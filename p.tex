@@ -1,20 +1,84 @@
 \documentclass[preprint]{sigplanconf}
 
-\usepackage{amssymb}
 \usepackage{graphicx}
-\usepackage{proof}
-\usepackage{stmaryrd}
-\usepackage{url}
+\usepackage{longtable}
+\usepackage{comment}
+\usepackage{amsmath}
+\usepackage{mdwlist}
+\usepackage{txfonts}
 \usepackage{xspace}
+\usepackage{amstext}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{proof}
+\usepackage{multicol}
+\usepackage[nodayofweek]{datetime}
+\usepackage{etex}
+\usepackage[all, cmtip]{xy}
+\usepackage{xcolor}
+\usepackage{listings}
 \usepackage{multicol}
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{definition}[theorem]{Definition}
 \newtheorem{proposition}[theorem]{Proposition}
-\newenvironment{proof}[1][Proof.]{\begin{trivlist}\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newtheorem{corollary}[theorem]{Corollary}
 
-\newcommand{\arrow}[1]{\mathtt{#1}}
+\newcommand{\xcomment}[2]{\textbf{#1:~\textsl{#2}}}
+\newcommand{\amr}[1]{\xcomment{Amr}{#1}}
+\newcommand{\roshan}[1]{\xcomment{Roshan}{#1}}
+
+\newcommand{\ie}{\textit{i.e.}\xspace}
+\newcommand{\eg}{\textit{e.g.}\xspace}
+
+\newcommand{\code}[1]{\lstinline[basicstyle=\small]{#1}\xspace}
+\newcommand{\name}[1]{\code{#1}}
+
+\def\newblock{}
+
+\newenvironment{floatrule}
+    {\hrule width \hsize height .33pt \vspace{.5pc}}
+    {\par\addvspace{.5pc}}
+
+%subcode-inline{bnf-inline} name langRev
+%! swap+ = \mathit{swap}^+
+%! swap* = \mathit{swap}^*
+%! dagger =  ^{\dagger}
+%! assocl+ = \mathit{assocl}^+
+%! assocr+ = \mathit{assocr}^+
+%! assocl* = \mathit{assocl}^*
+%! assocr* = \mathit{assocr}^*
+%! identr* = \mathit{uniti}
+%! identl* = \mathit{unite}
+%! dist = \mathit{distrib}
+%! factor = \mathit{factor}
+%! (o) = \fatsemi
+%! (;) = \fatsemi
+%! (*) = \times
+%! (+) = +
+
+%subcode-inline{bnf-inline} regex \{\{(((\}[^\}])|[^\}])*)\}\} name main include langRev
+%! Gx = \Gamma^{\times}
+%! G = \Gamma
+%! [] = \Box
+%! |-->* = \mapsto^{*}
+%! |-->> = \mapsto_{\ggg}
+%! |--> = \mapsto
+%! |- = \vdash
+%! ==> = \Longrightarrow
+%! <== = \Longleftarrow
+%! <=> = \Longleftrightarrow
+%! <-> = \leftrightarrow
+%! ~> = \leadsto
+%! ::= = &::=&
+%! /= = \neq
+%! forall = \forall
+%! exists = \exists
+%! empty = \epsilon
+%! langRev = \Pi
+%! theseus = Theseus
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
@@ -34,7 +98,7 @@
 \maketitle
 
 \begin{abstract}
-
+TODO
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -50,7 +114,182 @@ Languages, Theory
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-Blah\cite{infeffects}
+We introduced this thesis that computation should be based on isomorphisms
+that preserve information~\cite{infeffects}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Value Producers and Consumers}
+
+Consider the following ways of purchasing an item that costs \$20.00:
+
+\begin{enumerate}
+\item You produce a \$20.00 bill and give it to the seller.
+\item You use a credit card. 
+\end{enumerate}
+In both cases the seller receives the money immediately but there is a subtle
+difference. In the second transation, nobody has yet produced the money that
+the seller has received: instead a \emph{debt} is generated and this debt
+travels ``backwards'' towards the bank and (hopefully) reconciled there.
+
+Computationally we model the first transaction using essentially the identity
+function which receives a \$20.00 bill as input from the buyer and propagates
+it on its output to the seller. The second transaction is more
+complicated. We model it as shown in the circuit below:
+
+FIGURE
+
+There are two ways to understand this circuit that are both quite
+instructive. Let's first examine the type structure of each of the
+combinators that comprise the circuit. The first combinator on the right
+outputs \$20.00 to the seller. This \$20.00 is produced from nothing so to
+speak by generating an equivalent debt that travels backwards. COMPLETE BASED
+ON THE FIGURE.
+
+The othe way is to follow the execution. It goes forward in time so to speak,
+comes back, and then goes forwards again.
+
+\paragraph*{Continuations.} The idea of using negative types to model
+information flowing backwards, demand for values, continuations, etc. goes
+back to at Filinski's thesis. We recall these connections below but we first
+note that all these systems are complicated because in all these systems
+information can be ignored, destroyed, or duplicated. Clearly the possibility
+of erasure of information would mean that our credit card transaction is
+incorrect. In our work, information is maintained and hence we have a
+guarantee that, in a closed program, the debt must be accounted and paid for.
+
+\paragraph*{Filinski.}
+
+
+\paragraph*{Ariola, Herbelin, and Sabry.} We use subtractive types. Things
+are constrained so that the positive and negative values must be used
+together. In our new work we have no such constrained, the negative value can
+flow anywhere. The entire system guarantees that any closed program would
+have to account for it. We don't have to introduce special constraints to
+achieve that.
+
+\paragraph*{Focusing, Polarization, etc.}
+
+\paragraph*{Int Construction.}
+
+\paragraph*{Recursion.} In our previous work we introduce recursive types and
+trace operators. This is dangerous here because infinite loops allow us to
+prolong paying the debt for as long as we want.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Additive Duality in {{langRev}} }
+
+%%%%%%%%%%%%%%%
+\subsection{Syntax}
+
+%subcode{bnf} include main
+% Values, v = () | (v, v) | L v | R v
+% Combinators, c &=& iso | c (;) c | c(+)c | c (*) c 
+%
+% Sequential Contexts, P, F = [] | P:c
+% Parallel Contexts, D = [] 
+%                     &|& (P, [](+)c, F):D 
+%                     &|&  (P, c(+)[], F):D
+%                     &|& (P, c v, F):D 
+%                     &|&  (P, v c, F):D
+%
+%
+% Machine States  = <P, F, c v, D> | <P, F, v c, D>
+% Start State  = <[], [], c v, []>
+% Stop State  = <P, [], v c, []>
+
+Combinator reconstruction, {{P[c]}}: 
+%subcode{opsem} include main
+% [][c] '= c
+% (P:c')[c] '= P[c'(;)c]
+
+%%%%%%%%%%%%%%%%%%%%%
+\subsection{Operational Semantics}
+
+The small step semantics present for {{langRev}} below work
+symmetrically for forward and backward evaluation.
+
+\begin{itemize}
+\item 
+Basic reduction of an isomorphism. Note that the evaluation leaves the
+adjoint of the combinator behind. This will become important when we
+reverse the direction of computation.
+%subcode{opsem} include main
+% <P; F; iso v; D>      &|-->& <P; F; v'~ iso{dagger}; D>
+
+\item
+Sequencing involves pushing and popping from the Future and Past
+continuations:
+%subcode{opsem} include main
+% <P, F, c1(;)c2 v , D>  &|-->& <P, F:c2, c1 v, D>
+% <P, F:c2, v c1, D> &|-->& <P:c1, F, c2 v, D>
+
+
+\item
+Parallel composition, captures the current Future and Past and extends
+a Dump/meta-continuation.
+%subcode{opsem} include main
+% <P, F, c1 (+) c2 (L v), D> &|-->& <[], [], c1 v, (P,[](+)c2,F):D>
+% <P, F, c1 (+) c2 (R v), D> &|-->& <[], [], c2 v, (P,c1(+)[],F):D> 
+% <P', [], v c1, (P,[](+)c2,F):D> &|-->& < P, F, (L v) (P'[c1](+)c2{dagger}), D > 
+% <P', [], v c2, (P,c1(+)[],F):D> &|-->& <P, F, (R v) (c1{dagger}(+)P'[c2]), D>
+
+
+\item
+Similarly for products:
+%subcode{opsem} include main
+% <P, F, c1 (*) c2 (v1, v2), D> &|-->& <[], [], c1 v1, (P, [] (*) c2 v2,F):D>
+% <P', [], v1 c1, (P,[] (*) c2 v2,F):D> &|-->& <[], [], c2 v2, (P,v1 P'[c1] (*) [],F):D>
+% <P', [], v2 c2, (P,v1 c1 (*) [],F):D> &|-->& <P, F, (v1, v2) (c1(*)P'[c2]):D>
+and symmetrical rules for evaluation along the second branch. 
+%subcode{opsem} include main
+% <P', [], v2 c2, (P,c1 v1 (*) [],F):D> &|-->& <[], [], c1 v1, (P,[] (*) v2 P'[c2],F):D>
+% <P', [], v1 c1, (P,[] (*) v2 c2,F):D> &|-->& <P, F, (v1, v2) (P'[c1] (*) c2):D>
+
+The later two rules will be relevant only for reverse execution. 
+
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%
+\section{Rules for {{eta}} and {{eps}} }
+
+The operation {{eps}} reverses the direction of a particle by reversing the world. 
+
+\begin{itemize}
+\item Grammar
+%subcode{bnf} include main
+% Values, v = () | (v, v) | L v | R v | -v
+% Isomorphisms, iso &=& ... | eta | eps
+% Combinators, c &=& iso | c (;) c | c(+)c | c (*) c 
+
+\item
+Type judgement.
+%subcode{opsem} include main
+% eta &: 0 <-> (-b) + b :& eps
+
+%subcode{proof} include main
+%@ |- v : b
+%@@ |- -v : -b
+
+\item
+Operational Semantics.
+%subcode{opsem} include main
+% <P; F; eps (R v); D>      &|-->& <F; P; (L (-v))~ eps; D{dagger}>
+
+Note: there is NO reduction rule for {{eta}}. 
+
+\item
+The adjoint of a Dump is defined to be:
+%subcode{opsem} include main
+% []{dagger} '= []
+% ((P, [](+)c, F):D){dagger} '= (F, [](+)c{dagger}, P):D{dagger}
+% ((P, c(+)[], F):D){dagger} '= (F, c{dagger}(+)[], P):D{dagger}
+% ((P, [](*)c v, F):D){dagger} '= (F, [](*)v c, P):D{dagger}
+% ((P, [](*)v c, F):D){dagger} '= (F, [](*)c v, P):D{dagger}
+% ((P, c v(*)[], F):D){dagger} '= (F, v c(*)[], P):D{dagger}
+% ((P, v c(*)[], F):D){dagger} '= (F, c v(*)[], P):D{dagger}
+
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
