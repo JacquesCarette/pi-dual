@@ -18,6 +18,7 @@
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{multicol}
+\usepackage{bm}
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
@@ -187,20 +188,38 @@ prolong paying the debt for as long as we want.
 %
 % Sequential Contexts, P, F = [] | P:c
 % Parallel Contexts, D = [] 
-%                     &|& (P, [](+)c, F):D 
-%                     &|&  (P, c(+)[], F):D
-%                     &|& (P, c v, F):D 
-%                     &|&  (P, v c, F):D
+%                     &|& D:(P| [](+)c| F)
+%                     &|& D:(P| c(+)[]| F)
+%                     &|& D:(P| [] (*) c v| F)
+%                     &|& D:(P| [] (*) v c| F)
+%                     &|& D:(P| c v (*)  []| F)
+%                     &|& D:(P| v c (*) []| F)
 %
 %
-% Machine States  = <P, F, c v, D> | <P, F, v c, D>
-% Start State  = <[], [], c v, []>
-% Stop State  = <P, [], v c, []>
+% Machine States  = D[P| c v| F] | D[P| v c| F]
+% Start State  = [][[]| v c| []]
+% Stop State  = [][P| c v| []]
+
+%% %subcode{bnf} include main
+%% % Values, v = () | (v, v) | L v | R v
+%% % Combinators, c &=& iso | c (;) c | c(+)c | c (*) c 
+%% %
+%% % Sequential Contexts, P, F = [] | P:c
+%% % Parallel Contexts, D = [] 
+%% %                     &|& (P, [](+)c, F):D 
+%% %                     &|&  (P, c(+)[], F):D
+%% %                     &|& (P, c v, F):D 
+%% %                     &|&  (P, v c, F):D
+%% %
+%% %
+%% % Machine States  = <P, F, c v, D> | <P, F, v c, D>
+%% % Start State  = <[], [], c v, []>
+%% % Stop State  = <P, [], v c, []>
 
 Combinator reconstruction, {{P[c]}}: 
 %subcode{opsem} include main
-% [][c] '= c
-% (P:c')[c] '= P[c'(;)c]
+% [](c) '= c
+% P:c'(c) '= P(c'(;)c)
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{Operational Semantics}
@@ -213,37 +232,42 @@ symmetrically for forward and backward evaluation.
 Basic reduction of an isomorphism. Note that the evaluation leaves the
 adjoint of the combinator behind. This will become important when we
 reverse the direction of computation.
+%% %subcode{opsem} include main
+%% % <P; F; iso v; D>      &|-->& <P; F; v'~ iso{dagger}; D>
+
 %subcode{opsem} include main
-% <P; F; iso v; D>      &|-->& <P; F; v'~ iso{dagger}; D>
+% D[P|v iso| F]      &|-->& D[P| iso{dagger} v| F]
 
 \item
 Sequencing involves pushing and popping from the Future and Past
 continuations:
 %subcode{opsem} include main
-% <P, F, c1(;)c2 v , D>  &|-->& <P, F:c2, c1 v, D>
-% <P, F:c2, v c1, D> &|-->& <P:c1, F, c2 v, D>
+% D[P|v (c1(;)c2)| F]  &|-->& D[P| v c1| F:c2]
+% D[P| c1 v| F:c2] &|-->& D[P:c1| v c2| F]
 
 
 \item
 Parallel composition, captures the current Future and Past and extends
 a Dump/meta-continuation.
 %subcode{opsem} include main
-% <P, F, c1 (+) c2 (L v), D> &|-->& <[], [], c1 v, (P,[](+)c2,F):D>
-% <P, F, c1 (+) c2 (R v), D> &|-->& <[], [], c2 v, (P,c1(+)[],F):D> 
-% <P', [], v c1, (P,[](+)c2,F):D> &|-->& < P, F, (L v) (P'[c1](+)c2{dagger}), D > 
-% <P', [], v c2, (P,c1(+)[],F):D> &|-->& <P, F, (R v) (c1{dagger}(+)P'[c2]), D>
+% D[P|(L v) c1 (+) c2| F] &|-->& D:(P|[](+)c2|F)[ []| v c1| [] ]
+% D[P| (R v) c1 (+) c2| F] &|-->& D:(P|c1(+)[]|F)[ []| v c2| [] ]
+% D:(P|[](+)c2|F)[P'|c1 v| [] ]  &|-->& D[P|(P'(c1)(+)c2{dagger}) (L v)| F] 
+% D:(P|c1(+)[]|F)[P'| c2 v| [] ] &|-->& D[P|(c1{dagger}(+)P'(c2)) (R v)| F]
 
 
 \item
 Similarly for products:
 %subcode{opsem} include main
-% <P, F, c1 (*) c2 (v1, v2), D> &|-->& <[], [], c1 v1, (P, [] (*) c2 v2,F):D>
-% <P', [], v1 c1, (P,[] (*) c2 v2,F):D> &|-->& <[], [], c2 v2, (P,v1 P'[c1] (*) [],F):D>
-% <P', [], v2 c2, (P,v1 c1 (*) [],F):D> &|-->& <P, F, (v1, v2) (c1(*)P'[c2]):D>
+% D[P| (v1, v2) c1 (*) c2| F] &|-->& D:(P| [] (*) v2 c2|F)[ []| v1 c1| [] ]
+% D:(P|[] (*) v2 c2|F)[P'| c1 v1| [] ] &|-->& D:(P|P'(c1) v1 (*) []|F)[ []| v2 c2| [] ]
+% D:(P|c1 v1(*) []|F)[P'|c2 v2| [] ]  &|-->& D[P|c1(*)P'(c2) (v1, v2)| F]
+
+
 and symmetrical rules for evaluation along the second branch. 
 %subcode{opsem} include main
-% <P', [], v2 c2, (P,c1 v1 (*) [],F):D> &|-->& <[], [], c1 v1, (P,[] (*) v2 P'[c2],F):D>
-% <P', [], v1 c1, (P,[] (*) v2 c2,F):D> &|-->& <P, F, (v1, v2) (P'[c1] (*) c2):D>
+% D:(P|v1 c1 (*) []|F)[P'| c2 v2| [] ] &|-->& D:(P,[] (*) P'(c2) v2,F)[ []| v1 c1| [] ]
+% D:(P|[] (*) c2 v2|F)[P'|c1 v1| [] ] &|-->& D[P |P'(c1) (*) c2 (v1, v2)| F]
 
 The later two rules will be relevant only for reverse execution. 
 
@@ -274,20 +298,20 @@ Type judgement.
 \item
 Operational Semantics.
 %subcode{opsem} include main
-% <P; F; eps (R v); D>      &|-->& <F; P; (L (-v))~ eps; D{dagger}>
+% D[P| (R v) eps| F]      &|-->&  D{dagger}[F | eps (L (-v))| P]
 
 Note: there is NO reduction rule for {{eta}}. 
 
 \item
-The adjoint of a Dump is defined to be:
+The adjoint of a parallel context is defined to be:
 %subcode{opsem} include main
 % []{dagger} '= []
-% ((P, [](+)c, F):D){dagger} '= (F, [](+)c{dagger}, P):D{dagger}
-% ((P, c(+)[], F):D){dagger} '= (F, c{dagger}(+)[], P):D{dagger}
-% ((P, [](*)c v, F):D){dagger} '= (F, [](*)v c, P):D{dagger}
-% ((P, [](*)v c, F):D){dagger} '= (F, [](*)c v, P):D{dagger}
-% ((P, c v(*)[], F):D){dagger} '= (F, v c(*)[], P):D{dagger}
-% ((P, v c(*)[], F):D){dagger} '= (F, c v(*)[], P):D{dagger}
+% (D:(P, [](+)c, F)){dagger} '= D{dagger}:(F, [](+)c{dagger}, P)
+% (D:(P, c(+)[], F)){dagger} '= D{dagger}:(F, c{dagger}(+)[], P)
+% (D:(P, [](*)c v, F)){dagger} '= D{dagger}:(F, [](*)v c, P)
+% (D:(P, [](*)v c, F)){dagger} '= D{dagger}:(F, [](*)c v, P)
+% (D:(P, c v(*)[], F)){dagger} '= D{dagger}:(F, v c(*)[], P)
+% (D:(P, v c(*)[], F)){dagger} '= D{dagger}:(F, c v(*)[], P)
 
 \end{itemize}
 
