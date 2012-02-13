@@ -406,8 +406,36 @@ Delimited continuation
 
 Trace 
 
+%subcode{proof} include main
+%@ c : b2 + b1 <-> b2 + b3
+%@@ trace c : b1 <-> b3
+
 \begin{center}
   \includegraphics{diagrams/trace.pdf}
+\end{center}
+
+Double Negation
+
+{{b <-> -(-b)}}
+
+\begin{center}
+  \includegraphics{diagrams/double_neg.pdf}
+\end{center}
+
+Negation distributes over {{+}}.
+
+{{-(b1 + b2) <-> (b1) + (-b2)}}
+
+\begin{center}
+  \includegraphics{diagrams/dist_neg_plus.pdf}
+\end{center}
+
+Lifting negation out of {{*}}.
+
+{{(-b1) * b2 <-> -(b1 * b2) <-> b1 * (-b2)}}
+
+\begin{center}
+  \includegraphics{diagrams/mult_neg.pdf}
 \end{center}
 
 
@@ -430,15 +458,9 @@ types are not executable.
 
 \begin{itemize}
 
-\item {{(-b1) * b2}} is not the same as {{b1 * (-b2)}} as there is no
-  isomorphism to translate from one to the other.
-
 \item {{-(b1 * b2)}} is not the same as {{b1 * b2}} and is also not
   the same as {{(-b1) * (-b2)}} as there is no isomorphism that goes
   from one to the other.
-
-\item {{-(-b)}} is not the same as {{b}} as there is no isomorphism
-  that goes from one to the other.
 
 \item If we built an effect over {{langRevEE}}, say {{create}} and
   {{erase}}, are effects structured by an arrow or a monad now?
