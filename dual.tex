@@ -20,6 +20,7 @@
 \usepackage{multicol}
 \usepackage{bm}
 
+
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{proposition}[theorem]{Proposition}
@@ -31,6 +32,9 @@
 
 \newcommand{\ie}{\textit{i.e.}\xspace}
 \newcommand{\eg}{\textit{e.g.}\xspace}
+
+\newcommand{\lcal}{\ensuremath{\lambda}-calculus}
+\newcommand{\G}{\ensuremath{\mathcal{G}}\xspace}
 
 \newcommand{\code}[1]{\lstinline[basicstyle=\small]{#1}\xspace}
 \newcommand{\name}[1]{\code{#1}}
@@ -71,13 +75,17 @@
 %! <=> = \Longleftrightarrow
 %! <-> = \leftrightarrow
 %! ~> = \leadsto
+%! -o = \multimap
 %! ::= = &::=&
 %! /= = \neq
 %! forall = \forall
 %! exists = \exists
 %! empty = \epsilon
 %! langRev = \Pi
+%! langRevT = \Pi^{o}
+%! langRevEE = \Pi^{\eta\epsilon}
 %! theseus = Theseus
+%! * = \times
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -99,7 +107,19 @@
 \maketitle
 
 \begin{abstract}
-TODO
+We show a deep symmetry between functions and delimited continuations,
+values and continuations that arises in {{langRev}} in a manner that
+is reminiscent of Filinksi's Symmetric \lcal
+~\cite{Filinski:1989:DCI:648332.755574}. The symmetry arises by
+extending {{langRev}} with a notion of additive duality over the
+monoid {{(+, 0)}} by including {{eta}} and {{eps}} operators of
+Compact Closed Categories. The resulting dual types, which we denote
+{{-b}}, have a time traveling ``backward information flow''
+interpretation and allow for the encoding of higher-order function and
+iteration via the construction of {{trace}} operators, thereby making
+the extended language {{langRevEE}} a Turing-complete reversible
+programming language with higher-order functions and first-class
+delimited continuations.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -171,10 +191,23 @@ achieve that.
 \paragraph*{Focusing, Polarization, etc.}
 
 \paragraph*{Int Construction.}
+For a traced monoidal category {{C}} the Int construction produces a
+Compact Closed Category called Int {{C}} \cite{joyal1996traced}.
+Further we know that the target of the Int construction is isomorphic
+to the target of \G construction of Abramsky \cite{Abramsky96:0} from
+Haghverdi. However, note that the {{langRevEE}} is not the same as the
+image of the Int construction on {{langRevT}}, since the the later
+lacks a multiplicative tensor that distrbutes over the additive tensor
+in Int {{langRevT}}.
 
 \paragraph*{Recursion.} In our previous work we introduce recursive types and
 trace operators. This is dangerous here because infinite loops allow us to
 prolong paying the debt for as long as we want.
+
+
+\paragraph*{GoI machines} 
+We can now encode the GoI machine of Mackie \cite{Mackie2011,DBLP:conf/popl/Mackie95}.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Additive Duality in {{langRev}} }
@@ -200,23 +233,7 @@ prolong paying the debt for as long as we want.
 % Start State  = [][[]| v c| []]
 % Stop State  = [][P| c v| []]
 
-%% %subcode{bnf} include main
-%% % Values, v = () | (v, v) | L v | R v
-%% % Combinators, c &=& iso | c (;) c | c(+)c | c (*) c 
-%% %
-%% % Sequential Contexts, P, F = [] | P:c
-%% % Parallel Contexts, D = [] 
-%% %                     &|& (P, [](+)c, F):D 
-%% %                     &|&  (P, c(+)[], F):D
-%% %                     &|& (P, c v, F):D 
-%% %                     &|&  (P, v c, F):D
-%% %
-%% %
-%% % Machine States  = <P, F, c v, D> | <P, F, v c, D>
-%% % Start State  = <[], [], c v, []>
-%% % Stop State  = <P, [], v c, []>
-
-Combinator reconstruction, {{P[c]}}: 
+Combinator reconstruction, {{P[c]}}:
 %subcode{opsem} include main
 % [](c) '= c
 % P:c'(c) '= P(c'(;)c)
@@ -248,7 +265,7 @@ continuations:
 
 \item
 Parallel composition, captures the current Future and Past and extends
-a Dump/meta-continuation.
+the parallel context.
 %subcode{opsem} include main
 % D[P|(L v) c1 (+) c2| F] &|-->& D:(P|[](+)c2|F)[ []| v c1| [] ]
 % D[P| (R v) c1 (+) c2| F] &|-->& D:(P|c1(+)[]|F)[ []| v c2| [] ]
@@ -277,7 +294,13 @@ The later two rules will be relevant only for reverse execution.
 %%%%%%%%%%%%%%%%%
 \section{Rules for {{eta}} and {{eps}} }
 
-The operation {{eps}} reverses the direction of a particle by reversing the world. 
+The operation {{eps}} reverses the direction of a particle by
+reversing the world. 
+
+Note that we deviate from the categorical definition of {{eta}} and
+{{eps}} slightly in that they swap the order of {{-b}} and {{b}} in
+choice of {{eta}}. This however does not affect us, because we deal
+with a symmetric category.
 
 \begin{itemize}
 \item Grammar
@@ -318,30 +341,114 @@ The adjoint of a parallel context is defined to be:
 
 \end{itemize}
 
+
+\section{Diagrams}
+
+{{eta}}
+
 \begin{center}
   \includegraphics{diagrams/eta.pdf}
 \end{center}
+
+Note that the connective is a {{+}}, hence only one of the branches
+may be inhabited at any time. Thus the action of {{eta}} is to
+transfer a backward flowing value on one wire to a forward flowing
+value on the other wire.
+
+{{eps}}
 
 \begin{center}
   \includegraphics{diagrams/eps.pdf}
 \end{center}
 
+Coherence condition
+
+\begin{center}
+  \includegraphics{diagrams/coherence.pdf}
+\end{center}
+
+Function
+
 \begin{center}
   \includegraphics{diagrams/function.pdf}
 \end{center}
+
+Let us use the shorthand {{b1 -o b2 = -b1 + b2}}
+
+Function application
+
+\begin{center}
+  \includegraphics{diagrams/apply1.pdf}
+\end{center}
+
+\begin{center}
+  \includegraphics{diagrams/apply2.pdf}
+\end{center}
+
+
+Function composition
+
+\begin{center}
+  \includegraphics{diagrams/compose1.pdf}
+\end{center}
+
+\begin{center}
+  \includegraphics{diagrams/compose.pdf}
+\end{center}
+
+
+
+Delimited continuation
 
 \begin{center}
   \includegraphics{diagrams/delimc.pdf}
 \end{center}
 
 
+\paragraph*{Observability.} 
+Execution of program is defined by {{c : b1 <-> b2}} when evaluated on
+input {{v1 : b1}} gives us a value {{v2 : b2}} on
+termination. Execution is well defined only if {{b1}} and {{b2}} are
+entirely positive types. Consider the program that
+
+\begin{center}
+  \includegraphics{diagrams/shuffle.pdf}
+\end{center}
+
+We define observables to be only positive types. The ouputs of
+programs that ouput mixed positive and negative types are not
+observable.  Also, programs that input mixed positive and negatives
+types are not executable.
+
+\subsection{To think about}
+
+\begin{itemize}
+
+\item {{(-b1) * b2}} is not the same as {{b1 * (-b2)}} as there is no
+  isomorphism to translate from one to the other.
+
+\item {{-(b1 * b2)}} is not the same as {{b1 * b2}} and is also not
+  the same as {{(-b1) * (-b2)}} as there is no isomorphism that goes
+  from one to the other.
+
+\item {{-(-b)}} is not the same as {{b}} as there is no isomorphism
+  that goes from one to the other.
+
+\end{itemize}
+
+
+
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 
-\acks This project was partially funded by Indiana University's Office of the
-Vice President for Research and the Office of the Vice Provost for Research
-through its Faculty Research Support Program.  We also acknowledge support
-from Indiana University's Institute for Advanced Study.
+\acks This project was partially funded by Indiana University's Office
+of the Vice President for Research and the Office of the Vice Provost
+for Research through its Faculty Research Support Program.  We also
+acknowledge support from Indiana University's Institute for Advanced
+Study.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{small}
