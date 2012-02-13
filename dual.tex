@@ -449,6 +449,17 @@ types are not executable.
   product encoding of environments, there is no value one can assign
   to a variable such that it denotes a function.
 
+
+Actually this is possible. Consider two functions {{f : b1 <-> b2}}
+and {{g : b1 <-> b2}}. A value of type {{bool}} is sufficient to
+discriminate them. Hence the {{boo}} is the first class representation
+of the functions and can be thought of as the address of the function. 
+
+\begin{center}
+  \includegraphics{diagrams/dispatch.pdf}
+\end{center}
+
+
 \item It is not fair to say that negative types flow backwards. The
   following circuits are valid in {{langRevEE}}. It is however proper
   to say that for any type {{b}} that flows in a direction, the type
