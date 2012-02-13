@@ -13,7 +13,7 @@ dual.subc.pdf : dual.subc.tex cites.bib
         bibtex dual.subc
 
 dual-dropbox : dual.subc.pdf
-	cp dual.subc.pdf ~/Dropbox/Public/papers	
+	cp dual.subc.pdf ~/Dropbox/Public/papers
 
 
 # Build all 
