@@ -148,7 +148,7 @@ Consider the following ways of purchasing an item that costs \$20.00:
 \item You use a credit card. 
 \end{enumerate}
 In both cases the seller receives the money immediately but there is a subtle
-difference. In the second transation, nobody has yet produced the money that
+difference. In the second transaction, nobody has yet produced the money that
 the seller has received: instead a \emph{debt} is generated and this debt
 travels ``backwards'' towards the bank and (hopefully) reconciled there.
 
@@ -166,7 +166,7 @@ outputs \$20.00 to the seller. This \$20.00 is produced from nothing so to
 speak by generating an equivalent debt that travels backwards. COMPLETE BASED
 ON THE FIGURE.
 
-The othe way is to follow the execution. It goes forward in time so to speak,
+The other way is to follow the execution. It goes forward in time so to speak,
 comes back, and then goes forwards again.
 
 \paragraph*{Continuations.} The idea of using negative types to model
@@ -178,7 +178,28 @@ of erasure of information would mean that our credit card transaction is
 incorrect. In our work, information is maintained and hence we have a
 guarantee that, in a closed program, the debt must be accounted and paid for.
 
-\paragraph*{Filinski.}
+\paragraph*{Filinski~\cite{Filinski:1989:DCI:648332.755574}.}
+In his Masters thesis, Filinski proposes that continuations are a
+\emph{declarative} concept. He, furthermore, introduces a symmetric extension
+of the $\lambda$-calculus in which values and continuations are treated as
+opposites. This is essentially what we are proposing with one fundamental
+difference: our underlying language is not the $\lambda$-calculus but a
+language of pure isomorphisms in which information is preserved. This shift
+of perspective enables us to distill and generalize the duality of values and
+continuations: in particular, in the conventional $\lambda$-calculus setting
+values and continuations can be erased and duplicated which makes it
+difficult to maintain the correspondence between a value and its negative
+counterpart. In contrast, in our setting, one can start from the empty type
+$0$, introduce a positive value and its negative counterpart, and let each of
+these flow in arbitrary ways. The entire framework guarantees that neither
+the value nor its negative counterpart will be deleted or duplicated and
+hence that, in any closed program, the ``debt'' corresponding to the negative
+value is paid off exactly once. 
+
+The forward and backward executions in our framework correspond to
+call-by-value and call-by-name. This duality was observed by Filinski and
+others following him but it is particularly clean in our framework.
+
 
 
 \paragraph*{Ariola, Herbelin, and Sabry.} We use subtractive types. Things
