@@ -138,6 +138,19 @@ Languages, Theory
 We introduced this thesis that computation should be based on isomorphisms
 that preserve information~\cite{infeffects}.
 
+For a while we didn't know how to interpret the pair $(2,-3)$. I was thinking
+that it corresponds to having two things: the value $2$ and the continuation
+$3$. This makes no sense because $(2,-3)$ is isomorphic to $-(2,3)$. Instead
+the right interpretation is that $(2,-3)$ corresponds to having 2
+$3$-continuations which is the same as having a $6$-continuations or 3
+$2$-continuations and so on.
+
+Since Filinski, we've had the idea that values and continuations are like
+mirror images. In a conventional language, the negative (continuation) side
+is implicit and we introduce information effects on the positive. Trying to
+recover the duality from this distorted positive side has always been
+messy. Now it looks clean because we have kept the positive side pure.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Value Producers and Consumers}
 
@@ -199,8 +212,6 @@ value is paid off exactly once.
 The forward and backward executions in our framework correspond to
 call-by-value and call-by-name. This duality was observed by Filinski and
 others following him but it is particularly clean in our framework.
-
-
 
 \paragraph*{Ariola, Herbelin, and Sabry.} We use subtractive types. Things
 are constrained so that the positive and negative values must be used
