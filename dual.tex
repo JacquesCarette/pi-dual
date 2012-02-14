@@ -396,6 +396,11 @@ Function composition
   \includegraphics{diagrams/compose.pdf}
 \end{center}
 
+This is also equivalent to sequencing both the computation blocks. 
+
+\begin{center}
+  \includegraphics{diagrams/compose2.pdf}
+\end{center}
 
 
 Delimited continuation
@@ -430,6 +435,14 @@ Negation distributes over {{+}}.
   \includegraphics{diagrams/dist_neg_plus.pdf}
 \end{center}
 
+{{eps_{fst} }}
+
+{{(-b1)*b2 + b1*b2 <-> 0}}
+
+\begin{center}
+  \includegraphics{diagrams/eps_fst.pdf}
+\end{center}
+
 Lifting negation out of {{*}}.
 
 {{(-b1) * b2 <-> -(b1 * b2) <-> b1 * (-b2)}}
@@ -437,6 +450,11 @@ Lifting negation out of {{*}}.
 \begin{center}
   \includegraphics{diagrams/mult_neg.pdf}
 \end{center}
+
+The following isomoprhism can be constructed similarly 
+
+{{b1 * b2 <-> (-b1)*(-b2)}}
+
 
 
 \paragraph*{Observability.} 
@@ -457,10 +475,6 @@ types are not executable.
 \subsection{To think about}
 
 \begin{itemize}
-
-\item {{-(b1 * b2)}} is not the same as {{b1 * b2}} and is also not
-  the same as {{(-b1) * (-b2)}} as there is no isomorphism that goes
-  from one to the other.
 
 \item If we built an effect over {{langRevEE}}, say {{create}} and
   {{erase}}, are effects structured by an arrow or a monad now?
