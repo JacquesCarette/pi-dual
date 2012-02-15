@@ -136,20 +136,31 @@ Languages, Theory
 \section{Introduction}
 
 We introduced this thesis that computation should be based on isomorphisms
-that preserve information~\cite{infeffects}.
+that preserve information~\cite{infeffects}. Since Filinski, we've had the
+idea that values and continuations are like mirror images. In a conventional
+language, the negative (continuation) side is implicit and we introduce
+information effects on the positive. Trying to recover the duality from this
+distorted positive side has always been messy. Now it looks clean because we
+have kept the positive side pure.
 
-For a while we didn't know how to interpret the pair $(2,-3)$. I was thinking
-that it corresponds to having two things: the value $2$ and the continuation
-$3$. This makes no sense because $(2,-3)$ is isomorphic to $-(2,3)$. Instead
-the right interpretation is that $(2,-3)$ corresponds to having 2
-$3$-continuations which is the same as having a $6$-continuations or 3
-$2$-continuations and so on.
+The way to think about something of type $A$ is that it is a value we have
+produced. The way to think about something of type $-A$ is that is a value we
+have already consumed. 
 
-Since Filinski, we've had the idea that values and continuations are like
-mirror images. In a conventional language, the negative (continuation) side
-is implicit and we introduce information effects on the positive. Trying to
-recover the duality from this distorted positive side has always been
-messy. Now it looks clean because we have kept the positive side pure.
+Other interpretations of the types of think about. The first one is
+arithmetic obviously. Another one is languages consisting of sets of
+string. The type 0 is the empty set, the type 1 is the set containing the
+empty word, the $+$ constructor corresponds to union, and the $*$ constructor
+corresponds to concatenation. The constructor $-$ would not correspond to set
+difference however. It would correspond to marking the elements in the set as
+``consumed'' so that if we take the union and a ``consumed'' element appears
+in the other set, the two cancel. This makes it clear that concatenating a
+produced $a$ and a consumed $b$ is not the same as concatenating a consumed
+$a$ and a produced $b$. They really need to be kept separate. Incidentally,
+division would be defined as follows:
+\[
+L_1 / L_2 = \{ x ~|~ xy \in L_1 \mbox{~for~some~} y \in L_2 \}
+\]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Value Producers and Consumers}
