@@ -5,12 +5,12 @@
 .PHONY : clean clean-subcode
 
 # ICFP
-p.subc.pdf : p.subc.tex cites.bib
-	pdflatex -halt-on-error p.subc.tex
-	bibtex p.subc
+dual.subc.pdf : dual.subc.tex cites.bib
+	pdflatex -halt-on-error dual.subc.tex
+	bibtex dual.subc
 
-p.subc.tex : p.tex
-	ruby subcode/subc.rb p.tex
+dual.subc.tex : dual.tex
+	ruby subcode/subc.rb dual.tex
 
 # Clean
 clean: 
