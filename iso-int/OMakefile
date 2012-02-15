@@ -1,0 +1,30 @@
+########################################################################
+# Phony targets are scoped, so you probably want to declare them first.
+#
+
+.PHONY : all clean iso-int-dropbox
+
+# POPL-iso-int
+iso-int.subc.tex : iso-int.tex
+        ruby subcode/subc.rb iso-int.tex
+
+iso-int.subc.pdf : iso-int.subc.tex cites.bib
+	pdflatex iso-int.subc.tex
+        bibtex iso-int.subc
+
+iso-int-dropbox : iso-int.subc.pdf
+	cp iso-int.subc.pdf ~/Dropbox/Public/papers
+
+
+# Build all 
+all : iso-int-dropbox
+
+# Clean
+clean: 
+	rm *.subc.*
+	rm .subcode_cache*
+
+clean-subcode:
+	rm .subcode_cache*
+
+.DEFAULT : all
