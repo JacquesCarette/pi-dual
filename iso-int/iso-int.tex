@@ -94,9 +94,9 @@
 The constructions in this paper apply only to a class of interpreters
 that can be represented by logically reversible small-step operational
 semantics. While, in a formal sense, they are related to Abramsky's
-``bi-orthogonal automata'' , we will try to give them a more direct
-characterization purely in terms of logical reversibility of the
-small-step semantics.
+``bi-orthogonal automata''\cite{abramsky2005structural}, we will try
+to give them a more direct characterization purely in terms of logical
+reversibility of the small-step semantics.
 
 
 \section{Simple Bounded Iterator}
@@ -121,6 +121,8 @@ second. It stops when the first number reaches 0, thereby taking
 exactly {{n}} steps. While the machine does nothing interesting,
 it useful to illustrate the general idea.
 
+\begin{enumerate}
+\item 
 We can turn this abstract machine into a an isomorphic interpreter
 implemented in {{langRevT}}, in a systematic way. To start with we
 realize that the interpreter should implement the following map.
@@ -142,6 +144,7 @@ We start by examining the first value.
   \includegraphics{diagrams/nat-nat2.pdf}
 \end{center}
 
+\item
 The triangle denotes the {{unfold}} isomorphism, which works as
 follows: If the number {{n}} is zero, the output is the top branch
 which has type {{1}}. If the number was non-zero, the output is on the
@@ -155,6 +158,7 @@ can fill in the output part of the interpreter dually.
   \includegraphics{diagrams/nat-nat3.pdf}
 \end{center}
 
+\item
 Let us examine all the possible input states, by distributing on the
 input. Dually let us do the same with the output, but this time also
 be a little bit explicit about the swap operations required so the
@@ -164,6 +168,7 @@ right types are in place.
   \includegraphics{diagrams/nat-nat4.pdf}
 \end{center}
 
+\item
 The construction above already gives us some insight into how we can
 implement our one reduction step. If we chose {{m = m'-1}} and we
 chose {{n-1 =n'}} then we have essentially encoded the required
@@ -179,6 +184,7 @@ is just a swap of the two wires involved.
   \includegraphics{diagrams/nat-nat5.pdf}
 \end{center}
 
+\item
 We are a few steps away from an interpreter at this point and the
 final steps rely on the answers to a few questions.
 
@@ -190,8 +196,8 @@ final steps rely on the answers to a few questions.
 
 \end{enumerate}
 
-The branch labelled {{((), m)}} looks like the stop state of the
-machine. The branch labelled {{((), n')}} looks like the start state
+The branch labeled {{((), m)}} looks like the stop state of the
+machine. The branch label-led {{((), n')}} looks like the start state
 of the program. To complete the interpreter, we flip our current
 construction inside out.
 
@@ -213,22 +219,66 @@ to related machine states.
   \includegraphics{diagrams/nat-nat8.pdf}
 \end{center}
 
+\end{enumerate}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Abstracting out the Construction}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{What are the high level steps in the tranlsation?}
+\subsection{What are the high level steps in the translation?}
+\label{sec:steps}
 
+TODO
+
+\begin{enumerate}
+\item Expand the input such that every input term that the LHS of the
+  interpreter pattern matches on is exposed.
+
+\item Expand the output such that every output term that it
+  reconstructed by the interpreter is exposed.
+
+\item Shuffle matching LHS term to matching RHS terms, inserting any
+  appropriate mediating computations. In the previous example, this
+  was only a swap operation.
+
+\end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{What abstract machines can be turned into isomorphic interpreters?}
 
+Logically reversible abstract machines with distinguishable start and
+stop states can be converted into isomorphic interpreters in
+{{langRevT}}.  To develop an understanding for what sorts of machines
+these are, let us look at some examples.
+
+Consider a machine with the following two reduction steps
+{{<n+1,m>|--> <n, m+1>}} and {{<n+1,m>|--><n,m>}}. Can we create an
+isomorphic interpreter for such a machine? We can't, because for any
+given machine state, it is not obvious what reduction rule to
+apply. We could reverse this machine if there was a clear
+non-ambiguity in which machine rule was chosen.
+
+Consider a machine, with the following rewrite rules
+{{<n+1,m,p>|--><n,m,p+1>}} and {{<0,m+1,p>|--><0,m,p+1>}}. Can we
+create an isomorphic interpreter for this machine? It turns out we
+can't because for any given output state {{<0,m,p+1>}} it is not
+obvious which input state it came from - i.e. there are two
+possibilities {{<1,m,p>}} or there is {{<0,m+1,p>}}.
+
+Consider a machine that has the addition rule {{<''x+y''>|--><''z''>}}
+where {{z}} is the sum of {{x}} and {{y}}. This machine again cannot
+be turned into an isomorphic interpreter because the one reduction
+rule does not have a logically inverse -- in other words, given a
+{{z}}, we are unable to determine which {{x}} and {{y}} it originated
+from.
+
 If we had only the reduction relation {{<n+1> |--> <n>}}, can we
 construct an isomorphic interpreter? After all, every rewrite rule is
-logically reversible. In fact, this is not possible becuase there is
+logically reversible. In fact, this is not possible because there is
 no distinguished start state for such an interpreter and hence one
 does not know when to stop during reverse execution.
 
+\noindent
 Conditions that must be satisfied for constructing a isomorphic
 interpreter:
 
@@ -247,12 +297,73 @@ interpreter:
 \end{enumerate}
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Adder and Multiplier}
 
+\subsection{Logically Reversible Adder}
+
+%subcode{bnf} include main
+% Expressions, e = n
+% Numbers, n, m,p = 0 | n + 1
+%
+% Machine states = <e, e, e>
+% Start state = <n, p, 0>
+% Stop State = <0, p', m>
+
+Small-step Operational semantics:
+
+%subcode{opsem} include main
+% <n+1, p, m> |--> <n, p+1, m+1>
+
+This is an ostensibly useful machine in the sense that it computes the
+sum of its two inputs.  This construction proceeds exactly like the
+previous one till we have the following situation:
+
+\begin{center}
+  \includegraphics{diagrams/adder1.pdf}
+\end{center}
+
+The equalities we would like to express at this point are {{n-1=n'}},
+{{m=m'-1}} and that {{p+1=p'}}. Fortunately {{langRevT}} provides the
+{{add1: nat <-> nat}} combinator and so we could just use that to
+mediate between {{p}} and {{p'}}. This is one solution and this gives
+us:
+
+\begin{center}
+  \includegraphics{diagrams/adder2.pdf}
+\end{center}
+
+This can be inverted as before, to give us an interpreter. While this
+is a correct implementation of the small-step semantics, it is
+somewhat unsatisyfing for the reason that it does not see very
+systematic. After all we chose to use an {{add1}} for {{p}} -- why
+didn't we do the same for {{m}}? More importantly, the fact that we
+chose used {{add1}} is also hiding something -- namely that {{add1}}
+is a partial isomorphism. Its inverse is not defined when applied to
+{{0}} i.e. it will go into an infinite loop. 
+
+In a sense this implicit assymetry of the abstract machine was being
+hidden by the {{add1}} operation. So instead of chosing to use
+{{add1}} let us chose to expand out {{p'}}, as recommended by step 2
+in section \ref{sec:steps}. This gives us the following: 
+
+
+\begin{center}
+\scalebox{0.9}{
+  \includegraphics{diagrams/adder3.pdf}
+}
+\end{center}
+
+
+
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Tree Traversal}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A {{langRev}} Interpreter}
 
 
 
