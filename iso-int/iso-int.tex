@@ -335,15 +335,15 @@ us:
 
 This can be inverted as before, to give us an interpreter. While this
 is a correct implementation of the small-step semantics, it is
-somewhat unsatisyfing for the reason that it does not see very
+somewhat unsatisfying for the reason that it does not see very
 systematic. After all we chose to use an {{add1}} for {{p}} -- why
 didn't we do the same for {{m}}? More importantly, the fact that we
 chose used {{add1}} is also hiding something -- namely that {{add1}}
 is a partial isomorphism. Its inverse is not defined when applied to
 {{0}} i.e. it will go into an infinite loop. 
 
-In a sense this implicit assymetry of the abstract machine was being
-hidden by the {{add1}} operation. So instead of chosing to use
+In a sense this implicit asymmetry of the abstract machine was being
+hidden by the {{add1}} operation. So instead of choosing to use
 {{add1}} let us chose to expand out {{p'}}, as recommended by step 2
 in section \ref{sec:steps}. This gives us the following: 
 
@@ -354,7 +354,7 @@ in section \ref{sec:steps}. This gives us the following:
 }
 \end{center}
 
-We can very that the connected wires do indeed give us teh desired
+We can very that the connected wires do indeed give us the desired
 equalities between the inputs and outputs. Also we recognize our
 expected start state and expected stop state. What is the dangling
 state?
@@ -363,14 +363,14 @@ The dangling state was what has hidden by the use of {{add1}} and
 denotes the fact that the abstract machine did not define any valid
 backward reduction for the following valid machine state
 {{<n,0,m+1>}}. To take a backward step, both {{m}} and {{p}} have to
-be simulatenously decremented and this is not possible if {{p}} is
+be simultaneously decremented and this is not possible if {{p}} is
 {{0}}.  At this point we have two choices:
 
 \begin{enumerate}
 \item We can hide the use the combinator {{omega : b <-> 0}}
   expressible in {{langRevT}}. This combinator is basically an
-  infinote loop on all inputs and hence would allow us to entirely
-  discard one possible branch. In other words, we are explicitely
+  infinite loop on all inputs and hence would allow us to entirely
+  discard one possible branch. In other words, we are explicitly
   admitting that our machine is undefined on some inputs.
 
 \item We can admit that there are two possible start states to this
@@ -383,8 +383,8 @@ be simulatenously decremented and this is not possible if {{p}} is
 
 \end{enumerate}
 
-As we did before, we flip inside out the construction of the map and
-apply trace to give us the interpreter:
+As we did before, we flip inside out the construction so far and
+apply {{trace}} to get the isomorphic interpreter:
 
 \begin{center}
 \scalebox{0.9}{
