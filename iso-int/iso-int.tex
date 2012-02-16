@@ -94,6 +94,18 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
 
+
+Previous work on {{langRevT}} \cite{rc2011,infeffects} studied its
+properties and various constructions in it. However, for a
+computational model, there has been little focus on actually writing
+programs directly in {{langRevT}}. This paper aims to remedy that by
+presenting a systematic technique of expressing logically reversible
+small-step abstract machines in {{langRevT}}. This paper shows that
+once we have a logically reversible machine in a notation of our
+choice, expressing the machine as an isomorphic interpreter in
+{{langRevT}} can be done systematically and does not present any
+significant conceptual difficulties.
+
 The constructions in this paper apply only to a class of interpreters
 that can be represented by logically reversible small-step operational
 semantics. While, in a formal sense, they are related to Abramsky's
@@ -101,7 +113,7 @@ semantics. While, in a formal sense, they are related to Abramsky's
 to give them a more direct characterization purely in terms of logical
 reversibility of the small-step semantics.
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simple Bounded Iterator}
 Consider definition for the following small-step abstract machine:
 
