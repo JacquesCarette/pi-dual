@@ -26,6 +26,10 @@
 %! (+) = +
 
 %subcode-inline{bnf-inline} regex \{\{(((\}[^\}])|[^\}])*)\}\} name main include langRev
+%! [^ = \ulcorner
+%! ^] = \urcorner
+%! [v = \llcorner
+%! v] = \lrcorner
 %! |-->* = \mapsto^{*}
 %! |-->> = \mapsto_{\ggg}
 %! |-->let = \mapsto_{let}
@@ -391,10 +395,148 @@ apply {{trace}} to get the isomorphic interpreter:
 }
 \end{center}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Logically Reversible Multiplier}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Tree Traversal}
+
+Let us take the ideas developed so far and apply them to developing a
+tree traversal interpreter. We define a typical binary tree, one that
+has numbers as leaf values and also define a notion of tree
+contexts. The tree contexts serve to track which subtree is currently
+being explored and are similar to tree zippers CITE.
+
+%subcode{bnf} include main
+% Tree, t = L n | N t t
+% Tree Contexts, c = Lft c t | Rgt t c | []
+%
+% Machine states = <t, c> | {[c, t]}
+% Start state = <t, []>
+% Stop State = {[[], t]}
+
+We define an abstract machine whose task is to traverse a given tree
+and increment every leaf value. Small-step Operational semantics:
+
+%subcode{opsem} include main
+% <L n, c> &|-->& {[c, L (n+1)]}
+% <N t1 t2, c> &|-->& <t1, Lft c t2>
+% {[Lft c t2, t1]} &|-->& <t2, Rgt t1 c>
+% {[Rgt t1 c, t2]} &|-->& {[N t1 t2, c]}
+
+The machine here is a little richer than the ones dealt with
+previously. In particular, we have a two types of machine states --
+{{<t,c>}} and {{ {[t, c]} }}. One of these corresponds to walkking
+down a tree, building up the context in the process. The other
+corresponds to reconstructing the tree from the context and also
+switching focus to any unexplored subtrees in the process. There are
+also two syntactic categories to deal with -- trees and tree context
+-- where previously we only had numbers. The {{fold}} and {{unfold}}
+isomorphisms that we need for trees and tree contexts are:
+
+%subcode{bnf} include main
+%! columnStyle = rrcll
+% unfold_t :& ~~~~t &<->& n + t * t &: fold_t
+% unfold_c :& c &<->& 1 + c * t + t * c ~~~~~~&: fold_c
+
+However we will see that the previously developed systematic approach
+developing {{langRevT}} interpreters carries over to this abstract
+machine as well.  As the first step, we quickly check that the
+abstract machine however has disstinguished start and stop states, has
+no ambiguities in reduction and that each reduction step is logically
+reversible.
+
+\subsection{New Notation}
+
+Before we start on the actual construction, let us introduce a
+syntactic convenience. In the past interpreter we explicitely drew out
+every {{fold}} and {{unfold}} followed/preceded immediately by any
+required swaps and then a {{distribute}} or {{factor}}. In this
+presentation we will combine all of these into one construct which we
+will draw as a thin vertical rectangle. Also we will introduce the
+convention that the component that is being expanded or collapsed will
+be marked by using {{[^ ^]}} and the components that are being
+generated will be marked by {{[v v]}}. 
+
+\begin{center}
+\scalebox{1.0}{
+  \includegraphics{diagrams/syntax1.pdf}
+}
+\end{center}
+
+The above shows the expansion of a {{tree*nat}} type. First the
+{{tree}} component is expanded and in one of the generated branches
+the {{nat}} component is expanded.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Isomorphic Interpreter}
+
+The first step to developing teh isomorphic interpreter is to
+recognize that the two possible kinds of machine states simply hide an
+implicit {{bool}}. We make this explicit. 
+
+%subcode{opsem} include main
+% columnStyle = rclr
+% <T, L n, c> &|-->& <F, L (n+1), c> &~~~~~ rule 1
+% <T, N t1 t2, c> &|-->& <T, t1, Lft c t2> & rule 2 
+% <F, t1, Lft c t2> &|-->& <T, t2, Rgt t1 c> & rule 3
+% <F, t2, Rgt t1 c> &|-->& <F, c, N t1 t2> & rule 4
+
+And so machine states have the form:
+
+%subcode{bnf} include main
+% Machine states = <bool, t, c>
+% Start state = <T, t, []>
+% Stop state =  <F, t, []>
+
+
+And we start examining the machine components as before:
+
+\begin{center}
+\scalebox{0.9}{
+  \includegraphics{diagrams/tree1.pdf}
+}
+\end{center}
+
+On the LHS, for {{T}} states, we have expanded the tree component and
+for {{F}} states we have expanded the tree contexts. Similarly we have
+done the opposite on the RHS side exactly matching up what the
+abstract machine does. One thing to note is that we dropped the {{1}}
+introduced by expanding the {{bool}} and instead just labelled the
+{{true}} and {{false}} branches.
+
+We are ready to start connecting the machine states corresponding to
+the reductions that we would like. 
+
+\begin{enumerate}
+
+\item 
+When we encounter a leaf we would like to increment its value and move
+to the corresponding {{F}} machine state. For the sake of simplicity
+in this interpreter we won't be concerned with exposing stuck states
+on reverse execution caused by {{sub1 0}}. So we are free to use the
+{{add1}} combinator.
+
+\item
+For all the other reduction rules, it is a straight forward mapping of
+related states following the reduction rules. 
+
+\end{enumerate}
+
+The required reduction rules have been labeled on the construction
+belong. We have also included subscripts on the various {{t}}s to
+indicate any swaps that may need to be inserted.
+
+\begin{center}
+\scalebox{0.9}{
+  \includegraphics{diagrams/tree2.pdf}
+}
+\end{center}
+
+This essentially completes the construction of the (partially)
+isomorphic tree-traversal interpreter. (Partially because of the
+implicit non-termination introduced by the {{add1}}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A {{langRev}} Interpreter}

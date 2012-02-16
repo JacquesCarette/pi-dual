@@ -9,7 +9,7 @@ iso-int.subc.tex : iso-int.tex
         ruby subcode/subc.rb iso-int.tex
 
 iso-int.subc.pdf : iso-int.subc.tex cites.bib
-	pdflatex iso-int.subc.tex
+	pdflatex -halt-on-error iso-int.subc.tex
         bibtex iso-int.subc
 
 iso-int-dropbox : iso-int.subc.pdf
