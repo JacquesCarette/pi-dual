@@ -354,8 +354,43 @@ in section \ref{sec:steps}. This gives us the following:
 }
 \end{center}
 
+We can very that the connected wires do indeed give us teh desired
+equalities between the inputs and outputs. Also we recognize our
+expected start state and expected stop state. What is the dangling
+state?
 
+The dangling state was what has hidden by the use of {{add1}} and
+denotes the fact that the abstract machine did not define any valid
+backward reduction for the following valid machine state
+{{<n,0,m+1>}}. To take a backward step, both {{m}} and {{p}} have to
+be simulatenously decremented and this is not possible if {{p}} is
+{{0}}.  At this point we have two choices:
 
+\begin{enumerate}
+\item We can hide the use the combinator {{omega : b <-> 0}}
+  expressible in {{langRevT}}. This combinator is basically an
+  infinote loop on all inputs and hence would allow us to entirely
+  discard one possible branch. In other words, we are explicitely
+  admitting that our machine is undefined on some inputs.
+
+\item We can admit that there are two possible start states to this
+  abstract machine {{<n, m, 0>}} and {{<n,0,m>}}. One of this is an
+  artifact of the fact that backward execution encounters stuck
+  states. Dually, if there were stuck states for forward execution,
+  they would be reflected in the fact that there were multiple stop
+  states -- only one of which denotes a desirable or correct execution
+  of the machine.
+
+\end{enumerate}
+
+As we did before, we flip inside out the construction of the map and
+apply trace to give us the interpreter:
+
+\begin{center}
+\scalebox{0.9}{
+  \includegraphics{diagrams/adder4.pdf}
+}
+\end{center}
 
 
 
