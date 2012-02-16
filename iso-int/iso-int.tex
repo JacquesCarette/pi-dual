@@ -216,6 +216,36 @@ to related machine states.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Abstracting out the Construction}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{What are the high level steps in the tranlsation?}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{What abstract machines can be turned into isomorphic interpreters?}
+
+If we had only the reduction relation {{<n+1> |--> <n>}}, can we
+construct an isomorphic interpreter? After all, every rewrite rule is
+logically reversible. In fact, this is not possible becuase there is
+no distinguished start state for such an interpreter and hence one
+does not know when to stop during reverse execution.
+
+Conditions that must be satisfied for constructing a isomorphic
+interpreter:
+
+\begin{enumerate}
+
+\item Distinguishable start and stop states. There may be more than one
+  valid start state and more than one valid stop state.
+
+\item Each valid machine state must match a unique reduction LHS. Each
+  valid machine state must machine a unique reduction RHS.
+
+\item Every reduction step must be computable (in {{langRevT}}) and
+  must be logically reversible -- i.e. it must be possible to reduce
+  from right to left.
+
+\end{enumerate}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
