@@ -582,17 +582,47 @@ implicit non-termination introduced by the {{add1}}).
 
 TODO : The real difficulty with this interpreter is to argue why it is
 not full of undefined states. For instance, why the machines will
-never reach stuck states such as {{<c1(+)c2, (), ..>}}.
+never reach stuck states such as {{<c1(+)c2, (), ..>}}.  The right way
+out of that is to make the type system of the abstract machine rich
+enough that the structure of the abstract automatically rules out this
+sort of thing. 
 
-The right way out of that is to make the type system of the abstract
-machine rich enough that the structure of the abstract automatically
-rules out this sort of thing. 
+%subcode{bnf} include main
+% Combinators, c(t1<->t2) = 
+%             &|& c(t<->t) = iso 
+%             &|& c(t1<->t2) = c(t1<->t3) (;) c(t3<->t2) 
+%             &|& c(t1*t2<->t3*t4) = c(t1<->t3) (*) c(t2<->t4) 
+%             &|& c(t1+t2<->t3+t4) = c(t1<->t3) (+) c(t2<->t4)
+%
+% Combinator Contexts, cc = [] | Fst cc c | Snd c cc 
+%                  &|& LeftTimes cc c v | RightTimes c v cc 
+%                  &|& LeftPlus cc c | RightPlus c cc 
+%
+% Type Indexed Values, v(t) =
+%  &|& v(1) = () 
+%  &|& v(t1*t2) = (v(t1), v(t2)) 
+%  &|& v(t1+t2) = L v(t1) | R v(t2)
+%
+% Machine states = <c, v, cc> | {[c, v, cc]}
+% Start state = <c, v, []> 
+% Stop State = {[c, v, []]}
 
 
+However this begs the question - does {{langRevT}} need all these GADT
+types to reason about all these things? Something to think about. If
+we do, then thereare two ways out 
 
+(1) add GADTs to {{langRevT}} and keep the structure of things
+simple. They can always be added opaquely for any given types -- we
+only need to add the proper fold/unflod morphisms for those types
+(maybe).
 
-
-
+(2) compile down to {{langRevT}} as it is. In this case, {{langRevT}}
+is indeed a relatively less typed language than the source language
+and will hence have to treat as stuck-states the non-type correct
+machine states. We could apply omega to them and make them vanish --
+for example. This is similar to the handling of the {{sub1}} in the
+previous example. 
 
 
 \bibliographystyle{splncs03} 
