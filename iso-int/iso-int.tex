@@ -553,6 +553,44 @@ implicit non-termination introduced by the {{add1}}).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A {{langRev}} Interpreter}
 
+%subcode{bnf} include main
+% Combinators, c = iso | c (;) c | c (*) c | c (+) c
+% Combinator Contexts, cc = [] | Fst cc c | Snd c cc 
+%                  &|& LeftTimes cc c v | RightTimes c v cc 
+%                  &|& LeftPlus cc c | RightPlus c cc 
+% Values, v = () | (v, v) | L v | R v
+%
+% Machine states = <c, v, cc> | {[c, v, cc]}
+% Start state = <c, v, []> 
+% Stop State = {[c, v, []]}
+
+
+
+%subcode{opsem} include main
+% <iso, v, cc> &|-->& {[iso, iso(v), cc]}
+% <c1(;)c2, v, cc> &|-->& <c1, v, Fst cc c2>
+% {[c1, v, Fst cc c2]} &|-->& <c2, v, Snd c1 cc>
+% {[c2, v, Snd c1 cc]} &|-->& {[ c1(;)c2, v, cc ]}
+% <c1(+)c2, L v, cc> &|-->& <c1, v, LeftPlus cc c2>
+% {[ c1, v, LeftPlus cc c2 ]} &|-->& {[c1 (+) c2, L v, cc ]}
+% <c1(+)c2, R v, cc> &|-->& <c2, v, RightPlus c1 cc>
+% {[ c2, v, RightPlus c1 cc ]} &|-->& {[c1 (+) c2, R v, cc ]}
+% <c1(*)c2, (v1, v2), cc> &|-->& <c1, v1, LeftTimes cc c2 v2>
+% {[ c1, v1, LeftTimes cc c2 v2 ]} &|-->& <c2, v2, RightTimes c1 v1 cc>
+% {[ c2, v2, RightTimes c1 v1 cc ]} &|-->& {[ c1 (*) c2, (v1, v2), cc ]}
+
+
+TODO : The real difficulty with this interpreter is to argue why it is
+not full of undefined states. For instance, why the machines will
+never reach stuck states such as {{<c1(+)c2, (), ..>}}.
+
+The right way out of that is to make the type system of the abstract
+machine rich enough that the structure of the abstract automatically
+rules out this sort of thing. 
+
+
+
+
 
 
 
