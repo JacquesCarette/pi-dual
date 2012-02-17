@@ -567,17 +567,31 @@ implicit non-termination introduced by the {{add1}}).
 
 
 %subcode{opsem} include main
-% <iso, v, cc> &|-->& {[iso, iso(v), cc]}
-% <c1(;)c2, v, cc> &|-->& <c1, v, Fst cc c2>
-% {[c1, v, Fst cc c2]} &|-->& <c2, v, Snd c1 cc>
-% {[c2, v, Snd c1 cc]} &|-->& {[ c1(;)c2, v, cc ]}
-% <c1(+)c2, L v, cc> &|-->& <c1, v, LeftPlus cc c2>
-% {[ c1, v, LeftPlus cc c2 ]} &|-->& {[c1 (+) c2, L v, cc ]}
-% <c1(+)c2, R v, cc> &|-->& <c2, v, RightPlus c1 cc>
-% {[ c2, v, RightPlus c1 cc ]} &|-->& {[c1 (+) c2, R v, cc ]}
-% <c1(*)c2, (v1, v2), cc> &|-->& <c1, v1, LeftTimes cc c2 v2>
-% {[ c1, v1, LeftTimes cc c2 v2 ]} &|-->& <c2, v2, RightTimes c1 v1 cc>
-% {[ c2, v2, RightTimes c1 v1 cc ]} &|-->& {[ c1 (*) c2, (v1, v2), cc ]}
+%! columnStyle = rclr
+% <iso, v, cc> &|-->& {[iso, iso(v), cc]} &~~~~~~~~~~~~ rule 1
+% <c1(;)c2, v, cc> &|-->& <c1, v, Fst cc c2> &~~~~~~~~~~~~ rule 2
+% {[c1, v, Fst cc c2]} &|-->& <c2, v, Snd c1 cc> &~~~~~~~~~~~~ rule 3
+% {[c2, v, Snd c1 cc]} &|-->& {[ c1(;)c2, v, cc ]} &~~~~~~~~~~~~ rule 4
+% <c1(+)c2, L v, cc> &|-->& <c1, v, LeftPlus cc c2> &~~~~~~~~~~~~ rule 5
+% {[ c1, v, LeftPlus cc c2 ]} &|-->& {[c1 (+) c2, L v, cc ]} &~~~~~~~~~~~~ rule 6
+% <c1(+)c2, R v, cc> &|-->& <c2, v, RightPlus c1 cc> &~~~~~~~~~~~~ rule 7
+% {[ c2, v, RightPlus c1 cc ]} &|-->& {[c1 (+) c2, R v, cc ]} &~~~~~~~~~~~~ rule 8
+% <c1(*)c2, (v1, v2), cc> &|-->& <c1, v1, LeftTimes cc c2 v2> &~~~~~~~~~~~~ rule 9
+% {[ c1, v1, LeftTimes cc c2 v2 ]} &|-->& <c2, v2, RightTimes c1 v1 cc> &~~~~~~~~~~~~ rule 10
+% {[ c2, v2, RightTimes c1 v1 cc ]} &|-->& {[ c1 (*) c2, (v1, v2), cc ]} &~~~~~~~~~~~~ rule 11
+
+\begin{center}
+\scalebox{0.9}{
+  \includegraphics{diagrams/pi1.pdf}
+}
+\end{center}
+
+\begin{center}
+\scalebox{0.9}{
+  \includegraphics{diagrams/pi2.pdf}
+}
+\end{center}
+
 
 
 TODO : The real difficulty with this interpreter is to argue why it is
