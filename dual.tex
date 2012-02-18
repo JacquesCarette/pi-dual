@@ -97,7 +97,7 @@
 \titlebanner{}
 \preprintfooter{}
 
-\title{Continuations via Negative Information Flow}
+\title{Functional Pearl: \\ Programming with Negative and Fractional Types} 
 \authorinfo{Roshan P. James}
            {Indiana University}
            {rpjames@indiana.edu}
@@ -107,19 +107,19 @@
 \maketitle
 
 \begin{abstract}
-We show a deep symmetry between functions and delimited continuations,
-values and continuations that arises in {{langRev}} in a manner that
-is reminiscent of Filinksi's Symmetric \lcal
-~\cite{Filinski:1989:DCI:648332.755574}. The symmetry arises by
-extending {{langRev}} with a notion of additive duality over the
-monoid {{(+, 0)}} by including {{eta}} and {{eps}} operators of
-Compact Closed Categories. The resulting dual types, which we denote
-{{-b}}, have a time traveling ``backward information flow''
-interpretation and allow for the encoding of higher-order function and
-iteration via the construction of {{trace}} operators, thereby making
-the extended language {{langRevEE}} a Turing-complete reversible
-programming language with higher-order functions and first-class
-delimited continuations.
+  Every functional programmer knows about sum and product types, $a+b$ and
+  $a*b$ respectively. Negative and fractional types, $a-b$ and $a/b$
+  respectively, are much less known and their computational interpretation is
+  unfamiliar and often complicated. We show that in a programming model in
+  which information is preserved (such as the model introduced in our recent
+  paper on \emph{Information Effects}), negative and fractional types have
+  particularly intuitive and natural computational
+  interpretations. Intuitively, values of negative types are values that flow
+  ``backwards'' to satisfy demands, and values of fractional types are values
+  that represent first-class pattern clauses. The combination of negative and
+  fractional types allow a programmer to express a wide range of programming
+  idioms, including higher-order functions, delimited continuations,
+  speculative computation, logic programming, and more. 
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -134,6 +134,20 @@ Languages, Theory
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
+
+We show a deep symmetry between functions and delimited continuations,
+values and continuations that arises in {{langRev}} in a manner that
+is reminiscent of Filinksi's Symmetric \lcal
+~\cite{Filinski:1989:DCI:648332.755574}. The symmetry arises by
+extending {{langRev}} with a notion of additive duality over the
+monoid {{(+, 0)}} by including {{eta}} and {{eps}} operators of
+Compact Closed Categories. The resulting dual types, which we denote
+{{-b}}, have a time traveling ``backward information flow''
+interpretation and allow for the encoding of higher-order function and
+iteration via the construction of {{trace}} operators, thereby making
+the extended language {{langRevEE}} a Turing-complete reversible
+programming language with higher-order functions and first-class
+delimited continuations.
 
 We introduced this thesis that computation should be based on isomorphisms
 that preserve information~\cite{infeffects}. Since Filinski, we've had the
@@ -224,14 +238,35 @@ The forward and backward executions in our framework correspond to
 call-by-value and call-by-name. This duality was observed by Filinski and
 others following him but it is particularly clean in our framework.
 
-\paragraph*{Ariola, Herbelin, and Sabry.} We use subtractive types. Things
-are constrained so that the positive and negative values must be used
-together. In our new work we have no such constrained, the negative value can
-flow anywhere. The entire system guarantees that any closed program would
-have to account for it. We don't have to introduce special constraints to
-achieve that.
+\paragraph*{Subtraction} Wadler the reloaded paper, does not consider the
+subtraction type because its ``computational interpretation is not
+familiar.'' Curien and Herbelin study duality in classical logic, show that
+it exchanges call-by-value and call-by-name. They extend classical natural
+deduction with subtraction but give it no computational meaning. Crolard (in
+the formulae-as-types interpretation of subtractive logic) address the
+computational interpretation of substraction. He explains the type $A-B$ as
+the of \emph{coroutines} with a local environment of type $A$ and a
+continuation of type $B$. The description is complicated by what is
+essentially the desire to enforce linearity constraints so that coroutines
+cannot access the local environment of other coroutines. Must cite Selinger
+control categories in this context of duality but I am not sure what to say:
+it assumes cartesian closed categories for one thing and not symmetric
+monoidal ones. Ariola, Herbelin, and Sabry also use subtractive types to
+explain delimited continuations. 
 
-\paragraph*{Focusing, Polarization, etc.}
+\paragraph*{Linear Logic} In accounts that are linear, the value and
+continuation that comprise the substractive type need to be constrained to
+``stay together.'' This can be achieved by various restrictions. In this work
+we have no such constraints, the negative value can flow anywhere. The entire
+system guarantees that any closed program would have to account for it. We
+don't have to introduce special constraints to achieve that. Zeilberger in
+the paper on polarity and the logic of delimited continuations uses polarized
+logic: he shows that if positive and negative values are completely symmetric
+except that answer types are positive, then the framework accommodates
+delimited continuations. But he interprets negative values are control
+operators, or as values defined by the shape of their continuations. We
+simply interpret values of negative type as values flowing in the ``other''
+direction.
 
 \paragraph*{Int Construction.}
 For a traced monoidal category {{C}} the Int construction produces a
