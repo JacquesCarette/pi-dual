@@ -257,13 +257,18 @@ $\texttt{int}$. Indeed in this case, putting a value of type $\texttt{int}$
 in the context $(\texttt{int} \rightarrow \texttt{bool})$ produces a value of
 type $\texttt{bool}$. 
 
-In our case, the situation is simpler. We have an isomorphism 
-{{ 1 <-> a * (1/a) }} which when used in the left-to-right direction allows the
-creation of a value and a corresponding constraint on the context. 
-Both the value and the constraint can flow in arbitrary ways during the computation 
-but eventually in a closed program with no ``dangling'' constraints, the 
-isomorphism should be used in the right-to-left direction to resolve the constraints. 
-To understand the computational interpretation, consider the following example. 
+In our case, the situation is simpler. If the goal is to produce a value of
+type {{a * b}} and a subcomputation can only produce the {{a}}-part, it would
+have type {{(a * b) / b}}. In most settings, this type would be equivalent to
+{{a}}. However in our setting, the constraint that this value must eventually
+fit in a larger value that supplies the {{b}} is explicitly recorded and must
+be resolved. In more detail, we have an isomorphism {{ 1 <-> a * (1/a) }}
+which when used in the left-to-right direction allows the creation of a value
+and a corresponding constraint on the context.  Both the value and the
+constraint can flow in arbitrary ways during the computation but eventually
+in a closed program with no ``dangling'' constraints, the isomorphism should
+be used in the right-to-left direction to resolve the constraints.  To
+understand the computational interpretation, consider the following example.
 
 The goal is to produce a value of type $(\texttt{bool} \times
 \texttt{int})$. One part of the program, $e_1$, knows how to produce the
