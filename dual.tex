@@ -97,7 +97,7 @@
 \titlebanner{}
 \preprintfooter{}
 
-\title{Functional Pearl: \\ Programming with Negative and Fractional Types} 
+\title{Functional Pearl \\ Programming with Negative and Fractional Types} 
 \authorinfo{Roshan P. James}
            {Indiana University}
            {rpjames@indiana.edu}
@@ -116,10 +116,10 @@
   particularly intuitive and natural computational
   interpretations. Intuitively, values of negative types are values that flow
   ``backwards'' to satisfy demands, and values of fractional types are values
-  that represent first-class pattern clauses. The combination of negative and
+  that represent first-class constraints. The combination of negative and
   fractional types allow a programmer to express a wide range of programming
   idioms, including higher-order functions, delimited continuations,
-  speculative computation, logic programming, and more. 
+  speculative computation, logic programming, and more.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -130,7 +130,9 @@
 \terms
 Languages, Theory
 
-\keywords Arrows, Linear logic, Quantum computing, Reversible logic.
+\keywords continuations, information flow, linear logic, logic programming,
+quantum computing, reversible logic, symmetric monoidal categories, compact
+closed categories.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
@@ -176,116 +178,100 @@ division would be defined as follows:
 L_1 / L_2 = \{ x ~|~ xy \in L_1 \mbox{~for~some~} y \in L_2 \}
 \]
 
+Connections to type logical grammars and Lambek calculus
+
+Some background on {{langRev}} because it is mentioned in the next section.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Value Producers and Consumers}
+\section{Negative Types: Intuition} 
 
-Consider the following ways of purchasing an item that costs \$20.00:
-
+Consider the following two ways of purchasing an item that costs \$20.00:
 \begin{enumerate}
-\item You produce a \$20.00 bill and give it to the seller.
-\item You use a credit card. 
+\item You give the seller a \$20.00 bill.
+\item You use a credit card to pay the seller.
 \end{enumerate}
-In both cases the seller receives the money immediately but there is a subtle
-difference. In the second transaction, nobody has yet produced the money that
-the seller has received: instead a \emph{debt} is generated and this debt
-travels ``backwards'' towards the bank and (hopefully) reconciled there.
+In both cases, the seller receives the money immediately but there is a
+subtle difference. In the first transaction, the money received by the seller
+corresponds to a value that has been produced earlier in the computation. In
+the second transaction, the money may or may not exist yet: computationally,
+a \emph{debt} is generated to compensate for the money received by the seller
+and this debt travels ``backwards'' towards the bank and is (hopefully)
+reconciled there. 
 
-Computationally we model the first transaction using essentially the identity
-function which receives a \$20.00 bill as input from the buyer and propagates
-it on its output to the seller. The second transaction is more
-complicated. We model it as shown in the circuit below:
+The example suggests that the ability to consider values flowing backwards
+enriches our computational model. This observation goes back to Filinski's
+Masters thesis where continuations are identified with these negative values.
+We discuss the connections to Filinski's work and others in more detail in
+Sec.~\ref{sec:related}. For now, we note that in a conventional programming
+language in which values can be copied and deleted at will, extreme care is
+needed to keep track of negative values. Indeed, in the example above, if it
+were possible to simply delete the variable corresponding to the debt, we
+would have produced money out of nothing. 
+
+For this reason, our treatment of negative values in the context of
+{{langRev}} will be particularly simple. We will have a type $0$ and an
+isomorphism {{0 <-> a + (-a)}} that when used in the left-to-right direction
+allows us to create a value and a corresponding debt out of nothing. Both the
+value and its negative counterpart can flow anywhere in the system. Because
+information is preserved, a closed program (which does not have any
+``dangling'' negative value) will eventually have to match the negative value
+with some corresponding value, effectively using the isomorphism in the
+right-to-left direction. In more detail, we can model the credit card
+transaction above using the following program (shown diagrammatically):
 
 FIGURE
 
-There are two ways to understand this circuit that are both quite
-instructive. Let's first examine the type structure of each of the
-combinators that comprise the circuit. The first combinator on the right
-outputs \$20.00 to the seller. This \$20.00 is produced from nothing so to
-speak by generating an equivalent debt that travels backwards. COMPLETE BASED
-ON THE FIGURE.
+CLEAN UP the following based on the figure. In contrast, in our setting, one
+can start from the empty type $0$, introduce a positive value and its
+negative counterpart, and let each of these flow in arbitrary ways. The
+entire framework guarantees that neither the value nor its negative
+counterpart will be deleted or duplicated and hence that, in any closed
+program, the ``debt'' corresponding to the negative value is paid off exactly
+once. Computationally we model the first transaction using essentially the
+identity function which receives a \$20.00 bill as input from the buyer and
+propagates it on its output to the seller. The second transaction is more
+complicated. We model it as shown in the circuit below: There are two ways to
+understand this circuit that are both quite instructive. Let's first examine
+the type structure of each of the combinators that comprise the circuit. The
+first combinator on the right outputs \$20.00 to the seller. This \$20.00 is
+produced from nothing so to speak by generating an equivalent debt that
+travels backwards. COMPLETE BASED ON THE FIGURE. The other way is to follow
+the execution. It goes forward in time so to speak, comes back, and then goes
+forwards again.
 
-The other way is to follow the execution. It goes forward in time so to speak,
-comes back, and then goes forwards again.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Fractional Types: Intuition} 
 
-\paragraph*{Continuations.} The idea of using negative types to model
-information flowing backwards, demand for values, continuations, etc. goes
-back to at Filinski's thesis. We recall these connections below but we first
-note that all these systems are complicated because in all these systems
-information can be ignored, destroyed, or duplicated. Clearly the possibility
-of erasure of information would mean that our credit card transaction is
-incorrect. In our work, information is maintained and hence we have a
-guarantee that, in a closed program, the debt must be accounted and paid for.
+The type $a/b$ is prominent in the Lambek-Grishin calculus which is
+extensively used in computational linguistics. In the common interpretation,
+a value of type $a/b$ is a value of some type $c$ such that when put in a
+context of type $b$, the result is a value of type $a$. For example, assuming
+contexts are represented as functions, a value of type $\texttt{bool} /
+(\texttt{int} \rightarrow \texttt{bool})$ is simply a value of type
+$\texttt{int}$. Indeed in this case, putting a value of type $\texttt{int}$
+in the context $(\texttt{int} \rightarrow \texttt{bool})$ produces a value of
+type $\texttt{bool}$. More generally, one can think of a value of type $a/b$
+as a value that imposes a constraint on its context of use: it is a value
+that requires its context to be of type $b$ and only if that condition is
+satisfied, can the value be considered as a value of type $a$. In the
+simplest case, the type $1/b$ just constraints the context to be of type $b$.
 
-\paragraph*{Filinski~\cite{Filinski:1989:DCI:648332.755574}.}
-In his Masters thesis, Filinski proposes that continuations are a
-\emph{declarative} concept. He, furthermore, introduces a symmetric extension
-of the $\lambda$-calculus in which values and continuations are treated as
-opposites. This is essentially what we are proposing with one fundamental
-difference: our underlying language is not the $\lambda$-calculus but a
-language of pure isomorphisms in which information is preserved. This shift
-of perspective enables us to distill and generalize the duality of values and
-continuations: in particular, in the conventional $\lambda$-calculus setting
-values and continuations can be erased and duplicated which makes it
-difficult to maintain the correspondence between a value and its negative
-counterpart. In contrast, in our setting, one can start from the empty type
-$0$, introduce a positive value and its negative counterpart, and let each of
-these flow in arbitrary ways. The entire framework guarantees that neither
-the value nor its negative counterpart will be deleted or duplicated and
-hence that, in any closed program, the ``debt'' corresponding to the negative
-value is paid off exactly once. 
+By allowing the fractional types to be first-class, we can separate the
+generation of constraints from their use. For example, consider a variation
+on the example in the previous where the parent gives a child the \$20.00
+bill but requires that the child only spends the money on buying books. This
+can achieved by producing a constraint that can only be resolved if the child
+indeed buys a book. Technically, this is achieved by adding a new type
+isomorphism {{ 1 <-> a * (1/a) }} which when used in the left-to-right
+direction allows the creation of a value and a corresponding constraint. Both
+the value and the constraint can flow in arbitrary ways during the
+computation but eventually in a closed program with no ``dangling''
+constraints, the isomorphism should be used in the right-to-left direction to
+resolve the constraints.
 
-The forward and backward executions in our framework correspond to
-call-by-value and call-by-name. This duality was observed by Filinski and
-others following him but it is particularly clean in our framework.
-
-\paragraph*{Subtraction} Wadler the reloaded paper, does not consider the
-subtraction type because its ``computational interpretation is not
-familiar.'' Curien and Herbelin study duality in classical logic, show that
-it exchanges call-by-value and call-by-name. They extend classical natural
-deduction with subtraction but give it no computational meaning. Crolard (in
-the formulae-as-types interpretation of subtractive logic) address the
-computational interpretation of substraction. He explains the type $A-B$ as
-the of \emph{coroutines} with a local environment of type $A$ and a
-continuation of type $B$. The description is complicated by what is
-essentially the desire to enforce linearity constraints so that coroutines
-cannot access the local environment of other coroutines. Must cite Selinger
-control categories in this context of duality but I am not sure what to say:
-it assumes cartesian closed categories for one thing and not symmetric
-monoidal ones. Ariola, Herbelin, and Sabry also use subtractive types to
-explain delimited continuations. 
-
-\paragraph*{Linear Logic} In accounts that are linear, the value and
-continuation that comprise the substractive type need to be constrained to
-``stay together.'' This can be achieved by various restrictions. In this work
-we have no such constraints, the negative value can flow anywhere. The entire
-system guarantees that any closed program would have to account for it. We
-don't have to introduce special constraints to achieve that. Zeilberger in
-the paper on polarity and the logic of delimited continuations uses polarized
-logic: he shows that if positive and negative values are completely symmetric
-except that answer types are positive, then the framework accommodates
-delimited continuations. But he interprets negative values are control
-operators, or as values defined by the shape of their continuations. We
-simply interpret values of negative type as values flowing in the ``other''
-direction.
-
-\paragraph*{Int Construction.}
-For a traced monoidal category {{C}} the Int construction produces a
-Compact Closed Category called Int {{C}} \cite{joyal1996traced}.
-Further we know that the target of the Int construction is isomorphic
-to the target of \G construction of Abramsky \cite{Abramsky96:0} from
-Haghverdi. However, note that the {{langRevEE}} is not the same as the
-image of the Int construction on {{langRevT}}, since the the later
-lacks a multiplicative tensor that distrbutes over the additive tensor
-in Int {{langRevT}}.
-
-\paragraph*{Recursion.} In our previous work we introduce recursive types and
-trace operators. This is dangerous here because infinite loops allow us to
-prolong paying the debt for as long as we want.
-
-
-\paragraph*{GoI machines} 
-We can now encode the GoI machine of Mackie \cite{Mackie2011,DBLP:conf/popl/Mackie95}.
-
+NEED to work out the example in detail (or perhaps another example that's
+better. Not sure if this one makes sense because we have to create the book
+and the context at once.???
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Additive Duality in {{langRev}} }
@@ -370,7 +356,7 @@ The later two rules will be relevant only for reverse execution.
 
 
 %%%%%%%%%%%%%%%%%
-\section{Rules for {{eta}} and {{eps}} }
+\subsection{Rules for {{eta}} and {{eps}} }
 
 The operation {{eps}} reverses the direction of a particle by
 reversing the world. 
@@ -415,13 +401,10 @@ The adjoint of a parallel context is defined to be:
 % (D:(P, c v(*)[], F)){dagger} '= D{dagger}:(F, v c(*)[], P)
 % (D:(P, v c(*)[], F)){dagger} '= D{dagger}:(F, c v(*)[], P)
 
-
-
-
 \end{itemize}
 
-
-\section{Diagrams}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Diagrams}
 
 {{eta}}
 
@@ -543,9 +526,6 @@ Given {{c : b1 <-> b2}}
   \includegraphics{diagrams/neg_lift.pdf}
 \end{center}
 
-
-
-
 \paragraph*{Observability.} 
 Execution of program is defined by {{c : b1 <-> b2}} when evaluated on
 input {{v1 : b1}} gives us a value {{v2 : b2}} on
@@ -607,15 +587,102 @@ of the functions and can be thought of as the address of the function.
   \includegraphics{diagrams/neg_circuit2.pdf}
 \end{center}
 
-
-
-
 \end{itemize}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Multiplicative Duality in {{langRev}} }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Related Work} 
+\label{sec:related}
 
+Filinski proposes that continuations are a \emph{declarative} concept. He,
+furthermore, introduces a symmetric extension of the $\lambda$-calculus in
+which values and continuations are treated as opposites. This is essentially
+what we are proposing with one fundamental difference: our underlying
+language is not the $\lambda$-calculus but a language of pure isomorphisms in
+which information is preserved. This shift of perspective enables us to
+distill and generalize the duality of values and continuations: in
+particular, in the conventional $\lambda$-calculus setting values and
+continuations can be erased and duplicated which makes it difficult to
+maintain the correspondence between a value and its negative counterpart. 
 
+\paragraph*{Continuations.} The idea of using negative types to model
+information flowing backwards, demand for values, continuations, etc. goes
+back to at Filinski's thesis. We recall these connections below but we first
+note that all these systems are complicated because in all these systems
+information can be ignored, destroyed, or duplicated. Clearly the possibility
+of erasure of information would mean that our credit card transaction is
+incorrect. In our work, information is maintained and hence we have a
+guarantee that, in a closed program, the debt must be accounted and paid for.
 
+\paragraph*{Filinski~\cite{Filinski:1989:DCI:648332.755574}.}
+In his Masters thesis, Filinski proposes that continuations are a
+\emph{declarative} concept. He, furthermore, introduces a symmetric extension
+of the $\lambda$-calculus in which values and continuations are treated as
+opposites. This is essentially what we are proposing with one fundamental
+difference: our underlying language is not the $\lambda$-calculus but a
+language of pure isomorphisms in which information is preserved. This shift
+of perspective enables us to distill and generalize the duality of values and
+continuations: in particular, in the conventional $\lambda$-calculus setting
+values and continuations can be erased and duplicated which makes it
+difficult to maintain the correspondence between a value and its negative
+counterpart. In contrast, in our setting, one can start from the empty type
+$0$, introduce a positive value and its negative counterpart, and let each of
+these flow in arbitrary ways. The entire framework guarantees that neither
+the value nor its negative counterpart will be deleted or duplicated and
+hence that, in any closed program, the ``debt'' corresponding to the negative
+value is paid off exactly once. The forward and backward executions in our
+framework correspond to call-by-value and call-by-name. This duality was
+observed by Filinski and others following him but it is particularly clean in
+our framework.
+
+\paragraph*{Subtraction} Wadler the reloaded paper, does not consider the
+subtraction type because its ``computational interpretation is not
+familiar.'' Curien and Herbelin study duality in classical logic, show that
+it exchanges call-by-value and call-by-name. They extend classical natural
+deduction with subtraction but give it no computational meaning. Crolard (in
+the formulae-as-types interpretation of subtractive logic) address the
+computational interpretation of substraction. He explains the type $A-B$ as
+the of \emph{coroutines} with a local environment of type $A$ and a
+continuation of type $B$. The description is complicated by what is
+essentially the desire to enforce linearity constraints so that coroutines
+cannot access the local environment of other coroutines. Must cite Selinger
+control categories in this context of duality but I am not sure what to say:
+it assumes cartesian closed categories for one thing and not symmetric
+monoidal ones. Ariola, Herbelin, and Sabry also use subtractive types to
+explain delimited continuations. 
+
+\paragraph*{Linear Logic} In accounts that are linear, the value and
+continuation that comprise the substractive type need to be constrained to
+``stay together.'' This can be achieved by various restrictions. In this work
+we have no such constraints, the negative value can flow anywhere. The entire
+system guarantees that any closed program would have to account for it. We
+don't have to introduce special constraints to achieve that. Zeilberger in
+the paper on polarity and the logic of delimited continuations uses polarized
+logic: he shows that if positive and negative values are completely symmetric
+except that answer types are positive, then the framework accommodates
+delimited continuations. But he interprets negative values are control
+operators, or as values defined by the shape of their continuations. We
+simply interpret values of negative type as values flowing in the ``other''
+direction.
+
+\paragraph*{Int Construction.}
+For a traced monoidal category {{C}} the Int construction produces a
+Compact Closed Category called Int {{C}} \cite{joyal1996traced}.
+Further we know that the target of the Int construction is isomorphic
+to the target of \G construction of Abramsky \cite{Abramsky96:0} from
+Haghverdi. However, note that the {{langRevEE}} is not the same as the
+image of the Int construction on {{langRevT}}, since the the later
+lacks a multiplicative tensor that distrbutes over the additive tensor
+in Int {{langRevT}}.
+
+\paragraph*{Recursion.} In our previous work we introduce recursive types and
+trace operators. This is dangerous here because infinite loops allow us to
+prolong paying the debt for as long as we want.
+
+\paragraph*{GoI machines} 
+We can now encode the GoI machine of Mackie \cite{Mackie2011,DBLP:conf/popl/Mackie95}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
