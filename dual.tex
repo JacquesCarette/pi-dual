@@ -195,8 +195,8 @@ subtle difference. In the first transaction, the money received by the seller
 corresponds to a value that has been produced earlier in the computation. In
 the second transaction, the money may or may not exist yet: computationally,
 a \emph{debt} is generated to compensate for the money received by the seller
-and this debt travels ``backwards'' towards the bank and is (hopefully)
-reconciled there. 
+and this debt travels ``backwards'' towards the bank where it is (hopefully)
+reconciled.
 
 The example suggests that the ability to consider values flowing backwards
 enriches our computational model. This observation goes back to Filinski's
@@ -209,13 +209,13 @@ were possible to simply delete the variable corresponding to the debt, we
 would have produced money out of nothing. 
 
 For this reason, our treatment of negative values in the context of
-{{langRev}} will be particularly simple. We will have a type $0$ and an
+{{langRev}} is particularly simple. We will have a type $0$ and an
 isomorphism {{0 <-> a + (-a)}} that when used in the left-to-right direction
 allows us to create a value and a corresponding debt out of nothing. Both the
 value and its negative counterpart can flow anywhere in the system. Because
 information is preserved, a closed program (which does not have any
-``dangling'' negative value) will eventually have to match the negative value
-with some corresponding value, effectively using the isomorphism in the
+``dangling'' negative values) will eventually have to match the negative
+value with some corresponding value, effectively using the isomorphism in the
 right-to-left direction. In more detail, we can model the credit card
 transaction above using the following program (shown diagrammatically):
 
@@ -255,28 +255,47 @@ contexts are represented as functions, a value of type $\texttt{bool} /
 (\texttt{int} \rightarrow \texttt{bool})$ is simply a value of type
 $\texttt{int}$. Indeed in this case, putting a value of type $\texttt{int}$
 in the context $(\texttt{int} \rightarrow \texttt{bool})$ produces a value of
-type $\texttt{bool}$. More generally, one can think of a value of type $a/b$
-as a value that imposes a constraint on its context of use: it is a value
-that requires its context to be of type $b$ and only if that condition is
-satisfied, can the value be considered as a value of type $a$. In the
-simplest case, the type $1/b$ just constraints the context to be of type $b$.
+type $\texttt{bool}$. 
 
-By allowing the fractional types to be first-class, we can separate the
-generation of constraints from their use. For example, consider a variation
-on the example in the previous where the parent gives a child the \$20.00
-bill but requires that the child only spends the money on buying books. This
-can achieved by producing a constraint that can only be resolved if the child
-indeed buys a book. Technically, this is achieved by adding a new type
-isomorphism {{ 1 <-> a * (1/a) }} which when used in the left-to-right
-direction allows the creation of a value and a corresponding constraint. Both
-the value and the constraint can flow in arbitrary ways during the
+In our case, the situation is simpler. We have an isomorphism 
+{{ 1 <-> a * (1/a) }} which when used in the left-to-right direction allows the
+creation of a value and a corresponding constraint on the context. 
+Both the value and the constraint can flow in arbitrary ways during the computation 
+but eventually in a closed program with no ``dangling'' constraints, the 
+isomorphism should be used in the right-to-left direction to resolve the constraints. 
+To understand the computational interpretation, consider the following example. 
+
+The goal is to produce a value of type $(\texttt{bool} \times
+\texttt{int})$. One part of the program, $e_1$, knows how to produce the
+value of type $\texttt{int}$ (say {{3}}) and another part, $e_2$, knows how
+to produce the value of type $\texttt{bool}$ (say {{true}}). Computationally,
+we model this as follows. The first subcomputation $e_1$ produces {{((),3)}}
+and uses the isomorphism to convert {{()}} to {{(alpha,1/alpha)}} where
+{{alpha}} is a yet-unknown boolean value. Reshuffling the components, $e_1$
+produces {{((alpha,3), 1/alpha)}}. Similarly, $e_2$ can independently produce
+{{((true,beta),1/beta)}} where {{beta}} is a yet-unknown integer value.
+When the two values meet, we can group the components as follows:
+\[
+{{(alpha,beta)}}  {{(3,1/beta)}}  {{(true,1/alpha)}}
+\]
+Using the isomorphism in the right-to-left direction on the last two pairs,
+forces {{alpha}} to be resolved to {{true}} and forces {{beta}} to be
+resolved to {{3}}. Both of these pairs then become {{()}} and be absorbed. We
+are left with the pair {{(true,3)}} as desired. 
+
+To summarize, one can think of a value of type $a/b$ as a value that imposes
+a constraint on its context of use: it is a value that requires its context
+to be of type $b$ and only if that condition is satisfied, can the value be
+considered as a value of type $a$. In the simplest case, the type $1/b$ just
+constraints the context to be of type $b$. By allowing the fractional types
+to be first-class, we can separate the generation of constraints from their
+use. Both the value and the constraint can flow in arbitrary ways during the
 computation but eventually in a closed program with no ``dangling''
 constraints, the isomorphism should be used in the right-to-left direction to
 resolve the constraints.
 
 NEED to work out the example in detail (or perhaps another example that's
-better. Not sure if this one makes sense because we have to create the book
-and the context at once.???
+better. 
 
 Again it is critical that the framework in which the fractional types are
 introduced is a framework in which all information is preserved, with no
