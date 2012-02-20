@@ -97,7 +97,7 @@
 \titlebanner{}
 \preprintfooter{}
 
-\title{Functional Pearl \\ Programming with Negative and Fractional Types} 
+\title{Functional Pearl \\ Programming with Negative, Fractional, and Imaginary Types} 
 \authorinfo{Roshan P. James}
            {Indiana University}
            {rpjames@indiana.edu}
@@ -108,18 +108,20 @@
 
 \begin{abstract}
   Every functional programmer knows about sum and product types, $a+b$ and
-  $a*b$ respectively. Negative and fractional types, $a-b$ and $a/b$
-  respectively, are much less known and their computational interpretation is
-  unfamiliar and often complicated. We show that in a programming model in
-  which information is preserved (such as the model introduced in our recent
-  paper on \emph{Information Effects}), negative and fractional types have
-  particularly intuitive and natural computational
-  interpretations. Intuitively, values of negative types are values that flow
-  ``backwards'' to satisfy demands, and values of fractional types are values
-  that represent first-class constraints. The combination of negative and
-  fractional types allow a programmer to express a wide range of programming
-  idioms, including higher-order functions, delimited continuations,
-  speculative computation, logic programming, and more.
+  $a*b$ respectively. Negative, fractional, and imaginary types, $a-b$,
+  $a/b$, and $a+ib$ respectively, are much less known and their computational
+  interpretation is unfamiliar and often complicated. We show that in a
+  programming model in which information is preserved (such as the model
+  introduced in our recent paper on \emph{Information Effects}), negative,
+  fractional, and imaginary types have particularly intuitive and natural
+  computational interpretations. Intuitively, values of negative types are
+  values that flow ``backwards'' to satisfy demands, values of fractional
+  types are values that represent first-class constraints, and values of
+  imaginary types are values that capture the essence of recursive datatype
+  declarations. The combination of negative, fractional, and imaginary types
+  allow a programmer to express a wide range of programming idioms, including
+  higher-order functions, delimited continuations, speculative computation,
+  logic programming, and more.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -306,6 +308,21 @@ Again it is critical that the framework in which the fractional types are
 introduced is a framework in which all information is preserved, with no
 duplication or erasure. This guarantees that the generated constraints are
 satisfied once and exactly once. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Imaginary Types: Intuition} 
+
+Imaginary types have also appeared in the literature: we relegate the
+connections to Sec.~\ref{related} and proceed with a simple explanation. We
+have so far extended the set of types to be the rational numbers. Now we will
+push this and extend the set of types to algebraic numbers. In other words,
+we will allow datatypes defined by arbitrary polynomials and allow the roots
+of such polynomials to be types. Consider the type of binary trees:
+\begin{verbatim}
+data B = 1 + B * B
+\end{verbatim}
+Rearranging the terms, this declaration introduces the polynomial $b^2 - b +
+1 = 0$ whose roots are $(1 \pm i\sqrt{3}) / 2$. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Additive Duality in {{langRev}} }
