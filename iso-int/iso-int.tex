@@ -713,6 +713,27 @@ Adding backward execution using the adjoint.
 \end{center}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{CEK machine}
+
+%% %subcode{bnf} include main
+%% % e = x | \x.e | e e
+%% % rho = [] | x=v:rho
+%% % E = [] | (rho, e):E | v:E
+%% % v = (\x.e, rho)
+%% %
+%% % Machine states = <e, rho, E>
+%% % Start state = <e, [], []>
+%% % Stop state = <v, rho, []>
+
+
+%% %subcode{opsem} include main
+%% % <e1 e2, rho, E > &|-->& <e1, rho, (rho, e2):E >
+%% % <\x.e, rho, (rho', e'):E > &|-->& <e', rho', (\x.e,rho):E >
+%% % <\x.e, rho, (\x'.e',rho'):E > &|-->& <e', x' =(\x.e,rho):rho', E >
+
+
+
 \bibliographystyle{splncs03} 
 \bibliography{cites}
 \end{document}
