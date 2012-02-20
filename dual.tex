@@ -97,7 +97,8 @@
 \titlebanner{}
 \preprintfooter{}
 
-\title{Functional Pearl \\ Programming with Negative, Fractional, and Imaginary Types} 
+\title{Functional Pearl --- Programming with \\ 
+  Negative, Fractional, Square Root, and Imaginary Types} 
 \authorinfo{Roshan P. James}
            {Indiana University}
            {rpjames@indiana.edu}
@@ -108,18 +109,21 @@
 
 \begin{abstract}
   Every functional programmer knows about sum and product types, $a+b$ and
-  $a*b$ respectively. Negative, fractional, and imaginary types, $a-b$,
-  $a/b$, and $a+ib$ respectively, are much less known and their computational
-  interpretation is unfamiliar and often complicated. We show that in a
-  programming model in which information is preserved (such as the model
-  introduced in our recent paper on \emph{Information Effects}), negative,
-  fractional, and imaginary types have particularly intuitive and natural
-  computational interpretations. Intuitively, values of negative types are
-  values that flow ``backwards'' to satisfy demands, values of fractional
-  types are values that represent first-class constraints, and values of
-  imaginary types are values that capture the essence of recursive datatype
-  declarations. The combination of negative, fractional, and imaginary types
-  allow a programmer to express a wide range of programming idioms, including
+  $a*b$ respectively. Negative, fractional, square root, and imaginary types,
+  $a-b$, $a/b$, $\sqrt{a}$, and $a+ib$ respectively, are much less known and
+  their computational interpretation is unfamiliar and often complicated. We
+  show that in a programming model in which information is preserved (such as
+  the model introduced in our recent paper on \emph{Information Effects}),
+  these types have particularly intuitive and natural computational
+  interpretations. Intuitively, values of negative types are values that flow
+  ``backwards'' to satisfy demands, values of fractional types are values
+  that represent first-class ``structural'' constraints, and values of square
+  root and imaginary types are values that can be related by arbitrary
+  algebraic constraints. The combination of these negative, fractional,
+  square root, and imaginary types enable greater flexibility in programming
+  by breaking complicated invariants into local ones that can be
+  independently satisfied by a subcomputation. Furthermore, they allow a
+  programmer to express a wide range of programming idioms, including
   higher-order functions, delimited continuations, speculative computation,
   logic programming, and more.
 \end{abstract}
@@ -310,35 +314,51 @@ duplication or erasure. This guarantees that the generated constraints are
 satisfied once and exactly once. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Imaginary Types: Intuition} 
+\section{Algebraic Types: Intuition} 
 
-Imaginary types have also appeared in the literature: we relegate the
-connections to Sec.~\ref{related} and proceed with a simple explanation. We
-have so far extended the set of types to be the rational numbers. Now we will
-push this and extend the set of types to algebraic numbers. In other words,
-we will allow datatypes defined by arbitrary polynomials and allow the roots
-of such polynomials to be types. Consider the type of binary trees:
-\begin{verbatim}
-data B = 1 + B * B
-\end{verbatim}
-In conventional settings, this declaration introduces an isomorphism between
-$b$ and $1+b^2$ (whose two sides are commonly known as {{fold}} and
-{{unfold}}). In our setting, this induces an isomorphism between $0$ and $b^2
-- b + 1$. The latter polynomial has roots $(1 \pm i\sqrt{3}) / 2$ and hence
-we have two isomorphisms between $b - (1 + i\sqrt{3})$ and $0$ and also
-between $b - (1 - i\sqrt{3})$ and $0$.
+Square root and imaginary types have also appeared in the literature: we
+relegate the connections to Sec.~\ref{related} and proceed with a simple
+explanation. We have so far extended the set of types to be the rational
+numbers. Now we will push this and extend the set of types to algebraic
+numbers. In other words, we will allow datatypes defined by arbitrary
+polynomials and allow the roots of such polynomials to be types. 
 
-Now say I want to produce a value of type $b$. We can use the isomorphisms
-above to break this task in many ways. Essentially exploit that $b$ is
-isomorphic to $b^7$, let the various program components produce the various
-parts of $b^7$ and merge them.
+Consider first an example in which we want to compute with the sides of a
+rectangle whose area is 91 and whose length is longer than its width by 6
+units. One can solve the quadratic equation to determine that the sides are 7
+and 13 and proceed. This however prematuraly forces us to globally solve the
+constraint. Instead we can let the two sides of the rectangle be $x$ and
+$x+6$ and use the following equation to capture the desired constraint:
+\[
+x^2 + 6x - 91 = 0
+\]
+The equation introduces an isomorphism between the type $x^2 + 6x - 91$ and
+the type $0$. We can now proceed to compute with the unknown $x$, being
+assured that in a closed program, our computation will eventually be
+consistent with the solution of the algebraic equation. 
 
-Consider some simple examples first.
+Previously the most famous example of a similar nature is the puzzling
+isomorphism that one can establish between seven binary trees and one.
+A binary tree is defined by the datatype
+\[
+x = 1 + x * x 
+\]
+which can be rearranged to the polynomial equation $x^2 - x + 1 = 0$. By
+algebraic manipulation we can reason as follows:
+\[\begin{array}{rclclclcl}
+x^3 &=& x^2 x &=& (x-1) x &=& x^2 - x &=& -1 \\
+x^6 &=& 1 \\
+x^7 &=& x^6 x &=& x
+\end{array}\]
+Fiore poses the question of why such algebraic manipulation would make sense
+type theoretically but states that even though some of the intermediate steps
+make no sense, the final equivalence is valid and can be used to actually
+construct an isomorphism between $x^7$ the type of seven binary trees 
+and $x$ the type of binary trees.
 
+Discussion of possible polynomials:
 \begin{itemize}
-
 \item $b=1+1$. Boring.
-
 \item $b=b+1$. That introduces the natural numbers. No solution for this
   polynomial over the algebraic numbers. We must extend the numbers with
   $\omega$ to get a solution. We reject this in this paper and prefer to
@@ -346,13 +366,32 @@ Consider some simple examples first.
   valid numerically. With the above type we could subtract $b$ from both
   sides to show that $0=1$ which is nonsense. We can however have infinite
   types as long as they have algebraic solutions.
-
 \item $b^2=2$ or $b = \pm \sqrt{2}$. We have introduced the square root of a
   boolean! If we had superpositions, we could then write a function that
   performs the square root of negation in the sense that applying it twice
   would be equivalent to boolean negation.
-
 \end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Summary}
+
+To summarize negative, fractional, square root, and imaginary types all make
+sense. What they help you accomplish as a programmer is to disassociate
+global invariants into local ones that can be satisfied independently by
+subcomputations with no synchronization or communication. A computation
+producing something of type $a/b$ does not need to concern itself with who is
+going to supply the missing $b$: it just does its part. Conversely faced with
+a complicated task, a computation might decide to break it into pieces and
+demand these pieces using negative types. 
+
+It is no surprise that these types are closely related to quantum mechanics
+and that they give us the feel that this is how nature computes. This is
+speculation however.
+
+In any case, in a framework where information can be copied and deleted, none
+of this makes much sense. It is critical that these constraints and demands
+can neither be duplicated nor erased.  This gives us the maximum
+``parallelism'' possible.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Additive Duality in {{langRev}} }
