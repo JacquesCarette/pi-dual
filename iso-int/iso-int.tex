@@ -641,6 +641,100 @@ machine states. We could apply omega to them and make them vanish --
 for example. This is similar to the handling of the {{sub1}} in the
 previous example. 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A {{langRevT}} Interpreter}
+
+%subcode{bnf} include main
+% Combinators, c = iso | c (;) c | c (*) c | c (+) c | trace c
+% Combinator Contexts, cc = [] | Fst cc c | Snd c cc 
+%                  &|& LeftTimes cc c v | RightTimes c v cc 
+%                  &|& LeftPlus cc c | RightPlus c cc | Trace cc
+% Values, v = () | (v, v) | L v | R v
+%
+% Machine states = <c, v, cc> | {[c, v, cc]}
+% Start state = <c, v, []> 
+% Stop State = {[c, v, []]}
+
+
+%subcode{opsem} include main
+%! columnStyle = rclr
+% <iso, v, cc> &|-->& {[iso, iso(v), cc]} &~~~~~~~~~~~~ rule 1
+% <c1(;)c2, v, cc> &|-->& <c1, v, Fst cc c2> &~~~~~~~~~~~~ rule 2
+% {[c1, v, Fst cc c2]} &|-->& <c2, v, Snd c1 cc> &~~~~~~~~~~~~ rule 3
+% {[c2, v, Snd c1 cc]} &|-->& {[ c1(;)c2, v, cc ]} &~~~~~~~~~~~~ rule 4
+% <c1(+)c2, L v, cc> &|-->& <c1, v, LeftPlus cc c2> &~~~~~~~~~~~~ rule 5
+% {[ c1, v, LeftPlus cc c2 ]} &|-->& {[c1 (+) c2, L v, cc ]} &~~~~~~~~~~~~ rule 6
+% <c1(+)c2, R v, cc> &|-->& <c2, v, RightPlus c1 cc> &~~~~~~~~~~~~ rule 7
+% {[ c2, v, RightPlus c1 cc ]} &|-->& {[c1 (+) c2, R v, cc ]} &~~~~~~~~~~~~ rule 8
+% <c1(*)c2, (v1, v2), cc> &|-->& <c1, v1, LeftTimes cc c2 v2> &~~~~~~~~~~~~ rule 9
+% {[ c1, v1, LeftTimes cc c2 v2 ]} &|-->& <c2, v2, RightTimes c1 v1 cc> &~~~~~~~~~~~~ rule 10
+% {[ c2, v2, RightTimes c1 v1 cc ]} &|-->& {[ c1 (*) c2, (v1, v2), cc ]} &~~~~~~~~~~~~ rule 11
+% < trace c, v, cc> &|-->& <c, R v, Trace cc> &~~~~~~~~~~~~ rule 12
+% {[c, L v, Trace cc]} &|-->& <c, L v, Trace cc> &~~~~~~~~~~~~ rule 13
+% {[c, R v, Trace cc]} &|-->& {[trace c, R v, cc]} &~~~~~~~~~~~~ rule 14
+
+\begin{center}
+\scalebox{0.9}{
+  \includegraphics{diagrams/pi0-1.pdf}
+}
+\end{center}
+
+
+\begin{center}
+\scalebox{0.9}{
+  \includegraphics{diagrams/pi0-2.pdf}
+}
+\end{center}
+
+
+
+TODO : The real difficulty with this interpreter is to argue why it is
+not full of undefined states. For instance, why the machines will
+never reach stuck states such as {{<c1(+)c2, (), ..>}}.  The right way
+out of that is to make the type system of the abstract machine rich
+enough that the structure of the abstract automatically rules out this
+sort of thing. 
+
+%subcode{bnf} include main
+% Combinators, c(t1<->t2) = 
+%             &|& c(t<->t) = iso 
+%             &|& c(t1<->t2) = c(t1<->t3) (;) c(t3<->t2) 
+%             &|& c(t1*t2<->t3*t4) = c(t1<->t3) (*) c(t2<->t4) 
+%             &|& c(t1+t2<->t3+t4) = c(t1<->t3) (+) c(t2<->t4)
+%
+% Combinator Contexts, cc = [] | Fst cc c | Snd c cc 
+%                  &|& LeftTimes cc c v | RightTimes c v cc 
+%                  &|& LeftPlus cc c | RightPlus c cc 
+%
+% Type Indexed Values, v(t) =
+%  &|& v(1) = () 
+%  &|& v(t1*t2) = (v(t1), v(t2)) 
+%  &|& v(t1+t2) = L v(t1) | R v(t2)
+%
+% Machine states = <c, v, cc> | {[c, v, cc]}
+% Start state = <c, v, []> 
+% Stop State = {[c, v, []]}
+
+
+However this begs the question - does {{langRevT}} need all these GADT
+types to reason about all these things? Something to think about. If
+we do, then thereare two ways out 
+
+(1) add GADTs to {{langRevT}} and keep the structure of things
+simple. They can always be added opaquely for any given types -- we
+only need to add the proper fold/unflod morphisms for those types
+(maybe).
+
+(2) compile down to {{langRevT}} as it is. In this case, {{langRevT}}
+is indeed a relatively less typed language than the source language
+and will hence have to treat as stuck-states the non-type correct
+machine states. We could apply omega to them and make them vanish --
+for example. This is similar to the handling of the {{sub1}} in the
+previous example. 
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A {{langRevEE}} interpreter}
 
