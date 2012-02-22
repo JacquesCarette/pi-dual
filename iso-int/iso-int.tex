@@ -82,7 +82,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
-\title{On the Construction of Isomorphic Interpreters} 
+\title{Isomorphic Interpreters in {{langRevT}} (Journal Version)} 
 \titlerunning{On the construction of Isomorphic Interpreters} 
 \author{Roshan P. James \and Amr Sabry}
 \institute{School of Informatics and Computing, Indiana University\\
@@ -825,6 +825,47 @@ Adding backward execution using the adjoint.
 %% % <e1 e2, rho, E > &|-->& <e1, rho, (rho, e2):E >
 %% % <\x.e, rho, (rho', e'):E > &|-->& <e', rho', (\x.e,rho):E >
 %% % <\x.e, rho, (\x'.e',rho'):E > &|-->& <e', x' =(\x.e,rho):rho', E >
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Isomorphic Interpreters from Algebraic manipulation}
+
+aka. ultra-constructivism. 
+
+\begin{center}
+\scalebox{1.0}{
+  \includegraphics{diagrams/fiore_t3.pdf}
+}
+\end{center}
+
+The following diagram expresses the isomorphism {{t^3 <-> -1}} from
+Fiore's paper \cite{Fiore:2004}. The computation corresponds to the
+following algebraic manipulation:
+
+{{t^3 = t*(t*t)}}
+
+{{t^3 = t*(t-1)}} (because {{t = t*t + 1}}  and hence {{t*t = t - 1}}). 
+
+{{t^3 = t*t-t}}
+
+{{t^3 = -1}} (because {{t = t*t + 1}}  and hence {{t*t - t = -1}}). 
+
+However this computation is always non-terminating. So it is
+computationally useless. Fiore on the other hand says that {{t^7 = t}}
+has a useful computational interpretation. Which gives rise to the
+conclusion that there are algebraic proofs of equalities that have
+interesting computational content and once that are nonsense. What
+does this mean? If these programs are proof, why are there two sorts
+of proofs here? Are one set of proofs more ``constructive'' than the
+other? If so, how do we characterize them?
+
+
+%% data Tree = Node Tree Tree 
+%%           | Leaf 
+
+%% t = t * t + 1
 
 
 

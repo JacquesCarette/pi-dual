@@ -409,9 +409,6 @@ apply {{trace}} to get the isomorphic interpreter:
 }
 \end{center}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Logically Reversible Multiplier}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Tree Traversal}
@@ -552,95 +549,6 @@ This essentially completes the construction of the (partially)
 isomorphic tree-traversal interpreter. (Partially because of the
 implicit non-termination introduced by the {{add1}}).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{A {{langRev}} Interpreter}
-
-%subcode{bnf} include main
-% Combinators, c = iso | c (;) c | c (*) c | c (+) c
-% Combinator Contexts, cc = [] | Fst cc c | Snd c cc 
-%                  &|& LeftTimes cc c v | RightTimes c v cc 
-%                  &|& LeftPlus cc c | RightPlus c cc 
-% Values, v = () | (v, v) | L v | R v
-%
-% Machine states = <c, v, cc> | {[c, v, cc]}
-% Start state = <c, v, []> 
-% Stop State = {[c, v, []]}
-
-
-
-%subcode{opsem} include main
-%! columnStyle = rclr
-% <iso, v, cc> &|-->& {[iso, iso(v), cc]} &~~~~~~~~~~~~ rule 1
-% <c1(;)c2, v, cc> &|-->& <c1, v, Fst cc c2> &~~~~~~~~~~~~ rule 2
-% {[c1, v, Fst cc c2]} &|-->& <c2, v, Snd c1 cc> &~~~~~~~~~~~~ rule 3
-% {[c2, v, Snd c1 cc]} &|-->& {[ c1(;)c2, v, cc ]} &~~~~~~~~~~~~ rule 4
-% <c1(+)c2, L v, cc> &|-->& <c1, v, LeftPlus cc c2> &~~~~~~~~~~~~ rule 5
-% {[ c1, v, LeftPlus cc c2 ]} &|-->& {[c1 (+) c2, L v, cc ]} &~~~~~~~~~~~~ rule 6
-% <c1(+)c2, R v, cc> &|-->& <c2, v, RightPlus c1 cc> &~~~~~~~~~~~~ rule 7
-% {[ c2, v, RightPlus c1 cc ]} &|-->& {[c1 (+) c2, R v, cc ]} &~~~~~~~~~~~~ rule 8
-% <c1(*)c2, (v1, v2), cc> &|-->& <c1, v1, LeftTimes cc c2 v2> &~~~~~~~~~~~~ rule 9
-% {[ c1, v1, LeftTimes cc c2 v2 ]} &|-->& <c2, v2, RightTimes c1 v1 cc> &~~~~~~~~~~~~ rule 10
-% {[ c2, v2, RightTimes c1 v1 cc ]} &|-->& {[ c1 (*) c2, (v1, v2), cc ]} &~~~~~~~~~~~~ rule 11
-
-
-\begin{center}
-\scalebox{0.9}{
-  \includegraphics{diagrams/pi1.pdf}
-}
-\end{center}
-
-\begin{center}
-\scalebox{0.9}{
-  \includegraphics{diagrams/pi2.pdf}
-}
-\end{center}
-
-
-
-TODO : The real difficulty with this interpreter is to argue why it is
-not full of undefined states. For instance, why the machines will
-never reach stuck states such as {{<c1(+)c2, (), ..>}}.  The right way
-out of that is to make the type system of the abstract machine rich
-enough that the structure of the abstract automatically rules out this
-sort of thing. 
-
-%subcode{bnf} include main
-% Combinators, c(t1<->t2) = 
-%             &|& c(t<->t) = iso 
-%             &|& c(t1<->t2) = c(t1<->t3) (;) c(t3<->t2) 
-%             &|& c(t1*t2<->t3*t4) = c(t1<->t3) (*) c(t2<->t4) 
-%             &|& c(t1+t2<->t3+t4) = c(t1<->t3) (+) c(t2<->t4)
-%
-% Combinator Contexts, cc = [] | Fst cc c | Snd c cc 
-%                  &|& LeftTimes cc c v | RightTimes c v cc 
-%                  &|& LeftPlus cc c | RightPlus c cc 
-%
-% Type Indexed Values, v(t) =
-%  &|& v(1) = () 
-%  &|& v(t1*t2) = (v(t1), v(t2)) 
-%  &|& v(t1+t2) = L v(t1) | R v(t2)
-%
-% Machine states = <c, v, cc> | {[c, v, cc]}
-% Start state = <c, v, []> 
-% Stop State = {[c, v, []]}
-
-
-However this begs the question - does {{langRevT}} need all these GADT
-types to reason about all these things? Something to think about. If
-we do, then thereare two ways out 
-
-(1) add GADTs to {{langRevT}} and keep the structure of things
-simple. They can always be added opaquely for any given types -- we
-only need to add the proper fold/unflod morphisms for those types
-(maybe).
-
-(2) compile down to {{langRevT}} as it is. In this case, {{langRevT}}
-is indeed a relatively less typed language than the source language
-and will hence have to treat as stuck-states the non-type correct
-machine states. We could apply omega to them and make them vanish --
-for example. This is similar to the handling of the {{sub1}} in the
-previous example. 
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A {{langRevT}} Interpreter}
@@ -732,99 +640,6 @@ and will hence have to treat as stuck-states the non-type correct
 machine states. We could apply omega to them and make them vanish --
 for example. This is similar to the handling of the {{sub1}} in the
 previous example. 
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{A {{langRevEE}} interpreter}
-
-%subcode{bnf} include main
-% Combinators, c = iso | eta | eps | c (;) c | c (*) c | c (+) c
-% Combinator Contexts, cc = [] | Fst cc c | Snd c cc 
-%                  &|& LeftTimes cc c v | RightTimes c v cc 
-%                  &|& LeftPlus cc c | RightPlus c cc 
-% Values, v = () | (v, v) | L v | R v
-%
-% Machine states = <c, v, cc> | {[c, v, cc]} | <c, v, cc>^{dagger} | {[c, v, cc]}^{dagger}
-% Start state = <c, v, []> 
-% Stop State = {[c, v, []]}
-%
-
-%subcode{opsem} include main
-%! columnStyle = rclr
-% <iso, v, cc> &|-->& {[iso, iso(v), cc]} &~~~~~~~~~~~~ rule 1
-% <c1(;)c2, v, cc> &|-->& <c1, v, Fst cc c2> &~~~~~~~~~~~~ rule 2
-% {[c1, v, Fst cc c2]} &|-->& <c2, v, Snd c1 cc> &~~~~~~~~~~~~ rule 3
-% {[c2, v, Snd c1 cc]} &|-->& {[ c1(;)c2, v, cc ]} &~~~~~~~~~~~~ rule 4
-% <c1(+)c2, L v, cc> &|-->& <c1, v, LeftPlus cc c2> &~~~~~~~~~~~~ rule 5
-% {[ c1, v, LeftPlus cc c2 ]} &|-->& {[c1 (+) c2, L v, cc ]} &~~~~~~~~~~~~ rule 6
-% <c1(+)c2, R v, cc> &|-->& <c2, v, RightPlus c1 cc> &~~~~~~~~~~~~ rule 7
-% {[ c2, v, RightPlus c1 cc ]} &|-->& {[c1 (+) c2, R v, cc ]} &~~~~~~~~~~~~ rule 8
-% <c1(*)c2, (v1, v2), cc> &|-->& <c1, v1, LeftTimes cc c2 v2> &~~~~~~~~~~~~ rule 9
-% {[ c1, v1, LeftTimes cc c2 v2 ]} &|-->& <c2, v2, RightTimes c1 v1 cc> &~~~~~~~~~~~~ rule 10
-% {[ c2, v2, RightTimes c1 v1 cc ]} &|-->& {[ c1 (*) c2, (v1, v2), cc ]} &~~~~~~~~~~~~ rule 11
-% <eps, R v, cc> &|-->& <eps, L (-v), cc>^{dagger} &~~~~~~~~~~~~ rule 12
-% <eps, L (-v), cc> &|-->& <eps, R v, cc>^{dagger} &~~~~~~~~~~~~ rule 13
-
-
-%subcode{opsem} include main
-%! columnStyle = rclr
-% <iso, v, cc>^{dagger} &<--|& {[iso, iso(v), cc]}^{dagger} &~~~~~~~~~~~~ rule 1'
-% <c1(;)c2, v, cc>^{dagger} &<--|& <c1, v, Fst cc c2>^{dagger} &~~~~~~~~~~~~ rule 2'
-% {[c1, v, Fst cc c2]}^{dagger} &<--|& <c2, v, Snd c1 cc>^{dagger} &~~~~~~~~~~~~ rule 3'
-% {[c2, v, Snd c1 cc]}^{dagger} &<--|& {[ c1(;)c2, v, cc ]}^{dagger} &~~~~~~~~~~~~ rule 4'
-% <c1(+)c2, L v, cc>^{dagger} &<--|& <c1, v, LeftPlus cc c2>^{dagger} &~~~~~~~~~~~~ rule 5'
-% {[ c1, v, LeftPlus cc c2 ]}^{dagger} &<--|& {[c1 (+) c2, L v, cc ]}^{dagger} &~~~~~~~~~~~~ rule 6'
-% <c1(+)c2, R v, cc>^{dagger} &<--|& <c2, v, RightPlus c1 cc>^{dagger} &~~~~~~~~~~~~ rule 7'
-% {[ c2, v, RightPlus c1 cc ]}^{dagger} &<--|& {[c1 (+) c2, R v, cc ]}^{dagger} &~~~~~~~~~~~~ rule 8'
-% <c1(*)c2, (v1, v2), cc>^{dagger} &<--|& <c1, v1, LeftTimes cc c2 v2>^{dagger} &~~~~~~~~~~~~ rule 9'
-% {[ c1, v1, LeftTimes cc c2 v2 ]}^{dagger} &<--|& <c2, v2, RightTimes c1 v1 cc>^{dagger} &~~~~~~~~~~~~ rule 10'
-% {[ c2, v2, RightTimes c1 v1 cc ]}^{dagger} &<--|& {[ c1 (*) c2, (v1, v2), cc ]}^{dagger} &~~~~~~~~~~~~ rule 11'
-% {[eps, L (-v), cc]}  &<--|& {[eps, R v, cc]}^{dagger}  &~~~~~~~~~~~~ rule 12'
-% {[eps, R v, cc]} &<--|&  {[eps, L (-v), cc]}^{dagger} &~~~~~~~~~~~~ rule 13'
-
-
-\begin{center}
-\scalebox{0.9}{
-  \includegraphics{diagrams/piee1.pdf}
-}
-\end{center}
-
-Let us summarize it as follows.
-
-\begin{center}
-\scalebox{1.0}{
-  \includegraphics{diagrams/piee2.pdf}
-}
-\end{center}
-
-Adding backward execution using the adjoint.
-
-\begin{center}
-\scalebox{1.0}{
-  \includegraphics{diagrams/piee3.pdf}
-}
-\end{center}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{CEK machine}
-
-%% %subcode{bnf} include main
-%% % e = x | \x.e | e e
-%% % rho = [] | x=v:rho
-%% % E = [] | (rho, e):E | v:E
-%% % v = (\x.e, rho)
-%% %
-%% % Machine states = <e, rho, E>
-%% % Start state = <e, [], []>
-%% % Stop state = <v, rho, []>
-
-
-%% %subcode{opsem} include main
-%% % <e1 e2, rho, E > &|-->& <e1, rho, (rho, e2):E >
-%% % <\x.e, rho, (rho', e'):E > &|-->& <e', rho', (\x.e,rho):E >
-%% % <\x.e, rho, (\x'.e',rho'):E > &|-->& <e', x' =(\x.e,rho):rho', E >
 
 
 
