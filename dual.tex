@@ -143,6 +143,41 @@ closed categories.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
+The world of computation we are describing has:
+\begin{itemize}
+\item suppliers, 
+\item consumers, and
+\item bi-directional transformations
+\end{itemize}
+This is the same world described by the papers on the duality of computation
+but that work only scratched the surface! We have the following features:
+\begin{itemize}
+\item we can start from the supplier and push the values towards the
+  consumer (call-by-value in the duality of computation papers)
+\item we can start from the consumer and pull the values from the suppliers
+  (call-by-name in the duality of computation papers)
+\item we can combine the pushing and pulling and values using eta/epsilon for
+  sum types; these allow us to at any point in the middle of the computation
+  create out of nothing a value to send to the consumers and a demand to send
+  to the suppliers.
+\item we can break a big data structure into fragments described by
+  fractional types; the suppliers and consumers can produce and consume the
+  pieces completely independently of each other. Eventually the pieces will
+  fit together at the consumer to produce the desired output.
+\item we can break a bi-directional transformation into pieces using square
+  roots
+\item we can take into account that values have phase (complex numbers),
+  i.e., it is not that they flow towards the consumer or just towards the
+  suppliers; they can be flowing in direction that ``30 degrees'' towards the
+  consumer for example.
+\end{itemize}
+So it is all about breaking dependencies in some sense to allow for maximum
+autonomy (parallelism) of subcomputations. It is probably the case that to
+make full use of square root types and imaginary types, we have to move to a
+vector space. If that's the case, we should probably leave this stuff out and
+focus on negative and fractional types and only have a short discussion of
+the polynomials restricted to seven trees in one and similar issues.
+
 We show a deep symmetry between functions and delimited continuations,
 values and continuations that arises in {{langRev}} in a manner that
 is reminiscent of Filinksi's Symmetric \lcal
