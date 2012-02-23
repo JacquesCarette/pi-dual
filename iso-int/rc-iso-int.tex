@@ -96,6 +96,31 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
 
+Main points: 
+\begin{itemize}
+\item Make the case for reversibility via type isomorphisms
+\item Type isomorphisms between finite types are straightforward (but
+  tedious)
+\item Type isomorphisms between recursive types are quite difficult. This is
+  what we focus on.
+\end{itemize}
+To understand the problem in more detail, consider the problem of converting
+a reversible recursive function into a partial isomorphism. In general such a
+function takes an input, makes several recursive calls, and produces an
+answer. To implement this in a reversible way, the structure of the recursion
+and the number of recursive calls need to be exposed. The key trick is to
+express tease the function into two components: an outer driver that performs
+iteration and an inner state transition function that realizes one
+``unfolding'' of the recursion. In program transformation world, this is
+called, light-weight fission. Using this idea, one can realize any recursive
+function as a partial isomorphism. We show a few examples of the construction
+culminating with the most challenging recursive function: a full interpreter.
+
+
+
+
+
+
 
 Previous work on {{langRevT}} \cite{rc2011,infeffects} studied its
 properties and various constructions in it. However, for a
