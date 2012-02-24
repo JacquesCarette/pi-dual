@@ -838,7 +838,122 @@ Adding backward execution using the adjoint.
 \newpage
 \section{Isomorphic Interpreters from Algebraic Manipulation}
 
-aka. ultra-constructivism. 
+(Maybe this section should be a seperate paper altogether)
+
+This section introduces another class of isomorphic interpreters
+{{langRevEE}} that arise from algebraic manipulations. Recursive type
+definitions are viewed as algebraic polynomials characterizing the
+shape of the type. Thus binary trees {{@@x.1+x*x}} are represented as
+the polynomial {{x=1+x^2}} and hence {{x^2-x+1=0}}. 
+
+
+TODO: find a few more algebraic manipulations that give useful
+combinators. Depending on which language we are working in, there may
+be many. Suggestions:
+
+{{ a * b <-> (-a) * (-b)}}
+
+{{ -(-a) <-> a }}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Deriving the {{just : a <-> a + 1}} combinator}
+
+In the spirit of the above discussion, the type {{nat}} defined by
+{{@@x.1+x}} induces the polynomial {{nat = 1 + nat}}. Consider the
+following manipulation:
+
+{{a = a}}
+
+{{a + nat = a + nat}}
+
+{{a + nat = a + nat + 1}} because we know that {{nat = nat + 1}}. 
+
+{{a = a + 1}} by cancelling nat. 
+
+\noindent
+These algebraic manipulations can be treated as a computation in
+{{langRevT}} by witnessing each transformation with an appropriate
+combinator. 
+
+\begin{itemize}
+\item Thus we start with the the line corresponding to {{a=a}}:
+
+DIAGRAM
+
+\item And then we construct {{a * nat = a * nat}} by parallel
+  composing with {{nat = nat}}.
+
+DIAGRAM
+
+\item And then we {{unfold}} on the RHS
+
+DIAGRAM
+
+\item And finally we use {{trace}} to do the appropriate cancellation,
+  thereby getting the final circcuit, which we call {{just}}:
+
+DIAGRAM
+
+\end{itemize}
+
+
+\noindent
+Computationally the {{langRevT}} circuit does the following:
+
+\begin{enumerate}
+\item {{forall (v:a).just v |--> right v}} 
+\item {{forall (v:a).just^{dagger} (right v) |--> v}} 
+\item {{just (left ())}} diverges. 
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Isomorphisms of Trees}
+
+Algebraic manipulations like the above have questionable mathematical
+validitiy induced by the fact that the polynomial {{nat = nat + 1}} is
+not well defined. Hence axiomatically adding such a polynomial may be
+suspected as the underlying reason for the divergence. 
+
+
+In this context let us examine the isomorphism from one binary tree to
+seven binary trees that is examined in the Fiore's paper
+\cite{Fiore:2004}. Binary trees imply the polynomial {{t^2-t+1=0}}
+which does have a valid root, namely {{t = 1/2 + i*sqrt(3)/2}}. 
+
+ALGEBRA
+
+etc. 
+
+Which gives us the circuit: 
+
+DIAGRAM
+
+Indeed this circuit is proof of the embedding of trees in a strong
+constructive sense i.e. we can supply a binary tree and examine the
+resulting seven binary trees. Further the adjoint of the circuit
+allows us to supply seven binary trees and get one resultant tree. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Non-constructive Isomorphism of Trees}
+However not all valid algebraic manipulations of a binary trees also
+have meanignful computational interpretations. Consider the same
+isomophism explained with the algebraic manipulation:
+
+{{t^3 = t*(t*t)}}
+
+{{t^3 = t*(t-1)}} (because {{t = t*t + 1}}  and hence {{t*t = t - 1}}). 
+
+{{t^3 = t*t-t}}
+
+{{t^3 = -1}} (because {{t = t*t + 1}}  and hence {{t*t - t = -1}}). 
+
+{{t^6 = 1}} 
+
+{{t^7 = t}}
+
+The construction underlying this isomorphism is {{t^3 = -1}}, which
+can be expressed in {{langRevEE}} as the cicruit:
 
 \begin{center}
 \scalebox{1.0}{
