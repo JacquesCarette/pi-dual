@@ -142,65 +142,70 @@ reversibility of the small-step semantics.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simple Bounded Iterator}
-Consider definition for the following small-step abstract machine:
+We illustrate the main ideas underlying the derivation of isomorphic
+interpreters using a simple abstract machine.  Consider the definition
+of the following small-step abstract machine:
+
+\begin{multicols}{2}
+%subcode{bnf} include main
+% Numbers, n, m = 0 | n + 1
+% Machine states = <n, n>
 
 %subcode{bnf} include main
-% Expressions, e = n
-% Numbers, n, m = 0 | n + 1
-%
-% Machine states = <e, e>
 % Start state = <n, 0>
 % Stop State = <0, n>
-
-Small-step Operational semantics:
+\end{multicols}
+% Small-step operational semantics:
 
 %subcode{opsem} include main
 % <n+1, m> |--> <n, m+1>
-
-This machine start with a number {{n}} in the first position and at
-each reduction step decrements the first number and increments the
-second. It stops when the first number reaches 0, thereby taking
-exactly {{n}} steps. While the machine does nothing interesting,
-it useful to illustrate the general idea.
-
-\begin{enumerate}
-\item 
-We can turn this abstract machine into a an isomorphic interpreter
-implemented in {{langRevT}}, in a systematic way. To start with we
-realize that the interpreter should implement the following map.
+  
+This machine starts with a number {{n}} in the first position and
+{{0}} in the second. Each reduction step decrements the first number
+and increments the second. The machine stops when the first number
+reaches 0, thereby taking exactly {{n}} steps.  
+%% We can turn this
+%% abstract machine into a an isomorphic interpreter implemented in
+%% {{langRevT}}, in a systematic way. 
+Broadly, the interpreter should implement the map on the left:
 
 \begin{center}
   \includegraphics{diagrams/nat-nat1.pdf}
 \end{center}
 
-Now numbers can be implemented by the recursive type {{nat = @@x.1+x}}
-in {{langRevT}}. This gives us the isomorphisms 
+%% \begin{center}
+%%   \includegraphics{diagrams/nat-nat2.pdf}
+%% \end{center}  
+%% \end{multicols}
 
-\begin{center}
-  {{unfold : nat <-> 1 + nat : fold}}
-\end{center}
-
-We start by examining the first value. 
-
-\begin{center}
-  \includegraphics{diagrams/nat-nat2.pdf}
-\end{center}
-
-\item
-The triangle denotes the {{unfold}} isomorphism, which works as
-follows: If the number {{n}} is zero, the output is the top branch
-which has type {{1}}. If the number was non-zero, the output is on the
-bottom branch and has value {{n-1}}. 
-
-Since the abstract machine increments second component, we know that
-we need a {{fold}} on the second component to accomplish this. So we
-can fill in the output part of the interpreter dually. 
+In {{langRevT}} we have {{nat}} given by the recursive definition
+{{@@x.1+x}} along with isomorphisms {{unfold:nat <->1+nat:fold}}. The
+only reduction step of the abstract machine examines the first value
+of the input and reconstructs the second.
 
 \begin{center}
   \includegraphics{diagrams/nat-nat3.pdf}
 \end{center}
 
-\item
+The triangle denotes the {{unfold}} isomorphism, which works as
+follows: If the number {{n}} is zero, the output is the top branch
+which has type {{1}}. If the number was non-zero, the output is on the
+bottom branch and has value {{n-1}}.
+
+
+%% Now numbers can be implemented by the recursive type {{nat = @@x.1+x}}
+%% in {{langRevT}}. This gives us the isomorphisms 
+
+%% \begin{center}
+  
+%% \end{center}
+
+
+%% Since the abstract machine increments second component, we know that
+%% we need a {{fold}} on the second component to accomplish this. So we
+%% can fill in the output part of the interpreter dually. 
+
+
 Let us examine all the possible input states, by distributing on the
 input. Dually let us do the same with the output, but this time also
 be a little bit explicit about the swap operations required so the
@@ -210,7 +215,6 @@ right types are in place.
   \includegraphics{diagrams/nat-nat4.pdf}
 \end{center}
 
-\item
 The construction above already gives us some insight into how we can
 implement our one reduction step. If we chose {{m = m'-1}} and we
 chose {{n-1 =n'}} then we have essentially encoded the required
@@ -226,7 +230,6 @@ is just a swap of the two wires involved.
   \includegraphics{diagrams/nat-nat5.pdf}
 \end{center}
 
-\item
 We are a few steps away from an interpreter at this point and the
 final steps rely on the answers to a few questions.
 
@@ -234,7 +237,9 @@ final steps rely on the answers to a few questions.
 \item How do relate the outputs of the combinator to the inputs, such
   that the machine correctly takes multiple steps?
 
-\item What do we do about the two inner branches? 
+\item
+
+ What do we do about the two inner branches? 
 
 \end{enumerate}
 
@@ -261,7 +266,7 @@ to related machine states.
   \includegraphics{diagrams/nat-nat8.pdf}
 \end{center}
 
-\end{enumerate}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Abstracting out the Construction}
