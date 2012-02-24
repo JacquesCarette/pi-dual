@@ -178,6 +178,45 @@ vector space. If that's the case, we should probably leave this stuff out and
 focus on negative and fractional types and only have a short discussion of
 the polynomials restricted to seven trees in one and similar issues.
 
+The conventional idea is to divide the world into a ``real'' one and a
+``virtual'' one. In the ``real'' world, we can define datatypes like
+\verb|t=t^2+1| but we don't have additive inverses so it makes no sense to
+talk of negative types and we can't rearrange the terms in the datatype
+definition. However the observation is that we can map these datatypes to a
+virtual world that has more structure (a ring that provides additive inverses
+or a field that also provides multiplicative inverses) and then perform
+computations in the ring/field. If we perform computations in the ring, then
+some of these will use additive inverses in ways that cannot be mapped back
+to the ``real'' world. Much of current research attempts to characterize
+which computations done in the ring are valid isomorphisms between datatypes
+in the ``real'' world. This is nice but is not what I am after. In fact I am
+not interested in the ring or the semiring at all. I am interested in the
+field and I want this field to be \textbf{the real world.} This is partly
+motivated by the fact that Quantum Mechanics seems to demand an underlying
+field and more generally that the field provides the maximum generality in
+slicing and dicing computations. So assuming I live in a field and that the
+negative, fractional, square root, and imaginary types are all ``real,'' how
+do I compute in this field? Clearly there will be constraints on
+``measurement'' in the sense that a full program cannot produce any of the
+crazy types but that's done outside the formalism in some sense just as in
+Quantum Computing. The main question I am after is how to compute in this
+field with first-class negative, fractional, etc. types. As I mentioned in my
+previous email, we can produce programs that have types \verb|t^3 <-> -1| and
+they ``run'' (but only to give infinite loops). 
+
+So when a programmer writes the datatype declaration \verb|t = t^2+1|, if we
+allow negative etc. then this is effectively writing 
+\verb|t = cubicroot{-1}|. If we are in the field then computations that 
+manipulate these trees can be sliced and diced even at interfaces that
+expose the cubic root and the imaginary types. 
+
+Future work: develop a type system for a ``normal language'' that has
+negative, fractional, etc. types as first-class types. More long term,
+instead of adding one polynomial at a time, we can go to an algebraically
+closed field. The complex numbers is an obvious choice but I would rather go
+to something computable like the field of algebraic numbers. Is the adele
+ring or the p-adics relevant here?
+
 We show a deep symmetry between functions and delimited continuations,
 values and continuations that arises in {{langRev}} in a manner that
 is reminiscent of Filinksi's Symmetric \lcal
