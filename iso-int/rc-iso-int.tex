@@ -270,32 +270,15 @@ start the machine.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Abstracting out the Construction}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{What are the high level steps in the translation?}
-\label{sec:steps}
-
-TODO
-
-\begin{enumerate}
-\item Expand the input such that every input term that the LHS of the
-  interpreter pattern matches on is exposed.
-
-\item Expand the output such that every output term that it
-  reconstructed by the interpreter is exposed.
-
-\item Shuffle matching LHS term to matching RHS terms, inserting any
-  appropriate mediating computations. In the previous example, this
-  was only a swap operation.
-
-\end{enumerate}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{What abstract machines can be turned into isomorphic interpreters?}
-
-Logically reversible abstract machines with distinguishable start and
-stop states can be converted into isomorphic interpreters in
-{{langRevT}}.  To develop an understanding for what sorts of machines
-these are, let us look at some examples.
+The construction of the isomorphic interpreter essentially exploits
+the structure of most abstract machines -- the LHS of the transition
+rules determines a machine state by pattern machine. The RHS does the
+dual namely term reconstruction. The fact that the machine is
+logically reversible ensures that the computation performed by each
+reduction is essentially captured by an isomorphism. 
+%% To develop an
+%% understanding for what sort of machines can be treated this way, let
+%% us look at some examples.
 
 Consider a machine with the following two reduction steps
 {{<n+1,m>|--> <n, m+1>}} and {{<n+1,m>|--><n,m>}}. Can we create an
@@ -315,8 +298,7 @@ Consider a machine that has the addition rule {{<''x+y''>|--><''z''>}}
 where {{z}} is the sum of {{x}} and {{y}}. This machine again cannot
 be turned into an isomorphic interpreter because the one reduction
 rule does not have a logically inverse -- in other words, given a
-{{z}}, we are unable to determine which {{x}} and {{y}} it originated
-from.
+{{z}}, we are unable to determine the original {{x}} and {{y}}.
 
 If we had only the reduction relation {{<n+1> |--> <n>}}, can we
 construct an isomorphic interpreter? After all, every rewrite rule is
@@ -324,9 +306,11 @@ logically reversible. In fact, this is not possible because there is
 no distinguished start state for such an interpreter and hence one
 does not know when to stop during reverse execution.
 
-\noindent
-Conditions that must be satisfied for constructing a isomorphic
-interpreter:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \subsection{What abstract machines can be turned into isomorphic interpreters?}
+
+\paragraph*{Conditions that must be satisfied for constructing a isomorphic
+interpreter}:
 
 \begin{enumerate}
 
@@ -344,19 +328,44 @@ interpreter:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Adder and Multiplier}
+\paragraph*{High level steps in the translation:}
+\label{sec:steps}
 
-\subsection{Logically Reversible Adder}
+\begin{enumerate}
+\item Expand the input such that every input term that the LHS of the
+  interpreter pattern matches on is exposed.
+
+\item Expand the output such that every output term that it
+  reconstructed by the interpreter is exposed.
+
+\item Shuffle matching LHS term to matching RHS terms, inserting any
+  appropriate mediating computations. In the previous example, this
+  was only a swap operation.
+
+\item Flip the construction inside out introducing a {{trace}} and
+  exposing the start and stop states. 
+
+\end{enumerate}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Adder and Multiplier}
+
+\section{Logically Reversible Adder}
+
+Consider
+
+\begin{multicols}{2}  
+%subcode{bnf} include main
+% Numbers, n, m,p = 0 | n + 1
+% Machine states = <e, e, e>
 
 %subcode{bnf} include main
-% Expressions, e = n
-% Numbers, n, m,p = 0 | n + 1
-%
-% Machine states = <e, e, e>
 % Start state = <n, p, 0>
 % Stop State = <0, p', m>
+\end{multicols}
 
-Small-step Operational semantics:
+%Small-step Operational semantics:
 
 %subcode{opsem} include main
 % <n+1, p, m> |--> <n, p+1, m+1>
