@@ -78,6 +78,7 @@
 %! -o = \multimap
 %! ::= = &::=&
 %! /= = \neq
+%! @@ = \mu
 %! forall = \forall
 %! exists = \exists
 %! empty = \epsilon
@@ -107,24 +108,26 @@
 \maketitle
 
 \begin{abstract}
-  Every functional programmer knows about sum and product types, $a+b$ and
-  $a*b$ respectively. Negative, fractional, square root, and imaginary types,
-  $a-b$, $a/b$, $\sqrt{a}$, and $a+ib$ respectively, are much less known and
-  their computational interpretation is unfamiliar and often complicated. We
-  show that in a programming model in which information is preserved (such as
-  the model introduced in our recent paper on \emph{Information Effects}),
+  Every functional programmer knows about sum and product types, $a+b$
+  and $a*b$ respectively. Negative and fractional types, $a-b$ and
+  $a/b$ respectively, are much less known and their computational
+  interpretation is unfamiliar and often complicated. We show that in
+  a programming model in which information is preserved (such as the
+  model introduced in our recent paper on \emph{Information Effects}),
   these types have particularly intuitive and natural computational
-  interpretations. Intuitively, values of negative types are values that flow
-  ``backwards'' to satisfy demands, values of fractional types are values
-  that represent first-class ``structural'' constraints, and values of square
-  root and imaginary types are values that can be related by arbitrary
-  algebraic constraints. The combination of these negative, fractional,
-  square root, and imaginary types enable greater flexibility in programming
-  by breaking complicated invariants into local ones that can be
-  independently satisfied by a subcomputation. Furthermore, they allow a
-  programmer to express a wide range of programming idioms, including
-  higher-order functions, delimited continuations, speculative computation,
-  logic programming, and more.
+  interpretations. Intuitively, values of negative types are values
+  that flow ``backwards'' to satisfy demands, values of fractional
+  types are values that represent first-class ``structural''
+  constraints.
+  %% , and values of square root and imaginary types are values that can
+  %% be related by arbitrary algebraic constraints.
+  The combination of these negative, fractional, square root, and
+  imaginary types enable greater flexibility in programming by
+  breaking complicated invariants into local ones that can be
+  independently satisfied by a subcomputation. Furthermore, they allow
+  a programmer to express a wide range of programming idioms,
+  including higher-order functions, delimited continuations,
+  speculative computation, logic programming, and more.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -141,6 +144,18 @@ closed categories.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
+
+In a technical sense, this paper extends the language of isomorphisms
+{{langRev}}, with duality. Unlike Linear logic \cite{Girard87tcs} and
+other systems which have one notion of duality over additive and
+multiplicative componenents, {{langRevEE}} has two notions of duality
+-- an additive duality over the monoid {{(0, +)}} and a multiplicative
+duality over the monoid {{(1, *)}}. Each axis of duality also give us
+a function space and hence {{langRevEE}} has an additive function
+space correspoding to a notion of control or backtracking and a
+multiplicative function space corresponding to a notion of unification
+or constraint satisfaction.
+
 
 The world of computation we are describing has:
 \begin{itemize}
@@ -260,6 +275,106 @@ L_1 / L_2 = \{ x ~|~ xy \in L_1 \mbox{~for~some~} y \in L_2 \}
 Connections to type logical grammars and Lambek calculus
 
 Some background on {{langRev}} because it is mentioned in the next section.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Related Work} 
+\label{sec:related}
+
+
+(NOTE: Lets use this section here to establish a long of ideas and
+intuition. None of these connections have to be formal, but they can
+be concrete.)
+
+Filinski proposes that continuations are a \emph{declarative} concept. He,
+furthermore, introduces a symmetric extension of the $\lambda$-calculus in
+which values and continuations are treated as opposites. This is essentially
+what we are proposing with one fundamental difference: our underlying
+language is not the $\lambda$-calculus but a language of pure isomorphisms in
+which information is preserved. This shift of perspective enables us to
+distill and generalize the duality of values and continuations: in
+particular, in the conventional $\lambda$-calculus setting values and
+continuations can be erased and duplicated which makes it difficult to
+maintain the correspondence between a value and its negative counterpart. 
+
+\paragraph*{Continuations.} The idea of using negative types to model
+information flowing backwards, demand for values, continuations, etc. goes
+back to at Filinski's thesis. We recall these connections below but we first
+note that all these systems are complicated because in all these systems
+information can be ignored, destroyed, or duplicated. Clearly the possibility
+of erasure of information would mean that our credit card transaction is
+incorrect. In our work, information is maintained and hence we have a
+guarantee that, in a closed program, the debt must be accounted and paid for.
+
+\paragraph*{Filinski~\cite{Filinski:1989:DCI:648332.755574}.}
+In his Masters thesis, Filinski proposes that continuations are a
+\emph{declarative} concept. He, furthermore, introduces a symmetric extension
+of the $\lambda$-calculus in which values and continuations are treated as
+opposites. This is essentially what we are proposing with one fundamental
+difference: our underlying language is not the $\lambda$-calculus but a
+language of pure isomorphisms in which information is preserved. This shift
+of perspective enables us to distill and generalize the duality of values and
+continuations: in particular, in the conventional $\lambda$-calculus setting
+values and continuations can be erased and duplicated which makes it
+difficult to maintain the correspondence between a value and its negative
+counterpart. In contrast, in our setting, one can start from the empty type
+$0$, introduce a positive value and its negative counterpart, and let each of
+these flow in arbitrary ways. The entire framework guarantees that neither
+the value nor its negative counterpart will be deleted or duplicated and
+hence that, in any closed program, the ``debt'' corresponding to the negative
+value is paid off exactly once. The forward and backward executions in our
+framework correspond to call-by-value and call-by-name. This duality was
+observed by Filinski and others following him but it is particularly clean in
+our framework.
+
+\paragraph*{Subtraction} Wadler the reloaded paper, does not consider the
+subtraction type because its ``computational interpretation is not
+familiar.'' Curien and Herbelin study duality in classical logic, show that
+it exchanges call-by-value and call-by-name. They extend classical natural
+deduction with subtraction but give it no computational meaning. Crolard (in
+the formulae-as-types interpretation of subtractive logic) address the
+computational interpretation of substraction. He explains the type $A-B$ as
+the of \emph{coroutines} with a local environment of type $A$ and a
+continuation of type $B$. The description is complicated by what is
+essentially the desire to enforce linearity constraints so that coroutines
+cannot access the local environment of other coroutines. Must cite Selinger
+control categories in this context of duality but I am not sure what to say:
+it assumes cartesian closed categories for one thing and not symmetric
+monoidal ones. Ariola, Herbelin, and Sabry also use subtractive types to
+explain delimited continuations. 
+
+\paragraph*{Linear Logic} In accounts that are linear, the value and
+continuation that comprise the substractive type need to be constrained to
+``stay together.'' This can be achieved by various restrictions. In this work
+we have no such constraints, the negative value can flow anywhere. The entire
+system guarantees that any closed program would have to account for it. We
+don't have to introduce special constraints to achieve that. Zeilberger in
+the paper on polarity and the logic of delimited continuations uses polarized
+logic: he shows that if positive and negative values are completely symmetric
+except that answer types are positive, then the framework accommodates
+delimited continuations. But he interprets negative values are control
+operators, or as values defined by the shape of their continuations. We
+simply interpret values of negative type as values flowing in the ``other''
+direction.
+
+\paragraph*{Int Construction.}
+For a traced monoidal category {{C}} the Int construction produces a
+Compact Closed Category called Int {{C}} \cite{joyal1996traced}.
+Further we know that the target of the Int construction is isomorphic
+to the target of \G construction of Abramsky \cite{Abramsky96:0} from
+Haghverdi. However, note that the {{langRevEE}} is not the same as the
+image of the Int construction on {{langRevT}}, since the the later
+lacks a multiplicative tensor that distrbutes over the additive tensor
+in Int {{langRevT}}.
+
+\paragraph*{Recursion.} In our previous work we introduce recursive types and
+trace operators. This is dangerous here because infinite loops allow us to
+prolong paying the debt for as long as we want.
+
+\paragraph*{GoI machines} 
+We can now encode the GoI machine of Mackie \cite{Mackie2011,DBLP:conf/popl/Mackie95}.
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Negative Types: Intuition} 
@@ -386,64 +501,6 @@ introduced is a framework in which all information is preserved, with no
 duplication or erasure. This guarantees that the generated constraints are
 satisfied once and exactly once. 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Algebraic Types: Intuition} 
-
-Square root and imaginary types have also appeared in the literature: we
-relegate the connections to Sec.~\ref{related} and proceed with a simple
-explanation. We have so far extended the set of types to be the rational
-numbers. Now we will push this and extend the set of types to algebraic
-numbers. In other words, we will allow datatypes defined by arbitrary
-polynomials and allow the roots of such polynomials to be types. 
-
-Consider first an example in which we want to compute with the sides of a
-rectangle whose area is 91 and whose length is longer than its width by 6
-units. One can solve the quadratic equation to determine that the sides are 7
-and 13 and proceed. This however prematuraly forces us to globally solve the
-constraint. Instead we can let the two sides of the rectangle be $x$ and
-$x+6$ and use the following equation to capture the desired constraint:
-\[
-x^2 + 6x - 91 = 0
-\]
-The equation introduces an isomorphism between the type $x^2 + 6x - 91$ and
-the type $0$. We can now proceed to compute with the unknown $x$, being
-assured that in a closed program, our computation will eventually be
-consistent with the solution of the algebraic equation. 
-
-Previously the most famous example of a similar nature is the puzzling
-isomorphism that one can establish between seven binary trees and one.
-A binary tree is defined by the datatype
-\[
-x = 1 + x * x 
-\]
-which can be rearranged to the polynomial equation $x^2 - x + 1 = 0$. By
-algebraic manipulation we can reason as follows:
-\[\begin{array}{rclclclcl}
-x^3 &=& x^2 x &=& (x-1) x &=& x^2 - x &=& -1 \\
-x^6 &=& 1 \\
-x^7 &=& x^6 x &=& x
-\end{array}\]
-Fiore poses the question of why such algebraic manipulation would make sense
-type theoretically but states that even though some of the intermediate steps
-make no sense, the final equivalence is valid and can be used to actually
-construct an isomorphism between $x^7$ the type of seven binary trees 
-and $x$ the type of binary trees.
-
-Discussion of possible polynomials:
-\begin{itemize}
-\item $b=1+1$. Boring.
-\item $b=b+1$. That introduces the natural numbers. No solution for this
-  polynomial over the algebraic numbers. We must extend the numbers with
-  $\omega$ to get a solution. We reject this in this paper and prefer to
-  stick to algebraic numbers. The advantage is that all the isomorphisms are
-  valid numerically. With the above type we could subtract $b$ from both
-  sides to show that $0=1$ which is nonsense. We can however have infinite
-  types as long as they have algebraic solutions.
-\item $b^2=2$ or $b = \pm \sqrt{2}$. We have introduced the square root of a
-  boolean! If we had superpositions, we could then write a function that
-  performs the square root of negation in the sense that applying it twice
-  would be equivalent to boolean negation.
-\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Summary}
@@ -467,8 +524,57 @@ can neither be duplicated nor erased.  This gives us the maximum
 ``parallelism'' possible.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Additive Duality in {{langRev}} }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{ {{langRevEE}} }
 
+\paragraph*{Observability.} 
+Execution of program is defined by {{c : b1 <-> b2}} when evaluated on
+input {{v1 : b1}} gives us a value {{v2 : b2}} on
+termination. Execution is well defined only if {{b1}} and {{b2}} are
+entirely positive types. Consider the program that
+
+\begin{center}
+  \includegraphics{diagrams/shuffle.pdf}
+\end{center}
+
+We define observables to be only positive types. The ouputs of
+programs that ouput mixed positive and negative types are not
+observable.  Also, programs that input mixed positive and negatives
+types are not executable.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Additive Duality in {{langRev}} }
+
+{{eta}}
+
+\begin{center}
+  \includegraphics{diagrams/eta.pdf}
+\end{center}
+
+Note that the connective is a {{+}}, hence only one of the branches
+may be inhabited at any time. Thus the action of {{eta}} is to
+transfer a backward flowing value on one wire to a forward flowing
+value on the other wire.
+
+{{eps}}
+
+\begin{center}
+  \includegraphics{diagrams/eps.pdf}
+\end{center}
+
+Coherence condition
+
+\begin{center}
+  \includegraphics{diagrams/coherence.pdf}
+\end{center}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Multiplicative Duality in {{langRev}} }
+
+
+
+\section{Semantics}
 %%%%%%%%%%%%%%%
 \subsection{Syntax}
 
@@ -548,7 +654,7 @@ The later two rules will be relevant only for reverse execution.
 \end{itemize}
 
 
-%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Rules for {{eta}} and {{eps}} }
 
 The operation {{eps}} reverses the direction of a particle by
@@ -596,33 +702,13 @@ The adjoint of a parallel context is defined to be:
 
 \end{itemize}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Diagrams}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Constructions in {{langRevEE}} }
 
-{{eta}}
+These constructions are applicable to the additive and the
+multiplicative monoid.
 
-\begin{center}
-  \includegraphics{diagrams/eta.pdf}
-\end{center}
-
-Note that the connective is a {{+}}, hence only one of the branches
-may be inhabited at any time. Thus the action of {{eta}} is to
-transfer a backward flowing value on one wire to a forward flowing
-value on the other wire.
-
-{{eps}}
-
-\begin{center}
-  \includegraphics{diagrams/eps.pdf}
-\end{center}
-
-Coherence condition
-
-\begin{center}
-  \includegraphics{diagrams/coherence.pdf}
-\end{center}
-
-Function
+\paragraph*{Functions}
 
 \begin{center}
   \includegraphics{diagrams/function.pdf}
@@ -630,7 +716,7 @@ Function
 
 Let us use the shorthand {{b1 -o b2 = -b1 + b2}}
 
-Function application
+\paragraph*{Function application}
 
 \begin{center}
   \includegraphics{diagrams/apply1.pdf}
@@ -641,7 +727,7 @@ Function application
 \end{center}
 
 
-Function composition
+\paragraph*{Function composition}
 
 \begin{center}
   \includegraphics{diagrams/compose1.pdf}
@@ -658,13 +744,13 @@ This is also equivalent to sequencing both the computation blocks.
 \end{center}
 
 
-Delimited continuation
+\paragraph*{Delimited continuation}
 
 \begin{center}
   \includegraphics{diagrams/delimc.pdf}
 \end{center}
 
-Trace 
+\paragraph*{Trace }
 
 %subcode{proof} include main
 %@ c : b2 + b1 <-> b2 + b3
@@ -674,13 +760,16 @@ Trace
   \includegraphics{diagrams/trace.pdf}
 \end{center}
 
-Double Negation
+\paragraph*{Principium Contradictiones}
 
 {{b <-> -(-b)}}
 
 \begin{center}
   \includegraphics{diagrams/double_neg.pdf}
 \end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Constructions Specific to Negation}
 
 Negation distributes over {{+}}.
 
@@ -719,21 +808,12 @@ Given {{c : b1 <-> b2}}
   \includegraphics{diagrams/neg_lift.pdf}
 \end{center}
 
-\paragraph*{Observability.} 
-Execution of program is defined by {{c : b1 <-> b2}} when evaluated on
-input {{v1 : b1}} gives us a value {{v2 : b2}} on
-termination. Execution is well defined only if {{b1}} and {{b2}} are
-entirely positive types. Consider the program that
 
-\begin{center}
-  \includegraphics{diagrams/shuffle.pdf}
-\end{center}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Constructions Specific to Multiplication}
 
-We define observables to be only positive types. The ouputs of
-programs that ouput mixed positive and negative types are not
-observable.  Also, programs that input mixed positive and negatives
-types are not executable.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{To think about}
 
 \begin{itemize}
@@ -782,100 +862,85 @@ of the functions and can be thought of as the address of the function.
 
 \end{itemize}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Multiplicative Duality in {{langRev}} }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Related Work} 
-\label{sec:related}
+\section{Advanced Programming Examples}
 
-Filinski proposes that continuations are a \emph{declarative} concept. He,
-furthermore, introduces a symmetric extension of the $\lambda$-calculus in
-which values and continuations are treated as opposites. This is essentially
-what we are proposing with one fundamental difference: our underlying
-language is not the $\lambda$-calculus but a language of pure isomorphisms in
-which information is preserved. This shift of perspective enables us to
-distill and generalize the duality of values and continuations: in
-particular, in the conventional $\lambda$-calculus setting values and
-continuations can be erased and duplicated which makes it difficult to
-maintain the correspondence between a value and its negative counterpart. 
+\subsection{SAT solver}
 
-\paragraph*{Continuations.} The idea of using negative types to model
-information flowing backwards, demand for values, continuations, etc. goes
-back to at Filinski's thesis. We recall these connections below but we first
-note that all these systems are complicated because in all these systems
-information can be ignored, destroyed, or duplicated. Clearly the possibility
-of erasure of information would mean that our credit card transaction is
-incorrect. In our work, information is maintained and hence we have a
-guarantee that, in a closed program, the debt must be accounted and paid for.
+\subsection{GoI machine}
 
-\paragraph*{Filinski~\cite{Filinski:1989:DCI:648332.755574}.}
-In his Masters thesis, Filinski proposes that continuations are a
-\emph{declarative} concept. He, furthermore, introduces a symmetric extension
-of the $\lambda$-calculus in which values and continuations are treated as
-opposites. This is essentially what we are proposing with one fundamental
-difference: our underlying language is not the $\lambda$-calculus but a
-language of pure isomorphisms in which information is preserved. This shift
-of perspective enables us to distill and generalize the duality of values and
-continuations: in particular, in the conventional $\lambda$-calculus setting
-values and continuations can be erased and duplicated which makes it
-difficult to maintain the correspondence between a value and its negative
-counterpart. In contrast, in our setting, one can start from the empty type
-$0$, introduce a positive value and its negative counterpart, and let each of
-these flow in arbitrary ways. The entire framework guarantees that neither
-the value nor its negative counterpart will be deleted or duplicated and
-hence that, in any closed program, the ``debt'' corresponding to the negative
-value is paid off exactly once. The forward and backward executions in our
-framework correspond to call-by-value and call-by-name. This duality was
-observed by Filinski and others following him but it is particularly clean in
-our framework.
 
-\paragraph*{Subtraction} Wadler the reloaded paper, does not consider the
-subtraction type because its ``computational interpretation is not
-familiar.'' Curien and Herbelin study duality in classical logic, show that
-it exchanges call-by-value and call-by-name. They extend classical natural
-deduction with subtraction but give it no computational meaning. Crolard (in
-the formulae-as-types interpretation of subtractive logic) address the
-computational interpretation of substraction. He explains the type $A-B$ as
-the of \emph{coroutines} with a local environment of type $A$ and a
-continuation of type $B$. The description is complicated by what is
-essentially the desire to enforce linearity constraints so that coroutines
-cannot access the local environment of other coroutines. Must cite Selinger
-control categories in this context of duality but I am not sure what to say:
-it assumes cartesian closed categories for one thing and not symmetric
-monoidal ones. Ariola, Herbelin, and Sabry also use subtractive types to
-explain delimited continuations. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Field of Algebraic Numbers} 
 
-\paragraph*{Linear Logic} In accounts that are linear, the value and
-continuation that comprise the substractive type need to be constrained to
-``stay together.'' This can be achieved by various restrictions. In this work
-we have no such constraints, the negative value can flow anywhere. The entire
-system guarantees that any closed program would have to account for it. We
-don't have to introduce special constraints to achieve that. Zeilberger in
-the paper on polarity and the logic of delimited continuations uses polarized
-logic: he shows that if positive and negative values are completely symmetric
-except that answer types are positive, then the framework accommodates
-delimited continuations. But he interprets negative values are control
-operators, or as values defined by the shape of their continuations. We
-simply interpret values of negative type as values flowing in the ``other''
-direction.
+The field of algebraic numbers consist of the rationals extended with
+solutions to polynomials. In a limited sense {{langRevEE}} with
+recursive types already include polynomials such as the definition of
+binary tree {{@@x.(1+x*x)}} implies the equality {{t = 1 + t*t}} and
+hence {{t^2-t+1=0}}. While this equation does indeed have an
+irrational imaginary root, as we will see -- {{langRevEE}} does not
+have the means of expressing meaningful computation that uses the
+root.
 
-\paragraph*{Int Construction.}
-For a traced monoidal category {{C}} the Int construction produces a
-Compact Closed Category called Int {{C}} \cite{joyal1996traced}.
-Further we know that the target of the Int construction is isomorphic
-to the target of \G construction of Abramsky \cite{Abramsky96:0} from
-Haghverdi. However, note that the {{langRevEE}} is not the same as the
-image of the Int construction on {{langRevT}}, since the the later
-lacks a multiplicative tensor that distrbutes over the additive tensor
-in Int {{langRevT}}.
+TODO.
 
-\paragraph*{Recursion.} In our previous work we introduce recursive types and
-trace operators. This is dangerous here because infinite loops allow us to
-prolong paying the debt for as long as we want.
+Square root and imaginary types have also appeared in the literature: we
+relegate the connections to Sec.~\ref{related} and proceed with a simple
+explanation. We have so far extended the set of types to be the rational
+numbers. Now we will push this and extend the set of types to algebraic
+numbers. In other words, we will allow datatypes defined by arbitrary
+polynomials and allow the roots of such polynomials to be types. 
 
-\paragraph*{GoI machines} 
-We can now encode the GoI machine of Mackie \cite{Mackie2011,DBLP:conf/popl/Mackie95}.
+Consider first an example in which we want to compute with the sides of a
+rectangle whose area is 91 and whose length is longer than its width by 6
+units. One can solve the quadratic equation to determine that the sides are 7
+and 13 and proceed. This however prematuraly forces us to globally solve the
+constraint. Instead we can let the two sides of the rectangle be $x$ and
+$x+6$ and use the following equation to capture the desired constraint:
+\[
+x^2 + 6x - 91 = 0
+\]
+The equation introduces an isomorphism between the type $x^2 + 6x - 91$ and
+the type $0$. We can now proceed to compute with the unknown $x$, being
+assured that in a closed program, our computation will eventually be
+consistent with the solution of the algebraic equation. 
+
+Previously the most famous example of a similar nature is the puzzling
+isomorphism that one can establish between seven binary trees and one.
+A binary tree is defined by the datatype
+\[
+x = 1 + x * x 
+\]
+which can be rearranged to the polynomial equation $x^2 - x + 1 = 0$. By
+algebraic manipulation we can reason as follows:
+\[\begin{array}{rclclclcl}
+x^3 &=& x^2 x &=& (x-1) x &=& x^2 - x &=& -1 \\
+x^6 &=& 1 \\
+x^7 &=& x^6 x &=& x
+\end{array}\]
+Fiore poses the question of why such algebraic manipulation would make sense
+type theoretically but states that even though some of the intermediate steps
+make no sense, the final equivalence is valid and can be used to actually
+construct an isomorphism between $x^7$ the type of seven binary trees 
+and $x$ the type of binary trees.
+
+Discussion of possible polynomials:
+\begin{itemize}
+\item $b=1+1$. Boring.
+\item $b=b+1$. That introduces the natural numbers. No solution for this
+  polynomial over the algebraic numbers. We must extend the numbers with
+  $\omega$ to get a solution. We reject this in this paper and prefer to
+  stick to algebraic numbers. The advantage is that all the isomorphisms are
+  valid numerically. With the above type we could subtract $b$ from both
+  sides to show that $0=1$ which is nonsense. We can however have infinite
+  types as long as they have algebraic solutions.
+\item $b^2=2$ or $b = \pm \sqrt{2}$. We have introduced the square root of a
+  boolean! If we had superpositions, we could then write a function that
+  performs the square root of negation in the sense that applying it twice
+  would be equivalent to boolean negation.
+\end{itemize}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
