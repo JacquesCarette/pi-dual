@@ -21,10 +21,10 @@
 \usepackage{bm}
 
 
-\newtheorem{theorem}{Theorem}[section]
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{corollary}[theorem]{Corollary}
+%% \newtheorem{theorem}{Theorem}[section]
+%% \newtheorem{lemma}[theorem]{Lemma}
+%% \newtheorem{proposition}[theorem]{Proposition}
+%% \newtheorem{corollary}[theorem]{Corollary}
 
 \newcommand{\xcomment}[2]{\textbf{#1:~\textsl{#2}}}
 \newcommand{\amr}[1]{\xcomment{Amr}{#1}}
@@ -44,6 +44,16 @@
 \newenvironment{floatrule}
     {\hrule width \hsize height .33pt \vspace{.5pc}}
     {\par\addvspace{.5pc}}
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{proposition}[theorem]{Proposition}
+\newenvironment{proof}[1][Proof.]{\begin{trivlist}\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
+\newcommand{\arrow}[1]{\mathtt{#1}}
+
 
 %subcode-inline{bnf-inline} name langRev
 %! swap+ = \mathit{swap}^+
@@ -536,6 +546,61 @@ we have introduced the {{0}} type here, thereby completeing the monoid
 {{(0,+)}} and we present a small-step operational semantics. 
 
 %subcode{bnf} include main
+% value types, b ::= 0 | 1 | b + b | b * b 
+% values, v ::= () | left v | right v | (v, v)
+
+%subcode{bnf} include main
+%! columnStyle = r@{\hspace{-0.5pt}}c@{\hspace{-0.5pt}}l
+%zeroe :&  0 + b <-> b &: zeroi
+%swap+ :&  b1 + b2 <-> b2 + b1 &: swap+
+%assocl+ :&  b1 + (b2 + b3) <-> (b1 + b2) + b3 &: assocr+
+%identl* :&  1 * b <-> b &: identr*
+%swap* :&  b1 * b2 <-> b2 * b1 &: swap*
+%assocl* :&  b1 * (b2 * b3) <-> (b1 * b2) * b3 &: assocr*
+%dist0 :& 0 * b <-> 0 &: factor0
+%dist :&~ (b1 + b2) * b3 <-> (b1 * b3) + (b2 * b3)~ &: factor
+
+
+%subcode{proof} include main
+%@  ~
+%@@ id : b <-> b 
+%
+%@ c : b1 <-> b2
+%@@ sym c : b2 <-> b1
+%
+%@ c1 : b1 <-> b2
+%@ c2 : b2 <-> b3
+%@@ c1(;)c2 : b1 <-> b3
+%---
+%@ c1 : b1 <-> b3
+%@ c2 : b2 <-> b4
+%@@ c1 (+) c2 : b1 + b2 <-> b3 + b4
+%
+%@ c1 : b1 <-> b3
+%@ c2 : b2 <-> b4
+%@@ c1 (*) c2 : b1 * b2 <-> b3 * b4
+
+
+\begin{definition}{(Syntax of {{langRev}})}
+\label{def:langRev}
+We collect our types, values, and combinators, to get the full language
+definition.
+%subcode{bnf} include main
+% value types, b ::= 1 | b+b | b*b 
+% values, v ::= () | left v | right v | (v,v) 
+%
+% comb.~types, t ::= b <-> b
+% iso ::= swap+ | assocl+ | assocr+ 
+%     &|& identl* | identr* 
+%     &|& swap* | assocl* | assocr* 
+%     &|& dist | factor 
+% comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
+\end{definition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Semantics}
+
+%subcode{bnf} include main
 % Combinators, c = iso | c (;) c | c (*) c | c (+) c
 % Combinator Contexts, cc = [] | Fst cc c | Snd c cc 
 %                  &|& LeftTimes cc c v | RightTimes c v cc 
@@ -545,6 +610,31 @@ we have introduced the {{0}} type here, thereby completeing the monoid
 % Machine states = <c, v, cc> | {[c, v, cc]}
 % Start state = <c, v, []> 
 % Stop State = {[c, v, []]}
+
+
+\begin{scriptsize}
+%subcode{opsem} include main
+%! columnStyle = rlcl
+% swap+ & (left v) &|-->& right v
+% swap+ & (right v) &|-->& left v 
+% assocl+ & (left v1) &|-->& left (left v1)
+% assocl+ & (right (left v2)) &|-->& left (right v2)
+% assocl+ & (right (right v3)) &|-->& right v3 
+% assocr+ & (left (left v1)) &|-->& left v1
+% assocr+ & (left (right v2)) &|-->& right (left v2)
+% assocr+ & (right v3) &|-->& right (right v3)
+% identl* & ((), v) &|-->& v 
+% identr* & v &|-->& ((), v) 
+% swap* & (v1, v2) &|-->& (v2, v1) 
+% assocl* & (v1, (v2, v3)) &|-->& ((v1, v2), v3) 
+% assocr* & ((v1, v2), v3) &|-->& (v1, (v2, v3)) 
+% dist & (left v1, v3) &|-->& left (v1, v3)
+% dist & (right v2, v3) &|-->& right (v2, v3)
+% factor & (left (v1, v3)) &|-->& (left v1, v3) 
+% factor & (right (v2, v3)) &|-->& (right v2, v3)   
+\end{scriptsize}
+
+
 
 
 
@@ -574,6 +664,11 @@ input {{v1 : b1}} gives us a value {{v2 : b2}} on
 termination. Execution is well defined only if {{b1}} and {{b2}} are
 entirely positive types. Consider the program that
 
+(TODO: So this is a really bad explanation. But this section is really
+important and we need to explain carefully. Maybe an analogy can be
+drawn to Cayley diagrams for groups to point out that the notion of
+`i' is entirely artificial, but it is essential to the discourse.)
+
 \begin{center}
   \includegraphics{diagrams/shuffle.pdf}
 \end{center}
@@ -583,6 +678,8 @@ programs that ouput mixed positive and negative types are not
 observable.  Also, programs that input mixed positive and negatives
 types are not executable.
 
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Additive Duality in {{langRev}} }
 
@@ -591,7 +688,7 @@ denoted {{-b}} and the isomorphisms {{eta+}} and {{eps+}}. Hence we
 extend the language as follows:
 
 %subcode{bnf} include main
-% Base Types, b = ... | -b
+% Value Types, b = ... | -b
 % Values, v = ... | -v
 %
 % Isomorphisms, iso &=& ... | eta+ | eps+
@@ -883,7 +980,7 @@ This is also equivalent to sequencing both the computation blocks.
 \subsection{Constructions Specific to Negation}
 \label{sec:neg-constructions}
 
-Negation distributes over {{+}}.
+\paragraph*{Negation distributes over {{+}}. }
 
 {{-(b1 + b2) <-> (b1) + (-b2)}}
 
@@ -891,7 +988,7 @@ Negation distributes over {{+}}.
   \includegraphics{diagrams/dist_neg_plus.pdf}
 \end{center}
 
-{{eps_{fst} }}
+\paragraph*{ {{eps_{fst} }} }
 
 {{(-b1)*b2 + b1*b2 <-> 0}}
 
@@ -899,7 +996,7 @@ Negation distributes over {{+}}.
   \includegraphics{diagrams/eps_fst.pdf}
 \end{center}
 
-Lifting negation out of {{*}}.
+\paragraph*{Lifting negation out of {{*}}. }
 
 {{(-b1) * b2 <-> -(b1 * b2) <-> b1 * (-b2)}}
 
@@ -912,7 +1009,7 @@ The following isomoprhism can be constructed similarly
 {{b1 * b2 <-> (-b1)*(-b2)}}
 
 
-Lifting a operation of postive types to negated types:
+\paragraph*{Lifting a operation of postive types to negated types}
 
 Given {{c : b1 <-> b2}}
 
