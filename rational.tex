@@ -57,6 +57,10 @@
 %! identl* = \mathit{unite}
 %! dist = \mathit{distrib}
 %! factor = \mathit{factor}
+%! eta+ = \eta^+
+%! eps+ = \epsilon^+
+%! eta* = \eta^*
+%! eps* = \epsilon^*
 %! (o) = \fatsemi
 %! (;) = \fatsemi
 %! (*) = \times
@@ -525,6 +529,43 @@ can neither be duplicated nor erased.  This gives us the maximum
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{ {{langRev}} }
+
+The presentation here differs from \cite{infeffects} in the sense that
+we have introduced the {{0}} type here, thereby completeing the monoid
+{{(0,+)}} and we present a small-step operational semantics. 
+
+%subcode{bnf} include main
+% Combinators, c = iso | c (;) c | c (*) c | c (+) c
+% Combinator Contexts, cc = [] | Fst cc c | Snd c cc 
+%                  &|& LeftTimes cc c v | RightTimes c v cc 
+%                  &|& LeftPlus cc c | RightPlus c cc 
+% Values, v = () | (v, v) | L v | R v
+%
+% Machine states = <c, v, cc> | {[c, v, cc]}
+% Start state = <c, v, []> 
+% Stop State = {[c, v, []]}
+
+
+
+%subcode{opsem} include main
+%! columnStyle = rclr
+% <iso, v, cc> &|-->& {[iso, iso(v), cc]}
+% <c1(;)c2, v, cc> &|-->& <c1, v, Fst cc c2>
+% {[c1, v, Fst cc c2]} &|-->& <c2, v, Snd c1 cc>
+% {[c2, v, Snd c1 cc]} &|-->& {[ c1(;)c2, v, cc ]}
+% <c1(+)c2, L v, cc> &|-->& <c1, v, LeftPlus cc c2>
+% {[ c1, v, LeftPlus cc c2 ]} &|-->& {[c1 (+) c2, L v, cc ]}
+% <c1(+)c2, R v, cc> &|-->& <c2, v, RightPlus c1 cc>
+% {[ c2, v, RightPlus c1 cc ]} &|-->& {[c1 (+) c2, R v, cc ]}
+% <c1(*)c2, (v1, v2), cc> &|-->& <c1, v1, LeftTimes cc c2 v2>
+% {[ c1, v1, LeftTimes cc c2 v2 ]} &|-->& <c2, v2, RightTimes c1 v1 cc>
+% {[ c2, v2, RightTimes c1 v1 cc ]} &|-->& {[ c1 (*) c2, (v1, v2), cc ]}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{ {{langRevEE}} }
 
 \paragraph*{Observability.} 
@@ -545,28 +586,96 @@ types are not executable.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Additive Duality in {{langRev}} }
 
-{{eta}}
+Additive duality is added to {{langRev}} by addition of negative types
+denoted {{-b}} and the isomorphisms {{eta+}} and {{eps+}}. Hence we
+extend the language as follows:
 
+%subcode{bnf} include main
+% Base Types, b = ... | -b
+% Values, v = ... | -v
+%
+% Isomorphisms, iso &=& ... | eta+ | eps+
+
+\noindent
+with the types judgements
+
+%subcode{opsem} include main
+% eta+ &: 0 <-> (-b) + b :& eps+
+
+%subcode{proof} include main
+%@ |- v : b
+%@@ |- -v : -b
+
+We visually present {{eta+}} and {{eps+}} as `U'-shaped connectors. On
+the left below is {{eta+}} showing the map from {{0}} to {{-b+b}} and
+dualy on the right is {{eps+}} showing the map from {{-b+b}} to
+0. Even though the diagrams below show a {{0}} wire for completeness,
+later diagrams will always drop them in contexts where we can
+implicitely introduce/eliminate then using {{zeroi}}/{{zeroe}}.
+
+\begin{multicols}{2}
 \begin{center}
   \includegraphics{diagrams/eta.pdf}
 \end{center}
-
-Note that the connective is a {{+}}, hence only one of the branches
-may be inhabited at any time. Thus the action of {{eta}} is to
-transfer a backward flowing value on one wire to a forward flowing
-value on the other wire.
-
-{{eps}}
-
+  
 \begin{center}
   \includegraphics{diagrams/eps.pdf}
 \end{center}
+\end{multicols}
 
-Coherence condition
+The usual interpretation of the type {{b1+b2}} is that we either have
+an appropriately tagged value of type {{b1}} or an appropriately
+tagged value of type {{b2}}. This interpretation is mainted in the
+precense of {{eta+}} and {{eps+}} in the following sense: a value of
+type {{R v : -b + b}} flowing into an {{eps+}} on the lower wire
+switches into a value {{L (-v): -b + b}} that flows backwards on the
+upper wire. The inversion of direction is captured by the negative
+sign on the value.
+
+\paragraph*{Negative Information Flow.} 
+Hence, the intuitive way to read the digrams is that they reverse the
+flow of information -- in normal {{langRev}} circuits information
+flows from left-to-right and {{eps+}} operations cause information to
+flow from right-to-left.  The interpretation of {{eta+}} is precisely
+the opposite: it turns a right-to-left flow of information in a
+cicruit into a left-to-right flow.
+
+\paragraph*{Time Travelling.}
+A time travelling intuition is also applicable here: if view the
+left-to-right direction of information flow as the canonical forward
+direction of information, then the action of {{eps+}} allows values,
+aka information particles, to flow backwards in time. Particles that
+flow backward in time get to see and interact with the history of
+particles that they coexist with i.e. values that they exist
+multiplicatively with. Hence the isomorphism {{(-b1)*b2<->-(b1*b2)}}
+(whose construction is shown in Section \ref{sec:neg-constructions}).
+
+\paragraph*{Coherence.}
+The appropriate coherence condition for Compact Closed Categories,
+expressed as the traingle axiom, is satisfied by {{eta+}}/{{eps+}} and
+may be visualized as explained by Selinger
+\cite{springerlink:10.1007/978-3-642-12821-94} as follows:
 
 \begin{center}
   \includegraphics{diagrams/coherence.pdf}
 \end{center}
+
+\paragraph*{Non-termination.}
+As is well known in category theory, Compact Closed Categories contain
+trace operations.  In the context of {{langRev}} this implies that
+{{eta+}}/{{eps+}} allow the construction of a {{trace+}} operator
+(detailed in Section \ref{sec:monoidal-constructions}) hence
+introducing \emph{non-termination} into the language
+\cite{infeffects}.
+
+\paragraph*{Zero Information.}
+The fact that {{eta+}} (and hence {{eps+}}) introduces no information
+can be understood is by viewing {{-b+b}} as a type whose value is
+observable only if you `pay' {{b}} amount of information to the {{-b}}
+branch. When {{b}} amount of information is supplied {{(-b+b)+b=b}}
+amount of information is returned to you. (TODO. more needs to be said
+here.)
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -574,8 +683,9 @@ Coherence condition
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Semantics}
-%%%%%%%%%%%%%%%
+
 \subsection{Syntax}
 
 %subcode{bnf} include main
@@ -704,6 +814,7 @@ The adjoint of a parallel context is defined to be:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions in {{langRevEE}} }
+\label{sec:monoidal-constructions}
 
 These constructions are applicable to the additive and the
 multiplicative monoid.
@@ -770,6 +881,7 @@ This is also equivalent to sequencing both the computation blocks.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions Specific to Negation}
+\label{sec:neg-constructions}
 
 Negation distributes over {{+}}.
 
