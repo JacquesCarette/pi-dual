@@ -70,6 +70,7 @@
 %! eta+ = \eta^+
 %! eps+ = \epsilon^+
 %! eta* = \eta^*
+%! ^^^ = ^{-1}
 %! eps* = \epsilon^*
 %! (o) = \fatsemi
 %! (;) = \fatsemi
@@ -653,6 +654,21 @@ definition.
 % {[ c2, v2, RightTimes c1 v1 cc ]} &|-->& {[ c1 (*) c2, (v1, v2), cc ]}
 
 
+\begin{proposition}[Logical Reversibility]
+\label{prop:logrev}
+{{c v |--> v'}} iff {{c{dagger} v' |--> v}}.
+\end{proposition}
+
+\begin{proposition}[Groupoid]
+\label{prop:groupoid}
+{{langRev}} is a groupoid. 
+\end{proposition}
+
+\begin{proposition}
+\label{prop:groupoid}
+{{langRev}} is a dagger symmetric monoidal category. 
+\end{proposition}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -778,10 +794,42 @@ here.)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Multiplicative Duality in {{langRev}} }
 
+%subcode{bnf} include main
+% Value Types, b = ... | b^^^
+% Values, v = ... | v^^^
+%
+% Isomorphisms, iso &=& ... | eta* | eps*
 
+\noindent
+with the types judgements
+
+%subcode{opsem} include main
+% eta* &: 1 <-> b^^^ * b :& eps*
+
+%subcode{proof} include main
+%@ |- v : b
+%@@ |- v^^^ : b^^^
+
+Note that we will freely write {{b^^^}} as {{1/b}} and {{a*b^^^}} as
+{{a/b}}.
+
+\paragraph*{Unification.}
+
+\paragraph*{Entanglement.}
+
+\paragraph*{Coherence.}
+
+\paragraph*{Annihilation.}
+
+\paragraph*{Zero Information.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Semantics}
+
+
+
+
+
 
 \subsection{Syntax}
 
@@ -859,6 +907,27 @@ and symmetrical rules for evaluation along the second branch.
 The later two rules will be relevant only for reverse execution. 
 
 \end{itemize}
+
+
+\begin{proposition}[Logical Reversibility]
+\label{prop:logrev}
+{{c v |--> v'}} iff {{c{dagger} v' |--> v}}.
+\end{proposition}
+
+\begin{proposition}[Groupoid]
+\label{prop:groupoid}
+{{langRevEE}} is a groupoid. 
+\end{proposition}
+
+\begin{proposition}
+\label{prop:groupoid}
+{{langRev}} is a Dagger Symmetric Monoidal Closed Category.
+\end{proposition}
+
+Note: We use `Monoidal Closed' in the sense of Compact Closed. While
+the category has an multiplicative tensor that distributes over an
+additive tensor, it does not have injections or projections and hence
+does not have categorical sums and products.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
