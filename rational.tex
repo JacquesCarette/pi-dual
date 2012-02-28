@@ -20,7 +20,6 @@
 \usepackage{multicol}
 \usepackage{bm}
 
-
 %% \newtheorem{theorem}{Theorem}[section]
 %% \newtheorem{lemma}[theorem]{Lemma}
 %% \newtheorem{proposition}[theorem]{Proposition}
@@ -45,7 +44,6 @@
     {\hrule width \hsize height .33pt \vspace{.5pc}}
     {\par\addvspace{.5pc}}
 
-
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{definition}[theorem]{Definition}
@@ -53,7 +51,6 @@
 \newenvironment{proof}[1][Proof.]{\begin{trivlist}\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
 
 \newcommand{\arrow}[1]{\mathtt{#1}}
-
 
 %subcode-inline{bnf-inline} name langRev
 %! swap+ = \mathit{swap}^+
@@ -104,7 +101,6 @@
 %! * = \times
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \begin{document}
 
 \conferenceinfo{ICFP'12}{}
@@ -113,7 +109,7 @@
 \titlebanner{}
 \preprintfooter{}
 
-\title{Computing in the Field of Rationals}
+\title{The Two Dualities of Computation: Negative and Fractional Types}
 \authorinfo{Roshan P. James}
            {Indiana University}
            {rpjames@indiana.edu}
@@ -123,28 +119,23 @@
 \maketitle
 
 \begin{abstract}
-  Every functional programmer knows about sum and product types,
-  {{a+b}} and {{a*b}} respectively. Negative and fractional types,
-  $a-b$ and $a/b$ respectively, are much less known and their
-  computational interpretation is unfamiliar and often complicated. We
-  show that in a programming model in which information is preserved
-  (such as the model introduced in our recent paper on
-  \emph{Information Effects}), these types have particularly intuitive
-  and natural computational interpretations. Intuitively, values of
-  negative types are values that flow ``backwards'' to satisfy
-  demands, values of fractional types are values that represent
-  first-class ``structural'' constraints.  The combination of these
-  negative and fractional types enable greater flexibility in
-  programming by breaking complicated invariants into local ones that
-  can be independently satisfied by a subcomputation. Furthermore,
-  they allow a programmer to express a wide range of programming
-  idioms, including higher-order functions, delimited continuations,
-  speculative computation, logic programming, and more.
-
-
+  Every functional programmer knows about sum and product types, {{a+b}} and
+  {{a*b}} respectively. Negative and fractional types, $a-b$ and $a/b$
+  respectively, are much less known and their computational interpretation is
+  unfamiliar and often complicated. We show that in a programming model in
+  which information is preserved (such as the model introduced in our recent
+  paper on \emph{Information Effects}), these types have particularly
+  intuitive and natural computational interpretations. Intuitively, values of
+  negative types are values that flow ``backwards'' to satisfy demands and
+  values of fractional types are values that impose constraints on their
+  context.  The combination of these negative and fractional types enables
+  greater flexibility in programming by breaking global invariants into local
+  ones that can be autonomously satisfied by a subcomputation. Furthermore,
+  they allow a programmer to express a wide range of programming idioms,
+  including higher-order functions, delimited continuations, speculative
+  computation, logic programming, and more.
 \end{abstract}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \category{D.3.1}{Formal Definitions and Theory}{}
 \category{F.3.2}{Semantics of Programming Languages}{}
 \category{F.3.3}{Studies of Program Constructs}{Type structure}
@@ -158,6 +149,13 @@ closed categories.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
+
+
+
+
+
+
+
 
 In a technical sense, this paper extends the language of isomorphisms
 {{langRev}}, with duality. Unlike Linear logic \cite{Girard87tcs} and
@@ -290,11 +288,747 @@ Connections to type logical grammars and Lambek calculus
 
 Some background on {{langRev}} because it is mentioned in the next section.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Field of Rational Types: Intuitions} 
+
+%%%%%%%%%%%%%%%%%%
+\subsection{Negative Types}
+
+Consider the following two ways of purchasing an item that costs \$20.00:
+\begin{enumerate}
+\item You give the seller a \$20.00 bill.
+\item You use a credit card to pay the seller.
+\end{enumerate}
+In both cases, the seller receives the money immediately but there is a
+subtle difference. In the first transaction, the money received by the seller
+corresponds to a value that has been produced earlier in the computation. In
+the second transaction, the money may or may not exist yet: computationally,
+a \emph{debt} is generated to compensate for the money received by the seller
+and this debt travels ``backwards'' towards the bank where it is (hopefully)
+reconciled.
+
+The example suggests that the ability to consider values flowing backwards
+enriches our computational model. This observation goes back to Filinski's
+Masters thesis where continuations are identified with these negative values.
+We discuss the connections to Filinski's work and others in more detail in
+Sec.~\ref{sec:related}. For now, we note that in a conventional programming
+language in which values can be copied and deleted at will, extreme care is
+needed to keep track of negative values. Indeed, in the example above, if it
+were possible to simply delete the variable corresponding to the debt, we
+would have produced money out of nothing. 
+
+For this reason, our treatment of negative values in the context of
+{{langRev}} is particularly simple. We will have a type $0$ and an
+isomorphism {{0 <-> a + (-a)}} that when used in the left-to-right direction
+allows us to create a value and a corresponding debt out of nothing. Both the
+value and its negative counterpart can flow anywhere in the system. Because
+information is preserved, a closed program (which does not have any
+``dangling'' negative values) will eventually have to match the negative
+value with some corresponding value, effectively using the isomorphism in the
+right-to-left direction. In more detail, we can model the credit card
+transaction above using the following program (shown diagrammatically):
+
+FIGURE
+
+CLEAN UP the following based on the figure. In contrast, in our setting, one
+can start from the empty type $0$, introduce a positive value and its
+negative counterpart, and let each of these flow in arbitrary ways. The
+entire framework guarantees that neither the value nor its negative
+counterpart will be deleted or duplicated and hence that, in any closed
+program, the ``debt'' corresponding to the negative value is paid off exactly
+once. Computationally we model the first transaction using essentially the
+identity function which receives a \$20.00 bill as input from the buyer and
+propagates it on its output to the seller. The second transaction is more
+complicated. We model it as shown in the circuit below: There are two ways to
+understand this circuit that are both quite instructive. Let's first examine
+the type structure of each of the combinators that comprise the circuit. The
+first combinator on the right outputs \$20.00 to the seller. This \$20.00 is
+produced from nothing so to speak by generating an equivalent debt that
+travels backwards. COMPLETE BASED ON THE FIGURE. The other way is to follow
+the execution. It goes forward in time so to speak, comes back, and then goes
+forwards again.
+
+It is critical that the framework in which the negative types are introduced
+is a framework in which all information is preserved, with no duplication or
+erasure. This guarantees that the generated debts are paid once and exactly
+once.
+
+%%%%%%%%%%%%%%%%%%%%%%
+\section{Fractional Types}
+
+The type $a/b$ is prominent in the Lambek-Grishin calculus which is
+extensively used in computational linguistics. In the common interpretation,
+a value of type $a/b$ is a value of some type $c$ such that when put in a
+context of type $b$, the result is a value of type $a$. For example, assuming
+contexts are represented as functions, a value of type $\texttt{bool} /
+(\texttt{int} \rightarrow \texttt{bool})$ is simply a value of type
+$\texttt{int}$. Indeed in this case, putting a value of type $\texttt{int}$
+in the context $(\texttt{int} \rightarrow \texttt{bool})$ produces a value of
+type $\texttt{bool}$. 
+
+In our case, the situation is simpler. If the goal is to produce a value of
+type {{a * b}} and a subcomputation can only produce the {{a}}-part, it would
+have type {{(a * b) / b}}. In most settings, this type would be equivalent to
+{{a}}. However in our setting, the constraint that this value must eventually
+fit in a larger value that supplies the {{b}} is explicitly recorded and must
+be resolved. In more detail, we have an isomorphism {{ 1 <-> a * (1/a) }}
+which when used in the left-to-right direction allows the creation of a value
+and a corresponding constraint on the context.  Both the value and the
+constraint can flow in arbitrary ways during the computation but eventually
+in a closed program with no ``dangling'' constraints, the isomorphism should
+be used in the right-to-left direction to resolve the constraints.  To
+understand the computational interpretation, consider the following example.
+
+The goal is to produce a value of type $(\texttt{bool} \times
+\texttt{int})$. One part of the program, $e_1$, knows how to produce the
+value of type $\texttt{int}$ (say {{3}}) and another part, $e_2$, knows how
+to produce the value of type $\texttt{bool}$ (say {{true}}). Computationally,
+we model this as follows. The first subcomputation $e_1$ produces {{((),3)}}
+and uses the isomorphism to convert {{()}} to {{(alpha,1/alpha)}} where
+{{alpha}} is a yet-unknown boolean value. Reshuffling the components, $e_1$
+produces {{((alpha,3), 1/alpha)}}. Similarly, $e_2$ can independently produce
+{{((true,beta),1/beta)}} where {{beta}} is a yet-unknown integer value.
+When the two values meet, we can group the components as follows:
+\[
+{{(alpha,beta)}}  {{(3,1/beta)}}  {{(true,1/alpha)}}
+\]
+Using the isomorphism in the right-to-left direction on the last two pairs,
+forces {{alpha}} to be resolved to {{true}} and forces {{beta}} to be
+resolved to {{3}}. Both of these pairs then become {{()}} and be absorbed. We
+are left with the pair {{(true,3)}} as desired. 
+
+To summarize, one can think of a value of type $a/b$ as a value that imposes
+a constraint on its context of use: it is a value that requires its context
+to be of type $b$ and only if that condition is satisfied, can the value be
+considered as a value of type $a$. In the simplest case, the type $1/b$ just
+constraints the context to be of type $b$. By allowing the fractional types
+to be first-class, we can separate the generation of constraints from their
+use. Both the value and the constraint can flow in arbitrary ways during the
+computation but eventually in a closed program with no ``dangling''
+constraints, the isomorphism should be used in the right-to-left direction to
+resolve the constraints.
+
+NEED to work out the example in detail (or perhaps another example that's
+better. 
+
+Again it is critical that the framework in which the fractional types are
+introduced is a framework in which all information is preserved, with no
+duplication or erasure. This guarantees that the generated constraints are
+satisfied once and exactly once. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Summary}
+
+To summarize negative, fractional, square root, and imaginary types all make
+sense. What they help you accomplish as a programmer is to disassociate
+global invariants into local ones that can be satisfied independently by
+subcomputations with no synchronization or communication. A computation
+producing something of type $a/b$ does not need to concern itself with who is
+going to supply the missing $b$: it just does its part. Conversely faced with
+a complicated task, a computation might decide to break it into pieces and
+demand these pieces using negative types. 
+
+It is no surprise that these types are closely related to quantum mechanics
+and that they give us the feel that this is how nature computes. This is
+speculation however.
+
+In any case, in a framework where information can be copied and deleted, none
+of this makes much sense. It is critical that these constraints and demands
+can neither be duplicated nor erased.  This gives us the maximum
+``parallelism'' possible.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{ {{langRev}} }
+
+The presentation here differs from \cite{infeffects} in the sense that
+we have introduced the {{0}} type here, thereby completeing the monoid
+{{(0,+)}} and we present a small-step operational semantics. 
+
+%subcode{bnf} include main
+% value types, b ::= 0 | 1 | b + b | b * b 
+% values, v ::= () | left v | right v | (v, v)
+
+%subcode{bnf} include main
+%! columnStyle = r@{\hspace{-0.5pt}}c@{\hspace{-0.5pt}}l
+%zeroe :&  0 + b <-> b &: zeroi
+%swap+ :&  b1 + b2 <-> b2 + b1 &: swap+
+%assocl+ :&  b1 + (b2 + b3) <-> (b1 + b2) + b3 &: assocr+
+%identl* :&  1 * b <-> b &: identr*
+%swap* :&  b1 * b2 <-> b2 * b1 &: swap*
+%assocl* :&  b1 * (b2 * b3) <-> (b1 * b2) * b3 &: assocr*
+%dist0 :& 0 * b <-> 0 &: factor0
+%dist :&~ (b1 + b2) * b3 <-> (b1 * b3) + (b2 * b3)~ &: factor
+
+%subcode{proof} include main
+%@  ~
+%@@ id : b <-> b 
+%
+%@ c : b1 <-> b2
+%@@ sym c : b2 <-> b1
+%
+%@ c1 : b1 <-> b2
+%@ c2 : b2 <-> b3
+%@@ c1(;)c2 : b1 <-> b3
+%---
+%@ c1 : b1 <-> b3
+%@ c2 : b2 <-> b4
+%@@ c1 (+) c2 : b1 + b2 <-> b3 + b4
+%
+%@ c1 : b1 <-> b3
+%@ c2 : b2 <-> b4
+%@@ c1 (*) c2 : b1 * b2 <-> b3 * b4
+
+\begin{definition}{(Syntax of {{langRev}})}
+\label{def:langRev}
+We collect our types, values, and combinators, to get the full language
+definition.
+%subcode{bnf} include main
+% value types, b ::= 1 | b+b | b*b 
+% values, v ::= () | left v | right v | (v,v) 
+%
+% comb.~types, t ::= b <-> b
+% iso ::= swap+ | assocl+ | assocr+ 
+%     &|& identl* | identr* 
+%     &|& swap* | assocl* | assocr* 
+%     &|& dist | factor 
+% comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
+\end{definition}
+
+%%%%%%%%%%%%%%%%%%%
+\subsection{Semantics}
+
+%subcode{bnf} include main
+% Combinators, c = iso | c (;) c | c (*) c | c (+) c
+% Combinator Contexts, cc = [] | Fst cc c | Snd c cc 
+%                  &|& LeftTimes cc c v | RightTimes c v cc 
+%                  &|& LeftPlus cc c | RightPlus c cc 
+% Values, v = () | (v, v) | L v | R v
+%
+% Machine states = <c, v, cc> | {[c, v, cc]}
+% Start state = <c, v, []> 
+% Stop State = {[c, v, []]}
+
+\begin{scriptsize}
+%subcode{opsem} include main
+%! columnStyle = rlcl
+% swap+ & (left v) &|-->& right v
+% swap+ & (right v) &|-->& left v 
+% assocl+ & (left v1) &|-->& left (left v1)
+% assocl+ & (right (left v2)) &|-->& left (right v2)
+% assocl+ & (right (right v3)) &|-->& right v3 
+% assocr+ & (left (left v1)) &|-->& left v1
+% assocr+ & (left (right v2)) &|-->& right (left v2)
+% assocr+ & (right v3) &|-->& right (right v3)
+% identl* & ((), v) &|-->& v 
+% identr* & v &|-->& ((), v) 
+% swap* & (v1, v2) &|-->& (v2, v1) 
+% assocl* & (v1, (v2, v3)) &|-->& ((v1, v2), v3) 
+% assocr* & ((v1, v2), v3) &|-->& (v1, (v2, v3)) 
+% dist & (left v1, v3) &|-->& left (v1, v3)
+% dist & (right v2, v3) &|-->& right (v2, v3)
+% factor & (left (v1, v3)) &|-->& (left v1, v3) 
+% factor & (right (v2, v3)) &|-->& (right v2, v3)   
+\end{scriptsize}
+
+%subcode{opsem} include main
+%! columnStyle = rclr
+% <iso, v, cc> &|-->& {[iso, iso(v), cc]}
+% <c1(;)c2, v, cc> &|-->& <c1, v, Fst cc c2>
+% {[c1, v, Fst cc c2]} &|-->& <c2, v, Snd c1 cc>
+% {[c2, v, Snd c1 cc]} &|-->& {[ c1(;)c2, v, cc ]}
+% <c1(+)c2, L v, cc> &|-->& <c1, v, LeftPlus cc c2>
+% {[ c1, v, LeftPlus cc c2 ]} &|-->& {[c1 (+) c2, L v, cc ]}
+% <c1(+)c2, R v, cc> &|-->& <c2, v, RightPlus c1 cc>
+% {[ c2, v, RightPlus c1 cc ]} &|-->& {[c1 (+) c2, R v, cc ]}
+% <c1(*)c2, (v1, v2), cc> &|-->& <c1, v1, LeftTimes cc c2 v2>
+% {[ c1, v1, LeftTimes cc c2 v2 ]} &|-->& <c2, v2, RightTimes c1 v1 cc>
+% {[ c2, v2, RightTimes c1 v1 cc ]} &|-->& {[ c1 (*) c2, (v1, v2), cc ]}
+
+\begin{proposition}[Logical Reversibility]
+\label{prop:logrev}
+{{c v |--> v'}} iff {{c{dagger} v' |--> v}}.
+\end{proposition}
+
+\begin{proposition}[Groupoid]
+\label{prop:groupoid}
+{{langRev}} is a groupoid. 
+\end{proposition}
+
+\begin{proposition}
+\label{prop:groupoid}
+{{langRev}} is a dagger symmetric monoidal category. 
+\end{proposition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{ {{langRevEE}} }
+
+\paragraph*{Observability.} 
+Execution of program is defined by {{c : b1 <-> b2}} when evaluated on
+input {{v1 : b1}} gives us a value {{v2 : b2}} on
+termination. Execution is well defined only if {{b1}} and {{b2}} are
+entirely positive types. Consider the program that
+
+(TODO: So this is a really bad explanation. But this section is really
+important and we need to explain carefully. Maybe an analogy can be
+drawn to Cayley diagrams for groups to point out that the notion of
+`i' is entirely artificial, but it is essential to the discourse.)
+
+\begin{center}
+  \includegraphics{diagrams/shuffle.pdf}
+\end{center}
+
+We define observables to be only positive types. The ouputs of
+programs that ouput mixed positive and negative types are not
+observable.  Also, programs that input mixed positive and negatives
+types are not executable.
+
+%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Additive Duality in {{langRev}} }
+
+Additive duality is added to {{langRev}} by addition of negative types
+denoted {{-b}} and the isomorphisms {{eta+}} and {{eps+}}. Hence we
+extend the language as follows:
+
+%subcode{bnf} include main
+% Value Types, b = ... | -b
+% Values, v = ... | -v
+%
+% Isomorphisms, iso &=& ... | eta+ | eps+
+
+\noindent
+with the types judgements
+
+%subcode{opsem} include main
+% eta+ &: 0 <-> (-b) + b :& eps+
+
+%subcode{proof} include main
+%@ |- v : b
+%@@ |- -v : -b
+
+We visually present {{eta+}} and {{eps+}} as `U'-shaped connectors. On
+the left below is {{eta+}} showing the map from {{0}} to {{-b+b}} and
+dualy on the right is {{eps+}} showing the map from {{-b+b}} to
+0. Even though the diagrams below show a {{0}} wire for completeness,
+later diagrams will always drop them in contexts where we can
+implicitely introduce/eliminate then using {{zeroi}}/{{zeroe}}.
+
+\begin{multicols}{2}
+\begin{center}
+  \includegraphics{diagrams/eta.pdf}
+\end{center}
+  
+\begin{center}
+  \includegraphics{diagrams/eps.pdf}
+\end{center}
+\end{multicols}
+
+The usual interpretation of the type {{b1+b2}} is that we either have
+an appropriately tagged value of type {{b1}} or an appropriately
+tagged value of type {{b2}}. This interpretation is mainted in the
+precense of {{eta+}} and {{eps+}} in the following sense: a value of
+type {{R v : -b + b}} flowing into an {{eps+}} on the lower wire
+switches into a value {{L (-v): -b + b}} that flows backwards on the
+upper wire. The inversion of direction is captured by the negative
+sign on the value.
+
+\paragraph*{Negative Information Flow.} 
+Hence, the intuitive way to read the digrams is that they reverse the
+flow of information -- in normal {{langRev}} circuits information
+flows from left-to-right and {{eps+}} operations cause information to
+flow from right-to-left.  The interpretation of {{eta+}} is precisely
+the opposite: it turns a right-to-left flow of information in a
+cicruit into a left-to-right flow.
+
+\paragraph*{Time Travelling.}
+A time travelling intuition is also applicable here: if view the
+left-to-right direction of information flow as the canonical forward
+direction of information, then the action of {{eps+}} allows values,
+aka information particles, to flow backwards in time. Particles that
+flow backward in time get to see and interact with the history of
+particles that they coexist with i.e. values that they exist
+multiplicatively with. Hence the isomorphism {{(-b1)*b2<->-(b1*b2)}}
+(whose construction is shown in Section \ref{sec:neg-constructions}).
+
+\paragraph*{Coherence.}
+The appropriate coherence condition for Compact Closed Categories,
+expressed as the traingle axiom, is satisfied by {{eta+}}/{{eps+}} and
+may be visualized as explained by Selinger
+\cite{springerlink:10.1007/978-3-642-12821-94} as follows:
+
+\begin{center}
+  \includegraphics{diagrams/coherence.pdf}
+\end{center}
+
+\paragraph*{Non-termination.}
+As is well known in category theory, Compact Closed Categories contain
+trace operations.  In the context of {{langRev}} this implies that
+{{eta+}}/{{eps+}} allow the construction of a {{trace+}} operator
+(detailed in Section \ref{sec:monoidal-constructions}) hence
+introducing \emph{non-termination} into the language
+\cite{infeffects}.
+
+\paragraph*{Zero Information.}
+The fact that {{eta+}} (and hence {{eps+}}) introduces no information
+can be understood is by viewing {{-b+b}} as a type whose value is
+observable only if you `pay' {{b}} amount of information to the {{-b}}
+branch. When {{b}} amount of information is supplied {{(-b+b)+b=b}}
+amount of information is returned to you. (TODO. more needs to be said
+here.)
+
+%%%%%%%%%%%%%%%%%%%%%
+\subsection{Multiplicative Duality in {{langRev}} }
+
+%subcode{bnf} include main
+% Value Types, b = ... | b^^^
+% Values, v = ... | v^^^
+%
+% Isomorphisms, iso &=& ... | eta* | eps*
+
+\noindent
+with the types judgements
+
+%subcode{opsem} include main
+% eta* &: 1 <-> b^^^ * b :& eps*
+
+%subcode{proof} include main
+%@ |- v : b
+%@@ |- v^^^ : b^^^
+
+Note that we will freely write {{b^^^}} as {{1/b}} and {{a*b^^^}} as
+{{a/b}}.
+
+\paragraph*{Unification.}
+
+\paragraph*{Entanglement.}
+
+\paragraph*{Coherence.}
+
+\paragraph*{Annihilation.}
+
+\paragraph*{Zero Information.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Semantics}
+
+%%%%%%%%%%%%%%%%%%
+\subsection{Syntax}
+
+%subcode{bnf} include main
+% Values, v = () | (v, v) | L v | R v
+% Combinators, c &=& iso | c (;) c | c(+)c | c (*) c 
+%
+% Sequential Contexts, P, F = [] | P:c
+% Parallel Contexts, D = [] 
+%                     &|& D:(P| [](+)c| F)
+%                     &|& D:(P| c(+)[]| F)
+%                     &|& D:(P| [] (*) c v| F)
+%                     &|& D:(P| [] (*) v c| F)
+%                     &|& D:(P| c v (*)  []| F)
+%                     &|& D:(P| v c (*) []| F)
+%
+%
+% Machine States  = D[P| c v| F] | D[P| v c| F]
+% Start State  = [][[]| v c| []]
+% Stop State  = [][P| c v| []]
+
+Combinator reconstruction, {{P[c]}}:
+%subcode{opsem} include main
+% [](c) '= c
+% P:c'(c) '= P(c'(;)c)
+
+%%%%%%%%%%%%%%%%%%%%%
+\subsection{Operational Semantics}
+
+The small step semantics present for {{langRev}} below work
+symmetrically for forward and backward evaluation.
+
+\begin{itemize}
+\item 
+Basic reduction of an isomorphism. Note that the evaluation leaves the
+adjoint of the combinator behind. This will become important when we
+reverse the direction of computation.
+%% %subcode{opsem} include main
+%% % <P; F; iso v; D>      &|-->& <P; F; v'~ iso{dagger}; D>
+
+%subcode{opsem} include main
+% D[P|v iso| F]      &|-->& D[P| iso{dagger} v| F]
+
+\item
+Sequencing involves pushing and popping from the Future and Past
+continuations:
+%subcode{opsem} include main
+% D[P|v (c1(;)c2)| F]  &|-->& D[P| v c1| F:c2]
+% D[P| c1 v| F:c2] &|-->& D[P:c1| v c2| F]
+
+
+\item
+Parallel composition, captures the current Future and Past and extends
+the parallel context.
+%subcode{opsem} include main
+% D[P|(L v) c1 (+) c2| F] &|-->& D:(P|[](+)c2|F)[ []| v c1| [] ]
+% D[P| (R v) c1 (+) c2| F] &|-->& D:(P|c1(+)[]|F)[ []| v c2| [] ]
+% D:(P|[](+)c2|F)[P'|c1 v| [] ]  &|-->& D[P|(P'(c1)(+)c2{dagger}) (L v)| F] 
+% D:(P|c1(+)[]|F)[P'| c2 v| [] ] &|-->& D[P|(c1{dagger}(+)P'(c2)) (R v)| F]
+
+
+\item
+Similarly for products:
+%subcode{opsem} include main
+% D[P| (v1, v2) c1 (*) c2| F] &|-->& D:(P| [] (*) v2 c2|F)[ []| v1 c1| [] ]
+% D:(P|[] (*) v2 c2|F)[P'| c1 v1| [] ] &|-->& D:(P|P'(c1) v1 (*) []|F)[ []| v2 c2| [] ]
+% D:(P|c1 v1(*) []|F)[P'|c2 v2| [] ]  &|-->& D[P|c1(*)P'(c2) (v1, v2)| F]
+
+
+and symmetrical rules for evaluation along the second branch. 
+%subcode{opsem} include main
+% D:(P|v1 c1 (*) []|F)[P'| c2 v2| [] ] &|-->& D:(P,[] (*) P'(c2) v2,F)[ []| v1 c1| [] ]
+% D:(P|[] (*) c2 v2|F)[P'|c1 v1| [] ] &|-->& D[P |P'(c1) (*) c2 (v1, v2)| F]
+
+The later two rules will be relevant only for reverse execution. 
+
+\end{itemize}
+
+\begin{proposition}[Logical Reversibility]
+\label{prop:logrev}
+{{c v |--> v'}} iff {{c{dagger} v' |--> v}}.
+\end{proposition}
+
+\begin{proposition}[Groupoid]
+\label{prop:groupoid}
+{{langRevEE}} is a groupoid. 
+\end{proposition}
+
+\begin{proposition}
+\label{prop:groupoid}
+{{langRev}} is a Dagger Symmetric Monoidal Closed Category.
+\end{proposition}
+
+Note: We use `Monoidal Closed' in the sense of Compact Closed. While
+the category has an multiplicative tensor that distributes over an
+additive tensor, it does not have injections or projections and hence
+does not have categorical sums and products.
+
+%%%%%%%%%%%%%%%%%%%%
+\subsection{Rules for {{eta}} and {{eps}} }
+
+The operation {{eps}} reverses the direction of a particle by
+reversing the world. 
+
+Note that we deviate from the categorical definition of {{eta}} and
+{{eps}} slightly in that they swap the order of {{-b}} and {{b}} in
+choice of {{eta}}. This however does not affect us, because we deal
+with a symmetric category.
+
+\begin{itemize}
+\item Grammar
+%subcode{bnf} include main
+% Values, v = () | (v, v) | L v | R v | -v
+% Isomorphisms, iso &=& ... | eta | eps
+% Combinators, c &=& iso | c (;) c | c(+)c | c (*) c 
+
+\item
+Type judgement.
+%subcode{opsem} include main
+% eta &: 0 <-> (-b) + b :& eps
+
+%subcode{proof} include main
+%@ |- v : b
+%@@ |- -v : -b
+
+\item
+Operational Semantics.
+%subcode{opsem} include main
+% D[P| (R v) eps| F]      &|-->&  D{dagger}[F | eps (L (-v))| P]
+% D[P| (L (-v)) eps| F]      &|-->&  D{dagger}[F | eps (R v)| P]
+
+Note: there is NO reduction rule for {{eta}}. 
+
+\item
+The adjoint of a parallel context is defined to be:
+%subcode{opsem} include main
+% []{dagger} '= []
+% (D:(P, [](+)c, F)){dagger} '= D{dagger}:(F, [](+)c{dagger}, P)
+% (D:(P, c(+)[], F)){dagger} '= D{dagger}:(F, c{dagger}(+)[], P)
+% (D:(P, [](*)c v, F)){dagger} '= D{dagger}:(F, [](*)v c, P)
+% (D:(P, [](*)v c, F)){dagger} '= D{dagger}:(F, [](*)c v, P)
+% (D:(P, c v(*)[], F)){dagger} '= D{dagger}:(F, v c(*)[], P)
+% (D:(P, v c(*)[], F)){dagger} '= D{dagger}:(F, c v(*)[], P)
+
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Constructions in {{langRevEE}} }
+\label{sec:monoidal-constructions}
+
+These constructions are applicable to the additive and the
+multiplicative monoid.
+
+\paragraph*{Functions}
+
+\begin{center}
+  \includegraphics{diagrams/function.pdf}
+\end{center}
+
+Let us use the shorthand {{b1 -o b2 = -b1 + b2}}
+
+\paragraph*{Function application}
+
+\begin{center}
+  \includegraphics{diagrams/apply1.pdf}
+\end{center}
+
+\begin{center}
+  \includegraphics{diagrams/apply2.pdf}
+\end{center}
+
+\paragraph*{Function composition}
+
+\begin{center}
+  \includegraphics{diagrams/compose1.pdf}
+\end{center}
+
+\begin{center}
+  \includegraphics{diagrams/compose.pdf}
+\end{center}
+
+This is also equivalent to sequencing both the computation blocks. 
+
+\begin{center}
+  \includegraphics{diagrams/compose2.pdf}
+\end{center}
+
+
+\paragraph*{Delimited continuation}
+
+\begin{center}
+  \includegraphics{diagrams/delimc.pdf}
+\end{center}
+
+\paragraph*{Trace }
+
+%subcode{proof} include main
+%@ c : b2 + b1 <-> b2 + b3
+%@@ trace c : b1 <-> b3
+
+\begin{center}
+  \includegraphics{diagrams/trace.pdf}
+\end{center}
+
+\paragraph*{Principium Contradictiones}
+
+{{b <-> -(-b)}}
+
+\begin{center}
+  \includegraphics{diagrams/double_neg.pdf}
+\end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Constructions Specific to Negation}
+\label{sec:neg-constructions}
+
+\paragraph*{Negation distributes over {{+}}. }
+
+{{-(b1 + b2) <-> (b1) + (-b2)}}
+
+\begin{center}
+  \includegraphics{diagrams/dist_neg_plus.pdf}
+\end{center}
+
+\paragraph*{ {{eps_{fst} }} }
+
+{{(-b1)*b2 + b1*b2 <-> 0}}
+
+\begin{center}
+  \includegraphics{diagrams/eps_fst.pdf}
+\end{center}
+
+\paragraph*{Lifting negation out of {{*}}. }
+
+{{(-b1) * b2 <-> -(b1 * b2) <-> b1 * (-b2)}}
+
+\begin{center}
+  \includegraphics{diagrams/mult_neg.pdf}
+\end{center}
+
+The following isomoprhism can be constructed similarly 
+
+{{b1 * b2 <-> (-b1)*(-b2)}}
+
+
+\paragraph*{Lifting a operation of postive types to negated types}
+
+Given {{c : b1 <-> b2}}
+
+\begin{center}
+  \includegraphics{diagrams/neg_lift.pdf}
+\end{center}
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Constructions Specific to Multiplication}
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{To think about}
+
+\begin{itemize}
+
+\item If we built an effect over {{langRevEE}}, say {{create}} and
+  {{erase}}, are effects structured by an arrow or a monad now?
+
+\item Which operations can be lifted to work on negative types?
+
+\item Can the operational semantics for {{langRevEE}} be an
+  interpreter that is implemented in {{langRevT}} (similar to how the
+  the tree traversal interpreter was implemented). This would imply
+  the existence of a more powerful construction than Int, wherein the
+  products would also be preserved. This is possibly worth a paper in
+  itself.
+
+\item These functions aren't really values. There is no value one can
+  produce that denotes a function. These functions are the ability to
+  transform a value - the possibility of transforming a value.  In the
+  product encoding of environments, there is no value one can assign
+  to a variable such that it denotes a function.
+
+
+Actually this is possible. Consider two functions {{f : b1 <-> b2}}
+and {{g : b1 <-> b2}}. A value of type {{bool}} is sufficient to
+discriminate them. Hence the {{boo}} is the first class representation
+of the functions and can be thought of as the address of the function. 
+
+\begin{center}
+  \includegraphics{diagrams/dispatch.pdf}
+\end{center}
+
+
+\item It is not fair to say that negative types flow backwards. The
+  following circuits are valid in {{langRevEE}}. It is however proper
+  to say that for any type {{b}} that flows in a direction, the type
+  {{-b}} flows in the reverse direction. 
+
+\begin{center}
+  \includegraphics{diagrams/neg_circuit1.pdf}
+\end{center}
+
+\begin{center}
+  \includegraphics{diagrams/neg_circuit2.pdf}
+\end{center}
+
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Advanced Programming Examples}
+
+%%%%%%%%%%%%%%%%%%%
+\subsection{SAT solver}
+
+%%%%%%%%%%%%%%%%%%%
+\subsection{GoI machine}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work} 
 \label{sec:related}
-
 
 (NOTE: Lets use this section here to establish a long of ideas and
 intuition. None of these connections have to be formal, but they can
@@ -388,766 +1122,6 @@ prolong paying the debt for as long as we want.
 \paragraph*{GoI machines} 
 We can now encode the GoI machine of Mackie \cite{Mackie2011,DBLP:conf/popl/Mackie95}.
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Negative Types: Intuition} 
-
-Consider the following two ways of purchasing an item that costs \$20.00:
-\begin{enumerate}
-\item You give the seller a \$20.00 bill.
-\item You use a credit card to pay the seller.
-\end{enumerate}
-In both cases, the seller receives the money immediately but there is a
-subtle difference. In the first transaction, the money received by the seller
-corresponds to a value that has been produced earlier in the computation. In
-the second transaction, the money may or may not exist yet: computationally,
-a \emph{debt} is generated to compensate for the money received by the seller
-and this debt travels ``backwards'' towards the bank where it is (hopefully)
-reconciled.
-
-The example suggests that the ability to consider values flowing backwards
-enriches our computational model. This observation goes back to Filinski's
-Masters thesis where continuations are identified with these negative values.
-We discuss the connections to Filinski's work and others in more detail in
-Sec.~\ref{sec:related}. For now, we note that in a conventional programming
-language in which values can be copied and deleted at will, extreme care is
-needed to keep track of negative values. Indeed, in the example above, if it
-were possible to simply delete the variable corresponding to the debt, we
-would have produced money out of nothing. 
-
-For this reason, our treatment of negative values in the context of
-{{langRev}} is particularly simple. We will have a type $0$ and an
-isomorphism {{0 <-> a + (-a)}} that when used in the left-to-right direction
-allows us to create a value and a corresponding debt out of nothing. Both the
-value and its negative counterpart can flow anywhere in the system. Because
-information is preserved, a closed program (which does not have any
-``dangling'' negative values) will eventually have to match the negative
-value with some corresponding value, effectively using the isomorphism in the
-right-to-left direction. In more detail, we can model the credit card
-transaction above using the following program (shown diagrammatically):
-
-FIGURE
-
-CLEAN UP the following based on the figure. In contrast, in our setting, one
-can start from the empty type $0$, introduce a positive value and its
-negative counterpart, and let each of these flow in arbitrary ways. The
-entire framework guarantees that neither the value nor its negative
-counterpart will be deleted or duplicated and hence that, in any closed
-program, the ``debt'' corresponding to the negative value is paid off exactly
-once. Computationally we model the first transaction using essentially the
-identity function which receives a \$20.00 bill as input from the buyer and
-propagates it on its output to the seller. The second transaction is more
-complicated. We model it as shown in the circuit below: There are two ways to
-understand this circuit that are both quite instructive. Let's first examine
-the type structure of each of the combinators that comprise the circuit. The
-first combinator on the right outputs \$20.00 to the seller. This \$20.00 is
-produced from nothing so to speak by generating an equivalent debt that
-travels backwards. COMPLETE BASED ON THE FIGURE. The other way is to follow
-the execution. It goes forward in time so to speak, comes back, and then goes
-forwards again.
-
-It is critical that the framework in which the negative types are introduced
-is a framework in which all information is preserved, with no duplication or
-erasure. This guarantees that the generated debts are paid once and exactly
-once.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Fractional Types: Intuition} 
-
-The type $a/b$ is prominent in the Lambek-Grishin calculus which is
-extensively used in computational linguistics. In the common interpretation,
-a value of type $a/b$ is a value of some type $c$ such that when put in a
-context of type $b$, the result is a value of type $a$. For example, assuming
-contexts are represented as functions, a value of type $\texttt{bool} /
-(\texttt{int} \rightarrow \texttt{bool})$ is simply a value of type
-$\texttt{int}$. Indeed in this case, putting a value of type $\texttt{int}$
-in the context $(\texttt{int} \rightarrow \texttt{bool})$ produces a value of
-type $\texttt{bool}$. 
-
-In our case, the situation is simpler. If the goal is to produce a value of
-type {{a * b}} and a subcomputation can only produce the {{a}}-part, it would
-have type {{(a * b) / b}}. In most settings, this type would be equivalent to
-{{a}}. However in our setting, the constraint that this value must eventually
-fit in a larger value that supplies the {{b}} is explicitly recorded and must
-be resolved. In more detail, we have an isomorphism {{ 1 <-> a * (1/a) }}
-which when used in the left-to-right direction allows the creation of a value
-and a corresponding constraint on the context.  Both the value and the
-constraint can flow in arbitrary ways during the computation but eventually
-in a closed program with no ``dangling'' constraints, the isomorphism should
-be used in the right-to-left direction to resolve the constraints.  To
-understand the computational interpretation, consider the following example.
-
-The goal is to produce a value of type $(\texttt{bool} \times
-\texttt{int})$. One part of the program, $e_1$, knows how to produce the
-value of type $\texttt{int}$ (say {{3}}) and another part, $e_2$, knows how
-to produce the value of type $\texttt{bool}$ (say {{true}}). Computationally,
-we model this as follows. The first subcomputation $e_1$ produces {{((),3)}}
-and uses the isomorphism to convert {{()}} to {{(alpha,1/alpha)}} where
-{{alpha}} is a yet-unknown boolean value. Reshuffling the components, $e_1$
-produces {{((alpha,3), 1/alpha)}}. Similarly, $e_2$ can independently produce
-{{((true,beta),1/beta)}} where {{beta}} is a yet-unknown integer value.
-When the two values meet, we can group the components as follows:
-\[
-{{(alpha,beta)}}  {{(3,1/beta)}}  {{(true,1/alpha)}}
-\]
-Using the isomorphism in the right-to-left direction on the last two pairs,
-forces {{alpha}} to be resolved to {{true}} and forces {{beta}} to be
-resolved to {{3}}. Both of these pairs then become {{()}} and be absorbed. We
-are left with the pair {{(true,3)}} as desired. 
-
-To summarize, one can think of a value of type $a/b$ as a value that imposes
-a constraint on its context of use: it is a value that requires its context
-to be of type $b$ and only if that condition is satisfied, can the value be
-considered as a value of type $a$. In the simplest case, the type $1/b$ just
-constraints the context to be of type $b$. By allowing the fractional types
-to be first-class, we can separate the generation of constraints from their
-use. Both the value and the constraint can flow in arbitrary ways during the
-computation but eventually in a closed program with no ``dangling''
-constraints, the isomorphism should be used in the right-to-left direction to
-resolve the constraints.
-
-NEED to work out the example in detail (or perhaps another example that's
-better. 
-
-Again it is critical that the framework in which the fractional types are
-introduced is a framework in which all information is preserved, with no
-duplication or erasure. This guarantees that the generated constraints are
-satisfied once and exactly once. 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Summary}
-
-To summarize negative, fractional, square root, and imaginary types all make
-sense. What they help you accomplish as a programmer is to disassociate
-global invariants into local ones that can be satisfied independently by
-subcomputations with no synchronization or communication. A computation
-producing something of type $a/b$ does not need to concern itself with who is
-going to supply the missing $b$: it just does its part. Conversely faced with
-a complicated task, a computation might decide to break it into pieces and
-demand these pieces using negative types. 
-
-It is no surprise that these types are closely related to quantum mechanics
-and that they give us the feel that this is how nature computes. This is
-speculation however.
-
-In any case, in a framework where information can be copied and deleted, none
-of this makes much sense. It is critical that these constraints and demands
-can neither be duplicated nor erased.  This gives us the maximum
-``parallelism'' possible.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{ {{langRev}} }
-
-The presentation here differs from \cite{infeffects} in the sense that
-we have introduced the {{0}} type here, thereby completeing the monoid
-{{(0,+)}} and we present a small-step operational semantics. 
-
-%subcode{bnf} include main
-% value types, b ::= 0 | 1 | b + b | b * b 
-% values, v ::= () | left v | right v | (v, v)
-
-%subcode{bnf} include main
-%! columnStyle = r@{\hspace{-0.5pt}}c@{\hspace{-0.5pt}}l
-%zeroe :&  0 + b <-> b &: zeroi
-%swap+ :&  b1 + b2 <-> b2 + b1 &: swap+
-%assocl+ :&  b1 + (b2 + b3) <-> (b1 + b2) + b3 &: assocr+
-%identl* :&  1 * b <-> b &: identr*
-%swap* :&  b1 * b2 <-> b2 * b1 &: swap*
-%assocl* :&  b1 * (b2 * b3) <-> (b1 * b2) * b3 &: assocr*
-%dist0 :& 0 * b <-> 0 &: factor0
-%dist :&~ (b1 + b2) * b3 <-> (b1 * b3) + (b2 * b3)~ &: factor
-
-
-%subcode{proof} include main
-%@  ~
-%@@ id : b <-> b 
-%
-%@ c : b1 <-> b2
-%@@ sym c : b2 <-> b1
-%
-%@ c1 : b1 <-> b2
-%@ c2 : b2 <-> b3
-%@@ c1(;)c2 : b1 <-> b3
-%---
-%@ c1 : b1 <-> b3
-%@ c2 : b2 <-> b4
-%@@ c1 (+) c2 : b1 + b2 <-> b3 + b4
-%
-%@ c1 : b1 <-> b3
-%@ c2 : b2 <-> b4
-%@@ c1 (*) c2 : b1 * b2 <-> b3 * b4
-
-
-\begin{definition}{(Syntax of {{langRev}})}
-\label{def:langRev}
-We collect our types, values, and combinators, to get the full language
-definition.
-%subcode{bnf} include main
-% value types, b ::= 1 | b+b | b*b 
-% values, v ::= () | left v | right v | (v,v) 
-%
-% comb.~types, t ::= b <-> b
-% iso ::= swap+ | assocl+ | assocr+ 
-%     &|& identl* | identr* 
-%     &|& swap* | assocl* | assocr* 
-%     &|& dist | factor 
-% comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
-\end{definition}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Semantics}
-
-%subcode{bnf} include main
-% Combinators, c = iso | c (;) c | c (*) c | c (+) c
-% Combinator Contexts, cc = [] | Fst cc c | Snd c cc 
-%                  &|& LeftTimes cc c v | RightTimes c v cc 
-%                  &|& LeftPlus cc c | RightPlus c cc 
-% Values, v = () | (v, v) | L v | R v
-%
-% Machine states = <c, v, cc> | {[c, v, cc]}
-% Start state = <c, v, []> 
-% Stop State = {[c, v, []]}
-
-
-\begin{scriptsize}
-%subcode{opsem} include main
-%! columnStyle = rlcl
-% swap+ & (left v) &|-->& right v
-% swap+ & (right v) &|-->& left v 
-% assocl+ & (left v1) &|-->& left (left v1)
-% assocl+ & (right (left v2)) &|-->& left (right v2)
-% assocl+ & (right (right v3)) &|-->& right v3 
-% assocr+ & (left (left v1)) &|-->& left v1
-% assocr+ & (left (right v2)) &|-->& right (left v2)
-% assocr+ & (right v3) &|-->& right (right v3)
-% identl* & ((), v) &|-->& v 
-% identr* & v &|-->& ((), v) 
-% swap* & (v1, v2) &|-->& (v2, v1) 
-% assocl* & (v1, (v2, v3)) &|-->& ((v1, v2), v3) 
-% assocr* & ((v1, v2), v3) &|-->& (v1, (v2, v3)) 
-% dist & (left v1, v3) &|-->& left (v1, v3)
-% dist & (right v2, v3) &|-->& right (v2, v3)
-% factor & (left (v1, v3)) &|-->& (left v1, v3) 
-% factor & (right (v2, v3)) &|-->& (right v2, v3)   
-\end{scriptsize}
-
-
-
-
-
-%subcode{opsem} include main
-%! columnStyle = rclr
-% <iso, v, cc> &|-->& {[iso, iso(v), cc]}
-% <c1(;)c2, v, cc> &|-->& <c1, v, Fst cc c2>
-% {[c1, v, Fst cc c2]} &|-->& <c2, v, Snd c1 cc>
-% {[c2, v, Snd c1 cc]} &|-->& {[ c1(;)c2, v, cc ]}
-% <c1(+)c2, L v, cc> &|-->& <c1, v, LeftPlus cc c2>
-% {[ c1, v, LeftPlus cc c2 ]} &|-->& {[c1 (+) c2, L v, cc ]}
-% <c1(+)c2, R v, cc> &|-->& <c2, v, RightPlus c1 cc>
-% {[ c2, v, RightPlus c1 cc ]} &|-->& {[c1 (+) c2, R v, cc ]}
-% <c1(*)c2, (v1, v2), cc> &|-->& <c1, v1, LeftTimes cc c2 v2>
-% {[ c1, v1, LeftTimes cc c2 v2 ]} &|-->& <c2, v2, RightTimes c1 v1 cc>
-% {[ c2, v2, RightTimes c1 v1 cc ]} &|-->& {[ c1 (*) c2, (v1, v2), cc ]}
-
-
-\begin{proposition}[Logical Reversibility]
-\label{prop:logrev}
-{{c v |--> v'}} iff {{c{dagger} v' |--> v}}.
-\end{proposition}
-
-\begin{proposition}[Groupoid]
-\label{prop:groupoid}
-{{langRev}} is a groupoid. 
-\end{proposition}
-
-\begin{proposition}
-\label{prop:groupoid}
-{{langRev}} is a dagger symmetric monoidal category. 
-\end{proposition}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{ {{langRevEE}} }
-
-\paragraph*{Observability.} 
-Execution of program is defined by {{c : b1 <-> b2}} when evaluated on
-input {{v1 : b1}} gives us a value {{v2 : b2}} on
-termination. Execution is well defined only if {{b1}} and {{b2}} are
-entirely positive types. Consider the program that
-
-(TODO: So this is a really bad explanation. But this section is really
-important and we need to explain carefully. Maybe an analogy can be
-drawn to Cayley diagrams for groups to point out that the notion of
-`i' is entirely artificial, but it is essential to the discourse.)
-
-\begin{center}
-  \includegraphics{diagrams/shuffle.pdf}
-\end{center}
-
-We define observables to be only positive types. The ouputs of
-programs that ouput mixed positive and negative types are not
-observable.  Also, programs that input mixed positive and negatives
-types are not executable.
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Additive Duality in {{langRev}} }
-
-Additive duality is added to {{langRev}} by addition of negative types
-denoted {{-b}} and the isomorphisms {{eta+}} and {{eps+}}. Hence we
-extend the language as follows:
-
-%subcode{bnf} include main
-% Value Types, b = ... | -b
-% Values, v = ... | -v
-%
-% Isomorphisms, iso &=& ... | eta+ | eps+
-
-\noindent
-with the types judgements
-
-%subcode{opsem} include main
-% eta+ &: 0 <-> (-b) + b :& eps+
-
-%subcode{proof} include main
-%@ |- v : b
-%@@ |- -v : -b
-
-We visually present {{eta+}} and {{eps+}} as `U'-shaped connectors. On
-the left below is {{eta+}} showing the map from {{0}} to {{-b+b}} and
-dualy on the right is {{eps+}} showing the map from {{-b+b}} to
-0. Even though the diagrams below show a {{0}} wire for completeness,
-later diagrams will always drop them in contexts where we can
-implicitely introduce/eliminate then using {{zeroi}}/{{zeroe}}.
-
-\begin{multicols}{2}
-\begin{center}
-  \includegraphics{diagrams/eta.pdf}
-\end{center}
-  
-\begin{center}
-  \includegraphics{diagrams/eps.pdf}
-\end{center}
-\end{multicols}
-
-The usual interpretation of the type {{b1+b2}} is that we either have
-an appropriately tagged value of type {{b1}} or an appropriately
-tagged value of type {{b2}}. This interpretation is mainted in the
-precense of {{eta+}} and {{eps+}} in the following sense: a value of
-type {{R v : -b + b}} flowing into an {{eps+}} on the lower wire
-switches into a value {{L (-v): -b + b}} that flows backwards on the
-upper wire. The inversion of direction is captured by the negative
-sign on the value.
-
-\paragraph*{Negative Information Flow.} 
-Hence, the intuitive way to read the digrams is that they reverse the
-flow of information -- in normal {{langRev}} circuits information
-flows from left-to-right and {{eps+}} operations cause information to
-flow from right-to-left.  The interpretation of {{eta+}} is precisely
-the opposite: it turns a right-to-left flow of information in a
-cicruit into a left-to-right flow.
-
-\paragraph*{Time Travelling.}
-A time travelling intuition is also applicable here: if view the
-left-to-right direction of information flow as the canonical forward
-direction of information, then the action of {{eps+}} allows values,
-aka information particles, to flow backwards in time. Particles that
-flow backward in time get to see and interact with the history of
-particles that they coexist with i.e. values that they exist
-multiplicatively with. Hence the isomorphism {{(-b1)*b2<->-(b1*b2)}}
-(whose construction is shown in Section \ref{sec:neg-constructions}).
-
-\paragraph*{Coherence.}
-The appropriate coherence condition for Compact Closed Categories,
-expressed as the traingle axiom, is satisfied by {{eta+}}/{{eps+}} and
-may be visualized as explained by Selinger
-\cite{springerlink:10.1007/978-3-642-12821-94} as follows:
-
-\begin{center}
-  \includegraphics{diagrams/coherence.pdf}
-\end{center}
-
-\paragraph*{Non-termination.}
-As is well known in category theory, Compact Closed Categories contain
-trace operations.  In the context of {{langRev}} this implies that
-{{eta+}}/{{eps+}} allow the construction of a {{trace+}} operator
-(detailed in Section \ref{sec:monoidal-constructions}) hence
-introducing \emph{non-termination} into the language
-\cite{infeffects}.
-
-\paragraph*{Zero Information.}
-The fact that {{eta+}} (and hence {{eps+}}) introduces no information
-can be understood is by viewing {{-b+b}} as a type whose value is
-observable only if you `pay' {{b}} amount of information to the {{-b}}
-branch. When {{b}} amount of information is supplied {{(-b+b)+b=b}}
-amount of information is returned to you. (TODO. more needs to be said
-here.)
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Multiplicative Duality in {{langRev}} }
-
-%subcode{bnf} include main
-% Value Types, b = ... | b^^^
-% Values, v = ... | v^^^
-%
-% Isomorphisms, iso &=& ... | eta* | eps*
-
-\noindent
-with the types judgements
-
-%subcode{opsem} include main
-% eta* &: 1 <-> b^^^ * b :& eps*
-
-%subcode{proof} include main
-%@ |- v : b
-%@@ |- v^^^ : b^^^
-
-Note that we will freely write {{b^^^}} as {{1/b}} and {{a*b^^^}} as
-{{a/b}}.
-
-\paragraph*{Unification.}
-
-\paragraph*{Entanglement.}
-
-\paragraph*{Coherence.}
-
-\paragraph*{Annihilation.}
-
-\paragraph*{Zero Information.}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Semantics}
-
-
-
-
-
-
-\subsection{Syntax}
-
-%subcode{bnf} include main
-% Values, v = () | (v, v) | L v | R v
-% Combinators, c &=& iso | c (;) c | c(+)c | c (*) c 
-%
-% Sequential Contexts, P, F = [] | P:c
-% Parallel Contexts, D = [] 
-%                     &|& D:(P| [](+)c| F)
-%                     &|& D:(P| c(+)[]| F)
-%                     &|& D:(P| [] (*) c v| F)
-%                     &|& D:(P| [] (*) v c| F)
-%                     &|& D:(P| c v (*)  []| F)
-%                     &|& D:(P| v c (*) []| F)
-%
-%
-% Machine States  = D[P| c v| F] | D[P| v c| F]
-% Start State  = [][[]| v c| []]
-% Stop State  = [][P| c v| []]
-
-Combinator reconstruction, {{P[c]}}:
-%subcode{opsem} include main
-% [](c) '= c
-% P:c'(c) '= P(c'(;)c)
-
-%%%%%%%%%%%%%%%%%%%%%
-\subsection{Operational Semantics}
-
-The small step semantics present for {{langRev}} below work
-symmetrically for forward and backward evaluation.
-
-\begin{itemize}
-\item 
-Basic reduction of an isomorphism. Note that the evaluation leaves the
-adjoint of the combinator behind. This will become important when we
-reverse the direction of computation.
-%% %subcode{opsem} include main
-%% % <P; F; iso v; D>      &|-->& <P; F; v'~ iso{dagger}; D>
-
-%subcode{opsem} include main
-% D[P|v iso| F]      &|-->& D[P| iso{dagger} v| F]
-
-\item
-Sequencing involves pushing and popping from the Future and Past
-continuations:
-%subcode{opsem} include main
-% D[P|v (c1(;)c2)| F]  &|-->& D[P| v c1| F:c2]
-% D[P| c1 v| F:c2] &|-->& D[P:c1| v c2| F]
-
-
-\item
-Parallel composition, captures the current Future and Past and extends
-the parallel context.
-%subcode{opsem} include main
-% D[P|(L v) c1 (+) c2| F] &|-->& D:(P|[](+)c2|F)[ []| v c1| [] ]
-% D[P| (R v) c1 (+) c2| F] &|-->& D:(P|c1(+)[]|F)[ []| v c2| [] ]
-% D:(P|[](+)c2|F)[P'|c1 v| [] ]  &|-->& D[P|(P'(c1)(+)c2{dagger}) (L v)| F] 
-% D:(P|c1(+)[]|F)[P'| c2 v| [] ] &|-->& D[P|(c1{dagger}(+)P'(c2)) (R v)| F]
-
-
-\item
-Similarly for products:
-%subcode{opsem} include main
-% D[P| (v1, v2) c1 (*) c2| F] &|-->& D:(P| [] (*) v2 c2|F)[ []| v1 c1| [] ]
-% D:(P|[] (*) v2 c2|F)[P'| c1 v1| [] ] &|-->& D:(P|P'(c1) v1 (*) []|F)[ []| v2 c2| [] ]
-% D:(P|c1 v1(*) []|F)[P'|c2 v2| [] ]  &|-->& D[P|c1(*)P'(c2) (v1, v2)| F]
-
-
-and symmetrical rules for evaluation along the second branch. 
-%subcode{opsem} include main
-% D:(P|v1 c1 (*) []|F)[P'| c2 v2| [] ] &|-->& D:(P,[] (*) P'(c2) v2,F)[ []| v1 c1| [] ]
-% D:(P|[] (*) c2 v2|F)[P'|c1 v1| [] ] &|-->& D[P |P'(c1) (*) c2 (v1, v2)| F]
-
-The later two rules will be relevant only for reverse execution. 
-
-\end{itemize}
-
-
-\begin{proposition}[Logical Reversibility]
-\label{prop:logrev}
-{{c v |--> v'}} iff {{c{dagger} v' |--> v}}.
-\end{proposition}
-
-\begin{proposition}[Groupoid]
-\label{prop:groupoid}
-{{langRevEE}} is a groupoid. 
-\end{proposition}
-
-\begin{proposition}
-\label{prop:groupoid}
-{{langRev}} is a Dagger Symmetric Monoidal Closed Category.
-\end{proposition}
-
-Note: We use `Monoidal Closed' in the sense of Compact Closed. While
-the category has an multiplicative tensor that distributes over an
-additive tensor, it does not have injections or projections and hence
-does not have categorical sums and products.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Rules for {{eta}} and {{eps}} }
-
-The operation {{eps}} reverses the direction of a particle by
-reversing the world. 
-
-Note that we deviate from the categorical definition of {{eta}} and
-{{eps}} slightly in that they swap the order of {{-b}} and {{b}} in
-choice of {{eta}}. This however does not affect us, because we deal
-with a symmetric category.
-
-\begin{itemize}
-\item Grammar
-%subcode{bnf} include main
-% Values, v = () | (v, v) | L v | R v | -v
-% Isomorphisms, iso &=& ... | eta | eps
-% Combinators, c &=& iso | c (;) c | c(+)c | c (*) c 
-
-\item
-Type judgement.
-%subcode{opsem} include main
-% eta &: 0 <-> (-b) + b :& eps
-
-%subcode{proof} include main
-%@ |- v : b
-%@@ |- -v : -b
-
-\item
-Operational Semantics.
-%subcode{opsem} include main
-% D[P| (R v) eps| F]      &|-->&  D{dagger}[F | eps (L (-v))| P]
-% D[P| (L (-v)) eps| F]      &|-->&  D{dagger}[F | eps (R v)| P]
-
-Note: there is NO reduction rule for {{eta}}. 
-
-\item
-The adjoint of a parallel context is defined to be:
-%subcode{opsem} include main
-% []{dagger} '= []
-% (D:(P, [](+)c, F)){dagger} '= D{dagger}:(F, [](+)c{dagger}, P)
-% (D:(P, c(+)[], F)){dagger} '= D{dagger}:(F, c{dagger}(+)[], P)
-% (D:(P, [](*)c v, F)){dagger} '= D{dagger}:(F, [](*)v c, P)
-% (D:(P, [](*)v c, F)){dagger} '= D{dagger}:(F, [](*)c v, P)
-% (D:(P, c v(*)[], F)){dagger} '= D{dagger}:(F, v c(*)[], P)
-% (D:(P, v c(*)[], F)){dagger} '= D{dagger}:(F, c v(*)[], P)
-
-\end{itemize}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Constructions in {{langRevEE}} }
-\label{sec:monoidal-constructions}
-
-These constructions are applicable to the additive and the
-multiplicative monoid.
-
-\paragraph*{Functions}
-
-\begin{center}
-  \includegraphics{diagrams/function.pdf}
-\end{center}
-
-Let us use the shorthand {{b1 -o b2 = -b1 + b2}}
-
-\paragraph*{Function application}
-
-\begin{center}
-  \includegraphics{diagrams/apply1.pdf}
-\end{center}
-
-\begin{center}
-  \includegraphics{diagrams/apply2.pdf}
-\end{center}
-
-
-\paragraph*{Function composition}
-
-\begin{center}
-  \includegraphics{diagrams/compose1.pdf}
-\end{center}
-
-\begin{center}
-  \includegraphics{diagrams/compose.pdf}
-\end{center}
-
-This is also equivalent to sequencing both the computation blocks. 
-
-\begin{center}
-  \includegraphics{diagrams/compose2.pdf}
-\end{center}
-
-
-\paragraph*{Delimited continuation}
-
-\begin{center}
-  \includegraphics{diagrams/delimc.pdf}
-\end{center}
-
-\paragraph*{Trace }
-
-%subcode{proof} include main
-%@ c : b2 + b1 <-> b2 + b3
-%@@ trace c : b1 <-> b3
-
-\begin{center}
-  \includegraphics{diagrams/trace.pdf}
-\end{center}
-
-\paragraph*{Principium Contradictiones}
-
-{{b <-> -(-b)}}
-
-\begin{center}
-  \includegraphics{diagrams/double_neg.pdf}
-\end{center}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Constructions Specific to Negation}
-\label{sec:neg-constructions}
-
-\paragraph*{Negation distributes over {{+}}. }
-
-{{-(b1 + b2) <-> (b1) + (-b2)}}
-
-\begin{center}
-  \includegraphics{diagrams/dist_neg_plus.pdf}
-\end{center}
-
-\paragraph*{ {{eps_{fst} }} }
-
-{{(-b1)*b2 + b1*b2 <-> 0}}
-
-\begin{center}
-  \includegraphics{diagrams/eps_fst.pdf}
-\end{center}
-
-\paragraph*{Lifting negation out of {{*}}. }
-
-{{(-b1) * b2 <-> -(b1 * b2) <-> b1 * (-b2)}}
-
-\begin{center}
-  \includegraphics{diagrams/mult_neg.pdf}
-\end{center}
-
-The following isomoprhism can be constructed similarly 
-
-{{b1 * b2 <-> (-b1)*(-b2)}}
-
-
-\paragraph*{Lifting a operation of postive types to negated types}
-
-Given {{c : b1 <-> b2}}
-
-\begin{center}
-  \includegraphics{diagrams/neg_lift.pdf}
-\end{center}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Constructions Specific to Multiplication}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{To think about}
-
-\begin{itemize}
-
-\item If we built an effect over {{langRevEE}}, say {{create}} and
-  {{erase}}, are effects structured by an arrow or a monad now?
-
-\item Which operations can be lifted to work on negative types?
-
-\item Can the operational semantics for {{langRevEE}} be an
-  interpreter that is implemented in {{langRevT}} (similar to how the
-  the tree traversal interpreter was implemented). This would imply
-  the existence of a more powerful construction than Int, wherein the
-  products would also be preserved. This is possibly worth a paper in
-  itself.
-
-\item These functions aren't really values. There is no value one can
-  produce that denotes a function. These functions are the ability to
-  transform a value - the possibility of transforming a value.  In the
-  product encoding of environments, there is no value one can assign
-  to a variable such that it denotes a function.
-
-
-Actually this is possible. Consider two functions {{f : b1 <-> b2}}
-and {{g : b1 <-> b2}}. A value of type {{bool}} is sufficient to
-discriminate them. Hence the {{boo}} is the first class representation
-of the functions and can be thought of as the address of the function. 
-
-\begin{center}
-  \includegraphics{diagrams/dispatch.pdf}
-\end{center}
-
-
-\item It is not fair to say that negative types flow backwards. The
-  following circuits are valid in {{langRevEE}}. It is however proper
-  to say that for any type {{b}} that flows in a direction, the type
-  {{-b}} flows in the reverse direction. 
-
-\begin{center}
-  \includegraphics{diagrams/neg_circuit1.pdf}
-\end{center}
-
-\begin{center}
-  \includegraphics{diagrams/neg_circuit2.pdf}
-\end{center}
-
-\end{itemize}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Advanced Programming Examples}
-
-\subsection{SAT solver}
-
-\subsection{GoI machine}
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Field of Algebraic Numbers} 
 
@@ -1218,9 +1192,10 @@ Discussion of possible polynomials:
   would be equivalent to boolean negation.
 \end{itemize}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
+
+%% Jacques
 
 \acks This project was partially funded by Indiana University's Office
 of the Vice President for Research and the Office of the Vice Provost
