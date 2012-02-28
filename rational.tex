@@ -764,7 +764,10 @@ branch. When {{b}} amount of information is supplied {{(-b+b)+b=b}}
 amount of information is returned to you. (TODO. more needs to be said
 here.)
 
-%%%%%%%%%%%%%%%%%%%%%
+ADD MATH. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Multiplicative Duality in {{langRev}} }
 
 Multiplicative duality is added to {{langRev}} by adding types
@@ -788,6 +791,10 @@ These have the type judgments
 %@ |- v : b
 %@@ |- v^^^ : b^^^
 
+As with additive duals, we represent {{eta*}} and {{eps*}] using
+`U'-shaped connectors. In the general case the wires for {{1}} will be
+dropped as it can freely introduced or eliminated using {{uniti}} and
+{{unite}}. 
 
 \begin{multicols}{2}
 \begin{center}
@@ -799,10 +806,16 @@ These have the type judgments
 \end{center}
 \end{multicols}
 
+The usual interpretation of {{b1*b2}} we have both a value of type
+{{b1}} and a value of type {{b2}}. This interpretation is maintained
+in the precense of fractionals. Hence an {{eta* : 1 <-> b^^^ * b}} is
+to be viewed as a fission point for a value of type {{b}} and its
+multiplicative inverse {{b^^^}}. This naturally raises the question --
+which value of type {{b}} is produced? The isomorphism {{eta*}} does
+not produce any specific value of type {{b}}, instead it produces a
+place holder for a value such that the value of type {{b^^^}} is
+always the dual of the chosen one. 
 
-\paragraph*{Unification.}
-
-test test test
 \begin{multicols}{2}
 \begin{center}
 \scalebox{1.5}{
@@ -817,14 +830,70 @@ test test test
 \end{center}  
 \end{multicols}
 
+\paragraph*{Unification.}
+A computational interpretation of this is that {{langRevEE}} acts like
+a logic programming system and {{eta*}} acts as the site of creation
+of a new typed logic variable of type {{b}} and its corresponding dual
+of type {{b^^^}}. These two values are free to move independantly
+through a circuit, but any operations on value affect what operations
+are possible on the other since they are both related by an underlying
+logic variable. Dually, {{eps*}} acts as a unification site for values
+flowing along both branches. If the values are not exactly duals, then
+the system fails to unify and hence the program is stuck. If the
+values are exactly duals, then unification succeeds and {{eta*}}
+returns {{1}}.
 
-\paragraph*{Entanglement.}
+\paragraph*{Entanglement and Anti-Particles.}
+A dual view of the operation of {{eta*}} and {{eps*}} is inspired by
+quantum mechanics. The {{eta*}} is a site of fission that creates an
+information particle and its anti-particle. Both flow in the same
+direction in time. The produce particles are entangles in that actions
+on one (such as transformation by application of an isomorphism)
+affects the other. Further the fission site does not create a particle
+in any specific state, but in a superposition of all possible states
+as dictated by its type. In each possible world that the particle
+exists, it takes on a specific value inhibiting its type and
+correspondingly its entangled anti-particle takes the dual of the
+specific value.
 
-\paragraph*{Coherence.}
+This also leads to the exiciting point of view that entangled
+particle/anti-particle pairs act as functions in a physical
+first-class sense. We can ask the fuction to be applied to a value by
+unifying the anti-particle with a particle in a well-known state and
+examining is pair. We shall use this point of view in the development
+our SAT solver (see Sec. \ref{sec:sat-solver}).
+
+\paragraph*{Coherence.} 
+As before, the requisite coherence condition on Compact Closed
+Categories is applicable and is expressed below in terms of
+{{eta*}}/{{eps*}} and the multiplicative monoid.
+
+\begin{center}
+  \includegraphics{diagrams/coherence.pdf}
+\end{center}
 
 \paragraph*{Annihilation.}
+As with {{(+, 0)}} we can construct a {{trace*}} operation. Unlike the
+additive {{trace+}}, {{trace*}} gives us the ability to find the
+fixpoint of the contraint (expressed with combinators) that is
+traced. If the constraint has not satisfying values, there is not
+fixpoint possible -- we use the term `annihilation' to describe the
+corresponding undefined state of the program. Annihilation and a
+non-termination both describe undefined program execution -- while
+non-termination characterizes an iteration that fails to terminate,
+annihilation characterizes a constraint that has no fixpoint. 
 
 \paragraph*{Zero Information.}
+As with {{eta+}}, we argue that {{eta*}} constructs no new
+information, instead it gives us the ability to explore as many worlds
+as permitted by the type {{b}}. So situate ourselves in any specific
+world, we have to supply additional information in teh form of
+unifying the particle or anti-particle with a particle representing
+known information. Hence only by supplying information to a an
+entangled pair can we read information from it -- and always exactly
+as much information as we supplied.
+
+ADD MATH. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Semantics}
@@ -1141,6 +1210,7 @@ of the functions and can be thought of as the address of the function.
 
 %%%%%%%%%%%%%%%%%%%
 \subsection{SAT solver}
+\label{sec:sat-solver}
 
 %%%%%%%%%%%%%%%%%%%
 \subsection{GoI machine}
