@@ -19,6 +19,7 @@
 \usepackage{listings}
 \usepackage{multicol}
 \usepackage{bm}
+\usepackage{cmll}
 
 %% \newtheorem{theorem}{Theorem}[section]
 %% \newtheorem{lemma}[theorem]{Lemma}
@@ -120,20 +121,21 @@
 
 \begin{abstract}
   Every functional programmer knows about sum and product types, {{a+b}} and
-  {{a*b}} respectively. Negative and fractional types, $a-b$ and $a/b$
-  respectively, are much less known and their computational interpretation is
-  unfamiliar and often complicated. We show that in a programming model in
-  which information is preserved (such as the model introduced in our recent
-  paper on \emph{Information Effects}), these types have particularly
-  intuitive and natural computational interpretations. Intuitively, values of
-  negative types are values that flow ``backwards'' to satisfy demands and
-  values of fractional types are values that impose constraints on their
-  context.  The combination of these negative and fractional types enables
-  greater flexibility in programming by breaking global invariants into local
-  ones that can be autonomously satisfied by a subcomputation. Furthermore,
-  they allow a programmer to express a wide range of programming idioms,
-  including higher-order functions, delimited continuations, speculative
-  computation, logic programming, and more.
+  {{a*b}}. Negative and fractional types, $a-b$ and $a/b$ respectively, are
+  much less known and their computational interpretation is unfamiliar and
+  often complicated. We show that in a programming model in which information
+  is preserved (such as the model introduced in our recent paper on
+  \emph{Information Effects}), these types have particularly natural
+  computational interpretations. Intuitively, values of negative types are
+  values that flow ``backwards'' to satisfy demands and values of fractional
+  types are values that impose constraints on their context.  The combination
+  of these negative and fractional types enables greater flexibility in
+  programming by breaking global invariants into local ones that can be
+  autonomously satisfied by a subcomputation. Furthermore, these types and
+  their properties suggest that the previously observed duality of
+  computation conflated two orthogonal notions: an additive duality that
+  corresponds to backtracking and a multiplicative duality that corresponds
+  to unification.
 \end{abstract}
 
 \category{D.3.1}{Formal Definitions and Theory}{}
@@ -150,10 +152,25 @@ closed categories.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-In 1989, \cite{Filinski:1989:DCI:648332.755574} observed that values and
-continuations are dual notions. This observation was followed by numerous
-papers (\cite{Griffin:1989:FNC:96709.96714, curien00duality, Wadler:2003,
-  DBLP:conf/rta/Wadler05}) which explored and refined this duality.
+In 1989, Filinski~\cite{Filinski:1989:DCI:648332.755574} observed that values
+and continuations are dual notions. This observation was followed by numerous
+papers~\cite{Griffin:1989:FNC:96709.96714, curien00duality, Wadler:2003,
+  DBLP:conf/rta/Wadler05} which explored and refined this duality. Even
+earlier, Rauszer~\cite{springerlink:10.1007/BF02120864,rauszer,rauszer2}
+introduced a logic which contains a dual to implication. Her work has been
+distilled in the form of \emph{subtractive logic}~\cite{Crolard01} which has
+recently been related to coroutines~\cite{Crolard01082004} and delimited
+continuations~\cite{Ariola:2009:TFD:1743339.1743381}.
+
+In a seemingly unrelated development, Girard in 1987 introduced linear
+logic~\cite{Girard87tcs} which, among other contributions, exposed an
+additive/multiplicative distinction in logical connectives and rules. In
+particular, linear logic includes additive disjunctions $\oplus$ and
+conjunctions $\with$ as well as multiplicative disjunctions $\parr$ and
+conjuctions $\otimes$. Duality is also prominent in linear logic: it relates
+the additive connectives to each other (the dual of $\oplus$ is $\with$ and
+vice-versa) and the multiplicative connectives to each other (the dual of
+$\otimes$ is $\parr$ and vice-versa).
 
 We introduced this thesis that computation should be based on isomorphisms
 that preserve information~\cite{infeffects}. Since Filinski, we've had the
