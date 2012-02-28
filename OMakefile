@@ -9,7 +9,7 @@ dual.subc.tex : dual.tex
         ruby subcode/subc.rb dual.tex
 
 dual.subc.pdf : dual.subc.tex cites.bib
-	pdflatex dual.subc.tex
+	pdflatex -halt-on-error dual.subc.tex
         bibtex dual.subc
 
 dual-dropbox : dual.subc.pdf
@@ -21,7 +21,7 @@ rational.subc.tex : rational.tex
         ruby subcode/subc.rb rational.tex
 
 rational.subc.pdf : rational.subc.tex cites.bib
-	pdflatex rational.subc.tex
+	pdflatex -halt-on-error rational.subc.tex
         bibtex rational.subc
 
 rational-dropbox : rational.subc.pdf
