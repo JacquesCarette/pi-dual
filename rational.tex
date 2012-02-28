@@ -231,11 +231,11 @@ have kept the positive side pure.
 In a technical sense, this paper extends the language of isomorphisms
 {{langRev}}, with duality. Unlike Linear logic \cite{Girard87tcs} and
 other systems which have one notion of duality over additive and
-multiplicative componenents, {{langRevEE}} has two notions of duality
+multiplicative components, {{langRevEE}} has two notions of duality
 -- an additive duality over the monoid {{(0, +)}} and a multiplicative
 duality over the monoid {{(1, *)}}. Each axis of duality also give us
 a function space and hence {{langRevEE}} has an additive function
-space correspoding to a notion of control or backtracking and a
+space corresponding to a notion of control or backtracking and a
 multiplicative function space corresponding to a notion of unification
 or constraint satisfaction.
 
@@ -510,7 +510,7 @@ can neither be duplicated nor erased.  This gives us the maximum
 \section{ {{langRev}} }
 
 The presentation here differs from \cite{infeffects} in the sense that
-we have introduced the {{0}} type here, thereby completeing the monoid
+we have introduced the {{0}} type here, thereby completing the monoid
 {{(0,+)}} and we present a small-step operational semantics. 
 
 %subcode{bnf} include main
@@ -646,8 +646,8 @@ drawn to Cayley diagrams for groups to point out that the notion of
   \includegraphics{diagrams/shuffle.pdf}
 \end{center}
 
-We define observables to be only positive types. The ouputs of
-programs that ouput mixed positive and negative types are not
+We define observables to be only positive types. The outputs of
+programs that output mixed positive and negative types are not
 observable.  Also, programs that input mixed positive and negatives
 types are not executable.
 
@@ -665,7 +665,7 @@ extend the language as follows:
 % Isomorphisms, iso &=& ... | eta+ | eps+
 
 \noindent
-with the types judgements
+with the types judgments
 
 %subcode{opsem} include main
 % eta+ &: 0 <-> (-b) + b :& eps+
@@ -676,10 +676,10 @@ with the types judgements
 
 We visually present {{eta+}} and {{eps+}} as `U'-shaped connectors. On
 the left below is {{eta+}} showing the map from {{0}} to {{-b+b}} and
-dualy on the right is {{eps+}} showing the map from {{-b+b}} to
+dually on the right is {{eps+}} showing the map from {{-b+b}} to
 0. Even though the diagrams below show a {{0}} wire for completeness,
 later diagrams will always drop them in contexts where we can
-implicitely introduce/eliminate then using {{zeroi}}/{{zeroe}}.
+implicitly introduce/eliminate then using {{zeroi}}/{{zeroe}}.
 
 \begin{multicols}{2}
 \begin{center}
@@ -693,20 +693,20 @@ implicitely introduce/eliminate then using {{zeroi}}/{{zeroe}}.
 
 The usual interpretation of the type {{b1+b2}} is that we either have
 an appropriately tagged value of type {{b1}} or an appropriately
-tagged value of type {{b2}}. This interpretation is mainted in the
-precense of {{eta+}} and {{eps+}} in the following sense: a value of
+tagged value of type {{b2}}. This interpretation is maintained in the
+presence of {{eta+}} and {{eps+}} in the following sense: a value of
 type {{R v : -b + b}} flowing into an {{eps+}} on the lower wire
 switches into a value {{L (-v): -b + b}} that flows backwards on the
 upper wire. The inversion of direction is captured by the negative
 sign on the value.
 
 \paragraph*{Negative Information Flow.} 
-Hence, the intuitive way to read the digrams is that they reverse the
+Hence, the intuitive way to read the diagrams is that they reverse the
 flow of information -- in normal {{langRev}} circuits information
 flows from left-to-right and {{eps+}} operations cause information to
 flow from right-to-left.  The interpretation of {{eta+}} is precisely
 the opposite: it turns a right-to-left flow of information in a
-cicruit into a left-to-right flow.
+circuit into a left-to-right flow.
 
 \begin{multicols}{2}
 \begin{center}
@@ -722,8 +722,8 @@ cicruit into a left-to-right flow.
 \end{center}  
 \end{multicols}
 
-\paragraph*{Time Travelling.}
-A time travelling intuition is also applicable here: if view the
+\paragraph*{Time Traveling.}
+A time traveling intuition is also applicable here: if view the
 left-to-right direction of information flow as the canonical forward
 direction of information, then the action of {{eps+}} allows values,
 aka information particles, to flow backwards in time. Particles that
@@ -734,7 +734,7 @@ multiplicatively with. Hence the isomorphism {{(-b1)*b2<->-(b1*b2)}}
 
 \paragraph*{Coherence.}
 The appropriate coherence condition for Compact Closed Categories,
-expressed as the traingle axiom, is satisfied by {{eta+}}/{{eps+}} and
+expressed as the triangle axiom, is satisfied by {{eta+}}/{{eps+}} and
 may be visualized as explained by Selinger
 \cite{springerlink:10.1007/978-3-642-12821-94} as follows:
 
@@ -768,7 +768,7 @@ here.)
 % Isomorphisms, iso &=& ... | eta* | eps*
 
 \noindent
-with the types judgements
+with the types judgments
 
 %subcode{opsem} include main
 % eta* &: 1 <-> b^^^ * b :& eps*
@@ -937,7 +937,7 @@ with a symmetric category.
 % Combinators, c &=& iso | c (;) c | c(+)c | c (*) c 
 
 \item
-Type judgement.
+Type judgment.
 %subcode{opsem} include main
 % eta &: 0 <-> (-b) + b :& eps
 
@@ -1060,12 +1060,12 @@ This is also equivalent to sequencing both the computation blocks.
   \includegraphics{diagrams/mult_neg.pdf}
 \end{center}
 
-The following isomoprhism can be constructed similarly 
+The following isomorphism can be constructed similarly 
 
 {{b1 * b2 <-> (-b1)*(-b2)}}
 
 
-\paragraph*{Lifting a operation of postive types to negated types}
+\paragraph*{Lifting a operation of positive types to negated types}
 
 Given {{c : b1 <-> b2}}
 
@@ -1191,7 +1191,7 @@ familiar.'' Curien and Herbelin study duality in classical logic, show that
 it exchanges call-by-value and call-by-name. They extend classical natural
 deduction with subtraction but give it no computational meaning. Crolard (in
 the formulae-as-types interpretation of subtractive logic) address the
-computational interpretation of substraction. He explains the type $A-B$ as
+computational interpretation of subtraction. He explains the type $A-B$ as
 the of \emph{coroutines} with a local environment of type $A$ and a
 continuation of type $B$. The description is complicated by what is
 essentially the desire to enforce linearity constraints so that coroutines
@@ -1202,7 +1202,7 @@ monoidal ones. Ariola, Herbelin, and Sabry also use subtractive types to
 explain delimited continuations. 
 
 \paragraph*{Linear Logic} In accounts that are linear, the value and
-continuation that comprise the substractive type need to be constrained to
+continuation that comprise the subtractive type need to be constrained to
 ``stay together.'' This can be achieved by various restrictions. In this work
 we have no such constraints, the negative value can flow anywhere. The entire
 system guarantees that any closed program would have to account for it. We
@@ -1222,7 +1222,7 @@ Further we know that the target of the Int construction is isomorphic
 to the target of \G construction of Abramsky \cite{Abramsky96:0} from
 Haghverdi. However, note that the {{langRevEE}} is not the same as the
 image of the Int construction on {{langRevT}}, since the the later
-lacks a multiplicative tensor that distrbutes over the additive tensor
+lacks a multiplicative tensor that distributes over the additive tensor
 in Int {{langRevT}}.
 
 \paragraph*{Recursion.} In our previous work we introduce recursive types and
@@ -1244,6 +1244,45 @@ irrational imaginary root, as we will see -- {{langRevEE}} does not
 have the means of expressing meaningful computation that uses the
 root.
 
+Here is one way to view computations involving irrationals that might
+shed some insight into how we should view recursive data types
+also. For finite datatypes say of size {{n}} we can say that an
+element specifies a choice of {{1/n}} and hence contains as much
+information. For finite things, each value is computationally equal to
+any other value. Any permutation is possible among the values. Hence
+there is no metric possible on the values.  Recursive data types, such
+as binary trees, have an infinite number of elements and hence the
+argument that says that value specifies {{1/n}} units of information
+is not longer valid. Instead to talk meaningfully about information
+content, we should talk about a probability distribution on the values
+of the type. However what shall we base this distribution on? Is there
+a natural order beyond the unfolding order of the values of a type? 
+
+In this context, let us go back to the thought that recursive such as
+{{nat=nat+1}} have no meaningful solutions, whereas trees do. But the
+interesting solution of trees is precisely that they involve
+irrational numbers. Our usual notation for irrationals such as
+{{2^{1/2} }} can actually be viewed as a thunk representing the
+infinite computation {{1.4142..}}. Irrationals in this sense have a
+very different information theoretic interpretation from full real
+numbers. With Chaitin's Omega numbers he postulates the existence of
+real numbers that have an infinite amount of information -- ones for
+example are the solution to the question about the halting properties
+of every Turning machine. 
+
+Real numbers in that sense really are a series of bits of unknown
+information theoretic interpretation -- a sort of {{top}}. Numbers
+such as {{2^{1/2} }} are very different in the sense that even though
+they contain an infinite sequence of bits, there is a finite program
+that generates those bits and its only the cost of computing bits that
+is infinite.  The consistency of arithmetic isn't affected by
+extending the rational field by adding any specific computable
+irrational. So it might be possible to design a model of computing
+where we can indeed deal with them. Such a model will have to explicit
+thunks for the delayed computation represented by trees and never
+equate and cancel two infinite computations unless the represent
+exactly the same infinite computation.
+
 TODO.
 
 Square root and imaginary types have also appeared in the literature: we
@@ -1256,7 +1295,7 @@ polynomials and allow the roots of such polynomials to be types.
 Consider first an example in which we want to compute with the sides of a
 rectangle whose area is 91 and whose length is longer than its width by 6
 units. One can solve the quadratic equation to determine that the sides are 7
-and 13 and proceed. This however prematuraly forces us to globally solve the
+and 13 and proceed. This however prematurely forces us to globally solve the
 constraint. Instead we can let the two sides of the rectangle be $x$ and
 $x+6$ and use the following equation to capture the desired constraint:
 \[
