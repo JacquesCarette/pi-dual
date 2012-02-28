@@ -1,24 +1,26 @@
 \documentclass[preprint]{sigplanconf}
 
+%% I am getting an error about too many math packages used!!!
+%% I commented the ones we don't seem to be using.
+
 \usepackage{graphicx}
-\usepackage{longtable}
-\usepackage{comment}
+%%\usepackage{longtable}
+%%\usepackage{comment}
 \usepackage{amsmath}
-\usepackage{mdwlist}
-\usepackage{txfonts}
+%%\usepackage{mdwlist}
+%%\usepackage{txfonts}
 \usepackage{xspace}
-\usepackage{amstext}
+%%\usepackage{amstext}
 \usepackage{amssymb}
 \usepackage{stmaryrd}
 \usepackage{proof}
 \usepackage{multicol}
-\usepackage[nodayofweek]{datetime}
-\usepackage{etex}
-\usepackage[all, cmtip]{xy}
-\usepackage{xcolor}
-\usepackage{listings}
-\usepackage{multicol}
-\usepackage{bm}
+%%\usepackage[nodayofweek]{datetime}
+%%\usepackage{etex}
+%%\usepackage[all, cmtip]{xy}
+%%\usepackage{xcolor}
+%%\usepackage{listings}
+%%\usepackage{bm}
 \usepackage{cmll}
 
 %% \newtheorem{theorem}{Theorem}[section]
@@ -65,6 +67,8 @@
 %! identl* = \mathit{unite}
 %! dist = \mathit{distrib}
 %! factor = \mathit{factor}
+%! eta = \eta
+%! eps = \epsilon
 %! eta+ = \eta^+
 %! eps+ = \epsilon^+
 %! eta* = \eta^*
@@ -152,14 +156,51 @@ closed categories.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
+Continuations made their introduction to the world of programming language
+semantics as a mathematical device to model first-class labels and
+jumps~\cite{springerlink:10.1023/A:1010026413531}. In a remarkable
+development, Filinski~\cite{Filinski:1989:DCI:648332.755574} observed that
+--- with the right perspective --- this highly imperative concept was
+actually the symmetric dual of values. The heart of the observation is that
+values represent entities that flow from producers to consumers while
+continuations represent \emph{demands} for such entities, that flow from
+consumers to producers. In more detail, Filinski describes continuations as
+representing ``the \emph{lack} or \emph{absence} of a value, just as having a
+negative amount of money represents a debt.'' He then proceeds to construct a
+language where values and continuations are treated truly symmetrically. To
+that end, he abandons the $\lambda$-calculus amalgamation of functions and
+values and distinguishes between three different syntactic classes:
+functions, values, and continuations, with the property that any function can
+be used either as a value transformer or as a continuation transformer.
+
+This highly intuitive and appealing idea was further explored and refined by
+many authors~\cite{Griffin:1989:FNC:96709.96714, curien00duality,
+  Wadler:2003, DBLP:conf/rta/Wadler05}. Yet despite of its appeal, the idea
+that continuations of this
+
+
+
+
+
+
+appeared as functional
+representation of labels and jumps,
+Filinski, in 1989, observed that they
+are the categorical introduced the symmetric $\lambda$-calculus
+
+Computationally, symmetry exhibits itself as a duality between
+two concepts. 
+
+Symmetry is pervasive in both natural and man-made environments. 
+
+
 In 1989, Filinski~\cite{Filinski:1989:DCI:648332.755574} observed that values
 and continuations are dual notions. This observation was followed by numerous
-papers~\cite{Griffin:1989:FNC:96709.96714, curien00duality, Wadler:2003,
-  DBLP:conf/rta/Wadler05} which explored and refined this duality. Even
-earlier, Rauszer~\cite{springerlink:10.1007/BF02120864,rauszer,rauszer2}
-introduced a logic which contains a dual to implication. Her work has been
-distilled in the form of \emph{subtractive logic}~\cite{Crolard01} which has
-recently been related to coroutines~\cite{Crolard01082004} and delimited
+
+Rauszer~\cite{springerlink:10.1007/BF02120864,rauszer,rauszer2} introduced a
+logic which contains a dual to implication. Her work has been distilled in
+the form of \emph{subtractive logic}~\cite{Crolard01} which has recently been
+related to coroutines~\cite{Crolard01082004} and delimited
 continuations~\cite{Ariola:2009:TFD:1743339.1743381}.
 
 In a seemingly unrelated development, Girard in 1987 introduced linear
@@ -273,19 +314,17 @@ closed field. The complex numbers is an obvious choice but I would rather go
 to something computable like the field of algebraic numbers. Is the adele
 ring or the p-adics relevant here?
 
-We show a deep symmetry between functions and delimited continuations,
-values and continuations that arises in {{langRev}} in a manner that
-is reminiscent of Filinksi's Symmetric \lcal
-~\cite{Filinski:1989:DCI:648332.755574}. The symmetry arises by
-extending {{langRev}} with a notion of additive duality over the
-monoid {{(+, 0)}} by including {{eta}} and {{eps}} operators of
-Compact Closed Categories. The resulting dual types, which we denote
-{{-b}}, have a time traveling ``backward information flow''
-interpretation and allow for the encoding of higher-order function and
-iteration via the construction of {{trace}} operators, thereby making
-the extended language {{langRevEE}} a Turing-complete reversible
-programming language with higher-order functions and first-class
-delimited continuations.
+We show a deep symmetry between functions and delimited continuations, values
+and continuations that arises in {{langRev}} in a manner that is reminiscent
+of Filinksi's Symmetric \lcal ~\cite{Filinski:1989:DCI:648332.755574}. The
+symmetry arises by extending {{langRev}} with a notion of additive duality
+over the monoid {{(+, 0)}} by including {{eta}} and {{eps}} operators of
+Compact Closed Categories. The resulting dual types, which we denote {{-b}},
+have a time traveling ``backward information flow'' interpretation and allow
+for the encoding of higher-order function and iteration via the construction
+of trace operators, thereby making the extended language {{langRevEE}} a
+Turing-complete reversible programming language with higher-order functions
+and first-class delimited continuations.
 
 We introduced this thesis that computation should be based on isomorphisms
 that preserve information~\cite{infeffects}. Since Filinski, we've had the
@@ -412,20 +451,20 @@ understand the computational interpretation, consider the following example.
 The goal is to produce a value of type $(\texttt{bool} \times
 \texttt{int})$. One part of the program, $e_1$, knows how to produce the
 value of type $\texttt{int}$ (say {{3}}) and another part, $e_2$, knows how
-to produce the value of type $\texttt{bool}$ (say {{true}}). Computationally,
-we model this as follows. The first subcomputation $e_1$ produces {{((),3)}}
-and uses the isomorphism to convert {{()}} to {{(alpha,1/alpha)}} where
-{{alpha}} is a yet-unknown boolean value. Reshuffling the components, $e_1$
-produces {{((alpha,3), 1/alpha)}}. Similarly, $e_2$ can independently produce
-{{((true,beta),1/beta)}} where {{beta}} is a yet-unknown integer value.
-When the two values meet, we can group the components as follows:
+to produce the value of type $\texttt{bool}$ (say true). Computationally, we
+model this as follows. The first subcomputation $e_1$ produces {{((),3)}} and
+uses the isomorphism to convert {{()}} to $(\alpha,1/\alpha)$ where $\alpha$
+is a yet-unknown boolean value. Reshuffling the components, $e_1$ produces
+$((\alpha,3), 1/\alpha)$. Similarly, $e_2$ can independently produce
+$((true,\beta),1/\beta)$ where $\beta$ is a yet-unknown integer value.  When
+the two values meet, we can group the components as follows:
 \[
-{{(alpha,beta)}}  {{(3,1/beta)}}  {{(true,1/alpha)}}
+(\alpha,\beta)  \qquad (3,1/\beta)  \qquad (true,1/\alpha)
 \]
 Using the isomorphism in the right-to-left direction on the last two pairs,
-forces {{alpha}} to be resolved to {{true}} and forces {{beta}} to be
-resolved to {{3}}. Both of these pairs then become {{()}} and be absorbed. We
-are left with the pair {{(true,3)}} as desired. 
+forces $\alpha$ to be resolved to true and forces $\beta$ to be resolved to
+{{3}}. Both of these pairs then become {{()}} and be absorbed. We are left
+with the pair $(true,3)$ as desired.
 
 To summarize, one can think of a value of type $a/b$ as a value that imposes
 a constraint on its context of use: it is a value that requires its context
