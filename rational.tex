@@ -108,6 +108,10 @@
 %! langRevT = \Pi^{o}
 %! langRevEE = \Pi^{\eta\epsilon}
 %! theseus = Theseus
+%! sqrt(x) = \sqrt{#x}
+%! surd(p,x) = \sqrt[#p]{#x}
+%! inv(x) = \frac{1}{#x}
+%! frac(x,y) = \frac{#x}{#y}
 %! * = \times
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -839,8 +843,8 @@ Note that we will freely write {{b^^^}} as {{1/b}} and {{a*b^^^}} as
 {{a/b}}.
 
 %subcode{bnf} include main
-% Value Types, b = ... | b^^^
-% Values, v = ... | v^^^
+% Value Types, b = ... | inv(b)
+% Values, v = ... | inv(v)
 %
 % Isomorphisms, iso &=& ... | eta* | eps*
 
@@ -848,13 +852,13 @@ Note that we will freely write {{b^^^}} as {{1/b}} and {{a*b^^^}} as
 These have the type judgments
 
 %subcode{opsem} include main
-% eta* &: 1 <-> b^^^ * b :& eps*
+% eta* &: 1 <-> inv(b) * b :& eps*
 
 %subcode{proof} include main
 %@ |- v : b
-%@@ |- v^^^ : b^^^
+%@@ |- inv(v) : inv(b)
 
-As with additive duals, we represent {{eta*}} and {{eps*}] using
+As with additive duals, we represent {{eta*}} and {{eps*}} using
 `U'-shaped connectors. In the general case the wires for {{1}} will be
 dropped as it can freely introduced or eliminated using {{uniti}} and
 {{unite}}. 
@@ -871,12 +875,12 @@ dropped as it can freely introduced or eliminated using {{uniti}} and
 
 The usual interpretation of {{b1*b2}} we have both a value of type
 {{b1}} and a value of type {{b2}}. This interpretation is maintained
-in the precense of fractionals. Hence an {{eta* : 1 <-> b^^^ * b}} is
+in the precense of fractionals. Hence an {{eta* : 1 <-> inv(b) * b}} is
 to be viewed as a fission point for a value of type {{b}} and its
-multiplicative inverse {{b^^^}}. This naturally raises the question --
+multiplicative inverse {{inv(b)}}. This naturally raises the question --
 which value of type {{b}} is produced? The isomorphism {{eta*}} does
 not produce any specific value of type {{b}}, instead it produces a
-place holder for a value such that the value of type {{b^^^}} is
+place holder for a value such that the value of type {{inv(b)}} is
 always the dual of the chosen one. 
 
 \begin{multicols}{2}
@@ -897,7 +901,7 @@ always the dual of the chosen one.
 A computational interpretation of this is that {{langRevEE}} acts like
 a logic programming system and {{eta*}} acts as the site of creation
 of a new typed logic variable of type {{b}} and its corresponding dual
-of type {{b^^^}}. These two values are free to move independantly
+of type {{inv(b)}}. These two values are free to move independantly
 through a circuit, but any operations on value affect what operations
 are possible on the other since they are both related by an underlying
 logic variable. Dually, {{eps*}} acts as a unification site for values
@@ -1449,7 +1453,7 @@ In this context, let us go back to the thought that recursive such as
 {{nat=nat+1}} have no meaningful solutions, whereas trees do. But the
 interesting solution of trees is precisely that they involve
 irrational numbers. Our usual notation for irrationals such as
-{{2^{1/2} }} can actually be viewed as a thunk representing the
+{{sqrt(2) }} can actually be viewed as a thunk representing the
 infinite computation {{1.4142..}}. Irrationals in this sense have a
 very different information theoretic interpretation from full real
 numbers. With Chaitin's Omega numbers he postulates the existence of
@@ -1459,7 +1463,7 @@ of every Turning machine.
 
 Real numbers in that sense really are a series of bits of unknown
 information theoretic interpretation -- a sort of {{top}}. Numbers
-such as {{2^{1/2} }} are very different in the sense that even though
+such as {{sqrt(2) }} are very different in the sense that even though
 they contain an infinite sequence of bits, there is a finite program
 that generates those bits and its only the cost of computing bits that
 is infinite.  The consistency of arithmetic isn't affected by
