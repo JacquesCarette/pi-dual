@@ -1212,6 +1212,50 @@ of the functions and can be thought of as the address of the function.
 \subsection{SAT solver}
 \label{sec:sat-solver}
 
+The construction presented here is a novel SAT-solver that relies on
+{{trace*}} for its solution. It varies from previous classical SAT
+solvers in that there is not explicit search operation on the boolean
+space. It also varies from previous quantum SAT solvers in that it
+does uses a {{trace}} operation to compute a fixpoint which is the
+solution following which an isomorphic clone operation allows us to
+examine the result.
+
+The construction here is not limited to boolean satisfiability, but
+generalises to any constraint satisfaction problem whose search space
+can be represented by a recursive type and for which an isomorphic
+clone operation can be constructed. That said, we will focus on the
+limited case of boolean satisfiability here. 
+
+Consider the circuit below that has no observable output -- i.e. for
+all inputs it is annihilating. This happens because it constructs a
+boolean and its dual, negates one of them and attempts to collapse
+them.
+\begin{center}
+\scalebox{1.5}{
+  \includegraphics{diagrams/not_trace.pdf}
+}
+\end{center}  
+
+We leverage the basic idea of the above circuit, to collapse all
+values that are not solutions to the specified isomorphic constraint
+{{f}}. The operation {{f}} acts on some inputs and its adjoint
+reconstructs the inputs from the outputs. While the output of {{f}}
+may contain many components, its must contain a boolean indicating if
+the input satisfy {{f}}. The special output wire is used to `control'
+the negation of a boolean `control wire'. If the inputs do not satisfy
+{{f}}, the control wire is negated. 
+
+\begin{center}
+\scalebox{1.5}{
+  \includegraphics{diagrams/sat1.pdf}
+}
+\end{center}  
+
+If this construction is traced using {{trace*}}, all the values that
+do not satisfy {{f}} get annihilated because the control wire acts
+like the closed-loop `not' in the previous construction. 
+
+
 %%%%%%%%%%%%%%%%%%%
 \subsection{GoI machine}
 
