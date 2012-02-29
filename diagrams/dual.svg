@@ -15,7 +15,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.2 r9819"
-   sodipodi:docname="eps_times1.pdf">
+   sodipodi:docname="dual.svg">
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -24,7 +24,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="6.144381"
-     inkscape:cx="349.99115"
+     inkscape:cx="350.75061"
      inkscape:cy="646.3455"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -188,7 +188,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -6100,7 +6100,8 @@
    style="fill:#000000;stroke-width:0" />
 </g>    </g>
     <g
-       id="g27540">
+       id="g27540"
+       transform="translate(19.9746,-3.4492876)">
       <g
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
          ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
@@ -6150,7 +6151,7 @@
          style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1, 1;stroke-dashoffset:0;marker-start:none;marker-end:url(#Arrow2Send-5-4)" />
       <path
          transform="matrix(-0.99999916,-0.00128982,0.00128982,-0.99999916,634.59967,762.68535)"
-         d="m 300,319.86218 a 2.5,2.5 0 1 1 -5,0 2.5,2.5 0 1 1 5,0 z"
+         d="m 300,319.86218 c 0,1.38071 -1.11929,2.5 -2.5,2.5 -1.38071,0 -2.5,-1.11929 -2.5,-2.5 0,-1.38071 1.11929,-2.5 2.5,-2.5 1.38071,0 2.5,1.11929 2.5,2.5 z"
          sodipodi:ry="2.5"
          sodipodi:rx="2.5"
          sodipodi:cy="319.86218"
@@ -6160,7 +6161,7 @@
          sodipodi:type="arc" />
       <path
          transform="matrix(-0.30296698,0.95300105,-0.95300105,-0.30296698,732.30711,236.58384)"
-         d="m 300,319.86218 a 2.5,2.5 0 1 1 -5,0 2.5,2.5 0 1 1 5,0 z"
+         d="m 300,319.86218 c 0,1.38071 -1.11929,2.5 -2.5,2.5 -1.38071,0 -2.5,-1.11929 -2.5,-2.5 0,-1.38071 1.11929,-2.5 2.5,-2.5 1.38071,0 2.5,1.11929 2.5,2.5 z"
          sodipodi:ry="2.5"
          sodipodi:rx="2.5"
          sodipodi:cy="319.86218"
@@ -6191,7 +6192,7 @@
          id="g20034-4">
 <polygon
    id="polygon20036-7"
-   points="226.6,659.41 228.82,657.18 229.21,657.58 226.99,659.79 229.21,662.01 228.82,662.41 226.6,660.19 224.39,662.41 223.99,662.01 226.2,659.79 223.99,657.58 224.39,657.18 "
+   points="228.82,657.18 229.21,657.58 226.99,659.79 229.21,662.01 228.82,662.41 226.6,660.19 224.39,662.41 223.99,662.01 226.2,659.79 223.99,657.58 224.39,657.18 226.6,659.41 "
    style="fill:#000000;stroke-width:0" />
 </g>      <g
          id="g21744-7"
@@ -6214,7 +6215,7 @@
    inkscape:connector-curvature="0"
    style="fill:#000000;stroke-width:0" />
 <polygon
-   points="231.85,662.83 228.29,662.83 228.29,662.44 231.85,662.44 "
+   points="228.29,662.83 228.29,662.44 231.85,662.44 231.85,662.83 "
    id="polygon21748-0"
    style="fill:#000000;stroke-width:0" />
 <path
@@ -6238,7 +6239,7 @@
    inkscape:connector-curvature="0"
    style="fill:#000000;stroke-width:0" />
 <polygon
-   points="253.56,662.83 249.99,662.83 249.99,662.44 253.56,662.44 "
+   points="249.99,662.83 249.99,662.44 253.56,662.44 253.56,662.83 "
    id="polygon21758-2"
    style="fill:#000000;stroke-width:0" />
 <path
@@ -6268,7 +6269,7 @@
    id="path26659" />
 <polygon
    style="fill:#000000;stroke-width:0"
-   points="228.3,664.19 229.85,662.64 228.3,661.09 228.58,660.82 230.13,662.37 231.68,660.82 231.95,661.09 230.4,662.64 231.95,664.19 231.68,664.47 230.13,662.92 228.58,664.47 "
+   points="229.85,662.64 228.3,661.09 228.58,660.82 230.13,662.37 231.68,660.82 231.95,661.09 230.4,662.64 231.95,664.19 231.68,664.47 230.13,662.92 228.58,664.47 228.3,664.19 "
    id="polygon26661" />
 </g>    </g>
   </g>
