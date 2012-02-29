@@ -130,11 +130,11 @@
 
 \begin{abstract}
   Every functional programmer knows about sum and product types, {{a+b}} and
-  {{a*b}}. Negative and fractional types, $a-b$ and $a/b$ respectively, are
-  much less known and their computational interpretation is unfamiliar and
-  often complicated. We show that in a programming model in which information
-  is preserved (such as the model introduced in our recent paper on
-  \emph{Information Effects}), these types have particularly natural
+  {{a*b}} respectively. Negative and fractional types, $a-b$ and $a/b$
+  respectively, are much less known and their computational interpretation is
+  unfamiliar and often complicated. We show that in a programming model in
+  which information is preserved (such as the model introduced in our recent
+  paper on \emph{Information Effects}), these types have particularly natural
   computational interpretations. Intuitively, values of negative types are
   values that flow ``backwards'' to satisfy demands and values of fractional
   types are values that impose constraints on their context.  The combination
@@ -180,273 +180,52 @@ information effects, which obscured their appeal and murked their properties.
 To get a feeling for the main idea, consider the following algebraic
 manipulation relating a natural number $a$ to itself:
 \[\begin{array}{rclclclclcl}
-a &=& a + 0 &=& a + ((-a) + a) &=& (a + (-a)) + a &=& 0 + a &=& a
+a &=& a + 0 &=& a + ((-a) + a) \\
+  &=& (a + (-a)) + a &=& 0 + a &=& a
 \end{array}\]
-Although seemingly pointless, this isomorphism has a non-trivial and
-interesting computational interpretation (see Sec.~\ref{sub:neg}). 
 
-corresponds to a type isomorphism between the object $a$ and itself. 
-
-Furthermore, we illustrate their true appeal and expressiveness is brought
-forth by viewing them in the context of an information-preserving
-computational model.
-
-In addition, we show how these types enrich our computational model, they
-obey the same laws as the rational numbers. In other words, every algebraic
-identity that holds for the rational numbers corresponds to a type
-isomorphism in our model.
-
-Specifically, 
-isomorphisms enrich our computational model with have an interesting
-computational interpretation
-
- in our
-model. For example, 
-
-
-
-On the left we have a producer
-that can supply a value of type $a$ and on the right we have a consumer that
-demands a value of type $a$. For the purposes of the example, think of the
-producer as a buyer who has \$20.00 and the consumer as a seller who expects
-\$20.00 for the merchandise. In a conventional computational model, one might
-realize this situation by simply writing the identity function: the buyer
-hands the money to the seller to finish the transaction. The above sequence
-of isomorphisms implements this identity function in a much more interesting
-way, however. 
-of the above series of isomorphisms is that money is ``created'' on the
-consumer side together with a corresponding debt that travels ``backwards''
-until it is paid for by the money at the supplier. In other words, this
-computation models a credit card transaction. It shares the same benefits of
-such transactions: allowing transactions to occur without necessarily
-demanding that the resources be present at the time of the transaction.
-
-On the producer side, the debt is paid for by the money computation with
-the identity function. the producer and consumer must somehow share an
-explicit dependency that allows the value. However in our model, the presence
-of negative types allows the produced value to satisfy the demand without the
-producer or consumer even knowing about each other. As is explained in detail
-in
-
-Indeed, in 
-the above example, the computation on the consumer side creates 
-
-
-
-In particular, linear logic~\cite{Girard87tcs}, among other contributions,
-exposed an additive/multiplicative distinction in logical connectives and
-rules. In particular, linear logic includes additive disjunctions $\oplus$
-and conjunctions $\with$ as well as multiplicative disjunctions $\parr$ and
-conjuctions $\otimes$. Duality is also prominent in linear logic: it relates
-the additive connectives to each other (the dual of $\oplus$ is $\with$ and
-vice-versa) and the multiplicative connectives to each other (the dual of
-$\otimes$ is $\parr$ and vice-versa).
-
-We furthermore demonstrate that, in our model,
-programming with these negative and fractional types, is a new ``revolution''
-breaking dependencies...
-
-
-
-Since Filinski, we've had the
-idea that values and continuations are like mirror images. In a conventional
-language, the negative (continuation) side is implicit and we introduce
-information effects on the positive. Trying to recover the duality from this
-distorted positive side has always been messy. Now it looks clean because we
-have kept the positive side pure.
-
-
-
-
-
-\newpage
-
-Continuations made their introduction to the world of programming language
-semantics as a mathematical device to model first-class labels and
-jumps~\cite{springerlink:10.1023/A:1010026413531}. In a remarkable
-development, Filinski~\cite{Filinski:1989:DCI:648332.755574} observed that
---- with the right perspective --- this highly imperative concept was
-actually the symmetric dual of values. The heart of the observation is that
-values represent entities that flow from producers to consumers while
-continuations represent \emph{demands} for such entities, that flow from
-consumers to producers. In more detail, Filinski describes continuations as
-representing ``the \emph{lack} or \emph{absence} of a value, just as having a
-negative amount of money represents a debt.'' He then proceeds to construct a
-language where values and continuations are treated truly symmetrically. To
-that end, he abandons the $\lambda$-calculus amalgamation of functions and
-values and distinguishes between three different syntactic classes:
-functions, values, and continuations, with the property that any function can
-be used either as a value transformer or as a continuation transformer.
-
-This highly intuitive and appealing idea was further explored and refined by
-many authors~\cite{Griffin:1989:FNC:96709.96714, curien00duality,
-  Wadler:2003, DBLP:conf/rta/Wadler05}. Yet, despite its appeal, the duality
-between values and continuations 
-
-
-
-
-
-
-Computationally, symmetry exhibits itself as a duality between two concepts.
-
-Symmetry is pervasive in both natural and man-made environments. 
-
-In 1989, Filinski~\cite{Filinski:1989:DCI:648332.755574} observed that values
-and continuations are dual notions. This observation was followed by numerous
-
-Rauszer~\cite{springerlink:10.1007/BF02120864,rauszer,rauszer2} introduced a
-logic which contains a dual to implication. Her work has been distilled in
-the form of \emph{subtractive logic}~\cite{Crolard01} which has recently been
-related to coroutines~\cite{Crolard01082004} and delimited
-continuations~\cite{Ariola:2009:TFD:1743339.1743381}.
-
-In a seemingly unrelated development, Girard in 1987 introduced linear
-
-We introduced this thesis that computation should be based on isomorphisms
-that preserve information~\cite{infeffects}. Since Filinski, we've had the
-idea that values and continuations are like mirror images. In a conventional
-language, the negative (continuation) side is implicit and we introduce
-information effects on the positive. Trying to recover the duality from this
-distorted positive side has always been messy. Now it looks clean because we
-have kept the positive side pure.
-
-
-
-
-
-
-
-
-In a technical sense, this paper extends the language of isomorphisms
-{{langRev}}, with duality. Unlike Linear logic \cite{Girard87tcs} and
-other systems which have one notion of duality over additive and
-multiplicative components, {{langRevEE}} has two notions of duality
--- an additive duality over the monoid {{(0, +)}} and a multiplicative
-duality over the monoid {{(1, *)}}. Each axis of duality also give us
-a function space and hence {{langRevEE}} has an additive function
-space corresponding to a notion of control or backtracking and a
-multiplicative function space corresponding to a notion of unification
-or constraint satisfaction.
-
-
-The world of computation we are describing has:
+Although seemingly pointless, this algebraic proof corresponds, in our model,
+to an isomorphism with a non-trivial and interesting computational
+interpretation.  On the left we have a producer that can supply a value of
+type $a$ and on the right we have a consumer that demands a value of type
+$a$. For the purposes of the example, think of the producer as someone having
+\$20.00 and the consumer as someone demanding \$20.00. It is certainly
+possible to directly connect the producer and consumer: such a connection
+would be modeled by the identity function. The proof above implements this
+connection in a much more interesting way, however. A transformation $0 =
+(-a) + a$ is used at the consumer site to create money and a corresponding
+debt. The consumer gets the money immediately and the debt travels
+``backwards'' towards the producer where it is paid.  In other words, this
+computation models something similar to a credit card transaction. We discuss
+this example in detail in Sec.~\ref{sub:neg} and only focus on two important
+points here:
 \begin{itemize}
-\item suppliers, 
-\item consumers, and
-\item bi-directional transformations
+\item As the example illustrates, negative types corresponds to ``debts.''
+  It would clearly be disastrous if debts could be deleted or
+  duplicated. This simple observation explains why negative types are much
+  simpler and much more appealing in a framework where information is
+  guaranteed to be preserved. In previous work that used negative types,
+  complicated mechanisms are typically needed to constrain the propagation
+  and use of negative values because the surrounding computational framework
+  is, generally speaking, careless in its treatment of information.
+\item The appeal of negative types can already be gleaned from the credit
+  card analogy. The main reason credit card transactions are convenient is
+  because they disentangle the propagation of the money from the propagation
+  of the services. Not every transaction needs both the resources and
+  services to be brought together: it is sufficient to have a promise that
+  the money will be paid at some point, as long as the infrastructure can be
+  trusted that such promises will be fulfilled. 
 \end{itemize}
-This is the same world described by the papers on the duality of computation
-but that work only scratched the surface! We have the following features:
+
+Similar observations hold for fractional types but we defer these to
+Sec.~\ref{sub:frac}. Before proceeding to the main part of the paper, we
+briefly summarize the our technical contributions:
 \begin{itemize}
-\item we can start from the supplier and push the values towards the
-  consumer (call-by-value in the duality of computation papers)
-\item we can start from the consumer and pull the values from the suppliers
-  (call-by-name in the duality of computation papers)
-\item we can combine the pushing and pulling and values using eta/epsilon for
-  sum types; these allow us to at any point in the middle of the computation
-  create out of nothing a value to send to the consumers and a demand to send
-  to the suppliers.
-\item we can break a big data structure into fragments described by
-  fractional types; the suppliers and consumers can produce and consume the
-  pieces completely independently of each other. Eventually the pieces will
-  fit together at the consumer to produce the desired output.
-\item we can break a bi-directional transformation into pieces using square
-  roots
-\item we can take into account that values have phase (complex numbers),
-  i.e., it is not that they flow towards the consumer or just towards the
-  suppliers; they can be flowing in direction that ``30 degrees'' towards the
-  consumer for example.
+\item 
+\item 
+\item 
+\item 
 \end{itemize}
-So it is all about breaking dependencies in some sense to allow for maximum
-autonomy (parallelism) of subcomputations. It is probably the case that to
-make full use of square root types and imaginary types, we have to move to a
-vector space. If that's the case, we should probably leave this stuff out and
-focus on negative and fractional types and only have a short discussion of
-the polynomials restricted to seven trees in one and similar issues.
-
-The conventional idea is to divide the world into a ``real'' one and a
-``virtual'' one. In the ``real'' world, we can define datatypes like
-\verb|t=t^2+1| but we don't have additive inverses so it makes no sense to
-talk of negative types and we can't rearrange the terms in the datatype
-definition. However the observation is that we can map these datatypes to a
-virtual world that has more structure (a ring that provides additive inverses
-or a field that also provides multiplicative inverses) and then perform
-computations in the ring/field. If we perform computations in the ring, then
-some of these will use additive inverses in ways that cannot be mapped back
-to the ``real'' world. Much of current research attempts to characterize
-which computations done in the ring are valid isomorphisms between datatypes
-in the ``real'' world. This is nice but is not what I am after. In fact I am
-not interested in the ring or the semiring at all. I am interested in the
-field and I want this field to be \textbf{the real world.} This is partly
-motivated by the fact that Quantum Mechanics seems to demand an underlying
-field and more generally that the field provides the maximum generality in
-slicing and dicing computations. So assuming I live in a field and that the
-negative, fractional, square root, and imaginary types are all ``real,'' how
-do I compute in this field? Clearly there will be constraints on
-``measurement'' in the sense that a full program cannot produce any of the
-crazy types but that's done outside the formalism in some sense just as in
-Quantum Computing. The main question I am after is how to compute in this
-field with first-class negative, fractional, etc. types. As I mentioned in my
-previous email, we can produce programs that have types \verb|t^3 <-> -1| and
-they ``run'' (but only to give infinite loops). 
-
-So when a programmer writes the datatype declaration \verb|t = t^2+1|,
-if we allow negative etc. then this is effectively writing
-\verb|t = cubicroot{-1}|. If we are in the field then computations
-that manipulate these trees can be sliced and diced even at interfaces
-that expose the cubic root and the imaginary types.
-
-Future work: develop a type system for a ``normal language'' that has
-negative, fractional, etc. types as first-class types. More long term,
-instead of adding one polynomial at a time, we can go to an algebraically
-closed field. The complex numbers is an obvious choice but I would rather go
-to something computable like the field of algebraic numbers. Is the adele
-ring or the p-adics relevant here?
-
-
-We show a deep symmetry between functions and delimited continuations, values
-and continuations that arises in {{langRev}} in a manner that is reminiscent
-of Filinksi's Symmetric \lcal ~\cite{Filinski:1989:DCI:648332.755574}. The
-symmetry arises by extending {{langRev}} with a notion of additive duality
-over the monoid {{(+, 0)}} by including {{eta+}} and {{eps+}} operators of
-Compact Closed Categories. The resulting dual types, which we denote {{-b}},
-have a time traveling ``backward information flow'' interpretation and allow
-for the encoding of higher-order function and iteration via the construction
-of trace operators, thereby making the extended language {{langRevEE}} a
-Turing-complete reversible programming language with higher-order functions
-and first-class delimited continuations.
-
-We introduced this thesis that computation should be based on isomorphisms
-that preserve information~\cite{infeffects}. Since Filinski, we've had the
-idea that values and continuations are like mirror images. In a conventional
-language, the negative (continuation) side is implicit and we introduce
-information effects on the positive. Trying to recover the duality from this
-distorted positive side has always been messy. Now it looks clean because we
-have kept the positive side pure.
-
-The way to think about something of type $A$ is that it is a value we have
-produced. The way to think about something of type $-A$ is that is a value we
-have already consumed. 
-
-Other interpretations of the types of think about. The first one is
-arithmetic obviously. Another one is languages consisting of sets of
-string. The type 0 is the empty set, the type 1 is the set containing the
-empty word, the $+$ constructor corresponds to union, and the $*$ constructor
-corresponds to concatenation. The constructor $-$ would not correspond to set
-difference however. It would correspond to marking the elements in the set as
-``consumed'' so that if we take the union and a ``consumed'' element appears
-in the other set, the two cancel. This makes it clear that concatenating a
-produced $a$ and a consumed $b$ is not the same as concatenating a consumed
-$a$ and a produced $b$. They really need to be kept separate. Incidentally,
-division would be defined as follows:
-\[
-L_1 / L_2 = \{ x ~|~ xy \in L_1 \mbox{~for~some~} y \in L_2 \}
-\]
-
-Connections to type logical grammars and Lambek calculus
-
-Some background on {{langRev}} because it is mentioned in the next section.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Field of Rational Types: Intuitions} 
@@ -1751,6 +1530,226 @@ Discussion of possible polynomials:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
+
+
+The simplest way to connect the In a conventional computational model, one
+might realize this situation by simply writing the identity function: the
+buyer hands the money to the seller to finish the transaction. The above
+sequence of isomorphisms implements this identity function in a much more
+interesting way, however.  of the above series of
+
+On the producer side, the debt is paid for by the money computation with the
+identity function. the producer and consumer must somehow share an explicit
+dependency that allows the value. However in our model, the presence of
+negative types allows the produced value to satisfy the demand without the
+producer or consumer even knowing about each other. As is explained in detail
+in
+
+Furthermore, we illustrate their true appeal and expressiveness is brought
+forth by viewing them in the context of an information-preserving
+computational model.
+
+In addition, we show how these types enrich our computational model, they
+obey the same laws as the rational numbers. In other words, every algebraic
+identity that holds for the rational numbers corresponds to a type
+isomorphism in our model.
+
+Specifically, isomorphisms enrich our computational model with have an
+interesting computational interpretation
+
+In particular, linear logic~\cite{Girard87tcs}, among other contributions,
+exposed an additive/multiplicative distinction in logical connectives and
+rules. In particular, linear logic includes additive disjunctions $\oplus$
+and conjunctions $\with$ as well as multiplicative disjunctions $\parr$ and
+conjuctions $\otimes$. Duality is also prominent in linear logic: it relates
+the additive connectives to each other (the dual of $\oplus$ is $\with$ and
+vice-versa) and the multiplicative connectives to each other (the dual of
+$\otimes$ is $\parr$ and vice-versa).
+
+We furthermore demonstrate that, in our model,
+programming with these negative and fractional types, is a new ``revolution''
+breaking dependencies...
+
+Since Filinski, we've had the
+idea that values and continuations are like mirror images. In a conventional
+language, the negative (continuation) side is implicit and we introduce
+information effects on the positive. Trying to recover the duality from this
+distorted positive side has always been messy. Now it looks clean because we
+have kept the positive side pure.
+
+Continuations made their introduction to the world of programming language
+semantics as a mathematical device to model first-class labels and
+jumps~\cite{springerlink:10.1023/A:1010026413531}. In a remarkable
+development, Filinski~\cite{Filinski:1989:DCI:648332.755574} observed that
+--- with the right perspective --- this highly imperative concept was
+actually the symmetric dual of values. The heart of the observation is that
+values represent entities that flow from producers to consumers while
+continuations represent \emph{demands} for such entities, that flow from
+consumers to producers. In more detail, Filinski describes continuations as
+representing ``the \emph{lack} or \emph{absence} of a value, just as having a
+negative amount of money represents a debt.'' He then proceeds to construct a
+language where values and continuations are treated truly symmetrically. To
+that end, he abandons the $\lambda$-calculus amalgamation of functions and
+values and distinguishes between three different syntactic classes:
+functions, values, and continuations, with the property that any function can
+be used either as a value transformer or as a continuation transformer.
+
+This highly intuitive and appealing idea was further explored and refined by
+many authors~\cite{Griffin:1989:FNC:96709.96714, curien00duality,
+  Wadler:2003, DBLP:conf/rta/Wadler05}. Yet, despite its appeal, the duality
+between values and continuations 
+
+Computationally, symmetry exhibits itself as a duality between two concepts.
+
+Symmetry is pervasive in both natural and man-made environments. 
+
+In 1989, Filinski~\cite{Filinski:1989:DCI:648332.755574} observed that values
+and continuations are dual notions. This observation was followed by numerous
+
+Rauszer~\cite{springerlink:10.1007/BF02120864,rauszer,rauszer2} introduced a
+logic which contains a dual to implication. Her work has been distilled in
+the form of \emph{subtractive logic}~\cite{Crolard01} which has recently been
+related to coroutines~\cite{Crolard01082004} and delimited
+continuations~\cite{Ariola:2009:TFD:1743339.1743381}.
+
+In a seemingly unrelated development, Girard in 1987 introduced linear
+
+We introduced this thesis that computation should be based on isomorphisms
+that preserve information~\cite{infeffects}. Since Filinski, we've had the
+idea that values and continuations are like mirror images. In a conventional
+language, the negative (continuation) side is implicit and we introduce
+information effects on the positive. Trying to recover the duality from this
+distorted positive side has always been messy. Now it looks clean because we
+have kept the positive side pure.
+
+In a technical sense, this paper extends the language of isomorphisms
+{{langRev}}, with duality. Unlike Linear logic \cite{Girard87tcs} and
+other systems which have one notion of duality over additive and
+multiplicative components, {{langRevEE}} has two notions of duality
+-- an additive duality over the monoid {{(0, +)}} and a multiplicative
+duality over the monoid {{(1, *)}}. Each axis of duality also give us
+a function space and hence {{langRevEE}} has an additive function
+space corresponding to a notion of control or backtracking and a
+multiplicative function space corresponding to a notion of unification
+or constraint satisfaction.
+
+The world of computation we are describing has:
+\begin{itemize}
+\item suppliers, 
+\item consumers, and
+\item bi-directional transformations
+\end{itemize}
+This is the same world described by the papers on the duality of computation
+but that work only scratched the surface! We have the following features:
+\begin{itemize}
+\item we can start from the supplier and push the values towards the
+  consumer (call-by-value in the duality of computation papers)
+\item we can start from the consumer and pull the values from the suppliers
+  (call-by-name in the duality of computation papers)
+\item we can combine the pushing and pulling and values using eta/epsilon for
+  sum types; these allow us to at any point in the middle of the computation
+  create out of nothing a value to send to the consumers and a demand to send
+  to the suppliers.
+\item we can break a big data structure into fragments described by
+  fractional types; the suppliers and consumers can produce and consume the
+  pieces completely independently of each other. Eventually the pieces will
+  fit together at the consumer to produce the desired output.
+\item we can break a bi-directional transformation into pieces using square
+  roots
+\item we can take into account that values have phase (complex numbers),
+  i.e., it is not that they flow towards the consumer or just towards the
+  suppliers; they can be flowing in direction that ``30 degrees'' towards the
+  consumer for example.
+\end{itemize}
+So it is all about breaking dependencies in some sense to allow for maximum
+autonomy (parallelism) of subcomputations. It is probably the case that to
+make full use of square root types and imaginary types, we have to move to a
+vector space. If that's the case, we should probably leave this stuff out and
+focus on negative and fractional types and only have a short discussion of
+the polynomials restricted to seven trees in one and similar issues.
+
+The conventional idea is to divide the world into a ``real'' one and a
+``virtual'' one. In the ``real'' world, we can define datatypes like
+\verb|t=t^2+1| but we don't have additive inverses so it makes no sense to
+talk of negative types and we can't rearrange the terms in the datatype
+definition. However the observation is that we can map these datatypes to a
+virtual world that has more structure (a ring that provides additive inverses
+or a field that also provides multiplicative inverses) and then perform
+computations in the ring/field. If we perform computations in the ring, then
+some of these will use additive inverses in ways that cannot be mapped back
+to the ``real'' world. Much of current research attempts to characterize
+which computations done in the ring are valid isomorphisms between datatypes
+in the ``real'' world. This is nice but is not what I am after. In fact I am
+not interested in the ring or the semiring at all. I am interested in the
+field and I want this field to be \textbf{the real world.} This is partly
+motivated by the fact that Quantum Mechanics seems to demand an underlying
+field and more generally that the field provides the maximum generality in
+slicing and dicing computations. So assuming I live in a field and that the
+negative, fractional, square root, and imaginary types are all ``real,'' how
+do I compute in this field? Clearly there will be constraints on
+``measurement'' in the sense that a full program cannot produce any of the
+crazy types but that's done outside the formalism in some sense just as in
+Quantum Computing. The main question I am after is how to compute in this
+field with first-class negative, fractional, etc. types. As I mentioned in my
+previous email, we can produce programs that have types \verb|t^3 <-> -1| and
+they ``run'' (but only to give infinite loops). 
+
+So when a programmer writes the datatype declaration \verb|t = t^2+1|,
+if we allow negative etc. then this is effectively writing
+\verb|t = cubicroot{-1}|. If we are in the field then computations
+that manipulate these trees can be sliced and diced even at interfaces
+that expose the cubic root and the imaginary types.
+
+Future work: develop a type system for a ``normal language'' that has
+negative, fractional, etc. types as first-class types. More long term,
+instead of adding one polynomial at a time, we can go to an algebraically
+closed field. The complex numbers is an obvious choice but I would rather go
+to something computable like the field of algebraic numbers. Is the adele
+ring or the p-adics relevant here?
+
+
+We show a deep symmetry between functions and delimited continuations, values
+and continuations that arises in {{langRev}} in a manner that is reminiscent
+of Filinksi's Symmetric \lcal ~\cite{Filinski:1989:DCI:648332.755574}. The
+symmetry arises by extending {{langRev}} with a notion of additive duality
+over the monoid {{(+, 0)}} by including {{eta+}} and {{eps+}} operators of
+Compact Closed Categories. The resulting dual types, which we denote {{-b}},
+have a time traveling ``backward information flow'' interpretation and allow
+for the encoding of higher-order function and iteration via the construction
+of trace operators, thereby making the extended language {{langRevEE}} a
+Turing-complete reversible programming language with higher-order functions
+and first-class delimited continuations.
+
+We introduced this thesis that computation should be based on isomorphisms
+that preserve information~\cite{infeffects}. Since Filinski, we've had the
+idea that values and continuations are like mirror images. In a conventional
+language, the negative (continuation) side is implicit and we introduce
+information effects on the positive. Trying to recover the duality from this
+distorted positive side has always been messy. Now it looks clean because we
+have kept the positive side pure.
+
+The way to think about something of type $A$ is that it is a value we have
+produced. The way to think about something of type $-A$ is that is a value we
+have already consumed. 
+
+Other interpretations of the types of think about. The first one is
+arithmetic obviously. Another one is languages consisting of sets of
+string. The type 0 is the empty set, the type 1 is the set containing the
+empty word, the $+$ constructor corresponds to union, and the $*$ constructor
+corresponds to concatenation. The constructor $-$ would not correspond to set
+difference however. It would correspond to marking the elements in the set as
+``consumed'' so that if we take the union and a ``consumed'' element appears
+in the other set, the two cancel. This makes it clear that concatenating a
+produced $a$ and a consumed $b$ is not the same as concatenating a consumed
+$a$ and a produced $b$. They really need to be kept separate. Incidentally,
+division would be defined as follows:
+\[
+L_1 / L_2 = \{ x ~|~ xy \in L_1 \mbox{~for~some~} y \in L_2 \}
+\]
+
+Connections to type logical grammars and Lambek calculus
+
+Some background on {{langRev}} because it is mentioned in the next section.
 
 %% Jacques
 
