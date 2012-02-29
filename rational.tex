@@ -161,6 +161,106 @@ closed categories.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
+In a recent paper~\cite{infeffects}, we argued that, by encompassing
+irreversible physical primitives, conventional abstract models of computation
+have also inadvertently included some \emph{implicit} computational effects
+which we called \emph{information effects}. We then developed a pure
+reversible model of computation that is obtained from the type isomorphisms
+and categorical structures that underlie models of linear logic and quantum
+computing and that treats information as a linear resource that can neither
+be erased nor duplicated. In this paper, we show that our pure reversible
+model unveils deeper and more elegant symmetries of computation than have
+previously been reported. In particular, we expose two notions of duality of
+computation: an additive duality and a multiplicative duality that give rise
+to negative types and fractional types respectively. Although these types
+have previously appeared in the literature (see Sec.~\ref{sec:related}), they
+have typically appeared in the context of conventional languages with
+information effects, which obscured their appeal and murked their properties.
+
+To get a feeling for the main idea, consider the following algebraic
+manipulation relating a natural number $a$ to itself:
+\[\begin{array}{rclclclclcl}
+a &=& a + 0 &=& a + ((-a) + a) &=& (a + (-a)) + a &=& 0 + a &=& a
+\end{array}\]
+Although seemingly pointless, this isomorphism has a non-trivial and
+interesting computational interpretation (see Sec.~\ref{sub:neg}). 
+
+corresponds to a type isomorphism between the object $a$ and itself. 
+
+Furthermore, we illustrate their true appeal and expressiveness is brought
+forth by viewing them in the context of an information-preserving
+computational model.
+
+In addition, we show how these types enrich our computational model, they
+obey the same laws as the rational numbers. In other words, every algebraic
+identity that holds for the rational numbers corresponds to a type
+isomorphism in our model.
+
+Specifically, 
+isomorphisms enrich our computational model with have an interesting
+computational interpretation
+
+ in our
+model. For example, 
+
+
+
+On the left we have a producer
+that can supply a value of type $a$ and on the right we have a consumer that
+demands a value of type $a$. For the purposes of the example, think of the
+producer as a buyer who has \$20.00 and the consumer as a seller who expects
+\$20.00 for the merchandise. In a conventional computational model, one might
+realize this situation by simply writing the identity function: the buyer
+hands the money to the seller to finish the transaction. The above sequence
+of isomorphisms implements this identity function in a much more interesting
+way, however. 
+of the above series of isomorphisms is that money is ``created'' on the
+consumer side together with a corresponding debt that travels ``backwards''
+until it is paid for by the money at the supplier. In other words, this
+computation models a credit card transaction. It shares the same benefits of
+such transactions: allowing transactions to occur without necessarily
+demanding that the resources be present at the time of the transaction.
+
+On the producer side, the debt is paid for by the money computation with
+the identity function. the producer and consumer must somehow share an
+explicit dependency that allows the value. However in our model, the presence
+of negative types allows the produced value to satisfy the demand without the
+producer or consumer even knowing about each other. As is explained in detail
+in
+
+Indeed, in 
+the above example, the computation on the consumer side creates 
+
+
+
+In particular, linear logic~\cite{Girard87tcs}, among other contributions,
+exposed an additive/multiplicative distinction in logical connectives and
+rules. In particular, linear logic includes additive disjunctions $\oplus$
+and conjunctions $\with$ as well as multiplicative disjunctions $\parr$ and
+conjuctions $\otimes$. Duality is also prominent in linear logic: it relates
+the additive connectives to each other (the dual of $\oplus$ is $\with$ and
+vice-versa) and the multiplicative connectives to each other (the dual of
+$\otimes$ is $\parr$ and vice-versa).
+
+We furthermore demonstrate that, in our model,
+programming with these negative and fractional types, is a new ``revolution''
+breaking dependencies...
+
+
+
+Since Filinski, we've had the
+idea that values and continuations are like mirror images. In a conventional
+language, the negative (continuation) side is implicit and we introduce
+information effects on the positive. Trying to recover the duality from this
+distorted positive side has always been messy. Now it looks clean because we
+have kept the positive side pure.
+
+
+
+
+
+\newpage
+
 Continuations made their introduction to the world of programming language
 semantics as a mathematical device to model first-class labels and
 jumps~\cite{springerlink:10.1023/A:1010026413531}. In a remarkable
@@ -180,24 +280,17 @@ be used either as a value transformer or as a continuation transformer.
 
 This highly intuitive and appealing idea was further explored and refined by
 many authors~\cite{Griffin:1989:FNC:96709.96714, curien00duality,
-  Wadler:2003, DBLP:conf/rta/Wadler05}. Yet despite of its appeal, the idea
-that continuations of this
+  Wadler:2003, DBLP:conf/rta/Wadler05}. Yet, despite its appeal, the duality
+between values and continuations 
 
 
 
 
 
 
-appeared as functional
-representation of labels and jumps,
-Filinski, in 1989, observed that they
-are the categorical introduced the symmetric $\lambda$-calculus
-
-Computationally, symmetry exhibits itself as a duality between
-two concepts. 
+Computationally, symmetry exhibits itself as a duality between two concepts.
 
 Symmetry is pervasive in both natural and man-made environments. 
-
 
 In 1989, Filinski~\cite{Filinski:1989:DCI:648332.755574} observed that values
 and continuations are dual notions. This observation was followed by numerous
@@ -209,14 +302,6 @@ related to coroutines~\cite{Crolard01082004} and delimited
 continuations~\cite{Ariola:2009:TFD:1743339.1743381}.
 
 In a seemingly unrelated development, Girard in 1987 introduced linear
-logic~\cite{Girard87tcs} which, among other contributions, exposed an
-additive/multiplicative distinction in logical connectives and rules. In
-particular, linear logic includes additive disjunctions $\oplus$ and
-conjunctions $\with$ as well as multiplicative disjunctions $\parr$ and
-conjuctions $\otimes$. Duality is also prominent in linear logic: it relates
-the additive connectives to each other (the dual of $\oplus$ is $\with$ and
-vice-versa) and the multiplicative connectives to each other (the dual of
-$\otimes$ is $\parr$ and vice-versa).
 
 We introduced this thesis that computation should be based on isomorphisms
 that preserve information~\cite{infeffects}. Since Filinski, we've had the
@@ -368,6 +453,7 @@ Some background on {{langRev}} because it is mentioned in the next section.
 
 %%%%%%%%%%%%%%%%%%
 \subsection{Negative Types}
+\label{sub:neg}
 
 Consider the following two ways of purchasing an item that costs \$20.00:
 \begin{enumerate}
