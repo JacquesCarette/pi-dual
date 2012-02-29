@@ -634,6 +634,204 @@ definition.
 {{langRev}} is a dagger symmetric monoidal category. 
 \end{proposition}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{A Graphical Language for {{langRev}} }
+
+Combinators of {{langRev}} can be written using the the operators
+described in definition \ref{def:langRev} or via a graphical language
+similar in spirit to those developed for GoI
+\cite{DBLP:conf/popl/Mackie95} and for category theory
+\cite{springerlink:10.1007/978-3-642-12821-94}. Modulo some
+conventions and shorthands we will describe here, the wiring diagrams
+are a complete and equivalent to the operator based (syntactic)
+description of programs.  {{langRev}} combinators expressed in this
+graphical language looks like a ``wiring diagrams''. Value take the
+form of ``particles'' that flow along the wires. Computation is
+expressed by the flow of particles.
+
+
+\begin{itemize}
+\item 
+The simplest sort of diagram is the {{id : b <-> b}} combinator which
+is simply represented as a wire labeled by its type {{b}}. In more
+complex diagrams, if the type of a wire is obvious from the context,
+it may be omitted.
+
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/b-wire.pdf]
+\includegraphics{diagrams/thesis/b-wire.pdf}
+}
+\end{center}
+
+
+\item
+The product type {{b1*b2}} may be represented both as one wire
+labeled {{b1*b2}} or by two parallel wires labeled {{b1}} and
+{{b2}}. Both representations maybe used interchangeably. 
+
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/pair-one-wire.pdf]
+\includegraphics{diagrams/thesis/product-one-wire.pdf}
+}
+\end{center}
+
+  
+\begin{center}
+\scalebox{0.95}{
+%%%subcode-line{pdfimage}[diagrams/thesis/pair-of-wires.pdf]
+\includegraphics{diagrams/thesis/product-two-wires.pdf}
+}
+\end{center}
+\end{multicols}
+
+
+\item
+Sum types may similarly be represented using using parallel wires with
+a {{+}} operator between them. 
+
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/sum-one-wire.pdf]
+\includegraphics{diagrams/thesis/sum-one-wire.pdf}
+}
+\end{center}
+
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/sum-of-wires.pdf]
+\includegraphics{diagrams/thesis/sum-two-wires.pdf}
+}
+\end{center}
+\end{multicols}
+
+%% \item
+%% When representing complex types like {{(b1*b2)+b3}} some visual
+%% grouping of the wires may be done to aid readability. The exact type
+%% however will always be clarified by the context of the diagram.
+
+%% \begin{center}
+%% \scalebox{0.95}{
+%% %subcode-line{pdfimage}[diagrams/thesis/complex-type-crop.pdf]
+%% }
+%% \end{center}
+
+
+\item
+Associativity is entirely skipped in the graphical language. Hence
+three parallel wires maybe inferred as {{b1*(b2*b3)}} or
+{{(b1*b2)*b3}}, based on the context. This is much like handling of
+associativity in the graphical representations of categories
+\cite{springerlink:10.1007/978-3-642-12821-94},
+
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/associate.pdf]
+\includegraphics{diagrams/thesis/assoc.pdf}
+}
+\end{center}
+
+\item
+Commutativity is represented by crisscrossing wires. 
+
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/swap-pair.pdf]
+\includegraphics{diagrams/thesis/swap_times.pdf}
+}
+\end{center}
+
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/swap-sum.pdf]
+\includegraphics{diagrams/thesis/swap_plus.pdf}
+}
+\end{center}
+  
+\end{multicols}
+
+\item
+Identity morphisms and their duals are represented as follows:
+
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/identr1.pdf]
+\includegraphics{diagrams/thesis/uniti.pdf}
+}
+\end{center}
+
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/identl1.pdf]
+\includegraphics{diagrams/thesis/unite.pdf}
+}
+\end{center}  
+\end{multicols}
+
+
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/identr0.pdf]
+\includegraphics{diagrams/thesis/zeroi.pdf}
+}
+\end{center}
+
+\columnbreak
+
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/identl0.pdf]
+\includegraphics{diagrams/thesis/zeroe.pdf}
+}
+\end{center}
+\end{multicols}
+
+\item
+Finally, distributivity and factoring are represented using the dual
+boxes shown below:
+
+\begin{multicols}{2}
+  
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/distrib-crop.pdf]
+\includegraphics{diagrams/thesis/dist.pdf}
+}
+\end{center}
+
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/factor-crop.pdf]
+\includegraphics{diagrams/thesis/factor.pdf}
+}
+\end{center}
+\end{multicols}
+
+\end{itemize}
+
+\noindent 
+\textit{Example.} As an example consider the wiring diagram
+of the combinator {{c}} below:
+
+{{c : b * (1+1) <-> b + b}}
+
+{{c = swap* (;) dist (;) (identl* (+) identl*)}}
+
+
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/example1-crop.pdf]
+\includegraphics{diagrams/thesis/example1.pdf}
+}
+\end{center}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{ {{langRevEE}} }
 
