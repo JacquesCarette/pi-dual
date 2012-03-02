@@ -91,6 +91,21 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
+Previous work on {{langRevT}} \cite{rc2011,infeffects} studied its
+properties and various constructions in it. However, for a
+computational model, there has been little focus on actually writing
+programs directly in {{langRevT}}. This paper aims to remedy that by
+presenting a systematic technique of expressing logically reversible
+small-step abstract machines in {{langRevT}}. In other words, this
+paper shows that once we have a logically reversible machine in a
+notation of our choice, expressing the machine as an isomorphic
+interpreter in {{langRevT}} can be done systematically and does not
+present any significant conceptual difficulties. This gives us a means
+of developing large {{langRevT}} programs with the ease of reasoning
+at the level of a conventional small-step semantics.  We develop
+several simple interpreters over numbers and addition, move onto tree
+traversal and finish with an interpreter for {{langRevT}} expressed in
+{{langRevT}}.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -476,7 +491,7 @@ and increment every leaf value. Small-step Operational semantics:
 
 The machine here is a little richer than the ones dealt with
 previously. In particular, we have a two types of machine states --
-{{<t,c>}} and {{ {[t, c]} }}. One of these corresponds to walkking
+{{<t,c>}} and {{ {[t, c]} }}. One of these corresponds to walking
 down a tree, building up the context in the process. The other
 corresponds to reconstructing the tree from the context and also
 switching focus to any unexplored subtrees in the process. There are
@@ -492,14 +507,14 @@ isomorphisms that we need for trees and tree contexts are:
 However we will see that the previously developed systematic approach
 developing {{langRevT}} interpreters carries over to this abstract
 machine as well.  As the first step, we quickly check that the
-abstract machine however has disstinguished start and stop states, has
+abstract machine however has distinguished start and stop states, has
 no ambiguities in reduction and that each reduction step is logically
 reversible.
 
 \subsection{New Notation}
 
 Before we start on the actual construction, let us introduce a
-syntactic convenience. In the past interpreter we explicitely drew out
+syntactic convenience. In the past interpreter we explicitly drew out
 every {{fold}} and {{unfold}} followed/preceded immediately by any
 required swaps and then a {{distribute}} or {{factor}}. In this
 presentation we will combine all of these into one construct which we
@@ -521,7 +536,7 @@ the {{nat}} component is expanded.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Isomorphic Interpreter}
 
-The first step to developing teh isomorphic interpreter is to
+The first step to developing the isomorphic interpreter is to
 recognize that the two possible kinds of machine states simply hide an
 implicit {{bool}}. We make this explicit. 
 
@@ -552,7 +567,7 @@ On the LHS, for {{T}} states, we have expanded the tree component and
 for {{F}} states we have expanded the tree contexts. Similarly we have
 done the opposite on the RHS side exactly matching up what the
 abstract machine does. One thing to note is that we dropped the {{1}}
-introduced by expanding the {{bool}} and instead just labelled the
+introduced by expanding the {{bool}} and instead just labeled the
 {{true}} and {{false}} branches.
 
 We are ready to start connecting the machine states corresponding to
@@ -665,11 +680,11 @@ sort of thing.
 
 However this begs the question - does {{langRevT}} need all these GADT
 types to reason about all these things? Something to think about. If
-we do, then thereare two ways out 
+we do, then there are two ways out 
 
 (1) add GADTs to {{langRevT}} and keep the structure of things
 simple. They can always be added opaquely for any given types -- we
-only need to add the proper fold/unflod morphisms for those types
+only need to add the proper fold/unfold morphisms for those types
 (maybe).
 
 (2) compile down to {{langRevT}} as it is. In this case, {{langRevT}}
