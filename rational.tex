@@ -5,7 +5,7 @@
 
 \usepackage{graphicx}
 %%\usepackage{longtable}
-%%\usepackage{comment}
+\usepackage{comment}
 \usepackage{amsmath}
 %%\usepackage{mdwlist}
 %%\usepackage{txfonts}
@@ -590,11 +590,11 @@ a {{+}} operator between them.
 
 
 \item
-Associativity is entirely skipped in the graphical language. Hence
-three parallel wires maybe inferred as {{b1*(b2*b3)}} or
-{{(b1*b2)*b3}}, based on the context. This is much like handling of
-associativity in the graphical representations of categories
-\cite{springerlink:10.1007/978-3-642-12821-94},
+Associativity is entirely implicit in the graphical language. Three
+parallel wires maybe inferred as {{b1*(b2*b3)}} or {{(b1*b2)*b3}},
+based on the context, much like handling of associativity in the
+graphical representations of categories
+\cite{springerlink:10.1007/978-3-642-12821-94}.
 
 \begin{center}
 \scalebox{0.95}{
@@ -624,7 +624,8 @@ Commutativity is represented by crisscrossing wires.
 \end{multicols}
 
 \item
-Identity morphisms and their duals are represented as follows:
+Identity morphisms and their duals ({{uniti, unite, zeroi}} and
+{{zeroe}}) are represented as follows:
 
 \begin{multicols}{2}
 \begin{center}
@@ -641,7 +642,6 @@ Identity morphisms and their duals are represented as follows:
 }
 \end{center}  
 \end{multicols}
-
 
 \begin{multicols}{2}
 \begin{center}
@@ -660,6 +660,10 @@ Identity morphisms and their duals are represented as follows:
 }
 \end{center}
 \end{multicols}
+
+Since the monoidal units cxan be freely introduced and eliminated, in
+many diagrams they are omitted and dealt with explicitely when they
+are of special interest.
 
 \item
 Finally, distributivity and factoring are represented using the dual
@@ -965,6 +969,8 @@ ADD MATH.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Semantics}
 
+
+\begin{comment}
 %%%%%%%%%%%%%%%%%%
 \subsection{Syntax}
 
@@ -1110,6 +1116,8 @@ The adjoint of a parallel context is defined to be:
 % (D:(P, v c(*)[], F)){dagger} '= D{dagger}:(F, c v(*)[], P)
 
 \end{itemize}
+
+\end{comment}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions in {{langRevEE}} }
