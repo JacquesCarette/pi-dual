@@ -579,10 +579,7 @@ of the combinator {{c}} below:
 \end{center}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Field of Rational Types: Intuitions} 
-
-%%%%%%%%%%%%%%%%%%
-\subsection{Negative Types}
+\section{Negative Types}
 \label{sub:neg}
 
 Consider the following two ways of purchasing an item that costs \$20.00:
@@ -644,93 +641,7 @@ is a framework in which all information is preserved, with no duplication or
 erasure. This guarantees that the generated debts are paid once and exactly
 once.
 
-%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Fractional Types}
-
-The type $a/b$ is prominent in the Lambek-Grishin calculus which is
-extensively used in computational linguistics. In the common interpretation,
-a value of type $a/b$ is a value of some type $c$ such that when put in a
-context of type $b$, the result is a value of type $a$. For example, assuming
-contexts are represented as functions, a value of type $\texttt{bool} /
-(\texttt{int} \rightarrow \texttt{bool})$ is simply a value of type
-$\texttt{int}$. Indeed in this case, putting a value of type $\texttt{int}$
-in the context $(\texttt{int} \rightarrow \texttt{bool})$ produces a value of
-type $\texttt{bool}$. 
-
-In our case, the situation is simpler. If the goal is to produce a value of
-type {{a * b}} and a subcomputation can only produce the {{a}}-part, it would
-have type {{(a * b) / b}}. In most settings, this type would be equivalent to
-{{a}}. However in our setting, the constraint that this value must eventually
-fit in a larger value that supplies the {{b}} is explicitly recorded and must
-be resolved. In more detail, we have an isomorphism {{ 1 <-> a * (1/a) }}
-which when used in the left-to-right direction allows the creation of a value
-and a corresponding constraint on the context.  Both the value and the
-constraint can flow in arbitrary ways during the computation but eventually
-in a closed program with no ``dangling'' constraints, the isomorphism should
-be used in the right-to-left direction to resolve the constraints.  To
-understand the computational interpretation, consider the following example.
-
-The goal is to produce a value of type $(\texttt{bool} \times
-\texttt{int})$. One part of the program, $e_1$, knows how to produce the
-value of type $\texttt{int}$ (say {{3}}) and another part, $e_2$, knows how
-to produce the value of type $\texttt{bool}$ (say true). Computationally, we
-model this as follows. The first subcomputation $e_1$ produces {{((),3)}} and
-uses the isomorphism to convert {{()}} to $(\alpha,1/\alpha)$ where $\alpha$
-is a yet-unknown boolean value. Reshuffling the components, $e_1$ produces
-$((\alpha,3), 1/\alpha)$. Similarly, $e_2$ can independently produce
-$((true,\beta),1/\beta)$ where $\beta$ is a yet-unknown integer value.  When
-the two values meet, we can group the components as follows:
-\[
-(\alpha,\beta)  \qquad (3,1/\beta)  \qquad (true,1/\alpha)
-\]
-Using the isomorphism in the right-to-left direction on the last two pairs,
-forces $\alpha$ to be resolved to true and forces $\beta$ to be resolved to
-{{3}}. Both of these pairs then become {{()}} and be absorbed. We are left
-with the pair $(true,3)$ as desired.
-
-To summarize, one can think of a value of type $a/b$ as a value that imposes
-a constraint on its context of use: it is a value that requires its context
-to be of type $b$ and only if that condition is satisfied, can the value be
-considered as a value of type $a$. In the simplest case, the type $1/b$ just
-constraints the context to be of type $b$. By allowing the fractional types
-to be first-class, we can separate the generation of constraints from their
-use. Both the value and the constraint can flow in arbitrary ways during the
-computation but eventually in a closed program with no ``dangling''
-constraints, the isomorphism should be used in the right-to-left direction to
-resolve the constraints.
-
-NEED to work out the example in detail (or perhaps another example that's
-better. 
-
-Again it is critical that the framework in which the fractional types are
-introduced is a framework in which all information is preserved, with no
-duplication or erasure. This guarantees that the generated constraints are
-satisfied once and exactly once. 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Summary}
-
-To summarize negative, fractional, square root, and imaginary types all make
-sense. What they help you accomplish as a programmer is to disassociate
-global invariants into local ones that can be satisfied independently by
-subcomputations with no synchronization or communication. A computation
-producing something of type $a/b$ does not need to concern itself with who is
-going to supply the missing $b$: it just does its part. Conversely faced with
-a complicated task, a computation might decide to break it into pieces and
-demand these pieces using negative types. 
-
-It is no surprise that these types are closely related to quantum mechanics
-and that they give us the feel that this is how nature computes. This is
-speculation however.
-
-In any case, in a framework where information can be copied and deleted, none
-of this makes much sense. It is critical that these constraints and demands
-can neither be duplicated nor erased.  This gives us the maximum
-``parallelism'' possible.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{ {{langRevEE}} }
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \paragraph*{Observability.} 
 Execution of program is defined by {{c : b1 <-> b2}} when evaluated on
 input {{v1 : b1}} gives us a value {{v2 : b2}} on
@@ -859,6 +770,69 @@ amount of information is returned to you. (TODO. more needs to be said
 here.)
 
 ADD MATH. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Fractional Types}
+
+The type $a/b$ is prominent in the Lambek-Grishin calculus which is
+extensively used in computational linguistics. In the common interpretation,
+a value of type $a/b$ is a value of some type $c$ such that when put in a
+context of type $b$, the result is a value of type $a$. For example, assuming
+contexts are represented as functions, a value of type $\texttt{bool} /
+(\texttt{int} \rightarrow \texttt{bool})$ is simply a value of type
+$\texttt{int}$. Indeed in this case, putting a value of type $\texttt{int}$
+in the context $(\texttt{int} \rightarrow \texttt{bool})$ produces a value of
+type $\texttt{bool}$. 
+
+In our case, the situation is simpler. If the goal is to produce a value of
+type {{a * b}} and a subcomputation can only produce the {{a}}-part, it would
+have type {{(a * b) / b}}. In most settings, this type would be equivalent to
+{{a}}. However in our setting, the constraint that this value must eventually
+fit in a larger value that supplies the {{b}} is explicitly recorded and must
+be resolved. In more detail, we have an isomorphism {{ 1 <-> a * (1/a) }}
+which when used in the left-to-right direction allows the creation of a value
+and a corresponding constraint on the context.  Both the value and the
+constraint can flow in arbitrary ways during the computation but eventually
+in a closed program with no ``dangling'' constraints, the isomorphism should
+be used in the right-to-left direction to resolve the constraints.  To
+understand the computational interpretation, consider the following example.
+
+The goal is to produce a value of type $(\texttt{bool} \times
+\texttt{int})$. One part of the program, $e_1$, knows how to produce the
+value of type $\texttt{int}$ (say {{3}}) and another part, $e_2$, knows how
+to produce the value of type $\texttt{bool}$ (say true). Computationally, we
+model this as follows. The first subcomputation $e_1$ produces {{((),3)}} and
+uses the isomorphism to convert {{()}} to $(\alpha,1/\alpha)$ where $\alpha$
+is a yet-unknown boolean value. Reshuffling the components, $e_1$ produces
+$((\alpha,3), 1/\alpha)$. Similarly, $e_2$ can independently produce
+$((true,\beta),1/\beta)$ where $\beta$ is a yet-unknown integer value.  When
+the two values meet, we can group the components as follows:
+\[
+(\alpha,\beta)  \qquad (3,1/\beta)  \qquad (true,1/\alpha)
+\]
+Using the isomorphism in the right-to-left direction on the last two pairs,
+forces $\alpha$ to be resolved to true and forces $\beta$ to be resolved to
+{{3}}. Both of these pairs then become {{()}} and be absorbed. We are left
+with the pair $(true,3)$ as desired.
+
+To summarize, one can think of a value of type $a/b$ as a value that imposes
+a constraint on its context of use: it is a value that requires its context
+to be of type $b$ and only if that condition is satisfied, can the value be
+considered as a value of type $a$. In the simplest case, the type $1/b$ just
+constraints the context to be of type $b$. By allowing the fractional types
+to be first-class, we can separate the generation of constraints from their
+use. Both the value and the constraint can flow in arbitrary ways during the
+computation but eventually in a closed program with no ``dangling''
+constraints, the isomorphism should be used in the right-to-left direction to
+resolve the constraints.
+
+NEED to work out the example in detail (or perhaps another example that's
+better. 
+
+Again it is critical that the framework in which the fractional types are
+introduced is a framework in which all information is preserved, with no
+duplication or erasure. This guarantees that the generated constraints are
+satisfied once and exactly once. 
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{Multiplicative Duality in {{langRev}} }
@@ -1351,14 +1325,12 @@ If this construction is traced using {{trace*}}, all the values that
 do not satisfy {{f}} get annihilated because the control wire acts
 like the closed-loop `not' in the previous construction. 
 
-
 %%%%%%%%%%%%%%%%%%%
 \subsection{GoI machine}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work} 
 \label{sec:related}
-
 
 (NOTE: Lets use this section here to establish a long of ideas and
 intuition. None of these connections have to be formal, but they can
@@ -1560,6 +1532,24 @@ Discussion of possible polynomials:
   performs the square root of negation in the sense that applying it twice
   would be equivalent to boolean negation.
 \end{itemize}
+
+To summarize negative, fractional, square root, and imaginary types all make
+sense. What they help you accomplish as a programmer is to disassociate
+global invariants into local ones that can be satisfied independently by
+subcomputations with no synchronization or communication. A computation
+producing something of type $a/b$ does not need to concern itself with who is
+going to supply the missing $b$: it just does its part. Conversely faced with
+a complicated task, a computation might decide to break it into pieces and
+demand these pieces using negative types. 
+
+It is no surprise that these types are closely related to quantum mechanics
+and that they give us the feel that this is how nature computes. This is
+speculation however.
+
+In any case, in a framework where information can be copied and deleted, none
+of this makes much sense. It is critical that these constraints and demands
+can neither be duplicated nor erased.  This gives us the maximum
+``parallelism'' possible.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
