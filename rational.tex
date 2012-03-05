@@ -165,12 +165,12 @@ closed categories.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-In a recent paper~\cite{infeffects}, we argued that, by encompassing
+In a recent paper~\cite{infeffects}, we argued that, because they include
 irreversible physical primitives, conventional abstract models of computation
-have also inadvertently included some \emph{implicit} computational effects
-which we called \emph{information effects}. We then developed a pure
-reversible model of computation that is obtained from the type isomorphisms
-and categorical structures that underlie models of linear logic and quantum
+have inadvertently included some \emph{implicit} computational effects which
+we called \emph{information effects}. We then developed a pure reversible
+model of computation that is obtained from the type isomorphisms and
+categorical structures that underlie models of linear logic and quantum
 computing and that treats information as a linear resource that can neither
 be erased nor duplicated. In this paper, we show that our pure reversible
 model unveils deeper and more elegant symmetries of computation than have
@@ -194,10 +194,11 @@ interpretation.  On the left we have a producer that can supply a value of
 type $a$ and on the right we have a consumer that demands a value of type
 $a$. For the purposes of the example, think of the producer as someone having
 \$20.00 and the consumer as someone demanding \$20.00. It is certainly
-possible to directly connect the producer and consumer: such a connection
-would be modeled by the identity function. The proof above implements this
-connection in a much more interesting way, however. A transformation $0 =
-(-a) + a$ is used at the consumer site to create money and a corresponding
+possible to directly connect the producer and consumer using the algebraic
+identity $a=a$: such a connection would be computationally modeled by the
+identity function as expected. However, the algebraic proof above implements
+this connection in a much more interesting way: the transformation $0 = (-a)
++ a$ is used at the consumer site to create money and a corresponding
 debt. The consumer gets the money immediately and the debt travels
 ``backwards'' towards the producer where it is paid.  In other words, this
 computation models something similar to a credit card transaction. We discuss
@@ -208,178 +209,51 @@ points here:
   It would clearly be disastrous if debts could be deleted or
   duplicated. This simple observation explains why negative types are much
   simpler and much more appealing in a framework where information is
-  guaranteed to be preserved. In previous work that used negative types,
-  complicated mechanisms are typically needed to constrain the propagation
-  and use of negative values because the surrounding computational framework
-  is, generally speaking, careless in its treatment of information.
+  guaranteed to be preserved. In previous work that used negative types (see
+  Sec.~\ref{sec:related}), complicated mechanisms are typically needed to
+  constrain the propagation and use of negative values because the
+  surrounding computational framework is, generally speaking, careless in its
+  treatment of information.
 \item The appeal of negative types can already be gleaned from the credit
   card analogy. The main reason credit card transactions are convenient is
-  because they disentangle the propagation of the money from the propagation
-  of the services. Not every transaction needs both the resources and
-  services to be brought together: it is sufficient to have a promise that
-  the money will be paid at some point, as long as the infrastructure can be
-  trusted that such promises will be fulfilled. 
+  because they disentangle the propagation of the resources (money) from the
+  propagation of the services. Not every transaction needs both the resources
+  and services to be brought together: it is sufficient to have a promise
+  that the money will be paid at some point, as long as the infrastructure
+  can be trusted that such promises will be fulfilled. Computationally, this
+  means that negative types allow us to break the dependency between the
+  producer and consumer and let each compute independently.
 \end{itemize}
 
-Similar observations hold for fractional types but we defer these to
-Sec.~\ref{sub:frac}. Before proceeding to the main part of the paper, we
-briefly summarize the our technical contributions:
+Instead of also discussing fractional types and related work in this
+introduction, we briefly summarize our main technical contributions and move
+on to the heart of the paper where these topics can be explained in their
+proper context. Our main contributions are:
 \begin{itemize}
-\item 
-\item 
-\item 
-\item 
+\item We extend {{langRev}} our reversible programming language of type
+  isomorphisms~\cite{rc2011,infeffects} with a notion of negative types, that
+  satisfies the isomorphism $a + (-a) = 0$. The semantics of this extension
+  is expressed by having a ``dual'' evaluator that reverses the flow of
+  execution for negative values. 
+\item We independently extend {{langRev}} with a notion of fractional types,
+  that satisfies the isomorphism $a * (1/a) = 1$. The semantics of this
+  extension is expressed by introducing logical variables and a unification
+  mechanism to model and resolve the constraints introduced by the fractional
+  types.
+\item We combine the above two extensions into one extension that includes
+  both negative and fractional types. The resulting language allows any
+  rational number to be used as a type. The types satisfy the same familiar
+  and intuitive isomorphisms that are satisfied in the mathematical field of
+  rational numbers.
+\item We develop programming intuition and argue that negative and fractional
+  types ought to be part of the vocabulary of every programmer.
+\item We relate our notions of negative and fractional types to previous work
+  on continuations. We analyze and relate two apparently unrelated lines of
+  work: the first pioneered by
+  Filinski~\cite{Filinski:1989:DCI:648332.755574} relates continuations to
+  negative types; the second~\cite{Bernardi:2010:CSL:1749618.1749689} relates
+  continuations to the fractional types of the Lambek-Grishin calculus.
 \end{itemize}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Field of Rational Types: Intuitions} 
-
-%%%%%%%%%%%%%%%%%%
-\subsection{Negative Types}
-\label{sub:neg}
-
-Consider the following two ways of purchasing an item that costs \$20.00:
-\begin{enumerate}
-\item You give the seller a \$20.00 bill.
-\item You use a credit card to pay the seller.
-\end{enumerate}
-In both cases, the seller receives the money immediately but there is a
-subtle difference. In the first transaction, the money received by the seller
-corresponds to a value that has been produced earlier in the computation. In
-the second transaction, the money may or may not exist yet: computationally,
-a \emph{debt} is generated to compensate for the money received by the seller
-and this debt travels ``backwards'' towards the bank where it is (hopefully)
-reconciled.
-
-The example suggests that the ability to consider values flowing backwards
-enriches our computational model. This observation goes back to Filinski's
-Masters thesis where continuations are identified with these negative values.
-We discuss the connections to Filinski's work and others in more detail in
-Sec.~\ref{sec:related}. For now, we note that in a conventional programming
-language in which values can be copied and deleted at will, extreme care is
-needed to keep track of negative values. Indeed, in the example above, if it
-were possible to simply delete the variable corresponding to the debt, we
-would have produced money out of nothing. 
-
-For this reason, our treatment of negative values in the context of
-{{langRev}} is particularly simple. We will have a type $0$ and an
-isomorphism {{0 <-> a + (-a)}} that when used in the left-to-right direction
-allows us to create a value and a corresponding debt out of nothing. Both the
-value and its negative counterpart can flow anywhere in the system. Because
-information is preserved, a closed program (which does not have any
-``dangling'' negative values) will eventually have to match the negative
-value with some corresponding value, effectively using the isomorphism in the
-right-to-left direction. In more detail, we can model the credit card
-transaction above using the following program (shown diagrammatically):
-
-FIGURE
-
-CLEAN UP the following based on the figure. In contrast, in our setting, one
-can start from the empty type $0$, introduce a positive value and its
-negative counterpart, and let each of these flow in arbitrary ways. The
-entire framework guarantees that neither the value nor its negative
-counterpart will be deleted or duplicated and hence that, in any closed
-program, the ``debt'' corresponding to the negative value is paid off exactly
-once. Computationally we model the first transaction using essentially the
-identity function which receives a \$20.00 bill as input from the buyer and
-propagates it on its output to the seller. The second transaction is more
-complicated. We model it as shown in the circuit below: There are two ways to
-understand this circuit that are both quite instructive. Let's first examine
-the type structure of each of the combinators that comprise the circuit. The
-first combinator on the right outputs \$20.00 to the seller. This \$20.00 is
-produced from nothing so to speak by generating an equivalent debt that
-travels backwards. COMPLETE BASED ON THE FIGURE. The other way is to follow
-the execution. It goes forward in time so to speak, comes back, and then goes
-forwards again.
-
-It is critical that the framework in which the negative types are introduced
-is a framework in which all information is preserved, with no duplication or
-erasure. This guarantees that the generated debts are paid once and exactly
-once.
-
-%%%%%%%%%%%%%%%%%%%%%%
-\section{Fractional Types}
-
-The type $a/b$ is prominent in the Lambek-Grishin calculus which is
-extensively used in computational linguistics. In the common interpretation,
-a value of type $a/b$ is a value of some type $c$ such that when put in a
-context of type $b$, the result is a value of type $a$. For example, assuming
-contexts are represented as functions, a value of type $\texttt{bool} /
-(\texttt{int} \rightarrow \texttt{bool})$ is simply a value of type
-$\texttt{int}$. Indeed in this case, putting a value of type $\texttt{int}$
-in the context $(\texttt{int} \rightarrow \texttt{bool})$ produces a value of
-type $\texttt{bool}$. 
-
-In our case, the situation is simpler. If the goal is to produce a value of
-type {{a * b}} and a subcomputation can only produce the {{a}}-part, it would
-have type {{(a * b) / b}}. In most settings, this type would be equivalent to
-{{a}}. However in our setting, the constraint that this value must eventually
-fit in a larger value that supplies the {{b}} is explicitly recorded and must
-be resolved. In more detail, we have an isomorphism {{ 1 <-> a * (1/a) }}
-which when used in the left-to-right direction allows the creation of a value
-and a corresponding constraint on the context.  Both the value and the
-constraint can flow in arbitrary ways during the computation but eventually
-in a closed program with no ``dangling'' constraints, the isomorphism should
-be used in the right-to-left direction to resolve the constraints.  To
-understand the computational interpretation, consider the following example.
-
-The goal is to produce a value of type $(\texttt{bool} \times
-\texttt{int})$. One part of the program, $e_1$, knows how to produce the
-value of type $\texttt{int}$ (say {{3}}) and another part, $e_2$, knows how
-to produce the value of type $\texttt{bool}$ (say true). Computationally, we
-model this as follows. The first subcomputation $e_1$ produces {{((),3)}} and
-uses the isomorphism to convert {{()}} to $(\alpha,1/\alpha)$ where $\alpha$
-is a yet-unknown boolean value. Reshuffling the components, $e_1$ produces
-$((\alpha,3), 1/\alpha)$. Similarly, $e_2$ can independently produce
-$((true,\beta),1/\beta)$ where $\beta$ is a yet-unknown integer value.  When
-the two values meet, we can group the components as follows:
-\[
-(\alpha,\beta)  \qquad (3,1/\beta)  \qquad (true,1/\alpha)
-\]
-Using the isomorphism in the right-to-left direction on the last two pairs,
-forces $\alpha$ to be resolved to true and forces $\beta$ to be resolved to
-{{3}}. Both of these pairs then become {{()}} and be absorbed. We are left
-with the pair $(true,3)$ as desired.
-
-To summarize, one can think of a value of type $a/b$ as a value that imposes
-a constraint on its context of use: it is a value that requires its context
-to be of type $b$ and only if that condition is satisfied, can the value be
-considered as a value of type $a$. In the simplest case, the type $1/b$ just
-constraints the context to be of type $b$. By allowing the fractional types
-to be first-class, we can separate the generation of constraints from their
-use. Both the value and the constraint can flow in arbitrary ways during the
-computation but eventually in a closed program with no ``dangling''
-constraints, the isomorphism should be used in the right-to-left direction to
-resolve the constraints.
-
-NEED to work out the example in detail (or perhaps another example that's
-better. 
-
-Again it is critical that the framework in which the fractional types are
-introduced is a framework in which all information is preserved, with no
-duplication or erasure. This guarantees that the generated constraints are
-satisfied once and exactly once. 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Summary}
-
-To summarize negative, fractional, square root, and imaginary types all make
-sense. What they help you accomplish as a programmer is to disassociate
-global invariants into local ones that can be satisfied independently by
-subcomputations with no synchronization or communication. A computation
-producing something of type $a/b$ does not need to concern itself with who is
-going to supply the missing $b$: it just does its part. Conversely faced with
-a complicated task, a computation might decide to break it into pieces and
-demand these pieces using negative types. 
-
-It is no surprise that these types are closely related to quantum mechanics
-and that they give us the feel that this is how nature computes. This is
-speculation however.
-
-In any case, in a framework where information can be copied and deleted, none
-of this makes much sense. It is critical that these constraints and demands
-can neither be duplicated nor erased.  This gives us the maximum
-``parallelism'' possible.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{ {{langRev}} }
@@ -503,7 +377,7 @@ definition.
 {{langRev}} is a dagger symmetric monoidal category. 
 \end{proposition}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{A Graphical Language for {{langRev}} }
 
 Combinators of {{langRev}} can be written using the the operators
@@ -661,8 +535,8 @@ Identity morphisms and their duals ({{uniti, unite, zeroi}} and
 \end{center}
 \end{multicols}
 
-Since the monoidal units cxan be freely introduced and eliminated, in
-many diagrams they are omitted and dealt with explicitely when they
+Since the monoidal units can be freely introduced and eliminated, in
+many diagrams they are omitted and dealt with explicitly when they
 are of special interest.
 
 \item
@@ -704,6 +578,155 @@ of the combinator {{c}} below:
 }
 \end{center}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Field of Rational Types: Intuitions} 
+
+%%%%%%%%%%%%%%%%%%
+\subsection{Negative Types}
+\label{sub:neg}
+
+Consider the following two ways of purchasing an item that costs \$20.00:
+\begin{enumerate}
+\item You give the seller a \$20.00 bill.
+\item You use a credit card to pay the seller.
+\end{enumerate}
+In both cases, the seller receives the money immediately but there is a
+subtle difference. In the first transaction, the money received by the seller
+corresponds to a value that has been produced earlier in the computation. In
+the second transaction, the money may or may not exist yet: computationally,
+a \emph{debt} is generated to compensate for the money received by the seller
+and this debt travels ``backwards'' towards the bank where it is (hopefully)
+reconciled.
+
+The example suggests that the ability to consider values flowing backwards
+enriches our computational model. This observation goes back to Filinski's
+Masters thesis where continuations are identified with these negative values.
+We discuss the connections to Filinski's work and others in more detail in
+Sec.~\ref{sec:related}. For now, we note that in a conventional programming
+language in which values can be copied and deleted at will, extreme care is
+needed to keep track of negative values. Indeed, in the example above, if it
+were possible to simply delete the variable corresponding to the debt, we
+would have produced money out of nothing. 
+
+For this reason, our treatment of negative values in the context of
+{{langRev}} is particularly simple. We will have a type $0$ and an
+isomorphism {{0 <-> a + (-a)}} that when used in the left-to-right direction
+allows us to create a value and a corresponding debt out of nothing. Both the
+value and its negative counterpart can flow anywhere in the system. Because
+information is preserved, a closed program (which does not have any
+``dangling'' negative values) will eventually have to match the negative
+value with some corresponding value, effectively using the isomorphism in the
+right-to-left direction. In more detail, we can model the credit card
+transaction above using the following program (shown diagrammatically):
+
+FIGURE
+
+CLEAN UP the following based on the figure. In contrast, in our setting, one
+can start from the empty type $0$, introduce a positive value and its
+negative counterpart, and let each of these flow in arbitrary ways. The
+entire framework guarantees that neither the value nor its negative
+counterpart will be deleted or duplicated and hence that, in any closed
+program, the ``debt'' corresponding to the negative value is paid off exactly
+once. Computationally we model the first transaction using essentially the
+identity function which receives a \$20.00 bill as input from the buyer and
+propagates it on its output to the seller. The second transaction is more
+complicated. We model it as shown in the circuit below: There are two ways to
+understand this circuit that are both quite instructive. Let's first examine
+the type structure of each of the combinators that comprise the circuit. The
+first combinator on the right outputs \$20.00 to the seller. This \$20.00 is
+produced from nothing so to speak by generating an equivalent debt that
+travels backwards. COMPLETE BASED ON THE FIGURE. The other way is to follow
+the execution. It goes forward in time so to speak, comes back, and then goes
+forwards again.
+
+It is critical that the framework in which the negative types are introduced
+is a framework in which all information is preserved, with no duplication or
+erasure. This guarantees that the generated debts are paid once and exactly
+once.
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Fractional Types}
+
+The type $a/b$ is prominent in the Lambek-Grishin calculus which is
+extensively used in computational linguistics. In the common interpretation,
+a value of type $a/b$ is a value of some type $c$ such that when put in a
+context of type $b$, the result is a value of type $a$. For example, assuming
+contexts are represented as functions, a value of type $\texttt{bool} /
+(\texttt{int} \rightarrow \texttt{bool})$ is simply a value of type
+$\texttt{int}$. Indeed in this case, putting a value of type $\texttt{int}$
+in the context $(\texttt{int} \rightarrow \texttt{bool})$ produces a value of
+type $\texttt{bool}$. 
+
+In our case, the situation is simpler. If the goal is to produce a value of
+type {{a * b}} and a subcomputation can only produce the {{a}}-part, it would
+have type {{(a * b) / b}}. In most settings, this type would be equivalent to
+{{a}}. However in our setting, the constraint that this value must eventually
+fit in a larger value that supplies the {{b}} is explicitly recorded and must
+be resolved. In more detail, we have an isomorphism {{ 1 <-> a * (1/a) }}
+which when used in the left-to-right direction allows the creation of a value
+and a corresponding constraint on the context.  Both the value and the
+constraint can flow in arbitrary ways during the computation but eventually
+in a closed program with no ``dangling'' constraints, the isomorphism should
+be used in the right-to-left direction to resolve the constraints.  To
+understand the computational interpretation, consider the following example.
+
+The goal is to produce a value of type $(\texttt{bool} \times
+\texttt{int})$. One part of the program, $e_1$, knows how to produce the
+value of type $\texttt{int}$ (say {{3}}) and another part, $e_2$, knows how
+to produce the value of type $\texttt{bool}$ (say true). Computationally, we
+model this as follows. The first subcomputation $e_1$ produces {{((),3)}} and
+uses the isomorphism to convert {{()}} to $(\alpha,1/\alpha)$ where $\alpha$
+is a yet-unknown boolean value. Reshuffling the components, $e_1$ produces
+$((\alpha,3), 1/\alpha)$. Similarly, $e_2$ can independently produce
+$((true,\beta),1/\beta)$ where $\beta$ is a yet-unknown integer value.  When
+the two values meet, we can group the components as follows:
+\[
+(\alpha,\beta)  \qquad (3,1/\beta)  \qquad (true,1/\alpha)
+\]
+Using the isomorphism in the right-to-left direction on the last two pairs,
+forces $\alpha$ to be resolved to true and forces $\beta$ to be resolved to
+{{3}}. Both of these pairs then become {{()}} and be absorbed. We are left
+with the pair $(true,3)$ as desired.
+
+To summarize, one can think of a value of type $a/b$ as a value that imposes
+a constraint on its context of use: it is a value that requires its context
+to be of type $b$ and only if that condition is satisfied, can the value be
+considered as a value of type $a$. In the simplest case, the type $1/b$ just
+constraints the context to be of type $b$. By allowing the fractional types
+to be first-class, we can separate the generation of constraints from their
+use. Both the value and the constraint can flow in arbitrary ways during the
+computation but eventually in a closed program with no ``dangling''
+constraints, the isomorphism should be used in the right-to-left direction to
+resolve the constraints.
+
+NEED to work out the example in detail (or perhaps another example that's
+better. 
+
+Again it is critical that the framework in which the fractional types are
+introduced is a framework in which all information is preserved, with no
+duplication or erasure. This guarantees that the generated constraints are
+satisfied once and exactly once. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Summary}
+
+To summarize negative, fractional, square root, and imaginary types all make
+sense. What they help you accomplish as a programmer is to disassociate
+global invariants into local ones that can be satisfied independently by
+subcomputations with no synchronization or communication. A computation
+producing something of type $a/b$ does not need to concern itself with who is
+going to supply the missing $b$: it just does its part. Conversely faced with
+a complicated task, a computation might decide to break it into pieces and
+demand these pieces using negative types. 
+
+It is no surprise that these types are closely related to quantum mechanics
+and that they give us the feel that this is how nature computes. This is
+speculation however.
+
+In any case, in a framework where information can be copied and deleted, none
+of this makes much sense. It is critical that these constraints and demands
+can neither be duplicated nor erased.  This gives us the maximum
+``parallelism'' possible.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{ {{langRevEE}} }
@@ -837,8 +860,7 @@ here.)
 
 ADD MATH. 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
 \subsection{Multiplicative Duality in {{langRev}} }
 
 Multiplicative duality is added to {{langRev}} by adding types
@@ -879,7 +901,7 @@ dropped as it can freely introduced or eliminated using {{uniti}} and
 
 The usual interpretation of {{b1*b2}} we have both a value of type
 {{b1}} and a value of type {{b2}}. This interpretation is maintained
-in the precense of fractionals. Hence an {{eta* : 1 <-> inv(b) * b}} is
+in the presence of fractionals. Hence an {{eta* : 1 <-> inv(b) * b}} is
 to be viewed as a fission point for a value of type {{b}} and its
 multiplicative inverse {{inv(b)}}. This naturally raises the question --
 which value of type {{b}} is produced? The isomorphism {{eta*}} does
@@ -905,7 +927,7 @@ always the dual of the chosen one.
 A computational interpretation of this is that {{langRevEE}} acts like
 a logic programming system and {{eta*}} acts as the site of creation
 of a new typed logic variable of type {{b}} and its corresponding dual
-of type {{inv(b)}}. These two values are free to move independantly
+of type {{inv(b)}}. These two values are free to move independently
 through a circuit, but any operations on value affect what operations
 are possible on the other since they are both related by an underlying
 logic variable. Dually, {{eps*}} acts as a unification site for values
@@ -927,9 +949,9 @@ exists, it takes on a specific value inhibiting its type and
 correspondingly its entangled anti-particle takes the dual of the
 specific value.
 
-This also leads to the exiciting point of view that entangled
+This also leads to the exciting point of view that entangled
 particle/anti-particle pairs act as functions in a physical
-first-class sense. We can ask the fuction to be applied to a value by
+first-class sense. We can ask the function to be applied to a value by
 unifying the anti-particle with a particle in a well-known state and
 examining is pair. We shall use this point of view in the development
 our SAT solver (see Sec. \ref{sec:sat-solver}).
@@ -946,7 +968,7 @@ Categories is applicable and is expressed below in terms of
 \paragraph*{Annihilation.}
 As with {{(+, 0)}} we can construct a {{trace*}} operation. Unlike the
 additive {{trace+}}, {{trace*}} gives us the ability to find the
-fixpoint of the contraint (expressed with combinators) that is
+fixpoint of the constraint (expressed with combinators) that is
 traced. If the constraint has not satisfying values, there is not
 fixpoint possible -- we use the term `annihilation' to describe the
 corresponding undefined state of the program. Annihilation and a
@@ -958,7 +980,7 @@ annihilation characterizes a constraint that has no fixpoint.
 As with {{eta+}}, we argue that {{eta*}} constructs no new
 information, instead it gives us the ability to explore as many worlds
 as permitted by the type {{b}}. So situate ourselves in any specific
-world, we have to supply additional information in teh form of
+world, we have to supply additional information in the form of
 unifying the particle or anti-particle with a particle representing
 known information. Hence only by supplying information to a an
 entangled pair can we read information from it -- and always exactly
@@ -968,7 +990,6 @@ ADD MATH.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Semantics}
-
 
 \begin{comment}
 %%%%%%%%%%%%%%%%%%
@@ -1296,7 +1317,7 @@ solution following which an isomorphic clone operation allows us to
 examine the result.
 
 The construction here is not limited to boolean satisfiability, but
-generalises to any constraint satisfaction problem whose search space
+generalizes to any constraint satisfaction problem whose search space
 can be represented by a recursive type and for which an isomorphic
 clone operation can be constructed. That said, we will focus on the
 limited case of boolean satisfiability here. 
@@ -1542,7 +1563,6 @@ Discussion of possible polynomials:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
-
 
 The simplest way to connect the In a conventional computational model, one
 might realize this situation by simply writing the identity function: the
