@@ -1346,23 +1346,34 @@ Mackie~\cite{Mackie2011,DBLP:conf/popl/Mackie95}. \amr{The machine uses bang
 \section{Related Work} 
 \label{sec:related}
 
+The idea of ``negative types'' has appeared many times in the literature and
+has often been related to some form of continuations. Fractional types are
+less common but have also appeared in relation to parsing natural
+languages. Although each of these previous occurrences of negative and
+fractional types is somewhat related to our work, our results are
+subtantially different. To clarify this point, we start by reviewing the
+salient point of the major pieces of related work and conclude this section
+with a summary contrasting our approach to previous work.
+
 \paragraph*{Declarative Continuations.} 
 In his Masters thesis~\cite{Filinski:1989:DCI:648332.755574}, Filinski
 proposes that continuations are a \emph{declarative} concept. He,
 furthermore, introduces a symmetric extension of the $\lambda$-calculus in
-which values and continuations are treated as opposites. In more detail, the
-symmetric calculus contains a ``value'' fragment and a ``continuation''
-fragment which are mirror images. Pairs and sums are treated as duals in the
-sense that the ``value'' fragment includes pairs whose mirror image in the
-``continuation'' fragment are sums. In contrast, our language includes pairs
-and sums in the value fragment and two symmetries: one that maps the pairs to
-fractions and another that maps the sums to subtractions.
+which call-by-value is dual to call-by-name and values are dual to
+continuations. In more detail, the symmetric calculus contains a ``value''
+fragment and a ``continuation'' fragment which are mirror images. Pairs and
+sums are treated as duals in the sense that the ``value'' fragment includes
+pairs whose mirror image in the ``continuation'' fragment are sums. In
+contrast, our language includes pairs and sums in the value fragment and two
+symmetries: one that maps the pairs to fractions and another that maps the
+sums to subtractions.
 
 \paragraph*{The Duality of Computation.}
-The precise duality between call-by-name and call-by-value was further
-investigated by Selinger~\cite{Selinger:2001:CCD:966910.966911}. Curien and
-Herbelin~\cite{Curien:2000} introduce a calculus that exhibits symmetries
-between values and continuations and between call-by-value and
+The duality between call-by-name and call-by-value was further investigated
+by Selinger using control
+categories~\cite{Selinger:2001:CCD:966910.966911}. Curien and
+Herbelin~\cite{Curien:2000} also introduce a calculus that exhibits
+symmetries between values and continuations and between call-by-value and
 call-by-name. The calculus includes the type $A-B$ which is the dual of
 implication, i.e., a value of type $A-B$ is a context expecting a function of
 type $A \rightarrow B$. Alternatively a value of type $A-B$ is also explained
@@ -1381,7 +1392,7 @@ logic which contains a dual to implication. Her work has been distilled in
 the form of \emph{subtractive logic}~\cite{Crolard01} which has recently been
 related to coroutines~\cite{Crolard01082004} and delimited
 continuations~\cite{Ariola:2009:TFD:1743339.1743381}.  In more detail,
-Crolard explains the type $A-B$ as the of \emph{coroutines} with a local
+Crolard explains the type $A-B$ as the type of \emph{coroutines} with a local
 environment of type $A$ and a continuation of type $B$. The description is
 complicated by what is essentially the desire to enforce linearity
 constraints so that coroutines cannot access the local environment of other
@@ -1394,21 +1405,57 @@ negative types of linear logic as \emph{acceptors}, which are like
 continuations in the sense that they take an input and return no
 output. Acceptors however are also similar in flavor to logical variables:
 they can created and instantiated later once their context of use is
-determined. It is clear that, at an intuitive level, acceptors are entities
-that combine elements of our negative and fractional types.
+determined. Although a formal connection is lacking, it is clear that, at an
+intuitive level, acceptors are entities that combine elements of our negative
+and fractional types.
 
 \paragraph*{The Lambek-Grishin Calculus.} The ``parsing-as-deduction'' style
 of linguistic analysis uses the Lambek-Grishin calculus with the following
-types: product, left division, right division, coproduct, right difference,
-and left difference~\cite{Bernardi:2010:CSL:1749618.1749689}. The division
-and difference types are similar to our types but because the calculus lacks
+types: product, left division, right division, sum, right difference, and
+left difference~\cite{Bernardi:2010:CSL:1749618.1749689}. The division and
+difference types are similar to our types but because the calculus lacks
 commutativity and associativity and only has limited notions of
 distributivity, each connective needs a left and right version. The
 Lambek-Grishin exhibits two notions of symmetry but they are unrelated to our
 notions. In particular, the first notion of symmetry expresses commutativity
 and the second relates products to sums and divisions to subtractions. In
-contract, our two symmetries relate sums to subtractions and products to
+contrast, our two symmetries relate sums to subtractions and products to
 divisions.
+
+\paragraph*{Our Approach.} The salient aspects of our approach are the following:
+\begin{itemize}
+\item Negative and fractional types have an elementary and familiar
+  interpretation borrowed from the algebra of rational numbers. One can write
+  any algebraic identity that is valid for the rational numbers and interpret
+  it as an isomorphism with a clear computational interpretation: negative
+  values flow backwards and fractional values represent fragments of
+  aggregate data structures. None of the systems above has such a natural
+  interpretation of negative and fractional types. 
+\item Because we are \emph{not} in the context of the full
+  $\lambda$-calculus, which allows arbitrary duplication and erasure of
+  information, values of negative and fractional types are first-class values
+  that can flow anywhere. The information-preserving computational
+  infrastructure guarantees that, in a complete program, every negative
+  demand will be satisfied exactly once, and every constraint imposed by a
+  fractional value will also be satisfied exactly once. This property is
+  shared with systems that are based on linear logic; other systems must
+  impose ad hoc constraints to ensure negative values are used exactly
+  once. 
+\item In contrast to all the work that takes continuations as primitive
+  entities of negative types, we view continuations as a derived notion that
+  combines a demand for a value with constraints on how this value will be
+  used to proceed with the evaluation (to the closest delimiter or to the end
+  of the program). In other words, we view a continuation as a non-elementary
+  notion that combines the negative types to demand a value and the
+  fractional types to explain how this value will be used to continue the
+  evaluation. As a consequence, the previously observed duality between
+  values and continuations can be teased into two dualities: a duality
+  between values flowing in one direction or the other and a duality between
+  aggregate values composing and decomposing into smaller values. Arguably
+  each of the dualities is more natural than a duality that maps regular
+  values to a conflated notion of negative and fractional types, and hence
+  requires notions like ``additive pairs'' and ``multiplicative sums.''
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Field of Algebraic Numbers} 
