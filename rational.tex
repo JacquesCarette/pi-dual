@@ -380,17 +380,15 @@ definition.
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{A Graphical Language for {{langRev}} }
 
-Combinators of {{langRev}} can be written using the the operators
-described in definition \ref{def:langRev} or via a graphical language
-similar in spirit to those developed for GoI
-\cite{DBLP:conf/popl/Mackie95} and for category theory
-\cite{springerlink:10.1007/978-3-642-12821-94}. Modulo some
-conventions and shorthands we will describe here, the wiring diagrams
-are a complete and equivalent to the operator based (syntactic)
-description of programs.  {{langRev}} combinators expressed in this
-graphical language looks like a ``wiring diagrams''. Value take the
-form of ``particles'' that flow along the wires. Computation is
-expressed by the flow of particles.
+Combinators of {{langRev}} can be written using the the operators described
+in definition \ref{def:langRev} or via a graphical language similar in spirit
+to those developed for GoI~\cite{DBLP:conf/popl/Mackie95} and for category
+theory \cite{springerlink:10.1007/978-3-642-12821-94}. Modulo some
+conventions and shorthands we will describe here, the wiring diagrams are a
+complete and equivalent to the operator based (syntactic) description of
+programs.  {{langRev}} combinators expressed in this graphical language looks
+like a ``wiring diagrams''. Value take the form of ``particles'' that flow
+along the wires. Computation is expressed by the flow of particles.
 
 
 \begin{itemize}
@@ -643,10 +641,13 @@ once.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \paragraph*{Observability.} 
-Execution of program is defined by {{c : b1 <-> b2}} when evaluated on
-input {{v1 : b1}} gives us a value {{v2 : b2}} on
-termination. Execution is well defined only if {{b1}} and {{b2}} are
-entirely positive types. Consider the program that
+Execution of program is defined by {{c : b1 <-> b2}} when evaluated on input
+{{v1 : b1}} gives us a value {{v2 : b2}} on termination. Execution is well
+defined only if {{b1}} and {{b2}} are entirely positive types. This is
+similar to the constraint that Zeilberger imposes to explain intuitionistic
+polarity and delimited control~\cite{10.1109/LICS.2010.23}.
+
+Consider the program that
 
 (TODO: So this is a really bad explanation. But this section is really
 important and we need to explain carefully. Maybe an analogy can be
@@ -1275,6 +1276,15 @@ of the functions and can be thought of as the address of the function.
 
 \end{itemize}
 
+For a traced monoidal category {{C}} the Int construction produces a
+Compact Closed Category called Int {{C}} \cite{joyal1996traced}.
+Further we know that the target of the Int construction is isomorphic
+to the target of \G construction of Abramsky \cite{Abramsky96:0} from
+Haghverdi. However, note that the {{langRevEE}} is not the same as the
+image of the Int construction on {{langRevT}}, since the the later
+lacks a multiplicative tensor that distributes over the additive tensor
+in Int {{langRevT}}.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Advanced Programming Examples}
 
@@ -1328,13 +1338,96 @@ like the closed-loop `not' in the previous construction.
 %%%%%%%%%%%%%%%%%%%
 \subsection{GoI machine}
 
+We can now encode the GoI machine of
+Mackie~\cite{Mackie2011,DBLP:conf/popl/Mackie95}. \amr{The machine uses bang
+  which allows arbitrary duplication. Can we really do that???}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work} 
 \label{sec:related}
 
-(NOTE: Lets use this section here to establish a long of ideas and
-intuition. None of these connections have to be formal, but they can
-be concrete.)
+\paragraph*{Negation in Classical Linear Logic} 
+Filinski~\cite{Filinski92} uses the negative types of linear logic to model
+continuations. Reddy~\cite{Reddy91} generalizes this idea by interpreting the
+negative types of linear logic as \emph{acceptors}, which are like
+continuations in the sense that they take an input and return no
+output. Acceptors however are also similar in flavor to logical variables:
+they can created and instantiated later once their context of use is
+determined. It is clear that, at an intuitive level, acceptors are entities
+that combine elements of our negative and fractional types.
+
+\paragraph*{Declarative Continuations.} 
+In his Masters thesis~\cite{Filinski:1989:DCI:648332.755574}, Filinski
+proposes that continuations are a \emph{declarative} concept. He,
+furthermore, introduces a symmetric extension of the $\lambda$-calculus in
+which values and continuations are treated as opposites. This is essentially
+what we are proposing with one fundamental difference: our underlying
+language is not the $\lambda$-calculus but a language of pure isomorphisms in
+which information is preserved. This shift of perspective enables us to
+distill and generalize the duality of values and continuations: in
+particular, in the conventional $\lambda$-calculus setting values and
+continuations can be erased and duplicated which makes it difficult to
+maintain the correspondence between a value and its negative counterpart. In
+contrast, in our setting, one can start from the empty type $0$, introduce a
+positive value and its negative counterpart, and let each of these flow in
+arbitrary ways. The entire framework guarantees that neither the value nor
+its negative counterpart will be deleted or duplicated and hence that, in any
+closed program, the ``debt'' corresponding to the negative value is paid off
+exactly once. The forward and backward executions in our framework correspond
+to call-by-value and call-by-name. This duality was observed by Filinski and
+others following him but it is particularly clean in our framework.
+
+\paragraph*{The Duality of Computation.}
+Wadler the reloaded paper, does not consider the subtraction type because its
+``computational interpretation is not familiar.'' Curien and Herbelin study
+duality in classical logic, show that it exchanges call-by-value and
+call-by-name. They extend classical natural deduction with subtraction but
+give it no computational meaning. Crolard (in the formulae-as-types
+interpretation of subtractive logic) address the computational interpretation
+of subtraction. He explains the type $A-B$ as the of \emph{coroutines} with a
+local environment of type $A$ and a continuation of type $B$. The description
+is complicated by what is essentially the desire to enforce linearity
+constraints so that coroutines cannot access the local environment of other
+coroutines. Must cite Selinger control categories in this context of duality
+but I am not sure what to say: it assumes cartesian closed categories for one
+thing and not symmetric monoidal ones. Ariola, Herbelin, and Sabry also use
+subtractive types to explain delimited continuations.
+
+\paragraph*{Polarized Logic.} Polarized logic is the logic of values and
+continuations: each connective can be given a positive or negative polarity,
+which can be related to evaluation
+order~\cite{10.1109/LICS.2010.23}. Negative types in this work are a mix of
+our negative and fractional types: they include a notion of demand which
+corresponds to our negative types and a notion of pattern-matching on
+continuations (i.e., a notion of constraints on the context) which
+corresponds to our fractional types.
+
+\paragraph*{The Lambek-Grishin Calculus.} The ``parsing-as-deduction'' style
+of linguistic analysis uses the Lambek-Grishin calculus with the following
+types: product, left division, right division, coproduct, right difference,
+and left difference~\cite{Bernardi:2010:CSL:1749618.1749689}. The division
+and difference types are similar to our types but because the calculus lacks
+commutativity and associativity and only has limited notions of
+distributivity, each connective needs a left and right version. The
+Lambek-Grishin exhibits two notions of symmetry but they are unrelated to our
+notions. In particular, the first notion of symmetry expresses commutativity
+and the second relates products to sums and divisions to subtractions. In
+contract, our two symmetries relate sums to subtractions and products to
+divisions.
+
+\newpage
+
+Curien and Herbelin~\cite{Curien:2000} introduce a calculus that exhibits
+symmetries between values and continuations and between call-by-value and
+call-by-name. The calculus includes the type $A-B$ which is the dual of
+implication, i.e., a value of type $A-B$ is a context expecting a function of
+type $A \rightarrow B$. Alternatively a value of type $A-B$ is also explained
+as a \emph{pair} consisting of a value of type $A$ and a continuation of type
+$B$. which whose computational interpretation is left for future work. Curien
+and Herbelin informally explain values of types $A-B$ either as a context
+expecting a function $A \rightarrow B$ or as a \emph{pair} containing a value
+and a continuation. In our interpretation, a value of type $A-B$ is
+\emph{either} a value of $A$ or a demand for a value of type $B$.  
 
 Filinski proposes that continuations are a \emph{declarative} concept. He,
 furthermore, introduces a symmetric extension of the $\lambda$-calculus in
@@ -1345,84 +1438,50 @@ which information is preserved. This shift of perspective enables us to
 distill and generalize the duality of values and continuations: in
 particular, in the conventional $\lambda$-calculus setting values and
 continuations can be erased and duplicated which makes it difficult to
-maintain the correspondence between a value and its negative counterpart. 
+maintain the correspondence between a value and its negative counterpart.
 
-\paragraph*{Continuations.} The idea of using negative types to model
-information flowing backwards, demand for values, continuations, etc. goes
-back to at Filinski's thesis. We recall these connections below but we first
-note that all these systems are complicated because in all these systems
-information can be ignored, destroyed, or duplicated. Clearly the possibility
-of erasure of information would mean that our credit card transaction is
-incorrect. In our work, information is maintained and hence we have a
-guarantee that, in a closed program, the debt must be accounted and paid for.
+The idea of using negative types to model information flowing backwards,
+demand for values, continuations, etc. goes back to at Filinski's thesis. We
+recall these connections below but we first note that all these systems are
+complicated because in all these systems information can be ignored,
+destroyed, or duplicated. Clearly the possibility of erasure of information
+would mean that our credit card transaction is incorrect. In our work,
+information is maintained and hence we have a guarantee that, in a closed
+program, the debt must be accounted and paid for.
 
-\paragraph*{Filinski~\cite{Filinski:1989:DCI:648332.755574}.}
-In his Masters thesis, Filinski proposes that continuations are a
-\emph{declarative} concept. He, furthermore, introduces a symmetric extension
-of the $\lambda$-calculus in which values and continuations are treated as
-opposites. This is essentially what we are proposing with one fundamental
-difference: our underlying language is not the $\lambda$-calculus but a
-language of pure isomorphisms in which information is preserved. This shift
-of perspective enables us to distill and generalize the duality of values and
-continuations: in particular, in the conventional $\lambda$-calculus setting
-values and continuations can be erased and duplicated which makes it
-difficult to maintain the correspondence between a value and its negative
-counterpart. In contrast, in our setting, one can start from the empty type
-$0$, introduce a positive value and its negative counterpart, and let each of
-these flow in arbitrary ways. The entire framework guarantees that neither
-the value nor its negative counterpart will be deleted or duplicated and
-hence that, in any closed program, the ``debt'' corresponding to the negative
-value is paid off exactly once. The forward and backward executions in our
-framework correspond to call-by-value and call-by-name. This duality was
-observed by Filinski and others following him but it is particularly clean in
-our framework.
+Much of previous work builds on the idea that there is one duality in
+computation between values and continuations which manifests itself as a
+duality between the call-by-value and call-by-name parameter-passing
+mechanisms. The former mechanism focuses on evaluating expressions to values
+even if these values are not demanded by the context; the latter focuses on
+evaluating expressions to continuations even if these continuations might be
+aborted. The idea that a continuation is dual to a value is intuitive but
+then one would expect that the sum of two values naturally corresponds to the
+sum of two continuations and that the product of two values naturally
+corresponds to the product of two continuations.
 
-\paragraph*{Subtraction} Wadler the reloaded paper, does not consider the
-subtraction type because its ``computational interpretation is not
-familiar.'' Curien and Herbelin study duality in classical logic, show that
-it exchanges call-by-value and call-by-name. They extend classical natural
-deduction with subtraction but give it no computational meaning. Crolard (in
-the formulae-as-types interpretation of subtractive logic) address the
-computational interpretation of subtraction. He explains the type $A-B$ as
-the of \emph{coroutines} with a local environment of type $A$ and a
-continuation of type $B$. The description is complicated by what is
-essentially the desire to enforce linearity constraints so that coroutines
-cannot access the local environment of other coroutines. Must cite Selinger
-control categories in this context of duality but I am not sure what to say:
-it assumes cartesian closed categories for one thing and not symmetric
-monoidal ones. Ariola, Herbelin, and Sabry also use subtractive types to
-explain delimited continuations. 
+check and say that our work teases the continuations into a negative part
+(which simply demands a value) and a fractional part (which imposes
+constraints on how this value will be used). So something like $-1/c$ is
+needed to express a conventional continuation. Having two dualities makes the
+whole calculus natural and symmetric.
 
-\paragraph*{Linear Logic} In accounts that are linear, the value and
-continuation that comprise the subtractive type need to be constrained to
-``stay together.'' This can be achieved by various restrictions. In this work
-we have no such constraints, the negative value can flow anywhere. The entire
-system guarantees that any closed program would have to account for it. We
-don't have to introduce special constraints to achieve that. Zeilberger in
-the paper on polarity and the logic of delimited continuations uses polarized
-logic: he shows that if positive and negative values are completely symmetric
-except that answer types are positive, then the framework accommodates
-delimited continuations. But he interprets negative values are control
-operators, or as values defined by the shape of their continuations. We
-simply interpret values of negative type as values flowing in the ``other''
-direction.
+Consider a continuation that takes $x$ and $y$ and swaps them. It can't be
+expressed using two conventional continuations because the demand and the way
+it is used are entangled together.
 
-\paragraph*{Int Construction.}
-For a traced monoidal category {{C}} the Int construction produces a
-Compact Closed Category called Int {{C}} \cite{joyal1996traced}.
-Further we know that the target of the Int construction is isomorphic
-to the target of \G construction of Abramsky \cite{Abramsky96:0} from
-Haghverdi. However, note that the {{langRevEE}} is not the same as the
-image of the Int construction on {{langRevT}}, since the the later
-lacks a multiplicative tensor that distributes over the additive tensor
-in Int {{langRevT}}.
-
-\paragraph*{Recursion.} In our previous work we introduce recursive types and
-trace operators. This is dangerous here because infinite loops allow us to
-prolong paying the debt for as long as we want.
-
-\paragraph*{GoI machines} 
-We can now encode the GoI machine of Mackie \cite{Mackie2011,DBLP:conf/popl/Mackie95}.
+In accounts that are linear, the value and continuation that comprise the
+subtractive type need to be constrained to ``stay together.'' This can be
+achieved by various restrictions. In this work we have no such constraints,
+the negative value can flow anywhere. The entire system guarantees that any
+closed program would have to account for it. We don't have to introduce
+special constraints to achieve that. Zeilberger in the paper on polarity and
+the logic of delimited continuations uses polarized logic: he shows that if
+positive and negative values are completely symmetric except that answer
+types are positive, then the framework accommodates delimited
+continuations. But he interprets negative values are control operators, or as
+values defined by the shape of their continuations. We simply interpret
+values of negative type as values flowing in the ``other'' direction.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Field of Algebraic Numbers} 
@@ -1551,6 +1610,13 @@ of this makes much sense. It is critical that these constraints and demands
 can neither be duplicated nor erased.  This gives us the maximum
 ``parallelism'' possible.
 
+In our previous work we introduce recursive types and trace operators. This
+is dangerous here because infinite loops allow us to prolong paying the debt
+for as long as we want. The algebraic
+$\lambda$-calculus~\cite{Vaux:2009:ALC:1630585.1630590} shows that extreme
+care is needed when combining negative and fractional types with the full
+$\lambda$-calculus (including recursion).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 
@@ -1617,7 +1683,7 @@ functions, values, and continuations, with the property that any function can
 be used either as a value transformer or as a continuation transformer.
 
 This highly intuitive and appealing idea was further explored and refined by
-many authors~\cite{Griffin:1989:FNC:96709.96714, curien00duality,
+many authors~\cite{Griffin:1989:FNC:96709.96714, Curien:2000,
   Wadler:2003, DBLP:conf/rta/Wadler05}. Yet, despite its appeal, the duality
 between values and continuations 
 
