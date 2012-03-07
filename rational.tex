@@ -188,26 +188,66 @@ information effects, which obscured their appeal and murked their properties.
 
 To get a feeling for the main idea, consider the following algebraic
 manipulation relating a natural number $a$ to itself:
-\[\begin{array}{rclclclclcl}
-a &=& a + 0 &=& a + ((-a) + a) \\
-  &=& (a + (-a)) + a &=& 0 + a &=& a
+\[\begin{array}{rclll}
+&& a & \mbox{initial~$a$} & (0) \\
+&=& a + 0 & \mbox{$0$~is~identity~for~$+$} & (1) \\
+&=& a + (-a + a) & \mbox{$-a$~is~the~additive~inverse~of~$a$} & (2) \\
+&=& (a + (-a)) + a & \mbox{$+$~is~associative} & (3) \\
+&=& 0 + a & \mbox{$-a$~is~the~additive~inverse~of~$a$} & (4) \\
+&=& a & \mbox{$0$~is~identity~for~$+$} & (5)
 \end{array}\]
 Although seemingly pointless, this algebraic proof corresponds, in our model,
 to an isomorphism with a non-trivial and interesting computational
-interpretation.  On the left we have a producer that can supply a value of
-type $a$ and on the right we have a consumer that demands a value of type
-$a$. For the purposes of the example, think of the producer as someone having
-\$20.00 and the consumer as someone demanding \$20.00. It is certainly
-possible to directly connect the producer and consumer using the algebraic
-identity $a=a$: such a connection would be computationally modeled by the
-identity function as expected. However, the algebraic proof above implements
-this connection in a much more interesting way: the transformation $0 = (-a)
-+ a$ is used at the consumer site to create money and a corresponding
-debt. The consumer gets the money immediately and the debt travels
-``backwards'' towards the producer where it is paid.  In other words, this
-computation models something similar to a credit card transaction. We discuss
-this example in detail in Sec.~\ref{sub:neg} and only focus on two important
-points here:
+interpretation. Consider the starting $a$ as being supplied by a producer of
+values and the final $a$ as being demanded by a consumer. For the purposes of
+the example, think of the producer as someone having \$20.00 and the consumer
+as someone demanding \$20.00. It is certainly possible to directly connect
+the producer and consumer using the algebraic identity $a=a$: such a
+connection would be computationally modeled by the identity function as
+expected. However, the algebraic proof above implements this connection in a
+much more interesting way. As Sec.~\ref{sec:neg} explains in detail, the
+flow of the computation is as follows:
+\begin{itemize}
+\item We start at line (0) with \$20.00; 
+\item We proceed to line (1) with the same \$20.00 but tagged as being in the
+  left summand of the type $a+0$; we indicate this value as {{left 20}}
+\item We continue to line (2) with the same value {{left 20}};
+\item At line (3), the tag on the \$20.00 changes to indicate that it is
+  in the left-left summand, i.e., the value is now {{left (left 20)}};
+\item At line (4), we find ourselves needing to produce a value of type 0
+  which is impossible; this signals the beginning of a reverse execution
+  which sends us back to line (3) with a value {{left (right 20)}};
+\item Execution continues in reverse to line (2) with the value 
+  {{right (left 20)}};
+\item At line (1) we find ourselves again facing an empty type so we reverse
+  execution again; we go to line (2) with a value {{right (right 20)}};
+\item We proceed to line (3) and (4) with the value {{right 20}};
+\item We finally reach line 5 with the value {{20}}.
+\end{itemize}
+
+Collecting the various events that happen at the same lines, we can
+reorganize the above computation as follows:
+\begin{itemize}
+\item At line 0, we have the value {{20}} flowing forward;
+\item At line 1, we have the value {{left 20}} flowing forward;
+\item At line 2, we have the value {{left 20}} flowing forward or the value
+  {{right (left 20)}} flowing backwards or the value {{right (right 20)}}
+  flowing forward;
+\item At line 3, we have the value {{left (left 20)}} flowing forward or the
+  value {{left (right 20)}} flowing backward or the value {{right 20}}
+  flowing forward;
+\item At line 4, we have the value {{right 20}} flowing forward;
+\item At line 5, we have the value {{20}} flowing forward.
+\end{itemize}
+
+Use the above to argue that we have something like a credit card transaction!
+
+the transformation $0 = (-a) + a$ is used at the
+consumer site to create money and a corresponding debt. The consumer gets the
+money immediately and the debt travels ``backwards'' towards the producer
+where it is paid.  In other words, this computation models something similar
+to a credit card transaction. We discuss this example in detail in
+Sec.~\ref{sub:neg} and only focus on two important points here:
 \begin{itemize}
 \item As the example illustrates, negative types corresponds to ``debts.''
   It would clearly be disastrous if debts could be deleted or
