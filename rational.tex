@@ -92,6 +92,7 @@
 %! |-->> = \mapsto_{\ggg}
 %! |--> = \mapsto
 %! |- = \vdash
+%! <><> = \bowtie
 %! ==> = \Longrightarrow
 %! <== = \Longleftarrow
 %! <=> = \Longleftrightarrow
@@ -971,6 +972,21 @@ ADD MATH.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Rational Types}
 \label{sec:rat}
+
+%subcode{opsem} include main
+%! columnStyle = rclr
+% <iso, v, cc> &|-->& {[iso, iso(v), cc]}
+% <c1(;)c2, v, cc> &|-->& <c1, v, Fst cc c2>
+% {[c1, v, Fst cc c2]} &|-->& <c2, v, Snd c1 cc>
+% {[c2, v, Snd c1 cc]} &|-->& {[ c1(;)c2, v, cc ]}
+% <c1(+)c2, v' <><> L v, cc> &|-->& <c1, v, LeftPlus cc c2>
+% {[ c1, v, LeftPlus cc c2 ]} &|-->& {[c1 (+) c2, L v, cc ]}
+% <c1(+)c2, v' <><> R v, cc> &|-->& <c2, v, RightPlus c1 cc>
+% {[ c2, v, RightPlus c1 cc ]} &|-->& {[c1 (+) c2, R v, cc ]}
+% <c1(*)c2, v' <><> (v1, v2), cc> &|-->& <c1, v1, LeftTimes cc c2 v2>
+% {[ c1, v1, LeftTimes cc c2 v2 ]} &|-->& <c2, v2, RightTimes c1 v1 cc>
+% {[ c2, v2, RightTimes c1 v1 cc ]} &|-->& {[ c1 (*) c2, (v1, v2), cc ]}
+
 
 \begin{comment}
 %%%%%%%%%%%%%%%%%%
