@@ -83,10 +83,10 @@
 %! (;) = \fatsemi
 %! (*) = \times
 %! (+) = +
-%! LeftPlus = L^+
-%! RightPlus = R^+
-%! LeftTimes = L^{\times}
-%! RightTimes = R^{\times}
+%! LeftP = L^+
+%! RightP = R^+
+%! LeftT = L^{\times}
+%! RightT = R^{\times}
 
 %subcode-inline{bnf-inline} regex \{\{(((\}[^\}])|[^\}])*)\}\} name main include langRev
 %! Gx = \Gamma^{\times}
@@ -1009,19 +1009,19 @@ unification. The behaviour of the intepreter has not changed.
 %subcode{opsem} include main
 %! columnStyle = rclr
 %! fwd = \triangleright
-% <iso, v, cc, s>_{fwd} &|-->& {[iso, v', cc, s']}_{fwd}
+% <iso, v, C, s>_{fwd} &|-->& {[iso, v', C, s']}_{fwd}
 % & & where iso s v |--> (v', s')
-% <c1(;)c2, v, cc, s>_{fwd} &|-->& <c1, v, Fst cc c2, s>_{fwd}
-% {[c1, v, Fst cc c2, s]}_{fwd} &|-->& <c2, v, Snd c1 cc, s>_{fwd}
-% {[c2, v, Snd c1 cc, s]}_{fwd} &|-->& {[ c1(;)c2, v, cc,s ]}_{fwd}
-% <c1(+)c2, v', cc, s>_{fwd} &|-->& <c1, v, LeftPlus cc c2, s[v' <><> left v]>_{fwd}
-% {[ c1, v, LeftPlus cc c2, s ]}_{fwd} &|-->& {[c1 (+) c2, left v, cc,s ]}_{fwd}
-% <c1(+)c2, v', cc, s>_{fwd} &|-->& <c2, v, RightPlus c1 cc, s[v' <><> right v]>_{fwd}
-% {[ c2, v, RightPlus c1 cc,s ]}_{fwd} &|-->& {[c1 (+) c2, right v, cc,s ]}_{fwd}
-% <c1(*)c2, v', cc, s>_{fwd} &|-->& <c1, v1, LeftTimes cc c2 v2, s'>_{fwd}
+% <c1(;)c2, v, C, s>_{fwd} &|-->& <c1, v, Fst C c2, s>_{fwd}
+% {[c1, v, Fst C c2, s]}_{fwd} &|-->& <c2, v, Snd c1 C, s>_{fwd}
+% {[c2, v, Snd c1 C, s]}_{fwd} &|-->& {[ c1(;)c2, v, C,s ]}_{fwd}
+% <c1(+)c2, v', C, s>_{fwd} &|-->& <c1, v, LeftP C c2, s[v' <><> left v]>_{fwd}
+% {[ c1, v, LeftP C c2, s ]}_{fwd} &|-->& {[c1 (+) c2, left v, C,s ]}_{fwd}
+% <c1(+)c2, v', C, s>_{fwd} &|-->& <c2, v, RightP c1 C, s[v' <><> right v]>_{fwd}
+% {[ c2, v, RightP c1 C,s ]}_{fwd} &|-->& {[c1 (+) c2, right v, C,s ]}_{fwd}
+% <c1(*)c2, v', C, s>_{fwd} &|-->& <c1, v1, LeftT C c2 v2, s'>_{fwd}
 % & & where s' = s[v <><> (v1, v2)]
-% {[ c1, v1, LeftTimes cc c2 v2,s ]}_{fwd} &|-->& <c2, v2, RightTimes c1 v1 cc, s>_{fwd}
-% {[ c2, v2, RightTimes c1 v1 cc,s ]}_{fwd} &|-->& {[ c1 (*) c2, (v1, v2), cc,s ]}_{fwd}
+% {[ c1, v1, LeftT C c2 v2,s ]}_{fwd} &|-->& <c2, v2, RightT c1 v1 C, s>_{fwd}
+% {[ c2, v2, RightT c1 v1 C,s ]}_{fwd} &|-->& {[ c1 (*) c2, (v1, v2), C,s ]}_{fwd}
 
 \paragraph{Backward evaluator.}
 Here we have written a ``backward'' evaluator in the same style --
@@ -1031,18 +1031,18 @@ i.e. evaluation {{c v}} in this evaluator is equivalent to evaluating
 %subcode{opsem} include main
 %! columnStyle = rclr
 %! bck = \triangleleft
-% {[iso, v, cc, s]}_{bck} &|-->& <iso, v', cc, s'>_{bck}
+% {[iso, v, C, s]}_{bck} &|-->& <iso, v', C, s'>_{bck}
 % & & where iso^{dagger} s v |--> (v', s')
-% <c1, v, Fst cc c2, s>_{bck} &|-->& <c1(;)c2, v, cc, s>_{bck}
-% <c2, v, Snd c1 cc, s>_{bck} &|-->& {[c1, v, Fst cc c2, s]}_{bck}
-% {[ c1(;)c2, v, cc, s ]}_{bck} &|-->& {[c2, v, Snd c1 cc, s]}_{bck}
-% <c1, v, LeftPlus cc c2,s >_{bck} &|-->& <c1(+)c2,left v, cc>_{bck}
-% {[c1 (+) c2, v', cc, s ]}_{bck} &|-->& {[ c1, v, LeftPlus cc c2, s[v' <><> left v] ]}_{bck}
-% <c2, v, RightPlus c1 cc, s>_{bck} &|-->& <c1(+)c2, right v, cc>_{bck}
-% {[c1 (+) c2, v', cc,s ]}_{bck} &|-->& {[ c2, v, RightPlus c1 cc, s[v' <><> right v] ]}_{bck}
-% <c1, v1, LeftTimes cc c2 v2, s>_{bck} &|-->& <c1(*)c2, (v1, v2), cc, s>_{bck}
-% <c2, v2, RightTimes c1 v1 cc, s>_{bck} &|-->& {[ c1, v1, LeftTimes cc c2 v2, s ]}_{bck}
-% {[ c1 (*) c2, v, cc, s ]}_{bck} &|-->& {[ c2, v2, RightTimes c1 v1 cc, S' ]}_{bck}
+% <c1, v, Fst C c2, s>_{bck} &|-->& <c1(;)c2, v, C, s>_{bck}
+% <c2, v, Snd c1 C, s>_{bck} &|-->& {[c1, v, Fst C c2, s]}_{bck}
+% {[ c1(;)c2, v, C, s ]}_{bck} &|-->& {[c2, v, Snd c1 C, s]}_{bck}
+% <c1, v, LeftP C c2,s >_{bck} &|-->& <c1(+)c2,left v, C>_{bck}
+% {[c1 (+) c2, v', C, s ]}_{bck} &|-->& {[ c1, v, LeftP C c2, s[v' <><> left v] ]}_{bck}
+% <c2, v, RightP c1 C, s>_{bck} &|-->& <c1(+)c2, right v, C>_{bck}
+% {[c1 (+) c2, v', C,s ]}_{bck} &|-->& {[ c2, v, RightP c1 C, s[v' <><> right v] ]}_{bck}
+% <c1, v1, LeftT C c2 v2, s>_{bck} &|-->& <c1(*)c2, (v1, v2), C, s>_{bck}
+% <c2, v2, RightT c1 v1 C, s>_{bck} &|-->& {[ c1, v1, LeftT C c2 v2, s ]}_{bck}
+% {[ c1 (*) c2, v, C, s ]}_{bck} &|-->& {[ c2, v2, RightT c1 v1 C, S' ]}_{bck}
 % && where s' = s[v <><> (v1, v2)]
 
 
@@ -1072,16 +1072,16 @@ of primitive isomorphisms:
 %! columnStyle = rclr
 %! fwd = \triangleright
 %! bck = \triangleleft
-% <eps+, v, cc, s>_{fwd} |--> <eps+, left (-v'), cc, s[v <><> right v]>_{bck}
-% <eps+, v, cc, s>_{fwd} |--> <eps+, right v', cc, s[v <><> left (-v')]>_{bck}
+% <eps+, v, C, s>_{fwd} |--> <eps+, left (-v'), C, s[v <><> right v]>_{bck}
+% <eps+, v, C, s>_{fwd} |--> <eps+, right v', C, s[v <><> left (-v')]>_{bck}
 
     \item
 %subcode{opsem} include main
 %! columnStyle = rclr
 %! fwd = \triangleright
 %! bck = \triangleleft
-% <eta+, v, cc, s>_{bck} |--> <eta+, left (-v'), cc, s[v <><> right v]>_{fwd}
-% <eta+, v, cc, s>_{bck} |--> <eta+, right v', cc, s[v <><> left (-v')]>_{fwd}
+% <eta+, v, C, s>_{bck} |--> <eta+, left (-v'), C, s[v <><> right v]>_{fwd}
+% <eta+, v, C, s>_{bck} |--> <eta+, right v', C, s[v <><> left (-v')]>_{fwd}
 
   \end{enumerate}
 
