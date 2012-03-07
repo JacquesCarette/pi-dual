@@ -83,6 +83,10 @@
 %! (;) = \fatsemi
 %! (*) = \times
 %! (+) = +
+%! LeftPlus = L^+
+%! RightPlus = R^+
+%! LeftTimes = L^{\times}
+%! RightTimes = R^{\times}
 
 %subcode-inline{bnf-inline} regex \{\{(((\}[^\}])|[^\}])*)\}\} name main include langRev
 %! Gx = \Gamma^{\times}
@@ -92,6 +96,7 @@
 %! |-->> = \mapsto_{\ggg}
 %! |--> = \mapsto
 %! |- = \vdash
+%! <><> = \approx
 %! ==> = \Longrightarrow
 %! <== = \Longleftarrow
 %! <=> = \Longleftrightarrow
@@ -978,154 +983,110 @@ ADD MATH.
 \section{Rational Types}
 \label{sec:rat}
 
-\begin{comment}
-%%%%%%%%%%%%%%%%%%
-\subsection{Syntax}
+We start with the semantics for {{langRev}} defined in Sec
+\ref{sec:pi}, which we will systematically rewrite with unification
+and then present a ``reverse'' evaluator written in the same style. We
+shall then combine these into the semantics for {{langRevEE}}.
 
-%subcode{bnf} include main
-% Values, v = () | (v, v) | left v | right v
-% Combinators, c &=& iso | c (;) c | c(+)c | c (*) c 
-%
-% Sequential Contexts, P, F = [] | P:c
-% Parallel Contexts, D = [] 
-%                     &|& D:(P| [](+)c| F)
-%                     &|& D:(P| c(+)[]| F)
-%                     &|& D:(P| [] (*) c v| F)
-%                     &|& D:(P| [] (*) v c| F)
-%                     &|& D:(P| c v (*)  []| F)
-%                     &|& D:(P| v c (*) []| F)
-%
-%
-% Machine States  = D[P| c v| F] | D[P| v c| F]
-% Start State  = [][[]| v c| []]
-% Stop State  = [][P| c v| []]
 
-Combinator reconstruction, {{P[c]}}:
+\paragraph{Primitive Isomorphsims.}
+Previously the reductions of the primitive isomorphisms were specified
+in the following form.
+
+{{ iso v_{input pattern} |--> v_{output pattern} }}
+
+\noindent
+In the precense of unification, we rewrite them to accept the incoming
+substitution and extend it with the appropriate unification. 
+
+{{ iso s v' |--> (v_{output pattern}, s[v' <><> v_{input pattern}]) }}
+
+
+\paragraph{Extending the evaulator with unification.} 
+We have rewriten the semantics of Sec. \ref{sec:pi} with
+unification. The behaviour of the intepreter has not changed.
+
 %subcode{opsem} include main
-% [](c) '= c
-% P:c'(c) '= P(c'(;)c)
+%! columnStyle = rclr
+%! fwd = \triangleright
+% <iso, v, cc, s>_{fwd} &|-->& {[iso, v', cc, s']}_{fwd}
+% & & where iso s v |--> (v', s')
+% <c1(;)c2, v, cc, s>_{fwd} &|-->& <c1, v, Fst cc c2, s>_{fwd}
+% {[c1, v, Fst cc c2, s]}_{fwd} &|-->& <c2, v, Snd c1 cc, s>_{fwd}
+% {[c2, v, Snd c1 cc, s]}_{fwd} &|-->& {[ c1(;)c2, v, cc,s ]}_{fwd}
+% <c1(+)c2, v', cc, s>_{fwd} &|-->& <c1, v, LeftPlus cc c2, s[v' <><> left v]>_{fwd}
+% {[ c1, v, LeftPlus cc c2, s ]}_{fwd} &|-->& {[c1 (+) c2, left v, cc,s ]}_{fwd}
+% <c1(+)c2, v', cc, s>_{fwd} &|-->& <c2, v, RightPlus c1 cc, s[v' <><> right v]>_{fwd}
+% {[ c2, v, RightPlus c1 cc,s ]}_{fwd} &|-->& {[c1 (+) c2, right v, cc,s ]}_{fwd}
+% <c1(*)c2, v', cc, s>_{fwd} &|-->& <c1, v1, LeftTimes cc c2 v2, s'>_{fwd}
+% & & where s' = s[v <><> (v1, v2)]
+% {[ c1, v1, LeftTimes cc c2 v2,s ]}_{fwd} &|-->& <c2, v2, RightTimes c1 v1 cc, s>_{fwd}
+% {[ c2, v2, RightTimes c1 v1 cc,s ]}_{fwd} &|-->& {[ c1 (*) c2, (v1, v2), cc,s ]}_{fwd}
 
-%%%%%%%%%%%%%%%%%%%%%
-\subsection{Operational Semantics}
+\paragraph{Backward evaluator.}
+Here we have written a ``backward'' evaluator in the same style --
+i.e. evaluation {{c v}} in this evaluator is equivalent to evaluating
+{{C^{dagger} v}} in the forward evaluator.
 
-The small step semantics present for {{langRev}} below work
-symmetrically for forward and backward evaluation.
+%subcode{opsem} include main
+%! columnStyle = rclr
+%! bck = \triangleleft
+% {[iso, v, cc, s]}_{bck} &|-->& <iso, v', cc, s'>_{bck}
+% & & where iso^{dagger} s v |--> (v', s')
+% <c1, v, Fst cc c2, s>_{bck} &|-->& <c1(;)c2, v, cc, s>_{bck}
+% <c2, v, Snd c1 cc, s>_{bck} &|-->& {[c1, v, Fst cc c2, s]}_{bck}
+% {[ c1(;)c2, v, cc, s ]}_{bck} &|-->& {[c2, v, Snd c1 cc, s]}_{bck}
+% <c1, v, LeftPlus cc c2,s >_{bck} &|-->& <c1(+)c2,left v, cc>_{bck}
+% {[c1 (+) c2, v', cc, s ]}_{bck} &|-->& {[ c1, v, LeftPlus cc c2, s[v' <><> left v] ]}_{bck}
+% <c2, v, RightPlus c1 cc, s>_{bck} &|-->& <c1(+)c2, right v, cc>_{bck}
+% {[c1 (+) c2, v', cc,s ]}_{bck} &|-->& {[ c2, v, RightPlus c1 cc, s[v' <><> right v] ]}_{bck}
+% <c1, v1, LeftTimes cc c2 v2, s>_{bck} &|-->& <c1(*)c2, (v1, v2), cc, s>_{bck}
+% <c2, v2, RightTimes c1 v1 cc, s>_{bck} &|-->& {[ c1, v1, LeftTimes cc c2 v2, s ]}_{bck}
+% {[ c1 (*) c2, v, cc, s ]}_{bck} &|-->& {[ c2, v2, RightTimes c1 v1 cc, S' ]}_{bck}
+% && where s' = s[v <><> (v1, v2)]
 
-\begin{itemize}
+
+\subsection{Semantics of {{langRevEE}} }
+
+\begin{enumerate}
 \item 
-Basic reduction of an isomorphism. Note that the evaluation leaves the
-adjoint of the combinator behind. This will become important when we
-reverse the direction of computation.
-%% %subcode{opsem} include main
-%% % <P; F; iso v; D>      &|-->& <P; F; v'~ iso{dagger}; D>
+To add multiplicative duality, we add the following rules to the set
+of primitive isomorphisms:
+
+\begin{enumerate}
+\item {{eta* s () |--> ((inv(v), v), s)}}
+  where {{v}} is a fresh logic variable. 
+
+\item {{eps* s v |--> (1, s[v <><> (inv(v'),v') ])}}
+  where {{v'}} is a fresh logic variable. 
+
+\end{enumerate}
+
+\item To add negative types we add the following rules to the
+  reductions above: 
+
+  \begin{enumerate}
+  \item 
 
 %subcode{opsem} include main
-% D[P|v iso| F]      &|-->& D[P| iso{dagger} v| F]
+%! columnStyle = rclr
+%! fwd = \triangleright
+%! bck = \triangleleft
+% <eps+, v, cc, s>_{fwd} |--> <eps+, left (-v'), cc, s[v <><> right v]>_{bck}
+% <eps+, v, cc, s>_{fwd} |--> <eps+, right v', cc, s[v <><> left (-v')]>_{bck}
 
-\item
-Sequencing involves pushing and popping from the Future and Past
-continuations:
+    \item
 %subcode{opsem} include main
-% D[P|v (c1(;)c2)| F]  &|-->& D[P| v c1| F:c2]
-% D[P| c1 v| F:c2] &|-->& D[P:c1| v c2| F]
+%! columnStyle = rclr
+%! fwd = \triangleright
+%! bck = \triangleleft
+% <eta+, v, cc, s>_{bck} |--> <eta+, left (-v'), cc, s[v <><> right v]>_{fwd}
+% <eta+, v, cc, s>_{bck} |--> <eta+, right v', cc, s[v <><> left (-v')]>_{fwd}
+
+  \end{enumerate}
 
 
-\item
-Parallel composition, captures the current Future and Past and extends
-the parallel context.
-%subcode{opsem} include main
-% D[P|(left v) c1 (+) c2| F] &|-->& D:(P|[](+)c2|F)[ []| v c1| [] ]
-% D[P| (right v) c1 (+) c2| F] &|-->& D:(P|c1(+)[]|F)[ []| v c2| [] ]
-% D:(P|[](+)c2|F)[P'|c1 v| [] ]  &|-->& D[P|(P'(c1)(+)c2{dagger}) (left v)| F] 
-% D:(P|c1(+)[]|F)[P'| c2 v| [] ] &|-->& D[P|(c1{dagger}(+)P'(c2)) (right v)| F]
-
-
-\item
-Similarly for products:
-%subcode{opsem} include main
-% D[P| (v1, v2) c1 (*) c2| F] &|-->& D:(P| [] (*) v2 c2|F)[ []| v1 c1| [] ]
-% D:(P|[] (*) v2 c2|F)[P'| c1 v1| [] ] &|-->& D:(P|P'(c1) v1 (*) []|F)[ []| v2 c2| [] ]
-% D:(P|c1 v1(*) []|F)[P'|c2 v2| [] ]  &|-->& D[P|c1(*)P'(c2) (v1, v2)| F]
-
-
-and symmetrical rules for evaluation along the second branch. 
-%subcode{opsem} include main
-% D:(P|v1 c1 (*) []|F)[P'| c2 v2| [] ] &|-->& D:(P,[] (*) P'(c2) v2,F)[ []| v1 c1| [] ]
-% D:(P|[] (*) c2 v2|F)[P'|c1 v1| [] ] &|-->& D[P |P'(c1) (*) c2 (v1, v2)| F]
-
-The later two rules will be relevant only for reverse execution. 
-
-\end{itemize}
-
-\begin{proposition}[Logical Reversibility]
-\label{prop:logrevEE}
-{{c v |--> v'}} iff {{c{dagger} v' |--> v}}.
-\end{proposition}
-
-\begin{proposition}[Groupoid]
-\label{prop:groupoidEE}
-{{langRevEE}} is a groupoid. 
-\end{proposition}
-
-\begin{proposition}
-\label{prop:categoryEE}
-{{langRev}} is a Dagger Symmetric Monoidal Closed Category.
-\end{proposition}
-
-Note: We use `Monoidal Closed' in the sense of Compact Closed. While
-the category has an multiplicative tensor that distributes over an
-additive tensor, it does not have injections or projections and hence
-does not have categorical sums and products.
-
-%%%%%%%%%%%%%%%%%%%%
-\subsection{Rules for {{eta}} and {{eps}} }
-
-The operation {{eps}} reverses the direction of a particle by
-reversing the world. 
-
-Note that we deviate from the categorical definition of {{eta}} and
-{{eps}} slightly in that they swap the order of {{-b}} and {{b}} in
-choice of {{eta}}. This however does not affect us, because we deal
-with a symmetric category.
-
-\begin{itemize}
-\item Grammar
-%subcode{bnf} include main
-% Values, v = () | (v, v) | left v | right v | -v
-% Isomorphisms, iso &=& ... | eta | eps
-% Combinators, c &=& iso | c (;) c | c(+)c | c (*) c 
-
-\item
-Type judgment.
-%subcode{opsem} include main
-% eta &: 0 <-> (-b) + b :& eps
-
-%subcode{proof} include main
-%@ |- v : b
-%@@ |- -v : -b
-
-\item
-Operational Semantics.
-%subcode{opsem} include main
-% D[P| (right v) eps| F]      &|-->&  D{dagger}[F | eps (left (-v))| P]
-% D[P| (left (-v)) eps| F]      &|-->&  D{dagger}[F | eps (right v)| P]
-
-Note: there is NO reduction rule for {{eta}}. 
-
-\item
-The adjoint of a parallel context is defined to be:
-%subcode{opsem} include main
-% []{dagger} '= []
-% (D:(P, [](+)c, F)){dagger} '= D{dagger}:(F, [](+)c{dagger}, P)
-% (D:(P, c(+)[], F)){dagger} '= D{dagger}:(F, c{dagger}(+)[], P)
-% (D:(P, [](*)c v, F)){dagger} '= D{dagger}:(F, [](*)v c, P)
-% (D:(P, [](*)v c, F)){dagger} '= D{dagger}:(F, [](*)c v, P)
-% (D:(P, c v(*)[], F)){dagger} '= D{dagger}:(F, v c(*)[], P)
-% (D:(P, v c(*)[], F)){dagger} '= D{dagger}:(F, c v(*)[], P)
-
-\end{itemize}
-
-\end{comment}
+\end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions in {{langRevEE}} }
@@ -1192,6 +1153,10 @@ This is also equivalent to sequencing both the computation blocks.
 \begin{center}
   \includegraphics{diagrams/double_neg.pdf}
 \end{center}
+
+MUST TALK ABOUT AND CITE ABRAMSKY AND COECKE'S TR ABOUT QUANTUM
+COMPUTING.
+
 
 %%%%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions Specific to Negation}
