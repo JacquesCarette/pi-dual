@@ -197,16 +197,17 @@ manipulation relating a natural number $a$ to itself:
 &=& a & \mbox{$0$~is~identity~for~$+$} & (5)
 \end{array}\]
 Although seemingly pointless, this algebraic proof corresponds, in our model,
-to an isomorphism with a non-trivial and interesting computational
-interpretation. Consider the starting $a$ as being supplied by a producer of
-values and the final $a$ as being demanded by a consumer. For the purposes of
-the example, think of the producer as someone having \$20.00 and the consumer
-as someone demanding \$20.00. It is certainly possible to directly connect
-the producer and consumer using the algebraic identity $a=a$: such a
-connection would be computationally modeled by the identity function as
-expected. However, the algebraic proof above implements this connection in a
-much more interesting way. As Sec.~\ref{sec:neg} explains in detail, the
-flow of the computation is as follows:
+to an isomorphism of type {{a <-> a}} with a non-trivial and interesting
+computational interpretation. Consider the starting value of type $a$ as
+being supplied by a producer of values and the final value of type $a$ as
+being demanded by a consumer. For the purposes of the example, think of the
+producer as someone having \$20.00 and the consumer as someone demanding
+\$20.00. It is certainly possible to directly connect the producer and
+consumer using the algebraic identity $a=a$: such a connection would be
+computationally modeled by the identity function as expected. However, the
+algebraic proof above implements this connection in a much more interesting
+way. As the semantics of Sec.~\ref{sec:rat} formalizes, the flow of 
+computation is as follows:
 \begin{itemize}
 \item We start at line (0) with \$20.00; 
 \item We proceed to line (1) with the same \$20.00 but tagged as being in the
@@ -224,30 +225,24 @@ flow of the computation is as follows:
 \item We proceed to line (3) and (4) with the value {{right 20}};
 \item We finally reach line 5 with the value {{20}}.
 \end{itemize}
+The beauty of the above computation is that it can be realized with a
+completely different concurrent schedule as follows. \emph{Simultaneously}
+the execution begins at line (0) with the value {{20}}, at line (2) with the
+value {{right (right 20)}} flowing forward and the value {{right (left 20)}}
+flowing backwards, and at line (3) with the value {{left (left 20)}} flowing
+forward and the value {{left (right 20)}} flowing backward. We now have three
+independent subcomputations proceeding in parallel: the positive value
+created at line (2) which can flow to the consumer; the negative value
+created at line (3) which can pay for the debt created at line (2); and the
+initial value from line (0) which can flow to the required forward-flowing
+value needed at line (3). At some intuitive level, one might understand the
+situation as modeling a credit card payment in which money is created at line
+(2) for the consumer together with a corresponding debt. The producer's bank
+pays for the debt at line (3) and waits for the actual money to arrive from
+the producer.
 
-Collecting the various events that happen at the same lines, we can
-reorganize the above computation as follows:
-\begin{itemize}
-\item At line 0, we have the value {{20}} flowing forward;
-\item At line 1, we have the value {{left 20}} flowing forward;
-\item At line 2, we have the value {{left 20}} flowing forward or the value
-  {{right (left 20)}} flowing backwards or the value {{right (right 20)}}
-  flowing forward;
-\item At line 3, we have the value {{left (left 20)}} flowing forward or the
-  value {{left (right 20)}} flowing backward or the value {{right 20}}
-  flowing forward;
-\item At line 4, we have the value {{right 20}} flowing forward;
-\item At line 5, we have the value {{20}} flowing forward.
-\end{itemize}
-
-Use the above to argue that we have something like a credit card transaction!
-
-the transformation $0 = (-a) + a$ is used at the
-consumer site to create money and a corresponding debt. The consumer gets the
-money immediately and the debt travels ``backwards'' towards the producer
-where it is paid.  In other words, this computation models something similar
-to a credit card transaction. We discuss this example in detail in
-Sec.~\ref{sub:neg} and only focus on two important points here:
+There are at least two fundamental points about this example that must be
+emphasized:
 \begin{itemize}
 \item As the example illustrates, negative types corresponds to ``debts.''
   It would clearly be disastrous if debts could be deleted or
