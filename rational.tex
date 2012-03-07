@@ -83,6 +83,10 @@
 %! (;) = \fatsemi
 %! (*) = \times
 %! (+) = +
+%! LeftPlus = L^+
+%! RightPlus = R^+
+%! LeftTimes = L^{\times}
+%! RightTimes = R^{\times}
 
 %subcode-inline{bnf-inline} regex \{\{(((\}[^\}])|[^\}])*)\}\} name main include langRev
 %! Gx = \Gamma^{\times}
@@ -92,7 +96,7 @@
 %! |-->> = \mapsto_{\ggg}
 %! |--> = \mapsto
 %! |- = \vdash
-%! <><> = \bowtie
+%! <><> = \approx
 %! ==> = \Longrightarrow
 %! <== = \Longleftarrow
 %! <=> = \Longleftrightarrow
@@ -973,19 +977,58 @@ ADD MATH.
 \section{Rational Types}
 \label{sec:rat}
 
+\paragraph{Primitive Isomorphsims.}
+Previously the reductions of the primitive isomorphisms were specified
+in the following form.
+
+{{ iso v_{input pattern} |--> v_{output pattern} }}
+
+\noindent
+In the precense of unification, we rewrite them to accept the incoming
+substitution and extend it with the appropriate unification. 
+
+{{ iso s v' |--> (v_{output pattern}, s[v' <><> v_{input pattern}]) }}
+
+
+\paragraph{Extending the evaulator with unification.}
 %subcode{opsem} include main
 %! columnStyle = rclr
-% <iso, v, cc> &|-->& {[iso, iso(v), cc]}
-% <c1(;)c2, v, cc> &|-->& <c1, v, Fst cc c2>
-% {[c1, v, Fst cc c2]} &|-->& <c2, v, Snd c1 cc>
-% {[c2, v, Snd c1 cc]} &|-->& {[ c1(;)c2, v, cc ]}
-% <c1(+)c2, v' <><> L v, cc> &|-->& <c1, v, LeftPlus cc c2>
-% {[ c1, v, LeftPlus cc c2 ]} &|-->& {[c1 (+) c2, L v, cc ]}
-% <c1(+)c2, v' <><> R v, cc> &|-->& <c2, v, RightPlus c1 cc>
-% {[ c2, v, RightPlus c1 cc ]} &|-->& {[c1 (+) c2, R v, cc ]}
-% <c1(*)c2, v' <><> (v1, v2), cc> &|-->& <c1, v1, LeftTimes cc c2 v2>
-% {[ c1, v1, LeftTimes cc c2 v2 ]} &|-->& <c2, v2, RightTimes c1 v1 cc>
-% {[ c2, v2, RightTimes c1 v1 cc ]} &|-->& {[ c1 (*) c2, (v1, v2), cc ]}
+%! fwd = \triangleright
+% <iso, v, cc, s>_{fwd} &|-->& {[iso, v', cc, s']}_{fwd}
+% & & where iso s v |--> (v', s')
+% <c1(;)c2, v, cc, s>_{fwd} &|-->& <c1, v, Fst cc c2, s>_{fwd}
+% {[c1, v, Fst cc c2, s]}_{fwd} &|-->& <c2, v, Snd c1 cc, s>_{fwd}
+% {[c2, v, Snd c1 cc, s]}_{fwd} &|-->& {[ c1(;)c2, v, cc,s ]}_{fwd}
+% <c1(+)c2, v', cc, s>_{fwd} &|-->& <c1, v, LeftPlus cc c2, s[v' <><> left v]>_{fwd}
+% {[ c1, v, LeftPlus cc c2, s ]}_{fwd} &|-->& {[c1 (+) c2, left v, cc,s ]}_{fwd}
+% <c1(+)c2, v', cc, s>_{fwd} &|-->& <c2, v, RightPlus c1 cc, s[v' <><> right v]>_{fwd}
+% {[ c2, v, RightPlus c1 cc,s ]}_{fwd} &|-->& {[c1 (+) c2, right v, cc,s ]}_{fwd}
+% <c1(*)c2, v', cc, s>_{fwd} &|-->& <c1, v1, LeftTimes cc c2 v2, s'>_{fwd}
+% & & where s' = s[v <><> (v1, v2)]
+% {[ c1, v1, LeftTimes cc c2 v2,s ]}_{fwd} &|-->& <c2, v2, RightTimes c1 v1 cc, s>_{fwd}
+% {[ c2, v2, RightTimes c1 v1 cc,s ]}_{fwd} &|-->& {[ c1 (*) c2, (v1, v2), cc,s ]}_{fwd}
+
+
+
+\paragraph{Backward evaluator.}
+%subcode{opsem} include main
+%! columnStyle = rclr
+%! bck = \triangleleft
+% {[iso, v, cc, s]}_{bck} &|-->& <iso, v', cc, s'>_{bck}
+% & & where iso^{dagger} s v |--> (v', s')
+% <c1, v, Fst cc c2, s>_{bck} &|-->& <c1(;)c2, v, cc, s>_{bck}
+% <c2, v, Snd c1 cc, s>_{bck} &|-->& {[c1, v, Fst cc c2, s]}_{bck}
+% {[ c1(;)c2, v, cc, s ]}_{bck} &|-->& {[c2, v, Snd c1 cc, s]}_{bck}
+% <c1, v, LeftPlus cc c2,s >_{bck} &|-->& <c1(+)c2,left v, cc>_{bck}
+% {[c1 (+) c2, v', cc, s ]}_{bck} &|-->& {[ c1, v, LeftPlus cc c2, s[v' <><> left v] ]}_{bck}
+% <c2, v, RightPlus c1 cc, s>_{bck} &|-->& <c1(+)c2, right v, cc>_{bck}
+% {[c1 (+) c2, v', cc,s ]}_{bck} &|-->& {[ c2, v, RightPlus c1 cc, s[v' <><> right v] ]}_{bck}
+% <c1, v1, LeftTimes cc c2 v2, s>_{bck} &|-->& <c1(*)c2, (v1, v2), cc, s>_{bck}
+% <c2, v2, RightTimes c1 v1 cc, s>_{bck} &|-->& {[ c1, v1, LeftTimes cc c2 v2, s ]}_{bck}
+% {[ c1 (*) c2, v, cc, s ]}_{bck} &|-->& {[ c2, v2, RightTimes c1 v1 cc, S' ]}_{bck}
+% && where s' = s[v <><> (v1, v2)]
+
+
 
 
 \begin{comment}
@@ -1202,6 +1245,10 @@ This is also equivalent to sequencing both the computation blocks.
 \begin{center}
   \includegraphics{diagrams/double_neg.pdf}
 \end{center}
+
+MUST TALK ABOUT AND CITE ABRAMSKY AND COECKE'S TR ABOUT QUANTUM
+COMPUTING.
+
 
 %%%%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions Specific to Negation}
