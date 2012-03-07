@@ -259,17 +259,30 @@ proper context. Our main contributions are:
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{ {{langRev}} }
+\section{The Core Reversible Language: {{langRev}} }
 \label{sec:pi}
 
-The presentation here differs from \cite{infeffects} in the sense that
-we have introduced the {{0}} type here, thereby completing the monoid
-{{(0,+)}} and we present a small-step operational semantics. 
+We review our reversible language {{langRev}}: the presentation in this
+section differs from the one in our previous paper~\cite{infeffects} in two
+aspects. First, we add the empty type $0$ which is necessary to express the
+additive duality. Second, instead of explaining evaluation using a natural
+semantics, we give a small-step operational semantics that is more
+appropriate for the connections with continuations explored in this paper.
 
+%%%%%%%%%%%%%%%%%%%%
+\subsection{Syntax} 
+
+The set of types includes the empty type {{0}}, the unit type {{1}}, sum
+types {{b1+b2}}, and products types {{b1*b2}}. The set of values {{v}}
+includes {{()}} which is the only value of type {{1}}, {{left v}} and {{right v}} 
+which inject {{v}} into a sum type, and {{(v1,v2)}} which builds a
+value of product type. There are no values of type {{0}}:
 %subcode{bnf} include main
 % value types, b ::= 0 | 1 | b + b | b * b 
 % values, v ::= () | left v | right v | (v, v)
 
+The combinators of {{langRev}} are witnesses to the following type
+isomorphisms: 
 %subcode{bnf} include main
 %! columnStyle = r@{\hspace{-0.5pt}}c@{\hspace{-0.5pt}}l
 %zeroe :&  0 + b <-> b &: zeroi
@@ -280,7 +293,13 @@ we have introduced the {{0}} type here, thereby completing the monoid
 %assocl* :&  b1 * (b2 * b3) <-> (b1 * b2) * b3 &: assocr*
 %dist0 :& 0 * b <-> 0 &: factor0
 %dist :&~ (b1 + b2) * b3 <-> (b1 * b3) + (b2 * b3)~ &: factor
-
+Each line of the above table introduces one or two combinators that witness
+the isomorphism in the middle. Collectively the isomorphisms state that the
+structure {{(b,+,0,*,1)}} is a \emph{commutative semiring}, i.e., that each
+of {{(b,+,0)}} and {{(b,*,1)}} is a commutative monoid and that
+multiplication distributes over addition. The isomorphisms are extended to
+form a congruence relation by adding the following constructors that witness
+the equivalence and compatible closure:
 %subcode{proof} include main
 %@  ~
 %@@ id : b <-> b 
@@ -300,36 +319,196 @@ we have introduced the {{0}} type here, thereby completing the monoid
 %@ c2 : b2 <-> b4
 %@@ c1 (*) c2 : b1 * b2 <-> b3 * b4
 
+To summarize, the syntax of {{langRev}} is given as follows. 
+
 \begin{definition}{(Syntax of {{langRev}})}
 \label{def:langRev}
 We collect our types, values, and combinators, to get the full language
 definition.
 %subcode{bnf} include main
-% value types, b ::= 1 | b+b | b*b 
+% value types, b ::= 0 | 1 | b+b | b*b 
 % values, v ::= () | left v | right v | (v,v) 
 %
 % comb.~types, t ::= b <-> b
-% iso ::= swap+ | assocl+ | assocr+ 
+% iso ::= zeroe | zeroi 
+%     &|& swap+ | assocl+ | assocr+ 
 %     &|& identl* | identr* 
 %     &|& swap* | assocl* | assocr* 
-%     &|& dist | factor 
+%     &|& dist0 | factor0 | dist | factor 
 % comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
 \end{definition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Graphical Language}
+
+The syntactic notation described above is often obscure. Following the
+tradition established for monoidal
+categories~\cite{springerlink:10.1007/978-3-642-12821-94}, we present a
+graphical language that conveys the intuitive semantics of the language
+(which is formalized in the next section). The general idea of the graphical
+notation is that combinators are modeled by ``wiring diagrams'' or
+``circuits''; values are modeled as ``particles'' that may appear on the
+wires; and evaluation is modeled by the flow of particles along the wires. We
+now proceed to give the graphical notation for each combinator:
+
+\begin{itemize}
+\item The simplest sort of diagram is the {{id : b <-> b}} combinator which
+  is simply represented as a wire labeled by its type {{b}}. In more complex
+  diagrams, if the type of a wire is obvious from the context, it may be
+  omitted.
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/b-wire.pdf]
+\includegraphics{diagrams/thesis/b-wire.pdf}
+}
+\end{center}
+
+\item The product type {{b1*b2}} may be represented both as one wire labeled
+  {{b1*b2}} or by two parallel wires labeled {{b1}} and {{b2}}. Both
+  representations maybe used interchangeably.
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/pair-one-wire.pdf]
+\includegraphics{diagrams/thesis/product-one-wire.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+%%%subcode-line{pdfimage}[diagrams/thesis/pair-of-wires.pdf]
+\includegraphics{diagrams/thesis/product-two-wires.pdf}
+}
+\end{center}
+\end{multicols}
+
+\item Sum types may similarly be represented by one wire or using using
+  parallel wires with a {{+}} operator between them.
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/sum-one-wire.pdf]
+\includegraphics{diagrams/thesis/sum-one-wire.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/sum-of-wires.pdf]
+\includegraphics{diagrams/thesis/sum-two-wires.pdf}
+}
+\end{center}
+\end{multicols}
+
+%% \item
+%% When representing complex types like {{(b1*b2)+b3}} some visual
+%% grouping of the wires may be done to aid readability. The exact type
+%% however will always be clarified by the context of the diagram.
+
+%% \begin{center}
+%% \scalebox{0.95}{
+%% %subcode-line{pdfimage}[diagrams/thesis/complex-type-crop.pdf]
+%% }
+%% \end{center}
+
+\item Associativity is implicit in the graphical language. Three parallel
+  wires represent {{b1*(b2*b3)}} or {{(b1*b2)*b3}}, based on the context.
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/associate.pdf]
+\includegraphics{diagrams/thesis/assoc.pdf}
+}
+\end{center}
+
+\item Commutativity is represented by crisscrossing wires.
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/swap-pair.pdf]
+\includegraphics{diagrams/thesis/swap_times.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/swap-sum.pdf]
+\includegraphics{diagrams/thesis/swap_plus.pdf}
+}
+\end{center}
+\end{multicols}
+
+\item Identity morphisms and their duals ({{uniti, unite, zeroi}} and
+  {{zeroe}}) are represented as follows:
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/identr1.pdf]
+\includegraphics{diagrams/thesis/uniti.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/identl1.pdf]
+\includegraphics{diagrams/thesis/unite.pdf}
+}
+\end{center}  
+\end{multicols}
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/identr0.pdf]
+\includegraphics{diagrams/thesis/zeroi.pdf}
+}
+\end{center}
+\columnbreak
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/identl0.pdf]
+\includegraphics{diagrams/thesis/zeroe.pdf}
+}
+\end{center}
+\end{multicols}
+Since the monoidal units can be freely introduced and eliminated, in
+many diagrams they are omitted and dealt with explicitly when they
+are of special interest.
+
+\item Finally, distributivity and factoring are represented using the dual
+  boxes shown below:
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/distrib-crop.pdf]
+\includegraphics{diagrams/thesis/dist.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/factor-crop.pdf]
+\includegraphics{diagrams/thesis/factor.pdf}
+}
+\end{center}
+\end{multicols}
+
+\end{itemize}
+
+\noindent 
+\textit{Example.} As an example, the following combinator is represented by
+the given diagram:
+
+{{c : b * (1+1) <-> b + b}}
+
+{{c = swap* (;) dist (;) (identl* (+) identl*)}}
+
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/example1-crop.pdf]
+\includegraphics{diagrams/thesis/example1.pdf}
+}
+\end{center}
 
 %%%%%%%%%%%%%%%%%%%
 \subsection{Semantics}
 
-%subcode{bnf} include main
-% Combinators, c = iso | c (;) c | c (*) c | c (+) c
-% Combinator Contexts, cc = [] | Fst cc c | Snd c cc 
-%                  &|& LeftTimes cc c v | RightTimes c v cc 
-%                  &|& LeftPlus cc c | RightPlus c cc 
-% Values, v = () | (v, v) | L v | R v
-%
-% Machine states = <c, v, cc> | {[c, v, cc]}
-% Start state = <c, v, []> 
-% Stop State = {[c, v, []]}
-
+The semantics of the primitive combinators is given by the following
+single-step reductions. Since there are no values of type {{0}}, the rules
+omit some of the impossible cases:
 \begin{scriptsize}
 %subcode{opsem} include main
 %! columnStyle = rlcl
@@ -352,19 +531,45 @@ definition.
 % factor & (right (v2, v3)) &|-->& (right v2, v3)   
 \end{scriptsize}
 
+For the non-primitive combinators, we express the semantics using evaluation
+contexts which are used to represent the ``rest of the computation.'' More
+precisely, to calculate the result of applying combinator $c$ to value $v$,
+we start a small-step abstract machine in the configuration {{<c,v,[]>}}. The
+transitions of the machine (see below) are unusual in the sense that they
+always maintain full information about {{c}}, although this information may
+be split in the first and last component of the machine. The {{v}} component
+of the machine is the one that captures the current value as it is flowing in
+the combinator {{c}}. When  scattered in the machine will examine {{c}} and make
+transitions based on the structure of {{c}}. When the evaluation of {{c}} is
+complete, the configuration should be {{[c,v,[]]}} where the {{c}} is
+restored.
+
+This is a mess. Perhaps give a small example and explain things based on the
+example before giving the full transitions.
+
+
+%subcode{bnf} include main
+% Combinator Contexts, C = [] | Fst C c | Snd c C 
+%                  &|& LeftT C c v | RightT c v C 
+%                  &|& LeftP C c | RightP c C 
+% Machine states = <c, v, C> | {[c, v, C]}
+% Start state = <c, v, []> 
+% Stop State = {[c, v, []]}
+
+
 %subcode{opsem} include main
 %! columnStyle = rclr
-% <iso, v, cc> &|-->& {[iso, iso(v), cc]}
-% <c1(;)c2, v, cc> &|-->& <c1, v, Fst cc c2>
-% {[c1, v, Fst cc c2]} &|-->& <c2, v, Snd c1 cc>
-% {[c2, v, Snd c1 cc]} &|-->& {[ c1(;)c2, v, cc ]}
-% <c1(+)c2, L v, cc> &|-->& <c1, v, LeftPlus cc c2>
-% {[ c1, v, LeftPlus cc c2 ]} &|-->& {[c1 (+) c2, L v, cc ]}
-% <c1(+)c2, R v, cc> &|-->& <c2, v, RightPlus c1 cc>
-% {[ c2, v, RightPlus c1 cc ]} &|-->& {[c1 (+) c2, R v, cc ]}
-% <c1(*)c2, (v1, v2), cc> &|-->& <c1, v1, LeftTimes cc c2 v2>
-% {[ c1, v1, LeftTimes cc c2 v2 ]} &|-->& <c2, v2, RightTimes c1 v1 cc>
-% {[ c2, v2, RightTimes c1 v1 cc ]} &|-->& {[ c1 (*) c2, (v1, v2), cc ]}
+% <iso, v, C> &|-->& {[iso, iso(v), C]}
+% <c1(;)c2, v, C> &|-->& <c1, v, Fst C c2>
+% {[c1, v, Fst C c2]} &|-->& <c2, v, Snd c1 C>
+% {[c2, v, Snd c1 C]} &|-->& {[ c1(;)c2, v, C ]}
+% <c1(+)c2, left v, C> &|-->& <c1, v, LeftP C c2>
+% {[ c1, v, LeftP C c2 ]} &|-->& {[c1 (+) c2, left v, C ]}
+% <c1(+)c2, right v, C> &|-->& <c2, v, RightP c1 C>
+% {[ c2, v, RightP c1 C ]} &|-->& {[c1 (+) c2, right v, C ]}
+% <c1(*)c2, (v1, v2), C> &|-->& <c1, v1, LeftT C c2 v2>
+% {[ c1, v1, LeftT C c2 v2 ]} &|-->& <c2, v2, RightT c1 v1 C>
+% {[ c2, v2, RightT c1 v1 C ]} &|-->& {[ c1 (*) c2, (v1, v2), C ]}
 
 \begin{proposition}[Logical Reversibility]
 \label{prop:logrev}
@@ -381,208 +586,9 @@ definition.
 {{langRev}} is a dagger symmetric monoidal category. 
 \end{proposition}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{A Graphical Language for {{langRev}} }
-
-Combinators of {{langRev}} can be written using the the operators described
-in definition \ref{def:langRev} or via a graphical language similar in spirit
-to those developed for GoI~\cite{DBLP:conf/popl/Mackie95} and for category
-theory \cite{springerlink:10.1007/978-3-642-12821-94}. Modulo some
-conventions and shorthands we will describe here, the wiring diagrams are a
-complete and equivalent to the operator based (syntactic) description of
-programs.  {{langRev}} combinators expressed in this graphical language looks
-like a ``wiring diagrams''. Value take the form of ``particles'' that flow
-along the wires. Computation is expressed by the flow of particles.
-
-
-\begin{itemize}
-\item 
-The simplest sort of diagram is the {{id : b <-> b}} combinator which
-is simply represented as a wire labeled by its type {{b}}. In more
-complex diagrams, if the type of a wire is obvious from the context,
-it may be omitted.
-
-\begin{center}
-\scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/b-wire.pdf]
-\includegraphics{diagrams/thesis/b-wire.pdf}
-}
-\end{center}
-
-
-\item
-The product type {{b1*b2}} may be represented both as one wire
-labeled {{b1*b2}} or by two parallel wires labeled {{b1}} and
-{{b2}}. Both representations maybe used interchangeably. 
-
-\begin{multicols}{2}
-\begin{center}
-\scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/pair-one-wire.pdf]
-\includegraphics{diagrams/thesis/product-one-wire.pdf}
-}
-\end{center}
-
-  
-\begin{center}
-\scalebox{0.95}{
-%%%subcode-line{pdfimage}[diagrams/thesis/pair-of-wires.pdf]
-\includegraphics{diagrams/thesis/product-two-wires.pdf}
-}
-\end{center}
-\end{multicols}
-
-
-\item
-Sum types may similarly be represented using using parallel wires with
-a {{+}} operator between them. 
-
-\begin{multicols}{2}
-\begin{center}
-\scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/sum-one-wire.pdf]
-\includegraphics{diagrams/thesis/sum-one-wire.pdf}
-}
-\end{center}
-
-\begin{center}
-\scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/sum-of-wires.pdf]
-\includegraphics{diagrams/thesis/sum-two-wires.pdf}
-}
-\end{center}
-\end{multicols}
-
-%% \item
-%% When representing complex types like {{(b1*b2)+b3}} some visual
-%% grouping of the wires may be done to aid readability. The exact type
-%% however will always be clarified by the context of the diagram.
-
-%% \begin{center}
-%% \scalebox{0.95}{
-%% %subcode-line{pdfimage}[diagrams/thesis/complex-type-crop.pdf]
-%% }
-%% \end{center}
-
-
-\item
-Associativity is entirely implicit in the graphical language. Three
-parallel wires maybe inferred as {{b1*(b2*b3)}} or {{(b1*b2)*b3}},
-based on the context, much like handling of associativity in the
-graphical representations of categories
-\cite{springerlink:10.1007/978-3-642-12821-94}.
-
-\begin{center}
-\scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/associate.pdf]
-\includegraphics{diagrams/thesis/assoc.pdf}
-}
-\end{center}
-
-\item
-Commutativity is represented by crisscrossing wires. 
-
-\begin{multicols}{2}
-\begin{center}
-\scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/swap-pair.pdf]
-\includegraphics{diagrams/thesis/swap_times.pdf}
-}
-\end{center}
-
-\begin{center}
-\scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/swap-sum.pdf]
-\includegraphics{diagrams/thesis/swap_plus.pdf}
-}
-\end{center}
-  
-\end{multicols}
-
-\item
-Identity morphisms and their duals ({{uniti, unite, zeroi}} and
-{{zeroe}}) are represented as follows:
-
-\begin{multicols}{2}
-\begin{center}
-\scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/identr1.pdf]
-\includegraphics{diagrams/thesis/uniti.pdf}
-}
-\end{center}
-
-\begin{center}
-\scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/identl1.pdf]
-\includegraphics{diagrams/thesis/unite.pdf}
-}
-\end{center}  
-\end{multicols}
-
-\begin{multicols}{2}
-\begin{center}
-\scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/identr0.pdf]
-\includegraphics{diagrams/thesis/zeroi.pdf}
-}
-\end{center}
-
-\columnbreak
-
-\begin{center}
-\scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/identl0.pdf]
-\includegraphics{diagrams/thesis/zeroe.pdf}
-}
-\end{center}
-\end{multicols}
-
-Since the monoidal units can be freely introduced and eliminated, in
-many diagrams they are omitted and dealt with explicitly when they
-are of special interest.
-
-\item
-Finally, distributivity and factoring are represented using the dual
-boxes shown below:
-
-\begin{multicols}{2}
-  
-\begin{center}
-\scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/distrib-crop.pdf]
-\includegraphics{diagrams/thesis/dist.pdf}
-}
-\end{center}
-
-\begin{center}
-\scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/factor-crop.pdf]
-\includegraphics{diagrams/thesis/factor.pdf}
-}
-\end{center}
-\end{multicols}
-
-\end{itemize}
-
-\noindent 
-\textit{Example.} As an example consider the wiring diagram
-of the combinator {{c}} below:
-
-{{c : b * (1+1) <-> b + b}}
-
-{{c = swap* (;) dist (;) (identl* (+) identl*)}}
-
-
-\begin{center}
-\scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/example1-crop.pdf]
-\includegraphics{diagrams/thesis/example1.pdf}
-}
-\end{center}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Negative Types}
-\label{sub:neg}
+\label{sec:neg}
 
 Consider the following two ways of purchasing an item that costs \$20.00:
 \begin{enumerate}
@@ -711,8 +717,8 @@ The usual interpretation of the type {{b1+b2}} is that we either have
 an appropriately tagged value of type {{b1}} or an appropriately
 tagged value of type {{b2}}. This interpretation is maintained in the
 presence of {{eta+}} and {{eps+}} in the following sense: a value of
-type {{R v : -b + b}} flowing into an {{eps+}} on the lower wire
-switches into a value {{L (-v): -b + b}} that flows backwards on the
+type {{right v : -b + b}} flowing into an {{eps+}} on the lower wire
+switches into a value {{left (-v): -b + b}} that flows backwards on the
 upper wire. The inversion of direction is captured by the negative
 sign on the value.
 
@@ -977,7 +983,7 @@ ADD MATH.
 \subsection{Syntax}
 
 %subcode{bnf} include main
-% Values, v = () | (v, v) | L v | R v
+% Values, v = () | (v, v) | left v | right v
 % Combinators, c &=& iso | c (;) c | c(+)c | c (*) c 
 %
 % Sequential Contexts, P, F = [] | P:c
@@ -1028,10 +1034,10 @@ continuations:
 Parallel composition, captures the current Future and Past and extends
 the parallel context.
 %subcode{opsem} include main
-% D[P|(L v) c1 (+) c2| F] &|-->& D:(P|[](+)c2|F)[ []| v c1| [] ]
-% D[P| (R v) c1 (+) c2| F] &|-->& D:(P|c1(+)[]|F)[ []| v c2| [] ]
-% D:(P|[](+)c2|F)[P'|c1 v| [] ]  &|-->& D[P|(P'(c1)(+)c2{dagger}) (L v)| F] 
-% D:(P|c1(+)[]|F)[P'| c2 v| [] ] &|-->& D[P|(c1{dagger}(+)P'(c2)) (R v)| F]
+% D[P|(left v) c1 (+) c2| F] &|-->& D:(P|[](+)c2|F)[ []| v c1| [] ]
+% D[P| (right v) c1 (+) c2| F] &|-->& D:(P|c1(+)[]|F)[ []| v c2| [] ]
+% D:(P|[](+)c2|F)[P'|c1 v| [] ]  &|-->& D[P|(P'(c1)(+)c2{dagger}) (left v)| F] 
+% D:(P|c1(+)[]|F)[P'| c2 v| [] ] &|-->& D[P|(c1{dagger}(+)P'(c2)) (right v)| F]
 
 
 \item
@@ -1085,7 +1091,7 @@ with a symmetric category.
 \begin{itemize}
 \item Grammar
 %subcode{bnf} include main
-% Values, v = () | (v, v) | L v | R v | -v
+% Values, v = () | (v, v) | left v | right v | -v
 % Isomorphisms, iso &=& ... | eta | eps
 % Combinators, c &=& iso | c (;) c | c(+)c | c (*) c 
 
@@ -1101,8 +1107,8 @@ Type judgment.
 \item
 Operational Semantics.
 %subcode{opsem} include main
-% D[P| (R v) eps| F]      &|-->&  D{dagger}[F | eps (L (-v))| P]
-% D[P| (L (-v)) eps| F]      &|-->&  D{dagger}[F | eps (R v)| P]
+% D[P| (right v) eps| F]      &|-->&  D{dagger}[F | eps (left (-v))| P]
+% D[P| (left (-v)) eps| F]      &|-->&  D{dagger}[F | eps (right v)| P]
 
 Note: there is NO reduction rule for {{eta}}. 
 
