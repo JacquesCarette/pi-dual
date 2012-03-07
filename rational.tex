@@ -187,7 +187,6 @@ manipulation relating a natural number $a$ to itself:
 a &=& a + 0 &=& a + ((-a) + a) \\
   &=& (a + (-a)) + a &=& 0 + a &=& a
 \end{array}\]
-
 Although seemingly pointless, this algebraic proof corresponds, in our model,
 to an isomorphism with a non-trivial and interesting computational
 interpretation.  On the left we have a producer that can supply a value of
@@ -219,10 +218,10 @@ points here:
   because they disentangle the propagation of the resources (money) from the
   propagation of the services. Not every transaction needs both the resources
   and services to be brought together: it is sufficient to have a promise
-  that the money will be paid at some point, as long as the infrastructure
-  can be trusted that such promises will be fulfilled. Computationally, this
-  means that negative types allow us to break the dependency between the
-  producer and consumer and let each compute independently.
+  that the demand for resources will be somehow satisfied, as long as the
+  infrastructure can be trusted with such promises. Computationally, this
+  means that negative types allow us to break the dependency between
+  producers and consumers and let each compute independently.
 \end{itemize}
 
 Instead of also discussing fractional types and related work in this
@@ -231,32 +230,37 @@ on to the heart of the paper where these topics can be explained in their
 proper context. Our main contributions are:
 \begin{itemize}
 \item We extend {{langRev}} our reversible programming language of type
-  isomorphisms~\cite{rc2011,infeffects} with a notion of negative types, that
-  satisfies the isomorphism $a + (-a) = 0$. The semantics of this extension
-  is expressed by having a ``dual'' evaluator that reverses the flow of
-  execution for negative values. 
+  isomorphisms~\cite{rc2011,infeffects} (see Sec.~\ref{sec:pi}) with a notion
+  of negative types, that satisfies the isomorphism $a + (-a) = 0$. The
+  semantics of this extension is expressed by having a ``dual'' evaluator
+  that reverses the flow of execution for negative
+  values. (Sec.~\ref{sec:neg})
 \item We independently extend {{langRev}} with a notion of fractional types,
   that satisfies the isomorphism $a * (1/a) = 1$. The semantics of this
   extension is expressed by introducing logical variables and a unification
   mechanism to model and resolve the constraints introduced by the fractional
-  types.
+  types. (Sec.~\ref{sec:frac})
 \item We combine the above two extensions into one extension that includes
   both negative and fractional types. The resulting language allows any
   rational number to be used as a type. The types satisfy the same familiar
   and intuitive isomorphisms that are satisfied in the mathematical field of
-  rational numbers.
+  rational numbers. (Sec.~\ref{sec:rat})
 \item We develop programming intuition and argue that negative and fractional
-  types ought to be part of the vocabulary of every programmer.
+  types ought to be part of the vocabulary of every
+  programmer. (Sec.~\ref{sec:prog})
 \item We relate our notions of negative and fractional types to previous work
-  on continuations. We analyze and relate two apparently unrelated lines of
-  work: the first pioneered by
-  Filinski~\cite{Filinski:1989:DCI:648332.755574} relates continuations to
-  negative types; the second~\cite{Bernardi:2010:CSL:1749618.1749689} relates
-  continuations to the fractional types of the Lambek-Grishin calculus.
+  on continuations. Briefly, we argue that conventional continuations
+  conflate negative and fractional components. This observation allows us to
+  relate two apparently unrelated lines of work: the first pioneered by
+  Filinski~\cite{Filinski:1989:DCI:648332.755574} relating continuations to
+  negative types and the second~\cite{Bernardi:2010:CSL:1749618.1749689}
+  relating continuations to the fractional types of the Lambek-Grishin
+  calculus. (Sec.~\ref{sec:related})
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{ {{langRev}} }
+\label{sec:pi}
 
 The presentation here differs from \cite{infeffects} in the sense that
 we have introduced the {{0}} type here, thereby completing the monoid
@@ -774,6 +778,7 @@ ADD MATH.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Fractional Types}
+\label{sec:frac}
 
 The type $a/b$ is prominent in the Lambek-Grishin calculus which is
 extensively used in computational linguistics. In the common interpretation,
@@ -964,7 +969,8 @@ as much information as we supplied.
 ADD MATH. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Semantics}
+\section{Rational Types}
+\label{sec:rat}
 
 \begin{comment}
 %%%%%%%%%%%%%%%%%%
@@ -1287,6 +1293,7 @@ in Int {{langRevT}}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Advanced Programming Examples}
+\label{sec:prog}
 
 %%%%%%%%%%%%%%%%%%%
 \subsection{SAT solver}
@@ -1458,7 +1465,8 @@ divisions.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Field of Algebraic Numbers} 
+\section{Conclusion}
+\label{sec:conc}
 
 The field of algebraic numbers consist of the rationals extended with
 solutions to polynomials. In a limited sense {{langRevEE}} with
@@ -1590,9 +1598,6 @@ for as long as we want. The algebraic
 $\lambda$-calculus~\cite{Vaux:2009:ALC:1630585.1630590} shows that extreme
 care is needed when combining negative and fractional types with the full
 $\lambda$-calculus (including recursion).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusion}
 
 Say we have not considered recursion in this paper.
 
