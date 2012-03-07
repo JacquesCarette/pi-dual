@@ -983,10 +983,30 @@ ADD MATH.
 \section{Rational Types}
 \label{sec:rat}
 
-We start with the semantics for {{langRev}} defined in Sec
-\ref{sec:pi}, which we will systematically rewrite with unification
-and then present a ``reverse'' evaluator written in the same style. We
-shall then combine these into the semantics for {{langRevEE}}.
+In this section we develop the semantics for {{langRev}} extended with
+negative and fractional types, {{langRevEE}}.  We start with the
+semantics for {{langRev}} defined in Sec \ref{sec:pi}, which we will
+systematically rewrite until we have the desired {{langRevEE}}
+sematics. Broadly this construction takes two steps 
+
+\begin{enumerate}
+\item We rewrite the semantics in Sec \ref{sec:pi} using unification
+  of the values instead of direct pattern matching. This gives us the
+  neccessary infrastructure for fractional types, as we will see. 
+
+\item We write a reverse interpreter by reversing the direction of the
+  `{{|-->}}' reductions. This gives us the neccessary infrastructure for
+  negative types.
+\end{enumerate}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Unification and Logic Programming}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Extending {{langRev}} Semantics}
 
 
 \paragraph{Primitive Isomorphsims.}
@@ -997,7 +1017,7 @@ in the following form.
 
 \noindent
 In the precense of unification, we rewrite them to accept the incoming
-substitution and extend it with the appropriate unification. 
+substitution and extend it with the appropriate unification.
 
 {{ iso s v' |--> (v_{output pattern}, s[v' <><> v_{input pattern}]) }}
 
@@ -1045,8 +1065,11 @@ i.e. evaluation {{c v}} in this evaluator is equivalent to evaluating
 % {[ c1 (*) c2, v, C, s ]}_{bck} &|-->& {[ c2, v2, RightT c1 v1 C, S' ]}_{bck}
 % && where s' = s[v <><> (v1, v2)]
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Semantics of {{langRevEE}} }
+
+The previous section has defined all the pieces needed to define the
+semantics of {{langRevEE}} and we piece them together here. 
 
 \begin{enumerate}
 \item 
