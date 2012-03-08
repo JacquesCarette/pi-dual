@@ -1337,11 +1337,11 @@ lacks a multiplicative tensor that distributes over the additive tensor
 in Int {{langRevT}}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Advanced Programming Examples}
+\section{SAT Solver in {{langRevEE}} }
 \label{sec:prog}
 
 %%%%%%%%%%%%%%%%%%%
-\subsection{SAT solver}
+% \subsection{SAT solver}
 \label{sec:sat-solver}
 
 The construction presented here is a novel SAT-solver that relies on
@@ -1407,6 +1407,19 @@ match.
   \includegraphics{diagrams/sat2.pdf}
 }
 \end{center}  
+
+\roshan{Explain how the dotted part is implemented.}
+
+Let us call this construction which maps inputs, heap and control
+wires to input, heap and control wires as {{sat_f}}. The required
+contraint solver is then constructed as shown:
+
+\begin{center}
+\scalebox{1.5}{
+  \includegraphics{diagrams/sat3.pdf}
+}
+\end{center}  
+
 
 
 
