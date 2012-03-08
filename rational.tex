@@ -96,6 +96,7 @@
 %! |-->* = \mapsto^{*}
 %! |-->> = \mapsto_{\ggg}
 %! |--> = \mapsto
+%! <--| = \mapsfrom
 %! |- = \vdash
 %! <><> = \approx
 %! ==> = \Longrightarrow
@@ -249,7 +250,6 @@ proceed as follows:
 %   {{((20,1/20),20)}} which simplifies to {{((),20)}};
 % \item We reach line (5) with the value {{20}}.
 % \end{itemize}
-
 % \amr{the above is a boring trace; we need to convey why it is exciting but we
 %   are not agreeing on the interpretation.} 
 
@@ -338,7 +338,7 @@ semantics, we give a small-step operational semantics that is more
 appropriate for the connections with continuations explored in this paper.
 
 %%%%%%%%%%%%%%%%%%%%
-\subsection{Syntax} 
+\subsection{Syntax and Types} 
 \label{sec:pi-syntax}
 
 The set of types includes the empty type {{0}}, the unit type {{1}}, sum
@@ -414,13 +414,16 @@ The syntactic notation described in Sec \ref{sec:pi-syntax} is often
 obscure and hard to read.  Following the tradition established for
 monoidal categories~\cite{springerlink:10.1007/978-3-642-12821-94}, we
 present a graphical language that conveys the intuitive semantics of
-the language (which is formalized in the next section).  For the rest
-of the paper {{langRev}} programs will be presented graphically.
+the language (which is formalized in the next section).  Since, the
+graphical notation is easier to read an trace, for the rest of the
+paper {{langRev}} programs will be presented graphically.
 
 The general idea of the graphical notation is that combinators are
 modeled by ``wiring diagrams'' or ``circuits''; values are modeled as
 ``particles'' that may appear on the wires; and evaluation is modeled
-by the flow of particles along the wires.
+by the flow of particles along the wires. In fact, when talking about
+{{langRev}} circuits, we will often use the words {{value}} and
+{{particle}] interchangeably.
 
 %% We now proceed to give the graphical notation for each combinator:
 
@@ -438,7 +441,13 @@ by the flow of particles along the wires.
 }
 \end{center}
 
-DIAGRAM    
+
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/b-wire.pdf]
+\includegraphics{diagrams/thesis/b-wire-value.pdf}
+}
+\end{center}
   \end{multicols}
 
 When tracing a computation, one might imagine a value {{v}} of of type
@@ -458,6 +467,19 @@ When tracing a computation, one might imagine a value {{v}} of of type
 \scalebox{0.95}{
 %%%subcode-line{pdfimage}[diagrams/thesis/pair-of-wires.pdf]
 \includegraphics{diagrams/thesis/product-two-wires.pdf}
+}
+\end{center}
+\end{multicols}
+
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/product-one-wire-value.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/product-two-wires-value.pdf}
 }
 \end{center}
 \end{multicols}
@@ -483,8 +505,23 @@ each wire.
 \end{center}
 \end{multicols}
 
+
 When tracing the execution of two additive wires, a value can reside
 on only one of the two wires.
+
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/sum-two-wires-left-value.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/sum-two-wires-right-value.pdf}
+}
+\end{center}
+\end{multicols}
+
 
 %% \item
 %% When representing complex types like {{(b1*b2)+b3}} some visual
@@ -626,22 +663,11 @@ omit some of the impossible cases:
 % factor & (right (v2, v3)) &|-->& (right v2, v3)   
 \end{scriptsize}
 
-For the non-primitive combinators, we express the semantics using evaluation
-contexts which are used to represent the ``rest of the computation.'' More
-precisely, to calculate the result of applying combinator $c$ to value $v$,
-we start a small-step abstract machine in the configuration {{<c,v,[]>}}. The
-transitions of the machine (see below) are unusual in the sense that they
-always maintain full information about {{c}}, although this information may
-be split in the first and last component of the machine. The {{v}} component
-of the machine is the one that captures the current value as it is flowing in
-the combinator {{c}}. When  scattered in the machine will examine {{c}} and make
-transitions based on the structure of {{c}}. When the evaluation of {{c}} is
-complete, the configuration should be {{[c,v,[]]}} where the {{c}} is
-restored.
-
-This is a mess. Perhaps give a small example and explain things based on the
-example before giving the full transitions.
-
+The reductions for the primitive isomorphisms are exactly the same as
+have been presented before \cite{infeffects}. The reductions for the
+closure combinators are however presented in a small-step operational
+style. The following are the definition for evaluation contexts and
+machine states:
 
 %subcode{bnf} include main
 % Combinator Contexts, C = [] | Fst C c | Snd c C 
@@ -651,29 +677,79 @@ example before giving the full transitions.
 % Start state = <c, v, []> 
 % Stop State = {[c, v, []]}
 
+The reduction rules below essentially track the flow of particles
+through their circuit. The start machine state, {{<c,v,[]>}}, denotes
+the particle/value {{v}} about to be evaluated by the circuit
+{{c}}. The end machine state, {{[c, v, [] ]}}, denotes the situation
+where the particle {{v}} has exited the circuit {{c}}.
+
+
+%% For the non-primitive combinators, we express the semantics using evaluation
+%% contexts which are used to represent the ``rest of the computation.'' More
+%% precisely, to calculate the result of applying combinator $c$ to value $v$,
+%% we start a small-step abstract machine in the configuration {{<c,v,[]>}}. The
+%% transitions of the machine (see below) are unusual in the sense that they
+%% always maintain full information about {{c}}, although this information may
+%% be split in the first and last component of the machine. The {{v}} component
+%% of the machine is the one that captures the current value as it is flowing in
+%% the combinator {{c}}. When  scattered in the machine will examine {{c}} and make
+%% transitions based on the structure of {{c}}. When the evaluation of {{c}} is
+%% complete, the configuration should be {{[c,v,[]]}} where the {{c}} is
+%% restored.
+
+%% This is a mess. Perhaps give a small example and explain things based on the
+%% example before giving the full transitions.
 
 %subcode{opsem} include main
 %! columnStyle = rclr
-% <iso, v, C> &|-->& {[iso, iso(v), C]}
-% <c1(;)c2, v, C> &|-->& <c1, v, Fst C c2>
-% {[c1, v, Fst C c2]} &|-->& <c2, v, Snd c1 C>
-% {[c2, v, Snd c1 C]} &|-->& {[ c1(;)c2, v, C ]}
-% <c1(+)c2, left v, C> &|-->& <c1, v, LeftP C c2>
-% {[ c1, v, LeftP C c2 ]} &|-->& {[c1 (+) c2, left v, C ]}
-% <c1(+)c2, right v, C> &|-->& <c2, v, RightP c1 C>
-% {[ c2, v, RightP c1 C ]} &|-->& {[c1 (+) c2, right v, C ]}
-% <c1(*)c2, (v1, v2), C> &|-->& <c1, v1, LeftT C c2 v2>
-% {[ c1, v1, LeftT C c2 v2 ]} &|-->& <c2, v2, RightT c1 v1 C>
-% {[ c2, v2, RightT c1 v1 C ]} &|-->& {[ c1 (*) c2, (v1, v2), C ]}
+% <iso, v, C> &|-->& {[iso, v', C]} & (1)
+% & & where iso v |--> v' &
+% <c1(;)c2, v, C> &|-->& <c1, v, Fst C c2> & (2) 
+% {[c1, v, Fst C c2]} &|-->& <c2, v, Snd c1 C> & (3) 
+% {[c2, v, Snd c1 C]} &|-->& {[ c1(;)c2, v, C ]} & (4) 
+% <c1(+)c2, left v, C> &|-->& <c1, v, LeftP C c2> & (5) 
+% {[ c1, v, LeftP C c2 ]} &|-->& {[c1 (+) c2, left v, C ]} & (6)
+% <c1(+)c2, right v, C> &|-->& <c2, v, RightP c1 C> & (7)
+% {[ c2, v, RightP c1 C ]} &|-->& {[c1 (+) c2, right v, C ]} & (8)
+% <c1(*)c2, (v1, v2), C> &|-->& <c1, v1, LeftT C c2 v2> & (9)
+% {[ c1, v1, LeftT C c2 v2 ]} &|-->& <c2, v2, RightT c1 v1 C> & (10) 
+% {[ c2, v2, RightT c1 v1 C ]} &|-->& {[ c1 (*) c2, (v1, v2), C ]} & (11)
+
+The rule (1) describes evaluation by a primitive isomorphism. Rules
+(2), (3) and (4) deal with sequential evaluation. Rule (2) says that
+for the value {{v}} to flow through the sequence {{c1 (;) c2}}, it
+should first flow through {{c1}} with {{c2}} pending in the context
+({{Fst C c2}}). Rule (3) says the value {{v}} that exits from {{c1}}
+should proceed to flow through {{c2}}. Rule (4) says that if the value
+{{v}} has exited {{c2}} as well, then it is equivalent to having
+exited from {{c1(;)c2}}.
+
+Rules (5) to (8) deal with {{c1 (+) c2}} in the same way. In the case
+of sums, the shape of the value,i.e. is it is tagged with {{left}} or
+{{right}}, determines whether path {{c1}} or path {{c2}} is
+taken. Rules (9), (10) and (11) deal with {{c1 (*) c2}} similarly. In
+the case of products the value should have the form {{(v1, v2)}} where
+{{v1}} flows through {{c1}} and {{v2}} flows through {{c2}}. Both
+these paths are entirely independent of each other and we could
+evaluate either first, or evaluate both in parallel. In this
+presentation we have chosen to follow {{c1}} first, but this choice is
+entirely arbitrary.
+
+The interesting thing about the semantics is that it represents a
+reversible abstract machine. In other words, we can compute the start
+state from the stop state by changing the reductions `{{|-->}}' to run
+backwards `{{<--|}}'. We will take advantage of this property in
+Sec. \ref{sec:rat}.
+
 
 \begin{proposition}[Logical Reversibility]
 \label{prop:logrev}
 {{c v |--> v'}} iff {{c{dagger} v' |--> v}}.
 \end{proposition}
 
-\roshan{We really have to rethink this prop in the precense of
+\roshan{We really have to rethink this prop in the presence of
   negatives and fractionals. With negatives, the program can actually
-  end at the begining of the circuit -- i.e. the program {{c:b1<->b2}}
+  end at the beginning of the circuit -- i.e. the program {{c:b1<->b2}}
   can stop with a value of type {{b1}}. With fractionals, there can be
   several values of type {{b2}} produced for a value of type {{b1}}. }
 
@@ -729,7 +805,7 @@ transaction above using the following program (shown diagrammatically):
   \includegraphics{diagrams/algebra1.pdf}
 \end{center}
 
-\roshan{I chose to draw the igure with b instead of a, since b is what
+\roshan{I chose to draw the figure with b instead of a, since b is what
   we use for the types. Should this be a? Also I chose to make the
   swap and 0 wires, explicit.Is this what you intended? }
 
