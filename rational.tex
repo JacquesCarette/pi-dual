@@ -96,6 +96,7 @@
 %! |-->* = \mapsto^{*}
 %! |-->> = \mapsto_{\ggg}
 %! |--> = \mapsto
+%! <--| = \mapsfrom
 %! |- = \vdash
 %! <><> = \approx
 %! ==> = \Longrightarrow
@@ -622,22 +623,11 @@ omit some of the impossible cases:
 % factor & (right (v2, v3)) &|-->& (right v2, v3)   
 \end{scriptsize}
 
-For the non-primitive combinators, we express the semantics using evaluation
-contexts which are used to represent the ``rest of the computation.'' More
-precisely, to calculate the result of applying combinator $c$ to value $v$,
-we start a small-step abstract machine in the configuration {{<c,v,[]>}}. The
-transitions of the machine (see below) are unusual in the sense that they
-always maintain full information about {{c}}, although this information may
-be split in the first and last component of the machine. The {{v}} component
-of the machine is the one that captures the current value as it is flowing in
-the combinator {{c}}. When  scattered in the machine will examine {{c}} and make
-transitions based on the structure of {{c}}. When the evaluation of {{c}} is
-complete, the configuration should be {{[c,v,[]]}} where the {{c}} is
-restored.
-
-This is a mess. Perhaps give a small example and explain things based on the
-example before giving the full transitions.
-
+The reductions for the primitive isomorphisms are exactly the same as
+have been persented before \cite{infeffects}. The reductions for the
+closure combinators are however presented in a small-setp operational
+style. The following are the definition for evaluation contexts and
+machine states:
 
 %subcode{bnf} include main
 % Combinator Contexts, C = [] | Fst C c | Snd c C 
@@ -647,20 +637,69 @@ example before giving the full transitions.
 % Start state = <c, v, []> 
 % Stop State = {[c, v, []]}
 
+The reduction rules below essentially track the flow of particles
+through their circuit. The start machine state, {{<c,v,[]>}}, denotes
+the particle/value {{v}} about to be evluated by the circuit
+{{c}}. The end machine state, {{[c, v, [] ]}}, denotes the situation
+where the particle {{v}} has exited the circuit {{c}}.
+
+
+%% For the non-primitive combinators, we express the semantics using evaluation
+%% contexts which are used to represent the ``rest of the computation.'' More
+%% precisely, to calculate the result of applying combinator $c$ to value $v$,
+%% we start a small-step abstract machine in the configuration {{<c,v,[]>}}. The
+%% transitions of the machine (see below) are unusual in the sense that they
+%% always maintain full information about {{c}}, although this information may
+%% be split in the first and last component of the machine. The {{v}} component
+%% of the machine is the one that captures the current value as it is flowing in
+%% the combinator {{c}}. When  scattered in the machine will examine {{c}} and make
+%% transitions based on the structure of {{c}}. When the evaluation of {{c}} is
+%% complete, the configuration should be {{[c,v,[]]}} where the {{c}} is
+%% restored.
+
+%% This is a mess. Perhaps give a small example and explain things based on the
+%% example before giving the full transitions.
 
 %subcode{opsem} include main
 %! columnStyle = rclr
-% <iso, v, C> &|-->& {[iso, iso(v), C]}
-% <c1(;)c2, v, C> &|-->& <c1, v, Fst C c2>
-% {[c1, v, Fst C c2]} &|-->& <c2, v, Snd c1 C>
-% {[c2, v, Snd c1 C]} &|-->& {[ c1(;)c2, v, C ]}
-% <c1(+)c2, left v, C> &|-->& <c1, v, LeftP C c2>
-% {[ c1, v, LeftP C c2 ]} &|-->& {[c1 (+) c2, left v, C ]}
-% <c1(+)c2, right v, C> &|-->& <c2, v, RightP c1 C>
-% {[ c2, v, RightP c1 C ]} &|-->& {[c1 (+) c2, right v, C ]}
-% <c1(*)c2, (v1, v2), C> &|-->& <c1, v1, LeftT C c2 v2>
-% {[ c1, v1, LeftT C c2 v2 ]} &|-->& <c2, v2, RightT c1 v1 C>
-% {[ c2, v2, RightT c1 v1 C ]} &|-->& {[ c1 (*) c2, (v1, v2), C ]}
+% <iso, v, C> &|-->& {[iso, v', C]} & (1)
+% & & where iso v |--> v' & (2) 
+% <c1(;)c2, v, C> &|-->& <c1, v, Fst C c2> & (3) 
+% {[c1, v, Fst C c2]} &|-->& <c2, v, Snd c1 C> & (4) 
+% {[c2, v, Snd c1 C]} &|-->& {[ c1(;)c2, v, C ]} & (5) 
+% <c1(+)c2, left v, C> &|-->& <c1, v, LeftP C c2> & (6) 
+% {[ c1, v, LeftP C c2 ]} &|-->& {[c1 (+) c2, left v, C ]} & (7)
+% <c1(+)c2, right v, C> &|-->& <c2, v, RightP c1 C> & (8)
+% {[ c2, v, RightP c1 C ]} &|-->& {[c1 (+) c2, right v, C ]} & (9)
+% <c1(*)c2, (v1, v2), C> &|-->& <c1, v1, LeftT C c2 v2> & (10)
+% {[ c1, v1, LeftT C c2 v2 ]} &|-->& <c2, v2, RightT c1 v1 C> & (11) 
+% {[ c2, v2, RightT c1 v1 C ]} &|-->& {[ c1 (*) c2, (v1, v2), C ]} & (12)
+
+The rule (1) describes evaluation by a primitive isomorphism. Rules
+(2), (3) and (4) deal with sequential evaluation. Rule (2) says that
+for the value to flow through the sequence {{c1 (;) c2}} we should
+first flow through {{c1}} with {{c2}} pending in the context and rule
+(3) says the value that exits from {{c1}} should proceed to flow
+through {{c2}}. Rule (4) says that if the value {{v}} has exited
+{{c2}} as well, then it is equivalent to having exited from
+{{c1(;)c2}}. 
+
+Rules (5) to (9) deal with {{c1 (+) c2}} in the same way. In the case
+of sums, the shape of the value {{left v}}/{{right v}} determines
+whether path {{c1}} or path {{c2}} is taken. Rules (10), (11) and (12)
+deal with {{c1 (*) c2}} similarly. In the case of products the value
+should have the form {{(v1, v2)}} where {{v1}} flows through {{c1}}
+and {{v2}} flows through {{c2}}. Both these paths are entirely
+independant of each other and we could chosen to evaluate either
+first, or evaluate both in parallel. In this presentation we have
+chosen to follow {{c1}] first, but this choice is entirely artificial.
+
+Finally, we end by noting the abstract machine here is interesting is
+that it is a reversible machine. We could change reductions `{{|-->}}'
+to run backwards `{{<--|}}', thereby computing the start state from the
+stop state. We will take advantange of this property in
+Sec. \ref{sec:rat}.
+
 
 \begin{proposition}[Logical Reversibility]
 \label{prop:logrev}
