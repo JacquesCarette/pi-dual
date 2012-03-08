@@ -663,17 +663,17 @@ where the particle {{v}} has exited the circuit {{c}}.
 %subcode{opsem} include main
 %! columnStyle = rclr
 % <iso, v, C> &|-->& {[iso, v', C]} & (1)
-% & & where iso v |--> v' & (2) 
-% <c1(;)c2, v, C> &|-->& <c1, v, Fst C c2> & (3) 
-% {[c1, v, Fst C c2]} &|-->& <c2, v, Snd c1 C> & (4) 
-% {[c2, v, Snd c1 C]} &|-->& {[ c1(;)c2, v, C ]} & (5) 
-% <c1(+)c2, left v, C> &|-->& <c1, v, LeftP C c2> & (6) 
-% {[ c1, v, LeftP C c2 ]} &|-->& {[c1 (+) c2, left v, C ]} & (7)
-% <c1(+)c2, right v, C> &|-->& <c2, v, RightP c1 C> & (8)
-% {[ c2, v, RightP c1 C ]} &|-->& {[c1 (+) c2, right v, C ]} & (9)
-% <c1(*)c2, (v1, v2), C> &|-->& <c1, v1, LeftT C c2 v2> & (10)
-% {[ c1, v1, LeftT C c2 v2 ]} &|-->& <c2, v2, RightT c1 v1 C> & (11) 
-% {[ c2, v2, RightT c1 v1 C ]} &|-->& {[ c1 (*) c2, (v1, v2), C ]} & (12)
+% & & where iso v |--> v' &
+% <c1(;)c2, v, C> &|-->& <c1, v, Fst C c2> & (2) 
+% {[c1, v, Fst C c2]} &|-->& <c2, v, Snd c1 C> & (3) 
+% {[c2, v, Snd c1 C]} &|-->& {[ c1(;)c2, v, C ]} & (4) 
+% <c1(+)c2, left v, C> &|-->& <c1, v, LeftP C c2> & (5) 
+% {[ c1, v, LeftP C c2 ]} &|-->& {[c1 (+) c2, left v, C ]} & (6)
+% <c1(+)c2, right v, C> &|-->& <c2, v, RightP c1 C> & (7)
+% {[ c2, v, RightP c1 C ]} &|-->& {[c1 (+) c2, right v, C ]} & (8)
+% <c1(*)c2, (v1, v2), C> &|-->& <c1, v1, LeftT C c2 v2> & (9)
+% {[ c1, v1, LeftT C c2 v2 ]} &|-->& <c2, v2, RightT c1 v1 C> & (10) 
+% {[ c2, v2, RightT c1 v1 C ]} &|-->& {[ c1 (*) c2, (v1, v2), C ]} & (11)
 
 The rule (1) describes evaluation by a primitive isomorphism. Rules
 (2), (3) and (4) deal with sequential evaluation. Rule (2) says that
@@ -684,9 +684,9 @@ through {{c2}}. Rule (4) says that if the value {{v}} has exited
 {{c2}} as well, then it is equivalent to having exited from
 {{c1(;)c2}}. 
 
-Rules (5) to (9) deal with {{c1 (+) c2}} in the same way. In the case
+Rules (5) to (8) deal with {{c1 (+) c2}} in the same way. In the case
 of sums, the shape of the value {{left v}}/{{right v}} determines
-whether path {{c1}} or path {{c2}} is taken. Rules (10), (11) and (12)
+whether path {{c1}} or path {{c2}} is taken. Rules (9), (10) and (11)
 deal with {{c1 (*) c2}} similarly. In the case of products the value
 should have the form {{(v1, v2)}} where {{v1}} flows through {{c1}}
 and {{v2}} flows through {{c2}}. Both these paths are entirely
