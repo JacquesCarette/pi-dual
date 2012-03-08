@@ -1347,7 +1347,7 @@ all inputs it is annihilating. This happens because it constructs a
 boolean and its dual, negates one of them and attempts to collapse
 them.
 \begin{center}
-\scalebox{1.5}{
+\scalebox{1.2}{
   \includegraphics{diagrams/not_trace.pdf}
 }
 \end{center}  
@@ -1374,6 +1374,25 @@ negated.
 If this construction is traced using {{trace*}}, all the values that
 do not satisfy {{f}} get annihilated because the control wire acts
 like the closed-loop `not' in the previous construction. 
+
+The final detail we have to be concerned with is the handling of the
+heap and garbage of {{f}}. Any boolean expression {{bool^n -> bool}}
+can be compiled into the isomorphism {{f:bool^h*bool^n<->bool^g*bool}}
+where the extra bits {{bool^h}} and {{bool^g}} are the heap and
+garbage. Constructing such an isomorphism has been detailed before
+\cite{Toffoli:1980,infeffects}.  However the computation of {{f}} is
+meaningful {{iff}} the heap {{bool^h}} is initialized appropriately. We
+can ensure that the heap has the appropriate initial value by checking
+the heap and negating a second control wire, if the values do not
+match.
+
+\begin{center}
+\scalebox{1.5}{
+  \includegraphics{diagrams/sat2.pdf}
+}
+\end{center}  
+
+
 
 %%%%%%%%%%%%%%%%%%%
 \subsection{GoI machine}
