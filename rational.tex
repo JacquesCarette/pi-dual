@@ -1354,12 +1354,16 @@ them.
 
 We leverage the basic idea of the above circuit, to collapse all
 values that are not solutions to the specified isomorphic constraint
-{{f}}. The operation {{f}} acts on some inputs and its adjoint
-reconstructs the inputs from the outputs. While the output of {{f}}
-may contain many components, its must contain a boolean indicating if
-the input satisfy {{f}}. The special output wire is used to `control'
-the negation of a boolean `control wire'. If the inputs do not satisfy
-{{f}}, the control wire is negated. 
+{{f}}. The contraint {{f}} checks the inputs to see if they match a
+constraint -- in the case of the SAT solver, {{f}} would be the
+circuit expressing the boolean expression to be satisfied.  While the
+output of {{f}} may contain many components, its must contain a
+boolean indicating if the input satisfy {{f}}. The operation {{f}}
+acts on some inputs and its adjoint, {{f^{dagger} }}, reconstructs the
+inputs from the outputs.  The `trick' is the following: the special
+output wire is used to `control' the negation of a boolean `control
+wire'.  If the inputs do not satisfy {{f}}, the control wire is
+negated.
 
 \begin{center}
 \scalebox{1.5}{
