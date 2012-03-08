@@ -624,8 +624,8 @@ omit some of the impossible cases:
 \end{scriptsize}
 
 The reductions for the primitive isomorphisms are exactly the same as
-have been persented before \cite{infeffects}. The reductions for the
-closure combinators are however presented in a small-setp operational
+have been presented before \cite{infeffects}. The reductions for the
+closure combinators are however presented in a small-step operational
 style. The following are the definition for evaluation contexts and
 machine states:
 
@@ -639,7 +639,7 @@ machine states:
 
 The reduction rules below essentially track the flow of particles
 through their circuit. The start machine state, {{<c,v,[]>}}, denotes
-the particle/value {{v}} about to be evluated by the circuit
+the particle/value {{v}} about to be evaluated by the circuit
 {{c}}. The end machine state, {{[c, v, [] ]}}, denotes the situation
 where the particle {{v}} has exited the circuit {{c}}.
 
@@ -690,14 +690,14 @@ whether path {{c1}} or path {{c2}} is taken. Rules (10), (11) and (12)
 deal with {{c1 (*) c2}} similarly. In the case of products the value
 should have the form {{(v1, v2)}} where {{v1}} flows through {{c1}}
 and {{v2}} flows through {{c2}}. Both these paths are entirely
-independant of each other and we could chosen to evaluate either
+independent of each other and we could chosen to evaluate either
 first, or evaluate both in parallel. In this presentation we have
 chosen to follow {{c1}] first, but this choice is entirely artificial.
 
 Finally, we end by noting the abstract machine here is interesting is
 that it is a reversible machine. We could change reductions `{{|-->}}'
-to run backwards `{{<--|}}', thereby computing the start state from the
-stop state. We will take advantange of this property in
+to run backwards `{{<--|}}', thereby computing the start state from
+the stop state. We will take advantage of this property in
 Sec. \ref{sec:rat}.
 
 
@@ -706,9 +706,9 @@ Sec. \ref{sec:rat}.
 {{c v |--> v'}} iff {{c{dagger} v' |--> v}}.
 \end{proposition}
 
-\roshan{We really have to rethink this prop in the precense of
+\roshan{We really have to rethink this prop in the presence of
   negatives and fractionals. With negatives, the program can actually
-  end at the begining of the circuit -- i.e. the program {{c:b1<->b2}}
+  end at the beginning of the circuit -- i.e. the program {{c:b1<->b2}}
   can stop with a value of type {{b1}}. With fractionals, there can be
   several values of type {{b2}} produced for a value of type {{b1}}. }
 
@@ -764,7 +764,7 @@ transaction above using the following program (shown diagrammatically):
   \includegraphics{diagrams/algebra1.pdf}
 \end{center}
 
-\roshan{I chose to draw the igure with b instead of a, since b is what
+\roshan{I chose to draw the figure with b instead of a, since b is what
   we use for the types. Should this be a? Also I chose to make the
   swap and 0 wires, explicit.Is this what you intended? }
 
