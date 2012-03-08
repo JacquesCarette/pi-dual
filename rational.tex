@@ -311,6 +311,7 @@ appropriate for the connections with continuations explored in this paper.
 
 %%%%%%%%%%%%%%%%%%%%
 \subsection{Syntax} 
+\label{sec:pi-syntax}
 
 The set of types includes the empty type {{0}}, the unit type {{1}}, sum
 types {{b1+b2}}, and products types {{b1*b2}}. The set of values {{v}}
@@ -381,27 +382,39 @@ definition.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Graphical Language}
 
-The syntactic notation described above is often obscure. Following the
-tradition established for monoidal
-categories~\cite{springerlink:10.1007/978-3-642-12821-94}, we present a
-graphical language that conveys the intuitive semantics of the language
-(which is formalized in the next section). The general idea of the graphical
-notation is that combinators are modeled by ``wiring diagrams'' or
-``circuits''; values are modeled as ``particles'' that may appear on the
-wires; and evaluation is modeled by the flow of particles along the wires. We
-now proceed to give the graphical notation for each combinator:
+The syntactic notation described in Sec \ref{sec:pi-syntax} is often
+obscure and hard to read.  Following the tradition established for
+monoidal categories~\cite{springerlink:10.1007/978-3-642-12821-94}, we
+present a graphical language that conveys the intuitive semantics of
+the language (which is formalized in the next section).  For the rest
+of the paper {{langRev}} programs will be presented graphically.
+
+The general idea of the graphical notation is that combinators are
+modeled by ``wiring diagrams'' or ``circuits''; values are modeled as
+``particles'' that may appear on the wires; and evaluation is modeled
+by the flow of particles along the wires.
+
+%% We now proceed to give the graphical notation for each combinator:
 
 \begin{itemize}
-\item The simplest sort of diagram is the {{id : b <-> b}} combinator which
-  is simply represented as a wire labeled by its type {{b}}. In more complex
-  diagrams, if the type of a wire is obvious from the context, it may be
-  omitted.
+\item The simplest sort of diagram is the {{id : b <-> b}} combinator
+  which is simply represented as a wire labeled by its type {{b}}, as
+  shown on the left. In more complex diagrams, if the type of a wire
+  is obvious from the context, it may be omitted.
+
+  \begin{multicols}{2}
 \begin{center}
 \scalebox{0.95}{
 %%subcode-line{pdfimage}[diagrams/thesis/b-wire.pdf]
 \includegraphics{diagrams/thesis/b-wire.pdf}
 }
 \end{center}
+
+DIAGRAM    
+  \end{multicols}
+
+When tracing a computation, one might imagine a value {{v}} of of type
+{{b}} on the wire, as shown on the right.
 
 \item The product type {{b1*b2}} may be represented both as one wire labeled
   {{b1*b2}} or by two parallel wires labeled {{b1}} and {{b2}}. Both
@@ -421,6 +434,10 @@ now proceed to give the graphical notation for each combinator:
 \end{center}
 \end{multicols}
 
+In the case of products represented by a pair of wires, when tracing
+execution using particles, one should think of one value/particle on
+each wire.
+
 \item Sum types may similarly be represented by one wire or using using
   parallel wires with a {{+}} operator between them.
 \begin{multicols}{2}
@@ -437,6 +454,9 @@ now proceed to give the graphical notation for each combinator:
 }
 \end{center}
 \end{multicols}
+
+When tracing the execution of two additive wires, a value can reside
+on only one of the two wires.
 
 %% \item
 %% When representing complex types like {{(b1*b2)+b3}} some visual
@@ -474,6 +494,9 @@ now proceed to give the graphical notation for each combinator:
 \end{center}
 \end{multicols}
 
+The crisscrossing wires have the right semantics in that a value on
+the top wire, ends up on the bottom wire and vice versa.
+
 \item Identity morphisms and their duals ({{uniti, unite, zeroi}} and
   {{zeroe}}) are represented as follows:
 \begin{multicols}{2}
@@ -505,9 +528,10 @@ now proceed to give the graphical notation for each combinator:
 }
 \end{center}
 \end{multicols}
-Since the monoidal units can be freely introduced and eliminated, in
-many diagrams they are omitted and dealt with explicitly when they
-are of special interest.
+Note that since there is no value of type 0, there can be no particle
+on a wire of type {{0}}.  Since the monoidal units can be freely
+introduced and eliminated, in many diagrams they are omitted and dealt
+with explicitly when they are of special interest.
 
 \item Finally, distributivity and factoring are represented using the dual
   boxes shown below:
@@ -542,6 +566,9 @@ the given diagram:
 \includegraphics{diagrams/thesis/example1.pdf}
 }
 \end{center}
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Semantics}
