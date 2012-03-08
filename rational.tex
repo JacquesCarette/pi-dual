@@ -411,8 +411,9 @@ The syntactic notation described in Sec \ref{sec:pi-syntax} is often
 obscure and hard to read.  Following the tradition established for
 monoidal categories~\cite{springerlink:10.1007/978-3-642-12821-94}, we
 present a graphical language that conveys the intuitive semantics of
-the language (which is formalized in the next section).  For the rest
-of the paper {{langRev}} programs will be presented graphically.
+the language (which is formalized in the next section).  Since, the
+graphical notation is easier to read an trace, for the rest of the
+paper {{langRev}} programs will be presented graphically.
 
 The general idea of the graphical notation is that combinators are
 modeled by ``wiring diagrams'' or ``circuits''; values are modeled as
@@ -435,7 +436,13 @@ by the flow of particles along the wires.
 }
 \end{center}
 
-DIAGRAM    
+
+\begin{center}
+\scalebox{0.95}{
+%%subcode-line{pdfimage}[diagrams/thesis/b-wire.pdf]
+\includegraphics{diagrams/thesis/b-wire-value.pdf}
+}
+\end{center}
   \end{multicols}
 
 When tracing a computation, one might imagine a value {{v}} of of type
@@ -455,6 +462,19 @@ When tracing a computation, one might imagine a value {{v}} of of type
 \scalebox{0.95}{
 %%%subcode-line{pdfimage}[diagrams/thesis/pair-of-wires.pdf]
 \includegraphics{diagrams/thesis/product-two-wires.pdf}
+}
+\end{center}
+\end{multicols}
+
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/product-one-wire-value.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/product-two-wires-value.pdf}
 }
 \end{center}
 \end{multicols}
@@ -480,8 +500,23 @@ each wire.
 \end{center}
 \end{multicols}
 
+
 When tracing the execution of two additive wires, a value can reside
 on only one of the two wires.
+
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/sum-two-wires-left-value.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/sum-two-wires-right-value.pdf}
+}
+\end{center}
+\end{multicols}
+
 
 %% \item
 %% When representing complex types like {{(b1*b2)+b3}} some visual
