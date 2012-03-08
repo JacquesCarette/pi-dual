@@ -685,19 +685,20 @@ should proceed to flow through {{c2}}. Rule (4) says that if the value
 exited from {{c1(;)c2}}.
 
 Rules (5) to (8) deal with {{c1 (+) c2}} in the same way. In the case
-of sums, the shape of the value {{left v}}/{{right v}} determines
-whether path {{c1}} or path {{c2}} is taken. Rules (9), (10) and (11)
-deal with {{c1 (*) c2}} similarly. In the case of products the value
-should have the form {{(v1, v2)}} where {{v1}} flows through {{c1}}
-and {{v2}} flows through {{c2}}. Both these paths are entirely
-independent of each other and we could chosen to evaluate either
-first, or evaluate both in parallel. In this presentation we have
-chosen to follow {{c1}] first, but this choice is entirely artificial.
+of sums, the shape of the value,i.e. is it is tagged with {{left}} or
+{{right}}, determines whether path {{c1}} or path {{c2}} is
+taken. Rules (9), (10) and (11) deal with {{c1 (*) c2}} similarly. In
+the case of products the value should have the form {{(v1, v2)}} where
+{{v1}} flows through {{c1}} and {{v2}} flows through {{c2}}. Both
+these paths are entirely independent of each other and we could
+evaluate either first, or evaluate both in parallel. In this
+presentation we have chosen to follow {{c1}} first, but this choice is
+entirely arbitrary.
 
-Finally, we end by noting the abstract machine here is interesting is
-that it is a reversible machine. We could change reductions `{{|-->}}'
-to run backwards `{{<--|}}', thereby computing the start state from
-the stop state. We will take advantage of this property in
+The interesting thing about the semantics is that it represents a
+reversible abstract machine. In other words, we can compute the start
+state from the stop state by changing the reductions `{{|-->}}' to run
+backwards `{{<--|}}'. We will take advantage of this property in
 Sec. \ref{sec:rat}.
 
 
