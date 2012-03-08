@@ -378,7 +378,7 @@ definition.
 % comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
 \end{definition}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Graphical Language}
 
 The syntactic notation described above is often obscure. Following the
@@ -543,7 +543,7 @@ the given diagram:
 }
 \end{center}
 
-%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Semantics}
 
 The semantics of the primitive combinators is given by the following
@@ -615,6 +615,12 @@ example before giving the full transitions.
 \label{prop:logrev}
 {{c v |--> v'}} iff {{c{dagger} v' |--> v}}.
 \end{proposition}
+
+\roshan{We really have to rethink this prop in the precense of
+  negatives and fractionals. With negatives, the program can actually
+  end at the begining of the circuit -- i.e. the program {{c:b1<->b2}}
+  can stop with a value of type {{b1}}. With fractionals, there can be
+  several values of type {{b2}} produced for a value of type {{b1}}. }
 
 \begin{proposition}[Groupoid]
 \label{prop:groupoid}
