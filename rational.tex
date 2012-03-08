@@ -677,12 +677,12 @@ where the particle {{v}} has exited the circuit {{c}}.
 
 The rule (1) describes evaluation by a primitive isomorphism. Rules
 (2), (3) and (4) deal with sequential evaluation. Rule (2) says that
-for the value to flow through the sequence {{c1 (;) c2}} we should
-first flow through {{c1}} with {{c2}} pending in the context and rule
-(3) says the value that exits from {{c1}} should proceed to flow
-through {{c2}}. Rule (4) says that if the value {{v}} has exited
-{{c2}} as well, then it is equivalent to having exited from
-{{c1(;)c2}}. 
+for the value {{v}} to flow through the sequence {{c1 (;) c2}}, it
+should first flow through {{c1}} with {{c2}} pending in the context
+({{Fst C c2}}). Rule (3) says the value {{v}} that exits from {{c1}}
+should proceed to flow through {{c2}}. Rule (4) says that if the value
+{{v}} has exited {{c2}} as well, then it is equivalent to having
+exited from {{c1(;)c2}}.
 
 Rules (5) to (8) deal with {{c1 (+) c2}} in the same way. In the case
 of sums, the shape of the value {{left v}}/{{right v}} determines
