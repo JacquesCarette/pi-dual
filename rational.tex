@@ -1219,7 +1219,8 @@ sematics. Broadly this construction takes two steps
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Unification and Logic Programming}
 
-
+\roshan{Can we cite away unification, reificatio, handling of
+  substitutions etc?}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Extending {{langRev}} Semantics}
@@ -1237,6 +1238,9 @@ substitution and extend it with the appropriate unification.
 
 {{ iso s v' |--> (v_{output pattern}, s[v' <><> v_{input pattern}]) }}
 
+
+\roshan{Talk about non-determinism, determinism and our handling of
+  choices. Also, in what sense are we logically reversible?}
 
 \paragraph{Extending the evaulator with unification.} 
 We have rewriten the semantics of Sec. \ref{sec:pi} with
@@ -1327,20 +1331,28 @@ of primitive isomorphisms:
 
 \end{enumerate}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions in {{langRevEE}} }
 \label{sec:monoidal-constructions}
+
+MUST TALK ABOUT AND CITE ABRAMSKY AND COECKE'S TR ABOUT QUANTUM
+COMPUTING.
 
 These constructions are applicable to the additive and the
 multiplicative monoid.
 
 \paragraph*{Functions}
 
+Mention LL and {{a -o b}}.
+
 \begin{center}
   \includegraphics{diagrams/function.pdf}
 \end{center}
 
 Let us use the shorthand {{b1 -o b2 = -b1 + b2}}
+
+\roshan{Also: additive functions aren't values - they are
+  possibilities. Multiplicative functions really are values.}
 
 \paragraph*{Function application}
 
@@ -1393,11 +1405,7 @@ This is also equivalent to sequencing both the computation blocks.
   \includegraphics{diagrams/double_neg.pdf}
 \end{center}
 
-MUST TALK ABOUT AND CITE ABRAMSKY AND COECKE'S TR ABOUT QUANTUM
-COMPUTING.
-
-
-%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions Specific to Negation}
 \label{sec:neg-constructions}
 
@@ -1439,7 +1447,7 @@ Given {{c : b1 <-> b2}}
 \end{center}
 
 
-%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions Specific to Multiplication}
 
 
@@ -1513,14 +1521,6 @@ of the functions and can be thought of as the address of the function.
 
 \end{itemize}
 
-For a traced monoidal category {{C}} the Int construction produces a
-Compact Closed Category called Int {{C}} \cite{joyal1996traced}.
-Further we know that the target of the Int construction is isomorphic
-to the target of \G construction of Abramsky \cite{Abramsky96:0} from
-Haghverdi. However, note that the {{langRevEE}} is not the same as the
-image of the Int construction on {{langRevT}}, since the the later
-lacks a multiplicative tensor that distributes over the additive tensor
-in Int {{langRevT}}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{SAT Solver in {{langRevEE}} }
@@ -1703,6 +1703,15 @@ logic programming.
 \paragraph*{Linear Logic and GoI.} 
 Say something. 
 
+\paragraph*{Int Construction.}
+For a traced monoidal category {{C}} the Int construction produces a
+Compact Closed Category called Int {{C}} \cite{joyal1996traced}.
+Further we know that the target of the Int construction is isomorphic
+to the target of \G construction of Abramsky \cite{Abramsky96:0} from
+Haghverdi. However, note that the {{langRevEE}} is not the same as the
+image of the Int construction on {{langRevT}}, since the the later
+lacks a multiplicative tensor that distributes over the additive
+tensor in Int {{langRevT}}.
 
 \paragraph*{Our Approach.} The salient aspects of our approach are the following:
 \begin{itemize}
