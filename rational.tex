@@ -1477,11 +1477,6 @@ Given {{c : b1 <-> b2}}
 
 \begin{itemize}
 
-\item If we built an effect over {{langRevEE}}, say {{create}} and
-  {{erase}}, are effects structured by an arrow or a monad now?
-
-\item Which operations can be lifted to work on negative types?
-
 \item Can the operational semantics for {{langRevEE}} be an
   interpreter that is implemented in {{langRevT}} (similar to how the
   the tree traversal interpreter was implemented). This would imply
@@ -1862,6 +1857,41 @@ Discussion of possible polynomials:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 \label{sec:conc}
+
+
+Several things we don't know how to do, or are sloppy about. Some of
+these are deep questions to which there is no immeidate answer.
+
+\begin{itemize}
+
+\item Is the language without recursive types always terminating? For
+  the right symmetry with annihilation, it is desirable to have
+  non-termination.
+
+\item What is the correct lemma for logical reversibility now?
+
+\item We should say things about information preservation. At least
+  more so than what is being said now.
+
+\item Do we really have HOF and continuations? What is the exact
+  relationship? Do we have linearly used functions? Do we have linear
+  functions (in that they use their argument linearly)?
+
+\item Can we complete the construction in \cite{infeffects} to be full
+  STLC? This is again a HOF question in another guise. 
+
+\item What are information effects in {{langRevEE}}? Depending on what
+  we think about HOF, do we have a monad or is it still an arrow?
+
+\item Multiplicative duality gives us a means of talking about
+  equivalence classes of values. This should correspond to all sorts
+  of other things -- groupoids, Lawvere theories etc. We barely even
+  understand these connections.
+
+\item How does this connect to QC? Is there any strong connection such
+  that the SAT solver here is an alternate QC algorithm to Shor's?
+
+\end{itemize}
 
 
 To summarize negative, fractional, square root, and imaginary types all make
