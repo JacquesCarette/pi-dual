@@ -188,6 +188,10 @@ have previously appeared in the literature (see Sec.~\ref{sec:related}), they
 have typically appeared in the context of conventional languages with
 information effects, which obscured their appeal and murked their properties.
 
+start with int times bool divided by bool: it is like an int but it can only
+be used as the second component of a pair whose first component is an int;
+gives you the power to say here is 20 but you must use it to buy books
+
 To get a feeling for the main idea, consider the following algebraic
 manipulation relating a natural number $a$ to itself:
 %% \[\begin{array}{rclll}
@@ -216,7 +220,7 @@ manipulation relating a natural number $a$ to itself:
 Although seemingly pointless, this algebraic proof corresponds, in our model,
 to an isomorphism of type {{a <-> a}} with a non-trivial and interesting
 computational interpretation. The witness for this isomorphism is a
-computation that takes a value of type $a$ (say \$20.00) and eventually
+computation that takes a value of type~$a$ (say \$20.00) and eventually
 produces the same \$20.00 value as its output. As the semantics of
 Sec.~\ref{sec:rat} formalizes, the intermediate steps of the computation
 proceed as follows:
@@ -239,31 +243,30 @@ proceed as follows:
 \item We finally reach line 5 with the value {{20}}.
 \end{itemize}
 
-Now consider the following algebraic manipulation (assuming $a \neq 0$):
-\[\begin{array}{rclll}
-&& a & \mbox{initial~$a$} & (0) \\
-&=& a * 1 & \mbox{$1$~is~identity~for~$*$} & (1) \\
-&=& a * ((1/a) * a) & \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} & (2) \\
-&=& (a * (1/a)) * a & \mbox{$*$~is~associative} & (3) \\
-&=& 1 * a & \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} & (4) \\
-&=& a & \mbox{$1$~is~identity~for~$*$} & (5)
-\end{array}\]
-As the semantics in Sec.~\ref{sec:rat} formalizes, the witness to this 
-{{a <-> a}} isomorphism computes as follows:
-\begin{itemize}
-\item We start at line (0) with the value {{20}};
-\item We proceed to line (1) with the value {{(20,())}};
-\item We proceed to line (2) with the value {{(20,((1/alpha),alpha))}} where
-  $\alpha$ is essentially a logic variable;
-\item We proceed to line (3) with the value {{((20,1/alpha),alpha)}};
-\item At line (4) we require that $20$ and $1/\alpha$ cancel each other which
-  forces the unification $\alpha=20$, i.e., the value becomes
-  {{((20,1/20),20)}} which simplifies to {{((),20)}};
-\item We reach line (5) with the value {{20}}.
-\end{itemize}
-
-\amr{the above is a boring trace; we need to convey why it is exciting but we
-  are not agreeing on the interpretation.} 
+% Now consider the following algebraic manipulation (assuming $a \neq 0$):
+% \[\begin{array}{rclll}
+% && a & \mbox{initial~$a$} & (0) \\
+% &=& a * 1 & \mbox{$1$~is~identity~for~$*$} & (1) \\
+% &=& a * ((1/a) * a) & \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} & (2) \\
+% &=& (a * (1/a)) * a & \mbox{$*$~is~associative} & (3) \\
+% &=& 1 * a & \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} & (4) \\
+% &=& a & \mbox{$1$~is~identity~for~$*$} & (5)
+% \end{array}\]
+% As the semantics in Sec.~\ref{sec:rat} formalizes, the witness to this 
+% {{a <-> a}} isomorphism commputes as follows:
+% \begin{itemize}
+% \item We start at line (0) with the value {{20}};
+% \item We proceed to line (1) with the value {{(20,())}};
+% \item We proceed to line (2) with the value {{(20,((1/alpha),alpha))}} where
+%   $\alpha$ is essentially a logic variable;
+% \item We proceed to line (3) with the value {{((20,1/alpha),alpha)}};
+% \item At line (4) we require that $20$ and $1/\alpha$ cancel each other which
+%   forces the unification $\alpha=20$, i.e., the value becomes
+%   {{((20,1/20),20)}} which simplifies to {{((),20)}};
+% \item We reach line (5) with the value {{20}}.
+% \end{itemize}
+% \amr{the above is a boring trace; we need to convey why it is exciting but we
+%   are not agreeing on the interpretation.} 
 
 The beauty of the above computation is that it can be realized with a
 completely different concurrent schedule as follows. \emph{Simultaneously}
