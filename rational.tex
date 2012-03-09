@@ -88,6 +88,9 @@
 %! LeftT = L^{\times}
 %! RightT = R^{\times}
 %! alpha = \alpha
+%! bool = \textit{bool}
+%! color = \textit{color}
+%! Gr = G
 
 %subcode-inline{bnf-inline} regex \{\{(((\}[^\}])|[^\}])*)\}\} name main include langRev
 %! Gx = \Gamma^{\times}
@@ -151,8 +154,9 @@
   types are values that impose constraints on their context.  The combination
   of these negative and fractional types enables greater flexibility in
   programming by breaking global invariants into local ones that can be
-  autonomously satisfied by a subcomputation. Furthermore, these types and
-  their properties suggest that the previously observed duality of
+  autonomously satisfied by a subcomputation. Theoretically, these types give
+  rise to \emph{two} function spaces and to \emph{two} notions of
+  continuations, suggesting that the previously observed duality of
   computation conflated two orthogonal notions: an additive duality that
   corresponds to backtracking and a multiplicative duality that corresponds
   to unification.
@@ -188,42 +192,21 @@ have previously appeared in the literature (see Sec.~\ref{sec:related}), they
 have typically appeared in the context of conventional languages with
 information effects, which obscured their appeal and murked their properties.
 
-start with int times bool divided by bool: it is like an int but it can only
-be used as the second component of a pair whose first component is an int;
-gives you the power to say here is 20 but you must use it to buy books
-
-To get a feeling for the main idea, consider the following algebraic
-manipulation relating a natural number $a$ to itself:
-%% \[\begin{array}{rclll}
-%% && a & \mbox{initial~$a$} & (0) \\
-%% &=& a + 0 & \mbox{$0$~is~identity~for~$+$} & (1) \\
-%% &=& a + (-a + a) & \mbox{$-a$~is~the~additive~inverse~of~$a$} & (2) \\
-%% &=& (a + (-a)) + a & \mbox{$+$~is~associative} & (3) \\
-%% &=& 0 + a & \mbox{$-a$~is~the~additive~inverse~of~$a$} & (4) \\
-%% &=& a & \mbox{$0$~is~identity~for~$+$} & (5)
-%% \end{array}\]
-%% \[\begin{array}{rlllllllll}
-%%  \!&\!\!  a \!&\! \!&\!       \!&\! \!&\!    \!&\! \mbox{initial~$a$} \!&\! (0) \\
-%% =\!&\!\!  a \!&\!+\!&\!       \!&\!0\!&\!    \!&\! \mbox{$0$~is~identity~for~$+$} \!&\! (1) \\
-%% =\!&\!\!  a \!&\!+\!&\! (-a   \!&\!+\!&\! a) \!&\! \mbox{$-a$~is~the~additive~inverse~of~$a$} \!&\! (2) \\
-%% =\!&\!\! (a \!&\!+\!&\! (-a)) \!&\!+\!&\! a  \!&\! \mbox{$+$~is~associative} \!&\! (3) \\
-%% =\!&\!\!    \!&\!0\!&\!       \!&\!+\!&\! a  \!&\! \mbox{$-a$~is~the~additive~inverse~of~$a$} \!&\! (4) \\
-%% =\!&\!\!    \!&\! \!&\!       \!&\! \!&\! a  \!&\! \mbox{$0$~is~identity~for~$+$} \!&\! (5)
-%% \end{array}\]
-
+\paragraph*{Negative Types.} 
+Consider the following algebraic manipulation relating a natural number $a$
+to itself (ignoring the dotted line for a moment):
 \begin{center}
 \scalebox{1.1}{
 \includegraphics{diagrams/thesis/algebra-wire1.pdf}
 }
 \end{center}
-
 Although seemingly pointless, this algebraic proof corresponds, in our model,
 to an isomorphism of type {{a <-> a}} with a non-trivial and interesting
 computational interpretation. The witness for this isomorphism is a
 computation that takes a value of type~$a$ (say \$20.00) and eventually
 produces the same \$20.00 value as its output. As the semantics of
-Sec.~\ref{sec:rat} formalizes, the intermediate steps of the computation
-proceed as follows:
+Sec.~\ref{sec:rat} formalizes, this computation flows along the dotted
+line with the following intermediate steps:
 \begin{itemize}
 \item We start at line (0) with \$20.00; 
 \item We proceed to line (1) with the same \$20.00 but tagged as being in the
@@ -242,63 +225,25 @@ proceed as follows:
 \item We proceed to line (3) and (4) with the value {{right 20}};
 \item We finally reach line 5 with the value {{20}}.
 \end{itemize}
+The example illustrates that the empty type and negative types have a
+fascinating computational interpretation with some flavor of continuations.
+What is even more fascinating is that the above computation can be realized
+with a completely different concurrent schedule as
+follows. \emph{Simultaneously} the execution begins at line~(0) with the
+value {{20}}, at line (2) with the value {{right (right 20)}} flowing forward
+and the value {{right (left 20)}} flowing backwards, and at line (3) with the
+value {{left (left 20)}} flowing forward and the value {{left (right 20)}}
+flowing backward. We now have three independent subcomputations proceeding in
+parallel: the positive value created at line (2) which can flow to the
+consumer; the negative value created at line (3) which can pay for the debt
+created at line (2); and the initial value from line (0) which can flow to
+the required forward-flowing value needed at line (3). At some intuitive
+level, one might understand the situation as modeling a credit card payment
+in which money is created at line (2) for the consumer together with a
+corresponding debt. The producer's bank pays for the debt at line (3) and
+waits for the actual money to arrive from the producer.
 
-Now consider the following algebraic manipulation (assuming $a \neq 0$):
-%% \[\begin{array}{rclll}
-%% && a & \mbox{initial~$a$} & (0) \\
-%% &=& a * 1 & \mbox{$1$~is~identity~for~$*$} & (1) \\
-%% &=& a * ((1/a) * a) & \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} & (2) \\
-%% &=& (a * (1/a)) * a & \mbox{$*$~is~associative} & (3) \\
-%% &=& 1 * a & \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} & (4) \\
-%% &=& a & \mbox{$1$~is~identity~for~$*$} & (5)
-%% \end{array}\]
-
-%% \[\begin{array}{rcllllll}
-%%  \!&\! a \!&\! \!&\!        \!&\! \!&\!    \!&\! \mbox{initial~$a$} \!&\! (0) \\
-%% =\!&\! a \!&\!*\!&\!        \!&\!1\!&\!    \!&\! \mbox{$1$~is~identity~for~$*$} \!&\! (1) \\
-%% =\!&\! a \!&\!*\!&\! ((1/a) \!&\!*\!&\! a) \!&\! \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} \!&\! (2) \\
-%% =\!&\!(a \!&\!*\!&\! (1/a)) \!&\!*\!&\! a  \!&\! \mbox{$*$~is~associative} \!&\! (3) \\
-%% =\!&\!   \!&\!1\!&\!        \!&\!*\!&\! a  \!&\! \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} \!&\! (4) \\
-%% =\!&\!   \!&\! \!&\!        \!&\! \!&\! a  \!&\! \mbox{$1$~is~identity~for~$*$} \!&\! (5)
-%% \end{array}\]
-
-\begin{center}
-\scalebox{1.1}{
-\includegraphics{diagrams/thesis/algebra-wire2.pdf}
-}
-\end{center}
-
-As the semantics in Sec.~\ref{sec:rat} formalizes, the witness to this 
-{{a <-> a}} isomorphism computes as follows:
-\begin{itemize}
-\item We start at line (0) with the value {{20}};
-\item We proceed to line (1) with the value {{(20,())}};
-\item We proceed to line (2) with the value {{(20,((1/alpha),alpha))}} where
-  $\alpha$ is essentially a logic variable;
-\item We proceed to line (3) with the value {{((20,1/alpha),alpha)}};
-\item At line (4) we require that $20$ and $1/\alpha$ cancel each other which
-  forces the unification $\alpha=20$, i.e., the value becomes
-  {{((20,1/20),20)}} which simplifies to {{((),20)}};
-\item We reach line (5) with the value {{20}}.
-\end{itemize}
-
-The beauty of the above computation is that it can be realized with a
-completely different concurrent schedule as follows. \emph{Simultaneously}
-the execution begins at line (0) with the value {{20}}, at line (2) with the
-value {{right (right 20)}} flowing forward and the value {{right (left 20)}}
-flowing backwards, and at line (3) with the value {{left (left 20)}} flowing
-forward and the value {{left (right 20)}} flowing backward. We now have three
-independent subcomputations proceeding in parallel: the positive value
-created at line (2) which can flow to the consumer; the negative value
-created at line (3) which can pay for the debt created at line (2); and the
-initial value from line (0) which can flow to the required forward-flowing
-value needed at line (3). At some intuitive level, one might understand the
-situation as modeling a credit card payment in which money is created at line
-(2) for the consumer together with a corresponding debt. The producer's bank
-pays for the debt at line (3) and waits for the actual money to arrive from
-the producer.
-
-There are at least two fundamental points about this example that must be
+There are at least three fundamental points about this example that must be
 emphasized:
 \begin{itemize}
 \item As the example illustrates, negative types corresponds to ``debts.''
@@ -319,12 +264,102 @@ emphasized:
   infrastructure can be trusted with such promises. Computationally, this
   means that negative types allow us to break the dependency between
   producers and consumers and let each compute independently.
+\item Consider a value of type {{-a + b}}. The above discussion suggests that
+  this value demands {{a}} and produces {{b}}, i.e., that it is a
+  higher-order funtion mapping {{a}} to {{b}}. Dually and as the underlying
+  categorical semantics justifies (see Sec.~\ref{sec:neg}), the same value is
+  a continuation which produces {{b}} and then demands {{a}}, which
+  introduces a twist on how the function can be used: get the goods {{b}} now
+  and pay {{a}} later.
 \end{itemize}
 
-Instead of also discussing fractional types and related work in this
-introduction, we briefly summarize our main technical contributions and move
-on to the heart of the paper where these topics can be explained in their
-proper context. Our main contributions are:
+\paragraph*{Fractional Types.} 
+Consider the following realization of boolean negation written using a
+pattern-matching style:
+\begin{verbatim}
+notB b = case b of 
+  False -> True
+  True -> False
+\end{verbatim}
+In a functional language, we are not used to treating the pattern-matching
+clauses \verb|False -> True| and \verb|True -> False| as first-class entities
+but fractional types allow us to do just that! Informally, we can treat each
+of the pattern-matching clauses as a first-class value of type 
+{{(1/bool) * bool}}. 
+A small but complete example will illustrate the main aspects of this idea.
+
+Let \verb|color| be the datatype with three constructors \verb|R|, \verb|G|,
+and \verb|B| and let's try to construct a function that rotates the
+colors. In other words, we would like to build the following three
+pattern-matching clauses \verb|R -> G|, \verb|G -> B|, and \verb|B -> R|.  In
+the algebra of rational numbers we have that for each {{a}} that is not equal
+to {{0}}, {{1 = (1/a) * a}}. In our framework this algebraic identity
+corresponds to a type isomorphism {{1 <-> (1/a) * a}}. For the datatype
+\verb|color|, there are three possible witnesses for this isomorphism mapping
+{{()}} to either {{(1/R,R)}} or {{(1/Gr,Gr)}} or {{(1/B,B)}} with the
+particular witness determined by further constraints encountered during the
+computation. The idea of variables that capture constraints that are
+satisfied later is at the heart of logic programming and hence the witness for
+the isomorphisms above is generally {{(1/alpha,alpha)}} where~{{alpha}} is a
+fresh logic variable. 
+
+Returning to our goal of creating the function that rotates the colors, we
+proceed as follows:
+\begin{itemize}
+\item Using the fact that {{1}} is the multiplicative unit, generate from the
+  input {{()}} the value {{((),((),()))}} of type {{1 * (1 * 1)}};
+\item Apply the isomorphism {{1 <-> (1/a) * a}} in parallel to each of the
+  components of the above tuple. The resulting value is 
+{{((1/alpha1,alpha1),((1/alpha2,alpha2),(1/alpha3,alpha3)))}} where {{alpha1}},
+{{alpha2}}, and {{alpha3}} are fresh logic variables.
+\item Using the fact that {{*}} is associative and commutative, we can
+  rearrange the above tuple to produce the value:
+
+{{((1/alpha1,alpha2),((1/alpha2,alpha3),(1/alpha3,alpha1)))}}.
+\item At this point, we have produced the skeleton for our desired function.
+  Assume now that a client uses the first clause of the function in a context
+  that contains the value \verb|R|, i.e., the client has the value
+  {{((1/alpha1,alpha2),R)}} consiting of one of the clauses of the function
+  and an argument. This value can be rearranged to {{((1/alpha1,R),alpha2)}}.
+  At this point, we can use the isomorphism {{1 <-> (1/a) * a}} in reverse on
+  the first component of the pair which has the following effects:
+  \begin{itemize}
+    \item the logic variable {{alpha1}} is unified with {{R}};
+    \item the first component of the pair then reduces to () and can be
+      absorbed by the fact that {{1}} is the multiplicative unit. In other
+      words, the value reduces to simply {{alpha2}} reflecting that the
+      pattern-matching was successful and the result of the clause is now
+      available;
+    \item the first clause of the function has now disappeared and the the
+      unification adjusts the remaining two clauses to
+    {{((1/alpha2,alpha3),(1/alpha3,R))}}.
+  \item The same client or another client can now use the second clause
+    applying it to {{G}} which would produce the result {{alpha3}} for the
+    second client and ground the result of the first client to {{G}}.
+  \item Finally the remaining clause {{(1/alpha3,R)}} can be applied to {{B}}
+    which grounds the result of the second client to {{B}}.
+  \end{itemize}
+\end{itemize}
+It should be evident that in a universe in which information is not
+guaranteed to be preserved by the computational infrastructure, the above
+slicing and dicing of functions as a collection of first-class pattern
+clauses would make no sense. However, in a computational infrastructure that
+is guaranteed to preserve information, computations such as the one above are
+guaranteed to ``make sense.'' If one branch uses a clause that matches one
+part of the input to produce one part of the output, all other clauses are
+automatically adjusted to account for this to ensure that this input is not
+matched again and that this output is not produced again. Furthermore, just
+like the case for negative types, a dual reading of the the pattern-matching
+clauses as continuations allows the context to use the result of the clause
+and provide the matching argument later. 
+
+\paragraph*{Contributions and Outline.} 
+To summarize, in a computational framework that guarantees that information
+is preserved, negative and fractional types provide fascinating mechanisms in
+which computations can be sliced and diced, decomposed and recomposed,
+proceeding forward and backwards, in arbitrary ways. The remainder of the
+paper formalizes these informal observations. Specifically our main
+contributions are:
 \begin{itemize}
 \item We extend {{langRev}} our reversible programming language of type
   isomorphisms~\cite{rc2011,infeffects} (see Sec.~\ref{sec:pi}) with a notion
@@ -354,6 +389,26 @@ proper context. Our main contributions are:
   relating continuations to the fractional types of the Lambek-Grishin
   calculus. (Sec.~\ref{sec:related})
 \end{itemize}
+
+% Now consider the following algebraic manipulation (assuming $a \neq 0$):
+% \begin{center}
+% \scalebox{1.1}{
+% \includegraphics{diagrams/thesis/algebra-wire2.pdf}
+% }
+% \end{center}
+% As the semantics in Sec.~\ref{sec:rat} formalizes, the witness to this 
+% {{a <-> a}} isomorphism computes as follows:
+% \begin{itemize}
+% \item We start at line (0) with the value {{20}};
+% \item We proceed to line (1) with the value {{(20,())}};
+% \item We proceed to line (2) with the value {{(20,((1/alpha),alpha))}} where
+%   $\alpha$ is essentially a logic variable;
+% \item We proceed to line (3) with the value {{((20,1/alpha),alpha)}};
+% \item At line (4) we require that $20$ and $1/\alpha$ cancel each other which
+%   forces the unification $\alpha=20$, i.e., the value becomes
+%   {{((20,1/20),20)}} which simplifies to {{((),20)}};
+% \item We reach line (5) with the value {{20}}.
+% \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Core Reversible Language: {{langRev}} }
