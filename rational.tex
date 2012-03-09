@@ -1696,15 +1696,24 @@ and the second relates products to sums and divisions to subtractions. In
 contrast, our two symmetries relate sums to subtractions and products to
 divisions.
 
+\paragraph*{Logic Programming and Backtracking.} 
+This is a constrained form of backtracking and a constrained form of
+logic programming.
+
+\paragraph*{Linear Logic and GoI.} 
+Say something. 
+
+
 \paragraph*{Our Approach.} The salient aspects of our approach are the following:
 \begin{itemize}
 \item Negative and fractional types have an elementary and familiar
-  interpretation borrowed from the algebra of rational numbers. One can write
-  any algebraic identity that is valid for the rational numbers and interpret
-  it as an isomorphism with a clear computational interpretation: negative
-  values flow backwards and fractional values represent fragments of
-  aggregate data structures. None of the systems above has such a natural
-  interpretation of negative and fractional types. 
+  interpretation borrowed from the algebra of rational numbers. One
+  can write any algebraic identity that is valid for the rational
+  numbers and interpret it as an isomorphism with a clear
+  computational interpretation: negative values flow backwards and
+  fractional values represent fragments of aggregate data
+  structures. None of the systems above has such a natural
+  interpretation of negative and fractional types.
 \item Because we are \emph{not} in the context of the full
   $\lambda$-calculus, which allows arbitrary duplication and erasure of
   information, values of negative and fractional types are first-class values
@@ -1731,9 +1740,9 @@ divisions.
   requires notions like ``additive pairs'' and ``multiplicative sums.''
 \end{itemize}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusion}
-\label{sec:conc}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Computing in the Field of Algebraic Numbers}
 
 The field of algebraic numbers consist of the rationals extended with
 solutions to polynomials. In a limited sense {{langRevEE}} with
@@ -1840,6 +1849,11 @@ Discussion of possible polynomials:
   performs the square root of negation in the sense that applying it twice
   would be equivalent to boolean negation.
 \end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+\label{sec:conc}
+
 
 To summarize negative, fractional, square root, and imaginary types all make
 sense. What they help you accomplish as a programmer is to disassociate
