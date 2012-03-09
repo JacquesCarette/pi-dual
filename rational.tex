@@ -240,14 +240,31 @@ proceed as follows:
 \end{itemize}
 
 Now consider the following algebraic manipulation (assuming $a \neq 0$):
-\[\begin{array}{rclll}
-&& a & \mbox{initial~$a$} & (0) \\
-&=& a * 1 & \mbox{$1$~is~identity~for~$*$} & (1) \\
-&=& a * ((1/a) * a) & \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} & (2) \\
-&=& (a * (1/a)) * a & \mbox{$*$~is~associative} & (3) \\
-&=& 1 * a & \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} & (4) \\
-&=& a & \mbox{$1$~is~identity~for~$*$} & (5)
-\end{array}\]
+%% \[\begin{array}{rclll}
+%% && a & \mbox{initial~$a$} & (0) \\
+%% &=& a * 1 & \mbox{$1$~is~identity~for~$*$} & (1) \\
+%% &=& a * ((1/a) * a) & \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} & (2) \\
+%% &=& (a * (1/a)) * a & \mbox{$*$~is~associative} & (3) \\
+%% &=& 1 * a & \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} & (4) \\
+%% &=& a & \mbox{$1$~is~identity~for~$*$} & (5)
+%% \end{array}\]
+
+%% \[\begin{array}{rcllllll}
+%%  \!&\! a \!&\! \!&\!        \!&\! \!&\!    \!&\! \mbox{initial~$a$} \!&\! (0) \\
+%% =\!&\! a \!&\!*\!&\!        \!&\!1\!&\!    \!&\! \mbox{$1$~is~identity~for~$*$} \!&\! (1) \\
+%% =\!&\! a \!&\!*\!&\! ((1/a) \!&\!*\!&\! a) \!&\! \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} \!&\! (2) \\
+%% =\!&\!(a \!&\!*\!&\! (1/a)) \!&\!*\!&\! a  \!&\! \mbox{$*$~is~associative} \!&\! (3) \\
+%% =\!&\!   \!&\!1\!&\!        \!&\!*\!&\! a  \!&\! \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} \!&\! (4) \\
+%% =\!&\!   \!&\! \!&\!        \!&\! \!&\! a  \!&\! \mbox{$1$~is~identity~for~$*$} \!&\! (5)
+%% \end{array}\]
+
+\begin{center}
+\scalebox{1.1}{
+\includegraphics{diagrams/thesis/algebra-wire2.pdf}
+}
+\end{center}
+
+
 As the semantics in Sec.~\ref{sec:rat} formalizes, the witness to this 
 {{a <-> a}} isomorphism computes as follows:
 \begin{itemize}
