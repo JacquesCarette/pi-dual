@@ -144,7 +144,7 @@
 
 \begin{abstract}
   Every functional programmer knows about sum and product types, {{a+b}} and
-  {{a*b}} respectively. Negative and fractional types, $a-b$ and $a/b$
+  {{a*b}} respectively. Negative and fractional types, {{a-b}} and {{a/b}}
   respectively, are much less known and their computational interpretation is
   unfamiliar and often complicated. We show that in a programming model in
   which information is preserved (such as the model introduced in our recent
@@ -193,7 +193,7 @@ have typically appeared in the context of conventional languages with
 information effects, which obscured their appeal and murked their properties.
 
 \paragraph*{Negative Types.} 
-Consider the following algebraic manipulation relating a natural number $a$
+Consider the following algebraic manipulation relating a natural number {{a}}
 to itself (ignoring the dotted line for a moment):
 \begin{center}
 \scalebox{1.1}{
@@ -203,14 +203,14 @@ to itself (ignoring the dotted line for a moment):
 Although seemingly pointless, this algebraic proof corresponds, in our model,
 to an isomorphism of type {{a <-> a}} with a non-trivial and interesting
 computational interpretation. The witness for this isomorphism is a
-computation that takes a value of type~$a$ (say \$20.00) and eventually
+computation that takes a value of type~{{a}} (say \$20.00) and eventually
 produces the same \$20.00 value as its output. As the semantics of
 Sec.~\ref{sec:rat} formalizes, this computation flows along the dotted
 line with the following intermediate steps:
 \begin{itemize}
 \item We start at line (0) with \$20.00; 
 \item We proceed to line (1) with the same \$20.00 but tagged as being in the
-  left summand of the type $a+0$; we indicate this value as {{left 20}}
+  left summand of the type {{a+0}}; we indicate this value as {{left 20}}
 \item We continue to line (2) with the same value {{left 20}};
 \item At line (3), as a result of re-association the tag on the \$20.00
   changes to indicate that it is in the left-left summand, i.e., the value is
@@ -230,10 +230,10 @@ fascinating computational interpretation with some flavor of continuations.
 What is even more fascinating is that the above computation can be realized
 with a completely different concurrent schedule as
 follows. \emph{Simultaneously} the execution begins at line~(0) with the
-value {{20}}, at line (2) with the value {{right (right 20)}} flowing forward
+value {{20}}, at line (2) with the value {{right (right 20)}} flowing forwards
 and the value {{right (left 20)}} flowing backwards, and at line (3) with the
-value {{left (left 20)}} flowing forward and the value {{left (right 20)}}
-flowing backward. We now have three independent subcomputations proceeding in
+value {{left (left 20)}} flowing forwards and the value {{left (right 20)}}
+flowing backwards. We now have three independent subcomputations proceeding in
 parallel: the positive value created at line (2) which can flow to the
 consumer; the negative value created at line (3) which can pay for the debt
 created at line (2); and the initial value from line (0) which can flow to
@@ -330,12 +330,11 @@ proceed as follows:
       words, the value reduces to simply {{alpha2}} reflecting that the
       pattern-matching was successful and the result of the clause is now
       available;
-    \item the first clause of the function has now disappeared and the the
-      unification adjusts the remaining two clauses to
-    {{((1/alpha2,alpha3),(1/alpha3,R))}}.
+    \item the first clause of the function has now disappeared and the
+      remaining two clauses become {{((1/alpha2,alpha3),(1/alpha3,R))}}.
   \item The same client or another client can now use the second clause
-    applying it to {{G}} which would produce the result {{alpha3}} for the
-    second client and ground the result of the first client to {{G}}.
+    applying it to {{Gr}} which would produce the result {{alpha3}} for the
+    second client and ground the result of the first client to {{Gr}}.
   \item Finally the remaining clause {{(1/alpha3,R)}} can be applied to {{B}}
     which grounds the result of the second client to {{B}}.
   \end{itemize}
@@ -349,26 +348,26 @@ guaranteed to ``make sense.'' If one branch uses a clause that matches one
 part of the input to produce one part of the output, all other clauses are
 automatically adjusted to account for this to ensure that this input is not
 matched again and that this output is not produced again. Furthermore, just
-like the case for negative types, a dual reading of the the pattern-matching
+like the case for negative types, a dual reading of the pattern-matching
 clauses as continuations allows the context to use the result of the clause
-and provide the matching argument later. 
+and provide the matching argument later.
 
 \paragraph*{Contributions and Outline.} 
 To summarize, in a computational framework that guarantees that information
 is preserved, negative and fractional types provide fascinating mechanisms in
-which computations can be sliced and diced, decomposed and recomposed,
-proceeding forward and backwards, in arbitrary ways. The remainder of the
-paper formalizes these informal observations. Specifically our main
-contributions are:
+which computations can be sliced and diced, decomposed and recomposed, ran
+forwards and backwards, in arbitrary ways. The remainder of the paper
+formalizes these informal observations. Specifically our main contributions
+are:
 \begin{itemize}
 \item We extend {{langRev}} our reversible programming language of type
   isomorphisms~\cite{rc2011,infeffects} (see Sec.~\ref{sec:pi}) with a notion
-  of negative types, that satisfies the isomorphism $a + (-a) = 0$. The
+  of negative types, that satisfies the isomorphism {{a + (-a) <-> 0}}. The
   semantics of this extension is expressed by having a ``dual'' evaluator
   that reverses the flow of execution for negative
   values. (Sec.~\ref{sec:neg})
 \item We independently extend {{langRev}} with a notion of fractional types,
-  that satisfies the isomorphism $a * (1/a) = 1$. The semantics of this
+  that satisfies the isomorphism {{a * (1/a) <-> 1}}. The semantics of this
   extension is expressed by introducing logical variables and a unification
   mechanism to model and resolve the constraints introduced by the fractional
   types. (Sec.~\ref{sec:frac})
@@ -390,41 +389,16 @@ contributions are:
   calculus. (Sec.~\ref{sec:related})
 \end{itemize}
 
-% Now consider the following algebraic manipulation (assuming $a \neq 0$):
-% \begin{center}
-% \scalebox{1.1}{
-% \includegraphics{diagrams/thesis/algebra-wire2.pdf}
-% }
-% \end{center}
-% As the semantics in Sec.~\ref{sec:rat} formalizes, the witness to this 
-% {{a <-> a}} isomorphism computes as follows:
-% \begin{itemize}
-% \item We start at line (0) with the value {{20}};
-% \item We proceed to line (1) with the value {{(20,())}};
-% \item We proceed to line (2) with the value {{(20,((1/alpha),alpha))}} where
-%   $\alpha$ is essentially a logic variable;
-% \item We proceed to line (3) with the value {{((20,1/alpha),alpha)}};
-% \item At line (4) we require that $20$ and $1/\alpha$ cancel each other which
-%   forces the unification $\alpha=20$, i.e., the value becomes
-%   {{((20,1/20),20)}} which simplifies to {{((),20)}};
-% \item We reach line (5) with the value {{20}}.
-% \end{itemize}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Core Reversible Language: {{langRev}} }
 \label{sec:pi}
 
 We review our reversible language {{langRev}}: the presentation in this
 section differs from the one in our previous paper~\cite{infeffects} in two
-aspects. First, we add the empty type $0$ which is necessary to express the
+aspects. First, we add the empty type {{0}} which is necessary to express the
 additive duality. Second, instead of explaining evaluation using a natural
 semantics, we give a small-step operational semantics that is more
 appropriate for the connections with continuations explored in this paper.
-
-\roshan{Say somewhere that {{langRev}} corresponds to computing in the
-  commutative rig of whole numbers. More bluntly {{langRev}} is whole
-  numbers with addition and multiplication, while {{langRevEE}} is the
-  rational with addition and multiplication.}
 
 %%%%%%%%%%%%%%%%%%%%
 \subsection{Syntax and Types} 
@@ -457,7 +431,7 @@ structure {{(b,+,0,*,1)}} is a \emph{commutative semiring}, i.e., that each
 of {{(b,+,0)}} and {{(b,*,1)}} is a commutative monoid and that
 multiplication distributes over addition. The isomorphisms are extended to
 form a congruence relation by adding the following constructors that witness
-the equivalence and compatible closure:
+equivalence and compatible closure:
 %subcode{proof} include main
 %@  ~
 %@@ id : b <-> b 
@@ -496,31 +470,29 @@ definition.
 % comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
 \end{definition}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%
 \subsection{Graphical Language}
 
-The syntactic notation described in Sec \ref{sec:pi-syntax} is often
-obscure and hard to read.  Following the tradition established for
-monoidal categories~\cite{springerlink:10.1007/978-3-642-12821-94}, we
-present a graphical language that conveys the intuitive semantics of
-the language (which is formalized in the next section).  Since, the
-graphical notation is easier to read an trace, for the rest of the
-paper {{langRev}} programs will be presented graphically.
+The syntactic notation above is often obscure and hard to read.  Following
+the tradition established for monoidal
+categories~\cite{springerlink:10.1007/978-3-642-12821-94}, we present a
+graphical language that conveys the intuitive semantics of the language
+(which is formalized in the next section).
 
-The general idea of the graphical notation is that combinators are
-modeled by ``wiring diagrams'' or ``circuits''; values are modeled as
-``particles'' that may appear on the wires; and evaluation is modeled
-by the flow of particles along the wires. In fact, when talking about
-{{langRev}} circuits, we will often use the words {{value}} and
-{{particle}] interchangeably.
+The general idea of the graphical notation is that combinators are modeled by
+``wiring diagrams'' or ``circuits'' and that values are modeled as
+``particles'' that may appear on the wires. Evaluation therefore is modeled
+by the flow of particles along the wires.
 
-%% We now proceed to give the graphical notation for each combinator:
+%% In fact, when talking about {{langRev}} circuits, we will often use the
+%% words {{value}} and {{particle}} interchangeably.
 
 \begin{itemize}
-\item The simplest sort of diagram is the {{id : b <-> b}} combinator
-  which is simply represented as a wire labeled by its type {{b}}, as
-  shown on the left. In more complex diagrams, if the type of a wire
-  is obvious from the context, it may be omitted.
+\item The simplest sort of diagram is the {{id : b <-> b}} combinator which
+  is simply represented as a wire labeled by its type {{b}}, as shown on the
+  left. In more complex diagrams, if the type of a wire is obvious from the
+  context, it may be omitted. When tracing a computation, one might imagine a
+  value {{v}} of type {{b}} on the wire, as shown on the right.
 
   \begin{multicols}{2}
 \begin{center}
@@ -529,8 +501,6 @@ by the flow of particles along the wires. In fact, when talking about
 \includegraphics{diagrams/thesis/b-wire.pdf}
 }
 \end{center}
-
-
 \begin{center}
 \scalebox{0.95}{
 %%subcode-line{pdfimage}[diagrams/thesis/b-wire.pdf]
@@ -539,12 +509,10 @@ by the flow of particles along the wires. In fact, when talking about
 \end{center}
   \end{multicols}
 
-When tracing a computation, one might imagine a value {{v}} of of type
-{{b}} on the wire, as shown on the right.
-
-\item The product type {{b1*b2}} may be represented both as one wire labeled
-  {{b1*b2}} or by two parallel wires labeled {{b1}} and {{b2}}. Both
-  representations maybe used interchangeably.
+\item The product type {{b1*b2}} may be represented using either one wire
+  labeled {{b1*b2}} or two parallel wires labeled {{b1}} and {{b2}}. In the
+  case of products represented by a pair of wires, when tracing execution
+  using particles, one should think of one value/particle on each wire.
 \begin{multicols}{2}
 \begin{center}
 \scalebox{0.95}{
@@ -554,16 +522,15 @@ When tracing a computation, one might imagine a value {{v}} of of type
 \end{center}
 \begin{center}
 \scalebox{0.95}{
-%%%subcode-line{pdfimage}[diagrams/thesis/pair-of-wires.pdf]
-\includegraphics{diagrams/thesis/product-two-wires.pdf}
+\includegraphics{diagrams/thesis/product-one-wire-value.pdf}
 }
 \end{center}
 \end{multicols}
-
 \begin{multicols}{2}
 \begin{center}
 \scalebox{0.95}{
-\includegraphics{diagrams/thesis/product-one-wire-value.pdf}
+%%%subcode-line{pdfimage}[diagrams/thesis/pair-of-wires.pdf]
+\includegraphics{diagrams/thesis/product-two-wires.pdf}
 }
 \end{center}
 \begin{center}
@@ -573,12 +540,10 @@ When tracing a computation, one might imagine a value {{v}} of of type
 \end{center}
 \end{multicols}
 
-In the case of products represented by a pair of wires, when tracing
-execution using particles, one should think of one value/particle on
-each wire.
-
 \item Sum types may similarly be represented by one wire or using using
-  parallel wires with a {{+}} operator between them.
+  parallel wires with a {{+}} operator between them. When tracing the
+  execution of two additive wires, a value can reside on only one of the two
+  wires.
 \begin{multicols}{2}
 \begin{center}
 \scalebox{0.95}{
@@ -588,20 +553,15 @@ each wire.
 \end{center}
 \begin{center}
 \scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/sum-of-wires.pdf]
-\includegraphics{diagrams/thesis/sum-two-wires.pdf}
+\includegraphics{diagrams/thesis/sum-two-wires-left-value.pdf}
 }
 \end{center}
 \end{multicols}
-
-
-When tracing the execution of two additive wires, a value can reside
-on only one of the two wires.
-
 \begin{multicols}{2}
 \begin{center}
 \scalebox{0.95}{
-\includegraphics{diagrams/thesis/sum-two-wires-left-value.pdf}
+%%subcode-line{pdfimage}[diagrams/thesis/sum-of-wires.pdf]
+\includegraphics{diagrams/thesis/sum-two-wires.pdf}
 }
 \end{center}
 \begin{center}
@@ -648,11 +608,12 @@ on only one of the two wires.
 \end{center}
 \end{multicols}
 
-The crisscrossing wires have the right semantics in that a value on
-the top wire, ends up on the bottom wire and vice versa.
-
-\item Identity morphisms and their duals ({{uniti, unite, zeroi}} and
-  {{zeroe}}) are represented as follows:
+\item The morphisms that witness that {{0}} and {{1}} are the additive and
+  multiplicative unites are represented as shown below. Note that since there
+  is no value of type 0, there can be no particle on a wire of type {{0}}.
+  Also since the monoidal units can be freely introduced and eliminated, in
+  many diagrams they are omitted and dealt with explicitly only when they are
+  of special interest.
 \begin{multicols}{2}
 \begin{center}
 \scalebox{0.95}{
@@ -682,10 +643,6 @@ the top wire, ends up on the bottom wire and vice versa.
 }
 \end{center}
 \end{multicols}
-Note that since there is no value of type 0, there can be no particle
-on a wire of type {{0}}.  Since the monoidal units can be freely
-introduced and eliminated, in many diagrams they are omitted and dealt
-with explicitly when they are of special interest.
 
 \item Finally, distributivity and factoring are represented using the dual
   boxes shown below:
@@ -707,8 +664,8 @@ with explicitly when they are of special interest.
 \end{itemize}
 
 \noindent 
-\textit{Example.} As an example, the following combinator is represented by
-the given diagram:
+\textit{Example.} The following combinator is represented by the given
+diagram:
 
 {{c : b * (1+1) <-> b + b}}
 
@@ -721,15 +678,12 @@ the given diagram:
 }
 \end{center}
 
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Semantics}
 
 The semantics of the primitive combinators is given by the following
 single-step reductions. Since there are no values of type {{0}}, the rules
-omit some of the impossible cases:
+omit the impossible cases:
 \begin{scriptsize}
 %subcode{opsem} include main
 %! columnStyle = rlcl
@@ -751,13 +705,12 @@ omit some of the impossible cases:
 % factor & (left (v1, v3)) &|-->& (left v1, v3) 
 % factor & (right (v2, v3)) &|-->& (right v2, v3)   
 \end{scriptsize}
+The reductions for the primitive isomorphisms above are exactly the same as
+have been presented before~\cite{infeffects}. The reductions for the closure
+combinators are however presented in a small-step operational style using the
+following definitions of evaluation contexts and machine states:
 
-The reductions for the primitive isomorphisms are exactly the same as
-have been presented before \cite{infeffects}. The reductions for the
-closure combinators are however presented in a small-step operational
-style. The following are the definition for evaluation contexts and
-machine states:
-
+\begin{scriptsize}
 %subcode{bnf} include main
 % Combinator Contexts, C = [] | Fst C c | Snd c C 
 %                  &|& LeftT C c v | RightT c v C 
@@ -765,30 +718,14 @@ machine states:
 % Machine states = <c, v, C> | {[c, v, C]}
 % Start state = <c, v, []> 
 % Stop State = {[c, v, []]}
+\end{scriptsize}
+The machine transitions below track the flow of particles through a
+circuit. The start machine state, {{<c,v,[]>}}, denotes the particle/value
+{{v}} about to be evaluated by the circuit {{c}}. The end machine state,
+{{[c, v, [] ]}}, denotes the situation where the particle {{v}} has exited
+the circuit {{c}}.
 
-The reduction rules below essentially track the flow of particles
-through their circuit. The start machine state, {{<c,v,[]>}}, denotes
-the particle/value {{v}} about to be evaluated by the circuit
-{{c}}. The end machine state, {{[c, v, [] ]}}, denotes the situation
-where the particle {{v}} has exited the circuit {{c}}.
-
-
-%% For the non-primitive combinators, we express the semantics using evaluation
-%% contexts which are used to represent the ``rest of the computation.'' More
-%% precisely, to calculate the result of applying combinator $c$ to value $v$,
-%% we start a small-step abstract machine in the configuration {{<c,v,[]>}}. The
-%% transitions of the machine (see below) are unusual in the sense that they
-%% always maintain full information about {{c}}, although this information may
-%% be split in the first and last component of the machine. The {{v}} component
-%% of the machine is the one that captures the current value as it is flowing in
-%% the combinator {{c}}. When  scattered in the machine will examine {{c}} and make
-%% transitions based on the structure of {{c}}. When the evaluation of {{c}} is
-%% complete, the configuration should be {{[c,v,[]]}} where the {{c}} is
-%% restored.
-
-%% This is a mess. Perhaps give a small example and explain things based on the
-%% example before giving the full transitions.
-
+\begin{scriptsize}
 %subcode{opsem} include main
 %! columnStyle = rclr
 % <iso, v, C> &|-->& {[iso, v', C]} & (1)
@@ -803,54 +740,51 @@ where the particle {{v}} has exited the circuit {{c}}.
 % <c1(*)c2, (v1, v2), C> &|-->& <c1, v1, LeftT C c2 v2> & (9)
 % {[ c1, v1, LeftT C c2 v2 ]} &|-->& <c2, v2, RightT c1 v1 C> & (10) 
 % {[ c2, v2, RightT c1 v1 C ]} &|-->& {[ c1 (*) c2, (v1, v2), C ]} & (11)
+\end{scriptsize}
+Rule (1) describes evaluation by a primitive isomorphism. Rules (2), (3) and
+(4) deal with sequential evaluation. Rule (2) says that for the value {{v}}
+to flow through the sequence {{c1 (;) c2}}, it should first flow through
+{{c1}} with {{c2}} pending in the context ({{Fst C c2}}). Rule (3) says the
+value {{v}} that exits from {{c1}} should proceed to flow
+through~{{c2}}. Rule (4) says that when the value {{v}} exits {{c2}}, it also
+exits the sequential composition {{c1(;)c2}}. Rules (5) to (8) deal with 
+{{c1 (+) c2}} in the same way. In the case of sums, the shape of the value,
+i.e., whether it is tagged with {{left}} or {{right}}, determines whether
+path {{c1}} or path {{c2}} is taken. Rules (9), (10) and (11) deal with 
+{{c1 (*) c2}} similarly. In the case of products the value should have the
+form {{(v1, v2)}} where {{v1}} flows through {{c1}} and {{v2}} flows through
+{{c2}}. Both these paths are entirely independent of each other and we could
+evaluate either first, or evaluate both in parallel. In this presentation we
+have chosen to follow {{c1}} first, but this choice is entirely arbitrary.
 
-The rule (1) describes evaluation by a primitive isomorphism. Rules
-(2), (3) and (4) deal with sequential evaluation. Rule (2) says that
-for the value {{v}} to flow through the sequence {{c1 (;) c2}}, it
-should first flow through {{c1}} with {{c2}} pending in the context
-({{Fst C c2}}). Rule (3) says the value {{v}} that exits from {{c1}}
-should proceed to flow through {{c2}}. Rule (4) says that if the value
-{{v}} has exited {{c2}} as well, then it is equivalent to having
-exited from {{c1(;)c2}}.
-
-Rules (5) to (8) deal with {{c1 (+) c2}} in the same way. In the case
-of sums, the shape of the value,i.e. is it is tagged with {{left}} or
-{{right}}, determines whether path {{c1}} or path {{c2}} is
-taken. Rules (9), (10) and (11) deal with {{c1 (*) c2}} similarly. In
-the case of products the value should have the form {{(v1, v2)}} where
-{{v1}} flows through {{c1}} and {{v2}} flows through {{c2}}. Both
-these paths are entirely independent of each other and we could
-evaluate either first, or evaluate both in parallel. In this
-presentation we have chosen to follow {{c1}} first, but this choice is
-entirely arbitrary.
-
-The interesting thing about the semantics is that it represents a
-reversible abstract machine. In other words, we can compute the start
-state from the stop state by changing the reductions `{{|-->}}' to run
-backwards `{{<--|}}'. We will take advantage of this property in
-Sec. \ref{sec:rat}.
-
+The interesting thing about the semantics is that it represents a reversible
+abstract machine. In other words, we can compute the start state from the
+stop state by changing the reductions {{|-->}} to run backwards
+{{<--|}}. When running backwards, we use the isomorphism represented by a
+combinator {{c}} in the reverse direction which we indicate by writing
+{{c{dagger}}}. For example, {{distrib{dagger} = factor}} and so on.
 
 \begin{proposition}[Logical Reversibility]
 \label{prop:logrev}
-{{c v |--> v'}} iff {{c{dagger} v' |--> v}}.
+{{<c,v,[]> |--> [c,v',[]]}} iff 
+{{<c{dagger},v',[]> <--| [c{dagger},v,[]]}} 
 \end{proposition}
 
-\roshan{We really have to rethink this prop in the presence of
-  negatives and fractionals. With negatives, the program can actually
-  end at the beginning of the circuit -- i.e. the program {{c:b1<->b2}}
-  can stop with a value of type {{b1}}. With fractionals, there can be
-  several values of type {{b2}} produced for a value of type {{b1}}. }
+% \roshan{We really have to rethink this prop in the presence of
+%   negatives and fractionals. With negatives, the program can actually
+%   end at the beginning of the circuit -- i.e. the program {{c:b1<->b2}}
+%   can stop with a value of type {{b1}}. With fractionals, there can be
+%   several values of type {{b2}} produced for a value of type {{b1}}. }
 
-\begin{proposition}[Groupoid]
-\label{prop:groupoid}
-{{langRev}} is a groupoid. 
-\end{proposition}
+% \begin{proposition}[Groupoid]
+% \label{prop:groupoid}
+% {{langRev}} is a groupoid. 
+% \end{proposition}
 
-\begin{proposition}
-\label{prop:category}
-{{langRev}} is a dagger symmetric monoidal category. 
-\end{proposition}
+% \begin{proposition}
+% \label{prop:category}
+% {{langRev}} is a dagger symmetric monoidal category. 
+% \end{proposition}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Negative Types}
@@ -913,7 +847,7 @@ the type structure of each of the combinators that comprise the circuit. The
 first combinator on the right outputs \$20.00 to the seller. This \$20.00 is
 produced from nothing so to speak by generating an equivalent debt that
 travels backwards. COMPLETE BASED ON THE FIGURE. The other way is to follow
-the execution. It goes forward in time so to speak, comes back, and then goes
+the execution. It goes forwards in time so to speak, comes back, and then goes
 forwards again.
 
 It is critical that the framework in which the negative types are introduced
@@ -1021,7 +955,7 @@ A time traveling intuition is also applicable here: if view the
 left-to-right direction of information flow as the canonical forward
 direction of information, then the action of {{eps+}} allows values,
 aka information particles, to flow backwards in time. Particles that
-flow backward in time get to see and interact with the history of
+flow backwards in time get to see and interact with the history of
 particles that they coexist with i.e. values that they exist
 multiplicatively with. Hence the isomorphism {{(-b1)*b2<->-(b1*b2)}}
 (whose construction is shown in Section \ref{sec:neg-constructions}).
@@ -1054,13 +988,13 @@ here.)
 
 ADD MATH. 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Fractional Types}
 \label{sec:frac}
 
-The type $a/b$ is prominent in the Lambek-Grishin calculus which is
+The type {{a/b}} is prominent in the Lambek-Grishin calculus which is
 extensively used in computational linguistics. In the common interpretation,
-a value of type $a/b$ is a value of some type $c$ such that when put in a
+a value of type {{a/b}} is a value of some type $c$ such that when put in a
 context of type $b$, the result is a value of type $a$. For example, assuming
 contexts are represented as functions, a value of type $\texttt{bool} /
 (\texttt{int} \rightarrow \texttt{bool})$ is simply a value of type
@@ -1122,7 +1056,7 @@ satisfied once and exactly once.
   \includegraphics{diagrams/algebra2.pdf}
 \end{center}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Multiplicative Duality in {{langRev}} }
 
 Multiplicative duality is added to {{langRev}} by adding types
@@ -1271,13 +1205,13 @@ sematics. Broadly this construction takes two steps
 \end{enumerate}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
 \subsection{Unification and Logic Programming}
 
 \roshan{Can we cite away unification, reificatio, handling of
   substitutions etc?}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
 \subsection{Extending {{langRev}} Semantics}
 
 
@@ -1340,7 +1274,7 @@ i.e. evaluation {{c v}} in this evaluator is equivalent to evaluating
 % {[ c1 (*) c2, v, C, s ]}_{bck} &|-->& {[ c2, v2, RightT c1 v1 C, S' ]}_{bck}
 % && where s' = s[v <><> (v1, v2)]
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
 \subsection{Semantics of {{langRevEE}} }
 
 The previous section has defined all the pieces needed to define the
@@ -1386,7 +1320,7 @@ of primitive isomorphisms:
 
 \end{enumerate}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions in {{langRevEE}} }
 \label{sec:monoidal-constructions}
 
@@ -1460,7 +1394,7 @@ This is also equivalent to sequencing both the computation blocks.
   \includegraphics{diagrams/double_neg.pdf}
 \end{center}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
 \subsection{Constructions Specific to Negation}
 \label{sec:neg-constructions}
 
@@ -1502,7 +1436,7 @@ Given {{c : b1 <-> b2}}
 \end{center}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions Specific to Multiplication}
 
 
@@ -1656,9 +1590,6 @@ contraint solver is then constructed as shown:
 }
 \end{center}  
 
-
-
-
 %%%%%%%%%%%%%%%%%%%
 \subsection{GoI machine}
 
@@ -1728,7 +1659,7 @@ continuations. Reddy~\cite{Reddy91} generalizes this idea by interpreting the
 negative types of linear logic as \emph{acceptors}, which are like
 continuations in the sense that they take an input and return no
 output. Acceptors however are also similar in flavor to logical variables:
-they can created and instantiated later once their context of use is
+they can be created and instantiated later once their context of use is
 determined. Although a formal connection is lacking, it is clear that, at an
 intuitive level, acceptors are entities that combine elements of our negative
 and fractional types.
@@ -1746,33 +1677,16 @@ and the second relates products to sums and divisions to subtractions. In
 contrast, our two symmetries relate sums to subtractions and products to
 divisions.
 
-\paragraph*{Logic Programming and Backtracking.} 
-This is a constrained form of backtracking and a constrained form of
-logic programming.
-
-\paragraph*{Linear Logic and GoI.} 
-Say something. 
-
-\paragraph*{Int Construction.}
-For a traced monoidal category {{C}} the Int construction produces a
-Compact Closed Category called Int {{C}} \cite{joyal1996traced}.
-Further we know that the target of the Int construction is isomorphic
-to the target of \G construction of Abramsky \cite{Abramsky96:0} from
-Haghverdi. However, note that the {{langRevEE}} is not the same as the
-image of the Int construction on {{langRevT}}, since the the later
-lacks a multiplicative tensor that distributes over the additive
-tensor in Int {{langRevT}}.
-
-\paragraph*{Our Approach.} The salient aspects of our approach are the following:
+\paragraph*{Our Approach.} The salient aspects of our approach are the
+following:
 \begin{itemize}
 \item Negative and fractional types have an elementary and familiar
-  interpretation borrowed from the algebra of rational numbers. One
-  can write any algebraic identity that is valid for the rational
-  numbers and interpret it as an isomorphism with a clear
-  computational interpretation: negative values flow backwards and
-  fractional values represent fragments of aggregate data
-  structures. None of the systems above has such a natural
-  interpretation of negative and fractional types.
+  interpretation borrowed from the algebra of rational numbers. One can write
+  any algebraic identity that is valid for the rational numbers and interpret
+  it as an isomorphism with a clear computational interpretation: negative
+  values flow backwards and fractional values represent constraints on the
+  context. None of the systems above has such a natural interpretation of
+  negative and fractional types.
 \item Because we are \emph{not} in the context of the full
   $\lambda$-calculus, which allows arbitrary duplication and erasure of
   information, values of negative and fractional types are first-class values
@@ -1781,8 +1695,8 @@ tensor in Int {{langRevT}}.
   demand will be satisfied exactly once, and every constraint imposed by a
   fractional value will also be satisfied exactly once. This property is
   shared with systems that are based on linear logic; other systems must
-  impose ad hoc constraints to ensure negative values are used exactly
-  once. 
+  impose ad hoc constraints to ensure negative and fractional values are used
+  exactly once.
 \item In contrast to all the work that takes continuations as primitive
   entities of negative types, we view continuations as a derived notion that
   combines a demand for a value with constraints on how this value will be
@@ -2252,6 +2166,22 @@ closed program, the ``debt'' corresponding to the negative value is paid off
 exactly once. The forward and backward executions in our framework correspond
 to call-by-value and call-by-name. This duality was observed by Filinski and
 others following him but it is particularly clean in our framework.
+
+\paragraph*{Logic Programming and Backtracking.} 
+This is a constrained form of backtracking and a constrained form of
+logic programming.
+
+\paragraph*{Linear Logic and GoI.} 
+Say something. 
+
+\paragraph*{Int Construction.}
+For a traced monoidal category {{C}} the Int construction produces a Compact
+Closed Category called Int {{C}} \cite{joyal1996traced}.  Further we know
+that the target of the Int construction is isomorphic to the target of \G
+construction of Abramsky \cite{Abramsky96:0} from Haghverdi. However, note
+that the {{langRevEE}} is not the same as the image of the Int construction
+on {{langRevT}}, since the later lacks a multiplicative tensor that
+distributes over the additive tensor in Int {{langRevT}}.
 
 %% Jacques
 
