@@ -243,30 +243,44 @@ proceed as follows:
 \item We finally reach line 5 with the value {{20}}.
 \end{itemize}
 
-% Now consider the following algebraic manipulation (assuming $a \neq 0$):
-% \[\begin{array}{rclll}
-% && a & \mbox{initial~$a$} & (0) \\
-% &=& a * 1 & \mbox{$1$~is~identity~for~$*$} & (1) \\
-% &=& a * ((1/a) * a) & \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} & (2) \\
-% &=& (a * (1/a)) * a & \mbox{$*$~is~associative} & (3) \\
-% &=& 1 * a & \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} & (4) \\
-% &=& a & \mbox{$1$~is~identity~for~$*$} & (5)
-% \end{array}\]
-% As the semantics in Sec.~\ref{sec:rat} formalizes, the witness to this 
-% {{a <-> a}} isomorphism commputes as follows:
-% \begin{itemize}
-% \item We start at line (0) with the value {{20}};
-% \item We proceed to line (1) with the value {{(20,())}};
-% \item We proceed to line (2) with the value {{(20,((1/alpha),alpha))}} where
-%   $\alpha$ is essentially a logic variable;
-% \item We proceed to line (3) with the value {{((20,1/alpha),alpha)}};
-% \item At line (4) we require that $20$ and $1/\alpha$ cancel each other which
-%   forces the unification $\alpha=20$, i.e., the value becomes
-%   {{((20,1/20),20)}} which simplifies to {{((),20)}};
-% \item We reach line (5) with the value {{20}}.
-% \end{itemize}
-% \amr{the above is a boring trace; we need to convey why it is exciting but we
-%   are not agreeing on the interpretation.} 
+Now consider the following algebraic manipulation (assuming $a \neq 0$):
+%% \[\begin{array}{rclll}
+%% && a & \mbox{initial~$a$} & (0) \\
+%% &=& a * 1 & \mbox{$1$~is~identity~for~$*$} & (1) \\
+%% &=& a * ((1/a) * a) & \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} & (2) \\
+%% &=& (a * (1/a)) * a & \mbox{$*$~is~associative} & (3) \\
+%% &=& 1 * a & \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} & (4) \\
+%% &=& a & \mbox{$1$~is~identity~for~$*$} & (5)
+%% \end{array}\]
+
+%% \[\begin{array}{rcllllll}
+%%  \!&\! a \!&\! \!&\!        \!&\! \!&\!    \!&\! \mbox{initial~$a$} \!&\! (0) \\
+%% =\!&\! a \!&\!*\!&\!        \!&\!1\!&\!    \!&\! \mbox{$1$~is~identity~for~$*$} \!&\! (1) \\
+%% =\!&\! a \!&\!*\!&\! ((1/a) \!&\!*\!&\! a) \!&\! \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} \!&\! (2) \\
+%% =\!&\!(a \!&\!*\!&\! (1/a)) \!&\!*\!&\! a  \!&\! \mbox{$*$~is~associative} \!&\! (3) \\
+%% =\!&\!   \!&\!1\!&\!        \!&\!*\!&\! a  \!&\! \mbox{$1/a$~is~the~multiplicative~inverse~of~$a$} \!&\! (4) \\
+%% =\!&\!   \!&\! \!&\!        \!&\! \!&\! a  \!&\! \mbox{$1$~is~identity~for~$*$} \!&\! (5)
+%% \end{array}\]
+
+\begin{center}
+\scalebox{1.1}{
+\includegraphics{diagrams/thesis/algebra-wire2.pdf}
+}
+\end{center}
+
+As the semantics in Sec.~\ref{sec:rat} formalizes, the witness to this 
+{{a <-> a}} isomorphism computes as follows:
+\begin{itemize}
+\item We start at line (0) with the value {{20}};
+\item We proceed to line (1) with the value {{(20,())}};
+\item We proceed to line (2) with the value {{(20,((1/alpha),alpha))}} where
+  $\alpha$ is essentially a logic variable;
+\item We proceed to line (3) with the value {{((20,1/alpha),alpha)}};
+\item At line (4) we require that $20$ and $1/\alpha$ cancel each other which
+  forces the unification $\alpha=20$, i.e., the value becomes
+  {{((20,1/20),20)}} which simplifies to {{((),20)}};
+\item We reach line (5) with the value {{20}}.
+\end{itemize}
 
 The beauty of the above computation is that it can be realized with a
 completely different concurrent schedule as follows. \emph{Simultaneously}
