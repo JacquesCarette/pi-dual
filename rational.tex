@@ -39,7 +39,7 @@
 \newcommand{\ie}{\textit{i.e.}\xspace}
 \newcommand{\eg}{\textit{e.g.}\xspace}
 
-\newcommand{\lcal}{\ensuremath{\lambda}-calculus}
+\newcommand{\lcal}{\ensuremath{\lambda}-calculus\xspace}
 \newcommand{\G}{\ensuremath{\mathcal{G}}\xspace}
 
 \newcommand{\code}[1]{\lstinline[basicstyle=\small]{#1}\xspace}
@@ -108,6 +108,8 @@
 %! <=> = \Longleftrightarrow
 %! <-> = \leftrightarrow
 %! ~> = \leadsto
+%! -o+ = \multimap^{+}
+%! -o* = \multimap^{\times}
 %! -o = \multimap
 %! ::= = &::=&
 %! /= = \neq
@@ -1751,7 +1753,72 @@ following:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Computing in the Field of Algebraic Numbers}
+\section{Future Work}
+
+Several things we don't know how to do, or are sloppy about. Some of
+these are deep questions to which there is no immeidate answer.
+
+\begin{itemize}
+
+\item Is the language without recursive types always terminating? For
+  the right symmetry with annihilation, it is desirable to have
+  non-termination.
+
+\item What is the correct lemma for logical reversibility now?
+
+\item We should say things about information preservation. At least
+  more so than what is being said now.
+
+
+\item Multiplicative duality gives us a means of talking about
+  equivalence classes of values. This should correspond to all sorts
+  of other things -- groupoids, Lawvere theories etc. We barely even
+  understand these connections.
+
+\item How does this connect to QC? Is there any strong connection such
+  that the SAT solver here is an alternate QC algorithm to Shor's?
+
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Conventional Higher Order Functions}
+
+In a conventional language, higher-order functions capture scope and
+can be represented as first class values. On the other hand,
+{{langRevEE}} gives us two notions of functions both of which share
+similarities with conventional HOFs. 
+
+\begin{itemize}
+\item 
+Additive functions are not really values, but are possible paths of
+execution. However, they can be encoded as values as follows: Consider
+two functions {{f:b1 -o+ b2}} and {{g:b1-o+b2}}. A value of type
+{{bool}} can discriminate them and hence a value of type {{bool}} acts
+as the `address' of the function and is a first class value
+representing one of the {{b1 -o+ b2}} functions.  This is similar to
+how first classes functions a'la \lcal are represented by their
+addresses when compiled to conventional hardware.
+
+\item
+Multiplicative functions, of the form {{b1 -o* b2}}, on the other hand
+are indeed first class values. However these functions can only be
+linearly used -- i.e. they represent a contraint that can be satisfied
+at most once in one `computational world'. It may be possible that to
+repeatedly invoke multiplicative functions with an appropriate
+recursive type whose unfoldings allow for repeated unification.
+\end{itemize}
+
+The exact encoding on HOF in {{langRevEE}} should shed light on
+several problems, including the connections to continuations discussed
+in Sec. \ref{sec:related}. They should also allow for a natural
+encoding of HOFs in the translations of \lcal to {{langRevT}} and
+indicate a monadic encapsulation of of information effects which are
+currrently structured as an arrow.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Computing in the Field of Algebraic Numbers}
 
 The field of algebraic numbers consist of the rationals extended with
 solutions to polynomials. In a limited sense {{langRevEE}} with
@@ -1859,64 +1926,19 @@ Discussion of possible polynomials:
   would be equivalent to boolean negation.
 \end{itemize}
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 \label{sec:conc}
 
 
-Several things we don't know how to do, or are sloppy about. Some of
-these are deep questions to which there is no immeidate answer.
-
-\begin{itemize}
-
-\item Is the language without recursive types always terminating? For
-  the right symmetry with annihilation, it is desirable to have
-  non-termination.
-
-\item What is the correct lemma for logical reversibility now?
-
-\item We should say things about information preservation. At least
-  more so than what is being said now.
-
-\item Do we really have HOF and continuations? What is the exact
-  relationship? Do we have linearly used functions? Do we have linear
-  functions (in that they use their argument linearly)?
-
-\item Can we complete the construction in \cite{infeffects} to be full
-  STLC? This is again a HOF question in another guise. 
-
-\item What are information effects in {{langRevEE}}? Depending on what
-  we think about HOF, do we have a monad or is it still an arrow?
-
-\item Multiplicative duality gives us a means of talking about
-  equivalence classes of values. This should correspond to all sorts
-  of other things -- groupoids, Lawvere theories etc. We barely even
-  understand these connections.
-
-\item How does this connect to QC? Is there any strong connection such
-  that the SAT solver here is an alternate QC algorithm to Shor's?
-
-\end{itemize}
-
-
-\subsection{Higher Order Functions}
-
-These functions aren't really values. There is no value one can
-produce that denotes a function. These functions are the ability to
-transform a value - the possibility of transforming a value.  In the
-product encoding of environments, there is no value one can assign to
-a variable such that it denotes a function.
-
-Actually this is possible. Consider two functions {{f : b1 <-> b2}}
-and {{g : b1 <-> b2}}. A value of type {{bool}} is sufficient to
-discriminate them. Hence the {{boo}} is the first class representation
-of the functions and can be thought of as the address of the function. 
 
 %% \begin{center}
 %%   \includegraphics{diagrams/dispatch.pdf}
 %% \end{center}
 
-\subsection{Other}
+% \subsection{Other}
+
 To summarize negative, fractional, square root, and imaginary types all make
 sense. What they help you accomplish as a programmer is to disassociate
 global invariants into local ones that can be satisfied independently by
