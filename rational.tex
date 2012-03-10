@@ -399,7 +399,7 @@ are:
   values. (Sec.~\ref{sec:neg})
 \item We independently extend {{langRev}} with a notion of fractional types,
   that satisfies the isomorphism {{a * (1/a) <-> 1}}. The semantics of this
-  extension is expressed by introducing logical variables and a unification
+  extension is expressed by introducing logic variables and a unification
   mechanism to model and resolve the constraints introduced by the fractional
   types. (Sec.~\ref{sec:frac})
 \item We combine the above two extensions into one extension that includes
@@ -821,101 +821,43 @@ combinator {{c}} in the reverse direction which we indicate by writing
 \section{Negative Types}
 \label{sec:neg}
 
-Consider the following two ways of purchasing an item that costs \$20.00:
-\begin{enumerate}
-\item You give the seller a \$20.00 bill.
-\item You use a credit card to pay the seller.
-\end{enumerate}
-In both cases, the seller receives the money immediately but there is a
-subtle difference. In the first transaction, the money received by the seller
-corresponds to a value that has been produced earlier in the computation. In
-the second transaction, the money may or may not exist yet: computationally,
-a \emph{debt} is generated to compensate for the money received by the seller
-and this debt travels ``backwards'' towards the bank where it is (hopefully)
-reconciled.
-
-The example suggests that the ability to consider values flowing backwards
-enriches our computational model. This observation goes back to Filinski's
-Masters thesis where continuations are identified with these negative values.
-We discuss the connections to Filinski's work and others in more detail in
-Sec.~\ref{sec:related}. For now, we note that in a conventional programming
-language in which values can be copied and deleted at will, extreme care is
-needed to keep track of negative values. Indeed, in the example above, if it
-were possible to simply delete the variable corresponding to the debt, we
-would have produced money out of nothing. 
-
-For this reason, our treatment of negative values in the context of
-{{langRev}} is particularly simple. We will have a type $0$ and an
-isomorphism {{0 <-> a + (-a)}} that when used in the left-to-right direction
-allows us to create a value and a corresponding debt out of nothing. Both the
-value and its negative counterpart can flow anywhere in the system. Because
-information is preserved, a closed program (which does not have any
-``dangling'' negative values) will eventually have to match the negative
-value with some corresponding value, effectively using the isomorphism in the
-right-to-left direction. In more detail, we can model the credit card
-transaction above using the following program (shown diagrammatically):
-
-\begin{center}
-  \includegraphics{diagrams/algebra1.pdf}
-\end{center}
-
-\roshan{I chose to draw the figure with b instead of a, since b is what
-  we use for the types. Should this be a? Also I chose to make the
-  swap and 0 wires, explicit.Is this what you intended? }
-
-CLEAN UP the following based on the figure. In contrast, in our setting, one
-can start from the empty type $0$, introduce a positive value and its
-negative counterpart, and let each of these flow in arbitrary ways. The
-entire framework guarantees that neither the value nor its negative
-counterpart will be deleted or duplicated and hence that, in any closed
-program, the ``debt'' corresponding to the negative value is paid off exactly
-once. Computationally we model the first transaction using essentially the
-identity function which receives a \$20.00 bill as input from the buyer and
-propagates it on its output to the seller. The second transaction is more
-complicated. We model it as shown in the circuit below: There are two ways to
-understand this circuit that are both quite instructive. Let's first examine
-the type structure of each of the combinators that comprise the circuit. The
-first combinator on the right outputs \$20.00 to the seller. This \$20.00 is
-produced from nothing so to speak by generating an equivalent debt that
-travels backwards. COMPLETE BASED ON THE FIGURE. The other way is to follow
-the execution. It goes forwards in time so to speak, comes back, and then goes
-forwards again.
-
-It is critical that the framework in which the negative types are introduced
-is a framework in which all information is preserved, with no duplication or
-erasure. This guarantees that the generated debts are paid once and exactly
-once.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\paragraph*{Observability.} 
-Execution of program is defined by {{c : b1 <-> b2}} when evaluated on input
-{{v1 : b1}} gives us a value {{v2 : b2}} on termination. Execution is well
-defined only if {{b1}} and {{b2}} are entirely positive types. This is
-similar to the constraint that Zeilberger imposes to explain intuitionistic
-polarity and delimited control~\cite{10.1109/LICS.2010.23}.
-
-Consider the program that
-
-(TODO: So this is a really bad explanation. But this section is really
-important and we need to explain carefully. Maybe an analogy can be
-drawn to Cayley diagrams for groups to point out that the notion of
-`i' is entirely artificial, but it is essential to the discourse.)
-
-\begin{center}
-  \includegraphics{diagrams/shuffle.pdf}
-\end{center}
-
-We define observables to be only positive types. The outputs of
-programs that output mixed positive and negative types are not
-observable.  Also, programs that input mixed positive and negatives
-types are not executable.
+The structure of this section and the next are the same. The general outline
+is as follows:\footnote{We refer the reader to Selinger's excellent survey
+  article of monoidal
+  categories~\cite{springerlink:10.1007/978-3-642-12821-94} for the precise
+  definitions.}
+\begin{itemize}
+\item As established in our earlier work~\cite{rc2011,infeffects}, the
+  underlying categorical semantics of our core reversible language
+  {{langRev}} is based on \emph{two} distinct symmetric monoidal structures,
+  one with {{+}} as the monoidal tensor, and one with {{*}} as the monoidal
+  tensor.
+\item We extend each underlying symmetric monoidal structure to a
+  \emph{compact closed} structure by adding a dual for each object and two
+  special morphims traditionally called {{eta}} and {{eps}}. 
+\end{itemize}
+After presenting the extension at the syntactic level, we discuss the
+categorical semantics informally via the graphical language. The operational
+semantics is presented in Sec.~\ref{sec:rat}. As will be detailed in this
+section and the next, the compact closed structure provides several
+properties of interest: (i) morphisms or wires are allowed to run from right
+to left, (ii) the structure admits a trace that, depending on the situation,
+can be used to implement various notions of loops and
+recursion~\cite{joyal1996traced,Hasegawa:2009:TMC:1552068.1552069,Hasegawa:1997:RCS:645893.671607},
+(iii) the structure includes an isomorphism showing that the dual operator is
+an involution, and (iv) the structure is equipped with objects representing
+higher-order functions and a morphism \textit{eval} that applies these
+functional objects. Interestingly each monoidal structure provides the same
+ingredients, resulting in two dualities, two traces, two involutions, and two
+notions of higher-order functions.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Additive Duality in {{langRev}} }
 
-Additive duality is added to {{langRev}} by addition of negative types
-denoted {{-b}} and the isomorphisms {{eta+}} and {{eps+}}. Hence we
-extend the language as follows:
+Describing the syntax and types of an extension to {{langRev}} with additive
+duality is fairly straightforward. Basically, we extend the language with
+negative types denoted {{-b}}, negative values denoted {{-v}}, and two
+isomorphisms {{eta+}} and {{eps+}}:
 
 %subcode{bnf} include main
 % Value Types, b = ... | -b
@@ -923,23 +865,21 @@ extend the language as follows:
 %
 % Isomorphisms, iso &=& ... | eta+ | eps+
 
-\noindent
-with the types judgments
-
+The isomorphisms {{eta+}} and {{eps+}} witness the following
+isomorphism:
 %subcode{opsem} include main
 % eta+ &: 0 <-> (-b) + b :& eps+
-
+And as expected we have the following typing rule for negative value:
 %subcode{proof} include main
 %@ |- v : b
 %@@ |- -v : -b
 
-We visually present {{eta+}} and {{eps+}} as `U'-shaped connectors. On
-the left below is {{eta+}} showing the map from {{0}} to {{-b+b}} and
-dually on the right is {{eps+}} showing the map from {{-b+b}} to
-0. Even though the diagrams below show a {{0}} wire for completeness,
-later diagrams will always drop them in contexts where we can
-implicitly introduce/eliminate then using {{zeroi}}/{{zeroe}}.
-
+For the graphical language, we visually present {{eta+}} and {{eps+}} as
+U-shaped connectors. On the left below is {{eta+}} showing the map from {{0}}
+to {{-b+b}} and dually on the right is {{eps+}} showing the map from {{-b+b}}
+to 0. Even though the diagrams below show a {{0}} wire for completeness,
+later diagrams will always drop them in contexts where we can implicitly
+introduce/eliminate then using {{zeroi}}/{{zeroe}}:
 \begin{multicols}{2}
 \begin{center}
   \includegraphics{diagrams/eta.pdf}
@@ -950,14 +890,99 @@ implicitly introduce/eliminate then using {{zeroi}}/{{zeroe}}.
 \end{center}
 \end{multicols}
 
-The usual interpretation of the type {{b1+b2}} is that we either have
-an appropriately tagged value of type {{b1}} or an appropriately
-tagged value of type {{b2}}. This interpretation is maintained in the
-presence of {{eta+}} and {{eps+}} in the following sense: a value of
-type {{right v : -b + b}} flowing into an {{eps+}} on the lower wire
-switches into a value {{left (-v): -b + b}} that flows backwards on the
-upper wire. The inversion of direction is captured by the negative
-sign on the value.
+The usual interpretation of the type {{b1+b2}} is that we either have an
+appropriately tagged value of type {{b1}} or an appropriately tagged value of
+type {{b2}}. This interpretation is maintained in the presence of {{eta+}}
+and {{eps+}} in the following sense: a value of type {{right v : -b + b}}
+flowing into an {{eps+}} on the lower wire switches to a value 
+{{left (-v): -b + b}} that flows backwards on the upper wire. The inversion of
+direction is captured by the negative sign on the value. 
+As an example, the diagram representing the isomorphism from the introduction
+is:
+\begin{center}
+  \includegraphics{diagrams/algebra1.pdf}
+\end{center}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Compact Closure with Additive Inverses}
+
+\paragraph*{Coherence.}
+The appropriate coherence condition for Compact Closed Categories,
+expressed as the triangle axiom, is satisfied by {{eta+}}/{{eps+}} and
+may be visualized as explained by Selinger
+\cite{springerlink:10.1007/978-3-642-12821-94} as follows:
+
+\begin{center}
+  \includegraphics{diagrams/coherence.pdf}
+\end{center}
+
+\paragraph*{Trace}
+
+%subcode{proof} include main
+%@ c : b2 + b1 <-> b2 + b3
+%@@ trace c : b1 <-> b3
+
+\begin{center}
+  \includegraphics{diagrams/trace.pdf}
+\end{center}
+
+
+\paragraph*{Involution (Principium Contradictiones)}
+
+{{b <-> -(-b)}}
+
+\begin{center}
+  \includegraphics{diagrams/double_neg.pdf}
+\end{center}
+
+\paragraph*{Higher-Order Functions}
+
+Mention LL and {{a -o b}}.
+
+\begin{center}
+  \includegraphics{diagrams/function.pdf}
+\end{center}
+
+Let us use the shorthand {{b1 -o b2 = -b1 + b2}}
+
+\roshan{Also: additive functions aren't values - they are
+  possibilities. Multiplicative functions really are values.}
+
+\paragraph*{Function application}
+
+\begin{center}
+  \includegraphics{diagrams/apply1.pdf}
+\end{center}
+
+\begin{center}
+  \includegraphics{diagrams/apply2.pdf}
+\end{center}
+
+\paragraph*{Function composition}
+
+\begin{center}
+  \includegraphics{diagrams/compose1.pdf}
+\end{center}
+
+\begin{center}
+  \includegraphics{diagrams/compose.pdf}
+\end{center}
+
+This is also equivalent to sequencing both the computation blocks. 
+
+\begin{center}
+  \includegraphics{diagrams/compose2.pdf}
+\end{center}
+
+\paragraph*{Delimited continuation}
+
+\begin{center}
+  \includegraphics{diagrams/delimc.pdf}
+\end{center}
+
+%%%%%%%%%%%%%
 
 \paragraph*{Negative Information Flow.} 
 Hence, the intuitive way to read the diagrams is that they reverse the
@@ -991,16 +1016,6 @@ particles that they coexist with i.e. values that they exist
 multiplicatively with. Hence the isomorphism {{(-b1)*b2<->-(b1*b2)}}
 (whose construction is shown in Section \ref{sec:neg-constructions}).
 
-\paragraph*{Coherence.}
-The appropriate coherence condition for Compact Closed Categories,
-expressed as the triangle axiom, is satisfied by {{eta+}}/{{eps+}} and
-may be visualized as explained by Selinger
-\cite{springerlink:10.1007/978-3-642-12821-94} as follows:
-
-\begin{center}
-  \includegraphics{diagrams/coherence.pdf}
-\end{center}
-
 \paragraph*{Non-termination.}
 As is well known in category theory, Compact Closed Categories contain
 trace operations.  In the context of {{langRev}} this implies that
@@ -1017,87 +1032,56 @@ branch. When {{b}} amount of information is supplied {{(-b+b)+b=b}}
 amount of information is returned to you. (TODO. more needs to be said
 here.)
 
-ADD MATH. 
+For this reason, our treatment of negative values in the context of
+{{langRev}} is particularly simple. We will have a type $0$ and an
+isomorphism {{0 <-> a + (-a)}} that when used in the left-to-right direction
+allows us to create a value and a corresponding debt out of nothing. Both the
+value and its negative counterpart can flow anywhere in the system. Because
+information is preserved, a closed program (which does not have any
+``dangling'' negative values) will eventually have to match the negative
+value with some corresponding value, effectively using the isomorphism in the
+right-to-left direction. 
+
+\paragraph*{Observability.} 
+Execution of program is defined by {{c : b1 <-> b2}} when evaluated on input
+{{v1 : b1}} gives us a value {{v2 : b2}} on termination. Execution is well
+defined only if {{b1}} and {{b2}} are entirely positive types. This is
+similar to the constraint that Zeilberger imposes to explain intuitionistic
+polarity and delimited control~\cite{10.1109/LICS.2010.23}.
+
+Consider the program that
+
+(TODO: So this is a really bad explanation. But this section is really
+important and we need to explain carefully. Maybe an analogy can be
+drawn to Cayley diagrams for groups to point out that the notion of
+`i' is entirely artificial, but it is essential to the discourse.)
+
+\begin{center}
+  \includegraphics{diagrams/shuffle.pdf}
+\end{center}
+
+We define observables to be only positive types. The outputs of
+programs that output mixed positive and negative types are not
+observable.  Also, programs that input mixed positive and negatives
+types are not executable.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Fractional Types}
 \label{sec:frac}
 
-The type {{a/b}} is prominent in the Lambek-Grishin calculus which is
-extensively used in computational linguistics. In the common interpretation,
-a value of type {{a/b}} is a value of some type $c$ such that when put in a
-context of type $b$, the result is a value of type $a$. For example, assuming
-contexts are represented as functions, a value of type $\texttt{bool} /
-(\texttt{int} \rightarrow \texttt{bool})$ is simply a value of type
-$\texttt{int}$. Indeed in this case, putting a value of type $\texttt{int}$
-in the context $(\texttt{int} \rightarrow \texttt{bool})$ produces a value of
-type $\texttt{bool}$. 
-
-In our case, the situation is simpler. If the goal is to produce a value of
-type {{a * b}} and a subcomputation can only produce the {{a}}-part, it would
-have type {{(a * b) / b}}. In most settings, this type would be equivalent to
-{{a}}. However in our setting, the constraint that this value must eventually
-fit in a larger value that supplies the {{b}} is explicitly recorded and must
-be resolved. In more detail, we have an isomorphism {{ 1 <-> a * (1/a) }}
-which when used in the left-to-right direction allows the creation of a value
-and a corresponding constraint on the context.  Both the value and the
-constraint can flow in arbitrary ways during the computation but eventually
-in a closed program with no ``dangling'' constraints, the isomorphism should
-be used in the right-to-left direction to resolve the constraints.  To
-understand the computational interpretation, consider the following example.
-
-The goal is to produce a value of type $(\texttt{bool} \times
-\texttt{int})$. One part of the program, $e_1$, knows how to produce the
-value of type $\texttt{int}$ (say {{3}}) and another part, $e_2$, knows how
-to produce the value of type $\texttt{bool}$ (say true). Computationally, we
-model this as follows. The first subcomputation $e_1$ produces {{((),3)}} and
-uses the isomorphism to convert {{()}} to $(\alpha,1/\alpha)$ where $\alpha$
-is a yet-unknown boolean value. Reshuffling the components, $e_1$ produces
-$((\alpha,3), 1/\alpha)$. Similarly, $e_2$ can independently produce
-$((true,\beta),1/\beta)$ where $\beta$ is a yet-unknown integer value.  When
-the two values meet, we can group the components as follows:
-\[
-(\alpha,\beta)  \qquad (3,1/\beta)  \qquad (true,1/\alpha)
-\]
-Using the isomorphism in the right-to-left direction on the last two pairs,
-forces $\alpha$ to be resolved to true and forces $\beta$ to be resolved to
-{{3}}. Both of these pairs then become {{()}} and be absorbed. We are left
-with the pair $(true,3)$ as desired.
-
-To summarize, one can think of a value of type $a/b$ as a value that imposes
-a constraint on its context of use: it is a value that requires its context
-to be of type $b$ and only if that condition is satisfied, can the value be
-considered as a value of type $a$. In the simplest case, the type $1/b$ just
-constraints the context to be of type $b$. By allowing the fractional types
-to be first-class, we can separate the generation of constraints from their
-use. Both the value and the constraint can flow in arbitrary ways during the
-computation but eventually in a closed program with no ``dangling''
-constraints, the isomorphism should be used in the right-to-left direction to
-resolve the constraints.
-
-NEED to work out the example in detail (or perhaps another example that's
-better. 
-
-Again it is critical that the framework in which the fractional types are
-introduced is a framework in which all information is preserved, with no
-duplication or erasure. This guarantees that the generated constraints are
-satisfied once and exactly once. 
-
-\begin{center}
-  \includegraphics{diagrams/algebra2.pdf}
-\end{center}
+The section follows the outline of the previous one, first presenting the new
+syntax, and discussing the graphical language and the properites implied by
+the underlying categorical structure.
 
 %%%%%%%%%%%%%%%%%%%%%%
 \subsection{Multiplicative Duality in {{langRev}} }
 
 Multiplicative duality is added to {{langRev}} by adding types
-{{b^^^}}, values {{v^^^}} and isomorphisms {{eta*}} and {{eps*}}.
-Note that we will freely write {{b^^^}} as {{1/b}} and {{a*b^^^}} as
-{{a/b}}.
+{{1/b}}, values {{1/v}} and isomorphisms {{eta*}} and {{eps*}}.
 
 %subcode{bnf} include main
-% Value Types, b = ... | inv(b)
-% Values, v = ... | inv(v)
+% Value Types, b = ... | 1/b
+% Values, v = ... | 1/v
 %
 % Isomorphisms, iso &=& ... | eta* | eps*
 
@@ -1105,14 +1089,14 @@ Note that we will freely write {{b^^^}} as {{1/b}} and {{a*b^^^}} as
 These have the type judgments
 
 %subcode{opsem} include main
-% eta* &: 1 <-> inv(b) * b :& eps*
+% eta* &: 1 <-> (1/b) * b :& eps*
 
 %subcode{proof} include main
 %@ |- v : b
-%@@ |- inv(v) : inv(b)
+%@@ |- 1/v : 1/b
 
 As with additive duals, we represent {{eta*}} and {{eps*}} using
-`U'-shaped connectors. In the general case the wires for {{1}} will be
+U-shaped connectors. In the general case the wires for {{1}} will be
 dropped as it can freely introduced or eliminated using {{uniti}} and
 {{unite}}. 
 
@@ -1128,12 +1112,12 @@ dropped as it can freely introduced or eliminated using {{uniti}} and
 
 The usual interpretation of {{b1*b2}} we have both a value of type
 {{b1}} and a value of type {{b2}}. This interpretation is maintained
-in the presence of fractionals. Hence an {{eta* : 1 <-> inv(b) * b}} is
+in the presence of fractionals. Hence an {{eta* : 1 <-> (1/b) * b}} is
 to be viewed as a fission point for a value of type {{b}} and its
-multiplicative inverse {{inv(b)}}. This naturally raises the question --
+multiplicative inverse {{1/b}}. This naturally raises the question --
 which value of type {{b}} is produced? The isomorphism {{eta*}} does
 not produce any specific value of type {{b}}, instead it produces a
-place holder for a value such that the value of type {{inv(b)}} is
+place holder for a value such that the value of type {{1/b}} is
 always the dual of the chosen one. 
 
 \begin{multicols}{2}
@@ -1150,11 +1134,28 @@ always the dual of the chosen one.
 \end{center}  
 \end{multicols}
 
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Compact Closure with Multiplicative Inverses}
+
+\paragraph*{Coherence.} 
+As before, the requisite coherence condition on Compact Closed
+Categories is applicable and is expressed below in terms of
+{{eta*}}/{{eps*}} and the multiplicative monoid.
+
+\begin{center}
+  \includegraphics{diagrams/coherence.pdf}
+\end{center}
+
+The constructions for functions, involution, and trace are identical,
+replacing {{+}} by {{*}} mutatis mutandis.
+
+%%%%%
+
 \paragraph*{Unification.}
 A computational interpretation of this is that {{langRevEE}} acts like
 a logic programming system and {{eta*}} acts as the site of creation
 of a new typed logic variable of type {{b}} and its corresponding dual
-of type {{inv(b)}}. These two values are free to move independently
+of type {{1/b}}. These two values are free to move independently
 through a circuit, but any operations on value affect what operations
 are possible on the other since they are both related by an underlying
 logic variable. Dually, {{eps*}} acts as a unification site for values
@@ -1183,15 +1184,6 @@ unifying the anti-particle with a particle in a well-known state and
 examining is pair. We shall use this point of view in the development
 our SAT solver (see Sec. \ref{sec:sat-solver}).
 
-\paragraph*{Coherence.} 
-As before, the requisite coherence condition on Compact Closed
-Categories is applicable and is expressed below in terms of
-{{eta*}}/{{eps*}} and the multiplicative monoid.
-
-\begin{center}
-  \includegraphics{diagrams/coherence.pdf}
-\end{center}
-
 \paragraph*{Annihilation.}
 As with {{(+, 0)}} we can construct a {{trace*}} operation. Unlike the
 additive {{trace+}}, {{trace*}} gives us the ability to find the
@@ -1218,6 +1210,9 @@ ADD MATH.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Computing in the Field of Rationals : {{langRevEE}} }
 \label{sec:rat}
+
+once we combine the two structures, we seem to retain the monoidal
+structure. How!?
 
 In this section we develop the semantics for {{langRev}} extended with
 negative and fractional types, {{langRevEE}}.  We start with the
@@ -1317,7 +1312,7 @@ To add multiplicative duality, we add the following rules to the set
 of primitive isomorphisms:
 
 \begin{enumerate}
-\item {{eta* s () |--> ((inv(v), v), s)}}
+\item {{eta* s () |--> ((1/v, v), s)}}
   where {{v}} is a fresh logic variable. 
 
 \item {{eps* s v |--> (1, s[v <><> (inv(v'),v') ])}}
@@ -1355,75 +1350,6 @@ of primitive isomorphisms:
 \subsection{Constructions in {{langRevEE}} }
 \label{sec:monoidal-constructions}
 
-MUST TALK ABOUT AND CITE ABRAMSKY AND COECKE'S TR ABOUT QUANTUM
-COMPUTING.
-
-These constructions are applicable to the additive and the
-multiplicative monoid.
-
-\paragraph*{Functions}
-
-Mention LL and {{a -o b}}.
-
-\begin{center}
-  \includegraphics{diagrams/function.pdf}
-\end{center}
-
-Let us use the shorthand {{b1 -o b2 = -b1 + b2}}
-
-\roshan{Also: additive functions aren't values - they are
-  possibilities. Multiplicative functions really are values.}
-
-\paragraph*{Function application}
-
-\begin{center}
-  \includegraphics{diagrams/apply1.pdf}
-\end{center}
-
-\begin{center}
-  \includegraphics{diagrams/apply2.pdf}
-\end{center}
-
-\paragraph*{Function composition}
-
-\begin{center}
-  \includegraphics{diagrams/compose1.pdf}
-\end{center}
-
-\begin{center}
-  \includegraphics{diagrams/compose.pdf}
-\end{center}
-
-This is also equivalent to sequencing both the computation blocks. 
-
-\begin{center}
-  \includegraphics{diagrams/compose2.pdf}
-\end{center}
-
-
-\paragraph*{Delimited continuation}
-
-\begin{center}
-  \includegraphics{diagrams/delimc.pdf}
-\end{center}
-
-\paragraph*{Trace }
-
-%subcode{proof} include main
-%@ c : b2 + b1 <-> b2 + b3
-%@@ trace c : b1 <-> b3
-
-\begin{center}
-  \includegraphics{diagrams/trace.pdf}
-\end{center}
-
-\paragraph*{Principium Contradictiones}
-
-{{b <-> -(-b)}}
-
-\begin{center}
-  \includegraphics{diagrams/double_neg.pdf}
-\end{center}
 
 %%%%%%%%%%%%%%%%%%
 \subsection{Constructions Specific to Negation}
@@ -1689,7 +1615,7 @@ Filinski~\cite{Filinski92} uses the negative types of linear logic to model
 continuations. Reddy~\cite{Reddy91} generalizes this idea by interpreting the
 negative types of linear logic as \emph{acceptors}, which are like
 continuations in the sense that they take an input and return no
-output. Acceptors however are also similar in flavor to logical variables:
+output. Acceptors however are also similar in flavor to logic variables:
 they can be created and instantiated later once their context of use is
 determined. Although a formal connection is lacking, it is clear that, at an
 intuitive level, acceptors are entities that combine elements of our negative
@@ -2214,7 +2140,7 @@ that the {{langRevEE}} is not the same as the image of the Int construction
 on {{langRevT}}, since the later lacks a multiplicative tensor that
 distributes over the additive tensor in Int {{langRevT}}.
 
-%% Jacques
+%% Jacques Carette, Michael Adams
 
 \acks This project was partially funded by Indiana University's Office
 of the Vice President for Research and the Office of the Vice Provost
