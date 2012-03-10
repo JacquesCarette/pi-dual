@@ -230,12 +230,13 @@ line' with the following intermediate steps:
 \item We finally reach line 5 with the value {{20}}.
 \end{itemize}
 The example illustrates that the empty type and negative types have a
-fascinating computational interpretation as values that backtrack to
-satisfy dependancies and have some flavor of continuations.
+fascinating computational interpretation that has some flavor of
+continuations: negative types denote values that `backtrack to satisfy
+dependencies', or in other words act as `debts' that are satisfied by
+the backward flow of information.
 
-\paragraph*{Fractional Types.} What is even more fascinating is that
-the above computation can be realized with a completely different
-concurrent schedule as follows, with fractional types.
+\paragraph*{Fractional Types.} 
+Consider a similar algebraic manipulation involving fractional types.
 
 \begin{center}
 \scalebox{1.1}{
@@ -243,53 +244,80 @@ concurrent schedule as follows, with fractional types.
 }
 \end{center}
 
-%% The execution begins at line~(0) with the value {{20}}, at line (2)
-%% with the value {{right (right 20)}} flowing forwards and the value
-%% {{right (left 20)}} flowing backwards, and at line (3) with the value
-%% {{left (left 20)}} flowing forwards and the value {{left (right 20)}}
-%% flowing backwards. 
+In the case of negatives, the dotted line indicated the `flow of
+control' whereas for fractionals it indicates the `flow of
+constraints'. At the heart of logic programming is the idea of
+variables that capture constraints and hence it useful to trace this
+computation with the analogy to logic variables in mind:
 
-%\emph{Simultaneously} 
-The execution begins at line~(0) with the value {{20}}. At line~(1)
-values {{20}} and {{()}} flow forward, corresponding to the type
-`{{a*1}}'. At line~(2) three independent subcomputations \emph{proceed
-  concurrently}: the intial value {{20}} flowing from line (1) and two
-entangled values, let us call them {{1/x}} and {{x}}, such that
-specifying one implicitly specifies the dependant other. These three
-subcomputations \emph{exist at the same time}. At line (3), the
-dependant {{1/x}} is fixed to be the value {{20}}, thereby making
-fixing values of all three branches.
-%% the positive value created at line (2) which can flow to the
-%% consumer; the negative value created at line (3) which can pay for the
-%% debt created at line (2); and the initial value from line (0) which
-%% can flow to the required forward-flowing value needed at line (3). 
-At some intuitive level, one might understand the situation as
-modeling a credit card payment in which money is created at line (2)
-for the consumer together with a corresponding debt. The producer's
-bank pays for the debt at line (3) and waits for the actual money to
-arrive from the producer.  There are at least two fundamental points
-about this example that must be emphasized:
+As before, the execution begins at line~(0) with the value {{20}}. At
+line~(1) two values, {{20}} and {{()}}, flow forward. One can think of
+the value `{{()}}' (of type {{1}}) as `having a credit card': the
+`credit card' isn`t money, nor is it debt, but is the option to
+generate a `credit-debt' constraint.  At line~(2) we exercise this
+option and hence have three values: the initial value {{20}} flowing
+from line (1) and two entangled values, {{1/alpha}} and {{alpha}}. The
+{{alpha}} and {{1/alpha}} are unspecified values -- i.e. we don't yet
+know how much money we need to borrow, but we do know that what is
+borrowed must be what is returned. Hence {{alpha}} denotes the
+presence of an unknown quantity and dually {{1/alpha}} should be
+thought of as the absence of an unknown quantity.
+
+Unlike with negative types, wherein only one value existed at a time
+and the computation backtracked, what is fascinating here is that each
+of the three values \emph{exist at the same time}. In other words, the
+computation with fractions is realized with a completely different
+concurrent schedule in which every value independently and
+concurrently proceeds through its subcomputation.
+
+At line (3), the missing unknown {{1/alpha}} is fixed to be {{20}},
+thereby fixing values of all three branches i.e. we have paid our debt
+of the missing information and the third subcomputation has the known
+value {{20}}. After payment of our debt, as line (4) shows, we have
+use of our `credit card' again.
+
+%% At some intuitive level, one might understand the situation as
+%% modeling a credit card payment in which money is created at line (2)
+%% for the consumer together with a corresponding debt. The producer's
+%% bank pays for the debt at line (3) and waits for the actual money to
+%% arrive from the producer.
+
+The example illustrates that fractional types also have a fascinating
+computational interpretation that have some flavor of continuations:
+the fractional types denote values ({{1/alpha}}) that represent
+`missing information which must be supplied' in much the same sense
+that continuations denote evaluation contexts with `holes that must be
+filled'.  There are at least three fundamental points about the credit
+card examples that must be emphasized:
+
 \begin{itemize}
-\item As the example illustrates, negative types corresponds to
-  ``debts'' satified by backtracking and fractional types correspond
-  to debts satisfied by constraint propagation.  It would clearly be
-  disastrous if debts could be deleted or duplicated. This simple
-  observation explains why these types are much simpler and much more
-  appealing in a framework where information is guaranteed to be
-  preserved. In previous work that used negative types (see
-  Sec.~\ref{sec:related}), complicated mechanisms are typically needed
-  to constrain the propagation and use of negative values because the
-  surrounding computational framework is, generally speaking, careless
-  in its treatment of information.
-\item The appeal of negative and fractional types can already be
-  gleaned from the credit card analogy. The main reason credit card
-  transactions are convenient is because they disentangle the
-  propagation of the resources (money) from the propagation of the
-  services. Not every transaction needs both the resources and
-  services to be brought together: it is sufficient to have a promise
-  that the demand for resources will be somehow satisfied, as long as
-  the infrastructure can be trusted with such
-  promises. 
+\item 
+As the example illustrates, both negative types and fractional types
+corresponds to ``debts'' but in different ways: negatives are satisfied
+by backtracking and fractionals are satisfied by constraint
+propagation.
+
+\item 
+It would clearly be disastrous if debts could be deleted or
+duplicated. This simple observation explains why these types are much
+simpler and much more appealing in a framework where information is
+guaranteed to be preserved. In previous work that used negative types
+(see Sec.~\ref{sec:related}), complicated mechanisms are typically
+needed to constrain the propagation and use of negative values because
+the surrounding computational framework is, generally speaking,
+careless in its treatment of information.
+
+\item 
+The main reason credit card transactions are convenient is because
+they disentangle the propagation of the resources (money) from the
+propagation of the services. Not every transaction needs both the
+resources and services to be brought together: it is sufficient to
+have a promise that the demand for resources will be somehow
+satisfied, as long as the infrastructure can be trusted with such
+promises. This idea that dependencies can be freely decoupled and
+propagated can be a powerful programming tool and we leverage this in
+the construction of our novel SAT-solver (Sec. \ref{sec:sat-solver}).
+
 %% Computationally, this means that negative types allow us
 %%   to break the dependency between producers and consumers and let each
 %%   compute independently.
@@ -303,7 +331,7 @@ about this example that must be emphasized:
 %%   and pay {{a}} later.
 \end{itemize}
 
-\paragraph*{Functions and Dependancy Splitting.} 
+\paragraph*{Functions and Dependency Splitting.} 
 %% Consider the following realization of boolean negation written using a
 %% pattern-matching style:
 %% \begin{verbatim}
@@ -331,8 +359,9 @@ example, for the datatype \verb#color = R|G|B#, there are three
 possible witnesses for this isomorphism mapping {{()}} to either
 {{(1/R,R)}} or {{(1/Gr,Gr)}} or {{(1/B,B)}} with the particular
 witness determined by further constraints encountered during the
-computation.  The idea of variables that capture constraints that are
-satisfied later is at the heart of logic programming and hence the
+computation.  
+
+ and hence the
 witness for the isomorphisms above is generally {{(1/alpha,alpha)}}
 where~{{alpha}} is a fresh logic variable.
 
@@ -397,7 +426,7 @@ channel between the subcomputations -- unifying {{1/alpha1}} with
 other. Depending on the choice of the type {{a}}, an arbitrary number
 of bits may be communicated. The dual reading of the above, with
 additive functions of the form {{0<-> (-a)+b}}, correspond to
-control flow and corotuining between two subcomputations -- only one
+control flow and coroutining between two subcomputations -- only one
 of which `exists' at any point.
 
 It should be evident that in a universe in which information is not
