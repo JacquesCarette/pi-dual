@@ -361,7 +361,7 @@ particular witness determined by further constraints encountered
 during the computation. More generally, the witness for the
 isomorphism above may be represented as {{(1/alpha,alpha)}}
 where~{{alpha}} is a fresh logic variable of type {{a}}. With this
-view of {{a -o* a}} functions, let us consider the following
+view of `{{a -o* a}}' functions, let us consider the following
 manipulations:
 
 %% Returning to our goal of creating the function that rotates the colors, we
@@ -372,8 +372,8 @@ manipulations:
   from the input {{()}} the value {{((),())}} of type {{1 * 1}};
 \item Apply the isomorphism {{1 <-> (1/a) * a}} in parallel to each of
   the components of the above tuple. The resulting value is
-  {{((1/alpha1,alpha1),(1/alpha2,alpha2))}} where {{alpha1}}, and
-  {{alpha2}} are fresh logic variables.
+  {{((1/alpha1,alpha1),(1/alpha2,alpha2))}} where {{alpha1}} and
+  {{alpha2}} are fresh logic variables;
 \item Using the fact that {{*}} is associative and commutative, we can
   rearrange the above tuple to produce the value:
 
@@ -416,17 +416,17 @@ manipulations:
 %%   \end{itemize}
 \end{itemize}
 
-At this point we have constructed a strange mixing of two `{{a-o*a}}'
-functions; `inputs' of one form `outputs' of the other. If
-{{(1/alpha1,alpha2)}} is held by one subcomputation and
+At this point we have constructed a strange mix of two `{{a-o*a}}'
+functions; `inputs' of one function manifests as `outputs' of the
+other. If {{(1/alpha1,alpha2)}} is held by one subcomputation and
 {{(1/alpha2,alpha1)}} is held by another subcomputation, these
 `remixed functions' form a communication channel between the two
-concurrent subcomputations -- unifying {{1/alpha1}} with {{color}}
-`{{R}}' in one subcomputation, fixes {{alpha1}} in the other. The type
-{{a}} thus takes the role of the type of the communication channel,
-indicating how much information can be communicated between the two
-subcomputations.  Depending on the choice of the type {{a}}, an
-arbitrary number of bits may be communicated.
+concurrent subcomputations. Unifying {{1/alpha1}} with {{color}}
+`{{R}}' in one subcomputation, fixes {{alpha1}} to be {{R}} in the
+other. The type {{a}} thus takes the role of the type of the
+communication channel, indicating how much information can be
+communicated between the two subcomputations.  Depending on the choice
+of the type {{a}}, an arbitrary number of bits may be communicated.
 
 Dually, the additive reading of the above manipulations correspond to
 functions of the form {{a-o+a}}, witnessing isomorphisms of the form
