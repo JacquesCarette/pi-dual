@@ -1020,8 +1020,8 @@ As is well known in category theory, Compact Closed Categories contain
 trace operations.  In the context of {{langRev}} this implies that
 {{eta+}}/{{eps+}} allow the construction of a {{trace+}} operator
 (detailed in Section \ref{sec:monoidal-constructions}) hence
-introducing \emph{non-termination} into the language
-\cite{infeffects}.
+introducing \emph{non-termination} into the language (in the presence
+of recursive types) \cite{infeffects}.
 
 \paragraph*{Zero Information.}
 The fact that {{eta+}} (and hence {{eps+}}) introduces no information
@@ -1111,10 +1111,9 @@ Mention LL and {{a -o b}}.
   \includegraphics{diagrams/function.pdf}
 \end{center}
 
-Let us use the shorthand {{b1 -o b2 = -b1 + b2}}
-
-\roshan{Also: additive functions aren't values - they are
-  possibilities. Multiplicative functions really are values.}
+Let us use the shorthand {{b1 -o+ b2 = 0 <-> -b1 + b2}}. See
+Sec. \ref{sec:hof} for a discussion of the additive functions
+vs. multiplicative functions.
 
 \item
 \emph{Function composition.}
@@ -1319,9 +1318,12 @@ as much information as we supplied.
 ADD MATH. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Constructions in {{langRevEE}} specific to Addition and Multiplication}
-\label{sec:neg-constructions}
+\subsection{Constructions specific to Negatives and Fractions}
+\label{sec:specific-constructions}
 
+While the constructions in Sec \ref{sec:monoidal-constructions} apply
+to both the {{(0,+)}} and {{(1,*)}} monoids, each construction
+presented here applies to a specific monoid. 
 
 \begin{enumerate}
 
@@ -1783,6 +1785,7 @@ these are deep questions to which there is no immeidate answer.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Conventional Higher Order Functions}
+\label{sec:hof}
 
 In a conventional language, higher-order functions capture scope and
 can be represented as first class values. On the other hand,
