@@ -948,7 +948,7 @@ functional objects. Interestingly each monoidal structure provides the same
 ingredients, resulting in two dualities, two traces, two involutions, and two
 notions of higher-order functions.
 
-%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Additive Duality in {{langRev}} }
 
 Describing the syntax and types of an extension to {{langRev}} with additive
@@ -1077,143 +1077,6 @@ information is preserved, a closed program (which does not have any
 ``dangling'' negative values) will eventually have to match the negative
 value with some corresponding value, effectively using the isomorphism in the
 right-to-left direction. 
-
-\paragraph*{Observability.} 
-Execution of program is defined by {{c : b1 <-> b2}} when evaluated on input
-{{v1 : b1}} gives us a value {{v2 : b2}} on termination. Execution is well
-defined only if {{b1}} and {{b2}} are entirely positive types. This is
-similar to the constraint that Zeilberger imposes to explain intuitionistic
-polarity and delimited control~\cite{10.1109/LICS.2010.23}.
-
-Consider the program that
-
-(TODO: So this is a really bad explanation. But this section is really
-important and we need to explain carefully. Maybe an analogy can be
-drawn to Cayley diagrams for groups to point out that the notion of
-`i' is entirely artificial, but it is essential to the discourse.)
-
-\begin{center}
-  \includegraphics{diagrams/shuffle.pdf}
-\end{center}
-
-We define observables to be only positive types. The outputs of
-programs that output mixed positive and negative types are not
-observable.  Also, programs that input mixed positive and negatives
-types are not executable.
-
-It is not fair to say that negative types flow backwards. The
-following circuits are valid in {{langRevEE}}. It is however proper to
-say that for any type {{b}} that flows in a direction, the type {{-b}}
-flows in the reverse direction.
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Constructions in the Additive Monoid}
-\label{sec:monoidal-constructions}
-
-\begin{enumerate}
-\item 
-\emph{Trace}
-
-test.
-
-\begin{multicols}{2}
-\begin{center}
-  \includegraphics{diagrams/trace.pdf}
-\end{center}
-
-%subcode{proof} include main
-%@ c : b2 + b1 <-> b2 + b3
-%@@ trace c : b1 <-> b3
-
-\end{multicols}
-
-test. 
-
-\item
-\emph{Involution (Principium Contradictiones)}
-
-{{b <-> -(-b)}}
-
-\begin{center}
-  \includegraphics{diagrams/double_neg.pdf}
-\end{center}
-
-\item
-\emph{Functions}
-
-Mention LL and {{a -o b}}.
-
-\begin{center}
-  \includegraphics{diagrams/function.pdf}
-\end{center}
-
-Let us use the shorthand {{b1 -o+ b2 = 0 <-> -b1 + b2}}. See
-Sec. \ref{sec:hof} for a discussion of the additive functions
-vs. multiplicative functions.
-
-\item
-\emph{Function composition.}
-
-\begin{multicols}{2}
-\scalebox{1.1}{
-    \includegraphics{diagrams/compose1.pdf}
-}
-
-\scalebox{0.8}{
-    \includegraphics{diagrams/compose.pdf}
-}
-\end{multicols}
-This is also equivalent to sequencing both the computation blocks. 
-
-\begin{center}
-  \includegraphics{diagrams/compose2.pdf}
-\end{center}
-
-\item
-\emph{Function application.}
-test.
-\begin{multicols}{2}
-\begin{center}
-\scalebox{1.0}{
-  \includegraphics{diagrams/apply1.pdf}
-}
-\end{center}
-\begin{center}
-\scalebox{0.8}{
-  \includegraphics{diagrams/apply2.pdf}
-}
-\end{center}
-\end{multicols}
-
-\item
-\emph{Delimited continuation}
-
-\begin{center}
-  \includegraphics{diagrams/delimc.pdf}
-\end{center}
-
-\item
-\emph{Negation distributes over {{+}}. }
-
-{{-(b1 + b2) <-> (-b1) + (-b2)}}
-
-\begin{center}
-  \includegraphics{diagrams/dist_neg_plus.pdf}
-\end{center}
-
-\item
-\emph{Lifting a operation of positive types to negated types}
-
-Given {{c : b1 <-> b2}}
-
-\begin{center}
-  \includegraphics{diagrams/neg_lift.pdf}
-\end{center}
-
-\end{enumerate}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Fractional Types}
@@ -1354,6 +1217,150 @@ entangled pair can we read information from it -- and always exactly
 as much information as we supplied.
 
 ADD MATH. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Constructions independant of the  Monoid}
+\label{sec:monoidal-constructions}
+
+\begin{enumerate}
+\item 
+\emph{Trace}
+
+test.
+
+\begin{multicols}{2}
+\begin{center}
+  \includegraphics{diagrams/trace.pdf}
+\end{center}
+
+%subcode{proof} include main
+%@ c : b2 + b1 <-> b2 + b3
+%@@ trace c : b1 <-> b3
+
+\end{multicols}
+
+test. 
+
+\item
+\emph{Involution (Principium Contradictiones)}
+
+{{b <-> -(-b)}}
+
+\begin{center}
+  \includegraphics{diagrams/double_neg.pdf}
+\end{center}
+
+\item
+\emph{Functions}
+
+Mention LL and {{a -o b}}.
+
+\begin{center}
+  \includegraphics{diagrams/function.pdf}
+\end{center}
+
+Let us use the shorthand {{b1 -o+ b2 = 0 <-> -b1 + b2}}. See
+Sec. \ref{sec:hof} for a discussion of the additive functions
+vs. multiplicative functions.
+
+\item
+\emph{Function composition.}
+
+\begin{multicols}{2}
+\scalebox{1.1}{
+    \includegraphics{diagrams/compose1.pdf}
+}
+
+\scalebox{0.8}{
+    \includegraphics{diagrams/compose.pdf}
+}
+\end{multicols}
+This is also equivalent to sequencing both the computation blocks. 
+
+\begin{center}
+  \includegraphics{diagrams/compose2.pdf}
+\end{center}
+
+\item
+\emph{Function application.}
+test.
+\begin{multicols}{2}
+\begin{center}
+\scalebox{1.0}{
+  \includegraphics{diagrams/apply1.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.8}{
+  \includegraphics{diagrams/apply2.pdf}
+}
+\end{center}
+\end{multicols}
+
+\item
+\emph{Delimited continuation}
+
+\begin{center}
+  \includegraphics{diagrams/delimc.pdf}
+\end{center}
+
+\item
+\emph{Negation distributes over {{+}}. }
+
+{{-(b1 + b2) <-> (-b1) + (-b2)}}
+
+\begin{center}
+  \includegraphics{diagrams/dist_neg_plus.pdf}
+\end{center}
+
+\item
+\emph{Lifting a operation of positive types to negated types}
+
+Given {{c : b1 <-> b2}}
+
+\begin{center}
+  \includegraphics{diagrams/neg_lift.pdf}
+\end{center}
+
+\end{enumerate}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Conventional Higher Order Functions}
+\label{sec:hof}
+
+In a conventional language, higher-order functions capture scope and
+can be represented as first class values. On the other hand,
+{{langRevEE}} gives us two notions of functions both of which share
+similarities with conventional HOFs. 
+
+\begin{itemize}
+\item 
+Additive functions are not really values, but are possible paths of
+execution. However, they can be encoded as values as follows: Consider
+two functions {{f:b1 -o+ b2}} and {{g:b1-o+b2}}. A value of type
+{{bool}} can discriminate them and hence a value of type {{bool}} acts
+as the `address' of the function and is a first class value
+representing one of the {{b1 -o+ b2}} functions.  This is similar to
+how first classes functions a'la \lcal are represented by their
+addresses when compiled to conventional hardware.
+
+\item
+Multiplicative functions, of the form {{b1 -o* b2}}, on the other hand
+are indeed first class values. However these functions can only be
+linearly used -- i.e. they represent a contraint that can be satisfied
+at most once in one `computational world'. It may be possible that to
+repeatedly invoke multiplicative functions with an appropriate
+recursive type whose unfoldings allow for repeated unification.
+\end{itemize}
+
+The exact encoding on HOF in {{langRevEE}} should shed light on
+several problems, including the connections to continuations discussed
+in Sec. \ref{sec:related}. They should also allow for a natural
+encoding of HOFs in the translations of \lcal to {{langRevT}} and
+indicate a monadic encapsulation of of information effects which are
+currrently structured as an arrow.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions specific to Negatives and Fractions}
@@ -1504,7 +1511,7 @@ i.e. evaluation {{c v}} in this evaluator is equivalent to evaluating
 % {[ c1 (*) c2, v, C, s ]}_{bck} &|-->& {[ c2, v2, RightT c1 v1 C, S' ]}_{bck}
 % && where s' = s[v <><> (v1, v2)]
 
-%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Semantics of {{langRevEE}} }
 
 The previous section has defined all the pieces needed to define the
@@ -1554,6 +1561,33 @@ of primitive isomorphisms:
 %% \subsection{Constructions in {{langRevEE}} }
 %% \label{sec:monoidal-constructions}
 
+\paragraph*{Observability.} 
+Execution of program is defined by {{c : b1 <-> b2}} when evaluated on input
+{{v1 : b1}} gives us a value {{v2 : b2}} on termination. Execution is well
+defined only if {{b1}} and {{b2}} are entirely positive types. This is
+similar to the constraint that Zeilberger imposes to explain intuitionistic
+polarity and delimited control~\cite{10.1109/LICS.2010.23}.
+
+Consider the program that
+
+(TODO: So this is a really bad explanation. But this section is really
+important and we need to explain carefully. Maybe an analogy can be
+drawn to Cayley diagrams for groups to point out that the notion of
+`i' is entirely artificial, but it is essential to the discourse.)
+
+\begin{center}
+  \includegraphics{diagrams/shuffle.pdf}
+\end{center}
+
+We define observables to be only positive types. The outputs of
+programs that output mixed positive and negative types are not
+observable.  Also, programs that input mixed positive and negatives
+types are not executable.
+
+It is not fair to say that negative types flow backwards. The
+following circuits are valid in {{langRevEE}}. It is however proper to
+say that for any type {{b}} that flows in a direction, the type {{-b}}
+flows in the reverse direction.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1707,41 +1741,6 @@ these are deep questions to which there is no immeidate answer.
 
 -- WAVEFRONT STOP --
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Conventional Higher Order Functions}
-\label{sec:hof}
-
-In a conventional language, higher-order functions capture scope and
-can be represented as first class values. On the other hand,
-{{langRevEE}} gives us two notions of functions both of which share
-similarities with conventional HOFs. 
-
-\begin{itemize}
-\item 
-Additive functions are not really values, but are possible paths of
-execution. However, they can be encoded as values as follows: Consider
-two functions {{f:b1 -o+ b2}} and {{g:b1-o+b2}}. A value of type
-{{bool}} can discriminate them and hence a value of type {{bool}} acts
-as the `address' of the function and is a first class value
-representing one of the {{b1 -o+ b2}} functions.  This is similar to
-how first classes functions a'la \lcal are represented by their
-addresses when compiled to conventional hardware.
-
-\item
-Multiplicative functions, of the form {{b1 -o* b2}}, on the other hand
-are indeed first class values. However these functions can only be
-linearly used -- i.e. they represent a contraint that can be satisfied
-at most once in one `computational world'. It may be possible that to
-repeatedly invoke multiplicative functions with an appropriate
-recursive type whose unfoldings allow for repeated unification.
-\end{itemize}
-
-The exact encoding on HOF in {{langRevEE}} should shed light on
-several problems, including the connections to continuations discussed
-in Sec. \ref{sec:related}. They should also allow for a natural
-encoding of HOFs in the translations of \lcal to {{langRevT}} and
-indicate a monadic encapsulation of of information effects which are
-currrently structured as an arrow.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
