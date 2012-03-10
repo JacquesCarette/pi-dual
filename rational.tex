@@ -1062,6 +1062,12 @@ programs that output mixed positive and negative types are not
 observable.  Also, programs that input mixed positive and negatives
 types are not executable.
 
+It is not fair to say that negative types flow backwards. The
+following circuits are valid in {{langRevEE}}. It is however proper to
+say that for any type {{b}} that flows in a direction, the type {{-b}}
+flows in the reverse direction.
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions in the Additive Monoid}
@@ -1071,6 +1077,7 @@ types are not executable.
 \item 
 \emph{Trace}
 
+test.
 
 \begin{multicols}{2}
 \begin{center}
@@ -1082,6 +1089,8 @@ types are not executable.
 %@@ trace c : b1 <-> b3
 
 \end{multicols}
+
+test. 
 
 \item
 \emph{Involution (Principium Contradictiones)}
@@ -1123,7 +1132,6 @@ This is also equivalent to sequencing both the computation blocks.
 \begin{center}
   \includegraphics{diagrams/compose2.pdf}
 \end{center}
-
 
 \item
 \emph{Function application.}
@@ -1508,52 +1516,35 @@ The following isomorphism can be constructed similarly
 
 {{b1/b2 + b3/b4 <-> (b1*b4+b3*b2)/(b2*b4) }}
 
-
 \end{enumerate}
 
-%%%%%%%%%%%%%%%%%%%%%%
-\subsection{To think about}
-
-\begin{itemize}
-
-\item Can the operational semantics for {{langRevEE}} be an
-  interpreter that is implemented in {{langRevT}} (similar to how the
-  the tree traversal interpreter was implemented). This would imply
-  the existence of a more powerful construction than Int, wherein the
-  products would also be preserved. This is possibly worth a paper in
-  itself.
-
-\item These functions aren't really values. There is no value one can
-  produce that denotes a function. These functions are the ability to
-  transform a value - the possibility of transforming a value.  In the
-  product encoding of environments, there is no value one can assign
-  to a variable such that it denotes a function.
 
 
-Actually this is possible. Consider two functions {{f : b1 <-> b2}}
-and {{g : b1 <-> b2}}. A value of type {{bool}} is sufficient to
-discriminate them. Hence the {{boo}} is the first class representation
-of the functions and can be thought of as the address of the function. 
+%% %%%%%%%%%%%%%%%%%%%%%%
+%% \subsection{To think about}
 
-\begin{center}
-  \includegraphics{diagrams/dispatch.pdf}
-\end{center}
+%% \begin{itemize}
+
+%% \item Can the operational semantics for {{langRevEE}} be an
+%%   interpreter that is implemented in {{langRevT}} (similar to how the
+%%   the tree traversal interpreter was implemented). This would imply
+%%   the existence of a more powerful construction than Int, wherein the
+%%   products would also be preserved. This is possibly worth a paper in
+%%   itself.
+
+%% \item 
+%% \item 
 
 
-\item It is not fair to say that negative types flow backwards. The
-  following circuits are valid in {{langRevEE}}. It is however proper
-  to say that for any type {{b}} that flows in a direction, the type
-  {{-b}} flows in the reverse direction. 
+%% \begin{center}
+%%   \includegraphics{diagrams/neg_circuit1.pdf}
+%% \end{center}
 
-\begin{center}
-  \includegraphics{diagrams/neg_circuit1.pdf}
-\end{center}
+%% \begin{center}
+%%   \includegraphics{diagrams/neg_circuit2.pdf}
+%% \end{center}
 
-\begin{center}
-  \includegraphics{diagrams/neg_circuit2.pdf}
-\end{center}
-
-\end{itemize}
+%% \end{itemize}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1939,6 +1930,24 @@ these are deep questions to which there is no immeidate answer.
 \end{itemize}
 
 
+\subsection{Higher Order Functions}
+
+These functions aren't really values. There is no value one can
+produce that denotes a function. These functions are the ability to
+transform a value - the possibility of transforming a value.  In the
+product encoding of environments, there is no value one can assign to
+a variable such that it denotes a function.
+
+Actually this is possible. Consider two functions {{f : b1 <-> b2}}
+and {{g : b1 <-> b2}}. A value of type {{bool}} is sufficient to
+discriminate them. Hence the {{boo}} is the first class representation
+of the functions and can be thought of as the address of the function. 
+
+%% \begin{center}
+%%   \includegraphics{diagrams/dispatch.pdf}
+%% \end{center}
+
+\subsection{Other}
 To summarize negative, fractional, square root, and imaginary types all make
 sense. What they help you accomplish as a programmer is to disassociate
 global invariants into local ones that can be satisfied independently by
