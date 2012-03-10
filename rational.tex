@@ -1072,7 +1072,6 @@ flows in the reverse direction.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions in the Additive Monoid}
 
-
 \begin{enumerate}
 \item 
 \emph{Trace}
@@ -1189,7 +1188,8 @@ the underlying categorical structure.
 \subsection{Multiplicative Duality in {{langRev}} }
 
 Multiplicative duality is added to {{langRev}} by adding types
-{{1/b}}, values {{1/v}} and isomorphisms {{eta*}} and {{eps*}}.
+{{1/b}}, values {{1/v}} and isomorphisms {{eta*}} and {{eps*}} with
+the following type judgements.
 
 %subcode{bnf} include main
 % Value Types, b = ... | 1/b
@@ -1197,15 +1197,15 @@ Multiplicative duality is added to {{langRev}} by adding types
 %
 % Isomorphisms, iso &=& ... | eta* | eps*
 
-\noindent
-These have the type judgments
-
+\vspace{-15pt}
+\begin{multicols}{2}
 %subcode{opsem} include main
 % eta* &: 1 <-> (1/b) * b :& eps*
 
 %subcode{proof} include main
 %@ |- v : b
-%@@ |- 1/v : 1/b
+%@@ |- 1/v : 1/b  
+\end{multicols}
 
 As with additive duals, we represent {{eta*}} and {{eps*}} using
 U-shaped connectors. In the general case the wires for {{1}} will be
@@ -1246,10 +1246,7 @@ always the dual of the chosen one.
 \end{center}  
 \end{multicols}
 
-%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Compact Closure with Multiplicative Inverses}
-
-\paragraph*{Coherence.} 
+\paragraph*{Coherence for Compact Closure with Multiplicative Inverses} 
 As before, the requisite coherence condition on Compact Closed
 Categories is applicable and is expressed below in terms of
 {{eta*}}/{{eps*}} and the multiplicative monoid.
@@ -1320,6 +1317,61 @@ as much information as we supplied.
 ADD MATH. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Constructions in {{langRevEE}} specific to Addition and Multiplication}
+\label{sec:neg-constructions}
+
+
+\begin{enumerate}
+
+\item 
+\emph{ {{eps_{fst} }} }
+
+{{(-b1)*b2 + b1*b2 <-> 0}}
+
+\begin{center}
+  \includegraphics{diagrams/eps_fst.pdf}
+\end{center}
+
+\item 
+\emph{Lifting negation out of {{*}}. }
+
+{{(-b1) * b2 <-> -(b1 * b2) <-> b1 * (-b2)}}
+
+\begin{center}
+  \includegraphics{diagrams/mult_neg.pdf}
+\end{center}
+
+The following isomorphism can be constructed similarly 
+
+{{b1 * b2 <-> (-b1)*(-b2)}}
+
+
+%% \emph{Distributing fractions over {{*}} }
+%% {{1/(b1*b2) <-> (1/b1) * (1/b2)}}
+
+
+%% \emph{Lifting Computation intro fractions}
+%% {{b1 <-> b2 ==> 1/b1 <-> 1/b2}}
+
+\item 
+\emph{Multiplying Fractions}
+
+{{b1/b2 * b3/b4 <-> (b1*b3)/(b2*b4)}}
+
+
+\item 
+\emph{Adding the numerator}
+
+{{b1/b + b2/b <-> (b1+b2)/b}}
+
+\item 
+\emph{Fraction Addition}
+
+{{b1/b2 + b3/b4 <-> (b1*b4+b3*b2)/(b2*b4) }}
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Computing in the Field of Rationals : {{langRevEE}} }
 \label{sec:rat}
 
@@ -1343,7 +1395,7 @@ sematics. Broadly this construction takes two steps
 \end{enumerate}
 
 
-%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Unification and Logic Programming}
 
 \roshan{Can we cite away unification, reificatio, handling of
@@ -1462,89 +1514,6 @@ of primitive isomorphisms:
 %% \subsection{Constructions in {{langRevEE}} }
 %% \label{sec:monoidal-constructions}
 
-
-%%%%%%%%%%%%%%%%%%
-\subsection{Constructions in {{langRevEE}} specific to Addition and Multiplication}
-\label{sec:neg-constructions}
-
-
-\begin{enumerate}
-
-\item 
-\emph{ {{eps_{fst} }} }
-
-{{(-b1)*b2 + b1*b2 <-> 0}}
-
-\begin{center}
-  \includegraphics{diagrams/eps_fst.pdf}
-\end{center}
-
-\item 
-\emph{Lifting negation out of {{*}}. }
-
-{{(-b1) * b2 <-> -(b1 * b2) <-> b1 * (-b2)}}
-
-\begin{center}
-  \includegraphics{diagrams/mult_neg.pdf}
-\end{center}
-
-The following isomorphism can be constructed similarly 
-
-{{b1 * b2 <-> (-b1)*(-b2)}}
-
-
-%% \emph{Distributing fractions over {{*}} }
-%% {{1/(b1*b2) <-> (1/b1) * (1/b2)}}
-
-
-%% \emph{Lifting Computation intro fractions}
-%% {{b1 <-> b2 ==> 1/b1 <-> 1/b2}}
-
-\item 
-\emph{Multiplying Fractions}
-
-{{b1/b2 * b3/b4 <-> (b1*b3)/(b2*b4)}}
-
-
-\item 
-\emph{Adding the numerator}
-
-{{b1/b + b2/b <-> (b1+b2)/b}}
-
-\item 
-\emph{Fraction Addition}
-
-{{b1/b2 + b3/b4 <-> (b1*b4+b3*b2)/(b2*b4) }}
-
-\end{enumerate}
-
-
-
-%% %%%%%%%%%%%%%%%%%%%%%%
-%% \subsection{To think about}
-
-%% \begin{itemize}
-
-%% \item Can the operational semantics for {{langRevEE}} be an
-%%   interpreter that is implemented in {{langRevT}} (similar to how the
-%%   the tree traversal interpreter was implemented). This would imply
-%%   the existence of a more powerful construction than Int, wherein the
-%%   products would also be preserved. This is possibly worth a paper in
-%%   itself.
-
-%% \item 
-%% \item 
-
-
-%% \begin{center}
-%%   \includegraphics{diagrams/neg_circuit1.pdf}
-%% \end{center}
-
-%% \begin{center}
-%%   \includegraphics{diagrams/neg_circuit2.pdf}
-%% \end{center}
-
-%% \end{itemize}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
