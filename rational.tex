@@ -253,11 +253,11 @@ The execution begins at line~(0) with the value {{20}}. At line~(1)
 values {{20}} and {{()}} flow forward, corresponding to the type
 `{{a*1}}'. At line~(2) three independent subcomputations \emph{proceed
   concurrently}: the intial value {{20}} flowing from line (1) and two
-entangled values, {{1/x}} and {{x}}, such that specifying one
-implicitly specifies the dependant other. These three subcomputations
-exist \emph{at the same time}. At line (3), the dependant {{1/x}} is
-fixed to be the value {{20}}, thereby making fixing values of all
-three branches.
+entangled values, let us call them {{1/x}} and {{x}}, such that
+specifying one implicitly specifies the dependant other. These three
+subcomputations exist \emph{at the same time}. At line (3), the
+dependant {{1/x}} is fixed to be the value {{20}}, thereby making
+fixing values of all three branches.
 %% the positive value created at line (2) which can flow to the
 %% consumer; the negative value created at line (3) which can pay for the
 %% debt created at line (2); and the initial value from line (0) which
