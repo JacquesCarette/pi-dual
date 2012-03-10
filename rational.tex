@@ -1040,6 +1040,23 @@ This is also equivalent to sequencing both the computation blocks.
   \includegraphics{diagrams/delimc.pdf}
 \end{center}
 
+\paragraph*{Negation distributes over {{+}}. }
+
+{{-(b1 + b2) <-> (-b1) + (-b2)}}
+
+\begin{center}
+  \includegraphics{diagrams/dist_neg_plus.pdf}
+\end{center}
+
+\paragraph*{Lifting a operation of positive types to negated types}
+
+Given {{c : b1 <-> b2}}
+
+\begin{center}
+  \includegraphics{diagrams/neg_lift.pdf}
+\end{center}
+
+
 %%%%%%%%%%%%%
 
 \paragraph*{Negative Information Flow.} 
@@ -1413,13 +1430,7 @@ of primitive isomorphisms:
 \subsection{Constructions Specific to Negation}
 \label{sec:neg-constructions}
 
-\paragraph*{Negation distributes over {{+}}. }
 
-{{-(b1 + b2) <-> (-b1) + (-b2)}}
-
-\begin{center}
-  \includegraphics{diagrams/dist_neg_plus.pdf}
-\end{center}
 
 \paragraph*{ {{eps_{fst} }} }
 
@@ -1442,30 +1453,25 @@ The following isomorphism can be constructed similarly
 {{b1 * b2 <-> (-b1)*(-b2)}}
 
 
-\paragraph*{Lifting a operation of positive types to negated types}
-
-Given {{c : b1 <-> b2}}
-
-\begin{center}
-  \includegraphics{diagrams/neg_lift.pdf}
-\end{center}
 
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions Specific to Multiplication}
 
 
-\paragraph*{Distributing fractions over {{*}} }
+%% \paragraph*{Distributing fractions over {{*}} }
 
-{{1/(b1*b2) <-> (1/b1) * (1/b2)}}
+%% {{1/(b1*b2) <-> (1/b1) * (1/b2)}}
+
+
+%% \paragraph*{Lifting Computation intro fractions}
+
+%% {{b1 <-> b2 ==> 1/b1 <-> 1/b2}}
 
 \paragraph*{Multiplying Fractions}
 
 {{b1/b2 * b3/b4 <-> (b1*b3)/(b2*b4)}}
 
-\paragraph*{Lifting Computation intro fractions}
-
-{{b1 <-> b2 ==> 1/b1 <-> 1/b2}}
 
 \paragraph*{Adding the numerator}
 
