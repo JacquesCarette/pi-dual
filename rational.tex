@@ -1522,12 +1522,14 @@ of the functions and can be thought of as the address of the function.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{SAT Solver in {{langRevEE}} }
+\section{Advanced Example: SAT Solver in {{langRevEE}} }
 \label{sec:prog}
-
-%%%%%%%%%%%%%%%%%%%
-% \subsection{SAT solver}
 \label{sec:sat-solver}
+
+Additive traces correspond to iteration and multiplicative traces
+correspond to fixpoint of constraints. Addtive traces have been
+studied in the past \cite{infeffects} and here we focus on the
+multiplicative trace.
 
 The construction presented here is a novel SAT-solver that relies on
 {{trace*}} for its solution. It varies from previous classical SAT
@@ -1535,24 +1537,38 @@ solvers in that there is not explicit search operation on the boolean
 space. It also varies from previous quantum SAT solvers in that it
 does uses a {{trace}} operation to compute a fixpoint which is the
 solution following which an isomorphic clone operation allows us to
-examine the result.
+examine the result.  Though we focus on SAT here, this construction
+can be generalized to any constraint satisfaction problem whose search
+space can be represented by a recursive type and for which an
+isomorphic clone operation can be constructed. Before we start, let us
+recall two constructions:
 
-The construction here is not limited to boolean satisfiability, but
-generalizes to any constraint satisfaction problem whose search space
-can be represented by a recursive type and for which an isomorphic
-clone operation can be constructed. That said, we will focus on the
-limited case of boolean satisfiability here. 
+\begin{enumerate}
+\item Recall from previous work that for the types {{bool}} and, by
+  extension, any tuple of {{bool}}, an isomorphic clone operation can
+  be constructed (See Lemma 7.2 \cite{infeffects}).
 
-Consider the circuit below that has no observable output -- i.e. for
-all inputs it is annihilating. This happens because it constructs a
-boolean and its dual, negates one of them and attempts to collapse
-them.
+\item Also, Sec. 3.3 \cite{infeffects} constructed the combinator
+  {{if_{not} }}, which when generalized to two bits was
+  {{toffoli}}. This construction maybe generalised to {{n}} bits as
+  {{if^n_{not} }}.
+\end{enumerate}
+
+%% That said, we will focus on the limited case of boolean satisfiability
+%% here.
+
+\emph{A Total Annihilation Circuit.}  Consider the circuit below that
+has no observable output -- i.e. for all inputs it is
+annihilating. This happens because it constructs a boolean and its
+dual, negates one of them and attempts to collapse them.
+
 \begin{center}
 \scalebox{1.2}{
   \includegraphics{diagrams/not_trace.pdf}
 }
-\end{center}  
+\end{center}
 
+\emph{Controlled Annihilation.}
 We leverage the basic idea of the above circuit, to collapse all
 values that are not solutions to the specified isomorphic constraint
 {{f}}. The contraint {{f}} checks the inputs to see if they match a
@@ -1567,7 +1583,7 @@ wire'.  If the inputs do not satisfy {{f}}, the control wire is
 negated.
 
 \begin{center}
-\scalebox{1.5}{
+\scalebox{1.2}{
   \includegraphics{diagrams/sat1.pdf}
 }
 \end{center}  
@@ -1576,28 +1592,31 @@ If this construction is traced using {{trace*}}, all the values that
 do not satisfy {{f}} get annihilated because the control wire acts
 like the closed-loop `not' in the previous construction. 
 
-The final detail we have to be concerned with is the handling of the
-heap and garbage of {{f}}. Any boolean expression {{bool^n -> bool}}
-can be compiled into the isomorphism {{f:bool^h*bool^n<->bool^g*bool}}
-where the extra bits {{bool^h}} and {{bool^g}} are the heap and
-garbage. Constructing such an isomorphism has been detailed before
-\cite{Toffoli:1980,infeffects}.  However the computation of {{f}} is
-meaningful {{iff}} the heap {{bool^h}} is initialized appropriately. We
-can ensure that the heap has the appropriate initial value by checking
-the heap and negating a second control wire, if the values do not
-match.
+\emph{Controlling the heap.}  The final detail we have to be concerned
+with is the handling of the heap and garbage of {{f}}. Any boolean
+expression {{bool^n -> bool}} can be compiled into the isomorphism
+{{f:bool^h*bool^n<->bool^g*bool}} where the extra bits {{bool^h}} and
+{{bool^g}} are the heap and garbage. Constructing such an isomorphism
+has been detailed before \cite{Toffoli:1980,infeffects}.  However the
+computation of {{f}} is meaningful {{iff}} the heap {{bool^h}} is
+initialized appropriately. We can ensure that the heap has the
+appropriate initial value by checking the heap and negating a second
+control wire, if the values do not match -- i.e. the dotted part in
+the diagram below and is {{if^h_{not} }} followed by a {{not}} on the
+`heap control wire'.
 
 \begin{center}
-\scalebox{1.5}{
+\scalebox{1.2}{
   \includegraphics{diagrams/sat2.pdf}
 }
 \end{center}  
 
-\roshan{Explain how the dotted part is implemented.}
+% \roshan{Explain how the dotted part is implemented.}
 
-Let us call this construction which maps inputs, heap and control
-wires to input, heap and control wires as {{sat_f}}. The required
-contraint solver is then constructed as shown:
+\emph{Cloning the Solution.}.  Let us call the above construction
+which maps inputs, heap and control wires to input, heap and control
+wires as {{sat_f}}. The SAT-solver is is completed by tracing the
+{{sat_f}} and cloning the `inputs'. 
 
 \begin{center}
 \scalebox{1.5}{
@@ -1605,12 +1624,19 @@ contraint solver is then constructed as shown:
 }
 \end{center}  
 
-%%%%%%%%%%%%%%%%%%%
-\subsection{GoI machine}
+When the solver is fed inputs initialized to {{true}}, the {{clone}}
+will clone any inputs to {{sat_f}} that satisfies the constraints
+imposed by {{f}} and the constraints on the {{heap}}. In the case of
+unique-SAT the solver will produce exactly 1 or 0 solutions. In the
+case of general SAT the solver will produce solutions as determined by
+the top-level (Sec. \ref{sec:rat}).
 
-We can now encode the GoI machine of
-Mackie~\cite{Mackie2011,DBLP:conf/popl/Mackie95}. \amr{The machine uses bang
-  which allows arbitrary duplication. Can we really do that???}
+%% %%%%%%%%%%%%%%%%%%%
+%% \subsection{GoI machine}
+
+%% We can now encode the GoI machine of
+%% Mackie~\cite{Mackie2011,DBLP:conf/popl/Mackie95}. \amr{The machine uses bang
+%%   which allows arbitrary duplication. Can we really do that???}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work} 
