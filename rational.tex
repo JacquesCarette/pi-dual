@@ -246,7 +246,7 @@ In the case of negatives, the dotted line indicated the `flow of
 control' whereas for fractionals it indicates the `flow of
 constraints'. At the heart of logic programming is the idea of
 variables that capture constraints. Hence it is useful to trace the
-computation corresponding to the algebraic proof above with the
+computation corresponding to the algebraic proof above, with the
 analogy to logic variables in mind.
 
 As before, the execution begins at line~(0) with the value {{20}}. At
@@ -350,19 +350,19 @@ the construction of our novel SAT-solver (Sec. \ref{sec:sat-solver}).
 %% colors. In other words, we would like to build the following three
 %% pattern-matching clauses \verb|R -> G|, \verb|G -> B|, and \verb|B -> R|.  
 
-In the algebra of rational numbers we have that for each {{a}} that is
-not equal to {{0}}, {{1 = (1/a) * a}}. In our framework this algebraic
-identity corresponds to a type isomorphism {{1 <-> (1/a) * a}}, whose
-witness maybe thought of as the `identity function' at {{a}}.  For
-example, for the datatype \verb#color = R|G|B#, there are three
-possible witnesses for this isomorphism mapping {{()}} to either
-{{(1/R,R)}} or {{(1/Gr,Gr)}} or {{(1/B,B)}} with the particular
-witness determined by further constraints encountered during the
-computation.  
-
- and hence the
-witness for the isomorphisms above is generally {{(1/alpha,alpha)}}
-where~{{alpha}} is a fresh logic variable.
+In the algebra of rational numbers {{1 = (1/a) * a}} if {{a}} is
+nonzero.  In our framework this algebraic identity corresponds to a
+type isomorphism {{1 <-> (1/a) * a}} (written alternately as
+{{a-o*a}}) whose witness maybe thought of as the `identity function'
+at the type {{a}}.  For example, for the datatype {{color = R|Gr|B}},
+there are three possible witnesses for this isomorphism mapping {{()}}
+to either {{(1/R,R)}} or {{(1/Gr,Gr)}} or {{(1/B,B)}} with the
+particular witness determined by further constraints encountered
+during the computation. More generally, the witness for the
+isomorphism above may be represented as {{(1/alpha,alpha)}}
+where~{{alpha}} is a fresh logic variable of type {{a}}. With this
+view of {{a -o* a}} functions, let us consider the following
+manipulations:
 
 %% Returning to our goal of creating the function that rotates the colors, we
 %% proceed as follows:
@@ -416,17 +416,25 @@ where~{{alpha}} is a fresh logic variable.
 %%   \end{itemize}
 \end{itemize}
 
-At this point we have constructed a strange mixing of two functions;
-`inputs' of one form `outputs' of the other. If {{(1/alpha1,alpha2)}}
-is held by one subcomputation and {{(1/alpha2,alpha1)}} is held by
-another subcomputation, these `remixed functions' form a communication
-channel between the subcomputations -- unifying {{1/alpha1}} with
-\verb|color| {{R}} in one subcomputation, fixes it in the
-other. Depending on the choice of the type {{a}}, an arbitrary number
-of bits may be communicated. The dual reading of the above, with
-additive functions of the form {{0<-> (-a)+b}}, correspond to
-control flow and coroutining between two subcomputations -- only one
-of which `exists' at any point.
+At this point we have constructed a strange mixing of two `{{a-o*a}}'
+functions; `inputs' of one form `outputs' of the other. If
+{{(1/alpha1,alpha2)}} is held by one subcomputation and
+{{(1/alpha2,alpha1)}} is held by another subcomputation, these
+`remixed functions' form a communication channel between the two
+concurrent subcomputations -- unifying {{1/alpha1}} with {{color}}
+`{{R}}' in one subcomputation, fixes {{alpha1}} in the other. The type
+{{a}} thus takes the role of the type of the communication channel,
+indicating how much information can be communicated between the two
+subcomputations.  Depending on the choice of the type {{a}}, an
+arbitrary number of bits may be communicated.
+
+Dually, the additive reading of the above manipulations correspond to
+functions of the form {{a-o+a}}, witnessing isomorphisms of the form
+{{0<->(-a)+a}}). The `remixed' additive functions express control flow
+transfer between two subcomputations, \emph{only one of which exists}
+at any point -- i.e. they capture the essence of coroutines. The
+behaviour of additive and multiplicative functions are further
+discussed in Sec. \ref{sec:rat}.
 
 It should be evident that in a universe in which information is not
 guaranteed to be preserved by the computational infrastructure, the
@@ -434,6 +442,7 @@ above slicing and dicing of functions would make no sense. However, in
 a computational infrastructure that is guaranteed to preserve
 information, computations such as the one above are guaranteed to
 ``make sense.''
+
 
 
 %% If one branch uses a clause that matches one part of the input to
@@ -474,7 +483,7 @@ information, computations such as the one above are guaranteed to
 \paragraph*{Contributions and Outline.} 
 To summarize, in a computational framework that guarantees that information
 is preserved, negative and fractional types provide fascinating mechanisms in
-which computations can be sliced and diced, decomposed and recomposed, ran
+which computations can be sliced and diced, decomposed and recomposed, run
 forwards and backwards, in arbitrary ways. The remainder of the paper
 formalizes these informal observations. Specifically our main contributions
 are:
