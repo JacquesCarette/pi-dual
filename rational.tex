@@ -915,7 +915,7 @@ notions of higher-order functions.
 Describing the syntax and types of an extension to {{langRev}} with additive
 duality is fairly straightforward. Basically, we extend the language with
 negative types denoted {{-b}}, negative values denoted {{-v}}, and two
-isomorphisms {{eta+}} and {{eps+}}:
+isomorphisms {{eta+}} and {{eps+}} with the following type judgements:
 
 %subcode{bnf} include main
 % Value Types, b = ... | -b
@@ -923,14 +923,17 @@ isomorphisms {{eta+}} and {{eps+}}:
 %
 % Isomorphisms, iso &=& ... | eta+ | eps+
 
-The isomorphisms {{eta+}} and {{eps+}} witness the following
-isomorphism:
+\vspace{-15pt}
+\begin{multicols}{2}  
 %subcode{opsem} include main
 % eta+ &: 0 <-> (-b) + b :& eps+
-And as expected we have the following typing rule for negative value:
+
 %subcode{proof} include main
 %@ |- v : b
 %@@ |- -v : -b
+\end{multicols}
+
+
 
 For the graphical language, we visually present {{eta+}} and {{eps+}} as
 U-shaped connectors. On the left below is {{eta+}} showing the map from {{0}}
@@ -940,11 +943,15 @@ later diagrams will always drop them in contexts where we can implicitly
 introduce/eliminate then using {{zeroi}}/{{zeroe}}:
 \begin{multicols}{2}
 \begin{center}
+\scalebox{0.8}{
   \includegraphics{diagrams/eta.pdf}
+}
 \end{center}
   
 \begin{center}
-  \includegraphics{diagrams/eps.pdf}
+\scalebox{0.8}{
+ \includegraphics{diagrams/eps.pdf}
+}
 \end{center}
 \end{multicols}
 
@@ -955,109 +962,20 @@ and {{eps+}} in the following sense: a value of type {{right v : -b + b}}
 flowing into an {{eps+}} on the lower wire switches to a value 
 {{left (-v): -b + b}} that flows backwards on the upper wire. The inversion of
 direction is captured by the negative sign on the value. 
-As an example, the diagram representing the isomorphism from the introduction
-is:
+
+\begin{multicols}{2}
 \begin{center}
-  \includegraphics{diagrams/algebra1.pdf}
+\scalebox{1.1}{
+  \includegraphics{diagrams/eps_plus1.pdf}
+}
 \end{center}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Compact Closure with Additive Inverses}
-
-\paragraph*{Coherence.}
-The appropriate coherence condition for Compact Closed Categories,
-expressed as the triangle axiom, is satisfied by {{eta+}}/{{eps+}} and
-may be visualized as explained by Selinger
-\cite{springerlink:10.1007/978-3-642-12821-94} as follows:
-
+  
 \begin{center}
-  \includegraphics{diagrams/coherence.pdf}
-\end{center}
-
-\paragraph*{Trace}
-
-%subcode{proof} include main
-%@ c : b2 + b1 <-> b2 + b3
-%@@ trace c : b1 <-> b3
-
-\begin{center}
-  \includegraphics{diagrams/trace.pdf}
-\end{center}
-
-
-\paragraph*{Involution (Principium Contradictiones)}
-
-{{b <-> -(-b)}}
-
-\begin{center}
-  \includegraphics{diagrams/double_neg.pdf}
-\end{center}
-
-\paragraph*{Higher-Order Functions}
-
-Mention LL and {{a -o b}}.
-
-\begin{center}
-  \includegraphics{diagrams/function.pdf}
-\end{center}
-
-Let us use the shorthand {{b1 -o b2 = -b1 + b2}}
-
-\roshan{Also: additive functions aren't values - they are
-  possibilities. Multiplicative functions really are values.}
-
-\paragraph*{Function application}
-
-\begin{center}
-  \includegraphics{diagrams/apply1.pdf}
-\end{center}
-
-\begin{center}
-  \includegraphics{diagrams/apply2.pdf}
-\end{center}
-
-\paragraph*{Function composition}
-
-\begin{center}
-  \includegraphics{diagrams/compose1.pdf}
-\end{center}
-
-\begin{center}
-  \includegraphics{diagrams/compose.pdf}
-\end{center}
-
-This is also equivalent to sequencing both the computation blocks. 
-
-\begin{center}
-  \includegraphics{diagrams/compose2.pdf}
-\end{center}
-
-\paragraph*{Delimited continuation}
-
-\begin{center}
-  \includegraphics{diagrams/delimc.pdf}
-\end{center}
-
-\paragraph*{Negation distributes over {{+}}. }
-
-{{-(b1 + b2) <-> (-b1) + (-b2)}}
-
-\begin{center}
-  \includegraphics{diagrams/dist_neg_plus.pdf}
-\end{center}
-
-\paragraph*{Lifting a operation of positive types to negated types}
-
-Given {{c : b1 <-> b2}}
-
-\begin{center}
-  \includegraphics{diagrams/neg_lift.pdf}
-\end{center}
-
-
-%%%%%%%%%%%%%
+\scalebox{1.1}{
+  \includegraphics{diagrams/eps_plus2.pdf}
+}
+\end{center}  
+\end{multicols}
 
 \paragraph*{Negative Information Flow.} 
 Hence, the intuitive way to read the diagrams is that they reverse the
@@ -1066,20 +984,11 @@ flows from left-to-right and {{eps+}} operations cause information to
 flow from right-to-left.  The interpretation of {{eta+}} is precisely
 the opposite: it turns a right-to-left flow of information in a
 circuit into a left-to-right flow.
-
-\begin{multicols}{2}
+As an example, the diagram representing the isomorphism from the
+introduction is:
 \begin{center}
-\scalebox{1.5}{
-  \includegraphics{diagrams/eps_plus1.pdf}
-}
+  \includegraphics{diagrams/algebra1.pdf}
 \end{center}
-  
-\begin{center}
-\scalebox{1.5}{
-  \includegraphics{diagrams/eps_plus2.pdf}
-}
-\end{center}  
-\end{multicols}
 
 \paragraph*{Time Traveling.}
 A time traveling intuition is also applicable here: if view the
@@ -1090,6 +999,19 @@ flow backwards in time get to see and interact with the history of
 particles that they coexist with i.e. values that they exist
 multiplicatively with. Hence the isomorphism {{(-b1)*b2<->-(b1*b2)}}
 (whose construction is shown in Section \ref{sec:neg-constructions}).
+
+
+%\subsection{Compact Closure with Additive Inverses}
+\paragraph*{Coherence for Compact Closure with Additive Inverses.}
+The appropriate coherence condition for Compact Closed Categories,
+expressed as the triangle axiom, is satisfied by {{eta+}}/{{eps+}} and
+may be visualized as explained by Selinger
+\cite{springerlink:10.1007/978-3-642-12821-94} as follows:
+
+\begin{center}
+  \includegraphics{diagrams/coherence.pdf}
+\end{center}
+
 
 \paragraph*{Non-termination.}
 As is well known in category theory, Compact Closed Categories contain
@@ -1139,6 +1061,109 @@ We define observables to be only positive types. The outputs of
 programs that output mixed positive and negative types are not
 observable.  Also, programs that input mixed positive and negatives
 types are not executable.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Constructions in the Additive Monoid}
+
+
+\begin{enumerate}
+\item 
+\emph{Trace}
+
+
+\begin{multicols}{2}
+\begin{center}
+  \includegraphics{diagrams/trace.pdf}
+\end{center}
+
+%subcode{proof} include main
+%@ c : b2 + b1 <-> b2 + b3
+%@@ trace c : b1 <-> b3
+
+\end{multicols}
+
+\item
+\emph{Involution (Principium Contradictiones)}
+
+{{b <-> -(-b)}}
+
+\begin{center}
+  \includegraphics{diagrams/double_neg.pdf}
+\end{center}
+
+\item
+\emph{Functions}
+
+Mention LL and {{a -o b}}.
+
+\begin{center}
+  \includegraphics{diagrams/function.pdf}
+\end{center}
+
+Let us use the shorthand {{b1 -o b2 = -b1 + b2}}
+
+\roshan{Also: additive functions aren't values - they are
+  possibilities. Multiplicative functions really are values.}
+
+\item
+\emph{Function composition.}
+
+\begin{multicols}{2}
+    \includegraphics{diagrams/compose1.pdf}
+
+    \includegraphics{diagrams/compose.pdf}
+\end{multicols}
+This is also equivalent to sequencing both the computation blocks. 
+
+\begin{center}
+  \includegraphics{diagrams/compose2.pdf}
+\end{center}
+
+
+\item
+\emph{Function application.}
+test.
+\begin{multicols}{2}
+\begin{center}
+\scalebox{1.0}{
+  \includegraphics{diagrams/apply1.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.8}{
+  \includegraphics{diagrams/apply2.pdf}
+}
+\end{center}
+\end{multicols}
+
+\item
+\emph{Delimited continuation}
+
+\begin{center}
+  \includegraphics{diagrams/delimc.pdf}
+\end{center}
+
+\item
+\emph{Negation distributes over {{+}}. }
+
+{{-(b1 + b2) <-> (-b1) + (-b2)}}
+
+\begin{center}
+  \includegraphics{diagrams/dist_neg_plus.pdf}
+\end{center}
+
+\item
+\emph{Lifting a operation of positive types to negated types}
+
+Given {{c : b1 <-> b2}}
+
+\begin{center}
+  \includegraphics{diagrams/neg_lift.pdf}
+\end{center}
+
+\end{enumerate}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Fractional Types}
