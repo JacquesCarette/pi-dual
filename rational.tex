@@ -206,12 +206,13 @@ to an isomorphism of type {{a <-> a}} with a non-trivial and interesting
 computational interpretation. The witness for this isomorphism is a
 computation that takes a value of type~{{a}} (say \$20.00) and eventually
 produces the same \$20.00 value as its output. As the semantics of
-Sec.~\ref{sec:rat} formalizes, this computation flows along the dotted
-line with the following intermediate steps:
+Sec.~\ref{sec:rat} formalizes, this computation `flows along the dotted
+line' with the following intermediate steps:
 \begin{itemize}
 \item We start at line (0) with \$20.00; 
-\item We proceed to line (1) with the same \$20.00 but tagged as being in the
-  left summand of the type {{a+0}}; we indicate this value as {{left 20}}
+\item We proceed to line (1) with the same \$20.00 but tagged as being
+  in the left summand of the sum type `{{a+0}}'; we indicate this value
+  as {{left 20}}
 \item We continue to line (2) with the same value {{left 20}};
 \item At line (3), as a result of re-association the tag on the \$20.00
   changes to indicate that it is in the left-left summand, i.e., the value is
@@ -227,54 +228,83 @@ line with the following intermediate steps:
 \item We finally reach line 5 with the value {{20}}.
 \end{itemize}
 The example illustrates that the empty type and negative types have a
-fascinating computational interpretation with some flavor of continuations.
-What is even more fascinating is that the above computation can be realized
-with a completely different concurrent schedule as
-follows. \emph{Simultaneously} the execution begins at line~(0) with the
-value {{20}}, at line (2) with the value {{right (right 20)}} flowing forwards
-and the value {{right (left 20)}} flowing backwards, and at line (3) with the
-value {{left (left 20)}} flowing forwards and the value {{left (right 20)}}
-flowing backwards. We now have three independent subcomputations proceeding in
-parallel: the positive value created at line (2) which can flow to the
-consumer; the negative value created at line (3) which can pay for the debt
-created at line (2); and the initial value from line (0) which can flow to
-the required forward-flowing value needed at line (3). At some intuitive
-level, one might understand the situation as modeling a credit card payment
-in which money is created at line (2) for the consumer together with a
-corresponding debt. The producer's bank pays for the debt at line (3) and
-waits for the actual money to arrive from the producer.
+fascinating computational interpretation as values that backtrack to
+satisfy dependancies and have some flavor of continuations.
 
-There are at least three fundamental points about this example that must be
+\paragraph*{Fractional Types.} What is even more fascinating is that
+the above computation can be realized with a completely different
+concurrent schedule as follows, with fractional types.
+
+\begin{center}
+\scalebox{1.1}{
+\includegraphics{diagrams/thesis/algebra-wire2.pdf}
+}
+\end{center}
+
+%% The execution begins at line~(0) with the value {{20}}, at line (2)
+%% with the value {{right (right 20)}} flowing forwards and the value
+%% {{right (left 20)}} flowing backwards, and at line (3) with the value
+%% {{left (left 20)}} flowing forwards and the value {{left (right 20)}}
+%% flowing backwards. 
+
+
+%\emph{Simultaneously} 
+The execution begins at line~(0) with the value {{20}}. At line~(1)
+values {{20}} and {{()}} flow forward, corresponding to the type
+`{{a*1}}'. At line~(2) three independent subcomputations \emph{proceed
+  concurrently}: the intial value {{20}} flowing from line (1) and two
+entangled values, {{1/x}} and {{x}}, such that specifying one
+implicitly specifies the dependant other. These three subcomputations
+exist \emph{at the same time}. At line (3), the dependant {{1/x}} is
+fixed to be the value {{20}}, thereby making fixing values of all
+three branches.
+%% the positive value created at line (2) which can flow to the
+%% consumer; the negative value created at line (3) which can pay for the
+%% debt created at line (2); and the initial value from line (0) which
+%% can flow to the required forward-flowing value needed at line (3). 
+At some intuitive level, one might understand the situation as
+modeling a credit card payment in which money is created at line (2)
+for the consumer together with a corresponding debt. The producer's
+bank pays for the debt at line (3) and waits for the actual money to
+arrive from the producer.
+
+There are at least two fundamental points about this example that must be
 emphasized:
 \begin{itemize}
-\item As the example illustrates, negative types corresponds to ``debts.''
-  It would clearly be disastrous if debts could be deleted or
-  duplicated. This simple observation explains why negative types are much
-  simpler and much more appealing in a framework where information is
-  guaranteed to be preserved. In previous work that used negative types (see
-  Sec.~\ref{sec:related}), complicated mechanisms are typically needed to
-  constrain the propagation and use of negative values because the
-  surrounding computational framework is, generally speaking, careless in its
-  treatment of information.
-\item The appeal of negative types can already be gleaned from the credit
-  card analogy. The main reason credit card transactions are convenient is
-  because they disentangle the propagation of the resources (money) from the
-  propagation of the services. Not every transaction needs both the resources
-  and services to be brought together: it is sufficient to have a promise
-  that the demand for resources will be somehow satisfied, as long as the
-  infrastructure can be trusted with such promises. Computationally, this
-  means that negative types allow us to break the dependency between
-  producers and consumers and let each compute independently.
-\item Consider a value of type {{-a + b}}. The above discussion suggests that
-  this value demands {{a}} and produces {{b}}, i.e., that it is a
-  higher-order funtion mapping {{a}} to {{b}}. Dually and as the underlying
-  categorical semantics justifies (see Sec.~\ref{sec:neg}), the same value is
-  a continuation which produces {{b}} and then demands {{a}}, which
-  introduces a twist on how the function can be used: get the goods {{b}} now
-  and pay {{a}} later.
+\item As the example illustrates, negative types corresponds to
+  ``debts'' satified by backtracking and fractional types correspond
+  to debts satisfied by constraint propagation.  It would clearly be
+  disastrous if debts could be deleted or duplicated. This simple
+  observation explains why these types are much simpler and much more
+  appealing in a framework where information is guaranteed to be
+  preserved. In previous work that used negative types (see
+  Sec.~\ref{sec:related}), complicated mechanisms are typically needed
+  to constrain the propagation and use of negative values because the
+  surrounding computational framework is, generally speaking, careless
+  in its treatment of information.
+\item The appeal of negative and fractional types can already be
+  gleaned from the credit card analogy. The main reason credit card
+  transactions are convenient is because they disentangle the
+  propagation of the resources (money) from the propagation of the
+  services. Not every transaction needs both the resources and
+  services to be brought together: it is sufficient to have a promise
+  that the demand for resources will be somehow satisfied, as long as
+  the infrastructure can be trusted with such
+  promises. 
+%% Computationally, this means that negative types allow us
+%%   to break the dependency between producers and consumers and let each
+%%   compute independently.
+
+%% \item Consider a value of type {{-a + b}}. The above discussion suggests that
+%%   this value demands {{a}} and produces {{b}}, i.e., that it is a
+%%   higher-order funtion mapping {{a}} to {{b}}. Dually and as the underlying
+%%   categorical semantics justifies (see Sec.~\ref{sec:neg}), the same value is
+%%   a continuation which produces {{b}} and then demands {{a}}, which
+%%   introduces a twist on how the function can be used: get the goods {{b}} now
+%%   and pay {{a}} later.
 \end{itemize}
 
-\paragraph*{Fractional Types.} 
+\paragraph*{Functions and Dependancy Splitting.} 
 Consider the following realization of boolean negation written using a
 pattern-matching style:
 \begin{verbatim}
