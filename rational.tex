@@ -1379,8 +1379,6 @@ The following isomorphism can be constructed similarly
 \section{Computing in the Field of Rationals : {{langRevEE}} }
 \label{sec:rat}
 
-once we combine the two structures, we seem to retain the monoidal
-structure. How!?
 
 In this section we develop the semantics for {{langRev}} extended with
 negative and fractional types, {{langRevEE}}.  We start with the
@@ -1641,6 +1639,9 @@ the top-level (Sec. \ref{sec:rat}).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}
 
+-- WAVEFRONT START --
+
+
 Several things we don't know how to do, or are sloppy about. Some of
 these are deep questions to which there is no immeidate answer.
 
@@ -1666,6 +1667,7 @@ these are deep questions to which there is no immeidate answer.
 
 \end{itemize}
 
+-- WAVEFRONT STOP --
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Conventional Higher Order Functions}
@@ -1708,110 +1710,133 @@ currrently structured as an arrow.
 \subsection{Computing in the Field of Algebraic Numbers}
 
 The field of algebraic numbers consist of the rationals extended with
-solutions to polynomials. In a limited sense {{langRevEE}} with
-recursive types already include polynomials such as the definition of
-binary tree {{@@x.(1+x*x)}} implies the equality {{t = 1 + t*t}} and
-hence {{t^2-t+1=0}}. While this equation does indeed have an
-irrational imaginary root, as we will see -- {{langRevEE}} does not
-have the means of expressing meaningful computation that uses the
-root.
+solutions to polynomials. In a limited sense {{langRevEE}} extended
+with recursive types already include polynomials such as the
+definition of binary tree {{@@x.(1+x*x)}} implies the equality
+{{x=1+x*x}} and hence {{x^2-x+1=0}}. 
 
-Here is one way to view computations involving irrationals that might
-shed some insight into how we should view recursive data types
-also. For finite datatypes say of size {{n}} we can say that an
-element specifies a choice of {{1/n}} and hence contains as much
-information. For finite things, each value is computationally equal to
-any other value. Any permutation is possible among the values. Hence
-there is no metric possible on the values.  Recursive data types, such
-as binary trees, have an infinite number of elements and hence the
-argument that says that value specifies {{1/n}} units of information
-is not longer valid. Instead to talk meaningfully about information
-content, we should talk about a probability distribution on the values
-of the type. However what shall we base this distribution on? Is there
-a natural order beyond the unfolding order of the values of a type? 
+%% Partial isomorphisms algebraics
+%% do have computational 
 
-In this context, let us go back to the thought that recursive such as
-{{nat=nat+1}} have no meaningful solutions, whereas trees do. But the
-interesting solution of trees is precisely that they involve
-irrational numbers. Our usual notation for irrationals such as
-{{sqrt(2) }} can actually be viewed as a thunk representing the
-infinite computation {{1.4142..}}. Irrationals in this sense have a
-very different information theoretic interpretation from full real
-numbers. With Chaitin's Omega numbers he postulates the existence of
-real numbers that have an infinite amount of information -- ones for
-example are the solution to the question about the halting properties
-of every Turning machine. 
+%% While this equation does indeed have an irrational imaginary root,
+%% as we will see -- {{langRevEE}} does not have the means of
+%% expressing meaningful computation that uses the root.
 
-Real numbers in that sense really are a series of bits of unknown
-information theoretic interpretation -- a sort of {{top}}. Numbers
-such as {{sqrt(2) }} are very different in the sense that even though
-they contain an infinite sequence of bits, there is a finite program
-that generates those bits and its only the cost of computing bits that
-is infinite.  The consistency of arithmetic isn't affected by
-extending the rational field by adding any specific computable
-irrational. So it might be possible to design a model of computing
-where we can indeed deal with them. Such a model will have to explicit
-thunks for the delayed computation represented by trees and never
-equate and cancel two infinite computations unless the represent
-exactly the same infinite computation.
+The famous example of isomorphism on algebraics is the embedding of
+seven binary trees in one. In Figure 1 of Fiore's paper
+\cite{Fiore:2004}, he demonstrates this isomorphism by the
+corrsponding algebraic manipulation of the types.  The algebraic
+manipulation can be viewed as a {{langRevEE}} combinator and it indeed
+does constructively witness the isomorphism -- i.e. you can run it and
+view one data structure encoded by the other. In this context,
+consider the following algebraically valid proof of the same
+isomorphism:
 
-TODO.
-
-Square root and imaginary types have also appeared in the literature: we
-relegate the connections to Sec.~\ref{sec:related} and proceed with a simple
-explanation. We have so far extended the set of types to be the rational
-numbers. Now we will push this and extend the set of types to algebraic
-numbers. In other words, we will allow datatypes defined by arbitrary
-polynomials and allow the roots of such polynomials to be types. 
-
-Consider first an example in which we want to compute with the sides of a
-rectangle whose area is 91 and whose length is longer than its width by 6
-units. One can solve the quadratic equation to determine that the sides are 7
-and 13 and proceed. This however prematurely forces us to globally solve the
-constraint. Instead we can let the two sides of the rectangle be $x$ and
-$x+6$ and use the following equation to capture the desired constraint:
-\[
-x^2 + 6x - 91 = 0
-\]
-The equation introduces an isomorphism between the type $x^2 + 6x - 91$ and
-the type $0$. We can now proceed to compute with the unknown $x$, being
-assured that in a closed program, our computation will eventually be
-consistent with the solution of the algebraic equation. 
-
-Previously the most famous example of a similar nature is the puzzling
-isomorphism that one can establish between seven binary trees and one.
-A binary tree is defined by the datatype
-\[
-x = 1 + x * x 
-\]
-which can be rearranged to the polynomial equation $x^2 - x + 1 = 0$. By
-algebraic manipulation we can reason as follows:
+%% Previously the most famous example of a similar nature is the puzzling
+%% isomorphism that one can establish between seven binary trees and one.
+%% A binary tree is defined by the datatype
+%% \[
+%% x = 1 + x * x 
+%% \]
+%% which can be rearranged to the polynomial equation $x^2 - x + 1 = 0$. By
+%% algebraic manipulation we can reason as follows:
 \[\begin{array}{rclclclcl}
 x^3 &=& x^2 x &=& (x-1) x &=& x^2 - x &=& -1 \\
 x^6 &=& 1 \\
 x^7 &=& x^6 x &=& x
 \end{array}\]
-Fiore poses the question of why such algebraic manipulation would make sense
-type theoretically but states that even though some of the intermediate steps
-make no sense, the final equivalence is valid and can be used to actually
-construct an isomorphism between $x^7$ the type of seven binary trees 
-and $x$ the type of binary trees.
+Fiore poses the question of why such algebraic manipulation would make
+sense type theoretically, even though some of the intermediate steps
+make no sense.  Stated in terms of {{langRevEE}} computations, this
+manipulation has no meaningful computational content -- it is always
+non-terminating. It suggests that some algebraic manipulations are
+somehow more `constructive' than others or dually that {{langRevEE}}
+with recursive types somehow lacks the ability to express all
+computations that are otherwise algebraically meaningful.
 
-Discussion of possible polynomials:
-\begin{itemize}
-\item $b=1+1$. Boring.
-\item $b=b+1$. That introduces the natural numbers. No solution for this
-  polynomial over the algebraic numbers. We must extend the numbers with
-  $\omega$ to get a solution. We reject this in this paper and prefer to
-  stick to algebraic numbers. The advantage is that all the isomorphisms are
-  valid numerically. With the above type we could subtract $b$ from both
-  sides to show that $0=1$ which is nonsense. We can however have infinite
-  types as long as they have algebraic solutions.
-\item $b^2=2$ or $b = \pm \sqrt{2}$. We have introduced the square root of a
-  boolean! If we had superpositions, we could then write a function that
-  performs the square root of negation in the sense that applying it twice
-  would be equivalent to boolean negation.
-\end{itemize}
+-- WAVEFRONT START --
+
+But the interesting solution of trees is precisely that they involve
+irrational numbers. Our usual notation for irrationals such as
+{{sqrt(2) }} can actually be viewed as a thunk representing the
+infinite computation {{1.4142..}}.  Irrationals in this sense have a
+very different information theoretic interpretation from full real
+numbers.  With Chaitin's $\Omega$ numbers
+\cite{Chaitin:1975:TPS:321892.321894} he postulates the existence of
+real numbers that have an infinite amount of information -- ones for
+example are the solution to the question about the halting properties
+of every Turning machine.
+
+That introduces the natural numbers. No solution for this polynomial
+over the algebraic numbers. We must extend the numbers with $\omega$
+to get a solution. We reject this in this paper and prefer to stick to
+algebraic numbers. The advantage is that all the isomorphisms are
+valid numerically. With the above type we could subtract $b$ from both
+sides to show that $0=1$ which is nonsense. We can however have
+infinite types as long as they have algebraic solutions.
+
+-- WAVEFRONT STOP --
+
+
+%% the final equivalence is valid and can be used to actually
+%% construct an isomorphism between $x^7$ the type of seven binary
+%% trees and $x$ the type of binary trees.
+
+%% Here is one way to view computations involving irrationals that might
+%% shed some insight into how we should view recursive data types
+%% also. For finite datatypes say of size {{n}} we can say that an
+%% element specifies a choice of {{1/n}} and hence contains as much
+%% information. For finite things, each value is computationally equal to
+%% any other value. Any permutation is possible among the values. Hence
+%% there is no metric possible on the values.  Recursive data types, such
+%% as binary trees, have an infinite number of elements and hence the
+%% argument that says that value specifies {{1/n}} units of information
+%% is not longer valid. Instead to talk meaningfully about information
+%% content, we should talk about a probability distribution on the values
+%% of the type. However what shall we base this distribution on? Is there
+%% a natural order beyond the unfolding order of the values of a type? 
+
+%% In this context, let us go back to the thought that recursive such as
+%% {{nat=nat+1}} have no meaningful solutions, whereas trees do. 
+
+
+%% Real numbers in that sense really are a series of bits of unknown
+%% information theoretic interpretation -- a sort of {{top}}. Numbers
+%% such as {{sqrt(2) }} are very different in the sense that even though
+%% they contain an infinite sequence of bits, there is a finite program
+%% that generates those bits and its only the cost of computing bits that
+%% is infinite.  The consistency of arithmetic isn't affected by
+%% extending the rational field by adding any specific computable
+%% irrational. So it might be possible to design a model of computing
+%% where we can indeed deal with them. Such a model will have to explicit
+%% thunks for the delayed computation represented by trees and never
+%% equate and cancel two infinite computations unless the represent
+%% exactly the same infinite computation.
+
+%% TODO.
+
+%% Square root and imaginary types have also appeared in the literature: we
+%% relegate the connections to Sec.~\ref{sec:related} and proceed with a simple
+%% explanation. We have so far extended the set of types to be the rational
+%% numbers. Now we will push this and extend the set of types to algebraic
+%% numbers. In other words, we will allow datatypes defined by arbitrary
+%% polynomials and allow the roots of such polynomials to be types. 
+
+%% Consider first an example in which we want to compute with the sides of a
+%% rectangle whose area is 91 and whose length is longer than its width by 6
+%% units. One can solve the quadratic equation to determine that the sides are 7
+%% and 13 and proceed. This however prematurely forces us to globally solve the
+%% constraint. Instead we can let the two sides of the rectangle be $x$ and
+%% $x+6$ and use the following equation to capture the desired constraint:
+%% \[
+%% x^2 + 6x - 91 = 0
+%% \]
+%% The equation introduces an isomorphism between the type $x^2 + 6x - 91$ and
+%% the type $0$. We can now proceed to compute with the unknown $x$, being
+%% assured that in a closed program, our computation will eventually be
+%% consistent with the solution of the algebraic equation. 
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work} 
@@ -2262,6 +2287,10 @@ construction of Abramsky \cite{Abramsky96:0} from Haghverdi. However, note
 that the {{langRevEE}} is not the same as the image of the Int construction
 on {{langRevT}}, since the later lacks a multiplicative tensor that
 distributes over the additive tensor in Int {{langRevT}}.
+
+once we combine the two structures, we seem to retain the monoidal
+structure. How!?
+
 
 %% Jacques Carette, Michael Adams
 
