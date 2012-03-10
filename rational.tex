@@ -247,7 +247,6 @@ concurrent schedule as follows, with fractional types.
 %% {{left (left 20)}} flowing forwards and the value {{left (right 20)}}
 %% flowing backwards. 
 
-
 %\emph{Simultaneously} 
 The execution begins at line~(0) with the value {{20}}. At line~(1)
 values {{20}} and {{()}} flow forward, corresponding to the type
@@ -255,7 +254,7 @@ values {{20}} and {{()}} flow forward, corresponding to the type
   concurrently}: the intial value {{20}} flowing from line (1) and two
 entangled values, let us call them {{1/x}} and {{x}}, such that
 specifying one implicitly specifies the dependant other. These three
-subcomputations exist \emph{at the same time}. At line (3), the
+subcomputations \emph{exist at the same time}. At line (3), the
 dependant {{1/x}} is fixed to be the value {{20}}, thereby making
 fixing values of all three branches.
 %% the positive value created at line (2) which can flow to the
@@ -266,10 +265,8 @@ At some intuitive level, one might understand the situation as
 modeling a credit card payment in which money is created at line (2)
 for the consumer together with a corresponding debt. The producer's
 bank pays for the debt at line (3) and waits for the actual money to
-arrive from the producer.
-
-There are at least two fundamental points about this example that must be
-emphasized:
+arrive from the producer.  There are at least two fundamental points
+about this example that must be emphasized:
 \begin{itemize}
 \item As the example illustrates, negative types corresponds to
   ``debts'' satified by backtracking and fractional types correspond
@@ -305,83 +302,144 @@ emphasized:
 \end{itemize}
 
 \paragraph*{Functions and Dependancy Splitting.} 
-Consider the following realization of boolean negation written using a
-pattern-matching style:
-\begin{verbatim}
-notB b = case b of 
-  False -> True
-  True -> False
-\end{verbatim}
-In a functional language, we are not used to treating the pattern-matching
-clauses \verb|False -> True| and \verb|True -> False| as first-class entities
-but fractional types allow us to do just that! Informally, we can treat each
-of the pattern-matching clauses as a first-class value of type 
-{{(1/bool) * bool}}. 
-A small but complete example will illustrate the main aspects of this idea.
+%% Consider the following realization of boolean negation written using a
+%% pattern-matching style:
+%% \begin{verbatim}
+%% notB b = case b of 
+%%   False -> True
+%%   True -> False
+%% \end{verbatim}
+%% In a functional language, we are not used to treating the pattern-matching
+%% clauses \verb|False -> True| and \verb|True -> False| as first-class entities
+%% but fractional types allow us to do just that! Informally, we can treat each
+%% of the pattern-matching clauses as a first-class value of type 
+%% {{(1/bool) * bool}}. 
+%% A small but complete example will illustrate the main aspects of this idea.
 
-Let \verb|color| be the datatype with three constructors \verb|R|, \verb|G|,
-and \verb|B| and let's try to construct a function that rotates the
-colors. In other words, we would like to build the following three
-pattern-matching clauses \verb|R -> G|, \verb|G -> B|, and \verb|B -> R|.  In
-the algebra of rational numbers we have that for each {{a}} that is not equal
-to {{0}}, {{1 = (1/a) * a}}. In our framework this algebraic identity
-corresponds to a type isomorphism {{1 <-> (1/a) * a}}. For the datatype
-\verb|color|, there are three possible witnesses for this isomorphism mapping
-{{()}} to either {{(1/R,R)}} or {{(1/Gr,Gr)}} or {{(1/B,B)}} with the
-particular witness determined by further constraints encountered during the
-computation. The idea of variables that capture constraints that are
-satisfied later is at the heart of logic programming and hence the witness for
-the isomorphisms above is generally {{(1/alpha,alpha)}} where~{{alpha}} is a
-fresh logic variable. 
+%% Let \verb|color| be the datatype with three constructors \verb|R|, \verb|G|,
+%% and \verb|B| and let's try to construct a function that rotates the
+%% colors. In other words, we would like to build the following three
+%% pattern-matching clauses \verb|R -> G|, \verb|G -> B|, and \verb|B -> R|.  
 
-Returning to our goal of creating the function that rotates the colors, we
-proceed as follows:
+In the algebra of rational numbers we have that for each {{a}} that is
+not equal to {{0}}, {{1 = (1/a) * a}}. In our framework this algebraic
+identity corresponds to a type isomorphism {{1 <-> (1/a) * a}}, whose
+witness maybe thought of as the `identity function' at {{a}}.  For
+example, for the datatype \verb#color = R|G|B#, there are three
+possible witnesses for this isomorphism mapping {{()}} to either
+{{(1/R,R)}} or {{(1/Gr,Gr)}} or {{(1/B,B)}} with the particular
+witness determined by further constraints encountered during the
+computation.  The idea of variables that capture constraints that are
+satisfied later is at the heart of logic programming and hence the
+witness for the isomorphisms above is generally {{(1/alpha,alpha)}}
+where~{{alpha}} is a fresh logic variable.
+
+%% Returning to our goal of creating the function that rotates the colors, we
+%% proceed as follows:
+
 \begin{itemize}
-\item Using the fact that {{1}} is the multiplicative unit, generate from the
-  input {{()}} the value {{((),((),()))}} of type {{1 * (1 * 1)}};
-\item Apply the isomorphism {{1 <-> (1/a) * a}} in parallel to each of the
-  components of the above tuple. The resulting value is 
-{{((1/alpha1,alpha1),((1/alpha2,alpha2),(1/alpha3,alpha3)))}} where {{alpha1}},
-{{alpha2}}, and {{alpha3}} are fresh logic variables.
+\item Using the fact that {{1}} is the multiplicative unit, generate
+  from the input {{()}} the value {{((),())}} of type {{1 * 1}};
+\item Apply the isomorphism {{1 <-> (1/a) * a}} in parallel to each of
+  the components of the above tuple. The resulting value is
+  {{((1/alpha1,alpha1),(1/alpha2,alpha2))}} where {{alpha1}}, and
+  {{alpha2}} are fresh logic variables.
 \item Using the fact that {{*}} is associative and commutative, we can
   rearrange the above tuple to produce the value:
 
-{{((1/alpha1,alpha2),((1/alpha2,alpha3),(1/alpha3,alpha1)))}}.
-\item At this point, we have produced the skeleton for our desired function.
-  Assume now that a client uses the first clause of the function in a context
-  that contains the value \verb|R|, i.e., the client has the value
-  {{((1/alpha1,alpha2),R)}} consiting of one of the clauses of the function
-  and an argument. This value can be rearranged to {{((1/alpha1,R),alpha2)}}.
-  At this point, we can use the isomorphism {{1 <-> (1/a) * a}} in reverse on
-  the first component of the pair which has the following effects:
-  \begin{itemize}
-    \item the logic variable {{alpha1}} is unified with {{R}};
-    \item the first component of the pair then reduces to () and can be
-      absorbed by the fact that {{1}} is the multiplicative unit. In other
-      words, the value reduces to simply {{alpha2}} reflecting that the
-      pattern-matching was successful and the result of the clause is now
-      available;
-    \item the first clause of the function has now disappeared and the
-      remaining two clauses become {{((1/alpha2,alpha3),(1/alpha3,R))}}.
-  \item The same client or another client can now use the second clause
-    applying it to {{Gr}} which would produce the result {{alpha3}} for the
-    second client and ground the result of the first client to {{Gr}}.
-  \item Finally the remaining clause {{(1/alpha3,R)}} can be applied to {{B}}
-    which grounds the result of the second client to {{B}}.
-  \end{itemize}
+{{((1/alpha1,alpha2),(1/alpha2,alpha1))}}.
+
+
+%% \begin{itemize}
+%% \item Using the fact that {{1}} is the multiplicative unit, generate from the
+%%   input {{()}} the value {{((),((),()))}} of type {{1 * (1 * 1)}};
+%% \item Apply the isomorphism {{1 <-> (1/a) * a}} in parallel to each of the
+%%   components of the above tuple. The resulting value is 
+%% {{((1/alpha1,alpha1),((1/alpha2,alpha2),(1/alpha3,alpha3)))}} where {{alpha1}},
+%% {{alpha2}}, and {{alpha3}} are fresh logic variables.
+%% \item Using the fact that {{*}} is associative and commutative, we can
+%%   rearrange the above tuple to produce the value:
+
+%% {{((1/alpha1,alpha2),((1/alpha2,alpha3),(1/alpha3,alpha1)))}}.
+
+%% \item At this point, we have produced the skeleton for our desired function.
+%%   Assume now that a client uses the first clause of the function in a context
+%%   that contains the value \verb|R|, i.e., the client has the value
+%%   {{((1/alpha1,alpha2),R)}} consiting of one of the clauses of the function
+%%   and an argument. This value can be rearranged to {{((1/alpha1,R),alpha2)}}.
+%%   At this point, we can use the isomorphism {{1 <-> (1/a) * a}} in reverse on
+%%   the first component of the pair which has the following effects:
+%%   \begin{itemize}
+%%     \item the logic variable {{alpha1}} is unified with {{R}};
+%%     \item the first component of the pair then reduces to () and can be
+%%       absorbed by the fact that {{1}} is the multiplicative unit. In other
+%%       words, the value reduces to simply {{alpha2}} reflecting that the
+%%       pattern-matching was successful and the result of the clause is now
+%%       available;
+%%     \item the first clause of the function has now disappeared and the
+%%       remaining two clauses become {{((1/alpha2,alpha3),(1/alpha3,R))}}.
+%%   \item The same client or another client can now use the second clause
+%%     applying it to {{Gr}} which would produce the result {{alpha3}} for the
+%%     second client and ground the result of the first client to {{Gr}}.
+%%   \item Finally the remaining clause {{(1/alpha3,R)}} can be applied to {{B}}
+%%     which grounds the result of the second client to {{B}}.
+%%   \end{itemize}
 \end{itemize}
+
+At this point we have constructed a strange mixing of two functions;
+`inputs' of one form `outputs' of the other. If {{(1/alpha1,alpha2)}}
+is held by one subcomputation and {{1/alpha2,alpha1)}} is held by
+another subcomputation, these `remixed functions' form a communication
+channel between the subcomputations -- unifying {{1/alpha1}} with
+{{R}} in one subcomputation fixes it in the other. Depending on the
+choice of the type {{a}}, an arbitrary number of bits may be
+communicated. The dual reading of the above, with additive functions
+of the form {{0<-> ((-a)+b)}}, correspond to control flow and
+corotuining between two subcomputations -- only one of which `exists'
+at any point.
+
 It should be evident that in a universe in which information is not
-guaranteed to be preserved by the computational infrastructure, the above
-slicing and dicing of functions as a collection of first-class pattern
-clauses would make no sense. However, in a computational infrastructure that
-is guaranteed to preserve information, computations such as the one above are
-guaranteed to ``make sense.'' If one branch uses a clause that matches one
-part of the input to produce one part of the output, all other clauses are
-automatically adjusted to account for this to ensure that this input is not
-matched again and that this output is not produced again. Furthermore, just
-like the case for negative types, a dual reading of the pattern-matching
-clauses as continuations allows the context to use the result of the clause
-and provide the matching argument later.
+guaranteed to be preserved by the computational infrastructure, the
+above slicing and dicing of functions would make no sense. However, in
+a computational infrastructure that is guaranteed to preserve
+information, computations such as the one above are guaranteed to
+``make sense.''
+
+
+%% If one branch uses a clause that matches one part of the input to
+%% produce one part of the output, all other clauses are automatically
+%% adjusted to account for this to ensure that this input is not matched
+%% again and that this output is not produced again.
+
+
+%% \item At this point, we have produced the skeleton for our desired function.
+%%   Assume now that a client uses the first clause of the function in a context
+%%   that contains the value \verb|R|, i.e., the client has the value
+%%   {{((1/alpha1,alpha2),R)}} consiting of one of the clauses of the function
+%%   and an argument. This value can be rearranged to {{((1/alpha1,R),alpha2)}}.
+%%   At this point, we can use the isomorphism {{1 <-> (1/a) * a}} in reverse on
+%%   the first component of the pair which has the following effects:
+%%   \begin{itemize}
+%%     \item the logic variable {{alpha1}} is unified with {{R}};
+%%     \item the first component of the pair then reduces to () and can be
+%%       absorbed by the fact that {{1}} is the multiplicative unit. In other
+%%       words, the value reduces to simply {{alpha2}} reflecting that the
+%%       pattern-matching was successful and the result of the clause is now
+%%       available;
+%%     \item the first clause of the function has now disappeared and the
+%%       remaining two clauses become {{((1/alpha2,alpha3),(1/alpha3,R))}}.
+%%   \item The same client or another client can now use the second clause
+%%     applying it to {{Gr}} which would produce the result {{alpha3}} for the
+%%     second client and ground the result of the first client to {{Gr}}.
+%%   \item Finally the remaining clause {{(1/alpha3,R)}} can be applied to {{B}}
+%%     which grounds the result of the second client to {{B}}.
+%%   \end{itemize}
+
+
+
+%% Furthermore, just like the case for negative types, a dual reading of
+%% the pattern-matching clauses as continuations allows the context to
+%% use the result of the clause and provide the matching argument later.
 
 \paragraph*{Contributions and Outline.} 
 To summarize, in a computational framework that guarantees that information
