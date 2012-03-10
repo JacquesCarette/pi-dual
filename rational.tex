@@ -1421,18 +1421,20 @@ of primitive isomorphisms:
 
 \end{enumerate}
 
-%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Constructions in {{langRevEE}} }
-\label{sec:monoidal-constructions}
+%% %%%%%%%%%%%%%%%%%%%%%%
+%% \subsection{Constructions in {{langRevEE}} }
+%% \label{sec:monoidal-constructions}
 
 
 %%%%%%%%%%%%%%%%%%
-\subsection{Constructions Specific to Negation}
+\subsection{Constructions in {{langRevEE}} specific to Addition and Multiplication}
 \label{sec:neg-constructions}
 
 
+\begin{enumerate}
 
-\paragraph*{ {{eps_{fst} }} }
+\item 
+\emph{ {{eps_{fst} }} }
 
 {{(-b1)*b2 + b1*b2 <-> 0}}
 
@@ -1440,7 +1442,8 @@ of primitive isomorphisms:
   \includegraphics{diagrams/eps_fst.pdf}
 \end{center}
 
-\paragraph*{Lifting negation out of {{*}}. }
+\item 
+\emph{Lifting negation out of {{*}}. }
 
 {{(-b1) * b2 <-> -(b1 * b2) <-> b1 * (-b2)}}
 
@@ -1453,34 +1456,31 @@ The following isomorphism can be constructed similarly
 {{b1 * b2 <-> (-b1)*(-b2)}}
 
 
-
-
-%%%%%%%%%%%%%%%%%%%%%
-\subsection{Constructions Specific to Multiplication}
-
-
-%% \paragraph*{Distributing fractions over {{*}} }
-
+%% \emph{Distributing fractions over {{*}} }
 %% {{1/(b1*b2) <-> (1/b1) * (1/b2)}}
 
 
-%% \paragraph*{Lifting Computation intro fractions}
-
+%% \emph{Lifting Computation intro fractions}
 %% {{b1 <-> b2 ==> 1/b1 <-> 1/b2}}
 
-\paragraph*{Multiplying Fractions}
+\item 
+\emph{Multiplying Fractions}
 
 {{b1/b2 * b3/b4 <-> (b1*b3)/(b2*b4)}}
 
 
-\paragraph*{Adding the numerator}
+\item 
+\emph{Adding the numerator}
 
 {{b1/b + b2/b <-> (b1+b2)/b}}
 
-\paragraph*{Fraction Addition}
+\item 
+\emph{Fraction Addition}
 
 {{b1/b2 + b3/b4 <-> (b1*b4+b3*b2)/(b2*b4) }}
 
+
+\end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%
 \subsection{To think about}
