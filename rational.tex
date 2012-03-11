@@ -1080,13 +1080,12 @@ construction of a {{trace+}} operator (shown in Section
 \subsection{Multiplicative Duality in {{langRev}} }
 \label{sec:frac}
 
-The section follows the outline of the previous one, first presenting the new
-syntax, and discussing the graphical language and the properites implied by
-the underlying categorical structure.
+%% The section follows the outline of the previous one, first presenting
+%% the new syntax, and discussing the graphical language and the
+%% properites implied by the underlying categorical structure.
 
 Multiplicative duality is added to {{langRev}} by adding types
-{{1/b}}, values {{1/v}} and isomorphisms {{eta*}} and {{eps*}} with
-the following type judgements.
+{{1/b}}, values {{1/v}} and isomorphisms {{eta*}} and {{eps*}}.
 
 %subcode{bnf} include main
 % Value Types, b = ... | 1/b
@@ -1094,7 +1093,8 @@ the following type judgements.
 %
 % Isomorphisms, iso &=& ... | eta* | eps*
 
-\vspace{-15pt}
+These have type judgements, similar to those of their additive
+couterparts.
 \begin{multicols}{2}
 %subcode{opsem} include main
 % eta* &: 1 <-> (1/b) * b :& eps*
@@ -1105,9 +1105,9 @@ the following type judgements.
 \end{multicols}
 
 As with additive duals, we represent {{eta*}} and {{eps*}} using
-U-shaped connectors. In the general case the wires for {{1}} will be
-dropped as it can freely introduced or eliminated using {{uniti}} and
-{{unite}}. 
+U-shaped connectors. In later diagrams, the wires for {{1}} will be
+dropped as they can freely introduced or eliminated using {{uniti}}
+and {{unite}}.
 
 \begin{multicols}{2}
 \begin{center}
@@ -1126,8 +1126,9 @@ to be viewed as a fission point for a value of type {{b}} and its
 multiplicative inverse {{1/b}}. This naturally raises the question --
 which value of type {{b}} is produced? The isomorphism {{eta*}} does
 not produce any specific value of type {{b}}, instead it produces a
-place holder for a value such that the value of type {{1/b}} is
-always the dual of the chosen one. 
+placeholder for an unspecified value and dually, {{1/b}} is inhabited
+by the placeholder that indicates the absence of the unspecified
+value.
 
 \begin{multicols}{2}
 \begin{center}
@@ -1143,17 +1144,7 @@ always the dual of the chosen one.
 \end{center}  
 \end{multicols}
 
-\paragraph*{Coherence for Compact Closure with Multiplicative Inverses} 
-As before, the requisite coherence condition on Compact Closed
-Categories is applicable and is expressed below in terms of
-{{eta*}}/{{eps*}} and the multiplicative monoid.
 
-\begin{center}
-  \includegraphics{diagrams/coherence.pdf}
-\end{center}
-
-The constructions for functions, involution, and trace are identical,
-replacing {{+}} by {{*}} mutatis mutandis.
 
 %%%%%
 
@@ -1190,6 +1181,16 @@ unifying the anti-particle with a particle in a well-known state and
 examining is pair. We shall use this point of view in the development
 our SAT solver (see Sec. \ref{sec:sat-solver}).
 
+\paragraph*{Coherence for Compact Closure with Multiplicative Inverses} 
+As before, the requisite coherence condition on Compact Closed
+Categories is applicable and is expressed below in terms of
+{{eta*}}/{{eps*}} and the multiplicative monoid.
+
+\begin{center}
+  \includegraphics{diagrams/coherence.pdf}
+\end{center}
+
+
 \paragraph*{Annihilation.}
 As with {{(+, 0)}} we can construct a {{trace*}} operation. Unlike the
 additive {{trace+}}, {{trace*}} gives us the ability to find the
@@ -1201,22 +1202,14 @@ non-termination both describe undefined program execution -- while
 non-termination characterizes an iteration that fails to terminate,
 annihilation characterizes a constraint that has no fixpoint. 
 
-\paragraph*{Zero Information.}
-As with {{eta+}}, we argue that {{eta*}} constructs no new
-information, instead it gives us the ability to explore as many worlds
-as permitted by the type {{b}}. So situate ourselves in any specific
-world, we have to supply additional information in the form of
-unifying the particle or anti-particle with a particle representing
-known information. Hence only by supplying information to a an
-entangled pair can we read information from it -- and always exactly
-as much information as we supplied.
-
-ADD MATH. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions independant of the  Monoid}
 \label{sec:monoidal-constructions}
+
+The constructions for functions, involution, and trace are identical,
+replacing {{+}} by {{*}}, \textit{mutatis mutandis}.
 
 \begin{enumerate}
 \item 
@@ -1557,6 +1550,18 @@ of primitive isomorphisms:
 %% \subsection{Constructions in {{langRevEE}} }
 %% \label{sec:monoidal-constructions}
 
+
+\paragraph*{Zero Information.}
+As with {{eta+}}, we argue that {{eta*}} constructs no new
+information, instead it gives us the ability to explore as many worlds
+as permitted by the type {{b}}. So situate ourselves in any specific
+world, we have to supply additional information in the form of
+unifying the particle or anti-particle with a particle representing
+known information. Hence only by supplying information to a an
+entangled pair can we read information from it -- and always exactly
+as much information as we supplied.
+
+ADD MATH. 
 
 \emph{Zero Information.}  The intuitive explanation that {{eta+}} and
 hence {{eps+}} introduces no information effects is that {{-b+b}} as a
