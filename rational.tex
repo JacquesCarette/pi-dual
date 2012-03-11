@@ -229,8 +229,6 @@ with the following intermediate steps:
 \item We proceed to line (3) and (4) with the value {{right 20}};
 \item We finally reach line 5 with the value {{20}}.
 \end{itemize}
-\roshan{Why was this deleted?}
-\amr{because it says nothing new}
 The example illustrates that the empty type and negative types have a
 computational interpretation related to continuations: negative types denote
 values that backtrack to satisfy dependencies, or in other words act as debts
@@ -259,57 +257,47 @@ the initial value {{20}} flowing from line (1) and two entangled values,
 values, i.e., we don't yet know how much money we need to borrow, but we do
 know that what is borrowed must be what is returned. Hence~{{alpha}} denotes
 the presence of an unknown quantity and dually {{1/alpha}} should be thought
-of as the absence of an unknown quantity.
+of as the absence of an unknown quantity. At line (3), the missing unknown
+{{1/alpha}} is brought together with a value {{20}} and at line (4) we use
+the {{20}} to satisfy the constraint {{1/alpha}}. In other words, this branch
+of the computation succeeded in borrowing {{20}} which immediately
+communicates the {{20}} to the rightmost branch.
 
-% Unlike with negative types, wherein only one value existed at a time and the
-% computation backtracked, here we have three values that \emph{exist at the
-%   same time}. In other words, the computation with fractions is realized with
-% a schedule in which every value independently and concurrently proceeds
-% through its subcomputation.
-
-At line (3), the missing unknown {{1/alpha}} is fixed to be {{20}}, thereby
-fixing values of all three branches, i.e., we have paid our debt of the missing
-information and the third subcomputation has the known value {{20}}. After
-payment of our debt, as line (4) shows, we have use of our credit card again.
-
-\roshan{Also, why was this deleted?}
-\amr{no real info is communicated; you're saying that pairs are different 
-than sums}
 Unlike with negative types, wherein only one value existed at a time and the
 computation backtracked, here we have three values that \emph{exist at the
   same time}. In other words, the computation with fractions is realized with
 a schedule in which every value independently and concurrently proceeds
-through its subcomputation.
+through its subcomputation. The example illustrates that fractional types
+also have a computational interpretation that have some flavor of
+continuations: the fractional types denote values ({{1/alpha}}) that
+represent missing information that must be supplied in much the same sense
+that continuations denote evaluation contexts with holes that must be filled.
 
-%% At some intuitive level, one might understand the situation as
-%% modeling a credit card payment in which money is created at line (2)
-%% for the consumer together with a corresponding debt. The producer's
-%% bank pays for the debt at line (3) and waits for the actual money to
-%% arrive from the producer.
-
-The example illustrates that fractional types also have a computational
-interpretation that have some flavor of continuations: the fractional types
-denote values ({{1/alpha}}) that represent missing information that must be
-supplied in much the same sense that continuations denote evaluation contexts
-with holes that must be filled.  There are at least three fundamental points
-about the examples above that must be emphasized:
+There are at least four fundamental points about the examples above that must
+be emphasized:
 
 \begin{itemize}
-\item 
-As the example illustrates, both negative types and fractional types
-corresponds to ``debts'' but in different ways: negatives are satisfied
-by backtracking and fractionals are satisfied by constraint
-propagation.
+\item As the examples illustrate, both negative types and fractional types
+  corresponds to ``debts'' but in different ways: negatives are satisfied by
+  backtracking and fractionals are satisfied by constraint propagation.
 
-\item 
-It would clearly be disastrous if debts could be deleted or
-duplicated. This simple observation explains why these types are much
-simpler and much more appealing in a framework where information is
-guaranteed to be preserved. In previous work that used negative types
-(see Sec.~\ref{sec:related}), complicated mechanisms are typically
-needed to constrain the propagation and use of negative values because
-the surrounding computational framework is, generally speaking,
-careless in its treatment of information.
+\item It would clearly be disastrous if debts could be deleted or
+  duplicated. This simple observation explains why these types are much
+  simpler and much more appealing in a framework where information is
+  guaranteed to be preserved. In previous work that used negative types (see
+  Sec.~\ref{sec:related}), complicated mechanisms are typically needed to
+  constrain the propagation and use of negative values because the
+  surrounding computational framework is, generally speaking, careless in its
+  treatment of information.
+
+\item Each of the values {{-a + b}} and {{(1/a) * b}} can be viewed as a
+  function that asks for an {{a}} and then produces a {{b}}. When viewed as
+  functions, we write these types as {{a -o+ b}} and {{a -o* b}}
+  respectively. Alternatively we can view these values as first producing a
+  {{b}} and then demanding an {{a}} and in that perspective they correspond
+  to delimited continuations. Evidently, as the discussion above suggests,
+  these two notions of functions are not the same at all and should not be
+  conflated. Sec.~\ref{sub:hof} discusses this point in detail.
 
 \item The main reason credit card transactions are convenient is because they
   disentangle the propagation of the resources (money) from the propagation
@@ -320,164 +308,7 @@ careless in its treatment of information.
   dependencies can be freely decoupled and propagated can be a powerful
   programming tool and we leverage this in the construction of a novel
   SAT-solver (see Sec.~\ref{sec:sat-solver}).
-
-%% Computationally, this means that negative types allow us
-%%   to break the dependency between producers and consumers and let each
-%%   compute independently.
-
-%% \item Consider a value of type {{-a + b}}. The above discussion suggests that
-%%   this value demands {{a}} and produces {{b}}, i.e., that it is a
-%%   higher-order funtion mapping {{a}} to {{b}}. Dually and as the underlying
-%%   categorical semantics justifies (see Sec.~\ref{sec:neg}), the same value is
-%%   a continuation which produces {{b}} and then demands {{a}}, which
-%%   introduces a twist on how the function can be used: get the goods {{b}} now
-%%   and pay {{a}} later.
 \end{itemize}
-
-\paragraph*{Functions and Dependency Splitting.} 
-%% Consider the following realization of boolean negation written using a
-%% pattern-matching style:
-%% \begin{verbatim}
-%% notB b = case b of 
-%%   False -> True
-%%   True -> False
-%% \end{verbatim}
-%% In a functional language, we are not used to treating the pattern-matching
-%% clauses \verb|False -> True| and \verb|True -> False| as first-class entities
-%% but fractional types allow us to do just that! Informally, we can treat each
-%% of the pattern-matching clauses as a first-class value of type 
-%% {{(1/bool) * bool}}. 
-%% A small but complete example will illustrate the main aspects of this idea.
-
-%% Let \verb|color| be the datatype with three constructors \verb|R|, \verb|G|,
-%% and \verb|B| and let's try to construct a function that rotates the
-%% colors. In other words, we would like to build the following three
-%% pattern-matching clauses \verb|R -> G|, \verb|G -> B|, and \verb|B -> R|.  
-
-The pair {{(1/a) * a}} corresponds to a function type written {{a-o*a}})
-whose witness maybe thought of as the identity function at the type {{a}}.
-For example, consider a datatype {{color = R|Gr|B}}, and let us consider the
-following manipulations:
-
-%% for the
-%% there are three possible
-%% witnesses for this isomorphism mapping {{()}} to either {{(1/R,R)}} or
-%% {{(1/Gr,Gr)}} or {{(1/B,B)}} with the particular witness determined by
-%% further constraints encountered during the computation. More generally, the
-%% witness for the isomorphism above may be represented as {{(1/alpha,alpha)}}
-%% where~{{alpha}} is a fresh logic variable of type {{a}}. With this view of
-%% {{a -o* a}} functions, 
-%% 
-%% Returning to our goal of creating the function that rotates the colors, we
-%% proceed as follows:
-
-\begin{itemize}
-\item Using the fact that {{1}} is the multiplicative unit, generate
-  from the input {{()}} the value {{((),())}} of type {{1 * 1}};
-\item Apply the isomorphism {{1 <-> (1/a) * a}} in parallel to each of
-  the components of the above tuple. The resulting value is
-  {{((1/alpha1,alpha1),(1/alpha2,alpha2))}} where {{alpha1}} and
-  {{alpha2}} are fresh logic variables;
-\item Using the fact that {{*}} is associative and commutative, we can
-  rearrange the above tuple to produce the value:
-
-{{((1/alpha1,alpha2),(1/alpha2,alpha1))}}.
-
-
-%% \begin{itemize}
-%% \item Using the fact that {{1}} is the multiplicative unit, generate from the
-%%   input {{()}} the value {{((),((),()))}} of type {{1 * (1 * 1)}};
-%% \item Apply the isomorphism {{1 <-> (1/a) * a}} in parallel to each of the
-%%   components of the above tuple. The resulting value is 
-%% {{((1/alpha1,alpha1),((1/alpha2,alpha2),(1/alpha3,alpha3)))}} where {{alpha1}},
-%% {{alpha2}}, and {{alpha3}} are fresh logic variables.
-%% \item Using the fact that {{*}} is associative and commutative, we can
-%%   rearrange the above tuple to produce the value:
-
-%% {{((1/alpha1,alpha2),((1/alpha2,alpha3),(1/alpha3,alpha1)))}}.
-
-%% \item At this point, we have produced the skeleton for our desired function.
-%%   Assume now that a client uses the first clause of the function in a context
-%%   that contains the value \verb|R|, i.e., the client has the value
-%%   {{((1/alpha1,alpha2),R)}} consiting of one of the clauses of the function
-%%   and an argument. This value can be rearranged to {{((1/alpha1,R),alpha2)}}.
-%%   At this point, we can use the isomorphism {{1 <-> (1/a) * a}} in reverse on
-%%   the first component of the pair which has the following effects:
-%%   \begin{itemize}
-%%     \item the logic variable {{alpha1}} is unified with {{R}};
-%%     \item the first component of the pair then reduces to () and can be
-%%       absorbed by the fact that {{1}} is the multiplicative unit. In other
-%%       words, the value reduces to simply {{alpha2}} reflecting that the
-%%       pattern-matching was successful and the result of the clause is now
-%%       available;
-%%     \item the first clause of the function has now disappeared and the
-%%       remaining two clauses become {{((1/alpha2,alpha3),(1/alpha3,R))}}.
-%%   \item The same client or another client can now use the second clause
-%%     applying it to {{Gr}} which would produce the result {{alpha3}} for the
-%%     second client and ground the result of the first client to {{Gr}}.
-%%   \item Finally the remaining clause {{(1/alpha3,R)}} can be applied to {{B}}
-%%     which grounds the result of the second client to {{B}}.
-%%   \end{itemize}
-\end{itemize}
-
-At this point we have constructed a strange mix of two {{a-o*a}} functions;
-inputs of one function manifest themselves as outputs of the other. If
-{{(1/alpha1,alpha2)}} is held by one subcomputation and {{(1/alpha2,alpha1)}}
-is held by another subcomputation, these remixed functions form a
-communication channel between the two concurrent subcomputations. Unifying
-{{1/alpha1}} with {{color}} {{R}} in one subcomputation, fixes {{alpha1}} to
-be {{R}} in the other. The type {{a}} thus takes the role of the type of the
-communication channel, indicating how much information can be communicated
-between the two subcomputations.  Depending on the choice of the type {{a}},
-an arbitrary number of bits may be communicated.
-
-Dually, the additive reading of the above manipulations correspond to
-functions of the form {{a-o+a}}, witnessing isomorphisms of the form
-{{0<->(-a)+a}}). The remixed additive functions express control flow transfer
-between two subcomputations, \emph{only one of which exists} at any point,
-i.e., they capture the essence of coroutines. Additive and multiplicative
-functions are further discussed in Sec.~\ref{sec:rat}.  It should be evident
-that in a universe in which information is not guaranteed to be preserved by
-the computational infrastructure, the above slicing and dicing of functions
-would make no sense. Once the computational framework guarantees that
-information is maintained, it becomes possible to break dependencies,
-generate debts and constraints, and let these flow as first-class values,
-because they \emph{must} eventually be satisfied. 
-
-%% If one branch uses a clause that matches one part of the input to
-%% produce one part of the output, all other clauses are automatically
-%% adjusted to account for this to ensure that this input is not matched
-%% again and that this output is not produced again.
-
-
-%% \item At this point, we have produced the skeleton for our desired function.
-%%   Assume now that a client uses the first clause of the function in a context
-%%   that contains the value \verb|R|, i.e., the client has the value
-%%   {{((1/alpha1,alpha2),R)}} consiting of one of the clauses of the function
-%%   and an argument. This value can be rearranged to {{((1/alpha1,R),alpha2)}}.
-%%   At this point, we can use the isomorphism {{1 <-> (1/a) * a}} in reverse on
-%%   the first component of the pair which has the following effects:
-%%   \begin{itemize}
-%%     \item the logic variable {{alpha1}} is unified with {{R}};
-%%     \item the first component of the pair then reduces to () and can be
-%%       absorbed by the fact that {{1}} is the multiplicative unit. In other
-%%       words, the value reduces to simply {{alpha2}} reflecting that the
-%%       pattern-matching was successful and the result of the clause is now
-%%       available;
-%%     \item the first clause of the function has now disappeared and the
-%%       remaining two clauses become {{((1/alpha2,alpha3),(1/alpha3,R))}}.
-%%   \item The same client or another client can now use the second clause
-%%     applying it to {{Gr}} which would produce the result {{alpha3}} for the
-%%     second client and ground the result of the first client to {{Gr}}.
-%%   \item Finally the remaining clause {{(1/alpha3,R)}} can be applied to {{B}}
-%%     which grounds the result of the second client to {{B}}.
-%%   \end{itemize}
-
-
-
-%% Furthermore, just like the case for negative types, a dual reading of
-%% the pattern-matching clauses as continuations allows the context to
-%% use the result of the clause and provide the matching argument later.
 
 \paragraph*{Contributions and Outline.} 
 To summarize, in a computational framework that guarantees that information
@@ -498,11 +329,10 @@ are:
   extension is expressed by introducing logic variables and a unification
   mechanism to model and resolve the constraints introduced by the fractional
   types. (Sec.~\ref{sec:frac})
-\item We combine the above two extensions into one extension that includes
-  both negative and fractional types. The resulting language allows any
-  rational number to be used as a type. The types satisfy the same familiar
-  and intuitive isomorphisms that are satisfied in the mathematical field of
-  rational numbers. (Sec.~\ref{sec:rat})
+\item We combine the above two extensions into a language whose type system
+  allows any rational number to be used as a type. Moreover the types satisfy
+  the same familiar and intuitive isomorphisms that are satisfied in the
+  mathematical field of rational numbers. (Sec.~\ref{sec:rat})
 \item We develop programming intuition and argue that negative and fractional
   types ought to be part of the vocabulary of every
   programmer. (Sec.~\ref{sec:prog})
@@ -1510,6 +1340,129 @@ satisfiability constraint.
 % representing one of the {{b1 -o+ b2}} functions.  %% This is similar to
 % %% how first classes functions a'la \lcal are represented by their
 % %% addresses when compiled to conventional hardware.
+
+\paragraph*{Functions and Dependency Splitting.} 
+\label{sub:hof}
+
+We write these type
+written {{a-o*a}} whose witness may be thought of as the identity function at
+the type {{a}}.  For example, consider a datatype {{color = R|Gr|B}}, and let
+us consider the following manipulations:
+
+\begin{itemize}
+\item Using the fact that {{1}} is the multiplicative unit, generate
+  from the input {{()}} the value {{((),())}} of type {{1 * 1}};
+\item Apply the isomorphism {{1 <-> (1/a) * a}} in parallel to each of
+  the components of the above tuple. The resulting value is
+  {{((1/alpha1,alpha1),(1/alpha2,alpha2))}} where {{alpha1}} and
+  {{alpha2}} are fresh logic variables;
+\item Using the fact that {{*}} is associative and commutative, we can
+  rearrange the above tuple to produce the value:
+
+{{((1/alpha1,alpha2),(1/alpha2,alpha1))}}.
+
+
+%% \begin{itemize}
+%% \item Using the fact that {{1}} is the multiplicative unit, generate from the
+%%   input {{()}} the value {{((),((),()))}} of type {{1 * (1 * 1)}};
+%% \item Apply the isomorphism {{1 <-> (1/a) * a}} in parallel to each of the
+%%   components of the above tuple. The resulting value is 
+%% {{((1/alpha1,alpha1),((1/alpha2,alpha2),(1/alpha3,alpha3)))}} where {{alpha1}},
+%% {{alpha2}}, and {{alpha3}} are fresh logic variables.
+%% \item Using the fact that {{*}} is associative and commutative, we can
+%%   rearrange the above tuple to produce the value:
+
+%% {{((1/alpha1,alpha2),((1/alpha2,alpha3),(1/alpha3,alpha1)))}}.
+
+%% \item At this point, we have produced the skeleton for our desired function.
+%%   Assume now that a client uses the first clause of the function in a context
+%%   that contains the value \verb|R|, i.e., the client has the value
+%%   {{((1/alpha1,alpha2),R)}} consiting of one of the clauses of the function
+%%   and an argument. This value can be rearranged to {{((1/alpha1,R),alpha2)}}.
+%%   At this point, we can use the isomorphism {{1 <-> (1/a) * a}} in reverse on
+%%   the first component of the pair which has the following effects:
+%%   \begin{itemize}
+%%     \item the logic variable {{alpha1}} is unified with {{R}};
+%%     \item the first component of the pair then reduces to () and can be
+%%       absorbed by the fact that {{1}} is the multiplicative unit. In other
+%%       words, the value reduces to simply {{alpha2}} reflecting that the
+%%       pattern-matching was successful and the result of the clause is now
+%%       available;
+%%     \item the first clause of the function has now disappeared and the
+%%       remaining two clauses become {{((1/alpha2,alpha3),(1/alpha3,R))}}.
+%%   \item The same client or another client can now use the second clause
+%%     applying it to {{Gr}} which would produce the result {{alpha3}} for the
+%%     second client and ground the result of the first client to {{Gr}}.
+%%   \item Finally the remaining clause {{(1/alpha3,R)}} can be applied to {{B}}
+%%     which grounds the result of the second client to {{B}}.
+%%   \end{itemize}
+\end{itemize}
+
+At this point we have constructed a strange mix of two {{a-o*a}} functions;
+inputs of one function manifest themselves as outputs of the other. If
+{{(1/alpha1,alpha2)}} is held by one subcomputation and {{(1/alpha2,alpha1)}}
+is held by another subcomputation, these remixed functions form a
+communication channel between the two concurrent subcomputations. Unifying
+{{1/alpha1}} with {{color}} {{R}} in one subcomputation, fixes {{alpha1}} to
+be {{R}} in the other. The type {{a}} thus takes the role of the type of the
+communication channel, indicating how much information can be communicated
+between the two subcomputations.  Depending on the choice of the type {{a}},
+an arbitrary number of bits may be communicated.
+
+Dually, the additive reading of the above manipulations correspond to
+functions of the form {{a-o+a}}, witnessing isomorphisms of the form
+{{0<->(-a)+a}}). The remixed additive functions express control flow transfer
+between two subcomputations, \emph{only one of which exists} at any point,
+i.e., they capture the essence of coroutines. Additive and multiplicative
+functions are further discussed in Sec.~\ref{sec:rat}.  It should be evident
+that in a universe in which information is not guaranteed to be preserved by
+the computational infrastructure, the above slicing and dicing of functions
+would make no sense. Once the computational framework guarantees that
+information is maintained, it becomes possible to break dependencies,
+generate debts and constraints, and let these flow as first-class values,
+because they \emph{must} eventually be satisfied. 
+
+%% If one branch uses a clause that matches one part of the input to
+%% produce one part of the output, all other clauses are automatically
+%% adjusted to account for this to ensure that this input is not matched
+%% again and that this output is not produced again.
+
+
+%% \item At this point, we have produced the skeleton for our desired function.
+%%   Assume now that a client uses the first clause of the function in a context
+%%   that contains the value \verb|R|, i.e., the client has the value
+%%   {{((1/alpha1,alpha2),R)}} consiting of one of the clauses of the function
+%%   and an argument. This value can be rearranged to {{((1/alpha1,R),alpha2)}}.
+%%   At this point, we can use the isomorphism {{1 <-> (1/a) * a}} in reverse on
+%%   the first component of the pair which has the following effects:
+%%   \begin{itemize}
+%%     \item the logic variable {{alpha1}} is unified with {{R}};
+%%     \item the first component of the pair then reduces to () and can be
+%%       absorbed by the fact that {{1}} is the multiplicative unit. In other
+%%       words, the value reduces to simply {{alpha2}} reflecting that the
+%%       pattern-matching was successful and the result of the clause is now
+%%       available;
+%%     \item the first clause of the function has now disappeared and the
+%%       remaining two clauses become {{((1/alpha2,alpha3),(1/alpha3,R))}}.
+%%   \item The same client or another client can now use the second clause
+%%     applying it to {{Gr}} which would produce the result {{alpha3}} for the
+%%     second client and ground the result of the first client to {{Gr}}.
+%%   \item Finally the remaining clause {{(1/alpha3,R)}} can be applied to {{B}}
+%%     which grounds the result of the second client to {{B}}.
+%%   \end{itemize}
+
+
+
+%% Furthermore, just like the case for negative types, a dual reading of
+%% the pattern-matching clauses as continuations allows the context to
+%% use the result of the clause and provide the matching argument later.
+
+
+
+
+
+
+
 
 \emph{Constructions.} The constructions for functions, involution, and trace are identical,
 replacing {{+}} by {{*}}, \textit{mutatis mutandis}.
