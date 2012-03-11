@@ -781,10 +781,12 @@ by the flow of particles along the wires.
 \end{itemize}
 
 \noindent 
-\textit{Example.} The following combinator is represented by the given
+\textit{Example.}  We use the type {{bool}} as a shorthand to denote
+the type {{1+1}} and use {{left ()}} to be {{true}} and {{right ()}}
+to be {{false}}. The following combinator is represented by the given
 diagram:
 
-{{c : b * (1+1) <-> b + b}}
+{{c : b * bool <-> b + b}}
 
 {{c = swap* (;) dist (;) (identl* (+) identl*)}}
 
@@ -1046,19 +1048,6 @@ example, the diagram representing the isomorphism from the introduction is:
 
 % \paragraph*{Time Traveling.}
 %% <<<<<<< local
-%% A \emph{time traveling} intuition is also applicable here.  In a
-%% normal cicruit, as computational steps are taken values flow from left
-%% to right, i.e. computational time progresses from left to right.  The
-%% action of {{eps+}} causes values, aka information particles, to flow
-%% from right to left i.e. backwards in computational time.  The
-%% interesting thing about this interpretation is that particles that
-%% travel backwards in time get to see and interact with the history of
-%% particles that they coexist with. This gives us an intuitive
-%% interpretation of the isomorphism {{(-b1)*b2<->-(b1*b2)}} (see
-%% Sec. \ref{sec:specific-constructions}) where it would otherwise seem
-%% that {{-b1}} and {{b2}} move in opposite directions. The backward flow
-%% of the {{-b1}} allows it to `see the past' of {{b2}} and is thus
-%% equivalent to both particles moving backward in time.
 %% =======
 % A time traveling intuition is also applicable here: if view the
 % left-to-right direction of information flow as the canonical forward
@@ -1242,10 +1231,11 @@ couterparts.
 %@@ |- 1/v : 1/b  
 \end{multicols}
 
-As with additive duals, we represent {{eta*}} and {{eps*}} using
-U-shaped connectors. In later diagrams, the wires for {{1}} will be
-dropped as they can freely introduced or eliminated using {{uniti}}
-and {{unite}}.
+For convenience we sometime use the notation {{b1/b2}} to indicate the
+pair {{b1 * (1/b2)}}.  As with additive duals, we represent {{eta*}}
+and {{eps*}} using U-shaped connectors. In later diagrams, the wires
+for {{1}} will be dropped as they can freely introduced or eliminated
+using {{uniti}} and {{unite}}.
 
 \begin{multicols}{2}
 \begin{center}
@@ -1490,18 +1480,23 @@ presented here applies to a specific monoid.
 %% \item 
 %% \emph{ {{eps_{fst} }} }
 
-%% {{(-b1)*b2 + b1*b2 <-> 0}}
+%% {{(
 
 \item 
 \emph{Lifting negation out of {{*}}. }
 
 {{(-b1) * b2 <-> -(b1 * b2) <-> b1 * (-b2)}}
 
+To build these isomorphisms, we first build an intermeidate
+construction which we call {{eps_{fst} : (-b1)*b2 + b1*b2 <-> 0}}. 
 \begin{center}
 \scalebox{0.8}{
   \includegraphics{diagrams/eps_fst.pdf}
 }
 \end{center}
+
+The isomorphism {{(-b1) * b2 <-> -(b1 * b2)}} can be constructed in
+terms of {{eps_{fst} }} as shown below. 
 
 \begin{center}
 \scalebox{0.9}{
@@ -1509,11 +1504,24 @@ presented here applies to a specific monoid.
 }
 \end{center}  
 
+The second isomorphism can be built in the same way by merely swapping
+the arguments. 
+
 \item
 \emph{Multiplying Negatives}
 
 {{b1 * b2 <-> (-b1)*(-b2)}}
 
+This isomorphism can be built using \emph{involution} constructed in
+Sec \ref{sec:neg} and the isomorphisms above, and correspond to the
+algebraic manipulation:
+
+%subcode{opsem} include main
+%! columnStyle = rc
+%   & b1 * b2
+% = & -(-(b1*b2)) 
+% = & -((-b1)*b2)
+% = & (-b1)*(-b2)
 
 %% \emph{Distributing fractions over {{*}} }
 %% {{1/(b1*b2) <-> (1/b1) * (1/b2)}}
@@ -2100,6 +2108,36 @@ How are we preserving two compact closed structures -- what does this
 imply about the Int construction. 
 
 \paragraph*{QC} 
+A \emph{time traveling} intuition is also applicable here.  In a
+normal cicruit, as computational steps are taken values flow from left
+to right, i.e. computational time progresses from left to right.  The
+action of {{eps+}} causes values, aka information particles, to flow
+from right to left i.e. backwards in computational time.  The
+interesting thing about this interpretation is that particles that
+travel backwards in time get to see and interact with the history of
+particles that they coexist with. This gives us an intuitive
+interpretation of the isomorphism {{(-b1)*b2<->-(b1*b2)}} (see
+Sec. \ref{sec:specific-constructions}) where it would otherwise seem
+that {{-b1}} and {{b2}} move in opposite directions. The backward flow
+of the {{-b1}} allows it to `see the past' of {{b2}} and is thus
+equivalent to both particles moving backward in time.
+
+An analogy inspired by quantum mechanics is also applicable here.  The
+operator {{eta*}} is a site of fission that creates \emph{an entangled
+  particle and anti-particle}. These particles can be thought to be in
+a \emph{superposition} of states determined by their type. Both flow
+in the same direction in time.  In each possible world that the
+particle exists, it takes on a specific value inhibiting its type and
+correspondingly its entangled anti-particle takes the dual of the
+specific value. Since the particles are entangled, actions on one
+(such as transformation by application of an isomorphism) affects the
+other in much the same sense as \emph{action at a distance}. The
+`{{a-o*b}}' functions mentioned in the introduction, are first-class
+values and they correspond to these entagled pairs. Finally {{eps*}}
+operations are sites where corresponding particle and anti-particles
+annihilate each other. While appealing as an analogy, this description
+does not imply (or preclude) any formal connection with Physics.
+
 Are constructions are very similar to those developed in the context
 of QC. Is this how nature computes? Are the analogies to time
 traveling particles and anti-particles more concrete in some way? 
