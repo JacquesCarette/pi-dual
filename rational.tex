@@ -49,6 +49,7 @@
 
 \def\newblock{}
 
+
 \newenvironment{floatrule}
     {\hrule width \hsize height .33pt \vspace{.5pc}}
     {\par\addvspace{.5pc}}
@@ -841,15 +842,11 @@ wires for completeness, later diagrams will always drop them in contexts
 where they can be implicitly introduced and eliminated. 
 \begin{multicols}{2}
 \begin{center}
-\scalebox{0.8}{
   \includegraphics{diagrams/eta.pdf}
-}
 \end{center}
   
 \begin{center}
-\scalebox{0.8}{
  \includegraphics{diagrams/eps.pdf}
-}
 \end{center}
 \end{multicols}
 \begin{multicols}{2}
@@ -872,13 +869,13 @@ direction is captured by the negative sign on the value.
 
 \begin{multicols}{2}
 \begin{center}
-\scalebox{1.1}{
+\scalebox{1.5}{
   \includegraphics{diagrams/eps_plus1.pdf}
 }
 \end{center}
   
 \begin{center}
-\scalebox{1.1}{
+\scalebox{1.5}{
   \includegraphics{diagrams/eps_plus2.pdf}
 }
 \end{center}  
@@ -921,15 +918,18 @@ survey paper on monoidal
 categories~\cite{springerlink:10.1007/978-3-642-12821-94} and presented in
 the context of our language. 
 
-For a monoidal category to be compact closed, the maps~{{eta}} and~{{eps}}
-must satisfy a coherence condition that is usually visualized as follows:
+For a monoidal category to be compact closed with a dual objects
+presented as $b^*$, the maps~{{eta}} and~{{eps}} must satisfy a
+coherence condition that is usually visualized as follows:
 \begin{center}
   \includegraphics{diagrams/coherence.pdf}
 \end{center}
-In the case of negatives, the condition amounts to checking that reversing
-direction twice is a no-op. In the case of fractionals, the condition amounts
-to checking that creating values {{alpha}} and {{1/alpha}} and immediately
-unifying them is also a no-op. Both checks are straightforward.
+In the case of negatives, the condition amounts to checking that
+reversing direction twice is a no-op. In the case of fractionals, the
+condition amounts to checking that creating values {{alpha}} and
+{{1/alpha}} and immediately unifying them is also a no-op. Both checks
+are straightforward and are essentially the constructions in the
+introduction.
 
 We now review several interesting constructions related to looping,
 involution, and higher order functions. 
@@ -986,23 +986,26 @@ are particularly important in our context: we devote a little more time to
 explain them. Our discussion is mostly based on Abramsky and Coecke's article
 on categorical quantum mechanics~\cite{abramsky-2008}.
 
-In a compact closed category, each morphism {{f : a <-> b }} can be given a
+In a compact closed category, each morphism {{f : b1 <-> b2 }} can be given a
 \emph{name} and a \emph{coname}. For the additive fragment, the name
-$\fname{f}$ has type {{0 <-> (-a + b)}} and the coname $\fconame{f}$ has type
-{{a + (-b) <-> 0}}. For the multiplicative fragment, the name $\fname{f}$ has
-type {{1 <-> ((1/a) * b))}} and the coname $\fconame{f}$ has type 
-{{(a * (1/b)) <-> 1}}. Intuitively, this means that for each morphism, 
+$\fname{f}$ has type {{0 <-> (-b1 + b2)}} and the coname $\fconame{f}$ has type
+{{b1 + (-b2) <-> 0}}. For the multiplicative fragment, the name $\fname{f}$ has
+type {{1 <-> ((1/b1) * b2))}} and the coname $\fconame{f}$ has type 
+{{(b1 * (1/b2)) <-> 1}}. Intuitively, this means that for each morphism, 
 it is possible to construct, from ``nothing,'' an object in the category that 
 denotes this morphism, and dually it is possible to eliminate this object.
 The construction of the name and coname of {{c : b1 <-> b2}} in the additive case 
 can be visualized as follows:
 
+\begin{multicols}{2}
 \begin{center}
   \includegraphics{diagrams/function.pdf}
 \end{center}
+
 \begin{center}
   \includegraphics{diagrams/delimc.pdf}
-\end{center}
+\end{center}  
+\end{multicols}
 
 Intuitively the name consists of viewing {{c}} as a function and the coname
 consists of viewing {{c}} as a delimited continuation.
@@ -1051,7 +1054,7 @@ manipulations:
 \begin{itemize}
 \item Using the fact that {{1}} is the multiplicative unit, generate
   from the input {{()}} the value {{((),())}} of type {{1 * 1}};
-\item Apply the isomorphism {{1 <-> (1/a) * a}} in parallel to each of
+\item Apply the isomorphism {{1 <-> (1/b) * b}} in parallel to each of
   the components of the above tuple. The resulting value is
   {{((1/alpha1,alpha1),(1/alpha2,alpha2))}} where {{alpha1}} and
   {{alpha2}} are fresh logic variables;
@@ -1062,20 +1065,20 @@ manipulations:
 
 \end{itemize}
 
-At this point we have constructed a strange mix of two {{a-o*a}} functions;
+At this point we have constructed a strange mix of two {{b-o*b}} functions;
 inputs of one function manifest themselves as outputs of the other. If
 {{(1/alpha1,alpha2)}} is held by one subcomputation and {{(1/alpha2,alpha1)}}
 is held by another subcomputation, these remixed functions form a
 communication channel between the two concurrent subcomputations. Unifying
 {{1/alpha1}} with {{color}} {{R}} in one subcomputation, fixes {{alpha1}} to
-be {{R}} in the other. The type {{a}} thus takes the role of the type of the
+be {{R}} in the other. The type {{b}} thus takes the role of the type of the
 communication channel, indicating how much information can be communicated
-between the two subcomputations.  Depending on the choice of the type {{a}},
+between the two subcomputations.  Depending on the choice of the type {{b}},
 an arbitrary number of bits may be communicated.
 
 Dually, the additive reading of the above manipulations correspond to
-functions of the form {{a-o+a}}, witnessing isomorphisms of the form
-{{0<->(-a)+a}}). The remixed additive functions express control flow transfer
+functions of the form {{b-o+b}}, witnessing isomorphisms of the form
+{{0<->(-b)+b}}). The remixed additive functions express control flow transfer
 between two subcomputations, \emph{only one of which exists} at any point,
 i.e., they capture the essence of coroutines. 
 
