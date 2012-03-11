@@ -621,18 +621,29 @@ is modeled by the flow of waves and particles along the wires.
   boxes shown below:
 \begin{multicols}{2}
 \begin{center}
-\scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/distrib-crop.pdf]
-\includegraphics{diagrams/thesis/dist.pdf}
-}
+  \includegraphics{diagrams/thesis/dist.pdf}
 \end{center}
 \begin{center}
-\scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/factor-crop.pdf]
-\includegraphics{diagrams/thesis/factor.pdf}
-}
+  \includegraphics{diagrams/thesis/factor.pdf}
 \end{center}
 \end{multicols}
+
+
+Distributivity and factoring are interesting because they represent
+interactions between sum and pair types. Distributivity should
+essentially be thought of as a multiplexer that redirects the flow of
+{{v:b}} depending on what value inhabits the type {{b1+b2}}, as shown
+below. Factoring is the corresponding adjoint operation.
+
+\begin{multicols}{2}
+\begin{center}
+  \includegraphics{diagrams/thesis/dist-wire-value1.pdf}
+\end{center}
+\begin{center}
+  \includegraphics{diagrams/thesis/dist-wire-value2.pdf}
+\end{center}
+\end{multicols}
+
 
 \end{itemize}
 
