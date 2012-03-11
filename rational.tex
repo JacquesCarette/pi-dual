@@ -229,10 +229,11 @@ with the following intermediate steps:
 \item We proceed to line (3) and (4) with the value {{right 20}};
 \item We finally reach line 5 with the value {{20}}.
 \end{itemize}
-%% The example illustrates that the empty type and negative types have a
-%% computational interpretation related to continuations: negative types denote
-%% values that backtrack to satisfy dependencies, or in other words act as debts
-%% that are satisfied by the backward flow of information.
+\roshan{Why was this deleted?}
+The example illustrates that the empty type and negative types have a
+computational interpretation related to continuations: negative types denote
+values that backtrack to satisfy dependencies, or in other words act as debts
+that are satisfied by the backward flow of information.
 
 \paragraph*{Fractional Types.} 
 Consider a similar algebraic manipulation involving fractional types.
@@ -258,15 +259,17 @@ values, i.e., we don't yet know how much money we need to borrow, but we do
 know that what is borrowed must be what is returned. Hence~{{alpha}} denotes
 the presence of an unknown quantity and dually {{1/alpha}} should be thought
 of as the absence of an unknown quantity.
-% Unlike with negative types, wherein only one value existed at a time and the
-% computation backtracked, here we have three values that \emph{exist at the
-%   same time}. In other words, the computation with fractions is realized with
-% a schedule in which every value independently and concurrently proceeds
-% through its subcomputation.
 At line (3), the missing unknown {{1/alpha}} is fixed to be {{20}}, thereby
 fixing values of all three branches, i.e., we have paid our debt of the missing
 information and the third subcomputation has the known value {{20}}. After
 payment of our debt, as line (4) shows, we have use of our credit card again.
+
+\roshan{Again, why was this deleted?}
+Unlike with negative types, wherein only one value existed at a time and the
+computation backtracked, here we have three values that \emph{exist at the
+  same time}. In other words, the computation with fractions is realized with
+a schedule in which every value independently and concurrently proceeds
+through its subcomputation.
 
 %% At some intuitive level, one might understand the situation as
 %% modeling a credit card payment in which money is created at line (2)
