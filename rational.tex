@@ -1078,7 +1078,13 @@ satisfied.
 
 \paragraph*{Trace.}
 Every compact closed categoy admits a trace. In the context of {{langRev}}
-with {{eta+}}/{{eps+}}, we get the following construction:
+with {{eta+}}/{{eps+}}, we get the following definition. 
+Given {{f : a+c <-> b+c }}, define {{trace+ f : a <-> b}} as:
+
+{{ trace+ f = zeroi (;) (id (+) eta+) (;) (f (+) id) (;) (id (+) eps+) (;) zeroe }} 
+
+For readability, we have omitted some the commutativity and
+associativity shuffling.
 
 %% \emph{Non-termination.}  Compact closed categories contain {{trace}}
 %% operations and this implies that {{eta+}}/{{eps+}} allow the
@@ -1863,32 +1869,43 @@ these are deep questions to which there is no immeidate answer.
 % can be constructed. Before we start, let us recall two constructions:
 
 We illustrate the expressive power of first-class constraints represented by
-fractional types
+fractional types. To understand the intuition, recall the definition of
+{{trace}} for the multiplicative fragment of {{langRevEE}}. 
+Given {{f : a*c <-> b*c }}, we have {{trace* f : a <-> b}}: 
+
+{{ trace* f = uniti (;) (id (*) eta*) (;) (f (*) id) (;) (id (*) eps*) (;) unite }}
+
+\noindent This circuit uses {{eta*}} to generate all possible {{c}}-values
+together with an associated {{(1/c)}}-constraint. It then applies {{f}} to the
+pair {{(a,c)}}. The function {{f}} must produce an output {{(b,c')}} for each
+such input. If the input {{c}} and the output {{c'}} are the same they can be
+annihilated by {{eps*}}; otherwise the execution gets stuck and this
+particular choice of {{c}} is pruned. 
+
+This construction can be used to solve a large class of constraint
+satisfaction problems. We illustrate the main ideas with the implementation
+of a SAT-solver. Although the main idea is the use of {{trace*}}, the
+construction is involved so we proceed in small steps, reviewing some of the
+necessary constructions presented in our earlier paper~\cite{infeffects}.
 
 %%%%%%%%%%%%%%%%%%%
-\subsection{Constructions with Booleans}
+\subsection{Booleans and Conditionals} 
 
-Before we start, let us recall a construction of conditionals from
-prior work \cite{infeffects}.  Given any combinator {{c : b <-> b}} we
-can construct a combinator called {{if_c : bool*b <->bool*b}} in terms
-of {{c}}, where {{if_c}} behaves like a one-armed
-$\mathit{if}$-expression. If the supplied boolean is {{true}} then the
-combinator {{c}} is used to transform the value of type~{{b}}. If the
-boolean is {{false}}, then the value of type {{b}} remains
-unchanged. We can write down the combinator for {{if_c}} in terms of
-{{c}} as {{ dist (;) ((id (*) c) (+) id) (;) factor }}.
+Given any combinator {{c : b <-> b}} we can construct a combinator called
+{{if_c : bool*b <->bool*b}} in terms of {{c}}, where {{if_c}} behaves like a
+one-armed $\mathit{if}$-expression. If the supplied boolean is {{true}} then
+the combinator {{c}} is used to transform the value of type~{{b}}. If the
+boolean is {{false}}, then the value of type {{b}} remains unchanged. We can
+write down the combinator for {{if_c}} in terms of {{c}} as 
+{{ dist (;) ((id (*) c) (+) id) (;) factor }}.
 
-% Let us look at the combinator pictorially as if it were a circuit and values
-% are like particles that flow through this circuit.  
-
-The diagram below shows the input value of type {{(1+1)*b}} processed
-by the distribute operator {{dist}}, which converts it into a value of
-type {{(1*b)+(1*b)}}. In the {{left}} branch, which corresponds to the
-case when the boolean is {{true}} (i.e. the value was {{left ()}}),
-the combinator~{{c}} is applied to the value of type~{{b}}. The right
-branch which corresponds to the boolean being {{false}} passes along
-the value of type {{b}} unchanged.
-
+\noindent The diagram below shows the input value of type {{(1+1)*b}}
+processed by the distribute operator {{dist}}, which converts it into a value
+of type {{(1*b)+(1*b)}}. In the {{left}} branch, which corresponds to the
+case when the boolean is {{true}} (i.e. the value was {{left ()}}), the
+combinator~{{c}} is applied to the value of type~{{b}}. The right branch
+which corresponds to the boolean being {{false}} passes along the value of
+type {{b}} unchanged.
 
 \begin{center}
 \scalebox{1.0}{
@@ -1911,64 +1928,60 @@ the value of type {{b}} unchanged.
 % {{id}}, commutativity, and associativity, but instead just shuffle the wires
 % as appropriate.
 
-\emph{Boolean Operation based on {{if_c}}.}
 The combinator {{if_{not} }} has type {{bool*bool<->bool*bool}} and
 negates its second argument if the first argument is {{true}}. This
 gate {{if_{not} }} is often referred to as the {{cnot}} gate. An
 equivalent construction that is useful is {{else_{not} }} where we
 negate the second argument only is the first is {{false}}. 
 
-Similarly, we can iterate the construction of {{if_c}} to check
-several bits. The gate {{if_{cnot} }}, which we may also write as
-{{if^2_{not} }}, checks two booleans and negates the result wire only
-if they are both {{true}}. The gate {{if^2_{not} }} is well known as
-the universal reversible primitive gate called the `Toffoli gate'
-\cite{Toffoli:1980}.  We can generalize this construction to
-     {{if^n_{not} }} which checks {{n}} bits and negates the result
-     wire only if they are all {{true}}.
+Similarly, we can iterate the construction of {{if_c}} to check several
+bits. The gate {{if_{cnot} }}, which we may also write as {{if^2_{not} }},
+checks two booleans and negates the result wire only if they are both
+{{true}}. The gate {{if^2_{not} }} is well known as the Toffoli gate and is a
+universal reversible gate. We can generalize this construction to
+{{if^n_{not} }} which checks {{n}} bits and negates the result wire only if
+they are all {{true}}.
 
-\emph{Cloning Bits.} The gate {{else_{not} }} has the interesting
-property that as long as the second argument is fixed to be {{true}},
-output of the second wire is always the same as teh value of the first
-wire. In other words {{else_{not} }} can be thought of as cloning the
-value of the first wire. A circuit of {{n}} parallel {{else_{not} }}
-gates can hence clone {{n}} bits. They also consume {{n}} {{true}}
-inputs in the process. Let us call this construction 
+%%%%%%%%%%%%%%%%%%
+\subsection{Cloning}
+
+Although cloning is generally not allowed in reversible languages, it is
+possible at the cost of having additional constant inputs. For example,
+consider the gate {{else_{not} }}. Generally, the gate gates maps
+{{(false,a)}} to {{(false,not a)}} and {{(true,a)}} to {{(true,a)}}. Focusing
+on the cases in which the second input is {{true}}, we get that the gate maps
+{{(false,true)}} to {{(false,false)}} and {{(true,true)}} to {{(true,true)}},
+i.e., the gate clones the first input. A circuit of {{n}} parallel
+{{else_{not} }} gates can hence clone {{n}} bits.  They also consume {{n}}
+{{true}} inputs in the process.  Let us call this construction
 {{clone^n_{bool} }}.
 
-DIAGRAM clone
-
-DIAGRAM clone n bits
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Construction of the Solver}
-The key insight underlying the construction comes from the fact that
-we can build \emph{annihilation circuits}.  Consider the circuit below
-that has no observable output, i.e., for all inputs it is
-\emph{A Total Annihilation Circuit.}  Consider the circuit below that
-has no observable output, i.e., for all inputs it is
-annihilating. This happens because it constructs a boolean and its
-dual, negates one of them and attempts to collapse them.
+
+The key insight underlying the construction comes from the fact that we can
+build \emph{annihilation circuits} such as the one below:
 
 \begin{center}
 \scalebox{1.2}{
   \includegraphics{diagrams/not_trace.pdf}
 }
 \end{center}
+The circuit constructs a boolean {{b}} and its dual {{1/b}}, negates one of
+them and attempts to satisfy the constraint that they are equal which
+evidently fails. 
 
-
-\emph{Controlled Annihilation.}  We leverage the basic idea of the
-above circuit, to collapse all values that are not solutions to the
-specified isomorphic constraint {{f}}.  The contraint {{f}} checks the
-inputs to see if they match a constraint -- in the case of the SAT
-solver, {{f}} would be the circuit expressing the boolean expression
-to be satisfied.  While the output of {{f}} may contain many
-components, its must contain a boolean indicating if the input satisfy
-{{f}}. The operation {{f}} acts on some inputs and its adjoint,
-{{f^{dagger} }}, reconstructs the inputs from the outputs.  The
-`trick' is the following: the special output wire is used to `control'
-the negation of a boolean `control wire'.  If the inputs do not
-satisfy {{f}}, the control wire is negated.
+With a little work, we can modify this circuit to only annihilate values that
+fail to satisfy the constraints reprsented by a SAT-instance {{f}}. In more
+detail, an instance of SAT is a function/circuit {{f}} that given some
+boolean inputs returns {{true}} or {{false}} which we interpret as whether
+the inputs satisfy the constraints imposed by the structure of {{f}}. Because
+we are in a reversible world, our instance of SAT must be expressed as an
+isomorphism: this is easily achieved as shown in Sec.~\ref{sub:f}
+below. Assuming that {{f}} is expressed as an isomorphism, we have enough
+information to reconstruct the input from the output. This can be done by
+using the adjoint of {{f}}, denoted {{f^{dagger}}}. At this point we have,
+the top half of the construction below:
 
 \begin{center}
 \scalebox{1.2}{
@@ -1976,25 +1989,29 @@ satisfy {{f}}, the control wire is negated.
 }
 \end{center}  
 
-If this construction is traced using {{trace*}}, all the values that
-do not satisfy {{f}} get annihilated because the control wire acts
-like the closed-loop `not' in the previous construction. 
+To summarize, the top half of the circuit is the identity function except
+that we have also managed to produce a boolean wire labeled
+\textsf{satisfied?} that tells us if the inputs satisfy the desired
+constraints. We can take this boolean value and use it to decide whether to
+negate the control wire or not. Thus, the circuit achieves the following
+goal: if the inputs do not satisfy {{f}}, the control wire is negated.  We
+can now use {{trace*}} to annihilate all these bad values because the control
+wire acts like the closed-loop {{not}} in the previous construction.
 
-\emph{Controlling the heap.}  The final detail we have to be concerned
-with is the handling of the heap and garbage of {{f}}. Any boolean
-expression {{bool^n -> bool}} can be compiled into the isomorphism
-{{f:bool^h*bool^n<->bool^g*bool}} where the extra bits {{bool^h}} and
-{{bool^g}} are the heap and garbage. Constructing such an isomorphism
-has been detailed before \cite{Toffoli:1980,infeffects}.  However the
-computation of {{f}} is meaningful {{iff}} the heap {{bool^h}} is
-initialized appropriately. We can ensure that the heap has the
-appropriate initial value by checking the heap and negating a second
-control wire, if the values do not match, i.e., the dotted part in the
-diagram below and is {{if^h_{not} }} followed by a {{not}} operator on
-the control wire.
-control wire, if the values do not match, i.e., the dotted part in
-the diagram below and is {{if^h_{not} }} followed by a {{not}} on the
-`heap control wire'.
+%%%%%%%%%
+\subsection{Final Details}
+\label{sub:f}
+
+Any boolean expression {{f : bool^n -> bool}} can be compiled into the
+isomorphism {{iso : bool^h*bool^n<->bool^g*bool}} where the extra bits
+{{bool^h}} and {{bool^g}} are considered as heap and garbage. Constructing
+such an isomorphism has been detailed
+before~\cite{Toffoli:1980,infeffects}. The important relation to note is that
+applying {{iso}} to some special heap values and an input \textit{bs}
+produces some bits that can be ignored and the same output that {{f}} would
+have produced on {{bs}}. We can ensure that the heap has the appropriate
+initial values by checking the heap and negating a second control wire, if
+the values do not match, i.e., the dotted part in the diagram below.
 
 \begin{center}
 \scalebox{1.2}{
@@ -2004,10 +2021,10 @@ the diagram below and is {{if^h_{not} }} followed by a {{not}} on the
 
 % \roshan{Explain how the dotted part is implemented.}
 
-\emph{Cloning the Solution.}.  Let us call the above construction
-which maps inputs, heap and control wires to input, heap and control
-wires as {{sat_f}}. The SAT-solver is is completed by tracing the
-{{sat_f}} and cloning the `inputs' using {{clone^n_{bool} }}.
+Let us call the above construction which maps inputs, heap, and control wires
+to input, heap, and control wires as {{sat_f}}. The SAT-solver is is
+completed by tracing the {{sat_f}} and cloning the inputs using
+{{clone^n_{bool} }}.
 
 \begin{center}
 \scalebox{1.5}{
@@ -2015,12 +2032,12 @@ wires as {{sat_f}}. The SAT-solver is is completed by tracing the
 }
 \end{center}  
 
-When the solver is fed inputs initialized to {{true}}, the {{clone}}
-will clone any inputs to {{sat_f}} that satisfies the constraints
-imposed by {{f}} and the constraints on the {{heap}}. In the case of
-unique-SAT the solver will produce exactly 1 or 0 solutions. In the
-case of general SAT the solver will produce solutions as determined by
-the top-level (Sec. \ref{sec:rat}).
+When the solver is fed inputs initialized to {{true}}, the {{clone}} will
+clone any inputs to {{sat_f}} that satisfy the constraints imposed by {{f}}
+and the constraints on the {{heap}}. In the case of unique-SAT the solver
+will produce exactly 0 or 1 solutions. In the case of general SAT, the solver
+will produce solutions as determined by the semantics of the top-level
+interaction as discussed in Sec. \ref{sec:rat}.
 
 %% %%%%%%%%%%%%%%%%%%%
 %% \subsection{GoI machine}
@@ -2028,11 +2045,6 @@ the top-level (Sec. \ref{sec:rat}).
 %% We can now encode the GoI machine of
 %% Mackie~\cite{Mackie2011,DBLP:conf/popl/Mackie95}. \amr{The machine uses bang
 %%   which allows arbitrary duplication. Can we really do that???}
-
-
-
-
-
 
 %% the final equivalence is valid and can be used to actually
 %% construct an isomorphism between $x^7$ the type of seven binary
