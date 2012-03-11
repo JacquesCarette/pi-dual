@@ -1793,17 +1793,19 @@ which is the solution following which an isomorphic clone operation allows us
 to examine the result.  Though we focus on SAT here, this construction can be
 generalized to any constraint satisfaction problem whose search space can be
 represented by a recursive type and for which an isomorphic clone operation
-can be constructed. Before we start, let us recall a constructions from 
-prior work \cite{infeffects}. 
+can be constructed. 
 
-\emph{Conditionals.}
-Given any combinator {{c : b <-> b}} we can construct a combinator called
-{{if_c : bool*b <->bool*b}} in terms of {{c}}, where {{if_c}} behaves like a
-one-armed $\mathit{if}$-expression. If the supplied boolean is {{true}} then
-the combinator {{c}} is used to transform the value of type~{{b}}. If the
-boolean is {{false}}, then the value of type {{b}} remains unchanged. We can
-write down the combinator for {{if_c}} in terms of {{c}} as 
-{{ dist (;) ((id (*) c) (+) id) (;) factor }}.
+\subsection{Constructions with Booleans}
+
+Before we start, let us recall a construction of conditionals from
+prior work \cite{infeffects}.  Given any combinator {{c : b <-> b}} we
+can construct a combinator called {{if_c : bool*b <->bool*b}} in terms
+of {{c}}, where {{if_c}} behaves like a one-armed
+$\mathit{if}$-expression. If the supplied boolean is {{true}} then the
+combinator {{c}} is used to transform the value of type~{{b}}. If the
+boolean is {{false}}, then the value of type {{b}} remains
+unchanged. We can write down the combinator for {{if_c}} in terms of
+{{c}} as {{ dist (;) ((id (*) c) (+) id) (;) factor }}.
 
 % Let us look at the combinator pictorially as if it were a circuit and values
 % are like particles that flow through this circuit.  
@@ -1815,6 +1817,7 @@ case when the boolean is {{true}} (i.e. the value was {{left ()}}),
 the combinator~{{c}} is applied to the value of type~{{b}}. The right
 branch which corresponds to the boolean being {{false}} passes along
 the value of type {{b}} unchanged.
+
 
 \begin{center}
 \scalebox{1.0}{
@@ -1862,25 +1865,15 @@ gates can hence clone {{n}} bits. They also consume {{n}} {{true}}
 inputs in the process. Let us call this construction 
 {{clone^n_{bool} }}.
 
+DIAGRAM clone
 
-%% \begin{enumerate}
-%% \item Recall from previous work that for the types {{bool}} and, by
-%%   extension, any tuple of {{bool}}, an isomorphic clone operation can
-%%   be constructed (See Lemma 7.2 \cite{infeffects}).
+DIAGRAM clone n bits
 
 
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% \item Also, Sec. 3.3 \cite{infeffects} constructed the combinator
-%%   {{if_{not} }}, which when generalized to two bits was
-%%   {{toffoli}}. This construction maybe generalised to {{n}} bits as
-%%   {{if^n_{not} }}.
-%% \end{enumerate}
-
-%% That said, we will focus on the limited case of boolean satisfiability
-%% here.
-
-\emph{A Total Annihilation Circuit.}  Consider the circuit below that
-has no observable output, i.e., for all inputs it is
+\subsection{Construction of the Solver}
+The key insight underlying the construction comes from the fact that we
+can build \emph{annihilation circuits}.  Consider the circuit below
+that has no observable output, i.e., for all inputs it is
 annihilating. This happens because it constructs a boolean and its
 dual, negates one of them and attempts to collapse them.
 
@@ -1890,19 +1883,19 @@ dual, negates one of them and attempts to collapse them.
 }
 \end{center}
 
-\emph{Controlled Annihilation.}
-We leverage the basic idea of the above circuit, to collapse all
-values that are not solutions to the specified isomorphic constraint
-{{f}}. The contraint {{f}} checks the inputs to see if they match a
-constraint -- in the case of the SAT solver, {{f}} would be the
-circuit expressing the boolean expression to be satisfied.  While the
-output of {{f}} may contain many components, its must contain a
-boolean indicating if the input satisfy {{f}}. The operation {{f}}
-acts on some inputs and its adjoint, {{f^{dagger} }}, reconstructs the
-inputs from the outputs.  The `trick' is the following: the special
-output wire is used to `control' the negation of a boolean `control
-wire'.  If the inputs do not satisfy {{f}}, the control wire is
-negated.
+
+\emph{Controlled Annihilation.}  We leverage the basic idea of the
+above circuit, to collapse all values that are not solutions to the
+specified isomorphic constraint {{f}}.  The contraint {{f}} checks the
+inputs to see if they match a constraint -- in the case of the SAT
+solver, {{f}} would be the circuit expressing the boolean expression
+to be satisfied.  While the output of {{f}} may contain many
+components, its must contain a boolean indicating if the input satisfy
+{{f}}. The operation {{f}} acts on some inputs and its adjoint,
+{{f^{dagger} }}, reconstructs the inputs from the outputs.  The
+`trick' is the following: the special output wire is used to `control'
+the negation of a boolean `control wire'.  If the inputs do not
+satisfy {{f}}, the control wire is negated.
 
 \begin{center}
 \scalebox{1.2}{
