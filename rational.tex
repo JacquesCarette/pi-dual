@@ -947,20 +947,24 @@ involution, and higher order functions.
 
 \paragraph*{Trace.}
 Every compact closed categoy admits a trace. For the additive case, we get
-the following definition.  Given {{f : a+c <-> b+c }}, 
-define {{trace+ f : a <-> b}} as:
+the following definition.  Given {{f : b1+b2 <-> b1+b3 }}, 
+define {{trace+ f : b2 <-> b3}} as:
 
 {{ trace+ f = zeroi (;) (id (+) eta+) (;) (f (+) id) (;) (id (+) eps+) (;) zeroe }} 
 
+\begin{center}
+  \includegraphics{diagrams/thesis/trace_plus.pdf}
+\end{center}  
+
 \noindent We have omitted some the commutativity and associativity shuffling to
-communicate the main idea. We are given a value of type {{a}} which we embed
-into {{a+0}} and then {{a + (c - c)}}. This can be reassociated into 
-{{(a+c) - c}}. The component {{a+c}} which until now is just an appropriately 
-tagged value of type {{a}} can be given to~{{f}} which transforms it to
-something of type {{b+c}}. If the result is in the {{b}}-summand, it is produced
-as the answer; otherwise the result is in the {{c}}-summand; {{eps+}} is used to
+communicate the main idea. We are given a value of type {{b2}} which we embed
+into {{0+b2}} and then {{(-b1+b1)+b2)}}. This can be reassociated into 
+{{-b1+(b1+b2)}}. The component {{b1+b2}} which until now is just an appropriately 
+tagged value of type {{b2}} can be given to~{{f}} which transforms it to
+something of type {{b1+b3}}. If the result is in the {{b3}}-summand, it is produced
+as the answer; otherwise the result is in the {{b1}}-summand; {{eps+}} is used to
 make it flow backwards to be fed to the {{eta+}} located at the beginning of the 
-sequence. Iteration continues until a {{b}} is produced.
+sequence. Iteration continues until a {{b3}} is produced.
 
 
 %%%%%
