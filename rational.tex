@@ -2147,71 +2147,44 @@ We have extended the language {{langRev}} that expressed computation
 in the commutative semiring of whole numbers to {{langRevEE}} that
 expresses computation in the fields of rationals.  Every algebraic
 identity that holds for the rational numbers corresponds to a type
-isomorphism in our model.  In the process, we have examined the two
-function spaces that these give rise to an have seen non-trivial
-constructions such as a novel SAT-solver that relies on a
-multiplicative trace.
+isomorphism with a computational interpretation in our model. We have
+examined the two function spaces that arise in this model and
+developed non-trivial constructions such as a SAT-solver that relies
+on a multiplicative trace.
 
 In another sense however, this paper is about the nature of duality in
 computation. The concept of duality is deep and significant and in
 many cases -- probably most famously in the divide between classical
 and intuinionistic mathematics -- contain non-trivial assumptions
-about our world-view.
+about our world-view.  The problem of duality in computation and
+logic, has many facets of which `continuation' and `higher order
+functions' are only one.  We have contributed an elegant and natural
+notion of duality that arises from the monoidal structure of sums and
+pairs. This notion of duality has a crisp semantics, clear
+computational interpretations and an information theoretic basis.
+Before we conclude, we briefly mention some closely related ideas that
+warrant further study.
 
-The problem of duality in computation and logic, has many facets of
-which `continuation' and `higher order functions' are only one. 
+%% \paragraph*{Int Construction} How are we preserving two compact
+%% closed structures -- what does this imply about the Int
+%% construction.
 
-\paragraph*{GoI}
-The other popular model of computing with values traveling along wire
-is GoI -- specifically Mackie's work. How are we related to this
-model? Preliminary investogationb suggests that many of the no-cloning
-based constructions can be simulated in {{langRevEE}} as well. If
-there is a concrete connectoion, then by Curry-Howard the logical
-interpretation of {{langRevEE}} should a logic much like LL with a
-strong notion of resource preservation, but also with a strong
+\paragraph*{Geometry of Interaction.}
+GoI was developed by Girard \cite{girard1989geometry}as basis for the
+proof theory of Linear Logic.  GoI however has been developed into a
+reversible model of computing
+\cite{Mackie2011,DBLP:conf/popl/Mackie95,Abramsky:1994:NFG:184662.184664}
+in which values traveling along wires, much like {{langRevEE}}.
+Preliminary investigations suggest that many GoI machine constructions
+can be simulated in {{langRevEE}} by treating Mackie's bi-directional
+wires as pairs of wires in {{langRevEE}} and replacing the machine's
+global state with a typed value on the wire that captures the
+appropriate state.  However a concrete connection between GoI machines
+and GoI in general requires further work. This connection is exciting
+because when viewed through a Curry-Howard lens it suggests that the
+logical interpretation of {{langRevEE}} should a logic much like LL
+with a strong notion of resource preservation, but also with a strong
 computational basis.
-
-\paragraph*{Int Construction}
-How are we preserving two compact closed structures -- what does this
-imply about the Int construction. 
-
-\paragraph*{QC} 
-A \emph{time traveling} intuition is also applicable here.  In a
-normal cicruit, as computational steps are taken values flow from left
-to right, i.e. computational time progresses from left to right.  The
-action of {{eps+}} causes values, aka information particles, to flow
-from right to left i.e. backwards in computational time.  The
-interesting thing about this interpretation is that particles that
-travel backwards in time get to see and interact with the history of
-particles that they coexist with. This gives us an intuitive
-interpretation of the isomorphism {{(-b1)*b2<->-(b1*b2)}} (see
-Sec. \ref{sec:specific-constructions}) where it would otherwise seem
-that {{-b1}} and {{b2}} move in opposite directions. The backward flow
-of the {{-b1}} allows it to `see the past' of {{b2}} and is thus
-equivalent to both particles moving backward in time.
-
-An analogy inspired by quantum mechanics is also applicable here.  The
-operator {{eta*}} is a site of fission that creates \emph{an entangled
-  particle and anti-particle}. These particles can be thought to be in
-a \emph{superposition} of states determined by their type. Both flow
-in the same direction in time.  In each possible world that the
-particle exists, it takes on a specific value inhibiting its type and
-correspondingly its entangled anti-particle takes the dual of the
-specific value. Since the particles are entangled, actions on one
-(such as transformation by application of an isomorphism) affects the
-other in much the same sense as \emph{action at a distance}. The
-`{{a-o*b}}' functions mentioned in the introduction, are first-class
-values and they correspond to these entagled pairs. Finally {{eps*}}
-operations are sites where corresponding particle and anti-particles
-annihilate each other. While appealing as an analogy, this description
-does not imply (or preclude) any formal connection with Physics.
-
-Are constructions are very similar to those developed in the context
-of QC. Is this how nature computes? Are the analogies to time
-traveling particles and anti-particles more concrete in some way? 
-
-%% Parallel computing with constraints and backtracking -- breaking
-%% dependancies,
 
 \paragraph*{Computing in the Field of Algebraic Numbers.}
 \label{sec:algebraic-field}
@@ -2220,13 +2193,6 @@ solutions to polynomials. In a limited sense {{langRevEE}} extended
 with recursive types already include polynomials such as the
 definition of binary tree {{@@x.(1+x*x)}} implies the equality
 {{x=1+x*x}} and hence {{x^2-x+1=0}}. 
-
-%% Partial isomorphisms algebraics
-%% do have computational 
-
-%% While this equation does indeed have an irrational imaginary root,
-%% as we will see -- {{langRevEE}} does not have the means of
-%% expressing meaningful computation that uses the root.
 
 The famous example of isomorphism on algebraics is the embedding of
 seven binary trees in one. In Figure 1 of Fiore's paper
@@ -2237,15 +2203,6 @@ does constructively witness the isomorphism, i.e., you can run it and
 view one data structure encoded by the other. In this context,
 consider the following algebraically valid proof of the same
 isomorphism:
-
-%% Previously the most famous example of a similar nature is the puzzling
-%% isomorphism that one can establish between seven binary trees and one.
-%% A binary tree is defined by the datatype
-%% \[
-%% x = 1 + x * x 
-%% \]
-%% which can be rearranged to the polynomial equation $x^2 - x + 1 = 0$. By
-%% algebraic manipulation we can reason as follows:
 \[\begin{array}{rclclclcl}
 x^3 &=& x^2 x &=& (x-1) x &=& x^2 - x &=& -1 \\
 x^6 &=& 1 \\
@@ -2279,42 +2236,40 @@ computations that are otherwise algebraically meaningful.
 
 \end{itemize}
 
-%% -- WAVEFRONT START --
+\paragraph*{Quantum Computing} 
+A \emph{time traveling} intuition is also applicable here.  In a
+normal cicruit, as computational steps are taken values flow from left
+to right, i.e. computational time progresses from left to right.  The
+action of {{eps+}} causes values, aka information particles, to flow
+from right to left i.e. backwards in computational time.  The
+interesting thing about this interpretation is that particles that
+travel backwards in time get to see and interact with the history of
+particles that they coexist with. This gives us an intuitive
+interpretation of the isomorphism {{(-b1)*b2<->-(b1*b2)}} (see
+Sec. \ref{sec:specific-constructions}) where it would otherwise seem
+that {{-b1}} and {{b2}} move in opposite directions. The backward flow
+of the {{-b1}} allows it to `see the past' of {{b2}} and is thus
+equivalent to both particles moving backward in time.
 
-%% But the interesting solution of trees is precisely that they involve
-%% irrational numbers. Our usual notation for irrationals such as
-%% {{sqrt(2) }} can actually be viewed as a thunk representing the
-%% infinite computation {{1.4142..}}.  Irrationals in this sense have a
-%% very different information theoretic interpretation from full real
-%% numbers.  With Chaitin's $\Omega$ numbers
-%% \cite{Chaitin:1975:TPS:321892.321894} he postulates the existence of
-%% real numbers that have an infinite amount of information -- ones for
-%% example are the solution to the question about the halting properties
-%% of every Turning machine.
+An analogy inspired by quantum mechanics is also applicable here.  The
+operator {{eta*}} is a site of fission that creates \emph{an entangled
+  particle and anti-particle}. These particles can be thought to be in
+a \emph{superposition} of states determined by their type. Both flow
+in the same direction in time.  In each possible world that the
+particle exists, it takes on a specific value inhibiting its type and
+correspondingly its entangled anti-particle takes the dual of the
+specific value. Since the particles are entangled, actions on one
+(such as transformation by application of an isomorphism) affects the
+other in much the same sense as \emph{action at a distance}. The
+`{{a-o*b}}' functions mentioned in the introduction, are first-class
+values and they correspond to these entagled pairs. Finally {{eps*}}
+operations are sites where corresponding particle and anti-particles
+annihilate each other. While appealing as an analogy, this description
+does not imply (or preclude) any formal connection with Physics.
 
-%% That introduces the natural numbers. No solution for this polynomial
-%% over the algebraic numbers. We must extend the numbers with $\omega$
-%% to get a solution. We reject this in this paper and prefer to stick to
-%% algebraic numbers. The advantage is that all the isomorphisms are
-%% valid numerically. With the above type we could subtract $b$ from both
-%% sides to show that $0=1$ which is nonsense. We can however have
-%% infinite types as long as they have algebraic solutions.
-
-%% In our previous work we introduce recursive types and trace
-%% operators. This is dangerous here because infinite loops allow us to
-%% prolong paying the debt for as long as we want. The algebraic
-%% $\lambda$-calculus~\cite{Vaux:2009:ALC:1630585.1630590} shows that
-%% extreme care is needed when combining negative and fractional types
-%% with the full $\lambda$-calculus (including recursion).
-
-%% -- WAVEFRONT STOP --
-
-\paragraph*{Summary}
-We have contributed an elegant and natural notion of duality that
-arises from the monoidal structure of sums and pairs. This notion of
-duality has a crisp semantics, clear computational interpretations and
-an information theoretic basis. 
-
+Are constructions are very similar to those developed in the context
+of QC. Is this how nature computes? Are the analogies to time
+traveling particles and anti-particles more concrete in some way? 
 
 
 
@@ -2648,7 +2603,7 @@ structure. How!?
 
 \end{comment}
 
-%% Jacques Carette, Michael Adams, Khaled
+%% Jacques Carette, Michael Adams, Khaled, Will Byrd, Yin Wang
 
 \acks This project was partially funded by Indiana University's Office
 of the Vice President for Research and the Office of the Vice Provost
