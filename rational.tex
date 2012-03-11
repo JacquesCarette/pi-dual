@@ -1941,14 +1941,27 @@ about our world-view.
 The problem of duality in computation and logic, has many facets of
 which `continuation' and `higher order functions' are only one. 
 
-LL, GoI
+\paragraph*{GoI}
+The other popular model of computing with values traveling along wire
+is GoI -- specifically Mackie's work. How are we related to this
+model? Preliminary investogationb suggests that many of the no-cloning
+based constructions can be simulated in {{langRevEE}} as well. If
+there is a concrete connectoion, then by Curry-Howard the logical
+interpretation of {{langRevEE}} should a logic much like LL with a
+strong notion of resource preservation, but also with a strong
+computational basis.
 
-Int Construction
+\paragraph*{Int Construction}
+How are we preserving two compact closed structures -- what does this
+imply about the Int construction. 
 
-QC
+\paragraph*{QC} 
+Are constructions are very similar to those developed in the context
+of QC. Is this how nature computes? Are the analogies to time
+traveling particles and anti-particles more concrete in some way? 
 
-Parallel computing with constraints and backtracking -- breaking
-dependancies,
+%% Parallel computing with constraints and backtracking -- breaking
+%% dependancies,
 
 \paragraph*{Computing in the Field of Algebraic Numbers.}
 \label{sec:algebraic-field}
@@ -1997,38 +2010,56 @@ somehow more `constructive' than others or dually that {{langRevEE}}
 with recursive types somehow lacks the ability to express all
 computations that are otherwise algebraically meaningful.
 
--- WAVEFRONT START --
+\begin{itemize}
+\item Maybe the problem is that there is cancellation in the second
+  case and cancellation with recursive types is problematic. However
+  not all cancellation is. So what gives?
 
-But the interesting solution of trees is precisely that they involve
-irrational numbers. Our usual notation for irrationals such as
-{{sqrt(2) }} can actually be viewed as a thunk representing the
-infinite computation {{1.4142..}}.  Irrationals in this sense have a
-very different information theoretic interpretation from full real
-numbers.  With Chaitin's $\Omega$ numbers
-\cite{Chaitin:1975:TPS:321892.321894} he postulates the existence of
-real numbers that have an infinite amount of information -- ones for
-example are the solution to the question about the halting properties
-of every Turning machine.
+\item One idea is that irrationals correspond to an infinite amount of
+  computational work. If what we are cancelling is not the same
+  infinity, then things go wrong. 
 
-That introduces the natural numbers. No solution for this polynomial
-over the algebraic numbers. We must extend the numbers with $\omega$
-to get a solution. We reject this in this paper and prefer to stick to
-algebraic numbers. The advantage is that all the isomorphisms are
-valid numerically. With the above type we could subtract $b$ from both
-sides to show that $0=1$ which is nonsense. We can however have
-infinite types as long as they have algebraic solutions.
+\item Chaitin has already shown that reals have inifite amount of
+  information which is paradoxical and problematic. This is a
+  different issue from that of the rational being infinite
+  computations.
 
-In our previous work we introduce recursive types and trace
-operators. This is dangerous here because infinite loops allow us to
-prolong paying the debt for as long as we want. The algebraic
-$\lambda$-calculus~\cite{Vaux:2009:ALC:1630585.1630590} shows that
-extreme care is needed when combining negative and fractional types
-with the full $\lambda$-calculus (including recursion).
+\item Finally, not all meaningful types are meaningful polynomials --
+  ex. nat. So this is not the whole story. 
 
+\end{itemize}
 
--- WAVEFRONT STOP --
+%% -- WAVEFRONT START --
 
+%% But the interesting solution of trees is precisely that they involve
+%% irrational numbers. Our usual notation for irrationals such as
+%% {{sqrt(2) }} can actually be viewed as a thunk representing the
+%% infinite computation {{1.4142..}}.  Irrationals in this sense have a
+%% very different information theoretic interpretation from full real
+%% numbers.  With Chaitin's $\Omega$ numbers
+%% \cite{Chaitin:1975:TPS:321892.321894} he postulates the existence of
+%% real numbers that have an infinite amount of information -- ones for
+%% example are the solution to the question about the halting properties
+%% of every Turning machine.
 
+%% That introduces the natural numbers. No solution for this polynomial
+%% over the algebraic numbers. We must extend the numbers with $\omega$
+%% to get a solution. We reject this in this paper and prefer to stick to
+%% algebraic numbers. The advantage is that all the isomorphisms are
+%% valid numerically. With the above type we could subtract $b$ from both
+%% sides to show that $0=1$ which is nonsense. We can however have
+%% infinite types as long as they have algebraic solutions.
+
+%% In our previous work we introduce recursive types and trace
+%% operators. This is dangerous here because infinite loops allow us to
+%% prolong paying the debt for as long as we want. The algebraic
+%% $\lambda$-calculus~\cite{Vaux:2009:ALC:1630585.1630590} shows that
+%% extreme care is needed when combining negative and fractional types
+%% with the full $\lambda$-calculus (including recursion).
+
+%% -- WAVEFRONT STOP --
+
+\paragraph*{Summary}
 We have contributed an elegant and natural notion of duality that
 arises from the monoidal structure of sums and pairs. This notion of
 duality has a crisp semantics, clear computational interpretations and
