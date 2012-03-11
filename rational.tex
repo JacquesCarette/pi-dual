@@ -1122,7 +1122,9 @@ Given {{c : b1 <-> b2}}
 \paragraph*{Lifting negation out of {{*}}.}
 The isomorphisms below state that the direction is \emph{relative}. If {{b1}}
 and {{b2}} are flowing opposite to each other then it doesn't matter which is
-direction is forwards and which is backwards. 
+direction is forwards and which is backwards. More interestingly as {{b1}} is
+moving backwards, it can ``see the past'' of {{b2}} which is equivalent to
+both particles moving backwards.
 
 {{(-b1) * b2 <-> -(b1 * b2) <-> b1 * (-b2)}}
 
@@ -2162,7 +2164,7 @@ following:
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Future work and Conclusion}
+\section{Conclusion and Future Work}
 \label{sec:conc}
 
 We have extended the language {{langRev}} that expressed computation
@@ -2175,125 +2177,158 @@ developed non-trivial constructions such as a SAT-solver that relies
 on a multiplicative trace.
 
 In another sense however, this paper is about the nature of duality in
-computation. The concept of duality is deep and significant and in
-many cases -- probably most famously in the divide between classical
-and intuinionistic mathematics -- contain non-trivial assumptions
-about our world-view.  The problem of duality in computation and
-logic, has many facets of which `continuation' and `higher order
-functions' are only one.  We have contributed an elegant and natural
-notion of duality that arises from the monoidal structure of sums and
-pairs. This notion of duality has a crisp semantics, clear
-computational interpretations and an information theoretic basis.
-Before we conclude, we briefly mention some closely related ideas that
-warrant further study.
+computation. 
+% The concept of duality is deep and significant and in many cases ---
+% probably most famously in the divide between classical and intuitionistic
+% mathematics --- contain non-trivial assumptions about our worldview.  The
+% problem of duality in computation and logic, has many facets of which
+% `continuation' and `higher order functions' are only one.
+The concept of duality is deep and significant: we have opened the door for
+us to consider, not one but two notions of duality. Surprisingly this makes
+things significantly simpler. In particular, instead of conflating
+considering pairs as dual to sums, the tradition in mathematics has long been
+to consider fields with two notions of duality: one for sums and one for
+pairs. This double notion of duality has a crisp semantics, clear
+computational interpretation, and an information theoretic basis.  
+
+Our work has barely scratched the surface of an area of computing which has
+been explored in depth before but without the combined reversible
+information-preserving framework and the two notions of duality. The new
+insights point to further new areas of investigation of which we mention
+the three most significant ones (in our opinion).
 
 %% \paragraph*{Int Construction} How are we preserving two compact
 %% closed structures -- what does this imply about the Int
 %% construction.
 
-\paragraph*{Geometry of Interaction.}
-GoI was developed by Girard \cite{girard1989geometry}as basis for the
-proof theory of Linear Logic.  GoI however has been developed into a
-reversible model of computing
-\cite{Mackie2011,DBLP:conf/popl/Mackie95,Abramsky:1994:NFG:184662.184664}
-in which values traveling along wires, much like {{langRevEE}}.
-Preliminary investigations suggest that many GoI machine constructions
-can be simulated in {{langRevEE}} by treating Mackie's bi-directional
-wires as pairs of wires in {{langRevEE}} and replacing the machine's
-global state with a typed value on the wire that captures the
-appropriate state.  However a concrete connection between GoI machines
-and GoI in general requires further work. This connection is exciting
-because when viewed through a Curry-Howard lens it suggests that the
-logical interpretation of {{langRevEE}} should a logic much like LL
-with a strong notion of resource preservation, but also with a strong
-computational basis.
+\paragraph*{Geometry of Interaction (GoI.}
+This geometry was developed by Girard~\cite{girard1989geometry} as part of
+the development of linear logic. It was given a computational interpretation
+by Abramsky and Jagadeesan~\cite{Abramsky:1994:NFG:184662.184664}, and was
+developed into a reversible model of computing by
+Mackie~\cite{Mackie2011,DBLP:conf/popl/Mackie95}. Preliminary investigations
+suggest that many of the GoI machine constructions can be simulated in
+{{langRevEE}} by treating Mackie's bi-directional wires as pairs of wires in
+{{langRevEE}} and replacing the machine's global state with a typed value on
+the wire that captures the appropriate state. This connection is exciting
+because when viewed through a Curry-Howard lens it suggests that the logical
+interpretation of {{langRevEE}} would be a linear-like logic with a notion of
+resource preservation and with a natural computational interpretation. 
 
 \paragraph*{Computing in the Field of Algebraic Numbers.}
 \label{sec:algebraic-field}
-The field of algebraic numbers consist of the rationals extended with
-solutions to polynomials. In a limited sense {{langRevEE}} extended
-with recursive types already include polynomials such as the
-definition of binary tree {{@@x.(1+x*x)}} implies the equality
-{{x=1+x*x}} and hence {{x^2-x+1=0}}. 
+Algebraically, the move from {{langRev}} to {{langRevEE}} corresponds to a
+move from a ring-like structure to a full field. Our language {{langRevEE}}
+captures the structure of one particular field: that of the rational
+numbers. As we have seen, computation in this field is quite expressive and
+interesting and yet, it has two fundamental limitations. First it cannot
+express any recursive type, and second it cannot express any datatype
+definitions. We believe these to be two orthogonal extensions: recursive
+types were considered in our previous paper~\cite{infeffects}; arbitrary
+datatypes are however even more exciting that plain rationals as each
+datatype definition can be viewed as a polynomial (see below) which
+essentially means that we start computing in the field of algebraic numbers,
+which includes square roots and imaginary numbers. As crazy as it might seem,
+the type $\sqrt{2}$ and even the type $(1/2)+i(\sqrt{3}/2)$ ``make sense.''
+In fact the latter type is the solution to the polynomial {{x^2-x+1=0}} which
+if re-arranged looks like {{x=1+x*x}} and perhaps more familiarly as the
+datatype of binary trees {{@@x.(1+x*x)}}. These types happen to have been
+studied extensively following a paper by Blass~\cite{seventrees} which used
+the above datatype of trees to infer an isomorphism between seven binary
+trees and one!
 
-The famous example of isomorphism on algebraics is the embedding of
-seven binary trees in one. In Figure 1 of Fiore's paper
-\cite{Fiore:2004}, he demonstrates this isomorphism by the
-corrsponding algebraic manipulation of the types.  The algebraic
-manipulation can be viewed as a {{langRevEE}} combinator and it indeed
-does constructively witness the isomorphism, i.e., you can run it and
-view one data structure encoded by the other. In this context,
-consider the following algebraically valid proof of the same
-isomorphism:
+We have confirmed that we can extended {{langRevEE}} with the datatype
+declaration for binary trees and build a witness for this isomorphism that
+works as expected. To understand the issue in more detail, consider the
+following algebraically valid proof of the isomorphism in question:
 \[\begin{array}{rclclclcl}
 x^3 &=& x^2 x &=& (x-1) x &=& x^2 - x &=& -1 \\
 x^6 &=& 1 \\
 x^7 &=& x^6 x &=& x
 \end{array}\]
-Fiore poses the question of why such algebraic manipulation would make
-sense type theoretically, even though some of the intermediate steps
-make no sense.  Stated in terms of {{langRevEE}} computations, this
-manipulation has no meaningful computational content -- it is always
-non-terminating. It suggests that some algebraic manipulations are
-somehow more `constructive' than others or dually that {{langRevEE}}
-with recursive types somehow lacks the ability to express all
-computations that are otherwise algebraically meaningful.
+The question is why such an algebraic manipulation makes sense type
+theoretically, even though the intermediate step asking for an isomorphism
+between $x^6$ and $1$ has no computational context. In the setting of
+{{langRevEE}}, this isomorphism can be constructed but it diverges on all
+inputs (in both ways). This suggests that, in the field of algebraic numbers,
+some algebraic manipulations are somehow 
+``more constructive'' than others.
+%% or dually that {{langRevEE}} with recursive types
+%%somehow lacks the ability to express all computations that are otherwise
+%%algebraically meaningful.
 
-\begin{itemize}
-\item Maybe the problem is that there is cancellation in the second
-  case and cancellation with recursive types is problematic. However
-  not all cancellation is. So what gives?
+% \begin{itemize}
+% \item Maybe the problem is that there is cancellation in the second
+%   case and cancellation with recursive types is problematic. However
+%   not all cancellation is. So what gives?
 
-\item One idea is that irrationals correspond to an infinite amount of
-  computational work. If what we are cancelling is not the same
-  infinity, then things go wrong. 
+% \item One idea is that irrationals correspond to an infinite amount of
+%   computational work. If what we are cancelling is not the same
+%   infinity, then things go wrong. 
 
-\item Chaitin has already shown that reals have inifite amount of
-  information which is paradoxical and problematic. This is a
-  different issue from that of the rational being infinite
-  computations.
+% \item Chaitin has already shown that reals have inifite amount of
+%   information which is paradoxical and problematic. This is a
+%   different issue from that of the rational being infinite
+%   computations.
 
-\item Finally, not all meaningful types are meaningful polynomials --
-  ex. nat. So this is not the whole story. 
+% \item Finally, not all meaningful types are meaningful polynomials --
+%   ex. nat. So this is not the whole story. 
 
-\end{itemize}
+% \end{itemize}
 
-\paragraph*{Quantum Computing} 
-A \emph{time traveling} intuition is also applicable here.  In a
-normal cicruit, as computational steps are taken values flow from left
-to right, i.e. computational time progresses from left to right.  The
-action of {{eps+}} causes values, aka information particles, to flow
-from right to left i.e. backwards in computational time.  The
-interesting thing about this interpretation is that particles that
-travel backwards in time get to see and interact with the history of
-particles that they coexist with. This gives us an intuitive
-interpretation of the isomorphism {{(-b1)*b2<->-(b1*b2)}} (see
-Sec. \ref{sec:specific-constructions}) where it would otherwise seem
-that {{-b1}} and {{b2}} move in opposite directions. The backward flow
-of the {{-b1}} allows it to `see the past' of {{b2}} and is thus
-equivalent to both particles moving backward in time.
+\paragraph*{Quantum Computing.} 
+One understand of quantum computing is that it exploits the laws of physics
+to build faster machines (perhaps). Another more foundational understanding
+is that it provides a computational interpretation of physics, and in
+particular directly address the question of interpretation of quantum
+mechanics. In a little known document, Rozas~\cite{Rozas:1987:CMO:889539}
+uses continuations to implement the transactional interpretation of quantum
+mechanics~\cite{transactional} which includes as its main ingredient a
+fixpoint calculation between waves or particles traveling forwards and
+backwards in time. Our work shed no light on whether this interpretation is
+the ``right one'' but it is interesting that we can directly realize it using
+the primitives of {{langRevEE}}. 
 
-An analogy inspired by quantum mechanics is also applicable here.  The
-operator {{eta*}} is a site of fission that creates \emph{an entangled
-  particle and anti-particle}. These particles can be thought to be in
-a \emph{superposition} of states determined by their type. Both flow
-in the same direction in time.  In each possible world that the
-particle exists, it takes on a specific value inhibiting its type and
-correspondingly its entangled anti-particle takes the dual of the
-specific value. Since the particles are entangled, actions on one
-(such as transformation by application of an isomorphism) affects the
-other in much the same sense as \emph{action at a distance}. The
-`{{a-o*b}}' functions mentioned in the introduction, are first-class
-values and they correspond to these entagled pairs. Finally {{eps*}}
-operations are sites where corresponding particle and anti-particles
-annihilate each other. While appealing as an analogy, this description
-does not imply (or preclude) any formal connection with Physics.
+% A \emph{time
+%   traveling} intuition is also applicable here.  In a normal cicruit, as
+% computational steps are taken values flow from left to right,
+% i.e. computational time progresses from left to right.  The action of
+% {{eps+}} causes values, aka information particles, to flow from right to left
+% i.e. backwards in computational time.  The interesting thing about this
+% interpretation is that particles that travel backwards in time get to see and
+% interact with the history of particles that they coexist with. This gives us
+% an intuitive interpretation of the isomorphism {{(-b1)*b2<->-(b1*b2)}} (see
+% Sec. \ref{sec:specific-constructions}) where it would otherwise seem that
+% {{-b1}} and {{b2}} move in opposite directions. The backward flow of the
+% {{-b1}} allows it to `see the past' of {{b2}} and is thus equivalent to both
+% particles moving backward in time.
 
-Are constructions are very similar to those developed in the context
-of QC. Is this how nature computes? Are the analogies to time
-traveling particles and anti-particles more concrete in some way? 
+The multiplicative structure of {{langRevEE}} also has a direct connection to
+entangled quantum particles, or perhaps entangled particles and
+anti-particles.  The idea of entanglement is one action on one particle is
+``instanteneously'' communicated to the other. Again our model shed no light
+on whether this is related to how nature computes but it is again interesting
+that we can directly realize the idea using the primitives of {{langRevEE}}. 
 
+% natural An analogy
+% inspired by quantum mechanics is also applicable here.  The operator {{eta*}}
+% is a site of fission that creates \emph{an entangled particle and
+%   anti-particle}. These particles can be thought to be in a
+% \emph{superposition} of states determined by their type. Both flow in the
+% same direction in time.  In each possible world that the particle exists, it
+% takes on a specific value inhibiting its type and correspondingly its
+% entangled anti-particle takes the dual of the specific value. Since the
+% particles are entangled, actions on one (such as transformation by
+% application of an isomorphism) affects the other in much the same sense as
+% \emph{action at a distance}. The `{{a-o*b}}' functions mentioned in the
+% introduction, are first-class values and they correspond to these entagled
+% pairs. Finally {{eps*}} operations are sites where corresponding particle and
+% anti-particles annihilate each other. While appealing as an analogy, this
+% description does not imply (or preclude) any formal connection with Physics.
 
+% Are constructions are very similar to those developed in the context
+% of QC. Is this how nature computes? Are the analogies to time
+% traveling particles and anti-particles more concrete in some way? 
 
 \begin{comment}
   
@@ -2625,13 +2660,12 @@ structure. How!?
 
 \end{comment}
 
-%% Jacques Carette, Michael Adams, Khaled, Will Byrd, Yin Wang
-
-\acks This project was partially funded by Indiana University's Office
-of the Vice President for Research and the Office of the Vice Provost
-for Research through its Faculty Research Support Program.  We also
-acknowledge support from Indiana University's Institute for Advanced
-Study.
+\acks We thank Jacques Carette for stimulating discussion, and Michael Adams,
+Will Byrd, Lindsey Kuper, and Yin Wang for helpful comments and
+questions. This project was partially funded by Indiana University's Office
+of the Vice President for Research and the Office of the Vice Provost for
+Research through its Faculty Research Support Program.  We also acknowledge
+support from Indiana University's Institute for Advanced Study.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{small}
