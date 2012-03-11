@@ -348,6 +348,10 @@ are:
   calculus. (Sec.~\ref{sec:related})
 \end{itemize}
 
+\textbf{Note:} All the constructions, semantics, and examples in this paper
+have been implemented and tested in Haskell. We will make the URL available
+once the code is organized for better presentation.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Core Reversible Language: {{langRev}} }
 \label{sec:pi}
@@ -447,8 +451,8 @@ graphical language that conveys the intuitive semantics of the language
 
 The general idea of the graphical notation is that combinators are modeled by
 ``wiring diagrams'' or ``circuits'' and that values are modeled as
-``particles'' that may appear on the wires. Evaluation therefore is modeled
-by the flow of particles along the wires.
+``particles'' or ``waves'' that may appear on the wires. Evaluation therefore
+is modeled by the flow of waves and particles along the wires.
 
 %% In fact, when talking about {{langRev}} circuits, we will often use the
 %% words {{value}} and {{particle}} interchangeably.
@@ -478,7 +482,9 @@ by the flow of particles along the wires.
 \item The product type {{b1*b2}} may be represented using either one wire
   labeled {{b1*b2}} or two parallel wires labeled {{b1}} and {{b2}}. In the
   case of products represented by a pair of wires, when tracing execution
-  using particles, one should think of one value/particle on each wire.
+  using particles, one should think of one particle on each wire or
+  alternatively as in folklore in the literature on monoidal categories as a
+  ``wave.''
 \begin{multicols}{2}
 \begin{center}
 \scalebox{0.95}{
@@ -1522,52 +1528,54 @@ isomorphisms witnessing:
 \section{Computing in the Field of Rationals : {{langRevEE}} }
 \label{sec:rat}
 
+In this section we develop an operational semantics for {{langRev}} extended
+with negative and fractional types, {{langRevEE}}. The operational semantics
+takes the abstract categorical diagrams which were previously known but gives
+them a computational interpretation based on reverse execution for negative
+types and unification for fractional types. Even though this computational
+interpretation appears straightforward in retrospect, it constitutes a
+breakthrough because it breaks the preconceived idea that there is only one
+notion of duality and hence that both negative and fractional types should be
+implemented using the same underlying mechanism. In some sense, the folkore
+literature on monoidal categories describing the evaluations for additive and
+multiplicative fragments are ``particle-style'' and ``wave-style'' can be
+seen to suggest either a unified or separate implementations. But, since de
+Morgan, we have been predisposed to think of only one notion of duality which
+persisted to even linear logic. (See Sec.~\ref{sec:related} for further
+discussion of duality.)
 
-In this section we develop the semantics for {{langRev}} extended with
-negative and fractional types, {{langRevEE}}.  We start with the
-semantics for {{langRev}} defined in Sec \ref{sec:pi}, which we will
-systematically rewrite until we have the desired {{langRevEE}}
-sematics. Broadly this construction takes two steps 
+For the purposes of this section, we start with the semantics for {{langRev}}
+defined in Sec~\ref{sec:pi}, and we will systematically rewrite it to achieve
+the desired {{langRevEE}} semantics. This rewriting consists of two main steps:
 
 \begin{enumerate}
-\item We rewrite the semantics in Sec \ref{sec:pi} using unification
-  of the values instead of direct pattern matching. This gives us the
-  neccessary infrastructure for fractional types, as we will see. 
-
+\item We rewrite the semantics in Sec~\ref{sec:pi} using unification of the
+  values instead of direct pattern matching. This gives us the neccessary
+  infrastructure for fractional types. We assume the reader is familiar with
+  the idea of unification as realized using logic variables, substitutions,
+  and reification as presented in any standard text on logic programming.
 \item We write a reverse interpreter by reversing the direction of the
-  `{{|-->}}' reductions. This gives us the neccessary infrastructure for
+  {{|-->}} reductions. This gives us the neccessary infrastructure for
   negative types.
 \end{enumerate}
 
-%%%%%%%%%%%%%%%%%%%
-\subsection{Unification and Logic Programming}
-
-\roshan{Can we cite away unification, reificatio, handling of
-  substitutions etc?}
-
 %%%%%%%%%%%%%%%%%%%%%
-\subsection{Extending {{langRev}} Semantics}
+\subsection{Unification} 
 
-
-\paragraph{Primitive Isomorphsims.}
-Previously the reductions of the primitive isomorphisms were specified
-in the following form.
+Previously the reductions of the primitive isomorphisms were specified in the
+following form:
 
 {{ iso v_{input pattern} |--> v_{output pattern} }}
 
 \noindent
-In the precense of unification, we rewrite them to accept the incoming
-substitution and extend it with the appropriate unification.
+Instead of relying on pattern-matching, we rewrite the rules to accept an
+incoming substitution to which the required pattern-matching rules are added
+as constraints. The general case is:
 
 {{ iso s v' |--> (v_{output pattern}, s[v' <><> v_{input pattern}]) }}
 
-
-\roshan{Talk about non-determinism, determinism and our handling of
-  choices. Also, in what sense are we logically reversible?}
-
-\paragraph{Extending the evaulator with unification.} 
-We have rewriten the semantics of Sec. \ref{sec:pi} with
-unification. The behaviour of the intepreter has not changed.
+Using the same the entire semantics can be extended to thread the
+substitution as shown below:
 
 %subcode{opsem} include main
 %! columnStyle = rclr
@@ -1586,10 +1594,27 @@ unification. The behaviour of the intepreter has not changed.
 % {[ c1, v1, LeftT C c2 v2,s ]}_{fwd} &|-->& <c2, v2, RightT c1 v1 C, s>_{fwd}
 % {[ c2, v2, RightT c1 v1 C,s ]}_{fwd} &|-->& {[ c1 (*) c2, (v1, v2), C,s ]}_{fwd}
 
-\paragraph{Backward evaluator.}
-Here we have written a ``backward'' evaluator in the same style, 
-i.e., evaluation {{c v}} in this evaluator is equivalent to evaluating
-{{C^{dagger} v}} in the forward evaluator.
+Most of the rules look obviously correct but there is a subtle
+point. Consider the case for {{c1 (+) c2}}. Previously the shape of the value
+determined which of the combinators {{c1}} or {{c2}} to use. Now the incoming
+value could be a fresh logical variable, and indeed we have two rules with
+the same left hand side, and only depending on the success or failure of some
+further unification, can we decide which of them applies. The situation is
+common in logic programming in the sense that it is considered a
+non-deterministic process that keeps searching for the right substitution if
+any. Typical implementations of logic programming languages further provide
+top-level mechanisms to manipulate this non-deterministic search, for example
+by returning one answer and giving the user to ask for more answers. We
+abstract from this top-level semantics and view the rules above as being
+applied non-deterministically. 
+
+%%%%%%%%%%%%%%%%%
+\subsection{Reverse Execution}
+
+Given that our language is reversible (Proposition~\ref{prop:logrev}), a
+backward evaluator is relatively straightforward to implement: it simply
+corresponds to. Indeed using the backward evaluator to calculate{{c v}} is
+equivalent {{c^{dagger} v}} in the forward evaluator.
 
 %subcode{opsem} include main
 %! columnStyle = rclr
@@ -1611,8 +1636,9 @@ i.e., evaluation {{c v}} in this evaluator is equivalent to evaluating
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Semantics of {{langRevEE}} }
 
-The previous section has defined all the pieces needed to define the
-semantics of {{langRevEE}} and we piece them together here. 
+Combining the two constructions above, we get the semantics of the full
+{{langRevEE}} language by adding the rules for the two variants of~{{eta}}
+and~{{eps}}.
 
 \begin{enumerate}
 \item 
@@ -1651,118 +1677,105 @@ of primitive isomorphisms:
 
   \end{enumerate}
 
-
 \end{enumerate}
+
+The additions formalize our previous discussions and should not be surprising
+at this point.
 
 %% %%%%%%%%%%%%%%%%%%%%%%
 %% \subsection{Constructions in {{langRevEE}} }
 %% \label{sec:monoidal-constructions}
 
 
-\paragraph*{Zero Information.}
-As with {{eta+}}, we argue that {{eta*}} constructs no new
-information, instead it gives us the ability to explore as many worlds
-as permitted by the type {{b}}. So situate ourselves in any specific
-world, we have to supply additional information in the form of
-unifying the particle or anti-particle with a particle representing
-known information. Hence only by supplying information to a an
-entangled pair can we read information from it -- and always exactly
-as much information as we supplied.
+% \paragraph*{Zero Information.}
+% As with {{eta+}}, we argue that {{eta*}} constructs no new
+% information, instead it gives us the ability to explore as many worlds
+% as permitted by the type {{b}}. So situate ourselves in any specific
+% world, we have to supply additional information in the form of
+% unifying the particle or anti-particle with a particle representing
+% known information. Hence only by supplying information to a an
+% entangled pair can we read information from it -- and always exactly
+% as much information as we supplied.
 
-ADD MATH. 
+% ADD MATH. 
 
-\emph{Zero Information.}  The intuitive explanation that {{eta+}} and
-hence {{eps+}} introduces no information effects is that {{-b+b}} as a
-type whose value is observable only if you `pay' {{b}} amount of
-information to the {{-b}} branch. When {{b}} amount of information is
-supplied {{(-b+b)+b=b}} amount of information is returned to
-you. (TODO. more needs to be said here.)
+% \emph{Zero Information.}  The intuitive explanation that {{eta+}} and
+% hence {{eps+}} introduces no information effects is that {{-b+b}} as a
+% type whose value is observable only if you `pay' {{b}} amount of
+% information to the {{-b}} branch. When {{b}} amount of information is
+% supplied {{(-b+b)+b=b}} amount of information is returned to
+% you. (TODO. more needs to be said here.)
 
-For this reason, our treatment of negative values in the context of
-{{langRev}} is particularly simple. We will have a type $0$ and an
-isomorphism {{0 <-> a + (-a)}} that when used in the left-to-right direction
-allows us to create a value and a corresponding debt out of nothing. Both the
-value and its negative counterpart can flow anywhere in the system. Because
-information is preserved, a closed program (which does not have any
-``dangling'' negative values) will eventually have to match the negative
-value with some corresponding value, effectively using the isomorphism in the
-right-to-left direction. 
-
-
+% For this reason, our treatment of negative values in the context of
+% {{langRev}} is particularly simple. We will have a type $0$ and an
+% isomorphism {{0 <-> a + (-a)}} that when used in the left-to-right direction
+% allows us to create a value and a corresponding debt out of nothing. Both the
+% value and its negative counterpart can flow anywhere in the system. Because
+% information is preserved, a closed program (which does not have any
+% ``dangling'' negative values) will eventually have to match the negative
+% value with some corresponding value, effectively using the isomorphism in the
+% right-to-left direction. 
 
 \paragraph*{Observability.} 
-Execution of program is defined by {{c : b1 <-> b2}} when evaluated on input
-{{v1 : b1}} gives us a value {{v2 : b2}} on termination. Execution is well
-defined only if {{b1}} and {{b2}} are entirely positive types. This is
+
+The reductions above allow us to apply a program {{c : b1 <-> b2}} to an
+input {{v1 : b1}} to produce a result {{v2 : b2}} on termination. Execution
+is well defined only if {{b1}} and {{b2}} are entirely positive types. If
+either {{b1}} or {{b2}} is a negative or fractional type, the system has
+``dangling'' unsatisfied demands or constraints. For this reason, we
+constrain entire programs to have positive non-fractional types. This is
 similar to the constraint that Zeilberger imposes to explain intuitionistic
 polarity and delimited control~\cite{10.1109/LICS.2010.23}.
 
-Consider the program that
+% (TODO: So this is a really bad explanation. But this section is really
+% important and we need to explain carefully. Maybe an analogy can be
+% drawn to Cayley diagrams for groups to point out that the notion of
+% `i' is entirely artificial, but it is essential to the discourse.)
 
-(TODO: So this is a really bad explanation. But this section is really
-important and we need to explain carefully. Maybe an analogy can be
-drawn to Cayley diagrams for groups to point out that the notion of
-`i' is entirely artificial, but it is essential to the discourse.)
+% \begin{center}
+%   \includegraphics{diagrams/shuffle.pdf}
+% \end{center}
 
-\begin{center}
-  \includegraphics{diagrams/shuffle.pdf}
-\end{center}
+% We define observables to be only positive types. The outputs of
+% programs that output mixed positive and negative types are not
+% observable.  Also, programs that input mixed positive and negatives
+% types are not executable.
 
-We define observables to be only positive types. The outputs of
-programs that output mixed positive and negative types are not
-observable.  Also, programs that input mixed positive and negatives
-types are not executable.
+% It is not fair to say that negative types flow backwards. The
+% following circuits are valid in {{langRevEE}}. It is however proper to
+% say that for any type {{b}} that flows in a direction, the type {{-b}}
+% flows in the reverse direction.
 
-It is not fair to say that negative types flow backwards. The
-following circuits are valid in {{langRevEE}}. It is however proper to
-say that for any type {{b}} that flows in a direction, the type {{-b}}
-flows in the reverse direction.
+% Several things we don't know how to do, or are sloppy about. Some of
+% these are deep questions to which there is no immeidate answer.
 
-Several things we don't know how to do, or are sloppy about. Some of
-these are deep questions to which there is no immeidate answer.
+% \begin{itemize}
 
-\begin{itemize}
+% \item Is the language without recursive types always terminating? For
+%   the right symmetry with annihilation, it is desirable to have
+%   non-termination.
 
-\item Is the language without recursive types always terminating? For
-  the right symmetry with annihilation, it is desirable to have
-  non-termination.
+% \item What is the correct lemma for logical reversibility now?
 
-\item What is the correct lemma for logical reversibility now?
-
-\item We should say things about information preservation. At least
-  more so than what is being said now.
+% \item We should say things about information preservation. At least
+%   more so than what is being said now.
 
 
-\item Multiplicative duality gives us a means of talking about
-  equivalence classes of values. This should correspond to all sorts
-  of other things -- groupoids, Lawvere theories etc. We barely even
-  understand these connections.
+% \item Multiplicative duality gives us a means of talking about
+%   equivalence classes of values. This should correspond to all sorts
+%   of other things -- groupoids, Lawvere theories etc. We barely even
+%   understand these connections.
 
-\item How does this connect to QC? Is there any strong connection such
-  that the SAT solver here is an alternate QC algorithm to Shor's?
+% \item How does this connect to QC? Is there any strong connection such
+%   that the SAT solver here is an alternate QC algorithm to Shor's?
 
-\end{itemize}
+% \end{itemize}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Advanced Example: SAT Solver in {{langRevEE}} }
 \label{sec:prog}
 \label{sec:sat-solver}
-
-\amr{to merge}
-Annihilation and non-termination describe undefined program
-execution. While non-termination characterizes an iteration that fails
-to terminate, annihilation characterizes a constraint that has no
-fixpoint. The SAT-solver of Sec. \ref{sec:sat-solver} works by
-annihilating only the program states that do not match the boolean
-satisfiability constraint.
-\emph{Annihilation.}  
-With {{eta*}} and {{eps*}}, we can construct a {{trace*}} operation
-which gives us the ability to find the fixpoint of a constraint.  If
-the constraint has no satisfying values, there is no fixpoint possible
--- we use the term \emph{annihilation} to describe the corresponding
-undefined state of the program.
-
 
 % Additive traces correspond to iteration and multiplicative traces
 % correspond to fixpoint of constraints. Addtive traces have been
@@ -1794,6 +1807,19 @@ pair {{(a,c)}}. The function {{f}} must produce an output {{(b,c')}} for each
 such input. If the input {{c}} and the output {{c'}} are the same they can be
 annihilated by {{eps*}}; otherwise the execution gets stuck and this
 particular choice of {{c}} is pruned. 
+
+% Annihilation and non-termination describe undefined program
+% execution. While non-termination characterizes an iteration that fails
+% to terminate, annihilation characterizes a constraint that has no
+% fixpoint. The SAT-solver of Sec. \ref{sec:sat-solver} works by
+% annihilating only the program states that do not match the boolean
+% satisfiability constraint.
+% \emph{Annihilation.}  
+% With {{eta*}} and {{eps*}}, we can construct a {{trace*}} operation
+% which gives us the ability to find the fixpoint of a constraint.  If
+% the constraint has no satisfying values, there is no fixpoint possible
+% -- we use the term \emph{annihilation} to describe the corresponding
+% undefined state of the program.
 
 This construction can be used to solve a large class of constraint
 satisfaction problems. We illustrate the main ideas with the implementation
