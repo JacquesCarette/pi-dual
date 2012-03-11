@@ -1201,11 +1201,15 @@ test.
 
 \emph{Lifting a operation of positive types to negated types}
 
-Given {{c : b1 <-> b2}}
-
+\begin{multicols}{2}
 \begin{center}
   \includegraphics{diagrams/neg_lift.pdf}
-\end{center}
+\end{center}  
+
+%subcode{proof} include main
+%@ c : b1 <-> b2
+%@@ neg c : (-b1) <-> (-b2)
+\end{multicols}
 
 %%%%%%%%%%%%%%%%%%%%%%
 \subsection{Multiplicative Duality in {{langRev}} }
@@ -1294,19 +1298,19 @@ value of type {{1/b}} is always the dual of the chosen one.
 %% >>>>>>> other
 
 %% <<<<<<< local
-This can be understood in terms of the \emph{logic programming} as
-follows. Operator {{eta* : 1 <-> (1/b)*b}} acts as the site of
-creation of a new typed logic variable and constructs from it a value
-of type {{b}} and its dual of type {{1/b}}. These two values are free
-to move independently through the circuit. Operations on one value
-affect what operations are possible on the other since they are both
-related by an underlying logic variable. Dually, {{eps*}} acts as a
-unification site for values of type {{b}} and {{1/b}} flowing along
-both branches. If the values are not unifiable duals, then the
-specific program sequence fails. Like with logic programming, one can
-has many worlds where some might fail, while others make
-progress. Sec. \ref{sec:rat} has more details.  If the values are
-exactly duals, then unification succeeds and {{eta*}} returns {{1}}.
+In terms of \emph{logic programming}, {{eta* : 1 <-> (1/b)*b}} acts as
+the site of creation of a new typed logic variable and constructs two
+values using it: a value of type {{b}} and its dual of type
+{{1/b}}. These two values are free to move independently through the
+computation. Operations on one value affect what operations are possible
+on the other since they are both related by an underlying logic
+variable. The operator {{eps*}} acts as a unification site for values of
+type {{b}} and {{1/b}} flowing along both branches. If the values are
+not unifiable duals, then the specific program sequence fails. Like
+with logic programming, one can has many worlds where some might fail,
+while others make progress. Sec. \ref{sec:rat} has more details.  If
+the values are exactly duals, then unification succeeds and {{eta*}}
+returns {{1}}.
 
 % \paragraph*{Entanglement and Anti-Particles.}
 
@@ -1483,14 +1487,10 @@ presented here applies to a specific monoid.
 
 \begin{enumerate}
 
-\item 
-\emph{ {{eps_{fst} }} }
+%% \item 
+%% \emph{ {{eps_{fst} }} }
 
-{{(-b1)*b2 + b1*b2 <-> 0}}
-
-\begin{center}
-  \includegraphics{diagrams/eps_fst.pdf}
-\end{center}
+%% {{(-b1)*b2 + b1*b2 <-> 0}}
 
 \item 
 \emph{Lifting negation out of {{*}}. }
@@ -1498,10 +1498,19 @@ presented here applies to a specific monoid.
 {{(-b1) * b2 <-> -(b1 * b2) <-> b1 * (-b2)}}
 
 \begin{center}
-  \includegraphics{diagrams/mult_neg.pdf}
+\scalebox{0.8}{
+  \includegraphics{diagrams/eps_fst.pdf}
+}
 \end{center}
 
-The following isomorphism can be constructed similarly 
+\begin{center}
+\scalebox{0.9}{
+  \includegraphics{diagrams/mult_neg.pdf}
+}
+\end{center}  
+
+\item
+\emph{Multiplying Negatives}
 
 {{b1 * b2 <-> (-b1)*(-b2)}}
 
