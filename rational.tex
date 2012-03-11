@@ -1183,7 +1183,7 @@ test.
   \includegraphics{diagrams/dist_neg_plus.pdf}
 \end{center}
 
-\emph{Lifting a operation of positive types to negated types}
+\emph{Lifting an operation of positive types to negated types}
 
 \begin{multicols}{2}
 Given {{c : b1 <-> b2}}
@@ -1196,7 +1196,6 @@ Given {{c : b1 <-> b2}}
 %@ c : b1 <-> b2
 %@@ neg c : (-b1) <-> (-b2)
 \end{multicols}
-\end{center}
 
 %%%%%%%%%%%%%%%%%%%%%%
 \subsection{Multiplicative Duality in {{langRev}} }
@@ -1851,18 +1850,22 @@ these are deep questions to which there is no immeidate answer.
 % studied in the past \cite{infeffects} and here we focus on the
 % multiplicative trace.
 
-The construction presented here is a novel SAT-solver that relies on
-{{trace*}} for its solution. It varies from previous classical SAT solvers
-\amr{must cite ???} in that there is no explicit search operation on the
-boolean space. It also varies from previous quantum SAT solvers \amr{must
-  cite ???} in that it does uses a {{trace}} operation to compute a fixpoint
-which is the solution following which an isomorphic clone operation allows us
-to examine the result.  Though we focus on SAT here, this construction can be
-generalized to any constraint satisfaction problem whose search space can be
-represented by a recursive type and for which an isomorphic clone operation
-can be constructed. 
-can be constructed. Before we start, let us recall two constructions:
+% The construction presented here is a novel SAT-solver that relies on
+% {{trace*}} for its solution. It varies from previous classical SAT solvers
+% \amr{must cite ???} in that there is no explicit search operation on the
+% boolean space. It also varies from previous quantum SAT solvers \amr{must
+%   cite ???} in that it does uses a {{trace}} operation to compute a fixpoint
+% which is the solution following which an isomorphic clone operation allows us
+% to examine the result.  Though we focus on SAT here, this construction can be
+% generalized to any constraint satisfaction problem whose search space can be
+% represented by a recursive type and for which an isomorphic clone operation
+% can be constructed. 
+% can be constructed. Before we start, let us recall two constructions:
 
+We illustrate the expressive power of first-class constraints represented by
+fractional types
+
+%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions with Booleans}
 
 Before we start, let us recall a construction of conditionals from
