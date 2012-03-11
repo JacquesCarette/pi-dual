@@ -1793,18 +1793,88 @@ which is the solution following which an isomorphic clone operation allows us
 to examine the result.  Though we focus on SAT here, this construction can be
 generalized to any constraint satisfaction problem whose search space can be
 represented by a recursive type and for which an isomorphic clone operation
-can be constructed. Before we start, let us recall two constructions:
+can be constructed. Before we start, let us recall a constructions from 
+prior work \cite{infeffects}. 
 
-\begin{enumerate}
-\item Recall from previous work that for the types {{bool}} and, by
-  extension, any tuple of {{bool}}, an isomorphic clone operation can
-  be constructed (See Lemma 7.2 \cite{infeffects}).
+\emph{Conditionals.}
+Given any combinator {{c : b <-> b}} we can construct a combinator called
+{{if_c : bool*b <->bool*b}} in terms of {{c}}, where {{if_c}} behaves like a
+one-armed $\mathit{if}$-expression. If the supplied boolean is {{true}} then
+the combinator {{c}} is used to transform the value of type~{{b}}. If the
+boolean is {{false}}, then the value of type {{b}} remains unchanged. We can
+write down the combinator for {{if_c}} in terms of {{c}} as 
+{{ dist (;) ((id (*) c) (+) id) (;) factor }}.
 
-\item Also, Sec. 3.3 \cite{infeffects} constructed the combinator
-  {{if_{not} }}, which when generalized to two bits was
-  {{toffoli}}. This construction maybe generalised to {{n}} bits as
-  {{if^n_{not} }}.
-\end{enumerate}
+% Let us look at the combinator pictorially as if it were a circuit and values
+% are like particles that flow through this circuit.  
+
+The diagram below shows the input value of type {{(1+1)*b}} processed
+by the distribute operator {{dist}}, which converts it into a value of
+type {{(1*b)+(1*b)}}. In the {{left}} branch, which corresponds to the
+case when the boolean is {{true}} (i.e. the value was {{left ()}}),
+the combinator~{{c}} is applied to the value of type~{{b}}. The right
+branch which corresponds to the boolean being {{false}} passes along
+the value of type {{b}} unchanged.
+
+\begin{center}
+\scalebox{1.0}{
+%%subcode-line{pdfimage}[diagrams/if_c.pdf]
+\includegraphics{diagrams/thesis/cnot.pdf}
+}
+\end{center}
+
+% We will be seeing many more such wiring diagrams in this paper and it is
+% useful to note some conventions about them. Wires indicate a
+% value that can exist in the program. Each wire, whenever possible, is
+% annotated with its type and sometimes additional information to help clarify
+% its role. When multiple wires run in parallel, it means that those values
+% exist in the system at the same time, indicating pair types. When there is a
+% disjunction, we put a {{+}} between the wires. 
+% Combinators for distribution {{dist}} and factoring {{factor}}
+% are represented as triangles with their operator symbols in them. Other
+% triangles may be used and, in each case, types or labels will be used to
+% clarify their roles. Finally, we don't draw boxes for combinators such as
+% {{id}}, commutativity, and associativity, but instead just shuffle the wires
+% as appropriate.
+
+\emph{Boolean Operation based on {{if_c}}.}
+The combinator {{if_{not} }} has type {{bool*bool<->bool*bool}} and
+negates its second argument if the first argument is {{true}}. This
+gate {{if_{not} }} is often referred to as the {{cnot}} gate. An
+equivalent construction that is useful is {{else_{not} }} where we
+negate the second argument only is the first is {{false}}. 
+
+Similarly, we can iterate the construction of {{if_c}} to check
+several bits. The gate {{if_{cnot} }}, which we may also write as
+{{if^2_{not} }}, checks two booleans and negates the result wire only
+if they are both {{true}}. The gate {{if^2_{not} }} is well known as
+the universal reversible primitive gate called the `Toffoli gate'
+\cite{Toffoli:1980}.  We can generalize this construction to
+     {{if^n_{not} }} which checks {{n}} bits and negates the result
+     wire only if they are all {{true}}.
+
+\emph{Cloning Bits.} The gate {{else_{not} }} has the interesting
+property that as long as the second argument is fixed to be {{true}},
+output of the second wire is always the same as teh value of the first
+wire. In other words {{else_{not} }} can be thought of as cloning the
+value of the first wire. A circuit of {{n}} parallel {{else_{not} }}
+gates can hence clone {{n}} bits. They also consume {{n}} {{true}}
+inputs in the process. Let us call this construction 
+{{clone^n_{bool} }}.
+
+
+%% \begin{enumerate}
+%% \item Recall from previous work that for the types {{bool}} and, by
+%%   extension, any tuple of {{bool}}, an isomorphic clone operation can
+%%   be constructed (See Lemma 7.2 \cite{infeffects}).
+
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \item Also, Sec. 3.3 \cite{infeffects} constructed the combinator
+%%   {{if_{not} }}, which when generalized to two bits was
+%%   {{toffoli}}. This construction maybe generalised to {{n}} bits as
+%%   {{if^n_{not} }}.
+%% \end{enumerate}
 
 %% That said, we will focus on the limited case of boolean satisfiability
 %% here.
@@ -1853,9 +1923,9 @@ has been detailed before \cite{Toffoli:1980,infeffects}.  However the
 computation of {{f}} is meaningful {{iff}} the heap {{bool^h}} is
 initialized appropriately. We can ensure that the heap has the
 appropriate initial value by checking the heap and negating a second
-control wire, if the values do not match, i.e., the dotted part in
-the diagram below and is {{if^h_{not} }} followed by a {{not}} on the
-`heap control wire'.
+control wire, if the values do not match, i.e., the dotted part in the
+diagram below and is {{if^h_{not} }} followed by a {{not}} operator on
+the control wire.
 
 \begin{center}
 \scalebox{1.2}{
@@ -1868,7 +1938,7 @@ the diagram below and is {{if^h_{not} }} followed by a {{not}} on the
 \emph{Cloning the Solution.}.  Let us call the above construction
 which maps inputs, heap and control wires to input, heap and control
 wires as {{sat_f}}. The SAT-solver is is completed by tracing the
-{{sat_f}} and cloning the `inputs'. 
+{{sat_f}} and cloning the `inputs' using {{clone^n_{bool} }}.
 
 \begin{center}
 \scalebox{1.5}{
