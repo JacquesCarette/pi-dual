@@ -1140,7 +1140,7 @@ Mention LL and {{a -o b}}.
 
 Let us use the shorthand {{b1 -o+ b2 = 0 <-> -b1 + b2}}. See
 Sec. \ref{sec:hof} for a discussion of the additive functions
-vs. multiplicative functions.
+vs. multiplicative functions. \roshan{Where is the HOF discussion?}
 
 \emph{Function composition.}
 
@@ -1471,9 +1471,14 @@ replacing {{+}} by {{*}}, \textit{mutatis mutandis}.
 \subsection{Constructions specific to Negatives and Fractions}
 \label{sec:specific-constructions}
 
-While the constructions in Sec \ref{sec:monoidal-constructions} apply
-to both the {{(0,+)}} and {{(1,*)}} monoids, each construction
-presented here applies to a specific monoid. 
+While the constructions in Sec \ref{sec:neg} apply to both the
+{{(0,+)}} and {{(1,*)}} monoids, each construction presented here
+applies to a specific monoid.
+
+\roshan{Each of these isomorphisms has baffled us -- either we
+  believed they were not constructible. Or we have struggled to
+  comprehend what they mean. Hence it is worth saying a sentence or
+  two about each beyond how they are constructed.}
 
 \begin{enumerate}
 
@@ -1871,8 +1876,8 @@ DIAGRAM clone n bits
 
 
 \subsection{Construction of the Solver}
-The key insight underlying the construction comes from the fact that we
-can build \emph{annihilation circuits}.  Consider the circuit below
+The key insight underlying the construction comes from the fact that
+we can build \emph{annihilation circuits}.  Consider the circuit below
 that has no observable output, i.e., for all inputs it is
 annihilating. This happens because it constructs a boolean and its
 dual, negates one of them and attempts to collapse them.
