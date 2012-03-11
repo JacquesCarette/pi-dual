@@ -26,6 +26,8 @@
 \usepackage{bm}
 \usepackage{cmll}
 
+\newcommand{\fname}[1]{\ulcorner #1 \urcorner}
+\newcommand{\fconame}[1]{\llcorner #1 \lrcorner}
 
 %% \newtheorem{theorem}{Theorem}[section]
 %% \newtheorem{lemma}[theorem]{Lemma}
@@ -294,10 +296,10 @@ be emphasized:
   function that asks for an {{a}} and then produces a {{b}}. When viewed as
   functions, we write these types as {{a -o+ b}} and {{a -o* b}}
   respectively. Alternatively we can view these values as first producing a
-  {{b}} and then demanding an {{a}} and in that perspective they correspond
-  to delimited continuations. Evidently, as the discussion above suggests,
-  these two notions of functions are not the same at all and should not be
-  conflated. Sec.~\ref{sub:hof} discusses this point in detail.
+  value of type {{b}} and then demanding an {{a}} and in that perspective
+  they correspond to delimited continuations. Evidently, as the discussion
+  above suggests, these two notions of functions are not the same at all and
+  should not be conflated. Sec.~\ref{sub:hof} discusses this point in detail.
 
 \item The main reason credit card transactions are convenient is because they
   disentangle the propagation of the resources (money) from the propagation
@@ -426,6 +428,13 @@ definition.
 %     &|& dist0 | factor0 | dist | factor 
 % comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
 \end{definition}
+
+\paragraph*{Adjoint.} 
+An important property of the language is that every combinator {{c}} has an
+adjoint {{c{dagger}}} that reverses the action of {{c}}. This is evident by
+construction for the primitive isomorphisms. For the closure combinators, the
+adjoint is homomorphic except for the case of sequencing in which the order
+is reversed, i.e., {{(c1 (;) c2){dagger} = (c2{dagger}) (;) (c1{dagger}) }}.
 
 %%%%%%%%%%%%%%%
 \subsection{Graphical Language}
@@ -720,8 +729,8 @@ The interesting thing about the semantics is that it represents a reversible
 abstract machine. In other words, we can compute the start state from the
 stop state by changing the reductions {{|-->}} to run backwards
 {{<--|}}. When running backwards, we use the isomorphism represented by a
-combinator {{c}} in the reverse direction which we indicate by writing
-{{c{dagger}}}. For example, {{distrib{dagger} = factor}} and so on.
+combinator {{c}} in the reverse direction, i.e., we use the adjoint
+{{c{dagger}}}.
 
 \begin{proposition}[Logical Reversibility]
 \label{prop:logrev}
@@ -906,8 +915,8 @@ survey paper on monoidal
 categories~\cite{springerlink:10.1007/978-3-642-12821-94} and presented in
 the context of our language. 
 
-For a monoidal category to be compact closed, the maps {{eta}} and {{eps}}
-must satisfy a coherence condition that is usually visualized as follows
+For a monoidal category to be compact closed, the maps~{{eta}} and~{{eps}}
+must satisfy a coherence condition that is usually visualized as follows:
 \begin{center}
   \includegraphics{diagrams/coherence.pdf}
 \end{center}
@@ -926,11 +935,11 @@ define {{trace+ f : a <-> b}} as:
 
 {{ trace+ f = zeroi (;) (id (+) eta+) (;) (f (+) id) (;) (id (+) eps+) (;) zeroe }} 
 
-We have omitted some the commutativity and associativity shuffling to
+\noindent We have omitted some the commutativity and associativity shuffling to
 communicate the main idea. We are given a value of type {{a}} which we embed
 into {{a+0}} and then {{a + (c - c)}}. This can be reassociated into 
 {{(a+c) - c}}. The component {{a+c}} which until now is just an appropriately 
-tagged value of type {{a}} can be given to {{f}} which transforms it to
+tagged value of type {{a}} can be given to~{{f}} which transforms it to
 something of type {{b+c}}. If the result is in the {{b}}-summand, it is produced
 as the answer; otherwise the result is in the {{c}}-summand; {{eps+}} is used to
 make it flow backwards to be fed to the {{eta+}} located at the beginning of the 
@@ -940,25 +949,61 @@ sequence. Iteration continues until a {{b}} is produced.
 %%%%%
 \paragraph*{Involution (Principium Contradictiones)}
 
-{{b <-> -(-b)}}
+In a symmetric compact closed category, we can build isomorphisms that the
+dual operation is an involution. Specifically, we get the isomorphisms 
+{{b <-> -(-b)}} and {{b <-> (1/(1/b))}}. For the additive case, the 
+isomorphism is defined as follows:
 
-\begin{center}
-  \includegraphics{diagrams/double_neg.pdf}
-\end{center}
+{{ (id (+) eta+) (;) (swap+ (+) id) (;) (id (+) eps+) }}
+
+\noindent where we have omitted the 0 introduction and elimination. The idea
+is as follows: we start with a value of type {{b}}, embed it into {{b+0}} and
+use {{eta}} to create something of type {{b + (-(-b) + (-b))}}. This is possible
+because {{eta}} has the polymorphic type {{-a + a}} which can be instantiated
+to {{-b}}. We then reshuffle the type to produce {{-(-b) + (-b + b)}} and cancel
+the right hand side using {{eps+}}.  The construction for the multiplicative 
+case is identical and omitted.
+
+%% {{b <-> -(-b)}}
+%% 
+%% this is the wrong diagram: see lemma 4.17 in selinger's paper
+%% \begin{center}
+%%   \includegraphics{diagrams/double_neg.pdf}
+%% \end{center}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Functions and Delimited Continuations}
 \label{sub:hof}
 
-Mention LL and {{a -o b}}.
+Although these constructions are also standard, they are less known and they
+are particularly important in our context: we devote a little more time to
+explain them. Our discussion is mostly based on Abramsky and Coecke's article
+on categorical quantum mechanics~\cite{abramsky-2008}.
+
+In a compact closed category, each morphism {{f : a <-> b }} can be given a
+\emph{name} and a \emph{coname}. For the additive fragment, the name
+$\fname{f}$ has type {{0 <-> (-a + b)}} and the coname $\fconame{f}$ has type
+{{a + (-b) <-> 0}}. For the multiplicative fragment, the name $\fname{f}$ has
+type {{1 <-> ((1/a) * b))}} and the coname $\fconame{f}$ has type 
+{{(a * (1/b)) <-> 1}}. Intuitively, this means that for each morphism, 
+it is possible to construct, from ``nothing,'' an object in the category that 
+denotes this morphism, and dually it is possible to eliminate this object.
+The construction of the name and coname of {{c : b1 <-> b2}} in the additive case 
+can be visualized as follows:
 
 \begin{center}
   \includegraphics{diagrams/function.pdf}
 \end{center}
+\begin{center}
+  \includegraphics{diagrams/delimc.pdf}
+\end{center}
 
-Let us use the shorthand {{b1 -o+ b2 = 0 <-> -b1 + b2}}. See
-Sec. \ref{sec:hof} for a discussion of the additive functions
-vs. multiplicative functions. 
+Intuitively the name consists of viewing {{c}} as a function and the coname
+consists of viewing {{c}} as a delimited continuation.
+
+In addition to being able to represent morphisms, it is possible to express
+function composition. For the additive case, the composition is depicted
+below:
 
 \begin{multicols}{2}
 \scalebox{1.1}{
@@ -969,12 +1014,15 @@ vs. multiplicative functions.
     \includegraphics{diagrams/compose.pdf}
 }
 \end{multicols}
-This is also equivalent to sequencing both the computation blocks. 
+which is essentially equivalent to sequencing both the computation blocks as
+shown below:
 
 \begin{center}
   \includegraphics{diagrams/compose2.pdf}
 \end{center}
 
+Applying a function consists of making it flow backwards to satisfy the demand 
+of the function:
 \begin{multicols}{2}
 \begin{center}
 \scalebox{1.0}{
@@ -988,26 +1036,12 @@ This is also equivalent to sequencing both the computation blocks.
 \end{center}
 \end{multicols}
 
-%%%%%
-\paragraph*{Delimited continuation}
-
-\begin{center}
-  \includegraphics{diagrams/delimc.pdf}
-\end{center}
-
-
-In a conventional language, higher-order functions capture scope and can be
-represented as first-class values. In {{langRevEE}}, we have two notions of
-functions both of which share similarities with conventional higher-order
-functions.
-
-
-
-We write these type
-written {{a-o*a}} whose witness may be thought of as the identity function at
-the type {{a}}.  For example, consider a datatype {{color = R|Gr|B}}, and let
-us consider the following manipulations:
-
+Having reviewed the representation of functions, we now discuss the
+similarities and differences between the two notions of functions and their
+relation to conventional (linear) functions which mix additive and
+multiplicative components. For that purpose, we use a small example.
+Consider a datatype {{color = R|Gr|B}}, and let us consider the following
+manipulations:
 \begin{itemize}
 \item Using the fact that {{1}} is the multiplicative unit, generate
   from the input {{()}} the value {{((),())}} of type {{1 * 1}};
@@ -1037,30 +1071,36 @@ Dually, the additive reading of the above manipulations correspond to
 functions of the form {{a-o+a}}, witnessing isomorphisms of the form
 {{0<->(-a)+a}}). The remixed additive functions express control flow transfer
 between two subcomputations, \emph{only one of which exists} at any point,
-i.e., they capture the essence of coroutines. Additive and multiplicative
-functions are further discussed in Sec.~\ref{sec:rat}.  It should be evident
-that in a universe in which information is not guaranteed to be preserved by
-the computational infrastructure, the above slicing and dicing of functions
-would make no sense. Once the computational framework guarantees that
-information is maintained, it becomes possible to break dependencies,
-generate debts and constraints, and let these flow as first-class values,
-because they \emph{must} eventually be satisfied. 
+i.e., they capture the essence of coroutines. 
+
+It should be evident that in a universe in which information is not
+guaranteed to be preserved by the computational infrastructure, the above
+slicing and dicing of functions would make no sense. But linearity is not
+sufficient: one must also recognize that the additive and multiplicative
+spaces are different. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Constructions specific to Negatives and Fractions}
+\subsection{Additional Constructions}
 \label{sec:specific-constructions}
 
+The additional constructions below (presented with minimal commentary)
+confirm that conventional algebraic manipulations in the mathematical field
+of rationals do indeed correspond to realizable type isomorphisms in our
+setting. The constructions involving both negative and fractional types are
+novel.
 
-\emph{Negation distributes over {{+}}. }
-
+\paragraph*{Negation distributes over {{+}}. }
+One certainly expects that:
 {{-(b1 + b2) <-> (-b1) + (-b2)}}
-
+which can be realized as follows:
 \begin{center}
   \includegraphics{diagrams/dist_neg_plus.pdf}
 \end{center}
 
-\emph{Lifting an operation of positive types to negated types}
-
+\paragraph*{Lifting an operation of positive types to negated types.}
+Any operation on types can be applied to the negative versions of these
+types. The idea is simply to reverse the flow of values and use the
+adjoint of the operation:
 \begin{multicols}{2}
 Given {{c : b1 <-> b2}}
 
@@ -1073,28 +1113,10 @@ Given {{c : b1 <-> b2}}
 %@@ neg c : (-b1) <-> (-b2)
 \end{multicols}
 
-Annihilation and non-termination describe undefined program
-execution. While non-termination characterizes an iteration that fails
-to terminate, annihilation characterizes a constraint that has no
-fixpoint. The SAT-solver of Sec. \ref{sec:sat-solver} works by
-annihilating only the program states that do not match the boolean
-satisfiability constraint.
-
-\emph{Annihilation.}  
-With {{eta*}} and {{eps*}}, we can construct a {{trace*}} operation
-which gives us the ability to find the fixpoint of a constraint.  If
-the constraint has no satisfying values, there is no fixpoint possible
--- we use the term \emph{annihilation} to describe the corresponding
-undefined state of the program.
-
-While the constructions in Sec \ref{sec:neg} apply to both the
-{{(0,+)}} and {{(1,*)}} monoids, each construction presented here
-applies to a specific monoid.
-
-\begin{enumerate}
-
-\item 
-\emph{Lifting negation out of {{*}}. }
+\paragraph*{Lifting negation out of {{*}}.}
+The isomorphisms below state that the direction is \emph{relative}. If {{b1}}
+and {{b2}} are flowing opposite to each other then it doesn't matter which is
+direction is forwards and which is backwards. 
 
 {{(-b1) * b2 <-> -(b1 * b2) <-> b1 * (-b2)}}
 
@@ -1118,14 +1140,12 @@ terms of {{eps_{fst} }} as shown below.
 The second isomorphism can be built in the same way by merely swapping
 the arguments. 
 
-\item
-\emph{Multiplying Negatives}
+\paragraph*{Multiplying Negatives.}
 
 {{b1 * b2 <-> (-b1)*(-b2)}}
 
-This isomorphism can be built using \emph{involution} constructed in
-Sec~\ref{sec:neg} and the isomorphisms above, and correspond to the
-algebraic manipulation:
+This isomorphism is a consequence of the fact that $-$ is an involution: it
+corresponds to the algebraic manipulation:
 
 %subcode{opsem} include main
 %! columnStyle = rc
@@ -1134,23 +1154,17 @@ algebraic manipulation:
 % = & -((-b1)*b2)
 % = & (-b1)*(-b2)
 
-\item 
-\emph{Multiplying Fractions}
+\paragraph*{Multiplying and Adding Fractions.}
+An isomorphism witnessing:
 
 {{b1/b2 * b3/b4 <-> (b1*b3)/(b2*b4)}}
 
-
-\item 
-\emph{Adding the numerator}
+is straightforward. More surprisingly, it is also possible to construct
+isomorphisms witnessing:
 
 {{b1/b + b2/b <-> (b1+b2)/b}}
 
-\item 
-\emph{Fraction Addition}
-
 {{b1/b2 + b3/b4 <-> (b1*b4+b3*b2)/(b2*b4) }}
-
-\end{enumerate}
 
 % \paragraph*{Unification.}
 % A computational interpretation of this is that {{langRevEE}} acts like
@@ -1735,6 +1749,21 @@ these are deep questions to which there is no immeidate answer.
 \label{sec:prog}
 \label{sec:sat-solver}
 
+\amr{to merge}
+Annihilation and non-termination describe undefined program
+execution. While non-termination characterizes an iteration that fails
+to terminate, annihilation characterizes a constraint that has no
+fixpoint. The SAT-solver of Sec. \ref{sec:sat-solver} works by
+annihilating only the program states that do not match the boolean
+satisfiability constraint.
+\emph{Annihilation.}  
+With {{eta*}} and {{eps*}}, we can construct a {{trace*}} operation
+which gives us the ability to find the fixpoint of a constraint.  If
+the constraint has no satisfying values, there is no fixpoint possible
+-- we use the term \emph{annihilation} to describe the corresponding
+undefined state of the program.
+
+
 % Additive traces correspond to iteration and multiplicative traces
 % correspond to fixpoint of constraints. Addtive traces have been
 % studied in the past \cite{infeffects} and here we focus on the
@@ -1864,8 +1893,8 @@ we are in a reversible world, our instance of SAT must be expressed as an
 isomorphism: this is easily achieved as shown in Sec.~\ref{sub:f}
 below. Assuming that {{f}} is expressed as an isomorphism, we have enough
 information to reconstruct the input from the output. This can be done by
-using the adjoint of {{f}}, denoted {{f^{dagger}}}. At this point we have,
-the top half of the construction below:
+using the adjoint of {{f}}. At this point we have, the top half of the
+construction below:
 
 \begin{center}
 \scalebox{1.2}{
