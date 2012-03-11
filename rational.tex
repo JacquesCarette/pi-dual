@@ -916,10 +916,12 @@ combinator {{c}} in the reverse direction which we indicate by writing
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Negative and Fractional Types}
-\label{sec:neg}
 
-The structure of this section and the next are the same. The general outline
-is as follows:\footnote{We refer the reader to Selinger's excellent survey
+% The structure of this section and the next are the same. 
+
+This section introduces the syntax and graphical languages for
+negative types and fractionals.The general outline is as follows:
+\footnote{We refer the reader to Selinger's excellent survey
   article of monoidal
   categories~\cite{springerlink:10.1007/978-3-642-12821-94} for the precise
   definitions.}
@@ -934,22 +936,25 @@ is as follows:\footnote{We refer the reader to Selinger's excellent survey
   special morphims traditionally called {{eta}} and {{eps}}. 
 \end{itemize}
 After presenting the extension at the syntactic level, we discuss the
-categorical semantics informally via the graphical language. The operational
-semantics is presented in Sec.~\ref{sec:rat}. As will be detailed in this
-section and the next, the compact closed structure provides several
-properties of interest: (i) morphisms or wires are allowed to run from right
-to left, (ii) the structure admits a trace that, depending on the situation,
-can be used to implement various notions of loops and
+categorical semantics informally via the graphical language. The
+operational semantics is presented in Sec.~\ref{sec:rat}. As will be
+detailed in this sections \ref{sec:neg} and \ref{sec:frac}, the
+compact closed structure provides several properties of interest: (i)
+morphisms or wires are allowed to run from right to left, (ii) the
+structure admits a trace that, depending on the situation, can be used
+to implement various notions of loops and
 recursion~\cite{joyal1996traced,Hasegawa:2009:TMC:1552068.1552069,Hasegawa:1997:RCS:645893.671607},
-(iii) the structure includes an isomorphism showing that the dual operator is
-an involution, and (iv) the structure is equipped with objects representing
-higher-order functions and a morphism \textit{eval} that applies these
-functional objects. Interestingly each monoidal structure provides the same
-ingredients, resulting in two dualities, two traces, two involutions, and two
-notions of higher-order functions.
+(iii) the structure includes an isomorphism showing that the dual
+operator is an involution, and (iv) the structure is equipped with
+objects representing higher-order functions and a morphism
+\textit{eval} that applies these functional objects. Interestingly
+each monoidal structure provides the same ingredients, resulting in
+two dualities, two traces, two involutions, and two notions of
+higher-order functions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Additive Duality in {{langRev}} }
+\label{sec:neg}
 
 Describing the syntax and types of an extension to {{langRev}} with additive
 duality is fairly straightforward. Basically, we extend the language with
@@ -1016,67 +1021,56 @@ direction is captured by the negative sign on the value.
 \end{center}  
 \end{multicols}
 
-\paragraph*{Negative Information Flow.} 
 Hence, the intuitive way to read the diagrams is that they reverse the
-flow of information -- in normal {{langRev}} circuits information
-flows from left-to-right and {{eps+}} operations cause information to
-flow from right-to-left.  The interpretation of {{eta+}} is precisely
-the opposite: it turns a right-to-left flow of information in a
-circuit into a left-to-right flow.
-As an example, the diagram representing the isomorphism from the
-introduction is:
+flow of information -- i.e. they capture a notion of \emph{negative
+  information flow}. In normal {{langRev}} circuits, information flows
+from left-to-right. The operator {{eps+}} causes information to flow
+from right-to-left.  The interpretation of {{eta+}} is the opposite:
+it turns a right-to-left flow of information in a circuit into a
+left-to-right flow.  The diagram below is an example of using {{eta+}}
+and {{eps+}} and corresponds to the additive {{a <-> a}} isomorphism
+from the introduction. (Here the {{0}} wires have been shown for
+completeness.)
 \begin{center}
+\scalebox{1.2}{
   \includegraphics{diagrams/algebra1.pdf}
+}
 \end{center}
 
-\paragraph*{Time Traveling.}
-A time traveling intuition is also applicable here: if view the
-left-to-right direction of information flow as the canonical forward
-direction of information, then the action of {{eps+}} allows values,
-aka information particles, to flow backwards in time. Particles that
-flow backwards in time get to see and interact with the history of
-particles that they coexist with i.e. values that they exist
-multiplicatively with. Hence the isomorphism {{(-b1)*b2<->-(b1*b2)}}
-(whose construction is shown in Section \ref{sec:neg-constructions}).
-
+% \paragraph*{Time Traveling.}
+A \emph{time traveling} intuition is also applicable here.  In a
+normal cicruit, as computational steps are taken values flow from left
+to right, i.e. computational time progresses from left to right.  The
+action of {{eps+}} causes values, aka information particles, to flow
+from right to left i.e. backwards in computational time.  The
+interesting thing about this interpretation is that particles that
+travel backwards in time get to see and interact with the history of
+particles that they coexist with. This gives us an intuitive
+interpretation of the isomorphism {{(-b1)*b2<->-(b1*b2)}} (see
+Sec. \ref{sec:specific-constructions}) where it would otherwise seem
+that {{-b1}} and {{b2}} move in opposite directions. The backward flow
+of the {{-b1}} allows it to `see the past' of {{b2}} and is thus
+equivalent to both particles moving backward in time.
 
 %\subsection{Compact Closure with Additive Inverses}
-\paragraph*{Coherence for Compact Closure with Additive Inverses.}
-The appropriate coherence condition for Compact Closed Categories,
+\emph{Coherence for Compact Closure with Additive Duality.}  The
+appropriate coherence condition for Compact Closed Categories,
 expressed as the triangle axiom, is satisfied by {{eta+}}/{{eps+}} and
-may be visualized as explained by Selinger
-\cite{springerlink:10.1007/978-3-642-12821-94} as follows:
+may be visualized (modulo {{0}} wires, swapping etc.) as explained by
+Selinger \cite{springerlink:10.1007/978-3-642-12821-94} as the
+operational equivalence:
 
 \begin{center}
   \includegraphics{diagrams/coherence.pdf}
 \end{center}
 
 
-\paragraph*{Non-termination.}
-As is well known in category theory, Compact Closed Categories contain
-trace operations.  In the context of {{langRev}} this implies that
-{{eta+}}/{{eps+}} allow the construction of a {{trace+}} operator
-(detailed in Section \ref{sec:monoidal-constructions}) hence
-introducing \emph{non-termination} into the language (in the presence
-of recursive types) \cite{infeffects}.
-
-\paragraph*{Zero Information.}
-The fact that {{eta+}} (and hence {{eps+}}) introduces no information
-can be understood is by viewing {{-b+b}} as a type whose value is
-observable only if you `pay' {{b}} amount of information to the {{-b}}
-branch. When {{b}} amount of information is supplied {{(-b+b)+b=b}}
-amount of information is returned to you. (TODO. more needs to be said
-here.)
-
-For this reason, our treatment of negative values in the context of
-{{langRev}} is particularly simple. We will have a type $0$ and an
-isomorphism {{0 <-> a + (-a)}} that when used in the left-to-right direction
-allows us to create a value and a corresponding debt out of nothing. Both the
-value and its negative counterpart can flow anywhere in the system. Because
-information is preserved, a closed program (which does not have any
-``dangling'' negative values) will eventually have to match the negative
-value with some corresponding value, effectively using the isomorphism in the
-right-to-left direction. 
+\emph{Non-termination.}  Compact closed categories contain {{trace}}
+operations and this implies that {{eta+}}/{{eps+}} allow the
+construction of a {{trace+}} operator (shown in Section
+\ref{sec:monoidal-constructions}).  As shown in previous work
+\cite{infeffects}, non-terminating computation can be constructed from
+     {{trace+}} and recursive types.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \section{Fractional Types}
@@ -1562,6 +1556,26 @@ of primitive isomorphisms:
 %% %%%%%%%%%%%%%%%%%%%%%%
 %% \subsection{Constructions in {{langRevEE}} }
 %% \label{sec:monoidal-constructions}
+
+
+\emph{Zero Information.}  The intuitive explanation that {{eta+}} and
+hence {{eps+}} introduces no information effects is that {{-b+b}} as a
+type whose value is observable only if you `pay' {{b}} amount of
+information to the {{-b}} branch. When {{b}} amount of information is
+supplied {{(-b+b)+b=b}} amount of information is returned to
+you. (TODO. more needs to be said here.)
+
+For this reason, our treatment of negative values in the context of
+{{langRev}} is particularly simple. We will have a type $0$ and an
+isomorphism {{0 <-> a + (-a)}} that when used in the left-to-right direction
+allows us to create a value and a corresponding debt out of nothing. Both the
+value and its negative counterpart can flow anywhere in the system. Because
+information is preserved, a closed program (which does not have any
+``dangling'' negative values) will eventually have to match the negative
+value with some corresponding value, effectively using the isomorphism in the
+right-to-left direction. 
+
+
 
 \paragraph*{Observability.} 
 Execution of program is defined by {{c : b1 <-> b2}} when evaluated on input
