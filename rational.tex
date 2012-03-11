@@ -1145,64 +1145,74 @@ value.
 \end{multicols}
 
 
+This can be understood in terms of the \emph{logic programming} as
+follows. Operator {{eta* : 1 <-> (1/b)*b}} acts as the site of
+creation of a new typed logic variable and constructs from it a value
+of type {{b}} and its dual of type {{1/b}}. These two values are free
+to move independently through the circuit. Operations on one value
+affect what operations are possible on the other since they are both
+related by an underlying logic variable. Dually, {{eps*}} acts as a
+unification site for values of type {{b}} and {{1/b}} flowing along
+both branches. If the values are not unifiable duals, then the
+specific program sequence fails. Like with logic programming, one can
+has many worlds where some might fail, while others make
+progress. Sec. \ref{sec:rat} has more details.  If the values are
+exactly duals, then unification succeeds and {{eta*}} returns {{1}}.
 
-%%%%%
+% \paragraph*{Entanglement and Anti-Particles.}
 
-\paragraph*{Unification.}
-A computational interpretation of this is that {{langRevEE}} acts like
-a logic programming system and {{eta*}} acts as the site of creation
-of a new typed logic variable of type {{b}} and its corresponding dual
-of type {{1/b}}. These two values are free to move independently
-through a circuit, but any operations on value affect what operations
-are possible on the other since they are both related by an underlying
-logic variable. Dually, {{eps*}} acts as a unification site for values
-flowing along both branches. If the values are not exactly duals, then
-the system fails to unify and hence the program is stuck. If the
-values are exactly duals, then unification succeeds and {{eta*}}
-returns {{1}}.
-
-\paragraph*{Entanglement and Anti-Particles.}
-A dual view of the operation of {{eta*}} and {{eps*}} is inspired by
-quantum mechanics. The {{eta*}} is a site of fission that creates an
-information particle and its anti-particle. Both flow in the same
-direction in time. The produce particles are entangles in that actions
-on one (such as transformation by application of an isomorphism)
-affects the other. Further the fission site does not create a particle
-in any specific state, but in a superposition of all possible states
-as dictated by its type. In each possible world that the particle
-exists, it takes on a specific value inhibiting its type and
+An analogy inspired by quantum mechanics is also applicable here.  The
+operator {{eta*}} is a site of fission that creates \emph{an entangled
+  particle and anti-particle}. These particles can be thought to be in
+a \emph{superposition} of states determined by their type. Both flow
+in the same direction in time.  In each possible world that the
+particle exists, it takes on a specific value inhibiting its type and
 correspondingly its entangled anti-particle takes the dual of the
-specific value.
+specific value. Since the particles are entangled, actions on one
+(such as transformation by application of an isomorphism) affects the
+other in much the same sense as \emph{action at a distance}. The
+`{{a-o*b}}' functions mentioned in the introduction, are first-class
+values and they correspond to these entagled pairs. Finally {{eps*}}
+operations are sites where corresponding particle and anti-particles
+annihilate each other. While appealing as an analogy, this description
+does not imply (or preclude) any formal connection with Physics.
 
-This also leads to the exciting point of view that entangled
-particle/anti-particle pairs act as functions in a physical
-first-class sense. We can ask the function to be applied to a value by
-unifying the anti-particle with a particle in a well-known state and
-examining is pair. We shall use this point of view in the development
-our SAT solver (see Sec. \ref{sec:sat-solver}).
+%% We can ask the function to be applied to a value by
+%% unifying the anti-particle with a particle in a well-known state and
+%% examining is pair. We shall use this point of view in the development
+%% our SAT solver (see Sec. \ref{sec:sat-solver}).
 
-\paragraph*{Coherence for Compact Closure with Multiplicative Inverses} 
-As before, the requisite coherence condition on Compact Closed
-Categories is applicable and is expressed below in terms of
+%%  This also leads to the exciting point of view that
+%% entangled such particle/anti-particle pairs, which are first class
+%% values, act as functions in a physical first-class sense.
+
+%% Further the fission site does not create a particle in any specific
+%% state, but in a superposition of all possible states as dictated by
+%% its type.
+
+% Since such pairs are first-class entities, they correspond to 
+
+\emph{Coherence for Compact Closure with Multiplicative Duality.}  As
+before, the triangle axiom which is the coherence condition on compact
+closed categories is applicable and is expressed below in terms of
 {{eta*}}/{{eps*}} and the multiplicative monoid.
-
 \begin{center}
   \includegraphics{diagrams/coherence.pdf}
 \end{center}
 
+\emph{Annihilation.}  
+With {{eta*}} and {{eps*}}, we can construct a {{trace*}} operation
+which gives us the ability to find the fixpoint of a constraint.  If
+the constraint has no satisfying values, there is no fixpoint possible
+-- we use the term \emph{annihilation} to describe the corresponding
+undefined state of the program.
 
-\paragraph*{Annihilation.}
-As with {{(+, 0)}} we can construct a {{trace*}} operation. Unlike the
-additive {{trace+}}, {{trace*}} gives us the ability to find the
-fixpoint of the constraint (expressed with combinators) that is
-traced. If the constraint has not satisfying values, there is not
-fixpoint possible -- we use the term `annihilation' to describe the
-corresponding undefined state of the program. Annihilation and a
-non-termination both describe undefined program execution -- while
-non-termination characterizes an iteration that fails to terminate,
-annihilation characterizes a constraint that has no fixpoint. 
-
-
+Annihilation and non-termination describe undefined program
+execution. While non-termination characterizes an iteration that fails
+to terminate, annihilation characterizes a constraint that has no
+fixpoint. The SAT-solver of Sec. \ref{sec:sat-solver} works by
+annihilating only the program states that do not match the boolean
+satisfiability constraint.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions independant of the  Monoid}
