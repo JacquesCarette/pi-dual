@@ -1104,8 +1104,8 @@ shown below:
   \includegraphics{diagrams/compose2.pdf}
 \end{center}
 
-Applying a function consists of making it flow backwards to satisfy the demand 
-of the function:
+Applying a function to an argument consists of making the argument flow
+backwards to satisfy the demand of the function:
 \begin{multicols}{2}
 \begin{center}
 \scalebox{1.0}{
@@ -1661,17 +1661,17 @@ common in logic programming in the sense that it is considered a
 non-deterministic process that keeps searching for the right substitution if
 any. Typical implementations of logic programming languages further provide
 top-level mechanisms to manipulate this non-deterministic search, for example
-by returning one answer and giving the user to ask for more answers. We
-abstract from this top-level semantics and view the rules above as being
-applied non-deterministically. 
+by returning one answer and giving the user the option to ask for more
+answers. We abstract from this top-level semantics and view the rules above
+as being applied non-deterministically.
 
 %%%%%%%%%%%%%%%%%
 \subsection{Reverse Execution}
 
-Given that our language is reversible (Proposition~\ref{prop:logrev}), a
-backward evaluator is relatively straightforward to implement: it simply
-corresponds to. Indeed using the backward evaluator to calculate {{c v}} is
-equivalent {{c^{dagger} v}} in the forward evaluator.
+Given that our language is reversible (Prop.~\ref{prop:logrev}), a backward
+evaluator is relatively straightforward to implement: using the backward
+evaluator to calculate {{c v}} is equivalent {{c^{dagger} v}} in the forward
+evaluator.
 
 %subcode{opsem} include main
 %! columnStyle = rclr
@@ -1743,8 +1743,8 @@ them is accomplished in terms of an intermediate logic variable
     type {{0}} and hence the forward evaluator can never execute an
     {{eta+}}.
 
-    \item The rules for {{eta+}} are added to backward evaluator. A
-      program executing backward starts executing forward after the
+    \item The rules for {{eta+}} are added to the backward evaluator. A
+      program executing backward starts executing forwards after the
       execution of the {{eta+}}. Dual to the previous case, there is
       no rule for {{eps+}} in the backward evaluator since the output
       type of {{eps+}} is {{0}}.
@@ -1990,7 +1990,7 @@ evidently fails.
 
 With a little work, we can modify this circuit to only annihilate values that
 fail to satisfy the constraints reprsented by a SAT-instance {{f}}. In more
-detail, an instance of SAT is a function/circuit {{f}} that given some
+detail, an instance of SAT is a function/circuit~{{f}} that given some
 boolean inputs returns {{true}} or {{false}} which we interpret as whether
 the inputs satisfy the constraints imposed by the structure of {{f}}. Because
 we are in a reversible world, our instance of SAT must be expressed as an
