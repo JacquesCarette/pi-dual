@@ -1706,25 +1706,48 @@ of primitive isomorphisms:
 \item {{eta* s () |--> ((1/v, v), s)}}
   where {{v}} is a fresh logic variable. 
 
+As explained previously {{eta*}} creates two values {{1/v}} and {{1/v}}
+from a single logic variable. 
+
 \item {{eps* s v |--> (1, s[v <><> (1/v',v') ])}}
   where {{v'}} is a fresh logic variable. 
+
+Similarly, {{eps*}} unifies the values on incoming wires. The incoming
+value {{v}} represents the values of both wires and hence unifying
+them is accomplished in terms of an intermediate logic variable
+{{v'}}.
 
 \end{enumerate}
 
 \item To add negative types we add the following rules to the
-  reductions above: 
+  reductions above. The additions formalize our previous discussions
+  and should not be surprising at this point.
 
   \begin{enumerate}
-  \item 
-
+  \item The rules for {{eps+}} essentially transfer control from the
+    forward evaluator (whose states are tagged by $\triangleright$) to
+    the backward evaluator (whose states are tagged by
+    $\triangleleft$). In other words, after an {{eps+}} the direction
+    of the world is reversed. The pattern matching done by the
+    unification ensures that a value on the {{right}} wire is tagged
+    to be negative and transfered to the {{left}} wire, and vice versa.
 %subcode{opsem} include main
 %! columnStyle = rclr
 %! fwd = \triangleright
 %! bck = \triangleleft
 % <eps+, v, C, s>_{fwd} |--> <eps+, left (-v'), C, s[v <><> right v']>_{bck}
 % <eps+, v, C, s>_{fwd} |--> <eps+, right v', C, s[v <><> left (-v')]>_{bck}
+   %
+    Note that there is no evaluation rule for {{eta+}} in the forward
+    evaluator. This corresponds to the fact that there is no value of
+    type {{0}} and hence the forward evaluator can never execute an
+    {{eta+}}.
 
-    \item
+    \item The rules for {{eta+}} are added to backward evaluator. A
+      program executing backward starts executing forward after the
+      execution of the {{eta+}}. Dual to the previous case, there is
+      no rule for {{eps+}} in the backward evaluator since the output
+      type of {{eps+}} is {{0}}.
 %subcode{opsem} include main
 %! columnStyle = rclr
 %! fwd = \triangleright
@@ -1736,8 +1759,6 @@ of primitive isomorphisms:
 
 \end{enumerate}
 
-The additions formalize our previous discussions and should not be surprising
-at this point.
 
 %% %%%%%%%%%%%%%%%%%%%%%%
 %% \subsection{Constructions in {{langRevEE}} }
