@@ -199,7 +199,7 @@ computation: an additive duality and a multiplicative duality that give rise
 to negative types and fractional types respectively. Although these types
 have previously appeared in the literature (see Sec.~\ref{sec:related}), they
 have typically appeared in the context of conventional languages with
-information effects, which obscured their appeal and murked their properties.
+information effects, which limited their appeal and obscured their properties.
 
 \paragraph*{Negative Types.} 
 Consider the following algebraic manipulation relating a natural number {{a}}
@@ -335,10 +335,11 @@ are:
   extension is expressed by introducing logic variables and a unification
   mechanism to model and resolve the constraints introduced by the fractional
   types. (Sec.~\ref{sec:frac})
-\item We combine the above two extensions into a language whose type system
-  allows any rational number to be used as a type. Moreover the types satisfy
-  the same familiar and intuitive isomorphisms that are satisfied in the
-  mathematical field of rational numbers. (Sec.~\ref{sec:rat})
+\item We combine the above two extensions into a language, which we
+  call {{langRevEE}}, whose type system allows any rational number to
+  be used as a type. Moreover the types satisfy the same familiar and
+  intuitive isomorphisms that are satisfied in the mathematical field
+  of rational numbers. (Sec.~\ref{sec:rat})
 \item We develop programming intuition and argue that negative and fractional
   types ought to be part of the vocabulary of every
   programmer. (Sec.~\ref{sec:prog})
@@ -516,7 +517,7 @@ is modeled by the flow of waves and particles along the wires.
 \end{center}
 \end{multicols}
 
-\item Sum types may similarly be represented by one wire or using using
+\item Sum types may similarly be represented by one wire or using
   parallel wires with a {{+}} operator between them. When tracing the
   execution of two additive wires, a value can reside on only one of the two
   wires.
@@ -811,7 +812,7 @@ negative types and fractionals.The general outline is as follows:
   tensor.
 \item We extend each underlying symmetric monoidal structure to a
   \emph{compact closed} structure by adding a dual for each object and two
-  special morphims traditionally called {{eta}} and {{eps}}. 
+  special morphisms traditionally called {{eta}} and {{eps}}. 
 \end{itemize}
 After presenting the extension at the syntactic level, we discuss the
 categorical semantics informally via the graphical language. The operational
@@ -847,7 +848,7 @@ isomorphisms {{eta*}} and {{eps*}}.
 %
 % Isomorphisms, iso &=& ... | eta+ | eps+ | eta* | eps*
 
-For convenience we sometime use the notations {{b1 - b2}} and {{b1/b2}} to
+For convenience, we sometimes use the notations {{b1 - b2}} and {{b1/b2}} to
 indicate the types {{b1 + (-b2)}} and {{b1 * (1/b2)}} respectively.  The
 types of the new constructs are: 
 \vspace{-15pt}
@@ -949,24 +950,24 @@ survey paper on monoidal
 categories~\cite{springerlink:10.1007/978-3-642-12821-94} and presented in
 the context of our language. 
 
-For a monoidal category to be compact closed with a dual objects
-presented as $b^*$, the maps~{{eta}} and~{{eps}} must satisfy a
-coherence condition that is usually visualized as follows:
+For a monoidal category to be compact closed the maps~{{eta}}
+and~{{eps}} must satisfy a coherence condition that is usually
+visualized as follows:
 \begin{center}
   \includegraphics{diagrams/coherence.pdf}
 \end{center}
-In the case of negatives, the condition amounts to checking that
-reversing direction twice is a no-op. In the case of fractionals, the
-condition amounts to checking that creating values {{alpha}} and
-{{1/alpha}} and immediately unifying them is also a no-op. Both checks
-are straightforward and are essentially the constructions in the
-introduction.
+where $b^*$ represents the dual of {{b}}.  In the case of negatives,
+the condition amounts to checking that reversing direction twice is a
+no-op. In the case of fractionals, the condition amounts to checking
+that creating values {{alpha}} and {{1/alpha}} and immediately
+unifying them is also a no-op. Both checks are straightforward and are
+essentially the constructions in the introduction.
 
 We now review several interesting constructions related to looping,
 involution, and higher order functions. 
 
 \paragraph*{Trace.}
-Every compact closed categoy admits a trace. For the additive case, we get
+Every compact closed category admits a trace. For the additive case, we get
 the following definition.  Given {{f : b1+b2 <-> b1+b3 }}, 
 define {{trace+ f : b2 <-> b3}} as:
 
@@ -976,15 +977,17 @@ define {{trace+ f : b2 <-> b3}} as:
   \includegraphics{diagrams/thesis/trace_plus.pdf}
 \end{center}  
 
-\noindent We have omitted some the commutativity and associativity shuffling to
-communicate the main idea. We are given a value of type {{b2}} which we embed
-into {{0+b2}} and then {{(-b1+b1)+b2)}}. This can be reassociated into 
-{{-b1+(b1+b2)}}. The component {{b1+b2}} which until now is just an appropriately 
-tagged value of type {{b2}} can be given to~{{f}} which transforms it to
-something of type {{b1+b3}}. If the result is in the {{b3}}-summand, it is produced
-as the answer; otherwise the result is in the {{b1}}-summand; {{eps+}} is used to
-make it flow backwards to be fed to the {{eta+}} located at the beginning of the 
-sequence. Iteration continues until a {{b3}} is produced.
+\noindent We have omitted some of the commutativity and associativity
+shuffling to communicate the main idea. We are given a value of type
+{{b2}} which we embed into {{0+b2}} and then {{(-b1+b1)+b2)}}. This
+can be re-associated into {{-b1+(b1+b2)}}. The component {{b1+b2}},
+which until now is just an appropriately tagged value of type {{b2}},
+is transformed to a value of type {{b1+b3}} by {{f}}. 
+If the result is in the {{b3}}-summand, it is produced as
+the answer; otherwise the result is in the {{b1}}-summand; {{eps+}} is
+used to make it flow backwards to be fed to the {{eta+}} located at
+the beginning of the sequence. Iteration continues until a {{b3}} is
+produced.
 
 
 %%%%%
@@ -1022,10 +1025,12 @@ can be realized as follows:
   \includegraphics{diagrams/dist_neg_plus.pdf}
 \end{center}
 
-The multiplicative construction is similar. This is a distinguishing
-difference from *-autonomous categories that are models for Linear
-Logic, where the dual does not preserve the tensor but maps to a dual
-tensor \cite{curien2009interactive}.
+\noindent
+The multiplicative construction is similar. 
+
+%% This is a distinguishing difference from *-autonomous categories that
+%% are models for Linear Logic, where the dual does not preserve the
+%% tensor but maps to a dual tensor \cite{curien2009interactive}.
 
 \paragraph*{Duality is a functor.}
 Duality in {{langRevEE}} can map objects to their duals and morphisms
@@ -1046,10 +1051,11 @@ adjoint of the operation:
 %@@ neg c : (-b1) <-> (-b2)
 \end{multicols}
 
-The {{inv}} construction is similar.  We are able to do this because
-in {{langRevEE}} every morphism is an isomorphism and hence has an
-inverse morphism, whereas in compact closed categories with no
-underlying dagger structure we can only construct an op-functor.
+This construction relies on the fact that every {{langRevEE}} morphism
+has an adjoint.  The {{inv}} construction is similar.
+
+%% inverse morphism, whereas in compact closed categories with no
+%% underlying dagger structure we can only construct an op-functor.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Functions and Delimited Continuations}
@@ -1104,8 +1110,8 @@ shown below:
   \includegraphics{diagrams/compose2.pdf}
 \end{center}
 
-Applying a function consists of making it flow backwards to satisfy the demand 
-of the function:
+Applying a function to an argument consists of making the argument flow
+backwards to satisfy the demand of the function:
 \begin{multicols}{2}
 \begin{center}
 \scalebox{1.0}{
@@ -1174,14 +1180,14 @@ novel.
 
 \paragraph*{Lifting negation out of {{*}}.}
 The isomorphisms below state that the direction is \emph{relative}. If {{b1}}
-and {{b2}} are flowing opposite to each other then it doesn't matter which is
+and {{b2}} are flowing opposite to each other then it doesn't matter which
 direction is forwards and which is backwards. More interestingly as {{b1}} is
 moving backwards, it can ``see the past'' of {{b2}} which is equivalent to
 both particles moving backwards.
 
 {{(-b1) * b2 <-> -(b1 * b2) <-> b1 * (-b2)}}
 
-To build these isomorphisms, we first build an intermeidate
+To build these isomorphisms, we first build an intermediate
 construction which we call {{eps_{fst} : (-b1)*b2 + b1*b2 <-> 0}}. 
 \begin{center}
 \scalebox{0.8}{
@@ -1593,7 +1599,7 @@ types and unification for fractional types. Even though this computational
 interpretation appears straightforward in retrospect, it constitutes a
 breakthrough because it breaks the preconceived idea that there is only one
 notion of duality and hence that both negative and fractional types should be
-implemented using the same underlying mechanism. In some sense, the folkore
+implemented using the same underlying mechanism. In some sense, the folklore
 literature on monoidal categories describing the evaluations for additive and
 multiplicative fragments are ``particle-style'' and ``wave-style'' can be
 seen to suggest either a unified or separate implementations. But, since de
@@ -1607,12 +1613,12 @@ the desired {{langRevEE}} semantics. This rewriting consists of two main steps:
 
 \begin{enumerate}
 \item We rewrite the semantics in Sec~\ref{sec:pi} using unification of the
-  values instead of direct pattern matching. This gives us the neccessary
+  values instead of direct pattern matching. This gives us the necessary
   infrastructure for fractional types. We assume the reader is familiar with
   the idea of unification as realized using logic variables, substitutions,
   and reification as presented in any standard text on logic programming.
 \item We write a reverse interpreter by reversing the direction of the
-  {{|-->}} reductions. This gives us the neccessary infrastructure for
+  {{|-->}} reductions. This gives us the necessary infrastructure for
   negative types.
 \end{enumerate}
 
@@ -1631,8 +1637,8 @@ as constraints. The general case is:
 
 {{ iso s v' |--> (v_{output pattern}, s[v' <><> v_{input pattern}]) }}
 
-Using the same the entire semantics can be extended to thread the
-substitution as shown below:
+Using the same idea, the entire semantics can be extended to thread
+the substitution as shown below:
 
 %subcode{opsem} include main
 %! columnStyle = rclr
@@ -1661,17 +1667,17 @@ common in logic programming in the sense that it is considered a
 non-deterministic process that keeps searching for the right substitution if
 any. Typical implementations of logic programming languages further provide
 top-level mechanisms to manipulate this non-deterministic search, for example
-by returning one answer and giving the user to ask for more answers. We
-abstract from this top-level semantics and view the rules above as being
-applied non-deterministically. 
+by returning one answer and giving the user the option to ask for more
+answers. We abstract from this top-level semantics and view the rules above
+as being applied non-deterministically.
 
 %%%%%%%%%%%%%%%%%
 \subsection{Reverse Execution}
 
-Given that our language is reversible (Proposition~\ref{prop:logrev}), a
-backward evaluator is relatively straightforward to implement: it simply
-corresponds to. Indeed using the backward evaluator to calculate {{c v}} is
-equivalent {{c^{dagger} v}} in the forward evaluator.
+Given that our language is reversible (Prop.~\ref{prop:logrev}), a backward
+evaluator is relatively straightforward to implement: using the backward
+evaluator to calculate {{c v}} is equivalent {{c^{dagger} v}} in the forward
+evaluator.
 
 %subcode{opsem} include main
 %! columnStyle = rclr
@@ -1730,7 +1736,7 @@ them is accomplished in terms of an intermediate logic variable
     $\triangleleft$). In other words, after an {{eps+}} the direction
     of the world is reversed. The pattern matching done by the
     unification ensures that a value on the {{right}} wire is tagged
-    to be negative and transfered to the {{left}} wire, and vice versa.
+    to be negative and transferred to the {{left}} wire, and vice versa.
 %subcode{opsem} include main
 %! columnStyle = rclr
 %! fwd = \triangleright
@@ -1743,8 +1749,8 @@ them is accomplished in terms of an intermediate logic variable
     type {{0}} and hence the forward evaluator can never execute an
     {{eta+}}.
 
-    \item The rules for {{eta+}} are added to backward evaluator. A
-      program executing backward starts executing forward after the
+    \item The rules for {{eta+}} are added to the backward evaluator. A
+      program executing backwards starts executing forwards after the
       execution of the {{eta+}}. Dual to the previous case, there is
       no rule for {{eps+}} in the backward evaluator since the output
       type of {{eps+}} is {{0}}.
@@ -1899,11 +1905,11 @@ particular choice of {{c}} is pruned.
 % -- we use the term \emph{annihilation} to describe the corresponding
 % undefined state of the program.
 
-This construction can be used to solve a large class of constraint
-satisfaction problems. We illustrate the main ideas with the implementation
-of a SAT-solver. Although the main idea is the use of {{trace*}}, the
-construction is involved so we proceed in small steps, reviewing some of the
-necessary constructions presented in our earlier paper~\cite{infeffects}.
+A large class of constraint satisfaction problems can be expressed
+using {{trace*}}. We illustrate the main ideas with the implementation
+of a SAT-solver.  We proceed in small steps, reviewing some of the
+necessary constructions presented in our earlier
+paper~\cite{infeffects}.
 
 %%%%%%%%%%%%%%%%%%%
 \subsection{Booleans and Conditionals} 
@@ -1949,7 +1955,7 @@ The combinator {{if_{not} }} has type {{bool*bool<->bool*bool}} and
 negates its second argument if the first argument is {{true}}. This
 gate {{if_{not} }} is often referred to as the {{cnot}} gate. An
 equivalent construction that is useful is {{else_{not} }} where we
-negate the second argument only is the first is {{false}}. 
+negate the second argument only if the first is {{false}}. 
 
 Similarly, we can iterate the construction of {{if_c}} to check several
 bits. The gate {{if_{cnot} }}, which we may also write as {{if^2_{not} }},
@@ -1964,7 +1970,7 @@ they are all {{true}}.
 
 Although cloning is generally not allowed in reversible languages, it is
 possible at the cost of having additional constant inputs. For example,
-consider the gate {{else_{not} }}. Generally, the gate gates maps
+consider the gate {{else_{not} }}. Generally, the gate maps
 {{(false,a)}} to {{(false,not a)}} and {{(true,a)}} to {{(true,a)}}. Focusing
 on the cases in which the second input is {{true}}, we get that the gate maps
 {{(false,true)}} to {{(false,false)}} and {{(true,true)}} to {{(true,true)}},
@@ -1989,8 +1995,8 @@ them and attempts to satisfy the constraint that they are equal which
 evidently fails. 
 
 With a little work, we can modify this circuit to only annihilate values that
-fail to satisfy the constraints reprsented by a SAT-instance {{f}}. In more
-detail, an instance of SAT is a function/circuit {{f}} that given some
+fail to satisfy the constraints represented by a SAT-instance {{f}}. In more
+detail, an instance of SAT is a function/circuit~{{f}} that given some
 boolean inputs returns {{true}} or {{false}} which we interpret as whether
 the inputs satisfy the constraints imposed by the structure of {{f}}. Because
 we are in a reversible world, our instance of SAT must be expressed as an
@@ -2020,11 +2026,11 @@ wire acts like the closed-loop {{not}} in the previous construction.
 \label{sub:f}
 
 Any boolean expression {{f : bool^n -> bool}} can be compiled into the
-isomorphism {{iso : bool^h*bool^n<->bool^g*bool}} where the extra bits
+isomorphism {{iso_f : bool^h*bool^n<->bool^g*bool}} where the extra bits
 {{bool^h}} and {{bool^g}} are considered as heap and garbage. Constructing
 such an isomorphism has been detailed
 before~\cite{Toffoli:1980,infeffects}. The important relation to note is that
-applying {{iso}} to some special heap values and an input \textit{bs}
+applying {{iso_f}} to some special heap values and an input \textit{bs}
 produces some bits that can be ignored and the same output that {{f}} would
 have produced on {{bs}}. We can ensure that the heap has the appropriate
 initial values by checking the heap and negating a second control wire, if
@@ -2038,10 +2044,10 @@ the values do not match, i.e., the dotted part in the diagram below.
 
 % \roshan{Explain how the dotted part is implemented.}
 
-Let us call the above construction which maps inputs, heap, and control wires
-to input, heap, and control wires as {{sat_f}}. The SAT-solver is is
-completed by tracing the {{sat_f}} and cloning the inputs using
-{{clone^n_{bool} }}.
+Let us call the above construction which maps inputs, heap, and
+control wires to inputs, heap, and control wires as {{sat_f}}. The
+SAT-solver is is completed by tracing the {{sat_f}} and cloning the
+inputs using {{clone^n_{bool} }}.
 
 \begin{center}
 \scalebox{1.5}{
@@ -2049,12 +2055,12 @@ completed by tracing the {{sat_f}} and cloning the inputs using
 }
 \end{center}  
 
-When the solver is fed inputs initialized to {{true}}, the {{clone}} will
-clone any inputs to {{sat_f}} that satisfy the constraints imposed by {{f}}
-and the constraints on the {{heap}}. In the case of unique-SAT the solver
-will produce exactly 0 or 1 solutions. In the case of general SAT, the solver
-will produce solutions as determined by the semantics of the top-level
-interaction as discussed in Sec. \ref{sec:rat}.
+When the solver is fed inputs initialized to {{true}}, it clones only
+those inputs to {{sat_f}} that satisfy {{f}} and the {{heap}}
+constraints. In the case of unique-SAT the solver will produce exactly
+0 or 1 solutions. In the case of general SAT, the solver will produce
+solutions as determined by the semantics of the top-level interaction
+(see discussion in Sec. \ref{sec:rat}).
 
 %% %%%%%%%%%%%%%%%%%%%
 %% \subsection{GoI machine}
@@ -2132,7 +2138,7 @@ has often been related to some form of continuations. Fractional types are
 less common but have also appeared in relation to parsing natural
 languages. Although each of these previous occurrences of negative and
 fractional types is somewhat related to our work, our results are
-subtantially different. To clarify this point, we start by reviewing the
+substantially different. To clarify this point, we start by reviewing the
 salient point of the major pieces of related work and conclude this section
 with a summary contrasting our approach to previous work.
 
@@ -2164,7 +2170,7 @@ as \emph{either} a value of $A$ or a demand for a value of type $B$. This
 calculus was further analyzed and extended by
 Wadler~\cite{Wadler:2003,DBLP:conf/rta/Wadler05}. The extension gives no
 interpretation to the subtraction connective and like the original symmetric
-calculus of Filinksi, introduces a duality that relates sums to products and
+calculus of Filinski, introduces a duality that relates sums to products and
 vice-versa.
 
 \paragraph*{Subtractive Logic.} 
@@ -2245,7 +2251,7 @@ following:
 
 We have extended the language {{langRev}} that expressed computation
 in the commutative semiring of whole numbers to {{langRevEE}} that
-expresses computation in the fields of rationals.  Every algebraic
+expresses computation in the field of rationals.  Every algebraic
 identity that holds for the rational numbers corresponds to a type
 isomorphism with a computational interpretation in our model. We have
 examined the two function spaces that arise in this model and
@@ -2259,18 +2265,19 @@ computation.
 % mathematics --- contain non-trivial assumptions about our worldview.  The
 % problem of duality in computation and logic, has many facets of which
 % `continuation' and `higher order functions' are only one.
-The concept of duality is deep and significant: we have opened the door for
-us to consider, not one but two notions of duality. Surprisingly this makes
-things significantly simpler. In particular, instead of conflating
-considering pairs as dual to sums, the tradition in mathematics has long been
-to consider fields with two notions of duality: one for sums and one for
-pairs. This double notion of duality has a crisp semantics, clear
-computational interpretation, and an information theoretic basis.  
+The concept of duality is deep and significant: we have opened the
+door for us to consider, not one but two notions of
+duality. Surprisingly this makes things substantially simpler. In
+particular, instead of conflating pairs as dual to sums, the tradition
+in mathematics has long been to consider fields with two notions of
+duality: one for sums and one for pairs. This double notion of duality
+has a crisp semantics, clear computational interpretation, and an
+information theoretic basis.
 
 Our work has barely scratched the surface of an area of computing which has
 been explored in depth before but without the combined reversible
 information-preserving framework and the two notions of duality. The new
-insights point to further new areas of investigation of which we mention
+insights point to further new areas of investigation, of which we mention
 the three most significant ones (in our opinion).
 
 %% \paragraph*{Int Construction} How are we preserving two compact
@@ -2314,9 +2321,11 @@ the above datatype of trees to infer an isomorphism between seven binary
 trees and one!
 
 We have confirmed that we can extended {{langRevEE}} with the datatype
-declaration for binary trees and build a witness for this isomorphism that
-works as expected. To understand the issue in more detail, consider the
-following algebraically valid proof of the isomorphism in question:
+declaration for binary trees and build a witness for this isomorphism
+that works as expected. However not every isomorphism constructed from
+algebraic manipulation is computationally meaningful. To understand the
+issue in more detail, consider the following algebraically valid proof
+of the isomorphism in question:
 \[\begin{array}{rclclclcl}
 x^3 &=& x^2 x &=& (x-1) x &=& x^2 - x &=& -1 \\
 x^6 &=& 1 \\
@@ -2329,6 +2338,12 @@ between $x^6$ and $1$ has no computational context. In the setting of
 inputs (in both ways). This suggests that, in the field of algebraic numbers,
 some algebraic manipulations are somehow 
 ``more constructive'' than others.
+
+A related issue is that not all meaningful recursive types are
+meaningful polynomials. For instance {{nat=@@x.(1+x)}} implies the
+polynomial {{x=1+x}} which has no algebraic solutions without appeal
+to more complex structures with limits etc. 
+
 %% or dually that {{langRevEE}} with recursive types
 %%somehow lacks the ability to express all computations that are otherwise
 %%algebraically meaningful.
@@ -2353,15 +2368,15 @@ some algebraic manipulations are somehow
 % \end{itemize}
 
 \paragraph*{Quantum Computing.} 
-One understand of quantum computing is that it exploits the laws of physics
+One understanding of quantum computing is that it exploits the laws of physics
 to build faster machines (perhaps). Another more foundational understanding
 is that it provides a computational interpretation of physics, and in
-particular directly address the question of interpretation of quantum
+particular directly addresses the question of interpretation of quantum
 mechanics. In a little known document, Rozas~\cite{Rozas:1987:CMO:889539}
 uses continuations to implement the transactional interpretation of quantum
 mechanics~\cite{transactional} which includes as its main ingredient a
 fixpoint calculation between waves or particles traveling forwards and
-backwards in time. Our work shed no light on whether this interpretation is
+backwards in time. Our work sheds no light on whether this interpretation is
 the ``right one'' but it is interesting that we can directly realize it using
 the primitives of {{langRevEE}}. 
 
@@ -2379,12 +2394,15 @@ the primitives of {{langRevEE}}.
 % {{-b1}} allows it to `see the past' of {{b2}} and is thus equivalent to both
 % particles moving backward in time.
 
-The multiplicative structure of {{langRevEE}} also has a direct connection to
-entangled quantum particles, or perhaps entangled particles and
-anti-particles.  The idea of entanglement is one action on one particle is
-``instanteneously'' communicated to the other. Again our model shed no light
-on whether this is related to how nature computes but it is again interesting
-that we can directly realize the idea using the primitives of {{langRevEE}}. 
+The multiplicative structure of {{langRevEE}} also has a direct
+connection to entangled quantum particles, or perhaps entangled
+particles and anti-particles.  The idea of entanglement, that an
+action on one particle is ``instantaneously'' communicated to the
+other, is analogous to how unifying one value affects its dual pair
+which is possibly in another part of the computation.  Again our model
+sheds no light on whether this is related to how nature computes but
+it is again interesting that we can directly realize the idea using
+the primitives of {{langRevEE}}.
 
 % natural An analogy
 % inspired by quantum mechanics is also applicable here.  The operator {{eta*}}
@@ -2466,7 +2484,7 @@ In particular, linear logic~\cite{Girard87tcs}, among other contributions,
 exposed an additive/multiplicative distinction in logical connectives and
 rules. In particular, linear logic includes additive disjunctions $\oplus$
 and conjunctions $\with$ as well as multiplicative disjunctions $\parr$ and
-conjuctions $\otimes$. Duality is also prominent in linear logic: it relates
+conjunctions $\otimes$. Duality is also prominent in linear logic: it relates
 the additive connectives to each other (the dual of $\oplus$ is $\with$ and
 vice-versa) and the multiplicative connectives to each other (the dual of
 $\otimes$ is $\parr$ and vice-versa).
@@ -2608,7 +2626,7 @@ but that work only scratched the surface! We have the following features:
 
 We show a deep symmetry between functions and delimited continuations, values
 and continuations that arises in {{langRev}} in a manner that is reminiscent
-of Filinksi's Symmetric \lcal ~\cite{Filinski:1989:DCI:648332.755574}. The
+of Filinski's Symmetric \lcal ~\cite{Filinski:1989:DCI:648332.755574}. The
 symmetry arises by extending {{langRev}} with a notion of additive duality
 over the monoid {{(+, 0)}} by including {{eta+}} and {{eps+}} operators of
 Compact Closed Categories. The resulting dual types, which we denote {{-b}},
