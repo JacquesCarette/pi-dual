@@ -1046,10 +1046,10 @@ adjoint of the operation:
 %@@ neg c : (-b1) <-> (-b2)
 \end{multicols}
 
-We are able to do this because in {{langRevEE}} every morphism is an
-isomorphism and hence has an inverse morphism, whereas in compact
-closed categories with no underlying dagger structure we can only
-construct an op-functor.
+The {{inv}} construction is similar.  We are able to do this because
+in {{langRevEE}} every morphism is an isomorphism and hence has an
+inverse morphism, whereas in compact closed categories with no
+underlying dagger structure we can only construct an op-functor.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Functions and Delimited Continuations}
@@ -1208,12 +1208,14 @@ the arguments.
 This isomorphism is a consequence of the fact that $-$ is an involution: it
 corresponds to the algebraic manipulation:
 
-%subcode{opsem} include main
-%! columnStyle = rc
-%   & b1 * b2
-% = & -(-(b1*b2)) 
-% = & -((-b1)*b2)
-% = & (-b1)*(-b2)
+%% %subcode{opsem} include main
+%% %! columnStyle = rc
+%% %   & b1 * b2
+%% % = & -(-(b1*b2)) 
+%% % = & -((-b1)*b2)
+%% % = & (-b1)*(-b2)
+
+{{b1 * b2 = -(-(b1*b2)) = -((-b1)*b2) = (-b1)*(-b2)}}
 
 \paragraph*{Multiplying and Adding Fractions.}
 An isomorphism witnessing:
