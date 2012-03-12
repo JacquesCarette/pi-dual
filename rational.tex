@@ -1686,7 +1686,7 @@ of primitive isomorphisms:
 \item {{eta* s () |--> ((1/v, v), s)}}
   where {{v}} is a fresh logic variable. 
 
-\item {{eps* s v |--> (1, s[v <><> (inv(v'),v') ])}}
+\item {{eps* s v |--> (1, s[v <><> (1/v',v') ])}}
   where {{v'}} is a fresh logic variable. 
 
 \end{enumerate}
@@ -1701,7 +1701,7 @@ of primitive isomorphisms:
 %! columnStyle = rclr
 %! fwd = \triangleright
 %! bck = \triangleleft
-% <eps+, v, C, s>_{fwd} |--> <eps+, left (-v'), C, s[v <><> right v]>_{bck}
+% <eps+, v, C, s>_{fwd} |--> <eps+, left (-v'), C, s[v <><> right v']>_{bck}
 % <eps+, v, C, s>_{fwd} |--> <eps+, right v', C, s[v <><> left (-v')]>_{bck}
 
     \item
@@ -1709,7 +1709,7 @@ of primitive isomorphisms:
 %! columnStyle = rclr
 %! fwd = \triangleright
 %! bck = \triangleleft
-% <eta+, v, C, s>_{bck} |--> <eta+, left (-v'), C, s[v <><> right v]>_{fwd}
+% <eta+, v, C, s>_{bck} |--> <eta+, left (-v'), C, s[v <><> right v']>_{fwd}
 % <eta+, v, C, s>_{bck} |--> <eta+, right v', C, s[v <><> left (-v')]>_{fwd}
 
   \end{enumerate}
