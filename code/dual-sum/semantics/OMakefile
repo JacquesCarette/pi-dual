@@ -1,0 +1,24 @@
+########################################################################
+# Phony targets are scoped, so you probably want to declare them first.
+#
+
+.PHONY : all clean dropbox-dual
+
+dual.subc.tex : dual.tex
+	ruby subcode/subc.rb dual.tex
+
+dual.subc.pdf : dual.subc.tex p.bib
+	pdflatex -halt-on-error dual.subc.tex
+#	bibtex dual.subc
+
+dropbox-dual: dual.subc.pdf
+	cp dual.subc.pdf ~/Dropbox/Public/papers/
+
+all : dropbox-dual
+
+
+clean : 
+	rm *.subc.*
+	rm .subcode_cache*
+
+.DEFAULT : all

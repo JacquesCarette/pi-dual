@@ -1,0 +1,334 @@
+% Compile this document using omake. There should be an OMakefile and
+% OMakeroot in this directory. You can also run omake in `server mode'
+% by typing `omake -P' where it will monitor for file changes and
+% recompile when required.
+
+\documentclass[preprint]{easychair}
+
+%\usepackage{fullpage}
+%\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{comment}
+\usepackage{amsmath}
+\usepackage{mdwlist}
+\usepackage{txfonts}
+\usepackage{xspace}
+\usepackage{amstext}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{proof}
+\usepackage{multicol}
+% \usepackage[colon]{natbib}
+\usepackage[nodayofweek]{datetime}
+\usepackage{etex}
+\usepackage[all, cmtip]{xy}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{multicol}
+% \usepackage{inconsolata}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+%% \newenvironment{proof}[1][Proof]{\begin{trivlist}
+%% \item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+%% \newenvironment{definition}[1][Definition]{\begin{trivlist}
+%% \item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+%% \newenvironment{example}[1][Example]{\begin{trivlist}
+%% \item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+%% \newenvironment{remark}[1][Remark]{\begin{trivlist}
+%% \item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
+% \newcommand{\qed}{\nobreak \ifvmode \relax \else
+%       \ifdim\lastskip<1.5em \hskip-\lastskip
+%       \hskip1.5em plus0em minus0.5em \fi \nobreak
+%       \vrule height0.75em width0.5em depth0.25em\fi}
+
+%% \newcommand{\qed}{\hfill \ensuremath{\Box}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\xcomment}[2]{\textbf{#1:~\textsl{#2}}}
+\newcommand{\amr}[1]{\xcomment{Amr}{#1}}
+\newcommand{\roshan}[1]{\xcomment{Roshan}{#1}}
+
+\newcommand{\lcal}{$\lambda$-calculus\xspace}
+\newcommand{\yield}{\ensuremath{\mathit{yield}}\xspace}
+\newcommand{\run}{\ensuremath{\mathit{run}}\xspace}
+\newcommand{\shift}{\ensuremath{\mathit{shift}}\xspace}
+\newcommand{\reset}{\ensuremath{\mathit{reset}}\xspace}
+\newcommand{\iter}{\textit{iterator}\xspace}
+\newcommand{\iters}{\textit{iterators}\xspace}
+\newcommand{\Iter}{\textit{Iterator}\xspace}
+\newcommand{\Iters}{\textit{Iterators}\xspace}
+\newcommand{\ie}{\textit{i.e.}\xspace}
+\newcommand{\eg}{\textit{e.g.}\xspace}
+
+\newcommand{\code}[1]{\lstinline[basicstyle=\small]{#1}\xspace}
+%\newcommand{\name}[1]{\texttt{\textbf{#1}}\xspace}
+\newcommand{\name}[1]{\code{#1}}
+
+\def\newblock{}
+
+\newenvironment{floatrule}
+    {\hrule width \hsize height .33pt \vspace{.5pc}}
+    {\par\addvspace{.5pc}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%subcode-inline{bnf-inline} name langRev
+%! swap+ = \mathit{swap}^+
+%! swap* = \mathit{swap}^*
+%! dagger =  ^{\dagger}
+%! assocl+ = \mathit{assocl}^+
+%! assocr+ = \mathit{assocr}^+
+%! assocl* = \mathit{assocl}^*
+%! assocr* = \mathit{assocr}^*
+%! identr* = \mathit{uniti}
+%! identl* = \mathit{unite}
+%! dist = \mathit{distrib}
+%! factor = \mathit{factor}
+%! (o) = \fatsemi
+%! (;) = \fatsemi
+%! (*) = \times
+%! (+) = +
+
+
+
+%subcode-inline{bnf-inline} regex \{\{(((\}[^\}])|[^\}])*)\}\} name main include langRev
+%! Gx = \Gamma^{\times}
+%! G = \Gamma
+%! [] = \Box
+%! |-->* = \mapsto^{*}
+%! |-->> = \mapsto_{\ggg}
+%! |--> = \mapsto
+%! |- = \vdash
+%! ==> = \Longrightarrow
+%! <== = \Longleftarrow
+%! <=> = \Longleftrightarrow
+%! <-> = \leftrightarrow
+%! ~> = \leadsto
+%! ::= = &::=&
+%! /= = \neq
+%! forall = \forall
+%! exists = \exists
+%! empty = \epsilon
+%! langRev = \Pi
+%! theseus = Theseus
+
+\begin{document}
+
+%
+\title{Additive Duality in {{langRev}} } 
+
+% \titlerunning{} has to be set to either the main title or its shorter
+% version for the running heads. Use {\sf} for highliting your system
+% name, application, or a tool.
+%
+\titlerunning{Additive Duality} 
+
+%% \author{Roshan P. James\\
+%% Indiana University\\
+%% Bloomington, Indiana, U.S.A.\\
+%% \url{rpjames@indiana.edu}\\
+%% \and
+%% Amr Sabry\\
+%% Indiana University\\
+%% Bloomington, Indiana, U.S.A.\\
+%% \url{sabry@indiana.edu}\\
+%% }
+
+% \authorrunning{} has to be set for the shorter version of the authors' names;
+% otherwise a warning will be rendered in the running heads.
+%
+\authorrunning{R. P. James, and A. Sabry}
+
+\maketitle
+
+%% \begin{abstract}
+%%   %% {{langRev}} is too low level, almost like an assembly
+%%   %% langauge. {{theseus}} is a much more humane language.
+%% \end{abstract}
+
+
+% \category{D.1.1}{Applicative (Functional) Programming}{}
+% \category{D.3.3}{Language Constructs and Features}{Control structures,
+% Coroutines} \category{F.3.3}{Logics and Meanings of Programs}{Control
+% primitives}
+% \terms
+% Languages
+% \keywords
+% continuation, control flow, Haskell, iterator, lazy evaluation, monad
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Small Step Semantics}
+\subsection{Grammar and other definitions}
+
+%subcode{bnf} include main
+% Values, v = () | (v, v) | L v | R v
+% Combinators, c &=& iso | c (;) c | c(+)c | c (*) c 
+%
+% Sequential Contexts, P, F = [] | P:c
+% Parallel Contexts, D = [] 
+%                     &|& (P, [](+)c, F):D 
+%                     &|&  (P, c(+)[], F):D
+%                     &|& (P, c v, F):D 
+%                     &|&  (P, v c, F):D
+%
+%
+% Machine States  = <P, F, c v, D> | <P, F, v c, D>
+% Start State  = <[], [], c v, []>
+% Stop State  = <P, [], v c, []>
+
+Combinator reconstruction, {{P[c]}}: 
+%subcode{opsem} include main
+% [][c] '= c
+% (P:c')[c] '= P[c'(;)c]
+
+\subsection{Operational Semantics}
+
+The small step semantics present for {{langRev}} below work
+symmetrically for forward and backward evaluation.
+
+\begin{itemize}
+\item 
+Basic reduction of an isomorphism. Note that the evaluation leaves the
+adjoint of the combinator behind. This will become important when we
+reverse the direction of computation.
+%subcode{opsem} include main
+% <P; F; iso v; D>      &|-->& <P; F; v'~ iso{dagger}; D>
+
+\item
+Sequencing involves pushing and popping from the Future and Past
+continuations:
+%subcode{opsem} include main
+% <P, F, c1(;)c2 v , D>  &|-->& <P, F:c2, c1 v, D>
+% <P, F:c2, v c1, D> &|-->& <P:c1, F, c2 v, D>
+
+
+\item
+Parallel composition, captures the current Future and Past and extends
+a Dump/meta-continuation.
+%subcode{opsem} include main
+% <P, F, c1 (+) c2 (L v), D> &|-->& <[], [], c1 v, (P,[](+)c2,F):D>
+% <P, F, c1 (+) c2 (R v), D> &|-->& <[], [], c2 v, (P,c1(+)[],F):D> 
+% <P', [], v c1, (P,[](+)c2,F):D> &|-->& < P, F, (L v) (P'[c1](+)c2{dagger}), D > 
+% <P', [], v c2, (P,c1(+)[],F):D> &|-->& <P, F, (R v) (c1{dagger}(+)P'[c2]), D>
+
+
+\item
+Similarly for products:
+%subcode{opsem} include main
+% <P, F, c1 (*) c2 (v1, v2), D> &|-->& <[], [], c1 v1, (P, [] (*) c2 v2,F):D>
+% <P', [], v1 c1, (P,[] (*) c2 v2,F):D> &|-->& <[], [], c2 v2, (P,v1 P'[c1] (*) [],F):D>
+% <P', [], v2 c2, (P,v1 c1 (*) [],F):D> &|-->& <P, F, (v1, v2) (c1(*)P'[c2]):D>
+and symmetrical rules for evaluation along the second branch. 
+%subcode{opsem} include main
+% <P', [], v2 c2, (P,c1 v1 (*) [],F):D> &|-->& <[], [], c1 v1, (P,[] (*) v2 P'[c2],F):D>
+% <P', [], v1 c1, (P,[] (*) v2 c2,F):D> &|-->& <P, F, (v1, v2) (P'[c1] (*) c2):D>
+
+The later two rules will be relevant only for reverse execution. 
+
+\end{itemize}
+
+
+\section{Rules for {{eta}} and {{eps}} }
+
+The operation {{eps}} reverses the direction of a particle by reversing the world. 
+
+\begin{itemize}
+\item Grammar
+%subcode{bnf} include main
+% Values, v = () | (v, v) | L v | R v | -v
+% Isomorphisms, iso &=& ... | eta | eps
+% Combinators, c &=& iso | c (;) c | c(+)c | c (*) c 
+
+\item
+Type judgement.
+%subcode{opsem} include main
+% eta &: 0 <-> (-b) + b :& eps
+
+%subcode{proof} include main
+%@ |- v : b
+%@@ |- -v : -b
+
+
+
+\item
+Operational Semantics.
+%subcode{opsem} include main
+% <P; F; eps (R v); D>      &|-->& <F; P; (L (-v))~ eps; D{dagger}>
+
+Note: there is NO reduction rule for {{eta}}. 
+
+\item
+The adjoint of a Dump is defined to be:
+%subcode{opsem} include main
+% []{dagger} '= []
+% ((P, [](+)c, F):D){dagger} '= (F, [](+)c{dagger}, P):D{dagger}
+% ((P, c(+)[], F):D){dagger} '= (F, c{dagger}(+)[], P):D{dagger}
+% ((P, [](*)c v, F):D){dagger} '= (F, [](*)v c, P):D{dagger}
+% ((P, [](*)v c, F):D){dagger} '= (F, [](*)c v, P):D{dagger}
+% ((P, c v(*)[], F):D){dagger} '= (F, v c(*)[], P):D{dagger}
+% ((P, v c(*)[], F):D){dagger} '= (F, c v(*)[], P):D{dagger}
+
+\end{itemize}
+
+
+%% %subcode{bnf} include main
+%% % Expressions, e &=& p -> e | let p = F p in e | let p = p in e | p
+%% % Patterns, p = () | x | (p, p) | (p|p)
+%% %
+%% % Type Environments, G &=& empty | x : t | G * G | G + G
+%% % Type Contexts, C &=& [] | C * G | G * C | G + C | C + G
+%% %
+
+%% \subsection{Type System}
+%% %subcode{proof} include main
+%% %@ p ==> G
+%% %@@ C |- p : C[G] :: positive pattern
+%% %
+%% %@ p ==> G1 
+%% %@ G <-> C[G1]
+%% %@@ G |- p : C :: negative pattern
+%% %
+%% %---
+%% %
+%% %@ [] |- p : G 
+%% %@ G |- e : []
+%% %@ p ==> G1
+%% %@ e ==> G2
+%% %@@ |- p -> e : G1 <-> G2
+
+
+%% %subcode{code}
+%% %! language = Haskell
+%% %(x, (y | z)) => 
+%% %  let a = (x, y) in 
+%% %  (a | (x, z))
+
+
+%% %subcode{code}
+%% %! language = Haskell
+%% %G = [] 
+%% %(x, (y | z)) => 
+%% %  G = (x:t1, (y:t2 | z:t3))
+%% %  G = ((x:t1, y:t2) | (x:t1, z:t3))
+%% %  ([] | (x:t1, z:t3)) {
+%% %    G = (x:t1, y:t2)
+%% %    let a = (x, y) in 
+%% %    G = a:(t1 *t2)
+%% %  }
+%% %  G = ((a:(t1 *t2) | (x:t1, z:t3))
+%% %  (a | (x, z))
+%% %  G = []
+
+
+%% \bibliographystyle{alpha} 
+%% \bibliography{p}
+
+\end{document}
