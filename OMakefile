@@ -2,9 +2,9 @@
 # Phony targets are scoped, so you probably want to declare them first.
 #
 
-.PHONY : all clean dual-dropbox rational-dropbox
+.PHONY : all clean dual-dropbox rational-dropbox rational_ext-dropbox
 
-# POPL-dual
+# LOts of random stuff
 dual.subc.tex : dual.tex
         ruby subcode/subc.rb dual.tex
 
@@ -16,7 +16,7 @@ dual-dropbox : dual.subc.pdf
 	cp dual.subc.pdf ~/Dropbox/Public/papers
 
 
-# POPL-dual
+# ICFP
 rational.subc.tex : rational.tex
         ruby subcode/subc.rb rational.tex
 
@@ -27,9 +27,20 @@ rational.subc.pdf : rational.subc.tex cites.bib
 rational-dropbox : rational.subc.pdf
 	cp rational.subc.pdf ~/Dropbox/Public/papers
 
+# additions 
+rational_ext.subc.tex : rational_ext.tex
+        ruby subcode/subc.rb rational_ext.tex
+
+rational_ext.subc.pdf : rational_ext.subc.tex cites.bib
+	pdflatex -halt-on-error rational_ext.subc.tex
+        bibtex rational_ext.subc
+
+rational_ext-dropbox : rational_ext.subc.pdf
+	cp rational_ext.subc.pdf ~/Dropbox/Public/papers
+
 
 # Build all 
-all : dual-dropbox rational-dropbox
+all : dual-dropbox rational-dropbox rational_ext-dropbox
 
 # Clean
 clean: 
