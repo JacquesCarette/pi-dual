@@ -1227,6 +1227,113 @@ And thus we have
 \end{frame}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  
+    \begin{center}
+      \framebox{ Entropy Analysis Example : {{langArrT}} }
+    \end{center}
+
+
+\end{frame}
+
+
+\begin{frame}{XOR and NAND example : entropy analysis}
+  
+\vfill
+
+  {{xor(b1, b2) = if b1 then (if b2 then false else true) else b2 }}
+
+  {{nand(b1, b2) = if b1 then (if b2 then false else true) else true }}
+
+\pause
+\vfill
+
+\begin{itemize}
+\item Entropy of a function is {{ H_i - H_o }}
+\item Entropy of input, {{H_i}}, for {{bool * bool}} is 2 bits. 
+
+\pause
+\item For {{xor}}, 
+  \begin{itemize}
+  \item Probability of output being true, {{P(true) = 1/2}}
+  \item and {{P(false) = 1/2}}. 
+  \item Therefore {{H_o = }} $-\sum p_i \log{p_i}$ {{ = 1}} bits. 
+  \item Information lost is {{2 - 1 = 1 bit}}
+  \end{itemize}
+\pause
+
+\item For {{nand}}, 
+  \begin{itemize}
+  \item Probability of output being true, {{P(true) = 3/4}}
+  \item and {{P(false) = 1/4}}. 
+  \item Therefore {{H_o = }} $-\sum p_i \log{p_i} = 1/4 \log{4} + 3/4
+    (\log{4}-\log{3}) = 0.8$ bits.
+  \item Information lost is {{2 - 0.8 = 1.2 bits}}
+  \end{itemize}
+
+\end{itemize}
+
+\vfill
+
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{XOR and NAND example : {{langArrT}} implementation}
+  
+\vfill
+
+\begin{itemize}
+
+\item The most optimal implementation of {{xor}} must erase at least 1
+  bit i.e. there must be at least one {{erase_{bool} }}.
+
+  \begin{block}
+    
+
+
+{{ xor : bool * bool ~~> bool }}
+
+{{ xor = dist >>> (not +++ id) }} 
+
+{{~~~~~~~~ >>> factor >>> (erase_{bool} *** id) >>> arr identl*}}
+
+  \end{block}
+
+\vfill
+
+\item The most optimal implementation of {{nand}} must erase at least
+  1.2 bits i.e. at least two {{bools}} must be erased. 
+
+
+  \begin{block}
+    
+{{ nand : bool * bool ~~> bool }}
+
+{{ nand = dist >>> (not +++ (erase_{bool} >>> create_{true})) }} 
+
+{{~~~~~~~ >>> factor >>> (erase_{bool} *** id) >>> arr identl* }}
+
+  \end{block}
+
+\vfill
+
+\item These minimums are captured in the structure of the program.
+
+
+\end{itemize}
+
+
+
+
+
+\vfill
+
+\end{frame}
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1461,112 +1568,6 @@ We choose {{h = b}} and {{g = 1}} and we have \red{ {{c = swap*}} }.
 % \vfill
 % \end{frame}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-  
-    \begin{center}
-      \framebox{ Entropy Analysis Example : {{langArrT}} }
-    \end{center}
-
-
-\end{frame}
-
-
-\begin{frame}{XOR and NAND example : entropy analysis}
-  
-\vfill
-
-  {{xor(b1, b2) = if b1 then (if b2 then false else true) else b2 }}
-
-  {{nand(b1, b2) = if b1 then (if b2 then false else true) else true }}
-
-\pause
-\vfill
-
-\begin{itemize}
-\item Entropy of a function is {{ H_i - H_o }}
-\item Entropy of input, {{H_i}}, for {{bool * bool}} is 2 bits. 
-
-\pause
-\item For {{xor}}, 
-  \begin{itemize}
-  \item Probability of output being true, {{P(true) = 1/2}}
-  \item and {{P(false) = 1/2}}. 
-  \item Therefore {{H_o = }} $-\sum p_i \log{p_i}$ {{ = 1}} bits. 
-  \item Information lost is {{2 - 1 = 1 bit}}
-  \end{itemize}
-\pause
-
-\item For {{nand}}, 
-  \begin{itemize}
-  \item Probability of output being true, {{P(true) = 3/4}}
-  \item and {{P(false) = 1/4}}. 
-  \item Therefore {{H_o = }} $-\sum p_i \log{p_i} = 1/4 \log{4} + 3/4
-    (\log{4}-\log{3}) = 0.8$ bits.
-  \item Information lost is {{2 - 0.8 = 1.2 bits}}
-  \end{itemize}
-
-\end{itemize}
-
-\vfill
-
-
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{XOR and NAND example : {{langArrT}} implementation}
-  
-\vfill
-
-\begin{itemize}
-
-\item The most optimal implementation of {{xor}} must erase at least 1
-  bit i.e. there must be at least one {{erase_{bool} }}.
-
-  \begin{block}
-    
-
-
-{{ xor : bool * bool ~~> bool }}
-
-{{ xor = dist >>> (not +++ id) }} 
-
-{{~~~~~~~~ >>> factor >>> (erase_{bool} *** id) >>> arr identl*}}
-
-  \end{block}
-
-\vfill
-
-\item The most optimal implementation of {{nand}} must erase at least
-  1.2 bits i.e. at least two {{bools}} must be erased. 
-
-
-  \begin{block}
-    
-{{ nand : bool * bool ~~> bool }}
-
-{{ nand = dist >>> (not +++ (erase_{bool} >>> create_{true})) }} 
-
-{{~~~~~~~ >>> factor >>> (erase_{bool} *** id) >>> arr identl* }}
-
-  \end{block}
-
-\vfill
-
-\item These minimums are captured in the structure of the program.
-
-
-\end{itemize}
-
-
-
-
-
-\vfill
-
-\end{frame}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
