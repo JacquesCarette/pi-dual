@@ -127,7 +127,34 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
 
-Reversible languages 
+Landscape:
+
+- write program; derive inverse
+program~\cite{Gluck:2005,Mu:2002:IFF:648086.757330,conf/aplas/GluckK03,Gluck:2005};
+we're not interested in this; we want to directly write partial isomorphisms
+
+ - design reversible abstract machines by hand (e.g.,
+ SE(M)CD~\cite{Kluge:1999:SEMCD} or SECD-H~\cite{lorenz}) and then implement
+ them; this is what we are doing; our implementation is in this language in
+ which every computation is a partial isomorphism so the implementation will
+ be checked to be reversible by construction
+
+ - generally one can take any reversible algorithm; transform it to a
+ small-step reversible abstract machine, and then implement the machine in
+ our
+ language~\cite{Danvy:2008:RRN:1813347.1813350,Rendel:2010:ISD:1863523.1863525}.
+
+ \cite{Yokoyama:2008:PRP,Axelsen:2011:RPC:1987171.1987176} argue that the
+ clean simulation of reversible Turing machines is a criterion for computing
+ strength of reversible languages. This is kind of what we show.
+
+ \cite{Yokoyama:2007:RPL:1244381.1244404} also show a reversible
+ self-interpreter which is what we show
+
+ we argue and so does \cite{Rendel:2010:ISD:1863523.1863525} that partial iso
+ are a good foundation for reversible programming
+
+
 
 Main points: 
 \begin{itemize}
@@ -149,16 +176,15 @@ called, light-weight fission. Using this idea, one can realize any recursive
 function as a partial isomorphism. We show a few examples of the construction
 culminating with the most challenging recursive function: a full interpreter.
 
-Previous work on {{langRevT}} \cite{rc2011,infeffects} studied its
-properties and various constructions in it. However, for a
-computational model, there has been little focus on actually writing
-programs directly in {{langRevT}}. This paper aims to remedy that by
-presenting a systematic technique of expressing logically reversible
-small-step abstract machines in {{langRevT}}. This paper shows that
-once we have a logically reversible machine in a notation of our
-choice, expressing the machine as an isomorphic interpreter in
-{{langRevT}} can be done systematically and does not present any
-significant conceptual difficulties.
+Previous work on {{langRevT}} \cite{rc2011,James:2012:IE:2103656.2103667}
+studied its properties and various constructions in it. However, for a
+computational model, there has been little focus on actually writing programs
+directly in {{langRevT}}. This paper aims to remedy that by presenting a
+systematic technique of expressing logically reversible small-step abstract
+machines in {{langRevT}}. This paper shows that once we have a logically
+reversible machine in a notation of our choice, expressing the machine as an
+isomorphic interpreter in {{langRevT}} can be done systematically and does
+not present any significant conceptual difficulties.
 
 The constructions in this paper apply only to a class of interpreters
 that can be represented by logically reversible small-step operational
@@ -172,13 +198,13 @@ reversibility of the small-step semantics.
 \label{sec:pi}
 
 We briefly review the reversible language {{langRevT}} introduced in our
-previous work~\cite{rc2011,infeffects}. The set of types includes the empty
-type {{0}}, the unit type {{1}}, sum types {{b1+b2}}, product types
-{{b1*b2}}, and recursive types {{@@x.b}}. The set of values {{v}} includes
-{{()}} which is the only value of type {{1}}, {{left v}} and {{right v}}
-which inject {{v}} into a sum type, {{(v1,v2)}} which builds a value of
-product type, and {{<v>}} which is used to construct recursive values. There
-are no values of type {{0}}:
+previous work~\cite{rc2011,James:2012:IE:2103656.2103667}. The set of types
+includes the empty type {{0}}, the unit type {{1}}, sum types {{b1+b2}},
+product types {{b1*b2}}, and recursive types {{@@x.b}}. The set of values
+{{v}} includes {{()}} which is the only value of type {{1}}, {{left v}} and
+{{right v}} which inject {{v}} into a sum type, {{(v1,v2)}} which builds a
+value of product type, and {{<v>}} which is used to construct recursive
+values. There are no values of type {{0}}:
 %subcode{bnf} include main
 % value types, b ::= 0 | 1 | b + b | b * b | x | @@x.b
 % values, v ::= () | left v | right v | (v, v) | <v>
