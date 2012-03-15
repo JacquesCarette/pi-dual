@@ -127,71 +127,79 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
 
-Landscape:
+In recent papers~\cite{rc2011,James:2012:IE:2103656.2103667}, we developed a
+pure reversible model of computation that is obtained from the type
+isomorphisms and categorical structures that underlie models of linear logic
+and quantum computing and that treats information as a linear resource that
+can neither be erased nor duplicated. From a programming perspective, our
+model gives rise to a pure (with no embedded computational effects such as
+assignments) reversible programming language {{langRevT}} based on
+\emph{partial isomorphisms}. In more detail, in the recursion-free fragment
+of {{langRevT}}, every program witnesses an isomorphism between two finite
+types; in the full language with recursion, some of these isomorphisms may be
+partial, i.e., may diverge on some inputs. 
 
-- write program; derive inverse
-program~\cite{Gluck:2005,Mu:2002:IFF:648086.757330,conf/aplas/GluckK03,Gluck:2005};
-we're not interested in this; we want to directly write partial isomorphisms
-
- - design reversible abstract machines by hand (e.g.,
- SE(M)CD~\cite{Kluge:1999:SEMCD} or SECD-H~\cite{lorenz}) and then implement
- them; this is what we are doing; our implementation is in this language in
- which every computation is a partial isomorphism so the implementation will
- be checked to be reversible by construction
-
- - generally one can take any reversible algorithm; transform it to a
- small-step reversible abstract machine, and then implement the machine in
- our
- language~\cite{Danvy:2008:RRN:1813347.1813350,Rendel:2010:ISD:1863523.1863525}.
-
- \cite{Yokoyama:2008:PRP,Axelsen:2011:RPC:1987171.1987176} argue that the
- clean simulation of reversible Turing machines is a criterion for computing
- strength of reversible languages. This is kind of what we show.
-
- \cite{Yokoyama:2007:RPL:1244381.1244404} also show a reversible
- self-interpreter which is what we show
-
- we argue and so does \cite{Rendel:2010:ISD:1863523.1863525} that partial iso
- are a good foundation for reversible programming
-
-
-
-Main points: 
+In this paper, we investigate the practicality of writing recursive programs
+in {{langRevT}}. Specifically, we assume that we are giving some reversible
+recursive algorithm expressed as a \emph{reversible abstract machine}, and we
+show via a number of systematic steps, how to develop a {{langRevT}} program
+from that abstract machine. Our choice of starting from reversible abstract
+machines is supported by the following observations:
 \begin{itemize}
-\item Make the case for reversibility via type isomorphisms
-\item Type isomorphisms between finite types are straightforward (but
-  tedious)
-\item Type isomorphisms between recursive types are quite difficult. This is
-  what we focus on.
+\item it is an interesting enough class of reversible programs: researchers
+  have invested the effort in manually designing such machines, e.g., the
+  SE(M)CD machine~\cite{Kluge:1999:SEMCD}, and theSECD-H~\cite{lorenz});
+\item every reversible interpreter can be realized as such a machine: this
+  means that our class of programs includes self-interpreters which are
+  arguably a measure of the strength of any reversible
+  language~\cite{Yokoyama:2008:PRP,Axelsen:2011:RPC:1987171.1987176,Yokoyama:2007:RPL:1244381.1244404};
+\item general recursive programs can be systematically transformed to
+  abstract machines: the technique is independent of reversible programs and
+  consists of tranforming general recursion to tail recursion and then
+  applying \emph{fission} to split the program into a driver and a small-step
+  machine~\cite{Danvy:2008:RRN:1813347.1813350,Rendel:2010:ISD:1863523.1863525}.
 \end{itemize}
-To understand the problem in more detail, consider the problem of converting
-a reversible recursive function into a partial isomorphism. In general such a
-function takes an input, makes several recursive calls, and produces an
-answer. To implement this in a reversible way, the structure of the recursion
-and the number of recursive calls need to be exposed. The key trick is to
-express tease the function into two components: an outer driver that performs
-iteration and an inner state transition function that realizes one
-``unfolding'' of the recursion. In program transformation world, this is
-called, light-weight fission. Using this idea, one can realize any recursive
-function as a partial isomorphism. We show a few examples of the construction
-culminating with the most challenging recursive function: a full interpreter.
 
-Previous work on {{langRevT}} \cite{rc2011,James:2012:IE:2103656.2103667}
-studied its properties and various constructions in it. However, for a
-computational model, there has been little focus on actually writing programs
-directly in {{langRevT}}. This paper aims to remedy that by presenting a
-systematic technique of expressing logically reversible small-step abstract
-machines in {{langRevT}}. This paper shows that once we have a logically
-reversible machine in a notation of our choice, expressing the machine as an
-isomorphic interpreter in {{langRevT}} can be done systematically and does
-not present any significant conceptual difficulties.
+To summarize, we assume we are given some reversible abstract machine and we
+show how to derive a {{langRevT}} program that implements the semantics of
+the machine. Our derivation is systematic and expressive. In particular,
+{{langRevT}} can handle machines with stuck states because it is based on
+partial isomorphisms. We illustrate our techniques with simple machines that
+do bounded iteration on numbers, tree traversals, and a meta-circular
+interpreter for {{langRevT}}. 
 
-The constructions in this paper apply only to a class of interpreters
-that can be represented by logically reversible small-step operational
-semantics. While, in a formal sense, they are related to Abramsky's
-``bi-orthogonal automata''\cite{abramsky2005structural}, we will try
-to give them a more direct characterization purely in terms of logical
-reversibility of the small-step semantics.
+% To understand the problem in more detail, consider the problem of converting
+% a reversible recursive function into a partial isomorphism. In general such a
+% function takes an input, makes several recursive calls, and produces an
+% answer. To implement this in a reversible way, the structure of the recursion
+% and the number of recursive calls need to be exposed. The key trick is to
+% express tease the function into two components: an outer driver that performs
+% iteration and an inner state transition function that realizes one
+% ``unfolding'' of the recursion. In program transformation world, this is
+% called, light-weight fission. Using this idea, one can realize any recursive
+% function as a partial isomorphism. We show a few examples of the construction
+% culminating with the most challenging recursive function: a full interpreter.
+
+% Previous work on {{langRevT}} \cite{rc2011,James:2012:IE:2103656.2103667}
+% studied its properties and various constructions in it. However, for a
+% computational model, there has been little focus on actually writing programs
+% directly in {{langRevT}}. This paper aims to remedy that by presenting a
+% systematic technique of expressing logically reversible small-step abstract
+% machines in {{langRevT}}. This paper shows that once we have a logically
+% reversible machine in a notation of our choice, expressing the machine as an
+% isomorphic interpreter in {{langRevT}} can be done systematically and does
+% not present any significant conceptual difficulties.
+
+% The constructions in this paper apply only to a class of interpreters
+% that can be represented by logically reversible small-step operational
+% semantics. While, in a formal sense, they are related to Abramsky's
+% ``bi-orthogonal automata''\cite{abramsky2005structural}, we will try
+% to give them a more direct characterization purely in terms of logical
+% reversibility of the small-step semantics.
+
+%% - write program; derive inverse
+%% program~\cite{Gluck:2005,Mu:2002:IFF:648086.757330,conf/aplas/GluckK03,Gluck:2005};
+%% we're not interested in this; we want to directly write partial isomorphisms
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Review of the Reversible Language: {{langRevT}} }
