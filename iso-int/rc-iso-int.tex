@@ -387,7 +387,10 @@ the flow of waves and particles along the wires.
 %% }
 %% \end{center}
 
-\item Commutativity is represented by crisscrossing wires.
+\item Commutativity is represented by crisscrossing wires.  By
+  visually tracking the flow of particles on the wires, one can verify
+  that the expected types for commutativity are satisfied.
+
 \begin{multicols}{4}
 \begin{center}
 \scalebox{0.95}{
@@ -417,8 +420,6 @@ the flow of waves and particles along the wires.
 \end{center}
 \end{multicols}
 
-By visually tracking the flow of particles on the wires, one can
-verify that the expected types for commutativity are satisfied.
 
 
 \item The morphisms that witness that {{0}} and {{1}} are the additive and
@@ -457,8 +458,12 @@ verify that the expected types for commutativity are satisfied.
 \end{center}
 \end{multicols}
 
-\item Distributivity and factoring are represented using the dual
-  boxes shown below:
+\item Distributivity and factoring are interesting because they
+  represent interactions between sum and pair types. Distributivity
+  should essentially be thought of as a multiplexer that redirects the
+  flow of {{v:b}} depending on what value inhabits the type {{b1+b2}},
+  as shown below. Factoring is the corresponding adjoint operation.
+
 \begin{multicols}{4}
 \begin{center}
   \includegraphics{diagrams/thesis/dist.pdf}
@@ -476,11 +481,6 @@ verify that the expected types for commutativity are satisfied.
 \end{center}
 \end{multicols}
 
-Distributivity and factoring are interesting because they represent
-interactions between sum and pair types. Distributivity should
-essentially be thought of as a multiplexer that redirects the flow of
-{{v:b}} depending on what value inhabits the type {{b1+b2}}, as shown
-below. Factoring is the corresponding adjoint operation.
 
 
 \item {{fold}} and {{unfold}} are basically drawn as triangular boxes
