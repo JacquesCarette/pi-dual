@@ -821,8 +821,9 @@ examples: a tree traversal and a meta-circulator interpreter for
 The type of binary trees we use is {{@@x.nat+x*x}}, i.e., binary trees with
 no information at the nodes and with natural numbers at the leaves. To define
 the abstract machine, we need a notion of \emph{tree contexts} to track which
-subtree is currently being explored. The definitions are:
+subtree is currently being explored. The definitions are shown on the left:
 
+\begin{multicols}{2}
 %subcode{bnf} include main
 % Tree, t = L n | N t t
 % Tree Contexts, c = Lft c t | Rgt t c | []
@@ -831,24 +832,24 @@ subtree is currently being explored. The definitions are:
 % Start state = <t, []>
 % Stop State = {[[], t]}
 
-Our example machine below traverses a given tree and increments every leaf
-value:
-
 %subcode{opsem} include main
 % <L n, c> &|-->& {[c, L (n+1)]}
 % <N t1 t2, c> &|-->& <t1, Lft c t2>
 % {[Lft c t2, t1]} &|-->& <t2, Rgt t1 c>
 % {[Rgt t1 c, t2]} &|-->& {[N t1 t2, c]}
 
-The machine here is a little richer than the ones dealt with
-previously. In particular, we have a two types of machine states --
-{{<t,c>}} and {{ {[t, c]} }}. The first of these corresponds to walking
-down a tree, building up the context in the process. The second
-corresponds to reconstructing the tree from the context and also
-switching focus to any unexplored subtrees in the process. There are
-also two syntactic categories to deal with (trees and tree contexts)
-where previously we only had numbers. The {{fold}} and {{unfold}}
-isomorphisms that we need for trees and tree contexts are:
+\end{multicols}
+
+The reduction rules on the right traverses a given tree and increments
+every leaf value.  The machine here is a little richer than the ones
+dealt with previously. In particular, we have a two types of machine
+states -- {{<t,c>}} and {{ {[t, c]} }}. The first of these corresponds
+to walking down a tree, building up the context in the process. The
+second corresponds to reconstructing the tree from the context and
+also switching focus to any unexplored subtrees in the process. There
+are also two syntactic categories to deal with (trees and tree
+contexts) where previously we only had numbers. The {{fold}} and
+{{unfold}} isomorphisms that we need for trees and tree contexts are:
 
 %subcode{bnf} include main
 %! columnStyle = rrcll
@@ -876,19 +877,20 @@ We can now apply our construction. The first step to developing the
 isomorphic interpreter is to recognize that the two possible kinds of machine
 states simply hide an implicit {{bool}}. We make this explicit:
 
+\begin{multicols}{2}
+%subcode{bnf} include main
+% Machine states = <bool, t, c>
+%
+% Start state = <T, t, []>
+% Stop state =  <F, t, []>
+
 %subcode{opsem} include main
 %! columnStyle = rclr
 % <T, L n, c> &|-->& <F, L (n+1), c> &~~~~~ rule 1
 % <T, N t1 t2, c> &|-->& <T, t1, Lft c t2> & rule 2 
 % <F, t1, Lft c t2> &|-->& <T, t2, Rgt t1 c> & rule 3
 % <F, t2, Rgt t1 c> &|-->& <F, c, N t1 t2> & rule 4
-
-And so machine states have the form:
-
-%subcode{bnf} include main
-% Machine states = <bool, t, c>
-% Start state = <T, t, []>
-% Stop state =  <F, t, []>
+\end{multicols}
 
 And we start examining the machine components as before:
 
