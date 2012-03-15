@@ -71,6 +71,7 @@
 %! rho = \rho
 %! @@ = \mu
 %! @ = \,@\,
+%! * = \times
 %! langRev = \Pi
 %! langRevT = \Pi^{o}
 %! langRevEE = \Pi^{\eta\epsilon}_{+}
@@ -298,20 +299,21 @@ the flow of waves and particles along the wires.
   using particles, one should think of one particle on each wire or
   alternatively as in folklore in the literature on monoidal categories as a
   ``wave.''
-\begin{multicols}{2}
+\begin{multicols}{4}
 \begin{center}
 \scalebox{0.95}{
 %%subcode-line{pdfimage}[diagrams/thesis/pair-one-wire.pdf]
 \includegraphics{diagrams/thesis/product-one-wire.pdf}
 }
 \end{center}
+\columnbreak
 \begin{center}
 \scalebox{0.95}{
 \includegraphics{diagrams/thesis/product-one-wire-value.pdf}
 }
 \end{center}
-\end{multicols}
-\begin{multicols}{2}
+%% \end{multicols}
+%% \begin{multicols}{2}
 \begin{center}
 \scalebox{0.95}{
 %%%subcode-line{pdfimage}[diagrams/thesis/pair-of-wires.pdf]
@@ -329,24 +331,24 @@ the flow of waves and particles along the wires.
   parallel wires with a {{+}} operator between them. When tracing the
   execution of two additive wires, a value can reside on only one of the two
   wires.
-\begin{multicols}{2}
+\begin{multicols}{4}
 \begin{center}
 \scalebox{0.95}{
 %%subcode-line{pdfimage}[diagrams/thesis/sum-one-wire.pdf]
 \includegraphics{diagrams/thesis/sum-one-wire.pdf}
 }
 \end{center}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/thesis/sum-two-wires-left-value.pdf}
-}
-\end{center}
-\end{multicols}
-\begin{multicols}{2}
+%% \end{multicols}
+%% \begin{multicols}{2}
 \begin{center}
 \scalebox{0.95}{
 %%subcode-line{pdfimage}[diagrams/thesis/sum-of-wires.pdf]
 \includegraphics{diagrams/thesis/sum-two-wires.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/sum-two-wires-left-value.pdf}
 }
 \end{center}
 \begin{center}
@@ -370,38 +372,36 @@ the flow of waves and particles along the wires.
 
 \item Associativity is implicit in the graphical language. Three parallel
   wires represent {{b1*(b2*b3)}} or {{(b1*b2)*b3}}, based on the context.
-\begin{center}
-\scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/associate.pdf]
-\includegraphics{diagrams/thesis/assoc.pdf}
-}
-\end{center}
+%% \begin{center}
+%% \scalebox{0.95}{
+%% %%subcode-line{pdfimage}[diagrams/thesis/associate.pdf]
+%% \includegraphics{diagrams/thesis/assoc.pdf}
+%% }
+%% \end{center}
 
 \item Commutativity is represented by crisscrossing wires.
-\begin{multicols}{2}
+\begin{multicols}{4}
 \begin{center}
 \scalebox{0.95}{
 %%subcode-line{pdfimage}[diagrams/thesis/swap-pair.pdf]
 \includegraphics{diagrams/thesis/swap_times.pdf}
 }
 \end{center}
+%% \end{multicols}
+%% \begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/swap_times_value.pdf}
+}
+\end{center}
+
 \begin{center}
 \scalebox{0.95}{
 %%subcode-line{pdfimage}[diagrams/thesis/swap-sum.pdf]
 \includegraphics{diagrams/thesis/swap_plus.pdf}
 }
 \end{center}
-\end{multicols}
 
-By visually tracking the flow of particles on the wires, one can
-verify that the expected types for commutativity are satisfied.
-
-\begin{multicols}{2}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/thesis/swap_times_value.pdf}
-}
-\end{center}
 \begin{center}
 \scalebox{0.95}{
 \includegraphics{diagrams/thesis/swap_plus_value.pdf}
@@ -409,13 +409,17 @@ verify that the expected types for commutativity are satisfied.
 \end{center}
 \end{multicols}
 
+By visually tracking the flow of particles on the wires, one can
+verify that the expected types for commutativity are satisfied.
+
+
 \item The morphisms that witness that {{0}} and {{1}} are the additive and
   multiplicative units are represented as shown below. Note that since there
   is no value of type 0, there can be no particle on a wire of type {{0}}.
   Also since the monoidal units can be freely introduced and eliminated, in
   many diagrams they are omitted and dealt with explicitly only when they are
   of special interest.
-\begin{multicols}{2}
+\begin{multicols}{4}
 \begin{center}
 \scalebox{0.95}{
 %%subcode-line{pdfimage}[diagrams/thesis/identr1.pdf]
@@ -428,8 +432,8 @@ verify that the expected types for commutativity are satisfied.
 \includegraphics{diagrams/thesis/unite.pdf}
 }
 \end{center}  
-\end{multicols}
-\begin{multicols}{2}
+%% \end{multicols}
+%% \begin{multicols}{2}
 \begin{center}
 \scalebox{0.95}{
 %%subcode-line{pdfimage}[diagrams/thesis/identr0.pdf]
@@ -447,12 +451,20 @@ verify that the expected types for commutativity are satisfied.
 
 \item Distributivity and factoring are represented using the dual
   boxes shown below:
-\begin{multicols}{2}
+\begin{multicols}{4}
 \begin{center}
   \includegraphics{diagrams/thesis/dist.pdf}
 \end{center}
 \begin{center}
   \includegraphics{diagrams/thesis/factor.pdf}
+\end{center}
+%% \end{multicols}
+%% \begin{multicols}{2}
+\begin{center}
+  \includegraphics{diagrams/thesis/dist-wire-value1.pdf}
+\end{center}
+\begin{center}
+  \includegraphics{diagrams/thesis/dist-wire-value2.pdf}
 \end{center}
 \end{multicols}
 
@@ -462,16 +474,19 @@ essentially be thought of as a multiplexer that redirects the flow of
 {{v:b}} depending on what value inhabits the type {{b1+b2}}, as shown
 below. Factoring is the corresponding adjoint operation.
 
-\begin{multicols}{2}
-\begin{center}
-  \includegraphics{diagrams/thesis/dist-wire-value1.pdf}
-\end{center}
-\begin{center}
-  \includegraphics{diagrams/thesis/dist-wire-value2.pdf}
-\end{center}
-\end{multicols}
 
-\item \todo{fold, unfold, and trace}
+\item {{fold}} and {{unfold}} are basically drawn as triangular boxes
+  that map the a recursive type to its unfolding.
+
+\item {{trace+}} is drawn as a looped circuit, where the traced value
+  is shown as flowing backward. The semantics and interpretation of
+  {{trace}} are dealt with in detail in previous work (see Sec. 4 of
+  \cite{infeffects}).
+
+\begin{center}
+  \includegraphics{diagrams/thesis/trace_plus.pdf}
+\end{center}
+
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
