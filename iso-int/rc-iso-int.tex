@@ -704,6 +704,9 @@ construction. For reference, these steps are:
 
 Let us apply these steps to the slightly more interesting example of an
 adder:
+
+\vspace{-20pt}
+\begin{small}
 \begin{multicols}{2}  
 %subcode{bnf} include main
 % Numbers, n, m,p = 0 | n + 1
@@ -713,8 +716,10 @@ adder:
 % Start state = <n, n, 0>
 % Stop State = <0, n, n>
 \end{multicols}
+\vspace{-15pt}
 %subcode{opsem} include main
 % <n+1, p, m> |--> <n, p+1, m+1>
+\end{small}
 
 The idea of the machine is to start with 3 numbers: the two numbers to add
 and an accumulator initialized to 0. Each step of the machine, decrements one
@@ -779,7 +784,7 @@ both $p$ and $m$, we reach the following configuration:
 
 
 \begin{center}
-\scalebox{0.9}{
+\scalebox{0.7}{
   \includegraphics{diagrams/adder3.pdf}
 }
 \end{center}
@@ -804,7 +809,7 @@ We can slide the two sides of the diagram and tie the knot using {{trace}} to
 get the desired combinator:
 
 \begin{center}
-\scalebox{0.9}{
+\scalebox{0.7}{
   \includegraphics{diagrams/adder4.pdf}
 }
 \end{center}
@@ -825,6 +830,8 @@ no information at the nodes and with natural numbers at the leaves. To define
 the abstract machine, we need a notion of \emph{tree contexts} to track which
 subtree is currently being explored. The definitions are shown on the left:
 
+\vspace{-15pt}
+\begin{small}
 \begin{multicols}{2}
 %subcode{bnf} include main
 % Tree, t = L n | N t t
@@ -839,8 +846,8 @@ subtree is currently being explored. The definitions are shown on the left:
 % <N t1 t2, c> &|-->& <t1, Lft c t2>
 % {[Lft c t2, t1]} &|-->& <t2, Rgt t1 c>
 % {[Rgt t1 c, t2]} &|-->& {[N t1 t2, c]}
-
 \end{multicols}
+\end{small}
 
 The reduction rules on the right traverses a given tree and increments
 every leaf value.  The machine here is a little richer than the ones
@@ -879,6 +886,7 @@ We can now apply our construction. The first step to developing the
 isomorphic interpreter is to recognize that the two possible kinds of machine
 states simply hide an implicit {{bool}}. We make this explicit:
 
+\begin{small}
 \begin{multicols}{2}
 %subcode{bnf} include main
 % Machine states = <bool, t, c>
@@ -893,6 +901,7 @@ states simply hide an implicit {{bool}}. We make this explicit:
 % <F, t1, Lft c t2> &|-->& <T, t2, Rgt t1 c> & rule 3
 % <F, t2, Rgt t1 c> &|-->& <F, c, N t1 t2> & rule 4
 \end{multicols}
+\end{small}
 
 And we start examining the machine components as before:
 
@@ -940,6 +949,15 @@ implicit non-termination introduced by the {{add1}}).
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{A {{langRevT}} Interpreter}
 
+In the final construction we present a metacircular interpreter for
+{{langRevT}} written in {{langRevT}}. This is a a non-trivial abstract
+machine with several cases, but the deriving the corresponding
+{{langRevT}} interpreter follows in exactly the same way as
+before. Here is a logically reversible small-step abstract machine for
+{{langRevT}}.
+
+\begin{small}
+
 %subcode{bnf} include main
 % Combinators, c = iso | c (;) c | c (*) c | c (+) c | trace c
 % Combinator Contexts, cc = [] | Fst cc c | Snd c cc 
@@ -969,6 +987,41 @@ implicit non-termination introduced by the {{add1}}).
 % {[c, L v, Trace cc]} &|-->& <c, L v, Trace cc> &~~~~~~~~~~~~ rule 13
 % {[c, R v, Trace cc]} &|-->& {[trace c, R v, cc]} &~~~~~~~~~~~~ rule 14
 
+\end{small}
+
+The isomorphic interpreter thus derived is shown below, just before
+the `flipping' step (which makes it harder to read). Each wire has
+been annotated with the reduction rule it corresponds to making it
+easier to compare with the abstract machine. 
+
+\begin{center}
+\scalebox{0.85}{
+  \includegraphics{diagrams/pi0-2.pdf}
+}
+\end{center}
+
+\noindent
+A couple of important points: 
+
+\begin{enumerate}
+
+\item The definition here shows only the composition combinators;
+  which are the intersting cases. All the primitive isomorphisms are
+  hidden in the `{{iso(v)}}' application in {{rule 1}}. This should be
+  read as `tranformation {{v}} according to the isomorphism
+  {{iso}}'. Implementing this is straightformard and is hence skipped.
+
+\item The abstract machine definition is not very strongly typed in
+  teh following sense: we know that every {{v:b1*b2}} must have the
+  form {{(v1,v2)}} however is cases like {{rule 8}} if we allow any
+  {{v}} to appear the machine will be in an undefined state. The usual
+  way this is handled in any interpreter is to either test to ensure
+  that the runtime value has teh required form or to user s stronger
+  typing discipline such as GADTs.We abstract away from this choice in
+  this presentation.
+\end{enumerate}
+
+
 %% \begin{center}
 %% \scalebox{0.85}{
 %%   \includegraphics{diagrams/pi0-1.pdf}
@@ -976,11 +1029,6 @@ implicit non-termination introduced by the {{add1}}).
 %% \end{center}
 
 
-\begin{center}
-\scalebox{0.85}{
-  \includegraphics{diagrams/pi0-2.pdf}
-}
-\end{center}
 
 % TODO : The real difficulty with this interpreter is to argue why it is
 % not full of undefined states. For instance, why the machines will
