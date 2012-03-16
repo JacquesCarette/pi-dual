@@ -537,12 +537,13 @@ the machine transition is clearly reversible, the machine can execute
 backwards from the final configuration to reach the initial configuration in
 also 3 steps. 
 
-Our goal is to implement this abstract machine in {{langRevT}}, i.e., our
-goal is to write a combinator {{c : nat * nat <-> nat * nat}} where {{nat}}
-is an abbreviation for the recursive type {{@@x.1+x}}. The combinator should
-map {{(n,0)}} to {{(0,n)}} by precisely mimicking the steps of the abstract
-machine. Let us analyze this desired combinator {{c}} in detail starting from
-its interface:
+Our goal is to implement this abstract machine in {{langRevT}}: We
+start by writing a combinator {{c : nat * nat <-> nat * nat}} that
+executes a `small step'. Here {{nat}} is an abbreviation for the
+recursive type {{@@x.1+x}}. The combinator, when iterated, should map
+{{(n,0)}} to {{(0,n)}} by precisely mimicking the steps of the
+abstract machine. Let us analyze this desired combinator {{c}} in
+detail starting from its interface:
 
 \begin{center}
   \includegraphics{diagrams/nat-nat1.pdf}
@@ -622,7 +623,8 @@ reduction steps and exposing the start and stop states. We do this by
 
 The introduced {{trace}} feeds back related machine states. The
 exposed start state essentially requires the initial value of {{n}} to
-start the machine. 
+start the machine and the exposed stop state returns any result values
+that have been computed.
 
 \begin{center}
 \scalebox{1.0}{ \includegraphics{diagrams/nat-nat8.pdf} }
