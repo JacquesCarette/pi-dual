@@ -156,7 +156,7 @@ machines is supported by the following observations:
   language~\cite{Yokoyama:2008:PRP,Axelsen:2011:RPC:1987171.1987176,Yokoyama:2007:RPL:1244381.1244404};
 \item general recursive programs can be systematically transformed to
   abstract machines: the technique is independent of reversible programs and
-  consists of tranforming general recursion to tail recursion and then
+  consists of transforming general recursion to tail recursion and then
   applying \emph{fission} to split the program into a driver and a small-step
   machine~\cite{Danvy:2008:RRN:1813347.1813350,Rendel:2010:ISD:1863523.1863525}.
 \end{itemize}
@@ -704,7 +704,7 @@ construction. For reference, these steps are:
   mediating computations. 
 \item Slide the two sections to expose the start and stop state and
   introduce a {{trace}} to iterate the construction. This is always a
-  mechanical process completely independant of the logic of the machine.
+  mechanical process completely independent of the logic of the machine.
 \end{enumerate}
 
 Let us apply these steps to the slightly more interesting example of an
@@ -749,7 +749,7 @@ with them:
 \item \emph{Use better types.}  One could augment {{langRevT}} with a
   richer type system that distinguishes non-zero numbers from those
   that can be zero, thereby eliminating the {{sub1 0}} situation
-  entirely. Similarly, in the meta-circular intepreter in
+  entirely. Similarly, in the meta-circular interpreter in
   Sec. \ref{sec:langrevt-int} one could use GADTs to eliminate stuck
   states.
 
@@ -869,7 +869,7 @@ Sec. \ref{sec:tree}, it is acceptable to diverge.
 \section{Advanced Examples} 
 
 We show the generality of our construction by applying it to two non-trivial
-examples: a tree traversal and a meta-circulator interpreter for
+examples: a tree traversal and a meta-circular interpreter for
 {{langRevT}}.
 
 %%%%%%%%%%%%%%%%%%
@@ -879,7 +879,7 @@ examples: a tree traversal and a meta-circulator interpreter for
 The type of binary trees we use is {{@@x.(nat+x*x)}}, i.e., binary trees with
 no information at the nodes and with natural numbers at the leaves. To define
 the abstract machine, we need a notion of \emph{tree contexts} to track which
-subtree is currently being explored. The definitions are shown on the left:
+sub-tree is currently being explored. The definitions are shown on the left:
 
 \vspace{-15pt}
 \begin{small}
@@ -906,7 +906,7 @@ dealt with previously. In particular, we have a two types of machine
 states -- {{<t,c>}} and {{ {[t, c]} }}. The first of these corresponds
 to walking down a tree, building up the context in the process. The
 second corresponds to reconstructing the tree from the context and
-also switching focus to any unexplored subtrees in the process. There
+also switching focus to any unexplored sub-trees in the process. There
 are also two syntactic categories to deal with (trees and tree
 contexts) where previously we only had numbers. The {{fold}} and
 {{unfold}} isomorphisms that we need for trees and tree contexts are:
@@ -1011,7 +1011,7 @@ machine with several cases, but the deriving the corresponding
 {{langRevT}} interpreter follows in exactly the same way as
 before. Here is a logically reversible small-step abstract machine for
 {{langRevT}} and the derived isomorphic interpreter with the
-reductions labelled.
+reductions labeled.
 
 
 \begin{scriptsize}
@@ -1068,15 +1068,15 @@ entirely straightforward.  A couple of points however need clarification:
 \item The definition here shows only the handling of the composition
   combinators, which are the interesting cases. All the primitive
   isomorphisms are hidden in the `{{iso(v)}}' application in
-  {{rule~1}}. This should be read as `tranform {{v}} according to the
-  primitive isomorphism {{iso}}'. Implementing this is straightformard
+  {{rule~1}}. This should be read as `transform {{v}} according to the
+  primitive isomorphism {{iso}}'. Implementing this is straightforward
   and is hence skipped.
 
 \item Stuck states in this machine correspond to runtime values not
-  matching their expected types. They can be handled as decribed in
+  matching their expected types. They can be handled as described in
   Sec. \ref{sec:adder} using GADTs (which eliminates them entirely),
-  divergence, or adding extra halting states. We have abtracted from
-  this choice and marked the relevant cases with combinators labelled
+  divergence, or adding extra halting states. We have abstracted from
+  this choice and marked the relevant cases with combinators labeled
   `{{cast}}'.
 
 \end{enumerate}
@@ -1141,7 +1141,7 @@ We have developed a technique for the systematic development of
 {{langRevT}} programs from logically reversible small-step abstract
 machines. Since techniques for developing small-step interpreters are
 well developed this allows for the direct development of a large class
-of {{langRevT}} programs. We have demonstarted the effectiveness of
+of {{langRevT}} programs. We have demonstrated the effectiveness of
 this approach by deriving meta-circular interpreter for {{langRevT}}
 in this style.
 
