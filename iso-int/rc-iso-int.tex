@@ -483,13 +483,15 @@ the flow of waves and particles along the wires.
 
 
 
-\item {{fold}} and {{unfold}} are basically drawn as triangular boxes
-  that map the a recursive type to its unfolding.
+\item Operations {{fold}} and {{unfold}} are specific to the recursive
+  data type and are drawn as triangular boxes. Sec. \ref{sec:bounded}
+  for instance shows the {{fold}}/{{unfold}} for recursive type of
+  natural numbers, {{nat=@@x.(1+x)}}.
 
-\item {{trace+}} is drawn as a looped circuit, where the traced value
-  is shown as flowing backward. The semantics and interpretation of
-  {{trace}} are dealt with in detail in previous work (see Sec. 4 of
-  \cite{infeffects}).
+\item The {{trace+}} operation is drawn as a looped circuit, where the
+  traced value is shown as flowing backward. The semantics and
+  interpretation of {{trace}} are dealt with in detail in previous
+  work (see Sec. 4 of \cite{infeffects}).
 
 \begin{center}
   \includegraphics{diagrams/thesis/trace_plus.pdf}
@@ -499,6 +501,7 @@ the flow of waves and particles along the wires.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simple Bounded Number Iteration}
+\label{sec:bounded}
 
 We illustrate the main concepts and constructions using two simple examples
 that essentially count $n$ steps. The first machine does nothing else; the
@@ -729,18 +732,63 @@ sum of the two numbers will be in the second component, and the last
 component is supposed to record enough information to make the machine
 reversible.
 
-A closer look however reveals that the machine defines a \emph{partial}
-isomorphism: not all valid final states can be mapped to valid start
-states. Indeed consider the configuration {{<0,2,3>}} which is a valid final
-state. Going backwards, the transitions start as follows 
-{{<0,2,3> |--> <1,1,2> |--> <2,0,1>}} at which point, the machine gets stuck 
-at a state that is not a valid start state.  There are several ways to deal with this
-situation. The first is to use a partial isomorphism that diverges on the stuck state.
-The second is to add another
-possible kind of start state {{<n,0,n>}} to make the isomorphism total. 
-Assuming the seond solution, our construction now proceeds as
-expected. After expanding the input to expose $n$ and the output to expose
-both $p$ and $m$, we reach the following configuration:
+A closer look however reveals that the machine defines a
+\emph{partial} isomorphism: not all valid final states can be mapped
+to valid start states. Indeed consider the configuration {{<0,2,3>}}
+which is a valid final state. Going backwards, the transitions start
+as follows {{<0,2,3> |--> <1,1,2> |--> <2,0,1>}} at which point, the
+machine gets stuck at a state that is not a valid start state.
+
+\paragraph*{Stuck States.}
+In a more general sense, all abstract machines have to deal with stuch
+states and there are several standard ways of delaing with them:
+\begin{itemize}
+\item \emph{Use better types.} One could augment {{langRevT}} with a
+  richer type system that distinguishes non-zero numbers from those
+  that can be zero, thus emilinating this situation entirely. In the
+  intepreter in Sec. \ref{sec:langrevt-int} for instance one could use
+  a GADT to eliminate stuck states.
+
+\item \emph{Diverge.} Another standard approach in dealing with stuck
+  states is to make the diverge or leave the output
+  undefined/unobservable in some way. For instance {{add1}} defined in
+  {{langRevT}} (see Sec. 4.2 in \cite{James:2012:IE:2103656.2103667})
+  has teh property that {{add1^{dagger} 0}} diverges.
+
+\item \emph{Stop the machine.} In the case of our machine this
+  corresponds to another possible kind of start state {{<n,0,n>}} to
+  make the isomorphism total.  Let us choose this path in the case of
+  this machine.  After expanding the input to expose $n$ and the
+  output to expose both $p$ and $m$, we wire the machine corresponding
+  to the reduction rule. 
+
+\begin{center}
+\scalebox{0.8}{
+  \includegraphics{diagrams/adder3.pdf}
+}
+\end{center}
+
+\end{itemize}
+
+Note that there are indeed two start states in the interpreter. We can
+slide the two sides of the diagram and tie the knot using {{trace}} to
+get the desired interpreter:
+
+\begin{center}
+\scalebox{0.8}{
+  \includegraphics{diagrams/adder4.pdf}
+}
+\end{center}
+
+
+%% We have also connected the matching input and output wires. At this
+%% point, we have exposed both start states and the stop state.
+
+
+
+%% There are several ways to deal with this situation. The first is to
+%% use a partial isomorphism that diverges on the stuck state.  
+
 
 % \begin{center}
 %   \includegraphics{diagrams/adder1.pdf}
@@ -783,14 +831,7 @@ both $p$ and $m$, we reach the following configuration:
 % {{0}}.  At this point we have two choices:
 
 
-\begin{center}
-\scalebox{0.8}{
-  \includegraphics{diagrams/adder3.pdf}
-}
-\end{center}
 
-We have also connected the matching input and output wires. At this point, we
-have exposed both start states and the stop state. 
 % \begin{enumerate}
 % \item We can hide the use the combinator {{omega : b <-> 0}}
 %   expressible in {{langRevT}}. This combinator is basically an
@@ -805,14 +846,7 @@ have exposed both start states and the stop state.
 %   states -- only one of which denotes a desirable or correct execution
 %   of the machine.
 % \end{enumerate}
-We can slide the two sides of the diagram and tie the knot using {{trace}} to
-get the desired combinator:
 
-\begin{center}
-\scalebox{0.8}{
-  \includegraphics{diagrams/adder4.pdf}
-}
-\end{center}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -948,6 +982,7 @@ implicit non-termination introduced by the {{add1}}).
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{A {{langRevT}} Interpreter}
+\label{sec:langrevt-int}
 
 In the final construction we present a metacircular interpreter for
 {{langRevT}} written in {{langRevT}}. This is a a non-trivial abstract
@@ -956,7 +991,10 @@ machine with several cases, but the deriving the corresponding
 before. Here is a logically reversible small-step abstract machine for
 {{langRevT}}.
 
-\begin{small}
+
+\begin{scriptsize}
+  
+
 
 %subcode{bnf} include main
 % Combinators, c = iso | c (;) c | c (*) c | c (+) c | trace c
@@ -987,12 +1025,9 @@ before. Here is a logically reversible small-step abstract machine for
 % {[c, L v, Trace cc]} &|-->& <c, L v, Trace cc> &~~~~~~~~~~~~ rule 13
 % {[c, R v, Trace cc]} &|-->& {[trace c, R v, cc]} &~~~~~~~~~~~~ rule 14
 
-\end{small}
 
-The isomorphic interpreter thus derived is shown below, just before
-the `flipping' step (which makes it harder to read). Each wire has
-been annotated with the reduction rule it corresponds to making it
-easier to compare with the abstract machine. 
+\end{scriptsize}
+
 
 \begin{center}
 \scalebox{0.85}{
@@ -1000,8 +1035,11 @@ easier to compare with the abstract machine.
 }
 \end{center}
 
-\noindent
-A couple of important points: 
+The isomorphic interpreter thus derived is shown below, just before
+the `flipping' step (which makes it harder to read). Each wire has
+been annotated with the reduction rule it corresponds to making it
+easier to compare with the abstract machine.  A couple of important
+points:
 
 \begin{enumerate}
 
@@ -1011,14 +1049,11 @@ A couple of important points:
   read as `tranformation {{v}} according to the isomorphism
   {{iso}}'. Implementing this is straightformard and is hence skipped.
 
-\item The abstract machine definition is not very strongly typed in
-  teh following sense: we know that every {{v:b1*b2}} must have the
-  form {{(v1,v2)}} however is cases like {{rule 8}} if we allow any
-  {{v}} to appear the machine will be in an undefined state. The usual
-  way this is handled in any interpreter is to either test to ensure
-  that the runtime value has teh required form or to user s stronger
-  typing discipline such as GADTs.We abstract away from this choice in
-  this presentation.
+\item Stuck states in this machine correspond to values not matching
+  the shape expected by their types. They can be handled as decribed
+  in Sec. \ref{sec:adder} using GADTs (which eliminates them
+  entirely), divergence, or adding extra halting states.
+
 \end{enumerate}
 
 
@@ -1080,7 +1115,9 @@ A couple of important points:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{scriptsize}
 \bibliographystyle{splncs03} 
-\bibliography{cites}
+\bibliography{cites}  
+\end{scriptsize}
 \end{document}
 
