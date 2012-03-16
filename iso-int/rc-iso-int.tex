@@ -509,6 +509,7 @@ second uses this counting ability to add two numbers.
 
 The first machine is defined as follows:
 
+\vspace{-15pt}
 \begin{multicols}{2}
 %subcode{bnf} include main
 % Numbers, n, m = 0 | n + 1
@@ -518,8 +519,7 @@ The first machine is defined as follows:
 % Start state = <n, 0>
 % Stop State = <0, n>
 \end{multicols}
-% Small-step operational semantics:
-
+\vspace{-15pt}
 %subcode{opsem} include main
 % <n+1, m> |--> <n, m+1>
   
@@ -784,7 +784,7 @@ both $p$ and $m$, we reach the following configuration:
 
 
 \begin{center}
-\scalebox{0.7}{
+\scalebox{0.8}{
   \includegraphics{diagrams/adder3.pdf}
 }
 \end{center}
@@ -809,7 +809,7 @@ We can slide the two sides of the diagram and tie the knot using {{trace}} to
 get the desired combinator:
 
 \begin{center}
-\scalebox{0.7}{
+\scalebox{0.8}{
   \includegraphics{diagrams/adder4.pdf}
 }
 \end{center}
