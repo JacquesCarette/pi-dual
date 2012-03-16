@@ -597,7 +597,7 @@ The branch labeled {{((), m)}} corresponds to the machine state {{<0,m>}} and
 hence looks like the stop state of the machine. Similarly the branch labeled
 {{((), n')}} corresponds to the start state of the machine. We are close to
 the completion of the interpreter at this point. The last step in the
-construction involves introducing a {{trace}] operation for iteration of
+construction involves introducing a {{trace}} operation for iteration of
 reduction steps and exposing the start and stop states. We do this by
 ``sliding'' the two sections of the diagram as shown below:
 
@@ -724,16 +724,18 @@ sum of the two numbers will be in the second component, and the last
 component is supposed to record enough information to make the machine
 reversible.
 
-A closer look however reveals that the machine only defines a \emph{partial}
+A closer look however reveals that the machine defines a \emph{partial}
 isomorphism: not all valid final states can be mapped to valid start
 states. Indeed consider the configuration {{<0,2,3>}} which is a valid final
-state. Going backwards, the transitions start as follows
-{{<0,2,3> |--> <1,1,2> |--> <2,0,1>}} at which point, the machine 
-gets stuck at a state that is not a valid start state. 
-There are several ways to make this machine reversible. The simplest is to
-add another possible kind of start state {{<n,0,n>}}. Our construction now
-proceeds as expected. After expanding the input to expose $n$ and the output
-to expose both $p$ and $m$, we reach the following configuration:
+state. Going backwards, the transitions start as follows 
+{{<0,2,3> |--> <1,1,2> |--> <2,0,1>}} at which point, the machine gets stuck 
+at a state that is not a valid start state.  There are several ways to deal with this
+situation. The first is to use a partial isomorphism that diverges on the stuck state.
+The second is to add another
+possible kind of start state {{<n,0,n>}} to make the isomorphism total. 
+Assuming the seond solution, our construction now proceeds as
+expected. After expanding the input to expose $n$ and the output to expose
+both $p$ and $m$, we reach the following configuration:
 
 % \begin{center}
 %   \includegraphics{diagrams/adder1.pdf}
