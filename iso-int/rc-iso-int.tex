@@ -110,20 +110,20 @@
   established that every computation in it is a (partial) isomorphism that is
   reversible and that preserves information. The language is founded on type
   isomorphisms that have a clear categorical semantics but that are awkward
-  as a notation for writing actual programs, especially recursive
-  programs. This paper remedies this aspect by presenting a systematic
-  technique for developing a large and expressive class of reversible
-  recursive programs, that of logically reversible small-step abstract
-  machines. In other words, this paper shows that once we have a logically
-  reversible machine in a notation of our choice, expressing the machine as
-  an isomorphic interpreter can be done systematically and does not present
-  any significant conceptual difficulties. Concretely, we develop several
-  simple interpreters over numbers and addition, move on to tree traversals,
-  and finish with a meta-circular interpreter for our reversible
-  language. Generally, this gives us a means of developing large reversible
-  programs with the ease of reasoning at the level of a conventional
-  small-step semantics.
+  as a notation for writing actual programs, especially recursive ones. This
+  paper remedies this aspect by presenting a systematic technique for
+  developing a large and expressive class of reversible recursive programs,
+  that of logically reversible small-step abstract machines. In other words,
+  this paper shows that once we have a logically reversible machine in a
+  notation of our choice, expressing the machine as an isomorphic interpreter
+  can be done systematically and does not present any significant conceptual
+  difficulties. Concretely, we develop several simple interpreters over
+  numbers and addition, move on to tree traversals, and finish with a
+  meta-circular interpreter for our reversible language. Generally, this
+  gives us a means of developing large reversible programs with the ease of
+  reasoning at the level of a conventional small-step semantics.
 \end{abstract}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
@@ -149,14 +149,14 @@ machines is supported by the following observations:
 \begin{itemize}
 \item it is an interesting enough class of reversible programs: researchers
   have invested the effort in manually designing such machines, e.g., the
-  SE(M)CD machine~\cite{Kluge:1999:SEMCD}, and the SECD-H~\cite{lorenz});
+  SE(M)CD machine~\cite{Kluge:1999:SEMCD}, and the SECD-H~\cite{lorenz};
 \item every reversible interpreter can be realized as such a machine: this
   means that our class of programs includes self-interpreters which are
   arguably a measure of the strength of any reversible
-  language~\cite{Yokoyama:2008:PRP,Axelsen:2011:RPC:1987171.1987176,Yokoyama:2007:RPL:1244381.1244404};
+  language~\cite{Axelsen:2011:RPC:1987171.1987176,Yokoyama:2008:PRP,Yokoyama:2007:RPL:1244381.1244404};
 \item general recursive programs can be systematically transformed to
   abstract machines: the technique is independent of reversible programs and
-  consists of tranforming general recursion to tail recursion and then
+  consists of transforming general recursion to tail recursion and then
   applying \emph{fission} to split the program into a driver and a small-step
   machine~\cite{Danvy:2008:RRN:1813347.1813350,Rendel:2010:ISD:1863523.1863525}.
 \end{itemize}
@@ -270,8 +270,7 @@ adjoint is homomorphic except for the case of sequencing in which the order
 is reversed, i.e., {{(c1 (;) c2){dagger} = (c2{dagger}) (;) (c1{dagger}) }}.
 
 \paragraph*{Graphical Language.}
-The syntactic notation above is often obscure and hard to read.  Following
-the tradition established for monoidal
+Following the tradition established for monoidal
 categories~\cite{springerlink:10.1007/978-3-642-12821-94}, we present a
 graphical language that conveys the semantics of the language.  The general
 idea of the graphical notation is that combinators are modeled by ``wiring
@@ -340,30 +339,33 @@ the flow of waves and particles along the wires.
   execution of two additive wires, a value can reside on only one of the two
   wires.
 \begin{multicols}{4}
-\begin{center}
+%\begin{center}
 \scalebox{0.95}{
 %%subcode-line{pdfimage}[diagrams/thesis/sum-one-wire.pdf]
 \includegraphics{diagrams/thesis/sum-one-wire.pdf}
 }
-\end{center}
+
+%\end{center}
 %% \end{multicols}
 %% \begin{multicols}{2}
-\begin{center}
+%\begin{center}
 \scalebox{0.95}{
 %%subcode-line{pdfimage}[diagrams/thesis/sum-of-wires.pdf]
 \includegraphics{diagrams/thesis/sum-two-wires.pdf}
 }
-\end{center}
-\begin{center}
+
+%\end{center}
+%\begin{center}
 \scalebox{0.95}{
 \includegraphics{diagrams/thesis/sum-two-wires-left-value.pdf}
 }
-\end{center}
-\begin{center}
+
+%\end{center}
+%\begin{center}
 \scalebox{0.95}{
 \includegraphics{diagrams/thesis/sum-two-wires-right-value.pdf}
 }
-\end{center}
+%\end{center}
 \end{multicols}
 
 
@@ -481,15 +483,16 @@ the flow of waves and particles along the wires.
 \end{center}
 \end{multicols}
 
+\item Operations {{fold}} and {{unfold}} are specific to each recursive
+  data type and are drawn as triangular boxes. For instance,
+  Sec. \ref{sec:bounded} shows {{fold}}/{{unfold}} isomorphisms for
+  numbers, {{nat=@@x.(1+x)}}.
 
-
-\item {{fold}} and {{unfold}} are basically drawn as triangular boxes
-  that map the a recursive type to its unfolding.
-
-\item {{trace+}} is drawn as a looped circuit, where the traced value
-  is shown as flowing backward. The semantics and interpretation of
-  {{trace}} are dealt with in detail in previous work (see Sec. 4 of
-  \cite{infeffects}).
+\item The {{trace+}} operation is drawn as a looped circuit, where the
+  traced type {{b1}} is shown as flowing backward. 
+%% The semantics and
+%%  interpretation of {{trace}} are dealt with in detail in previous
+%%  work (see Sec. 4 of \cite{James:2012:IE:2103656.2103667}).
 
 \begin{center}
   \includegraphics{diagrams/thesis/trace_plus.pdf}
@@ -499,6 +502,7 @@ the flow of waves and particles along the wires.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simple Bounded Number Iteration}
+\label{sec:bounded}
 
 We illustrate the main concepts and constructions using two simple examples
 that essentially count $n$ steps. The first machine does nothing else; the
@@ -509,6 +513,7 @@ second uses this counting ability to add two numbers.
 
 The first machine is defined as follows:
 
+\vspace{-15pt}
 \begin{multicols}{2}
 %subcode{bnf} include main
 % Numbers, n, m = 0 | n + 1
@@ -518,8 +523,7 @@ The first machine is defined as follows:
 % Start state = <n, 0>
 % Stop State = <0, n>
 \end{multicols}
-% Small-step operational semantics:
-
+\vspace{-15pt}
 %subcode{opsem} include main
 % <n+1, m> |--> <n, m+1>
   
@@ -533,12 +537,12 @@ the machine transition is clearly reversible, the machine can execute
 backwards from the final configuration to reach the initial configuration in
 also 3 steps. 
 
-Our goal is to implement this abstract machine in {{langRevT}}, i.e., our
-goal is to write a combinator {{c : nat * nat <-> nat * nat}} where {{nat}}
-is an abbreviation for the recursive type {{@@x.1+x}}. The combinator should
-map {{(n,0)}} to {{(0,n)}} by precisely mimicking the steps of the abstract
-machine. Let us analyze this desired combinator {{c}} in detail starting from
-its interface:
+Our goal is to implement this abstract machine in {{langRevT}}: We start by
+writing a combinator {{c : nat * nat <-> nat * nat}} that executes one step
+of the machine transition. Here {{nat}} is an abbreviation for the recursive
+type {{@@x.1+x}}. The combinator, when iterated, should map {{(n,0)}} to
+{{(0,n)}} by precisely mimicking the steps of the abstract machine. Let us
+analyze this desired combinator {{c}} in detail starting from its interface:
 
 \begin{center}
   \includegraphics{diagrams/nat-nat1.pdf}
@@ -552,13 +556,11 @@ its structure and the second {{nat}} is folded to reconstruct it:
   \includegraphics{diagrams/nat-nat3.pdf}
 \end{center}
 
-The triangle on the left denotes the {{unfold}} isomorphism, which
-works as follows: If the number {{n}} is zero, the output is the top
-branch which has type {{1}}. If the number was non-zero, the output is
-on the bottom branch and has value {{n-1}}. The triangle on the right
-is the dual {{fold}} isomorphism.  Let us examine all the possible
-machine states by introducing distribution operations and any required
-swaps:
+The triangle on the left denotes the {{unfold}} isomorphism, which works as
+follows: If the number {{n}} is zero, the output is the top branch which has
+type {{1}}. If the number was non-zero, the output is on the bottom branch
+and has value {{n-1}}. The triangle on the right is the dual {{fold}}
+isomorphism.  We now use distribution to isolate each possible machine state:
 
 %% by distributing on the
 %% input. Dually let us do the same with the output, but this time also
@@ -569,12 +571,9 @@ swaps:
   \includegraphics{diagrams/nat-nat4.pdf}
 \end{center}
 
-The construction above already gives us some insight into how we can
-implement our machine's one reduction step. We want the output {{n'}} to be
-{{n+1}} where~{{n}} is the first component of the input and similarly the
-output {{m'}} to be {{m+1}} where {{m}} is the second component of the input.
-We can express these equalities by connecting wires, i.e., by connecting the
-{{n-1}} wire to {{n'}} and the {{m}} wire to {{m'-1}}:
+At this point, it is clear that the machine's transition consists connecting
+the {{n-1}} input wire to {{n'}} on the output side and the {{m}} input wire
+to {{m'-1}} on the output side:
 
 \begin{center}
   \includegraphics{diagrams/nat-nat5.pdf}
@@ -593,13 +592,13 @@ We can express these equalities by connecting wires, i.e., by connecting the
 
 %% \end{enumerate}
 
-The branch labeled {{((), m)}} corresponds to the machine state {{<0,m>}} and
-hence looks like the stop state of the machine. Similarly the branch labeled
-{{((), n')}} corresponds to the start state of the machine. We are close to
-the completion of the interpreter at this point. The last step in the
-construction involves introducing a {{trace}] operation for iteration of
-reduction steps and exposing the start and stop states. We do this by
-``sliding'' the two sections of the diagram as shown below:
+We are now close to the completion of the interpreter.  The branch labeled
+{{((), m)}} corresponds to the machine state {{<0,m>}} which is the stop
+state of the machine. Similarly the branch labeled {{((), n')}} corresponds
+to the start state of the machine.  The last step in the construction
+involves introducing a {{trace}} operation for iterating the small step
+realized so far. We do this by first ``sliding'' the two sections of the
+diagram as shown below:
 
 \vspace{-20px}
 \begin{multicols}{2}
@@ -616,9 +615,12 @@ reduction steps and exposing the start and stop states. We do this by
 \end{center}  
 \end{multicols}
 
-The introduced {{trace}} feeds back related machine states. The
-exposed start state essentially requires the initial value of {{n}} to
-start the machine. 
+This rearrangement exposes that the middle connections were really recursive
+calls to the machine transition. The final figure is given below: 
+
+%% The introduced {{trace}} feeds back related machine states. The exposed start
+%% state essentially requires the initial value of {{n}} to start the machine
+%% and the exposed stop state returns any result values that have been computed.
 
 \begin{center}
 \scalebox{1.0}{ \includegraphics{diagrams/nat-nat8.pdf} }
@@ -687,7 +689,7 @@ start the machine.
 % \end{enumerate}
 
 \subsection{Adder} 
-
+\label{sec:adder}
 
 Although trivial, the previous example captures the fundamental steps of our
 construction. For reference, these steps are:
@@ -698,12 +700,16 @@ construction. For reference, these steps are:
   hand side of each machine state;
 \item Shuffle matching input terms to output terms, inserting any appropriate
   mediating computations. 
-\item Slide the two sections to expose the start and stop state and introduce
-  a {{trace}} to iterate the construction.
+\item Slide the two sections to expose the start and stop state and
+  introduce a {{trace}} to iterate the construction. This is always a
+  mechanical process completely independent of the logic of the machine.
 \end{enumerate}
 
 Let us apply these steps to the slightly more interesting example of an
 adder:
+
+\vspace{-20pt}
+\begin{small}
 \begin{multicols}{2}  
 %subcode{bnf} include main
 % Numbers, n, m,p = 0 | n + 1
@@ -713,8 +719,10 @@ adder:
 % Start state = <n, n, 0>
 % Stop State = <0, n, n>
 \end{multicols}
+\vspace{-15pt}
 %subcode{opsem} include main
 % <n+1, p, m> |--> <n, p+1, m+1>
+\end{small}
 
 The idea of the machine is to start with 3 numbers: the two numbers to add
 and an accumulator initialized to 0. Each step of the machine, decrements one
@@ -724,16 +732,80 @@ sum of the two numbers will be in the second component, and the last
 component is supposed to record enough information to make the machine
 reversible.
 
-A closer look however reveals that the machine only defines a \emph{partial}
-isomorphism: not all valid final states can be mapped to valid start
-states. Indeed consider the configuration {{<0,2,3>}} which is a valid final
-state. Going backwards, the transitions start as follows
-{{<0,2,3> |--> <1,1,2> |--> <2,0,1>}} at which point, the machine 
-gets stuck at a state that is not a valid start state. 
-There are several ways to make this machine reversible. The simplest is to
-add another possible kind of start state {{<n,0,n>}}. Our construction now
-proceeds as expected. After expanding the input to expose $n$ and the output
-to expose both $p$ and $m$, we reach the following configuration:
+A closer look however reveals that the machine defines a
+\emph{partial} isomorphism: not all valid final states can be mapped
+to valid start states. Indeed consider the configuration {{<0,2,3>}}
+which is a valid final state. Going backwards, the transitions start
+as follows {{<0,2,3> |--> <1,1,2> |--> <2,0,1>}} at which point, the
+machine gets stuck at a state that is not a valid start state. This 
+is a general problem that we discuss below in detail. 
+
+\paragraph*{Stuck States.}
+The type systems of most languages are not expressive enough to encode the
+precise domain and range of a function. For example, in most typed languages,
+division by zero is considered type-correct and the runtime system is
+required to deal with such an error. A stuck state of an abstract machine is
+just a manifestation of this general problem. The common solutions are:
+\begin{itemize}
+\item \emph{Use a more expressive type system.}  One could augment
+  {{langRevT}} with a richer type system that distinguishes non-zero numbers
+  from those that can be zero, thereby eliminating the {{sub1 0}} situation
+  entirely. Similarly, in the meta-circular interpreter in
+  Sec.~\ref{sec:langrevt-int}, one could use generalized abstract data types
+  (GADTs)~\cite{phantom,Xi:2003:GRD:604131.604150}) to eliminate the stuck
+  states.
+
+\item \emph{Diverge.}  Another standard approach in dealing with stuck states
+  is to make the machine diverge or leave the output undefined or
+  unobservable in some way. If the specific case of the machine above, we can
+  use a primitive {{add1}} whose dual {{sub1}} is undefined when applied to
+  {{0}}. (Such a primitive is definable in
+  {{langRevT}}~\cite[Sec.~4.2]{James:2012:IE:2103656.2103667}.)
+
+\item \emph{Stop the machine.}  Alternatively, we can consider the stuck
+  state as a valid final state. In the case of the example above, we would
+  treat states of the form {{<n,0,n>}} as valid stop states for reverse
+  execution. This gives us two valid start states in the case of forward
+  execution and makes the isomorphism total. If we chose this approach, the
+  machine would look as shown below by the end of {{step 3}}:
+
+%% In the case of our machine this corresponds to another possible kind
+%% of start state {{<n,0,n>}} to make the isomorphism total.  Let us
+%% choose this path in the case of this machine.  After expanding the
+%% input to expose $n$ and the output to expose both $p$ and $m$, we wire
+%% the machine corresponding to the reduction rule.
+
+\begin{center}
+\scalebox{0.8}{
+  \includegraphics{diagrams/adder3.pdf}
+}
+\end{center}
+
+\end{itemize}
+
+Note that there are indeed two ``start states'' in the interpreter. As before, we can
+slide the two sides of the diagram and tie the knot using {{trace}} to
+get the desired interpreter:
+
+\begin{center}
+\scalebox{0.8}{
+  \includegraphics{diagrams/adder4.pdf}
+}
+\end{center}
+
+% More generally, how the programmer handles stuck states depends on the
+% specific program. For some machines it may be feasible to use a
+% stronger type system while for others, such as our tree example in
+% Sec. \ref{sec:tree}, it is acceptable to diverge.
+
+%% We have also connected the matching input and output wires. At this
+%% point, we have exposed both start states and the stop state.
+
+
+
+%% There are several ways to deal with this situation. The first is to
+%% use a partial isomorphism that diverges on the stuck state.  
+
 
 % \begin{center}
 %   \includegraphics{diagrams/adder1.pdf}
@@ -776,14 +848,7 @@ to expose both $p$ and $m$, we reach the following configuration:
 % {{0}}.  At this point we have two choices:
 
 
-\begin{center}
-\scalebox{0.9}{
-  \includegraphics{diagrams/adder3.pdf}
-}
-\end{center}
 
-We have also connected the matching input and output wires. At this point, we
-have exposed both start states and the stop state. 
 % \begin{enumerate}
 % \item We can hide the use the combinator {{omega : b <-> 0}}
 %   expressible in {{langRevT}}. This combinator is basically an
@@ -798,35 +863,31 @@ have exposed both start states and the stop state.
 %   states -- only one of which denotes a desirable or correct execution
 %   of the machine.
 % \end{enumerate}
-We can slide the two sides of the diagram and tie the knot using {{trace}} to
-get the desired combinator:
 
-\begin{center}
-\scalebox{0.9}{
-  \includegraphics{diagrams/adder4.pdf}
-}
-\end{center}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Advanced Examples} 
 
 We show the generality of our construction by applying it to two non-trivial
-examples: a tree traversal and a meta-circulator interpreter for
+examples: a tree traversal and a meta-circular interpreter for
 {{langRevT}}.
 
 %%%%%%%%%%%%%%%%%%
 \subsection{Tree Traversal}
+\label{sec:tree}
 
-The type of binary trees we use is {{@@x.nat+x*x}}, i.e., binary trees with
+The type of binary trees we use is {{@@x.(nat+x*x)}}, i.e., binary trees with
 no information at the nodes and with natural numbers at the leaves. To define
 the abstract machine, we need a notion of \emph{tree contexts} to track which
 subtree is currently being explored. The definitions are shown on the left:
 
+\vspace{-15pt}
+\begin{small}
 \begin{multicols}{2}
 %subcode{bnf} include main
 % Tree, t = L n | N t t
-% Tree Contexts, c = Lft c t | Rgt t c | []
+% Tree Contexts, c = [] | Lft c t | Rgt t c
 %
 % Machine states = <t, c> | {[c, t]}
 % Start state = <t, []>
@@ -837,10 +898,10 @@ subtree is currently being explored. The definitions are shown on the left:
 % <N t1 t2, c> &|-->& <t1, Lft c t2>
 % {[Lft c t2, t1]} &|-->& <t2, Rgt t1 c>
 % {[Rgt t1 c, t2]} &|-->& {[N t1 t2, c]}
-
 \end{multicols}
+\end{small}
 
-The reduction rules on the right traverses a given tree and increments
+The reduction rules on the right traverse a given tree and increment
 every leaf value.  The machine here is a little richer than the ones
 dealt with previously. In particular, we have a two types of machine
 states -- {{<t,c>}} and {{ {[t, c]} }}. The first of these corresponds
@@ -851,18 +912,21 @@ are also two syntactic categories to deal with (trees and tree
 contexts) where previously we only had numbers. The {{fold}} and
 {{unfold}} isomorphisms that we need for trees and tree contexts are:
 
+\begin{small}
+  
 %subcode{bnf} include main
 %! columnStyle = rrcll
 % unfold_t :& ~~~~t &<->& n + t * t &: fold_t
 % unfold_c :& c &<->& 1 + c * t + t * c ~~~~~~&: fold_c
+\end{small}
 
 \paragraph*{New Notation.}
 To make the diagrams easier to understand, we introduce a syntactic
 convenience which combines the first steps of the construction that consist
 of {{fold}} / {{unfold}} and {{distribute}} / {{factor}}. We collectively
 represent these steps using thin vertical rectangle. Also we will introduce
-the convention that the component that is being expanded or collapsed will be
-marked by using {{[^ ^]}} and the components that are being generated will be
+the convention that the component that is being expanded (or constructed) will be
+marked by using {{[^ ^]}} and the components that are being generated (or consumed) will be
 marked by {{[v v]}}. For example, given a value of type {{tree*nat}}, the
 diagram below shows how to first expand the {{tree}} component and then in
 one of the generated branches, expand the {{nat}} component:
@@ -875,8 +939,9 @@ one of the generated branches, expand the {{nat}} component:
 
 We can now apply our construction. The first step to developing the
 isomorphic interpreter is to recognize that the two possible kinds of machine
-states simply hide an implicit {{bool}}. We make this explicit:
+states simply hide an implicit {{bool=T~|~F}}. We make this explicit:
 
+\begin{small}
 \begin{multicols}{2}
 %subcode{bnf} include main
 % Machine states = <bool, t, c>
@@ -891,6 +956,7 @@ states simply hide an implicit {{bool}}. We make this explicit:
 % <F, t1, Lft c t2> &|-->& <T, t2, Rgt t1 c> & rule 3
 % <F, t2, Rgt t1 c> &|-->& <F, c, N t1 t2> & rule 4
 \end{multicols}
+\end{small}
 
 And we start examining the machine components as before:
 
@@ -901,7 +967,7 @@ And we start examining the machine components as before:
 \end{center}
 
 On the input side, for {{T}} states, we have expanded the tree component and
-for {{F}} states we have expanded the tree contexts. Similarly we have done
+for {{F}}~states we have expanded the tree contexts. Similarly we have done
 the opposite on the output side exactly matching up what the abstract machine
 does. One thing to note is that we dropped the {{1}} introduced by expanding
 the {{bool}} and instead just labeled the {{true}} and {{false}} branches.
@@ -910,19 +976,18 @@ We are ready to start connecting the machine states corresponding to
 the reductions that we would like:
 \begin{enumerate}
 \item When we encounter a leaf we would like to increment its value and move
-  to the corresponding {{F}} machine state. For the sake of simplicity in
-  this interpreter we won't be concerned with exposing stuck states on
-  reverse execution caused by {{sub1 0}}. So we are free to use the {{add1}}
-  combinator.
+  to the corresponding {{F}} machine state. For the sake of simplicity, in
+  this interpreter we won't be concerned with exposing stuck states: we
+  simply use {{add1}} whose adjoint {{sub1}} diverges when applied to {{0}}.
 
 \item For all the other reduction rules, it is a straightforward mapping of
-  related states following the reduction rules.
+  related states following the reduction rules. For readability, we have
+  annotated the diagram below with the names of the reduction rules and we
+  have included subscripts on the various {{t}}s to indicate any implicit
+  swaps that should be inserted.
 
 \end{enumerate}
 
-The required reduction rules have been labeled on the construction
-belong. We have also included subscripts on the various {{t}}s to
-indicate any swaps that may need to be inserted.
 
 \begin{center}
 \scalebox{1.1}{
@@ -930,13 +995,24 @@ indicate any swaps that may need to be inserted.
 }
 \end{center}
 
-This essentially completes the construction of the (partially)
-isomorphic tree-traversal interpreter. (Partially because of the
-implicit non-termination introduced by the {{add1}}).
-
+This essentially completes the construction of the (partially) isomorphic
+tree-traversal interpreter, except for the final step which slides the input
+and output sides. 
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{A {{langRevT}} Interpreter}
+\label{sec:langrevt-int}
+
+In the final construction we present a meta-circular interpreter for
+{{langRevT}} written in~{{langRevT}}. This is a a non-trivial abstract
+machine with several cases, but the derivation follows in exactly the same
+way as before. Here is a logically reversible small-step abstract machine for
+{{langRevT}} and the derived isomorphic interpreter with the reductions
+labeled.
+
+\begin{scriptsize}
+  
+
 
 %subcode{bnf} include main
 % Combinators, c = iso | c (;) c | c (*) c | c (+) c | trace c
@@ -949,7 +1025,7 @@ implicit non-termination introduced by the {{add1}}).
 % Start state = <c, v, []> 
 % Stop State = {[c, v, []]}
 
-
+\vspace{-15pt}
 %subcode{opsem} include main
 %! columnStyle = rclr
 % <iso, v, cc> &|-->& {[iso, iso(v), cc]} &~~~~~~~~~~~~ rule 1
@@ -967,6 +1043,40 @@ implicit non-termination introduced by the {{add1}}).
 % {[c, L v, Trace cc]} &|-->& <c, L v, Trace cc> &~~~~~~~~~~~~ rule 13
 % {[c, R v, Trace cc]} &|-->& {[trace c, R v, cc]} &~~~~~~~~~~~~ rule 14
 
+\end{scriptsize}
+
+\begin{center}
+\scalebox{0.9}{
+  \includegraphics{diagrams/pi0-2.pdf}
+}
+\end{center}
+
+%% The isomorphic interpreter thus derived is shown below, just before
+%% the `flipping' step (which makes it harder to read). Each wire has
+%% been annotated with the reduction rule it corresponds to making it
+%% easier to compare with the abstract machine.  
+
+The derivation of the {{langRevT}} interpreter, while tedious, is
+entirely straightforward.  A couple of points however need clarification:
+
+\begin{enumerate}
+
+\item The definition here shows only the handling of the composition
+  combinators, which are the interesting cases. All the primitive
+  isomorphisms are hidden in the {{iso(v)}} application in {{rule~1}}. This
+  should be read as ``transform {{v}} according to the primitive isomorphism
+  {{iso}}.'' Implementing this is straightforward and is hence skipped.
+
+\item Stuck states in this machine correspond to runtime values not
+  matching their expected types. They can be handled as described in
+  Sec. \ref{sec:adder} using GADTs (which eliminates them entirely),
+  divergence, or adding extra halting states. We have abstracted from
+  this choice and marked the relevant cases with combinators labeled
+  {{cast}}.
+
+\end{enumerate}
+
+
 %% \begin{center}
 %% \scalebox{0.85}{
 %%   \includegraphics{diagrams/pi0-1.pdf}
@@ -974,11 +1084,6 @@ implicit non-termination introduced by the {{add1}}).
 %% \end{center}
 
 
-\begin{center}
-\scalebox{0.85}{
-  \includegraphics{diagrams/pi0-2.pdf}
-}
-\end{center}
 
 % TODO : The real difficulty with this interpreter is to argue why it is
 % not full of undefined states. For instance, why the machines will
@@ -1027,10 +1132,18 @@ implicit non-termination introduced by the {{add1}}).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 
+We have developed a technique for the systematic derivation of
+{{langRevT}} programs from logically reversible small-step abstract
+machines. Since techniques for devising small-step interpreters are
+well known, this allows for the direct development of a large class of
+{{langRevT}} programs.  We have demonstrated the effectiveness of this
+approach by deriving a meta-circular interpreter for {{langRevT}}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{scriptsize}
 \bibliographystyle{splncs03} 
-\bibliography{cites}
+\bibliography{cites}  
+\end{scriptsize}
 \end{document}
 
