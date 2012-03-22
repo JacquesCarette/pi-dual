@@ -2,7 +2,7 @@
 # Phony targets are scoped, so you probably want to declare them first.
 #
 
-.PHONY : all clean dual-dropbox rational-dropbox rational_ext-dropbox msr-slides-dropbox
+.PHONY : all clean dual-dropbox rational-dropbox rational_ext-dropbox msr-slides-dropbox jsc-slides-dropbox
 
 # LOts of random stuff
 dual.subc.tex : dual.tex
@@ -26,6 +26,17 @@ msr-slides.subc.pdf : msr-slides.subc.tex cites.bib
 
 msr-slides-dropbox : msr-slides.subc.pdf
 	cp msr-slides.subc.pdf /home/rosh/Dropbox/Public/papers/	
+
+# MSR-slides
+jsc-slides.subc.tex : jsc-slides.tex
+        ruby subcode/subc.rb jsc-slides.tex
+
+jsc-slides.subc.pdf : jsc-slides.subc.tex cites.bib
+	pdflatex -halt-on-error  jsc-slides.subc.tex
+        bibtex jsc-slides.subc
+
+jsc-slides-dropbox : jsc-slides.subc.pdf
+	cp jsc-slides.subc.pdf /home/rosh/Dropbox/Public/papers/	
 
 
 
@@ -53,7 +64,7 @@ rational_ext-dropbox : rational_ext.subc.pdf
 
 
 # Build all 
-all : dual-dropbox rational-dropbox rational_ext-dropbox msr-slides-dropbox
+all : dual-dropbox rational-dropbox rational_ext-dropbox msr-slides-dropbox jsc-slides-dropbox
 
 # Clean
 clean: 
