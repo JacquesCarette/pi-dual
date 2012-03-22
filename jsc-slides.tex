@@ -1194,6 +1194,45 @@ And thus we have
 
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Arrows }
+
+Computations are {{f : input ~> output}}
+
+\begin{center}
+\scalebox{0.3}{
+  \includegraphics{diagrams/arrow.png}
+}  
+\end{center}
+
+
+\begin{center}
+  
+{{ arr : (b -> c) -> (b ~> c) }}
+
+{{ >>> : (b~> c) -> (c ~> d) -> (b ~> d) }}
+
+{{ first : (a ~> b) -> ((b, d) ~> (c, d)) }}
+
+\end{center}
+
+\begin{center}
+\scalebox{0.3}{
+  \includegraphics{diagrams/arr.png}
+}
+\scalebox{0.3}{
+  \includegraphics{diagrams/compose.png}
+}
+\scalebox{0.3}{
+  \includegraphics{diagrams/first.png}
+}
+\end{center}
+
+We will lift sequencing, parallel composition and trace. 
+
+
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
