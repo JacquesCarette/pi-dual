@@ -1198,6 +1198,16 @@ And thus we have
 \begin{frame}
 \frametitle{Arrows }
 
+\begin{block}
+
+  Information effects are captured using an \red{arrow-metalanguage
+    over {{langRevT}} } --- similar to expressing computational
+  effects over \lcal using arrows or monads.
+  
+\end{block}
+
+\pause
+
 Computations are {{f : input ~> output}}
 
 \begin{center}
@@ -1241,16 +1251,9 @@ We will lift sequencing, parallel composition and trace.
 \vfill
 %\begin{itemize}
 
-\begin{block}
 
-  Information effects are captured using an \red{arrow-metalanguage
-    over {{langRevT}} } --- similar to expressing computational
-  effects over \lcal using arrows or monads.
-  
-\end{block}
-
-\vfill
-\pause
+%% \vfill
+%% \pause
 \begin{enumerate}
 \item {{langArrT}} extends {{langRevT}} with the arrow type \red{
     {{a:b1~~>b2}} }.
@@ -1260,7 +1263,7 @@ We will lift sequencing, parallel composition and trace.
 \item Lifts traces, sequencing and parallel composition to the new
   arrow type {{b1 ~~> b2}}.
 
-
+\pause
 \vfill
 \item And adds two information effects representing the creation and
   erasure of information.

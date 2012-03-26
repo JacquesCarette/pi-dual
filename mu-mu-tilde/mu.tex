@@ -1,0 +1,124 @@
+\documentclass{llncs}
+\usepackage{url}
+\usepackage{proof}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{listings}
+\usepackage{graphicx}
+
+\newcommand{\todo}[1]{\textbf{TODO: #1}}
+
+%subcode-inline{bnf-inline} name langRev
+%! swap+ = \mathit{swap}^+
+%! swap* = \mathit{swap}^*
+%! dagger =  ^{\dagger}
+%! assocl+ = \mathit{assocl}^+
+%! assocr+ = \mathit{assocr}^+
+%! assocl* = \mathit{assocl}^*
+%! assocr* = \mathit{assocr}^*
+%! identr* = \mathit{uniti}
+%! identl* = \mathit{unite}
+%! dist = \mathit{distrib}
+%! factor = \mathit{factor}
+%! (o) = \fatsemi
+%! (;) = \fatsemi
+%! (*) = \times
+%! (+) = +
+
+%subcode-inline{bnf-inline} regex \{\{(((\}[^\}])|[^\}])*)\}\} name main include langRev
+%! [^ = \ulcorner
+%! ^] = \urcorner
+%! [v = \llcorner
+%! v] = \lrcorner
+%! |-->* = \mapsto^{*}
+%! |-->> = \mapsto_{\ggg}
+%! |-->let = \mapsto_{let}
+%! |--> = \mapsto
+%! <--| = \mapsfrom
+%! |- = \vdash
+%! in = \!\!\in\!\!
+%! <=> = \Longleftrightarrow
+%! <-> = \leftrightarrow
+%! ~> = \leadsto
+%! ::= = ::=
+%! /= = \neq
+%! vi = v_i
+%! di = d_i
+%! si = s_i
+%! sj = s_j
+%! F = \texttt{F}
+%! T = \texttt{T}
+%! forall = \forall
+%! exists = \exists
+%! empty = \emptyset
+%! eta = \eta
+%! where = \textbf{where}
+%! epsilon = \varepsilon
+%! least = \phi
+%! trace+ = trace
+%! trace* = trace_{\times}
+%! loop+ = loop_{+}
+%! loop* = loop_{\times}
+%! CatC = {\mathcal C}
+%! CatA = {\mathcal A}
+%! gamma = \gamma
+%! {[ = \{
+%! ]} = \}
+%! elem = \in
+%! dagger = ^\dagger
+%! alpha = \alpha
+%! beta = \beta
+%! rho = \rho
+%! @@~ = \mu^{\cap}
+%! @@ = \mu
+%! @ = \,@\,
+%! * = \times
+%! langRev = \Pi
+%! langRevT = \Pi^{o}
+%! langRevEE = \Pi^{\eta\epsilon}_{+}
+%! bullet = \bullet
+
+\urldef{\mails}\path|{rpjames, sabry}@indiana.edu|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\title{ {{@@ @@~ }} } 
+\titlerunning{On the construction of Isomorphic Interpreters} 
+\author{Roshan P. James \and Amr Sabry}
+\institute{School of Informatics and Computing, Indiana University\\
+\mails}
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+\end{abstract}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Krivine Machine / Call by Name} 
+
+
+%subcode{bnf} include main
+% M,N = x | \x.M | M N
+% E = [] | M . E
+
+
+%subcode{opsem} include main
+% <M N, E> &|-->& <M, N. E>
+% <\x.M, N.E> &|-->& <M[N/x], E>
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{scriptsize}
+\bibliographystyle{splncs03} 
+\bibliography{cites}  
+\end{scriptsize}
+\end{document}
+
