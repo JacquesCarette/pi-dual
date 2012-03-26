@@ -1,12 +1,17 @@
-\documentclass{llncs}
+\documentclass{article}
+
 \usepackage{url}
 \usepackage{proof}
 \usepackage{amssymb}
 \usepackage{stmaryrd}
 \usepackage{listings}
 \usepackage{graphicx}
+\usepackage{multicol}
 
 \newcommand{\todo}[1]{\textbf{TODO: #1}}
+
+\setlength{\parskip}{0pt}
+
 
 %subcode-inline{bnf-inline} name langRev
 %! swap+ = \mathit{swap}^+
@@ -69,10 +74,13 @@
 %! alpha = \alpha
 %! beta = \beta
 %! rho = \rho
+%! < = \langle
+%! > = \rangle
 %! @@~ = \tilde{\mu}
 %! @@ = \mu
 %! @ = \,@\,
 %! * = \times
+%! FC = \mathcal{C}
 %! langRev = \Pi
 %! langRevT = \Pi^{o}
 %! langRevEE = \Pi^{\eta\epsilon}_{+}
@@ -84,10 +92,10 @@
 
 \begin{document}
 \title{ {{@@ @@~ }} } 
-\titlerunning{On the construction of Isomorphic Interpreters} 
+% \titlerunning{On the construction of Isomorphic Interpreters} 
 \author{Roshan P. James \and Amr Sabry}
-\institute{School of Informatics and Computing, Indiana University\\
-\mails}
+%\institute{School of Informatics and Computing, Indiana University\\
+% \mails}
 \maketitle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -98,6 +106,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Krivine Machine / Call by Name} 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{CBName}
 
 %subcode{bnf} include main
 % M,N = x | \x.M | M N
@@ -107,6 +117,107 @@
 %subcode{opsem} include main
 % <M N, E> &|-->& <M, N. E>
 % <\x.M, N.E> &|-->& <M[N/x], E>
+
+\begin{multicols}{2}
+Reduction
+
+%subcode{opsem} include main
+% M N = E |--> <M, N.E>
+
+\columnbreak
+\noindent
+As a binder
+
+%subcode{opsem} include main
+% M N = @@beta.<M, N.beta>  
+\end{multicols}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{CBName with Felleisen's {{FC}} }
+
+
+\begin{multicols}{2}
+
+\noindent
+Abstract Machine Style
+
+%subcode{bnf} include main
+% M,N = x | \x.M | M N 
+% &|& FC(M) | [^ E ^]
+% E = [] | M . E
+
+\begin{scriptsize}
+%subcode{opsem} include main
+%! columnStyle = rlcrl
+% <M N,& E> &|-->& <M,& N. E>
+% <\x.M,& N.E> &|-->& <M[N/x],& E>
+% <FC(M),& E> &|-->& <M,& [^E^].[]>
+% < [^E^],& M.E'> &|-->& <M,& E>
+\end{scriptsize}
+
+\noindent
+Evaluation Context Style
+
+%subcode{bnf} include main
+%! abort = \mathcal{A}
+% e = x | \x.e | e1 e2 
+% &|& FC e | abort e 
+% E = E e
+
+\begin{scriptsize}
+  
+%subcode{opsem} include main
+%! abort = \mathcal{A}
+% E[(\x.e1) e2] &|-->& E[e1[e2/x]]
+% E[FC e] &|-->& [e \x.(abort E[x])]
+% E[abort e] &|-->& e
+  
+\end{scriptsize}
+
+\end{multicols}
+
+\begin{multicols}{2}
+Reduction
+
+%subcode{opsem} include main
+% M N '= E |--> <M, N.E>
+% FC(M) '= E |--> <M, [^E^].[]>
+% [^E^] '= M, E' |--> <M, E>
+
+\noindent
+As a binder
+
+%subcode{opsem} include main
+% M N '= @@beta.<M, N.beta>
+% FC(M) '= @@beta.<M, [^beta^]. []>
+% [^E^] '= \x.@@alpha.<x,E>
+\end{multicols}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Call By Value }
+Abstract Machine Style
+
+%subcode{bnf} include main
+%! (.) = \circ
+% M,N = x | \x.M | M N 
+% &|& FC(M) | [^ E ^]
+% V = x | \x.M | [^E^]
+% E = [] | M . E | M (.) E
+
+\begin{scriptsize}
+%subcode{opsem} include main
+%! columnStyle = rlcrl
+%! (.) = \circ
+% <M N,& E> &|-->& <N,& M (.) E>
+% <V,& M(.)E> &|-->& <M,& V . E>
+% <\x.M,& N.E> &|-->& <M[N/x],& E>
+% <FC(M),& E> &|-->& <M,& [^E^].[]>
+% < [^E^],& M.E'> &|-->& <M,& E>
+\end{scriptsize}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
