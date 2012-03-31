@@ -239,4 +239,29 @@ addThirds = Factor
             :.: CommuteTimes
             :.: EpsTimes
 
-
+-- Algebra
+-- 1 
+-- (-1 + 1) + 1 
+-- -1 + (1 + 1)
+-- -1 + 1 * 2
+-- -1 + (1/2 * 2) * 2
+-- -1 + (1/2 * (2 * 2))
+-- -1 + (1/2 * ((1+1) + 2) -- swap/not
+-- -1 + (1/2 * (2 * 2))
+-- -1 + (1/2 * 2) * 2
+-- -1 + 1 * 2
+-- -1 + (1 + 1)
+-- (-1 + 1) + 1 
+-- 1 
+inf_stream :: () :<=> ()
+inf_stream = trace (FoldB :.: inner :.: UnfoldB)
+    where 
+      inner :: Bool :<=> Bool 
+      inner = 
+          UnitI
+          :.: (EtaTimes :*: Id)
+          :.: AssocTimesR
+          :.: (Id :*: cnot)
+          :.: AssocTimesL
+          :.: (EpsTimes :*: Id)
+          :.: UnitE
