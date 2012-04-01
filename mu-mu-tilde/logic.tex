@@ -1,0 +1,176 @@
+\documentclass{article}
+
+\usepackage{url}
+\usepackage{proof}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{multicol}
+
+\newcommand{\todo}[1]{\textbf{TODO: #1}}
+
+\setlength{\parskip}{0pt}
+
+
+%subcode-inline{bnf-inline} name langRev
+%! swap+ = \mathit{swap}^+
+%! swap* = \mathit{swap}^*
+%! dagger =  ^{\dagger}
+%! assocl+ = \mathit{assocl}^+
+%! assocr+ = \mathit{assocr}^+
+%! assocl* = \mathit{assocl}^*
+%! assocr* = \mathit{assocr}^*
+%! identr* = \mathit{uniti}
+%! identl* = \mathit{unite}
+%! dist = \mathit{distrib}
+%! factor = \mathit{factor}
+%! (o) = \fatsemi
+%! (;) = \fatsemi
+%! (*) = \times
+%! (+) = +
+
+%subcode-inline{bnf-inline} regex \{\{(((\}[^\}])|[^\}])*)\}\} name main include langRev
+%! [^ = \ulcorner
+%! ^] = \urcorner
+%! [v = \llcorner
+%! v] = \lrcorner
+%! |-->* = \mapsto^{*}
+%! |-->> = \mapsto_{\ggg}
+%! |-->let = \mapsto_{let}
+%! |--> = \mapsto
+%! <--| = \mapsfrom
+%! |- = \vdash
+%! in = \!\!\in\!\!
+%! <=> = \Longleftrightarrow
+%! <-> = \leftrightarrow
+%! ~> = \leadsto
+%! ::= = ::=
+%! /= = \neq
+%! vi = v_i
+%! di = d_i
+%! si = s_i
+%! sj = s_j
+%! F = \texttt{F}
+%! T = \texttt{T}
+%! forall = \forall
+%! exists = \exists
+%! empty = \emptyset
+%! eta = \eta
+%! where = \textbf{where}
+%! epsilon = \varepsilon
+%! least = \phi
+%! trace+ = trace
+%! trace* = trace_{\times}
+%! loop+ = loop_{+}
+%! loop* = loop_{\times}
+%! CatC = {\mathcal C}
+%! CatA = {\mathcal A}
+%! gamma = \gamma
+%! {[ = \{
+%! ]} = \}
+%! elem = \in
+%! dagger = ^\dagger
+%! alpha = \alpha
+%! beta = \beta
+%! rho = \rho
+%! < = \langle
+%! > = \rangle
+%! @@~ = \tilde{\mu}
+%! @@ = \mu
+%! @ = \,@\,
+%! * = \times
+%! FC = \mathcal{C}
+%! langRev = \Pi
+%! langRevT = \Pi^{o}
+%! langRevEE = \Pi^{\eta\epsilon}_{+}
+%! bullet = \bullet
+
+\urldef{\mails}\path|{rpjames, sabry}@indiana.edu|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\title{ Logic of {{langRevEE}} } 
+% \titlerunning{On the construction of Isomorphic Interpreters} 
+% \author{Roshan P. James \and Amr Sabry}
+%\institute{School of Informatics and Computing, Indiana University\\
+% \mails}
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+\end{abstract}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Logic} 
+
+By Curry-Howard of the presentataion of {{langRevEE}}, we simply erase
+the terms to reveal the underlying logic. Sequents have the form
+{{b1~|-~b2}} with just one formula on the left and right of the sequent. 
+
+
+%subcode{proof} include main
+%@ ~
+%@@  0 + b |- b 
+%
+%@ ~
+%@@  b1 + b2 |- b2 + b1 
+%
+%@ ~
+%@@  b1 + (b2 + b3) |- (b1 + b2) + b3 
+%---
+%@ ~
+%@@  1 * b |- b 
+%
+%@ ~
+%@@  b1 * b2 |- b2 * b1 
+%
+%@ ~
+%@@  b1 * (b2 * b3) |- (b1 * b2) * b3 
+%---
+%@ ~
+%@@ 0 * b |- 0 
+%
+%@ ~
+%@@ (b1 + b2) * b3 |- (b1 * b3) + (b2 * b3)
+%---
+%@ ~
+%@@ 0 |- (-b) + b
+%
+%@ ~
+%@@ 1 |- (1/b) * b
+%
+
+
+%subcode{proof} include main
+%@  ~
+%@@ b |- b 
+%
+%@ b1 |- b2
+%@@ b2 |- b1
+%
+%@ b1 |- b2
+%@ b2 |- b3
+%@@ b1 |- b3
+%---
+%@ b1 |- b3
+%@ b2 |- b4
+%@@ b1 + b2 |- b3 + b4
+%
+%@ b1 |- b3
+%@ b2 |- b4
+%@@ b1 * b2 |- b3 * b4
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{scriptsize}
+\bibliographystyle{splncs03} 
+\bibliography{cites}  
+\end{scriptsize}
+\end{document}
+
