@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -XGADTs -XTypeOperators -XExistentialQuantification -XFlexibleContexts #-} -- 7.0.1
+{-# OPTIONS_GHC -XGADTs -XTypeOperators -XExistentialQuantification -XFlexibleContexts -XScopedTypeVariables #-} -- 7.0.1
 
 import Dual 
 
@@ -246,7 +246,7 @@ addThirds = Factor
 -- -1 + 1 * 2
 -- -1 + (1/2 * 2) * 2
 -- -1 + (1/2 * (2 * 2))
--- -1 + (1/2 * ((1+1) + 2) -- swap/not
+-- -1 + (1/2 * ((1+1) * 2) -- swap/not
 -- -1 + (1/2 * (2 * 2))
 -- -1 + (1/2 * 2) * 2
 -- -1 + 1 * 2
@@ -262,6 +262,18 @@ inf_stream = trace (FoldB :.: inner :.: UnfoldB)
           :.: (EtaTimes :*: Id)
           :.: AssocTimesR
           :.: (Id :*: cnot)
+          :.: AssocTimesL
+          :.: (EpsTimes :*: Id)
+          :.: UnitE
+
+inf_three :: (Three :<=> Three) -> Either () () :<=> Either () ()
+inf_three f = trace (FoldThree :.: inner :.: UnfoldThree)
+    where 
+      inner = 
+          UnitI
+          :.: (EtaTimes :*: Id)
+          :.: AssocTimesR
+          :.: (Id :*: controlled f)
           :.: AssocTimesL
           :.: (EpsTimes :*: Id)
           :.: UnitE
