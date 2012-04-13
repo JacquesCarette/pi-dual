@@ -7,7 +7,7 @@
 module Model2 where
 
 import Model hiding ((@@))
-import Lang (Neg,Unpack(..))
+import Lang (Neg,Inv,Unpack(..))
 import Control.Monad
 import Unsafe.Coerce -- needed for polymorphic lookup. 
 
@@ -19,6 +19,7 @@ data V a where
     L :: V a -> V (Either a b) 
     R :: V b -> V (Either a b) 
     Neg :: V a -> V (Neg a)
+    Inv :: V a -> V (Inv a)
     Fresh :: Var a -> V a
 
 instance Show (V a) where 
@@ -27,13 +28,14 @@ instance Show (V a) where
     show (L a) = "L " ++ (show a) 
     show (R a) = "R " ++ (show a)
     show (Neg a) = "Neg " ++ (show a)
+    show (Inv a) = "Inv " ++ (show a)
     show (Fresh n) = show n
 
 instance Unpack V where
     unLeft (L a) = a
     unRight (R a) = a
-    proj1 (Pair a b) = a
-    proj2 (Pair a b) = b
+    proj1 (Pair a _) = a
+    proj2 (Pair _ b) = b
     unNeg (Neg a) = a
 
 ---------------------------------------------------------------------------
@@ -49,7 +51,7 @@ data Binding = forall a. Binding (Var a) (V a)
 type World = ([Binding], Int)
 
 instance Show Binding where 
-    show (Binding n v) = (show n) ++ " -> " 
+    show (Binding n _) = (show n) ++ " -> " 
 
 instance Unifyable V where
   type W = M
@@ -60,7 +62,7 @@ extendW :: Var a -> V a -> [Binding] -> [Binding]
 extendW x v w = (Binding x v):w
 
 lookupW :: V a -> [Binding] -> V a
-lookupW (Fresh n) w = find n w 
+lookupW (Fresh nm) w = find nm w 
     where 
       find :: Var a -> [Binding] -> V a 
       find n ((Binding n' v):w') | n == n'   = lookupW (unsafeCoerce v) w
@@ -69,7 +71,7 @@ lookupW (Fresh n) w = find n w
 lookupW v _ = v
     
 unify_ :: V a -> V a -> [Binding] -> Maybe [Binding]
-unify_ v v' w = unify' (lookupW v w) (lookupW v' w) w
+unify_ a a' b = unify' (lookupW a b) (lookupW a' b) b
     where 
       unify' :: V a -> V a -> [Binding] -> Maybe [Binding]
       unify' (Fresh x) v w = Just (extendW x v w)
@@ -77,9 +79,9 @@ unify_ v v' w = unify' (lookupW v w) (lookupW v' w) w
       unify' (L v) (L v') w = unify_ v v' w
       unify' (R v) (R v') w = unify_ v v' w
       unify' (Neg v) (Neg v') w = unify_ v v' w
-      unify' (Pair a b) (Pair a' b') w = case (unify_ b b' w) of 
+      unify' (Pair x y) (Pair x' y') w = case (unify_ y y' w) of 
                                            Nothing -> Nothing 
-                                           Just w' -> unify_ a a' w'
+                                           Just z' -> unify_ x x' z'
       unify' Unit Unit w = Just w
       unify' _ _ _ = Nothing
 
@@ -87,13 +89,13 @@ unifyW :: V a -> V a -> World -> Maybe World
 unifyW v1 v2 (bs, n) = 
     case (unify_ v1 v2 bs) of 
       Nothing -> Nothing
-      Just bs -> Just (bs, n)
+      Just cs -> Just (cs, n)
 
 freshW :: World -> (V a, World)
 freshW (bs, n) = (Fresh n, (bs, n+1))
 
 reify :: (V a, World) -> V a
-reify (v, (bs, _)) = reify' (lookupW v bs) bs 
+reify (x, (cs, _)) = reify' (lookupW x cs) cs 
     where 
       reify' :: V a -> [Binding] -> V a
       reify' Unit _ = Unit
@@ -101,6 +103,7 @@ reify (v, (bs, _)) = reify' (lookupW v bs) bs
       reify' (L v) bs = L (reify' (lookupW v bs) bs)
       reify' (R v) bs = R (reify' (lookupW v bs) bs)
       reify' (Neg v) bs = Neg (reify' (lookupW v bs) bs)
+      reify' (Inv v) bs = Inv (reify' (lookupW v bs) bs)
       reify' (Pair a b) bs = Pair (reify' (lookupW a bs) bs) (reify' (lookupW b bs) bs)
 
 -------------------------------------------------------
@@ -110,7 +113,7 @@ data M a = M (World -> [(a, World)])
 
 instance Monad M where 
     return a = M (\w -> [(a, w)])
-    (M f) >>= g = M (\w -> foldl (\acc (v, w) -> acc ++ (g v `app` w)) [] (f w))
+    (M f) >>= g = M (\w -> foldl (\acc (v, z) -> acc ++ (g v `app` z)) [] (f w))
 
 app :: M a -> World -> [(a, World)]
 app (M f) w = f w
@@ -128,7 +131,7 @@ orM :: M a -> M a -> M a
 orM e1 e2 = M (\w -> (e1 `app` w) ++ (e2 `app` w))
           
 zeroM :: M a
-zeroM = M(\w -> [])
+zeroM = M(\_ -> [])
 
 instance MonadPlus M where
   mzero = zeroM
@@ -265,9 +268,9 @@ Factor @@ v =
       (mr2 (\x y -> L (Pair x y)) (\(x,y) -> Pair (L x) y) `orV`
        mr2 (\x y -> R (Pair x y)) (\(x,y) -> Pair (R x) y)) v
 
--- Eta and Eps as U shaped connectors
-Eta @@ v = mr (\_ -> Unit) (\x -> Pair (Neg x) x) v
-Eps @@ v = mr (\x -> Pair x (Neg x)) (\_ -> Unit) v
+-- EtaTimes and EpsTimes as U shaped connectors
+EtaTimes @@ v = mr (\_ -> Unit) (\x -> Pair (Inv x) x) v
+EpsTimes @@ v = mr (\x -> Pair x (Inv x)) (\_ -> Unit) v
 
 -- FoldB @@ (Left ()) = True
 -- FoldB @@ (Right ()) = False
@@ -343,13 +346,13 @@ Eps @@ v = mr (\x -> Pair x (Neg x)) (\_ -> Unit) v
 -- Constructions
 
 -- Some shorthands 
-type (:=>>) a b = (Neg a, b)
-type (:<<=) a b = (a, Neg b)
+type (:=>>) a b = (Inv a, b)
+type (:<<=) a b = (a, Inv b)
 type P a = () :<=> a
 type N a = a  :<=> ()
 
 makeFunc :: (a :<=> b) -> P (a :=>> b)
-makeFunc c = Eta :.: (Id :*: c)
+makeFunc c = EtaTimes :.: (Id :*: c)
 
 -- Many apply's to be written here based on what interface we want:
 -- apply : P (a :=>> b) -> P a -> P b
@@ -359,28 +362,28 @@ makeFunc c = Eta :.: (Id :*: c)
 applyFunc :: ((a :=>> b), a) :<=> b 
 applyFunc = CommuteTimes 
             :.: AssocTimesL 
-            :.: (Eps :*: Id) 
+            :.: (EpsTimes :*: Id) 
             :.: TimesOneL
 
 -- These 
 makeDC :: (a :<=> b) -> N (a :<<= b)
-makeDC c = (c :*: Id) :.: Eps
+makeDC c = (c :*: Id) :.: EpsTimes
 
 -- A similar apply is possible, but I dont know what it means. 
 
 -- Trace
 traceTimes :: (a, b) :<=> (a, c) -> b :<=> c
 traceTimes c = TimesOneR 
-               :.: (Eta :*: Id) 
+               :.: (EtaTimes :*: Id) 
                :.: AssocTimesR 
                :.: (Id :*: c) 
                :.: AssocTimesL 
-               :.: ((CommuteTimes :.: Eps) :*: Id)
+               :.: ((CommuteTimes :.: EpsTimes) :*: Id)
                :.: TimesOneL
 
 -- This is the yanking lemma for trace. 
-e1 :: a :<=> a
-e1 = traceTimes CommuteTimes
+yank :: a :<=> a
+yank = traceTimes CommuteTimes
 
 -- Here I make 'not' a first-class function and then apply it:
 -- *Pi> :t TimesOneR :.: ((makeFunc CommuteTimes) :*: Id) :.: applyFunc

@@ -42,8 +42,11 @@ data a :<=> b where
   Distribute  :: (Either b c, a) :<=> Either (b, a) (c, a)
   Factor      :: Either (b, a) (c, a) :<=> (Either b c, a)
 -- Eta and Eps over the monoid (*, 1)
-  Eta :: () :<=> (Neg a, a)
-  Eps :: (a, Neg a) :<=> ()
+  EtaTimes :: () :<=> (Inv a, a)
+  EpsTimes :: (a, Inv a) :<=> () 
+-- Eta and Eps over the monoid (+, 0)
+  EtaPlus :: Zero :<=> Either (Neg a) a
+  EpsPlus :: Either a (Neg a) :<=> Zero
 -- Encoding of booleans
   FoldB   :: Either () () :<=> Bool
   UnfoldB :: Bool :<=> Either () ()
@@ -92,8 +95,12 @@ instance Pi (:<=>) where
 
 instance PiN (:<=>) where
   adjo = Adj
-  eta = Eta
-  eps = Eps
+  etaPlus = EtaPlus
+  epsPlus = EpsPlus
+
+instance PiInv (:<=>) where
+  etaTimes = EtaTimes
+  epsTimes = EpsTimes
 
 -- Adjoint
 adjoint :: (a :<=> b) -> (b :<=> a)
@@ -116,8 +123,10 @@ adjoint TimesZeroL = TimesZeroR
 adjoint TimesZeroR = TimesZeroL
 adjoint Distribute = Factor
 adjoint Factor = Distribute
-adjoint Eta = CommuteTimes :.: Eps
-adjoint Eps = Eta :.: CommuteTimes
+adjoint EtaTimes = CommuteTimes :.: EpsTimes
+adjoint EpsTimes = EtaTimes :.: CommuteTimes
+adjoint EtaPlus = CommutePlus :.: EpsPlus
+adjoint EpsPlus = EtaPlus :.: CommutePlus
 adjoint FoldB = UnfoldB
 adjoint UnfoldB = FoldB
 adjoint FoldN = UnfoldN
@@ -133,23 +142,33 @@ unI :: I a -> a
 unI (I a) = a
 
 instance Unpack I where
+  -- neither of the error can actually happen, for type reasons
   unLeft (I (Left a)) = I a
+  unLeft (I (Right _)) = error "unLeft on a Right"
   unRight (I (Right a)) = I a
-  proj1 (I (a,b)) = I a
-  proj2 (I (a,b)) = I b
+  unRight (I (Left _)) = error "unRight on a Left"
+  proj1 (I (a,_)) = I a
+  proj2 (I (_,b)) = I b
   unNeg (I (Negative a)) = I a
 
 -- This allows us to pattern match and typecheck too
+unL :: Either a b -> a
 unL = unI . unLeft . I
+unR :: Either a b -> b
 unR = unI . unRight . I
+projL :: (a,b) -> a
 projL = unI . proj1 . I
+projR :: (a,b) -> b
 projR = unI . proj2 . I
+unN :: Neg a -> a
 unN = unI . unNeg . I
 
-unList f g []    = f
-unList f g (h:t) = g h t
+unList :: a -> (b -> [b] -> a) -> [b] -> a
+unList f _ []    = f
+unList _ g (h:t) = g h t
 
--- Semantics
+-- (simple) Semantics.  4 cases missing
+-- 0*a = 0, 0 = 0*a, 1 = 1/a*a, 1/a*a = 1
 instance Extract (:<=>) where
   Id           @! v = v
   (Adj f)      @! v = Negative ((adjoint f) @@ (unN v))
@@ -180,7 +199,7 @@ instance Extract (:<=>) where
   UnfoldL      @! v = unList (Left ()) (\a b -> Right (a,b)) v
   (TracePlus c) @! v = loop c (c @! (Right v))
       where
-        loop c = either (\z -> loop c (c @! (Left z))) (\z -> z)
+        loop d = either (\z -> loop d (d @! (Left z))) (\z -> z)
 
 -- for interactive convenience
 (@@) :: (a :<=> b) -> a -> b
