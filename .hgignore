@@ -15,7 +15,7 @@ OMakefile.omc
 OMakeroot.omc
 *~
 .omakedb*
-.subcode_cache*
+.subcode_cache
 *.bbl
 *.blg
 *.log
@@ -27,5 +27,7 @@ OMakeroot.omc
 *.toc
 *.subc.pdf
 *.subc.tex
-*.eps
+.subcode_cache*
+*.orig
+*.pdf.eps
 subcode
