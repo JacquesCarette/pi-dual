@@ -2,7 +2,7 @@
 # Phony targets are scoped, so you probably want to declare them first.
 #
 
-.PHONY : all clean iso-int-dropbox
+.PHONY : all clean mu-dropbox logic-dropbox
 
 # iso-int
 mu.subc.tex : mu.tex
@@ -10,15 +10,26 @@ mu.subc.tex : mu.tex
 
 mu.subc.pdf : mu.subc.tex cites.bib
 	pdflatex -halt-on-error mu.subc.tex
-        bibtex mu.subc
+        # bibtex mu.subc
 
-iso-int-dropbox : mu.subc.pdf
+mu-dropbox : mu.subc.pdf
 	cp mu.subc.pdf ~/Dropbox/Public/papers
 
 
+# iso-int
+logic.subc.tex : logic.tex
+        ruby subcode/subc.rb logic.tex
+
+logic.subc.pdf : logic.subc.tex cites.bib
+	pdflatex -halt-on-error logic.subc.tex
+        # bibtex logic.subc
+
+logic-dropbox : logic.subc.pdf
+	cp logic.subc.pdf ~/Dropbox/Public/papers
+
 
 # Build all 
-all : iso-int-dropbox
+all : mu-dropbox logic-dropbox
 
 # Clean
 clean: 
@@ -29,3 +40,5 @@ clean-subcode:
 	rm .subcode_cache*
 
 .DEFAULT : all
+
+
