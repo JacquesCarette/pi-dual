@@ -1,0 +1,48 @@
+
+We thank the reviewers for their detailed comments.
+
+Review A
+--------
+
+Regarding the construction of iso_f, the writing is a bit confusing. In fact,
+the *construction* of iso_f does not depend on the heap having any particular
+values: the construction only depends on the structure of f. We will clarify
+this point which is explained in detail in our POPL'12 paper.
+
+About impact: Our belief is that negative/fractional types have the benefits
+of continuations without some of their complications, and that they can
+potentially be useful for organizing concurrent systems. We did not want to
+speculate about this too much so you are right that it is premature to argue
+that everybody needs negative and fractional types *now*.
+
+Review B
+--------
+
+
+
+Review C
+--------
+
+We are happy that the paper appears exciting and conveys some sense of beauty
+but we sincerely apologize that the intuition is not there yet. The reviewer
+should not be blamed: this is entirely our fault. The diagrams, examples, and
+the introduction were supposed to help but it seems that we need to think
+much harder about how to communicate this material.
+
+We also agree that it is premature to argue that "every programmer" should
+know about negative/fractional types (as mentioned in the response to Review
+A) but we can dream :-)
+
+Review D
+--------
+
+We do not have a complete proof that the operational abstract machine
+semantics corresponds to the graphical (categorial) model but we do not
+expect such a proof to be a problem.
+
+The relation to "Galois connections" is interesting but might need some
+thinking: the first "iteration" of the Galois connection loses information
+and this might be a problem in our setting.
+
+
+
