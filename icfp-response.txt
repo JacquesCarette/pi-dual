@@ -57,7 +57,8 @@ finite dimensional Hilbert spaces, which are usually presented as
 compact closed categories with biproducts, may also be presented as
 field-like categories discussed here.
 
-Review C --------
+Review C 
+--------
 
 We are happy that the paper appears exciting and conveys some sense of beauty
 but we sincerely apologize that the intuition is not there yet. The reviewer
@@ -72,11 +73,14 @@ A) but we can dream :-)
 Review D
 --------
 
-We do not have a complete proof that the operational abstract machine
-semantics corresponds to the graphical (categorial) model but we do
-not expect such a proof to be a problem. See, for example, Selinger's
-presentation of coherence conditions for graphical languages for
-monoidal categories. 
+As mentioned in our response to Review B, the categorical structure that
+corresponds to a field is a topic of current research by others. In other
+words, there is no known categorical semantics for something like
+Pi^\eta\epsilon. For each of the dagger compact closed fragments separately
+(i.e., for each of the monoids (*,1) with inverse / and (+,0) with inverse
+-), our semantics does correspond to the categorical one. (This is shown in
+the POPL'12 paper, the RC'11 paper, and is to be presented in full detail in
+James's thesis (forthcoming, June 2012).
 
 The relation to "Galois connections" is interesting but might need some
 thinking: the first "iteration" of the Galois connection loses information
