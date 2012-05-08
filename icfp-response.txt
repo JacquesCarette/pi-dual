@@ -32,14 +32,13 @@ question:
 This is precisely the point. The category we want to live in is the
 categorification of the field of rational numbers! Now it is true that this
 fact is not stated as clearly as it should, but we do repeat several times
-that we are in an algebraic structure that is a field, and hence, we admit,
-implicitly, that multiplicative inverses exist only for non-zero
-elements. Moreover, since we clearly state that there are no values of type
-0, the abstract machine semantics (which is the only semantics we have), can
-never produce anything of type 0 or 1/0. So even if one tried to use the
-isomorphisms eta/epsilon at type 0, i.e, if one tried to map between "1 <-> 0
-* 1/0", the corresponding combinator could be never be executed as there are
-no values of type 0.
+that we are in an algebraic structure that is a field, and hence that
+multiplicative inverses exist only for non-zero elements. Moreover, since we
+clearly state that there are no values of type 0, the abstract machine
+semantics (which is the only semantics we have), can never produce anything
+of type 0 or 1/0. Even if one tried to use the isomorphisms eta/epsilon at
+type 0, i.e, if one tried to map between "1 <-> 0 * 1/0", the corresponding
+combinator could be never be executed as there are no values of type 0.
 
 Having said all of that, the reviewer is still pointing to something deep
 regarding the categorical model of \Pi^\eta\epsilon. As mentioned above, the
@@ -51,10 +50,11 @@ example:
  * From Finite Sets to Feynman Diagrams, John C. Baez and James Dolan
  * Knot Theory And Categorification, Dave de Jonge, Master's Thesis
 
-We believe this to be a very interesting technical problem but one we are not
-attempting to solve (nor quite honestly are we qualified to solve at this
-point). What we are presenting however is a operational (syntactic) semantics
-for such a language. 
+We believe this to be a very interesting technical problem but it is not a
+problem we are not attempting to solve in this paper. (Quite honestly, we are
+not qualified to solve it at this point). What we have instead is an
+operational (syntactic) semantics for a language whose type system is the
+field of rational numbers. 
 
 Review C 
 --------
