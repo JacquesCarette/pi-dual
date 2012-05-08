@@ -18,44 +18,43 @@ that everybody needs negative and fractional types *now*.
 Review B
 --------
 
-The reviewer's concern that the compact closed structure collapses
-into a trivial category stems from the construction of b <-> 0
-morphisms through the use of division by 0.
+The review points to a very deep issue regarding the categorical semantics of
+\Pi^\eta\epsilon. But first let us clarify a misunderstanding (that is
+entirely our fault).
 
-In our system there are no objects of form b/0. While we had
-explicitely stated this in the text of our paper, it appears that we
-have may have lost mention of this in the editing process. We
-apologize for this and thank the reviewer for bringing our attention
-to this.
+Misunderstanding: After showing that the categorical structure collapses to a
+trivial one if one allows fractional types X/0, the reviewer poses a
+question:
 
-That said, the fact that b/0 objects are not allowed is implicit in
-the paper:
+> (By the way, I do not understand the analogy with the field of rational
+> numbers, because of the presence of the fractional types X/0.)
 
-  (1) We discus the computational model presented here as computation
-      in the field of rationals. Field axioms explicitely disallow
-      division by zero.
+This is precisely the point. The category we want to live in is the
+categorification of the field of rational numbers! Now it is true that this
+fact is not stated as clearly as it should, but we do repeat several times
+that we are in an algebraic structure that is a field, and hence, we admit,
+implicitly, that multiplicative inverses exist only for non-zero
+elements. Moreover, since we clearly state that there are no values of type
+0, the abstract machine semantics (which is the only semantics we have), can
+never produce anything of type 0 or 1/0. So even if one tried to use the
+isomorphisms eta/epsilon at type 0, i.e, if one tried to map between "1 <-> 0
+* 1/0", the corresponding combinator could be never be executed as there are
+no values of type 0.
 
-  (2) This also manifests in our semantics. The type 0 is not to be
-      confused with values of type 0 -- there are no values of type
-      0. In our setting, the only way one may attempt to create an
-      object b/0 (i.e. get 0 in the denominator) is by using eta/eps
-      at the type 0 (i.e. the isomorphism "1 <-> 0*1/0"). A combinator
-      correpsonding to this isomorphic type can never be executed as
-      there are no values of type 0.
+Having said all of that, the reviewer is still pointing to something deep
+regarding the categorical model of \Pi^\eta\epsilon. As mentioned above, the
+categorical structure we want would be the categorification of the field of
+rational numbers. It is unlikely that anything "conventional" is going to
+work here. There has been some work on such categorical structures, see for
+example:
 
-In this sense, it is not neccessary to eliminate 0 objects by limiting
-the monoid (0, +) to being traced as opposed to being compact
-closed. As independant research question however, it would interesting
-to study what aspects of the (1, *) is preserved by an Int
-construction over the additive trace.
+ * From Finite Sets to Feynman Diagrams, John C. Baez and James Dolan
+ * Knot Theory And Categorification, Dave de Jonge, Master's Thesis
 
-It is true that field-like categories, namely ones with two compact
-closed structures with distributivity of tensors, are non-standard and
-not well known.  We however suspect that these categories are common
-and pervasive. For instance, preliminary investigations suggest that
-finite dimensional Hilbert spaces, which are usually presented as
-compact closed categories with biproducts, may also be presented as
-field-like categories discussed here.
+We believe this to be a very interesting technical problem but one we are not
+attempting to solve (nor quite honestly are we qualified to solve at this
+point). What we are presenting however is a operational (syntactic) semantics
+for such a language. 
 
 Review C 
 --------
@@ -80,7 +79,8 @@ Pi^\eta\epsilon. For each of the dagger compact closed fragments separately
 (i.e., for each of the monoids (*,1) with inverse / and (+,0) with inverse
 -), our semantics does correspond to the categorical one. (This is shown in
 the POPL'12 paper, the RC'11 paper, and is to be presented in full detail in
-James's thesis (forthcoming, June 2012).
+James's thesis (forthcoming, June 2012). For the full language, we only have
+the semantics based on the abstract machine. 
 
 The relation to "Galois connections" is interesting but might need some
 thinking: the first "iteration" of the Galois connection loses information
