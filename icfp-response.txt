@@ -18,10 +18,46 @@ that everybody needs negative and fractional types *now*.
 Review B
 --------
 
+The reviewer's concern that the compact closed structure collapses
+into a trivial category stems from the construction of b <-> 0
+morphisms through the use of division by 0.
 
+In our system there are no objects of form b/0. While we had
+explicitely stated this in the text of our paper, it appears that we
+have may have lost mention of this in the editing process. We
+apologize for this and thank the reviewer for bringing our attention
+to this.
 
-Review C
---------
+That said, the fact that b/0 objects are not allowed is implicit in
+the paper:
+
+  (1) We discus the computational model presented here as computation
+      in the field of rationals. Field axioms explicitely disallow
+      division by zero.
+
+  (2) This also manifests in our semantics. The type 0 is not to be
+      confused with values of type 0 -- there are no values of type
+      0. In our setting, the only way one may attempt to create an
+      object b/0 (i.e. get 0 in the denominator) is by using eta/eps
+      at the type 0 (i.e. the isomorphism "1 <-> 0*1/0"). A combinator
+      correpsonding to this isomorphic type can never be executed as
+      there are no values of type 0.
+
+In this sense, it is not neccessary to eliminate 0 objects by limiting
+the monoid (0, +) to being traced as opposed to being compact
+closed. As independant research question however, it would interesting
+to study what aspects of the (1, *) is preserved by an Int
+construction over the additive trace.
+
+It is true that field-like categories, namely ones with two compact
+closed structures with distributivity of tensors, are non-standard and
+not well known.  We however suspect that these categories are common
+and pervasive. For instance, preliminary investigations suggest that
+finite dimensional Hilbert spaces, which are usually presented as
+compact closed categories with biproducts, may also be presented as
+field-like categories discussed here.
+
+Review C --------
 
 We are happy that the paper appears exciting and conveys some sense of beauty
 but we sincerely apologize that the intuition is not there yet. The reviewer
@@ -37,8 +73,10 @@ Review D
 --------
 
 We do not have a complete proof that the operational abstract machine
-semantics corresponds to the graphical (categorial) model but we do not
-expect such a proof to be a problem.
+semantics corresponds to the graphical (categorial) model but we do
+not expect such a proof to be a problem. See, for example, Selinger's
+presentation of coherence conditions for graphical languages for
+monoidal categories. 
 
 The relation to "Galois connections" is interesting but might need some
 thinking: the first "iteration" of the Galois connection loses information
