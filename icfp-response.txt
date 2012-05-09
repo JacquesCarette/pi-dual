@@ -47,7 +47,8 @@ rational numbers. It is unlikely that anything "conventional" is going to
 work here. There has been some work on such categorical structures, see for
 example:
 
- * From Finite Sets to Feynman Diagrams, John C. Baez and James Dolan
+ * From Finite Sets to Feynman Diagrams, John C. Baez and James Dolan 
+   (see page 11-12)
  * Knot Theory And Categorification, Dave de Jonge, Master's Thesis
 
 We believe this to be a very interesting technical problem but it is not a
