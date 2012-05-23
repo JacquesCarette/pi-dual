@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -XGADTs -XTypeOperators -XExistentialQuantification -XFlexibleContexts -XScopedTypeVariables #-} -- 7.0.1
+{-# OPTIONS_GHC -XGADTs -XTypeOperators -XExistentialQuantification -XFlexibleContexts -XScopedTypeVariables #-} -- 7.0.1, 7.0.3
 
 import Dual 
 
@@ -6,47 +6,17 @@ import Dual
 ------------------------------------------------------------------------------------
 -- Constructions
 
--- Some shorthands 
-type (:=>>) a b = (Inv a, b)
-type (:<<=) a b = (a, Inv b)
-type P a = () :<=> a
-type N a = a  :<=> ()
-
-makeFunc :: (a :<=> b) -> P (a :=>> b)
-makeFunc c = EtaTimes:.: (Id :*: c)
-
--- Many apply's to be written here based on what interface we want:
--- apply : P (a :=>> b) -> P a -> P b
--- apply : P (a :=>> b) -> (c :<=> a) -> (c :<=> b)
--- apply : ((a :=>> b), a) :<=> b
-
-applyFunc :: ((a :=>> b), a) :<=> b 
-applyFunc = CommuteTimes 
-            :.: AssocTimesL 
-            :.: ((CommuteTimes :.: EpsTimes) :*: Id) 
-            :.: UnitE
-
--- These 
-makeDC :: (a :<=> b) -> N (a :<<= b)
-makeDC c = (c :*: Id) :.: CommuteTimes :.:  EpsTimes
-
-
--- A similar apply is possible, but I dont know what it means. 
-
--- Trace
 traceTimes :: (a, b) :<=> (a, c) -> b :<=> c
 traceTimes c = UnitI 
-               :.: (EtaTimes:*: Id) 
+               :.: (EtaTimes :*: Id) 
                :.: AssocTimesR 
                :.: (Id :*: c) 
                :.: AssocTimesL 
                :.: (EpsTimes :*: Id)
                :.: UnitE
 
--- This is the yanking lemma for trace. 
 yankTimes :: a :<=> a
 yankTimes = traceTimes CommuteTimes
-
 
 z_shapeTimes :: a :<=> a
 z_shapeTimes = UnitI
@@ -58,14 +28,133 @@ z_shapeTimes = UnitI
                :.: UnitE
                
 
--- Not works by first converting the Haskell boolean via a Unfold to
--- either Left () or Right (), where True is Left (), False is Right ().
--- not can simply use CommutePlus to perform a not, then Fold up the
--- bool.
--- REPL Session:
--- *Pi> inot @@ True
+----------------------------------------------------------------
+
+tracePlus :: (Either a b :<=> Either a c) -> (b :<=> c)
+tracePlus c = ZeroI 
+          :.: (EtaPlus :+: Id)
+          :.: AssocPlusR
+          :.: (Id :+: c)
+          :.: AssocPlusL
+          :.: (EpsPlus :+: Id)
+          :.: ZeroE
+
+yankPlus :: b :<=> b
+yankPlus = trace CommutePlus
+
+-- Teleportation (??)
+-- Also the coherence condition for eta/eps for compact closed categories. 
+-- *PiCont> eval z_shape False
 -- False
--- *Pi> inot @@ False
+-- *PiCont> eval z_shape True
+-- True
+-- *PiCont> eval z_shape (True, False)
+-- (True,False)
+z_shapePlus :: b :<=> b
+z_shapePlus = ZeroI 
+           :.: ((EtaPlus :.: CommutePlus) :+: Id)
+           :.: AssocPlusR
+           :.: (Id :+: EpsPlus)
+           :.: CommutePlus
+           :.: ZeroE
+
+
+
+
+-- Yank Not : bool -> bool
+-- *PiCont> eval yank_not True
+-- False
+-- *PiCont> eval yank_not False
+-- True
+yank_not :: Bool :<=> Bool
+yank_not = trace (CommutePlus :.: (inot :+: Id))
+
+----------------------------------------------------------------
+-- eta and eps over products
+
+eta_fst :: Zero :<=> Either (a,b) (Neg a, b)
+eta_fst = TimesZeroR
+          :.: ((EtaPlus :.: CommutePlus) :*: Id)
+          :.: Distribute
+
+eta_snd :: Zero :<=> Either (a,b) (a, Neg b)
+eta_snd = eta_fst :.: (CommuteTimes :+: CommuteTimes)
+
+eps_fst :: Either (a,b) (Neg a, b) :<=> Zero
+eps_fst = adjoint eta_fst
+
+eps_snd :: Either (a,b) (a, Neg b) :<=> Zero
+eps_snd = adjoint eta_snd
+
+
+-- *PiCont> eval neg_fst (Neg True, False)
+-- (Neg (True,False))
+neg_fst :: (Neg a, b) :<=> Neg (a, b)
+neg_fst = ZeroI 
+          :.: (EtaPlus :+: Id)
+          :.: AssocPlusR
+          :.: (Id :+: eps_fst)
+          :.: CommutePlus
+          :.: ZeroE
+
+
+neg_swap :: (Neg a, b) :<=> (a, Neg b)
+neg_swap = neg_fst 
+           :.: neg_lift CommuteTimes 
+           :.: (adjoint neg_fst) 
+           :.: CommuteTimes
+
+-- Lifts an isomorphisms to work on negatives. 
+neg_lift :: (a :<=> b) -> ((Neg a) :<=> (Neg b))
+neg_lift c = ZeroI 
+             :.: (EtaPlus :+: Id)
+             :.: AssocPlusR
+             :.: (Id :+: ((adjoint c) :+: Id))
+             :.: (Id :+: (CommutePlus :.: EpsPlus))
+             :.: CommutePlus
+             :.: ZeroE
+
+----------------------------------------------------------------
+-- Operations on fractions
+
+type Frac a b = (a, Inv b)
+
+addNumerator :: (Frac a c :+: Frac b c) :<=> Frac (a :+: b) c
+addNumerator = Factor
+
+-- *Main> eval (adjoint addHalfs) ()
+-- [L ((), Inv True),R ((), Inv False)]
+addHalfs :: (Frac () Bool :+: Frac () Bool) :<=> ()
+addHalfs = Factor 
+           :.: (FoldB :*: Id)
+           :.: CommuteTimes
+           :.: EpsTimes
+
+-- *Main> eval (adjoint addHalfs2) ()
+-- [R ((), Inv True),L ((), Inv False)]
+addHalfs2 :: (Frac () Bool :+: Frac () Bool) :<=> ()
+addHalfs2 = Factor 
+            :.: (FoldB :*: Id)
+            :.: (inot :*: Id)
+            :.: CommuteTimes
+            :.: EpsTimes
+
+-- *Main> eval (adjoint addThirds) ()
+-- [L ((), Inv One),R (True, Inv Two),R (False, Inv Three)]
+addThirds :: (Frac () Three :+: Frac Bool Three) :<=> ()
+addThirds = Factor
+            :.: ((Id :+: UnfoldB) :*: Id)
+            :.: (FoldThree :*: Id)
+            :.: CommuteTimes
+            :.: EpsTimes
+
+--------------------------------------------------------------------
+-- Simple Conditionals
+
+-- inot works by first converting the Haskell boolean via a Unfold to
+-- either Left () or Right (), where True is Left (), False is Right
+-- ().  inot can simply use CommutePlus to perform a not, then Fold up
+-- the bool.
 inot :: Bool :<=> Bool
 inot = UnfoldB :.: CommutePlus :.: FoldB
 
@@ -115,131 +204,9 @@ fredkin :: (Bool,(Bool,Bool)) :<=> (Bool,(Bool,Bool))
 fredkin = controlled CommuteTimes
 
 
+------------------------------------------------------------------
+-- Weak Normalization
 
--- Teleportation (??)
--- Also the coherence condition for eta/eps for compact closed categories. 
--- *PiCont> eval z_shape False
--- False
--- *PiCont> eval z_shape True
--- True
--- *PiCont> eval z_shape (True, False)
--- (True,False)
-z_shape :: b :<=> b
-z_shape = ZeroI 
-           :.: ((EtaPlus :.: CommutePlus) :+: Id)
-           :.: AssocPlusR
-           :.: (Id :+: EpsPlus)
-           :.: CommutePlus
-           :.: ZeroE
-
-
--- We can now construct a trace using eta and eps. 
-trace :: (Either a b :<=> Either a c) -> (b :<=> c)
-trace c = ZeroI 
-          :.: (EtaPlus :+: Id)
-          :.: AssocPlusR
-          :.: (Id :+: c)
-          :.: AssocPlusL
-          :.: (EpsPlus :+: Id)
-          :.: ZeroE
-
--- Yanking 
--- Should be Id
-yank :: b :<=> b
-yank = trace CommutePlus
-
-
--- Yank Not : bool -> bool
--- *PiCont> eval yank_not True
--- False
--- *PiCont> eval yank_not False
--- True
-yank_not :: Bool :<=> Bool
-yank_not = trace (CommutePlus :.: (inot :+: Id))
-
-
--- eta and eps over products
-eta_fst :: Zero :<=> Either (a,b) (Neg a, b)
-eta_fst = TimesZeroR
-          :.: ((EtaPlus :.: CommutePlus) :*: Id)
-          :.: Distribute
-
-eta_snd :: Zero :<=> Either (a,b) (a, Neg b)
-eta_snd = eta_fst :.: (CommuteTimes :+: CommuteTimes)
-
-eps_fst :: Either (a,b) (Neg a, b) :<=> Zero
-eps_fst = adjoint eta_fst
-
-eps_snd :: Either (a,b) (a, Neg b) :<=> Zero
-eps_snd = adjoint eta_snd
-
-
-
--- *PiCont> eval neg_fst (Neg True, False)
--- (Neg (True,False))
-neg_fst :: (Neg a, b) :<=> Neg (a, b)
-neg_fst = ZeroI 
-          :.: (EtaPlus :+: Id)
-          :.: AssocPlusR
-          :.: (Id :+: eps_fst)
-          :.: CommutePlus
-          :.: ZeroE
-
-
-neg_swap :: (Neg a, b) :<=> (a, Neg b)
-neg_swap = neg_fst 
-           :.: neg_lift CommuteTimes 
-           :.: (adjoint neg_fst) 
-           :.: CommuteTimes
-
--- Lifts an isomorphisms to work on negatives. 
-neg_lift :: (a :<=> b) -> ((Neg a) :<=> (Neg b))
-neg_lift c = ZeroI 
-             :.: (EtaPlus :+: Id)
-             :.: AssocPlusR
-             :.: (Id :+: ((adjoint c) :+: Id))
-             :.: (Id :+: (CommutePlus :.: EpsPlus))
-             :.: CommutePlus
-             :.: ZeroE
-
-
-type Frac a b = (a, Inv b)
-
--- So now can we try some of the Hasegawa-Hyland fixpoint
--- constructions?
--- fiore3 :: (
-
-addNumerator :: (Frac a c :+: Frac b c) :<=> Frac (a :+: b) c
-addNumerator = Factor
-
-
--- *Main> eval (adjoint addHalfs) ()
--- [L ((), Inv True),R ((), Inv False)]
-addHalfs :: (Frac () Bool :+: Frac () Bool) :<=> ()
-addHalfs = Factor 
-           :.: (FoldB :*: Id)
-           :.: CommuteTimes
-           :.: EpsTimes
-
--- *Main> eval (adjoint addHalfs2) ()
--- [R ((), Inv True),L ((), Inv False)]
-addHalfs2 :: (Frac () Bool :+: Frac () Bool) :<=> ()
-addHalfs2 = Factor 
-            :.: (FoldB :*: Id)
-            :.: (inot :*: Id)
-            :.: CommuteTimes
-            :.: EpsTimes
-
--- *Main> eval (adjoint addThirds) ()
--- [L ((), Inv One),R (True, Inv Two),R (False, Inv Three)]
-addThirds :: (Frac () Three :+: Frac Bool Three) :<=> ()
-addThirds = Factor
-            :.: ((Id :+: UnfoldB) :*: Id)
-            :.: (FoldThree :*: Id)
-            :.: CommuteTimes
-            :.: EpsTimes
-
--- Algebra
 -- 1 
 -- (-1 + 1) + 1 
 -- -1 + (1 + 1)
@@ -277,3 +244,27 @@ inf_three f = trace (FoldThree :.: inner :.: UnfoldThree)
           :.: AssocTimesL
           :.: (EpsTimes :*: Id)
           :.: UnitE
+
+
+----------------------------------------------------------------
+-- Some shorthands 
+
+type (:=>>) a b = (Inv a, b)
+type (:<<=) a b = (a, Inv b)
+type P a = () :<=> a
+type N a = a  :<=> ()
+
+makeFunc :: (a :<=> b) -> P (a :=>> b)
+makeFunc c = EtaTimes:.: (Id :*: c)
+
+applyFunc :: ((a :=>> b), a) :<=> b 
+applyFunc = CommuteTimes 
+            :.: AssocTimesL 
+            :.: ((CommuteTimes :.: EpsTimes) :*: Id) 
+            :.: UnitE
+
+makeDC :: (a :<=> b) -> N (a :<<= b)
+makeDC c = (c :*: Id) :.: CommuteTimes :.:  EpsTimes
+
+
+
