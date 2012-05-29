@@ -191,13 +191,6 @@ interpreter for {{langRevT}}.
 % isomorphic interpreter in {{langRevT}} can be done systematically and does
 % not present any significant conceptual difficulties.
 
-% The constructions in this paper apply only to a class of interpreters
-% that can be represented by logically reversible small-step operational
-% semantics. While, in a formal sense, they are related to Abramsky's
-% ``bi-orthogonal automata''\cite{abramsky2005structural}, we will try
-% to give them a more direct characterization purely in terms of logical
-% reversibility of the small-step semantics.
-
 %% - write program; derive inverse
 %% program~\cite{Gluck:2005,Mu:2002:IFF:648086.757330,conf/aplas/GluckK03,Gluck:2005};
 %% we're not interested in this; we want to directly write partial isomorphisms
@@ -500,13 +493,29 @@ the flow of waves and particles along the wires.
 
 \end{itemize}
 
+\paragraph*{Universality.} 
+As an example, consider the implementation of the Toffoli gate below,
+which establishes that {{langRevT}} is complete for combinational
+circuits. This encoding uses the type {{1+1}} as {{bool}} and values
+{{left ()}} and {{right()}} as {{true}} and {{false}}. Previous
+work\cite{James:2012:IE:2103656.2103667} (see Sec 5) also establishes
+that {{langRevT}} is Turing complete by showing the compilation of a
+Turing complete language -- a first-order language with numbers and
+iteration -- to {{langRevT}}.
+
+\begin{center}
+  \includegraphics{diagrams/toffoli.pdf}
+\end{center}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simple Bounded Number Iteration}
 \label{sec:bounded}
 
-We illustrate the main concepts and constructions using two simple examples
-that essentially count $n$ steps. The first machine does nothing else; the
-second uses this counting ability to add two numbers. 
+We illustrate the main concepts and constructions using two simple
+examples that essentially count $n$ steps. The first machine does
+nothing else; the second uses this counting ability to add two
+numbers.
 
 %%%%%%%%%%%%%%%%%%%
 \subsection{Counting}
@@ -601,19 +610,23 @@ realized so far. We do this by first ``sliding'' the two sections of the
 diagram as shown below:
 
 \vspace{-20px}
-\begin{multicols}{2}
+% \begin{multicols}{2}
 \begin{center}
-\scalebox{0.5}{
+\scalebox{1.0}{
   \includegraphics{diagrams/nat-nat6.pdf}
 }
 \end{center}
-\columnbreak
+
+\noindent
+we exchange sections A and B while maintaining the connectivity of the wires:
+
+%\columnbreak
 \begin{center}
-\scalebox{0.6}{
+\scalebox{1.0}{
   \includegraphics{diagrams/nat-nat7.pdf}
 }
 \end{center}  
-\end{multicols}
+%\end{multicols}
 
 This rearrangement exposes that the middle connections were really recursive
 calls to the machine transition. The final figure is given below: 
@@ -662,17 +675,6 @@ calls to the machine transition. The final figure is given below:
 % no distinguished start state for such an interpreter and hence one
 % does not know when to stop during reverse execution.
 
-% \paragraph*{Conditions that must be satisfied for constructing a isomorphic
-% interpreter}:
-% \begin{enumerate}
-% \item Distinguishable start and stop states. There may be more than one
-%   valid start state and more than one valid stop state.
-% \item Each valid machine state must match a unique reduction LHS. Each
-%   valid machine state must machine a unique reduction RHS.
-% \item Every reduction step must be computable (in {{langRevT}}) and
-%   must be logically reversible -- i.e. it must be possible to reduce
-%   from right to left.
-% \end{enumerate}
 
 % \paragraph*{High level steps in the translation:}
 % \label{sec:steps}
@@ -688,11 +690,43 @@ calls to the machine transition. The final figure is given below:
 %   exposing the start and stop states. 
 % \end{enumerate}
 
-\subsection{Adder} 
-\label{sec:adder}
 
-Although trivial, the previous example captures the fundamental steps of our
-construction. For reference, these steps are:
+%% In the absence of a formal classification for styles of reversible
+%% abstract machines, we will present only an informal characterisation
+%% of our input language. 
+
+\paragraph*{Input Machines.}
+
+Our translation apply to machines presented as small-step operational
+semantics, i.e. machines that are step-wise rewrites of tuples of
+algebraic datatypes, wherein each rewrite step must be logically
+reversible. The formal criterion logical reversibility in this setting
+are captured in Abramsky's presentation of \emph{bi-orthogonal
+  automata} \cite{abramsky2005structural} and may be summarized as:
+\begin{enumerate}
+\item
+  Machines must have distinguishable start and stop states. There may
+  be more than one valid start state and more than one valid stop
+  state.
+\item Each valid machine state must match a unique pattern on the
+  left-hand-side and right-hand-side of the `{{|-->}}' rewrite.
+\item Every reduction step must be computable (in {{langRevT}}) and
+  must be logically reversible -- i.e. it must be possible to reduce
+  from right to left.
+\end{enumerate}
+
+
+%% The constructions in this paper apply only to a class of interpreters
+%% that can be represented by logically reversible small-step operational
+%% semantics. While, in a formal sense, they are related to Abramsky's
+%% ``bi-orthogonal automata''\cite{abramsky2005structural}, we will try
+%% to give them a more direct characterization purely in terms of logical
+%% reversibility of the small-step semantics. 
+
+\paragraph*{Steps of the Translation.}
+
+Although trivial, the previous example captures the fundamental steps
+of our construction. For reference, these steps are:
 \begin{enumerate}
 \item Expand the input to expose enough structure to distinguish the left
   hand side of each machine state; 
@@ -704,6 +738,10 @@ construction. For reference, these steps are:
   introduce a {{trace}} to iterate the construction. This is always a
   mechanical process completely independent of the logic of the machine.
 \end{enumerate}
+
+\subsection{Adder} 
+\label{sec:adder}
+
 
 Let us apply these steps to the slightly more interesting example of an
 adder:
@@ -939,22 +977,22 @@ one of the generated branches, expand the {{nat}} component:
 
 We can now apply our construction. The first step to developing the
 isomorphic interpreter is to recognize that the two possible kinds of machine
-states simply hide an implicit {{bool=T~|~F}}. We make this explicit:
+states simply hide an implicit {{bool}}. We make this explicit:
 
 \begin{small}
 \begin{multicols}{2}
 %subcode{bnf} include main
 % Machine states = <bool, t, c>
 %
-% Start state = <T, t, []>
-% Stop state =  <F, t, []>
+% Start state = <true, t, []>
+% Stop state =  <false, t, []>
 
 %subcode{opsem} include main
 %! columnStyle = rclr
-% <T, L n, c> &|-->& <F, L (n+1), c> &~~~~~ rule 1
-% <T, N t1 t2, c> &|-->& <T, t1, Lft c t2> & rule 2 
-% <F, t1, Lft c t2> &|-->& <T, t2, Rgt t1 c> & rule 3
-% <F, t2, Rgt t1 c> &|-->& <F, c, N t1 t2> & rule 4
+% <true, L n, c> &|-->& <false, L (n+1), c> &~~~~~ rule 1
+% <true, N t1 t2, c> &|-->& <true, t1, Lft c t2> & rule 2 
+% <false, t1, Lft c t2> &|-->& <true, t2, Rgt t1 c> & rule 3
+% <false, t2, Rgt t1 c> &|-->& <false, c, N t1 t2> & rule 4
 \end{multicols}
 \end{small}
 
@@ -966,8 +1004,8 @@ And we start examining the machine components as before:
 }
 \end{center}
 
-On the input side, for {{T}} states, we have expanded the tree component and
-for {{F}}~states we have expanded the tree contexts. Similarly we have done
+On the input side, for {{true}} states, we have expanded the tree component and
+for {{false}}~states we have expanded the tree contexts. Similarly we have done
 the opposite on the output side exactly matching up what the abstract machine
 does. One thing to note is that we dropped the {{1}} introduced by expanding
 the {{bool}} and instead just labeled the {{true}} and {{false}} branches.
@@ -976,7 +1014,7 @@ We are ready to start connecting the machine states corresponding to
 the reductions that we would like:
 \begin{enumerate}
 \item When we encounter a leaf we would like to increment its value and move
-  to the corresponding {{F}} machine state. For the sake of simplicity, in
+  to the corresponding {{false}} machine state. For the sake of simplicity, in
   this interpreter we won't be concerned with exposing stuck states: we
   simply use {{add1}} whose adjoint {{sub1}} diverges when applied to {{0}}.
 
