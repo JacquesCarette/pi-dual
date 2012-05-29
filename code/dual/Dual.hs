@@ -1,97 +1,76 @@
-{-# OPTIONS_GHC -XGADTs -XTypeOperators -XExistentialQuantification -XFlexibleContexts #-} -- 7.0.1, 7.0.3
-
--- {-# OPTIONS_GHC -fglasgow-exts #-} -- 6.12.3
--- Dont know: This code tested with GHC version 6.12.3, and version 7.0.1
+{-# OPTIONS_GHC -XGADTs -XTypeOperators -XExistentialQuantification #-}
+{-# OPTIONS_GHC -XFlexibleContexts -XEmptyDataDecls #-} 
 
 module Dual where
 
-import Data.Typeable
-import Unsafe.Coerce -- needed for polymorphic lookup. 
+import Unsafe.Coerce -- needed for polymorphic lookup (lookupW)
 
-
------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Base types 
 
 data Zero 
+
 data Show a => Neg a = Ng a
-             deriving Show
+  deriving Show                       
+
 data Show a => Inv a = In a
-             deriving Show
-type (:+:) a b = Either a b
-type (:*:) a b = (a, b)
+  deriving Show
 
-data Three = One 
-           | Two 
-           | Three
-             deriving (Eq, Show)
-
------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Values 
 -- 
 -- Values of the form 'V a' are values used by the interpreter. 
-
-
 -- Values can contain non-grounded fresh variables
-type Var a = Int
-data V a where
-    Unit :: V () 
-    Pair :: V a -> V b -> V (a, b) 
-    L :: V a -> V (Either a b) 
-    R :: V b -> V (Either a b) 
-    Neg :: V a -> V (Neg a)
-    Inv :: V a -> V (Inv a)
-    Lift :: (Eq a, Show a) => a -> V a
-    Fresh :: Var a -> V a
 
+type Var a = Int
+
+data V a where
+  Unit :: V () 
+  Pair :: V a -> V b -> V (a, b) 
+  L :: V a -> V (Either a b) 
+  R :: V b -> V (Either a b) 
+  Neg :: V a -> V (Neg a)
+  Inv :: V a -> V (Inv a)
+  Fresh :: Var a -> V a
 
 instance Show (V a) where 
-    show Unit = "()"
-    show (Pair a b) = "(" ++ show a ++ ", " ++ show b ++ ")"
-    show (L a) = "L " ++ (show a) 
-    show (R a) = "R " ++ (show a)
-    show (Neg a) = "Neg " ++ (show a)
-    show (Inv a) = "Inv " ++ (show a)
-    show (Lift a) = show a
-    show (Fresh n) = show n
+  show Unit = "()"
+  show (Pair a b) = "(" ++ show a ++ "," ++ show b ++ ")"
+  show (L a) = "L " ++ (show a) 
+  show (R a) = "R " ++ (show a)
+  show (Neg a) = "Neg " ++ (show a)
+  show (Inv a) = "Inv " ++ (show a)
+  show (Fresh n) = show n
 
-------------------------------------------------------------------------------------
 -- Translate a normal value to value usable by the interpreter.
 -- a -> V a
 
 class ToV a where 
-    makeV :: a -> V a
+  makeV :: a -> V a
 
 instance ToV () where 
-    makeV () = Unit
+  makeV () = Unit
 
 instance (ToV a, ToV b) => ToV (Either a  b) where 
-    makeV (Left a) = L (makeV a)
-    makeV (Right a) = R (makeV a)
+  makeV (Left a) = L (makeV a)
+  makeV (Right a) = R (makeV a)
 
 instance (ToV a, ToV b) => ToV (a, b) where 
-    makeV (a, b) = Pair (makeV a) (makeV b)
+  makeV (a,b) = Pair (makeV a) (makeV b)
 
 instance (Show a, ToV a) => ToV (Inv a) where 
-    makeV (In a) = Inv (makeV a)
+  makeV (In a) = Inv (makeV a)
 
 instance (Show a, ToV a) => ToV (Neg a) where 
-    makeV (Ng a) = Neg (makeV a)
+  makeV (Ng a) = Neg (makeV a)
 
-instance ToV Bool where 
-    makeV b = Lift b
-
-instance ToV Three where 
-    makeV b = Lift b
-
-
-
------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Isomorphisms 
 
 data a :<=> b where 
 -- Congruence
   Id    :: a :<=> a
-  Adj   :: (a :<=> b) -> (Neg b :<=> Neg a) 
+  Sym   :: (a :<=> b) -> (b :<=> a)
   (:.:) :: (a :<=> b) -> (b :<=> c) -> (a :<=> c)
   (:*:) :: (a :<=> b) -> (c :<=> d) -> ((a,c) :<=> (b,d))
   (:+:) :: (a :<=> b) -> (c :<=> d) -> (Either a c :<=> Either b d)
@@ -116,21 +95,15 @@ data a :<=> b where
   EtaTimes:: () :<=> (Inv a, a)
   EpsTimes :: (Inv a, a) :<=> ()
 -- EtaTimesand EpsTimes over the monoid (+, 0)
-  EtaPlus :: Zero :<=> (Neg a :+: a)
-  EpsPlus :: (Neg a :+: a) :<=> Zero
--- Some handy constant types 
--- Encoding of Booleans
-  FoldB   :: Either () () :<=> Bool
-  UnfoldB :: Bool :<=> Either () ()
--- Encoding of Three
-  FoldThree   :: Either () (Either () ()) :<=> Three
-  UnfoldThree :: Three :<=> Either () (Either () ())
+  EtaPlus :: Zero :<=> (Either (Neg a) a)
+  EpsPlus :: (Either (Neg a) a) :<=> Zero
 
----------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Adjoint
+
 adjoint :: (a :<=> b) -> (b :<=> a)
 adjoint Id = Id
-adjoint (Adj f) = Adj (adjoint f)
+adjoint (Sym f) = f
 adjoint (f :.: g) = adjoint g :.: adjoint f
 adjoint (f :*: g) = adjoint f :*: adjoint g
 adjoint (f :+: g) = adjoint f :+: adjoint g
@@ -152,12 +125,8 @@ adjoint EtaTimes= EpsTimes
 adjoint EpsTimes = EtaTimes
 adjoint EtaPlus = EpsPlus
 adjoint EpsPlus = EtaPlus
-adjoint FoldB = UnfoldB
-adjoint UnfoldB = FoldB
-adjoint FoldThree = UnfoldThree
-adjoint UnfoldThree = FoldThree
 
----------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Unification and Reification of values
 
 data Binding = forall a. Binding (Var a) (V a)
@@ -196,7 +165,6 @@ unify v v' w = unify' (lookupW v w) (lookupW v' w) w
                                            Nothing -> Nothing 
                                            Just w' -> unify a a' w'
       unify' Unit Unit w = Just w
-      unify' (Lift a) (Lift a') w | a == a' = Just w
       unify' _ _ _ = Nothing
 
 unifyW :: V a -> V a -> World -> Maybe World 
@@ -214,15 +182,15 @@ reify (v, (bs, _)) = reify' (lookupW v bs) bs
     where 
       reify' :: V a -> [Binding] -> V a
       reify' Unit _ = Unit
-      reify' (Lift v) _ = Lift v
       reify' (Fresh n) _ = Fresh n 
       reify' (L v) bs = L (reify' (lookupW v bs) bs)
       reify' (R v) bs = R (reify' (lookupW v bs) bs)
       reify' (Neg v) bs = Neg (reify' (lookupW v bs) bs)
       reify' (Inv v) bs = Inv (reify' (lookupW v bs) bs)
-      reify' (Pair a b) bs = Pair (reify' (lookupW a bs) bs) (reify' (lookupW b bs) bs)
+      reify' (Pair a b) bs = 
+          Pair (reify' (lookupW a bs) bs) (reify' (lookupW b bs) bs)
 
--------------------------------------------------------
+------------------------------------------------------------------------------
 -- A Unification Monad
 
 data M a = M (World -> [(a, World)])
@@ -254,7 +222,7 @@ run e = map (\w->reify w) (e `app` ([], 100))
 -- variable thus reserving fresh variables 0..99 for user input. This
 -- is just a hack.
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Eval Simple
 -- 
 -- Operational semantics of primtive isomorphisms expressed using the
@@ -382,42 +350,7 @@ eval_iso EpsTimes v =
        unifyM (Pair (Inv x) x) v 
        return Unit
 
--- Fold, Unfold : Bool
-eval_iso FoldB v = 
-    do unifyM (L Unit) v 
-       return (Lift True)
-    `orM`
-    do unifyM (R Unit) v
-       return (Lift False)
-eval_iso UnfoldB v = 
-    do unifyM (Lift True) v 
-       return (L Unit)
-    `orM`
-    do unifyM (Lift False) v
-       return (R Unit)
-    
--- Fold, Unfold : Three
-eval_iso FoldThree v = 
-    do unifyM (L Unit) v 
-       return (Lift One)
-    `orM`
-    do unifyM (R (L Unit)) v
-       return (Lift Two)
-    `orM`
-    do unifyM (R (R Unit)) v
-       return (Lift Three)
-eval_iso UnfoldThree v = 
-    do unifyM (Lift One) v 
-       return (L Unit)
-    `orM`
-    do unifyM (Lift Two) v
-       return (R (L Unit))
-    `orM`
-    do unifyM (Lift Three) v
-       return (R (R Unit))
-
-
-----------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Evaluation Contexts
 -- 
 -- These contexts are used in the definition of the composition
@@ -427,17 +360,19 @@ data K a b c d where
     KEmpty :: K a b a b 
     Fst :: (b :<=> c) -> K a c i o -> K a b i o 
     Snd :: (a :<=> b) -> K a c i o -> K b c i o 
-    LftPlus :: (c :<=> d) -> K (a:+:c) (b:+:d) i o -> K a b i o 
-    RgtPlus :: (a :<=> b) -> K (a:+:c) (b:+:d) i o -> K c d i o 
-    LftTimes :: V c -> (c :<=> d) -> K (a:*:c) (b:*:d) i o -> K a b i o 
-    RgtTimes :: (a :<=> b) -> V b -> K (a:*:c) (b:*:d) i o -> K c d i o 
+    LftPlus :: (c :<=> d) -> K (Either a c) (Either b d) i o -> K a b i o 
+    RgtPlus :: (a :<=> b) -> K (Either a c) (Either b d) i o -> K c d i o 
+    LftTimes :: V c -> (c :<=> d) -> K (a,c) (b,d) i o -> K a b i o 
+    RgtTimes :: (a :<=> b) -> V b -> K (a,c) (b,d) i o -> K c d i o 
      
-
---------------------------------------------------------
+------------------------------------------------------------------------------
 -- Operational semantics for the Forward evaluator
 
 -- Explore current combinator 
 eval_c :: (a :<=> b) -> V a -> K a b c d -> M (V d)
+
+eval_c (Sym f) a k = undefined
+
 -- (f :.: g) @@ a = g @@ (f @@ a)
 eval_c (f :.: g) a k = 
     eval_c f a (Fst g k)
@@ -497,11 +432,14 @@ eval_k g v2 (RgtTimes f v1 k) =
        unifyM v' (Pair v1 v2)
        eval_k (f :*: g) v' k 
 
---------------------------------------------------------
+------------------------------------------------------------------------------
 -- Operational semantics for the Backward evaluator
 
 -- Explore the combinator
 back_eval_c :: (a :<=> b) -> V b -> K a b c d -> M (V d)
+
+back_eval_c (Sym f) a k = undefined 
+
 -- (f :.: g) @@ a = g @@ (f @@ a)
 back_eval_c (f :.: g) a k = 
     back_eval_c g a (Snd f k)
@@ -566,11 +504,13 @@ back_eval_k f v1 (LftTimes v2 g k) =
 -- termination in the backward evaluator.
 --  back_eval_k c v KEmpty = return v
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Eval
 -- 
 -- We use eval to run a Pi computation. Evaluation starts in the
 -- forward evaluator with a user supplied value.
 eval :: (ToV a, Show (V a)) => (a :<=> b) -> a -> [V b]
 eval c v = run (eval_c c (makeV v) KEmpty)
+
+------------------------------------------------------------------------------
 
