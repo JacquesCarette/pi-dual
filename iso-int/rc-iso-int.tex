@@ -6,8 +6,6 @@
 \usepackage{listings}
 \usepackage{graphicx}
 
-\newcommand{\todo}[1]{\textbf{TODO: #1}}
-
 %subcode-inline{bnf-inline} name langRev
 %! swap+ = \mathit{swap}^+
 %! swap* = \mathit{swap}^*
@@ -83,7 +81,7 @@
 
 \begin{document}
 \title{Isomorphic Interpreters from Logically Reversible Abstract Machines} 
-\titlerunning{On the construction of Isomorphic Interpreters} 
+\titlerunning{On the Construction of Isomorphic Interpreters} 
 \author{Roshan P. James \and Amr Sabry}
 \institute{School of Informatics and Computing, Indiana University\\
 \mails}
@@ -141,7 +139,7 @@ types; in the full language with recursion, some of these isomorphisms may be
 partial, i.e., may diverge on some inputs. 
 
 In this paper, we investigate the practicality of writing recursive programs
-in {{langRevT}}. Specifically, we assume that we are giving some reversible
+in {{langRevT}}. Specifically, we assume that we are given some reversible
 recursive algorithm expressed as a \emph{reversible abstract machine}, and we
 show via a number of systematic steps, how to develop a {{langRevT}} program
 from that abstract machine. Our choice of starting from reversible abstract
@@ -263,9 +261,9 @@ adjoint is homomorphic except for the case of sequencing in which the order
 is reversed, i.e., {{(c1 (;) c2){dagger} = (c2{dagger}) (;) (c1{dagger}) }}.
 
 \paragraph*{Graphical Language.}
-Following the tradition established for monoidal
+Following the tradition for computations in monoidal
 categories~\cite{springerlink:10.1007/978-3-642-12821-94}, we present a
-graphical language that conveys the semantics of the language.  The general
+graphical notation that conveys the semantics of {{langRevT}}.  The general
 idea of the graphical notation is that combinators are modeled by ``wiring
 diagrams'' or ``circuits'' and that values are modeled as ``particles'' or
 ``waves'' that may appear on the wires. Evaluation therefore is modeled by
@@ -273,10 +271,11 @@ the flow of waves and particles along the wires.
 
 \begin{itemize}
 \item The simplest sort of diagram is the {{id : b <-> b}} combinator which
-  is simply represented as a wire labeled by its type {{b}}, as shown on the
-  left. In more complex diagrams, if the type of a wire is obvious from the
-  context, it may be omitted. When tracing a computation, one might imagine a
-  value {{v}} of type {{b}} on the wire, as shown on the right.
+  is simply represented as a wire labeled by its type {{b}}, as shown below
+  on the left. In more complex diagrams, if the type of a wire is obvious
+  from the context, it may be omitted. When tracing a computation, one might
+  imagine a value {{v}} of type {{b}} on the wire, as shown below on the
+  right:
 
   \begin{multicols}{2}
 \begin{center}
@@ -298,7 +297,7 @@ the flow of waves and particles along the wires.
   case of products represented by a pair of wires, when tracing execution
   using particles, one should think of one particle on each wire or
   alternatively as in folklore in the literature on monoidal categories as a
-  ``wave.''
+  ``wave:''
 \begin{multicols}{4}
 \begin{center}
 \scalebox{0.95}{
@@ -327,10 +326,9 @@ the flow of waves and particles along the wires.
 \end{center}
 \end{multicols}
 
-\item Sum types may similarly be represented by one wire or using
-  parallel wires with a {{+}} operator between them. When tracing the
-  execution of two additive wires, a value can reside on only one of the two
-  wires.
+\item Sum types may similarly be represented by one wire or using parallel
+  wires with a {{+}} operator between them. When tracing the execution of two
+  additive wires, a value can reside on only one of the two wires:
 \begin{multicols}{4}
 %\begin{center}
 \scalebox{0.95}{
@@ -374,7 +372,7 @@ the flow of waves and particles along the wires.
 %% \end{center}
 
 \item Associativity is implicit in the graphical language. Three parallel
-  wires represent {{b1*(b2*b3)}} or {{(b1*b2)*b3}}, based on the context.
+  wires may represent {{b1*(b2*b3)}} or {{(b1*b2)*b3}}.
 %% \begin{center}
 %% \scalebox{0.95}{
 %% %%subcode-line{pdfimage}[diagrams/thesis/associate.pdf]
@@ -382,9 +380,7 @@ the flow of waves and particles along the wires.
 %% }
 %% \end{center}
 
-\item Commutativity is represented by crisscrossing wires.  By
-  visually tracking the flow of particles on the wires, one can verify
-  that the expected types for commutativity are satisfied.
+\item Commutativity is represented by crisscrossing wires:
 
 \begin{multicols}{4}
 \begin{center}
@@ -422,7 +418,7 @@ the flow of waves and particles along the wires.
   is no value of type 0, there can be no particle on a wire of type {{0}}.
   Also since the monoidal units can be freely introduced and eliminated, in
   many diagrams they are omitted and dealt with explicitly only when they are
-  of special interest.
+  of special interest:
 \begin{multicols}{4}
 \begin{center}
 \scalebox{0.95}{
@@ -457,7 +453,7 @@ the flow of waves and particles along the wires.
   represent interactions between sum and pair types. Distributivity
   should essentially be thought of as a multiplexer that redirects the
   flow of {{v:b}} depending on what value inhabits the type {{b1+b2}},
-  as shown below. Factoring is the corresponding adjoint operation.
+  as shown below. Factoring is the corresponding adjoint operation:
 
 \begin{multicols}{4}
 \begin{center}
@@ -482,7 +478,7 @@ the flow of waves and particles along the wires.
   numbers, {{nat=@@x.(1+x)}}.
 
 \item The {{trace+}} operation is drawn as a looped circuit, where the
-  traced type {{b1}} is shown as flowing backward. 
+  traced type {{b1}} is shown as flowing backwards:
 %% The semantics and
 %%  interpretation of {{trace}} are dealt with in detail in previous
 %%  work (see Sec. 4 of \cite{James:2012:IE:2103656.2103667}).
@@ -494,19 +490,17 @@ the flow of waves and particles along the wires.
 \end{itemize}
 
 \paragraph*{Universality.} 
-As an example, consider the implementation of the Toffoli gate below,
-which establishes that {{langRevT}} is complete for combinational
-circuits. This encoding uses the type {{1+1}} as {{bool}} and values
-{{left ()}} and {{right()}} as {{true}} and {{false}}. Previous
-work\cite{James:2012:IE:2103656.2103667} (see Sec 5) also establishes
-that {{langRevT}} is Turing complete by showing the compilation of a
-Turing complete language -- a first-order language with numbers and
-iteration -- to {{langRevT}}.
-
+As an example, consider the implementation of the Toffoli gate below, which
+establishes that {{langRevT}} is complete for combinational circuits. This
+encoding uses the type {{1+1}} as {{bool}} and values {{left ()}} and
+{{right()}} as {{true}} and {{false}}:
 \begin{center}
   \includegraphics{diagrams/toffoli.pdf}
 \end{center}
-
+\noindent Previous work~\cite[Sec.~5]{James:2012:IE:2103656.2103667}
+establishes that {{langRevT}} is Turing complete by showing the compilation
+of a Turing complete language --- a first-order language with numbers and
+iteration --- to {{langRevT}}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simple Bounded Number Iteration}
@@ -544,9 +538,9 @@ the configuration {{<3,0>}}, it would take exactly 3 steps to reach the final
 configuration: {{ <3,0> |--> <2,1> |--> <1,2> |--> <0,3> }}. Dually, since
 the machine transition is clearly reversible, the machine can execute
 backwards from the final configuration to reach the initial configuration in
-also 3 steps. 
+also~3 steps. 
 
-Our goal is to implement this abstract machine in {{langRevT}}: We start by
+Our goal is to implement this abstract machine in {{langRevT}}. We start by
 writing a combinator {{c : nat * nat <-> nat * nat}} that executes one step
 of the machine transition. Here {{nat}} is an abbreviation for the recursive
 type {{@@x.1+x}}. The combinator, when iterated, should map {{(n,0)}} to
@@ -567,7 +561,7 @@ its structure and the second {{nat}} is folded to reconstruct it:
 
 The triangle on the left denotes the {{unfold}} isomorphism, which works as
 follows: If the number {{n}} is zero, the output is the top branch which has
-type {{1}}. If the number was non-zero, the output is on the bottom branch
+type~{{1}}. If the number is non-zero, the output is on the bottom branch
 and has value {{n-1}}. The triangle on the right is the dual {{fold}}
 isomorphism.  We now use distribution to isolate each possible machine state:
 
@@ -606,8 +600,7 @@ We are now close to the completion of the interpreter.  The branch labeled
 state of the machine. Similarly the branch labeled {{((), n')}} corresponds
 to the start state of the machine.  The last step in the construction
 involves introducing a {{trace}} operation for iterating the small step
-realized so far. We do this by first ``sliding'' the two sections of the
-diagram as shown below:
+realized so far:
 
 \vspace{-20px}
 % \begin{multicols}{2}
@@ -618,7 +611,9 @@ diagram as shown below:
 \end{center}
 
 \noindent
-we exchange sections A and B while maintaining the connectivity of the wires:
+Sliding sections A and B past each other while maintaining the connectivity
+of the wires, exposes that the middle connections were really recursive calls
+to the machine transition:
 
 %\columnbreak
 \begin{center}
@@ -628,16 +623,15 @@ we exchange sections A and B while maintaining the connectivity of the wires:
 \end{center}  
 %\end{multicols}
 
-This rearrangement exposes that the middle connections were really recursive
-calls to the machine transition. The final figure is given below: 
+%% The final figure is given below: 
 
 %% The introduced {{trace}} feeds back related machine states. The exposed start
 %% state essentially requires the initial value of {{n}} to start the machine
 %% and the exposed stop state returns any result values that have been computed.
 
-\begin{center}
-\scalebox{1.0}{ \includegraphics{diagrams/nat-nat8.pdf} }
-\end{center}
+%% \begin{center}
+%% \scalebox{1.0}{ \includegraphics{diagrams/nat-nat8.pdf} }
+%% \end{center}
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \section{Abstracting out the Construction}
@@ -695,28 +689,6 @@ calls to the machine transition. The final figure is given below:
 %% abstract machines, we will present only an informal characterisation
 %% of our input language. 
 
-\paragraph*{Input Machines.}
-
-Our translation apply to machines presented as small-step operational
-semantics, i.e. machines that are step-wise rewrites of tuples of
-algebraic datatypes, wherein each rewrite step must be logically
-reversible. The formal criterion logical reversibility in this setting
-are captured in Abramsky's presentation of \emph{bi-orthogonal
-  automata} \cite{abramsky2005structural} (see Sec. 2) and may be
-summarized as:
-\begin{enumerate}
-\item
-  Machines must have distinguishable start and stop states. There may
-  be more than one valid start state and more than one valid stop
-  state.
-\item Each valid machine state must match a unique pattern on the
-  left-hand-side and right-hand-side of the `{{|-->}}' rewrite.
-\item Every reduction step must be computable (in {{langRevT}}) and
-  must be logically reversible -- i.e. it must be possible to reduce
-  from right to left.
-\end{enumerate}
-
-
 %% The constructions in this paper apply only to a class of interpreters
 %% that can be represented by logically reversible small-step operational
 %% semantics. While, in a formal sense, they are related to Abramsky's
@@ -726,23 +698,39 @@ summarized as:
 
 \paragraph*{Steps of the Construction.}
 
-Although trivial, the previous example captures the fundamental steps
-of our construction. For reference, these steps are:
+Although trivial, the previous example captures the fundamental aspects of
+our construction. In general, our starting point is an abstract machine in
+which every rewrite step is logically reversible. The formal criterion of
+logical reversibility in this setting is captured by Abramsky's
+\emph{bi-orthogonal automata}~\cite[Sec.~2]{abramsky2005structural} which is
+summarized as:
 \begin{enumerate}
-\item Expand the input to expose enough structure to distinguish the left
-  hand side of each machine state; 
-\item Expand the output to expose enough structure to distinguish the right
-  hand side of each machine state;
+\item
+  Machines must have distinguishable start and stop states. There may
+  be more than one valid start state and more than one valid stop
+  state, however.
+\item Each valid machine state must match a unique pattern on the
+  left-hand side and right-hand side of the `{{|-->}}' relation.
+\item Every reduction step must be computable (in {{langRevT}}) and
+  must be logically reversible --- i.e. it must be possible to reduce
+  from right to left.
+\end{enumerate}
+Given such a machine the process of encoding the machine in {{langRevT}}
+consists of the following steps:
+\begin{enumerate}
+\item Expand the input to expose enough structure to distinguish the
+  left-hand side of each machine state;
+\item Expand the output to expose enough structure to distinguish the
+  right-hand side of each machine state;
 \item Shuffle matching input terms to output terms, inserting any appropriate
   mediating computations. 
 \item Slide the two sections to expose the start and stop state and
-  introduce a {{trace}} to iterate the construction. This is always a
-  mechanical process completely independent of the logic of the machine.
+  introduce a {{trace}} to iterate the construction. 
 \end{enumerate}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Adder} 
 \label{sec:adder}
-
 
 Let us apply these steps to the slightly more interesting example of an
 adder:
@@ -943,7 +931,7 @@ subtree is currently being explored. The definitions are shown on the left:
 The reduction rules on the right traverse a given tree and increment
 every leaf value.  The machine here is a little richer than the ones
 dealt with previously. In particular, we have a two types of machine
-states -- {{<t,c>}} and {{ {[t, c]} }}. The first of these corresponds
+states {{<t,c>}} and {{ {[t, c]} }}. The first of these corresponds
 to walking down a tree, building up the context in the process. The
 second corresponds to reconstructing the tree from the context and
 also switching focus to any unexplored subtrees in the process. There
@@ -966,7 +954,7 @@ of {{fold}} / {{unfold}} and {{distribute}} / {{factor}}. We collectively
 represent these steps using thin vertical rectangle. Also we will introduce
 the convention that the component that is being expanded (or constructed) will be
 marked by using {{[^ ^]}} and the components that are being generated (or consumed) will be
-marked by {{[v v]}}. For example, given a value of type {{tree*nat}}, the
+marked by~{{[v v]}}. For example, given a value of type {{tree*nat}}, the
 diagram below shows how to first expand the {{tree}} component and then in
 one of the generated branches, expand the {{nat}} component:
 
@@ -990,14 +978,14 @@ states simply hide an implicit {{bool}}. We make this explicit:
 
 %subcode{opsem} include main
 %! columnStyle = rclr
-% <true, L n, c> &|-->& <false, L (n+1), c> &~~~~~ rule 1
-% <true, N t1 t2, c> &|-->& <true, t1, Lft c t2> & rule 2 
-% <false, t1, Lft c t2> &|-->& <true, t2, Rgt t1 c> & rule 3
-% <false, t2, Rgt t1 c> &|-->& <false, c, N t1 t2> & rule 4
+% <true, L n, c> &|-->& <false, L (n+1), c> 
+% <true, N t1 t2, c> &|-->& <true, t1, Lft c t2> 
+% <false, t1, Lft c t2> &|-->& <true, t2, Rgt t1 c> 
+% <false, t2, Rgt t1 c> &|-->& <false, c, N t1 t2> 
 \end{multicols}
 \end{small}
 
-And we start examining the machine components as before:
+We start examining the machine components as before:
 
 \begin{center}
 \scalebox{1.0}{
@@ -1005,9 +993,9 @@ And we start examining the machine components as before:
 }
 \end{center}
 
-On the input side, for {{true}} states, we have expanded the tree component and
-for {{false}}~states we have expanded the tree contexts. Similarly we have done
-the opposite on the output side exactly matching up what the abstract machine
+On the input side, for {{true}} states, we have expanded the tree component
+and for {{false}}~states we have expanded the tree contexts. We have done the
+opposite on the output side exactly matching up what the abstract machine
 does. One thing to note is that we dropped the {{1}} introduced by expanding
 the {{bool}} and instead just labeled the {{true}} and {{false}} branches.
 
@@ -1104,7 +1092,7 @@ entirely straightforward.  A couple of points however need clarification:
   combinators, which are the interesting cases. All the primitive
   isomorphisms are hidden in the {{iso(v)}} application in {{rule~1}}. This
   should be read as ``transform {{v}} according to the primitive isomorphism
-  {{iso}}.'' Implementing this is straightforward and is hence skipped.
+  {{iso}}.'' 
 
 \item Stuck states in this machine correspond to runtime values not
   matching their expected types. They can be handled as described in
@@ -1177,6 +1165,11 @@ machines. Since techniques for devising small-step interpreters are
 well known, this allows for the direct development of a large class of
 {{langRevT}} programs.  We have demonstrated the effectiveness of this
 approach by deriving a meta-circular interpreter for {{langRevT}}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\paragraph*{Acknowledgments.} 
+This material is based upon work supported by the National Science Foundation
+under Grant No. 1116725.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
