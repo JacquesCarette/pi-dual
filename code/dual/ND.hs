@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -XGADTs -XTypeOperators -XExistentialQuantification #-}
 {-# OPTIONS_GHC -XFlexibleContexts -XEmptyDataDecls #-} 
 
-module Dual where
+module ND where
 
 import Control.Monad
 
@@ -11,7 +11,9 @@ import Control.Monad
 -- 0, -t, 1/t are modeled using the following types
 
 data Zero -- empty type
+
 data Inv a = Inv a deriving Eq -- fractional types (a should not be zero) 
+
 data Neg a = Neg a deriving Eq -- negative types
 
 instance Show Zero where 
@@ -19,6 +21,8 @@ instance Show Zero where
 
 instance Eq Zero where 
   _ == _ = error "Cannot use == at type 0"
+
+-- 
 
 class Eq a => V a where
   elems :: [a]
@@ -103,24 +107,38 @@ adjoint EtaTimes = EpsTimes
 adjoint EpsTimes = EtaTimes
 
 ------------------------------------------------------------------------------
--- Non-determisnism monad
+-- Non-determisnism monad (implemented using []) 
 -- 
--- We have non-determinism because of eta*/epsilon*. In particular eta* maps
--- () non-deterministically to (1/v,v) to where v is a value of the
+-- We have non-determinism because of eta*/epsilon*. In particular eta*
+-- non-deterministically maps () to (1/v,v) to where v is a value of the
 -- approriate type; epsilon* takes a pair (1/v',v) and checks whether
 -- v==v'. If so we return () and otherwise we fail.
 
-eval_iso :: (V a, V b) => (a :<=> b) -> [a] -> [b] 
-eval_iso c xs = xs >>= eval_iso1 c
-
 eval_iso1 :: (V a, V b) => (a :<=> b) -> a -> [b]
+
 eval_iso1 Id a = return a
+
+eval_iso1 (Sym f) b = eval_iso1 (adjoint f) b
+
+eval_iso1 (f :.: g) a = do b <- eval_iso1 f a 
+                           eval_iso1 g b
+
+eval_iso1 (f :*: g) (a,c) = do b <- eval_iso1 f a 
+                               d <- eval_iso1 g c
+                               return (b,d) 
+
+eval_iso1 (f :+: g) v = 
+  case v of 
+    Left a -> do b <- eval_iso1 f a
+                 return (Left b) 
+    Right c -> do d <- eval_iso1 g c
+                  return (Right d) 
 
 -- ZeroE @@ (Right a) = a
 eval_iso1 ZeroE v = 
   case v of 
-    Left _ -> mzero
     Right a -> return a
+    Left _ -> error "Impossible: ZeroE applied to Left"
 
 -- ZeroI @@ a = Right a
 eval_iso1 ZeroI v = return (Right v) 
@@ -165,8 +183,14 @@ eval_iso1 AssocTimesL (a,(b,c)) = return ((a,b),c)
 -- AssocTimesR @@ ((a,b),c)  = (a,(b,c))
 eval_iso1 AssocTimesR ((a,b),c) = return (a,(b,c)) 
 
--- Distribute @@ (Left b, a) = Left (b, a) 
--- Distribute @@ (Right c, a) = Right (c, a) 
+--  TimesZeroL  :: V a => (Zero, a) :<=> Zero
+eval_iso1 TimesZeroL _ = error "Impossible: TimesZeroL applied"
+
+--  TimesZeroR  :: V a => Zero :<=> (Zero,a)
+eval_iso1 TimesZeroR _ = error "Impossible: TimesZeroR applied"
+
+-- Distribute @@ (Left b, a) = Left (b,a) 
+-- Distribute @@ (Right c, a) = Right (c,a) 
 eval_iso1 Distribute v = 
   case v of 
     (Left b, a) -> return (Left (b,a)) 
@@ -179,185 +203,53 @@ eval_iso1 Factor v =
     Left (b,a) -> return (Left b, a) 
     Right (c,a) -> return (Right c, a) 
 
+-- eta times
+eval_iso1 EtaTimes () = msum [return (Inv a, a) | a <- elems] 
+
 -- epsilon times
 eval_iso1 EpsTimes (Inv a, a') | a == a' = return ()
                                | otherwise = mzero
 
--- eta times
-eval_iso1 EtaTimes () = msum [return (Inv a, a) | a <- elems] 
-
--- epsilon plus
-eval_iso1 EpsPlus v = 
-  case v of 
-    Left (Neg a) -> undefined
-    Right a -> undefined
-
--- eta plus
+-- eta plus :: Zero :<=> (Either (Neg a) a)
 eval_iso1 EtaPlus _ = undefined
 
+-- epsilon plus :: (Either (Neg a) a) :<=> Zero
+eval_iso1 EpsPlus _ = undefined
 
-{--
+-- If the input is non-deterministic use:
 
-------------------------------------------------------------------------------
--- forward and backward evaluators
-
--- Evaluation Contexts
--- 
--- These contexts are used in the definition of the composition
--- combinators.
-
-data K a b c d where
-    KEmpty :: K a b a b 
-    Fst :: (b :<=> c) -> K a c i o -> K a b i o 
-    Snd :: (a :<=> b) -> K a c i o -> K b c i o 
-    LftPlus :: (c :<=> d) -> K (Either a c) (Either b d) i o -> K a b i o 
-    RgtPlus :: (a :<=> b) -> K (Either a c) (Either b d) i o -> K c d i o 
-    LftTimes :: V c -> (c :<=> d) -> K (a,c) (b,d) i o -> K a b i o 
-    RgtTimes :: (a :<=> b) -> V b -> K (a,c) (b,d) i o -> K c d i o 
-     
--- Explore current combinator 
-eval_c :: (a :<=> b) -> V a -> K a b c d -> M (V d)
-
-eval_c (Sym f) a k = undefined
-
--- (f :.: g) @@ a = g @@ (f @@ a)
-eval_c (f :.: g) a k = 
-    eval_c f a (Fst g k)
-         
--- (f :*: g) @@ (a,c) = (f @@ a, g @@ c)
-eval_c (f :*: g) v k = 
-    do x1 <- freshM 
-       x2 <- freshM 
-       unifyM (Pr x1 x2) v
-       eval_c f x1 (LftTimes x2 g k)
-
--- (f :+: g) @@ (Left a) = Left (f @@ a) 
--- (f :+: g) @@ (Right b) = Right (g @@ b) 
-eval_c (f :+: g) v k = 
-    do v1 <- freshM 
-       unifyM (L v1) v 
-       eval_c f v1 (LftPlus g k)
-    `orM`
-    do v1 <- freshM 
-       unifyM (R v1) v
-       eval_c g v1 (RgtPlus f k)
-
--- eps : switch to the other evaluator
-eval_c EpsPlus v k = 
-    do v1 <- freshM 
-       unifyM (L (Ng v1)) v 
-       back_eval_k EpsPlus (R v1) k
-    `orM`
-    do v1 <- freshM 
-       unifyM (R v1) v
-       back_eval_k EpsPlus (L (Ng v1)) k
-
--- all primitive isomorphisms are executed using eval_iso1
-eval_c c v k = 
-    do v' <- eval_iso1 c v
-       eval_k c v' k
-
--- Explore current stack
-eval_k :: (a :<=> b) -> V b -> K a b c d -> M (V d)
-eval_k c v KEmpty = return v
-
-eval_k f v (Fst g k) = eval_c g v (Snd f k)
-eval_k g v (Snd f k) = eval_k (f :.: g) v k
-
-eval_k f v (LftPlus g k) = 
-    do v' <- freshM 
-       unifyM v' (L v)
-       eval_k (f :+: g) v' k 
-eval_k g v (RgtPlus f k) =
-    do v' <- freshM 
-       unifyM v' (R v)
-       eval_k (f :+: g) v' k 
-                              
-eval_k f v1 (LftTimes v2 g k) = eval_c g v2 (RgtTimes f v1 k)
-eval_k g v2 (RgtTimes f v1 k) = 
-    do v' <- freshM 
-       unifyM v' (Pr v1 v2)
-       eval_k (f :*: g) v' k 
-
-
--- backward evaluator 
-
--- Explore the combinator
-back_eval_c :: (a :<=> b) -> V b -> K a b c d -> M (V d)
-
-back_eval_c (Sym f) a k = undefined 
-
--- (f :.: g) @@ a = g @@ (f @@ a)
-back_eval_c (f :.: g) a k = 
-    back_eval_c g a (Snd f k)
-         
--- (f :*: g) @@ (a,c) = (f @@ a, g @@ c)
-back_eval_c (f :*: g) v k = 
-    do x1 <- freshM 
-       x2 <- freshM 
-       unifyM (Pr x1 x2) v
-       back_eval_c g x2 (RgtTimes f x1 k)
-
--- (f :+: g) @@ (Left a) = Left (f @@ a) 
--- (f :+: g) @@ (Right b) = Right (g @@ b) 
-back_eval_c (f :+: g) v k = 
-    do v1 <- freshM 
-       unifyM (L v1) v 
-       back_eval_c f v1 (LftPlus g k)
-    `orM`
-    do v1 <- freshM 
-       unifyM (R v1) v
-       back_eval_c g v1 (RgtPlus f k)
-
--- eta : switch to the other evaluator
-back_eval_c EtaPlus v k = 
-    do v1 <- freshM 
-       unifyM (L (Ng v1)) v 
-       eval_k EtaPlus (R v1) k
-    `orM`
-    do v1 <- freshM 
-       unifyM (R v1) v
-       eval_k EtaPlus (L (Ng v1)) k
-
--- all primitive isomorphisms are executed backwards.
-back_eval_c c v k = 
-    do v' <- eval_iso1 (adjoint c) v
-       back_eval_k c v' k
-
-
--- Explore the stack
-back_eval_k :: (a :<=> b) -> V a -> K a b c d -> M (V d)
-back_eval_k c v KEmpty = error "Cannot terminate in backwards evaluator"
-
-back_eval_k g v (Snd f k) = back_eval_c f v (Fst g k)
-back_eval_k f v (Fst g k) = back_eval_k (f :.: g) v k
-
-back_eval_k f v (LftPlus g k) = 
-    do v' <- freshM 
-       unifyM v' (L v)
-       back_eval_k (f :+: g) v' k 
-back_eval_k g v (RgtPlus f k) =
-    do v' <- freshM 
-       unifyM v' (R v)
-       back_eval_k (f :+: g) v' k 
-                              
-back_eval_k g v2 (RgtTimes f v1 k) = back_eval_c f v1 (LftTimes v2 g k)
-back_eval_k f v1 (LftTimes v2 g k) = 
-    do v' <- freshM 
-       unifyM v' (Pr v1 v2)
-       back_eval_k (f :*: g) v' k 
-
--- Note: We could explore an alternate semantics that allows for
--- termination in the backward evaluator.
---  back_eval_k c v KEmpty = return v
+eval_iso :: (V a, V b) => (a :<=> b) -> [a] -> [b] 
+eval_iso c xs = xs >>= eval_iso1 c
 
 ------------------------------------------------------------------------------
--- Eval
--- 
--- We use eval to run a Pi computation. Evaluation starts in the
--- forward evaluator with a user supplied value.
-eval :: (ToV a, Show (V a)) => (a :<=> b) -> a -> [V b]
-eval c v = run (eval_c c (makeV v) KEmpty)
+-- Examples
+
+type B = Either () ()
+
+cohTimes :: V a => a :<=> a
+cohTimes = UnitI                      -- ((),v) 
+           :.: (EtaTimes :*: Id)      -- ((1/v),v),v) 
+           :.: (CommuteTimes :*: Id)  -- ((v,1/v),v)
+           :.: AssocTimesR            -- (v,(1/v,v))
+           :.: (Id :*: EpsTimes)      -- (v,()) 
+           :.: CommuteTimes           -- ((),v) 
+           :.: UnitE                  -- v
+
+test1, test2 :: [B]
+test1 = eval_iso1 cohTimes (Left ())
+test2 = eval_iso1 cohTimes (Right ())
+
+cohPlus :: V a => a :<=> a
+cohPlus = ZeroI                      
+          :.: (EtaPlus :+: Id)       
+          :.: (CommutePlus :+: Id)  
+          :.: AssocPlusR            
+          :.: (Id :+: EpsPlus)      
+          :.: CommutePlus
+          :.: ZeroE                  
+
+test3, test4 :: [B]
+test3 = eval_iso1 cohPlus (Left ())
+test4 = eval_iso1 cohPlus (Right ())
 
 ------------------------------------------------------------------------------
---}
