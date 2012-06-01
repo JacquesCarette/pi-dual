@@ -117,7 +117,7 @@
   can be done systematically and does not present any significant conceptual
   difficulties. Concretely, we develop several simple interpreters over
   numbers and addition, move on to tree traversals, and finish with a
-  meta-circular interpreter for our reversible language. Generally, this
+  meta-circular interpreter for our reversible language. This
   gives us a means of developing large reversible programs with the ease of
   reasoning at the level of a conventional small-step semantics.
 \end{abstract}
@@ -138,7 +138,7 @@ of {{langRevT}}, every program witnesses an isomorphism between two finite
 types; in the full language with recursion, some of these isomorphisms may be
 partial, i.e., may diverge on some inputs. 
 
-In this paper, we investigate the practicality of writing recursive programs
+In this paper, we investigate the practicality of writing large recursive programs
 in {{langRevT}}. Specifically, we assume that we are given some reversible
 recursive algorithm expressed as a \emph{reversible abstract machine}, and we
 show via a number of systematic steps, how to develop a {{langRevT}} program
@@ -371,7 +371,7 @@ the flow of waves and particles along the wires.
 %% }
 %% \end{center}
 
-\item Associativity is implicit in the graphical language. Three parallel
+\item Associativity is implicit in the graphical language. Thus, three parallel
   wires may represent {{b1*(b2*b3)}} or {{(b1*b2)*b3}}.
 %% \begin{center}
 %% \scalebox{0.95}{
@@ -605,7 +605,7 @@ realized so far:
 \vspace{-20px}
 % \begin{multicols}{2}
 \begin{center}
-\scalebox{1.0}{
+\scalebox{0.8}{
   \includegraphics{diagrams/nat-nat6.pdf}
 }
 \end{center}
@@ -617,21 +617,22 @@ to the machine transition:
 
 %\columnbreak
 \begin{center}
-\scalebox{1.0}{
+\scalebox{0.8}{
   \includegraphics{diagrams/nat-nat7.pdf}
 }
 \end{center}  
 %\end{multicols}
 
-%% The final figure is given below: 
+\noindent
+The completed interpreter is given below: 
 
 %% The introduced {{trace}} feeds back related machine states. The exposed start
 %% state essentially requires the initial value of {{n}} to start the machine
 %% and the exposed stop state returns any result values that have been computed.
 
-%% \begin{center}
-%% \scalebox{1.0}{ \includegraphics{diagrams/nat-nat8.pdf} }
-%% \end{center}
+\begin{center}
+\scalebox{1.0}{ \includegraphics{diagrams/nat-nat8.pdf} }
+\end{center}
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \section{Abstracting out the Construction}
@@ -711,9 +712,10 @@ summarized as:
   state, however.
 \item Each valid machine state must match a unique pattern on the
   left-hand side and right-hand side of the `{{|-->}}' relation.
-\item Every reduction step must be computable (in {{langRevT}}) and
-  must be logically reversible --- i.e. it must be possible to reduce
-  from right to left.
+\item Every reduction step must be computable (in {{langRevT}}), must
+  not drop or duplicate pattern variables and must be logically
+  reversible --- i.e. it must be possible to reduce from right to
+  left.
 \end{enumerate}
 Given such a machine the process of encoding the machine in {{langRevT}}
 consists of the following steps:
@@ -930,7 +932,7 @@ subtree is currently being explored. The definitions are shown on the left:
 
 The reduction rules on the right traverse a given tree and increment
 every leaf value.  The machine here is a little richer than the ones
-dealt with previously. In particular, we have a two types of machine
+dealt with previously. In particular, we have two types of machine
 states {{<t,c>}} and {{ {[t, c]} }}. The first of these corresponds
 to walking down a tree, building up the context in the process. The
 second corresponds to reconstructing the tree from the context and
@@ -942,9 +944,9 @@ contexts) where previously we only had numbers. The {{fold}} and
 \begin{small}
   
 %subcode{bnf} include main
-%! columnStyle = rrcll
-% unfold_t :& ~~~~t &<->& n + t * t &: fold_t
-% unfold_c :& c &<->& 1 + c * t + t * c ~~~~~~&: fold_c
+%! columnStyle = rcl
+% unfold_t :& t <-> n + t * t &: fold_t
+% unfold_c :& ~~~~~ c <-> 1 + c * t + t * c ~~~~ &: fold_c
 \end{small}
 
 \paragraph*{New Notation.}
