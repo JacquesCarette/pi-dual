@@ -1,5 +1,8 @@
-{-# OPTIONS_GHC -XGADTs -XTypeOperators -XExistentialQuantification #-}
-{-# OPTIONS_GHC -XFlexibleContexts -XEmptyDataDecls #-} 
+{-# OPTIONS_GHC -XTypeOperators  #-}
+{-# OPTIONS_GHC -XGADTs          #-}
+{-# OPTIONS_GHC -XEmptyDataDecls #-} 
+
+-- eta+/epsilon+ undefined in this model
 
 module ND where
 
@@ -22,7 +25,7 @@ instance Show Zero where
 instance Eq Zero where 
   _ == _ = error "Cannot use == at type 0"
 
--- 
+-- Returns a list of all the elements of the type
 
 class Eq a => V a where
   elems :: [a]
@@ -51,18 +54,19 @@ instance V a => V (Inv a) where
 data a :<=> b where 
 -- Congruence
   Id    :: V a => a :<=> a
-  Sym   :: (V a, V b) => (a :<=> b) -> (b :<=> a)
   (:.:) :: (V a, V b, V c) => (a :<=> b) -> (b :<=> c) -> (a :<=> c)
-  (:*:) :: (V a, V b, V c, V d) => (a :<=> b) -> (c :<=> d) -> ((a,c) :<=> (b,d))
-  (:+:) :: (V a, V b, V c, V d) => (a :<=> b) -> (c :<=> d) -> (Either a c :<=> Either b d)
-  -- (a :<=> b) -> (Neg a :<=> Neg b) ??
-  -- (a :<=> b) -> (Inv a :<=> Inv b) ??
+  (:*:) :: (V a, V b, V c, V d) => 
+             (a :<=> b) -> (c :<=> d) -> ((a,c) :<=> (b,d))
+  (:+:) :: (V a, V b, V c, V d) => 
+             (a :<=> b) -> (c :<=> d) -> (Either a c :<=> Either b d)
 -- (+) is associative, commutative, and has a unit
   ZeroE       :: V a => Either Zero a :<=> a
   ZeroI       :: V a => a :<=> Either Zero a
   CommutePlus :: (V a, V b) => Either a b :<=> Either b a
-  AssocPlusL  :: (V a, V b, V c) => Either a (Either b c) :<=> Either (Either a b) c 
-  AssocPlusR  :: (V a, V b, V c) => Either (Either a b) c :<=> Either a (Either b c) 
+  AssocPlusL  :: (V a, V b, V c) => 
+                   Either a (Either b c) :<=> Either (Either a b) c 
+  AssocPlusR  :: (V a, V b, V c) => 
+                   Either (Either a b) c :<=> Either a (Either b c) 
 -- (*) is associative, commutative, and has a unit
   UnitE        :: V a => ((), a) :<=> a
   UnitI        :: V a => a :<=> ((), a)
@@ -72,8 +76,10 @@ data a :<=> b where
 -- (*) distributes over (+) 
   TimesZeroL  :: V a => (Zero, a) :<=> Zero
   TimesZeroR  :: V a => Zero :<=> (Zero, a)
-  Distribute  :: (V a, V b, V c) => (Either b c, a) :<=> Either (b, a) (c, a)
-  Factor      :: (V a, V b, V c) => Either (b, a) (c, a) :<=> (Either b c, a)
+  Distribute  :: (V a, V b, V c) => 
+                   (Either b c, a) :<=> Either (b, a) (c, a)
+  Factor      :: (V a, V b, V c) => 
+                   Either (b, a) (c, a) :<=> (Either b c, a)
 -- Additive inverses
   EtaPlus :: V a => Zero :<=> (Either (Neg a) a)
   EpsPlus :: V a => (Either (Neg a) a) :<=> Zero
@@ -83,7 +89,6 @@ data a :<=> b where
 
 adjoint :: (a :<=> b) -> (b :<=> a)
 adjoint Id = Id
-adjoint (Sym f) = f
 adjoint (f :.: g) = adjoint g :.: adjoint f
 adjoint (f :*: g) = adjoint f :*: adjoint g
 adjoint (f :+: g) = adjoint f :+: adjoint g
@@ -107,18 +112,16 @@ adjoint EtaTimes = EpsTimes
 adjoint EpsTimes = EtaTimes
 
 ------------------------------------------------------------------------------
--- Non-determisnism monad (implemented using []) 
+-- Non-determinism monad (implemented using []) 
 -- 
 -- We have non-determinism because of eta*/epsilon*. In particular eta*
 -- non-deterministically maps () to (1/v,v) to where v is a value of the
--- approriate type; epsilon* takes a pair (1/v',v) and checks whether
+-- appropriate type; epsilon* takes a pair (1/v',v) and checks whether
 -- v==v'. If so we return () and otherwise we fail.
 
 eval_iso1 :: (V a, V b) => (a :<=> b) -> a -> [b]
 
 eval_iso1 Id a = return a
-
-eval_iso1 (Sym f) b = eval_iso1 (adjoint f) b
 
 eval_iso1 (f :.: g) a = do b <- eval_iso1 f a 
                            eval_iso1 g b
@@ -204,17 +207,17 @@ eval_iso1 Factor v =
     Right (c,a) -> return (Right c, a) 
 
 -- eta times
-eval_iso1 EtaTimes () = msum [return (Inv a, a) | a <- elems] 
+eval_iso1 EtaTimes () = msum [ return (Inv a, a) | a <- elems] 
 
 -- epsilon times
 eval_iso1 EpsTimes (Inv a, a') | a == a' = return ()
                                | otherwise = mzero
 
 -- eta plus :: Zero :<=> (Either (Neg a) a)
-eval_iso1 EtaPlus _ = undefined
+eval_iso1 EtaPlus _ = error "Impossible: eta+ encountered in forward eval"
 
 -- epsilon plus :: (Either (Neg a) a) :<=> Zero
-eval_iso1 EpsPlus _ = undefined
+eval_iso1 EpsPlus v = undefined
 
 -- If the input is non-deterministic use:
 
@@ -226,14 +229,14 @@ eval_iso c xs = xs >>= eval_iso1 c
 
 type B = Either () ()
 
-cohTimes :: V a => a :<=> a
-cohTimes = UnitI                      -- ((),v) 
-           :.: (EtaTimes :*: Id)      -- ((1/v),v),v) 
-           :.: (CommuteTimes :*: Id)  -- ((v,1/v),v)
-           :.: AssocTimesR            -- (v,(1/v,v))
-           :.: (Id :*: EpsTimes)      -- (v,()) 
-           :.: CommuteTimes           -- ((),v) 
-           :.: UnitE                  -- v
+cohTimes :: V a => a :<=> a           -- [v]
+cohTimes = UnitI                      -- [((),v)]
+           :.: (EtaTimes :*: Id)      -- [((1/v),v),v)] ++ [((1/v',v'),v)]
+           :.: (CommuteTimes :*: Id)  -- [((v,1/v),v)] ++ [((v',1/v'),v)]
+           :.: AssocTimesR            -- [(v,(1/v,v))] ++ [(v',(1/v',v))]
+           :.: (Id :*: EpsTimes)      -- [(v,())] ++ []
+           :.: CommuteTimes           -- [((),v)]
+           :.: UnitE                  -- [v]
 
 test1, test2 :: [B]
 test1 = eval_iso1 cohTimes (Left ())
