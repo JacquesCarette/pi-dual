@@ -21,8 +21,7 @@
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{multicol}
-\newcommand\hmmax{0} % default 3
-\newcommand\bmmax{0} % default 4
+\newcommand\hmmax{0} % default \newcommand\bmmax{0} % default 4
 \usepackage{bm}
 \usepackage{cmll}
 
@@ -771,6 +770,14 @@ stop state by changing the reductions {{|-->}} to run backwards
 combinator {{c}} in the reverse direction, i.e., we use the adjoint
 {{c{dagger}}}.
 
+\begin{proposition}[Strong Normalizing]
+\label{prop:termination-pi} 
+{{langRev}} computation always terminate.  
+
+{{forall. c:b1<->b2, v:b1, exists v':b2.}}  
+{{<c,v,[]> |-->  [c,v',[]]}}
+\end{proposition}
+
 \begin{proposition}[Logical Reversibility]
 \label{prop:logrev}
 {{<c,v,[]> |--> [c,v',[]]}} iff 
@@ -979,6 +986,78 @@ the connective between the values, but a property intrinsic to the
 values themselves. Hence {{v}} and {{1/v}} share secretely a
 relationship that their combinting {{*}} constructor does not and need
 not know about. 
+
+\roshan{We need to prove this. I am not sure how to start.}
+\begin{proposition}[Strong Normalizing]
+\label{prop:termination-piee-plus} 
+Computations in {{langRev}} extended with {{eta+}} and {{eps+}} are
+always terminating.
+\end{proposition}
+
+
+\roshan{This is straightforward.}
+\begin{proposition}[Strong Normalizing]
+\label{prop:termination-piee-times} 
+Computations in {{langRev}} extended with {{eta*}} and {{eps*}} are
+always terminating.
+\end{proposition}
+
+
+\begin{proposition}[Weak Normalizing]
+\label{prop:termination-piee} 
+Computations in full {{langRevEE}} are weak normalizing.
+\end{proposition}
+
+\begin{center}
+  \includegraphics{diagrams/inf1.pdf}
+\end{center}
+
+\subsection{Logical Reversibility}
+
+\begin{proposition}[Logical Reversibility]
+{{langRev}} with {{eta+}} and {{eps+}} is logically reversible.
+\end{proposition}
+\roshan{Proof follows from compilation to {{langRevT}} }
+
+\begin{proposition}[Logical Reversibility]
+{{langRev}} with {{eta*}} and {{eps*}} is logically reversible.
+\end{proposition}
+
+This is an awkward one. I dont thnk that the above statement is
+right.. At least not in the usualy sense. We can construct the
+following combinators.
+
+{{c1 : bool <-> bool}}
+
+{{c1 true |--> {[true, false ]} }}
+
+{{c1 false |--> {[true, false ]} }}
+
+{{c1{dagger} true |--> {[true, false ]} }}
+
+{{c1{dagger} false |--> {[true, false ]} }}
+
+\noindent
+And
+
+{{c2 : bool <-> bool}}
+
+{{c2 true |--> {[true, false ]} }}
+
+{{c2 false |--> undefined }}
+
+{{c2{dagger} true |--> true }}
+
+{{c2{dagger} false |--> true }}
+
+Probably the right way to approach this is to see what they do in
+physics. If fractionals do correspond to measurement and the
+categorical structures of Coecke and Abramsky, then the ideas of
+reversibility in that setting should also apply here.
+
+I don't think this issue will go away by any sort of choice of
+top-level. I tried to design a top-level that can fix this -- I dont
+think it is possible.
 
 %%%%%%%%%%%%%%%%%%%%
 \subsection{Categorical Constructions}
