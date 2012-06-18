@@ -138,33 +138,54 @@
 \titlebanner{}
 \preprintfooter{}
 
-\title{(With Extensions)The Two Dualities of Computation: Negative and Fractional Types}
-\authorinfo{Roshan P. James}
-           {Indiana University}
-           {rpjames@indiana.edu}
-\authorinfo{Amr Sabry}
-           {Indiana University}
-           {sabry@indiana.edu}
-\maketitle
+\title{Computing in the Field of Rationals}
+%% \authorinfo{Roshan P. James}
+%%            {Indiana University}
+%%            {rpjames@indiana.edu}
+%% \authorinfo{Amr Sabry}
+%%            {Indiana University}
+%%            {sabry@indiana.edu}
+%% \maketitle
 
 \begin{abstract}
-  Every functional programmer knows about sum and product types, {{a+b}} and
-  {{a*b}} respectively. Negative and fractional types, {{a-b}} and {{a/b}}
-  respectively, are much less known and their computational interpretation is
-  unfamiliar and often complicated. We show that in a programming model in
-  which information is preserved (such as the model introduced in our recent
-  paper on \emph{Information Effects}), these types have particularly natural
-  computational interpretations. Intuitively, values of negative types are
-  values that flow ``backwards'' to satisfy demands and values of fractional
-  types are values that impose constraints on their context.  The combination
-  of these negative and fractional types enables greater flexibility in
-  programming by breaking global invariants into local ones that can be
-  autonomously satisfied by a subcomputation. Theoretically, these types give
-  rise to \emph{two} function spaces and to \emph{two} notions of
-  continuations, suggesting that the previously observed duality of
-  computation conflated two orthogonal notions: an additive duality that
-  corresponds to backtracking and a multiplicative duality that corresponds
-  to constraint propagation.
+
+  Previous work on \emph{information effects} established the notion
+  of information preserving computation
+  \cite{infeffects,rc2011,rc2012} and the core calculus for computing
+  with the isomorphisms of finite types, {{langRev}}. Given the
+  first-order nature of {{langRev}} however it was unclear how one may
+  express first-class functions.  Andrej Filinski's masters thesis
+  \cite{Filinski:1989:DCI:648332.755574} suggested a remarkable
+  symmetry underlying computation in the \lcal. Filinski showed that
+  values are dual to continuations and that functions are dual to
+  delimited continuations.
+
+
+  We present a computational model whose types are \emph{the field of
+    rational numbers}. This computational model is derived
+  systemmatically from the {{langRev}} by considering a symmetric
+  notion of duality. Unlike the \lcal which shows a classical demorgan
+  dulaity, here we have two axis of dualization and hence two
+  dualities -- an additive duality, namely negative types and a
+  multiplicative duality, namely fractional types.
+
+  %% Every functional programmer knows about sum and product types, {{a+b}} and
+  %% {{a*b}} respectively. Negative and fractional types, {{a-b}} and {{a/b}}
+  %% respectively, are much less known and their computational interpretation is
+  %% unfamiliar and often complicated. We show that in a programming model in
+  %% which information is preserved (such as the model introduced in our recent
+  %% paper on \emph{Information Effects}), these types have particularly natural
+  %% computational interpretations. Intuitively, values of negative types are
+  %% values that flow ``backwards'' to satisfy demands and values of fractional
+  %% types are values that impose constraints on their context.  The combination
+  %% of these negative and fractional types enables greater flexibility in
+  %% programming by breaking global invariants into local ones that can be
+  %% autonomously satisfied by a subcomputation. Theoretically, these types give
+  %% rise to \emph{two} function spaces and to \emph{two} notions of
+  %% continuations, suggesting that the previously observed duality of
+  %% computation conflated two orthogonal notions: an additive duality that
+  %% corresponds to backtracking and a multiplicative duality that corresponds
+  %% to constraint propagation.
 \end{abstract}
 
 
@@ -183,6 +204,21 @@ closed categories.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
+
+Andrej Filinksi's masters thesis
+\cite{Filinski:1989:DCI:648332.755574} suggested a remarkable symmetry
+underlying computation is one embraces the symmetry hidden in
+continuations. Filinski showed that values are dual to continuations,
+functions are dual to delimited continuations. Filinksi also shows a
+de-morgan style duality, by treating value pairs as the dual of
+continuation sums and value sums as dual to continuation pairs.
+
+
+
+
+
+
+
 
 In a recent paper~\cite{infeffects}, we argued that, because they include
 irreversible physical primitives, conventional abstract models of computation
@@ -799,6 +835,15 @@ combinator {{c}} in the reverse direction, i.e., we use the adjoint
 % \label{prop:category}
 % {{langRev}} is a dagger symmetric monoidal category. 
 % \end{proposition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{First class functions from the permutation space.}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Traces and the Int-Construction.}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Negative and Fractional Types}

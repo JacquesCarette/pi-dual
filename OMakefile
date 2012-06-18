@@ -41,15 +41,15 @@ jsc-slides-dropbox : jsc-slides.subc.pdf
 
 
 # ICFP
-rational.subc.tex : rational.tex
-        ruby subcode/subc.rb rational.tex
+# rational.subc.tex : rational.tex
+#         ruby subcode/subc.rb rational.tex
 
-rational.subc.pdf : rational.subc.tex cites.bib
-	pdflatex -halt-on-error rational.subc.tex
-        bibtex rational.subc
+# rational.subc.pdf : rational.subc.tex cites.bib
+# 	pdflatex -halt-on-error rational.subc.tex
+#         bibtex rational.subc
 
-rational-dropbox : rational.subc.pdf
-	cp rational.subc.pdf ~/Dropbox/Public/papers
+# rational-dropbox : rational.subc.pdf
+# 	cp rational.subc.pdf ~/Dropbox/Public/papers
 
 # additions 
 rational_ext.subc.tex : rational_ext.tex
@@ -64,7 +64,7 @@ rational_ext-dropbox : rational_ext.subc.pdf
 
 
 # Build all 
-all : dual-dropbox rational-dropbox rational_ext-dropbox msr-slides-dropbox jsc-slides-dropbox
+all : dual-dropbox rational_ext-dropbox msr-slides-dropbox jsc-slides-dropbox
 
 # Clean
 clean: 
