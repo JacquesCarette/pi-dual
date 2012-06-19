@@ -37,6 +37,8 @@
 \newcommand{\amr}[1]{\xcomment{Amr}{#1}}
 \newcommand{\roshan}[1]{\xcomment{Roshan}{#1}}
 
+\newcommand{\asterix}[0]{*}
+
 \newcommand{\ie}{\textit{i.e.}\xspace}
 \newcommand{\eg}{\textit{e.g.}\xspace}
 
@@ -99,7 +101,7 @@
 %! Gx = \Gamma^{\times}
 %! G = \Gamma
 %! [] = \Box
-%! |-->* = \mapsto^{*}
+%! |-->* = \mapsto^{\asterix}
 %! |-->> = \mapsto_{\ggg}
 %! |--> = \mapsto
 %! <--| = \mapsfrom
@@ -119,9 +121,11 @@
 %! forall = \forall
 %! exists = \exists
 %! empty = \epsilon
-%! langRev = \Pi
-%! langRevT = \Pi^{o}
-%! langRevEE = \Pi^{\eta\epsilon}
+%! Pi = \Pi
+%! Pi0 = \Pi^{o}
+%! PiEE* = \Pi^{\eta\epsilon}_{*}
+%! PiEE+ = \Pi^{\eta\epsilon}_{+}
+%! PiEE = \Pi^{\eta\epsilon}
 %! theseus = Theseus
 %! sqrt(x) = \sqrt{#x}
 %! surd(p,x) = \sqrt[#p]{#x}
@@ -140,34 +144,38 @@
 
 \title{Computing in the Field of Rationals}
 
-%% \authorinfo{Roshan P. James}
-%%            {Indiana University}
-%%            {rpjames@indiana.edu}
-%% \authorinfo{Amr Sabry}
-%%            {Indiana University}
-%%            {sabry@indiana.edu}
+\authorinfo{Roshan P. James}
+           {Indiana University}
+           {rpjames@indiana.edu}
+\authorinfo{Amr Sabry}
+           {Indiana University}
+           {sabry@indiana.edu}
 
 \maketitle
 
 \begin{abstract}
 
-  Previous work on \emph{information effects} established the notion
-  of information preserving computation
-  \cite{infeffects,rc2011,rc2012} and the core calculus for computing
-  with the isomorphisms of finite types, {{langRev}}. Given the
-  first-order nature of {{langRev}} however it was unclear how one may
-  express first-class functions.  Andrej Filinski's masters thesis
+
+  Andrzej Filinski's masters thesis
   \cite{Filinski:1989:DCI:648332.755574} suggested a remarkable
   symmetry underlying computation in the \lcal. Filinski showed that
   values are dual to continuations and that functions are dual to
-  delimited continuations.
+  delimited continuations, thereby suggesting that
+  values-and-functions and continuations-and-delimited-continuations
+  are mirror images of the same phenomena.
 
+  Previous work on \emph{information effects} established the notion
+  of information preserving computation
+  \cite{infeffects,rc2011,rc2012} and the core calculus for computing
+  with the isomorphisms of finite types, {{Pi}}. Given the
+  first-order nature of {{Pi}} however it was unclear how one may
+  express first-class functions and duality in the sense of Filinski.
 
   We present a computational model whose types are \emph{the field of
     rational numbers}. This computational model is derived
-  systemmatically from the {{langRev}} by considering a symmetric
+  systemmatically from the {{Pi}} by considering a symmetric
   notion of duality. Unlike the \lcal which shows a classical demorgan
-  dulaity, here we have two axis of dualization and hence two
+  duality, here we have two axis of dualization and hence two
   dualities -- an additive duality, namely negative types and a
   multiplicative duality, namely fractional types.
 
@@ -206,17 +214,13 @@ closed categories.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-Andrej Filinksi's masters thesis
+Andrzej Filinksi's masters thesis
 \cite{Filinski:1989:DCI:648332.755574} suggested a remarkable symmetry
-underlying computation is one embraces the symmetry hidden in
-continuations. Filinski showed that values are dual to continuations,
-functions are dual to delimited continuations. Filinksi also shows a
-de-morgan style duality, by treating value pairs as the dual of
-continuation sums and value sums as dual to continuation pairs.
-
-
-
-
+underlying computation in the \lcal. Filinski showed that values are
+dual to continuations, functions are dual to delimited
+continuations. Filinksi also shows a De Morgan style duality, by
+treating value pairs as the dual of continuation sums and value sums
+as dual to continuation pairs.
 
 
 \begin{comment}
@@ -360,19 +364,19 @@ forwards and backwards, in arbitrary ways. The remainder of the paper
 formalizes these informal observations. Specifically our main contributions
 are:
 \begin{itemize}
-\item We extend {{langRev}} our reversible programming language of type
+\item We extend {{Pi}} our reversible programming language of type
   isomorphisms~\cite{rc2011,infeffects} (reviewed in Sec.~\ref{sec:pi}) with a notion
   of negative types, that satisfies the isomorphism {{a + (-a) <-> 0}}. The
   semantics of this extension is expressed by having a \emph{dual} evaluator
   that reverses the flow of execution for negative
   values. (Sec.~\ref{sec:neg})
-\item We independently extend {{langRev}} with a notion of fractional types,
+\item We independently extend {{Pi}} with a notion of fractional types,
   that satisfies the isomorphism {{a * (1/a) <-> 1}}. The semantics of this
   extension is expressed by introducing logic variables and a unification
   mechanism to model and resolve the constraints introduced by the fractional
   types. (Sec.~\ref{sec:frac})
 \item We combine the above two extensions into a language, which we
-  call {{langRevEE}}, whose type system allows any rational number to
+  call {{PiEE}}, whose type system allows any rational number to
   be used as a type. Moreover the types satisfy the same familiar and
   intuitive isomorphisms that are satisfied in the mathematical field
   of rational numbers. (Sec.~\ref{sec:rat})
@@ -397,10 +401,10 @@ once the code is organized for better presentation.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Core Reversible Language: {{langRev}} }
+\section{The Core Reversible Language: {{Pi}} }
 \label{sec:pi}
 
-We review our reversible language {{langRev}}: the presentation in this
+We review our reversible language {{Pi}}: the presentation in this
 section differs from the one in our previous paper~\cite{infeffects} in two
 aspects. First, we add the empty type {{0}} which is necessary to express the
 additive duality. Second, instead of explaining evaluation using a natural
@@ -420,7 +424,7 @@ value of product type. There are no values of type {{0}}:
 % value types, b ::= 0 | 1 | b + b | b * b 
 % values, v ::= () | left v | right v | (v, v)
 
-The combinators of {{langRev}} are witnesses to the following type
+The combinators of {{Pi}} are witnesses to the following type
 isomorphisms: 
 %subcode{bnf} include main
 %! columnStyle = r@{\hspace{-0.5pt}}c@{\hspace{-0.5pt}}l
@@ -458,10 +462,10 @@ equivalence and compatible closure:
 %@ c2 : b2 <-> b4
 %@@ c1 (*) c2 : b1 * b2 <-> b3 * b4
 
-To summarize, the syntax of {{langRev}} is given as follows. 
+To summarize, the syntax of {{Pi}} is given as follows. 
 
-\begin{definition}{(Syntax of {{langRev}})}
-\label{def:langRev}
+\begin{definition}{(Syntax of {{Pi}})}
+\label{def:Pi}
 We collect our types, values, and combinators, to get the full language
 definition.
 %subcode{bnf} include main
@@ -498,7 +502,7 @@ The general idea of the graphical notation is that combinators are modeled by
 ``particles'' or ``waves'' that may appear on the wires. Evaluation therefore
 is modeled by the flow of waves and particles along the wires.
 
-%% In fact, when talking about {{langRev}} circuits, we will often use the
+%% In fact, when talking about {{Pi}} circuits, we will often use the
 %% words {{value}} and {{particle}} interchangeably.
 
 \begin{itemize}
@@ -750,7 +754,49 @@ omit the impossible cases:
 % dist & (right v2, v3) &|-->& right (v2, v3)
 % factor & (left (v1, v3)) &|-->& (left v1, v3) 
 % factor & (right (v2, v3)) &|-->& (right v2, v3)   
+
+%subcode{proof} include main
+%@ ~
+%@@ id v |--> v 
+%
+%@ c{dagger} v1 |--> v2
+%@@ (sym c) v1 |--> v2
+%
+%@ c1  v1 |--> v
+%@ c2  v |--> v2
+%@@ (c1(;)c2)  v1 |--> v2
+%---
+%@ c1  v1 |--> v2
+%@@ (c1 (+) c2)  (left v1) |--> left v2
+%
+%@ c2  v1 |--> v2
+%@@ (c1 (+) c2)  (right v1) |--> right v2
+%---
+%@ c1  v1 |--> v3
+%@ c2  v2 |--> v4
+%@@ (c1 (*) c2)  (v1, v2) |--> (v3, v4)
 \end{scriptsize}
+
+\begin{proposition}[Type Safety]
+  
+\end{proposition}
+
+\begin{proposition}[Strong Normalizing]
+\label{prop:termination-pi} 
+{{Pi}} computation always terminate.  
+
+{{forall. c:b1<->b2, v:b1, exists v':b2.}}  
+{{c v |--> v'}}
+\end{proposition}
+
+\begin{proposition}[Logical Reversibility]
+\label{prop:logrev}
+{{c v |--> v'}} iff 
+{{ c{dagger} v' |--> v}}
+\end{proposition}
+
+\subsection{Small Step Semantics}
+
 The reductions for the primitive isomorphisms above are exactly the same as
 have been presented before~\cite{infeffects}. The reductions for the closure
 combinators are however presented in a small-step operational style using the
@@ -810,19 +856,21 @@ stop state by changing the reductions {{|-->}} to run backwards
 combinator {{c}} in the reverse direction, i.e., we use the adjoint
 {{c{dagger}}}.
 
-\begin{proposition}[Strong Normalizing]
-\label{prop:termination-pi} 
-{{langRev}} computation always terminate.  
+\begin{proposition}[Correspondence]
+  Evalution in the small-step evaulator corresponds to evaluation in
+  the natural semantics.
 
-{{forall. c:b1<->b2, v:b1, exists v':b2.}}  
-{{<c,v,[]> |-->  [c,v',[]]}}
+  {{c v |--> v'}} iff {{<c, v, []> |-->* [c, v', [] ]}}
+
 \end{proposition}
 
-\begin{proposition}[Logical Reversibility]
-\label{prop:logrev}
-{{<c,v,[]> |--> [c,v',[]]}} iff 
-{{<c{dagger},v',[]> |--> [c{dagger},v,[]]}} 
+Consequently the small step semantics is logically reversible and
+strong normalizing. 
+
+\begin{proposition}[Type Safety]
+  
 \end{proposition}
+
 
 % \roshan{We really have to rethink this prop in the presence of
 %   negatives and fractionals. With negatives, the program can actually
@@ -832,116 +880,63 @@ combinator {{c}} in the reverse direction, i.e., we use the adjoint
 
 % \begin{proposition}[Groupoid]
 % \label{prop:groupoid}
-% {{langRev}} is a groupoid. 
+% {{Pi}} is a groupoid. 
 % \end{proposition}
 
 % \begin{proposition}
 % \label{prop:category}
-% {{langRev}} is a dagger symmetric monoidal category. 
+% {{Pi}} is a dagger symmetric monoidal category. 
 % \end{proposition}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \section{First class functions from the permutation space.}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Traces and the Int-Construction.}
 
+For a traced symmetric monoidal catgeory, the Int-construction of
+Joyal, Street and Verity \cite{joyal1996traced} gives us a way of
+constructing a compact closed category. This is the obvious first
+thing to try for a duality in this setting.
+
+%subcode{proof} include main
+%@ c : b1 + b2 <-> b1 + b3
+%@@ trace c : b2 <-> b3  
+
+%% \begin{center}
+%%   \includegraphics{diagrams/thesis/trace_plus.pdf}
+%% \end{center}
+
+Show that the int construction does not preserve the {{*}} tensor. We
+need a duality that preserves both tensors.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Fractional Types}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Negative and Fractional Types}
-\label{sec:neg}
-\label{sec:frac}
-
-This section introduces the syntax and graphical languages for
-negatives and fractionals.  The general outline is as follows:
-\footnote{We refer the reader to Selinger's excellent survey
-  article of monoidal
-  categories~\cite{springerlink:10.1007/978-3-642-12821-94} for the precise
-  definitions.}
-\begin{itemize}
-\item As established in our earlier work~\cite{rc2011,infeffects}, the
-  underlying categorical semantics of our core reversible language
-  {{langRev}} is based on \emph{two} distinct symmetric monoidal structures,
-  one with {{+}} as the monoidal tensor, and one with {{*}} as the monoidal
-  tensor.
-\item We extend each underlying symmetric monoidal structure to a
-  \emph{compact closed} structure by adding a dual for each object and two
-  special morphisms traditionally called {{eta}} and {{eps}}. 
-\end{itemize}
-The extended language is referred to as {{langRevEE}}.  After
-presenting the extension at the syntactic level, we discuss the
-categorical semantics informally via the graphical language. The
-operational semantics is presented in Sec.~\ref{sec:rat}.
-
-As will be detailed in the remainder of this section, the compact closed
-structure provides several properties of interest: (i) morphisms or wires are
-allowed to run from right to left, (ii) the structure admits a trace that,
-depending on the situation, can be used to implement various notions of loops
-and
-recursion~\cite{joyal1996traced,Hasegawa:2009:TMC:1552068.1552069,Hasegawa:1997:RCS:645893.671607},
-(iii) the structure includes an isomorphism showing that the dual operator is
-an involution, and (iv) the structure is equipped with objects representing
-higher-order functions and a morphism \textit{eval} that applies these
-functional objects. Interestingly each monoidal structure provides the same
-ingredients, resulting in two dualities, two traces, two involutions, and two
-notions of higher-order functions.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Syntax and Types} 
-
-Describing the syntax and types of an extension to {{langRev}} with additive
-and multiplicative duality is fairly straightforward. Basically, for the
-additive case, we extend the language with negative types denoted {{-b}},
-negative values denoted {{-v}}, and two isomorphisms {{eta+}} and
-{{eps+}}. Similarly, for the multiplicative case, we extend the language with
-fractional types denoted {{1/b}}, fractional values denoted {{1/v}}, and two
-isomorphisms {{eta*}} and {{eps*}}. 
+\section{Fractional Types : {{PiEE*}} }
 
 %subcode{bnf} include main
-% Value Types, b = ... | -b | 1/b
-% Values, v = ... | -v | 1/v
+% Value Types, b = 0 | 1 | b + b | b * b  | 1/b
+% Values, v = () | left v | right v | (v, v) | 1/v
 %
-% Isomorphisms, iso &=& ... | eta+ | eps+ | eta* | eps*
+% Isomorphisms, iso &=& ... | eta* | eps*
 
+\noindent
+No division by zero. 
 
-For convenience, we sometimes use the notations {{b1 - b2}} and
-{{b1/b2}} to indicate the types {{b1 + (-b2)}} and {{b1 * (1/b2)}}
-respectively.  The types of the new constructs are:
-\vspace{-15pt}
 \begin{multicols}{2}  
 %subcode{opsem} include main
-% eta+ &: 0 <-> (-b) + b :& eps+
 % eta* &: 1 <-> (1/b) * b :& eps*
 
 %subcode{proof} include main
 %@ |- v : b
-%@@ |- -v : -b
-%
-%@ |- v : b
 %@@ |- 1/v : 1/b
 \end{multicols}
 
-For the graphical language, we visually represent {{eta+}}, {{eps+}},
-{{eta*}}, and {{eps*}} as U-shaped connectors. On the left below are {{eta+}}
-and {{eta*}} showing the maps from {{0}} to {{-b+b}} and {{1}} to {{1/b * b}}. 
-On the right are {{eps+}} and {{eps*}} showing the maps from {{-b+b}} to~0 and 
-{{1/b * b}} to~1. Even though the diagrams below show the {{0}} and {{1}} 
-wires for completeness, later diagrams will always drop them in contexts 
-where they can be implicitly introduced and eliminated. 
-\begin{multicols}{2}
-\begin{center}
-  \includegraphics{diagrams/eta.pdf}
-\end{center}
-  
-\begin{center}
- \includegraphics{diagrams/eps.pdf}
-\end{center}
-\end{multicols}
+For the graphical language, we visually represent {{eta*}}, and
+{{eps*}} as U-shaped connectors. On the left below is {{eta*}} showing
+the map and {{1}} to {{1/b * b}}.  On the right is {{eps*}} showing
+the map from {{1/b * b}} to~1. Even though the diagrams below show the
+{{1}} wires for completeness, later diagrams will always drop them in
+contexts where they can be implicitly introduced and eliminated.
 \begin{multicols}{2}
 \begin{center}
   \includegraphics{diagrams/eta_times.pdf}
@@ -952,43 +947,15 @@ where they can be implicitly introduced and eliminated.
 \end{center}
 \end{multicols}
 
-The usual interpretation of the type {{b1+b2}} is that we either have an
-appropriately tagged value of type {{b1}} or an appropriately tagged value of
-type {{b2}}. This interpretation is maintained in the presence of {{eta+}}
-and {{eps+}} in the following sense: a value of type {{right v : -b + b}}
-flowing into an {{eps+}} on the lower wire switches to a value 
-{{left (-v): -b + b}} that flows backwards on the upper wire. The inversion of
-direction is captured by the negative sign on the value. 
+The usual interpretation of {{b1*b2}} we have both a value of type
+{{b1}} and a value of type {{b2}}. This interpretation is maintained
+in the presence of fractionals. Hence an {{eta* : 1 <-> (1/b) * b}} is
+to be viewed as a fission point for a value of type {{b}} and its
+multiplicative inverse {{1/b}}. Operationally, this corresponds to the
+creation of two values {{alpha}} and {{1/alpha}} where {{alpha}} is a
+fresh logic variable. The operator {{eps*}} then becomes a unification
+site for these logic variables:
 
-\begin{multicols}{2}
-\begin{center}
-\scalebox{1.5}{
-  \includegraphics{diagrams/eps_plus1.pdf}
-}
-\end{center}
-  
-\begin{center}
-\scalebox{1.5}{
-  \includegraphics{diagrams/eps_plus2.pdf}
-}
-\end{center}  
-\end{multicols}
-As an example, the diagram representing the first isomorphism in the
-introduction is:
-\begin{center}
-\scalebox{1.2}{
-  \includegraphics{diagrams/algebra1.pdf}
-}
-\end{center}
-
-Similarly, in the usual interpretation of {{b1*b2}} we have both a value of
-type {{b1}} and a value of type {{b2}}. This interpretation is maintained in
-the presence of fractionals. Hence an {{eta* : 1 <-> (1/b) * b}} is to be
-viewed as a fission point for a value of type {{b}} and its multiplicative
-inverse {{1/b}}. Operationally, this corresponds to the creation of two
-values {{alpha}} and {{1/alpha}} where {{alpha}} is a fresh logic
-variable. The operator {{eps*}} then becomes a unification site for these
-logic variables:
 \begin{multicols}{2}
 \begin{center}
 \scalebox{1.5}{
@@ -1003,121 +970,27 @@ logic variables:
 \end{center}  
 \end{multicols}
 
-It is useful to contrast the categorical structure of {{langRevEE}},
-which has two distinct \emph{compact closed} structures, to the
-well-known and closed related \emph{*-autonomous} categories that form
-a model for linear logic. The distnguishing feature that seperates
-*-autonomous structures from compact closed structures is that the
-dualizing action in *-autonomous categories does not preserve the
-tensor. In {{langRev}}, as we will see , we can construct the
-isomorphism {{-(b1+b2)<-> (-b1)+(-b2)}}, i.e. the tensor {{+}} has
-been preserved by the negation.  Whereas in linear logic we have that
-$(a\oplus b)^\bot$ is $a^\bot \parr b^\bot$, i.e. the connective
-$\oplus$ is not preserved. 
+Negative Information and Measurements. 
 
-In linear logic terms `additive pairs' and `multiplicative sums' are
-used to indicate this notion that some connectives has both additive
-and multiplicative properties. The usual intuitive interpretations for
-these involve suggestions like one has a dollar to spend and the both
-cigarettes and soda are available for purchase, but the fact that you
-have only a dollar to spend affords you only one of these. The
-intuitions talk about a sort of dependacy underlying the fact that
-both cigarettes and soda are available but you can have only one. 
+Compact Closed Structure (modulo 0). 
 
-In {{langRevEE}}, operators {{eta}} and {{eps}} capture a similar
-notion.The pair of values {{v}} and {{1/v}} created by {{eta*}} are
-not fully independant in the way one would think of normal pairs. The
-value of one, affects the value of the other. Similarly, the {{v}} and
-{{-v}} created by {{eta+}} do really present a strict choice of
-{{left}} or {{right}} in the sense that usual sums do, but instead can
-have a \emph{both} {{left}} and {{right}} values at different points
-during the computation. However, in our opinion, the philisophical
-difference the additiveness of the additive pairs and the
-multiplicativesness of the multiplicative pair aren't a property of
-the connective between the values, but a property intrinsic to the
-values themselves. Hence {{v}} and {{1/v}} share secretely a
-relationship that their combinting {{*}} constructor does not and need
-not know about. 
+Show that ``no division by zero'' is supported by the semantics. 
 
-\roshan{We need to prove this. I am not sure how to start.}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Semantics}
+
+Provide a semantics with the nondeterminism monad and define an
+\emph{eval}.
+
+\begin{proposition}[Type Safety]
+  
+\end{proposition}
+
 \begin{proposition}[Strong Normalizing]
-\label{prop:termination-piee-plus} 
-Computations in {{langRev}} extended with {{eta+}} and {{eps+}} are
-always terminating.
+  
 \end{proposition}
 
-
-\roshan{This is straightforward.}
-\begin{proposition}[Strong Normalizing]
-\label{prop:termination-piee-times} 
-Computations in {{langRev}} extended with {{eta*}} and {{eps*}} are
-always terminating.
-\end{proposition}
-
-
-\begin{proposition}[Weak Normalizing]
-\label{prop:termination-piee} 
-Computations in full {{langRevEE}} are weak normalizing.
-\end{proposition}
-
-\begin{center}
-  \includegraphics{diagrams/inf1.pdf}
-\end{center}
-
-\subsection{Logical Reversibility}
-
-\begin{proposition}[Logical Reversibility]
-{{langRev}} with {{eta+}} and {{eps+}} is logically reversible.
-\end{proposition}
-\roshan{Proof follows from compilation to {{langRevT}} }
-
-\begin{proposition}[Logical Reversibility]
-{{langRev}} with {{eta*}} and {{eps*}} is logically reversible.
-\end{proposition}
-
-This is an awkward one. I dont thnk that the above statement is
-right.. At least not in the usualy sense. We can construct the
-following combinators.
-
-{{c1 : bool <-> bool}}
-
-{{c1 true |--> {[true, false ]} }}
-
-{{c1 false |--> {[true, false ]} }}
-
-{{c1{dagger} true |--> {[true, false ]} }}
-
-{{c1{dagger} false |--> {[true, false ]} }}
-
-\noindent
-And
-
-{{c2 : bool <-> bool}}
-
-{{c2 true |--> {[true, false ]} }}
-
-{{c2 false |--> undefined }}
-
-{{c2{dagger} true |--> true }}
-
-{{c2{dagger} false |--> true }}
-
-Probably the right way to approach this is to see what they do in
-physics. If fractionals do correspond to measurement and the
-categorical structures of Coecke and Abramsky, then the ideas of
-reversibility in that setting should also apply here.
-
-I don't think this issue will go away by any sort of choice of
-top-level. I tried to design a top-level that can fix this -- I dont
-think it is possible.
-
-%%%%%%%%%%%%%%%%%%%%
-\subsection{Categorical Constructions}
-
-All the constructions below are standard: they are collected from Selinger's
-survey paper on monoidal
-categories~\cite{springerlink:10.1007/978-3-642-12821-94} and presented in
-the context of our language. 
+Note that this language is not logically reversible. 
 
 For a monoidal category to be compact closed the maps~{{eta}}
 and~{{eps}} must satisfy a coherence condition that is usually
@@ -1131,6 +1004,19 @@ no-op. In the case of fractionals, the condition amounts to checking
 that creating values {{alpha}} and {{1/alpha}} and immediately
 unifying them is also a no-op. Both checks are straightforward and are
 essentially the constructions in the introduction.
+
+\begin{proposition}[Coherence]
+  
+\end{proposition}
+
+
+%%%%%%%%%%%%%%%%%%%%
+\subsection{Categorical Constructions}
+
+All the constructions below are standard: they are collected from Selinger's
+survey paper on monoidal
+categories~\cite{springerlink:10.1007/978-3-642-12821-94} and presented in
+the context of our language. 
 
 We now review several interesting constructions related to looping,
 involution, and higher order functions. 
@@ -1186,7 +1072,7 @@ case is identical and omitted.
 
 \paragraph*{Duality preserves the monoidal tensor. }
 As with compact closed categories, the dual on the objects distributes
-over the tensor. In terms of {{langRevEE}} we have that {{-(b1+b2)}}
+over the tensor. In terms of {{PiEE}} we have that {{-(b1+b2)}}
 can be mapped to {{(-b1)+(-b2)}} and that {{1/(b1*b2)}} can be mapped
 to {{(1/b1)*(1/b2)}}. The isomorphism {{-(b1 + b2) <-> (-b1) + (-b2)}}
 can be realized as follows:
@@ -1202,7 +1088,7 @@ The multiplicative construction is similar.
 %% tensor but maps to a dual tensor \cite{curien2009interactive}.
 
 \paragraph*{Duality is a functor.}
-Duality in {{langRevEE}} can map objects to their duals and morphisms
+Duality in {{PiEE}} can map objects to their duals and morphisms
 to act on dual objects. In other {{c : b1 <-> b2}} to
 {{neg~c:-b1<->-b2}} in the additive monoid and to
 {{inv~c:1/b1<->1/b2}} in the multiplicative monoid. 
@@ -1220,813 +1106,15 @@ adjoint of the operation:
 %@@ neg c : (-b1) <-> (-b2)
 \end{multicols}
 
-This construction relies on the fact that every {{langRevEE}} morphism
+This construction relies on the fact that every {{PiEE}} morphism
 has an adjoint.  The {{inv}} construction is similar.
 
 %% inverse morphism, whereas in compact closed categories with no
 %% underlying dagger structure we can only construct an op-functor.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Functions and Delimited Continuations}
-\label{sub:hof}
-
-Although these constructions are also standard, they are less known and they
-are particularly important in our context: we devote a little more time to
-explain them. Our discussion is mostly based on Abramsky and Coecke's article
-on categorical quantum mechanics~\cite{abramsky-2008}.
-
-In a compact closed category, each morphism {{f : b1 <-> b2 }} can be given a
-\emph{name} and a \emph{coname}. For the additive fragment, the name
-$\fname{f}$ has type {{0 <-> (-b1 + b2)}} and the coname $\fconame{f}$ has type
-{{b1 + (-b2) <-> 0}}. For the multiplicative fragment, the name $\fname{f}$ has
-type {{1 <-> ((1/b1) * b2))}} and the coname $\fconame{f}$ has type 
-{{(b1 * (1/b2)) <-> 1}}. Intuitively, this means that for each morphism, 
-it is possible to construct, from ``nothing,'' an object in the category that 
-denotes this morphism, and dually it is possible to eliminate this object.
-The construction of the name and coname of {{c : b1 <-> b2}} in the additive case 
-can be visualized as follows:
-
-\begin{multicols}{2}
-\begin{center}
-  \includegraphics{diagrams/function.pdf}
-\end{center}
-
-\begin{center}
-  \includegraphics{diagrams/delimc.pdf}
-\end{center}  
-\end{multicols}
-
-Intuitively the name consists of viewing {{c}} as a function and the coname
-consists of viewing {{c}} as a delimited continuation.
-
-In addition to being able to represent morphisms, it is possible to express
-function composition. For the additive case, the composition is depicted
-below:
-
-\begin{multicols}{2}
-\scalebox{1.1}{
-    \includegraphics{diagrams/compose1.pdf}
-}
-
-\scalebox{0.8}{
-    \includegraphics{diagrams/compose.pdf}
-}
-\end{multicols}
-which is essentially equivalent to sequencing both the computation blocks as
-shown below:
-
-\begin{center}
-  \includegraphics{diagrams/compose2.pdf}
-\end{center}
-
-Applying a function to an argument consists of making the argument flow
-backwards to satisfy the demand of the function:
-\begin{multicols}{2}
-\begin{center}
-\scalebox{1.0}{
-  \includegraphics{diagrams/apply1.pdf}
-}
-\end{center}
-\begin{center}
-\scalebox{0.8}{
-  \includegraphics{diagrams/apply2.pdf}
-}
-\end{center}
-\end{multicols}
-
-Having reviewed the representation of functions, we now discuss the
-similarities and differences between the two notions of functions and their
-relation to conventional (linear) functions which mix additive and
-multiplicative components. For that purpose, we use a small example.
-Consider a datatype {{color = R|Gr|B}}, and let us consider the following
-manipulations:
-\begin{itemize}
-\item Using the fact that {{1}} is the multiplicative unit, generate
-  from the input {{()}} the value {{((),())}} of type {{1 * 1}};
-\item Apply the isomorphism {{1 <-> (1/b) * b}} in parallel to each of
-  the components of the above tuple. The resulting value is
-  {{((1/alpha1,alpha1),(1/alpha2,alpha2))}} where {{alpha1}} and
-  {{alpha2}} are fresh logic variables;
-\item Using the fact that {{*}} is associative and commutative, we can
-  rearrange the above tuple to produce the value:
-
-{{((1/alpha1,alpha2),(1/alpha2,alpha1))}}.
-
-\end{itemize}
-
-At this point we have constructed a strange mix of two {{b-o*b}} functions;
-inputs of one function manifest themselves as outputs of the other. If
-{{(1/alpha1,alpha2)}} is held by one subcomputation and {{(1/alpha2,alpha1)}}
-is held by another subcomputation, these remixed functions form a
-communication channel between the two concurrent subcomputations. Unifying
-{{1/alpha1}} with {{color}} {{R}} in one subcomputation, fixes {{alpha1}} to
-be {{R}} in the other. The type {{b}} thus takes the role of the type of the
-communication channel, indicating how much information can be communicated
-between the two subcomputations.  Depending on the choice of the type {{b}},
-an arbitrary number of bits may be communicated.
-
-Dually, the additive reading of the above manipulations correspond to
-functions of the form {{b-o+b}}, witnessing isomorphisms of the form
-{{0<->(-b)+b}}). The remixed additive functions express control flow transfer
-between two subcomputations, \emph{only one of which exists} at any point,
-i.e., they capture the essence of coroutines. 
-
-It should be evident that in a universe in which information is not
-guaranteed to be preserved by the computational infrastructure, the above
-slicing and dicing of functions would make no sense. But linearity is not
-sufficient: one must also recognize that the additive and multiplicative
-spaces are different. 
-
-%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Additional Constructions}
-\label{sec:specific-constructions}
-
-The additional constructions below (presented with minimal commentary)
-confirm that conventional algebraic manipulations in the mathematical field
-of rationals do indeed correspond to realizable type isomorphisms in our
-setting. The constructions involving both negative and fractional types are
-novel.
-
-\paragraph*{Lifting negation out of {{*}}.}
-The isomorphisms below state that the direction is \emph{relative}. If {{b1}}
-and {{b2}} are flowing opposite to each other then it doesn't matter which
-direction is forwards and which is backwards. More interestingly as {{b1}} is
-moving backwards, it can ``see the past'' of {{b2}} which is equivalent to
-both particles moving backwards.
-
-{{(-b1) * b2 <-> -(b1 * b2) <-> b1 * (-b2)}}
-
-To build these isomorphisms, we first build an intermediate
-construction which we call {{eps_{fst} : (-b1)*b2 + b1*b2 <-> 0}}. 
-\begin{center}
-\scalebox{0.8}{
-  \includegraphics{diagrams/eps_fst.pdf}
-}
-\end{center}
-
-The isomorphism {{(-b1) * b2 <-> -(b1 * b2)}} can be constructed in
-terms of {{eps_{fst} }} as shown below. 
-
-\begin{center}
-\scalebox{0.9}{
-  \includegraphics{diagrams/mult_neg.pdf}
-}
-\end{center}  
-
-The second isomorphism can be built in the same way by merely swapping
-the arguments. 
-
-\paragraph*{Multiplying Negatives.}
-
-{{b1 * b2 <-> (-b1)*(-b2)}}
-
-This isomorphism is a consequence of the fact that $-$ is an involution: it
-corresponds to the algebraic manipulation:
-
-%% %subcode{opsem} include main
-%% %! columnStyle = rc
-%% %   & b1 * b2
-%% % = & -(-(b1*b2)) 
-%% % = & -((-b1)*b2)
-%% % = & (-b1)*(-b2)
-
-{{b1 * b2 = -(-(b1*b2)) = -((-b1)*b2) = (-b1)*(-b2)}}
-
-\paragraph*{Multiplying and Adding Fractions.}
-An isomorphism witnessing:
-
-{{b1/b2 * b3/b4 <-> (b1*b3)/(b2*b4)}}
-
-is straightforward. More surprisingly, it is also possible to construct
-isomorphisms witnessing:
-
-{{b1/b + b2/b <-> (b1+b2)/b}}
-
-{{b1/b2 + b3/b4 <-> (b1*b4+b3*b2)/(b2*b4) }}
-
-% \paragraph*{Unification.}
-% A computational interpretation of this is that {{langRevEE}} acts like
-% a logic programming system and {{eta*}} acts as the site of creation
-% of a new typed logic variable of type {{b}} and its corresponding dual
-% of type {{1/b}}. These two values are free to move independently
-% through a circuit, but any operations on value affect what operations
-% are possible on the other since they are both related by an underlying
-% logic variable. Dually, {{eps*}} acts as a unification site for values
-% flowing along both branches. If the values are not exactly duals, then
-% the system fails to unify and hence the program is stuck. If the
-% values are exactly duals, then unification succeeds and {{eta*}}
-% returns {{1}}.
-
-% \paragraph*{Entanglement and Anti-Particles.}
-% A dual view of the operation of {{eta*}} and {{eps*}} is inspired by
-% quantum mechanics. The {{eta*}} is a site of fission that creates an
-% information particle and its anti-particle. Both flow in the same
-% direction in time. The produce particles are entangles in that actions
-% on one (such as transformation by application of an isomorphism)
-% affects the other. Further the fission site does not create a particle
-% in any specific state, but in a superposition of all possible states
-% as dictated by its type. In each possible world that the particle
-% exists, it takes on a specific value inhibiting its type and
-% correspondingly its entangled anti-particle takes the dual of the
-% specific value.
-
-% This also leads to the exciting point of view that entangled
-% particle/anti-particle pairs act as functions in a physical
-% first-class sense. We can ask the function to be applied to a value by
-% unifying the anti-particle with a particle in a well-known state and
-% examining is pair. We shall use this point of view in the development
-% our SAT solver (see Sec. \ref{sec:sat-solver}).
-
-% \paragraph*{Entanglement and Anti-Particles.}
-% \paragraph*{Annihilation.}
-% As with {{(+, 0)}} we can construct a {{trace*}} operation. Unlike the
-% additive {{trace+}}, {{trace*}} gives us the ability to find the
-% fixpoint of the constraint (expressed with combinators) that is
-% traced. If the constraint has not satisfying values, there is not
-% fixpoint possible -- we use the term `annihilation' to describe the
-% corresponding undefined state of the program. Annihilation and a
-% non-termination both describe undefined program execution -- while
-% non-termination characterizes an iteration that fails to terminate,
-% annihilation characterizes a constraint that has no fixpoint. 
-%% An analogy inspired by quantum mechanics is also applicable here.  The
-%% operator {{eta*}} is a site of fission that creates \emph{an entangled
-%%   particle and anti-particle}. These particles can be thought to be in
-%% a \emph{superposition} of states determined by their type. Both flow
-%% in the same direction in time.  In each possible world that the
-%% particle exists, it takes on a specific value inhibiting its type and
-%% correspondingly its entangled anti-particle takes the dual of the
-%% specific value. Since the particles are entangled, actions on one
-%% (such as transformation by application of an isomorphism) affects the
-%% other in much the same sense as \emph{action at a distance}. The
-%% `{{a-o*b}}' functions mentioned in the introduction, are first-class
-%% values and they correspond to these entagled pairs. Finally {{eps*}}
-%% operations are sites where corresponding particle and anti-particles
-%% annihilate each other. While appealing as an analogy, this description
-%% does not imply (or preclude) any formal connection with Physics.
-% \paragraph*{Zero Information.}
-% As with {{eta+}}, we argue that {{eta*}} constructs no new
-% information, instead it gives us the ability to explore as many worlds
-% as permitted by the type {{b}}. So situate ourselves in any specific
-% world, we have to supply additional information in the form of
-% unifying the particle or anti-particle with a particle representing
-% known information. Hence only by supplying information to a an
-% entangled pair can we read information from it -- and always exactly
-% as much information as we supplied.
-
-%% We can ask the function to be applied to a value by
-%% unifying the anti-particle with a particle in a well-known state and
-%% examining is pair. We shall use this point of view in the development
-%% our SAT solver (see Sec. \ref{sec:sat-solver}).
-
-%%  This also leads to the exciting point of view that
-%% entangled such particle/anti-particle pairs, which are first class
-%% values, act as functions in a physical first-class sense.
-
-%% Further the fission site does not create a particle in any specific
-%% state, but in a superposition of all possible states as dictated by
-%% its type.
-
-% Since such pairs are first-class entities, they correspond to 
-
-%% \emph{Coherence for Compact Closure with Multiplicative Duality.}  As
-%% before, the triangle axiom which is the coherence condition on compact
-%% closed categories is applicable and is expressed below in terms of
-%% {{eta*}}/{{eps*}} and the multiplicative monoid.
-
-%% %% The section follows the outline of the previous one, first presenting
-%% %% the new syntax, and discussing the graphical language and the
-%% %% properites implied by the underlying categorical structure.
-%% The usual interpretation of {{b1*b2}} we have both a value of type
-%% {{b1}} and a value of type {{b2}}. This interpretation is maintained
-%% in the presence of fractionals. Hence an {{eta* : 1 <-> (1/b) * b}} is
-%% to be viewed as a fission point for a value of type {{b}} and its
-%% multiplicative inverse {{1/b}}. This naturally raises the question --
-%% which value of type {{b}} is produced? The isomorphism {{eta*}} does
-%% not produce any specific value of type {{b}}, instead it produces a
-%% placeholder for an unspecified value and dually, {{1/b}} is inhabited
-%% by the placeholder that indicates the absence of the unspecified
-%% value.
-
-
-%% \begin{enumerate}
-%% \item 
-%% \emph{Trace}
-%% % \item
-%% % Multiplicative functions, of the form {{b1 -o* b2}}, on the other hand
-%% % are indeed first-class values. However these functions can only be
-%% % linearly used, i.e., they represent a constraint that can be satisfied
-%% % at most once.
-%% % %%  in one `computational world'. It may be possible that to
-%% % %% repeatedly invoke multiplicative functions with an appropriate
-%% % %% recursive type whose unfoldings allow for repeated unification.
-%% % \end{itemize}
-
-% The exact encoding on HOF in {{langRevEE}} should shed light on
-% several problems, including the connections to continuations discussed
-% in Sec. \ref{sec:related}. They should also allow for a natural
-% encoding of HOFs in the translations of \lcal to {{langRevT}} and
-% indicate a monadic encapsulation of of information effects which are
-% currrently structured as an arrow.
-
-%% If one branch uses a clause that matches one part of the input to
-%% produce one part of the output, all other clauses are automatically
-%% adjusted to account for this to ensure that this input is not matched
-%% again and that this output is not produced again.
-
-
-%% \item At this point, we have produced the skeleton for our desired function.
-%%   Assume now that a client uses the first clause of the function in a context
-%%   that contains the value \verb|R|, i.e., the client has the value
-%%   {{((1/alpha1,alpha2),R)}} consiting of one of the clauses of the function
-%%   and an argument. This value can be rearranged to {{((1/alpha1,R),alpha2)}}.
-%%   At this point, we can use the isomorphism {{1 <-> (1/a) * a}} in reverse on
-%%   the first component of the pair which has the following effects:
-%%   \begin{itemize}
-%%     \item the logic variable {{alpha1}} is unified with {{R}};
-%%     \item the first component of the pair then reduces to () and can be
-%%       absorbed by the fact that {{1}} is the multiplicative unit. In other
-%%       words, the value reduces to simply {{alpha2}} reflecting that the
-%%       pattern-matching was successful and the result of the clause is now
-%%       available;
-%%     \item the first clause of the function has now disappeared and the
-%%       remaining two clauses become {{((1/alpha2,alpha3),(1/alpha3,R))}}.
-%%   \item The same client or another client can now use the second clause
-%%     applying it to {{Gr}} which would produce the result {{alpha3}} for the
-%%     second client and ground the result of the first client to {{Gr}}.
-%%   \item Finally the remaining clause {{(1/alpha3,R)}} can be applied to {{B}}
-%%     which grounds the result of the second client to {{B}}.
-%%   \end{itemize}
-
-%% Furthermore, just like the case for negative types, a dual reading of
-%% the pattern-matching clauses as continuations allows the context to
-%% use the result of the clause and provide the matching argument later.
-
-%% \begin{itemize}
-%% \item Using the fact that {{1}} is the multiplicative unit, generate from the
-%%   input {{()}} the value {{((),((),()))}} of type {{1 * (1 * 1)}};
-%% \item Apply the isomorphism {{1 <-> (1/a) * a}} in parallel to each of the
-%%   components of the above tuple. The resulting value is 
-%% {{((1/alpha1,alpha1),((1/alpha2,alpha2),(1/alpha3,alpha3)))}} where {{alpha1}},
-%% {{alpha2}}, and {{alpha3}} are fresh logic variables.
-%% \item Using the fact that {{*}} is associative and commutative, we can
-%%   rearrange the above tuple to produce the value:
-
-%% {{((1/alpha1,alpha2),((1/alpha2,alpha3),(1/alpha3,alpha1)))}}.
-
-%% \item At this point, we have produced the skeleton for our desired function.
-%%   Assume now that a client uses the first clause of the function in a context
-%%   that contains the value \verb|R|, i.e., the client has the value
-%%   {{((1/alpha1,alpha2),R)}} consiting of one of the clauses of the function
-%%   and an argument. This value can be rearranged to {{((1/alpha1,R),alpha2)}}.
-%%   At this point, we can use the isomorphism {{1 <-> (1/a) * a}} in reverse on
-%%   the first component of the pair which has the following effects:
-%%   \begin{itemize}
-%%     \item the logic variable {{alpha1}} is unified with {{R}};
-%%     \item the first component of the pair then reduces to () and can be
-%%       absorbed by the fact that {{1}} is the multiplicative unit. In other
-%%       words, the value reduces to simply {{alpha2}} reflecting that the
-%%       pattern-matching was successful and the result of the clause is now
-%%       available;
-%%     \item the first clause of the function has now disappeared and the
-%%       remaining two clauses become {{((1/alpha2,alpha3),(1/alpha3,R))}}.
-%%   \item The same client or another client can now use the second clause
-%%     applying it to {{Gr}} which would produce the result {{alpha3}} for the
-%%     second client and ground the result of the first client to {{Gr}}.
-%%   \item Finally the remaining clause {{(1/alpha3,R)}} can be applied to {{B}}
-%%     which grounds the result of the second client to {{B}}.
-%%   \end{itemize}
-% \paragraph*{Unification.}
-% A computational interpretation of this is that {{langRevEE}} acts like
-% a logic programming system and {{eta*}} acts as the site of creation
-% of a new typed logic variable of type {{b}} and its corresponding dual
-% of type {{1/b}}. These two values are free to move independently
-% through a circuit, but any operations on value affect what operations
-% are possible on the other since they are both related by an underlying
-% logic variable. Dually, {{eps*}} acts as a unification site for values
-% flowing along both branches. If the values are not exactly duals, then
-% the system fails to unify and hence the program is stuck. If the
-% values are exactly duals, then unification succeeds and {{eta*}}
-% returns {{1}}.
-% \begin{itemize}
-% \item 
-% Additive functions are not really values, but are possible paths of
-% execution. However, they can be encoded as values as follows: Consider
-% two functions {{f:b1 -o+ b2}} and {{g:b1-o+b2}}. A value of type
-% {{bool}} can discriminate them and hence a value of type {{bool}} acts
-% as the address of the function and is a first class value
-% representing one of the {{b1 -o+ b2}} functions.  %% This is similar to
-% %% how first classes functions a'la \lcal are represented by their
-% %% addresses when compiled to conventional hardware.
-
-% \paragraph*{Entanglement and Anti-Particles.}
-% A dual view of the operation of {{eta*}} and {{eps*}} is inspired by
-% quantum mechanics. The {{eta*}} is a site of fission that creates an
-% information particle and its anti-particle. Both flow in the same
-% direction in time. The produce particles are entangles in that actions
-% on one (such as transformation by application of an isomorphism)
-% affects the other. Further the fission site does not create a particle
-% in any specific state, but in a superposition of all possible states
-% as dictated by its type. In each possible world that the particle
-% exists, it takes on a specific value inhibiting its type and
-% correspondingly its entangled anti-particle takes the dual of the
-% specific value.
-% \item
-% Multiplicative functions, of the form {{b1 -o* b2}}, on the other hand
-% are indeed first-class values. However these functions can only be
-% linearly used, i.e., they represent a constraint that can be satisfied
-% at most once.
-% %%  in one `computational world'. It may be possible that to
-% %% repeatedly invoke multiplicative functions with an appropriate
-% %% recursive type whose unfoldings allow for repeated unification.
-% \end{itemize}
-
-% This also leads to the exciting point of view that entangled
-% particle/anti-particle pairs act as functions in a physical
-% first-class sense. We can ask the function to be applied to a value by
-% unifying the anti-particle with a particle in a well-known state and
-% examining is pair. We shall use this point of view in the development
-% our SAT solver (see Sec. \ref{sec:sat-solver}).
-% The exact encoding on HOF in {{langRevEE}} should shed light on
-% several problems, including the connections to continuations discussed
-% in Sec. \ref{sec:related}. They should also allow for a natural
-% encoding of HOFs in the translations of \lcal to {{langRevT}} and
-% indicate a monadic encapsulation of of information effects which are
-% currrently structured as an arrow.
-
-% \paragraph*{Annihilation.}
-% As with {{(+, 0)}} we can construct a {{trace*}} operation. Unlike the
-% additive {{trace+}}, {{trace*}} gives us the ability to find the
-% fixpoint of the constraint (expressed with combinators) that is
-% traced. If the constraint has not satisfying values, there is not
-% fixpoint possible -- we use the term `annihilation' to describe the
-% corresponding undefined state of the program. Annihilation and a
-% non-termination both describe undefined program execution -- while
-% non-termination characterizes an iteration that fails to terminate,
-% annihilation characterizes a constraint that has no fixpoint. 
-
-% \paragraph*{Zero Information.}
-% As with {{eta+}}, we argue that {{eta*}} constructs no new
-% information, instead it gives us the ability to explore as many worlds
-% as permitted by the type {{b}}. So situate ourselves in any specific
-% world, we have to supply additional information in the form of
-% unifying the particle or anti-particle with a particle representing
-% known information. Hence only by supplying information to a an
-% entangled pair can we read information from it -- and always exactly
-% as much information as we supplied.
-
-% ADD MATH. 
-
-% %%%%%%%%%%%%%%%%%%%%%%%%
-% \subsection{Conventional Higher-Order Functions}
-% \label{sec:hof}
-
-% In a conventional language, higher-order functions capture scope and can be
-% represented as first-class values. In {{langRevEE}}, we have two notions of
-% functions both of which share similarities with conventional higher-order
-% functions.
-
-% \begin{itemize}
-% \item 
-% Additive functions are not really values, but are possible paths of
-% execution. However, they can be encoded as values as follows: Consider
-% two functions {{f:b1 -o+ b2}} and {{g:b1-o+b2}}. A value of type
-% {{bool}} can discriminate them and hence a value of type {{bool}} acts
-% as the address of the function and is a first class value
-% representing one of the {{b1 -o+ b2}} functions.  %% This is similar to
-% %% how first classes functions a'la \lcal are represented by their
-% %% addresses when compiled to conventional hardware.
-
-%% \emph{Non-termination.}  Compact closed categories contain {{trace}}
-%% operations and this implies that {{eta+}}/{{eps+}} allow the
-%% construction of a {{trace+}} operator (shown in Section
-%% \ref{sec:monoidal-constructions}).  As shown in previous work
-%% \cite{infeffects}, non-terminating computation can be constructed from
-%%      {{trace+}} and recursive types.
-% \begin{multicols}{2}
-% \begin{center}
-%   \includegraphics{diagrams/trace.pdf}
-% \end{center}
-% %subcode{proof} include main
-% %@ c : b2 + b1 <-> b2 + b3
-% %@@ trace c : b1 <-> b3
-% \end{multicols}
-
-% \paragraph*{Zero Information.}
-% The fact that {{eta+}} (and hence {{eps+}}) introduces no information
-% can be understood is by viewing {{-b+b}} as a type whose value is
-% observable only if you `pay' {{b}} amount of information to the {{-b}}
-% branch. When {{b}} amount of information is supplied {{(-b+b)+b=b}}
-% amount of information is returned to you. (TODO. more needs to be said
-% here.)
-
-% For this reason, our treatment of negative values in the context of
-% {{langRev}} is particularly simple. We will have a type $0$ and an
-% isomorphism {{0 <-> a + (-a)}} that when used in the left-to-right direction
-% allows us to create a value and a corresponding debt out of nothing. Both the
-% value and its negative counterpart can flow anywhere in the system. Because
-% information is preserved, a closed program (which does not have any
-% ``dangling'' negative values) will eventually have to match the negative
-% value with some corresponding value, effectively using the isomorphism in the
-% right-to-left direction. 
-
-%% Hence, the intuitive way to read the diagrams is that they reverse the
-%% flow of information -- i.e. they capture a notion of \emph{negative
-%%   information flow}. In normal {{langRev}} circuits, information flows
-%% from left-to-right. The operator {{eps+}} causes information to flow
-%% from right-to-left.  The interpretation of {{eta+}} is the opposite:
-%% it turns a right-to-left flow of information in a circuit into a
-%% left-to-right flow.  The diagram below is an example of using {{eta+}}
-%% and {{eps+}} and corresponds to the additive {{a <-> a}} isomorphism
-%% from the introduction. (Here the {{0}} wires have been shown for
-%% completeness.)
-%% \paragraph*{Negative Information Flow.} 
-% A time traveling intuition is also applicable here: if view the
-% left-to-right direction of information flow as the canonical forward
-% direction of information, then the action of {{eps+}} allows values,
-% aka information particles, to flow backwards in time. Particles that
-% flow backwards in time get to see and interact with the history of
-% particles that they coexist with, i.e., values that they exist
-% multiplicatively with. Hence the isomorphism {{(-b1)*b2<->-(b1*b2)}}
-% (whose construction is shown in Section \ref{sec:neg-constructions}).
-%\subsection{Compact Closure with Additive Inverses}
-%% \emph{Coherence for Compact Closure with Additive Duality.}  The
-%% appropriate coherence condition for compact closed categories,
-%% expressed as the triangle axiom, is satisfied by {{eta+}}/{{eps+}} and
-%% may be visualized (modulo {{0}} wires, swapping etc.) as explained by
-%% Selinger \cite{springerlink:10.1007/978-3-642-12821-94} as the
-%% operational equivalence:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Computing in the Field of Rationals : {{langRevEE}} }
-\label{sec:rat}
-
-In this section we develop an operational semantics for {{langRev}} extended
-with negative and fractional types, {{langRevEE}}. The operational semantics
-takes the abstract categorical diagrams which were previously known but gives
-them a computational interpretation based on reverse execution for negative
-types and unification for fractional types. Even though this computational
-interpretation appears straightforward in retrospect, it constitutes a
-breakthrough because it breaks the preconceived idea that there is only one
-notion of duality and hence that both negative and fractional types should be
-implemented using the same underlying mechanism. In some sense, the folklore
-literature on monoidal categories describing the evaluations for additive and
-multiplicative fragments are ``particle-style'' and ``wave-style'' can be
-seen to suggest either a unified or separate implementations. But, since de
-Morgan, we have been predisposed to think of only one notion of duality which
-persisted to even linear logic. (See Sec.~\ref{sec:related} for further
-discussion of duality.)
-
-For the purposes of this section, we start with the semantics for {{langRev}}
-defined in Sec~\ref{sec:pi}, and we will systematically rewrite it to achieve
-the desired {{langRevEE}} semantics. This rewriting consists of two main steps:
-
-\begin{enumerate}
-\item We rewrite the semantics in Sec~\ref{sec:pi} using unification of the
-  values instead of direct pattern matching. This gives us the necessary
-  infrastructure for fractional types. We assume the reader is familiar with
-  the idea of unification as realized using logic variables, substitutions,
-  and reification as presented in any standard text on logic programming.
-\item We write a reverse interpreter by reversing the direction of the
-  {{|-->}} reductions. This gives us the necessary infrastructure for
-  negative types.
-\end{enumerate}
-
-%%%%%%%%%%%%%%%%%%%%%
-\subsection{Unification} 
-
-Previously the reductions of the primitive isomorphisms were specified in the
-following form:
-
-{{ iso v_{input pattern} |--> v_{output pattern} }}
-
-\noindent
-Instead of relying on pattern-matching, we rewrite the rules to accept an
-incoming substitution to which the required pattern-matching rules are added
-as constraints. The general case is:
-
-{{ iso s v' |--> (v_{output pattern}, s[v' <><> v_{input pattern}]) }}
-
-Using the same idea, the entire semantics can be extended to thread
-the substitution as shown below:
-
-%subcode{opsem} include main
-%! columnStyle = rclr
-%! fwd = \triangleright
-% <iso, v, C, s>_{fwd} &|-->& {[iso, v', C, s']}_{fwd}
-% & & where iso s v |--> (v', s')
-% <c1(;)c2, v, C, s>_{fwd} &|-->& <c1, v, Fst C c2, s>_{fwd}
-% {[c1, v, Fst C c2, s]}_{fwd} &|-->& <c2, v, Snd c1 C, s>_{fwd}
-% {[c2, v, Snd c1 C, s]}_{fwd} &|-->& {[ c1(;)c2, v, C,s ]}_{fwd}
-% <c1(+)c2, v', C, s>_{fwd} &|-->& <c1, v, LeftP C c2, s[v' <><> left v]>_{fwd}
-% {[ c1, v, LeftP C c2, s ]}_{fwd} &|-->& {[c1 (+) c2, left v, C,s ]}_{fwd}
-% <c1(+)c2, v', C, s>_{fwd} &|-->& <c2, v, RightP c1 C, s[v' <><> right v]>_{fwd}
-% {[ c2, v, RightP c1 C,s ]}_{fwd} &|-->& {[c1 (+) c2, right v, C,s ]}_{fwd}
-% <c1(*)c2, v', C, s>_{fwd} &|-->& <c1, v1, LeftT C c2 v2, s'>_{fwd}
-% & & where s' = s[v <><> (v1, v2)]
-% {[ c1, v1, LeftT C c2 v2,s ]}_{fwd} &|-->& <c2, v2, RightT c1 v1 C, s>_{fwd}
-% {[ c2, v2, RightT c1 v1 C,s ]}_{fwd} &|-->& {[ c1 (*) c2, (v1, v2), C,s ]}_{fwd}
-
-Most of the rules look obviously correct but there is a subtle
-point. Consider the case for {{c1 (+) c2}}. Previously the shape of the value
-determined which of the combinators {{c1}} or {{c2}} to use. Now the incoming
-value could be a fresh logical variable, and indeed we have two rules with
-the same left hand side, and only depending on the success or failure of some
-further unification, can we decide which of them applies. The situation is
-common in logic programming in the sense that it is considered a
-non-deterministic process that keeps searching for the right substitution if
-any. Typical implementations of logic programming languages further provide
-top-level mechanisms to manipulate this non-deterministic search, for example
-by returning one answer and giving the user the option to ask for more
-answers. We abstract from this top-level semantics and view the rules above
-as being applied non-deterministically.
-
-%%%%%%%%%%%%%%%%%
-\subsection{Reverse Execution}
-
-Given that our language is reversible (Prop.~\ref{prop:logrev}), a backward
-evaluator is relatively straightforward to implement: using the backward
-evaluator to calculate {{c v}} is equivalent {{c^{dagger} v}} in the forward
-evaluator.
-
-%subcode{opsem} include main
-%! columnStyle = rclr
-%! bck = \triangleleft
-% {[iso, v, C, s]}_{bck} &|-->& <iso, v', C, s'>_{bck}
-% & & where iso^{dagger} s v |--> (v', s')
-% <c1, v, Fst C c2, s>_{bck} &|-->& <c1(;)c2, v, C, s>_{bck}
-% <c2, v, Snd c1 C, s>_{bck} &|-->& {[c1, v, Fst C c2, s]}_{bck}
-% {[ c1(;)c2, v, C, s ]}_{bck} &|-->& {[c2, v, Snd c1 C, s]}_{bck}
-% <c1, v, LeftP C c2,s >_{bck} &|-->& <c1(+)c2,left v, C>_{bck}
-% {[c1 (+) c2, v', C, s ]}_{bck} &|-->& {[ c1, v, LeftP C c2, s[v' <><> left v] ]}_{bck}
-% <c2, v, RightP c1 C, s>_{bck} &|-->& <c1(+)c2, right v, C>_{bck}
-% {[c1 (+) c2, v', C,s ]}_{bck} &|-->& {[ c2, v, RightP c1 C, s[v' <><> right v] ]}_{bck}
-% <c1, v1, LeftT C c2 v2, s>_{bck} &|-->& <c1(*)c2, (v1, v2), C, s>_{bck}
-% <c2, v2, RightT c1 v1 C, s>_{bck} &|-->& {[ c1, v1, LeftT C c2 v2, s ]}_{bck}
-% {[ c1 (*) c2, v, C, s ]}_{bck} &|-->& {[ c2, v2, RightT c1 v1 C, S' ]}_{bck}
-% && where s' = s[v <><> (v1, v2)]
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Semantics of {{langRevEE}} }
-
-Combining the two constructions above, we get the semantics of the full
-{{langRevEE}} language by adding the rules for the two variants of~{{eta}}
-and~{{eps}}.
-
-\begin{enumerate}
-\item 
-To add multiplicative duality, we add the following rules to the set
-of primitive isomorphisms:
-
-\begin{enumerate}
-\item {{eta* s () |--> ((1/v, v), s)}}
-  where {{v}} is a fresh logic variable. 
-
-As explained previously {{eta*}} creates two values {{1/v}} and {{1/v}}
-from a single logic variable. 
-
-\item {{eps* s v |--> (1, s[v <><> (1/v',v') ])}}
-  where {{v'}} is a fresh logic variable. 
-
-Similarly, {{eps*}} unifies the values on incoming wires. The incoming
-value {{v}} represents the values of both wires and hence unifying
-them is accomplished in terms of an intermediate logic variable
-{{v'}}.
-
-\end{enumerate}
-
-\item To add negative types we add the following rules to the
-  reductions above. The additions formalize our previous discussions
-  and should not be surprising at this point.
-
-  \begin{enumerate}
-  \item The rules for {{eps+}} essentially transfer control from the
-    forward evaluator (whose states are tagged by $\triangleright$) to
-    the backward evaluator (whose states are tagged by
-    $\triangleleft$). In other words, after an {{eps+}} the direction
-    of the world is reversed. The pattern matching done by the
-    unification ensures that a value on the {{right}} wire is tagged
-    to be negative and transferred to the {{left}} wire, and vice versa.
-%subcode{opsem} include main
-%! columnStyle = rclr
-%! fwd = \triangleright
-%! bck = \triangleleft
-% <eps+, v, C, s>_{fwd} |--> <eps+, left (-v'), C, s[v <><> right v']>_{bck}
-% <eps+, v, C, s>_{fwd} |--> <eps+, right v', C, s[v <><> left (-v')]>_{bck}
-   %
-    Note that there is no evaluation rule for {{eta+}} in the forward
-    evaluator. This corresponds to the fact that there is no value of
-    type {{0}} and hence the forward evaluator can never execute an
-    {{eta+}}.
-
-    \item The rules for {{eta+}} are added to the backward evaluator. A
-      program executing backwards starts executing forwards after the
-      execution of the {{eta+}}. Dual to the previous case, there is
-      no rule for {{eps+}} in the backward evaluator since the output
-      type of {{eps+}} is {{0}}.
-%subcode{opsem} include main
-%! columnStyle = rclr
-%! fwd = \triangleright
-%! bck = \triangleleft
-% <eta+, v, C, s>_{bck} |--> <eta+, left (-v'), C, s[v <><> right v']>_{fwd}
-% <eta+, v, C, s>_{bck} |--> <eta+, right v', C, s[v <><> left (-v')]>_{fwd}
-
-  \end{enumerate}
-
-\end{enumerate}
-
-
-%% %%%%%%%%%%%%%%%%%%%%%%
-%% \subsection{Constructions in {{langRevEE}} }
-%% \label{sec:monoidal-constructions}
-
-
-% \paragraph*{Zero Information.}
-% As with {{eta+}}, we argue that {{eta*}} constructs no new
-% information, instead it gives us the ability to explore as many worlds
-% as permitted by the type {{b}}. So situate ourselves in any specific
-% world, we have to supply additional information in the form of
-% unifying the particle or anti-particle with a particle representing
-% known information. Hence only by supplying information to a an
-% entangled pair can we read information from it -- and always exactly
-% as much information as we supplied.
-
-% ADD MATH. 
-
-% \emph{Zero Information.}  The intuitive explanation that {{eta+}} and
-% hence {{eps+}} introduces no information effects is that {{-b+b}} as a
-% type whose value is observable only if you `pay' {{b}} amount of
-% information to the {{-b}} branch. When {{b}} amount of information is
-% supplied {{(-b+b)+b=b}} amount of information is returned to
-% you. (TODO. more needs to be said here.)
-
-% For this reason, our treatment of negative values in the context of
-% {{langRev}} is particularly simple. We will have a type $0$ and an
-% isomorphism {{0 <-> a + (-a)}} that when used in the left-to-right direction
-% allows us to create a value and a corresponding debt out of nothing. Both the
-% value and its negative counterpart can flow anywhere in the system. Because
-% information is preserved, a closed program (which does not have any
-% ``dangling'' negative values) will eventually have to match the negative
-% value with some corresponding value, effectively using the isomorphism in the
-% right-to-left direction. 
-
-\paragraph*{Observability.} 
-
-The reductions above allow us to apply a program {{c : b1 <-> b2}} to an
-input {{v1 : b1}} to produce a result {{v2 : b2}} on termination. Execution
-is well defined only if {{b1}} and {{b2}} are entirely positive types. If
-either {{b1}} or {{b2}} is a negative or fractional type, the system has
-``dangling'' unsatisfied demands or constraints. For this reason, we
-constrain entire programs to have positive non-fractional types. This is
-similar to the constraint that Zeilberger imposes to explain intuitionistic
-polarity and delimited control~\cite{10.1109/LICS.2010.23}.
-
-% (TODO: So this is a really bad explanation. But this section is really
-% important and we need to explain carefully. Maybe an analogy can be
-% drawn to Cayley diagrams for groups to point out that the notion of
-% `i' is entirely artificial, but it is essential to the discourse.)
-
-% \begin{center}
-%   \includegraphics{diagrams/shuffle.pdf}
-% \end{center}
-
-% We define observables to be only positive types. The outputs of
-% programs that output mixed positive and negative types are not
-% observable.  Also, programs that input mixed positive and negatives
-% types are not executable.
-
-% It is not fair to say that negative types flow backwards. The
-% following circuits are valid in {{langRevEE}}. It is however proper to
-% say that for any type {{b}} that flows in a direction, the type {{-b}}
-% flows in the reverse direction.
-
-% Several things we don't know how to do, or are sloppy about. Some of
-% these are deep questions to which there is no immeidate answer.
-
-% \begin{itemize}
-
-% \item Is the language without recursive types always terminating? For
-%   the right symmetry with annihilation, it is desirable to have
-%   non-termination.
-
-% \item What is the correct lemma for logical reversibility now?
-
-% \item We should say things about information preservation. At least
-%   more so than what is being said now.
-
-
-% \item Multiplicative duality gives us a means of talking about
-%   equivalence classes of values. This should correspond to all sorts
-%   of other things -- groupoids, Lawvere theories etc. We barely even
-%   understand these connections.
-
-% \item How does this connect to QC? Is there any strong connection such
-%   that the SAT solver here is an alternate QC algorithm to Shor's?
-
-% \end{itemize}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Advanced Example: SAT Solver in {{langRevEE}} }
+\section{SAT Solver }
 \label{sec:prog}
 \label{sec:sat-solver}
 
@@ -2049,7 +1137,7 @@ polarity and delimited control~\cite{10.1109/LICS.2010.23}.
 
 We illustrate the expressive power of first-class constraints represented by
 fractional types. To understand the intuition, recall the definition of
-{{trace}} for the multiplicative fragment of {{langRevEE}}. 
+{{trace}} for the multiplicative fragment of {{PiEE}}. 
 Given {{f : a*c <-> b*c }}, we have {{trace* f : a <-> b}}: 
 
 {{ trace* f = uniti (;) (id (*) eta*) (;) (f (*) id) (;) (id (*) eps*) (;) unite }}
@@ -2190,7 +1278,7 @@ goal: if the inputs do not satisfy {{f}}, the control wire is negated.  We
 can now use {{trace*}} to annihilate all these bad values because the control
 wire acts like the closed-loop {{not}} in the previous construction.
 
-%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Final Details}
 \label{sub:f}
 
@@ -2222,7 +1310,7 @@ inputs using {{clone^n_{bool} }}.
 \scalebox{1.5}{
   \includegraphics{diagrams/sat3.pdf}
 }
-\end{center}  
+\end{center}
 
 When the solver is fed inputs initialized to {{true}}, it clones only
 those inputs to {{sat_f}} that satisfy {{f}} and the heap
@@ -2231,70 +1319,389 @@ constraints. In the case of unique-SAT the solver will produce exactly
 solutions as determined by the semantics of the top-level interaction
 (see discussion in Sec. \ref{sec:rat}).
 
-%% %%%%%%%%%%%%%%%%%%%
-%% \subsection{GoI machine}
 
-%% We can now encode the GoI machine of
-%% Mackie~\cite{Mackie2011,DBLP:conf/popl/Mackie95}. \amr{The machine uses bang
-%%   which allows arbitrary duplication. Can we really do that???}
-
-%% the final equivalence is valid and can be used to actually
-%% construct an isomorphism between $x^7$ the type of seven binary
-%% trees and $x$ the type of binary trees.
-
-%% Here is one way to view computations involving irrationals that might
-%% shed some insight into how we should view recursive data types
-%% also. For finite datatypes say of size {{n}} we can say that an
-%% element specifies a choice of {{1/n}} and hence contains as much
-%% information. For finite things, each value is computationally equal to
-%% any other value. Any permutation is possible among the values. Hence
-%% there is no metric possible on the values.  Recursive data types, such
-%% as binary trees, have an infinite number of elements and hence the
-%% argument that says that value specifies {{1/n}} units of information
-%% is not longer valid. Instead to talk meaningfully about information
-%% content, we should talk about a probability distribution on the values
-%% of the type. However what shall we base this distribution on? Is there
-%% a natural order beyond the unfolding order of the values of a type? 
-
-%% In this context, let us go back to the thought that recursive such as
-%% {{nat=nat+1}} have no meaningful solutions, whereas trees do. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Finite Dimensional Hilbert Spaces}
 
 
-%% Real numbers in that sense really are a series of bits of unknown
-%% information theoretic interpretation -- a sort of {{top}}. Numbers
-%% such as {{sqrt(2) }} are very different in the sense that even though
-%% they contain an infinite sequence of bits, there is a finite program
-%% that generates those bits and its only the cost of computing bits that
-%% is infinite.  The consistency of arithmetic isn't affected by
-%% extending the rational field by adding any specific computable
-%% irrational. So it might be possible to design a model of computing
-%% where we can indeed deal with them. Such a model will have to explicit
-%% thunks for the delayed computation represented by trees and never
-%% equate and cancel two infinite computations unless the represent
-%% exactly the same infinite computation.
 
-%% TODO.
+Halmos \cite{halmos1958finite}, Abramsky and Coecke
+\cite{abramsky2004categorical}. Despite the fact that this fragment
+seem badly behaved (no logical reversibility) we have a close
+connection with finite dimensional hilbert spaces.
 
-%% Square root and imaginary types have also appeared in the literature: we
-%% relegate the connections to Sec.~\ref{sec:related} and proceed with a simple
-%% explanation. We have so far extended the set of types to be the rational
-%% numbers. Now we will push this and extend the set of types to algebraic
-%% numbers. In other words, we will allow datatypes defined by arbitrary
-%% polynomials and allow the roots of such polynomials to be types. 
+The technical goal of this section is to show that the categorical
+structure of finite dimensionl hilbert spaces with unitary maps and
+inner product has the same categorical structure as {{PiEE*}}. Thus
+constructions in {{PiEE*}} can be transported to FdHilb-unitary. If we
+allow all linear maps, then {{+}} becomes a biproduct.  This has
+connections to the Quantum Picturisms of Abramsky and Coecke and hence
+to Qunatum Physics.
 
-%% Consider first an example in which we want to compute with the sides of a
-%% rectangle whose area is 91 and whose length is longer than its width by 6
-%% units. One can solve the quadratic equation to determine that the sides are 7
-%% and 13 and proceed. This however prematurely forces us to globally solve the
-%% constraint. Instead we can let the two sides of the rectangle be $x$ and
-%% $x+6$ and use the following equation to capture the desired constraint:
-%% \[
-%% x^2 + 6x - 91 = 0
-%% \]
-%% The equation introduces an isomorphism between the type $x^2 + 6x - 91$ and
-%% the type $0$. We can now proceed to compute with the unknown $x$, being
-%% assured that in a closed program, our computation will eventually be
-%% consistent with the solution of the algebraic equation. 
+%subcode{bnf} include main
+% v = 0 | 1 | v + v | v * v| 1/v 
+
+There is much future work to be done in this line. The logical
+consequence of this line of research is either (1) there is no way to
+accomodate proabailities etc in this setting and this is all
+meaningless or (2) constrcutions in {{PiEE*}} correspond to physical
+phenomena.
+
+Also show the what the irreversible constructions can be interpreted
+in Dirac style.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Negative Types : {{PiEE+}} }
+
+What is a negative type anyway? 
+
+
+%subcode{bnf} include main
+% Value Types, b = 0 | 1 | b + b | b * b | -b
+% Values, v = () | left v | right v | (v, v) | -v 
+%
+% Isomorphisms, iso &=& ... | eta+ | eps+
+
+For convenience, we sometimes use the notations {{b1 - b2}} and
+{{b1/b2}} to indicate the types {{b1 + (-b2)}} and {{b1 * (1/b2)}}
+respectively.  The types of the new constructs are:
+\vspace{-15pt}
+\begin{multicols}{2}  
+%subcode{opsem} include main
+% eta+ &: 0 <-> (-b) + b :& eps+
+
+%subcode{proof} include main
+%@ |- v : b
+%@@ |- -v : -b
+\end{multicols}
+
+
+\begin{multicols}{2}
+\begin{center}
+  \includegraphics{diagrams/eta.pdf}
+\end{center}
+  
+\begin{center}
+ \includegraphics{diagrams/eps.pdf}
+\end{center}
+\end{multicols}
+
+\begin{multicols}{2}
+\begin{center}
+\scalebox{1.5}{
+  \includegraphics{diagrams/eps_plus1.pdf}
+}
+\end{center}
+  
+\begin{center}
+\scalebox{1.5}{
+  \includegraphics{diagrams/eps_plus2.pdf}
+}
+\end{center}  
+\end{multicols}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Semantics}
+
+%subcode{opsem} include main
+%! columnStyle = rclr
+%! fwd = \triangleright
+% <iso, v, C, s>_{fwd} &|-->& {[iso, v', C, s']}_{fwd}
+% & & where iso s v |--> (v', s')
+% <c1(;)c2, v, C, s>_{fwd} &|-->& <c1, v, Fst C c2, s>_{fwd}
+% {[c1, v, Fst C c2, s]}_{fwd} &|-->& <c2, v, Snd c1 C, s>_{fwd}
+% {[c2, v, Snd c1 C, s]}_{fwd} &|-->& {[ c1(;)c2, v, C,s ]}_{fwd}
+% <c1(+)c2, v', C, s>_{fwd} &|-->& <c1, v, LeftP C c2, s[v' <><> left v]>_{fwd}
+% {[ c1, v, LeftP C c2, s ]}_{fwd} &|-->& {[c1 (+) c2, left v, C,s ]}_{fwd}
+% <c1(+)c2, v', C, s>_{fwd} &|-->& <c2, v, RightP c1 C, s[v' <><> right v]>_{fwd}
+% {[ c2, v, RightP c1 C,s ]}_{fwd} &|-->& {[c1 (+) c2, right v, C,s ]}_{fwd}
+% <c1(*)c2, v', C, s>_{fwd} &|-->& <c1, v1, LeftT C c2 v2, s'>_{fwd}
+% & & where s' = s[v <><> (v1, v2)]
+% {[ c1, v1, LeftT C c2 v2,s ]}_{fwd} &|-->& <c2, v2, RightT c1 v1 C, s>_{fwd}
+% {[ c2, v2, RightT c1 v1 C,s ]}_{fwd} &|-->& {[ c1 (*) c2, (v1, v2), C,s ]}_{fwd}
+
+Given that our language is reversible (Prop.~\ref{prop:logrev}), a backward
+evaluator is relatively straightforward to implement: using the backward
+evaluator to calculate {{c v}} is equivalent {{c^{dagger} v}} in the forward
+evaluator.
+
+%subcode{opsem} include main
+%! columnStyle = rclr
+%! bck = \triangleleft
+% {[iso, v, C, s]}_{bck} &|-->& <iso, v', C, s'>_{bck}
+% & & where iso^{dagger} s v |--> (v', s')
+% <c1, v, Fst C c2, s>_{bck} &|-->& <c1(;)c2, v, C, s>_{bck}
+% <c2, v, Snd c1 C, s>_{bck} &|-->& {[c1, v, Fst C c2, s]}_{bck}
+% {[ c1(;)c2, v, C, s ]}_{bck} &|-->& {[c2, v, Snd c1 C, s]}_{bck}
+% <c1, v, LeftP C c2,s >_{bck} &|-->& <c1(+)c2,left v, C>_{bck}
+% {[c1 (+) c2, v', C, s ]}_{bck} &|-->& {[ c1, v, LeftP C c2, s[v' <><> left v] ]}_{bck}
+% <c2, v, RightP c1 C, s>_{bck} &|-->& <c1(+)c2, right v, C>_{bck}
+% {[c1 (+) c2, v', C,s ]}_{bck} &|-->& {[ c2, v, RightP c1 C, s[v' <><> right v] ]}_{bck}
+% <c1, v1, LeftT C c2 v2, s>_{bck} &|-->& <c1(*)c2, (v1, v2), C, s>_{bck}
+% <c2, v2, RightT c1 v1 C, s>_{bck} &|-->& {[ c1, v1, LeftT C c2 v2, s ]}_{bck}
+% {[ c1 (*) c2, v, C, s ]}_{bck} &|-->& {[ c2, v2, RightT c1 v1 C, S' ]}_{bck}
+% && where s' = s[v <><> (v1, v2)]
+
+To add negative types we add the following rules to the
+  reductions above. The additions formalize our previous discussions
+  and should not be surprising at this point.
+
+  \begin{enumerate}
+  \item The rules for {{eps+}} essentially transfer control from the
+    forward evaluator (whose states are tagged by $\triangleright$) to
+    the backward evaluator (whose states are tagged by
+    $\triangleleft$). In other words, after an {{eps+}} the direction
+    of the world is reversed. The pattern matching done by the
+    unification ensures that a value on the {{right}} wire is tagged
+    to be negative and transferred to the {{left}} wire, and vice versa.
+
+%subcode{opsem} include main
+%! columnStyle = rclr
+%! fwd = \triangleright
+%! bck = \triangleleft
+% <eps+, v, C, s>_{fwd} |--> <eps+, left (-v'), C, s[v <><> right v']>_{bck}
+% <eps+, v, C, s>_{fwd} |--> <eps+, right v', C, s[v <><> left (-v')]>_{bck}
+
+    Note that there is no evaluation rule for {{eta+}} in the forward
+    evaluator. This corresponds to the fact that there is no value of
+    type {{0}} and hence the forward evaluator can never execute an
+    {{eta+}}.
+
+    \item The rules for {{eta+}} are added to the backward evaluator. A
+      program executing backwards starts executing forwards after the
+      execution of the {{eta+}}. Dual to the previous case, there is
+      no rule for {{eps+}} in the backward evaluator since the output
+      type of {{eps+}} is {{0}}.
+
+%subcode{opsem} include main
+%! columnStyle = rclr
+%! fwd = \triangleright
+%! bck = \triangleleft
+% {[eta+, v, C, s]}_{bck} |--> {[eta+, left (-v'), C, s[v <><> right v'] ]}_{fwd}
+% {[eta+, v, C, s]}_{bck} |--> {[eta+, right v', C, s[v <><> left (-v')] ]}_{fwd}
+
+  \end{enumerate}
+
+
+\begin{proposition}[Logical Reversibility]
+  
+\end{proposition}
+
+\begin{proposition}[Strong Normalization]
+  
+\end{proposition}
+
+\begin{proposition}[Type Safety]
+  
+\end{proposition}
+
+\begin{proposition}[Coherence]
+  
+\end{proposition}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Computing in the Field of Rationals : {{PiEE}} }
+
+Not logically reversible and we can express infinite loops.
+
+
+\paragraph*{Observability.} 
+
+The reductions above allow us to apply a program {{c : b1 <-> b2}} to an
+input {{v1 : b1}} to produce a result {{v2 : b2}} on termination. Execution
+is well defined only if {{b1}} and {{b2}} are entirely positive types. If
+either {{b1}} or {{b2}} is a negative or fractional type, the system has
+``dangling'' unsatisfied demands or constraints. For this reason, we
+constrain entire programs to have positive non-fractional types. This is
+similar to the constraint that Zeilberger imposes to explain intuitionistic
+polarity and delimited control~\cite{10.1109/LICS.2010.23}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Constructions with Negatives and Fractionals}
+\label{sec:specific-constructions}
+
+The additional constructions below (presented with minimal commentary)
+confirm that conventional algebraic manipulations in the mathematical field
+of rationals do indeed correspond to realizable type isomorphisms in our
+setting. The constructions involving both negative and fractional types are
+novel.
+
+\paragraph*{Lifting negation out of {{*}}.}
+The isomorphisms below state that the direction is \emph{relative}. If {{b1}}
+and {{b2}} are flowing opposite to each other then it doesn't matter which
+direction is forwards and which is backwards. More interestingly as {{b1}} is
+moving backwards, it can ``see the past'' of {{b2}} which is equivalent to
+both particles moving backwards.
+
+{{(-b1) * b2 <-> -(b1 * b2) <-> b1 * (-b2)}}
+
+To build these isomorphisms, we first build an intermediate
+construction which we call {{eps_{fst} : (-b1)*b2 + b1*b2 <-> 0}}. 
+\begin{center}
+\scalebox{0.8}{
+  \includegraphics{diagrams/eps_fst.pdf}
+}
+\end{center}
+
+The isomorphism {{(-b1) * b2 <-> -(b1 * b2)}} can be constructed in
+terms of {{eps_{fst} }} as shown below. 
+
+\begin{center}
+\scalebox{0.9}{
+  \includegraphics{diagrams/mult_neg.pdf}
+}
+\end{center}  
+
+The second isomorphism can be built in the same way by merely swapping
+the arguments. 
+
+\paragraph*{Multiplying Negatives.}
+
+{{b1 * b2 <-> (-b1)*(-b2)}}
+
+This isomorphism is a consequence of the fact that $-$ is an involution: it
+corresponds to the algebraic manipulation:
+
+%% %subcode{opsem} include main
+%% %! columnStyle = rc
+%% %   & b1 * b2
+%% % = & -(-(b1*b2)) 
+%% % = & -((-b1)*b2)
+%% % = & (-b1)*(-b2)
+
+{{b1 * b2 = -(-(b1*b2)) = -((-b1)*b2) = (-b1)*(-b2)}}
+
+\paragraph*{Multiplying and Adding Fractions.}
+An isomorphism witnessing:
+
+{{b1/b2 * b3/b4 <-> (b1*b3)/(b2*b4)}}
+
+is straightforward. More surprisingly, it is also possible to construct
+isomorphisms witnessing:
+
+{{b1/b + b2/b <-> (b1+b2)/b}}
+
+{{b1/b2 + b3/b4 <-> (b1*b4+b3*b2)/(b2*b4) }}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Two Dualities of Computation}
+\label{sub:hof}
+
+Information Effects, Filinksi, De Morgan
+
+\subsection{Function Spaces}
+
+Although these constructions are also standard, they are less known and they
+are particularly important in our context: we devote a little more time to
+explain them. Our discussion is mostly based on Abramsky and Coecke's article
+on categorical quantum mechanics~\cite{abramsky-2008}.
+
+In a compact closed category, each morphism {{f : b1 <-> b2 }} can be given a
+\emph{name} and a \emph{coname}. For the additive fragment, the name
+$\fname{f}$ has type {{0 <-> (-b1 + b2)}} and the coname $\fconame{f}$ has type
+{{b1 + (-b2) <-> 0}}. For the multiplicative fragment, the name $\fname{f}$ has
+type {{1 <-> ((1/b1) * b2))}} and the coname $\fconame{f}$ has type 
+{{(b1 * (1/b2)) <-> 1}}. Intuitively, this means that for each morphism, 
+it is possible to construct, from ``nothing,'' an object in the category that 
+denotes this morphism, and dually it is possible to eliminate this object.
+The construction of the name and coname of {{c : b1 <-> b2}} in the additive case 
+can be visualized as follows:
+
+\begin{multicols}{2}
+\begin{center}
+  \includegraphics{diagrams/function.pdf}
+\end{center}
+
+\begin{center}
+  \includegraphics{diagrams/delimc.pdf}
+\end{center}  
+\end{multicols}
+
+Intuitively the name consists of viewing {{c}} as a function and the coname
+consists of viewing {{c}} as a delimited continuation.
+
+In addition to being able to represent morphisms, it is possible to express
+function composition. For the additive case, the composition is depicted
+below:
+
+\begin{multicols}{2}
+\scalebox{1.1}{
+    \includegraphics{diagrams/compose1.pdf}
+}
+
+\scalebox{0.8}{
+    \includegraphics{diagrams/compose.pdf}
+}
+\end{multicols}
+which is essentially equivalent to sequencing both the computation blocks as
+shown below:
+
+\begin{center}
+  \includegraphics{diagrams/compose2.pdf}
+\end{center}
+
+Applying a function to an argument consists of making the argument flow
+backwards to satisfy the demand of the function:
+\begin{multicols}{2}
+\begin{center}
+\scalebox{1.0}{
+  \includegraphics{diagrams/apply1.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.8}{
+  \includegraphics{diagrams/apply2.pdf}
+}
+\end{center}
+\end{multicols}
+
+Having reviewed the representation of functions, we now discuss the
+similarities and differences between the two notions of functions and their
+relation to conventional (linear) functions which mix additive and
+multiplicative components. For that purpose, we use a small example.
+Consider a datatype {{color = R|Gr|B}}, and let us consider the following
+manipulations:
+\begin{itemize}
+\item Using the fact that {{1}} is the multiplicative unit, generate
+  from the input {{()}} the value {{((),())}} of type {{1 * 1}};
+\item Apply the isomorphism {{1 <-> (1/b) * b}} in parallel to each of
+  the components of the above tuple. The resulting value is
+  {{((1/alpha1,alpha1),(1/alpha2,alpha2))}} where {{alpha1}} and
+  {{alpha2}} are fresh logic variables;
+\item Using the fact that {{*}} is associative and commutative, we can
+  rearrange the above tuple to produce the value:
+
+{{((1/alpha1,alpha2),(1/alpha2,alpha1))}}.
+
+\end{itemize}
+
+At this point we have constructed a strange mix of two {{b-o*b}} functions;
+inputs of one function manifest themselves as outputs of the other. If
+{{(1/alpha1,alpha2)}} is held by one subcomputation and {{(1/alpha2,alpha1)}}
+is held by another subcomputation, these remixed functions form a
+communication channel between the two concurrent subcomputations. Unifying
+{{1/alpha1}} with {{color}} {{R}} in one subcomputation, fixes {{alpha1}} to
+be {{R}} in the other. The type {{b}} thus takes the role of the type of the
+communication channel, indicating how much information can be communicated
+between the two subcomputations.  Depending on the choice of the type {{b}},
+an arbitrary number of bits may be communicated.
+
+Dually, the additive reading of the above manipulations correspond to
+functions of the form {{b-o+b}}, witnessing isomorphisms of the form
+{{0<->(-b)+b}}). The remixed additive functions express control flow transfer
+between two subcomputations, \emph{only one of which exists} at any point,
+i.e., they capture the essence of coroutines. 
+
+It should be evident that in a universe in which information is not
+guaranteed to be preserved by the computational infrastructure, the above
+slicing and dicing of functions would make no sense. But linearity is not
+sufficient: one must also recognize that the additive and multiplicative
+spaces are different. 
 
 
 
@@ -2418,8 +1825,8 @@ following:
 \section{Conclusion and Future Work}
 \label{sec:conc}
 
-We have extended the language {{langRev}} that expressed computation
-in the commutative semiring of whole numbers to {{langRevEE}} that
+We have extended the language {{Pi}} that expressed computation
+in the commutative semiring of whole numbers to {{PiEE}} that
 expresses computation in the field of rationals.  Every algebraic
 identity that holds for the rational numbers corresponds to a type
 isomorphism with a computational interpretation in our model. We have
@@ -2460,17 +1867,17 @@ by Abramsky and Jagadeesan~\cite{Abramsky:1994:NFG:184662.184664}, and was
 developed into a reversible model of computing by
 Mackie~\cite{Mackie2011,DBLP:conf/popl/Mackie95}. Preliminary investigations
 suggest that many of the GoI machine constructions can be simulated in
-{{langRevEE}} by treating Mackie's bi-directional wires as pairs of wires in
-{{langRevEE}} and replacing the machine's global state with a typed value on
+{{PiEE}} by treating Mackie's bi-directional wires as pairs of wires in
+{{PiEE}} and replacing the machine's global state with a typed value on
 the wire that captures the appropriate state. This connection is exciting
 because when viewed through a Curry-Howard lens it suggests that the logical
-interpretation of {{langRevEE}} would be a linear-like logic with a notion of
+interpretation of {{PiEE}} would be a linear-like logic with a notion of
 resource preservation and with a natural computational interpretation. 
 
 \paragraph*{Computing in the Field of Algebraic Numbers.}
 \label{sec:algebraic-field}
-Algebraically, the move from {{langRev}} to {{langRevEE}} corresponds to a
-move from a ring-like structure to a full field. Our language {{langRevEE}}
+Algebraically, the move from {{Pi}} to {{PiEE}} corresponds to a
+move from a ring-like structure to a full field. Our language {{PiEE}}
 captures the structure of one particular field: that of the rational
 numbers. As we have seen, computation in this field is quite expressive and
 interesting and yet, it has two fundamental limitations. First it cannot
@@ -2489,7 +1896,7 @@ studied extensively following a paper by Blass~\cite{seventrees} which used
 the above datatype of trees to infer an isomorphism between seven binary
 trees and one!
 
-We have confirmed that we can extended {{langRevEE}} with the datatype
+We have confirmed that we can extended {{PiEE}} with the datatype
 declaration for binary trees and build a witness for this isomorphism
 that works as expected. However not every isomorphism constructed from
 algebraic manipulation is computationally meaningful. To understand the
@@ -2503,7 +1910,7 @@ x^7 &=& x^6 x &=& x
 The question is why such an algebraic manipulation makes sense type
 theoretically, even though the intermediate step asking for an isomorphism
 between $x^6$ and $1$ has no computational context. In the setting of
-{{langRevEE}}, this isomorphism can be constructed but it diverges on all
+{{PiEE}}, this isomorphism can be constructed but it diverges on all
 inputs (in both ways). This suggests that, in the field of algebraic numbers,
 some algebraic manipulations are somehow 
 ``more constructive'' than others.
@@ -2513,7 +1920,7 @@ meaningful polynomials. For instance {{nat=@@x.(1+x)}} implies the
 polynomial {{x=1+x}} which has no algebraic solutions without appeal
 to more complex structures with limits etc. 
 
-%% or dually that {{langRevEE}} with recursive types
+%% or dually that {{PiEE}} with recursive types
 %%somehow lacks the ability to express all computations that are otherwise
 %%algebraically meaningful.
 
@@ -2547,7 +1954,7 @@ mechanics~\cite{transactional} which includes as its main ingredient a
 fixpoint calculation between waves or particles traveling forwards and
 backwards in time. Our work sheds no light on whether this interpretation is
 the ``right one'' but it is interesting that we can directly realize it using
-the primitives of {{langRevEE}}. 
+the primitives of {{PiEE}}. 
 
 % A \emph{time
 %   traveling} intuition is also applicable here.  In a normal cicruit, as
@@ -2563,7 +1970,7 @@ the primitives of {{langRevEE}}.
 % {{-b1}} allows it to `see the past' of {{b2}} and is thus equivalent to both
 % particles moving backward in time.
 
-The multiplicative structure of {{langRevEE}} also has a direct
+The multiplicative structure of {{PiEE}} also has a direct
 connection to entangled quantum particles, or perhaps entangled
 particles and anti-particles.  The idea of entanglement, that an
 action on one particle is ``instantaneously'' communicated to the
@@ -2571,7 +1978,7 @@ other, is analogous to how unifying one value affects its dual pair
 which is possibly in another part of the computation.  Again our model
 sheds no light on whether this is related to how nature computes but
 it is again interesting that we can directly realize the idea using
-the primitives of {{langRevEE}}.
+the primitives of {{PiEE}}.
 
 % natural An analogy
 % inspired by quantum mechanics is also applicable here.  The operator {{eta*}}
@@ -2707,12 +2114,12 @@ and continuations are dual notions. This observation was followed by numerous
 %% have kept the positive side pure.
 
 %% In a technical sense, this paper extends the language of isomorphisms
-%% {{langRev}}, with duality. Unlike Linear logic \cite{Girard87tcs} and
+%% {{Pi}}, with duality. Unlike Linear logic \cite{Girard87tcs} and
 %% other systems which have one notion of duality over additive and
-%% multiplicative components, {{langRevEE}} has two notions of duality
+%% multiplicative components, {{PiEE}} has two notions of duality
 %% -- an additive duality over the monoid {{(0, +)}} and a multiplicative
 %% duality over the monoid {{(1, *)}}. Each axis of duality also give us
-%% a function space and hence {{langRevEE}} has an additive function
+%% a function space and hence {{PiEE}} has an additive function
 %% space corresponding to a notion of control or backtracking and a
 %% multiplicative function space corresponding to a notion of unification
 %% or constraint satisfaction.
@@ -2794,14 +2201,14 @@ but that work only scratched the surface! We have the following features:
 
 
 We show a deep symmetry between functions and delimited continuations, values
-and continuations that arises in {{langRev}} in a manner that is reminiscent
+and continuations that arises in {{Pi}} in a manner that is reminiscent
 of Filinski's Symmetric \lcal ~\cite{Filinski:1989:DCI:648332.755574}. The
-symmetry arises by extending {{langRev}} with a notion of additive duality
+symmetry arises by extending {{Pi}} with a notion of additive duality
 over the monoid {{(+, 0)}} by including {{eta+}} and {{eps+}} operators of
 Compact Closed Categories. The resulting dual types, which we denote {{-b}},
 have a time traveling ``backward information flow'' interpretation and allow
 for the encoding of higher-order function and iteration via the construction
-of trace operators, thereby making the extended language {{langRevEE}} a
+of trace operators, thereby making the extended language {{PiEE}} a
 Turing-complete reversible programming language with higher-order functions
 and first-class delimited continuations.
 
@@ -2914,9 +2321,9 @@ For a traced monoidal category {{C}} the Int construction produces a Compact
 Closed Category called Int {{C}} \cite{joyal1996traced}.  Further we know
 that the target of the Int construction is isomorphic to the target of \G
 construction of Abramsky \cite{Abramsky96:0} from Haghverdi. However, note
-that the {{langRevEE}} is not the same as the image of the Int construction
-on {{langRevT}}, since the later lacks a multiplicative tensor that
-distributes over the additive tensor in Int {{langRevT}}.
+that the {{PiEE}} is not the same as the image of the Int construction
+on {{Pi0}}, since the later lacks a multiplicative tensor that
+distributes over the additive tensor in Int {{Pi0}}.
 
 once we combine the two structures, we seem to retain the monoidal
 structure. How!?
