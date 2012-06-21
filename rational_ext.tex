@@ -85,7 +85,7 @@
 %! trace+ = trace^+
 %! trace* = trace^{\times}
 %! ^^^ = ^{-1}
-%! (o) = \fatsemi
+%! (o) = \circ
 %! (;) = \fatsemi
 %! (*) = \times
 %! (+) = +
@@ -127,6 +127,7 @@
 %! PiEE* = \Pi^{\eta\epsilon}_{*}
 %! PiEE+ = \Pi^{\eta\epsilon}_{+}
 %! PiEE = \Pi^{\eta\epsilon}
+%! CatSet = \textbf{Set}
 %! theseus = Theseus
 %! sqrt(x) = \sqrt{#x}
 %! surd(p,x) = \sqrt[#p]{#x}
@@ -816,11 +817,16 @@ We say {{c1 = c2}} if {{c1:b1<->b2}} and {{c2:b1<->b2}} and for all
 {{v1:b}}, we have {{c1 v1 |--> v2}} iff {{c2 v1 |--> v2}} and {{v2:b2}}.
 \end{lemma}
 
+We present the categorical structure with minimum commentry. More
+details may be found in excellent references such as Barr and Wells
+[CITE] and Selinger[CITE].
+
 \begin{lemma}[{{Pi}} is a category]
-  We have as objects the types {{b}} and as morphisms equivalence
-  classes of combinators {{b1<->b2}}. One can check:
+  The category {{Pi}} has the types {{b}} as objects and equivalence
+  classes of well-typed combinators {{b1<->b2}} as morphisms. One can
+  check:
   \begin{enumerate}
-  \item Every object {{b}} has an identity morphism {{b <->b}}.
+  \item Every object {{b}} has an identity morphism {{id : b <->b}}.
   \item Composition {{g (o) f}} of morphisms {{f:b1 <->b2}} and
     {{g:b2<->b3}} is given by sequencing {{f (;) g}}. 
   \item Associativity of composition follows from operational
@@ -853,7 +859,7 @@ and
   hold (where {{g : b2 <-> b3}}): 
   \begin{enumerate}
   \item {{id^{dagger} = id : b <-> b}}
-  \item {{(f (;) g)^{dagger} = f^{dagger} (;) g^{dagger}: b1 <-> b2}}
+  \item {{(f (;) g)^{dagger} = g^{dagger} (;) f^{dagger}: b3 <-> b1}}
   \item {{f^{dagger dagger} = f : b1 <-> b2}}
   \end{enumerate}
 \end{lemma}
@@ -900,12 +906,12 @@ and
 
 \end{lemma}
 
-\begin{lemma}[Symmetric Monoidal (*, 1)]
+\begin{lemma}[Symmetric Monoidal {{(*, 1)}}]
   {{Pi}} is a symmetric monoidal category over the tensor {{*}} and
-  unit {{1}}. The details here follow those of the {{(0, +)}} monoid
-  and are skipped.
+  unit {{1}}. The details mirror those of the {{(0, +)}} monoid.
 \end{lemma}
 
+\noindent
 Some technical and pedantic comments are due at this point. 
 
 \begin{itemize}
@@ -920,21 +926,21 @@ Some technical and pedantic comments are due at this point.
 
 \item The category {{Pi}} has no initial and terminal objects. The
   objects {{0}} and {{1}} would be initial and terminal if we admitted
-  all functions (is in the category {{CatSet}}).
+  all functions (as in the category {{CatSet}}).
 
 \item The category {{Pi}} has neither categorical products, nor
-  categorical co-products -- {{*}} and {{+}} are merely monoidal
+  categorical co-products, i.e. {{*}} and {{+}} are merely monoidal
   tensors. This follows from the fact that injection and projection
   maps are not isomorphisms.
 \end{itemize}
 
 While we don't do so in this work, if we extend {{Pi}} with products
 and co-products (say through the addition of information effects) it
-is concievable that part of its structure collapses. The sort of
+is concievable that part of its structure collapses. This sort of
 collapse, while catastrophic for algebraic structures (effectively
-trivializing them) still retains some interest in computing, because in
-computing we are interested in the specific operational nature (the
-computation content, so to speak) of the morphisms. Anectodal evidence
+trivializing them), still retains some interest in computing, because
+in computing we are interested in the specific operational nature (the
+computational content, so to speak) of the morphisms. Anectodal evidence
 follows from the fact several real-world programming language have
 inconsistent type systems. blah blah blah...
 
