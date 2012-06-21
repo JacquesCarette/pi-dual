@@ -24,14 +24,14 @@ import Prelude hiding (id)
 -- *Pi> inot @@ True
 -- False
 -- *Pi> inot @@ False
-inot :: Pi eq => eq Bool Bool
+inot :: PiBool eq => eq Bool Bool
 inot = unfoldB %. commutePlus %. foldB
 
 -- Cond takes two isomorphisms from some type a to some type b, and 
 -- creates an isomorphism between a pair of (Bool, a) which will apply
 -- the first isomorphism if the Bool is True, and the second if the Bool
 -- is False.
-cond :: Pi eq => eq a b -> eq a b -> eq (Bool, a) (Bool, b)
+cond :: PiBool eq => eq a b -> eq a b -> eq (Bool, a) (Bool, b)
 cond f g = (unfoldB %* id) 
            %. distribute 
            %. ((id %* f) %+ (id %* g))
@@ -42,7 +42,7 @@ cond f g = (unfoldB %* id)
 -- creates an isomorphism (using cond) that will apply the isomorphism to
 -- the second value of the pair, if the first value if True, and apply
 -- Id otherwise.
-controlled :: Pi eq => eq a a -> eq (Bool, a) (Bool, a)
+controlled :: PiBool eq => eq a a -> eq (Bool, a) (Bool, a)
 controlled f = cond f id
 
 -- cnot is Controlled Not, as found in reversible computing papers such
@@ -56,7 +56,7 @@ controlled f = cond f id
 -- (False, True)
 -- *Pi> cnot @@ (True, False)
 -- (True, False)
-cnot :: Pi eq => eq (Bool, Bool) (Bool, Bool)
+cnot :: PiBool eq => eq (Bool, Bool) (Bool, Bool)
 cnot = controlled inot
 
 -- Toffoli is the universal nand/and gate presented in Reversible
@@ -72,18 +72,18 @@ cnot = controlled inot
 -- ((True, True), False)
 -- *Pi> toffoli @@ ((False, True), False)
 -- ((False, True), False)
-toffoli :: Pi eq => eq ((Bool,Bool),Bool) ((Bool,Bool),Bool)
+toffoli :: PiBool eq => eq ((Bool,Bool),Bool) ((Bool,Bool),Bool)
 toffoli = assocTimesR %. controlled cnot %. assocTimesL
 
 -- The Fredkin gate is a well known universal gate.
 -- If the first bool is true, it swaps the second two, otherwise it
 -- leaves the values unchanged.
-fredkin :: Pi eq => eq (Bool,(Bool,Bool)) (Bool,(Bool,Bool))
+fredkin :: PiBool eq => eq (Bool,(Bool,Bool)) (Bool,(Bool,Bool))
 fredkin = controlled commuteTimes
 
 -- The Peres gate is a universal gate: it takes three inputs a, b, and c, 
 -- and produces a, a xor b, (a and b) xor c
-peres :: Pi eq => eq ((Bool,Bool),Bool) ((Bool,Bool),Bool)
+peres :: PiBool eq => eq ((Bool,Bool),Bool) ((Bool,Bool),Bool)
 peres = toffoli %. (cnot %* id) 
 
 -- fullAdder can be interpreted as an irreversible 2 bit adder with
@@ -95,7 +95,7 @@ peres = toffoli %. (cnot %* id)
 --
 -- All values should be booleans, where False is 0 and True is 1.
 -- Constant must be initialized to 0.
-fullAdder :: Pi eq => eq (Bool, ((Bool, Bool), Bool)) (Bool,(Bool,(Bool,Bool)))
+fullAdder :: PiBool eq => eq (Bool, ((Bool, Bool), Bool)) (Bool,(Bool,(Bool,Bool)))
 fullAdder = commuteTimes %. (commuteTimes %* id) %. 
             assocTimesR %. commuteTimes %. (peres %* id) %.
             assocTimesR %. (id %* commuteTimes) %. 
@@ -134,7 +134,7 @@ hide_unit c = timesOneR %. commuteTimes %. c %. commuteTimes %. timesOneL
 -- (2, 9)
 -- *Pi> addSub1 @@ (10, 0)
 -- (0, 10)
-addSub1 :: Pi eq => eq (Int, Int) (Int, Int)
+addSub1 :: PiNat eq => eq (Int, Int) (Int, Int)
 addSub1 = commuteTimes 
             %. (unfoldN %* id) 
             %. distribute 
@@ -163,7 +163,7 @@ addSub1 = commuteTimes
 -- The resulting isomorphism will take a list and some threaded values,
 -- and iterate over the list, performing step each time a tail operation
 -- is performed (i.e. the list is 'decremented')
-iter_ls_nat :: Pi eq => 
+iter_ls_nat :: (PiLNat eq, PiTracePlus eq) => 
                eq ((Int, [Int]), ([Int], a)) ((Int, [Int]), ([Int], a)) -> 
                eq ([Int], a) ([Int], a)
 iter_ls_nat step = timesOneR 
@@ -192,14 +192,14 @@ iter_ls_nat step = timesOneR
 -- [5,4,3,2,1]
 -- *Pi> ireverse @@ [5,4..1]
 -- [1,2,3,4,5]
-ireverse :: Pi eq => eq [Int] [Int]
+ireverse :: (PiLNat eq, PiTracePlus eq) => eq [Int] [Int]
 ireverse = hide_unit (iter_ls_nat id)
 
 -- shuffle performs a shuffle on the list; it reverses the tail of the
 -- list at each step of iteration, before recurring on it.
 -- *Pi> shuffle @@ [1..5]
 -- [1,5,2,4,3]
-shuffle :: Pi eq => eq [Int] [Int]
+shuffle :: (PiTracePlus eq, PiLNat eq) => eq [Int] [Int]
 shuffle = hide_unit (iter_ls_nat rev') %. ireverse
     where rev' = (id %* ireverse) %* id
     
@@ -211,7 +211,7 @@ shuffle = hide_unit (iter_ls_nat rev') %. ireverse
 -- isomorphism at each step, as it iterates over the int.  At each step,
 -- the given isomorphism has access to only the values of a, which are
 -- threaded through the loop.
-iter_nat ::  Pi eq => eq a a -> eq (Int, a) (Int, a)
+iter_nat ::  (PiTracePlus eq, PiNat eq) => eq a a -> eq (Int, a) (Int, a)
 iter_nat step = timesOneR 
                 %. (tracePlus body)
                 %. timesOneL
@@ -225,7 +225,7 @@ iter_nat step = timesOneR
              %. distribute
              %. (((id %* (id %* step)) %. sw) %+ id)
 
-iter_nat_i ::  Pi eq => eq (Int, a) (Int, a) -> eq (Int, a) (Int, a)
+iter_nat_i ::  (PiNat eq, PiTracePlus eq) => eq (Int, a) (Int, a) -> eq (Int, a) (Int, a)
 iter_nat_i step = timesOneR 
                 %. (tracePlus body)
                 %. timesOneL
@@ -258,7 +258,7 @@ iter_nat_i step = timesOneR
 -- (5, True)
 -- *Pi> evenOdd @@ (4, True)
 -- (4, True)
-evenOdd :: Pi eq => eq (Int, Bool) (Int, Bool)
+evenOdd :: (PiNat eq, PiBool eq, PiTracePlus eq) => eq (Int, Bool) (Int, Bool)
 evenOdd = iter_nat inot
 
 -- addSubN can be thought of the irreversible function add by providing
@@ -288,7 +288,7 @@ evenOdd = iter_nat inot
 -- ((0,10),1)
 -- *P> addSubN @@ ((10, 0), 2)
 -- ((1,9),2)
-addSubN :: Pi eq => eq ((Int, Int), Int) ((Int, Int), Int)
+addSubN :: (PiNat eq, PiTracePlus eq) => eq ((Int, Int), Int) ((Int, Int), Int)
 addSubN = commuteTimes %. (iter_nat addSub1) %. commuteTimes
 
 -- Mult can be thought of as the irreversible function multiply by
@@ -310,12 +310,12 @@ addSubN = commuteTimes %. (iter_nat addSub1) %. commuteTimes
 -- (((0,10000),7),0)
 -- *P> mult @@ (((0,10000), 0), 11)
 -- (((0,10000),0),11)
-mult :: Pi eq => eq (((Int, Int), Int), Int) (((Int, Int), Int), Int)
+mult :: (PiNat eq, PiTracePlus eq) => eq (((Int, Int), Int), Int) (((Int, Int), Int), Int)
 mult = commuteTimes %. (iter_nat addSubN) %. commuteTimes
 
 -- Factorial. Shuffle the accumulator and the 2nd input around.  Assumes the same
 -- input as mult.  Used for fact.
-fshuf :: Pi eq => eq (((Int, Int), Int), Int) (((Int, Int), Int), Int)
+fshuf :: PiNat eq => eq (((Int, Int), Int), Int) (((Int, Int), Int), Int)
 fshuf = assocTimesR 
         %. assocTimesR 
         %. (id %* (assocTimesL %. commuteTimes)) 
@@ -331,7 +331,7 @@ fshuf = assocTimesR
 -- the new accumulator.
 -- It was written in a very systematic way, and as a result is much more
 -- verbose than necessary, and rather inefficient.
-collect_garbage :: Pi eq => eq
+collect_garbage :: PiLNat eq => eq
                        (((((Int, Int), Int), Int), [Int]), [Int])
                        (((((Int, Int), Int), Int), [Int]), [Int])
 collect_garbage = (assocTimesR %* id)
@@ -379,7 +379,8 @@ collect_garbage = (assocTimesR %* id)
 -- different sort of iteration over nats, that gives us access to
 -- intermediate values.
 -- There are many optimizations possible in this code.
-fact :: Pi eq => eq ((([Int], [Int]), (((Int, Int), Int), Int)), Int)
+fact :: (PiLNat eq, PiTracePlus eq)
+              => eq ((([Int], [Int]), (((Int, Int), Int), Int)), Int)
                     ((([Int], [Int]), (((Int, Int), Int), Int)), Int)
 fact =  commuteTimes %. iter_nat ((id %* mult)
                 %. (commuteTimes %. assocTimesL %. collect_garbage)
@@ -403,7 +404,7 @@ fact =  commuteTimes %. iter_nat ((id %* mult)
 -- (0, False) --> (0, True)
 -- 
 -- the adjoint of this function is also an isomorphism. 
-iso_inc :: Pi eq => eq (Int, Bool) (Int, Bool)
+iso_inc :: (PiBool eq, PiNat eq) => eq (Int, Bool) (Int, Bool)
 iso_inc = commuteTimes 
           %. (unfoldB %* id)
           %. distribute
@@ -420,35 +421,35 @@ iso_inc = commuteTimes
 -- n --> n+1
 -- 
 -- the adjoint of this function is undefined for 0. 
-inc :: Pi eq => eq Int Int
+inc :: (PiTracePlus eq, PiNat eq) => eq Int Int
 inc = tracePlus body
   where 
     body = ((unfoldN %. commutePlus) %+ id) %. assocPlusR %. (id %+ foldN)
 
-dec :: Pi eq => eq Int Int
+dec :: (PiNat eq, PiTracePlus eq) => eq Int Int
 dec = adj inc
 
 -- A total function that will turn a () into False
-introFalse :: Pi eq => eq () Bool
+introFalse :: (PiTracePlus eq, PiBool eq, PiNat eq) => eq () Bool
 introFalse = tracePlus body
            where 
              body = assocPlusR
                     %. (unfoldN %. commutePlus %+ foldB)
 
-introTrue :: Pi eq => eq () Bool
+introTrue :: (PiBool eq, PiTracePlus eq, PiNat eq) => eq () Bool
 introTrue = introFalse %. inot
 
 -- A partial function that will delete a False.  Only defined on input
 -- False
-deleteFalse :: Pi eq => eq Bool ()
+deleteFalse :: (PiBool eq, PiTracePlus eq, PiNat eq) => eq Bool ()
 deleteFalse = adj introFalse
 
 -- A partial function that will delete True.
-deleteTrue :: Pi eq => eq Bool ()
+deleteTrue :: (PiBool eq, PiTracePlus eq, PiNat eq) => eq Bool ()
 deleteTrue = adj introTrue
 
 -- A total function which will introduce a 0
-introZero :: Pi eq => eq () Int
+introZero :: (PiNat eq, PiTracePlus eq, PiBool eq) => eq () Int
 introZero = tracePlus body
      where 
        body = commutePlus -- () + Int
@@ -460,30 +461,30 @@ introZero = tracePlus body
               %. (timesOneL %+ timesOneL)
 
 -- A partial function which will delete a zero
-deleteZero :: Pi eq => eq Int ()
+deleteZero :: (PiNat eq, PiBool eq, PiTracePlus eq) => eq Int ()
 deleteZero = adj introZero
 
 -- Convenient ways to introduce zeros.
-introZeroL :: Pi eq => eq a (Int, a)
+introZeroL :: (PiNat eq, PiBool eq, PiTracePlus eq) => eq a (Int, a)
 introZeroL = timesOneR %. (introZero %* id)
 
-deleteZeroL :: Pi eq => eq (Int, a) a
+deleteZeroL :: (PiNat eq, PiBool eq, PiTracePlus eq) => eq (Int, a) a
 deleteZeroL = adj introZeroL
 
 -- Some more interesting functions that do unexpected things
 --
 -- intToBool is a partial function, undefined for all n > 1.
 -- It transforms 1 to False and 0 to True
-intToBool :: Pi eq => eq Int Bool
+intToBool :: (PiNat eq, PiBool eq, PiTracePlus eq) => eq Int Bool
 intToBool = unfoldN %. (id %+ deleteZero) %. foldB
 
 -- A total function which converts True to 0 and False to 1
-boolToInt :: Pi eq => eq Bool Int
+boolToInt :: (PiNat eq, PiBool eq, PiTracePlus eq) => eq Bool Int
 boolToInt = adj intToBool
 
 -- A partial function defined only on zero.  It's inverse is also
 -- defined only on zero.
-zero :: Pi eq => eq Int Int
+zero :: (PiNat eq, PiBool eq, PiTracePlus eq) => eq Int Int
 zero = timesOneR 
        %. commuteTimes 
        %. iter_nat_i body 
@@ -497,23 +498,23 @@ zero = timesOneR
               %. (id %* commutePlus)
               %. (id %* (foldN %. deleteZero))
 
-add :: Pi eq => eq (Int, Int) (Int, Int)
+add :: (PiNat eq, PiTracePlus eq) => eq (Int, Int) (Int, Int)
 add = iter_nat inc
 
-mult' :: Pi eq => eq (Int, (Int,Int)) (Int, (Int, Int))
+mult' :: (PiNat eq, PiTracePlus eq) => eq (Int, (Int,Int)) (Int, (Int, Int))
 mult' = iter_nat add
 
 -- Some list operations
-cons :: Pi eq => eq (Int, [Int]) [Int]
+cons :: (PiLNat eq, PiTracePlus eq) => eq (Int, [Int]) [Int]
 cons = tracePlus body
      where
        body = assocPlusR 
               %. ((unfoldN %. commutePlus) %+ foldLN)
 
-car :: Pi eq => eq [Int] (Int, [Int])
+car :: (PiLNat eq, PiTracePlus eq) => eq [Int] (Int, [Int])
 car = adj cons
 
-nil :: Pi eq => eq () [Int]
+nil :: (PiLNat eq, PiTracePlus eq, PiBool eq) => eq () [Int]
 nil = tracePlus body
     where
        body = commutePlus -- () + (Int, [Int])
@@ -525,18 +526,18 @@ nil = tracePlus body
               %. ((introZero %* id) %+ timesOneL)
 
 -- Convenient way to introduce nil
-introNilR :: Pi eq => eq a (a, [Int])
+introNilR :: (PiLNat eq, PiTracePlus eq, PiBool eq) => eq a (a, [Int])
 introNilR = timesOneR %. (nil %* id) %. commuteTimes
 
-deleteNilR :: Pi eq => eq (a, [Int]) a
+deleteNilR :: (PiLNat eq, PiTracePlus eq, PiBool eq) => eq (a, [Int]) a
 deleteNilR = adj introNilR
 
 -- Duplicate an integer
-duplicate :: Pi eq => eq Int (Int, Int)
+duplicate :: (PiNat eq, PiTracePlus eq, PiBool eq) => eq Int (Int, Int)
 duplicate = introZeroL %. commuteTimes %. add
 
 -- A much better implementation of fact' !
-fact' :: Pi eq => eq Int (Int, [Int])
+fact' :: (PiLNat eq, PiTracePlus eq, PiBool eq) => eq Int (Int, [Int])
 fact' = heap
         %. arrangeIn
         %. (iter_nat_i (arrangeOut %. body %. arrangeIn)) 
@@ -544,7 +545,7 @@ fact' = heap
         %. garbage
       where
         -- Introduces some extra terms to work with.
-        heap :: Pi eq => eq Int ((Int, (Int, Int)), [Int])
+        heap :: (PiLNat eq, PiBool eq, PiTracePlus eq) => eq Int ((Int, (Int, Int)), [Int])
         heap = introNilR 
              %. ((duplicate 
                  %. introZeroL
@@ -572,14 +573,14 @@ fact' = heap
                %. ((dec %* id) %* id)
         -- ((Int, (Int, 0)), [Int]) :<=> (Int, (Int, [Int]))
         -- Delete the leftover zero.
-        deleteZero :: Pi eq => eq ((Int, (Int, Int)), [Int]) (Int, (Int, [Int]))
+        deleteZero :: (PiNat eq, PiBool eq, PiTracePlus eq) => eq ((Int, (Int, Int)), [Int]) (Int, (Int, [Int]))
         deleteZero = ((id %* (commuteTimes %. deleteZeroL)) %* id)
                      %. assocTimesR
         -- After deleting the zero, our answer isn't in the nicest
         -- place, and we still have 1 intermediate value left, and the
         -- original input. Let's put the answer in a nicer place, and
         -- put those unneeded values in the garbage list.
-        garbage :: Pi eq => eq ((Int, (Int, Int)),[Int]) (Int, [Int])
+        garbage :: (PiLNat eq, PiBool eq, PiTracePlus eq) => eq ((Int, (Int, Int)),[Int]) (Int, [Int])
         garbage = deleteZero
                   %. (id %* (id %* car)) -- (Int, (Int, (Int, [Int])))
                   %. (id %* (id %* commuteTimes))
@@ -592,7 +593,7 @@ fact' = heap
 
 -- Some interesting divergent functions (partial bijections)
 --
-omega0 :: Pi eq => eq (Int, Bool) (Int, Bool)
+omega0 :: (PiBool eq, PiNat eq, PiTracePlus eq) => eq (Int, Bool) (Int, Bool)
 omega0 = timesOneR
          %. (tracePlus body)
          %. timesOneL
@@ -610,11 +611,11 @@ omega0 = timesOneR
 --
 -- This is a partial function. It is the identity on the defined
 -- inputs.  i.e. (c v) |-->* v if it terminates.
-omega0_partial_id :: Pi eq => eq (Int, Bool) (Int, Bool)
+omega0_partial_id :: (PiNat eq, PiBool eq, PiTracePlus eq) => eq (Int, Bool) (Int, Bool)
 omega0_partial_id = omega0 %. (adj omega0)
 
 -- This is just the identity. 
-omega0_id :: Pi eq => eq (Int,Bool) (Int, Bool)
+omega0_id :: (PiNat eq, PiBool eq, PiTracePlus eq) => eq (Int,Bool) (Int, Bool)
 omega0_id = (adj omega0) %. omega0
 
 -- Another infinite loop, but this time on a finite type.  This is
@@ -622,7 +623,7 @@ omega0_id = (adj omega0) %. omega0
 -- this is on a finite type, we can ask our usual information
 -- theoretic questions about this: Does this function preserve
 -- information?
-omega1 :: Pi eq => eq Bool Bool
+omega1 :: (PiNat eq, PiBool eq, PiTracePlus eq) => eq Bool Bool
 omega1 = timesOneR 
          %. (tracePlus body)
          %. timesOneL
@@ -638,19 +639,19 @@ omega1 = timesOneR
 
 -- Undefined on all inputs. Does this constitute some form of
 -- "deleting a bit"? Entropy of bool is 1. 
-omega1_bool :: Pi eq => eq Bool Bool
+omega1_bool :: (PiNat eq, PiBool eq, PiTracePlus eq) => eq Bool Bool
 omega1_bool = omega1 %. omega1
 
 -- Another infinite loop.  Unit however is supposed to have no
 -- information, so what does non-termination mean in this case?
 -- Entropy of unit is 0.
-omega1_unit :: Pi eq => eq () ()
+omega1_unit :: (PiNat eq, PiBool eq, PiTracePlus eq) => eq () ()
 omega1_unit = tracePlus (foldB %. omega1 %. unfoldB)
 
 ------------------------------------------------------------------------
 
 class CreateConst a where 
-    createConst :: Pi eq => eq () a
+    createConst :: (PiBool eq, PiLNat eq, PiTracePlus eq) => eq () a
 
 instance CreateConst () where 
     createConst = id 
@@ -667,7 +668,7 @@ instance CreateConst Int where
 instance CreateConst a => CreateConst [a] where 
     createConst = tracePlus body 
         where 
-          body :: Pi eq => eq (Either (a, [a]) ()) (Either (a, [a]) [a])
+          body :: (PiBool eq, PiLNat eq, PiTracePlus eq) => eq (Either (a, [a]) ()) (Either (a, [a]) [a])
           body = commutePlus
                  %. foldL 
                  %. withUnit (introFalse %. unfoldB)

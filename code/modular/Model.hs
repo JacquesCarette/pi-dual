@@ -83,14 +83,22 @@ instance Pi (:<=>) where
   timesZeroR = TimesZeroR
   distribute = Distribute
   factor = Factor
+
+instance PiBool (:<=>) where
   foldB = FoldB
   unfoldB = UnfoldB
+
+instance PiNat (:<=>) where
   foldN = FoldN
   unfoldN = UnfoldN
+
+instance PiLNat (:<=>) where
   foldLN = FoldLN
   unfoldLN = UnfoldLN
   foldL = FoldL
   unfoldL = UnfoldL
+
+instance PiTracePlus (:<=>) where
   tracePlus = TracePlus
 
 instance PiN (:<=>) where
@@ -169,38 +177,38 @@ unList _ g (h:t) = g h t
 
 -- (simple) Semantics.  4 cases missing
 -- 0*a = 0, 0 = 0*a, 1 = 1/a*a, 1/a*a = 1
-instance Extract (:<=>) where
-  Id           @! v = v
-  (Adj f)      @! v = Negative ((adjoint f) @@ (unN v))
-  (f :.: g)    @! v = ((g @!) . (f @!)) v
-  (f :*: g)    @! v = (,) (f @! projL v) (g @! projR v) 
-  (f :+: g)    @! v = either (Left . (f @!)) (Right . (g @!)) v
-  PlusZeroL    @! v = unR v
-  PlusZeroR    @! v = Right v
-  CommutePlus  @! v = either Right Left v
-  AssocPlusL   @! v = either (Left . Left) (either (Left . Right) Right) v
-  AssocPlusR   @! v = either (either Left (Right . Left)) (Right . Right) v
-  TimesOneL    @! v = projR v
-  TimesOneR    @! v = ((), v)
-  CommuteTimes @! v = (projR v, projL v)
-  AssocTimesL  @! v = ((projL v, projL . projR $ v), projR . projR $ v)
-  AssocTimesR  @! v = (projL . projL $ v, (projR . projL $ v, projR v))
-  Distribute   @! v = let w = projR v in 
-                      either (\z -> Left (z, w)) (\z -> Right (z,w)) (projL v)
-  Factor       @! v = either (\z -> (Left $ projL z, projR z))
-                             (\z -> (Right $ projL z, projR z)) v
-  FoldB        @! v = either (\() -> True) (\() -> False) v
-  UnfoldB      @! v = if v then Left () else Right ()
-  FoldN        @! v = either (const 0) (1+) v
-  FoldLN       @! v = either (\() -> []) (\(h,t) -> h : t) v
-  FoldL        @! v = either (\() -> []) (\(h,t) -> h : t) v
-  UnfoldN      @! v = if v == 0 then Left () else Right (v-1)
-  UnfoldLN     @! v = unList (Left ()) (\a b -> Right (a,b)) v
-  UnfoldL      @! v = unList (Left ()) (\a b -> Right (a,b)) v
-  (TracePlus c) @! v = loop c (c @! (Right v))
-      where
-        loop d = either (\z -> loop d (d @! (Left z))) (\z -> z)
+-- instance Extract (:<=>) where
+--   Id           @! v = v
+--   (Adj f)      @! v = Negative ((adjoint f) @@ (unN v))
+--   (f :.: g)    @! v = ((g @!) . (f @!)) v
+--   (f :*: g)    @! v = (,) (f @! projL v) (g @! projR v) 
+--   (f :+: g)    @! v = either (Left . (f @!)) (Right . (g @!)) v
+--   PlusZeroL    @! v = unR v
+--   PlusZeroR    @! v = Right v
+--   CommutePlus  @! v = either Right Left v
+--   AssocPlusL   @! v = either (Left . Left) (either (Left . Right) Right) v
+--   AssocPlusR   @! v = either (either Left (Right . Left)) (Right . Right) v
+--   TimesOneL    @! v = projR v
+--   TimesOneR    @! v = ((), v)
+--   CommuteTimes @! v = (projR v, projL v)
+--   AssocTimesL  @! v = ((projL v, projL . projR $ v), projR . projR $ v)
+--   AssocTimesR  @! v = (projL . projL $ v, (projR . projL $ v, projR v))
+--   Distribute   @! v = let w = projR v in 
+--                       either (\z -> Left (z, w)) (\z -> Right (z,w)) (projL v)
+--   Factor       @! v = either (\z -> (Left $ projL z, projR z))
+--                              (\z -> (Right $ projL z, projR z)) v
+--   FoldB        @! v = either (\() -> True) (\() -> False) v
+--   UnfoldB      @! v = if v then Left () else Right ()
+--   FoldN        @! v = either (const 0) (1+) v
+--   FoldLN       @! v = either (\() -> []) (\(h,t) -> h : t) v
+--   FoldL        @! v = either (\() -> []) (\(h,t) -> h : t) v
+--   UnfoldN      @! v = if v == 0 then Left () else Right (v-1)
+--   UnfoldLN     @! v = unList (Left ()) (\a b -> Right (a,b)) v
+--   UnfoldL      @! v = unList (Left ()) (\a b -> Right (a,b)) v
+--   (TracePlus c) @! v = loop c (c @! (Right v))
+--       where
+--         loop d = either (\z -> loop d (d @! (Left z))) (\z -> z)
 
 -- for interactive convenience
-(@@) :: (a :<=> b) -> a -> b
-(@@) = (@!)
+-- (@@) :: (a :<=> b) -> a -> b
+-- (@@) = (@!)

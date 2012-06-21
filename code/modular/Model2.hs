@@ -6,8 +6,9 @@
 
 module Model2 where
 
-import Model hiding ((@@))
-import Lang (Neg,Inv,Unpack(..))
+import Model
+import Lang (Neg,Inv,Unpack(..),Unifyable(..),Extract(..),DS(..),
+    mr,mr2,mar,fresh1,fresh2,fresh3,orV)
 import Control.Monad
 import Unsafe.Coerce -- needed for polymorphic lookup. 
 
@@ -38,14 +39,15 @@ instance Unpack V where
     proj2 (Pair _ b) = b
     unNeg (Neg a) = a
 
+instance DS V where
+    unit = Unit
+    pair = pair
+    left = L
+    right = R
+    neg = Neg
+    inv = inv
 ---------------------------------------------------------------------------
 -- Unification
-
--- This class says that, the u a's can be unified (as an effect) and generated
-class Unifyable u where
-  type W :: * -> *
-  unify :: u a -> u a -> W ()
-  fresh :: W (u a)
 
 data Binding = forall a. Binding (Var a) (V a)
 type World = ([Binding], Int)
@@ -137,9 +139,6 @@ instance MonadPlus M where
   mzero = zeroM
   mplus = orM
 
-orV :: MonadPlus m => (v a -> m b) -> (v a -> m b) -> (v a -> m b)
-orV f g = \v -> f v `mplus` g v
-
 ----------------------------------------------------------------------
 -- Run the computation
 run :: M (V a) -> [V a]
@@ -147,44 +146,6 @@ run e = map reify (e `app` ([], 100))
 
 -- Note: I start with the 100 as the first system generated fresh
 -- variable thus reserving fresh variables 0..99 for user input. 
-
-----------
--- Helper fn
-fresh1 :: (Unifyable v) => (v a -> v b) -> v b -> W (v a)
-fresh1 f v =
-  do x <- fresh
-     unify (f x) v
-     return x
-
-fresh2 :: (Unifyable v) => (v a1 -> v a2 -> v b) -> v b -> W (v a1, v a2)
-fresh2 f v =
-  do x1 <- fresh
-     x2 <- fresh
-     unify (f x1 x2) v
-     return (x1,x2)
-
-fresh3 :: (Unifyable v) => (v a1 -> v a2 -> v a3 -> v b) 
-                           -> v b -> W (v a1, v a2, v a3)
-fresh3 f v =
-  do x1 <- fresh
-     x2 <- fresh
-     x3 <- fresh
-     unify (f x1 x2 x3) v
-     return (x1,x2,x3)
-
-lift1 :: Monad m => (t -> m a) -> (a -> r) -> t -> m r
-lift1 f g v = liftM g (f v)
-
--- mar = match >=> act >=> return
-mar :: Unifyable v => (v a -> v b) -> (v a -> W c) -> (c -> d) -> (v b -> W d)
-mar f g h = fresh1 f >=> g >=> (return . h)
--- mr = match >=> return
-mr :: (V a -> V b) -> (V a -> c) -> (V b -> M c)
-mr f h = fresh1 f >=> (return . h)
-
--- mr2 = match >=> return (on 2 args)
-mr2 :: Unifyable v => (v a1 -> v a2 -> v b) -> ((v a1, v a2) -> c) -> v b -> W c
-mr2 f h = fresh2 f >=> (return . h)
 
 ----------------------------------------------------------------------
 -- Semantics
@@ -203,74 +164,78 @@ mr2 f h = fresh2 f >=> (return . h)
 -- Logic programming often smells like it has some
 -- quantumness/reversibility. This code essentially leverages that for
 -- Pi.
-(@@) :: (a :<=> b) -> V a -> M (V b)
+
+instance Extract (:<=>) where
+-- (@@) :: (a :<=> b) -> V a -> M (V b)
 -- Id @@ a = return a 
-Id @@ a = mr id id a
-(Adj f) @@ v = mar Neg ((adjoint f) @@) Neg v
+  Id @! a = mr id id a
+  (Adj f) @! v = mar neg ((adjoint f) @!) neg v
 
 -- (f :.: g) @@ a = g @@ (f @@ a)
-(f :.: g) @@ a = ((f @@) >=> (g @@)) a
+  (f :.: g) @! a = ((f @!) >=> (g @!)) a
 
 -- (f :*: g) @@ (a,c) = (f @@ a, g @@ c)
-(f :*: g) @@ v = 
-     do (x1,x2) <- fresh2 Pair v
-        liftM2 Pair (f @@ x1) (g @@ x2)
+  (f :*: g) @! v = 
+       do (x1,x2) <- fresh2 pair v
+          liftM2 pair (f @! x1) (g @! x2)
 
 -- (f :+: g) @@ (Left a) = Left (f @@ a) 
 -- (f :+: g) @@ (Right b) = Right (g @@ b) 
-(f :+: g) @@ v = (mar L (f @@) L `orV` mar R (g @@) R) v
+  (f :+: g) @! v = (mar left (f @!) left `orV` mar right (g @!) right) v
 
 -- PlusZeroL @@ (Right a) = a
-PlusZeroL @@ v = mr R id v
+  PlusZeroL @! v = mr right id v
 -- PlusZeroR @@ a = Right a
-PlusZeroR @@ v = mr id R v
+  PlusZeroR @! v = mr id right v
 
 -- CommutePlus @@ (Left a) = Right a
 -- CommutePlus @@ (Right b) = Left b 
-CommutePlus @@ v = (mr L R `orV` mr R L) v
+  CommutePlus @! v = (mr left right `orV` mr right left) v
 
 -- AssocPlusL @@ (Left a) = Left (Left a) 
 -- AssocPlusL @@ (Right (Left b)) = Left (Right b) 
 -- AssocPlusL @@ (Right (Right c)) = Right c
-AssocPlusL @@ v = (mr L (L . L) `orV` mr (R . L) (L . R) `orV` mr (R . R) R) v
+  AssocPlusL @! v = (mr left (left . left) 
+              `orV` mr (right . left) (left . right) 
+              `orV` mr (right . right) right) v
 
 -- AssocPlusR @@ (Left (Left a)) = Left a
 -- AssocPlusR @@ (Left (Right b)) = Right (Left b)
 -- AssocPlusR @@ (Right c) = Right (Right c)
-AssocPlusR @@ v = (mr (L . L) L `orV` mr (L . R) (R . L) `orV` mr R (R . R)) v
+  AssocPlusR @! v = (mr (left . left) left `orV` mr (left . right) (right . left) `orV` mr right (right . right)) v
 
 -- TimesOneL @@ ((), a) = a
-TimesOneL @@ v = fresh1 (Pair Unit) v
+  TimesOneL @! v = fresh1 (pair unit) v
 -- TimesOneR @@ a = ((), a)
-TimesOneR @@ v = return (Pair Unit v)
+  TimesOneR @! v = return (pair unit v)
 
 -- CommuteTimes @@ (a,b) = (b,a) 
-CommuteTimes @@ v = mr2 Pair (uncurry $ flip Pair) v
+  CommuteTimes @! v = mr2 pair (uncurry $ flip pair) v
 
 -- AssocTimesL @@ (a,(b,c)) = ((a,b),c) 
-AssocTimesL @@ v = 
-    do (x,y,z) <- fresh3 (\a b c -> Pair a (Pair b c)) v
-       return (Pair (Pair x y) z)
+  AssocTimesL @! v = 
+      do (x,y,z) <- fresh3 (\a b c -> pair a (pair b c)) v
+         return (pair (pair x y) z)
 -- AssocTimesR @@ ((a,b),c)  = (a,(b,c))
-AssocTimesR @@ v = 
-    do (x,y,z) <- fresh3 (\a b c -> Pair (Pair a b) c) v
-       return (Pair x (Pair y z))
+  AssocTimesR @! v = 
+      do (x,y,z) <- fresh3 (\a b c -> pair (pair a b) c) v
+         return (pair x (pair y z))
 
 -- Distribute @@ (Left b, a) = Left (b, a) 
 -- Distribute @@ (Right c, a) = Right (c, a) 
-Distribute @@ v = 
-      (mr2 (\x y -> Pair (L x) y) (L . uncurry Pair) `orV`
-       mr2 (\x y -> Pair (R x) y) (R . uncurry Pair)) v
+  Distribute @! v = 
+        (mr2 (\x y -> pair (left x) y) (left . uncurry pair) `orV`
+         mr2 (\x y -> pair (right x) y) (right . uncurry pair)) v
 
 -- Factor @@ (Left (b, a)) = (Left b, a) 
 -- Factor @@ (Right (c, a)) = (Right c, a) 
-Factor @@ v = 
-      (mr2 (\x y -> L (Pair x y)) (\(x,y) -> Pair (L x) y) `orV`
-       mr2 (\x y -> R (Pair x y)) (\(x,y) -> Pair (R x) y)) v
+  Factor @! v = 
+        (mr2 (\x y -> left (pair x y)) (\(x,y) -> pair (left x) y) `orV`
+         mr2 (\x y -> right (pair x y)) (\(x,y) -> pair (right x) y)) v
 
 -- EtaTimes and EpsTimes as U shaped connectors
-EtaTimes @@ v = mr (\_ -> Unit) (\x -> Pair (Inv x) x) v
-EpsTimes @@ v = mr (\x -> Pair x (Inv x)) (\_ -> Unit) v
+  EtaTimes @! v = mr (\_ -> unit) (\x -> pair (inv x) x) v
+  EpsTimes @! v = mr (\x -> pair x (inv x)) (\_ -> unit) v
 
 -- FoldB @@ (Left ()) = True
 -- FoldB @@ (Right ()) = False
@@ -293,6 +258,8 @@ EpsTimes @@ v = mr (\x -> Pair x (Inv x)) (\_ -> Unit) v
 --       loop c (Left v) = loop c (c @@ (Left v))
 --       loop c (Right v) = v
 
+(@@) :: (a :<=> b) -> V a -> M (V b)
+(@@) = (@!)
 
 --------------------------------------------------------------
 -- Sample interaction
