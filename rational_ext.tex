@@ -119,6 +119,8 @@
 %! ::= = &::=&
 %! /= = \neq
 %! @@ = \mu
+%! [^ = \lceil
+%! ^] = \rceil
 %! forall = \forall
 %! exists = \exists
 %! empty = \epsilon
@@ -469,6 +471,7 @@ equivalence and compatible closure:
 %@ c2 : b2 <-> b4
 %@@ c1 (*) c2 : b1 * b2 <-> b3 * b4
 
+\noindent
 To summarize, the syntax of {{Pi}} is given as follows. 
 
 \begin{definition}{(Syntax of {{Pi}})}
@@ -495,7 +498,30 @@ construction for the primitive isomorphisms. For the closure combinators, the
 adjoint is homomorphic except for the case of sequencing in which the order
 is reversed, i.e., {{(c1 (;) c2){dagger} = (c2{dagger}) (;) (c1{dagger}) }}.
 
-%%%%%%%%%%%%%%%
+\begin{definition}[Size of a type]
+\label{def:size}
+The size of a type {{b}} is a number defined to be:
+\vspace{-20pt}
+\begin{multicols}{2}
+%subcode{opsem} include main
+% [^ b1 + b2 ^] '= [^ b1 ^] + [^ b2 ^]
+% [^ b1 * b2 ^] '= [^ b1 ^] * [^ b2 ^]  
+
+%subcode{opsem} include main
+% [^ 0 ^] '= 0
+% [^ 1 ^] '= 1
+\end{multicols}
+
+where {{+}} is numeric addition and {{*}} is numeric multiplication. 
+  
+\end{definition}
+\noindent
+In the setting of {{Pi}} the \emph{size}, {{[^ b ^]}}, may be simply thought of as
+the number of inhabitants (an arity) of the type. This intuition will
+however become tenuous in the presence of negative and fractional
+types.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Graphical Language}
 
 The syntactic notation above is often obscure and hard to read.  Following
@@ -715,6 +741,8 @@ below. Factoring is the corresponding adjoint operation.
 \end{center}
 \end{multicols}
 
+\item Composition TODO.
+
 
 \end{itemize}
 
@@ -735,7 +763,7 @@ diagram:
 }
 \end{center}
 
-%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Semantics}
 
 The operational semantics of {{Pi}} is summarized below (also see
@@ -833,21 +861,26 @@ details may be found in excellent references such as Barr and Wells
     equivalence of {{f(;)(g(;)h)}} and {{(f(;)g)(;)h}} (where
     {{h:b3<->b4}}). One can check:
 
+\vspace{-20pt}
+    \begin{multicols}{2}
+      \begin{scriptsize}
+        
 %subcode{proof} include main
 %@@ f v1 |--> v2
 %@ g v2 |--> v3
 %@ h v3 |--> v4
 %@@ g (;) h  v2 |--> v4
 %@@@ f (;) (g (;) h) v1 |--> v4
-
-and
-
+~
 %subcode{proof} include main
 %@ f v1 |--> v2
 %@ g v2 |--> v3
 %@@ f (;) g v1 |--> v3
 %@@ h v3 |--> v4
 %@@@ (f (;) g) (;) h v1 |--> v4
+
+      \end{scriptsize}
+    \end{multicols}
 
   \item Composition respects identity: {{id (;) f = f}} and {{g(;)id=g}}.
   \end{enumerate}
@@ -858,9 +891,9 @@ and
   has the adjoint {{f^{dagger}:b2 <->b1}}. The following properties
   hold (where {{g : b2 <-> b3}}): 
   \begin{enumerate}
-  \item {{id^{dagger} = id : b <-> b}}
-  \item {{(f (;) g)^{dagger} = g^{dagger} (;) f^{dagger}: b3 <-> b1}}
-  \item {{f^{dagger dagger} = f : b1 <-> b2}}
+  \item {{id^{dagger} = id : b <-> b}}.
+  \item {{(f (;) g)^{dagger} = g^{dagger} (;) f^{dagger}: b3 <-> b1}}.
+  \item {{f^{dagger dagger} = f : b1 <-> b2}}.
   \end{enumerate}
 \end{lemma}
 
@@ -872,20 +905,20 @@ and
   \begin{proof}
     To establish that category is monoidal one must show isomorphisms
     \begin{enumerate}
-    \item {{b1 + (b2 + b3) <-> (b1 +b2) + b3}} given by {{assoc+}}
-    \item {{0 + b <-> b}} given by {{zeroe}}
-    \item {{b + 0 <-> b}} given by {{swap+ (;) zeroe}}
+    \item {{b1 + (b2 + b3) <-> (b1 +b2) + b3}} given by {{assocl+}}.
+    \item {{0 + b <-> b}} given by {{zeroe}}.
+    \item {{b + 0 <-> b}} given by {{swap+ (;) zeroe}}.
     \item We need to check that {{+}} is a bifunctor. 
       \begin{enumerate}
-      \item {{id_{b1<->b1}(+)id_{b2<->b2} = id_{b1+b2<->b1+b2} }}
-      \item {{(f(+)g)(;)(j(+)k) = (f (;) j) (+) (g (;) k)}}
+      \item {{id_{b1<->b1}(+)id_{b2<->b2} = id_{b1+b2<->b1+b2} }}.
+      \item {{(f(+)g)(;)(j(+)k) = (f (;) j) (+) (g (;) k)}}.
       \end{enumerate}
-    \item We need to check the naturality of {{assoc+}}, {{zeroe}} and
+    \item We need to check the naturality of {{assocl+}}, {{zeroe}} and
       {{swap+(;)zeroe}}.
       \begin{enumerate}
-      \item {{assoc+ (;) ((f (+)g) (+) h) = (f (+)(g (+) h)) (;) assoc+}}
-      \item {{zeroe (;) f = (id (+) f) (;) zeroe}}
-      \item {{(swap+ (;) zeroe) (;) f = (f (+) id) (;) (swap+ (;) zeroe)}}
+      \item {{assocl+ (;) ((f (+)g) (+) h) = (f (+)(g (+) h)) (;) assocl+}}.
+      \item {{zeroe (;) f = (id (+) f) (;) zeroe}}.
+      \item {{(swap+ (;) zeroe) (;) f = (f (+) id) (;) (swap+ (;) zeroe)}}.
       \end{enumerate}
     \item Satisfy certain coherence conditions which are usually
       called the ``pentagon'' and ``triangle'' axioms (see Sec 3.1
@@ -901,7 +934,7 @@ and
 
     \begin{enumerate}
     \item The braiding must satisfy two ``hexagon axioms''.
-    \item The braiding is self inverse
+    \item The braiding is self inverse,
       {{swap+_{b1+b2}=(swap+_{b2+b1})^{dagger} }}.
     \end{enumerate}
 
