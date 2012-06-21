@@ -737,9 +737,10 @@ diagram:
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Semantics}
 
-The semantics of the primitive combinators is given by the following
-single-step reductions. Since there are no values of type {{0}}, the rules
-omit the impossible cases:
+The operational semantics of {{Pi}} is summarized below (also see
+\cite{infeffects}).  The semantics of the primitive combinators is
+given by the following single-step reductions below. Since there are
+no values of type {{0}}, the rules omit the impossible cases:
 \begin{scriptsize}
 %subcode{opsem} include main
 %! columnStyle = rlcl
@@ -760,6 +761,9 @@ omit the impossible cases:
 % dist & (right v2, v3) &|-->& right (v2, v3)
 % factor & (left (v1, v3)) &|-->& (left v1, v3) 
 % factor & (right (v2, v3)) &|-->& (right v2, v3)   
+
+The operational semantics of the closure conditions are presented in
+the usual big-step style.
 
 %subcode{proof} include main
 %@ ~
@@ -783,9 +787,9 @@ omit the impossible cases:
 %@@ (c1 (*) c2)  (v1, v2) |--> (v3, v4)
 \end{scriptsize}
 
-\begin{proposition}[Type Safety]
-  
-\end{proposition}
+The type safety of {{Pi}} follows directly from the corresondence
+between inductive definitions of the types and the big-step
+semantics. Previous work also established the following properties:
 
 \begin{proposition}[Strong Normalizing]
 \label{prop:termination-pi} 
@@ -801,6 +805,57 @@ omit the impossible cases:
 {{ c{dagger} v' |--> v}}
 \end{proposition}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Categorical Structure}
+
+For the purpose of establishing equivalence of morphisms in the
+categorical presentation we use the following notion of equality:
+
+\begin{lemma}[{{c1  = c2}}]
+We say {{c1 = c2}} if {{c1:b1<->b2}} and {{c2:b1<->b2}} and for all
+{{v1:b}}, we have {{c1 v1 |--> v2}} iff {{c2 v1 |--> v2}} and {{v2:b2}}.
+\end{lemma}
+
+\begin{lemma}[{{Pi}} is a category]
+  We have as objects the types {{b}} and as morphisms equivalence
+  classes of combinators {{b1<->b2}}. One can check:
+  \begin{enumerate}
+  \item Every object {{b}} has an identity morphism {{b <->b}}.
+  \item Composition {{g (o) f}} of morphisms {{f:b1 <->b2}} and
+    {{g:b2<->b3}} is given by sequencing {{f (;) g}}. 
+  \item Associativity of composition follows from operational
+    equivalence of {{f(;)(g(;)h)}} and {{(f(;)g)(;)h}} (where
+    {{h:b3<->b4}}). One can check:
+
+%subcode{proof} include main
+%@@ f v1 |--> v2
+%@ g v2 |--> v3
+%@ h v3 |--> v4
+%@@ g (;) h  v2 |--> v4
+%@@@ f (;) (g (;) h) v1 |--> v4
+
+and
+
+%subcode{proof} include main
+%@ f v1 |--> v2
+%@ g v2 |--> v3
+%@@ f (;) g v1 |--> v3
+%@@ h v3 |--> v4
+%@@@ (f (;) g) (;) h v1 |--> v4
+
+  \item Composition respects identity: {{id (;) f = f}} and {{g(;)id=g}}.
+  \end{enumerate}
+\end{lemma}
+
+\begin{lemma}[Symmetric Monoidal (+, 0)]
+  {{Pi}} is a symmetric monoidal category with tensor {{+}} and
+  monoidal unit {{0}}. For any object {{b1+b2}} the required symmetry
+  morphism (called in categorical literature) is
+  {{swap+:b1+b2<->b2+b1}}.
+\end{lemma}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Small Step Semantics}
 
 The reductions for the primitive isomorphisms above are exactly the same as
