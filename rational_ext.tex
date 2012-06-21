@@ -500,7 +500,8 @@ is reversed, i.e., {{(c1 (;) c2){dagger} = (c2{dagger}) (;) (c1{dagger}) }}.
 
 \begin{definition}[Size of a type]
 \label{def:size}
-The size of a type {{b}} is a number defined to be:
+The size of a type {{b}}, denoted by {{[^ b ^]}}, is a numeric value
+and is defined to be:
 \vspace{-20pt}
 \begin{multicols}{2}
 %subcode{opsem} include main
@@ -743,7 +744,6 @@ below. Factoring is the corresponding adjoint operation.
 
 \item Composition TODO.
 
-
 \end{itemize}
 
 \noindent 
@@ -859,7 +859,11 @@ details may be found in excellent references such as Barr and Wells
     {{g:b2<->b3}} is given by sequencing {{f (;) g}}. 
   \item Associativity of composition follows from operational
     equivalence of {{f(;)(g(;)h)}} and {{(f(;)g)(;)h}} (where
-    {{h:b3<->b4}}). One can check:
+    {{h:b3<->b4}}). 
+
+    Assuming {{v1:b1}}, {{v2:b2}}, {{v3:b3}}, {{v4:b4}},
+    {{f~v1|-->v2}}, {{g v2 |--> v3}} and {{h~v3 |--> v4}}, one can
+    check:
 
 \vspace{-20pt}
     \begin{multicols}{2}
@@ -933,7 +937,7 @@ details may be found in excellent references such as Barr and Wells
     \cite{springerlink:10.1007/978-3-642-12821-94}).
 
     \begin{enumerate}
-    \item The braiding must satisfy two ``hexagon axioms''.
+    \item The braiding must satisfy two ``hexagon'' axioms.
     \item The braiding is self inverse,
       {{swap+_{b1+b2}=(swap+_{b2+b1})^{dagger} }}.
     \end{enumerate}
