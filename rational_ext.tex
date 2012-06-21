@@ -794,7 +794,7 @@ semantics. Previous work also established the following properties:
 
 \begin{proposition}[Strong Normalizing]
 \label{prop:termination-pi} 
-{{Pi}} computation always terminate.  
+{{Pi}} computations always terminate.  
 
 {{forall. c:b1<->b2, v:b1, exists v':b2.}}  
 {{c v |--> v'}}
@@ -819,7 +819,7 @@ We say {{c1 = c2}} if {{c1:b1<->b2}} and {{c2:b1<->b2}} and for all
 
 We present the categorical structure with minimum commentry. More
 details may be found in excellent references such as Barr and Wells
-[CITE] and Selinger[CITE].
+[CITE] and Selinger \cite{springerlink:10.1007/978-3-642-12821-94}.
 
 \begin{lemma}[{{Pi}} is a category]
   The category {{Pi}} has the types {{b}} as objects and equivalence
@@ -888,19 +888,23 @@ and
       \item {{(swap+ (;) zeroe) (;) f = (f (+) id) (;) (swap+ (;) zeroe)}}
       \end{enumerate}
     \item Satisfy certain coherence conditions which are usually
-      called the ``pentagon'' and ``triangle'' axioms.
+      called the ``pentagon'' and ``triangle'' axioms (see Sec 3.1
+      \cite{springerlink:10.1007/978-3-642-12821-94})
     \end{enumerate}
 
     The last three points require checking equality of combinators by
     writing out their derivation trees as we did in the case of
     associativity of sequential composition. To show symmetry, we need
     a braiding operation {{b1+b2 <-> b2+b1}} which is given by
-    {{swap+}}.
+    {{swap+}} (see Sec. 3.3 and 3.5
+    \cite{springerlink:10.1007/978-3-642-12821-94}).
 
     \begin{enumerate}
-    \item The braiding must satisfy two ``hexagon axioms''. 
-    \item The braiding is self inverse {{swap+_{b1+b2} = (swap+_{b2+b1})^{dagger} }}.
+    \item The braiding must satisfy two ``hexagon axioms''.
+    \item The braiding is self inverse
+      {{swap+_{b1+b2}=(swap+_{b2+b1})^{dagger} }}.
     \end{enumerate}
+
 
   \end{proof}
 
@@ -920,6 +924,24 @@ Some technical and pedantic comments are due at this point.
   {{(0, +)}} and {{(*, 1)}}. In Sec. \ref{sec:int} we will see that a
   {{trace}} operator can be admitted in this category without any
   change of expressiveness.
+
+\item To be pedantic, what we have shown is that the ``term model'' of
+  {{Pi}} that follows from the extensional operational equality of
+  combinators has the requisite categorical structure. A consequence
+  is that the ``wiring diagrams'' of {{Pi}} correspond closely with ``string
+  diagrams'' developed for categories.
+
+  To establish the later rigorously, we will need to show when it is
+  valid to slide one wire over the other and that equivalent diagrams
+  for syntactically different combinators such as
+  {{(f(+)g)(;)(j(+)k)}} and {{(f(;)j)(+)(g(;)k)}} do respect
+  operational equivalence.  We don't formalize the graphical notation
+  in this work. Joyal et. al's work on ``planar isotopy'' and
+  Selinger's survey \cite{springerlink:10.1007/978-3-642-12821-94}
+  show how this has been addressed before in the categorical
+  setting. In the absense of any prior knowledge of category theory
+  however, our wiring diagrams may be read as the ``flow of types'' in
+  a combinator-circuit.
 
 \item By definition, in {{Pi}} every morphism is an isomorphism --
   this makes {{Pi}} a groupoid.
@@ -1044,6 +1066,7 @@ strong normalizing.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Traces and the Int-Construction.}
+\label{sec:int}
 
 For a traced symmetric monoidal category, the Int-construction of
 Joyal, Street and Verity \cite{joyal1996traced} gives us a way of
