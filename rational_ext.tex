@@ -762,10 +762,10 @@ no values of type {{0}}, the rules omit the impossible cases:
 % dist & (right v2, v3) &|-->& right (v2, v3)
 % factor & (left (v1, v3)) &|-->& (left v1, v3) 
 % factor & (right (v2, v3)) &|-->& (right v2, v3)   
-
+\end{scriptsize}
 The operational semantics of the closure conditions are presented in
 the usual big-step style.
-
+\begin{scriptsize}
 %subcode{proof} include main
 %@ ~
 %@@ id v |--> v 
@@ -877,7 +877,7 @@ and
     \item {{b + 0 <-> b}} given by {{swap+ (;) zeroe}}
     \item We need to check that {{+}} is a bifunctor. 
       \begin{enumerate}
-      \item {{id_{b1}(+)id_{b2} = id_{b1+b2} }}
+      \item {{id_{b1<->b1}(+)id_{b2<->b2} = id_{b1+b2<->b1+b2} }}
       \item {{(f(+)g)(;)(j(+)k) = (f (;) j) (+) (g (;) k)}}
       \end{enumerate}
     \item We need to check the naturality of {{assoc+}}, {{zeroe}} and
@@ -888,7 +888,7 @@ and
       \item {{(swap+ (;) zeroe) (;) f = (f (+) id) (;) (swap+ (;) zeroe)}}
       \end{enumerate}
     \item Satisfy certain coherence conditions which are usually
-      called the pentagon and traingle axioms.
+      called the ``pentagon'' and ``triangle'' axioms.
     \end{enumerate}
 
     The last three points require checking equality of combinators by
