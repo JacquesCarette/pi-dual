@@ -1130,8 +1130,15 @@ need a duality that preserves both tensors.
 %
 % Isomorphisms, iso &=& ... | eta* | eps*
 
-\noindent
-No division by zero. 
+
+\paragraph*{No division by zero.} 
+The important side-condition on the types not captured by the syntax
+above is that there are no types of the form {{1/b}}, where
+{{[^b^]=0}} (see Defn. \ref{def:size}). This eliminates syntaxes of
+the form {{1/0}}, {{1/(0+0)}}, {{1/(0*b)}} etc, from being treated as
+valid {{b}} types. Intuitively, this translates into the familiar
+restriction that there is no division by 0 in arithmetic or the
+definition of fields in abstract algebra.
 
 \begin{multicols}{2}  
 %subcode{opsem} include main
@@ -1433,7 +1440,7 @@ universal reversible gate. We can generalize this construction to
 {{if^n_{not} }} which checks {{n}} bits and negates the result wire only if
 they are all {{true}}.
 
-%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Cloning}
 
 Although cloning is generally not allowed in reversible languages, it is
@@ -1447,7 +1454,7 @@ i.e., the gate clones the first input. A circuit of {{n}} parallel
 {{true}} inputs in the process.  Let us call this construction
 {{clone^n_{bool} }}.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Construction of the Solver}
 
 The key insight underlying the construction comes from the fact that we can
