@@ -1228,12 +1228,38 @@ that creating values {{alpha}} and {{1/alpha}} and immediately
 unifying them is also a no-op. Both checks are straightforward and are
 essentially the constructions in the introduction.
 
-\begin{proposition}[Coherence]
-  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Categorical Structure}
+
+As with {{Pi}}, {{PiEE*}} is a dagger symmetric monoidal category with
+two monoidal structures. In this section we establish that it is
+``locally compact closed'' in the sense that for non-zero objects,
+namely types where {{[^ b ^]=0}}, {{PiEE*}} satisfies the conditions
+for compact closed categories.
+
+\begin{proposition}[Locally Compact Closed]
+{{PiEE*}} is a locally compact closed category in the sense that for
+all non-zero objects {{b}}, we have an inverse object {{1/b}} in the
+symmetric monoidal structure of {{(*, 1)}}, with the morphisms: 
+
+\begin{enumerate}
+\item {{1 <-> 1/b * b}} given by {{eta*}}, called the `unit map'.
+\item {{b * 1/b <-> 1}} given by {{swap* (;) eps*}}, called the `counit map'.
+\end{enumerate}
+
+The following coherence conditions hold (see 2.1 in
+\cite{selinger2007dagger}):
+
+
+\begin{enumerate}
+\item {{uniti (;) (eta* (;) swap(*)id) (;)(swap* (*) id) (;) assocr* (;) (id (*) eps*) (;) swap* (;) unite = id}}
+\end{enumerate}
+
 \end{proposition}
 
 
-%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Categorical Constructions}
 
 All the constructions below are standard: they are collected from Selinger's

@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -XGADTs -XTypeOperators -XExistentialQuantification -XFlexibleContexts -XScopedTypeVariables #-} -- 7.0.1, 7.0.3
 
-import Dual 
+import OldDual 
 
 ------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------
@@ -18,9 +18,18 @@ traceTimes c = UnitI
 yankTimes :: a :<=> a
 yankTimes = traceTimes CommuteTimes
 
+-- z_shapeTimes :: a :<=> a
+-- z_shapeTimes = UnitI
+--                :.: (EtaTimes:*: Id) 
+--                :.: (CommuteTimes :*: Id)
+--                :.: AssocTimesR 
+--                :.: (Id :*: EpsTimes)
+--                :.: CommuteTimes
+--                :.: UnitE
+               
 z_shapeTimes :: a :<=> a
 z_shapeTimes = UnitI
-               :.: (EtaTimes:*: Id) 
+               :.: (EtaTimes :*: Id) 
                :.: (CommuteTimes :*: Id)
                :.: AssocTimesR 
                :.: (Id :*: EpsTimes)
