@@ -27,14 +27,21 @@ yankTimes = traceTimes CommuteTimes
 --                :.: CommuteTimes
 --                :.: UnitE
                
-z_shapeTimes :: a :<=> a
-z_shapeTimes = UnitI
-               :.: (EtaTimes :*: Id) 
-               :.: (CommuteTimes :*: Id)
-               :.: AssocTimesR 
-               :.: (Id :*: EpsTimes)
-               :.: CommuteTimes
-               :.: UnitE
+z_shape1Times :: a :<=> a
+z_shape1Times = UnitI
+                :.: CommuteTimes
+                :.: (Id :*: EtaTimes) 
+                :.: AssocTimesL
+                :.: ((CommuteTimes :.: EpsTimes) :*: Id)
+                :.: UnitE
+               
+z_shape2Times :: Inv a :<=> Inv a
+z_shape2Times = UnitI
+                :.: (EtaTimes :*: Id)
+                :.: AssocTimesR
+                :.: (Id :*: (CommuteTimes :.: EpsTimes))
+                :.: CommuteTimes
+                :.: UnitE
                
 
 ----------------------------------------------------------------
@@ -49,7 +56,7 @@ tracePlus c = ZeroI
           :.: ZeroE
 
 yankPlus :: b :<=> b
-yankPlus = trace CommutePlus
+yankPlus = tracePlus CommutePlus
 
 -- Teleportation (??)
 -- Also the coherence condition for eta/eps for compact closed categories. 
@@ -76,7 +83,7 @@ z_shapePlus = ZeroI
 -- *PiCont> eval yank_not False
 -- True
 yank_not :: Bool :<=> Bool
-yank_not = trace (CommutePlus :.: (inot :+: Id))
+yank_not = tracePlus (CommutePlus :.: (inot :+: Id))
 
 ----------------------------------------------------------------
 -- eta and eps over products
@@ -230,7 +237,7 @@ fredkin = controlled CommuteTimes
 -- (-1 + 1) + 1 
 -- 1 
 inf_stream :: () :<=> ()
-inf_stream = trace (FoldB :.: inner :.: UnfoldB)
+inf_stream = tracePlus (FoldB :.: inner :.: UnfoldB)
     where 
       inner :: Bool :<=> Bool 
       inner = 
@@ -243,7 +250,7 @@ inf_stream = trace (FoldB :.: inner :.: UnfoldB)
           :.: UnitE
 
 inf_three :: (Three :<=> Three) -> Either () () :<=> Either () ()
-inf_three f = trace (FoldThree :.: inner :.: UnfoldThree)
+inf_three f = tracePlus (FoldThree :.: inner :.: UnfoldThree)
     where 
       inner = 
           UnitI

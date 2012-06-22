@@ -1195,15 +1195,15 @@ site for these logic variables:
 
 Negative Information and Measurements. 
 
-Compact Closed Structure (modulo 0). 
-
-Show that ``no division by zero'' is supported by the semantics. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Semantics}
 
 Provide a semantics with the non-determinism monad and define an
 \emph{eval}.
+
+Show that ``no division by zero'' is supported by the semantics. 
+
 
 \begin{proposition}[Type Safety]
   
@@ -1215,18 +1215,6 @@ Provide a semantics with the non-determinism monad and define an
 
 Note that this language is not logically reversible. 
 
-For a monoidal category to be compact closed the maps~{{eta}}
-and~{{eps}} must satisfy a coherence condition that is usually
-visualized as follows:
-\begin{center}
-  \includegraphics{diagrams/coherence.pdf}
-\end{center}
-where $b^*$ represents the dual of {{b}}.  In the case of negatives,
-the condition amounts to checking that reversing direction twice is a
-no-op. In the case of fractionals, the condition amounts to checking
-that creating values {{alpha}} and {{1/alpha}} and immediately
-unifying them is also a no-op. Both checks are straightforward and are
-essentially the constructions in the introduction.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Categorical Structure}
@@ -1247,16 +1235,51 @@ symmetric monoidal structure of {{(*, 1)}}, with the morphisms:
 \item {{b * 1/b <-> 1}} given by {{swap* (;) eps*}}, called the `counit map'.
 \end{enumerate}
 
-The following coherence conditions hold (see 2.1 in
+\noindent
+such that the following coherence conditions hold (see 2.1 in
 \cite{selinger2007dagger}):
 
 
 \begin{enumerate}
-\item {{uniti (;) (eta* (;) swap(*)id) (;)(swap* (*) id) (;) assocr* (;) (id (*) eps*) (;) swap* (;) unite = id}}
+\item {{uniti (;) swap* (;) (id (*) eta*) (;) assocl* (;) ((swap* (;) eps*) (*) id) (;) unite = id : b <-> b}}
+\item {{uniti (;) (eta* (*) id) (;) assocr* (;) (id (*) (swap* (;) eps*)) (;) swap* (;) unite = id : 1/b <-> 1/b}}
+
+
+%% z_shape1Times :: a :<=> a
+%% z_shape1Times = UnitI
+%%                 :.: CommuteTimes
+%%                 :.: (Id :*: EtaTimes) 
+%%                 :.: AssocTimesL
+%%                 :.: ((CommuteTimes :.: EpsTimes) :*: Id)
+%%                 :.: UnitE
+               
+%% z_shape2Times :: Inv a :<=> Inv a
+%% z_shape2Times = UnitI
+%%                 :.: (EtaTimes :*: Id)
+%%                 :.: AssocTimesR
+%%                 :.: (Id :*: (CommuteTimes :.: EpsTimes))
+%%                 :.: CommuteTimes
+%%                 :.: UnitE
+
 \end{enumerate}
 
 \end{proposition}
 
+TODO: once the semantics are written, write out the proof of one of
+the coherence conditions in full.
+
+For a monoidal category to be compact closed the maps~{{eta}}
+and~{{eps}} must satisfy a coherence condition that is usually
+visualized as follows:
+\begin{center}
+  \includegraphics{diagrams/coherence.pdf}
+\end{center}
+where $b^*$ represents the dual of {{b}}.  In the case of negatives,
+the condition amounts to checking that reversing direction twice is a
+no-op. In the case of fractionals, the condition amounts to checking
+that creating values {{alpha}} and {{1/alpha}} and immediately
+unifying them is also a no-op. Both checks are straightforward and are
+essentially the constructions in the introduction.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
