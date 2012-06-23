@@ -522,10 +522,10 @@ the number of inhabitants (an arity) of the type. This intuition will
 however become tenuous in the presence of negative and fractional
 types.
 
-\begin{proposition}[Size 0 is uninhabited]. 
-\label{prop:no-zero-values}
-There are no values {{v:b}} when {{[^b^]=0}}.
-\end{proposition}
+%% \begin{proposition}[Size 0 is uninhabited]. 
+%% \label{prop:no-zero-values}
+%% There are no values {{v:b}} when {{[^b^]=0}}.
+%% \end{proposition}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Graphical Language}
@@ -1139,11 +1139,12 @@ need a duality that preserves both tensors.
 \paragraph*{No division by zero.} 
 The important side-condition on the types not captured by the syntax
 above is that there are no types of the form {{1/b}}, where
-{{[^b^]=0}} (see Defn. \ref{def:size}). This eliminates syntaxes of
-the form {{1/0}}, {{1/(0+0)}}, {{1/(0*b)}} etc, from being treated as
-valid {{b}} types. Intuitively, this translates into the familiar
-restriction that there is no division by 0 in arithmetic or the
-definition of fields in abstract algebra.
+{{[^b^]=0}} (see Defn. \ref{def:size} and \ref{def:size-frac}
+below). This eliminates syntaxes of the form {{1/0}}, {{1/(0+0)}},
+{{1/(0*b)}} etc, from being treated as valid {{b}} types. Intuitively,
+this translates into the familiar restriction that there is no
+division by 0 in arithmetic or the definition of fields in abstract
+algebra.
 
 \begin{multicols}{2}  
 %subcode{opsem} include main
@@ -1195,6 +1196,12 @@ site for these logic variables:
 
 Negative Information and Measurements. 
 
+\begin{definition}[Size of a type.] 
+\label{def:size-frac}
+The definition of size, {{[^ b ^]}}, is extended to include
+fractionals as {{[^1 / b ^] = 1/[^ b ^]}}.
+\end{definition}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Semantics}
@@ -1208,7 +1215,7 @@ following two rules to the small-step operational semantics of {{Pi}}.
 % <eps*, (1/v,v), C> &|-->& {[eps*, (), C]} & (eps*) 
 
 The rule {{(eta*)}} is different from other rules encountered before
-due to the {{forall v:b}} quaitification and is to be understood as
+due to the {{forall v:b}} quantification and is to be understood as
 follows: when the machine encounters an {{eta*}} reduction it
 non-deterministically replicates into several machine states, each of
 which is seeded by a unique value {{v}} that inhabits the type {{b}}
@@ -1231,7 +1238,8 @@ are undefined. For instance consider, where {{not : bool <-> bool}}.
 
 {{eta* (;) (id (*) not) (;) eps* : 1 <-> 1}}
 
-Tracing this circuit gives us: 
+\noindent
+Tracing the execution of this circuit gives us: 
 
 %subcode{opsem} include main
 %! columnStyle = rllr
@@ -1248,8 +1256,6 @@ Tracing this circuit gives us:
 % & |-->* & [eps*, (1/false, true), Snd (id (*) not) (Snd~eta* [])]
 % & |--> & undefined
 
-
-
 \begin{proposition}[Type Safety]
   
 \end{proposition}
@@ -1258,7 +1264,7 @@ Tracing this circuit gives us:
   
 \end{proposition}
 
-Note that this language is not logically reversible.
+% Note that this language is not logically reversible.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1307,34 +1313,27 @@ such that the following coherence conditions hold (see 2.1 in
 %%                 :.: UnitE
 
 \end{enumerate}
-
+\end{proposition}
 \begin{proof}
   We briefly summarize the execution of the first combinator (let us
   call it {{c}}) combinator to show that the coherence conditions
-  hold.
-\item 
+  hold. The second combinator simply mirrors {{c}}. To show that
+  {{c=id}}, we must show for {{v:b}}, the evaluation of {{<c, v, []>}}
+  always produces {{v:b}} as output.
 
 %subcode{opsem} include main
 %! columnStyle = rllr
 % & & <c, v:b, []>
 % & |-->* & <eta*, (), C1>
 % & |-->  & <eta*, (1/v',v'), C2> & some v':b
-% & |-->* & <eps*, (1/v', v), C3> & when v' = v
-% (1) & |-->~ & [eps*, (), C3]
+% (1) & |-->* & <eps*, (1/v', v), C3> & when v' = v
+% & |-->~ & [eps*, (), C3]
 % & |-->* & [c', v, [] ]
 % (2) & |-->* & <eps*, (1/v', v), C3> & when v' /= v
 % & |-->~ & undefined
 
-Thus for {{v:b}}, the evaluation of {{<c, v, []>}} always produces {{v:b}} as
-output, i.e. {{c = id}}.
-
 \end{proof}
 
-
-\end{proposition}
-
-TODO: once the semantics are written, write out the proof of one of
-the coherence conditions in full.
 
 For a monoidal category to be compact closed the maps~{{eta}}
 and~{{eps}} must satisfy a coherence condition that is usually
