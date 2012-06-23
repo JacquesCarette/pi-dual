@@ -1225,6 +1225,28 @@ The rule {{(eps*)}} is straightforward : when given a tuple
 {{()}}. The machine is undefined for cases where where the input is
 {{(1/v',v):1/b*b}} and {{v' /= v}}.
 
+\paragraph*{Annihilation.} 
+A consequence of the semantics is that they admit computations that
+are undefined. For instance consider, where {{not : bool <-> bool}}. 
+
+{{eta* (;) (id (*) not) (;) eps* : 1 <-> 1}}
+
+Tracing this circuit gives us: 
+
+%subcode{opsem} include main
+%! columnStyle = rclr
+% & & <eta* (;) (id (*) not) (;) eps*, (), []>
+% & |-->* & <eta*, (), Fst [] (id (*) not) (;) eps*>
+% (1) & |--> & [eta*, (1/true, true), Fst [] (id (*) not) (;) eps*] 
+% & |-->* & <not, true, RightT id 1/true (Fst (Snd~eta* []) ~eps*)> 
+% & |-->* & [not, false, RightT id 1/true (Fst (Snd~eta* []) ~eps*)] 
+% & |-->* & [eps*, (1/true, false), Snd (id (*) not) (Snd~eta* [])]
+% & |--> & undefined
+% (2) & |--> & [eta*, (1/false, false), Fst [] (id (*) not) (;) eps*] 
+% & |-->* & <not, false, RightT id 1/false (Fst (Snd~eta* []) ~eps*)> 
+% & |-->* & [not, true, RightT id 1/false (Fst (Snd~eta* []) ~eps*)] 
+% & |-->* & [eps*, (1/false, true), Snd (id (*) not) (Snd~eta* [])]
+% & |--> & undefined
 
 
 
@@ -1236,7 +1258,7 @@ The rule {{(eps*)}} is straightforward : when given a tuple
   
 \end{proposition}
 
-Note that this language is not logically reversible. 
+Note that this language is not logically reversible.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
