@@ -1199,10 +1199,33 @@ Negative Information and Measurements.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Semantics}
 
-Provide a semantics with the non-determinism monad and define an
-\emph{eval}.
+The operational semantics for {{PiEE*}} involve the addition of the
+following two rules to the small-step operational semantics of {{Pi}}.
 
-Show that ``no division by zero'' is supported by the semantics. 
+%subcode{opsem} include main
+%! columnStyle = rclr
+% <eta*, (), C> &|-->& forall v:b.{[eta*, (1/v, v), C]} & (eta*)
+% <eps*, (1/v,v), C> &|-->& {[eps*, (), C]} & (eps*) 
+
+The rule {{(eta*)}} is different from other rules encountered before
+due to the {{forall v:b}} quaitification and is to be understood as
+follows: when the machine encounters an {{eta*}} reduction it
+non-deterministically replicates into several machine states, each of
+which is seeded by a unique value {{v}} that inhabits the type {{b}}
+that indexes {{eta* : 1 <-> 1/b * b}}. As an example at the type
+{{bool}}, we would have two possible machine states: 
+
+%subcode{opsem} include main
+%! columnStyle = rclr
+% <eta*, (), C> &|-->& {[eta*, (1/true, true), C]}
+% and  &|-->& {[eta*, (1/false, false), C]} 
+
+The rule {{(eps*)}} is straightforward : when given a tuple
+{{(1/v,v):1/b * b}} where {{eta*:1/b*b <-> 1}} the result is
+{{()}}. The machine is undefined for cases where where the input is
+{{(1/v',v):1/b*b}} and {{v' /= v}}.
+
+
 
 
 \begin{proposition}[Type Safety]
