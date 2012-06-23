@@ -1234,7 +1234,7 @@ are undefined. For instance consider, where {{not : bool <-> bool}}.
 Tracing this circuit gives us: 
 
 %subcode{opsem} include main
-%! columnStyle = rclr
+%! columnStyle = rllr
 % & & <eta* (;) (id (*) not) (;) eps*, (), []>
 % & |-->* & <eta*, (), Fst [] (id (*) not) (;) eps*>
 % (1) & |--> & [eta*, (1/true, true), Fst [] (id (*) not) (;) eps*] 
@@ -1307,6 +1307,29 @@ such that the following coherence conditions hold (see 2.1 in
 %%                 :.: UnitE
 
 \end{enumerate}
+
+\begin{proof}
+  We briefly summarize the execution of the first combinator (let us
+  call it {{c}}) combinator to show that the coherence conditions
+  hold.
+\item 
+
+%subcode{opsem} include main
+%! columnStyle = rllr
+% & & <c, v:b, []>
+% & |-->* & <eta*, (), C1>
+% & |-->  & <eta*, (1/v',v'), C2> & some v':b
+% & |-->* & <eps*, (1/v', v), C3> & when v' = v
+% (1) & |-->~ & [eps*, (), C3]
+% & |-->* & [c', v, [] ]
+% (2) & |-->* & <eps*, (1/v', v), C3> & when v' /= v
+% & |-->~ & undefined
+
+Thus for {{v:b}}, the evaluation of {{<c, v, []>}} always produces {{v:b}} as
+output, i.e. {{c = id}}.
+
+\end{proof}
+
 
 \end{proposition}
 
