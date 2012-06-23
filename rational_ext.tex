@@ -821,7 +821,7 @@ the usual big-step style.
 %@@ (c1 (*) c2)  (v1, v2) |--> (v3, v4)
 \end{scriptsize}
 
-The type safety of {{Pi}} follows directly from the corresondence
+The type safety of {{Pi}} follows directly from the correspondence
 between inductive definitions of the types and the big-step
 semantics. Previous work also established the following properties:
 
@@ -850,7 +850,7 @@ We say {{c1 = c2}} if {{c1:b1<->b2}} and {{c2:b1<->b2}} and for all
 {{v1:b}}, we have {{c1 v1 |--> v2}} iff {{c2 v1 |--> v2}} and {{v2:b2}}.
 \end{lemma}
 
-We present the categorical structure with minimum commentry. More
+We present the categorical structure with minimum commentary. More
 details may be found in excellent references such as Barr and Wells
 [CITE] and Selinger \cite{springerlink:10.1007/978-3-642-12821-94}.
 
@@ -981,7 +981,7 @@ Some technical and pedantic comments are due at this point.
   in this work. Joyal et. al's work on ``planar isotopy'' and
   Selinger's survey \cite{springerlink:10.1007/978-3-642-12821-94}
   show how this has been addressed before in the categorical
-  setting. In the absense of any prior knowledge of category theory
+  setting. In the absence of any prior knowledge of category theory
   however, our wiring diagrams may be read as the ``flow of types'' in
   a combinator-circuit.
 
@@ -1000,11 +1000,11 @@ Some technical and pedantic comments are due at this point.
 
 While we don't do so in this work, if we extend {{Pi}} with products
 and co-products (say through the addition of information effects) it
-is concievable that part of its structure collapses. This sort of
+is conceivable that part of its structure collapses. This sort of
 collapse, while catastrophic for algebraic structures (effectively
 trivializing them), still retains some interest in computing, because
 in computing we are interested in the specific operational nature (the
-computational content, so to speak) of the morphisms. Anectodal evidence
+computational content, so to speak) of the morphisms. Anecdotal evidence
 follows from the fact several real-world programming language have
 inconsistent type systems. blah blah blah...
 
@@ -1139,8 +1139,8 @@ need a duality that preserves both tensors.
 \paragraph*{No division by zero.} 
 The important side-condition on the types not captured by the syntax
 above is that there are no types of the form {{1/b}}, where
-{{[^b^]=0}} (see Defn. \ref{def:size} and \ref{def:size-frac}
-below). This eliminates syntaxes of the form {{1/0}}, {{1/(0+0)}},
+{{[^b^]=0}} (see Def. \ref{def:size} and \ref{def:size-frac}
+below). This eliminates terms of the form {{1/0}}, {{1/(0+0)}},
 {{1/(0*b)}} etc, from being treated as valid {{b}} types. Intuitively,
 this translates into the familiar restriction that there is no
 division by 0 in arithmetic or the definition of fields in abstract
