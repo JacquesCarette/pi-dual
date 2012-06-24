@@ -849,6 +849,76 @@ semantics. Previous work also established the following properties:
 {{ c{dagger} v' |--> v}}
 \end{proposition}
 
+%%%%%%%%%%%%%%%%%%%
+\subsection{Constructions}
+
+\paragraph*{Booleans and Conditionals.} 
+Given any combinator {{c : b <-> b}} we can construct a combinator called
+{{if_c : bool*b <->bool*b}} in terms of {{c}}, where {{if_c}} behaves like a
+one-armed $\mathit{if}$-expression. If the supplied boolean is {{true}} then
+the combinator {{c}} is used to transform the value of type~{{b}}. If the
+boolean is {{false}}, then the value of type {{b}} remains unchanged. We can
+write down the combinator for {{if_c}} in terms of {{c}} as 
+{{ dist (;) ((id (*) c) (+) id) (;) factor }}.
+
+\noindent The diagram below shows the input value of type {{(1+1)*b}}
+processed by the distribute operator {{dist}}, which converts it into a value
+of type {{(1*b)+(1*b)}}. In the {{left}} branch, which corresponds to the
+case when the boolean is {{true}} (i.e. the value was {{left ()}}), the
+combinator~{{c}} is applied to the value of type~{{b}}. The right branch
+which corresponds to the boolean being {{false}} passes along the value of
+type {{b}} unchanged.
+
+\begin{center}
+\scalebox{1.0}{
+%%subcode-line{pdfimage}[diagrams/if_c.pdf]
+\includegraphics{diagrams/thesis/cnot.pdf}
+}
+\end{center}
+
+% We will be seeing many more such wiring diagrams in this paper and it is
+% useful to note some conventions about them. Wires indicate a
+% value that can exist in the program. Each wire, whenever possible, is
+% annotated with its type and sometimes additional information to help clarify
+% its role. When multiple wires run in parallel, it means that those values
+% exist in the system at the same time, indicating pair types. When there is a
+% disjunction, we put a {{+}} between the wires. 
+% Combinators for distribution {{dist}} and factoring {{factor}}
+% are represented as triangles with their operator symbols in them. Other
+% triangles may be used and, in each case, types or labels will be used to
+% clarify their roles. Finally, we don't draw boxes for combinators such as
+% {{id}}, commutativity, and associativity, but instead just shuffle the wires
+% as appropriate.
+
+The combinator {{if_{not} }} has type {{bool*bool<->bool*bool}} and
+negates its second argument if the first argument is {{true}}. This
+gate {{if_{not} }} is often referred to as the {{cnot}} gate. An
+equivalent construction that is useful is {{else_{not} }} where we
+negate the second argument only if the first is {{false}}. 
+
+Similarly, we can iterate the construction of {{if_c}} to check several
+bits. The gate {{if_{cnot} }}, which we may also write as {{if^2_{not} }},
+checks two booleans and negates the result wire only if they are both
+{{true}}. The gate {{if^2_{not} }} is well known as the Toffoli gate and is a
+universal reversible gate. We can generalize this construction to
+{{if^n_{not} }} which checks {{n}} bits and negates the result wire only if
+they are all {{true}}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\paragraph*{Cloning.}
+Although cloning is generally not allowed in reversible languages, it is
+possible at the cost of having additional constant inputs. For example,
+consider the gate {{else_{not} }}. Generally, the gate maps
+{{(false,a)}} to {{(false,not a)}} and {{(true,a)}} to {{(true,a)}}. Focusing
+on the cases in which the second input is {{true}}, we get that the gate maps
+{{(false,true)}} to {{(false,false)}} and {{(true,true)}} to {{(true,true)}},
+i.e., the gate clones the first input. A circuit of {{n}} parallel
+{{else_{not} }} gates can hence clone {{n}} bits.  They also consume {{n}}
+{{true}} inputs in the process.  Let us call this construction
+{{clone^n_{bool} }}.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Categorical Structure}
 
@@ -1085,9 +1155,45 @@ combinator {{c}} in the reverse direction, i.e., we use the adjoint
   Evaluation in the small-step evaluator corresponds to evaluation in
   the natural semantics.
 
-  {{c v |--> v'}} iff {{<c, v, []> |-->* [c, v', [] ]}}
-
+  {{c v |--> v'}} iff {{<c, v, []> |-->* [c', v', [] ]}}
 \end{proposition}
+\begin{proof}
+  To prove the above, we first show that a more general lemma holds,
+  namely that: {{c v |--> v'}} iff {{<c, v, C> |-->* [c', v', C ]}}.
+
+  To show the left-to-right direction we proceed by induction on the
+  derivation of {{c v |--> v'}}. In the case of primitive isomorphisms
+  the condition holds trivially. In the case of composition, we work
+  out the case of {{c1+c2}} as an example. Given {{c1 +c2 v |--> v'}}
+  we have to show that there is a small step derivation sequence that
+  matches it. Here {{v:b1+b2}} can be of the form {{left v1}} or
+  {{right v2}}. Assuming {{left v1}}, we have: 
+
+%subcode{proof} include main
+%@ c1 v1 |--> v1' ==> <c1, v1, C'> |-->* {[c1',v1',C']}
+%@@ c1+c2 (left v1) |--> left v1' ==> ? 
+
+Choosing {{C' =Lft c2 C}}, we have the required derivation sequence: 
+{{ <c1+c2, left v1, C> |--> <c1,v1,LeftP c2 C> |-->* {[c1',v1', LeftP c2 C]} |--> {[c1'+c2,left v1',C]} }}. The proof follows similarly for the {{right v2}} case.  
+
+To show the right-to-left direction we proceed by induction of the
+sequence of {{|-->*}} derivations. Again the case for primtive
+isomorphisms follows trivially. Taking the case of {{c1+c2}} we are
+required to show that given a sequence 
+{{<c1+c2,v,C> |-->* {[c', v', C]} }} there is a derviation tree for
+{{c1+c2 v |--> v'}}. In the case that {{v:v1+b2}} has the form
+{{left~v1}}, this follows by observing that the given sequence must have the form
+{{ <c1+c2, left v1, C> |--> <c1,v1,LeftP c2 C> |-->* {[c1',v1', LeftP c2 C]} |--> {[c1'+c2,left v1',C]} }}. 
+For the strictly smaller inner subsequence by induction we have
+{{c1~v1 |--> v1'}} which lets us complete the derivation of
+{{c1+c2~(left v1) |--> left v1'}}. The {{right v2}} follows similarly. 
+
+
+
+
+
+\end{proof}
+
 
 Consequently the small step semantics is logically reversible and
 strong normalizing. 
@@ -1325,8 +1431,8 @@ such that the following coherence conditions hold (see 2.1 in
 \end{enumerate}
 \end{proposition}
 \begin{proof}
-  For convenience let us draw {{swap* (;) eps*}} shown on the left
-  instead as shown on the right.
+For convenience, we draw the combinator {{swap* (;) eps*}} (shown on
+the left) as shown on the right.
 
 \begin{multicols}{2}
 \dgm[0.8]{swap_eps_times}
@@ -1334,7 +1440,8 @@ such that the following coherence conditions hold (see 2.1 in
 \dgm[0.8]{cat_eps_times}    
 \end{multicols}
 
-The two coherence conditions are more intuitive when presented
+\noindent
+The coherence conditions are more intuitive when presented
 graphically. They require that the combinators below be equal to
 {{id}}, at the appropriate type (see Sec. 4
 \cite{springerlink:10.1007/978-3-642-12821-94}).
@@ -1549,73 +1656,6 @@ of a SAT-solver.  We proceed in small steps, reviewing some of the
 necessary constructions presented in our earlier
 paper~\cite{infeffects}.
 
-%%%%%%%%%%%%%%%%%%%
-\subsection{Booleans and Conditionals} 
-
-Given any combinator {{c : b <-> b}} we can construct a combinator called
-{{if_c : bool*b <->bool*b}} in terms of {{c}}, where {{if_c}} behaves like a
-one-armed $\mathit{if}$-expression. If the supplied boolean is {{true}} then
-the combinator {{c}} is used to transform the value of type~{{b}}. If the
-boolean is {{false}}, then the value of type {{b}} remains unchanged. We can
-write down the combinator for {{if_c}} in terms of {{c}} as 
-{{ dist (;) ((id (*) c) (+) id) (;) factor }}.
-
-\noindent The diagram below shows the input value of type {{(1+1)*b}}
-processed by the distribute operator {{dist}}, which converts it into a value
-of type {{(1*b)+(1*b)}}. In the {{left}} branch, which corresponds to the
-case when the boolean is {{true}} (i.e. the value was {{left ()}}), the
-combinator~{{c}} is applied to the value of type~{{b}}. The right branch
-which corresponds to the boolean being {{false}} passes along the value of
-type {{b}} unchanged.
-
-\begin{center}
-\scalebox{1.0}{
-%%subcode-line{pdfimage}[diagrams/if_c.pdf]
-\includegraphics{diagrams/thesis/cnot.pdf}
-}
-\end{center}
-
-% We will be seeing many more such wiring diagrams in this paper and it is
-% useful to note some conventions about them. Wires indicate a
-% value that can exist in the program. Each wire, whenever possible, is
-% annotated with its type and sometimes additional information to help clarify
-% its role. When multiple wires run in parallel, it means that those values
-% exist in the system at the same time, indicating pair types. When there is a
-% disjunction, we put a {{+}} between the wires. 
-% Combinators for distribution {{dist}} and factoring {{factor}}
-% are represented as triangles with their operator symbols in them. Other
-% triangles may be used and, in each case, types or labels will be used to
-% clarify their roles. Finally, we don't draw boxes for combinators such as
-% {{id}}, commutativity, and associativity, but instead just shuffle the wires
-% as appropriate.
-
-The combinator {{if_{not} }} has type {{bool*bool<->bool*bool}} and
-negates its second argument if the first argument is {{true}}. This
-gate {{if_{not} }} is often referred to as the {{cnot}} gate. An
-equivalent construction that is useful is {{else_{not} }} where we
-negate the second argument only if the first is {{false}}. 
-
-Similarly, we can iterate the construction of {{if_c}} to check several
-bits. The gate {{if_{cnot} }}, which we may also write as {{if^2_{not} }},
-checks two booleans and negates the result wire only if they are both
-{{true}}. The gate {{if^2_{not} }} is well known as the Toffoli gate and is a
-universal reversible gate. We can generalize this construction to
-{{if^n_{not} }} which checks {{n}} bits and negates the result wire only if
-they are all {{true}}.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Cloning}
-
-Although cloning is generally not allowed in reversible languages, it is
-possible at the cost of having additional constant inputs. For example,
-consider the gate {{else_{not} }}. Generally, the gate maps
-{{(false,a)}} to {{(false,not a)}} and {{(true,a)}} to {{(true,a)}}. Focusing
-on the cases in which the second input is {{true}}, we get that the gate maps
-{{(false,true)}} to {{(false,false)}} and {{(true,true)}} to {{(true,true)}},
-i.e., the gate clones the first input. A circuit of {{n}} parallel
-{{else_{not} }} gates can hence clone {{n}} bits.  They also consume {{n}}
-{{true}} inputs in the process.  Let us call this construction
-{{clone^n_{bool} }}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Construction of the Solver}
