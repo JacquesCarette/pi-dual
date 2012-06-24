@@ -2,7 +2,8 @@
 {-# OPTIONS_GHC -XGADTs          #-}
 {-# OPTIONS_GHC -XEmptyDataDecls #-} 
 
--- eta+/epsilon+ undefined in this model
+-- Fractional types introduce non-determinism; instead of having one value we
+-- have a sequence of possible values
 
 module ND where
 
@@ -17,13 +18,14 @@ data Zero -- empty type
 
 data Inv a = Inv a deriving Eq -- fractional types (a should not be zero) 
 
-data Neg a = Neg a deriving Eq -- negative types
-
 instance Show Zero where 
   show _ = error "Empty type has no values to show"
 
 instance Eq Zero where 
   _ == _ = error "Cannot use == at type 0"
+
+instance Show a => Show (Inv a) where
+  show (Inv a) = "1/" ++ show a
 
 -- Returns a list of all the elements of the type
 
@@ -41,9 +43,6 @@ instance (V a, V b) => V (Either a b) where
 
 instance (V a, V b) => V (a,b) where
   elems = [(a,b) | a <- elems, b <- elems] 
-
-instance V a => V (Neg a) where
-  elems = map Neg elems
 
 instance V a => V (Inv a) where
   elems = map Inv elems
@@ -80,9 +79,6 @@ data a :<=> b where
                    (Either b c, a) :<=> Either (b, a) (c, a)
   Factor      :: (V a, V b, V c) => 
                    Either (b, a) (c, a) :<=> (Either b c, a)
--- Additive inverses
-  EtaPlus :: V a => Zero :<=> (Either (Neg a) a)
-  EpsPlus :: V a => (Either (Neg a) a) :<=> Zero
 -- Multiplicative inverses (a cannot be 0) 
   EtaTimes :: V a => () :<=> (Inv a, a)
   EpsTimes :: V a => (Inv a, a) :<=> ()
@@ -106,8 +102,6 @@ adjoint TimesZeroL = TimesZeroR
 adjoint TimesZeroR = TimesZeroL
 adjoint Distribute = Factor
 adjoint Factor = Distribute
-adjoint EtaPlus = EpsPlus
-adjoint EpsPlus = EtaPlus
 adjoint EtaTimes = EpsTimes
 adjoint EpsTimes = EtaTimes
 
@@ -206,18 +200,14 @@ eval_iso1 Factor v =
     Left (b,a) -> return (Left b, a) 
     Right (c,a) -> return (Right c, a) 
 
--- eta times
+-- eta times 
+-- if EtaTimes is used at the empty, the list elems is empty and EtaTimes ()
+-- returns mzero
 eval_iso1 EtaTimes () = msum [ return (Inv a, a) | a <- elems] 
 
 -- epsilon times
 eval_iso1 EpsTimes (Inv a, a') | a == a' = return ()
                                | otherwise = mzero
-
--- eta plus :: Zero :<=> (Either (Neg a) a)
-eval_iso1 EtaPlus _ = error "Impossible: eta+ encountered in forward eval"
-
--- epsilon plus :: (Either (Neg a) a) :<=> Zero
-eval_iso1 EpsPlus v = undefined
 
 -- If the input is non-deterministic use:
 
@@ -242,17 +232,16 @@ test1, test2 :: [B]
 test1 = eval_iso1 cohTimes (Left ())
 test2 = eval_iso1 cohTimes (Right ())
 
-cohPlus :: V a => a :<=> a
-cohPlus = ZeroI                      
-          :.: (EtaPlus :+: Id)       
-          :.: (CommutePlus :+: Id)  
-          :.: AssocPlusR            
-          :.: (Id :+: EpsPlus)      
-          :.: CommutePlus
-          :.: ZeroE                  
-
-test3, test4 :: [B]
-test3 = eval_iso1 cohPlus (Left ())
-test4 = eval_iso1 cohPlus (Right ())
-
 ------------------------------------------------------------------------------
+
+-- test3 :: (V a, V b) => a :<=> ((Inv b, b), a)
+
+test3 :: V a => a :<=> ((Inv B, B), a)
+test3 = UnitI :.: (EtaTimes :*: Id)
+
+{--
+
+*ND> eval_iso1 test3 (Left(), Right())
+[((1/Left (),Left ()),(Left (),Right ())),((1/Right (),Right ()),(Left (),Right ()))]
+
+--}
