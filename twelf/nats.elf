@@ -1,0 +1,281 @@
+nat : type. %name nat N.
+
+z : nat.
+s : nat -> nat.
+
+
+plus : nat -> nat -> nat -> type.
+
+plus/z : plus z N N.
+plus/s : plus (s N1) N2 (s N3)
+           <- plus N1 N2 N3.
+
+
+plus-exists : {n1 : nat} {n2 : nat} plus n1 n2 N3 -> type.
+%mode plus-exists +N1 +N2 -D.
+
+plus-exists/z : plus-exists z _ plus/z.
+plus-exists/s : plus-exists (s N1) N2 (plus/s D)
+                  <- plus-exists N1 N2 D.
+
+%worlds () (plus-exists _ _ _).
+%total N1 (plus-exists N1 _ _).
+
+
+%% Not sure if I'm going to need this
+
+nat-leq : nat -> nat -> type.
+
+nat-leq/z : nat-leq z N.
+nat-leq/s : nat-leq (s N1) (s N2) <- nat-leq N1 N2.
+
+nat-lt : nat -> nat -> type.
+
+nat-lt/z : nat-lt z (s N).
+nat-lt/s : nat-lt (s N1) (s N2) <- nat-lt N1 N2.
+
+plus-reduces  : {N2}{N3}
+         plus N1 N2 N3
+         -> type.
+%mode plus-reduces +D1 +D2 +D3.
+
+- : plus-reduces _ _ plus/z.
+
+- : plus-reduces _ _ (plus/s DL)
+     <- plus-reduces _ _ DL.
+
+%worlds () (plus-reduces _ _ _).
+%reduces N2 <= N3 (plus-reduces N2 N3 _).
+%total {D1} (plus-reduces _ _ D1).
+
+
+plus-reduces-s  : {N2}{N3}
+         plus (s N1) N2 N3
+         -> type.
+%mode plus-reduces-s +D1 +D2 +D3.
+
+- : plus-reduces-s _ _ (plus/s plus/z).
+
+- : plus-reduces-s _ _ (plus/s DL)
+     <- plus-reduces-s _ _ DL.
+
+%worlds () (plus-reduces-s _ _ _).
+%reduces N2 < N3 (plus-reduces-s N2 N3 _).
+%total {D1} (plus-reduces-s _ _ D1).
+
+nat-leq-plus : nat-leq N1 N2
+       -> plus N1 _ N2
+       -> type.
+%mode nat-leq-plus +D1 -D2.
+
+
+- : nat-leq-plus nat-leq/z plus/z.
+
+- : nat-leq-plus (nat-leq/s DL) (plus/s DP)
+     <- nat-leq-plus DL DP.
+
+%worlds () (nat-leq-plus _ _).
+%total {D1} (nat-leq-plus D1 _).
+
+
+nat-lt-plus : nat-lt N1 N2 -> plus N1 (s _) N2 -> type.
+%mode nat-lt-plus +D1 -D2.
+
+- : nat-lt-plus nat-lt/z plus/z.
+
+- : nat-lt-plus (nat-lt/s DL) (plus/s DP) <- nat-lt-plus DL DP.
+
+%worlds () (nat-lt-plus _ _).
+%total D1 (nat-lt-plus D1 _).
+
+plus-z  : {N}
+       plus N z N
+       -> type.
+%mode plus-z +D1 -D2.
+
+- : plus-z z plus/z.
+
+- : plus-z _ (plus/s DP)
+     <- plus-z _ DP.
+
+%worlds () (plus-z _ _).
+%total {D1} (plus-z D1 _).
+
+
+
+plus-s  : plus N1 N2 N3
+       -> plus N1 (s N2) (s N3)
+       -> type.
+%mode plus-s +D1 -D2.
+
+- : plus-s plus/z plus/z.
+
+- : plus-s (plus/s DP1) (plus/s DP2)
+     <- plus-s DP1 DP2.
+
+%worlds () (plus-s _ _).
+%total {D1} (plus-s D1 _).
+
+plus-s-rev  : plus N1 N2 N3
+       -> plus N1 (s N2) (s N3)
+       -> type.
+%mode plus-s-rev -D1 +D2.
+
+- : plus-s-rev plus/z plus/z.
+
+- : plus-s-rev (plus/s DP1) (plus/s DP2)
+     <- plus-s-rev DP1 DP2.
+
+%worlds () (plus-s-rev _ _).
+%total {D1} (plus-s-rev _ D1).
+
+
+plus-commute  : plus N1 N2 N3
+         -> plus N2 N1 N3
+         -> type.
+%mode plus-commute +D1 -D2.
+
+- : plus-commute plus/z DP
+     <- plus-z _ DP.
+
+- : plus-commute (plus/s DP1) DP2
+     <- plus-commute DP1 DP1'
+     <- plus-s DP1' DP2.
+
+%worlds () (plus-commute _ _).
+%total {D1} (plus-commute D1 _).
+
+
+plus-reduces-first : {N1:nat} {N3:nat} plus N1 N2 N3 -> type.
+%mode plus-reduces-first +N1 +N3 +D.
+
+plus-reduces-first/ : plus-reduces-first N1 N3 D
+                        <- plus-commute D D'
+                        <- plus-reduces N1 N3 D'.
+
+%worlds () (plus-reduces-first _ _ _).
+%reduces N1 <= N3 (plus-reduces-first N1 N3 _).
+%total {} (plus-reduces-first _ _ _).
+
+nat-leq-reduces  : {N1}{N2}
+         nat-leq N1 N2
+         -> type.
+%mode nat-leq-reduces +D1 +D2 +D3.
+
+- : nat-leq-reduces _ _ DL
+     <- nat-leq-plus DL DP
+     <- plus-commute DP DP'
+     <- plus-reduces _ _ DP'.
+
+%worlds () (nat-leq-reduces _ _ _).
+%reduces N1 <= N2 (nat-leq-reduces N1 N2 _).
+%total {} (nat-leq-reduces _ _ _).
+
+nat-lt-reduces  : {N1}{N2}
+         nat-lt N1 N2
+         -> type.
+%mode nat-lt-reduces +D1 +D2 +D3.
+
+- : nat-lt-reduces _ _ DL
+     <- nat-lt-plus DL DP
+     <- plus-commute DP DP'
+     <- plus-reduces-s _ _ DP'.
+
+%worlds () (nat-lt-reduces _ _ _).
+%reduces N1 < N2 (nat-lt-reduces N1 N2 _).
+%total {} (nat-lt-reduces _ _ _).
+
+
+eq-or-lt : nat -> nat -> type.
+
+eq-or-lt/eq : eq-or-lt N N.
+eq-or-lt/lt : eq-or-lt N1 N2 <- nat-lt N1 N2.
+
+
+factor-eol : eq-or-lt N1 N2 -> eq-or-lt (s N1) (s N2) -> type.
+%mode factor-eol +D -D'.
+
+factor-eol/eq : factor-eol eq-or-lt/eq eq-or-lt/eq.
+factor-eol/lt : factor-eol (eq-or-lt/lt D) (eq-or-lt/lt (nat-lt/s D)).
+
+%worlds () (factor-eol _ _).
+%total D (factor-eol D _).
+
+
+leq-means-leq : nat-leq N1 N2 -> eq-or-lt N1 N2 -> type.
+%mode leq-means-leq +D -D'.
+
+leq-means-leq/same : leq-means-leq (D : nat-leq N N) eq-or-lt/eq.
+leq-means-leq/diffz : leq-means-leq (D : nat-leq z (s N2))
+                                    (eq-or-lt/lt nat-lt/z).
+leq-means-leq/diffs : leq-means-leq (nat-leq/s D : nat-leq (s N1) (s N2)) D''
+                        <- leq-means-leq D D'
+                        <- factor-eol D' D''.
+
+%worlds () (leq-means-leq _ _).
+%total D (leq-means-leq D _).
+
+
+lt-sub1 : nat-lt N1 (s N2) -> nat-leq N1 N2 -> type.
+%mode lt-sub1 +D -D'.
+
+lt-sub1/z : lt-sub1 nat-lt/z nat-leq/z.
+lt-sub1/s : lt-sub1 (nat-lt/s D) (nat-leq/s D')
+              <- lt-sub1 D D'.
+
+%worlds () (lt-sub1 _ _).
+%total D (lt-sub1 D _).
+
+nat-leq-add : nat-leq N1 N2 -> nat-leq N1 (s N2) -> type.
+%mode nat-leq-add +D -D'.
+
+nat-leq-add/z : nat-leq-add nat-leq/z nat-leq/z.
+nat-leq-add/s : nat-leq-add (nat-leq/s D) (nat-leq/s D')
+                   <- nat-leq-add D D'.
+
+%worlds () (nat-leq-add _ _).
+%total D (nat-leq-add D _).
+
+%%
+
+plus-less : nat-leq N1 N1' -> nat-leq N2 N2' -> plus N1 N2 N3 ->
+              plus N1' N2' N3' -> nat-leq N3 N3' -> type.
+%mode plus-less +DL1 +DL2 +DP +DP' -DL3.
+
+plus-less/z-z : plus-less nat-leq/z nat-leq/z plus/z _ nat-leq/z.
+
+plus-less/z-s : plus-less nat-leq/z (nat-leq/s DL2) plus/z DP (nat-leq/s D)
+                  <- plus-s-rev DP' DP
+                  <- plus-less nat-leq/z DL2 plus/z DP' D.
+
+plus-less/s-z : plus-less (nat-leq/s DL1) nat-leq/z (plus/s DP) (plus/s DP')
+                          (nat-leq/s D)
+                  <- plus-less DL1 nat-leq/z DP DP' D.
+
+plus-less/s-s : plus-less (nat-leq/s DL1) (nat-leq/s DL2) (plus/s DP)
+                          (plus/s DP') (nat-leq/s (nat-leq/s D))
+                  <- plus-s-rev DP'' DP'
+                  <- plus-s-rev DP''' DP
+                  <- plus-less DL1 DL2 DP''' DP'' D.
+
+%worlds () (plus-less _ _ _ _ _).
+%%reduces N3 <= N3' (plus-less N3 N3' _ _ _ _ _).
+%total [D1 D2] (plus-less D1 D2 _ _ _).
+
+less-succ : {N:nat} nat-leq N (s N) -> type.
+%mode less-succ +N -D.
+
+less-succ/z : less-succ z nat-leq/z.
+
+less-succ/s : less-succ (s N) (nat-leq/s D)
+                <- less-succ N D.
+
+%worlds () (less-succ _ _).
+%total N (less-succ N _).
+
+
+bottom-implies-leq : bottom -> nat-leq N1 N2 -> type.
+%mode bottom-implies-leq +F -D.
+
+%worlds () (bottom-implies-leq _ _).
+%total {} (bottom-implies-leq _ _).
