@@ -1,0 +1,776 @@
+
+base : type. %name base B.
+
+0 : base.
+1 : base.
++ : base -> base -> base. %infix left 10 +.
+* : base -> base -> base. %infix left 11 *.
+
+
+val : type. %name val V.
+
+<>    : val.
+,     : val -> val -> val. %infix none 0 ,.
+left  : val -> val.
+right : val -> val.
+
+
+base-of : val -> base -> type.
+
+base-of/<>    : base-of <> 1.
+
+base-of/,     : base-of (V1 , V2) (B1 * B2)
+                  <- base-of V1 B1
+                  <- base-of V2 B2.
+
+base-of/left  : base-of (left V1) (B1 + B2)
+                  <- base-of V1 B1.
+
+base-of/right : base-of (right V2) (B1 + B2)
+                  <- base-of V2 B2.
+
+
+%% THE WORST NAMES
+
+iso : type. %name iso Iso.
+
+>>+ : iso.
+<<+ : iso.
+x+  : iso.
+><+ : iso.
+<>+ : iso.
+>>* : iso.
+<<* : iso.
+x*  : iso.
+><* : iso.
+<>* : iso.
+-<0 : iso.
+>-0 : iso.
+-<  : iso.
+>-  : iso.
+
+
+
+comb : type. %name comb C.
+
+c   : iso -> comb.
+id  : comb.
+sym : comb -> comb.
+o   : comb -> comb -> comb. %infix left 10 o.
+o+  : comb -> comb -> comb. %infix left 10 o+.
+o*  : comb -> comb -> comb. %infix left 10 o*.
+
+
+
+%% Size of combinators---useful for termination
+
+size : comb -> nat -> type.
+
+size/id : size id z.
+
+size/iso : size (c I) z.
+
+size/sym : size (sym C) (s N) <- size C N.
+
+size/comp : size (C1 o C2) (s N3)
+              <- size C1 N1
+              <- size C2 N2
+              <- plus N1 N2 N3.
+
+size/o+ : size (C1 o+ C2) (s N3)
+            <- size C1 N1
+            <- size C2 N2
+            <- plus N1 N2 N3.
+
+size/o* : size (C1 o* C2) (s N3)
+            <- size C1 N1
+            <- size C2 N2
+            <- plus N1 N2 N3.
+
+
+has-size : {c:comb} size c N -> type.
+%mode has-size +C -D.
+
+has-size/id : has-size id size/id.
+
+has-size/iso : has-size (c I) size/iso.
+
+has-size/sym : has-size (sym C) (size/sym D)
+                 <- has-size C D.
+
+%{ XXX FINISH THIS SHIT
+has-size 
+}%
+
+
+tp : type. %name tp T.
+
+<-> : base -> base -> tp. %infix none 5 <->.
+
+
+
+iso-of : iso -> tp -> type.
+
+
+iso-of/>>+ : iso-of >>+ (0 + B <-> B).
+iso-of/<<+ : iso-of <<+ (B <-> 0 + B).
+
+iso-of/x+ : iso-of x+ (B1 + B2 <-> B2 + B1).
+
+iso-of/><+ : iso-of ><+ (B1 + (B2 + B3) <-> (B1 + B2) + B3).
+iso-of/<>+ : iso-of <>+ ((B1 + B2) + B3 <-> B1 + (B2 + B3)).
+
+iso-of/>>* : iso-of >>* (1 * B <-> B).
+iso-of/<<* : iso-of <<* (B <-> 1 * B).
+
+iso-of/x* : iso-of x* (B1 * B2 <-> B2 * B1).
+
+iso-of/><* : iso-of ><* (B1 * (B2 * B3) <-> (B1 * B2) * B3).
+iso-of/<>* : iso-of <>* ((B1 * B2) * B3 <-> B1 * (B2 * B3)).
+
+iso-of/-<0 : iso-of -<0 (0 * B <-> 0).
+iso-of/>-0 : iso-of >-0 (0 <-> 0 * B).
+
+iso-of/-< : iso-of -< ((B1 + B2) * B3 <-> (B1 * B3) + (B2 * B3)).
+iso-of/>- : iso-of >- ((B1 * B3) + (B2 * B3) <-> (B1 + B2) * B3).
+
+
+
+
+comb-of : comb -> tp -> type.
+
+
+comb-of/iso : comb-of (c I) T
+                <- iso-of I T.
+
+comb-of/id : comb-of id (B <-> B).
+
+comb-of/sym : comb-of (sym C) (B2 <-> B1)
+                <- comb-of C (B1 <-> B2).
+
+comb-of/comp : comb-of (C1 o C2) (B1 <-> B3)
+                 <- comb-of C1 (B1 <-> B2)
+                 <- comb-of C2 (B2 <-> B3).
+
+comb-of/o+ : comb-of (C1 o+ C2) (B1 + B2 <-> B3 + B4)
+               <- comb-of C1 (B1 <-> B3)
+               <- comb-of C2 (B2 <-> B4).
+
+
+comb-of/o* : comb-of (C1 o* C2) (B1 * B2 <-> B3 * B4)
+               <- comb-of C1 (B1 <-> B3)
+               <- comb-of C2 (B2 <-> B4).
+
+
+
+adjoint-iso : iso -> iso -> type.
+%mode adjoint-iso +I -Id.
+
+
+
+adjoint-iso/>>+ : adjoint-iso >>+ <<+.
+adjoint-iso/<<+ : adjoint-iso <<+ >>+.
+
+adjoint-iso/x+ : adjoint-iso x+ x+.
+
+adjoint-iso/><+ : adjoint-iso ><+ <>+.
+adjoint-iso/<>+ : adjoint-iso <>+ ><+.
+
+adjoint-iso/>>* : adjoint-iso >>* <<*.
+adjoint-iso/<<* : adjoint-iso <<* >>*.
+
+adjoint-iso/x* : adjoint-iso x* x*.
+
+adjoint-iso/><* : adjoint-iso ><* <>*.
+adjoint-iso/<>* : adjoint-iso <>* ><*.
+
+adjoint-iso/-<0 : adjoint-iso -<0 >-0.
+adjoint-iso/>-0 : adjoint-iso >-0 -<0.
+
+adjoint-iso/-< : adjoint-iso -< >-.
+adjoint-iso/>- : adjoint-iso >- -<.
+
+%worlds () (adjoint-iso _ _).
+%%reduces Id <= I (adjoint-iso I Id).
+%total I (adjoint-iso I _).
+
+
+
+
+adjoint : comb -> comb -> type.
+%mode adjoint +C -Cd.
+
+
+
+adjoint/iso : adjoint (c I) (c Id)
+                <- adjoint-iso I Id.
+
+adjoint/id : adjoint id id.
+
+adjoint/sym : adjoint (sym C) C.
+
+adjoint/comp : adjoint (C1 o C2) (C2d o C1d)
+                 <- adjoint C1 C1d
+                 <- adjoint C2 C2d.
+
+adjoint/o+ : adjoint (C1 o+ C2) (C1d o+ C2d)
+               <- adjoint C1 C1d
+               <- adjoint C2 C2d.
+
+adjoint/o* : adjoint (C1 o* C2) (C1d o* C2d)
+               <- adjoint C1 C1d
+               <- adjoint C2 C2d.
+
+%worlds () (adjoint _ _).
+%%reduces Cd <= C (adjoint C Cd).
+%total C (adjoint C _).
+
+
+adj-reduces-size : {N : nat} {N' : nat} size C N -> adjoint C Cd -> size Cd N'
+                     -> nat-leq N' N -> type.
+%mode adj-reduces-size +N -N' +DS +Dd -DSd -DL.
+
+ars/iso : adj-reduces-size z z size/iso _ size/iso nat-leq/z.
+
+ars/id : adj-reduces-size z z size/id _ size/id nat-leq/z.
+
+ars/sym : adj-reduces-size (s N) N (size/sym DS) _ DS D
+            <- less-succ N D.
+
+ars/comp : adj-reduces-size (s N) (s N') (size/comp (P : plus N1 N2 N) DS2 DS1)
+                            (adjoint/comp Dd2 Dd1)
+                            (size/comp D DSd1 DSd2)
+                            (nat-leq/s DL3)
+             <- adj-reduces-size N1 N1' DS1 Dd1 DSd1 DL1
+             <- adj-reduces-size N2 N2' DS2 Dd2 DSd2 DL2
+             <- plus-exists N2' N1' (D : plus N2' N1' N')
+             <- plus-commute D D'
+             <- plus-less DL1 DL2 D' P DL3
+             <- nat-leq-reduces (s N') (s N) (nat-leq/s DL3).
+
+ars/o+ : adj-reduces-size (s N) (s N') (size/o+ (P : plus N1 N2 N) DS2 DS1)
+                          (adjoint/o+ Dd2 Dd1) (size/o+ D DSd2 DSd1)
+                          (nat-leq/s DL3)
+           <- adj-reduces-size N1 N1' DS1 Dd1 DSd1 DL1
+           <- adj-reduces-size N2 N2' DS2 Dd2 DSd2 DL2
+           <- plus-exists N1' N2' (D : plus N1' N2' N')
+           <- plus-less DL1 DL2 D P DL3
+           <- nat-leq-reduces (s N') (s N) (nat-leq/s DL3).
+
+ars/o* : adj-reduces-size (s N) (s N') (size/o* (P : plus N1 N2 N) DS2 DS1)
+                          (adjoint/o* Dd2 Dd1) (size/o* D DSd2 DSd1)
+                          (nat-leq/s DL3)
+           <- adj-reduces-size N1 N1' DS1 Dd1 DSd1 DL1
+           <- adj-reduces-size N2 N2' DS2 Dd2 DSd2 DL2
+           <- plus-exists N1' N2' (D : plus N1' N2' N')
+           <- plus-less DL1 DL2 D P DL3
+           <- nat-leq-reduces (s N') (s N) (nat-leq/s DL3).
+
+%worlds () (adj-reduces-size _ _ _ _ _ _).
+%reduces N' <= N (adj-reduces-size N N' _ _ _ _).
+%total Dd (adj-reduces-size _ _ _ Dd _ _).
+
+has-adj-iso : {i:iso} adjoint-iso i Id -> type.
+%mode has-adj-iso +I -D.
+
+has-adj-iso/>>+ : has-adj-iso >>+ adjoint-iso/>>+.
+has-adj-iso/<<+ : has-adj-iso <<+ adjoint-iso/<<+.
+has-adj-iso/x+ : has-adj-iso x+ adjoint-iso/x+.
+has-adj-iso/><+ : has-adj-iso ><+ adjoint-iso/><+.
+has-adj-iso/<>+ : has-adj-iso <>+ adjoint-iso/<>+.
+has-adj-iso/>>* : has-adj-iso >>* adjoint-iso/>>*.
+has-adj-iso/<<* : has-adj-iso <<* adjoint-iso/<<*.
+has-adj-iso/x* : has-adj-iso x* adjoint-iso/x*.
+has-adj-iso/><* : has-adj-iso ><* adjoint-iso/><*.
+has-adj-iso/<>* : has-adj-iso <>* adjoint-iso/<>*.
+has-adj-iso/-<0 : has-adj-iso -<0 adjoint-iso/-<0.
+has-adj-iso/>-0 : has-adj-iso >-0 adjoint-iso/>-0.
+has-adj-iso/-< : has-adj-iso -< adjoint-iso/-<.
+has-adj-iso/>- : has-adj-iso >- adjoint-iso/>-.
+
+%worlds () (has-adj-iso _ _).
+%total I (has-adj-iso I _).
+
+
+has-adj : {c:comb} adjoint c Cd -> type.
+%mode has-adj +C -D.
+
+has-adj/iso : has-adj (c I) (adjoint/iso D)
+                <- has-adj-iso I D.
+
+has-adj/id : has-adj id adjoint/id.
+
+has-adj/sym : has-adj (sym C) adjoint/sym.
+
+has-adj/comp : has-adj (C1 o C2) (adjoint/comp D2 D1)
+                 <- has-adj C1 D1
+                 <- has-adj C2 D2.
+
+has-adj/o+ : has-adj (C1 o+ C2) (adjoint/o+ D2 D1)
+                 <- has-adj C1 D1
+                 <- has-adj C2 D2.
+
+has-adj/o* : has-adj (C1 o* C2) (adjoint/o* D2 D1)
+                 <- has-adj C1 D1
+                 <- has-adj C2 D2.
+
+%worlds () (has-adj _ _).
+%total C (has-adj C _).
+
+
+step-iso : iso -> val -> val -> type.
+
+step-iso/>>+ : step-iso >>+ (right V) V.
+step-iso/<<+ : step-iso <<+ V (right V).
+
+step-iso/x+left : step-iso x+ (left V) (right V).
+step-iso/x+right : step-iso x+ (right V) (left V).
+
+step-iso/><+left : step-iso ><+ (left V) (left (left V)).
+step-iso/><+rightleft : step-iso ><+ (right (left V)) (left (right V)).
+step-iso/><+rightright : step-iso ><+ (right (right V)) (right V).
+
+step-iso/<>+leftleft : step-iso <>+ (left (left V)) (left V).
+step-iso/<>+leftright : step-iso <>+ (left (right V)) (right (left V)).
+step-iso/<>+right : step-iso <>+ (right V) (right (right V)).
+
+step-iso/>>* : step-iso >>* (<> , V) V.
+step-iso/<<* : step-iso <<* V (<> , V).
+
+step-iso/x* : step-iso x* (V1 , V2) (V2 , V1).
+
+step-iso/><* : step-iso ><* (V1 , (V2 , V3)) ((V1 , V2), V3).
+step-iso/<>* : step-iso <>* ((V1 , V2), V3) (V1 , (V2 , V3)).
+
+step-iso/-<left : step-iso -< (left V1 , V3) (left (V1 , V3)).
+step-iso/-<right : step-iso -< (right V2 , V3) (right (V2 , V3)).
+
+step-iso/>-left : step-iso >- (left (V1 , V3)) (left V1 , V3).
+step-iso/>-right : step-iso >- (right (V2 , V3)) (right V2 , V3).
+
+
+
+step : comb -> val -> val -> type.
+
+step/iso : step (c I) V V'
+             <- step-iso I V V'.
+
+step/id : step id V V.
+
+step/sym : step (sym C) V V'
+             <- adjoint C Cd
+             <- step Cd V V'.
+
+step/comp : step (C1 o C2) V V''
+              <- step C1 V V'
+              <- step C2 V' V''.
+
+step/o+left : step (C1 o+ C2) (left V) (left V')
+                <- step C1 V V'.
+
+step/o+right : step (C1 o+ C2) (right V) (right V')
+                <- step C2 V V'.
+
+step/o* : step (C1 o* C2) (V1 , V2) (V1' , V2')
+            <- step C1 V1 V1'
+            <- step C2 V2 V2'.
+
+
+log-rev-iso : adjoint-iso I Id -> step-iso I V V' -> step-iso Id V' V -> type.
+%mode log-rev-iso +Dd +DS -DSd.
+
+log-rev-iso-opp : adjoint-iso I Id -> step-iso I V V' -> step-iso Id V' V -> type.
+%mode log-rev-iso-opp +Dd -DS +DSd.
+
+
+log-rev-iso/>>+ : log-rev-iso adjoint-iso/>>+ step-iso/>>+ step-iso/<<+.
+log-rev-iso/<<+ : log-rev-iso adjoint-iso/<<+ step-iso/<<+ step-iso/>>+.
+
+log-rev-iso/x+ : log-rev-iso adjoint-iso/x+ step-iso/x+left step-iso/x+right.
+log-rev-iso/x+ : log-rev-iso adjoint-iso/x+ step-iso/x+right step-iso/x+left.
+
+log-rev-iso/><+left : log-rev-iso adjoint-iso/><+ step-iso/><+left
+                                  step-iso/<>+leftleft.
+log-rev-iso/><+rightleft : log-rev-iso adjoint-iso/><+ step-iso/><+rightleft
+                                       step-iso/<>+leftright.
+log-rev-iso/><+rightright : log-rev-iso adjoint-iso/><+ step-iso/><+rightright
+                                        step-iso/<>+right.
+
+log-rev-iso/<>+leftleft : log-rev-iso adjoint-iso/<>+ step-iso/<>+leftleft
+                                      step-iso/><+left.
+log-rev-iso/<>+leftright : log-rev-iso adjoint-iso/<>+ step-iso/<>+leftright
+                                       step-iso/><+rightleft.
+log-rev-iso/<>+right : log-rev-iso adjoint-iso/<>+ step-iso/<>+right
+                                   step-iso/><+rightright.
+
+
+%% Identical to the stuff above, but with worse indentation
+
+log-rev-iso/>>* : log-rev-iso adjoint-iso/>>* step-iso/>>* step-iso/<<*.
+log-rev-iso/<<* : log-rev-iso adjoint-iso/<<* step-iso/<<* step-iso/>>*.
+
+log-rev-iso/x* : log-rev-iso adjoint-iso/x* step-iso/x* step-iso/x*.
+
+log-rev-iso/><* : log-rev-iso adjoint-iso/><* step-iso/><* step-iso/<>*.
+log-rev-iso/><* : log-rev-iso adjoint-iso/<>* step-iso/<>* step-iso/><*.
+
+log-rev-iso/-<left : log-rev-iso adjoint-iso/-< step-iso/-<left step-iso/>-left.
+log-rev-iso/-<right : log-rev-iso adjoint-iso/-< step-iso/-<right
+                                                 step-iso/>-right.
+
+log-rev-iso/>-left : log-rev-iso adjoint-iso/>- step-iso/>-left step-iso/-<left.
+log-rev-iso/>-right : log-rev-iso adjoint-iso/>- step-iso/>-right
+                                                 step-iso/-<right.
+
+log-rev-iso-opp/>>+ : log-rev-iso-opp adjoint-iso/>>+ step-iso/>>+ step-iso/<<+.
+log-rev-iso-opp/<<+ : log-rev-iso-opp adjoint-iso/<<+ step-iso/<<+ step-iso/>>+.
+
+log-rev-iso-opp/x+ : log-rev-iso-opp adjoint-iso/x+ step-iso/x+left step-iso/x+right.
+log-rev-iso-opp/x+ : log-rev-iso-opp adjoint-iso/x+ step-iso/x+right step-iso/x+left.
+
+log-rev-iso-opp/><+left : log-rev-iso-opp adjoint-iso/><+ step-iso/><+left
+                                  step-iso/<>+leftleft.
+log-rev-iso-opp/><+rightleft : log-rev-iso-opp adjoint-iso/><+ step-iso/><+rightleft
+                                       step-iso/<>+leftright.
+log-rev-iso-opp/><+rightright : log-rev-iso-opp adjoint-iso/><+ step-iso/><+rightright
+                                        step-iso/<>+right.
+
+log-rev-iso-opp/<>+leftleft : log-rev-iso-opp adjoint-iso/<>+ step-iso/<>+leftleft
+                                      step-iso/><+left.
+log-rev-iso-opp/<>+leftright : log-rev-iso-opp adjoint-iso/<>+ step-iso/<>+leftright
+                                       step-iso/><+rightleft.
+log-rev-iso-opp/<>+right : log-rev-iso-opp adjoint-iso/<>+ step-iso/<>+right
+                                   step-iso/><+rightright.
+
+log-rev-iso-opp/>>* : log-rev-iso-opp adjoint-iso/>>* step-iso/>>* step-iso/<<*.
+log-rev-iso-opp/<<* : log-rev-iso-opp adjoint-iso/<<* step-iso/<<* step-iso/>>*.
+
+log-rev-iso-opp/x* : log-rev-iso-opp adjoint-iso/x* step-iso/x* step-iso/x*.
+
+log-rev-iso-opp/><* : log-rev-iso-opp adjoint-iso/><* step-iso/><* step-iso/<>*.
+log-rev-iso-opp/><* : log-rev-iso-opp adjoint-iso/<>* step-iso/<>* step-iso/><*.
+
+log-rev-iso-opp/-<left : log-rev-iso-opp adjoint-iso/-< step-iso/-<left step-iso/>-left.
+log-rev-iso-opp/-<right : log-rev-iso-opp adjoint-iso/-< step-iso/-<right
+                                                 step-iso/>-right.
+
+log-rev-iso-opp/>-left : log-rev-iso-opp adjoint-iso/>- step-iso/>-left step-iso/-<left.
+log-rev-iso-opp/>-right : log-rev-iso-opp adjoint-iso/>- step-iso/>-right
+                                                 step-iso/-<right.
+
+%worlds () (log-rev-iso _ _ _).
+%total Dd (log-rev-iso Dd _ _).
+
+%worlds () (log-rev-iso-opp _ _ _).
+%total Dd (log-rev-iso-opp Dd _ _).
+
+log-rev : adjoint C Cd -> step C V V' -> step Cd V' V -> type.
+%mode log-rev +Dd +DS -DSd.
+
+log-rev-opp : adjoint C Cd -> step C V V' -> step Cd V' V -> type.
+%mode log-rev-opp +Dd -DS +DSd.
+
+log-rev/iso : log-rev (adjoint/iso Dd) (step/iso DS) (step/iso DSd)
+                <- log-rev-iso Dd DS DSd.
+
+log-rev-opp/iso : log-rev-opp (adjoint/iso Dd) (step/iso DS) (step/iso DSd)
+                    <- log-rev-iso-opp Dd DS DSd.
+
+log-rev/id : log-rev adjoint/id step/id step/id.
+
+log-rev-opp/id : log-rev-opp adjoint/id step/id step/id.
+
+log-rev/sym : log-rev (adjoint/sym : adjoint (sym C) C)
+                      ((step/sym DSd (Dd)) : step (sym C) V V')
+                      (DS : step C V' V)
+                <- log-rev-opp Dd DS DSd.
+
+log-rev-opp/sym : log-rev-opp (adjoint/sym : adjoint (sym C) C)
+                              ((step/sym DSd (Dd)) : step (sym C) V V')
+                              (DS : step C V' V)
+                        <- has-adj C Dd
+                        <- log-rev Dd DS DSd.
+
+log-rev/comp : log-rev (adjoint/comp Dd2 Dd1)
+                       (step/comp DS2 DS1)
+                       (step/comp DSd1 DSd2) %% whaaaat
+                 <- log-rev Dd1 DS1 DSd1
+                 <- log-rev Dd2 DS2 DSd2.
+
+log-rev-opp/comp : log-rev-opp (adjoint/comp Dd2 Dd1)
+                               (step/comp DS2 DS1)
+                               (step/comp DSd1 DSd2) %% whaaaat
+                     <- log-rev-opp Dd1 DS1 DSd1
+                     <- log-rev-opp Dd2 DS2 DSd2.
+
+log-rev/o+left : log-rev (adjoint/o+ Dd2 Dd1)
+                         (step/o+left DS1)
+                         (step/o+left DS1d)
+                   <- log-rev Dd1 DS1 DS1d.
+
+log-rev-opp/o+left : log-rev-opp (adjoint/o+ Dd2 Dd1)
+                                 (step/o+left DS1)
+                                 (step/o+left DS1d)
+                       <- log-rev-opp Dd1 DS1 DS1d.
+
+log-rev/o+right : log-rev (adjoint/o+ Dd2 Dd1)
+                          (step/o+right DS2)
+                          (step/o+right DS2d)
+                    <- log-rev Dd2 DS2 DS2d.
+
+log-rev-opp/o+right : log-rev-opp (adjoint/o+ Dd2 Dd1)
+                                  (step/o+right DS2)
+                                  (step/o+right DS2d)
+                        <- log-rev-opp Dd2 DS2 DS2d.
+
+log-rev/o* : log-rev (adjoint/o* Dd2 Dd1) (step/o* DS2 DS1) (step/o* DSd2 DSd1)
+               <- log-rev Dd1 DS1 DSd1
+               <- log-rev Dd2 DS2 DSd2.
+
+log-rev-opp/o* : log-rev-opp (adjoint/o* Dd2 Dd1)
+                             (step/o* DS2 DS1)
+                             (step/o* DSd2 DSd1)
+                   <- log-rev-opp Dd1 DS1 DSd1
+                   <- log-rev-opp Dd2 DS2 DSd2.
+
+
+%worlds () (log-rev _ _ _) (log-rev-opp _ _ _).
+%total (D D') (log-rev _ D _) (log-rev-opp _ _ D').
+
+
+
+
+
+adj-type-iso : iso-of I (B1 <-> B2) -> adjoint-iso I Id -> iso-of Id (B2 <-> B1)
+                 -> type.
+%mode adj-type-iso +DT +Dd -DTd.
+
+
+adj-type-iso/>>+ : adj-type-iso iso-of/>>+ adjoint-iso/>>+ iso-of/<<+. 
+adj-type-iso/<<+ : adj-type-iso iso-of/<<+ adjoint-iso/<<+ iso-of/>>+. 
+
+adj-type-iso/x+ : adj-type-iso iso-of/x+ adjoint-iso/x+ iso-of/x+. 
+
+adj-type-iso/><+ : adj-type-iso iso-of/><+ adjoint-iso/><+ iso-of/<>+. 
+adj-type-iso/<>+ : adj-type-iso iso-of/<>+ adjoint-iso/<>+ iso-of/><+. 
+
+adj-type-iso/>>* : adj-type-iso iso-of/>>* adjoint-iso/>>* iso-of/<<*. 
+adj-type-iso/<<* : adj-type-iso iso-of/<<* adjoint-iso/<<* iso-of/>>*. 
+
+adj-type-iso/x* : adj-type-iso iso-of/x* adjoint-iso/x* iso-of/x*. 
+
+adj-type-iso/><* : adj-type-iso iso-of/><* adjoint-iso/><* iso-of/<>*. 
+adj-type-iso/<>* : adj-type-iso iso-of/<>* adjoint-iso/<>* iso-of/><*. 
+
+adj-type-iso/-<0 : adj-type-iso iso-of/-<0 adjoint-iso/-<0 iso-of/>-0.
+adj-type-iso/>-0 : adj-type-iso iso-of/>-0 adjoint-iso/>-0 iso-of/-<0.
+
+adj-type-iso/-< : adj-type-iso iso-of/-< adjoint-iso/-< iso-of/>-.
+adj-type-iso/>- : adj-type-iso iso-of/>- adjoint-iso/>- iso-of/-<.
+
+%worlds () (adj-type-iso _ _ _).
+%total DT (adj-type-iso DT _ _).
+
+
+%{
+
+If C : B1 <-> B2 and Cd is the adjoint of C, then Cd : B2 <-> B1.
+
+}%
+
+
+adj-type : comb-of C (B1 <-> B2) -> adjoint C Cd -> comb-of Cd (B2 <-> B1)
+            -> type.
+%mode adj-type +DT +Dd -DTd.
+
+adj-type/iso : adj-type (comb-of/iso DT) (adjoint/iso Dd) (comb-of/iso DTd)
+                 <- adj-type-iso DT Dd DTd.
+
+adj-type/id : adj-type comb-of/id adjoint/id comb-of/id.
+
+adj-type/sym : adj-type (comb-of/sym DT) adjoint/sym DT.
+
+adj-type/comp : adj-type (comb-of/comp DT2 DT1) (adjoint/comp D2d D1d)
+                                                (comb-of/comp DT1d DT2d)
+                  <- adj-type DT1 D1d DT1d
+                  <- adj-type DT2 D2d DT2d.
+
+adj-type/o+ : adj-type (comb-of/o+ DT2 DT1) (adjoint/o+ D2d D1d)
+                                            (comb-of/o+ DT2d DT1d)
+                <- adj-type DT1 D1d DT1d
+                <- adj-type DT2 D2d DT2d.
+
+adj-type/o* : adj-type (comb-of/o* DT2 DT1) (adjoint/o* D2d D1d)
+                                            (comb-of/o* DT2d DT1d)
+                <- adj-type DT1 D1d DT1d
+                <- adj-type DT2 D2d DT2d.
+
+%worlds () (adj-type _ _ _).
+%total DT (adj-type DT _ _).
+
+
+
+%% Combination progress/preservation
+
+safe-iso : iso-of I (B1 <-> B2) -> base-of V B1 ->
+             step-iso I V V' -> base-of V' B2 -> type.
+%mode safe-iso +DTI +DTV -DS -DTV'.
+
+safe-iso/>>+ : safe-iso iso-of/>>+ (base-of/right DTV) step-iso/>>+ DTV.
+safe-iso/<<+ : safe-iso iso-of/<<+ DTV step-iso/<<+ (base-of/right DTV).
+
+safe-iso/x+left : safe-iso iso-of/x+ (base-of/left DTV) step-iso/x+left 
+                           (base-of/right DTV).
+safe-iso/x+right : safe-iso iso-of/x+ (base-of/right DTV) step-iso/x+right 
+                            (base-of/left DTV).
+
+safe-iso/><+left : safe-iso iso-of/><+ (base-of/left DTV) step-iso/><+left
+                            (base-of/left (base-of/left DTV)).
+safe-iso/><+rightleft : safe-iso iso-of/><+ (base-of/right (base-of/left DTV))
+                                 step-iso/><+rightleft
+                                 (base-of/left (base-of/right DTV)).
+safe-iso/><+rightright : safe-iso iso-of/><+ (base-of/right (base-of/right DTV))
+                                  step-iso/><+rightright
+                                  (base-of/right DTV).
+
+safe-iso/<>+leftleft : safe-iso iso-of/<>+ (base-of/left (base-of/left DTV))
+                                step-iso/<>+leftleft (base-of/left DTV).
+safe-iso/<>+leftright : safe-iso iso-of/<>+ (base-of/left (base-of/right DTV))
+                                 step-iso/<>+leftright
+                                 (base-of/right (base-of/left DTV)).
+safe-iso/<>+right : safe-iso iso-of/<>+ (base-of/right DTV) step-iso/<>+right
+                             (base-of/right (base-of/right DTV)).
+
+safe-iso/>>* : safe-iso iso-of/>>* (base-of/, DTV2 DTV1) step-iso/>>* DTV2.
+safe-iso/<<* : safe-iso iso-of/<<* DTV2 step-iso/<<*
+                        (base-of/, DTV2 base-of/<>).
+
+safe-iso/x* : safe-iso iso-of/x* (base-of/, DTV2 DTV1) step-iso/x*
+                       (base-of/, DTV1 DTV2).
+
+safe-iso/><* : safe-iso iso-of/><* (base-of/, (base-of/, DTV3 DTV2) DTV1)
+                        step-iso/><* (base-of/, DTV3 (base-of/, DTV2 DTV1)).
+
+safe-iso/<>* : safe-iso iso-of/<>* (base-of/, DTV3 (base-of/, DTV2 DTV1))
+                        step-iso/<>* (base-of/, (base-of/, DTV3 DTV2) DTV1).
+
+safe-iso/-<left : safe-iso iso-of/-< (base-of/, DTV2 (base-of/left DTV1))
+                           step-iso/-<left (base-of/left (base-of/, DTV2 DTV1)).
+
+safe-iso/-<right : safe-iso iso-of/-< (base-of/, DTV2 (base-of/right DTV1))
+                           step-iso/-<right (base-of/right (base-of/, DTV2 DTV1)).
+
+safe-iso/>-left : safe-iso iso-of/>- (base-of/left (base-of/, DTV2 DTV1))
+                           step-iso/>-left (base-of/, DTV2 (base-of/left DTV1)).
+
+safe-iso/>-right : safe-iso iso-of/>- (base-of/right (base-of/, DTV2 DTV1))
+                           step-iso/>-right (base-of/, DTV2 (base-of/right DTV1)).
+
+
+%worlds () (safe-iso _ _ _ _).
+%total D (safe-iso D _ _ _).
+
+
+safe : {n:nat} size C n -> comb-of C (B1 <-> B2) -> base-of V B1 ->
+          step C V V' -> base-of V' B2 -> type.
+%mode safe +N +D +DTC +DTV -DS -DTV'.
+
+safe/iso : safe z size/iso (comb-of/iso DTC) DTV (step/iso DS) DTV'
+             <- safe-iso DTC DTV DS DTV'.
+
+safe/id : safe z size/id comb-of/id DTV step/id DTV.
+
+safe/sym : safe (s N) ((size/sym D) : size (sym C) _) (comb-of/sym (DTC)) DTV
+                (step/sym DSd Dd) DTVd
+             <- has-adj C (Dd : adjoint C Cd)
+             <- adj-type (DTC : comb-of C (B2 <-> B1))
+                         (Dd : adjoint C Cd)
+                         (DTCd : comb-of Cd (B1 <-> B2))
+             <- adj-reduces-size N Nd D Dd DSid _
+             <- safe Nd DSid DTCd DTV DSd DTVd.
+
+safe/comp : safe (s N) (size/comp (DP : plus N1 N2 N) D2 D1)
+                 (comb-of/comp DTC2 DTC1 : comb-of (C1 o C2) _)
+                 DTV
+                 (step/comp DS' DS)
+                 DTV''
+              <- plus-reduces-first N1 N DP
+              <- plus-reduces-s N2 (s N) (plus/s DP)
+              <- safe N1 D1 DTC1 DTV DS DTV'
+              <- safe N2 D2 DTC2 DTV' DS' DTV''.
+
+safe/o+left : safe (s N) (size/o+ (DP : plus N1 N2 N) D2 D1)
+                   (comb-of/o+ DTC2 DTC1) (base-of/left DTV1)
+                   (step/o+left DS) (base-of/left DTV')
+                <- plus-commute DP DPC
+                <- plus-reduces-s N1 (s N) (plus/s DPC)
+                <- safe N1 D1 DTC1 DTV1 DS DTV'.
+
+safe/o+right : safe (s N) (size/o+ (DP : plus N1 N2 N) D2 D1)
+                    (comb-of/o+ DTC2 DTC1) (base-of/right DTV2)
+                    (step/o+right DS) (base-of/right DTV')
+                 <- plus-reduces-s N2 (s N) (plus/s DP)
+                 <- safe N2 D2 DTC2 DTV2 DS DTV'.
+
+safe/o* : safe (s N) (size/o* (DP : plus N1 N2 N) D2 D1)
+               (comb-of/o* DTC2 DTC1) (base-of/, DTV2 DTV1) (step/o* DS2 DS1)
+               (base-of/, DTV2' DTV1')
+            <- plus-commute DP DPC
+            <- plus-reduces-s N1 (s N) (plus/s DPC)
+            <- plus-reduces-s N2 (s N) (plus/s DP)
+            <- safe N1 D1 DTC1 DTV1 DS1 DTV1'
+            <- safe N2 D2 DTC2 DTV2 DS2 DTV2'.
+
+
+%worlds () (safe _ _ _ _ _ _).
+%total N (safe N _ _ _ _ _).
+
+safe' : comb-of C (B1 <-> B2) -> base-of V B1 -> step C V V' ->
+          base-of V' B2 -> type.
+%mode safe' +DTC +DTV -DS -DTV'.
+
+safe'/appeal : safe' (DTC : comb-of C _) DTV DS DTV'
+                 <- has-size C (Dsize : size C N)
+                 <- safe N Dsize DTC DTV DS DTV'.
+
+%worlds () (safe' _ _ _ _).
+%total {} (safe' _ _ _ _).
+
+
+%{
+samestep : comb -> comb -> val -> type.
+
+samestep/ : samestep C1 C2 V
+              <- step C1 V V'
+              <- step C2 V V'.
+
+
+~ : comb -> comb -> type. %infix none 10 ~.
+
+~/same : C1 ~ C2
+           <- comb-of C1 (B1 <-> B2)
+           <- comb-of C2 (B1 <-> B2)
+           <- ({v:val} base-of v B1 -> samestep C1 C2 v).
+
+
+self-equiv : {C:comb} C ~ C -> type.
+%mode self-equiv +C -D.
+
+self-equiv/ : self-equiv C (~/same DT DT _)
+                <- has-type C DT
+                <- ({v:val} {d:of-base v _} safe 
+
+}%
+
+
+%{ Not sure if want...
+~/ref : C ~ C.
+
+~/comm : C1 ~ C2 -> C2 ~ C1.
+
+~/trans : C1 ~ C2 -> C2 ~ C3 -> C1 ~ C3.
+
+~/id : (C o id) ~ C.
+
+~/
+}%
