@@ -857,7 +857,10 @@ below. Factoring is the corresponding adjoint operation.
 \end{center}
 \end{multicols}
 
-\item Composition TODO.
+\item Combinators can be composed is series ({{c1 (;) c2}}) or
+  parallel. There are two forms of parallel composition -- combinators
+  can be combined additively {{c1(+)c2}} (shown on the left) or
+  multiplicatively {{c1(*)c2}} (shown on the right).
 
   \begin{multicols}{2}
 \dgm{c1c2_par_sum}
@@ -867,22 +870,22 @@ below. Factoring is the corresponding adjoint operation.
 
 \end{itemize}
 
-\noindent 
-\textit{Example.}  We use the type {{bool}} as a shorthand to denote
-the type {{1+1}} and use {{left ()}} to be {{true}} and {{right ()}}
-to be {{false}}. The following combinator is represented by the given
-diagram:
+%% \noindent 
+%% \textit{Example.}  We use the type {{bool}} as a shorthand to denote
+%% the type {{1+1}} and use {{left ()}} to be {{true}} and {{right ()}}
+%% to be {{false}}. The following combinator is represented by the given
+%% diagram:
 
-{{c : b * bool <-> b + b}}
+%% {{c : b * bool <-> b + b}}
 
-{{c = swap* (;) dist (;) (identl* (+) identl*)}}
+%% {{c = swap* (;) dist (;) (identl* (+) identl*)}}
 
-\begin{center}
-\scalebox{0.95}{
-%%subcode-line{pdfimage}[diagrams/thesis/example1-crop.pdf]
-\includegraphics{diagrams/thesis/example1.pdf}
-}
-\end{center}
+%% \begin{center}
+%% \scalebox{0.95}{
+%% %%subcode-line{pdfimage}[diagrams/thesis/example1-crop.pdf]
+%% \includegraphics{diagrams/thesis/example1.pdf}
+%% }
+%% \end{center}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Semantics}
@@ -944,7 +947,6 @@ semantics. Previous work also established the following properties:
 \begin{proposition}[Strong Normalizing]
 \label{prop:termination-pi} 
 {{Pi}} computations always terminate.  
-
 {{forall. c:b1<->b2, v:b1, exists v':b2.}}  
 {{c v |--> v'}}
 \end{proposition}
@@ -954,6 +956,11 @@ semantics. Previous work also established the following properties:
 {{c v |--> v'}} iff 
 {{ c{dagger} v' |--> v}}
 \end{proposition}
+
+\begin{definition}[{{c1  = c2}}]
+We say {{c1 = c2}} if {{c1:b1<->b2}} and {{c2:b1<->b2}} and for all
+{{v1:b}}, we have {{c1 v1 |--> v2}} iff {{c2 v1 |--> v2}} and {{v2:b2}}.
+\end{definition}
 
 %%%%%%%%%%%%%%%%%%%
 \subsection{Constructions}
@@ -1027,14 +1034,6 @@ i.e., the gate clones the first input. A circuit of {{n}} parallel
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Categorical Structure}
-
-For the purpose of establishing equivalence of morphisms in the
-categorical presentation we use the following notion of equality:
-
-\begin{lemma}[{{c1  = c2}}]
-We say {{c1 = c2}} if {{c1:b1<->b2}} and {{c2:b1<->b2}} and for all
-{{v1:b}}, we have {{c1 v1 |--> v2}} iff {{c2 v1 |--> v2}} and {{v2:b2}}.
-\end{lemma}
 
 We present the categorical structure with minimum commentary. More
 details may be found in excellent references such as Barr and Wells
