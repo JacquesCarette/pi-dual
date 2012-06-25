@@ -15,7 +15,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="dual.svg">
+   sodipodi:docname="z_times2.pdf">
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -23,9 +23,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="12.288762"
-     inkscape:cx="469.96945"
-     inkscape:cy="538.20861"
+     inkscape:zoom="6.144381"
+     inkscape:cx="509.92345"
+     inkscape:cy="195.65207"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -36,7 +36,7 @@
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:snap-global="true">
+     inkscape:snap-global="false">
     <inkscape:grid
        id="grid2985"
        type="xygrid" />
@@ -189,7 +189,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -1980,167 +1980,8 @@
    style="fill:#000000;stroke-width:0" />
 </g>    </g>
     <g
-       id="g7873"
-       transform="translate(0,-8)">
-      <path
-         sodipodi:nodetypes="cccccccccccccc"
-         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         d="m 550,902.36218 -90,0 -40,-40 -20,0 c -10,0 -20,10 -20,20 0,10 10,20 20,20 l 20,0 10,-10 30,-30 40,0 c 10,0 20,-10 20,-20 0,-10 -10,-20 -20,-20 l -110,0 -30,0"
-         id="path3739"
-         inkscape:connector-curvature="0" />
-      <g
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-         ns0:preamble=""
-         ns0:text="$b$"
-         word-spacing="normal"
-         letter-spacing="normal"
-         font-size-adjust="none"
-         font-stretch="normal"
-         font-weight="normal"
-         font-variant="normal"
-         font-style="normal"
-         stroke-miterlimit="10.433"
-         xml:space="preserve"
-         transform="matrix(1,0,0,-1,260.83,1513.4922)"
-         id="g3038-5-4-3-8">
-<path
-   id="path3040-9-3-1-9"
-   d="m 225.81,664.03 0,0 0,0 0,0.01 0,0 0,0 0,0 0,0.01 0,0 0,0 0,0.01 0,0 0,0.01 0,0 0,0.01 -0.01,0 0,0.01 0,0 -0.01,0.01 0,0 0,0.01 -0.01,0 0,0 0,0 -0.01,0.01 0,0 0,0 0,0 -0.01,0 0,0.01 0,0 -0.01,0 0,0 -0.01,0 0,0 0,0.01 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 -0.01,0 c -0.22,0 -0.95,-0.08 -1.21,-0.1 -0.08,-0.01 -0.19,-0.02 -0.19,-0.2 0,-0.12 0.09,-0.12 0.24,-0.12 0.48,0 0.5,-0.07 0.5,-0.17 0,-0.07 -0.09,-0.4 -0.14,-0.61 l -0.82,-3.25 c -0.12,-0.49 -0.16,-0.65 -0.16,-1 0,-0.95 0.53,-1.56 1.27,-1.56 v 0.21 c -0.34,0 -0.67,0.27 -0.67,1.01 0,0.19 0,0.38 0.16,1 l 0.22,0.92 c 0.06,0.22 0.06,0.24 0.15,0.35 0.48,0.65 0.93,0.79 1.19,0.79 0.36,0 0.63,-0.29 0.63,-0.93 0,-0.59 -0.33,-1.73 -0.51,-2.11 -0.33,-0.67 -0.79,-1.03 -1.17,-1.03 v -0.21 c 1.17,0 2.4,1.48 2.4,2.91 0,0.91 -0.53,1.59 -1.33,1.59 -0.45,0 -0.86,-0.29 -1.16,-0.59 z"
-   inkscape:connector-curvature="0"
-   style="fill:#000000;stroke-width:0" />
-</g>      <g
-         id="g4158"
-         transform="matrix(1,0,0,-1,144.83,1473.4922)"
-         xml:space="preserve"
-         stroke-miterlimit="10.433"
-         font-style="normal"
-         font-variant="normal"
-         font-weight="normal"
-         font-stretch="normal"
-         font-size-adjust="none"
-         letter-spacing="normal"
-         word-spacing="normal"
-         ns0:text="$-b$"
-         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0">
-<polygon
-   style="fill:#000000;stroke-width:0"
-   points="229.15,659.51 229.15,660.07 224.05,660.07 224.05,659.51 "
-   id="polygon4160" />
-<path
-   style="fill:#000000;stroke-width:0"
-   inkscape:connector-curvature="0"
-   d="m 230.87,663.63 0.02,0 0.03,0 0.02,0 0.03,0 0.02,0 0.03,0 0.02,0 0.02,0 0.02,-0.01 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.01,-0.01 0.02,0 0.02,0 0.01,0 0.02,0 0.01,0 0.01,-0.01 0.02,0 0.01,0 0.01,0 0.01,-0.01 0.02,0 0.02,-0.01 0.02,0 0.01,-0.01 0.02,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0,-0.01 0.01,-0.02 0,-0.01 0.01,-0.01 0,-0.02 0,-0.02 0,-0.02 0,-0.01 0,-0.02 c 0,-0.09 -0.03,-0.21 -0.09,-0.43 -0.02,-0.07 -0.04,-0.14 -0.05,-0.19 l -0.02,-0.07 -1.35,-4.99 v -0.04 c 0,-0.23 0.76,-0.52 1.32,-0.52 1.51,0 3.16,1.74 3.16,3.3 0,0.7 -0.49,1.19 -1.15,1.19 -0.7,0 -1.22,-0.4 -1.93,-1.5 l 0.17,-0.13 c 0.44,0.77 0.89,1.15 1.37,1.15 h 0 c 0.43,0 0.7,-0.33 0.7,-0.86 0,-0.66 -0.51,-1.72 -1.1,-2.34 -0.37,-0.38 -0.8,-0.59 -1.23,-0.59 -0.31,0 -0.46,0.11 -0.46,0.34 0,0.6 0.3,1.57 0.72,2.3 l -0.17,0.13 c 0.52,1.89 0.59,2.16 1.04,3.86 l -0.05,0.05 c -0.5,-0.09 -0.86,-0.15 -1.52,-0.23 z"
-   id="path4162" />
-</g>      <g
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-         ns0:preamble=""
-         ns0:text="$b$"
-         word-spacing="normal"
-         letter-spacing="normal"
-         font-size-adjust="none"
-         font-stretch="normal"
-         font-weight="normal"
-         font-variant="normal"
-         font-style="normal"
-         stroke-miterlimit="10.433"
-         xml:space="preserve"
-         transform="matrix(1,0,0,-1,186.1,1551.0522)"
-         id="g3038-5-4-3-8-2">
-<path
-   id="path3040-9-3-1-9-8"
-   d="m 225.81,664.03 0,0 0,0 0,0.01 0,0 0,0 0,0 0,0.01 0,0 0,0 0,0.01 0,0 0,0.01 0,0 0,0.01 -0.01,0 0,0.01 0,0 -0.01,0.01 0,0 0,0.01 -0.01,0 0,0 0,0 -0.01,0.01 0,0 0,0 0,0 -0.01,0 0,0.01 0,0 -0.01,0 0,0 -0.01,0 0,0 0,0.01 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 -0.01,0 c -0.22,0 -0.95,-0.08 -1.21,-0.1 -0.08,-0.01 -0.19,-0.02 -0.19,-0.2 0,-0.12 0.09,-0.12 0.24,-0.12 0.48,0 0.5,-0.07 0.5,-0.17 0,-0.07 -0.09,-0.4 -0.14,-0.61 l -0.82,-3.25 c -0.12,-0.49 -0.16,-0.65 -0.16,-1 0,-0.95 0.53,-1.56 1.27,-1.56 v 0.21 c -0.34,0 -0.67,0.27 -0.67,1.01 0,0.19 0,0.38 0.16,1 l 0.22,0.92 c 0.06,0.22 0.06,0.24 0.15,0.35 0.48,0.65 0.93,0.79 1.19,0.79 0.36,0 0.63,-0.29 0.63,-0.93 0,-0.59 -0.33,-1.73 -0.51,-2.11 -0.33,-0.67 -0.79,-1.03 -1.17,-1.03 v -0.21 c 1.17,0 2.4,1.48 2.4,2.91 0,0.91 -0.53,1.59 -1.33,1.59 -0.45,0 -0.86,-0.29 -1.16,-0.59 z"
-   inkscape:connector-curvature="0"
-   style="fill:#000000;stroke-width:0" />
-</g>      <g
-         id="g4158-9"
-         transform="matrix(1,0,0,-1,180,1512.0122)"
-         xml:space="preserve"
-         stroke-miterlimit="10.433"
-         font-style="normal"
-         font-variant="normal"
-         font-weight="normal"
-         font-stretch="normal"
-         font-size-adjust="none"
-         letter-spacing="normal"
-         word-spacing="normal"
-         ns0:text="$-b$"
-         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0">
-<polygon
-   style="fill:#000000;stroke-width:0"
-   points="224.05,659.51 229.15,659.51 229.15,660.07 224.05,660.07 "
-   id="polygon4160-3" />
-<path
-   style="fill:#000000;stroke-width:0"
-   inkscape:connector-curvature="0"
-   d="m 230.87,663.63 0.02,0 0.03,0 0.02,0 0.03,0 0.02,0 0.03,0 0.02,0 0.02,0 0.02,-0.01 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.01,-0.01 0.02,0 0.02,0 0.01,0 0.02,0 0.01,0 0.01,-0.01 0.02,0 0.01,0 0.01,0 0.01,-0.01 0.02,0 0.02,-0.01 0.02,0 0.01,-0.01 0.02,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0,-0.01 0.01,-0.02 0,-0.01 0.01,-0.01 0,-0.02 0,-0.02 0,-0.02 0,-0.01 0,-0.02 c 0,-0.09 -0.03,-0.21 -0.09,-0.43 -0.02,-0.07 -0.04,-0.14 -0.05,-0.19 l -0.02,-0.07 -1.35,-4.99 v -0.04 c 0,-0.23 0.76,-0.52 1.32,-0.52 1.51,0 3.16,1.74 3.16,3.3 0,0.7 -0.49,1.19 -1.15,1.19 -0.7,0 -1.22,-0.4 -1.93,-1.5 l 0.17,-0.13 c 0.44,0.77 0.89,1.15 1.37,1.15 h 0 c 0.43,0 0.7,-0.33 0.7,-0.86 0,-0.66 -0.51,-1.72 -1.1,-2.34 -0.37,-0.38 -0.8,-0.59 -1.23,-0.59 -0.31,0 -0.46,0.11 -0.46,0.34 0,0.6 0.3,1.57 0.72,2.3 l -0.17,0.13 c 0.52,1.89 0.59,2.16 1.04,3.86 l -0.05,0.05 c -0.5,-0.09 -0.86,-0.15 -1.52,-0.23 z"
-   id="path4162-6" />
-</g>      <g
-         id="g4158-8"
-         transform="matrix(1,0,0,-1,309.15,1552.0522)"
-         xml:space="preserve"
-         stroke-miterlimit="10.433"
-         font-style="normal"
-         font-variant="normal"
-         font-weight="normal"
-         font-stretch="normal"
-         font-size-adjust="none"
-         letter-spacing="normal"
-         word-spacing="normal"
-         ns0:text="$-b$"
-         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0">
-<polygon
-   style="fill:#000000;stroke-width:0"
-   points="224.05,659.51 229.15,659.51 229.15,660.07 224.05,660.07 "
-   id="polygon4160-0" />
-<path
-   style="fill:#000000;stroke-width:0"
-   inkscape:connector-curvature="0"
-   d="m 230.87,663.63 0.02,0 0.03,0 0.02,0 0.03,0 0.02,0 0.03,0 0.02,0 0.02,0 0.02,-0.01 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.01,-0.01 0.02,0 0.02,0 0.01,0 0.02,0 0.01,0 0.01,-0.01 0.02,0 0.01,0 0.01,0 0.01,-0.01 0.02,0 0.02,-0.01 0.02,0 0.01,-0.01 0.02,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0,-0.01 0.01,-0.02 0,-0.01 0.01,-0.01 0,-0.02 0,-0.02 0,-0.02 0,-0.01 0,-0.02 c 0,-0.09 -0.03,-0.21 -0.09,-0.43 -0.02,-0.07 -0.04,-0.14 -0.05,-0.19 l -0.02,-0.07 -1.35,-4.99 v -0.04 c 0,-0.23 0.76,-0.52 1.32,-0.52 1.51,0 3.16,1.74 3.16,3.3 0,0.7 -0.49,1.19 -1.15,1.19 -0.7,0 -1.22,-0.4 -1.93,-1.5 l 0.17,-0.13 c 0.44,0.77 0.89,1.15 1.37,1.15 h 0 c 0.43,0 0.7,-0.33 0.7,-0.86 0,-0.66 -0.51,-1.72 -1.1,-2.34 -0.37,-0.38 -0.8,-0.59 -1.23,-0.59 -0.31,0 -0.46,0.11 -0.46,0.34 0,0.6 0.3,1.57 0.72,2.3 l -0.17,0.13 c 0.52,1.89 0.59,2.16 1.04,3.86 l -0.05,0.05 c -0.5,-0.09 -0.86,-0.15 -1.52,-0.23 z"
-   id="path4162-2" />
-</g>      <g
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
-         ns0:text="$+$"
-         word-spacing="normal"
-         letter-spacing="normal"
-         font-size-adjust="none"
-         font-stretch="normal"
-         font-weight="normal"
-         font-variant="normal"
-         font-style="normal"
-         stroke-miterlimit="10.433"
-         xml:space="preserve"
-         transform="matrix(1,0,0,-1,278.68,1501.8722)"
-         id="g4971">
-<polygon
-   id="polygon4973"
-   points="226.88,662.32 226.32,662.32 226.32,660.07 224.05,660.07 224.05,659.51 226.32,659.51 226.32,657.23 226.88,657.23 226.88,659.51 229.15,659.51 229.15,660.07 226.88,660.07 "
-   style="fill:#000000;stroke-width:0" />
-</g>      <g
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
-         ns0:text="$+$"
-         word-spacing="normal"
-         letter-spacing="normal"
-         font-size-adjust="none"
-         font-stretch="normal"
-         font-weight="normal"
-         font-variant="normal"
-         font-style="normal"
-         stroke-miterlimit="10.433"
-         xml:space="preserve"
-         transform="matrix(1,0,0,-1,168.68,1541.8722)"
-         id="g4971-5">
-<polygon
-   id="polygon4973-8"
-   points="226.32,657.23 226.88,657.23 226.88,659.51 229.15,659.51 229.15,660.07 226.88,660.07 226.88,662.32 226.32,662.32 226.32,660.07 224.05,660.07 224.05,659.51 226.32,659.51 "
-   style="fill:#000000;stroke-width:0" />
-</g>    </g>
-    <g
-       id="g7826">
+       id="g7826"
+       transform="translate(6.444584,-40.508814)">
       <path
          sodipodi:nodetypes="cccccccccccccc"
          style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -2164,7 +2005,7 @@
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0">
 <polygon
    style="fill:#000000;stroke-width:0"
-   points="224.05,660.07 224.05,659.51 229.15,659.51 229.15,660.07 "
+   points="224.05,659.51 229.15,659.51 229.15,660.07 224.05,660.07 "
    id="polygon4160-2" />
 <path
    style="fill:#000000;stroke-width:0"
@@ -2188,7 +2029,7 @@
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0">
 <polygon
    style="fill:#000000;stroke-width:0"
-   points="229.15,659.51 229.15,660.07 224.05,660.07 224.05,659.51 "
+   points="229.15,660.07 224.05,660.07 224.05,659.51 229.15,659.51 "
    id="polygon4160-0-4" />
 <path
    style="fill:#000000;stroke-width:0"
@@ -2212,7 +2053,7 @@
          id="g4971-9">
 <polygon
    id="polygon4973-1"
-   points="229.15,660.07 226.88,660.07 226.88,662.32 226.32,662.32 226.32,660.07 224.05,660.07 224.05,659.51 226.32,659.51 226.32,657.23 226.88,657.23 226.88,659.51 229.15,659.51 "
+   points="226.88,660.07 226.88,662.32 226.32,662.32 226.32,660.07 224.05,660.07 224.05,659.51 226.32,659.51 226.32,657.23 226.88,657.23 226.88,659.51 229.15,659.51 229.15,660.07 "
    style="fill:#000000;stroke-width:0" />
 </g>      <g
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
@@ -2231,7 +2072,7 @@
          id="g4971-5-9">
 <polygon
    id="polygon4973-8-6"
-   points="224.05,659.51 226.32,659.51 226.32,657.23 226.88,657.23 226.88,659.51 229.15,659.51 229.15,660.07 226.88,660.07 226.88,662.32 226.32,662.32 226.32,660.07 224.05,660.07 "
+   points="226.32,659.51 226.32,657.23 226.88,657.23 226.88,659.51 229.15,659.51 229.15,660.07 226.88,660.07 226.88,662.32 226.32,662.32 226.32,660.07 224.05,660.07 224.05,659.51 "
    style="fill:#000000;stroke-width:0" />
 </g>      <g
          id="g5824"
@@ -2250,7 +2091,7 @@
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0">
 <polygon
    style="fill:#000000;stroke-width:0"
-   points="224.05,660.07 224.05,659.51 229.15,659.51 229.15,660.07 "
+   points="224.05,659.51 229.15,659.51 229.15,660.07 224.05,660.07 "
    id="polygon5826" />
 <path
    style="fill:#000000;stroke-width:0"
@@ -2259,7 +2100,7 @@
    id="path5828" />
 <polygon
    style="fill:#000000;stroke-width:0"
-   points="233.7,660.07 233.7,659.51 238.81,659.51 238.81,660.07 "
+   points="233.7,659.51 238.81,659.51 238.81,660.07 233.7,660.07 "
    id="polygon5830" />
 <path
    style="fill:#000000;stroke-width:0"
@@ -2289,7 +2130,7 @@
 <polygon
    style="fill:#000000;stroke-width:0"
    id="polygon6624"
-   points="224.05,660.07 224.05,659.51 229.15,659.51 229.15,660.07 " />
+   points="224.05,659.51 229.15,659.51 229.15,660.07 224.05,660.07 " />
 <path
    style="fill:#000000;stroke-width:0"
    inkscape:connector-curvature="0"
@@ -2312,7 +2153,7 @@
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0">
 <polygon
    style="fill:#000000;stroke-width:0"
-   points="224.05,660.07 224.05,659.51 229.15,659.51 229.15,660.07 "
+   points="224.05,659.51 229.15,659.51 229.15,660.07 224.05,660.07 "
    id="polygon7418" />
 <path
    style="fill:#000000;stroke-width:0"
@@ -2321,7 +2162,7 @@
    id="path7420" />
 <polygon
    style="fill:#000000;stroke-width:0"
-   points="233.7,660.07 233.7,659.51 238.81,659.51 238.81,660.07 "
+   points="233.7,659.51 238.81,659.51 238.81,660.07 233.7,660.07 "
    id="polygon7422" />
 <path
    style="fill:#000000;stroke-width:0"
@@ -7545,5 +7386,710 @@
        d="m 490,532.36218 40,0"
        id="path15029"
        inkscape:connector-curvature="0" />
+    <g
+       transform="translate(-100,720)"
+       id="g8717-8">
+      <path
+         sodipodi:nodetypes="ccccc"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 525,287.36218 -60,0 c -5,0 -10,-10 -10,-20 0,-10 5,-20 10,-20 l 60,0"
+         id="path2989-36-4"
+         inkscape:connector-curvature="0" />
+      <g
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         ns0:preamble=""
+         ns0:text="$b$"
+         word-spacing="normal"
+         letter-spacing="normal"
+         font-size-adjust="none"
+         font-stretch="normal"
+         font-weight="normal"
+         font-variant="normal"
+         font-style="normal"
+         stroke-miterlimit="10.433"
+         xml:space="preserve"
+         transform="matrix(1,0,0,-1,288.66,940.73218)"
+         id="g3038-4-5">
+<path
+   id="path3040-7-1"
+   d="m 225.81,664.03 0,0 0,0 0,0.01 0,0 0,0 0,0 0,0.01 0,0 0,0 0,0.01 0,0 0,0.01 0,0 0,0.01 -0.01,0 0,0.01 0,0 -0.01,0.01 0,0 0,0.01 -0.01,0 0,0 0,0 -0.01,0.01 0,0 0,0 0,0 -0.01,0 0,0.01 0,0 -0.01,0 0,0 -0.01,0 0,0 0,0.01 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 -0.01,0 c -0.22,0 -0.95,-0.08 -1.21,-0.1 -0.08,-0.01 -0.19,-0.02 -0.19,-0.2 0,-0.12 0.09,-0.12 0.24,-0.12 0.48,0 0.5,-0.07 0.5,-0.17 0,-0.07 -0.09,-0.4 -0.14,-0.61 l -0.82,-3.25 c -0.12,-0.49 -0.16,-0.65 -0.16,-1 0,-0.95 0.53,-1.56 1.27,-1.56 v 0.21 c -0.34,0 -0.67,0.27 -0.67,1.01 0,0.19 0,0.38 0.16,1 l 0.22,0.92 c 0.06,0.22 0.06,0.24 0.15,0.35 0.48,0.65 0.93,0.79 1.19,0.79 0.36,0 0.63,-0.29 0.63,-0.93 0,-0.59 -0.33,-1.73 -0.51,-2.11 -0.33,-0.67 -0.79,-1.03 -1.17,-1.03 v -0.21 c 1.17,0 2.4,1.48 2.4,2.91 0,0.91 -0.53,1.59 -1.33,1.59 -0.45,0 -0.86,-0.29 -1.16,-0.59 z"
+   inkscape:connector-curvature="0"
+   style="fill:#000000;stroke-width:0" />
+</g>      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 430,267.36218 25,0"
+         id="path3124-0-9"
+         inkscape:connector-curvature="0" />
+      <g
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+         ns0:text="$\\times$"
+         word-spacing="normal"
+         letter-spacing="normal"
+         font-size-adjust="none"
+         font-stretch="normal"
+         font-weight="normal"
+         font-variant="normal"
+         font-style="normal"
+         stroke-miterlimit="10.433"
+         xml:space="preserve"
+         transform="matrix(1,0,0,-1,248.61,926.54218)"
+         id="g15612-3">
+<polygon
+   style="fill:#000000;stroke-width:0"
+   id="polygon15614-7"
+   points="229.21,657.58 226.99,659.79 229.21,662.01 228.82,662.41 226.6,660.19 224.39,662.41 223.99,662.01 226.2,659.79 223.99,657.58 224.39,657.18 226.6,659.41 228.82,657.18 " />
+</g>      <g
+         id="g17293-2"
+         transform="matrix(1,0,0,-1,215.35,920.00218)"
+         xml:space="preserve"
+         stroke-miterlimit="10.433"
+         font-style="normal"
+         font-variant="normal"
+         font-weight="normal"
+         font-stretch="normal"
+         font-size-adjust="none"
+         letter-spacing="normal"
+         word-spacing="normal"
+         ns0:text="$1$"
+         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0">
+<path
+   style="fill:#000000;stroke-width:0"
+   inkscape:connector-curvature="0"
+   d="m 226.33,663.96 -1.79,-0.9 v -0.14 c 0.12,0.05 0.23,0.09 0.27,0.11 0.18,0.07 0.35,0.11 0.45,0.11 0.21,0 0.29,-0.15 0.29,-0.47 v -4.51 c 0,-0.33 -0.07,-0.56 -0.23,-0.65 -0.15,-0.09 -0.29,-0.12 -0.71,-0.13 v -0.15 h 2.75 v 0.15 c -0.79,0.01 -0.95,0.11 -0.95,0.59 v 5.97 z"
+   id="path17295-9" />
+</g>      <g
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+         ns0:text="$1/b$"
+         word-spacing="normal"
+         letter-spacing="normal"
+         font-size-adjust="none"
+         font-stretch="normal"
+         font-weight="normal"
+         font-variant="normal"
+         font-style="normal"
+         stroke-miterlimit="10.433"
+         xml:space="preserve"
+         transform="matrix(1,0,0,-1,282.8,913.30218)"
+         id="g5871-8">
+<path
+   style="fill:#000000;stroke-width:0"
+   inkscape:connector-curvature="0"
+   id="path5873-4"
+   d="m 226.33,663.96 -1.79,-0.9 v -0.14 c 0.12,0.05 0.23,0.09 0.27,0.11 0.18,0.07 0.35,0.11 0.45,0.11 0.21,0 0.29,-0.15 0.29,-0.47 v -4.51 c 0,-0.33 -0.07,-0.56 -0.23,-0.65 -0.15,-0.09 -0.29,-0.12 -0.71,-0.13 v -0.15 h 2.75 v 0.15 c -0.79,0.01 -0.95,0.11 -0.95,0.59 v 5.97 z" />
+<polygon
+   style="fill:#000000;stroke-width:0"
+   id="polygon5875-4"
+   points="232.19,663.98 231.67,663.98 229.03,655.63 229.55,655.63 " />
+<path
+   style="fill:#000000;stroke-width:0"
+   inkscape:connector-curvature="0"
+   id="path5877-0"
+   d="m 233.9,663.63 0.03,0 0.03,0 0.02,0 0.03,0 0.02,0 0.03,0 0.02,0 0.02,0 0.02,-0.01 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.01,-0.01 0.02,0 0.02,0 0.01,0 0.01,0 0.02,0 0.01,-0.01 0.01,0 0.02,0 0.01,0 0.01,-0.01 0.02,0 0.02,-0.01 0.02,0 0.01,-0.01 0.02,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0,-0.01 0.01,-0.02 0,-0.01 0,-0.01 0.01,-0.02 0,-0.02 0,-0.02 0,-0.01 0,-0.02 c 0,-0.09 -0.03,-0.21 -0.09,-0.43 -0.02,-0.07 -0.04,-0.14 -0.05,-0.19 l -0.02,-0.07 -1.35,-4.99 v -0.04 c 0,-0.23 0.76,-0.52 1.32,-0.52 1.51,0 3.16,1.74 3.16,3.3 0,0.7 -0.49,1.19 -1.15,1.19 -0.7,0 -1.22,-0.4 -1.93,-1.5 l 0.17,-0.13 c 0.44,0.77 0.89,1.15 1.37,1.15 h 0 c 0.43,0 0.7,-0.33 0.7,-0.86 0,-0.66 -0.51,-1.72 -1.1,-2.34 -0.37,-0.38 -0.8,-0.59 -1.23,-0.59 -0.31,0 -0.46,0.11 -0.46,0.34 0,0.6 0.3,1.57 0.72,2.3 l -0.17,0.13 c 0.52,1.89 0.59,2.16 1.04,3.86 l -0.05,0.05 c -0.5,-0.09 -0.86,-0.15 -1.53,-0.23 z" />
+</g>    </g>
+    <path
+       inkscape:connector-curvature="0"
+       id="path2989-4-7-1"
+       d="m 450,912.36218 59.99781,-0.51289 c 4.99982,-0.0427 10.08512,9.91415 10.1706,19.91378 0.0855,9.99964 -4.82885,20.04201 -9.82867,20.08476 l -59.99781,0.51289"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       sodipodi:nodetypes="ccccc" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3124-8-1-0"
+       d="m 545.1675,931.54937 -24.99909,0.2137"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <g
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+       ns0:text="$1$"
+       word-spacing="normal"
+       letter-spacing="normal"
+       font-size-adjust="none"
+       font-stretch="normal"
+       font-weight="normal"
+       font-variant="normal"
+       font-style="normal"
+       stroke-miterlimit="10.433"
+       xml:space="preserve"
+       transform="matrix(1,0,0,-1,309.45,1585.2552)"
+       id="g17293-0-7">
+<path
+   style="fill:#000000;stroke-width:0"
+   inkscape:connector-curvature="0"
+   id="path17295-3-5"
+   d="m 226.33,663.96 -1.79,-0.9 v -0.14 c 0.12,0.05 0.23,0.09 0.27,0.11 0.18,0.07 0.35,0.11 0.45,0.11 0.21,0 0.29,-0.15 0.29,-0.47 v -4.51 c 0,-0.33 -0.07,-0.56 -0.23,-0.65 -0.15,-0.09 -0.29,-0.12 -0.71,-0.13 v -0.15 h 2.75 v 0.15 c -0.79,0.01 -0.95,0.11 -0.95,0.59 v 5.97 z" />
+</g>    <g
+       id="g15612-7-1"
+       transform="matrix(1,0,0,-1,278.4,1591.9952)"
+       xml:space="preserve"
+       stroke-miterlimit="10.433"
+       font-style="normal"
+       font-variant="normal"
+       font-weight="normal"
+       font-stretch="normal"
+       font-size-adjust="none"
+       letter-spacing="normal"
+       word-spacing="normal"
+       ns0:text="$\\times$"
+       ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0">
+<polygon
+   points="229.21,657.58 226.99,659.79 229.21,662.01 228.82,662.41 226.6,660.19 224.39,662.41 223.99,662.01 226.2,659.79 223.99,657.58 224.39,657.18 226.6,659.41 228.82,657.18 "
+   id="polygon15614-0-0"
+   style="fill:#000000;stroke-width:0" />
+</g>    <g
+       id="g3038-4-9-2"
+       transform="matrix(1,0,0,-1,229.47549,1578.2876)"
+       xml:space="preserve"
+       stroke-miterlimit="10.433"
+       font-style="normal"
+       font-variant="normal"
+       font-weight="normal"
+       font-stretch="normal"
+       font-size-adjust="none"
+       letter-spacing="normal"
+       word-spacing="normal"
+       ns0:text="$b$"
+       ns0:preamble=""
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0">
+<path
+   style="fill:#000000;stroke-width:0"
+   inkscape:connector-curvature="0"
+   d="m 225.81,664.03 0,0 0,0 0,0.01 0,0 0,0 0,0 0,0.01 0,0 0,0 0,0.01 0,0 0,0.01 0,0 0,0.01 -0.01,0 0,0.01 0,0 -0.01,0.01 0,0 0,0.01 -0.01,0 0,0 0,0 -0.01,0.01 0,0 0,0 0,0 -0.01,0 0,0.01 0,0 -0.01,0 0,0 -0.01,0 0,0 0,0.01 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 -0.01,0 c -0.22,0 -0.95,-0.08 -1.21,-0.1 -0.08,-0.01 -0.19,-0.02 -0.19,-0.2 0,-0.12 0.09,-0.12 0.24,-0.12 0.48,0 0.5,-0.07 0.5,-0.17 0,-0.07 -0.09,-0.4 -0.14,-0.61 l -0.82,-3.25 c -0.12,-0.49 -0.16,-0.65 -0.16,-1 0,-0.95 0.53,-1.56 1.27,-1.56 v 0.21 c -0.34,0 -0.67,0.27 -0.67,1.01 0,0.19 0,0.38 0.16,1 l 0.22,0.92 c 0.06,0.22 0.06,0.24 0.15,0.35 0.48,0.65 0.93,0.79 1.19,0.79 0.36,0 0.63,-0.29 0.63,-0.93 0,-0.59 -0.33,-1.73 -0.51,-2.11 -0.33,-0.67 -0.79,-1.03 -1.17,-1.03 v -0.21 c 1.17,0 2.4,1.48 2.4,2.91 0,0.91 -0.53,1.59 -1.33,1.59 -0.45,0 -0.86,-0.29 -1.16,-0.59 z"
+   id="path3040-7-0-3" />
+</g>    <g
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+       ns0:text="$1/b$"
+       word-spacing="normal"
+       letter-spacing="normal"
+       font-size-adjust="none"
+       font-stretch="normal"
+       font-weight="normal"
+       font-variant="normal"
+       font-style="normal"
+       stroke-miterlimit="10.433"
+       xml:space="preserve"
+       transform="matrix(1,0,0,-1,226.48749,1605.5645)"
+       id="g7765-1">
+<path
+   id="path7767-2"
+   d="m 226.33,663.96 -1.79,-0.9 v -0.14 c 0.12,0.05 0.23,0.09 0.27,0.11 0.18,0.07 0.35,0.11 0.45,0.11 0.21,0 0.29,-0.15 0.29,-0.47 v -4.51 c 0,-0.33 -0.07,-0.56 -0.23,-0.65 -0.15,-0.09 -0.29,-0.12 -0.71,-0.13 v -0.15 h 2.75 v 0.15 c -0.79,0.01 -0.95,0.11 -0.95,0.59 v 5.97 z"
+   inkscape:connector-curvature="0"
+   style="fill:#000000;stroke-width:0" />
+<polygon
+   id="polygon7769-7"
+   points="232.19,663.98 231.67,663.98 229.03,655.63 229.55,655.63 "
+   style="fill:#000000;stroke-width:0" />
+<path
+   id="path7771-6"
+   d="m 233.9,663.63 0.03,0 0.03,0 0.02,0 0.03,0 0.02,0 0.03,0 0.02,0 0.02,0 0.02,-0.01 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.01,-0.01 0.02,0 0.02,0 0.01,0 0.01,0 0.02,0 0.01,-0.01 0.01,0 0.02,0 0.01,0 0.01,-0.01 0.02,0 0.02,-0.01 0.02,0 0.01,-0.01 0.02,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0,-0.01 0.01,-0.02 0,-0.01 0,-0.01 0.01,-0.02 0,-0.02 0,-0.02 0,-0.01 0,-0.02 c 0,-0.09 -0.03,-0.21 -0.09,-0.43 -0.02,-0.07 -0.04,-0.14 -0.05,-0.19 l -0.02,-0.07 -1.35,-4.99 v -0.04 c 0,-0.23 0.76,-0.52 1.32,-0.52 1.51,0 3.16,1.74 3.16,3.3 0,0.7 -0.49,1.19 -1.15,1.19 -0.7,0 -1.22,-0.4 -1.93,-1.5 l 0.17,-0.13 c 0.44,0.77 0.89,1.15 1.37,1.15 h 0 c 0.43,0 0.7,-0.33 0.7,-0.86 0,-0.66 -0.51,-1.72 -1.1,-2.34 -0.37,-0.38 -0.8,-0.59 -1.23,-0.59 -0.31,0 -0.46,0.11 -0.46,0.34 0,0.6 0.3,1.57 0.72,2.3 l -0.17,0.13 c 0.52,1.89 0.59,2.16 1.04,3.86 l -0.05,0.05 c -0.5,-0.09 -0.86,-0.15 -1.53,-0.23 z"
+   inkscape:connector-curvature="0"
+   style="fill:#000000;stroke-width:0" />
+</g>    <g
+       id="g5357">
+      <path
+         sodipodi:nodetypes="cccccsccccc"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 575,912.36218 15,0 c 10,0 10,40 20,40 l 5,0 14.99781,-0.51289 c 4.99982,-0.0427 10.2561,-10.08658 10.1706,-20.08622 -0.0855,-9.99963 -5.17078,-19.95648 -10.1706,-19.91378 L 615,912.36218 l -5,0 c -10,0 -10,40 -20,40 l -15,0"
+         id="path2989-4-7-1-0"
+         inkscape:connector-curvature="0" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 665.1675,931.54937 -24.99909,0.2137"
+         id="path3124-8-1-0-3"
+         inkscape:connector-curvature="0" />
+      <g
+         id="g17293-0-7-8"
+         transform="matrix(1,0,0,-1,429.45,1585.2552)"
+         xml:space="preserve"
+         stroke-miterlimit="10.433"
+         font-style="normal"
+         font-variant="normal"
+         font-weight="normal"
+         font-stretch="normal"
+         font-size-adjust="none"
+         letter-spacing="normal"
+         word-spacing="normal"
+         ns0:text="$1$"
+         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0">
+<path
+   d="m 226.33,663.96 -1.79,-0.9 v -0.14 c 0.12,0.05 0.23,0.09 0.27,0.11 0.18,0.07 0.35,0.11 0.45,0.11 0.21,0 0.29,-0.15 0.29,-0.47 v -4.51 c 0,-0.33 -0.07,-0.56 -0.23,-0.65 -0.15,-0.09 -0.29,-0.12 -0.71,-0.13 v -0.15 h 2.75 v 0.15 c -0.79,0.01 -0.95,0.11 -0.95,0.59 v 5.97 z"
+   id="path17295-3-5-7"
+   inkscape:connector-curvature="0"
+   style="fill:#000000;stroke-width:0" />
+</g>      <g
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+         ns0:text="$\\times$"
+         word-spacing="normal"
+         letter-spacing="normal"
+         font-size-adjust="none"
+         font-stretch="normal"
+         font-weight="normal"
+         font-variant="normal"
+         font-style="normal"
+         stroke-miterlimit="10.433"
+         xml:space="preserve"
+         transform="matrix(1,0,0,-1,398.4,1591.9952)"
+         id="g15612-7-1-1">
+<polygon
+   style="fill:#000000;stroke-width:0"
+   id="polygon15614-0-0-9"
+   points="224.39,662.41 223.99,662.01 226.2,659.79 223.99,657.58 224.39,657.18 226.6,659.41 228.82,657.18 229.21,657.58 226.99,659.79 229.21,662.01 228.82,662.41 226.6,660.19 " />
+</g>      <g
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         ns0:preamble=""
+         ns0:text="$b$"
+         word-spacing="normal"
+         letter-spacing="normal"
+         font-size-adjust="none"
+         font-stretch="normal"
+         font-weight="normal"
+         font-variant="normal"
+         font-style="normal"
+         stroke-miterlimit="10.433"
+         xml:space="preserve"
+         transform="matrix(1,0,0,-1,353.76,1578.9922)"
+         id="g3038-4-9-2-3">
+<path
+   id="path3040-7-0-3-1"
+   d="m 225.81,664.03 0,0 0,0 0,0.01 0,0 0,0 0,0 0,0.01 0,0 0,0 0,0.01 0,0 0,0.01 0,0 0,0.01 -0.01,0 0,0.01 0,0 -0.01,0.01 0,0 0,0.01 -0.01,0 0,0 0,0 -0.01,0.01 0,0 0,0 0,0 -0.01,0 0,0.01 0,0 -0.01,0 0,0 -0.01,0 0,0 0,0.01 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 -0.01,0 c -0.22,0 -0.95,-0.08 -1.21,-0.1 -0.08,-0.01 -0.19,-0.02 -0.19,-0.2 0,-0.12 0.09,-0.12 0.24,-0.12 0.48,0 0.5,-0.07 0.5,-0.17 0,-0.07 -0.09,-0.4 -0.14,-0.61 l -0.82,-3.25 c -0.12,-0.49 -0.16,-0.65 -0.16,-1 0,-0.95 0.53,-1.56 1.27,-1.56 v 0.21 c -0.34,0 -0.67,0.27 -0.67,1.01 0,0.19 0,0.38 0.16,1 l 0.22,0.92 c 0.06,0.22 0.06,0.24 0.15,0.35 0.48,0.65 0.93,0.79 1.19,0.79 0.36,0 0.63,-0.29 0.63,-0.93 0,-0.59 -0.33,-1.73 -0.51,-2.11 -0.33,-0.67 -0.79,-1.03 -1.17,-1.03 v -0.21 c 1.17,0 2.4,1.48 2.4,2.91 0,0.91 -0.53,1.59 -1.33,1.59 -0.45,0 -0.86,-0.29 -1.16,-0.59 z"
+   inkscape:connector-curvature="0"
+   style="fill:#000000;stroke-width:0" />
+</g>      <g
+         id="g7765-1-4"
+         transform="matrix(1,0,0,-1,349.5835,1606.5057)"
+         xml:space="preserve"
+         stroke-miterlimit="10.433"
+         font-style="normal"
+         font-variant="normal"
+         font-weight="normal"
+         font-stretch="normal"
+         font-size-adjust="none"
+         letter-spacing="normal"
+         word-spacing="normal"
+         ns0:text="$1/b$"
+         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0">
+<path
+   style="fill:#000000;stroke-width:0"
+   inkscape:connector-curvature="0"
+   d="m 226.33,663.96 -1.79,-0.9 v -0.14 c 0.12,0.05 0.23,0.09 0.27,0.11 0.18,0.07 0.35,0.11 0.45,0.11 0.21,0 0.29,-0.15 0.29,-0.47 v -4.51 c 0,-0.33 -0.07,-0.56 -0.23,-0.65 -0.15,-0.09 -0.29,-0.12 -0.71,-0.13 v -0.15 h 2.75 v 0.15 c -0.79,0.01 -0.95,0.11 -0.95,0.59 v 5.97 z"
+   id="path7767-2-2" />
+<polygon
+   style="fill:#000000;stroke-width:0"
+   points="229.03,655.63 229.55,655.63 232.19,663.98 231.67,663.98 "
+   id="polygon7769-7-9" />
+<path
+   style="fill:#000000;stroke-width:0"
+   inkscape:connector-curvature="0"
+   d="m 233.9,663.63 0.03,0 0.03,0 0.02,0 0.03,0 0.02,0 0.03,0 0.02,0 0.02,0 0.02,-0.01 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.01,-0.01 0.02,0 0.02,0 0.01,0 0.01,0 0.02,0 0.01,-0.01 0.01,0 0.02,0 0.01,0 0.01,-0.01 0.02,0 0.02,-0.01 0.02,0 0.01,-0.01 0.02,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0,-0.01 0.01,-0.02 0,-0.01 0,-0.01 0.01,-0.02 0,-0.02 0,-0.02 0,-0.01 0,-0.02 c 0,-0.09 -0.03,-0.21 -0.09,-0.43 -0.02,-0.07 -0.04,-0.14 -0.05,-0.19 l -0.02,-0.07 -1.35,-4.99 v -0.04 c 0,-0.23 0.76,-0.52 1.32,-0.52 1.51,0 3.16,1.74 3.16,3.3 0,0.7 -0.49,1.19 -1.15,1.19 -0.7,0 -1.22,-0.4 -1.93,-1.5 l 0.17,-0.13 c 0.44,0.77 0.89,1.15 1.37,1.15 h 0 c 0.43,0 0.7,-0.33 0.7,-0.86 0,-0.66 -0.51,-1.72 -1.1,-2.34 -0.37,-0.38 -0.8,-0.59 -1.23,-0.59 -0.31,0 -0.46,0.11 -0.46,0.34 0,0.6 0.3,1.57 0.72,2.3 l -0.17,0.13 c 0.52,1.89 0.59,2.16 1.04,3.86 l -0.05,0.05 c -0.5,-0.09 -0.86,-0.15 -1.53,-0.23 z"
+   id="path7771-6-8" />
+</g>    </g>
+    <g
+       id="g7873-2"
+       transform="translate(-295.72671,139.57972)">
+      <path
+         sodipodi:nodetypes="cccccccccccccc"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 550,902.36218 -90,0 -40,-40 -20,0 c -10,0 -20,10 -20,20 0,10 10,20 20,20 l 20,0 10,-10 30,-30 40,0 c 10,0 20,-10 20,-20 0,-10 -10,-20 -20,-20 l -110,0 -30,0"
+         id="path3739-24"
+         inkscape:connector-curvature="0" />
+      <g
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         ns0:preamble=""
+         ns0:text="$b$"
+         word-spacing="normal"
+         letter-spacing="normal"
+         font-size-adjust="none"
+         font-stretch="normal"
+         font-weight="normal"
+         font-variant="normal"
+         font-style="normal"
+         stroke-miterlimit="10.433"
+         xml:space="preserve"
+         transform="matrix(1,0,0,-1,260.83,1513.4922)"
+         id="g3038-5-4-3-8-6">
+<path
+   id="path3040-9-3-1-9-3"
+   d="m 225.81,664.03 0,0 0,0 0,0.01 0,0 0,0 0,0 0,0.01 0,0 0,0 0,0.01 0,0 0,0.01 0,0 0,0.01 -0.01,0 0,0.01 0,0 -0.01,0.01 0,0 0,0.01 -0.01,0 0,0 0,0 -0.01,0.01 0,0 0,0 0,0 -0.01,0 0,0.01 0,0 -0.01,0 0,0 -0.01,0 0,0 0,0.01 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 -0.01,0 c -0.22,0 -0.95,-0.08 -1.21,-0.1 -0.08,-0.01 -0.19,-0.02 -0.19,-0.2 0,-0.12 0.09,-0.12 0.24,-0.12 0.48,0 0.5,-0.07 0.5,-0.17 0,-0.07 -0.09,-0.4 -0.14,-0.61 l -0.82,-3.25 c -0.12,-0.49 -0.16,-0.65 -0.16,-1 0,-0.95 0.53,-1.56 1.27,-1.56 v 0.21 c -0.34,0 -0.67,0.27 -0.67,1.01 0,0.19 0,0.38 0.16,1 l 0.22,0.92 c 0.06,0.22 0.06,0.24 0.15,0.35 0.48,0.65 0.93,0.79 1.19,0.79 0.36,0 0.63,-0.29 0.63,-0.93 0,-0.59 -0.33,-1.73 -0.51,-2.11 -0.33,-0.67 -0.79,-1.03 -1.17,-1.03 v -0.21 c 1.17,0 2.4,1.48 2.4,2.91 0,0.91 -0.53,1.59 -1.33,1.59 -0.45,0 -0.86,-0.29 -1.16,-0.59 z"
+   inkscape:connector-curvature="0"
+   style="fill:#000000;stroke-width:0" />
+</g>      <g
+         id="g4158-92"
+         transform="matrix(1,0,0,-1,144.83,1473.4922)"
+         xml:space="preserve"
+         stroke-miterlimit="10.433"
+         font-style="normal"
+         font-variant="normal"
+         font-weight="normal"
+         font-stretch="normal"
+         font-size-adjust="none"
+         letter-spacing="normal"
+         word-spacing="normal"
+         ns0:text="$-b$"
+         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0">
+<polygon
+   style="fill:#000000;stroke-width:0"
+   points="229.15,659.51 229.15,660.07 224.05,660.07 224.05,659.51 "
+   id="polygon4160-7" />
+<path
+   style="fill:#000000;stroke-width:0"
+   inkscape:connector-curvature="0"
+   d="m 230.87,663.63 0.02,0 0.03,0 0.02,0 0.03,0 0.02,0 0.03,0 0.02,0 0.02,0 0.02,-0.01 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.01,-0.01 0.02,0 0.02,0 0.01,0 0.02,0 0.01,0 0.01,-0.01 0.02,0 0.01,0 0.01,0 0.01,-0.01 0.02,0 0.02,-0.01 0.02,0 0.01,-0.01 0.02,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0,-0.01 0.01,-0.02 0,-0.01 0.01,-0.01 0,-0.02 0,-0.02 0,-0.02 0,-0.01 0,-0.02 c 0,-0.09 -0.03,-0.21 -0.09,-0.43 -0.02,-0.07 -0.04,-0.14 -0.05,-0.19 l -0.02,-0.07 -1.35,-4.99 v -0.04 c 0,-0.23 0.76,-0.52 1.32,-0.52 1.51,0 3.16,1.74 3.16,3.3 0,0.7 -0.49,1.19 -1.15,1.19 -0.7,0 -1.22,-0.4 -1.93,-1.5 l 0.17,-0.13 c 0.44,0.77 0.89,1.15 1.37,1.15 h 0 c 0.43,0 0.7,-0.33 0.7,-0.86 0,-0.66 -0.51,-1.72 -1.1,-2.34 -0.37,-0.38 -0.8,-0.59 -1.23,-0.59 -0.31,0 -0.46,0.11 -0.46,0.34 0,0.6 0.3,1.57 0.72,2.3 l -0.17,0.13 c 0.52,1.89 0.59,2.16 1.04,3.86 l -0.05,0.05 c -0.5,-0.09 -0.86,-0.15 -1.52,-0.23 z"
+   id="path4162-1" />
+</g>      <g
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         ns0:preamble=""
+         ns0:text="$b$"
+         word-spacing="normal"
+         letter-spacing="normal"
+         font-size-adjust="none"
+         font-stretch="normal"
+         font-weight="normal"
+         font-variant="normal"
+         font-style="normal"
+         stroke-miterlimit="10.433"
+         xml:space="preserve"
+         transform="matrix(1,0,0,-1,186.1,1551.0522)"
+         id="g3038-5-4-3-8-2-3">
+<path
+   id="path3040-9-3-1-9-8-4"
+   d="m 225.81,664.03 0,0 0,0 0,0.01 0,0 0,0 0,0 0,0.01 0,0 0,0 0,0.01 0,0 0,0.01 0,0 0,0.01 -0.01,0 0,0.01 0,0 -0.01,0.01 0,0 0,0.01 -0.01,0 0,0 0,0 -0.01,0.01 0,0 0,0 0,0 -0.01,0 0,0.01 0,0 -0.01,0 0,0 -0.01,0 0,0 0,0.01 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 -0.01,0 c -0.22,0 -0.95,-0.08 -1.21,-0.1 -0.08,-0.01 -0.19,-0.02 -0.19,-0.2 0,-0.12 0.09,-0.12 0.24,-0.12 0.48,0 0.5,-0.07 0.5,-0.17 0,-0.07 -0.09,-0.4 -0.14,-0.61 l -0.82,-3.25 c -0.12,-0.49 -0.16,-0.65 -0.16,-1 0,-0.95 0.53,-1.56 1.27,-1.56 v 0.21 c -0.34,0 -0.67,0.27 -0.67,1.01 0,0.19 0,0.38 0.16,1 l 0.22,0.92 c 0.06,0.22 0.06,0.24 0.15,0.35 0.48,0.65 0.93,0.79 1.19,0.79 0.36,0 0.63,-0.29 0.63,-0.93 0,-0.59 -0.33,-1.73 -0.51,-2.11 -0.33,-0.67 -0.79,-1.03 -1.17,-1.03 v -0.21 c 1.17,0 2.4,1.48 2.4,2.91 0,0.91 -0.53,1.59 -1.33,1.59 -0.45,0 -0.86,-0.29 -1.16,-0.59 z"
+   inkscape:connector-curvature="0"
+   style="fill:#000000;stroke-width:0" />
+</g>      <g
+         id="g4158-9-4"
+         transform="matrix(1,0,0,-1,180,1512.0122)"
+         xml:space="preserve"
+         stroke-miterlimit="10.433"
+         font-style="normal"
+         font-variant="normal"
+         font-weight="normal"
+         font-stretch="normal"
+         font-size-adjust="none"
+         letter-spacing="normal"
+         word-spacing="normal"
+         ns0:text="$-b$"
+         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0">
+<polygon
+   style="fill:#000000;stroke-width:0"
+   points="224.05,659.51 229.15,659.51 229.15,660.07 224.05,660.07 "
+   id="polygon4160-3-2" />
+<path
+   style="fill:#000000;stroke-width:0"
+   inkscape:connector-curvature="0"
+   d="m 230.87,663.63 0.02,0 0.03,0 0.02,0 0.03,0 0.02,0 0.03,0 0.02,0 0.02,0 0.02,-0.01 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.01,-0.01 0.02,0 0.02,0 0.01,0 0.02,0 0.01,0 0.01,-0.01 0.02,0 0.01,0 0.01,0 0.01,-0.01 0.02,0 0.02,-0.01 0.02,0 0.01,-0.01 0.02,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0,-0.01 0.01,-0.02 0,-0.01 0.01,-0.01 0,-0.02 0,-0.02 0,-0.02 0,-0.01 0,-0.02 c 0,-0.09 -0.03,-0.21 -0.09,-0.43 -0.02,-0.07 -0.04,-0.14 -0.05,-0.19 l -0.02,-0.07 -1.35,-4.99 v -0.04 c 0,-0.23 0.76,-0.52 1.32,-0.52 1.51,0 3.16,1.74 3.16,3.3 0,0.7 -0.49,1.19 -1.15,1.19 -0.7,0 -1.22,-0.4 -1.93,-1.5 l 0.17,-0.13 c 0.44,0.77 0.89,1.15 1.37,1.15 h 0 c 0.43,0 0.7,-0.33 0.7,-0.86 0,-0.66 -0.51,-1.72 -1.1,-2.34 -0.37,-0.38 -0.8,-0.59 -1.23,-0.59 -0.31,0 -0.46,0.11 -0.46,0.34 0,0.6 0.3,1.57 0.72,2.3 l -0.17,0.13 c 0.52,1.89 0.59,2.16 1.04,3.86 l -0.05,0.05 c -0.5,-0.09 -0.86,-0.15 -1.52,-0.23 z"
+   id="path4162-6-4" />
+</g>      <g
+         id="g4158-8-6"
+         transform="matrix(1,0,0,-1,309.15,1552.0522)"
+         xml:space="preserve"
+         stroke-miterlimit="10.433"
+         font-style="normal"
+         font-variant="normal"
+         font-weight="normal"
+         font-stretch="normal"
+         font-size-adjust="none"
+         letter-spacing="normal"
+         word-spacing="normal"
+         ns0:text="$-b$"
+         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0">
+<polygon
+   style="fill:#000000;stroke-width:0"
+   points="224.05,659.51 229.15,659.51 229.15,660.07 224.05,660.07 "
+   id="polygon4160-0-7" />
+<path
+   style="fill:#000000;stroke-width:0"
+   inkscape:connector-curvature="0"
+   d="m 230.87,663.63 0.02,0 0.03,0 0.02,0 0.03,0 0.02,0 0.03,0 0.02,0 0.02,0 0.02,-0.01 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.01,-0.01 0.02,0 0.02,0 0.01,0 0.02,0 0.01,0 0.01,-0.01 0.02,0 0.01,0 0.01,0 0.01,-0.01 0.02,0 0.02,-0.01 0.02,0 0.01,-0.01 0.02,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0,-0.01 0.01,-0.02 0,-0.01 0.01,-0.01 0,-0.02 0,-0.02 0,-0.02 0,-0.01 0,-0.02 c 0,-0.09 -0.03,-0.21 -0.09,-0.43 -0.02,-0.07 -0.04,-0.14 -0.05,-0.19 l -0.02,-0.07 -1.35,-4.99 v -0.04 c 0,-0.23 0.76,-0.52 1.32,-0.52 1.51,0 3.16,1.74 3.16,3.3 0,0.7 -0.49,1.19 -1.15,1.19 -0.7,0 -1.22,-0.4 -1.93,-1.5 l 0.17,-0.13 c 0.44,0.77 0.89,1.15 1.37,1.15 h 0 c 0.43,0 0.7,-0.33 0.7,-0.86 0,-0.66 -0.51,-1.72 -1.1,-2.34 -0.37,-0.38 -0.8,-0.59 -1.23,-0.59 -0.31,0 -0.46,0.11 -0.46,0.34 0,0.6 0.3,1.57 0.72,2.3 l -0.17,0.13 c 0.52,1.89 0.59,2.16 1.04,3.86 l -0.05,0.05 c -0.5,-0.09 -0.86,-0.15 -1.52,-0.23 z"
+   id="path4162-2-9" />
+</g>      <g
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+         ns0:text="$+$"
+         word-spacing="normal"
+         letter-spacing="normal"
+         font-size-adjust="none"
+         font-stretch="normal"
+         font-weight="normal"
+         font-variant="normal"
+         font-style="normal"
+         stroke-miterlimit="10.433"
+         xml:space="preserve"
+         transform="matrix(1,0,0,-1,278.68,1501.8722)"
+         id="g4971-7">
+<polygon
+   id="polygon4973-6"
+   points="226.88,659.51 229.15,659.51 229.15,660.07 226.88,660.07 226.88,662.32 226.32,662.32 226.32,660.07 224.05,660.07 224.05,659.51 226.32,659.51 226.32,657.23 226.88,657.23 "
+   style="fill:#000000;stroke-width:0" />
+</g>      <g
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+         ns0:text="$+$"
+         word-spacing="normal"
+         letter-spacing="normal"
+         font-size-adjust="none"
+         font-stretch="normal"
+         font-weight="normal"
+         font-variant="normal"
+         font-style="normal"
+         stroke-miterlimit="10.433"
+         xml:space="preserve"
+         transform="matrix(1,0,0,-1,168.68,1541.8722)"
+         id="g4971-5-7">
+<polygon
+   id="polygon4973-8-7"
+   points="226.32,660.07 224.05,660.07 224.05,659.51 226.32,659.51 226.32,657.23 226.88,657.23 226.88,659.51 229.15,659.51 229.15,660.07 226.88,660.07 226.88,662.32 226.32,662.32 "
+   style="fill:#000000;stroke-width:0" />
+</g>    </g>
+    <g
+       id="g5818">
+      <path
+         sodipodi:nodetypes="cccccccc"
+         inkscape:connector-curvature="0"
+         id="path5537"
+         d="m 395,807.36218 60,0 c 5,0 10,5 10,10 0,5 -5,10 -10,10 l -35,0 c -5,0 -10,5 -10,10 0,5 5,10 10,10 l 60,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <g
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         ns0:preamble=""
+         ns0:text="$b$"
+         word-spacing="normal"
+         letter-spacing="normal"
+         font-size-adjust="none"
+         font-stretch="normal"
+         font-weight="normal"
+         font-variant="normal"
+         font-style="normal"
+         stroke-miterlimit="10.433"
+         xml:space="preserve"
+         transform="matrix(1,0,0,-1,171.422,1474.6512)"
+         id="g3038-4-9-2-0">
+<path
+   id="path3040-7-0-3-2"
+   d="m 225.81,664.03 0,0 0,0 0,0.01 0,0 0,0 0,0 0,0.01 0,0 0,0 0,0.01 0,0 0,0.01 0,0 0,0.01 -0.01,0 0,0.01 0,0 -0.01,0.01 0,0 0,0.01 -0.01,0 0,0 0,0 -0.01,0.01 0,0 0,0 0,0 -0.01,0 0,0.01 0,0 -0.01,0 0,0 -0.01,0 0,0 0,0.01 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 -0.01,0 c -0.22,0 -0.95,-0.08 -1.21,-0.1 -0.08,-0.01 -0.19,-0.02 -0.19,-0.2 0,-0.12 0.09,-0.12 0.24,-0.12 0.48,0 0.5,-0.07 0.5,-0.17 0,-0.07 -0.09,-0.4 -0.14,-0.61 l -0.82,-3.25 c -0.12,-0.49 -0.16,-0.65 -0.16,-1 0,-0.95 0.53,-1.56 1.27,-1.56 v 0.21 c -0.34,0 -0.67,0.27 -0.67,1.01 0,0.19 0,0.38 0.16,1 l 0.22,0.92 c 0.06,0.22 0.06,0.24 0.15,0.35 0.48,0.65 0.93,0.79 1.19,0.79 0.36,0 0.63,-0.29 0.63,-0.93 0,-0.59 -0.33,-1.73 -0.51,-2.11 -0.33,-0.67 -0.79,-1.03 -1.17,-1.03 v -0.21 c 1.17,0 2.4,1.48 2.4,2.91 0,0.91 -0.53,1.59 -1.33,1.59 -0.45,0 -0.86,-0.29 -1.16,-0.59 z"
+   inkscape:connector-curvature="0"
+   style="fill:#000000;stroke-width:0" />
+</g>      <g
+         id="g7765-1-7"
+         transform="matrix(1,0,0,-1,201.23486,1481.7377)"
+         xml:space="preserve"
+         stroke-miterlimit="10.433"
+         font-style="normal"
+         font-variant="normal"
+         font-weight="normal"
+         font-stretch="normal"
+         font-size-adjust="none"
+         letter-spacing="normal"
+         word-spacing="normal"
+         ns0:text="$1/b$"
+         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0">
+<path
+   style="fill:#000000;stroke-width:0"
+   inkscape:connector-curvature="0"
+   d="m 226.33,663.96 -1.79,-0.9 v -0.14 c 0.12,0.05 0.23,0.09 0.27,0.11 0.18,0.07 0.35,0.11 0.45,0.11 0.21,0 0.29,-0.15 0.29,-0.47 v -4.51 c 0,-0.33 -0.07,-0.56 -0.23,-0.65 -0.15,-0.09 -0.29,-0.12 -0.71,-0.13 v -0.15 h 2.75 v 0.15 c -0.79,0.01 -0.95,0.11 -0.95,0.59 v 5.97 z"
+   id="path7767-2-7" />
+<polygon
+   style="fill:#000000;stroke-width:0"
+   points="229.03,655.63 229.55,655.63 232.19,663.98 231.67,663.98 "
+   id="polygon7769-7-1" />
+<path
+   style="fill:#000000;stroke-width:0"
+   inkscape:connector-curvature="0"
+   d="m 233.9,663.63 0.03,0 0.03,0 0.02,0 0.03,0 0.02,0 0.03,0 0.02,0 0.02,0 0.02,-0.01 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.01,-0.01 0.02,0 0.02,0 0.01,0 0.01,0 0.02,0 0.01,-0.01 0.01,0 0.02,0 0.01,0 0.01,-0.01 0.02,0 0.02,-0.01 0.02,0 0.01,-0.01 0.02,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0,-0.01 0.01,-0.02 0,-0.01 0,-0.01 0.01,-0.02 0,-0.02 0,-0.02 0,-0.01 0,-0.02 c 0,-0.09 -0.03,-0.21 -0.09,-0.43 -0.02,-0.07 -0.04,-0.14 -0.05,-0.19 l -0.02,-0.07 -1.35,-4.99 v -0.04 c 0,-0.23 0.76,-0.52 1.32,-0.52 1.51,0 3.16,1.74 3.16,3.3 0,0.7 -0.49,1.19 -1.15,1.19 -0.7,0 -1.22,-0.4 -1.93,-1.5 l 0.17,-0.13 c 0.44,0.77 0.89,1.15 1.37,1.15 h 0 c 0.43,0 0.7,-0.33 0.7,-0.86 0,-0.66 -0.51,-1.72 -1.1,-2.34 -0.37,-0.38 -0.8,-0.59 -1.23,-0.59 -0.31,0 -0.46,0.11 -0.46,0.34 0,0.6 0.3,1.57 0.72,2.3 l -0.17,0.13 c 0.52,1.89 0.59,2.16 1.04,3.86 l -0.05,0.05 c -0.5,-0.09 -0.86,-0.15 -1.53,-0.23 z"
+   id="path7771-6-7" />
+</g>      <g
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         ns0:preamble=""
+         ns0:text="$b$"
+         word-spacing="normal"
+         letter-spacing="normal"
+         font-size-adjust="none"
+         font-stretch="normal"
+         font-weight="normal"
+         font-variant="normal"
+         font-style="normal"
+         stroke-miterlimit="10.433"
+         xml:space="preserve"
+         transform="matrix(1,0,0,-1,248.51945,1501.7472)"
+         id="g3038-4-9-2-5">
+<path
+   id="path3040-7-0-3-9"
+   d="m 225.81,664.03 0,0 0,0 0,0.01 0,0 0,0 0,0 0,0.01 0,0 0,0 0,0.01 0,0 0,0.01 0,0 0,0.01 -0.01,0 0,0.01 0,0 -0.01,0.01 0,0 0,0.01 -0.01,0 0,0 0,0 -0.01,0.01 0,0 0,0 0,0 -0.01,0 0,0.01 0,0 -0.01,0 0,0 -0.01,0 0,0 0,0.01 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 -0.01,0 c -0.22,0 -0.95,-0.08 -1.21,-0.1 -0.08,-0.01 -0.19,-0.02 -0.19,-0.2 0,-0.12 0.09,-0.12 0.24,-0.12 0.48,0 0.5,-0.07 0.5,-0.17 0,-0.07 -0.09,-0.4 -0.14,-0.61 l -0.82,-3.25 c -0.12,-0.49 -0.16,-0.65 -0.16,-1 0,-0.95 0.53,-1.56 1.27,-1.56 v 0.21 c -0.34,0 -0.67,0.27 -0.67,1.01 0,0.19 0,0.38 0.16,1 l 0.22,0.92 c 0.06,0.22 0.06,0.24 0.15,0.35 0.48,0.65 0.93,0.79 1.19,0.79 0.36,0 0.63,-0.29 0.63,-0.93 0,-0.59 -0.33,-1.73 -0.51,-2.11 -0.33,-0.67 -0.79,-1.03 -1.17,-1.03 v -0.21 c 1.17,0 2.4,1.48 2.4,2.91 0,0.91 -0.53,1.59 -1.33,1.59 -0.45,0 -0.86,-0.29 -1.16,-0.59 z"
+   inkscape:connector-curvature="0"
+   style="fill:#000000;stroke-width:0" />
+</g>      <g
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+         ns0:text="$\\times$"
+         word-spacing="normal"
+         letter-spacing="normal"
+         font-size-adjust="none"
+         font-stretch="normal"
+         font-weight="normal"
+         font-variant="normal"
+         font-style="normal"
+         stroke-miterlimit="10.433"
+         xml:space="preserve"
+         transform="matrix(1,0,0,-1,196.55084,1497.0012)"
+         id="g15612-7-1-6">
+<polygon
+   style="fill:#000000;stroke-width:0"
+   id="polygon15614-0-0-0"
+   points="226.2,659.79 223.99,657.58 224.39,657.18 226.6,659.41 228.82,657.18 229.21,657.58 226.99,659.79 229.21,662.01 228.82,662.41 226.6,660.19 224.39,662.41 223.99,662.01 " />
+</g>      <g
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+         ns0:text="$\\times$"
+         word-spacing="normal"
+         letter-spacing="normal"
+         font-size-adjust="none"
+         font-stretch="normal"
+         font-weight="normal"
+         font-variant="normal"
+         font-style="normal"
+         stroke-miterlimit="10.433"
+         xml:space="preserve"
+         transform="matrix(1,0,0,-1,226.98516,1477.1457)"
+         id="g15612-7-1-6-5">
+<polygon
+   style="fill:#000000;stroke-width:0"
+   id="polygon15614-0-0-0-3"
+   points="226.99,659.79 229.21,662.01 228.82,662.41 226.6,660.19 224.39,662.41 223.99,662.01 226.2,659.79 223.99,657.58 224.39,657.18 226.6,659.41 228.82,657.18 229.21,657.58 " />
+</g>    </g>
+    <g
+       id="g5833">
+      <path
+         sodipodi:nodetypes="cccccccc"
+         inkscape:connector-curvature="0"
+         id="path5537-5"
+         d="m 569.93955,841.9478 -59.99895,0.35533 c -4.99991,0.0296 -9.97021,5.05913 -9.9406,10.05905 0.0296,4.99991 5.05913,9.97021 10.05905,9.9406 l 34.99938,-0.20728 c 4.99992,-0.0296 10.02944,4.94069 10.05905,9.9406 0.0296,4.99992 -4.94069,10.02944 -9.9406,10.05905 l -59.99895,0.35533"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <g
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         ns0:preamble=""
+         ns0:text="$b$"
+         word-spacing="normal"
+         letter-spacing="normal"
+         font-size-adjust="none"
+         font-stretch="normal"
+         font-weight="normal"
+         font-variant="normal"
+         font-style="normal"
+         stroke-miterlimit="10.433"
+         xml:space="preserve"
+         transform="matrix(1,0,0,-1,303.3663,1517.6968)"
+         id="g3038-4-9-2-0-0">
+<path
+   id="path3040-7-0-3-2-9"
+   d="m 225.81,664.03 0,0 0,0 0,0.01 0,0 0,0 0,0 0,0.01 0,0 0,0 0,0.01 0,0 0,0.01 0,0 0,0.01 -0.01,0 0,0.01 0,0 -0.01,0.01 0,0 0,0.01 -0.01,0 0,0 0,0 -0.01,0.01 0,0 0,0 0,0 -0.01,0 0,0.01 0,0 -0.01,0 0,0 -0.01,0 0,0 0,0.01 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 0,0 -0.01,0 -0.01,0 c -0.22,0 -0.95,-0.08 -1.21,-0.1 -0.08,-0.01 -0.19,-0.02 -0.19,-0.2 0,-0.12 0.09,-0.12 0.24,-0.12 0.48,0 0.5,-0.07 0.5,-0.17 0,-0.07 -0.09,-0.4 -0.14,-0.61 l -0.82,-3.25 c -0.12,-0.49 -0.16,-0.65 -0.16,-1 0,-0.95 0.53,-1.56 1.27,-1.56 v 0.21 c -0.34,0 -0.67,0.27 -0.67,1.01 0,0.19 0,0.38 0.16,1 l 0.22,0.92 c 0.06,0.22 0.06,0.24 0.15,0.35 0.48,0.65 0.93,0.79 1.19,0.79 0.36,0 0.63,-0.29 0.63,-0.93 0,-0.59 -0.33,-1.73 -0.51,-2.11 -0.33,-0.67 -0.79,-1.03 -1.17,-1.03 v -0.21 c 1.17,0 2.4,1.48 2.4,2.91 0,0.91 -0.53,1.59 -1.33,1.59 -0.45,0 -0.86,-0.29 -1.16,-0.59 z"
+   inkscape:connector-curvature="0"
+   style="fill:#000000;stroke-width:0" />
+</g>      <g
+         id="g7765-1-7-4"
+         transform="matrix(1,0,0,-1,261.94073,1536.7473)"
+         xml:space="preserve"
+         stroke-miterlimit="10.433"
+         font-style="normal"
+         font-variant="normal"
+         font-weight="normal"
+         font-stretch="normal"
+         font-size-adjust="none"
+         letter-spacing="normal"
+         word-spacing="normal"
+         ns0:text="$1/b$"
+         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0">
+<path
+   style="fill:#000000;stroke-width:0"
+   inkscape:connector-curvature="0"
+   d="m 226.33,663.96 -1.79,-0.9 v -0.14 c 0.12,0.05 0.23,0.09 0.27,0.11 0.18,0.07 0.35,0.11 0.45,0.11 0.21,0 0.29,-0.15 0.29,-0.47 v -4.51 c 0,-0.33 -0.07,-0.56 -0.23,-0.65 -0.15,-0.09 -0.29,-0.12 -0.71,-0.13 v -0.15 h 2.75 v 0.15 c -0.79,0.01 -0.95,0.11 -0.95,0.59 v 5.97 z"
+   id="path7767-2-7-1" />
+<polygon
+   style="fill:#000000;stroke-width:0"
+   points="232.19,663.98 231.67,663.98 229.03,655.63 229.55,655.63 "
+   id="polygon7769-7-1-0" />
+<path
+   style="fill:#000000;stroke-width:0"
+   inkscape:connector-curvature="0"
+   d="m 233.9,663.63 0.03,0 0.03,0 0.02,0 0.03,0 0.02,0 0.03,0 0.02,0 0.02,0 0.02,-0.01 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.01,-0.01 0.02,0 0.02,0 0.01,0 0.01,0 0.02,0 0.01,-0.01 0.01,0 0.02,0 0.01,0 0.01,-0.01 0.02,0 0.02,-0.01 0.02,0 0.01,-0.01 0.02,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0,-0.01 0.01,-0.02 0,-0.01 0,-0.01 0.01,-0.02 0,-0.02 0,-0.02 0,-0.01 0,-0.02 c 0,-0.09 -0.03,-0.21 -0.09,-0.43 -0.02,-0.07 -0.04,-0.14 -0.05,-0.19 l -0.02,-0.07 -1.35,-4.99 v -0.04 c 0,-0.23 0.76,-0.52 1.32,-0.52 1.51,0 3.16,1.74 3.16,3.3 0,0.7 -0.49,1.19 -1.15,1.19 -0.7,0 -1.22,-0.4 -1.93,-1.5 l 0.17,-0.13 c 0.44,0.77 0.89,1.15 1.37,1.15 h 0 c 0.43,0 0.7,-0.33 0.7,-0.86 0,-0.66 -0.51,-1.72 -1.1,-2.34 -0.37,-0.38 -0.8,-0.59 -1.23,-0.59 -0.31,0 -0.46,0.11 -0.46,0.34 0,0.6 0.3,1.57 0.72,2.3 l -0.17,0.13 c 0.52,1.89 0.59,2.16 1.04,3.86 l -0.05,0.05 c -0.5,-0.09 -0.86,-0.15 -1.53,-0.23 z"
+   id="path7771-6-7-1" />
+</g>      <g
+         id="g7765-1-7-4-0"
+         transform="matrix(1,0,0,-1,331.92337,1508.4288)"
+         xml:space="preserve"
+         stroke-miterlimit="10.433"
+         font-style="normal"
+         font-variant="normal"
+         font-weight="normal"
+         font-stretch="normal"
+         font-size-adjust="none"
+         letter-spacing="normal"
+         word-spacing="normal"
+         ns0:text="$1/b$"
+         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0">
+<path
+   style="fill:#000000;stroke-width:0"
+   inkscape:connector-curvature="0"
+   d="m 226.33,663.96 -1.79,-0.9 v -0.14 c 0.12,0.05 0.23,0.09 0.27,0.11 0.18,0.07 0.35,0.11 0.45,0.11 0.21,0 0.29,-0.15 0.29,-0.47 v -4.51 c 0,-0.33 -0.07,-0.56 -0.23,-0.65 -0.15,-0.09 -0.29,-0.12 -0.71,-0.13 v -0.15 h 2.75 v 0.15 c -0.79,0.01 -0.95,0.11 -0.95,0.59 v 5.97 z"
+   id="path7767-2-7-1-9" />
+<polygon
+   style="fill:#000000;stroke-width:0"
+   points="229.03,655.63 229.55,655.63 232.19,663.98 231.67,663.98 "
+   id="polygon7769-7-1-0-7" />
+<path
+   style="fill:#000000;stroke-width:0"
+   inkscape:connector-curvature="0"
+   d="m 233.9,663.63 0.03,0 0.03,0 0.02,0 0.03,0 0.02,0 0.03,0 0.02,0 0.02,0 0.02,-0.01 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.02,0 0.01,-0.01 0.02,0 0.02,0 0.01,0 0.01,0 0.02,0 0.01,-0.01 0.01,0 0.02,0 0.01,0 0.01,-0.01 0.02,0 0.02,-0.01 0.02,0 0.01,-0.01 0.02,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0.01,-0.01 0,-0.01 0.01,-0.02 0,-0.01 0,-0.01 0.01,-0.02 0,-0.02 0,-0.02 0,-0.01 0,-0.02 c 0,-0.09 -0.03,-0.21 -0.09,-0.43 -0.02,-0.07 -0.04,-0.14 -0.05,-0.19 l -0.02,-0.07 -1.35,-4.99 v -0.04 c 0,-0.23 0.76,-0.52 1.32,-0.52 1.51,0 3.16,1.74 3.16,3.3 0,0.7 -0.49,1.19 -1.15,1.19 -0.7,0 -1.22,-0.4 -1.93,-1.5 l 0.17,-0.13 c 0.44,0.77 0.89,1.15 1.37,1.15 h 0 c 0.43,0 0.7,-0.33 0.7,-0.86 0,-0.66 -0.51,-1.72 -1.1,-2.34 -0.37,-0.38 -0.8,-0.59 -1.23,-0.59 -0.31,0 -0.46,0.11 -0.46,0.34 0,0.6 0.3,1.57 0.72,2.3 l -0.17,0.13 c 0.52,1.89 0.59,2.16 1.04,3.86 l -0.05,0.05 c -0.5,-0.09 -0.86,-0.15 -1.53,-0.23 z"
+   id="path7771-6-7-1-8" />
+</g>      <g
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+         ns0:text="$\\times$"
+         word-spacing="normal"
+         letter-spacing="normal"
+         font-size-adjust="none"
+         font-stretch="normal"
+         font-weight="normal"
+         font-variant="normal"
+         font-style="normal"
+         stroke-miterlimit="10.433"
+         xml:space="preserve"
+         transform="matrix(1,0,0,-1,286.06352,1512.2998)"
+         id="g15612-7-1-6-5-4">
+<polygon
+   style="fill:#000000;stroke-width:0"
+   id="polygon15614-0-0-0-3-5"
+   points="226.2,659.79 223.99,657.58 224.39,657.18 226.6,659.41 228.82,657.18 229.21,657.58 226.99,659.79 229.21,662.01 228.82,662.41 226.6,660.19 224.39,662.41 223.99,662.01 " />
+</g>      <g
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         ns0:preamble="/home/rosh/writing/pi-dual/diagrams/prefix.tex"
+         ns0:text="$\\times$"
+         word-spacing="normal"
+         letter-spacing="normal"
+         font-size-adjust="none"
+         font-stretch="normal"
+         font-weight="normal"
+         font-variant="normal"
+         font-style="normal"
+         stroke-miterlimit="10.433"
+         xml:space="preserve"
+         transform="matrix(1,0,0,-1,316.00958,1532.3181)"
+         id="g15612-7-1-6-5-4-9">
+<polygon
+   style="fill:#000000;stroke-width:0"
+   id="polygon15614-0-0-0-3-5-1"
+   points="226.99,659.79 229.21,662.01 228.82,662.41 226.6,660.19 224.39,662.41 223.99,662.01 226.2,659.79 223.99,657.58 224.39,657.18 226.6,659.41 228.82,657.18 229.21,657.58 " />
+</g>    </g>
   </g>
 </svg>

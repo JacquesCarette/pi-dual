@@ -64,6 +64,15 @@
 
 \newcommand{\arrow}[1]{\mathtt{#1}}
 
+\newcommand{\dgm}[2][0.95]{
+\begin{center}
+\scalebox{#1}{
+\includegraphics{diagrams/#2.pdf}
+}
+\end{center}
+}
+
+
 %subcode-inline{bnf-inline} name langRev
 %! swap+ = \mathit{swap}^+
 %! swap* = \mathit{swap}^*
@@ -165,7 +174,7 @@
   Filinski\cite{Filinski:1989:DCI:648332.755574} on the duality of
   computation \cite{Curien:2000,DBLP:conf/rta/Wadler05} with work on
   information preserving computation \cite{infeffects,rc2011}.
-  Andrzej Filinski's masters thesis
+  Andrzej Filinski's Masters thesis
   \cite{Filinski:1989:DCI:648332.755574} suggested a remarkable
   symmetry underlying computation in the \lcal. Filinski showed that
   values are dual to continuations and that functions are dual to
@@ -182,7 +191,7 @@
 
   We present a computational model whose types are \emph{the field of
     rational numbers}. This computational model is derived
-  systemmatically from the {{Pi}} by considering a symmetric notion of
+  systematically from the {{Pi}} by considering a symmetric notion of
   duality. Unlike the \lcal which shows a classical De Morgan duality,
   here we have two axis of dualization and hence two dualities -- an
   additive duality, namely negative types and a multiplicative
@@ -223,13 +232,112 @@ closed categories.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-Andrzej Filinski's masters thesis
+Andrzej Filinski's Masters thesis
 \cite{Filinski:1989:DCI:648332.755574} suggested a remarkable symmetry
 underlying computation in the \lcal. Filinski showed that values are
-dual to continuations, functions are dual to delimited
-continuations. Filinksi also shows a De Morgan style duality, by
-treating value pairs as the dual of continuation sums and value sums
-as dual to continuation pairs.
+dual to continuations, functions are dual to delimited continuations
+and a De Morgan style duality by treating pairs of values as dual to
+sums (choice) of continuation and sums of values as dual to pairs of
+continuations. He, furthermore, introduced a symmetric extension of
+the $\lambda$-calculus in which call-by-value is dual to call-by-name.
+
+Symmetry between the value fragment and the continuation fragment was
+refined by Curien and Herbelin \cite{Curien:2000} who introduced the
+sequent-style $\mu\tilde{\mu}$-calculus, that exhibits symmetries
+between values and continuations and between call-by-value and
+call-by-name. The calculus includes the type $A-B$ which is the dual
+of implication, i.e., a value of type $A-B$ is a context expecting a
+function of type $A \rightarrow B$. Alternatively a value of type
+$A-B$ is also explained as a \emph{pair} consisting of a value of type
+$A$ and a continuation of type $B$. This is to be contrasted with our
+interpretation of a value of that type as \emph{either} a value of $A$
+or a demand for a value of type $B$. The duality between call-by-name
+and call-by-value was further investigated by Selinger using control
+categories~\cite{Selinger:2001:CCD:966910.966911}. The
+$\mu\tilde{\mu}$-calculus was further analyzed and extended by
+Wadler~\cite{Wadler:2003,DBLP:conf/rta/Wadler05}. The extension gives
+no interpretation to the subtraction connective and like the original
+symmetric calculus of Filinski, introduces a duality that relates sums
+to products and vice-versa.
+
+Previous work on \emph{information effects} established the logically
+reversible computational model {{Pi}} (and its extension {{Pi0}})
+wherein computation is inherently information preserving. The
+computational model is derived from the isomorphisms of finite-types,
+every computation admits an adjoint that expresses the logical
+``inverse'' of a computation and is complete for combinational
+circuits. The term model of {{Pi}} is a so-called commutative
+bimonoidal category, i.e. it corresponds to the categorification of a
+commutative semiring with two commutative monoidal structures
+{{(0,+)}} and {{(*,1)}} with {{*}} distributing over {{+}}. 
+
+The language {{Pi}} however lacks a natural representation for
+first-class functions due to the first-order nature of its values. In
+the light of the work of duality of computation it was felt that
+``right model'' for expressing functions in {{Pi}} would also express
+symmetries similar to those in the calculi of Filinski, Curien and
+Herbelin and Wadler. The technical goal of this paper is to present
+such a symmetric dual extension of {{Pi}}.
+
+The extended language, which we call {{PiEE}}, is interesting because
+it does not have one De Morgan style dualizing action $(\_)^\bot$, but
+two distinct dualizing actions -- an additive duality characterized by
+negative types $-(\_)$ and a multiplicative duality characterized by
+fractional types $1/(\_)$. Each dualizing operation preserves the
+underlying connective {{-(a+b)<->(-a)+(-b)}} and
+{{1/(a*b)<->1/a*1/b}}. Negative and fractional types have a clear and
+intuitive semantics in the setting of {{Pi}}.  
+
+The types of {{PiEE}} correspond to the \emph{field of rational
+  numbers} (with the important restriction of fields that there is no
+division by zero). Consequently algebraic manipulations of rationals
+can be given an operational interpretation and \emph{have
+  computational content}.  These negative and fractional dualities
+must not confused with $(\-)^\bot$ duality in the additive and
+multiplicative fragment of linear logic.  Models of linear logic rely
+on *-autonomous categories which change the monoidal tensor when
+dualizing. Compact closed categories preserve the monoidal tensor on
+dualizing.  The term model of {{PiEE}} corresponds to the
+\emph{categorification of a field}. The category is compact closed
+over the additive monoid. In the multiplicative monoid (since there is
+no division by zero) respects compact closed structure only when a
+dual object is defined.
+
+
+Say more: fractionals, entaglements, backtracking, superposition,
+constrants, negative information. Negative types, backward information
+flows, sets with negative types, iteration.. etc.
+
+
+We present {{Pi}} in the big-step style presented in the previous
+work, develop the categorical semantics of its term model and present
+a small-step semantics useful for modeling fractionals and
+negatives. We proceed to present the fractional fragment of the
+language {{PiEE*}}, work out its properties and categorical
+semantics. We further use the multiplicative {{trace}} to express a
+SAT solver. We then present the negative fragment of the language
+{{PiEE+}} and finally present the unified language {{PiEE}}.
+
+
+%% Traditionally, dealing with fields in a categorical setting has proven
+%% hard and hence we hope that the term model of {{PiEE}} will prove
+%% useful. Further, it is as yet unclear why there are two different
+%% dualities in the setting of {{Pi}}.
+
+
+%% \paragraph*{Declarative Continuations.} 
+%% In his Masters thesis~\cite{Filinski:1989:DCI:648332.755574}, Filinski
+%% proposes that continuations are a \emph{declarative} concept. He,
+%% furthermore, introduces a symmetric extension of the $\lambda$-calculus in
+%% which call-by-value is dual to call-by-name and values are dual to
+%% continuations. In more detail, the symmetric calculus contains a ``value''
+%% fragment and a ``continuation'' fragment which are mirror images. Pairs and
+%% sums are treated as duals in the sense that the ``value'' fragment includes
+%% pairs whose mirror image in the ``continuation'' fragment are sums. In
+%% contrast, our language includes pairs and sums in the value fragment and two
+%% symmetries: one that maps the pairs to fractions and another that maps the
+%% sums to subtractions.
+
 
 
 \begin{comment}
@@ -522,10 +630,10 @@ the number of inhabitants (an arity) of the type. This intuition will
 however become tenuous in the presence of negative and fractional
 types.
 
-\begin{proposition}[Size 0 is uninhabited]. 
-\label{prop:no-zero-values}
-There are no values {{v:b}} when {{[^b^]=0}}.
-\end{proposition}
+%% \begin{proposition}[Size 0 is uninhabited]. 
+%% \label{prop:no-zero-values}
+%% There are no values {{v:b}} when {{[^b^]=0}}.
+%% \end{proposition}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Graphical Language}
@@ -749,6 +857,12 @@ below. Factoring is the corresponding adjoint operation.
 
 \item Composition TODO.
 
+  \begin{multicols}{2}
+\dgm{c1c2_par_sum}
+\dgm{c1c2_par_times}
+  \end{multicols}
+\dgm{c1c2_seq}    
+
 \end{itemize}
 
 \noindent 
@@ -821,7 +935,7 @@ the usual big-step style.
 %@@ (c1 (*) c2)  (v1, v2) |--> (v3, v4)
 \end{scriptsize}
 
-The type safety of {{Pi}} follows directly from the corresondence
+The type safety of {{Pi}} follows directly from the correspondence
 between inductive definitions of the types and the big-step
 semantics. Previous work also established the following properties:
 
@@ -839,6 +953,76 @@ semantics. Previous work also established the following properties:
 {{ c{dagger} v' |--> v}}
 \end{proposition}
 
+%%%%%%%%%%%%%%%%%%%
+\subsection{Constructions}
+
+\paragraph*{Booleans and Conditionals.} 
+Given any combinator {{c : b <-> b}} we can construct a combinator called
+{{if_c : bool*b <->bool*b}} in terms of {{c}}, where {{if_c}} behaves like a
+one-armed $\mathit{if}$-expression. If the supplied boolean is {{true}} then
+the combinator {{c}} is used to transform the value of type~{{b}}. If the
+boolean is {{false}}, then the value of type {{b}} remains unchanged. We can
+write down the combinator for {{if_c}} in terms of {{c}} as 
+{{ dist (;) ((id (*) c) (+) id) (;) factor }}.
+
+\noindent The diagram below shows the input value of type {{(1+1)*b}}
+processed by the distribute operator {{dist}}, which converts it into a value
+of type {{(1*b)+(1*b)}}. In the {{left}} branch, which corresponds to the
+case when the boolean is {{true}} (i.e. the value was {{left ()}}), the
+combinator~{{c}} is applied to the value of type~{{b}}. The right branch
+which corresponds to the boolean being {{false}} passes along the value of
+type {{b}} unchanged.
+
+\begin{center}
+\scalebox{1.0}{
+%%subcode-line{pdfimage}[diagrams/if_c.pdf]
+\includegraphics{diagrams/thesis/cnot.pdf}
+}
+\end{center}
+
+% We will be seeing many more such wiring diagrams in this paper and it is
+% useful to note some conventions about them. Wires indicate a
+% value that can exist in the program. Each wire, whenever possible, is
+% annotated with its type and sometimes additional information to help clarify
+% its role. When multiple wires run in parallel, it means that those values
+% exist in the system at the same time, indicating pair types. When there is a
+% disjunction, we put a {{+}} between the wires. 
+% Combinators for distribution {{dist}} and factoring {{factor}}
+% are represented as triangles with their operator symbols in them. Other
+% triangles may be used and, in each case, types or labels will be used to
+% clarify their roles. Finally, we don't draw boxes for combinators such as
+% {{id}}, commutativity, and associativity, but instead just shuffle the wires
+% as appropriate.
+
+The combinator {{if_{not} }} has type {{bool*bool<->bool*bool}} and
+negates its second argument if the first argument is {{true}}. This
+gate {{if_{not} }} is often referred to as the {{cnot}} gate. An
+equivalent construction that is useful is {{else_{not} }} where we
+negate the second argument only if the first is {{false}}. 
+
+Similarly, we can iterate the construction of {{if_c}} to check several
+bits. The gate {{if_{cnot} }}, which we may also write as {{if^2_{not} }},
+checks two booleans and negates the result wire only if they are both
+{{true}}. The gate {{if^2_{not} }} is well known as the Toffoli gate and is a
+universal reversible gate. We can generalize this construction to
+{{if^n_{not} }} which checks {{n}} bits and negates the result wire only if
+they are all {{true}}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\paragraph*{Cloning.}
+Although cloning is generally not allowed in reversible languages, it is
+possible at the cost of having additional constant inputs. For example,
+consider the gate {{else_{not} }}. Generally, the gate maps
+{{(false,a)}} to {{(false,not a)}} and {{(true,a)}} to {{(true,a)}}. Focusing
+on the cases in which the second input is {{true}}, we get that the gate maps
+{{(false,true)}} to {{(false,false)}} and {{(true,true)}} to {{(true,true)}},
+i.e., the gate clones the first input. A circuit of {{n}} parallel
+{{else_{not} }} gates can hence clone {{n}} bits.  They also consume {{n}}
+{{true}} inputs in the process.  Let us call this construction
+{{clone^n_{bool} }}.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Categorical Structure}
 
@@ -850,7 +1034,7 @@ We say {{c1 = c2}} if {{c1:b1<->b2}} and {{c2:b1<->b2}} and for all
 {{v1:b}}, we have {{c1 v1 |--> v2}} iff {{c2 v1 |--> v2}} and {{v2:b2}}.
 \end{lemma}
 
-We present the categorical structure with minimum commentry. More
+We present the categorical structure with minimum commentary. More
 details may be found in excellent references such as Barr and Wells
 [CITE] and Selinger \cite{springerlink:10.1007/978-3-642-12821-94}.
 
@@ -981,7 +1165,7 @@ Some technical and pedantic comments are due at this point.
   in this work. Joyal et. al's work on ``planar isotopy'' and
   Selinger's survey \cite{springerlink:10.1007/978-3-642-12821-94}
   show how this has been addressed before in the categorical
-  setting. In the absense of any prior knowledge of category theory
+  setting. In the absence of any prior knowledge of category theory
   however, our wiring diagrams may be read as the ``flow of types'' in
   a combinator-circuit.
 
@@ -1000,11 +1184,11 @@ Some technical and pedantic comments are due at this point.
 
 While we don't do so in this work, if we extend {{Pi}} with products
 and co-products (say through the addition of information effects) it
-is concievable that part of its structure collapses. This sort of
+is conceivable that part of its structure collapses. This sort of
 collapse, while catastrophic for algebraic structures (effectively
 trivializing them), still retains some interest in computing, because
 in computing we are interested in the specific operational nature (the
-computational content, so to speak) of the morphisms. Anectodal evidence
+computational content, so to speak) of the morphisms. Anecdotal evidence
 follows from the fact several real-world programming language have
 inconsistent type systems. blah blah blah...
 
@@ -1075,9 +1259,45 @@ combinator {{c}} in the reverse direction, i.e., we use the adjoint
   Evaluation in the small-step evaluator corresponds to evaluation in
   the natural semantics.
 
-  {{c v |--> v'}} iff {{<c, v, []> |-->* [c, v', [] ]}}
-
+  {{c v |--> v'}} iff {{<c, v, []> |-->* [c', v', [] ]}}
 \end{proposition}
+\begin{proof}
+  To prove the above, we first show that a more general lemma holds,
+  namely that: {{c v |--> v'}} iff {{<c, v, C> |-->* [c', v', C ]}}.
+
+  To show the left-to-right direction we proceed by induction on the
+  derivation of {{c v |--> v'}}. In the case of primitive isomorphisms
+  the condition holds trivially. In the case of composition, we work
+  out the case of {{c1+c2}} as an example. Given {{c1 +c2 v |--> v'}}
+  we have to show that there is a small step derivation sequence that
+  matches it. Here {{v:b1+b2}} can be of the form {{left v1}} or
+  {{right v2}}. Assuming {{left v1}}, we have: 
+
+%subcode{proof} include main
+%@ c1 v1 |--> v1' ==> <c1, v1, C'> |-->* {[c1',v1',C']}
+%@@ c1+c2 (left v1) |--> left v1' ==> ? 
+
+Choosing {{C' =Lft c2 C}}, we have the required derivation sequence: 
+{{ <c1+c2, left v1, C> |--> <c1,v1,LeftP c2 C> |-->* {[c1',v1', LeftP c2 C]} |--> {[c1'+c2,left v1',C]} }}. The proof follows similarly for the {{right v2}} case.  
+
+To show the right-to-left direction we proceed by induction of the
+sequence of {{|-->*}} derivations. Again the case for primtive
+isomorphisms follows trivially. Taking the case of {{c1+c2}} we are
+required to show that given a sequence 
+{{<c1+c2,v,C> |-->* {[c', v', C]} }} there is a derivation tree for
+{{c1+c2 v |--> v'}}. In the case that {{v:v1+b2}} has the form
+{{left~v1}}, this follows by observing that the given sequence must have the form
+{{ <c1+c2, left v1, C> |--> <c1,v1,LeftP c2 C> |-->* {[c1',v1', LeftP c2 C]} |--> {[c1'+c2,left v1',C]} }}. 
+For the strictly smaller inner subsequence by induction we have
+{{c1~v1 |--> v1'}} which lets us complete the derivation of
+{{c1+c2~(left v1) |--> left v1'}}. The {{right v2}} follows similarly. 
+
+
+
+
+
+\end{proof}
+
 
 Consequently the small step semantics is logically reversible and
 strong normalizing. 
@@ -1139,11 +1359,12 @@ need a duality that preserves both tensors.
 \paragraph*{No division by zero.} 
 The important side-condition on the types not captured by the syntax
 above is that there are no types of the form {{1/b}}, where
-{{[^b^]=0}} (see Defn. \ref{def:size}). This eliminates syntaxes of
-the form {{1/0}}, {{1/(0+0)}}, {{1/(0*b)}} etc, from being treated as
-valid {{b}} types. Intuitively, this translates into the familiar
-restriction that there is no division by 0 in arithmetic or the
-definition of fields in abstract algebra.
+{{[^b^]=0}} (see Def. \ref{def:size} and \ref{def:size-frac}
+below). This eliminates terms of the form {{1/0}}, {{1/(0+0)}},
+{{1/(0*b)}} etc, from being treated as valid {{b}} types. Intuitively,
+this translates into the familiar restriction that there is no
+division by 0 in arithmetic or the definition of fields in abstract
+algebra.
 
 \begin{multicols}{2}  
 %subcode{opsem} include main
@@ -1195,15 +1416,65 @@ site for these logic variables:
 
 Negative Information and Measurements. 
 
+\begin{definition}[Size of a type.] 
+\label{def:size-frac}
+The definition of size, {{[^ b ^]}}, is extended to include
+fractionals as {{[^1 / b ^] = 1/[^ b ^]}}.
+\end{definition}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Semantics}
 
-Provide a semantics with the non-determinism monad and define an
-\emph{eval}.
+The operational semantics for {{PiEE*}} involve the addition of the
+following two rules to the small-step operational semantics of {{Pi}}.
 
-Show that ``no division by zero'' is supported by the semantics. 
+%subcode{opsem} include main
+%! columnStyle = rclr
+% <eta*, (), C> &|-->& forall v:b.{[eta*, (1/v, v), C]} & (eta*)
+% <eps*, (1/v,v), C> &|-->& {[eps*, (), C]} & (eps*) 
 
+The rule {{(eta*)}} is different from other rules encountered before
+due to the {{forall v:b}} quantification and is to be understood as
+follows: when the machine encounters an {{eta*}} reduction it
+non-deterministically replicates into several machine states, each of
+which is seeded by a unique value {{v}} that inhabits the type {{b}}
+that indexes {{eta* : 1 <-> 1/b * b}}. As an example at the type
+{{bool}}, we would have two possible machine states: 
+
+%subcode{opsem} include main
+%! columnStyle = rclr
+% <eta*, (), C> &|-->& {[eta*, (1/true, true), C]}
+% and  &|-->& {[eta*, (1/false, false), C]} 
+
+The rule {{(eps*)}} is straightforward : when given a tuple
+{{(1/v,v):1/b * b}} where {{eta*:1/b*b <-> 1}} the result is
+{{()}}. The machine is undefined for cases where where the input is
+{{(1/v',v):1/b*b}} and {{v' /= v}}.
+
+\paragraph*{Annihilation.} 
+A consequence of the semantics is that they admit computations that
+are undefined. For instance consider, where {{not : bool <-> bool}}. 
+
+{{eta* (;) (id (*) not) (;) eps* : 1 <-> 1}}
+
+\noindent
+Tracing the execution of this circuit gives us: 
+
+%subcode{opsem} include main
+%! columnStyle = rllr
+% & & <eta* (;) (id (*) not) (;) eps*, (), []>
+% & |-->* & <eta*, (), Fst [] (id (*) not) (;) eps*>
+% (1) & |--> & [eta*, (1/true, true), Fst [] (id (*) not) (;) eps*] 
+% & |-->* & <not, true, RightT id 1/true (Fst (Snd~eta* []) ~eps*)> 
+% & |-->* & [not, false, RightT id 1/true (Fst (Snd~eta* []) ~eps*)] 
+% & |-->* & [eps*, (1/true, false), Snd (id (*) not) (Snd~eta* [])]
+% & |--> & undefined
+% (2) & |--> & [eta*, (1/false, false), Fst [] (id (*) not) (;) eps*] 
+% & |-->* & <not, false, RightT id 1/false (Fst (Snd~eta* []) ~eps*)> 
+% & |-->* & [not, true, RightT id 1/false (Fst (Snd~eta* []) ~eps*)] 
+% & |-->* & [eps*, (1/false, true), Snd (id (*) not) (Snd~eta* [])]
+% & |--> & undefined
 
 \begin{proposition}[Type Safety]
   
@@ -1213,7 +1484,7 @@ Show that ``no division by zero'' is supported by the semantics.
   
 \end{proposition}
 
-Note that this language is not logically reversible. 
+% Note that this language is not logically reversible.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1262,24 +1533,73 @@ such that the following coherence conditions hold (see 2.1 in
 %%                 :.: UnitE
 
 \end{enumerate}
-
 \end{proposition}
+\begin{proof}
+For convenience, we draw the combinator {{swap* (;) eps*}} (shown on
+the left) as shown on the right.
 
-TODO: once the semantics are written, write out the proof of one of
-the coherence conditions in full.
+\begin{multicols}{2}
+\dgm[0.8]{swap_eps_times}
 
-For a monoidal category to be compact closed the maps~{{eta}}
-and~{{eps}} must satisfy a coherence condition that is usually
-visualized as follows:
-\begin{center}
-  \includegraphics{diagrams/coherence.pdf}
-\end{center}
-where $b^*$ represents the dual of {{b}}.  In the case of negatives,
-the condition amounts to checking that reversing direction twice is a
-no-op. In the case of fractionals, the condition amounts to checking
-that creating values {{alpha}} and {{1/alpha}} and immediately
-unifying them is also a no-op. Both checks are straightforward and are
-essentially the constructions in the introduction.
+\dgm[0.8]{cat_eps_times}    
+\end{multicols}
+
+\noindent
+The coherence conditions are more intuitive when presented
+graphically. They require that the combinators below be equal to
+{{id}}, at the appropriate type (see Sec. 4
+\cite{springerlink:10.1007/978-3-642-12821-94}).
+
+\begin{multicols}{2}
+\dgm{z_times1}
+
+\dgm{z_times2}
+\end{multicols}
+
+
+  We briefly trace the execution of the first combinator (let us call
+  it {{c}}. To show that {{c=id}}, we must show for {{v:b}}, the
+  evaluation of {{<c,v,[]>}} always produces {{v:b}} as
+  output. Verification for the second combinator is similar.
+
+%subcode{opsem} include main
+%! columnStyle = rllr
+% & & <c, v:b, []>
+% & |-->* & <eta*, (), C1>
+% & |-->  & <eta*, (1/v',v'), C2> & some v':b
+% (1) & |-->* & <eps*, (1/v', v), C3> & when v' = v
+% & |-->~ & [eps*, (), C3]
+% & |-->* & [c', v, [] ]
+% (2) & |-->* & <eps*, (1/v', v), C3> & when v' /= v
+% & |-->~ & undefined
+
+\end{proof}
+
+It is important to note that in a compact closed category, the
+dualizing action, usually denoted $(-)^\asterix$, is a contravariant
+functor. However {{PiEE*}} is not compact closed and {{1/(-)}} is not
+a functor specifically because division is not defined on 0 sized
+types. 
+
+Without the important side condition on division by zero, we would
+have {{1<->1/0*0}} which implies {{1 <-> 0}} and consequently
+collapses the entire structure. Structures that are ``zero totalized
+fields'' such as meadows \cite{Bergstra:2009:MES:1507774.1508000}
+deserve investigation as alternative models for {{Pi}} with
+fractionals (and negatives).
+
+%% For a monoidal category to be compact closed the maps~{{eta}}
+%% and~{{eps}} must satisfy a coherence condition that is usually
+%% visualized as follows:
+%% \begin{center}
+%%   \includegraphics{diagrams/coherence.pdf}
+%% \end{center}
+%% where $b^*$ represents the dual of {{b}}.  In the case of negatives,
+%% the condition amounts to checking that reversing direction twice is a
+%% no-op. In the case of fractionals, the condition amounts to checking
+%% that creating values {{alpha}} and {{1/alpha}} and immediately
+%% unifying them is also a no-op. Both checks are straightforward and are
+%% essentially the constructions in the introduction.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1440,73 +1760,6 @@ of a SAT-solver.  We proceed in small steps, reviewing some of the
 necessary constructions presented in our earlier
 paper~\cite{infeffects}.
 
-%%%%%%%%%%%%%%%%%%%
-\subsection{Booleans and Conditionals} 
-
-Given any combinator {{c : b <-> b}} we can construct a combinator called
-{{if_c : bool*b <->bool*b}} in terms of {{c}}, where {{if_c}} behaves like a
-one-armed $\mathit{if}$-expression. If the supplied boolean is {{true}} then
-the combinator {{c}} is used to transform the value of type~{{b}}. If the
-boolean is {{false}}, then the value of type {{b}} remains unchanged. We can
-write down the combinator for {{if_c}} in terms of {{c}} as 
-{{ dist (;) ((id (*) c) (+) id) (;) factor }}.
-
-\noindent The diagram below shows the input value of type {{(1+1)*b}}
-processed by the distribute operator {{dist}}, which converts it into a value
-of type {{(1*b)+(1*b)}}. In the {{left}} branch, which corresponds to the
-case when the boolean is {{true}} (i.e. the value was {{left ()}}), the
-combinator~{{c}} is applied to the value of type~{{b}}. The right branch
-which corresponds to the boolean being {{false}} passes along the value of
-type {{b}} unchanged.
-
-\begin{center}
-\scalebox{1.0}{
-%%subcode-line{pdfimage}[diagrams/if_c.pdf]
-\includegraphics{diagrams/thesis/cnot.pdf}
-}
-\end{center}
-
-% We will be seeing many more such wiring diagrams in this paper and it is
-% useful to note some conventions about them. Wires indicate a
-% value that can exist in the program. Each wire, whenever possible, is
-% annotated with its type and sometimes additional information to help clarify
-% its role. When multiple wires run in parallel, it means that those values
-% exist in the system at the same time, indicating pair types. When there is a
-% disjunction, we put a {{+}} between the wires. 
-% Combinators for distribution {{dist}} and factoring {{factor}}
-% are represented as triangles with their operator symbols in them. Other
-% triangles may be used and, in each case, types or labels will be used to
-% clarify their roles. Finally, we don't draw boxes for combinators such as
-% {{id}}, commutativity, and associativity, but instead just shuffle the wires
-% as appropriate.
-
-The combinator {{if_{not} }} has type {{bool*bool<->bool*bool}} and
-negates its second argument if the first argument is {{true}}. This
-gate {{if_{not} }} is often referred to as the {{cnot}} gate. An
-equivalent construction that is useful is {{else_{not} }} where we
-negate the second argument only if the first is {{false}}. 
-
-Similarly, we can iterate the construction of {{if_c}} to check several
-bits. The gate {{if_{cnot} }}, which we may also write as {{if^2_{not} }},
-checks two booleans and negates the result wire only if they are both
-{{true}}. The gate {{if^2_{not} }} is well known as the Toffoli gate and is a
-universal reversible gate. We can generalize this construction to
-{{if^n_{not} }} which checks {{n}} bits and negates the result wire only if
-they are all {{true}}.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Cloning}
-
-Although cloning is generally not allowed in reversible languages, it is
-possible at the cost of having additional constant inputs. For example,
-consider the gate {{else_{not} }}. Generally, the gate maps
-{{(false,a)}} to {{(false,not a)}} and {{(true,a)}} to {{(true,a)}}. Focusing
-on the cases in which the second input is {{true}}, we get that the gate maps
-{{(false,true)}} to {{(false,false)}} and {{(true,true)}} to {{(true,true)}},
-i.e., the gate clones the first input. A circuit of {{n}} parallel
-{{else_{not} }} gates can hence clone {{n}} bits.  They also consume {{n}}
-{{true}} inputs in the process.  Let us call this construction
-{{clone^n_{bool} }}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Construction of the Solver}
@@ -1864,7 +2117,7 @@ isomorphisms witnessing:
 \section{Two Dualities of Computation}
 \label{sub:hof}
 
-Information Effects, Filinksi, De Morgan
+Information Effects, Filinski, De Morgan
 
 \subsection{Function Spaces}
 
