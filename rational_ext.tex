@@ -235,26 +235,24 @@ closed categories.
 Andrzej Filinski's Masters thesis
 \cite{Filinski:1989:DCI:648332.755574} suggested a remarkable symmetry
 underlying computation in the \lcal. Filinski showed that values are
-dual to continuations, functions are dual to delimited
-continuations. Filinski also shows a De Morgan style duality by
-treating pairs of values as dual to sums (choice) of continuation and
-sums of values as dual to pairs of continuations. He, furthermore,
-introduces a symmetric extension of the $\lambda$-calculus in which
-call-by-value is dual to call-by-name. 
+dual to continuations, functions are dual to delimited continuations
+and a De Morgan style duality by treating pairs of values as dual to
+sums (choice) of continuation and sums of values as dual to pairs of
+continuations. He, furthermore, introduced a symmetric extension of
+the $\lambda$-calculus in which call-by-value is dual to call-by-name.
 
-Symmetry between the value fragment of the language and the
-continuation fragment was refined by Curien and Herbelin
-\cite{Curien:2000} who introduced the sequent-style
-$\mu\tilde{\mu}$-calculus, that exhibits symmetries between values and
-continuations and between call-by-value and call-by-name. The calculus
-includes the type $A-B$ which is the dual of implication, i.e., a
-value of type $A-B$ is a context expecting a function of type $A
-\rightarrow B$. Alternatively a value of type $A-B$ is also explained
-as a \emph{pair} consisting of a value of type $A$ and a continuation
-of type $B$. This is to be contrasted with our interpretation of a
-value of that type as \emph{either} a value of $A$ or a demand for a
-value of type $B$. The duality between call-by-name and call-by-value
-was further investigated by Selinger using control
+Symmetry between the value fragment and the continuation fragment was
+refined by Curien and Herbelin \cite{Curien:2000} who introduced the
+sequent-style $\mu\tilde{\mu}$-calculus, that exhibits symmetries
+between values and continuations and between call-by-value and
+call-by-name. The calculus includes the type $A-B$ which is the dual
+of implication, i.e., a value of type $A-B$ is a context expecting a
+function of type $A \rightarrow B$. Alternatively a value of type
+$A-B$ is also explained as a \emph{pair} consisting of a value of type
+$A$ and a continuation of type $B$. This is to be contrasted with our
+interpretation of a value of that type as \emph{either} a value of $A$
+or a demand for a value of type $B$. The duality between call-by-name
+and call-by-value was further investigated by Selinger using control
 categories~\cite{Selinger:2001:CCD:966910.966911}. The
 $\mu\tilde{\mu}$-calculus was further analyzed and extended by
 Wadler~\cite{Wadler:2003,DBLP:conf/rta/Wadler05}. The extension gives
@@ -274,12 +272,12 @@ commutative semiring with two commutative monoidal structures
 {{(0,+)}} and {{(*,1)}} with {{*}} distributing over {{+}}. 
 
 The language {{Pi}} however lacks a natural representation for
-first-class functions due to the first-order nature of its
-values. In the light of the work of duality of computation it was felt
-that ``right model'' for expressing functions in {{Pi}} would also
-express symmetries similar to those in the calculi of Filinski, Curien
-and Herbelin and Wadler. The technical goal of this paper is to
-present such a symmetric dual extension in the setting of {{Pi}}.
+first-class functions due to the first-order nature of its values. In
+the light of the work of duality of computation it was felt that
+``right model'' for expressing functions in {{Pi}} would also express
+symmetries similar to those in the calculi of Filinski, Curien and
+Herbelin and Wadler. The technical goal of this paper is to present
+such a symmetric dual extension of {{Pi}}.
 
 The extended language, which we call {{PiEE}}, is interesting because
 it does not have one De Morgan style dualizing action $(\_)^\bot$, but
