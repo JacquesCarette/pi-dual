@@ -242,9 +242,9 @@ sums of values as dual to pairs of continuations. He, furthermore,
 introduces a symmetric extension of the $\lambda$-calculus in which
 call-by-value is dual to call-by-name. 
 
-This view of symmetry between the value fragment of the language and
-the continuation fragment was refined by Curien and Herbelin
-\cite{Curien:2000} who introduce the sequent-style
+Symmetry between the value fragment of the language and the
+continuation fragment was refined by Curien and Herbelin
+\cite{Curien:2000} who introduced the sequent-style
 $\mu\tilde{\mu}$-calculus, that exhibits symmetries between values and
 continuations and between call-by-value and call-by-name. The calculus
 includes the type $A-B$ which is the dual of implication, i.e., a
@@ -264,48 +264,52 @@ to products and vice-versa.
 
 Previous work on \emph{information effects} established the logically
 reversible computational model {{Pi}} (and its extension {{Pi0}})
-wherein computation is information preserving. The computational model
-is derived from the isomorphisms of finite-types, every computation
-admits an adjoint that expresses the logical ``inverse'' of a
-computation and is complete for combinational circuits. The term model
-of {{Pi}} is a so-called commutative bimonoidal category, a term used
-for the categorification of a commutative semiring.  
+wherein computation is inherently information preserving. The
+computational model is derived from the isomorphisms of finite-types,
+every computation admits an adjoint that expresses the logical
+``inverse'' of a computation and is complete for combinational
+circuits. The term model of {{Pi}} is a so-called commutative
+bimonoidal category, i.e. it corresponds to the categorification of a
+commutative semiring with two commutative monoidal structures
+{{(0,+)}} and {{(*,1)}} with {{*}} distributing over {{+}}. 
 
-The language {{Pi}} however lacked a natural representation for
+The language {{Pi}} however lacks a natural representation for
 first-class functions due to first-order nature of all of its
 values. In the light of the work of duality of computation it was felt
 that ``right model'' for expressing functions in {{Pi}} would also
 express symmetries similar to those in the calculi of Filinski, Curien
 and Herbelin and Wadler. The technical goal of this paper is to
-present the duality of computation in the setting of {{Pi}}.
+present such a symmetric dual extension in the setting of {{Pi}}.
 
-The extended language, which we call {{PiEE}}, does not have one De
-Morgan style dualizing action $(\_)^\bot$, but two distinct dualizing
-actions -- an additive duality characterized by negative types $-(\_)$
-and a multiplicative duality characterized by fractional types
-$1/(\_)$. These negative and fractional dualities must not confused
-with the duality in the additive and multiplicative fragment of linear
-logic with the dualizing action $(\-)^\bot$. Each dualizing operation
-preserves the underlying connective {{-(a+b)<->(-a)+(-b)}} and
-{{1/(a*b)<->1/a*1/b}}. 
+The extended language, which we call {{PiEE}}, is interesting because
+it does not have one De Morgan style dualizing action $(\_)^\bot$, but
+two distinct dualizing actions -- an additive duality characterized by
+negative types $-(\_)$ and a multiplicative duality characterized by
+fractional types $1/(\_)$. Each dualizing operation preserves the
+underlying connective {{-(a+b)<->(-a)+(-b)}} and
+{{1/(a*b)<->1/a*1/b}}. Negative and fractional types have a clear and
+intuitive semantics in the setting of {{Pi}}.  
 
-The types of {{PiEE}} thus correspond to the field of rational numbers
-(with the important restriction of fields that there is no division by
-zero). A direct consequence of this is that algebraic manipulations of
-rationals can be given an operational interpretation and \emph{have
+These negative and fractional dualities must not confused with
+$(\-)^\bot$ duality in the additive and multiplicative fragment of
+linear logic.  Models of linear logic rely on *-autonomous categories
+which change the monoidal tensor when dualizing. Compact closed
+categories preserve the monoidal tensor on dualizing.  The term model
+of {{PiEE}} corresponds to the \emph{categorification of a field}. The
+category is compact closed over the additive monoid. In the
+multiplicative monoid, since there is no division by zero, respects
+compact closed structure only when a dual object is defined.
+
+The types of {{PiEE}} correspond to the \emph{field of rational
+  numbers} (with the important restriction of fields that there is no
+division by zero). Consequently algebraic manipulations of rationals
+can be given an operational interpretation and \emph{have
   computational content}.
-
-Models of linear logic rely on *-autonomous categories which change
-the monoidal tensor when dualizing. Compact closed categories preserve
-the monoidal tensor on dualizing.  The term model of {{PiEE}}
-corresponds to the \emph{categorification of a field}. The category is
-compact closed over the additive monoid. In the multiplicative monoid,
-since there is no division by zero, respects compact closed structure
-only when a dual object is defined.
 
 Say more: fractionals, entaglements, backtracking, superposition,
 constrants, negative information. Negative types, backward information
 flows, sets with negative types, iteration.. etc.
+
 
 We present {{Pi}} in the big-step style presented in the previous
 work, develop the categorical semantics of its term model and present
