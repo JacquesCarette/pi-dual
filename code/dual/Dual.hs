@@ -5,102 +5,88 @@
 
 module Dual where
 
-import Unsafe.Coerce -- needed for polymorphic lookup (lookupW)
+import Control.Monad
 
 ------------------------------------------------------------------------------
 -- Base types 
+-- 1, t+t, t*t are modeled using built-in Haskell types
+-- 0, -t, 1/t are modeled using the following types
 
-data Zero 
+data Zero -- empty type
+data Inv a = Inv a deriving Eq -- fractional types (a should not be zero) 
+data Neg a = Neg a deriving Eq -- negative types
 
+<<<<<<< local
 data Neg a = Ng a
+=======
+instance Show Zero where 
+  show _ = error "Empty type has no values to show"
+>>>>>>> other
 
+<<<<<<< local
 data Inv a = In a
 
+=======
+instance Eq Zero where 
+  _ == _ = error "Cannot use == at type 0"
+>>>>>>> other
 
-------------------------------------------------------------------------------
--- Values 
--- 
--- Values of the form 'V a' are values used by the interpreter. 
--- Values can contain non-grounded fresh variables
+class Eq a => V a where
+  elems :: [a]
 
-type Var a = Int
+instance V Zero where
+  elems = []
 
-data V a where
-  Unit :: V () 
-  Pair :: V a -> V b -> V (a, b) 
-  L :: V a -> V (Either a b) 
-  R :: V b -> V (Either a b) 
-  Neg :: V a -> V (Neg a)
-  Inv :: V a -> V (Inv a)
-  Fresh :: Var a -> V a
+instance V () where
+  elems = [()] 
 
-instance Show (V a) where 
-  show Unit = "()"
-  show (Pair a b) = "(" ++ show a ++ "," ++ show b ++ ")"
-  show (L a) = "L " ++ (show a) 
-  show (R a) = "R " ++ (show a)
-  show (Neg a) = "Neg " ++ (show a)
-  show (Inv a) = "Inv " ++ (show a)
-  show (Fresh n) = show n
+instance (V a, V b) => V (Either a b) where
+  elems = map Left elems ++ map Right elems
 
--- Translate a normal value to value usable by the interpreter.
--- a -> V a
+instance (V a, V b) => V (a,b) where
+  elems = [(a,b) | a <- elems, b <- elems] 
 
-class ToV a where 
-  makeV :: a -> V a
+instance V a => V (Neg a) where
+  elems = map Neg elems
 
-instance ToV () where 
-  makeV () = Unit
-
-instance (ToV a, ToV b) => ToV (Either a  b) where 
-  makeV (Left a) = L (makeV a)
-  makeV (Right a) = R (makeV a)
-
-instance (ToV a, ToV b) => ToV (a, b) where 
-  makeV (a,b) = Pair (makeV a) (makeV b)
-
-instance (Show a, ToV a) => ToV (Inv a) where 
-  makeV (In a) = Inv (makeV a)
-
-instance (Show a, ToV a) => ToV (Neg a) where 
-  makeV (Ng a) = Neg (makeV a)
+instance V a => V (Inv a) where
+  elems = map Inv elems
 
 ------------------------------------------------------------------------------
 -- Isomorphisms 
 
 data a :<=> b where 
 -- Congruence
-  Id    :: a :<=> a
-  Sym   :: (a :<=> b) -> (b :<=> a)
-  (:.:) :: (a :<=> b) -> (b :<=> c) -> (a :<=> c)
-  (:*:) :: (a :<=> b) -> (c :<=> d) -> ((a,c) :<=> (b,d))
-  (:+:) :: (a :<=> b) -> (c :<=> d) -> (Either a c :<=> Either b d)
+  Id    :: V a => a :<=> a
+  Sym   :: (V a, V b) => (a :<=> b) -> (b :<=> a)
+  (:.:) :: (V a, V b, V c) => (a :<=> b) -> (b :<=> c) -> (a :<=> c)
+  (:*:) :: (V a, V b, V c, V d) => (a :<=> b) -> (c :<=> d) -> ((a,c) :<=> (b,d))
+  (:+:) :: (V a, V b, V c, V d) => (a :<=> b) -> (c :<=> d) -> (Either a c :<=> Either b d)
+  -- (a :<=> b) -> (Neg a :<=> Neg b) ??
+  -- (a :<=> b) -> (Inv a :<=> Inv b) ??
 -- (+) is associative, commutative, and has a unit
-  ZeroE   :: Either Zero a :<=> a
-  ZeroI   :: a :<=> Either Zero a
-  CommutePlus :: Either a b :<=> Either b a
-  AssocPlusL  :: Either a (Either b c) :<=> Either (Either a b) c 
-  AssocPlusR  :: Either (Either a b) c :<=> Either a (Either b c) 
+  ZeroE       :: V a => Either Zero a :<=> a
+  ZeroI       :: V a => a :<=> Either Zero a
+  CommutePlus :: (V a, V b) => Either a b :<=> Either b a
+  AssocPlusL  :: (V a, V b, V c) => Either a (Either b c) :<=> Either (Either a b) c 
+  AssocPlusR  :: (V a, V b, V c) => Either (Either a b) c :<=> Either a (Either b c) 
 -- (*) is associative, commutative, and has a unit
-  UnitE    :: ((), a) :<=> a
-  UnitI    :: a :<=> ((), a)
-  CommuteTimes :: (a,b) :<=> (b,a) 
-  AssocTimesL  :: (a,(b,c)) :<=> ((a,b),c)
-  AssocTimesR  :: ((a,b),c) :<=> (a,(b,c))
+  UnitE        :: V a => ((), a) :<=> a
+  UnitI        :: V a => a :<=> ((), a)
+  CommuteTimes :: (V a, V b) => (a,b) :<=> (b,a) 
+  AssocTimesL  :: (V a, V b, V c) => (a,(b,c)) :<=> ((a,b),c)
+  AssocTimesR  :: (V a, V b, V c) => ((a,b),c) :<=> (a,(b,c))
 -- (*) distributes over (+) 
-  TimesZeroL  :: (Zero, a) :<=> Zero
-  TimesZeroR  :: Zero :<=> (Zero, a)
-  Distribute  :: (Either b c, a) :<=> Either (b, a) (c, a)
-  Factor      :: Either (b, a) (c, a) :<=> (Either b c, a)
--- Eta and Eps over the monoid (*, 1)
-  EtaTimes:: () :<=> (Inv a, a)
-  EpsTimes :: (Inv a, a) :<=> ()
--- EtaTimesand EpsTimes over the monoid (+, 0)
-  EtaPlus :: Zero :<=> (Either (Neg a) a)
-  EpsPlus :: (Either (Neg a) a) :<=> Zero
-
-------------------------------------------------------------------------------
--- Adjoint
+  TimesZeroL  :: V a => (Zero, a) :<=> Zero
+  TimesZeroR  :: V a => Zero :<=> (Zero, a)
+  Distribute  :: (V a, V b, V c) => (Either b c, a) :<=> Either (b, a) (c, a)
+  Factor      :: (V a, V b, V c) => Either (b, a) (c, a) :<=> (Either b c, a)
+-- Additive inverses
+  EtaPlus :: V a => Zero :<=> (Either (Neg a) a)
+  EpsPlus :: V a => (Either (Neg a) a) :<=> Zero
+-- Multiplicative inverses (a cannot be 0) 
+  EtaTimes :: V a => () :<=> (Inv a, a)
+  EpsTimes :: V a => (Inv a, a) :<=> ()
 
 adjoint :: (a :<=> b) -> (b :<=> a)
 adjoint Id = Id
@@ -122,236 +108,110 @@ adjoint TimesZeroL = TimesZeroR
 adjoint TimesZeroR = TimesZeroL
 adjoint Distribute = Factor
 adjoint Factor = Distribute
-adjoint EtaTimes= EpsTimes
-adjoint EpsTimes = EtaTimes
 adjoint EtaPlus = EpsPlus
 adjoint EpsPlus = EtaPlus
+adjoint EtaTimes = EpsTimes
+adjoint EpsTimes = EtaTimes
 
 ------------------------------------------------------------------------------
--- Unification and Reification of values
-
-data Binding = forall a. Binding (Var a) (V a)
-type World = ([Binding], Int)
-
-type Wave a = (V a, World)
-
-instance Show Binding where 
-    show (Binding n v) = (show n) ++ " -> " 
-
-
-extendW :: Var a -> V a -> [Binding] -> [Binding]
-extendW x v w = (Binding x v):w
-
-lookupW :: V a -> [Binding] -> V a
-lookupW (Fresh n) w = find n w 
-    where 
-      find :: Var a -> [Binding] -> V a 
-      find n ((Binding n' v):w') | n == n'   = lookupW (unsafeCoerce v) w
-                                 | otherwise = find n w'
-      find n [] = Fresh n
-lookupW v _ = v
-    
-
-unify :: V a -> V a -> [Binding] -> Maybe [Binding]
-unify v v' w = unify' (lookupW v w) (lookupW v' w) w
-    where 
-      unify' :: V a -> V a -> [Binding] -> Maybe [Binding]
-      unify' (Fresh x) v w = Just (extendW x v w)
-      unify' v (Fresh x) w = Just (extendW x v w)
-      unify' (L v) (L v') w = unify v v' w
-      unify' (R v) (R v') w = unify v v' w
-      unify' (Neg v) (Neg v') w = unify v v' w
-      unify' (Inv v) (Inv v') w = unify v v' w
-      unify' (Pair a b) (Pair a' b') w = case (unify b b' w) of 
-                                           Nothing -> Nothing 
-                                           Just w' -> unify a a' w'
-      unify' Unit Unit w = Just w
-      unify' _ _ _ = Nothing
-
-unifyW :: V a -> V a -> World -> Maybe World 
-unifyW v1 v2 (bs, n) = 
-    case (unify v1 v2 bs) of 
-      Nothing -> Nothing
-      Just bs -> Just (bs, n)
-
-
-fresh :: World -> (V a, World)
-fresh (bs, n) = (Fresh n, (bs, n+1))
-
-reify :: (V a, World) -> V a
-reify (v, (bs, _)) = reify' (lookupW v bs) bs 
-    where 
-      reify' :: V a -> [Binding] -> V a
-      reify' Unit _ = Unit
-      reify' (Fresh n) _ = Fresh n 
-      reify' (L v) bs = L (reify' (lookupW v bs) bs)
-      reify' (R v) bs = R (reify' (lookupW v bs) bs)
-      reify' (Neg v) bs = Neg (reify' (lookupW v bs) bs)
-      reify' (Inv v) bs = Inv (reify' (lookupW v bs) bs)
-      reify' (Pair a b) bs = 
-          Pair (reify' (lookupW a bs) bs) (reify' (lookupW b bs) bs)
-
-------------------------------------------------------------------------------
--- A Unification Monad
-
-data M a = M (World -> [(a, World)])
-
-instance Monad M where 
-    return a = M (\w -> [(a, w)])
-    (M f) >>= g = M (\w -> foldl (\acc (v, w) -> acc ++ (g v `app` w)) [] (f w))
-
-app :: M a -> World -> [(a, World)]
-app (M f) w = f w
-
-unifyM :: V a -> V a -> M () 
-unifyM v1 v2 = M (\w -> 
-                      case (unifyW v1 v2 w) of 
-                        Nothing -> []
-                        Just w' -> [((), w')])
-
-freshM :: M (V a)
-freshM = M (\w -> [fresh w])
-
-orM :: M a -> M a -> M a
-orM e1 e2 = M (\w -> (e1 `app` w) ++ (e2 `app` w))
-          
--- Run the monadic computation
-run :: Show (V a) => M (V a) -> [V a]
-run e = map (\w->reify w) (e `app` ([], 100)) 
-
--- Note: I start with the 100 as the first system generated fresh
--- variable thus reserving fresh variables 0..99 for user input. This
--- is just a hack.
-
-------------------------------------------------------------------------------
--- Eval Simple
+-- Non-determisnism monad
 -- 
--- Operational semantics of primtive isomorphisms expressed using the
--- unification monad. Morphisms eta/eps for (*, 1) are also included
--- here.
- 
-eval_iso :: (a :<=> b) -> (V a) -> M (V b)
-eval_iso Id a = return a
+-- We have non-determinism because of eta*/epsilon*. In particular eta* maps
+-- () non-deterministically to (1/v,v) to where v is a value of the
+-- approriate type; epsilon* takes a pair (1/v',v) and checks whether
+-- v==v'. If so we return () and otherwise we fail.
+
+eval_iso :: (V a, V b) => (a :<=> b) -> [a] -> [b] 
+eval_iso c xs = xs >>= eval_iso1 c
+
+eval_iso1 :: (V a, V b) => (a :<=> b) -> a -> [b]
+eval_iso1 Id a = return a
 
 -- ZeroE @@ (Right a) = a
-eval_iso ZeroE v = 
-    do v1 <- freshM 
-       unifyM (R v1) v 
-       return v1
+eval_iso1 ZeroE v = 
+  case v of 
+    Left _ -> mzero
+    Right a -> return a
+
 -- ZeroI @@ a = Right a
-eval_iso ZeroI v = 
-    return (R v)
+eval_iso1 ZeroI v = return (Right v) 
+
 -- CommutePlus @@ (Left a) = Right a
 -- CommutePlus @@ (Right b) = Left b 
-eval_iso CommutePlus v = 
-    do v1 <- freshM 
-       unifyM (L v1) v 
-       return (R v1)
-    `orM`
-    do v1 <- freshM 
-       unifyM (R v1) v
-       return (L v1)
+eval_iso1 CommutePlus v = 
+  case v of 
+    Left a -> return (Right a) 
+    Right b -> return (Left b) 
 
 -- AssocPlusL @@ (Left a) = Left (Left a) 
 -- AssocPlusL @@ (Right (Left b)) = Left (Right b) 
 -- AssocPlusL @@ (Right (Right c)) = Right c
-eval_iso AssocPlusL v = 
-    do x <- freshM 
-       unifyM (L x) v
-       return (L (L x))
-    `orM`
-    do x <- freshM 
-       unifyM (R (L x)) v
-       return (L (R x))
-    `orM`
-    do x <- freshM 
-       unifyM (R (R x)) v
-       return (R x)
+eval_iso1 AssocPlusL v = 
+  case v of 
+    Left a -> return (Left (Left a)) 
+    Right (Left b) -> return (Left (Right b))
+    Right (Right c) -> return (Right c) 
 
 -- AssocPlusR @@ (Left (Left a)) = Left a
 -- AssocPlusR @@ (Left (Right b)) = Right (Left b)
 -- AssocPlusR @@ (Right c) = Right (Right c)
-eval_iso AssocPlusR v = 
-    do x <- freshM 
-       unifyM (L (L x)) v
-       return (L x)
-    `orM`
-    do x <- freshM 
-       unifyM (L (R x)) v
-       return (R (L x))
-    `orM`
-    do x <- freshM 
-       unifyM (R x) v
-       return (R (R x))
+eval_iso1 AssocPlusR v = 
+  case v of 
+    Left (Left a) -> return (Left a)
+    Left (Right b) -> return (Right (Left b)) 
+    Right c -> return (Right (Right c))
 
 -- UnitE @@ ((), a) = a
-eval_iso UnitE v = 
-    do x <- freshM 
-       unifyM (Pair Unit x) v
-       return x
+eval_iso1 UnitE ((),a) = return a
+
 -- UnitI @@ a = ((), a)
-eval_iso UnitI v = 
-    return (Pair Unit v)
+eval_iso1 UnitI v = return ((),v) 
 
 -- CommuteTimes @@ (a,b) = (b,a) 
-eval_iso CommuteTimes v = 
-    do x <- freshM 
-       y <- freshM
-       unifyM (Pair x y) v
-       return (Pair y x)
+eval_iso1 CommuteTimes (a,b) = return (b,a) 
 
 -- AssocTimesL @@ (a,(b,c)) = ((a,b),c) 
-eval_iso AssocTimesL v = 
-    do x <- freshM 
-       y <- freshM
-       z <- freshM 
-       unifyM (Pair x (Pair y z)) v
-       return (Pair (Pair x y) z)
+eval_iso1 AssocTimesL (a,(b,c)) = return ((a,b),c) 
+
 -- AssocTimesR @@ ((a,b),c)  = (a,(b,c))
-eval_iso AssocTimesR v = 
-    do x <- freshM 
-       y <- freshM
-       z <- freshM 
-       unifyM (Pair (Pair x y) z) v
-       return (Pair x (Pair y z))
+eval_iso1 AssocTimesR ((a,b),c) = return (a,(b,c)) 
 
 -- Distribute @@ (Left b, a) = Left (b, a) 
 -- Distribute @@ (Right c, a) = Right (c, a) 
-eval_iso Distribute v = 
-    do x <- freshM 
-       y <- freshM
-       unifyM (Pair (L x) y) v
-       return (L (Pair x y))
-    `orM`
-    do x <- freshM 
-       y <- freshM
-       unifyM (Pair (R x) y) v
-       return (R (Pair x y))
+eval_iso1 Distribute v = 
+  case v of 
+    (Left b, a) -> return (Left (b,a)) 
+    (Right c, a) -> return (Right (c,a)) 
 
 -- Factor @@ (Left (b, a)) = (Left b, a) 
 -- Factor @@ (Right (c, a)) = (Right c, a) 
-eval_iso Factor v = 
-    do x <- freshM 
-       y <- freshM
-       unifyM (L (Pair x y)) v
-       return (Pair (L x) y)
-    `orM`
-    do x <- freshM 
-       y <- freshM
-       unifyM (R (Pair x y)) v
-       return (Pair (R x) y)
+eval_iso1 Factor v = 
+  case v of 
+    Left (b,a) -> return (Left b, a) 
+    Right (c,a) -> return (Right c, a) 
 
--- EtaTimesand EpsTimes as U shaped connectors
-eval_iso EtaTimes v = 
-    do x <- freshM 
-       unifyM Unit v 
-       return  (Pair (Inv x) x)
-eval_iso EpsTimes v = 
-    do x <- freshM 
-       unifyM (Pair (Inv x) x) v 
-       return Unit
+-- epsilon times
+eval_iso1 EpsTimes (Inv a, a') | a == a' = return ()
+                               | otherwise = mzero
+
+-- eta times
+eval_iso1 EtaTimes () = msum [return (Inv a, a) | a <- elems] 
+
+-- epsilon plus
+eval_iso1 EpsPlus v = 
+  case v of 
+    Left (Neg a) -> undefined
+    Right a -> undefined
+
+-- eta plus
+eval_iso1 EtaPlus _ = undefined
+
+
+{--
 
 ------------------------------------------------------------------------------
+-- forward and backward evaluators
+
 -- Evaluation Contexts
 -- 
 -- These contexts are used in the definition of the composition
@@ -366,9 +226,6 @@ data K a b c d where
     LftTimes :: V c -> (c :<=> d) -> K (a,c) (b,d) i o -> K a b i o 
     RgtTimes :: (a :<=> b) -> V b -> K (a,c) (b,d) i o -> K c d i o 
      
-------------------------------------------------------------------------------
--- Operational semantics for the Forward evaluator
-
 -- Explore current combinator 
 eval_c :: (a :<=> b) -> V a -> K a b c d -> M (V d)
 
@@ -382,7 +239,7 @@ eval_c (f :.: g) a k =
 eval_c (f :*: g) v k = 
     do x1 <- freshM 
        x2 <- freshM 
-       unifyM (Pair x1 x2) v
+       unifyM (Pr x1 x2) v
        eval_c f x1 (LftTimes x2 g k)
 
 -- (f :+: g) @@ (Left a) = Left (f @@ a) 
@@ -399,16 +256,16 @@ eval_c (f :+: g) v k =
 -- eps : switch to the other evaluator
 eval_c EpsPlus v k = 
     do v1 <- freshM 
-       unifyM (L (Neg v1)) v 
+       unifyM (L (Ng v1)) v 
        back_eval_k EpsPlus (R v1) k
     `orM`
     do v1 <- freshM 
        unifyM (R v1) v
-       back_eval_k EpsPlus (L (Neg v1)) k
+       back_eval_k EpsPlus (L (Ng v1)) k
 
--- all primitive isomorphisms are executed using eval_iso
+-- all primitive isomorphisms are executed using eval_iso1
 eval_c c v k = 
-    do v' <- eval_iso c v
+    do v' <- eval_iso1 c v
        eval_k c v' k
 
 -- Explore current stack
@@ -430,11 +287,11 @@ eval_k g v (RgtPlus f k) =
 eval_k f v1 (LftTimes v2 g k) = eval_c g v2 (RgtTimes f v1 k)
 eval_k g v2 (RgtTimes f v1 k) = 
     do v' <- freshM 
-       unifyM v' (Pair v1 v2)
+       unifyM v' (Pr v1 v2)
        eval_k (f :*: g) v' k 
 
-------------------------------------------------------------------------------
--- Operational semantics for the Backward evaluator
+
+-- backward evaluator 
 
 -- Explore the combinator
 back_eval_c :: (a :<=> b) -> V b -> K a b c d -> M (V d)
@@ -449,7 +306,7 @@ back_eval_c (f :.: g) a k =
 back_eval_c (f :*: g) v k = 
     do x1 <- freshM 
        x2 <- freshM 
-       unifyM (Pair x1 x2) v
+       unifyM (Pr x1 x2) v
        back_eval_c g x2 (RgtTimes f x1 k)
 
 -- (f :+: g) @@ (Left a) = Left (f @@ a) 
@@ -466,16 +323,16 @@ back_eval_c (f :+: g) v k =
 -- eta : switch to the other evaluator
 back_eval_c EtaPlus v k = 
     do v1 <- freshM 
-       unifyM (L (Neg v1)) v 
+       unifyM (L (Ng v1)) v 
        eval_k EtaPlus (R v1) k
     `orM`
     do v1 <- freshM 
        unifyM (R v1) v
-       eval_k EtaPlus (L (Neg v1)) k
+       eval_k EtaPlus (L (Ng v1)) k
 
 -- all primitive isomorphisms are executed backwards.
 back_eval_c c v k = 
-    do v' <- eval_iso (adjoint c) v
+    do v' <- eval_iso1 (adjoint c) v
        back_eval_k c v' k
 
 
@@ -498,7 +355,7 @@ back_eval_k g v (RgtPlus f k) =
 back_eval_k g v2 (RgtTimes f v1 k) = back_eval_c f v1 (LftTimes v2 g k)
 back_eval_k f v1 (LftTimes v2 g k) = 
     do v' <- freshM 
-       unifyM v' (Pair v1 v2)
+       unifyM v' (Pr v1 v2)
        back_eval_k (f :*: g) v' k 
 
 -- Note: We could explore an alternate semantics that allows for
@@ -514,4 +371,4 @@ eval :: (ToV a, Show (V a)) => (a :<=> b) -> a -> [V b]
 eval c v = run (eval_c c (makeV v) KEmpty)
 
 ------------------------------------------------------------------------------
-
+--}
