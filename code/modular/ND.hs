@@ -1,5 +1,6 @@
 {-# OPTIONS_GHC -XTypeOperators  #-}
 {-# OPTIONS_GHC -XGADTs          #-}
+{-# OPTIONS_GHC -XNoMonomorphismRestriction #-}
 
 -- Fractional types introduce non-determinism; instead of having one value we
 -- have a sequence of possible values
@@ -30,6 +31,14 @@ instance (V a, V b) => V (a,b) where
 instance V a => V (Inv a) where
   elems = map Inv elems
 
+-- for further testing
+data Bob = Uncle | Aunt | Other | Unrelated deriving (Eq, Show)
+instance V Bob where
+  elems = [Uncle, Aunt, Other, Unrelated]
+
+instance V Char where
+  elems = ['a'..'z']
+
 data a :<=> b where 
 -- Congruence
   Id    :: a :<=> a
@@ -54,8 +63,8 @@ data a :<=> b where
   Distribute  :: (Either b c, a) :<=> Either (b, a) (c, a)
   Factor      :: Either (b, a) (c, a) :<=> (Either b c, a)
 -- Multiplicative inverses (a cannot be 0) 
-  EtaTimes :: V a => () :<=> (Inv a, a)
-  EpsTimes :: Eq a => (Inv a, a) :<=> ()
+  EtaTimes :: V c => () :<=> (Inv c, c)
+  EpsTimes :: Eq c => (Inv c, c) :<=> ()
 
 instance Pi (:<=>) where
   id = Id
@@ -95,7 +104,7 @@ instance PiInv (:<=>) where
 -- v==v'. If so we return () and otherwise we fail.
 
 class Pi eq => EvIso eq where
-  eval :: eq a b -> a -> [b]
+  eval :: (MonadPlus m, Monad m) => eq a b -> a -> m b
 
 instance EvIso (:<=>) where
   eval Id a = return a
@@ -190,7 +199,7 @@ instance EvIso (:<=>) where
 
 -- If the input is non-deterministic use:
 
-eval_iso :: (V a, V b) => (a :<=> b) -> [a] -> [b] 
+eval_iso :: (V a, V b, Monad m, MonadPlus m) => (a :<=> b) -> m a -> m b
 eval_iso c xs = xs >>= eval c
 
 ------------------------------------------------------------------------------
@@ -198,7 +207,7 @@ eval_iso c xs = xs >>= eval c
 
 type B = Either () ()
 
-cohTimes :: V a => a :<=> a           -- [v]
+-- cohTimes :: V a => a :<=> a           -- [v]
 cohTimes = UnitI                      -- [((),v)]
            :.: (EtaTimes :*: Id)      -- [((1/v),v),v)] ++ [((1/v',v'),v)]
            :.: (CommuteTimes :*: Id)  -- [((v,1/v),v)] ++ [((v',1/v'),v)]
@@ -232,5 +241,9 @@ justTimes2 = UnitI :.: (EtaTimes :*: Id)
 
 test5 :: V a => [((Inv a, a), (B,B))]
 test5 = eval justTimes2 (Left (), Right ())
+
+-- inv :: (PiInv eq) => eq a a
+-- inv = timesOneR %. (etaTimes %* id) %. (epsTimes %* id) %. timesOneL
+
 
 ------------------------------------------------------------------------------
