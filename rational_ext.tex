@@ -93,7 +93,6 @@
 %! eps* = \epsilon^{\times}
 %! trace+ = trace^+
 %! trace* = trace^{\times}
-%! ^^^ = ^{-1}
 %! (o) = \circ
 %! (;) = \fatsemi
 %! (*) = \times
@@ -130,6 +129,10 @@
 %! @@ = \mu
 %! [^ = \lceil
 %! ^] = \rceil
+%! {| = \{
+%! |} = \}
+%! ^^^ = ^{\dagger}
+%! elem = \in
 %! forall = \forall
 %! exists = \exists
 %! empty = \epsilon
@@ -1394,10 +1397,11 @@ The usual interpretation of {{b1*b2}} we have both a value of type
 {{b1}} and a value of type {{b2}}. This interpretation is maintained
 in the presence of fractionals. Hence an {{eta* : 1 <-> (1/b) * b}} is
 to be viewed as a fission point for a value of type {{b}} and its
-multiplicative inverse {{1/b}}. Operationally, this corresponds to the
-creation of two values {{alpha}} and {{1/alpha}} where {{alpha}} is a
-fresh logic variable. The operator {{eps*}} then becomes a unification
-site for these logic variables:
+multiplicative inverse {{1/b}}. 
+%% Operationally, this corresponds to the
+%% creation of two values {{alpha}} and {{1/alpha}} where {{alpha}} is a
+%% fresh logic variable. The operator {{eps*}} then becomes a unification
+%% site for these logic variables:
 
 \begin{multicols}{2}
 \begin{center}
@@ -1475,6 +1479,9 @@ Tracing the execution of this circuit gives us:
 % & |-->* & [eps*, (1/false, true), Snd (id (*) not) (Snd~eta* [])]
 % & |--> & undefined
 
+\roshan{Maybe replace the annihilation example with union and
+  difference.}
+
 \begin{proposition}[Type Safety]
   
 \end{proposition}
@@ -1483,42 +1490,46 @@ Tracing the execution of this circuit gives us:
   
 \end{proposition}
 
+In the discourse below we use {{c v |-->* v'}} as a shorthand for the
+execution sequence {{<c,v,[]>|-->*{[c,v',[] ]} }}.
+
 \begin{definition}[eval(c,v)]
 
-Given a combinator {{c:b1<->b2}} and a value {{v:b1}} we can define
+Given a combinator {{c:b1<->b2}} and a value {{v:b1}} we define
 {{eval(c, v)}} to be the set of values {{v':b}} such that there is
-small-step reduction sequence {{c v |-->* v'}}. 
+small-step reduction sequence {{c v |-->* v'}}.
 
 $eval(c, v) = \{v'~|~ c~ v\mapsto^{\asterix} v' \} $
 \end{definition}
 
-The definition of equality between combinators has to be extended to
-reflect the fact that combinators can have multiple outputs for an
-input. More generally, combinators denotes relations. 
+The above definition implies that combinators {{c:b1<->b2}} can be
+indetified by relations between the sets {{b1}} and {{b2}}, i.e. 
+{{c:b1<->b2 = {| (v, v') | v:b2, v':b2 and c v |-->* v'|} }}.
+The definition of equality between combinators is extended reflect the
+fact that combinators denote relations.
 
 \begin{definition}[c1 = c2]
 We say that {{c1 = c2}}, for combinators {{c1:b1<->b2}} and
-{{c2:b1<->b2}} iff the denote the same relation between sets {{b1}}
+{{c2:b1<->b2}} iff they denote the same relation between sets {{b1}}
 and {{b2}}. Equivalently,
 
 {{forall v:b1. eval(c1, v) = eval(c2, v)}}
 \end{definition}
 
 \begin{proposition}[Logical Reversibility]
-\label{prop:logrev2}
+\label{prop:logrev2} ~
 
 {{c v |-->* v'}} iff {{ c{dagger} v' |-->* v}}
 \end{proposition}
 
-The logical reversibility is extended to relations and should be
-understood as follows. The combinator {{c:b1<->b2}} denotes a relation
-from {{b1}} to {{b2}} and its adjoint denotes the inverse relation
-from {{b2}} to {{b1}}. Operationally, for any execution path from
-{{v}} to {{v'}} in {{c}}, {{c{dagger} }} has an execution path from
-{{v'}} to {{v}}.
+Logical reversibility of {{PiEE*}} implies that {{c^{dagger} }}
+denotes the inverse relation that {{c}} denotes, i.e.
+{{c^^^={|(v',v)~|~(v,v') elem c|} }}.  Operationally, for any
+execution path from {{v}} to {{v'}} in {{c}}, {{c{dagger} }} has an
+execution path from {{v'}} to {{v}}.
 
 \roshan{This is an important question -- is {{PiEE*}} still
-  bimonoidal? i.e. so all the coherence conditions on isomorphisms
+  bimonoidal? i.e. do all the coherence conditions on isomorphisms
   naturally extend to relations. I suspect yes.}
 
 
