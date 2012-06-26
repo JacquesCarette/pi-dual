@@ -1368,8 +1368,7 @@ above is that there are no types of the form {{1/b}}, where
 below). This eliminates terms of the form {{1/0}}, {{1/(0+0)}},
 {{1/(0*b)}} etc, from being treated as valid {{b}} types. Intuitively,
 this translates into the familiar restriction that there is no
-division by 0 in arithmetic or the definition of fields in abstract
-algebra.
+division by 0 in arithmetic, nor in algebraic fields.
 
 \begin{multicols}{2}  
 %subcode{opsem} include main
@@ -1441,13 +1440,13 @@ following two rules to the small-step operational semantics of {{Pi}}.
 % <eps*, (1/v,v), C> &|-->& {[eps*, (), C]} & (eps*) 
 
 The rule {{(eta*)}} is different from other rules encountered before
-due to the {{forall v:b}} quantification and is to be understood as
+due to the {{forall v:b}} quantification. It is to be understood as
 follows: when the machine encounters an {{eta*}} reduction it
-non-deterministically replicates into several machine states or
-worlds, each of which is seeded by a unique value {{v}} that inhabits
-the type {{b}} that indexes {{eta* : 1 <-> 1/b * b}}. Each world has
-an independant existence. As an example at the type {{bool}}, we would
-have two possible machine states:
+non-deterministically replicates into several machine states (or
+worlds). Each world is seeded by a unique value {{v:b}}, where {{b}}
+comes from {{eta*:1 <-> 1/b * b}}.  For example, at
+{{eta*:1<->1/bool*bool}}, we would have two possible machine
+states:
 
 %subcode{opsem} include main
 %! columnStyle = rclr
@@ -1457,7 +1456,7 @@ have two possible machine states:
 
 
 The rule {{(eps*)}} is straightforward : when given a tuple
-{{(1/v,v):1/b * b}} where {{eta*:1/b*b <-> 1}} the result is
+{{(1/v,v):1/b * b}} where {{eps*:1/b*b <-> 1}} the result is
 {{()}}. The machine is undefined for cases where where the input is
 {{(1/v',v):1/b*b}} and {{v' /= v}}.
 
@@ -1496,8 +1495,9 @@ Tracing the execution of this circuit gives us:
   
 \end{proposition}
 
-In the discourse below we use {{c v |-->* v'}} as a shorthand for the
-execution sequence {{<c,v,[]>|-->*{[c,v',[] ]} }}.
+\noindent
+We use {{c v |-->* v'}} as a shorthand for the reduction sequence
+{{<c,v,[]>|-->*{[c,v',[] ]} }}.
 
 \begin{definition}[eval(c,v)]
 
@@ -1508,18 +1508,16 @@ small-step reduction sequence {{c v |-->* v'}}.
 $eval(c, v) = \{v'~|~ c~ v\mapsto^{\asterix} v' \} $
 \end{definition}
 
-The above definition implies that combinators {{c:b1<->b2}} can be
-indetified by relations between the sets {{b1}} and {{b2}}, i.e. 
-{{c:b1<->b2 = {| (v, v') | v:b2, v':b2 and c v |-->* v'|} }}.
-The definition of equality between combinators is extended reflect the
-fact that combinators denote relations.
+The above definition implies that combinators {{c:b1<->b2}} denote
+relations between the sets {{b1}} and {{b2}}, i.e.
+{{c:b1<->b2={|(v,v') | v:b2, v':b2 and c v |-->* v'|} }}.  The
+definition of combinator equality reflects the fact that combinators
+denote relations.
 
 \begin{definition}[c1 = c2]
 We say that {{c1 = c2}}, for combinators {{c1:b1<->b2}} and
-{{c2:b1<->b2}} iff they denote the same relation between sets {{b1}}
-and {{b2}}. Equivalently,
-
-{{forall v:b1. eval(c1, v) = eval(c2, v)}}
+{{c2:b1<->b2}} iff they denote the same relation. Equivalently,
+{{forall v:b1. eval(c1, v) = eval(c2, v)}}.
 \end{definition}
 
 \begin{proposition}[Logical Reversibility]
@@ -1528,18 +1526,14 @@ and {{b2}}. Equivalently,
 {{c v |-->* v'}} iff {{ c{dagger} v' |-->* v}}
 \end{proposition}
 
-Logical reversibility of {{PiEE*}} implies that {{c^{dagger} }}
-denotes the inverse relation that {{c}} denotes, i.e.
-{{c^^^={|(v',v)~|~(v,v') elem c|} }}.  Operationally, for any
-execution path from {{v}} to {{v'}} in {{c}}, {{c{dagger} }} has an
-execution path from {{v'}} to {{v}}.  Intuitively, logical
-reversibility holds because for every {{eta*}} reduction in a world
-that transforms {{()}} into {{(1/v,v)}}, on reverse execution the
-adjoint {{eps*}} will transform {{(1/v,v)}} back to {{()}}.
-
-\roshan{This is an important question -- is {{PiEE*}} still
-  bimonoidal? i.e. do all the coherence conditions on isomorphisms
-  naturally extend to relations. I suspect yes.}
+For any execution path from {{v}} to {{v'}} in {{c}}, {{c{dagger} }}
+has an execution path from {{v'}} to {{v}}.  Stated differently,
+logical reversibility implies that {{c^{dagger} }} denotes the inverse
+relation that {{c}} denotes, i.e.  {{c^^^={|(v',v)~|~(v,v') elem c|} }}.  
+Intuitively logical reversibility holds because for every
+{{eta*}} reduction in a world that transforms {{()}} into {{(1/v,v)}},
+on reverse execution the adjoint {{eps*}} will transform {{(1/v,v)}}
+back to {{()}}.
 
 \roshan{Should we show completeness -- i.e. that every relation is
   expressible? We can. But should we?}
@@ -1550,17 +1544,33 @@ adjoint {{eps*}} will transform {{(1/v,v)}} back to {{()}}.
 
 Like {{Pi}}, {{PiEE*}} is a commutative bimonoidal catgeory.
 Symmetric monoidal categories where every object had a dual object and
-where dualizing preserves the monodal tensor are referred to as
+where dualizing preserves the monoidal tensor are referred to as
 compact closed categories. Since divison is defined only for types of
-non-zero size, not all objects have dual objects.  In this section
-establish that {{PiEE*}} is ``locally compact closed'' in the sense
-that for non-zero objects, namely types where {{[^ b ^]=0}}, it
-satisfies the conditions for compact closed categories.
+non-zero size, not all objects have duals.  We show that {{PiEE*}}
+respects compact closed structure for non-zero objects. We introduce
+the term ``locally compact closed'' to refer to this notion.
+
+It is important to note that in a compact closed category, the
+dualizing action, usually denoted $(-)^\asterix$, is a contravariant
+functor. However {{PiEE*}} is not compact closed and {{1/(-)}} is not
+a functor specifically because division is not defined on 0 sized
+types.
+
+Without the important side condition on division by zero, we would
+have {{1<->1/0*0}} which implies {{1 <-> 0}} consequently collapsing
+the entire structure. In this context, an important area for future
+investigation is to consider alternatives to fields as a model for
+fractionals and negatives -- particularly algebraic structures that
+are ``zero totalized fields'' such as meadows
+\cite{Bergstra:2009:MES:1507774.1508000}.
+
+\roshan{This is an important question -- is {{PiEE*}} still
+  bimonoidal? i.e. do all the coherence conditions on isomorphisms
+  naturally extend to relations. I suspect yes.}
 
 \begin{proposition}[Locally Compact Closed]
-{{PiEE*}} is a locally compact closed category in the sense that for
-all non-zero objects {{b}}, we have an inverse object {{1/b}} in the
-symmetric monoidal structure of {{(*, 1)}}, with the morphisms: 
+For every non-zero object {{b}} of {{PiEE*}}, there exists an inverse
+object {{1/b}} in the {{(*, 1)}} symmetric monoid with the morphisms:
 
 \begin{enumerate}
 \item {{1 <-> 1/b * b}} given by {{eta*}}, called the `unit map'.
@@ -1606,7 +1616,7 @@ the left) as shown on the right.
 \end{multicols}
 
 \noindent
-The coherence conditions are more intuitive when presented
+The coherence conditions are intuitive when presented
 graphically. They require that the combinators below be equal to
 {{id}}, at the appropriate type (see Sec. 4
 \cite{springerlink:10.1007/978-3-642-12821-94}).
@@ -1619,7 +1629,7 @@ graphically. They require that the combinators below be equal to
 
 
   We briefly trace the execution of the first combinator (let us call
-  it {{c}}. To show that {{c=id}}, we must show for {{v:b}}, the
+  it {{c}}). To show that {{c=id}}, we must show for {{v:b}}, the
   evaluation of {{<c,v,[]>}} always produces {{v:b}} as
   output. Verification for the second combinator is similar.
 
@@ -1630,24 +1640,13 @@ graphically. They require that the combinators below be equal to
 % & |-->  & <eta*, (1/v',v'), C2> & some v':b
 % (1) & |-->* & <eps*, (1/v', v), C3> & when v' = v
 % & |-->~ & [eps*, (), C3]
-% & |-->* & [c', v, [] ]
+% & |-->* & [c, v, [] ]
 % (2) & |-->* & <eps*, (1/v', v), C3> & when v' /= v
 % & |-->~ & undefined
 
 \end{proof}
 
-It is important to note that in a compact closed category, the
-dualizing action, usually denoted $(-)^\asterix$, is a contravariant
-functor. However {{PiEE*}} is not compact closed and {{1/(-)}} is not
-a functor specifically because division is not defined on 0 sized
-types. 
 
-Without the important side condition on division by zero, we would
-have {{1<->1/0*0}} which implies {{1 <-> 0}} and consequently
-collapses the entire structure. Structures that are ``zero totalized
-fields'' such as meadows \cite{Bergstra:2009:MES:1507774.1508000}
-deserve investigation as alternative models for {{Pi}} with
-fractionals (and negatives).
 
 %% For a monoidal category to be compact closed the maps~{{eta}}
 %% and~{{eps}} must satisfy a coherence condition that is usually
