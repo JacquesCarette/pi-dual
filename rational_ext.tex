@@ -1365,17 +1365,11 @@ closed categories.
 %%%%%%%%%%%%%%%%%
 \subsection{The Powerset Monad} 
 
-In order to interpret fractional types, we define a monad {{S}} over the
-{{Pi}}-category of finite sets and bijections. The functor part of the monad
-\[\begin{array}{rcl}
+In order to interpret fractional types, we first define a monad {{S}} over
+the {{Pi}}-category of finite sets and bijections.
 
-\end{array}\]
-
-
-
-
-\paragraph*{Data.} We extend values types with types {{S b}} denoting sets of
-values {{ {| v1, v2, dots |} }}:
+\paragraph*{Data.} The syntax of {{Pi}} is extended with the type {{S b}}
+which denotes sets {{ {| v1, v2, dots |} }} of values of type {{b}}:
 %subcode{bnf} include main
 % value types, b ::= 0 | 1 | b + b | b * b | S b
 % values, v ::= () | left v | right v | (v, v) | {| v1, v2, dots |}
