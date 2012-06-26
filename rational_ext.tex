@@ -1261,11 +1261,11 @@ combinator {{c}} in the reverse direction, i.e., we use the adjoint
   Evaluation in the small-step evaluator corresponds to evaluation in
   the natural semantics.
 
-  {{c v |--> v'}} iff {{<c, v, []> |-->* [c', v', [] ]}}
+  {{c v |--> v'}} iff {{<c, v, []> |-->* [c, v', [] ]}}
 \end{proposition}
 \begin{proof}
   To prove the above, we first show that a more general lemma holds,
-  namely that: {{c v |--> v'}} iff {{<c, v, C> |-->* [c', v', C ]}}.
+  namely that: {{c v |--> v'}} iff {{<c, v, C> |-->* [c, v', C ]}}.
 
   To show the left-to-right direction we proceed by induction on the
   derivation of {{c v |--> v'}}. In the case of primitive isomorphisms
@@ -1276,20 +1276,20 @@ combinator {{c}} in the reverse direction, i.e., we use the adjoint
   {{right v2}}. Assuming {{left v1}}, we have: 
 
 %subcode{proof} include main
-%@ c1 v1 |--> v1' ==> <c1, v1, C'> |-->* {[c1',v1',C']}
+%@ c1 v1 |--> v1' ==> <c1, v1, C'> |-->* {[c1,v1',C']}
 %@@ c1+c2 (left v1) |--> left v1' ==> ? 
 
 Choosing {{C' =Lft c2 C}}, we have the required derivation sequence: 
-{{ <c1+c2, left v1, C> |--> <c1,v1,LeftP c2 C> |-->* {[c1',v1', LeftP c2 C]} |--> {[c1'+c2,left v1',C]} }}. The proof follows similarly for the {{right v2}} case.  
+{{ <c1+c2, left v1, C> |--> <c1,v1,LeftP c2 C> |-->* {[c1,v1', LeftP c2 C]} |--> {[c1+c2,left v1',C]} }}. The proof follows similarly for the {{right v2}} case.  
 
 To show the right-to-left direction we proceed by induction of the
 sequence of {{|-->*}} derivations. Again the case for primtive
 isomorphisms follows trivially. Taking the case of {{c1+c2}} we are
 required to show that given a sequence 
-{{<c1+c2,v,C> |-->* {[c', v', C]} }} there is a derivation tree for
+{{<c1+c2,v,C> |-->* {[c1+c2, v', C]} }} there is a derivation tree for
 {{c1+c2 v |--> v'}}. In the case that {{v:v1+b2}} has the form
 {{left~v1}}, this follows by observing that the given sequence must have the form
-{{ <c1+c2, left v1, C> |--> <c1,v1,LeftP c2 C> |-->* {[c1',v1', LeftP c2 C]} |--> {[c1'+c2,left v1',C]} }}. 
+{{ <c1+c2, left v1, C> |--> <c1,v1,LeftP c2 C> |-->* {[c1,v1', LeftP c2 C]} |--> {[c1+c2,left v1',C]} }}. 
 For the strictly smaller inner subsequence by induction we have
 {{c1~v1 |--> v1'}} which lets us complete the derivation of
 {{c1+c2~(left v1) |--> left v1'}}. The {{right v2}} follows similarly. 
