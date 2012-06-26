@@ -1,8 +1,5 @@
 \documentclass[preprint]{sigplanconf}
 
-%% I am getting an error about too many math packages used!!!
-%% I commented the ones we don't seem to be using.
-
 \usepackage{graphicx}
 %%\usepackage{longtable}
 \usepackage{comment}
@@ -28,12 +25,6 @@
 \newcommand{\fname}[1]{\ulcorner #1 \urcorner}
 \newcommand{\fconame}[1]{\llcorner #1 \lrcorner}
 
-%% \newtheorem{theorem}{Theorem}[section]
-%% \newtheorem{lemma}[theorem]{Lemma}
-%% \newtheorem{proposition}[theorem]{Proposition}
-%% \newtheorem{corollary}[theorem]{Corollary}
-
-
 \newcommand{\xcomment}[2]{\textbf{#1:~\textsl{#2}}}
 \newcommand{\amr}[1]{\xcomment{Amr}{#1}}
 \newcommand{\roshan}[1]{\xcomment{Roshan}{#1}}
@@ -50,7 +41,6 @@
 \newcommand{\name}[1]{\code{#1}}
 
 \def\newblock{}
-
 
 \newenvironment{floatrule}
     {\hrule width \hsize height .33pt \vspace{.5pc}}
@@ -131,6 +121,7 @@
 %! ^] = \rceil
 %! {| = \{
 %! |} = \}
+%! dots = \ldots
 %! ^^^ = ^{\dagger}
 %! elem = \in
 %! forall = \forall
@@ -158,16 +149,20 @@
 \titlebanner{}
 \preprintfooter{}
 
-\title{Computing in the Field of Rationals}
+\title{Negative and Fractional Types} 
 
-\authorinfo{Nicolas Bourbaki}
-
-%% \authorinfo{Roshan P. James}
-%%            {Indiana University}
-%%            {rpjames@indiana.edu}
-%% \authorinfo{Amr Sabry}
-%%            {Indiana University}
-%%            {sabry@indiana.edu}
+\authorinfo{Roshan P. James}
+           {Indiana University}
+           {rpjames@indiana.edu}
+\authorinfo{Zachary Sparks} 
+           {Indiana University}
+           {zasparks@indiana.edu}
+\authorinfo{Jacques Carette} 
+           {McMaster University}
+           {carette@mcmaster.ca}
+\authorinfo{Amr Sabry}
+           {Indiana University}
+           {sabry@indiana.edu}
 
 \maketitle
 
@@ -217,9 +212,8 @@
   %% computation conflated two orthogonal notions: an additive duality that
   %% corresponds to backtracking and a multiplicative duality that corresponds
   %% to constraint propagation.
+
 \end{abstract}
-
-
 
 \category{D.3.1}{Formal Definitions and Theory}{}
 \category{F.3.2}{Semantics of Programming Languages}{}
@@ -340,8 +334,6 @@ SAT solver. We then present the negative fragment of the language
 %% contrast, our language includes pairs and sums in the value fragment and two
 %% symmetries: one that maps the pairs to fractions and another that maps the
 %% sums to subtractions.
-
-
 
 \begin{comment}
 
@@ -519,10 +511,44 @@ once the code is organized for better presentation.
 
 \end{comment}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Core Reversible Language: {{Pi}} }
 \label{sec:pi}
+
+\begin{verbatim}
+Restructure this section to emphasize the following
+
+In plain Pi: 
+------------
+
+types b ::= 0 | 1 | b+b | b*b
+values v ::= () | L v | R v | (v,v)
+typing v : b
+
+Semantics of values: 
+ - a type b is interpreted as a set
+ - a value v : b is an element of the set denoted by b
+
+types b <-> b
+combinators c ::= primitiveIso
+               | c + c | c * c | c ; c 
+typing c : b1 <-> b2
+
+Semantics of combinators:
+ - types b1 <-> b2 are interpreted as bijections 
+   between the sets denoted by b1 and b2
+ - a combinator c : b1 <-> b2 is interpeted as a 
+   bijection between the appropriate sets
+
+Evaluation is function application, i.e., 
+  eval c v applies the function denoted by c to 
+  the value denoted by v.
+
+[If we want to use categorical language, 
+we can express the above semantics using the category 
+of finite sets and bijections.]
+
+\end{verbatim} 
 
 We review our reversible language {{Pi}}: the presentation in this
 section differs from the one in our previous paper~\cite{infeffects} in two
@@ -535,17 +561,22 @@ appropriate for the connections with continuations explored in this paper.
 \subsection{Syntax and Types} 
 \label{sec:pi-syntax}
 
-The set of types includes the empty type {{0}}, the unit type {{1}}, sum
-types {{b1+b2}}, and products types {{b1*b2}}. The set of values {{v}}
-includes {{()}} which is the only value of type {{1}}, {{left v}} and {{right v}} 
-which inject {{v}} into a sum type, and {{(v1,v2)}} which builds a
-value of product type. There are no values of type {{0}}:
+Unlike the traditional situation with the $\lambda$-calculus, in {{Pi}},
+there is a sharp distinction between data and programs. 
+
+\paragraph*{Data.} The sets of values and their types include:
 %subcode{bnf} include main
 % value types, b ::= 0 | 1 | b + b | b * b 
 % values, v ::= () | left v | right v | (v, v)
+Types include the empty type {{0}}, the unit type {{1}}, sum types {{b1+b2}},
+and products types {{b1*b2}}.  Values includes {{()}} which is the only value
+of type {{1}}, {{left v}} and {{right v}} which inject {{v}} into a sum type,
+and {{(v1,v2)}} which builds a value of product type. There are no values of
+type {{0}}.
 
-The combinators of {{Pi}} are witnesses to the following type
-isomorphisms: 
+\paragraph*{Programs.} All the programs of {{Pi}} are special maps of type
+{{v \rightarrow v}}. Specifically, they are witnesses to the following type
+isomorphisms:
 %subcode{bnf} include main
 %! columnStyle = r@{\hspace{-0.5pt}}c@{\hspace{-0.5pt}}l
 %zeroe :&  0 + b <-> b &: zeroi
@@ -638,7 +669,7 @@ types.
 %% There are no values {{v:b}} when {{[^b^]=0}}.
 %% \end{proposition}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%
 \subsection{Graphical Language}
 
 The syntactic notation above is often obscure and hard to read.
@@ -741,7 +772,6 @@ is modeled by the flow of waves and particles along the wires.
 \end{center}
 \end{multicols}
 
-
 %% \item
 %% When representing complex types like {{(b1*b2)+b3}} some visual
 %% grouping of the wires may be done to aid readability. The exact type
@@ -794,7 +824,6 @@ verify that the expected types for commutativity are satisfied.
 \end{center}
 \end{multicols}
 
-
 \item The morphisms that witness that {{0}} and {{1}} are the additive and
   multiplicative units are represented as shown below. Note that since there
   is no value of type 0, there can be no particle on a wire of type {{0}}.
@@ -842,7 +871,6 @@ verify that the expected types for commutativity are satisfied.
 \end{center}
 \end{multicols}
 
-
 Distributivity and factoring are interesting because they represent
 interactions between sum and pair types. Distributivity should
 essentially be thought of as a multiplexer that redirects the flow of
@@ -888,7 +916,7 @@ below. Factoring is the corresponding adjoint operation.
 %% }
 %% \end{center}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%
 \subsection{Semantics}
 
 The operational semantics of {{Pi}} is summarized below (also see
@@ -963,7 +991,7 @@ We say {{c1 = c2}} if {{c1:b1<->b2}} and {{c2:b1<->b2}} and for all
 {{v1:b}}, we have {{c1 v1 |--> v2}} iff {{c2 v1 |--> v2}} and {{v2:b2}}.
 \end{definition}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%
 \subsection{Constructions}
 
 \paragraph*{Booleans and Conditionals.} 
@@ -1018,8 +1046,7 @@ universal reversible gate. We can generalize this construction to
 {{if^n_{not} }} which checks {{n}} bits and negates the result wire only if
 they are all {{true}}.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%%
 \paragraph*{Cloning.}
 Although cloning is generally not allowed in reversible languages, it is
 possible at the cost of having additional constant inputs. For example,
@@ -1032,8 +1059,7 @@ i.e., the gate clones the first input. A circuit of {{n}} parallel
 {{true}} inputs in the process.  Let us call this construction
 {{clone^n_{bool} }}.
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
 \subsection{Categorical Structure}
 
 We present the categorical structure with minimum commentary. More
@@ -1201,8 +1227,7 @@ computational content, so to speak) of the morphisms. Anecdotal evidence
 follows from the fact several real-world programming language have
 inconsistent type systems. blah blah blah...
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%
 \subsection{Small Step Semantics}
 
 The reductions for the primitive isomorphisms above are exactly the same as
@@ -1303,14 +1328,12 @@ For the strictly smaller inner subsequence by induction we have
 
 \end{proof}
 
-
 Consequently the small step semantics is logically reversible and
 strong normalizing. 
 
 \begin{proposition}[Type Safety]
   
 \end{proposition}
-
 
 % \roshan{We really have to rethink this prop in the presence of
 %   negatives and fractionals. With negatives, the program can actually
@@ -1329,12 +1352,126 @@ strong normalizing.
 % \end{proposition}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \section{First class functions from the permutation space.}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Traces and the Int-Construction.}
+\section{Fractional Types : {{PiEE*}} }
 \label{sec:int}
 
+In arithmetic the main identity satisfied by fractional numbers is that for
+non-zero {{b}}, we have {{b * 1/b = 1}}. Translating this identity to our
+world requires us to find an isomorphism between the types {{1}} and 
+{{b * 1/b}} (where {{b}} is not equivalent to {{0}}). Formally, we move 
+from the setting of symmetric monoidal categories to that of compact
+closed categories. 
+
+%%%%%%%%%%%%%%%%%
+\subsection{The Powerset Monad} 
+
+In order to interpret fractional types, we define a monad {{S}} over the
+{{Pi}}-category of finite sets and bijections. The functor part of the monad
+\[\begin{array}{rcl}
+
+\end{array}\]
+
+
+
+
+\paragraph*{Data.} We extend values types with types {{S b}} denoting sets of
+values {{ {| v1, v2, dots |} }}:
+%subcode{bnf} include main
+% value types, b ::= 0 | 1 | b + b | b * b | S b
+% values, v ::= () | left v | right v | (v, v) | {| v1, v2, dots |}
+
+Types include the empty type {{0}}, the unit type {{1}}, sum types {{b1+b2}},
+and products types {{b1*b2}}.  Values includes {{()}} which is the only value
+of type {{1}}, {{left v}} and {{right v}} which inject {{v}} into a sum type,
+and {{(v1,v2)}} which builds a value of product type. There are no values of
+type {{0}}.
+
+\paragraph*{Programs.} All the programs of {{Pi}} are special maps of type
+{{v -> v}}. Specifically, they are witnesses to the following type
+isomorphisms:
+%subcode{bnf} include main
+%! columnStyle = r@{\hspace{-0.5pt}}c@{\hspace{-0.5pt}}l
+%zeroe :&  0 + b <-> b &: zeroi
+%swap+ :&  b1 + b2 <-> b2 + b1 &: swap+
+%assocl+ :&  b1 + (b2 + b3) <-> (b1 + b2) + b3 &: assocr+
+%identl* :&  1 * b <-> b &: identr*
+%swap* :&  b1 * b2 <-> b2 * b1 &: swap*
+%assocl* :&  b1 * (b2 * b3) <-> (b1 * b2) * b3 &: assocr*
+%dist0 :& 0 * b <-> 0 &: factor0
+%dist :&~ (b1 + b2) * b3 <-> (b1 * b3) + (b2 * b3)~ &: factor
+Each line of the above table introduces one or two combinators that witness
+the isomorphism in the middle. Collectively the isomorphisms state that the
+structure {{(b,+,0,*,1)}} is a \emph{commutative semiring}, i.e., that each
+of {{(b,+,0)}} and {{(b,*,1)}} is a commutative monoid and that
+multiplication distributes over addition. The isomorphisms are extended to
+form a congruence relation by adding the following constructors that witness
+equivalence and compatible closure:
+%subcode{proof} include main
+%@  ~
+%@@ id : b <-> b 
+%
+%@ c : b1 <-> b2
+%@@ sym c : b2 <-> b1
+%
+%@ c1 : b1 <-> b2
+%@ c2 : b2 <-> b3
+%@@ c1(;)c2 : b1 <-> b3
+%---
+%@ c1 : b1 <-> b3
+%@ c2 : b2 <-> b4
+%@@ c1 (+) c2 : b1 + b2 <-> b3 + b4
+%
+%@ c1 : b1 <-> b3
+%@ c2 : b2 <-> b4
+%@@ c1 (*) c2 : b1 * b2 <-> b3 * b4
+
+\noindent
+To summarize, the syntax of {{Pi}} is given as follows. 
+
+\begin{definition}{(Syntax of {{Pi}})}
+\label{def:Pi}
+We collect our types, values, and combinators, to get the full language
+definition.
+%subcode{bnf} include main
+% value types, b ::= 0 | 1 | b+b | b*b 
+% values, v ::= () | left v | right v | (v,v) 
+%
+% comb.~types, t ::= b <-> b
+% iso ::= zeroe | zeroi 
+%     &|& swap+ | assocl+ | assocr+ 
+%     &|& identl* | identr* 
+%     &|& swap* | assocl* | assocr* 
+%     &|& dist0 | factor0 | dist | factor 
+% comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
+\end{definition}
+
+
+
+
+
+
+
+
+
+
+%subcode{opsem} include main
+% eta* &: 1 <-> (1/b) * b :& eps*
+
+
+
+
+IntuitivelyThe main challenge Adding fractional types to
+{{Pi}} takes us from a symmetric monoidal category to a compact closed
+category.
+
+%subcode{bnf} include main
+% Value Types, b = 0 | 1 | b + b | b * b  | 1/b
+% Values, v = () | left v | right v | (v, v) | 1/v
+%
+% Isomorphisms, iso &=& ... | eta* | eps*
+
+
+\paragraph*{Traces and the Int-Construction.}
 For a traced symmetric monoidal category, the Int-construction of
 Joyal, Street and Verity \cite{joyal1996traced} gives us a way of
 constructing a compact closed category. This is the obvious first
@@ -1350,16 +1487,6 @@ thing to try for a duality in this setting.
 
 Show that the int construction does not preserve the {{*}} tensor. We
 need a duality that preserves both tensors.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Fractional Types : {{PiEE*}} }
-
-%subcode{bnf} include main
-% Value Types, b = 0 | 1 | b + b | b * b  | 1/b
-% Values, v = () | left v | right v | (v, v) | 1/v
-%
-% Isomorphisms, iso &=& ... | eta* | eps*
-
 
 \paragraph*{No division by zero.} 
 The important side-condition on the types not captured by the syntax
@@ -1427,8 +1554,7 @@ The definition of size, {{[^ b ^]}}, is extended to include
 fractionals as {{[^1 / b ^] = 1/[^ b ^]}}.
 \end{definition}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%
 \subsection{Semantics}
 
 The operational semantics for {{PiEE*}} involve the addition of the
@@ -1541,8 +1667,7 @@ execution sequence {{eta*}} transforms {{()}} into particular
 \roshan{Should we show completeness -- i.e. that every relation is
   expressible? We can. But should we?}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%
 \subsection{Categorical Structure}
 
 Like {{Pi}}, {{PiEE*}} is a commutative bimonoidal category.
@@ -1649,8 +1774,6 @@ graphically. They require that the combinators below be equal to
 
 \end{proof}
 
-
-
 %% For a monoidal category to be compact closed the maps~{{eta}}
 %% and~{{eps}} must satisfy a coherence condition that is usually
 %% visualized as follows:
@@ -1664,8 +1787,7 @@ graphically. They require that the combinators below be equal to
 %% unifying them is also a no-op. Both checks are straightforward and are
 %% essentially the constructions in the introduction.
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%
 \subsection{Categorical Constructions}
 
 All the constructions below are standard: they are collected from Selinger's
@@ -1767,7 +1889,6 @@ has an adjoint.  The {{inv}} construction is similar.
 %% inverse morphism, whereas in compact closed categories with no
 %% underlying dagger structure we can only construct an op-functor.
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{SAT Solver }
 \label{sec:prog}
@@ -1823,8 +1944,7 @@ of a SAT-solver.  We proceed in small steps, reviewing some of the
 necessary constructions presented in our earlier
 paper~\cite{infeffects}.
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%
 \subsection{Construction of the Solver}
 
 The key insight underlying the construction comes from the fact that we can
@@ -1866,7 +1986,7 @@ goal: if the inputs do not satisfy {{f}}, the control wire is negated.  We
 can now use {{trace*}} to annihilate all these bad values because the control
 wire acts like the closed-loop {{not}} in the previous construction.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%
 \subsection{Final Details}
 \label{sub:f}
 
@@ -1907,11 +2027,8 @@ constraints. In the case of unique-SAT the solver will produce exactly
 solutions as determined by the semantics of the top-level interaction
 (see discussion in Sec. \ref{sec:rat}).
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Finite Dimensional Hilbert Spaces}
-
-
 
 Halmos \cite{halmos1958finite}, Abramsky and Coecke
 \cite{abramsky2004categorical}. Despite the fact that this fragment
@@ -1938,12 +2055,10 @@ phenomena.
 Also show the what the irreversible constructions can be interpreted
 in Dirac style.
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Negative Types : {{PiEE+}} }
 
 What is a negative type anyway? 
-
 
 %subcode{bnf} include main
 % Value Types, b = 0 | 1 | b + b | b * b | -b
@@ -1989,8 +2104,7 @@ respectively.  The types of the new constructs are:
 \end{center}  
 \end{multicols}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%
 \subsection{Semantics}
 
 %subcode{opsem} include main
@@ -2089,13 +2203,10 @@ To add negative types we add the following rules to the
   
 \end{proposition}
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Computing in the Field of Rationals : {{PiEE}} }
 
 Not logically reversible and we can express infinite loops.
-
 
 \paragraph*{Observability.} 
 
@@ -2108,7 +2219,7 @@ constrain entire programs to have positive non-fractional types. This is
 similar to the constraint that Zeilberger imposes to explain intuitionistic
 polarity and delimited control~\cite{10.1109/LICS.2010.23}.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%
 \subsection{Constructions with Negatives and Fractionals}
 \label{sec:specific-constructions}
 
@@ -2175,13 +2286,13 @@ isomorphisms witnessing:
 
 {{b1/b2 + b3/b4 <-> (b1*b4+b3*b2)/(b2*b4) }}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Two Dualities of Computation}
 \label{sub:hof}
 
 Information Effects, Filinski, De Morgan
 
+%%%%%%%%%%%%%
 \subsection{Function Spaces}
 
 Although these constructions are also standard, they are less known and they
@@ -2290,8 +2401,6 @@ guaranteed to be preserved by the computational infrastructure, the above
 slicing and dicing of functions would make no sense. But linearity is not
 sufficient: one must also recognize that the additive and multiplicative
 spaces are different. 
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work} 
