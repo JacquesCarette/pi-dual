@@ -1039,6 +1039,13 @@ i.e., the gate clones the first input. A circuit of {{n}} parallel
 We present the categorical structure with minimum commentary. More
 details may be found in excellent references such as Barr and Wells
 [CITE] and Selinger \cite{springerlink:10.1007/978-3-642-12821-94}.
+For brevity, we don't re-state standard categorical definitions and
+subsequently present their {{Pi}} equivalents. Instead, we directly
+state categorical definitions in terms of {{Pi}} types and
+combinators, and provide appropriate references to the former. For
+example, associativity is denoted by the greek letter $\alpha$ (and
+$\alpha^{-1}$) in standard definitions, whereas we use {{assocl*}}
+(and {{assocr*}}).
 
 \begin{lemma}[{{Pi}} is a category]
   The category {{Pi}} has the types {{b}} as objects and equivalence
@@ -1537,6 +1544,9 @@ adjoint {{eps*}} will transform {{(1/v,v)}} back to {{()}}.
 \roshan{This is an important question -- is {{PiEE*}} still
   bimonoidal? i.e. do all the coherence conditions on isomorphisms
   naturally extend to relations. I suspect yes.}
+
+\roshan{Should we show completeness -- i.e. that every relation is
+  expressible? We can. But should we?}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
