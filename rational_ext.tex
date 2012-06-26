@@ -960,7 +960,7 @@ We say {{c1 = c2}} if {{c1:b1<->b2}} and {{c2:b1<->b2}} and for all
 {{v1:b}}, we have {{c1 v1 |--> v2}} iff {{c2 v1 |--> v2}} and {{v2:b2}}.
 \end{definition}
 
-%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Constructions}
 
 \paragraph*{Booleans and Conditionals.} 
@@ -1483,7 +1483,43 @@ Tracing the execution of this circuit gives us:
   
 \end{proposition}
 
-% Note that this language is not logically reversible.
+\begin{definition}[eval(c,v)]
+
+Given a combinator {{c:b1<->b2}} and a value {{v:b1}} we can define
+{{eval(c, v)}} to be the set of values {{v':b}} such that there is
+small-step reduction sequence {{c v |-->* v'}}. 
+
+$eval(c, v) = \{v'~|~ c~ v\mapsto^{\asterix} v' \} $
+\end{definition}
+
+The definition of equality between combinators has to be extended to
+reflect the fact that combinators can have multiple outputs for an
+input. More generally, combinators denotes relations. 
+
+\begin{definition}[c1 = c2]
+We say that {{c1 = c2}}, for combinators {{c1:b1<->b2}} and
+{{c2:b1<->b2}} iff the denote the same relation between sets {{b1}}
+and {{b2}}. Equivalently,
+
+{{forall v:b1. eval(c1, v) = eval(c2, v)}}
+\end{definition}
+
+\begin{proposition}[Logical Reversibility]
+\label{prop:logrev2}
+
+{{c v |-->* v'}} iff {{ c{dagger} v' |-->* v}}
+\end{proposition}
+
+The logical reversibility is extended to relations and should be
+understood as follows. The combinator {{c:b1<->b2}} denotes a relation
+from {{b1}} to {{b2}} and its adjoint denotes the inverse relation
+from {{b2}} to {{b1}}. Operationally, for any execution path from
+{{v}} to {{v'}} in {{c}}, {{c{dagger} }} has an execution path from
+{{v'}} to {{v}}.
+
+\roshan{This is an important question -- is {{PiEE*}} still
+  bimonoidal? i.e. so all the coherence conditions on isomorphisms
+  naturally extend to relations. I suspect yes.}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
