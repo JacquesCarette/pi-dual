@@ -53,6 +53,7 @@
 \newenvironment{proof}[1][Proof.]{\begin{trivlist}\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
 
 \newcommand{\arrow}[1]{\mathtt{#1}}
+\newcommand{\PiL}{\ensuremath{\Pi}}
 
 \newcommand{\dgm}[2][0.95]{
 \begin{center}
@@ -61,7 +62,6 @@
 }
 \end{center}
 }
-
 
 %subcode-inline{bnf-inline} name langRev
 %! swap+ = \mathit{swap}^+
@@ -551,11 +551,30 @@ of finite sets and bijections.]
 \end{verbatim} 
 
 We review our reversible language {{Pi}}: the presentation in this
-section differs from the one in our previous paper~\cite{infeffects} in two
+section differs from the one in~\cite{infeffects} in two technical
 aspects. First, we add the empty type {{0}} which is necessary to express the
 additive duality. Second, instead of explaining evaluation using a natural
 semantics, we give a small-step operational semantics that is more
-appropriate for the connections with continuations explored in this paper.
+appropriate for later parts of this paper.
+
+There is also a notable shift in emphasis.  The terms of {{Pi}} are not
+classical values and functions; rather, the terms are isomorphism 
+witnesses.  In other words, the terms of {{Pi}} are proofs that certain
+``shapes of values'' are isomorphic.  And, in classical Curry-Howard
+fashion, our operational semantics shows how these proofs can be
+directly interpreted as actions on ordinary values which effect this
+shape transformation.
+
+Of course, ``shapes of values'' are very familiar already: they are usually
+called \emph{types}.  But usually one designs a type system as a method
+of classifying terms, with the eventual purpose to show that certain
+properties of well-typed terms hold, such as safety.  Our eventual goal
+is different: we start from a type system, and are striving to discover
+a term language which naturally inhabits these types, along with an
+appropriate operational semantics.
+
+Generally, such an approach would be rather vacuous.  What makes this
+pursuit different is that ... (will continue from here -- Jacques)
 
 %%%%%%%%%%%%%%%%%%%%
 \subsection{Syntax and Types} 
