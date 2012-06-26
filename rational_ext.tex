@@ -1440,15 +1440,18 @@ following two rules to the small-step operational semantics of {{Pi}}.
 The rule {{(eta*)}} is different from other rules encountered before
 due to the {{forall v:b}} quantification and is to be understood as
 follows: when the machine encounters an {{eta*}} reduction it
-non-deterministically replicates into several machine states, each of
-which is seeded by a unique value {{v}} that inhabits the type {{b}}
-that indexes {{eta* : 1 <-> 1/b * b}}. As an example at the type
-{{bool}}, we would have two possible machine states: 
+non-deterministically replicates into several machine states or
+worlds, each of which is seeded by a unique value {{v}} that inhabits
+the type {{b}} that indexes {{eta* : 1 <-> 1/b * b}}. Each world has
+an independant existence. As an example at the type {{bool}}, we would
+have two possible machine states:
 
 %subcode{opsem} include main
 %! columnStyle = rclr
 % <eta*, (), C> &|-->& {[eta*, (1/true, true), C]}
 % and  &|-->& {[eta*, (1/false, false), C]} 
+
+
 
 The rule {{(eps*)}} is straightforward : when given a tuple
 {{(1/v,v):1/b * b}} where {{eta*:1/b*b <-> 1}} the result is
@@ -1526,7 +1529,10 @@ Logical reversibility of {{PiEE*}} implies that {{c^{dagger} }}
 denotes the inverse relation that {{c}} denotes, i.e.
 {{c^^^={|(v',v)~|~(v,v') elem c|} }}.  Operationally, for any
 execution path from {{v}} to {{v'}} in {{c}}, {{c{dagger} }} has an
-execution path from {{v'}} to {{v}}.
+execution path from {{v'}} to {{v}}.  Intuitively, logical
+reversibility holds because for every {{eta*}} reduction in a world
+that transforms {{()}} into {{(1/v,v)}}, on reverse execution the
+adjoint {{eps*}} will transform {{(1/v,v)}} back to {{()}}.
 
 \roshan{This is an important question -- is {{PiEE*}} still
   bimonoidal? i.e. do all the coherence conditions on isomorphisms
@@ -1536,11 +1542,14 @@ execution path from {{v'}} to {{v}}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Categorical Structure}
 
-As with {{Pi}}, {{PiEE*}} is a dagger symmetric monoidal category with
-two monoidal structures. In this section we establish that it is
-``locally compact closed'' in the sense that for non-zero objects,
-namely types where {{[^ b ^]=0}}, {{PiEE*}} satisfies the conditions
-for compact closed categories.
+Like {{Pi}}, {{PiEE*}} is a commutative bimonoidal catgeory.
+Symmetric monoidal categories where every object had a dual object and
+where dualizing preserves the monodal tensor are referred to as
+compact closed categories. Since divison is defined only for types of
+non-zero size, not all objects have dual objects.  In this section
+establish that {{PiEE*}} is ``locally compact closed'' in the sense
+that for non-zero objects, namely types where {{[^ b ^]=0}}, it
+satisfies the conditions for compact closed categories.
 
 \begin{proposition}[Locally Compact Closed]
 {{PiEE*}} is a locally compact closed category in the sense that for
