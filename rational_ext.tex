@@ -307,8 +307,8 @@ no division by zero) respects compact closed structure only when a
 dual object is defined.
 
 
-Say more: fractionals, entaglements, backtracking, superposition,
-constrants, negative information. Negative types, backward information
+Say more: fractionals, entanglements, backtracking, superposition,
+constraints, negative information. Negative types, backward information
 flows, sets with negative types, iteration.. etc.
 
 
@@ -1043,7 +1043,7 @@ For brevity, we don't re-state standard categorical definitions and
 subsequently present their {{Pi}} equivalents. Instead, we directly
 state categorical definitions in terms of {{Pi}} types and
 combinators, and provide appropriate references to the former. For
-example, associativity is denoted by the greek letter $\alpha$ (and
+example, associativity is denoted by the Greek letter $\alpha$ (and
 $\alpha^{-1}$) in standard definitions, whereas we use {{assocl*}}
 (and {{assocr*}}).
 
@@ -1290,7 +1290,7 @@ Choosing {{C' =Lft c2 C}}, we have the required derivation sequence:
 {{ <c1+c2, left v1, C> |--> <c1,v1,LeftP c2 C> |-->* {[c1,v1', LeftP c2 C]} |--> {[c1+c2,left v1',C]} }}. The proof follows similarly for the {{right v2}} case.  
 
 To show the right-to-left direction we proceed by induction of the
-sequence of {{|-->*}} derivations. Again the case for primtive
+sequence of {{|-->*}} derivations. Again the case for primitive
 isomorphisms follows trivially. Taking the case of {{c1+c2}} we are
 required to show that given a sequence 
 {{<c1+c2,v,C> |-->* {[c1+c2, v', C]} }} there is a derivation tree for
@@ -1526,14 +1526,17 @@ We say that {{c1 = c2}}, for combinators {{c1:b1<->b2}} and
 {{c v |-->* v'}} iff {{ c{dagger} v' |-->* v}}
 \end{proposition}
 
-For any execution path from {{v}} to {{v'}} in {{c}}, {{c{dagger} }}
-has an execution path from {{v'}} to {{v}}.  Stated differently,
-logical reversibility implies that {{c^{dagger} }} denotes the inverse
-relation that {{c}} denotes, i.e.  {{c^^^={|(v',v)~|~(v,v') elem c|} }}.  
-Intuitively logical reversibility holds because for every
-{{eta*}} reduction in a world that transforms {{()}} into {{(1/v,v)}},
-on reverse execution the adjoint {{eps*}} will transform {{(1/v,v)}}
-back to {{()}}.
+In other words, for any execution path from {{v}} to {{v'}} in {{c}},
+{{c{dagger} }} has an execution path from {{v'}} to {{v}}.
+Intuitively this maybe understood as follows: For every particular
+execution sequence {{eta*}} transforms {{()}} into particular
+{{(1/v,v)}}. On reverse execution the adjoint {{eps*}} will transform
+{{(1/v,v)}} back to {{()}}.  Logical reversibility implies that
+{{c^^^}} denotes the inverse relation that {{c}} denotes, i.e.
+{{c^^^={|(v',v)~|~(v,v') elem c|} }}.
+
+\roshan{This probably needs rigorous proof.}
+
 
 \roshan{Should we show completeness -- i.e. that every relation is
   expressible? We can. But should we?}
@@ -1542,10 +1545,10 @@ back to {{()}}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Categorical Structure}
 
-Like {{Pi}}, {{PiEE*}} is a commutative bimonoidal catgeory.
+Like {{Pi}}, {{PiEE*}} is a commutative bimonoidal category.
 Symmetric monoidal categories where every object had a dual object and
 where dualizing preserves the monoidal tensor are referred to as
-compact closed categories. Since divison is defined only for types of
+compact closed categories. Since division is defined only for types of
 non-zero size, not all objects have duals.  We show that {{PiEE*}}
 respects compact closed structure for non-zero objects. We introduce
 the term ``locally compact closed'' to refer to this notion.
