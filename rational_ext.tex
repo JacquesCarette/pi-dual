@@ -1846,10 +1846,341 @@ graphically. They require that the combinators below be equal to
 %% unifying them is also a no-op. Both checks are straightforward and are
 %% essentially the constructions in the introduction.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{SAT Solver }
+\label{sec:sat-solver}
+
+% Additive traces correspond to iteration and multiplicative traces
+% correspond to fixpoint of constraints. Addtive traces have been
+% studied in the past \cite{infeffects} and here we focus on the
+% multiplicative trace.
+
+% The construction presented here is a novel SAT-solver that relies on
+% {{trace*}} for its solution. It varies from previous classical SAT solvers
+% \amr{must cite ???} in that there is no explicit search operation on the
+% boolean space. It also varies from previous quantum SAT solvers \amr{must
+%   cite ???} in that it does uses a {{trace}} operation to compute a fixpoint
+% which is the solution following which an isomorphic clone operation allows us
+% to examine the result.  Though we focus on SAT here, this construction can be
+% generalized to any constraint satisfaction problem whose search space can be
+% represented by a recursive type and for which an isomorphic clone operation
+% can be constructed. 
+% can be constructed. Before we start, let us recall two constructions:
+
+As we will see if Sec. \ref{sec:neg-constructions}, every compact
+closed category admits a {{trace}} operator. In the case of {{PiEE*}},
+the operator {{trace*}} is defined only on the non-zero fragment.
+Given {{f : a*c <-> b*c }}, we have {{trace* f : a <-> b}}:
+
+{{ trace* f = uniti (;) (id (*) eta*) (;) (f (*) id) (;) (id (*) eps*) (;) unite }}
+
+\noindent This circuit uses {{eta*}} to generate all possible {{c}}-values
+together with an associated {{(1/c)}}-constraint. It then applies {{f}} to the
+pair {{(a,c)}}. The function {{f}} must produce an output {{(b,c')}} for each
+such input. If the input {{c}} and the output {{c'}} are the same they can be
+annihilated by {{eps*}}; otherwise the execution gets stuck and this
+particular choice of {{c}} is pruned. 
+
+% Annihilation and non-termination describe undefined program
+% execution. While non-termination characterizes an iteration that fails
+% to terminate, annihilation characterizes a constraint that has no
+% fixpoint. The SAT-solver of Sec. \ref{sec:sat-solver} works by
+% annihilating only the program states that do not match the boolean
+% satisfiability constraint.
+% \emph{Annihilation.}  
+% With {{eta*}} and {{eps*}}, we can construct a {{trace*}} operation
+% which gives us the ability to find the fixpoint of a constraint.  If
+% the constraint has no satisfying values, there is no fixpoint possible
+% -- we use the term \emph{annihilation} to describe the corresponding
+% undefined state of the program.
+
+A large class of constraint satisfaction problems can be expressed
+using {{trace*}}. We illustrate the main ideas with the implementation
+of a SAT-solver.  
+
+%% We proceed in small steps, reviewing some of the
+%% necessary constructions presented in our earlier
+%% paper~\cite{infeffects}.
+
+%%%%%%%
+\subsection{Construction of the Solver}
+
+The key insight underlying the construction comes from the fact that we can
+build \emph{annihilation circuits} such as the one below:
+
+\begin{center}
+\scalebox{1.2}{
+  \includegraphics{diagrams/not_trace.pdf}
+}
+\end{center}
+The circuit constructs a boolean {{b}} and its dual {{1/b}}, negates one of
+them and attempts to satisfy the constraint that they are equal which
+evidently fails. 
+
+With a little work, we can modify this circuit to only annihilate values that
+fail to satisfy the constraints represented by a SAT-instance {{f}}. In more
+detail, an instance of SAT is a function/circuit~{{f}} that given some
+boolean inputs returns {{true}} or {{false}} which we interpret as whether
+the inputs satisfy the constraints imposed by the structure of {{f}}. Because
+we are in a reversible world, our instance of SAT must be expressed as an
+isomorphism: this is easily achieved as shown in Sec.~\ref{sub:f}
+below. Assuming that {{f}} is expressed as an isomorphism, we have enough
+information to reconstruct the input from the output. This can be done by
+using the adjoint of {{f}}. At this point we have, the top half of the
+construction below:
+
+\begin{center}
+\scalebox{1.2}{
+  \includegraphics{diagrams/sat1.pdf}
+}
+\end{center}  
+
+To summarize, the top half of the circuit is the identity function except
+that we have also managed to produce a boolean wire labeled
+\textsf{satisfied?} that tells us if the inputs satisfy the desired
+constraints. We can take this boolean value and use it to decide whether to
+negate the control wire or not. Thus, the circuit achieves the following
+goal: if the inputs do not satisfy {{f}}, the control wire is negated.  We
+can now use {{trace*}} to annihilate all these bad values because the control
+wire acts like the closed-loop {{not}} in the previous construction.
+
+%%%%%%%%
+\subsection{Final Details}
+\label{sub:f}
+
+Any boolean expression {{f : bool^n -> bool}} can be compiled into the
+isomorphism {{iso_f : bool^h*bool^n<->bool^g*bool}} where the extra
+bits {{bool^h}} and {{bool^g}} are considered as heap and
+garbage. Constructing such an isomorphism has been detailed
+before~\cite{Toffoli:1980,infeffects}. The important relation to note
+is that applying {{iso_f}} to some special heap values and an input
+\textit{bs} produces some bits that can be ignored and the same output
+that {{f}} would have produced on {{bs}}. We can ensure that the heap
+has the appropriate initial values by checking the heap and negating a
+second control wire, if the values do not match using, i.e., the
+dotted part in the diagram below. This is achieved by first applying
+{{not}} to the control wire and then testing that all the heap values
+are true using {{cnot^n}}, undoing the {{not}} only if they are.
+
+\begin{center}
+\scalebox{1.2}{
+  \includegraphics{diagrams/sat2.pdf}
+}
+\end{center}  
+
+% \roshan{Explain how the dotted part is implemented.}
+
+Let us call the above construction which maps inputs, heap, and
+control wires to inputs, heap, and control wires as {{sat_f}}. The
+SAT-solver is is completed by tracing the {{sat_f}} and cloning the
+inputs using {{clone^n_{bool} }}.
+
+\begin{center}
+\scalebox{1.5}{
+  \includegraphics{diagrams/sat3.pdf}
+}
+\end{center}
+
+When the solver is fed inputs initialized to {{true}}, it clones only
+those inputs to {{sat_f}} that satisfy {{f}} and the heap
+constraints. In the case of unique-SAT the solver will produce exactly
+0 or 1 solutions. In the case of general SAT, the solver will produce
+all satisfying solution. 
+
+
+\begin{comment}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Finite Dimensional Hilbert Spaces}
+
+Halmos \cite{halmos1958finite}, Abramsky and Coecke
+\cite{abramsky2004categorical}. Despite the fact that this fragment
+seem badly behaved (no logical reversibility) we have a close
+connection with finite dimensional Hilbert spaces.
+
+The technical goal of this section is to show that the categorical
+structure of finite dimensional Hilbert spaces with unitary maps and
+inner product has the same categorical structure as {{PiEE*}}. Thus
+constructions in {{PiEE*}} can be transported to FdHilb-unitary. If we
+allow all linear maps, then {{+}} becomes a biproduct.  This has
+connections to the Quantum Picturisms of Abramsky and Coecke and hence
+to Quantum Physics.
+
+%subcode{bnf} include main
+% v = 0 | 1 | v + v | v * v| 1/v 
+
+There is much future work to be done in this line. The logical
+consequence of this line of research is either (1) there is no way to
+accommodate probabilities etc in this setting and this is all
+meaningless or (2) constructions in {{PiEE*}} correspond to physical
+phenomena.
+
+Also show the what the irreversible constructions can be interpreted
+in Dirac style.
+
+\end{comment}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Negative Types : {{PiEE+}} }
+
+What is a negative type anyway? 
+
+%subcode{bnf} include main
+% Value Types, b = 0 | 1 | b + b | b * b | -b
+% Values, v = () | left v | right v | (v, v) | -v 
+%
+% Isomorphisms, iso &=& ... | eta+ | eps+
+
+For convenience, we sometimes use the notations {{b1 - b2}} and
+{{b1/b2}} to indicate the types {{b1 + (-b2)}} and {{b1 * (1/b2)}}
+respectively.  The types of the new constructs are:
+\vspace{-15pt}
+\begin{multicols}{2}  
+%subcode{opsem} include main
+% eta+ &: 0 <-> (-b) + b :& eps+
+
+%subcode{proof} include main
+%@ |- v : b
+%@@ |- -v : -b
+\end{multicols}
+
+
+\begin{multicols}{2}
+\begin{center}
+  \includegraphics{diagrams/eta.pdf}
+\end{center}
+  
+\begin{center}
+ \includegraphics{diagrams/eps.pdf}
+\end{center}
+\end{multicols}
+
+\begin{multicols}{2}
+\begin{center}
+\scalebox{1.5}{
+  \includegraphics{diagrams/eps_plus1.pdf}
+}
+\end{center}
+  
+\begin{center}
+\scalebox{1.5}{
+  \includegraphics{diagrams/eps_plus2.pdf}
+}
+\end{center}  
+\end{multicols}
+
+\begin{definition}[Size of a type]
+The defintion of size is extended to include negative types.
+{{[^-b^] = -[^b^]}}
+\end{definition}
+
+%%%%%%%%%
+\subsection{Semantics}
+
+\begin{comment}
+  
+%subcode{opsem} include main
+%! columnStyle = rclr
+%! fwd = \triangleright
+% <iso, v, C, s>_{fwd} &|-->& {[iso, v', C, s']}_{fwd}
+% & & where iso s v |--> (v', s')
+% <c1(;)c2, v, C, s>_{fwd} &|-->& <c1, v, Fst C c2, s>_{fwd}
+% {[c1, v, Fst C c2, s]}_{fwd} &|-->& <c2, v, Snd c1 C, s>_{fwd}
+% {[c2, v, Snd c1 C, s]}_{fwd} &|-->& {[ c1(;)c2, v, C,s ]}_{fwd}
+% <c1(+)c2, v', C, s>_{fwd} &|-->& <c1, v, LeftP C c2, s[v' <><> left v]>_{fwd}
+% {[ c1, v, LeftP C c2, s ]}_{fwd} &|-->& {[c1 (+) c2, left v, C,s ]}_{fwd}
+% <c1(+)c2, v', C, s>_{fwd} &|-->& <c2, v, RightP c1 C, s[v' <><> right v]>_{fwd}
+% {[ c2, v, RightP c1 C,s ]}_{fwd} &|-->& {[c1 (+) c2, right v, C,s ]}_{fwd}
+% <c1(*)c2, v', C, s>_{fwd} &|-->& <c1, v1, LeftT C c2 v2, s'>_{fwd}
+% & & where s' = s[v <><> (v1, v2)]
+% {[ c1, v1, LeftT C c2 v2,s ]}_{fwd} &|-->& <c2, v2, RightT c1 v1 C, s>_{fwd}
+% {[ c2, v2, RightT c1 v1 C,s ]}_{fwd} &|-->& {[ c1 (*) c2, (v1, v2), C,s ]}_{fwd}
+
+\end{comment}
+
+Given that our language is reversible (Prop.~\ref{prop:logrev}), a backward
+evaluator is relatively straightforward to implement: using the backward
+evaluator to calculate {{c v}} is equivalent {{c^{dagger} v}} in the forward
+evaluator.
+
+%subcode{opsem} include main
+%! columnStyle = rclr
+% {[iso, v, C]}^^^ &|-->& <iso, v', C>^^^
+% & & where iso^{dagger} v |--> v'
+% <c1, v, Fst C c2>^^^ &|-->& <c1(;)c2, v, C>^^^
+% <c2, v, Snd c1 C>^^^ &|-->& {[c1, v, Fst C c2]}^^^
+% {[ c1(;)c2, v, C]}^^^ &|-->& {[c2, v, Snd c1 C]}^^^
+% <c1, v, LeftP C c2>^^^ &|-->& <c1(+)c2,left v, C>^^^
+% {[c1 (+) c2, left v, C]}^^^ &|-->& {[ c1, v, LeftP C c2 ]}^^^
+% <c2, v, RightP c1 C, s>^^^ &|-->& <c1(+)c2, right v, C>^^^
+% {[c1 (+) c2, right v, C ]}^^^ &|-->& {[ c2, v, RightP c1 C ]}^^^
+% <c1, v1, LeftT C c2 v2>^^^ &|-->& <c1(*)c2, (v1, v2), C>^^^
+% <c2, v2, RightT c1 v1 C >^^^ &|-->& {[ c1, v1, LeftT C c2 v2 ]}^^^
+% {[ c1 (*) c2, (v1, v2), C ]}^^^ &|-->& {[ c2, v2, RightT c1 v1 C ]}^^^
+
+To add negative types we add the following rules to the
+  reductions above. The additions formalize our previous discussions
+  and should not be surprising at this point.
+
+  \begin{enumerate}
+  \item The rules for {{eps+}} essentially transfer control from the
+    forward evaluator (whose states are tagged by $\triangleright$) to
+    the backward evaluator (whose states are tagged by
+    $\triangleleft$). In other words, after an {{eps+}} the direction
+    of the world is reversed. The pattern matching done by the
+    unification ensures that a value on the {{right}} wire is tagged
+    to be negative and transferred to the {{left}} wire, and vice versa.
+
+%subcode{opsem} include main
+%! columnStyle = rclr
+%! fwd = \triangleright
+%! bck = \triangleleft
+% <eps+, right v, C, s> &|-->& <eps+, left (-v), C]>^^^
+% <eps+, left (-v), C, s> &|-->& <eps+, right v, C>^^^
+
+    Note that there is no evaluation rule for {{eta+}} in the forward
+    evaluator. This corresponds to the fact that there is no value of
+    type {{0}} and hence the forward evaluator can never execute an
+    {{eta+}}.
+
+    \item The rules for {{eta+}} are added to the backward evaluator. A
+      program executing backwards starts executing forwards after the
+      execution of the {{eta+}}. Dual to the previous case, there is
+      no rule for {{eps+}} in the backward evaluator since the output
+      type of {{eps+}} is {{0}}.
+
+%subcode{opsem} include main
+%! columnStyle = rclr
+%! fwd = \triangleright
+%! bck = \triangleleft
+% {[eta+, right v, C, s]}^^^ &|-->& {[eta+, left (-v), C ]}
+% {[eta+, left (-v), C, s]}^^^ &|-->& {[eta+, right v, C ]}
+
+  \end{enumerate}
+
+
+\begin{proposition}[Logical Reversibility]
+  
+\end{proposition}
+
+\begin{proposition}[Strong Normalization]
+  
+\end{proposition}
+
+\begin{proposition}[Type Safety]
+  
+\end{proposition}
+
+\begin{proposition}[Coherence]
+  
+\end{proposition}
+
 %%%%%%%%%
 \subsection{Categorical Constructions}
-\label{sec:frac-constructions}
+\label{sec:neg-constructions}
 
+\
 All the constructions below are standard: they are collected from Selinger's
 survey paper on monoidal
 categories~\cite{springerlink:10.1007/978-3-642-12821-94} and presented in
@@ -1948,322 +2279,6 @@ has an adjoint.  The {{inv}} construction is similar.
 
 %% inverse morphism, whereas in compact closed categories with no
 %% underlying dagger structure we can only construct an op-functor.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{SAT Solver }
-\label{sec:sat-solver}
-
-% Additive traces correspond to iteration and multiplicative traces
-% correspond to fixpoint of constraints. Addtive traces have been
-% studied in the past \cite{infeffects} and here we focus on the
-% multiplicative trace.
-
-% The construction presented here is a novel SAT-solver that relies on
-% {{trace*}} for its solution. It varies from previous classical SAT solvers
-% \amr{must cite ???} in that there is no explicit search operation on the
-% boolean space. It also varies from previous quantum SAT solvers \amr{must
-%   cite ???} in that it does uses a {{trace}} operation to compute a fixpoint
-% which is the solution following which an isomorphic clone operation allows us
-% to examine the result.  Though we focus on SAT here, this construction can be
-% generalized to any constraint satisfaction problem whose search space can be
-% represented by a recursive type and for which an isomorphic clone operation
-% can be constructed. 
-% can be constructed. Before we start, let us recall two constructions:
-
-We illustrate the expressive power of first-class constraints represented by
-fractional types. To understand the intuition, recall the definition of
-{{trace}} for the multiplicative fragment of {{PiEE}}. 
-Given {{f : a*c <-> b*c }}, we have {{trace* f : a <-> b}}: 
-
-{{ trace* f = uniti (;) (id (*) eta*) (;) (f (*) id) (;) (id (*) eps*) (;) unite }}
-
-\noindent This circuit uses {{eta*}} to generate all possible {{c}}-values
-together with an associated {{(1/c)}}-constraint. It then applies {{f}} to the
-pair {{(a,c)}}. The function {{f}} must produce an output {{(b,c')}} for each
-such input. If the input {{c}} and the output {{c'}} are the same they can be
-annihilated by {{eps*}}; otherwise the execution gets stuck and this
-particular choice of {{c}} is pruned. 
-
-% Annihilation and non-termination describe undefined program
-% execution. While non-termination characterizes an iteration that fails
-% to terminate, annihilation characterizes a constraint that has no
-% fixpoint. The SAT-solver of Sec. \ref{sec:sat-solver} works by
-% annihilating only the program states that do not match the boolean
-% satisfiability constraint.
-% \emph{Annihilation.}  
-% With {{eta*}} and {{eps*}}, we can construct a {{trace*}} operation
-% which gives us the ability to find the fixpoint of a constraint.  If
-% the constraint has no satisfying values, there is no fixpoint possible
-% -- we use the term \emph{annihilation} to describe the corresponding
-% undefined state of the program.
-
-A large class of constraint satisfaction problems can be expressed
-using {{trace*}}. We illustrate the main ideas with the implementation
-of a SAT-solver.  We proceed in small steps, reviewing some of the
-necessary constructions presented in our earlier
-paper~\cite{infeffects}.
-
-%%%%%%%
-\subsection{Construction of the Solver}
-
-The key insight underlying the construction comes from the fact that we can
-build \emph{annihilation circuits} such as the one below:
-
-\begin{center}
-\scalebox{1.2}{
-  \includegraphics{diagrams/not_trace.pdf}
-}
-\end{center}
-The circuit constructs a boolean {{b}} and its dual {{1/b}}, negates one of
-them and attempts to satisfy the constraint that they are equal which
-evidently fails. 
-
-With a little work, we can modify this circuit to only annihilate values that
-fail to satisfy the constraints represented by a SAT-instance {{f}}. In more
-detail, an instance of SAT is a function/circuit~{{f}} that given some
-boolean inputs returns {{true}} or {{false}} which we interpret as whether
-the inputs satisfy the constraints imposed by the structure of {{f}}. Because
-we are in a reversible world, our instance of SAT must be expressed as an
-isomorphism: this is easily achieved as shown in Sec.~\ref{sub:f}
-below. Assuming that {{f}} is expressed as an isomorphism, we have enough
-information to reconstruct the input from the output. This can be done by
-using the adjoint of {{f}}. At this point we have, the top half of the
-construction below:
-
-\begin{center}
-\scalebox{1.2}{
-  \includegraphics{diagrams/sat1.pdf}
-}
-\end{center}  
-
-To summarize, the top half of the circuit is the identity function except
-that we have also managed to produce a boolean wire labeled
-\textsf{satisfied?} that tells us if the inputs satisfy the desired
-constraints. We can take this boolean value and use it to decide whether to
-negate the control wire or not. Thus, the circuit achieves the following
-goal: if the inputs do not satisfy {{f}}, the control wire is negated.  We
-can now use {{trace*}} to annihilate all these bad values because the control
-wire acts like the closed-loop {{not}} in the previous construction.
-
-%%%%%%%%
-\subsection{Final Details}
-\label{sub:f}
-
-Any boolean expression {{f : bool^n -> bool}} can be compiled into the
-isomorphism {{iso_f : bool^h*bool^n<->bool^g*bool}} where the extra
-bits {{bool^h}} and {{bool^g}} are considered as heap and
-garbage. Constructing such an isomorphism has been detailed
-before~\cite{Toffoli:1980,infeffects}. The important relation to note
-is that applying {{iso_f}} to some special heap values and an input
-\textit{bs} produces some bits that can be ignored and the same output
-that {{f}} would have produced on {{bs}}. We can ensure that the heap
-has the appropriate initial values by checking the heap and negating a
-second control wire, if the values do not match using, i.e., the
-dotted part in the diagram below. This is achieved by first applying
-{{not}} to the control wire and then testing that all the heap values
-are true using {{cnot^n}}, undoing the {{not}} only if they are.
-
-\begin{center}
-\scalebox{1.2}{
-  \includegraphics{diagrams/sat2.pdf}
-}
-\end{center}  
-
-% \roshan{Explain how the dotted part is implemented.}
-
-Let us call the above construction which maps inputs, heap, and
-control wires to inputs, heap, and control wires as {{sat_f}}. The
-SAT-solver is is completed by tracing the {{sat_f}} and cloning the
-inputs using {{clone^n_{bool} }}.
-
-\begin{center}
-\scalebox{1.5}{
-  \includegraphics{diagrams/sat3.pdf}
-}
-\end{center}
-
-When the solver is fed inputs initialized to {{true}}, it clones only
-those inputs to {{sat_f}} that satisfy {{f}} and the heap
-constraints. In the case of unique-SAT the solver will produce exactly
-0 or 1 solutions. In the case of general SAT, the solver will produce
-all satisfying solution. 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Finite Dimensional Hilbert Spaces}
-
-Halmos \cite{halmos1958finite}, Abramsky and Coecke
-\cite{abramsky2004categorical}. Despite the fact that this fragment
-seem badly behaved (no logical reversibility) we have a close
-connection with finite dimensional Hilbert spaces.
-
-The technical goal of this section is to show that the categorical
-structure of finite dimensional Hilbert spaces with unitary maps and
-inner product has the same categorical structure as {{PiEE*}}. Thus
-constructions in {{PiEE*}} can be transported to FdHilb-unitary. If we
-allow all linear maps, then {{+}} becomes a biproduct.  This has
-connections to the Quantum Picturisms of Abramsky and Coecke and hence
-to Quantum Physics.
-
-%subcode{bnf} include main
-% v = 0 | 1 | v + v | v * v| 1/v 
-
-There is much future work to be done in this line. The logical
-consequence of this line of research is either (1) there is no way to
-accommodate probabilities etc in this setting and this is all
-meaningless or (2) constructions in {{PiEE*}} correspond to physical
-phenomena.
-
-Also show the what the irreversible constructions can be interpreted
-in Dirac style.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Negative Types : {{PiEE+}} }
-
-What is a negative type anyway? 
-
-%subcode{bnf} include main
-% Value Types, b = 0 | 1 | b + b | b * b | -b
-% Values, v = () | left v | right v | (v, v) | -v 
-%
-% Isomorphisms, iso &=& ... | eta+ | eps+
-
-For convenience, we sometimes use the notations {{b1 - b2}} and
-{{b1/b2}} to indicate the types {{b1 + (-b2)}} and {{b1 * (1/b2)}}
-respectively.  The types of the new constructs are:
-\vspace{-15pt}
-\begin{multicols}{2}  
-%subcode{opsem} include main
-% eta+ &: 0 <-> (-b) + b :& eps+
-
-%subcode{proof} include main
-%@ |- v : b
-%@@ |- -v : -b
-\end{multicols}
-
-
-\begin{multicols}{2}
-\begin{center}
-  \includegraphics{diagrams/eta.pdf}
-\end{center}
-  
-\begin{center}
- \includegraphics{diagrams/eps.pdf}
-\end{center}
-\end{multicols}
-
-\begin{multicols}{2}
-\begin{center}
-\scalebox{1.5}{
-  \includegraphics{diagrams/eps_plus1.pdf}
-}
-\end{center}
-  
-\begin{center}
-\scalebox{1.5}{
-  \includegraphics{diagrams/eps_plus2.pdf}
-}
-\end{center}  
-\end{multicols}
-
-%%%%%%%%%
-\subsection{Semantics}
-
-%subcode{opsem} include main
-%! columnStyle = rclr
-%! fwd = \triangleright
-% <iso, v, C, s>_{fwd} &|-->& {[iso, v', C, s']}_{fwd}
-% & & where iso s v |--> (v', s')
-% <c1(;)c2, v, C, s>_{fwd} &|-->& <c1, v, Fst C c2, s>_{fwd}
-% {[c1, v, Fst C c2, s]}_{fwd} &|-->& <c2, v, Snd c1 C, s>_{fwd}
-% {[c2, v, Snd c1 C, s]}_{fwd} &|-->& {[ c1(;)c2, v, C,s ]}_{fwd}
-% <c1(+)c2, v', C, s>_{fwd} &|-->& <c1, v, LeftP C c2, s[v' <><> left v]>_{fwd}
-% {[ c1, v, LeftP C c2, s ]}_{fwd} &|-->& {[c1 (+) c2, left v, C,s ]}_{fwd}
-% <c1(+)c2, v', C, s>_{fwd} &|-->& <c2, v, RightP c1 C, s[v' <><> right v]>_{fwd}
-% {[ c2, v, RightP c1 C,s ]}_{fwd} &|-->& {[c1 (+) c2, right v, C,s ]}_{fwd}
-% <c1(*)c2, v', C, s>_{fwd} &|-->& <c1, v1, LeftT C c2 v2, s'>_{fwd}
-% & & where s' = s[v <><> (v1, v2)]
-% {[ c1, v1, LeftT C c2 v2,s ]}_{fwd} &|-->& <c2, v2, RightT c1 v1 C, s>_{fwd}
-% {[ c2, v2, RightT c1 v1 C,s ]}_{fwd} &|-->& {[ c1 (*) c2, (v1, v2), C,s ]}_{fwd}
-
-Given that our language is reversible (Prop.~\ref{prop:logrev}), a backward
-evaluator is relatively straightforward to implement: using the backward
-evaluator to calculate {{c v}} is equivalent {{c^{dagger} v}} in the forward
-evaluator.
-
-%subcode{opsem} include main
-%! columnStyle = rclr
-%! bck = \triangleleft
-% {[iso, v, C, s]}_{bck} &|-->& <iso, v', C, s'>_{bck}
-% & & where iso^{dagger} s v |--> (v', s')
-% <c1, v, Fst C c2, s>_{bck} &|-->& <c1(;)c2, v, C, s>_{bck}
-% <c2, v, Snd c1 C, s>_{bck} &|-->& {[c1, v, Fst C c2, s]}_{bck}
-% {[ c1(;)c2, v, C, s ]}_{bck} &|-->& {[c2, v, Snd c1 C, s]}_{bck}
-% <c1, v, LeftP C c2,s >_{bck} &|-->& <c1(+)c2,left v, C>_{bck}
-% {[c1 (+) c2, v', C, s ]}_{bck} &|-->& {[ c1, v, LeftP C c2, s[v' <><> left v] ]}_{bck}
-% <c2, v, RightP c1 C, s>_{bck} &|-->& <c1(+)c2, right v, C>_{bck}
-% {[c1 (+) c2, v', C,s ]}_{bck} &|-->& {[ c2, v, RightP c1 C, s[v' <><> right v] ]}_{bck}
-% <c1, v1, LeftT C c2 v2, s>_{bck} &|-->& <c1(*)c2, (v1, v2), C, s>_{bck}
-% <c2, v2, RightT c1 v1 C, s>_{bck} &|-->& {[ c1, v1, LeftT C c2 v2, s ]}_{bck}
-% {[ c1 (*) c2, v, C, s ]}_{bck} &|-->& {[ c2, v2, RightT c1 v1 C, S' ]}_{bck}
-% && where s' = s[v <><> (v1, v2)]
-
-To add negative types we add the following rules to the
-  reductions above. The additions formalize our previous discussions
-  and should not be surprising at this point.
-
-  \begin{enumerate}
-  \item The rules for {{eps+}} essentially transfer control from the
-    forward evaluator (whose states are tagged by $\triangleright$) to
-    the backward evaluator (whose states are tagged by
-    $\triangleleft$). In other words, after an {{eps+}} the direction
-    of the world is reversed. The pattern matching done by the
-    unification ensures that a value on the {{right}} wire is tagged
-    to be negative and transferred to the {{left}} wire, and vice versa.
-
-%subcode{opsem} include main
-%! columnStyle = rclr
-%! fwd = \triangleright
-%! bck = \triangleleft
-% <eps+, v, C, s>_{fwd} |--> <eps+, left (-v'), C, s[v <><> right v']>_{bck}
-% <eps+, v, C, s>_{fwd} |--> <eps+, right v', C, s[v <><> left (-v')]>_{bck}
-
-    Note that there is no evaluation rule for {{eta+}} in the forward
-    evaluator. This corresponds to the fact that there is no value of
-    type {{0}} and hence the forward evaluator can never execute an
-    {{eta+}}.
-
-    \item The rules for {{eta+}} are added to the backward evaluator. A
-      program executing backwards starts executing forwards after the
-      execution of the {{eta+}}. Dual to the previous case, there is
-      no rule for {{eps+}} in the backward evaluator since the output
-      type of {{eps+}} is {{0}}.
-
-%subcode{opsem} include main
-%! columnStyle = rclr
-%! fwd = \triangleright
-%! bck = \triangleleft
-% {[eta+, v, C, s]}_{bck} |--> {[eta+, left (-v'), C, s[v <><> right v'] ]}_{fwd}
-% {[eta+, v, C, s]}_{bck} |--> {[eta+, right v', C, s[v <><> left (-v')] ]}_{fwd}
-
-  \end{enumerate}
-
-
-\begin{proposition}[Logical Reversibility]
-  
-\end{proposition}
-
-\begin{proposition}[Strong Normalization]
-  
-\end{proposition}
-
-\begin{proposition}[Type Safety]
-  
-\end{proposition}
-
-\begin{proposition}[Coherence]
-  
-\end{proposition}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Computing in the Field of Rationals : {{PiEE}} }
