@@ -1012,6 +1012,7 @@ We say {{c1 = c2}} if {{c1:b1<->b2}} and {{c2:b1<->b2}} and for all
 
 %%%%%%%%%%%%%%%
 \subsection{Constructions}
+\label{sec:pi-constructions}
 
 The constructions in this section provide a brief overview to writing
 programs in {{Pi}}. More details maybe found in previous work
@@ -1026,7 +1027,7 @@ We use the type {{1+1}} to denote {{bool}}, with {{left ()}} as
 {{if_{c1,c2}:bool*b1<->bool*b2}} textually as 
 {{dist(;)((id(*)c1)(+)(id(*)c2))(;)factor}} and graphically as: 
 
-\dgm{if-c1-c2}
+% \dgm{if-c1-c2}
 
 \noindent
 If {{c1 v |--> v'}} and {{c2 v |--> v''}}, we can verify that the
@@ -1662,8 +1663,8 @@ Tracing the execution of this circuit gives us:
 % & |-->* & [eps*, (1/false, true), Snd (id (*) not) (Snd~eta* [])]
 % & |--> & undefined
 
-\roshan{Maybe replace the annihilation example with union and
-  difference.}
+%% \roshan{Maybe replace the annihilation example with union and
+%%   difference.}
 
 \begin{proposition}[Type Safety]
   
@@ -1713,11 +1714,18 @@ execution sequence {{eta*}} transforms {{()}} into particular
 {{c^^^}} denotes the inverse relation that {{c}} denotes, i.e.
 {{c^^^={|(v',v)~|~(v,v') elem c|} }}.
 
-\roshan{This probably needs rigorous proof.}
+% \roshan{This probably needs rigorous proof.}
 
+\paragraph*{Union.}
+The union of the two relations {{c1:b1<->b2}} and {{c2:b1<->b2}} is
+expressed by {{trace* if_{c1,c2} :b1<->b2}} (see Sec.
+\ref{sec:pi-constructions} for {{if_{c1,c2} }} and
+Sec. \ref{sec:frac-constructions} for {{trace*}}). Intersection can be
+expressed by ``controlled-annihilation'' detailed in
+Sec. \ref{sec:sat-solver}.
 
-\roshan{Should we show completeness -- i.e. that every relation is
-  expressible? We can. But should we?}
+%% \roshan{Should we show completeness -- i.e. that every relation is
+%%   expressible? We can. But should we?}
 
 %%%%%%%%%%%
 \subsection{Categorical Structure}
@@ -1841,6 +1849,7 @@ graphically. They require that the combinators below be equal to
 
 %%%%%%%%%
 \subsection{Categorical Constructions}
+\label{sec:frac-constructions}
 
 All the constructions below are standard: they are collected from Selinger's
 survey paper on monoidal
@@ -1943,7 +1952,6 @@ has an adjoint.  The {{inv}} construction is similar.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{SAT Solver }
-\label{sec:prog}
 \label{sec:sat-solver}
 
 % Additive traces correspond to iteration and multiplicative traces
@@ -2043,15 +2051,18 @@ wire acts like the closed-loop {{not}} in the previous construction.
 \label{sub:f}
 
 Any boolean expression {{f : bool^n -> bool}} can be compiled into the
-isomorphism {{iso_f : bool^h*bool^n<->bool^g*bool}} where the extra bits
-{{bool^h}} and {{bool^g}} are considered as heap and garbage. Constructing
-such an isomorphism has been detailed
-before~\cite{Toffoli:1980,infeffects}. The important relation to note is that
-applying {{iso_f}} to some special heap values and an input \textit{bs}
-produces some bits that can be ignored and the same output that {{f}} would
-have produced on {{bs}}. We can ensure that the heap has the appropriate
-initial values by checking the heap and negating a second control wire, if
-the values do not match, i.e., the dotted part in the diagram below.
+isomorphism {{iso_f : bool^h*bool^n<->bool^g*bool}} where the extra
+bits {{bool^h}} and {{bool^g}} are considered as heap and
+garbage. Constructing such an isomorphism has been detailed
+before~\cite{Toffoli:1980,infeffects}. The important relation to note
+is that applying {{iso_f}} to some special heap values and an input
+\textit{bs} produces some bits that can be ignored and the same output
+that {{f}} would have produced on {{bs}}. We can ensure that the heap
+has the appropriate initial values by checking the heap and negating a
+second control wire, if the values do not match using, i.e., the
+dotted part in the diagram below. This is achieved by first applying
+{{not}} to the control wire and then testing that all the heap values
+are true using {{cnot^n}}, undoing the {{not}} only if they are.
 
 \begin{center}
 \scalebox{1.2}{
@@ -2076,8 +2087,8 @@ When the solver is fed inputs initialized to {{true}}, it clones only
 those inputs to {{sat_f}} that satisfy {{f}} and the heap
 constraints. In the case of unique-SAT the solver will produce exactly
 0 or 1 solutions. In the case of general SAT, the solver will produce
-solutions as determined by the semantics of the top-level interaction
-(see discussion in Sec. \ref{sec:rat}).
+all satisfying solution. 
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Finite Dimensional Hilbert Spaces}

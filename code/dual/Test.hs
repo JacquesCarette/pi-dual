@@ -45,12 +45,28 @@ z_shape2Times = UnitI
               
 type SBool = Either () () 
 
-ifc1c2 :: b :<=> b 
-          -> b :<=> b
-          -> (SBool :*: b) :<=> (SBool :*: b)
+ifc1c2 :: b1 :<=> b2 
+          -> b1 :<=> b2
+          -> (SBool :*: b1) :<=> (SBool :*: b2)
 ifc1c2 c1 c2 = Distribute
                :.: ((Id :*: c1) :+: (Id :*: c2))
                :.: Factor
+
+
+unionc1c2 :: b1 :<=> b2 -> b1 :<=> b2 -> b1 :<=> b2
+unionc1c2 c1 c2 = UnitI 
+                  :.: (EtaTimes :*: Id)
+                  :.: AssocTimesR
+                  :.: (Id :*: (ifc1c2 c1 c2))
+                  :.: AssocTimesL
+                  :.: (EpsTimes :*: Id)
+                  :.: UnitE
+
+union c1 c2 = traceTimes (ifc1c2 c1 c2)
+
+notSBool :: SBool :<=> SBool
+notSBool = CommutePlus
+
 
 ----------------------------------------------------------------
 
@@ -292,3 +308,5 @@ makeDC c = (c :*: Id) :.: CommuteTimes :.:  EpsTimes
 
 
 
+-- dualPlus :: Neg (a :+: b) :<=> (Neg a :+: Neg b)
+-- dualPlus = 
