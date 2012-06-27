@@ -22,8 +22,9 @@
 \usepackage{bm}
 \usepackage{cmll}
 
+\newcommand{\vecspace}[1]{\mathbb{V}_{#1}}
 \renewcommand{\vec}[2]{\begin{bmatrix} #1 \\ #2 \end{bmatrix}}
-\newcommand{\Fpx}[1]{\mathbf{F}_{#1}}
+\newcommand{\Fpx}[1]{\mathbb{F}_{#1}}
 \newcommand{\modulusp}[1]{\left | #1 \right |}
 \newcommand{\fname}[1]{\ulcorner #1 \urcorner}
 \newcommand{\fconame}[1]{\llcorner #1 \lrcorner}
@@ -1429,10 +1430,13 @@ closed categories.
 In order to interpret fractional types, we first lift the values and
 combinators of {{Pi}} to the world of vector spaces. Intuitively:
 \begin{itemize}
-\item each type {{b}} is now interpreted as a vector space of dimension
-  $\modulusp{b}$ over the field $\Fpx{2}$; the elements of such a vector
-  space are column vectors
-\item each value {{v_i : b}} is interpreted as column vector:
+\item instead of interpreting a type {{b}} as a set of cardinality
+  $\modulusp{b}$, we now interpret each type {{b}} as a vector space
+  $\vecspace{b}$ of dimension $\modulusp{b}$ over the field of booleans
+  $\Fpx{2}$;
+\item the elements of such a vector space are column vectors whose elements
+  are 0 or 1 and which indexed by the values of type {{b}}, i.e., 
+  a value {{v_i : b}} is interpreted as the vector:
 \[\begin{array}{r@{~}l}
 \begin{array}{r} 
 v_0 \\ v_1 \\ \vdots \\ v_i \\ \vdots \\ v_n 
@@ -1447,11 +1451,20 @@ v_0 \\ v_1 \\ \vdots \\ v_i \\ \vdots \\ v_n
   and column containing exactly one occurrence of the value 1.
 \end{itemize}
 
-Once we are in the world of vector spaces, the fractional type {{1/b}} is
-interpreted as the \emph{dual} to the vector space denoted by {{b}}. The
-elements of this dual vector space can be represented as \emph{row vectors}. 
+Now that the types are interpreted as vector spaces, it is possible to add a
+new type {{1/b}} which corresponds to the \emph{dual} of the vector space
+denoting {{b}}. The elements of this dual vector space are \emph{linear
+  functionals} mapping vectors in $V_b$ to a scalar (0 or 1). The isomorphism
+between the types {{1}} and {{b * 1/b}} is now a consequence of that fact
+that the pairing of a functional in the dual space $\vecspace{1/b}$ and a
+vector in the space $\vecspace{b}$ produces a scalar.
 
-Multiplying a row vector by a column gives a scalar: this is eta and epsilon.
+The alert co-author should have noticed that using $\Fpx{2}$ as the underlying
+field is actually nonsense. To get things to work properly we need a field of
+one element, which apparently exists and has some nice properties. 
+
+
+
 
 \newpage
 
