@@ -8,6 +8,8 @@
 rational_ext.subc.pdf : rational_ext.subc.tex cites.bib
 	pdflatex -halt-on-error rational_ext.subc.tex
 	bibtex rational_ext.subc
+	pdflatex -halt-on-error rational_ext.subc.tex
+	pdflatex -halt-on-error rational_ext.subc.tex
 
 rational_ext.subc.tex : rational_ext.tex
 	ruby subcode/subc.rb rational_ext.tex
