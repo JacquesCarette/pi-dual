@@ -32,6 +32,7 @@
 \newcommand{\xcomment}[2]{\textbf{#1:~\textsl{#2}}}
 \newcommand{\amr}[1]{\xcomment{Amr}{#1}}
 \newcommand{\roshan}[1]{\xcomment{Roshan}{#1}}
+\newcommand{\jacques}[1]{\xcomment{Jacques}{#1}}
 
 \newcommand{\asterix}[0]{*}
 
@@ -57,7 +58,6 @@
 \newenvironment{proof}[1][Proof.]{\begin{trivlist}\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
 
 \newcommand{\arrow}[1]{\mathtt{#1}}
-\newcommand{\PiL}{\ensuremath{\Pi}}
 
 \newcommand{\dgm}[2][0.95]{
 \begin{center}
@@ -520,38 +520,26 @@ once the code is organized for better presentation.
 \label{sec:pi}
 
 \begin{verbatim}
-Restructure this section to emphasize the following
+(parts of rewrite that are done are removed from here)
 
 In plain Pi: 
 ------------
 
-types b ::= 0 | 1 | b+b | b*b
-values v ::= () | L v | R v | (v,v)
-typing v : b
-
-Semantics of values: 
- - a type b is interpreted as a set
- - a value v : b is an element of the set denoted by b
-
-types b <-> b
-combinators c ::= primitiveIso
-               | c + c | c * c | c ; c 
-typing c : b1 <-> b2
-
 Semantics of combinators:
- - types b1 <-> b2 are interpreted as bijections 
+ - iso-types b1 <-> b2 are interpreted as bijections 
    between the sets denoted by b1 and b2
  - a combinator c : b1 <-> b2 is interpeted as a 
-   bijection between the appropriate sets
+   bijection from set b1 to set b2.
+ - there is a natural adjoint to c : b1 <-> b2 
+   corresponding to the bijection c^* : b2 <-> b1
 
 Evaluation is function application, i.e., 
-  eval c v applies the function denoted by c to 
+  eval c v applies the function (bijection) denoted by c to 
   the value denoted by v.
 
 [If we want to use categorical language, 
 we can express the above semantics using the category 
 of finite sets and bijections.]
-
 \end{verbatim} 
 
 We review our reversible language {{Pi}}: the presentation in this
@@ -577,29 +565,36 @@ is different: we start from a type system, and are striving to discover
 a term language which naturally inhabits these types, along with an
 appropriate operational semantics.
 
-Generally, such an approach would be rather vacuous.  What makes this
-pursuit different is that ... (will continue from here -- Jacques)
-
 %%%%%%%%%%%%%%%%%%%%
 \subsection{Syntax and Types} 
 \label{sec:pi-syntax}
 
-Unlike the traditional situation with the $\lambda$-calculus, in {{Pi}},
-there is a sharp distinction between data and programs. 
-
-\paragraph*{Data.} The sets of values and their types include:
+\paragraph*{Data.}
+We view {{Pi}} as having two levels:  it has traditional values, given by
+%subcode{bnf} include main
+% values, v ::= () | left v | right v | (v, v)
+and these are classified by ordinary types
 %subcode{bnf} include main
 % value types, b ::= 0 | 1 | b + b | b * b 
-% values, v ::= () | left v | right v | (v, v)
+
 Types include the empty type {{0}}, the unit type {{1}}, sum types {{b1+b2}},
 and products types {{b1*b2}}.  Values includes {{()}} which is the only value
 of type {{1}}, {{left v}} and {{right v}} which inject {{v}} into a sum type,
 and {{(v1,v2)}} which builds a value of product type. There are no values of
 type {{0}}.
 
-\paragraph*{Programs.} All the programs of {{Pi}} are special maps of type
-{{v \rightarrow v}}. Specifically, they are witnesses to the following type
-isomorphisms:
+But these should be regarded as largely ancilliary.  In particular we
+do not treat the above values as first-class citizens.  They only occur
+when we want to observe the effect of an isomorphism.
+
+Nevertheless, these have a precise denotation:  a type {{b}} is 
+interpreted as a set, and {{v : b}}  denotes that {{v}} is a member
+of the set denoted by {{b}}.  As our (traditional) values are first-order,
+and non-polymorphic, such a set interpretation is sound.
+
+\paragraph*{Isomorphisms.} The terms of {{Pi}} are witnesses to type
+isomorphisms.  They have (iso) types {{v \rightarrow v}}.  
+Specifically, they are witnesses to the following type isomorphisms:
 %subcode{bnf} include main
 %! columnStyle = r@{\hspace{-0.5pt}}c@{\hspace{-0.5pt}}l
 %zeroe :&  0 + b <-> b &: zeroi
@@ -610,13 +605,21 @@ isomorphisms:
 %assocl* :&  b1 * (b2 * b3) <-> (b1 * b2) * b3 &: assocr*
 %dist0 :& 0 * b <-> 0 &: factor0
 %dist :&~ (b1 + b2) * b3 <-> (b1 * b3) + (b2 * b3)~ &: factor
-Each line of the above table introduces one or two combinators that witness
-the isomorphism in the middle. Collectively the isomorphisms state that the
-structure {{(b,+,0,*,1)}} is a \emph{commutative semiring}, i.e., that each
-of {{(b,+,0)}} and {{(b,*,1)}} is a commutative monoid and that
-multiplication distributes over addition. The isomorphisms are extended to
-form a congruence relation by adding the following constructors that witness
-equivalence and compatible closure:
+Each line of the above table introduces a pair of dual constants%
+\footnote{where {{swap*}} and {{swap+}} are self-dual}
+that witness the type isomorphism in the middle.  Collectively the isomorphisms
+state that the structure {{(b,+,0,*,1)}} is a \emph{commutative semiring},
+i.e., that each of {{(b,+,0)}} and {{(b,*,1)}} is a commutative monoid and that
+multiplication distributes over addition.  These are the base 
+(non-reducible) terms of the second, principal level of {{Pi}}.
+
+It is worthwhile to remember that the above correspond to the \emph{axioms}
+of commutative semirings.  However, seen as universally quantified,
+orientable statements, these axioms also induce transformations of the
+(traditional) values. \jacques{include code here to be explicit}
+
+The isomorphisms are extended to form a congruence relation by adding the
+following constructors that witness equivalence and compatible closure:
 %subcode{proof} include main
 %@  ~
 %@@ id : b <-> b 
@@ -636,29 +639,33 @@ equivalence and compatible closure:
 %@ c2 : b2 <-> b4
 %@@ c1 (*) c2 : b1 * b2 <-> b3 * b4
 
+The syntax is overloaded: we use the same symbol at the value-type level
+and at the isomorphism-type level for denoting sums and products.  Hopefully
+this will not cause undue confusion.
+
 \noindent
 To summarize, the syntax of {{Pi}} is given as follows. 
 
 \begin{definition}{(Syntax of {{Pi}})}
 \label{def:Pi}
-We collect our types, values, and combinators, to get the full language
+We collect our types, values, and isomorphisms, to get the full language
 definition.
 %subcode{bnf} include main
 % value types, b ::= 0 | 1 | b+b | b*b 
 % values, v ::= () | left v | right v | (v,v) 
 %
-% comb.~types, t ::= b <-> b
-% iso ::= zeroe | zeroi 
+% iso.~types, t ::= b <-> b
+% base iso ::= zeroe | zeroi 
 %     &|& swap+ | assocl+ | assocr+ 
 %     &|& identl* | identr* 
 %     &|& swap* | assocl* | assocr* 
 %     &|& dist0 | factor0 | dist | factor 
-% comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
+% iso comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
 \end{definition}
 
 \paragraph*{Adjoint.} 
-An important property of the language is that every combinator {{c}} has an
-adjoint {{c{dagger}}} that reverses the action of {{c}}. This is evident by
+An important property of the language is that every term {{c}} has an
+adjoint {{c{dagger}}} that reverses the isomorphisms {{c}}.  This is evident by
 construction for the primitive isomorphisms. For the closure combinators, the
 adjoint is homomorphic except for the case of sequencing in which the order
 is reversed, i.e., {{(c1 (;) c2){dagger} = (c2{dagger}) (;) (c1{dagger}) }}.
@@ -677,13 +684,12 @@ and is defined to be:
 % [^ 0 ^] '= 0
 % [^ 1 ^] '= 1
 \end{multicols}
-
 where {{+}} is numeric addition and {{*}} is numeric multiplication. 
   
 \end{definition}
 \noindent
-In the setting of {{Pi}} the \emph{size}, {{[^ b ^]}}, may be simply thought of as
-the number of inhabitants (an arity) of the type. This intuition will
+In the setting of {{Pi}} the \emph{size}, {{[^ b ^]}}, may be simply thought of
+as the number of inhabitants (an arity) of the type. This intuition will
 however become tenuous in the presence of negative and fractional
 types.
 
