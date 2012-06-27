@@ -22,6 +22,9 @@
 \usepackage{bm}
 \usepackage{cmll}
 
+\renewcommand{\vec}[2]{\begin{bmatrix} #1 \\ #2 \end{bmatrix}}
+\newcommand{\Fpx}[1]{\mathbf{F}_{#1}}
+\newcommand{\modulusp}[1]{\left | #1 \right |}
 \newcommand{\fname}[1]{\ulcorner #1 \urcorner}
 \newcommand{\fconame}[1]{\llcorner #1 \lrcorner}
 
@@ -1421,10 +1424,37 @@ from the setting of symmetric monoidal categories to that of compact
 closed categories. 
 
 %%%%%%%%%%%%%%%%%
-\subsection{The Powerset Monad} 
+\subsection{Vector Spaces} 
 
-In order to interpret fractional types, we first define a monad {{S}} over
-the {{Pi}}-category of finite sets and bijections.
+In order to interpret fractional types, we first lift the values and
+combinators of {{Pi}} to the world of vector spaces. Intuitively:
+\begin{itemize}
+\item each type {{b}} is now interpreted as a vector space of dimension
+  $\modulusp{b}$ over the field $\Fpx{2}$; the elements of such a vector
+  space are column vectors
+\item each value {{v_i : b}} is interpreted as column vector:
+\[\begin{array}{r@{~}l}
+\begin{array}{r} 
+v_0 \\ v_1 \\ \vdots \\ v_i \\ \vdots \\ v_n 
+\end{array} & 
+\begin{bmatrix}
+0 \\ 0 \\ \vdots \\ 1 \\ \vdots \\ 0
+\end{bmatrix}
+\end{array}\]
+\item each combinator {{c : b1 <-> b2}} is interpreted as a matrix whose
+  columns are indexed by the values of type {{b1}} and whose rows are indexed
+  by the values of type {{b2}}. The matrix is \emph{orthogonal} with each row
+  and column containing exactly one occurrence of the value 1.
+\end{itemize}
+
+Once we are in the world of vector spaces, the fractional type {{1/b}} is
+interpreted as the \emph{dual} to the vector space denoted by {{b}}. The
+elements of this dual vector space can be represented as \emph{row vectors}. 
+
+Multiplying a row vector by a column gives a scalar: this is eta and epsilon.
+
+\newpage
+
 
 \paragraph*{Data.} The syntax of {{Pi}} is extended with the type {{S b}}
 which denotes sets {{ {| v1, v2, dots |} }} of values of type {{b}}:
