@@ -1013,70 +1013,109 @@ We say {{c1 = c2}} if {{c1:b1<->b2}} and {{c2:b1<->b2}} and for all
 %%%%%%%%%%%%%%%
 \subsection{Constructions}
 
-\paragraph*{Booleans and Conditionals.} 
-Given any combinator {{c : b <-> b}} we can construct a combinator called
-{{if_c : bool*b <->bool*b}} in terms of {{c}}, where {{if_c}} behaves like a
-one-armed $\mathit{if}$-expression. If the supplied boolean is {{true}} then
-the combinator {{c}} is used to transform the value of type~{{b}}. If the
-boolean is {{false}}, then the value of type {{b}} remains unchanged. We can
-write down the combinator for {{if_c}} in terms of {{c}} as 
-{{ dist (;) ((id (*) c) (+) id) (;) factor }}.
+The constructions in this section provide a brief overview to writing
+programs in {{Pi}}. More details maybe found in previous work
+(Sec. 3.3 \cite{infeffects} and the constructions in \cite{rc2012}).
 
-\noindent The diagram below shows the input value of type {{(1+1)*b}}
-processed by the distribute operator {{dist}}, which converts it into a value
-of type {{(1*b)+(1*b)}}. In the {{left}} branch, which corresponds to the
-case when the boolean is {{true}} (i.e. the value was {{left ()}}), the
-combinator~{{c}} is applied to the value of type~{{b}}. The right branch
-which corresponds to the boolean being {{false}} passes along the value of
-type {{b}} unchanged.
+\paragraph*{Booleans, Conditionals and Cloning.} 
+We use the type {{1+1}} to denote {{bool}}, with {{left ()}} as
+{{true}} and {{right ()}} as {{false}}. The combinator
+{{not:bool<->bool}} can be expressed by {{swap+}} at the type
+{{bool}}. Further, given any two combinators {{c1:b1<->b2}} and
+{{c2:b1<->b2}}, we can write the conditional combinator
+{{if_{c1,c2}:bool*b1<->bool*b2}} textually as 
+{{dist(;)((id(*)c1)(+)(id(*)c2))(;)factor}} and graphically as: 
 
-\begin{center}
-\scalebox{1.0}{
-%%subcode-line{pdfimage}[diagrams/if_c.pdf]
-\includegraphics{diagrams/thesis/cnot.pdf}
-}
-\end{center}
+\dgm{if-c1-c2}
 
-% We will be seeing many more such wiring diagrams in this paper and it is
-% useful to note some conventions about them. Wires indicate a
-% value that can exist in the program. Each wire, whenever possible, is
-% annotated with its type and sometimes additional information to help clarify
-% its role. When multiple wires run in parallel, it means that those values
-% exist in the system at the same time, indicating pair types. When there is a
-% disjunction, we put a {{+}} between the wires. 
-% Combinators for distribution {{dist}} and factoring {{factor}}
-% are represented as triangles with their operator symbols in them. Other
-% triangles may be used and, in each case, types or labels will be used to
-% clarify their roles. Finally, we don't draw boxes for combinators such as
-% {{id}}, commutativity, and associativity, but instead just shuffle the wires
-% as appropriate.
+\noindent
+If {{c1 v |--> v'}} and {{c2 v |--> v''}}, we can verify that the
+conditional maps {{if_{c1,c2} (true, v) |--> (true, v')}} and
+{{if_{c1,c2} (false, v) |--> (false, v'')}}.  Several useful
+combinators follow from this basic construction:
 
-The combinator {{if_{not} }} has type {{bool*bool<->bool*bool}} and
-negates its second argument if the first argument is {{true}}. This
-gate {{if_{not} }} is often referred to as the {{cnot}} gate. An
-equivalent construction that is useful is {{else_{not} }} where we
-negate the second argument only if the first is {{false}}. 
+\begin{enumerate}
+\item The combinator {{cnot:bool*bool<->bool*bool}} that negates the
+  second input if the first input (called the control wire) is
+  {{true}} may be defined as {{if_{not,id} }}.
+\item The universal reversible combinator, the Toffoli gate, may be
+  defined as
+  {{if_{cnot,id}:bool*(bool*bool)<->bool*(bool*bool)}}. This can be
+  extended to test {{n}} control wires and we call this combinator
+  {{cnot^n:bool^{n+1}<->bool^{n+1} }}.
+\item The combinator {{if_{id,not}:bool*bool<->bool*bool}} has the
+  property that it maps {{(x, true)|-->(x, x)}} i.e. if the second bit
+  is fixed to {{true}} it clones the first bit. We can generalize this
+  to clone {{n}} bits and we write
+  {{clone^n:bool^n*bool^n<->bool^n*bool^n}}. The second argument
+  {{bool^n}} must be supplied {{true}} values to correctly simulate
+  cloning.
+\end{enumerate}
 
-Similarly, we can iterate the construction of {{if_c}} to check several
-bits. The gate {{if_{cnot} }}, which we may also write as {{if^2_{not} }},
-checks two booleans and negates the result wire only if they are both
-{{true}}. The gate {{if^2_{not} }} is well known as the Toffoli gate and is a
-universal reversible gate. We can generalize this construction to
-{{if^n_{not} }} which checks {{n}} bits and negates the result wire only if
-they are all {{true}}.
 
-%%
-\paragraph*{Cloning.}
-Although cloning is generally not allowed in reversible languages, it is
-possible at the cost of having additional constant inputs. For example,
-consider the gate {{else_{not} }}. Generally, the gate maps
-{{(false,a)}} to {{(false,not a)}} and {{(true,a)}} to {{(true,a)}}. Focusing
-on the cases in which the second input is {{true}}, we get that the gate maps
-{{(false,true)}} to {{(false,false)}} and {{(true,true)}} to {{(true,true)}},
-i.e., the gate clones the first input. A circuit of {{n}} parallel
-{{else_{not} }} gates can hence clone {{n}} bits.  They also consume {{n}}
-{{true}} inputs in the process.  Let us call this construction
-{{clone^n_{bool} }}.
+%% Given any combinator {{c : b <-> b}} we can construct a combinator called
+%% {{if_c : bool*b <->bool*b}} in terms of {{c}}, where {{if_c}} behaves like a
+%% one-armed $\mathit{if}$-expression. If the supplied boolean is {{true}} then
+%% the combinator {{c}} is used to transform the value of type~{{b}}. If the
+%% boolean is {{false}}, then the value of type {{b}} remains unchanged. We can
+%% write down the combinator for {{if_c}} in terms of {{c}} as 
+%% {{ dist (;) ((id (*) c) (+) id) (;) factor }}.
+
+%% \noindent The diagram below shows the input value of type {{(1+1)*b}}
+%% processed by the distribute operator {{dist}}, which converts it into a value
+%% of type {{(1*b)+(1*b)}}. In the {{left}} branch, which corresponds to the
+%% case when the boolean is {{true}} (i.e. the value was {{left ()}}), the
+%% combinator~{{c}} is applied to the value of type~{{b}}. The right branch
+%% which corresponds to the boolean being {{false}} passes along the value of
+%% type {{b}} unchanged.
+
+%% \begin{center}
+%% \scalebox{1.0}{
+%% %%subcode-line{pdfimage}[diagrams/if_c.pdf]
+%% \includegraphics{diagrams/thesis/cnot.pdf}
+%% }
+%% \end{center}
+
+%% % We will be seeing many more such wiring diagrams in this paper and it is
+%% % useful to note some conventions about them. Wires indicate a
+%% % value that can exist in the program. Each wire, whenever possible, is
+%% % annotated with its type and sometimes additional information to help clarify
+%% % its role. When multiple wires run in parallel, it means that those values
+%% % exist in the system at the same time, indicating pair types. When there is a
+%% % disjunction, we put a {{+}} between the wires. 
+%% % Combinators for distribution {{dist}} and factoring {{factor}}
+%% % are represented as triangles with their operator symbols in them. Other
+%% % triangles may be used and, in each case, types or labels will be used to
+%% % clarify their roles. Finally, we don't draw boxes for combinators such as
+%% % {{id}}, commutativity, and associativity, but instead just shuffle the wires
+%% % as appropriate.
+
+%% The combinator {{if_{not} }} has type {{bool*bool<->bool*bool}} and
+%% negates its second argument if the first argument is {{true}}. This
+%% gate {{if_{not} }} is often referred to as the {{cnot}} gate. An
+%% equivalent construction that is useful is {{else_{not} }} where we
+%% negate the second argument only if the first is {{false}}. 
+
+%% Similarly, we can iterate the construction of {{if_c}} to check several
+%% bits. The gate {{if_{cnot} }}, which we may also write as {{if^2_{not} }},
+%% checks two booleans and negates the result wire only if they are both
+%% {{true}}. The gate {{if^2_{not} }} is well known as the Toffoli gate and is a
+%% universal reversible gate. We can generalize this construction to
+%% {{if^n_{not} }} which checks {{n}} bits and negates the result wire only if
+%% they are all {{true}}.
+
+%% %%
+%% \paragraph*{Cloning.}
+%% Although cloning is generally not allowed in reversible languages, it is
+%% possible at the cost of having additional constant inputs. For example,
+%% consider the gate {{else_{not} }}. Generally, the gate maps
+%% {{(false,a)}} to {{(false,not a)}} and {{(true,a)}} to {{(true,a)}}. Focusing
+%% on the cases in which the second input is {{true}}, we get that the gate maps
+%% {{(false,true)}} to {{(false,false)}} and {{(true,true)}} to {{(true,true)}},
+%% i.e., the gate clones the first input. A circuit of {{n}} parallel
+%% {{else_{not} }} gates can hence clone {{n}} bits.  They also consume {{n}}
+%% {{true}} inputs in the process.  Let us call this construction
+%% {{clone^n_{bool} }}.
 
 %%%%%%%%%%%%%%%%
 \subsection{Categorical Structure}

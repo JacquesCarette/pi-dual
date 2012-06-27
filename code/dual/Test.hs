@@ -42,7 +42,15 @@ z_shape2Times = UnitI
                 :.: (Id :*: (CommuteTimes :.: EpsTimes))
                 :.: CommuteTimes
                 :.: UnitE
-               
+              
+type SBool = Either () () 
+
+ifc1c2 :: b :<=> b 
+          -> b :<=> b
+          -> (SBool :*: b) :<=> (SBool :*: b)
+ifc1c2 c1 c2 = Distribute
+               :.: ((Id :*: c1) :+: (Id :*: c2))
+               :.: Factor
 
 ----------------------------------------------------------------
 
