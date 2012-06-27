@@ -1425,45 +1425,27 @@ from the setting of symmetric monoidal categories to that of compact
 closed categories. 
 
 %%%%%%%%%%%%%%%%%
-\subsection{Vector Spaces} 
+\subsection{Pointed Sets}
 
 In order to interpret fractional types, we first lift the values and
-combinators of {{Pi}} to the world of vector spaces. Intuitively:
+combinators of {{Pi}} to the world of \emph{pointed sets}. Intuitively:
 \begin{itemize}
-\item instead of interpreting a type {{b}} as a set of cardinality
-  $\modulusp{b}$, we now interpret each type {{b}} as a vector space
-  $\vecspace{b}$ of dimension $\modulusp{b}$ over the field of booleans
-  $\Fpx{2}$;
-\item the elements of such a vector space are column vectors whose elements
-  are 0 or 1 and which indexed by the values of type {{b}}, i.e., 
-  a value {{v_i : b}} is interpreted as the vector:
-\[\begin{array}{r@{~}l}
-\begin{array}{r} 
-v_0 \\ v_1 \\ \vdots \\ v_i \\ \vdots \\ v_n 
-\end{array} & 
-\begin{bmatrix}
-0 \\ 0 \\ \vdots \\ 1 \\ \vdots \\ 0
-\end{bmatrix}
-\end{array}\]
-\item each combinator {{c : b1 <-> b2}} is interpreted as a matrix whose
-  columns are indexed by the values of type {{b1}} and whose rows are indexed
-  by the values of type {{b2}}. The matrix is \emph{orthogonal} with each row
-  and column containing exactly one occurrence of the value 1.
+\item instead of interpreting a type {{b}} as a plain set of cardinality
+  $\modulusp{b}$, we now interpret each type {{b}} as a pointed set $P_b$
+  with a distinguished \emph{basepoint} $\bot_b$;
+\item a combinator {{c : b1 <-> b2}} is interpreted as a function as before
+  with the restriction that it must map the basepoint $\bot_{b_1}$ to the
+  basepoint $\bot_{b_2}$.
 \end{itemize}
 
-Now that the types are interpreted as vector spaces, it is possible to add a
-new type {{1/b}} which corresponds to the \emph{dual} of the vector space
-denoting {{b}}. The elements of this dual vector space are \emph{linear
-  functionals} mapping vectors in $V_b$ to a scalar (0 or 1). The isomorphism
-between the types {{1}} and {{b * 1/b}} is now a consequence of that fact
-that the pairing of a functional in the dual space $\vecspace{1/b}$ and a
-vector in the space $\vecspace{b}$ produces a scalar.
-
-The alert co-author should have noticed that using $\Fpx{2}$ as the underlying
-field is actually nonsense. To get things to work properly we need a field of
-one element, which apparently exists and has some nice properties. 
-
-
+Intuitively a pointed set may be seen as a vector space over the field with
+one element. This view allows us to add the type {{1/b}} and interpret it as
+the \emph{dual} of the vector space denoting {{b}}. Concretely the elements
+of the pointed set denoted by {{1/b}} are \emph{linear functionals} $f : P_b
+\rightarrow P_1$. Note that $P_1$ is the pointed set containing {{()}} and
+$\bot_1$. The isomorphism between the types {{1}} and {{b * 1/b}} is now a
+consequence of that fact that the pairing of a vector and a functional in the
+dual space produces a scalar. 
 
 
 \newpage
