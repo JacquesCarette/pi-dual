@@ -245,5 +245,4 @@ test5 = eval justTimes2 (Left (), Right ())
 -- inv :: (PiInv eq) => eq a a
 -- inv = timesOneR %. (etaTimes %* id) %. (epsTimes %* id) %. timesOneL
 
-
 ------------------------------------------------------------------------------
