@@ -595,7 +595,7 @@ of the set denoted by {{b}}.  As our (traditional) values are first-order,
 and non-polymorphic, such a set interpretation is sound.
 
 \paragraph*{Isomorphisms.} The terms of {{Pi}} are witnesses to type
-isomorphisms.  They have (iso) types {{v \rightarrow v}}.  
+isomorphisms.  They have (iso) types {{v <-> v}}.  
 Specifically, they are witnesses to the following type isomorphisms:
 %subcode{bnf} include main
 %! columnStyle = r@{\hspace{-0.5pt}}c@{\hspace{-0.5pt}}l
@@ -608,18 +608,25 @@ Specifically, they are witnesses to the following type isomorphisms:
 %dist0 :& 0 * b <-> 0 &: factor0
 %dist :&~ (b1 + b2) * b3 <-> (b1 * b3) + (b2 * b3)~ &: factor
 Each line of the above table introduces a pair of dual constants%
-\footnote{where {{swap*}} and {{swap+}} are self-dual}
+\footnote{where {{swap*}} and {{swap+}} are self-dual} (and its typing)
 that witness the type isomorphism in the middle.  Collectively the isomorphisms
 state that the structure {{(b,+,0,*,1)}} is a \emph{commutative semiring},
 i.e., that each of {{(b,+,0)}} and {{(b,*,1)}} is a commutative monoid and that
 multiplication distributes over addition.  These are the base 
 (non-reducible) terms of the second, principal level of {{Pi}}.
 
-It is worthwhile to remember that the above correspond to the \emph{axioms}
-of commutative semirings.  However, seen as universally quantified,
-orientable statements, these axioms also induce transformations of the
-(traditional) values. \jacques{include code here to be explicit}
+Note how the above has two readings: first as a set of typing relations for
+a set of constants, as well as giving names to the \emph{axioms} of
+commutative semirings.  However, if these axioms are seen as universally
+quantified, orientable statements, they also induce transformations of
+the (traditional) values.  The (categorical) intuition here is that 
+these axioms have computational content because they witness isomorphisms
+rather than merely stating an extensional equality.
 
+For example {{ swap* }} induces a function 
+%subcode{code}
+%! language = Haskell
+% swapProd (a,b) = (b,a)
 The isomorphisms are extended to form a congruence relation by adding the
 following constructors that witness equivalence and compatible closure:
 %subcode{proof} include main
@@ -706,10 +713,12 @@ types.
 The operational semantics of {{Pi}} is summarized below (also see
 \cite{infeffects}).  The semantics of the primitive combinators is
 given by the following single-step reductions below. Since there are
-no values of type {{0}}, the rules omit the impossible cases:
+no values of type {{0}}, there are no rules for the impossible cases:
 \begin{scriptsize}
 %subcode{opsem} include main
 %! columnStyle = rlcl
+% zeroi & v & |-->& right v
+% zeroe & (right v) &|-->& v
 % swap+ & (left v) &|-->& right v
 % swap+ & (right v) &|-->& left v 
 % assocl+ & (left v1) &|-->& left (left v1)
