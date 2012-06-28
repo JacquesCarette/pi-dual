@@ -245,5 +245,8 @@ test5 = eval justTimes2 (Left (), Right ())
 -- inv :: (PiInv eq) => eq a a
 -- inv = timesOneR %. (etaTimes %* id) %. (epsTimes %* id) %. timesOneL
 
-
+-- to Show this, need to fix a monad; that's what test6s is for.
+test6 :: MonadPlus m => m Zero
+test6 = eval cohTimes (undefined::Zero)
+test6s = test6 :: [Zero]
 ------------------------------------------------------------------------------
