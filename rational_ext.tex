@@ -623,10 +623,11 @@ the (traditional) values.  The (categorical) intuition here is that
 these axioms have computational content because they witness isomorphisms
 rather than merely stating an extensional equality.
 
-For example {{ swap* }} induces a function 
+For example {{ swap* }} induces a function (akin to)
 %subcode{code}
 %! language = Haskell
 % swapProd (a,b) = (b,a)
+
 The isomorphisms are extended to form a congruence relation by adding the
 following constructors that witness equivalence and compatible closure:
 %subcode{proof} include main
@@ -652,6 +653,14 @@ The syntax is overloaded: we use the same symbol at the value-type level
 and at the isomorphism-type level for denoting sums and products.  Hopefully
 this will not cause undue confusion.
 
+It is important to note that ``values'' and ``isomorphisms'' are 
+completely separate syntactic categories which do not intermix.  The 
+semantics of the language come when these are made to interact at
+the ``top level'', a new syntactic category:
+%subcode{bnf} include main
+% top-level term, l ::= c v
+We refer to this as \emph{application}.
+
 \noindent
 To summarize, the syntax of {{Pi}} is given as follows. 
 
@@ -670,6 +679,7 @@ definition.
 %     &|& swap* | assocl* | assocr* 
 %     &|& dist0 | factor0 | dist | factor 
 % iso comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
+% top-level term, l ::= c v
 \end{definition}
 
 \paragraph*{Adjoint.} 
@@ -710,10 +720,11 @@ types.
 %%%%%%%%%%%%
 \subsection{Semantics}
 
-The operational semantics of {{Pi}} is summarized below (also see
-\cite{infeffects}).  The semantics of the primitive combinators is
-given by the following single-step reductions below. Since there are
-no values of type {{0}}, there are no rules for the impossible cases:
+The operational semantics of top-level terms of {{Pi}} is summarized below
+(also see \cite{infeffects}).  The semantics of applying the primitive
+combinators to a value is given by the following single-step reductions below.
+Since there are no values of type {{0}}, there are no rules for the impossible
+cases:
 \begin{scriptsize}
 %subcode{opsem} include main
 %! columnStyle = rlcl
@@ -766,7 +777,7 @@ The type safety of {{Pi}} follows directly from the correspondence
 between inductive definitions of the types and the big-step
 semantics. Previous work also established the following properties:
 
-\begin{proposition}[Strong Normalizing]
+\begin{proposition}[Strongly Normalizing]
 \label{prop:termination-pi} 
 {{Pi}} computations always terminate.  
 {{forall. c:b1<->b2, v:b1, exists v':b2.}}  
@@ -798,10 +809,10 @@ We use the type {{1+1}} to denote {{bool}}, with {{left ()}} as
 {{not:bool<->bool}} can be expressed by {{swap+}} at the type
 {{bool}}. Further, given any two combinators {{c1:b1<->b2}} and
 {{c2:b1<->b2}}, we can write the conditional combinator
-{{if_{c1,c2}:bool*b1<->bool*b2}} textually as 
-{{dist(;)((id(*)c1)(+)(id(*)c2))(;)factor}} and graphically as: 
+{{if_{c1,c2}:bool*b1<->bool*b2}} as 
+{{dist(;)((id(*)c1)(+)(id(*)c2))(;)factor}}.
 
-\dgm{if-c1-c2}
+% \dgm{if-c1-c2}
 
 \noindent
 If {{c1 v |--> v'}} and {{c2 v |--> v''}}, we can verify that the
@@ -975,7 +986,7 @@ combinator {{c}} in the reverse direction, i.e., we use the adjoint
 %@ c1 v1 |--> v1' ==> <c1, v1, C'> |-->* {[c1,v1',C']}
 %@@ c1+c2 (left v1) |--> left v1' ==> ? 
 
-Choosing {{C' =Lft c2 C}}, we have the required derivation sequence: 
+Choosing {{C' =LeftP c2 C}}, we have the required derivation sequence: 
 {{ <c1+c2, left v1, C> |--> <c1,v1,LeftP c2 C> |-->* {[c1,v1', LeftP c2 C]} |--> {[c1+c2,left v1',C]} }}. The proof follows similarly for the {{right v2}} case.  
 
 To show the right-to-left direction we proceed by induction of the
@@ -1022,7 +1033,7 @@ The syntactic notation above is often obscure and hard to read.
 Following the tradition established for monoidal
 categories~\cite{springerlink:10.1007/978-3-642-12821-94}, we present
 a graphical language that conveys the intuitive semantics of the
-language (which is formalized in the next section).
+language.
 
 The general idea of the graphical notation is that combinators are modeled by
 ``wiring diagrams'' or ``circuits'' and that values are modeled as
