@@ -2,7 +2,7 @@
 # Phony targets are scoped, so you probably want to declare them first.
 #
 
-.PHONY : all clean dual-dropbox rational-dropbox rational_ext-dropbox msr-slides-dropbox jsc-slides-dropbox
+.PHONY : all clean current dual-dropbox rational-dropbox rational_ext-dropbox msr-slides-dropbox jsc-slides-dropbox
 
 # LOts of random stuff
 dual.subc.tex : dual.tex
@@ -58,6 +58,8 @@ rational_ext.subc.tex : rational_ext.tex
 rational_ext.subc.pdf : rational_ext.subc.tex cites.bib
 	pdflatex -halt-on-error rational_ext.subc.tex
         bibtex rational_ext.subc
+	pdflatex -halt-on-error rational_ext.subc.tex
+	pdflatex -halt-on-error rational_ext.subc.tex
 
 rational_ext-dropbox : rational_ext.subc.pdf
 	cp rational_ext.subc.pdf ~/Dropbox/Public/papers
@@ -65,6 +67,8 @@ rational_ext-dropbox : rational_ext.subc.pdf
 
 # Build all 
 all : dual-dropbox rational_ext-dropbox msr-slides-dropbox jsc-slides-dropbox
+
+current: rational_ext.subc.pdf
 
 # Clean
 clean: 
