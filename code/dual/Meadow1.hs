@@ -3,7 +3,28 @@
 -- {-# OPTIONS_GHC -fglasgow-exts #-} -- 6.12.3
 -- Dont know: This code tested with GHC version 6.12.3, and version 7.0.1
 
-module OldDual where
+module Meadow where
+
+-- These meadows are 
+-- 
+-- CR axioms
+-- (x+y)+z = x+(y+z)
+-- x+y = y+x
+-- x+0 = x
+-- x+(-x)=0
+-- (x.y).z = x.(y.z)
+-- x.y = y.x
+-- x.1 = x
+-- x.(y+z) = x.y + x.z
+-- 
+-- Along with 
+-- 
+-- Axiom Ref (reflection)
+-- 1/1/x = x
+-- Axiom Ril (restricted inverse)
+-- x.(x.1/x) = x
+
+
 
 import Data.Typeable
 import Unsafe.Coerce -- needed for polymorphic lookup. 
@@ -107,13 +128,13 @@ data a :<=> b where
   AssocTimesL  :: (a,(b,c)) :<=> ((a,b),c)
   AssocTimesR  :: ((a,b),c) :<=> (a,(b,c))
 -- (*) distributes over (+) 
-  TimesZeroL  :: (Zero, a) :<=> Zero
-  TimesZeroR  :: Zero :<=> (Zero, a)
+--  TimesZeroL  :: (Zero, a) :<=> Zero
+--  TimesZeroR  :: Zero :<=> (Zero, a)
   Distribute  :: (Either b c, a) :<=> Either (b, a) (c, a)
   Factor      :: Either (b, a) (c, a) :<=> (Either b c, a)
 -- Eta and Eps over the monoid (*, 1)
-  EtaTimes:: () :<=> (Inv a, a)
-  EpsTimes :: (Inv a, a) :<=> ()
+--  EtaTimes:: () :<=> (Inv a, a)
+--  EpsTimes :: (Inv a, a) :<=> ()
 -- EtaTimesand EpsTimes over the monoid (+, 0)
   EtaPlus :: Zero :<=> (Neg a :+: a)
   EpsPlus :: (Neg a :+: a) :<=> Zero
@@ -124,6 +145,13 @@ data a :<=> b where
 -- Encoding of Three
   FoldThree   :: Either () (Either () ()) :<=> Three
   UnfoldThree :: Three :<=> Either () (Either () ())
+-- Axioms Ref and Ril
+  RefL :: Inv (Inv a) :<=> a
+  RefR :: a :<=> Inv (Inv a)
+  RilL :: (a, (a, Inv a)) :<=> a
+  RilR :: a :<=> (a, (a, Inv a))
+
+
 
 ---------------------------------------------------------------------------
 -- Adjoint
@@ -143,18 +171,23 @@ adjoint UnitI = UnitE
 adjoint CommuteTimes = CommuteTimes
 adjoint AssocTimesL = AssocTimesR
 adjoint AssocTimesR = AssocTimesL
-adjoint TimesZeroL = TimesZeroR
-adjoint TimesZeroR = TimesZeroL
+-- adjoint TimesZeroL = TimesZeroR
+-- adjoint TimesZeroR = TimesZeroL
 adjoint Distribute = Factor
 adjoint Factor = Distribute
-adjoint EtaTimes= EpsTimes
-adjoint EpsTimes = EtaTimes
+-- adjoint EtaTimes= EpsTimes
+-- adjoint EpsTimes = EtaTimes
 adjoint EtaPlus = EpsPlus
 adjoint EpsPlus = EtaPlus
 adjoint FoldB = UnfoldB
 adjoint UnfoldB = FoldB
 adjoint FoldThree = UnfoldThree
 adjoint UnfoldThree = FoldThree
+adjoint RefL = RefR
+adjoint RefR = RefL
+adjoint RilL = RilR
+adjoint RilR = RilL
+
 
 ---------------------------------------------------------------------------
 -- Unification and Reification of values
@@ -372,14 +405,34 @@ eval_iso Factor v =
        return (Pair (R x) y)
 
 -- EtaTimesand EpsTimes as U shaped connectors
-eval_iso EtaTimes v = 
+-- eval_iso EtaTimes v = 
+--     do x <- freshM 
+--        unifyM Unit v 
+--        return  (Pair (Inv x) x)
+-- eval_iso EpsTimes v = 
+--     do x <- freshM 
+--        unifyM (Pair (Inv x) x) v 
+--        return Unit
+
+-- Axiom Ref
+eval_iso RefL v = 
     do x <- freshM 
-       unifyM Unit v 
-       return  (Pair (Inv x) x)
-eval_iso EpsTimes v = 
+       unifyM (Inv (Inv x)) v
+       return x
+eval_iso RefR v = 
+    return (Inv (Inv v))
+
+-- Axiom Ril
+eval_iso RilL v = 
     do x <- freshM 
-       unifyM (Pair (Inv x) x) v 
-       return Unit
+       y <- freshM 
+       unifyM (Pair x (Pair y (Inv y))) v
+       return x
+eval_iso RilR v = 
+    do x <- freshM 
+       return (Pair v (Pair x (Inv x)))
+
+
 
 -- Fold, Unfold : Bool
 eval_iso FoldB v = 

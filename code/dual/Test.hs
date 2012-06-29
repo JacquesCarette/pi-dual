@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -XGADTs -XTypeOperators -XExistentialQuantification -XFlexibleContexts -XScopedTypeVariables #-} -- 7.0.1, 7.0.3
 
-import OldDual 
+import Field
 
 ------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------
