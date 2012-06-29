@@ -5,7 +5,8 @@
 
 module Meadow where
 
--- These meadows are 
+-- Meadows are a sort of zero totalized fields. 
+-- http://arxiv.org/abs/0901.0823
 -- 
 -- CR axioms
 -- (x+y)+z = x+(y+z)
