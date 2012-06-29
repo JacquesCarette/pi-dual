@@ -2125,7 +2125,27 @@ in Dirac style.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Negative Types : {{PiEE+}} }
 
-What is a negative type anyway? 
+Charles Pinter in his book on Abstract Algebra talks about how
+negatives were used by \emph{logisticians} of a 1000 years ago used
+negative numbers as a ``useful fiction''.  The concept of negative
+numbers were ``discovered''much later than fractionals. Like Joan Baez
+says ``half an apple is easier to undertand than a negative apple''.
+
+Negative types should correspond to sets with negative arity. But what
+does that mean? Various approaches have been proposed -- Loeb uses the
+notion of multiplicity functions to express negative sized sets
+[CITE]. These notions have been extended to Euler characteristic of
+categories by Leinster, Joyal and Schanuel -- negative values are
+explained sometimes as eqaulities relating otherwise indepedant
+objects -- Baez tells a story about ``island'' and positive and
+``bridges connecting islands'' as negatives (since the effectively
+reduce trhe number of disconnected elements.)
+
+We use the use the syntax {{-b}} for negative types and {{-v}} for
+negative values and the axiom {{0 <-> (-b)+b}} as the basis for
+negatives. In {{Pi}}/{{PiEE*}}, values flowed from left-to-right in
+circuits. Negative types are negative in the sense that they flow in
+the oppostite direction. 
 
 %subcode{bnf} include main
 % Value Types, b = 0 | 1 | b + b | b * b | -b
@@ -2133,9 +2153,9 @@ What is a negative type anyway?
 %
 % Isomorphisms, iso &=& ... | eta+ | eps+
 
-For convenience, we sometimes use the notations {{b1 - b2}} and
-{{b1/b2}} to indicate the types {{b1 + (-b2)}} and {{b1 * (1/b2)}}
-respectively.  The types of the new constructs are:
+For convenience, we sometimes use the notations {{b1 - b2}} to
+indicate the types {{b1 + (-b2)}}.  The types of the new constructs
+are:
 \vspace{-15pt}
 \begin{multicols}{2}  
 %subcode{opsem} include main
@@ -2257,9 +2277,33 @@ To add negative types we add the following rules to the
 %! bck = \triangleleft
 % {[eta+, right v, C, s]}^^^ &|-->& {[eta+, left (-v), C ]}
 % {[eta+, left (-v), C, s]}^^^ &|-->& {[eta+, right v, C ]}
-
   \end{enumerate}
 
+Consider the combinator {{c:(-1+1)+1<->1}} defined below. On providing
+the value {{right ():(-1+1)+1}} we get the output {{():1}}. But on
+supply input {{left (right ())}} evaluation stop on the reverse
+interpreter with value {{left (left ()):(-1+1)+1}}.
+
+By definition, since negative values flow in the opposite direction of
+positive values, this is not surprising. Combinators can terminate in
+the forward interpreter (with result of type {{b2}}) or in the reverse
+interpreter (with result of type {{b1}}). To define an {{eval}} in a
+consistent manner without worrying about state of the evaluator, we
+transform every combinator of the form {{c:b1<->b2}} to one of the
+form {{c:-b2+b1<->0}} by the construction {{action(c)=id(+)c(;)eps+}}. 
+
+\begin{definition}[{{eval(c, v)}}]
+For {{c:b1<->b2}} and {{v:b1}} we define {{eval(c, v)=v'}} such that
+\begin{enumerate}
+\item {{v':-b2+b1}} and
+\item {{<action(c), right v, []> |-->* <action(c),v',[]>^^^}}
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[{{c1=c2}}]
+  For {{c1:b1<->b2}} and {{c2:b1<->b2}}, we define {{c1=c2}} if
+  {{~forall v:b1.eval(c1,v) = eval(c2,v)}}.
+\end{definition}
 
 \begin{proposition}[Logical Reversibility]
   
@@ -2273,9 +2317,36 @@ To add negative types we add the following rules to the
   
 \end{proposition}
 
-\begin{proposition}[Coherence]
-  
+%%%%%%%%%
+\subsection{Categorical Structure}
+% \label{sec:neg-constructions}
+
+As before, we can show that {{PiEE+}} is a bimonoidal
+category. Additionally it has a compact closed structure in the
+{{(0,+)}} monoid.
+
+\begin{proposition}[Compact Closed {{(0,+,-)}}]
+  {{PiEE+}} is a compact closed category with over the symmetric
+  monoid {{(0,+)}} with the dual of objects {{b}} give by {{-b}} with
+  morphisms:
+
+\begin{enumerate}
+\item {{0 <-> -b + b}} given by {{eta+}}, called the `unit map'.
+\item {{b + -b <-> 0}} given by {{swap+ (;) eps+}}, called the `counit map'.
+\end{enumerate}
+
+\noindent
+such that the following coherence conditions hold (see 2.1 in
+\cite{selinger2007dagger}):
+
+
+\begin{enumerate}
+\item {{zeroi (;) swap+ (;) (id (+) eta+) (;) assocl+ (;) ((swap+ (;) eps+) (+) id) (;) zeroe = id : b <-> b}}
+\item {{zeroi (;) (eta+ (+) id) (;) assocr+ (;) (id (+) (swap+ (;) eps+)) (;) swap+ (;) zeroe = id : -b <-> -b}}
+\end{enumerate}
+
 \end{proposition}
+
 
 %%%%%%%%%
 \subsection{Categorical Constructions}
