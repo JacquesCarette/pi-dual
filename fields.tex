@@ -2162,9 +2162,9 @@ transform every combinator of the form {{c:b1<->b2}} to one of the
 form {{c:-b2+b1<->0}} by the construction {{action(c)=id(+)c(;)eps+}}. 
 
 \begin{definition}[{{eval(c, v)}}]
-For {{c:b1<->b2}} and {{v:b1}} we define {{eval(c, v)=v'}} such that
+Given {{c:b1<->b2}} and {{v:b1}} we define {{eval(c, v)=v'}} such that
 \begin{enumerate}
-\item {{v':-b2+b1}} and
+\item {{right v:-b2+b1}}, {{v':-b2+b1}} and
 \item {{<action(c), right v, []> |-->* <action(c),v',[]>^^^}}
 \end{enumerate}
 \end{definition}
