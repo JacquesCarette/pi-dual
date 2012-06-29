@@ -1,0 +1,57 @@
+tp : type. %name tp T.
+
+<-> : base -> base -> tp. %infix none 5 <->.
+
+
+
+iso-of : iso -> tp -> type.
+
+
+iso-of/>>+ : iso-of >>+ (0 + B <-> B).
+iso-of/<<+ : iso-of <<+ (B <-> 0 + B).
+
+iso-of/x+ : iso-of x+ (B1 + B2 <-> B2 + B1).
+
+iso-of/><+ : iso-of ><+ (B1 + (B2 + B3) <-> (B1 + B2) + B3).
+iso-of/<>+ : iso-of <>+ ((B1 + B2) + B3 <-> B1 + (B2 + B3)).
+
+iso-of/>>* : iso-of >>* (1 * B <-> B).
+iso-of/<<* : iso-of <<* (B <-> 1 * B).
+
+iso-of/x* : iso-of x* (B1 * B2 <-> B2 * B1).
+
+iso-of/><* : iso-of ><* (B1 * (B2 * B3) <-> (B1 * B2) * B3).
+iso-of/<>* : iso-of <>* ((B1 * B2) * B3 <-> B1 * (B2 * B3)).
+
+iso-of/-<0 : iso-of -<0 (0 * B <-> 0).
+iso-of/>-0 : iso-of >-0 (0 <-> 0 * B).
+
+iso-of/-< : iso-of -< ((B1 + B2) * B3 <-> (B1 * B3) + (B2 * B3)).
+iso-of/>- : iso-of >- ((B1 * B3) + (B2 * B3) <-> (B1 + B2) * B3).
+
+
+
+
+comb-of : comb -> tp -> type.
+
+
+comb-of/iso : comb-of (c I) T
+                <- iso-of I T.
+
+comb-of/id : comb-of id (B <-> B).
+
+comb-of/sym : comb-of (sym C) (B2 <-> B1)
+                <- comb-of C (B1 <-> B2).
+
+comb-of/comp : comb-of (C1 o C2) (B1 <-> B3)
+                 <- comb-of C1 (B1 <-> B2)
+                 <- comb-of C2 (B2 <-> B3).
+
+comb-of/o+ : comb-of (C1 o+ C2) (B1 + B2 <-> B3 + B4)
+               <- comb-of C1 (B1 <-> B3)
+               <- comb-of C2 (B2 <-> B4).
+
+
+comb-of/o* : comb-of (C1 o* C2) (B1 * B2 <-> B3 * B4)
+               <- comb-of C1 (B1 <-> B3)
+               <- comb-of C2 (B2 <-> B4).

@@ -1,0 +1,39 @@
+
+
+%{
+samestep : comb -> comb -> val -> type.
+
+samestep/ : samestep C1 C2 V
+              <- step C1 V V'
+              <- step C2 V V'.
+
+
+~ : comb -> comb -> type. %infix none 10 ~.
+
+~/same : C1 ~ C2
+           <- comb-of C1 (B1 <-> B2)
+           <- comb-of C2 (B1 <-> B2)
+           <- ({v:val} base-of v B1 -> samestep C1 C2 v).
+
+
+self-equiv : {C:comb} C ~ C -> type.
+%mode self-equiv +C -D.
+
+self-equiv/ : self-equiv C (~/same DT DT _)
+                <- has-type C DT
+                <- ({v:val} {d:of-base v _} safe 
+
+}%
+
+
+%{ Not sure if want...
+~/ref : C ~ C.
+
+~/comm : C1 ~ C2 -> C2 ~ C1.
+
+~/trans : C1 ~ C2 -> C2 ~ C3 -> C1 ~ C3.
+
+~/id : (C o id) ~ C.
+
+~/
+}%

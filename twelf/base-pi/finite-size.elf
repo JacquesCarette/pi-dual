@@ -1,0 +1,41 @@
+%% Size of combinators---useful for termination
+
+size : comb -> nat -> type.
+
+size/id : size id z.
+
+size/iso : size (c I) z.
+
+size/sym : size (sym C) (s N) <- size C N.
+
+size/comp : size (C1 o C2) (s N3)
+              <- size C1 N1
+              <- size C2 N2
+              <- plus N1 N2 N3.
+
+size/o+ : size (C1 o+ C2) (s N3)
+            <- size C1 N1
+            <- size C2 N2
+            <- plus N1 N2 N3.
+
+size/o* : size (C1 o* C2) (s N3)
+            <- size C1 N1
+            <- size C2 N2
+            <- plus N1 N2 N3.
+
+
+has-size : {c:comb} size c N -> type.
+%mode has-size +C -D.
+
+has-size/id : has-size id size/id.
+
+has-size/iso : has-size (c I) size/iso.
+
+has-size/sym : has-size (sym C) (size/sym D)
+                 <- has-size C D.
+
+%{ XXX FINISH THIS SHIT
+has-size 
+}%
+
+

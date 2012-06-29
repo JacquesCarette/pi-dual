@@ -1,0 +1,220 @@
+adjoint-iso : iso -> iso -> type.
+%mode adjoint-iso +I -Id.
+
+
+
+adjoint-iso/>>+ : adjoint-iso >>+ <<+.
+adjoint-iso/<<+ : adjoint-iso <<+ >>+.
+
+adjoint-iso/x+ : adjoint-iso x+ x+.
+
+adjoint-iso/><+ : adjoint-iso ><+ <>+.
+adjoint-iso/<>+ : adjoint-iso <>+ ><+.
+
+adjoint-iso/>>* : adjoint-iso >>* <<*.
+adjoint-iso/<<* : adjoint-iso <<* >>*.
+
+adjoint-iso/x* : adjoint-iso x* x*.
+
+adjoint-iso/><* : adjoint-iso ><* <>*.
+adjoint-iso/<>* : adjoint-iso <>* ><*.
+
+adjoint-iso/-<0 : adjoint-iso -<0 >-0.
+adjoint-iso/>-0 : adjoint-iso >-0 -<0.
+
+adjoint-iso/-< : adjoint-iso -< >-.
+adjoint-iso/>- : adjoint-iso >- -<.
+
+%worlds () (adjoint-iso _ _).
+%%reduces Id <= I (adjoint-iso I Id).
+%total I (adjoint-iso I _).
+
+
+
+
+adjoint : comb -> comb -> type.
+%mode adjoint +C -Cd.
+
+
+
+adjoint/iso : adjoint (c I) (c Id)
+                <- adjoint-iso I Id.
+
+adjoint/id : adjoint id id.
+
+adjoint/sym : adjoint (sym C) C.
+
+adjoint/comp : adjoint (C1 o C2) (C2d o C1d)
+                 <- adjoint C1 C1d
+                 <- adjoint C2 C2d.
+
+adjoint/o+ : adjoint (C1 o+ C2) (C1d o+ C2d)
+               <- adjoint C1 C1d
+               <- adjoint C2 C2d.
+
+adjoint/o* : adjoint (C1 o* C2) (C1d o* C2d)
+               <- adjoint C1 C1d
+               <- adjoint C2 C2d.
+
+%worlds () (adjoint _ _).
+%%reduces Cd <= C (adjoint C Cd).
+%total C (adjoint C _).
+
+
+adj-reduces-size : {N : nat} {N' : nat} size C N -> adjoint C Cd -> size Cd N'
+                     -> nat-leq N' N -> type.
+%mode adj-reduces-size +N -N' +DS +Dd -DSd -DL.
+
+ars/iso : adj-reduces-size z z size/iso _ size/iso nat-leq/z.
+
+ars/id : adj-reduces-size z z size/id _ size/id nat-leq/z.
+
+ars/sym : adj-reduces-size (s N) N (size/sym DS) _ DS D
+            <- less-succ N D.
+
+ars/comp : adj-reduces-size (s N) (s N') (size/comp (P : plus N1 N2 N) DS2 DS1)
+                            (adjoint/comp Dd2 Dd1)
+                            (size/comp D DSd1 DSd2)
+                            (nat-leq/s DL3)
+             <- adj-reduces-size N1 N1' DS1 Dd1 DSd1 DL1
+             <- adj-reduces-size N2 N2' DS2 Dd2 DSd2 DL2
+             <- plus-exists N2' N1' (D : plus N2' N1' N')
+             <- plus-commute D D'
+             <- plus-less DL1 DL2 D' P DL3
+             <- nat-leq-reduces (s N') (s N) (nat-leq/s DL3).
+
+ars/o+ : adj-reduces-size (s N) (s N') (size/o+ (P : plus N1 N2 N) DS2 DS1)
+                          (adjoint/o+ Dd2 Dd1) (size/o+ D DSd2 DSd1)
+                          (nat-leq/s DL3)
+           <- adj-reduces-size N1 N1' DS1 Dd1 DSd1 DL1
+           <- adj-reduces-size N2 N2' DS2 Dd2 DSd2 DL2
+           <- plus-exists N1' N2' (D : plus N1' N2' N')
+           <- plus-less DL1 DL2 D P DL3
+           <- nat-leq-reduces (s N') (s N) (nat-leq/s DL3).
+
+ars/o* : adj-reduces-size (s N) (s N') (size/o* (P : plus N1 N2 N) DS2 DS1)
+                          (adjoint/o* Dd2 Dd1) (size/o* D DSd2 DSd1)
+                          (nat-leq/s DL3)
+           <- adj-reduces-size N1 N1' DS1 Dd1 DSd1 DL1
+           <- adj-reduces-size N2 N2' DS2 Dd2 DSd2 DL2
+           <- plus-exists N1' N2' (D : plus N1' N2' N')
+           <- plus-less DL1 DL2 D P DL3
+           <- nat-leq-reduces (s N') (s N) (nat-leq/s DL3).
+
+%worlds () (adj-reduces-size _ _ _ _ _ _).
+%reduces N' <= N (adj-reduces-size N N' _ _ _ _).
+%total Dd (adj-reduces-size _ _ _ Dd _ _).
+
+has-adj-iso : {i:iso} adjoint-iso i Id -> type.
+%mode has-adj-iso +I -D.
+
+has-adj-iso/>>+ : has-adj-iso >>+ adjoint-iso/>>+.
+has-adj-iso/<<+ : has-adj-iso <<+ adjoint-iso/<<+.
+has-adj-iso/x+ : has-adj-iso x+ adjoint-iso/x+.
+has-adj-iso/><+ : has-adj-iso ><+ adjoint-iso/><+.
+has-adj-iso/<>+ : has-adj-iso <>+ adjoint-iso/<>+.
+has-adj-iso/>>* : has-adj-iso >>* adjoint-iso/>>*.
+has-adj-iso/<<* : has-adj-iso <<* adjoint-iso/<<*.
+has-adj-iso/x* : has-adj-iso x* adjoint-iso/x*.
+has-adj-iso/><* : has-adj-iso ><* adjoint-iso/><*.
+has-adj-iso/<>* : has-adj-iso <>* adjoint-iso/<>*.
+has-adj-iso/-<0 : has-adj-iso -<0 adjoint-iso/-<0.
+has-adj-iso/>-0 : has-adj-iso >-0 adjoint-iso/>-0.
+has-adj-iso/-< : has-adj-iso -< adjoint-iso/-<.
+has-adj-iso/>- : has-adj-iso >- adjoint-iso/>-.
+
+%worlds () (has-adj-iso _ _).
+%total I (has-adj-iso I _).
+
+
+has-adj : {c:comb} adjoint c Cd -> type.
+%mode has-adj +C -D.
+
+has-adj/iso : has-adj (c I) (adjoint/iso D)
+                <- has-adj-iso I D.
+
+has-adj/id : has-adj id adjoint/id.
+
+has-adj/sym : has-adj (sym C) adjoint/sym.
+
+has-adj/comp : has-adj (C1 o C2) (adjoint/comp D2 D1)
+                 <- has-adj C1 D1
+                 <- has-adj C2 D2.
+
+has-adj/o+ : has-adj (C1 o+ C2) (adjoint/o+ D2 D1)
+                 <- has-adj C1 D1
+                 <- has-adj C2 D2.
+
+has-adj/o* : has-adj (C1 o* C2) (adjoint/o* D2 D1)
+                 <- has-adj C1 D1
+                 <- has-adj C2 D2.
+
+%worlds () (has-adj _ _).
+%total C (has-adj C _).
+
+adj-type-iso : iso-of I (B1 <-> B2) -> adjoint-iso I Id -> iso-of Id (B2 <-> B1)
+                 -> type.
+%mode adj-type-iso +DT +Dd -DTd.
+
+
+adj-type-iso/>>+ : adj-type-iso iso-of/>>+ adjoint-iso/>>+ iso-of/<<+. 
+adj-type-iso/<<+ : adj-type-iso iso-of/<<+ adjoint-iso/<<+ iso-of/>>+. 
+
+adj-type-iso/x+ : adj-type-iso iso-of/x+ adjoint-iso/x+ iso-of/x+. 
+
+adj-type-iso/><+ : adj-type-iso iso-of/><+ adjoint-iso/><+ iso-of/<>+. 
+adj-type-iso/<>+ : adj-type-iso iso-of/<>+ adjoint-iso/<>+ iso-of/><+. 
+
+adj-type-iso/>>* : adj-type-iso iso-of/>>* adjoint-iso/>>* iso-of/<<*. 
+adj-type-iso/<<* : adj-type-iso iso-of/<<* adjoint-iso/<<* iso-of/>>*. 
+
+adj-type-iso/x* : adj-type-iso iso-of/x* adjoint-iso/x* iso-of/x*. 
+
+adj-type-iso/><* : adj-type-iso iso-of/><* adjoint-iso/><* iso-of/<>*. 
+adj-type-iso/<>* : adj-type-iso iso-of/<>* adjoint-iso/<>* iso-of/><*. 
+
+adj-type-iso/-<0 : adj-type-iso iso-of/-<0 adjoint-iso/-<0 iso-of/>-0.
+adj-type-iso/>-0 : adj-type-iso iso-of/>-0 adjoint-iso/>-0 iso-of/-<0.
+
+adj-type-iso/-< : adj-type-iso iso-of/-< adjoint-iso/-< iso-of/>-.
+adj-type-iso/>- : adj-type-iso iso-of/>- adjoint-iso/>- iso-of/-<.
+
+%worlds () (adj-type-iso _ _ _).
+%total DT (adj-type-iso DT _ _).
+
+
+%{
+
+If C : B1 <-> B2 and Cd is the adjoint of C, then Cd : B2 <-> B1.
+
+}%
+
+
+adj-type : comb-of C (B1 <-> B2) -> adjoint C Cd -> comb-of Cd (B2 <-> B1)
+            -> type.
+%mode adj-type +DT +Dd -DTd.
+
+adj-type/iso : adj-type (comb-of/iso DT) (adjoint/iso Dd) (comb-of/iso DTd)
+                 <- adj-type-iso DT Dd DTd.
+
+adj-type/id : adj-type comb-of/id adjoint/id comb-of/id.
+
+adj-type/sym : adj-type (comb-of/sym DT) adjoint/sym DT.
+
+adj-type/comp : adj-type (comb-of/comp DT2 DT1) (adjoint/comp D2d D1d)
+                                                (comb-of/comp DT1d DT2d)
+                  <- adj-type DT1 D1d DT1d
+                  <- adj-type DT2 D2d DT2d.
+
+adj-type/o+ : adj-type (comb-of/o+ DT2 DT1) (adjoint/o+ D2d D1d)
+                                            (comb-of/o+ DT2d DT1d)
+                <- adj-type DT1 D1d DT1d
+                <- adj-type DT2 D2d DT2d.
+
+adj-type/o* : adj-type (comb-of/o* DT2 DT1) (adjoint/o* D2d D1d)
+                                            (comb-of/o* DT2d DT1d)
+                <- adj-type DT1 D1d DT1d
+                <- adj-type DT2 D2d DT2d.
+
+%worlds () (adj-type _ _ _).
+%total DT (adj-type DT _ _).

@@ -1,0 +1,60 @@
+base : type. %name base B.
+
+0 : base.
+1 : base.
++ : base -> base -> base. %infix left 10 +.
+* : base -> base -> base. %infix left 11 *.
+
+
+val : type. %name val V.
+
+<>    : val.
+,     : val -> val -> val. %infix none 0 ,.
+left  : val -> val.
+right : val -> val.
+
+
+base-of : val -> base -> type.
+
+base-of/<>    : base-of <> 1.
+
+base-of/,     : base-of (V1 , V2) (B1 * B2)
+                  <- base-of V1 B1
+                  <- base-of V2 B2.
+
+base-of/left  : base-of (left V1) (B1 + B2)
+                  <- base-of V1 B1.
+
+base-of/right : base-of (right V2) (B1 + B2)
+                  <- base-of V2 B2.
+
+
+%% THE WORST NAMES
+
+iso : type. %name iso Iso.
+
+>>+ : iso.
+<<+ : iso.
+x+  : iso.
+><+ : iso.
+<>+ : iso.
+>>* : iso.
+<<* : iso.
+x*  : iso.
+><* : iso.
+<>* : iso.
+-<0 : iso.
+>-0 : iso.
+-<  : iso.
+>-  : iso.
+
+
+
+comb : type. %name comb C.
+
+c   : iso -> comb.
+id  : comb.
+sym : comb -> comb.
+o   : comb -> comb -> comb. %infix left 10 o.
+o+  : comb -> comb -> comb. %infix left 10 o+.
+o*  : comb -> comb -> comb. %infix left 10 o*.
