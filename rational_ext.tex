@@ -1844,14 +1844,6 @@ functor. However {{PiEE*}} is not compact closed and {{1/(-)}} is not
 a functor specifically because division is not defined on 0 sized
 types.
 
-Without the important side condition on division by zero, we would
-have {{1<->1/0*0}} which implies {{1 <-> 0}} consequently collapsing
-the entire structure. In this context, an important area for future
-investigation is to consider alternatives to fields as a model for
-fractionals and negatives -- particularly algebraic structures that
-are ``zero totalized fields'' such as meadows
-\cite{Bergstra:2009:MES:1507774.1508000}.
-
 \roshan{This is an important question -- is {{PiEE*}} still
   bimonoidal? i.e. do all the coherence conditions on isomorphisms
   naturally extend to relations. I suspect yes.}
@@ -1947,6 +1939,47 @@ graphically. They require that the combinators below be equal to
 %% unifying them is also a no-op. Both checks are straightforward and are
 %% essentially the constructions in the introduction.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Zero Totalized Fields}
+
+Without the important side condition on division by zero, we would
+have {{1<->1/0*0}} which implies {{1 <-> 0}} consequently collapsing
+the entire structure. 
+
+While fields require the ``no division by zero'' constraint, alternate
+algebraic structures such as meadows
+\cite{Bergstra:2009:MES:1507774.1508000} have been studied which admit
+division and negative without this constraint. Such structures are
+called ``zero totalized fields'' and define multiplicative inverse of
+{{0}}. The axiomatic presentation of meadows involve removing the
+combinators corresponding the axiom {{0*b<->0}} (i.e. {{dist0}} and
+{{factor0}}) and {{1<->1/b*b}} (i.e. {{eta*}} and {{eps*}}). Instead
+meadows include axioms \emph{reflexivity}, {{refl}} and {{refr}}, and
+\emph{restricted inverse}, {{ril}} and {{rir}}, which are:
+%subcode{opsem} include main
+% refl :& 1/1/b <-> b :& refr
+% ril :& b*(b*1/b) <-> b :& rir
+
+\noindent
+Combinators {{refl}} and {{refr}} are primitive and can be defined as:
+%subcode{opsem} include main
+% refl 1/(1/v) &|-->& v
+% refr v &|-->& 1/(1/v)
+
+\noindent
+Combinators {{ril}} and {{rir}} are defined as machine transitions
+similar to {{eta*}}/{{eps*}}:
+%subcode{opsem} include main
+% <ril, (v,(v',1/v')), C> &|-->& {[ril, v, C]}
+% <rir, v, C> &|-->& forall v':b.{[rir, (v, (v',1/v')), C]}
+
+While not as commonly used as fields, zero totalization is useful not
+just because we are spared from continuously checking the division
+constraint, but also because many other structures such as the
+category of vectors spaces do admit a dual to the 0 vector
+space. However their categorization is not well developed and we
+however lose the nice correspondence that {{eta*}}/{{eps*}} have with
+compact closed structures. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{SAT Solver }
@@ -2129,23 +2162,23 @@ Charles Pinter in his book on Abstract Algebra talks about how
 negatives were used by \emph{logisticians} of a 1000 years ago used
 negative numbers as a ``useful fiction''.  The concept of negative
 numbers were ``discovered''much later than fractionals. Like Joan Baez
-says ``half an apple is easier to undertand than a negative apple''.
+says ``half an apple is easier to understand than a negative apple''.
 
 Negative types should correspond to sets with negative arity. But what
 does that mean? Various approaches have been proposed -- Loeb uses the
 notion of multiplicity functions to express negative sized sets
 [CITE]. These notions have been extended to Euler characteristic of
 categories by Leinster, Joyal and Schanuel -- negative values are
-explained sometimes as eqaulities relating otherwise indepedant
+explained sometimes as equalities relating otherwise independent
 objects -- Baez tells a story about ``island'' and positive and
 ``bridges connecting islands'' as negatives (since the effectively
-reduce trhe number of disconnected elements.)
+reduce the number of disconnected elements.)
 
 We use the use the syntax {{-b}} for negative types and {{-v}} for
 negative values and the axiom {{0 <-> (-b)+b}} as the basis for
 negatives. In {{Pi}}/{{PiEE*}}, values flowed from left-to-right in
 circuits. Negative types are negative in the sense that they flow in
-the oppostite direction. 
+the opposite direction. 
 
 %subcode{bnf} include main
 % Value Types, b = 0 | 1 | b + b | b * b | -b
@@ -2192,7 +2225,7 @@ are:
 \end{multicols}
 
 \begin{definition}[Size of a type]
-The defintion of size is extended to include negative types.
+The definition of size is extended to include negative types.
 {{[^-b^] = -[^b^]}}
 \end{definition}
 
