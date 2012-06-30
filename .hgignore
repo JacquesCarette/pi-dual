@@ -27,6 +27,7 @@ OMakeroot.omc
 *.toc
 *.subc.pdf
 *.subc.tex
+*.vrb
 .subcode_cache*
 *.orig
 *.pdf.eps
