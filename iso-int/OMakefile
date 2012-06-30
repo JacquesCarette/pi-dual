@@ -2,7 +2,7 @@
 # Phony targets are scoped, so you probably want to declare them first.
 #
 
-.PHONY : all clean iso-int-dropbox rc-iso-int-dropbox
+.PHONY : all clean iso-int-dropbox rc-iso-int-dropbox rc-iso-int-slides-dropbox
 
 # iso-int
 iso-int.subc.tex : iso-int.tex
@@ -27,9 +27,20 @@ rc-iso-int.subc.pdf : rc-iso-int.subc.tex cites.bib
 rc-iso-int-dropbox : rc-iso-int.subc.pdf
 	cp rc-iso-int.subc.pdf ~/Dropbox/Public/papers
 
+# rc-iso-int-slides
+rc-iso-int-slides.subc.tex : rc-iso-int-slides.tex
+        ruby subcode/subc.rb rc-iso-int-slides.tex
+
+rc-iso-int-slides.subc.pdf : rc-iso-int-slides.subc.tex cites.bib
+	pdflatex -halt-on-error rc-iso-int-slides.subc.tex
+        #bibtex rc-iso-int-slides.subc
+
+rc-iso-int-slides-dropbox : rc-iso-int-slides.subc.pdf
+	cp rc-iso-int-slides.subc.pdf ~/Dropbox/Public/papers
+
 
 # Build all 
-all : rc-iso-int-dropbox iso-int-dropbox
+all : rc-iso-int-dropbox rc-iso-int-slides-dropbox iso-int-dropbox
 
 # Clean
 clean: 
