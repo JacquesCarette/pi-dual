@@ -194,7 +194,7 @@
   \end{enumerate}
 
   \begin{itemize}
-  \item The computational model {{Pi}}/{{Pi0}}.
+  \item The computational model {{Pi0}}.
   \item The idea that computation can preserve information/entropy.
   \item Information effects can be encapsulated by  a type-and-effect system. 
   \item Simple semantics, categorical connections, Turing complete.. etc.
@@ -448,152 +448,6 @@ Another possible execution. {{(b1+b2)*b3<->(b1*b3)+(b2+b3)}}
 \vfill
 \end{frame}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Values and their Types}
-So lets talk about the types. Here is one model. 
-
-\vfill
-\begin{block}
-
-types = 0, 1, 2, 3, 4, ...   
-\end{block}
-
-
-\vfill
-Values that inhabit types:
-
-\begin{block}
-  
-0 = \{\}
-
-1 = \{o\}
-
-2 = \{o, o\}
-
-3 = \{o, o, o\}
-\end{block}
-
-\vfill
-\pause
-Now it would be convenient to give values names so that we know which
-`o' we are talking about.
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Values and their Types}
-Hijack some good notation:
-
-\vfill
-\begin{block}
-
-  {{ types, b = 0 ~|~ 1 ~|~ b + b ~|~ b * b }}
-
-\end{block}
-
-\vfill
-This gives us all the types 0, 1, 2, 3 ... 
-
-\vfill
-\pause
-Values that inhabit the types:
-
-\begin{enumerate}
-\item 
-{{() elem 1}}
-
-\vfill
-\pause
-\item 
-{{(v1, v2) elem b1*b2}} \pause if {{v1 elem b1}} and {{v2 elem b2}}
-
-\pause
-We can check: if {{b1}} has 5 values and {{b2}} has 3 values, then
-{{b1*b2}} does have 15 values.
-
-\vfill
-\pause
-\item 
-{{left v elem b1+b2}} if {{v elem b1}}
-
-\pause
-{{right v elem b1+b2}} if {{v elem b2}}
-
-\pause
-We can check: if {{b1}} has 5 values and {{b2}} has 3 values, then
-{{b1+b2}} does have 8 values. 5 of them will have the tag {{left}} and
-3 will have the tag {{right}}.
-\end{enumerate}
-
-
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Values and their Types}
-
-\vfill
-\begin{block}
-
-  {{ types, b = 0 ~|~ 1 ~|~ b + b ~|~ b * b }}
-
-  {{ values, v = () ~|~ (v, v) ~|~ left v ~|~ right v }}
-
-\end{block}
-
-\vfill
-%subcode{proof} include main
-%@ ~
-%@@ |- () : 1
-%
-%@ |- v1 : b1
-%@ |- v2 : b2
-%@@ |- (v1, v2) : b1 * b2
-%----
-%@ |- v : b1
-%@@ |- left v  : b1 + b2
-%
-%@ |- v : b2
-%@@ |- right v : b1 + b2  
-
-\vfill
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Values and their Types: Isorecursive types}
-
-nat = {0, 1, 2, 3... }
-
-\begin{multicols}{2}
-{{data Nat = Zero ~|~ Succ Nat}}
-
-{{0 = Zero}}
-
-{{1 = Succ Zero}}
-
-{{2 = Succ (Succ Zero)}}
-
-\columnbreak
-{{nat = @@x.(1+x)}}
-
-{{0 = <left ()>:nat}}
-
-{{1 = <right <left ()>>:nat}}
-
-{{2 = <right <right <left ()>> > :nat}}
-
-\end{multicols}
-
-\vfill
-
-\iso{unfold_nat}
-
-\vfill
-
-\end{frame}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Values and their Types}
 Take {{bool}}, {{true}} and {{false}} as {{1+1}}, {{left()}}, {{right ()}}
@@ -616,1209 +470,6 @@ The universal reversible Toffoli gate.
 \vfill
 Complete for boolean circuits.
 \end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Wires}
-
-What are the rules that determining how wires can be drawn? 
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Wires : Monoids}
-
-
-\begin{block}
-
-  {{ types, b = 0 ~|~ 1 ~|~ b + b ~|~ b * b }}
-
-\end{block}
-
-
-  \begin{block}{Commutative Monoid: {{(1, *)}} }
-    
-%subcode{bnf} include main
-% 1 * b &<->& b // identity for~ *
-% b1 * b2 &<->& b2 * b1 // commutativity for~ *
-% b1 * (b2 * b3) &<->& (b1 * b2) * b3 //associativity for~ *
-
-  \end{block}
-
-\pause
-
-\begin{multicols}{2}
-\dgm[0.7]{unite}
-\dgm[0.7]{uniti}  
-\end{multicols}
-
-
-\begin{multicols}{2}
-\dgm[0.7]{swap_times}
-
-\dgm[0.7]{assoc}  
-\end{multicols}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Wires : Two Monoids}
-
-
-\begin{block}
-
-  {{ types, b = 0 ~|~ 1 ~|~ b + b ~|~ b * b }}
-
-\end{block}
-
-
-  \begin{block}{Commutative Monoid: {{(1, *)}} }
-    
-%subcode{bnf} include main
-% 1 * b &<->& b // identity for~ *
-% b1 * b2 &<->& b2 * b1 // commutativity for~ *
-% b1 * (b2 * b3) &<->& (b1 * b2) * b3 //associativity for~ *
-
-  \end{block}
-
-  \begin{block}{Commutative Monoid: {{(0, +)}} }
-
-%subcode{bnf} include main
-% 0 + b&<->& b // identity for~ +
-% b1 + b2 &<->& b2 + b1 // commutativity for~ +
-% b1 + (b2 + b3) &<->& (b1 + b2) + b3 // associativity for~ +
-
-  \end{block}
-
-
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{ Isomorphisms of Finite Types }
-
-\begin{block}
-
-  {{ types, b = 0 ~|~ 1 ~|~ b + b ~|~ b * b }}
-
-\end{block}
-
-
-  \begin{block}{ Primitive Combinators }
-    
-%subcode{bnf} include main
-% 1 * b &<->& b // identity for~ *
-% b1 * b2 &<->& b2 * b1 // commutativity for~ *
-% b1 * (b2 * b3) &<->& (b1 * b2) * b3 //associativity for~ *
-
-
-%subcode{bnf} include main
-% 0 + b&<->& b // identity for~ +
-% b1 + b2 &<->& b2 + b1 // commutativity for~ +
-% b1 + (b2 + b3) &<->& (b1 + b2) + b3 // associativity for~ +
-
-%subcode{bnf} include main
-% 0 *b &<->& 0  // distribute over~ 0
-% (b1 + b2) * b3 &<->& (b1 * b3) + (b2 * b3) // distribute over~ +
-
-  \end{block}
-
-
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{ Rules for Composing Wires }
-
-%% \begin{block}
-
-%%   {{ types, b = 0 ~|~ 1 ~|~ b + b ~|~ b * b }}
-
-%% \end{block}
-
-
-\dgm{c1c2_seq}
-
-\begin{multicols}{2}
-\dgm{c1c2_par_times}
-
-\dgm{c1c2_par_sum}  
-\end{multicols}
-
-
-\begin{block}{ Closure }
-
-%subcode{proof} include main
-%@ b1 <-> b2
-%@ b2 <-> b3
-%@@ b1 <-> b3
-%
-%@ b1 <-> b3
-%@ b2 <-> b4
-%@@ (b1 * b2) <-> (b3 * b4)
-%
-%@ b1 <-> b3
-%@ b2 <-> b4
-%@@ (b1 + b2) <-> (b3 + b4) 
-
-\end{block}
-
-
-\end{frame}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Witnesses for Type Isomorphisms of Finite Types : {{Pi}} }
-
-%\begin{block}{Primitive operators and their composition}
-
-{\scriptsize
-%Primitive operators and their composition:
-
-
-%subcode{bnf} include main
-% base types, b ::= 0 | 1 | b+b | b*b
-% values, v ::= () | left v | right v | (v, v)
-
-
-% {@1@ unfold @}:& @@x.b  &<->& b[@@x.b/x] &: {@1@fold @}
-
-%subcode{opsem} include main
-%! columnStyle = rrcll
-%
-% {@1@ identl+ @}:&  0 + b &<->& b &: {@1@identr+ @}
-% {@1@ swap+ @}:&  b1 + b2 &<->& b2 + b1 &: {@1@swap+ @}
-% {@1@ assocl+ @}:&  b1 + (b2 + b3) &<->& (b1 + b2) + b3 &: {@1@assocr+ @}
-%
-% {@1@ identl* @}:&  1 * b &<->& b &: {@1@identr* @}
-% {@1@ swap* @}:&  b1 * b2 &<->& b2 * b1 &: {@1@swap* @}
-% {@1@ assocl* @}:&  b1 * (b2 * b3) &<->& (b1 * b2) * b3 &: {@1@assocr* @}
-%
-% {@1@ dist0 @}:&  0 *b &<->& 0  &: {@1@factor0 @}
-% {@1@ dist @}:& (b1 + b2) * b3 &<->& (b1 * b3) + (b2 * b3) &: {@1@factor @}
-
-%subcode{proof} include main
-%@  ~
-%@@ {@1@ id @}: b <-> b 
-%
-%@ {@1@ c @}: b1 <-> b2
-%@@ {@1@ sym c @}: b2 <-> b1
-%
-%@ {@1@ c1 @}: b1 <-> b2
-%@ {@1@ c2 @}: b2 <-> b3
-%@@ {@1@ (c1(;)c2) @}: b1 <-> b3
-%---
-%@ {@1@ c1 @}: b1 <-> b3
-%@ {@1@ c2 @}: b2 <-> b4
-%@@ {@1@ (c1 (+) c2) @}: (b1 + b2) <-> (b3 + b4)
-%
-%@ {@1@ c1 @}: b1 <-> b3
-%@ {@1@ c2 @}: b2 <-> b4
-%@@ {@1@ (c1 (*) c2) @}: (b1 * b2) <-> (b3 * b4)
-%
-
-%@ {@1@ c @}: b1 + b2 <-> b1 + b3
-%@@ {@1@ trace c @}: b2 <-> b3
-}
-%\end{block}
-
-
-\end{frame}
-
-
-
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{ The language {{Pi}} }
-
-% A programming language emerges:
-
-\begin{block}{Syntax of {{Pi}} }
-%subcode{bnf} include main 
-% base types, b ::= 0 | 1 | b+b | b*b 
-% combinator types, t ::= b <-> b
-% values, v ::= () | left v | right v | (v,v) 
-%
-% isomorphisms, iso ::= swap+ | assocl+ | assocr+ | zeroe | zeroi
-%                   &|& swap* | assocl* | assocr* | identl* | identr* 
-%                   &|& dist | factor | id 
-% combinators, c ::= iso | sym c | c (;) c | c (*) c | c (+) c 
-
-\end{block}
-
-
-
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Properties : {{Pi}} }
-
-
-\begin{enumerate}
-
-\vfill
-\item Graphical language. 
-
-\vfill
-\item Term language
-
-\vfill
-\item Interpretation in terms of type-isomorphisms. 
-
-\vfill
-\item Categorical interpretation: 
-
-  \begin{enumerate}
-  \item Dagger symmetric monoidal categories (with two monoids). 
-  \item Bi-monoidal categories
-  \item Categorification of a commutative semi-ring. 
-  \end{enumerate}
-
-\vfill
-\item Complete for combinational circuits (boolean circuits).
-
-\vfill
-\item Logically reversible.
-
-\pause
-\vfill
-\item Information preservation. 
-
-\end{enumerate}
-
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Information Preservation }
-
-\begin{itemize}
-\item Entropy {{H =}} $-\sum p_i \log{p_i}$
-
-  \begin{itemize}
-  \item Probability of the {{i^{th} }} item is {{p_i}}. 
-  \item Example: 
-
-    \begin{itemize}
-    \item 4 items {{TT}}, {{TF}}, {{FT}}, {{FF}}
-    \item {{p(TT) = 50}}\%, {{p(TT) = 25}}\%, {{p(TT) = 12.5}}\%, {{p(TT) = 12.5}}\%
-    \item {{H = 1.75 bits}}
-    \end{itemize}
-
-  \end{itemize}
-
-\pause
-\vfill
-\item For a function {{f}}
-
-  \begin{itemize}
-  \item Input Entropy {{H_i}}
-  \item Output Entropy  {{H_o}}
-  \item Entropy of a function is {{H(f) = H_i - H_o }}
-  \end{itemize}
-
-\end{itemize}
-
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Information Preservation }
-
-\begin{itemize}
-\item In {{Pi}}, for all combinators {{H_o = H_i}}. 
-
-\item Information can \red{neither be created nor deleted} in {{Pi}}
-    much like
-
-    \begin{itemize}
-    \item Restrictions on weakening and contraction in Linear Logic 
-    \item The no-cloning and no-deletion theorems of Quantum
-      Mechanics.
-    \end{itemize}
-
-\end{itemize}
-
-
-\dgm{entropy_preservation}
-
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Conventional Computing Models}
-
-Information preservation is the ``deep difference'' with conventional computing:
-
-
-    \begin{itemize}
-
-\pause
-\vfill
-    \item \red{Logic gates} such as \textbf{nand} cannot recover
-      inputs from outputs.
-
-\pause
-\vfill
-\item \red{Turing machines} rely on overwriting of symbols on a tape.
-
-\pause
-\vfill
-\item \red{\lcal} relies on $\beta$ reduction.
-
-    \end{itemize}
-
-\end{frame}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Back to Physics, Turing and criticism of paper... }
-
-
-\begin{block}
-
-Abstract models of computation \red{shield} us from the underlying
-technology that realize computation in the real world.  
-\end{block}
-
-
-
-\pause
-\vfill
-  \begin{itemize}
-
-  \item Quantum Physics suggests a universe in which
-
-    \begin{itemize}
-    \item fundamental interactions are all \red{reversible}.
-    \item various quantities such as mass, energy, angular momentum,
-      spin etc are \red{conserved}.
-    \end{itemize}
-
-
-\pause
-\vfill
-\item Abstract models of computations that embrace a \red{irreversible
-    classical worldview} are at odds with quantum physics.
-
-    \begin{itemize}
-
-
-\vfill
-    \item \red{Logic gates} such as \textbf{nand} cannot recover inputs from outputs.
-
-
-\vfill
-\item \red{Turing machines} rely on overwriting of symbols on a tape.
-
-\vfill
-\item \red{\lcal} relies on $\beta$ reduction.
-
-    \end{itemize}
-
-  \end{itemize}
-
-\vfill
-
-\end{frame}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-  
-    \begin{center}
-      \framebox{ Information Effects }
-    \end{center}
-
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Information Effects}
-
-
-The ``gap'' between information preserving computing and conventional
-computing:
-
-\vfill
-  \begin{block}
-
-    By embodying irreversible physical primitives, conventional
-    abstract models of computation have also inadvertently included
-    some \emph{implicit} computational effects, which we call
-    \emph{information effects}.
-  \end{block}
-
-\vfill
-
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Information Effects}
-
-\dgm{create}
-
-\dgm{erase}
-
-\vfill
-  \begin{itemize}
-  \item {{create : 1 ~> b}}
-  \item {{erase : b ~> 1}}
-  \end{itemize}
-\vfill
-
-
-\end{frame}
-
-
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{ The language {{Pi}} }
-
-% A programming language emerges:
-
-\begin{block}{Syntax of {{Pi}} }
-%subcode{bnf} include main 
-% base types, b ::= 0 | 1 | b+b | b*b 
-% combinator types, t ::= b <-> b
-% values, v ::= () | left v | right v | (v,v) 
-%
-% isomorphisms, iso ::= swap+ | assocl+ | assocr+ | zeroe | zeroi
-%                   &|& swap* | assocl* | assocr* | identl* | identr* 
-%                   &|& dist | factor | id 
-% combinators, c ::= iso | sym c | c (;) c | c (*) c | c (+) c 
-
-\end{block}
-
-
-
-\end{frame}
-
-
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{ The language {{langArr}} }
-
-% A programming language emerges:
-
-\begin{block}{Syntax of {{langArr}} }
-%subcode{bnf} include main 
-% base types, b ::= 0 | 1 | b+b | b*b 
-% combinator types, t ::= b <-> b | b ~> b
-% values, v ::= () | left v | right v | (v,v) 
-%
-% isomorphisms, iso ::= swap+ | assocl+ | assocr+ | zeroe | zeroi
-%                   &|& swap* | assocl* | assocr* | identl* | identr* 
-%                   &|& dist | factor | id 
-% arrow comp., a ::= iso | a (+) a | a (*) a | a (;) a 
-%     &|& arr a | a >>> a | a1 *** a2 | a1 +++ a2
-%     &|& create_b | erase 
-
-\end{block}
-
-Traditionally ``{{afirst a}}'' instead of ``{{a1 *** a2}}'' and 
-
-``{{aleft a}}'' instead of ``{{a1 +++ a2}}''
-
-\end{frame}
-
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{ The language {{langArr}} }
-
-%subcode{proof} include main
-%@ a : b1 <-> b2
-%@@ arr a : b1 ~> b2
-%
-%@ a1 : b1 ~> b2
-%@ a2 : b2 ~> b3
-%@@ a1 >>> a2 : b1 ~> b3
-%---
-%@ a : b1 ~> b2
-%@@ afirst a : b1 * b3 ~> b2 * b3
-%
-%@ a : b1 ~> b2
-%@@ aleft a : b1 + b3 ~> b2 + b3
-%---
-%@ ~
-%@@ create_b : 1 ~> b
-%
-%@ ~
-%@@ erase : b ~> 1 
-
-
-\end{frame}
-
-
-
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{ Properties of {{langArr}} }
-
-{{langArr}} is very different from {{Pi}}:
-
-\pause
-
-\begin{enumerate}
-\vfill
-\item We can clone. 
-
-  \begin{itemize}
-  \item {{clone : b ~> b * b}} 
-  \end{itemize}
-\vfill
-\item We can erase. 
-
-  \begin{itemize}
-  \item {{erase : b ~> 1}}
-  \end{itemize}
-  \vfill
-
-\vfill
-\item Not logically reversible.
-
-\vfill
-\item Not information preserving.
-
-\end{enumerate}
-
-
-\end{frame}
-
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{ Properties of {{langArr}} }
-
-\begin{enumerate}
-\item We have ``real'' products. 
-
-  \begin{enumerate}
-\vfill
-  \item {{fst : b1 * b2 ~> b1}}
-\vfill
-  \item {{snd : b1 * b2 ~> b2}}
-\vfill
-  \end{enumerate}
-
-\item We have ``real'' sums. 
-
-  \begin{enumerate}
-\vfill
-  \item {{left : b1 ~> b1 + b2}}
-\vfill
-  \item {{right : b2 ~> b1 + b2}}
-\vfill
-  \end{enumerate}
-
-\item We have gone from monoidal to cartesian and co-cartesian.
-
-\vfill
-
-\end{enumerate}
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-  
-    \begin{center}
-      \framebox{ Entropy Analysis Example : {{langArr}} }
-    \end{center}
-
-
-\end{frame}
-
-
-\begin{frame}{XOR and NAND example : entropy analysis}
-  
-\vfill
-
-  {{xor(b1, b2) = if b1 then (if b2 then false else true) else b2 }}
-
-  {{nand(b1, b2) = if b1 then (if b2 then false else true) else true }}
-
-\pause
-\vfill
-
-\begin{itemize}
-\item Entropy of a function is {{ H_i - H_o }}
-\item Entropy of input, {{H_i}}, for {{bool * bool}} is 2 bits. 
-
-\pause
-\item For {{xor}}, 
-  \begin{itemize}
-  \item Probability of output being true, {{P(true) = 1/2}}
-  \item and {{P(false) = 1/2}}. 
-  \item Therefore {{H_o = }} $-\sum p_i \log{p_i}$ {{ = 1}} bits. 
-  \item Information lost is {{2 - 1 = 1 bit}}
-  \end{itemize}
-\pause
-
-\item For {{nand}}, 
-  \begin{itemize}
-  \item Probability of output being true, {{P(true) = 3/4}}
-  \item and {{P(false) = 1/4}}. 
-  \item Therefore {{H_o = }} $-\sum p_i \log{p_i} = 1/4 \log{4} + 3/4
-    (\log{4}-\log{3}) = 0.8$ bits.
-  \item Information lost is {{2 - 0.8 = 1.2 bits}}
-  \end{itemize}
-
-\end{itemize}
-
-\vfill
-
-
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{XOR and NAND example : {{langArr}} implementation}
-  
-\vfill
-
-\begin{itemize}
-
-\item The most optimal implementation of {{xor}} must erase at least 1
-  bit i.e. there must be at least one {{erase_{bool} }}.
-
-  \begin{block}
-    
-
-
-{{ xor : bool * bool ~~> bool }}
-
-{{ xor = dist >>> (not +++ id) }} 
-
-{{~~~~~~~~ >>> factor >>> (erase_{bool} *** id) >>> arr identl*}}
-
-  \end{block}
-
-\vfill
-
-\item The most optimal implementation of {{nand}} must erase at least
-  1.2 bits i.e. at least two {{bools}} must be erased. 
-
-
-  \begin{block}
-    
-{{ nand : bool * bool ~~> bool }}
-
-{{ nand = dist >>> (not +++ (erase_{bool} >>> create_{true})) }} 
-
-{{~~~~~~~ >>> factor >>> (erase_{bool} *** id) >>> arr identl* }}
-
-  \end{block}
-
-\vfill
-
-\item These minimums are captured in the structure of the program.
-
-
-\end{itemize}
-\vfill
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-  
-    \begin{center}
-      \framebox{ Recovering Conventional Computation }
-    \end{center}
-
-
-\end{frame}
-
-
-
-\begin{frame}{Recovering Conventional Computing}
-
-  \begin{itemize}
-    \vfill
-  \item {{langArr}}  irreversible and can create and erase information.
-    \begin{itemize}
-    \item Just like conventional computing.
-    \end{itemize}
-
-    \vfill
-  \item It must then be possible to express conventional computing in {{langArr}}
-
-  \end{itemize}
-
-    \vfill
-    \begin{center}
-      {{STLClet ==> langArr}}
-    \end{center}
-
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Source Language: {{STLClet}} }
-  
-%subcode{bnf} include main
-%Base types, b = 1 | b + b | b * b
-%Values, v = () | left v | right v | (v, v)
-%
-%Expressions, e = () | x | let x = e1 in e2 
-%       &|& left e | right e | case e x.e1 x.e2 
-%       &|& fst e | snd e | (e, e)
-%
-%Type environments, G = empty | G, x:b
-
-%subcode{proof} include main
-%@ G(x) = b
-%@@ G |- x : b
-%
-%@ G |- e1 : b1 
-%@ G,x:b1 |- e2 : b2
-%@@ G |- let x=e1 in e2 : b2
-%----
-%@ G |- e1 : b1
-%@ G |- e2 : b2
-%@@ G |- (e1, e2) : b1 * b2
-%
-%@ G |- e : b1
-%@@ G |- left e  : b1 + b2
-%---
-%@ G |- e : b1 + b2
-%@ G,x:b1 |- e1 : b
-%@ G,x:b2 |- e2 : b
-%@@ G |- case e x.e1 x.e2 : b
-
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Translation 1: {{STLClet ==> langArr}} }
-  
-    \vfill
-
-    \begin{block}
-
-      We show the translation from a first-order {{STLC}}, with sum
-      and product types to {{langArr}}.
-
-      \begin{center}
-        {{ {@1@ G |- e : b ==> a : G^{*} ~> b @} }}
-      \end{center}
-
-      such that, {{a}} ``behaves like'' {{e}}.
-    \end{block}
-
-
-
-  \begin{itemize}
-    \vfill
-  \item The translation exposes the implicit irreversibility of the
-    \lcal by requiring explicit {{create}} and {{erase}} operations.
-
-  \end{itemize}
-  \vfill
-
-\end{frame}
-
-
-\begin{frame}{Translation 1 : overview}
-
-  \begin{itemize}
-
-
-\item Case {{let x = e1 in e2}}:
-%subcode{proof} include main, trans1
-%@ G |- e1 : b1 ==>  a1 : Gx ~> b1
-%@@! G, x : b1 |- e2 : b2 ==>  a2 : Gx * b1 ~> b2
-%@@@ G |- let x = e1 in e2 : b2  ==> a : Gx ~> b2
-
-%% To construct the required {{a}} we first clone {{Gx}}. We can
-%% apply~{{a1}} to one of the copies to get {{b1}}.  The resulting
-%% value of type {{Gx*b1}} is the input required by {{a2}} which
-%% returns the result of type {{b2}}:
-
-\dgm{let_arr}
-
-  \end{itemize}
-
-  
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Translation 1 : overview}
-
-\vfill
-  \begin{itemize}
-
-
-    \vfill
-  \item The main work of the translation is to
-
-  \begin{itemize}
-  \item Make the implicit environment of {{STLCfor}} explicit as the {{G^*}} input.
-  \item Thread the environment through the computation.
-  \item Clone/introduce constants as required. 
-  \item Erase unwanted values.
-  \end{itemize}
-
-\vfill
-  \item Much of the complexity lies in the handling of sums and {{case}}. 
-
-\vfill
-  \item The product fragment of this translation is much like the
-    {{CCC}} semantics for {{STLC}}.
-
-  \end{itemize}
-\vfill  
-
-\end{frame}
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-  
-    \begin{center}
-      \framebox{ Effects as Interactions }
-    \end{center}
-
-\end{frame}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Translation 2: {{langArr ==> Pi}} }
-  
-    \vfill
-
-    \begin{block}
-
-      {{langArr}} can be translated to {{Pi}}
-
-    \begin{center}
-      {{ {@1@ a : G^{*} ~> b ==> c : h * G^* <-> g * b @} }}
-    \end{center}
-
-      such that, {{c}} ``behaves like'' {{a}}.
-  \end{block}
-
-\pause
-\vfill
-
-\begin{center}
-  Information effects can be compiled away. 
-\end{center}
-    \vfill
-
-
-%%   \begin{itemize}
-%% \vfill
-%% \item Information effects manifest as interactions with an information
-%%   environment.
-
-%% %% \item Irreversible {{langArrT}} programs with explicit information
-%% %%   effects can be modeled by reversible {{Pi0}} programs where
-%% %%   the information effects manifest as interactions with an information
-%% %%   environment.
-
-%%   \begin{itemize}
-%%   \item The artifacts {{h}} and {{g}}, exposed in the types, represent
-%%     this information environment.
-%%   \end{itemize}
-
-%% \end{itemize}
-%% \vfill
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Closed Systems and Interactions as Effects}
-
-Back to Physics:
-
-  \begin{itemize}
-
-\vfill
-\item \red{Closed systems} are the basic unit of study in Physics.
-
-  \begin{itemize}
-  \item Closed systems are reversible and obey various conservation
-  laws.
-
-  \end{itemize}
-
-\vfill
-\item \red{Open systems}, ones that interact with their environment,
-  are a derived notion.
-
-  \begin{itemize}
-  \item Open systems do not share these properties.
-
-  \end{itemize}
-
-%% \vfill
-%% \item \textit{Interactions with the environment are much like side
-%%     effects that change the properties of a closed system.}
-
-\vfill
-
-  \end{itemize}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-
-  \begin{block}{Interactions as Effects}
-
-Interactions with the environment that change the properties of a
-closed system, are much like side effects .
-  \end{block}
-
-\end{frame}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Translation 2: {{langArr ==> Pi}} }
-  
-
-
-
-  \begin{itemize}
-\vfill
-\item
-Here is evaluation in {{STLClet}}:
-
-\dgm[0.8]{let_evaluation}
-
-\pause
-\vfill 
-\item When compiled to {{Pi}}, programs can be thought of as
-being surrounded by an \emph{information environment}.
-
-\dgm[0.8]{prog_env}
-
-\pause
-\vfill
-\item Evaluation in {{Pi}} transforms both the explicit
-  information and the information in the environment.
-
-\dgm[0.8]{pi_evaluation}
-
-
-  \end{itemize}
-
-\vfill
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Translation 2: {{langArr ==> Pi}} }
-  
-  \begin{itemize}
-\vfill
-\item Information effects manifest as interactions with an information
-  environment.
-
-
-\dgm[0.8]{prog_env_create}
-
-\dgm[0.8]{prog_env_erase}
-
-
-  %% \begin{itemize}
-  %% \item The artifacts {{h}} and {{g}}, exposed in the types, represent
-  %%   this information environment.
-  %% \end{itemize}
-
-  \end{itemize}
-
-\vfill
-
-\end{frame}
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Translation 2 : overview}
-
-
-    \begin{block}
-
-    \begin{center}
-      {{ {@1@ a : G^{*} ~> b ==> c : h * G^* <-> g * b @} }}
-    \end{center}
-
-  \end{block}
-
-
-  \begin{itemize}
-
-
-\item {{a1 >>> a2}}:
-%subcode{proof} include main, trans1
-%@ a1 : b1 ~~> b2 ==> c1 : h1 * b1 <-> g1 * b2 
-%@@! a2 : b2 ~~> b3 ==> c2 : h2 * b2 <-> g2 * b3
-%@@@ a1 >>> a2 : b1 ~~> b3 ==> c: h * b1 <-> g * b3
-
-We choose {{h = h1 * h2}} and {{g = g1 * g2}} and we have 
-
-\dgm{seq_arr}
-
-  \end{itemize}
-
-  
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Translation 2 : overview}
-
-\vfill
-  \begin{itemize}
-
-
-  \item The main work of the translation is to shuffle {{h}} and {{g}}
-    values through the computation.
-
-\vfill
-  \item In the simplest sense, {{create}} exposes the input heap.
-
-%subcode{proof} include main, trans1
-%@ ~
-%@@ create : 1 ~> b ==> c: h * 1 <-> g * b
-
-We choose {{h = b}} and {{g = 1}} 
-
-and we have \red{ {{c = swap*}} }. 
-
-\dgm[0.8]{prog_env_create}
-
-  \end{itemize}
-\vfill  
-
-
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-  
-    \begin{center}
-      \framebox{ Turing Completeness }
-    \end{center}
-
-\end{frame}
-
-
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{ The language {{Pi}} }
-
-% A programming language emerges:
-
-\begin{block}{Syntax of {{Pi}} }
-%subcode{bnf} include main 
-% base types, b ::= 0 | 1 | b+b | b*b 
-% combinator types, t ::= b <-> b
-% values, v ::= () | left v | right v | (v,v) 
-%
-% isomorphisms, iso ::= swap+ | assocl+ | assocr+ | zeroe | zeroi
-%                   &|& swap* | assocl* | assocr* | identl* | identr* 
-%                   &|& dist | factor | id 
-% combinators, c ::= iso | sym c | c (;) c | c (*) c | c (+) c 
-
-\end{block}
-
-\end{frame}
-
-
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{ The language {{Pi0}} }
-
-% A programming language emerges:
-
-\begin{block}{Syntax of {{Pi0}} }
-%subcode{bnf} include main 
-% base types, b ::= 0 | 1 | b+b | b*b {@1@ | x | @@x.b @}
-% combinator types, t ::= {@1@ b <--> b @}
-% values, v ::= () | left v | right v | (v,v) {@1@ | <v> @}
-%
-% isomorphisms, iso ::= swap+ | assocl+ | assocr+ | zeroe | zeroi
-%                   &|& swap* | assocl* | assocr* | identl* | identr* 
-%                   &|& dist | factor | id {@1@ | fold | unfold @}
-% combinators, c ::= iso | sym c | c (;) c | c (*) c | c (+) c {@1@ | trace c @}
-
-\end{block}
-
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{ Recursive types }
-
-\vfill
-
-%subcode{bnf} include main 
-% base types, b ::= ... | x | @@x.b
-% combinator types, t ::= b <--> b
-% values, v ::= ... | <v>
-%
-% isomorphisms, iso ::= ... | fold | unfold
-
-\vfill
-
-If you are unfamiliar with these, think of them as a primitive
-encoding of Haskell-style recursive data types. 
-
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{ Recursive types : Nat }
-
-%subcode{bnf} include main 
-%!language = Haskell
-% data Nat = Zero | Succ Nat
-
-
-
-\begin{block}
-
-  \begin{center}
-    {{nat = @@x.(1+x)}}
-
-    {{unfold : nat <--> 1 + nat : fold }}
-  \end{center}
-
-\end{block}
-
-%subcode{opsem} include main
-%! columnStyle = ||c|c|c||
-% {@1@ 1 + nat @} & {@1@ nat @} & {@1@ numeric @}
-% left () & <left ()> & 0 
-% right <left ()> & <right <left ()> > & 1
-% right <right <left ()>> & <right <right <left ()> > > & 2
-% ... & ... & ...
-
-\end{frame}
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1893,9 +544,362 @@ Loops, Cancellation Law, Categorical Trace
 
 \end{frame}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Values and their Types}
+So lets talk about the types. Here is one model. 
+
+\vfill
+\begin{block}
+
+types = 0, 1, 2, 3, 4, ...   
+\end{block}
+
+
+\vfill
+Values that inhabit types:
+
+\begin{block}
+  
+0 = \{\}
+
+1 = \{o\}
+
+2 = \{o, o\}
+
+3 = \{o, o, o\}
+\end{block}
+
+\vfill
+\pause
+Now it would be convenient to give values names so that we know which
+`o' we are talking about.
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Values and their Types}
+Hijack some good notation:
+
+\vfill
+\begin{block}
+
+  {{ types, b = 0 ~|~ 1 ~|~ b + b ~|~ b * b }}
+
+\end{block}
+
+\vfill
+This gives us all the types 0, 1, 2, 3 ... 
+
+\vfill
+\pause
+Values that inhabit the types:
+
+\begin{enumerate}
+\item 
+{{() elem 1}}
+
+\vfill
+\pause
+\item 
+{{(v1, v2) elem b1*b2}} \pause if {{v1 elem b1}} and {{v2 elem b2}}
+
+\vfill
+\pause
+\item 
+{{left v elem b1+b2}} if {{v elem b1}}
+
+\pause
+{{right v elem b1+b2}} if {{v elem b2}}
+
+\end{enumerate}
+
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{ Recursive types : Nat }
+
+%subcode{bnf} include main 
+%!language = Haskell
+% data Nat = Zero | Succ Nat
+
+\begin{block}
+
+  \begin{center}
+    {{nat = @@x.(1+x)}}
+
+  \end{center}
+
+\end{block}
+
+%subcode{opsem} include main
+%! columnStyle = ||c|c|c||
+% {@1@ Nat @} & {@1@ nat @} & {@1@ numeric @}
+% Zero & <left ()> & 0 
+% Succ Zero & <right <left ()> > & 1
+% Succ (Succ Zero) & <right <right <left ()> > > & 2
+% ... & ... & ...
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{ Recursive types : Nat }
+
+%subcode{bnf} include main 
+%!language = Haskell
+% data Nat = Zero | Succ Nat
+
+
+  \begin{center}
+    {{nat = @@x.(1+x)}}
+    
+    \vfill
+
+    {{unfold : nat <--> 1 + nat : fold }}
+  \end{center}
+
+
+\vfill
+
+\iso{unfold_nat}
+
+\vfill
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{ Recursive types : Binary Trees }
+
+%subcode{bnf} include main 
+%!language = Haskell
+% data Tree = Leaf | Node Tree Tree
+
+
+  \begin{center}
+    {{tree, t = @@x.(1+x*x)}}
+    
+    \vfill
+
+    {{unfold : t <--> 1 + t*t : fold }}
+  \end{center}
+
+
+\vfill
+
+UNFOLD TREE
+
+\vfill
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Values and their Types}
+
+\vfill
+\begin{block}
+
+  {{ types, b = 0 ~|~ 1 ~|~ b + b ~|~ b * b ~|~ x ~|~ @@x.b }}
+
+  {{ values, v = () ~|~ (v, v) ~|~ left v ~|~ right v ~|~ <v> }}
+
+\end{block}
+
+\vfill
+%subcode{proof} include main
+%@ ~
+%@@ |- () : 1
+%
+%@ |- v1 : b1
+%@ |- v2 : b2
+%@@ |- (v1, v2) : b1 * b2
+%----
+%@ |- v : b1
+%@@ |- left v  : b1 + b2
+%
+%@ |- v : b2
+%@@ |- right v : b1 + b2  
+%----
+%@ |- v : b[@@x.b/x]
+%@@ |- <v>  : @@x.b
+
+\vfill
+
+\end{frame}
+
+
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \begin{frame}[fragile]{Values and their Types: Isorecursive types}
+
+%% nat = {0, 1, 2, 3... }
+
+%% \begin{multicols}{2}
+%% {{data Nat = Zero ~|~ Succ Nat}}
+
+%% {{0 = Zero}}
+
+%% {{1 = Succ Zero}}
+
+%% {{2 = Succ (Succ Zero)}}
+
+%% \columnbreak
+%% {{nat = @@x.(1+x)}}
+
+%% {{0 = <left ()>:nat}}
+
+%% {{1 = <right <left ()>>:nat}}
+
+%% {{2 = <right <right <left ()>> > :nat}}
+
+%% \end{multicols}
+
+%% \vfill
+
+%% \iso{unfold_nat}
+
+%% \vfill
+
+%% \end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Wires}
+
+What are the rules that determine how wires can be drawn? 
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Wires : Monoids}
+
+  \begin{block}{Commutative Monoid: {{(1, *)}} }
+    
+%subcode{bnf} include main
+% 1 * b &<->& b // identity for~ *
+% b1 * b2 &<->& b2 * b1 // commutativity for~ *
+% b1 * (b2 * b3) &<->& (b1 * b2) * b3 //associativity for~ *
+
+  \end{block}
+
+\pause
+
+\begin{multicols}{2}
+\dgm[0.7]{unite}
+\dgm[0.7]{uniti}  
+\end{multicols}
+
+
+\begin{multicols}{2}
+\dgm[0.7]{swap_times}
+
+\dgm[0.7]{assoc}  
+\end{multicols}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Wires : Two Monoids}
+
+
+  \begin{block}{Commutative Monoid: {{(1, *)}} }
+    
+%subcode{bnf} include main
+% 1 * b &<->& b // identity for~ *
+% b1 * b2 &<->& b2 * b1 // commutativity for~ *
+% b1 * (b2 * b3) &<->& (b1 * b2) * b3 //associativity for~ *
+
+  \end{block}
+
+  \begin{block}{Commutative Monoid: {{(0, +)}} }
+
+%subcode{bnf} include main
+% 0 + b&<->& b // identity for~ +
+% b1 + b2 &<->& b2 + b1 // commutativity for~ +
+% b1 + (b2 + b3) &<->& (b1 + b2) + b3 // associativity for~ +
+
+  \end{block}
+
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{ Isomorphisms of Finite Types }
+
+
+  \begin{block}{ Primitive Combinators }
+    
+%subcode{bnf} include main
+% 1 * b &<->& b // identity for~ *
+% b1 * b2 &<->& b2 * b1 // commutativity for~ *
+% b1 * (b2 * b3) &<->& (b1 * b2) * b3 //associativity for~ *
+
+
+%subcode{bnf} include main
+% 0 + b&<->& b // identity for~ +
+% b1 + b2 &<->& b2 + b1 // commutativity for~ +
+% b1 + (b2 + b3) &<->& (b1 + b2) + b3 // associativity for~ +
+
+%subcode{bnf} include main
+% 0 *b &<->& 0  // distribute over~ 0
+% (b1 + b2) * b3 &<->& (b1 * b3) + (b2 * b3) // distribute over~ +
+
+  \end{block}
+
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{ Rules for Composing Wires }
+
+%% \begin{block}
+
+%%   {{ types, b = 0 ~|~ 1 ~|~ b + b ~|~ b * b }}
+
+%% \end{block}
+
+
+\dgm{c1c2_seq}
+
+\begin{multicols}{2}
+\dgm{c1c2_par_times}
+
+\dgm{c1c2_par_sum}  
+\end{multicols}
+
+
+\begin{block}{ Closure }
+
+%subcode{proof} include main
+%@ b1 <-> b2
+%@ b2 <-> b3
+%@@ b1 <-> b3
+%
+%@ b1 <-> b3
+%@ b2 <-> b4
+%@@ (b1 * b2) <-> (b3 * b4)
+%
+%@ b1 <-> b3
+%@ b2 <-> b4
+%@@ (b1 + b2) <-> (b3 + b4) 
+
+\end{block}
+
+
+\end{frame}
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Witnesses for Type Isomorphisms with Trace : {{Pi0}} }
+\frametitle{ Type Isomorphisms and Trace : {{Pi0}} }
 
 %\begin{block}{Primitive operators and their composition}
 
@@ -1908,42 +912,44 @@ Loops, Cancellation Law, Categorical Trace
 % values, v ::= () | left v | right v | (v, v) | <v>
 
 
+
 %subcode{opsem} include main
 %! columnStyle = rrcll
-% {@1@ unfold @}:& @@x.b  &<-->& b[@@x.b/x] &: {@1@fold @}
 %
-% {@1@ identl+ @}:&  0 + b &<-->& b &: {@1@identr+ @}
-% {@1@ swap+ @}:&  b1 + b2 &<-->& b2 + b1 &: {@1@swap+ @}
-% {@1@ assocl+ @}:&  b1 + (b2 + b3) &<-->& (b1 + b2) + b3 &: {@1@assocr+ @}
+% {@1@ unfold @}:& @@x.b  &<->& b[@@x.b/x] &: {@1@fold @}
 %
-% {@1@ identl* @}:&  1 * b &<-->& b &: {@1@identr* @}
-% {@1@ swap* @}:&  b1 * b2 &<-->& b2 * b1 &: {@1@swap* @}
-% {@1@ assocl* @}:&  b1 * (b2 * b3) &<-->& (b1 * b2) * b3 &: {@1@assocr* @}
+% {@1@ identl+ @}:&  0 + b &<->& b &: {@1@identr+ @}
+% {@1@ swap+ @}:&  b1 + b2 &<->& b2 + b1 &: {@1@swap+ @}
+% {@1@ assocl+ @}:&  b1 + (b2 + b3) &<->& (b1 + b2) + b3 &: {@1@assocr+ @}
 %
-% {@1@ dist0 @}:&  0 *b &<-->& 0  &: {@1@factor0 @}
-% {@1@ dist @}:& (b1 + b2) * b3 &<-->& (b1 * b3) + (b2 * b3) &: {@1@factor @}
+% {@1@ identl* @}:&  1 * b &<->& b &: {@1@identr* @}
+% {@1@ swap* @}:&  b1 * b2 &<->& b2 * b1 &: {@1@swap* @}
+% {@1@ assocl* @}:&  b1 * (b2 * b3) &<->& (b1 * b2) * b3 &: {@1@assocr* @}
+%
+% {@1@ dist0 @}:&  0 *b &<->& 0  &: {@1@factor0 @}
+% {@1@ dist @}:& (b1 + b2) * b3 &<->& (b1 * b3) + (b2 * b3) &: {@1@factor @}
 
 %subcode{proof} include main
 %@  ~
-%@@ {@1@ id @}: b <--> b 
+%@@ {@1@ id @}: b <-> b 
 %
-%@ {@1@ c @}: b1 <--> b2
-%@@ {@1@ sym c @}: b2 <--> b1
+%@ {@1@ c @}: b1 <-> b2
+%@@ {@1@ sym c @}: b2 <-> b1
 %
-%@ {@1@ c1 @}: b1 <--> b2
-%@ {@1@ c2 @}: b2 <--> b3
-%@@ {@1@ (c1(;)c2) @}: b1 <--> b3
+%@ {@1@ c1 @}: b1 <-> b2
+%@ {@1@ c2 @}: b2 <-> b3
+%@@ {@1@ (c1(;)c2) @}: b1 <-> b3
 %---
-%@ {@1@ c1 @}: b1 <--> b3
-%@ {@1@ c2 @}: b2 <--> b4
-%@@ {@1@ (c1 (+) c2) @}: (b1 + b2) <--> (b3 + b4)
+%@ {@1@ c1 @}: b1 <-> b3
+%@ {@1@ c2 @}: b2 <-> b4
+%@@ {@1@ (c1 (+) c2) @}: (b1 + b2) <-> (b3 + b4)
 %
-%@ {@1@ c1 @}: b1 <--> b3
-%@ {@1@ c2 @}: b2 <--> b4
-%@@ {@1@ (c1 (*) c2) @}: (b1 * b2) <--> (b3 * b4)
+%@ {@1@ c1 @}: b1 <-> b3
+%@ {@1@ c2 @}: b2 <-> b4
+%@@ {@1@ (c1 (*) c2) @}: (b1 * b2) <-> (b3 * b4)
 %
-%@ {@1@ c @}: b1 + b2 <--> b1 + b3
-%@@ {@1@ trace c @}: b2 <--> b3
+%@ {@1@ c @}: b1 + b2 <-> b1 + b3
+%@@ {@1@ trace c @}: b2 <-> b3
 }
 %\end{block}
 
@@ -1951,70 +957,30 @@ Loops, Cancellation Law, Categorical Trace
 \end{frame}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Properties : {{Pi0}} }
+\frametitle{ The language {{Pi0}} }
 
-\begin{enumerate}
+% A programming language emerges:
 
+\begin{block}
+
+%subcode{bnf} include main 
+% base types, b ::= 0 | 1 | b+b | b*b | x | @@x.b
+% combinator types, t ::= b <-> b
+% values, v ::= () | left v | right v | (v,v) | <v>
+%
+% isomorphisms, iso ::= swap+ | assocl+ | assocr+ | zeroe | zeroi
+%                   &|& swap* | assocl* | assocr* | identl* | identr* 
+%                   &|& dist | factor | id | fold | unfold
+% combinators, c ::= iso | sym c | c (;) c | c (*) c | c (+) c | trace c
+
+\end{block}
 \vfill
-\item Graphical language.  
-
+{{if = dist(;)((id(*)c1)(+)(id(*)c2))(;)factor}}
 \vfill
-\item Term language
 
-\vfill
-\item Interpretation in terms of type-isomorphisms or recursive types
-  and cancellation.
-
-\vfill
-\item Categorical interpretation: 
-
-  \begin{enumerate}
-  \item Traced Dagger symmetric monoidal categories (with two monoids). 
-  \item Categorification of a semi-ring with trace. 
-  \end{enumerate}
-
-\vfill
-\item Logically reversible and Information preserving. 
-
-\vfill
-\item Turing Complete. 
-
-\end{enumerate}
-
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Compilation : {{STLCfor ==> langArrT ==> Pi0}} }
-
-\begin{itemize}
-
-\vfill
-\item We can add information effects to get {{langArrT}}
-  \begin{itemize}
-  \item We add {{create}}, {{erase}} and other combinators as before.
-  \item We add an effectful {{trace}}.
-  \end{itemize}
-
-\vfill
-\item We can now compile a Turing complete language to {{langArrT}}. 
-  \begin{itemize}
-  \item We extend the previous language with a for-loop and numbers.
-  \item Handling effects in loops are complex. 
-  \end{itemize}
-
-\vfill
-\item Hence, Turing Complete. 
-
-\vfill
-\end{itemize}
-
-\begin{scriptsize}
-  (See ``Information Effects'', POPL 2012)
-\end{scriptsize}
 \end{frame}
 
 
@@ -2072,110 +1038,6 @@ For example, a meta-circular interpreter for {{Pi0}}
 \end{frame}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-  
-    \begin{center}
-      \framebox{ Duality of Computation }
-    \end{center}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{ Duality of Computation and Continuations }
-  
-  \begin{itemize}
-    \vfill
-  \item van Wijngaarden, Landin, Wadsworth, Fischer - Jumps,
-    Continuations, CPS
-    
-    \vfill
-  \item Felleisen, Sabry, Danvy - Operational Semantics, Delimited
-    Continuations, Inverse CPS
-    
-    \vfill
-  \item Filinski - Symmetric \lcal
-    \vfill
-  \item Wadler - ``Call-by-Value is Dual to Call-by-Name''. 
-    \vfill
-  \item Herbelin and Curien - $\mu\tilde{\mu}$
-    \vfill
-  \item Melli\'{e}s, Zeilberger, Munch-Maccagnoni, Krishnaswami.. 
-    \vfill
-  \end{itemize}
-
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{ Duality of Computation } 
-
-  \vfill
-  Filinski 89: 
-  \begin{itemize}
-  \vfill
-  \item Values are dual to continuations
-  \vfill
-  \item Functions are dual to delimited continuations
-  \vfill
-  \item Pairs allow choice of continuations
-    \begin{itemize}
-    \item Use first component or the second component
-    \end{itemize}
-
-  \vfill
-  \item Sums require pairs of continuations
-    \begin{itemize}
-    \item Sums require a pattern matching clause that provides both
-      continuations.
-    \end{itemize}
-
-  \vfill
-  \end{itemize}
-
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{ {{Pi}} : Good and bad} 
-
-\begin{itemize}
-
-  \vfill\item It is possible to \red{independently} extend \red{each}
-  symmetric monoidal structure to a compact closed one;
-
-  \vfill\item The two compact closed structures appear \red{incompatible}
-  with each other; 
-
-  \vfill\item It doesn't appear possible to get \red{one} notion of negation
-  like in propositional, classical, intuitionistic, and even linear logic;
-
-  \vfill\item It doesn't appear possible to get \red{one} notion of functions
-  like in most models of computation;
-
-\end{itemize}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Solution} 
-
-\begin{itemize}
-
-\vfill\item Keep trying to find the unifying structure, or:
-
-\pause
-
-\vfill\item Give up our preconceived notions about negation and functions,
-and investigate:
-\begin{itemize}
-\vfill\item \red{two} notions of negation; 
-\vfill\item \red{two} notions of functions; 
-\vfill\item \red{two} notions of duality; and 
-\vfill\item \red{two} notions of symmetry!
-\end{itemize}
-
-\end{itemize}
-
-\end{frame}
 
 
 \end{document}
