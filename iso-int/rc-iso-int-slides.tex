@@ -22,7 +22,6 @@
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\xcomment}[2]{\textbf{#1:~\textsl{#2}}}
 \newcommand{\amr}[1]{\xcomment{Amr}{#1}}
@@ -193,13 +192,14 @@
   \item Information Effects (POPL, 2012)
   \end{enumerate}
 
+\vfill
   \begin{itemize}
   \item The computational model {{Pi0}}.
   \item The idea that computation can preserve information/entropy.
   \item Information effects can be encapsulated by  a type-and-effect system. 
   \item Simple semantics, categorical connections, Turing complete.. etc.
   \end{itemize}
-
+\vfill
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -223,7 +223,7 @@
   \pause 
 
   \begin{center}
-    It's not obvious how to write any interesting programs in it. 
+    It's not obvious how to write any interesting programs in {{Pi0}}. 
   \end{center}
   \vfill
 
@@ -460,16 +460,16 @@ Take {{bool}}, {{true}} and {{false}} as {{1+1}}, {{left()}}, {{right ()}}
 This is a conditional statement, like {{if}}.
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Values and their Types}
-The universal reversible Toffoli gate. 
-\vfill
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \begin{frame}[fragile]{Values and their Types}
+%% The universal reversible Toffoli gate. 
+%% \vfill
 
-\dgm{toffoli}
+%% \dgm{toffoli}
 
-\vfill
-Complete for boolean circuits.
-\end{frame}
+%% \vfill
+%% Complete for boolean circuits.
+%% \end{frame}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -593,7 +593,6 @@ This gives us all the types 0, 1, 2, 3 ...
 
 \vfill
 \pause
-Values that inhabit the types:
 
 \begin{enumerate}
 \item 
@@ -609,10 +608,27 @@ Values that inhabit the types:
 \item 
 {{left v elem b1+b2}} if {{v elem b1}}
 
-\pause
 {{right v elem b1+b2}} if {{v elem b2}}
 
 \end{enumerate}
+
+\pause
+
+%subcode{proof} include main
+%@ ~
+%@@ |- () : 1
+%
+%@ |- v1 : b1
+%@ |- v2 : b2
+%@@ |- (v1, v2) : b1 * b2
+%
+%@ |- v : b1
+%@@ |- left v  : b1 + b2
+%
+%@ |- v : b2
+%@@ |- right v : b1 + b2  
+
+
 
 \end{frame}
 
@@ -960,27 +976,32 @@ What are the rules that determine how wires can be drawn?
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{ The language {{Pi0}} }
+\frametitle{ An Example }
 
 % A programming language emerges:
 
-\begin{block}
+%% \begin{block}
 
-%subcode{bnf} include main 
-% base types, b ::= 0 | 1 | b+b | b*b | x | @@x.b
-% combinator types, t ::= b <-> b
-% values, v ::= () | left v | right v | (v,v) | <v>
-%
-% isomorphisms, iso ::= swap+ | assocl+ | assocr+ | zeroe | zeroi
-%                   &|& swap* | assocl* | assocr* | identl* | identr* 
-%                   &|& dist | factor | id | fold | unfold
-% combinators, c ::= iso | sym c | c (;) c | c (*) c | c (+) c | trace c
+%% %subcode{bnf} include main 
+%% % base types, b ::= 0 | 1 | b+b | b*b | x | @@x.b
+%% % combinator types, t ::= b <-> b
+%% % values, v ::= () | left v | right v | (v,v) | <v>
+%% %
+%% % isomorphisms, iso ::= swap+ | assocl+ | assocr+ | zeroe | zeroi
+%% %                   &|& swap* | assocl* | assocr* | identl* | identr* 
+%% %                   &|& dist | factor | id | fold | unfold
+%% % combinators, c ::= iso | sym c | c (;) c | c (*) c | c (+) c | trace c
 
-\end{block}
+%% \end{block}
+
 \vfill
 {{if = dist(;)((id(*)c1)(+)(id(*)c2))(;)factor}}
 \vfill
 
+\dgm{if-c1-c2}
+
+
+\vfill
 \end{frame}
 
 
