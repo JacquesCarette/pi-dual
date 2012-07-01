@@ -186,6 +186,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Context}
+\vfill
 
   \begin{enumerate}
   \item Dagger Traced Symmetric Monoidal Categories and Reversible Computation (Wip RC, 2011)
@@ -193,6 +194,8 @@
   \end{enumerate}
 
 \vfill
+
+Established the following:
   \begin{itemize}
   \item The computational model {{Pi0}}.
   \item The idea that computation can preserve information/entropy.
@@ -223,7 +226,7 @@
   \pause 
 
   \begin{center}
-    It's not obvious how to write any interesting programs in {{Pi0}}. 
+    \red{It's not obvious how to write any interesting programs in {{Pi0}}. }
   \end{center}
   \vfill
 
@@ -1022,17 +1025,19 @@ What are the rules that determine how wires can be drawn?
 \item Machine states {{<n, n>}}
 \item Start state {{<n, 0>}}
 \item Stop state {{<0, n>}}
+\item Logically reversible
 \end{enumerate}
 
 \end{center}
 
 \vfill
 
-{{<3, 0>}}
-{{|--> <2, 1>}}
-{{|--> <1, 2>}}
-{{|--> <0, 3>}}
-
+\begin{center}
+  {{<3, 0>}}
+  {{|--> <2, 1>}}
+  {{|--> <1, 2>}}
+  {{|--> <0, 3>}}
+\end{center}
 \vfill
 \end{frame}
 
@@ -1213,9 +1218,80 @@ Equations:
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Exposing start and stop states}
+\begin{frame}{Completed {{Pi0}} program}
 
+\vfill
+  \begin{center}
+    {{<n+1, m> |--> <n, m+1>}}
+  \end{center}
+
+\vfill
 \iso[0.9]{nat-nat8}
+\vfill
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Another Simple Machine : Stuck States}
+
+\vfill
+
+\begin{block}
+
+  \begin{center}
+    {{<n+1, m, p> |--> <n, m+1, p+1>}}
+
+    Start {{<n, m, 0>}}
+
+    Stop {{<0, m, p>}}
+
+  \end{center}
+\end{block}
+\vfill
+
+\begin{itemize}
+\item 
+Acts like an adder:
+ {{<n, m, 0> |-->* <0, m+n, n>}} 
+
+\pause
+\item
+Problem: ``stuck states'' on reverse execution:
+{{<0, 1, 2> |--> <1, 0, 1> |--> ? }}
+
+\end{itemize}
+
+\pause
+\vfill
+\iso[0.7]{adder4}
+\vfill
+
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Overview}
+
+  \begin{enumerate}
+\vfill
+  \item Systematic translation
+\vfill
+  \item Applies to logically reversible small-step abstract machines
+    \begin{enumerate}
+    \item Clear start and stop states
+    \item Each reduction rule must be reversible
+    \item Stuck states.
+    \end{enumerate}
+\vfill
+  \item Scales well to large machines
+    \begin{enumerate}
+    \item Small examples with numbers
+    \item Tree traversal
+    \item Metacircular interpreter for {{Pi0}}
+    \end{enumerate}
+
+  \end{enumerate}
+\vfill
 
 \end{frame}
 
@@ -1274,6 +1350,70 @@ For example, a meta-circular interpreter for {{Pi0}}
 \end{scriptsize}
 \end{frame}
 
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Open Question}
+
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Challenge}
+
+\pause
+  \begin{center}
+    \red{Can we implement {{Pi0}} in hardware? }
+  \end{center}
+
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Challenge : Thoughts}
+
+\begin{itemize}
+
+\vfill
+\item What is {{Pi0}}? 
+  \begin{itemize}
+  \item Lots of wires... and shuffling
+  \item Distribute/Factor = Mux/Demux -- i.e. no transistors. 
+  \item Trace = Feedback loops
+  \end{itemize}
+
+\vfill
+\item Types? 
+  \begin{itemize}
+  \item Information carrying content of wires
+  \item Some sort of ``fidelity''
+  \end{itemize}
+
+\end{itemize}
+\vfill
+
+\end{frame}
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Challenge : Thoughts}
+
+\begin{itemize}
+
+\vfill
+\item SQUIDs
+  \begin{itemize}
+  \item 2-3 degrees Kelvin we get superconductivity 
+  \item Chips for satellites
+  \end{itemize}
+
+\vfill
+\item We don't know much about hardware
+  \begin{itemize}
+  \item But we'd be excited to collborate
+  \end{itemize}
+
+\end{itemize}
+\vfill
+
+\end{frame}
 
 
 
