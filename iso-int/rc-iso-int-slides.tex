@@ -1004,6 +1004,222 @@ What are the rules that determine how wires can be drawn?
 \vfill
 \end{frame}
 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{ Simple Abstract Machine }
+
+\begin{center}
+
+\vfill
+
+{{n,m = 0 ~|~ n + 1 }}
+
+\vfill
+{{<n+1, m> |--> <n, m+1>}}
+
+\vfill
+\begin{enumerate}
+\item Machine states {{<n, n>}}
+\item Start state {{<n, 0>}}
+\item Stop state {{<0, n>}}
+\end{enumerate}
+
+\end{center}
+
+\vfill
+
+{{<3, 0>}}
+{{|--> <2, 1>}}
+{{|--> <1, 2>}}
+{{|--> <0, 3>}}
+
+\vfill
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Goal}
+
+Translate the abstract machine to a {{Pi0}} circuit. 
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Start by examining the machine states}
+
+\vfill
+
+\begin{center}
+  {{<n+1, m> |--> <n, m+1>}}
+\end{center}
+
+\vfill
+\pause
+
+\iso[0.9]{nat-nat2}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Start by examining the machine states}
+
+\vfill
+
+\begin{center}
+  {{<n+1, m> |--> <n, m+1>}}
+\end{center}
+
+\vfill
+
+\iso[0.8]{nat-nat3}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Start by examining the machine states}
+
+\vfill
+
+\begin{center}
+  {{<n+1, m> |--> <n, m+1>}}
+\end{center}
+
+\vfill
+
+\iso[0.8]{nat-nat4}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Reductions maps input states to output states}
+
+\vfill
+
+\begin{center}
+  {{<n+1, m> |--> <n, m+1>}}
+\end{center}
+
+\vfill
+{{<n, m>}} becomes {{<n', m'>}}
+
+Equations:
+
+{{n' = n-1}}
+
+{{m' = m + 1}}
+
+\vfill
+
+\pause
+
+\iso[0.8]{nat-nat4}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Reductions maps input states to output states}
+
+\vfill
+
+\begin{center}
+  {{<n+1, m> |--> <n, m+1>}}
+\end{center}
+
+\vfill
+{{<n, m>}} becomes {{<n', m'>}}
+
+Equations:
+
+{{n' = n-1}}
+
+{{m' = m + 1}}
+
+\vfill
+
+
+\iso[0.8]{nat-nat5}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Start and stop states}
+
+\iso[0.8]{nat-nat5}
+
+\vfill
+\begin{enumerate}
+\item Start state {{<n, 0>}}
+\item Stop state {{<0, n>}}
+\end{enumerate}
+
+\pause
+
+\begin{center}
+  We need to expose the start and stop states. 
+\end{center}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Start and stop states}
+
+\iso[0.8]{nat-nat5}
+
+
+\vfill
+  \begin{itemize}
+  \item Given a start state {{<n, 0>}}
+\vfill
+  \item Produce an output state {{<0, n>}}
+\vfill
+  \item All the other {{<n, m>}} states are internal, intermediate... 
+  \end{itemize}
+\vfill
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Exposing start and stop states}
+
+\iso[0.75]{nat-nat5}
+
+\pause
+\iso[0.75]{nat-nat6}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Exposing start and stop states}
+
+\iso[0.70]{nat-nat6}
+
+\pause
+\iso[0.70]{nat-nat7}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Exposing start and stop states}
+
+\iso[0.75]{nat-nat7}
+
+\pause
+\iso[0.75]{nat-nat8}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Exposing start and stop states}
+
+\iso[0.9]{nat-nat8}
+
+\end{frame}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
