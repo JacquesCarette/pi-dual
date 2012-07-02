@@ -1009,6 +1009,35 @@ What are the rules that determine how wires can be drawn?
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\frametitle{ Problem }
+
+\begin{center}
+  \vfill
+  How do we build programs in {{Pi0}}?
+
+  \vfill
+  \pause
+  Compile \red{small-step operational semantics} to {{Pi0}}.
+\end{center}
+\vfill
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{ Problem }
+
+\begin{center}
+  \vfill
+  How do we build programs in {{Pi0}}?
+
+  \vfill
+  Compile \red{logically reversible} small-step operational semantics to {{Pi0}}.
+\end{center}
+\vfill
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
 \frametitle{ Simple Abstract Machine }
 
 \begin{center}
@@ -1044,7 +1073,9 @@ What are the rules that determine how wires can be drawn?
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Goal}
 
-Translate the abstract machine to a {{Pi0}} circuit. 
+  \begin{center}
+    Translate the abstract machine to a {{Pi0}} circuit. 
+  \end{center}
 
 \end{frame}
 
@@ -1262,40 +1293,11 @@ Problem: ``stuck states'' on reverse execution:
 
 \end{itemize}
 
-\pause
 \vfill
-\iso[0.7]{adder4}
-\vfill
-
-\end{frame}
-
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Overview}
-
-  \begin{enumerate}
-\vfill
-  \item Systematic translation
-\vfill
-  \item Applies to logically reversible small-step abstract machines
-    \begin{enumerate}
-    \item Clear start and stop states
-    \item Each reduction rule must be reversible
-    \item Stuck states.
-    \end{enumerate}
-\vfill
-  \item Scales well to large machines
-    \begin{enumerate}
-    \item Small examples with numbers
-    \item Tree traversal
-    \item Metacircular interpreter for {{Pi0}}
-    \end{enumerate}
-
-  \end{enumerate}
+\iso[0.7]{adder3}
 \vfill
 
 \end{frame}
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
@@ -1351,6 +1353,54 @@ For example, a meta-circular interpreter for {{Pi0}}
 \end{frame}
 
 
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Steps}
+
+  \begin{enumerate}
+\vfill
+\item Expand the input and output machine states.
+\vfill
+\item Make choices about stuck states. 
+\vfill
+\item Connect related machine states based on the reduction rules.
+\vfill
+\item Expose start and stop states. 
+  \end{enumerate}
+\vfill
+
+\end{frame}
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Overview}
+
+  \begin{enumerate}
+\vfill
+  \item Systematic translation
+\vfill
+  \item Applies to logically reversible small-step abstract machines
+    \begin{enumerate}
+    \item Clear start and stop states
+    \item Each reduction rule must be reversible
+    \item Stuck states.
+    \end{enumerate}
+\vfill
+  \item Scales well to large machines
+    \begin{enumerate}
+    \item Small examples with numbers
+    \item Tree traversal
+    \item Metacircular interpreter for {{Pi0}}
+    \end{enumerate}
+
+  \end{enumerate}
+\vfill
+
+\end{frame}
+
+
+
+
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Open Question}
 
@@ -1386,35 +1436,27 @@ For example, a meta-circular interpreter for {{Pi0}}
   \item Some sort of ``fidelity''
   \end{itemize}
 
+\vfill
+\item Example. Superconductivity
+  \begin{itemize}
+  \item SQUID
+  \item Rapid Single Flux Quantum MUX and DEMUX
+  \end{itemize}
+
 \end{itemize}
 \vfill
 
 \end{frame}
-
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Challenge : Thoughts}
+\begin{frame}
 
-\begin{itemize}
+  \begin{center}
+    Thank you.
+  \end{center}
 
-\vfill
-\item SQUIDs
-  \begin{itemize}
-  \item 2-3 degrees Kelvin we get superconductivity 
-  \item Chips for satellites
-  \end{itemize}
-
-\vfill
-\item We don't know much about hardware
-  \begin{itemize}
-  \item But we'd be excited to collborate
-  \end{itemize}
-
-\end{itemize}
-\vfill
 
 \end{frame}
-
 
 
 \end{document}
