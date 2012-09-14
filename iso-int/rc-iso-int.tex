@@ -23,6 +23,7 @@
 %! (*) = \times
 %! (+) = +
 
+
 %subcode-inline{bnf-inline} regex \{\{(((\}[^\}])|[^\}])*)\}\} name main include langRev
 %! [^ = \ulcorner
 %! ^] = \urcorner
@@ -697,7 +698,7 @@ The completed interpreter is given below:
 %% to give them a more direct characterization purely in terms of logical
 %% reversibility of the small-step semantics. 
 
-\paragraph*{Steps of the Construction.}
+\subsection{Steps of the Construction.}
 
 Although trivial, the previous example captures the fundamental aspects of
 our construction. In general, our starting point is an abstract machine in
@@ -706,12 +707,18 @@ logical reversibility in this setting is captured by Abramsky's
 \emph{bi-orthogonal automata}~\cite[Sec.~2]{abramsky2005structural} which is
 summarized as:
 \begin{enumerate}
+\item 
+ Machine states are described as tuples whose components are algebraic
+ data types. In the above example we used only the {{nat}} data type
+ and tuples of the form {{<n, m>}}.
 \item
   Machines must have distinguishable start and stop states. There may
   be more than one valid start state and more than one valid stop
-  state, however.
+  state, however. 
+
 \item Each valid machine state must match a unique pattern on the
-  left-hand side and right-hand side of the `{{|-->}}' relation.
+  left-hand side and right-hand side of the `{{|-->}}' relation. 
+
 \item Every reduction step must be computable (in {{langRevT}}), must
   not drop or duplicate pattern variables and must be logically
   reversible --- i.e. it must be possible to reduce from right to
@@ -1035,51 +1042,63 @@ and output sides.
 \subsection{Parity Translation }
 \label{sec:parity-int}
 
-While the previous machines expressed traversals of the values with
-input values reflected in the outputs, the following machine
-translates one recursive type to another. Consider the type {{nat}}
-(defined to be {{@@x.1+x}}) and its parity encoded version {{parity}}
-(defined to be {{@@x.1+(1+x)}}). Algebraically, we may write:
+Deriving {{langRevT}} combinators from abstract machines can sometimes
+be used as an efficient indirect way of programming in {{langRevT}}.
+Say we wished to build a {{langRevT}} combinator to map {{nat}} to a
+parity encoded version {{par = @@x.1+(1+x)}}. Since {{par}} is not a
+fixed unfolding of {{nat}}, it is not immediately apparent how such a
+combinator can be constructed.
+
+Instead of directly programming in {{langRevT}}, one can derive the
+required {{nat<->par}} combinator by first constructing an abstract
+machine that maps {{nat}} to {{par}}. We first express {{nat}} and
+{{par}} algebraically and then develop a logically reversible abstract
+machine expressing the translation:
+
+
+
+% Algebraically, we may write:
+
+%% %subcode{bnf} include main
+%% % Numbers, n, m = 0 | n + 1
+%% % Parity, par = zero | one | plus2 par
+
+%% While it is apparent that there is a natural one to one correspondence
+%% between their values, it is non-obvious how this can be expressed as a
+%% {{langRevT}} isomorphism. This map can be expressed in terms of the
+%% algebraic type definitions as shown below:
+
+%% %subcode{opsem} include main
+%% %! columnStyle = ||c|r||
+%% % 0 & even
+%% % 1 & odd
+%% % 2 & A even
+%% % 3 & A odd
+%% % 4 & A (A even)
+%% % ... &  ...
+
+%% \indent
+%% and in terms of their {{langRevT}} type encodings as shown below:
+
+%% %subcode{opsem} include main
+%% %! columnStyle = ||c|c||
+%% % <left ()> & <left ()>
+%% % <right <left ()>> & <right left ()>
+%% % <right <right <left ()> > > & <right right <left ()>>
+%% % <right <right <right <left ()>> >> & <right right <right left ()>>
+%% % <right <right <right <right <left ()>> >> > & <right right <right right <left ()> > >
+%% % ... &  ...
+
+% \noindent
+
 
 %subcode{bnf} include main
 % Numbers, n, m = 0 | n + 1
 % Parity, par = even | odd | A par
-
-
-
-
-While it is apparent that there is a natural one to one correspondence
-between their values, it is non-obvious how this can be expressed as a
-{{langRevT}} isomorphism. This map can be expressed in terms of the
-algebraic type definitions as shown below:
-
-%subcode{opsem} include main
-%! columnStyle = ||c|r||
-% 0 & even
-% 1 & odd
-% 2 & A even
-% 3 & A odd
-% 4 & A (A even)
-% ... &  ...
-
-\indent
-and in terms of their {{langRevT}} type encodings as shown below:
-
-%subcode{opsem} include main
-%! columnStyle = ||c|c||
-% <left ()> & <left ()>
-% <right <left ()>> & <right left ()>
-% <right <right <left ()> > > & <right right <left ()>>
-% <right <right <right <left ()>> >> & <right right <right left ()>>
-% <right <right <right <right <left ()>> >> > & <right right <right right <left ()> > >
-% ... &  ...
+%
 
 \noindent
-Instead of directly programming in {{langRevT}}, one can derive a
-{{langRevT}} combinator for this purpose by first constructing an
-abstract machine that maps {{nat}} to {{parity}}.  A logically
-reversible abstract machine expressing the translation may be defined
-as follows:
+Machine States:
 
 %subcode{bnf} include main
 % Machine states = <nat, nat> | {[parity, nat]}
@@ -1095,9 +1114,9 @@ Machine Reductions:
 % <(n+1)+1, m> &|-->& <n, m+1>
 % {[par, m+1]} &|-->& {[A par, m]}
 
-The construction of the {{langRevT}} combinator is straightforward and
-proceeds as before. The partial combinator representing the wiring of
-machine reductions is shown below.
+The construction of the {{langRevT}} combinator is
+straightforward and proceeds as before. The partial combinator
+representing the wiring of machine reductions is shown below.
 
 \begin{center}
 \scalebox{1.0}{
