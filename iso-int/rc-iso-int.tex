@@ -902,6 +902,8 @@ We show the generality of our construction by applying it to two non-trivial
 examples: a tree traversal and a meta-circular interpreter for
 {{langRevT}}.
 
+
+
 %%%%%%%%%%%%%%%%%%
 \subsection{Tree Traversal}
 \label{sec:tree}
@@ -1027,6 +1029,84 @@ the reductions that we would like:
 This essentially completes the construction of the (partially) isomorphic
 tree-traversal interpreter, except for the final step which slides the input
 and output sides. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Parity Translation }
+\label{sec:parity-int}
+
+While the previous machines expressed traversals of the values with
+input values reflected in the outputs, the following machine
+translates one recursive type to another. Consider the type {{nat}}
+(defined to be {{@@x.1+x}}) and its parity encoded version {{parity}}
+(defined to be {{@@x.1+(1+x)}}). Algebraically, we may write:
+
+%subcode{bnf} include main
+% Numbers, n, m = 0 | n + 1
+% Parity, par = even | odd | A par
+
+
+
+
+While it is apparent that there is a natural one to one correspondence
+between their values, it is non-obvious how this can be expressed as a
+{{langRevT}} isomorphism. This map can be expressed in terms of the
+algebraic type definitions as shown below:
+
+%subcode{opsem} include main
+%! columnStyle = ||c|r||
+% 0 & even
+% 1 & odd
+% 2 & A even
+% 3 & A odd
+% 4 & A (A even)
+% ... &  ...
+
+\indent
+and in terms of their {{langRevT}} type encodings as shown below:
+
+%subcode{opsem} include main
+%! columnStyle = ||c|c||
+% <left ()> & <left ()>
+% <right <left ()>> & <right left ()>
+% <right <right <left ()> > > & <right right <left ()>>
+% <right <right <right <left ()>> >> & <right right <right left ()>>
+% <right <right <right <right <left ()>> >> > & <right right <right right <left ()> > >
+% ... &  ...
+
+\noindent
+Instead of directly programming in {{langRevT}}, one can derive a
+{{langRevT}} combinator for this purpose by first constructing an
+abstract machine that maps {{nat}} to {{parity}}.  A logically
+reversible abstract machine expressing the translation may be defined
+as follows:
+
+%subcode{bnf} include main
+% Machine states = <nat, nat> | {[parity, nat]}
+% Start state = <n , 0>
+% Stop state =  {[par, 0]}
+
+\noindent
+Machine Reductions:
+%subcode{opsem} include main
+%! columnStyle = rclr
+% <0, m> &|-->& {[even, m]}
+% <1, m> &|-->& {[odd, m]}
+% <(n+1)+1, m> &|-->& <n, m+1>
+% {[par, m+1]} &|-->& {[A par, m]}
+
+The construction of the {{langRevT}} combinator is straightforward and
+proceeds as before. The partial combinator representing the wiring of
+machine reductions is shown below.
+
+\begin{center}
+\scalebox{1.0}{
+  \includegraphics{diagrams/nat-parity.pdf}
+}
+\end{center}
+
+\noindent
+We thank Fritz Henglein for the motivation underlying this example.
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{A {{langRevT}} Interpreter}
