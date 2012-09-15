@@ -249,4 +249,5 @@ test5 = eval justTimes2 (Left (), Right ())
 test6 :: MonadPlus m => m Zero
 test6 = eval cohTimes (undefined::Zero)
 test6s = test6 :: [Zero]
+
 ------------------------------------------------------------------------------
