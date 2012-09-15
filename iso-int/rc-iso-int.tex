@@ -493,26 +493,27 @@ the flow of waves and particles along the wires.
 \subsection{Universality.} 
 As an example, consider the implementation of the Toffoli gate below,
 which establishes that {{langRevT}} is complete for combinational
-circuits. This encoding uses the type {{1+1}} as {{bool}} and values
-{{left ()}} and {{right()}} as {{true}} and {{false}}.  Boolean
-negation not is simply {{swap+}}. The Toffoli gate takes three boolean
-inputs: if the first two inputs are {{true}} then the third is
-negated. 
+circuits. The Toffoli gate takes three boolean inputs: if the first
+two inputs are {{true}} then the third is negated. This encoding uses
+the type {{1+1}} as {{bool}} and values {{left ()}} and {{right()}} as
+{{true}} and {{false}}.  Boolean negation, {{not : bool<->bool}}, is
+simply {{swap+}}.
 
 Even though {{langRevT}} lacks conditional expressions, they are
-expressible using the distributivity laws as we demonstrate.  Given
-any combinator {{c : b <-> b}} we can construct a combinator called
-{{if_c : bool*b <-> bool*b}} in terms of {{c}}, where {{if_c}}
-behaves like a one-armed if-expression. If the supplied boolean is
-true then the combinator {{c}} is used to transform the value of type
-{{b}}. If the boolean is {{false}}, then the value of type {{b}}
-remains unchanged. We can write down the combinator for {{if_c}} in
-terms of {{c}} as {{distrib (;) ((id (*) c) (+) id) (;) factor}}.
+expressible using the distributivity laws.  Given any combinator
+{{c:b<->b}}, we can construct a combinator called
+{{if_c:bool*b<->bool*b}} in terms of {{c}}, which behaves
+like a one-armed if-expression. If the supplied boolean is {{true}} then
+the combinator {{c}} is used to transform the value of type {{b}}. If
+the boolean is {{false}} then the value of type {{b}} remains
+unchanged. We can write down the combinator for {{if_c}} in terms of
+{{c}} as {{distrib (;) ((id (*) c) (+) id) (;) factor}}.
 
 Given {{if_c}}, constructing the Toffoli gate is straightforward. If
-we choose {{c}} to be {{not}} we get {{if_{not} }} which is
-{{cnot:bool*bool<->bool*bool}} and {{if_{cnot} }} is the required
-{{toffoli : bool * (bool * bool) <-> bool * (bool * bool)}}, drawn
+we choose {{c}} to be {{not}} we get {{if_{not} }} which is controlled-not,
+{{cnot:bool*bool<->bool*bool}}. Further, {{if_{cnot} }} is the required
+Toffoli gate, 
+{{toffoli : bool * (bool * bool) <-> bool * (bool * bool)}}, and is drawn
 below.
 \begin{center}
 \scalebox{1.2}{
@@ -527,42 +528,42 @@ iteration --- to {{langRevT}}.
 \subsection{Numeric Operations.}
 \label{sec:numeric-ops}
 
-In {{langRevT}} we encode numbers, {{nat = 0 ~|~ n + 1}}, using the
-recursive type {{@@x.1+x}}. The {{fold}}/{{unfold}} isomorphisms for
+We encode numbers, {{nat = 0 ~|~ n + 1}}, using the
+recursive {{langRevT}} type {{@@x.1+x}}. The {{fold}}/{{unfold}} isomorphisms for
 {{nat}} are {{unfold : nat <-> 1+nat : fold}}.
 \begin{multicols}{3}
 \begin{center}
-\scalebox{0.8}{
+\scalebox{0.9}{
   \includegraphics{diagrams/unfold_nat.pdf}
 }
 \end{center}
 
 \begin{center}
-\scalebox{0.8}{
+\scalebox{0.9}{
   \includegraphics{diagrams/fold_nat.pdf}
 }
 \end{center}
 
 \begin{center}
-\scalebox{0.8}{
+\scalebox{0.9}{
   \includegraphics{diagrams/add1.pdf}
 }
 \end{center}
 \end{multicols}
-The triangle on the left denotes the {{unfold}} isomorphism, which
+The combinator on the left denotes the {{unfold}} isomorphism, which
 works as follows: If the number {{n}} is zero, the output is the top
 branch which has type~{{1}}. If the number is non-zero, the output is
-on the bottom branch and has value {{n-1}}. The triangle in the middle
-is the dual {{fold}} isomorphism.  
+on the bottom branch and has value {{n-1}}. The combinator in the middle
+is its dual {{fold}} isomorphism.  
 
 As explained in previous work
 \cite[Sec.~4.2]{James:2012:IE:2103656.2103667}, numeric addition and
 subtraction can be expressed in {{langRevT}} as partial
-isomorphisms. The combinator on the right above is
-{{add1:nat<->nat}}. It acts like the successor function returning
-{{n+1}} for all inputs {{n}}. Its adjoint {{sub1:nat<->nat}}, which we
-get by flipping the diagram right to left, diverges on input {{0}} and
-returns {{n-1}} for all other inputs {{n}}.
+isomorphisms: The combinator on the right, {{add1:nat<->nat}}, acts
+like the successor function returning {{n+1}} for all inputs
+{{n}}. Its adjoint, {{sub1}}, obtained by flipping the
+diagram right to left, is a partial map that diverges on input {{0}}
+and returns {{n-1}} for all other inputs {{n}}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simple Bounded Number Iteration}
@@ -1101,26 +1102,26 @@ and output sides.
 \label{sec:parity-int}
 
 Deriving {{langRevT}} combinators from abstract machines can sometimes
-be used as an efficient indirect way of programming in {{langRevT}}.
-It is well known that every number {{n}} can be represented as
-{{2a+0}} or {{2a+1}} depending on whether it is odd or even.  The
-later can be viewed as the algebraic data type
-{{par=odd~|~even~|~A~par}} such that 
-{{0 = even, 1 = odd, 2 = A even, 3 = A odd, 4 = A (A even)}} etc where
-the nesting of {{A}} constructor indicates the value of {{a}}.
+be used as an efficient indirect way to program in {{langRevT}}.  It
+is well known that every number {{n}} can be represented as {{2a+0}}
+or {{2a+1}}, depending on whether it is odd or even.  The later can be
+represented by the algebraic data type {{par=odd~|~even~|~A~par}}
+where the nesting of {{A}} constructor indicates the value of
+{{a}}. For example 
+{{0 = even, 1 = odd, 2 = A even, 3 = A odd, 4 = A (A even)}} etc.
 
 
 Say we wish to build a {{langRevT}} combinator to map {{nat}} to its
-parity encoded version {{par}}, expressible as the {{langRevT}} type
-{{@@x.(1+1)+x}}. Since {{par}} is not a fixed unfolding of {{nat}}
-({{@@x.1+x}}), it is not immediately apparent how such a combinator
-can be constructed.
+parity encoded version {{par}}. While the type {{par}} is expressible
+as {{@@x.(1+1)+x}} in {{langRevT}}, it is not a fixed unfolding of
+{{nat = @@x.1+x}} and hence it is not immediately apparent how such a
+combinator can be constructed.
 
-Instead of directly programming in {{langRevT}}, one can derive the
-required {{nat<->par}} combinator by first constructing an abstract
-machine that maps {{nat}} to {{par}}. We first express {{nat}} and
-{{par}} algebraically and then develop a logically reversible abstract
-machine expressing the translation:
+Instead of directly programming in {{langRevT}} however, one can
+derive the required {{nat<->par}} combinator by first constructing an
+abstract machine that maps {{nat}} to {{par}} and then translating it
+to {{langRevT}}. We first express {{nat}} and {{par}} algebraically
+and then develop a logically reversible abstract machine:
 
 
 
@@ -1181,7 +1182,7 @@ Machine Reductions:
 % <(n+1)+1, m> &|-->& <n, m+1>
 % {[par, m+1]} &|-->& {[A par, m]}
 
-The construction of the {{langRevT}} combinator is
+The derivation of the {{langRevT}} combinator is
 straightforward and proceeds as before. The partial combinator
 representing the wiring of machine reductions is shown below.
 
