@@ -475,7 +475,7 @@ the flow of waves and particles along the wires.
 
 \item Operations {{fold}} and {{unfold}} are specific to each recursive
   data type and are drawn as triangular boxes. For instance,
-  Sec. \ref{sec:bounded} shows {{fold}}/{{unfold}} isomorphisms for
+  Sec. \ref{sec:numeric-ops} shows {{fold}}/{{unfold}} isomorphisms for
   numbers, {{nat=@@x.(1+x)}}.
 
 \item The {{trace+}} operation is drawn as a looped circuit, where the
@@ -490,7 +490,7 @@ the flow of waves and particles along the wires.
 
 \end{itemize}
 
-\paragraph*{Universality.} 
+\subsection{Universality.} 
 As an example, consider the implementation of the Toffoli gate below,
 which establishes that {{langRevT}} is complete for combinational
 circuits. This encoding uses the type {{1+1}} as {{bool}} and values
@@ -523,6 +523,46 @@ below.
 establishes that {{langRevT}} is Turing complete by showing the compilation
 of a Turing complete language --- a first-order language with numbers and
 iteration --- to {{langRevT}}.
+
+\subsection{Numeric Operations.}
+\label{sec:numeric-ops}
+
+In {{langRevT}} we encode numbers, {{nat = 0 ~|~ n + 1}}, using the
+recursive type {{@@x.1+x}}. The {{fold}}/{{unfold}} isomorphisms for
+{{nat}} are {{unfold : nat <-> 1+nat : fold}}.
+\begin{multicols}{3}
+\begin{center}
+\scalebox{0.8}{
+  \includegraphics{diagrams/unfold_nat.pdf}
+}
+\end{center}
+
+\begin{center}
+\scalebox{0.8}{
+  \includegraphics{diagrams/fold_nat.pdf}
+}
+\end{center}
+
+\begin{center}
+\scalebox{0.8}{
+  \includegraphics{diagrams/add1.pdf}
+}
+\end{center}
+\end{multicols}
+The triangle on the left denotes the {{unfold}} isomorphism, which
+works as follows: If the number {{n}} is zero, the output is the top
+branch which has type~{{1}}. If the number is non-zero, the output is
+on the bottom branch and has value {{n-1}}. The triangle in the middle
+is the dual {{fold}} isomorphism.  
+
+As explained in previous work
+\cite[Sec.~4.2]{James:2012:IE:2103656.2103667}, numeric addition and
+subtraction can be expressed in {{langRevT}} as partial
+isomorphisms. The combinator on the right above is
+{{add1:nat<->nat}}. It acts like the successor function returning
+{{n+1}} for all inputs {{n}}. Its adjoint {{sub1:nat<->nat}}, which we
+get by flipping the diagram right to left, diverges on input {{0}} and
+returns {{n-1}} for all other inputs {{n}}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simple Bounded Number Iteration}
@@ -564,8 +604,10 @@ also~3 steps.
 
 Our goal is to implement this abstract machine in {{langRevT}}. We start by
 writing a combinator {{c : nat * nat <-> nat * nat}} that executes one step
-of the machine transition. Here {{nat}} is an abbreviation for the recursive
-type {{@@x.1+x}}. The combinator, when iterated, should map {{(n,0)}} to
+of the machine transition. 
+%% Here {{nat}} is an abbreviation for the recursive
+%% type {{@@x.1+x}}. 
+The combinator, when iterated, should map {{(n,0)}} to
 {{(0,n)}} by precisely mimicking the steps of the abstract machine. Let us
 analyze this desired combinator {{c}} in detail starting from its interface:
 
@@ -581,11 +623,7 @@ its structure and the second {{nat}} is folded to reconstruct it:
   \includegraphics{diagrams/nat-nat3.pdf}
 \end{center}
 
-The triangle on the left denotes the {{unfold}} isomorphism, which works as
-follows: If the number {{n}} is zero, the output is the top branch which has
-type~{{1}}. If the number is non-zero, the output is on the bottom branch
-and has value {{n-1}}. The triangle on the right is the dual {{fold}}
-isomorphism.  We now use distribution to isolate each possible machine state:
+We now use distribution to isolate each possible machine state:
 
 %% by distributing on the
 %% input. Dually let us do the same with the output, but this time also
@@ -815,9 +853,8 @@ just a manifestation of this general problem. The common solutions are:
 \item \emph{Diverge.}  Another standard approach in dealing with stuck states
   is to make the machine diverge or leave the output undefined or
   unobservable in some way. If the specific case of the machine above, we can
-  use a primitive {{add1}} whose dual {{sub1}} is undefined when applied to
-  {{0}}. (Such a primitive is definable in
-  {{langRevT}}~\cite[Sec.~4.2]{James:2012:IE:2103656.2103667}.)
+  use the primitive {{add1}} whose dual {{sub1}} is undefined when applied to
+  {{0}} (see Sec.~\ref{sec:numeric-ops}).
 
 \item \emph{Stop the machine.}  Alternatively, we can consider the stuck
   state as a valid final state. In the case of the example above, we would
