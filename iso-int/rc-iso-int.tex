@@ -491,12 +491,33 @@ the flow of waves and particles along the wires.
 \end{itemize}
 
 \paragraph*{Universality.} 
-As an example, consider the implementation of the Toffoli gate below, which
-establishes that {{langRevT}} is complete for combinational circuits. This
-encoding uses the type {{1+1}} as {{bool}} and values {{left ()}} and
-{{right()}} as {{true}} and {{false}}:
+As an example, consider the implementation of the Toffoli gate below,
+which establishes that {{langRevT}} is complete for combinational
+circuits. This encoding uses the type {{1+1}} as {{bool}} and values
+{{left ()}} and {{right()}} as {{true}} and {{false}}.  Boolean
+negation not is simply {{swap+}}. The Toffoli gate takes three boolean
+inputs: if the first two inputs are {{true}} then the third is
+negated. 
+
+Even though {{langRevT}} lacks conditional expressions, they are
+expressible using the distributivity laws as we demonstrate.  Given
+any combinator {{c : b <-> b}} we can construct a combinator called
+{{if_c : bool*b <-> bool*b}} in terms of {{c}}, where {{if_c}}
+behaves like a one-armed if-expression. If the supplied boolean is
+true then the combinator {{c}} is used to transform the value of type
+{{b}}. If the boolean is {{false}}, then the value of type {{b}}
+remains unchanged. We can write down the combinator for {{if_c}} in
+terms of {{c}} as {{distrib (;) ((id (*) c) (+) id) (;) factor}}.
+
+Given {{if_c}}, constructing the Toffoli gate is straightforward. If
+we choose {{c}} to be {{not}} we get {{if_{not} }} which is
+{{cnot:bool*bool<->bool*bool}} and {{if_{cnot} }} is the required
+{{toffoli : bool * (bool * bool) <-> bool * (bool * bool)}}, drawn
+below.
 \begin{center}
+\scalebox{1.2}{
   \includegraphics{diagrams/toffoli.pdf}
+}
 \end{center}
 \noindent Previous work~\cite[Sec.~5]{James:2012:IE:2103656.2103667}
 establishes that {{langRevT}} is Turing complete by showing the compilation
@@ -748,8 +769,8 @@ adder:
 \begin{small}
 \begin{multicols}{2}  
 %subcode{bnf} include main
-% Numbers, n, m,p = 0 | n + 1
-% Machine states = <e, e, e>
+% Numbers, n, m, p = 0 | n + 1
+% Machine states = <n, n, n>
 
 %subcode{bnf} include main
 % Start state = <n, n, 0>
@@ -788,7 +809,7 @@ just a manifestation of this general problem. The common solutions are:
   from those that can be zero, thereby eliminating the {{sub1 0}} situation
   entirely. Similarly, in the meta-circular interpreter in
   Sec.~\ref{sec:langrevt-int}, one could use generalized abstract data types
-  (GADTs)~\cite{phantom,Xi:2003:GRD:604131.604150}) to eliminate the stuck
+  (GADTs~\cite{phantom,Xi:2003:GRD:604131.604150}) to eliminate the stuck
   states.
 
 \item \emph{Diverge.}  Another standard approach in dealing with stuck states
@@ -905,9 +926,9 @@ get the desired interpreter:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Advanced Examples} 
 
-We show the generality of our construction by applying it to two non-trivial
-examples: a tree traversal and a meta-circular interpreter for
-{{langRevT}}.
+We show the generality of our construction by applying it to three
+non-trivial examples: a tree traversal, parity translation of numbers
+and a meta-circular interpreter for {{langRevT}}.
 
 
 
@@ -1044,10 +1065,19 @@ and output sides.
 
 Deriving {{langRevT}} combinators from abstract machines can sometimes
 be used as an efficient indirect way of programming in {{langRevT}}.
-Say we wished to build a {{langRevT}} combinator to map {{nat}} to a
-parity encoded version {{par = @@x.1+(1+x)}}. Since {{par}} is not a
-fixed unfolding of {{nat}}, it is not immediately apparent how such a
-combinator can be constructed.
+It is well known that every number {{n}} can be represented as
+{{2a+0}} or {{2a+1}} depending on whether it is odd or even.  The
+later can be viewed as the algebraic data type
+{{par=odd~|~even~|~A~par}} such that 
+{{0 = even, 1 = odd, 2 = A even, 3 = A odd, 4 = A (A even)}} etc where
+the nesting of {{A}} constructor indicates the value of {{a}}.
+
+
+Say we wish to build a {{langRevT}} combinator to map {{nat}} to its
+parity encoded version {{par}}, expressible as the {{langRevT}} type
+{{@@x.(1+1)+x}}. Since {{par}} is not a fixed unfolding of {{nat}}
+({{@@x.1+x}}), it is not immediately apparent how such a combinator
+can be constructed.
 
 Instead of directly programming in {{langRevT}}, one can derive the
 required {{nat<->par}} combinator by first constructing an abstract
@@ -1120,7 +1150,7 @@ representing the wiring of machine reductions is shown below.
 
 \begin{center}
 \scalebox{1.0}{
-  \includegraphics{diagrams/nat-parity.pdf}
+  \includegraphics{diagrams/nat-parity2.pdf}
 }
 \end{center}
 
