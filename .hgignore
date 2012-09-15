@@ -33,4 +33,5 @@ OMakeroot.omc
 .subcode_cache*
 *.orig
 *.pdf.eps
+.zip
 subcode
