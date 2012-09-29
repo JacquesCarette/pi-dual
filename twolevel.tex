@@ -1,0 +1,41 @@
+There are two ways to read types and Curry-Howard: 
+\begin{enumerate}
+\item One first concentrates on the \emph{types}, as propositions.  We can come up with a ``type system'' which 
+reflects a logic.  Then, as a second step, choose the proofs which inhabit these types/propositions, and call these
+proofs \emph{terms}.
+\item Alternatively, one first concentrates on the \emph{terms}, focusing on their operational semantics as primary.
+Then, as a second step, one designs a ``type system'' to classify the terms, so as to be able to prove progress and
+preservations theorems, to ensure that well-typed terms ``don't go wrong''.
+\end{enumerate}
+
+Under the first interpretation, coming up with an operational interpretation of the terms can be challenging:
+witness the ongoing effort to understand aspects of classical logic as a type system for a (programming) calculus.
+Similarly, various modal logics as well as linear logic are still being given different interpretations as type
+systems for calculi, to different degrees of effectiveness.
+
+The second interpretation is not straightforward either.  The definition of ``doing wrong'' frequently gets 
+expanded to covering effects, permissions, memory access, and so forth, which can seriously affect the decidability
+properties of the type system (not to mention efficiency when decidability is not an issue).
+
+Even in the first interpretation, the understanding is that terms represented \emph{values}, which are irreducible
+terms (proof terms reduce principally via cut elimination, but there are other reduction rules for projections, etc).
+
+We wish to shift the focus and consider \emph{equivalences} as our types.  This will mean, under the first 
+interpretation, that our terms will be witnesses for these equivalences.  The underlying reason is that we wish
+to examine \emph{reversible computation}.  From an information-theoretic point of view, this means that information
+\emph{must be preserved}, although it can certainly be rearranged in many different ways.
+
+In other words, we wish to regard types with shape $T_1\equiv T_2$, where $T_1$ and $T_2$ are usual value-types.
+In fact, we want more: we wish to regard these as \emph{oriented}: the eventual induced operational interpretation
+will regard equivalence witnesses as inducing a transformation from values of types $T_1$ to values of type $T_2$.
+Of course, as these are equivalences, there will always be a term which inhabits $T_2\equiv T_1$ whenever there
+is one inhabiting $T_1 \equiv T_2$.  This will be clearly visible when we give rules for terms, as these will always
+by symmetric (and will provably induce invertible transformations).
+
+- equational theories
+- equations of equational theories
+- axioms as constants
+- various operators to create ``larger'' equiations from smaller
+- (speak about lens as imperfect equivalences)
+- algebraic structures as classifiers
+- Curry-Howard up a level too -- sums and products of equivalences
