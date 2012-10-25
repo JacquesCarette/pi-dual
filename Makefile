@@ -15,7 +15,7 @@ r.subc.tex : r.tex
 	ruby subcode/subc.rb r.tex
 
 agda: 
-	agda --html -i . -i /u/sabry/include/agda2/src Pi.agda
+	agda --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src Pi.agda
 
 # Clean
 clean: 
