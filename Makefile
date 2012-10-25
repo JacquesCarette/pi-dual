@@ -5,14 +5,18 @@
 .PHONY : clean clean-subcode
 
 # ICFP
-rational_ext.subc.pdf : rational_ext.subc.tex cites.bib
-	pdflatex -halt-on-error rational_ext.subc.tex
-	bibtex rational_ext.subc
-	pdflatex -halt-on-error rational_ext.subc.tex
-	pdflatex -halt-on-error rational_ext.subc.tex
+r.subc.pdf : r.subc.tex cites.bib
+	pdflatex -halt-on-error r.subc.tex
+	bibtex r.subc
+	pdflatex -halt-on-error r.subc.tex
+	pdflatex -halt-on-error r.subc.tex
 
-rational_ext.subc.tex : rational_ext.tex
-	ruby subcode/subc.rb rational_ext.tex
+r.subc.tex : r.tex
+	ruby subcode/subc.rb r.tex
+
+agda-sabry: 
+	/bin/rm -r /u/sabry/.hyplan/pi
+	agda --html-dir=/u/sabry/.hyplan/pi --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src Pi.agda
 
 # Clean
 clean: 
