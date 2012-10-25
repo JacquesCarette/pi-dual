@@ -14,8 +14,9 @@ r.subc.pdf : r.subc.tex cites.bib
 r.subc.tex : r.tex
 	ruby subcode/subc.rb r.tex
 
-agda: 
-	agda --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src Pi.agda
+agda-sabry: 
+	/bin/rm -r /u/sabry/.hyplan/pi
+	agda --html-dir=/u/sabry/.hyplan/pi --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src Pi.agda
 
 # Clean
 clean: 
