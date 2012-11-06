@@ -1,3 +1,5 @@
+{-# OPTIONS --no-termination-check #-}
+
 module Pi where
 
 open import Data.Empty
@@ -5,7 +7,7 @@ open import Data.Unit
 open import Data.Sum
 open import Data.Product
 open import Function
-open import Relation.Binary.PropositionalEquality
+open import Relation.Binary.PropositionalEquality hiding (sym)
 
 -- First we define a universe of our value types
 
@@ -18,19 +20,86 @@ data B : Set where
 ⟦_⟧ : B → Set
 ⟦ ZERO ⟧         = ⊥
 ⟦ ONE ⟧          = ⊤
-⟦ PLUS b1 b2 ⟧  = ⟦ b1 ⟧ ⊎ ⟦ b2 ⟧
-⟦ TIMES b1 b2 ⟧ = ⟦ b1 ⟧ × ⟦ b2 ⟧
+⟦ PLUS b1 b2 ⟧   = ⟦ b1 ⟧ ⊎ ⟦ b2 ⟧
+⟦ TIMES b1 b2 ⟧  = ⟦ b1 ⟧ × ⟦ b2 ⟧
 
 -- Now we define another universe for our equivalences. First the codes for
 -- equivalences.
 
 infixr 30 _⟷_
 
+-- omit distrib0 because that's probably "wrong"
+
 data _⟷_ : B → B → Set where
+  unite₊  : { b : B } → PLUS ZERO b ⟷ b
+  uniti₊  : { b : B } → b ⟷ PLUS ZERO b
+  swap₊   : { b₁ b₂ : B } → PLUS b₁ b₂ ⟷ PLUS b₂ b₁
+  assocl₊ : { b₁ b₂ b₃ : B } → PLUS b₁ (PLUS b₂ b₃) ⟷ PLUS (PLUS b₁ b₂) b₃
+  assocr₊ : { b₁ b₂ b₃ : B } → PLUS (PLUS b₁ b₂) b₃ ⟷ PLUS b₁ (PLUS b₂ b₃)
+  unite⋆  : { b : B } → TIMES ONE b ⟷ b
+  uniti⋆  : { b : B } → b ⟷ TIMES ONE b
+  swap⋆   : { b₁ b₂ : B } → TIMES b₁ b₂ ⟷ TIMES b₂ b₁
+  assocl⋆ : { b₁ b₂ b₃ : B } → TIMES b₁ (TIMES b₂ b₃) ⟷ TIMES (TIMES b₁ b₂) b₃
+  assocr⋆ : { b₁ b₂ b₃ : B } → TIMES (TIMES b₁ b₂) b₃ ⟷ TIMES b₁ (TIMES b₂ b₃)
+  dist    : { b₁ b₂ b₃ : B } → 
+            TIMES (PLUS b₁ b₂) b₃ ⟷ PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) 
+  factor  : { b₁ b₂ b₃ : B } → 
+            PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) ⟷ TIMES (PLUS b₁ b₂) b₃
   id⟷   : { b : B } → b ⟷ b
-  unit₊ : { b : B } → PLUS ZERO b ⟷ b
-  swap₊ : { b₁ b₂ : B } → PLUS b₁ b₂ ⟷ PLUS b₂ b₁
-  _◎_ : { a b c : B } → a ⟷ b → b ⟷ c → a ⟷ c
+  sym    : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
+  _◎_    : { b₁ b₂ b₃ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₃) → (b₁ ⟷ b₃)
+  _⊕_    : { b₁ b₂ b₃ b₄ : B } → 
+           (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (PLUS b₁ b₂ ⟷ PLUS b₃ b₄)
+  _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
+           (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (TIMES b₁ b₂ ⟷ TIMES b₃ b₄)
+
+adjoint : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
+adjoint unite₊    = uniti₊
+adjoint uniti₊    = unite₊
+adjoint swap₊     = swap₊
+adjoint assocl₊   = assocr₊
+adjoint assocr₊   = assocl₊
+adjoint unite⋆    = uniti⋆
+adjoint uniti⋆    = unite⋆
+adjoint swap⋆     = swap⋆
+adjoint assocl⋆   = assocr⋆
+adjoint assocr⋆   = assocl⋆
+adjoint dist      = factor
+adjoint factor    = dist
+adjoint id⟷      = id⟷
+adjoint (sym c)   = c
+adjoint (c₁ ◎ c₂) = adjoint c₂ ◎ adjoint c₁
+adjoint (c₁ ⊕ c₂) = adjoint c₁ ⊕ adjoint c₂
+adjoint (c₁ ⊗ c₂) = adjoint c₁ ⊗ adjoint c₂
+
+
+eval  :{ b₁ b₂ : B } → (b₁ ⟷ b₂) → ⟦ b₁ ⟧ → ⟦ b₂ ⟧
+eval unite₊ (inj₁ ())
+eval unite₊ (inj₂ v) = v
+eval uniti₊ v = inj₂ v
+eval swap₊ (inj₁ v) = inj₂ v
+eval swap₊ (inj₂ v) = inj₁ v
+eval assocl₊ (inj₁ v) = inj₁ (inj₁ v)
+eval assocl₊ (inj₂ (inj₁ v)) = inj₁ (inj₂ v)
+eval assocl₊ (inj₂ (inj₂ v)) = inj₂ v
+eval assocr₊ (inj₁ (inj₁ v)) = inj₁ v
+eval assocr₊ (inj₁ (inj₂ v)) = inj₂ (inj₁ v)
+eval assocr₊ (inj₂ v) = inj₂ (inj₂ v)
+eval unite⋆ (tt , v) = v
+eval uniti⋆ v = (tt , v)
+eval swap⋆ (v₁ , v₂) = (v₂ , v₁)
+eval assocl⋆ (v₁ , (v₂ , v₃)) = ((v₁ , v₂) , v₃)
+eval assocr⋆ ((v₁ , v₂) , v₃) = (v₁ , (v₂ , v₃))
+eval dist (inj₁ v₁ , v₃) = inj₁ (v₁ , v₃)
+eval dist (inj₂ v₂ , v₃) = inj₂ (v₂ , v₃)
+eval factor (inj₁ (v₁ , v₃)) = (inj₁ v₁ , v₃)
+eval factor (inj₂ (v₂ , v₃)) = (inj₂ v₂ , v₃)
+eval id⟷ v = v
+eval (sym c) v = eval (adjoint c) v
+eval (c₁ ◎ c₂) v = eval c₂ (eval c₁ v)
+eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
+eval (c₁ ⊕ c₂) (inj₂ v) = inj₂ (eval c₂ v)
+eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
 
 -- NOW WE DEFINE THE SEMANTIC NOTION OF EQUIVALENCE
 
@@ -63,6 +132,7 @@ r ⊙ s = equiv (λ x → f₁₂ s ( f₁₂ r x)) (λ x → f₂₁ r ( f₂�
               (lem-⟺-inv (f₁₂ r) (f₂₁ r) (f₁₂ s) (f₂₁ s) (p₂ r) (p₂ s)) 
 
 -- THESE ARE NEEDED MULTIPLE TIMES, FACTOR OUT
+
 zeroe : {A : Set} → ⊥ ⊎ A → A
 zeroe (inj₁ ())
 zeroe (inj₂ V) = V
@@ -83,24 +153,58 @@ swp { x = inj₁ v } = refl
 swp { x = inj₂ v } = refl
 
 -- And finally we map each code to an actual equivalence
+
 iso : { b₁ b₂ : B } → b₁ ⟷ b₂ → b₁ ⟺ b₂
 
 iso id⟷ = equiv id id refl refl
 iso (f ◎ g) = (iso f) ⊙ (iso g)
-iso unit₊ = equiv zeroe zeroi zeroeip refl 
+iso unite₊ = equiv zeroe zeroi zeroeip refl 
 iso swap₊ = equiv sw sw swp swp
+iso _ = {!!}
  
 -- Examples
-
-unit_π : ⟦ ONE ⟧
-unit_π = tt
 
 BOOL : B
 BOOL = PLUS ONE ONE
 
-true_π : ⟦ BOOL ⟧
-true_π = inj₁ tt
+BOOL² : B
+BOOL² = TIMES BOOL BOOL
 
-false_π : ⟦ BOOL ⟧
-false_π = inj₂ tt
+BOOL³ : B
+BOOL³ = TIMES BOOL BOOL² 
 
+unitπ : ⟦ ONE ⟧
+unitπ = tt
+
+trueπ : ⟦ BOOL ⟧
+trueπ = inj₁ tt
+
+falseπ : ⟦ BOOL ⟧
+falseπ = inj₂ tt
+
+e0 : ⟦ BOOL² ⟧
+e0 = (falseπ , falseπ)
+
+e1 : ⟦ BOOL² ⟧
+e1 = (falseπ , trueπ)
+
+e2 : ⟦ BOOL² ⟧
+e2 = (trueπ , falseπ)
+
+e3 : ⟦ BOOL² ⟧
+e3 = (trueπ , trueπ)
+
+notπ : BOOL ⟷ BOOL
+notπ = swap₊
+
+ifc : { b : B } → (b ⟷ b) → (TIMES BOOL b ⟷ TIMES BOOL b)
+ifc c = dist ◎ ((id⟷ ⊗ c) ⊕ id⟷) ◎ factor
+
+cnot : BOOL² ⟷ BOOL²
+cnot = ifc notπ
+
+toffoli : BOOL³ ⟷ BOOL³
+toffoli = ifc cnot
+
+test1 : ⟦ BOOL³ ⟧
+test1 = eval toffoli (trueπ , (trueπ , trueπ))
