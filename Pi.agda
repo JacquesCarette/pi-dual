@@ -9,6 +9,12 @@ open import Data.Product
 open import Function
 open import Relation.Binary.PropositionalEquality hiding (sym)
 
+infixr 30 _⟷_
+infixr 30 _⟺_
+infixr 20 _⊙_
+infixr 20 _◎_
+
+------------------------------------------------------------------------------
 -- First we define a universe of our value types
 
 data B : Set where
@@ -23,10 +29,9 @@ data B : Set where
 ⟦ PLUS b1 b2 ⟧   = ⟦ b1 ⟧ ⊎ ⟦ b2 ⟧
 ⟦ TIMES b1 b2 ⟧  = ⟦ b1 ⟧ × ⟦ b2 ⟧
 
+------------------------------------------------------------------------------
 -- Now we define another universe for our equivalences. First the codes for
 -- equivalences.
-
-infixr 30 _⟷_
 
 -- omit distrib0 because that's probably "wrong"
 
@@ -72,7 +77,6 @@ adjoint (c₁ ◎ c₂) = adjoint c₂ ◎ adjoint c₁
 adjoint (c₁ ⊕ c₂) = adjoint c₁ ⊕ adjoint c₂
 adjoint (c₁ ⊗ c₂) = adjoint c₁ ⊗ adjoint c₂
 
-
 eval  :{ b₁ b₂ : B } → (b₁ ⟷ b₂) → ⟦ b₁ ⟧ → ⟦ b₂ ⟧
 eval unite₊ (inj₁ ())
 eval unite₊ (inj₂ v) = v
@@ -101,12 +105,11 @@ eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₂ v) = inj₂ (eval c₂ v)
 eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
 
+------------------------------------------------------------------------------
+-- Define the alternative semantics based on small-step semantics
+
+------------------------------------------------------------------------------
 -- NOW WE DEFINE THE SEMANTIC NOTION OF EQUIVALENCE
-
-infixr 30 _⟺_
-
-infixr 20 _⊙_
-infixr 20 _◎_
 
 record _⟺_ (b₁ b₂ : B) : Set where 
   constructor equiv
@@ -155,13 +158,13 @@ swp { x = inj₂ v } = refl
 -- And finally we map each code to an actual equivalence
 
 iso : { b₁ b₂ : B } → b₁ ⟷ b₂ → b₁ ⟺ b₂
-
 iso id⟷ = equiv id id refl refl
 iso (f ◎ g) = (iso f) ⊙ (iso g)
 iso unite₊ = equiv zeroe zeroi zeroeip refl 
 iso swap₊ = equiv sw sw swp swp
-iso _ = {!!}
+iso _ = {!!} 
  
+------------------------------------------------------------------------------
 -- Examples
 
 BOOL : B
@@ -208,3 +211,5 @@ toffoli = ifc cnot
 
 test1 : ⟦ BOOL³ ⟧
 test1 = eval toffoli (trueπ , (trueπ , trueπ))
+
+------------------------------------------------------------------------------
