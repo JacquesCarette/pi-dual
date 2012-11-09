@@ -7,7 +7,11 @@ open import Data.Unit
 open import Data.Sum
 open import Data.Product
 open import Function
+open import Level
 open import Relation.Binary.PropositionalEquality hiding (sym)
+open import Relation.Binary.Core
+open import Algebra
+open import Algebra.Structures
 
 infixr 30 _⟷_
 infixr 30 _⟺_
@@ -107,6 +111,36 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
 
 ------------------------------------------------------------------------------
 -- Define the alternative semantics based on small-step semantics
+
+------------------------------------------------------------------------------
+-- Connect with Algebra
+
++-isEquivalence : IsEquivalence _⟷_
++-isEquivalence = record {
+    refl = id⟷ ;
+    sym = λ ij → sym ij ;
+    trans = λ ij jk → ij ◎ jk
+  } 
+
++-IsSemigroup : IsSemigroup _⟷_ PLUS
++-IsSemigroup = record {
+    isEquivalence = +-isEquivalence ;
+    assoc = λ x y z → assocr₊ {x} {y} {z} ;
+    ∙-cong = λ xy uv → xy ⊕ uv
+  }
+
++-CommutativeMonoid : CommutativeMonoid zero zero
++-CommutativeMonoid = record {
+  Carrier = B ;
+  _≈_ = _⟷_ ; 
+  _∙_ = PLUS ;
+  ε = ZERO ;
+  isCommutativeMonoid = record {
+    isSemigroup = +-IsSemigroup ;
+    identityˡ = λ x → unite₊ {x} ;
+    comm = λ x y → swap₊ {x} {y} 
+  }  
+  }
 
 ------------------------------------------------------------------------------
 -- NOW WE DEFINE THE SEMANTIC NOTION OF EQUIVALENCE
