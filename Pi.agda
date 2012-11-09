@@ -11,6 +11,8 @@ open import Level
 open import Relation.Binary.PropositionalEquality hiding (sym)
 open import Relation.Binary.Core
 open import Algebra
+import Algebra.FunctionProperties as FunctionProperties
+open import Algebra.FunctionProperties.Core 
 open import Algebra.Structures
 
 infixr 30 _⟷_
@@ -61,6 +63,9 @@ data _⟷_ : B → B → Set where
            (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (PLUS b₁ b₂ ⟷ PLUS b₃ b₄)
   _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
            (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (TIMES b₁ b₂ ⟷ TIMES b₃ b₄)
+
+dist' : {b₁ b₂ b₃ : B} → TIMES b₁ (PLUS b₂ b₃) ⟷ PLUS (TIMES b₁ b₂) (TIMES b₁ b₃)
+dist' = swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆) 
 
 adjoint : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
 adjoint unite₊    = uniti₊
@@ -129,17 +134,20 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
     ∙-cong = λ xy uv → xy ⊕ uv
   }
 
++-IsCommutativeMonoid : IsCommutativeMonoid _⟷_ PLUS ZERO
++-IsCommutativeMonoid = record {
+    isSemigroup = +-IsSemigroup ;
+    identityˡ = λ x → unite₊ {x} ;
+    comm = λ x y → swap₊ {x} {y} 
+  }
+
 +-CommutativeMonoid : CommutativeMonoid zero zero
 +-CommutativeMonoid = record {
   Carrier = B ;
   _≈_ = _⟷_ ; 
   _∙_ = PLUS ;
   ε = ZERO ;
-  isCommutativeMonoid = record {
-    isSemigroup = +-IsSemigroup ;
-    identityˡ = λ x → unite₊ {x} ;
-    comm = λ x y → swap₊ {x} {y} 
-  }  
+  isCommutativeMonoid = +-IsCommutativeMonoid  
   }
 
 ⋆-IsSemigroup : IsSemigroup _⟷_ TIMES
@@ -149,18 +157,39 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
     ∙-cong = λ xy uv → xy ⊗ uv
   }
 
+⋆-IsCommutativeMonoid : IsCommutativeMonoid _⟷_ TIMES ONE
+⋆-IsCommutativeMonoid = record {
+    isSemigroup = ⋆-IsSemigroup ;
+    identityˡ = λ x → unite⋆ {x} ;
+    comm = λ x y → swap⋆ {x} {y} 
+  }  
+
 ⋆-CommutativeMonoid : CommutativeMonoid zero zero
 ⋆-CommutativeMonoid = record {
   Carrier = B ;
   _≈_ = _⟷_ ; 
   _∙_ = TIMES ;
   ε = ONE ;
-  isCommutativeMonoid = record {
-    isSemigroup = ⋆-IsSemigroup ;
-    identityˡ = λ x → unite⋆ {x} ;
-    comm = λ x y → swap⋆ {x} {y} 
-  }  
+  isCommutativeMonoid = ⋆-IsCommutativeMonoid
   }
+
+record IsCommutativeSemiringWithoutAnnihilatingZero
+         {a ℓ} {A : Set a} (≈ : Rel A ℓ)
+         (+ * : Op₂ A) (0# 1# : A) : Set (a ⊔ ℓ) where
+  open FunctionProperties ≈
+  field
+    +-isCommutativeMonoid : IsCommutativeMonoid ≈ + 0#
+    *-isCommutativeMonoid : IsCommutativeMonoid ≈ * 1#
+    distrib               : * DistributesOver +
+
+B-isCommutativeSemiringWithoutAnnihilatingZero
+    : IsCommutativeSemiringWithoutAnnihilatingZero _⟷_ PLUS TIMES ZERO ONE
+B-isCommutativeSemiringWithoutAnnihilatingZero = record {
+    +-isCommutativeMonoid = +-IsCommutativeMonoid ;
+    *-isCommutativeMonoid = ⋆-IsCommutativeMonoid ;
+    distrib = ( (λ x y z → dist' {x} {y} {z}) ,
+                (λ x y z → dist {y} {z} {x} ))
+    }
 
 ------------------------------------------------------------------------------
 -- NOW WE DEFINE THE SEMANTIC NOTION OF EQUIVALENCE
