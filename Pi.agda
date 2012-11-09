@@ -115,8 +115,8 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
 ------------------------------------------------------------------------------
 -- Connect with Algebra
 
-+-isEquivalence : IsEquivalence _⟷_
-+-isEquivalence = record {
+⟷-isEquivalence : IsEquivalence _⟷_
+⟷-isEquivalence = record {
     refl = id⟷ ;
     sym = λ ij → sym ij ;
     trans = λ ij jk → ij ◎ jk
@@ -124,7 +124,7 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
 
 +-IsSemigroup : IsSemigroup _⟷_ PLUS
 +-IsSemigroup = record {
-    isEquivalence = +-isEquivalence ;
+    isEquivalence = ⟷-isEquivalence ;
     assoc = λ x y z → assocr₊ {x} {y} {z} ;
     ∙-cong = λ xy uv → xy ⊕ uv
   }
@@ -139,6 +139,26 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
     isSemigroup = +-IsSemigroup ;
     identityˡ = λ x → unite₊ {x} ;
     comm = λ x y → swap₊ {x} {y} 
+  }  
+  }
+
+⋆-IsSemigroup : IsSemigroup _⟷_ TIMES
+⋆-IsSemigroup = record {
+    isEquivalence = ⟷-isEquivalence ;
+    assoc = λ x y z → assocr⋆ {x} {y} {z} ;
+    ∙-cong = λ xy uv → xy ⊗ uv
+  }
+
+⋆-CommutativeMonoid : CommutativeMonoid zero zero
+⋆-CommutativeMonoid = record {
+  Carrier = B ;
+  _≈_ = _⟷_ ; 
+  _∙_ = TIMES ;
+  ε = ONE ;
+  isCommutativeMonoid = record {
+    isSemigroup = ⋆-IsSemigroup ;
+    identityˡ = λ x → unite⋆ {x} ;
+    comm = λ x y → swap⋆ {x} {y} 
   }  
   }
 
