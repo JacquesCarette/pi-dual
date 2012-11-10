@@ -27,12 +27,14 @@ data B : Set where
   ZERO  : B
   ONE   : B
   PLUS  : B → B → B
+  NEG   : B → B
   TIMES : B → B → B
 
 ⟦_⟧ : B → Set
 ⟦ ZERO ⟧         = ⊥
 ⟦ ONE ⟧          = ⊤
 ⟦ PLUS b1 b2 ⟧   = ⟦ b1 ⟧ ⊎ ⟦ b2 ⟧
+⟦ NEG b ⟧        = {!!} 
 ⟦ TIMES b1 b2 ⟧  = ⟦ b1 ⟧ × ⟦ b2 ⟧
 
 ------------------------------------------------------------------------------
@@ -56,6 +58,8 @@ data _⟷_ : B → B → Set where
             TIMES (PLUS b₁ b₂) b₃ ⟷ PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) 
   factor  : { b₁ b₂ b₃ : B } → 
             PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) ⟷ TIMES (PLUS b₁ b₂) b₃
+  η₊      : { b : B } → ZERO ⟷ PLUS (NEG b) b
+  ε₊      : { b : B } → PLUS b (NEG b) ⟷ ZERO
   id⟷   : { b : B } → b ⟷ b
   sym    : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
   _◎_    : { b₁ b₂ b₃ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₃) → (b₁ ⟷ b₃)
@@ -66,6 +70,16 @@ data _⟷_ : B → B → Set where
 
 dist' : {b₁ b₂ b₃ : B} → TIMES b₁ (PLUS b₂ b₃) ⟷ PLUS (TIMES b₁ b₂) (TIMES b₁ b₃)
 dist' = swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆) 
+
+neg : {b₁ b₂ : B} → (b₁ ⟷ b₂) → (NEG b₁ ⟷ NEG b₂) 
+neg {b₁} {b₂} c = 
+  uniti₊ ◎ 
+  (η₊ {b₂} ⊕ id⟷) ◎ 
+  ((id⟷ ⊕ sym c) ⊕ id⟷) ◎ 
+  assocr₊ ◎ 
+  (id⟷ ⊕ ε₊) ◎
+  swap₊ ◎
+  unite₊
 
 adjoint : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
 adjoint unite₊    = uniti₊
@@ -80,6 +94,8 @@ adjoint assocl⋆   = assocr⋆
 adjoint assocr⋆   = assocl⋆
 adjoint dist      = factor
 adjoint factor    = dist
+adjoint η₊        = {!!} 
+adjoint ε₊        = {!!} 
 adjoint id⟷      = id⟷
 adjoint (sym c)   = c
 adjoint (c₁ ◎ c₂) = adjoint c₂ ◎ adjoint c₁
@@ -107,6 +123,8 @@ eval dist (inj₁ v₁ , v₃) = inj₁ (v₁ , v₃)
 eval dist (inj₂ v₂ , v₃) = inj₂ (v₂ , v₃)
 eval factor (inj₁ (v₁ , v₃)) = (inj₁ v₁ , v₃)
 eval factor (inj₂ (v₂ , v₃)) = (inj₂ v₂ , v₃)
+eval η₊ v = {!!} 
+eval ε₊ v = {!!} 
 eval id⟷ v = v
 eval (sym c) v = eval (adjoint c) v
 eval (c₁ ◎ c₂) v = eval c₂ (eval c₁ v)
@@ -134,6 +152,13 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
     ∙-cong = λ xy uv → xy ⊕ uv
   }
 
++-IsMonoid : IsMonoid _⟷_ PLUS ZERO
++-IsMonoid = record {
+    isSemigroup = +-IsSemigroup ;
+    identity = ((λ x → unite₊ {x}) , 
+                (λ x → swap₊ ◎ unite₊ {x}))
+  }
+
 +-IsCommutativeMonoid : IsCommutativeMonoid _⟷_ PLUS ZERO
 +-IsCommutativeMonoid = record {
     isSemigroup = +-IsSemigroup ;
@@ -141,7 +166,7 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
     comm = λ x y → swap₊ {x} {y} 
   }
 
-+-CommutativeMonoid : CommutativeMonoid zero zero
++-CommutativeMonoid : CommutativeMonoid _ _
 +-CommutativeMonoid = record {
   Carrier = B ;
   _≈_ = _⟷_ ; 
@@ -150,12 +175,21 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
   isCommutativeMonoid = +-IsCommutativeMonoid  
   }
 
+-- 
+
 ⋆-IsSemigroup : IsSemigroup _⟷_ TIMES
 ⋆-IsSemigroup = record {
     isEquivalence = ⟷-isEquivalence ;
     assoc = λ x y z → assocr⋆ {x} {y} {z} ;
     ∙-cong = λ xy uv → xy ⊗ uv
   }
+
+⋆-IsMonoid : IsMonoid _⟷_ TIMES ONE
+⋆-IsMonoid = record {
+    isSemigroup = ⋆-IsSemigroup ;
+    identity = ((λ x → unite⋆ {x}) , 
+                (λ x → swap⋆ ◎ unite⋆ {x}))
+  }  
 
 ⋆-IsCommutativeMonoid : IsCommutativeMonoid _⟷_ TIMES ONE
 ⋆-IsCommutativeMonoid = record {
@@ -164,7 +198,7 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
     comm = λ x y → swap⋆ {x} {y} 
   }  
 
-⋆-CommutativeMonoid : CommutativeMonoid zero zero
+⋆-CommutativeMonoid : CommutativeMonoid _ _ 
 ⋆-CommutativeMonoid = record {
   Carrier = B ;
   _≈_ = _⟷_ ; 
@@ -190,6 +224,36 @@ B-isCommutativeSemiringWithoutAnnihilatingZero = record {
     distrib = ( (λ x y z → dist' {x} {y} {z}) ,
                 (λ x y z → dist {y} {z} {x} ))
     }
+
+-- 
+
++-IsGroup : IsGroup _⟷_ PLUS ZERO NEG
++-IsGroup = record {
+  isMonoid = +-IsMonoid ; 
+  inverse = ( (λ x → swap₊ ◎ ε₊ {x}) , 
+              (λ x → ε₊ {x}) );
+  ⁻¹-cong = λ ij → neg ij
+  }
+
++-IsAbelianGroup : IsAbelianGroup _⟷_ PLUS ZERO NEG
++-IsAbelianGroup = record {
+    isGroup = +-IsGroup ; 
+    comm = λ x y → swap₊ {x} {y} 
+  }
+
+B-IsRing : IsRing _⟷_ PLUS TIMES NEG ZERO ONE
+B-IsRing = record {
+    +-isAbelianGroup = +-IsAbelianGroup ; 
+    *-isMonoid = ⋆-IsMonoid ;
+    distrib = ( (λ x y z → dist' {x} {y} {z}) ,
+                (λ x y z → dist {y} {z} {x} ))
+  }
+
+B-IsCommutativeRing : IsCommutativeRing _⟷_ PLUS TIMES NEG ZERO ONE
+B-IsCommutativeRing = record {
+    isRing = B-IsRing ;
+    *-comm = λ x y → swap⋆ {x} {y} 
+  }
 
 ------------------------------------------------------------------------------
 -- NOW WE DEFINE THE SEMANTIC NOTION OF EQUIVALENCE
