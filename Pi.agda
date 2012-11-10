@@ -288,15 +288,47 @@ record IsMeadow
          (+ * : Op₂ A) (- r : Op₁ A) (0# 1# : A) : Set (a ⊔ ℓ) where
   open FunctionProperties ≈
   field
-    +-isCommutativeRing : IsCommutativeRing ≈ + * - 0# 1#
+    +*-isCommutativeRing : IsCommutativeRing ≈ + * - 0# 1#
     *-refl-l : ∀ x → ≈ (r (r x)) x
     *-refl-r : ∀ x → ≈ x (r (r x))
     *-ril-l : ∀ x → ≈ (* x (* x (r x))) x
     *-ril-r : ∀ x → ≈ x (* x (* x (r x)))
     r-cong : ∀ x y → ≈ x y → ≈ (r x) (r y)
 
+record Meadow c ℓ : Set (suc (c ⊔ ℓ)) where
+  field 
+    Carrier : Set c
+    _≈_ : Rel Carrier ℓ
+    _+_ : Op₂ Carrier
+    _*_ : Op₂ Carrier
+    -_ : Op₁ Carrier
+    r  : Op₁ Carrier
+    0# : Carrier
+    1# : Carrier
+    isMeadow : IsMeadow _≈_ _+_ _*_ -_ r 0# 1#
 
+B-IsMeadow : IsMeadow _⟷_ PLUS TIMES NEG RECIP ZERO ONE
+B-IsMeadow = record {
+    +*-isCommutativeRing = B-IsCommutativeRing ;
+    *-refl-l = {!!} ;
+    *-refl-r = {!!} ;
+    *-ril-l = {!!} ;
+    *-ril-r = {!!} ;
+    r-cong = {!!} 
+  }
 
+B-Meadow : Meadow _ _
+B-Meadow = record {
+    Carrier = B ;
+    _≈_ = _⟷_ ;
+    _+_ = PLUS ;
+    _*_ = TIMES ; 
+    -_ = NEG ;
+    r  = RECIP ;
+    0# = ZERO ;
+    1# = ONE ;
+    isMeadow = B-IsMeadow
+  }
 
 ------------------------------------------------------------------------------
 -- NOW WE DEFINE THE SEMANTIC NOTION OF EQUIVALENCE
