@@ -132,7 +132,7 @@ eval dist (inj₁ v₁ , v₃) = inj₁ (v₁ , v₃)
 eval dist (inj₂ v₂ , v₃) = inj₂ (v₂ , v₃)
 eval factor (inj₁ (v₁ , v₃)) = (inj₁ v₁ , v₃)
 eval factor (inj₂ (v₂ , v₃)) = (inj₂ v₂ , v₃)
-eval η₊ v = {!!} 
+eval η₊ ()
 eval ε₊ v = {!!} 
 eval ref⋆ v = {!!}
 eval ril⋆ v = {!!}
@@ -152,15 +152,15 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
 ⟷-isEquivalence : IsEquivalence _⟷_
 ⟷-isEquivalence = record {
     refl = id⟷ ;
-    sym = λ ij → sym ij ;
-    trans = λ ij jk → ij ◎ jk
+    sym = sym  ;
+    trans = _◎_ 
   } 
 
 +-IsSemigroup : IsSemigroup _⟷_ PLUS
 +-IsSemigroup = record {
     isEquivalence = ⟷-isEquivalence ;
     assoc = λ x y z → assocr₊ {x} {y} {z} ;
-    ∙-cong = λ xy uv → xy ⊕ uv
+    ∙-cong = _⊕_
   }
 
 +-IsMonoid : IsMonoid _⟷_ PLUS ZERO
@@ -192,7 +192,7 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
 ⋆-IsSemigroup = record {
     isEquivalence = ⟷-isEquivalence ;
     assoc = λ x y z → assocr⋆ {x} {y} {z} ;
-    ∙-cong = λ xy uv → xy ⊗ uv
+    ∙-cong = _⊗_
   }
 
 ⋆-IsMonoid : IsMonoid _⟷_ TIMES ONE
@@ -243,7 +243,7 @@ B-isCommutativeSemiringWithoutAnnihilatingZero = record {
   isMonoid = +-IsMonoid ; 
   inverse = ( (λ x → swap₊ ◎ ε₊ {x}) , 
               (λ x → ε₊ {x}) );
-  ⁻¹-cong = λ ij → neg ij
+  ⁻¹-cong = neg
   }
 
 +-IsAbelianGroup : IsAbelianGroup _⟷_ PLUS ZERO NEG
@@ -280,7 +280,6 @@ B-CommutativeRing = record {
     isCommutativeRing = B-IsCommutativeRing
   } 
 
-
 -- 
 
 record IsMeadow
@@ -314,7 +313,7 @@ B-IsMeadow = record {
     *-refl-r = {!!} ;
     *-ril-l = {!!} ;
     *-ril-r = {!!} ;
-    r-cong = {!!} 
+    r-cong = λ x y → recip {x} {y} 
   }
 
 B-Meadow : Meadow _ _
