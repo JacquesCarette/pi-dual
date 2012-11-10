@@ -29,6 +29,7 @@ data B : Set where
   PLUS  : B → B → B
   NEG   : B → B
   TIMES : B → B → B
+  RECIP : B → B
 
 ⟦_⟧ : B → Set
 ⟦ ZERO ⟧         = ⊥
@@ -36,6 +37,7 @@ data B : Set where
 ⟦ PLUS b1 b2 ⟧   = ⟦ b1 ⟧ ⊎ ⟦ b2 ⟧
 ⟦ NEG b ⟧        = {!!} 
 ⟦ TIMES b1 b2 ⟧  = ⟦ b1 ⟧ × ⟦ b2 ⟧
+⟦ RECIP b ⟧      = {!!} 
 
 ------------------------------------------------------------------------------
 -- Now we define another universe for our equivalences. First the codes for
@@ -60,6 +62,8 @@ data _⟷_ : B → B → Set where
             PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) ⟷ TIMES (PLUS b₁ b₂) b₃
   η₊      : { b : B } → ZERO ⟷ PLUS (NEG b) b
   ε₊      : { b : B } → PLUS b (NEG b) ⟷ ZERO
+  ref⋆    : { b : B } → RECIP (RECIP b) ⟷ b
+  ril⋆    : { b : B } → TIMES b (TIMES b (RECIP b)) ⟷ b
   id⟷   : { b : B } → b ⟷ b
   sym    : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
   _◎_    : { b₁ b₂ b₃ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₃) → (b₁ ⟷ b₃)
@@ -96,6 +100,8 @@ adjoint dist      = factor
 adjoint factor    = dist
 adjoint η₊        = {!!} 
 adjoint ε₊        = {!!} 
+adjoint ref⋆      = {!!}
+adjoint ril⋆      = {!!}
 adjoint id⟷      = id⟷
 adjoint (sym c)   = c
 adjoint (c₁ ◎ c₂) = adjoint c₂ ◎ adjoint c₁
@@ -125,6 +131,8 @@ eval factor (inj₁ (v₁ , v₃)) = (inj₁ v₁ , v₃)
 eval factor (inj₂ (v₂ , v₃)) = (inj₂ v₂ , v₃)
 eval η₊ v = {!!} 
 eval ε₊ v = {!!} 
+eval ref⋆ v = {!!}
+eval ril⋆ v = {!!}
 eval id⟷ v = v
 eval (sym c) v = eval (adjoint c) v
 eval (c₁ ◎ c₂) v = eval c₂ (eval c₁ v)
@@ -254,6 +262,23 @@ B-IsCommutativeRing = record {
     isRing = B-IsRing ;
     *-comm = λ x y → swap⋆ {x} {y} 
   }
+
+-- 
+
+B-CommutativeRing : CommutativeRing _ _
+B-CommutativeRing = record {
+    Carrier = B ;
+    _≈_ = _⟷_ ; 
+    _+_ = PLUS ;
+    _*_ = TIMES ;
+    -_ = NEG ;
+    0# = ZERO ;
+    1# = ONE ;
+    isCommutativeRing = B-IsCommutativeRing
+  } 
+
+
+-- Define Meadow structure
 
 ------------------------------------------------------------------------------
 -- NOW WE DEFINE THE SEMANTIC NOTION OF EQUIVALENCE
