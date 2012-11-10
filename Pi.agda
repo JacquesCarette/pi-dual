@@ -85,6 +85,9 @@ neg {b₁} {b₂} c =
   swap₊ ◎
   unite₊
 
+recip : {b₁ b₂ : B} → (b₁ ⟷ b₂) → (RECIP b₁ ⟷ RECIP b₂) 
+recip {b₁} {b₂} c = {!!}
+
 adjoint : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
 adjoint unite₊    = uniti₊
 adjoint uniti₊    = unite₊
@@ -278,7 +281,22 @@ B-CommutativeRing = record {
   } 
 
 
--- Define Meadow structure
+-- 
+
+record IsMeadow
+         {a ℓ} {A : Set a} (≈ : Rel A ℓ)
+         (+ * : Op₂ A) (- r : Op₁ A) (0# 1# : A) : Set (a ⊔ ℓ) where
+  open FunctionProperties ≈
+  field
+    +-isCommutativeRing : IsCommutativeRing ≈ + * - 0# 1#
+    *-refl-l : ∀ x → ≈ (r (r x)) x
+    *-refl-r : ∀ x → ≈ x (r (r x))
+    *-ril-l : ∀ x → ≈ (* x (* x (r x))) x
+    *-ril-r : ∀ x → ≈ x (* x (* x (r x)))
+    r-cong : ∀ x y → ≈ x y → ≈ (r x) (r y)
+
+
+
 
 ------------------------------------------------------------------------------
 -- NOW WE DEFINE THE SEMANTIC NOTION OF EQUIVALENCE
