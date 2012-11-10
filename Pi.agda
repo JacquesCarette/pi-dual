@@ -43,8 +43,6 @@ data B : Set where
 -- Now we define another universe for our equivalences. First the codes for
 -- equivalences.
 
--- omit distrib0 because that's probably "wrong"
-
 data _⟷_ : B → B → Set where
   unite₊  : { b : B } → PLUS ZERO b ⟷ b
   uniti₊  : { b : B } → b ⟷ PLUS ZERO b
@@ -62,8 +60,10 @@ data _⟷_ : B → B → Set where
             PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) ⟷ TIMES (PLUS b₁ b₂) b₃
   η₊      : { b : B } → ZERO ⟷ PLUS (NEG b) b
   ε₊      : { b : B } → PLUS b (NEG b) ⟷ ZERO
-  ref⋆    : { b : B } → RECIP (RECIP b) ⟷ b
-  ril⋆    : { b : B } → TIMES b (TIMES b (RECIP b)) ⟷ b
+  refe⋆   : { b : B } → RECIP (RECIP b) ⟷ b
+  refi⋆   : { b : B } → b ⟷ RECIP (RECIP b) 
+  rile⋆   : { b : B } → TIMES b (TIMES b (RECIP b)) ⟷ b
+  rili⋆   : { b : B } → b ⟷ TIMES b (TIMES b (RECIP b)) 
   id⟷   : { b : B } → b ⟷ b
   sym    : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
   _◎_    : { b₁ b₂ b₃ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₃) → (b₁ ⟷ b₃)
@@ -76,14 +76,20 @@ dist' : {b₁ b₂ b₃ : B} → TIMES b₁ (PLUS b₂ b₃) ⟷ PLUS (TIMES b�
 dist' = swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆) 
 
 neg : {b₁ b₂ : B} → (b₁ ⟷ b₂) → (NEG b₁ ⟷ NEG b₂) 
-neg {b₁} {b₂} c = 
-  uniti₊ ◎ 
-  (η₊ {b₂} ⊕ id⟷) ◎ 
-  ((id⟷ ⊕ sym c) ⊕ id⟷) ◎ 
-  assocr₊ ◎ 
-  (id⟷ ⊕ ε₊) ◎
-  swap₊ ◎
-  unite₊
+neg {b₁} {b₂} c =              -- -b1
+  uniti₊ ◎                     -- 0 + (-b1)
+  (η₊ {b₂} ⊕ id⟷) ◎           -- (-b2 + b2) + (-b1)
+  ((id⟷ ⊕ sym c) ⊕ id⟷) ◎    -- (-b2 + b1) + (-b1)
+  assocr₊ ◎                    -- (-b2) + (b1 + (-b1))
+  (id⟷ ⊕ ε₊) ◎                -- (-b2) + 0
+  swap₊ ◎                      -- 0 + (-b2)
+  unite₊                       -- -b2
+
+mul0 : {b : B} → ZERO ⟷ TIMES ZERO b
+mul0 = {!!} 
+
+inv0 : {b : B} → {p0 : b ≡ ZERO} → (TIMES b (RECIP b) ⟷ ZERO)
+inv0 = {!!} 
 
 recip : {b₁ b₂ : B} → (b₁ ⟷ b₂) → (RECIP b₁ ⟷ RECIP b₂) 
 recip {b₁} {b₂} c = {!!}
@@ -101,10 +107,12 @@ adjoint assocl⋆   = assocr⋆
 adjoint assocr⋆   = assocl⋆
 adjoint dist      = factor
 adjoint factor    = dist
-adjoint η₊        = {!!} 
-adjoint ε₊        = {!!} 
-adjoint ref⋆      = {!!}
-adjoint ril⋆      = {!!}
+adjoint η₊        = swap₊ ◎ ε₊
+adjoint ε₊        = η₊ ◎ swap₊
+adjoint refe⋆     = refi⋆
+adjoint refi⋆     = refe⋆
+adjoint rile⋆     = rili⋆
+adjoint rili⋆     = rile⋆
 adjoint id⟷      = id⟷
 adjoint (sym c)   = c
 adjoint (c₁ ◎ c₂) = adjoint c₂ ◎ adjoint c₁
@@ -134,8 +142,10 @@ eval factor (inj₁ (v₁ , v₃)) = (inj₁ v₁ , v₃)
 eval factor (inj₂ (v₂ , v₃)) = (inj₂ v₂ , v₃)
 eval η₊ ()
 eval ε₊ v = {!!} 
-eval ref⋆ v = {!!}
-eval ril⋆ v = {!!}
+eval refe⋆ v = {!!}
+eval refi⋆ v = {!!}
+eval rile⋆ v = {!!}
+eval rili⋆ v = {!!}
 eval id⟷ v = v
 eval (sym c) v = eval (adjoint c) v
 eval (c₁ ◎ c₂) v = eval c₂ (eval c₁ v)
@@ -149,73 +159,73 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
 ------------------------------------------------------------------------------
 -- Connect with Algebra
 
-⟷-isEquivalence : IsEquivalence _⟷_
-⟷-isEquivalence = record {
+⟷IsEquivalence : IsEquivalence _⟷_
+⟷IsEquivalence = record {
     refl = id⟷ ;
     sym = sym  ;
     trans = _◎_ 
   } 
 
-+-IsSemigroup : IsSemigroup _⟷_ PLUS
-+-IsSemigroup = record {
-    isEquivalence = ⟷-isEquivalence ;
++IsSemigroup : IsSemigroup _⟷_ PLUS
++IsSemigroup = record {
+    isEquivalence = ⟷IsEquivalence ;
     assoc = λ x y z → assocr₊ {x} {y} {z} ;
     ∙-cong = _⊕_
   }
 
-+-IsMonoid : IsMonoid _⟷_ PLUS ZERO
-+-IsMonoid = record {
-    isSemigroup = +-IsSemigroup ;
++0IsMonoid : IsMonoid _⟷_ PLUS ZERO
++0IsMonoid = record {
+    isSemigroup = +IsSemigroup ;
     identity = ((λ x → unite₊ {x}) , 
                 (λ x → swap₊ ◎ unite₊ {x}))
   }
 
-+-IsCommutativeMonoid : IsCommutativeMonoid _⟷_ PLUS ZERO
-+-IsCommutativeMonoid = record {
-    isSemigroup = +-IsSemigroup ;
++0IsCommutativeMonoid : IsCommutativeMonoid _⟷_ PLUS ZERO
++0IsCommutativeMonoid = record {
+    isSemigroup = +IsSemigroup ;
     identityˡ = λ x → unite₊ {x} ;
     comm = λ x y → swap₊ {x} {y} 
   }
 
-+-CommutativeMonoid : CommutativeMonoid _ _
-+-CommutativeMonoid = record {
++0CommutativeMonoid : CommutativeMonoid _ _
++0CommutativeMonoid = record {
   Carrier = B ;
   _≈_ = _⟷_ ; 
   _∙_ = PLUS ;
   ε = ZERO ;
-  isCommutativeMonoid = +-IsCommutativeMonoid  
+  isCommutativeMonoid = +0IsCommutativeMonoid  
   }
 
 -- 
 
-⋆-IsSemigroup : IsSemigroup _⟷_ TIMES
-⋆-IsSemigroup = record {
-    isEquivalence = ⟷-isEquivalence ;
+⋆IsSemigroup : IsSemigroup _⟷_ TIMES
+⋆IsSemigroup = record {
+    isEquivalence = ⟷IsEquivalence ;
     assoc = λ x y z → assocr⋆ {x} {y} {z} ;
     ∙-cong = _⊗_
   }
 
-⋆-IsMonoid : IsMonoid _⟷_ TIMES ONE
-⋆-IsMonoid = record {
-    isSemigroup = ⋆-IsSemigroup ;
+⋆1IsMonoid : IsMonoid _⟷_ TIMES ONE
+⋆1IsMonoid = record {
+    isSemigroup = ⋆IsSemigroup ;
     identity = ((λ x → unite⋆ {x}) , 
                 (λ x → swap⋆ ◎ unite⋆ {x}))
   }  
 
-⋆-IsCommutativeMonoid : IsCommutativeMonoid _⟷_ TIMES ONE
-⋆-IsCommutativeMonoid = record {
-    isSemigroup = ⋆-IsSemigroup ;
+⋆1IsCommutativeMonoid : IsCommutativeMonoid _⟷_ TIMES ONE
+⋆1IsCommutativeMonoid = record {
+    isSemigroup = ⋆IsSemigroup ;
     identityˡ = λ x → unite⋆ {x} ;
     comm = λ x y → swap⋆ {x} {y} 
   }  
 
-⋆-CommutativeMonoid : CommutativeMonoid _ _ 
-⋆-CommutativeMonoid = record {
+⋆1CommutativeMonoid : CommutativeMonoid _ _ 
+⋆1CommutativeMonoid = record {
   Carrier = B ;
   _≈_ = _⟷_ ; 
   _∙_ = TIMES ;
   ε = ONE ;
-  isCommutativeMonoid = ⋆-IsCommutativeMonoid
+  isCommutativeMonoid = ⋆1IsCommutativeMonoid
   }
 
 record IsCommutativeSemiringWithoutAnnihilatingZero
@@ -230,32 +240,32 @@ record IsCommutativeSemiringWithoutAnnihilatingZero
 B-isCommutativeSemiringWithoutAnnihilatingZero
     : IsCommutativeSemiringWithoutAnnihilatingZero _⟷_ PLUS TIMES ZERO ONE
 B-isCommutativeSemiringWithoutAnnihilatingZero = record {
-    +-isCommutativeMonoid = +-IsCommutativeMonoid ;
-    *-isCommutativeMonoid = ⋆-IsCommutativeMonoid ;
+    +-isCommutativeMonoid = +0IsCommutativeMonoid ;
+    *-isCommutativeMonoid = ⋆1IsCommutativeMonoid ;
     distrib = ( (λ x y z → dist' {x} {y} {z}) ,
                 (λ x y z → dist {y} {z} {x} ))
     }
 
 -- 
 
-+-IsGroup : IsGroup _⟷_ PLUS ZERO NEG
-+-IsGroup = record {
-  isMonoid = +-IsMonoid ; 
++0-IsGroup : IsGroup _⟷_ PLUS ZERO NEG
++0-IsGroup = record {
+  isMonoid = +0IsMonoid ; 
   inverse = ( (λ x → swap₊ ◎ ε₊ {x}) , 
               (λ x → ε₊ {x}) );
   ⁻¹-cong = neg
   }
 
-+-IsAbelianGroup : IsAbelianGroup _⟷_ PLUS ZERO NEG
-+-IsAbelianGroup = record {
-    isGroup = +-IsGroup ; 
++0-IsAbelianGroup : IsAbelianGroup _⟷_ PLUS ZERO NEG
++0-IsAbelianGroup = record {
+    isGroup = +0-IsGroup ; 
     comm = λ x y → swap₊ {x} {y} 
   }
 
 B-IsRing : IsRing _⟷_ PLUS TIMES NEG ZERO ONE
 B-IsRing = record {
-    +-isAbelianGroup = +-IsAbelianGroup ; 
-    *-isMonoid = ⋆-IsMonoid ;
+    +-isAbelianGroup = +0-IsAbelianGroup ; 
+    *-isMonoid = ⋆1IsMonoid ;
     distrib = ( (λ x y z → dist' {x} {y} {z}) ,
                 (λ x y z → dist {y} {z} {x} ))
   }
@@ -306,8 +316,8 @@ record Meadow c ℓ : Set (suc (c ⊔ ℓ)) where
     1# : Carrier
     isMeadow : IsMeadow _≈_ _+_ _*_ -_ r 0# 1#
 
-B-IsMeadow : IsMeadow _⟷_ PLUS TIMES NEG RECIP ZERO ONE
-B-IsMeadow = record {
+B-/IsMeadow : IsMeadow _⟷_ PLUS TIMES NEG RECIP ZERO ONE
+B-/IsMeadow = record {
     +*-isCommutativeRing = B-IsCommutativeRing ;
     *-refl-l = {!!} ;
     *-refl-r = {!!} ;
@@ -316,8 +326,8 @@ B-IsMeadow = record {
     r-cong = λ x y → recip {x} {y} 
   }
 
-B-Meadow : Meadow _ _
-B-Meadow = record {
+B-/Meadow : Meadow _ _
+B-/Meadow = record {
     Carrier = B ;
     _≈_ = _⟷_ ;
     _+_ = PLUS ;
@@ -326,7 +336,7 @@ B-Meadow = record {
     r  = RECIP ;
     0# = ZERO ;
     1# = ONE ;
-    isMeadow = B-IsMeadow
+    isMeadow = B-/IsMeadow
   }
 
 ------------------------------------------------------------------------------
