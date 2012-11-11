@@ -85,8 +85,17 @@ neg {b₁} {b₂} c =              -- -b1
   swap₊ ◎                      -- 0 + (-b2)
   unite₊                       -- -b2
 
-mul0 : {b : B} → ZERO ⟷ TIMES ZERO b
-mul0 = {!!} 
+lem1 : {x : B} → TIMES ZERO x ⟷ PLUS (TIMES ZERO x) (TIMES ZERO x)
+lem1 = (uniti₊ {ZERO} ⊗ id⟷ ) ◎ swap⋆ ◎ dist' ◎ (swap⋆ ⊕ swap⋆)
+
+lem2 : {b : B} → PLUS (TIMES ZERO b) (NEG (TIMES ZERO b)) ⟷ PLUS (PLUS (TIMES ZERO b) (TIMES ZERO b)) (NEG (TIMES ZERO b))
+lem2 {b} = lem1 {b} ⊕ id⟷ {NEG (TIMES ZERO b)}
+
+lem3 : {b : B} → PLUS (TIMES ZERO b) (NEG (TIMES ZERO b)) ⟷ TIMES ZERO b
+lem3 {b} = lem2 {b} ◎ assocr₊ ◎ (id⟷ ⊕ ε₊) ◎ swap₊ ◎ unite₊
+
+mul0 : {b : B} → TIMES ZERO b ⟷ ZERO
+mul0 {b} = sym (lem3 {b}) ◎ lem2 ◎ sym (lem2 {b}) ◎ ε₊
 
 inv0 : {b : B} → {p0 : b ≡ ZERO} → (TIMES b (RECIP b) ⟷ ZERO)
 inv0 = {!!} 
