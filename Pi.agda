@@ -85,20 +85,17 @@ neg {b₁} {b₂} c =              -- -b1
   swap₊ ◎                      -- 0 + (-b2)
   unite₊                       -- -b2
 
-lem1 : {x : B} → TIMES ZERO x ⟷ PLUS (TIMES ZERO x) (TIMES ZERO x)
-lem1 = (uniti₊ {ZERO} ⊗ id⟷ ) ◎ swap⋆ ◎ dist' ◎ (swap⋆ ⊕ swap⋆)
-
 lem2 : {b : B} → PLUS (TIMES ZERO b) (NEG (TIMES ZERO b)) ⟷ PLUS (PLUS (TIMES ZERO b) (TIMES ZERO b)) (NEG (TIMES ZERO b))
-lem2 {b} = lem1 {b} ⊕ id⟷ {NEG (TIMES ZERO b)}
+lem2 {b} = (uniti₊ {ZERO} ⊗ id⟷ ) ◎ swap⋆ ◎ dist' ◎ (swap⋆ ⊕ swap⋆) ⊕ id⟷
 
 lem3 : {b : B} → PLUS (TIMES ZERO b) (NEG (TIMES ZERO b)) ⟷ TIMES ZERO b
-lem3 {b} = lem2 {b} ◎ assocr₊ ◎ (id⟷ ⊕ ε₊) ◎ swap₊ ◎ unite₊
+lem3 = lem2 ◎ assocr₊ ◎ (id⟷ ⊕ ε₊) ◎ swap₊ ◎ unite₊
 
 mul0 : {b : B} → TIMES ZERO b ⟷ ZERO
-mul0 {b} = sym (lem3 {b}) ◎ lem2 ◎ sym (lem2 {b}) ◎ ε₊
+mul0 = sym (lem3) ◎ ε₊
 
-inv0 : {b : B} → {p0 : b ≡ ZERO} → (TIMES b (RECIP b) ⟷ ZERO)
-inv0 = {!!} 
+inv0 : TIMES ZERO (RECIP ZERO) ⟷ ZERO
+inv0 = mul0 
 
 recip : {b₁ b₂ : B} → (b₁ ⟷ b₂) → (RECIP b₁ ⟷ RECIP b₂) 
 recip {b₁} {b₂} c = {!!}
@@ -150,10 +147,11 @@ eval dist (inj₂ v₂ , v₃) = inj₂ (v₂ , v₃)
 eval factor (inj₁ (v₁ , v₃)) = (inj₁ v₁ , v₃)
 eval factor (inj₂ (v₂ , v₃)) = (inj₂ v₂ , v₃)
 eval η₊ ()
-eval ε₊ v = {!!} 
+eval ε₊ (inj₁ x) = {!!}
+eval ε₊ (inj₂ y) = {!!}
 eval refe⋆ v = {!!}
 eval refi⋆ v = {!!}
-eval rile⋆ v = {!!}
+eval rile⋆ (v , _) =  v
 eval rili⋆ v = {!!}
 eval id⟷ v = v
 eval (sym c) v = eval (adjoint c) v
@@ -328,10 +326,10 @@ record Meadow c ℓ : Set (suc (c ⊔ ℓ)) where
 B-/IsMeadow : IsMeadow _⟷_ PLUS TIMES NEG RECIP ZERO ONE
 B-/IsMeadow = record {
     +*-isCommutativeRing = B-IsCommutativeRing ;
-    *-refl-l = {!!} ;
-    *-refl-r = {!!} ;
-    *-ril-l = {!!} ;
-    *-ril-r = {!!} ;
+    *-refl-l = λ x → refe⋆ {x} ;
+    *-refl-r = λ x → sym (refe⋆ {x}) ;
+    *-ril-l = λ x → sym (rili⋆ {x}) ;
+    *-ril-r = λ x → rili⋆ {x} ;
     r-cong = λ x y → recip {x} {y} 
   }
 
