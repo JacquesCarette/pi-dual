@@ -97,8 +97,31 @@ mul0 = sym (lem3) ◎ ε₊
 inv0 : TIMES ZERO (RECIP ZERO) ⟷ ZERO
 inv0 = mul0 
 
+reciplem1 : {b₁ b₂ : B} → (b₁ ⟷ b₂) → (b₁ ⟷ (TIMES b₁ (TIMES (TIMES b₁ (RECIP b₂)) (TIMES b₂ (RECIP b₂)))))
+reciplem1 {b₁} {b₂} c =  c ◎                       -- b
+  rili⋆ ◎                                -- b * (b * 1/b)
+  (rili⋆ ⊗ id⟷) ◎                        -- (b * (b * 1/b)) * (b * 1/b)
+  (((sym c) ⊗ ((sym c) ⊗ id⟷)) ⊗ id⟷) ◎ -- ((a * (a * 1/b)) * (b * 1/b))  
+  assocr⋆                                -- a * ((a * 1/b) * (b * 1/b))
+
+midtofront : {a b c : B} → TIMES a (TIMES b c) ⟷ TIMES b (TIMES a c)
+midtofront = assocl⋆ ◎ (swap⋆ ⊗ id⟷) ◎ assocr⋆
+
 recip : {b₁ b₂ : B} → (b₁ ⟷ b₂) → (RECIP b₁ ⟷ RECIP b₂) 
-recip {b₁} {b₂} c = {!!}
+recip {b₁} {b₂} c =          -- 1/a
+  rili⋆ {RECIP b₁} ◎         -- 1/a * (1/a * 1/1/a)
+  (id⟷ ⊗ (id⟷ ⊗ refe⋆)) ◎   -- 1/a * (1/a * a)
+  assocl⋆ ◎                  -- (1/a * 1/a) * a
+  (id⟷ ⊗ reciplem1 c) ◎     -- (1/a * 1/a) * (a * ((a * 1/b) * (b * 1/b)))
+  assocl⋆ ◎                  -- (((1/a * 1/a) * a) * ((a * 1/b) * (b * 1/b)))
+  ((id⟷ ⊗ refi⋆ ) ⊗ id⟷) ◎   -- (((1/a *1/a) * 1/(1/a)) * ((a * 1/b) * (b * 1/b))
+  ((assocr⋆ ◎ rile⋆ ) ⊗ (id⟷ ⊗ ((sym c) ⊗ id⟷))) ◎ -- 1/a * ((a * 1/b) * (a * 1/b))
+  (id⟷ ⊗ (assocr⋆ ◎ (id⟷ ⊗ midtofront))) ◎ -- 1/a * (a * (a * (1/b * 1/b)))
+  (assocl⋆ ◎ assocl⋆) ◎                      -- ((1/a * a) * a) * (1/b * 1/b)
+  (((swap⋆ ⊗ id⟷) ◎ swap⋆) ⊗ id⟷) ◎         -- ((a * (a * 1/a)) * (1/b * 1/b))
+  (rile⋆ ⊗ id⟷ ) ◎                           -- a * (1/b * 1/b)
+  ((c ◎ refi⋆ ) ⊗ id⟷) ◎ swap⋆ ◎             -- (1/b * 1/b) * 1/(1/b)
+  assocr⋆ ◎ rile⋆                             -- 1/b
 
 adjoint : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
 adjoint unite₊    = uniti₊
