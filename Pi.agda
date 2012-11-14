@@ -2,10 +2,12 @@
 
 module Pi where
 
+open import Data.Nat hiding (_⊔_; suc; _+_; _*_)
+open import Data.Vec 
 open import Data.Empty
 open import Data.Unit
-open import Data.Sum
-open import Data.Product
+open import Data.Sum hiding (map)
+open import Data.Product hiding (map)
 open import Function
 open import Level
 open import Relation.Binary.PropositionalEquality hiding (sym)
@@ -38,6 +40,29 @@ data B : Set where
 ⟦ NEG b ⟧        = {!!} 
 ⟦ TIMES b1 b2 ⟧  = ⟦ b1 ⟧ × ⟦ b2 ⟧
 ⟦ RECIP b ⟧      = {!!} 
+
+
+-- Define module over a ring (the types bot, top, disjoint union, and product
+-- do form a ring as shown in the type-iso library) 
+
+module MR where
+
+  open Data.Nat using (ℕ; zero; _*_)
+  open Data.Vec using ([]; _∷_; map; _++_)
+
+  module-over : B → ℕ → Set
+  module-over b dim = Vec ⟦ b ⟧ dim 
+
+  zeroV : forall {b : B} → module-over b 0
+  zeroV = []
+
+  tensorV : {b₁ b₂ : B} {m₁ m₂ : ℕ} → 
+            module-over b₁ m₁ → module-over b₂ m₂ → 
+            module-over (TIMES b₁ b₂) (m₁ * m₂)
+  tensorV [] _ = []
+  tensorV (x ∷ xs) ys = (map (λ y → (x , y)) ys) ++ (tensorV xs ys)
+
+open MR
 
 ------------------------------------------------------------------------------
 -- Now we define another universe for our equivalences. First the codes for
@@ -72,8 +97,15 @@ data _⟷_ : B → B → Set where
   _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
            (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (TIMES b₁ b₂ ⟷ TIMES b₃ b₄)
 
+--
+
 dist' : {b₁ b₂ b₃ : B} → TIMES b₁ (PLUS b₂ b₃) ⟷ PLUS (TIMES b₁ b₂) (TIMES b₁ b₃)
 dist' = swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆) 
+
+midtofront : {a b c : B} → TIMES a (TIMES b c) ⟷ TIMES b (TIMES a c)
+midtofront = assocl⋆ ◎ (swap⋆ ⊗ id⟷) ◎ assocr⋆
+
+--
 
 neg : {b₁ b₂ : B} → (b₁ ⟷ b₂) → (NEG b₁ ⟷ NEG b₂) 
 neg {b₁} {b₂} c =              -- -b1
@@ -84,6 +116,8 @@ neg {b₁} {b₂} c =              -- -b1
   (id⟷ ⊕ ε₊) ◎                -- (-b2) + 0
   swap₊ ◎                      -- 0 + (-b2)
   unite₊                       -- -b2
+
+--
 
 mul0 : {b : B} → TIMES ZERO b ⟷ ZERO
 mul0 =                    -- 0*b
@@ -99,22 +133,12 @@ inv0 = mul0
 
 --
 
-reciplem1 : {b₁ b₂ : B} → (b₁ ⟷ b₂) → (b₁ ⟷ (TIMES b₁ (TIMES (TIMES b₁ (RECIP b₂)) (TIMES b₂ (RECIP b₂)))))
-reciplem1 {b₁} {b₂} c =  c ◎                       -- b
-  rili⋆ ◎                                -- b * (b * 1/b)
-  (rili⋆ ⊗ id⟷) ◎                        -- (b * (b * 1/b)) * (b * 1/b)
-  (((sym c) ⊗ ((sym c) ⊗ id⟷)) ⊗ id⟷) ◎ -- ((a * (a * 1/b)) * (b * 1/b))  
-  assocr⋆                                -- a * ((a * 1/b) * (b * 1/b))
-
-midtofront : {a b c : B} → TIMES a (TIMES b c) ⟷ TIMES b (TIMES a c)
-midtofront = assocl⋆ ◎ (swap⋆ ⊗ id⟷) ◎ assocr⋆
-
 recip : {b₁ b₂ : B} → (b₁ ⟷ b₂) → (RECIP b₁ ⟷ RECIP b₂) 
 recip {b₁} {b₂} c =          -- 1/a
   rili⋆ {RECIP b₁} ◎         -- 1/a * (1/a * 1/1/a)
   (id⟷ ⊗ (id⟷ ⊗ refe⋆)) ◎   -- 1/a * (1/a * a)
   assocl⋆ ◎                  -- (1/a * 1/a) * a
-  (id⟷ ⊗ reciplem1 c) ◎     -- (1/a * 1/a) * (a * ((a * 1/b) * (b * 1/b)))
+  (id⟷ ⊗ reciplem c) ◎     -- (1/a * 1/a) * (a * ((a * 1/b) * (b * 1/b)))
   assocl⋆ ◎                  -- (((1/a * 1/a) * a) * ((a * 1/b) * (b * 1/b)))
   ((id⟷ ⊗ refi⋆ ) ⊗ id⟷) ◎   -- (((1/a *1/a) * 1/(1/a)) * ((a * 1/b) * (b * 1/b))
   ((assocr⋆ ◎ rile⋆ ) ⊗ (id⟷ ⊗ ((sym c) ⊗ id⟷))) ◎ -- 1/a * ((a * 1/b) * (a * 1/b))
@@ -124,6 +148,16 @@ recip {b₁} {b₂} c =          -- 1/a
   (rile⋆ ⊗ id⟷ ) ◎                           -- a * (1/b * 1/b)
   ((c ◎ refi⋆ ) ⊗ id⟷) ◎ swap⋆ ◎             -- (1/b * 1/b) * 1/(1/b)
   assocr⋆ ◎ rile⋆                             -- 1/b
+  where 
+    reciplem : {b₁ b₂ : B} → (b₁ ⟷ b₂) → (b₁ ⟷ (TIMES b₁ (TIMES (TIMES b₁ (RECIP b₂)) (TIMES b₂ (RECIP b₂)))))
+    reciplem {b₁} {b₂} c =  c ◎                       -- b
+      rili⋆ ◎                                -- b * (b * 1/b)
+      (rili⋆ ⊗ id⟷) ◎                        -- (b * (b * 1/b)) * (b * 1/b)
+      (((sym c) ⊗ ((sym c) ⊗ id⟷)) ⊗ id⟷) ◎ -- ((a * (a * 1/b)) * (b * 1/b))  
+      assocr⋆                                -- a * ((a * 1/b) * (b * 1/b))
+
+
+--
 
 adjoint : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
 adjoint unite₊    = uniti₊
@@ -176,7 +210,7 @@ eval ε₊ (inj₁ x) = {!!}
 eval ε₊ (inj₂ y) = {!!}
 eval refe⋆ v = {!!}
 eval refi⋆ v = {!!}
-eval rile⋆ (v , _) =  v
+eval rile⋆ v = {!!}
 eval rili⋆ v = {!!}
 eval id⟷ v = v
 eval (sym c) v = eval (adjoint c) v
@@ -262,7 +296,8 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
 
 record IsCommutativeSemiringWithoutAnnihilatingZero
          {a ℓ} {A : Set a} (≈ : Rel A ℓ)
-         (+ * : Op₂ A) (0# 1# : A) : Set (a ⊔ ℓ) where
+         (+ * : Op₂ A) (0# 1# : A) 
+       : Set (a ⊔ ℓ) where
   open FunctionProperties ≈
   field
     +-isCommutativeMonoid : IsCommutativeMonoid ≈ + 0#
