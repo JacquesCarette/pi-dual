@@ -45,20 +45,20 @@ data B : Set where
 -- Define module over a ring (the types bot, top, disjoint union, and product
 -- do form a ring as shown in the type-iso library) 
 
-module MR where
+module MR(C : CommutativeRing Level.zero Level.zero) where
 
-  open Data.Nat using (ℕ; zero; _*_)
+  open Data.Nat using (ℕ; zero; suc; _*_)
   open Data.Vec using ([]; _∷_; map; _++_)
 
-  module-over : B → ℕ → Set
-  module-over b dim = Vec ⟦ b ⟧ dim 
+  R-module : Set → ℕ → Set
+  R-module c dim = Vec c dim 
 
-  zeroV : forall {b : B} → module-over b 0
+  zeroV : ∀ {b : Set} → R-module b 0
   zeroV = []
 
-  tensorV : {b₁ b₂ : B} {m₁ m₂ : ℕ} → 
-            module-over b₁ m₁ → module-over b₂ m₂ → 
-            module-over (TIMES b₁ b₂) (m₁ * m₂)
+  tensorV : {b₁ b₂ : Set } {m₁ m₂ : ℕ} → 
+            R-module b₁ m₁ → R-module b₂ m₂ → 
+            R-module (b₁ × b₂) (m₁ * m₂)
   tensorV [] _ = []
   tensorV (x ∷ xs) ys = (map (λ y → (x , y)) ys) ++ (tensorV xs ys)
 
