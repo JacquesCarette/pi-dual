@@ -49,6 +49,7 @@ module MR(C : CommutativeRing Level.zero Level.zero) where
 
   open Data.Nat using (ℕ; zero; suc; _*_)
   open Data.Vec using ([]; _∷_; map; _++_)
+  open CommutativeRing using (Carrier; _+_)
 
   R-module : Set → ℕ → Set
   R-module c dim = Vec c dim 
@@ -62,6 +63,9 @@ module MR(C : CommutativeRing Level.zero Level.zero) where
   tensorV [] _ = []
   tensorV (x ∷ xs) ys = (map (λ y → (x , y)) ys) ++ (tensorV xs ys)
 
+  addV : {n : ℕ} → R-module (Carrier C) n → R-module (Carrier C) n
+                 → R-module (Carrier C) n
+  addV x y = Data.Vec.zipWith (_+_ C) x y    
 open MR
 
 ------------------------------------------------------------------------------
