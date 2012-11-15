@@ -8,7 +8,7 @@ open import Data.Sum hiding (map)
 open import Data.Product hiding (map)
 open import Function
 open import Level
-open import Relation.Binary.PropositionalEquality hiding (sym)
+open import Relation.Binary.PropositionalEquality hiding (sym; [_])
 open import Relation.Binary.Core
 open import Algebra
 import Algebra.FunctionProperties as FunctionProperties
@@ -22,14 +22,32 @@ open import PiNF-algebra
 -- Define module over a ring (the types bot, top, disjoint union, and product
 -- do form a ring as shown in the type-iso library) 
 
+R-module : ℕ → Set → Set
+R-module dim c = Vec c dim 
+
+-- The only element of (R-module 0) is the zero vector
+
+zeroV : ∀ {A : Set} → R-module 0 A
+zeroV = []
+
+-- (R-module 1 A) is isomorphic to A
+
+v-R1 : ∀ {A : Set} → A → R-module 1 A
+v-R1 a = [ a ]
+
+R1-v : ∀ {A : Set} → R-module 1 A → A
+R1-v (a ∷ []) = a
+
+-- 
+
+
 module MR (C : CommutativeSemiringWithoutAnnihilatingZero Level.zero Level.zero) where
 
-  open Data.Nat using (ℕ; zero; suc; _*_)
+  open Data.Nat using (ℕ; zero; suc; _+_; _*_)
   open Data.Vec using ([]; _∷_; map; _++_)
-  open CommutativeSemiringWithoutAnnihilatingZero using (Carrier; _+_)
-
-  R-module : Set → ℕ → Set
-  R-module c dim = Vec c dim 
+  open CommutativeSemiringWithoutAnnihilatingZero 
+    using (Carrier; _≈_; 0#; 1#)
+    renaming (_+_ to _+r_; _*_ to _*r_)
 
 {--
   zeroV : ∀ {b : Set} → R-module b 0
@@ -44,7 +62,8 @@ module MR (C : CommutativeSemiringWithoutAnnihilatingZero Level.zero Level.zero)
 
   addV : {n : ℕ} → R-module (Carrier C) n → R-module (Carrier C) n
                  → R-module (Carrier C) n
-  addV x y = Data.Vec.zipWith (_+_ C) x y    
+  addV x y = Data.Vec.zipWith (_+r_ C) x y
+
 open MR
 
 ------------------------------------------------------------------------------
