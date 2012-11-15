@@ -58,11 +58,12 @@ module MR (C : CommutativeSemiringWithoutAnnihilatingZero Level.zero Level.zero)
             R-module (b₁ × b₂) (m₁ * m₂)
   tensorV [] _ = []
   tensorV (x ∷ xs) ys = (map (λ y → (x , y)) ys) ++ (tensorV xs ys)
---}
 
   addV : {n : ℕ} → R-module (Carrier C) n → R-module (Carrier C) n
                  → R-module (Carrier C) n
   addV x y = Data.Vec.zipWith (_+r_ C) x y
+
+--}
 
 open MR
 
