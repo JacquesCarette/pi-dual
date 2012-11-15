@@ -41,33 +41,6 @@ data B : Set where
 ⟦ TIMES b1 b2 ⟧  = ⟦ b1 ⟧ × ⟦ b2 ⟧
 ⟦ RECIP b ⟧      = {!!} 
 
-
--- Define module over a ring (the types bot, top, disjoint union, and product
--- do form a ring as shown in the type-iso library) 
-
-module MR(C : CommutativeRing Level.zero Level.zero) where
-
-  open Data.Nat using (ℕ; zero; suc; _*_)
-  open Data.Vec using ([]; _∷_; map; _++_)
-  open CommutativeRing using (Carrier; _+_)
-
-  R-module : Set → ℕ → Set
-  R-module c dim = Vec c dim 
-
-  zeroV : ∀ {b : Set} → R-module b 0
-  zeroV = []
-
-  tensorV : {b₁ b₂ : Set } {m₁ m₂ : ℕ} → 
-            R-module b₁ m₁ → R-module b₂ m₂ → 
-            R-module (b₁ × b₂) (m₁ * m₂)
-  tensorV [] _ = []
-  tensorV (x ∷ xs) ys = (map (λ y → (x , y)) ys) ++ (tensorV xs ys)
-
-  addV : {n : ℕ} → R-module (Carrier C) n → R-module (Carrier C) n
-                 → R-module (Carrier C) n
-  addV x y = Data.Vec.zipWith (_+_ C) x y    
-open MR
-
 ------------------------------------------------------------------------------
 -- Now we define another universe for our equivalences. First the codes for
 -- equivalences.
@@ -108,6 +81,139 @@ dist' = swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆)
 
 midtofront : {a b c : B} → TIMES a (TIMES b c) ⟷ TIMES b (TIMES a c)
 midtofront = assocl⋆ ◎ (swap⋆ ⊗ id⟷) ◎ assocr⋆
+
+------------------------------------------------------------------------------
+-- Establish that syntactically we have a commutative semiring
+
+⟷IsEquivalence : IsEquivalence _⟷_
+⟷IsEquivalence = record {
+    refl = id⟷ ;
+    sym = sym  ;
+    trans = _◎_ 
+  } 
+
++IsSemigroup : IsSemigroup _⟷_ PLUS
++IsSemigroup = record {
+    isEquivalence = ⟷IsEquivalence ;
+    assoc = λ x y z → assocr₊ {x} {y} {z} ;
+    ∙-cong = _⊕_
+  }
+
++0IsMonoid : IsMonoid _⟷_ PLUS ZERO
++0IsMonoid = record {
+    isSemigroup = +IsSemigroup ;
+    identity = ((λ x → unite₊ {x}) , 
+                (λ x → swap₊ ◎ unite₊ {x}))
+  }
+
++0IsCommutativeMonoid : IsCommutativeMonoid _⟷_ PLUS ZERO
++0IsCommutativeMonoid = record {
+    isSemigroup = +IsSemigroup ;
+    identityˡ = λ x → unite₊ {x} ;
+    comm = λ x y → swap₊ {x} {y} 
+  }
+
++0CommutativeMonoid : CommutativeMonoid _ _
++0CommutativeMonoid = record {
+  Carrier = B ;
+  _≈_ = _⟷_ ; 
+  _∙_ = PLUS ;
+  ε = ZERO ;
+  isCommutativeMonoid = +0IsCommutativeMonoid  
+  }
+
+-- 
+
+⋆IsSemigroup : IsSemigroup _⟷_ TIMES
+⋆IsSemigroup = record {
+    isEquivalence = ⟷IsEquivalence ;
+    assoc = λ x y z → assocr⋆ {x} {y} {z} ;
+    ∙-cong = _⊗_
+  }
+
+⋆1IsMonoid : IsMonoid _⟷_ TIMES ONE
+⋆1IsMonoid = record {
+    isSemigroup = ⋆IsSemigroup ;
+    identity = ((λ x → unite⋆ {x}) , 
+                (λ x → swap⋆ ◎ unite⋆ {x}))
+  }  
+
+⋆1IsCommutativeMonoid : IsCommutativeMonoid _⟷_ TIMES ONE
+⋆1IsCommutativeMonoid = record {
+    isSemigroup = ⋆IsSemigroup ;
+    identityˡ = λ x → unite⋆ {x} ;
+    comm = λ x y → swap⋆ {x} {y} 
+  }  
+
+⋆1CommutativeMonoid : CommutativeMonoid _ _ 
+⋆1CommutativeMonoid = record {
+  Carrier = B ;
+  _≈_ = _⟷_ ; 
+  _∙_ = TIMES ;
+  ε = ONE ;
+  isCommutativeMonoid = ⋆1IsCommutativeMonoid
+  }
+
+record IsCommutativeSemiringWithoutAnnihilatingZero
+         {a ℓ} {A : Set a} (≈ : Rel A ℓ)
+         (+ * : Op₂ A) (0# 1# : A) 
+       : Set (a ⊔ ℓ) where
+  open FunctionProperties ≈
+  field
+    +-isCommutativeMonoid : IsCommutativeMonoid ≈ + 0#
+    *-isCommutativeMonoid : IsCommutativeMonoid ≈ * 1#
+    distrib               : * DistributesOver +
+
+record CommutativeSemiringWithoutAnnihilatingZero c ℓ : Set (suc (c ⊔ ℓ)) where
+  field
+    Carrier : Set c
+    _≈_ : Rel Carrier ℓ
+    _+_ : Op₂ Carrier
+    _*_ : Op₂ Carrier
+    0# : Carrier
+    1# : Carrier
+    isCommutativeSemiringWithoutAnnihilatingZero : 
+      IsCommutativeSemiringWithoutAnnihilatingZero _≈_ _+_ _*_ 0# 1#
+
+B-isCommutativeSemiringWithoutAnnihilatingZero
+    : IsCommutativeSemiringWithoutAnnihilatingZero _⟷_ PLUS TIMES ZERO ONE
+B-isCommutativeSemiringWithoutAnnihilatingZero = record {
+    +-isCommutativeMonoid = +0IsCommutativeMonoid ;
+    *-isCommutativeMonoid = ⋆1IsCommutativeMonoid ;
+    distrib = ( (λ x y z → dist' {x} {y} {z}) ,
+                (λ x y z → dist {y} {z} {x} ))
+    }
+
+------------------------------------------------------------------------------
+-- Now we want to add negatives and fractionals...
+
+-- Define module over a ring (the types bot, top, disjoint union, and product
+-- do form a ring as shown in the type-iso library) 
+
+module MR (C : CommutativeSemiringWithoutAnnihilatingZero Level.zero Level.zero) where
+
+  open Data.Nat using (ℕ; zero; suc; _*_)
+  open Data.Vec using ([]; _∷_; map; _++_)
+  open CommutativeSemiringWithoutAnnihilatingZero using (Carrier; _+_)
+
+  R-module : Set → ℕ → Set
+  R-module c dim = Vec c dim 
+
+{--
+  zeroV : ∀ {b : Set} → R-module b 0
+  zeroV = []
+
+  tensorV : {b₁ b₂ : Set } {m₁ m₂ : ℕ} → 
+            R-module b₁ m₁ → R-module b₂ m₂ → 
+            R-module (b₁ × b₂) (m₁ * m₂)
+  tensorV [] _ = []
+  tensorV (x ∷ xs) ys = (map (λ y → (x , y)) ys) ++ (tensorV xs ys)
+--}
+
+  addV : {n : ℕ} → R-module (Carrier C) n → R-module (Carrier C) n
+                 → R-module (Carrier C) n
+  addV x y = Data.Vec.zipWith (_+_ C) x y    
+open MR
 
 --
 
@@ -225,97 +331,6 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
 
 ------------------------------------------------------------------------------
 -- Define the alternative semantics based on small-step semantics
-
-------------------------------------------------------------------------------
--- Connect with Algebra
-
-⟷IsEquivalence : IsEquivalence _⟷_
-⟷IsEquivalence = record {
-    refl = id⟷ ;
-    sym = sym  ;
-    trans = _◎_ 
-  } 
-
-+IsSemigroup : IsSemigroup _⟷_ PLUS
-+IsSemigroup = record {
-    isEquivalence = ⟷IsEquivalence ;
-    assoc = λ x y z → assocr₊ {x} {y} {z} ;
-    ∙-cong = _⊕_
-  }
-
-+0IsMonoid : IsMonoid _⟷_ PLUS ZERO
-+0IsMonoid = record {
-    isSemigroup = +IsSemigroup ;
-    identity = ((λ x → unite₊ {x}) , 
-                (λ x → swap₊ ◎ unite₊ {x}))
-  }
-
-+0IsCommutativeMonoid : IsCommutativeMonoid _⟷_ PLUS ZERO
-+0IsCommutativeMonoid = record {
-    isSemigroup = +IsSemigroup ;
-    identityˡ = λ x → unite₊ {x} ;
-    comm = λ x y → swap₊ {x} {y} 
-  }
-
-+0CommutativeMonoid : CommutativeMonoid _ _
-+0CommutativeMonoid = record {
-  Carrier = B ;
-  _≈_ = _⟷_ ; 
-  _∙_ = PLUS ;
-  ε = ZERO ;
-  isCommutativeMonoid = +0IsCommutativeMonoid  
-  }
-
--- 
-
-⋆IsSemigroup : IsSemigroup _⟷_ TIMES
-⋆IsSemigroup = record {
-    isEquivalence = ⟷IsEquivalence ;
-    assoc = λ x y z → assocr⋆ {x} {y} {z} ;
-    ∙-cong = _⊗_
-  }
-
-⋆1IsMonoid : IsMonoid _⟷_ TIMES ONE
-⋆1IsMonoid = record {
-    isSemigroup = ⋆IsSemigroup ;
-    identity = ((λ x → unite⋆ {x}) , 
-                (λ x → swap⋆ ◎ unite⋆ {x}))
-  }  
-
-⋆1IsCommutativeMonoid : IsCommutativeMonoid _⟷_ TIMES ONE
-⋆1IsCommutativeMonoid = record {
-    isSemigroup = ⋆IsSemigroup ;
-    identityˡ = λ x → unite⋆ {x} ;
-    comm = λ x y → swap⋆ {x} {y} 
-  }  
-
-⋆1CommutativeMonoid : CommutativeMonoid _ _ 
-⋆1CommutativeMonoid = record {
-  Carrier = B ;
-  _≈_ = _⟷_ ; 
-  _∙_ = TIMES ;
-  ε = ONE ;
-  isCommutativeMonoid = ⋆1IsCommutativeMonoid
-  }
-
-record IsCommutativeSemiringWithoutAnnihilatingZero
-         {a ℓ} {A : Set a} (≈ : Rel A ℓ)
-         (+ * : Op₂ A) (0# 1# : A) 
-       : Set (a ⊔ ℓ) where
-  open FunctionProperties ≈
-  field
-    +-isCommutativeMonoid : IsCommutativeMonoid ≈ + 0#
-    *-isCommutativeMonoid : IsCommutativeMonoid ≈ * 1#
-    distrib               : * DistributesOver +
-
-B-isCommutativeSemiringWithoutAnnihilatingZero
-    : IsCommutativeSemiringWithoutAnnihilatingZero _⟷_ PLUS TIMES ZERO ONE
-B-isCommutativeSemiringWithoutAnnihilatingZero = record {
-    +-isCommutativeMonoid = +0IsCommutativeMonoid ;
-    *-isCommutativeMonoid = ⋆1IsCommutativeMonoid ;
-    distrib = ( (λ x y z → dist' {x} {y} {z}) ,
-                (λ x y z → dist {y} {z} {x} ))
-    }
 
 -- 
 
