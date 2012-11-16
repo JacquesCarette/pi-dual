@@ -186,16 +186,16 @@ iso _ = {!!}
 
 ⟷IsEquivalence : IsEquivalence _⟺_ 
 ⟷IsEquivalence = record {
-    refl = ? ;
-    sym = ? ;
-    trans = ? 
+    refl = {!!} ;
+    sym = {!!} ;
+    trans = {!!} 
   } 
 
 +IsSemigroup : IsSemigroup _⟺_  PLUS
 +IsSemigroup = record {
     isEquivalence = ⟷IsEquivalence ;
-    assoc = ? ;
-    ∙-cong = ? 
+    assoc = {!!} ;
+    ∙-cong = {!!} 
   }
 
 
