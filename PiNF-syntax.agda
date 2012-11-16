@@ -1,10 +1,5 @@
 module PiNF-syntax where
 
-open import Data.Empty
-open import Data.Unit
-open import Data.Sum hiding (map)
-open import Data.Product hiding (map)
-
 infixr 30 _⟷_
 infixr 20 _◎_
 
