@@ -1,14 +1,14 @@
 module PiNF-algebra where
 
-open import Data.Nat hiding (_⊔_; suc; _+_; _*_)
-open import Data.Vec 
-open import Data.Empty
-open import Data.Unit
-open import Data.Sum hiding (map)
+-- open import Data.Nat hiding (_⊔_; suc; _+_; _*_)
+-- open import Data.Vec 
+-- open import Data.Empty
+-- open import Data.Unit
+-- open import Data.Sum hiding (map)
 open import Data.Product hiding (map)
-open import Function
+-- open import Function
 open import Level
-open import Relation.Binary.PropositionalEquality hiding (sym)
+-- open import Relation.Binary.PropositionalEquality hiding (sym)
 open import Relation.Binary.Core
 open import Algebra
 import Algebra.FunctionProperties as FunctionProperties
