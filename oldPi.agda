@@ -1,6 +1,6 @@
 {-# OPTIONS --no-termination-check #-}
 
-module Pi where
+module oldPi where
 
 open import Data.Nat hiding (_⊔_; suc; _+_; _*_)
 open import Data.Vec 
