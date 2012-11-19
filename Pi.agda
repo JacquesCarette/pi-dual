@@ -119,6 +119,49 @@ adjoint (c₁ ⊗ c₂) = adjoint c₁ ⊗ adjoint c₂
 
 --
 
+-- Frame a b c d means: expect (a <-> b) and return (c <-> d)
+data Frame : B → B → B → B → Set where
+  Seq₁ : {b₁ b₂ b₃ : B} → (b₂ ⟺ b₃) → Frame b₁ b₂ b₁ b₃
+  Seq₂ : {b₁ b₂ b₃ : B} → (b₁ ⟺ b₂) → Frame b₂ b₃ b₁ b₃
+  Left : {b₁ b₂ b₃ b₄ : B} → (b₃ ⟺ b₄) → Frame b₁ b₂ (PLUS b₁ b₃) (PLUS b₂ b₄)
+  Right : {b₁ b₂ b₃ b₄ : B} → (b₁ ⟺ b₂) → Frame b₃ b₄ (PLUS b₁ b₃) (PLUS b₂ b₄)
+  Fst : {b₁ b₂ b₃ b₄ : B} → 
+        ⟦ b₂ ⟧ → (b₃ ⟺ b₄) → Frame b₁ b₂ (TIMES b₁ b₃) (TIMES b₂ b₄)
+  Snd : {b₁ b₂ b₃ b₄ : B} → (b₁ ⟺ b₂) → Frame b₃ b₄ (TIMES b₁ b₃) (TIMES b₂ b₄)
+
+data Context : B → B → B → B → Set where
+  Empty : {b₁ b₂ : B} → Context b₁ b₂ b₁ b₂ 
+  Push : {b₁ b₂ b₃ b₄ b₅ b₆ : B} → Frame b₁ b₂ b₃ b₄ → Context b₃ b₄ b₅ b₆ → 
+         Context b₁ b₂ b₅ b₆ 
+
+mutual 
+
+  eval_c : { a b c d : B } → (a ⟺ b) → ⟦ a ⟧ → Context a b c d → ⟦ d ⟧
+  eval_c (iso f) v C = eval_k (iso f) (evalP f v) C
+  eval_c (sym c) v C = eval_c (adjoint c) v C
+  eval_c (f ◎ g) v C = eval_c f v (Push (Seq₁ g) C)
+  eval_c (f ⊕ g) (inj₁ v) C = eval_c f v (Push (Left g) C)
+  eval_c (f ⊕ g) (inj₂ v) C = eval_c g v (Push (Right f) C)
+  eval_c (f ⊗ g) (v₁ , v₂) C = eval_c f v₁ (Push (Fst v₂ g) C)
+  eval_c _ _ _ = ?
+
+  eval_k : { a b c d : B } → (a ⟺ b) → ⟦ b ⟧ → Context a b c d → ⟦ d ⟧
+  eval_k f v Empty = v
+  eval_k _ _ _ = ?
+
+{--
+  eval_k f v (seqC₁ g C) = eval_c g v (seqC₂ f C) 
+  eval_k g v (seqC₂ f C) = eval_k (f ◎ g) v C
+  eval_k f v (leftC g C) = eval_k (f ⊕ g) (inj₁ v) C
+  eval_k g v (rightC f C) = eval_k (f ⊕ g) (inj₂ v) C
+  eval_k f v₁ (fstC v₂ g C) = eval_c g v₂ (sndC f v₁ C)
+  eval_k g v₂ (sndC f v₁ C) = eval_k (f ⊗ g) (v₁ , v₂) C
+--}
+
+
+
+{--
+
 data Context : B → B → B → B → Set where
   emptyC : {a b : B} → Context a b a b
   seqC₁ : {a b c i o : B} → (b ⟺ c) → Context a c i o → Context a b i o
@@ -189,3 +232,4 @@ logical-reversibility = {!!}
 
 ------------------------------------------------------------------------------
 
+--}
