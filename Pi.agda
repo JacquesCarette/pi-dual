@@ -14,7 +14,7 @@ infixr 30 _⟺_
 infixr 20 _◎_
 
 ------------------------------------------------------------------------------
--- First we define a universe of our value types
+-- A universe of our value types
 
 data B : Set where
   ZERO  : B
@@ -29,7 +29,7 @@ data B : Set where
 ⟦ TIMES b1 b2 ⟧  = ⟦ b1 ⟧ × ⟦ b2 ⟧
 
 ------------------------------------------------------------------------------
--- Now we define the primitive isomorphisms
+-- Primitive isomorphisms
 
 data _⟷_ : B → B → Set where
   -- (+,0) commutative monoid
@@ -96,7 +96,7 @@ bevalP : { b₁ b₂ : B } → (b₁ ⟷ b₂) → ⟦ b₂ ⟧ → ⟦ b₁ ⟧
 bevalP c v = evalP (adjointP c) v
 
 ------------------------------------------------------------------------------
--- and then the closure combinators
+-- Closure combinators
 
 data _⟺_ : B → B → Set where
   iso    : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₁ ⟺ b₂) 
@@ -117,10 +117,7 @@ adjoint (c₁ ◎ c₂) = adjoint c₂ ◎ adjoint c₁
 adjoint (c₁ ⊕ c₂) = adjoint c₁ ⊕ adjoint c₂
 adjoint (c₁ ⊗ c₂) = adjoint c₁ ⊗ adjoint c₂
 
--- 
--- (Context a b i o) is 
--- a combinator (i <==> o) with a hole 
--- missing a combinator (a <==> b)
+--
 
 data Context : B → B → B → B → Set where
   emptyC : {a b : B} → Context a b a b
@@ -135,11 +132,11 @@ data Context : B → B → B → B → Set where
   sndC : {a b c d i o : B} → 
          (a ⟺ b) → ⟦ b ⟧ → Context (TIMES a c) (TIMES b d) i o → Context c d i o
 
--- evaluation
+-- Evaluation
 
 mutual 
 
-  -- should be:
+  -- should perhaps be:
   -- eval_c : { a b c d : B } → (a ⟺ b) → ⟦ c ⟧ → Context a b c d → ⟦ d ⟧
   -- context takes you from c to a, then combinator takes you from a to b, 
   -- and then context takes you from b to d
@@ -174,7 +171,7 @@ mutual
   beval_c (f ⊗ g) (v₁ , v₂) C = beval_c g v₂ (sndC f v₁ C)
 
   beval_k : { a b c d : B } → (a ⟺ b) → ⟦ a ⟧ → Context a b c d → ⟦ d ⟧
-  beval_k f v emptyC = {!!} -- want to return v but need to generalize types as explained above first, I think.
+  beval_k f v emptyC = ? 
   beval_k g v (seqC₂ f C) = beval_c f v (seqC₁ g C) 
   beval_k f v (seqC₁ g C) = beval_k (f ◎ g) v C
   beval_k f v (leftC g C) = beval_k (f ⊕ g) (inj₁ v) C
@@ -183,7 +180,7 @@ mutual
   beval_k f v₁ (fstC v₂ g C) = beval_k (f ⊗ g) (v₁ , v₂) C
 
 ------------------------------------------------------------------------------
--- reversible
+-- Proposition 'Reversible'
 
 logical-reversibility : 
   {a : B} {c : a ⟺ a} {v : ⟦ a ⟧} {v' : ⟦ a ⟧} → 
