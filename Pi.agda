@@ -202,11 +202,18 @@ mutual
 ------------------------------------------------------------------------------
 -- Proposition 'Reversible'
 
-logical-reversibility : 
-  {a : B} {c : a ⟺ a} {v : ⟦ a ⟧} {v' : ⟦ a ⟧} → 
-  eval_c c v emptyC ≡ v' → beval_c c v' emptyC ≡ v
-logical-reversibility = {!!}
+-- eval_c : { a b c d : B } → (a ⟺ b) → ⟦ a ⟧ → Context a b c d → ⟦ d ⟧
+-- eval_k : { a b c d : B } → (a ⟺ b) → ⟦ b ⟧ → Context a b c d → ⟦ d ⟧
+-- beval_c : { a b c d : B } → (a ⟺ b) → ⟦ b ⟧ → Context a b c d → ⟦ c ⟧
+-- beval_k : { a b c d : B } → (a ⟺ b) → ⟦ a ⟧ → Context a b c d → ⟦ c ⟧
+
+-- Prop. 2.2
+
+logical-reversibility : {a b : B} {f : a ⟺ b} {va : ⟦ a ⟧} {vb : ⟦ b ⟧} →
+  eval_c f va emptyC ≡ eval_k f vb emptyC → 
+  eval_c (adjoint f) vb emptyC ≡ eval_k (adjoint f) va emptyC
+logical-reversibility = {!!} 
 
 ------------------------------------------------------------------------------
 
-
+  
