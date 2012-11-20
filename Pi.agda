@@ -119,48 +119,12 @@ adjoint (c₁ ⊗ c₂) = adjoint c₁ ⊗ adjoint c₂
 
 --
 
--- Frame a b c d means: expect (a <-> b) and return (c <-> d)
-data Frame : B → B → B → B → Set where
-  Seq₁ : {b₁ b₂ b₃ : B} → (b₂ ⟺ b₃) → Frame b₁ b₂ b₁ b₃
-  Seq₂ : {b₁ b₂ b₃ : B} → (b₁ ⟺ b₂) → Frame b₂ b₃ b₁ b₃
-  Left : {b₁ b₂ b₃ b₄ : B} → (b₃ ⟺ b₄) → Frame b₁ b₂ (PLUS b₁ b₃) (PLUS b₂ b₄)
-  Right : {b₁ b₂ b₃ b₄ : B} → (b₁ ⟺ b₂) → Frame b₃ b₄ (PLUS b₁ b₃) (PLUS b₂ b₄)
-  Fst : {b₁ b₂ b₃ b₄ : B} → 
-        ⟦ b₂ ⟧ → (b₃ ⟺ b₄) → Frame b₁ b₂ (TIMES b₁ b₃) (TIMES b₂ b₄)
-  Snd : {b₁ b₂ b₃ b₄ : B} → (b₁ ⟺ b₂) → Frame b₃ b₄ (TIMES b₁ b₃) (TIMES b₂ b₄)
-
-data Context : B → B → B → B → Set where
-  Empty : {b₁ b₂ : B} → Context b₁ b₂ b₁ b₂ 
-  Push : {b₁ b₂ b₃ b₄ b₅ b₆ : B} → Frame b₁ b₂ b₃ b₄ → Context b₃ b₄ b₅ b₆ → 
-         Context b₁ b₂ b₅ b₆ 
-
-mutual 
-
-  eval_c : { a b c d : B } → (a ⟺ b) → ⟦ a ⟧ → Context a b c d → ⟦ d ⟧
-  eval_c (iso f) v C = eval_k (iso f) (evalP f v) C
-  eval_c (sym c) v C = eval_c (adjoint c) v C
-  eval_c (f ◎ g) v C = eval_c f v (Push (Seq₁ g) C)
-  eval_c (f ⊕ g) (inj₁ v) C = eval_c f v (Push (Left g) C)
-  eval_c (f ⊕ g) (inj₂ v) C = eval_c g v (Push (Right f) C)
-  eval_c (f ⊗ g) (v₁ , v₂) C = eval_c f v₁ (Push (Fst v₂ g) C)
-  eval_c _ _ _ = ?
-
-  eval_k : { a b c d : B } → (a ⟺ b) → ⟦ b ⟧ → Context a b c d → ⟦ d ⟧
-  eval_k f v Empty = v
-  eval_k _ _ _ = ?
-
-{--
-  eval_k f v (seqC₁ g C) = eval_c g v (seqC₂ f C) 
-  eval_k g v (seqC₂ f C) = eval_k (f ◎ g) v C
-  eval_k f v (leftC g C) = eval_k (f ⊕ g) (inj₁ v) C
-  eval_k g v (rightC f C) = eval_k (f ⊕ g) (inj₂ v) C
-  eval_k f v₁ (fstC v₂ g C) = eval_c g v₂ (sndC f v₁ C)
-  eval_k g v₂ (sndC f v₁ C) = eval_k (f ⊗ g) (v₁ , v₂) C
---}
-
-
-
-{--
+-- (Context a b c d) represents a combinator (c <-> d) with a hole
+-- requiring something of type (a <-> b). When we use these contexts,
+-- it is always the case that the (c <-> a) part of the computation
+-- has ALREADY been done and that we are about to evaluate (a <-> b)
+-- using a given 'a'. The continuation takes the output 'b' and
+-- produces a 'd'.
 
 data Context : B → B → B → B → Set where
   emptyC : {a b : B} → Context a b a b
@@ -170,8 +134,13 @@ data Context : B → B → B → B → Set where
           (c ⟺ d) → Context (PLUS a c) (PLUS b d) i o → Context a b i o
   rightC : {a b c d i o : B} → 
            (a ⟺ b) → Context (PLUS a c) (PLUS b d) i o → Context c d i o
+  -- the (i <-> a) part of the computation is completely done; so we must store
+  -- the value of type [[ c ]] as part of the context
   fstC : {a b c d i o : B} → 
          ⟦ c ⟧ → (c ⟺ d) → Context (TIMES a c) (TIMES b d) i o → Context a b i o
+  -- the (i <-> c) part of the computation and the (a <-> b) part of
+  -- the computation are completely done; so we must store the value
+  -- of type [[ b ]] as part of the context
   sndC : {a b c d i o : B} → 
          (a ⟺ b) → ⟦ b ⟧ → Context (TIMES a c) (TIMES b d) i o → Context c d i o
 
@@ -179,11 +148,9 @@ data Context : B → B → B → B → Set where
 
 mutual 
 
-  -- should perhaps be:
-  -- eval_c : { a b c d : B } → (a ⟺ b) → ⟦ c ⟧ → Context a b c d → ⟦ d ⟧
-  -- context takes you from c to a, then combinator takes you from a to b, 
-  -- and then context takes you from b to d
-
+  -- The (c <-> a) part of the computation has been done. 
+  -- We have an 'a' and we are about to do the (a <-> b) computation.
+  -- We get a 'b' and examine the context to get the 'd'
   eval_c : { a b c d : B } → (a ⟺ b) → ⟦ a ⟧ → Context a b c d → ⟦ d ⟧
   eval_c (iso f) v C = eval_k (iso f) (evalP f v) C
   eval_c (sym c) v C = eval_c (adjoint c) v C
@@ -192,6 +159,10 @@ mutual
   eval_c (f ⊕ g) (inj₂ v) C = eval_c g v (rightC f C)
   eval_c (f ⊗ g) (v₁ , v₂) C = eval_c f v₁ (fstC v₂ g C)
 
+  -- The (c <-> a) part of the computation has been done.
+  -- The (a <-> b) part of the computation has been done.
+  -- We need to examine the context to get the 'd'.
+  -- We rebuild the combinator on the way out.
   eval_k : { a b c d : B } → (a ⟺ b) → ⟦ b ⟧ → Context a b c d → ⟦ d ⟧
   eval_k f v emptyC = v 
   eval_k f v (seqC₁ g C) = eval_c g v (seqC₂ f C) 
@@ -205,7 +176,10 @@ mutual
 
 mutual 
 
-  beval_c : { a b c d : B } → (a ⟺ b) → ⟦ b ⟧ → Context a b c d → ⟦ d ⟧
+  -- The (d <-> b) part of the computation has been done. 
+  -- We have a 'b' and we are about to do the (a <-> b) computation backwards.
+  -- We get an 'a' and examine the context to get the 'c'
+  beval_c : { a b c d : B } → (a ⟺ b) → ⟦ b ⟧ → Context a b c d → ⟦ c ⟧
   beval_c (iso f) v C = beval_k (iso f) (bevalP f v) C
   beval_c (sym c) v C = beval_c (adjoint c) v C
   beval_c (f ◎ g) v C = beval_c g v (seqC₂ f C) 
@@ -213,8 +187,11 @@ mutual
   beval_c (f ⊕ g) (inj₂ v) C = beval_c g v (rightC f C)
   beval_c (f ⊗ g) (v₁ , v₂) C = beval_c g v₂ (sndC f v₁ C)
 
-  beval_k : { a b c d : B } → (a ⟺ b) → ⟦ a ⟧ → Context a b c d → ⟦ d ⟧
-  beval_k f v emptyC = ? 
+  -- The (d <-> b) part of the computation has been done. 
+  -- The (a <-> b) backwards computation has been done. 
+  -- We have an 'a' and examine the context to get the 'c'
+  beval_k : { a b c d : B } → (a ⟺ b) → ⟦ a ⟧ → Context a b c d → ⟦ c ⟧
+  beval_k f v emptyC = v
   beval_k g v (seqC₂ f C) = beval_c f v (seqC₁ g C) 
   beval_k f v (seqC₁ g C) = beval_k (f ◎ g) v C
   beval_k f v (leftC g C) = beval_k (f ⊕ g) (inj₁ v) C
@@ -232,4 +209,4 @@ logical-reversibility = {!!}
 
 ------------------------------------------------------------------------------
 
---}
+
