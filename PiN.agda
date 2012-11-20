@@ -210,3 +210,17 @@ mutual
   beval_k g v (rightC f C) = beval_k (f ⊕ g) (inj₂ v) C
   beval_k g v₂ (sndC f v₁ C) = beval_c f v₁ (fstC v₂ g C)
   beval_k f v₁ (fstC v₂ g C) = beval_k (f ⊗ g) (v₁ , v₂) C
+
+------------------------------------------------------------------------------
+-- Top level eval
+
+eval : { a : BN } → (a ⟺ a) → ⟦ a ⟧N → ⟦ a ⟧N
+eval f v = eval_c f v emptyC
+
+BOOL : BN
+BOOL = PLUSN ONEN ONEN
+
+test1 : ⟦ BOOL ⟧N
+test1 = eval (iso swap₊) (inj₁ tt)
+
+
