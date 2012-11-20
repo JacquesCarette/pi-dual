@@ -107,7 +107,6 @@ data _⟺_ : B → B → Set where
   _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
            (b₁ ⟺ b₃) → (b₂ ⟺ b₄) → (TIMES b₁ b₂ ⟺ TIMES b₃ b₄)
 
-
 -- 
 
 adjoint : { b₁ b₂ : B } → (b₁ ⟺ b₂) → (b₂ ⟺ b₁)
@@ -117,10 +116,6 @@ adjoint (c₁ ◎ c₂) = adjoint c₂ ◎ adjoint c₁
 adjoint (c₁ ⊕ c₂) = adjoint c₁ ⊕ adjoint c₂
 adjoint (c₁ ⊗ c₂) = adjoint c₁ ⊗ adjoint c₂
 
--- 
--- (Context a b i o) is 
--- a combinator (i <==> o) with a hole 
--- missing a combinator (a <==> b)
 
 data Context : B → B → B → B → Set where
   emptyC : {a b : B} → Context a b a b
