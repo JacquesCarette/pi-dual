@@ -4,6 +4,7 @@ module PiF where
 
 open import Data.Empty
 open import Data.Unit
+open import Data.Bool
 open import Data.Sum hiding (map)
 open import Data.Product hiding (map)
 
@@ -20,6 +21,13 @@ data BF : Set where
   PLUSF  : BF → BF → BF
   TIMESF : BF → BF → BF
   RECIP  : BF → BF
+
+--data VF : Set where
+--  unitF : 
+
+-- data hasType : 
+
+-- normalize : (b : BF) → (hasType v b) → normalform v b
 
 -- fractional types are un-interpreted
 
@@ -95,6 +103,22 @@ evalP factor (inj₁ (v₁ , v₃)) = (inj₁ v₁ , v₃)
 evalP factor (inj₂ (v₂ , v₃)) = (inj₂ v₂ , v₃)
 evalP id⟷ v = v
 
+-- normalize values in BF to x * 1/y and then decide equality of normalized values
+
+_≡B_ : {b₁ : BF} → {b₂ : BF} → ⟦ b₁ ⟧F → ⟦ b₂ ⟧F → Bool 
+_≡B_ {ZEROF} () _ 
+_≡B_ {ONEF} {ONEF} tt tt = true
+_≡B_ {ONEF} {b₂ = _} _ _ = false
+_≡B_ {PLUSF y y'} z h = {!!}
+_≡B_ {TIMESF y y'} z h = {!!}
+_≡B_ {RECIP y} z h = {!!} 
+-- _≡B_ {b₁ = ONEF} {b₂ = ONEF} tt tt = true
+--_≡B_ {b₁ = TIMESF d c} {b₂ = TIMESF c d} (v₁ , v₃) (v₄ , v₂) =
+--  _≡B_ {b₁ = d} {b₂ = d} v₁ v₂ ∧ _≡B_ {b₁ = c} {b₂ = c} v₃ v₄
+  -- zero??
+         
+
+  
 -- Backwards evaluator
 
 bevalP : { b₁ b₂ : BF } → (b₁ ⟷ b₂) → ⟦ b₂ ⟧F → ⟦ b₁ ⟧F
