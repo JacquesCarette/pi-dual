@@ -3,32 +3,105 @@
 module Pi-abstract-machine where
 
 open import Data.Empty
+open import Data.Bool
+open import Data.Fin hiding (_+_; zero; suc)
 open import Data.Unit
 open import Data.Sum hiding (map)
 open import Data.Product hiding (map)
-open import Data.Nat
+open import Data.Nat -- hiding (_+_; zero; suc)
 open import Relation.Binary
 
 open import Relation.Binary.PropositionalEquality hiding (sym; [_])
 
 infixr 30 _⟷_
-infixr 30 _⟺_
-infixr 20 _◎_
+--infixr 30 _⟺_
+--infixr 20 _◎_
 
 ------------------------------------------------------------------------------
 -- A universe of our value types
 
+-- un-normalized types
 data B : Set where
   ZERO  : B
   ONE   : B
   PLUS  : B → B → B
   TIMES : B → B → B
 
-⟦_⟧ : B → Set
-⟦ ZERO ⟧         = ⊥
-⟦ ONE ⟧          = ⊤
-⟦ PLUS b1 b2 ⟧   = ⟦ b1 ⟧ ⊎ ⟦ b2 ⟧
-⟦ TIMES b1 b2 ⟧  = ⟦ b1 ⟧ × ⟦ b2 ⟧
+-- un-normalized values
+data VB : (b : B) → Set where
+  unitB : VB ONE
+  inlB : {b₁ b₂ : B} → VB b₁ → VB (PLUS b₁ b₂)
+  inrB : {b₁ b₂ : B} → VB b₂ → VB (PLUS b₁ b₂)
+  pairB : {b₁ b₂ : B} → VB b₁ → VB b₂ → VB (TIMES b₁ b₂)
+
+-- normalize a type to a natural number (only thing that matters)
+module Size where
+  open Data.Nat using (_+_; _*_; zero; suc)
+
+  size : B → ℕ
+  size ZERO = 0
+  size ONE = 1
+  size (PLUS b₁ b₂) = size b₁ + size b₂
+  size (TIMES b₁ b₂) = size b₁ * size b₂
+
+open Size
+
+-- normalize a value to a number
+{--
+ Example: 
+    original type is PLUS ONE (PLUS ONE ONE)
+    it has 3 values
+      inlB unitB
+      inrB (inlB unitB)
+      inrB (inrB unitB)
+
+    we map the type to the natural number 3
+    we map the values to numbers
+--}
+
+module Norm where
+  open Data.Nat using (_+_; _*_; zero; suc)
+
+  normalize : (b : B) → VB b → ℕ
+  normalize ZERO () 
+  normalize ONE unitB = zero
+  normalize (PLUS b₁ b₂) (inlB v) = normalize b₁ v
+  normalize (PLUS b₁ b₂) (inrB v) = size b₁ + normalize b₂ v
+  normalize (TIMES b₁ b₂) (pairB v₁ v₂) = size b₂ * normalize b₁ v₁ + normalize b₂ v₂
+
+open Norm
+
+{--
+testT = PLUS ONE (PLUS ONE ONE)
+test1 = normalize testT (inlB unitB)
+test2 = normalize testT (inrB (inlB unitB))
+test3 = normalize testT (inrB (inrB unitB))
+
+testT = PLUS ZERO (PLUS ONE ONE)
+test1 = normalize testT (inrB (inlB unitB))
+test2 = normalize testT (inrB (inrB unitB))
+
+testT = TIMES (PLUS ONE ONE) ZERO
+test1 = size testT
+
+testT = TIMES (PLUS ONE ONE) (PLUS ONE (PLUS ONE ONE))
+test1 = normalize testT (pairB (inlB unitB) (inlB unitB))
+test2 = normalize testT (pairB (inrB unitB) (inlB unitB))
+test3 = normalize testT (pairB (inlB unitB) (inrB (inlB unitB)))
+test4 = normalize testT (pairB (inrB unitB) (inrB (inlB unitB)))
+test5 = normalize testT (pairB (inlB unitB) (inrB (inrB unitB)))
+test6 = normalize testT (pairB (inrB unitB) (inrB (inrB unitB)))
+
+--}
+
+ℕ= : ℕ → ℕ → Bool
+ℕ= zero zero = true
+ℕ= zero _ = false
+ℕ= _ zero = false
+ℕ= (suc m) (suc n) = ℕ= m n 
+
+b= : {b₁ b₂ : B} → (v₁ : VB b₁) → (v₂ : VB b₂) → Bool
+b= {b₁} {b₂} v₁ v₂ = ℕ= (normalize b₁ v₁) (normalize b₂ v₂)
 
 ------------------------------------------------------------------------------
 -- Primitive isomorphisms
@@ -69,32 +142,32 @@ adjointP dist      = factor
 adjointP factor    = dist
 adjointP id⟷      = id⟷
 
-evalP : { b₁ b₂ : B } → (b₁ ⟷ b₂) → ⟦ b₁ ⟧ → ⟦ b₂ ⟧
-evalP unite₊ (inj₁ ())
-evalP unite₊ (inj₂ v) = v
-evalP uniti₊ v = inj₂ v
-evalP swap₊ (inj₁ v) = inj₂ v
-evalP swap₊ (inj₂ v) = inj₁ v
-evalP assocl₊ (inj₁ v) = inj₁ (inj₁ v)
-evalP assocl₊ (inj₂ (inj₁ v)) = inj₁ (inj₂ v)
-evalP assocl₊ (inj₂ (inj₂ v)) = inj₂ v
-evalP assocr₊ (inj₁ (inj₁ v)) = inj₁ v
-evalP assocr₊ (inj₁ (inj₂ v)) = inj₂ (inj₁ v)
-evalP assocr₊ (inj₂ v) = inj₂ (inj₂ v)
-evalP unite⋆ (tt , v) = v
-evalP uniti⋆ v = (tt , v)
-evalP swap⋆ (v₁ , v₂) = (v₂ , v₁)
-evalP assocl⋆ (v₁ , (v₂ , v₃)) = ((v₁ , v₂) , v₃)
-evalP assocr⋆ ((v₁ , v₂) , v₃) = (v₁ , (v₂ , v₃))
-evalP dist (inj₁ v₁ , v₃) = inj₁ (v₁ , v₃)
-evalP dist (inj₂ v₂ , v₃) = inj₂ (v₂ , v₃)
-evalP factor (inj₁ (v₁ , v₃)) = (inj₁ v₁ , v₃)
-evalP factor (inj₂ (v₂ , v₃)) = (inj₂ v₂ , v₃)
+evalP : { b₁ b₂ : B } → (b₁ ⟷ b₂) → VB b₁ → VB b₂
+evalP unite₊ (inlB ())
+evalP unite₊ (inrB v) = v
+evalP uniti₊ v = inrB v
+evalP swap₊ (inlB v) = inrB v
+evalP swap₊ (inrB v) = inlB v
+evalP assocl₊ (inlB v) = inlB (inlB v)
+evalP assocl₊ (inrB (inlB v)) = inlB (inrB v)
+evalP assocl₊ (inrB (inrB v)) = inrB v
+evalP assocr₊ (inlB (inlB v)) = inlB v
+evalP assocr₊ (inlB (inrB v)) = inrB (inlB v)
+evalP assocr₊ (inrB v) = inrB (inrB v)
+evalP unite⋆ (pairB unitB v) = v
+evalP uniti⋆ v = (pairB unitB v)
+evalP swap⋆ (pairB v₁ v₂) = pairB v₂ v₁
+evalP assocl⋆ (pairB v₁ (pairB v₂ v₃)) = pairB (pairB v₁ v₂) v₃
+evalP assocr⋆ (pairB (pairB v₁ v₂) v₃) = pairB v₁ (pairB v₂ v₃)
+evalP dist (pairB (inlB v₁) v₃) = inlB (pairB v₁ v₃)
+evalP dist (pairB (inrB v₂) v₃) = inrB (pairB v₂ v₃)
+evalP factor (inlB (pairB v₁ v₃)) = pairB (inlB v₁) v₃
+evalP factor (inrB (pairB v₂ v₃)) = pairB (inrB v₂) v₃
 evalP id⟷ v = v
 
 -- Backwards evaluator
 
-bevalP : { b₁ b₂ : B } → (b₁ ⟷ b₂) → ⟦ b₂ ⟧ → ⟦ b₁ ⟧
+bevalP : { b₁ b₂ : B } → (b₁ ⟷ b₂) → VB b₂ → VB b₁ 
 bevalP c v = evalP (adjointP c) v
 
 ------------------------------------------------------------------------------
@@ -138,12 +211,12 @@ data Context : B → B → B → B → Set where
   -- the (i <-> a) part of the computation is completely done; so we must store
   -- the value of type [[ c ]] as part of the context
   fstC : {a b c d i o : B} → 
-         ⟦ c ⟧ → (c ⟺ d) → Context (TIMES a c) (TIMES b d) i o → Context a b i o
+         VB c → (c ⟺ d) → Context (TIMES a c) (TIMES b d) i o → Context a b i o
   -- the (i <-> c) part of the computation and the (a <-> b) part of
   -- the computation are completely done; so we must store the value
   -- of type [[ b ]] as part of the context
   sndC : {a b c d i o : B} → 
-         (a ⟺ b) → ⟦ b ⟧ → Context (TIMES a c) (TIMES b d) i o → Context c d i o
+         (a ⟺ b) → VB b → Context (TIMES a c) (TIMES b d) i o → Context c d i o
 
 -- Evaluation
 
@@ -151,46 +224,46 @@ record BState { a b c d : B } : Set where
   constructor <_#_#_>
   field
     comb : a ⟺ b 
-    val : ⟦ a ⟧ 
+    val : VB a 
     context :  Context a b c d 
 
 record AState { a b c d : B } : Set where
   constructor [_#_#_]
   field
     comb : a ⟺ b 
-    val : ⟦ b ⟧ 
+    val : VB b 
     context : Context a b c d 
 
 data State (d : B) : Set where
   before : {a b c : B} → BState {a} {b} {c} {d} → State d
   after : {a b c : B} → AState {a} {b} {c} {d} → State d
-  final : ⟦ d ⟧ → State d
+  final : VB d → State d
 
 beforeStep : {a b c d : B} → BState {a} {b} {c} {d} → State d
 beforeStep < iso f # v # C > = after [ iso f # (evalP f v) # C ]
 beforeStep < sym c # v # C > = before < adjoint c # v # C > 
 beforeStep < _◎_ {b₂ = _} f g # v # C > = before < f # v # seqC₁ g C > 
-beforeStep < _⊕_ {b₁} {b₂} {b₃} {b₄} f g # inj₁ v # C > = before < f # v # leftC g C >  
-beforeStep < _⊕_ {b₁} {b₂} {b₃} {b₄} f g # inj₂ v # C > = before < g # v # rightC f C > 
-beforeStep < _⊗_ f g # (v₁ , v₂ ) # C > = before < f # v₁ # fstC v₂ g C >  
+beforeStep < _⊕_ {b₁} {b₂} {b₃} {b₄} f g # inlB v # C > = before < f # v # leftC g C >  
+beforeStep < _⊕_ {b₁} {b₂} {b₃} {b₄} f g # inrB v # C > = before < g # v # rightC f C > 
+beforeStep < _⊗_ f g # (pairB v₁ v₂ ) # C > = before < f # v₁ # fstC v₂ g C >  
 
 afterStep : {a b c d : B} → AState {a} {b} {c} {d} → State d
 afterStep {d = d} [ f # v # emptyC ] = final {d} v
 afterStep [ f # v # seqC₁ g C ] = before <  g # v # seqC₂ f C >
 afterStep [ g # v # seqC₂ f C ] = after [ f ◎ g # v # C ]
-afterStep [ f # v # leftC g C ] = after [ f ⊕ g # inj₁ v # C ]
-afterStep [ g # v # rightC f C ] = after [ f ⊕ g # inj₂ v # C ]
+afterStep [ f # v # leftC g C ] = after [ f ⊕ g # inlB v # C ]
+afterStep [ g # v # rightC f C ] = after [ f ⊕ g # inrB v # C ]
 afterStep [ f # v₁ # fstC v₂ g C ] = before < g # v₂ # sndC f v₁ C >
-afterStep [ g # v₂ # sndC f v₁ C ] = after [ f ⊗ g # (v₁ , v₂) # C ]
+afterStep [ g # v₂ # sndC f v₁ C ] = after [ f ⊗ g # (pairB v₁ v₂) # C ]
   -- The (c <-> a) part of the computation has been done.
   -- The (a <-> b) part of the computation has been done.
   -- We need to examine the context to get the 'd'.
   -- We rebuild the combinator on the way out.
 
-eval : {a b : B} → (a ⟺ b) → ⟦ a ⟧ → ⟦ b ⟧ 
+eval : {a b : B} → (a ⟺ b) → VB a → VB b 
 eval f v = loop (before < f # v # emptyC > )
   where
-    loop : {b : B} → State b  → ⟦ b ⟧
+    loop : {b : B} → State b  → VB b
     loop (before y) = loop (beforeStep y)
     loop (after y) = loop (afterStep y)
     loop (final y) = y
@@ -205,26 +278,26 @@ mutual
   -- The (c <-> a) part of the computation has been done. 
   -- We have an 'a' and we are about to do the (a <-> b) computation.
   -- We get a 'b' and examine the context to get the 'd'
-  eval_c : { a b c d : B } → (a ⟺ b) → ⟦ a ⟧ → Context a b c d → ⟦ d ⟧
+  eval_c : { a b c d : B } → (a ⟺ b) → VB a → Context a b c d → VB d
   eval_c (iso f) v C = eval_k (iso f) (evalP f v) C
   eval_c (sym c) v C = eval_c (adjoint c) v C
   eval_c (f ◎ g) v C = eval_c f v (seqC₁ g C) 
-  eval_c (f ⊕ g) (inj₁ v) C = eval_c f v (leftC g C)
-  eval_c (f ⊕ g) (inj₂ v) C = eval_c g v (rightC f C)
-  eval_c (f ⊗ g) (v₁ , v₂) C = eval_c f v₁ (fstC v₂ g C)
+  eval_c (f ⊕ g) (inlB v) C = eval_c f v (leftC g C)
+  eval_c (f ⊕ g) (inrB v) C = eval_c g v (rightC f C)
+  eval_c (f ⊗ g) (pairB v₁ v₂) C = eval_c f v₁ (fstC v₂ g C)
 
   -- The (c <-> a) part of the computation has been done.
   -- The (a <-> b) part of the computation has been done.
   -- We need to examine the context to get the 'd'.
   -- We rebuild the combinator on the way out.
-  eval_k : { a b c d : B } → (a ⟺ b) → ⟦ b ⟧ → Context a b c d → ⟦ d ⟧
+  eval_k : { a b c d : B } → (a ⟺ b) → VB b → Context a b c d → VB d
   eval_k f v emptyC = v 
   eval_k f v (seqC₁ g C) = eval_c g v (seqC₂ f C) 
   eval_k g v (seqC₂ f C) = eval_k (f ◎ g) v C
-  eval_k f v (leftC g C) = eval_k (f ⊕ g) (inj₁ v) C
-  eval_k g v (rightC f C) = eval_k (f ⊕ g) (inj₂ v) C
+  eval_k f v (leftC g C) = eval_k (f ⊕ g) (inlB v) C
+  eval_k g v (rightC f C) = eval_k (f ⊕ g) (inrB v) C
   eval_k f v₁ (fstC v₂ g C) = eval_c g v₂ (sndC f v₁ C)
-  eval_k g v₂ (sndC f v₁ C) = eval_k (f ⊗ g) (v₁ , v₂) C
+  eval_k g v₂ (sndC f v₁ C) = eval_k (f ⊗ g) (pairB v₁ v₂) C
 
 -- Backwards evaluator
 
@@ -233,25 +306,25 @@ mutual
   -- The (d <-> b) part of the computation has been done. 
   -- We have a 'b' and we are about to do the (a <-> b) computation backwards.
   -- We get an 'a' and examine the context to get the 'c'
-  beval_c : { a b c d : B } → (a ⟺ b) → ⟦ b ⟧ → Context a b c d → ⟦ c ⟧
+  beval_c : { a b c d : B } → (a ⟺ b) → VB b → Context a b c d → VB c
   beval_c (iso f) v C = beval_k (iso f) (bevalP f v) C
   beval_c (sym c) v C = beval_c (adjoint c) v C
   beval_c (f ◎ g) v C = beval_c g v (seqC₂ f C) 
-  beval_c (f ⊕ g) (inj₁ v) C = beval_c f v (leftC g C)
-  beval_c (f ⊕ g) (inj₂ v) C = beval_c g v (rightC f C)
-  beval_c (f ⊗ g) (v₁ , v₂) C = beval_c g v₂ (sndC f v₁ C)
+  beval_c (f ⊕ g) (inlB v) C = beval_c f v (leftC g C)
+  beval_c (f ⊕ g) (inrB v) C = beval_c g v (rightC f C)
+  beval_c (f ⊗ g) (pairB v₁ v₂) C = beval_c g v₂ (sndC f v₁ C)
 
   -- The (d <-> b) part of the computation has been done. 
   -- The (a <-> b) backwards computation has been done. 
   -- We have an 'a' and examine the context to get the 'c'
-  beval_k : { a b c d : B } → (a ⟺ b) → ⟦ a ⟧ → Context a b c d → ⟦ c ⟧
+  beval_k : { a b c d : B } → (a ⟺ b) → VB a → Context a b c d → VB c 
   beval_k f v emptyC = v
   beval_k g v (seqC₂ f C) = beval_c f v (seqC₁ g C) 
   beval_k f v (seqC₁ g C) = beval_k (f ◎ g) v C
-  beval_k f v (leftC g C) = beval_k (f ⊕ g) (inj₁ v) C
-  beval_k g v (rightC f C) = beval_k (f ⊕ g) (inj₂ v) C
+  beval_k f v (leftC g C) = beval_k (f ⊕ g) (inlB v) C
+  beval_k g v (rightC f C) = beval_k (f ⊕ g) (inrB v) C
   beval_k g v₂ (sndC f v₁ C) = beval_c f v₁ (fstC v₂ g C)
-  beval_k f v₁ (fstC v₂ g C) = beval_k (f ⊗ g) (v₁ , v₂) C
+  beval_k f v₁ (fstC v₂ g C) = beval_k (f ⊗ g) (pairB v₁ v₂) C
 
 ------------------------------------------------------------------------------
 -- Proposition 'Reversible'
@@ -262,10 +335,11 @@ mutual
 -- beval_k : { a b c d : B } → (a ⟺ b) → ⟦ a ⟧ → Context a b c d → ⟦ c ⟧
 
 -- Prop. 2.2
-
+{--
 logical-reversibility : {a b : B} {f : a ⟺ b} {va : ⟦ a ⟧} {vb : ⟦ b ⟧} →
   eval_c f va emptyC ≡ eval_k f vb emptyC → 
   eval_c (adjoint f) vb emptyC ≡ eval_k (adjoint f) va emptyC
 logical-reversibility = {!!} 
+--}
 
 ------------------------------------------------------------------------------
