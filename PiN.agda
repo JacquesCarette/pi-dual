@@ -217,9 +217,22 @@ mutual
 eval : { a : BN } → (a ⟺ a) → ⟦ a ⟧N → ⟦ a ⟧N
 eval f v = eval_c f v emptyC
 
+--
+
 BOOL : BN
 BOOL = PLUSN ONEN ONEN
 
 test1 : ⟦ BOOL ⟧N
-test1 = eval (iso swap₊) (inj₁ tt)
+test1 = eval {BOOL} (iso swap₊) (inj₁ tt)
 
+teleport : {a : BN} → a ⟺ a
+teleport = (iso uniti₊)        -- 0+a
+         ◎ (η+ ⊕ (iso id⟷))   -- (-a+a)+a
+         ◎ ((iso swap₊) ⊕ (iso id⟷)) -- (a+(-a))+a
+         ◎ (iso assocr₊) -- a+((-a)+a)
+         ◎ ((iso id⟷) ⊕ ε+) -- a+0
+         ◎ (iso swap₊) -- 0+a
+         ◎ (iso unite₊)
+
+test2 : ⟦ BOOL ⟧N
+test2 = eval {BOOL} teleport (inj₁ tt)
