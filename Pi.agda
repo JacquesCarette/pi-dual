@@ -107,7 +107,6 @@ data _⟺_ : B → B → Set where
   _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
            (b₁ ⟺ b₃) → (b₂ ⟺ b₄) → (TIMES b₁ b₂ ⟺ TIMES b₃ b₄)
 
-
 -- 
 
 adjoint : { b₁ b₂ : B } → (b₁ ⟺ b₂) → (b₂ ⟺ b₁)
