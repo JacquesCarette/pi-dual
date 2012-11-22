@@ -103,6 +103,27 @@ mul0 =                    -- 0*b
   (id⟷ ⊕ (unite₊ ⊗ id⟷)) ◎  -- -(0*b) + 0*b
   swap₊ ◎  ε₊ -- 0
 
+{-
+mul0 : {b : B} → TIMES ZERO b ⟷ ZERO
+mul0 {b} = ⟷-begin
+         TIMES ZERO b 
+   ⟷⟨ uniti₊ ⟩
+         0 + 0*b
+   ⟷⟨ η₊ ⊕ id⟷ ⟩
+         (-(0*b) + 0*b) + 0*b
+   ⟷⟨ assocr₊ ⟩
+         -(0*b) + (0*b + 0*b)
+   ⟷⟨ id⟷ ⊕ factor ⟩
+         -(0*b) + (0+0)*b
+  (id⟷ ⊕ (unite₊ ⊗ id⟷)) ◎  -- -(0*b) + 0*b
+  swap₊ ◎  ε₊ -- 0
+  ∎
+-}
+
+
+--  conType T cond = Σ[ x ∶ T ] cond x
+
+
 inv0 : TIMES ZERO (RECIP ZERO) ⟷ ZERO
 inv0 = mul0 
 

@@ -8,6 +8,8 @@ open import Data.Bool
 open import Data.Sum hiding (map)
 open import Data.Product hiding (map)
 
+open import Relation.Binary.PropositionalEquality hiding (sym; [_])
+
 infixr 30 _⟷_
 infixr 30 _⟺_
 infixr 20 _◎_
@@ -105,13 +107,6 @@ evalP id⟷ v = v
 
 -- normalize values in BF to x * 1/y and then decide equality of normalized values
 
-_≡B_ : {b₁ : BF} → {b₂ : BF} → ⟦ b₁ ⟧F → ⟦ b₂ ⟧F → Bool 
-_≡B_ {ZEROF} () _ 
-_≡B_ {ONEF} {ONEF} tt tt = true
-_≡B_ {ONEF} {b₂ = _} _ _ = false
-_≡B_ {PLUSF y y'} z h = {!!}
-_≡B_ {TIMESF y y'} z h = {!!}
-_≡B_ {RECIP y} z h = {!!} 
 -- _≡B_ {b₁ = ONEF} {b₂ = ONEF} tt tt = true
 --_≡B_ {b₁ = TIMESF d c} {b₂ = TIMESF c d} (v₁ , v₃) (v₄ , v₂) =
 --  _≡B_ {b₁ = d} {b₂ = d} v₁ v₂ ∧ _≡B_ {b₁ = c} {b₂ = c} v₃ v₄
@@ -227,7 +222,7 @@ mutual
   beval_c refe⋆ v C = beval_k refe⋆ (recip (recip v)) C
   beval_c refi⋆ (recip (recip v)) C = beval_k refi⋆ v C
   beval_c rile⋆ v C = beval_k rile⋆ (v , (v , (recip v))) C
-  beval_c rili⋆ (v₁ , (v₂ , recip v₃)) C = {!!}
+  beval_c rili⋆ (v₁ , (v₂ , recip v₃)) C = {!!} 
 
   -- The (d <-> b) part of the computation has been done. 
   -- The (a <-> b) backwards computation has been done. 
