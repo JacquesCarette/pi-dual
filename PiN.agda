@@ -1,3 +1,5 @@
+{-# OPTIONS --no-termination-check #-}
+
 module PiN where
 
 open import Data.Empty
