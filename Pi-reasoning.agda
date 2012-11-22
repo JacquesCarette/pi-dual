@@ -9,6 +9,12 @@ open import Data.Nat
 open import Data.List
 open import Data.Sum hiding (map)
 open import Data.Product hiding (map)
+open import Level hiding (suc)
+open import Relation.Binary.Core
+open import Algebra
+import Algebra.FunctionProperties as FunctionProperties
+open import Algebra.FunctionProperties.Core 
+open import Algebra.Structures
 
 open import Pi-abstract-machine
 
@@ -37,9 +43,9 @@ normalize {TIMES b₁ b₂} (pairB v₁ v₂) = size b₂ * normalize {b₁} v�
 -- natural numbers are a model of commutative semirings.
 
 ℕ= : ℕ → ℕ → Bool
-ℕ= zero zero = true
-ℕ= zero _ = false
-ℕ= _ zero = false
+ℕ= 0 0 = true
+ℕ= 0 _ = false
+ℕ= _ 0 = false
 ℕ= (suc m) (suc n) = ℕ= m n 
 
 vb= : {b₁ b₂ : B} → (v₁ : VB b₁) → (v₂ : VB b₂) → Bool
@@ -56,17 +62,21 @@ values (TIMES b₁ b₂) = concatMap (λ v₁ → map (pairB v₁) (values b₂)
 -- equality of combinators:
 -- two combinators are equal if they map equal values to equal values
 
-⟺= : {b₁ b₂ b₃ b₄ : B} → (b₁ ⟺ b₂) → (b₃ ⟺ b₄) → Bool
-⟺= {b₁} {b₂} {b₃} {b₄} f g = 
-  ℕ= (size b₁) (size b₃) ∧
-  ℕ= (size b₂) (size b₄) ∧
-  and (zipWith vb= (map (λ v → eval f v) vs₁) (map (λ v → eval g v) vs₃))
-  where vs₁ = values b₁
-        vs₃ = values b₃
+⟺=bool : {b₁ b₂ : B} → (b₁ ⟺ b₂) → (b₁ ⟺ b₂) → Bool
+⟺=bool {b₁} {b₂} f g = 
+  and (zipWith vb= (map (eval f) vs) (map (eval g) vs))
+  where vs = values b₁
 
-BOOL = PLUS ONE ONE
-test = ⟺= {BOOL} {BOOL} {BOOL} {BOOL} 
-        (iso swap₊ ◎ iso swap₊) (iso id⟷)
+data _⟺=_ : {b₁ b₂ : B} → (b₁ ⟺ b₂) → (b₁ ⟺ b₂) → Set where
+  check : {b₁ b₂ : B} → (f : b₁ ⟺ b₂) → (g : b₁ ⟺ b₂) → 
+          T (⟺=bool f g) → (f ⟺= g) 
+
+⟺=IsEquivalence : {b₁ b₂ : B} → IsEquivalence (_⟺=_ {b₁} {b₂})
+⟺=IsEquivalence = record {
+    refl = {!!} ;
+    sym = {!!} ;
+    trans = {!!} 
+  } 
 
 ------------------------------------------------------------------------------
 
@@ -90,5 +100,23 @@ test3 = normalize {testT} (pairB (inlB unitB) (inrB (inlB unitB)))
 test4 = normalize {testT} (pairB (inrB unitB) (inrB (inlB unitB)))
 test5 = normalize {testT} (pairB (inlB unitB) (inrB (inrB unitB)))
 test6 = normalize {testT} (pairB (inrB unitB) (inrB (inrB unitB)))
+
+BOOL = PLUS ONE ONE
+test = ⟺= {BOOL} {BOOL} (iso swap₊ ◎ iso swap₊) (iso id⟷)
+
+test1 : (iso swap₊) ⟺= (iso swap₊)
+test1 = check
+          {PLUS ONE ONE} {PLUS ONE ONE} 
+          (iso swap₊) (iso swap₊)
+          tt
+
+The following does NOT typecheck which is good. Agda rejected my
+nonsense claim that id is equivalent to swap+
+
+test2 : (iso swap₊) ⟺= (iso swap₊)
+test2 = check 
+          {PLUS ONE ONE} {PLUS ONE ONE} 
+          (iso swap₊) (iso id⟷)
+          tt
 
 --}
