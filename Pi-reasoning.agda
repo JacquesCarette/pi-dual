@@ -68,15 +68,18 @@ values (TIMES b₁ b₂) = concatMap (λ v₁ → map (pairB v₁) (values b₂)
   where vs = values b₁
 
 data _⟺=_ : {b₁ b₂ : B} → (b₁ ⟺ b₂) → (b₁ ⟺ b₂) → Set where
+  id⟺= : {b₁ b₂ : B} → (f : b₁ ⟺ b₂) → (f ⟺= f) 
   check : {b₁ b₂ : B} → (f : b₁ ⟺ b₂) → (g : b₁ ⟺ b₂) → 
           T (⟺=bool f g) → (f ⟺= g) 
 
 ⟺=IsEquivalence : {b₁ b₂ : B} → IsEquivalence (_⟺=_ {b₁} {b₂})
-⟺=IsEquivalence = record {
-    refl = {!!} ;
-    sym = {!!} ;
+⟺=IsEquivalence {b₁} {b₂} = record {
+    refl = λ {f : b₁ ⟺ b₂} → id⟺= {b₁} {b₂} f ;
+    sym = λ {f : b₁ ⟺ b₂} {g : b₁ ⟺ b₂} f⟺=g → flip f⟺=g ;
     trans = {!!} 
   } 
+  where flip : {b₁ b₂ : B} {f : b₁ ⟺ b₂} {g : b₁ ⟺ b₂} → (f ⟺= g) → (g ⟺= f) 
+        flip _ = {!!} 
 
 ------------------------------------------------------------------------------
 
@@ -113,7 +116,7 @@ test1 = check
 The following does NOT typecheck which is good. Agda rejected my
 nonsense claim that id is equivalent to swap+
 
-test2 : (iso swap₊) ⟺= (iso swap₊)
+test2 : (iso swap₊) ⟺= (iso id⟷)
 test2 = check 
           {PLUS ONE ONE} {PLUS ONE ONE} 
           (iso swap₊) (iso id⟷)
