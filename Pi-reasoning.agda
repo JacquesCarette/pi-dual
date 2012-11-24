@@ -3,17 +3,20 @@
 module Pi-reasoning where
 
 open import Data.Empty
-open import Data.Unit
-open import Data.Bool
+open import Data.Unit hiding (_≟_)
+open import Data.Bool hiding (_≟_)
 open import Data.Nat 
 open import Data.List
 open import Data.Sum hiding (map)
 open import Data.Product hiding (map)
 open import Level hiding (suc)
-open import Relation.Binary.Core
+open import Relation.Nullary
+open import Relation.Binary
 open import Algebra
+open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Relation.Binary.PropositionalEquality as PropEq using(sym; trans)
 import Algebra.FunctionProperties as FunctionProperties
-open import Algebra.FunctionProperties.Core 
+-- open import Algebra.FunctionProperties
 open import Algebra.Structures
 
 open import Pi-abstract-machine
@@ -41,15 +44,19 @@ normalize {TIMES b₁ b₂} (pairB v₁ v₂) = size b₂ * normalize {b₁} v�
 -- decidable equality of our values: normalize and compare the
 -- underlying natural numbers. This is justified by the fact that the
 -- natural numbers are a model of commutative semirings.
+-- Note that we can't compare at different types so easily, they have
+-- to have the same size, something not worth dealing with right now
+vb= : {b : B} → (v₁ : VB b) → (v₂ : VB b) → Set
+vb= {b} v₁ v₂ = (normalize {b} v₁) ≡ (normalize {b} v₂)
 
-ℕ= : ℕ → ℕ → Bool
-ℕ= 0 0 = true
-ℕ= 0 _ = false
-ℕ= _ 0 = false
-ℕ= (suc m) (suc n) = ℕ= m n 
+vb-Equivalence : {b : B} → IsEquivalence (vb= {b})
+vb-Equivalence = record 
+  { refl = refl
+  ; sym = PropEq.sym
+  ; trans = PropEq.trans }
 
-vb= : {b₁ b₂ : B} → (v₁ : VB b₁) → (v₂ : VB b₂) → Bool
-vb= {b₁} {b₂} v₁ v₂ = ℕ= (normalize {b₁} v₁) (normalize {b₂} v₂)
+vb== : {b : B} → Decidable {A = VB b} vb=
+vb== {b} x y = (normalize {b} x) ≟ (normalize {b} y)
 
 -- generate all normalized values of a type
 
@@ -59,9 +66,19 @@ values ONE = [ unitB ]
 values (PLUS b₁ b₂) = map inlB (values b₁) ++ map inrB (values b₂)
 values (TIMES b₁ b₂) = concatMap (λ v₁ → map (pairB v₁) (values b₂)) (values b₁)
 
+-- B is a Setoid
+
+VB-is-Setoid : {b : B} → Setoid Level.zero Level.zero
+VB-is-Setoid {b} = record 
+  { Carrier = VB b
+  ; _≈_ = vb=
+  ; isEquivalence = vb-Equivalence
+  }
+
 -- equality of combinators:
 -- two combinators are equal if they map equal values to equal values
-
+-- best do this via proving that vb= generates a decidable equivalence
+{-
 ⟺=bool : {b₁ b₂ : B} → (b₁ ⟺ b₂) → (b₁ ⟺ b₂) → Bool
 ⟺=bool {b₁} {b₂} f g = 
   and (zipWith vb= (map (eval f) vs) (map (eval g) vs))
@@ -69,18 +86,16 @@ values (TIMES b₁ b₂) = concatMap (λ v₁ → map (pairB v₁) (values b₂)
 
 data _⟺=_ : {b₁ b₂ : B} → (b₁ ⟺ b₂) → (b₁ ⟺ b₂) → Set where
   id⟺= : {b₁ b₂ : B} → (f : b₁ ⟺ b₂) → (f ⟺= f) 
-  check : {b₁ b₂ : B} → (f : b₁ ⟺ b₂) → (g : b₁ ⟺ b₂) → 
-          T (⟺=bool f g) → (f ⟺= g) 
+  sym⟺= : {b₁ b₂ : B} → (f : b₁ ⟺ b₂) → (g : b₁ ⟺ b₂) → ( f ⟺= g ) → (g ⟺= f) 
+
 
 ⟺=IsEquivalence : {b₁ b₂ : B} → IsEquivalence (_⟺=_ {b₁} {b₂})
 ⟺=IsEquivalence {b₁} {b₂} = record {
     refl = λ {f : b₁ ⟺ b₂} → id⟺= {b₁} {b₂} f ;
-    sym = λ {f : b₁ ⟺ b₂} {g : b₁ ⟺ b₂} f⟺=g → flip f⟺=g ;
-    trans = {!!} 
+    sym = λ {f : b₁ ⟺ b₂} {g : b₁ ⟺ b₂} h  → sym⟺= f g h ;
+    trans = λ f g → {!!} 
   } 
-  where flip : {b₁ b₂ : B} {f : b₁ ⟺ b₂} {g : b₁ ⟺ b₂} → (f ⟺= g) → (g ⟺= f) 
-        flip _ = {!!} 
-
+-}
 ------------------------------------------------------------------------------
 
 {--
