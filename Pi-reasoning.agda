@@ -51,7 +51,7 @@ normalize {TIMES b₁ b₂} (pairB v₁ v₂) = size b₂ * normalize {b₁} v�
 vb= : {b₁ b₂ : B} → (v₁ : VB b₁) → (v₂ : VB b₂) → Bool
 vb= {b₁} {b₂} v₁ v₂ = ℕ= (normalize {b₁} v₁) (normalize {b₂} v₂)
 
--- generate all normalized values of a type
+-- generate all values of a type
 
 values : (b : B) → List (VB b)
 values ZERO = []
@@ -72,14 +72,26 @@ data _⟺=_ : {b₁ b₂ : B} → (b₁ ⟺ b₂) → (b₁ ⟺ b₂) → Set wh
   check : {b₁ b₂ : B} → (f : b₁ ⟺ b₂) → (g : b₁ ⟺ b₂) → 
           T (⟺=bool f g) → (f ⟺= g) 
 
-⟺=IsEquivalence : {b₁ b₂ : B} → IsEquivalence (_⟺=_ {b₁} {b₂})
-⟺=IsEquivalence {b₁} {b₂} = record {
-    refl = λ {f : b₁ ⟺ b₂} → id⟺= {b₁} {b₂} f ;
-    sym = λ {f : b₁ ⟺ b₂} {g : b₁ ⟺ b₂} f⟺=g → flip f⟺=g ;
+-- verifies that the given combinators relates the given values
+
+data _s⟷_ : B → B → Set where
+  sid⟷ : {b : B} {v₁ : VB b} {v₂ : VB b} {p : T (vb= (eval (iso id⟷) v₁) v₂)} → (b s⟷ b)
+
+⟺=IsEquivalence : IsEquivalence _s⟷_
+⟺=IsEquivalence = record { 
+    refl = srefl ; 
+    sym = {!!} ;
     trans = {!!} 
   } 
-  where flip : {b₁ b₂ : B} {f : b₁ ⟺ b₂} {g : b₁ ⟺ b₂} → (f ⟺= g) → (g ⟺= f) 
-        flip _ = {!!} 
+  where srefl : {b : B} {v : VB b} → b s⟷ b
+        srefl {b} {v} = sid⟷ {b} {v} {v} {{!!}}
+
+-- <-> : B -> B -> Set with constructors id : {b : B} -> (b <-> b)
+-- IsEquivalence <->
+--   refl = id
+
+-- R= : B -> B -> Set with constructos 
+
 
 ------------------------------------------------------------------------------
 
