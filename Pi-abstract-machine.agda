@@ -190,50 +190,38 @@ afterStep [ f ! v₁ ! fstC v₂ g C ] = before < g ! v₂ ! sndC f v₁ C >
 afterStep [ g ! v₂ ! sndC f v₁ C ] = after [ f ⊗ g ! (pairB v₁ v₂) ! C ]
 
 -- Backwards evaluator
+-- Re-use AState and BState, but use them 'backwards'
 
-record BStateb (a b c d : B) : Set where
-  constructor <_!_!_>b
-  field
-    comb : a ⟺ b 
-    val : VB b
-    context :  Context a b c d 
-
-record AStateb (a b c d : B) : Set where
-  constructor [_!_!_]b
-  field
-    comb : a ⟺ b 
-    val : VB a 
-    context : Context a b c d 
-
+-- this one is different as it produces a 'c' rather than a 'd' 
 data Stateb (c : B) : Set where
-  before : {a b d : B} → BStateb a b c d → Stateb c
-  after : {a b d : B} → AStateb a b c d → Stateb c
+  before : {a b d : B} → AState a b c d → Stateb c
+  after : {a b d : B} → BState a b c d → Stateb c
   final : VB c → Stateb c
 
 -- The (d <=> b) part of the computation has been done. 
 -- We have a 'b' and we are about to do the (a <=> b) computation backwards.
 -- We get an 'a' and examine the context to get the 'c'
 
-beforeStepb : { a b c d : B } → BStateb a b c d → Stateb c
-beforeStepb < iso f ! v ! C >b = after [ iso f ! bevalP f v ! C ]b
-beforeStepb < sym c ! v ! C >b = before < adjoint c ! v ! C >b
-beforeStepb < f ◎ g ! v ! C >b = before < g ! v ! seqC₂ f C >b
-beforeStepb < f ⊕ g ! inlB v ! C >b = before < f ! v ! leftC g C >b
-beforeStepb < f ⊕ g ! inrB v ! C >b = before < g ! v ! rightC f C >b
-beforeStepb < f ⊗ g ! pairB v₁ v₂ ! C >b = before < g ! v₂ ! sndC f v₁ C >b
+beforeStepb : { a b c d : B } → AState a b c d → Stateb c
+beforeStepb [ iso f ! v ! C ] = after < iso f ! bevalP f v ! C >
+beforeStepb [ sym c ! v ! C ] = before [ adjoint c ! v ! C ]
+beforeStepb [ f ◎ g ! v ! C ] = before [ g ! v ! seqC₂ f C ]
+beforeStepb [ f ⊕ g ! inlB v ! C ] = before [ f ! v ! leftC g C ]
+beforeStepb [ f ⊕ g ! inrB v ! C ] = before [ g ! v ! rightC f C ]
+beforeStepb [ f ⊗ g ! pairB v₁ v₂ ! C ] = before [ g ! v₂ ! sndC f v₁ C ]
 
 -- The (d <-> b) part of the computation has been done. 
 -- The (a <-> b) backwards computation has been done. 
 -- We have an 'a' and examine the context to get the 'c'
 
-afterStepb : { a b c d : B } → AStateb a b c d → Stateb c
-afterStepb [ f ! v ! emptyC ]b = final v
-afterStepb [ g ! v ! seqC₂ f C ]b = before < f ! v ! seqC₁ g C >b
-afterStepb [ f ! v ! seqC₁ g C ]b = after [ f ◎ g ! v ! C ]b
-afterStepb [ f ! v ! leftC g C ]b = after [ f ⊕ g ! inlB v ! C ]b
-afterStepb [ g ! v ! rightC f C ]b = after [ f ⊕ g ! inrB v ! C ]b
-afterStepb [ g ! v₂ ! sndC f v₁ C ]b = before < f ! v₁ ! fstC v₂ g C >b
-afterStepb [ f ! v₁ ! fstC v₂ g C ]b = after [ f ⊗ g ! pairB v₁ v₂ ! C ]b
+afterStepb : { a b c d : B } → BState a b c d → Stateb c
+afterStepb < f ! v ! emptyC > = final v
+afterStepb < g ! v ! seqC₂ f C > = before [ f ! v ! seqC₁ g C ]
+afterStepb < f ! v ! seqC₁ g C > = after < f ◎ g ! v ! C >
+afterStepb < f ! v ! leftC g C > = after < f ⊕ g ! inlB v ! C >
+afterStepb < g ! v ! rightC f C > = after < f ⊕ g ! inrB v ! C >
+afterStepb < g ! v₂ ! sndC f v₁ C > = before [ f ! v₁ ! fstC v₂ g C ]
+afterStepb < f ! v₁ ! fstC v₂ g C > = after < f ⊗ g ! pairB v₁ v₂ ! C >
 
 ------------------------------------------------------------------------------
 -- A single step of a machine
@@ -258,7 +246,7 @@ eval f v = loop (before < f ! v ! emptyC > )
     loop st = loop (step st)
 
 evalb : {a b : B} → (a ⟺ b) → VB b → VB a
-evalb f v = loop (before < f ! v ! emptyC >b )
+evalb f v = loop (before [ f ! v ! emptyC ] )
   where
     loop : {b : B} → Stateb b  → VB b
     loop (final v) = v
