@@ -4,7 +4,12 @@
 
 .PHONY : clean clean-subcode
 
-# ICFP
+outline.subc.pdf : outline.subc.tex cites.bib
+	pdflatex -halt-on-error outline.subc.tex
+
+outline.subc.tex : outline.tex
+	ruby subcode/subc.rb outline.tex
+
 r.subc.pdf : r.subc.tex cites.bib
 	pdflatex -halt-on-error r.subc.tex
 	bibtex r.subc

@@ -1,0 +1,471 @@
+\documentclass[preprint]{sigplanconf}
+
+\usepackage{graphicx}
+\usepackage{comment}
+\usepackage{amsmath}
+\usepackage{xspace}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{proof}
+\usepackage{multicol}
+\usepackage[nodayofweek]{datetime}
+\usepackage{etex}
+\usepackage[all, cmtip]{xy}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{multicol}
+\newcommand\hmmax{0} % default \newcommand\bmmax{0} % default 4
+\usepackage{bm}
+\usepackage{cmll}
+
+\newcommand{\fname}[1]{\ulcorner #1 \urcorner}
+\newcommand{\fconame}[1]{\llcorner #1 \lrcorner}
+
+\newcommand{\xcomment}[2]{\textbf{#1:~\textsl{#2}}}
+\newcommand{\amr}[1]{\xcomment{Amr}{#1}}
+\newcommand{\roshan}[1]{\xcomment{Roshan}{#1}}
+
+\newcommand{\asterix}[0]{*}
+
+\newcommand{\ie}{\textit{i.e.}\xspace}
+\newcommand{\eg}{\textit{e.g.}\xspace}
+
+\newcommand{\lcal}{\ensuremath{\lambda}-calculus\xspace}
+\newcommand{\G}{\ensuremath{\mathcal{G}}\xspace}
+
+\newcommand{\code}[1]{\lstinline[basicstyle=\small]{#1}\xspace}
+\newcommand{\name}[1]{\code{#1}}
+
+\def\newblock{}
+
+\newenvironment{floatrule}
+    {\hrule width \hsize height .33pt \vspace{.5pc}}
+    {\par\addvspace{.5pc}}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{proposition}[theorem]{Proposition}
+\newenvironment{proof}[1][Proof.]{\begin{trivlist}\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
+\newcommand{\arrow}[1]{\mathtt{#1}}
+
+\newcommand{\dgm}[2][0.95]{
+\begin{center}
+\scalebox{#1}{
+\includegraphics{diagrams/#2.pdf}
+}
+\end{center}
+}
+
+%subcode-inline{bnf-inline} name langRev
+%! swap+ = \mathit{swap}^+
+%! swap* = \mathit{swap}^*
+%! dagger =  ^{\dagger}
+%! assocl+ = \mathit{assocl}^+
+%! assocr+ = \mathit{assocr}^+
+%! assocl* = \mathit{assocl}^*
+%! assocr* = \mathit{assocr}^*
+%! identr* = \mathit{uniti}
+%! identl* = \mathit{unite}
+%! dist = \mathit{distrib}
+%! factor = \mathit{factor}
+%! eta = \eta
+%! eps = \epsilon
+%! eta+ = \eta^+
+%! eps+ = \epsilon^+
+%! eta* = \eta^{\times}
+%! eps* = \epsilon^{\times}
+%! trace+ = trace^+
+%! trace* = trace^{\times}
+%! ^^^ = ^{-1}
+%! (o) = \circ
+%! (;) = \fatsemi
+%! (*) = \times
+%! (+) = +
+%! LeftP = L^+
+%! RightP = R^+
+%! LeftT = L^{\times}
+%! RightT = R^{\times}
+%! alpha = \alpha
+%! bool = \textit{bool}
+%! color = \textit{color}
+%! Gr = G
+
+%subcode-inline{bnf-inline} regex \{\{(((\}[^\}])|[^\}])*)\}\} name main include langRev
+%! Gx = \Gamma^{\times}
+%! G = \Gamma
+%! [] = \Box
+%! |-->* = \mapsto^{\asterix}
+%! |-->> = \mapsto_{\ggg}
+%! |--> = \mapsto
+%! <--| = \mapsfrom
+%! |- = \vdash
+%! <><> = \approx
+%! ==> = \Longrightarrow
+%! <== = \Longleftarrow
+%! <=> = \Longleftrightarrow
+%! <-> = \leftrightarrow
+%! ~> = \leadsto
+%! -o+ = \multimap^{+}
+%! -o* = \multimap^{\times}
+%! -o = \multimap
+%! ::= = &::=&
+%! /= = \neq
+%! @@ = \mu
+%! [^ = \lceil
+%! ^] = \rceil
+%! forall = \forall
+%! exists = \exists
+%! empty = \epsilon
+%! Pi = \Pi
+%! Pi0 = \Pi^{o}
+%! PiEE* = \Pi^{\eta\epsilon}_{*}
+%! PiEE+ = \Pi^{\eta\epsilon}_{+}
+%! PiEE = \Pi^{\eta\epsilon}
+%! CatSet = \textbf{Set}
+%! theseus = Theseus
+%! sqrt(x) = \sqrt{#x}
+%! surd(p,x) = \sqrt[#p]{#x}
+%! inv(x) = \frac{1}{#x}
+%! frac(x,y) = \frac{#x}{#y}
+%! * = \times
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\conferenceinfo{POPL'13}{}
+\CopyrightYear{}
+\copyrightdata{}
+\titlebanner{}
+\preprintfooter{}
+
+\title{Fractional Types} 
+
+\authorinfo{*}{*}{*}
+\maketitle
+
+\begin{abstract}
+
+\end{abstract}
+
+\category{D.3.1}{Formal Definitions and Theory}{}
+\category{F.3.2}{Semantics of Programming Languages}{}
+\category{F.3.3}{Studies of Program Constructs}{Type structure}
+
+\terms
+Languages, Theory
+
+\keywords continuations, information flow, linear logic, logic programming,
+quantum computing, reversible logic, symmetric monoidal categories, compact
+closed categories.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Game}
+
+We start with a type {{A}} and build terms of the types {{A}}, {{Id_A}},
+{{Id_{Id_a} }}, etc.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Level of Atoms}
+
+We start with the kind {{type}} and terms of kind {{type}}:
+
+%subcode{bnf} include main
+% kinds, k ::= type
+% value types, b ::= 0 | 1 | b + b | b * b 
+
+%subcode{proof} include main
+%@  ~
+%@@ 0 : type
+%
+%@  ~
+%@@ 1 : type
+%
+%@  b1 : type
+%@  b2 : type
+%@@ b1 + b2 : type
+%
+%@  b1 : type
+%@  b2 : type
+%@@ b1 * b2 : type
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{ {{Pi}} Combinators}
+
+Now we introduce isomorphisms between terms of kind {{type}}. This is where
+the {{Pi}} combinators appear.
+
+%subcode{bnf} include main
+% kinds, k ::= type
+% value types, b ::= 0 | 1 | b + b | b * b 
+% 
+% identity types, t0 ::= Id_k(b1,b2)
+% iso ::= zeroe | zeroi 
+%     &|& swap+ | assocl+ | assocr+ 
+%     &|& identl* | identr* 
+%     &|& swap* | assocl* | assocr* 
+%     &|& dist | factor 
+% comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
+
+%subcode{proof} include main
+%@  b : k
+%@@ zeroe : Id_k(0+b,b)
+%
+%@  b : k
+%@@ zeroi : Id_k(b,0+b)
+%---
+%@  b1 : k
+%@  b2 : k
+%@@ swap+ : Id_k(b1+b2,b2+b1)
+%---
+%@  b1 : k
+%@  b2 : k
+%@  b3 : k
+%@@ assocl+ : Id_k(b1+(b2+b3),(b1+b2)+b3)
+%---
+%@  b1 : k
+%@  b2 : k
+%@  b3 : k
+%@@ assocr+ : Id_k((b1+b2)+b3,b1+(b2+b3))
+%---
+%@  b : k
+%@@ unite : Id_k(1 * b, b)
+%
+%@  b : k
+%@@ uniti : Id_k(b, 1 * b)
+%---
+%@  b1 : k
+%@  b2 : k
+%@@ swap* : Id_k(b1 * b2,b2 * b1)
+%---
+%@  b1 : k
+%@  b2 : k
+%@  b3 : k
+%@@ assocl* : Id_k(b1*(b2*b3),(b1*b2)*b3)
+%---
+%@  b1 : k
+%@  b2 : k
+%@  b3 : k
+%@@ assocr* : Id_k((b1*b2)*b3,b1*(b2*b3))
+%---
+%@  b1 : k
+%@  b2 : k
+%@  b3 : k
+%@@ distrib : Id_k((b1+b2)*b3,(b1*b3)+(b2*b3))
+%---
+%@  b1 : k
+%@  b2 : k
+%@  b3 : k
+%@@ factor : Id_k((b1*b3)+(b2*b3),(b1+b2)*b3)
+%---
+%@ b : k
+%@@ id : Id_k(b,b)
+%
+%@ c : Id_k(b1,b2)
+%@@ sym c : Id_k(b2,b1)
+%---
+%@ c1 : Id_k(b1,b2)
+%@ c2 : Id_k(b2,b3)
+%@@ c1(;)c2 : Id_k(b1,b3)
+%---
+%@ c1 : Id_k(b1,b3)
+%@ c2 : Id_k(b2,b4)
+%@@ c1(+)c2 : Id_k(b1+b2,b3+b4)
+%---
+%@ c1 : Id_k(b1,b3)
+%@ c2 : Id_k(b2,b4)
+%@@ c1(*)c2 : Id_k(b1*b2,b3*b4)
+
+We will give the semantics in an usual style to simplify the presentation of
+next section. First we define values and clauses:
+
+%subcode{bnf} include main
+% values, v ::= () | left v | right v | (v,v)
+% clauses, m ::= (1/v,v) 
+
+%subcode{proof} include main
+%@  ~
+%@@ () : 1
+%
+%@  v : b1
+%@@ left v : b1 + b2
+%
+%@  v : b2
+%@@ right v : b1 + b2
+%---
+%@  v1 : b1
+%@  v2 : b2
+%@@ (v1,v2) : b1 * b2
+
+The intuition behind clauses is the following: if applying 
+{{c : Id_k(b1,b2)}} to {{v1 : b1}} yields {{v2 : b2}}, we say that 
+the clause {{ (1/v1, v2) }} has type {{c}}. 
+
+%subcode{proof} include main
+%@ zeroe : Id_k(0+b,b)
+%@ v : b
+%@@ (1/right v, v) : zeroe
+% 
+%@ zeroi : Id_k(b,0+b)
+%@ v : b
+%@@ (1/v, right v) : zeroi
+%---
+%@ swap+ : Id_k(b1+b2,b2+b1)
+%@ v : b1
+%@@ (1/left v, right v) : swap+
+%---
+%@ swap+ : Id_k(b1+b2,b2+b1)
+%@ v : b2
+%@@ (1/right v, left v) : swap+
+%---
+%@ assocl+ : Id_k(b1+(b2+b3),(b1+b2)+b3)
+%@ v : b1
+%@@ (1/ left v, left (left v)) : assocl+
+%---
+%@ assocl+ : Id_k(b1+(b2+b3),(b1+b2)+b3)
+%@ v : b2
+%@@ (1/ right (left v), left (right v)) : assocl+
+%---
+%@ assocl+ : Id_k(b1+(b2+b3),(b1+b2)+b3)
+%@ v : b3
+%@@ (1/ right (right v), right v) : assocl+
+%---
+%@ assocr+ : Id_k((b1+b2)+b3,b1+(b2+b3))
+%@ v : b1
+%@@ (1/ left (left v), left v) : assocr+
+%---
+%@ assocr+ : Id_k((b1+b2)+b3,b1+(b2+b3))
+%@ v : b2
+%@@ (1/ left (right v), right (left v)) : assocr+
+%---
+%@ assocr+ : Id_k((b1+b2)+b3,b1+(b2+b3))
+%@ v : b3
+%@@ (1/ right v, right (right v)) : assocr+
+%---
+%@ unite : Id_k(1 * b, b)
+%@ v : b
+%@@ (1/((),v), v) : unite
+% 
+%@ uniti : Id_k(b, 1 * b)
+%@ v : b
+%@@ (1/v, ((),v)) : uniti
+%---
+%@ swap* : Id_k(b1 * b2,b2 * b1)
+%@ v1 : b1
+%@ v2 : b2
+%@@ (1/(v1,v2), (v2,v1)) : swap*
+%---
+%@ assocl* : Id_k(b1*(b2*b3),(b1*b2)*b3)
+%@ v1 : b1
+%@ v2 : b2
+%@ v3 : b3
+%@@ (1/(v1,(v2,v3)), ((v1,v2),v3)) : assocl*
+%---
+%@ assocr* : Id_k((b1*b2)*b3,b1*(b2*b3))
+%@ v1 : b1
+%@ v2 : b2
+%@ v3 : b3
+%@@ (1/((v1,v2),v3), (v1,(v2,v3))) : assocr*
+%---
+%@ distrib : Id_k((b1+b2)*b3,(b1*b3)+(b2*b3))
+%@ v1 : b1
+%@ v3 : b3
+%@@ (1/(left v1,v3), left (v1,v3)) : distrib
+%---
+%@ distrib : Id_k((b1+b2)*b3,(b1*b3)+(b2*b3))
+%@ v2 : b2
+%@ v3 : b3
+%@@ (1/(right v2,v3), right (v2,v3)) : distrib
+%---
+%@ factor : Id_k((b1*b3)+(b2*b3),(b1+b2)*b3)
+%@ v1 : b1
+%@ v3 : b3
+%@@ (1/(left (v1,v3)), (left v1,v3)) : factor
+%---
+%@ factor : Id_k((b1*b3)+(b2*b3),(b1+b2)*b3)
+%@ v2 : b2
+%@ v3 : b3
+%@@ (1/(right (v2,v3)), (right v2,v3)) : factor
+%---
+%@ id : Id_k(b,b)
+%@ v : b
+%@@ (1/v,v) : id
+%
+%@ c : Id_k(b2,b1)
+%@ (1/v2, v1) : c
+%@@ (1/v1, v2) : sym c
+%---
+%@ c1 : Id_k(b1,b2)
+%@ c2 : Id_k(b2,b3)
+%@ (1/v1, v2) : c1
+%@ (1/v2, v3) : c2
+%@@ (1/v1, v3) : c1 (;) c2
+%---
+%@ c1 : Id_k(b1,b3)
+%@ (1/v1, v3) :: c1
+%@@ (1/left v1, left v3) : c1 (+) c2
+%
+%@ c2 : Id_k(b2,b4)
+%@ (1/v2, v4) :: c2
+%@@ (1/right v2, right v4) : c1 (+) c2
+%---
+%@ c1 : Id_k(b1,b3)
+%@ c2 : Id_k(b2,b4)
+%@ (1/v1, v3) :: c1
+%@ (1/v2, v4) :: c2
+%@@ (1/(v1,v2), (v3,v4)) : c1 (*) c2
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{ {{Pi}} semantics I}
+
+Now we introduce isomoprhisms between terms of type {{Id_k(b1,b2)}}. This is
+where we start reasoning about equivalence of the {{Pi}}-combinators
+themselves. For {{c1 : Id_k(b1,b2)}} and {{c2 : Id_k(b1,b2)}}, terms of type
+{{Id_{Id_k(b1,b2)}(c1,c2)}} would witness that {{c1}} and {{c2}} are
+isomorphic (up to equivalence at the next level). 
+
+For example, given the combinator {{uniti}} at type {{bool = 1+1}}:
+
+%subcode{proof} include main
+%@ uniti : Id_k(1+1, 1 * (1+1))
+%@ v : 1+1
+%@@ (1/v, ((),v)) : uniti
+
+when viewed as a type, the elements of {{uniti}} are:
+{{ (1/left (), ((), left ())) }}
+and 
+{{ (1/right (), ((), right ())) }}
+
+Using our isomorphisms we can apply {{ id (*) unite }} to the above to
+produce
+{{ (1/left (), left ()) }}
+and 
+{{ (1/right (), right ()) }}.
+
+In other words, there is an isomorphism {{alpha = id (*) unite}} beween
+{{uniti}} and {{id}} at type {{bool}}. We now need to generalize this idea to
+the full language. We possibly (probably) need to add the meadow rules so
+that we can convert a clause to a regular value, use the isomorphisms on it,
+and then translate it back to a clause.
+
+%subcode{bnf} include main
+% kinds, k ::= type
+% value types, b ::= 0 | 1 | b + b | b * b 
+%
+% identity types, t0 ::= Id_k(b1,b2) 
+% iso ::= zeroe | zeroi 
+%     &|& swap+ | assocl+ | assocr+ 
+%     &|& identl* | identr* 
+%     &|& swap* | assocl* | assocr* 
+%     &|& dist | factor 
+% comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
+%
+% identity types, t1 ::= Id_{t0}(c1,c2)
+% alpha ::= ...
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
