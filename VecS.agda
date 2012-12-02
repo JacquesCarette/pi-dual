@@ -98,11 +98,13 @@ embed c v = PAIR (FLIP (lift v)) (lift (Pi.eval c v))
 -- then we would have a proof that 
 --   (embed pi-combinator v , v) ~iso~ v'
 
+pibool : Pi.B 
 pibool = Pi.PLUS Pi.ONE Pi.ONE
 
 pitrue : Pi.BVAL pibool
 pitrue = Pi.LEFT Pi.UNIT
 
+ex1 : BVAL (TIMES (DUAL (PLUS ONE ONE)) (PLUS ONE ONE))
 ex1 = embed {pibool} {pibool} Pi.swap₊  pitrue
 -- ex1 = PAIR (FLIP (LEFT UNIT)) (RIGHT UNIT)
 
