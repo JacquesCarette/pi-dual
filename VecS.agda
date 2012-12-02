@@ -1,10 +1,12 @@
 module VecS where
 
-infixr 20 _◎_
-
-open import Data.Product
+open import Data.Empty
+open import Data.Product hiding (map)
+open import Data.Sum 
 open import Data.Vec
 open import Data.Nat
+open import Data.Bool
+open import Data.Nat.Properties
 
 ------------------------------------------------------------------------------
 
@@ -14,108 +16,66 @@ data B : Set where
   PLUS  : B → B → B
   TIMES : B → B → B
 
-data BVAL : B → Set where
-  UNIT : BVAL ONE
-  LEFT : {b₁ b₂ : B} → BVAL b₁ → BVAL (PLUS b₁ b₂)
-  RIGHT : {b₁ b₂ : B} → BVAL b₂ → BVAL (PLUS b₁ b₂)
-  PAIR : {b₁ b₂ : B} → BVAL b₁ → BVAL b₂ → BVAL (TIMES b₁ b₂)
+data BVal : B → Set where
+  UNIT   : BVal ONE
+  LEFT   : {b₁ b₂ : B} → BVal b₁ → BVal (PLUS b₁ b₂)
+  RIGHT  : {b₁ b₂ : B} → BVal b₂ → BVal (PLUS b₁ b₂)
+  PAIR   : {b₁ b₂ : B} → BVal b₁ → BVal b₂ → BVal (TIMES b₁ b₂)
+  UNITP  : BVal ONE
+  LEFTP  : {b₁ b₂ : B} → BVal b₁ → BVal (PLUS b₁ b₂)
+  RIGHTP : {b₁ b₂ : B} → BVal b₂ → BVal (PLUS b₁ b₂)
+  PAIRP  : {b₁ b₂ : B} → BVal b₁ → BVal b₂ → BVal (TIMES b₁ b₂)
+  DUAL   : {b : B} → BVal b → BVal b
 
-size : B → ℕ
-size ZERO = 0
-size ONE = 1
-size (PLUS b₁ b₂) = size b₁ + size b₂
-size (TIMES b₁ b₂) = size b₁ * size b₂
-
-BVEC : B → Set
-BVEC b = Vec (BVAL b) (size b)
-
-------------------------------------------------------------------------------
- 
-
-{--
-data Id_B : {b₁ b₂ : B} → (BVEC b₁ × BVEC b₂) → Set where
-  unite₊  : { b : B } → Id_B (PLUS ZERO b , b) 
-  uniti₊  : { b : B } → Id_B (b , PLUS ZERO b) 
-  swap₊   : { b₁ b₂ : B } → Id_B (PLUS b₁ b₂ , PLUS b₂ b₁)
-  assocl₊ : { b₁ b₂ b₃ : B } → Id_B (PLUS b₁ (PLUS b₂ b₃) , PLUS (PLUS b₁ b₂) b₃)
-  assocr₊ : { b₁ b₂ b₃ : B } → Id_B (PLUS (PLUS b₁ b₂) b₃ , PLUS b₁ (PLUS b₂ b₃))
-  unite⋆  : { b : B } → Id_B (TIMES ONE b , b)
-  uniti⋆  : { b : B } → Id_B (b , TIMES ONE b)
-  swap⋆   : { b₁ b₂ : B } → Id_B (TIMES b₁ b₂ , TIMES b₂ b₁)
-  assocl⋆ : { b₁ b₂ b₃ : B } → 
-            Id_B (TIMES b₁ (TIMES b₂ b₃) , TIMES (TIMES b₁ b₂) b₃)
-  assocr⋆ : { b₁ b₂ b₃ : B } → 
-            Id_B (TIMES (TIMES b₁ b₂) b₃ , TIMES b₁ (TIMES b₂ b₃))
-  dist    : { b₁ b₂ b₃ : B } → 
-            Id_B (TIMES (PLUS b₁ b₂) b₃ , PLUS (TIMES b₁ b₃) (TIMES b₂ b₃))
-  factor  : { b₁ b₂ b₃ : B } → 
-            Id_B (PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) , TIMES (PLUS b₁ b₂) b₃)
-  id⟷   : { b : B } → Id_B (b , b)
-  sym    : { b₁ b₂ : B } → Id_B (b₁ , b₂) → Id_B (b₂ , b₁)
-  _◎_    : { b₁ b₂ b₃ : B } → Id_B (b₁ , b₂) → Id_B (b₂ , b₃) → Id_B (b₁ , b₃)
-  _⊕_    : { b₁ b₂ b₃ b₄ : B } → 
-           Id_B (b₁ , b₃) → Id_B (b₂ , b₄) → Id_B (PLUS b₁ b₂ , PLUS b₃ b₄)
-  _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
-           Id_B (b₁ , b₃) → Id_B (b₂ , b₄) → Id_B (TIMES b₁ b₂ , TIMES b₃ b₄)
-
-
-mutual
-
-  eval : {b₁ b₂ : B} → Id_B (b₁ , b₂) → BVAL b₁ → BVAL b₂
-  eval unite₊ (LEFT ())
-  eval unite₊ (RIGHT v) = v
-  eval uniti₊ v = RIGHT v
-  eval swap₊ (LEFT v) = RIGHT v
-  eval swap₊ (RIGHT v) = LEFT v
-  eval assocl₊ (LEFT v) = LEFT (LEFT v)
-  eval assocl₊ (RIGHT (LEFT v)) = LEFT (RIGHT v)
-  eval assocl₊ (RIGHT (RIGHT v)) = RIGHT v
-  eval assocr₊ (LEFT (LEFT v)) = LEFT v
-  eval assocr₊ (LEFT (RIGHT v)) = RIGHT (LEFT v)
-  eval assocr₊ (RIGHT v) = RIGHT (RIGHT v)
-  eval unite⋆ (PAIR UNIT v) = v
-  eval uniti⋆ v = PAIR UNIT v
-  eval swap⋆ (PAIR v1 v2) = PAIR v2 v1
-  eval assocl⋆ (PAIR v1 (PAIR v2 v3)) = PAIR (PAIR v1 v2) v3
-  eval assocr⋆ (PAIR (PAIR v1 v2) v3) = PAIR v1 (PAIR v2 v3)
-  eval dist (PAIR (LEFT v1) v3) = LEFT (PAIR v1 v3)
-  eval dist (PAIR (RIGHT v2) v3) = RIGHT (PAIR v2 v3)
-  eval factor (LEFT (PAIR v1 v3)) = PAIR (LEFT v1) v3
-  eval factor (RIGHT (PAIR v2 v3)) = PAIR (RIGHT v2) v3
-  eval id⟷ v = v
-  eval (sym c) v = evalB c v
-  eval (c₁ ◎ c₂) v = eval c₂ (eval c₁ v)
-  eval (c₁ ⊕ c₂) (LEFT v) = LEFT (eval c₁ v)
-  eval (c₁ ⊕ c₂) (RIGHT v) = RIGHT (eval c₂ v)
-  eval (c₁ ⊗ c₂) (PAIR v₁ v₂) = PAIR (eval c₁ v₁) (eval c₂ v₂)
-
-  evalB : {b₁ b₂ : B} → Id_B (b₁ , b₂) → BVAL b₂ → BVAL b₁
-  evalB unite₊ v = RIGHT v
-  evalB uniti₊ (LEFT ())
-  evalB uniti₊ (RIGHT v) = v
-  evalB swap₊ (LEFT v) = RIGHT v
-  evalB swap₊ (RIGHT v) = LEFT v
-  evalB assocl₊ (LEFT (LEFT v)) = LEFT v
-  evalB assocl₊ (LEFT (RIGHT v)) = RIGHT (LEFT v)
-  evalB assocl₊ (RIGHT v) = RIGHT (RIGHT v)
-  evalB assocr₊ (LEFT v) = LEFT (LEFT v)
-  evalB assocr₊ (RIGHT (LEFT v)) = LEFT (RIGHT v)
-  evalB assocr₊ (RIGHT (RIGHT v)) = RIGHT v
-  evalB unite⋆ v = PAIR UNIT v
-  evalB uniti⋆ (PAIR UNIT v) = v
-  evalB swap⋆ (PAIR v1 v2) = PAIR v2 v1
-  evalB assocl⋆ (PAIR (PAIR v1 v2) v3) = PAIR v1 (PAIR v2 v3)
-  evalB assocr⋆ (PAIR v1 (PAIR v2 v3)) = PAIR (PAIR v1 v2) v3
-  evalB dist (LEFT (PAIR v1 v3)) = PAIR (LEFT v1) v3
-  evalB dist (RIGHT (PAIR v2 v3)) = PAIR (RIGHT v2) v3
-  evalB factor (PAIR (LEFT v1) v3) = LEFT (PAIR v1 v3)
-  evalB factor (PAIR (RIGHT v2) v3) = RIGHT (PAIR v2 v3)
-  evalB id⟷ v = v
-  evalB (sym c) v = eval c v
-  evalB (c₁ ◎ c₂) v = evalB c₁ (evalB c₂ v)
-  evalB (c₁ ⊕ c₂) (LEFT v) = LEFT (evalB c₁ v)
-  evalB (c₁ ⊕ c₂) (RIGHT v) = RIGHT (evalB c₂ v)
-  evalB (c₁ ⊗ c₂) (PAIR v₁ v₂) = PAIR (evalB c₁ v₁) (evalB c₂ v₂)
---}
+data Iso : {b₁ b₂ : B} → BVal b₁ → BVal b₂ → Set where
+  unite₊  : {b : B} {v : BVal b} → Iso (RIGHT {ZERO} {b} v) v
+  uniti₊  : {b : B} {v : BVal b} → Iso v (RIGHT {ZERO} {b} v)
+  swap₊1  : {b₁ b₂ : B} {v₁ : BVal b₁} → Iso (LEFT {b₁} {b₂} v₁) (RIGHT {b₂} {b₁} v₁)
+  swap₊2  : {b₁ b₂ : B} {v₂ : BVal b₂} → Iso (RIGHT {b₁} {b₂} v₂) (LEFT {b₂} {b₁} v₂)
+  assocl₊1 : {b₁ b₂ b₃ : B} {v₁ : BVal b₁} → 
+             Iso (LEFT {b₁} {PLUS b₂ b₃} v₁) (LEFT {PLUS b₁ b₂} {b₃} (LEFT {b₁} {b₂} v₁))
+  assocl₊2 : {b₁ b₂ b₃ : B} {v₂ : BVal b₂} → 
+             Iso (RIGHT {b₁} {PLUS b₂ b₃} (LEFT {b₂} {b₃} v₂)) (LEFT {PLUS b₁ b₂} {b₃} (RIGHT {b₁} {b₂} v₂))
+  assocl₊3 : {b₁ b₂ b₃ : B} {v₃ : BVal b₃} → 
+             Iso (RIGHT {b₁} {PLUS b₂ b₃} (RIGHT {b₂} {b₃} v₃)) (RIGHT {PLUS b₁ b₂} {b₃} v₃)
+  assocr₊1 : {b₁ b₂ b₃ : B} {v₁ : BVal b₁} → 
+             Iso (LEFT {PLUS b₁ b₂} {b₃} (LEFT {b₁} {b₂} v₁)) (LEFT {b₁} {PLUS b₂ b₃} v₁) 
+  assocr₊2 : {b₁ b₂ b₃ : B} {v₂ : BVal b₂} → 
+             Iso (LEFT {PLUS b₁ b₂} {b₃} (RIGHT {b₁} {b₂} v₂)) (RIGHT {b₁} {PLUS b₂ b₃} (LEFT {b₂} {b₃} v₂)) 
+  assocr₊3 : {b₁ b₂ b₃ : B} {v₃ : BVal b₃} → 
+             Iso (RIGHT {PLUS b₁ b₂} {b₃} v₃) (RIGHT {b₁} {PLUS b₂ b₃} (RIGHT {b₂} {b₃} v₃)) 
+  unite⋆  : {b : B} {v : BVal b} → Iso (PAIR UNIT v) v
+  uniti⋆  : {b : B} {v : BVal b} → Iso v (PAIR UNIT v)
+  swap⋆   : {b₁ b₂ : B} {v₁ : BVal b₁} {v₂ : BVal b₂} → Iso (PAIR v₁ v₂) (PAIR v₂ v₁)
+  assocl⋆ : {b₁ b₂ b₃ : B} {v₁ : BVal b₁} {v₂ : BVal b₂} {v₃ : BVal b₃} → 
+            Iso (PAIR v₁ (PAIR v₂ v₃)) (PAIR (PAIR v₁ v₂) v₃)
+  assocr⋆ : {b₁ b₂ b₃ : B} {v₁ : BVal b₁} {v₂ : BVal b₂} {v₃ : BVal b₃} → 
+            Iso (PAIR (PAIR v₁ v₂) v₃) (PAIR v₁ (PAIR v₂ v₃))
+  dist1   : {b₁ b₂ b₃ : B} {v₁ : BVal b₁} {v₃ : BVal b₃} → 
+            Iso (PAIR (LEFT {b₁} {b₂} v₁) v₃) (LEFT {TIMES b₁ b₃} {TIMES b₂ b₃} (PAIR v₁ v₃))
+  dist2   : {b₁ b₂ b₃ : B} {v₂ : BVal b₂} {v₃ : BVal b₃} → 
+            Iso (PAIR (RIGHT {b₁} {b₂} v₂) v₃) (RIGHT {TIMES b₁ b₃} {TIMES b₂ b₃} (PAIR v₂ v₃))
+  factor1 : {b₁ b₂ b₃ : B} {v₁ : BVal b₁} {v₃ : BVal b₃} → 
+            Iso (LEFT {TIMES b₁ b₃} {TIMES b₂ b₃} (PAIR v₁ v₃)) (PAIR (LEFT {b₁} {b₂} v₁) v₃)
+  factor2 : {b₁ b₂ b₃ : B} {v₂ : BVal b₂} {v₃ : BVal b₃} → 
+            Iso (RIGHT {TIMES b₁ b₃} {TIMES b₂ b₃} (PAIR v₂ v₃)) (PAIR (RIGHT {b₁} {b₂} v₂) v₃)
+  id⟷   : {b : B} {v : BVal b} → Iso v v
+  sym    : {b₁ b₂ : B} {v₁ : BVal b₁} {v₂ : BVal b₂} → Iso v₁ v₂ → Iso v₂ v₁
+  VSEMI  : {b₁ b₂ b₃ : B} {v₁ : BVal b₁} {v₂ : BVal b₂} {v₃ : BVal b₃} → 
+           Iso v₁ v₂ → Iso v₂ v₃ → Iso v₁ v₃
+  VPLUS1  : {b₁ b₂ b₃ b₄ : B} {v₁ : BVal b₁} {v₂ : BVal b₂} {v₃ : BVal b₃} {v₄ : BVal b₄} → 
+           Iso v₁ v₃ → Iso v₂ v₄ → Iso (LEFT {b₁} {b₂} v₁) (LEFT {b₃} {b₄} v₃)
+  VPLUS2  : {b₁ b₂ b₃ b₄ : B} {v₁ : BVal b₁} {v₂ : BVal b₂} {v₃ : BVal b₃} {v₄ : BVal b₄} → 
+           Iso v₁ v₃ → Iso v₂ v₄ → Iso (RIGHT {b₁} {b₂} v₂) (RIGHT {b₃} {b₄} v₄)
+  VTIMES : {b₁ b₂ b₃ b₄ : B} {v₁ : BVal b₁} {v₂ : BVal b₂} {v₃ : BVal b₃} {v₄ : BVal b₄} → 
+           Iso v₁ v₃ → Iso v₂ v₄ → Iso (PAIR v₁ v₂) (PAIR v₃ v₄)
+  refe⋆   : {b : B} {v : BVal b} → Iso (DUAL (DUAL v)) v
+  refi⋆   : {b : B} {v : BVal b} → Iso v (DUAL (DUAL v))
+  rile⋆   : {b : B} {v : BVal b} → Iso (PAIR v (PAIR v (DUAL v))) v
+  rili⋆   : {b : B} {v : BVal b} → Iso v (PAIR v (PAIR v (DUAL v)))
 
 ------------------------------------------------------------------------------
+
+-- embed pi into this (values of type B go to a vector of dimension D
+-- with a true at the entry indexed by the value and false everywhere
+-- else; combinators go to matrices (outer product (dual v1 * v2)
