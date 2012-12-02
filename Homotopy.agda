@@ -166,9 +166,6 @@ embedArr x = ?
   _I⊗_    : { b₁ b₂ b₃ b₄ : B } → 
            Id_BB (b₁ , b₃) → Id_BB (b₂ , b₄) → Id_BB (TIMES b₁ b₂ , TIMES b₃ b₄)
 
---}
-{--
-
 data BRVAL : BR → Set where
   UNITR : BRVAL ONER
   LEFTR : {b₁ b₂ : BR} → BRVAL b₁ → BRVAL (PLUSR b₁ b₂)
