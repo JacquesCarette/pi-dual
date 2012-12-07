@@ -19,9 +19,10 @@ r.subc.pdf : r.subc.tex cites.bib
 r.subc.tex : r.tex
 	ruby subcode/subc.rb r.tex
 
-agda-sabry: VecS.agda Homotopy.agda Pi.agda PiN.agda PiF.agda PiNF-syntax.agda PiNF-algebra.agda PiNF-semantics.agda Pi-abstract-machine.agda Pi-reasoning.agda oldPi.agda
+agda-sabry: VecSN.agda VecS.agda Homotopy.agda Pi.agda PiN.agda PiF.agda PiNF-syntax.agda PiNF-algebra.agda PiNF-semantics.agda Pi-abstract-machine.agda Pi-reasoning.agda oldPi.agda
 	touch /u/sabry/.hyplan/pi
 	/bin/rm -r /u/sabry/.hyplan/pi
+	agda --html-dir=/u/sabry/.hyplan/pi --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src VecSN.agda
 	agda --html-dir=/u/sabry/.hyplan/pi --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src VecS.agda
 	agda --html-dir=/u/sabry/.hyplan/pi --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src Homotopy.agda
 	agda --html-dir=/u/sabry/.hyplan/pi --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src Pi.agda
