@@ -5,26 +5,31 @@ open import Data.Bool
 infixr 20 _◎_
 
 ------------------------------------------------------------------------------
--- types (dimension of a vector space)
--- values (indices for vectors which match the dimension)
+-- fix a field F_3 = {0, 1, -1} 
+-- types B (ZERO,ONE,PLUS,TIMES) determine the DIMENSION of a vector space over F_3
+-- values of type B are INDICES for B-dimensional vectors
+-- we do not allow superpositions (we have AT MOST one entry in the
+-- vector that is non-zero), so we can identify the INDICES with the vectors
 --
--- these look like pi types but interpreted at the "next layer"
--- (vectors and duals assuming underlying field is F_3 and that we do
--- not allow superpositions)
-
--- in particular ZERO is not the empty type! it is the type containing
--- one "annihilating value"
+-- in particular: 
+--   - ZERO is not the empty type! it is like the 0-dimensional vector space
+--     (i.e, the type containing one "annihilating value")
+--   - ONE is like a 1-dimensional vector space; it is isomorphic to 
+--     the scalars (0,+1,-1)
+--   - PLUS gives the direct sum of vector spaces (dimension is the sum)
+--   - TIMES gives the tensor product of vector spaces (dimension is the product)
+--   - DUAL gives the dual space (functionals that map vectors to scalars; i.e.
+--     that maps values to scalars)
 
 data B : Set where
   ZERO   : B
   ONE    : B
-  PLUS   : B → B → B
-  TIMES  : B → B → B
---
+  PLUS   : B → B → B  
+  TIMES  : B → B → B  
   DUAL   : B → B
---
-  NEG    : B → B
------  CHOICE : B → B → B
+
+-- now we describe the vectors for each B-dimensional vector space
+-- the zero vector is everywhere
 
 data BVAL : B → Set where
   zero : {b : B} → BVAL b
@@ -33,10 +38,8 @@ data BVAL : B → Set where
   right : {b₁ b₂ : B} → BVAL b₂ → BVAL (PLUS b₁ b₂)
   pair : {b₁ b₂ : B} → BVAL b₁ → BVAL b₂ → BVAL (TIMES b₁ b₂)
   dual : {b : B} → BVAL b → BVAL (DUAL b)
--- negative values are not first class; they are created internally
--- to confirm choices
-  neg : {b : B} → BVAL b → BVAL (NEG b)
------  choose : {b : B} → BVAL b → BVAL b → BVAL b
+
+-- syntactic equality on vectors
 
 b= : { b : B } → BVAL b → BVAL b → Bool
 b= zero zero = true
@@ -45,9 +48,9 @@ b= (left v₁) (left v₂) = b= v₁ v₂
 b= (right v₁) (right v₂) = b= v₁ v₂
 b= (pair v₁ v₂) (pair v₁' v₂') = b= v₁ v₁' ∧ b= v₂ v₂'
 b= (dual v₁) (dual v₂) = b= v₁ v₂
-b= (neg v₁) (neg v₂) = b= v₁ v₂
------ b= (choose v₁ v₂) (choose v₁' v₂') = b= v₁ v₁' ∧ b= v₂ v₂'
 b= _ _ = false
+
+--HERE
 
 data Iso : B → B → Set where
   -- (+,0) commutative monoid
@@ -75,13 +78,6 @@ data Iso : B → B → Set where
            Iso b₁ b₃ → Iso b₂ b₄ → Iso (PLUS b₁ b₂) (PLUS b₃ b₄)
   _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
            Iso b₁ b₃ → Iso b₂ b₄ → Iso (TIMES b₁ b₂) (TIMES b₃ b₄)
-  -- additive duality
------   η₊      : { b : B } → Iso ZERO (PLUS (NEG b) b)
------   ε₊      : { b : B } → Iso (PLUS b (NEG b)) ZERO
------   refe₊   : { b : B } → Iso (NEG (NEG b)) b
------   refi₊   : { b : B } → Iso b (NEG (NEG b))
------  rile₊   : { b : B } → Iso (CHOICE b (CHOICE b (NEG b))) b
------   rili₊   : { b : B } → Iso b (CHOICE b (CHOICE b (NEG b)))
   -- multiplicative duality
   refe⋆   : { b : B } → Iso (DUAL (DUAL b)) b
   refi⋆   : { b : B } → Iso b (DUAL (DUAL b))
@@ -180,9 +176,6 @@ clause1 = pair (dual pitrue) pifalse
 clause2 : BVAL (TIMES (DUAL pibool) pibool)
 clause2 = pair (dual pifalse) pitrue
 
------ swapPlus : BVAL (TIMES (DUAL pibool) pibool)
------ swapPlus = choose clause1 clause2
-
 -- swap clause 1 applied to true
 ex1 : BVAL (TIMES pibool (TIMES (DUAL pibool) pibool))
 ex1 = pair pitrue clause1
@@ -207,21 +200,9 @@ c =         -- (v,(1/t,f))
   rile⋆     -- f or zero
 
 -- 
--- apply both clauses of swapPlus to true
------ ex : BVAL (TIMES pibool (TIMES (DUAL pibool) pibool))
------ ex = pair pitrue swapPlus
-
--- 
 v1 = eval c ex1
 v2 = eval c ex2
 v3 = eval c ex3
 v4 = eval c ex4
-
-------------------------------------------------------------------------------
--- negatives...
-
--- choose v1 v2: internally create negative things: eval with (left
--- v1); if result is (right (neg v1)) then choose v1 else choose try
--- v2. If ok choose v2; otherwise return zero.
 
 ------------------------------------------------------------------------------
