@@ -2,130 +2,130 @@ module VecSN where
 
 open import Data.Bool
 
+infixr 20 _◎_
+
 ------------------------------------------------------------------------------
 -- types (dimension of a vector space)
 -- values (indices for vectors which match the dimension)
 --
--- next layer of types (vectors and duals assuming underlying field is F_3
--- and that we do not allow superpositions)
+-- these look like pi types but interpreted at the "next layer"
+-- (vectors and duals assuming underlying field is F_3 and that we do
+-- not allow superpositions)
 
-data BV : Set where
-  ZEROV   : BV
-  ONEV    : BV
-  PLUSV   : BV → BV → BV
-  TIMESV  : BV → BV → BV
+-- in particular ZERO is not the empty type! it is the type containing
+-- one "annihilating value"
+
+data B : Set where
+  ZERO   : B
+  ONE    : B
+  PLUS   : B → B → B
+  TIMES  : B → B → B
 --
-  DUALV   : BV → BV
-  IPV     : BV → BV → BV
+  DUAL   : B → B
 --
-  NEGV    : BV → BV
-  CHOOSEV : BV → BV → BV
+  NEG    : B → B
+-----  CHOICE : B → B → B
 
-data BVEC : BV → Set where
-  zero : {b : BV} → BVEC b
-  unit : BVEC ONEV
-  left : {b₁ b₂ : BV} → BVEC b₁ → BVEC (PLUSV b₁ b₂)
-  right : {b₁ b₂ : BV} → BVEC b₂ → BVEC (PLUSV b₁ b₂)
-  pair : {b₁ b₂ : BV} → BVEC b₁ → BVEC b₂ → BVEC (TIMESV b₁ b₂)
-  dual : {b : BV} → BVEC b → BVEC (DUALV b)
-  ip : {b₁ b₂ : BV} → BVEC b₁ → BVEC b₂ → BVEC (IPV b₁ b₂)
-  neg : {b : BV} → BVEC b → BVEC (NEGV b)
-  choose : {b₁ b₂ : BV} → BVEC b₁ → BVEC b₂ → BVEC (CHOOSEV b₁ b₂)
+data BVAL : B → Set where
+  zero : {b : B} → BVAL b
+  unit : BVAL ONE
+  left : {b₁ b₂ : B} → BVAL b₁ → BVAL (PLUS b₁ b₂)
+  right : {b₁ b₂ : B} → BVAL b₂ → BVAL (PLUS b₁ b₂)
+  pair : {b₁ b₂ : B} → BVAL b₁ → BVAL b₂ → BVAL (TIMES b₁ b₂)
+  dual : {b : B} → BVAL b → BVAL (DUAL b)
+-- negative values are not first class; they are created internally
+-- to confirm choices
+  neg : {b : B} → BVAL b → BVAL (NEG b)
+-----  choose : {b : B} → BVAL b → BVAL b → BVAL b
 
-b= : { b : BV } → BVEC b → BVEC b → Bool
+b= : { b : B } → BVAL b → BVAL b → Bool
 b= zero zero = true
 b= unit unit = true
 b= (left v₁) (left v₂) = b= v₁ v₂
 b= (right v₁) (right v₂) = b= v₁ v₂
 b= (pair v₁ v₂) (pair v₁' v₂') = b= v₁ v₁' ∧ b= v₂ v₂'
 b= (dual v₁) (dual v₂) = b= v₁ v₂
-b= (ip v₁ v₂) (ip v₁' v₂') = b= v₁ v₁' ∧ b= v₂ v₂'
 b= (neg v₁) (neg v₂) = b= v₁ v₂
-b= (choose v₁ v₂) (choose v₁' v₂') = b= v₁ v₁' ∧ b= v₂ v₂'
+----- b= (choose v₁ v₂) (choose v₁' v₂') = b= v₁ v₁' ∧ b= v₂ v₂'
 b= _ _ = false
 
-data Iso : BV → BV → Set where
+data Iso : B → B → Set where
   -- (+,0) commutative monoid
-  unite₊  : { b : BV } → Iso (PLUSV ZEROV b) b
-  uniti₊  : { b : BV } → Iso b (PLUSV ZEROV b)
-  swap₊   : { b₁ b₂ : BV } → Iso (PLUSV b₁ b₂) (PLUSV b₂ b₁)
-  assocl₊ : { b₁ b₂ b₃ : BV } → Iso (PLUSV b₁ (PLUSV b₂ b₃)) (PLUSV (PLUSV b₁ b₂) b₃)
-  assocr₊ : { b₁ b₂ b₃ : BV } → Iso (PLUSV (PLUSV b₁ b₂) b₃) (PLUSV b₁ (PLUSV b₂ b₃))
+  unite₊  : { b : B } → Iso (PLUS ZERO b) b
+  uniti₊  : { b : B } → Iso b (PLUS ZERO b)
+  swap₊   : { b₁ b₂ : B } → Iso (PLUS b₁ b₂) (PLUS b₂ b₁)
+  assocl₊ : { b₁ b₂ b₃ : B } → Iso (PLUS b₁ (PLUS b₂ b₃)) (PLUS (PLUS b₁ b₂) b₃)
+  assocr₊ : { b₁ b₂ b₃ : B } → Iso (PLUS (PLUS b₁ b₂) b₃) (PLUS b₁ (PLUS b₂ b₃))
   -- (*,1) commutative monoid
-  unite⋆  : { b : BV } → Iso (TIMESV ONEV b) b
-  uniti⋆  : { b : BV } → Iso b (TIMESV ONEV b)
-  swap⋆   : { b₁ b₂ : BV } → Iso (TIMESV b₁ b₂) (TIMESV b₂ b₁)
-  assocl⋆ : { b₁ b₂ b₃ : BV } → Iso (TIMESV b₁ (TIMESV b₂ b₃)) (TIMESV (TIMESV b₁ b₂) b₃)
-  assocr⋆ : { b₁ b₂ b₃ : BV } → Iso (TIMESV (TIMESV b₁ b₂) b₃) (TIMESV b₁ (TIMESV b₂ b₃))
+  unite⋆  : { b : B } → Iso (TIMES ONE b) b
+  uniti⋆  : { b : B } → Iso b (TIMES ONE b)
+  swap⋆   : { b₁ b₂ : B } → Iso (TIMES b₁ b₂) (TIMES b₂ b₁)
+  assocl⋆ : { b₁ b₂ b₃ : B } → Iso (TIMES b₁ (TIMES b₂ b₃)) (TIMES (TIMES b₁ b₂) b₃)
+  assocr⋆ : { b₁ b₂ b₃ : B } → Iso (TIMES (TIMES b₁ b₂) b₃) (TIMES b₁ (TIMES b₂ b₃))
   -- * distributes over + 
-  dist    : { b₁ b₂ b₃ : BV } → 
-            Iso (TIMESV (PLUSV b₁ b₂) b₃) (PLUSV (TIMESV b₁ b₃) (TIMESV b₂ b₃))
-  factor  : { b₁ b₂ b₃ : BV } → 
-            Iso (PLUSV (TIMESV b₁ b₃) (TIMESV b₂ b₃)) (TIMESV (PLUSV b₁ b₂) b₃)
+  dist    : { b₁ b₂ b₃ : B } → 
+            Iso (TIMES (PLUS b₁ b₂) b₃) (PLUS (TIMES b₁ b₃) (TIMES b₂ b₃))
+  factor  : { b₁ b₂ b₃ : B } → 
+            Iso (PLUS (TIMES b₁ b₃) (TIMES b₂ b₃)) (TIMES (PLUS b₁ b₂) b₃)
   -- closure
-  id⟷   : { b : BV } → Iso b b
-  sym    : { b₁ b₂ : BV } → Iso b₁ b₂ → Iso b₂ b₁
-  _◎_    : { b₁ b₂ b₃ : BV } → Iso b₁ b₂ → Iso b₂ b₃ → Iso b₁ b₃
-  _⊕_    : { b₁ b₂ b₃ b₄ : BV } → 
-           Iso b₁ b₃ → Iso b₂ b₄ → Iso (PLUSV b₁ b₂) (PLUSV b₃ b₄)
-  _⊗_    : { b₁ b₂ b₃ b₄ : BV } → 
-           Iso b₁ b₃ → Iso b₂ b₄ → Iso (TIMESV b₁ b₂) (TIMESV b₃ b₄)
+  id⟷   : { b : B } → Iso b b
+  sym    : { b₁ b₂ : B } → Iso b₁ b₂ → Iso b₂ b₁
+  _◎_    : { b₁ b₂ b₃ : B } → Iso b₁ b₂ → Iso b₂ b₃ → Iso b₁ b₃
+  _⊕_    : { b₁ b₂ b₃ b₄ : B } → 
+           Iso b₁ b₃ → Iso b₂ b₄ → Iso (PLUS b₁ b₂) (PLUS b₃ b₄)
+  _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
+           Iso b₁ b₃ → Iso b₂ b₄ → Iso (TIMES b₁ b₂) (TIMES b₃ b₄)
   -- additive duality
-  refe₊   : { b : BV } → Iso (NEGV (NEGV b)) b
-  refi₊   : { b : BV } → Iso b (NEGV (NEGV b))
-  rile₊   : { b : BV } → Iso (PLUSV b (CHOOSEV b (NEGV b))) b
-  rili₊   : { b : BV } → Iso b (PLUSV b (CHOOSEV b (NEGV b)))
+-----   η₊      : { b : B } → Iso ZERO (PLUS (NEG b) b)
+-----   ε₊      : { b : B } → Iso (PLUS b (NEG b)) ZERO
+-----   refe₊   : { b : B } → Iso (NEG (NEG b)) b
+-----   refi₊   : { b : B } → Iso b (NEG (NEG b))
+-----  rile₊   : { b : B } → Iso (CHOICE b (CHOICE b (NEG b))) b
+-----   rili₊   : { b : B } → Iso b (CHOICE b (CHOICE b (NEG b)))
   -- multiplicative duality
-  refe⋆   : { b : BV } → Iso (DUALV (DUALV b)) b
-  refi⋆   : { b : BV } → Iso b (DUALV (DUALV b))
-  rile⋆   : { b : BV } → Iso (TIMESV b (IPV b (DUALV b))) b
-  rili⋆   : { b : BV } → Iso b (TIMESV b (IPV b (DUALV b)))
+  refe⋆   : { b : B } → Iso (DUAL (DUAL b)) b
+  refi⋆   : { b : B } → Iso b (DUAL (DUAL b))
+  rile⋆   : { b : B } → Iso (TIMES b (TIMES b (DUAL b))) b
+  rili⋆   : { b : B } → Iso b (TIMES b (TIMES b (DUAL b)))
 
 mutual 
 
-  evalV : {b₁ b₂ : BV} → Iso b₁ b₂ → BVEC b₁ → BVEC b₂
-  evalV unite₊ (left _) = zero
-  evalV unite₊ (right v) = v
-  evalV uniti₊ v = right v
-  evalV swap₊ (left v) = right v
-  evalV swap₊ (right v) = left v
-  evalV assocl₊ (left v) = left (left v)
-  evalV assocl₊ (right (left v)) = left (right v)
-  evalV assocl₊ (right (right v)) = right v
-  evalV assocr₊ (left (left v)) = left v
-  evalV assocr₊ (left (right v)) = right (left v)
-  evalV assocr₊ (right v) = right (right v)
-  evalV unite⋆ (pair unit v) = v
-  evalV uniti⋆ v = pair unit v
-  evalV swap⋆ (pair v1 v2) = pair v2 v1
-  evalV assocl⋆ (pair v1 (pair v2 v3)) = pair (pair v1 v2) v3
-  evalV assocr⋆ (pair (pair v1 v2) v3) = pair v1 (pair v2 v3)
-  evalV dist (pair (left v1) v3) = left (pair v1 v3)
-  evalV dist (pair (right v2) v3) = right (pair v2 v3)
-  evalV factor (left (pair v1 v3)) = pair (left v1) v3
-  evalV factor (right (pair v2 v3)) = pair (right v2) v3
-  evalV id⟷ v = v
-  evalV (sym c) v = evalB c v
-  evalV (c₁ ◎ c₂) v = evalV c₂ (evalV c₁ v)
-  evalV (c₁ ⊕ c₂) (left v) = left (evalV c₁ v)
-  evalV (c₁ ⊕ c₂) (right v) = right (evalV c₂ v)
-  evalV (c₁ ⊗ c₂) (pair v₁ v₂) = pair (evalV c₁ v₁) (evalV c₂ v₂)
-  evalV refe₊ (neg (neg v)) = v
-  evalV refi₊ v = neg (neg v)
-  evalV rile₊ (left v) = v
-  evalV rile₊ (right (choose v₁ (neg v₂))) with b= v₁ v₂
-  evalV rile₊ (right (choose v₁ (neg v₂))) | true = v₁
-  evalV rile₊ (right (choose v₁ (neg v₂))) | false = zero
-  evalV rili₊ v = left v
-  evalV refe⋆ (dual (dual v)) = v
-  evalV refi⋆ v = dual (dual v)
-  evalV rile⋆ (pair v (ip v₁ (dual v₂))) with b= v₁ v₂
-  evalV rile⋆ (pair v (ip v₁ (dual v₂))) | true = v₁
-  evalV rile⋆ (pair v (ip v₁ (dual v₂))) | false = zero
-  evalV rili⋆ v = pair v (ip v (dual v))
-  evalV _ _ = zero
+  eval : {b₁ b₂ : B} → Iso b₁ b₂ → BVAL b₁ → BVAL b₂
+  eval unite₊ (left _) = zero
+  eval unite₊ (right v) = v
+  eval uniti₊ v = right v
+  eval swap₊ (left v) = right v
+  eval swap₊ (right v) = left v
+  eval assocl₊ (left v) = left (left v)
+  eval assocl₊ (right (left v)) = left (right v)
+  eval assocl₊ (right (right v)) = right v
+  eval assocr₊ (left (left v)) = left v
+  eval assocr₊ (left (right v)) = right (left v)
+  eval assocr₊ (right v) = right (right v)
+  eval unite⋆ (pair unit v) = v
+  eval uniti⋆ v = pair unit v
+  eval swap⋆ (pair v1 v2) = pair v2 v1
+  eval assocl⋆ (pair v1 (pair v2 v3)) = pair (pair v1 v2) v3
+  eval assocr⋆ (pair (pair v1 v2) v3) = pair v1 (pair v2 v3)
+  eval dist (pair (left v1) v3) = left (pair v1 v3)
+  eval dist (pair (right v2) v3) = right (pair v2 v3)
+  eval factor (left (pair v1 v3)) = pair (left v1) v3
+  eval factor (right (pair v2 v3)) = pair (right v2) v3
+  eval id⟷ v = v
+  eval (sym c) v = evalB c v
+  eval (c₁ ◎ c₂) v = eval c₂ (eval c₁ v)
+  eval (c₁ ⊕ c₂) (left v) = left (eval c₁ v)
+  eval (c₁ ⊕ c₂) (right v) = right (eval c₂ v)
+  eval (c₁ ⊗ c₂) (pair v₁ v₂) = pair (eval c₁ v₁) (eval c₂ v₂)
+  eval refe⋆ (dual (dual v)) = v
+  eval refi⋆ v = dual (dual v)
+  eval rile⋆ (pair v (pair v₁ (dual v₂))) with b= v₁ v₂
+  eval rile⋆ (pair v (pair v₁ (dual v₂))) | true = v
+  eval rile⋆ (pair v (pair v₁ (dual v₂))) | false = zero
+  eval rili⋆ v = pair v (pair v (dual v))
+  eval _ _ = zero
 
-  evalB : {b₁ b₂ : BV} → Iso b₁ b₂ → BVEC b₂ → BVEC b₁
+  evalB : {b₁ b₂ : B} → Iso b₁ b₂ → BVAL b₂ → BVAL b₁
   evalB unite₊ v = right v
   evalB uniti₊ (left _) = zero
   evalB uniti₊ (right v) = v
@@ -147,27 +147,81 @@ mutual
   evalB factor (pair (left v1) v3) = left (pair v1 v3)
   evalB factor (pair (right v2) v3) = right (pair v2 v3)
   evalB id⟷ v = v
-  evalB (sym c) v = evalV c v
+  evalB (sym c) v = eval c v
   evalB (c₁ ◎ c₂) v = evalB c₁ (evalB c₂ v)
   evalB (c₁ ⊕ c₂) (left v) = left (evalB c₁ v)
   evalB (c₁ ⊕ c₂) (right v) = right (evalB c₂ v)
   evalB (c₁ ⊗ c₂) (pair v₁ v₂) = pair (evalB c₁ v₁) (evalB c₂ v₂)
-  evalB refe₊ v = neg (neg v)
-  evalB refi₊ (neg (neg v)) = v
-  evalB rile₊ v = left v
-  evalB rili₊ (left v) = v
-  evalB rili₊ (right (choose v₁ (neg v₂))) with b= v₁ v₂
-  evalB rili₊ (right (choose v₁ (neg v₂))) | true = v₁
-  evalB rili₊ (right (choose v₁ (neg v₂))) | false = zero
   evalB refe⋆ v = dual (dual v)
   evalB refi⋆ (dual (dual v)) = v
-  evalB rile⋆ v = pair v (ip v (dual v))
-  evalB rili⋆ (pair v (ip v₁ (dual v₂))) with b= v₁ v₂
-  evalB rili⋆ (pair v (ip v₁ (dual v₂))) | true = v₁
-  evalB rili⋆ (pair v (ip v₁ (dual v₂))) | false = zero
+  evalB rile⋆ v = pair v (pair v (dual v))
+  evalB rili⋆ (pair v (pair v₁ (dual v₂))) with b= v₁ v₂
+  evalB rili⋆ (pair v (pair v₁ (dual v₂))) | true = v
+  evalB rili⋆ (pair v (pair v₁ (dual v₂))) | false = zero
   evalB _ _ = zero
 
 ------------------------------------------------------------------------------
+-- example with duals
 
+pibool : B
+pibool = PLUS ONE ONE
 
+pitrue : BVAL pibool
+pitrue = left unit
 
+pifalse : BVAL pibool
+pifalse = right unit
+
+-- swap clause 1 = (T => F)
+clause1 : BVAL (TIMES (DUAL pibool) pibool)
+clause1 = pair (dual pitrue) pifalse
+
+-- swap clause 2 = (F => T)
+clause2 : BVAL (TIMES (DUAL pibool) pibool)
+clause2 = pair (dual pifalse) pitrue
+
+----- swapPlus : BVAL (TIMES (DUAL pibool) pibool)
+----- swapPlus = choose clause1 clause2
+
+-- swap clause 1 applied to true
+ex1 : BVAL (TIMES pibool (TIMES (DUAL pibool) pibool))
+ex1 = pair pitrue clause1
+
+-- swap clause 1 applied to false
+ex2 : BVAL (TIMES pibool (TIMES (DUAL pibool) pibool))
+ex2 = pair pifalse clause1
+
+-- swap clause 1 applied to true
+ex3 : BVAL (TIMES pibool (TIMES (DUAL pibool) pibool))
+ex3 = pair pitrue clause2
+
+-- swap clause 1 applied to false
+ex4 : BVAL (TIMES pibool (TIMES (DUAL pibool) pibool))
+ex4 = pair pifalse clause2
+
+-- applies one of the clauses to a value 
+c : Iso (TIMES pibool (TIMES (DUAL pibool) pibool)) pibool
+c =         -- (v,(1/t,f))
+  assocl⋆ ◎ -- ((v,1/t),f)
+  swap⋆ ◎   -- (f,(v,1/t))
+  rile⋆     -- f or zero
+
+-- 
+-- apply both clauses of swapPlus to true
+----- ex : BVAL (TIMES pibool (TIMES (DUAL pibool) pibool))
+----- ex = pair pitrue swapPlus
+
+-- 
+v1 = eval c ex1
+v2 = eval c ex2
+v3 = eval c ex3
+v4 = eval c ex4
+
+------------------------------------------------------------------------------
+-- negatives...
+
+-- choose v1 v2: internally create negative things: eval with (left
+-- v1); if result is (right (neg v1)) then choose v1 else choose try
+-- v2. If ok choose v2; otherwise return zero.
+
+------------------------------------------------------------------------------
