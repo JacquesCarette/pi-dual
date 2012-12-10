@@ -50,8 +50,6 @@ b= (pair v₁ v₂) (pair v₁' v₂') = b= v₁ v₁' ∧ b= v₂ v₂'
 b= (dual v₁) (dual v₂) = b= v₁ v₂
 b= _ _ = false
 
---HERE
-
 data Iso : B → B → Set where
   -- (+,0) commutative monoid
   unite₊  : { b : B } → Iso (PLUS ZERO b) b
@@ -83,6 +81,9 @@ data Iso : B → B → Set where
   refi⋆   : { b : B } → Iso b (DUAL (DUAL b))
   rile⋆   : { b : B } → Iso (TIMES b (TIMES b (DUAL b))) b
   rili⋆   : { b : B } → Iso b (TIMES b (TIMES b (DUAL b)))
+  -- negatives: we have a circuit that requires the value to choose
+  -- the incoming value : b₁ can go left or right
+  choose : { b₁ b₂ : B } → Iso b₁ b₂ → Iso b₁ b₂ → Iso b₁ b₂ 
 
 mutual 
 
@@ -119,6 +120,8 @@ mutual
   eval rile⋆ (pair v (pair v₁ (dual v₂))) | true = v
   eval rile⋆ (pair v (pair v₁ (dual v₂))) | false = zero
   eval rili⋆ v = pair v (pair v (dual v))
+-- choose : { b₁ b₂ : B } → Iso b₁ b₂ → Iso b₁ b₂ → Iso b₁ b₂ 
+  eval (choose c₁ c₂) v = {!!} 
   eval _ _ = zero
 
   evalB : {b₁ b₂ : B} → Iso b₁ b₂ → BVAL b₂ → BVAL b₁
@@ -204,5 +207,30 @@ v1 = eval c ex1
 v2 = eval c ex2
 v3 = eval c ex3
 v4 = eval c ex4
+
+-- generalize
+
+-- applies one of the clauses of a function : b -> b to a value : b
+apply : {b : B} → Iso (TIMES b (TIMES (DUAL b) b)) b
+apply = assocl⋆ ◎ swap⋆ ◎ rile⋆
+
+
+
+{--
+want:
+
+value is True
+in parallel apply clause1 to value and apply clause2 to value
+one of these will return False and the other will return zero
+merge the results to get False
+
+better:
+
+value is True
+we create a new logic variable ALPHA which can be unified with either clause1 or clause2
+we create a value (ALPHA - ALPHA) which we apply to evaluate 
+
+
+--}
 
 ------------------------------------------------------------------------------
