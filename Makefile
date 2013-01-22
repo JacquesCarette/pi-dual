@@ -4,11 +4,11 @@
 
 .PHONY : clean clean-subcode
 
-outline.subc.pdf : outline.subc.tex cites.bib
-	pdflatex -halt-on-error outline.subc.tex
+frac.subc.pdf : frac.subc.tex cites.bib
+	pdflatex -halt-on-error frac.subc.tex
 
-outline.subc.tex : outline.tex
-	ruby subcode/subc.rb outline.tex
+frac.subc.tex : frac.tex
+	ruby subcode/subc.rb frac.tex
 
 r.subc.pdf : r.subc.tex cites.bib
 	pdflatex -halt-on-error r.subc.tex
