@@ -109,22 +109,85 @@
 \begin{abstract}
   In previous work, we developed a \emph{first-order},
   information-preserving, and reversible programming language {{langRev}}
-  founded on type isomorphisms. Being first-order limits the expressiveness
-  of the language: it is not possible, for example, to abstract program
-  fragments into a higher-level combinator. More importantly, however, the
-  limitation to first-order types means that the class of isomorphisms
-  between two types {{b1}} and {{b2}} cannot be itself represented as a type
-  and hence that the natural notion of equivalence between two {{langRev}}
-  computations is no longer based on isomorphisms. In this paper, we
-  introduce a higher-order extension of {{langRev}} based on the novel
-  concept of \emph{fractional types}. Intuitively, a value of a fractional
-  type represents \emph{negative} information: such fractional values can be
-  freely propagated and transformed but must ultimately --- in a complete
-  program --- be offset by the corresponding amount of positive information.
+  founded on type isomorphisms. Being restricted to first-order types limits
+  the expressiveness of the language: it is not possible, for example, to
+  abstract common program fragments into a higher-level combinator. In this
+  paper, we introduce a higher-order extension of {{langRev}} based on the
+  novel concept of \emph{fractional types} {{1/b}}. Intuitively, a value of a
+  fractional type {{1/v}} represents \emph{negative} information. A
+  higher-order function is modeled by a pair {{(1/v1,v2)}} with {{1/v1}}
+  representing the needed argument and {{v2}} representing the
+  result. Fractional values can be freely propagated and transformed but must
+  ultimately --- in a complete program --- be offset by the corresponding
+  amount of positive information.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
+
+We are witnessing a convergence of ideas from several distinct research
+communities (physics, mathematics, and computer science) towards replacing
+\emph{equalities} by \emph{isomorphisms}. The combined programme originating
+from these research areas has sparked a huge amount of research that unveiled
+new and surprising connections between geometry, algebra, logic, and
+computation.
+
+In the physics community, Landauer, Feynman, and others viewed the laws of
+physics as fundamentally related to computation. In more detail, the great
+majority of the laws of physics are formulated as equalities between
+different physical observables. For instance, Newton's second law of
+classical mechanics equates the force acting on a system to its rate of
+change of momentum. The insight of Landauer, Feynman, etc. is that
+\emph{different} physical observables should not be related by an
+\emph{equality} but more appropriately by an \emph{isomorphism} that
+witnesses, explains, and simulates the process of transforming one observable
+to the other. 
+
+In the mathematics and logic community, Martin-L\"of developed an extension
+of the simply typed $\lambda$-calculus originally intended to provide a
+rigorous framework for constructive mathematics. It is now natural to extend
+this type theory with a new \emph{identity type} representing the proposition
+that two terms are ``equal.'' Specifically, given two terms $a$ and $b$ of
+the same type $A$, one forms the type $\texttt{Id}_A(a,b)$ representing the
+proposition that $a$ and $b$ are equal: in other words, a term of type
+$\texttt{Id}_A(a,b)$ witnesses, explains, and simulates the process of
+transforming $a$ to $b$ and vice-versa.
+
+In the computer science community, the theory and practice of type
+isomorphisms is well-established. Originally, such type isomorphisms were
+motivated the pragmatic concern of searching large libraries of functions by
+providing one of the many possible isomorphic types for the desired
+function. More recently, type isomorphisms have taken a more central role as
+\emph{the} fundamental computational mechanism from which more conventional,
+i.e., irreversible computation, is derived~\cite{infeffects}. In more detail,
+in our own previous work, we started with the notion of type isomorphism as
+the ``right'' starting point for a theory of computation. The central
+technical contribution was the development of a family of programming
+languages, {{langRev}} with various superscripts, in which every computation
+is an isomorphism. Other major results are that all such computations
+preserve the information-theoretic entropy, that the language is logically
+reversible, and that it has a model in symmetric monoidal categories (which
+are the backbone of models for linear logic and quantum computation). We have
+also invested a significant amount of time in using {{langRev}} as an actual
+programming language and established several idioms for programming large
+classes of interesting (recursive) programs in {{langRev}}. 
+
+A major open problem remains, however. This concerns a higher-order extension
+of {{langRev}}. This extension is of fundamental importance in all the
+originating research areas. In physics, it allows the process itself or the
+observer to be treated as ``data'' that can be transformed by higher-level
+processes or observed by meta-level observers. In mathematics and logic, it
+allows the equivalence between different proofs of type $\texttt{Id}_A(a,b)$
+to be itself expressed as an isomorphism as a higher type
+$\texttt{Id}_{\texttt{Id}_A(a,b)}(p,q)$. Finally, in computer science,
+higher-order types allow code to abstract over other code fragments as well
+as the manipulation of code as data and data as code which is central to many
+algorithms and application domains.
+
+We address this higher-order extension in our paper using a simple novel type
+construction, that of a fractional type. The plan of the paper is therefore
+as follows: \todo{roadmap}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Background: {{langRev}} }
