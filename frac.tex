@@ -15,6 +15,9 @@
 }
 
 \newcommand{\todo}[1]{\textbf{TODO:} #1}
+\newcommand{\jacques}[1]{\textsc{Jacques says:} #1}
+
+\hyphenation{a-reas}
 
 %subcode-inline{bnf-inline} name langRev
 %! swap+ = \mathit{swap}^+
@@ -130,9 +133,10 @@ communities (physics, mathematics, and computer science) towards replacing
 \emph{equalities} by \emph{isomorphisms}. The combined programme originating
 from these research areas has sparked a huge amount of research that unveiled
 new and surprising connections between geometry, algebra, logic, and
-computation.
+computation (see \cite{baez2011physics} for an overview).
 
-In the physics community, Landauer, Feynman, and others viewed the laws of
+In the physics community, Landauer~\cite{Landauer:1961}, Feynman, and 
+others have interpreted the laws of
 physics as fundamentally related to computation. In more detail, the great
 majority of the laws of physics are formulated as equalities between
 different physical observables. For instance, Newton's second law of
@@ -140,17 +144,18 @@ classical mechanics equates the force acting on a system to its rate of
 change of momentum. The insight of Landauer, Feynman, etc. is that
 \emph{different} physical observables should not be related by an
 \emph{equality} but more appropriately by an \emph{isomorphism} that
-witnesses, explains, and simulates the process of transforming one observable
+witnesses, explains, and models the process of transforming one observable
 to the other. 
 
 In the mathematics and logic community, Martin-L\"of developed an extension
 of the simply typed $\lambda$-calculus originally intended to provide a
-rigorous framework for constructive mathematics. It is now natural to extend
-this type theory with a new \emph{identity type} representing the proposition
+rigorous framework for constructive mathematics. This has been further
+extended (first by Streicher and Awodey, and subsequently by many others)
+with a new \emph{identity type} representing the proposition
 that two terms are ``equal.'' Specifically, given two terms $a$ and $b$ of
 the same type $A$, one forms the type $\texttt{Id}_A(a,b)$ representing the
 proposition that $a$ and $b$ are equal: in other words, a term of type
-$\texttt{Id}_A(a,b)$ witnesses, explains, and simulates the process of
+$\texttt{Id}_A(a,b)$ witnesses, explains, and models the process of
 transforming $a$ to $b$ and vice-versa.
 
 In the computer science community, the theory and practice of type
@@ -184,8 +189,14 @@ higher-order types allow code to abstract over other code fragments as well
 as the manipulation of code as data and data as code which is central to many
 algorithms and application domains.
 
-We address this higher-order extension in our paper using a simple novel type
-construction, that of a fractional type. The plan of the paper is therefore
+This paper addresses this higher-order extension.  It does this via a novel
+type construction, which we dub a \emph{fractional type} because of its
+interaction with product types.  By adding a formal (linear) dual to
+(type theoretic) products, we can internalize the notion that ``taking an
+input'' corresponds to negative information, which turns out to be the 
+basis of first-class functions.
+
+The plan of the paper is therefore
 as follows: \todo{roadmap}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -242,7 +253,7 @@ isomorphism in the middle.  These are the base (non-reducible) terms of the
 second, principal level of {{langRev}}.
 
 Note how the above has two readings: first as a set of typing relations for a
-set of constants. If these axioms are seen as universally quantified,
+set of constants. Second, if these axioms are seen as universally quantified,
 orientable statements, they also induce transformations of the (traditional)
 values.  The (categorical) intuition here is that these axioms have
 computational content because they witness isomorphisms rather than merely
@@ -286,8 +297,6 @@ To summarize, the syntax of {{langRev}} is given as follows.
 
 \begin{definition}{(Syntax of {{langRev}})}
 \label{def:Pi}
-We collect our types, values, and isomorphisms, to get the full language
-definition.
 %subcode{bnf} include main
 % value types, b ::= 1 | b+b | b*b 
 % values, v ::= () | left v | right v | (v,v) 
@@ -301,27 +310,55 @@ definition.
 \end{definition}
 
 Mathematically, {{langRev}} can be interpreted in the category of finite sets
-and bijections: each type denotes a finite set of the corresponding size and
-each combinator {{c : b1 <-> b2}} denotes a bijection between the sets
+and bijections: each value type denotes a finite set of the corresponding size
+and each combinator {{c : b1 <-> b2}} denotes a bijection between the sets
 denoted by {{b1}} and {{b2}}. Operationally, the semantics of {{langRev}} is
 given using two mutually recursive interpreters: one going forward and one
 going backwards. The use of {{sym}} switches control from one evaluator to
 the other. We will not present the operational semantics until the next
-section in the context of the extended language. For now, we state without
+section, in the context of the extended language. For now, we state without
 proof that the evaluation of well-typed combinators always terminates and
 that {{langRev}} is logically reversible, i.e., that for all combinators 
 {{c : b1 <-> b2}} and values {{v1 : b1}} and {{v2 : b2}} we have the forward
 evaluation of {{c v1}} produces {{v2}} iff the backwards evaluation of 
 {{c v2}} produces {{v1}}.
 
+\jacques{Since we have Agda code for the above, should we refer to it
+here, and make it available?}
+
+Note that a small modification of {{lanRev}} (the addition of an
+empty type {{0}} with its usual laws) would exactly capture, at the type
+level, the notion of \emph{semiring} (occasionally called a \emph{rig}) where
+we replace equality by isomorphism.  This can also be also compared to
+\emph{bimonoidal categories}.  As is usual with with type theories, the
+coherence conditions (pentagonal and triangle identity) are not explicit,
+but would correspond to certain identity types being trivial.  {{lanRev}}
+instead, at the type leve, models a commutative ringoid where the
+multiplicative structure forms a commutative monoid, but the additive structure
+is just a commutative magma.  We chose not to include {{0}} as a technical
+convenience for the next section.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Language: {{langRevTF}} }
+
+{{langRev}} models isomorphisms of values rather well.  However, purposefully,
+it has no notion of \emph{input} or \emph{output}; more precisely, because
+of strict preservation of information, these two concepts coincide.  This
+is the root of reversibility.
+
+But if we want to model functions of any flavor, we need to differentiate
+between these notions.  Our idea, inspired by computational dualities and
+polarity, is to introduce a \emph{formal dual} for our types.  We thus
+consider a type in a negative position in a type to possess negative
+information, as it is really a request for information.  Since information
+is logarithmic, this means that a request for information should behave
+like a \emph{fractional type}.
 
 Syntactically, the extension with fractional types is simple. 
 
 \begin{definition}[Syntax of {{langRevTF}}]
 \label{def:langRevT}
-We extend Def.~\ref{def:Pi} as follows:
+We extend Def.~\ref{def:Pi} with:
 %subcode{bnf} include main
 % value types, b ::= ... | 1/b
 % values, v ::= ... | 1/v
@@ -330,15 +367,22 @@ We extend Def.~\ref{def:Pi} as follows:
 \end{definition}
 
 For a given type {{b}}, the values of type {{1/b}} are of the form {{1/v}}
-where {{v : b}}. We think of a value like {{1/left ()}} as a
+where {{v : b}}. Note that {{1/v}} is purely formal, as is {{1/b}}.
+However, we think of a value like {{1/left ()}} as a
 \emph{first-class constraint} that can only be satisfied if it is matched
 with an actual value {{left ()}} or as representing the absence of some
 information (i.e., \emph{negative information}), that can only be supplied by
 {{left ()}}. The combinator {{eta*_b : 1 <-> 1/b * b}} represents a fission
-point which creates --- out of nothing --- an equal amount of negative and
-positive information. Symmetrically, the combinator {{eps*_b : 1/b * b <-> 1}}
-matches up an equal amount of negative and positive information producing 
-no residual information.
+point which creates --- out of no information --- an equal amount of negative
+and positive information. Symmetrically, the combinator {{eps*_b : 1/b * b <->
+1}} matches up an equal amount of negative and positive information producing 
+no residual information.  The best analogy is probably that of vectors and
+covectors, also know as column vectors and row vectors (respectively): in
+the finite dimensional case, they are isomorphic, but they are nevertheless
+quite different, being $(1,0)$ and $(0,1)$ tensors (respectively).  In
+other words, since we are explicitly interested in \emph{isomorphisms}, 
+we should not conflate negative-information values with positive-information
+values just because they happen to be isomorphic.
 
 %%%%%%%%%%%%%%%%%%%%%5
 \subsection{Relational Semantics}
