@@ -155,8 +155,8 @@ transforming $a$ to $b$ and vice-versa.
 
 In the computer science community, the theory and practice of type
 isomorphisms is well-established. Originally, such type isomorphisms were
-motivated the pragmatic concern of searching large libraries of functions by
-providing one of the many possible isomorphic types for the desired
+motivated by the pragmatic concern of searching large libraries of functions
+by providing one of the many possible isomorphic types for the desired
 function. More recently, type isomorphisms have taken a more central role as
 \emph{the} fundamental computational mechanism from which more conventional,
 i.e., irreversible computation, is derived~\cite{infeffects}. In more detail,
@@ -170,7 +170,7 @@ reversible, and that it has a model in symmetric monoidal categories (which
 are the backbone of models for linear logic and quantum computation). We have
 also invested a significant amount of time in using {{langRev}} as an actual
 programming language and established several idioms for programming large
-classes of interesting (recursive) programs in {{langRev}}. 
+classes of interesting (recursive) programs in {{langRev}}.
 
 A major open problem remains, however. This concerns a higher-order extension
 of {{langRev}}. This extension is of fundamental importance in all the
@@ -196,21 +196,21 @@ context for our higher-order extension.\footnote{The presentation in this
   section focuses on the simplest version of {{langRev}}. Other versions
   include the empty type, recursive types, and trace operators but these
   extensions are orthogonal to the higher-order extension emphasized in this
-  paper.} The terms of {{Pi}} are not classical values and functions; rather,
-the terms are isomorphism witnesses.  In other words, the terms of {{Pi}} are
-proofs that certain ``shapes of values'' are isomorphic.  And, in classical
-Curry-Howard fashion, our operational semantics shows how these proofs can be
-directly interpreted as actions on ordinary values which effect this shape
-transformation. Of course, ``shapes of values'' are very familiar already:
-they are usually called \emph{types}.  But usually one designs a type system
-as a method of classifying terms, with the eventual purpose to show that
-certain properties of well-typed terms hold, such as safety.  Our approach is
-different: we start from a type system, and then present a term language
-which naturally inhabits these types, along with an appropriate operational
-semantics.
+  paper.} The terms of {{langRev}} are not classical values and functions;
+rather, the terms are isomorphism witnesses.  In other words, the terms of
+{{langRev}} are proofs that certain ``shapes of values'' are isomorphic.
+And, in classical Curry-Howard fashion, our operational semantics shows how
+these proofs can be directly interpreted as actions on ordinary values which
+effect this shape transformation. Of course, ``shapes of values'' are very
+familiar already: they are usually called \emph{types}.  But usually one
+designs a type system as a method of classifying terms, with the eventual
+purpose to show that certain properties of well-typed terms hold, such as
+safety.  Our approach is different: we start from a type system, and then
+present a term language which naturally inhabits these types, along with an
+appropriate operational semantics.
 
 \paragraph*{Data.}
-We view {{Pi}} as having two levels:  it has traditional values, given by
+We view {{langRev}} as having two levels:  it has traditional values, given by
 %subcode{bnf} include main
 % values, v ::= () | left v | right v | (v, v)
 and these are classified by ordinary types
@@ -225,7 +225,7 @@ regarded as largely ancillary.  In particular we do not treat the above
 values as first-class citizens.  They only occur when we want to observe the
 effect of an isomorphism.
 
-\paragraph*{Isomorphisms.} The terms of {{Pi}} are witnesses to type
+\paragraph*{Isomorphisms.} The terms of {{langRev}} are witnesses to type
 isomorphisms.  They have (iso) types {{b <-> b}}.  
 Specifically, they are witnesses to the following type isomorphisms:
 %subcode{bnf} include main
@@ -239,7 +239,7 @@ Specifically, they are witnesses to the following type isomorphisms:
 Each line of the above table introduces a pair of dual constants%
 \footnote{where {{swap*}} and {{swap+}} are self-dual} that witness the type
 isomorphism in the middle.  These are the base (non-reducible) terms of the
-second, principal level of {{Pi}}.
+second, principal level of {{langRev}}.
 
 Note how the above has two readings: first as a set of typing relations for a
 set of constants. If these axioms are seen as universally quantified,
@@ -282,9 +282,9 @@ the ``top level'', a new syntactic category:
 We refer to this as \emph{application}.
 
 \noindent
-To summarize, the syntax of {{Pi}} is given as follows. 
+To summarize, the syntax of {{langRev}} is given as follows. 
 
-\begin{definition}{(Syntax of {{Pi}})}
+\begin{definition}{(Syntax of {{langRev}})}
 \label{def:Pi}
 We collect our types, values, and isomorphisms, to get the full language
 definition.
@@ -300,15 +300,19 @@ definition.
 % top level term, l ::= c v
 \end{definition}
 
-The semantics of {{langRev}} is given using two mutually recursive
-interpreters: one going forward and one going backwards. The use of {{sym}}
-switches control from one evaluator to the other. We will not present the
-semantics until the next section in the context of the extended language.
-For now, we state without proof that the evaluation of well-typed combinators
-always terminates and that {{langRev}} is logically reversible, i.e., that
-for all combinators {{c : b1 <-> b2}} and values {{v1 : b1}} and {{v2 : b2}}
-we have the forward evaluation of {{c v1}} produces {{v2}} iff the backwards
-evaluation of {{c v2}} produces {{v1}}.
+Mathematically, {{langRev}} can be interpreted in the category of finite sets
+and bijections: each type denotes a finite set of the corresponding size and
+each combinator {{c : b1 <-> b2}} denotes a bijection between the sets
+denoted by {{b1}} and {{b2}}. Operationally, the semantics of {{langRev}} is
+given using two mutually recursive interpreters: one going forward and one
+going backwards. The use of {{sym}} switches control from one evaluator to
+the other. We will not present the operational semantics until the next
+section in the context of the extended language. For now, we state without
+proof that the evaluation of well-typed combinators always terminates and
+that {{langRev}} is logically reversible, i.e., that for all combinators 
+{{c : b1 <-> b2}} and values {{v1 : b1}} and {{v2 : b2}} we have the forward
+evaluation of {{c v1}} produces {{v2}} iff the backwards evaluation of 
+{{c v2}} produces {{v1}}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Language: {{langRevTF}} }
@@ -317,17 +321,12 @@ Syntactically, the extension with fractional types is simple.
 
 \begin{definition}[Syntax of {{langRevTF}}]
 \label{def:langRevT}
-The syntax of types, values, and combinators, is:
+We extend Def.~\ref{def:Pi} as follows:
 %subcode{bnf} include main
-% value types, b ::= 1 | b+b | b*b | 1/b 
-% values, v ::= () | left v | right v | (v,v) | 1/v 
+% value types, b ::= ... | 1/b
+% values, v ::= ... | 1/v
 %
-% iso.~types, t ::= b <-> b
-% base iso ::= swap+ | assocl+ | assocr+ 
-%                   &|& unite | uniti | swap* | assocl* | assocr* 
-%                   &|& dist | factor 
-%                   &|& eta*_b | eps*_b
-% combinators, c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
+% base iso ::= ... | eta*_b | eps*_b
 \end{definition}
 
 For a given type {{b}}, the values of type {{1/b}} are of the form {{1/v}}
@@ -338,14 +337,52 @@ information (i.e., \emph{negative information}), that can only be supplied by
 {{left ()}}. The combinator {{eta*_b : 1 <-> 1/b * b}} represents a fission
 point which creates --- out of nothing --- an equal amount of negative and
 positive information. Symmetrically, the combinator {{eps*_b : 1/b * b <-> 1}}
-consumes an equal amount of negative and positive information producing 
+matches up an equal amount of negative and positive information producing 
 no residual information.
+
+%%%%%%%%%%%%%%%%%%%%%5
+\subsection{Relational Semantics}
+
+Even though the categorical semantics of {{langRevTF}} is not the main focus
+of this paper, we find it helpful to briefly outline an interpretation of
+{{langRevTF}} in \emph{dagger compact closed categories}. These categories
+were introduced by Abramsky and
+Coecke~\cite{Abramsky:2004:CSQ:1018438.1021878} and then by
+Selinger~\cite{Selinger:2007:DCC:1229185.1229207}. The simplest example of
+such categories is the category of finite sets and relations on which we
+focus.
+
+We recall that a \emph{symmetric monoidal category} is a category together
+with a bifunctor $\otimes$, a distinguished object $I$, and natural
+isomorphisms $\alpha_{A,B,C} : (A \otimes B) \otimes C \rightarrow A \otimes
+(B \otimes C)$, $\lambda_A : A \rightarrow I \otimes A$, and $\sigma_{A,B} :
+A \otimes B \rightarrow B \otimes A$ subject to standard coherence
+conditions~\cite{nla.cat-vn1051288}. Following common practice
+(e.g.,~\cite{Selinger:2007:DCC:1229185.1229207}), we write $\rho_A =
+\sigma_{I,A} \circ \lambda_A : A \rightarrow A \otimes I$.
+
+A \emph{compact closed category} is a symmetric monoidal category where each
+object $A$ is assigned a dual object $A^*$, together with a unit map $\eta_A
+: I \rightarrow A^* \otimes A$ and a counit map $\epsilon_A : A \otimes A^*
+\rightarrow I$, such that:
+\[\begin{array}{rcl}
+\lambda_A^{-1} \circ (\epsilon_A \otimes A) \circ \alpha_{A,A^*,A}^{-1} \circ (A \otimes \eta_A) \circ \rho_A &=& \mathit{id}_A \\
+\rho_{A^*}^{-1} \circ (A^* \otimes \epsilon_A) \circ \alpha_{A^*,A,A^*} \circ (\eta_A \otimes A^*) \circ \lambda_A &=& \mathit{id}_{A^*}
+\end{array}\]
+
+
+
+the category of finite sets and relations.
+
 
 give some intuition; example with eta/epsilon
 
 motivate the need for relations
 
 present formal semantics
+
+model using vector spaces; category of finite sets and relations; homotopy
+equivalence???
 
 \begin{definition}[Denotation of Types {{ [[b]] }}]
 \label{chx:def:denot}
