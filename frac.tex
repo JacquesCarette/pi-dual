@@ -194,7 +194,7 @@ as follows: \todo{roadmap}
 We review our language {{langRev}} providing the necessary background and
 context for our higher-order extension.\footnote{The presentation in this
   section focuses on the simplest version of {{langRev}}. Other versions
-  include the empty type, recursive types, and trace opeators but these
+  include the empty type, recursive types, and trace operators but these
   extensions are orthogonal to the higher-order extension emphasized in this
   paper.} The terms of {{Pi}} are not classical values and functions; rather,
 the terms are isomorphism witnesses.  In other words, the terms of {{Pi}} are
@@ -221,7 +221,7 @@ Types include the unit type {{1}}, sum types {{b1+b2}}, and products types
 {{b1*b2}}.  Values includes {{()}} which is the only value of type {{1}},
 {{left v}} and {{right v}} which inject {{v}} into a sum type, and
 {{(v1,v2)}} which builds a value of product type. But these values should be
-regarded as largely ancilliary.  In particular we do not treat the above
+regarded as largely ancillary.  In particular we do not treat the above
 values as first-class citizens.  They only occur when we want to observe the
 effect of an isomorphism.
 
@@ -247,11 +247,6 @@ orientable statements, they also induce transformations of the (traditional)
 values.  The (categorical) intuition here is that these axioms have
 computational content because they witness isomorphisms rather than merely
 stating an extensional equality.
-
-For example {{ swap* }} induces a function (akin to):
-%subcode{code}
-%! language = Haskell
-% swapProd (a,b) = (b,a)
 
 The isomorphisms are extended to form a congruence relation by adding the
 following constructors that witness equivalence and compatible closure:
@@ -299,102 +294,58 @@ definition.
 %
 % iso.~types, t ::= b <-> b
 % base iso ::= swap+ | assocl+ | assocr+ 
-%     &|& identl* | identr* 
-%     &|& swap* | assocl* | assocr* 
+%     &|& unite | uniti | swap* | assocl* | assocr* 
 %     &|& dist | factor 
 % iso comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
 % top level term, l ::= c v
 \end{definition}
 
-
 The semantics of {{langRev}} is given using two mutually recursive
 interpreters: one going forward and one going backwards. The use of {{sym}}
 switches control from one evaluator to the other. We will not present the
-semantics because we present a more general version in the next section. We
-state without proof that the evaluation of well-typed combinators always
-terminates and that {{langRev}} is logically reversible, i.e., that for all
-combinators {{c : b1 <-> b2}} and values {{v1 : b1}} and {{v2 : b2}} we have
-the forward evaluation of {{c v1}} produces {{v2}} iff the backwards
+semantics until the next section in the context of the extended language.
+For now, we state without proof that the evaluation of well-typed combinators
+always terminates and that {{langRev}} is logically reversible, i.e., that
+for all combinators {{c : b1 <-> b2}} and values {{v1 : b1}} and {{v2 : b2}}
+we have the forward evaluation of {{c v1}} produces {{v2}} iff the backwards
 evaluation of {{c v2}} produces {{v1}}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Language: {{langRevTF}} }
 
-As hinted to in the first section, the semantics of fractional types introduces
-a form of non-determinism in the sense that there could zero, one, or several
-values that satisfy the constraints imposed by fractional values. To model
-such non-determinism, we specify the semantics using \emph{relations}. In
-other words, the results of {{evalF c v}} or {{evalB c v}} are no longer
-guaranteed to be a single value: they could be \emph{sets} of values.
+Syntactically, the extension with fractional types is simple. 
 
-The introduction of relations makes sequential composition of
-combinators more involved than simply passing the value produced by
-the first to the second. The following example illustrates our
-notation for the composition of relations which is used in the formal
-semantics. 
-
-\begin{example}[Composition of Relations]
-Consider the two relations:
-\[\begin{array}{rcl}                                                                       
-R_1 &=& \{ (1,2),(1,3),(2,2) \} \\                                                       
-R_2 &=& \{ (2,1),(2,3),(3,1) \}                                                          
-\end{array}\]
-These relations can be expressed in a functional notation as follows:
-\[\begin{array}{rcl}                                                                       
-R_1 (1) &=& \{ 2,3 \} \\                                                                 
-R_1 (2) &=& \{ 2 \} \\                                                                   
-R_1 (3) &=& \emptyset \\
-\\ 
-R_2 (1) &=& \emptyset \\                                                                 
-R_2 (2) &=& \{ 1,3 \} \\                                                                 
-R_2 (3) &=& \{ 1 \}                                                                      
-\end{array}\]
-Using the functional notation, the composition $(R_2 \circ R_1)$ is defined as
-follows:
-\[\begin{array}{rcl}                                                                   
-(R_2 \circ R_1)~(a) &=& \bigcup_{b \in R_1(a)} R_2(b)                                  
-\end{array}\]
-We calculate the composition:
-\[\begin{array}[t]{rcl}                                                                  
-(R_2 \circ R_1)~(1) &=& \bigcup_{b \in R_1(1)} R_2(b) \\                               
-         &=& R_2(2) \cup R_2(3) \\                                                     
-         &=& \{1,3\} \cup \{ 1 \} \\                                                   
-         &=& \{ 1,3 \} \\                                                              
-(R_2 \circ R_1)~(2) &=& \{ 1,3 \} \\                                                   
-(R_2 \circ R_1)~(3) &=& \emptyset                                                      
-\end{array}\]
-In other words, 
-\[
-(R_2 \circ R_1) = \{(1,1), (1,3), (2,1), (2,3)\}
-\]
-\end{example}
-
-We extend {{langRevT}} with fractional types, fractional values, and two
-combinators {{eta*_b}} and {{eps*_b}}.  We provide the full syntactic and
-semantic definitions for the language below.
-
-\begin{definition}[Syntax of {{langRevT}}]
+\begin{definition}[Syntax of {{langRevTF}}]
 \label{def:langRevT}
 The syntax of types, values, and combinators, is:
 %subcode{bnf} include main
-% natural numbers, n 
-% value types, b ::= 1 | b+b | b*b | 1/b | bool 
-% values, v ::= () | left v | right v | (v,v) | 1/v | true | false | n
+% value types, b ::= 1 | b+b | b*b | 1/b 
+% values, v ::= () | left v | right v | (v,v) | 1/v 
 %
-% combinator types, t ::= b <-> b
-% isomorphisms, iso ::= swap+ | assocl+ | assocr+ 
+% iso.~types, t ::= b <-> b
+% base iso ::= swap+ | assocl+ | assocr+ 
 %                   &|& unite | uniti | swap* | assocl* | assocr* 
 %                   &|& dist | factor 
-%                   &|& foldB | unfoldB 
 %                   &|& eta*_b | eps*_b
 % combinators, c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
 \end{definition}
 
-If {{v : b}}, we define the value {{1/v : 1/b}} and these are the only
-values of type~{{1/b}}. Since there are no values of type {{0}}, this
-means that {{1/0}} is also an empty type. Generally, we think of a
-value like {{1/false}} as a \emph{first-class constraint} that can
-only be satisfied if it is matched with an actual value {{false}}. 
+For a given type {{b}}, the values of type {{1/b}} are of the form {{1/v}}
+where {{v : b}}. We think of a value like {{1/left ()}} as a
+\emph{first-class constraint} that can only be satisfied if it is matched
+with an actual value {{left ()}} or as representing the absence of some
+information (i.e., \emph{negative information}), that can only be supplied by
+{{left ()}}. The combinator {{eta*_b : 1 <-> 1/b * b}} represents a fission
+point which creates --- out of nothing --- an equal amount of negative and
+positive information. Symmetrically, the combinator {{eps*_b : 1/b * b <-> 1}}
+consumes an equal amount of negative and positive information producing 
+no residual information.
+
+give some intuition; example with eta/epsilon
+
+motivate the need for relations
+
+present formal semantics
 
 \begin{definition}[Denotation of Types {{ [[b]] }}]
 \label{chx:def:denot}
@@ -506,6 +457,55 @@ For all combinators {{c : b1 <-> b2}} and values {{v1 : b1}} and
 
 An interesting point to ponder is what happens to \emph{information}
 in circuits like {{annihilate}}? We return to this point later.
+
+As hinted to in the first section, the semantics of fractional types introduces
+a form of non-determinism in the sense that there could zero, one, or several
+values that satisfy the constraints imposed by fractional values. To model
+such non-determinism, we specify the semantics using \emph{relations}. In
+other words, the results of {{evalF c v}} or {{evalB c v}} are no longer
+guaranteed to be a single value: they could be \emph{sets} of values.
+
+The introduction of relations makes sequential composition of
+combinators more involved than simply passing the value produced by
+the first to the second. The following example illustrates our
+notation for the composition of relations which is used in the formal
+semantics. 
+
+\begin{example}[Composition of Relations]
+Consider the two relations:
+\[\begin{array}{rcl}                                                                       
+R_1 &=& \{ (1,2),(1,3),(2,2) \} \\                                                       
+R_2 &=& \{ (2,1),(2,3),(3,1) \}                                                          
+\end{array}\]
+These relations can be expressed in a functional notation as follows:
+\[\begin{array}{rcl}                                                                       
+R_1 (1) &=& \{ 2,3 \} \\                                                                 
+R_1 (2) &=& \{ 2 \} \\                                                                   
+R_1 (3) &=& \emptyset \\
+\\ 
+R_2 (1) &=& \emptyset \\                                                                 
+R_2 (2) &=& \{ 1,3 \} \\                                                                 
+R_2 (3) &=& \{ 1 \}                                                                      
+\end{array}\]
+Using the functional notation, the composition $(R_2 \circ R_1)$ is defined as
+follows:
+\[\begin{array}{rcl}                                                                   
+(R_2 \circ R_1)~(a) &=& \bigcup_{b \in R_1(a)} R_2(b)                                  
+\end{array}\]
+We calculate the composition:
+\[\begin{array}[t]{rcl}                                                                  
+(R_2 \circ R_1)~(1) &=& \bigcup_{b \in R_1(1)} R_2(b) \\                               
+         &=& R_2(2) \cup R_2(3) \\                                                     
+         &=& \{1,3\} \cup \{ 1 \} \\                                                   
+         &=& \{ 1,3 \} \\                                                              
+(R_2 \circ R_1)~(2) &=& \{ 1,3 \} \\                                                   
+(R_2 \circ R_1)~(3) &=& \emptyset                                                      
+\end{array}\]
+In other words, 
+\[
+(R_2 \circ R_1) = \{(1,1), (1,3), (2,1), (2,3)\}
+\]
+\end{example}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Expressiveness} 
