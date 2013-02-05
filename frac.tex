@@ -120,9 +120,9 @@
   fractional type {{1/v}} represents \emph{negative} information. A
   higher-order function is modeled by a pair {{(1/v1,v2)}} with {{1/v1}}
   representing the needed argument and {{v2}} representing the
-  result. Fractional values can be freely propagated and transformed but must
-  ultimately --- in a complete program --- be offset by the corresponding
-  amount of positive information.
+  result. Fractional values are first-class: they can be freely propagated
+  and transformed but must ultimately --- in a complete program --- be offset
+  by the corresponding amount of positive information.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -133,19 +133,18 @@ communities (physics, mathematics, and computer science) towards replacing
 \emph{equalities} by \emph{isomorphisms}. The combined programme originating
 from these research areas has sparked a huge amount of research that unveiled
 new and surprising connections between geometry, algebra, logic, and
-computation (see \cite{baez2011physics} for an overview).
+computation (see~\cite{baez2011physics} for an overview).
 
-In the physics community, Landauer~\cite{Landauer:1961}, Feynman, and 
-others have interpreted the laws of
-physics as fundamentally related to computation. In more detail, the great
-majority of the laws of physics are formulated as equalities between
-different physical observables. For instance, Newton's second law of
-classical mechanics equates the force acting on a system to its rate of
-change of momentum. The insight of Landauer, Feynman, etc. is that
-\emph{different} physical observables should not be related by an
-\emph{equality} but more appropriately by an \emph{isomorphism} that
-witnesses, explains, and models the process of transforming one observable
-to the other. 
+In the physics community, Landauer~\cite{Landauer:1961}, Feynman, and others
+have interpreted the laws of physics as fundamentally related to
+computation. In more detail, the great majority of the laws of physics are
+formulated as equalities between different physical observables. For
+instance, Newton's second law of classical mechanics equates the force acting
+on a system to its rate of change of momentum. The insight of Landauer,
+Feynman, etc. is that \emph{different} physical observables should not be
+related by an \emph{equality} but more appropriately by an \emph{isomorphism}
+that witnesses, explains, and models the process of transforming one
+observable to the other.
 
 In the mathematics and logic community, Martin-L\"of developed an extension
 of the simply typed $\lambda$-calculus originally intended to provide a
@@ -326,14 +325,14 @@ evaluation of {{c v1}} produces {{v2}} iff the backwards evaluation of
 \jacques{Since we have Agda code for the above, should we refer to it
 here, and make it available?}
 
-Note that a small modification of {{lanRev}} (the addition of an
+Note that a small modification of {{langRev}} (the addition of an
 empty type {{0}} with its usual laws) would exactly capture, at the type
 level, the notion of \emph{semiring} (occasionally called a \emph{rig}) where
 we replace equality by isomorphism.  This can also be also compared to
 \emph{bimonoidal categories}.  As is usual with with type theories, the
 coherence conditions (pentagonal and triangle identity) are not explicit,
-but would correspond to certain identity types being trivial.  {{lanRev}}
-instead, at the type leve, models a commutative ringoid where the
+but would correspond to certain identity types being trivial.  {{langRev}}
+instead, at the type level, models a commutative ringoid where the
 multiplicative structure forms a commutative monoid, but the additive structure
 is just a commutative magma.  We chose not to include {{0}} as a technical
 convenience for the next section.
@@ -378,7 +377,7 @@ and positive information. Symmetrically, the combinator
 {{eps*_b : 1/b * b <-> 1}} matches up an equal amount of negative and positive
 information producing no residual information.  The best analogy is probably
 that of vectors and
-covectors, also know as column vectors and row vectors (respectively): in
+co-vectors, also know as column vectors and row vectors (respectively): in
 the finite dimensional case, they are isomorphic, but they are nevertheless
 quite different, being $(1,0)$ and $(0,1)$ tensors (respectively).  In
 other words, since we are explicitly interested in \emph{isomorphisms}, 
@@ -515,7 +514,7 @@ the backwards direction by supplying it with a value {{v2 : b2}}.
 % evalB ~eps*_b () &=& Union_{v in [[b]]} ~{[ (1/v,v) ]}
 \end{definition}
 
-The language {{langRevT}} is still logically reversible. 
+The language {{langRevTF}} is still logically reversible. 
 
 \begin{proposition}[Logical Reversibility]
 \label{chx:prop:logrev-tracep}
