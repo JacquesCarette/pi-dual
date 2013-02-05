@@ -389,33 +389,31 @@ values just because they happen to be isomorphic.
 
 Even though the categorical semantics of {{langRevTF}} is not the main focus
 of this paper, we find it helpful to briefly outline an interpretation of
-{{langRevTF}} in \emph{dagger compact closed categories}. These categories
-were introduced by Abramsky and
+{{langRevTF}} in \emph{biproduct dagger compact closed categories}. These
+categories were introduced by Abramsky and
 Coecke~\cite{Abramsky:2004:CSQ:1018438.1021878} and then by
-Selinger~\cite{Selinger:2007:DCC:1229185.1229207}. The simplest example of
-such categories is the category of finite sets and relations on which we
-focus.
+Selinger~\cite{Selinger:2007:DCC:1229185.1229207}. The bare definitions are
+collected in Appendix~\ref{app:cat}.
 
-We recall that a \emph{symmetric monoidal category} is a category together
-with a bifunctor $\otimes$, a distinguished object $I$, and natural
-isomorphisms $\alpha_{A,B,C} : (A \otimes B) \otimes C \rightarrow A \otimes
-(B \otimes C)$, $\lambda_A : A \rightarrow I \otimes A$, and $\sigma_{A,B} :
-A \otimes B \rightarrow B \otimes A$ subject to standard coherence
-conditions~\cite{nla.cat-vn1051288}. Following common practice
-(e.g.,~\cite{Selinger:2007:DCC:1229185.1229207}), we write $\rho_A =
-\sigma_{I,A} \circ \lambda_A : A \rightarrow A \otimes I$.
+The simplest example of such categories is the category of finite sets and
+relations on which we focus. To interpret {{langRevTF}} in this category, we
+associate a set with each type. For {{1}}, we associate a set with one
+element and we interpret {{*}} as the cartesian product and {{+}} as the
+disjoint union. For {{1/b}}, we associate the same set associated with {{b}}
+and hence, in our denotations, we identify {{b}} and {{1/b}} as well as {{v}}
+and {{1/v}}. It is intuitively clear that this category is compact closed as
+any relation between $A$ and $B$ can be represented as a finite set of type
+{{A * B}}. For example, consider the ``boolean negation'' relation:
 
-A \emph{compact closed category} is a symmetric monoidal category where each
-object $A$ is assigned a dual object $A^*$, together with a unit map $\eta_A
-: I \rightarrow A^* \otimes A$ and a counit map $\epsilon_A : A \otimes A^*
-\rightarrow I$, such that:
-\[\begin{array}{rcl}
-\lambda_A^{-1} \circ (\epsilon_A \otimes A) \circ \alpha_{A,A^*,A}^{-1} \circ (A \otimes \eta_A) \circ \rho_A &=& \mathit{id}_A \\
-\rho_{A^*}^{-1} \circ (A^* \otimes \epsilon_A) \circ \alpha_{A^*,A,A^*} \circ (\eta_A \otimes A^*) \circ \lambda_A &=& \mathit{id}_{A^*}
-\end{array}\]
+{{ {[ (1/left(), right()), (1/right (), left ()) ]} }}
+
+This is clearly isomorphic to the corresponding set of pairs. The map
+{{eta_b}} constructs the identity relation at type {{b}}. For example, {{eta_{1+1} }}
+is the relation:
+
+{{ {[ (1/(), (left(), left())), (1/(), (right(),right ())) ]} }}
 
 
-the category of finite sets and relations.
 
 give some intuition; example with eta/epsilon
 
@@ -1051,7 +1049,65 @@ results.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\appendix
+\section{Categorical Background}
+\label{app:cat} 
+
+We recall that a \emph{symmetric monoidal category} is a category together
+with a bifunctor $\otimes$, a distinguished object $I$, and natural
+isomorphisms $\alpha_{A,B,C} : (A \otimes B) \otimes C \rightarrow A \otimes
+(B \otimes C)$, $\lambda_A : A \rightarrow I \otimes A$, and $\sigma_{A,B} :
+A \otimes B \rightarrow B \otimes A$ subject to standard coherence
+conditions~\cite{nla.cat-vn1051288}. Following common practice
+(e.g.,~\cite{Selinger:2007:DCC:1229185.1229207}), we write $\rho_A =
+\sigma_{I,A} \circ \lambda_A : A \rightarrow A \otimes I$.
+
+A \emph{compact closed category} is a symmetric monoidal category where each
+object $A$ is assigned a dual object $A^*$, together with a unit map $\eta_A
+: I \rightarrow A^* \otimes A$ and a counit map $\epsilon_A : A \otimes A^*
+\rightarrow I$, such that:
+\[\begin{array}{rcl}
+\lambda_A^{-1} \circ (\epsilon_A \otimes A) \circ \alpha_{A,A^*,A}^{-1} \circ (A \otimes \eta_A) \circ \rho_A &=& \mathit{id}_A \\
+\rho_{A^*}^{-1} \circ (A^* \otimes \epsilon_A) \circ \alpha_{A^*,A,A^*} \circ (\eta_A \otimes A^*) \circ \lambda_A &=& \mathit{id}_{A^*}
+\end{array}\]
+
+A \emph{dagger category} is a category together with an involutive,
+identity-on-objects, contravariant functor $\dagger$. Concretely, this means
+that to every morphism $F : A \rightarrow B$, one associates a morphism
+$f^{\dagger} : B \rightarrow A$, called the \emph{adjoint} of $f$, such that
+for all $f : A \rightarrow B$ and $g : B \rightarrow C$, we have:
+\[\begin{array}{rcl}
+\mathit{id}^\dagger_A &=& \mathit{id}_A \\
+(g \circ f)^\dagger &=& f^\dagger \circ g^\dagger \\
+(f^dagger)^\dagger &=& f
+\end{array}\]
+
+A \emph{dagger symmetric monoidal category} is a symmetric monoidal category
+with a dagger structure such that the contravariant functor $\dagger$
+coherently preserves the symmetric monoidal structure. Concretely, this
+requirement means that for all $f : A \rightarrow B$ and $g : C \rightarrow
+D$, we have:
+\[\begin{array}{rcl}
+(f \otimes g)^\dagger &=& f^\dagger \otimes g^\dagger \\
+\alpha^\dagger_{A,B,C} &=& \alpha^{-1}_{A,B,C} \\
+\lambda^\dagger_A &=& \lambda^{-1}_A \\
+\sigma^\dagger_{A,B} &=& \sigma^{-1}{A,B}
+\end{array}\]
+
+\begin{definition}[Dagger Compact Closed Category]
+\label{def:cat}
+A \emph{dagger compact closed category} is a dagger symmetric monoidal
+category that is also compact closed and such that for all $A$:
+\[
+\eta_A = \sigma_{A,A^*} \circ \epsilon^\dagger_A
+\]
+\end{definition}
+
+\todo{biproducts}
+
 \bibliographystyle{splncs03} 
 \bibliography{cites}
 \end{document}
+
+
 
