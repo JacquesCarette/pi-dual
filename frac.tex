@@ -374,9 +374,10 @@ with an actual value {{left ()}} or as representing the absence of some
 information (i.e., \emph{negative information}), that can only be supplied by
 {{left ()}}. The combinator {{eta*_b : 1 <-> 1/b * b}} represents a fission
 point which creates --- out of no information --- an equal amount of negative
-and positive information. Symmetrically, the combinator {{eps*_b : 1/b * b <->
-1}} matches up an equal amount of negative and positive information producing 
-no residual information.  The best analogy is probably that of vectors and
+and positive information. Symmetrically, the combinator 
+{{eps*_b : 1/b * b <-> 1}} matches up an equal amount of negative and positive
+information producing no residual information.  The best analogy is probably
+that of vectors and
 covectors, also know as column vectors and row vectors (respectively): in
 the finite dimensional case, they are isomorphic, but they are nevertheless
 quite different, being $(1,0)$ and $(0,1)$ tensors (respectively).  In
@@ -415,9 +416,7 @@ object $A$ is assigned a dual object $A^*$, together with a unit map $\eta_A
 \end{array}\]
 
 
-
 the category of finite sets and relations.
-
 
 give some intuition; example with eta/epsilon
 
@@ -428,7 +427,7 @@ present formal semantics
 model using vector spaces; category of finite sets and relations; homotopy
 equivalence???
 
-\begin{definition}[Denotation of Types {{ [[b]] }}]
+\begin{definition}[Denotation of Value Types {{ [[b]] }}]
 \label{chx:def:denot}
 Each type denotes a set of values as follows:
 \[\begin{array}{rcl}
@@ -442,10 +441,10 @@ Each type denotes a set of values as follows:
 \end{array}\]
 \end{definition}
 
-The semantics of {{langRevTF}} is given using two mutually recursive
-interpreters: one going forward and one going backwards. Unlike the case for
-{{langRev}}, each combinator denotes a \emph{relation} and hence the result
-of applying a combinator to a value generally returns a \emph{set} of
+The operational semantics of {{langRevTF}} is given using two mutually
+recursive interpreters: one going forward and one going backwards. Unlike the
+case for {{langRev}}, each combinator denotes a \emph{relation} and hence the
+result of applying a combinator to a value generally returns a \emph{set} of
 values. 
 
 \begin{definition}[Operational semantics for {{langRevTF}}]
