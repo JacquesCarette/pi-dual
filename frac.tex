@@ -389,30 +389,46 @@ values just because they happen to be isomorphic.
 
 Even though the categorical semantics of {{langRevTF}} is not the main focus
 of this paper, we find it helpful to briefly outline an interpretation of
-{{langRevTF}} in \emph{biproduct dagger compact closed categories}. These
-categories were introduced by Abramsky and
-Coecke~\cite{Abramsky:2004:CSQ:1018438.1021878} and then by
-Selinger~\cite{Selinger:2007:DCC:1229185.1229207}. The bare definitions are
-collected in Appendix~\ref{app:cat}.
+{{langRevTF}} in the category of finite sets and relations. This category is
+an example of a \emph{biproduct dagger compact closed category} which are
+categories introduced by Abramsky and
+Coecke~\cite{Abramsky:2004:CSQ:1018438.1021878} and by
+Selinger~\cite{Selinger:2007:DCC:1229185.1229207} to model quantum
+computation.\footnote{The other common example of these categories is that of
+  finite dimensional Hilbert spaces.} The category intuitively supports
+higher-order relations as any relation between $A$ and $B$ can be represented
+as a subset of {{A * B}}, i.e., as a value. More generally, the two main
+features of these biproduct dagger compact closed categories are that they
+support an adjoint for each morphism (to model reversibility) and a notion of
+higher-order relation (built from the dagger which is modeled by our
+fractional types).
 
-The simplest example of such categories is the category of finite sets and
-relations on which we focus. To interpret {{langRevTF}} in this category, we
-associate a set with each type. For {{1}}, we associate a set with one
-element and we interpret {{*}} as the cartesian product and {{+}} as the
-disjoint union. For {{1/b}}, we associate the same set associated with {{b}}
-and hence, in our denotations, we identify {{b}} and {{1/b}} as well as {{v}}
-and {{1/v}}. It is intuitively clear that this category is compact closed as
-any relation between $A$ and $B$ can be represented as a finite set of type
-{{A * B}}. For example, consider the ``boolean negation'' relation:
+To interpret {{langRevTF}} in this category, we associate a finite set
+$\llbracket b \rrbracket$ with each type $b$ and a relation $\llbracket c
+\rrbracket$ with each combinator $c$. The denotation of types is
+straighforward: the denotation of {{1/b}} is an isomorphic copy of the
+denotation of {{b}}. 
 
-{{ {[ (1/left(), right()), (1/right (), left ()) ]} }}
+\begin{definition}[Denotation of Value Types {{ [[b]] }}]
+\label{chx:def:denot}
+Each type denotes a finite set of values as follows:
+\[\begin{array}{rcl}
+\llbracket 1 \rrbracket &=& \{ () \} \\
+\llbracket b_1 + b_2 \rrbracket &=& \{ \mathit{left}~v ~|~ v \leftarrow \llbracket b_1 \rrbracket \} \cup \{ \mathit{right}~v ~|~ v \leftarrow \llbracket b_2 \rrbracket \} \\
+\llbracket b_1 \times b_2 \rrbracket &=& \{ (v_1,v_2) ~|~ v_1 \leftarrow \llbracket b_1 \rrbracket, v_2 \leftarrow \llbracket b_2 \rrbracket \} \\
+\llbracket 1/b \rrbracket &=& \{ 1/v ~|~ v \leftarrow \llbracket b \rrbracket \} 
+\end{array}\]
+\end{definition}
 
-This is clearly isomorphic to the corresponding set of pairs. The map
-{{eta_b}} constructs the identity relation at type {{b}}. For example, {{eta_{1+1} }}
-is the relation:
+
+Give the denotation of a few combinators. The denotation of {{eta_{1+1} }} is
+the relation:
 
 {{ {[ (1/(), (left(), left())), (1/(), (right(),right ())) ]} }}
 
+Perhaps get rid of the semantics below and replace by a semantics which maps
+each combinator to a relation. This is probably clearer than the operational
+style.
 
 
 give some intuition; example with eta/epsilon
@@ -423,20 +439,6 @@ present formal semantics
 
 model using vector spaces; category of finite sets and relations; homotopy
 equivalence???
-
-\begin{definition}[Denotation of Value Types {{ [[b]] }}]
-\label{chx:def:denot}
-Each type denotes a set of values as follows:
-\[\begin{array}{rcl}
-\llbracket 1 \rrbracket &=& \{ () \} \\
-\llbracket \mathit{bool} \rrbracket &=& \{ \mathit{true}, \mathit{false} \} \\
-\llbracket b_1 + b_2 \rrbracket &=& \{ \mathit{left}~v ~|~ v \leftarrow \llbracket b_1 \rrbracket \}
-           \cup \{ \mathit{right}~v ~|~ v \leftarrow \llbracket b_2 \rrbracket \} \\
-\llbracket b_1 \times b_2 \rrbracket &=& \{ (v_1,v_2) ~|~ v_1 \leftarrow \llbracket b_1 \rrbracket, 
-           v_2 \leftarrow \llbracket b_2 \rrbracket \} \\
-\llbracket 1/b \rrbracket &=& \{ 1/v ~|~ v \leftarrow \llbracket b \rrbracket \} 
-\end{array}\]
-\end{definition}
 
 The operational semantics of {{langRevTF}} is given using two mutually
 recursive interpreters: one going forward and one going backwards. Unlike the
@@ -1047,7 +1049,14 @@ results.
 \section{Conclusion}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{splncs03} 
+\bibliography{cites}
+\end{document}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \appendix
 \section{Categorical Background}
@@ -1079,7 +1088,7 @@ for all $f : A \rightarrow B$ and $g : B \rightarrow C$, we have:
 \[\begin{array}{rcl}
 \mathit{id}^\dagger_A &=& \mathit{id}_A \\
 (g \circ f)^\dagger &=& f^\dagger \circ g^\dagger \\
-(f^dagger)^\dagger &=& f
+(f^\dagger)^\dagger &=& f
 \end{array}\]
 
 A \emph{dagger symmetric monoidal category} is a symmetric monoidal category
@@ -1104,10 +1113,3 @@ category that is also compact closed and such that for all $A$:
 \end{definition}
 
 \todo{biproducts}
-
-\bibliographystyle{splncs03} 
-\bibliography{cites}
-\end{document}
-
-
-
