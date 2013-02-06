@@ -454,6 +454,87 @@ the backwards direction by supplying it with a value {{v2 : b2}}.
 
 \paragraph*{Forward Evaluator:}
 
+%subcode{proof} include main
+%@ ~
+%@@ (left v) swap+ (right v)
+%
+%@ ~
+%@@ (right v) swap+ (left v)
+%----
+%@ ~
+%@@ (left v) assocl+ (left (left v))
+%
+%@ ~
+%@@ (right (left v)) assocl+ (left (right v))
+%
+%@ ~
+%@@ (right (right v)) assocl+ (right v)
+%----
+%@ ~
+%@@ (left (left v)) assocr+ (left v)
+%
+%@ ~
+%@@ (left (right v)) assocr+ (right (left v))
+%
+%@ ~
+%@@ (right v) assocr+ (right (right v))
+%----
+%@ ~
+%@@ ((), v) unite v
+%
+%@ ~
+%@@ v uniti ((), v)
+%----
+%@ ~
+%@@ (v1, v2) swap* (v2, v1)
+%----
+%@ ~
+%@@ (v1, (v2, v3)) assocl* ((v1, v2), v3)
+%
+%@ ~
+%@@ ((v1, v2), v3) assocr* (v1, (v2, v3))
+%----
+%@ ~
+%@@ (left v1, v3) dist (left (v1, v3))
+%
+%@ ~
+%@@ (right v2, v3) dist (right (v2, v3))
+%----
+%@ ~
+%@@ (left (v1, v3)) factor (left v1, v3)
+%
+%@ ~
+%@@ (right (v2, v3)) factor (right v2, v3)
+%----
+%@ ~
+%@@ v id v
+%
+%@ v' c v
+%@@ v (sym c) v'
+%----
+%@ v1 c1 v2
+%@ v2 c2 v3
+%@@ v1 (c1(;)c2) v3
+%
+%@ v c1 v'
+%@@ (left v) (c1 (+) c2) (left v')
+%
+%@ v c2 v'
+%@@ (right v) (c1 (+) c2) (right v')
+%----
+%@ v1 c1 v1'
+%@ v2 c2 v2'
+%@@ (v1, v2) (c1 (*) c2) (v1', v2')
+%----
+%@ v in [[b]]
+%@@ () ~eta*_b (1/v,v)
+%
+%@ ~
+%@@ (1/v,v) ~eps*_b ()
+
+
+
+
 %subcode{opsem} include main
 %! columnStyle = rcl
 % evalF swap+ (left v) &=& {[ right v ]}
@@ -538,7 +619,7 @@ An interesting point to ponder is what happens to \emph{information}
 in circuits like {{annihilate}}? We return to this point later.
 
 As hinted to in the first section, the semantics of fractional types introduces
-a form of non-determinism in the sense that there could zero, one, or several
+a form of non-determinism in the sense that there could be zero, one, or several
 values that satisfy the constraints imposed by fractional values. To model
 such non-determinism, we specify the semantics using \emph{relations}. In
 other words, the results of {{evalF c v}} or {{evalB c v}} are no longer
