@@ -1,0 +1,1462 @@
+% Created 2010-09-18 Sat 17:30
+
+\documentclass[svgnames,11pt]{beamer}
+
+%\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{amsmath}
+\usepackage{mdwlist}
+\usepackage{txfonts}
+\usepackage{xspace}
+\usepackage{amstext}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{proof}
+\usepackage{multicol}
+\usepackage[colon]{natbib}
+\usepackage[nodayofweek]{datetime}
+\usepackage{etex}
+\usepackage[all, cmtip]{xy}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\xcomment}[2]{\textbf{#1:~\textsl{#2}}}
+\newcommand{\amr}[1]{\xcomment{Amr}{#1}}
+\newcommand{\roshan}[1]{\xcomment{Roshan}{#1}}
+
+\newcommand{\arrow}[1]{{\color{blue}{#1}}}
+\newcommand{\red}[1]{{\color{red}{#1}}}
+\newcommand{\timesarr}{\otimes}
+\newcommand{\plusarr}{\oplus}
+\newcommand{\lcal}{\ensuremath{\lambda}-calculus\xspace}
+
+\def\newblock{}
+
+
+\newenvironment{floatrule}
+    {\hrule width \hsize height .33pt \vspace{.5pc}}
+    {\par\addvspace{.5pc}}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%subcode-inline{bnf-inline} name langRev
+%! swap+ = \mathit{swap}^+
+%! swap* = \mathit{swap}^*
+%! dagger =  ^{\dagger}
+%! assocl+ = \mathit{assocl}^+
+%! assocr+ = \mathit{assocr}^+
+%! assocl* = \mathit{assocl}^*
+%! assocr* = \mathit{assocr}^*
+%! identr* = \mathit{uniti}
+%! identl* = \mathit{unite}
+%! identr+ = \mathit{zeroi}
+%! identl+ = \mathit{zeroe}
+%! dist = \mathit{distrib}
+%! factor = \mathit{factor}
+%! eta = \eta
+%! eps = \epsilon
+%! eta+ = \eta^+
+%! eps+ = \epsilon^+
+%! eta* = \eta^{\times}
+%! eps* = \epsilon^{\times}
+%! (o) = \fatsemi
+%! (;) = \fatsemi
+%! (*) = \times
+%! (+) = +
+
+
+%subcode-inline{bnf-inline} name langArr
+%! arr = \arrow{arr}
+%! >>> = ~\arrow{\ggg\xspace}~
+%! *** = ~\arrow{\otimes}~
+%! +++ = ~\arrow{\oplus}~
+%! create = \arrow{create}
+%! erase = \arrow{erase}
+%! afirst = \arrow{first}
+%! asecond = \arrow{second}
+%! aleft = \arrow{left}
+%! atrace = \arrow{traceA}
+%! fstA = \arrow{fstA}
+%! sndA = \arrow{sndA}
+%! leftA = \arrow{leftA}
+%! rightA = \arrow{rightA}
+%! |-->>* = \mapsto_{\mathsf{ML}}^{\ast}
+%! |-->> = \mapsto_{\mathsf{ML}}
+
+
+%subcode-inline{bnf-inline} regex \{\{(((\}[^\}])|[^\}])*)\}\} name main include langRev, langArr
+%! Gx = \Gamma^{\times}
+%! G = \Gamma
+%! |-->* = \mapsto^{\ast}
+%! |-->> = \mapsto_{\ggg}
+%! |-->let = \mapsto_{let}
+%! |--> = \mapsto
+%! |- = \vdash
+%! ==> = \Longrightarrow
+%! <=> = \Longleftrightarrow
+%! <--> = \rightleftharpoons
+%! <-> = \leftrightarrow
+%! ~~> = \rightharpoonup
+%! ~> = \leadsto
+%! ::= = &::=&
+%! /= = \neq
+%! trans = \mathcal{T}
+%! trans1 = \mathcal{T}_1
+%! trans2 = \mathcal{T}_2
+%! forall = \forall
+%! exists = \exists
+%! empty = \epsilon
+%! least = \phi
+%! {[ = \{
+%! ]} = \}
+%! bottom = \bot
+%! alpha = \alpha
+%! beta = \beta
+%! rho = \rho
+%! dagger = ^\dagger
+%! @@ = \mu
+%! STLC = \lambda^{\rightarrow}
+%! STLClet = \textsf{LET}
+%! STLCfor = \textsf{LET}^{o}
+%! langArr = \textsf{ML}_{\Pi}
+%! langArrT = \textsf{ML}_{\Pi^o}
+%! Pi = \Pi
+%! Pi0 = \Pi^{o}
+%! PiEE = \Pi^{\eta\epsilon}
+%! if = \mathbf{if}
+%! do = \mathbf{do}
+%! then = \mathbf{then}
+%! else = \mathbf{else}
+%! elem = \in
+%! * = \times
+
+\newcommand{\dgm}[2][1.5]{
+\begin{center}
+\scalebox{#1}{
+\includegraphics{../diagrams/thesis/#2.pdf}
+}
+\end{center}
+}
+
+\newcommand{\iso}[2][1.5]{
+\begin{center}
+\scalebox{#1}{
+\includegraphics{diagrams/#2.pdf}
+}
+\end{center}
+}
+
+\newcommand{\rat}[2][1.0]{
+\begin{center}
+\scalebox{#1}{
+\includegraphics{../diagrams/#2.pdf}
+}
+\end{center}
+}
+
+
+\usetheme{CambridgeUS}
+%\usetheme{Boadilla}
+%\usecolortheme{crane}
+
+\title{Isomorphic Interpreters from Logically Reversible Abstract Machines}
+% \subtitle{Work done with Amr Sabry}
+\author{Roshan P. James and Amr Sabry}
+\institute[IU]{
+  School of Informatics and Computing \\
+  Indiana University.\\
+  \texttt{rpjames@indiana.edu},
+  \texttt{sabry@indiana.edu}
+}
+
+\date{2 July 2012}
+
+\begin{document}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\maketitle
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Context}
+\vfill
+
+  \begin{enumerate}
+  \item Dagger Traced Symmetric Monoidal Categories and Reversible Computation (Wip RC, 2011)
+  \item Information Effects (POPL, 2012)
+  \end{enumerate}
+
+\vfill
+
+Established the following:
+  \begin{itemize}
+  \item The computational model {{Pi0}}.
+  \item The idea that computation can preserve information/entropy.
+  \item Information effects can be encapsulated by  a type-and-effect system. 
+  \item Simple semantics, categorical connections, Turing complete.. etc.
+  \end{itemize}
+\vfill
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Context}
+
+  \begin{itemize}
+  \item {{Pi0}} is logically reversible by construction.  
+    \begin{itemize}
+    \item Reversibility is not added to an irreversible model.
+    \item It does not arise from compilation.
+    \item .. nor from tracking history/undo information.
+    \item .. nor from application specific predicates on branch and join points. 
+    \end{itemize}
+  \end{itemize}
+
+  \vfill
+  \pause
+  But there is a problem:
+
+  \vfill
+  \pause 
+
+  \begin{center}
+    \red{It's not obvious how to write any interesting programs in {{Pi0}}. }
+  \end{center}
+  \vfill
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+Here is a simple program.
+\vfill  
+
+  \dgm{b-wire}
+
+\vfill
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+It is well-typed. Its type is {{b <-> b}}.
+\vfill  
+
+  \dgm{b-wire}
+
+\vfill
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+Here is how you run it. 
+\vfill  
+
+  \dgm{b-wire-value}
+
+\vfill
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+Here is another simple program of type {{b1*b2<->b1*b2}}.
+\vfill  
+
+  \dgm{product-one-wire}
+
+\vfill
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+Here is how you run it. 
+\vfill  
+
+  \dgm{product-one-wire-value}
+
+\vfill
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+Here is the same program {{b1*b2<->b1*b2}}.
+\vfill  
+
+  \dgm{product-two-wires}
+
+\vfill
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+Here is how you run it. 
+\vfill  
+
+  \dgm{product-two-wires-value}
+
+\vfill
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+\vfill  
+
+The programs so far were rather boring. 
+
+\vfill
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+Here is a more interesting program. ({{b1*b2<->b2*b1}})
+\vfill  
+
+  \dgm{swap_times}
+
+\vfill
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+Here is how you run it. ({{b1*b2<->b2*b1}})
+\vfill  
+
+  \dgm{swap_times_value}
+
+\vfill
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+Shuffle some booleans. ({{bool*bool*bool<->bool*bool*bool}})
+\vfill  
+
+  \dgm{reverse-3-bit}
+
+\vfill
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+Something different. ({{b1+b2 <-> b1+b2 }})
+\vfill  
+
+  \dgm{sum-two-wires}
+
+\vfill
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+Let's run it. ({{b1+b2 <-> b1+b2 }})
+\vfill  
+
+  \dgm{sum-two-wires-left-value}
+
+\vfill
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+We can have a value on only one of the two wires. ({{b1+b2 <-> b1+b2 }})
+\vfill  
+
+  \dgm{sum-two-wires-left-value}
+
+\vfill
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+Run it with a value on the other wire. ({{b1+b2 <-> b1+b2 }})
+\vfill  
+
+  \dgm{sum-two-wires-right-value}
+
+\vfill
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+It can be drawn as just one wire. ({{b1+b2 <-> b1+b2 }})
+\vfill  
+
+  \dgm{sum-one-wire}
+
+\vfill
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+Another swapping program. ({{b1+b2 <-> b2+b1 }})
+\vfill  
+
+  \dgm{swap_plus}
+
+\vfill
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+Another swapping program. ({{b1+b2 <-> b2+b1 }})
+\vfill  
+
+  \dgm{swap_plus_value}
+
+\vfill
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+One special triangular box. ({{(b1+b2)*b3<->(b1*b3)+(b2*b3)}})
+\vfill  
+
+  \dgm{dist}
+
+\vfill
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+One possible execution. {{(b1+b2)*b3<->(b1*b3)+(b2*b3)}}
+\vfill  
+
+  \dgm{dist-wire-value1}
+
+\vfill
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A New Model of Computation}
+Another possible execution. {{(b1+b2)*b3<->(b1*b3)+(b2+b3)}}
+\vfill  
+
+  \dgm{dist-wire-value2}
+
+\vfill
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Values and their Types}
+Take {{bool}}, {{true}} and {{false}} as {{1+1}}, {{left()}}, {{right ()}}
+\vfill
+
+\dgm{if-c1-c2}
+
+\vfill
+\pause
+This is a conditional statement, like {{if}}.
+\end{frame}
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \begin{frame}[fragile]{Values and their Types}
+%% The universal reversible Toffoli gate. 
+%% \vfill
+
+%% \dgm{toffoli}
+
+%% \vfill
+%% Complete for boolean circuits.
+%% \end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{ Trace }
+
+Loops, Cancellation Law, Categorical Trace 
+
+\dgm{trace_plus}
+
+%subcode{proof} include main
+%@ c : b1 + b2 <--> b1 + b3
+%@@ trace c : b2 <--> b3  
+
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{ Trace Example }
+
+\dgm{trace-example0}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{ Trace Example }
+
+\dgm{trace-example1}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{ Trace Example }
+
+\dgm{trace-example2}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{ Trace Example }
+
+\dgm{trace-example3}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{ Trace Example }
+
+\dgm{trace-example4}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{ Trace Example }
+
+\dgm{trace-example5}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{ Trace Example }
+
+\dgm{trace-example6}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{ Trace Example }
+
+\dgm{trace-example7}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Values and their Types}
+So lets talk about the types. Here is one model. 
+
+\vfill
+\begin{block}
+
+types = 0, 1, 2, 3, 4, ...   
+\end{block}
+
+
+\vfill
+Values that inhabit types:
+
+\begin{block}
+  
+0 = \{\}
+
+1 = \{o\}
+
+2 = \{o, o\}
+
+3 = \{o, o, o\}
+\end{block}
+
+\vfill
+\pause
+Now it would be convenient to give values names so that we know which
+`o' we are talking about.
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Values and their Types}
+Hijack some good notation:
+
+\vfill
+\begin{block}
+
+  {{ types, b = 0 ~|~ 1 ~|~ b + b ~|~ b * b }}
+
+\end{block}
+
+\vfill
+This gives us all the types 0, 1, 2, 3 ... 
+
+\vfill
+\pause
+
+\begin{enumerate}
+\item 
+{{() elem 1}}
+
+\vfill
+\pause
+\item 
+{{(v1, v2) elem b1*b2}} \pause if {{v1 elem b1}} and {{v2 elem b2}}
+
+\vfill
+\pause
+\item 
+{{left v elem b1+b2}} if {{v elem b1}}
+
+{{right v elem b1+b2}} if {{v elem b2}}
+
+\end{enumerate}
+
+\pause
+
+%subcode{proof} include main
+%@ ~
+%@@ |- () : 1
+%
+%@ |- v1 : b1
+%@ |- v2 : b2
+%@@ |- (v1, v2) : b1 * b2
+%
+%@ |- v : b1
+%@@ |- left v  : b1 + b2
+%
+%@ |- v : b2
+%@@ |- right v : b1 + b2  
+
+
+
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{ Recursive types : Nat }
+
+%subcode{bnf} include main 
+%!language = Haskell
+% data Nat = Zero | Succ Nat
+
+\begin{block}
+
+  \begin{center}
+    {{nat = @@x.(1+x)}}
+
+  \end{center}
+
+\end{block}
+
+%subcode{opsem} include main
+%! columnStyle = ||c|c|c||
+% {@1@ Nat @} & {@1@ nat @} & {@1@ numeric @}
+% Zero & <left ()> & 0 
+% Succ Zero & <right <left ()> > & 1
+% Succ (Succ Zero) & <right <right <left ()> > > & 2
+% ... & ... & ...
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{ Recursive types : Nat }
+
+%subcode{bnf} include main 
+%!language = Haskell
+% data Nat = Zero | Succ Nat
+
+
+  \begin{center}
+    {{nat = @@x.(1+x)}}
+    
+    \vfill
+
+    {{unfold : nat <--> 1 + nat : fold }}
+  \end{center}
+
+
+\vfill
+
+\iso{unfold_nat}
+
+\vfill
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{ Recursive types : Binary Trees }
+
+%subcode{bnf} include main 
+%!language = Haskell
+% data Tree = Leaf | Node Tree Tree
+
+
+  \begin{center}
+    {{tree, t = @@x.(1+x*x)}}
+    
+    \vfill
+
+    {{unfold : t <--> 1 + t*t : fold }}
+  \end{center}
+
+
+\vfill
+
+\iso{unfold_tree}
+
+\vfill
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Values and their Types}
+
+\vfill
+\begin{block}
+
+  {{ types, b = 0 ~|~ 1 ~|~ b + b ~|~ b * b ~|~ x ~|~ @@x.b }}
+
+  {{ values, v = () ~|~ (v, v) ~|~ left v ~|~ right v ~|~ <v> }}
+
+\end{block}
+
+\vfill
+%subcode{proof} include main
+%@ ~
+%@@ |- () : 1
+%
+%@ |- v1 : b1
+%@ |- v2 : b2
+%@@ |- (v1, v2) : b1 * b2
+%----
+%@ |- v : b1
+%@@ |- left v  : b1 + b2
+%
+%@ |- v : b2
+%@@ |- right v : b1 + b2  
+%----
+%@ |- v : b[@@x.b/x]
+%@@ |- <v>  : @@x.b
+
+\vfill
+
+\end{frame}
+
+
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \begin{frame}[fragile]{Values and their Types: Isorecursive types}
+
+%% nat = {0, 1, 2, 3... }
+
+%% \begin{multicols}{2}
+%% {{data Nat = Zero ~|~ Succ Nat}}
+
+%% {{0 = Zero}}
+
+%% {{1 = Succ Zero}}
+
+%% {{2 = Succ (Succ Zero)}}
+
+%% \columnbreak
+%% {{nat = @@x.(1+x)}}
+
+%% {{0 = <left ()>:nat}}
+
+%% {{1 = <right <left ()>>:nat}}
+
+%% {{2 = <right <right <left ()>> > :nat}}
+
+%% \end{multicols}
+
+%% \vfill
+
+%% \iso{unfold_nat}
+
+%% \vfill
+
+%% \end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Wires}
+
+What are the rules that determine how wires can be drawn? 
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Wires : Monoids}
+
+  \begin{block}{Commutative Monoid: {{(1, *)}} }
+    
+%subcode{bnf} include main
+% 1 * b &<->& b // identity for~ *
+% b1 * b2 &<->& b2 * b1 // commutativity for~ *
+% b1 * (b2 * b3) &<->& (b1 * b2) * b3 //associativity for~ *
+
+  \end{block}
+
+\pause
+
+\begin{multicols}{2}
+\dgm[0.7]{unite}
+\dgm[0.7]{uniti}  
+\end{multicols}
+
+
+\begin{multicols}{2}
+\dgm[0.7]{swap_times}
+
+\dgm[0.7]{assoc}  
+\end{multicols}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Wires : Two Monoids}
+
+
+  \begin{block}{Commutative Monoid: {{(1, *)}} }
+    
+%subcode{bnf} include main
+% 1 * b &<->& b // identity for~ *
+% b1 * b2 &<->& b2 * b1 // commutativity for~ *
+% b1 * (b2 * b3) &<->& (b1 * b2) * b3 //associativity for~ *
+
+  \end{block}
+
+  \begin{block}{Commutative Monoid: {{(0, +)}} }
+
+%subcode{bnf} include main
+% 0 + b&<->& b // identity for~ +
+% b1 + b2 &<->& b2 + b1 // commutativity for~ +
+% b1 + (b2 + b3) &<->& (b1 + b2) + b3 // associativity for~ +
+
+  \end{block}
+
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{ Isomorphisms of Finite Types }
+
+
+  \begin{block}{ Primitive Combinators }
+    
+%subcode{bnf} include main
+% 1 * b &<->& b // identity for~ *
+% b1 * b2 &<->& b2 * b1 // commutativity for~ *
+% b1 * (b2 * b3) &<->& (b1 * b2) * b3 //associativity for~ *
+
+
+%subcode{bnf} include main
+% 0 + b&<->& b // identity for~ +
+% b1 + b2 &<->& b2 + b1 // commutativity for~ +
+% b1 + (b2 + b3) &<->& (b1 + b2) + b3 // associativity for~ +
+
+%subcode{bnf} include main
+% 0 *b &<->& 0  // distribute over~ 0
+% (b1 + b2) * b3 &<->& (b1 * b3) + (b2 * b3) // distribute over~ +
+
+  \end{block}
+
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{ Rules for Composing Wires }
+
+%% \begin{block}
+
+%%   {{ types, b = 0 ~|~ 1 ~|~ b + b ~|~ b * b }}
+
+%% \end{block}
+
+
+\dgm{c1c2_seq}
+
+\begin{multicols}{2}
+\dgm{c1c2_par_times}
+
+\dgm{c1c2_par_sum}  
+\end{multicols}
+
+
+\begin{block}{ Closure }
+
+%subcode{proof} include main
+%@ b1 <-> b2
+%@ b2 <-> b3
+%@@ b1 <-> b3
+%
+%@ b1 <-> b3
+%@ b2 <-> b4
+%@@ (b1 * b2) <-> (b3 * b4)
+%
+%@ b1 <-> b3
+%@ b2 <-> b4
+%@@ (b1 + b2) <-> (b3 + b4) 
+
+\end{block}
+
+
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{ Type Isomorphisms and Trace : {{Pi0}} }
+
+%\begin{block}{Primitive operators and their composition}
+
+{\scriptsize
+%Primitive operators and their composition:
+
+
+%subcode{bnf} include main
+% base types, b ::= 0 | 1 | b+b | b*b | x | @@x.b
+% values, v ::= () | left v | right v | (v, v) | <v>
+
+
+
+%subcode{opsem} include main
+%! columnStyle = rrcll
+%
+% {@1@ unfold @}:& @@x.b  &<->& b[@@x.b/x] &: {@1@fold @}
+%
+% {@1@ identl+ @}:&  0 + b &<->& b &: {@1@identr+ @}
+% {@1@ swap+ @}:&  b1 + b2 &<->& b2 + b1 &: {@1@swap+ @}
+% {@1@ assocl+ @}:&  b1 + (b2 + b3) &<->& (b1 + b2) + b3 &: {@1@assocr+ @}
+%
+% {@1@ identl* @}:&  1 * b &<->& b &: {@1@identr* @}
+% {@1@ swap* @}:&  b1 * b2 &<->& b2 * b1 &: {@1@swap* @}
+% {@1@ assocl* @}:&  b1 * (b2 * b3) &<->& (b1 * b2) * b3 &: {@1@assocr* @}
+%
+% {@1@ dist0 @}:&  0 *b &<->& 0  &: {@1@factor0 @}
+% {@1@ dist @}:& (b1 + b2) * b3 &<->& (b1 * b3) + (b2 * b3) &: {@1@factor @}
+
+%subcode{proof} include main
+%@  ~
+%@@ {@1@ id @}: b <-> b 
+%
+%@ {@1@ c @}: b1 <-> b2
+%@@ {@1@ sym c @}: b2 <-> b1
+%
+%@ {@1@ c1 @}: b1 <-> b2
+%@ {@1@ c2 @}: b2 <-> b3
+%@@ {@1@ (c1(;)c2) @}: b1 <-> b3
+%---
+%@ {@1@ c1 @}: b1 <-> b3
+%@ {@1@ c2 @}: b2 <-> b4
+%@@ {@1@ (c1 (+) c2) @}: (b1 + b2) <-> (b3 + b4)
+%
+%@ {@1@ c1 @}: b1 <-> b3
+%@ {@1@ c2 @}: b2 <-> b4
+%@@ {@1@ (c1 (*) c2) @}: (b1 * b2) <-> (b3 * b4)
+%
+%@ {@1@ c @}: b1 + b2 <-> b1 + b3
+%@@ {@1@ trace c @}: b2 <-> b3
+}
+%\end{block}
+
+
+\end{frame}
+
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{ An Example }
+
+% A programming language emerges:
+
+%% \begin{block}
+
+%% %subcode{bnf} include main 
+%% % base types, b ::= 0 | 1 | b+b | b*b | x | @@x.b
+%% % combinator types, t ::= b <-> b
+%% % values, v ::= () | left v | right v | (v,v) | <v>
+%% %
+%% % isomorphisms, iso ::= swap+ | assocl+ | assocr+ | zeroe | zeroi
+%% %                   &|& swap* | assocl* | assocr* | identl* | identr* 
+%% %                   &|& dist | factor | id | fold | unfold
+%% % combinators, c ::= iso | sym c | c (;) c | c (*) c | c (+) c | trace c
+
+%% \end{block}
+
+\vfill
+{{if = dist(;)((id(*)c1)(+)(id(*)c2))(;)factor}}
+\vfill
+
+\dgm{if-c1-c2}
+
+
+\vfill
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{ Problem }
+
+\begin{center}
+  \vfill
+  How do we build programs in {{Pi0}}?
+
+  \vfill
+  \pause
+  Compile \red{small-step operational semantics} to {{Pi0}}.
+\end{center}
+\vfill
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{ Problem }
+
+\begin{center}
+  \vfill
+  How do we build programs in {{Pi0}}?
+
+  \vfill
+  Compile \red{logically reversible} small-step operational semantics to {{Pi0}}.
+\end{center}
+\vfill
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{ Simple Abstract Machine }
+
+\begin{center}
+
+\vfill
+
+{{n,m = 0 ~|~ n + 1 }}
+
+\vfill
+{{<n+1, m> |--> <n, m+1>}}
+
+\vfill
+\begin{enumerate}
+\item Machine states {{<n, n>}}
+\item Start state {{<n, 0>}}
+\item Stop state {{<0, n>}}
+\item Logically reversible
+\end{enumerate}
+
+\end{center}
+
+\vfill
+
+\begin{center}
+  {{<3, 0>}}
+  {{|--> <2, 1>}}
+  {{|--> <1, 2>}}
+  {{|--> <0, 3>}}
+\end{center}
+\vfill
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Goal}
+
+  \begin{center}
+    Translate the abstract machine to a {{Pi0}} circuit. 
+  \end{center}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Start by examining the machine states}
+
+\vfill
+
+\begin{center}
+  {{<n+1, m> |--> <n, m+1>}}
+\end{center}
+
+\vfill
+\pause
+
+\iso[0.9]{nat-nat2}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Start by examining the machine states}
+
+\vfill
+
+\begin{center}
+  {{<n+1, m> |--> <n, m+1>}}
+\end{center}
+
+\vfill
+
+\iso[0.8]{nat-nat3}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Start by examining the machine states}
+
+\vfill
+
+\begin{center}
+  {{<n+1, m> |--> <n, m+1>}}
+\end{center}
+
+\vfill
+
+\iso[0.8]{nat-nat4}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Reductions maps input states to output states}
+
+\vfill
+
+\begin{center}
+  {{<n+1, m> |--> <n, m+1>}}
+\end{center}
+
+\vfill
+{{<n, m>}} becomes {{<n', m'>}}
+
+Equations:
+
+{{n' = n-1}}
+
+{{m' = m + 1}}
+
+\vfill
+
+\pause
+
+\iso[0.8]{nat-nat4}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Reductions maps input states to output states}
+
+\vfill
+
+\begin{center}
+  {{<n+1, m> |--> <n, m+1>}}
+\end{center}
+
+\vfill
+{{<n, m>}} becomes {{<n', m'>}}
+
+Equations:
+
+{{n' = n-1}}
+
+{{m' = m + 1}}
+
+\vfill
+
+
+\iso[0.8]{nat-nat5}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Start and stop states}
+
+\iso[0.8]{nat-nat5}
+
+\vfill
+\begin{enumerate}
+\item Start state {{<n, 0>}}
+\item Stop state {{<0, n>}}
+\end{enumerate}
+
+\pause
+
+\begin{center}
+  We need to expose the start and stop states. 
+\end{center}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Start and stop states}
+
+\iso[0.8]{nat-nat5}
+
+
+\vfill
+  \begin{itemize}
+  \item Given a start state {{<n, 0>}}
+\vfill
+  \item Produce an output state {{<0, n>}}
+\vfill
+  \item All the other {{<n, m>}} states are internal, intermediate... 
+  \end{itemize}
+\vfill
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Exposing start and stop states}
+
+\iso[0.75]{nat-nat5}
+
+\pause
+\iso[0.75]{nat-nat6}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Exposing start and stop states}
+
+\iso[0.70]{nat-nat6}
+
+\pause
+\iso[0.70]{nat-nat7}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Exposing start and stop states}
+
+\iso[0.75]{nat-nat7}
+
+\pause
+\iso[0.75]{nat-nat8}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Completed {{Pi0}} program}
+
+\vfill
+  \begin{center}
+    {{<n+1, m> |--> <n, m+1>}}
+  \end{center}
+
+\vfill
+\iso[0.9]{nat-nat8}
+\vfill
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Another Simple Machine : Stuck States}
+
+\vfill
+
+\begin{block}
+
+  \begin{center}
+    {{<n+1, m, p> |--> <n, m+1, p+1>}}
+
+    Start {{<n, m, 0>}}
+
+    Stop {{<0, m, p>}}
+
+  \end{center}
+\end{block}
+\vfill
+
+\begin{itemize}
+\item 
+Acts like an adder:
+ {{<n, m, 0> |-->* <0, m+n, n>}} 
+
+\pause
+\item
+Problem: ``stuck states'' on reverse execution:
+{{<0, 1, 2> |--> <1, 0, 1> |--> ? }}
+
+\end{itemize}
+
+\vfill
+\iso[0.7]{adder3}
+\vfill
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Compile Abstract Machines to {{Pi0}} }
+For example, a meta-circular interpreter for {{Pi0}}
+
+  \begin{scriptsize}
+    
+%subcode{bnf} include main
+% Combinators, c = iso | c (;) c | c (*) c | c (+) c | trace c
+% Combinator Contexts, cc = [] | Fst cc c | Snd c cc 
+%                  &|& LeftTimes cc c v | RightTimes c v cc 
+%                  &|& LeftPlus cc c | RightPlus c cc | Trace cc
+% Values, v = () | (v, v) | L v | R v
+
+%
+% Machine states = <c, v, cc> | {[c, v, cc]}
+% Start state = <c, v, []> 
+% Stop State = {[c, v, []]}
+
+
+%subcode{opsem} include main
+%! columnStyle = rclr
+% <iso, v, cc> &|-->& {[iso, iso(v), cc]} &~~~~~~~~~~~~ rule 1
+% <c1(;)c2, v, cc> &|-->& <c1, v, Fst cc c2> &~~~~~~~~~~~~ rule 2
+% {[c1, v, Fst cc c2]} &|-->& <c2, v, Snd c1 cc> &~~~~~~~~~~~~ rule 3
+% {[c2, v, Snd c1 cc]} &|-->& {[ c1(;)c2, v, cc ]} &~~~~~~~~~~~~ rule 4
+% <c1(+)c2, L v, cc> &|-->& <c1, v, LeftPlus cc c2> &~~~~~~~~~~~~ rule 5
+% {[ c1, v, LeftPlus cc c2 ]} &|-->& {[c1 (+) c2, L v, cc ]} &~~~~~~~~~~~~ rule 6
+% <c1(+)c2, R v, cc> &|-->& <c2, v, RightPlus c1 cc> &~~~~~~~~~~~~ rule 7
+% {[ c2, v, RightPlus c1 cc ]} &|-->& {[c1 (+) c2, R v, cc ]} &~~~~~~~~~~~~ rule 8
+% <c1(*)c2, (v1, v2), cc> &|-->& <c1, v1, LeftTimes cc c2 v2> &~~~~~~~~~~~~ rule 9
+% {[ c1, v1, LeftTimes cc c2 v2 ]} &|-->& <c2, v2, RightTimes c1 v1 cc> &~~~~~~~~~~~~ rule 10
+% {[ c2, v2, RightTimes c1 v1 cc ]} &|-->& {[ c1 (*) c2, (v1, v2), cc ]} &~~~~~~~~~~~~ rule 11
+% < trace c, v, cc> &|-->& <c, R v, Trace cc> &~~~~~~~~~~~~ rule 12
+% {[c, L v, Trace cc]} &|-->& <c, L v, Trace cc> &~~~~~~~~~~~~ rule 13
+% {[c, R v, Trace cc]} &|-->& {[trace c, R v, cc]} &~~~~~~~~~~~~ rule 14
+
+  \end{scriptsize}
+
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{ {{Pi0}} examples : Metacircular Evaluator}
+
+\iso[0.7]{pi0-2}
+
+\begin{scriptsize}
+  (See ``Isomorphic Interpreters'', RC 2012)
+\end{scriptsize}
+\end{frame}
+
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Steps}
+
+  \begin{enumerate}
+\vfill
+\item Expand the input and output machine states.
+\vfill
+\item Make choices about stuck states. 
+\vfill
+\item Connect related machine states based on the reduction rules.
+\vfill
+\item Expose start and stop states. 
+  \end{enumerate}
+\vfill
+
+\end{frame}
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Overview}
+
+  \begin{enumerate}
+\vfill
+  \item Systematic translation
+\vfill
+  \item Applies to logically reversible small-step abstract machines
+    \begin{enumerate}
+    \item Clear start and stop states
+    \item Each reduction rule must be reversible
+    \item Stuck states.
+    \end{enumerate}
+\vfill
+  \item Scales well to large machines
+    \begin{enumerate}
+    \item Small examples with numbers
+    \item Tree traversal
+    \item Metacircular interpreter for {{Pi0}}
+    \end{enumerate}
+
+  \end{enumerate}
+\vfill
+
+\end{frame}
+
+
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Open Question}
+
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Challenge}
+
+\pause
+  \begin{center}
+    \red{Can we implement {{Pi0}} in hardware? }
+  \end{center}
+
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Challenge : Thoughts}
+
+\begin{itemize}
+
+\vfill
+\item What is {{Pi0}}? 
+  \begin{itemize}
+  \item Lots of wires... and shuffling
+  \item Distribute/Factor = Mux/Demux -- i.e. no transistors. 
+  \item Trace = Feedback loops
+  \end{itemize}
+
+\vfill
+\item Types? 
+  \begin{itemize}
+  \item Information carrying content of wires
+  \item Some sort of ``fidelity''
+  \end{itemize}
+
+\vfill
+\item Example. Superconductivity
+  \begin{itemize}
+  \item SQUID
+  \item Rapid Single Flux Quantum MUX and DEMUX
+  \end{itemize}
+
+\end{itemize}
+\vfill
+
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+  \begin{center}
+    Thank you.
+  \end{center}
+
+
+\end{frame}
+
+
+\end{document}

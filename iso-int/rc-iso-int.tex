@@ -23,6 +23,7 @@
 %! (*) = \times
 %! (+) = +
 
+
 %subcode-inline{bnf-inline} regex \{\{(((\}[^\}])|[^\}])*)\}\} name main include langRev
 %! [^ = \ulcorner
 %! ^] = \urcorner
@@ -474,7 +475,7 @@ the flow of waves and particles along the wires.
 
 \item Operations {{fold}} and {{unfold}} are specific to each recursive
   data type and are drawn as triangular boxes. For instance,
-  Sec. \ref{sec:bounded} shows {{fold}}/{{unfold}} isomorphisms for
+  Sec. \ref{sec:numeric-ops} shows {{fold}}/{{unfold}} isomorphisms for
   numbers, {{nat=@@x.(1+x)}}.
 
 \item The {{trace+}} operation is drawn as a looped circuit, where the
@@ -489,18 +490,80 @@ the flow of waves and particles along the wires.
 
 \end{itemize}
 
-\paragraph*{Universality.} 
-As an example, consider the implementation of the Toffoli gate below, which
-establishes that {{langRevT}} is complete for combinational circuits. This
-encoding uses the type {{1+1}} as {{bool}} and values {{left ()}} and
-{{right()}} as {{true}} and {{false}}:
+\subsection{Universality.} 
+As an example, consider the implementation of the Toffoli gate below,
+which establishes that {{langRevT}} is complete for combinational
+circuits. The Toffoli gate takes three boolean inputs: if the first
+two inputs are {{true}} then the third is negated. This encoding uses
+the type {{1+1}} as {{bool}} and values {{left ()}} and {{right()}} as
+{{true}} and {{false}}.  Boolean negation, {{not : bool<->bool}}, is
+simply {{swap+}}.
+
+Even though {{langRevT}} lacks conditional expressions, they are
+expressible using the distributivity laws.  Given any combinator
+{{c:b<->b}}, we can construct a combinator called
+{{if_c:bool*b<->bool*b}} in terms of {{c}}, which behaves
+like a one-armed if-expression. If the supplied boolean is {{true}} then
+the combinator {{c}} is used to transform the value of type {{b}}. If
+the boolean is {{false}} then the value of type {{b}} remains
+unchanged. We can write down the combinator for {{if_c}} in terms of
+{{c}} as {{distrib (;) ((id (*) c) (+) id) (;) factor}}.
+
+Given {{if_c}}, constructing the Toffoli gate is straightforward. If
+we choose {{c}} to be {{not}} we get {{if_{not} }} which is controlled-not,
+{{cnot:bool*bool<->bool*bool}}. Further, {{if_{cnot} }} is the required
+Toffoli gate, 
+{{toffoli : bool * (bool * bool) <-> bool * (bool * bool)}}, and is drawn
+below.
 \begin{center}
+\scalebox{1.2}{
   \includegraphics{diagrams/toffoli.pdf}
+}
 \end{center}
 \noindent Previous work~\cite[Sec.~5]{James:2012:IE:2103656.2103667}
 establishes that {{langRevT}} is Turing complete by showing the compilation
 of a Turing complete language --- a first-order language with numbers and
 iteration --- to {{langRevT}}.
+
+\subsection{Numeric Operations.}
+\label{sec:numeric-ops}
+
+We encode numbers, {{nat = 0 ~|~ n + 1}}, using the
+recursive {{langRevT}} type {{@@x.1+x}}. The {{fold}}/{{unfold}} isomorphisms for
+{{nat}} are {{unfold : nat <-> 1+nat : fold}}.
+\begin{multicols}{3}
+\begin{center}
+\scalebox{0.9}{
+  \includegraphics{diagrams/unfold_nat.pdf}
+}
+\end{center}
+
+\begin{center}
+\scalebox{0.9}{
+  \includegraphics{diagrams/fold_nat.pdf}
+}
+\end{center}
+
+\begin{center}
+\scalebox{0.9}{
+  \includegraphics{diagrams/add1.pdf}
+}
+\end{center}
+\end{multicols}
+The combinator on the left denotes the {{unfold}} isomorphism, which
+works as follows: If the number {{n}} is zero, the output is the top
+branch which has type~{{1}}. If the number is non-zero, the output is
+on the bottom branch and has value {{n-1}}. The combinator in the middle
+is its dual {{fold}} isomorphism.  
+
+As explained in previous work
+\cite[Sec.~4.2]{James:2012:IE:2103656.2103667}, numeric addition and
+subtraction can be expressed in {{langRevT}} as partial
+isomorphisms: The combinator on the right, {{add1:nat<->nat}}, acts
+like the successor function returning {{n+1}} for all inputs
+{{n}}. Its adjoint, {{sub1}}, obtained by flipping the
+diagram right to left, is a partial map that diverges on input {{0}}
+and returns {{n-1}} for all other inputs {{n}}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simple Bounded Number Iteration}
@@ -542,8 +605,10 @@ also~3 steps.
 
 Our goal is to implement this abstract machine in {{langRevT}}. We start by
 writing a combinator {{c : nat * nat <-> nat * nat}} that executes one step
-of the machine transition. Here {{nat}} is an abbreviation for the recursive
-type {{@@x.1+x}}. The combinator, when iterated, should map {{(n,0)}} to
+of the machine transition. 
+%% Here {{nat}} is an abbreviation for the recursive
+%% type {{@@x.1+x}}. 
+The combinator, when iterated, should map {{(n,0)}} to
 {{(0,n)}} by precisely mimicking the steps of the abstract machine. Let us
 analyze this desired combinator {{c}} in detail starting from its interface:
 
@@ -559,11 +624,7 @@ its structure and the second {{nat}} is folded to reconstruct it:
   \includegraphics{diagrams/nat-nat3.pdf}
 \end{center}
 
-The triangle on the left denotes the {{unfold}} isomorphism, which works as
-follows: If the number {{n}} is zero, the output is the top branch which has
-type~{{1}}. If the number is non-zero, the output is on the bottom branch
-and has value {{n-1}}. The triangle on the right is the dual {{fold}}
-isomorphism.  We now use distribution to isolate each possible machine state:
+We now use distribution to isolate each possible machine state:
 
 %% by distributing on the
 %% input. Dually let us do the same with the output, but this time also
@@ -697,7 +758,7 @@ The completed interpreter is given below:
 %% to give them a more direct characterization purely in terms of logical
 %% reversibility of the small-step semantics. 
 
-\paragraph*{Steps of the Construction.}
+\subsection{Steps of the Construction.}
 
 Although trivial, the previous example captures the fundamental aspects of
 our construction. In general, our starting point is an abstract machine in
@@ -706,12 +767,18 @@ logical reversibility in this setting is captured by Abramsky's
 \emph{bi-orthogonal automata}~\cite[Sec.~2]{abramsky2005structural} which is
 summarized as:
 \begin{enumerate}
+\item 
+ Machine states are described as tuples whose components are algebraic
+ data types. In the above example we used only the {{nat}} data type
+ and tuples of the form {{<n, m>}}.
 \item
   Machines must have distinguishable start and stop states. There may
   be more than one valid start state and more than one valid stop
-  state, however.
+  state, however. 
+
 \item Each valid machine state must match a unique pattern on the
-  left-hand side and right-hand side of the `{{|-->}}' relation.
+  left-hand side and right-hand side of the `{{|-->}}' relation. 
+
 \item Every reduction step must be computable (in {{langRevT}}), must
   not drop or duplicate pattern variables and must be logically
   reversible --- i.e. it must be possible to reduce from right to
@@ -741,8 +808,8 @@ adder:
 \begin{small}
 \begin{multicols}{2}  
 %subcode{bnf} include main
-% Numbers, n, m,p = 0 | n + 1
-% Machine states = <e, e, e>
+% Numbers, n, m, p = 0 | n + 1
+% Machine states = <n, n, n>
 
 %subcode{bnf} include main
 % Start state = <n, n, 0>
@@ -781,15 +848,14 @@ just a manifestation of this general problem. The common solutions are:
   from those that can be zero, thereby eliminating the {{sub1 0}} situation
   entirely. Similarly, in the meta-circular interpreter in
   Sec.~\ref{sec:langrevt-int}, one could use generalized abstract data types
-  (GADTs)~\cite{phantom,Xi:2003:GRD:604131.604150}) to eliminate the stuck
+  (GADTs~\cite{phantom,Xi:2003:GRD:604131.604150}) to eliminate the stuck
   states.
 
 \item \emph{Diverge.}  Another standard approach in dealing with stuck states
   is to make the machine diverge or leave the output undefined or
   unobservable in some way. If the specific case of the machine above, we can
-  use a primitive {{add1}} whose dual {{sub1}} is undefined when applied to
-  {{0}}. (Such a primitive is definable in
-  {{langRevT}}~\cite[Sec.~4.2]{James:2012:IE:2103656.2103667}.)
+  use the primitive {{add1}} whose dual {{sub1}} is undefined when applied to
+  {{0}} (see Sec.~\ref{sec:numeric-ops}).
 
 \item \emph{Stop the machine.}  Alternatively, we can consider the stuck
   state as a valid final state. In the case of the example above, we would
@@ -898,9 +964,11 @@ get the desired interpreter:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Advanced Examples} 
 
-We show the generality of our construction by applying it to two non-trivial
-examples: a tree traversal and a meta-circular interpreter for
-{{langRevT}}.
+We show the generality of our construction by applying it to three
+non-trivial examples: a tree traversal, parity translation of numbers
+and a meta-circular interpreter for {{langRevT}}.
+
+
 
 %%%%%%%%%%%%%%%%%%
 \subsection{Tree Traversal}
@@ -1027,6 +1095,105 @@ the reductions that we would like:
 This essentially completes the construction of the (partially) isomorphic
 tree-traversal interpreter, except for the final step which slides the input
 and output sides. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Parity Translation }
+\label{sec:parity-int}
+
+Deriving {{langRevT}} combinators from abstract machines can sometimes
+be used as an efficient indirect way to program in {{langRevT}}.  It
+is well known that every number {{n}} can be represented as {{2a+0}}
+or {{2a+1}}, depending on whether it is odd or even.  The later can be
+represented by the algebraic data type {{par=odd~|~even~|~A~par}}
+where the nesting of {{A}} constructor indicates the value of
+{{a}}. For example 
+{{0 = even, 1 = odd, 2 = A even, 3 = A odd, 4 = A (A even)}} etc.
+
+
+Say we wish to build a {{langRevT}} combinator to map {{nat}} to its
+parity encoded version {{par}}. While the type {{par}} is expressible
+as {{@@x.(1+1)+x}} in {{langRevT}}, it is not a fixed unfolding of
+{{nat = @@x.1+x}} and hence it is not immediately apparent how such a
+combinator can be constructed.
+
+Instead of directly programming in {{langRevT}} however, one can
+derive the required {{nat<->par}} combinator by first constructing an
+abstract machine that maps {{nat}} to {{par}} and then translating it
+to {{langRevT}}. We first express {{nat}} and {{par}} algebraically
+and then develop a logically reversible abstract machine:
+
+
+
+% Algebraically, we may write:
+
+%% %subcode{bnf} include main
+%% % Numbers, n, m = 0 | n + 1
+%% % Parity, par = zero | one | plus2 par
+
+%% While it is apparent that there is a natural one to one correspondence
+%% between their values, it is non-obvious how this can be expressed as a
+%% {{langRevT}} isomorphism. This map can be expressed in terms of the
+%% algebraic type definitions as shown below:
+
+%% %subcode{opsem} include main
+%% %! columnStyle = ||c|r||
+%% % 0 & even
+%% % 1 & odd
+%% % 2 & A even
+%% % 3 & A odd
+%% % 4 & A (A even)
+%% % ... &  ...
+
+%% \indent
+%% and in terms of their {{langRevT}} type encodings as shown below:
+
+%% %subcode{opsem} include main
+%% %! columnStyle = ||c|c||
+%% % <left ()> & <left ()>
+%% % <right <left ()>> & <right left ()>
+%% % <right <right <left ()> > > & <right right <left ()>>
+%% % <right <right <right <left ()>> >> & <right right <right left ()>>
+%% % <right <right <right <right <left ()>> >> > & <right right <right right <left ()> > >
+%% % ... &  ...
+
+% \noindent
+
+
+%subcode{bnf} include main
+% Numbers, n, m = 0 | n + 1
+% Parity, par = even | odd | A par
+%
+
+\noindent
+Machine States:
+
+%subcode{bnf} include main
+% Machine states = <nat, nat> | {[parity, nat]}
+% Start state = <n , 0>
+% Stop state =  {[par, 0]}
+
+\noindent
+Machine Reductions:
+%subcode{opsem} include main
+%! columnStyle = rclr
+% <0, m> &|-->& {[even, m]}
+% <1, m> &|-->& {[odd, m]}
+% <(n+1)+1, m> &|-->& <n, m+1>
+% {[par, m+1]} &|-->& {[A par, m]}
+
+The derivation of the {{langRevT}} combinator is
+straightforward and proceeds as before. The partial combinator
+representing the wiring of machine reductions is shown below.
+
+\begin{center}
+\scalebox{1.0}{
+  \includegraphics{diagrams/nat-parity2.pdf}
+}
+\end{center}
+
+\noindent
+We thank Fritz Henglein for the motivation underlying this example.
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{A {{langRevT}} Interpreter}

@@ -4,15 +4,36 @@
 
 .PHONY : clean clean-subcode
 
-# ICFP
-rational_ext.subc.pdf : rational_ext.subc.tex cites.bib
-	pdflatex -halt-on-error rational_ext.subc.tex
-	bibtex rational_ext.subc
-	pdflatex -halt-on-error rational_ext.subc.tex
-	pdflatex -halt-on-error rational_ext.subc.tex
+frac.subc.pdf : frac.subc.tex cites.bib
+	pdflatex -halt-on-error frac.subc.tex
 
-rational_ext.subc.tex : rational_ext.tex
-	ruby subcode/subc.rb rational_ext.tex
+frac.subc.tex : frac.tex
+	ruby subcode/subc.rb frac.tex
+
+r.subc.pdf : r.subc.tex cites.bib
+	pdflatex -halt-on-error r.subc.tex
+	bibtex r.subc
+	pdflatex -halt-on-error r.subc.tex
+	pdflatex -halt-on-error r.subc.tex
+
+r.subc.tex : r.tex
+	ruby subcode/subc.rb r.tex
+
+agda-sabry: VecSN.agda VecS.agda Homotopy.agda Pi.agda PiN.agda PiF.agda PiNF-syntax.agda PiNF-algebra.agda PiNF-semantics.agda Pi-abstract-machine.agda Pi-reasoning.agda oldPi.agda
+	touch /u/sabry/.hyplan/pi
+	/bin/rm -r /u/sabry/.hyplan/pi
+	agda --html-dir=/u/sabry/.hyplan/pi --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src VecSN.agda
+	agda --html-dir=/u/sabry/.hyplan/pi --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src VecS.agda
+	agda --html-dir=/u/sabry/.hyplan/pi --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src Homotopy.agda
+	agda --html-dir=/u/sabry/.hyplan/pi --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src Pi.agda
+	agda --html-dir=/u/sabry/.hyplan/pi --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src PiN.agda
+	agda --html-dir=/u/sabry/.hyplan/pi --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src PiF.agda
+	agda --html-dir=/u/sabry/.hyplan/pi --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src PiNF-syntax.agda
+	agda --html-dir=/u/sabry/.hyplan/pi --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src PiNF-algebra.agda
+	agda --html-dir=/u/sabry/.hyplan/pi --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src PiNF-semantics.agda
+	agda --html-dir=/u/sabry/.hyplan/pi --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src Pi-abstract-machine.agda
+	agda --html-dir=/u/sabry/.hyplan/pi --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src Pi-reasoning.agda
+	agda --html-dir=/u/sabry/.hyplan/pi --allow-unsolved-metas --html -i . -i /u/sabry/include/agda2/src oldPi.agda
 
 # Clean
 clean: 

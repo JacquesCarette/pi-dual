@@ -2,41 +2,41 @@
 # Phony targets are scoped, so you probably want to declare them first.
 #
 
-.PHONY : all clean current dual-dropbox rational-dropbox rational_ext-dropbox msr-slides-dropbox jsc-slides-dropbox
+.PHONY : all clean current dual-dropbox rational-dropbox rational_ext-dropbox fields-dropbox msr-slides-dropbox jsc-slides-dropbox
 
-# LOts of random stuff
-dual.subc.tex : dual.tex
-        ruby subcode/subc.rb dual.tex
+# # LOts of random stuff
+# dual.subc.tex : dual.tex
+#         ruby subcode/subc.rb dual.tex
 
-dual.subc.pdf : dual.subc.tex cites.bib
-	pdflatex -halt-on-error dual.subc.tex
-        bibtex dual.subc
+# dual.subc.pdf : dual.subc.tex cites.bib
+# 	pdflatex -halt-on-error dual.subc.tex
+#         bibtex dual.subc
 
-dual-dropbox : dual.subc.pdf
-	cp dual.subc.pdf ~/Dropbox/Public/papers
+# dual-dropbox : dual.subc.pdf
+# 	cp dual.subc.pdf ~/Dropbox/Public/papers
 
 
-# MSR-slides
-msr-slides.subc.tex : msr-slides.tex
-        ruby subcode/subc.rb msr-slides.tex
+# # MSR-slides
+# msr-slides.subc.tex : msr-slides.tex
+#         ruby subcode/subc.rb msr-slides.tex
 
-msr-slides.subc.pdf : msr-slides.subc.tex cites.bib
-	pdflatex -halt-on-error  msr-slides.subc.tex
-        bibtex msr-slides.subc
+# msr-slides.subc.pdf : msr-slides.subc.tex cites.bib
+# 	pdflatex -halt-on-error  msr-slides.subc.tex
+#         bibtex msr-slides.subc
 
-msr-slides-dropbox : msr-slides.subc.pdf
-	cp msr-slides.subc.pdf /home/rosh/Dropbox/Public/papers/	
+# msr-slides-dropbox : msr-slides.subc.pdf
+# 	cp msr-slides.subc.pdf /home/rosh/Dropbox/Public/papers/	
 
-# MSR-slides
-jsc-slides.subc.tex : jsc-slides.tex
-        ruby subcode/subc.rb jsc-slides.tex
+# # MSR-slides
+# jsc-slides.subc.tex : jsc-slides.tex
+#         ruby subcode/subc.rb jsc-slides.tex
 
-jsc-slides.subc.pdf : jsc-slides.subc.tex cites.bib
-	pdflatex -halt-on-error  jsc-slides.subc.tex
-        bibtex jsc-slides.subc
+# jsc-slides.subc.pdf : jsc-slides.subc.tex cites.bib
+# 	pdflatex -halt-on-error  jsc-slides.subc.tex
+#         bibtex jsc-slides.subc
 
-jsc-slides-dropbox : jsc-slides.subc.pdf
-	cp jsc-slides.subc.pdf /home/rosh/Dropbox/Public/papers/	
+# jsc-slides-dropbox : jsc-slides.subc.pdf
+# 	cp jsc-slides.subc.pdf /home/rosh/Dropbox/Public/papers/	
 
 
 
@@ -65,8 +65,23 @@ rational_ext-dropbox : rational_ext.subc.pdf
 	cp rational_ext.subc.pdf ~/Dropbox/Public/papers
 
 
+# fields
+fields.subc.tex : fields.tex
+        ruby subcode/subc.rb fields.tex
+
+fields.subc.pdf : fields.subc.tex cites.bib
+	pdflatex -halt-on-error fields.subc.tex
+        bibtex fields.subc
+	pdflatex -halt-on-error fields.subc.tex
+	pdflatex -halt-on-error fields.subc.tex
+
+fields-dropbox : fields.subc.pdf
+	cp fields.subc.pdf ~/Dropbox/Public/papers
+
+
+
 # Build all 
-all : dual-dropbox rational_ext-dropbox msr-slides-dropbox jsc-slides-dropbox
+all : dual-dropbox rational_ext-dropbox fields-dropbox msr-slides-dropbox jsc-slides-dropbox
 
 current: rational_ext.subc.pdf
 

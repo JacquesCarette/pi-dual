@@ -25,9 +25,13 @@ OMakeroot.omc
 *.snm
 *.nav
 *.toc
+*.vrb
+*.subc.vrb
 *.subc.pdf
 *.subc.tex
+*.vrb
 .subcode_cache*
 *.orig
 *.pdf.eps
+.zip
 subcode
