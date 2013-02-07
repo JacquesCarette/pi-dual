@@ -41,7 +41,7 @@
 %! unfoldN = unfold_N
 %! trace+ = \mathit{trace}^{+}
 %! trace* = \mathit{trace}^{\times}
-%! :-* = \multimap^{\times}
+%! :-* = \multimap
 %! :-+ = \multimap^{+}
 %! emptyset = \emptyset
 
@@ -50,10 +50,10 @@
 %! ^] = \urcorner
 %! [v = \llcorner
 %! v] = \lrcorner
-%| [[ = \llbracket
-%| ]] = \rrbracket
-%! eta* = \eta^{\times}
-%! eps* = \epsilon^{\times}
+%! [[ = \llbracket
+%! ]] = \rrbracket
+%! eta* = \eta
+%! eps* = \epsilon
 %! Union = \bigcup
 %! in = \in
 %! |-->* = \mapsto^{*}
@@ -386,9 +386,6 @@ since we are explicitly interested in \emph{isomorphisms}, we should not
 conflate negative-information values with positive-information values just
 because they happen to be isomorphic.
 
-%%%%%%%%%%%%%%%%%%%%%5
-\subsection{Relational Semantics}
-
 In {{langRev}} presented in Sec.~\ref{sec:pi}, we have been able to maintain
 the simple idea that a syntactic isomorphism denotes a \emph{bijection}. In
 richer languages, e.g., in a Turing complete language that admits
@@ -424,10 +421,10 @@ types). The latter is intuitively clear as any relation between $A$ and $B$
 can be represented as a subset of {{A * B}}, i.e., as a value.
 
 To interpret {{langRevTF}} in this category, we associate a finite set
-{{ [[b]] }} with each type {{b}} and a relation {{ [[c]] }} over
-{{ [[b1]] }} and {{ [[b2]] }} for each combinator {{ c : b1 <-> b2 }}.
+{{ [[ b ]] }} with each type {{b}} and a relation {{ [[ c ]] }} over
+{{ [[ b1 ]] }} and {{ [[ b2 ]] }} for each combinator {{ c : b1 <-> b2 }}.
 
-\begin{definition}[Denotation of Value Types {{ [[b]] }}]
+\begin{definition}[Denotation of Value Types {{ [[ b ]] }}]
 \label{chx:def:denot}
 Each type denotes a finite set of values as follows:
 \[\begin{array}{rcl}
@@ -460,13 +457,13 @@ as specified below.
 %
 %@ ~
 %@@ (right (left v)) ~~assocl+~~ (left (right v))
-%
-%@ ~
-%@@ (right (right v)) ~~assocl+~~ (right v)
 %----
 %@ ~
-%@@ (left (left v)) ~~assocr+~~ (left v)
+%@@ (right (right v)) ~~assocl+~~ (right v)
 %
+%@ ~
+%@@ (left (left v)) ~~assocr+~~ (left v)
+%----
 %@ ~
 %@@ (left (right v)) ~~assocr+~~ (right (left v))
 %
@@ -505,11 +502,11 @@ as specified below.
 %
 %@ v' ~~c~~ v
 %@@ v ~~(sym c)~~ v'
-%----
+%
 %@ v1 ~~c1~~ v2
 %@ v2 ~~c2~~ v3
 %@@ v1 ~~(c1(;)c2)~~ v3
-%
+%----
 %@ v ~~c1~~ v'
 %@@ (left v) ~~(c1 (+) c2)~~ (left v')
 %
@@ -520,7 +517,7 @@ as specified below.
 %@ v2 ~~c2~~ v2'
 %@@ (v1, v2) ~~(c1 (*) c2)~~ (v1', v2')
 %----
-%@ v in [[b]]
+%@ v in [[ b ]]  
 %@@ () ~~eta*_b~~ (1/v,v)
 %
 %@ ~
