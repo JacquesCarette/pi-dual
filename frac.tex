@@ -50,6 +50,8 @@
 %! ^] = \urcorner
 %! [v = \llcorner
 %! v] = \lrcorner
+%| [[ = \llbracket
+%| ]] = \rrbracket
 %! eta* = \eta^{\times}
 %! eps* = \epsilon^{\times}
 %! Union = \bigcup
@@ -98,7 +100,7 @@
 %! bullet = \bullet
 %! * = \times
 %! langRevT = \Pi^{o}
-%! langRevTF = \Pi^{o/}
+%! langRevTF = \Pi^{/}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -340,18 +342,18 @@ convenience for the next section.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Language: {{langRevTF}} }
 
-{{langRev}} models isomorphisms of values rather well.  However, purposefully,
-it has no notion of \emph{input} or \emph{output}; more precisely, because
-of strict preservation of information, these two concepts coincide.  This
-is the root of reversibility.
+The language {{langRev}} models isomorphisms of values rather well.  However,
+purposefully, it has no notion of \emph{input} or \emph{output}; more
+precisely, because of strict preservation of information, these two concepts
+coincide.  This is the root of reversibility.
 
 But if we want to model functions of any flavor, we need to differentiate
 between these notions.  Our idea, inspired by computational dualities and
 polarity, is to introduce a \emph{formal dual} for our types.  We thus
-consider a type in a negative position in a type to possess negative
-information, as it is really a request for information.  Since information
-is logarithmic, this means that a request for information should behave
-like a \emph{fractional type}.
+consider a type in a negative position to possess negative information, as it
+is really a request for information.  Since information is logarithmic, this
+means that a request for information should behave like a \emph{fractional
+  type}.
 
 Syntactically, the extension with fractional types is simple. 
 
@@ -366,26 +368,27 @@ We extend Def.~\ref{def:Pi} with:
 \end{definition}
 
 For a given type {{b}}, the values of type {{1/b}} are of the form {{1/v}}
-where {{v : b}}. Note that {{1/v}} is purely formal, as is {{1/b}}.
-However, we think of a value like {{1/left ()}} as a
-\emph{first-class constraint} that can only be satisfied if it is matched
-with an actual value {{left ()}} or as representing the absence of some
-information (i.e., \emph{negative information}), that can only be supplied by
-{{left ()}}. The combinator {{eta*_b : 1 <-> 1/b * b}} represents a fission
-point which creates --- out of no information --- an equal amount of negative
-and positive information. Symmetrically, the combinator 
-{{eps*_b : 1/b * b <-> 1}} matches up an equal amount of negative and positive
-information producing no residual information.  The best analogy is probably
-that of vectors and
-co-vectors, also know as column vectors and row vectors (respectively): in
-the finite dimensional case, they are isomorphic, but they are nevertheless
-quite different, being $(1,0)$ and $(0,1)$ tensors (respectively).  In
-other words, since we are explicitly interested in \emph{isomorphisms}, 
-we should not conflate negative-information values with positive-information
-values just because they happen to be isomorphic.
+where {{v : b}}. Note that {{1/v}} is purely formal, as is {{1/b}}.  However,
+we think of a value like {{1/left ()}} as a \emph{first-class constraint}
+that can only be satisfied if it is matched with an actual value {{left ()}}
+or as representing the absence of some information (i.e., \emph{negative
+  information}), that can only be supplied by {{left ()}}. The combinator
+{{eta*_b : 1 <-> 1/b * b}} represents a fission point which creates --- out
+of no information --- an equal amount of negative and positive
+information. Symmetrically, the combinator {{eps*_b : 1/b * b <-> 1}} matches
+up an equal amount of negative and positive information producing no residual
+information.  The best analogy is probably that of vectors and co-vectors,
+also know as column vectors and row vectors (respectively): in the finite
+dimensional case, they are isomorphic, but they are nevertheless quite
+different, being $(1,0)$ and $(0,1)$ tensors (respectively).  In other words,
+since we are explicitly interested in \emph{isomorphisms}, we should not
+conflate negative-information values with positive-information values just
+because they happen to be isomorphic.
 
 %%%%%%%%%%%%%%%%%%%%%5
 \subsection{Relational Semantics}
+
+motivate the need for relations
 
 Even though the categorical semantics of {{langRevTF}} is not the main focus
 of this paper, we find it helpful to briefly outline an interpretation of
@@ -395,19 +398,19 @@ categories introduced by Abramsky and
 Coecke~\cite{Abramsky:2004:CSQ:1018438.1021878} and by
 Selinger~\cite{Selinger:2007:DCC:1229185.1229207} to model quantum
 computation.\footnote{The other common example of these categories is that of
-  finite dimensional Hilbert spaces.} The category intuitively supports
-higher-order relations as any relation between $A$ and $B$ can be represented
-as a subset of {{A * B}}, i.e., as a value. More generally, the two main
-features of these biproduct dagger compact closed categories are that they
-support an adjoint for each morphism (to model reversibility) and a notion of
-higher-order relation (built from the dagger which is modeled by our
-fractional types).
+  finite dimensional Hilbert spaces.} The two main features of these
+biproduct dagger compact closed categories are that they support an adjoint
+for each morphism (to model reversibility) and that they support higher-order
+relation (built from the categorical dagger which is modeled by our
+fractional types). The latter is intuitively clear as any relation between
+$A$ and $B$ can be represented as a subset of {{A * B}}, i.e., as a
+value. 
 
 To interpret {{langRevTF}} in this category, we associate a finite set
-$\llbracket b \rrbracket$ with each type $b$ and a relation $\llbracket c
-\rrbracket$ with each combinator $c$. The denotation of types is
-straighforward: the denotation of {{1/b}} is an isomorphic copy of the
-denotation of {{b}}. 
+{{ [[b]] }} with each type $b$ and a relation {{ [[c]] }} over
+{{ [[b1]] }} and {{ [[b2]] }} for each combinator {{ c : b1 <-> b2 }}.
+The denotation of types is straighforward: the denotation of {{1/b}} 
+is an isomorphic copy of the denotation of {{b}}.
 
 \begin{definition}[Denotation of Value Types {{ [[b]] }}]
 \label{chx:def:denot}
@@ -420,180 +423,104 @@ Each type denotes a finite set of values as follows:
 \end{array}\]
 \end{definition}
 
+The denotation of combinators as relations is given below. We specify
+relations using a deductive system whose judgments are of the form 
+{{ v1 ~~c~~ v2 }} indicating that the pair {{(v1,v2)}} is in the relation 
+denoted by {{c}}.
+
+\begin{definition}[Relational semantics]
+\label{def:relational-langRevTF}
+Each combinator {{c : b1 <-> b2}} in {{langRevTF}} denotes a relation
+as specified below. 
+
+%subcode{proof} include main
+%@ ~
+%@@ (left v) ~~swap+~~ (right v)
+%
+%@ ~
+%@@ (right v) ~~swap+~~ (left v)
+%----
+%@ ~
+%@@ (left v) ~~assocl+~~ (left (left v))
+%
+%@ ~
+%@@ (right (left v)) ~~assocl+~~ (left (right v))
+%
+%@ ~
+%@@ (right (right v)) ~~assocl+~~ (right v)
+%----
+%@ ~
+%@@ (left (left v)) ~~assocr+~~ (left v)
+%
+%@ ~
+%@@ (left (right v)) ~~assocr+~~ (right (left v))
+%
+%@ ~
+%@@ (right v) ~~assocr+~~ (right (right v))
+%----
+%@ ~
+%@@ ((), v) ~~unite~~ v
+%
+%@ ~
+%@@ v ~~uniti~~ ((), v)
+%----
+%@ ~
+%@@ (v1, v2) ~~swap*~~ (v2, v1)
+%----
+%@ ~
+%@@ (v1, (v2, v3)) ~~assocl*~~ ((v1, v2), v3)
+%
+%@ ~
+%@@ ((v1, v2), v3) ~~assocr*~~ (v1, (v2, v3))
+%----
+%@ ~
+%@@ (left v1, v3) ~~dist~~ (left (v1, v3))
+%
+%@ ~
+%@@ (right v2, v3) ~~dist~~ (right (v2, v3))
+%----
+%@ ~
+%@@ (left (v1, v3)) ~~factor~~ (left v1, v3)
+%
+%@ ~
+%@@ (right (v2, v3)) ~~factor~~ (right v2, v3)
+%----
+%@ ~
+%@@ v ~~id~~ v
+%
+%@ v' ~~c~~ v
+%@@ v ~~(sym c)~~ v'
+%----
+%@ v1 ~~c1~~ v2
+%@ v2 ~~c2~~ v3
+%@@ v1 ~~(c1(;)c2)~~ v3
+%
+%@ v ~~c1~~ v'
+%@@ (left v) ~~(c1 (+) c2)~~ (left v')
+%
+%@ v ~~c2~~ v'
+%@@ (right v) ~~(c1 (+) c2)~~ (right v')
+%----
+%@ v1 ~~c1~~ v1'
+%@ v2 ~~c2~~ v2'
+%@@ (v1, v2) ~~(c1 (*) c2)~~ (v1', v2')
+%----
+%@ v in [[b]]
+%@@ () ~~eta*_b~~ (1/v,v)
+%
+%@ ~
+%@@ (1/v,v) ~~eps*_b~~ ()
+
+\newpage
 
 Give the denotation of a few combinators. The denotation of {{eta_{1+1} }} is
 the relation:
 
 {{ {[ (1/(), (left(), left())), (1/(), (right(),right ())) ]} }}
 
-Perhaps get rid of the semantics below and replace by a semantics which maps
-each combinator to a relation. This is probably clearer than the operational
-style.
-
-
 give some intuition; example with eta/epsilon
 
-motivate the need for relations
-
-present formal semantics
-
-model using vector spaces; category of finite sets and relations; homotopy
-equivalence???
-
-The operational semantics of {{langRevTF}} is given using two mutually
-recursive interpreters: one going forward and one going backwards. Unlike the
-case for {{langRev}}, each combinator denotes a \emph{relation} and hence the
-result of applying a combinator to a value generally returns a \emph{set} of
-values. 
-
-\begin{definition}[Operational semantics for {{langRevTF}}]
-\label{def:operational-langRevTF}
-Given a program {{c : b1 <-> b2}} in {{langRev}}, we can run it in the
-forward direction by supplying it with a value {{ v1 : b1 }} and in
-the backwards direction by supplying it with a value {{v2 : b2}}. 
-
-\paragraph*{Forward Evaluator:}
-
-%subcode{proof} include main
-%@ ~
-%@@ (left v) swap+ (right v)
-%
-%@ ~
-%@@ (right v) swap+ (left v)
-%----
-%@ ~
-%@@ (left v) assocl+ (left (left v))
-%
-%@ ~
-%@@ (right (left v)) assocl+ (left (right v))
-%
-%@ ~
-%@@ (right (right v)) assocl+ (right v)
-%----
-%@ ~
-%@@ (left (left v)) assocr+ (left v)
-%
-%@ ~
-%@@ (left (right v)) assocr+ (right (left v))
-%
-%@ ~
-%@@ (right v) assocr+ (right (right v))
-%----
-%@ ~
-%@@ ((), v) unite v
-%
-%@ ~
-%@@ v uniti ((), v)
-%----
-%@ ~
-%@@ (v1, v2) swap* (v2, v1)
-%----
-%@ ~
-%@@ (v1, (v2, v3)) assocl* ((v1, v2), v3)
-%
-%@ ~
-%@@ ((v1, v2), v3) assocr* (v1, (v2, v3))
-%----
-%@ ~
-%@@ (left v1, v3) dist (left (v1, v3))
-%
-%@ ~
-%@@ (right v2, v3) dist (right (v2, v3))
-%----
-%@ ~
-%@@ (left (v1, v3)) factor (left v1, v3)
-%
-%@ ~
-%@@ (right (v2, v3)) factor (right v2, v3)
-%----
-%@ ~
-%@@ v id v
-%
-%@ v' c v
-%@@ v (sym c) v'
-%----
-%@ v1 c1 v2
-%@ v2 c2 v3
-%@@ v1 (c1(;)c2) v3
-%
-%@ v c1 v'
-%@@ (left v) (c1 (+) c2) (left v')
-%
-%@ v c2 v'
-%@@ (right v) (c1 (+) c2) (right v')
-%----
-%@ v1 c1 v1'
-%@ v2 c2 v2'
-%@@ (v1, v2) (c1 (*) c2) (v1', v2')
-%----
-%@ v in [[b]]
-%@@ () ~eta*_b (1/v,v)
-%
-%@ ~
-%@@ (1/v,v) ~eps*_b ()
-
-
-
-
-%subcode{opsem} include main
-%! columnStyle = rcl
-% evalF swap+ (left v) &=& {[ right v ]}
-% evalF swap+ (right v) &=& {[ left v ]}
-% evalF assocl+ (left v) &=& {[ left (left v) ]}
-% evalF assocl+ (right (left v)) &=& {[ left (right v) ]}
-% evalF assocl+ (right (right v)) &=& {[ right v ]}
-% evalF assocr+ (left (left v)) &=& {[ left v ]}
-% evalF assocr+ (left (right v)) &=& {[ right (left v) ]}
-% evalF assocr+ (right v) &=& {[ right (right v) ]}
-% evalF unite ((), v) &=& {[ v ]}
-% evalF uniti v &=& {[ ((), v) ]}
-% evalF swap* (v1, v2) &=& {[ (v2, v1) ]}
-% evalF assocl* (v1, (v2, v3)) &=& {[ ((v1, v2), v3) ]}
-% evalF assocr* ((v1, v2), v3) &=& {[ (v1, (v2, v3)) ]}
-% evalF dist (left v1, v3) &=& {[ left (v1, v3) ]}
-% evalF dist (right v2, v3) &=& {[ right (v2, v3) ]}
-% evalF factor (left (v1, v3)) &=& {[ (left v1, v3) ]}
-% evalF factor (right (v2, v3)) &=& {[ (right v2, v3) ]}
-% evalF id v &=& {[ v ]}
-% evalF (sym c) v &=& evalB c v
-% evalF (c1(;)c2) v &=& Union ~{[ evalF c2 v' ~|~ v' in (evalF c1 v) ]}
-% evalF (c1 (+) c2) (left v1) &=& {[ left v' ~|~ v' in (evalF c1 v1) ]}
-% evalF (c1 (+) c2) (right v2) &=& {[ left v' ~|~ v' in (evalF c2 v2) ]}
-% evalF (c1 (*) c2) (v1,v2) &=& {[ (v3,v4) ~|~ v3 in (evalF c1 v1), v4 in (evalF c2 v2) ]}
-% evalF ~eta*_b () &=& Union_{v in [[b]]} ~{[ (1/v,v) ]}
-% evalF ~eps*_b (1/v,v) &=& {[ () ]} 
-% evalF ~eps*_b (1/v1,v2) &=& emptyset, where v1 /= v2
-\paragraph*{Backwards Evaluator:}
-
-%subcode{opsem} include main
-%! columnStyle = rcl
-% evalB swap+ (left v) &=& {[ right v ]}
-% evalB swap+ (right v) &=& {[ left v ]}
-% evalB assocl+ (left (left v)) &=& {[ left v ]}
-% evalB assocl+ (left (right v)) &=& {[ right (left v) ]}
-% evalB assocl+ (right v) &=& {[ right (right v) ]}
-% evalB assocr+ (left v) &=& {[ left (left v) ]}
-% evalB assocr+ (right (left v)) &=& {[ left (right v) ]}
-% evalB assocr+ (right (right v)) &=& {[ right v ]}
-% evalB unite v &=& {[ ((), v) ]}
-% evalB uniti ((), v) &=& {[ v ]}
-% evalB swap* (v1, v2) &=& {[ (v2, v1) ]}
-% evalB assocl* ((v1, v2), v3) &=& {[ (v1, (v2, v3)) ]}
-% evalB assocr* (v1, (v2, v3)) &=& {[ ((v1, v2), v3) ]}
-% evalB dist (left (v1, v3)) &=& {[ (left v1, v3) ]}
-% evalB dist (right (v2, v3)) &=& {[ (right v2, v3) ]}
-% evalB factor (left v1, v3) &=& {[ left (v1, v3) ]}
-% evalB factor (right v2, v3) &=& {[ right (v2, v3) ]}
-% evalB id v &=& {[ v ]}
-% evalB (sym c) v &=& evalF c v
-% evalB (c1(;)c2) v &=& Union ~{[ evalB c1 v' ~|~ v' in (evalB c2 v) ]}
-% evalB (c1 (+) c2) (left v1) &=& {[ left v' ~|~ v' in (evalB c1 v1) ]}
-% evalB (c1 (+) c2) (right v2) &=& {[ right v' ~|~ v' in (evalB c2 v2) ]}
-% evalB (c1 (*) c2) (v1,v2) &=& {[ (v3,v4) ~|~ v3 in (evalB c1 v1), v4 in (evalB c2 v2) ]}
-% evalB ~eta*_b (1/v,v) &=& {[ () ]} 
-% evalB ~eta*_b (1/v1,v2) &=& emptyset, where v1 /= v2
-% evalB ~eps*_b () &=& Union_{v in [[b]]} ~{[ (1/v,v) ]}
-\end{definition}
+homotopy equivalence???
 
 The language {{langRevTF}} is still logically reversible. 
 
@@ -774,9 +701,6 @@ constitute, a form of self-inverse negation. In particular, we have:
 %    &<->& 1 * 1/(1/b) & (swap*)
 %    &<->& 1/(1/b) & (unite)
 
-What is interesting about this isomorphism is that it holds for all
-types {{b}}, and in particular we have {{0 <-> 1/(1/0)}}.
-
 %%%%%%%%%%%%
 \subsection{Feedback, Iteration, and Trace Operators}
 
@@ -829,22 +753,6 @@ combinator to {{() : 1}} requires us to find a value {{b : bool}} such
 that {{evalF c (b,()) = (b,())}} which is impossible since {{c}} negates
 {{b}}. Operationally, we would expect the evaluation of such a
 combinator to produce no value. 
-\end{example}
-
-\begin{example}
-A more fundamental problem occurs if we attempt to apply the trace
-operator to cancel the empty type. Consider a combinator:
-
-{{c : 0 * 1 <-> 0 * bool}}
-
-{{c = distrib0 (;) factor0}}
-
-\noindent Using the multiplicative trace, we can construct the combinator
-{{trace* c : 1 <-> bool}} which relates two types of different sizes! Fortunately,
-because {{0}} is the empty type, 
-when attempting to evaluate such a combinator, it is impossible to find a value
-{{v : 0}} to satisfy the constraint imposed by {{trace*}} and hence 
-we would also expect the evaluation of such a combinator to produce no value.
 \end{example}
 
 With fractionals, the multiplicative trace operator becomes expressible:
