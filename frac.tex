@@ -226,7 +226,7 @@ appropriate operational semantics.
 We view {{langRev}} as having two levels:  it has traditional values, given by
 %subcode{bnf} include main
 % values, v ::= () | left v | right v | (v, v)
-and these are classified by ordinary types
+\noindent and these are classified by ordinary types
 %subcode{bnf} include main
 % value types, b ::= 1 | b + b | b * b 
 
@@ -249,7 +249,8 @@ Specifically, they are witnesses to the following type isomorphisms:
 %swap* :&  b1 * b2 <-> b2 * b1 &: swap*
 %assocl* :&  b1 * (b2 * b3) <-> (b1 * b2) * b3 &: assocr*
 %dist :&~ (b1 + b2) * b3 <-> (b1 * b3) + (b2 * b3)~ &: factor
-Each line of the above table introduces a pair of dual constants%
+
+\noindent Each line of the above table introduces a pair of dual constants%
 \footnote{where {{swap*}} and {{swap+}} are self-dual} that witness the type
 isomorphism in the middle.  These are the base (non-reducible) terms of the
 second, principal level of {{langRev}}.
@@ -282,7 +283,7 @@ following constructors that witness equivalence and compatible closure:
 %@ c2 : b2 <-> b4
 %@@ c1 (*) c2 : b1 * b2 <-> b3 * b4
 
-The syntax is overloaded: we use the same symbol at the value-type level
+\noindent The syntax is overloaded: we use the same symbol at the value-type level
 and at the isomorphism-type level for denoting sums and products.  Hopefully
 this will not cause undue confusion.
 
@@ -292,7 +293,7 @@ semantics of the language come when these are made to interact at
 the ``top level'', a new syntactic category:
 %subcode{bnf} include main
 % top level term, l ::= c v
-We refer to this as \emph{application}.
+\noindent We refer to this as \emph{application}.
 
 \noindent
 To summarize, the syntax of {{langRev}} is given as follows. 
@@ -537,52 +538,49 @@ For all combinators {{c : b1 <-> b2}} and values {{v1 : b1}} and
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Expressiveness} 
 
-Give the denotation of a few combinators. The denotation of {{eta_{1+1} }} is
-the relation:
-
-{{ {[ (1/(), (left(), left())), (1/(), (right(),right ())) ]} }}
-
-give some intuition; example with eta/epsilon
-
-homotopy equivalence???
-
 Fractional types and values add considerable expressiveness to our
-language.
+language. In the following, we use {{bool}} as an abbreviation of {{1+1}} 
+with {{true}} as an abbreviation for {{left ()}} and {{false}} as an 
+abbreviation for {{right ()}}.
 
 %%%%%%%%%%%%
 \subsection{First-Class Relations}
 
-With fractional types, we can define a value that denotes a first-class
-function or relation. Indeed a value of type {{1/b1 * b2}} is a pair of a
-\emph{constraint} that can only be satisfied by some {{v1 : b1}} and a value
-{{v2 : b2}}. In other words, it corresponds to a function or relation which
-when given matched with a value {{v1 : b1}} ``releases'' the value 
-{{v2 : b2}}. In the remainder of the paper, we introduce this abbreviation:
+As motivated, with fractional types, we can define a value that denotes a
+first-class function or relation. Indeed a value of type {{1/b1 * b2}} is a
+pair of a \emph{constraint} that can only be satisfied by some {{v1 : b1}}
+and a value {{v2 : b2}}. In other words, it corresponds to a function or
+relation which when given matched with a value {{v1 : b1}} ``releases'' the
+value {{v2 : b2}}. To emphasize this view, we introduce the abbreviation:
 
 %subcode{bnf} include main
-%  b1 :-* b2 ::= 1/b1 * b2
+%  b1 :-* b2 &::=& 1/b1 * b2
 
-What is remarkable is that we can systematically turn any combinator
-{{c : b1 <-> b2}} into a (constant) value of type {{b1 :-* b2}} as
-shown below:
+\noindent which suggests a function-like behavior for the pair of a fractional value
+and a regular value. What is remarkable is that we can almost trivially turn
+any combinator {{c : b1 <-> b2}} into a (constant) value of 
+type {{b1 :-* b2}} as shown below:
 
 %subcode{opsem} include main
 %! columnStyle = rcl
 % name &:& (b1 <-> b2) -> (1 <-> (b1 :-* b2))
 % name c &=& eta*_{b1} (;) (id (*) c)
 
-As a simple example, consider the combinator 
-{{name not : 1 <-> (bool :-* bool)}}. Applying this 
-combinator to {{ () }} evaluates as follows:
+As a simple example, consider combinator {{not}} denoting boolean negation.
+It is straightforward to check that the combinator 
+{{name not : 1 <-> (bool :-* bool)}} denotes the following
+relation:
 
-%subcode{opsem} include main
-%! columnStyle = ll
-% {[ () ]}  & 
-% {[ (1/false,false), (1/true,true) ]} & eta*_{bool}
-% {[ (1/false,true), (1/true,false) ]} & id (*) not
+%subcode{proof} include main
+%@ ~
+%@@ () ~~(name not)~~ (1/false,true)
+%
+%@ ~
+%@@ () ~~(name not)~~ (1/true,false)
 
-\noindent In other words, the result of applying the combinator to {{ () }}
-is a value that represents the boolean negation function. 
+\noindent The relation {{name not}} can therefore be used to convert any
+{{false}} to {{true}} and vice-versa. We formalize this ``apply'' combinator
+below.
 
 %%%%%%%%%%%%
 \subsection{Higher-Order Relations}
@@ -658,7 +656,8 @@ categorical trace
 operators~\cite{joyal1996traced,Hasegawa:1997:RCS:645893.671607}.  In a
 language like {{langRev}} there are two natural families of trace operators
 that can be defined, an additive family (explored in detail in our previous
-work) and a multiplicative family (which is the focus of this section). 
+work~\cite{rc2011}) and a multiplicative family (which is the focus of this
+section).
 
 In this case, we are given a computation {{c:b1 * b2 <-> b1 * b3}} and we
 want to cancel the common type {{b1}}, to produce a new combinator
@@ -667,10 +666,9 @@ given a value {{v2 : b2}} but to evaluate {{c}}, we must provide a pair
 consisting of some value {{v1 : b1}} together with the given {{v2 : b2}}. The
 needed value {{v1 : b1}} cannot be arbitrary, however. We do have a
 constraint that the value {{v1 : b1}} must be such that it is also produced
-by as the first component of the result, i.e., 
-that {{evalF c (v1,v2) = (v1,v3)}}. In general, there may be several 
-such values fixed-point values or none. 
-A few examples should help understand the subtleties.
+by as the first component of the result. In general, there may be several
+such values fixed-point values or none.  A few examples should help
+understand the subtleties.
 
 \begin{example}
 Consider the combinator {{c}}:
@@ -682,9 +680,9 @@ Consider the combinator {{c}}:
 \noindent Using the multiplicative trace operator, we can construct the
 combinator {{trace* c : 1 <-> 1}}. Applying this combinator to 
 {{() : 1}} requires us to find a value {{b : bool}} such that 
-{{evalF c (b,()) = (b,())}}. Given that {{c}} is the identity and that the type {{bool}} 
+{{(b,()) ~~c~~ (b,())}}. Given that {{c}} is the identity and that the type {{bool}} 
 has two values, there are two values {{false}} and {{true}} that satisfy the 
-constraint. In other words, expect that {{evalF (trace* c) () = ()}}. 
+constraint. In other words, expect that {{() ~~(trace* c)~~() }}.
 \end{example}
 
 \begin{example}
@@ -699,7 +697,7 @@ Consider a small variation on the combinator {{c}} above:
 pair. Using the multiplicative trace operator, we can construct the
 combinator {{trace* c : 1 <-> 1}} as before. But now, applying this
 combinator to {{() : 1}} requires us to find a value {{b : bool}} such
-that {{evalF c (b,()) = (b,())}} which is impossible since {{c}} negates
+that {{(b,()) ~~c~~ (b,())}} which is impossible since {{c}} negates
 {{b}}. Operationally, we would expect the evaluation of such a
 combinator to produce no value. 
 \end{example}
@@ -738,13 +736,12 @@ Consider the circuit below:
   \includegraphics{diagrams/not_trace.pdf}
 }
 \end{center}
-As motivated earlier, it is clearly impossible for the constraint
-implied by {{trace*}} to be satisfied as a boolean value {{v}} can
-never be the same as its negation. Thus there is no incoming value of
-type {{b}} that can ever go through the circuit. Indeed, if we call
-the circuit above {{c}}, then we can calculate that 
-{{ evalF c v = emptyset}}. We call such a circuit an 
-annihilation circuit.
+As motivated earlier, it is clearly impossible for the constraint implied by
+{{trace*}} to be satisfied as a boolean value {{v}} can never be the same as
+its negation. Thus there is no incoming value of type {{b}} that can ever go
+through the circuit. Indeed, if we call the circuit above {{c}}, then we can
+calculate that {{c}} does not relate {{v}} to anything. We call such a
+circuit an annihilation circuit.
 \end{example}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -776,26 +773,45 @@ Consider the relation {{R}} on booleans given by:
 
 We show how to define a combinator {{c_R}} whose semantics is such that:
 
-%subcode{opsem} include main
-%! columnStyle = rcl
-% evalF c_R false &=& {[ false, true ]} 
-% evalF c_R true &=& {[ false ]} 
+%subcode{proof} include main
+%@ ~
+%@@ false ~~c_R~~ false
+%
+%@ ~
+%@@ false ~~c_R~~ true
+%
+%@ ~
+%@@ true ~~c_R~~ false
 
 The key idea is to find a combinator {{cInner : (a * bool) <-> (a * bool)}}
 for some type {{a}} such that {{trace* cInner}} is the desired combinator
 {{c_R}}. A little experimentation shows that we get the desired behavior
 if {{cInner}} is chosen to behave as follows:
 
-%subcode{opsem} include main
-%! columnStyle = rcl
-% evalF cInner ((false,false),false) &=& ((false,false),false) 
-% evalF cInner ((false,true),false) &=& ((false,true),true) 
-% evalF cInner ((false,true),true) &=& ((false,true),false) 
-% evalF cInner ((false,false),true) &=& ((true,false),true) 
-% evalF cInner ((true,false),false) &=& ((true,true),false) 
-% evalF cInner ((true,false),true) &=& ((true,true),true) 
-% evalF cInner ((true,true),false) &=& ((true,false),false) 
-% evalF cInner ((true,true),true) &=& ((false,false),true) 
+%subcode{proof} include main
+%@ ~
+%@@ ((false,false),false) ~~cInner~~ ((false,false),false) 
+%----
+%@ ~
+%@@ ((false,true),false) ~~cInner~~ ((false,true),true) 
+%----
+%@ ~
+%@@  ((false,true),true) ~~cInner~~ ((false,true),false) 
+%----
+%@ ~
+%@@ ((false,false),true) ~~cInner~~ ((true,false),true) 
+%----
+%@ ~
+%@@ ((true,false),false) ~~cInner~~ ((true,true),false)  
+%----
+%@ ~
+%@@ ((true,false),true) ~~cInner~~ ((true,true),true)  
+%----
+%@ ~
+%@@ ((true,true),false) ~~cInner~~ ((true,false),false) 
+%----
+%@ ~
+%@@ ((true,true),true) ~~cInner~~ ((false,false),true) 
 
 In the first three lines, the first argument is a fixed point and hence the
 multiplicative trace would map the second input to the second output
@@ -985,6 +1001,15 @@ results.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
+
+Give the denotation of a few combinators. The denotation of {{eta_{1+1} }} is
+the relation:
+
+{{ {[ (1/(), (left(), left())), (1/(), (right(),right ())) ]} }}
+
+give some intuition; example with eta/epsilon
+
+homotopy equivalence???
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
