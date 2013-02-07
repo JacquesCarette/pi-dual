@@ -202,6 +202,7 @@ as follows: \todo{roadmap}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Background: {{langRev}} }
+\label{sec:pi}
 
 We review our language {{langRev}} providing the necessary background and
 context for our higher-order extension.\footnote{The presentation in this
@@ -388,29 +389,43 @@ because they happen to be isomorphic.
 %%%%%%%%%%%%%%%%%%%%%5
 \subsection{Relational Semantics}
 
-motivate the need for relations
+In {{langRev}} presented in Sec.~\ref{sec:pi}, we have been able to maintain
+the simple idea that a syntactic isomorphism denotes a \emph{bijection}. In
+richer languages, e.g., in a Turing complete language that admits
+non-termination, isomorphisms necessarily denote \emph{partial
+  bijections}~\cite{rc2011,infeffects}. As we demonstrate in this section,
+once we make the extension to higher-order functions, we must interpret the
+syntactic isomorphisms as \emph{relations}. The intuitive idea, is that the
+fission point combinator {{eta*_b : 1 <-> 1/b * b}} must be able to map the
+element {{() : 1}} to any pair of the form {{(1/v,v)}} with
+{{v:b}}. Similarly, the combinator {{eps*_b : 1/b * b <-> 1}} must be able to
+accept pairs {{(1/v1,v2)}} in which the negative information {{1/v1}} does
+not match the positive information {{v2}}. On such pairs, {{eps*_b}} is
+undefined, i.e., it does not produce {{():1}}. In other words, some of the
+combinators are not partial and some produce more than one result for a
+particular input, and hence we move to the setting of general binary
+relations to interpret our combinators. 
 
-Even though the categorical semantics of {{langRevTF}} is not the main focus
-of this paper, we find it helpful to briefly outline an interpretation of
-{{langRevTF}} in the category of finite sets and relations. This category is
-an example of a \emph{biproduct dagger compact closed category} which are
-categories introduced by Abramsky and
-Coecke~\cite{Abramsky:2004:CSQ:1018438.1021878} and by
-Selinger~\cite{Selinger:2007:DCC:1229185.1229207} to model quantum
+This setting is not only consistent with logical reversibility but is
+arguably the \emph{right} framework for considering expressive reversible
+languages (including the interesting examples of quantum languages).  Indeed,
+even though the categorical semantics of {{langRevTF}} is not the main focus
+of this paper, we find it helpful to state that the category of finite sets
+and relations in which we are going to interpret our language, is an example
+of a \emph{biproduct dagger compact closed category} which are categories
+introduced by Abramsky and Coecke~\cite{Abramsky:2004:CSQ:1018438.1021878}
+and by Selinger~\cite{Selinger:2007:DCC:1229185.1229207} to model quantum
 computation.\footnote{The other common example of these categories is that of
-  finite dimensional Hilbert spaces.} The two main features of these
-biproduct dagger compact closed categories are that they support an adjoint
-for each morphism (to model reversibility) and that they support higher-order
-relation (built from the categorical dagger which is modeled by our
-fractional types). The latter is intuitively clear as any relation between
-$A$ and $B$ can be represented as a subset of {{A * B}}, i.e., as a
-value. 
+  finite dimensional Hilbert spaces.} Two of the most relevant features of
+these categories for our purposes are that they support an adjoint for each
+morphism (to model reversibility) and that they support higher-order relation
+(built from the categorical dagger which is modeled by our fractional
+types). The latter is intuitively clear as any relation between $A$ and $B$
+can be represented as a subset of {{A * B}}, i.e., as a value.
 
 To interpret {{langRevTF}} in this category, we associate a finite set
-{{ [[b]] }} with each type $b$ and a relation {{ [[c]] }} over
+{{ [[b]] }} with each type {{b}} and a relation {{ [[c]] }} over
 {{ [[b1]] }} and {{ [[b2]] }} for each combinator {{ c : b1 <-> b2 }}.
-The denotation of types is straighforward: the denotation of {{1/b}} 
-is an isomorphic copy of the denotation of {{b}}.
 
 \begin{definition}[Denotation of Value Types {{ [[b]] }}]
 \label{chx:def:denot}
@@ -512,7 +527,18 @@ as specified below.
 %@@ (1/v,v) ~~eps*_b~~ ()
 \end{definition}
 
-\newpage
+The language {{langRevTF}} is still logically reversible. This is intuitively
+clear as the relation denoted by a combinator can be used in the reverse
+direction by swapping inputs and outputs.
+
+\begin{proposition}[Logical Reversibility]
+\label{chx:prop:logrev-tracep}
+For all combinators {{c : b1 <-> b2}} and values {{v1 : b1}} and 
+{{v2 : b2}} we have {{v1 ~~c~~ v2}} iff {{v2 ~~(sym c)~~ v1}}.
+\end{proposition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Expressiveness} 
 
 Give the denotation of a few combinators. The denotation of {{eta_{1+1} }} is
 the relation:
@@ -522,81 +548,6 @@ the relation:
 give some intuition; example with eta/epsilon
 
 homotopy equivalence???
-
-The language {{langRevTF}} is still logically reversible. 
-
-\begin{proposition}[Logical Reversibility]
-\label{chx:prop:logrev-tracep}
-For all combinators {{c : b1 <-> b2}} and values {{v1 : b1}} and 
-{{v2 : b2}} we have {{v2 in (evalF c v1)}} iff
-{{v1 in (evalB c v2)}}.
-\end{proposition}
-
-Every relation is clearly reversible by simply swapping the input and
-output components of every pair, i.e., if {{r = {[ (a,b), ... ]} }}
-then the inverse of {{r}} is simply {{ {[ (b,a), ... ]} }}. 
-
-\begin{proposition}[Logical Reversibility]
-\label{prop:logrev-tracet}
-For all combinators {{c : b1 <-> b2}} and values {{v1 : b1}} and 
-{{v2 : b2}} we have if {{v2 in (evalF c v1)}} then 
-{{v1 in (evalB c v2)}}.
-\end{proposition}
-
-An interesting point to ponder is what happens to \emph{information}
-in circuits like {{annihilate}}? We return to this point later.
-
-As hinted to in the first section, the semantics of fractional types introduces
-a form of non-determinism in the sense that there could be zero, one, or several
-values that satisfy the constraints imposed by fractional values. To model
-such non-determinism, we specify the semantics using \emph{relations}. In
-other words, the results of {{evalF c v}} or {{evalB c v}} are no longer
-guaranteed to be a single value: they could be \emph{sets} of values.
-
-The introduction of relations makes sequential composition of
-combinators more involved than simply passing the value produced by
-the first to the second. The following example illustrates our
-notation for the composition of relations which is used in the formal
-semantics. 
-
-\begin{example}[Composition of Relations]
-Consider the two relations:
-\[\begin{array}{rcl}                                                                       
-R_1 &=& \{ (1,2),(1,3),(2,2) \} \\                                                       
-R_2 &=& \{ (2,1),(2,3),(3,1) \}                                                          
-\end{array}\]
-These relations can be expressed in a functional notation as follows:
-\[\begin{array}{rcl}                                                                       
-R_1 (1) &=& \{ 2,3 \} \\                                                                 
-R_1 (2) &=& \{ 2 \} \\                                                                   
-R_1 (3) &=& \emptyset \\
-\\ 
-R_2 (1) &=& \emptyset \\                                                                 
-R_2 (2) &=& \{ 1,3 \} \\                                                                 
-R_2 (3) &=& \{ 1 \}                                                                      
-\end{array}\]
-Using the functional notation, the composition $(R_2 \circ R_1)$ is defined as
-follows:
-\[\begin{array}{rcl}                                                                   
-(R_2 \circ R_1)~(a) &=& \bigcup_{b \in R_1(a)} R_2(b)                                  
-\end{array}\]
-We calculate the composition:
-\[\begin{array}[t]{rcl}                                                                  
-(R_2 \circ R_1)~(1) &=& \bigcup_{b \in R_1(1)} R_2(b) \\                               
-         &=& R_2(2) \cup R_2(3) \\                                                     
-         &=& \{1,3\} \cup \{ 1 \} \\                                                   
-         &=& \{ 1,3 \} \\                                                              
-(R_2 \circ R_1)~(2) &=& \{ 1,3 \} \\                                                   
-(R_2 \circ R_1)~(3) &=& \emptyset                                                      
-\end{array}\]
-In other words, 
-\[
-(R_2 \circ R_1) = \{(1,1), (1,3), (2,1), (2,3)\}
-\]
-\end{example}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Expressiveness} 
 
 Fractional types and values add considerable expressiveness to our
 language.
