@@ -19,6 +19,12 @@ r.subc.pdf : r.subc.tex cites.bib
 r.subc.tex : r.tex
 	ruby subcode/subc.rb r.tex
 
+talk.subc.pdf : talk.subc.tex 
+	pdflatex talk.subc.tex
+
+talk.subc.tex : talk.tex
+	ruby subcode/subc.rb talk.tex
+
 agda-sabry: VecSN.agda VecS.agda Homotopy.agda Pi.agda PiN.agda PiF.agda PiNF-syntax.agda PiNF-algebra.agda PiNF-semantics.agda Pi-abstract-machine.agda Pi-reasoning.agda oldPi.agda
 	touch /u/sabry/.hyplan/pi
 	/bin/rm -r /u/sabry/.hyplan/pi
