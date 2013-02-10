@@ -1011,6 +1011,126 @@ give some intuition; example with eta/epsilon
 
 homotopy equivalence???
 
+axioms for field or meadow; actually we probably a semifield
+
+definition of logical reversibility with relations
+
+definition of information preservation in the case of relations; fanout as an
+example which we can write
+
+explain in detail the size of 2 * 1/2; it should have exactly one element;
+there are two elemens in 2 but the 1/2 identifies them somehow; be precise
+
+we can get the empty relation (eta ; id * swap; eps) what does that mean? 
+
+connection to vector spaces; projectors; inner product. Given dual vectors,
+we can have a standalone |0><0| which is a piece of a function or a projector
+if viewed by itself; we can also have |v><v'| which produces the scalars YES
+or NO. We have an isomorphism between matrices and vectors by viewing 
+|0><0|+|1><1| as |00>+|11>
+
+Perhaps if restrict the ``top-level'' to non-fractional types, we can never
+observe a function built from from fractionals; we must apply it and in that
+case, the system overall behaves like Pi. (no empty relation for example)???
+Idea suggested by Zach is to change eps to (1/a) * a * a <-> a
+
+The code implementing the 16 relations... all 16 relations have the same
+information content as () ??? So we should treat (1/bool * bool) as opaque
+things; we can only extract information from them by applying them.
+
+Include dneg, name (inv cnot) as example of programs which when fed
+non-fractional values produce fractional values
+
+Also include recipT which shows that 1/ distributes over products and tens
+which shows that we can manipulate fractional types in interesting ways
+
+Using relational semantics is good because it's clear; but it's also bad
+unless we spend time to explain the operational model
+
+Explain 'name' in detail; it IS a faithful representation of the input
+relation as a value; we don't get to see the full relation though; we
+interact with it by giving it inputs and observing the related ouptut come
+out. If we make two copies and use each in a different context (applying each
+to a different value, we can ``see'' that it's really a full relation and not
+just one branch.) 
+
+total functions have size 1; partial functions have fractional sizes!!!
+
+denotation of type in Pi is a set; in Pi/ we get a set with an equivalence
+relation (Id by default) but fractionals introduce first-class equivalence
+relations that can be used to restrict the sets.
+
+---
+
+Having re-read Baez-Dolan, I now feel better.
+
+On 13-02-08 08:53 AM, Amr Sabry wrote:
+> I think all the observations in this email are due to the fact that we
+> haven't formalized the size of fractionals using homotopy equivalence. I
+> started doing this but abandoned it for now but the bottom line is that
+> the size of b * 1/b is 1.
+
+Again, agree - more deeply so now.  In more detail, my current thinking:
+- v \in b has size 1.  So |b| counts how many elements it has, whenever 
+b is a type of Pi.  The sum and product rules apply.
+- for b * 1/b to have size 1, then 1/b must have size 1/|b| (assuming 
+these are independent types, which we have been assuming all along)
+
+Attempt #1
+- there are |b| elements in 1/b, and if size is additive, ( 1/|b| = 
+sum_{1/v \in 1/b} |1/v| ) should hold; since |1/v| should be constant, 
+this sum is |b|*c, so c = 1/|b|^2.  Weird.
+
+Let us look at a single 'function' in bool -o bool, namely the identity 
+function.  It should be 'the same' as { (1/true, true), (1/false, false) 
+}.  The cardinality of that set is (1/(2^2)*1 + 1/(2^2)*1) = 1/4 + 1/4 = 
+1/2.   From weird to probably-wrong.
+
+Attempt #2
+- the elements of 1/b are not distinguishable from each other (i.e. they 
+are all isomorphic).  So each element 1/v has b automorphisms, so |1/b| 
+= sum_{aut classes of 1/v \in 1/b} 1/|aut 1/v| = sum_{singleton} 1/|b| = 
+1/|b|.  [as per p.14 of Baez-Dolan]
+
+The size of the set { (1/true, true), (1/false, false) } is now 1/2*1 + 
+1/2*1 = 1.  So this 'set' indeed represents a single "concept".
+
+Note that in attempt #2, we get a new phenomenon.  Consider the 
+(partial) relation {(1/true, false)}, also of type bool -o bool.  It has 
+size 1/2 !  So, if I have not erred somewhere, only total functions have 
+size 1.  Which, I must admit, I rather like.  It's not that partial 
+functions are outlawed, they just don't pull as much weight [pun intended].
+
+So 1/b is very much like a collection of |b| constraints, all of which 
+are "the same" (externally).  While they may have internal structure, it 
+is not visible to any of our combinators, so up to iso, there is only a 
+single element of 1/b, of size 1/|b|.
+
+Yet another way to look at it: let's assume we are looking at FinSet_0, 
+where in fact our universe U has finitely (say N) things in it.  Then 
+the singleton set 1 is actually the isomorphism class of {u_1, ..., 
+u_N}.  There are N of them, but they have N automorphisms in a single 
+orbit, so the quotient has size 1 (i.e. |S| = N but |G| = N too, so |S 
+// G| = 1 ).
+
+So an element of 1/b is closer to an action of b on b; we call it a 
+constraint, or a pattern-match.  I think thinking of it as 'actions' is 
+definitely the right way to go, as we will be able to have different 
+kinds of actions on a type b that just those that come from the elements.
+
+> I don't know how much of a priority this is but if it is we should try
+> to work it out in detail. The good and bad news is that we will have a
+> model much richer and much more complicated than relations. My thought
+> when writing sec. 3 was that we would use the simple but slightly
+> inadequate model of relations (which for one thing confuses v and 1/v)
+> and simply mention that the right abstraction is that of 'biproduct
+> dagger compact closed categories' which presumably would include the
+> richer model.
+
+I am as convinced that the right model is 'biproduct dagger compact 
+closed categories' as I am that the right model for the type level is 
+'categorified field'.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \bibliographystyle{splncs03} 
