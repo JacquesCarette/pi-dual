@@ -45,7 +45,7 @@
 %! :-+ = \multimap^{+}
 %! emptyset = \emptyset
 
-%subcode-inline{bnf-inline} regex \{\{(((\}[^\}])|[^\}])*)\}\} name main include langRev
+%subcode-inline{bnf-inline} regex \{\{(((\}[^\}])|[^\}])*)\}\} name main include Pi
 %! [^ = \ulcorner
 %! ^] = \urcorner
 %! [v = \llcorner
@@ -94,13 +94,13 @@
 %! rho = \rho
 %! @@ = \mu
 %! @ = \,@\,
-%! langRev = \Pi
-%! langRevT = \Pi^{o}
-%! langRevEE = \Pi^{\eta\epsilon}_{+}
+%! Pi = \Pi
+%! PiT = \Pi^{o}
+%! PiEE = \Pi^{\eta\epsilon}_{+}
 %! bullet = \bullet
 %! * = \times
-%! langRevT = \Pi^{o}
-%! langRevTF = \Pi^{/}
+%! PiT = \Pi^{o}
+%! PiTF = \Pi^{/}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -113,11 +113,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
   In previous work, we developed a \emph{first-order},
-  information-preserving, and reversible programming language {{langRev}}
+  information-preserving, and reversible programming language {{Pi}}
   founded on type isomorphisms. Being restricted to first-order types limits
   the expressiveness of the language: it is not possible, for example, to
   abstract common program fragments into a higher-level combinator. In this
-  paper, we introduce a higher-order extension of {{langRev}} based on the
+  paper, we introduce a higher-order extension of {{Pi}} based on the
   novel concept of \emph{fractional types} {{1/b}}. Intuitively, a value of a
   fractional type {{1/v}} represents \emph{negative} information. A
   higher-order function is modeled by a pair {{(1/v1,v2)}} with {{1/v1}}
@@ -169,17 +169,17 @@ i.e., irreversible computation, is derived~\cite{infeffects}. In more detail,
 in our own previous work, we started with the notion of type isomorphism as
 the ``right'' starting point for a theory of computation. The central
 technical contribution was the development of a family of programming
-languages, {{langRev}} with various superscripts, in which every computation
+languages, {{Pi}} with various superscripts, in which every computation
 is an isomorphism. Other major results are that all such computations
 preserve the information-theoretic entropy, that the language is logically
 reversible, and that it has a model in symmetric monoidal categories (which
 are the backbone of models for linear logic and quantum computation). We have
-also invested a significant amount of time in using {{langRev}} as an actual
+also invested a significant amount of time in using {{Pi}} as an actual
 programming language and established several idioms for programming large
-classes of interesting (recursive) programs in {{langRev}}.
+classes of interesting (recursive) programs in {{Pi}}.
 
 A major open problem remains, however. This concerns a higher-order extension
-of {{langRev}}. This extension is of fundamental importance in all the
+of {{Pi}}. This extension is of fundamental importance in all the
 originating research areas. In physics, it allows the process itself or the
 observer to be treated as ``data'' that can be transformed by higher-level
 processes or observed by meta-level observers. In mathematics and logic, it
@@ -201,17 +201,17 @@ The plan of the paper is therefore
 as follows: \todo{roadmap}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Background: {{langRev}} }
+\section{Background: {{Pi}} }
 \label{sec:pi}
 
-We review our language {{langRev}} providing the necessary background and
+We review our language {{Pi}} providing the necessary background and
 context for our higher-order extension.\footnote{The presentation in this
-  section focuses on the simplest version of {{langRev}}. Other versions
+  section focuses on the simplest version of {{Pi}}. Other versions
   include the empty type, recursive types, and trace operators but these
   extensions are orthogonal to the higher-order extension emphasized in this
-  paper.} The terms of {{langRev}} are not classical values and functions;
+  paper.} The terms of {{Pi}} are not classical values and functions;
 rather, the terms are isomorphism witnesses.  In other words, the terms of
-{{langRev}} are proofs that certain ``shapes of values'' are isomorphic.
+{{Pi}} are proofs that certain ``shapes of values'' are isomorphic.
 And, in classical Curry-Howard fashion, our operational semantics shows how
 these proofs can be directly interpreted as actions on ordinary values which
 effect this shape transformation. Of course, ``shapes of values'' are very
@@ -223,7 +223,7 @@ present a term language which naturally inhabits these types, along with an
 appropriate operational semantics.
 
 \paragraph*{Data.}
-We view {{langRev}} as having two levels:  it has traditional values, given by
+We view {{Pi}} as having two levels:  it has traditional values, given by
 %subcode{bnf} include main
 % values, v ::= () | left v | right v | (v, v)
 \noindent and these are classified by ordinary types
@@ -238,7 +238,7 @@ regarded as largely ancillary.  In particular we do not treat the above
 values as first-class citizens.  They only occur when we want to observe the
 effect of an isomorphism.
 
-\paragraph*{Isomorphisms.} The terms of {{langRev}} are witnesses to type
+\paragraph*{Isomorphisms.} The terms of {{Pi}} are witnesses to type
 isomorphisms.  They have (iso) types {{b <-> b}}.  
 Specifically, they are witnesses to the following type isomorphisms:
 %subcode{bnf} include main
@@ -253,7 +253,7 @@ Specifically, they are witnesses to the following type isomorphisms:
 \noindent Each line of the above table introduces a pair of dual constants%
 \footnote{where {{swap*}} and {{swap+}} are self-dual} that witness the type
 isomorphism in the middle.  These are the base (non-reducible) terms of the
-second, principal level of {{langRev}}.
+second, principal level of {{Pi}}.
 
 Note how the above has two readings: first as a set of typing relations for a
 set of constants. Second, if these axioms are seen as universally quantified,
@@ -296,9 +296,9 @@ the ``top level'', a new syntactic category:
 \noindent We refer to this as \emph{application}.
 
 \noindent
-To summarize, the syntax of {{langRev}} is given as follows. 
+To summarize, the syntax of {{Pi}} is given as follows. 
 
-\begin{definition}{(Syntax of {{langRev}})}
+\begin{definition}{(Syntax of {{Pi}})}
 \label{def:Pi}
 %subcode{bnf} include main
 % value types, b ::= 1 | b+b | b*b 
@@ -312,16 +312,16 @@ To summarize, the syntax of {{langRev}} is given as follows.
 % top level term, l ::= c v
 \end{definition}
 
-Mathematically, {{langRev}} can be interpreted in the category of finite sets
+Mathematically, {{Pi}} can be interpreted in the category of finite sets
 and bijections: each value type denotes a finite set of the corresponding size
 and each combinator {{c : b1 <-> b2}} denotes a bijection between the sets
-denoted by {{b1}} and {{b2}}. Operationally, the semantics of {{langRev}} is
+denoted by {{b1}} and {{b2}}. Operationally, the semantics of {{Pi}} is
 given using two mutually recursive interpreters: one going forward and one
 going backwards. The use of {{sym}} switches control from one evaluator to
 the other. We will not present the operational semantics until the next
 section, in the context of the extended language. For now, we state without
 proof that the evaluation of well-typed combinators always terminates and
-that {{langRev}} is logically reversible, i.e., that for all combinators 
+that {{Pi}} is logically reversible, i.e., that for all combinators 
 {{c : b1 <-> b2}} and values {{v1 : b1}} and {{v2 : b2}} we have the forward
 evaluation of {{c v1}} produces {{v2}} iff the backwards evaluation of 
 {{c v2}} produces {{v1}}.
@@ -329,22 +329,22 @@ evaluation of {{c v1}} produces {{v2}} iff the backwards evaluation of
 \jacques{Since we have Agda code for the above, should we refer to it
 here, and make it available?}
 
-Note that a small modification of {{langRev}} (the addition of an
+Note that a small modification of {{Pi}} (the addition of an
 empty type {{0}} with its usual laws) would exactly capture, at the type
 level, the notion of \emph{semiring} (occasionally called a \emph{rig}) where
 we replace equality by isomorphism.  This can also be also compared to
 \emph{bimonoidal categories}.  As is usual with with type theories, the
 coherence conditions (pentagonal and triangle identity) are not explicit,
-but would correspond to certain identity types being trivial.  {{langRev}}
+but would correspond to certain identity types being trivial.  {{Pi}}
 instead, at the type level, models a commutative ringoid where the
 multiplicative structure forms a commutative monoid, but the additive structure
 is just a commutative magma.  We chose not to include {{0}} as a technical
 convenience for the next section.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Language: {{langRevTF}} }
+\section{The Language: {{PiTF}} }
 
-The language {{langRev}} models isomorphisms of values rather well.  However,
+The language {{Pi}} models isomorphisms of values rather well.  However,
 purposefully, it has no notion of \emph{input} or \emph{output}; more
 precisely, because of strict preservation of information, these two concepts
 coincide.  This is the root of reversibility.
@@ -359,8 +359,8 @@ means that a request for information should behave like a \emph{fractional
 
 Syntactically, the extension with fractional types is simple. 
 
-\begin{definition}[Syntax of {{langRevTF}}]
-\label{def:langRevT}
+\begin{definition}[Syntax of {{PiTF}}]
+\label{def:PiT}
 We extend Def.~\ref{def:Pi} with:
 %subcode{bnf} include main
 % value types, b ::= ... | 1/b
@@ -387,7 +387,7 @@ since we are explicitly interested in \emph{isomorphisms}, we should not
 conflate negative-information values with positive-information values just
 because they happen to be isomorphic.
 
-In {{langRev}} presented in Sec.~\ref{sec:pi}, we have been able to maintain
+In {{Pi}} presented in Sec.~\ref{sec:pi}, we have been able to maintain
 the simple idea that a syntactic isomorphism denotes a \emph{bijection}. In
 richer languages, e.g., in a Turing complete language that admits
 non-termination, isomorphisms necessarily denote \emph{partial
@@ -407,7 +407,7 @@ relations to interpret our combinators.
 This setting is not only consistent with logical reversibility but is
 arguably the \emph{right} framework for considering expressive reversible
 languages (including the interesting examples of quantum languages).  Indeed,
-even though the categorical semantics of {{langRevTF}} is not the main focus
+even though the categorical semantics of {{PiTF}} is not the main focus
 of this paper, we find it helpful to state that the category of finite sets
 and relations in which we are going to interpret our language, is an example
 of a \emph{biproduct dagger compact closed category} which are categories
@@ -421,7 +421,7 @@ morphism (to model reversibility) and that they support higher-order relation
 types). The latter is intuitively clear as any relation between $A$ and $B$
 can be represented as a subset of {{A * B}}, i.e., as a value.
 
-To interpret {{langRevTF}} in this category, we associate a finite set
+To interpret {{PiTF}} in this category, we associate a finite set
 {{ [[ b ]] }} with each type {{b}} and a relation {{ [[ c ]] }} over
 {{ [[ b1 ]] }} and {{ [[ b2 ]] }} for each combinator {{ c : b1 <-> b2 }}.
 
@@ -442,8 +442,8 @@ relations using a deductive system whose judgments are of the form
 denoted by {{c}}.
 
 \begin{definition}[Relational semantics]
-\label{def:relational-langRevTF}
-Each combinator {{c : b1 <-> b2}} in {{langRevTF}} denotes a relation
+\label{def:relational-PiTF}
+Each combinator {{c : b1 <-> b2}} in {{PiTF}} denotes a relation
 as specified below. 
 
 %subcode{proof} include main
@@ -525,15 +525,68 @@ as specified below.
 %@@ (1/v,v) ~~eps*_b~~ ()
 \end{definition}
 
-The language {{langRevTF}} is still logically reversible. This is intuitively
+The language {{PiTF}} is still logically reversible. This is intuitively
 clear as the relation denoted by a combinator can be used in the reverse
 direction by swapping inputs and outputs.
+
+\begin{verbatim}
+In the rules above it is unclear as to which v is chosen in the rule
+ for eta. It is unclear that these rules are logically reversible.
+\end{verbatim}
 
 \begin{proposition}[Logical Reversibility]
 \label{chx:prop:logrev-tracep}
 For all combinators {{c : b1 <-> b2}} and values {{v1 : b1}} and 
 {{v2 : b2}} we have {{v1 ~~c~~ v2}} iff {{v2 ~~(sym c)~~ v1}}.
 \end{proposition}
+
+
+
+\subsection{Relational Semantics}
+
+Some thoughts on a relational semantics. We define {{ a <-> b }}
+$\equiv$ {{a R b}}
+
+\noindent
+We now have primitives:
+%subcode{opsem} include main
+% swap* '= {[ ((v1, v2), (v2, v1)) ~|~ v1 in b1, v2 in b2 ]}
+% swap+ '= {[ ((left v1), (right v1)) and ((right v2), (left v2)) ~|~ v1 in b1, v2 in b2]}
+% assocl* '= {[ ((v1, (v2, v3)), ((v1, v2), v3)) ~|~ v1 in b1, v2 in b2, v3 in b3]}
+etc..
+
+\noindent
+closure combinators:
+%subcode{opsem} include main
+% sym c '= {[(v2, v1) ~|~ (v1, v2) in c ]}
+% c1 (;) c2 '= {[(v1, v3) ~|~ v2 in b2, (v1, v2) in c1, (v2, v3) in c2 ]}
+% c1 (*) c2 '= {[((v1, v2), (v3, v4)) ~|~ (v1, v3) in c1, (v2, v4) in c2 ]}
+etc..
+
+\noindent
+Now we have 
+%subcode{opsem} include main
+% eta* '= {[ ((), (v, 1/v)) ~|~ v in b ]}
+% eps* '= {[ ((v, 1/v), ()) ~|~ v in b ]}
+
+Now {{PiTF}} is logically reversible in that for all {{c:b1<->b2}} we
+have {{c^{dagger}: b2 <-> b1}} such that 
+%
+{{c^{dagger} = {[(v2, v1)~|~(v1,v2) in c ]} }}. This is
+straightforward from the definitions above. 
+
+We can define evaluation as follows: 
+%
+{{ c v = {[ v' ~|~ (v, v') in c ]} }}. 
+
+However this is unpleasant since it is unclear how to evaluate if
+{{c~v}} and {{c^{dagger} v'}} are dual by evaluation. This ties into a
+deeper issue of interpreting relations as programs.
+
+Q) If {{|b1|=|b2|}}, can we define all relations between {{b1}} and
+{{b2}}? If yes, then we have a model for {{PiTF}} where the objects
+are sets {{b}} and the morphisms are the relations between objects of
+equal size.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Expressiveness} 
@@ -654,7 +707,7 @@ constitute, a form of self-inverse negation. In particular, we have:
 Mathematically speaking, recursion and iteration can be expressed using
 categorical trace
 operators~\cite{joyal1996traced,Hasegawa:1997:RCS:645893.671607}.  In a
-language like {{langRev}} there are two natural families of trace operators
+language like {{Pi}} there are two natural families of trace operators
 that can be defined, an additive family (explored in detail in our previous
 work~\cite{rc2011}) and a multiplicative family (which is the focus of this
 section).
@@ -832,7 +885,7 @@ behavior above. One can infer the following implementation:
 % c_R &:& bool <-> bool
 % c_R &=& trace* cInner
 
-The above example should convince the reader that the language {{langRev}}
+The above example should convince the reader that the language {{Pi}}
 with multiplicative trace is expressive enough to model finite relational
 programming. We will not prove this claim. We develop an even more
 substantial example: a SAT solver.
