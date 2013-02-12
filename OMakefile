@@ -82,6 +82,7 @@
 
 frac.subc.pdf : frac.subc.tex cites.bib
 	pdflatex -halt-on-error frac.subc.tex
+	bibtex frac.subc
 
 frac.subc.tex : frac.tex
 	ruby subcode/subc.rb frac.tex

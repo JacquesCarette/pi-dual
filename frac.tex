@@ -16,10 +16,14 @@
 
 \newcommand{\todo}[1]{\textbf{TODO:} #1}
 \newcommand{\jacques}[1]{\textsc{Jacques says:} #1}
+\newcommand{\roshan}[1]{\textsc{Roshan says:} 
+  \textit{#1}
+}
 
 \hyphenation{a-reas}
 
-%subcode-inline{bnf-inline} name langRev
+
+%subcode-inline{bnf-inline} name Pi
 %! swap+ = \mathit{swap}^+
 %! swap* = \mathit{swap}^*
 %! dagger =  ^{\dagger}
@@ -52,6 +56,7 @@
 %! v] = \lrcorner
 %! [[ = \llbracket
 %! ]] = \rrbracket
+%! ^^^ = ^{\dagger}
 %! eta* = \eta
 %! eps* = \epsilon
 %! Union = \bigcup
@@ -94,13 +99,14 @@
 %! rho = \rho
 %! @@ = \mu
 %! @ = \,@\,
+%! Pow = \mathcal{P}
 %! Pi = \Pi
 %! PiT = \Pi^{o}
 %! PiEE = \Pi^{\eta\epsilon}_{+}
-%! bullet = \bullet
-%! * = \times
 %! PiT = \Pi^{o}
 %! PiTF = \Pi^{/}
+%! bullet = \bullet
+%! * = \times
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -189,6 +195,10 @@ $\texttt{Id}_{\texttt{Id}_A(a,b)}(p,q)$. Finally, in computer science,
 higher-order types allow code to abstract over other code fragments as well
 as the manipulation of code as data and data as code which is central to many
 algorithms and application domains.
+
+\roshan{It is unclear what the Id types refer to. We should provide
+  some more context here}
+
 
 This paper addresses this higher-order extension.  It does this via a novel
 type construction, which we dub a \emph{fractional type} because of its
@@ -357,6 +367,20 @@ is really a request for information.  Since information is logarithmic, this
 means that a request for information should behave like a \emph{fractional
   type}.
 
+\roshan{It is unclear how fractions help differentiate between inputs
+  and outputs. On first reading this seemed promising, but nothing
+  in the rest of the paper substantiates this point of view.}
+
+\roshan{I think we should arrive at relational programming as a means
+  of giving semantics to fractionals, rather than the other way
+  round. To show that relational programming is reversible, one does
+  not need to resort to fractionals. Everyone understand that
+  relations can be reversed and none of this setup with {{Pi}} is
+  required for that. Our key point should be to communicate that
+  fractionals have a clean semantics in the setting of relational
+  programming rather than the other way round.}
+
+
 Syntactically, the extension with fractional types is simple. 
 
 \begin{definition}[Syntax of {{PiTF}}]
@@ -428,12 +452,13 @@ To interpret {{PiTF}} in this category, we associate a finite set
 \begin{definition}[Denotation of Value Types {{ [[ b ]] }}]
 \label{chx:def:denot}
 Each type denotes a finite set of values as follows:
-\[\begin{array}{rcl}
-\llbracket 1 \rrbracket &=& \{ () \} \\
-\llbracket b_1 + b_2 \rrbracket &=& \{ \mathit{left}~v ~|~ v \leftarrow \llbracket b_1 \rrbracket \} \cup \{ \mathit{right}~v ~|~ v \leftarrow \llbracket b_2 \rrbracket \} \\
-\llbracket b_1 \times b_2 \rrbracket &=& \{ (v_1,v_2) ~|~ v_1 \leftarrow \llbracket b_1 \rrbracket, v_2 \leftarrow \llbracket b_2 \rrbracket \} \\
-\llbracket 1/b \rrbracket &=& \{ 1/v ~|~ v \leftarrow \llbracket b \rrbracket \} 
-\end{array}\]
+%subcode{opsem} include main
+%! <- = \leftarrow
+%! union = \cup
+% [[1]] '= {[ () ]}
+% [[b1 + b2]] '= {[ left v ~|~ v <- [[b1]] ]} union {[ right v ~|~ v <- [[b2]] ]}
+% [[b1 * b2]] '= {[ (v1, v2) ~|~ v1 <- [[b1]], v2 <- [[b2]] ]}
+% [[1/b]] '= {[ 1/v ~|~ v <- [[b]] ]}
 \end{definition}
 
 The denotation of combinators as relations is given below. We specify
@@ -445,6 +470,23 @@ denoted by {{c}}.
 \label{def:relational-PiTF}
 Each combinator {{c : b1 <-> b2}} in {{PiTF}} denotes a relation
 as specified below. 
+
+\roshan{In the judgments below it is misleading that only {{eta*}}
+  appears indexed by a type. To construct each family of relations,
+  the corresponding definition must be indexed by their types. In
+  other words, there is nothing special about {{eta*}}. Further, I am
+  unsure of how to format this so that the combinators are correctly
+  indexed by their types for both primitives and for composition
+  combinators. We could do the following, but it seems to be a
+  overkill.}
+
+%subcode{proof} include main
+%@ v1 in [[b1]]
+%@ v2 in [[b2]]
+%@ v3 in [[b3]]
+%@@ (v1, (v2, v3)) ~assocl*~ ((v1, v2), v3)
+
+
 
 %subcode{proof} include main
 %@ ~
@@ -525,14 +567,16 @@ as specified below.
 %@@ (1/v,v) ~~eps*_b~~ ()
 \end{definition}
 
+
+
+
 The language {{PiTF}} is still logically reversible. This is intuitively
 clear as the relation denoted by a combinator can be used in the reverse
 direction by swapping inputs and outputs.
 
-\begin{verbatim}
-In the rules above it is unclear as to which v is chosen in the rule
- for eta. It is unclear that these rules are logically reversible.
-\end{verbatim}
+\roshan{ In the rules above it is unclear as to which v is chosen in
+  the rule for eta. It is unclear that these rules are logically
+  reversible.  }
 
 \begin{proposition}[Logical Reversibility]
 \label{chx:prop:logrev-tracep}
@@ -542,6 +586,7 @@ For all combinators {{c : b1 <-> b2}} and values {{v1 : b1}} and
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Relational Semantics}
 
 Some thoughts on a relational semantics. We define {{ a <-> b }}
@@ -550,9 +595,11 @@ $\equiv$ {{a R b}}
 \noindent
 We now have primitives:
 %subcode{opsem} include main
-% swap* '= {[ ((v1, v2), (v2, v1)) ~|~ v1 in b1, v2 in b2 ]}
-% swap+ '= {[ ((left v1), (right v1)) and ((right v2), (left v2)) ~|~ v1 in b1, v2 in b2]}
-% assocl* '= {[ ((v1, (v2, v3)), ((v1, v2), v3)) ~|~ v1 in b1, v2 in b2, v3 in b3]}
+% swap*:b1*b2<->b2*b1 '= {[ ((v1, v2), (v2, v1)) ~|~ v1 in b1, v2 in b2 ]}
+% swap+:b1+b2<->b2+b1 '= {[ ((left v1), (right v1)) and ((right v2), (left v2)) 
+%                     && ~~~| v1 in b1, v2 in b2]}
+% assocl*:b1*(b2*b3)<->(b1*b2)*b3 '= {[ ((v1, (v2, v3)), ((v1, v2), v3)) 
+%                   & & ~~~|~ v1 in b1, v2 in b2, v3 in b3]}
 etc..
 
 \noindent
@@ -575,18 +622,64 @@ have {{c^{dagger}: b2 <-> b1}} such that
 {{c^{dagger} = {[(v2, v1)~|~(v1,v2) in c ]} }}. This is
 straightforward from the definitions above. 
 
-We can define evaluation as follows: 
-%
-{{ c v = {[ v' ~|~ (v, v') in c ]} }}. 
 
-However this is unpleasant since it is unclear how to evaluate if
-{{c~v}} and {{c^{dagger} v'}} are dual by evaluation. This ties into a
-deeper issue of interpreting relations as programs.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Evaluation}
 
-Q) If {{|b1|=|b2|}}, can we define all relations between {{b1}} and
+I think defining eval is an open problem.  Consider a few relations:
+
+\begin{enumerate}
+\item 
+{{empty = {[ ]} }}
+
+\item 
+{{full =  {[ R, G, B ]} * {[ R, G, B ]} }}
+
+\item 
+{{id  =  {[ (R, R), (G, G), (B, B) ]} }}
+
+\item 
+{{cycle = {[ (R, R), (R, G), (G, G), (G, B), (B, B), (B, R) ]} }}
+\end{enumerate}
+ 
+Can we define an {{eval}} that meaningfully distinguishes these? What
+can we say about {{(c (;) c^^^) v}} based on {{eval}}?  Here are
+several possible {{eval}} definitions:
+
+\begin{enumerate}
+\item {{ c v = v'}} where {{ v' in {[ v' ~|~ (v, v') in c ]} }}. The
+  eval maps {{b1 -> b2}}. 
+
+\item {{ c v = {[ v' ~|~ (v, v') in c ]} }}. The eval maps {{b1 -> Pow(b2)}}.
+
+\item {{ c vs = {[ v' ~|~ (v, v') in c, v in vs ]} }}. where
+  {{vs:Pow(b1)}}. The eval maps {{Pow(b1) -> Pow(b2)}}. 
+
+\end{enumerate}
+
+For the relations above, none of the suggested eval definitions give a
+logically reversible semantics.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \subsection{Model}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Completeness}
+
+\roshan{If {{|b1|=|b2|}}, can we define all relations between {{b1}} and
 {{b2}}? If yes, then we have a model for {{PiTF}} where the objects
 are sets {{b}} and the morphisms are the relations between objects of
-equal size.
+equal size.}
+
+\roshan{ I suspect that all relations can be constructed, but we have
+  to show this. This is not obvious.}
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Expressiveness} 
