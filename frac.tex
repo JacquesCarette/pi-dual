@@ -16,12 +16,12 @@
 
 \newcommand{\todo}[1]{\textbf{TODO:} #1}
 \newcommand{\jacques}[1]{\textsc{Jacques says:} #1}
+\newcommand{\amr}[1]{\textsc{Amr says:} #1}
 \newcommand{\roshan}[1]{\textsc{Roshan says:} 
   \textit{#1}
 }
 
 \hyphenation{a-reas}
-
 
 %subcode-inline{bnf-inline} name Pi
 %! swap+ = \mathit{swap}^+
@@ -69,6 +69,7 @@
 %! |- = \vdash
 %! <=> = \Longleftrightarrow
 %! <-> = \leftrightarrow
+%| -> = \rightarrow
 %! ~> = \leadsto
 %! ::= = ::=
 %! /= = \neq
@@ -584,9 +585,7 @@ For all combinators {{c : b1 <-> b2}} and values {{v1 : b1}} and
 {{v2 : b2}} we have {{v1 ~~c~~ v2}} iff {{v2 ~~(sym c)~~ v1}}.
 \end{proposition}
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%
 \subsection{Relational Semantics}
 
 Some thoughts on a relational semantics. We define {{ a <-> b }}
@@ -622,8 +621,7 @@ have {{c^{dagger}: b2 <-> b1}} such that
 {{c^{dagger} = {[(v2, v1)~|~(v1,v2) in c ]} }}. This is
 straightforward from the definitions above. 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
 \subsection{Evaluation}
 
 I think defining eval is an open problem.  Consider a few relations:
@@ -660,13 +658,10 @@ several possible {{eval}} definitions:
 For the relations above, none of the suggested eval definitions give a
 logically reversible semantics.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \subsection{Model}
+%%%%%%%%%%%%%%%%%
+%% \subsection{Model}
 
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%
 \subsection{Completeness}
 
 \roshan{If {{|b1|=|b2|}}, can we define all relations between {{b1}} and
@@ -677,9 +672,51 @@ equal size.}
 \roshan{ I suspect that all relations can be constructed, but we have
   to show this. This is not obvious.}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Semantics} 
 
+Each type in {{PiTF}} is interpreted as a \emph{groupoid}. A groupoid can be
+equivalently viewed as an oriented graph, a generalization of a group, or a
+special category. We present the categorical view below.
 
+A groupoid is defined by:
+\begin{itemize}
+\item a set of objects $x,y,\ldots$;
+\item for each pair of objects, a (possibly empty) set $G(x,y)$ of morphisms
+  $x \rightarrow y$; 
+\item for each object $x$, there exists an identity morphism {{id_x in G(x,x)}};
+\item for each triple of objects $x,y,z$, we have a function 
+{{comp_{x,y,z} : G(x,y) * G(y,z) -> G(x,z)}}
+\item there exists a function {{inv_{x,y} : G(x,y) -> G(y,x)}}
+\end{itemize}
+such that for all {{f : x -> y}}, {{g : y -> z}}, and {{h : z -> w}}, we have:
+%subcode{bnf} include main
+% comp_{x,x,y}(id_x,f) &=& f \\
+% comp_{x,y,y}(f,id_y) &=& f \\
+% comp_{x,y,z}(f, comp_{y,z,w}(g,h)) &=& comp_{x,z,w}(comp_{x,y,z}(f,g),h) \\
+% comp_{y,x,y}(inv_{x,y}(f),f) &=& id_y \\
+% comp_{x,y,x}(f,inv_{x,y}(f)) &=& id_x
 
+We now proceed to explain how each {{PiTF}} type denotes a groupoid. First,
+each {{Pi}} type denotes a set as follows.
+
+\begin{definition}[Denotation of {{Pi}} Value Types {{ [[ b ]] }}]
+\label{chx:def:denot}
+Each {{Pi}}type denotes a finite set of values as follows:
+%subcode{opsem} include main
+%! <- = \leftarrow
+%! union = \cup
+% [[1]] '= {[ () ]}
+% [[b1 + b2]] '= {[ left v ~|~ v <- [[b1]] ]} union {[ right v ~|~ v <- [[b2]] ]}
+% [[b1 * b2]] '= {[ (v1, v2) ~|~ v1 <- [[b1]], v2 <- [[b2]] ]}
+\end{definition}
+
+For each of the types {{b}} above, the corresponding groupoid consists of the
+set {{ [[b]] }} of elements with only the trivial identity morphisms. The
+interesting groupoid is the one associated with {{1/b}}. It is defined as
+follows. 
+
+\amr{stuck}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Expressiveness} 
@@ -1148,7 +1185,6 @@ results.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 
-
 Give the denotation of a few combinators. The denotation of {{eta_{1+1} }} is
 the relation:
 
@@ -1289,7 +1325,6 @@ closed categories' as I am that the right model for the type level is
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 \appendix
 \section{Categorical Background}
