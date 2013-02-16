@@ -120,12 +120,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
   In previous work, we developed a \emph{first-order},
-  information-preserving, and reversible programming language {{Pi}}
-  founded on type isomorphisms. Being restricted to first-order types limits
-  the expressiveness of the language: it is not possible, for example, to
+  information-preserving, and reversible programming language {{Pi}} founded
+  on type isomorphisms. Being restricted to first-order types limits the
+  expressiveness of the language: it is not possible, for example, to
   abstract common program fragments into a higher-level combinator. In this
-  paper, we introduce a higher-order extension of {{Pi}} based on the
-  novel concept of \emph{fractional types} {{1/b}}. Intuitively, a value of a
+  paper, we introduce a higher-order extension of {{Pi}} based on the novel
+  concept of \emph{fractional types} {{1/b}}. Intuitively, a value of a
   fractional type {{1/v}} represents \emph{negative} information. A
   higher-order function is modeled by a pair {{(1/v1,v2)}} with {{1/v1}}
   representing the needed argument and {{v2}} representing the
@@ -144,46 +144,49 @@ from these research areas has sparked a huge amount of research that unveiled
 new and surprising connections between geometry, algebra, logic, and
 computation (see~\cite{baez2011physics} for an overview).
 
-In the physics community, Landauer~\cite{Landauer:1961}, Feynman, and others
-have interpreted the laws of physics as fundamentally related to
-computation. In more detail, the great majority of the laws of physics are
-formulated as equalities between different physical observables. For
-instance, Newton's second law of classical mechanics equates the force acting
-on a system to its rate of change of momentum. The insight of Landauer,
-Feynman, etc. is that \emph{different} physical observables should not be
-related by an \emph{equality} but more appropriately by an \emph{isomorphism}
-that witnesses, explains, and models the process of transforming one
-observable to the other.
+In the physics community, Landauer~\cite{Landauer,Landauer:1961},
+Feynman~\cite{springerlink:10.1007/BF02650179}, and others have interpreted
+the laws of physics as fundamentally related to computation. In more detail,
+the great majority of the laws of physics are formulated as equalities
+between different physical observables. For instance, Newton's second law of
+classical mechanics equates the force acting on a system to its rate of
+change of momentum. The insight of Landauer, Feynman, etc. is that
+\emph{different} physical observables should not be related by an
+\emph{equality} but more appropriately by an \emph{isomorphism} that
+witnesses, explains, and models the process of transforming one observable to
+the other.
 
 In the mathematics and logic community, Martin-L\"of developed an extension
 of the simply typed $\lambda$-calculus originally intended to provide a
-rigorous framework for constructive mathematics. This has been further
-extended (first by Streicher and Awodey, and subsequently by many others)
-with a new \emph{identity type} representing the proposition
-that two terms are ``equal.'' Specifically, given two terms $a$ and $b$ of
-the same type $A$, one forms the type $\texttt{Id}_A(a,b)$ representing the
-proposition that $a$ and $b$ are equal: in other words, a term of type
-$\texttt{Id}_A(a,b)$ witnesses, explains, and models the process of
-transforming $a$ to $b$ and vice-versa.
+rigorous framework for constructive
+mathematics~\cite{citeulike:7374951}. This theory has been further extended
+with \emph{identity types} representing the proposition that two terms are
+``equal.'' (See~\cite{warren,streicher} for a survey.) Briefly speaking,
+given two terms $a$ and $b$ of the same type $A$, one forms the type
+$\texttt{Id}_A(a,b)$ representing the proposition that $a$ and $b$ are equal:
+in other words, a term of type $\texttt{Id}_A(a,b)$ witnesses, explains, and
+models the process of transforming $a$ to $b$ and vice-versa.
 
 In the computer science community, the theory and practice of type
 isomorphisms is well-established. Originally, such type isomorphisms were
 motivated by the pragmatic concern of searching large libraries of functions
 by providing one of the many possible isomorphic types for the desired
-function. More recently, type isomorphisms have taken a more central role as
-\emph{the} fundamental computational mechanism from which more conventional,
-i.e., irreversible computation, is derived~\cite{infeffects}. In more detail,
-in our own previous work, we started with the notion of type isomorphism as
-the ``right'' starting point for a theory of computation. The central
-technical contribution was the development of a family of programming
-languages, {{Pi}} with various superscripts, in which every computation
-is an isomorphism. Other major results are that all such computations
-preserve the information-theoretic entropy, that the language is logically
-reversible, and that it has a model in symmetric monoidal categories (which
-are the backbone of models for linear logic and quantum computation). We have
-also invested a significant amount of time in using {{Pi}} as an actual
-programming language and established several idioms for programming large
-classes of interesting (recursive) programs in {{Pi}}.
+function~\cite{Rittri:1989:UTS:99370.99384}. More recently, type isomorphisms
+have taken a more central role as \emph{the} fundamental computational
+mechanism from which more conventional, i.e., irreversible computation, is
+derived. In more detail, in our own previous
+work~\cite{James:2012:IE:2103656.2103667,rc2011,rc2012} we started with the
+notion of type isomorphism as the ``right'' starting point for a theory of
+computation. The central technical contribution was the development of a
+family of programming languages, {{Pi}} with various superscripts, in which
+every computation is an isomorphism. Other major results are that all such
+computations preserve the information-theoretic entropy, that the languages
+are logically reversible, and that they have models in various flavors of
+symmetric monoidal categories (which are the backbone of models for linear
+logic and quantum computation). We have also invested a significant amount of
+time in using {{Pi}} as an actual programming language and established
+several idioms for programming large classes of interesting (recursive)
+programs in {{Pi}}.
 
 A major open problem remains, however. This concerns a higher-order extension
 of {{Pi}}. This extension is of fundamental importance in all the
@@ -197,19 +200,25 @@ higher-order types allow code to abstract over other code fragments as well
 as the manipulation of code as data and data as code which is central to many
 algorithms and application domains.
 
-\roshan{It is unclear what the Id types refer to. We should provide
-  some more context here}
+Technically speaking, obtaining a higher-order extension requires the
+construction of a \emph{compact closed category} from the underlying monoidal
+category for {{Pi}}. Although several such constructions that work in special
+cases are known in the literature (surveyed below), there are many subtleties
+in adapting these ideas to {{Pi}}. Our main novel technical device to
+achieving the higher-order extension is a \emph{fractional type}, which we so
+named because of its duality with conventional product types.  By adding a
+formal (linear) dual to (type theoretic) products, we can internalize the
+notion that ``taking an input'' corresponds to negative information, which
+turns out to be the basis of first-class functions. The remainder of the
+paper reviews {{Pi}} and then introduces the syntax and semantics of the
+extension with fractional types. We then study the properties of the extended
+language and establish its expressiveness via several constructions and
+examples that exploit its ability to model higher-order computations.
 
-
-This paper addresses this higher-order extension.  It does this via a novel
-type construction, which we dub a \emph{fractional type} because of its
-interaction with product types.  By adding a formal (linear) dual to
-(type theoretic) products, we can internalize the notion that ``taking an
-input'' corresponds to negative information, which turns out to be the 
-basis of first-class functions.
-
-The plan of the paper is therefore
-as follows: \todo{roadmap}
+%% \roshan{It is unclear what the Id types refer to. We should provide
+%%   some more context here}
+%% I think the previous paragraph in the intro that talks about Martin-Lof type 
+%% theory provides the context. Anything else??
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Background: {{Pi}} }
@@ -412,22 +421,22 @@ since we are explicitly interested in \emph{isomorphisms}, we should not
 conflate negative-information values with positive-information values just
 because they happen to be isomorphic.
 
-In {{Pi}} presented in Sec.~\ref{sec:pi}, we have been able to maintain
-the simple idea that a syntactic isomorphism denotes a \emph{bijection}. In
+In {{Pi}} presented in Sec.~\ref{sec:pi}, we have been able to maintain the
+simple idea that a syntactic isomorphism denotes a \emph{bijection}. In
 richer languages, e.g., in a Turing complete language that admits
 non-termination, isomorphisms necessarily denote \emph{partial
-  bijections}~\cite{rc2011,infeffects}. As we demonstrate in this section,
-once we make the extension to higher-order functions, we must interpret the
-syntactic isomorphisms as \emph{relations}. The intuitive idea, is that the
-fission point combinator {{eta*_b : 1 <-> 1/b * b}} must be able to map the
-element {{() : 1}} to any pair of the form {{(1/v,v)}} with
+  bijections}~\cite{rc2011,James:2012:IE:2103656.2103667}. As we demonstrate
+in this section, once we make the extension to higher-order functions, we
+must interpret the syntactic isomorphisms as \emph{relations}. The intuitive
+idea, is that the fission point combinator {{eta*_b : 1 <-> 1/b * b}} must be
+able to map the element {{() : 1}} to any pair of the form {{(1/v,v)}} with
 {{v:b}}. Similarly, the combinator {{eps*_b : 1/b * b <-> 1}} must be able to
 accept pairs {{(1/v1,v2)}} in which the negative information {{1/v1}} does
 not match the positive information {{v2}}. On such pairs, {{eps*_b}} is
 undefined, i.e., it does not produce {{():1}}. In other words, some of the
 combinators are not partial and some produce more than one result for a
 particular input, and hence we move to the setting of general binary
-relations to interpret our combinators. 
+relations to interpret our combinators.
 
 This setting is not only consistent with logical reversibility but is
 arguably the \emph{right} framework for considering expressive reversible
