@@ -215,6 +215,7 @@ extension with fractional types. We then study the properties of the extended
 language and establish its expressiveness via several constructions and
 examples that exploit its ability to model higher-order computations.
 
+%% AMR:
 %% \roshan{It is unclear what the Id types refer to. We should provide
 %%   some more context here}
 %% I think the previous paragraph in the intro that talks about Martin-Lof type 
@@ -243,18 +244,17 @@ present a term language which naturally inhabits these types, along with an
 appropriate operational semantics.
 
 \paragraph*{Data.}
-We view {{Pi}} as having two levels:  it has traditional values, given by
+We view {{Pi}} as having two levels:  it has traditional values, given by:
 %subcode{bnf} include main
 % values, v ::= () | left v | right v | (v, v)
-\noindent and these are classified by ordinary types
+\noindent and these are classified by ordinary types:
 %subcode{bnf} include main
 % value types, b ::= 1 | b + b | b * b 
-
-Types include the unit type {{1}}, sum types {{b1+b2}}, and products types
-{{b1*b2}}.  Values includes {{()}} which is the only value of type {{1}},
-{{left v}} and {{right v}} which inject {{v}} into a sum type, and
-{{(v1,v2)}} which builds a value of product type. But these values should be
-regarded as largely ancillary.  In particular we do not treat the above
+\noindent Types include the unit type {{1}}, sum types {{b1+b2}}, and
+products types {{b1*b2}}.  Values includes {{()}} which is the only value of
+type {{1}}, {{left v}} and {{right v}} which inject {{v}} into a sum type,
+and {{(v1,v2)}} which builds a value of product type. But these values should
+be regarded as largely ancillary.  In particular we do not treat the above
 values as first-class citizens.  They only occur when we want to observe the
 effect of an isomorphism.
 
@@ -269,18 +269,16 @@ Specifically, they are witnesses to the following type isomorphisms:
 %swap* :&  b1 * b2 <-> b2 * b1 &: swap*
 %assocl* :&  b1 * (b2 * b3) <-> (b1 * b2) * b3 &: assocr*
 %dist :&~ (b1 + b2) * b3 <-> (b1 * b3) + (b2 * b3)~ &: factor
-
-\noindent Each line of the above table introduces a pair of dual constants%
-\footnote{where {{swap*}} and {{swap+}} are self-dual} that witness the type
-isomorphism in the middle.  These are the base (non-reducible) terms of the
-second, principal level of {{Pi}}.
-
-Note how the above has two readings: first as a set of typing relations for a
-set of constants. Second, if these axioms are seen as universally quantified,
-orientable statements, they also induce transformations of the (traditional)
-values.  The (categorical) intuition here is that these axioms have
-computational content because they witness isomorphisms rather than merely
-stating an extensional equality.
+\noindent Each line of the above table introduces a pair of dual
+constants~\footnote{where {{swap*}} and {{swap+}} are self-dual} that witness
+the type isomorphism in the middle.  These are the base (non-reducible) terms
+of the second, principal level of {{Pi}}. Note how the above has two
+readings: first as a set of typing relations for a set of constants. Second,
+if these axioms are seen as universally quantified, orientable statements,
+they also induce transformations of the (traditional) values. The
+(categorical) intuition here is that these axioms have computational content
+because they witness isomorphisms rather than merely stating an extensional
+equality.
 
 The isomorphisms are extended to form a congruence relation by adding the
 following constructors that witness equivalence and compatible closure:
@@ -302,7 +300,6 @@ following constructors that witness equivalence and compatible closure:
 %@ c1 : b1 <-> b3
 %@ c2 : b2 <-> b4
 %@@ c1 (*) c2 : b1 * b2 <-> b3 * b4
-
 \noindent The syntax is overloaded: we use the same symbol at the value-type level
 and at the isomorphism-type level for denoting sums and products.  Hopefully
 this will not cause undue confusion.
@@ -315,51 +312,54 @@ the ``top level'', a new syntactic category:
 % top level term, l ::= c v
 \noindent We refer to this as \emph{application}.
 
-\noindent
-To summarize, the syntax of {{Pi}} is given as follows. 
+% \noindent
+% To summarize, the syntax of {{Pi}} is given as follows. 
 
-\begin{definition}{(Syntax of {{Pi}})}
-\label{def:Pi}
-%subcode{bnf} include main
-% value types, b ::= 1 | b+b | b*b 
-% values, v ::= () | left v | right v | (v,v) 
-%
-% iso.~types, t ::= b <-> b
-% base iso ::= swap+ | assocl+ | assocr+ 
-%     &|& unite | uniti | swap* | assocl* | assocr* 
-%     &|& dist | factor 
-% iso comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
-% top level term, l ::= c v
-\end{definition}
+% \begin{definition}{(Syntax of {{Pi}})}
+% \label{def:Pi}
+% %subcode{bnf} include main
+% % value types, b ::= 1 | b+b | b*b 
+% % values, v ::= () | left v | right v | (v,v) 
+% %
+% % iso.~types, t ::= b <-> b
+% % base iso ::= swap+ | assocl+ | assocr+ 
+% %     &|& unite | uniti | swap* | assocl* | assocr* 
+% %     &|& dist | factor 
+% % iso comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
+% % top level term, l ::= c v
+% \end{definition}
 
-Mathematically, {{Pi}} can be interpreted in the category of finite sets
-and bijections: each value type denotes a finite set of the corresponding size
+Mathematically, {{Pi}} can be interpreted in the category of finite sets and
+bijections: each value type denotes a finite set of the corresponding size
 and each combinator {{c : b1 <-> b2}} denotes a bijection between the sets
-denoted by {{b1}} and {{b2}}. Operationally, the semantics of {{Pi}} is
-given using two mutually recursive interpreters: one going forward and one
-going backwards. The use of {{sym}} switches control from one evaluator to
-the other. We will not present the operational semantics until the next
-section, in the context of the extended language. For now, we state without
-proof that the evaluation of well-typed combinators always terminates and
-that {{Pi}} is logically reversible, i.e., that for all combinators 
+denoted by {{b1}} and {{b2}}. Operationally, the semantics of {{Pi}} is given
+using two mutually recursive interpreters: one going forward and one going
+backwards. The use of {{sym}} switches control from one evaluator to the
+other. We will present the operational semantics in the next section along
+with the extension with fractional types and values. For now, we state
+without proof that the evaluation of well-typed combinators always terminates
+and that {{Pi}} is logically reversible, i.e., that for all combinators 
 {{c : b1 <-> b2}} and values {{v1 : b1}} and {{v2 : b2}} we have the forward
 evaluation of {{c v1}} produces {{v2}} iff the backwards evaluation of 
-{{c v2}} produces {{v1}}.
+{{c v2}} produces {{v1}}. 
 
-\jacques{Since we have Agda code for the above, should we refer to it
-here, and make it available?}
+%% AMR:
+%% \jacques{Since we have Agda code for the above, should we refer to it
+%% here, and make it available?}
+%% That is a great idea but it would take a significant amount of time to
+%% clean up the code and make it presentable. If someone is willing to do
+%% that, then we should definitely add a reference to the code and make it
+%% available.
 
-Note that a small modification of {{Pi}} (the addition of an
-empty type {{0}} with its usual laws) would exactly capture, at the type
-level, the notion of \emph{semiring} (occasionally called a \emph{rig}) where
-we replace equality by isomorphism.  This can also be also compared to
-\emph{bimonoidal categories}.  As is usual with with type theories, the
-coherence conditions (pentagonal and triangle identity) are not explicit,
-but would correspond to certain identity types being trivial.  {{Pi}}
-instead, at the type level, models a commutative ringoid where the
-multiplicative structure forms a commutative monoid, but the additive structure
-is just a commutative magma.  We chose not to include {{0}} as a technical
-convenience for the next section.
+The language presented above, at the type level, models a commutative ringoid
+where the multiplicative structure forms a commutative monoid, but the
+additive structure is just a commutative magma.  Note that the version of
+{{Pi}} that include the empty type with its usual laws exactly captures, at
+the type level, the notion of a \emph{semiring} (occasionally called a
+\emph{rig}) where we replace equality by isomorphism.  This can also be also
+compared to \emph{bimonoidal categories}.  As is usual with type theories,
+the coherence conditions (pentagonal and triangle identity) are not explicit,
+but would correspond to certain identity types being trivial.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Language: {{PiTF}} }
