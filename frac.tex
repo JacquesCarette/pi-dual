@@ -365,11 +365,10 @@ but would correspond to certain identity types being trivial.
 \section{The Language: {{PiTF}} }
 
 The language {{Pi}} models isomorphisms of values rather well.  However,
-purposefully, it has no notion of \emph{input} or \emph{output}; more
-precisely, because of strict preservation of information, these two concepts
-coincide.  This is the root of reversibility.
-
-But if we want to model functions of any flavor, we need to differentiate
+purposefully, it has no distinguished notion of \emph{input} or
+\emph{output}; more precisely, because of strict preservation of information,
+these two concepts coincide.  This is the root of reversibility. But if we
+want to model functions of any flavor as values, we need to differentiate
 between these notions.  Our idea, inspired by computational dualities and
 polarity, is to introduce a \emph{formal dual} for our types.  We thus
 consider a type in a negative position to possess negative information, as it
@@ -377,19 +376,21 @@ is really a request for information.  Since information is logarithmic, this
 means that a request for information should behave like a \emph{fractional
   type}.
 
-\roshan{It is unclear how fractions help differentiate between inputs
-  and outputs. On first reading this seemed promising, but nothing
-  in the rest of the paper substantiates this point of view.}
+% AMR: a function a -o b is modeled by (1/a,b) not (a,b) 
+% \roshan{It is unclear how fractions help differentiate between inputs
+%   and outputs. On first reading this seemed promising, but nothing
+%   in the rest of the paper substantiates this point of view.}
+%
 
-\roshan{I think we should arrive at relational programming as a means
-  of giving semantics to fractionals, rather than the other way
-  round. To show that relational programming is reversible, one does
-  not need to resort to fractionals. Everyone understand that
-  relations can be reversed and none of this setup with {{Pi}} is
-  required for that. Our key point should be to communicate that
-  fractionals have a clean semantics in the setting of relational
-  programming rather than the other way round.}
-
+% AMR: relations are indeed only presented as a way to explain the semantics
+% \roshan{I think we should arrive at relational programming as a means
+%   of giving semantics to fractionals, rather than the other way
+%   round. To show that relational programming is reversible, one does
+%   not need to resort to fractionals. Everyone understand that
+%   relations can be reversed and none of this setup with {{Pi}} is
+%   required for that. Our key point should be to communicate that
+%   fractionals have a clean semantics in the setting of relational
+%   programming rather than the other way round.}
 
 Syntactically, the extension with fractional types is simple. 
 
@@ -401,6 +402,8 @@ We extend Def.~\ref{def:Pi} with:
 % values, v ::= ... | 1/v
 %
 % base iso ::= ... | eta*_b | eps*_b
+where:
+{{eta*_b : 1 <-> 1/b * b : eps*_b}}
 \end{definition}
 
 For a given type {{b}}, the values of type {{1/b}} are of the form {{1/v}}
@@ -419,45 +422,14 @@ dimensional case, they are isomorphic, but they are nevertheless quite
 different, being $(1,0)$ and $(0,1)$ tensors (respectively).  In other words,
 since we are explicitly interested in \emph{isomorphisms}, we should not
 conflate negative-information values with positive-information values just
-because they happen to be isomorphic.
+because they happen to be isomorphic. (See Sec.~\ref{sec:cat} for a more
+thorough discussion about the meaning of fractional types and values in an
+algebraic and categorical sense.)
 
-In {{Pi}} presented in Sec.~\ref{sec:pi}, we have been able to maintain the
-simple idea that a syntactic isomorphism denotes a \emph{bijection}. In
-richer languages, e.g., in a Turing complete language that admits
-non-termination, isomorphisms necessarily denote \emph{partial
-  bijections}~\cite{rc2011,James:2012:IE:2103656.2103667}. As we demonstrate
-in this section, once we make the extension to higher-order functions, we
-must interpret the syntactic isomorphisms as \emph{relations}. The intuitive
-idea, is that the fission point combinator {{eta*_b : 1 <-> 1/b * b}} must be
-able to map the element {{() : 1}} to any pair of the form {{(1/v,v)}} with
-{{v:b}}. Similarly, the combinator {{eps*_b : 1/b * b <-> 1}} must be able to
-accept pairs {{(1/v1,v2)}} in which the negative information {{1/v1}} does
-not match the positive information {{v2}}. On such pairs, {{eps*_b}} is
-undefined, i.e., it does not produce {{():1}}. In other words, some of the
-combinators are not partial and some produce more than one result for a
-particular input, and hence we move to the setting of general binary
-relations to interpret our combinators.
-
-This setting is not only consistent with logical reversibility but is
-arguably the \emph{right} framework for considering expressive reversible
-languages (including the interesting examples of quantum languages).  Indeed,
-even though the categorical semantics of {{PiTF}} is not the main focus
-of this paper, we find it helpful to state that the category of finite sets
-and relations in which we are going to interpret our language, is an example
-of a \emph{biproduct dagger compact closed category} which are categories
-introduced by Abramsky and Coecke~\cite{Abramsky:2004:CSQ:1018438.1021878}
-and by Selinger~\cite{Selinger:2007:DCC:1229185.1229207} to model quantum
-computation.\footnote{The other common example of these categories is that of
-  finite dimensional Hilbert spaces.} Two of the most relevant features of
-these categories for our purposes are that they support an adjoint for each
-morphism (to model reversibility) and that they support higher-order relation
-(built from the categorical dagger which is modeled by our fractional
-types). The latter is intuitively clear as any relation between $A$ and $B$
-can be represented as a subset of {{A * B}}, i.e., as a value.
-
-To interpret {{PiTF}} in this category, we associate a finite set
-{{ [[ b ]] }} with each type {{b}} and a relation {{ [[ c ]] }} over
-{{ [[ b1 ]] }} and {{ [[ b2 ]] }} for each combinator {{ c : b1 <-> b2 }}.
+For now, we proceed with an operational understanding of the language. The
+semantics we provide is simple: each combinator {{c : b1 <-> b2}} is
+interpreted as a \emph{relation} between the sets denoted by {{b1}} and
+{{b2}} respectively. 
 
 \begin{definition}[Denotation of Value Types {{ [[ b ]] }}]
 \label{chx:def:denot}
@@ -480,24 +452,6 @@ denoted by {{c}}.
 \label{def:relational-PiTF}
 Each combinator {{c : b1 <-> b2}} in {{PiTF}} denotes a relation
 as specified below. 
-
-\roshan{In the judgments below it is misleading that only {{eta*}}
-  appears indexed by a type. To construct each family of relations,
-  the corresponding definition must be indexed by their types. In
-  other words, there is nothing special about {{eta*}}. Further, I am
-  unsure of how to format this so that the combinators are correctly
-  indexed by their types for both primitives and for composition
-  combinators. We could do the following, but it seems to be a
-  overkill.}
-
-%subcode{proof} include main
-%@ v1 in [[b1]]
-%@ v2 in [[b2]]
-%@ v3 in [[b3]]
-%@@ (v1, (v2, v3)) ~assocl*~ ((v1, v2), v3)
-
-
-
 %subcode{proof} include main
 %@ ~
 %@@ (left v) ~~swap+~~ (right v)
@@ -577,7 +531,63 @@ as specified below.
 %@@ (1/v,v) ~~eps*_b~~ ()
 \end{definition}
 
+\newpage
+~
+\newpage
 
+
+\roshan{In the judgments below it is misleading that only {{eta*}}
+  appears indexed by a type. To construct each family of relations,
+  the corresponding definition must be indexed by their types. In
+  other words, there is nothing special about {{eta*}}. Further, I am
+  unsure of how to format this so that the combinators are correctly
+  indexed by their types for both primitives and for composition
+  combinators. We could do the following, but it seems to be a
+  overkill.}
+
+%subcode{proof} include main
+%@ v1 in [[b1]]
+%@ v2 in [[b2]]
+%@ v3 in [[b3]]
+%@@ (v1, (v2, v3)) ~assocl*~ ((v1, v2), v3)
+
+In the previous section, we have been able to maintain the simple idea that a
+syntactic isomorphism denotes a \emph{bijection}. In richer languages, e.g.,
+in a Turing complete language that admits non-termination, isomorphisms
+necessarily denote \emph{partial
+  bijections}~\cite{rc2011,James:2012:IE:2103656.2103667}. As we demonstrate
+in this section, once we make the extension to higher-order functions, we
+must interpret the syntactic isomorphisms as \emph{relations}. The intuitive
+idea, is that the fission point combinator {{eta*_b : 1 <-> 1/b * b}} must be
+able to map the element {{() : 1}} to any pair of the form {{(1/v,v)}} with
+{{v:b}}. Similarly, the combinator {{eps*_b : 1/b * b <-> 1}} must be able to
+accept pairs {{(1/v1,v2)}} in which the negative information {{1/v1}} does
+not match the positive information {{v2}}. On such pairs, {{eps*_b}} is
+undefined, i.e., it does not produce {{():1}}. In other words, some of the
+combinators are not partial and some produce more than one result for a
+particular input, and hence we move to the setting of general binary
+relations to interpret our combinators.
+
+This setting is not only consistent with logical reversibility but is
+arguably the \emph{right} framework for considering expressive reversible
+languages (including the interesting examples of quantum languages).  Indeed,
+even though the categorical semantics of {{PiTF}} is not the main focus
+of this paper, we find it helpful to state that the category of finite sets
+and relations in which we are going to interpret our language, is an example
+of a \emph{biproduct dagger compact closed category} which are categories
+introduced by Abramsky and Coecke~\cite{Abramsky:2004:CSQ:1018438.1021878}
+and by Selinger~\cite{Selinger:2007:DCC:1229185.1229207} to model quantum
+computation.\footnote{The other common example of these categories is that of
+  finite dimensional Hilbert spaces.} Two of the most relevant features of
+these categories for our purposes are that they support an adjoint for each
+morphism (to model reversibility) and that they support higher-order relation
+(built from the categorical dagger which is modeled by our fractional
+types). The latter is intuitively clear as any relation between $A$ and $B$
+can be represented as a subset of {{A * B}}, i.e., as a value.
+
+To interpret {{PiTF}} in this category, we associate a finite set
+{{ [[ b ]] }} with each type {{b}} and a relation {{ [[ c ]] }} over
+{{ [[ b1 ]] }} and {{ [[ b2 ]] }} for each combinator {{ c : b1 <-> b2 }}.
 
 
 The language {{PiTF}} is still logically reversible. This is intuitively
@@ -593,9 +603,6 @@ direction by swapping inputs and outputs.
 For all combinators {{c : b1 <-> b2}} and values {{v1 : b1}} and 
 {{v2 : b2}} we have {{v1 ~~c~~ v2}} iff {{v2 ~~(sym c)~~ v1}}.
 \end{proposition}
-
-%%%%%%%%%%%%%
-\subsection{Relational Semantics}
 
 Some thoughts on a relational semantics. We define {{ a <-> b }}
 $\equiv$ {{a R b}}
@@ -629,9 +636,6 @@ have {{c^{dagger}: b2 <-> b1}} such that
 %
 {{c^{dagger} = {[(v2, v1)~|~(v1,v2) in c ]} }}. This is
 straightforward from the definitions above. 
-
-%%%%%%%%%%%%%%%%
-\subsection{Evaluation}
 
 I think defining eval is an open problem.  Consider a few relations:
 
@@ -667,12 +671,6 @@ several possible {{eval}} definitions:
 For the relations above, none of the suggested eval definitions give a
 logically reversible semantics.
 
-%%%%%%%%%%%%%%%%%
-%% \subsection{Model}
-
-%%%%%%%%%%%%%%%%%
-\subsection{Completeness}
-
 \roshan{If {{|b1|=|b2|}}, can we define all relations between {{b1}} and
 {{b2}}? If yes, then we have a model for {{PiTF}} where the objects
 are sets {{b}} and the morphisms are the relations between objects of
@@ -682,7 +680,7 @@ equal size.}
   to show this. This is not obvious.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Semantics} 
+\section{Expressiveness and Examples} 
 
 Each type in {{PiTF}} is interpreted as a \emph{groupoid}. A groupoid can be
 equivalently viewed as an oriented graph, a generalization of a group, or a
@@ -724,11 +722,6 @@ For each of the types {{b}} above, the corresponding groupoid consists of the
 set {{ [[b]] }} of elements with only the trivial identity morphisms. The
 interesting groupoid is the one associated with {{1/b}}. It is defined as
 follows. 
-
-\amr{stuck}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Expressiveness} 
 
 Fractional types and values add considerable expressiveness to our
 language. In the following, we use {{bool}} as an abbreviation of {{1+1}} 
@@ -913,9 +906,6 @@ with the set {{ {[ false ]} }} which gets transformed as follows:
 % {[ (1/false, (true,false)), (1/true,(false,false)) ]} & (not (*) id)
 % {[ ((1/false,true),false), ((1/true,false),false) ]} & (assocl*)
 % emptyset & eps*_{bool}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Examples} 
 
 Now that we have the formal semantics, we consider a generalized version of
 Ex.~\ref{ch3:ex:annihilate}.
@@ -1190,6 +1180,10 @@ second is satisfied by {{(false,true)}} and {{(true,true)}}.
 It can indeed be verified using the semantics that the {{solve_f}}
 combinators instantiated with the SAT instances produce the expected
 results. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Discussion}
+\label{sec:cat} 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
