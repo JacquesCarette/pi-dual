@@ -540,6 +540,20 @@ as specified below.
 %@@ (1/v,v) ~~eps*_b~~ ()
 \end{definition}
 
+The operational semantics define a relation rather than a function, now, but the
+goal is for them to still be reversible; in particular, we wish for the relation
+to mode check so that for any combinator {{c}} we can treat either its left or
+its right side as an input; this allows us to define {{sym}} as just an argument
+swap. In the interest of brevity, we have treated the type annotations in the
+base isomorphisms as implicit; for example, the rule for {{assocr*}} should
+really read
+
+%subcode{proof} include main
+%@ v1 in b1
+%@ v2 in b2
+%@ v3 in b3
+%@@ ((v1, v2), v3) ~~assocr*_{b1, b2, b3}~~ (v1, (v2, v3))
+
 If it were not for the cases of {{eta*}} and {{eps*}}, each combinator 
 {{c : b1 <-> b2}} would define a total one-to-one function between the sets 
 {{ [[ b1 ]] }} and {{ [[ b2 ]] }}. 
