@@ -6,6 +6,9 @@
 
 frac.subc.pdf : frac.subc.tex cites.bib
 	pdflatex -halt-on-error frac.subc.tex
+	bibtex frac.subc
+	pdflatex -halt-on-error frac.subc.tex
+	pdflatex -halt-on-error frac.subc.tex
 
 frac.subc.tex : frac.tex
 	ruby subcode/subc.rb frac.tex

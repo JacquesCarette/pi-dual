@@ -139,18 +139,18 @@
 
 We are witnessing a convergence of ideas from several distinct research
 communities (physics, mathematics, and computer science) towards replacing
-\emph{equalities} by \emph{isomorphisms}. The combined programme originating
-from these research areas has sparked a huge amount of research that unveiled
+\emph{equalities} by \emph{isomorphisms}. The combined programme 
+has sparked a huge amount of research that unveiled
 new and surprising connections between geometry, algebra, logic, and
 computation (see~\cite{baez2011physics} for an overview).
 
-In the physics community, Landauer~\cite{Landauer,Landauer:1961},
+In the physics community, Landauer~\cite{Landauer:1961,Landauer},
 Feynman~\cite{springerlink:10.1007/BF02650179}, and others have interpreted
 the laws of physics as fundamentally related to computation. In more detail,
 the great majority of the laws of physics are formulated as equalities
-between different physical observables. For instance, Newton's second law of
-classical mechanics equates the force acting on a system to its rate of
-change of momentum. The insight of Landauer, Feynman, etc. is that
+between different physical observables, such as Newton's second law of
+classical mechanics ($F=\dot{p}$).
+The insight of Landauer, Feynman, etc. is that
 \emph{different} physical observables should not be related by an
 \emph{equality} but more appropriately by an \emph{isomorphism} that
 witnesses, explains, and models the process of transforming one observable to
@@ -161,7 +161,7 @@ of the simply typed $\lambda$-calculus originally intended to provide a
 rigorous framework for constructive
 mathematics~\cite{citeulike:7374951}. This theory has been further extended
 with \emph{identity types} representing the proposition that two terms are
-``equal.'' (See~\cite{warren,streicher} for a survey.) Briefly speaking,
+``equal.'' (See~\cite{streicher,warren} for a survey.) Briefly speaking,
 given two terms $a$ and $b$ of the same type $A$, one forms the type
 $\texttt{Id}_A(a,b)$ representing the proposition that $a$ and $b$ are equal:
 in other words, a term of type $\texttt{Id}_A(a,b)$ witnesses, explains, and
@@ -188,17 +188,16 @@ time in using {{Pi}} as an actual programming language and established
 several idioms for programming large classes of interesting (recursive)
 programs in {{Pi}}.
 
-A major open problem remains, however. This concerns a higher-order extension
+A major open problem remains, however: a higher-order extension
 of {{Pi}}. This extension is of fundamental importance in all the
 originating research areas. In physics, it allows the process itself or the
 observer to be treated as ``data'' that can be transformed by higher-level
 processes or observed by meta-level observers. In mathematics and logic, it
 allows the equivalence between different proofs of type $\texttt{Id}_A(a,b)$
-to be itself expressed as an isomorphism as a higher type
+to itself be expressed as an isomorphism (of a higher type)
 $\texttt{Id}_{\texttt{Id}_A(a,b)}(p,q)$. Finally, in computer science,
 higher-order types allow code to abstract over other code fragments as well
-as the manipulation of code as data and data as code which is central to many
-algorithms and application domains.
+as the manipulation of code as data and data as code.
 
 Technically speaking, obtaining a higher-order extension requires the
 construction of a \emph{compact closed category} from the underlying monoidal
@@ -236,7 +235,7 @@ rather, the terms are isomorphism witnesses.  In other words, the terms of
 And, in classical Curry-Howard fashion, our operational semantics shows how
 these proofs can be directly interpreted as actions on ordinary values which
 effect this shape transformation. Of course, ``shapes of values'' are very
-familiar already: they are usually called \emph{types}.  But usually one
+familiar already: they are usually called \emph{types}.  But frequently one
 designs a type system as a method of classifying terms, with the eventual
 purpose to show that certain properties of well-typed terms hold, such as
 safety.  Our approach is different: we start from a type system, and then
@@ -258,9 +257,10 @@ be regarded as largely ancillary.  In particular we do not treat the above
 values as first-class citizens.  They only occur when we want to observe the
 effect of an isomorphism.
 
-\paragraph*{Isomorphisms.} The terms of {{Pi}} are witnesses to type
-isomorphisms.  They have (iso) types {{b <-> b}}.  
-Specifically, they are witnesses to the following type isomorphisms:
+\paragraph*{Isomorphisms.} The important terms of {{Pi}} are witnesses to
+(value) type isomorphisms.  They are also typed, by the shape of the (value)
+type isomorphism they witness {{b <-> b}}.  Specifically, they are witnesses to
+the following type isomorphisms:
 %subcode{bnf} include main
 %! columnStyle = r@{\hspace{-0.5pt}}c@{\hspace{-0.5pt}}l
 %swap+ :&  b1 + b2 <-> b2 + b1 &: swap+
@@ -270,7 +270,7 @@ Specifically, they are witnesses to the following type isomorphisms:
 %assocl* :&  b1 * (b2 * b3) <-> (b1 * b2) * b3 &: assocr*
 %dist :&~ (b1 + b2) * b3 <-> (b1 * b3) + (b2 * b3)~ &: factor
 \noindent Each line of the above table introduces a pair of dual
-constants~\footnote{where {{swap*}} and {{swap+}} are self-dual} that witness
+constants\footnote{where {{swap*}} and {{swap+}} are self-dual} that witness
 the type isomorphism in the middle.  These are the base (non-reducible) terms
 of the second, principal level of {{Pi}}. Note how the above has two
 readings: first as a set of typing relations for a set of constants. Second,
@@ -350,10 +350,12 @@ evaluation of {{c v1}} produces {{v2}} iff the backwards evaluation of
 %% clean up the code and make it presentable. If someone is willing to do
 %% that, then we should definitely add a reference to the code and make it
 %% available.
+%% Jacques:  Right.  I'll definitely work on cleaning up the paper first,
+%% then see if there is time left for the code.
 
 The language presented above, at the type level, models a commutative ringoid
 where the multiplicative structure forms a commutative monoid, but the
-additive structure is just a commutative magma.  Note that the version of
+additive structure is just a commutative semigroup.  Note that the version of
 {{Pi}} that include the empty type with its usual laws exactly captures, at
 the type level, the notion of a \emph{semiring} (occasionally called a
 \emph{rig}) where we replace equality by isomorphism.  This can also be also
@@ -379,13 +381,14 @@ in a negative position to possess negative information, as it is really a
 request for information.  Since information is logarithmic, this means that a
 request for information should behave like a \emph{fractional type}.
 
-% AMR: a function a -o b is modeled by (1/a,b) not (a,b) 
 % \roshan{It is unclear how fractions help differentiate between inputs
 %   and outputs. On first reading this seemed promising, but nothing
 %   in the rest of the paper substantiates this point of view.}
+% AMR: a function a -o b is modeled by (1/a,b) not (a,b) 
+% Jacques: Exactly!  1/a is negative information is input, b is positive is
+%    output.
 %
 
-% AMR: relations are indeed only presented as a way to explain the semantics
 % \roshan{I think we should arrive at relational programming as a means
 %   of giving semantics to fractionals, rather than the other way
 %   round. To show that relational programming is reversible, one does
@@ -394,12 +397,13 @@ request for information should behave like a \emph{fractional type}.
 %   required for that. Our key point should be to communicate that
 %   fractionals have a clean semantics in the setting of relational
 %   programming rather than the other way round.}
+% AMR: relations are indeed only presented as a way to explain the semantics
 
 Syntactically, the extension with fractional types is simple. 
 
 \begin{definition}[Syntax of {{PiTF}}]
 \label{def:PiT}
-We extend Def.~\ref{def:Pi} with:
+We extend our previous definition with:
 %subcode{bnf} include main
 % value types, b ::= ... | 1/b
 % values, v ::= ... | 1/v
@@ -529,7 +533,7 @@ as specified below.
 %@ v2 ~~c2~~ v2'
 %@@ (v1, v2) ~~(c1 (*) c2)~~ (v1', v2')
 %----
-%@ v in [[ b ]]  
+%@ ~
 %@@ () ~~eta*_b~~ (1/v,v)
 %
 %@ ~
