@@ -5,6 +5,7 @@
 \usepackage{stmaryrd}
 \usepackage{listings}
 \usepackage{graphicx}
+\usepackage{comment}
 
 \newcommand{\inkscape}[2][1.5]{
 \begin{center}
@@ -559,10 +560,10 @@ If it were not for the cases of {{eta*}} and {{eps*}}, each combinator
 {{ [[ b1 ]] }} and {{ [[ b2 ]] }}. 
 This is indeed the situation for the language {{Pi}} 
 defined in the previous section. In the presence of fractionals, this simple 
-interpretation of combinators as one-to-one functions is not sufficient.
+interpretation of combinators as one-to-one functions is not sufficient%
 \footnote{The interpretation of combinators as one-to-one functions is also 
 not valid in the presence of recursive 
-types~\cite{rc2011,James:2012:IE:2103656.2103667}.}
+types~\cite{rc2011,James:2012:IE:2103656.2103667}.}.
 The intuitive reason, is that the fission point combinator 
 {{eta*_b : 1 <-> 1/b * b}} must be
 able to map the element {{() : 1}} to any pair of the form {{(1/v,v)}} with
@@ -696,6 +697,8 @@ various higher-order notions.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Expressiveness and Examples} 
 
+\begin{comment}
+% We are not doing groupoids in this paper
 Each type in {{PiTF}} is interpreted as a \emph{groupoid}. A groupoid can be
 equivalently viewed as an oriented graph, a generalization of a group, or a
 special category. We present the categorical view below.
@@ -738,7 +741,9 @@ interesting groupoid is the one associated with {{1/b}}. It is defined as
 follows. 
 
 Fractional types and values add considerable expressiveness to our
-language. In the following, we use {{bool}} as an abbreviation of {{1+1}} 
+language. 
+\end{comment}
+In the following, we use {{bool}} as an abbreviation of {{1+1}} 
 with {{true}} as an abbreviation for {{left ()}} and {{false}} as an 
 abbreviation for {{right ()}}.
 
@@ -800,42 +805,45 @@ shown below:
 %     &<->& b1 * (1/b1 * b2) & (swap*)
 %     &<->& (b1 * 1/b1) * b2) & (assocl*)
 %     &<->& (1/b1 * b1) * b2) & (swap* (*) id)
-%     &<->& 1 * b2 & (eps*{b1} (*) id)
+%     &<->& 1 * b2 & (eps*_{b1} (*) id)
 %     &<->& b2 & (unite)
 
 \noindent Intuitively, we simply match the incoming argument of type {{b1}} with
 the constraint encoded by the function. If they match, they cancel
 each other and the value of type {{b2}} is exposed with no
-constraints. Otherwise, the mismatched values are \emph{annihilated}.
+constraints. Otherwise, the result is undefined.
 
-Function or relation composition is only slightly more involved:
+\noindent A flipped variant is also useful:
+%subcode{opsem} include main
+%! columnStyle = rcl
+% apply' &:& b1 * (b1 :-* b2) <-> b2
+% apply' &=& assocl* (;) (swap* (*) id) (;) (eps*_{b1} (*) id) (;) unite
+
+\noindent Function or relation composition is now straightforward:
 
 %subcode{opsem} include main
 %! columnStyle = rcl
 % compose &:& (b1 :-* b2) * (b2 :-* b3) -> (b1 :-* b3)
-% compose &=& assocr* (;) (id (*) (assocl* (;) (swap* (*) id) (;) (eps*_{b2} (*) id) (;) unite))
+% compose &=& assocr* (;) (id (*) apply')
 
 \noindent Again, at the type level, the computation proceeds as follows:
 
 %subcode{bnf} include main
 %  (b1 :-* b2) * (b2 :-* b3) &=& (1/b1 * b2) * (1/b2 * b3) & 
 %     &<->& (1/b1 * (b2 * (1/b2 * b3)) & (assocr*)
-%     &<->& (1/b1 * ((b2 * 1/b2) * b3) & (assocl*)
-%     &<->& (1/b1 * ((1/b2 * b2) * b3) & (assocl*)
-%     &<->& (1/b1 * (1 * b3) & (eps*_{b2})
-%     &<->& (1/b1 * b3) & (unite)
+%     &<->& (1/b1 * b3) & (id * apply')
 %     &=& b1 :-* b3
 
 %%%%%%%%%%%%
 \subsection{Duality}
 
 The final remarkable property of fractional types is that they
-constitute, a form of self-inverse negation. In particular, we have:
+are involutive.  In particular, we have:
 
 %subcode{opsem} include main
 %! columnStyle = rcl
-% doubleNeg &:& b <-> 1/(1/b)
-% doubleNeg &=& uniti (;) (eta*_{1/b} (*) id) (;) assocr* (;) (id (*) eps*_b) (;) swap* (;) unite
+% doubleDiv &:& b <-> 1/(1/b)
+% doubleDiv &=& uniti (;) (eta*_{1/b} (*) id) (;) assocr* (;) (id (*) eps*_b) (;) swap* (;) unite
 
 \noindent At the type level, this computation proceeds as follows:
 
@@ -861,23 +869,22 @@ section).
 In this case, we are given a computation {{c:b1 * b2 <-> b1 * b3}} and we
 want to cancel the common type {{b1}}, to produce a new combinator
 {{trace*~c:b2<->b3}}. For the evaluation of such a combinator, we are only
-given a value {{v2 : b2}} but to evaluate {{c}}, we must provide a pair
-consisting of some value {{v1 : b1}} together with the given {{v2 : b2}}. The
-needed value {{v1 : b1}} cannot be arbitrary, however. We do have a
-constraint that the value {{v1 : b1}} must be such that it is also produced
-by as the first component of the result. In general, there may be several
-such values fixed-point values or none.  A few examples should help
-understand the subtleties.
+given a value {{v2 : b2}}. But to evaluate {{c}}, we must provide a pair
+consisting of ``some'' value {{v1 : b1}} together with the given {{v2 : b2}}.
+The needed value {{v1 : b1}} cannot be arbitrary: it must be such that is
+is the value produced as the first component of the result.  In general, there
+may be several such fixed-point values or none.  A few examples should help
+explain the subtleties.
 
 \begin{example}
-Consider the combinator {{c}}:
+Consider the combinator
 
 {{c : bool * 1 <-> bool * 1}} 
 
 {{c = id}}
 
-\noindent Using the multiplicative trace operator, we can construct the
-combinator {{trace* c : 1 <-> 1}}. Applying this combinator to 
+\noindent Using {{trace*}}, we construct the
+combinator {{trace* c : 1 <-> 1}}. Applying this to 
 {{() : 1}} requires us to find a value {{b : bool}} such that 
 {{(b,()) ~~c~~ (b,())}}. Given that {{c}} is the identity and that the type {{bool}} 
 has two values, there are two values {{false}} and {{true}} that satisfy the 
@@ -897,8 +904,8 @@ pair. Using the multiplicative trace operator, we can construct the
 combinator {{trace* c : 1 <-> 1}} as before. But now, applying this
 combinator to {{() : 1}} requires us to find a value {{b : bool}} such
 that {{(b,()) ~~c~~ (b,())}} which is impossible since {{c}} negates
-{{b}}. Operationally, we would expect the evaluation of such a
-combinator to produce no value. 
+{{b}}, i.e. {{c}} has no fixed points. Operationally, the evaluation of
+such a combinator should produce no value (if it even terminates).
 \end{example}
 
 With fractionals, the multiplicative trace operator becomes expressible:
@@ -915,15 +922,13 @@ with the set {{ {[ false ]} }} which gets transformed as follows:
 %subcode{opsem} include main
 %! columnStyle = ll
 % {[ ((),false) ]}  & (uniti)
-% {[ ((1/false,false),false), ((1/true,true),false) ]} & (eta*_{bool})
+% {[ ((1/false,false),false), ((1/true,true),false) ]} & (eta*_{bool} * id)
 % {[ (1/false, (false,false)), (1/true,(true,false)) ]} & (assocr*)
-% {[ (1/false, (true,false)), (1/true,(false,false)) ]} & (not (*) id)
+% {[ (1/false, (true,false)), (1/true,(false,false)) ]} & (id (*) not )
 % {[ ((1/false,true),false), ((1/true,false),false) ]} & (assocl*)
-% emptyset & eps*_{bool}
+% emptyset & (eps*_{bool} * id)
 
-Now that we have the formal semantics, we consider a generalized version of
-Ex.~\ref{ch3:ex:annihilate}.
-
+\jacques{in the current paper, this seems to no longer make sense}
 \begin{example}[Annihilation]
 \label{ch3:ex;annihilation}
 Consider the circuit below:
