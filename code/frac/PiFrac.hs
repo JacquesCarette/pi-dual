@@ -70,8 +70,8 @@ data a :<=> b where
   FoldN   :: Either () Nat :<=> Nat
   UnfoldN :: Nat :<=> Either () Nat
 -- Trace operators for looping/recursion
-  TraceP :: (B a, B b1, B b2) => (Either a b1 :<=> Either a b2) -> (b1 :<=> b2)
-  TraceT :: (B a, B b1, B b2) => ((a, b1) :<=> (a, b2)) -> (b1 :<=> b2)
+--  TraceP :: (B a, B b1, B b2) => (Either a b1 :<=> Either a b2) -> (b1 :<=> b2)
+--  TraceT :: (B a, B b1, B b2) => ((a, b1) :<=> (a, b2)) -> (b1 :<=> b2)
 -- Eta/Psi
   EtaT :: (B a) => () :<=> (Recip a, a)
   EpsT :: (B a) => (Recip a, a) :<=> ()
@@ -102,8 +102,8 @@ adjoint FoldB = UnfoldB
 adjoint UnfoldB = FoldB
 adjoint FoldN = UnfoldN
 adjoint UnfoldN = FoldN
-adjoint (TraceP c) = TraceP (adjoint c)
-adjoint (TraceT c) = TraceT (adjoint c)
+--adjoint (TraceP c) = TraceP (adjoint c)
+--adjoint (TraceT c) = TraceT (adjoint c)
 adjoint EtaT = EpsT
 adjoint EpsT = EtaT
 
@@ -147,6 +147,7 @@ eval FoldN (Left ()) = return 0
 eval FoldN (Right n) = return (n+1)
 eval UnfoldN 0 = return (Left ())
 eval UnfoldN n = return (Right (n-1))
+{--
 eval (TraceP c) v = do v' <- eval c (Right v)
                        loop c v'
     where
@@ -159,9 +160,10 @@ eval (TraceT c) v = try elems
                             if a == a' 
                               then v' : try as
                               else try as
+--}
 eval EtaT () = [(Recip v, v) | v <- elems]
 eval EpsT (Recip v1, v2) | v1 == v2 = [()]
-                         | otherwise = []
+                         | otherwise = error "Type error"
 
 evalR :: (a :<=> b) -> b -> [a]
 evalR Id a = return a
@@ -202,6 +204,7 @@ evalR FoldN 0 = return (Left ())
 evalR FoldN n = return (Right (n-1))
 evalR UnfoldN (Left ()) = return 0
 evalR UnfoldN (Right n) = return (n+1)
+{--
 evalR (TraceP c) v = do v' <- evalR c (Right v)
                         loop c v'
     where
@@ -214,8 +217,9 @@ evalR (TraceT c) v = try elems
                             if a == a' 
                               then v' : try as
                               else try as
+--}
 evalR EtaT (Recip v1, v2) | v1 == v2 = [()]
-                          | otherwise = []
+                          | otherwise = error "Type error"
 evalR EpsT () = [(Recip v, v) | v <- elems]
 
 -- using nub; could use exclusive union to get modal QC or nothing to get duplicates
@@ -384,6 +388,7 @@ addsub =               -- (n1' + n2)
   (SwapP :+: Id) :.:   -- ((1+n1') + n2')
   (FoldN :+: Id)       -- (n1 + n2')
 
+{--
 just :: B b => b :<=> Either () b
 just = TraceP c 
   where c :: B b => Either Nat b :<=> Either Nat (Either () b)
@@ -407,6 +412,7 @@ introZ :: () :<=> Nat
 introZ = TraceP c 
   where c :: Either Nat () :<=> Either Nat Nat
         c = SwapP :.: FoldN :.: injectR
+--}
 
 ------------------------------------------------------------------------
 -- GoI??
@@ -483,7 +489,7 @@ clone3 = shuffle :.:
 -- Multiplicative Trace (SAT)
 
 annihilate :: B a => a :<=> a
-annihilate = TraceT c
+annihilate = dtraceT c
   where c :: B a => (Bool, a) :<=> (Bool, a)
         c = inot :*: Id
         
@@ -536,7 +542,7 @@ satf isof = -- ((((heap-control,control),heap),input-1),input-2)
 solve :: ((((Bool,Bool),Bool) :<=> ((Bool,Bool),Bool))) -> 
          ((Bool,Bool) :<=> (Bool,Bool))
          -- cloning-heap :<=> inputs that satisfy isof
-solve isof = TraceT body 
+solve isof = dtraceT body 
   where body :: ((((Bool,Bool),Bool),(Bool,Bool)),(Bool,Bool)) :<=> 
                 ((((Bool,Bool),Bool),(Bool,Bool)),(Bool,Bool))
         -- ((((input-1,input-2),heap),(control,heap-control)),cloning-heap)
@@ -596,6 +602,7 @@ test3 c = mapM_ (\b -> print (b, evalL c [b])) b3
 ------------------------------------------------------------------------
 -- iterate twice
 
+{--
 twice :: B a => (a :<=> a) -> (a :<=> a)
 twice c = TraceP (((c :+: c) :+: Id) :.: r)
   where r :: B a => (Either (Either a a) a) :<=> (Either (Either a a) a)
@@ -604,7 +611,7 @@ twice c = TraceP (((c :+: c) :+: Id) :.: r)
           AssocRP :.:        -- b + (a + c)
           (Id :+: SwapP) :.: -- b + (c + a)
           AssocLP            -- (b + c) + a
-          
+--}          
 -- of course we could have written (c ; c) but when we introduce
 -- recursive types, iteration becomes essential.
 -- generalize to iterate n times for fixed n
@@ -615,14 +622,14 @@ twice c = TraceP (((c :+: c) :+: Id) :.: r)
 r, s, u, v, rd, sd, ud, vd, eq, g, k, gk :: Bool :<=> Bool        
 r = Id
 s = inot
-u = TraceT cr 
+u = dtraceT cr 
   where cr :: ((Bool,Bool),Bool) :<=> ((Bool,Bool),Bool) 
         cr = Sym (AssocRT :.: (Id :*: cnot) :.: AssocLT :.:
                   SwapT :.: (controlled (inot :*: inot)) :.: SwapT :.: 
                   AssocRT :.: SwapT :.: toffoli :.: SwapT :.: AssocLT :.:
                   SwapT :.: AssocLT :.: (cond2 Id Id inot Id) :.: AssocRT :.: SwapT :.:
                   SwapT :.: AssocLT :.: toffoli :.: AssocRT :.: SwapT)
-v = TraceT cr 
+v = dtraceT cr 
   where cr :: ((Bool,Bool),Bool) :<=> ((Bool,Bool),Bool)
         cr = Sym (SwapT :.: AssocLT :.: (cnot :*: Id) :.: AssocRT :.: SwapT :.: 
                   toffoli :.: ((SwapT :.: cnot :.: SwapT) :*: Id) :.:
@@ -649,10 +656,10 @@ dotP = undefined
 r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15 :: Bool :<=> Bool
 
 -- empty
-r0 = TraceT (inot :*: Id)
+r0 = dtraceT (inot :*: Id)
 
 -- (F,F)
-r1 = TraceT (SwapT :.: cnot :.: SwapT)
+r1 = dtraceT (SwapT :.: cnot :.: SwapT)
 
 -- (F,T)
 r2 = r1 :.: inot
@@ -700,30 +707,30 @@ r15 = sd :.: Sym sd
 -- Examples from book
 
 ex1 :: () :<=> ()
-ex1 = TraceT c        
+ex1 = dtraceT c        
   where c :: (Bool, ()) :<=> (Bool, ())
         c = Id
 
 ex2 :: () :<=> ()
-ex2 = TraceT c
+ex2 = dtraceT c
   where c :: (Bool, ()) :<=> (Bool, ())
         c = inot :*: Id
         
 ex3 :: () :<=> Bool        
-ex3 = TraceT c 
+ex3 = dtraceT c 
   where c :: (Zero, ()) :<=> (Zero, Bool)
         c = DistribZ :.: FactorZ
         
 -- satisfied many many many times ;-)
 exn :: () :<=> ()
-exn = TraceT c
+exn = dtraceT c
   where c :: (Nat, ()) :<=> (Nat, ())
         c = Id
 
 -- satisfy c @@ () returns () if any row of c is the identity
 
 satisfy :: B a => (a :<=> a) -> () :<=> ()
-satisfy c = TraceT (SwapT :.: UnitE :.: c :.: UnitI :.: SwapT)
+satisfy c = dtraceT (SwapT :.: UnitE :.: c :.: UnitI :.: SwapT)
 
 sat1 = satisfy inot
 
@@ -752,7 +759,7 @@ block = -- (a,(b,(c,y)))
 
 ex :: ((Bool,Bool),Bool) :<=> ((Bool,Bool),Bool)
 -- (a,(b,(c,y))) ((a,b),(c,y)) (((a,b),c),y) (y,((a,b),c))
-ex = TraceT (SwapT :.: AssocRT :.: AssocRT :.:
+ex = dtraceT (SwapT :.: AssocRT :.: AssocRT :.:
              block :.:
              AssocLT :.: AssocLT :.: SwapT)
 
