@@ -164,7 +164,7 @@ mathematics~\cite{citeulike:7374951}. This theory has been further extended
 with \emph{identity types} representing the proposition that two terms are
 ``equal.'' (See~\cite{streicher,warren} for a survey.) Briefly speaking,
 given two terms $a$ and $b$ of the same type $A$, one forms the type
-$\texttt{Id}_A(a,b)$ representing the proposition that $a$ and $b$ are equal:
+$\texttt{Id}_A(a,b)$ representing the proposition that~$a$ and~$b$ are equal:
 in other words, a term of type $\texttt{Id}_A(a,b)$ witnesses, explains, and
 models the process of transforming $a$ to $b$ and vice-versa.
 
@@ -189,31 +189,32 @@ time in using {{Pi}} as an actual programming language and established
 several idioms for programming large classes of interesting (recursive)
 programs in {{Pi}}.
 
-A major open problem remains, however: a higher-order extension
-of {{Pi}}. This extension is of fundamental importance in all the
-originating research areas. In physics, it allows the process itself or the
-observer to be treated as ``data'' that can be transformed by higher-level
-processes or observed by meta-level observers. In mathematics and logic, it
-allows the equivalence between different proofs of type $\texttt{Id}_A(a,b)$
-to itself be expressed as an isomorphism (of a higher type)
+A major open problem remains, however: a higher-order extension of
+{{Pi}}. This extension is of fundamental importance in all the originating
+research areas. In physics, it allows a process or observer to be treated as
+``data'' that can be transformed by higher-level processes or observed by
+meta-level observers. In mathematics and logic, it allows the equivalence
+between different proofs of type $\texttt{Id}_A(a,b)$ to itself be expressed
+as an isomorphism (of a higher type)
 $\texttt{Id}_{\texttt{Id}_A(a,b)}(p,q)$. Finally, in computer science,
 higher-order types allow code to abstract over other code fragments as well
 as the manipulation of code as data and data as code.
 
 Technically speaking, obtaining a higher-order extension requires the
 construction of a \emph{compact closed category} from the underlying monoidal
-category for {{Pi}}. Although several such constructions that work in special
-cases are known in the literature (surveyed below), there are many subtleties
-in adapting these ideas to {{Pi}}. Our main novel technical device to
-achieving the higher-order extension is a \emph{fractional type}, which we so
-named because of its duality with conventional product types.  By adding a
-formal (linear) dual to (type theoretic) products, we can internalize the
-notion that ``taking an input'' corresponds to negative information, which
-turns out to be the basis of first-class functions. The remainder of the
-paper reviews {{Pi}} and then introduces the syntax and semantics of the
-extension with fractional types. We then study the properties of the extended
-language and establish its expressiveness via several constructions and
-examples that exploit its ability to model higher-order computations.
+category for~{{Pi}}. Although the general idea of such a construction is
+well-understood, the details of adapting it to an actual programming language
+as subtle (as we explain in the main body of the paper).  Our main novel
+technical device to achieving the higher-order extension is a
+\emph{fractional type}, which we so named because of its duality with
+conventional product types.  By adding a formal (linear) dual to (type
+theoretic) products, we can internalize the notion that ``taking an input''
+corresponds to negative information, which turns out to be the basis of
+first-class functions. The remainder of the paper reviews {{Pi}} and then
+introduces the syntax and semantics of the extension with fractional
+types. We then study the properties of the extended language and establish
+its expressiveness via several constructions and examples that exploit its
+ability to model higher-order computations.
 
 %% AMR:
 %% \roshan{It is unclear what the Id types refer to. We should provide
@@ -250,7 +251,7 @@ We view {{Pi}} as having two levels:  it has traditional values, given by:
 \noindent and these are classified by ordinary types:
 %subcode{bnf} include main
 % value types, b ::= 1 | b + b | b * b 
-\noindent Types include the unit type {{1}}, sum types {{b1+b2}}, and
+\noindent Types include the unit type {{1}}, sum types {{b1 + b2}}, and
 products types {{b1*b2}}.  Values includes {{()}} which is the only value of
 type {{1}}, {{left v}} and {{right v}} which inject {{v}} into a sum type,
 and {{(v1,v2)}} which builds a value of product type. But these values should
@@ -261,7 +262,7 @@ effect of an isomorphism.
 \paragraph*{Isomorphisms.} The important terms of {{Pi}} are witnesses to
 (value) type isomorphisms.  They are also typed, by the shape of the (value)
 type isomorphism they witness {{b <-> b}}.  Specifically, they are witnesses to
-the following type isomorphisms:
+the following isomorphisms:
 %subcode{bnf} include main
 %! columnStyle = r@{\hspace{-0.5pt}}c@{\hspace{-0.5pt}}l
 %swap+ :&  b1 + b2 <-> b2 + b1 &: swap+
@@ -331,10 +332,11 @@ the ``top level'', a new syntactic category:
 % \end{definition}
 
 Mathematically, {{Pi}} can be interpreted in the category of finite sets and
-bijections: each value type denotes a finite set of the corresponding size
-and each combinator {{c : b1 <-> b2}} denotes a bijection between the sets
-denoted by {{b1}} and {{b2}}. Operationally, the semantics of {{Pi}} is given
-using two mutually recursive interpreters: one going forward and one going
+bijections: each value type denotes a finite set of a size calculated by
+viewing the types as natural numbers and each combinator {{c : b1 <-> b2}}
+denotes a bijection between the sets denoted by~{{b1}}
+and~{{b2}}. Operationally, the semantics of {{Pi}} is given using two
+mutually recursive interpreters: one going forward and one going
 backwards. The use of {{sym}} switches control from one evaluator to the
 other. We will present the operational semantics in the next section along
 with the extension with fractional types and values. For now, we state
@@ -342,7 +344,7 @@ without proof that the evaluation of well-typed combinators always terminates
 and that {{Pi}} is logically reversible, i.e., that for all combinators 
 {{c : b1 <-> b2}} and values {{v1 : b1}} and {{v2 : b2}} we have the forward
 evaluation of {{c v1}} produces {{v2}} iff the backwards evaluation of 
-{{c v2}} produces {{v1}}. 
+{{c v2}} produces {{v1}}.
 
 %% AMR:
 %% \jacques{Since we have Agda code for the above, should we refer to it
@@ -576,9 +578,10 @@ The relational semantics can be given an operational interpretation by
 defining two functions: a forward evaluator and a backwards evaluator that
 exercise the relation in opposite directions. It follows that if the forward
 evaluation of {{c v1}} produces {{v2}} as a possible answer then the
-backwards evaluation of {{c v2}} produces {{v1}} as a possible answer. More
-generally, the semantics of {{PiTF}} using sets and relations, i.e., in the
-category of finite sets and relations suggests a few additional immediate
+backwards evaluation of {{c v2}} produces {{v1}} as a possible answer. 
+
+More generally, the semantics of {{PiTF}} using sets and relations, i.e., in
+the category of finite sets and relations suggests a few additional immediate
 properties.  The category of finite sets and relations is an example of a
 \emph{biproduct dagger compact closed category} which are the categories
 introduced by Abramsky and Coecke~\cite{Abramsky:2004:CSQ:1018438.1021878}
@@ -697,52 +700,6 @@ various higher-order notions.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Expressiveness and Examples} 
 
-\begin{comment}
-% We are not doing groupoids in this paper
-Each type in {{PiTF}} is interpreted as a \emph{groupoid}. A groupoid can be
-equivalently viewed as an oriented graph, a generalization of a group, or a
-special category. We present the categorical view below.
-
-A groupoid is defined by:
-\begin{itemize}
-\item a set of objects $x,y,\ldots$;
-\item for each pair of objects, a (possibly empty) set $G(x,y)$ of morphisms
-  $x \rightarrow y$; 
-\item for each object $x$, there exists an identity morphism {{id_x in G(x,x)}};
-\item for each triple of objects $x,y,z$, we have a function 
-{{comp_{x,y,z} : G(x,y) * G(y,z) -> G(x,z)}}
-\item there exists a function {{inv_{x,y} : G(x,y) -> G(y,x)}}
-\end{itemize}
-such that for all {{f : x -> y}}, {{g : y -> z}}, and {{h : z -> w}}, we have:
-%subcode{bnf} include main
-% comp_{x,x,y}(id_x,f) &=& f \\
-% comp_{x,y,y}(f,id_y) &=& f \\
-% comp_{x,y,z}(f, comp_{y,z,w}(g,h)) &=& comp_{x,z,w}(comp_{x,y,z}(f,g),h) \\
-% comp_{y,x,y}(inv_{x,y}(f),f) &=& id_y \\
-% comp_{x,y,x}(f,inv_{x,y}(f)) &=& id_x
-
-We now proceed to explain how each {{PiTF}} type denotes a groupoid. First,
-each {{Pi}} type denotes a set as follows.
-
-\begin{definition}[Denotation of {{Pi}} Value Types {{ [[ b ]] }}]
-\label{chx:def:denot}
-Each {{Pi}}type denotes a finite set of values as follows:
-%subcode{opsem} include main
-%! <- = \leftarrow
-%! union = \cup
-% [[1]] '= {[ () ]}
-% [[b1 + b2]] '= {[ left v ~|~ v <- [[b1]] ]} union {[ right v ~|~ v <- [[b2]] ]}
-% [[b1 * b2]] '= {[ (v1, v2) ~|~ v1 <- [[b1]], v2 <- [[b2]] ]}
-\end{definition}
-
-For each of the types {{b}} above, the corresponding groupoid consists of the
-set {{ [[b]] }} of elements with only the trivial identity morphisms. The
-interesting groupoid is the one associated with {{1/b}}. It is defined as
-follows. 
-
-Fractional types and values add considerable expressiveness to our
-language. 
-\end{comment}
 In the following, we use {{bool}} as an abbreviation of {{1+1}} 
 with {{true}} as an abbreviation for {{left ()}} and {{false}} as an 
 abbreviation for {{right ()}}.
@@ -754,8 +711,8 @@ As motivated, with fractional types, we can define a value that denotes a
 first-class function or relation. Indeed a value of type {{1/b1 * b2}} is a
 pair of a \emph{constraint} that can only be satisfied by some {{v1 : b1}}
 and a value {{v2 : b2}}. In other words, it corresponds to a function or
-relation which when given matched with a value {{v1 : b1}} ``releases'' the
-value {{v2 : b2}}. To emphasize this view, we introduce the abbreviation:
+relation which when ``given'' a value {{v1 : b1}} ``releases'' the value 
+{{v2 : b2}}. To emphasize this view, we introduce the abbreviation:
 
 %subcode{bnf} include main
 %  b1 :-* b2 &::=& 1/b1 * b2
@@ -770,26 +727,25 @@ type {{b1 :-* b2}} as shown below:
 % name &:& (b1 <-> b2) -> (1 <-> (b1 :-* b2))
 % name c &=& eta*_{b1} (;) (id (*) c)
 
-As a simple example, consider combinator {{not}} denoting boolean negation.
-It is straightforward to check that the combinator 
-{{name not : 1 <-> (bool :-* bool)}} denotes the following
-relation:
+As a simple example, consider the combinator {{swap+}} denoting boolean
+negation.  It is straightforward to check that the combinator 
+{{name swap+ : 1 <-> (bool :-* bool)}} denotes the following relation:
 
 %subcode{proof} include main
 %@ ~
-%@@ () ~~(name not)~~ (1/false,true)
+%@@ () ~~(name swap+)~~ (1/false,true)
 %
 %@ ~
-%@@ () ~~(name not)~~ (1/true,false)
+%@@ () ~~(name swap+)~~ (1/true,false)
 
-\noindent The relation {{name not}} can therefore be used to convert any
-{{false}} to {{true}} and vice-versa. We formalize this ``apply'' combinator
-below.
+\noindent The relation {{name swap+}} maps {{()}} to a value which can be used
+to convert any {{false}} to {{true}} and vice-versa. We formalize this
+``apply'' combinator below.
 
 %%%%%%%%%%%%
 \subsection{Higher-Order Relations}
 
-We are now a small step to implementing various higher-order
+We are now a small step from implementing various higher-order
 combinators that manipulate functions or relations. In particular, we
 can \emph{apply} and \emph{compose} values representing relations as
 shown below:
@@ -928,7 +884,10 @@ with the set {{ {[ false ]} }} which gets transformed as follows:
 % {[ ((1/false,true),false), ((1/true,false),false) ]} & (assocl*)
 % emptyset & (eps*_{bool} * id)
 
-\jacques{in the current paper, this seems to no longer make sense}
+%% \jacques{in the current paper, this seems to no longer make sense}
+%% Yes I know, but I think we should leave it to explain the problem in Sec. 5
+%% and motivate the different semantics
+
 \begin{example}[Annihilation]
 \label{ch3:ex;annihilation}
 Consider the circuit below:
@@ -950,19 +909,15 @@ circuit an annihilation circuit.
 \label{ch3:sec:lp}
 
 Relational programming leverages set-theoretic relations and their
-composition to express computational tasks in a declarative way. For
-instance, consider this example:
-
-{{parent = {[ (A,B), (B,C), (A,D) ]} }}
-
-{{grandparent = parent (o) parent}}
-
-\noindent The example defines a relation {{parent}} specified using a
-set of tuples and another relation {{grandparent}} specified using the
-composition of two parent relations. If we wrote this example in a
-relational language (e.g., Prolog) and we executed the query
-{{grandparent(A)}}, we would get the answer {{ {[C]} }}.
-
+composition to express computational tasks in a declarative way. 
+% For instance, consider this example:
+% {{parent = {[ (A,B), (B,C), (A,D) ]} }}
+% {{grandparent = parent (o) parent}}
+% \noindent The example defines a relation {{parent}} specified using a
+% set of tuples and another relation {{grandparent}} specified using the
+% composition of two parent relations. If we wrote this example in a
+% relational language (e.g., Prolog) and we executed the query
+% {{grandparent(A)}}, we would get the answer {{ {[C]} }}.
 It turns out that with the addition of the multiplicative trace, and
 the move to relations motivated in the previous section, we can
 express relational programming. We illustrate the idea using a
@@ -986,41 +941,39 @@ We show how to define a combinator {{c_R}} whose semantics is such that:
 
 The key idea is to find a combinator {{cInner : (a * bool) <-> (a * bool)}}
 for some type {{a}} such that {{trace* cInner}} is the desired combinator
-{{c_R}}. A little experimentation shows that we get the desired behavior
-if {{cInner}} is chosen to behave as follows:
-
-%subcode{proof} include main
-%@ ~
-%@@ ((false,false),false) ~~cInner~~ ((false,false),false) 
-%----
-%@ ~
-%@@ ((false,true),false) ~~cInner~~ ((false,true),true) 
-%----
-%@ ~
-%@@  ((false,true),true) ~~cInner~~ ((false,true),false) 
-%----
-%@ ~
-%@@ ((false,false),true) ~~cInner~~ ((true,false),true) 
-%----
-%@ ~
-%@@ ((true,false),false) ~~cInner~~ ((true,true),false)  
-%----
-%@ ~
-%@@ ((true,false),true) ~~cInner~~ ((true,true),true)  
-%----
-%@ ~
-%@@ ((true,true),false) ~~cInner~~ ((true,false),false) 
-%----
-%@ ~
-%@@ ((true,true),true) ~~cInner~~ ((false,false),true) 
-
-In the first three lines, the first argument is a fixed point and hence the
-multiplicative trace would map the second input to the second output
-producing the desired relation. In the remaining five cases, the first
-argument is not a fixed point and hence all these cases would be rejected as
-solutions to the constraint imposed by the multiplicative trace. It simply
-remains to find the actual realization of {{cInner}} that would produce the
-behavior above. One can infer the following implementation:
+{{c_R}}.  A little experimentation shows that we get the desired behavior if
+as follows:
+% %subcode{proof} include main
+% %@ ~
+% %@@ ((false,false),false) ~~cInner~~ ((false,false),false) 
+% %----
+% %@ ~
+% %@@ ((false,true),false) ~~cInner~~ ((false,true),true) 
+% %----
+% %@ ~
+% %@@  ((false,true),true) ~~cInner~~ ((false,true),false) 
+% %----
+% %@ ~
+% %@@ ((false,false),true) ~~cInner~~ ((true,false),true) 
+% %----
+% %@ ~
+% %@@ ((true,false),false) ~~cInner~~ ((true,true),false)  
+% %----
+% %@ ~
+% %@@ ((true,false),true) ~~cInner~~ ((true,true),true)  
+% %----
+% %@ ~
+% %@@ ((true,true),false) ~~cInner~~ ((true,false),false) 
+% %----
+% %@ ~
+% %@@ ((true,true),true) ~~cInner~~ ((false,false),true) 
+% In the first three lines, the first argument is a fixed point and hence the
+% multiplicative trace would map the second input to the second output
+% producing the desired relation. In the remaining five cases, the first
+% argument is not a fixed point and hence all these cases would be rejected as
+% solutions to the constraint imposed by the multiplicative trace. It simply
+% remains to find the actual realization of {{cInner}} that would produce the
+% behavior above. 
 
 %subcode{opsem} include main
 %! columnStyle = rcl
@@ -1033,172 +986,170 @@ behavior above. One can infer the following implementation:
 % c_R &:& bool <-> bool
 % c_R &=& trace* cInner
 
-The above example should convince the reader that the language {{Pi}}
-with multiplicative trace is expressive enough to model finite relational
-programming. We will not prove this claim. We develop an even more
-substantial example: a SAT solver.
+% The above example should convince the reader that the language {{Pi}}
+% with multiplicative trace is expressive enough to model finite relational
+% programming. 
+% %%%%%%%%%%%%%%%
+% \subsection{Solving Constraints}
+% \label{ch3:sec:constraints}
 
-%%%%%%%%%%%%%%%
-\subsection{Solving Constraints}
-\label{ch3:sec:constraints}
+% A large class of constraint satisfaction problems can be expressed
+% using multiplicative traces. We illustrate the main ideas with the
+% implementation of a SAT solver.
 
-A large class of constraint satisfaction problems can be expressed
-using multiplicative traces. We illustrate the main ideas with the
-implementation of a SAT solver.
+% In the usual setting, an instance of SAT is a function~{{f}} which,
+% when given some boolean inputs, returns {{true}} or {{false}}. The
+% function returns {{true}} when the inputs satisfy the constraints
+% imposed by the structure of {{f}} and a solution to the SAT problem is
+% the set of all inputs on which {{f}} produces {{true}}. The basic idea
+% of our construction is to generalize the annihilation circuit from
+% Ex.~\ref{ch3:ex;annihilation} to only annihilate values that fail to
+% satisfy the constraints represented by the SAT instance {{f}}. To
+% achieve this goal, we must however deal with several important
+% details.
 
-In the usual setting, an instance of SAT is a function~{{f}} which,
-when given some boolean inputs, returns {{true}} or {{false}}. The
-function returns {{true}} when the inputs satisfy the constraints
-imposed by the structure of {{f}} and a solution to the SAT problem is
-the set of all inputs on which {{f}} produces {{true}}. The basic idea
-of our construction is to generalize the annihilation circuit from
-Ex.~\ref{ch3:ex;annihilation} to only annihilate values that fail to
-satisfy the constraints represented by the SAT instance {{f}}. To
-achieve this goal, we must however deal with several important
-details.
+% First, because we are in a reversible world, our instance of SAT must be
+% expressed as an isomorphism: this is easily achieved by the construction
+% which embeds any boolean function {{f}} into a reversible one {{iso_f}} with
+% a larger domain and range.  Given such a reversible function {{iso_f}} which
+% represents a SAT instance, we first construct the circuit below:
 
-First, because we are in a reversible world, our instance of SAT must be
-expressed as an isomorphism: this is easily achieved by the construction
-which embeds any boolean function {{f}} into a reversible one {{iso_f}} with
-a larger domain and range.  Given such a reversible function {{iso_f}} which
-represents a SAT instance, we first construct the circuit below:
+% \begin{center}
+% \scalebox{1.2}{
+%   \includegraphics{diagrams/sat2.pdf}
+% }
+% \end{center}  
 
-\begin{center}
-\scalebox{1.2}{
-  \includegraphics{diagrams/sat2.pdf}
-}
-\end{center}  
+% As shown in the circuit, the reversible SAT instance {{iso_f}} takes
+% two sets of values and produces two outputs. The incoming values
+% labeled \textsf{inputs} are the inputs we need to test for
+% satisfiability. The other incoming values labeled \textsf{heap} are
+% the additional inputs needed to embed the original SAT instance {{f}}
+% into a reversible function. If these \textsf{heap} values are all
+% initialized to {{false}}, the output wire \textsf{satisfied?}
+% corresponds to the output that {{f}} would have produced on
+% \textsf{inputs}. The other outputs labeled \textsf{garbage} are not
+% needed for their own sake but they are important because they are used
+% as inputs to the adjoint of {{iso_f}} to reproduce the inputs exactly,
+% in anticipation of closing the loop with {{trace*}}.
 
-As shown in the circuit, the reversible SAT instance {{iso_f}} takes
-two sets of values and produces two outputs. The incoming values
-labeled \textsf{inputs} are the inputs we need to test for
-satisfiability. The other incoming values labeled \textsf{heap} are
-the additional inputs needed to embed the original SAT instance {{f}}
-into a reversible function. If these \textsf{heap} values are all
-initialized to {{false}}, the output wire \textsf{satisfied?}
-corresponds to the output that {{f}} would have produced on
-\textsf{inputs}. The other outputs labeled \textsf{garbage} are not
-needed for their own sake but they are important because they are used
-as inputs to the adjoint of {{iso_f}} to reproduce the inputs exactly,
-in anticipation of closing the loop with {{trace*}}.
+% To summarize, the top half of the circuit is the identity function
+% except that we have also managed to produce a boolean wire labeled
+% \textsf{satisfied?} that tells us if the inputs satisfy the desired
+% constraints. We can take this boolean value and use it to decide
+% whether to negate the bottom wire (labeled \textsf{control
+%   wire}). Specifically, if the inputs do \emph{not} satisfy {{f}}, the
+% control wire is negated. The last wire labeled \textsf{heap control
+%   wire} is negated if the heap values do not have the right initial
+% values, i.e., are not all {{false}}.
 
-To summarize, the top half of the circuit is the identity function
-except that we have also managed to produce a boolean wire labeled
-\textsf{satisfied?} that tells us if the inputs satisfy the desired
-constraints. We can take this boolean value and use it to decide
-whether to negate the bottom wire (labeled \textsf{control
-  wire}). Specifically, if the inputs do \emph{not} satisfy {{f}}, the
-control wire is negated. The last wire labeled \textsf{heap control
-  wire} is negated if the heap values do not have the right initial
-values, i.e., are not all {{false}}.
+% Let us call the above construction {{sat_f}}. If we now close the loop
+% using {{trace*}}, two things should happen:
+% \begin{itemize}
+% \item configurations in which the \textsf{heap} values are not all
+%   {{false}} will be annihilated;
+% \item configurations in which the \textsf{inputs} do not satisfy {{f}}
+%   will cause the \textsf{satisfied?} wire to be negated and hence will
+%   also be annihilated.
+% \end{itemize}
+% In other words, the only configurations that will survive are the ones in
+% which the \textsf{inputs} satisfy {{f}}. We simply need to arrange to
+% \emph{clone} these values and produce them as the output of the whole
+% circuit. The final construction is therefore:
 
-Let us call the above construction {{sat_f}}. If we now close the loop
-using {{trace*}}, two things should happen:
-\begin{itemize}
-\item configurations in which the \textsf{heap} values are not all
-  {{false}} will be annihilated;
-\item configurations in which the \textsf{inputs} do not satisfy {{f}}
-  will cause the \textsf{satisfied?} wire to be negated and hence will
-  also be annihilated.
-\end{itemize}
-In other words, the only configurations that will survive are the ones in
-which the \textsf{inputs} satisfy {{f}}. We simply need to arrange to
-\emph{clone} these values and produce them as the output of the whole
-circuit. The final construction is therefore:
+% \begin{center}
+% \scalebox{1.5}{
+%   \includegraphics{diagrams/sat3.pdf}
+% }
+% \end{center}  
 
-\begin{center}
-\scalebox{1.5}{
-  \includegraphics{diagrams/sat3.pdf}
-}
-\end{center}  
+% To make the previous discussion concrete, we present a small, but
+% complete, example. In our example, the SAT instance {{f}} is tiny: it
+% takes two inputs. This function is embedded into a reversible function
+% {{iso_f}} of type 
+% {{((bool * bool) * bool) <-> ((bool * bool) * bool)}} where the last
+% input represents the heap and the first two outputs represent the garbage. 
+% The realization of {{sat_f}} given below is parametrized by such 
+% a function {{iso_f}}. The inputs to {{sat_f}} are 
+% \textsf{heap control}, \textsf{control}, \textsf{heap}, \textsf{input-1}, and 
+% \textsf{input-2}. Its operation is simple: if the \textsf{heap} is {{true}}, 
+% \textsf{heap control} is negated, and if the last output of {{iso_f}} 
+% is {{false}}, \textsf{control} is negated:
 
-To make the previous discussion concrete, we present a small, but
-complete, example. In our example, the SAT instance {{f}} is tiny: it
-takes two inputs. This function is embedded into a reversible function
-{{iso_f}} of type 
-{{((bool * bool) * bool) <-> ((bool * bool) * bool)}} where the last
-input represents the heap and the first two outputs represent the garbage. 
-The realization of {{sat_f}} given below is parametrized by such 
-a function {{iso_f}}. The inputs to {{sat_f}} are 
-\textsf{heap control}, \textsf{control}, \textsf{heap}, \textsf{input-1}, and 
-\textsf{input-2}. Its operation is simple: if the \textsf{heap} is {{true}}, 
-\textsf{heap control} is negated, and if the last output of {{iso_f}} 
-is {{false}}, \textsf{control} is negated:
+% %subcode{opsem} include main
+% %! columnStyle = rcl
+% % sat_f &:& ((((bool * bool) * bool) * bool) * bool) <-> ((((bool * bool) * bool) * bool) * bool)
+% % sat_f &=& ((swap* (*) id) (*) id) (;) 
+% % && ((assocl* (*) id) (*) id) (;) 
+% % &&   (((cnot (*) id) (*) id) (*) id) (;) 
+% % &&   assocr* (;) 
+% % &&   (assocr* (*) id) (;) 
+% % &&   (swap* (*) id) (;) 
+% % &&   assocr* (;) 
+% % &&   (id (*) assocl*) (;) 
+% % &&   (id (*) isof) (;) 
+% % &&   swap* (;) 
+% % &&   assocr* (;) 
+% % &&   (id (*) (id (*) swap*)) (;) 
+% % &&   (id (*) assocl*) (;) 
+% % &&   (id (*) ((inot (*) id) (*) id)) (;)
+% % &&   (id (*) (cnot (*) id)) (;) 
+% % &&   (id (*) ((inot (*) id) (*) id)) (;)
+% % &&   (id (*) assocr*) (;) 
+% % &&   (id (*) (id (*) swap*)) (;) 
+% % &&   assocl* (;)
+% % &&   swap* (;)
+% % &&   (id (*) Sym isof) (;) 
+% % &&   (id (*) assocr*) (;) 
+% % &&   assocl* (;) 
+% % &&   assocl* 
 
-%subcode{opsem} include main
-%! columnStyle = rcl
-% sat_f &:& ((((bool * bool) * bool) * bool) * bool) <-> ((((bool * bool) * bool) * bool) * bool)
-% sat_f &=& ((swap* (*) id) (*) id) (;) 
-% && ((assocl* (*) id) (*) id) (;) 
-% &&   (((cnot (*) id) (*) id) (*) id) (;) 
-% &&   assocr* (;) 
-% &&   (assocr* (*) id) (;) 
-% &&   (swap* (*) id) (;) 
-% &&   assocr* (;) 
-% &&   (id (*) assocl*) (;) 
-% &&   (id (*) isof) (;) 
-% &&   swap* (;) 
-% &&   assocr* (;) 
-% &&   (id (*) (id (*) swap*)) (;) 
-% &&   (id (*) assocl*) (;) 
-% &&   (id (*) ((inot (*) id) (*) id)) (;)
-% &&   (id (*) (cnot (*) id)) (;) 
-% &&   (id (*) ((inot (*) id) (*) id)) (;)
-% &&   (id (*) assocr*) (;) 
-% &&   (id (*) (id (*) swap*)) (;) 
-% &&   assocl* (;)
-% &&   swap* (;)
-% &&   (id (*) Sym isof) (;) 
-% &&   (id (*) assocr*) (;) 
-% &&   assocl* (;) 
-% &&   assocl* 
+% Given the construction of {{sat_f}} we can build the full solver as
+% follows. The overall input is the cloning heap. The combinator given
+% to {{trace*}} takes the cloning heap and the inputs flowing around the
+% loop and produces two copies of these inputs. One copy is produced as
+% the overall output and another is fed back around the loop. 
 
-Given the construction of {{sat_f}} we can build the full solver as
-follows. The overall input is the cloning heap. The combinator given
-to {{trace*}} takes the cloning heap and the inputs flowing around the
-loop and produces two copies of these inputs. One copy is produced as
-the overall output and another is fed back around the loop. 
+% %subcode{opsem} include main
+% %! columnStyle = rcl
+% % solve_f &:& bool * bool <-> bool * Bool
+% % solve_f &=& trace* (
+% % && (assocr* (*) id) (;) 
+% % && assocr* (;)
+% % && (id (*) swap*) (;)
+% % && assocl* (;)
+% % && (assocr* (*) id) (;)
+% % && (clone2 (*) id) (;)
+% % && swap* (;)
+% % && (swap* (*) id) (;)
+% % && ((swap* (*) id) (*) id) (;)
+% % && assocl* (;)
+% % && assocl* (;)
+% % && (sat_f (*) id) (;)
+% % && (assocr* (*) id) (;)
+% % && (swap* (*) id) (;) 
+% % && ((id (*) swap*) (*) id) (;)
+% % && (assocl* (*) id) (;)
+% % && ((id (*) swap*) (*) id))
 
-%subcode{opsem} include main
-%! columnStyle = rcl
-% solve_f &:& bool * bool <-> bool * Bool
-% solve_f &=& trace* (
-% && (assocr* (*) id) (;) 
-% && assocr* (;)
-% && (id (*) swap*) (;)
-% && assocl* (;)
-% && (assocr* (*) id) (;)
-% && (clone2 (*) id) (;)
-% && swap* (;)
-% && (swap* (*) id) (;)
-% && ((swap* (*) id) (*) id) (;)
-% && assocl* (;)
-% && assocl* (;)
-% && (sat_f (*) id) (;)
-% && (assocr* (*) id) (;)
-% && (swap* (*) id) (;) 
-% && ((id (*) swap*) (*) id) (;)
-% && (assocl* (*) id) (;)
-% && ((id (*) swap*) (*) id))
+% We can test our {{solve_f}} combinator using several SAT
+% instances. Here are two possible instances. The first instance is
+% satisfied by {{(false,false)}} and the
+% second is satisfied by {{(false,true)}} and {{(true,true)}}.
 
-We can test our {{solve_f}} combinator using several SAT
-instances. Here are two possible instances. The first instance is
-satisfied by {{(false,false)}} and the
-second is satisfied by {{(false,true)}} and {{(true,true)}}.
+% %subcode{opsem} include main
+% %! columnStyle = rcl
+% % iso_{f_1} &:& ((bool * bool) * bool) <-> ((bool * bool) * bool)
+% % iso_{f_1} &=& (assocr* (;) swap* (;) toffoli (;) swap* (;) assocl*) (;)
+% % && (((swap+ (*) id) (*) id) (;) toffoli (;) ((swap+ (*) id) (*) id)) (;) 
+% % && (id (*) swap+)
+% % 
+% % iso_{f_2} &:& ((bool * bool) * bool) <-> ((bool * bool) * bool)
+% % iso_{f_2} &=& toffoli
 
-%subcode{opsem} include main
-%! columnStyle = rcl
-% iso_{f_1} &:& ((bool * bool) * bool) <-> ((bool * bool) * bool)
-% iso_{f_1} &=& (assocr* (;) swap* (;) toffoli (;) swap* (;) assocl*) (;)
-% && (((swap+ (*) id) (*) id) (;) toffoli (;) ((swap+ (*) id) (*) id)) (;) 
-% && (id (*) swap+)
-% 
-% iso_{f_2} &:& ((bool * bool) * bool) <-> ((bool * bool) * bool)
-% iso_{f_2} &=& toffoli
-
-It can indeed be verified using the semantics that the {{solve_f}}
-combinators instantiated with the SAT instances produce the expected
-results. 
+% It can indeed be verified using the semantics that the {{solve_f}}
+% combinators instantiated with the SAT instances produce the expected
+% results. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}
@@ -1213,6 +1164,72 @@ the relation:
 {{ {[ (1/(), (left(), left())), (1/(), (right(),right ())) ]} }}
 
 give some intuition; example with eta/epsilon
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{splncs03} 
+\bibliography{cites}
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\appendix
+\section{Categorical Background}
+\label{app:cat} 
+
+We recall that a \emph{symmetric monoidal category} is a category together
+with a bifunctor $\otimes$, a distinguished object $I$, and natural
+isomorphisms $\alpha_{A,B,C} : (A \otimes B) \otimes C \rightarrow A \otimes
+(B \otimes C)$, $\lambda_A : A \rightarrow I \otimes A$, and $\sigma_{A,B} :
+A \otimes B \rightarrow B \otimes A$ subject to standard coherence
+conditions~\cite{nla.cat-vn1051288}. Following common practice
+(e.g.,~\cite{Selinger:2007:DCC:1229185.1229207}), we write $\rho_A =
+\sigma_{I,A} \circ \lambda_A : A \rightarrow A \otimes I$.
+
+A \emph{compact closed category} is a symmetric monoidal category where each
+object $A$ is assigned a dual object $A^*$, together with a unit map $\eta_A
+: I \rightarrow A^* \otimes A$ and a counit map $\epsilon_A : A \otimes A^*
+\rightarrow I$, such that:
+\[\begin{array}{rcl}
+\lambda_A^{-1} \circ (\epsilon_A \otimes A) \circ \alpha_{A,A^*,A}^{-1} \circ (A \otimes \eta_A) \circ \rho_A &=& \mathit{id}_A \\
+\rho_{A^*}^{-1} \circ (A^* \otimes \epsilon_A) \circ \alpha_{A^*,A,A^*} \circ (\eta_A \otimes A^*) \circ \lambda_A &=& \mathit{id}_{A^*}
+\end{array}\]
+
+A \emph{dagger category} is a category together with an involutive,
+identity-on-objects, contravariant functor $\dagger$. Concretely, this means
+that to every morphism $F : A \rightarrow B$, one associates a morphism
+$f^{\dagger} : B \rightarrow A$, called the \emph{adjoint} of $f$, such that
+for all $f : A \rightarrow B$ and $g : B \rightarrow C$, we have:
+\[\begin{array}{rcl}
+\mathit{id}^\dagger_A &=& \mathit{id}_A \\
+(g \circ f)^\dagger &=& f^\dagger \circ g^\dagger \\
+(f^\dagger)^\dagger &=& f
+\end{array}\]
+
+A \emph{dagger symmetric monoidal category} is a symmetric monoidal category
+with a dagger structure such that the contravariant functor $\dagger$
+coherently preserves the symmetric monoidal structure. Concretely, this
+requirement means that for all $f : A \rightarrow B$ and $g : C \rightarrow
+D$, we have:
+\[\begin{array}{rcl}
+(f \otimes g)^\dagger &=& f^\dagger \otimes g^\dagger \\
+\alpha^\dagger_{A,B,C} &=& \alpha^{-1}_{A,B,C} \\
+\lambda^\dagger_A &=& \lambda^{-1}_A \\
+\sigma^\dagger_{A,B} &=& \sigma^{-1}{A,B}
+\end{array}\]
+
+\begin{definition}[Dagger Compact Closed Category]
+\label{def:cat}
+A \emph{dagger compact closed category} is a dagger symmetric monoidal
+category that is also compact closed and such that for all $A$:
+\[
+\eta_A = \sigma_{A,A^*} \circ \epsilon^\dagger_A
+\]
+\end{definition}
+
+\todo{biproducts}
 
 \begin{verbatim}
 homotopy equivalence???
@@ -1339,67 +1356,48 @@ closed categories' as I am that the right model for the type level is
 
 \end{verbatim}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{comment}
+Each type in {{PiTF}} is interpreted as a \emph{groupoid}. A groupoid can be
+equivalently viewed as an oriented graph, a generalization of a group, or a
+special category. We present the categorical view below.
 
-\bibliographystyle{splncs03} 
-\bibliography{cites}
-\end{document}
+A groupoid is defined by:
+\begin{itemize}
+\item a set of objects $x,y,\ldots$;
+\item for each pair of objects, a (possibly empty) set $G(x,y)$ of morphisms
+  $x \rightarrow y$; 
+\item for each object $x$, there exists an identity morphism {{id_x in G(x,x)}};
+\item for each triple of objects $x,y,z$, we have a function 
+{{comp_{x,y,z} : G(x,y) * G(y,z) -> G(x,z)}}
+\item there exists a function {{inv_{x,y} : G(x,y) -> G(y,x)}}
+\end{itemize}
+such that for all {{f : x -> y}}, {{g : y -> z}}, and {{h : z -> w}}, we have:
+%subcode{bnf} include main
+% comp_{x,x,y}(id_x,f) &=& f \\
+% comp_{x,y,y}(f,id_y) &=& f \\
+% comp_{x,y,z}(f, comp_{y,z,w}(g,h)) &=& comp_{x,z,w}(comp_{x,y,z}(f,g),h) \\
+% comp_{y,x,y}(inv_{x,y}(f),f) &=& id_y \\
+% comp_{x,y,x}(f,inv_{x,y}(f)) &=& id_x
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+We now proceed to explain how each {{PiTF}} type denotes a groupoid. First,
+each {{Pi}} type denotes a set as follows.
 
-\appendix
-\section{Categorical Background}
-\label{app:cat} 
-
-We recall that a \emph{symmetric monoidal category} is a category together
-with a bifunctor $\otimes$, a distinguished object $I$, and natural
-isomorphisms $\alpha_{A,B,C} : (A \otimes B) \otimes C \rightarrow A \otimes
-(B \otimes C)$, $\lambda_A : A \rightarrow I \otimes A$, and $\sigma_{A,B} :
-A \otimes B \rightarrow B \otimes A$ subject to standard coherence
-conditions~\cite{nla.cat-vn1051288}. Following common practice
-(e.g.,~\cite{Selinger:2007:DCC:1229185.1229207}), we write $\rho_A =
-\sigma_{I,A} \circ \lambda_A : A \rightarrow A \otimes I$.
-
-A \emph{compact closed category} is a symmetric monoidal category where each
-object $A$ is assigned a dual object $A^*$, together with a unit map $\eta_A
-: I \rightarrow A^* \otimes A$ and a counit map $\epsilon_A : A \otimes A^*
-\rightarrow I$, such that:
-\[\begin{array}{rcl}
-\lambda_A^{-1} \circ (\epsilon_A \otimes A) \circ \alpha_{A,A^*,A}^{-1} \circ (A \otimes \eta_A) \circ \rho_A &=& \mathit{id}_A \\
-\rho_{A^*}^{-1} \circ (A^* \otimes \epsilon_A) \circ \alpha_{A^*,A,A^*} \circ (\eta_A \otimes A^*) \circ \lambda_A &=& \mathit{id}_{A^*}
-\end{array}\]
-
-A \emph{dagger category} is a category together with an involutive,
-identity-on-objects, contravariant functor $\dagger$. Concretely, this means
-that to every morphism $F : A \rightarrow B$, one associates a morphism
-$f^{\dagger} : B \rightarrow A$, called the \emph{adjoint} of $f$, such that
-for all $f : A \rightarrow B$ and $g : B \rightarrow C$, we have:
-\[\begin{array}{rcl}
-\mathit{id}^\dagger_A &=& \mathit{id}_A \\
-(g \circ f)^\dagger &=& f^\dagger \circ g^\dagger \\
-(f^\dagger)^\dagger &=& f
-\end{array}\]
-
-A \emph{dagger symmetric monoidal category} is a symmetric monoidal category
-with a dagger structure such that the contravariant functor $\dagger$
-coherently preserves the symmetric monoidal structure. Concretely, this
-requirement means that for all $f : A \rightarrow B$ and $g : C \rightarrow
-D$, we have:
-\[\begin{array}{rcl}
-(f \otimes g)^\dagger &=& f^\dagger \otimes g^\dagger \\
-\alpha^\dagger_{A,B,C} &=& \alpha^{-1}_{A,B,C} \\
-\lambda^\dagger_A &=& \lambda^{-1}_A \\
-\sigma^\dagger_{A,B} &=& \sigma^{-1}{A,B}
-\end{array}\]
-
-\begin{definition}[Dagger Compact Closed Category]
-\label{def:cat}
-A \emph{dagger compact closed category} is a dagger symmetric monoidal
-category that is also compact closed and such that for all $A$:
-\[
-\eta_A = \sigma_{A,A^*} \circ \epsilon^\dagger_A
-\]
+\begin{definition}[Denotation of {{Pi}} Value Types {{ [[ b ]] }}]
+\label{chx:def:denot}
+Each {{Pi}}type denotes a finite set of values as follows:
+%subcode{opsem} include main
+%! <- = \leftarrow
+%! union = \cup
+% [[1]] '= {[ () ]}
+% [[b1 + b2]] '= {[ left v ~|~ v <- [[b1]] ]} union {[ right v ~|~ v <- [[b2]] ]}
+% [[b1 * b2]] '= {[ (v1, v2) ~|~ v1 <- [[b1]], v2 <- [[b2]] ]}
 \end{definition}
 
-\todo{biproducts}
+For each of the types {{b}} above, the corresponding groupoid consists of the
+set {{ [[b]] }} of elements with only the trivial identity morphisms. The
+interesting groupoid is the one associated with {{1/b}}. It is defined as
+follows. 
+
+Fractional types and values add considerable expressiveness to our
+language. 
+\end{comment}
