@@ -404,69 +404,66 @@ request for information should behave like a \emph{fractional type}.
 %   programming rather than the other way round.}
 % AMR: relations are indeed only presented as a way to explain the semantics
 
-The extension of the sets of types and values is simple:
+The extension of the sets of types and values from {{Pi}} to {{PiTF}} is
+simple:
 
 %subcode{bnf} include main
 % value types, b ::= ... | 1/b
 % values, v ::= ... | 1/v
 
 For a given type {{b}}, the values of type {{1/b}} are of the form {{1/v}}
-where {{v : b}}. Note that {{1/v}} is purely formal, as is {{1/b}}. There is
-however have some informal intuition about the \emph{meaning} of such
-fractional types and values. (See Sec.~\ref{sec:cat} for more discussion
-about this point.) From both the programming perspective and from the
-categorical perspective we expect the fractional types to satisfy the
+where {{v : b}}. Note that {{1/v}} is purely formal, as is {{1/b}}. We have
+however some informal intuition about the \emph{meaning} of such fractional
+types and values. (See Sec.~\ref{sec:cat} for more discussion about this
+point.) In more detail, given a symmetric monoidal category modeling a
+certain language (like {{Pi}}), one can obtain a higher-order extension of
+the language by extending the category to a \emph{compact closed} one, i.e.,
+a category in which morphisms are representable as objects. The key to this
+extension is to add dual objects (in our case the fractionals) satisfying the
 following isomorphism witnessed by two new combinators {{eta*_b}} and
 {{eps*_b}}:
 
 {{eta*_b : 1 <-> 1/b * b : eps*_b}}
 
-From a programming perspective, we think of a value {{1/v}} as a
+\noindent From a programming perspective, we think of a value {{1/v}} as a
 \emph{first-class constraint} that can only be satisfied if it is matched
 with an actual value {{v}} or as a \emph{pattern} representing the absence of
-some information of a specific shapre (i.e., \emph{negative information}),
+some information of a specific shape (i.e., \emph{negative information}),
 that can only be reconciliated by an actual value {{v}}. The combinator
 {{eta*_b : 1 <-> 1/b * b}} thus represents a fission point which creates ---
 out of no information --- an equal amount of negative and positive
 information. Symmetrically, the combinator {{eps*_b : 1/b * b <-> 1}} matches
 up an equal amount of negative and positive information producing no residual
-information. From the categorical perspective, the extended language {{PiTF}}
-needs to have a semantics in a \emph{compact closed category} which are the
-categories introduced by Abramsky and
-Coecke~\cite{Abramsky:2004:CSQ:1018438.1021878} and by
-Selinger~\cite{Selinger:2007:DCC:1229185.1229207} to model quantum
-computation. Two of the most relevant features of these categories for our
-purposes are that they support an adjoint for each morphism (to model
-reversibility) and that they support higher-order relation (built from the
-categorical dagger which is modeled by our fractional types). The main
-requirement on the dagger operation is the isomorphism above witnessed by
-{{eta*_b}} and {{eps*_b}}. 
+information. 
 
-One can think of several concrete compact closed categories: the first and
-most intuitive is the category of finite sets and relations. In that case,
-the dagger operation (i.e., the fractional type) collapses by defining
-{{1/b}} to be {{b}}. This is still an interesting category as any relation is
-trivially reversible and more importantly any relation between {{b1}} and
-{{b2}} can be represented as a subset of {{b1 * b2}}, i.e., as a value. A
-more interesting example is the category of finite dimensional vector spaces
-and linear maps (or even the category of finite dimensional Hilbert
-spaces). In such categories the dagger operation takes a vector space
-(consisting of ``column vectors'') to the dual vector space (consisting of
-``row vectors''). These vector spaces are isomorphic, but they are
-nevertheless quite different, being $(1,0)$ and $(0,1)$ tensors
-(respectively).  In other words, the category provides a more refined model
-in which isomorphic negative-information values and positive-information are
-not identified. 
+From the categorical perspective, versions of compact closed categories were
+introduced by Abramsky and Coecke~\cite{Abramsky:2004:CSQ:1018438.1021878}
+and by Selinger~\cite{Selinger:2007:DCC:1229185.1229207} as the
+generalization of monoidal categories to model quantum computation.  The
+first and most intuitive example of such categories is the category of finite
+sets and relations. In that case, the dual operation (i.e., the fractional
+type) collapses by defining {{1/b}} to be {{b}}. In spite of this degenerate
+interpretation of fractionals, this is still an interesting category as it
+provides a model for a reversible higher-order language. Indeed, any relation
+is trivially reversible and any relation between {{b1}} and {{b2}} can be
+represented as a subset of {{b1 * b2}}, i.e., as a value. A more interesting
+example is the category of finite dimensional vector spaces and linear maps
+(or even the category of finite dimensional Hilbert spaces). In such
+categories the dual operation takes a vector space (consisting of ``column
+vectors'') to the dual vector space (consisting of ``row vectors''). These
+vector spaces are isomorphic, but they are nevertheless quite different,
+being $(1,0)$ and $(0,1)$ tensors (respectively).  In other words, the
+category provides a more refined model in which isomorphic
+negative-information values and positive-information are not identified.
 
 In this section, we provide a simple semantics of {{PiTF}} in the category of
-finite sets and relations. In other words, we interpret each combinator 
-{{c :  b1 <-> b2}} as a \emph{relation} between the sets denoted
-by {{b1}} and {{b2}} respectively. As we illustrate, this semantics allows
-\emph{arbitrary} relations (including the empty relation and
-relations that are not isomorphisms) to be represented as values in {{PiTF}}.
-In Sec.~\ref{sec:cat} we discuss a more refined semantics that is
-more suitable for richer categories and which only allows relations
-representing \emph{isomorphisms} to be represented as values in~{{PiTF}}. 
+finite sets and relations. In other words, we interpret each combinator {{c :
+    b1 <-> b2}} as a \emph{relation} between the sets denoted by {{b1}} and
+{{b2}} respectively. As we illustrate, this semantics allows \emph{arbitrary}
+relations (including the empty relation and relations that are not
+isomorphisms) to be represented as values in {{PiTF}}.  In Sec.~\ref{sec:cat}
+we discuss more refined semantics that are more suitable for richer
+categories.
 
 \begin{definition}[Denotation of Value Types {{ [[ b ]] }}]
 \label{chx:def:denot}
@@ -568,43 +565,26 @@ as specified below.
 %@@ (1/v,v) ~~eps*_b~~ ()
 \end{definition}
 
-The operational semantics define a relation rather than a function, now, but the
-goal is for them to still be reversible; in particular, we wish for the relation
-to mode check so that for any combinator {{c}} we can treat either its left or
-its right side as an input; this allows us to define {{sym}} as just an argument
-swap. In the interest of brevity, we have treated the type annotations in the
-base isomorphisms as implicit; for example, the rule for {{assocr*}} should
-really read
+The operational semantics define a relation rather than a function, but the
+goal is for them to still be reversible; in particular, we wish for the
+relation to mode check so that for any combinator {{c}} we can treat either
+its left or its right side as an input; this allows us to define {{sym}} as
+just an argument swap. We can then give an operational interpretation to the
+semantic relation by defining two functions: a forward evaluator and a
+backwards evaluator that exercise the relation in opposite directions. It is
+straightforward to check that if the forward evaluation of {{c v1}} produces
+{{v2}} as a possible answer then the backwards evaluation of {{c v2}}
+produces {{v1}} as a possible answer.
+
+In the interest of brevity, we have treated the type annotations in the base
+isomorphisms as implicit; for example, the rule for {{assocr*}} should really
+read:
 
 %subcode{proof} include main
 %@ v1 in b1
 %@ v2 in b2
 %@ v3 in b3
 %@@ ((v1, v2), v3) ~~assocr*_{b1, b2, b3}~~ (v1, (v2, v3))
-
-If it were not for the cases of {{eta*}} and {{eps*}}, each combinator 
-{{c : b1 <-> b2}} would define a total one-to-one function between the sets 
-{{ [[ b1 ]] }} and {{ [[ b2 ]] }}. 
-This is indeed the situation for the language {{Pi}} 
-defined in the previous section. In the presence of fractionals, this simple 
-interpretation of combinators as one-to-one functions is not sufficient%
-\footnote{The interpretation of combinators as one-to-one functions is also 
-not valid in the presence of recursive 
-types~\cite{rc2011,James:2012:IE:2103656.2103667}.}.
-The intuitive reason, is that the fission point combinator 
-{{eta*_b : 1 <-> 1/b * b}} must be
-able to map the element {{() : 1}} to any pair of the form {{(1/v,v)}} with
-{{v:b}}. Similarly, the combinator {{eps*_b : 1/b * b <-> 1}} must be able to
-accept pairs {{(1/v1,v2)}} in which the negative information {{1/v1}} does
-not match the positive information {{v2}}. On such pairs, {{eps*_b}} is
-undefined, i.e., it does not produce {{():1}}. 
-
-The relational semantics can be given an operational interpretation by
-defining two functions: a forward evaluator and a backwards evaluator that
-exercise the relation in opposite directions. It follows that if the forward
-evaluation of {{c v1}} produces {{v2}} as a possible answer then the
-backwards evaluation of {{c v2}} produces {{v1}} as a possible answer. 
-
 
 % \roshan{ In the rules above it is unclear as to which v is chosen in
 %   the rule for eta. It is unclear that these rules are logically
@@ -1163,6 +1143,34 @@ as follows:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}
 \label{sec:cat} 
+
+If it were not for the cases of {{eta*}} and {{eps*}}, each combinator 
+{{c : b1 <-> b2}} would define a total one-to-one function between the sets 
+{{ [[ b1 ]] }} and {{ [[ b2 ]] }}. 
+This is indeed the situation for the language {{Pi}} 
+defined in the previous section. In the presence of fractionals, this simple 
+interpretation of combinators as one-to-one functions is not sufficient%
+\footnote{The interpretation of combinators as one-to-one functions is also 
+not valid in the presence of recursive 
+types~\cite{rc2011,James:2012:IE:2103656.2103667}.}.
+The intuitive reason, is that the fission point combinator 
+{{eta*_b : 1 <-> 1/b * b}} must be
+able to map the element {{() : 1}} to any pair of the form {{(1/v,v)}} with
+{{v:b}}. Similarly, the combinator {{eps*_b : 1/b * b <-> 1}} must be able to
+accept pairs {{(1/v1,v2)}} in which the negative information {{1/v1}} does
+not match the positive information {{v2}}. On such pairs, {{eps*_b}} is
+undefined, i.e., it does not produce {{():1}}. 
+
+discuss two generalizations of the semantics
+
+vector spaces (more refined because it doesn't collpase 1/b to b; also each
+vector space must have a zero vector; so we have an explicit notion of
+``error'' which we can use and track at run time. Adding this error
+eliminates at RUN TIME relations which are not isomorphisms I think. 
+
+a potentionally better and more semantics is based on groupoids; mention that
+we can have sets (with stucture) who cardinality is fractionals and that this
+would formalize nicely the negative information
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
