@@ -306,10 +306,10 @@ following constructors that witness equivalence and compatible closure:
 and at the isomorphism-type level for denoting sums and products.  Hopefully
 this will not cause undue confusion.
 
-It is important to note that ``values'' and ``isomorphisms'' are 
-completely separate syntactic categories which do not intermix.  The 
-semantics of the language come when these are made to interact at
-the ``top level'', a new syntactic category:
+It is important to note that ``values'' and ``isomorphisms'' are completely
+separate syntactic categories which do not intermix. The semantics of the
+language come when these are made to interact at the ``top level'', a new
+syntactic category:
 %subcode{bnf} include main
 % top level term, l ::= c v
 \noindent We refer to this as \emph{application}.
@@ -374,8 +374,10 @@ purposefully, it has no distinguished notion of \emph{input} or
 \emph{output}; more precisely, because of strict preservation of information,
 these two concepts coincide.  This is the root of reversibility. But if we
 want to model functions of any flavor as values, we need to differentiate
-between these notions.  Our idea, inspired by computational
-dualities~\cite{Filinski:1989:DCI:648332.755574,Curien:2000},
+between these notions. We also clearly need to relax the strict separation
+between values and isomorphisms as the notion of ``higher-order'' requires
+that isomorphisms be represented as values. Our idea, inspired by
+computational dualities~\cite{Filinski:1989:DCI:648332.755574,Curien:2000},
 polarity~\cite{Girard87tcs,10.1109/LICS.2010.23}, and the categorical notion
 of \emph{compact
   closure}~\cite{Selinger:2007:DCC:1229185.1229207,Abramsky:2004:CSQ:1018438.1021878},
@@ -402,46 +404,69 @@ request for information should behave like a \emph{fractional type}.
 %   programming rather than the other way round.}
 % AMR: relations are indeed only presented as a way to explain the semantics
 
-Syntactically, the extension with fractional types is simple. 
+The extension of the sets of types and values is simple:
 
-\begin{definition}[Syntax of {{PiTF}}]
-\label{def:PiT}
-We extend our previous definition with:
 %subcode{bnf} include main
 % value types, b ::= ... | 1/b
 % values, v ::= ... | 1/v
-%
-% base iso ::= ... | eta*_b | eps*_b
-where:
-{{eta*_b : 1 <-> 1/b * b : eps*_b}}
-\end{definition}
 
 For a given type {{b}}, the values of type {{1/b}} are of the form {{1/v}}
-where {{v : b}}. Note that {{1/v}} is purely formal, as is {{1/b}}.  However,
-we think of a value like {{1/left ()}} as a \emph{first-class constraint}
-that can only be satisfied if it is matched with an actual value {{left ()}}
-or as representing the absence of some information (i.e., \emph{negative
-  information}), that can only be reconciliated by {{left ()}}. The
-combinator {{eta*_b : 1 <-> 1/b * b}} represents a fission point which
-creates --- out of no information --- an equal amount of negative and
-positive information. Symmetrically, the combinator 
-{{eps*_b : 1/b * b <-> 1}} 
-matches up an equal amount of negative and positive information producing no
-residual information.  The best analogy is probably that of vectors and
-co-vectors, also know as column vectors and row vectors (respectively) where
-the multiplication of the row vector by the column vector is a scalar. In the
-finite dimensional case, they are isomorphic, but they are nevertheless quite
-different, being $(1,0)$ and $(0,1)$ tensors (respectively).  In other words,
-since we are explicitly interested in \emph{isomorphisms}, we should not
-conflate negative-information values with positive-information values just
-because they happen to be isomorphic. (See Sec.~\ref{sec:cat} for a more
-thorough discussion about the meaning of fractional types and values in both an
-algebraic and categorical sense.) For now, we proceed with an operational 
-understanding of the language. 
+where {{v : b}}. Note that {{1/v}} is purely formal, as is {{1/b}}. There is
+however have some informal intuition about the \emph{meaning} of such
+fractional types and values. (See Sec.~\ref{sec:cat} for more discussion
+about this point.) From both the programming perspective and from the
+categorical perspective we expect the fractional types to satisfy the
+following isomorphism witnessed by two new combinators {{eta*_b}} and
+{{eps*_b}}:
 
-The semantics we provide is simple: each combinator {{c : b1 <-> b2}} is
-interpreted as a \emph{relation} between the sets denoted by {{b1}} and
-{{b2}} respectively.
+{{eta*_b : 1 <-> 1/b * b : eps*_b}}
+
+From a programming perspective, we think of a value {{1/v}} as a
+\emph{first-class constraint} that can only be satisfied if it is matched
+with an actual value {{v}} or as a \emph{pattern} representing the absence of
+some information of a specific shapre (i.e., \emph{negative information}),
+that can only be reconciliated by an actual value {{v}}. The combinator
+{{eta*_b : 1 <-> 1/b * b}} thus represents a fission point which creates ---
+out of no information --- an equal amount of negative and positive
+information. Symmetrically, the combinator {{eps*_b : 1/b * b <-> 1}} matches
+up an equal amount of negative and positive information producing no residual
+information. From the categorical perspective, the extended language {{PiTF}}
+needs to have a semantics in a \emph{compact closed category} which are the
+categories introduced by Abramsky and
+Coecke~\cite{Abramsky:2004:CSQ:1018438.1021878} and by
+Selinger~\cite{Selinger:2007:DCC:1229185.1229207} to model quantum
+computation. Two of the most relevant features of these categories for our
+purposes are that they support an adjoint for each morphism (to model
+reversibility) and that they support higher-order relation (built from the
+categorical dagger which is modeled by our fractional types). The main
+requirement on the dagger operation is the isomorphism above witnessed by
+{{eta*_b}} and {{eps*_b}}. 
+
+One can think of several concrete compact closed categories: the first and
+most intuitive is the category of finite sets and relations. In that case,
+the dagger operation (i.e., the fractional type) collapses by defining
+{{1/b}} to be {{b}}. This is still an interesting category as any relation is
+trivially reversible and more importantly any relation between {{b1}} and
+{{b2}} can be represented as a subset of {{b1 * b2}}, i.e., as a value. A
+more interesting example is the category of finite dimensional vector spaces
+and linear maps (or even the category of finite dimensional Hilbert
+spaces). In such categories the dagger operation takes a vector space
+(consisting of ``column vectors'') to the dual vector space (consisting of
+``row vectors''). These vector spaces are isomorphic, but they are
+nevertheless quite different, being $(1,0)$ and $(0,1)$ tensors
+(respectively).  In other words, the category provides a more refined model
+in which isomorphic negative-information values and positive-information are
+not identified. 
+
+In this section, we provide a simple semantics of {{PiTF}} in the category of
+finite sets and relations. In other words, we interpret each combinator 
+{{c :  b1 <-> b2}} as a \emph{relation} between the sets denoted
+by {{b1}} and {{b2}} respectively. As we illustrate, this semantics allows
+\emph{arbitrary} relations (including the empty relation and
+relations that are not isomorphisms) to be represented as values in {{PiTF}}.
+In Sec.~\ref{sec:cat} we discuss a more refined semantics that is
+more suitable for richer categories and which only allows relations
+representing \emph{isomorphisms} to be represented as values in~{{PiTF}}. 
 
 \begin{definition}[Denotation of Value Types {{ [[ b ]] }}]
 \label{chx:def:denot}
@@ -580,22 +605,6 @@ exercise the relation in opposite directions. It follows that if the forward
 evaluation of {{c v1}} produces {{v2}} as a possible answer then the
 backwards evaluation of {{c v2}} produces {{v1}} as a possible answer. 
 
-More generally, the semantics of {{PiTF}} using sets and relations, i.e., in
-the category of finite sets and relations suggests a few additional immediate
-properties.  The category of finite sets and relations is an example of a
-\emph{biproduct dagger compact closed category} which are the categories
-introduced by Abramsky and Coecke~\cite{Abramsky:2004:CSQ:1018438.1021878}
-and by Selinger~\cite{Selinger:2007:DCC:1229185.1229207} to model quantum
-computation.\footnote{The other common example of these categories is that of
-  finite dimensional Hilbert spaces.} Two of the most relevant features of
-these categories for our purposes are that they support an adjoint for each
-morphism (to model reversibility) and that they support higher-order relation
-(built from the categorical dagger which is modeled by our fractional
-types). The latter is intuitively clear as any relation between $A$ and $B$
-can be represented as a subset of {{A * B}}, i.e., as a value. We return to
-such properties of {{PiTF}} in Sec.~\ref{sec:cat} after we present
-programming examples that illustrate {{PiTF}} and its ability to express
-various higher-order notions.
 
 % \roshan{ In the rules above it is unclear as to which v is chosen in
 %   the rule for eta. It is unclear that these rules are logically
