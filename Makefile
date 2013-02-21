@@ -4,7 +4,7 @@
 
 .PHONY : clean clean-subcode
 
-frac.subc.pdf : frac.subc.tex cites.bib
+frac.subc.pdf : frac.tex frac.subc.tex cites.bib
 	pdflatex -halt-on-error frac.subc.tex
 	bibtex frac.subc
 	pdflatex -halt-on-error frac.subc.tex

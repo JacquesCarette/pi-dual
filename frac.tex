@@ -128,7 +128,7 @@
   paper, we introduce a higher-order extension of {{Pi}} based on the novel
   concept of \emph{fractional types} {{1/b}}. Intuitively, a value of a
   fractional type {{1/v}} represents \emph{negative} information. A
-  higher-order function is modeled by a pair {{(1/v1,v2)}} with {{1/v1}}
+  function is modeled by a pair {{(1/v1,v2)}} with {{1/v1}}
   representing the needed argument and {{v2}} representing the
   result. Fractional values are first-class: they can be freely propagated
   and transformed but must ultimately --- in a complete program --- be offset
@@ -143,7 +143,8 @@ communities (physics, mathematics, and computer science) towards replacing
 \emph{equalities} by \emph{isomorphisms}. The combined programme 
 has sparked a huge amount of research that unveiled
 new and surprising connections between geometry, algebra, logic, and
-computation (see~\cite{baez2011physics} for an overview).
+computation (see~\cite{baez2011physics} for an overview of some of the 
+connections).
 
 In the physics community, Landauer~\cite{Landauer:1961,Landauer},
 Feynman~\cite{springerlink:10.1007/BF02650179}, and others have interpreted
@@ -204,7 +205,7 @@ Technically speaking, obtaining a higher-order extension requires the
 construction of a \emph{compact closed category} from the underlying monoidal
 category for~{{Pi}}. Although the general idea of such a construction is
 well-understood, the details of adapting it to an actual programming language
-as subtle (as we explain in the main body of the paper).  Our main novel
+are subtle (as we explain in the main body of the paper).  Our main novel
 technical device to achieving the higher-order extension is a
 \emph{fractional type}, which we so named because of its duality with
 conventional product types.  By adding a formal (linear) dual to (type
@@ -264,13 +265,13 @@ effect of an isomorphism.
 type isomorphism they witness {{b <-> b}}.  Specifically, they are witnesses to
 the following isomorphisms:
 %subcode{bnf} include main
-%! columnStyle = r@{\hspace{-0.5pt}}c@{\hspace{-0.5pt}}l
-%swap+ :&  b1 + b2 <-> b2 + b1 &: swap+
-%assocl+ :&  b1 + (b2 + b3) <-> (b1 + b2) + b3 &: assocr+
-%identl* :&  1 * b <-> b &: identr*
-%swap* :&  b1 * b2 <-> b2 * b1 &: swap*
-%assocl* :&  b1 * (b2 * b3) <-> (b1 * b2) * b3 &: assocr*
-%dist :&~ (b1 + b2) * b3 <-> (b1 * b3) + (b2 * b3)~ &: factor
+%! columnStyle = r@{\hspace{-0.5pt}}r c l@{\hspace{-0.5pt}}l
+%swap+ :&  b1 + b2 & <-> & b2 + b1 &: swap+
+%assocl+ :&  b1 + (b2 + b3) & <-> & (b1 + b2) + b3 &: assocr+
+%identl* :&  1 * b & <-> & b &: identr*
+%swap* :&  b1 * b2 & <-> & b2 * b1 &: swap*
+%assocl* :&  b1 * (b2 * b3) & <-> & (b1 * b2) * b3 &: assocr*
+%dist :&~ (b1 + b2) * b3 & <-> & (b1 * b3) + (b2 * b3)~ &: factor
 \noindent Each line of the above table introduces a pair of dual
 constants\footnote{where {{swap*}} and {{swap+}} are self-dual} that witness
 the type isomorphism in the middle.  These are the base (non-reducible) terms
@@ -420,10 +421,14 @@ certain language (like {{Pi}}), one can obtain a higher-order extension of
 the language by extending the category to a \emph{compact closed} one, i.e.,
 a category in which morphisms are representable as objects. The key to this
 extension is to add dual objects (in our case the fractionals) satisfying the
-following isomorphism witnessed by two new combinators {{eta*_b}} and
-{{eps*_b}}:
+following isomorphism witnessed by two new type indexed combinators 
+{{eta*_b}} and {{eps*_b}}:
 
-{{eta*_b : 1 <-> 1/b * b : eps*_b}}
+%subcode{bnf} include main
+%! columnStyle = r r c l l
+%eta*_b :&  1 & <-> & 1/b * b &: eps*_b
+
+%% {{eta*_b : 1 <-> 1/b * b : eps*_b}}
 
 \noindent From a programming perspective, we think of a value {{1/v}} as a
 \emph{first-class constraint} that can only be satisfied if it is matched
@@ -445,7 +450,8 @@ sets and relations. In that case, the dual operation (i.e., the fractional
 type) collapses by defining {{1/b}} to be {{b}}. In spite of this degenerate
 interpretation of fractionals, this is still an interesting category as it
 provides a model for a reversible higher-order language. Indeed, any relation
-is trivially reversible and any relation between {{b1}} and {{b2}} can be
+is reversible via the standard \emph{converse} operation on a relation.
+Furthermore, any relation between {{b1}} and {{b2}} can be
 represented as a subset of {{b1 * b2}}, i.e., as a value. A more interesting
 example is the category of finite dimensional vector spaces and linear maps
 (or even the category of finite dimensional Hilbert spaces). In such
@@ -457,8 +463,8 @@ category provides a more refined model in which isomorphic
 negative-information values and positive-information are not identified.
 
 In this section, we provide a simple semantics of {{PiTF}} in the category of
-finite sets and relations. In other words, we interpret each combinator {{c :
-    b1 <-> b2}} as a \emph{relation} between the sets denoted by {{b1}} and
+finite sets and relations. In other words, we interpret each combinator 
+{{c : b1 <-> b2}} as a \emph{relation} between the sets denoted by {{b1}} and
 {{b2}} respectively. As we illustrate, this semantics allows \emph{arbitrary}
 relations (including the empty relation and relations that are not
 isomorphisms) to be represented as values in {{PiTF}}.  In Sec.~\ref{sec:cat}
@@ -575,12 +581,18 @@ The operational semantics define a relation rather than a function, but the
 goal is for them to still be reversible; in particular, we wish for the
 relation to mode check so that for any combinator {{c}} we can treat either
 its left or its right side as an input; this allows us to define {{sym}} as
-just an argument swap. We can then give an operational interpretation to the
+just relational converse, which amounts to
+an argument swap. We can then give an operational interpretation to the
 semantic relation by defining two functions: a forward evaluator and a
-backwards evaluator that exercise the relation in opposite directions. It is
+backwards evaluator that exercise the relation in opposite directions,
+but which now can return a \emph{set} of results. It is
 straightforward to check that if the forward evaluation of {{c v1}} produces
 {{v2}} as a possible answer then the backwards evaluation of {{c v2}}
-produces {{v1}} as a possible answer.
+produces {{v1}} as a possible answer.  One can check that all relations
+for {{Pi}} are total functional relations whose converse are also total 
+functional relations -- aka isomorphisms.  However {{eta*_b}} relates
+{{()}} to multiple values (one for each value of {{b}}), and is thus
+not functional; {{eps*_b}} is exactly its relational converse, as expected.
 
 In the interest of brevity, we have treated the type annotations in the base
 isomorphisms as implicit; for example, the rule for {{assocr*}} should really
@@ -713,12 +725,6 @@ relation which when ``given'' a value {{v1 : b1}} ``releases'' the value
 %subcode{bnf} include main
 %  b1 :-* b2 &::=& 1/b1 * b2
 
-\begin{multicols}{2}
-  \dgm{function-times}
-
-  \dgm{delimc-times}
-\end{multicols}
-
 \noindent which suggests a function-like behavior for the pair of a fractional value
 and a regular value. What is remarkable is that we can almost trivially turn
 any combinator {{c : b1 <-> b2}} into a (constant) value of 
@@ -729,18 +735,28 @@ type {{b1 :-* b2}} as shown below:
 % name &:& (b1 <-> b2) -> (1 <-> (b1 :-* b2))
 % name c &=& eta*_{b1} (;) (id (*) c)
 
-As a simple example, consider the combinator {{swap+}} denoting boolean
+\begin{multicols}{2}
+  \dgm{function-times}
+
+  \dgm{delimc-times}
+\end{multicols}
+\noindent  Dually, as illustrated above, we also have a {{coname}} combinator
+which when given an answer {{v2 : b2}}, and a request for the corresponding
+input {{1/b1}} for {{c : b1 <-> b2}}, eliminates this as a un-needed 
+computation.
+
+As a simple example, consider {{swap+}} denoting boolean
 negation.  It is straightforward to check that the combinator 
-{{name swap+ : 1 <-> (bool :-* bool)}} denotes the following relation:
+{{name~swap+ : 1 <-> (bool :-* bool)}} denotes the following relation:
 
 %subcode{proof} include main
 %@ ~
-%@@ () ~~(name swap+)~~ (1/false,true)
+%@@ () ~~(name~swap+)~~ (1/false,true)
 %
 %@ ~
-%@@ () ~~(name swap+)~~ (1/true,false)
+%@@ () ~~(name~swap+)~~ (1/true,false)
 
-\noindent The relation {{name swap+}} maps {{()}} to a value which can be used
+\noindent The relation {{name~swap+}} maps {{()}} to a value which can be used
 to convert any {{false}} to {{true}} and vice-versa. We formalize this
 ``apply'' combinator below.
 
@@ -842,14 +858,14 @@ that can be defined, an additive family (explored in detail in our previous
 work~\cite{rc2011}) and a multiplicative family (which is the focus of this
 section).
 
-In this case, we are given a computation {{c:b1 * b2 <-> b1 * b3}} and we
+Given a computation {{c:b1 * b2 <-> b1 * b3}} and we
 want to cancel the common type {{b1}}, to produce a new combinator
 {{trace*~c:b2<->b3}}. For the evaluation of such a combinator, we are only
 given a value {{v2 : b2}}. But to evaluate {{c}}, we must provide a pair
 consisting of ``some'' value {{v1 : b1}} together with the given {{v2 : b2}}.
 The needed value {{v1 : b1}} cannot be arbitrary: it must be such that is
 is the value produced as the first component of the result.  In general, there
-may be several such fixed-point values or none.  A few examples should help
+may be several such fixed-point values, or none.  A few examples should help
 explain the subtleties.
 
 \begin{example}
@@ -862,9 +878,9 @@ Consider the combinator
 \noindent Using {{trace*}}, we construct the
 combinator {{trace* c : 1 <-> 1}}. Applying this to 
 {{() : 1}} requires us to find a value {{b : bool}} such that 
-{{(b,()) ~~c~~ (b,())}}. Given that {{c}} is the identity and that the type {{bool}} 
+{{(b,()) ~~d~~ (b,())}}. Given that the type {{bool}} 
 has two values, there are two values {{false}} and {{true}} that satisfy the 
-constraint. In other words, expect that {{() ~~(trace* c)~~() }}.
+constraint. In other words, {{() ~~(trace* c)~~() }}.
 \end{example}
 
 \begin{example}
@@ -879,12 +895,12 @@ Consider a small variation on the combinator {{c}} above:
 pair. Using the multiplicative trace operator, we can construct the
 combinator {{trace* c : 1 <-> 1}} as before. But now, applying this
 combinator to {{() : 1}} requires us to find a value {{b : bool}} such
-that {{(b,()) ~~c~~ (b,())}} which is impossible since {{c}} negates
-{{b}}, i.e. {{c}} has no fixed points. Operationally, the evaluation of
-such a combinator should produce no value (if it even terminates).
+that {{(b,()) ~~swap+~~ (b,())}} which is impossible since {{swap+}} 
+has no fixed points.  Operationally, the evaluation of
+such a combinator should produce no value (were it to even terminate).
 \end{example}
 
-With fractionals, the multiplicative trace operator becomes expressible:
+With fractionals, {{trace*}} becomes directly expressible:
 
 %subcode{opsem} include main
 %! columnStyle = rcl
@@ -892,9 +908,12 @@ With fractionals, the multiplicative trace operator becomes expressible:
 % trace*_b c &=& uniti (;) (eta*_b (*) id) (;) assocr* (;) 
 %            && (id (*) c) (;) assocl* (;) (eps*_b (*) id) (;) unite
 
-Let's use the semantics to calculate the result of applying
-{{trace*_{bool} (not (*) id)}} to {{false}}. We start
-with the set {{ {[ false ]} }} which gets transformed as follows:
+We can use the relational semantics of definition~\ref{def:relational-PiTF}
+to calculate the result of applying
+{{trace*_{bool} (swap+ (*) id)}} to {{false}}.  We use the usual conversion
+of a relation from a subset of {{A x B}} to a function from {{A}} to the
+powerset of {{B}} (and Kleisli composition in the powerset monad) for
+the computation:
 %subcode{opsem} include main
 %! columnStyle = ll
 % {[ ((),false) ]}  & (uniti)
@@ -904,21 +923,10 @@ with the set {{ {[ false ]} }} which gets transformed as follows:
 % {[ ((1/false,true),false), ((1/true,false),false) ]} & (assocl*)
 % emptyset & (eps*_{bool} * id)
 
-%% \jacques{in the current paper, this seems to no longer make sense}
-%% Yes I know, but I think we should leave it to explain the problem in Sec. 5
-%% and motivate the different semantics
-
-\begin{example}[Annihilation]
-\label{ch3:ex;annihilation}
-Consider the circuit below:
-\dgm{not_trace}
-As motivated earlier, it is clearly impossible for the constraint implied by
-{{trace*}} to be satisfied as a boolean value {{v}} can never be the same as
-its negation. Thus there is no incoming value of type {{b}} that can ever go
-through the circuit. Indeed, if we call the circuit above {{c}}, then we can
-calculate that {{c}} does not relate {{v}} to anything. We call such a
-circuit an annihilation circuit.
-\end{example}
+\noindent  The computation with {{true}} gives the same result.  This
+implies that although our semantics is formally reversible, it 
+strays from the kind of reversibility that has been achieved with {{Pi}}.
+Nevertheless, the next subsection illustrates why this is still useful.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{(Finite) Relational Programming}
@@ -936,28 +944,16 @@ composition to express computational tasks in a declarative way.
 % {{grandparent(A)}}, we would get the answer {{ {[C]} }}.
 It turns out that with the addition of the multiplicative trace, and
 the move to relations motivated in the previous section, we can
-express relational programming. We illustrate the idea using a
-complete example. 
+express relational programming.
 
 Consider the relation {{R}} on booleans given by:
 
 {{ {[(false,false), (false,true), (true,false) ]}. }}
 
-We show how to define a combinator {{c_R}} whose semantics is such that:
-
-%subcode{proof} include main
-%@ ~
-%@@ false ~~c_R~~ false
-%
-%@ ~
-%@@ false ~~c_R~~ true
-%
-%@ ~
-%@@ true ~~c_R~~ false
-
+\noindent We can define a combinator {{c_R}} whose denotation is {{R}}.
 The key idea is to find a combinator {{cInner : (a * bool) <-> (a * bool)}}
-for some type {{a}} such that {{trace* cInner}} is the desired combinator
-{{c_R}}.  A little experimentation shows that we get the desired behavior if
+for some type {{a}} such that {{c_R}} == {{trace* cInner}}.
+A little experimentation shows that we get the desired behavior 
 as follows:
 % %subcode{proof} include main
 % %@ ~
@@ -994,13 +990,15 @@ as follows:
 %subcode{opsem} include main
 %! columnStyle = rcl
 % cInner &:& (bool * bool) * bool <-> (bool * bool) * bool
-% cInner &=& sym (swap* (;) assocl* (;) (cnot (*) id) (;) assoct* (;) swap* (;) 
+% cInner &=& sym (swap* (;) assocl* (;) (cnot (*) id) (;) assocr* (;) swap* (;) 
 %        &&  toffoli (;) ((swap* (;) cnot (;) swap*) (*) id) (;)
 %        &&  toffoli (;) (assocr* (;) swap* (;) toffoli (;) swap* (;) assocl*) (;)
 %        &&  toffoli (;) (cnot (*) id))
-%     
-% c_R &:& bool <-> bool
-% c_R &=& trace* cInner
+\noindent where {{toffoli}} and {{cnot}} were defined (for {{Pi}}) in
+\cite{rc2011}.
+% %     
+% % c_R &:& bool <-> bool
+% % c_R &=& trace* cInner
 
 % The above example should convince the reader that the language {{Pi}}
 % with multiplicative trace is expressive enough to model finite relational
@@ -1177,41 +1175,38 @@ reversible relation and in which relations are first-class values. This
 relational model is however, unsatisfactory, for several reasons:
 
 \begin{itemize}
-\item the type {{1/b}} is interpreted in the same way as {{b}} which gives no
+\item the type {{1/b}} is interpreted in the same way as {{b}}, which gives no
   insight into the ``true meaning'' of fractionals;
 \item the interpretation is inconsistent with the view of types as algebraic
   structures; for example, {{Pi}} with the empty type, is the
-  categorificationi of a semiring but although fractional types in {{PiTF}}
+  categorification of a semiring but although fractional types in {{PiTF}}
   syntactically ``look like'' rational numbers, there is no such formal
   connection to the rational numbers;
 \item finally, we have lost some delicate structure moving from {{Pi}} to
   {{PiTF}} as we can express arbitrary relations between types and not just
-  isomorphisms.
+  \emph{isomorphisms}.
 \end{itemize}
 
 For these reasons, it is interesting to consider other possible semantic
 interpretations of fractionals. A natural alternative is to use the
 ``canonical'' compact closed category, that is finite dimensional vector
-spaces and linear maps. We outline the main features of such an
-interpretation:
+spaces and linear maps\cite{Selinger:2011:FDH:1942319.1942398,Hasegawa:2008:FDV:1805839.1805859} over fields of characteristic $0$. Let us fix an arbitrary
+field $k$ of characteristic $0$.
+Such an interpretation has the following features:
 
 \begin{itemize}
-\item before we talk about vector spaces, we must fix an underlying
-  field. For simplicity in the following discussion we choose the underlying
-  field to be the field of booleans with two elements labeled \texttt{F} and
-  \texttt{T}
 \item each type {{b}} in {{PiTF}} is interpreted as a finite dimensional
-  vector space $\mathbf{V}_b$ over the field of booleans. Of particular
+  vector space $\mathbf{V}_b$ over the field $k$. Of particular
   interest:
   \begin{itemize}
   \item every vector space contains a zero vector which means that the type
-    {{0}} (if included in {{PiTF}} would not be the ``empty'' type --- it
-    would contain the empty vector. Furthermore all combinators would be
-    partial as they would have to map the zero vector to itself. 
+    {{0}} (if included in {{PiTF}} would not be the ``empty'' type.
+    Furthermore all combinators would be
+    strict as they would have to map the zero vector to itself. 
   \item the type {{1}} is interpreted as a 1-dimensional vector space and hence
     is isomorphic to the underlying field.
   \item the fractional type {{1/b}} is interpreted as the dual vector space
-    of the vector space $\mathbf{V}_b$ representing {{b}} consisting of all
+    to the vector space $\mathbf{V}_b$ representing {{b}} consisting of all
     the \emph{linear functionals} on $\mathbf{V}_b$.
   \item one can then validate certain desirable properties: {{1/(1/b)}} is
     isomorphic to {{b}}; and {{eps*_b}} corresponds to a bilinear form which
@@ -1221,7 +1216,7 @@ interpretation:
 
 Although this semantics appears to have ``better'' properties than the
 relational one, we argue that it is not \emph{the} ``perfect'' semantics. By
-including the zero vector, the language has again additional partial
+including the zero vector, the language has
 morphisms that do not correspond to isomorphisms and it is difficult to
 reconcile the interpretation with the view that the types are rational
 numbers. What would really be a ``perfect'' interpretation is one in which we
