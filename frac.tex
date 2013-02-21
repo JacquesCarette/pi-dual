@@ -1144,33 +1144,71 @@ as follows:
 \section{Discussion}
 \label{sec:cat} 
 
-If it were not for the cases of {{eta*}} and {{eps*}}, each combinator 
-{{c : b1 <-> b2}} would define a total one-to-one function between the sets 
-{{ [[ b1 ]] }} and {{ [[ b2 ]] }}. 
-This is indeed the situation for the language {{Pi}} 
-defined in the previous section. In the presence of fractionals, this simple 
-interpretation of combinators as one-to-one functions is not sufficient%
-\footnote{The interpretation of combinators as one-to-one functions is also 
-not valid in the presence of recursive 
-types~\cite{rc2011,James:2012:IE:2103656.2103667}.}.
-The intuitive reason, is that the fission point combinator 
-{{eta*_b : 1 <-> 1/b * b}} must be
-able to map the element {{() : 1}} to any pair of the form {{(1/v,v)}} with
-{{v:b}}. Similarly, the combinator {{eps*_b : 1/b * b <-> 1}} must be able to
-accept pairs {{(1/v1,v2)}} in which the negative information {{1/v1}} does
-not match the positive information {{v2}}. On such pairs, {{eps*_b}} is
-undefined, i.e., it does not produce {{():1}}. 
+The interpretation of {{PiTF}} in the category of sets and relations is
+adequate in the sense that it produces a language in which every program is a
+reversible relation and in which relations are first-class values. This
+relational model is however, unsatisfactory, for several reasons:
 
-discuss two generalizations of the semantics
+\begin{itemize}
+\item the type {{1/b}} is interpreted in the same way as {{b}} which gives no
+  insight into the ``true meaning'' of fractionals;
+\item the interpretation is inconsistent with the view of types as algebraic
+  structures; for example, {{Pi}} with the empty type, is the
+  categorificationi of a semiring but although fractional types in {{PiTF}}
+  syntactically ``look like'' rational numbers, there is no such formal
+  connection to the rational numbers;
+\item finally, we have lost some delicate structure moving from {{Pi}} to
+  {{PiTF}} as we can express arbitrary relations between types and not just
+  isomorphisms.
+\end{itemize}
 
-vector spaces (more refined because it doesn't collpase 1/b to b; also each
-vector space must have a zero vector; so we have an explicit notion of
-``error'' which we can use and track at run time. Adding this error
-eliminates at RUN TIME relations which are not isomorphisms I think. 
+For these reasons, it is interesting to consider other possible semantic
+interpretations of fractionals. A natural alternative is to use the
+``canonical'' compact closed category, that is finite dimensional vector
+spaces and linear maps. We outline the main features of such an
+interpretation:
 
-a potentionally better and more semantics is based on groupoids; mention that
-we can have sets (with stucture) who cardinality is fractionals and that this
-would formalize nicely the negative information
+\begin{itemize}
+\item before we talk about vector spaces, we must fix an underlying
+  field. For simplicity in the following discussion we choose the underlying
+  field to be the field of booleans with two elements labeled \texttt{F} and
+  \texttt{T}
+\item each type {{b}} in {{PiTF}} is interpreted as a finite dimensional
+  vector space $\mathbf{V}_b$ over the field of booleans. Of particular
+  interest:
+  \begin{itemize}
+  \item every vector space contains a zero vector which means that the type
+    {{0}} (if included in {{PiTF}} would not be the ``empty'' type --- it
+    would contain the empty vector. Furthermore all combinators would be
+    partial as they would have to map the zero vector to itself. 
+  \item the type {{1}} is interpreted as a 1-dimensional vector space and hence
+    is isomorphic to the underlying field.
+  \item the fractional type {{1/b}} is interpreted as the dual vector space
+    of the vector space $\mathbf{V}_b$ representing {{b}} consisting of all
+    the \emph{linear functionals} on $\mathbf{V}_b$.
+  \item one can then validate certain desirable properties: {{1/(1/b)}} is
+    isomorphic to {{b}}; and {{eps*_b}} corresponds to a bilinear form which
+    maps a dual vector and a vector to a field element.
+  \end{itemize}
+\end{itemize}
+
+Although this semantics appears to have ``better'' properties than the
+relational one, we argue that it is not \emph{the} ``perfect'' semantics. By
+including the zero vector, the language has again additional partial
+morphisms that do not correspond to isomorphisms and it is difficult to
+reconcile the interpretation with the view that the types are rational
+numbers. What would really be a ``perfect'' interpretation is one in which we
+can only express {{Pi}}-isomorphisms as first class values and in which the
+types are interpreted in a way that is consistent with the rational
+numbers. Fortunately, there is promising significant work on the groupoid
+interpretation of type theory and on the categorification of the rational
+numbers that we outline next.
+
+The fundamental idea of both lines of previous work is that it is possible to
+build sets (with additional structure) with a \emph{fractional cardinality}.
+
+%% EXPAND on this
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
@@ -1418,3 +1456,31 @@ follows.
 Fractional types and values add considerable expressiveness to our
 language. 
 \end{comment}
+
+If it were not for the cases of {{eta*}} and {{eps*}}, each combinator 
+{{c : b1 <-> b2}} would define a total one-to-one function between the sets 
+{{ [[ b1 ]] }} and {{ [[ b2 ]] }}. 
+This is indeed the situation for the language {{Pi}} 
+defined in the previous section. In the presence of fractionals, this simple 
+interpretation of combinators as one-to-one functions is not sufficient%
+\footnote{The interpretation of combinators as one-to-one functions is also 
+not valid in the presence of recursive 
+types~\cite{rc2011,James:2012:IE:2103656.2103667}.}.
+The intuitive reason, is that the fission point combinator 
+{{eta*_b : 1 <-> 1/b * b}} must be
+able to map the element {{() : 1}} to any pair of the form {{(1/v,v)}} with
+{{v:b}}. Similarly, the combinator {{eps*_b : 1/b * b <-> 1}} must be able to
+accept pairs {{(1/v1,v2)}} in which the negative information {{1/v1}} does
+not match the positive information {{v2}}. On such pairs, {{eps*_b}} is
+undefined, i.e., it does not produce {{():1}}. 
+
+discuss two generalizations of the semantics
+
+vector spaces (more refined because it doesn't collapse 1/b to b; also each
+vector space must have a zero vector; so we have an explicit notion of
+``error'' which we can use and track at run time. Adding this error
+eliminates at RUN TIME relations which are not isomorphisms I think. 
+
+a potentially better and more semantics is based on groupoids; mention that
+we can have sets (with structure) who cardinality is fractionals and that this
+would formalize nicely the negative information
