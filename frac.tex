@@ -7,10 +7,10 @@
 \usepackage{graphicx}
 \usepackage{comment}
 
-\newcommand{\inkscape}[2][1.5]{
+\newcommand{\dgm}[2][1.5]{
 \begin{center}
 \scalebox{#1}{
-\includegraphics{diagrams/#2}
+\includegraphics{diagrams/#2.pdf}
 }
 \end{center}
 }
@@ -565,6 +565,12 @@ as specified below.
 %@@ (1/v,v) ~~eps*_b~~ ()
 \end{definition}
 
+\begin{multicols}{2}
+  \dgm{eta_times2}
+
+  \dgm{eps_times2}  
+\end{multicols}
+
 The operational semantics define a relation rather than a function, but the
 goal is for them to still be reversible; in particular, we wish for the
 relation to mode check so that for any combinator {{c}} we can treat either
@@ -693,6 +699,7 @@ In the following, we use {{bool}} as an abbreviation of {{1+1}}
 with {{true}} as an abbreviation for {{left ()}} and {{false}} as an 
 abbreviation for {{right ()}}.
 
+
 %%%%%%%%%%%%
 \subsection{First-Class Relations}
 
@@ -705,6 +712,12 @@ relation which when ``given'' a value {{v1 : b1}} ``releases'' the value
 
 %subcode{bnf} include main
 %  b1 :-* b2 &::=& 1/b1 * b2
+
+\begin{multicols}{2}
+  \dgm{function-times}
+
+  \dgm{delimc-times}
+\end{multicols}
 
 \noindent which suggests a function-like behavior for the pair of a fractional value
 and a regular value. What is remarkable is that we can almost trivially turn
@@ -744,6 +757,13 @@ shown below:
 % apply &:& (b1 :-* b2) * b1 <-> b2
 % apply &=& swap* (;) assocl* (;) (swap* (*) id) (;) (eps*_{b1} (*) id) (;) unite
 
+\begin{multicols}{2}
+  \dgm[1.2]{apply-times1}
+
+  \dgm{apply-times2}
+\end{multicols}
+
+
 \noindent At the type level, the computation proceeds as follows:
 %subcode{bnf} include main
 %  (b1 :-* b2) * b1 &=& (1/b1 * b2) * b1 & 
@@ -770,6 +790,15 @@ constraints. Otherwise, the result is undefined.
 %! columnStyle = rcl
 % compose &:& (b1 :-* b2) * (b2 :-* b3) -> (b1 :-* b3)
 % compose &=& assocr* (;) (id (*) apply')
+
+\begin{multicols}{2}
+  \dgm[1.0]{compose-times1}
+
+  \dgm{compose-times2}
+\end{multicols}
+
+\dgm{compose-times3}
+
 
 \noindent Again, at the type level, the computation proceeds as follows:
 
@@ -880,11 +909,7 @@ with the set {{ {[ false ]} }} which gets transformed as follows:
 \begin{example}[Annihilation]
 \label{ch3:ex;annihilation}
 Consider the circuit below:
-\begin{center}
-\scalebox{1.2}{
-  \includegraphics{diagrams/not_trace.pdf}
-}
-\end{center}
+\dgm{not_trace}
 As motivated earlier, it is clearly impossible for the constraint implied by
 {{trace*}} to be satisfied as a boolean value {{v}} can never be the same as
 its negation. Thus there is no incoming value of type {{b}} that can ever go
