@@ -571,6 +571,7 @@ as specified below.
 %@@ (1/v,v) ~~eps*_b~~ ()
 \end{definition}
 
+%% XXX: diagrams need unit wires(?)
 \begin{multicols}{2}
   \dgm{eta_times2}
 
@@ -709,7 +710,9 @@ read:
 
 In the following, we use {{bool}} as an abbreviation of {{1+1}} 
 with {{true}} as an abbreviation for {{left ()}} and {{false}} as an 
-abbreviation for {{right ()}}.
+abbreviation for {{right ()}}. In addition, for the sake of readability, the
+circuit diagrams in this section will elide trivial unit wires, such as in
+{{eta}} and {{eps}}.
 
 
 %%%%%%%%%%%%
@@ -823,6 +826,44 @@ constraints. Otherwise, the result is undefined.
 %     &<->& (1/b1 * (b2 * (1/b2 * b3)) & (assocr*)
 %     &<->& (1/b1 * b3) & (id * apply')
 %     &=& b1 :-* b3
+
+We can also derive currying (and dually, uncurrying) combinators. Observe that
+the type of {{curry}} needs to be {{b1 * b2 :-* b3 <-> b1 :-* (b2 :-* b3)}},
+which can be written in mathematical notation as {{b3/(b1 * b2) = (b3 * 1/b2) *
+(1/b1)}}. This means {{curry}} can be written using {{recip}}, the
+implementation of the mathematical identity {{1/(b1 * b2) = 1/b1 * 1/b2}}:
+
+%subcode{opsem} include main
+%! columnStyle = rcl
+% recip &:& 1 / (b1 * b2) <-> 1 / b1 * 1 / b2
+% recip &=& (uniti) (;) (uniti) (;) (assocl*) (;) ((eta* (*) eta*) (*) id)
+%     &&    (;) (reorder (*) id) (;) (assocr*) (;) (id (*) swap*) (id (*) eps*)
+%     &&    (;) swap* (;) (unite)
+
+\noindent
+where {{reorder}} is the obvious combinator of type {{b1 * (b2 * b3) * b4 <-> b1
+* (b3 * b2) * b4}}. At the type level, the computation proceeds as follows:
+
+%subcode{opsem} include main
+%! columnstyle = rlr
+%        & 1/(b1 * b2) & 
+%     <->& 1 * 1/(b1 * b2) & uniti
+%     <->& 1 * (1 * 1/(b1 * b2)) & uniti
+%     <->& (1 * 1) * 1/(b1 * b2) & assocl*
+%     <->& ((1/b1 * b1) * (1/b2 * b2)) * 1/(b1 * b2) &(eta*_{b1} (*) eta*_{b2}) (*) id
+%     <->& ((1/b1 * 1/b2) * (b1 * b2)) * 1/(b1 * b2) & reoder (*) id
+%     <->& (1/b1 * 1/b2) * ((b1 * b2) * 1/(b1 * b2)) & assocr*
+%     <->& (1/b1 * 1/b2) * (1/(b1 * b2) * (b1 * b2)) & id * swap*
+%     <->& (1/b1 * 1/b2) * 1 & id * eps*
+%     <->& 1 * (1/b1 * 1/b2) & swap*
+%     <->& (1/b1 * 1/b2) & unite
+
+With {{recip}} out of the way, we can easily write {{curry}}:
+
+%subcode{opsem} include main
+%! columnStyle = rcl
+% curry &:& b1 (x) b2 :-* b3 <-> b1 :-* (b2 :-* b3)
+% curry &=& (id * recip) (;) (id * swap*) (;) assocl*
 
 %%%%%%%%%%%%
 \subsection{Duality}
