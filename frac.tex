@@ -768,8 +768,8 @@ to convert any {{false}} to {{true}} and vice-versa. We formalize this
 
 We are now a small step from implementing various higher-order
 combinators that manipulate functions or relations. In particular, we
-can \emph{apply} and \emph{compose} values representing relations as
-shown below:
+can \emph{apply} and \emph{compose} values representing relations.
+\emph{apply} is shown below:
 
 %subcode{opsem} include main
 %! columnStyle = rcl
@@ -827,6 +827,7 @@ constraints. Otherwise, the result is undefined.
 %     &<->& (1/b1 * b3) & (id * apply')
 %     &=& b1 :-* b3
 
+\noindent
 We can also derive currying (and dually, uncurrying) combinators. Observe that
 the type of {{curry}} needs to be {{b1 * b2 :-* b3 <-> b1 :-* (b2 :-* b3)}},
 which can be written in mathematical notation as {{b3/(b1 * b2) = (b3 * 1/b2) *
@@ -836,7 +837,7 @@ implementation of the mathematical identity {{1/(b1 * b2) = 1/b1 * 1/b2}}:
 %subcode{opsem} include main
 %! columnStyle = rcl
 % recip &:& 1 / (b1 * b2) <-> 1 / b1 * 1 / b2
-% recip &=& (uniti) (;) (uniti) (;) (assocl*) (;) ((eta* (*) eta*) (*) id)
+% recip &=& (uniti) (;) (uniti) (;) (assocl*) (;) ((eta*_{b1} (*) eta*_{b2}) (*) id)
 %     &&    (;) (reorder (*) id) (;) (assocr*) (;) (id (*) swap*) (id (*) eps*)
 %     &&    (;) swap* (;) (unite)
 
@@ -844,20 +845,22 @@ implementation of the mathematical identity {{1/(b1 * b2) = 1/b1 * 1/b2}}:
 where {{reorder}} is the obvious combinator of type {{b1 * (b2 * b3) * b4 <-> b1
 * (b3 * b2) * b4}}. At the type level, the computation proceeds as follows:
 
+%% XXX: why won't the columnstyle declaration here work? (Z)
 %subcode{opsem} include main
-%! columnstyle = rlr
+%! columnStyle = rlr
 %        & 1/(b1 * b2) & 
-%     <->& 1 * 1/(b1 * b2) & uniti
-%     <->& 1 * (1 * 1/(b1 * b2)) & uniti
-%     <->& (1 * 1) * 1/(b1 * b2) & assocl*
-%     <->& ((1/b1 * b1) * (1/b2 * b2)) * 1/(b1 * b2) &(eta*_{b1} (*) eta*_{b2}) (*) id
-%     <->& ((1/b1 * 1/b2) * (b1 * b2)) * 1/(b1 * b2) & reoder (*) id
-%     <->& (1/b1 * 1/b2) * ((b1 * b2) * 1/(b1 * b2)) & assocr*
-%     <->& (1/b1 * 1/b2) * (1/(b1 * b2) * (b1 * b2)) & id * swap*
-%     <->& (1/b1 * 1/b2) * 1 & id * eps*
-%     <->& 1 * (1/b1 * 1/b2) & swap*
-%     <->& (1/b1 * 1/b2) & unite
+%     <->& 1 * 1/(b1 * b2) & (uniti)
+%     <->& 1 * (1 * 1/(b1 * b2)) & (uniti)
+%     <->& (1 * 1) * 1/(b1 * b2) & (assocl*)
+%     <->& ((1/b1 * b1) * (1/b2 * b2)) * 1/(b1 * b2) &((eta*_{b1} (*) eta*_{b2}) (*) id)
+%     <->& ((1/b1 * 1/b2) * (b1 * b2)) * 1/(b1 * b2) & (reoder (*) id)
+%     <->& (1/b1 * 1/b2) * ((b1 * b2) * 1/(b1 * b2)) & (assocr*)
+%     <->& (1/b1 * 1/b2) * (1/(b1 * b2) * (b1 * b2)) & (id * swap*)
+%     <->& (1/b1 * 1/b2) * 1 & (id * eps*)
+%     <->& 1 * (1/b1 * 1/b2) & (swap*)
+%     <->& (1/b1 * 1/b2) & (unite)
 
+\noindent
 With {{recip}} out of the way, we can easily write {{curry}}:
 
 %subcode{opsem} include main
@@ -899,12 +902,12 @@ that can be defined, an additive family (explored in detail in our previous
 work~\cite{rc2011}) and a multiplicative family (which is the focus of this
 section).
 
-Given a computation {{c:b1 * b2 <-> b1 * b3}} and we
+Given a computation {{c:b1 * b2 <-> b1 * b3}},we
 want to cancel the common type {{b1}}, to produce a new combinator
 {{trace*~c:b2<->b3}}. For the evaluation of such a combinator, we are only
 given a value {{v2 : b2}}. But to evaluate {{c}}, we must provide a pair
 consisting of ``some'' value {{v1 : b1}} together with the given {{v2 : b2}}.
-The needed value {{v1 : b1}} cannot be arbitrary: it must be such that is
+The needed value {{v1 : b1}} cannot be arbitrary: it must be such that it
 is the value produced as the first component of the result.  In general, there
 may be several such fixed-point values, or none.  A few examples should help
 explain the subtleties.
