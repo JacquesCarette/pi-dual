@@ -1152,13 +1152,25 @@ for some type {{a}} such that {{c_R = trace* cInner}}:
 % results. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Discussion}
+\section{Conclusion}
 \label{sec:cat} 
 
-The interpretation of {{PiTF}} in the category of sets and relations is
-adequate in the sense that it produces a language in which every program is a
-reversible relation and in which relations are first-class values. This
-relational model is however, unsatisfactory, for several reasons:
+We have introduced the idea of \emph{fractional types} in the context of a
+reversible language founded on type isomorphisms and preservation of
+information. Values of fractional types represent \emph{negative
+  information}, a concept which is difficult to introduce in a conventional
+language that allows arbitrary creation and deletion of information but which
+is much simpler to deal with when the surrounding language infrastructure
+guarantees preservation of information. Fractional types and values can be
+used to express a simple and elegant notion of higher-order functions: a
+function {{b1 :-* b2}} is a first-class value consisting of negative
+information drawn from {{b1}} and positive information drawn from {{b2}}.
+
+The interpretation of our language {{PiTF}} in the category of sets and
+relations is adequate in the sense that it produces a language in which every
+program is a reversible relation and in which relations are first-class
+values. This relational model is however, unsatisfactory, for several
+reasons:
 
 \begin{itemize}
 \item the type {{1/b}} is interpreted in the same way as {{b}}, which gives no
@@ -1219,9 +1231,6 @@ identify those groupoid actions which are proper generalizations of
 isomorphisms \emph{and} can be represented as groupoids, so as to obtain a
 proper interpretation for a higher-order language.  As the category of
 groupoids is cartesian closed, this appears eminently feasible.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusion}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
