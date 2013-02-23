@@ -840,7 +840,7 @@ are involutive:
 % \dgm{involution-times}
 
 %%%%%%%%%%%%
-\subsection{Feedback, Iteration, and Trace Operators}
+\subsection{Trace Operators and (Finite) Relational Programming}
 
 Mathematically speaking, recursion and iteration can be expressed using
 categorical trace
@@ -900,17 +900,19 @@ the computation:
 % {[ ((1/false,true),false), ((1/true,false),false) ]} & (assocl*)
 % emptyset & (eps*_{bool} * id)
 
+%% XXX: do we want to cite something for relational programming?
 \noindent  The computation with {{true}} gives the same result.  This
 implies that although our semantics is formally reversible, it 
 does not result in isomorphisms.
-Nevertheless, the next subsection illustrates why this is still useful.
+Nevertheless, this can still be useful, as it gives us access to
+\emph{relational programming},
+which uses set-theoretic relations and their
+composition to express computational tasks in a declarative way. Their encoding
+in {{PiTF}} uses fractional types (and specifically, their ability to encode the
+multiplicative trace operator).
+%% XXX: this falls kind of flat without some kind of example. do we want to
+%% release code with the paper and mention it here?
 
-%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{(Finite) Relational Programming}
-\label{ch3:sec:lp}
-
-Relational programming leverages set-theoretic relations and their
-composition to express computational tasks in a declarative way. 
 % For instance, consider this example:
 % {{parent = {[ (A,B), (B,C), (A,D) ]} }}
 % {{grandparent = parent (o) parent}}
@@ -919,59 +921,56 @@ composition to express computational tasks in a declarative way.
 % composition of two parent relations. If we wrote this example in a
 % relational language (e.g., Prolog) and we executed the query
 % {{grandparent(A)}}, we would get the answer {{ {[C]} }}.
-It turns out that with the addition of the multiplicative trace, and
-the move to relations motivated in the previous section, we can
-express relational programming.
 
-Consider the relation {{R}} on booleans given by:
-
-{{ {[(false,false), (false,true), (true,false) ]}. }}
-
-\noindent We can define a combinator {{c_R}} whose denotation is {{R}},
-by defining a combinator {{cInner : (a * bool) <-> (a * bool)}}
-for some type {{a}} such that {{c_R = trace* cInner}}:
-
-% %subcode{proof} include main
-% %@ ~
-% %@@ ((false,false),false) ~~cInner~~ ((false,false),false) 
-% %----
-% %@ ~
-% %@@ ((false,true),false) ~~cInner~~ ((false,true),true) 
-% %----
-% %@ ~
-% %@@  ((false,true),true) ~~cInner~~ ((false,true),false) 
-% %----
-% %@ ~
-% %@@ ((false,false),true) ~~cInner~~ ((true,false),true) 
-% %----
-% %@ ~
-% %@@ ((true,false),false) ~~cInner~~ ((true,true),false)  
-% %----
-% %@ ~
-% %@@ ((true,false),true) ~~cInner~~ ((true,true),true)  
-% %----
-% %@ ~
-% %@@ ((true,true),false) ~~cInner~~ ((true,false),false) 
-% %----
-% %@ ~
-% %@@ ((true,true),true) ~~cInner~~ ((false,false),true) 
-% In the first three lines, the first argument is a fixed point and hence the
-% multiplicative trace would map the second input to the second output
-% producing the desired relation. In the remaining five cases, the first
-% argument is not a fixed point and hence all these cases would be rejected as
-% solutions to the constraint imposed by the multiplicative trace. It simply
-% remains to find the actual realization of {{cInner}} that would produce the
-% behavior above. 
-
-%subcode{opsem} include main
-%! columnStyle = rcl
-% cInner &:& (bool * bool) * bool <-> (bool * bool) * bool
-% cInner &=& sym (swap* (;) assocl* (;) (cnot (*) id) (;) assocr* (;) swap* (;)  toffoli (;)
-%        &&  ((swap* (;) cnot (;) swap*) (*) id) (;) toffoli (;)
-%        &&  (assocr* (;) swap* (;) toffoli (;) swap* (;) assocl*) (;) toffoli (;) (cnot (*) id))
-
-\noindent where {{toffoli}} and {{cnot}} were defined for {{Pi}} in
-\cite{rc2011}.
+% Consider the relation {{R}} on booleans given by:
+% 
+% {{ {[(false,false), (false,true), (true,false) ]}. }}
+% 
+% \noindent We can define a combinator {{c_R}} whose denotation is {{R}},
+% by defining a combinator {{cInner : (a * bool) <-> (a * bool)}}
+% for some type {{a}} such that {{c_R = trace* cInner}}:
+% 
+% % %subcode{proof} include main
+% % %@ ~
+% % %@@ ((false,false),false) ~~cInner~~ ((false,false),false) 
+% % %----
+% % %@ ~
+% % %@@ ((false,true),false) ~~cInner~~ ((false,true),true) 
+% % %----
+% % %@ ~
+% % %@@  ((false,true),true) ~~cInner~~ ((false,true),false) 
+% % %----
+% % %@ ~
+% % %@@ ((false,false),true) ~~cInner~~ ((true,false),true) 
+% % %----
+% % %@ ~
+% % %@@ ((true,false),false) ~~cInner~~ ((true,true),false)  
+% % %----
+% % %@ ~
+% % %@@ ((true,false),true) ~~cInner~~ ((true,true),true)  
+% % %----
+% % %@ ~
+% % %@@ ((true,true),false) ~~cInner~~ ((true,false),false) 
+% % %----
+% % %@ ~
+% % %@@ ((true,true),true) ~~cInner~~ ((false,false),true) 
+% % In the first three lines, the first argument is a fixed point and hence the
+% % multiplicative trace would map the second input to the second output
+% % producing the desired relation. In the remaining five cases, the first
+% % argument is not a fixed point and hence all these cases would be rejected as
+% % solutions to the constraint imposed by the multiplicative trace. It simply
+% % remains to find the actual realization of {{cInner}} that would produce the
+% % behavior above. 
+% 
+% %subcode{opsem} include main
+% %! columnStyle = rcl
+% % cInner &:& (bool * bool) * bool <-> (bool * bool) * bool
+% % cInner &=& sym (swap* (;) assocl* (;) (cnot (*) id) (;) assocr* (;) swap* (;)  toffoli (;)
+% %        &&  ((swap* (;) cnot (;) swap*) (*) id) (;) toffoli (;)
+% %        &&  (assocr* (;) swap* (;) toffoli (;) swap* (;) assocl*) (;) toffoli (;) (cnot (*) id))
+% 
+% \noindent where {{toffoli}} and {{cnot}} were defined for {{Pi}} in
+% \cite{rc2011}.
 % %     
 % % c_R &:& bool <-> bool
 % % c_R &=& trace* cInner
