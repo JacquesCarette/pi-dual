@@ -859,33 +859,23 @@ is the value produced as the first component of the result.  In general, there
 may be several such fixed-point values, or none.  A few examples should help
 explain the subtleties.
 
-\begin{example}
-Consider the combinator {{c : bool * 1 <-> bool * 1}}, with {{c = id}}.
+Consider the combinator {{id : bool * 1 <-> bool * 1}}.
+Using {{trace*}}, we construct the combinator {{trace* c : 1 <-> 1}}.
+Applying this to {{() : 1}} requires us to find a value {{b : bool}} such
+that {{(b,()) ~~d~~ (b,())}}. Given that the type {{bool}} has two values,
+there are two values {{false}} and {{true}} that satisfy the constraint.
+In other words, {{()~~(trace* id)~~() }}.
 
-\noindent Using {{trace*}}, we construct the
-combinator {{trace* c : 1 <-> 1}}. Applying this to 
-{{() : 1}} requires us to find a value {{b : bool}} such that 
-{{(b,()) ~~d~~ (b,())}}. Given that the type {{bool}} 
-has two values, there are two values {{false}} and {{true}} that satisfy the 
-constraint. In other words, {{() ~~(trace* c)~~() }}.
-\end{example}
-
-\begin{example}
-\label{ch3:ex:annihilate}
-Consider a small variation on the combinator {{c}} above:
-
-{{c : bool * 1 <-> bool * 1}} 
-
-{{c = swap+ (*) id }}
-
-\noindent which negates the boolean component of its incoming
+%% \label{ch3:ex:annihilate}
+Consider another combinator that also has the type {{bool * 1 <-. bool * 1}},
+but is instead defined to be {{c = swap+ (*) id }}, which negates the boolean
+component of its incoming
 pair. Using the multiplicative trace operator, we can construct the
 combinator {{trace* c : 1 <-> 1}} as before. But now, applying this
 combinator to {{() : 1}} requires us to find a value {{b : bool}} such
-that {{(b,()) ~~swap+~~ (b,())}} which is impossible since {{swap+}} 
+that {{(b,()) ~~swap+ (*) id~~ (b,())}} which is impossible since {{swap+}} 
 has no fixed points.  Operationally, the evaluation of
 such a combinator should produce no value (were it to even terminate).
-\end{example}
 
 With fractionals, {{trace*}} becomes directly expressible:
 
