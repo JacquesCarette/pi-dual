@@ -270,12 +270,14 @@ We view {{Pi}} as having two levels:  it has traditional values, given by:
 \noindent and these are classified by ordinary types:
 %subcode{bnf} include main
 % value types, b ::= 1 | b + b | b * b 
-\noindent Types include the unit type {{1}}, sum types {{b1 + b2}}, and
+\noindent 
+Types include the unit type {{1}}, sum types {{b1+b2}}, and
 products types {{b1*b2}}.  Values includes {{()}} which is the only value of
 type {{1}}, {{left v}} and {{right v}} which inject {{v}} into a sum type,
 and {{(v1,v2)}} which builds a value of product type. But these values should
 be regarded as largely ancillary: we do not treat them as first-class citizens,
 and they only occur when observing the effect of an isomorphism.
+
 
 \paragraph*{Isomorphisms.} The important terms of {{Pi}} are witnesses to
 (value) type isomorphisms.  They are also typed, by the shape of the (value)
