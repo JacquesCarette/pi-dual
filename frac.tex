@@ -782,16 +782,6 @@ can \emph{apply} and \emph{compose} values representing relations.
   \dgm{apply-times2}
 \end{multicols}
 
-
-\noindent At the type level, the computation proceeds as follows:
-%subcode{bnf} include main
-%  (b1 :-* b2) * b1 &=& (1/b1 * b2) * b1 & 
-%     &<->& b1 * (1/b1 * b2) & (swap*)
-%     &<->& (b1 * 1/b1) * b2) & (assocl*)
-%     &<->& (1/b1 * b1) * b2) & (swap* (*) id)
-%     &<->& 1 * b2 & (eps*_{b1} (*) id)
-%     &<->& b2 & (unite)
-
 \noindent Intuitively, we simply match the incoming argument of type {{b1}} with
 the constraint encoded by the function. If they match, they cancel
 each other and the value of type {{b2}} is exposed with no
@@ -818,15 +808,6 @@ constraints. Otherwise, the result is undefined.
 
 \dgm{compose-times3}
 
-
-\noindent Again, at the type level, the computation proceeds as follows:
-
-%subcode{bnf} include main
-%  (b1 :-* b2) * (b2 :-* b3) &=& (1/b1 * b2) * (1/b2 * b3) & 
-%     &<->& (1/b1 * (b2 * (1/b2 * b3)) & (assocr*)
-%     &<->& (1/b1 * b3) & (id * apply')
-%     &=& b1 :-* b3
-
 \noindent
 We can also derive currying (and dually, uncurrying) combinators. Observe that
 the type of {{curry}} needs to be {{b1 * b2 :-* b3 <-> b1 :-* (b2 :-* b3)}},
@@ -842,25 +823,7 @@ implementation of the mathematical identity {{1/(b1 * b2) = 1/b1 * 1/b2}}:
 %     &&    (;) swap* (;) (unite)
 
 \noindent
-where {{reorder}} is the obvious combinator of type {{b1 * (b2 * b3) * b4 <-> b1
-* (b3 * b2) * b4}}. At the type level, the computation proceeds as follows:
-
-%% XXX: why won't the columnstyle declaration here work? (Z)
-%subcode{opsem} include main
-%! columnStyle = rlr
-%        & 1/(b1 * b2) & 
-%     <->& 1 * 1/(b1 * b2) & (uniti)
-%     <->& 1 * (1 * 1/(b1 * b2)) & (uniti)
-%     <->& (1 * 1) * 1/(b1 * b2) & (assocl*)
-%     <->& ((1/b1 * b1) * (1/b2 * b2)) * 1/(b1 * b2) &((eta*_{b1} (*) eta*_{b2}) (*) id)
-%     <->& ((1/b1 * 1/b2) * (b1 * b2)) * 1/(b1 * b2) & (reoder (*) id)
-%     <->& (1/b1 * 1/b2) * ((b1 * b2) * 1/(b1 * b2)) & (assocr*)
-%     <->& (1/b1 * 1/b2) * (1/(b1 * b2) * (b1 * b2)) & (id * swap*)
-%     <->& (1/b1 * 1/b2) * 1 & (id * eps*)
-%     <->& 1 * (1/b1 * 1/b2) & (swap*)
-%     <->& (1/b1 * 1/b2) & (unite)
-
-\noindent
+where {{reorder}} is the obvious combinator of type {{b1 * (b2 * b3) * b4 <-> b1 * (b3 * b2) * b4}}.
 With {{recip}} out of the way, we can easily write {{curry}}:
 
 %subcode{opsem} include main
@@ -880,16 +843,6 @@ are involutive.  In particular, we have:
 % doubleDiv &=& uniti (;) (eta*_{1/b} (*) id) (;) assocr* (;) (id (*) eps*_b) (;) swap* (;) unite
 
 \dgm{involution-times}
-
-\noindent At the type level, this computation proceeds as follows:
-
-%subcode{bnf} include main
-%  b &<->& (1 * b) & (uniti)
-%    &<->& (1/(1/b) * 1/b) * b & (eta*_{1/b} (*) id)
-%    &<->& 1/(1/b) * (1/b * b) & (assocr*)
-%    &<->& 1/(1/b) * 1 & (id (*) eps*_b)
-%    &<->& 1 * 1/(1/b) & (swap*)
-%    &<->& 1/(1/b) & (unite)
 
 %%%%%%%%%%%%
 \subsection{Feedback, Iteration, and Trace Operators}
