@@ -169,6 +169,14 @@ $\texttt{Id}_A(a,b)$ representing the proposition that~$a$ and~$b$ are equal:
 in other words, a term of type $\texttt{Id}_A(a,b)$ witnesses, explains, and
 models the process of transforming $a$ to $b$ and vice-versa.
 
+\roshan{The above para is too technical in a weird way. Its unclear
+  what it contributes. If one wants to make a point of computational
+  witnesses of isomorphisms its easier to explain and cite in terms of
+  Andreas Blass and Fiore -- and more generally by Barry Mazur. I say
+  this also because it seems that HOTT is more concerned with
+  topological structure of equalities, even though they tend to start
+  their literature with some talk of intentional specifications.}
+
 In the computer science community, the theory and practice of type
 isomorphisms is well-established. Originally, such type isomorphisms were
 motivated by the pragmatic concern of searching large libraries of functions
@@ -176,7 +184,7 @@ by providing one of the many possible isomorphic types for the desired
 function~\cite{Rittri:1989:UTS:99370.99384}. More recently, type isomorphisms
 have taken a more central role as \emph{the} fundamental computational
 mechanism from which more conventional, i.e., irreversible computation, is
-derived. In more detail, in our own previous
+derived. In our own previous
 work~\cite{James:2012:IE:2103656.2103667,rc2011,rc2012} we started with the
 notion of type isomorphism as the ``right'' starting point for a theory of
 computation. The central technical contribution was the development of a
@@ -185,21 +193,31 @@ every computation is an isomorphism. Other major results are that all such
 computations preserve the information-theoretic entropy, that the languages
 are logically reversible, and that they have models in various flavors of
 symmetric monoidal categories (which are the backbone of models for linear
-logic and quantum computation). We have also invested a significant amount of
-time in using {{Pi}} as an actual programming language and established
-several idioms for programming large classes of interesting (recursive)
-programs in {{Pi}}.
+logic and quantum computation). 
+%% We have also invested a significant amount of time in using {{Pi}} as
+%% an actual programming language and established several idioms for
+%% programming large classes of interesting (recursive) programs in
+%% {{Pi}}.
 
 A major open problem remains, however: a higher-order extension of
 {{Pi}}. This extension is of fundamental importance in all the originating
-research areas. In physics, it allows a process or observer to be treated as
-``data'' that can be transformed by higher-level processes or observed by
-meta-level observers. In mathematics and logic, it allows the equivalence
-between different proofs of type $\texttt{Id}_A(a,b)$ to itself be expressed
-as an isomorphism (of a higher type)
+research areas. 
+%% In physics, it allows a process or observer to be treated as
+%% ``data'' that can be transformed by higher-level processes or observed by
+%% meta-level observers. 
+In physics, it allows for quantum states to be viewed as processes and
+processes to be viewed as states, such as with the Choi-Jamiolkowski
+isomorphism \cite{choi1975completely,jamiolkowski1972linear}.  In
+mathematics and logic, it allows the equivalence between different
+proofs of type $\texttt{Id}_A(a,b)$ to itself be expressed as an
+isomorphism (of a higher type)
 $\texttt{Id}_{\texttt{Id}_A(a,b)}(p,q)$. Finally, in computer science,
-higher-order types allow code to abstract over other code fragments as well
-as the manipulation of code as data and data as code.
+higher-order types allow code to abstract over other code fragments as
+well as the manipulation of code as data and data as code.
+
+\roshan{Again, HOTT seems jarring. Saying something about logic in
+  this way however seems useful. Maybe one can use one of the examples
+  of equivalence between proofs that Baez's Rosetta stone uses. }
 
 Technically speaking, obtaining a higher-order extension requires the
 construction of a \emph{compact closed category} from the underlying monoidal
