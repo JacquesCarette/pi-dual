@@ -220,7 +220,11 @@ well as the manipulation of code as data and data as code.
   of equivalence between proofs that Baez's Rosetta stone uses. }
 
 Technically speaking, obtaining a higher-order extension requires the
-construction of a \emph{compact closed category} from the underlying monoidal
+construction of a 
+%\emph{compact closed category}
+\emph{closed category} 
+%
+from the underlying monoidal
 category for~{{Pi}}. Although the general idea of such a construction is
 well-understood, the details of adapting it to an actual programming language
 are subtle.  Our main novel
@@ -229,7 +233,8 @@ technical device to achieving the higher-order extension is a
 conventional product types.  By adding a formal (linear) dual to (type
 theoretic) products, we can internalize the notion that ``taking an input''
 corresponds to negative information, which turns out to be the basis of
-first-class functions. The remainder of the paper reviews {{Pi}} and then
+first-class functions. \roshan{The last sentence is terrible.} 
+The remainder of the paper reviews {{Pi}} and then
 introduces the syntax and semantics of the extension with fractional
 types. We then study the properties of the extended language and establish
 its expressiveness via several constructions and examples that exploit its
@@ -441,16 +446,26 @@ a category in which morphisms are representable as objects. The key to this
 extension is to add dual objects (in our case the fractionals) satisfying the
 following isomorphism witnessed by two new type indexed combinators 
 {{eta*_b}} and {{eps*_b}}:
+\begin{multicols}{3}
+  \dgm{eta_times2}
+
+\columnbreak
+
 %subcode{bnf} include main
 %! columnStyle = r r c l l
 %eta*_b :&  1 & <-> & 1/b * b &: eps*_b
 %% XXX: diagrams need unit wires(?)
-\begin{multicols}{2}
-  \dgm{eta_times2}
+%% Roshan: We should just be clear that unit wires are dropped. Dgms
+%% including them dont communicate any additional information and
+%% appear crowded.
+
+\columnbreak
 
   \dgm{eps_times2}  
 \end{multicols}
 
+
+\vspace{-10pt}
 \noindent From a programming perspective, we think of a value {{1/v}} as a
 \emph{first-class constraint} that can only be satisfied if it is matched
 with an actual value {{v}} or as a \emph{pattern} representing the absence of
