@@ -1163,13 +1163,25 @@ as follows:
 % results. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Discussion}
+\section{Conclusion}
 \label{sec:cat} 
 
-The interpretation of {{PiTF}} in the category of sets and relations is
-adequate in the sense that it produces a language in which every program is a
-reversible relation and in which relations are first-class values. This
-relational model is however, unsatisfactory, for several reasons:
+We have introduced the idea of \emph{fractional types} in the context of a
+reversible language founded on type isomorphisms and preservation of
+information. Values of fractional types represent \emph{negative
+  information}, a concept which is difficult to introduce in a conventional
+language that allows arbitrary creation and deletion of information but which
+is much simpler to deal with when the surrounding language infrastructure
+guarantees preservation of information. Fractional types and values can be
+used to express a simple and elegant notion of higher-order functions: a
+function {{b1 :-* b2}} is a first-class value consisting of negative
+information drawn from {{b1}} and positive information drawn from {{b2}}.
+
+The interpretation of our language {{PiTF}} in the category of sets and
+relations is adequate in the sense that it produces a language in which every
+program is a reversible relation and in which relations are first-class
+values. This relational model is however, unsatisfactory, for several
+reasons:
 
 \begin{itemize}
 \item the type {{1/b}} is interpreted in the same way as {{b}}, which gives no
@@ -1213,32 +1225,17 @@ Such an interpretation has the following features:
 
 Although this semantics appears to have ``better'' properties than the
 relational one, we argue that it is not \emph{the} ``perfect'' semantics. By
-including the zero vector, the language has
-morphisms that do not correspond to isomorphisms and it is difficult to
-reconcile the interpretation with the view that the types are rational
-numbers. What would really be a ``perfect'' interpretation is one in which we
-can only express {{Pi}}-isomorphisms as first class values and in which the
-types are interpreted in a way that is consistent with the rational
-numbers. Fortunately, there is promising significant work on the groupoid
-interpretation of type theory and on the categorification of the rational
-numbers that we outline next.
-
-The fundamental idea of both lines of previous work is that it is possible to
-build sets (with additional structure) with a \emph{fractional cardinality}.
-
-%% EXPAND on this
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusion}
-
-Give the denotation of a few combinators. The denotation of {{eta_{1+1} }} is
-the relation:
-
-{{ {[ (1/(), (left(), left())), (1/(), (right(),right ())) ]} }}
-
-give some intuition; example with eta/epsilon
-
+including the zero vector, the language has morphisms that do not correspond
+to isomorphisms and it is difficult to reconcile the interpretation with the
+view that the types are rational numbers. What would really be a ``perfect''
+interpretation is one in which we can only express {{Pi}}-isomorphisms as
+first class values and in which the types are interpreted in a way that is
+consistent with the rational numbers. Fortunately, there is promising
+significant work on the groupoid interpretation of type theory and on the
+categorification of the rational numbers that we outline next. The
+fundamental idea of both lines of previous work is that it is possible to
+build sets (with additional structure) with a \emph{fractional cardinality}
+--- a topic we are currently investigating in detail. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
