@@ -19,10 +19,10 @@
 \newcommand{\jacques}[1]{\textsc{Jacques says:} #1}
 \newcommand{\amr}[1]{\textsc{Amr says:} #1}
 
-%% \newcommand{\roshan}[1]{} 
-\newcommand{\roshan}[1]{\textsc{Roshan says:} 
-  \textit{#1}
-}
+\newcommand{\roshan}[1]{} 
+%% \newcommand{\roshan}[1]{\textsc{Roshan says:} 
+%%   \textit{#1}
+%% }
 
 \hyphenation{a-reas}
 
@@ -116,8 +116,8 @@
 
 \begin{document}
 \title{Fractional Types}
-\author{Roshan P. James \and Zachary Sparks \and Jacques Carette \and Amr Sabry}
-\institute{Indiana University and McMaster University}
+\author{Roshan P. James$^{1}$ \and Zachary Sparks$^{1}$ \and Jacques Carette$^{2}$ \and Amr Sabry$^{1}$}
+\institute{$^{(1)}$~Indiana University \qquad $^{(2)}$~McMaster University}
 \maketitle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -142,23 +142,19 @@
 
 We are witnessing a convergence of ideas from several distinct research
 communities (physics, mathematics, and computer science) towards replacing
-\emph{equalities} by \emph{isomorphisms}. The combined programme 
-has sparked a huge amount of research that unveiled
-new and surprising connections between geometry, algebra, logic, and
-computation (see~\cite{baez2011physics} for an overview of some of the 
-connections).
+\emph{equalities} by \emph{isomorphisms}. The combined programme has sparked
+a significant amount of research that unveiled new and surprising connections
+between geometry, algebra, logic, and computation (see~\cite{baez2011physics}
+for an overview of some of the connections).
 
 In the physics community, Landauer~\cite{Landauer:1961,Landauer},
 Feynman~\cite{springerlink:10.1007/BF02650179}, and others have interpreted
-the laws of physics as fundamentally related to computation. In more detail,
-the great majority of the laws of physics are formulated as equalities
-between different physical observables, such as Newton's second law of
-classical mechanics ($F=\dot{p}$).
-The insight of Landauer, Feynman, etc. is that
-\emph{different} physical observables should not be related by an
-\emph{equality} but more appropriately by an \emph{isomorphism} that
-witnesses, explains, and models the process of transforming one observable to
-the other.
+the laws of physics as fundamentally related to computation. The great
+majority of these laws are formulated as equalities between different
+physical observables which is unsatisfying: \emph{different} physical
+observables should not be related by an \emph{equality}. It is more
+appropriate to relate them by an \emph{isomorphism} that witnesses, explains,
+and models the process of transforming one observable to the other.
 
 In the mathematics and logic community, Martin-L\"of developed an extension
 of the simply typed $\lambda$-calculus originally intended to provide a
@@ -179,6 +175,12 @@ models the process of transforming $a$ to $b$ and vice-versa.
   topological structure of equalities, even though they tend to start
   their literature with some talk of intentional specifications.}
 
+%% AMR: I am not sure how to take this comment into account. I think we
+%% should make a specific connection to Martin-Lof type theory to at least
+%% justify the mention of groupoids in the conclusion. I agree though that
+%% this is a very technical point and I do find it hard to express the point
+%% in a couple of sentences. Suggestions welcome. 
+
 In the computer science community, the theory and practice of type
 isomorphisms is well-established. Originally, such type isomorphisms were
 motivated by the pragmatic concern of searching large libraries of functions
@@ -188,14 +190,12 @@ have taken a more central role as \emph{the} fundamental computational
 mechanism from which more conventional, i.e., irreversible computation, is
 derived. In our own previous
 work~\cite{James:2012:IE:2103656.2103667,rc2011,rc2012} we started with the
-notion of type isomorphism as the ``right'' starting point for a theory of
-computation. The central technical contribution was the development of a
-family of programming languages, {{Pi}} with various superscripts, in which
-every computation is an isomorphism. Other major results are that all such
-computations preserve the information-theoretic entropy, that the languages
-are logically reversible, and that they have models in various flavors of
-symmetric monoidal categories (which are the backbone of models for linear
-logic and quantum computation). 
+notion of type isomorphism and developed from it a family of programming
+languages, {{Pi}} with various superscripts, in which computation is an
+isomorphism preserving the information-theoretic entropy.
+%% Moreover these languages have models in various flavors of symmetric
+%% monoidal categories (which are the backbone of models for linear logic and
+%% quantum computation).
 %% We have also invested a significant amount of time in using {{Pi}} as
 %% an actual programming language and established several idioms for
 %% programming large classes of interesting (recursive) programs in
@@ -203,44 +203,41 @@ logic and quantum computation).
 
 A major open problem remains, however: a higher-order extension of
 {{Pi}}. This extension is of fundamental importance in all the originating
-research areas. 
+research areas.
 %% In physics, it allows a process or observer to be treated as
 %% ``data'' that can be transformed by higher-level processes or observed by
 %% meta-level observers. 
 In physics, it allows for quantum states to be viewed as processes and
 processes to be viewed as states, such as with the Choi-Jamiolkowski
-isomorphism \cite{choi1975completely,jamiolkowski1972linear}.  In
-mathematics and logic, it allows the equivalence between different
-proofs of type $\texttt{Id}_A(a,b)$ to itself be expressed as an
-isomorphism (of a higher type)
-$\texttt{Id}_{\texttt{Id}_A(a,b)}(p,q)$. Finally, in computer science,
-higher-order types allow code to abstract over other code fragments as
-well as the manipulation of code as data and data as code.
+isomorphism~\cite{choi1975completely,jamiolkowski1972linear}.  In mathematics
+and logic, it allows the equivalence between different proofs of type
+$\texttt{Id}_A(a,b)$ to itself be expressed as an isomorphism (of a higher
+type) $\texttt{Id}_{\texttt{Id}_A(a,b)}(p,q)$. Finally, in computer science,
+higher-order types allow code to abstract over other code fragments as well
+as the manipulation of code as data and data as code.
 
 \roshan{Again, HOTT seems jarring. Saying something about logic in
   this way however seems useful. Maybe one can use one of the examples
   of equivalence between proofs that Baez's Rosetta stone uses. }
 
 Technically speaking, obtaining a higher-order extension requires the
-construction of a 
-%\emph{compact closed category}
-\emph{closed category} 
-%
-from the underlying monoidal
+construction of a \emph{closed category} from the underlying monoidal
 category for~{{Pi}}. Although the general idea of such a construction is
 well-understood, the details of adapting it to an actual programming language
-are subtle.  Our main novel
-technical device to achieving the higher-order extension is a
-\emph{fractional type}, which we so named because of its duality with
-conventional product types.  By adding a formal (linear) dual to (type
-theoretic) products, we can internalize the notion that ``taking an input''
-corresponds to negative information, which turns out to be the basis of
-first-class functions. \roshan{The last sentence is terrible.} 
-The remainder of the paper reviews {{Pi}} and then
-introduces the syntax and semantics of the extension with fractional
-types. We then study the properties of the extended language and establish
-its expressiveness via several constructions and examples that exploit its
-ability to model higher-order computations.
+are subtle.  Our main novel technical device to achieving the higher-order
+extension is a \emph{fractional type} which represents \emph{negative
+  information} and which is so named because of its duality with conventional
+product types.  
+%% By adding a formal (linear) dual to (type theoretic) products, we can
+%% internalize the notion that ``taking an input'' corresponds
+%% to negative information, which turns out to be the basis of first-class
+%% functions.  
+%% \roshan{The last sentence is terrible.}
+The remainder of the paper reviews {{Pi}} and then introduces the syntax and
+semantics of the extension with fractional types. We then study the
+properties of the extended language and establish its expressiveness via
+several constructions and examples that exploit its ability to model
+higher-order computations.
 
 %% AMR:
 %% \roshan{It is unclear what the Id types refer to. We should provide
