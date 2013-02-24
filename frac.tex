@@ -366,7 +366,7 @@ this will not cause undue confusion.
 It is important to note that ``values'' and ``isomorphisms'' are completely
 separate syntactic categories which do not intermix. The semantics of the
 language come when these are made to interact at the ``top level'' via
-\emph{application}: \roshan{This last sentence is unclear.}
+\emph{application}: \roshan{I understand its intent, but this last sentence is unclear.}
 %subcode{bnf} include main
 % top level term, l ::= c v
 
@@ -399,6 +399,14 @@ finite set of a size calculated by viewing the types as natural numbers and
 each combinator {{c : b1 <-> b2}} denotes a bijection between the sets
 denoted by~{{b1}} and~{{b2}}. (We discuss the operational semantics in
 conjuction with our extension in the next section.) 
+
+\roshan{Suggestion : This para is a good one to delete if we run out
+  of space. This is largely general knowledge about universal algebra
+  and maybe one useful remark about the categorical structure. However
+  we have a whole paper about the categorical structure of Pi at RC
+  itself. My point is this sort of this can be a remark inserted at
+  other places in passing and it doesn't deserve a para on its own. It
+  teaches the reader nothing new about Pi. }
 
 % Operationally, the
 % semantics of {{Pi}} is given using two mutually recursive interpreters: one
@@ -445,6 +453,8 @@ in a negative position to possess negative information, as it is really a
 request for information.  Since information is logarithmic, this means that a
 request for information should behave like a \emph{fractional type}.
 
+
+
 % \roshan{It is unclear how fractions help differentiate between inputs
 %   and outputs. On first reading this seemed promising, but nothing
 %   in the rest of the paper substantiates this point of view.}
@@ -452,6 +462,10 @@ request for information should behave like a \emph{fractional type}.
 % Jacques: Exactly!  1/a is negative information is input, b is positive is
 %    output.
 %
+% Roshan: I completely understand this and this is not my objection. This
+% is not what the above sentence is saying however. Its talking about
+% Pi not having a notion of input and output which is simply
+% confusing.
 
 % \roshan{I think we should arrive at relational programming as a means
 %   of giving semantics to fractionals, rather than the other way
