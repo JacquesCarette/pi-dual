@@ -268,6 +268,23 @@ safety.  Our approach is different: we start from a type system, and then
 present a term language which naturally inhabits these types, along with an
 appropriate operational semantics.
 
+\roshan{In the above the, when we say that the terms of {{Pi}} are
+  proofs that certain ``shapes of values'' are isomorphic, it is
+  misleading. In {{langRev}}, the value {{left ()}} may or may not be
+  isomorphic to the value {{right ()}} or {{left ()}} itself, or any
+  other value of our choice. In particular the actual syntactic
+  structure of the value has nothing to do with values being
+  isomorphic. Values are just place-holders for the situations that
+  their type represents. Their shapes have no intrinsic content. }
+
+
+\roshan{Further, this is not to say that we may not be able to use the
+  syntactic structure of a value for some purpose.  The prime use for
+  such a thing might be, for example, to define a notion of distance
+  between values -- such that values live in a metric space. Time and
+  time again, we have felt the need for developing such an idea. Such
+  a thing doesn't exist for the scope of this paper however. }
+
 \paragraph*{Data.}
 We view {{Pi}} as having two levels:  it has traditional values, given by:
 %subcode{bnf} include main
