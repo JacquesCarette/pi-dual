@@ -491,7 +491,7 @@ collapses by defining {{1/b}} to be {{b}}. In spite of this degenerate
 interpretation of fractionals, this is still an interesting category as it
 provides a model for a reversible higher-order language. Indeed, any relation
 is reversible via the standard \emph{converse} operation on a relation.
-Furthermore, as any relation between {{b1}} and {{b2}} can be represented as
+Furthermore, any relation between {{b1}} and {{b2}} can be represented as
 a subset of {{b1 * b2}}, i.e., as a value. 
 
 In this section, we provide a simple semantics of {{PiTF}} in the category of
@@ -615,10 +615,10 @@ read:
 
 The semantics above defines a relation rather than a function. It is still
 reversible in the sense that it ``mode-checks''. In other words, for any
-combinator {{c}} we can treat either its left or its right side as an input;
+combinator~{{c}} we can treat either its left or its right side as an input;
 this allows us to define {{sym}} as just relational converse, which amounts
 to an argument swap. We can then give an operational interpretation to the
-semantic relation by defining two functions: a forward evaluator and a
+semantic relation by defining two interpreters: a forward evaluator and a
 backwards evaluator that exercise the relation in opposite directions, but
 which now can return a \emph{set} of results. This operational view exploits
 the usual conversion of a relation from a subset of {{A * B}} to a function
@@ -1055,7 +1055,8 @@ function returns {{true}} when the inputs satisfy the constraints imposed by
 the structure of {{f}} and a solution to the SAT problem is the set of all
 inputs on which {{f}} produces {{true}}. The basic idea of our construction
 is to use {{trace*}} to annihilate values that fail to satisfy the
-constraints represented by the SAT instance {{f}}. 
+constraints represented by the SAT instance {{f}}. (The accompanying code
+details the construction of such a solver.) 
 
 
 
