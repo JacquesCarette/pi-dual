@@ -85,6 +85,7 @@
 %! forall = \forall
 %! exists = \exists
 %! empty = \emptyset
+%! Sigma = \Sigma
 %! eta = \eta
 %! where = \textbf{where}
 %! epsilon = \varepsilon
@@ -1301,6 +1302,11 @@ isomorphisms \emph{and} can be represented as groupoids, so as to obtain a
 proper interpretation for a higher-order language.  As the category of
 groupoids is cartesian closed, this appears eminently feasible.
 
+Another promising approach is the use of dependent types for {{eps*_b}} and
+{{eta*_b}}; more precisely, {{eps*_b}} would have type 
+{{Sigma (v:b) (1/v,v) <-> 1}} where {{(1/v,v)}} here denotes a singleton type.
+This extra precision appears to restrict combinators of {{PiTF}} back to
+denoting only isomorphisms.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 {\small
