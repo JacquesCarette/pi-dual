@@ -285,6 +285,11 @@ appropriate operational semantics.
   time again, we have felt the need for developing such an idea. Such
   a thing doesn't exist for the scope of this paper however. }
 
+\roshan{The use of the word ``orthogonal'' is inappropriate in the
+  footnote. Adding 0 truly affects how fractionals are developed,
+  whereas when we say ``orthogonal'' we give the impression that it does
+  not really matter. }
+
 \paragraph*{Data.}
 We view {{Pi}} as having two levels:  it has traditional values, given by:
 %subcode{bnf} include main
@@ -302,11 +307,17 @@ and {{(v1,v2)}} which builds a value of product type. But these values should
 be regarded as largely ancillary: we do not treat them as first-class citizens,
 and they only occur when observing the effect of an isomorphism.
 
+\roshan{It is unclear what the usage ``first-class'' and ``effect of
+  an isomorphism'' indicate. Maybe we should rephrase. }
 
-\paragraph*{Isomorphisms.} The important terms of {{Pi}} are witnesses to
-(value) type isomorphisms.  They are also typed, by the shape of the (value)
-type isomorphism they witness {{b <-> b}}.  Specifically, they are witnesses to
-the following isomorphisms:
+
+%% \paragraph*{Isomorphisms.} The important terms of {{Pi}} are witnesses to
+%% (value) type isomorphisms.  They are also typed, by the shape of the (value)
+%% type isomorphism they witness {{b <-> b}}.  Specifically, they are witnesses to
+%% the following isomorphisms:
+\paragraph*{Isomorphisms.} The terms of {{Pi}} witness
+type isomorphisms of the form {{b <-> b}}. They consist of base
+isomorphisms, as defined below, and their composition.
 %subcode{bnf} include main
 %! columnStyle = r@{\hspace{-0.5pt}}r c l@{\hspace{-0.5pt}}l
 %swap+ :&  b1 + b2 & <-> & b2 + b1 &: swap+
@@ -379,7 +390,7 @@ language come when these are made to interact at the ``top level'' via
 The language presented above, at the type level, models a commutative ringoid
 where the multiplicative structure forms a commutative monoid, but the
 additive structure is just a commutative semigroup.  Note that the version of
-{{Pi}} that include the empty type with its usual laws exactly captures, at
+{{Pi}} that includes the empty type with its usual laws exactly captures, at
 the type level, the notion of a \emph{semiring} (occasionally called a
 \emph{rig}) where we replace equality by isomorphism.  Semantically, {{Pi}}
 models a \emph{bimonoidal category} whose simplest example is the category of
