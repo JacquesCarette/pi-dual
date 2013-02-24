@@ -303,9 +303,10 @@ We view {{Pi}} as having two levels:  it has traditional values, given by:
 Types include the unit type {{1}}, sum types {{b1+b2}}, and
 products types {{b1*b2}}.  Values includes {{()}} which is the only value of
 type {{1}}, {{left v}} and {{right v}} which inject~{{v}} into a sum type,
-and {{(v1,v2)}} which builds a value of product type. But these values should
-be regarded as largely ancillary: we do not treat them as first-class citizens,
-and they only occur when observing the effect of an isomorphism.
+and {{(v1,v2)}} which builds a value of product type. 
+%% But these values should be regarded as largely ancillary: we do not
+%% treat them as first-class citizens, and they only occur when observing
+%% the effect of an isomorphism.
 
 \roshan{It is unclear what the usage ``first-class'' and ``effect of
   an isomorphism'' indicate. Maybe we should rephrase. }
@@ -476,6 +477,7 @@ request for information should behave like a \emph{fractional type}.
 %   fractionals have a clean semantics in the setting of relational
 %   programming rather than the other way round.}
 % AMR: relations are indeed only presented as a way to explain the semantics
+% Roshan: it reads much better now. 
 
 The extension of the sets of types and values from {{Pi}} to {{PiTF}} is
 simple:
