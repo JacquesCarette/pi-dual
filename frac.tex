@@ -515,7 +515,7 @@ type indexed combinators {{eta*_b}} and {{eps*_b}}:
 \vspace{-10pt}
 \noindent From a programming perspective, we think of a value {{1/v}} as a
 \emph{first-class constraint} that can only be satisfied if it is matched
-with an actual value {{v}} or as a \emph{pattern} representing the absence of
+with an actual value {{v}}. In other words, {{1/v}} is a \emph{pattern} representing the absence of
 some information of a specific shape (i.e., \emph{negative information}),
 that can only be reconciliated by an actual value {{v}}. The combinator
 {{eta*_b : 1 <-> 1/b * b}} thus represents a fission point which creates ---
@@ -534,16 +534,18 @@ collapses by defining {{1/b}} to be {{b}}. In spite of this degenerate
 interpretation of fractionals, this is still an interesting category as it
 provides a model for a reversible higher-order language. Indeed, any relation
 is reversible via the standard \emph{converse} operation on a relation.
-Furthermore, any relation between {{b1}} and {{b2}} can be represented as
+Furthermore, any relation between {{b1}} and {{b2}} can be represented as 
 a subset of {{b1 * b2}}, i.e., as a value. 
 
-In this section, we provide a simple semantics of {{PiTF}} in the category of
-finite sets and relations. We interpret each combinator {{c : b1 <-> b2}} as
-a \emph{relation} between the sets denoted by {{b1}} and {{b2}}
-respectively. As we illustrate, this semantics allows \emph{arbitrary}
-relations (including the empty relation and relations that are not
-isomorphisms) to be represented as values in {{PiTF}}.  In Sec.~\ref{sec:cat}
-we discuss more refined semantics that are more suitable for richer
+In this section, we provide a simple semantics of {{PiTF}} in the
+category of finite sets and relations, in the following way: We
+interpret each combinator {{c : b1 <-> b2}} as a \emph{relation}
+between the sets denoted by {{b1}} and {{b2}} respectively. Sets
+{{b1}} and {{b2}} can be related only if the same information measure.
+As we illustrate, this semantics allows \emph{arbitrary} relations
+(including the empty relation and relations that are not isomorphisms)
+to be represented as values in {{PiTF}}.  In Sec.~\ref{sec:cat} we
+discuss more refined semantics that are more suitable for richer
 categories.
 
 \begin{definition}[Denotation of Value Types]
