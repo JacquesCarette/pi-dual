@@ -1,7 +1,8 @@
-{-# LANGUAGE TypeOperators, GADTs, TypeSynonymInstances #-}
+{-# LANGUAGE TypeOperators, GADTs #-}
 
 module PiFracClean where
 
+import Prelude hiding (curry,uncurry)
 import Data.List
 
 -----------------------------------------------------------------------
@@ -207,49 +208,44 @@ apply = SwapT :.: apply'
 compose :: (B b1, B b2, B b3) => (b1 :-* b2, b2 :-* b3) :<=> (b1 :-* b3)
 compose = AssocRT :.: (Id :*: apply')
 
-dneg :: B b => b :<=> Recip (Recip b) 
-dneg = -- b 
-  UnitI :.: -- ((),b)
+doubleDiv :: B b => b :<=> Recip (Recip b) 
+doubleDiv = -- b 
+  UnitI :.:         -- ((),b)
   (EtaT :*: Id) :.: -- ((1/(1/b),1/b),b)
-  AssocRT :.: -- (1/(1/b), ((1/b),b))
+  AssocRT :.:       -- (1/(1/b), ((1/b),b))
   (Id :*: EpsT) :.: SwapT :.: UnitE
 
-tens :: (B b1, B b2, B b3, B b4) => (b2 :-* b1, b4 :-* b3) :<=> ((b2,b4) :-* (b1,b3))
-tens = -- ((1/b2,b1),(1/b4,b3))
-  reorder :.: -- ((1/b2,1/b4),(b1,b3))
-  (Sym recipT :*: Id) 
-  where reorder :: (B a, B b, B c, B d) => ((a,b),(c,d)) :<=> ((a,c),(b,d))
-        reorder = AssocLT :.: -- (((a,b),c),d)
-                  (AssocRT :*: Id) :.: -- ((a,(b,c)),d)
-                  ((Id :*: SwapT) :*: Id) :.: -- ((a,(c,b)),d)
-                  (AssocLT :*: Id) :.: -- (((a,c),b),d)
-                  AssocRT 
-
 recipT :: (B b1, B b2) => Recip (b1,b2) :<=> (Recip b1, Recip b2)
-recipT = -- 1/(b1,b2)
-  UnitI :.: -- ((),1/(b1,b2))
-  UnitI :.: -- ((),((),1/(b1,b2)))
-  AssocLT :.: -- (((),()), 1/(b1,b2))
+recipT =                       -- 1/(b1,b2)
+  UnitI :.:                    -- ((),1/(b1,b2))
+  UnitI :.:                    -- ((),((),1/(b1,b2)))
+  AssocLT :.:                  -- (((),()), 1/(b1,b2))
   ((EtaT :*: EtaT) :*: Id) :.: -- (((1/b1,b1),(1/b2,b2)),1/(b1,b2))
-  (reorder :*: Id) :.: -- (((1/b1,1/b2),(b1,b2)),1/(b1,b2))
-  AssocRT :.: -- ((1/b1,1/b2),((b1,b2),1/(b1,b2)))
-  (Id :*: SwapT) :.: -- ((1/b1,1/b2),(1/(b1,b2),(b1,b2)))
-  (Id :*: EpsT) :.: -- ((1/b1,1/b2),())
+  (reorder :*: Id) :.:         -- (((1/b1,1/b2),(b1,b2)),1/(b1,b2))
+  AssocRT :.:                  -- ((1/b1,1/b2),((b1,b2),1/(b1,b2)))
+  (Id :*: SwapT) :.:           -- ((1/b1,1/b2),(1/(b1,b2),(b1,b2)))
+  (Id :*: EpsT) :.:            -- ((1/b1,1/b2),())
   SwapT :.: UnitE
   where reorder :: (B a, B b, B c, B d) => ((a,b),(c,d)) :<=> ((a,c),(b,d))
-        reorder = AssocLT :.: -- (((a,b),c),d)
-                  (AssocRT :*: Id) :.: -- ((a,(b,c)),d)
+        reorder = AssocLT :.:                 -- (((a,b),c),d)
+                  (AssocRT :*: Id) :.:        -- ((a,(b,c)),d)
                   ((Id :*: SwapT) :*: Id) :.: -- ((a,(c,b)),d)
-                  (AssocLT :*: Id) :.: -- (((a,c),b),d)
+                  (AssocLT :*: Id) :.:        -- (((a,c),b),d)
                   AssocRT 
 
 inv :: (B b1, B b2) => (b1 :<=> b2) -> (Recip b1 :<=> Recip b2)
-inv f = -- 1/b1
-  UnitI :.: -- ((),1/b1)
-  (EtaT :*: Id) :.: -- ((1/b2,b2),1/b1)
-  AssocRT :.: -- (1/b2, (b2,1/b1))
+inv f =                       -- 1/b1
+  UnitI :.:                   -- ((),1/b1)
+  (EtaT :*: Id) :.:           -- ((1/b2,b2),1/b1)
+  AssocRT :.:                 -- (1/b2, (b2,1/b1))
   (Id :*: (Sym f :*: Id)) :.: -- (1/b2, (b1,1/b1))
   SwapT :.: (SwapT :*: Id) :.: (EpsT :*: Id) :.: UnitE
+
+curry :: (B b1, B b2, B b3) => ((b1, b2) :-* b3) :<=> (b1 :-* (b2 :-* b3))
+curry = (recipT :*: Id) :.: AssocRT
+
+uncurry :: (B b1, B b2, B b3) => (b1 :-* (b2 :-* b3)) :<=> ((b1,b2) :-* b3)
+uncurry = Sym curry
 
 hor0, hor1, hor2, hor3, hor4, hor5, hor6, hor7, hor8, hor9, 
   hor10, hor11, hor12, hor13, hor14, hor15 :: () :<=> (Recip Bool, Bool)
