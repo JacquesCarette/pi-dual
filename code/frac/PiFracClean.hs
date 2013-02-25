@@ -114,7 +114,7 @@ eval UnfoldB True = return (Left ())
 eval UnfoldB False = return (Right ())
 eval EtaT () = [(Recip v, v) | v <- elems]
 eval EpsT (Recip v1, v2) | v1 == v2 = [()]
-                         | otherwise = error "Type error"
+                         | otherwise = []
 
 evalR :: (a :<=> b) -> b -> [a]
 evalR Id a = return a
@@ -150,7 +150,7 @@ evalR FoldB False = return (Right ())
 evalR UnfoldB (Left ()) = return True
 evalR UnfoldB (Right ()) = return False
 evalR EtaT (Recip v1, v2) | v1 == v2 = [()]
-                          | otherwise = error "Type error"
+                          | otherwise = []
 evalR EpsT () = [(Recip v, v) | v <- elems]
 
 -- using nub; could use exclusive union to get modal QC or nothing to get duplicates
