@@ -50,9 +50,6 @@ data a :<=> b where
 -- Encoding of booleans
   FoldB   :: Either () () :<=> Bool
   UnfoldB :: Bool :<=> Either () ()
--- Trace operators for looping/recursion
---  TraceP :: (B a, B b1, B b2) => (Either a b1 :<=> Either a b2) -> (b1 :<=> b2)
---  TraceT :: (B a, B b1, B b2) => ((a, b1) :<=> (a, b2)) -> (b1 :<=> b2)
 -- Eta/Psi
   EtaT :: (B a) => () :<=> (Recip a, a)
   EpsT :: (B a) => (Recip a, a) :<=> ()
@@ -77,8 +74,6 @@ adjoint Distrib = Factor
 adjoint Factor = Distrib
 adjoint FoldB = UnfoldB
 adjoint UnfoldB = FoldB
---adjoint (TraceP c) = TraceP (adjoint c)
---adjoint (TraceT c) = TraceT (adjoint c)
 adjoint EtaT = EpsT
 adjoint EpsT = EtaT
 
@@ -116,20 +111,6 @@ eval FoldB (Left ()) = return True
 eval FoldB (Right ()) = return False
 eval UnfoldB True = return (Left ())
 eval UnfoldB False = return (Right ())
-{--
-eval (TraceP c) v = do v' <- eval c (Right v)
-                       loop c v'
-    where
-      loop c (Left v) = do v' <- eval c (Left v)
-                           loop c v'
-      loop c (Right v) = return v
-eval (TraceT c) v = try elems
-    where try [] = []
-          try (a : as) = do (a',v') <- eval c (a,v)
-                            if a == a' 
-                              then v' : try as
-                              else try as
---}
 eval EtaT () = [(Recip v, v) | v <- elems]
 eval EpsT (Recip v1, v2) | v1 == v2 = [()]
                          | otherwise = error "Type error"
@@ -214,20 +195,17 @@ name f = EtaT :.: (Id :*: f)
 coname :: (B b1, B b2) => (b1 :<=> b2) -> ((b1 :-* b2) :<=> ())
 coname f = (Id :*: Sym f) :.: EpsT
 
-compose :: (B b1, B b2, B b3) => (b1 :-* b2, b2 :-* b3) :<=> (b1 :-* b3)
-compose = -- ((1/b1,b2),(1/b2,b3))
-  AssocRT :.: -- (1/b1,(b2,(1/b2,b3)))
-  (Id :*: AssocLT) :.: -- (1/b1,((b2,1/b2),b3))
-  (Id :*: (SwapT :*: Id)) :.: -- (1/b1,((1/b2,b2),b3))
-  (Id :*: (EpsT :*: Id)) :.: -- (1/b1,((),b3))
-  (Id :*: UnitE)
-
-apply :: (B b1, B b2) => ((b1 :-* b2, b1) :<=> b2)
-apply = -- ((1/b1,b2),b1)
-  SwapT :.: -- (b1,(1/b1,b2))
-  AssocLT :.: -- ((b1,1/b1),b2)
+apply' :: (B b1, B b2) => ((b1, b1 :-* b2) :<=> b2)
+apply' =              -- (b1, (1/b1,b2))
+  AssocLT :.:        -- ((b1,1/b1),b2)
   (SwapT :*: Id) :.: -- ((1/b1,b1),b2)
   (EpsT :*: Id) :.: UnitE
+
+apply :: (B b1, B b2) => ((b1 :-* b2, b1) :<=> b2)
+apply = SwapT :.: apply'
+
+compose :: (B b1, B b2, B b3) => (b1 :-* b2, b2 :-* b3) :<=> (b1 :-* b3)
+compose = AssocRT :.: (Id :*: apply')
 
 dneg :: B b => b :<=> Recip (Recip b) 
 dneg = -- b 
@@ -327,6 +305,7 @@ hor15 = name r15
 ------------------------------------------------------------------------
 -- Combinational circuits 
 
+-- do 
 inot :: Bool :<=> Bool
 inot = UnfoldB :.: SwapP :.: FoldB
 
@@ -353,7 +332,7 @@ elsenot :: (Bool, Bool) :<=> (Bool, Bool)
 elsenot = cond Id inot
 
 toffoli :: ((Bool,Bool),Bool) :<=> ((Bool,Bool),Bool)
-toffoli = AssocRT :.: controlled cnot :.: AssocLT
+toffoli = AssocRT :.: (controlled cnot) :.: AssocLT
 
 fredkin :: (Bool,(Bool,Bool)) :<=> (Bool,(Bool,Bool))
 fredkin = controlled SwapT
@@ -380,17 +359,17 @@ clone3 :: (Bool,(Bool,(Bool,(Bool,(Bool,Bool))))) :<=> (Bool,(Bool,(Bool,(Bool,(
 clone3 = shuffle :.:
          (elsenot :*: (elsenot :*: elsenot)) :.:
          (Sym shuffle)
-  where shuffle =              -- (a,(b,(c,(a',(b',c')))))
-          (Id :*: AssocLT) :.: -- (a,((b,c),(a',(b',c'))))
-          (Id :*: SwapT)   :.: -- (a,((a',(b',c')),(b,c)))
-          AssocLT :.:          -- ((a,(a',(b',c'))),(b,c))
-          (AssocLT :*: Id) :.: -- (((a,a'),(b',c')),(b,c))
-          AssocRT :.:          -- ((a,a'),((b',c'),(b,c)))
-          (Id :*: AssocLT) :.: -- ((a,a'),(((b',c'),b),c))
-          (Id :*: (SwapT :*: Id)) :.:   -- ((a,a'),((b,(b',c')),c))
-          (Id :*: (AssocLT :*: Id)) :.: -- ((a,a'),(((b,b'),c'),c))
-          (Id :*: AssocRT) :.:          -- ((a,a'),((b,b'),(c',c)))
-          (Id :*: (Id :*: SwapT))       -- ((a,a'),((b,b'),(c,c')))
+  where shuffle =                       -- (a,(b,(c,(a',(b',c')))))
+          (Id :*: AssocLT) :.:          -- (a,((b,c),(a',(b',c'))))
+          (Id :*: SwapT)   :.:          -- (a,((a',(b',c')),(b,c)))
+          AssocLT :.:                   -- ((a,(a',(b',c'))),(b,c))
+          (AssocLT :*: Id) :.:          -- (((a,a'),(b',c')),(b,c))
+          AssocRT :.:                   -- ((a,a'),((b',c'),(b,c)))
+          (Id :*: ((AssocLT) :.:        -- ((a,a'),(((b',c'),b),c))
+                   (SwapT :*: Id) :.:   -- ((a,a'),((b,(b',c')),c))
+                   (AssocLT :*: Id) :.: -- ((a,a'),(((b,b'),c'),c))
+                   AssocRT :.:          -- ((a,a'),((b,b'),(c',c)))
+                   (Id :*: SwapT)))     -- ((a,a'),((b,b'),(c,c')))
 
 ------------------------------------------------------------------------
 -- Multiplicative Trace (SAT)
@@ -421,30 +400,27 @@ satf :: (((Bool,Bool),Bool) :<=> ((Bool,Bool),Bool)) ->
 -- if heap=True, negate heap-control;
 -- if isof produces False, negate control
 satf isof = -- ((((heap-control,control),heap),input-1),input-2)
-  ((SwapT :*: Id) :*: Id) :.: -- (((heap,(heap-control,control)),input-1),input-2)
-  ((AssocLT :*: Id) :*: Id) :.: -- ((((heap,heap-control),control),input-1),input-2)
+  ((SwapT :*: Id) :*: Id) :.:         -- (((heap,(heap-control,control)),input-1),input-2)
+  ((AssocLT :*: Id) :*: Id) :.:       -- ((((heap,heap-control),control),input-1),input-2)
   (((cnot :*: Id) :*: Id) :*: Id) :.: -- ((((heap,heap-control),control),input-1),input-2)
-  AssocRT :.: -- (((heap,heap-control),control),(input-1,input-2))
-  (AssocRT :*: Id) :.: -- ((heap,(heap-control,control)),(input-1,input-2))
-  (SwapT :*: Id) :.: -- (((heap-control,control),heap),(input-1,input-2))
-  AssocRT :.: -- ((heap-control,control),(heap,(input-1,input-2)))
-  (Id :*: AssocLT) :.: -- ((heap-control,control),((heap,input-1),input-2))
-  (Id :*: isof) :.: -- ((heap-control,control),((garbage-1,garbage-2),satisfied?))
-  SwapT :.: -- (((garbage-1,garbage-2),satisfied?),(heap-control,control))
-  AssocRT :.: -- ((garbage-1,garbage-2),(satisfied?,(heap-control,control)))
-  (Id :*: (Id :*: SwapT)) :.: -- ((garbage-1,garbage-2),(satisfied?,(control,heap-control)))
+  AssocRT :.:                         -- (((heap,heap-control),control),(input-1,input-2))
+  (AssocRT :*: Id) :.:                -- ((heap,(heap-control,control)),(input-1,input-2))
+  (SwapT :*: Id) :.:                  -- (((heap-control,control),heap),(input-1,input-2))
+  AssocRT :.:                         -- ((heap-control,control),(heap,(input-1,input-2)))
+  (Id :*: AssocLT) :.:                -- ((heap-control,control),((heap,input-1),input-2))
+  (Id :*: isof) :.:                   -- ((heap-control,control),((garbage-1,garbage-2),satisfied?))
+  SwapT :.:                           -- (((garbage-1,garbage-2),satisfied?),(heap-control,control))
+  AssocRT :.:                         -- ((garbage-1,garbage-2),(satisfied?,(heap-control,control)))
+  (Id :*: (Id :*: SwapT)) :.:         -- ((garbage-1,garbage-2),(satisfied?,(control,heap-control)))
   (Id :*: AssocLT) :.: -- ((garbage-1,garbage-2),((satisfied?,control),heap-control))
   (Id :*: ((inot :*: Id) :*: Id)) :.:
   (Id :*: (cnot :*: Id)) :.: 
   (Id :*: ((inot :*: Id) :*: Id)) :.:
   (Id :*: AssocRT) :.: 
   (Id :*: (Id :*: SwapT)) :.: 
-  AssocLT :.:
-  SwapT :.:
-  (Id :*: Sym isof) :.: -- ((heap-control,control),((heap,input-1),input-2))
-  (Id :*: AssocRT) :.: -- ((heap-control,control),(heap,(input-1,input-2)))
-  AssocLT :.: -- (((heap-control,control),heap),(input-1,input-2))
-  AssocLT -- ((((heap-control,control),heap),input-1),input-2)
+  AssocLT :.: SwapT :.:
+  (Id :*: (Sym isof :.: AssocRT)) :.: -- ((heap-control,control),(heap,(input-1,input-2)))
+  AssocLT :.: AssocLT                 -- ((((heap-control,control),heap),input-1),input-2)
 
 solve :: ((((Bool,Bool),Bool) :<=> ((Bool,Bool),Bool))) -> 
          ((Bool,Bool) :<=> (Bool,Bool))
@@ -514,23 +490,6 @@ test3 :: (Show c, B c) => (((Bool, Bool), Bool) :<=> c) -> IO ()
 test3 = tester b3
 
 ------------------------------------------------------------------------
--- iterate twice
-
-{--
-twice :: B a => (a :<=> a) -> (a :<=> a)
-twice c = TraceP (((c :+: c) :+: Id) :.: r)
-  where r :: B a => (Either (Either a a) a) :<=> (Either (Either a a) a)
-        r =                  -- (a + b) + c
-          (SwapP :+: Id) :.: -- (b + a) + c
-          AssocRP :.:        -- b + (a + c)
-          (Id :+: SwapP) :.: -- b + (c + a)
-          AssocLP            -- (b + c) + a
---}          
--- of course we could have written (c ; c) but when we introduce
--- recursive types, iteration becomes essential.
--- generalize to iterate n times for fixed n
-
-------------------------------------------------------------------------
 -- Superdense coding
         
 r, s, u, v', rd, sd :: Bool :<=> Bool        
@@ -553,7 +512,7 @@ rd = inot :.: v' :.: inot
 sd = rd :.: inot
 
 ------------------------------------------------------------------------
--- Relations on Bool X Bool
+-- All Relations on Bool X Bool
 
 r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15 :: Bool :<=> Bool
 
@@ -618,35 +577,32 @@ ex2 = dtraceT c
   where c :: (Bool, ()) :<=> (Bool, ())
         c = inot :*: Id
         
+------------------------------------------------------------------------
 -- satisfy c @@ () returns () if any row of c is the identity
 satisfy :: B a => (a :<=> a) -> () :<=> ()
 satisfy c = dtraceT (SwapT :.: UnitE :.: c :.: UnitI :.: SwapT)
 
 sat1,sat2,sat3,sat4,sat5,sat6 :: () :<=> ()
+
 sat1 = satisfy inot
-
 sat2 = satisfy cnot
-
 sat3 = satisfy toffoli
-
 sat4 = satisfy fredkin
-
 sat5 = satisfy peres
-
 sat6 = satisfy (inot :*: inot)
 
 -- 
 
 block :: (Bool,(Bool,(Bool,Bool))) :<=> (Bool,(Bool,(Bool,Bool)))
-block = -- (a,(b,(c,y)))
+block =                                          -- (a,(b,(c,y)))
   (Id :*: (AssocLT :.: toffoli :.: AssocRT)) :.: -- (a,(b,(c,y)))
-  (Id :*: SwapT) :.: -- (a,((c,y),b))
-  (Id :*: (SwapT :*: Id)) :.: -- (a,((y,c),b))
-  AssocLT :.: -- ((a,(y,c)),b)
+  (Id :*: SwapT) :.:                             -- (a,((c,y),b))
+  (Id :*: (SwapT :*: Id)) :.:                    -- (a,((y,c),b))
+  AssocLT :.:                                    -- ((a,(y,c)),b)
   ((AssocLT :.: toffoli :.: AssocRT) :*: Id) :.: -- ((a,(y,c)),b)
-  AssocRT :.: -- (a,((y,c),b))
-  (Id :*: (SwapT :*: Id)) :.: -- (a,((c,y),b))
-  (Id :*: SwapT) -- (a,(b,(c,y)))
+  AssocRT :.:                                    -- (a,((y,c),b))
+  (Id :*: (SwapT :*: Id)) :.:                    -- (a,((c,y),b))
+  (Id :*: SwapT)                                 -- (a,(b,(c,y)))
 
 ex :: ((Bool,Bool),Bool) :<=> ((Bool,Bool),Bool)
 -- (a,(b,(c,y))) ((a,b),(c,y)) (((a,b),c),y) (y,((a,b),c))
