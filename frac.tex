@@ -923,7 +923,7 @@ With {{recip}} out of the way, we can easily write {{curry}}:
 %subcode{opsem} include main
 %! columnStyle = rcl
 % curry &:& b1 * b2 :-* b3 <-> b1 :-* (b2 :-* b3)
-% curry &=& (id * recip) (;) (id * swap*) (;) assocl*
+% curry &=& (recip * id) (;) assocr*
 
 \noindent That {{recip}} is the heart of currying seems quite remarkable.
 
