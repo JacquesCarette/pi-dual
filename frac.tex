@@ -825,7 +825,7 @@ type {{b1 :-* b2}} as shown below on the left:
 \noindent Dually, as illustrated above on the right, we also have a
 {{coname}} combinator which when given an answer {{v2 : b2}}, and a request
 for the corresponding input {{1/b1}} for {{c : b1 <-> b2}}, eliminates this
-as a un-needed computation.
+as a un-needed computation (see also Sec. 3, \cite{abramsky-2008}).
 
 More generally any combinator manipulating values of type {{b}} can be turned
 into a combinator manipulating values of type {{1/b}} and vice-versa. This is
@@ -1103,7 +1103,12 @@ is to use {{trace*}} to annihilate values that fail to satisfy the
 constraints represented by the SAT instance {{f}}. (The accompanying code
 details the construction of such a solver.) 
 
-
+\roshan{Either we should have explain the SAT solver well or we
+  shouldn't have at all. There are some original ideas in the
+  construction of that solver and the Oxford QF group for instance
+  were very interested in its details. This presentation neither
+  leaves the idea prime for future publication, and neither does it
+  explain it well.}
 
 
 % In the usual setting, an instance of SAT is a function~{{f}} which,
@@ -1317,6 +1322,11 @@ vector space $\mathbf{V}_b$ over the field $k$. In particular:
     isomorphic to~{{b}}; and {{eps*_b}} corresponds to a bilinear form which
     maps a dual vector and a vector to a field element.
 \end{itemize}
+
+\roshan{Again, if we have lost zero, we cannot talk about vector
+  spaces with the zero vector. We should alternately included it in
+  our presentation to start with. }
+
 In such categories, the fractional type is given a non-trivial
 interpretation. Indeed, while the space of column vectors is isomorphic to
 the space of row vectors, they are nevertheless quite different, being
@@ -1336,6 +1346,8 @@ rational numbers, something we are actively seeking. What would really be a
 {{Pi}}-isomorphisms as first class values and in which the types are
 interpreted in a way that is consistent with the rational numbers.
 
+\roshan{The above para should simply be deleted.}
+
 Fortunately, there is promising significant work on the groupoid
 interpretation of type theory~\cite{Hofmann96thegroupoid} and on the 
 categorification of the rational numbers~\cite{math/9802029} that may well give
@@ -1347,6 +1359,10 @@ identify those groupoid actions which are proper generalizations of
 isomorphisms \emph{and} can be represented as groupoids, so as to obtain a
 proper interpretation for a higher-order language.  As the category of
 groupoids is cartesian closed, this appears eminently feasible.
+
+\roshan{Again, the above para is just lose speculation. Further, the
+  fact that we say that its cartesian closed instead of monoidal
+  closed should *immediately* tell us that its the wrong model.}
 
 Another promising approach is the use of dependent types for {{eps*_b}} and
 {{eta*_b}}; more precisely, {{eps*_b}} would have type 
