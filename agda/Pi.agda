@@ -207,12 +207,12 @@ mutual
 -- beval_k : { a b c d : B } → (a ⟺ b) → ⟦ a ⟧ → Context a b c d → ⟦ c ⟧
 
 -- Prop. 2.2
-
+{-
 logical-reversibility : {a b : B} {f : a ⟺ b} {va : ⟦ a ⟧} {vb : ⟦ b ⟧} →
   eval_c f va emptyC ≡ eval_k f vb emptyC → 
   eval_c (adjoint f) vb emptyC ≡ eval_k (adjoint f) va emptyC
-logical-reversibility = {!!} 
-
+logical-reversibility = λ fwd≡bwd → {!!} 
+-}
 ------------------------------------------------------------------------------
 
   
