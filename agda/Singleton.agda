@@ -6,6 +6,7 @@ open import Data.Product
 open import Function 
 open import Relation.Binary
 open import Function.Inverse
+open import Function.Equality as FE
 open import Relation.Binary.PropositionalEquality as P
 
 open import Pi using (⟦_⟧; _⟷_ )
@@ -21,8 +22,8 @@ B-to-Σ⊤ v = (v , tt)
 
 BΣ₁ : ∀ {b} → Inverse (P.setoid b) (P.setoid (embed₁ b))
 BΣ₁ = record { 
-        to = record { _⟨$⟩_ = B-to-Σ⊤; cong = cong B-to-Σ⊤  }
-      ; from = record { _⟨$⟩_ = Σ⊤-to-B; cong = cong Σ⊤-to-B }
+        to = record { _⟨$⟩_ = B-to-Σ⊤; cong = P.cong B-to-Σ⊤  }
+      ; from = record { _⟨$⟩_ = Σ⊤-to-B; cong = P.cong Σ⊤-to-B }
       ; inverse-of = record { left-inverse-of = λ _ → refl
                                ; right-inverse-of = λ x → refl } } 
 
@@ -60,15 +61,23 @@ right-inverse (v , singleton .v) = refl
 
 BΣ₂ : ∀ {b} → Inverse (P.setoid b) (P.setoid (embed₂ b))
 BΣ₂ =  record { 
-         to = record { _⟨$⟩_ = B-to-ΣS; cong = cong B-to-ΣS }
-       ; from = record { _⟨$⟩_ = ΣS-to-B; cong = cong ΣS-to-B }
+         to = record { _⟨$⟩_ = B-to-ΣS; cong = P.cong B-to-ΣS }
+       ; from = record { _⟨$⟩_ = ΣS-to-B; cong = P.cong ΣS-to-B }
        ; inverse-of = record { left-inverse-of = λ x → refl
                              ; right-inverse-of = right-inverse } }
 
--- A generalized idea of a permutation: a bijection on any type
-Permutation : Set -> Set
-Permutation b = Inverse (P.setoid b) (P.setoid b)
+-- A generalized idea of a permutation: a bijection between any two types
+Permutation : Set → Set -> Set
+Permutation a b = Inverse (P.setoid a) (P.setoid b)
 
 -- Now, what we really want is to interpret Pi combinators as
 -- permutations.  We need a refined version of embed₂ which 
 -- allows us to use a permutation to transport things.
+
+embed₃ : {l : Level} → (S T : Setoid l l) → Inverse S T → Setoid l l
+embed₃ S T f = record { 
+                 Carrier = Σ A (λ b → Singleton (to f ⟨$⟩ b))
+               ; _≈_ = _≡_
+               ; isEquivalence = P.isEquivalence }
+               where open Inverse {From = S} {T}
+                     A = Setoid.Carrier S
