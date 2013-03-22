@@ -1,7 +1,8 @@
-{-# OPTIONS --no-termination-check #-}
+{-# OPTIONS --no-termination-check --universe-polymorphism #-}
 
 module PiF where
 
+open import Level
 open import Data.Empty
 open import Data.Unit
 open import Data.Bool
@@ -10,6 +11,8 @@ open import Data.Product hiding (map)
 
 open import Relation.Binary.PropositionalEquality hiding (sym; [_])
 
+open import Singleton
+
 infixr 30 _⟷_
 infixr 30 _⟺_
 infixr 20 _◎_
@@ -17,12 +20,13 @@ infixr 20 _◎_
 ------------------------------------------------------------------------------
 -- A universe of our value types
 
-data BF : Set where
-  ZEROF  : BF
-  ONEF   : BF
-  PLUSF  : BF → BF → BF
-  TIMESF : BF → BF → BF
-  RECIP  : BF → BF
+mutual 
+  data BF : Set zero where
+    ZEROF  : BF
+    ONEF   : BF
+    PLUSF  : BF → BF → BF
+    TIMESF : BF → BF → BF
+    RECIP  : BF → BF
 
 --data VF : Set where
 --  unitF : 
@@ -33,15 +37,19 @@ data BF : Set where
 
 -- fractional types are un-interpreted
 
+data Reciprocal (A : Set) : Set where
+  rec : (b : A) → ((x : Singleton b) → ⊤) → Reciprocal A
+ 
 data Recip (A : Set) : Set where
   recip : (a : A) → Recip A
 
-⟦_⟧F : BF → Set
+⟦_⟧F : BF → Set zero
 ⟦ ZEROF ⟧F         = ⊥
 ⟦ ONEF ⟧F          = ⊤
 ⟦ PLUSF b1 b2 ⟧F   = ⟦ b1 ⟧F ⊎ ⟦ b2 ⟧F
 ⟦ TIMESF b1 b2 ⟧F  = ⟦ b1 ⟧F × ⟦ b2 ⟧F
-⟦ RECIP b ⟧F  = Recip ⟦ b ⟧F
+⟦ RECIP b ⟧F  = -- Σ ⟦ b ⟧F (λ v → ((x : Singleton v) → ⊤))
+                Reciprocal ⟦ b ⟧F
 
 ------------------------------------------------------------------------------
 -- Primitive isomorphisms
@@ -189,10 +197,11 @@ mutual
   eval_c (f ⊕ g) (inj₁ v) C = eval_c f v (leftC g C)
   eval_c (f ⊕ g) (inj₂ v) C = eval_c g v (rightC f C)
   eval_c (f ⊗ g) (v₁ , v₂) C = eval_c f v₁ (fstC v₂ g C)
-  eval_c refe⋆ (recip (recip v)) C = eval_k refe⋆ v C
-  eval_c refi⋆ v C = eval_k refi⋆ (recip (recip v)) C
-  eval_c rile⋆ (v₁ , (v₂ , recip v₃)) C = {!!} 
-  eval_c rili⋆ v C = eval_k rili⋆ (v , (v , recip v)) C 
+  eval_c refe⋆ (rec (rec v _) _)  C = eval_k refe⋆ v C
+  eval_c refi⋆ v C = eval_k refi⋆ (rec (rec v (λ x → tt)) ff) C
+    where ff = λ x → tt
+  eval_c rile⋆ (v₁ , (v₂ , rec v₃ _)) C = eval_k rile⋆ v₁ C 
+  eval_c rili⋆ v C = eval_k rili⋆ (v , (v , {!!})) C 
 
   -- The (c <-> a) part of the computation has been done.
   -- The (a <-> b) part of the computation has been done.
@@ -219,10 +228,10 @@ mutual
   beval_c (f ⊕ g) (inj₁ v) C = beval_c f v (leftC g C)
   beval_c (f ⊕ g) (inj₂ v) C = beval_c g v (rightC f C)
   beval_c (f ⊗ g) (v₁ , v₂) C = beval_c g v₂ (sndC f v₁ C)
-  beval_c refe⋆ v C = beval_k refe⋆ (recip (recip v)) C
-  beval_c refi⋆ (recip (recip v)) C = beval_k refi⋆ v C
-  beval_c rile⋆ v C = beval_k rile⋆ (v , (v , (recip v))) C
-  beval_c rili⋆ (v₁ , (v₂ , recip v₃)) C = {!!} 
+  beval_c refe⋆ v C = beval_k refe⋆ {!!} C
+  beval_c refi⋆ _ C = beval_k refi⋆ {!!} C
+  beval_c rile⋆ v C = beval_k rile⋆ (v , (v , {!!})) C
+  beval_c rili⋆ (v₁ , (v₂ , _)) C = {!!} 
 
   -- The (d <-> b) part of the computation has been done. 
   -- The (a <-> b) backwards computation has been done. 
