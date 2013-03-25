@@ -4,6 +4,15 @@
 
 .PHONY : clean clean-subcode
 
+frac2.subc.pdf : frac2.tex frac2.subc.tex cites.bib
+	pdflatex -halt-on-error frac2.subc.tex
+	bibtex frac2.subc
+	pdflatex -halt-on-error frac2.subc.tex
+	pdflatex -halt-on-error frac2.subc.tex
+
+frac2.subc.tex : frac2.tex
+	ruby ../subcode/subc.rb frac2.tex
+
 frac.subc.pdf : frac.tex frac.subc.tex cites.bib
 	pdflatex -halt-on-error frac.subc.tex
 	bibtex frac.subc
