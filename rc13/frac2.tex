@@ -16,13 +16,7 @@
 \end{center}
 }
 
-\newcommand{\todo}[1]{\textbf{TODO:} #1}
-\newcommand{\jacques}[1]{\textsc{Jacques says:} #1}
-\newcommand{\amr}[1]{\textsc{Amr says:} #1}
 \newtheorem{definition}{Definition}
-
-
-\hyphenation{a-reas}
 
 %subcode-inline{bnf-inline} name Pi
 %! swap+ = \mathit{swap}^+
@@ -119,10 +113,11 @@
 \copyrightyear{2013}
 \copyrightdata{[to be supplied]} 
 
-\titlebanner{banner above paper title}        % These are ignored unless
-\preprintfooter{short description of paper}   % 'preprint' option specified.
+\titlebanner{}
+\preprintfooter{}
 
-\title{Fractional Types}
+\title{Fractional Types: \\
+First-Class Pattern Matching Clauses and Higher-Order Reversible Functions}
 \authorinfo{Jacques Carette \and Amr Sabry}
            {McMaster University \and Indiana University}
            {carette@mcmaster.ca \and sabry@indiana.edu}
@@ -133,17 +128,20 @@
 \begin{abstract}
   In previous work, we developed a \emph{first-order},
   information-preserving, and reversible programming language {{Pi}} founded
-  on type isomorphisms. Being restricted to first-order types limits the
-  expressiveness of the language: it is not possible, for example, to
-  abstract common program fragments into a higher-level combinator. In this
-  paper, we introduce a higher-order extension of {{Pi}} based on the novel
-  concept of \emph{fractional types} {{1/b}}. Intuitively, a value of a
-  fractional type {{1/v}} represents \emph{negative} information. A
-  function is modeled by a pair {{(1/v1,v2)}} with {{1/v1}}
-  representing the needed argument and {{v2}} representing the
-  result. Fractional values are first-class: they can be freely propagated
-  and transformed but must ultimately --- in a complete program --- be offset
-  by the corresponding amount of positive information.
+  on type isomorphisms. In subsequent work, we extended this language with
+  \emph{fractional types}, the dual of conventional product types which, from
+  an information-theoretic point of view, corresponds to the type of values
+  with \emph{negative information}. The extended language was given an
+  operational interpretation that hinted at two facts: fractional types can
+  be used to define first-class pattern-matching clauses as well as
+  higher-order reversible functions. Neither of these observations was backed
+  by an appropriate denotational model, however. In this paper, we develop
+  such a model by interpreting fractional types using functions mapping
+  singleton types to the unit type. This interpretation requires that nearly
+  all of the type constructs in {{Pi}} be re-interpreted as \emph{dependent
+    types}. The framework, formalized in Agda, takes steps towards developing
+  a computational interpretation of homotopy type theory using higher-order
+  reversible languages.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
