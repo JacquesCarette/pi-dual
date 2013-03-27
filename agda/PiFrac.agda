@@ -1,10 +1,98 @@
 module PiFrac where
 
+open import Data.Empty
 open import Data.Unit
 open import Data.Sum
 open import Data.Product
 
 infixr 20 _◎_
+
+data Singleton {A : Set} : A → Set where
+  singleton : (x : A) -> Singleton x
+
+mutual
+
+  data B : Set where
+    ZERO  : B
+    ONE   : B
+    PLUS  : B → B → B
+    TIMES : B → B → B
+    RECIP : B → B
+
+  ⟦_⟧ : B → Set
+  ⟦ ZERO ⟧         = ⊥
+  ⟦ ONE ⟧          = ⊤
+  ⟦ PLUS b1 b2 ⟧   = ⟦ b1 ⟧ ⊎ ⟦ b2 ⟧
+  ⟦ TIMES b1 b2 ⟧  = ⟦ b1 ⟧ × ⟦ b2 ⟧
+  ⟦ RECIP b ⟧      = {v : ⟦ b ⟧} → Singleton v → ⊤
+
+data _⟷_ : B → B → Set where
+  unite₊ : {b : B} → PLUS ZERO b ⟷ b
+  uniti₊ : {b : B} → b ⟷ PLUS ZERO b
+  swap₊ : {b₁ b₂ : B} → PLUS b₁ b₂ ⟷ PLUS b₂ b₁
+  assocl₊ : { b₁ b₂ b₃ : B } → PLUS b₁ (PLUS b₂ b₃) ⟷ PLUS (PLUS b₁ b₂) b₃
+  assocr₊ : { b₁ b₂ b₃ : B } → PLUS (PLUS b₁ b₂) b₃ ⟷ PLUS b₁ (PLUS b₂ b₃)
+  unite⋆  : { b : B } → TIMES ONE b ⟷ b
+  uniti⋆  : { b : B } → b ⟷ TIMES ONE b
+  swap⋆ : {b₁ b₂ : B} → TIMES b₁ b₂ ⟷ TIMES b₂ b₁
+  assocl⋆ : { b₁ b₂ b₃ : B } → TIMES b₁ (TIMES b₂ b₃) ⟷ TIMES (TIMES b₁ b₂) b₃
+  assocr⋆ : { b₁ b₂ b₃ : B } → TIMES (TIMES b₁ b₂) b₃ ⟷ TIMES b₁ (TIMES b₂ b₃)
+  id⟷ : {b : B } → b ⟷ b
+  sym    : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
+  _◎_    : { b₁ b₂ b₃ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₃) → (b₁ ⟷ b₃)
+  _⊕_    : { b₁ b₂ b₃ b₄ : B } → 
+           (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (PLUS b₁ b₂ ⟷ PLUS b₃ b₄)
+  _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
+           (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (TIMES b₁ b₂ ⟷ TIMES b₃ b₄)
+
+eval : {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → ⟦ b₁ ⟧ → ⟦ b₂ ⟧
+eval unite₊ (inj₁ ())
+eval unite₊ (inj₂ v) = v
+eval _ _ = {!!}
+
+
+{--
+
+mutual
+  data B : Set where
+    ONE   : B
+    PLUS  : B → B → B
+    TIMES : B → B → B
+    MATCH : {b : B} → Singleton b → B
+    DPAIR : {b : B} → (Σ (BV b) Singleton) → B
+
+
+mutual 
+  eval : {b₁ b₂ : B} → b₁ ⟷ b₂ → BV b₁ → BV b₂
+  eval swap₊ (LEFT v) = RIGHT v
+  eval swap₊ (RIGHT v) = LEFT v
+  eval (η {b₁} {v}) UNIT = NCPROD b₁ v
+  eval assocl₊ (LEFT v) = LEFT (LEFT v)
+  eval assocl₊ (RIGHT (LEFT v)) = LEFT (RIGHT v)
+  eval assocl₊ (RIGHT (RIGHT v)) = RIGHT v
+  eval assocr₊ (LEFT (LEFT v)) = LEFT v
+  eval assocr₊ (LEFT (RIGHT v)) = RIGHT (LEFT v)
+  eval assocr₊ (RIGHT v) = RIGHT (RIGHT v)
+  eval unite⋆ (PAIR UNIT v) = v
+  eval uniti⋆ v = PAIR UNIT v
+  eval (ε {b₁} {v}) (NCPROD .b₁ .v) = UNIT
+  eval id⟷ v = v
+  eval (c₁ ◎ c₂) v = eval c₂ (eval c₁ v)
+  eval (c₁ ⊕ c₂) (LEFT v) = LEFT (eval c₁ v)
+  eval (c₁ ⊕ c₂) (RIGHT v) = RIGHT (eval c₂ v)
+  eval (c₁ ⊗ c₂) (PAIR v₁ v₂) = PAIR (eval c₁ v₁) (eval c₂ v₂)
+  eval (lift {b₁} {b₂} {v} c) (NCPROD .b₁ .v) = NCPROD b₂ (eval c v)
+ 
+-- name : {b₁ b₂ : B} {v : BV b₁} → (b₁ ⟷ b₂) → (ONE ⟷ DPAIR (v , singleton v))
+-- name {b₁} {b₂} {v} c = η {b₁} {v} ◎ (lift (id⟷ ⊗ c))
+
+
+--}
+
+--------------------------------------------------------------------------------
+-- Jacques's code
+
+{--
 
 data Singleton {A : Set} : A → Set where
   singleton : (x : A) -> Singleton x
@@ -71,3 +159,5 @@ mutual
  
 -- name : {b₁ b₂ : B} {v : BV b₁} → (b₁ ⟷ b₂) → (ONE ⟷ DPAIR (v , singleton v))
 -- name {b₁} {b₂} {v} c = η {b₁} {v} ◎ (lift (id⟷ ⊗ c))
+
+--}
