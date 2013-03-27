@@ -13,23 +13,23 @@ data <_> {A : Set} : A → Set where
 
 mutual
 
-  data B : Set where
+  data B : Set₁ where
     ZERO  : B 
     ONE   : B
     PLUS  : B → B → B
     TIMES : B → B → B
-    RECIP : B → B
-    DPAIR : (b : B) → ⟦ b ⟧ → B
+    RECIP : (b : B) → ⟦ b ⟧ → B
+    DPAIR : (b : B) → (⟦ b ⟧ → Set) → B
 
   ⟦_⟧ : B → Set
   ⟦ ZERO ⟧         = ⊥
   ⟦ ONE ⟧          = ⊤
   ⟦ PLUS b₁ b₂ ⟧   = ⟦ b₁ ⟧ ⊎ ⟦ b₂ ⟧
   ⟦ TIMES b₁ b₂ ⟧  = ⟦ b₁ ⟧ × ⟦ b₂ ⟧
-  ⟦ RECIP b ⟧      = {v : ⟦ b ⟧} → < v > → ⊤
-  ⟦ DPAIR b v ⟧ = Σ ⟦ b ⟧ <_>
+  ⟦ RECIP b v ⟧      = <_> {⟦ b ⟧} v → ⊤
+  ⟦ DPAIR b c ⟧ = Σ ⟦ b ⟧ c
 
-data _⟷_ : B → B → Set where
+data _⟷_ : B → B → Set₁ where
   unite₊ : {b : B} → PLUS ZERO b ⟷ b
   uniti₊ : {b : B} → b ⟷ PLUS ZERO b
   swap₊ : {b₁ b₂ : B} → PLUS b₁ b₂ ⟷ PLUS b₂ b₁
@@ -47,7 +47,8 @@ data _⟷_ : B → B → Set where
            (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (PLUS b₁ b₂ ⟷ PLUS b₃ b₄)
   _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
            (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (TIMES b₁ b₂ ⟷ TIMES b₃ b₄)
-  η : {b : B} { v : ⟦ b ⟧ } → ONE ⟷ DPAIR b v
+  η : {b : B} → ONE ⟷ DPAIR b (λ v → ⟦ RECIP b v ⟧)
+  ε : {b : B} → DPAIR b (λ v → ⟦ RECIP b v ⟧) ⟷ ONE 
 
 mutual
   eval : {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → ⟦ b₁ ⟧ → ⟦ b₂ ⟧
@@ -73,7 +74,8 @@ mutual
   eval (c₁ ⊕ c₂) (inj₁ x) = inj₁ (eval c₁ x)
   eval (c₁ ⊕ c₂) (inj₂ y) = inj₂ (eval c₂ y)
   eval (c₁ ⊗ c₂) (x , y) = (eval c₁ x , eval c₂ y)
-  eval (η {b} {v}) tt = ( v , singleton v)
+  eval (η {b}) tt = {!!}
+  eval (ε {b}) (w , c) = tt
 
   evalB :  {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → ⟦ b₂ ⟧ → ⟦ b₁ ⟧
   evalB uniti₊ (inj₁ ())
@@ -99,13 +101,13 @@ mutual
   evalB (c₁ ⊕ c₂) (inj₂ y) = inj₂ (evalB c₂ y)
   evalB (c₁ ⊗ c₂) (x , y) = (evalB c₁ x , evalB c₂ y)
   evalB (η {b}) _ = tt
+  evalB (ε {b}) tt = {!!}
+
+ -- this is better in that one can't use inj₂ tt on the rhs
+test : ⊤
+test = evalB (η {PLUS ONE ONE}) (inj₁ tt , {!!})
 
 {--
-
-  -- This type checks, but it shouldn't :-(
-test : ⊤
-test = evalB (η {PLUS ONE ONE} {inj₁ tt}) (singleton ((inj₁ tt , singleton (inj₁ tt))))
-
 mutual
   data B : Set where
     ONE   : B
