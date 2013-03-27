@@ -1,5 +1,6 @@
 module PiFrac where
 
+open import Level
 open import Data.Empty
 open import Data.Unit
 open import Data.Sum
@@ -12,19 +13,21 @@ data Singleton {A : Set} : A → Set where
 
 mutual
 
-  data B : Set where
-    ZERO  : B
+  data B {ℓ : Level} : Set ℓ where
+    ZERO  : B {ℓ}
     ONE   : B
     PLUS  : B → B → B
     TIMES : B → B → B
     RECIP : B → B
+    DPAIR : {ℓ : Level} → {b : B {ℓ} } → (Σ ⟦ b ⟧ (B { suc ℓ } → Set)) → B { suc (suc ℓ) }
 
-  ⟦_⟧ : B → Set
+  ⟦_⟧ : {ℓ : Level} → B {ℓ} → Set
   ⟦ ZERO ⟧         = ⊥
   ⟦ ONE ⟧          = ⊤
-  ⟦ PLUS b1 b2 ⟧   = ⟦ b1 ⟧ ⊎ ⟦ b2 ⟧
-  ⟦ TIMES b1 b2 ⟧  = ⟦ b1 ⟧ × ⟦ b2 ⟧
+  ⟦ PLUS b₁ b₂ ⟧   = ⟦ b₁ ⟧ ⊎ ⟦ b₂ ⟧
+  ⟦ TIMES b₁ b₂ ⟧  = ⟦ b₁ ⟧ × ⟦ b₂ ⟧
   ⟦ RECIP b ⟧      = {v : ⟦ b ⟧} → Singleton v → ⊤
+  ⟦ DPAIR _ ⟧ = ? 
 
 data _⟷_ : B → B → Set where
   unite₊ : {b : B} → PLUS ZERO b ⟷ b
