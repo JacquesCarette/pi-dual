@@ -13,24 +13,21 @@ data Singleton {A : Set} : A → Set where
 
 mutual
 
-  data B {ℓ : Level} : Set ℓ where
-    ZERO  : B {ℓ}
+  data B : Set where
+    ZERO  : B 
     ONE   : B
     PLUS  : B → B → B
     TIMES : B → B → B
     RECIP : B → B
-    DPAIR : {ℓ : Level} → { b : B {ℓ} } → (Σ ⟦ b ⟧ (B { suc ℓ } → Set)) → B { suc (suc ℓ) }
+    DPAIR : { b : B } → (Σ ⟦ b ⟧ Singleton) → B
 
-  data BF { ℓ : Level } : Set → Set ℓ where
-    PAT : (B → B) → BF B
-
-  ⟦_⟧ : {ℓ : Level} → B {ℓ} → Set
+  ⟦_⟧ : B → Set
   ⟦ ZERO ⟧         = ⊥
   ⟦ ONE ⟧          = ⊤
   ⟦ PLUS b₁ b₂ ⟧   = ⟦ b₁ ⟧ ⊎ ⟦ b₂ ⟧
   ⟦ TIMES b₁ b₂ ⟧  = ⟦ b₁ ⟧ × ⟦ b₂ ⟧
   ⟦ RECIP b ⟧      = {v : ⟦ b ⟧} → Singleton v → ⊤
---  ⟦ DPAIR _ ⟧ = ? 
+  ⟦ DPAIR {b} x ⟧ = Singleton x 
 
 data _⟷_ : B → B → Set where
   unite₊ : {b : B} → PLUS ZERO b ⟷ b
@@ -50,7 +47,7 @@ data _⟷_ : B → B → Set where
            (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (PLUS b₁ b₂ ⟷ PLUS b₃ b₄)
   _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
            (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (TIMES b₁ b₂ ⟷ TIMES b₃ b₄)
-  η : {b₁ : B} {v : ⟦ b₁ ⟧} → (ONE ⟷ (TIMES b₁ (RECIP b₁)))
+  η : {b₁ : B} {v : ⟦ b₁ ⟧} → (ONE ⟷ (DPAIR (v , singleton v)))
 
 mutual
   eval : {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → ⟦ b₁ ⟧ → ⟦ b₂ ⟧
@@ -76,7 +73,7 @@ mutual
   eval (c₁ ⊕ c₂) (inj₁ x) = inj₁ (eval c₁ x)
   eval (c₁ ⊕ c₂) (inj₂ y) = inj₂ (eval c₂ y)
   eval (c₁ ⊗ c₂) (x , y) = (eval c₁ x , eval c₂ y)
-  eval (η {b₁} {v}) tt = v , (λ x → tt)
+  eval (η {b₁} {v}) tt = singleton (v , (singleton v))
 
   evalB :  {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → ⟦ b₂ ⟧ → ⟦ b₁ ⟧
   evalB uniti₊ (inj₁ ())
@@ -105,7 +102,7 @@ mutual
 
   -- This type checks, but it shouldn't :-(
 test : ⊤
-test = evalB (η {PLUS ONE ONE} {inj₁ tt}) ((inj₂ tt) , (λ _ → tt))
+test = evalB (η {PLUS ONE ONE} {inj₁ tt}) (singleton ((inj₁ tt , singleton (inj₁ tt))))
 {--
 
 mutual
