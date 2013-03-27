@@ -8,8 +8,8 @@ open import Data.Product
 
 infixr 20 _◎_
 
-data Singleton {A : Set} : A → Set where
-  singleton : (x : A) -> Singleton x
+data <_> {A : Set} : A → Set where
+  singleton : (x : A) -> < x > 
 
 mutual
 
@@ -19,15 +19,15 @@ mutual
     PLUS  : B → B → B
     TIMES : B → B → B
     RECIP : B → B
-    DPAIR : { b : B } → (Σ ⟦ b ⟧ Singleton) → B
+    DPAIR : (b : B) → ⟦ b ⟧ → B
 
   ⟦_⟧ : B → Set
   ⟦ ZERO ⟧         = ⊥
   ⟦ ONE ⟧          = ⊤
   ⟦ PLUS b₁ b₂ ⟧   = ⟦ b₁ ⟧ ⊎ ⟦ b₂ ⟧
   ⟦ TIMES b₁ b₂ ⟧  = ⟦ b₁ ⟧ × ⟦ b₂ ⟧
-  ⟦ RECIP b ⟧      = {v : ⟦ b ⟧} → Singleton v → ⊤
-  ⟦ DPAIR {b} x ⟧ = Singleton x 
+  ⟦ RECIP b ⟧      = {v : ⟦ b ⟧} → < v > → ⊤
+  ⟦ DPAIR b v ⟧ = Σ ⟦ b ⟧ <_>
 
 data _⟷_ : B → B → Set where
   unite₊ : {b : B} → PLUS ZERO b ⟷ b
@@ -47,7 +47,7 @@ data _⟷_ : B → B → Set where
            (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (PLUS b₁ b₂ ⟷ PLUS b₃ b₄)
   _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
            (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (TIMES b₁ b₂ ⟷ TIMES b₃ b₄)
-  η : {b₁ : B} {v : ⟦ b₁ ⟧} → (ONE ⟷ (DPAIR (v , singleton v)))
+  η : {b : B} { v : ⟦ b ⟧ } → ONE ⟷ DPAIR b v
 
 mutual
   eval : {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → ⟦ b₁ ⟧ → ⟦ b₂ ⟧
@@ -73,7 +73,7 @@ mutual
   eval (c₁ ⊕ c₂) (inj₁ x) = inj₁ (eval c₁ x)
   eval (c₁ ⊕ c₂) (inj₂ y) = inj₂ (eval c₂ y)
   eval (c₁ ⊗ c₂) (x , y) = (eval c₁ x , eval c₂ y)
-  eval (η {b₁} {v}) tt = singleton (v , (singleton v))
+  eval (η {b} {v}) tt = ( v , singleton v)
 
   evalB :  {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → ⟦ b₂ ⟧ → ⟦ b₁ ⟧
   evalB uniti₊ (inj₁ ())
@@ -98,12 +98,13 @@ mutual
   evalB (c₁ ⊕ c₂) (inj₁ x) = inj₁ (evalB c₁ x)
   evalB (c₁ ⊕ c₂) (inj₂ y) = inj₂ (evalB c₂ y)
   evalB (c₁ ⊗ c₂) (x , y) = (evalB c₁ x , evalB c₂ y)
-  evalB (η {b₁} {v}) _ = tt
+  evalB (η {b}) _ = tt
+
+{--
 
   -- This type checks, but it shouldn't :-(
 test : ⊤
 test = evalB (η {PLUS ONE ONE} {inj₁ tt}) (singleton ((inj₁ tt , singleton (inj₁ tt))))
-{--
 
 mutual
   data B : Set where
