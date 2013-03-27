@@ -76,8 +76,8 @@ mutual
   eval (c₁ ⊕ c₂) (inj₁ x) = inj₁ (eval c₁ x)
   eval (c₁ ⊕ c₂) (inj₂ y) = inj₂ (eval c₂ y)
   eval (c₁ ⊗ c₂) (x , y) = (eval c₁ x , eval c₂ y)
-  eval (η {b}) tt = ?
-  eval (ε {b}) (w , c) = tt
+  eval (η {b}) tt = {!!}
+  eval (ε {b}) (w , c) = c (singleton w)
 
   evalB :  {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → ⟦ b₂ ⟧ → ⟦ b₁ ⟧
   evalB uniti₊ (inj₁ ())
@@ -102,14 +102,18 @@ mutual
   evalB (c₁ ⊕ c₂) (inj₁ x) = inj₁ (evalB c₁ x)
   evalB (c₁ ⊕ c₂) (inj₂ y) = inj₂ (evalB c₂ y)
   evalB (c₁ ⊗ c₂) (x , y) = (evalB c₁ x , evalB c₂ y)
-  evalB (η {b}) _ = tt
+  evalB (η {b}) (w , c) = c (singleton w)
   evalB (ε {b}) tt = {!!}
 
- -- this is better in that one can't use inj₂ tt on the rhs
-test : ⊤
-test = evalB (η {PLUS ONE ONE}) (inj₁ tt , {!!})
 
-{--
+ -- this is better in that one can't use inj₂ tt on the rhs
+-- the overly precise version doesn't type check, don't know why
+test : ⊤
+test = eval (ε {PLUS ONE ONE}) (inj₁ tt , f)
+  where f : < inj₁ {B = ⊤} tt > → ⊤
+--      f (singleton (inj₁ {B = ⊤} tt)) = tt
+        f x = tt
+{-
 mutual
   data B : Set where
     ONE   : B
