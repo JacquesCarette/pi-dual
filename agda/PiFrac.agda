@@ -19,7 +19,10 @@ mutual
     PLUS  : B → B → B
     TIMES : B → B → B
     RECIP : B → B
-    DPAIR : {ℓ : Level} → {b : B {ℓ} } → (Σ ⟦ b ⟧ (B { suc ℓ } → Set)) → B { suc (suc ℓ) }
+    DPAIR : {ℓ : Level} → { b : B {ℓ} } → (Σ ⟦ b ⟧ (B { suc ℓ } → Set)) → B { suc (suc ℓ) }
+
+  data BF { ℓ : Level } : Set → Set ℓ where
+    PAT : (B → B) → BF B
 
   ⟦_⟧ : {ℓ : Level} → B {ℓ} → Set
   ⟦ ZERO ⟧         = ⊥
@@ -27,7 +30,7 @@ mutual
   ⟦ PLUS b₁ b₂ ⟧   = ⟦ b₁ ⟧ ⊎ ⟦ b₂ ⟧
   ⟦ TIMES b₁ b₂ ⟧  = ⟦ b₁ ⟧ × ⟦ b₂ ⟧
   ⟦ RECIP b ⟧      = {v : ⟦ b ⟧} → Singleton v → ⊤
-  ⟦ DPAIR _ ⟧ = ? 
+--  ⟦ DPAIR _ ⟧ = ? 
 
 data _⟷_ : B → B → Set where
   unite₊ : {b : B} → PLUS ZERO b ⟷ b
