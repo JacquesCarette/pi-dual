@@ -18,16 +18,18 @@ mutual
     ONE   : B
     PLUS  : B → B → B
     TIMES : B → B → B
+    SING  : (b : B) → ⟦ b ⟧ → B
     RECIP : (b : B) → ⟦ b ⟧ → B
-    DPAIR : (b : B) → (⟦ b ⟧ → Set) → B
+    DPAIR : (b : B) → (⟦ b ⟧ → B) → B
 
   ⟦_⟧ : B → Set
   ⟦ ZERO ⟧         = ⊥
   ⟦ ONE ⟧          = ⊤
   ⟦ PLUS b₁ b₂ ⟧   = ⟦ b₁ ⟧ ⊎ ⟦ b₂ ⟧
   ⟦ TIMES b₁ b₂ ⟧  = ⟦ b₁ ⟧ × ⟦ b₂ ⟧
+  ⟦ SING b v ⟧  = <_> {⟦ b ⟧} v
   ⟦ RECIP b v ⟧      = <_> {⟦ b ⟧} v → ⊤
-  ⟦ DPAIR b c ⟧ = Σ ⟦ b ⟧ c
+  ⟦ DPAIR b c ⟧ = Σ ⟦ b ⟧ (λ v → ⟦ c v ⟧)
 
 data _⟷_ : B → B → Set₁ where
   unite₊ : {b : B} → PLUS ZERO b ⟷ b
@@ -47,8 +49,8 @@ data _⟷_ : B → B → Set₁ where
            (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (PLUS b₁ b₂ ⟷ PLUS b₃ b₄)
   _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
            (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (TIMES b₁ b₂ ⟷ TIMES b₃ b₄)
-  η : {b : B} → ONE ⟷ DPAIR b (λ v → ⟦ RECIP b v ⟧)
-  ε : {b : B} → DPAIR b (λ v → ⟦ RECIP b v ⟧) ⟷ ONE 
+  η : {b : B} → ONE ⟷ DPAIR b (λ v → RECIP b v)
+  ε : {b : B} → DPAIR b (λ v → RECIP b v) ⟷ ONE 
 
 mutual
   eval : {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → ⟦ b₁ ⟧ → ⟦ b₂ ⟧
@@ -74,7 +76,7 @@ mutual
   eval (c₁ ⊕ c₂) (inj₁ x) = inj₁ (eval c₁ x)
   eval (c₁ ⊕ c₂) (inj₂ y) = inj₂ (eval c₂ y)
   eval (c₁ ⊗ c₂) (x , y) = (eval c₁ x , eval c₂ y)
-  eval (η {b}) tt = {!!}
+  eval (η {b}) tt = ?
   eval (ε {b}) (w , c) = tt
 
   evalB :  {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → ⟦ b₂ ⟧ → ⟦ b₁ ⟧
