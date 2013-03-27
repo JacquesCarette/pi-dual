@@ -20,7 +20,7 @@ frac.subc.pdf : frac.tex frac.subc.tex cites.bib
 	pdflatex -halt-on-error frac.subc.tex
 
 frac.subc.tex : frac.tex
-	ruby subcode/subc.rb frac.tex
+	ruby ../subcode/subc.rb frac.tex
 
 r.subc.pdf : r.subc.tex cites.bib
 	pdflatex -halt-on-error r.subc.tex
@@ -29,13 +29,13 @@ r.subc.pdf : r.subc.tex cites.bib
 	pdflatex -halt-on-error r.subc.tex
 
 r.subc.tex : r.tex
-	ruby subcode/subc.rb r.tex
+	ruby ../subcode/subc.rb r.tex
 
 talk.subc.pdf : talk.subc.tex 
 	pdflatex talk.subc.tex
 
 talk.subc.tex : talk.tex
-	ruby subcode/subc.rb talk.tex
+	ruby ../subcode/subc.rb talk.tex
 
 agda-sabry: VecSN.agda VecS.agda Homotopy.agda Pi.agda PiN.agda PiF.agda PiNF-syntax.agda PiNF-algebra.agda PiNF-semantics.agda Pi-abstract-machine.agda Pi-reasoning.agda oldPi.agda
 	touch /u/sabry/.hyplan/pi
