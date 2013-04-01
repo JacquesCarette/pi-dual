@@ -8,8 +8,22 @@ open import Data.Sum
 open import Data.Product
 open import Relation.Binary.PropositionalEquality
 
-infixr 20 _◎_
+-- infixr 20 _◎_
 
+{-
+postulate
+  A : Set
+  a b c : A
+  p : a ≡ b
+  q : b ≡ c
+
+data <_> {a : Level} {A : Set a} (x : A) : Set a where
+         singleton : {y : A} → y ≡ x -> < x > 
+
+irr : singleton {_} {A} {b} p ≡ singleton {_} {A} {b} (sym q)
+irr = {!!}
+
+-}
 data <_> {a : Level} {A : Set a} (x : A) : Set a where
          singleton : {y : A} → y ≡ x -> < x > 
 
@@ -91,7 +105,7 @@ mutual
   eval (ε {b}) (w , c) = w
   eval (c₁ ◑ c₂) v = proj₁ v₂ , eval (c₂ {proj₁ v₂}) (proj₂ v₂)  
     where v₂ = eval c₁ v
-  eval (lift c refl) (singleton refl) = singleton refl
+  eval (lift c z) (singleton {y = v} refl) = singleton {y = eval c v} (sym z)
 
   evalB :  {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → ⟦ b₂ ⟧ → ⟦ b₁ ⟧
   evalB uniti₊ (inj₁ ())
@@ -120,7 +134,7 @@ mutual
   evalB (ε {b}) v = v , ((singleton refl) , (λ x → tt))
   evalB (_◑_ {c = c} {d} c₁ c₂) (v , x) = evalB c₁ (v , v₂)
     where v₂ = evalB (c₂ {v}) x
-  evalB (lift {v = v} c refl) w = eval (lift (op c) (reverse v c)) w
+  evalB (lift {v = v} c z) _ = eval (lift (op c) (reverse v c)) (singleton {y = eval c v} refl)
 
   reverse : {b₁ b₂ : B} (v : ⟦ b₁ ⟧) → (c : b₁ ⟷ b₂) → v ≡ evalB c (eval c v)
   reverse (inj₁ ()) unite₊
@@ -140,7 +154,7 @@ mutual
   reverse v assocl⋆ = refl
   reverse v assocr⋆ = refl
   reverse v id⟷ = refl
-  reverse v (op c) = {!!}
+  reverse v (op c) = reverse' c v
   reverse {_} {b₂} v (c ◎ c₁) = trans (reverse v c) (cong (evalB c) eq)
      where eq : eval c v ≡ evalB c₁ (eval c₁ (eval c v))
            eq = reverse (eval c v) c₁
@@ -153,13 +167,18 @@ mutual
           eq₂ = reverse (proj₂ y) u
           eq₃ : y ≡ (proj₁ y , evalB u (eval u (proj₂ y)))
           eq₃ = cong (λ z → (proj₁ y , z)) eq₂
-  reverse (singleton {v} refl) (lift c refl) = {!!}
+  reverse (singleton {y = v₁} prf₁) (lift {v = v₂} {w₂} c prf₂) = {!!}
+    where eq₁ : evalB c (eval c v₁) ≡ evalB c (eval c v₂)
+          eq₁ = cong (evalB c) (cong (eval c) prf₁)
      -- sym (trans (cong (evalB c) x) (sym (reverse v c)))
   reverse (inj₁ x) (c ⊕ _) = cong inj₁ (reverse x c)
   reverse (inj₂ y) (_ ⊕ c) = cong inj₂ (reverse y c)
   reverse (x , y) (c₁ ⊗ c₂) = cong₂ _,_ (reverse x c₁) (reverse y c₂)
   reverse v η = refl
   reverse (_ , (singleton refl , _)) ε = refl
+
+  reverse' : {b₁ b₂ : B} (c : b₁ ⟷ b₂) → (w : ⟦ b₂ ⟧) → w ≡ eval c (evalB c w)
+  reverse' c w = {!!}
 
 -- they are properly inverse of each other
 -- easy direction
