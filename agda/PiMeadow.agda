@@ -1,3 +1,4 @@
+{-# OPTIONS --no-termination-check #-}
 module PiMeadow where
 
 open import Level
@@ -5,15 +6,14 @@ open import Data.Empty
 open import Data.Unit
 open import Data.Sum
 open import Data.Product
-open import Relation.Binary.PropositionalEquality hiding (sym)
+open import Relation.Binary.PropositionalEquality
 
 infixr 20 _◎_
 
-data <_> {A : Set} : A → Set where
-  singleton : (x : A) -> < x > 
+data <_> {a : Level} {A : Set a} (x : A) : Set a where
+         singleton : {y : A} → y ≡ x -> < x > 
 
 mutual
-
   data B : Set₁ where
     ZERO  : B 
     ONE   : B
@@ -28,46 +28,42 @@ mutual
   ⟦ ONE ⟧          = ⊤
   ⟦ PLUS b₁ b₂ ⟧   = ⟦ b₁ ⟧ ⊎ ⟦ b₂ ⟧
   ⟦ TIMES b₁ b₂ ⟧  = ⟦ b₁ ⟧ × ⟦ b₂ ⟧
-  ⟦ SING b v ⟧  = <_> {⟦ b ⟧} v
-  ⟦ RECIP b v ⟧      = <_> {⟦ b ⟧} v → ⊤
+  ⟦ SING b v ⟧  = <_> {A = ⟦ b ⟧} v
+  ⟦ RECIP b v ⟧      = <_> {A = ⟦ b ⟧} v → ⊤
   ⟦ DPAIR b c ⟧ = Σ ⟦ b ⟧ (λ v → ⟦ c v ⟧)
 
 -- Useful abbrev
 leftIdemp : (b : B) → ⟦ b ⟧ → B
 leftIdemp b v = TIMES (SING b v) (RECIP b v)
- 
-data _⟷_ : B → B → Set₁ where
-  unite₊ : {b : B} → PLUS ZERO b ⟷ b
-  uniti₊ : {b : B} → b ⟷ PLUS ZERO b
-  swap₊ : {b₁ b₂ : B} → PLUS b₁ b₂ ⟷ PLUS b₂ b₁
-  assocl₊ : { b₁ b₂ b₃ : B } → PLUS b₁ (PLUS b₂ b₃) ⟷ PLUS (PLUS b₁ b₂) b₃
-  assocr₊ : { b₁ b₂ b₃ : B } → PLUS (PLUS b₁ b₂) b₃ ⟷ PLUS b₁ (PLUS b₂ b₃)
-  unite⋆  : { b : B } → TIMES ONE b ⟷ b
-  uniti⋆  : { b : B } → b ⟷ TIMES ONE b
-  swap⋆ : {b₁ b₂ : B} → TIMES b₁ b₂ ⟷ TIMES b₂ b₁
-  assocl⋆ : { b₁ b₂ b₃ : B } → TIMES b₁ (TIMES b₂ b₃) ⟷ TIMES (TIMES b₁ b₂) b₃
-  assocr⋆ : { b₁ b₂ b₃ : B } → TIMES (TIMES b₁ b₂) b₃ ⟷ TIMES b₁ (TIMES b₂ b₃)
-  id⟷ : {b : B } → b ⟷ b
-  sym    : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
-  _◎_    : { b₁ b₂ b₃ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₃) → (b₁ ⟷ b₃)
---  _◑_    : { b₁ b₂ b₃ b₄ b₅: B } → (DPAIR b₁ c ⟷ b₂) →
---           (b₂ ⟷ DPAIR b₃ d) → (c : B  
---           (DPAIR b₁ c) ⟷ DPAIR (b₃ d)) 
-  _⊕_    : { b₁ b₂ b₃ b₄ : B } → 
-           (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (PLUS b₁ b₂ ⟷ PLUS b₃ b₄)
-  _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
-           (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (TIMES b₁ b₂ ⟷ TIMES b₃ b₄)
-  η : {b : B} → b ⟷ DPAIR b (λ v → leftIdemp b v)
-  ε : {b : B} → (DPAIR b (λ v → leftIdemp b v)) ⟷ b 
 
-{-
-_◑_ : { b₁ b₂ b₃ : B } {c : ⟦ b₁ ⟧ → B} {d : ⟦ b₃ ⟧ → B} → 
-          (DPAIR b₁ c ⟷ b₂) → (b₂ ⟷ DPAIR b₃ d) → 
-          (DPAIR b₁ c ⟷ DPAIR b₃ d) 
-f ◑ g = {!!}
--}
+mutual 
+  data _⟷_ : B → B → Set₁ where
+    unite₊ : {b : B} → PLUS ZERO b ⟷ b
+    uniti₊ : {b : B} → b ⟷ PLUS ZERO b
+    swap₊ : {b₁ b₂ : B} → PLUS b₁ b₂ ⟷ PLUS b₂ b₁
+    assocl₊ : { b₁ b₂ b₃ : B } → PLUS b₁ (PLUS b₂ b₃) ⟷ PLUS (PLUS b₁ b₂) b₃
+    assocr₊ : { b₁ b₂ b₃ : B } → PLUS (PLUS b₁ b₂) b₃ ⟷ PLUS b₁ (PLUS b₂ b₃)
+    unite⋆  : { b : B } → TIMES ONE b ⟷ b
+    uniti⋆  : { b : B } → b ⟷ TIMES ONE b
+    swap⋆ : {b₁ b₂ : B} → TIMES b₁ b₂ ⟷ TIMES b₂ b₁
+    assocl⋆ : { b₁ b₂ b₃ : B } → TIMES b₁ (TIMES b₂ b₃) ⟷ TIMES (TIMES b₁ b₂) b₃
+    assocr⋆ : { b₁ b₂ b₃ : B } → TIMES (TIMES b₁ b₂) b₃ ⟷ TIMES b₁ (TIMES b₂ b₃)
+    id⟷ : {b : B } → b ⟷ b
+    op    : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
+    _◎_    : { b₁ b₂ b₃ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₃) → (b₁ ⟷ b₃)
+    _◑_    : { b₁ b₂ : B } {c d : ⟦ b₂ ⟧ → B} → 
+               (b₁ ⟷ DPAIR b₂ c) →
+               (∀ {v} → c v ⟷ d v ) → (b₁ ⟷ DPAIR b₂ d )
+    lift    : { b₁ b₂ : B } {v : ⟦ b₁ ⟧ } {w : ⟦ b₂ ⟧ } 
+                (c : b₁ ⟷ b₂) → (w ≡ eval c v) → 
+                (SING b₁ v ⟷ SING b₂ w) 
+    _⊕_    : { b₁ b₂ b₃ b₄ : B } → 
+             (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (PLUS b₁ b₂ ⟷ PLUS b₃ b₄)
+    _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
+             (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (TIMES b₁ b₂ ⟷ TIMES b₃ b₄)
+    η : {b : B} → b ⟷ DPAIR b (λ v → leftIdemp b v)
+    ε : {b : B} → (DPAIR b (λ v → leftIdemp b v)) ⟷ b 
 
-mutual
   eval : {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → ⟦ b₁ ⟧ → ⟦ b₂ ⟧
   eval unite₊ (inj₁ ())
   eval unite₊ (inj₂ v) = v
@@ -86,13 +82,16 @@ mutual
   eval assocl⋆ (x , (y , z)) = ((x , y), z)
   eval assocr⋆ ((x , y), z) = (x , (y , z))
   eval id⟷ v = v
-  eval (sym c) v = evalB c v
+  eval (op c) v = evalB c v
   eval (c₁ ◎ c₂) v = eval c₂ (eval c₁ v)
   eval (c₁ ⊕ c₂) (inj₁ x) = inj₁ (eval c₁ x)
   eval (c₁ ⊕ c₂) (inj₂ y) = inj₂ (eval c₂ y)
   eval (c₁ ⊗ c₂) (x , y) = (eval c₁ x , eval c₂ y)
-  eval (η {b}) v = v , ((singleton v) , (λ x → tt))
+  eval (η {b}) v = v , ((singleton refl) , (λ x → tt))
   eval (ε {b}) (w , c) = w
+  eval (c₁ ◑ c₂) v = proj₁ v₂ , eval (c₂ {proj₁ v₂}) (proj₂ v₂)  
+    where v₂ = eval c₁ v
+  eval (lift c refl) (singleton refl) = singleton refl
 
   evalB :  {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → ⟦ b₂ ⟧ → ⟦ b₁ ⟧
   evalB uniti₊ (inj₁ ())
@@ -112,13 +111,55 @@ mutual
   evalB assocr⋆ (x , (y , z)) = ((x , y), z)
   evalB assocl⋆ ((x , y), z) = (x , (y , z))
   evalB id⟷ v = v
-  evalB (sym c) v = eval c v
+  evalB (op c) v = eval c v
   evalB (c₁ ◎ c₂) v = evalB c₁ (evalB c₂ v)
   evalB (c₁ ⊕ c₂) (inj₁ x) = inj₁ (evalB c₁ x)
   evalB (c₁ ⊕ c₂) (inj₂ y) = inj₂ (evalB c₂ y)
   evalB (c₁ ⊗ c₂) (x , y) = (evalB c₁ x , evalB c₂ y)
   evalB (η {b}) (w , c) = w
-  evalB (ε {b}) v = v , ((singleton v) , (λ x → tt))
+  evalB (ε {b}) v = v , ((singleton refl) , (λ x → tt))
+  evalB (_◑_ {c = c} {d} c₁ c₂) (v , x) = evalB c₁ (v , v₂)
+    where v₂ = evalB (c₂ {v}) x
+  evalB (lift {v = v} c refl) w = eval (lift (op c) (reverse v c)) w
+
+  reverse : {b₁ b₂ : B} (v : ⟦ b₁ ⟧) → (c : b₁ ⟷ b₂) → v ≡ evalB c (eval c v)
+  reverse (inj₁ ()) unite₊
+  reverse (inj₂ y) unite₊ = refl
+  reverse v uniti₊ = refl
+  reverse (inj₁ x) swap₊ = refl
+  reverse (inj₂ y) swap₊ = refl
+  reverse (inj₁ x) assocl₊ = refl
+  reverse (inj₂ (inj₁ x)) assocl₊ = refl
+  reverse (inj₂ (inj₂ y)) assocl₊ = refl
+  reverse (inj₁ (inj₁ x)) assocr₊ = refl
+  reverse (inj₁ (inj₂ y)) assocr₊ = refl
+  reverse (inj₂ y) assocr₊ = refl
+  reverse v unite⋆ = refl
+  reverse v uniti⋆ = refl
+  reverse v swap⋆ = refl
+  reverse v assocl⋆ = refl
+  reverse v assocr⋆ = refl
+  reverse v id⟷ = refl
+  reverse v (op c) = {!!}
+  reverse {_} {b₂} v (c ◎ c₁) = trans (reverse v c) (cong (evalB c) eq)
+     where eq : eval c v ≡ evalB c₁ (eval c₁ (eval c v))
+           eq = reverse (eval c v) c₁
+  reverse v (_◑_ {b₁} {b₂} {c} {d} c₁ u) = trans eq₁ (cong (evalB c₁) eq₃)
+    where y : Σ ⟦ b₂ ⟧ (λ ww → ⟦ c ww ⟧)
+          y = eval c₁ v
+          eq₁ : v ≡ evalB c₁ y
+          eq₁ = reverse v c₁
+          eq₂ : proj₂ y ≡ evalB u (eval u (proj₂ y))
+          eq₂ = reverse (proj₂ y) u
+          eq₃ : y ≡ (proj₁ y , evalB u (eval u (proj₂ y)))
+          eq₃ = cong (λ z → (proj₁ y , z)) eq₂
+  reverse (singleton {v} refl) (lift c refl) = {!!}
+     -- sym (trans (cong (evalB c) x) (sym (reverse v c)))
+  reverse (inj₁ x) (c ⊕ _) = cong inj₁ (reverse x c)
+  reverse (inj₂ y) (_ ⊕ c) = cong inj₂ (reverse y c)
+  reverse (x , y) (c₁ ⊗ c₂) = cong₂ _,_ (reverse x c₁) (reverse y c₂)
+  reverse v η = refl
+  reverse (_ , (singleton refl , _)) ε = refl
 
 -- they are properly inverse of each other
 -- easy direction
@@ -128,9 +169,11 @@ mutual
 -- hard direction.
 ε∘η : {b : B} (v : ⟦ b ⟧) → { w : Σ < v > (λ _ → < v > → ⊤) } 
       → (eval {DPAIR b (leftIdemp b) } {_} (ε ◎ η) (v , w)) ≡ (v , w)
-ε∘η {b} v {(singleton .v , r )} = cong f {v , v , (singleton v)} refl
+ε∘η {b} v {(singleton refl , r )} = cong f {v , v , (singleton refl)} refl
     where f : Σ ⟦ b ⟧ (λ x → Σ ⟦ b ⟧ (λ y → < v >)) → 
                 Σ ⟦ b ⟧ (λ z → Σ < z > (λ x → < z > → ⊤ ))
           f (_ , (_ , j)) = (v , j , r)
 
 -- Now need to write some actual programs...
+makeFunc : {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → b₁ ⟷ DPAIR b₁ (λ x → TIMES (SING b₂ (eval c x)) (RECIP b₁ x))
+makeFunc {b₁} {b₂} c = η {b₁} ◑ (λ {v₁} →  (lift c refl) ⊗ id⟷)
