@@ -1,3 +1,4 @@
+
 {-# OPTIONS --no-termination-check #-}
 module PiMeadow where
 
@@ -26,6 +27,12 @@ irr = {!!}
 -}
 data <_> {a : Level} {A : Set a} (x : A) : Set a where
          singleton : {y : A} → y ≡ x -> < x > 
+
+-- Courtesy of Wolfram Kahl, a dependent cong₂
+cong₂D  :  {a b c : Level} {A : Set a} {B : A → Set b} {C : Set c} (f : (x : A) → B x → C)
+          →  {x₁ x₂ : A} {y₁ : B x₁} {y₂ : B x₂}
+          →  (x₁≡x₂ : x₁ ≡ x₂) → y₁ ≡ subst B (sym x₁≡x₂) y₂ → f x₁ y₁ ≡ f x₂ y₂
+cong₂D f refl refl = refl
 
 mutual
   data B : Set₁ where
@@ -68,6 +75,9 @@ mutual
     _◑_    : { b₁ b₂ : B } {c d : ⟦ b₂ ⟧ → B} → 
                (b₁ ⟷ DPAIR b₂ c) →
                (∀ {v} → c v ⟷ d v ) → (b₁ ⟷ DPAIR b₂ d )
+ {-   _◐_    : { b₁ b₂ : B } {c d : ⟦ b₂ ⟧ → B} → 
+               (∀ {v} → c v ⟷ d v ) → (b₁ ⟷ DPAIR b₂ c) →
+                (b₁ ⟷ DPAIR b₂ d ) -}
     lift    : { b₁ b₂ : B } {v : ⟦ b₁ ⟧ } {w : ⟦ b₂ ⟧ } 
                 (c : b₁ ⟷ b₂) → (w ≡ eval c v) → 
                 (SING b₁ v ⟷ SING b₂ w) 
@@ -105,6 +115,8 @@ mutual
   eval (ε {b}) (w , c) = w
   eval (c₁ ◑ c₂) v = proj₁ v₂ , eval (c₂ {proj₁ v₂}) (proj₂ v₂)  
     where v₂ = eval c₁ v
+{-  eval (c₁ ◐ c₂) v = proj₁ v₂ , eval (c₁ {proj₁ v₂}) (proj₂ v₂)
+    where v₂ = eval c₂ v -}
   eval (lift c z) (singleton {y = v} refl) = singleton {y = eval c v} (sym z)
 
   evalB :  {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → ⟦ b₂ ⟧ → ⟦ b₁ ⟧
@@ -132,8 +144,8 @@ mutual
   evalB (c₁ ⊗ c₂) (x , y) = (evalB c₁ x , evalB c₂ y)
   evalB (η {b}) (w , c) = w
   evalB (ε {b}) v = v , ((singleton refl) , (λ x → tt))
-  evalB (_◑_ {c = c} {d} c₁ c₂) (v , x) = evalB c₁ (v , v₂)
-    where v₂ = evalB (c₂ {v}) x
+  evalB (c₁ ◑ c₂) (v , x) = evalB c₁ (v , evalB c₂ x)
+{-  evalB (c₁ ◐ c₂) (v , x) = evalB c₂ (v , evalB c₁ x) -}
   evalB (lift {v = v} c z) _ = eval (lift (op c) (reverse v c)) (singleton {y = eval c v} refl)
 
   reverse : {b₁ b₂ : B} (v : ⟦ b₁ ⟧) → (c : b₁ ⟷ b₂) → v ≡ evalB c (eval c v)
@@ -155,10 +167,10 @@ mutual
   reverse v assocr⋆ = refl
   reverse v id⟷ = refl
   reverse v (op c) = reverse' c v
-  reverse {_} {b₂} v (c ◎ c₁) = trans (reverse v c) (cong (evalB c) eq)
+  reverse v (c ◎ c₁) = trans (reverse v c) (cong (evalB c) eq)
      where eq : eval c v ≡ evalB c₁ (eval c₁ (eval c v))
            eq = reverse (eval c v) c₁
-  reverse v (_◑_ {b₁} {b₂} {c} {d} c₁ u) = trans eq₁ (cong (evalB c₁) eq₃)
+  reverse v (_◑_ {_} {b₂} {c} c₁ u) = trans eq₁ (cong (evalB c₁) eq₃)
     where y : Σ ⟦ b₂ ⟧ (λ ww → ⟦ c ww ⟧)
           y = eval c₁ v
           eq₁ : v ≡ evalB c₁ y
@@ -167,10 +179,10 @@ mutual
           eq₂ = reverse (proj₂ y) u
           eq₃ : y ≡ (proj₁ y , evalB u (eval u (proj₂ y)))
           eq₃ = cong (λ z → (proj₁ y , z)) eq₂
-  reverse (singleton {y = v₁} prf₁) (lift {v = v₂} {w₂} c prf₂) = {!!}
-    where eq₁ : evalB c (eval c v₁) ≡ evalB c (eval c v₂)
-          eq₁ = cong (evalB c) (cong (eval c) prf₁)
-     -- sym (trans (cong (evalB c) x) (sym (reverse v c)))
+{-  reverse v (_◐_ {_} {b₂} {c} c₁ c₂) = {!!} -}
+  reverse (singleton prf₁) (lift {v = v₂} c prf₂) =
+     cong₂D (λ x e → singleton {y = x} e) 
+            (trans prf₁ (reverse v₂ c)) (proof-irrelevance prf₁ _)
   reverse (inj₁ x) (c ⊕ _) = cong inj₁ (reverse x c)
   reverse (inj₂ y) (_ ⊕ c) = cong inj₂ (reverse y c)
   reverse (x , y) (c₁ ⊗ c₂) = cong₂ _,_ (reverse x c₁) (reverse y c₂)
@@ -178,7 +190,41 @@ mutual
   reverse (_ , (singleton refl , _)) ε = refl
 
   reverse' : {b₁ b₂ : B} (c : b₁ ⟷ b₂) → (w : ⟦ b₂ ⟧) → w ≡ eval c (evalB c w)
-  reverse' c w = {!!}
+  reverse' unite₊ w = refl
+  reverse' uniti₊ (inj₁ ())
+  reverse' uniti₊ (inj₂ y) = refl
+  reverse' swap₊ (inj₁ x) = refl
+  reverse' swap₊ (inj₂ y) = refl
+  reverse' assocl₊ (inj₁ (inj₁ x)) = refl
+  reverse' assocl₊ (inj₁ (inj₂ y)) = refl
+  reverse' assocl₊ (inj₂ y) = refl
+  reverse' assocr₊ (inj₁ x) = refl
+  reverse' assocr₊ (inj₂ (inj₁ x)) = refl
+  reverse' assocr₊ (inj₂ (inj₂ y)) = refl
+  reverse' unite⋆ w = refl
+  reverse' uniti⋆ w = refl
+  reverse' swap⋆ w = refl
+  reverse' assocl⋆ w = refl
+  reverse' assocr⋆ w = refl
+  reverse' id⟷ w = refl
+  reverse' (op c) w = reverse w c
+  reverse' (c ◎ c₁) w = trans (reverse' c₁ w) (cong (eval c₁) (reverse' c (evalB c₁ w)))
+  reverse' {b₁} {DPAIR b₂ d} (_◑_ {c = c} c₁ c₂) (w₁ , w₂) 
+    =  {!!}
+    where y : ⟦ DPAIR b₂ c ⟧
+          y = w₁ , evalB c₂ w₂
+          eq₁ : y ≡ eval c₁ (evalB c₁ y)
+          eq₁ = reverse' c₁ y
+          eq₂ : w₂ ≡ eval c₂ (proj₂ y)
+          eq₂ = reverse' c₂ w₂
+{-  reverse' (c₁ ◐ c₂) w = {!!} -}
+  reverse' (lift {v = v} {w = w₂} c prf₂) (singleton {z} prf₁) = cong₂D
+    (λ x e → eval (lift c prf₂) (singleton {x = v} {!trans (cong (evalB c) prf₂) prf₁!}) ) ( trans (sym prf₂) (reverse' c w₂) ) (proof-irrelevance prf₁ _ )
+  reverse' (c ⊕ _) (inj₁ x) = cong inj₁ (reverse' c x)
+  reverse' (_ ⊕ c) (inj₂ y) = cong inj₂ (reverse' c y)
+  reverse' (c₁ ⊗ c₂) (x , y) = cong₂ _,_ (reverse' c₁ x) (reverse' c₂ y)
+  reverse' η (_ , singleton refl , _ ) = refl
+  reverse' ε w = refl
 
 -- they are properly inverse of each other
 -- easy direction
