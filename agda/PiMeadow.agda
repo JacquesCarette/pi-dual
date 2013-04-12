@@ -117,8 +117,9 @@ mutual
     where v₂ = eval c₁ v
 {-  eval (c₁ ◐ c₂) v = proj₁ v₂ , eval (c₁ {proj₁ v₂}) (proj₂ v₂)
     where v₂ = eval c₂ v -}
-  eval (lift c z) (singleton {y = v} refl) = singleton {y = eval c v} (sym z)
-
+  eval (lift c z) (singleton {y = v} prf) = singleton {y = eval c v} (trans (cong (eval c) prf) (sym z))
+  -- eval (lift c z) (singleton {y = v} refl) = singleton {y = eval c v} (sym z)
+  -- eval (lift {- w = .(eval c v) -} c refl) (singleton {y = v} refl) = singleton {y = eval c v} refl
   evalB :  {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → ⟦ b₂ ⟧ → ⟦ b₁ ⟧
   evalB uniti₊ (inj₁ ())
   evalB uniti₊ (inj₂ v) = v
@@ -180,9 +181,10 @@ mutual
           eq₃ : y ≡ (proj₁ y , evalB u (eval u (proj₂ y)))
           eq₃ = cong (λ z → (proj₁ y , z)) eq₂
 {-  reverse v (_◐_ {_} {b₂} {c} c₁ c₂) = {!!} -}
+--  reverse (singleton {.v₂} refl) (lift {v = v₂} {.(eval c v₂)} c refl) =  {!cong singleton {! proof-irrelevance  {! (reverse v₂ c)  !} ?!} !}
   reverse (singleton prf₁) (lift {v = v₂} c prf₂) =
-     cong₂D (λ x e → singleton {y = x} e) 
-            (trans prf₁ (reverse v₂ c)) (proof-irrelevance prf₁ _)
+      cong₂D (λ x e → singleton {y = x} e) 
+            (trans prf₁ (reverse v₂ c)) (proof-irrelevance prf₁ _) 
   reverse (inj₁ x) (c ⊕ _) = cong inj₁ (reverse x c)
   reverse (inj₂ y) (_ ⊕ c) = cong inj₂ (reverse y c)
   reverse (x , y) (c₁ ⊗ c₂) = cong₂ _,_ (reverse x c₁) (reverse y c₂)
@@ -210,16 +212,9 @@ mutual
   reverse' (op c) w = reverse w c
   reverse' (c ◎ c₁) w = trans (reverse' c₁ w) (cong (eval c₁) (reverse' c (evalB c₁ w)))
   reverse' {b₁} {DPAIR b₂ d} (_◑_ {c = c} c₁ c₂) (w₁ , w₂) 
-    =  {!!}
-    where y : ⟦ DPAIR b₂ c ⟧
-          y = w₁ , evalB c₂ w₂
-          eq₁ : y ≡ eval c₁ (evalB c₁ y)
-          eq₁ = reverse' c₁ y
-          eq₂ : w₂ ≡ eval c₂ (proj₂ y)
-          eq₂ = reverse' c₂ w₂
+    rewrite (sym (reverse' c₁ (w₁ , evalB c₂ w₂))) | (sym (reverse' c₂ w₂)) =  refl
 {-  reverse' (c₁ ◐ c₂) w = {!!} -}
-  reverse' (lift {v = v} {w = w₂} c prf₂) (singleton {z} prf₁) = cong₂D
-    (λ x e → eval (lift c prf₂) (singleton {x = v} {!trans (cong (evalB c) prf₂) prf₁!}) ) ( trans (sym prf₂) (reverse' c w₂) ) (proof-irrelevance prf₁ _ )
+  reverse' (lift {v = v} {w = .(eval c v)} c refl) (singleton refl) = cong₂D (λ x e → singleton {y = x} e) (reverse' c (eval c v)) (proof-irrelevance refl _)
   reverse' (c ⊕ _) (inj₁ x) = cong inj₁ (reverse' c x)
   reverse' (_ ⊕ c) (inj₂ y) = cong inj₂ (reverse' c y)
   reverse' (c₁ ⊗ c₂) (x , y) = cong₂ _,_ (reverse' c₁ x) (reverse' c₂ y)
