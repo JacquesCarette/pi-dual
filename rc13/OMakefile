@@ -91,9 +91,20 @@ frac-dbx : frac.subc.pdf
  	cp frac.subc.pdf /home/rosh/Dropbox/Public/papers/
 
 
+frac2.subc.pdf : frac2.subc.tex cites.bib
+	pdflatex -halt-on-error frac2.subc.tex
+	bibtex frac2.subc
+
+frac2.subc.tex : frac2.tex
+	ruby subcode/subc.rb frac2.tex
+
+frac2-dbx : frac2.subc.pdf
+ 	cp frac2.subc.pdf /home/rosh/Dropbox/Public/papers/
+
+
 # Build all 
 # all : dual-dropbox rational_ext-dropbox fields-dropbox msr-slides-dropbox jsc-slides-dropbox
-all : frac-dbx
+all : frac-dbx frac2-dbx
 
 
 current: rational_ext.subc.pdf
