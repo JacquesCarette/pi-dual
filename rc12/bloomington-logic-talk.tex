@@ -1400,89 +1400,208 @@ For example, a meta-circular interpreter for {{Pi0}}
 
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Theseus}
+\begin{frame}[fragile]{Theseus : Types}
 
-  \begin{block}
-    
 %subcode{code} include main
 %! language=haskell
-%type Bool = True
+%data Bool = True 
 %          | False
 %
+%type Int = 0 | Succ Int
 %
+%type Tree = Node Tree Tree | Leaf Int
+
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus : Builtin types}
+
+%subcode{code} include main
+%! language=haskell
+%-- Builtin types
+%type _+_ a b = Left a | Right b
+%type _*_ a b = (a, b)
+%type () = ()
+%type 0 
+
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus : Maps}
+
+%subcode{code} include main
+%! language=haskell
+%-- Simple functions
 %not :: Bool <-> Bool
 %| True <-> False
 %| False <-> True
 
+\end{frame}
 
-%type Tree = Leaf
-%          | Node Tree Tree
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus : Maps}
+
+\vfill
+
+%subcode{code} include main
+%! language=haskell
+%expand :: Nat <-> Nat + ()
+%| Zero <-> Right ()
+%| Succ n <-> Left n 
 %
-%type Ctxt = Empty
-%          | Left Ctxt Tree
-%          | Right Tree Ctxt
+%treeUnwind :: Tree <-> Tree * Tree + Int
+%| Node t1 t2 <-> Left (t1, t2)
+%| Leaf n <-> Right n
+
+\pause
+\vfill
+
+\begin{enumerate}
+\item Coverage in pattern clauses.
+\item Preserve typed variables across {{<->}}.
+\item Constructors don't matter, constants don't matter.
+\end{enumerate}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus}
+
+%subcode{code} include main
+%! language=haskell
+%treeUnwind :: Tree <-> Tree * Tree + Int
+%| Node t1 t2 <-> Left (t1, t2)
+%| Leaf n <-> Right n
+%
+%-- Maps can be reversed
+%rev_treeUnwind :: Tree * Tree + Int <-> Tree
+%| Left (t1, t2) <-> Node t1 t2
+%| Right n <-> Leaf n
+
+\end{frame}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus : Parameterized maps}
 
-  \end{block}
+\vfill
+
+%subcode{code} include main
+%! language=haskell
+%treeUnwindf :: f:(Nat <-> a) -> Tree <-> Tree * Tree + a
+%| Node t1 t2 <-> Left (t1, t2)
+%| Leaf n <-> Right (f n)
+
+\vfill
+\pause
+  \begin{enumerate}
+  \item Everything is monomorphized. There is no polymorphism here. 
+  \item Paramterization is fully inlined. 
+  \item The final program has a type of the form {{a <-> b}}
+  \end{enumerate}
 
 
 \end{frame}
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Theseus}
 
-  \begin{block}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus : Reversing}
+
+\begin{scriptsize}
     
 %subcode{code} include main
 %! language=haskell
-%type Tree = Leaf
-%          | Node Tree Tree
+%treeUnwindf :: f:(Nat <-> a) -> Tree <-> Tree * Tree + a
+%| Node t1 t2 <-> Left (t1, t2)
+%| Leaf n <-> Right (f n)
 %
-%treeUnwind :: Tree <-> Tree * Tree + Bool
-%| Node t1 t2 <-> (t1, t2)
-%| Leaf b <-> b
+%-- Its reverse
+%rev_treeUnwind' :: f:(Nat <-> a) -> Tree <-> Tree * Tree + a
+%| Left (t1, t2) <-> Node t1 t2
+%| Right (f n) <-> Leaf n
+%
+%rev_treeUnwindf :: f:(Nat <-> a) -> Tree <-> Tree * Tree + a
+%| Left (t1, t2) <-> Node t1 t2
+%| Right a <-> Leaf (rev_f a)
 
-
-
-%type Ctxt = Empty
-%          | Left Ctxt Tree
-%          | Right Tree Ctxt
-
-
-
-  \end{block}
+\end{scriptsize}
 
 
 \end{frame}
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Theseus}
 
-  \begin{block}
-    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus : Adjoints}
+
 %subcode{code} include main
 %! language=haskell
-%type Tree = Leaf
-%          | Node Tree Tree
+%-- functions are ``adjointed'' across <-> 
+%adjoint :: a <-> b -> b <-> a
 %
-%treeUnwind :: Tree <-> Tree * Tree + Bool
-%| Node t1 t2 <-> (t1, t2)
-%| Leaf b <-> b
+%treeUnwindf :: f:(Nat <-> a) -> Tree <-> Tree * Tree + a
+%| Node t1 t2 <-> Left (t1, t2)
+%| Leaf ((adjoint f) a) <-> Right a
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus : Derived maps}
+
+
+
+%subcode{code} include main
+%! language=haskell
+%-- Conditionals
+%ifc :: th:(a <-> b) -> el:(a <-> c) -> Bool * a <-> c + c
+%| True, a <-> Left (th a)
+%| False, a <-> Right (el a)
 %
-%treeUnwind2 :: Tree <-> Tree * Tree + Bool
-%| Node t1 t2 <-> (t1, t2)
-%| Leaf b <-> not b
+%-- Homework. Build the following:
+%_._ :: f:(a <-> b) -> g:(b <-> c) -> a <-> c
+%_*_ :: f:(a <-> b) -> g:(c <-> d) -> a * c <-> b * d
+%_+_ :: f:(a <-> b) -> g:(c <-> d) -> a + c <-> b + d
+
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus}
+
+%subcode{code} include main
+%! language=haskell
+%parity :: Nat * Bool <-> Nat * Bool 
+%| n, b                <-> iter $ n, 0, b
+%| iter $ Succ n, m, b <-> iter $ n, Succ m, not b
+%| iter $ 0, m, b      <-> m, b
+%  where iter :: Nat * Nat * Bool 
+
+\vfill
+\pause
+
+  \begin{enumerate}
+  \item Labels must be typed. They are similar to Agda views in spirit. 
+  \item Labels give us iteration 
+  \item Labels are subject to the same pattern coverage requirements. 
+  \end{enumerate}
+
+\pause
+%subcode{code} include main
+%! language=haskell
+% -- Homework. Implement trace using labels:
+% trace :: f:(a + b <-> a + c) -> b <-> c
+
+\end{frame}
 
 
 
-%type Ctxt = Empty
-%          | Left Ctxt Tree
-%          | Right Tree Ctxt
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus}
 
-
-  \end{block}
+%subcode{code} include main
+%! language=haskell
 
 
 \end{frame}
