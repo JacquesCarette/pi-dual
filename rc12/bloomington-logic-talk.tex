@@ -15,6 +15,7 @@
 \usepackage{stmaryrd}
 \usepackage{proof}
 \usepackage{multicol}
+\usepackage{listings}
 \usepackage[colon]{natbib}
 \usepackage[nodayofweek]{datetime}
 \usepackage{etex}
@@ -1398,10 +1399,101 @@ For example, a meta-circular interpreter for {{Pi0}}
 \end{frame}
 
 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus}
+
+  \begin{block}
+    
+%subcode{code} include main
+%! language=haskell
+%type Bool = True
+%          | False
+%
+%
+%not :: Bool <-> Bool
+%| True <-> False
+%| False <-> True
 
 
+%type Tree = Leaf
+%          | Node Tree Tree
+%
+%type Ctxt = Empty
+%          | Left Ctxt Tree
+%          | Right Tree Ctxt
+
+
+
+  \end{block}
+
+
+\end{frame}
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus}
+
+  \begin{block}
+    
+%subcode{code} include main
+%! language=haskell
+%type Tree = Leaf
+%          | Node Tree Tree
+%
+%treeUnwind :: Tree <-> Tree * Tree + Bool
+%| Node t1 t2 <-> (t1, t2)
+%| Leaf b <-> b
+
+
+
+%type Ctxt = Empty
+%          | Left Ctxt Tree
+%          | Right Tree Ctxt
+
+
+
+  \end{block}
+
+
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus}
+
+  \begin{block}
+    
+%subcode{code} include main
+%! language=haskell
+%type Tree = Leaf
+%          | Node Tree Tree
+%
+%treeUnwind :: Tree <-> Tree * Tree + Bool
+%| Node t1 t2 <-> (t1, t2)
+%| Leaf b <-> b
+%
+%treeUnwind2 :: Tree <-> Tree * Tree + Bool
+%| Node t1 t2 <-> (t1, t2)
+%| Leaf b <-> not b
+
+
+
+%type Ctxt = Empty
+%          | Left Ctxt Tree
+%          | Right Tree Ctxt
+
+
+
+  \end{block}
+
+
+\end{frame}
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 
   \begin{center}
