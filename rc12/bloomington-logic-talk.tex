@@ -104,6 +104,7 @@
 %! <-> = \leftrightarrow
 %! ~~> = \rightharpoonup
 %! ~> = \leadsto
+%! -o = \multimap
 %! ::= = &::=&
 %! /= = \neq
 %! trans = \mathcal{T}
@@ -1672,18 +1673,35 @@ For Amr Sabry,
 %where u1 :: -a + a 
 %      u2 :: -b + b
 
-\pause
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus}
 
 \vfill
 \begin{scriptsize}
-  Definition {{a ~> b}} : Is a shorthand for {{0 <-> (-a + b)}}
+  Definition {{a -o b}} : Is a shorthand for {{0 <-> (-a + b)}}
 \end{scriptsize}
 %subcode{code} include main
 %! language=haskell
 %! style = bluescript
 %-- Homework. Implement the following:
-%curry :: f:(a <-> b) -> a ~> b
-%apply :: (a ~> b) * a <-> b
+%reify :: f:(a <-> b) -> a -o b
+%apply :: (a -o b) * a <-> b
+
+\pause
+\vfill
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+%-- What if we had these maps? 
+%cancel1 :: 1/a * a <-> a
+%
+%ril  :: 1/a * a * a <-> a
+%refl :: 1/(1/a)     <-> a
+
+\vfill
 
 \end{frame}
 
