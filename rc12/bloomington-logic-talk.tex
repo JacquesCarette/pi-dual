@@ -1404,6 +1404,7 @@ For example, a meta-circular interpreter for {{Pi0}}
 
 %subcode{code} include main
 %! language=haskell
+%! style = bluescript
 %data Bool = True 
 %          | False
 %
@@ -1418,6 +1419,7 @@ For example, a meta-circular interpreter for {{Pi0}}
 
 %subcode{code} include main
 %! language=haskell
+%! style = bluescript
 %-- Builtin types
 %type _+_ a b = Left a | Right b
 %type _*_ a b = (a, b)
@@ -1431,6 +1433,7 @@ For example, a meta-circular interpreter for {{Pi0}}
 
 %subcode{code} include main
 %! language=haskell
+%! style = bluescript
 %-- Simple functions
 %not :: Bool <-> Bool
 %| True <-> False
@@ -1445,6 +1448,7 @@ For example, a meta-circular interpreter for {{Pi0}}
 
 %subcode{code} include main
 %! language=haskell
+%! style = bluescript
 %expand :: Nat <-> Nat + ()
 %| Zero <-> Right ()
 %| Succ n <-> Left n 
@@ -1469,6 +1473,7 @@ For example, a meta-circular interpreter for {{Pi0}}
 
 %subcode{code} include main
 %! language=haskell
+%! style = bluescript
 %treeUnwind :: Tree <-> Tree * Tree + Int
 %| Node t1 t2 <-> Left (t1, t2)
 %| Leaf n <-> Right n
@@ -1488,6 +1493,7 @@ For example, a meta-circular interpreter for {{Pi0}}
 
 %subcode{code} include main
 %! language=haskell
+%! style = bluescript
 %treeUnwindf :: f:(Nat <-> a) -> Tree <-> Tree * Tree + a
 %| Node t1 t2 <-> Left (t1, t2)
 %| Leaf n <-> Right (f n)
@@ -1511,6 +1517,7 @@ For example, a meta-circular interpreter for {{Pi0}}
     
 %subcode{code} include main
 %! language=haskell
+%! style = bluescript
 %treeUnwindf :: f:(Nat <-> a) -> Tree <-> Tree * Tree + a
 %| Node t1 t2 <-> Left (t1, t2)
 %| Leaf n <-> Right (f n)
@@ -1535,6 +1542,7 @@ For example, a meta-circular interpreter for {{Pi0}}
 
 %subcode{code} include main
 %! language=haskell
+%! style = bluescript
 %-- functions are ``adjointed'' across <-> 
 %adjoint :: a <-> b -> b <-> a
 %
@@ -1552,6 +1560,7 @@ For example, a meta-circular interpreter for {{Pi0}}
 
 %subcode{code} include main
 %! language=haskell
+%! style = bluescript
 %-- Conditionals
 %ifc :: th:(a <-> b) -> el:(a <-> c) -> Bool * a <-> c + c
 %| True, a <-> Left (th a)
@@ -1571,6 +1580,7 @@ For example, a meta-circular interpreter for {{Pi0}}
 
 %subcode{code} include main
 %! language=haskell
+%! style = bluescript
 %parity :: Nat * Bool <-> Nat * Bool 
 %| n, b                <-> iter $ n, 0, b
 %| iter $ Succ n, m, b <-> iter $ n, Succ m, not b
@@ -1589,6 +1599,7 @@ For example, a meta-circular interpreter for {{Pi0}}
 \pause
 %subcode{code} include main
 %! language=haskell
+%! style = bluescript
 % -- Homework. Implement trace using labels:
 % trace :: f:(a + b <-> a + c) -> b <-> c
 
@@ -1598,15 +1609,83 @@ For example, a meta-circular interpreter for {{Pi0}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Theseus}
+\begin{frame}[fragile]{Theseus : Tree walking}
 
 %subcode{code} include main
 %! language=haskell
-
+%! style = bluescript
+%type Ctxt = Empty
+%          | L Ctxt Tree
+%          | R Tree Ctxt
+%
+%treeWalk :: Tree <-> Tree
+%| tr                       <-> walk $ tr, Empty
+%| walk $ Leaf b, ctxt      <-> reconst $ ctxt, Leaf (not b) 
+%| walk $ Node b1 b2, ctxt  <-> walk $ b1, L ctxt b2 
+%| reconst $ Empty, tr      <-> tr
+%| reconst $ L ctxt b2, b1  <-> walk $ b2, R b1 ctxt
+%| reconst $ R b1 ctxt, b2  <-> reconst $ ctxt, Node b1 b2  
+%  where walk :: Tree * Ctxt 
+%        reconst :: Ctxt * Tree
 
 \end{frame}
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus : A somewhat important map}
+
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+%just :: a <-> a + 1
+%| a <-> iter $ Right a 
+%| iter $ Right a <-> Right a 
+%| iter $ Left 0 <-> Left ()
+%| iter $ Left (Succ n) <-> iter $ Left n 
+% where iter :: Nat + a
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus}
+
+For Amr Sabry,
+
+\pause
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+%cancel :: -a + a <-> 0 
+
+\pause
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+%negate :: f:(a <-> b) -> -a <-> -b 
+%| na               <-> u1 $ Left na 
+%| u1 $ a_zero      <-> cancel a_zero
+%| u2 $ Right (f a) <-> u1 $ Right a 
+%| u2 $ Left nb     <-> nb 
+%| cancel b_zero    <-> u2 $ b_zero
+%where u1 :: -a + a 
+%      u2 :: -b + b
+
+\pause
+
+\vfill
+\begin{scriptsize}
+  Definition {{a ~> b}} : Is a shorthand for {{0 <-> (-a + b)}}
+\end{scriptsize}
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+%-- Homework. Implement the following:
+%curry :: f:(a <-> b) -> a ~> b
+%apply :: (a ~> b) * a <-> b
+
+\end{frame}
 
 
 
