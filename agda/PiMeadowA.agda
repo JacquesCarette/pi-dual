@@ -12,12 +12,25 @@ open import Relation.Binary.PropositionalEquality
 ------------------------------------------------------------------------------
 -- Universe of types
 
--- To make a value of type < v > one must provide v' and a proof that v is
--- equal to v'
+-- The type < v > is the singleton type containing the one value v. We can
+-- construct values of this type using (singleton v' proof) where the proof
+-- asserts that v is propositionally equal to v.
+
 data <_> {a : Level} {A : Set a} (x : A) : Set a where
   singleton : (y : A) → y ≡ x → < x > 
 
+-- The types of Pi include 0, 1, +, * as usual but they also include three
+-- new type expressions:
+-- * SING v whose denotation is the singleton type < v > 
+-- * RECIP v whose denotation is a pattern expressed in Agda as 
+--   < v > -> Unit that matches v and nothing but v
+-- * DTIMES b c which is a dependent version of TIMES: the first component is
+--   a value v of type b and the second component is a value of type (c v)
+--   that depends on the value in the first component. This dependent pair
+--   will be used in the types of eta and epsilon.
+
 mutual
+
   data B : Set₁ where
     ZERO   : B 
     ONE    : B
@@ -49,6 +62,11 @@ cong₂D  :  {a b c : Level} {A : Set a} {B : A → Set b} {C : Set c}
           →  {x₁ x₂ : A} {y₁ : B x₁} {y₂ : B x₂}
           →  (x₁≡x₂ : x₁ ≡ x₂) → y₁ ≡ subst B (sym x₁≡x₂) y₂ → f x₁ y₁ ≡ f x₂ y₂
 cong₂D f refl refl = refl
+
+
+
+
+
 
 ------------------------------------------------------------------------------
 -- Giant mutually recursive definition: 
