@@ -10,40 +10,42 @@ open import Data.Product
 open import Relation.Binary.PropositionalEquality
 
 ------------------------------------------------------------------------------
--- Syntax and type rules
+-- Universe of types
 
+-- To make a value of type < v > one must provide v' and a proof that v is
+-- equal to v'
 data <_> {a : Level} {A : Set a} (x : A) : Set a where
   singleton : (y : A) → y ≡ x → < x > 
 
 mutual
   data B : Set₁ where
-    ZERO  : B 
-    ONE   : B
-    PLUS  : B → B → B
-    TIMES : B → B → B
-    SING  : (b : B) → ⟦ b ⟧ → B
-    RECIP : (b : B) → ⟦ b ⟧ → B
-    DPAIR : (b : B) → (⟦ b ⟧ → B) → B
+    ZERO   : B 
+    ONE    : B
+    PLUS   : B → B → B
+    TIMES  : B → B → B
+    SING   : {b : B} → ⟦ b ⟧ → B
+    RECIP  : {b : B} → ⟦ b ⟧ → B
+    DTIMES : (b : B) → (⟦ b ⟧ → B) → B
 
   ⟦_⟧ : B → Set
   ⟦ ZERO ⟧        = ⊥
   ⟦ ONE ⟧         = ⊤
   ⟦ PLUS b₁ b₂ ⟧  = ⟦ b₁ ⟧ ⊎ ⟦ b₂ ⟧
   ⟦ TIMES b₁ b₂ ⟧ = ⟦ b₁ ⟧ × ⟦ b₂ ⟧
-  ⟦ SING b v ⟧    = < v > 
-  ⟦ RECIP b v ⟧   = < v > → ⊤
-  ⟦ DPAIR b c ⟧   = Σ ⟦ b ⟧ (λ v → ⟦ c v ⟧)
+  ⟦ SING v ⟧      = < v > 
+  ⟦ RECIP v ⟧     = < v > → ⊤
+  ⟦ DTIMES b c ⟧  = Σ ⟦ b ⟧ (λ v → ⟦ c v ⟧)
 
 ------------------------------------------------------------------------------
 -- Abbreviations and general definitions
 
--- Useful abbrev
-leftIdemp : (b : B) → ⟦ b ⟧ → B
-leftIdemp b v = TIMES (SING b v) (RECIP b v)
+-- Useful abbrev: call this 'match' or 'inner product' ???
+leftIdemp : {b : B} → ⟦ b ⟧ → B
+leftIdemp {b} v = TIMES (SING {b} v) (RECIP {b} v)
 
 -- Courtesy of Wolfram Kahl, a dependent cong₂
 cong₂D  :  {a b c : Level} {A : Set a} {B : A → Set b} {C : Set c} 
-               (f : (x : A) → B x → C)
+             (f : (x : A) → B x → C)
           →  {x₁ x₂ : A} {y₁ : B x₁} {y₂ : B x₂}
           →  (x₁≡x₂ : x₁ ≡ x₂) → y₁ ≡ subst B (sym x₁≡x₂) y₂ → f x₁ y₁ ≡ f x₂ y₂
 cong₂D f refl refl = refl
@@ -75,17 +77,17 @@ mutual
     op    : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
     _◎_    : { b₁ b₂ b₃ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₃) → (b₁ ⟷ b₃)
     _◑_    : { b₁ b₂ : B } {c d : ⟦ b₂ ⟧ → B} → 
-               (b₁ ⟷ DPAIR b₂ c) →
-               (∀ {v} → c v ⟷ d v ) → (b₁ ⟷ DPAIR b₂ d )
+               (b₁ ⟷ DTIMES b₂ c) →
+               (∀ {v} → c v ⟷ d v ) → (b₁ ⟷ DTIMES b₂ d )
     lift    : { b₁ b₂ : B } {v : ⟦ b₁ ⟧ } {w : ⟦ b₂ ⟧ } 
                 (c : b₁ ⟷ b₂) → (w ≡ eval c v) → 
-                (SING b₁ v ⟷ SING b₂ w) 
+                (SING {b₁} v ⟷ SING {b₂} w) 
     _⊕_    : { b₁ b₂ b₃ b₄ : B } → 
              (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (PLUS b₁ b₂ ⟷ PLUS b₃ b₄)
     _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
              (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (TIMES b₁ b₂ ⟷ TIMES b₃ b₄)
-    η : {b : B} → b ⟷ DPAIR b (λ v → leftIdemp b v)
-    ε : {b : B} → (DPAIR b (λ v → leftIdemp b v)) ⟷ b 
+    η : {b : B} → b ⟷ DTIMES b (λ v → leftIdemp {b} v)
+    ε : {b : B} → (DTIMES b (λ v → leftIdemp {b} v)) ⟷ b 
 
   -- Semantics
 
@@ -212,7 +214,7 @@ mutual
   reverse' id⟷ w = refl
   reverse' (op c) w = reverse w c
   reverse' (c ◎ c₁) w = trans (reverse' c₁ w) (cong (eval c₁) (reverse' c (evalB c₁ w)))
-  reverse' {b₁} {DPAIR b₂ d} (_◑_ {c = c} c₁ c₂) (w₁ , w₂) 
+  reverse' {b₁} {DTIMES b₂ d} (_◑_ {c = c} c₁ c₂) (w₁ , w₂) 
     rewrite (sym (reverse' c₁ (w₁ , evalB c₂ w₂))) | (sym (reverse' c₂ w₂)) =  refl
   reverse' (lift {v = v} {w = .(eval c v)} c refl) (singleton ._ refl) = 
     cong₂D (λ x e → singleton x e) (reverse' c (eval c v)) (proof-irrelevance refl _)
@@ -232,7 +234,7 @@ mutual
 
 -- hard direction.
 ε∘η : {b : B} (v : ⟦ b ⟧) → { w : Σ < v > (λ _ → < v > → ⊤) } 
-      → (eval {DPAIR b (leftIdemp b) } {_} (ε ◎ η) (v , w)) ≡ (v , w)
+      → (eval {DTIMES b (leftIdemp {b}) } {_} (ε ◎ η) (v , w)) ≡ (v , w)
 ε∘η {b} v {(singleton .v refl , r )} = cong f {v , v , (singleton v refl)} refl
     where f : Σ ⟦ b ⟧ (λ x → Σ ⟦ b ⟧ (λ y → < v >)) → 
                 Σ ⟦ b ⟧ (λ z → Σ < z > (λ x → < z > → ⊤ ))
@@ -243,7 +245,7 @@ mutual
 -- Now need to write some actual programs...
 
 makeFunc : {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → 
-           b₁ ⟷ DPAIR b₁ (λ x → TIMES (SING b₂ (eval c x)) (RECIP b₁ x))
+           b₁ ⟷ DTIMES b₁ (λ x → TIMES (SING (eval c x)) (RECIP x))
 makeFunc {b₁} {b₂} c = η {b₁} ◑ (λ {v₁} →  (lift c refl) ⊗ id⟷)
 
 ------------------------------------------------------------------------------
