@@ -639,31 +639,31 @@ This gives us all the types 0, 1, 2, 3 ...
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{ Recursive types : Nat }
+%% \begin{frame}
+%% \frametitle{ Recursive types : Nat }
 
-%subcode{bnf} include main 
-%!language = Haskell
-% data Nat = Zero | Succ Nat
+%% %subcode{bnf} include main 
+%% %!language = Haskell
+%% % data Nat = Zero | Succ Nat
 
-\begin{block}
+%% \begin{block}
 
-  \begin{center}
-    {{nat = @@x.(1+x)}}
+%%   \begin{center}
+%%     {{nat = @@x.(1+x)}}
 
-  \end{center}
+%%   \end{center}
 
-\end{block}
+%% \end{block}
 
-%subcode{opsem} include main
-%! columnStyle = ||c|c|c||
-% {@1@ Nat @} & {@1@ nat @} & {@1@ numeric @}
-% Zero & <left ()> & 0 
-% Succ Zero & <right <left ()> > & 1
-% Succ (Succ Zero) & <right <right <left ()> > > & 2
-% ... & ... & ...
+%% %subcode{opsem} include main
+%% %! columnStyle = ||c|c|c||
+%% % {@1@ Nat @} & {@1@ nat @} & {@1@ numeric @}
+%% % Zero & <left ()> & 0 
+%% % Succ Zero & <right <left ()> > & 1
+%% % Succ (Succ Zero) & <right <right <left ()> > > & 2
+%% % ... & ... & ...
 
-\end{frame}
+%% \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
@@ -1355,45 +1355,44 @@ For example, a meta-circular interpreter for {{Pi0}}
 
 
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Steps}
+%% % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \begin{frame}{Steps}
 
-  \begin{enumerate}
-\vfill
-\item Expand the input and output machine states.
-\vfill
-\item Make choices about stuck states. 
-\vfill
-\item Connect related machine states based on the reduction rules.
-\vfill
-\item Expose start and stop states. 
-  \end{enumerate}
-\vfill
+%%   \begin{enumerate}
+%% \vfill
+%% \item Expand the input and output machine states.
+%% \vfill
+%% \item Make choices about stuck states. 
+%% \vfill
+%% \item Connect related machine states based on the reduction rules.
+%% \vfill
+%% \item Expose start and stop states. 
+%%   \end{enumerate}
+%% \vfill
 
-\end{frame}
+%% \end{frame}
 
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Summary}
 
   \begin{enumerate}
-\vfill
-  \item Systematic translation
-\vfill
-  \item Applies to logically reversible small-step abstract machines
-    \begin{enumerate}
-    \item Clear start and stop states
-    \item Each reduction rule must be reversible
-    \item Stuck states.
-    \end{enumerate}
-\vfill
-  \item Scales well to large machines
-    \begin{enumerate}
-    \item Small examples with numbers
-    \item Tree traversal
-    \item Metacircular interpreter for {{Pi0}}
-    \end{enumerate}
-
+%% \vfill
+%%   \item Systematic translation
+%% \vfill
+%%   \item Applies to logically reversible small-step abstract machines
+%%     \begin{enumerate}
+%%     \item Clear start and stop states
+%%     \item Each reduction rule must be reversible
+%%     \item Stuck states.
+%%     \end{enumerate}
+%% \vfill
+%%   \item Scales well to large machines
+%%     \begin{enumerate}
+%%     \item Small examples with numbers
+%%     \item Tree traversal
+%%     \item Metacircular interpreter for {{Pi0}}
+%%     \end{enumerate}
 
 \vfill
   \item Isomorphic Interpreters from Logically Reversible Abstract
@@ -1407,13 +1406,15 @@ For example, a meta-circular interpreter for {{Pi0}}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Theseus}
 
-\vfill
-Can we design a high-level language out of what we just saw?
-
 \vfill 
 
 The \lcal has information effects.  Can we have a language with
-binders that does not information effects?  \vfill
+binders that does not entail information effects?  \vfill
+
+
+\vfill
+Can we design a high-level language out of what we just saw?
+
 
 \end{frame}
 
@@ -1502,7 +1503,7 @@ binders that does not information effects?  \vfill
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Theseus}
+\begin{frame}[fragile]{Theseus: Reversing Maps}
 
 \vfill
 
@@ -1642,8 +1643,9 @@ binders that does not information effects?  \vfill
 \pause
 
   \begin{enumerate}
-  \item Labels must be typed. They are similar to Agda views in spirit. 
-  \item Labels give us iteration 
+  \item Labels must be typed. 
+  \item Somewhat like Agda views. 
+  \item Labels give us iteration.
   \item Labels are subject to the same pattern coverage requirements. 
   \end{enumerate}
 
@@ -1748,7 +1750,7 @@ For Amr Sabry,
 
 \vfill
 \begin{scriptsize}
-  Definition {{a -o b}} : Is a shorthand for {{0 <-> (-a + b)}}
+  Definition {{a -o b}} : Is a shorthand for {{(-a + b)}}
 \end{scriptsize}
 
 \vfill
@@ -1756,8 +1758,8 @@ For Amr Sabry,
 %! language=haskell
 %! style = bluescript
 %-- Homework. Implement the following:
-%reify :: f:(a <-> b) -> a -o b
-%apply :: (a -o b) * a <-> b
+%reify :: f:(a <-> b) -> 0 <-> a -o b
+%apply :: (a -o b) + a <-> b
 
 \pause
 \vfill
@@ -1765,7 +1767,7 @@ For Amr Sabry,
 %! language=haskell
 %! style = bluescript
 %-- What if we had these maps? 
-%cancel1 :: 1/a * a <-> a
+%cancel1 :: 1/a * a <-> 1
 %
 %ril  :: 1/a * a * a <-> a
 %refl :: 1/(1/a)     <-> a
