@@ -63,11 +63,6 @@ cong₂D  :  {a b c : Level} {A : Set a} {B : A → Set b} {C : Set c}
           →  (x₁≡x₂ : x₁ ≡ x₂) → y₁ ≡ subst B (sym x₁≡x₂) y₂ → f x₁ y₁ ≡ f x₂ y₂
 cong₂D f refl refl = refl
 
-
-
-
-
-
 ------------------------------------------------------------------------------
 -- Giant mutually recursive definition: 
 -- syntax and types of combinators ⟷ refers to eval
