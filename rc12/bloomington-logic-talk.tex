@@ -104,6 +104,7 @@
 %! <-> = \leftrightarrow
 %! ~~> = \rightharpoonup
 %! ~> = \leadsto
+%! -o = \multimap
 %! ::= = &::=&
 %! /= = \neq
 %! trans = \mathcal{T}
@@ -638,31 +639,31 @@ This gives us all the types 0, 1, 2, 3 ...
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{ Recursive types : Nat }
+%% \begin{frame}
+%% \frametitle{ Recursive types : Nat }
 
-%subcode{bnf} include main 
-%!language = Haskell
-% data Nat = Zero | Succ Nat
+%% %subcode{bnf} include main 
+%% %!language = Haskell
+%% % data Nat = Zero | Succ Nat
 
-\begin{block}
+%% \begin{block}
 
-  \begin{center}
-    {{nat = @@x.(1+x)}}
+%%   \begin{center}
+%%     {{nat = @@x.(1+x)}}
 
-  \end{center}
+%%   \end{center}
 
-\end{block}
+%% \end{block}
 
-%subcode{opsem} include main
-%! columnStyle = ||c|c|c||
-% {@1@ Nat @} & {@1@ nat @} & {@1@ numeric @}
-% Zero & <left ()> & 0 
-% Succ Zero & <right <left ()> > & 1
-% Succ (Succ Zero) & <right <right <left ()> > > & 2
-% ... & ... & ...
+%% %subcode{opsem} include main
+%% %! columnStyle = ||c|c|c||
+%% % {@1@ Nat @} & {@1@ nat @} & {@1@ numeric @}
+%% % Zero & <left ()> & 0 
+%% % Succ Zero & <right <left ()> > & 1
+%% % Succ (Succ Zero) & <right <right <left ()> > > & 2
+%% % ... & ... & ...
 
-\end{frame}
+%% \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
@@ -1354,142 +1355,490 @@ For example, a meta-circular interpreter for {{Pi0}}
 
 
 
+%% % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \begin{frame}{Steps}
+
+%%   \begin{enumerate}
+%% \vfill
+%% \item Expand the input and output machine states.
+%% \vfill
+%% \item Make choices about stuck states. 
+%% \vfill
+%% \item Connect related machine states based on the reduction rules.
+%% \vfill
+%% \item Expose start and stop states. 
+%%   \end{enumerate}
+%% \vfill
+
+%% \end{frame}
+
+
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Steps}
+\begin{frame}{Summary}
 
   \begin{enumerate}
+%% \vfill
+%%   \item Systematic translation
+%% \vfill
+%%   \item Applies to logically reversible small-step abstract machines
+%%     \begin{enumerate}
+%%     \item Clear start and stop states
+%%     \item Each reduction rule must be reversible
+%%     \item Stuck states.
+%%     \end{enumerate}
+%% \vfill
+%%   \item Scales well to large machines
+%%     \begin{enumerate}
+%%     \item Small examples with numbers
+%%     \item Tree traversal
+%%     \item Metacircular interpreter for {{Pi0}}
+%%     \end{enumerate}
+
 \vfill
-\item Expand the input and output machine states.
-\vfill
-\item Make choices about stuck states. 
-\vfill
-\item Connect related machine states based on the reduction rules.
-\vfill
-\item Expose start and stop states. 
+  \item Isomorphic Interpreters from Logically Reversible Abstract
+    Machines (RC 2012).
+
   \end{enumerate}
 \vfill
 
 \end{frame}
-
-
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Overview}
-
-  \begin{enumerate}
-\vfill
-  \item Systematic translation
-\vfill
-  \item Applies to logically reversible small-step abstract machines
-    \begin{enumerate}
-    \item Clear start and stop states
-    \item Each reduction rule must be reversible
-    \item Stuck states.
-    \end{enumerate}
-\vfill
-  \item Scales well to large machines
-    \begin{enumerate}
-    \item Small examples with numbers
-    \item Tree traversal
-    \item Metacircular interpreter for {{Pi0}}
-    \end{enumerate}
-
-  \end{enumerate}
-\vfill
-
-\end{frame}
-
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Theseus}
 
-  \begin{block}
-    
+\vfill 
+
+The \lcal has information effects.  Can we have a language with
+binders that does not entail information effects?  \vfill
+
+
+\vfill
+Can we design a high-level language out of what we just saw?
+
+
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus : Types}
+
+\vfill
+
 %subcode{code} include main
 %! language=haskell
-%type Bool = True
+%! morekeywords = {Nat,Tree,Int,Bool}
+%! style = bluescript
+%data Bool = True 
 %          | False
 %
+%type Nat = 0 | Succ Nat
 %
+%type Tree = Node Tree Tree | Leaf Nat
+
+\vfill
+
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus : Builtin types}
+
+\vfill
+
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+%-- Builtin types
+%type _+_ a b = Left a | Right b
+%type _*_ a b = (a, b)
+%type () = ()
+%type 0 
+
+\vfill
+
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus : Maps}
+\vfill
+
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+%! morekeywords = {Nat,Tree,Int,Bool}
+%-- Simple functions
 %not :: Bool <-> Bool
 %| True <-> False
 %| False <-> True
-
-
-%type Tree = Leaf
-%          | Node Tree Tree
-%
-%type Ctxt = Empty
-%          | Left Ctxt Tree
-%          | Right Tree Ctxt
-
-
-
-  \end{block}
-
+\vfill
 
 \end{frame}
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Theseus}
+\begin{frame}[fragile]{Theseus : Maps}
 
-  \begin{block}
-    
+\vfill
+
 %subcode{code} include main
 %! language=haskell
-%type Tree = Leaf
-%          | Node Tree Tree
+%! morekeywords = {Nat,Tree,Int,Bool}
+%! style = bluescript
+%expand :: Nat <-> Nat + ()
+%| Zero <-> Right ()
+%| Succ n <-> Left n 
 %
-%treeUnwind :: Tree <-> Tree * Tree + Bool
-%| Node t1 t2 <-> (t1, t2)
-%| Leaf b <-> b
+%treeUnwind :: Tree <-> Tree * Tree + Nat
+%| Node t1 t2 <-> Left (t1, t2)
+%| Leaf n <-> Right n
 
+\pause
+\vfill
 
+\begin{enumerate}
+\item Coverage in pattern clauses.
+\item Preserve typed variables across {{<->}}.
+\item Constructors don't matter, constants don't matter.
+\end{enumerate}
 
-%type Ctxt = Empty
-%          | Left Ctxt Tree
-%          | Right Tree Ctxt
-
-
-
-  \end{block}
-
+\vfill
 
 \end{frame}
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Theseus}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus: Reversing Maps}
 
-  \begin{block}
-    
+\vfill
+
 %subcode{code} include main
 %! language=haskell
-%type Tree = Leaf
-%          | Node Tree Tree
+%! style = bluescript
+%! morekeywords = {Nat,Tree,Int,Bool}
+%treeUnwind :: Tree <-> Tree * Tree + Nat
+%| Node t1 t2 <-> Left (t1, t2)
+%| Leaf n <-> Right n
 %
-%treeUnwind :: Tree <-> Tree * Tree + Bool
-%| Node t1 t2 <-> (t1, t2)
-%| Leaf b <-> b
-%
-%treeUnwind2 :: Tree <-> Tree * Tree + Bool
-%| Node t1 t2 <-> (t1, t2)
-%| Leaf b <-> not b
+%-- Maps can be reversed
+%rev_treeUnwind :: Tree * Tree + Nat <-> Tree
+%| Left (t1, t2) <-> Node t1 t2
+%| Right n <-> Leaf n
 
-
-
-%type Ctxt = Empty
-%          | Left Ctxt Tree
-%          | Right Tree Ctxt
-
-
-
-  \end{block}
-
+\vfill
 
 \end{frame}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus : Parameterized maps}
+
+\vfill
+
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+%! morekeywords = {Nat,Tree,Int,Bool}
+%treeUnwindf :: f:(Nat <-> a) -> Tree <-> Tree * Tree + a
+%| Node t1 t2 <-> Left (t1, t2)
+%| Leaf n <-> Right (f n)
+
+\vfill
+\pause
+  \begin{enumerate}
+  \item Everything is monomorphized. There is no polymorphism here. 
+  \item Paramterization is fully inlined. 
+  \item The final program has a type of the form {{a <-> b}}
+  \end{enumerate}
+
+\vfill
+
+\end{frame}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus : Reversing}
+
+
+\vfill
+
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+%! morekeywords = {Nat,Tree,Int,Bool}
+%treeUnwindf :: f:(Nat <-> a) -> Tree <-> Tree * Tree + a
+%| Node t1 t2 <-> Left (t1, t2)
+%| Leaf n <-> Right (f n)
+%
+%-- Its reverse
+%rev_treeUnwind' :: f:(Nat <-> a) -> Tree <-> Tree * Tree + a
+%| Left (t1, t2) <-> Node t1 t2
+%| Right (f n) <-> Leaf n
+%
+%rev_treeUnwindf :: f:(Nat <-> a) -> Tree <-> Tree * Tree + a
+%| Left (t1, t2) <-> Node t1 t2
+%| Right a <-> Leaf (rev_f a)
+
+\vfill
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus : Adjoints}
+
+\vfill
+
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+%! morekeywords = {Nat,Tree,Int,Bool}
+%-- functions are ``adjointed'' across <-> 
+%adjoint :: a <-> b -> b <-> a
+%
+%treeUnwindf :: f:(Nat <-> a) -> Tree <-> Tree * Tree + a
+%| Node t1 t2 <-> Left (t1, t2)
+%| Leaf ((adjoint f) a) <-> Right a
+
+\vfill
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus : Derived maps}
+
+\vfill
+
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+%-- Conditionals
+%ifc :: th:(a <-> b) -> el:(a <-> c) -> Bool * a <-> c + c
+%| True, a <-> Left (th a)
+%| False, a <-> Right (el a)
+%
+%-- Homework. Build the following:
+%_._ :: f:(a <-> b) -> g:(b <-> c) -> a <-> c
+%_*_ :: f:(a <-> b) -> g:(c <-> d) -> a * c <-> b * d
+%_+_ :: f:(a <-> b) -> g:(c <-> d) -> a + c <-> b + d
+
+\vfill
+
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus}
+
+\vfill
+
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+%! morekeywords = {iter,Nat}
+%parity :: Nat * Bool <-> Nat * Bool 
+%| n, b                <-> iter $ n, 0, b
+%| iter $ Succ n, m, b <-> iter $ n, Succ m, not b
+%| iter $ 0, m, b      <-> m, b
+%  where iter :: Nat * Nat * Bool 
+
+\vfill
+\pause
+
+  \begin{enumerate}
+  \item Labels must be typed. 
+  \item Somewhat like Agda views. 
+  \item Labels give us iteration.
+  \item Labels are subject to the same pattern coverage requirements. 
+  \end{enumerate}
+
+\vfill
+\pause
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+% -- Homework. Implement trace using labels:
+% trace :: f:(a + b <-> a + c) -> b <-> c
+
+\vfill
+
+\end{frame}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus : Tree walking}
+
+\vfill
+
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+%! morekeywords = {Nat,Tree,Ctxt,reconst}
+%type Ctxt = Empty
+%          | L Ctxt Tree
+%          | R Tree Ctxt
+%
+%treeWalk :: Tree <-> Tree
+%| tr                       <-> walk $ tr, Empty
+%| walk $ Leaf b, ctxt      <-> reconst $ ctxt, Leaf (not b) 
+%| walk $ Node b1 b2, ctxt  <-> walk $ b1, L ctxt b2 
+%| reconst $ Empty, tr      <-> tr
+%| reconst $ L ctxt b2, b1  <-> walk $ b2, R b1 ctxt
+%| reconst $ R b1 ctxt, b2  <-> reconst $ ctxt, Node b1 b2  
+%  where walk :: Tree * Ctxt 
+%        reconst :: Ctxt * Tree
+
+\vfill
+
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus : An important map}
+
+\vfill
+
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+%just :: a <-> a + 1
+%| a                    <-> iter $ Right a 
+%| iter $ Right a       <-> Right a 
+%| iter $ Left 0        <-> Left ()
+%| iter $ Left (Succ n) <-> iter $ Left n 
+% where iter :: Nat + a
+
+\vfill
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus}
+
+For Amr Sabry,
+
+\vfill
+\pause
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+%! morekeywords = {cancel}
+%cancel :: -a + a <-> 0 
+
+\vfill
+\pause
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+%! morekeywords = {cancel}
+%negate :: f:(a <-> b) -> -a <-> -b 
+%| na               <-> u1 $ Left na 
+%| u1 $ a_zero      <-> cancel a_zero
+%| u2 $ Right (f a) <-> u1 $ Right a 
+%| u2 $ Left nb     <-> nb 
+%| cancel b_zero    <-> u2 $ b_zero
+%where u1 :: -a + a 
+%      u2 :: -b + b
+
+\vfill
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Theseus : More}
+
+\vfill
+\begin{scriptsize}
+  Definition {{a -o b}} : Is a shorthand for {{(-a + b)}}
+\end{scriptsize}
+
+\vfill
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+%-- Homework. Implement the following:
+%reify :: f:(a <-> b) -> 0 <-> a -o b
+%apply :: (a -o b) + a <-> b
+
+\pause
+\vfill
+%subcode{code} include main
+%! language=haskell
+%! style = bluescript
+%-- What if we had these maps? 
+%cancel1 :: 1/a * a <-> 1
+%
+%ril  :: 1/a * a * a <-> a
+%refl :: 1/(1/a)     <-> a
+
+\vfill
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Summary}
+
+  \begin{enumerate}
+\vfill
+  \item Pattern matching coverage.
+\vfill
+  \item Preserve variables across the {{<->}} boundary.
+\vfill
+  \item Types of constructors don't matter. Types of constants don't matter.
+\vfill
+  \item Maps can be reversed.
+\vfill
+  \item Monomorphised.
+\vfill
+  \item All the {{->}} are inlined to {{a <-> b}} at compile time. 
+\vfill
+  \item Typed labels for iteration (approximate Agda views). 
+\vfill
+  \item {{Pi0}} primitives can be built.
+\vfill
+  \item Can be translated to {{Pi0}}.
+\vfill
+  \end{enumerate}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{To do}
+
+  \begin{enumerate}
+
+\vfill
+  \item Build a compiler.
+
+\vfill
+  \item Interesting thing is the type checker.
+
+\vfill
+  \item Open: can we make the type system richer? 
+    \begin{enumerate}
+    \item Bounded types, universes, polymorphisms, existentials -- suspect yes to most. 
+    \end{enumerate}
+
+\vfill
+  \item Proofs: Connection to dagger symmetric traced bimonoidal categories. 
+
+\vfill
+  \item Information effects and type-and-effect system.
+
+\vfill
+  \item Can we have an implicit runtime stack and support for inductive
+    walks without defining a context type?
+
+\vfill
+  \item Can we have higher order things, first class patterns, dual
+    objects and continuations?
+
+\vfill
+  \end{enumerate}
+
+\end{frame}
 
 
 
