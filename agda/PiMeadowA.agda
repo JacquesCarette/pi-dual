@@ -162,51 +162,50 @@ mutual
   evalB ε v = v , ((singleton v refl) , (λ x → tt))
   evalB (c₁ ◑ c₂) (v , x) = evalB c₁ (v , evalB c₂ x)
   evalB (lift {v = v} c _) _ = 
-    eval (lift (op c) (reverse v c)) (singleton (eval c v) refl)
+    eval (lift (op c) (reverse c v)) (singleton (eval c v) refl)
 
   -- reversibility
 
 -- swap order of arguments to be like reverse'
 
-  reverse : {b₁ b₂ : B} (v : ⟦ b₁ ⟧) → (c : b₁ ⟷ b₂) → v ≡ evalB c (eval c v)
-  reverse (inj₁ ()) unite₊
-  reverse (inj₂ y) unite₊ = refl
-  reverse v uniti₊ = refl
-  reverse (inj₁ x) swap₊ = refl
-  reverse (inj₂ y) swap₊ = refl
-  reverse (inj₁ x) assocl₊ = refl
-  reverse (inj₂ (inj₁ x)) assocl₊ = refl
-  reverse (inj₂ (inj₂ y)) assocl₊ = refl
-  reverse (inj₁ (inj₁ x)) assocr₊ = refl
-  reverse (inj₁ (inj₂ y)) assocr₊ = refl
-  reverse (inj₂ y) assocr₊ = refl
-  reverse v unite⋆ = refl
-  reverse v uniti⋆ = refl
-  reverse v swap⋆ = refl
-  reverse v assocl⋆ = refl
-  reverse v assocr⋆ = refl
-  reverse v id⟷ = refl
-  reverse v (op c) = reverse' c v
-  reverse v (c ◎ c₁) = trans (reverse v c) (cong (evalB c) eq)
-     where eq : eval c v ≡ evalB c₁ (eval c₁ (eval c v))
-           eq = reverse (eval c v) c₁
-  reverse v (_◑_ {_} {b₂} {c} c₁ u) = trans eq₁ (cong (evalB c₁) eq₃)
+  reverse : {b₁ b₂ : B} (c : b₁ ⟷ b₂) → (v : ⟦ b₁ ⟧) → v ≡ evalB c (eval c v)
+  reverse unite₊ (inj₁ ())
+  reverse unite₊ (inj₂ y) = refl
+  reverse uniti₊ v = refl
+  reverse swap₊ (inj₁ x) = refl
+  reverse swap₊ (inj₂ y) = refl
+  reverse assocl₊ (inj₁ x) = refl
+  reverse assocl₊ (inj₂ (inj₁ x)) = refl
+  reverse assocl₊ (inj₂ (inj₂ y)) = refl
+  reverse assocr₊ (inj₁ (inj₁ x)) = refl
+  reverse assocr₊ (inj₁ (inj₂ y)) = refl
+  reverse assocr₊ (inj₂ y) = refl
+  reverse unite⋆ v = refl
+  reverse uniti⋆ v = refl
+  reverse swap⋆ v = refl
+  reverse assocl⋆ v = refl
+  reverse assocr⋆ v = refl
+  reverse id⟷ v = refl
+  reverse (op c) v = reverse' c v
+  reverse (c ◎ c₁) v = trans (reverse c v) 
+                             (cong (evalB c) (reverse c₁ (eval c v)))
+  reverse (_◑_ {_} {b₂} {c} c₁ u) v = trans eq₁ (cong (evalB c₁) eq₃)
     where y : Σ ⟦ b₂ ⟧ (λ ww → ⟦ c ww ⟧)
           y = eval c₁ v
           eq₁ : v ≡ evalB c₁ y
-          eq₁ = reverse v c₁
+          eq₁ = reverse c₁ v
           eq₂ : proj₂ y ≡ evalB u (eval u (proj₂ y))
-          eq₂ = reverse (proj₂ y) u
+          eq₂ = reverse u (proj₂ y)
           eq₃ : y ≡ (proj₁ y , evalB u (eval u (proj₂ y)))
           eq₃ = cong (λ z → (proj₁ y , z)) eq₂
-  reverse (singleton _ prf₁) (lift {v = v₂} c prf₂) =
+  reverse (lift {v = v₂} c prf₂) (singleton _ prf₁) =
       cong₂D singleton 
-             (trans prf₁ (reverse v₂ c)) (proof-irrelevance prf₁ _) 
-  reverse (inj₁ x) (c ⊕ _) = cong inj₁ (reverse x c)
-  reverse (inj₂ y) (_ ⊕ c) = cong inj₂ (reverse y c)
-  reverse (x , y) (c₁ ⊗ c₂) = cong₂ _,_ (reverse x c₁) (reverse y c₂)
-  reverse v η = refl
-  reverse (v , (singleton .v refl , _)) ε = refl
+             (trans prf₁ (reverse c v₂)) (proof-irrelevance prf₁ _) 
+  reverse (c ⊕ _) (inj₁ x) = cong inj₁ (reverse c x)
+  reverse (_ ⊕ c) (inj₂ y) = cong inj₂ (reverse c y)
+  reverse (c₁ ⊗ c₂) (x , y) = cong₂ _,_ (reverse c₁ x) (reverse c₂ y)
+  reverse η v = refl
+  reverse ε (v , (singleton .v refl , _)) = refl
 
   reverse' : {b₁ b₂ : B} (c : b₁ ⟷ b₂) → (w : ⟦ b₂ ⟧) → w ≡ eval c (evalB c w)
   reverse' unite₊ w = refl
@@ -226,7 +225,7 @@ mutual
   reverse' assocl⋆ w = refl
   reverse' assocr⋆ w = refl
   reverse' id⟷ w = refl
-  reverse' (op c) w = reverse w c
+  reverse' (op c) w = reverse c w
   reverse' (c ◎ c₁) w = trans (reverse' c₁ w) 
                               (cong (eval c₁) (reverse' c (evalB c₁ w)))
   reverse' (c₁ ◑ c₂) (w₁ , w₂) 
