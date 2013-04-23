@@ -53,6 +53,7 @@ mutual
 -- Abbreviations and general definitions
 
 -- Useful abbrev: call this 'match' or 'inner product' ???
+--   I would lead towards 'inner product'
 leftIdemp : {b : B} → ⟦ b ⟧ → B
 leftIdemp {b} v = TIMES (SING {b} v) (RECIP {b} v)
 
@@ -62,11 +63,6 @@ cong₂D  :  {a b c : Level} {A : Set a} {B : A → Set b} {C : Set c}
           →  {x₁ x₂ : A} {y₁ : B x₁} {y₂ : B x₂}
           →  (x₁≡x₂ : x₁ ≡ x₂) → y₁ ≡ subst B (sym x₁≡x₂) y₂ → f x₁ y₁ ≡ f x₂ y₂
 cong₂D f refl refl = refl
-
-
-
-
-
 
 ------------------------------------------------------------------------------
 -- Giant mutually recursive definition: 
@@ -132,9 +128,9 @@ mutual
   eval (c₁ ⊕ c₂) (inj₁ x) = inj₁ (eval c₁ x)
   eval (c₁ ⊕ c₂) (inj₂ y) = inj₂ (eval c₂ y)
   eval (c₁ ⊗ c₂) (x , y) = (eval c₁ x , eval c₂ y)
-  eval (η {b}) v = v , ((singleton v refl) , (λ x → tt))
-  eval (ε {b}) (w , c) = w
-  eval (c₁ ◑ c₂) v = proj₁ v₂ , eval (c₂ {proj₁ v₂}) (proj₂ v₂)  
+  eval η v = v , ((singleton v refl) , (λ x → tt))
+  eval ε (w , _) = w  -- the types insure the rhs is unique
+  eval (c₁ ◑ c₂) v = proj₁ v₂ , eval c₂ (proj₂ v₂)  
     where v₂ = eval c₁ v
   eval (lift c z) (singleton v prf) = 
     singleton (eval c v) (trans (cong (eval c) prf) (sym z))
@@ -162,10 +158,10 @@ mutual
   evalB (c₁ ⊕ c₂) (inj₁ x) = inj₁ (evalB c₁ x)
   evalB (c₁ ⊕ c₂) (inj₂ y) = inj₂ (evalB c₂ y)
   evalB (c₁ ⊗ c₂) (x , y) = (evalB c₁ x , evalB c₂ y)
-  evalB (η {b}) (w , c) = w
-  evalB (ε {b}) v = v , ((singleton v refl) , (λ x → tt))
+  evalB η (w , _) = w
+  evalB ε v = v , ((singleton v refl) , (λ x → tt))
   evalB (c₁ ◑ c₂) (v , x) = evalB c₁ (v , evalB c₂ x)
-  evalB (lift {v = v} c z) _ = 
+  evalB (lift {v = v} c _) _ = 
     eval (lift (op c) (reverse v c)) (singleton (eval c v) refl)
 
   -- reversibility
@@ -204,7 +200,7 @@ mutual
           eq₃ : y ≡ (proj₁ y , evalB u (eval u (proj₂ y)))
           eq₃ = cong (λ z → (proj₁ y , z)) eq₂
   reverse (singleton _ prf₁) (lift {v = v₂} c prf₂) =
-      cong₂D (λ x e → singleton x e) 
+      cong₂D singleton 
              (trans prf₁ (reverse v₂ c)) (proof-irrelevance prf₁ _) 
   reverse (inj₁ x) (c ⊕ _) = cong inj₁ (reverse x c)
   reverse (inj₂ y) (_ ⊕ c) = cong inj₂ (reverse y c)
@@ -231,16 +227,17 @@ mutual
   reverse' assocr⋆ w = refl
   reverse' id⟷ w = refl
   reverse' (op c) w = reverse w c
-  reverse' (c ◎ c₁) w = trans (reverse' c₁ w) (cong (eval c₁) (reverse' c (evalB c₁ w)))
-  reverse' {b₁} {DTIMES b₂ d} (_◑_ {c = c} c₁ c₂) (w₁ , w₂) 
+  reverse' (c ◎ c₁) w = trans (reverse' c₁ w) 
+                              (cong (eval c₁) (reverse' c (evalB c₁ w)))
+  reverse' (c₁ ◑ c₂) (w₁ , w₂) 
     rewrite (sym (reverse' c₁ (w₁ , evalB c₂ w₂))) | (sym (reverse' c₂ w₂)) =  refl
   reverse' (lift {v = v} {w = .(eval c v)} c refl) (singleton ._ refl) = 
-    cong₂D (λ x e → singleton x e) (reverse' c (eval c v)) (proof-irrelevance refl _)
+    cong₂D singleton (reverse' c (eval c v)) (proof-irrelevance refl _)
   reverse' (c ⊕ _) (inj₁ x) = cong inj₁ (reverse' c x)
   reverse' (_ ⊕ c) (inj₂ y) = cong inj₂ (reverse' c y)
   reverse' (c₁ ⊗ c₂) (x , y) = cong₂ _,_ (reverse' c₁ x) (reverse' c₂ y)
   reverse' η (v , singleton .v refl , _ ) = refl
-  reverse' ε w = refl
+  reverse' ε _ = refl
 
 ------------------------------------------------------------------------------
 -- Proofs of reversibility
@@ -264,7 +261,7 @@ mutual
 
 makeFunc : {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → 
            b₁ ⟷ DTIMES b₁ (λ x → TIMES (SING (eval c x)) (RECIP x))
-makeFunc {b₁} {b₂} c = η {b₁} ◑ (λ {v₁} →  (lift c refl) ⊗ id⟷)
+makeFunc c = η ◑ (λ {v₁} →  (lift c refl) ⊗ id⟷)
 
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
