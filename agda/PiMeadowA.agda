@@ -90,18 +90,17 @@ mutual
     id⟷ : {b : B } → b ⟷ b
     op    : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
     _◎_    : { b₁ b₂ b₃ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₃) → (b₁ ⟷ b₃)
-    _◑_    : { b₁ b₂ : B } {c d : ⟦ b₂ ⟧ → B} → 
-               (b₁ ⟷ DTIMES b₂ c) →
-               (∀ {v} → c v ⟷ d v ) → (b₁ ⟷ DTIMES b₂ d )
-    lift    : { b₁ b₂ : B } {v : ⟦ b₁ ⟧ } {w : ⟦ b₂ ⟧ } 
-                (c : b₁ ⟷ b₂) → (w ≡ eval c v) → 
-                (SING {b₁} v ⟷ SING {b₂} w) 
     _⊕_    : { b₁ b₂ b₃ b₄ : B } → 
              (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (PLUS b₁ b₂ ⟷ PLUS b₃ b₄)
     _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
              (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (TIMES b₁ b₂ ⟷ TIMES b₃ b₄)
     η : {b : B} → b ⟷ DTIMES b (λ v → leftIdemp {b} v)
     ε : {b : B} → (DTIMES b (λ v → leftIdemp {b} v)) ⟷ b 
+    slide : { b₁ : B } {c d : ⟦ b₁ ⟧ → B} → 
+            (∀ {v} → c v ⟷ d v) → DTIMES b₁ c ⟷ DTIMES b₁ d
+    lift    : { b₁ b₂ : B } {v : ⟦ b₁ ⟧ } {w : ⟦ b₂ ⟧ } 
+                (c : b₁ ⟷ b₂) → (w ≡ eval c v) → 
+                (SING {b₁} v ⟷ SING {b₂} w) 
 
   -- Semantics
 
@@ -130,10 +129,9 @@ mutual
   eval (c₁ ⊗ c₂) (x , y) = (eval c₁ x , eval c₂ y)
   eval η v = v , ((singleton v refl) , (λ x → tt))
   eval ε (w , _) = w  -- the types insure the rhs is unique
-  eval (c₁ ◑ c₂) v = proj₁ v₂ , eval c₂ (proj₂ v₂)  
-    where v₂ = eval c₁ v
   eval (lift c z) (singleton v prf) = 
     singleton (eval c v) (trans (cong (eval c) prf) (sym z))
+  eval (slide t) (v , w) = v , eval t w 
 
   evalB :  {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → ⟦ b₂ ⟧ → ⟦ b₁ ⟧
   evalB uniti₊ (inj₁ ())
@@ -160,13 +158,11 @@ mutual
   evalB (c₁ ⊗ c₂) (x , y) = (evalB c₁ x , evalB c₂ y)
   evalB η (w , _) = w
   evalB ε v = v , ((singleton v refl) , (λ x → tt))
-  evalB (c₁ ◑ c₂) (v , x) = evalB c₁ (v , evalB c₂ x)
   evalB (lift {v = v} c _) _ = 
     eval (lift (op c) (reverse c v)) (singleton (eval c v) refl)
+  evalB (slide c₁) (v , w) = v , evalB c₁ w
 
   -- reversibility
-
--- swap order of arguments to be like reverse'
 
   reverse : {b₁ b₂ : B} (c : b₁ ⟷ b₂) → (v : ⟦ b₁ ⟧) → v ≡ evalB c (eval c v)
   reverse unite₊ (inj₁ ())
@@ -189,15 +185,6 @@ mutual
   reverse (op c) v = reverse' c v
   reverse (c ◎ c₁) v = trans (reverse c v) 
                              (cong (evalB c) (reverse c₁ (eval c v)))
-  reverse (_◑_ {_} {b₂} {c} c₁ u) v = trans eq₁ (cong (evalB c₁) eq₃)
-    where y : Σ ⟦ b₂ ⟧ (λ ww → ⟦ c ww ⟧)
-          y = eval c₁ v
-          eq₁ : v ≡ evalB c₁ y
-          eq₁ = reverse c₁ v
-          eq₂ : proj₂ y ≡ evalB u (eval u (proj₂ y))
-          eq₂ = reverse u (proj₂ y)
-          eq₃ : y ≡ (proj₁ y , evalB u (eval u (proj₂ y)))
-          eq₃ = cong (λ z → (proj₁ y , z)) eq₂
   reverse (lift {v = v₂} c prf₂) (singleton _ prf₁) =
       cong₂D singleton 
              (trans prf₁ (reverse c v₂)) (proof-irrelevance prf₁ _) 
@@ -206,6 +193,7 @@ mutual
   reverse (c₁ ⊗ c₂) (x , y) = cong₂ _,_ (reverse c₁ x) (reverse c₂ y)
   reverse η v = refl
   reverse ε (v , (singleton .v refl , _)) = refl
+  reverse (slide c) (_ , w) rewrite (sym (reverse c w)) = refl
 
   reverse' : {b₁ b₂ : B} (c : b₁ ⟷ b₂) → (w : ⟦ b₂ ⟧) → w ≡ eval c (evalB c w)
   reverse' unite₊ w = refl
@@ -228,8 +216,6 @@ mutual
   reverse' (op c) w = reverse c w
   reverse' (c ◎ c₁) w = trans (reverse' c₁ w) 
                               (cong (eval c₁) (reverse' c (evalB c₁ w)))
-  reverse' (c₁ ◑ c₂) (w₁ , w₂) 
-    rewrite (sym (reverse' c₁ (w₁ , evalB c₂ w₂))) | (sym (reverse' c₂ w₂)) =  refl
   reverse' (lift {v = v} {w = .(eval c v)} c refl) (singleton ._ refl) = 
     cong₂D singleton (reverse' c (eval c v)) (proof-irrelevance refl _)
   reverse' (c ⊕ _) (inj₁ x) = cong inj₁ (reverse' c x)
@@ -237,6 +223,7 @@ mutual
   reverse' (c₁ ⊗ c₂) (x , y) = cong₂ _,_ (reverse' c₁ x) (reverse' c₂ y)
   reverse' η (v , singleton .v refl , _ ) = refl
   reverse' ε _ = refl
+  reverse' (slide c) (v , w) rewrite (sym (reverse' c w)) = refl
 
 ------------------------------------------------------------------------------
 -- Proofs of reversibility
@@ -259,8 +246,9 @@ mutual
 -- Now need to write some actual programs...
 
 makeFunc : {b₁ b₂ : B} → (c : b₁ ⟷ b₂) → 
-           b₁ ⟷ DTIMES b₁ (λ x → TIMES (SING (eval c x)) (RECIP x))
-makeFunc c = η ◑ (λ {v₁} →  (lift c refl) ⊗ id⟷)
+            b₁ ⟷ DTIMES b₁ (λ x → TIMES (SING (eval c x)) (RECIP x))
+makeFunc c = η ◎ slide (λ {_} →  (lift c refl) ⊗ id⟷)
+
 
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
