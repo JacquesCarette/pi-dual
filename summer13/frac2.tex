@@ -1,0 +1,248 @@
+\documentclass{llncs}
+\usepackage{url}
+\usepackage{proof}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{comment}
+
+\newcommand{\dgm}[2][1.5]{
+\begin{center}
+\scalebox{#1}{
+\includegraphics{diagrams/#2.pdf}
+}
+\end{center}
+}
+
+\newcommand{\todo}[1]{\textbf{TODO:} #1}
+\newcommand{\jacques}[1]{\textsc{Jacques says:} #1}
+\newcommand{\amr}[1]{\textsc{Amr says:} #1}
+
+
+\hyphenation{a-reas}
+
+%subcode-inline{bnf-inline} name Pi
+%! swap+ = \mathit{swap}^+
+%! swap* = \mathit{swap}^*
+%! dagger =  ^{\dagger}
+%! assocl+ = \mathit{assocl}^+
+%! assocr+ = \mathit{assocr}^+
+%! assocl* = \mathit{assocl}^*
+%! assocr* = \mathit{assocr}^*
+%! identr* = \mathit{uniti}
+%! identl* = \mathit{unite}
+%! dist = \mathit{distrib}
+%! factor = \mathit{factor}
+%! (o) = \fatsemi
+%! (;) = \fatsemi
+%! (*) = \times
+%! (+) = +
+%! foldB = fold_B
+%! unfoldB = unfold_B
+%! foldN = fold_N
+%! unfoldN = unfold_N
+%! trace+ = \mathit{trace}^{+}
+%! trace* = \mathit{trace}^{\times}
+%! :-* = \multimap
+%! :-+ = \multimap^{+}
+%! emptyset = \emptyset
+
+%subcode-inline{bnf-inline} regex \{\{(((\}[^\}])|[^\}])*)\}\} name main include Pi
+%! [^ = \ulcorner
+%! ^] = \urcorner
+%! [v = \llcorner
+%! v] = \lrcorner
+%! [[ = \llbracket
+%! ]] = \rrbracket
+%! ^^^ = ^{\dagger}
+%! eta* = \eta
+%! eps* = \epsilon
+%! Union = \bigcup
+%! in = \in
+%! |-->* = \mapsto^{*}
+%! |-->> = \mapsto_{\ggg}
+%! |-->let = \mapsto_{let}
+%! |--> = \mapsto
+%! <--| = \mapsfrom
+%! |- = \vdash
+%! <=> = \Longleftrightarrow
+%! <-> = \leftrightarrow
+%! -> = \rightarrow
+%! ~> = \leadsto
+%! ::= = ::=
+%! /= = \neq
+%! vi = v_i
+%! di = d_i
+%! si = s_i
+%! sj = s_j
+%! F = \texttt{F}
+%! T = \texttt{T}
+%! forall = \forall
+%! exists = \exists
+%! empty = \emptyset
+%! Sigma = \Sigma
+%! eta = \eta
+%! where = \textbf{where}
+%! epsilon = \varepsilon
+%! least = \phi
+%! loop+ = loop_{+}
+%! loop* = loop_{\times}
+%! CatC = {\mathcal C}
+%! CatA = {\mathcal A}
+%! gamma = \gamma
+%! {[ = \{
+%! ]} = \}
+%! elem = \in
+%! dagger = ^\dagger
+%! alpha = \alpha
+%! beta = \beta
+%! rho = \rho
+%! @@ = \mu
+%! @ = \,@\,
+%! Pow = \mathcal{P}
+%! Pi = \Pi
+%! PiT = \Pi^{o}
+%! PiEE = \Pi^{\eta\epsilon}_{+}
+%! PiT = \Pi^{o}
+%! PiTF = \Pi^{/}
+%! bullet = \bullet
+%! * = \times
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\section{Higher-Order Reversible Functions}
+
+To get from {{Pi}} types and combinators to a higher order setting, we hope to
+add \emph{fractional types} to the language. Recall that to construct the
+(positive) rational numbers {{Q}}, we can take pairs of positive integers
+{{(m, n)}} and quotient by the equivalence relation that says {{(m1, n1)}} is
+equal to {{(m2, n2)}} if {{m1 * n2 = m2 * n1}}. We can write this as an
+inference rule as follows:
+
+%subcode{proof} include main
+%@ m1 * n2 = m2 * n1
+%@@ (m1, n1) = (m2, n2)
+
+\noindent
+Adding in computational content, pi-style, suggests that we want something like:
+
+%subcode{proof} include main
+%@ c : A1 * B2 <-> B1 * A2
+%@@ {[c]} : (B1 |--> A1) <=> (B2 |--> A2)
+
+\noindent
+However, this does not quite work. To see why, recall that we want to treat the
+pair {{(m, n)}} (written here as {{A |--> B}}) as an internalization of the
+reversible function space. Thus, the type {{(B1 |--> A1) <=> (B2 |--> A2)}}
+should be a transformation of a {{Pi}} combinator of type {{B1 <-> A1}} into a
+{{Pi}} combinator of type {{B2 <-> A2}}. In order to do this, we need a trace
+combinator (TODO: draw a diagram that demonstrates this) with the type
+
+%subcode{proof} include main
+%@ c : A * C <-> B * C
+%@@ trace c : A <-> B
+
+\noindent
+This is an issue, since prior attempts at defining an adequate trace operator
+failed: we got a language that could express all relations, but was no longer
+reversible in a meaningful sense.
+
+\subsection{Defining trace}
+
+The trace operator had two problems: it allowed arbitrary function definition,
+and it would not work in a language that contained the empty type {{0}}. The
+former problem arose due to the logic programming-style interpretation we
+assigned to trace: it would create *all* possible values of type {{C}}, then run
+the given combinator on them and throw away the branches that did not return the
+same {{C}} value.
+
+We can solve this problem by parameterizing the trace operator with a value {{v
+: C}}. This results in the following new typing rule for trace:
+
+%subcode{proof} include main
+%@ c : A * C <-> B * C
+%@ v : C
+%@@ trace_v c : A <-> B
+
+\noindent
+This ends up solving both problems: we give the trace a default value, and
+prevent it from running on the empty type (since {{C}} now must be inhabited).
+However, we still must assign dynamic semantics to trace. The na\"ive solution
+of running {{c}} on the pair of the input value and {{v}} does not work, as this
+is trivially irreversible---consider, for example, {{trace_v swap*}}, which
+takes any value of the same type as {{v}} and returns {{v}}. Thus, the semantics
+for {{trace}} must be slightly more complicated.
+
+Recall that in {{Pi}}, combinators can be viewed as permutations on finite sets.
+A combinator of type {{A * C <-> B * C}} can be seen as two separate
+permutations: one on {{A}} (or equivalently, B, since they must have the same
+size and thus the same denotation as a finite set) and one on {{C}}. If we
+apply the fragment of the combinator that acts on {{C}} enough times, we will
+eventually get out the same value that we started with\footnote{I want to prove
+that this is actually true; having the extra {{A}} there seems like it might
+complicate things.}. Thus, the semantics that we want is for {{(trace_v c) v'}}
+to run {{c}} on the pair of {{v'}} and the last {{C}} value (starting with
+{{v}}) until the {{C}} value matches {{v}}, at which point it returns the {{B}}
+value returned by the combinator. In pseudocode:
+
+\begin{verbatim}
+TODO: figure out how to do the code environment in subcode
+
+trace v c vin =
+  v0 = v
+  <vout, v'> = c <vin, v>
+
+  while (v' != v)
+    <vout, v'> := c <vin, v'>
+
+  return vout
+\end{verbatim}
+
+A more concise formulation as an inference rule is as follows:
+
+%subcode{proof} include main
+%@ exists v0 : C. c <v_{in}, v> = <v_{out}, v>
+%@@ (trace_v c) v_{in} = v_{out}
+
+This is easily reversible: {{(trace_v c)dagger = trace_v (c dagger)}}
+\footnote{Also need to prove this.}.
+
+\subsection{Higher-Order Combinators}
+
+Now that we have the trace combinator defined, we can proceed with defining
+higher-order combinators. Note that this parameterizes our definition of
+$\{c\}$ by {{v}}, the value of type {{A}} (or equivalently, type {{B}}) used
+in the trace:
+
+%subcode{proof} include main
+%@ c : A1 * B2 <-> B1 * A2
+%@@ {[c]}_v : (B1 |--> A1) <=> (B2 |--> A2)
+
+\noindent
+We want this to be a transformation on combinators, taking a combinator of type
+{{B1 <-> A1}} to a combinator of type {{B2 <-> A2}}. This can be achieved by
+letting the combinator {{{[c]}_v c'}} be {{trace_v (c ; c' * id)}}, where
+{{c : B1 <-> A1}} and {{v : A1}}.
+
+From here, we want to define bifunctors {{/}}, {{*}}, and {{+}}, to make sure
+that our definition of functions is truly higher-order.
+
+\begin{itemize}
+
+\item {{(B |--> A) / (D |--> C) = (A * D) |--> (B * C)}}, with
+
+{{{[c1]}_{v1} : ((B |--> A) <=> (D |--> C)) / {[c2]}_{v_2} : ((B' |--> A') <=> (D' |--> C')) = {[shuffle ; c1 * c2dagger ; shuffle]}_{<v1, c2 v2>}}}
+%%: B1 * A2 |--> A1 * B2 <=> D1 * C2 |--> C1 * D2}},
+where
+{{shuffle : (A * B) * (C * D) <-> (A * C) * (B * D)}}.
+
+\item {{(B |--> A) * (D |--> C) = (B * D) |--> (A * C)}}, with
+
+\end{itemize}
+
+
+
+\end{document}
