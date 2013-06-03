@@ -1,4 +1,4 @@
-\documentclass{llncs}
+\documentclass{sigplanconf}
 \usepackage{url}
 \usepackage{proof}
 \usepackage{amssymb}
@@ -14,13 +14,14 @@
 }
 \end{center}
 }
-
 \newcommand{\todo}[1]{\textbf{TODO:} #1}
 \newcommand{\jacques}[1]{\textsc{Jacques says:} #1}
 \newcommand{\amr}[1]{\textsc{Amr says:} #1}
 
-
-\hyphenation{a-reas}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{proposition}[theorem]{Proposition}
 
 %subcode-inline{bnf-inline} name Pi
 %! swap+ = \mathit{swap}^+
@@ -71,6 +72,7 @@
 %! -> = \rightarrow
 %! ~> = \leadsto
 %! ::= = ::=
+%! amp = \&
 %! /= = \neq
 %! vi = v_i
 %! di = d_i
@@ -109,18 +111,199 @@
 %! bullet = \bullet
 %! * = \times
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \begin{document}
+\conferenceinfo{POPL '14}{date, City.} 
+\copyrightyear{2014}
+\copyrightdata{[to be supplied]} 
 
+\title{\ldots}
+\authorinfo{\ldots}
+           {\ldots}
+           {\ldots}
+
+\maketitle
+
+\begin{abstract}
+\ldots
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Background: {{Pi}} }
+\label{sec:pi}
+
+We review our language {{Pi}} providing the necessary background and
+context for our higher-order extension.\footnote{The presentation in this
+  section focuses on the simplest version of {{Pi}}. Other versions
+  include the empty type, recursive types, and trace operators but these
+  extensions are orthogonal to the higher-order extension emphasized in this
+  paper.} The terms of {{Pi}} are not classical values and functions;
+rather, the terms are isomorphism witnesses.  In other words, the terms of
+{{Pi}} are proofs that certain ``shapes of values'' are isomorphic.
+And, in classical Curry-Howard fashion, our operational semantics shows how
+these proofs can be directly interpreted as actions on ordinary values which
+effect this shape transformation. Of course, ``shapes of values'' are very
+familiar already: they are usually called \emph{types}.  But frequently one
+designs a type system as a method of classifying terms, with the eventual
+purpose to show that certain properties of well-typed terms hold, such as
+safety.  Our approach is different: we start from a type system, and then
+present a term language which naturally inhabits these types, along with an
+appropriate operational semantics.
+
+\paragraph*{Data.}
+We view {{Pi}} as having two levels:  it has traditional values, given by:
+%subcode{bnf} include main
+% values, v ::= () | left v | right v | (v, v)
+
+\noindent and these are classified by ordinary types:
+%subcode{bnf} include main
+% value types, b ::= 1 | b + b | b * b 
+
+\noindent 
+Types include the unit type {{1}}, sum types {{b1+b2}}, and product types
+{{b1*b2}}.  Values include {{()}} which is the only value of type {{1}},
+{{left v}} and {{right v}} which inject~{{v}} into a sum type, and
+{{(v1,v2)}} which builds a value of product type.  These values should be
+regarded as largely ancillary: we do not treat them as first-class citizens,
+and they only occur when observing the effect of an isomorphism.
+
+\paragraph*{Isomorphisms.} The important terms of {{Pi}} are witnesses to
+(value) type isomorphisms.  They are also typed, by the shape of the (value)
+type isomorphism they witness {{b <-> b}}.  Specifically, they are witnesses
+to the following isomorphisms:
+%subcode{bnf} include main
+%! columnStyle = r@{\hspace{-0.5pt}}r c l@{\hspace{-0.5pt}}l
+%swap+ :&  b1 + b2 & <-> & b2 + b1 &: swap+
+%assocl+ :&  b1 + (b2 + b3) & <-> & (b1 + b2) + b3 &: assocr+
+%identl* :&  1 * b & <-> & b &: identr*
+%swap* :&  b1 * b2 & <-> & b2 * b1 &: swap*
+%assocl* :&  b1 * (b2 * b3) & <-> & (b1 * b2) * b3 &: assocr*
+%dist :&~ (b1 + b2) * b3 & <-> & (b1 * b3) + (b2 * b3)~ &: factor
+
+\noindent Each line of the above table introduces a pair of dual
+constants\footnote{where {{swap*}} and {{swap+}} are self-dual.} that witness
+the type isomorphism in the middle.  These are the base (non-reducible) terms
+of the second, principal level of {{Pi}}. Note how the above has two
+readings: first as a set of typing relations for a set of constants. Second,
+if these axioms are seen as universally quantified, orientable statements,
+they also induce transformations of the (traditional) values. The
+(categorical) intuition here is that these axioms have computational content
+because they witness isomorphisms rather than merely stating an extensional
+equality.
+
+The isomorphisms are extended to form a congruence relation by adding the
+following constructors that witness equivalence and compatible closure:
+
+%subcode{proof} include main
+%@  ~
+%@@ id : b <-> b 
+%
+%@ c : b1 <-> b2
+%@@ sym c : b2 <-> b1
+%
+%@ c1 : b1 <-> b2
+%@ c2 : b2 <-> b3
+%@@ c1(;)c2 : b1 <-> b3
+%---
+%@ c1 : b1 <-> b3
+%@ c2 : b2 <-> b4
+%@@ c1 (+) c2 : b1 + b2 <-> b3 + b4
+%
+%@ c1 : b1 <-> b3
+%@ c2 : b2 <-> b4
+%@@ c1 (*) c2 : b1 * b2 <-> b3 * b4
+\noindent The syntax is overloaded: we use the same symbol at the value-type level
+and at the isomorphism-type level for denoting sums and products.  Hopefully
+this will not cause undue confusion.
+
+It is important to note that ``values'' and ``isomorphisms'' are completely
+separate syntactic categories which do not intermix. The semantics of the
+language come when these are made to interact at the ``top level'' via
+\emph{application}: 
+%subcode{bnf} include main
+% top level term, l ::= c v
+
+\noindent
+To summarize, the syntax of {{Pi}} is given as follows. 
+
+\begin{definition}{(Syntax of {{Pi}})}
+\label{def:Pi}
+%subcode{bnf} include main
+% value types, b ::= 1 | b+b | b*b 
+% values, v ::= () | left v | right v | (v,v) 
+%
+% iso.~types, t ::= b <-> b
+% base iso ::= swap+ | assocl+ | assocr+ 
+%     &|& unite | uniti | swap* | assocl* | assocr* 
+%     &|& dist | factor 
+% iso comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
+% top level term, l ::= c v
+\end{definition}
+
+The language presented above, at the type level, models a commutative ringoid
+where the multiplicative structure forms a commutative monoid, but the
+additive structure is just a commutative semigroup.  Note that the version of
+{{Pi}} that includes the empty type with its usual laws exactly captures, at
+the type level, the notion of a \emph{semiring} (occasionally called a
+\emph{rig}) where we replace equality by isomorphism.  Semantically, {{Pi}}
+models a \emph{bimonoidal category} whose simplest example is the category of
+finite sets and bijections. In that interpretation, each value type denotes a
+finite set of a size calculated by viewing the types as natural numbers and
+each combinator {{c : b1 <-> b2}} denotes a bijection between the sets
+denoted by~{{b1}} and~{{b2}}. 
+
+Operationally, the semantics of {{Pi}} is given using two mutually recursive
+interpreters: one going forward and one going backwards. The use of {{sym}}
+switches control from one evaluator to the other. We will present the
+operational semantics in the next section along with the extension with
+fractional types and values. For now, we state without proof that the
+evaluation of well-typed combinators always terminates and that {{Pi}} is
+logically reversible, i.e., that for all combinators {{c : b1 <-> b2}} and
+values {{v1 : b1}} and {{v2 : b2}} we have the forward evaluation of {{c v1}}
+produces {{v2}} iff the backwards evaluation of {{c v2}} produces {{v1}}.
+
+As is usual with type theories, the coherence conditions (pentagonal and
+triangle identity) are not explicit, but would correspond to certain identity
+types being trivial.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Syntax of Fractionals}
+
+The types of {{Pi}} correspond to the natural numbers. Our goal is to have a
+type system that corresponds to the (positive) rational numbers. 
+
+\begin{definition}{(Syntax of {{PiTF}})}
+\label{def:PiTF}
+%subcode{bnf} include main
+% value types, r ::= b / b
+% values, f ::= (v |--> v amp c)
+%
+% iso.~types, t ::= r <=> r
+% base iso ::= swap+ | assocl+ | assocr+ 
+%     &|& unite | uniti | swap* | assocl* | assocr* 
+%     &|& dist | factor 
+%     &|& eta | epsilon
+% iso comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
+% top level term, l ::= c v
+\end{definition}
+
+If we restrict our attention to types {{b / 1}} and values {{ () |--> v amp id}},
+we recover {{Pi}}. 
+
+In algebra, the rational number {{a/b}} denotes 
+$\{ (a','b) ~|~ a * b' = a' * b \}$. We essentially use the same denotation but
+add computational content, i.e., the type {{a/b}} denotes
+$\{ (a',b',c) ~|~ c : a * b' \leftrightarrow a' * b \}$ where $c$ is a {{Pi}}
+combinator witnessing the equivalence of {{a * b'}} and {{a' * b}}. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Higher-Order Reversible Functions}
 
-To get from {{Pi}} types and combinators to a higher order setting, we hope to
-add \emph{fractional types} to the language. Recall that to construct the
-(positive) rational numbers {{Q}}, we can take pairs of positive integers
-{{(m, n)}} and quotient by the equivalence relation that says {{(m1, n1)}} is
-equal to {{(m2, n2)}} if {{m1 * n2 = m2 * n1}}. We can write this as an
-inference rule as follows:
+To get from {{Pi}}~\cite{James:2012:IE:2103656.2103667} types and combinators
+to a higher order setting, we hope to add \emph{fractional types} to the
+language. Recall that to construct the (positive) rational numbers {{Q}}, we
+can take pairs of positive integers {{(m, n)}} and quotient by the
+equivalence relation that says {{(m1, n1)}} is equal to {{(m2, n2)}} if 
+{{m1 * n2 = m2 * n1}}. We can write this as an inference rule as follows:
 
 %subcode{proof} include main
 %@ m1 * n2 = m2 * n1
@@ -150,6 +333,7 @@ This is an issue, since prior attempts at defining an adequate trace operator
 failed: we got a language that could express all relations, but was no longer
 reversible in a meaningful sense.
 
+%%%%%%%%%%%%%%%%%%%
 \subsection{Defining trace}
 
 The trace operator had two problems: it allowed arbitrary function definition,
@@ -189,7 +373,8 @@ to run {{c}} on the pair of {{v'}} and the last {{C}} value (starting with
 value returned by the combinator. In pseudocode:
 
 \begin{verbatim}
-TODO: figure out how to do the code environment in subcode
+TODO: figure out how to do the code 
+environment in subcode
 
 trace v c vin =
   v0 = v
@@ -210,6 +395,7 @@ A more concise formulation as an inference rule is as follows:
 This is easily reversible: {{(trace_v c)dagger = trace_v (c dagger)}}
 \footnote{Also need to prove this.}.
 
+%%%%%%%%%%%%%%%%%%%
 \subsection{Higher-Order Combinators}
 
 Now that we have the trace combinator defined, we can proceed with defining
@@ -244,5 +430,8 @@ where
 \end{itemize}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\bibliographystyle{abbrvnat}
+\bibliography{cites}
 \end{document}
