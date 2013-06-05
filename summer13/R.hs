@@ -1,4 +1,4 @@
-{-# LANGUAGE TypeOperators, GADTs, RankNTypes #-}
+{-# LANGUAGE TypeOperators, GADTs, RankNTypes, NamedFieldPuns #-}
 
 module R where
 
@@ -149,18 +149,26 @@ evalR UnfoldB (Right ()) = False
 -- Pi-frac
 
 data Frac a b =
-  forall a' b'. (V a', V b') => Frac { iso :: (a,b') :<=> (a',b) }
+  forall a' b'. (V a', V b') => Frac { 
+               prepare :: a -> (a,b'), 
+               iso :: (a,b') :<=> (a',b), 
+               measure :: (a',b) -> b
+             }
 
 instance (V a, V b) => V (Frac a b) where
   elems = undefined
 
 instance (V a, V b, Show a, Show b) => Show (Frac a b) where
-  show (Frac f) = 
-      show [(a, snd (eval f (a,b'))) | a <- elems, b' <- elems]
+  show (Frac { prepare, iso, measure }) = 
+      show [(a, measure (eval iso (prepare a))) | a <- elems]
 
 -- Should recover natural number and basic Pi with types (a/1)
 nat :: V a => Frac a () 
-nat = Frac Id
+nat = Frac { 
+        prepare = \a -> (a,()),
+        iso = Id, 
+        measure = \(a,()) -> ()
+      }
 
 oneF :: Frac () ()
 oneF = nat
@@ -168,18 +176,29 @@ oneF = nat
 boolF :: Frac Bool ()
 boolF = nat
 
-boolFRecip :: Frac () Bool
-boolFRecip = Frac Id
+boolFRecip :: Bool -> Frac () Bool
+boolFRecip b = Frac {
+                 prepare = \() -> ((),b),
+                 iso = Id,
+                 measure = \((),b) -> b
+               }
 
 boolUnit :: Frac Bool Bool
-boolUnit = Frac (SwapT :: (Bool,()) :<=> ((),Bool))
+boolUnit = Frac {
+             prepare = \b -> (b,()),
+             iso = SwapT,
+             measure = \((),b) -> b
+           }
 
 -- I can use `eval Id boolF' etc.
 test1 = eval Id boolF 
 
 --
+
+{--
 recip :: (V a, V b) => Frac a b -> Frac b a
-recip (Frac f) = Frac (SwapT :.: adjoint f :.: SwapT) 
+recip (Frac { prepare, iso, measure }) = 
+    Frac (SwapT :.: adjoint f :.: SwapT) 
 
 times :: (V a, V b, V c, V d) => 
          Frac a b -> Frac c d -> Frac (a,c) (b,d) 
@@ -226,3 +245,4 @@ plus (Frac f) (Frac g) =
 --}
 
 -----------------------------------------------------------------------
+--}
