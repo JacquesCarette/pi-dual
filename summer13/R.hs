@@ -7,12 +7,23 @@ module R where
 
 data Zero 
 
-class V a where
-instance V Zero
-instance V ()
-instance V Bool
-instance (V a, V b) => V (Either a b) 
-instance (V a, V b) => V (a,b) 
+class V a where 
+  elems :: [a]
+
+instance V Zero where
+  elems = []
+
+instance V () where
+  elems = [()]
+
+instance V Bool where
+  elems = [False,True]
+
+instance (V a, V b) => V (Either a b) where
+  elems = map Left elems ++ map Right elems
+
+instance (V a, V b) => V (a,b) where
+  elems = [(a,b) | a <- elems, b <- elems] 
 
 data a :<=> b where 
 -- Congruence
@@ -140,6 +151,30 @@ evalR UnfoldB (Right ()) = False
 data Frac a b =
   forall a' b'. (V a', V b') => Frac { iso :: (a,b') :<=> (a',b) }
 
+instance (V a, V b) => V (Frac a b) where
+  elems = undefined
+
+instance (V a, V b, Show a, Show b) => Show (Frac a b) where
+  show (Frac f) = 
+      show [(a, snd (eval f (a,b'))) | a <- elems, b' <- elems]
+
+-- Should recover natural number and basic Pi with types (a/1)
+nat :: V a => Frac a () 
+nat = Frac Id
+
+oneF :: Frac () ()
+oneF = nat
+
+boolF :: Frac Bool ()
+boolF = nat
+
+boolFRecip :: Frac () Bool
+boolFRecip = Frac Id
+
+-- I can use `eval Id boolF' etc.
+test1 = eval Id boolF 
+
+--
 recip :: (V a, V b) => Frac a b -> Frac b a
 recip (Frac f) = Frac (SwapT :.: adjoint f :.: SwapT) 
 
@@ -162,16 +197,29 @@ times (Frac f) (Frac g) =
                   (Id :*: AssocRT) :.: -- (a,(b,(c,d)))
                   AssocLT -- ((a,b),(c,d))
 
+eta :: V a => Frac () () -> Frac a a
+eta (Frac f) = undefined
+
+epsilon :: V a => Frac a a -> Frac () ()
+epsilon (Frac f) = undefined
+
+{--
 plus :: (V a, V b, V c, V d) => 
-        Frac a b -> Frac c d -> Frac (Either a c) (Either b d) 
+        Frac a b -> Frac c d -> Frac (Either (a,d) (c,b)) (b,d)
 plus (Frac f) (Frac g) =          
   -- f :: (a,b') :<=> (a',b) 
   -- g :: (c,d') :<=> (c',d)
-  -- want (Either a c, y') :<=> (x',Either b d)
-  undefined
-
-
-    
-
+  -- want (Either (a,d) (c,b), y') :<=> (x',(b,d))
+  Frac (Distrib :.: -- Either (a,y') (c,y')
+        (f :+: g) :.: -- Either (z',b) (w',d)
+        (SwapT :+: SwapT) :.: -- Either (b,z') (d,w')
+        magic :.: -- Either (b,x') (d,x')
+        Factor :.: -- (Either b d, x')
+        SwapT) -- (x', Either b d)
+  where magic :: Either (b,z') (d,w') :<=> Either (b,x') (d,x')
+        magic = undefined
+--  Distrib  :: (V a, V b, V c) => (Either b c, a) :<=> Either (b, a) (c, a)
+--  Factor   :: (V a, V b, V c) => Either (b, a) (c, a) :<=> (Either b c, a)
+--}
 
 -----------------------------------------------------------------------
