@@ -171,6 +171,9 @@ boolF = nat
 boolFRecip :: Frac () Bool
 boolFRecip = Frac Id
 
+boolUnit :: Frac Bool Bool
+boolUnit = Frac (SwapT :: (Bool,()) :<=> ((),Bool))
+
 -- I can use `eval Id boolF' etc.
 test1 = eval Id boolF 
 
