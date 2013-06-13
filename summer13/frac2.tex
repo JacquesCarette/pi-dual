@@ -300,6 +300,28 @@ some (ideally all) of the trace properties, or at the very least some subset of
 them that is sufficient to prove some necessary properties for {{Pi}} extended
 with fractional types, as presented in the next few sections.
 
+\subsection{Alternatives}
+
+If this formulation of trace does not work, we have a few alternatives:
+
+\begin{itemize}
+
+\item Don't bother choosing a default element at all. We did this previously
+with the relational semantics, without much success, but perhaps there's a
+better way of looking at it.
+
+\item Choose a canonical representative of the type {{b}} that's being traced
+out. This seems like it's a strictly worse option than parameterizing it, but
+it's still on the table, at least for now.
+
+\item Focus on the combinator. Jacques pointed out that our old version of trace
+``worked'' whenever the part of {{c}} acting on {{b}} was equivalent to the
+identity. This seems promising, but I'm not quite sure how to think about it
+yet, so I'm ignoring it for now. It's definitely something we want to look at,
+though, especialy if the current approach doesn't work.
+
+\end{itemize}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Syntax of Fractionals}
