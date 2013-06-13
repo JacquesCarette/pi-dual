@@ -265,6 +265,42 @@ As is usual with type theories, the coherence conditions (pentagonal and
 triangle identity) are not explicit, but would correspond to certain identity
 types being trivial.
 
+\section{ {{Pi}} with trace}
+
+In order to take a step toward being able to write the Int construction in
+{{Pi}} to give it fractional types, we want to add a trace combinator to it,
+with the following type:
+
+%subcode{proof} include main
+%@  c : b1 * b <-> b2 * b
+%@@ trace c : b1 <-> b2
+
+This kind of combinator allows us to cancel out a common factor. When the type
+{{0}} is removed from the language, it is always possible to do this, but adding
+computational content becomes tricky. For example, consider permutations on the
+finite set of size {{6}}. If we wish to trace one of these to get a permutation
+on the set of size {{3}}, we are able to, but which set of size {{3}}? There
+are several different ways to do this, but there is no obvious canonical answer.
+
+More concretely, suppose we have a combinator {{c : 3 * 2 <-> 3 * 2}}. The
+combinator {{trace c : 3 <-> 3}} can be constructed in two obvious ways: let
+{{(trace c) v}} run {{c}} on {{(v, true)}} or on {{(v, false)}}. It is possible
+to choose {{c}} so that depending on which default value of type {{2}} is used,
+a different combinator results.
+
+To fix this, we parameterize {{trace}} with a value {{v : b}}, as follows:
+
+%subcode{proof} include main
+%@  c : b1 * b <-> b2 * b
+%@  v : b
+%@@ trace_v c : b1 <-> b2
+
+It remains to show that this is ``well-behaved''; that is, we want it to obey
+some (ideally all) of the trace properties, or at the very least some subset of
+them that is sufficient to prove some necessary properties for {{Pi}} extended
+with fractional types, as presented in the next few sections.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Syntax of Fractionals}
 
