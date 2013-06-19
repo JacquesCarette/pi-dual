@@ -197,3 +197,22 @@ eps v = Hat v Id
 evalFrac :: (V a, V b, V c, V d) => (a, b) :<==> (c, d) -> a :<=> b -> c :<=> d
 evalFrac (Hat v c1) c2 =
   Trace v (SwapT :.: adjoint c1 :.: (c2 :*: Id) :.: SwapT)
+
+-- Functors!
+
+-- Div a b c d = (a / b) / (c / d)
+type Div a b c d = ((a, d), (b, c))
+
+-- -- XXX: parameterizing this with an a2 seems like a gross hack, but I don't see
+-- -- any way around it---what if b2 is 1 but a2 is 0, for instance?
+-- div :: (V a1, V a2, V b1, V b2, V c1, V c2, V d1, V d2) =>
+--          a2
+--       -> (a1, b1) :<==> (c1, d1) -> (a2, b2) :<==> (c2, d2)
+--       -> Div a1 b1 a2 b2 :<==> Div c1 d1 c2 d2
+-- div v (Hat v1 c1) (Hat v2 c2) =
+--   Hat (v1, v)
+--       (shuffle :.: (c1 :*: (adjoint c2)) :.: shuffle)
+--   where
+--     shuffle :: forall a b c d. ((a, b), (c, d)) :<=> ((a, c), (d, b))
+--     shuffle = AssocRT :.: (Id :*: AssocLT) :.: (Id :*: (SwapT :*: Id))
+--           :.: (Id :*: AssocRT) :.: AssocLT
