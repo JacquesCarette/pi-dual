@@ -231,19 +231,43 @@ c1 = SwapT :.: (caseB rotateC (rotateC :.: rotateC)) :.: SwapT
 -- test (Trace False c1)
 -- test (Trace True c1)
 
--- Now implement the one below     
+type Three = Either () (Either () ())
+
+-- RedFalse == LL
+-- RedTrue  == RL
+-- GreenFalse == LRL
+-- GreenTrue == TRL
+-- BlueFalse == LRR
+-- BlueTrue == RRR
+
+unfoldCB :: (Color,Bool) :<=> Either Three Three
+unfoldCB = 
+  (UnfoldC :*: UnfoldB) :.: SwapT :.: Distrib :.: (UnitE :+: UnitE) 
+                            
+foldCB :: Either Three Three :<=> (Color,Bool)
+foldCB = adjoint unfoldCB
 
 {--
 Consider the following permutation on (3 x 2) where I call the elements
 of 3 as A,B,C and the elements of 2 as F,T.
-
 (R,F) (R,T)
 (R,T) (G,T)
 (G,F) (R,F)
 (G,T) (B,T)
 (B,F) (G,F)
 (B,T) (B,F)
+--}
+c2 :: (Color,Bool) :<=> (Color,Bool)
+c2 = unfoldCB :.: -- (rf + (gf + bf)) + (rt + (gt + bt))
+     (AssocLP :+: Id) :.: -- ((rf + gf) + bf) + (rt + (gt + bt))
+     AssocRP :.: -- (rf + gf) + (bf + (rt + (gt + bt)))
+     (Id :+: SwapP) :.: -- (rf + gf) + ((rt + (gt + bt)) + bf)
+     (Id :+: AssocRP) :.: -- (rf + gf) + (rt + ((gt + bt) + bf))
+     AssocLP :.: -- ((rf + gf) + rt) + ((gt + bt) + bf)
+     (SwapP :+: AssocRP) :.: -- (rt + (rf + gf)) + (gt + (bt + bf))
+     foldCB
 
+{--
  If we trace out the elements (_,T) we get the following permutation on 3:
  R B
  G R
