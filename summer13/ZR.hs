@@ -11,6 +11,8 @@ data Zero
 
 instance Eq Zero where
   
+data Color = Red | Green | Blue deriving (Show,Eq)
+
 class Eq a => V a where 
   elems :: [a]
 
@@ -22,6 +24,9 @@ instance V () where
 
 instance V Bool where
   elems = [False,True]
+
+instance V Color where
+  elems = [Red, Green, Blue]
 
 instance (V a, V b) => V (Either a b) where
   elems = map Left elems ++ map Right elems
@@ -59,9 +64,11 @@ data a :<=> b where
   FactorZ  :: V a => Zero :<=> (Zero, a)
   Distrib  :: (V a, V b, V c) => (Either b c, a) :<=> Either (b, a) (c, a)
   Factor   :: (V a, V b, V c) => Either (b, a) (c, a) :<=> (Either b c, a)
--- Encoding of booleans
+-- Encoding of booleans and colors
   FoldB   :: Either () () :<=> Bool
   UnfoldB :: Bool :<=> Either () ()
+  FoldC   :: Either () (Either () ()) :<=> Color
+  UnfoldC :: Color :<=> Either () (Either () ())
 
 -- Adjoint
 
@@ -88,6 +95,8 @@ adjoint Distrib = Factor
 adjoint Factor = Distrib
 adjoint FoldB = UnfoldB
 adjoint UnfoldB = FoldB
+adjoint FoldC = UnfoldC
+adjoint UnfoldC = FoldC
 
 -- Semantics
 eval :: (V a, V b) => (a :<=> b) -> a -> b
@@ -121,6 +130,12 @@ eval FoldB (Left ()) = True
 eval FoldB (Right ()) = False
 eval UnfoldB True = Left ()
 eval UnfoldB False = Right ()
+eval FoldC (Left ()) = Red
+eval FoldC (Right (Left ())) = Green
+eval FoldC (Right (Right ())) = Blue
+eval UnfoldC Red = Left ()
+eval UnfoldC Green = Right (Left ())
+eval UnfoldC Blue = Right (Right ())
 
 runTrace :: (V a, V b, V c) => ((a, c) :<=> (b, c)) -> a -> c -> b
 runTrace c v v0 = rt v0
@@ -171,7 +186,76 @@ evalR FoldB True = Left ()
 evalR FoldB False = Right ()
 evalR UnfoldB (Left ()) = True
 evalR UnfoldB (Right ()) = False
+evalR FoldC Red = Left ()
+evalR FoldC Green = Right (Left ())
+evalR FoldC Blue = Right (Right ())
+evalR UnfoldC (Left ()) = Red
+evalR UnfoldC (Right (Left ())) = Green
+evalR UnfoldC (Right (Right ())) = Blue
 
+-----------------------------------------------------------------------
+-- Trace examples...
+
+test :: (V a, V b) => (a :<=> b) -> [(a,b)]
+test c = [(a,eval c a) | a <- elems]
+
+notB :: Bool :<=> Bool
+notB = UnfoldB :.: SwapP :.: FoldB
+
+-- once:  R->G, G->B, B->R
+-- twice: R->B, G->R, B->G
+rotateC :: Color :<=> Color
+rotateC = UnfoldC :.: AssocLP :.: SwapP :.: FoldC
+
+caseB :: V a => (a :<=> a) -> (a :<=> a) -> (Bool,a) :<=> (Bool,a)
+caseB fa tr = 
+  (UnfoldB :*: Id) :.:
+  Distrib :.:
+  ((Id :*: fa) :+: (Id :*: tr)) :.:
+  Factor :.:
+  (FoldB :*: Id)
+
+caseC :: V a => (a :<=> a) -> (a :<=> a) -> (a :<=> a) -> 
+                (Color,a) :<=> (Color,a)
+caseC r g b = 
+  (UnfoldC :*: Id) :.:
+  Distrib :.: (Id :+: Distrib) :.: 
+  ((Id :*: r) :+: ((Id :*: g) :+: (Id :*: b))) :.: 
+  (Id :+: Factor) :.: Factor :.:
+  (FoldC :*: Id)
+
+c1 :: (Color,Bool) :<=> (Color,Bool)
+c1 = SwapT :.: (caseB rotateC (rotateC :.: rotateC)) :.: SwapT 
+
+-- test c1
+-- test (Trace False c1)
+-- test (Trace True c1)
+
+-- Now implement the one below     
+
+{--
+Consider the following permutation on (3 x 2) where I call the elements
+of 3 as A,B,C and the elements of 2 as F,T.
+
+(R,F) (R,T)
+(R,T) (G,T)
+(G,F) (R,F)
+(G,T) (B,T)
+(B,F) (G,F)
+(B,T) (B,F)
+
+ If we trace out the elements (_,T) we get the following permutation on 3:
+ R B
+ G R
+ B G
+
+ If we trace out the elements (_,F) we get the following permutation on 3:
+ R G
+ G B
+ B R
+--}
+
+-----------------------------------------------------------------------
 ----- Fractional Stuff
 
 -- Ideally this would be a typeclass, but I'm not sure how to do it like that
