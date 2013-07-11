@@ -137,15 +137,31 @@ eval UnfoldC Red = Left ()
 eval UnfoldC Green = Right (Left ())
 eval UnfoldC Blue = Right (Right ())
 
-runTrace :: (V a, V b, V c) => ((a, c) :<=> (b, c)) -> a -> c -> b
-runTrace c v v0 = rt v0
-  where
-    rt vc = 
-      let (b, v0') = eval c (v, vc) in
-        if v0' == v0
-        then b
-        else rt v0'
 
+runTrace :: (V a, V b, V c) => ((a, c) :<=> (b, c)) -> a -> c -> b
+runTrace c vin v0 =
+  let (vout, vnew) = eval c (vin, v0) in
+    if vnew == v0
+    then vout
+    else rt c vin v0 vnew
+
+rt :: (V a, V b, V c) => (a, c) :<=> (b, c) -> a -> c -> c -> b
+rt c v v0 vind =
+  let (vout, vnew) = eval c (v, vind) in
+    if vnew == v0
+    then vout
+    else rt c v v0 vnew
+
+-- This version seems to break GHC!
+-- runTrace :: (V a, V b, V c) => ((a, c) :<=> (b, c)) -> a -> c -> b
+-- runTrace c vin v0 = rt v0
+--   where
+--     rt temp = 
+--       let (b, v0') = eval c (vin, temp) in
+--         if v0' == v0
+--         then b
+--         else rt v0'
+-- 
 runTraceB :: (V a, V b, V c) => ((a, c) :<=> (b, c)) -> b -> c -> a
 runTraceB c v v0 = rt v0
   where
