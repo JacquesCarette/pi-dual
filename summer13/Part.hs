@@ -17,7 +17,8 @@ instance Eq Zero where
   
 data Color = Red | Green | Blue deriving (Show,Eq)
 
-class Eq a => V a where 
+-- class Eq a => V a where 
+class V a where 
   elems :: [a]
 
 instance V Zero where
@@ -37,6 +38,9 @@ instance (V a, V b) => V (Either a b) where
 
 instance (V a, V b) => V (a,b) where
   elems = [(a,b) | a <- elems, b <- elems] 
+
+instance (V a, V b) => V (a -> b) where
+  elems = [] -- placeholder
 
 data a :<=> b where 
 -- Congruence
@@ -193,3 +197,38 @@ evalIsoR FoldC Blue = Right (Right ())
 evalIsoR UnfoldC (Left ()) = Red
 evalIsoR UnfoldC (Right (Left ())) = Green
 evalIsoR UnfoldC (Right (Right ())) = Blue
+
+-- Okay, time for the actual partition stuff!
+
+-- Type for runtime values
+-- Represents a set of values of type b, but on the level of a
+-- Or in other words, a partition of the type a into |b| classes
+-- Restriction: the function *must* be surjective
+type RT a b = (a, a -> b)
+
+-- Get an external handle on the set
+observe :: RT a b -> b
+observe (s, e) = e s
+
+data a :<==> b where
+  Eta :: V b => (b, ()) :<==> (b, (b, b -> ()))
+  Eps :: (V a, V c) => (c, (a, a -> ())) :<==> (a, ())
+  Com :: a :<=> b -> (c, a) :<==> (c, b)
+  (:..:) :: (c1, a) :<==> (c2, b) -> (c2, b) :<==> (c3, c) ->
+              (c1, a) :<==> (c3, c)
+
+evalP :: ((c1, a) :<==> (c2, b)) -> RT c1 a -> RT c2 b
+evalP Eta (s, e) = (s, \s -> (s, e))
+evalP Eps rt@(s, e) = (fst $ observe rt, const ())
+-- We have to do the computation here in the continuation for it to typecheck
+evalP (Com c) rt@(s, e) = (s, \s -> head $ eval c [observe (s, e)])
+evalP (f :..: g) rt = evalP g (evalP f rt)
+
+-- A couple of tests
+
+-- should be ()
+t1 = observe $ evalP (Eta :..: Eps) (True, const ())
+
+-- should be True
+t2 = fst . observe $ evalP (Eps :..: Eta) ((True, const ()), id)
+
