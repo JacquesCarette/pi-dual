@@ -40,7 +40,7 @@ instance (V a, V b) => V (a,b) where
   elems = [(a,b) | a <- elems, b <- elems] 
 
 instance (V a, V b) => V (a -> b) where
-  elems = [] -- placeholder
+  elems = [] -- XXX: placeholder
 
 data a :<=> b where 
 -- Congruence
@@ -201,8 +201,14 @@ evalIsoR UnfoldC (Right (Right ())) = Blue
 -- Okay, time for the actual partition stuff!
 
 -- Type for runtime values
+--
 -- Represents a set of values of type b, but on the level of a
--- Or in other words, a partition of the type a into |b| classes
+--
+-- Or in other words, a partition of the type a into |b| classes, where each
+-- class is labeled by an element of b. So there could be two distinct
+-- partitions that represent the same equivalence relation, but label the
+-- resulting classes differently.
+--
 -- Restriction: the function *must* be surjective
 type RT a b = (a, a -> b)
 
@@ -216,6 +222,9 @@ data a :<==> b where
   Com :: a :<=> b -> (c, a) :<==> (c, b)
   (:..:) :: (c1, a) :<==> (c2, b) -> (c2, b) :<==> (c3, c) ->
               (c1, a) :<==> (c3, c)
+
+-- Eta exposes the underlying set
+-- Epsilon observes it & collapses it all back down to ()
 
 evalP :: ((c1, a) :<==> (c2, b)) -> RT c1 a -> RT c2 b
 evalP Eta (s, e) = (s, \s -> (s, e))
@@ -232,3 +241,7 @@ t1 = observe $ evalP (Eta :..: Eps) (True, const ())
 -- should be True
 t2 = fst . observe $ evalP (Eps :..: Eta) ((True, const ()), id)
 
+-- trace :: (?, (a, c)) :<==> (?, (b, c)) -> (?, a) :<==> (?, b)
+-- trace c =
+--   (Com UnitI) :..: (Eta :*: Id) :.: AssocRT :.: (Id :*: c) :.: AssocLT :.:
+--   (Eps :*: Id) :.: UnitE

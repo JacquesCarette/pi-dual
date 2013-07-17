@@ -196,3 +196,45 @@ name f = -- ()
   (Id :*: f) -- 1/b1 * b2
 
 -----------------------------------------------------------------------
+
+-- Dividing things into fragments
+
+-- Dividing 3 into 2/3 and 1/3
+
+type Three = Either () (Either () ())
+eps = Epsilon
+
+divThree :: Three :<=> Three
+divThree =                        -- Start: 3
+      UnitI                         -- 1 * 3
+  :.: (Eta :*: Id)                  -- (3 * 1/3) * 3
+  :.: (Distrib :*: Id)              -- (1 * 1/3 + 2 * 1/3) * 3
+  :.: Distrib                       -- ((1 * 1/3) * 3) + ((2 * 1/3) * 3)
+  :.: ((UnitE :*: Id) :+: AssocRT)  -- 1/3 * 3 + 2 * (1/3 * 3)
+  :.: (SwapT :+: (Id :*: SwapT))    -- (3 * 1/3) + 2 * (3 * 1/3)
+  :.: (eps :+: (Id :*: eps))        -- 1 + 2 * 1
+  :.: (Id :+: (SwapT :.: UnitE))    -- End: 3
+
+-- Dividing 6 into 2/3 and 1/3
+
+-- type Six = Either () (Either () (Either () (Either () (Either () ()))))
+-- type Six = Either Three Three
+type Six = (Either () (), Three)
+
+bUnitE = SwapT :.: UnitE
+
+divSix :: Six :<=> Six
+divSix =                            -- Start: 6
+      UnitI                         -- 1 * 6
+  :.: (Eta :*: Id)                  -- (3 * 1/3) * 6
+  :.: (Distrib :*: Id)              -- (1 * 1/3 + 2 * 1/3) * 6
+  :.: Distrib                       -- ((1 * 1/3) * 6) + ((2 * 1/3) * 6)
+  :.: ((UnitE :*: Id) :+: AssocRT)  -- 1/3 * 6 + 2 * (1/3 * 6)
+  :.: (SwapT :+: (Id :*: SwapT))    -- (6 * 1/3) + 2 * (6 * 1/3)
+  :.: (AssocRT :+: (Id :*: AssocRT))-- (2 * (3 * 1/3)) + (2 * (2 * (3 * 1/3)))
+  :.: ((Id :*: eps) :+: Id)         -- (2 * 1) + (2 * (2 * (3 * 1/3)))
+  :.: (Id :+: (Id :*: (Id :*: eps)))-- (2 * 1) + (2 * (2 * 1))
+  :.: (Id :+: (Id :*: bUnitE))      -- (2 * 1) + (2 * 2)
+  :.: (SwapT :+: Id)                -- (1 * 2) + (2 * 2)
+  :.: Factor                        -- 3 * 2
+  :.: SwapT                         -- End: 6
