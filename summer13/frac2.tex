@@ -1,0 +1,495 @@
+\documentclass{sigplanconf}
+\usepackage{url}
+\usepackage{proof}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{comment}
+
+\newcommand{\dgm}[2][1.5]{
+\begin{center}
+\scalebox{#1}{
+\includegraphics{diagrams/#2.pdf}
+}
+\end{center}
+}
+\newcommand{\todo}[1]{\textbf{TODO:} #1}
+\newcommand{\jacques}[1]{\textsc{Jacques says:} #1}
+\newcommand{\amr}[1]{\textsc{Amr says:} #1}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{proposition}[theorem]{Proposition}
+
+%subcode-inline{bnf-inline} name Pi
+%! swap+ = \mathit{swap}^+
+%! swap* = \mathit{swap}^*
+%! dagger =  ^{\dagger}
+%! assocl+ = \mathit{assocl}^+
+%! assocr+ = \mathit{assocr}^+
+%! assocl* = \mathit{assocl}^*
+%! assocr* = \mathit{assocr}^*
+%! identr* = \mathit{uniti}
+%! identl* = \mathit{unite}
+%! dist = \mathit{distrib}
+%! factor = \mathit{factor}
+%! (o) = \fatsemi
+%! (;) = \fatsemi
+%! (*) = \times
+%! (+) = +
+%! foldB = fold_B
+%! unfoldB = unfold_B
+%! foldN = fold_N
+%! unfoldN = unfold_N
+%! trace+ = \mathit{trace}^{+}
+%! trace* = \mathit{trace}^{\times}
+%! :-* = \multimap
+%! :-+ = \multimap^{+}
+%! emptyset = \emptyset
+
+%subcode-inline{bnf-inline} regex \{\{(((\}[^\}])|[^\}])*)\}\} name main include Pi
+%! [^ = \ulcorner
+%! ^] = \urcorner
+%! [v = \llcorner
+%! v] = \lrcorner
+%! [[ = \llbracket
+%! ]] = \rrbracket
+%! ^^^ = ^{\dagger}
+%! eta* = \eta
+%! eps* = \epsilon
+%! Union = \bigcup
+%! in = \in
+%! |-->* = \mapsto^{*}
+%! |-->> = \mapsto_{\ggg}
+%! |-->let = \mapsto_{let}
+%! |--> = \mapsto
+%! <--| = \mapsfrom
+%! |- = \vdash
+%! <=> = \Longleftrightarrow
+%! <-> = \leftrightarrow
+%! -> = \rightarrow
+%! ~> = \leadsto
+%! ::= = ::=
+%! amp = \&
+%! /= = \neq
+%! vi = v_i
+%! di = d_i
+%! si = s_i
+%! sj = s_j
+%! F = \texttt{F}
+%! T = \texttt{T}
+%! forall = \forall
+%! exists = \exists
+%! empty = \emptyset
+%! Sigma = \Sigma
+%! eta = \eta
+%! where = \textbf{where}
+%! epsilon = \varepsilon
+%! least = \phi
+%! loop+ = loop_{+}
+%! loop* = loop_{\times}
+%! CatC = {\mathcal C}
+%! CatA = {\mathcal A}
+%! gamma = \gamma
+%! {[ = \{
+%! ]} = \}
+%! elem = \in
+%! dagger = ^\dagger
+%! alpha = \alpha
+%! beta = \beta
+%! rho = \rho
+%! @@ = \mu
+%! @ = \,@\,
+%! Pow = \mathcal{P}
+%! Pi = \Pi
+%! PiT = \Pi^{o}
+%! PiEE = \Pi^{\eta\epsilon}_{+}
+%! PiT = \Pi^{o}
+%! PiTF = \Pi^{/}
+%! bullet = \bullet
+%! * = \times
+
+\begin{document}
+\conferenceinfo{POPL '14}{date, City.} 
+\copyrightyear{2014}
+\copyrightdata{[to be supplied]} 
+
+\title{\ldots}
+\authorinfo{\ldots}
+           {\ldots}
+           {\ldots}
+
+\maketitle
+
+\begin{abstract}
+\ldots
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Background: {{Pi}} }
+\label{sec:pi}
+
+We review our language {{Pi}} providing the necessary background and
+context for our higher-order extension.\footnote{The presentation in this
+  section focuses on the simplest version of {{Pi}}. Other versions
+  include the empty type, recursive types, and trace operators but these
+  extensions are orthogonal to the higher-order extension emphasized in this
+  paper.} The terms of {{Pi}} are not classical values and functions;
+rather, the terms are isomorphism witnesses.  In other words, the terms of
+{{Pi}} are proofs that certain ``shapes of values'' are isomorphic.
+And, in classical Curry-Howard fashion, our operational semantics shows how
+these proofs can be directly interpreted as actions on ordinary values which
+effect this shape transformation. Of course, ``shapes of values'' are very
+familiar already: they are usually called \emph{types}.  But frequently one
+designs a type system as a method of classifying terms, with the eventual
+purpose to show that certain properties of well-typed terms hold, such as
+safety.  Our approach is different: we start from a type system, and then
+present a term language which naturally inhabits these types, along with an
+appropriate operational semantics.
+
+\paragraph*{Data.}
+We view {{Pi}} as having two levels:  it has traditional values, given by:
+%subcode{bnf} include main
+% values, v ::= () | left v | right v | (v, v)
+
+\noindent and these are classified by ordinary types:
+%subcode{bnf} include main
+% value types, b ::= 1 | b + b | b * b 
+
+\noindent 
+Types include the unit type {{1}}, sum types {{b1+b2}}, and product types
+{{b1*b2}}.  Values include {{()}} which is the only value of type {{1}},
+{{left v}} and {{right v}} which inject~{{v}} into a sum type, and
+{{(v1,v2)}} which builds a value of product type.  These values should be
+regarded as largely ancillary: we do not treat them as first-class citizens,
+and they only occur when observing the effect of an isomorphism.
+
+\paragraph*{Isomorphisms.} The important terms of {{Pi}} are witnesses to
+(value) type isomorphisms.  They are also typed, by the shape of the (value)
+type isomorphism they witness {{b <-> b}}.  Specifically, they are witnesses
+to the following isomorphisms:
+%subcode{bnf} include main
+%! columnStyle = r@{\hspace{-0.5pt}}r c l@{\hspace{-0.5pt}}l
+%swap+ :&  b1 + b2 & <-> & b2 + b1 &: swap+
+%assocl+ :&  b1 + (b2 + b3) & <-> & (b1 + b2) + b3 &: assocr+
+%identl* :&  1 * b & <-> & b &: identr*
+%swap* :&  b1 * b2 & <-> & b2 * b1 &: swap*
+%assocl* :&  b1 * (b2 * b3) & <-> & (b1 * b2) * b3 &: assocr*
+%dist :&~ (b1 + b2) * b3 & <-> & (b1 * b3) + (b2 * b3)~ &: factor
+
+\noindent Each line of the above table introduces a pair of dual
+constants\footnote{where {{swap*}} and {{swap+}} are self-dual.} that witness
+the type isomorphism in the middle.  These are the base (non-reducible) terms
+of the second, principal level of {{Pi}}. Note how the above has two
+readings: first as a set of typing relations for a set of constants. Second,
+if these axioms are seen as universally quantified, orientable statements,
+they also induce transformations of the (traditional) values. The
+(categorical) intuition here is that these axioms have computational content
+because they witness isomorphisms rather than merely stating an extensional
+equality.
+
+The isomorphisms are extended to form a congruence relation by adding the
+following constructors that witness equivalence and compatible closure:
+
+%subcode{proof} include main
+%@  ~
+%@@ id : b <-> b 
+%
+%@ c : b1 <-> b2
+%@@ sym c : b2 <-> b1
+%
+%@ c1 : b1 <-> b2
+%@ c2 : b2 <-> b3
+%@@ c1(;)c2 : b1 <-> b3
+%---
+%@ c1 : b1 <-> b3
+%@ c2 : b2 <-> b4
+%@@ c1 (+) c2 : b1 + b2 <-> b3 + b4
+%
+%@ c1 : b1 <-> b3
+%@ c2 : b2 <-> b4
+%@@ c1 (*) c2 : b1 * b2 <-> b3 * b4
+\noindent The syntax is overloaded: we use the same symbol at the value-type level
+and at the isomorphism-type level for denoting sums and products.  Hopefully
+this will not cause undue confusion.
+
+It is important to note that ``values'' and ``isomorphisms'' are completely
+separate syntactic categories which do not intermix. The semantics of the
+language come when these are made to interact at the ``top level'' via
+\emph{application}: 
+%subcode{bnf} include main
+% top level term, l ::= c v
+
+\noindent
+To summarize, the syntax of {{Pi}} is given as follows. 
+
+\begin{definition}{(Syntax of {{Pi}})}
+\label{def:Pi}
+%subcode{bnf} include main
+% value types, b ::= 1 | b+b | b*b 
+% values, v ::= () | left v | right v | (v,v) 
+%
+% iso.~types, t ::= b <-> b
+% base iso ::= swap+ | assocl+ | assocr+ 
+%     &|& unite | uniti | swap* | assocl* | assocr* 
+%     &|& dist | factor 
+% iso comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
+% top level term, l ::= c v
+\end{definition}
+
+The language presented above, at the type level, models a commutative ringoid
+where the multiplicative structure forms a commutative monoid, but the
+additive structure is just a commutative semigroup.  Note that the version of
+{{Pi}} that includes the empty type with its usual laws exactly captures, at
+the type level, the notion of a \emph{semiring} (occasionally called a
+\emph{rig}) where we replace equality by isomorphism.  Semantically, {{Pi}}
+models a \emph{bimonoidal category} whose simplest example is the category of
+finite sets and bijections. In that interpretation, each value type denotes a
+finite set of a size calculated by viewing the types as natural numbers and
+each combinator {{c : b1 <-> b2}} denotes a bijection between the sets
+denoted by~{{b1}} and~{{b2}}. 
+
+Operationally, the semantics of {{Pi}} is given using two mutually recursive
+interpreters: one going forward and one going backwards. The use of {{sym}}
+switches control from one evaluator to the other. We will present the
+operational semantics in the next section along with the extension with
+fractional types and values. For now, we state without proof that the
+evaluation of well-typed combinators always terminates and that {{Pi}} is
+logically reversible, i.e., that for all combinators {{c : b1 <-> b2}} and
+values {{v1 : b1}} and {{v2 : b2}} we have the forward evaluation of {{c v1}}
+produces {{v2}} iff the backwards evaluation of {{c v2}} produces {{v1}}.
+
+As is usual with type theories, the coherence conditions (pentagonal and
+triangle identity) are not explicit, but would correspond to certain identity
+types being trivial.
+
+\section{ {{Pi}} with trace}
+
+In order to take a step toward being able to write the Int construction in
+{{Pi}} to give it fractional types, we want to add a trace combinator to it,
+with the following type:
+
+%subcode{proof} include main
+%@  c : b1 * b <-> b2 * b
+%@@ trace c : b1 <-> b2
+
+This kind of combinator allows us to cancel out a common factor. When the type
+{{0}} is removed from the language, it is always possible to do this, but adding
+computational content becomes tricky. For example, consider permutations on the
+finite set of size {{6}}. If we wish to trace one of these to get a permutation
+on the set of size {{3}}, we are able to, but which set of size {{3}}? There
+are several different ways to do this, but there is no obvious canonical answer.
+
+More concretely, suppose we have a combinator {{c : 3 * 2 <-> 3 * 2}}. The
+combinator {{trace c : 3 <-> 3}} can be constructed in two obvious ways: let
+{{(trace c) v}} run {{c}} on {{(v, true)}} or on {{(v, false)}}. It is possible
+to choose {{c}} so that depending on which default value of type {{2}} is used,
+a different combinator results.
+
+To fix this, we parameterize {{trace}} with a value {{v : b}}, as follows:
+
+%subcode{proof} include main
+%@  c : b1 * b <-> b2 * b
+%@  v : b
+%@@ trace_v c : b1 <-> b2
+
+It remains to show that this is ``well-behaved''; that is, we want it to obey
+some (ideally all) of the trace properties, or at the very least some subset of
+them that is sufficient to prove some necessary properties for {{Pi}} extended
+with fractional types, as presented in the next few sections.
+
+\subsection{Alternatives}
+
+If this formulation of trace does not work, we have a few alternatives:
+
+\begin{itemize}
+
+\item Don't bother choosing a default element at all. We did this previously
+with the relational semantics, without much success, but perhaps there's a
+better way of looking at it.
+
+\item Choose a canonical representative of the type {{b}} that's being traced
+out. This seems like it's a strictly worse option than parameterizing it, but
+it's still on the table, at least for now.
+
+\item Focus on the combinator. Jacques pointed out that our old version of trace
+``worked'' whenever the part of {{c}} acting on {{b}} was equivalent to the
+identity. This seems promising, but I'm not quite sure how to think about it
+yet, so I'm ignoring it for now. It's definitely something we want to look at,
+though, especialy if the current approach doesn't work.
+
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Syntax of Fractionals}
+
+The types of {{Pi}} correspond to the natural numbers. Our goal is to have a
+type system that corresponds to the (positive) rational numbers. 
+
+\begin{definition}{(Syntax of {{PiTF}})}
+\label{def:PiTF}
+%subcode{bnf} include main
+% value types, r ::= b1 / b2
+% values, f ::= (v1 |--> v2, c)
+%
+% iso.~types, t ::= r <=> r
+% base iso ::= swap+ | assocl+ | assocr+ 
+%     &|& unite | uniti | swap* | assocl* | assocr* 
+%     &|& dist | factor 
+%     &|& eta | epsilon
+% iso comb., c ::= iso | id | sym c | c (;) c | c (+) c | c (*) c 
+% top level term, l ::= c v
+\end{definition}
+
+If we restrict our attention to types {{b / 1}} and values {{ () |--> v amp id}},
+we recover {{Pi}}. 
+
+In algebra, the rational number {{a/b}} denotes 
+$\{ (a','b) ~|~ a * b' = a' * b \}$. We essentially use the same denotation but
+add computational content, i.e., the type {{a/b}} denotes
+$\{ (a',b',c) ~|~ c : a * b' \leftrightarrow a' * b \}$ where $c$ is a {{Pi}}
+combinator witnessing the equivalence of {{a * b'}} and {{a' * b}}. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Higher-Order Reversible Functions}
+
+To get from {{Pi}}~\cite{James:2012:IE:2103656.2103667} types and combinators
+to a higher order setting, we hope to add \emph{fractional types} to the
+language. Recall that to construct the (positive) rational numbers {{Q}}, we
+can take pairs of positive integers {{(m, n)}} and quotient by the
+equivalence relation that says {{(m1, n1)}} is equal to {{(m2, n2)}} if 
+{{m1 * n2 = m2 * n1}}. We can write this as an inference rule as follows:
+
+%subcode{proof} include main
+%@ m1 * n2 = m2 * n1
+%@@ (m1, n1) = (m2, n2)
+
+\noindent
+Adding in computational content, pi-style, suggests that we want something like:
+
+%subcode{proof} include main
+%@ c : A1 * B2 <-> B1 * A2
+%@@ {[c]} : (B1 |--> A1) <=> (B2 |--> A2)
+
+\noindent
+However, this does not quite work. To see why, recall that we want to treat the
+pair {{(m, n)}} (written here as {{A |--> B}}) as an internalization of the
+reversible function space. Thus, the type {{(B1 |--> A1) <=> (B2 |--> A2)}}
+should be a transformation of a {{Pi}} combinator of type {{B1 <-> A1}} into a
+{{Pi}} combinator of type {{B2 <-> A2}}. In order to do this, we need a trace
+combinator (TODO: draw a diagram that demonstrates this) with the type
+
+%subcode{proof} include main
+%@ c : A * C <-> B * C
+%@@ trace c : A <-> B
+
+\noindent
+This is an issue, since prior attempts at defining an adequate trace operator
+failed: we got a language that could express all relations, but was no longer
+reversible in a meaningful sense.
+
+%%%%%%%%%%%%%%%%%%%
+\subsection{Defining trace}
+
+The trace operator had two problems: it allowed arbitrary function definition,
+and it would not work in a language that contained the empty type {{0}}. The
+former problem arose due to the logic programming-style interpretation we
+assigned to trace: it would create *all* possible values of type {{C}}, then run
+the given combinator on them and throw away the branches that did not return the
+same {{C}} value.
+
+We can solve this problem by parameterizing the trace operator with a value {{v
+: C}}. This results in the following new typing rule for trace:
+
+%subcode{proof} include main
+%@ c : A * C <-> B * C
+%@ v : C
+%@@ trace_v c : A <-> B
+
+\noindent
+This ends up solving both problems: we give the trace a default value, and
+prevent it from running on the empty type (since {{C}} now must be inhabited).
+However, we still must assign dynamic semantics to trace. The na\"ive solution
+of running {{c}} on the pair of the input value and {{v}} does not work, as this
+is trivially irreversible---consider, for example, {{trace_v swap*}}, which
+takes any value of the same type as {{v}} and returns {{v}}. Thus, the semantics
+for {{trace}} must be slightly more complicated.
+
+Recall that in {{Pi}}, combinators can be viewed as permutations on finite sets.
+A combinator of type {{A * C <-> B * C}} can be seen as two separate
+permutations: one on {{A}} (or equivalently, B, since they must have the same
+size and thus the same denotation as a finite set) and one on {{C}}. If we
+apply the fragment of the combinator that acts on {{C}} enough times, we will
+eventually get out the same value that we started with\footnote{I want to prove
+that this is actually true; having the extra {{A}} there seems like it might
+complicate things.}. Thus, the semantics that we want is for {{(trace_v c) v'}}
+to run {{c}} on the pair of {{v'}} and the last {{C}} value (starting with
+{{v}}) until the {{C}} value matches {{v}}, at which point it returns the {{B}}
+value returned by the combinator. In pseudocode:
+
+\begin{verbatim}
+TODO: figure out how to do the code 
+environment in subcode
+
+trace v c vin =
+  v0 = v
+  <vout, v'> = c <vin, v>
+
+  while (v' != v)
+    <vout, v'> := c <vin, v'>
+
+  return vout
+\end{verbatim}
+
+A more concise formulation as an inference rule is as follows:
+
+%subcode{proof} include main
+%@ exists v0 : C. c <v_{in}, v> = <v_{out}, v>
+%@@ (trace_v c) v_{in} = v_{out}
+
+This is easily reversible: {{(trace_v c)dagger = trace_v (c dagger)}}
+\footnote{Also need to prove this.}.
+
+%%%%%%%%%%%%%%%%%%%
+\subsection{Higher-Order Combinators}
+
+Now that we have the trace combinator defined, we can proceed with defining
+higher-order combinators. Note that this parameterizes our definition of
+$\{c\}$ by {{v}}, the value of type {{A}} (or equivalently, type {{B}}) used
+in the trace:
+
+%subcode{proof} include main
+%@ c : A1 * B2 <-> B1 * A2
+%@@ {[c]}_v : (B1 |--> A1) <=> (B2 |--> A2)
+
+\noindent
+We want this to be a transformation on combinators, taking a combinator of type
+{{B1 <-> A1}} to a combinator of type {{B2 <-> A2}}. This can be achieved by
+letting the combinator {{{[c]}_v c'}} be {{trace_v (c ; c' * id)}}, where
+{{c : B1 <-> A1}} and {{v : A1}}.
+
+From here, we want to define bifunctors {{/}}, {{*}}, and {{+}}, to make sure
+that our definition of functions is truly higher-order.
+
+\begin{itemize}
+
+\item {{(B |--> A) / (D |--> C) = (A * D) |--> (B * C)}}, with
+
+{{{[c1]}_{v1} : ((B |--> A) <=> (D |--> C)) / {[c2]}_{v_2} : ((B' |--> A') <=> (D' |--> C')) = {[shuffle ; c1 * c2dagger ; shuffle]}_{<v1, c2 v2>}}}
+%%: B1 * A2 |--> A1 * B2 <=> D1 * C2 |--> C1 * D2}},
+where
+{{shuffle : (A * B) * (C * D) <-> (A * C) * (B * D)}}.
+
+\item {{(B |--> A) * (D |--> C) = (B * D) |--> (A * C)}}, with
+
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{abbrvnat}
+\bibliography{cites}
+\end{document}
