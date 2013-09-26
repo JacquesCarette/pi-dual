@@ -12,43 +12,10 @@ open import Function
 open import Relation.Binary.PropositionalEquality
 
 ------------------------------------------------------------------------------
--- Codes for our types
-
-data B : Set where
-  -- no zero because we map types to POINTED SETS
-  ONE   : B
-  PLUS  : B → B → B
-  TIMES : B → B → B
-  TEST₁  : B -- used to explore fractionals
-  TEST₂  : B -- used to explore fractionals
-
--- Pointed sets with some paths on them (groupoids) 
-
-PointedSet : ∀ {u} → Set (L.suc u)
-PointedSet {u} = Σ (Set u) (λ A → A)
-
-baseSet : PointedSet → Set
-baseSet = proj₁
-
-basePoint : (pt : PointedSet) → baseSet pt
-basePoint = proj₂
-
-Groupoid : Set₁
-Groupoid = Σ PointedSet (λ pt → basePoint pt ≡ basePoint pt)
-
-baseSetG : Groupoid → Set
-baseSetG gp = proj₁ (proj₁ gp)
-
-basePointG : (gp : Groupoid) → baseSetG gp
-basePointG gp = proj₂ (proj₁ gp)
-
-pathG : (gp : Groupoid) → (basePointG gp ≡ basePointG gp)
-pathG = proj₂
-
 -- Reasoning about paths
 
-pathInd : ∀ {u} → {A : Set} → 
-  (C : (x y : A) → (x ≡ y) → Set u) → 
+pathInd : ∀ {u u'} → {A : Set u} → 
+  (C : (x y : A) → (x ≡ y) → Set u') → 
   (c : (x : A) → C x x refl) → 
   ((x y : A) (p : x ≡ y) → C x y p)
 pathInd C c x .x refl = c x
@@ -84,66 +51,58 @@ transport {A} {x} {y} {P} p =
     (λ x → id)
     x y p
 
--- An example type with a path other than refl
+------------------------------------------------------------------------------
+-- Codes for our types
 
-{-- 
-Informal idea
+data B : Set where
+  -- no zero because we map types to POINTED SETS
+  ONE   : B
+  PLUS  : B → B → B
+  TIMES : B → B → B
+  HALF  : B -- used to explore fractionals
 
-data S₁ : Set where
-  base : S₁
-  loop : base ≡ base
+{--
 
-Formalized used Dan Licata's trick:
-"http://homotopytypetheory.org/2011/04/23/running-circles-around-in-your-proof-assistant/"
-Implement it "inconsistently" in a private module; the interface is safe.
+Now let's define groups/groupoids
+
+The type 1/2 is modeled by the group { refl , loop } 
+where loop is self-inverse, i.e., loop . loop = refl
+
+We always get refl, inverses, and associativity for free. We need to
+explicitly add the new element 'loop' and the new equation 
+'loop . loop = refl'
+
 --}
 
--- S₁
+record Groupoid : Set (L.suc (L.suc L.zero)) where
+  constructor •[_,_,_,_]
+  field
+    ∣_∣       : Set 
+    •        : ∣_∣
+    path     : • ≡ •        -- the additional path (loop)
+    truncate : path ≡ path  -- the equivalence used to truncate
 
-private
-  data #S₁ : Set where
-    #base : #S₁
+open Groupoid public
 
-S₁ : Set
-S₁ = #S₁
+-- Example:
 
-base : S₁
-base = #base
+postulate iloop     : tt ≡ tt
+          itruncate : iloop ≡ iloop -- (trans' iloop iloop) ≡ refl
 
-postulate loop : base ≡ base
+half : Groupoid
+half = •[ ⊤ , tt , iloop , itruncate ]
 
-indS₁ : (P : S₁ → Set) → (b : P base) (p : transport {P = P} loop b ≡ b) → 
-        (x : S₁) → P x 
-indS₁ P b p #base = b
-
--- 1/2 which should be the same as S₁ with an additional path 
--- "loop . loop = refl" to truncate the tower of isos
-
-private
-  data #T₁ : Set where
-    #baseT : #T₁
-
-T₁ : Set
-T₁ = #T₁
-
-baseT : T₁
-baseT = #baseT
-
-postulate loopT : baseT ≡ baseT
-postulate loop2T : (trans' {A = T₁} loopT loopT) ≡ refl
-          
 -- Interpretations of types
 
 ⟦_⟧ : B → Groupoid
-⟦ ONE ⟧ = ((⊤ , tt) , refl)
+⟦ ONE ⟧ = •[ ⊤ , tt , refl , refl ]
 ⟦ PLUS b₁ b₂ ⟧ with ⟦ b₁ ⟧ | ⟦ b₂ ⟧ 
-... | ((B₁ , x₁) , p₁) | ((B₂ , x₂) , p₂) = 
-  (((B₁ ⊎ B₂) , inj₁ x₁) , ap inj₁ p₁)
+... | •[ B₁ , x₁ , p₁ , t₁ ] | •[ B₂ , x₂ , p₂ , t₂ ] = 
+  •[ B₁ ⊎ B₂ , inj₁ x₁ , ap inj₁ p₁ , ? ]
 ⟦ TIMES b₁ b₂ ⟧ with ⟦ b₁ ⟧ | ⟦ b₂ ⟧ 
-... | ((B₁ , x₁) , p₁) | ((B₂ , x₂) , p₂) = 
-  (((B₁ × B₂) , (x₁ , x₂)) , ap× p₁ p₂)
-⟦ TEST₁ ⟧ = ((S₁ , base) , loop)
-⟦ TEST₂ ⟧ = ? -- (((baseT ≡ baseT) , loopT) , loop2T)
+... | •[ B₁ , x₁ , p₁ , t₁ ] | •[ B₂ , x₂ , p₂ , t₂ ] = 
+  •[ B₁ × B₂ , (x₁ , x₂) , ap× p₁ p₂ , ? ]
+⟦ HALF ⟧ = half
 
 -- Combinators
 
@@ -152,10 +111,10 @@ data _⟷_ : B → B → Set₁ where
 
 record GFunctor (G₁ G₂ : Groupoid) : Set where
   field 
-    fun : baseSetG G₁ → baseSetG G₂
-    baseP : fun (basePointG G₁) ≡ basePointG G₂
+    fun : ∣ G₁ ∣ → ∣ G₂ ∣
+    baseP : fun (• G₁) ≡ (• G₂)
     -- dependent paths??
-    isoP : {x y : baseSetG G₁} (p : x ≡ y) → (fun x ≡ fun y)
+    isoP : {x y : ∣ G₁ ∣} (p : x ≡ y) → (fun x ≡ fun y)
 
 eval : {b₁ b₂ : B} → (b₁ ⟷ b₂) → GFunctor ⟦ b₁ ⟧ ⟦ b₂ ⟧
 eval swap× = 
@@ -166,3 +125,4 @@ eval swap× =
   }
 
 ------------------------------------------------------------------------------
+
