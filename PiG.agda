@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS --without-K --no-positivity-check #-}
 
 module PiG where
 
@@ -10,6 +10,7 @@ open import Data.Product
 open import Data.Nat
 open import Function
 open import Relation.Binary.PropositionalEquality
+open import Relation.Binary
 
 ------------------------------------------------------------------------------
 -- Reasoning about paths
@@ -74,34 +75,48 @@ explicitly add the new element 'loop' and the new equation
 
 --}
 
-record Groupoid : Set (L.suc (L.suc L.zero)) where
-  constructor •[_,_,_,_]
+cut-path : {A : Set} → {x : A} → (f g : ( x ≡ x) → (x ≡ x)) → x ≡ x → Set
+cut-path f g a = f a ≡ g a
+
+record GroupoidVal : Set₁ where
+  constructor •[_,_,_,_,_,_]
   field
     ∣_∣       : Set 
     •        : ∣_∣
     path     : • ≡ •        -- the additional path (loop)
-    truncate : path ≡ path  -- the equivalence used to truncate
+    -- truncate : trans' path path ≡ refl  -- the equivalence used to truncate
+    -- truncate : (f : • ≡ • → • ≡ •) → (b : • ≡ •) → f b ≡ refl
+    path-rel₁ : • ≡ • → • ≡ •
+    path-rel₂ : • ≡ • → • ≡ •  
+    truncate : cut-path path-rel₁ path-rel₂ path
 
-open Groupoid public
+open GroupoidVal public
 
 -- Example:
 
-postulate iloop     : tt ≡ tt
-          itruncate : iloop ≡ iloop -- (trans' iloop iloop) ≡ refl
+const-loop : {A : Set} {x : A} → (y : x ≡ x) → x ≡ x
+const-loop _ = refl
 
-half : Groupoid
-half = •[ ⊤ , tt , iloop , itruncate ]
+postulate iloop     : tt ≡ tt
+          itruncate : (f : tt ≡ tt → tt ≡ tt) → cut-path f const-loop iloop
+              -- (trans' iloop iloop) ≡ refl
+
+2loop : {A : Set} → {x : A} → x ≡ x → x ≡ x
+2loop x = trans' x x
+
+half : GroupoidVal
+half = •[ ⊤ , tt , iloop , 2loop , const-loop , itruncate 2loop ]
 
 -- Interpretations of types
 
-⟦_⟧ : B → Groupoid
-⟦ ONE ⟧ = •[ ⊤ , tt , refl , refl ]
+⟦_⟧ : B → GroupoidVal
+⟦ ONE ⟧ = •[ ⊤ , tt , refl , id , id , refl ]
 ⟦ PLUS b₁ b₂ ⟧ with ⟦ b₁ ⟧ | ⟦ b₂ ⟧ 
-... | •[ B₁ , x₁ , p₁ , t₁ ] | •[ B₂ , x₂ , p₂ , t₂ ] = 
-  •[ B₁ ⊎ B₂ , inj₁ x₁ , ap inj₁ p₁ , ? ]
+... | •[ B₁ , x₁ , p₁ , f₁ , g₁ , t₁ ] | •[ B₂ , x₂ , p₂ , f₂ , g₂ , t₂ ] = 
+  •[ B₁ ⊎ B₂ , inj₁ x₁ , ap inj₁ p₁ , id , id ,  refl ]
 ⟦ TIMES b₁ b₂ ⟧ with ⟦ b₁ ⟧ | ⟦ b₂ ⟧ 
-... | •[ B₁ , x₁ , p₁ , t₁ ] | •[ B₂ , x₂ , p₂ , t₂ ] = 
-  •[ B₁ × B₂ , (x₁ , x₂) , ap× p₁ p₂ , ? ]
+... | •[ B₁ , x₁ , p₁ , f₁ , g₁ , t₁ ] | •[ B₂ , x₂ , p₂ , f₂ , g₂ , t₂ ] = 
+  •[ B₁ × B₂ , (x₁ , x₂) , ap× p₁ p₂ , id , id , refl ]
 ⟦ HALF ⟧ = half
 
 -- Combinators
@@ -109,7 +124,7 @@ half = •[ ⊤ , tt , iloop , itruncate ]
 data _⟷_ : B → B → Set₁ where
   swap× : {b₁ b₂ : B} → TIMES b₁ b₂ ⟷ TIMES b₂ b₁
 
-record GFunctor (G₁ G₂ : Groupoid) : Set where
+record GFunctor (G₁ G₂ : GroupoidVal) : Set where
   field 
     fun : ∣ G₁ ∣ → ∣ G₂ ∣
     baseP : fun (• G₁) ≡ (• G₂)
@@ -126,3 +141,39 @@ eval swap× =
 
 ------------------------------------------------------------------------------
 
+{-
+   Some old scribblings
+A-2 : Set
+A-2 = ⊤
+
+postulate 
+  S⁰ : Set
+  S¹ : Set
+
+record Trunc-1 (A : Set) : Set where
+  field
+    embed : A → Trunc-1 A
+    hub : (r : S⁰ → Trunc-1 A) → Trunc-1 A
+    spoke : (r : S⁰ → Trunc-1 A) → (x : S⁰) → r x ≡ hub r
+
+-}
+
+--------------------
+
+record 2Groupoid : Set₁ where
+  constructor ²[_,_,_]
+  field
+    obj      : Set 
+    hom     : Rel obj L.zero        -- paths (loop)
+    2path    : ∀ {a b} → hom a b → hom a b → Set  -- 2paths, i.e. path eqns
+
+open 2Groupoid public
+
+hom⊤ : Rel ⊤ L.zero
+hom⊤ = _≡_
+
+2path⊤ : Rel (hom⊤ tt tt) L.zero
+2path⊤ = _≡_
+
+half' : 2Groupoid
+half' = ²[ ⊤ , hom⊤ , 2path⊤ ]
