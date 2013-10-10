@@ -15,17 +15,11 @@ infix  30 _⟷_
 --}
 
 ---------------------------------------------------------------------------
--- Our own version of refl that makes 'a' explicit
 
-data _≡_ {u} {A : Set u} : (a b : A) → Set u where
-  refl : (a : A) → (a ≡ a)
+data _↝_ {u} {A : Set u} : (a b : A) → Set u where
+  path : (a : A) → (b : A) → (a ↝ b)
 
--- if we have no occurrences of reciprocals then we can use plain sets; for
--- consistency with the rest of the story we will explicitly add refl paths
--- in this file we assume we have exactly one occurrence of reciprocals
--- so 1/b is ok but 1/(1/b) not ok
-
--- pi types with no reciprocals
+-- pi types with exactly one level of reciprocals
 
 data B0 : Set where
   ONE    : B0
@@ -38,37 +32,51 @@ data B1 : Set where
   TIMES1 : B1 → B1 → B1
   RECIP1 : B0 → B1
 
--- discrete groupoids
+-- groupoids
+
+record 0-type : Set₁ where
+  constructor G₀
+  field
+    ∣_∣₀ : Set
+  0-paths : {a : ∣_∣₀} → (a ↝ a)
+  0-paths {a} = path a a
+
+open 0-type public
+
+{--
 
 record 2-type : Set₁ where
   constructor G₂
   field
-    ∣_∣ : Set
-    1-paths : {a b : ∣_∣} → (a ≡ b)
---    2-paths : {a b : ∣_∣} {p q : 1-paths {a} {b}} → (p ≡ q)
+    ∣_∣₁ : Set
+    1-paths : {a b : ∣_∣₁} → (a ≡ b)
+    2-paths : {a b : ∣_∣₁} {p q : a ≡ b} → (p ≡ q)
 
 open 2-type public
 
-x : (r : 2-type) → {a b : ∣ r ∣} → (a ≡ b)
-x = 1-paths
-
-p : (r : 2-type) → {a b : ∣ r ∣} {q p : x r {a} {b}} → (p ≡ q)
-p = ?
-
-{--
+-- We interpret types as 2-groupoids
 
 plus : 0-type → 0-type → 0-type
-plus t₁ t₂ = G₀ (∣ t₁ ∣ ⊎ ∣ t₂ ∣)
+plus t₁ t₂ = G₀ (∣ t₁ ∣₀ ⊎ ∣ t₂ ∣₀)
 
 times : 0-type → 0-type → 0-type
-times t₁ t₂ = G₀ (∣ t₁ ∣ × ∣ t₂ ∣)
+times t₁ t₂ = G₀ (∣ t₁ ∣₀ × ∣ t₂ ∣₀)
 
--- We interpret types as discrete groupoids
+⟦_⟧₀ : B0 → 0-type
+⟦ ONE ⟧₀ = G₀ ⊤
+⟦ PLUS0 b₁ b₂ ⟧₀ = plus ⟦ b₁ ⟧₀ ⟦ b₂ ⟧₀
+⟦ TIMES0 b₁ b₂ ⟧₀ = times ⟦ b₁ ⟧₀ ⟦ b₂ ⟧₀
 
-⟦_⟧ : B → 0-type
-⟦ ONE ⟧ = G₀ ⊤
-⟦ PLUS b₁ b₂ ⟧ = plus ⟦ b₁ ⟧ ⟦ b₂ ⟧
-⟦ TIMES b₁ b₂ ⟧ = times ⟦ b₁ ⟧ ⟦ b₂ ⟧
+⟦_⟧₁ : B1 → 2-type
+⟦ LIFT0 b0 ⟧₁ with ⟦ b0 ⟧₀ 
+... | gb0 = ? -- G₂ ∣ gb0 ∣₀ (0-paths gb0) (λ {a} {b} {p} {q} → refl p)
+⟦ PLUS1 b₁ b₂ ⟧₁ = {!!}
+⟦ TIMES1 b₁ b₂ ⟧₁ = {!!}
+-- b0 is 3
+⟦ RECIP1 b0 ⟧₁ with ⟦ b0 ⟧₀
+... | gb0 = G₂ ⊤ [refl : tt ≡ tt, p : tt ≡ tt, q : tt ≡ tt]
+
+
 
 -- isos
 
