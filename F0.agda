@@ -6,7 +6,7 @@ import Level as L
 open import Data.Unit
 open import Data.Sum
 open import Data.Product
-open import Function using (id)
+open import Function using (id ; _$_ )
 
 infixr 90 _⊗_
 infixr 80 _⊕_
@@ -124,21 +124,50 @@ dist×⊎ : {A B C : Set} → (A ⊎ B) × C → (A × C) ⊎ (B × C)
 dist×⊎ (inj₁ a , c) = inj₁ (a , c)
 dist×⊎ (inj₂ b , c) = inj₂ (b , c)
 
-eval : {b₁ b₂ : B} → (b₁ ⟷ b₂) → 0-functor ⟦ b₁ ⟧ ⟦ b₂ ⟧
-eval swap₊ = F₀ swap⊎
-eval assocl₊ = F₀ assocl⊎ -- : { b₁ b₂ b₃ : B } → PLUS b₁ (PLUS b₂ b₃) ⟷ PLUS (PLUS b₁ b₂) b₃
-eval assocr₊ = F₀ assocr⊎ -- : { b₁ b₂ b₃ : B } → PLUS (PLUS b₁ b₂) b₃ ⟷ PLUS b₁ (PLUS b₂ b₃)
-eval unite⋆ = F₀ unite× -- : { b : B } → TIMES ONE b ⟷ b
-eval uniti⋆ = F₀ uniti× -- : { b : B } → b ⟷ TIMES ONE b
-eval swap⋆ = F₀ swap× --  : { b₁ b₂ : B } → TIMES b₁ b₂ ⟷ TIMES b₂ b₁
-eval assocl⋆ = F₀ assocl× -- : { b₁ b₂ b₃ : B } → TIMES b₁ (TIMES b₂ b₃) ⟷ TIMES (TIMES b₁ b₂) b₃
-eval assocr⋆ = F₀ assocr× -- : { b₁ b₂ b₃ : B } → TIMES (TIMES b₁ b₂) b₃ ⟷ TIMES b₁ (TIMES b₂ b₃)
-eval dist = F₀ dist×⊎ -- : { b₁ b₂ b₃ : B } → TIMES (PLUS b₁ b₂) b₃ ⟷ PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) 
-eval factor = F₀ {!!} -- : { b₁ b₂ b₃ : B } → PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) ⟷ TIMES (PLUS b₁ b₂) b₃
-eval id⟷ = F₀ id --  : { b : B } → b ⟷ b
-eval (sym c) = F₀ {!!} -- : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
-eval (c₁ ∘ c₂) = F₀ {!!} -- : { b₁ b₂ b₃ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₃) → (b₁ ⟷ b₃)
-eval (c₁ ⊕ c₂) = F₀ {!!} -- : { b₁ b₂ b₃ b₄ : B } → (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (PLUS b₁ b₂ ⟷ PLUS b₃ b₄)
-eval (c₁ ⊗ c₂) = F₀ {!!} -- : { b₁ b₂ b₃ b₄ : B } → (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (TIMES b₁ b₂ ⟷ TIMES b₃ b₄)
+factor⊎× : {A B C : Set} → (A × C) ⊎ (B × C) → (A ⊎ B) × C
+factor⊎× (inj₁ (a , c)) = (inj₁ a , c)
+factor⊎× (inj₂ (b , c)) = (inj₂ b , c)
+
+ev⊎ : {A B C D : Set} → (A → C) → (B → D) → A ⊎ B → C ⊎ D
+ev⊎ f _ (inj₁ a) = inj₁ (f a)
+ev⊎ _ g (inj₂ b) = inj₂ (g b)
+
+ev× : {A B C D : Set} → (A → C) → (B → D) → A × B → C × D
+ev× f g (a , b) = (f a , g b)
+
+mutual 
+       eval : {b₁ b₂ : B} → (b₁ ⟷ b₂) → 0-functor ⟦ b₁ ⟧ ⟦ b₂ ⟧
+       eval swap₊ = F₀ swap⊎
+       eval assocl₊ = F₀ assocl⊎
+       eval assocr₊ = F₀ assocr⊎
+       eval unite⋆ = F₀ unite×
+       eval uniti⋆ = F₀ uniti×
+       eval swap⋆ = F₀ swap×
+       eval assocl⋆ = F₀ assocl×
+       eval assocr⋆ = F₀ assocr×
+       eval dist = F₀ dist×⊎
+       eval factor = F₀ factor⊎×
+       eval id⟷ = F₀ id
+       eval (sym c) = evalB c
+       eval (c₁ ∘ c₂) = F₀ (λ x → fobj (eval c₂) (fobj (eval c₁) x))
+       eval (c₁ ⊕ c₂) = F₀ (ev⊎ (fobj $ eval c₁) (fobj $ eval c₂))
+       eval (c₁ ⊗ c₂) = F₀ (ev× (fobj $ eval c₁) (fobj $ eval c₂))
+
+       evalB : {b₁ b₂ : B} → (b₁ ⟷ b₂) → 0-functor ⟦ b₂ ⟧ ⟦ b₁ ⟧
+       evalB swap₊ = F₀ swap⊎
+       evalB assocl₊ = F₀ assocr⊎
+       evalB assocr₊ = F₀ assocl⊎
+       evalB unite⋆ = F₀ uniti×
+       evalB uniti⋆ = F₀ unite×
+       evalB swap⋆ = F₀ swap×
+       evalB assocl⋆ = F₀ assocr×
+       evalB assocr⋆ = F₀ assocl×
+       evalB dist = F₀ factor⊎×
+       evalB factor = F₀ dist×⊎
+       evalB id⟷ = F₀ id
+       evalB (sym c) = eval c
+       evalB (c₁ ∘ c₂) = F₀ (λ x → fobj (evalB c₁) (fobj (evalB c₂) x))
+       evalB (c₁ ⊕ c₂) = F₀ (ev⊎ (fobj $ evalB c₁) (fobj $ evalB c₂))
+       evalB (c₁ ⊗ c₂) = F₀ (ev× (fobj $ evalB c₁) (fobj $ evalB c₂))
 
 ---------------------------------------------------------------------------
