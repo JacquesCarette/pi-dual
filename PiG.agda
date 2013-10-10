@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --no-positivity-check #-}
+{-# OPTIONS --without-K #-}
 
 module PiG where
 
