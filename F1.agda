@@ -24,6 +24,9 @@ infix  30 _⟷_
 data Path (A : Set) : Set where
   _↝_ : (a : A) → (b : A) → Path A
 
+id↝ : {A : Set} → (a : A) → Path A
+id↝ a = a ↝ a
+
 ap : {A B : Set} → (f : A → B) → Path A → Path B
 ap f (a ↝ a') = f a ↝ f a'
 
@@ -84,9 +87,10 @@ record 2-type : Set₁ where
 open 2-type public
 
 ⟦_⟧₁ : B1 → 2-type
-⟦ LIFT0 b0 ⟧₁ = G₂ ∣ ⟦ b0 ⟧₀ ∣₀ (map (λ a → a ↝ a) (elems0 b0)) []
-⟦ PLUS1 b₁ b₂ ⟧₁ = {!!}
-⟦ TIMES1 b₁ b₂ ⟧₁ = {!!}
+⟦ LIFT0 b0 ⟧₁ = G₂ ∣ ⟦ b0 ⟧₀ ∣₀ (map id↝ (elems0 b0)) []
+⟦ PLUS1 b₁ b₂ ⟧₁ with ⟦ b₁ ⟧₁ | ⟦ b₂ ⟧₁ 
+... | G₂ 0p₁ 1p₁ 2p₁ | G₂ 0p₂ 1p₂ 2p₂ = G₂ (0p₁ ⊎ 0p₂) (map (ap inj₁) 1p₁ ++ map (ap inj₂) 1p₂) []
+⟦ TIMES1 b₁ b₂ ⟧₁ = G₂ {!!} {!!} []
 ⟦ RECIP1 b0 ⟧₁ = G₂ ⊤ (map (λ _ → tt ↝ tt) (elems0 b0)) []
 
 test10 = ⟦ LIFT0 ONE ⟧₁
