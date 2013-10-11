@@ -2,10 +2,13 @@
 
 module F1 where
 
-import Level as L
 open import Data.Unit
-open import Data.Sum
-open import Data.Product
+open import Data.Sum hiding (map)
+open import Data.Product hiding (map)
+open import Data.List
+
+open import Data.Nat
+open import Data.Bool
 
 {--
 infixr 90 _⊗_
@@ -15,10 +18,21 @@ infix  30 _⟷_
 --}
 
 ---------------------------------------------------------------------------
+-- Paths
 
-data _↝_ {u} {A : Set u} : (a b : A) → Set u where
-  path : (a : A) → (b : A) → (a ↝ b)
+-- Path relation should be an equivalence 
+data Path (A : Set) : Set where
+  _↝_ : (a : A) → (b : A) → Path A
 
+ap : {A B : Set} → (f : A → B) → Path A → Path B
+ap f (a ↝ a') = f a ↝ f a'
+
+pathProd : {A B : Set} → Path A → Path B → Path (A × B)
+pathProd (a ↝ a') (b ↝ b') = (a , b) ↝ (a' , b')
+
+pathProdL : {A B : Set} → List (Path A) → List (Path B) → List (Path (A × B))
+pathProdL pas pbs = concatMap (λ pa → map (pathProd pa) pbs) pas
+  
 -- pi types with exactly one level of reciprocals
 
 data B0 : Set where
@@ -32,50 +46,54 @@ data B1 : Set where
   TIMES1 : B1 → B1 → B1
   RECIP1 : B0 → B1
 
--- groupoids
+-- interpretation of B0 as discrete groupoids
 
 record 0-type : Set₁ where
   constructor G₀
   field
     ∣_∣₀ : Set
-  0-paths : {a : ∣_∣₀} → (a ↝ a)
-  0-paths {a} = path a a
 
 open 0-type public
 
-{--
-
-record 2-type : Set₁ where
-  constructor G₂
-  field
-    ∣_∣₁ : Set
-    1-paths : {a b : ∣_∣₁} → (a ≡ b)
-    2-paths : {a b : ∣_∣₁} {p q : a ≡ b} → (p ≡ q)
-
-open 2-type public
-
--- We interpret types as 2-groupoids
-
 plus : 0-type → 0-type → 0-type
-plus t₁ t₂ = G₀ (∣ t₁ ∣₀ ⊎ ∣ t₂ ∣₀)
+plus t₁ t₂ = G₀ (∣ t₁ ∣₀ ⊎ ∣ t₂ ∣₀) 
 
 times : 0-type → 0-type → 0-type
 times t₁ t₂ = G₀ (∣ t₁ ∣₀ × ∣ t₂ ∣₀)
 
 ⟦_⟧₀ : B0 → 0-type
-⟦ ONE ⟧₀ = G₀ ⊤
+⟦ ONE ⟧₀ = G₀ ⊤ 
 ⟦ PLUS0 b₁ b₂ ⟧₀ = plus ⟦ b₁ ⟧₀ ⟦ b₂ ⟧₀
 ⟦ TIMES0 b₁ b₂ ⟧₀ = times ⟦ b₁ ⟧₀ ⟦ b₂ ⟧₀
 
+elems0 : (b : B0) → List ∣ ⟦ b ⟧₀ ∣₀
+elems0 ONE = [ tt ]
+elems0 (PLUS0 b b') = map inj₁ (elems0 b) ++ map inj₂ (elems0 b')
+elems0 (TIMES0 b b') = 
+  concatMap (λ a → map (λ b → (a , b)) (elems0 b')) (elems0 b)
+
+-- interpretation of B1 types as 2-types
+
+record 2-type : Set₁ where
+  constructor G₂
+  field
+    ∣_∣₁ : Set
+    1-paths : List (Path ∣_∣₁)
+    2-paths : List (Path (Path ∣_∣₁))
+
+open 2-type public
+
 ⟦_⟧₁ : B1 → 2-type
-⟦ LIFT0 b0 ⟧₁ with ⟦ b0 ⟧₀ 
-... | gb0 = ? -- G₂ ∣ gb0 ∣₀ (0-paths gb0) (λ {a} {b} {p} {q} → refl p)
+⟦ LIFT0 b0 ⟧₁ = G₂ ∣ ⟦ b0 ⟧₀ ∣₀ (map (λ a → a ↝ a) (elems0 b0)) []
 ⟦ PLUS1 b₁ b₂ ⟧₁ = {!!}
 ⟦ TIMES1 b₁ b₂ ⟧₁ = {!!}
--- b0 is 3
-⟦ RECIP1 b0 ⟧₁ with ⟦ b0 ⟧₀
-... | gb0 = G₂ ⊤ [refl : tt ≡ tt, p : tt ≡ tt, q : tt ≡ tt]
+⟦ RECIP1 b0 ⟧₁ = G₂ ⊤ (map (λ _ → tt ↝ tt) (elems0 b0)) []
 
+test10 = ⟦ LIFT0 ONE ⟧₁
+test11 = ⟦ LIFT0 (PLUS0 ONE ONE) ⟧₁
+test12 = ⟦ RECIP1 (PLUS0 ONE ONE) ⟧₁
+
+{--
 
 
 -- isos
