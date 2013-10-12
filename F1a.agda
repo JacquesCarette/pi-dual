@@ -1,6 +1,6 @@
 {-# OPTIONS --without-K #-}
 
-module F1 where
+module F1a where
 
 open import Data.Unit
 open import Data.Sum hiding (map)
@@ -21,20 +21,26 @@ infix  30 _⟷_
 -- Paths
 
 -- Path relation should be an equivalence 
-data Path (A : Set) : Set where
-  _↝_ : (a : A) → (b : A) → Path A
+data IPath (I A : Set) : Set where
+  _↝_ : {i : I} (a : A) → (b : A) → IPath I A
+
+Path : Set → Set
+Path A = IPath ⊤ A
 
 id↝ : {A : Set} → (a : A) → Path A
 id↝ a = a ↝ a
 
-ap : {A B : Set} → (f : A → B) → Path A → Path B
-ap f (a ↝ a') = f a ↝ f a'
+ap : {A B I : Set} → (A → B) → IPath I A → IPath I B
+ap f (_↝_ {i} a a') = _↝_ {i = i} (f a) (f a')
 
-pathProd : {A B : Set} → Path A → Path B → Path (A × B)
-pathProd (a ↝ a') (b ↝ b') = (a , b) ↝ (a' , b')
+iap : {A B I J : Set} → (I → J) → (A → B) → IPath I A → IPath J B
+iap g f (_↝_ {i} a a') = _↝_ {i = g i} (f a) (f a')
 
-pathProdL : {A B : Set} → List (Path A) → List (Path B) → List (Path (A × B))
-pathProdL pas pbs = concatMap (λ pa → map (pathProd pa) pbs) pas
+ipathProd : {A B I J : Set} → IPath I A → IPath J B → IPath (I × J) (A × B)
+ipathProd (_↝_ {i = i} a a') (_↝_ {i = j} b b') = _↝_ {i = i , j} (a , b) (a' , b')
+
+_×↝_ : {A B I J : Set} → List (IPath I A) → List (IPath J B) → List (IPath (I × J) (A × B))
+pas ×↝ pbs = concatMap (λ pa → map (ipathProd pa) pbs) pas
   
 -- pi types with exactly one level of reciprocals
 
@@ -77,38 +83,36 @@ elems0 (TIMES0 b b') =
 
 -- interpretation of B1 types as 2-types
 
-record 2-type : Set₁ where
+record 1-type : Set₁ where
   constructor G₂
   field
+    I : Set
     ∣_∣₁ : Set
-    1-paths : List (Path ∣_∣₁)
-    2-paths : List (Path (Path ∣_∣₁))
+    1-paths : List (IPath I ∣_∣₁)
 
-open 2-type public
+open 1-type public
 
-_⊎↝_ : {A B : Set} → List (Path A) → List (Path B) → List (Path (A ⊎ B))
-p₁ ⊎↝ p₂ = map (ap inj₁) p₁ ++ map (ap inj₂) p₂
+_⊎↝_ : {I J A B : Set} → List (IPath I A) → List (IPath J B) → List (IPath (I ⊎ J) (A ⊎ B))
+p₁ ⊎↝ p₂ = map (iap inj₁ inj₁) p₁ ++ map (iap inj₂ inj₂) p₂
 
-⟦_⟧₁ : B1 → 2-type
-⟦ LIFT0 b0 ⟧₁ = G₂ ∣ ⟦ b0 ⟧₀ ∣₀ (map id↝ (elems0 b0)) []
+⟦_⟧₁ : B1 → 1-type
+⟦ LIFT0 b0 ⟧₁ = G₂ ⊤ ∣ ⟦ b0 ⟧₀ ∣₀ (map id↝ (elems0 b0))
 ⟦ PLUS1 b₁ b₂ ⟧₁ with ⟦ b₁ ⟧₁ | ⟦ b₂ ⟧₁ 
-... | G₂ 0p₁ 1p₁ 2p₁ | G₂ 0p₂ 1p₂ 2p₂ = G₂ (0p₁ ⊎ 0p₂) (1p₁ ⊎↝ 1p₂) []
-⟦ TIMES1 b₁ b₂ ⟧₁ = G₂ {!!} {!!} []
-⟦ RECIP1 b0 ⟧₁ = G₂ ⊤ (map (λ _ → tt ↝ tt) (elems0 b0)) []
+... | G₂ I₁ 0p₁ 1p₁ | G₂ I₂ 0p₂ 1p₂ = G₂ (I₁ ⊎ I₂) (0p₁ ⊎ 0p₂) (1p₁ ⊎↝ 1p₂)
+⟦ TIMES1 b₁ b₂ ⟧₁ with ⟦ b₁ ⟧₁ | ⟦ b₂ ⟧₁ 
+... | G₂ I₁ 0p₁ 1p₁ | G₂ I₂ 0p₂ 1p₂ = G₂ (I₁ × I₂) (0p₁ × 0p₂) (1p₁ ×↝ 1p₂)
+⟦ RECIP1 b0 ⟧₁ = G₂ (∣ ⟦ TIMES0 b0 b0 ⟧₀ ∣₀ ) ⊤ (concatMap (λ a → map (λ b → _↝_ {i = a , b} tt tt) (elems0 b0)) (elems0 b0) )
 
 test10 = ⟦ LIFT0 ONE ⟧₁
 test11 = ⟦ LIFT0 (PLUS0 ONE ONE) ⟧₁
 test12 = ⟦ RECIP1 (PLUS0 ONE ONE) ⟧₁
 
-{--
-
-
 -- isos
 
-data _⟷_ : B → B → Set where
+data _⟷_ : B1 → B1 → Set where
   -- + 
-  swap₊   : { b₁ b₂ : B } → PLUS b₁ b₂ ⟷ PLUS b₂ b₁
-  assocl₊ : { b₁ b₂ b₃ : B } → PLUS b₁ (PLUS b₂ b₃) ⟷ PLUS (PLUS b₁ b₂) b₃
+  swap₊   : { b₁ b₂ : B1 } → PLUS1 b₁ b₂ ⟷ PLUS1 b₂ b₁
+{-  assocl₊ : { b₁ b₂ b₃ : B } → PLUS b₁ (PLUS b₂ b₃) ⟷ PLUS (PLUS b₁ b₂) b₃
   assocr₊ : { b₁ b₂ b₃ : B } → PLUS (PLUS b₁ b₂) b₃ ⟷ PLUS b₁ (PLUS b₂ b₃)
   -- *
   unite⋆  : { b : B } → TIMES ONE b ⟷ b
@@ -132,14 +136,15 @@ data _⟷_ : B → B → Set where
 
 -- interpret isos as functors
 
-record 0-functor (A B : 0-type) : Set where
-  constructor F₀
+record 1-functor (A B : 1-type) : Set where
+  constructor F₁
   field
-    fobj : ∣ A ∣ → ∣ B ∣
-  fmor : {a b : ∣ A ∣} → (a ≡ b) → (fobj a ≡ fobj b)
-  fmor {a} {.a} (refl .a) = refl (fobj a)
+    find : I A → I B
+    fobj : ∣ A ∣₁ → ∣ B ∣₁
+  fmor : {a b : ∣ A ∣₁} → {i j : I A} → (IPath i a) → (IPath j (fobj a) (fobj b))
+  fmor {a} {b} (p) = ?
 
-open 0-functor public
+open 1-functor public
 
 swap⊎ : {A B : Set} → A ⊎ B → B ⊎ A
 swap⊎ (inj₁ a) = inj₂ a
