@@ -24,24 +24,25 @@ infix  30 _⟷_
 data IPath (I A : Set) : Set where
   _↝_ : {i : I} (a : A) → (b : A) → IPath I A
 
-Path : Set → Set
-Path A = IPath ⊤ A
-
-id↝ : {A : Set} → (a : A) → Path A
+id↝ : {A : Set} → (a : A) → IPath ⊤ A
 id↝ a = a ↝ a
 
-ap : {A B I : Set} → (A → B) → IPath I A → IPath I B
-ap f (_↝_ {i} a a') = _↝_ {i = i} (f a) (f a')
+ap : {A B I J : Set} → (I → J) → (A → B) → IPath I A → IPath J B
+ap g f (_↝_ {i} a a') = _↝_ {i = g i} (f a) (f a')
 
-iap : {A B I J : Set} → (I → J) → (A → B) → IPath I A → IPath J B
-iap g f (_↝_ {i} a a') = _↝_ {i = g i} (f a) (f a')
+ZIP : (K : Set → Set → Set) → (P : Set → Set → Set) 
+     → (I : Set) → (J : Set) → (A : Set) → (B : Set) → Set
+ZIP K P I J A B = K I A → K J B → K (P I J) (P A B)
 
-ipathProd : {A B I J : Set} → IPath I A → IPath J B → IPath (I × J) (A × B)
-ipathProd (_↝_ {i = i} a a') (_↝_ {i = j} b b') = _↝_ {i = i , j} (a , b) (a' , b')
+pathProd : {A B I J : Set} → ZIP IPath _×_ I J A B
+pathProd (_↝_ {i = i} a a') (_↝_ {i = j} b b') = _↝_ {i = i , j} (a , b) (a' , b')
+
+prod : {X Y : Set} → {K : Set → Set → Set} → (X → Y → K X Y) → List X → List Y → List (K X Y)
+prod f l₁ l₂ = concatMap (λ b → map (f b) l₂) l₁
 
 _×↝_ : {A B I J : Set} → List (IPath I A) → List (IPath J B) → List (IPath (I × J) (A × B))
-pas ×↝ pbs = concatMap (λ pa → map (ipathProd pa) pbs) pas
-  
+_×↝_ {A} {B} {I} {J} pas pbs = prod {K = λ _ _ → IPath (I × J) (A × B)} pathProd pas pbs
+
 -- pi types with exactly one level of reciprocals
 
 data B0 : Set where
@@ -81,6 +82,11 @@ elems0 (PLUS0 b b') = map inj₁ (elems0 b) ++ map inj₂ (elems0 b')
 elems0 (TIMES0 b b') = 
   concatMap (λ a → map (λ b → (a , b)) (elems0 b')) (elems0 b)
 
+point : (b : B0) → ∣ ⟦ b ⟧₀ ∣₀
+point ONE = tt
+point (PLUS0 b _) = inj₁ (point b)
+point (TIMES0 b₀ b₁) = point b₀ , point b₁ 
+
 -- interpretation of B1 types as 2-types
 
 record 1-type : Set₁ where
@@ -93,7 +99,7 @@ record 1-type : Set₁ where
 open 1-type public
 
 _⊎↝_ : {I J A B : Set} → List (IPath I A) → List (IPath J B) → List (IPath (I ⊎ J) (A ⊎ B))
-p₁ ⊎↝ p₂ = map (iap inj₁ inj₁) p₁ ++ map (iap inj₂ inj₂) p₂
+p₁ ⊎↝ p₂ = map (ap inj₁ inj₁) p₁ ++ map (ap inj₂ inj₂) p₂
 
 ⟦_⟧₁ : B1 → 1-type
 ⟦ LIFT0 b0 ⟧₁ = G₂ ⊤ ∣ ⟦ b0 ⟧₀ ∣₀ (map id↝ (elems0 b0))
@@ -133,7 +139,8 @@ data _⟷_ : B1 → B1 → Set where
            (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (PLUS b₁ b₂ ⟷ PLUS b₃ b₄)
   _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
            (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (TIMES b₁ b₂ ⟷ TIMES b₃ b₄)
-
+-}
+  η⋆ : (b : B0) → LIFT0 ONE ⟷ TIMES1 (LIFT0 b) (RECIP1 b)
 -- interpret isos as functors
 
 record 1-functor (A B : 1-type) : Set where
@@ -141,8 +148,7 @@ record 1-functor (A B : 1-type) : Set where
   field
     find : I A → I B
     fobj : ∣ A ∣₁ → ∣ B ∣₁
-  fmor : {a b : ∣ A ∣₁} → {i j : I A} → (IPath i a) → (IPath j (fobj a) (fobj b))
-  fmor {a} {b} (p) = ?
+    fmor : List (IPath (I A) ∣ A ∣₁) →  List (IPath (I B) ∣ B ∣₁)
 
 open 1-functor public
 
@@ -150,9 +156,32 @@ swap⊎ : {A B : Set} → A ⊎ B → B ⊎ A
 swap⊎ (inj₁ a) = inj₂ a
 swap⊎ (inj₂ b) = inj₁ b
 
-eval : {b₁ b₂ : B} → (b₁ ⟷ b₂) → 0-functor ⟦ b₁ ⟧ ⟦ b₂ ⟧
-eval swap₊ = F₀ swap⊎
-eval assocl₊ = ? -- : { b₁ b₂ b₃ : B } → PLUS b₁ (PLUS b₂ b₃) ⟷ PLUS (PLUS b₁ b₂) b₃
+Iη⋆ : (b : B0) → I ⟦ LIFT0 ONE ⟧₁ → I ⟦ TIMES1 (LIFT0 b) (RECIP1 b) ⟧₁
+Iη⋆ b tt = tt , (point b , point b)
+
+objη⋆ : (b : B0) → ∣ ⟦ LIFT0 ONE ⟧₁ ∣₁ → ∣ ⟦ TIMES1 (LIFT0 b) (RECIP1 b) ⟧₁ ∣₁
+objη⋆ b tt = point b , tt
+
+sw : {b₁ b₂ : B1} → IPath (I ⟦ PLUS1 b₁ b₂ ⟧₁) ∣ ⟦ PLUS1 b₁ b₂ ⟧₁ ∣₁ → IPath (I ⟦ PLUS1 b₂ b₁ ⟧₁) ∣ ⟦ PLUS1 b₂ b₁ ⟧₁ ∣₁
+sw (_↝_ {i} (inj₁ x) (inj₁ y)) = _↝_ {i = swap⊎ i} (inj₂ x) (inj₂ y)
+sw (_↝_ {i} (inj₁ x) (inj₂ y)) = _↝_ {i = swap⊎ i} (inj₂ x) (inj₁ y)
+sw (_↝_ {i} (inj₂ x) (inj₁ y)) = _↝_ {i = swap⊎ i} (inj₁ x) (inj₂ y)
+sw (_↝_ {i} (inj₂ x) (inj₂ y)) = _↝_ {i = swap⊎ i} (inj₁ x) (inj₁ y)
+
+sw[] :  (b₁ b₂ : B1) → List (IPath (I ⟦ PLUS1 b₁ b₂ ⟧₁) ∣ ⟦ PLUS1 b₁ b₂ ⟧₁ ∣₁ ) → List (IPath (I ⟦ PLUS1 b₂ b₁ ⟧₁) ∣ ⟦ PLUS1 b₂ b₁ ⟧₁ ∣₁ )
+sw[] _ _ [] = []
+sw[] b₁ b₂ (x ∷ l) = sw {b₁} {b₂} x ∷ sw[] b₁ b₂ l
+
+-- This could be simplified, but this is the 'semantically correct' version
+eta : (b : B0) → List (IPath (I ⟦ LIFT0 ONE ⟧₁) ∣ ⟦ LIFT0 ONE ⟧₁ ∣₁) → List (IPath (I ⟦ TIMES1 (LIFT0 b) (RECIP1 b) ⟧₁) ∣ ⟦ TIMES1 (LIFT0 b) (RECIP1 b) ⟧₁ ∣₁)
+-- note how the input list is not used at all!
+eta b _ = (concatMap (λ a → map (λ a' → _↝_ {i = tt , a , a'} (a , tt) (a' , tt)) (elems0 b)) (elems0 b) )
+
+eval : {b₁ b₂ : B1} → (b₁ ⟷ b₂) → 1-functor ⟦ b₁ ⟧₁ ⟦ b₂ ⟧₁
+eval (swap₊ {b₁} {b₂}) = F₁ swap⊎ swap⊎ (sw[] b₁ b₂)
+eval (η⋆ b) = F₁ (Iη⋆ b) (objη⋆ b) (eta b )
+
+{- eval assocl₊ = ? -- : { b₁ b₂ b₃ : B } → PLUS b₁ (PLUS b₂ b₃) ⟷ PLUS (PLUS b₁ b₂) b₃
 eval assocr₊ = ? -- : { b₁ b₂ b₃ : B } → PLUS (PLUS b₁ b₂) b₃ ⟷ PLUS b₁ (PLUS b₂ b₃)
 eval unite⋆ = ? -- : { b : B } → TIMES ONE b ⟷ b
 eval uniti⋆ = ? -- : { b : B } → b ⟷ TIMES ONE b
