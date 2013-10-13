@@ -1,0 +1,240 @@
+\documentclass[11pt]{article}
+\usepackage{fullpage}
+\usepackage{url}
+\usepackage{color, colortbl}
+\usepackage{courier}
+
+\begin{document}
+\begin{titlepage}
+\begin{center}
+\vfill
+{\LARGE Isomorphisms as Groupoids: \\ 
+  Homotopy Type Theory with Fractional Types} \\[1.5cm]
+{\Large Jacques Carette${}^*$ \qquad Amr Sabry${}^{\dagger}$}\\[0.5cm]
+{\Large $({}^*)$~McMaster University \qquad $({}^\dagger)$~Indiana University}
+\vfill
+\end{center}
+\vfill
+\noindent\textbf{Abstract.} 
+
+\vfill
+\vfill
+\end{titlepage}
+
+\title{Isomorphisms as Groupoids: \\ 
+  Homotopy Type Theory with Fractional Types}
+\author{Jacques Carette \and Amr Sabry}
+\date{\today}
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+HoTT cannot really deal with functions. The starting point is that paths
+explain and witness identities. This works for all the usual types but not
+for functions or universes. For functions, the HoTT treatment is to allow
+arbitrary functions, single out the isos via classical extensional methods,
+and then assert via an axiom that the class of singled out functions is
+equivalent to paths. This is a convoluted way. Why not start with functions
+that are, by construction, isos. This was the programme we started earlier,
+inspired by physical considerations. Because physics requires various
+conservation principles (including conservation of information) and because
+computation is fundamentally a physical process, the argument (originally due
+to Feynman etc.) was that computation should be based on reversible
+processes, or in abstract terms, on isomorphisms. That fits very well with
+the HoTT philosophy that makes isos first-class. Except that HoTT does not
+deal exclusively with isos, the functions are generally not isos. So let's
+investigate the radical idea that all functions are isos in the HoTT
+framework. What we get is a notion of first-class functions that by
+construction are isos and obey the usual path rules etc. The technical device
+is the notion of fractional types which are dual to products. A function
+(iso) $A \rightarrow B$ is represented as an element of the type
+$(\frac{1}{A} \times B)$. The construction shows the essential nature of the
+$\infty$-groupoid structure. The more higher-order functions we have the
+higher we have to go in the groupoid structure. We also have something
+significant in the realm of reversible computing. We finally have
+higher-order functions. Of course we need to show that we have constructed a
+monoidal closed category (a concrete one) and then we can inherit all the
+fancy constructions. Finally we have a very interesting operational
+interpretation of paths and we outline various applications.
+
+Need a clear explanation of why we can't deal with the usual functions that
+are not isomorphisms. Regular function spaces obey $1^A = 1$ for all $A$. In
+terms of fractionals this gives $\frac{1}{A} = 1$ for all $A$ which is not
+true. However if we restrict to isomorphisms then the only functions we can
+write are $A \rightarrow B$ where $A$ and $B$ are isomorphic types and hence
+the only functions we can write in the space $1^A$ are to types $A$ that are
+isomorphic to 1 and in that case we do indeed get that $\frac{1}{A} =
+1$. See~\cite{fiore-remarks} for more details. The benefit is that we fit
+squarely in the physically motivated notion that isomorphisms are the
+foundational computational mechanism as well as the HoTT approach that is
+essentially all about isomorphisms. Of course we don't lose anything by
+restricting our attention to isomorphisms because we know that general
+(irreversible) functions can be obtained from isomorphisms via
+\emph{information effects}~\cite{James:2012:IE:2103656.2103667}.
+
+We are witnessing a convergence of ideas from several distinct research
+communities (physics, mathematics, and computer science) towards replacing
+\emph{equalities} by \emph{isomorphisms}. The combined programme has sparked
+a significant amount of research that unveiled new and surprising connections
+between geometry, algebra, logic, and computation (see~\cite{baez2011physics}
+for an overview of some of the connections).
+
+In the physics community, Landauer~\cite{Landauer:1961,Landauer},
+Feynman~\cite{springerlink:10.1007/BF02650179}, and others have interpreted
+the laws of physics as fundamentally related to computation. The great
+majority of these laws are formulated as equalities between different
+physical observables which is unsatisfying: \emph{different} physical
+observables should not be related by an \emph{equality}. It is more
+appropriate to relate them by an \emph{isomorphism} that witnesses, explains,
+and models the process of transforming one observable to the other.
+
+In the mathematics and logic community, Martin-L\"of developed an extension
+of the simply typed $\lambda$-calculus originally intended to provide a
+rigorous framework for constructive
+mathematics~\cite{citeulike:7374951}. This theory has been further extended
+with \emph{identity types} representing the proposition that two terms are
+``equal.'' (See~\cite{streicher,warren} for a survey.) Briefly speaking,
+given two terms $a$ and $b$ of the same type $A$, one forms the type
+$\texttt{Id}_A(a,b)$ representing the proposition that~$a$ and~$b$ are equal:
+in other words, a term of type $\texttt{Id}_A(a,b)$ witnesses, explains, and
+models the process of transforming $a$ to $b$ and vice-versa.
+
+In the computer science community, the theory and practice of type
+isomorphisms is well-established. Originally, such type isomorphisms were
+motivated by the pragmatic concern of searching large libraries of functions
+by providing one of the many possible isomorphic types for the desired
+function~\cite{Rittri:1989:UTS:99370.99384}. More recently, type isomorphisms
+have taken a more central role as \emph{the} fundamental computational
+mechanism from which more conventional, i.e., irreversible computation, is
+derived. In our own previous
+work~\cite{James:2012:IE:2103656.2103667,rc2011,rc2012} we started with the
+notion of type isomorphism and developed from it a family of programming
+languages, $\Pi$ with various superscripts, in which computation is an
+isomorphism preserving the information-theoretic entropy.
+
+A major open problem remains, however: a higher-order extension of
+$\Pi$. This extension is of fundamental importance in all the originating
+research areas. In physics, it allows for quantum states to be viewed as
+processes and processes to be viewed as states, such as with the
+Choi-Jamiolkowski
+isomorphism~\cite{choi1975completely,jamiolkowski1972linear}.  In mathematics
+and logic, it allows the equivalence between different proofs of type
+$\texttt{Id}_A(a,b)$ to itself be expressed as an isomorphism (of a higher
+type) $\texttt{Id}_{\texttt{Id}_A(a,b)}(p,q)$. Finally, in computer science,
+higher-order types allow code to abstract over other code fragments as well
+as the manipulation of code as data and data as code.
+
+Technically speaking, obtaining a higher-order extension requires the
+construction of a \emph{closed category} from the underlying monoidal
+category for~$\Pi$. Although the general idea of such a construction is
+well-understood, the details of adapting it to an actual programming language
+are subtle.  Our main novel technical device to achieving the higher-order
+extension is a \emph{fractional type} which represents \emph{negative
+information} and which is so named because of its duality with conventional
+product types.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Intuitive Ideas and Examples} 
+\label{sec:intuition}
+
+Talk about groupoid cardinality and give an example of how the cardinality of
+a group of order $n$ is $\frac{1}{n}$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Finite Types as Discrete (0-) Groupoids} 
+
+A review of pi and slight reformulation of the semantics to use the groupoid
+terminology. In more detail, motivate and introduce pointed types here, add
+an element $\bot_A$ to every type $A$ and express the groupoids using a
+pointed type and an explicit collection of discrete paths (not indexed by
+anything at this point).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Fractional Types as Groupoids} 
+
+In the previous section, every type was modeled by a collection of values
+(including a special ``unusable'' value $\bot$) and a collection of trivial
+paths. In this section, non-trivial paths will emerge to model ``fractional
+values.'' The intuition is that two values that that are connected by a path
+should not be counted twice as the path induces an equivalence between these
+two values. As illustrated in Sec.~\ref{sec:intuition}, this idea generalizes
+to conclude that a value connected to iself using several paths corresponds
+to a ``fraction.''
+
+We begin by investigating the special situation of a type $\frac{1}{A}$ where
+$A$ is a 0-type (i.e., where $A$ does not contain any fractional components).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Rank-1 Isomorphisms as 1-Groupoids}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Rank-$n$ Isomorphisms as $n$-Groupoids}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Operational Semantics via Backtracking Constraints} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Connections to Type Theory} 
+
+\begin{quote} 
+As usual, something funny happens at the left of the arrow. John Reynolds,
+Aarhus, June 27, 2000.~\cite{danvypage} 
+\end{quote}
+
+No more! We finally have an inductive characterization of functions
+(isomorphisms). No negative occurrences of types. No positivity
+checks. Nothing funny.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Connections to Semantics} 
+
+Now that functions are a proper inductive type, we can use conventional
+induction to reason about functions. There are also probably connections to
+logical relations and parametricity that are essentially some kind of
+isomorphism which might be expressible as a higher-order path.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Connections to Logic} 
+
+Similar to double negation proof of $A \vee \neg A$. Make a guess and if
+wrong backtrack and choose the other branch.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Connections to Programming Practice} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Connections to Resource Interpretation} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Connections to Category Theory} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Connections to Homotopy Theory} 
+
+The connection between type theory and homotopy theory raises some
+interesting questions. What do the various shapes (spheres, tori, etc.) have
+to go with programming? Our answer is that they represent a class
+of \emph{functions}: isomorphisms.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Connections to Quantum Computing} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Connections to Physics, Information Theory, and Reversible Computing}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusions and Future Work} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Acknowledgments}
+
+This material is based upon work supported by the National Science Foundation
+under Grant No. 1217454. We would like to specially thank Roshan James and
+Zachary Sparks for their contributions to early stages of this work. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{plain}
+\bibliography{cites}
+\end{document}
+
