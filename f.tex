@@ -142,7 +142,7 @@ Talk about groupoid cardinality and give an example of how the cardinality of
 a group of order $n$ is $\frac{1}{n}$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Finite Types as Discrete (0-) Groupoids} 
+\section{Finite Types as Discrete (0-)Groupoids} 
 
 A review of pi and slight reformulation of the semantics to use the groupoid
 terminology. In more detail, motivate and introduce pointed types here, add
@@ -156,11 +156,11 @@ anything at this point).
 In the previous section, every type was modeled by a collection of values
 (including a special ``unusable'' value $\bot$) and a collection of trivial
 paths. In this section, non-trivial paths will emerge to model ``fractional
-values.'' The intuition is that two values that that are connected by a path
+values.'' The intuition is that two values that are connected by a path
 should not be counted twice as the path induces an equivalence between these
-two values. As illustrated in Sec.~\ref{sec:intuition}, this idea generalizes
-to conclude that a value connected to iself using several paths corresponds
-to a ``fraction.''
+two values: ``they are the same.'' As illustrated in
+Sec.~\ref{sec:intuition}, this idea generalizes to conclude that a value
+connected to itself using several paths corresponds to a ``fraction.''
 
 We begin by investigating the special situation of a type $\frac{1}{A}$ where
 $A$ is a 0-type (i.e., where $A$ does not contain any fractional components).
@@ -186,6 +186,9 @@ No more! We finally have an inductive characterization of functions
 (isomorphisms). No negative occurrences of types. No positivity
 checks. Nothing funny.
 
+There are also deep connections with algebraic types, the seven trees in one,
+and the Fiore papers.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Connections to Semantics} 
 
@@ -203,11 +206,36 @@ wrong backtrack and choose the other branch.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Connections to Programming Practice} 
 
+Our construction can be interpreted in the context of speculative concurrent
+programming. A thread can at any time create, out of nothing, a value of type
+$A$ and proceed with it, generating in the process a value of type
+$\frac{1}{A}$ that a concurrent process can be manipulate. When an actual
+value of type $A$ is produced, the fractional value is used to coordinate a
+backtracking mechanism that communicates the actual value of type $A$ to the
+original process. This is very similar to how we use logical variables and
+unification.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Connections to Resource Interpretation} 
+\section{Connections to Reversible Computing}
+
+We have higher-order reversible computations.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Connections to Category Theory} 
+
+We have constructed a concrete closed monoidal category. We did not use the
+Int-construction which requires an existing trace operator. We inherit a lot
+of constructions for free: name, coname, trace, etc.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Connections to Resource Interpretation} 
+
+We can interpret $\times$ as parallel computations (i.e., as computations
+occurring simultaneously in different regions in space). So a value of type
+$A \times B$ consists of two values occupying two different space locations,
+e.g., two different memory locations. With that perspective, a value of type
+$\frac{1}{A}$ consists of a small dictionary that stores all the values of
+type $A$ and can shuffle them around.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Connections to Homotopy Theory} 
@@ -218,13 +246,24 @@ to go with programming? Our answer is that they represent a class
 of \emph{functions}: isomorphisms.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Connections to Quantum Computing} 
+\section{Connections to Physics and Quantum Computing} 
+
+The dual vector space in quantum mechanics and its role in quantum
+computing. The fact that $\eta$ and $\epsilon$ are dual is essentially the
+teleportation algorithm. We can give it a computational interpretation in
+terms of backtracking.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Connections to Physics, Information Theory, and Reversible Computing}
+\section{Connections to Information Theory} 
+
+We have given classic computational interpretations to negative
+information~\cite{negative-information} and negative
+entropy~\cite{negative-entropy}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions and Future Work} 
+
+This is cool and deep.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Acknowledgments}
