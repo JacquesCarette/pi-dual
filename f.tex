@@ -3,6 +3,7 @@
 \usepackage{url}
 \usepackage{color, colortbl}
 \usepackage{courier}
+\usepackage{graphicx}
 
 \begin{document}
 \begin{titlepage}
@@ -215,10 +216,25 @@ backtracking mechanism that communicates the actual value of type $A$ to the
 original process. This is very similar to how we use logical variables and
 unification.
 
+Because we are \emph{not} in the context of the full $\lambda$-calculus,
+which allows arbitrary duplication and erasure of information, values of
+fractional types are first-class values that can flow anywhere. The
+information-preserving computational infrastructure guarantees that, in a
+complete program, every constraint imposed by a fractional value will also be
+satisfied exactly once. This property is shared with systems that are based
+on linear logic.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Connections to Reversible Computing}
 
 We have higher-order reversible computations.
+
+Consider a similar algebraic manipulation involving fractional types.
+\begin{center}
+\scalebox{1.1}{
+\includegraphics{diagrams/thesis/algebra-wire2.pdf}
+}
+\end{center}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Connections to Category Theory} 
@@ -253,6 +269,26 @@ computing. The fact that $\eta$ and $\epsilon$ are dual is essentially the
 teleportation algorithm. We can give it a computational interpretation in
 terms of backtracking.
 
+One understanding of quantum computing is that it exploits the laws of physics
+to build faster machines (perhaps). Another more foundational understanding
+is that it provides a computational interpretation of physics, and in
+particular directly addresses the question of interpretation of quantum
+mechanics. In a little known document, Rozas~\cite{Rozas:1987:CMO:889539}
+uses continuations to implement the transactional interpretation of quantum
+mechanics~\cite{transactional} which includes as its main ingredient a
+fixpoint calculation between waves or particles traveling forwards and
+backwards in time. Our work sheds no light on whether this interpretation is
+the ``right one'' but it is interesting that we can directly realize it using
+the primitives of our language.
+
+The multiplicative structure has a direct connection to entangled quantum
+particles, or perhaps entangled particles and anti-particles.  The idea of
+entanglement, that an action on one particle is ``instantaneously''
+communicated to the other, is analogous to how unifying one value affects its
+dual pair which is possibly in another part of the computation.  Again our
+model sheds no light on whether this is related to how nature computes but it
+is again interesting that we can directly realize the idea.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Connections to Information Theory} 
 
@@ -261,9 +297,194 @@ information~\cite{negative-information} and negative
 entropy~\cite{negative-entropy}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Speculative Connections} 
+
+Negative types, square root types, and imaginary types have also appeared in
+the literature: we proceed with a simple explanation. We have so far extended
+the set of types to be the positive rational numbers. Now we will push this
+and extend the set of types to algebraic numbers. In other words, we will
+allow datatypes defined by arbitrary polynomials and allow the roots of such
+polynomials to be types.
+
+Consider first an example in which we want to compute with the sides of a
+rectangle whose area is 91 and whose length is longer than its width by 6
+units. One can solve the quadratic equation to determine that the sides are 7
+and 13 and proceed. This however prematuraly forces us to globally solve the
+constraint. Instead we can let the two sides of the rectangle be $x$ and
+$x+6$ and use the following equation to capture the desired constraint:
+\[
+x^2 + 6x - 91 = 0
+\]
+The equation introduces an isomorphism between the type $x^2 + 6x - 91$ and
+the type $0$. We can now proceed to compute with the unknown $x$, being
+assured that in a closed program, our computation will eventually be
+consistent with the solution of the algebraic equation. 
+
+Previously the most famous example of a similar nature is the puzzling
+isomorphism that one can establish between seven binary trees and one.
+A binary tree is defined by the datatype
+\[
+x = 1 + x * x 
+\]
+which can be rearranged to the polynomial equation $x^2 - x + 1 = 0$. By
+algebraic manipulation we can reason as follows:
+\[\begin{array}{rclclclcl}
+x^3 &=& x^2 x &=& (x-1) x &=& x^2 - x &=& -1 \\
+x^6 &=& 1 \\
+x^7 &=& x^6 x &=& x
+\end{array}\]
+Fiore poses the question of why such algebraic manipulation would make sense
+type theoretically but states that even though some of the intermediate steps
+make no sense, the final equivalence is valid and can be used to actually
+construct an isomorphism between $x^7$ the type of seven binary trees 
+and $x$ the type of binary trees.
+
+Discussion of possible polynomials:
+\begin{itemize}
+\item $b=1+1$. Boring.
+\item $b=b+1$. That introduces the natural numbers. No solution for this
+  polynomial over the algebraic numbers. We must extend the numbers with
+  $\omega$ to get a solution. We reject this in this paper and prefer to
+  stick to algebraic numbers. The advantage is that all the isomorphisms are
+  valid numerically. With the above type we could subtract $b$ from both
+  sides to show that $0=1$ which is nonsense. We can however have infinite
+  types as long as they have algebraic solutions.
+\item $b^2=2$ or $b = \pm \sqrt{2}$. We have introduced the square root of a
+  boolean! If we had superpositions, we could then write a function that
+  performs the square root of negation in the sense that applying it twice
+  would be equivalent to boolean negation.
+\end{itemize}
+
+\paragraph*{Geometry of Interaction (GoI).}
+Geometry of Interaction was developed by Girard~\cite{girard1989geometry} as
+part of the development of linear logic. It was given a computational
+interpretation by Abramsky and
+Jagadeesan~\cite{Abramsky:1994:NFG:184662.184664}, and was developed into a
+reversible model of computing by
+Mackie~\cite{Mackie2011,DBLP:conf/popl/Mackie95}. Preliminary investigations
+suggest that many of the GoI machine constructions can be simulated by
+treating Mackie's bi-directional wires as pairs of wires and replacing the
+machine's global state with a typed value on the wire that captures the
+appropriate state. This connection is exciting because when viewed through a
+Curry-Howard lens it suggests that the logical interpretation of would be a
+linear-like logic with a notion of resource preservation and with a natural
+computational interpretation.
+
+\paragraph*{Computing in the Field of Algebraic Numbers.}
+\label{sec:algebraic-field}
+Algebraically, the addition of fractional types corresponds to a move from a
+ring-like structure to a full field. Our language captures the structure of
+one particular field: that of the rational numbers. As we have seen,
+computation in this field is quite expressive and interesting and yet, it has
+two fundamental limitations. First it cannot express any recursive type, and
+second it cannot express any datatype definitions. We believe these to be two
+orthogonal extensions: recursive types were considered in our previous
+paper~\cite{James:2012:IE:2103656.2103667}; arbitrary datatypes are however
+even more exciting that plain rationals as each datatype definition can be
+viewed as a polynomial (see below) which essentially means that we start
+computing in the field of algebraic numbers, which includes square roots and
+imaginary numbers. As crazy as it might seem, the type $\sqrt{2}$ and even
+the type $(1/2)+i(\sqrt{3}/2)$ ``make sense.''  In fact the latter type is
+the solution to the polynomial $x^2-x+1=0$ which if re-arranged looks like
+$x=1+x*x$ and perhaps more familiarly as the datatype of binary trees $\mu
+x.(1+x*x)$. These types happen to have been studied extensively following a
+paper by Blass~\cite{seventrees} which used the above datatype of trees to
+infer an isomorphism between seven binary trees and one!
+
+We have confirmed that we can extend our language with the datatype
+declaration for binary trees and build a witness for this isomorphism that
+works as expected. However not every isomorphism constructed from algebraic
+manipulation is computationally meaningful. To understand the issue in more
+detail, consider the following algebraically valid proof of the isomorphism
+in question:
+\[\begin{array}{rclclclcl}
+x^3 &=& x^2 x &=& (x-1) x &=& x^2 - x &=& -1 \\
+x^6 &=& 1 \\
+x^7 &=& x^6 x &=& x
+\end{array}\]
+The question is why such an algebraic manipulation makes sense type
+theoretically, even though the intermediate step asking for an isomorphism
+between $x^6$ and $1$ has no computational context. In our setting, this
+isomorphism can be constructed but it diverges on all inputs (in both
+ways). This suggests that, in the field of algebraic numbers, some algebraic
+manipulations are somehow ``more constructive'' than others.
+
+A related issue is that not all meaningful recursive types are meaningful
+polynomials. For instance $\textsf{nat}=\mu x.(1+x)$ implies the polynomial
+$x=1+x$ which has no algebraic solutions without appeal to more complex
+structures with limits etc.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions and Future Work} 
 
 This is cool and deep.
+
+\paragraph*{Declarative Continuations.} 
+In his Masters thesis~\cite{Filinski:1989:DCI:648332.755574}, Filinski
+proposes that continuations are a \emph{declarative} concept. He,
+furthermore, introduces a symmetric extension of the $\lambda$-calculus in
+which call-by-value is dual to call-by-name and values are dual to
+continuations. In more detail, the symmetric calculus contains a ``value''
+fragment and a ``continuation'' fragment which are mirror images. Pairs and
+sums are treated as duals in the sense that the ``value'' fragment includes
+pairs whose mirror image in the ``continuation'' fragment are sums. In
+contrast, our language includes pairs and sums in the value fragment and two
+symmetries: one that maps the pairs to fractions and another that maps the
+sums to subtractions.
+
+\paragraph*{The Duality of Computation.}
+The duality between call-by-name and call-by-value was further investigated
+by Selinger using control
+categories~\cite{Selinger:2001:CCD:966910.966911}. Curien and
+Herbelin~\cite{Curien:2000} also introduce a calculus that exhibits
+symmetries between values and continuations and between call-by-value and
+call-by-name. The calculus includes the type $A-B$ which is the dual of
+implication, i.e., a value of type $A-B$ is a context expecting a function of
+type $A \rightarrow B$. Alternatively a value of type $A-B$ is also explained
+as a \emph{pair} consisting of a value of type $A$ and a continuation of type
+$B$. This is to be contrasted with our interpretation of a value of that type
+as \emph{either} a value of $A$ or a demand for a value of type $B$. This
+calculus was further analyzed and extended by
+Wadler~\cite{Wadler:2003,DBLP:conf/rta/Wadler05}. The extension gives no
+interpretation to the subtraction connective and like the original symmetric
+calculus of Filinski, introduces a duality that relates sums to products and
+vice-versa.
+
+\paragraph*{Subtractive Logic.} 
+Rauszer~\cite{springerlink:10.1007/BF02120864,rauszer,rauszer2} introduced a
+logic which contains a dual to implication. Her work has been distilled in
+the form of \emph{subtractive logic}~\cite{Crolard01} which has recently been
+related to coroutines~\cite{Crolard01082004} and delimited
+continuations~\cite{Ariola:2009:TFD:1743339.1743381}.  In more detail,
+Crolard explains the type $A-B$ as the type of \emph{coroutines} with a local
+environment of type $A$ and a continuation of type $B$. The description is
+complicated by what is essentially the desire to enforce linearity
+constraints so that coroutines cannot access the local environment of other
+coroutines. 
+
+\paragraph*{Negation in Classical Linear Logic} 
+Filinski~\cite{Filinski92} uses the negative types of linear logic to model
+continuations. Reddy~\cite{Reddy91} generalizes this idea by interpreting the
+negative types of linear logic as \emph{acceptors}, which are like
+continuations in the sense that they take an input and return no
+output. Acceptors however are also similar in flavor to logic variables:
+they can be created and instantiated later once their context of use is
+determined. Although a formal connection is lacking, it is clear that, at an
+intuitive level, acceptors are entities that combine elements of our negative
+and fractional types.
+
+\paragraph*{The Lambek-Grishin Calculus.} The ``parsing-as-deduction'' style
+of linguistic analysis uses the Lambek-Grishin calculus with the following
+types: product, left division, right division, sum, right difference, and
+left difference~\cite{Bernardi:2010:CSL:1749618.1749689}. The division and
+difference types are similar to our types but because the calculus lacks
+commutativity and associativity and only has limited notions of
+distributivity, each connective needs a left and right version. The
+Lambek-Grishin exhibits two notions of symmetry but they are unrelated to our
+notions. In particular, the first notion of symmetry expresses commutativity
+and the second relates products to sums and divisions to subtractions. In
+contrast, our two symmetries relate sums to subtractions and products to
+divisions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Acknowledgments}
