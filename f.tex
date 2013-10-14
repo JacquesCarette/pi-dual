@@ -1,9 +1,39 @@
 \documentclass[11pt]{article}
 \usepackage{fullpage}
 \usepackage{url}
+\usepackage{stmaryrd}
 \usepackage{color, colortbl}
 \usepackage{courier}
 \usepackage{graphicx}
+
+\newcommand{\alt}{~|~}
+\newcommand{\leftv}[1]{\textsf{left}~#1}
+\newcommand{\rightv}[1]{\textsf{right}~#1}
+\newcommand{\iso}{\leftrightarrow}
+\newcommand{\identlp}{\mathit{identl}_+}
+\newcommand{\identrp}{\mathit{identr}_+}
+\newcommand{\swapp}{\mathit{swap}_+}
+\newcommand{\assoclp}{\mathit{assocl}_+}
+\newcommand{\assocrp}{\mathit{assocr}_+}
+\newcommand{\identlt}{\mathit{identl}_*}
+\newcommand{\identrt}{\mathit{identr}_*}
+\newcommand{\swapt}{\mathit{swap}_*}
+\newcommand{\assoclt}{\mathit{assocl}_*}
+\newcommand{\assocrt}{\mathit{assocr}_*}
+\newcommand{\distz}{\mathit{dist}_0}
+\newcommand{\factorz}{\mathit{factor}_0}
+\newcommand{\dist}{\mathit{dist}}
+\newcommand{\factor}{\mathit{factor}}
+\newcommand{\idc}{\mathit{id}}
+\newcommand{\symc}[1]{\mathit{sym}~#1}
+\newcommand{\proves}{\vdash}
+\newcommand{\Rule}[4]{
+\makebox{{\rm #1}
+$\displaystyle
+\frac{\begin{array}{l}#2\\\end{array}}
+{\begin{array}{l}#3\\\end{array}}$
+ #4}}
+\newcommand{\jdg}[3]{#2 \proves_{#1} #3}
 
 \begin{document}
 \begin{titlepage}
@@ -145,8 +175,138 @@ a group of order $n$ is $\frac{1}{n}$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Finite Types as Discrete (0-)Groupoids} 
 
-A review of pi and slight reformulation of the semantics to use the groupoid
-terminology. In more detail, motivate and introduce pointed types here, add
+We review our language $\Pi$ providing the necessary background and context
+for our higher-order extension.\footnote{The presentation in this section
+  focuses on the simplest version of $\Pi$. Other versions include recursive
+  types and trace operators but these extensions are orthogonal to the
+  higher-order extension emphasized in this document.} Even though the
+semantics of $\Pi$ could be explained using plain sets, we express it using
+the groupoid terminology to faciliate the transition to fractionals and
+higher-order functions. 
+
+%%%%%%%%%%%%%%%%%
+\subsection{Syntax and Types} 
+
+The terms of $\Pi$ are not classical values and functions; rather, the terms
+are isomorphism witnesses.  In other words, the terms of $\Pi$ are proofs
+that certain ``shapes of values'' are isomorphic.  And, in classical
+Curry-Howard fashion, our operational semantics shows how these proofs can be
+directly interpreted as actions on ordinary values which effect this shape
+transformation. Of course, ``shapes of values'' are very familiar already:
+they are usually called \emph{types}.  But frequently one designs a type
+system as a method of classifying terms, with the eventual purpose to show
+that certain properties of well-typed terms hold, such as safety.  Our
+approach is different: we start from a type system, and then present a term
+language which naturally inhabits these types, along with an appropriate
+operational and denotational semantics.
+
+\paragraph*{Data.}
+We view $\Pi$ as having two levels: it has traditional values classified by
+ordinary types:
+\[\begin{array}{lrcl} 
+\textit{values}, v &::=& () \alt \leftv{v} \alt \rightv{v} \alt (v,v) \\
+\textit{value types}, b &::=& 0 \alt 1 \alt b+b \alt b * b
+\end{array}\]
+
+Types include the empty type $0$, the unit type $1$, sum types $b_1+b_2$, and
+product types $b_1*b_2$.  Values include $()$ which is the only value of type
+$1$, $\leftv{v}$ and $\rightv{v}$ which inject $v$ into a sum type, and
+$(v_1,v_2)$ which builds a value of product type.
+
+\paragraph*{Isomorphisms.} The terms of $\Pi$ witness
+type isomorphisms of the form $b \iso b$. They consist of base isomorphisms,
+as defined below, and their composition.
+\[\begin{array}{rrcll}
+\identlp :&  0 + b & \iso & b &: \identrp \\
+\swapp :&  b_1 + b_2 & \iso & b_2 + b_1 &: \swapp \\
+\assoclp :&  b_1 + (b_2 + b_3) & \iso & (b_1 + b_2) + b_3 &: \assocrp \\
+\identlt :&  1 * b & \iso & b &: \identrt \\
+\swapt :&  b_1 * b_2 & \iso & b_2 * b_1 &: \swapt \\
+\assoclt :&  b_1 * (b_2 * b_3) & \iso & (b_1 * b_2) * b_3 &: \assocrt \\
+\distz :&~ 0 * b & \iso & 0 &: \factorz \\
+\dist :&~ (b_1 + b_2) * b_3 & \iso & (b_1 * b_3) + (b_2 * b_3)~ &: \factor
+\end{array}\]
+
+Each line of the above table introduces a pair of dual
+constants\footnote{where $\swapp$ and $swapt$ are self-dual.} that witness
+the type isomorphism in the middle.  These are the base (non-reducible) terms
+of the second, principal level of $\Pi$. Note how the above has two readings:
+first as a set of typing relations for a set of constants. Second, if these
+axioms are seen as universally quantified, orientable statements, they also
+induce transformations of the (traditional) values. The (categorical or
+homotopical) intuition here is that these axioms have computational content
+because they witness isomorphisms rather than merely stating an extensional
+equality.
+
+The isomorphisms are extended to form a congruence relation by adding the
+following constructors that witness equivalence and compatible closure:
+
+\begin{table}[t]
+\hrule
+\smallskip
+\begin{center} 
+\Rule{}
+{}
+{\jdg{}{}{\idc : b \iso b}}
+{}
+\quad 
+\Rule{}
+{\jdg{}{}{c : b_1 \iso b_2}}
+{\jdg{}{}{\symc{c} : b_2 \iso b_1}}
+{}
+\quad
+\Rule{}
+{\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_2 \iso b_3}
+{\jdg{}{}{c_1 \fatsemi c_2 : b_1 \iso b_3}}
+{}
+\medskip 
+\Rule{}
+{\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_3 \iso b_4}
+{\jdg{}{}{c_1 \oplus c_2 : b_1 + b_3 \iso b_2 + b_4}}
+{}
+\quad 
+\Rule{}
+{\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_3 \iso b_4}
+{\jdg{}{}{c_1 \otimes c_2 : b_1 * b_3 \iso b_2 * b_4}}
+{}
+\end{center}
+\caption{Combinators\label{pi-combinators}}
+\smallskip
+\hrule
+\end{table}
+
+It is important to note that ``values'' and ``isomorphisms'' are completely
+separate syntactic categories which do not intermix. The semantics of the
+language come when these are made to interact at the ``top level'' via
+\emph{application}: 
+\[\begin{array}{lrcl}
+\textit{top level term}, l &::=& c v
+\end{array}\]
+
+The language presented above, at the type level, models a \emph{semiring}
+(occasionally called a \emph{rig}) where we replace equality by isomorphism.
+Semantically, $\Pi$ models a \emph{bimonoidal category} whose simplest
+example is the category of finite sets and bijections. In that
+interpretation, each value type denotes a finite set of a size calculated by
+viewing the types as natural numbers and each combinator $c : b_1 \iso b_2$
+denotes a bijection between the sets denoted by $b_1$ and $b_2$. 
+
+%%%%%%%%%%%%%%%%%
+\subsection{Operational Semantics} 
+
+Operationally, the semantics of $\Pi$ is given using two mutually recursive
+interpreters: one going forward and one going backwards. The use of $\symc{}$
+switches control from one evaluator to the other.  We state without proof
+that the evaluation of well-typed combinators always terminates and that
+$\Pi$ is logically reversible, i.e., that for all combinators $c : b_1 \iso
+b_2$ and values $v_1 : b_1$ and $v_2 : b_2$ we have the forward evaluation of
+$c v_1$ produces $v_2$ iff the backwards evaluation of $c v_2$ produces
+$v_1$.
+
+%%%%%%%%%%%%%%%%%
+\subsection{Groupoid Semantics} 
+
+In more detail, motivate and introduce pointed types here, add
 an element $\bot_A$ to every type $A$ and express the groupoids using a
 pointed type and an explicit collection of discrete paths (not indexed by
 anything at this point).
