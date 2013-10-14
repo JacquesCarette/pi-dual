@@ -2,11 +2,20 @@
 \usepackage{fullpage}
 \usepackage{url}
 \usepackage{stmaryrd}
+\usepackage{amssymb}
 \usepackage{color, colortbl}
 \usepackage{courier}
 \usepackage{graphicx}
 
+\newcommand{\amr}[1]{\fbox{Amr says:} \textbf{#1}}
+
+\newcommand{\union}{\cup}
+\newtheorem{definition}{Definition}
+\newcommand{\refl}{\mathit{refl}}
+\renewcommand{\path}{\leadsto}
+\renewcommand{\circ}{\circlearrowleft}
 \newcommand{\alt}{~|~}
+\newcommand{\dt}[1]{\llbracket #1 \rrbracket}
 \newcommand{\leftv}[1]{\textsf{left}~#1}
 \newcommand{\rightv}[1]{\textsf{right}~#1}
 \newcommand{\iso}{\leftrightarrow}
@@ -25,6 +34,8 @@
 \newcommand{\dist}{\mathit{dist}}
 \newcommand{\factor}{\mathit{factor}}
 \newcommand{\idc}{\mathit{id}}
+\newcommand{\wedgesum}{\vee}
+\newcommand{\smashproduct}{\wedge}
 \newcommand{\symc}[1]{\mathit{sym}~#1}
 \newcommand{\proves}{\vdash}
 \newcommand{\Rule}[4]{
@@ -181,7 +192,7 @@ for our higher-order extension.\footnote{The presentation in this section
   types and trace operators but these extensions are orthogonal to the
   higher-order extension emphasized in this document.} Even though the
 semantics of $\Pi$ could be explained using plain sets, we express it using
-the groupoid terminology to faciliate the transition to fractionals and
+the groupoid terminology to facilitate the transition to fractionals and
 higher-order functions. 
 
 %%%%%%%%%%%%%%%%%
@@ -203,7 +214,7 @@ operational and denotational semantics.
 \paragraph*{Data.}
 We view $\Pi$ as having two levels: it has traditional values classified by
 ordinary types:
-\[\begin{array}{lrcl} 
+\[\begin{array}{rcl} 
 \textit{values}, v &::=& () \alt \leftv{v} \alt \rightv{v} \alt (v,v) \\
 \textit{value types}, b &::=& 0 \alt 1 \alt b+b \alt b * b
 \end{array}\]
@@ -242,8 +253,7 @@ The isomorphisms are extended to form a congruence relation by adding the
 following constructors that witness equivalence and compatible closure:
 
 \begin{table}[t]
-\hrule
-\smallskip
+\hrule\medskip
 \begin{center} 
 \Rule{}
 {}
@@ -259,7 +269,7 @@ following constructors that witness equivalence and compatible closure:
 {\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_2 \iso b_3}
 {\jdg{}{}{c_1 \fatsemi c_2 : b_1 \iso b_3}}
 {}
-\medskip 
+\\ \bigskip
 \Rule{}
 {\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_3 \iso b_4}
 {\jdg{}{}{c_1 \oplus c_2 : b_1 + b_3 \iso b_2 + b_4}}
@@ -271,8 +281,7 @@ following constructors that witness equivalence and compatible closure:
 {}
 \end{center}
 \caption{Combinators\label{pi-combinators}}
-\smallskip
-\hrule
+\medskip\hrule
 \end{table}
 
 It is important to note that ``values'' and ``isomorphisms'' are completely
@@ -283,33 +292,143 @@ language come when these are made to interact at the ``top level'' via
 \textit{top level term}, l &::=& c v
 \end{array}\]
 
-The language presented above, at the type level, models a \emph{semiring}
-(occasionally called a \emph{rig}) where we replace equality by isomorphism.
-Semantically, $\Pi$ models a \emph{bimonoidal category} whose simplest
-example is the category of finite sets and bijections. In that
-interpretation, each value type denotes a finite set of a size calculated by
-viewing the types as natural numbers and each combinator $c : b_1 \iso b_2$
-denotes a bijection between the sets denoted by $b_1$ and $b_2$. 
-
-%%%%%%%%%%%%%%%%%
-\subsection{Operational Semantics} 
-
-Operationally, the semantics of $\Pi$ is given using two mutually recursive
-interpreters: one going forward and one going backwards. The use of $\symc{}$
-switches control from one evaluator to the other.  We state without proof
-that the evaluation of well-typed combinators always terminates and that
-$\Pi$ is logically reversible, i.e., that for all combinators $c : b_1 \iso
-b_2$ and values $v_1 : b_1$ and $v_2 : b_2$ we have the forward evaluation of
-$c v_1$ produces $v_2$ iff the backwards evaluation of $c v_2$ produces
-$v_1$.
-
 %%%%%%%%%%%%%%%%%
 \subsection{Groupoid Semantics} 
 
-In more detail, motivate and introduce pointed types here, add
-an element $\bot_A$ to every type $A$ and express the groupoids using a
-pointed type and an explicit collection of discrete paths (not indexed by
-anything at this point).
+The language presented above, at the type level, models a \emph{commutative
+  semiring} (occasionally called a \emph{commutative rig}) where we replace
+equality by isomorphism.  Semantically, $\Pi$ models a \emph{bimonoidal
+  category} whose simplest example is the category of finite sets and
+bijections. In that interpretation, each value type denotes a finite set of a
+size calculated by viewing the types as natural numbers and each combinator
+$c : b_1 \iso b_2$ denotes a bijection between the sets denoted by $b_1$ and
+$b_2$. Instead of presenting such a semantics, we present a slightly more
+involved semantics using discrete groupoids. In that semantics, the
+denotation of each type will consist of (i) a pointed set, and (ii) a trivial
+equivalence relation relating each element to itself by a \emph{path}. The
+pointed sets are constructed by adjoining, to each ``regular'' set, an
+element $\circ$ which topologically corresponds to the
+\emph{circle}. Significantly, using the Euler characteristic as a generalized
+notion of cardinality, a set containing $n$ ``regular'' elements and a circle
+$\circ$ has cardinality $n$ and not $n+1$.\footnote{Generally speaking, this
+  generalized cardinality based on the Euler characteristic counts the number
+  of ``connected components'' of a set. Consider a set with $n$ points and
+  various paths connecting them. We start by counting all the points giving
+  us cardinality $n$. Then for every path, we decrease the cardinality by one
+  to avoid double-counting connected elements. Then we add one again for
+  every path that forms a loop because the path forming the loop did not
+  decrease the number of connected components. It is easy to see that a point
+  with a path that connects it to itself would have generalized cardinality
+  0. Moreover the generalized cardinality of the disjoint union of two sets
+  is their sum and the generalized cardinality of the product of two sets is
+  their product.}
+
+\begin{definition}[Denotation of types]
+Each type $b$ is mapped to a groupoid $(\dt{b}, \circ_b, \mathit{paths}_b)$
+where $\dt{b}$ is a pointed set with distinguished point $\circ_b$ and
+$\mathit{paths}_b$ is a collection of paths, $v_1 \path v_2$, between elements
+$v_1$ and $v_2$ of $\dt{b}$. The map is defined as follows:
+\[\begin{array}{rcl@{\qquad}l}
+\dt{0} &=& (\{ \circ_0 \}, \circ_0, \{ \circ_0 \path \circ_0 \}) &
+          (\mbox{circle}) \\
+\dt{1} &=& (\{ \bullet, \circ_1 \}, \circ_1, 
+           \{ \circ_1 \path \circ_1, \bullet \path \bullet \}) &
+          (\mbox{0-sphere})\\
+\dt{(b_1 + b_2)} &=& \dt{b_1} \wedgesum \dt{b_2} & 
+          (\mbox{wedge~sum}) \\
+\dt{(b_1 * b_2)} &=& \dt{b_1} \smashproduct \dt{b_2} & 
+          (\mbox{smash~product})
+\end{array}\]
+The empty type is mapped to the topological circle which is a point that is
+connected to itself. The unit type is mapped to the topological 0-sphere
+which is a pair of points with the discrete topology. The operation
+$\wedgesum$ is the \emph{wedge sum} which is a regular disjoint union with a
+new distinguished point $\circ_{b_1+b_2}$ and additional paths consisting of
+the equivalence closure of the identifications $\circ_{b_1} \path
+\circ_{b_1+b_2}$ and $\circ_{b_2} \path \circ_{b_1+b_2}$. The operation
+$\smashproduct$ is the \emph{smash product} which is a regular product with a
+new distinguished point $\circ_{b_1*b_2}$ and additional paths consisting of
+the equivalence closure of the identifications $(x,\circ_{b_2}) \path
+\circ_{b_1*b_2}$ and $(\circ_{b_1},y) \path \circ_{b_1*b_2}$ for all $x \in
+\dt{b_1}$ and $y \in \dt{b_2}$.
+\end{definition}
+
+We quickly check that the desired isomorphisms hold at the level of types,
+e.g., the isomorphism $b * 0 \iso 0$ requires that the smash product of any
+groupoid with the circle be indistinguishable from the circle.
+
+The semantics of $\Pi$ is given using two mutually recursive interpreters:
+one going forward and one going backwards. The use of $\symc{}$ switches
+control from one evaluator to the other.
+
+\[\begin{array}{rcl}
+\mathit{eval} &:& (a \iso b) \rightarrow \dt{a} \rightarrow \dt{b} \\
+\mathit{eval}~\idc~a &=& a \\
+\mathit{eval}~(\symc{f})~b &=& \mathit{evalR}~f~b \\
+\mathit{eval}~(f \fatsemi g)~a &=& \mathit{eval}~g~(\mathit{eval}~f~a) \\
+\mathit{eval}~(f \otimes g)~(a,b) &=& (\mathit{eval}~f~a, \mathit{eval}~g~b) \\
+\mathit{eval}~(f \oplus g)~(\leftv{a}) &=& \leftv{(\mathit{eval}~f~a)} \\
+\mathit{eval}~(f \oplus g)~(\rightv{b}) &=& \rightv{(\mathit{eval}~g~b)} \\
+\mathit{eval}~\identlp~(\leftv{\circ}) &=& \circ \\
+\mathit{eval}~\identlp~(\rightv{a}) &=& a \\
+\mathit{eval}~\identrp~a &=& \rightv{a} \\
+\mathit{eval}~\swapp~(\leftv{a}) &=& \rightv{a} \\
+\mathit{eval}~\swapp~(\rightv{b}) &=& \leftv{b} \\
+\mathit{eval}~\assoclp~(\leftv{a}) &=& \leftv{(\leftv{a})} \\
+\mathit{eval}~\assoclp~(\rightv{(\leftv{b})}) &=& \leftv{(\rightv{b})} \\
+\mathit{eval}~\assoclp~(\rightv{(\rightv{c})}) &=& \rightv{c} \\
+\mathit{eval}~\assocrp~(\leftv{(\leftv{a})}) &=& \leftv{a} \\
+\mathit{eval}~\assocrp~(\leftv{(\rightv{b})}) &=& \rightv{(\leftv{b})} \\
+\mathit{eval}~\assocrp~(\rightv{c}) &=& \rightv{(\rightv{c})} \\
+\mathit{eval}~\identlt~((), a) &=& a \\
+\mathit{eval}~\identrt~a &=& ((), a) \\
+\mathit{eval}~\swapt~(a,b) &=& (b,a) \\
+\mathit{eval}~\assoclt~(a,(b,c)) &=& ((a,b),c) \\
+\mathit{eval}~\assocrt~((a,b),c)  &=& (a,(b,c)) \\
+\mathit{eval}~\distz~(\rightv{c}, a) &=& \rightv{(c, a)} \\
+\mathit{eval}~\factorz~(\leftv{(b, a)}) &=& (\leftv{b}, a) \\
+\mathit{eval}~\dist~(\leftv{b}, a) &=& \leftv{(b, a)} \\
+\mathit{eval}~\dist~(\rightv{c}, a) &=& \rightv{(c, a)} \\
+\mathit{eval}~\factor~(\leftv{(b, a)}) &=& (\leftv{b}, a) \\
+\mathit{eval}~\factor~(\rightv{(c, a)}) &=& (\rightv{c}, a) \\
+\end{array}\]
+\[\begin{array}{rcl}
+\mathit{evalR} &:& (a \iso ) \rightarrow b \rightarrow a \\
+\mathit{evalR}~\idc~a &=& a \\
+\mathit{evalR}~(\symc{f}) b &=& \mathit{eval}~f b \\
+\mathit{evalR}~(f \fatsemi g) a &=& \mathit{evalR}~f (\mathit{evalR}~g a) \\
+\mathit{evalR}~(f \otimes g) (a,b) &=& 
+  (\mathit{evalR}~f a, \mathit{evalR}~g b) \\
+\mathit{evalR}~(f \oplus g) (\leftv{a}) &=& \leftv{(\mathit{evalR}~f a)} \\
+\mathit{evalR}~(f \oplus g) (\rightv{b}) &=& \rightv{(\mathit{evalR}~g b)} \\
+\mathit{evalR}~\identlp~a &=& \rightv{a} \\
+\mathit{evalR}~\identrp~(\rightv{a}) &=& a \\
+\mathit{evalR}~\swapp~(\leftv{a}) &=& \rightv{a} \\
+\mathit{evalR}~\swapp~(\rightv{b}) &=& \leftv{b} \\ 
+\mathit{evalR}~\assoclp~(\leftv{(\leftv{a})}) &=& \leftv{a} \\
+\mathit{evalR}~\assoclp~(\leftv{(\rightv{b})}) &=& \rightv{(\leftv{b})} \\
+\mathit{evalR}~\assoclp~(\rightv{c}) &=& \rightv{(\rightv{c})} \\
+\mathit{evalR}~\assocrp~(\leftv{a}) &=& \leftv{(\leftv{a})} \\
+\mathit{evalR}~\assocrp~(\rightv{(\leftv{b})}) &=& \leftv{(\rightv{b})} \\
+\mathit{evalR}~\assocrp~(\rightv{(\rightv{c})}) &=& \rightv{c} \\
+\mathit{evalR}~\identlt~a &=& ((), a) \\
+\mathit{evalR}~\identrt~((), a) &=& a \\
+\mathit{evalR}~\swapt~(a,b) &=& (b,a) \\
+\mathit{evalR}~\assoclt~((a,b),c)  &=& (a,(b,c)) \\
+\mathit{evalR}~\assocrt~(a,(b,c)) &=& ((a,b),c) \\
+\mathit{eval}~\distz~(\rightv{c}, a) &=& \rightv{(c, a)} \\
+\mathit{eval}~\factorz~(\leftv{(b, a)}) &=& (\leftv{b}, a) \\
+\mathit{evalR}~\dist~(\leftv{(b, a)}) &=& (\leftv{b}, a) \\
+\mathit{evalR}~\dist~(\rightv{(c, a)}) &=& (\rightv{c}, a) \\
+\mathit{evalR}~\factor~(\leftv{b}, a) &=& \leftv{(b, a)} \\
+\mathit{evalR}~\factor~(\rightv{c}, a) &=& \rightv{(c, a)}
+\end{array}\]
+
+We state without proof that the evaluation of well-typed combinators always
+terminates and that $\Pi$ is logically reversible, i.e., that for all
+combinators $c : b_1 \iso b_2$ and values $v_1 : b_1$ and $v_2 : b_2$ we have
+the forward evaluation of $c v_1$ produces $v_2$ iff the backwards evaluation
+of $c v_2$ produces $v_1$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Fractional Types as Groupoids} 
@@ -469,7 +588,7 @@ polynomials to be types.
 Consider first an example in which we want to compute with the sides of a
 rectangle whose area is 91 and whose length is longer than its width by 6
 units. One can solve the quadratic equation to determine that the sides are 7
-and 13 and proceed. This however prematuraly forces us to globally solve the
+and 13 and proceed. This however prematurely forces us to globally solve the
 constraint. Instead we can let the two sides of the rectangle be $x$ and
 $x+6$ and use the following equation to capture the desired constraint:
 \[
