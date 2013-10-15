@@ -239,7 +239,7 @@ as defined below, and their composition.
 \end{array}\]
 
 Each line of the above table introduces a pair of dual
-constants\footnote{where $\swapp$ and $swapt$ are self-dual.} that witness
+constants\footnote{where $\swapp$ and $\swapt$ are self-dual.} that witness
 the type isomorphism in the middle.  These are the base (non-reducible) terms
 of the second, principal level of $\Pi$. Note how the above has two readings:
 first as a set of typing relations for a set of constants. Second, if these
@@ -289,7 +289,7 @@ separate syntactic categories which do not intermix. The semantics of the
 language come when these are made to interact at the ``top level'' via
 \emph{application}: 
 \[\begin{array}{lrcl}
-\textit{top level term}, l &::=& c v
+\textit{top level term}, l &::=& c~v
 \end{array}\]
 
 %%%%%%%%%%%%%%%%%
@@ -307,12 +307,13 @@ involved semantics using discrete groupoids. In that semantics, the
 denotation of each type will consist of (i) a pointed set, and (ii) a trivial
 equivalence relation relating each element to itself by a \emph{path}. The
 pointed sets are constructed by adjoining, to each ``regular'' set, an
-element $\circ$ which topologically corresponds to the
-\emph{circle}. Significantly, using the Euler characteristic as a generalized
-notion of cardinality, a set containing $n$ ``regular'' elements and a circle
-$\circ$ has cardinality $n$ and not $n+1$.\footnote{Generally speaking, this
-  generalized cardinality based on the Euler characteristic counts the number
-  of ``connected components'' of a set. Consider a set with $n$ points and
+element $\bot$ with a non-trivial path to itself which, topologically,
+corresponds to the \emph{circle}. Significantly, using the Euler
+characteristic as a generalized notion of cardinality, a set containing $n$
+discrete elements (with only trivial reflexivity paths) and a circle has
+cardinality $n$ and not $n+1$.\footnote{Generally speaking, this generalized
+  cardinality based on the Euler characteristic counts the number of
+  ``connected components'' of a set. Consider a set with $n$ points and
   various paths connecting them. We start by counting all the points giving
   us cardinality $n$. Then for every path, we decrease the cardinality by one
   to avoid double-counting connected elements. Then we add one again for
@@ -324,33 +325,33 @@ $\circ$ has cardinality $n$ and not $n+1$.\footnote{Generally speaking, this
   their product.}
 
 \begin{definition}[Denotation of types]
-Each type $b$ is mapped to a groupoid $(\dt{b}, \circ_b, \mathit{paths}_b)$
-where $\dt{b}$ is a pointed set with distinguished point $\circ_b$ and
-$\mathit{paths}_b$ is a collection of paths, $v_1 \path v_2$, between elements
-$v_1$ and $v_2$ of $\dt{b}$. The map is defined as follows:
+Each type $b$ is mapped to a groupoid $(\dt{b}, \bot_b, \mathit{paths}_b)$
+where~$\dt{b}$ is a pointed set with distinguished point $\bot_b$ and
+$\mathit{paths}_b$ is a collection of paths, $v_1 \path v_2$,
+between elements $v_1$ and $v_2$ of $\dt{b}$. (We omit the trivial paths for
+reflexivity and only include the non-trivial ``generating'' paths as
+suggested by the notation of \emph{higher-order inductive types}.)
 \[\begin{array}{rcl@{\qquad}l}
-\dt{0} &=& (\{ \circ_0 \}, \circ_0, \{ \circ_0 \path \circ_0 \}) &
-          (\mbox{circle}) \\
-\dt{1} &=& (\{ \bullet, \circ_1 \}, \circ_1, 
-           \{ \circ_1 \path \circ_1, \bullet \path \bullet \}) &
-          (\mbox{0-sphere})\\
+\dt{0} &=& (\{ \bot_0 \}, \bot_0, \{ \bot_0 \path \bot_0 \}) &
+           (\mbox{circle}) \\
+\dt{1} &=& (\{ \bullet, \bot_1 \}, \bot_1, \{ \bot_1 \path \bot_1 \}) &\\
 \dt{(b_1 + b_2)} &=& \dt{b_1} \wedgesum \dt{b_2} & 
-          (\mbox{wedge~sum}) \\
+           (\mbox{wedge~sum}) \\
 \dt{(b_1 * b_2)} &=& \dt{b_1} \smashproduct \dt{b_2} & 
-          (\mbox{smash~product})
+           (\mbox{smash~product})
 \end{array}\]
 The empty type is mapped to the topological circle which is a point that is
-connected to itself. The unit type is mapped to the topological 0-sphere
-which is a pair of points with the discrete topology. The operation
-$\wedgesum$ is the \emph{wedge sum} which is a regular disjoint union with a
-new distinguished point $\circ_{b_1+b_2}$ and additional paths consisting of
-the equivalence closure of the identifications $\circ_{b_1} \path
-\circ_{b_1+b_2}$ and $\circ_{b_2} \path \circ_{b_1+b_2}$. The operation
-$\smashproduct$ is the \emph{smash product} which is a regular product with a
-new distinguished point $\circ_{b_1*b_2}$ and additional paths consisting of
-the equivalence closure of the identifications $(x,\circ_{b_2}) \path
-\circ_{b_1*b_2}$ and $(\circ_{b_1},y) \path \circ_{b_1*b_2}$ for all $x \in
-\dt{b_1}$ and $y \in \dt{b_2}$.
+connected to itself. The unit type is mapped to a pointed singleton with a
+distinguished element connected to itself with a non-trivial loop. The
+operation $\wedgesum$ is the \emph{wedge sum} which corresponds to the
+disjoint union with an additional path $\leftv{\bot_{b_1}} \path
+\rightv{\bot_{b_2}}$ identifying the two distinguished elements of the
+component spaces. The new cluster is the distinguished element of the
+composite space. The operation $\smashproduct$ is the \emph{smash product}
+which is the regular set product with additional paths connecting
+$(x,\bot_{b_2})$ and $(\bot_{b_1},y)$ for all $x \in \dt{b_1}$ and $y \in
+\dt{b_2}$. The new cluster of identified distinguished elements is the new
+distinguished element of the composite space.
 \end{definition}
 
 We quickly check that the desired isomorphisms hold at the level of types,
