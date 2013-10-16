@@ -3,6 +3,7 @@
 \usepackage{url}
 \usepackage{stmaryrd}
 \usepackage{amssymb}
+\usepackage[sans]{dsfont}
 \usepackage{color, colortbl}
 \usepackage{courier}
 \usepackage{graphicx}
@@ -14,6 +15,7 @@
 \newtheorem{definition}{Definition}
 \newcommand{\refl}{\mathit{refl}}
 \renewcommand{\path}{\leadsto}
+\newcommand{\paths}[1]{\mathds{P}(#1)}
 %% \renewcommand{\circ}{\circlearrowleft}
 \newcommand{\alt}{~|~}
 \newcommand{\dt}[1]{\llbracket #1 \rrbracket}
@@ -185,7 +187,189 @@ Talk about groupoid cardinality and give an example of how the cardinality of
 a group of order $n$ is $\frac{1}{n}$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Finite Types as Discrete (0-)Groupoids} 
+\section{The Category of Pointed Groupoids}
+
+%%%%%%%%%%%%%%%%%
+\subsection{Paths} 
+
+\begin{definition}[Path]
+A \emph{path} $p : x \path y$ between two points $x$ and $y$ in some space
+$A$ is a directed edge $p$ from $x$ to $y$. We denote the set of paths of the
+space $A$ as $\paths{A}$.
+\end{definition}
+
+\begin{definition}[Disjoint union of paths]
+Given $\paths{A}$ and $\paths{B}$ in spaces $A$ and $B$ respectively, we
+construct $\paths{A} \uplus^p \paths{B}$ in space $A \uplus B$, the disjoint
+union of $A$ and $B$, as follows:
+\[ 
+  \{ \leftv{p} : \leftv{x} \path \leftv{y} ~|~ 
+    (p : x \path y) \in \paths{A} \}
+  \union
+  \{ \rightv{q} : \rightv{x} \path \rightv{y} ~|~ 
+    (q : x \path y) \in \paths{B} \}
+\]
+\end{definition}
+We will sometimes write this as $\leftv{(\paths{A})} \union
+\rightv{(\paths{B})}$.
+
+\begin{definition}[Product of paths]
+Given $\paths{A}$ and $\paths{B}$ in spaces $A$ and $B$
+respectively, we construct $\paths{A} \times^p \paths{B}$ in
+space $A \times B$, the cartesian product of $A$ and $B$, as follows: 
+\[ 
+\{ (p,q) : (x,z) \path (y,w) ~|~ (p : x \path y) \in \paths{A}, 
+   (q : z \path w) \in \paths{B} \}
+\]
+\end{definition}
+We will sometimes write this as $(\paths{A},\paths{B})$.
+
+%%%%%%%%%%%%%%%%%
+\subsection{Pointed Groupoids} 
+
+\begin{definition}[Groupoid]
+A \emph{groupoid} $G = (G_0, \paths{G_0})$ is a set $G_0$ together
+with a collection of paths $x \path y$, between elements $x$ and $y$ of $G_0$
+that satisfies the following conditions:
+\begin{itemize}
+\item for every $x \in G_0$, there is a path $\refl_x : x \path x$,
+\item every path $p : x \path y$, there is an inverse path $! p : y \path x$, 
+\item for every paths $p : x \path y$ and $q : y \path z$ there is a path $p
+  \circ q : x \path z$, and
+\item for every paths $p : x \path y$, $q : y \path z$, and $r : z \path w$,
+  we have:
+  \begin{itemize}
+  \item $\refl_x \circ p = p$;
+  \item $p \circ \refl_y = p$;
+  \item $(p \circ q) \circ r = (p \circ (q \circ r))$;
+  \item $p \,\circ\, !p = \refl_x$;
+  \item $!p \,\circ\, p = \refl_y$.
+  \end{itemize}
+\end{itemize}
+\end{definition}
+When introducing a groupoid, we only explicitly mention a collection of
+non-trivial ``generating'' paths. The equivalence closure under $\refl$, $!$,
+and $\circ$ with the appropriate conditions is implicitly
+assumed.\footnote{For higher groupoids, the five equivalences in the last
+  condition will be witnessed by paths between paths and not by the
+  extensional equivalence relation $=$.}
+
+\begin{definition}[Pointed groupoid]
+A pointed groupoid $G_{\bullet} = (G_0, \bot_{G_0}, \paths{G_0})$ is
+a groupoid $(G_0, \paths{G_0})$ with a distinguished element
+$\bot_{G_0} \in G_0$.
+\end{definition}
+
+\begin{definition}[Wedge sum]
+The \emph{wedge sum} of two pointed groupoids $G_\bullet$ and $H_\bullet$,
+written $G_\bullet \wedgesum H_\bullet$ is defined as follows:
+\[\begin{array}{l}
+(G_0, \bot_{G_0}, \paths{G_0}) \wedgesum 
+(H_0, \bot_{H_0}, \paths{H_0}) = \\
+((G_0 \uplus H_0) \union \{ \bot \},
+ \bot,
+ (\paths{G_0} \uplus^p \paths{H_0}) \union
+ \{ L: \leftv{\bot_{G_0}} \path \bot, 
+    R: \rightv{\bot_{H_0}} \path \bot \})
+\end{array}\]
+where $\uplus$ is the disjoint union operation on sets and $\bot$ is a new
+distinguished element that is related by new paths to the distinguished
+elements of $G_\bullet$ and $H_\bullet$.
+\end{definition}
+
+\begin{definition}[Smash product]
+The \emph{smash product} of two pointed groupoids $G_\bullet$ and
+$H_\bullet$, written $G_\bullet \smashproduct H_\bullet$ is defined as
+follows:
+\[\begin{array}{l}
+(G_0, \bot_{G_0}, \paths{G_0}) \smashproduct
+(H_0, \bot_{H_0}, \paths{H_0}) = \\
+((G_0 \times H_0) \union \{ \bot \},
+ \bot,
+ (\paths{G_0} \times^p \paths{H_0}) \union
+ \{ F_h: (\bot_{G_0},h) \path \bot \} \union 
+ \{ S_g: (g,\bot_{H_0}) \path \bot \} 
+\end{array}\]
+where $\times$ is the cartesian product operation on sets and $\bot$ is a new
+distinguished element that is related by new paths to every pair of elements
+that includes either $\bot_{G_0}$ or $\bot_{H_0}$. 
+\end{definition}
+
+\begin{definition}[Denotation of types]
+Each type $b$ is mapped to a \emph{pointed groupoid} $(\dt{b}, \bot_b,
+\paths{b})$ as follows:
+\[\begin{array}{rcl@{\qquad}l}
+\dt{0} &=& (\{ \bot_0 \}, \bot_0, \{ \mathit{loop}_0 : \bot_0 \path \bot_0 \}) &
+           (\mbox{circle}) \\
+\dt{1} &=& (\{ \bullet, \bot_1 \}, \bot_1, 
+           \{ \mathit{loop}_1 : \bot_1 \path \bot_1 \}) &\\
+\dt{(b_1 + b_2)} &=& \dt{b_1} \wedgesum \dt{b_2} & 
+           (\mbox{wedge~sum}) \\
+\dt{(b_1 * b_2)} &=& \dt{b_1} \smashproduct \dt{b_2} & 
+           (\mbox{smash~product})
+\end{array}\]
+\end{definition} 
+
+Topologically $\dt{0}$ corresponds to the circle $S^1$ which has Euler
+characteristic (which generalizes the notion of set cardinality) of 0. As a
+groupoid, the space $\dt{0}$ includes this infinite collection of paths from
+$\bot_0 \path \bot_0$:
+\[\begin{array}{l}
+\refl_{\bot_0} \\
+\mathit{loop}_0 \\
+!~\mathit{loop}_0 \\
+\mathit{loop}_0 \circ \mathit{loop}_0 \\
+!~(\mathit{loop}_0 \circ \mathit{loop}_0) \\
+\mathit{loop}_0 \circ \mathit{loop}_0 \circ \mathit{loop}_0 \\
+!~(\mathit{loop}_0 \circ \mathit{loop}_0 \circ \mathit{loop}_0) \\
+\vdots
+\end{array}\]
+and hence, using the definition introduced by Baez and
+Dolan~\cite{groupoidcard}, has groupoid cardinality 0. We will abbreviate
+this collection of paths as $\mathit{loop}^n_0$ for integer $n$, where
+$\mathit{loop}^0_0$ is $\refl$, and $\mathit{loop}^n_0$ abbreviates the
+$n$-fold composition in one direction for positive $n$ and in the opposite
+direction for negative $n$.
+
+Note that all our pointed spaces have a similar structure: a collection of
+``regular elements'' forming several connected components and a separate
+isolated connected component that includes the distinguished element
+$\bot$. The distinguished element $\bot$ has the infinite collection of loops
+on it and, in general, may be connected to the distinguished elements of the
+subspaces used in the construction. That entire cluster including $\bot$ has
+Euler characteristic and groupoid cardinality 0.
+
+We now check that the wedge sum of any of our pointed groupoids $G_\bullet$
+with $\dt{0}$ is ``essentially'' $G_\bullet$ itself, i.e., that $\dt{0}$ is
+the additive unit in our space of pointed groupoids. Consider:
+\[\begin{array}{l}
+G_\bullet \wedgesum \dt{0} = \\
+(G_0, \bot_{G_0}, \paths{G_0}) \wedgesum 
+  (\{ \bot_0 \}, \bot_0, \{ \mathit{loop}_0 : \bot_0 \path \bot_0 \}) = \\
+((\leftv{G_0} \union \{ \rightv{\bot_0}, \bot \}, 
+ \bot,
+ (\leftv{\paths{G_0}} \union \{ \rightv{\mathit{loop}^n_0} , 
+ \leftv{\bot_{G_0}} \path \bot, \rightv{\bot_0} \path \bot \})
+\end{array}\]
+One can see that this space consists of $\leftv{G_0}$ with whatever structure
+is on it and another connected component consisting of $\leftv{\bot_{G_0}}$,
+$\rightv{\bot_0}$, and the new $\bot$ for the entire space. This cluster has
+cardinality 0 and hence the new space is ``equivalent'' to the original
+$G\bullet$ as we have essentially only changed the representation of 0. 
+
+Therefore, since the wedge sum is evidently commutative and associative, it
+is at least plausible that the structure $(\wedgesum, \dt{0}$ is a symmetric
+monoidal category. All of that will be formalized later. The categorical
+morphisms must obviously map distinguished elements to distinguished elements
+and preserve the structure of the path. It is also reasonably easy to see
+that the structure $(\smashproduct, \dt{1})$ is another symmetric monoidal
+category. Even better one can check that for any pointed groupoid
+$G_\bullet$, we have $G_\bullet \smashproduct \dt{0}$ gives us a very
+complicated 0 but still a 0. I didn't check distributivity but I suspect it
+holds too.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Finite Types as Pointed Groupoids} 
 
 We review our language $\Pi$ providing the necessary background and context
 for our higher-order extension.\footnote{The presentation in this section
@@ -294,7 +478,7 @@ language come when these are made to interact at the ``top level'' via
 \end{array}\]
 
 %%%%%%%%%%%%%%%%%
-\subsection{Types as Groupoids}
+\subsection{Groupoid Semantics}
 
 The language presented above, at the type level, models a \emph{commutative
   semiring} (occasionally called a \emph{commutative rig}) where we replace
@@ -305,177 +489,6 @@ size calculated by viewing the types as natural numbers and each combinator
 $c : b_1 \iso b_2$ denotes a bijection between the sets denoted by $b_1$ and
 $b_2$. Instead of presenting such a semantics, we present a more involved
 semantics using groupoids. 
-
-\begin{definition}[Path]
-A \emph{path} $p : x \path y$ between two points $x$ and $y$ in some space
-$A$ is a directed edge $p$ from $x$ to $y$. The notation $\transport{p}{x}$
-denotes the action of \emph{transporting} the point $x$ to the point~$y$
-along $p$.
-\end{definition}
-
-\begin{definition}[Disjoint union of paths]
-Given two sets of paths $P$ and $Q$, the disjoint union $P \uplus^p Q$ is
-defined as:
-\[ 
-  \{ \leftv{p} : \leftv{x} \path \leftv{y} ~|~ (p : x \path y) \in P \}
-  \union
-  \{ \rightv{q} : \leftv{x} \path \leftv{y} ~|~ (q : x \path y) \in Q \}
-\]
-\end{definition}
-We will sometimes write this as $\leftv{P} \union \rightv{Q}$.
-
-\begin{definition}[Product of paths]
-Given two sets of paths $P$ and $Q$, the product $P \times^p Q$ is
-defined as:
-\[ 
-\{ (p,q) : (x,z) \path (y,w) ~|~ (p : x \path y) \in P, (q : z \path w) \in Q \}
-\]
-\end{definition}
-We will sometimes write this as $(P,Q)$.
-
-\begin{definition}[Groupoid]
-A \emph{groupoid} $G = (G_0, \mathit{paths}_{G_0})$ is a set $G_0$ together
-with a collection of paths $x \path y$, between elements $x$ and $y$ of $G_0$
-that satisfies the following conditions:
-\begin{itemize}
-\item for every $x \in G_0$, there is a path $\refl_x : x \path x$,
-\item every path $p : x \path y$, there is an inverse path $! p : y \path x$, 
-\item for every paths $p : x \path y$ and $q : y \path z$ there is a path $p
-  \circ q : x \path z$, and
-\item for every paths $p : x \path y$, $q : y \path z$, and $r : z \path w$,
-  we have:
-  \begin{itemize}
-  \item $\refl_x \circ p = p$;
-  \item $p \circ \refl_y = p$;
-  \item $(p \circ q) \circ r = (p \circ (q \circ r))$;
-  \item $p \,\circ\, !p = \refl_x$;
-  \item $!p \,\circ\, p = \refl_y$.
-  \end{itemize}
-\end{itemize}
-\end{definition}
-When introducing a groupoid, we only explicitly mention a collection of
-non-trivial ``generating'' paths. The equivalence closure under $\refl$, $!$,
-and $\circ$ with the appropriate conditions is implicitly
-assumed.\footnote{For higher groupoids, the five equivalences in the last
-  condition will be witnessed by paths between paths and not by the
-  extensional equivalence relation $=$.}
-
-\begin{definition}[Pointed groupoid]
-A pointed groupoid $G_{\bullet} = (G_0, \bot_{G_0}, \mathit{paths}_{G_0})$ is
-a groupoid $(G_0, \mathit{paths}_{G_0})$ with a distinguished element
-$\bot_{G_0} \in G_0$.
-\end{definition}
-
-\begin{definition}[Wedge sum]
-The \emph{wedge sum} of two pointed groupoids $G_\bullet$ and $H_\bullet$,
-written $G_\bullet \wedgesum H_\bullet$ is defined as follows:
-\[\begin{array}{l}
-(G_0, \bot_{G_0}, \mathit{paths}_{G_0}) \wedgesum 
-(H_0, \bot_{H_0}, \mathit{paths}_{H_0}) = \\
-((G_0 \uplus H_0) \union \{ \bot \},
- \bot,
- (\mathit{paths}_{G_0} \uplus^p \mathit{paths}_{H_0}) \union
- \{ L: \leftv{\bot_{G_0}} \path \bot, 
-    R: \rightv{\bot_{H_0}} \path \bot \})
-\end{array}\]
-where $\uplus$ is the disjoint union operation on sets and $\bot$ is a new
-distinguished element that is related by new paths to the distinguished
-elements of $G_\bullet$ and $H_\bullet$.
-\end{definition}
-
-\begin{definition}[Smash product]
-The \emph{smash product} of two pointed groupoids $G_\bullet$ and
-$H_\bullet$, written $G_\bullet \smashproduct H_\bullet$ is defined as
-follows:
-\[\begin{array}{l}
-(G_0, \bot_{G_0}, \mathit{paths}_{G_0}) \smashproduct
-(H_0, \bot_{H_0}, \mathit{paths}_{H_0}) = \\
-((G_0 \times H_0) \union \{ \bot \},
- \bot,
- (\mathit{paths}_{G_0} \times^p \mathit{paths}_{H_0}) \union
- \{ F_h: (\bot_{G_0},h) \path \bot \} \union 
- \{ S_g: (g,\bot_{H_0}) \path \bot \} 
-\end{array}\]
-where $\times$ is the cartesian product operation on sets and $\bot$ is a new
-distinguished element that is related by new paths to every pair of elements
-that includes either $\bot_{G_0}$ or $\bot_{H_0}$. 
-\end{definition}
-
-\begin{definition}[Denotation of types]
-Each type $b$ is mapped to a \emph{pointed groupoid} $(\dt{b}, \bot_b,
-\mathit{paths}_b)$ as follows:
-\[\begin{array}{rcl@{\qquad}l}
-\dt{0} &=& (\{ \bot_0 \}, \bot_0, \{ \mathit{loop}_0 : \bot_0 \path \bot_0 \}) &
-           (\mbox{circle}) \\
-\dt{1} &=& (\{ \bullet, \bot_1 \}, \bot_1, 
-           \{ \mathit{loop}_1 : \bot_1 \path \bot_1 \}) &\\
-\dt{(b_1 + b_2)} &=& \dt{b_1} \wedgesum \dt{b_2} & 
-           (\mbox{wedge~sum}) \\
-\dt{(b_1 * b_2)} &=& \dt{b_1} \smashproduct \dt{b_2} & 
-           (\mbox{smash~product})
-\end{array}\]
-\end{definition} 
-
-Topologically $\dt{0}$ corresponds to the circle $S^1$ which has Euler
-characteristic (which generalizes the notion of set cardinality) of 0. As a
-groupoid, the space $\dt{0}$ includes this infinite collection of paths from
-$\bot_0 \path \bot_0$:
-\[\begin{array}{l}
-\refl_{\bot_0} \\
-\mathit{loop}_0 \\
-!~\mathit{loop}_0 \\
-\mathit{loop}_0 \circ \mathit{loop}_0 \\
-!~(\mathit{loop}_0 \circ \mathit{loop}_0) \\
-\mathit{loop}_0 \circ \mathit{loop}_0 \circ \mathit{loop}_0 \\
-!~(\mathit{loop}_0 \circ \mathit{loop}_0 \circ \mathit{loop}_0) \\
-\vdots
-\end{array}\]
-and hence, using the definition introduced by Baez and
-Dolan~\cite{groupoidcard}, has groupoid cardinality 0. We will abbreviate
-this collection of paths as $\mathit{loop}^n_0$ for integer $n$, where
-$\mathit{loop}^0_0$ is $\refl$, and $\mathit{loop}^n_0$ abbreviates the
-$n$-fold composition in one direction for positive $n$ and in the opposite
-direction for negative $n$.
-
-Note that all our pointed spaces have a similar structure: a collection of
-``regular elements'' forming several connected components and a separate
-isolated connected component that includes the distinguished element
-$\bot$. The distinguished element $\bot$ has the infinite collection of loops
-on it and, in general, may be connected to the distinguished elements of the
-subspaces used in the construction. That entire cluster including $\bot$ has
-Euler characteristic and groupoid cardinality 0.
-
-We now check that the wedge sum of any of our pointed groupoids $G_\bullet$
-with $\dt{0}$ is ``essentially'' $G_\bullet$ itself, i.e., that $\dt{0}$ is
-the additive unit in our space of pointed groupoids. Consider:
-\[\begin{array}{l}
-G_\bullet \wedgesum \dt{0} = \\
-(G_0, \bot_{G_0}, \mathit{paths}_{G_0}) \wedgesum 
-  (\{ \bot_0 \}, \bot_0, \{ \mathit{loop}_0 : \bot_0 \path \bot_0 \}) = \\
-((\leftv{G_0} \union \{ \rightv{\bot_0}, \bot \}, 
- \bot,
- (\leftv{\mathit{paths}_{G_0}} \union \{ \rightv{\mathit{loop}^n_0} , 
- \leftv{\bot_{G_0}} \path \bot, \rightv{\bot_0} \path \bot \})
-\end{array}\]
-One can see that this space consists of $\leftv{G_0}$ with whatever structure
-is on it and another connected component consisting of $\leftv{\bot_{G_0}}$,
-$\rightv{\bot_0}$, and the new $\bot$ for the entire space. This cluster has
-cardinality 0 and hence the new space is ``equivalent'' to the original
-$G\bullet$ as we have essentially only changed the representation of 0. 
-
-Therefore, since the wedge sum is evidently commutative and associative, it
-is at least plausible that the structure $(\wedgesum, \dt{0}$ is a symmetric
-monoidal category. All of that will be formalized later. The categorical
-morphisms must obviously map distinguished elements to distinguished elements
-and preserve the structure of the path. It is also reasonably easy to see
-that the structure $(\smashproduct, \dt{1})$ is another symmetric monoidal
-category. Even better one can check that for any pointed groupoid
-$G_\bullet$, we have $G_\bullet \smashproduct \dt{0}$ gives us a very
-complicated 0 but still a 0. I didn't check distributivity but I suspect it
-holds too.
-
-%%%%%%%%%%%%%%%%%
-\subsection{Groupoid Semantics}
 
 The semantics of $\Pi$ is given using two mutually recursive interpreters:
 one going forward and one going backwards. The use of $\symc{}$ switches
