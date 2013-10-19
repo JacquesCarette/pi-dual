@@ -7,12 +7,79 @@
 \usepackage{color, colortbl}
 \usepackage{courier}
 \usepackage{graphicx}
+\usepackage[all]{xy}
+\xyoption{line}
 
 \newcommand{\amr}[1]{\fbox{Amr says:} \textbf{#1}}
 
+% ----------------------------------------------------------------------
+% XY-Pic definitions for making ``wire charts''
+
+\def\wirechart#1#2{\let\labelstyle\objectstyle\xy*[*1.0]\xybox{\small%
+\xymatrix@C=10mm@R=4mm#1{#2}}\endxy}
+\def\wire#1#2{\ar@{-}[#1]^<>(.5){#2}}
+\def\wireright#1#2{\wire{#1}{#2}\ar@{}[#1]|<>(.5)/.6ex/{\dir2{>}}}
+\def\wireleft#1#2{\wire{#1}{#2}\ar@{}[#1]|<>(.5)/-.6ex/{\dir2{<}}}
+\def\wwblank#1{*=<#1,0mm>{~}}
+\def\wblank{\wwblank{11mm}}
+\def\blank{\wwblank{8mm}}
+\def\vublank{*=<0mm,2.3mm>!D{}}
+\def\vdblank{*=<0mm,2.3mm>!U{}}
+\def\vsblank{*=<0mm,5.6mm>{}}
+\def\wirecross#1{\save[]!L;[#1]!R**@{-}\restore}
+\def\wirebraid#1#2{\save[]!L;[#1]!R**{}?(#2)**@{-}\restore\save[#1]!R;[]!L**{}?(#2)**@{-}\restore}
+\def\wireopen#1{\save[]!R;[#1]!R**\crv{[]!C&[#1]!C}\restore}
+\def\wireclose#1{\save[]!L;[#1]!L**\crv{[]!C&[#1]!C}\restore}
+\def\wireopenlabel#1#2{\save[]!R;[#1]!R**\crv{[]!C&[#1]!C}?<>(.5)*^+!R{#2}\restore}
+\def\wirecloselabel#1#2{\save[]!L;[#1]!L**\crv{[]!C&[#1]!C}?<>(.5)*^+!L{#2}\restore}
+\def\wireid{\blank\save[]!L*{};[]!R*{}**@{-}\restore}
+\def\wwireid{\wblank\save[]!L*{};[]!R*{}**@{-}\restore}
+\def\wwwireid#1{\wwblank{#1}\save[]!L*{};[]!R*{}**@{-}\restore}
+\newcommand{\corner}{\rule{2.5mm}{2.5mm}}
+\def\minheight{8mm}
+\def\addheight{8mm}
+\def\cornerbox#1#2#3{  % draw a box with a marked corner around
+                   % the object #1. #2=label
+                   % usage:   \ulbox{[ll].[].[ul]}{f}
+  \save#1="box";
+  "box"!C*+<0mm,\addheight>+=<0mm,\minheight>[|(5)]\frm{-}="box1";
+  "box1"*{#2};
+  ={"box1"!LU*!LU[]{\corner}}"ul";
+  ={"box1"!RU*!RU[]{\corner}}"ur";
+  ={"box1"!LD*!LD[]{\corner}}"dl";
+  ={"box1"!RD*!RD[]{\corner}}"dr";
+  #3
+  \restore
+}
+\def\nnbox#1#2{\cornerbox{#1}{#2}{}}
+\def\ulbox#1#2{\cornerbox{#1}{#2}{"ul"}}
+\def\urbox#1#2{\cornerbox{#1}{#2}{"ur"}}
+\def\dlbox#1#2{\cornerbox{#1}{#2}{"dl"}}
+\def\drbox#1#2{\cornerbox{#1}{#2}{"dr"}}
+\def\ubox#1#2{\cornerbox{#1}{#2}{"ul","ur"}}
+\def\dbox#1#2{\cornerbox{#1}{#2}{"dl","dr"}}
+\def\lbox#1#2{\cornerbox{#1}{#2}{"ul","dl"}}
+\def\rbox#1#2{\cornerbox{#1}{#2}{"ur","dr"}}
+\def\circbox#1{*+[o][F-]{#1}}
+
+\newtheorem{definition}{Definition}
+\newtheorem{n-lemma}{Lemma}[section]
+\newtheorem{n-example}[n-lemma]{Example}
+\newenvironment{example}{\begin{n-example}}{\end{n-example}}
+
+\newcommand{\ssep}{\hspace{1em}} 
+\newcommand{\sym}{c}       % braid: could be \sigma or c or \gamma
+\newcommand{\cp}{\circ}                 % composition
+\newcommand{\symi}{\sym\inv}
+\newcommand{\inv}{^{-1}}
+\newcommand{\id}{\textrm{\rm id}}       % identity
+\newcommand{\x}{\otimes}
+\newcommand{\boolt}{\mathit{bool}}
+\newcommand{\ffv}{\mathit{false}}
+\newcommand{\ttv}{\mathit{true}}
+\newcommand{\notb}{\mathit{not}}
 \newcommand{\union}{\cup}
 \newcommand{\transport}[2]{\overline{#1}(#2)}
-\newtheorem{definition}{Definition}
 \newcommand{\refl}{\mathit{refl}}
 \renewcommand{\path}{\leadsto}
 \newcommand{\paths}[1]{\mathds{P}(#1)}
@@ -54,7 +121,7 @@ $\displaystyle
 \begin{center}
 \vfill
 {\LARGE Isomorphisms as Groupoids: \\ 
-  Homotopy Type Theory with Fractional Types} \\[1.5cm]
+  Homotopy Type Theory and Fractional Types} \\[1.5cm]
 {\Large Jacques Carette${}^*$ \qquad Amr Sabry${}^{\dagger}$}\\[0.5cm]
 {\Large $({}^*)$~McMaster University \qquad $({}^\dagger)$~Indiana University}
 \vfill
@@ -67,7 +134,7 @@ $\displaystyle
 \end{titlepage}
 
 \title{Isomorphisms as Groupoids: \\ 
-  Homotopy Type Theory with Fractional Types}
+  Homotopy Type Theory and Fractional Types}
 \author{Jacques Carette \and Amr Sabry}
 \date{\today}
 \maketitle
@@ -179,9 +246,233 @@ extension is a \emph{fractional type} which represents \emph{negative
 information} and which is so named because of its duality with conventional
 product types.
 
+From the wikipedia page on homeomorphism: 
+\begin{quote}
+The intuitive criterion of stretching, bending, cutting and gluing back
+together takes a certain amount of practice to apply correctly—it may not be
+obvious from the description above that deforming a line segment to a point
+is impermissible, for instance. It is thus important to realize that it is
+the formal definition given above that counts.
+
+This characterization of a homeomorphism often leads to confusion with the
+concept of homotopy, which is actually defined as a continuous deformation,
+but from one function to another, rather than one space to another. In the
+case of a homeomorphism, envisioning a continuous deformation is a mental
+tool for keeping track of which points on space X correspond to which points
+on Y—one just follows them as X deforms. In the case of homotopy, the
+continuous deformation from one map to the other is of the essence, and it is
+also less restrictive, since none of the maps involved need to be one-to-one
+or onto. Homotopy does lead to a relation on spaces: homotopy equivalence.
+
+There is a name for the kind of deformation involved in visualizing a
+homeomorphism. It is (except when cutting and regluing are required) an
+isotopy between the identity map on X and the homeomorphism from X to Y.
+\end{quote}
+
+It is strange for homotopy type theory to be all about isomorphisms and then
+not insist on isomorphisms between spaces.
+
+If we focus on homeomorphisms, the higher-order space is a \emph{torsor}.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Intuitive Ideas and Examples} 
 \label{sec:intuition}
+
+%% the next 7 figures are taken from Selinger's paper on graphical languages
+%% for monoidal categories; if we use them make sure it's ok with him and
+%% acknowledge him
+
+In homotopy type theory, there is a focus on isomomorphisms represented by
+paths (proofs of identities) and yet arbitrary functions are considered. We
+propose to only consider functions that are themselves isomorphisms: this
+will allow us to view the function itself as a collection of paths and it
+doesn't lose anything in terms of computability because we know that we could
+do everything with reversible functions if we wanted to.
+
+Consider the function $\notb$ from the space $\boolt$ to itself. We can
+represent this function as a pair of paths. Since we are in a topological
+world, we should care whether the path top pass crosses over the bottom one
+or vice-versa. In the diagram below, we chose for the top wire to cross over
+the bottom one:
+
+\begin{center}
+  \begin{tabular}{@{}llc@{}}
+    $\notb : \boolt \rightarrow \boolt$ & & 
+    $\vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
+        *{}\wireright{r}{\ffv}&\blank\wirecross{d}\wireright{r}{\ffv}&\\
+        *{}\wireright{r}{\ttv}&\blank\wirebraid{u}{.3}\wireright{r}{\ttv}&
+        }}$ 
+  \end{tabular}
+\end{center}
+
+It is important also to note that the two paths must be taken together
+because there is a constraint between them. If the top path takes $\ffv$ to
+$\ttv$ then the bottom path cannot take $\ttv$ to $\ttv$: it \emph{has} to
+lead to $\ffv$. We will return to this point later.
+
+For now, consider the functions:
+\[\begin{array}{rcl}
+\mathit{id}^1 &=& \lambda x.x \\
+\mathit{id}^2 &=& \lambda x. \notb~(\notb~x)
+\end{array}\]
+These two functions are evidently extensionally equivalent and hence in the
+conventional treatment of homotopy type theory, it is acceptable to assume
+they are also propositionally equivalent, i.e., it is acceptable to postulate
+a path $\mathit{id}^1 \path \mathit{id}^2$ in the space $\boolt \rightarrow
+\boolt$. 
+
+When represented as paths, we get the following situation for the second
+function:
+\[\vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
+    *{}\wireright{r}{\ffv}&
+    \blank\wirecross{d}\wireright{r}{\ttv}&
+    \blank\wirecross{d}\wireright{r}{\ffv}&
+    \\
+    *{}\wireright{r}{\ttv}&
+    \blank\wirebraid{u}{.3}\wireright{r}{\ffv}&
+    \blank\wirebraid{u}{.3}\wireright{r}{\ttv}&
+    \\
+    }}
+\]
+Repeating the $\notb$ operation results in a twisted path that externally
+behaves like the identity but that evidently not identical to the straight
+path with no twists. Thus although one can justify that the two functions
+should have a path between them, the function extensionality axiom does not
+give insights into \emph{what} this path is actually doing topologically.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%% \begin{center}
+%%   \begin{tabular}{@{}llc@{}}
+%%     Braiding & $\sym_{A,B}$ &
+%%     $\vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
+%%         *{}\wireright{r}{B}&\blank\wirecross{d}\wireright{r}{A}&\\
+%%         *{}\wireright{r}{A}&\blank\wirebraid{u}{.3}\wireright{r}{B}&
+%%         }}$ \\
+%%   \end{tabular}
+%% \end{center}
+
+%% Note that the braiding satisfies
+%% $\sym_{A,B}\cp\symi_{A,B}=\id_{A\x B}$, but not
+%% $\sym_{A,B}\cp\sym_{B,A}=\id_{A\x B}$. Graphically:
+
+%% \[\vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
+%%     *{}\wireright{r}{B}&
+%%     \blank\wirecross{d}\wireright{r}{A}&
+%%     \blank\wirebraid{d}{.3}\wireright{r}{B}&
+%%     \\
+%%     *{}\wireright{r}{A}&
+%%     \blank\wirebraid{u}{.3}\wireright{r}{B}&
+%%     \blank\wirecross{u}\wireright{r}{A}&
+%%     \\
+%%     }}
+%% = \id_{A\x B},
+%% \]
+%% \[\vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
+%%     *{}\wireright{r}{B}&
+%%     \blank\wirecross{d}\wireright{r}{A}&
+%%     \blank\wirecross{d}\wireright{r}{B}&
+%%     \\
+%%     *{}\wireright{r}{A}&
+%%     \blank\wirebraid{u}{.3}\wireright{r}{B}&
+%%     \blank\wirebraid{u}{.3}\wireright{r}{A}&
+%%     \\
+%%     }}
+%% \neq \id_{A\x B}.
+%% \]
+
+%% \begin{example}
+%%   The hexagon axiom translates into the following in the graphical
+%%   language:
+
+%%   \[ (\id_B\x\sym_{A,C}) \cp \alpha_{B,A,C} \cp (\sym_{A,B}\x\id_C)
+%%   = \alpha_{B,C,A} \cp (\sym_{B,C\x A}) \cp \alpha_{A,B,C}
+%%   \]
+%%   \[\vcenter{\wirechart{@R=6mm}{
+%%     \wireright{r}{C}&
+%%     \wireid\wireright{r}{C}&
+%%     \blank\wirecross{d}{.3}\wireright{r}{A}&
+%%     \\
+%%     \wireright{r}{B}&
+%%     \blank\wirecross{d}{.3}\wireright{r}{A}&
+%%     \blank\wirebraid{u}{.3}\wireright{r}{C}&
+%%     \\
+%%     \wireright{r}{A}&
+%%     \blank\wirebraid{u}{.3}\wireright{r}{B}&
+%%     \wireid\wireright{r}{B}&
+%%     \\
+%%     }}
+%%   \ssep=\ssep
+%%   \vcenter{\wirechart{@R=6mm}{
+%%     \wireright{r}{C}&
+%%     \blank\wirecross{d}{.3}\wireright{r}{A}&
+%%     \\
+%%     \wireright{r}{B}&
+%%     \blank\wirecross{d}{.3}\wireright{r}{C}&
+%%     \\
+%%     \wireright{r}{A}&
+%%     \blank\wirebraid{uu}{.2}\wireright{r}{B}&
+%%     \\
+%%     }}
+%%   \]
+%% \end{example}
+
+%% \begin{example}
+%%   The {\em Yang-Baxter equation} is the following equation, which is a
+%%   consequence of the hexagon axiom and naturality:
+%%   \[ (\sym_{B,C}\x\id_A)\cp(\id_B\x\sym_{A,C})\cp(\sym_{A,B}\x\id_C) =
+%%   (\id_C\x\sym_{A,B})\cp(\sym_{A,C}\x\id_B)\cp(\id_A\x\sym_{B,C}).
+%%   \]
+%%   In the graphical language, it becomes:
+%%   \[\vcenter{\wirechart{@C-4mm@R=6mm}{
+%%     \wireright{r}{C}&
+%%     \wireid\wireright{r}{C}&
+%%     \blank\wirecross{d}{.3}\wireright{r}{A}&
+%%     \wireid\wireright{r}{A}&
+%%     \\
+%%     \wireright{r}{B}&
+%%     \blank\wirecross{d}{.3}\wireright{r}{A}&
+%%     \blank\wirebraid{u}{.3}\wireright{r}{C}&
+%%     \blank\wirecross{d}{.3}\wireright{r}{B}&
+%%     \\
+%%     \wireright{r}{A}&
+%%     \blank\wirebraid{u}{.3}\wireright{r}{B}&
+%%     \wireid\wireright{r}{B}&
+%%     \blank\wirebraid{u}{.3}\wireright{r}{C}&
+%%     \\
+%%     }}
+%%   \ssep=\ssep
+%%   \vcenter{\wirechart{@C-4mm@R=6mm}{
+%%     \wireright{r}{C}&
+%%     \blank\wirecross{d}{.3}\wireright{r}{B}&
+%%     \wireid\wireright{r}{B}&
+%%     \blank\wirecross{d}{.3}\wireright{r}{A}&
+%%     \\
+%%     \wireright{r}{B}&
+%%     \blank\wirebraid{u}{.3}\wireright{r}{C}&
+%%     \blank\wirecross{d}{.3}\wireright{r}{A}&
+%%     \blank\wirebraid{u}{.3}\wireright{r}{B}&
+%%     \\
+%%     \wireright{r}{A}&
+%%     \wireid\wireright{r}{A}&
+%%     \blank\wirebraid{u}{.3}\wireright{r}{C}&
+%%     \wireid\wireright{r}{C}&
+%%     \\
+%%     }}
+%%   \]
+%% \end{example}
 
 Talk about groupoid cardinality and give an example of how the cardinality of
 a group of order $n$ is $\frac{1}{n}$.
