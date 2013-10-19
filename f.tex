@@ -67,11 +67,13 @@
 \newtheorem{n-example}[n-lemma]{Example}
 \newenvironment{example}{\begin{n-example}}{\end{n-example}}
 
+\newcommand{\br}{\mathit{Br}}
 \newcommand{\ssep}{\hspace{1em}} 
 \newcommand{\sym}{c}       % braid: could be \sigma or c or \gamma
 \newcommand{\cp}{\circ}                 % composition
 \newcommand{\symi}{\sym\inv}
 \newcommand{\inv}{^{-1}}
+\newcommand{\lolli}{\multimap} 
 \newcommand{\id}{\textrm{\rm id}}       % identity
 \newcommand{\x}{\otimes}
 \newcommand{\boolt}{\mathit{bool}}
@@ -278,23 +280,34 @@ If we focus on homeomorphisms, the higher-order space is a \emph{torsor}.
 \section{Intuitive Ideas and Examples} 
 \label{sec:intuition}
 
-%% the next 7 figures are taken from Selinger's paper on graphical languages
+%% the next figures are taken from Selinger's paper on graphical languages
 %% for monoidal categories; if we use them make sure it's ok with him and
 %% acknowledge him
 
-In homotopy type theory, there is a focus on isomomorphisms represented by
-paths (proofs of identities) and yet arbitrary functions are considered. We
-propose to only consider functions that are themselves isomorphisms: this
-will allow us to view the function itself as a collection of paths and it
+In homotopy type theory, there is a focus on isomorphisms: for most of the
+spaces an isomorphism between $A$ and $B$ is represented by a path denoting a
+particular proof of the identify $A \equiv B$. Different proofs yield
+different paths and these proofs can be related by 2-paths to reason about
+proof equivalence and so on. Yet in the middle of all these identities and
+isomorphisms, conventional homotopy type theory deals with arbitrary
+functions, then defines what it means \emph{extensionally} for functions to
+be isomorphic, and \emph{then} postulates an axiom that extensionally
+equivalent functions are identical in the sense of having a path between
+them. This treatment gives no insight about the nature paths between
+functions and is undesirable for many reasons. 
+
+We propose to just consider functions are isomorphisms by construction. This
 doesn't lose anything in terms of computability because we know that we could
-do everything with reversible functions if we wanted to.
+do everything with reversible functions if we wanted to. There are actually
+many advantages of doing so as we and others have argued at length
+before. Anyway, the point is that if we have isomorphisms-by-construction
+functions then the function itself becomes naturally a collection of
+paths. We illustrate this point with examples.
 
 Consider the function $\notb$ from the space $\boolt$ to itself. We can
 represent this function as a pair of paths. Since we are in a topological
-world, we should care whether the path top pass crosses over the bottom one
-or vice-versa. In the diagram below, we chose for the top wire to cross over
-the bottom one:
-
+world, we should care about how the paths cross over each other.  In the
+diagram below, we chose for the top path to cross over the bottom one:
 \begin{center}
   \begin{tabular}{@{}llc@{}}
     $\notb : \boolt \rightarrow \boolt$ & & 
@@ -304,26 +317,28 @@ the bottom one:
         }}$ 
   \end{tabular}
 \end{center}
-
-It is important also to note that the two paths must be taken together
+It is important to note that the two paths must be taken together
 because there is a constraint between them. If the top path takes $\ffv$ to
 $\ttv$ then the bottom path cannot take $\ttv$ to $\ttv$: it \emph{has} to
-lead to $\ffv$. We will return to this point later.
+lead to $\ffv$. In other words, it is incorrect to focus only on the top path
+and conclude that there is an identity between $\ffv$ and $\ttv$. What is
+correct is that, collectively, there is an identity between $\boolt$ and
+$\boolt$ that permutes the elements of $\boolt$. Technically we have a
+\emph{braid}. 
 
-For now, consider the functions:
+We will return to this point later. But for now, consider the functions:
 \[\begin{array}{rcl}
-\mathit{id}^1 &=& \lambda x.x \\
-\mathit{id}^2 &=& \lambda x. \notb~(\notb~x)
+\idc^1 &=& \lambda x.x \\
+\idc^2 &=& \lambda x. \notb~(\notb~x)
 \end{array}\]
 These two functions are evidently extensionally equivalent and hence in the
-conventional treatment of homotopy type theory, it is acceptable to assume
-they are also propositionally equivalent, i.e., it is acceptable to postulate
-a path $\mathit{id}^1 \path \mathit{id}^2$ in the space $\boolt \rightarrow
-\boolt$. 
-
-When represented as paths, we get the following situation for the second
-function:
-\[\vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
+conventional treatment of homotopy type theory, they are also treated as
+propositionally equivalent by the function extensionality axiom. When the
+functions themselves are represented as paths, however, we get the following
+situation for the second function:
+\[
+\idc^2 = \lambda x.\notb~(\notb~x) \qquad
+\vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
     *{}\wireright{r}{\ffv}&
     \blank\wirecross{d}\wireright{r}{\ffv}&
     \blank\wirecross{d}\wireright{r}{\ffv}&
@@ -334,25 +349,133 @@ function:
     \\
     }}
 \]
-Repeating the $\notb$ operation results in a twisted path that externally
-behaves like the identity but that evidently not identical to the straight
-path with no twists. Thus although one can justify that the two functions
-should have a path between them, the function extensionality axiom does not
-give insights into \emph{what} this path is actually doing topologically.
+Repeating the $\notb$ operation results in a twisted braid that extensionally
+behaves like the trivial braid but that is evidently not identical to
+it. Formally to find a (2-)path between the functions requires us to find an
+\emph{isotopy} between the two braids, where loosely speaking an isotopy is
+essentially homotopy in the case of bijections. The two braids for $\idc^1$
+and $\idc^2$ are \emph{not} isotopic so there is no path between them in our
+world. What is interesting is that the braid isotopy problem has efficient
+solutions and hence we are in a situation where function equivalence has
+efficient algorithms.
 
+Note that one can define another version of boolean negation $\notb'$ in
+which the bottom path is the one that crosses over the top one. Using this
+version, the function $\idc^3 = \lambda x.\notb'~(\notb~x)$ would look like:
+\[
+\idc^3 = \lambda x.\notb'~(\notb~x) \qquad
+\vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
+     *{}\wireright{r}{\ffv}&
+     \blank\wirecross{d}\wireright{r}{\ffv}&
+     \blank\wirebraid{d}{.3}\wireright{r}{\ffv}&
+     \\
+     *{}\wireright{r}{\ttv}&
+     \blank\wirebraid{u}{.3}\wireright{r}{\ttv}&
+     \blank\wirecross{u}\wireright{r}{\ttv}&
+     \\
+     }}
+\]
+And this version is isotopic to the trivial braid, and hence we would have a
+(2-)path between $\idc^1$ and $\idc^3$.
 
+To summarize, if we restrict our attention to a certain class of functions,
+these functions are naturally described as braids and function equivalence
+(i.e, paths between functions) are generated by braid isotopy. This is
+already quite neat but note that we have only talked about functions
+\emph{between} spaces and modeled these as braids. What we have not done yet
+is describe the space of functions itself. In our running example, we need to
+describe some space $\boolt \lolli \boolt$ that represents the various
+functions we discussed from $\boolt$ to $\boolt$.
 
+%%%%%%%%%%%%%%%%%
+\subsection{Pointed Spaces} 
 
+We will construct this in steps. First we note that a function is a ``large''
+object that can be applied to many possible arguments. Each application is
+however associated with exactly one argument. Thus, in this first step, we do
+not model functions in their entirety; we only model functions \emph{at one
+  particular point}. We will return to the issue of modeling the entire
+function object later. For now, we have technically moved from \emph{spaces}
+to \emph{pointed spaces}. Let's revisit our previous discussion from the
+perspective of pointed spaces.
 
+The type $\boolt$ is now split in two types: the type $(\boolt,\ffv)$ with
+$\ffv$ as the distinguished point and $(\boolt,\ttv)$ with $\ttv$ as the
+distinguished point. We now have two copies of the function $\notb$, a
+version $\notb_{\ffv} : (\boolt,\ffv) \rightarrow (\boolt,\ttv)$ and a
+version $\notb_{\ttv} : (\boolt,\ttv) \rightarrow (\boolt,\ffv)$ depending on
+the starting basepoint. Indeed functions must respect the basepoints, i.e.,
+map basepoints to basepoints. The function is still a braid on the complete
+$\boolt$ space but in the first case, the distinguished point $\ffv$ tells us
+that the function is ``applied'' to $\ffv$ and hence that the top branch is
+the one in focus.
 
+Concretely then we want spaces (i.e., groupoids) $(\boolt,\ffv) \lolli
+(\boolt,\ffv)$, $(\boolt,\ffv) \lolli (\boolt,\ttv)$, $(\boolt,\ttv) \lolli
+(\boolt,\ffv)$, and $(\boolt,\ttv) \lolli (\boolt,\ttv)$. As examples, the
+first space will contain $\idc^1_{\ffv}$ and $\idc^3{\ffv}$; the second space
+will contain $\notb_{\ffv}$ and $\notb'_{\ffv}$; the third space will contain
+$\notb_{\ttv}$, and the last space will contain $\idc^1_{\ttv}$. In the first
+space, there will be a path between $\idc^1_{\ffv}$ and $\idc^3{\ffv}$ as
+there is an isotopy between them etc. To describe these spaces fully, we need
+introduction rules, elimination rules, computation rules, and induction
+principles, etc. It should be clear that we can't just use
+$\lambda$-expressions as introduction rules: they are not refined enough to
+capture all the invariants we want.
 
+Let's start with some basic observations. How many points (i.e., functions or
+braids) are there in the space $(\boolt,\ffv) \lolli (\boolt,\ffv)$. These
+are all the twists on two elements with the paths starting and ending at
+$\ffv$ highlighted: by giving a twist in one direction the value $+1$ and a
+twist in the other direction the value $-1$, we see that this is isomorphic
+to the integers under addition. We would like to argue that this space has
+groupoid cardinality 1 and if we succeed then it is natural to think of it as
+the product of a space with fractional cardinality $\frac{1}{2}$ and the
+space $\boolt$ with cardinality 2. Think of all the words over the alphabet
+$\{ 0, 1, -1\}$ with rules $0x\rightarrow x$, $x0\rightarrow x$,
+$1(-1)\rightarrow\epsilon$ and $(-1)1\rightarrow\epsilon$. This produces
+equivalence classes which describe the connected components (isotopy
+equivalences) of the space $\boolt\lolli\boolt$. Let's denote by $V_n$ the
+size of the equivalence class of words whose value is $n$ where the value is
+the sum of the elements. The groupoid cardinality of the space is therefore
+$\Sigma_{n\in\mathbb{Z}} \frac{1}{A_n}$. Does this thing have value 1???
+Plausible. Assume yes for now and proceed under the assumption that it is 1
+and hence that it makes sense to decompose the space into the product of
+something of cardinality $\frac{1}{2}$ and something of cardinality $2$. So
+what kind of groupoid would have cardinality $\frac{1}{2}$. This actually is
+something well studied. Talk about groupoid cardinality and give an example
+of how the cardinality of a group of order $n$ is $\frac{1}{n}$. Some
+intuition about the paths reducing the number of elements and the Euler
+characteristic.
 
+%%%%%%%%%%%%%%%%%
+\subsection{Fractionals} 
 
+As an example, let's focus now on building the type
+$\frac{1}{(\boolt,\ffv)}$: it will correspond to the braid group $\br_2$ on
+two strands. This type will have an infinite number of points each
+representing one element of the braid group $\br_2$. Mathematically, for $n$
+strands, the braid group $\br_n$ is generated by $\sigma_1, \ldots,
+\sigma_{n-1}$ and the following relations:
+\begin{itemize}
+\item $\sigma_i\sigma_{i+1}\sigma_i = \sigma_{i+1}\sigma_{i}\sigma_{i+1}$, 
+\item $\sigma_i\sigma_j = \sigma_j\sigma_i$ if $|i-j| \geq 2$.
+\end{itemize}
+So for the particular case of $\br_2$, we have one generator $\sigma$ and no
+relations. The generator corresponds to one non-trivial twist in one
+direction. The group elements (i.e., the elements of
+$\frac{1}{(\boolt,\ffv)}$) are the trivial braid, the $n$-fold compositions
+of $\sigma$ for all $n$, and the $n$-fold compositions of $\sigma^{-1}$ for
+all $n$. 
 
+So generally speaking $\eta_n$ will produce a product of $\br_n$ and $n$ and
+$\epsilon_n$ will be the group action of the group on $\br_n$ on the
+particular strand $n$. 
 
+%%%%%%%%%%%%%%%%%
+\subsection{Negatives?} 
 
-
-
+Need operations to change the basepoint. Would these be the negatives?
 
 %% \begin{center}
 %%   \begin{tabular}{@{}llc@{}}
@@ -473,9 +596,6 @@ give insights into \emph{what} this path is actually doing topologically.
 %%     }}
 %%   \]
 %% \end{example}
-
-Talk about groupoid cardinality and give an example of how the cardinality of
-a group of order $n$ is $\frac{1}{n}$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Category of Pointed Groupoids}
