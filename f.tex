@@ -470,7 +470,32 @@ all $n$.
 
 So generally speaking $\eta_n$ will produce a product of $\br_n$ and $n$ and
 $\epsilon_n$ will be the group action of the group on $\br_n$ on the
-particular strand $n$. 
+particular strand $n$. A function will have a particular wiring; this wiring
+is reflected as a first class value using the group generators. For booleans,
+the group generators can be represented as id, not, and not'; every wiring is
+a sequence of these. So values of type $1/bool$ are (id), (not o not'), (not'
+o not'), (not o not o not), etc. or in other words the code for the circuits
+becomes represented as a value. (Is that related to the encode/decode method
+in the HoTT book?) How about functions: T1 -> T2. The types T1 and T2 must be
+connected by paths so we might as well think about T1 -> T1.
+
+So B has value f and t
+1/B has values id; not; not'; and their compositions (semantically
+represented as elements of the group Br2. 
+
+eta : (1,()) -> ((B,1/B),(f,id))
+eta () = (f , id)
+
+eta : (1,()) -> ((B,1/B),(f,not))
+eta () = (t , not)
+
+...
+
+epsilon : ((B,1/B),(f,not)) -> (1,())
+epsilon (t , not) = ()
+
+...
+
 
 %%%%%%%%%%%%%%%%%
 \subsection{Negatives?} 
