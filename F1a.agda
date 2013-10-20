@@ -128,11 +128,11 @@ test12 = ⟦ RECIP1 (PLUS0 ONE ONE) ⟧₁
 data _⟷_ : B1 → B1 → Set where
   -- + 
   swap₊   : { b₁ b₂ : B1 } → PLUS1 b₁ b₂ ⟷ PLUS1 b₂ b₁
+  -- *
   unite⋆  : { b : B1 } → TIMES1 (LIFT0 ONE) b ⟷ b
+  uniti⋆  : { b : B1 } → b ⟷ TIMES1 (LIFT0 ONE) b
 {-  assocl₊ : { b₁ b₂ b₃ : B } → PLUS b₁ (PLUS b₂ b₃) ⟷ PLUS (PLUS b₁ b₂) b₃
   assocr₊ : { b₁ b₂ b₃ : B } → PLUS (PLUS b₁ b₂) b₃ ⟷ PLUS b₁ (PLUS b₂ b₃)
-  -- *
-  uniti⋆  : { b : B } → b ⟷ TIMES ONE b
   swap⋆   : { b₁ b₂ : B } → TIMES b₁ b₂ ⟷ TIMES b₂ b₁
   assocl⋆ : { b₁ b₂ b₃ : B } → TIMES b₁ (TIMES b₂ b₃) ⟷ TIMES (TIMES b₁ b₂) b₃
   assocr⋆ : { b₁ b₂ b₃ : B } → TIMES (TIMES b₁ b₂) b₃ ⟷ TIMES b₁ (TIMES b₂ b₃)
@@ -151,6 +151,7 @@ data _⟷_ : B1 → B1 → Set where
            (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (TIMES b₁ b₂ ⟷ TIMES b₃ b₄)
 -}
   η⋆ : (b : B0) → LIFT0 ONE ⟷ TIMES1 (LIFT0 b) (RECIP1 b)
+  ε⋆ : (b : B0) → TIMES1 (LIFT0 b) (RECIP1 b) ⟷ LIFT0 ONE
 -- interpret isos as functors
 
 record 1-functor (A B : 1-type) : Set where
@@ -172,11 +173,20 @@ swap⊎ (inj₂ b) = inj₁ b
 elim1⋆ : {b : B1} → ipath (TIMES1 (LIFT0 ONE) b) → ipath b
 elim1⋆ (_↝_ {tt , x} (tt , y) (tt , z)) = _↝_ {i = x} y z
 
+intro1⋆ : {b : B1} → ipath b → ipath (TIMES1 (LIFT0 ONE) b)
+intro1⋆ (_↝_ {x} y z) = _↝_ {i = tt , x} (tt , y) (tt , z)
+
 Iη⋆ : (b : B0) → I ⟦ LIFT0 ONE ⟧₁ → I ⟦ TIMES1 (LIFT0 b) (RECIP1 b) ⟧₁
 Iη⋆ b tt = tt , (point b , point b)
 
+Iε⋆ : (b : B0) → I ⟦ TIMES1 (LIFT0 b) (RECIP1 b) ⟧₁ → I ⟦ LIFT0 ONE ⟧₁
+Iε⋆ b (tt , x) = tt
+
 objη⋆ : (b : B0) → ı₁ (LIFT0 ONE) → ı₁ (TIMES1 (LIFT0 b) (RECIP1 b))
 objη⋆ b tt = point b , tt
+
+objε⋆ : (b : B0) → ı₁ (TIMES1 (LIFT0 b) (RECIP1 b)) → ı₁ (LIFT0 ONE)
+objε⋆ b (x , tt) = tt
 
 sw : {b₁ b₂ : B1} → ipath (PLUS1 b₁ b₂) → ipath (PLUS1 b₂ b₁)
 sw (_↝_ {i} (inj₁ x) (inj₁ y)) = _↝_ {i = swap⊎ i} (inj₂ x) (inj₂ y)
@@ -190,18 +200,37 @@ elim1I b (tt , x) = x
 elim1∣₁ : (b : B1) → ı₁ (TIMES1 (LIFT0 ONE) b) → ı₁ b
 elim1∣₁ b (tt , x) = x
 
+introI : (b : B1) → I ⟦ b ⟧₁ → I ⟦ TIMES1 (LIFT0 ONE) b ⟧₁
+introI b x = (tt , x)
+
+intro1∣₁ : (b : B1) → ı₁ b → ı₁ (TIMES1 (LIFT0 ONE) b)
+intro1∣₁ b x = (tt , x)
+
 eta : (b : B0) → List (ipath (LIFT0 ONE)) → List (ipath (TIMES1 (LIFT0 b) (RECIP1 b)))
 -- note how the input list is not used at all!
 eta b _ = prod (λ a a' → _↝_ {i = tt , a , a'} (a , tt) (a' , tt)) (elems0 b) (elems0 b)
 
-eval : {b₁ b₂ : B1} → (b₁ ⟷ b₂) → 1-functor ⟦ b₁ ⟧₁ ⟦ b₂ ⟧₁
-eval (swap₊ {b₁} {b₂}) = F₁ swap⊎ swap⊎ (map (sw {b₁} {b₂}))
-eval (unite⋆ {b}) = F₁ (elim1I b) (elim1∣₁ b) (map (elim1⋆ {b}))
-eval (η⋆ b) = F₁ (Iη⋆ b) (objη⋆ b) (eta b )
+eps : (b : B0) → ipath (TIMES1 (LIFT0 b) (RECIP1 b)) → ipath (LIFT0 ONE)
+eps b0 (_↝_ {i = i} a b) = _↝_ tt tt
+
+mutual
+  eval : {b₁ b₂ : B1} → (b₁ ⟷ b₂) → 1-functor ⟦ b₁ ⟧₁ ⟦ b₂ ⟧₁
+  eval (swap₊ {b₁} {b₂}) = F₁ swap⊎ swap⊎ (map (sw {b₁} {b₂}))
+  eval (unite⋆ {b}) = F₁ (elim1I b) (elim1∣₁ b) (map (elim1⋆ {b}))
+  eval (uniti⋆ {b}) = F₁ (introI b) (intro1∣₁ b) (map (intro1⋆ {b}))
+  eval (η⋆ b) = F₁ (Iη⋆ b) (objη⋆ b) (eta b )
+  eval (ε⋆ b) = F₁ (Iε⋆ b) (objε⋆ b) (map (eps b))
+
+  evalB : {b₁ b₂ : B1} → (b₁ ⟷ b₂) → 1-functor ⟦ b₂ ⟧₁ ⟦ b₁ ⟧₁
+  evalB (swap₊ {b₁} {b₂}) = F₁ swap⊎ swap⊎ (map (sw {b₂} {b₁}))
+  evalB (unite⋆ {b}) = F₁ (introI b) (intro1∣₁ b) (map (intro1⋆ {b}))
+  evalB (uniti⋆ {b}) = F₁ (elim1I b) (elim1∣₁ b) (map (elim1⋆ {b}))
+  evalB (η⋆ b) = F₁ (Iε⋆ b) (objε⋆ b) (map (eps b))
+  evalB (ε⋆ b) = F₁ (Iη⋆ b) (objη⋆ b) (eta b)
+
 
 {- eval assocl₊ = ? -- : { b₁ b₂ b₃ : B } → PLUS b₁ (PLUS b₂ b₃) ⟷ PLUS (PLUS b₁ b₂) b₃
 eval assocr₊ = ? -- : { b₁ b₂ b₃ : B } → PLUS (PLUS b₁ b₂) b₃ ⟷ PLUS b₁ (PLUS b₂ b₃)
-eval unite⋆ = ? -- : { b : B } → TIMES ONE b ⟷ b
 eval uniti⋆ = ? -- : { b : B } → b ⟷ TIMES ONE b
 eval swap⋆ = ? --  : { b₁ b₂ : B } → TIMES b₁ b₂ ⟷ TIMES b₂ b₁
 eval assocl⋆ = ? -- : { b₁ b₂ b₃ : B } → TIMES b₁ (TIMES b₂ b₃) ⟷ TIMES (TIMES b₁ b₂) b₃
