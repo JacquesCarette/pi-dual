@@ -9,6 +9,7 @@ open import Relation.Binary.PropositionalEquality
 
 -- 1-groupoids are those where the various laws hold up to ≡.
 record 1Groupoid : Set₁ where
+  infixr 5 _↝_
   field
     set : Set₀
     _↝_ : set → set → Set
@@ -18,6 +19,6 @@ record 1Groupoid : Set₁ where
     lneutr : ∀ {x y}(α : x ↝ y) → id ∘ α ≡ α
     rneutr : ∀ {x y}(α : x ↝ y) → α ∘ id ≡ α
     assoc : ∀ {w x y z}(α : y ↝ z)(β : x ↝ y)(δ : w ↝ x) → (α ∘ β) ∘ δ ≡ α ∘ (β ∘ δ)
-    linv : ∀ {x y}(α : x ↝ y) → α ⁻¹ ∘ α ≡ id
-    rinv : ∀ {x y}(α : x ↝ y) → α ∘ α ⁻¹ ≡ id
+    linv : ∀ {x y}(α : x ↝ y) → α ⁻¹ ∘ α ≡ id {x}
+    rinv : ∀ {x y}(α : x ↝ y) → α ∘ α ⁻¹ ≡ id {y}
 
