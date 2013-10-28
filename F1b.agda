@@ -7,6 +7,7 @@ open import Data.Sum hiding (map; [_,_])
 open import Data.Product hiding (map)
 open import Data.List hiding ([_])
 open import Function using (flip)
+open import Relation.Binary.Core using (IsEquivalence; Reflexive; Symmetric; Transitive)
 
 open import Groupoid
 
@@ -24,14 +25,48 @@ infix  30 _⟷_
 data Path {A : Set} : A → A → Set where
   _⇛_ : (x : A) → (y : A) → Path x y
 
-data _≣⇛_ {A : Set} {a b : A} : Path a b → Path a b → Set where
-  refl⇛ : (a ⇛ b) ≣⇛ (a ⇛ b)
+data _≣⇛_ {A : Set} {a b : A} (x : Path a b) : Path a b → Set where
+  refl⇛ : x ≣⇛ x
 
 id⇛ : {A : Set} → (a : A) → Path a a
 id⇛ a = a ⇛ a
 
 ap : {A B : Set} → (f : A → B) → {a a' : A} → Path a a' → Path (f a) (f a')
 ap f (a ⇛ a') = (f a) ⇛ (f a')
+
+_∙⇛_ : {A : Set} {a b c : A} → Path b c → Path a b → Path a c
+(b ⇛ c) ∙⇛ (a ⇛ .b) = a ⇛ c
+
+_⇚ : {A : Set} {a b : A} → Path a b → Path b a
+(x ⇛ y) ⇚ = y ⇛ x
+
+lid⇛ : {A : Set} {x y : A} (α : Path x y) → (id⇛ y ∙⇛ α) ≣⇛ α
+lid⇛ (x ⇛ y) = refl⇛
+
+rid⇛ : {A : Set} {x y : A} (α : Path x y) → (α ∙⇛ id⇛ x) ≣⇛ α
+rid⇛ (x ⇛ y) = refl⇛
+
+assoc⇛ : {A : Set} {w x y z : A} (α : Path y z) (β : Path x y) (δ : Path w x) → ((α ∙⇛ β) ∙⇛ δ) ≣⇛ (α ∙⇛ (β ∙⇛ δ))
+assoc⇛ (y ⇛ z) (x ⇛ .y) (w ⇛ .x) = refl⇛
+
+l⇚ : {A : Set}  {x y : A} (α : Path x y) → ((α ⇚) ∙⇛ α) ≣⇛ id⇛ x
+l⇚ (x ⇛ y) = refl⇛
+
+r⇚ : {A : Set} {x y : A} (α : Path x y) → (α ∙⇛ (α ⇚)) ≣⇛ id⇛ y
+r⇚ (x ⇛ y) = refl⇛
+
+sym⇛ : {A : Set} {x y : A} {α β : Path x y} → α ≣⇛ β → β ≣⇛ α
+sym⇛ refl⇛ = refl⇛
+
+trans⇛ : {A : Set} {x y : A} {α β δ : Path x y} → α ≣⇛ β → β ≣⇛ δ → α ≣⇛ δ
+trans⇛ refl⇛ refl⇛ = refl⇛
+ 
+equiv≣⇛ : {A : Set} {x y : A} → IsEquivalence {_} {_} {Path x y} (_≣⇛_)
+equiv≣⇛ = record { refl = refl⇛; sym = sym⇛; trans = trans⇛ }
+
+resp≣⇛ : {A : Set} {x y z : A} {f h : Path y z} {g i : Path x y} →
+  f ≣⇛ h → g ≣⇛ i → (f ∙⇛ g) ≣⇛ (h ∙⇛ i)
+resp≣⇛ refl⇛ refl⇛ = refl⇛
 
 pathProd : {A B : Set} {a a' : A} {b b' : B} → Path a a' → Path b b' → Path (a , b) (a' , b')
 pathProd (a ⇛ b) (a' ⇛ b') = (a , a') ⇛ (b , b')
@@ -41,9 +76,6 @@ prod f l₁ l₂ = concatMap (λ b → map (f b) l₂) l₁
 
 _×↝_ : {A B : Set} {a a' : A} {b b' : B} → List (Path a a') → List (Path b b') → List (Path (a , b) (a' , b'))
 _×↝_ = prod pathProd
-
-_∘⇛_ : {A : Set} {a b c : A} → Path b c → Path a b → Path a c
-(b ⇛ c) ∘⇛ (a ⇛ .b) = a ⇛ c
 
 -- Discrete paths.  Essentially ≡.
 data DPath {A : Set} (x : A) : A → Set where
@@ -60,6 +92,25 @@ lidD reflD = reflD
 
 ridD : {A : Set} {x y : A} (α : DPath x y) → DPath (transD α reflD) α
 ridD reflD = reflD
+
+assocD : {A : Set} {w x y z : A} (α : DPath y z) (β : DPath x y) (δ : DPath w x) → DPath (transD (transD α β) δ) (transD α (transD β δ))
+assocD reflD reflD reflD = reflD
+
+linvD : {A : Set} {x y : A} (α : DPath x y) → DPath (transD (symD α) α) reflD
+linvD reflD = reflD
+
+rinvD : {A : Set} {x y : A} (α : DPath x y) → DPath (transD α (symD α)) reflD
+rinvD reflD = reflD
+
+equivD : {A : Set} {x y : A} → IsEquivalence {_} {_} {DPath x y} DPath
+equivD = λ {A} {x} {y} → record 
+  { refl = reflD
+  ; sym = symD
+  ; trans = flip transD }
+
+respD : {A : Set} {x y z : A} {f h : DPath y z} {g i : DPath x y} → 
+    DPath f h → DPath g i → DPath (transD f g) (transD h i)
+respD reflD reflD = reflD
 
 -- pi types with exactly one level of reciprocals
 
@@ -125,11 +176,11 @@ discrete a =  record
     ; _⁻¹ = symD
     ; lneutr = lidD
     ; rneutr = ridD
-    ; assoc = {!!}
-    ; linv = {!!}
-    ; rinv = {!!}
-    ; equiv = {!!} 
-    ;  ∘-resp-≈ = {!!}}
+    ; assoc = assocD
+    ; linv = linvD
+    ; rinv = rinvD
+    ; equiv = equivD 
+    ;  ∘-resp-≈ = respD}
 
 allPaths : Set → 1Groupoid
 allPaths a =  record
@@ -137,20 +188,20 @@ allPaths a =  record
     ; _↝_ = Path
     ; _≈_ = _≣⇛_
     ; id = λ {x} → id⇛ x
-    ; _∘_ = {!!}
-    ; _⁻¹ = {!!}
-    ; lneutr = {!!}
-    ; rneutr = {!!}
-    ; assoc = {!!}
-    ; linv = {!!}
-    ; rinv = {!!}
-    ; equiv = {!!} 
-    ;  ∘-resp-≈ = {!!}}
+    ; _∘_ = _∙⇛_
+    ; _⁻¹ = _⇚
+    ; lneutr = lid⇛
+    ; rneutr = rid⇛
+    ; assoc = assoc⇛
+    ; linv = l⇚
+    ; rinv = r⇚
+    ; equiv = equiv≣⇛ 
+    ;  ∘-resp-≈ = resp≣⇛}
 
 ⟦_⟧₁ : B1 → 1Groupoid
 ⟦ LIFT0 b0 ⟧₁ = discrete (ı₀ b0) 
-⟦ PLUS1 b₁ b₂ ⟧₁ = discrete (set ⟦ b₁ ⟧₁ ⊎ set ⟦ b₂ ⟧₁)
-⟦ TIMES1 b₁ b₂ ⟧₁ = discrete (set ⟦ b₁ ⟧₁ × set ⟦ b₂ ⟧₁)
+⟦ PLUS1 b₁ b₂ ⟧₁ = discrete (set ⟦ b₁ ⟧₁ ⊎ set ⟦ b₂ ⟧₁) -- this is wrong
+⟦ TIMES1 b₁ b₂ ⟧₁ = discrete (set ⟦ b₁ ⟧₁ × set ⟦ b₂ ⟧₁) -- and so is this
 ⟦ RECIP1 b0 ⟧₁ = allPaths (ı₀ b0)
 
 ı₁ : B1 → Set
