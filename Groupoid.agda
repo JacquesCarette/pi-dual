@@ -6,7 +6,10 @@
 
 module Groupoid where
 
+open import Level
+open import Data.Empty
 open import Data.Sum
+open import Data.Product using (_×_)
 open import Relation.Binary
 
 -- 1-groupoids are those where the various laws hold up to ≈.
@@ -34,18 +37,39 @@ _[_,_] = 1Groupoid._↝_
 
 open 1Groupoid
 
+private
+  _⇛_ : {X Y : 1Groupoid} → set X ⊎ set Y → set X ⊎ set Y → Set
+  _⇛_ {X} (inj₁ x) (inj₁ y) = _↝_ X x y
+  _⇛_ (inj₁ _) (inj₂ _) = ⊥
+  _⇛_ (inj₂ _) (inj₁ _) = ⊥
+  _⇛_ {Y = Y} (inj₂ x) (inj₂ y) = _↝_ Y x y
+
+  mk≈ : {X Y : 1Groupoid} {A B : set X ⊎ set Y} →
+        _⇛_ {X} {Y} A B → _⇛_ {X} {Y} A B → Set
+  mk≈ {X} {Y} {inj₁ z} {inj₁ z'} a b = _≈_ X a b
+  mk≈ {X} {Y} {inj₁ x} {inj₂ y}  () ()
+  mk≈ {X} {Y} {inj₂ y} {inj₁ x}  () ()
+  mk≈ {X} {Y} {inj₂ y} {inj₂ y'} a b = _≈_ Y a b
+
+  id⇛ : {X Y : 1Groupoid} {x : set X ⊎ set Y} → _⇛_ {X} {Y} x x
+  id⇛ {X} {Y} {inj₁ x} = id X
+  id⇛ {X} {Y} {inj₂ y} = id Y
+
 _⊎G_ : 1Groupoid → 1Groupoid → 1Groupoid
 A ⊎G B = record 
-  { set = set A ⊎ set B
-  ; _↝_ = {!!}
-  ; _≈_ = {!!}
-  ; id = {!!};
-           _∘_ = {!!};
-           _⁻¹ = {!!};
-           lneutr = {!!};
-           rneutr = {!!};
-           assoc = {!!};
-           equiv = {!!};
-           linv = {!!};
-           rinv = {!!};
-           ∘-resp-≈ = {!!} }
+  { set = A.set ⊎ B.set
+  ; _↝_ = _⇛_
+  ; _≈_ = λ {A₁ B₁} → mk≈ {A} {B} {A₁}   
+  ; id = λ {x} → id⇛ {x = x}
+  ; _∘_ = {!!}
+  ; _⁻¹ = {!!}
+  ; lneutr = {!!}
+  ; rneutr = {!!}
+  ; assoc = {!!}
+  ; equiv = {!!}
+  ; linv = {!!}
+  ; rinv = {!!}
+  ; ∘-resp-≈ = {!!} }
+  where
+    module A = 1Groupoid A
+    module B = 1Groupoid B

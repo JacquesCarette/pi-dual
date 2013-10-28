@@ -200,7 +200,7 @@ allPaths a =  record
 
 ⟦_⟧₁ : B1 → 1Groupoid
 ⟦ LIFT0 b0 ⟧₁ = discrete (ı₀ b0) 
-⟦ PLUS1 b₁ b₂ ⟧₁ = discrete (set ⟦ b₁ ⟧₁ ⊎ set ⟦ b₂ ⟧₁) -- this is wrong
+⟦ PLUS1 b₁ b₂ ⟧₁ = ⟦ b₁ ⟧₁ ⊎G ⟦ b₂ ⟧₁
 ⟦ TIMES1 b₁ b₂ ⟧₁ = discrete (set ⟦ b₁ ⟧₁ × set ⟦ b₂ ⟧₁) -- and so is this
 ⟦ RECIP1 b0 ⟧₁ = allPaths (ı₀ b0)
 
