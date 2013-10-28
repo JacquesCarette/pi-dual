@@ -6,6 +6,7 @@
 
 module Groupoid where
 
+open import Data.Sum
 open import Relation.Binary
 
 -- 1-groupoids are those where the various laws hold up to ≈.
@@ -31,3 +32,20 @@ record 1Groupoid : Set₁ where
 _[_,_] : (C : 1Groupoid) → 1Groupoid.set C → 1Groupoid.set C → Set
 _[_,_] = 1Groupoid._↝_
 
+open 1Groupoid
+
+_⊎G_ : 1Groupoid → 1Groupoid → 1Groupoid
+A ⊎G B = record 
+  { set = set A ⊎ set B
+  ; _↝_ = {!!}
+  ; _≈_ = {!!}
+  ; id = {!!};
+           _∘_ = {!!};
+           _⁻¹ = {!!};
+           lneutr = {!!};
+           rneutr = {!!};
+           assoc = {!!};
+           equiv = {!!};
+           linv = {!!};
+           rinv = {!!};
+           ∘-resp-≈ = {!!} }
