@@ -44,8 +44,7 @@ private
   _⇛_ (inj₂ _) (inj₁ _) = ⊥
   _⇛_ {Y = Y} (inj₂ x) (inj₂ y) = _↝_ Y x y
 
-  mk≈ : {X Y : 1Groupoid} {A B : set X ⊎ set Y} →
-        _⇛_ {X} {Y} A B → _⇛_ {X} {Y} A B → Set
+  mk≈ : {X Y : 1Groupoid} {A B : set X ⊎ set Y} → _⇛_ {X} {Y} A B → _⇛_ {X} {Y} A B → Set
   mk≈ {X} {Y} {inj₁ z} {inj₁ z'} a b = _≈_ X a b
   mk≈ {X} {Y} {inj₁ x} {inj₂ y}  () ()
   mk≈ {X} {Y} {inj₂ y} {inj₁ x}  () ()
@@ -55,14 +54,28 @@ private
   id⇛ {X} {Y} {inj₁ x} = id X
   id⇛ {X} {Y} {inj₂ y} = id Y
 
+  _∙G_ : {X Y : 1Groupoid} {x y z : set X ⊎ set Y} → _⇛_ {X} {Y} y z → _⇛_ {X} {Y} x y → _⇛_ {X} {Y} x z
+  _∙G_ {X} {Y} {inj₁ _} {inj₁ _} {inj₁ _} a b = _∘_ X a b
+  _∙G_ {X} {Y} {inj₁ _} {inj₁ _} {inj₂ _} () b
+  _∙G_ {X} {Y} {inj₁ x} {inj₂ y} a ()
+  _∙G_ {X} {Y} {inj₂ y} {inj₁ x} a ()
+  _∙G_ {X} {Y} {inj₂ y} {inj₂ y₁} {inj₁ x} () b
+  _∙G_ {X} {Y} {inj₂ _} {inj₂ _} {inj₂ _} a b = _∘_ Y a b
+
+  inv : {X Y : 1Groupoid} {x y : set X ⊎ set Y} → _⇛_ {X} {Y} x y → _⇛_ {X} {Y} y x
+  inv {X} {_} {inj₁ _} {inj₁ _} a = _⁻¹ X a
+  inv {x = inj₁ _} {inj₂ _} ()
+  inv {x = inj₂ _} {inj₁ _} ()
+  inv {_} {Y} {inj₂ _} {inj₂ _} a = _⁻¹ Y a
+
 _⊎G_ : 1Groupoid → 1Groupoid → 1Groupoid
 A ⊎G B = record 
   { set = A.set ⊎ B.set
   ; _↝_ = _⇛_
   ; _≈_ = λ {A₁ B₁} → mk≈ {A} {B} {A₁}   
   ; id = λ {x} → id⇛ {x = x}
-  ; _∘_ = {!!}
-  ; _⁻¹ = {!!}
+  ; _∘_ = λ {x} → _∙G_ {A} {B} {x}
+  ; _⁻¹ = λ {x} → inv {A} {B} {x}
   ; lneutr = {!!}
   ; rneutr = {!!}
   ; assoc = {!!}
