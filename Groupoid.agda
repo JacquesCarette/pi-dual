@@ -10,7 +10,7 @@ open import Level
 open import Data.Empty
 open import Data.Sum
 open import Data.Product using (_×_)
-open import Relation.Binary using (IsEquivalence; Reflexive)
+open import Relation.Binary using (IsEquivalence; Reflexive; Symmetric; Transitive)
 
 -- 1-groupoids are those where the various laws hold up to ≈.
 record 1Groupoid : Set₁ where
@@ -116,6 +116,7 @@ A ⊎G B = record
     linv⇛ {inj₁ x} {inj₂ y} ()
     linv⇛ {inj₂ y} {inj₁ x} ()
     linv⇛ {inj₂ _} {inj₂ _} = B.linv
+    
 
     rinv⇛ : {x y : A.set ⊎ B.set} (α : x ⇛ y) → mk≈ {y} (_∙G_ {y} α (inv {x} α)) (id⇛ {y})
     rinv⇛ {inj₁ _} {inj₁ _} = A.rinv
@@ -129,5 +130,20 @@ A ⊎G B = record
     refl≈ {inj₂ _} {inj₁ _} {()}
     refl≈ {inj₂ y} {inj₂ y₁} = IsEquivalence.refl B.equiv
 
+    sym≈ : {x y : C} → Symmetric (mk≈ {x} {y})
+    sym≈ {inj₁ _} {inj₁ _} = IsEquivalence.sym A.equiv
+    sym≈ {inj₁ _} {inj₂ _} {()}
+    sym≈ {inj₂ _} {inj₁ _} {()}
+    sym≈ {inj₂ y} {inj₂ y₁} = IsEquivalence.sym B.equiv
+
     equiv≈ : {x y : C} → IsEquivalence (mk≈ {x} {y})
-    equiv≈ {x} {y} = record { refl = refl≈ {x}; sym = {!!}; trans = {!!} }
+    equiv≈ {x} = record { refl = refl≈ {x}; sym = sym≈ {x}; trans = {!!} }
+
+
+{-
+    two⇛ : {x y : A.set ⊎ B.set} {X : Set} → ((x ⇛ y) → X) → ((x ⇛ y) → X) → (x ⇛ y) → X
+    two⇛ {inj₁ x} {inj₁ y} c₁ _ a = c₁ a
+    two⇛ {inj₁ x} {inj₂ y} _ _ ()
+    two⇛ {inj₂ y} {inj₁ x} _ _ ()
+    two⇛ {inj₂ _} {inj₂ _} _ c₂ a = c₂ a
+-}
