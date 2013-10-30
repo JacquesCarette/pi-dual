@@ -1,10 +1,10 @@
-{-# OPTIONS  #-}
+{-# OPTIONS --without-K #-}
 
 module F1b where
 
 open import Data.Unit
 open import Data.Sum hiding (map; [_,_])
-open import Data.Product hiding (map)
+open import Data.Product hiding (map; ,_)
 open import Data.List hiding ([_])
 open import Function using (flip)
 open import Relation.Binary.Core using (IsEquivalence; Reflexive; Symmetric; Transitive)
@@ -201,7 +201,7 @@ allPaths a =  record
 ⟦_⟧₁ : B1 → 1Groupoid
 ⟦ LIFT0 b0 ⟧₁ = discrete (ı₀ b0) 
 ⟦ PLUS1 b₁ b₂ ⟧₁ = ⟦ b₁ ⟧₁ ⊎G ⟦ b₂ ⟧₁
-⟦ TIMES1 b₁ b₂ ⟧₁ = discrete (set ⟦ b₁ ⟧₁ × set ⟦ b₂ ⟧₁) -- and so is this
+⟦ TIMES1 b₁ b₂ ⟧₁ =  ⟦ b₁ ⟧₁ ×G ⟦ b₂ ⟧₁
 ⟦ RECIP1 b0 ⟧₁ = allPaths (ı₀ b0)
 
 ı₁ : B1 → Set
@@ -261,10 +261,6 @@ swap⊎ : {A B : Set} → A ⊎ B → B ⊎ A
 swap⊎ (inj₁ a) = inj₂ a
 swap⊎ (inj₂ b) = inj₁ b
 
--- this does not type-check in the presence of --without-K !  Danger lurking here.
-elim1⋆ : {b : B1} {x y : ı₁ b} → ipath (TIMES1 (LIFT0 ONE) b) (tt , x) (tt , y) → ipath b x y
-elim1⋆ ((tt , x) ⇛ (tt , y)) = x ⇛ y
-
 intro1⋆ : {b : B1} {x y : ı₁ b} → ipath b x y → ipath (TIMES1 (LIFT0 ONE) b) (tt , x) (tt , y)
 intro1⋆ (y ⇛ z) = (tt , y) ⇛ (tt , z)
 
@@ -273,9 +269,6 @@ objη⋆ b tt = point b , point b
 
 objε⋆ : (b : B0) → ı₁ (TIMES1 (LIFT0 b) (RECIP1 b)) → ı₁ (LIFT0 ONE)
 objε⋆ b (x , y) = tt
-
-sw : {b₁ b₂ : B1} {x : ı₁ b₁} {y : ı₁ b₂} → ipath (PLUS1 b₁ b₂) (inj₁ x) (inj₂ y) → ipath (PLUS1 b₂ b₁) (inj₁ y) (inj₂ x)
-sw {b₁} {b₂} {x} {y} (.(inj₁ x) ⇛ .(inj₂ y)) = (inj₁ y) ⇛ (inj₂ x)
 
 elim1∣₁ : (b : B1) → ı₁ (TIMES1 (LIFT0 ONE) b) → ı₁ b
 elim1∣₁ b (tt , x) = x
