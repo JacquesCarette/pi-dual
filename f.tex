@@ -284,6 +284,29 @@ If we focus on homeomorphisms, the higher-order space is a \emph{torsor}.
 %% for monoidal categories; if we use them make sure it's ok with him and
 %% acknowledge him
 
+A permutation is represented as
+
+\begin{verbatim}
+(1 2 3 4 5)
+(2 5 4 3 1)
+\end{verbatim}
+
+We can decompose it in:
+
+\begin{verbatim}
+2
+
+and 
+
+1 with paths (2 3 4 5)
+             (5 4 3 1)
+\end{verbatim}
+
+This is the decomposition of the function \verb|A -> A| into
+\verb|A * 1/A|. A problem still with cardinality: there is exactly one
+element into the latter type but presumably several functions in the
+former. Perhaps all these functions are equivalent somewho up to homotopy?
+
 In homotopy type theory, there is a focus on isomorphisms: for most of the
 spaces an isomorphism between $A$ and $B$ is represented by a path denoting a
 particular proof of the identify $A \equiv B$. Different proofs yield
@@ -470,7 +493,32 @@ all $n$.
 
 So generally speaking $\eta_n$ will produce a product of $\br_n$ and $n$ and
 $\epsilon_n$ will be the group action of the group on $\br_n$ on the
-particular strand $n$. 
+particular strand $n$. A function will have a particular wiring; this wiring
+is reflected as a first class value using the group generators. For booleans,
+the group generators can be represented as id, not, and not'; every wiring is
+a sequence of these. So values of type $1/bool$ are (id), (not o not'), (not'
+o not'), (not o not o not), etc. or in other words the code for the circuits
+becomes represented as a value. (Is that related to the encode/decode method
+in the HoTT book?) How about functions: T1 -> T2. The types T1 and T2 must be
+connected by paths so we might as well think about T1 -> T1.
+
+So B has value f and t
+1/B has values id; not; not'; and their compositions (semantically
+represented as elements of the group Br2. 
+
+eta : (1,()) -> ((B,1/B),(f,id))
+eta () = (f , id)
+
+eta : (1,()) -> ((B,1/B),(f,not))
+eta () = (t , not)
+
+...
+
+epsilon : ((B,1/B),(f,not)) -> (1,())
+epsilon (t , not) = ()
+
+...
+
 
 %%%%%%%%%%%%%%%%%
 \subsection{Negatives?} 
