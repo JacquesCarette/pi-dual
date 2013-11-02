@@ -10,8 +10,13 @@ open import Level
 open import Data.Empty
 open import Data.Sum
 open import Data.Product
-open import Relation.Binary using (IsEquivalence; Reflexive; Symmetric; Transitive)
+open import Function using (flip)
+open import Relation.Binary
 
+-- Useful
+Rel0 : Set → Set₁
+Rel0 A = Rel A zero
+ 
 -- 1-groupoids are those where the various laws hold up to ≈.
 record 1Groupoid : Set₁ where
   infixr 9 _∘_
@@ -160,15 +165,17 @@ A ×G B = record
   ; _↝_ =  liftG A._↝_ B._↝_
   ; _≈_ = liftG A._≈_ B._≈_
   ; id = A.id , B.id
-  ; _∘_ = liftOp {Z₁ = A._↝_} {B._↝_} A._∘_ B._∘_
+  ; _∘_ = liftOp2 {Z₁ = A._↝_} {B._↝_} A._∘_ B._∘_
   ; _⁻¹ = λ x₁ → A._⁻¹ (proj₁ x₁) , B._⁻¹ (proj₂ x₁)
   ; lneutr = λ α → A.lneutr (proj₁ α) , B.lneutr (proj₂ α)
   ; rneutr = λ α → A.rneutr (proj₁ α) , B.rneutr (proj₂ α)
   ; assoc = λ α β δ → A.assoc (proj₁ α) (proj₁ β) (proj₁ δ) , B.assoc (proj₂ α) (proj₂ β) (proj₂ δ)
-  ; equiv = record { refl = IsEquivalence.refl A.equiv , IsEquivalence.refl B.equiv
-                   ; sym = λ i≈j → (IsEquivalence.sym A.equiv (proj₁ i≈j)) , IsEquivalence.sym B.equiv (proj₂ i≈j)
-                   ; trans = λ i≈j j≈k → (IsEquivalence.trans A.equiv (proj₁ i≈j) (proj₁ j≈k)) , 
-                                         ((IsEquivalence.trans B.equiv (proj₂ i≈j) (proj₂ j≈k))) }
+  ; equiv = λ {x} {y} → let module W = IsEquivalence (A.equiv {proj₁ x} {proj₁ y}) 
+                            module Z = IsEquivalence (B.equiv {proj₂ x} {proj₂ y}) in
+            record { refl = W.refl , Z.refl
+                   ; sym = λ i≈j → W.sym (proj₁ i≈j) , Z.sym (proj₂ i≈j)
+                   ; trans = λ i≈j j≈k → (W.trans (proj₁ i≈j) (proj₁ j≈k)) , 
+                                        ((Z.trans (proj₂ i≈j) (proj₂ j≈k))) }
   ; linv = λ α → A.linv (proj₁ α) , B.linv (proj₂ α)
   ; rinv = λ α → A.rinv (proj₁ α) , B.rinv (proj₂ α)
   ; ∘-resp-≈ = λ x₁ x₂ → (A.∘-resp-≈ (proj₁ x₁) (proj₁ x₂)) , B.∘-resp-≈ (proj₂ x₁) (proj₂ x₂) }
@@ -178,11 +185,15 @@ A ×G B = record
     C : Set
     C = A.set × B.set
 
-    liftG : {X Y : Set} → (X → X → Set) → (Y → Y → Set) → X × Y → X × Y → Set
+    liftG : {X Y : Set} → Rel0 X → Rel0 Y → X × Y → X × Y → Set
     liftG F G =  λ x y → F (proj₁ x) (proj₁ y) × G (proj₂ x) (proj₂ y)
 
-    liftOp : {A₁ A₂ : Set} {x y z : A₁ × A₂} {Z₁ : A₁ → A₁ → Set} {Z₂ : A₂ → A₂ → Set}
-                → (Z₁ (proj₁ y) (proj₁ z) → Z₁ (proj₁ x) (proj₁ y) → Z₁ (proj₁ x) (proj₁ z)) 
-                → (Z₂ (proj₂ y) (proj₂ z) → Z₂ (proj₂ x) (proj₂ y) → Z₂ (proj₂ x) (proj₂ z)) 
-                → (liftG Z₁ Z₂ y z) → (liftG Z₁ Z₂ x y) → liftG Z₁ Z₂ x z
-    liftOp F G = λ x y → F (proj₁ x) (proj₁ y) , G (proj₂ x) (proj₂ y)
+    liftOp2 : {A₁ A₂ : Set} {x y z : A₁ × A₂} {Z₁ : Rel0 A₁} {Z₂ : Rel0 A₂} →
+             let _⇛_ = liftG Z₁ Z₂ in
+             let _↝₁_ : (a b : A₁ × A₂) → Set
+                 _↝₁_ = λ a b → Z₁ (proj₁ a) (proj₁ b)
+                 _↝₂_ : (a b : A₁ × A₂) → Set
+                 _↝₂_ = λ a b → Z₂ (proj₂ a) (proj₂ b) in
+                   (y ↝₁ z → x ↝₁ y → x ↝₁ z) → (y ↝₂ z → x ↝₂ y → x ↝₂ z) 
+                → y ⇛ z → x ⇛ y → x ⇛ z
+    liftOp2 F G = λ x y → F (proj₁ x) (proj₁ y) , G (proj₂ x) (proj₂ y)

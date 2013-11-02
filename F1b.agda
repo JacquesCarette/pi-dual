@@ -2,12 +2,14 @@
 
 module F1b where
 
+open import Level
 open import Data.Unit
 open import Data.Sum hiding (map; [_,_])
 open import Data.Product hiding (map; ,_)
 open import Data.List hiding ([_])
 open import Function using (flip)
 open import Relation.Binary.Core using (IsEquivalence; Reflexive; Symmetric; Transitive)
+open import Relation.Binary
 
 open import Groupoid
 
@@ -250,7 +252,7 @@ record 1-functor (A B : 1Groupoid) : Set where
 
   field
     F₀ : set A → set B
-    F₁ : ∀ {X Y} → A [ X , Y ] → B [ F₀ X , F₀ Y ]
+    F₁ : ∀ {X Y : set A} → A [ X , Y ] → B [ F₀ X , F₀ Y ]
 
 open 1-functor public
 
@@ -276,6 +278,16 @@ elim1∣₁ b (tt , x) = x
 intro1∣₁ : (b : B1) → ı₁ b → ı₁ (TIMES1 (LIFT0 ONE) b)
 intro1∣₁ b x = (tt , x)
 
+
+swapF : {b₁ b₂ : B1} →
+      let G = ⟦ b₁ ⟧₁ ⊎G ⟦ b₂ ⟧₁
+          G' = ⟦ b₂ ⟧₁ ⊎G ⟦ b₁ ⟧₁ in
+      {X Y : set G} → G [ X , Y ] → G' [ swap⊎ X , swap⊎ Y ]
+swapF {X = inj₁ _} {inj₁ _} f = f
+swapF {X = inj₁ _} {inj₂ _} ()
+swapF {X = inj₂ _} {inj₁ _} ()
+swapF {X = inj₂ _} {inj₂ _} f = f
+
 {-
 eta : (b : B0) → List (ipath (LIFT0 ONE)) → List (ipath (TIMES1 (LIFT0 b) (RECIP1 b)))
 -- note how the input list is not used at all!
@@ -287,14 +299,14 @@ eps b0 (a ⇛ b) = tt ⇛ tt
 
 mutual
   eval : {b₁ b₂ : B1} → (b₁ ⟷ b₂) → 1-functor ⟦ b₁ ⟧₁ ⟦ b₂ ⟧₁
-  eval (swap₊ {b₁} {b₂}) = 1F swap⊎ {!!}
+  eval (swap₊ {b₁} {b₂}) = 1F swap⊎ (λ {X Y} → swapF {b₁} {b₂} {X} {Y})
   eval (unite⋆ {b}) = 1F (elim1∣₁ b) {!!} -- (map (elim1⋆ {b}))
   eval (uniti⋆ {b}) = 1F (intro1∣₁ b) {!!} -- (map (intro1⋆ {b}))
 --  eval (η⋆ b) = F₁ (objη⋆ b) (eta b )
 --  eval (ε⋆ b) = F₁ (objε⋆ b) (map (eps b))
 
   evalB : {b₁ b₂ : B1} → (b₁ ⟷ b₂) → 1-functor ⟦ b₂ ⟧₁ ⟦ b₁ ⟧₁
-  evalB (swap₊ {b₁} {b₂}) = 1F swap⊎ {!!} -- (map (sw {b₂} {b₁}))
+  evalB (swap₊ {b₁} {b₂}) = 1F swap⊎ ((λ {X Y} → swapF {b₂} {b₁} {X} {Y}))
   evalB (unite⋆ {b}) = 1F (intro1∣₁ b) {!!} -- (map (intro1⋆ {b}))
   evalB (uniti⋆ {b}) = 1F (elim1∣₁ b) {!!} -- (map (elim1⋆ {b}))
 --  evalB (η⋆ b) = F₁ (objε⋆ b) (map (eps b))
