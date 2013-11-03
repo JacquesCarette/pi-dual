@@ -2,11 +2,9 @@
 
 module F1b where
 
-open import Level
 open import Data.Unit
 open import Data.Sum hiding (map; [_,_])
 open import Data.Product hiding (map; ,_)
-open import Data.List hiding ([_])
 open import Function using (flip)
 open import Relation.Binary.Core using (IsEquivalence; Reflexive; Symmetric; Transitive)
 open import Relation.Binary
@@ -70,50 +68,6 @@ resp≣⇛ : {A : Set} {x y z : A} {f h : Path y z} {g i : Path x y} →
   f ≣⇛ h → g ≣⇛ i → (f ∙⇛ g) ≣⇛ (h ∙⇛ i)
 resp≣⇛ refl⇛ refl⇛ = refl⇛
 
-pathProd : {A B : Set} {a a' : A} {b b' : B} → Path a a' → Path b b' → Path (a , b) (a' , b')
-pathProd (a ⇛ b) (a' ⇛ b') = (a , a') ⇛ (b , b')
-
-prod : {X Y Z : Set} → (X → Y → Z) → List X → List Y → List Z
-prod f l₁ l₂ = concatMap (λ b → map (f b) l₂) l₁
-
-_×↝_ : {A B : Set} {a a' : A} {b b' : B} → List (Path a a') → List (Path b b') → List (Path (a , b) (a' , b'))
-_×↝_ = prod pathProd
-
--- Discrete paths.  Essentially ≡.
-data DPath {A : Set} (x : A) : A → Set where
-  reflD : DPath x x
-
-transD : {A : Set} {x y z : A} → DPath y z → DPath x y → DPath x z
-transD reflD reflD = reflD
-
-symD : {A : Set} {x y : A} → DPath x y → DPath y x
-symD reflD = reflD
-
-lidD : {A : Set} {x y : A} (α : DPath x y) → DPath (transD reflD α) α
-lidD reflD = reflD
-
-ridD : {A : Set} {x y : A} (α : DPath x y) → DPath (transD α reflD) α
-ridD reflD = reflD
-
-assocD : {A : Set} {w x y z : A} (α : DPath y z) (β : DPath x y) (δ : DPath w x) → DPath (transD (transD α β) δ) (transD α (transD β δ))
-assocD reflD reflD reflD = reflD
-
-linvD : {A : Set} {x y : A} (α : DPath x y) → DPath (transD (symD α) α) reflD
-linvD reflD = reflD
-
-rinvD : {A : Set} {x y : A} (α : DPath x y) → DPath (transD α (symD α)) reflD
-rinvD reflD = reflD
-
-equivD : {A : Set} {x y : A} → IsEquivalence {_} {_} {DPath x y} DPath
-equivD = λ {A} {x} {y} → record 
-  { refl = reflD
-  ; sym = symD
-  ; trans = flip transD }
-
-respD : {A : Set} {x y z : A} {f h : DPath y z} {g i : DPath x y} → 
-    DPath f h → DPath g i → DPath (transD f g) (transD h i)
-respD reflD reflD = reflD
-
 -- pi types with exactly one level of reciprocals
 
 data B0 : Set where
@@ -150,13 +104,6 @@ times t₁ t₂ = G₀ (∣ t₁ ∣₀ × ∣ t₂ ∣₀)
 ı₀ : B0 → Set
 ı₀ b = ∣ ⟦ b ⟧₀ ∣₀ 
 
-elems0 : (b : B0) → List (ı₀ b)
-elems0 ONE = tt ∷ []
-elems0 (PLUS0 b b') = map inj₁ (elems0 b) ++ map inj₂ (elems0 b')
-elems0 (TIMES0 b b') = 
---  concatMap (λ a → map (λ b → (a , b)) (elems0 b')) (elems0 b)
-    prod _,_ (elems0 b) (elems0 b')
-
 point : (b : B0) → ı₀ b
 point ONE = tt
 point (PLUS0 b _) = inj₁ (point b)
@@ -164,25 +111,6 @@ point (TIMES0 b₀ b₁) = point b₀ , point b₁
 
 -- interpretation of B1 types as 1-groupoids
 open 1Groupoid
-
-_⊎↝_ : {A B : Set} {a a' : A} {b b' : B} → List (Path a a') → List (Path b b') → List (Path a a' ⊎ Path b b')
-p₁ ⊎↝ p₂ = map (inj₁) p₁ ++ map (inj₂) p₂
-
-discrete : Set → 1Groupoid
-discrete a =  record
-    { set = a
-    ; _↝_ = DPath
-    ; _≈_ = DPath -- or could use _≡_ .
-    ; id = reflD
-    ; _∘_ = transD
-    ; _⁻¹ = symD
-    ; lneutr = lidD
-    ; rneutr = ridD
-    ; assoc = assocD
-    ; linv = linvD
-    ; rinv = rinvD
-    ; equiv = equivD 
-    ;  ∘-resp-≈ = respD}
 
 allPaths : Set → 1Groupoid
 allPaths a =  record
@@ -278,7 +206,6 @@ elim1∣₁ b (tt , x) = x
 intro1∣₁ : (b : B1) → ı₁ b → ı₁ (TIMES1 (LIFT0 ONE) b)
 intro1∣₁ b x = (tt , x)
 
-
 swapF : {b₁ b₂ : B1} →
       let G = ⟦ b₁ ⟧₁ ⊎G ⟦ b₂ ⟧₁
           G' = ⟦ b₂ ⟧₁ ⊎G ⟦ b₁ ⟧₁ in
@@ -297,18 +224,24 @@ eps : (b : B0) → ipath (TIMES1 (LIFT0 b) (RECIP1 b)) → ipath (LIFT0 ONE)
 eps b0 (a ⇛ b) = tt ⇛ tt
 -}
 
+Funite⋆ : {b₁ : B1} → ∀ {X Y : set (discrete (ı₀ ONE) ×G ⟦ b₁ ⟧₁)} →  DPath (proj₁ X) (proj₁ Y) ×  (_↝_ ⟦ b₁ ⟧₁) (proj₂ X) (proj₂ Y) →  _↝_ ⟦ b₁ ⟧₁ (proj₂ X) (proj₂ Y) 
+Funite⋆ {b₁} {tt , _} {tt , _} (reflD , y) = y
+
+Funiti⋆ : {b₁ : B1} → ∀ {X Y : set (discrete (ı₀ ONE) ×G ⟦ b₁ ⟧₁)} →  _↝_ ⟦ b₁ ⟧₁ (proj₂ X) (proj₂ Y) → DPath (proj₁ X) (proj₁ Y) ×  (_↝_ ⟦ b₁ ⟧₁) (proj₂ X) (proj₂ Y)
+Funiti⋆ y = reflD , y
+
 mutual
   eval : {b₁ b₂ : B1} → (b₁ ⟷ b₂) → 1-functor ⟦ b₁ ⟧₁ ⟦ b₂ ⟧₁
   eval (swap₊ {b₁} {b₂}) = 1F swap⊎ (λ {X Y} → swapF {b₁} {b₂} {X} {Y})
-  eval (unite⋆ {b}) = 1F (elim1∣₁ b) {!!} -- (map (elim1⋆ {b}))
-  eval (uniti⋆ {b}) = 1F (intro1∣₁ b) {!!} -- (map (intro1⋆ {b}))
+  eval (unite⋆ {b}) = 1F (elim1∣₁ b) (Funite⋆ {b})  
+  eval (uniti⋆ {b}) = 1F (intro1∣₁ b) (Funiti⋆ {b})
 --  eval (η⋆ b) = F₁ (objη⋆ b) (eta b )
 --  eval (ε⋆ b) = F₁ (objε⋆ b) (map (eps b))
 
   evalB : {b₁ b₂ : B1} → (b₁ ⟷ b₂) → 1-functor ⟦ b₂ ⟧₁ ⟦ b₁ ⟧₁
   evalB (swap₊ {b₁} {b₂}) = 1F swap⊎ ((λ {X Y} → swapF {b₂} {b₁} {X} {Y}))
-  evalB (unite⋆ {b}) = 1F (intro1∣₁ b) {!!} -- (map (intro1⋆ {b}))
-  evalB (uniti⋆ {b}) = 1F (elim1∣₁ b) {!!} -- (map (elim1⋆ {b}))
+  evalB (unite⋆ {b}) = 1F (intro1∣₁ b) (Funiti⋆ {b})
+  evalB (uniti⋆ {b}) = 1F (elim1∣₁ b) (Funite⋆ {b})
 --  evalB (η⋆ b) = F₁ (objε⋆ b) (map (eps b))
 --  evalB (ε⋆ b) = F₁ (objη⋆ b) (eta b)
 
@@ -328,21 +261,3 @@ eval (c₁ ⊗ c₂) = ? -- : { b₁ b₂ b₃ b₄ : B } → (b₁ ⟷ b₃) �
 
 ---------------------------------------------------------------------------
 --}
-
-{-
-lneutr≡ : {a : Set} {x y : a} (α : x ≡ y) → trans α refl ≡ α
-lneutr≡ refl = refl
-
-rneutr≡ : {b : Set} {x y : b} (α : x ≡ y) → trans refl α ≡ α
-rneutr≡ refl = refl
-
-assoc≡ : {b : Set} {w x y z : b} (α : y ≡ z) (β : x ≡ y) (δ : w ≡ x) →
-    trans δ (trans β α) ≡ trans (trans δ β) α
-assoc≡ refl refl refl = refl
-
-linv≡ : {a : Set} {x y : a} (α : x ≡ y) → trans α (sym α) ≡ refl
-linv≡ refl = refl
-
-rinv≡ : {b : Set} {x y : b} (α : x ≡ y) → trans (sym α) α ≡ refl
-rinv≡ refl = refl
--}

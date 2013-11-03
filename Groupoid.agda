@@ -197,3 +197,54 @@ A ×G B = record
                    (y ↝₁ z → x ↝₁ y → x ↝₁ z) → (y ↝₂ z → x ↝₂ y → x ↝₂ z) 
                 → y ⇛ z → x ⇛ y → x ⇛ z
     liftOp2 F G = λ x y → F (proj₁ x) (proj₁ y) , G (proj₂ x) (proj₂ y)
+
+-- Discrete paths.  Essentially ≡.
+data DPath {A : Set} (x : A) : A → Set where
+  reflD : DPath x x
+
+transD : {A : Set} {x y z : A} → DPath y z → DPath x y → DPath x z
+transD reflD reflD = reflD
+
+symD : {A : Set} {x y : A} → DPath x y → DPath y x
+symD reflD = reflD
+
+lidD : {A : Set} {x y : A} (α : DPath x y) → DPath (transD reflD α) α
+lidD reflD = reflD
+
+ridD : {A : Set} {x y : A} (α : DPath x y) → DPath (transD α reflD) α
+ridD reflD = reflD
+
+assocD : {A : Set} {w x y z : A} (α : DPath y z) (β : DPath x y) (δ : DPath w x) → DPath (transD (transD α β) δ) (transD α (transD β δ))
+assocD reflD reflD reflD = reflD
+
+linvD : {A : Set} {x y : A} (α : DPath x y) → DPath (transD (symD α) α) reflD
+linvD reflD = reflD
+
+rinvD : {A : Set} {x y : A} (α : DPath x y) → DPath (transD α (symD α)) reflD
+rinvD reflD = reflD
+
+equivD : {A : Set} {x y : A} → IsEquivalence {_} {_} {DPath x y} DPath
+equivD = λ {A} {x} {y} → record 
+  { refl = reflD
+  ; sym = symD
+  ; trans = flip transD }
+
+respD : {A : Set} {x y z : A} {f h : DPath y z} {g i : DPath x y} → 
+    DPath f h → DPath g i → DPath (transD f g) (transD h i)
+respD reflD reflD = reflD
+
+discrete : Set → 1Groupoid
+discrete a =  record
+    { set = a
+    ; _↝_ = DPath
+    ; _≈_ = DPath -- or could use _≡_ .
+    ; id = reflD
+    ; _∘_ = transD
+    ; _⁻¹ = symD
+    ; lneutr = lidD
+    ; rneutr = ridD
+    ; assoc = assocD
+    ; linv = linvD
+    ; rinv = rinvD
+    ; equiv = equivD 
+    ;  ∘-resp-≈ = respD }
