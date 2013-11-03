@@ -1373,3 +1373,126 @@ Zachary Sparks for their contributions to early stages of this work.
 \bibliography{cites}
 \end{document}
 
+
+{--
+
+-- In our perspective isomorphisms are represented by paths; there are
+-- 1! isomorphims from ? to itself so we expect exactly one path in
+-- the space ? o-> ?, i.e., one path from ? to itself, i.e., the space
+-- (? ? ?) should be isomorphic to ?. However we can't witness this
+-- isomorphism yet until we postulate the ? and ? paths.
+--
+-- unitPath' : (? ? ?) ? ?
+-- unitPath' = ?
+
+-- functions and types should have their equivalences as paths NOT
+-- extensional isomorphisms which are later postulated to be paths!!!
+
+-- need some kind of ``vertical'' path that allows us to move one level up.
+
+-- explore this: 1 -> 1/x * x goes to point x which has a higher
+-- groupoid structure ``above it'', gives you the higher groupoid
+-- structure as 1/x and the naked point as x. Epsilon can then
+-- recombine a higher groupoid collection of paths with a
+-- point. Recall the 3/4 example: the paths not attached to any points
+-- are 3/4: they take 4 points and return 3 points.
+
+-- to get 1/5
+-- start with 5 points * * * * *
+-- and paths that connect them so that they are identified to be 1 point
+-- Separate the points from the paths: the paths represent 1/5: something that takes
+-- 5 points and collapses them to 1 and so we get 1_{5} --> 1/5 * 5
+-- The problem is that 5 now has no paths over it so it's a different 5 and 1/5 has
+-- no points so it's not a groupoid or is it?
+
+-- 1/x can switch the two components of [_,_] so that it is an involution
+
+We don't have pointed types. We have HITs. Each type is a collection
+of points and a collection of non-trivial paths. (We get refl, !, ?,
+associativity, etc. for tree and we also get the higher groupoid
+structure for free which witnesses for example the pentagon and
+triangle axioms, i.e., the coherence of assoc and the nice interplay
+with !).
+
+Start with the type 1 at 3 [{a,b,c) , {(a==b),(b==c)}]. This type
+represents ``1'' but uses three identical elements to express this fact.
+
+The paths by themselves are some sort of function that takes three
+points and identifies them; this can be represented by the type
+1/3. The three points by themselves can be represented by the type 3.
+
+So 3 is [{a,b,c}, ?]
+
+and 1/3 is [{? a b c ? (a==b,b==c)}, ?] 
+the ? is a mini one step function to express that the paths are not
+attached to any end points. You give me the end points and I will connect them.
+
+The only value of type 1/3 is that function. We can pass around it and
+eventually we must apply to 3 points which become identified. So
+eventually we recover 1 back.
+
+So now what is 1/(1/3). Remember that to express 1/3. We started with
+a version of 1 that had 3 elements and paths between them. So to do
+1/(1/3) we need to start with a version of 1 that has 1/3 elements and
+paths between them.
+
+1 at 1/3 is [{? a b c ? (a==b,b==c)}, 3 paths from this point to itself ]
+
+so 1 at 1/3 can be split into 1/3 and and 1/(1/3) as follows:
+1/3 = [{? a b c ? (a==b,b==c)}, ?]
+1/(1/3) = [ ? a ? 3 paths from a to itself , ? ]
+
+--
+
+swapP : {A B : Set} ? A × B ? B × A
+swapP {A} {B} = ?
+
+It looks like I will need an axiom (not univalence necessarily but
+something like it. We want to say that type isos from Pi correspond to
+paths. So instead of saying (A ? B) ? (A ? B) we would say (A ? B) ?
+(A ? B) where ? is the type of isos from Pi (making the types into a
+field like structure).
+
+Ok so there is an external map between A × B and B × A but because we
+are monoidal closed there is also an internal map (1/(A × B)) × (B × A)
+or more readably (A × B) -o (B × A). This map is defined as follows.
+
+First let's start with 1 at A × B. This is:
+
+[ {(a0,b0),(a0,b1),(a1,b0),(a1,b1)} , {(a0,b0)?(a0,b1), (a0,b0)?(a1,b0), ... }]
+
+Anyway the point is that we can build 1/(A×B). Now we know that every
+(a0,b0)?(a1,b1) comes from (a0?a1) and (b0?b1) and hence we can
+assemble them in the other direction to get (b0,a0)?(b1,a1). 
+
+Now we can split using ? to 1/(A×B) and (A×B) where:
+
+A×B = [ {(a0,b0),(a0,b1),(a1,b0),(a1,b1)} , ?]
+and
+1/(A×B) = [? (a0,b0) (a0,b1) (a1,b0) (a1,b1) ? 
+             {(a0,b0)?(a0,b1), (a0,b0)?(a1,b0), ... } , 
+           ?]
+
+which is the same as:
+
+1/(A×B) = [? a0 a1 b0 b1 ? {a0?a1, b0?b1} , ?]
+              
+Now the map (A×B)-o(B×A) is represented by the type:
+
+[{((b0,a0),? a0 a1 b0 b1 ? {a0?a1, b0?b1}),
+   ((b0,a1),? a0 a1 b0 b1 ? {a0?a1, b0?b1}),
+   ((b1,a0),? a0 a1 b0 b1 ? {a0?a1, b0?b1}),
+   ((b1,a1),? a0 a1 b0 b1 ? {a0?a1, b0?b1})}
+  ?]
+
+Now applying the function to (a0,b0) means pairing the above with (a0,b0):
+              
+[{((b0,a0),(a0,b0),? a0 a1 b0 b1 ? {a0?a1, b0?b1}),
+   ((b0,a1),(a0,b0),? a0 a1 b0 b1 ? {a0?a1, b0?b1}),
+   ((b1,a0),(a0,b0),? a0 a1 b0 b1 ? {a0?a1, b0?b1}),
+   ((b1,a1),(a0,b0),? a0 a1 b0 b1 ? {a0?a1, b0?b1})}
+  ?]
+
+--}
+
+------------------------------------------------------------------------------
