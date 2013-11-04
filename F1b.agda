@@ -181,6 +181,8 @@ record 1-functor (A B : 1Groupoid) : Set where
   field
     F₀ : set A → set B
     F₁ : ∀ {X Y : set A} → A [ X , Y ] → B [ F₀ X , F₀ Y ]
+    -- identity : ∀ {X} → B._≈_ (F₁ (A.id {X})) B.id
+    -- F-resp-≈ : ∀ {X Y} {F G : A [ X , Y ]} → A._≈_ F G → B._≈_ (F₁ F) (F₁ G)
 
 open 1-functor public
 
@@ -232,8 +234,8 @@ Funiti⋆ y = reflD , y
 
 mutual
   eval : {b₁ b₂ : B1} → (b₁ ⟷ b₂) → 1-functor ⟦ b₁ ⟧₁ ⟦ b₂ ⟧₁
-  eval (swap₊ {b₁} {b₂}) = 1F swap⊎ (λ {X Y} → swapF {b₁} {b₂} {X} {Y})
-  eval (unite⋆ {b}) = 1F (elim1∣₁ b) (Funite⋆ {b})  
+  eval (swap₊ {b₁} {b₂}) = 1F swap⊎ (λ {X Y} → swapF {b₁} {b₂} {X} {Y}) 
+  eval (unite⋆ {b}) = 1F (elim1∣₁ b) (Funite⋆ {b})
   eval (uniti⋆ {b}) = 1F (intro1∣₁ b) (Funiti⋆ {b})
 --  eval (η⋆ b) = F₁ (objη⋆ b) (eta b )
 --  eval (ε⋆ b) = F₁ (objε⋆ b) (map (eps b))
