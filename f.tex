@@ -284,28 +284,67 @@ If we focus on homeomorphisms, the higher-order space is a \emph{torsor}.
 %% for monoidal categories; if we use them make sure it's ok with him and
 %% acknowledge him
 
-A permutation is represented as
-
+What can we say in pi about these two combinators:
 \begin{verbatim}
-(1 2 3 4 5)
-(2 5 4 3 1)
+Let f : A -> C and G : B -> D
+
+(id x g) o (f x id)  :  A x B -> C x D
+
+(f x id) o (id x g)  :  A x B -> C x D
 \end{verbatim}
+Are they the ``same''? We can reason extensionally to check that for all
+inputs these two combinators produce the same results. In other words, we
+reason from the axioms of category theory which includes things like
+\verb|f o id = f| which are extensional equalities. (If we had weak
+$n$-categories here what would happen, perhaps this is where we are leading
+with the next sentence.) Better is to reason topologically exploiting the
+original connections established by Joyal and
+Street~\cite{planardiagrams,geometrytensor}. One can in this case show the
+equivalence of these combinators by using the graphical language and noticing
+that there is a \emph{planar isotopy} between the two diagrams, that moves
+things around without crossing, cutting, or gluing any wires. 
 
-We can decompose it in:
+More formally, we view each type as a topological space and each function as
+a deformation of the space expressed as a (sequential, parallel, etc.)
+composition of primitive deformations (id, swap, unit, assoc, distribute,
+factor, etc.). If we have a planar monoidal category, then there isn't much
+you can do: the types are collections of lines grouped in bundles. The only
+deformations that functions can do are to re-associate the bundles and get
+rid of unit wires. (If the ambient space is a plane, i.e., if we restrict our
+``hardware model'' to be a 2D model in which wires can't cross over each
+other, then we can't even equate the functions that apply id to different
+bundles. If the ambient space is 3D then we can. Eq. 3.2 in Selinger's survey
+of graphical languages for monoidal categories.) An example of two functions
+we can show to be the same in the planar model is the one above in the
+verbatim block. An isotopy exists between the two combinators because we can
+move things around in the plane as long as we don't cross or cut any wires.
 
-\begin{verbatim}
-2
+If we allow braiding (i.e, commutativity) we must move to ambient isotopies
+in 3D. In particular, the two versions of not that cross true over false or
+vice versa are not isotopic.
 
-and 
+If we also want, the composition of not and not to be expressible directly as
+a twist, we must move to \emph{framed} isotopies in 3 dimensions, where the
+lines are represented as flat ribbons.
 
-1 with paths (2 3 4 5)
-             (5 4 3 1)
-\end{verbatim}
+A symmetric monoidal category requires ambient isotopy in 4 dimensions so
+we're not going to consider it.
 
-This is the decomposition of the function \verb|A -> A| into
-\verb|A * 1/A|. A problem still with cardinality: there is exactly one
-element into the latter type but presumably several functions in the
-former. Perhaps all these functions are equivalent somewho up to homotopy?
+If we are going to have higher-order functions, we need to move up, i.e., we
+need to build a space in which the types are the functions of the lower
+level, and in which the functions are the isotopies of the lower level. In
+other words, we need to be able to express the lower level functions as
+topological spaces and we need to be able to express the lower level
+isotopies as functions. 
+
+Think of a function as a map connecting points from one space to points in
+the other space (respecting paths etc.). This map gives a geometric shape. We
+will think of one line in that shape as solid with all the other lines dashed.
+
+Another unrelated observation is that Pi gives us an inductive
+characterization of functions! If that whole thing with fractionals
+works out we will have an inductive characterization of higher-order
+functions! 
 
 In homotopy type theory, there is a focus on isomorphisms: for most of the
 spaces an isomorphism between $A$ and $B$ is represented by a path denoting a
@@ -319,13 +358,13 @@ equivalent functions are identical in the sense of having a path between
 them. This treatment gives no insight about the nature paths between
 functions and is undesirable for many reasons. 
 
-We propose to just consider functions are isomorphisms by construction. This
-doesn't lose anything in terms of computability because we know that we could
-do everything with reversible functions if we wanted to. There are actually
-many advantages of doing so as we and others have argued at length
-before. Anyway, the point is that if we have isomorphisms-by-construction
-functions then the function itself becomes naturally a collection of
-paths. We illustrate this point with examples.
+We propose to just consider functions that are isomorphisms by
+construction. This doesn't lose anything in terms of computability because we
+know that we could do everything with reversible functions if we wanted
+to. There are actually many advantages of doing so as we and others have
+argued at length before. Anyway, the point is that if we have
+isomorphisms-by-construction functions then the function itself becomes
+naturally a collection of paths. We illustrate this point with examples.
 
 Consider the function $\notb$ from the space $\boolt$ to itself. We can
 represent this function as a pair of paths. Since we are in a topological
@@ -1069,11 +1108,18 @@ induction to reason about functions. There are also probably connections to
 logical relations and parametricity that are essentially some kind of
 isomorphism which might be expressible as a higher-order path.
 
+Are higher-order inductive types something like ADTs where we have equations
+or something like graphs where we can build interesting shapes inductively or
+perhaps both somehow?
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Connections to Logic} 
 
 Similar to double negation proof of $A \vee \neg A$. Make a guess and if
 wrong backtrack and choose the other branch.
+
+Double negation vs. braids and twists. Any insights from category theory or
+topology that can be used to understand classical proofs?
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Connections to Programming Practice} 
@@ -1138,6 +1184,8 @@ We have constructed a good candidate for pointed homotopy category.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Connections to Physics and Quantum Computing} 
+
+Connections between standard circuit model and topological quantum computing.
 
 The dual vector space in quantum mechanics and its role in quantum
 computing. The fact that $\eta$ and $\epsilon$ are dual is essentially the
@@ -1496,3 +1544,312 @@ Now applying the function to (a0,b0) means pairing the above with (a0,b0):
 --}
 
 ------------------------------------------------------------------------------
+
+CS: Give computational content of science
+  Logic: Curry-Howard
+  Classical logic: Continuations
+  Physics: Quantum information; computation
+  cognition
+  linguistics
+  Construction of cellos
+
+Mathematical proofs have computational content
+Physical equations have computational content
+
+Now at the heart of it all: EQUALITY has computational content and is the
+most fundamental relation we use implicitly
+
+Theory at the center of many many things: topology, algebra, geometry, type
+theory, physics, etc. ==> Exciting
+
+Conservation of information, energy, etc. 
+Symmetry
+F = m a
+or E = m C^2
+are not EQUALITIES. They are isomorphisms: go from one to the other
+preserving various entitites. 
+Get rid of equality ==> use isomorphisms exclusively
+
+Turtles all the way down (or up in that case)
+
+
+--
+
+when are two structures "the same"
+if their elements are the same
+
+what is the structures are infinite? (i.e., described by a process); go
+right, then right, then right, then right is the same as stay here but not
+quite the same
+
+E=mc2, F=ma
+
+Leibnitz
+
+--
+
+ - topology of computation/evaluation: in addition to loops/circle,
+   bernstein conditions for parallelism; or more accurately two
+   computations are homotopic if one is sequential and is parallel and I
+   can massage one to the other
+
+ - univalence: (A \== B) isEquiv (A isEquiv B) fun. ext. (f \== g) -> (x
+   : A) f(x) \== g(x) is an equivalence paths between complex types iff
+   there are paths between the points: works for simple finite types;
+   for infinite things can't be proved; need these two additional axioms
+
+ - for my intro: what is hott; article about hott in magazine; 
+   steve awodey's talk
+   "http://www.andrew.cmu.edu/user/awodey/hott/CMUslides.pdf"
+   formalize mathematics if you care about that: eckmann-hilton
+   "http://blogs.scientificamerican.com/guest-blog/2013/10/01/voevodskys-mathematical-revolution/"
+    Logic level -1
+    Set theory level 0
+    groupoid level 1
+    ...
+    The Propositions-as-Types conception of Martin-Löf type theory leads
+   to a system of logic that is different from both classical and
+   intuitionistic logic with respect to the statements that hold in the
+   fragment of logical language that these three share, namely the
+   quantifiers \Pi , \Sigma , equality \mathsf{Id} , conjunction \times
+   , disjunction + , implication \rightarrow and negation \neg .  For
+   example, it validates the axiom of choice but not the law
+   of excluded middle  a combination that is impossible
+   classically and intuitionistically.  Let us call this conception
+   constructive validity following a paper by Dana Scott in
+   which it was first introduced (Constructive Validity, Symposium on
+   Automated Deduction, LNM 125, Springer (1970), pp. 237-275).
+
+ - for class "http://math.ucr.edu/home/baez/eckmann_hilton.jpg"
+
+ - circle ==> recursion: homotopy between path p and path q means
+   if we can move from p to q without getting snagged in a loop, i.e.,
+   without crossing over an infinite loop!!
+
+ - Agda and homotopy type theory idea: Ulf showed us how to fill in
+   "small" program fragments automatically. If we had more precise types
+   can the compiler fill in different algorithms for us. Here is an
+   idea: in HoTT we can control the isomorphisms and what we mean by
+   them. For example, we can add paths between A and B to mean that B is
+   a sorted version of A. Then different arrows would correspond to
+   different sorting algorithms. If we maintain proof relevance then we
+   can do actions depending on the particular sorting algorithm that is
+   used to go from A to B. This might be doable in Pi actually.
+
+- different levels correspond to fractal equality or perhaps each level gives
+  you more precision
+
+- Don't you think that these:
+  "http://en.wikipedia.org/wiki/Loop_optimization"
+  are homotopies. They do make some explicit connections to
+  "geometry/topology". I think we have discovered a gold mine 
+
+
+So I thought more about it and I think it holds more water. Here is the story:
+
+- paths in HoTT represent computations; this is true in the conventional
+  HoTT but even more or so in our context where all computations are
+  isomorphisms; 
+
+- paths that loop are therefore looping computations;
+
+- the loop in a 2groupoid terminates after two iterations;
+
+- the loop in S1 is an infinite loop;
+
+- the loop in S2 is a double infinite loop (on two natural
+  numbers); 
+
+- the various geometric objects capture various patterns of iteration!
+
+- Filinski's paper below shows that if you are given one simple infinite
+  loop and continuations, then you can expression recursion.  So if we
+  include S1 in our system and we figure out how to do higher-order
+  functions (and their duals as delimited continuations), then we should
+  be able to express recursion. A small hope would be that we can get
+  away without full continuations and that we can get recursion from S1
+  using just the groupoid structure but that's speculative.
+
+I like it! --Amr
+
+Check this out: "http://iml.univ-mrs.fr/geocal06/"=20
+
+In particular this workshop:
+
+Algebraic Topology, Concurrency and Rewriting
+
+Organizers: =C3=89ric Goubault, Yves Lafont
+
+The objective of the course is to give a general overview of the recent
+developments of ``geometrical'' approaches to the theory of computation,
+in particular concurrent and distributed computations, and rewriting.
+
+The course will start by a general introduction to homotopy and
+homology, classical on topological spaces, and generalize through
+abstract homotopy theory and generalized homology theories. Then two
+different applications will be developped.
+
+The first one concerns concurrency theory. In this application, a
+refined form of homotopy (dihomotopy) has to be designed, that takes
+into account the direction of time. Similar methods as the ones on
+ordinary topological spaces can be defined, in order to find
+``invariants'' under dihomotopy, i.e. a way to classify directed shapes
+under (directed) deformation. These invariants can in turn be used for
+purposes of proofs or static analysis of algorithms or programs. We will
+show such applications in the course. Other applications, of more
+classical algebraic topological invariants will also be derived, in the
+field of fault-tolerant distributed systems.
+
+The second one concerns the rewriting theory. Since the pioneering work
+by Squier, we know how to use homology to characterize the algebraic
+objects presented by rewriting systems. Basically, words are seen as
+objects of dimension one, rewriting rules are seen as of dimension two,
+confluence diagrams as of dimension three etc. providing resolutions to
+the algebraic objects they present. Extensions to term rewriting has
+been recently solved, along similar lines, using more general homology
+theories. Also higher-dimensional rewriting has gained wide interest and
+its theory will be fully developped, in conjunction with the necessary
+n-categorical (or polygraphic) theory.
+
+mfsp paper by Fajstrup, Goubault, and Raussen
+
+http://www.pps.univ-paris-diderot.fr/~laurent/geocal/slides/mellies.pdf‎
+
+-- Repeat for monoids without using equivalences!
+
+-- Let's build a monoidal category whose objects are ∞-groupoids using
+-- Thorsten's trick perhaps. Or perhaps we only need 1-groupoids or
+-- 2-groupoids... Or better use HITs: explicit constructors for points
+-- and paths and let the whole ∞-groupoid structure be implicit and
+-- generated by J on demand as needed. A morphim between such HITs
+-- would map points to points and paths to paths LYING OVER the
+-- original paths (using transport).
+
+-- multiplicative monoid:
+-- bifunctor ⊗ maps two types A and B to the type (A ⊗ B):
+--   map a point in A and a point in B to a point in (A ⊗ B)
+--   map a path in A and a path in B to a path in (A ⊗ B)
+--   if paths p in A and q in B are respectively equal to paths p' in
+--     A and q' in B then their images in (A ⊗ B) are also equal
+-- associative up to ...
+-- an object I which is both a left and right identity for ⊗ 
+-- coherence conditions: pentagon and triangle
+-- 
+-- Now what is the structure on 1 and ⊗ in terms of paths on the
+-- components
+
+-- map points to points
+-- map paths to paths
+-- preserve ≡
+
+apTensor : {A B C : Set} {x y : A × B} → (f : A × B → C) → (x ≡ y) → (f x ≡ f y)
+apTensor {A} {B} {C} {x} {y} f p = 
+  pathInd 
+    (λ {x} {y} p → f x ≡ f y) 
+    (λ x → refl (f x))
+    {x} {y} p
+
+-- monoid 0 and ⊕
+
+-- do all these sections in Ch. 2 with monoidal categories instead of
+-- the usual type constructors
+
+-- imagine we had tensor products instead would be it possible to
+-- convert a path : A × B → C × D to two sequential paths A → C with
+-- refl on B followed by the path B → D and refl on C. So the
+-- topological view of computation would express which dependencies
+-- allow you to move computations around to make them more or less
+-- parallel. Delooping sounds like it would allow you to make a loop
+-- (sequential) into something that operates in parallel (say every
+-- two iterations happen in parallel) but that can only happen if the
+-- dependencies are "right".
+
+loops/spaces; loop optimizations; cata/epi/etc-morphisms are also
+patterns of recursion; probably even parametricity and logical
+relations; all these things must be homotopies.
+
+1/x gives you the pattern to define a clause
++ gives you the ability to write all the clauses
+- gives you the ability to retract a clause
+all functions are constructible from the identity by massaging it
+functors between types internalized inside a type using 1/., +, and -
+
+PI 
+
+cardinality of these infinity groupoids
+
+delooping: 1/Bool = 1/(delooping false) + 1/(deloopoing true) 
+
+≡ {u+1} {Set u : Set (u+1)} (T1 : Set u) (T2 : Set u) -> Set (u+1)
+
+CC : ∀ {u} → (A B : Set u) → _≡_ {L.suc u} {Set u} A B → Set (L.suc u)
+CC {u} A B p = _≡_ {L.suc u} {Set u} (A × B) (B × A)
+
+cc : ∀ {u} → (A : Set u) → _≡_ {L.suc u} {Set u} (A × A) (A × A)
+cc A = refl
+
+swapP : ∀ {u} → (A B : Set u) → _≡_ {L.suc u} {Set u} (A × B) (B × A) 
+swapP {u} = pathIndU {u} {Set u} CC cc
+  
+t : ℕ × Bool ≡ Bool × ℕ
+t = swapP ℕ Bool
+
+How many elements are in this set:
+
+{ Egyptian, American, Chinese }
+
+It depends on the equivalence relation. If you think the trivial
+relation, there are 3 elements. If you think the relation that
+identifies Egyptian/American (Amr) then you have two elements only in
+the set. We can make this equivalence relation depend on the
+particular element in question and we can make it first-class. When
+viewed by itself, it is like the fraction 2/3: it takes 3 elements and
+identifies two of them giving you back two elements.
+
+
+https://inf.ug.edu.pl/~stefan/AlgTop/
+
+--
+
+All programming only builds trees. 
+Graphs require assignments and ugly things
+HoTT allows us to build datatypes with "paths", "shapes", etc.
+
+CS -> Topology: study shapes with inductive types
+Topology -> CS: richer datatypes with cycles
+
+Can I build types that solve polynomials ???
+
+Define pointed types (A,a)
+
+Reciprocal of a pointed type (A,a) is delooping (a=a,refl)
+
+delooping of A is (B,b) such that loopspace(B,a) = A
+
+our construction of fractionals is delooping: take n points connected by a
+group stucture; turn them into a point with the group structure turned into
+path composition.
+
+A permutation is represented as
+
+\begin{verbatim}
+(1 2 3 4 5)
+(2 5 4 3 1)
+\end{verbatim}
+
+We can decompose it in:
+
+\begin{verbatim}
+2
+
+and 
+
+1 with paths (2 3 4 5)
+             (5 4 3 1)
+\end{verbatim}
+
+This is the decomposition of the function \verb|A -> A| into
+\verb|A * 1/A|. A problem still with cardinality: there is exactly one
+element into the latter type but presumably several functions in the
+former. Perhaps all these functions are equivalent somewho up to homotopy?
+
