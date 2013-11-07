@@ -1,5 +1,6 @@
 \documentclass[11pt]{article}
 \usepackage{fullpage}
+\usepackage{tikz}
 \usepackage{url}
 \usepackage{stmaryrd}
 \usepackage{amssymb}
@@ -71,6 +72,7 @@
 \newcommand{\ssep}{\hspace{1em}} 
 \newcommand{\sym}{c}       % braid: could be \sigma or c or \gamma
 \newcommand{\cp}{\circ}                 % composition
+\newcommand{\pc}{\fatsemi}                 % path composition
 \newcommand{\symi}{\sym\inv}
 \newcommand{\inv}{^{-1}}
 \newcommand{\lolli}{\multimap} 
@@ -110,6 +112,7 @@
 \newcommand{\smashproduct}{\wedge}
 \newcommand{\symc}[1]{\mathit{sym}~#1}
 \newcommand{\proves}{\vdash}
+\newcommand{\ap}[2]{\mathit{ap}~#1~#2}
 \newcommand{\Rule}[4]{
 \makebox{{\rm #1}
 $\displaystyle
@@ -117,6 +120,7 @@ $\displaystyle
 {\begin{array}{l}#3\\\end{array}}$
  #4}}
 \newcommand{\jdg}[3]{#2 \proves_{#1} #3}
+\newcommand{\adjoint}[1]{#1^{\dagger}}
 
 \begin{document}
 \begin{titlepage}
@@ -283,6 +287,196 @@ If we focus on homeomorphisms, the higher-order space is a \emph{torsor}.
 %% the next figures are taken from Selinger's paper on graphical languages
 %% for monoidal categories; if we use them make sure it's ok with him and
 %% acknowledge him
+
+Univalence says:
+\[ 
+(A \simeq B) \quad\simeq\quad (A \equiv B)
+\]
+where $\simeq$ is a strong form of isomorphism witnessed by functions from
+$A$ to $B$ and vice versa that are inverses and $\equiv$ is the propositional
+equality in type theoretic terms or a path (homotopy) in topological
+terms. The axiom relates two notions that are a priori different: functions
+and paths. However if we define functions from the outset as paths then there
+is no need for this axiom.
+
+So what would it take to have each function correspond to a path and
+higher-order functions correspond to paths between paths etc.? Since paths
+form an equivalence relation, the first immediate observation is that all
+functions must be reversible. Formally we need the following properties of
+paths to be satisfied by functions. (We write $\path$ for paths instead of
+$\equiv$.)
+
+\begin{itemize}
+\item For each $A$, there is function $\id : A \path A$, 
+
+\item for each function $f: A \path B$, there exists a function $\adjoint{f}
+  : B \path A$, and
+
+\item for each functions $f : A \path B$ and $g : B \path C$, there exists a
+  function $g \cp f : A \path C$, such that:
+
+\begin{itemize}
+\item $f \path f \cp \id$;
+\item $f \path \id \cp f$;
+\item $\adjoint{f} \cp f \path \id$;
+\item $f \cp \, \adjoint{f} \path \id$;
+\item $\adjoint{(\adjoint{f})} \path f$;
+\item $f \cp (g \cp h) \path (f \cp g) \cp h$
+\end{itemize}
+\end{itemize}
+Similar equivalences hold are higher-levels. A good starting point for this
+notion of functions are the $\Pi$-combinators we previously developed. Each
+combinator in that setting had an \emph{adjoint} going in the other direction
+that acts as the inverse. Moreover if $f : A \path B$ then $A$ must be
+isomorphic to $B$ and $f$ is permutation. We use $!p$ for the inverse of a
+path.
+
+But first, let's examine the structure of a path $f : A \path B$. A natural
+representation for a path representing a function is a collection of paths
+(called \emph{fibers}) one for each $a : A$. So for example, if $A$ is the
+set $\{ x , y , z \}$ and $B$ is the set $\{ a , b , c \}$ (remember that $A$
+and $B$ must be isomorphic), and $f$ is the function mapping $x$ to $a$, $y$
+to $b$, and $z$ to $c$, then $f : A \path B$ is the collection of paths $f_x
+: x \path a$, $f_y : y \path b$, and $f_z : z \path c$.
+
+Assuming this representation of functions, let's see what properties are
+induced for these functions. 
+
+The first property is that functions should preserve paths, i.e., if there is
+a path between $x$ and~$y$ then there should be a path between $f(x)$
+and~$f(y)$. From the figure below it is clear that:
+\[ 
+\ap{f}{p} = \, !f_x \pc p \pc f_y
+\]
+
+\begin{center}
+\begin{tikzpicture}
+  \draw (-3,0) ellipse (1.5cm and 3cm);
+  \draw (3,0) ellipse (1.5cm and 3cm);
+  \draw[fill] (-3,1.5) circle [radius=0.025];
+  \draw[fill] (-3,-1.5) circle [radius=0.025];
+  \node[above] at (-3,1.5) {$x$};
+  \node[below] at (-3,-1.5) {$y$};
+  \draw[fill] (3,1.5) circle [radius=0.025];
+  \draw[fill] (3,-1.5) circle [radius=0.025];
+  \node[above] at (3,1.5) {$f(x)$};
+  \node[below] at (3,-1.5) {$f(y)$};
+  \draw[->,cyan,thick] (-3,1.5) -- (-3,-1.5);
+  \node[left,cyan] at (-3,0) {$p$};
+  \draw[->,dashed,cyan,thick] (3,1.5) -- (3,-1.5);
+  \node[right,cyan] at (3,0) {$\mathit{ap}~f~p$};
+  \draw[->,red,thick] (-3,1.5) -- (3,1.5);
+  \draw[->,red,thick] (-3,-1.5) -- (3,-1.5);
+  \node[red,below] at (0,1.5) {$f_x$};
+  \node[red,below] at (0,-1.5) {$f_y$};
+\end{tikzpicture}
+\end{center}
+
+Let $p : x \path y$ and $q : y \path z$, then the following properties 
+hold:
+\begin{itemize}
+\item $\ap{f}{(p \pc q)} \path \ap{f}{p} \pc \ap{f}{q}$:
+\[\begin{array}{rcl}
+LHS &=& \, !f_x \pc (p \pc q) \pc f_z \\
+    &\path& ! f_x \pc p \pc f_y \pc \, ! f_y \pc q \pc f_z \\
+    &\path& (! f_x \pc p \pc f_y) \pc (! f_y \pc q \pc f_z) \\
+    &=& RHS
+\end{array}\]
+\item $\ap{f}{!p} \path \, !(\ap{f}{p})$
+\[\begin{array}{rcl}
+LHS &=& \, !f_y \pc (!p) \pc f_x \\
+    &\path& \, !(!f_x \pc p \pc f_y) \\
+    &=& RHS
+\end{array}\]
+\item $\ap{g}{(\ap{f}{p})} \path \ap{(g \cp f)}{p}$
+\[\begin{array}{rcl}
+LHS &=& \, !g_{f_x} \pc !f_x \pc p \pc f_y \pc g_{f_y} \\
+    &\path& \, ! (f_x \pc g_{f_x}) \pc p \pc (f_y \pc g_{f_y}) \\
+    &=& RHS
+\end{array}\]
+\item $\ap{\id}{p} \path p$
+\[\begin{array}{rcl}
+LHS &=& \, !\id_x \pc p \pc \id_y \\
+    &\path& p \\
+    &=& RHS
+\end{array}\]
+\end{itemize}
+
+A homotopy between functions $f$ and $g$ is a 2-path between each pair of
+fibers $f_x$ and $g_x$. These 2-paths are induced by the following diagram:
+
+\begin{center}
+\begin{tikzpicture}
+  \draw[fill] (-3,0) circle [radius=0.025];
+  \node[below] at (-3,0) {$x$};
+  \draw[fill] (3,1.5) circle [radius=0.025];
+  \node[above] at (3,1.5) {$a$};
+  \draw[fill] (3,-1.5) circle [radius=0.025];
+  \node[below] at (3,-1.5) {$b$};
+  \draw[->,cyan,thick] (-3,0) -- (3,1.5);
+  \draw[->,cyan,thick] (-3,0) -- (3,-1.5);
+  \draw[->,red,thick] (3,1.5) -- (3,-1.5);
+  \node[red,above] at (0,0.5) {$f_x$};
+  \node[red,below] at (0,-0.5) {$f_y$};
+  \draw[->,double,dashed,blue,thick] (1.5,1) to [out=225, in=135] (1.5,-1);
+  \node[blue,right] at (1.5,0) {$H_x$};
+\end{tikzpicture}
+\end{center}
+
+Here is something more interesting. Let $p : y \path z$ in $A$. Let $f$ and
+$g$ be functions from $A$ to $B$. Let $H$ be a 2-path between $f_y$ and
+$g_y$. If we are given a path $f(y) \path g(y)$ in B, then we can construct a
+2-path between $f_z$ and $g_z$. (This is Thm 2.11.3 in the book.) We do this
+going backwards along $f_z$, backwards along $p$, then follow $f_y$ and the
+path to $g(y)$, and backwards along $g_y$, forwards along $p$, and finally
+forwards along $g_z$:
+
+\begin{center}
+\begin{tikzpicture}
+  \draw[fill] (-3,0) circle [radius=0.025];
+  \node[below] at (-3,0) {$x$};
+  \draw[fill] (3,1.5) circle [radius=0.025];
+  \node[above] at (3,1.5) {$a$};
+  \draw[fill] (3,-1.5) circle [radius=0.025];
+  \node[below] at (3,-1.5) {$b$};
+  \draw[->,cyan,thick] (-3,0) -- (3,1.5);
+  \draw[->,cyan,thick] (-3,0) -- (3,-1.5);
+  \draw[->,red,thick] (3,1.5) -- (3,-1.5);
+  \node[red,above] at (0,0.5) {$f_x$};
+  \node[red,below] at (0,-0.5) {$f_y$};
+  \draw[->,double,dashed,blue,thick] (1.5,1) to [out=225, in=135] (1.5,-1);
+  \node[blue,right] at (1.5,0) {$H_x$};
+  \draw[fill] (-3,-5) circle [radius=0.025];
+  \node[below] at (-3,-5) {$x$};
+  \draw[fill] (3,-3.5) circle [radius=0.025];
+  \node[above] at (3,-3.5) {$a$};
+  \draw[fill] (3,-6.5) circle [radius=0.025];
+  \node[below] at (3,-6.5) {$b$};
+  \draw[->,cyan,thick] (-3,-5) -- (3,-3.5);
+  \draw[->,cyan,thick] (-3,-5) -- (3,-6.5);
+  \draw[->,red,thick] (3,-3.5) -- (3,-6.5);
+  \node[red,above] at (0,-4.5) {$f_x$};
+  \node[red,below] at (0,-5.5) {$f_y$};
+\end{tikzpicture}
+\end{center}
+
+Now the most interesting question is whether we can internalize functions as
+objects. Given $f$ a function from $A$ to $B$, what we can do below is to
+represent each fiber $f_x$ as an element of the type $(\frac{1}{A} \times
+B)$. As an example, let $A$ be the set $\{x,y,z\}$ and let $B$ be
+$\{a,b,c\}$, the type $\frac{1}{A}$ has one element $\frac{1}{3}$ which is
+one point that has three self loops labeled $x \path$, $y \path$, and $z
+\path$. A value $(\frac{1}{3},a)$ is a fiber of the function that produces
+$a$ as the second component indicates. The first component states that the
+$a$ could have come from $x$ along the path $x \path$, or from $y$ along the
+path $y \path$ or from $z$ along the path $z \path$.
+
+
+
+
+
+
+\newpage
 
 What can we say in pi about these two combinators:
 \begin{verbatim}
