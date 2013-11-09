@@ -11,12 +11,10 @@ open import Relation.Binary
 
 open import Groupoid
 
-{--
 infixr 90 _⊗_
 infixr 80 _⊕_
 infixr 60 _∘_
 infix  30 _⟷_
---}
 
 ---------------------------------------------------------------------------
 -- Paths
@@ -68,18 +66,13 @@ resp≣⇛ : {A : Set} {x y z : A} {f h : Path y z} {g i : Path x y} →
   f ≣⇛ h → g ≣⇛ i → (f ∙⇛ g) ≣⇛ (h ∙⇛ i)
 resp≣⇛ refl⇛ refl⇛ = refl⇛
 
+------------------------------------------------------------------------------
 -- pi types with exactly one level of reciprocals
 
 data B0 : Set where
   ONE    : B0
   PLUS0  : B0 → B0 → B0
   TIMES0 : B0 → B0 → B0
-
-data B1 : Set where
-  LIFT0  : B0 → B1
-  PLUS1  : B1 → B1 → B1
-  TIMES1 : B1 → B1 → B1
-  RECIP1 : B0 → B1
 
 -- interpretation of B0 as discrete groupoids
 
@@ -109,7 +102,52 @@ point ONE = tt
 point (PLUS0 b _) = inj₁ (point b)
 point (TIMES0 b₀ b₁) = point b₀ , point b₁ 
 
+-- isos
+
+data _⟷_ : B0 → B0 → Set where
+  -- + 
+  swap₊   : { b₁ b₂ : B0 } → PLUS0 b₁ b₂ ⟷ PLUS0 b₂ b₁
+  assocl₊ : { b₁ b₂ b₃ : B0 } → PLUS0 b₁ (PLUS0 b₂ b₃) ⟷ PLUS0 (PLUS0 b₁ b₂) b₃
+  assocr₊ : { b₁ b₂ b₃ : B0 } → PLUS0 (PLUS0 b₁ b₂) b₃ ⟷ PLUS0 b₁ (PLUS0 b₂ b₃)
+  -- *
+  unite⋆  : { b : B0 } → TIMES0 ONE b ⟷ b
+  uniti⋆  : { b : B0 } → b ⟷ TIMES0 ONE b
+  swap⋆   : { b₁ b₂ : B0 } → TIMES0 b₁ b₂ ⟷ TIMES0 b₂ b₁
+  assocl⋆ : { b₁ b₂ b₃ : B0 } → TIMES0 b₁ (TIMES0 b₂ b₃) ⟷ TIMES0 (TIMES0 b₁ b₂) b₃
+  assocr⋆ : { b₁ b₂ b₃ : B0 } → TIMES0 (TIMES0 b₁ b₂) b₃ ⟷ TIMES0 b₁ (TIMES0 b₂ b₃)
+  -- * distributes over + 
+  dist    : { b₁ b₂ b₃ : B0 } → 
+            TIMES0 (PLUS0 b₁ b₂) b₃ ⟷ PLUS0 (TIMES0 b₁ b₃) (TIMES0 b₂ b₃) 
+  factor  : { b₁ b₂ b₃ : B0 } → 
+            PLUS0 (TIMES0 b₁ b₃) (TIMES0 b₂ b₃) ⟷ TIMES0 (PLUS0 b₁ b₂) b₃
+  -- congruence
+  id⟷   : { b : B0 } → b ⟷ b
+  sym    : { b₁ b₂ : B0 } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
+  _∘_    : { b₁ b₂ b₃ : B0 } → (b₁ ⟷ b₂) → (b₂ ⟷ b₃) → (b₁ ⟷ b₃)
+  _⊕_    : { b₁ b₂ b₃ b₄ : B0 } → 
+           (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (PLUS0 b₁ b₂ ⟷ PLUS0 b₃ b₄)
+  _⊗_    : { b₁ b₂ b₃ b₄ : B0 } → 
+           (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (TIMES0 b₁ b₂ ⟷ TIMES0 b₃ b₄)
+{--
+--}
+
+-- interpret isos as paths
+
+eval0 : {b₁ b₂ : B0} → (c : b₁ ⟷ b₂) → (x : ı₀ b₁) → ı₀ b₂
+eval0 _ = {!!}
+
+--comb0 : {b₁ b₂ : B0} → (c : b₁ ⟷ b₂) → (x : ı₀ b₁) → Path x (eval0 c x)
+--comb0 _ = ?
+
+------------------------------------------------------------------------------
 -- interpretation of B1 types as 1-groupoids
+
+data B1 : Set where
+  LIFT0  : B0 → B1
+  PLUS1  : B1 → B1 → B1
+  TIMES1 : B1 → B1 → B1
+  RECIP1 : B0 → B1
+
 open 1Groupoid
 
 allPaths : Set → 1Groupoid
@@ -141,37 +179,38 @@ test10 = ⟦ LIFT0 ONE ⟧₁
 test11 = ⟦ LIFT0 (PLUS0 ONE ONE) ⟧₁
 test12 = ⟦ RECIP1 (PLUS0 ONE ONE) ⟧₁
 
--- isos
+-- interpret isos as functors
 
-data _⟷_ : B1 → B1 → Set where
+data _⟷₁_ : B1 → B1 → Set where
   -- + 
-  swap₊   : { b₁ b₂ : B1 } → PLUS1 b₁ b₂ ⟷ PLUS1 b₂ b₁
+  swap₊   : { b₁ b₂ : B1 } → PLUS1 b₁ b₂ ⟷₁ PLUS1 b₂ b₁
+{--
+  assocl₊ : { b₁ b₂ b₃ : B1 } → PLUS b₁ (PLUS b₂ b₃) ⟷₁ PLUS (PLUS b₁ b₂) b₃
+  assocr₊ : { b₁ b₂ b₃ : B1 } → PLUS (PLUS b₁ b₂) b₃ ⟷₁ PLUS b₁ (PLUS b₂ b₃)
   -- *
-  unite⋆  : { b : B1 } → TIMES1 (LIFT0 ONE) b ⟷ b
-  uniti⋆  : { b : B1 } → b ⟷ TIMES1 (LIFT0 ONE) b
-{-  assocl₊ : { b₁ b₂ b₃ : B } → PLUS b₁ (PLUS b₂ b₃) ⟷ PLUS (PLUS b₁ b₂) b₃
-  assocr₊ : { b₁ b₂ b₃ : B } → PLUS (PLUS b₁ b₂) b₃ ⟷ PLUS b₁ (PLUS b₂ b₃)
-  swap⋆   : { b₁ b₂ : B } → TIMES b₁ b₂ ⟷ TIMES b₂ b₁
-  assocl⋆ : { b₁ b₂ b₃ : B } → TIMES b₁ (TIMES b₂ b₃) ⟷ TIMES (TIMES b₁ b₂) b₃
-  assocr⋆ : { b₁ b₂ b₃ : B } → TIMES (TIMES b₁ b₂) b₃ ⟷ TIMES b₁ (TIMES b₂ b₃)
+--}
+  unite⋆  : { b : B1 } → TIMES1 (LIFT0 ONE) b ⟷₁ b
+  uniti⋆  : { b : B1 } → b ⟷₁ TIMES1 (LIFT0 ONE) b
+{--
+  swap⋆   : { b₁ b₂ : B } → TIMES b₁ b₂ ⟷₁ TIMES b₂ b₁
+  assocl⋆ : { b₁ b₂ b₃ : B } → TIMES b₁ (TIMES b₂ b₃) ⟷₁ TIMES (TIMES b₁ b₂) b₃
+  assocr⋆ : { b₁ b₂ b₃ : B } → TIMES (TIMES b₁ b₂) b₃ ⟷₁ TIMES b₁ (TIMES b₂ b₃)
   -- * distributes over + 
   dist    : { b₁ b₂ b₃ : B } → 
-            TIMES (PLUS b₁ b₂) b₃ ⟷ PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) 
+            TIMES (PLUS b₁ b₂) b₃ ⟷₁ PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) 
   factor  : { b₁ b₂ b₃ : B } → 
-            PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) ⟷ TIMES (PLUS b₁ b₂) b₃
+            PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) ⟷₁ TIMES (PLUS b₁ b₂) b₃
   -- congruence
-  id⟷   : { b : B } → b ⟷ b
-  sym    : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
-  _∘_    : { b₁ b₂ b₃ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₃) → (b₁ ⟷ b₃)
+  id⟷₁   : { b : B } → b ⟷₁ b
+  sym    : { b₁ b₂ : B } → (b₁ ⟷₁ b₂) → (b₂ ⟷₁ b₁)
+  _∘_    : { b₁ b₂ b₃ : B } → (b₁ ⟷₁ b₂) → (b₂ ⟷₁ b₃) → (b₁ ⟷₁ b₃)
   _⊕_    : { b₁ b₂ b₃ b₄ : B } → 
-           (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (PLUS b₁ b₂ ⟷ PLUS b₃ b₄)
+           (b₁ ⟷₁ b₃) → (b₂ ⟷₁ b₄) → (PLUS b₁ b₂ ⟷₁ PLUS b₃ b₄)
   _⊗_    : { b₁ b₂ b₃ b₄ : B } → 
-           (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (TIMES b₁ b₂ ⟷ TIMES b₃ b₄)
-
-  η⋆ : (b : B0) → LIFT0 ONE ⟷ TIMES1 (LIFT0 b) (RECIP1 b)
-  ε⋆ : (b : B0) → TIMES1 (LIFT0 b) (RECIP1 b) ⟷ LIFT0 ONE
--}
--- interpret isos as functors
+           (b₁ ⟷₁ b₃) → (b₂ ⟷₁ b₄) → (TIMES b₁ b₂ ⟷₁ TIMES b₃ b₄)
+  η⋆ : (b : B0) → LIFT0 ONE ⟷₁ TIMES1 (LIFT0 b) (RECIP1 b)
+  ε⋆ : (b : B0) → TIMES1 (LIFT0 b) (RECIP1 b) ⟷₁ LIFT0 ONE
+--}
 
 record 1-functor (A B : 1Groupoid) : Set where
   constructor 1F
@@ -233,33 +272,33 @@ Funiti⋆ : {b₁ : B1} → ∀ {X Y : set (discrete (ı₀ ONE) ×G ⟦ b₁ �
 Funiti⋆ y = reflD , y
 
 mutual
-  eval : {b₁ b₂ : B1} → (b₁ ⟷ b₂) → 1-functor ⟦ b₁ ⟧₁ ⟦ b₂ ⟧₁
+  eval : {b₁ b₂ : B1} → (b₁ ⟷₁ b₂) → 1-functor ⟦ b₁ ⟧₁ ⟦ b₂ ⟧₁
   eval (swap₊ {b₁} {b₂}) = 1F swap⊎ (λ {X Y} → swapF {b₁} {b₂} {X} {Y}) 
   eval (unite⋆ {b}) = 1F (elim1∣₁ b) (Funite⋆ {b})
   eval (uniti⋆ {b}) = 1F (intro1∣₁ b) (Funiti⋆ {b})
 --  eval (η⋆ b) = F₁ (objη⋆ b) (eta b )
 --  eval (ε⋆ b) = F₁ (objε⋆ b) (map (eps b))
 
-  evalB : {b₁ b₂ : B1} → (b₁ ⟷ b₂) → 1-functor ⟦ b₂ ⟧₁ ⟦ b₁ ⟧₁
+  evalB : {b₁ b₂ : B1} → (b₁ ⟷₁ b₂) → 1-functor ⟦ b₂ ⟧₁ ⟦ b₁ ⟧₁
   evalB (swap₊ {b₁} {b₂}) = 1F swap⊎ ((λ {X Y} → swapF {b₂} {b₁} {X} {Y}))
   evalB (unite⋆ {b}) = 1F (intro1∣₁ b) (Funiti⋆ {b})
   evalB (uniti⋆ {b}) = 1F (elim1∣₁ b) (Funite⋆ {b})
 --  evalB (η⋆ b) = F₁ (objε⋆ b) (map (eps b))
 --  evalB (ε⋆ b) = F₁ (objη⋆ b) (eta b)
 
-{- eval assocl₊ = ? -- : { b₁ b₂ b₃ : B } → PLUS b₁ (PLUS b₂ b₃) ⟷ PLUS (PLUS b₁ b₂) b₃
-eval assocr₊ = ? -- : { b₁ b₂ b₃ : B } → PLUS (PLUS b₁ b₂) b₃ ⟷ PLUS b₁ (PLUS b₂ b₃)
-eval uniti⋆ = ? -- : { b : B } → b ⟷ TIMES ONE b
-eval swap⋆ = ? --  : { b₁ b₂ : B } → TIMES b₁ b₂ ⟷ TIMES b₂ b₁
-eval assocl⋆ = ? -- : { b₁ b₂ b₃ : B } → TIMES b₁ (TIMES b₂ b₃) ⟷ TIMES (TIMES b₁ b₂) b₃
-eval assocr⋆ = ? -- : { b₁ b₂ b₃ : B } → TIMES (TIMES b₁ b₂) b₃ ⟷ TIMES b₁ (TIMES b₂ b₃)
-eval dist = ? -- : { b₁ b₂ b₃ : B } → TIMES (PLUS b₁ b₂) b₃ ⟷ PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) 
-eval factor = ? -- : { b₁ b₂ b₃ : B } → PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) ⟷ TIMES (PLUS b₁ b₂) b₃
-eval id⟷ = ? --  : { b : B } → b ⟷ b
-eval (sym c) = ? -- : { b₁ b₂ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₁)
-eval (c₁ ∘ c₂) = ? -- : { b₁ b₂ b₃ : B } → (b₁ ⟷ b₂) → (b₂ ⟷ b₃) → (b₁ ⟷ b₃)
-eval (c₁ ⊕ c₂) = ? -- : { b₁ b₂ b₃ b₄ : B } → (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (PLUS b₁ b₂ ⟷ PLUS b₃ b₄)
-eval (c₁ ⊗ c₂) = ? -- : { b₁ b₂ b₃ b₄ : B } → (b₁ ⟷ b₃) → (b₂ ⟷ b₄) → (TIMES b₁ b₂ ⟷ TIMES b₃ b₄)
+{- eval assocl₊ = ? -- : { b₁ b₂ b₃ : B } → PLUS b₁ (PLUS b₂ b₃) ⟷₁ PLUS (PLUS b₁ b₂) b₃
+eval assocr₊ = ? -- : { b₁ b₂ b₃ : B } → PLUS (PLUS b₁ b₂) b₃ ⟷₁ PLUS b₁ (PLUS b₂ b₃)
+eval uniti⋆ = ? -- : { b : B } → b ⟷₁ TIMES ONE b
+eval swap⋆ = ? --  : { b₁ b₂ : B } → TIMES b₁ b₂ ⟷₁ TIMES b₂ b₁
+eval assocl⋆ = ? -- : { b₁ b₂ b₃ : B } → TIMES b₁ (TIMES b₂ b₃) ⟷₁ TIMES (TIMES b₁ b₂) b₃
+eval assocr⋆ = ? -- : { b₁ b₂ b₃ : B } → TIMES (TIMES b₁ b₂) b₃ ⟷₁ TIMES b₁ (TIMES b₂ b₃)
+eval dist = ? -- : { b₁ b₂ b₃ : B } → TIMES (PLUS b₁ b₂) b₃ ⟷₁ PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) 
+eval factor = ? -- : { b₁ b₂ b₃ : B } → PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) ⟷₁ TIMES (PLUS b₁ b₂) b₃
+eval id⟷₁ = ? --  : { b : B } → b ⟷₁ b
+eval (sym c) = ? -- : { b₁ b₂ : B } → (b₁ ⟷₁ b₂) → (b₂ ⟷₁ b₁)
+eval (c₁ ∘ c₂) = ? -- : { b₁ b₂ b₃ : B } → (b₁ ⟷₁ b₂) → (b₂ ⟷₁ b₃) → (b₁ ⟷₁ b₃)
+eval (c₁ ⊕ c₂) = ? -- : { b₁ b₂ b₃ b₄ : B } → (b₁ ⟷₁ b₃) → (b₂ ⟷₁ b₄) → (PLUS b₁ b₂ ⟷₁ PLUS b₃ b₄)
+eval (c₁ ⊗ c₂) = ? -- : { b₁ b₂ b₃ b₄ : B } → (b₁ ⟷₁ b₃) → (b₂ ⟷₁ b₄) → (TIMES b₁ b₂ ⟷₁ TIMES b₃ b₄)
 
 ---------------------------------------------------------------------------
 --}
