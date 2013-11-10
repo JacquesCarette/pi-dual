@@ -102,6 +102,12 @@ data _⇛_ : {A B : Set} → (x : A) → (y : B) → Set₁ where
   times⇛     : {A B C D : Set} {x : A} {y : B} {z : C} {w : D} → 
                x ⇛ z → y ⇛ w → _⇛_ {A × B} {C × D} (x , y) (z , w)
 
+-- permute
+-- for any given type, we should be able to generate permutations mapping any
+-- point to any other type
+
+
+
 -- Introduce equational reasoning syntax to simplify proofs
 
 _≡⟨_⟩_ : {A B C : Set} (x : A) {y : B} {z : C} → (x ⇛ y) → (y ⇛ z) → (x ⇛ z)
@@ -271,8 +277,15 @@ pathInd C c .(Σ A (λ x₁ → B)) .(Σ C₁ (λ x₁ → D)) .(x , y) .(z , w)
 ------------------------------------------------------------------------------
 -- Now interpret a path (x ⇛ y) as a value of type (1/x , y)
 
-Recip : {A : Set} → (x : A) → Set₁
-Recip {A} x = (x ⇛ x) 
+Recip : {A : Set} → (base : A) → (x : A) → Set₁
+Recip {A} base = λ x → (x ⇛ base)
+
+η : {A : Set} {base : A} → ⊤ → Recip base × Singleton base
+η {A} {base} tt = (λ x → ? , singleton base)
+
+{--
+If A={x0,x1,x2}, 1/A has three values:
+(x0<-x0, x0<-x1, x0<-x2)
 
 η : {A : Set} {x : A} → ⊤ → Recip x × Singleton x
 η {A} {x} tt = (id⇛ x , singleton x)
@@ -290,7 +303,6 @@ apr {A} {B} {x} {y} p ry =
     ≡⟨ sym⇛ p ⟩
   x ∎
 
-{--
 ε : {A B : Set} {x : A} {y : B} → Recip x → Singleton y → x ⇛ y
 ε rx (singleton y) = rx y
 
