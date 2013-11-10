@@ -4,7 +4,7 @@ open import Data.Empty
 open import Data.Unit
 open import Data.Sum hiding (map; [_,_])
 open import Data.Product hiding (map; ,_)
-open import Function using (flip)
+open import Function using (flip; _∘_ )
 open import Relation.Binary.Core 
   using (IsEquivalence; Reflexive; Symmetric; Transitive)
 open import Relation.Binary
@@ -49,7 +49,6 @@ Explain connection to negative information.
 Knowing head or tails is 1 bits. Giving you a choice between heads and tails
 and then cooking this so that heads=tails takes away your choice. 
 
-
 --}
 
 -- Pointed type
@@ -60,9 +59,10 @@ record P (A : Set) : Set where
 
 open P
 
+
 data _⇛_ : {A B : Set} → P A → P B → Set₁ where
   -- + 
-  unite₊⇛    : {A : Set} {x : P A} → ↑ (inj₂ {A = ⊥ ⊎ A} (p x)) ⇛ x
+  unite₊⇛    : {A : Set} {x : P A} → ↑ (inj₂ {A = ⊥} (p x)) ⇛ x
 {-
   uniti₊⇛    : {A : Set} {x : A} → _⇛_ {A} {⊥ ⊎ A} x (inj₂ x)
   swap₁₊⇛    : {A B : Set} {x : A} → _⇛_ {A ⊎ B} {B ⊎ A} (inj₁ x) (inj₂ x)
@@ -110,6 +110,8 @@ data _⇛_ : {A B : Set} → P A → P B → Set₁ where
   times⇛     : {A B C D : Set} {x : A} {y : B} {z : C} {w : D} → 
                x ⇛ z → y ⇛ w → _⇛_ {A × B} {C × D} (x , y) (z , w)
 -}
+  transp⇛ : {A B : Set} {x y : P A} → (f : A → B) → x ⇛ y → ↑ (f (p x)) ⇛ ↑ (f (p y)) 
+
 -- Introduce equational reasoning syntax to simplify proofs
 
 _≡⟨_⟩_ : {A B C : Set} (x : P A) {y : P B} {z : P C} → (x ⇛ y) → (y ⇛ z) → (x ⇛ z)
@@ -121,14 +123,22 @@ bydef {A} {x} = id⇛ x
 _∎ : {A : Set} (x : P A) → x ⇛ x
 _∎ x = id⇛ x
 
-{-
-data Singleton {A : Set} : A → Set where
-  singleton : (x : A) → Singleton x
--}
+-- Morphism of pointed space: contains a path!
+record _⟶_ {A B : Set} (pA : P A) (pB : P B) : Set₁ where
+  field
+    fun : A → B
+    eq : ↑ (fun (p pA)) ⇛ pB
+
+open _⟶_
+
+_○_ : {A B C : Set} {pA : P A} {pB : P B} {pC : P C} → pA ⟶ pB → pB ⟶ pC → pA ⟶ pC
+f ○ g = record { fun = λ x → (fun g) ((fun f) x) ; eq = trans⇛ (transp⇛ (fun g) (eq f)) (eq g)}
+
 mutual 
 
-  ap : {A B : Set} {x : P A} {y : P B} → x ⇛ y → P A → P B
-  ap t x = ?
+  ap : {A B : Set} {x : P A} {y : P B} → x ⇛ y → x ⟶ y
+  ap {y = y} unite₊⇛ = record { fun = λ { (inj₁ ()) 
+                                        ; (inj₂ x) → x } ; eq = id⇛ y }
   {-
   ap uniti₊⇛ (singleton x) = singleton (inj₂ x)
   ap (swap₁₊⇛ {A} {B} {x}) (singleton .(inj₁ x)) = singleton (inj₂ x)
@@ -164,9 +174,10 @@ mutual
   ap {.(⊥ × A)} {.⊥} {.(• , x)} {•} (dist0⇛ {A} {.•} {x}) (singleton .(• , x)) = 
     singleton • 
   ap factor0⇛ (singleton ()) -}
-  ap (id⇛ x) y = y
-  ap (sym⇛ c) x = apI c x
-  ap (trans⇛ c₁ c₂) x = ap c₂ (ap c₁ x)
+  ap {x = x} (id⇛ .x) = record { fun = λ x → x; eq = id⇛ x }
+  ap (sym⇛ c) = apI c
+  ap (trans⇛ c₁ c₂) = (ap c₁) ○ (ap c₂)
+  ap (transp⇛ f a) = record { fun = λ x → x; eq = transp⇛ f a }
   {-
   ap (plus₁⇛ {A} {B} {C} {D} {x} {z} c) (singleton .(inj₁ x)) 
     with ap c (singleton x)
@@ -179,8 +190,8 @@ mutual
   ... | singleton .z | singleton .w = singleton (z , w)
 -}
 
-  apI : {A B : Set} {x : P A} {y : P B} → x ⇛ y → A → B
-  apI unite₊⇛ x = (inj₂ x)
+  apI : {A B : Set} {x : P A} {y : P B} → x ⇛ y → y ⟶ x
+  apI {y = y} unite₊⇛ = record { fun = inj₂; eq = id⇛ (↑ (inj₂ (p y))) }
 {-
  
  apI {A} {.(⊥ ⊎ A)} {x} uniti₊⇛ (singleton .(inj₂ x)) = singleton x
@@ -217,10 +228,10 @@ mutual
   apI {.⊥} {.(⊥ × A)} {•} (factor0⇛ {A} {.•} {x}) (singleton .(• , x)) = 
     singleton •
   -}
-  apI (id⇛ .x) x = x
-  apI (sym⇛ c) x = ap c x
-  apI {A} {B} {x} {y} (trans⇛ c₁ c₂) .y = 
-    apI c₁ (apI c₂ y)
+  apI {x = x} (id⇛ .x) = record { fun = λ x → x; eq = id⇛ x }
+  apI (sym⇛ c) = ap c
+  apI (trans⇛ c₁ c₂) = (apI c₂) ○ (apI c₁)
+  apI (transp⇛ f a) = record { fun = λ x → x; eq = transp⇛ f (sym⇛ a) }
   {-
   apI (plus₁⇛ {A} {B} {C} {D} {x} {z} c) (singleton .(inj₁ z)) 
     with apI c (singleton z)
@@ -282,29 +293,32 @@ pathInd C c .(A ⊎ B) .(C₁ ⊎ D) .(inj₂ y) .(inj₂ w)
   (plus₂⇛ {A} {B} {C₁} {D} {y} {w} p) = {!!}
 pathInd C c .(Σ A (λ x₁ → B)) .(Σ C₁ (λ x₁ → D)) .(x , y) .(z , w) 
   (times⇛ {A} {B} {C₁} {D} {x} {y} {z} {w} p p₁) = {!!}
-
+-}
 ------------------------------------------------------------------------------
 -- Now interpret a path (x ⇛ y) as a value of type (1/x , y)
 
-Recip : {A : Set} → (x : A) → Set₁
+Recip : {A : Set} → (x : P A) → Set₁
 Recip {A} x = (x ⇛ x) 
 
-η : {A : Set} {x : A} → ⊤ → Recip x × Singleton x
-η {A} {x} tt = (id⇛ x , singleton x)
+η : {A : Set} {x : P A} → ⊤ → Recip x × P A 
+η {A} {x} tt = (id⇛ x , x)
 
-ε : {A : Set} {x : A} → Recip x × Singleton x → ⊤
-ε {A} {x} (rx , singleton .x) = tt -- makes no sense
+lower : {A : Set} {x : P A} → x ⇛ x -> ⊤
+lower c = tt
 
-apr : {A B : Set} {x : A} {y : B} → (x ⇛ y) → Recip y → Recip x
-apr {A} {B} {x} {y} p ry = 
-  x 
-    ≡⟨ p ⟩
+-- The problem here is that we can't assert that y == x.
+ε : {A : Set} {x : P A} → Recip x × P A → ⊤
+ε {A} {x} (rx , y) = lower (id⇛ ( ↑ (fun (ap rx) (p y)) )) -- makes insufficient sense
+
+apr : {A B : Set} {x : P A} {y : P B} → (x ⇛ y) → Recip y → Recip x
+apr {A} {B} {x} {y} q ry = trans⇛ q (trans⇛ ry (sym⇛ q))
+{-  x 
+    ≡⟨ q ⟩
   y
     ≡⟨ ry ⟩
   y
-    ≡⟨ sym⇛ p ⟩
+    ≡⟨ sym⇛ q ⟩
   x ∎
-
 -}
 
 {--
