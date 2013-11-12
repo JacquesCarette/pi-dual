@@ -11,135 +11,132 @@ open import Relation.Binary
 
 open import Groupoid
 
--- infix  2  _∎      -- equational reasoning
--- infixr 2  _≡⟨_⟩_  -- equational reasoning
+infix  2  _∎      -- equational reasoning
+infixr 2  _≡⟨_⟩_   -- equational reasoning
+
+---------------------------------------------------------------------------
+-- Pointed types
+
+record •_ (A : Set) : Set where
+  constructor ↑
+  field 
+    focus : A
+
+open •_
+
+{--
+Example:
+
+test1 : • ℕ
+test1 = ↑ 3
+
+test2 : ℕ 
+test2 = focus test1 {-- 3 --}
+
+import to build 
+bot : • ⊥
+--}
+
+One : • ⊤
+One = ↑ tt
+
+PlusL : {A B : Set} → • A → • (A ⊎ B)
+PlusL (↑ a) = ↑ (inj₁ a)
+
+PlusR : {A B : Set} → • B → • (A ⊎ B)
+PlusR (↑ b) = ↑ (inj₂ b)
+
+Times : {A B : Set} → • A → • B → • (A × B)
+Times (↑ a) (↑ b) = ↑ (a , b)
 
 ---------------------------------------------------------------------------
 -- Paths
 
--- these are individual paths so to speak
--- should we represent a path like swap+ as a family explicitly:
--- swap+ : (x : A) -> x ⇛ swapF x
--- I guess we can: swap+ : (x : A) -> case x of inj1 -> swap1 x else swap2 x
-{--
-If A={x0,x1,x2}, 1/A has three values:
-(x0<-x0, x0<-x1, x0<-x2)
-(x1<-x0, x1<-x1, x1<-x2)
-(x2<-x0, x2<-x1, x2<-x2)
-It is a fake choice between x0, x1, and x2 (some negative information). You base
-yourself at x0 for example and enforce that any other value can be mapped to x0.
-So think of a value of type 1/A as an uncertainty about which value of A we 
-have. It could be x0, x1, or x2 but at the end it makes no difference. There is
-no choice.
-
-You can manipulate a value of type 1/A (x0<-x0, x0<-x1, x0<-x2) by with a
-path to some arbitrary path to b0 for example:
-
-(b0<-x0<-x0, b0<-x0<-x1, b0<-x0<-x2)
-
-eta_3 will give (x0<-x0, x0<-x1, x0<-x2, x0) for example but any other
-combination is equivalent.
-
-epsilon_3 will take (x0<-x0, x0<-x1, x0<-x2) and one actual xi which is now
-certain; we can resolve our previous uncertainty by following the path from
-xi to x0 thus eliminating the fake choice we seemed to have. 
-
-Explain connection to negative information.
-
-Knowing head or tails is 1 bits. Giving you a choice between heads and tails
-and then cooking this so that heads=tails takes away your choice. 
-
---}
-
--- Pointed type
-record P (A : Set) : Set where
-  constructor ↑
-  field
-    p : A
-
-open P
-
-
-data _⇛_ : {A B : Set} → P A → P B → Set₁ where
+data _⇛_ : {A B : Set} → • A → • B → Set₁ where
   -- + 
-  unite₊⇛    : {A : Set} {x : P A} → ↑ (inj₂ {A = ⊥} (p x)) ⇛ x
-{-
-  uniti₊⇛    : {A : Set} {x : A} → _⇛_ {A} {⊥ ⊎ A} x (inj₂ x)
-  swap₁₊⇛    : {A B : Set} {x : A} → _⇛_ {A ⊎ B} {B ⊎ A} (inj₁ x) (inj₂ x)
-  swap₂₊⇛    : {A B : Set} {y : B} → _⇛_ {A ⊎ B} {B ⊎ A} (inj₂ y) (inj₁ y)
-  assocl₁₊⇛  : {A B C : Set} {x : A} → 
-               _⇛_ {A ⊎ (B ⊎ C)} {(A ⊎ B) ⊎ C} (inj₁ x) (inj₁ (inj₁ x)) 
-  assocl₂₁₊⇛ : {A B C : Set} {y : B} → 
-               _⇛_ {A ⊎ (B ⊎ C)} {(A ⊎ B) ⊎ C} (inj₂ (inj₁ y)) (inj₁ (inj₂ y)) 
-  assocl₂₂₊⇛ : {A B C : Set} {z : C} → 
-               _⇛_ {A ⊎ (B ⊎ C)} {(A ⊎ B) ⊎ C} (inj₂ (inj₂ z)) (inj₂ z)
-  assocr₁₁₊⇛ : {A B C : Set} {x : A} → 
-               _⇛_ {(A ⊎ B) ⊎ C} {A ⊎ (B ⊎ C)} (inj₁ (inj₁ x)) (inj₁ x)
-  assocr₁₂₊⇛ : {A B C : Set} {y : B} → 
-               _⇛_ {(A ⊎ B) ⊎ C} {A ⊎ (B ⊎ C)} (inj₁ (inj₂ y)) (inj₂ (inj₁ y))
-  assocr₂₊⇛  : {A B C : Set} {z : C} → 
-               _⇛_ {(A ⊎ B) ⊎ C} {A ⊎ (B ⊎ C)} (inj₂ z) (inj₂ (inj₂ z))
+  swap₁₊⇛    : {A B : Set} {a : • A} → 
+               _⇛_ {A ⊎ B} {B ⊎ A} (PlusL a) (PlusR a) 
+  swap₂₊⇛    : {A B : Set} {b : • B} → 
+               _⇛_ {A ⊎ B} {B ⊎ A} (PlusR b) (PlusL b)
+  assocl₁₊⇛  : {A B C : Set} {a : • A} → 
+               _⇛_ {A ⊎ (B ⊎ C)} {(A ⊎ B) ⊎ C} (PlusL a) (PlusL (PlusL a))
+  assocl₂₁₊⇛ : {A B C : Set} {b : • B} → 
+               _⇛_ {A ⊎ (B ⊎ C)} {(A ⊎ B) ⊎ C} 
+                   (PlusR (PlusL b)) (PlusL (PlusR b))
+  assocl₂₂₊⇛ : {A B C : Set} {c : • C} → 
+               _⇛_ {A ⊎ (B ⊎ C)} {(A ⊎ B) ⊎ C} (PlusR (PlusR c)) (PlusR c)
+  assocr₁₁₊⇛ : {A B C : Set} {a : • A} → 
+               _⇛_ {(A ⊎ B) ⊎ C} {A ⊎ (B ⊎ C)} (PlusL (PlusL a)) (PlusL a)
+  assocr₁₂₊⇛ : {A B C : Set} {b : • B} → 
+               _⇛_ {(A ⊎ B) ⊎ C} {A ⊎ (B ⊎ C)} 
+                   (PlusL (PlusR b)) (PlusR (PlusL b))
+  assocr₂₊⇛  : {A B C : Set} {c : • C} → 
+               _⇛_ {(A ⊎ B) ⊎ C} {A ⊎ (B ⊎ C)} 
+                   (PlusR c) (PlusR (PlusR c))
   -- *
-  unite⋆⇛    : {A : Set} {x : A} → _⇛_ {⊤ × A} {A} (tt , x) x
-  uniti⋆⇛    : {A : Set} {x : A} → _⇛_ {A} {⊤ × A} x (tt , x)
-  swap⋆⇛     : {A B : Set} {x : A} {y : B} → _⇛_ {A × B} {B × A} (x , y) (y , x)
-  assocl⋆⇛   : {A B C : Set} {x : A} {y : B} {z : C} → 
-               _⇛_ {A × (B × C)} {(A × B) × C} (x , (y , z)) ((x , y) , z)
-  assocr⋆⇛   : {A B C : Set} {x : A} {y : B} {z : C} → 
-               _⇛_ {(A × B) × C} {A × (B × C)} ((x , y) , z) (x , (y , z))
+  unite⋆⇛    : {A : Set} {a : • A} → Times One a ⇛ a
+  uniti⋆⇛    : {A : Set} {a : • A} → a ⇛ Times One a
+  swap⋆⇛     : {A B : Set} {a : • A} {b : • B} → Times a b ⇛ Times b a
+  assocl⋆⇛   : {A B C : Set} {a : • A} {b : • B} {c : • C} → 
+               Times a (Times b c) ⇛ Times (Times a b) c
+  assocr⋆⇛   : {A B C : Set} {a : • A} {b : • B} {c : • C} → 
+               Times (Times a b) c ⇛ Times a (Times b c)
   -- distributivity
-  dist₁⇛     : {A B C : Set} {x : A} {z : C} → 
-               _⇛_ {(A ⊎ B) × C} {(A × C) ⊎ (B × C)} (inj₁ x , z) (inj₁ (x , z))
-  dist₂⇛     : {A B C : Set} {y : B} {z : C} → 
-               _⇛_ {(A ⊎ B) × C} {(A × C) ⊎ (B × C)} (inj₂ y , z) (inj₂ (y , z))
-  factor₁⇛   : {A B C : Set} {x : A} {z : C} → 
-               _⇛_ {(A × C) ⊎ (B × C)} {(A ⊎ B) × C} (inj₁ (x , z)) (inj₁ x , z)
-  factor₂⇛   : {A B C : Set} {y : B} {z : C} → 
+  dist₁⇛     : {A B C : Set} {a : • A} {c : • C} → 
+               _⇛_ {(A ⊎ B) × C} {(A × C) ⊎ (B × C)} 
+                   (Times (PlusL a) c) (PlusL (Times a c))
+  dist₂⇛     : {A B C : Set} {b : • B} {c : • C} → 
+               _⇛_ {(A ⊎ B) × C} {(A × C) ⊎ (B × C)} 
+                   (Times (PlusR b) c) (PlusR (Times b c))
+  factor₁⇛   : {A B C : Set} {a : • A} {c : • C} → 
+               _⇛_ {(A × C) ⊎ (B × C)} {(A ⊎ B) × C} 
+                   (PlusL (Times a c)) (Times (PlusL a) c)
+  factor₂⇛   : {A B C : Set} {b : • B} {c : • C} → 
                _⇛_ {(A × C) ⊎ (B × C)} {(A ⊎ B) × C}  
-                   (inj₂ (y , z)) (inj₂ y , z)
-  dist0⇛     : {A : Set} {• : ⊥} {x :  A} → _⇛_ {⊥ × A} {⊥} (• , x) •
-  factor0⇛   : {A : Set} {• : ⊥} {x : A} → _⇛_ {⊥} {⊥ × A} • (• , x) -}
+                   (PlusR (Times b c)) (Times (PlusR b) c)
   -- congruence
-  id⇛        : {A : Set} → (x : P A) → x ⇛ x
-  sym⇛       : {A B : Set} {x : P A} {y : P B} → x ⇛ y → y ⇛ x 
-  trans⇛     : {A B C : Set} {x : P A} {y : P B} {z : P C} → x ⇛ y → y ⇛ z → x ⇛ z
-{-  plus₁⇛     : {A B C D : Set} {x : A} {z : C} → 
-               x ⇛ z → _⇛_ {A ⊎ B} {C ⊎ D} (inj₁ x) (inj₁ z)
-  plus₂⇛     : {A B C D : Set} {y : B} {w : D} → 
-               y ⇛ w → _⇛_ {A ⊎ B} {C ⊎ D} (inj₂ y) (inj₂ w)
-  times⇛     : {A B C D : Set} {x : A} {y : B} {z : C} {w : D} → 
-               x ⇛ z → y ⇛ w → _⇛_ {A × B} {C × D} (x , y) (z , w)
--}
-  transp⇛ : {A B : Set} {x y : P A} → (f : A → B) → x ⇛ y → ↑ (f (p x)) ⇛ ↑ (f (p y)) 
+  id⇛        : {A : Set} {a : • A} → a ⇛ a
+  sym⇛       : {A B : Set} {a : • A} {b : • B} → (a ⇛ b) → (b ⇛ a)
+  trans⇛     : {A B C : Set} {a : • A} {b : • B} {c : • C} → 
+               (a ⇛ b) → (b ⇛ c) → (a ⇛ c)
+  plus₁⇛     : {A B C D : Set} {a : • A} {c : • C} → (a ⇛ c) → 
+               _⇛_ {A ⊎ B} {C ⊎ D} (PlusL a) (PlusL c)
+  plus₂⇛     : {A B C D : Set} {b : • B} {d : • D} → (b ⇛ d) → 
+               _⇛_ {A ⊎ B} {C ⊎ D} (PlusR b) (PlusR d)
+  times⇛     : {A B C D : Set} {a : • A} {b : • B} {c : • C} {d : • D} → 
+               (a ⇛ c) → (b ⇛ d) → (Times a b ⇛ Times c d)
 
 -- Introduce equational reasoning syntax to simplify proofs
 
-_≡⟨_⟩_ : {A B C : Set} (x : P A) {y : P B} {z : P C} → (x ⇛ y) → (y ⇛ z) → (x ⇛ z)
+_≡⟨_⟩_ : {A B C : Set} (a : • A) {b : • B} {c : • C} → 
+        (a ⇛ b) → (b ⇛ c) → (a ⇛ c)
 _ ≡⟨ p ⟩ q = trans⇛ p q
 
-bydef : {A : Set} {x : P A} → (x ⇛ x)
-bydef {A} {x} = id⇛ x
+bydef : {A : Set} {a : • A} → (a ⇛ a)
+bydef = id⇛ 
 
-_∎ : {A : Set} (x : P A) → x ⇛ x
-_∎ x = id⇛ x
+_∎ : {A : Set} {a : • A} → (a ⇛ a)
+_∎ = id⇛ 
+
+---------------------------------------------------------------------------
+{--
 
 -- Morphism of pointed space: contains a path!
-record _⟶_ {A B : Set} (pA : P A) (pB : P B) : Set₁ where
+record _⟶_ {A B : Set} (pA : • A) (pB : • B) : Set₁ where
   field
     fun : A → B
-    eq : ↑ (fun (p pA)) ⇛ pB
+    eq : ↑ (fun (focus pA)) ⇛ pB
 
 open _⟶_
 
-_○_ : {A B C : Set} {pA : P A} {pB : P B} {pC : P C} → pA ⟶ pB → pB ⟶ pC → pA ⟶ pC
+_○_ : {A B C : Set} {pA : • A} {pB : • B} {pC : • C} → pA ⟶ pB → pB ⟶ pC → pA ⟶ pC
 f ○ g = record { fun = λ x → (fun g) ((fun f) x) ; eq = trans⇛ (transp⇛ (fun g) (eq f)) (eq g)}
 
 mutual 
 
-  ap : {A B : Set} {x : P A} {y : P B} → x ⇛ y → x ⟶ y
+  ap : {A B : Set} {x : • A} {y : • B} → x ⇛ y → x ⟶ y
   ap {y = y} unite₊⇛ = record { fun = λ { (inj₁ ()) 
                                         ; (inj₂ x) → x } ; eq = id⇛ y }
-  {-
   ap uniti₊⇛ (singleton x) = singleton (inj₂ x)
   ap (swap₁₊⇛ {A} {B} {x}) (singleton .(inj₁ x)) = singleton (inj₂ x)
   ap (swap₂₊⇛ {A} {B} {y}) (singleton .(inj₂ y)) = singleton (inj₁ y)
@@ -173,12 +170,12 @@ mutual
     singleton (inj₂ y , z)
   ap {.(⊥ × A)} {.⊥} {.(• , x)} {•} (dist0⇛ {A} {.•} {x}) (singleton .(• , x)) = 
     singleton • 
-  ap factor0⇛ (singleton ()) -}
+  ap factor0⇛ (singleton ()) 
   ap {x = x} (id⇛ .x) = record { fun = λ x → x; eq = id⇛ x }
   ap (sym⇛ c) = apI c
   ap (trans⇛ c₁ c₂) = (ap c₁) ○ (ap c₂)
   ap (transp⇛ f a) = record { fun = λ x → x; eq = transp⇛ f a }
-  {-
+
   ap (plus₁⇛ {A} {B} {C} {D} {x} {z} c) (singleton .(inj₁ x)) 
     with ap c (singleton x)
   ... | singleton .z = singleton (inj₁ z)
@@ -188,11 +185,11 @@ mutual
   ap (times⇛ {A} {B} {C} {D} {x} {y} {z} {w} c₁ c₂) (singleton .(x , y)) 
     with ap c₁ (singleton x) | ap c₂ (singleton y) 
   ... | singleton .z | singleton .w = singleton (z , w)
--}
 
-  apI : {A B : Set} {x : P A} {y : P B} → x ⇛ y → y ⟶ x
-  apI {y = y} unite₊⇛ = record { fun = inj₂; eq = id⇛ (↑ (inj₂ (p y))) }
-{-
+
+  apI : {A B : Set} {x : • A} {y : • B} → x ⇛ y → y ⟶ x
+  apI {y = y} unite₊⇛ = record { fun = inj₂; eq = id⇛ (↑ (inj₂ (focus y))) }
+
  
  apI {A} {.(⊥ ⊎ A)} {x} uniti₊⇛ (singleton .(inj₂ x)) = singleton x
   apI (swap₁₊⇛ {A} {B} {x}) (singleton .(inj₂ x)) = singleton (inj₁ x)
@@ -227,12 +224,12 @@ mutual
   apI dist0⇛ (singleton ()) 
   apI {.⊥} {.(⊥ × A)} {•} (factor0⇛ {A} {.•} {x}) (singleton .(• , x)) = 
     singleton •
-  -}
+
   apI {x = x} (id⇛ .x) = record { fun = λ x → x; eq = id⇛ x }
   apI (sym⇛ c) = ap c
   apI (trans⇛ c₁ c₂) = (apI c₂) ○ (apI c₁)
   apI (transp⇛ f a) = record { fun = λ x → x; eq = transp⇛ f (sym⇛ a) }
-  {-
+
   apI (plus₁⇛ {A} {B} {C} {D} {x} {z} c) (singleton .(inj₁ z)) 
     with apI c (singleton z)
   ... | singleton .x = singleton (inj₁ x)
@@ -293,35 +290,33 @@ pathInd C c .(A ⊎ B) .(C₁ ⊎ D) .(inj₂ y) .(inj₂ w)
   (plus₂⇛ {A} {B} {C₁} {D} {y} {w} p) = {!!}
 pathInd C c .(Σ A (λ x₁ → B)) .(Σ C₁ (λ x₁ → D)) .(x , y) .(z , w) 
   (times⇛ {A} {B} {C₁} {D} {x} {y} {z} {w} p p₁) = {!!}
--}
+
 ------------------------------------------------------------------------------
 -- Now interpret a path (x ⇛ y) as a value of type (1/x , y)
 
-Recip : {A : Set} → (x : P A) → Set₁
+Recip : {A : Set} → (x : • A) → Set₁
 Recip {A} x = (x ⇛ x) 
 
-η : {A : Set} {x : P A} → ⊤ → Recip x × P A 
+η : {A : Set} {x : • A} → ⊤ → Recip x × • A 
 η {A} {x} tt = (id⇛ x , x)
 
-lower : {A : Set} {x : P A} → x ⇛ x -> ⊤
+lower : {A : Set} {x : • A} → x ⇛ x -> ⊤
 lower c = tt
 
 -- The problem here is that we can't assert that y == x.
-ε : {A : Set} {x : P A} → Recip x × P A → ⊤
-ε {A} {x} (rx , y) = lower (id⇛ ( ↑ (fun (ap rx) (p y)) )) -- makes insufficient sense
+ε : {A : Set} {x : • A} → Recip x × • A → ⊤
+ε {A} {x} (rx , y) = lower (id⇛ ( ↑ (fun (ap rx) (focus y)) )) -- makes insufficient sense
 
-apr : {A B : Set} {x : P A} {y : P B} → (x ⇛ y) → Recip y → Recip x
+apr : {A B : Set} {x : • A} {y : • B} → (x ⇛ y) → Recip y → Recip x
 apr {A} {B} {x} {y} q ry = trans⇛ q (trans⇛ ry (sym⇛ q))
-{-  x 
+  x 
     ≡⟨ q ⟩
   y
     ≡⟨ ry ⟩
   y
     ≡⟨ sym⇛ q ⟩
   x ∎
--}
 
-{--
 ε : {A B : Set} {x : A} {y : B} → Recip x → Singleton y → x ⇛ y
 ε rx (singleton y) = rx y
 
@@ -358,3 +353,39 @@ pathV (times⇛ p p₁) = {!!}
 --}
 
 
+-- these are individual paths so to speak
+-- should we represent a path like swap+ as a family explicitly:
+-- swap+ : (x : A) -> x ⇛ swapF x
+-- I guess we can: swap+ : (x : A) -> case x of inj1 -> swap1 x else swap2 x
+{--
+If A={x0,x1,x2}, 1/A has three values:
+(x0<-x0, x0<-x1, x0<-x2)
+(x1<-x0, x1<-x1, x1<-x2)
+(x2<-x0, x2<-x1, x2<-x2)
+It is a fake choice between x0, x1, and x2 (some negative information). You base
+yourself at x0 for example and enforce that any other value can be mapped to x0.
+So think of a value of type 1/A as an uncertainty about which value of A we 
+have. It could be x0, x1, or x2 but at the end it makes no difference. There is
+no choice.
+
+You can manipulate a value of type 1/A (x0<-x0, x0<-x1, x0<-x2) by with a
+path to some arbitrary path to b0 for example:
+
+(b0<-x0<-x0, b0<-x0<-x1, b0<-x0<-x2)
+
+eta_3 will give (x0<-x0, x0<-x1, x0<-x2, x0) for example but any other
+combination is equivalent.
+
+epsilon_3 will take (x0<-x0, x0<-x1, x0<-x2) and one actual xi which is now
+certain; we can resolve our previous uncertainty by following the path from
+xi to x0 thus eliminating the fake choice we seemed to have. 
+
+Explain connection to negative information.
+
+Knowing head or tails is 1 bits. Giving you a choice between heads and tails
+and then cooking this so that heads=tails takes away your choice. 
+
+--}
+
+-- transp⇛ : {A B : Set} {x y : • A} → 
+-- (f : A → B) → x ⇛ y → ↑ (f (focus x)) ⇛ ↑ (f (focus y)) 
