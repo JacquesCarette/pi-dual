@@ -81,7 +81,7 @@ abs : N → NA
 abs = recN NA zero one two three four
 
 con : NA → N
-con = recNA N Zero One Zero One Zero (refl Zero) (refl Zero) (refl One)
+con = recNA N Two Three Two Three Two (refl Two) (refl Two) (refl Three)
 
 -- Computations on N and NA can be related
 -- Concrete computation
@@ -103,20 +103,19 @@ absF f = abs ○ f ○ con
 approx : (N → N) → (N → N)
 approx f n = con ((absF f) (abs n))
 
-test0 : approx incN Zero ≡ One
-test0 = refl One
+test0 : approx incN Zero ≡ Three
+test0 = refl Three
 
-test1 : approx incN One ≡ Zero
-test1 = refl Zero
+test1 : approx incN One ≡ Two
+test1 = refl Two
 
-test2 : approx incN Two ≡ One
-test2 = refl One
+test2 : approx incN Two ≡ Three
+test2 = refl Three
 
-test3 : approx incN Three ≡ Zero
-test3 = refl Zero
+test3 : approx incN Three ≡ Two
+test3 = refl Two
 
-test4 : approx incN Four ≡ One
-test4 = refl One
+test4 : approx incN Four ≡ Three
+test4 = refl Three
 
 ------------------------------------------------------------------------------
-
