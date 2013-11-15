@@ -1,4 +1,4 @@
-module O where
+module OldO where
 
 open import Data.Product
 open import Function renaming (_∘_ to _○_)
