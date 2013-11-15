@@ -210,38 +210,65 @@ evalIsoR UnfoldC (Right (Right ())) = Blue
 -- resulting classes differently.
 --
 -- Restriction: the function *must* be surjective
-type RT a b = (a, a -> b)
 
--- Get an external handle on the set
-observe :: RT a b -> b
-observe (s, e) = e s
+data Costate a b = Costate { cursor :: a, observer :: a -> b }
+
+class Comonad w where
+  extract :: w a -> a
+  (<<=)   :: (w a -> b) -> w a -> w b
+
+instance Comonad (Costate a) where
+  extract (Costate c o) = o c
+  f <<= cs@(Costate c o) = Costate c (\_ -> f cs)
+
+type RT = Costate
 
 data a :<==> b where
   Eta :: V b => (b, ()) :<==> (b, (b, b -> ()))
   Eps :: (V a, V c) => (c, (a, a -> ())) :<==> (a, ())
   Com :: a :<=> b -> (c, a) :<==> (c, b)
-  (:..:) :: (c1, a) :<==> (c2, b) -> (c2, b) :<==> (c3, c) ->
-              (c1, a) :<==> (c3, c)
+  (:..:) :: (c, a1) :<==> (c, a2) -> (c, a2) :<==> (c, a3) ->
+              (c, a1) :<==> (c, a3)
+  (:**:) :: (c, a1) :<==> (c, a2) -> (c, b1) :<==> (c, b2) ->
+              (c, (a1, b1)) :<==> (c, (a2, b2))
+
+csDistrib :: Costate s (a1, a2) -> (Costate s a1, Costate s a2)
+csDistrib (Costate c o) = (Costate c (fst . o), Costate c (snd . o))
+
 
 -- Eta exposes the underlying set
 -- Epsilon observes it & collapses it all back down to ()
 
-evalP :: ((c1, a) :<==> (c2, b)) -> RT c1 a -> RT c2 b
-evalP Eta (s, e) = (s, \s -> (s, e))
-evalP Eps rt@(s, e) = (fst $ observe rt, const ())
+evalP :: ((c, a) :<==> (c, b)) -> RT c a -> b
+evalP Eta (Costate s e) = (s, e)
+evalP Eps rt@(Costate s e) = ()
 -- We have to do the computation here in the continuation for it to typecheck
-evalP (Com c) rt@(s, e) = (s, \s -> head $ eval c [observe (s, e)])
-evalP (f :..: g) rt = evalP g (evalP f rt)
+evalP (Com c) rt@(Costate s e) = head $ eval c [extract rt]
+evalP (f :..: g) rt = evalP g ((evalP f) <<= rt)
+evalP (f :**: g) rt =
+  let (rt1, rt2) = csDistrib rt in
+    (evalP f rt1, evalP g rt2)
 
 -- A couple of tests
 
 -- should be ()
-t1 = observe $ evalP (Eta :..: Eps) (True, const ())
+t1 = evalP (Eta :..: Eps) (Costate True $ const ())
 
 -- should be True
-t2 = fst . observe $ evalP (Eps :..: Eta) ((True, const ()), id)
+epseta :: (Bool, (Bool, Bool -> ())) :<==> (Bool, (Bool, Bool -> ()))
+epseta = (Eps :..: Eta)
+
+eeApp :: (Bool, Bool -> ())
+eeApp = evalP epseta (Costate True (\x -> (x, const ())))
+
+t2 :: Bool
+t2 = fst eeApp
 
 -- trace :: (?, (a, c)) :<==> (?, (b, c)) -> (?, a) :<==> (?, b)
 -- trace c =
 --   (Com UnitI) :..: (Eta :*: Id) :.: AssocRT :.: (Id :*: c) :.: AssocLT :.:
 --   (Eps :*: Id) :.: UnitE
+
+name :: (V a1, V a2)
+        => (a1, a1) :<==> (a1, a2) -> (a1, ()) :<==> (a1, (a2, a1 -> ()))
+name c = Eta :..: (c :**: (Com Id))
