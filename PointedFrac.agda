@@ -14,7 +14,7 @@ data _⟷_ : {A B : Set} → ∙ A → ∙ B → Set1 where
   id : {A : Set} → (x : A) → (⇡ x) ⟷ (⇡ x)
   swap₊₁ : {A B : Set} → {x : A} → _⟷_ {A ⊎ B} {B ⊎ A} (⇡ (inj₁ x)) (⇡ (inj₂ x))
   swap₊₂ : {A B : Set} → {y : B} → _⟷_ {A ⊎ B} {B ⊎ A} (⇡ (inj₂ y)) (⇡ (inj₁ y))
-  swap× : {A B : Set} → {x : A} → {y : B} ‌→ _⟷_ {A × B} {B × A} (⇡ (x , y)) (⇡ (y , x))
+  swap× : {A B : Set} → {x : A} → {y : B} ‌→ ⇡ (x , y) ⟷ ⇡ (y , x)
   -- ...and so on
 
 -- shorter arrow for a shorter definition!
