@@ -38,13 +38,19 @@ evalB swap₊ (inj₁ x) = inj₂ x , swap₊₂
 evalB swap₊ (inj₂ y) = inj₁ y , swap₊₁
 evalB swap× (x , y) = (y , x) , swap×
 
--- this can't quite be proven now, as we need more combinators to do so
 -- if c : A ↔ B and v : A, then evalB c (eval c v) ⟷ v
 right-inv : {A B : Set} → (c : A ↔ B) → (v : A) → ⇡ (proj₁ (evalB c (proj₁ (eval c v)))) ⟷ ⇡ v
 right-inv id v = id v
-right-inv swap₊ v = {!!}
+right-inv swap₊ (inj₁ x) = id (inj₁ x)
+right-inv swap₊ (inj₂ y) = id (inj₂ y)
 right-inv swap× v = id v
- 
+
+-- left-inv should be just as easy.
+
+-- we should also be able to make a statement about proj₂ associated with back-and-forth
+
+-- and create a function that maps c to its inverse, and 'prove' eval c = evalB @ inverse c
+
 -- "forget" the extra structure
 ↓ : {A B : Set} → {x : A} → {y : B} → (⇡ x) ⟷ (⇡ y) → A ↔ B
 ↓ {A} {.A} {x} (id .x) = id
