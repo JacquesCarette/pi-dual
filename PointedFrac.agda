@@ -23,13 +23,28 @@ data _↔_ : Set → Set → Set1 where
   swap₊ : {A B : Set} → (A ⊎ B) ↔ (B ⊎ A)
   swap× : {A B : Set} → (A × B) ↔ (B × A)
 
--- Theorem, equivalent to stepping: if c : A ↔ B and v : A, then there exists v' : B and c' : (∙ x) ⟷ (∙ y)
+-- Theorem, equivalent to stepping: if c : A ↔ B and v : A, then there exists v' : B and c' : (∙ v) ⟷ (∙ v')
 eval : {A B : Set} → (A ↔ B) → (v : A) → Σ[ v' ∈ B ] ((⇡ v) ⟷ (⇡ v'))
 eval id v = v , id v
 eval swap₊ (inj₁ x) = inj₂ x , swap₊₁
 eval swap₊ (inj₂ y) = inj₁ y , swap₊₂
 eval swap× (x , y) = (y , x) , swap×
 
+-- Theorem, equivalent to backwards stepping: 
+-- if c : A ↔ B and v' : B, then there exists v : A and c' : (∙ v) ⟷ (∙ v')
+evalB : {A B : Set} → (A ↔ B) → (v' : B) → Σ[ v ∈ A ] ((⇡ v) ⟷ (⇡ v'))
+evalB id v = v , id v
+evalB swap₊ (inj₁ x) = inj₂ x , swap₊₂
+evalB swap₊ (inj₂ y) = inj₁ y , swap₊₁
+evalB swap× (x , y) = (y , x) , swap×
+
+-- this can't quite be proven now, as we need more combinators to do so
+-- if c : A ↔ B and v : A, then evalB c (eval c v) ⟷ v
+right-inv : {A B : Set} → (c : A ↔ B) → (v : A) → ⇡ (proj₁ (evalB c (proj₁ (eval c v)))) ⟷ ⇡ v
+right-inv id v = id v
+right-inv swap₊ v = {!!}
+right-inv swap× v = id v
+ 
 -- "forget" the extra structure
 ↓ : {A B : Set} → {x : A} → {y : B} → (⇡ x) ⟷ (⇡ y) → A ↔ B
 ↓ {A} {.A} {x} (id .x) = id
