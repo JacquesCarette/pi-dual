@@ -2,14 +2,16 @@ module F2a where
 
 open import Agda.Prim
 open import Data.Sum 
+open import Data.Nat
 open import Data.Product
 
-infix  2  _∎      -- equational reasoning
-infixr 2  _≡⟨_⟩_   -- equational reasoning
+--infix  2  _∎      -- equational reasoning
+--infixr 2  _≡⟨_⟩_   -- equational reasoning
 
 ---------------------------------------------------------------------------
 -- Pointed types
 
+{--
 record •_ {ℓ : Level} (A : Set ℓ) : Set ℓ where
   constructor ↑
   field 
@@ -17,11 +19,14 @@ record •_ {ℓ : Level} (A : Set ℓ) : Set ℓ where
 
 open •_
 
-{--
--- Examples:
-
 test1 : • ℕ
 test1 = ↑ 3
+
+test2 : • ℕ 
+test2 = ↑ 4
+
+-- Examples:
+
 
 test2 : ℕ 
 test2 = focus test1 {-- 3 --}
@@ -32,7 +37,6 @@ bot : • ⊥
 -- It is higher-order!
 test3 : {A : Set} {a : • A} → • (a ⇛ a)
 test3 {A} {a} = ↑ id⇛
---}
 
 data Unit {ℓ : Level} : Set ℓ where
   tt : Unit
@@ -49,13 +53,31 @@ PlusR (↑ b) = ↑ (inj₂ b)
 Times : ∀ {ℓ} {A B : Set ℓ} → • A → • B → • (A × B)
 Times (↑ a) (↑ b) = ↑ (a , b)
 
+--}
 ---------------------------------------------------------------------------
 -- Paths
 
-data _⇛_ {ℓ : Level} : {A B : Set ℓ} → • A → • B → Set (lsuc ℓ) where
+record Set• {ℓ : Level} : Set (lsuc ℓ) where
+  constructor •[_,_]
+  field
+    ∣_∣ : Set ℓ
+    • : ∣_∣
+
+test : Set• {lsuc lzero}
+test = •[ Set , ℕ ]
+
+test1 : ∀ {ℓ} → Set• {lsuc (lsuc ℓ)}
+test1 {ℓ} = •[ Set (lsuc ℓ) , Set ℓ ]
+
+open Set• public
+
+data _⇛_ : {ℓ : Level} → Set• {ℓ} → Set• {ℓ} → Set (lsuc ℓ) where
   -- + 
-  swap₁₊⇛    : {A B : Set ℓ} {a : • A} → 
-               _⇛_ {ℓ} {A ⊎ B} {B ⊎ A} (PlusL a) (PlusR a) 
+  swap₁₊⇛    : {ℓ : Level} {A B : Set ℓ} {a : A} → •[ A ⊎ B , inj₁ a ] ⇛ •[ B ⊎ A , inj₂ a ]
+  swap₂₊⇛    : {ℓ : Level} {A B : Set ℓ} {b : B} → •[ A ⊎ B , inj₂ b ] ⇛ •[ B ⊎ A , inj₁ b ]
+  swap₊⇛     : {ℓ : Level} {A B : Set ℓ} → _⇛_ {ℓ} •[ Set ℓ , A ⊎ B ] •[ Set ℓ , B ⊎ A ] 
+
+{--
   swap₂₊⇛    : {A B : Set ℓ} {b : • B} → 
                _⇛_ {ℓ} {A ⊎ B} {B ⊎ A} (PlusR b) (PlusL b)
   assocl₁₊⇛  : {A B C : Set ℓ} {a : • A} → 
@@ -135,7 +157,6 @@ _∎ = id⇛
 
 ---------------------------------------------------------------------------
 
-{--
 -- Now interpret a path (x ⇛ y) as a value of type (1/x , y)
 
 Recip : {A : Set} → (x : • A) → Set₁
@@ -198,7 +219,7 @@ pathV (times⇛ p p₁) = {!!}
 -- should we represent a path like swap+ as a family explicitly:
 -- swap+ : (x : A) -> x ⇛ swapF x
 -- I guess we can: swap+ : (x : A) -> case x of inj1 -> swap1 x else swap2 x
-{--
+
 If A={x0,x1,x2}, 1/A has three values:
 (x0<-x0, x0<-x1, x0<-x2)
 (x1<-x0, x1<-x1, x1<-x2)
@@ -225,8 +246,6 @@ Explain connection to negative information.
 
 Knowing head or tails is 1 bits. Giving you a choice between heads and tails
 and then cooking this so that heads=tails takes away your choice. 
-
---}
 
 -- transp⇛ : {A B : Set} {x y : • A} → 
 -- (f : A → B) → x ⇛ y → ↑ (f (focus x)) ⇛ ↑ (f (focus y)) 
