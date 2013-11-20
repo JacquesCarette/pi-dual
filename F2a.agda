@@ -107,75 +107,75 @@ pathInd : {ℓ ℓ' : Level} →
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid = swap₁₊ a
+  cid (swap₁₊⇛ a) = swap₁₊ a
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid = swap₂₊ b
+  cid (swap₂₊⇛ b) = swap₂₊ b
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid = assocl₁₊ a
+  cid (assocl₁₊⇛ a) = assocl₁₊ a
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid = assocl₂₁₊ b
+  cid (assocl₂₁₊⇛ b) = assocl₂₁₊ b
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid = assocl₂₂₊ c
+  cid (assocl₂₂₊⇛ c) = assocl₂₂₊ c
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid = assocr₁₁₊ a
+  cid (assocr₁₁₊⇛ a) = assocr₁₁₊ a
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid = assocr₁₂₊ b
+  cid (assocr₁₂₊⇛ b) = assocr₁₂₊ b
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid = assocr₂₊ c
+  cid (assocr₂₊⇛ c) = assocr₂₊ c
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid = unite⋆ a
+  cid (unite⋆⇛ a) = unite⋆ a
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid = uniti⋆ a
+  cid (uniti⋆⇛ a) = uniti⋆ a
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid = swap⋆ a b
+  cid (swap⋆⇛ a b) = swap⋆ a b
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid = assocl⋆ a b c
+  cid (assocl⋆⇛ a b c) = assocl⋆ a b c
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid = assocr⋆ a b c
+  cid (assocr⋆⇛ a b c) = assocr⋆ a b c
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid = dist₁ a c
+  cid (dist₁⇛ a c) = dist₁ a c
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid = dist₂ b c
+  cid (dist₂⇛ b c) = dist₂ b c
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid = factor₁ a c
+  cid (factor₁⇛ a c) = factor₁ a c
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid = factor₂ b c
+  cid (factor₂⇛ b c) = factor₂ b c
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid = cid a
+  cid (id⇛ a) = cid a
 
 -- Abbreviations and small examples
 
