@@ -6,6 +6,9 @@ open import Data.Sum
 open import Data.Nat hiding (_⊔_)
 open import Data.Product
 
+infix  2  _∎      -- equational reasoning
+infixr 2  _≡⟨_⟩_  -- equational reasoning
+
 ---------------------------------------------------------------------------
 -- Pointed types
 
@@ -75,8 +78,12 @@ data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc (lsuc ℓ
   factor₂⇛   : {A B C : Set ℓ} → (b : B) → (c : C) → 
                •[ (A × C) ⊎ (B × C) , inj₂ (b , c) ] ⇛
                •[ (A ⊎ B) × C , (inj₂ b , c) ]
-  -- id
+  -- id and trans
   id⇛        : {A : Set ℓ} → (a : A) → •[ A , a ] ⇛ •[ A , a ]
+  trans⇛     : {A B C : Set ℓ} {a : A} {b : B} {c : C} → 
+               (•[ A , a ] ⇛ •[ B , b ]) → 
+               (•[ B , b ] ⇛ •[ C , c ]) → 
+               (•[ A , a ] ⇛ •[ C , c ]) 
 
 -- Path induction
 
@@ -103,79 +110,96 @@ pathInd : {ℓ ℓ' : Level} →
   ({A B C : Set ℓ} → (a : A) → (c : C) → P (factor₁⇛ {ℓ} {A} {B} {C} a c)) → 
   ({A B C : Set ℓ} → (b : B) → (c : C) → P (factor₂⇛ {ℓ} {A} {B} {C} b c)) → 
   ({A : Set ℓ} → (a : A) → P (id⇛ {ℓ} {A} a)) → 
+  ({A B C : Set ℓ} {a : A} {b : B} {c : C} → 
+    (p : (•[ A , a ] ⇛ •[ B , b ])) → 
+    (q : (•[ B , b ] ⇛ •[ C , c ])) → 
+    P p → P q → P (trans⇛ p q)) → 
   {A B : Set ℓ} {a : A} {b : B} → (p : •[ A , a ] ⇛ •[ B , b ]) → P p
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid (swap₁₊⇛ a) = swap₁₊ a
+  cid ctrans (swap₁₊⇛ a) = swap₁₊ a
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid (swap₂₊⇛ b) = swap₂₊ b
+  cid ctrans (swap₂₊⇛ b) = swap₂₊ b
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid (assocl₁₊⇛ a) = assocl₁₊ a
+  cid ctrans (assocl₁₊⇛ a) = assocl₁₊ a
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid (assocl₂₁₊⇛ b) = assocl₂₁₊ b
+  cid ctrans (assocl₂₁₊⇛ b) = assocl₂₁₊ b
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid (assocl₂₂₊⇛ c) = assocl₂₂₊ c
+  cid ctrans (assocl₂₂₊⇛ c) = assocl₂₂₊ c
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid (assocr₁₁₊⇛ a) = assocr₁₁₊ a
+  cid ctrans (assocr₁₁₊⇛ a) = assocr₁₁₊ a
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid (assocr₁₂₊⇛ b) = assocr₁₂₊ b
+  cid ctrans (assocr₁₂₊⇛ b) = assocr₁₂₊ b
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid (assocr₂₊⇛ c) = assocr₂₊ c
+  cid ctrans (assocr₂₊⇛ c) = assocr₂₊ c
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid (unite⋆⇛ a) = unite⋆ a
+  cid ctrans (unite⋆⇛ a) = unite⋆ a
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid (uniti⋆⇛ a) = uniti⋆ a
+  cid ctrans (uniti⋆⇛ a) = uniti⋆ a
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid (swap⋆⇛ a b) = swap⋆ a b
+  cid ctrans (swap⋆⇛ a b) = swap⋆ a b
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid (assocl⋆⇛ a b c) = assocl⋆ a b c
+  cid ctrans (assocl⋆⇛ a b c) = assocl⋆ a b c
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid (assocr⋆⇛ a b c) = assocr⋆ a b c
+  cid ctrans (assocr⋆⇛ a b c) = assocr⋆ a b c
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid (dist₁⇛ a c) = dist₁ a c
+  cid ctrans (dist₁⇛ a c) = dist₁ a c
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid (dist₂⇛ b c) = dist₂ b c
+  cid ctrans (dist₂⇛ b c) = dist₂ b c
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid (factor₁⇛ a c) = factor₁ a c
+  cid ctrans (factor₁⇛ a c) = factor₁ a c
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid (factor₂⇛ b c) = factor₂ b c
+  cid ctrans (factor₂⇛ b c) = factor₂ b c
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
-  cid (id⇛ a) = cid a
+  cid ctrans (id⇛ a) = cid a
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid ctrans (trans⇛ p q) = 
+    ctrans p q  
+      (pathInd P swap₁₊ swap₂₊ 
+       assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+       unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+       cid ctrans p)
+      (pathInd P swap₁₊ swap₂₊ 
+       assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+       unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+       cid ctrans q)
 
 -- Abbreviations and small examples
 
@@ -186,6 +210,13 @@ pathInd P swap₁₊ swap₂₊
   (p : 1Path a b) → (q : 1Path c d) → Set (lsuc (lsuc (lsuc (lsuc ℓ))))
 2Path {ℓ} {A} {B} {C} {D} {a} {b} {c} {d} p q = 
   •[ 1Path a b , p ] ⇛ •[ 1Path c d , q ]
+
+_≡⟨_⟩_ : ∀ {ℓ} → {A B C : Set ℓ} (a : A) {b : B} {c : C} → 
+        1Path a b → 1Path b c → 1Path a c
+_ ≡⟨ p ⟩ q = trans⇛ p q
+
+_∎ : ∀ {ℓ} → {A : Set ℓ} (a : A) → 1Path a a
+_∎ a = id⇛ a
 
 test3 : {A : Set} {a : A} → Set•
 test3 {A} {a} = •[ 1Path a a , id⇛ a ] 
@@ -202,22 +233,247 @@ test5 {A} {B} {C} {D} {a} {b} {c} {d} p q =
 
 sym⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → 1Path a b → 1Path b a
 sym⇛ {ℓ} {A} {B} {a} {b} p = 
-  pathInd {ℓ}
+  (pathInd 
     (λ {A} {B} {a} {b} p → 1Path b a)
     swap₂₊⇛ swap₁₊⇛ 
     assocr₁₁₊⇛ assocr₁₂₊⇛ assocr₂₊⇛ assocl₁₊⇛ assocl₂₁₊⇛ assocl₂₂₊⇛ 
     uniti⋆⇛ unite⋆⇛ (λ a b → swap⋆⇛ b a) 
     assocr⋆⇛ assocl⋆⇛ factor₁⇛ factor₂⇛ dist₁⇛ dist₂⇛ 
-    id⇛
-    {A} {B} {a} {b} p 
+    id⇛ (λ _ _ p' q' → trans⇛ q' p'))
+  {A} {B} {a} {b} p 
 
+test6 : {A : Set} {a : A} → 1Path a (tt , a)
+test6 {A} {a} = sym⇛ (unite⋆⇛ a) -- evaluates to (uniti⋆⇛ a)
 
+idright : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} {p : 1Path a b} →
+          2Path (trans⇛ p (id⇛ b)) p
+idright {ℓ} {A} {B} {a} {b} {p} = 
+  (pathInd 
+    (λ {A} {B} {a} {b} p → 2Path (trans⇛ p (id⇛ b)) p)
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!}
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!})
+  {A} {B} {a} {b} p
 
 {--
+?0 : {A₁ B₁ : Set ℓ} (a₁ : A₁) →
+     2Path (trans⇛ (swap₁₊⇛ a₁) (id⇛ (inj₂ a₁))) (swap₁₊⇛ a₁)
+?1 : {A₁ B₁ : Set ℓ} (b₁ : B₁) →
+     2Path (trans⇛ (swap₂₊⇛ b₁) (id⇛ (inj₁ b₁))) (swap₂₊⇛ b₁)
+?2 : {A₁ B₁ C : Set ℓ} (a₁ : A₁) →
+     2Path (trans⇛ (assocl₁₊⇛ a₁) (id⇛ (inj₁ (inj₁ a₁)))) (assocl₁₊⇛ a₁)
+?3 : {A₁ B₁ C : Set ℓ} (b₁ : B₁) →
+     2Path (trans⇛ (assocl₂₁₊⇛ b₁) (id⇛ (inj₁ (inj₂ b₁))))
+     (assocl₂₁₊⇛ b₁)
+?4 : {A₁ B₁ C : Set ℓ} (c : C) →
+     2Path (trans⇛ (assocl₂₂₊⇛ c) (id⇛ (inj₂ c))) (assocl₂₂₊⇛ c)
+?5 : {A₁ B₁ C : Set ℓ} (a₁ : A₁) →
+     2Path (trans⇛ (assocr₁₁₊⇛ a₁) (id⇛ (inj₁ a₁))) (assocr₁₁₊⇛ a₁)
+?6 : {A₁ B₁ C : Set ℓ} (b₁ : B₁) →
+     2Path (trans⇛ (assocr₁₂₊⇛ b₁) (id⇛ (inj₂ (inj₁ b₁))))
+     (assocr₁₂₊⇛ b₁)
+?7 : {A₁ B₁ C : Set ℓ} (c : C) →
+     2Path (trans⇛ (assocr₂₊⇛ c) (id⇛ (inj₂ (inj₂ c)))) (assocr₂₊⇛ c)
+?8 : {A₁ : Set ℓ} (a₁ : A₁) →
+     2Path (trans⇛ (unite⋆⇛ a₁) (id⇛ a₁)) (unite⋆⇛ a₁)
+?9 : {A₁ : Set ℓ} (a₁ : A₁) →
+     2Path (trans⇛ (uniti⋆⇛ a₁) (id⇛ (tt , a₁))) (uniti⋆⇛ a₁)
+?10 : {A₁ B₁ : Set ℓ} (a₁ : A₁) (b₁ : B₁) →
+      2Path (trans⇛ (swap⋆⇛ a₁ b₁) (id⇛ (b₁ , a₁))) (swap⋆⇛ a₁ b₁)
+?11 : {A₁ B₁ C : Set ℓ} (a₁ : A₁) (b₁ : B₁) (c : C) →
+      2Path (trans⇛ (assocl⋆⇛ a₁ b₁ c) (id⇛ ((a₁ , b₁) , c)))
+      (assocl⋆⇛ a₁ b₁ c)
+?12 : {A₁ B₁ C : Set ℓ} (a₁ : A₁) (b₁ : B₁) (c : C) →
+      2Path (trans⇛ (assocr⋆⇛ a₁ b₁ c) (id⇛ (a₁ , b₁ , c)))
+      (assocr⋆⇛ a₁ b₁ c)
+?13 : {A₁ B₁ C : Set ℓ} (a₁ : A₁) (c : C) →
+      2Path (trans⇛ (dist₁⇛ a₁ c) (id⇛ (inj₁ (a₁ , c)))) (dist₁⇛ a₁ c)
+?14 : {A₁ B₁ C : Set ℓ} (b₁ : B₁) (c : C) →
+      2Path (trans⇛ (dist₂⇛ b₁ c) (id⇛ (inj₂ (b₁ , c)))) (dist₂⇛ b₁ c)
+?15 : {A₁ B₁ C : Set ℓ} (a₁ : A₁) (c : C) →
+      2Path (trans⇛ (factor₁⇛ a₁ c) (id⇛ (inj₁ a₁ , c))) (factor₁⇛ a₁ c)
+?16 : {A₁ B₁ C : Set ℓ} (b₁ : B₁) (c : C) →
+      2Path (trans⇛ (factor₂⇛ b₁ c) (id⇛ (inj₂ b₁ , c))) (factor₂⇛ b₁ c)
+?17 : {A₁ : Set ℓ} (a₁ : A₁) → 2Path (trans⇛ (id⇛ a₁) (id⇛ a₁)) (id⇛ a₁)
+?18 : {A₁ B₁ C : Set ℓ} {a₁ : A₁} {b₁ : B₁} {c : C}
+      (p₁ : •[ A₁ , a₁ ] ⇛ •[ B₁ , b₁ ])
+      (q : •[ B₁ , b₁ ] ⇛ •[ C , c ]) →
+      2Path (trans⇛ p₁ (id⇛ b₁)) p₁ →
+      2Path (trans⇛ q (id⇛ c)) q →
+      2Path (trans⇛ (trans⇛ p₁ q) (id⇛ c)) (trans⇛ p₁ q)
+--}
 
-congruence structure emerges from path induction ???
-  sym⇛       : {A B : Set ℓ} {a : A} {b : B} → 
-               (•[ A , a ] ⇛ •[ B , b ]) → (•[ B , b ] ⇛ •[ A , a ]) 
+aptransL : {ℓ : Level} {A B C : Set ℓ} {a : A} {b : B} {c : C} → 
+           (p q : 1Path a b) → (r : 1Path b c) → (α : 2Path p q) → 
+           2Path (trans⇛ p r) (trans⇛ q r)
+aptransL {ℓ} {A} {B} {C} {a} {b} {c} p q r α = 
+  (pathInd 
+    (λ {B} {C} {b} {c} r → (A : Set ℓ) → (a : A) → (p q : 1Path a b) → 
+      (α : 2Path p q) → 2Path (trans⇛ p r) (trans⇛ q r))
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!} 
+    {!!})
+  {B} {C} {b} {c} r A a p q α
+
+{--
+?19 : {A₁ B₁ : Set ℓ} (a₁ : A₁) (A₂ : Set ℓ) (a₂ : A₂)
+      (p₁ q₁ : 1Path a₂ (inj₁ a₁)) →
+      2Path p₁ q₁ →
+      2Path (trans⇛ p₁ (swap₁₊⇛ a₁)) (trans⇛ q₁ (swap₁₊⇛ a₁))
+?20 : {A₁ B₁ : Set ℓ} (b₁ : B₁) (A₂ : Set ℓ) (a₁ : A₂)
+      (p₁ q₁ : 1Path a₁ (inj₂ b₁)) →
+      2Path p₁ q₁ →
+      2Path (trans⇛ p₁ (swap₂₊⇛ b₁)) (trans⇛ q₁ (swap₂₊⇛ b₁))
+?21 : {A₁ B₁ C₁ : Set ℓ} (a₁ : A₁) (A₂ : Set ℓ) (a₂ : A₂)
+      (p₁ q₁ : 1Path a₂ (inj₁ a₁)) →
+      2Path p₁ q₁ →
+      2Path (trans⇛ p₁ (assocl₁₊⇛ a₁)) (trans⇛ q₁ (assocl₁₊⇛ a₁))
+?22 : {A₁ B₁ C₁ : Set ℓ} (b₁ : B₁) (A₂ : Set ℓ) (a₁ : A₂)
+      (p₁ q₁ : 1Path a₁ (inj₂ (inj₁ b₁))) →
+      2Path p₁ q₁ →
+      2Path (trans⇛ p₁ (assocl₂₁₊⇛ b₁)) (trans⇛ q₁ (assocl₂₁₊⇛ b₁))
+?23 : {A₁ B₁ C₁ : Set ℓ} (c₁ : C₁) (A₂ : Set ℓ) (a₁ : A₂)
+      (p₁ q₁ : 1Path a₁ (inj₂ (inj₂ c₁))) →
+      2Path p₁ q₁ →
+      2Path (trans⇛ p₁ (assocl₂₂₊⇛ c₁)) (trans⇛ q₁ (assocl₂₂₊⇛ c₁))
+?24 : {A₁ B₁ C₁ : Set ℓ} (a₁ : A₁) (A₂ : Set ℓ) (a₂ : A₂)
+      (p₁ q₁ : 1Path a₂ (inj₁ (inj₁ a₁))) →
+      2Path p₁ q₁ →
+      2Path (trans⇛ p₁ (assocr₁₁₊⇛ a₁)) (trans⇛ q₁ (assocr₁₁₊⇛ a₁))
+?25 : {A₁ B₁ C₁ : Set ℓ} (b₁ : B₁) (A₂ : Set ℓ) (a₁ : A₂)
+      (p₁ q₁ : 1Path a₁ (inj₁ (inj₂ b₁))) →
+      2Path p₁ q₁ →
+      2Path (trans⇛ p₁ (assocr₁₂₊⇛ b₁)) (trans⇛ q₁ (assocr₁₂₊⇛ b₁))
+?26 : {A₁ B₁ C₁ : Set ℓ} (c₁ : C₁) (A₂ : Set ℓ) (a₁ : A₂)
+      (p₁ q₁ : 1Path a₁ (inj₂ c₁)) →
+      2Path p₁ q₁ →
+      2Path (trans⇛ p₁ (assocr₂₊⇛ c₁)) (trans⇛ q₁ (assocr₂₊⇛ c₁))
+?27 : {A₁ : Set ℓ} (a₁ : A₁) (A₂ : Set ℓ) (a₂ : A₂)
+      (p₁ q₁ : 1Path a₂ (tt , a₁)) →
+      2Path p₁ q₁ →
+      2Path (trans⇛ p₁ (unite⋆⇛ a₁)) (trans⇛ q₁ (unite⋆⇛ a₁))
+?28 : {A₁ : Set ℓ} (a₁ : A₁) (A₂ : Set ℓ) (a₂ : A₂)
+      (p₁ q₁ : 1Path a₂ a₁) →
+      2Path p₁ q₁ →
+      2Path (trans⇛ p₁ (uniti⋆⇛ a₁)) (trans⇛ q₁ (uniti⋆⇛ a₁))
+?29 : {A₁ B₁ : Set ℓ} (a₁ : A₁) (b₁ : B₁) (A₂ : Set ℓ) (a₂ : A₂)
+      (p₁ q₁ : 1Path a₂ (a₁ , b₁)) →
+      2Path p₁ q₁ →
+      2Path (trans⇛ p₁ (swap⋆⇛ a₁ b₁)) (trans⇛ q₁ (swap⋆⇛ a₁ b₁))
+?30 : {A₁ B₁ C₁ : Set ℓ} (a₁ : A₁) (b₁ : B₁) (c₁ : C₁) (A₂ : Set ℓ)
+      (a₂ : A₂) (p₁ q₁ : 1Path a₂ (a₁ , b₁ , c₁)) →
+      2Path p₁ q₁ →
+      2Path (trans⇛ p₁ (assocl⋆⇛ a₁ b₁ c₁))
+      (trans⇛ q₁ (assocl⋆⇛ a₁ b₁ c₁))
+?31 : {A₁ B₁ C₁ : Set ℓ} (a₁ : A₁) (b₁ : B₁) (c₁ : C₁) (A₂ : Set ℓ)
+      (a₂ : A₂) (p₁ q₁ : 1Path a₂ ((a₁ , b₁) , c₁)) →
+      2Path p₁ q₁ →
+      2Path (trans⇛ p₁ (assocr⋆⇛ a₁ b₁ c₁))
+      (trans⇛ q₁ (assocr⋆⇛ a₁ b₁ c₁))
+?32 : {A₁ B₁ C₁ : Set ℓ} (a₁ : A₁) (c₁ : C₁) (A₂ : Set ℓ) (a₂ : A₂)
+      (p₁ q₁ : 1Path a₂ (inj₁ a₁ , c₁)) →
+      2Path p₁ q₁ →
+      2Path (trans⇛ p₁ (dist₁⇛ a₁ c₁)) (trans⇛ q₁ (dist₁⇛ a₁ c₁))
+?33 : {A₁ B₁ C₁ : Set ℓ} (b₁ : B₁) (c₁ : C₁) (A₂ : Set ℓ) (a₁ : A₂)
+      (p₁ q₁ : 1Path a₁ (inj₂ b₁ , c₁)) →
+      2Path p₁ q₁ →
+      2Path (trans⇛ p₁ (dist₂⇛ b₁ c₁)) (trans⇛ q₁ (dist₂⇛ b₁ c₁))
+?34 : {A₁ B₁ C₁ : Set ℓ} (a₁ : A₁) (c₁ : C₁) (A₂ : Set ℓ) (a₂ : A₂)
+      (p₁ q₁ : 1Path a₂ (inj₁ (a₁ , c₁))) →
+      2Path p₁ q₁ →
+      2Path (trans⇛ p₁ (factor₁⇛ a₁ c₁)) (trans⇛ q₁ (factor₁⇛ a₁ c₁))
+?35 : {A₁ B₁ C₁ : Set ℓ} (b₁ : B₁) (c₁ : C₁) (A₂ : Set ℓ) (a₁ : A₂)
+      (p₁ q₁ : 1Path a₁ (inj₂ (b₁ , c₁))) →
+      2Path p₁ q₁ →
+      2Path (trans⇛ p₁ (factor₂⇛ b₁ c₁)) (trans⇛ q₁ (factor₂⇛ b₁ c₁))
+?36 : {A₁ : Set ℓ} (a₁ : A₁) (A₂ : Set ℓ) (a₂ : A₂)
+      (p₁ q₁ : 1Path a₂ a₁) →
+      2Path p₁ q₁ → 2Path (trans⇛ p₁ (id⇛ a₁)) (trans⇛ q₁ (id⇛ a₁))
+?37 : {A₁ B₁ C₁ : Set ℓ} {a₁ : A₁} {b₁ : B₁} {c₁ : C₁}
+      (p₁ : •[ A₁ , a₁ ] ⇛ •[ B₁ , b₁ ])
+      (q₁ : •[ B₁ , b₁ ] ⇛ •[ C₁ , c₁ ]) →
+      ((A₂ : Set ℓ) (a₂ : A₂) (p₂ q₂ : 1Path a₂ a₁) →
+      2Path p₂ q₂ → 2Path (trans⇛ p₂ p₁) (trans⇛ q₂ p₁)) →
+      ((A₂ : Set ℓ) (a₂ : A₂) (p₂ q₂ : 1Path a₂ b₁) →
+      2Path p₂ q₂ → 2Path (trans⇛ p₂ q₁) (trans⇛ q₂ q₁)) →
+      (A₂ : Set ℓ) (a₂ : A₂) (p₂ q₂ : 1Path a₂ a₁) →
+      2Path p₂ q₂ →
+      2Path (trans⇛ p₂ (trans⇛ p₁ q₁)) (trans⇛ q₂ (trans⇛ p₁ q₁))
+--}
+
+symsym : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → (p : 1Path a b) → 
+         2Path (sym⇛ (sym⇛ p)) p
+symsym {ℓ} {A} {B} {a} {b} p = 
+  (pathInd
+    (λ {A} {B} {a} {b} p → 2Path (sym⇛ (sym⇛ p)) p)
+    (λ a → id⇛ (swap₁₊⇛ a)) 
+    (λ b → id⇛ (swap₂₊⇛ b)) 
+    (λ a → id⇛ (assocl₁₊⇛ a)) 
+    (λ b → id⇛ (assocl₂₁₊⇛ b)) 
+    (λ c → id⇛ (assocl₂₂₊⇛ c)) 
+    (λ a → id⇛ (assocr₁₁₊⇛ a)) 
+    (λ b → id⇛ (assocr₁₂₊⇛ b)) 
+    (λ c → id⇛ (assocr₂₊⇛ c)) 
+    (λ a → id⇛ (unite⋆⇛ a)) 
+    (λ a → id⇛ (uniti⋆⇛ a)) 
+    (λ a b → id⇛ (swap⋆⇛ a b)) 
+    (λ a b c → id⇛ (assocl⋆⇛ a b c)) 
+    (λ a b c → id⇛ (assocr⋆⇛ a b c)) 
+    (λ a c → id⇛ (dist₁⇛ a c)) 
+    (λ b c → id⇛ (dist₂⇛ b c)) 
+    (λ a c → id⇛ (factor₁⇛ a c)) 
+    (λ b c → id⇛ (factor₂⇛ b c)) 
+    (λ a → id⇛ (id⇛ a)) 
+    (λ p q α β → {!!}))
+  {A} {B} {a} {b} p
+
+{--
+?38 : 2Path (sym⇛ (sym⇛ (trans⇛ p q))) (trans⇛ p q)
+--}
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+{--
+
   trans⇛     : {A B C : Set ℓ} {a : A} {b : B} {c : C} → 
                (•[ A , a ] ⇛ •[ B , b ]) → (•[ B , b ] ⇛ •[ C , c ]) →
                (•[ A , a ] ⇛ •[ C , c ])
@@ -245,59 +501,6 @@ congruence structure emerges from path induction ???
     (q : (•[ B , b ] ⇛ •[ D , d ])) → 
     P p → P q → P (times⇛ p q)) → 
 
-?0 : {A₁ B₁ : Set ℓ} (a₁ : A₁) → 1Path (inj₂ a₁) (inj₁ a₁)
-?1 : {A₁ B₁ : Set ℓ} (b₁ : B₁) → 1Path (inj₁ b₁) (inj₂ b₁)
-?2 : {A₁ B₁ C : Set ℓ} (a₁ : A₁) → 1Path (inj₁ (inj₁ a₁)) (inj₁ a₁)
-?3 : {A₁ B₁ C : Set ℓ} (b₁ : B₁) →
-1Path (inj₁ (inj₂ b₁)) (inj₂ (inj₁ b₁))
-?4 : {A₁ B₁ C : Set ℓ} (c : C) → 1Path (inj₂ c) (inj₂ (inj₂ c))
-?5 : {A₁ B₁ C : Set ℓ} (a₁ : A₁) → 1Path (inj₁ a₁) (inj₁ (inj₁ a₁))
-?6 : {A₁ B₁ C : Set ℓ} (b₁ : B₁) →
-1Path (inj₂ (inj₁ b₁)) (inj₁ (inj₂ b₁))
-?7 : {A₁ B₁ C : Set ℓ} (c : C) → 1Path (inj₂ (inj₂ c)) (inj₂ c)
-?8 : {A₁ : Set ℓ} (a₁ : A₁) → 1Path a₁ (tt , a₁)
-?9 : {A₁ : Set ℓ} (a₁ : A₁) → 1Path (tt , a₁) a₁
-?10 : {A₁ B₁ : Set ℓ} (a₁ : A₁) (b₁ : B₁) → 1Path (b₁ , a₁) (a₁ , b₁)
-?11 : {A₁ B₁ C : Set ℓ} (a₁ : A₁) (b₁ : B₁) (c : C) →
-1Path ((a₁ , b₁) , c) (a₁ , b₁ , c)
-?12 : {A₁ B₁ C : Set ℓ} (a₁ : A₁) (b₁ : B₁) (c : C) →
-1Path (a₁ , b₁ , c) ((a₁ , b₁) , c)
-?13 : {A₁ B₁ C : Set ℓ} (a₁ : A₁) (c : C) →
-1Path (inj₁ (a₁ , c)) (inj₁ a₁ , c)
-?14 : {A₁ B₁ C : Set ℓ} (b₁ : B₁) (c : C) →
-1Path (inj₂ (b₁ , c)) (inj₂ b₁ , c)
-?15 : {A₁ B₁ C : Set ℓ} (a₁ : A₁) (c : C) →
-1Path (inj₁ a₁ , c) (inj₁ (a₁ , c))
-?16 : {A₁ B₁ C : Set ℓ} (b₁ : B₁) (c : C) →
-1Path (inj₂ b₁ , c) (inj₂ (b₁ , c))
-?17 : {A₁ : Set ℓ} (a₁ : A₁) → 1Path a₁ a₁
-
-
-
-
-
-trans⇛ : {ℓ : Level} {A B C : Set ℓ} {a : A} {b : B} {c : C} → 
-         1Path a b → 1Path b c → 1Path a c
-trans⇛ {ℓ} {A} {B} {C} {a} {b} {c} p q = 
-  pathInd {ℓ}
-    (λ {A} {B} {a} {b} p → (c : C) → (q : 1Path b c) → 1Path a c)
-    {!!} {!!}
-    {!!} {!!} {!!} {!!} {!!} {!!} 
-    {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} 
-    {!!}
-    {A} {B} {a} {b} p c q
-
-idright : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} {p : 1Path a b} →
-          2Path (trans⇛ p (id⇛ b)) p
-idright {ℓ} {A} {B} {a} {b} {p} = 
-  (pathInd {ℓ}
-    (λ {A} {B} {a} {b} p → 2Path (trans⇛ p (id⇛ b)) p)
-    {!!} {!!} 
-    {!!} {!!} {!!} {!!} {!!} {!!}
-    {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} 
-    {!!} 
-    {!!} {!!} {!!} {!!} {!!})
-  {A} {B} {a} {b} p
 
 ?17 : {A₁ : Set ℓ} (a₁ : A₁) → 
       2Path (trans⇛ (id⇛ a₁) (id⇛ a₁)) (id⇛ a₁)
@@ -317,9 +520,6 @@ idright {ℓ} {A} {B} {a} {b} {p} =
 
    ⇛ •[ •[ A ⊎ B , inj₁ a ] ⇛ •[ B ⊎ A , inj₂ a ] , 
         swap₁₊⇛ a ]
-
-
-
 
 -- use path induction to prove trans p id = p and so on
 
@@ -410,7 +610,6 @@ xη⇛ : ∀ {ℓ} {A : Set ℓ} {a : • A} →
      One ⇛ (Times (Path (create⇛ {ℓ} {A} {a})) (Path (annihilate⇛ {ℓ} {A} {a})))
 xη⇛ = {!!}
 
----------------------------------------------------------------------------
 -- Introduce equational reasoning syntax to simplify proofs
 
 _≡⟨_⟩_ : ∀ {ℓ} {A B C : Set ℓ} (a : • A) {b : • B} {c : • C} → 
@@ -422,8 +621,6 @@ bydef = id⇛
 
 _∎ : ∀ {ℓ} {A : Set ℓ} {a : • A} → (a ⇛ a)
 _∎ = id⇛ 
-
----------------------------------------------------------------------------
 
 -- Now interpret a path (x ⇛ y) as a value of type (1/x , y)
 
