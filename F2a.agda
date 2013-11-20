@@ -1,61 +1,13 @@
 module F2a where
 
 open import Agda.Prim
+open import Data.Unit
 open import Data.Sum 
-open import Data.Nat
+open import Data.Nat hiding (_⊔_)
 open import Data.Product
-
---infix  2  _∎      -- equational reasoning
---infixr 2  _≡⟨_⟩_   -- equational reasoning
 
 ---------------------------------------------------------------------------
 -- Pointed types
-
-{--
-record •_ {ℓ : Level} (A : Set ℓ) : Set ℓ where
-  constructor ↑
-  field 
-    focus : A
-
-open •_
-
-test1 : • ℕ
-test1 = ↑ 3
-
-test2 : • ℕ 
-test2 = ↑ 4
-
--- Examples:
-
-
-test2 : ℕ 
-test2 = focus test1 {-- 3 --}
-
--- impossible to have:
-bot : • ⊥
-
--- It is higher-order!
-test3 : {A : Set} {a : • A} → • (a ⇛ a)
-test3 {A} {a} = ↑ id⇛
-
-data Unit {ℓ : Level} : Set ℓ where
-  tt : Unit
-
-One : ∀ {ℓ} → • Unit {ℓ}
-One = ↑ tt
-
-PlusL : ∀ {ℓ} {A B : Set ℓ} → • A → • (A ⊎ B)
-PlusL (↑ a) = ↑ (inj₁ a)
-
-PlusR : ∀ {ℓ} {A B : Set ℓ} → • B → • (A ⊎ B)
-PlusR (↑ b) = ↑ (inj₂ b)
-
-Times : ∀ {ℓ} {A B : Set ℓ} → • A → • B → • (A × B)
-Times (↑ a) (↑ b) = ↑ (a , b)
-
---}
----------------------------------------------------------------------------
--- Paths
 
 record Set• {ℓ : Level} : Set (lsuc ℓ) where
   constructor •[_,_]
@@ -63,73 +15,389 @@ record Set• {ℓ : Level} : Set (lsuc ℓ) where
     ∣_∣ : Set ℓ
     • : ∣_∣
 
-test : Set• {lsuc lzero}
-test = •[ Set , ℕ ]
-
-test1 : ∀ {ℓ} → Set• {lsuc (lsuc ℓ)}
-test1 {ℓ} = •[ Set (lsuc ℓ) , Set ℓ ]
-
 open Set• public
 
-data _⇛_ : {ℓ : Level} → Set• {ℓ} → Set• {ℓ} → Set (lsuc ℓ) where
+test0 : Set• {lzero}
+test0 = •[ ℕ , 3 ]
+
+test1 : Set• {lsuc lzero}
+test1 = •[ Set , ℕ ]
+
+test2 : ∀ {ℓ} → Set• {lsuc (lsuc ℓ)}
+test2 {ℓ} = •[ Set (lsuc ℓ) , Set ℓ ]
+
+---------------------------------------------------------------------------
+-- Paths
+
+-- 1-paths are pi-combinators
+
+data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc (lsuc ℓ)) where
   -- + 
-  swap₁₊⇛    : {ℓ : Level} {A B : Set ℓ} {a : A} → •[ A ⊎ B , inj₁ a ] ⇛ •[ B ⊎ A , inj₂ a ]
-  swap₂₊⇛    : {ℓ : Level} {A B : Set ℓ} {b : B} → •[ A ⊎ B , inj₂ b ] ⇛ •[ B ⊎ A , inj₁ b ]
-  swap₊⇛     : {ℓ : Level} {A B : Set ℓ} → _⇛_ {ℓ} •[ Set ℓ , A ⊎ B ] •[ Set ℓ , B ⊎ A ] 
+  swap₁₊⇛    : {A B : Set ℓ} → (a : A) → 
+               •[ A ⊎ B , inj₁ a ] ⇛ •[ B ⊎ A , inj₂ a ]
+  swap₂₊⇛    : {A B : Set ℓ} → (b : B) → 
+               •[ A ⊎ B , inj₂ b ] ⇛ •[ B ⊎ A , inj₁ b ]
+  assocl₁₊⇛  : {A B C : Set ℓ} → (a : A) → 
+               •[ A ⊎ (B ⊎ C) , inj₁ a ] ⇛ •[ (A ⊎ B) ⊎ C , inj₁ (inj₁ a) ]
+  assocl₂₁₊⇛ : {A B C : Set ℓ} → (b : B) → 
+               •[ A ⊎ (B ⊎ C) , inj₂ (inj₁ b) ] ⇛ 
+               •[ (A ⊎ B) ⊎ C , inj₁ (inj₂ b) ]
+  assocl₂₂₊⇛ : {A B C : Set ℓ} → (c : C) → 
+               •[ A ⊎ (B ⊎ C) , inj₂ (inj₂ c) ] ⇛ •[ (A ⊎ B) ⊎ C , inj₂ c ]
+  assocr₁₁₊⇛ : {A B C : Set ℓ} → (a : A) → 
+               •[ (A ⊎ B) ⊎ C , inj₁ (inj₁ a) ] ⇛ •[ A ⊎ (B ⊎ C) , inj₁ a ]
+  assocr₁₂₊⇛ : {A B C : Set ℓ} → (b : B) → 
+               •[ (A ⊎ B) ⊎ C , inj₁ (inj₂ b) ] ⇛ 
+               •[ A ⊎ (B ⊎ C) , inj₂ (inj₁ b) ]
+  assocr₂₊⇛  : {A B C : Set ℓ} → (c : C) → 
+               •[ (A ⊎ B) ⊎ C , inj₂ c ] ⇛ •[ A ⊎ (B ⊎ C) , inj₂ (inj₂ c) ]
+  -- *
+  unite⋆⇛    : {A : Set ℓ} → (a : A) → •[ ⊤ × A , (tt , a) ] ⇛ •[ A , a ]
+  uniti⋆⇛    : {A : Set ℓ} → (a : A) → •[ A , a ] ⇛ •[ ⊤ × A , (tt , a) ]
+  swap⋆⇛     : {A B : Set ℓ} → (a : A) → (b : B) → 
+               •[ A × B , (a , b) ] ⇛ •[ B × A , (b , a) ] 
+  assocl⋆⇛   : {A B C : Set ℓ} → (a : A) → (b : B) → (c : C) → 
+               •[ A × (B × C) , (a , (b , c)) ] ⇛ 
+               •[ (A × B) × C , ((a , b) , c) ]
+  assocr⋆⇛   : {A B C : Set ℓ} → (a : A) → (b : B) → (c : C) → 
+               •[ (A × B) × C , ((a , b) , c) ] ⇛
+               •[ A × (B × C) , (a , (b , c)) ]
+  -- distributivity
+  dist₁⇛     : {A B C : Set ℓ} → (a : A) → (c : C) → 
+               •[ (A ⊎ B) × C , (inj₁ a , c) ] ⇛ 
+               •[ (A × C) ⊎ (B × C) , inj₁ (a , c) ]
+  dist₂⇛     : {A B C : Set ℓ} → (b : B) → (c : C) → 
+               •[ (A ⊎ B) × C , (inj₂ b , c) ] ⇛
+               •[ (A × C) ⊎ (B × C) , inj₂ (b , c) ]
+  factor₁⇛   : {A B C : Set ℓ} → (a : A) → (c : C) → 
+               •[ (A × C) ⊎ (B × C) , inj₁ (a , c) ] ⇛
+               •[ (A ⊎ B) × C , (inj₁ a , c) ]
+  factor₂⇛   : {A B C : Set ℓ} → (b : B) → (c : C) → 
+               •[ (A × C) ⊎ (B × C) , inj₂ (b , c) ] ⇛
+               •[ (A ⊎ B) × C , (inj₂ b , c) ]
+  -- id
+  id⇛        : {A : Set ℓ} → (a : A) → •[ A , a ] ⇛ •[ A , a ]
+
+-- Path induction
+
+pathInd : {ℓ ℓ' : Level} → 
+  (P : {A B : Set ℓ} {a : A} {b : B} → 
+    (•[ A , a ] ⇛ •[ B , b ]) → Set ℓ') → 
+  ({A B : Set ℓ} → (a : A) → P (swap₁₊⇛ {ℓ} {A} {B} a)) → 
+  ({A B : Set ℓ} → (b : B) → P (swap₂₊⇛ {ℓ} {A} {B} b)) → 
+  ({A B C : Set ℓ} → (a : A) → P (assocl₁₊⇛ {ℓ} {A} {B} {C} a)) → 
+  ({A B C : Set ℓ} → (b : B) → P (assocl₂₁₊⇛ {ℓ} {A} {B} {C} b)) → 
+  ({A B C : Set ℓ} → (c : C) → P (assocl₂₂₊⇛ {ℓ} {A} {B} {C} c)) → 
+  ({A B C : Set ℓ} → (a : A) → P (assocr₁₁₊⇛ {ℓ} {A} {B} {C} a)) → 
+  ({A B C : Set ℓ} → (b : B) → P (assocr₁₂₊⇛ {ℓ} {A} {B} {C} b)) → 
+  ({A B C : Set ℓ} → (c : C) → P (assocr₂₊⇛ {ℓ} {A} {B} {C} c)) → 
+  ({A : Set ℓ} → (a : A) → P (unite⋆⇛ {ℓ} {A} a)) → 
+  ({A : Set ℓ} → (a : A) → P (uniti⋆⇛ {ℓ} {A} a)) → 
+  ({A B : Set ℓ} → (a : A) → (b : B) → P (swap⋆⇛ {ℓ} {A} {B} a b)) → 
+  ({A B C : Set ℓ} → (a : A) → (b : B) → (c : C) → 
+    P (assocl⋆⇛ {ℓ} {A} {B} {C} a b c)) → 
+  ({A B C : Set ℓ} → (a : A) → (b : B) → (c : C) → 
+    P (assocr⋆⇛ {ℓ} {A} {B} {C} a b c)) → 
+  ({A B C : Set ℓ} → (a : A) → (c : C) → P (dist₁⇛ {ℓ} {A} {B} {C} a c)) → 
+  ({A B C : Set ℓ} → (b : B) → (c : C) → P (dist₂⇛ {ℓ} {A} {B} {C} b c)) → 
+  ({A B C : Set ℓ} → (a : A) → (c : C) → P (factor₁⇛ {ℓ} {A} {B} {C} a c)) → 
+  ({A B C : Set ℓ} → (b : B) → (c : C) → P (factor₂⇛ {ℓ} {A} {B} {C} b c)) → 
+  ({A : Set ℓ} → (a : A) → P (id⇛ {ℓ} {A} a)) → 
+  {A B : Set ℓ} {a : A} {b : B} → (p : •[ A , a ] ⇛ •[ B , b ]) → P p
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid = swap₁₊ a
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid = swap₂₊ b
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid = assocl₁₊ a
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid = assocl₂₁₊ b
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid = assocl₂₂₊ c
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid = assocr₁₁₊ a
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid = assocr₁₂₊ b
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid = assocr₂₊ c
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid = unite⋆ a
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid = uniti⋆ a
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid = swap⋆ a b
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid = assocl⋆ a b c
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid = assocr⋆ a b c
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid = dist₁ a c
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid = dist₂ b c
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid = factor₁ a c
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid = factor₂ b c
+pathInd P swap₁₊ swap₂₊ 
+  assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
+  unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
+  cid = cid a
+
+-- Abbreviations and small examples
+
+1Path : {ℓ : Level} {A B : Set ℓ} → (a : A) → (b : B) → Set (lsuc (lsuc ℓ))
+1Path {ℓ} {A} {B} a b = •[ A , a ] ⇛ •[ B , b ]
+
+2Path : {ℓ : Level} {A B C D : Set ℓ} {a : A} {b : B} {c : C} {d : D} → 
+  (p : 1Path a b) → (q : 1Path c d) → Set (lsuc (lsuc (lsuc (lsuc ℓ))))
+2Path {ℓ} {A} {B} {C} {D} {a} {b} {c} {d} p q = 
+  •[ 1Path a b , p ] ⇛ •[ 1Path c d , q ]
+
+test3 : {A : Set} {a : A} → Set•
+test3 {A} {a} = •[ 1Path a a , id⇛ a ] 
+
+test4 : {A : Set} {a : A} → Set•
+test4 {A} {a} = •[ 2Path (id⇛ a) (id⇛ a) , id⇛ (id⇛ a) ]
+
+test5 : {A B C D : Set} {a : A} {b : B} {c : C} {d : D} → 
+        (p : 1Path a b) → (q : 1Path c d) → Set•
+test5 {A} {B} {C} {D} {a} {b} {c} {d} p q = 
+  •[ 1Path a b × 1Path c d , (p , q) ]
+
+-- The groupoid structure emerges...
+
+sym⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → 1Path a b → 1Path b a
+sym⇛ {ℓ} {A} {B} {a} {b} p = 
+  pathInd {ℓ}
+    (λ {A} {B} {a} {b} p → 1Path b a)
+    swap₂₊⇛ swap₁₊⇛ 
+    assocr₁₁₊⇛ assocr₁₂₊⇛ assocr₂₊⇛ assocl₁₊⇛ assocl₂₁₊⇛ assocl₂₂₊⇛ 
+    uniti⋆⇛ unite⋆⇛ (λ a b → swap⋆⇛ b a) 
+    assocr⋆⇛ assocl⋆⇛ factor₁⇛ factor₂⇛ dist₁⇛ dist₂⇛ 
+    id⇛
+    {A} {B} {a} {b} p 
+
+
 
 {--
-  swap₂₊⇛    : {A B : Set ℓ} {b : • B} → 
-               _⇛_ {ℓ} {A ⊎ B} {B ⊎ A} (PlusR b) (PlusL b)
-  assocl₁₊⇛  : {A B C : Set ℓ} {a : • A} → 
-               _⇛_ {ℓ} {A ⊎ (B ⊎ C)} {(A ⊎ B) ⊎ C} (PlusL a) (PlusL (PlusL a))
-  assocl₂₁₊⇛ : {A B C : Set ℓ} {b : • B} → 
-               _⇛_ {ℓ} {A ⊎ (B ⊎ C)} {(A ⊎ B) ⊎ C} 
-                   (PlusR (PlusL b)) (PlusL (PlusR b))
-  assocl₂₂₊⇛ : {A B C : Set ℓ} {c : • C} → 
-               _⇛_ {ℓ} {A ⊎ (B ⊎ C)} {(A ⊎ B) ⊎ C} (PlusR (PlusR c)) (PlusR c)
-  assocr₁₁₊⇛ : {A B C : Set ℓ} {a : • A} → 
-               _⇛_ {ℓ} {(A ⊎ B) ⊎ C} {A ⊎ (B ⊎ C)} (PlusL (PlusL a)) (PlusL a)
-  assocr₁₂₊⇛ : {A B C : Set ℓ} {b : • B} → 
-               _⇛_ {ℓ} {(A ⊎ B) ⊎ C} {A ⊎ (B ⊎ C)} 
-                   (PlusL (PlusR b)) (PlusR (PlusL b))
-  assocr₂₊⇛  : {A B C : Set ℓ} {c : • C} → 
-               _⇛_ {ℓ} {(A ⊎ B) ⊎ C} {A ⊎ (B ⊎ C)} 
-                   (PlusR c) (PlusR (PlusR c))
-  -- *
-  unite⋆⇛    : {A : Set ℓ} {a : • A} → Times One a ⇛ a
-  uniti⋆⇛    : {A : Set ℓ} {a : • A} → a ⇛ Times One a
-  swap⋆⇛     : {A B : Set ℓ} {a : • A} {b : • B} → Times a b ⇛ Times b a
-  assocl⋆⇛   : {A B C : Set ℓ} {a : • A} {b : • B} {c : • C} → 
-               Times a (Times b c) ⇛ Times (Times a b) c
-  assocr⋆⇛   : {A B C : Set ℓ} {a : • A} {b : • B} {c : • C} → 
-               Times (Times a b) c ⇛ Times a (Times b c)
-  -- distributivity
-  dist₁⇛     : {A B C : Set ℓ} {a : • A} {c : • C} → 
-               _⇛_ {ℓ} {(A ⊎ B) × C} {(A × C) ⊎ (B × C)} 
-                   (Times (PlusL a) c) (PlusL (Times a c))
-  dist₂⇛     : {A B C : Set ℓ} {b : • B} {c : • C} → 
-               _⇛_ {ℓ} {(A ⊎ B) × C} {(A × C) ⊎ (B × C)} 
-                   (Times (PlusR b) c) (PlusR (Times b c))
-  factor₁⇛   : {A B C : Set ℓ} {a : • A} {c : • C} → 
-               _⇛_ {ℓ} {(A × C) ⊎ (B × C)} {(A ⊎ B) × C} 
-                   (PlusL (Times a c)) (Times (PlusL a) c)
-  factor₂⇛   : {A B C : Set ℓ} {b : • B} {c : • C} → 
-               _⇛_ {ℓ} {(A × C) ⊎ (B × C)} {(A ⊎ B) × C}  
-                   (PlusR (Times b c)) (Times (PlusR b) c)
-  -- congruence
-  id⇛        : {A : Set ℓ} {a : • A} → a ⇛ a
-  sym⇛       : {A B : Set ℓ} {a : • A} {b : • B} → (a ⇛ b) → (b ⇛ a)
-  trans⇛     : {A B C : Set ℓ} {a : • A} {b : • B} {c : • C} → 
-               (a ⇛ b) → (b ⇛ c) → (a ⇛ c)
-  plus₁⇛     : {A B C D : Set ℓ} {a : • A} {c : • C} → (a ⇛ c) → 
-               _⇛_ {ℓ} {A ⊎ B} {C ⊎ D} (PlusL a) (PlusL c)
-  plus₂⇛     : {A B C D : Set ℓ} {b : • B} {d : • D} → (b ⇛ d) → 
-               _⇛_ {ℓ} {A ⊎ B} {C ⊎ D} (PlusR b) (PlusR d)
-  times⇛     : {A B C D : Set ℓ} {a : • A} {b : • B} {c : • C} {d : • D} → 
-               (a ⇛ c) → (b ⇛ d) → (Times a b ⇛ Times c d)
-  -- create and annihilate
-  create⇛     : {A : Set ℓ} {a : • A} → (One ⇛ a)
-  annihilate⇛ : {A : Set ℓ} {a : • A} → (a ⇛ One)
+
+congruence structure emerges from path induction ???
+  sym⇛       : {A B : Set ℓ} {a : A} {b : B} → 
+               (•[ A , a ] ⇛ •[ B , b ]) → (•[ B , b ] ⇛ •[ A , a ]) 
+  trans⇛     : {A B C : Set ℓ} {a : A} {b : B} {c : C} → 
+               (•[ A , a ] ⇛ •[ B , b ]) → (•[ B , b ] ⇛ •[ C , c ]) →
+               (•[ A , a ] ⇛ •[ C , c ])
+  plus₁⇛     : {A B C D : Set ℓ} {a : A} {c : C} → 
+               (•[ A , a ] ⇛ •[ C , c ]) →
+               (•[ A ⊎ B , inj₁ a ] ⇛ •[ C ⊎ D , inj₁ c ])
+  plus₂⇛     : {A B C D : Set ℓ} {b : B} {d : D} → 
+               (•[ B , b ] ⇛ •[ D , d ]) →
+               (•[ A ⊎ B , inj₂ b ] ⇛ •[ C ⊎ D , inj₂ d ])
+  times⇛     : {A B C D : Set ℓ} {a : A} {b : B} {c : C} {d : D} → 
+               (•[ A , a ] ⇛ •[ C , c ]) → (•[ B , b ] ⇛ •[ D , d ]) →
+               (•[ A × B , (a , b) ] ⇛ •[ C × D , (c , d) ])
+  ({A B : Set ℓ} {a : A} {b : B} → 
+    (p : (•[ A , a ] ⇛ •[ B , b ])) → P p → P (sym⇛ p)) →
+  ({A B C : Set ℓ} {a : A} {b : B} {c : C} → 
+    (p : (•[ A , a ] ⇛ •[ B , b ])) → 
+    (q : (•[ B , b ] ⇛ •[ C , c ])) → 
+    P p → P q → P (trans⇛ p q)) → 
+  ({A B C D : Set ℓ} {a : A} {c : C} → (p : (•[ A , a ] ⇛ •[ C , c ])) → 
+    P p → P (plus₁⇛ {ℓ} {A} {B} {C} {D} {a} {c} p)) → 
+  ({A B C D : Set ℓ} {b : B} {d : D} → (q : (•[ B , b ] ⇛ •[ D , d ])) → 
+    P q → P (plus₂⇛ {ℓ} {A} {B} {C} {D} {b} {d} q)) → 
+  ({A B C D : Set ℓ} {a : A} {b : B} {c : C} {d : D} → 
+    (p : (•[ A , a ] ⇛ •[ C , c ])) → 
+    (q : (•[ B , b ] ⇛ •[ D , d ])) → 
+    P p → P q → P (times⇛ p q)) → 
+
+?0 : {A₁ B₁ : Set ℓ} (a₁ : A₁) → 1Path (inj₂ a₁) (inj₁ a₁)
+?1 : {A₁ B₁ : Set ℓ} (b₁ : B₁) → 1Path (inj₁ b₁) (inj₂ b₁)
+?2 : {A₁ B₁ C : Set ℓ} (a₁ : A₁) → 1Path (inj₁ (inj₁ a₁)) (inj₁ a₁)
+?3 : {A₁ B₁ C : Set ℓ} (b₁ : B₁) →
+1Path (inj₁ (inj₂ b₁)) (inj₂ (inj₁ b₁))
+?4 : {A₁ B₁ C : Set ℓ} (c : C) → 1Path (inj₂ c) (inj₂ (inj₂ c))
+?5 : {A₁ B₁ C : Set ℓ} (a₁ : A₁) → 1Path (inj₁ a₁) (inj₁ (inj₁ a₁))
+?6 : {A₁ B₁ C : Set ℓ} (b₁ : B₁) →
+1Path (inj₂ (inj₁ b₁)) (inj₁ (inj₂ b₁))
+?7 : {A₁ B₁ C : Set ℓ} (c : C) → 1Path (inj₂ (inj₂ c)) (inj₂ c)
+?8 : {A₁ : Set ℓ} (a₁ : A₁) → 1Path a₁ (tt , a₁)
+?9 : {A₁ : Set ℓ} (a₁ : A₁) → 1Path (tt , a₁) a₁
+?10 : {A₁ B₁ : Set ℓ} (a₁ : A₁) (b₁ : B₁) → 1Path (b₁ , a₁) (a₁ , b₁)
+?11 : {A₁ B₁ C : Set ℓ} (a₁ : A₁) (b₁ : B₁) (c : C) →
+1Path ((a₁ , b₁) , c) (a₁ , b₁ , c)
+?12 : {A₁ B₁ C : Set ℓ} (a₁ : A₁) (b₁ : B₁) (c : C) →
+1Path (a₁ , b₁ , c) ((a₁ , b₁) , c)
+?13 : {A₁ B₁ C : Set ℓ} (a₁ : A₁) (c : C) →
+1Path (inj₁ (a₁ , c)) (inj₁ a₁ , c)
+?14 : {A₁ B₁ C : Set ℓ} (b₁ : B₁) (c : C) →
+1Path (inj₂ (b₁ , c)) (inj₂ b₁ , c)
+?15 : {A₁ B₁ C : Set ℓ} (a₁ : A₁) (c : C) →
+1Path (inj₁ a₁ , c) (inj₁ (a₁ , c))
+?16 : {A₁ B₁ C : Set ℓ} (b₁ : B₁) (c : C) →
+1Path (inj₂ b₁ , c) (inj₂ (b₁ , c))
+?17 : {A₁ : Set ℓ} (a₁ : A₁) → 1Path a₁ a₁
+
+
+
+
+
+trans⇛ : {ℓ : Level} {A B C : Set ℓ} {a : A} {b : B} {c : C} → 
+         1Path a b → 1Path b c → 1Path a c
+trans⇛ {ℓ} {A} {B} {C} {a} {b} {c} p q = 
+  pathInd {ℓ}
+    (λ {A} {B} {a} {b} p → (c : C) → (q : 1Path b c) → 1Path a c)
+    {!!} {!!}
+    {!!} {!!} {!!} {!!} {!!} {!!} 
+    {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} 
+    {!!}
+    {A} {B} {a} {b} p c q
+
+idright : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} {p : 1Path a b} →
+          2Path (trans⇛ p (id⇛ b)) p
+idright {ℓ} {A} {B} {a} {b} {p} = 
+  (pathInd {ℓ}
+    (λ {A} {B} {a} {b} p → 2Path (trans⇛ p (id⇛ b)) p)
+    {!!} {!!} 
+    {!!} {!!} {!!} {!!} {!!} {!!}
+    {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} 
+    {!!} 
+    {!!} {!!} {!!} {!!} {!!})
+  {A} {B} {a} {b} p
+
+?17 : {A₁ : Set ℓ} (a₁ : A₁) → 
+      2Path (trans⇛ (id⇛ a₁) (id⇛ a₁)) (id⇛ a₁)
+
+?0 : {A₁ B₁ : Set ℓ} (a₁ : A₁) →
+     2Path (trans⇛ (swap₁₊⇛ a₁) (id⇛ (inj₂ a₁))) (swap₁₊⇛ a₁)
+
+--
+
+     •[ 1Path (inj₁ a) (inj₂ a) , trans⇛ (swap₁₊⇛ a) (id⇛ (inj₂ a)) ]
+   ⇛ •[ 1Path (inj₁ a) (inj₂ a) , swap₁₊⇛ a ]
+
+--
+
+     •[ •[ A ⊎ B , inj₁ a ] ⇛ •[ B ⊎ A , inj₂ a ] , 
+        trans⇛ (swap₁₊⇛ a) (id⇛ (inj₂ a)) ]
+
+   ⇛ •[ •[ A ⊎ B , inj₁ a ] ⇛ •[ B ⊎ A , inj₂ a ] , 
+        swap₁₊⇛ a ]
+
+
+
+
+-- use path induction to prove trans p id = p and so on
+
+-- abbrev to path types Path A B instead of •[ A , a ] ⇛ • [ B , b ]
+-- proof of idright: neat. provide a proof for each possible path that
+   p could be...
+
+-- 2-paths 
+
+data _2⇛_ : {A B C D : Set} {a : A} {b : B} {c : C} {d : D} → 
+            (•[ A , a ] ⇛ •[ B , b ]) → (•[ C , c ] ⇛ •[ D , d ]) → Set₂ where
+  2Path : {A B C D : Set} 
+          {a : A} {b : B} {c : C} {d : D}
+          {p : •[ A , a ] ⇛ •[ B , b ]}
+          {q : •[ C , c ] ⇛ •[ D , d ]} →
+          (•[ C , c ] ⇛ •[ A , a ]) → (•[ B , b ] ⇛ •[ D , d ]) → 
+          (p 2⇛ q)
+
+
+
+idright : {A B : Set} {a : A} {b : B} {p : •[ A , a ] ⇛ •[ B , b ]} →
+          (trans⇛ p (id⇛ {B} {b})) 2⇛ p
+idright = 2Path id⇛ id⇛ 
+        
+idleft : {A B : Set} {a : A} {b : B} {p : •[ A , a ] ⇛ •[ B , b ]} →
+         (trans⇛ (id⇛ {A} {a}) p) 2⇛ p
+idleft = 2Path id⇛ id⇛
+        
+assoc  : {A B C D : Set} {a : A} {b : B} {c : C} {d : D}
+         {p : •[ A , a ] ⇛ •[ B , b ]}
+         {q : •[ B , b ] ⇛ •[ C , c ]}
+         {r : •[ C , c ] ⇛ •[ D , d ]} →
+         (trans⇛ p (trans⇛ q r)) 2⇛ (trans⇛ (trans⇛ p q) r)
+assoc = 2Path id⇛ id⇛
+
+bifunctorid⋆ : {A B : Set} {a : A} {b : B} → 
+  (times⇛ (id⇛ {A} {a}) (id⇛ {B} {b})) 2⇛ (id⇛ {A × B} {(a , b)})
+bifunctorid⋆ = 2Path id⇛ id⇛
+
+bifunctorid₊₁ : {A B : Set} {a : A} → 
+  (plus₁⇛ {A} {B} {A} {B} (id⇛ {A} {a})) 2⇛ (id⇛ {A ⊎ B} {inj₁ a})
+bifunctorid₊₁ = 2Path id⇛ id⇛
+
+bifunctorid₊₂ : {A B : Set} {b : B} → 
+  (plus₂⇛ {A} {B} {A} {B} (id⇛ {B} {b})) 2⇛ (id⇛ {A ⊎ B} {inj₂ b})
+bifunctorid₊₂ = 2Path id⇛ id⇛
+
+bifunctorC⋆ : {A B C D E F : Set} 
+              {a : A} {b : B} {c : C} {d : D} {e : E} {f : F}
+              {p : •[ A , a ] ⇛ •[ B , b ]}
+              {q : •[ B , b ] ⇛ •[ C , c ]}
+              {r : •[ D , d ] ⇛ •[ E , e ]} 
+              {s : •[ E , e ] ⇛ •[ F , f ]} →
+  (trans⇛ (times⇛ p r) (times⇛ q s)) 2⇛ (times⇛ (trans⇛ p q) (trans⇛ r s))
+bifunctorC⋆ = 2Path id⇛ id⇛
+
+bifunctorC₊₁₁ : {A B C D E F : Set} 
+                {a : A} {b : B} {c : C}
+                {p : •[ A , a ] ⇛ •[ B , b ]}
+                {q : •[ B , b ] ⇛ •[ C , c ]} →
+  (trans⇛ (plus₁⇛ {A} {D} {B} {E} p) (plus₁⇛ {B} {E} {C} {F} q)) 2⇛ 
+  (plus₁⇛ {A} {D} {C} {F} (trans⇛ p q))
+bifunctorC₊₁₁ = 2Path id⇛ id⇛
+
+bifunctorC₊₂₂ : {A B C D E F : Set} 
+                {d : D} {e : E} {f : F}
+                {r : •[ D , d ] ⇛ •[ E , e ]} 
+                {s : •[ E , e ] ⇛ •[ F , f ]} →
+  (trans⇛ (plus₂⇛ {A} {D} {B} {E} r) (plus₂⇛ {B} {E} {C} {F} s)) 2⇛ 
+  (plus₂⇛ {A} {D} {C} {F} (trans⇛ r s))
+bifunctorC₊₂₂ = 2Path id⇛ id⇛
+
+triangle : {A B : Set} {a : A} {b : B} → 
+  (trans⇛ (assocr⋆⇛ {A} {⊤} {B} {a} {tt} {b}) (times⇛ id⇛ unite⋆⇛)) 2⇛
+  (times⇛ (trans⇛ swap⋆⇛ unite⋆⇛) id⇛)
+triangle = 2Path id⇛ id⇛
+
+--  id2⇛ : {A B : Set} {a : A} {b : B} {p : •[ A , a ] ⇛ •[ B , b ]} → p 2⇛ p
 
 -- Paths as data
 
@@ -368,56 +636,5 @@ mutual
   apI (times⇛ {A} {B} {C} {D} {x} {y} {z} {w} c₁ c₂) (singleton .(z , w)) 
     with apI c₁ (singleton z) | apI c₂ (singleton w) 
   ... | singleton .x | singleton .y = singleton (x , y)
-
--- Path induction
-
-pathInd : 
-  (C : (A : Set) → (B : Set) → (x : A) → (y : B) → x ⇛ y → Set) → 
-  (c : (A : Set) → (x : A) → C A A x x (id⇛ x)) → 
-  -- add more cases, one for each constructor
-  (A : Set) → (B : Set) → (x : A) → (y : B) → (p : x ⇛ y) → C A B x y p
-pathInd C c .(⊥ ⊎ B) B .(inj₂ y) y unite₊⇛ = {!!}
-pathInd C c A .(⊥ ⊎ A) x .(inj₂ x) uniti₊⇛ = {!!}
-pathInd C c .(A ⊎ B) .(B ⊎ A) .(inj₁ x) .(inj₂ x) (swap₁₊⇛ {A} {B} {x}) = {!!}
-pathInd C c .(A ⊎ B) .(B ⊎ A) .(inj₂ y) .(inj₁ y) (swap₂₊⇛ {A} {B} {y}) = {!!}
-pathInd C c .(A ⊎ B ⊎ C₁) .((A ⊎ B) ⊎ C₁) .(inj₁ x) .(inj₁ (inj₁ x)) 
-  (assocl₁₊⇛ {A} {B} {C₁} {x}) = {!!}
-pathInd C c .(A ⊎ B ⊎ C₁) .((A ⊎ B) ⊎ C₁) .(inj₂ (inj₁ y)) .(inj₁ (inj₂ y)) 
-  (assocl₂₁₊⇛ {A} {B} {C₁} {y}) = {!!}
-pathInd C c .(A ⊎ B ⊎ C₁) .((A ⊎ B) ⊎ C₁) .(inj₂ (inj₂ z)) .(inj₂ z) 
-  (assocl₂₂₊⇛ {A} {B} {C₁} {z}) = {!!}
-pathInd C c .((A ⊎ B) ⊎ C₁) .(A ⊎ B ⊎ C₁) .(inj₁ (inj₁ x)) .(inj₁ x) 
-  (assocr₁₁₊⇛ {A} {B} {C₁} {x}) = {!!}
-pathInd C c .((A ⊎ B) ⊎ C₁) .(A ⊎ B ⊎ C₁) .(inj₁ (inj₂ y)) .(inj₂ (inj₁ y)) 
-  (assocr₁₂₊⇛ {A} {B} {C₁} {y}) = {!!}
-pathInd C c .((A ⊎ B) ⊎ C₁) .(A ⊎ B ⊎ C₁) .(inj₂ z) .(inj₂ (inj₂ z)) 
-  (assocr₂₊⇛ {A} {B} {C₁} {z}) = {!!}
-pathInd C c .(Σ ⊤ (λ x₁ → B)) B .(tt , y) y unite⋆⇛ = {!!}
-pathInd C c A .(Σ ⊤ (λ x₁ → A)) x .(tt , x) uniti⋆⇛ = {!!}
-pathInd C c .(Σ A (λ x₁ → B)) .(Σ B (λ x₁ → A)) .(x , y) .(y , x) 
-  (swap⋆⇛ {A} {B} {x} {y}) = {!!}
-pathInd C c .(Σ A (λ x₁ → Σ B (λ x₂ → C₁))) .(Σ (Σ A (λ x₁ → B)) (λ x₁ → C₁)) 
-  .(x , y , z) .((x , y) , z) (assocl⋆⇛ {A} {B} {C₁} {x} {y} {z}) = {!!}
-pathInd C c .(Σ (Σ A (λ x₁ → B)) (λ x₁ → C₁)) .(Σ A (λ x₁ → Σ B (λ x₂ → C₁))) 
-  .((x , y) , z) .(x , y , z) (assocr⋆⇛ {A} {B} {C₁} {x} {y} {z}) = {!!}
-pathInd C c .(Σ (A ⊎ B) (λ x₁ → C₁)) .(Σ A (λ x₁ → C₁) ⊎ Σ B (λ x₁ → C₁)) 
-  .(inj₁ x , z) .(inj₁ (x , z)) (dist₁⇛ {A} {B} {C₁} {x} {z}) = {!!}
-pathInd C c .(Σ (A ⊎ B) (λ x₁ → C₁)) .(Σ A (λ x₁ → C₁) ⊎ Σ B (λ x₁ → C₁)) 
-  .(inj₂ y , z) .(inj₂ (y , z)) (dist₂⇛ {A} {B} {C₁} {y} {z}) = {!!}
-pathInd C c .(Σ A (λ x₁ → C₁) ⊎ Σ B (λ x₁ → C₁)) .(Σ (A ⊎ B) (λ x₁ → C₁)) 
-  .(inj₁ (x , z)) .(inj₁ x , z) (factor₁⇛ {A} {B} {C₁} {x} {z}) = {!!}
-pathInd C c .(Σ A (λ x₁ → C₁) ⊎ Σ B (λ x₁ → C₁)) .(Σ (A ⊎ B) (λ x₁ → C₁)) 
-  .(inj₂ (y , z)) .(inj₂ y , z) (factor₂⇛ {A} {B} {C₁} {y} {z}) = {!!}
-pathInd C c .(Σ ⊥ (λ x₁ → A)) .⊥ .(y , x) y (dist0⇛ {A} {.y} {x}) = {!!}
-pathInd C c .⊥ .(Σ ⊥ (λ x₁ → A)) x .(x , x₁) (factor0⇛ {A} {.x} {x₁}) = {!!}
-pathInd C c A .A x .x (id⇛ .x) = c A x
-pathInd C c A B x y (sym⇛ p) = {!!}
-pathInd C c A B x y (trans⇛ p p₁) = {!!}
-pathInd C c .(A ⊎ B) .(C₁ ⊎ D) .(inj₁ x) .(inj₁ z) 
-  (plus₁⇛ {A} {B} {C₁} {D} {x} {z} p) = {!!}
-pathInd C c .(A ⊎ B) .(C₁ ⊎ D) .(inj₂ y) .(inj₂ w) 
-  (plus₂⇛ {A} {B} {C₁} {D} {y} {w} p) = {!!}
-pathInd C c .(Σ A (λ x₁ → B)) .(Σ C₁ (λ x₁ → D)) .(x , y) .(z , w) 
-  (times⇛ {A} {B} {C₁} {D} {x} {y} {z} {w} p p₁) = {!!}
 
 --}
