@@ -472,36 +472,113 @@ symsym {ℓ} {A} {B} {a} {b} p =
 ?38 : 2Path (sym⇛ (sym⇛ (trans⇛ p q))) (trans⇛ p q)
 --}
 
--- Total cheat, but still shows the 'right' idea somehow
--- the code below was obtained by
--- ctrl-c ctrl-c on the argument of eval
--- for each line: ctr-c ctr-r, ctrl-c ctrl-a twice !
+-- We can extract a forward evaluator (i.e. paths really are functions)
 eval :  {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
-    •[ A , a ] ⇛ •[ B , b ] → (Σ (A → B) (λ f → f a ≡ b ))
-eval (swap₁₊⇛ a) = (λ _ → inj₂ a) , refl
-eval (swap₂₊⇛ b) = (λ _ → inj₁ b) , refl
-eval (assocl₁₊⇛ a) = (λ _ → inj₁ (inj₁ a)) , refl
-eval (assocl₂₁₊⇛ b) = (λ _ → inj₁ (inj₂ b)) , refl
-eval (assocl₂₂₊⇛ c) = (λ _ → inj₂ c) , refl
-eval (assocr₁₁₊⇛ a) = (λ _ → inj₁ a) , refl
-eval (assocr₁₂₊⇛ b) = (λ _ → inj₂ (inj₁ b)) , refl
-eval (assocr₂₊⇛ c) = (λ _ → inj₂ (inj₂ c)) , refl
-eval {b = b} (unite⋆⇛ .b) = (λ x → b) , refl
-eval {a = a} (uniti⋆⇛ .a) = (λ x → tt , a) , refl
-eval (swap⋆⇛ a b) = (λ x → b , proj₁ x) , refl
-eval (assocl⋆⇛ a b c) = (λ z → (a , b) , proj₂ (proj₂ z)) , refl
-eval (assocr⋆⇛ a b c) = (λ z → a , b , proj₂ z) , refl
-eval (dist₁⇛ a c) = (λ z → inj₁ (a , proj₂ z)) , refl
-eval (dist₂⇛ b c) = (λ z → inj₂ (b , proj₂ z)) , refl
-eval (factor₁⇛ a c) = (λ _ → inj₁ a , c) , refl
-eval (factor₂⇛ b c) = (λ _ → inj₂ b , c) , refl
-eval {a = a} (id⇛ .a) = (λ z → z) , refl
-eval {b = b} (trans⇛ c c₁) = (λ _ → b) , refl 
+    •[ A , a ] ⇛ •[ B , b ] → A → B
+eval (swap₁₊⇛ a) (inj₁ x) = inj₂ x
+eval (swap₁₊⇛ a) (inj₂ y) = inj₁ y
+eval (swap₂₊⇛ b) (inj₁ x) = inj₂ x
+eval (swap₂₊⇛ b) (inj₂ y) = inj₁ y
+eval (assocl₁₊⇛ a) (inj₁ x) = inj₁ (inj₁ x)
+eval (assocl₁₊⇛ a) (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
+eval (assocl₁₊⇛ a) (inj₂ (inj₂ y)) = inj₂ y
+eval (assocl₂₁₊⇛ b) (inj₁ x) = inj₁ (inj₁ x)
+eval (assocl₂₁₊⇛ b) (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
+eval (assocl₂₁₊⇛ b) (inj₂ (inj₂ y)) = inj₂ y
+eval (assocl₂₂₊⇛ c) (inj₁ x) = inj₁ (inj₁ x)
+eval (assocl₂₂₊⇛ c) (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
+eval (assocl₂₂₊⇛ c) (inj₂ (inj₂ y)) = inj₂ y
+eval (assocr₁₁₊⇛ a) (inj₁ (inj₁ x)) = inj₁ x
+eval (assocr₁₁₊⇛ a) (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
+eval (assocr₁₁₊⇛ a) (inj₂ y) = inj₂ (inj₂ y)
+eval (assocr₁₂₊⇛ b) (inj₁ (inj₁ x)) = inj₁ x
+eval (assocr₁₂₊⇛ b) (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
+eval (assocr₁₂₊⇛ b) (inj₂ y) = inj₂ (inj₂ y)
+eval (assocr₂₊⇛ c) (inj₁ (inj₁ x)) = inj₁ x
+eval (assocr₂₊⇛ c) (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
+eval (assocr₂₊⇛ c) (inj₂ y) = inj₂ (inj₂ y)
+eval {b = b} (unite⋆⇛ .b) (tt , x) = x
+eval {a = a} (uniti⋆⇛ .a) x = tt , x
+eval (swap⋆⇛ a b) (x , y) = y , x
+eval (assocl⋆⇛ a b c) (x , y , z) = (x , y) , z
+eval (assocr⋆⇛ a b c) ((x , y) , z) = x , y , z
+eval (dist₁⇛ a c) (inj₁ x , y) = inj₁ (x , y)
+eval (dist₁⇛ a c) (inj₂ x , y) = inj₂ (x , y)
+eval (dist₂⇛ b c) (inj₁ x , z) = inj₁ (x , z)
+eval (dist₂⇛ b c) (inj₂ y , z) = inj₂ (y , z)
+eval (factor₁⇛ a c) (inj₁ (x , y)) = inj₁ x , y
+eval (factor₁⇛ a c) (inj₂ (x , y)) = inj₂ x , y
+eval (factor₂⇛ b c) (inj₁ (x , y)) = inj₁ x , y
+eval (factor₂⇛ b c) (inj₂ (x , y)) = inj₂ x , y
+eval {a = a} (id⇛ .a) x = x
+eval (trans⇛ c d) x = eval d (eval c x)
 
-eval2 :  {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
-    •[ A , a ] ⇛ •[ B , b ] → (A → B)
-eval2 c = proj₁ (eval c)
+-- and a backwards one too
+evalB :  {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
+    •[ A , a ] ⇛ •[ B , b ] → B → A
+evalB (swap₂₊⇛ a) (inj₁ x) = inj₂ x
+evalB (swap₂₊⇛ a) (inj₂ y) = inj₁ y
+evalB (swap₁₊⇛ b) (inj₁ x) = inj₂ x
+evalB (swap₁₊⇛ b) (inj₂ y) = inj₁ y
+evalB (assocr₂₊⇛ a) (inj₁ x) = inj₁ (inj₁ x)
+evalB (assocr₂₊⇛ a) (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
+evalB (assocr₂₊⇛ a) (inj₂ (inj₂ y)) = inj₂ y
+evalB (assocr₁₂₊⇛ b) (inj₁ x) = inj₁ (inj₁ x)
+evalB (assocr₁₂₊⇛ b) (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
+evalB (assocr₁₂₊⇛ b) (inj₂ (inj₂ y)) = inj₂ y
+evalB (assocr₁₁₊⇛ c) (inj₁ x) = inj₁ (inj₁ x)
+evalB (assocr₁₁₊⇛ c) (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
+evalB (assocr₁₁₊⇛ c) (inj₂ (inj₂ y)) = inj₂ y
+evalB (assocl₂₂₊⇛ a) (inj₁ (inj₁ x)) = inj₁ x
+evalB (assocl₂₂₊⇛ a) (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
+evalB (assocl₂₂₊⇛ a) (inj₂ y) = inj₂ (inj₂ y)
+evalB (assocl₂₁₊⇛ b) (inj₁ (inj₁ x)) = inj₁ x
+evalB (assocl₂₁₊⇛ b) (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
+evalB (assocl₂₁₊⇛ b) (inj₂ y) = inj₂ (inj₂ y)
+evalB (assocl₁₊⇛ c) (inj₁ (inj₁ x)) = inj₁ x
+evalB (assocl₁₊⇛ c) (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
+evalB (assocl₁₊⇛ c) (inj₂ y) = inj₂ (inj₂ y)
+evalB {a = a} (uniti⋆⇛ .a) (tt , x) = x
+evalB {b = b} (unite⋆⇛ .b) x = tt , x
+evalB (swap⋆⇛ a b) (x , y) = y , x
+evalB (assocr⋆⇛ a b c) (x , y , z) = (x , y) , z
+evalB (assocl⋆⇛ a b c) ((x , y) , z) = x , y , z
+evalB (dist₁⇛ a c) (inj₁ (x , y)) = inj₁ x , y
+evalB (dist₁⇛ a c) (inj₂ (x , y)) = inj₂ x , y
+evalB (dist₂⇛ b c) (inj₁ (x , z)) = inj₁ x , z
+evalB (dist₂⇛ b c) (inj₂ (y , z)) = inj₂ y , z
+evalB (factor₁⇛ a c) (inj₁ x , y) = inj₁ (x , y)
+evalB (factor₁⇛ a c) (inj₂ x , y) = inj₂ (x , y)
+evalB (factor₂⇛ b c) (inj₁ x , y) = inj₁ (x , y)
+evalB (factor₂⇛ b c) (inj₂ x , y) = inj₂ (x , y)
+evalB {a = a} (id⇛ .a) x = x
+evalB (trans⇛ c d) x = evalB c (evalB d x)
 
+eval-resp-• : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
+    (c : •[ A , a ] ⇛ •[ B , b ]) → eval c a ≡ b
+eval-resp-• (swap₁₊⇛ a) = refl
+eval-resp-• (swap₂₊⇛ b) = refl
+eval-resp-• (assocl₁₊⇛ a) = refl
+eval-resp-• (assocl₂₁₊⇛ b) = refl
+eval-resp-• (assocl₂₂₊⇛ c) = refl
+eval-resp-• (assocr₁₁₊⇛ a) = refl
+eval-resp-• (assocr₁₂₊⇛ b) = refl
+eval-resp-• (assocr₂₊⇛ c) = refl
+eval-resp-• {b = b} (unite⋆⇛ .b) = refl
+eval-resp-• {a = a} (uniti⋆⇛ .a) = refl
+eval-resp-• (swap⋆⇛ a b) = refl
+eval-resp-• (assocl⋆⇛ a b c) = refl
+eval-resp-• (assocr⋆⇛ a b c) = refl
+eval-resp-• (dist₁⇛ a c) = refl
+eval-resp-• (dist₂⇛ b c) = refl
+eval-resp-• (factor₁⇛ a c) = refl
+eval-resp-• (factor₂⇛ b c) = refl
+eval-resp-• {a = a} (id⇛ .a) = refl
+eval-resp-• {a = a} (trans⇛ c d) rewrite eval-resp-• c | eval-resp-• d = refl
+
+eval-gives-id⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
+    (c : •[ A , a ] ⇛ •[ B , b ]) → •[ B , eval c a ] ⇛ •[ B , b ]
+eval-gives-id⇛ {b = b} c rewrite eval-resp-• c = id⇛ b
 
 ------------------------------------------------------------------------------
 {--
