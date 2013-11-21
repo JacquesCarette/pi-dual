@@ -86,6 +86,14 @@ data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc (lsuc ℓ
                (•[ B , b ] ⇛ •[ C , c ]) → 
                (•[ A , a ] ⇛ •[ C , c ]) 
 
+trans~ : {ℓ : Level} {A B C : Set ℓ} {a : A} {b : B} {c : C} →
+         •[ A , a ] ⇛ •[ B , b ] →
+         •[ B , b ] ⇛ •[ C , c ] → 
+         •[ A , a ] ⇛ •[ C , c ] 
+trans~ (id⇛ a) q = q
+trans~ (trans⇛ p₁ p₂) q = trans~ p₁ (trans~ p₂ q)
+trans~ p q = trans⇛ p q
+
 -- Path induction
 
 pathInd : {ℓ ℓ' : Level} → 
