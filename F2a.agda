@@ -5,6 +5,7 @@ open import Data.Unit
 open import Data.Sum 
 open import Data.Nat hiding (_⊔_)
 open import Data.Product
+open import Relation.Binary.PropositionalEquality
 
 infix  2  _∎      -- equational reasoning
 infixr 2  _≡⟨_⟩_  -- equational reasoning
@@ -250,7 +251,7 @@ idright : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} {p : 1Path a b} →
 idright {ℓ} {A} {B} {a} {b} {p} = 
   (pathInd 
     (λ {A} {B} {a} {b} p → 2Path (trans⇛ p (id⇛ b)) p)
-    {!!} 
+    (λ {A} {B} a₁ → {!!}) 
     {!!} 
     {!!} 
     {!!} 
@@ -463,12 +464,35 @@ symsym {ℓ} {A} {B} {a} {b} p =
 ?38 : 2Path (sym⇛ (sym⇛ (trans⇛ p q))) (trans⇛ p q)
 --}
 
+-- Total cheat, but still shows the 'right' idea somehow
+-- the code below was obtained by
+-- ctrl-c ctrl-c on the argument of eval
+-- for each line: ctr-c ctr-r, ctrl-c ctrl-a twice !
+eval :  {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
+    •[ A , a ] ⇛ •[ B , b ] → (Σ (A → B) (λ f → f a ≡ b ))
+eval (swap₁₊⇛ a) = (λ _ → inj₂ a) , refl
+eval (swap₂₊⇛ b) = (λ _ → inj₁ b) , refl
+eval (assocl₁₊⇛ a) = (λ _ → inj₁ (inj₁ a)) , refl
+eval (assocl₂₁₊⇛ b) = (λ _ → inj₁ (inj₂ b)) , refl
+eval (assocl₂₂₊⇛ c) = (λ _ → inj₂ c) , refl
+eval (assocr₁₁₊⇛ a) = (λ _ → inj₁ a) , refl
+eval (assocr₁₂₊⇛ b) = (λ _ → inj₂ (inj₁ b)) , refl
+eval (assocr₂₊⇛ c) = (λ _ → inj₂ (inj₂ c)) , refl
+eval {b = b} (unite⋆⇛ .b) = (λ x → b) , refl
+eval {a = a} (uniti⋆⇛ .a) = (λ x → tt , a) , refl
+eval (swap⋆⇛ a b) = (λ x → b , proj₁ x) , refl
+eval (assocl⋆⇛ a b c) = (λ z → (a , b) , proj₂ (proj₂ z)) , refl
+eval (assocr⋆⇛ a b c) = (λ z → a , b , proj₂ z) , refl
+eval (dist₁⇛ a c) = (λ z → inj₁ (a , proj₂ z)) , refl
+eval (dist₂⇛ b c) = (λ z → inj₂ (b , proj₂ z)) , refl
+eval (factor₁⇛ a c) = (λ _ → inj₁ a , c) , refl
+eval (factor₂⇛ b c) = (λ _ → inj₂ b , c) , refl
+eval {a = a} (id⇛ .a) = (λ z → z) , refl
+eval {b = b} (trans⇛ c c₁) = (λ _ → b) , refl 
 
-
-
-
-
-
+eval2 :  {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
+    •[ A , a ] ⇛ •[ B , b ] → (A → B)
+eval2 c = proj₁ (eval c)
 
 
 ------------------------------------------------------------------------------
