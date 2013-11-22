@@ -5,15 +5,11 @@ open import Data.Unit
 open import Data.Sum 
 open import Data.Nat hiding (_⊔_)
 open import Data.Product
+open import Function
 open import Relation.Binary.PropositionalEquality
 
 infix  2  _∎      -- equational reasoning
 infixr 2  _≡⟨_⟩_  -- equational reasoning
-
--- we need some equality that gives us:
---    trans id id === id
--- and similarly for other congruence rules
--- and then we can use that to build paths
 
 ---------------------------------------------------------------------------
 -- Pointed types
@@ -108,15 +104,35 @@ data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc (lsuc ℓ
                (•[ A → B , ??? ] ⇛ •[ C → D , ??? ])
 --}
 
--- need something more general
-trans~ : {ℓ : Level} {A B C : Set ℓ} {a : A} {b : B} {c : C} →
-         •[ A , a ] ⇛ •[ B , b ] →
-         •[ B , b ] ⇛ •[ C , c ] → 
-         •[ A , a ] ⇛ •[ C , c ] 
-trans~ (id⇛ a) q = q
-trans~ (trans⇛ p₁ p₂) q = trans~ p₁ (trans~ p₂ q)
-trans~ p q = trans⇛ p q
+-- Abbreviations and small examples
 
+1Path : {ℓ : Level} {A B : Set ℓ} → (a : A) → (b : B) → Set (lsuc (lsuc ℓ))
+1Path {ℓ} {A} {B} a b = •[ A , a ] ⇛ •[ B , b ]
+
+2Path : {ℓ : Level} {A B C D : Set ℓ} {a : A} {b : B} {c : C} {d : D} → 
+  (p : 1Path a b) → (q : 1Path c d) → Set (lsuc (lsuc (lsuc (lsuc ℓ))))
+2Path {ℓ} {A} {B} {C} {D} {a} {b} {c} {d} p q = 
+  •[ 1Path a b , p ] ⇛ •[ 1Path c d , q ]
+
+_≡⟨_⟩_ : ∀ {ℓ} → {A B C : Set ℓ} (a : A) {b : B} {c : C} → 
+        1Path a b → 1Path b c → 1Path a c
+_ ≡⟨ p ⟩ q = trans⇛ p q
+
+_∎ : ∀ {ℓ} → {A : Set ℓ} (a : A) → 1Path a a
+_∎ a = id⇛ a
+
+test3 : {A : Set} {a : A} → Set•
+test3 {A} {a} = •[ 1Path a a , id⇛ a ] 
+
+test4 : {A : Set} {a : A} → Set•
+test4 {A} {a} = •[ 2Path (id⇛ a) (id⇛ a) , id⇛ (id⇛ a) ]
+
+test5 : {A B C D : Set} {a : A} {b : B} {c : C} {d : D} → 
+        (p : 1Path a b) → (q : 1Path c d) → Set•
+test5 {A} {B} {C} {D} {a} {b} {c} {d} p q = 
+  •[ 1Path (a , c) (b , d) , times⇛ p q ]
+      
+---------------------------------------------------------------------------
 -- Path induction
 
 pathInd : {ℓ ℓ' : Level} → 
@@ -284,35 +300,8 @@ pathInd P swap₁₊ swap₂₊
        unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
        cid ctrans plus₁ plus₂ times q)
 
--- Abbreviations and small examples
-
-1Path : {ℓ : Level} {A B : Set ℓ} → (a : A) → (b : B) → Set (lsuc (lsuc ℓ))
-1Path {ℓ} {A} {B} a b = •[ A , a ] ⇛ •[ B , b ]
-
-2Path : {ℓ : Level} {A B C D : Set ℓ} {a : A} {b : B} {c : C} {d : D} → 
-  (p : 1Path a b) → (q : 1Path c d) → Set (lsuc (lsuc (lsuc (lsuc ℓ))))
-2Path {ℓ} {A} {B} {C} {D} {a} {b} {c} {d} p q = 
-  •[ 1Path a b , p ] ⇛ •[ 1Path c d , q ]
-
-_≡⟨_⟩_ : ∀ {ℓ} → {A B C : Set ℓ} (a : A) {b : B} {c : C} → 
-        1Path a b → 1Path b c → 1Path a c
-_ ≡⟨ p ⟩ q = trans⇛ p q
-
-_∎ : ∀ {ℓ} → {A : Set ℓ} (a : A) → 1Path a a
-_∎ a = id⇛ a
-
-test3 : {A : Set} {a : A} → Set•
-test3 {A} {a} = •[ 1Path a a , id⇛ a ] 
-
-test4 : {A : Set} {a : A} → Set•
-test4 {A} {a} = •[ 2Path (id⇛ a) (id⇛ a) , id⇛ (id⇛ a) ]
-
-test5 : {A B C D : Set} {a : A} {b : B} {c : C} {d : D} → 
-        (p : 1Path a b) → (q : 1Path c d) → Set•
-test5 {A} {B} {C} {D} {a} {b} {c} {d} p q = 
-  •[ 1Path (a , c) (b , d) , times⇛ p q ]
-      
--- The groupoid structure emerges...
+---------------------------------------------------------------------------
+-- Groupoid structure (emerging...)
 
 sym⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → 1Path a b → 1Path b a
 sym⇛ {ℓ} {A} {B} {a} {b} p = 
@@ -329,7 +318,7 @@ sym⇛ {ℓ} {A} {B} {a} {b} p =
 
 test6 : {A : Set} {a : A} → 1Path (a , (tt , a)) ((tt , a) , a)
 test6 {A} {a} = sym⇛ (times⇛ (unite⋆⇛ a) (uniti⋆⇛ a)) 
--- evaluates to (times⇛ (uniti⋆⇛ a) (unite⋆⇛ a) 
+             -- evaluates to (times⇛ (uniti⋆⇛ a) (unite⋆⇛ a) 
 
 idright : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} {p : 1Path a b} →
           2Path (trans⇛ p (id⇛ b)) p
@@ -420,7 +409,73 @@ symsym {ℓ} {A} {B} {a} {b} p =
     (λ p q α β → {!!}))
   {A} {B} {a} {b} p
 
+---------------------------------------------------------------------------
+-- Isomorphisms (or more accurately equivalences)
+
+_∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
+      (f g : (x : A) → P x) → Set (ℓ ⊔ lsuc (lsuc ℓ'))
+_∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → 1Path (f x) (g x)
+
+-- ∼ is an equivalence relation
+
+refl∼ : {A B : Set} {f : A → B} → (f ∼ f)
+refl∼ {A} {B} {f} x = id⇛ (f x)
+
+sym∼ : {A B : Set} {f g : A → B} → (f ∼ g) → (g ∼ f)
+sym∼ H x = sym⇛ (H x) 
+
+trans∼ : {A B : Set} {f g h : A → B} → (f ∼ g) → (g ∼ h) → (f ∼ h)
+trans∼ H G x = trans⇛ (H x) (G x)
+
+-- quasi-inverses
+
+record qinv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
+  Set (lsuc (lsuc ℓ) ⊔ lsuc (lsuc ℓ')) where
+  constructor mkqinv
+  field
+    g : B → A 
+    α : (f ∘ g) ∼ id
+    β : (g ∘ f) ∼ id
+
+idqinv : ∀ {ℓ} → {A : Set ℓ} → qinv {ℓ} {ℓ} {A} {A} id
+idqinv = record {
+           g = id ;
+           α = λ b → id⇛ b ; 
+           β = λ a → id⇛ a
+         } 
+
+-- equivalences
+
+record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
+  Set (lsuc (lsuc ℓ) ⊔ lsuc (lsuc ℓ')) where
+  constructor mkisequiv
+  field
+    g : B → A 
+    α : (f ∘ g) ∼ id
+    h : B → A
+    β : (h ∘ f) ∼ id
+
+equiv₁ : ∀ {ℓ ℓ'} → {A : Set ℓ} {B : Set ℓ'} {f : A → B} → qinv f → isequiv f
+equiv₁ (mkqinv qg qα qβ) = mkisequiv qg qα qg qβ
+
+_≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (lsuc (lsuc ℓ) ⊔ lsuc (lsuc ℓ'))
+A ≃ B = Σ (A → B) isequiv
+
+idequiv : ∀ {ℓ} {A : Set ℓ} → A ≃ A
+idequiv = (id , equiv₁ idqinv)
+
+-- univalence
+-- 
+-- as a postulate for now but hopefully we can actually prove it since
+-- the pi-combinators are sound and complete for isomorphisms between
+-- finite types
+
+postulate 
+  univalence : {A B : Set} → (1Path A B) ≃ (A ≃ B)
+
+------------------------------------------------------------------------------
 -- We can extract a forward evaluator (i.e. paths really are functions)
+
 eval :  {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
     •[ A , a ] ⇛ •[ B , b ] → A → B
 eval (swap₁₊⇛ a) (inj₁ x) = inj₂ x
@@ -467,8 +522,9 @@ eval (plus₂⇛ c d) (inj₂ x) = inj₂ (eval d x)
 eval (times⇛ c d) (x , y) = (eval c x , eval d y)
 
 -- and a backwards one too
-evalB :  {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
-    •[ A , a ] ⇛ •[ B , b ] → B → A
+
+evalB : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
+        •[ A , a ] ⇛ •[ B , b ] → B → A
 evalB (swap₂₊⇛ a) (inj₁ x) = inj₂ x
 evalB (swap₂₊⇛ a) (inj₂ y) = inj₁ y
 evalB (swap₁₊⇛ b) (inj₁ x) = inj₂ x
@@ -513,7 +569,7 @@ evalB (plus₂⇛ c d) (inj₂ x) = inj₂ (evalB d x)
 evalB (times⇛ c d) (x , y) = (evalB c x , evalB d y)
 
 eval-resp-• : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
-    (c : •[ A , a ] ⇛ •[ B , b ]) → eval c a ≡ b
+              (c : •[ A , a ] ⇛ •[ B , b ]) → eval c a ≡ b
 eval-resp-• (swap₁₊⇛ a) = refl
 eval-resp-• (swap₂₊⇛ b) = refl
 eval-resp-• (assocl₁₊⇛ a) = refl
@@ -537,8 +593,8 @@ eval-resp-• (plus₁⇛ c d) = {!!}
 eval-resp-• (plus₂⇛ c d) = {!!} 
 eval-resp-• (times⇛ c d) = {!!} 
 
-eval-gives-id⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
-    (c : •[ A , a ] ⇛ •[ B , b ]) → •[ B , eval c a ] ⇛ •[ B , b ]
+eval-gives-id⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → 
+  (c : •[ A , a ] ⇛ •[ B , b ]) → •[ B , eval c a ] ⇛ •[ B , b ]
 eval-gives-id⇛ {b = b} c rewrite eval-resp-• c = id⇛ b
 
 ------------------------------------------------------------------------------
