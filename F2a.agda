@@ -1,3 +1,5 @@
+-- {-# OPTIONS --without-K #-}
+
 module F2a where
 
 open import Agda.Prim
@@ -108,32 +110,37 @@ data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc (lsuc ℓ
 
 -- Abbreviations and small examples
 
-1Path : {ℓ : Level} {A B : Set ℓ} → (a : A) → (b : B) → Set (lsuc (lsuc ℓ))
-1Path {ℓ} {A} {B} a b = •[ A , a ] ⇛ •[ B , b ]
+Path : {ℓ : Level} {A B : Set ℓ} → (a : A) → (b : B) → Set (lsuc (lsuc ℓ))
+Path {ℓ} {A} {B} a b = •[ A , a ] ⇛ •[ B , b ]
 
 2Path : {ℓ : Level} {A B C D : Set ℓ} {a : A} {b : B} {c : C} {d : D} → 
-  (p : 1Path a b) → (q : 1Path c d) → Set (lsuc (lsuc (lsuc (lsuc ℓ))))
+  (p : Path a b) → (q : Path c d) → Set (lsuc (lsuc (lsuc (lsuc ℓ))))
 2Path {ℓ} {A} {B} {C} {D} {a} {b} {c} {d} p q = 
-  •[ 1Path a b , p ] ⇛ •[ 1Path c d , q ]
+  •[ Path a b , p ] ⇛ •[ Path c d , q ]
 
 _≡⟨_⟩_ : ∀ {ℓ} → {A B C : Set ℓ} (a : A) {b : B} {c : C} → 
-        1Path a b → 1Path b c → 1Path a c
+        Path a b → Path b c → Path a c
 _ ≡⟨ p ⟩ q = trans⇛ p q
 
-_∎ : ∀ {ℓ} → {A : Set ℓ} (a : A) → 1Path a a
+_∎ : ∀ {ℓ} → {A : Set ℓ} (a : A) → Path a a
 _∎ a = id⇛ a
 
 test3 : {A : Set} {a : A} → Set•
-test3 {A} {a} = •[ 1Path a a , id⇛ a ] 
+test3 {A} {a} = •[ Path a a , id⇛ a ] 
 
 test4 : {A : Set} {a : A} → Set•
 test4 {A} {a} = •[ 2Path (id⇛ a) (id⇛ a) , id⇛ (id⇛ a) ]
 
 test5 : {A B C D : Set} {a : A} {b : B} {c : C} {d : D} → 
-        (p : 1Path a b) → (q : 1Path c d) → Set•
+        (p : Path a b) → (q : Path c d) → Set•
 test5 {A} {B} {C} {D} {a} {b} {c} {d} p q = 
-  •[ 1Path (a , c) (b , d) , times⇛ p q ]
+  •[ Path (a , c) (b , d) , times⇛ p q ]
       
+-- Propositional equality implies a path
+
+≡Path : {ℓ : Level} {A : Set ℓ} {x y : A} → (x ≡ y) → Path x y
+≡Path {ℓ} {A} {x} {.x} refl = id⇛ x
+
 ---------------------------------------------------------------------------
 -- Path induction
 
@@ -305,10 +312,10 @@ pathInd P swap₁₊ swap₂₊
 ---------------------------------------------------------------------------
 -- Groupoid structure (emerging...)
 
-sym⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → 1Path a b → 1Path b a
+sym⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → Path a b → Path b a
 sym⇛ {ℓ} {A} {B} {a} {b} p = 
   (pathInd 
-    (λ {A} {B} {a} {b} p → 1Path b a)
+    (λ {A} {B} {a} {b} p → Path b a)
     swap₂₊⇛ swap₁₊⇛ 
     assocr₁₁₊⇛ assocr₁₂₊⇛ assocr₂₊⇛ assocl₁₊⇛ assocl₂₁₊⇛ assocl₂₂₊⇛ 
     uniti⋆⇛ unite⋆⇛ (λ a b → swap⋆⇛ b a) 
@@ -318,11 +325,11 @@ sym⇛ {ℓ} {A} {B} {a} {b} p =
     (λ _ _ p' q' → times⇛ p' q')
   {A} {B} {a} {b} p 
 
-test6 : {A : Set} {a : A} → 1Path (a , (tt , a)) ((tt , a) , a)
+test6 : {A : Set} {a : A} → Path (a , (tt , a)) ((tt , a) , a)
 test6 {A} {a} = sym⇛ (times⇛ (unite⋆⇛ a) (uniti⋆⇛ a)) 
              -- evaluates to (times⇛ (uniti⋆⇛ a) (unite⋆⇛ a) 
 
-idright : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} {p : 1Path a b} →
+idright : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} {p : Path a b} →
           2Path (trans⇛ p (id⇛ b)) p
 idright {ℓ} {A} {B} {a} {b} {p} = 
   (pathInd 
@@ -352,11 +359,11 @@ idright {ℓ} {A} {B} {a} {b} {p} =
   {A} {B} {a} {b} p
 
 aptransL : {ℓ : Level} {A B C : Set ℓ} {a : A} {b : B} {c : C} → 
-           (p q : 1Path a b) → (r : 1Path b c) → (α : 2Path p q) → 
+           (p q : Path a b) → (r : Path b c) → (α : 2Path p q) → 
            2Path (trans⇛ p r) (trans⇛ q r)
 aptransL {ℓ} {A} {B} {C} {a} {b} {c} p q r α = 
   (pathInd 
-    (λ {B} {C} {b} {c} r → (A : Set ℓ) → (a : A) → (p q : 1Path a b) → 
+    (λ {B} {C} {b} {c} r → (A : Set ℓ) → (a : A) → (p q : Path a b) → 
       (α : 2Path p q) → 2Path (trans⇛ p r) (trans⇛ q r))
     (λ a₁ A₂ a₂ p₁ q₁ α₁ → {!!}) 
     {!!} 
@@ -382,7 +389,7 @@ aptransL {ℓ} {A} {B} {C} {a} {b} {c} p q r α =
     {!!})
   {B} {C} {b} {c} r A a p q α
 
-symsym : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → (p : 1Path a b) → 
+symsym : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → (p : Path a b) → 
          2Path (sym⇛ (sym⇛ p)) p
 symsym {ℓ} {A} {B} {a} {b} p = 
   (pathInd
@@ -416,7 +423,7 @@ symsym {ℓ} {A} {B} {a} {b} p =
 
 _∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
       (f g : (x : A) → P x) → Set (ℓ ⊔ lsuc (lsuc ℓ'))
-_∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → 1Path (f x) (g x)
+_∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → Path (f x) (g x)
 
 -- ∼ is an equivalence relation
 
@@ -465,15 +472,6 @@ A ≃ B = Σ (A → B) isequiv
 
 idequiv : ∀ {ℓ} {A : Set ℓ} → A ≃ A
 idequiv = (id , equiv₁ idqinv)
-
--- univalence
--- 
--- as a postulate for now but hopefully we can actually prove it since
--- the pi-combinators are sound and complete for isomorphisms between
--- finite types
-
-postulate 
-  univalence : {ℓ : Level} {A B : Set ℓ} → (1Path A B) ≃ (A ≃ B)
 
 ------------------------------------------------------------------------------
 -- We can extract a forward evaluator (i.e. paths really are functions)
@@ -598,6 +596,19 @@ eval-resp-• (times⇛ c d) rewrite eval-resp-• c | eval-resp-• d = refl
 eval-gives-id⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → 
   (c : •[ A , a ] ⇛ •[ B , b ]) → •[ B , eval c a ] ⇛ •[ B , b ]
 eval-gives-id⇛ {b = b} c rewrite eval-resp-• c = id⇛ b
+
+------------------------------------------------------------------------------
+-- Univalence
+-- 
+-- as a postulate for now but hopefully we can actually prove it since
+-- the pi-combinators are sound and complete for isomorphisms between
+-- finite types
+
+postulate 
+  univalence : {ℓ : Level} {A B : Set ℓ} → (Path A B) ≃ (A ≃ B)
+
+path2iso : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → Path a b → A ≃ B
+path2iso {ℓ} {A} {B} {a} {b} p = (eval p , ?)
 
 ------------------------------------------------------------------------------
 {--
