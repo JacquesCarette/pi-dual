@@ -608,7 +608,7 @@ postulate
   univalence : {ℓ : Level} {A B : Set ℓ} → (Path A B) ≃ (A ≃ B)
 
 path2iso : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → Path a b → A ≃ B
-path2iso {ℓ} {A} {B} {a} {b} p = (eval p , ?)
+path2iso {ℓ} {A} {B} {a} {b} p = (eval p , {!!})
 
 ------------------------------------------------------------------------------
 {--
