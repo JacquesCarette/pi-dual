@@ -33,6 +33,15 @@ test1 = •[ Set , ℕ ]
 test2 : ∀ {ℓ} → Set• {lsuc (lsuc ℓ)}
 test2 {ℓ} = •[ Set (lsuc ℓ) , Set ℓ ]
 
+-- See:
+-- http://homotopytypetheory.org/2012/11/21/on-heterogeneous-equality/
+
+beta : {ℓ : Level} {A : Set ℓ} {a : A} → • •[ A , a ] ≡ a
+beta {ℓ} {A} {a} = refl
+
+eta : {ℓ : Level} → (A• : Set•) → •[ ∣ A• ∣ , • A• ] ≡ A•
+eta {ℓ} A• = refl
+
 ---------------------------------------------------------------------------
 -- Paths
 
