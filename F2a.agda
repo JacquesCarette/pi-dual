@@ -34,7 +34,7 @@ test2 {ℓ} = •[ Set (lsuc ℓ) , Set ℓ ]
 ---------------------------------------------------------------------------
 -- Paths
 
--- 1-paths are pi-combinators
+-- Paths are pi-combinators
 
 data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc (lsuc ℓ)) where
   -- + 
@@ -473,7 +473,7 @@ idequiv = (id , equiv₁ idqinv)
 -- finite types
 
 postulate 
-  univalence : {A B : Set} → (1Path A B) ≃ (A ≃ B)
+  univalence : {ℓ : Level} {A B : Set ℓ} → (1Path A B) ≃ (A ≃ B)
 
 ------------------------------------------------------------------------------
 -- We can extract a forward evaluator (i.e. paths really are functions)
