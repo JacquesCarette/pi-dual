@@ -102,6 +102,8 @@ data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc (lsuc ℓ
   fun⇛     : {A B C D : Set ℓ} {a : A} {b : B} {c : C} {d : D} → 
                (•[ A , a ] ⇛ •[ C , c ]) → (•[ B , b ] ⇛ •[ D , d ]) →
                (•[ A → B , ??? ] ⇛ •[ C → D , ??? ])
+  -- Jacques says: no!  That would build-in functions, and we want to show
+  -- that we can do so 'by hand'.
 --}
 
 -- Abbreviations and small examples
@@ -356,7 +358,7 @@ aptransL {ℓ} {A} {B} {C} {a} {b} {c} p q r α =
   (pathInd 
     (λ {B} {C} {b} {c} r → (A : Set ℓ) → (a : A) → (p q : 1Path a b) → 
       (α : 2Path p q) → 2Path (trans⇛ p r) (trans⇛ q r))
-    {!!} 
+    (λ a₁ A₂ a₂ p₁ q₁ α₁ → {!!}) 
     {!!} 
     {!!} 
     {!!} 
@@ -404,8 +406,8 @@ symsym {ℓ} {A} {B} {a} {b} p =
     (λ b c → id⇛ (factor₂⇛ b c)) 
     (λ a → id⇛ (id⇛ a)) 
     (λ p q α β → {!!})
-    (λ p α → {!!})
-    (λ q α → {!!})
+    (λ p q α β → {!!})
+    (λ p q α β → {!!})
     (λ p q α β → {!!}))
   {A} {B} {a} {b} p
 
@@ -589,9 +591,9 @@ eval-resp-• (factor₁⇛ a c) = refl
 eval-resp-• (factor₂⇛ b c) = refl
 eval-resp-• {a = a} (id⇛ .a) = refl
 eval-resp-• {a = a} (trans⇛ c d) rewrite eval-resp-• c | eval-resp-• d = refl
-eval-resp-• (plus₁⇛ c d) = {!!} 
-eval-resp-• (plus₂⇛ c d) = {!!} 
-eval-resp-• (times⇛ c d) = {!!} 
+eval-resp-• (plus₁⇛ c d) rewrite eval-resp-• c = refl 
+eval-resp-• (plus₂⇛ c d) rewrite eval-resp-• d = refl 
+eval-resp-• (times⇛ c d) rewrite eval-resp-• c | eval-resp-• d = refl 
 
 eval-gives-id⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → 
   (c : •[ A , a ] ⇛ •[ B , b ]) → •[ B , eval c a ] ⇛ •[ B , b ]
