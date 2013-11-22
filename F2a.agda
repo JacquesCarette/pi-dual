@@ -12,6 +12,7 @@ infixr 2  _≡⟨_⟩_  -- equational reasoning
 
 -- we need some equality that gives us:
 --    trans id id === id
+-- and similarly for other congruence rules
 -- and then we can use that to build paths
 
 ---------------------------------------------------------------------------
@@ -100,6 +101,12 @@ data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc (lsuc ℓ
   times⇛     : {A B C D : Set ℓ} {a : A} {b : B} {c : C} {d : D} → 
                (•[ A , a ] ⇛ •[ C , c ]) → (•[ B , b ] ⇛ •[ D , d ]) →
                (•[ A × B , (a , b) ] ⇛ •[ C × D , (c , d) ])
+{--
+  -- should we have something like that too?
+  fun⇛     : {A B C D : Set ℓ} {a : A} {b : B} {c : C} {d : D} → 
+               (•[ A , a ] ⇛ •[ C , c ]) → (•[ B , b ] ⇛ •[ D , d ]) →
+               (•[ A → B , ??? ] ⇛ •[ C → D , ??? ])
+--}
 
 -- need something more general
 trans~ : {ℓ : Level} {A B C : Set ℓ} {a : A} {b : B} {c : C} →
