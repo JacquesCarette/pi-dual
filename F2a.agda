@@ -40,6 +40,8 @@ record _→•_ {ℓ : Level} (A• B• : Set• {ℓ}) : Set ℓ where
     f : ∣ A• ∣ → ∣ B• ∣
     resp• : f (• A•) ≡ • B•
 
+open _→•_ public
+
 -- See:
 -- http://homotopytypetheory.org/2012/11/21/on-heterogeneous-equality/
 
@@ -440,6 +442,10 @@ symsym {ℓ} {A} {B} {a} {b} p =
 _∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
       (f g : (x : A) → P x) → Set (ℓ ⊔ lsuc (lsuc ℓ'))
 _∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → Path (f x) (g x)
+
+_∼•_ : ∀ {ℓ ℓ'} → {A• B• : Set•} → 
+      (f g : A• →• B•) → Set (ℓ ⊔ lsuc (lsuc ℓ'))
+_∼•_ {ℓ} {ℓ'} {A•} {B•} f• g• = Path (f f• (• A•)) (f g• (• A•)) 
 
 -- ∼ is an equivalence relation
 
