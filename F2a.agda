@@ -33,6 +33,14 @@ test1 = •[ Set , ℕ ]
 test2 : ∀ {ℓ} → Set• {lsuc (lsuc ℓ)}
 test2 {ℓ} = •[ Set (lsuc ℓ) , Set ℓ ]
 
+-- functions between pointed types
+
+record fun• {ℓ : Level} {A• B• : Set• {ℓ}} : Set ℓ where
+  constructor _→•_
+  field 
+    f : ∣ A• ∣ → ∣ B• ∣
+    resp• : • B• ≡ f (• A•)
+
 -- See:
 -- http://homotopytypetheory.org/2012/11/21/on-heterogeneous-equality/
 
@@ -428,7 +436,7 @@ symsym {ℓ} {A} {B} {a} {b} p =
   {A} {B} {a} {b} p
 
 ---------------------------------------------------------------------------
--- Isomorphisms (or more accurately equivalences)
+-- Isomorphisms (or more accurately equivalences) between pointed types
 
 _∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
       (f g : (x : A) → P x) → Set (ℓ ⊔ lsuc (lsuc ℓ'))
