@@ -496,9 +496,26 @@ swap₊ : {ℓ : Level} {A B : Set ℓ} → A ⊎ B → B ⊎ A
 swap₊ (inj₁ a) = inj₂ a
 swap₊ (inj₂ b) = inj₁ b
 
+assocl₊ : {ℓ : Level} {A B C : Set ℓ} → A ⊎ (B ⊎ C) → (A ⊎ B) ⊎ C
+assocl₊ (inj₁ a) = inj₁ (inj₁ a)
+assocl₊ (inj₂ (inj₁ b)) = inj₁ (inj₂ b) 
+assocl₊ (inj₂ (inj₂ c)) = inj₂ c
+
+assocr₊ : {ℓ : Level} {A B C : Set ℓ} → (A ⊎ B) ⊎ C → A ⊎ (B ⊎ C) 
+assocr₊ (inj₁ (inj₁ a)) = inj₁ a
+assocr₊ (inj₁ (inj₂ b)) = inj₂ (inj₁ b)
+assocr₊ (inj₂ c) = inj₂ (inj₂ c)
+
 eval• :  {ℓ : Level} {A• B• : Set•} → A• ⇛ B• → (A• →• B•)
-eval• (swap₁₊⇛ a) = record { f = swap₊ ; resp• = refl } 
-eval• c = ? 
+eval• (swap₁₊⇛ a)    = record { f = swap₊   ; resp• = refl } 
+eval• (swap₂₊⇛ b)    = record { f = swap₊   ; resp• = refl } 
+eval• (assocl₁₊⇛ a)  = record { f = assocl₊ ; resp• = refl } 
+eval• (assocl₂₁₊⇛ b) = record { f = assocl₊ ; resp• = refl } 
+eval• (assocl₂₂₊⇛ c) = record { f = assocl₊ ; resp• = refl } 
+eval• (assocr₁₁₊⇛ a) = record { f = assocr₊ ; resp• = refl } 
+eval• (assocr₁₂₊⇛ b) = record { f = assocr₊ ; resp• = refl } 
+eval• (assocr₂₊⇛ c)  = record { f = assocr₊ ; resp• = refl } 
+eval• c = {!!} 
 
 eval :  {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
     •[ A , a ] ⇛ •[ B , b ] → A → B
