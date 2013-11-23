@@ -609,6 +609,31 @@ eval-resp-• (plus₁⇛ c d) rewrite eval-resp-• c = refl
 eval-resp-• (plus₂⇛ c d) rewrite eval-resp-• d = refl 
 eval-resp-• (times⇛ c d) rewrite eval-resp-• c | eval-resp-• d = refl 
 
+evalB-resp-• : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
+              (c : •[ A , a ] ⇛ •[ B , b ]) → evalB c b ≡ a
+evalB-resp-• (swap₁₊⇛ a) = refl
+evalB-resp-• (swap₂₊⇛ b) = refl
+evalB-resp-• (assocl₁₊⇛ a) = refl
+evalB-resp-• (assocl₂₁₊⇛ b) = refl
+evalB-resp-• (assocl₂₂₊⇛ c) = refl
+evalB-resp-• (assocr₁₁₊⇛ a) = refl
+evalB-resp-• (assocr₁₂₊⇛ b) = refl
+evalB-resp-• (assocr₂₊⇛ c) = refl
+evalB-resp-• {b = b} (unite⋆⇛ .b) = refl
+evalB-resp-• {a = a} (uniti⋆⇛ .a) = refl
+evalB-resp-• (swap⋆⇛ a b) = refl
+evalB-resp-• (assocl⋆⇛ a b c) = refl
+evalB-resp-• (assocr⋆⇛ a b c) = refl
+evalB-resp-• (dist₁⇛ a c) = refl
+evalB-resp-• (dist₂⇛ b c) = refl
+evalB-resp-• (factor₁⇛ a c) = refl
+evalB-resp-• (factor₂⇛ b c) = refl
+evalB-resp-• {a = a} (id⇛ .a) = refl
+evalB-resp-• {a = a} (trans⇛ c d) rewrite evalB-resp-• d | evalB-resp-• c = refl
+evalB-resp-• (plus₁⇛ c d) rewrite evalB-resp-• c = refl 
+evalB-resp-• (plus₂⇛ c d) rewrite evalB-resp-• d = refl 
+evalB-resp-• (times⇛ c d) rewrite evalB-resp-• c | evalB-resp-• d = refl 
+
 eval-gives-id⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → 
   (c : •[ A , a ] ⇛ •[ B , b ]) → •[ B , eval c a ] ⇛ •[ B , b ]
 eval-gives-id⇛ {b = b} c rewrite eval-resp-• c = id⇛ b
@@ -617,7 +642,7 @@ eval• :  {ℓ : Level} {A• B• : Set•} → A• ⇛ B• → (A• →•
 eval• c = record { f = eval c ; resp• = eval-resp-• c } 
 
 evalB• :  {ℓ : Level} {A• B• : Set•} → A• ⇛ B• → (B• →• A•)
-evalB• c = record { f = evalB c ; resp• = ? } 
+evalB• c = record { f = evalB c ; resp• = evalB-resp-• c } 
 
 ------------------------------------------------------------------------------
 -- Univalence
