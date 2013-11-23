@@ -38,7 +38,7 @@ test2 {ℓ} = •[ Set (lsuc ℓ) , Set ℓ ]
 record _→•_ {ℓ : Level} (A• B• : Set• {ℓ}) : Set ℓ where
   field 
     f : ∣ A• ∣ → ∣ B• ∣
-    resp• : • B• ≡ f (• A•)
+    resp• : f (• A•) ≡ • B•
 
 -- See:
 -- http://homotopytypetheory.org/2012/11/21/on-heterogeneous-equality/
@@ -492,31 +492,6 @@ idequiv = (id , equiv₁ idqinv)
 ------------------------------------------------------------------------------
 -- We can extract a forward evaluator (i.e. paths really are functions)
 
-swap₊ : {ℓ : Level} {A B : Set ℓ} → A ⊎ B → B ⊎ A
-swap₊ (inj₁ a) = inj₂ a
-swap₊ (inj₂ b) = inj₁ b
-
-assocl₊ : {ℓ : Level} {A B C : Set ℓ} → A ⊎ (B ⊎ C) → (A ⊎ B) ⊎ C
-assocl₊ (inj₁ a) = inj₁ (inj₁ a)
-assocl₊ (inj₂ (inj₁ b)) = inj₁ (inj₂ b) 
-assocl₊ (inj₂ (inj₂ c)) = inj₂ c
-
-assocr₊ : {ℓ : Level} {A B C : Set ℓ} → (A ⊎ B) ⊎ C → A ⊎ (B ⊎ C) 
-assocr₊ (inj₁ (inj₁ a)) = inj₁ a
-assocr₊ (inj₁ (inj₂ b)) = inj₂ (inj₁ b)
-assocr₊ (inj₂ c) = inj₂ (inj₂ c)
-
-eval• :  {ℓ : Level} {A• B• : Set•} → A• ⇛ B• → (A• →• B•)
-eval• (swap₁₊⇛ a)    = record { f = swap₊   ; resp• = refl } 
-eval• (swap₂₊⇛ b)    = record { f = swap₊   ; resp• = refl } 
-eval• (assocl₁₊⇛ a)  = record { f = assocl₊ ; resp• = refl } 
-eval• (assocl₂₁₊⇛ b) = record { f = assocl₊ ; resp• = refl } 
-eval• (assocl₂₂₊⇛ c) = record { f = assocl₊ ; resp• = refl } 
-eval• (assocr₁₁₊⇛ a) = record { f = assocr₊ ; resp• = refl } 
-eval• (assocr₁₂₊⇛ b) = record { f = assocr₊ ; resp• = refl } 
-eval• (assocr₂₊⇛ c)  = record { f = assocr₊ ; resp• = refl } 
-eval• c = {!!} 
-
 eval :  {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
     •[ A , a ] ⇛ •[ B , b ] → A → B
 eval (swap₁₊⇛ a) (inj₁ x) = inj₂ x
@@ -637,6 +612,12 @@ eval-resp-• (times⇛ c d) rewrite eval-resp-• c | eval-resp-• d = refl
 eval-gives-id⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → 
   (c : •[ A , a ] ⇛ •[ B , b ]) → •[ B , eval c a ] ⇛ •[ B , b ]
 eval-gives-id⇛ {b = b} c rewrite eval-resp-• c = id⇛ b
+
+eval• :  {ℓ : Level} {A• B• : Set•} → A• ⇛ B• → (A• →• B•)
+eval• c = record { f = eval c ; resp• = eval-resp-• c } 
+
+evalB• :  {ℓ : Level} {A• B• : Set•} → A• ⇛ B• → (B• →• A•)
+evalB• c = record { f = evalB c ; resp• = ? } 
 
 ------------------------------------------------------------------------------
 -- Univalence
