@@ -35,8 +35,7 @@ test2 {ℓ} = •[ Set (lsuc ℓ) , Set ℓ ]
 
 -- functions between pointed types
 
-record fun• {ℓ : Level} {A• B• : Set• {ℓ}} : Set ℓ where
-  constructor _→•_
+record _→•_ {ℓ : Level} (A• B• : Set• {ℓ}) : Set ℓ where
   field 
     f : ∣ A• ∣ → ∣ B• ∣
     resp• : • B• ≡ f (• A•)
@@ -492,6 +491,14 @@ idequiv = (id , equiv₁ idqinv)
 
 ------------------------------------------------------------------------------
 -- We can extract a forward evaluator (i.e. paths really are functions)
+
+swap₊ : {ℓ : Level} {A B : Set ℓ} → A ⊎ B → B ⊎ A
+swap₊ (inj₁ a) = inj₂ a
+swap₊ (inj₂ b) = inj₁ b
+
+eval• :  {ℓ : Level} {A• B• : Set•} → A• ⇛ B• → (A• →• B•)
+eval• (swap₁₊⇛ a) = record { f = swap₊ ; resp• = refl } 
+eval• c = ? 
 
 eval :  {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
     •[ A , a ] ⇛ •[ B , b ] → A → B
