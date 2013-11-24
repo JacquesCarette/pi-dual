@@ -436,65 +436,6 @@ symsym {ℓ} {A} {B} {a} {b} p =
     (λ p q α β → {!!}))
   {A} {B} {a} {b} p
 
----------------------------------------------------------------------------
--- Isomorphisms (or more accurately equivalences) between pointed types
-
-_∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
-      (f g : (x : A) → P x) → Set (ℓ ⊔ lsuc (lsuc ℓ'))
-_∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → Path (f x) (g x)
-
-_∼•_ : ∀ {ℓ ℓ'} → {A• B• : Set•} → 
-      (f g : A• →• B•) → Set (ℓ ⊔ lsuc (lsuc ℓ'))
-_∼•_ {ℓ} {ℓ'} {A•} {B•} f• g• = Path (f f• (• A•)) (f g• (• A•)) 
-
--- ∼ is an equivalence relation
-
-refl∼ : {A B : Set} {f : A → B} → (f ∼ f)
-refl∼ {A} {B} {f} x = id⇛ (f x)
-
-sym∼ : {A B : Set} {f g : A → B} → (f ∼ g) → (g ∼ f)
-sym∼ H x = sym⇛ (H x) 
-
-trans∼ : {A B : Set} {f g h : A → B} → (f ∼ g) → (g ∼ h) → (f ∼ h)
-trans∼ H G x = trans⇛ (H x) (G x)
-
--- quasi-inverses
-
-record qinv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
-  Set (lsuc (lsuc ℓ) ⊔ lsuc (lsuc ℓ')) where
-  constructor mkqinv
-  field
-    g : B → A 
-    α : (f ∘ g) ∼ id
-    β : (g ∘ f) ∼ id
-
-idqinv : ∀ {ℓ} → {A : Set ℓ} → qinv {ℓ} {ℓ} {A} {A} id
-idqinv = record {
-           g = id ;
-           α = λ b → id⇛ b ; 
-           β = λ a → id⇛ a
-         } 
-
--- equivalences
-
-record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
-  Set (lsuc (lsuc ℓ) ⊔ lsuc (lsuc ℓ')) where
-  constructor mkisequiv
-  field
-    g : B → A 
-    α : (f ∘ g) ∼ id
-    h : B → A
-    β : (h ∘ f) ∼ id
-
-equiv₁ : ∀ {ℓ ℓ'} → {A : Set ℓ} {B : Set ℓ'} {f : A → B} → qinv f → isequiv f
-equiv₁ (mkqinv qg qα qβ) = mkisequiv qg qα qg qβ
-
-_≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (lsuc (lsuc ℓ) ⊔ lsuc (lsuc ℓ'))
-A ≃ B = Σ (A → B) isequiv
-
-idequiv : ∀ {ℓ} {A : Set ℓ} → A ≃ A
-idequiv = (id , equiv₁ idqinv)
-
 ------------------------------------------------------------------------------
 -- We can extract a forward evaluator (i.e. paths really are functions)
 
@@ -649,6 +590,70 @@ eval• c = record { f = eval c ; resp• = eval-resp-• c }
 
 evalB• :  {ℓ : Level} {A• B• : Set•} → A• ⇛ B• → (B• →• A•)
 evalB• c = record { f = evalB c ; resp• = evalB-resp-• c } 
+
+---------------------------------------------------------------------------
+-- Isomorphisms (or more accurately equivalences) between pointed types
+
+_∼•_ : ∀ {ℓ ℓ'} → {A• B• : Set•} → 
+      (f g : A• →• B•) → Set (ℓ ⊔ lsuc (lsuc ℓ'))
+_∼•_ {ℓ} {ℓ'} {A•} {B•} f• g• = Path (f f• (• A•)) (f g• (• A•)) 
+
+-- define composition of pointed functions
+-- prove eval o evalB is ~ to id
+-- show eval is an equivalence
+-- use that to prove one direction of univalence
+
+_∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
+      (f g : (x : A) → P x) → Set (ℓ ⊔ lsuc (lsuc ℓ'))
+_∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → Path (f x) (g x)
+
+-- ∼ is an equivalence relation
+
+refl∼ : {A B : Set} {f : A → B} → (f ∼ f)
+refl∼ {A} {B} {f} x = id⇛ (f x)
+
+sym∼ : {A B : Set} {f g : A → B} → (f ∼ g) → (g ∼ f)
+sym∼ H x = sym⇛ (H x) 
+
+trans∼ : {A B : Set} {f g h : A → B} → (f ∼ g) → (g ∼ h) → (f ∼ h)
+trans∼ H G x = trans⇛ (H x) (G x)
+
+-- quasi-inverses
+
+record qinv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
+  Set (lsuc (lsuc ℓ) ⊔ lsuc (lsuc ℓ')) where
+  constructor mkqinv
+  field
+    g : B → A 
+    α : (f ∘ g) ∼ id
+    β : (g ∘ f) ∼ id
+
+idqinv : ∀ {ℓ} → {A : Set ℓ} → qinv {ℓ} {ℓ} {A} {A} id
+idqinv = record {
+           g = id ;
+           α = λ b → id⇛ b ; 
+           β = λ a → id⇛ a
+         } 
+
+-- equivalences
+
+record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
+  Set (lsuc (lsuc ℓ) ⊔ lsuc (lsuc ℓ')) where
+  constructor mkisequiv
+  field
+    g : B → A 
+    α : (f ∘ g) ∼ id
+    h : B → A
+    β : (h ∘ f) ∼ id
+
+equiv₁ : ∀ {ℓ ℓ'} → {A : Set ℓ} {B : Set ℓ'} {f : A → B} → qinv f → isequiv f
+equiv₁ (mkqinv qg qα qβ) = mkisequiv qg qα qg qβ
+
+_≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (lsuc (lsuc ℓ) ⊔ lsuc (lsuc ℓ'))
+A ≃ B = Σ (A → B) isequiv
+
+idequiv : ∀ {ℓ} {A : Set ℓ} → A ≃ A
+idequiv = (id , equiv₁ idqinv)
 
 ------------------------------------------------------------------------------
 -- Univalence
