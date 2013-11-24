@@ -41,11 +41,11 @@ eta {ℓ} A• = refl
 -- Isomorphisms (or more accurately equivalences) between pointed types
 
 _∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
-      (f g : (x : A) → P x) → Set (lsuc (lsuc ℓ') ⊔ ℓ)
+      (f g : (x : A) → P x) → Set (lsuc ℓ' ⊔ ℓ)
 _∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → Path (f x) (g x)
 
 _∼•_ : ∀ {ℓ ℓ'} → {A• : Set• {ℓ}} → {B• : Set• {ℓ'}} →
-      (A• →• B•) → (A• →• B•) → Set (lsuc (lsuc ℓ'))
+      (A• →• B•) → (A• →• B•) → Set (lsuc ℓ')
 _∼•_ {ℓ} {ℓ'} {A•} {B•} f• g• = Path (f f• (• A•)) (f g• (• A•)) 
 
 -- ∼ is an equivalence relation
@@ -59,10 +59,22 @@ sym∼ H x = sym⇛ (H x)
 trans∼ : {A B : Set} {f g h : A → B} → (f ∼ g) → (g ∼ h) → (f ∼ h)
 trans∼ H G x = trans⇛ (H x) (G x)
 
+-- and so is ∼•
+refl∼• : {ℓ ℓ' : Level} { A B : Set} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} {f• : A• →• B•} → f• ∼• f•
+refl∼• {A• = A•} {B•} {f•} = id⇛ (f f• (• A•))
+
+sym∼• : {ℓ ℓ' : Level} {A B : Set} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} 
+  {f• g• : A• →• B•} → f• ∼• g• → g• ∼• f•
+sym∼• f•∼•g• = sym⇛ f•∼•g•
+
+trans∼• :  {ℓ ℓ' : Level} {A B : Set} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} 
+  {f• g• h• : A• →• B•} → f• ∼• g• → g• ∼• h• → f• ∼• h•
+trans∼• fg gh = trans⇛ fg gh
+
 -- quasi-inverses
 
 record qinv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
-  Set (lsuc (lsuc ℓ) ⊔ lsuc (lsuc ℓ')) where
+  Set (lsuc ℓ ⊔ lsuc ℓ') where
   constructor mkqinv
   field
     g : B → A 
@@ -79,7 +91,7 @@ idqinv = record {
 -- equivalences
 
 record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
-  Set (lsuc (lsuc ℓ) ⊔ lsuc (lsuc ℓ')) where
+  Set (lsuc ℓ ⊔ lsuc ℓ') where
   constructor mkisequiv
   field
     g : B → A 
@@ -90,11 +102,21 @@ record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) :
 equiv₁ : ∀ {ℓ ℓ'} → {A : Set ℓ} {B : Set ℓ'} {f : A → B} → qinv f → isequiv f
 equiv₁ (mkqinv qg qα qβ) = mkisequiv qg qα qg qβ
 
-_≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (lsuc (lsuc ℓ) ⊔ lsuc (lsuc ℓ'))
+_≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (lsuc ℓ ⊔ lsuc ℓ')
 A ≃ B = Σ (A → B) isequiv
 
 idequiv : ∀ {ℓ} {A : Set ℓ} → A ≃ A
 idequiv = (id , equiv₁ idqinv)
+
+record isequiv• {ℓ} {A B : Set} {A• B• : Set• {ℓ}} (f• : A• →• B•) : 
+  Set (lsuc ℓ) where
+  constructor mkisequiv•
+  field
+    equi : isequiv (f f•)  
+    path : Path (• A•) (• B•)
+
+_≈•_ : ∀ {ℓ} {A B : Set} (A• B• : Set• {ℓ}) → Set (lsuc ℓ)
+_≈•_ {_} {A} {B} A• B• = Σ (A• →• B•) (isequiv• {_} {A} {B})
 
 ------------------------------------------------------------------------------
 -- We can extract a forward evaluator (i.e. paths really are functions)
@@ -147,7 +169,7 @@ eval (times⇛ c d) (x , y) = (eval c x , eval d y)
 -- and a backwards one too
 
 evalB : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
-        •[ A , a ] ⇛ •[ B , b ] → B → A
+       Path a b → B → A
 evalB (swap₂₊⇛ a) (inj₁ x) = inj₂ x
 evalB (swap₂₊⇛ a) (inj₂ y) = inj₁ y
 evalB (swap₁₊⇛ b) (inj₁ x) = inj₂ x
@@ -243,8 +265,59 @@ evalB-resp-• (times⇛ c d) rewrite evalB-resp-• c | evalB-resp-• d = refl
 
 -- the proof that eval ∙ evalB x ≡ x will be useful below
 eval∘evalB≡id :  {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → 
-  (c : •[ A , a ] ⇛ •[ B , b ]) → evalB c (eval c a) ≡ a
+  (c : Path a b) → evalB c (eval c a) ≡ a
 eval∘evalB≡id c rewrite eval-resp-• c | evalB-resp-• c = refl
+
+-- if this is useful, move it elsewhere
+-- but it might not be, as it appears to be 'level raising'
+cong⇚ : {ℓ : Level} {A B : Set ℓ} {a₁ a₂ : A}
+       (f : Path a₁ a₂ ) → (x : A) → Path (evalB f x) (evalB f x)
+cong⇚ f x = id⇛ (evalB f x)
+
+eval∘evalB :  {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → 
+  (c : Path a b) → (x : A) → Path (evalB c (eval c x)) x
+eval∘evalB (swap₁₊⇛ a) (inj₁ x) = id⇛ (inj₁ x)
+eval∘evalB (swap₁₊⇛ a) (inj₂ y) = id⇛ (inj₂ y)
+eval∘evalB (swap₂₊⇛ b) (inj₁ x) = id⇛ (inj₁ x)
+eval∘evalB (swap₂₊⇛ b) (inj₂ y) = id⇛ (inj₂ y)
+eval∘evalB (assocl₁₊⇛ a) (inj₁ x) = id⇛ (inj₁ x)
+eval∘evalB (assocl₁₊⇛ a) (inj₂ (inj₁ x)) = id⇛ (inj₂ (inj₁ x))
+eval∘evalB (assocl₁₊⇛ a) (inj₂ (inj₂ y)) = id⇛ (inj₂ (inj₂ y))
+eval∘evalB (assocl₂₁₊⇛ b) (inj₁ x) = id⇛ (inj₁ x)
+eval∘evalB (assocl₂₁₊⇛ b) (inj₂ (inj₁ x)) = id⇛ (inj₂ (inj₁ x))
+eval∘evalB (assocl₂₁₊⇛ b) (inj₂ (inj₂ y)) = id⇛ (inj₂ (inj₂ y))
+eval∘evalB (assocl₂₂₊⇛ c) (inj₁ x) = id⇛ (inj₁ x)
+eval∘evalB (assocl₂₂₊⇛ c) (inj₂ (inj₁ x)) = id⇛ (inj₂ (inj₁ x))
+eval∘evalB (assocl₂₂₊⇛ c) (inj₂ (inj₂ y)) = id⇛ (inj₂ (inj₂ y))
+eval∘evalB (assocr₁₁₊⇛ a) (inj₁ (inj₁ x)) = id⇛ (inj₁ (inj₁ x))
+eval∘evalB (assocr₁₁₊⇛ a) (inj₁ (inj₂ y)) = id⇛ (inj₁ (inj₂ y))
+eval∘evalB (assocr₁₁₊⇛ a) (inj₂ y) = id⇛ (inj₂ y)
+eval∘evalB (assocr₁₂₊⇛ b) (inj₁ (inj₁ x)) = id⇛ (inj₁ (inj₁ x))
+eval∘evalB (assocr₁₂₊⇛ b) (inj₁ (inj₂ y)) = id⇛ (inj₁ (inj₂ y))
+eval∘evalB (assocr₁₂₊⇛ b) (inj₂ y) = id⇛ (inj₂ y)
+eval∘evalB (assocr₂₊⇛ c) (inj₁ (inj₁ x)) = id⇛ (inj₁ (inj₁ x))
+eval∘evalB (assocr₂₊⇛ c) (inj₁ (inj₂ y)) = id⇛ (inj₁ (inj₂ y))
+eval∘evalB (assocr₂₊⇛ c) (inj₂ y) = id⇛ (inj₂ y)
+eval∘evalB {b = b} (unite⋆⇛ .b) (tt , x) = id⇛ (tt , x)
+eval∘evalB {a = a} (uniti⋆⇛ .a) x = id⇛ x
+eval∘evalB (swap⋆⇛ a b) (x , y) = id⇛ (x , y)
+eval∘evalB (assocl⋆⇛ a b c) (x , y , z) = id⇛ (x , y , z)
+eval∘evalB (assocr⋆⇛ a b c) ((x , y) , z) = id⇛ ((x , y) , z)
+eval∘evalB (dist₁⇛ a c) (inj₁ x , y) = id⇛ (inj₁ x , y)
+eval∘evalB (dist₁⇛ a c) (inj₂ y , z) = id⇛ (inj₂ y , z)
+eval∘evalB (dist₂⇛ b c) (inj₁ x , z) = id⇛ (inj₁ x , z)
+eval∘evalB (dist₂⇛ b c) (inj₂ y , z) = id⇛ (inj₂ y , z)
+eval∘evalB (factor₁⇛ a c) (inj₁ (x , y)) = id⇛ (inj₁ (x , y))
+eval∘evalB (factor₁⇛ a c) (inj₂ (x , y)) = id⇛ (inj₂ (x , y))
+eval∘evalB (factor₂⇛ b c) (inj₁ (x , y)) = id⇛ (inj₁ (x , y))
+eval∘evalB (factor₂⇛ b c) (inj₂ (x , y)) = id⇛ (inj₂ (x , y))
+eval∘evalB {a = a} (id⇛ .a) x = id⇛ x
+eval∘evalB (trans⇛ {A = A} {B} {C} {a} {b} {c} c₁ c₂) x = trans⇛ {!cong⇚ ? (id⇛ (eval c₁ x))!} (eval∘evalB c₁ x) 
+eval∘evalB (plus₁⇛ {b = b} c₁ c₂) (inj₁ x) = plus₁⇛ (eval∘evalB c₁ x) (id⇛ b)
+eval∘evalB (plus₁⇛ {a = a} c₁ c₂) (inj₂ y) = plus₂⇛ (id⇛ a) (eval∘evalB c₂ y)
+eval∘evalB (plus₂⇛ {b = b} c₁ c₂) (inj₁ x) = plus₁⇛ (eval∘evalB c₁ x) (id⇛ b)
+eval∘evalB (plus₂⇛ {a = a} c₁ c₂) (inj₂ y) = plus₂⇛ (id⇛ a) (eval∘evalB c₂ y)
+eval∘evalB (times⇛ c₁ c₂) (x , y) = times⇛ (eval∘evalB c₁ x) (eval∘evalB c₂ y) 
 
 eval-gives-id⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → 
   (c : •[ A , a ] ⇛ •[ B , b ]) → •[ B , eval c a ] ⇛ •[ B , b ]
@@ -269,5 +342,6 @@ postulate
 -- This is at the wrong level... We need to define equivalences ≃ between
 -- pointed sets too...
 
--- path2iso : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → Path a b → A ≃ B
--- path2iso {ℓ} {A} {B} {a} {b} p = (eval p , {!!})
+path2iso : {ℓ : Level} {A• B• : Set• {ℓ}} → A• ⇛ B• → ∣ A• ∣ ≃ ∣ B• ∣
+path2iso {ℓ} {a} {b} p = (eval p , 
+  mkisequiv (evalB p) (λ x → {!!}) (evalB p) (λ x → {!eval∘evalB p!}))

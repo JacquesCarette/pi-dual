@@ -38,7 +38,7 @@ test2 {ℓ} = •[ Set (lsuc ℓ) , Set ℓ ]
 
 -- Paths are pi-combinators
 
-data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc (lsuc ℓ)) where
+data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc ℓ) where
   -- + 
   swap₁₊⇛    : {A B : Set ℓ} → (a : A) → 
                •[ A ⊎ B , inj₁ a ] ⇛ •[ B ⊎ A , inj₂ a ]
@@ -110,11 +110,11 @@ data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc (lsuc ℓ
 
 -- Abbreviations and small examples
 
-Path : {ℓ : Level} {A B : Set ℓ} → (a : A) → (b : B) → Set (lsuc (lsuc ℓ))
+Path : {ℓ : Level} {A B : Set ℓ} → (a : A) → (b : B) → Set (lsuc ℓ)
 Path {ℓ} {A} {B} a b = •[ A , a ] ⇛ •[ B , b ]
 
 2Path : {ℓ : Level} {A B C D : Set ℓ} {a : A} {b : B} {c : C} {d : D} → 
-  (p : Path a b) → (q : Path c d) → Set (lsuc (lsuc (lsuc (lsuc ℓ))))
+  (p : Path a b) → (q : Path c d) → Set (lsuc (lsuc ℓ))
 2Path {ℓ} {A} {B} {C} {D} {a} {b} {c} {d} p q = 
   •[ Path a b , p ] ⇛ •[ Path c d , q ]
 
