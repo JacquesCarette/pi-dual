@@ -3,10 +3,10 @@
 module Paths where
 
 open import Agda.Prim
-open import Data.Bool
 open import Data.Unit
-open import Data.Sum 
+open import Data.Bool
 open import Data.Nat hiding (_⊔_)
+open import Data.Sum 
 open import Data.Product
 open import Function
 open import Relation.Binary.PropositionalEquality
@@ -14,7 +14,7 @@ open import Relation.Binary.PropositionalEquality
 infix  2  _∎      -- equational reasoning
 infixr 2  _≡⟨_⟩_  -- equational reasoning
 
----------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Pointed types
 
 record Set• {ℓ : Level} : Set (lsuc ℓ) where
@@ -34,13 +34,13 @@ test1 = •[ Set , ℕ ]
 test2 : ∀ {ℓ} → Set• {lsuc (lsuc ℓ)}
 test2 {ℓ} = •[ Set (lsuc ℓ) , Set ℓ ]
 
----------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Paths
 
 -- Paths are pi-combinators
 
 data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc ℓ) where
-  -- + 
+  -- additive structure
   swap₁₊⇛    : {A B : Set ℓ} → (a : A) → 
                •[ A ⊎ B , inj₁ a ] ⇛ •[ B ⊎ A , inj₂ a ]
   swap₂₊⇛    : {A B : Set ℓ} → (b : B) → 
@@ -59,7 +59,7 @@ data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc ℓ) wher
                •[ A ⊎ (B ⊎ C) , inj₂ (inj₁ b) ]
   assocr₂₊⇛  : {A B C : Set ℓ} → (c : C) → 
                •[ (A ⊎ B) ⊎ C , inj₂ c ] ⇛ •[ A ⊎ (B ⊎ C) , inj₂ (inj₂ c) ]
-  -- *
+  -- multiplicative structure
   unite⋆⇛    : {A : Set ℓ} → (a : A) → •[ ⊤ × A , (tt , a) ] ⇛ •[ A , a ]
   uniti⋆⇛    : {A : Set ℓ} → (a : A) → •[ A , a ] ⇛ •[ ⊤ × A , (tt , a) ]
   swap⋆⇛     : {A B : Set ℓ} → (a : A) → (b : B) → 
@@ -107,6 +107,8 @@ data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc ℓ) wher
                (•[ A → B , ??? ] ⇛ •[ C → D , ??? ])
   -- Jacques says: no!  That would build-in functions, and we want to show
   -- that we can do so 'by hand'.
+  -- Amr says: but we can experiment with that to understand the structure
+  -- of higher-order functions...
 --}
 
 -- Abbreviations and small examples
@@ -120,7 +122,7 @@ Path {ℓ} {A} {B} a b = •[ A , a ] ⇛ •[ B , b ]
   •[ Path a b , p ] ⇛ •[ Path c d , q ]
 
 _≡⟨_⟩_ : ∀ {ℓ} → {A B C : Set ℓ} (a : A) {b : B} {c : C} → 
-        Path a b → Path b c → Path a c
+         Path a b → Path b c → Path a c
 _ ≡⟨ p ⟩ q = trans⇛ p q
 
 _∎ : ∀ {ℓ} → {A : Set ℓ} (a : A) → Path a a
@@ -145,15 +147,22 @@ test8 : {A B C D : Set} {a : A} {b : B} {c : C} {d : D} →
         (p : Path a b) → (q : Path c d) → Set•
 test8 {A} {B} {C} {D} {a} {b} {c} {d} p q = 
   •[ Path (a , c) (b , d) , times⇛ p q ]
-      
-
 
 -- Propositional equality implies a path
 
 ≡Path : {ℓ : Level} {A : Set ℓ} {x y : A} → (x ≡ y) → Path x y
 ≡Path {ℓ} {A} {x} {.x} refl = id⇛ x
 
----------------------------------------------------------------------------
+-- See:
+-- http://homotopytypetheory.org/2012/11/21/on-heterogeneous-equality/
+
+beta : {ℓ : Level} {A : Set ℓ} {a : A} → • •[ A , a ] ≡ a
+beta {ℓ} {A} {a} = refl
+
+eta : {ℓ : Level} → (A• : Set• {ℓ}) → •[ ∣ A• ∣ , • A• ] ≡ A•
+eta {ℓ} A• = refl
+
+------------------------------------------------------------------------------
 -- Path induction
 
 pathInd : {ℓ ℓ' : Level} → 
@@ -321,7 +330,7 @@ pathInd P swap₁₊ swap₂₊
        unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
        cid ctrans plus₁ plus₂ times q)
 
----------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Groupoid structure (emerging...)
 
 sym⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → Path a b → Path b a
@@ -340,7 +349,8 @@ sym⇛ {ℓ} {A} {B} {a} {b} p =
 test9 : {A : Set} {a : A} → Path (a , (tt , a)) ((tt , a) , a)
 test9 {A} {a} = sym⇛ (times⇛ (unite⋆⇛ a) (uniti⋆⇛ a)) 
              -- evaluates to (times⇛ (uniti⋆⇛ a) (unite⋆⇛ a) 
-{-
+
+{--
 idright : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} {p : Path a b} →
           2Path (trans⇛ p (id⇛ b)) p
 idright {ℓ} {A} {B} {a} {b} {p} = 
@@ -429,7 +439,8 @@ symsym {ℓ} {A} {B} {a} {b} p =
     (λ p q α β → {!!})
     (λ p q α β → {!!}))
   {A} {B} {a} {b} p
--}
+--}
+
 ------------------------------------------------------------------------------
 {-- old stuff which we might need again
 
