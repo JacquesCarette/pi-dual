@@ -34,8 +34,7 @@ open import Paths
 
 ------------------------------------------------------------------------------
 -- Isomorphisms (or more accurately equivalences) between raw types
--- eventually delete this entire section and only use the corresponding
--- notions for pointed types below
+-- This is generalized below to pointed types
 
 _∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
       (f g : (x : A) → P x) → Set (lsuc ℓ' ⊔ ℓ)
@@ -91,6 +90,55 @@ idequiv = (id , equiv₁ idqinv)
 
 postulate 
   univalence : {ℓ : Level} {A B : Set ℓ} → (Path A B) ≃ (A ≃ B)
+
+------------------------------------------------------------------------------
+-- Functions and equivalences between pointed types
+-- 
+-- Univalence as a postulate for now but hopefully we can actually prove it
+-- since the pi-combinators are sound and complete for isomorphisms between
+-- finite types
+
+record _→•_ {ℓ ℓ' : Level} (A• : Set• {ℓ}) (B• : Set• {ℓ'}) 
+  : Set (ℓ ⊔ ℓ') where
+  field 
+    fun   : ∣ A• ∣ → ∣ B• ∣
+    resp• : fun (• A•) ≡ • B•
+
+open _→•_ public
+
+-- composition of functions between pointed types
+_⊚_ : {ℓ₁ ℓ₂ ℓ₃ : Level} {A• : Set• {ℓ₁}} {B• : Set• {ℓ₂}} {C• : Set• {ℓ₃}} →
+      (A• →• B•) → (B• →• C•) → (A• →• C•)
+g ⊚ h = record { 
+          fun = fun h ∘ fun g ; 
+          resp• = trans (cong (fun h) (resp• g)) (resp• h) 
+        }
+
+_∼•_ : ∀ {ℓ ℓ'} → {A• : Set• {ℓ}} → {B• : Set• {ℓ'}} →
+      (A• →• B•) → (A• →• B•) → Set (lsuc ℓ')
+_∼•_ {ℓ} {ℓ'} {A•} {B•} f• g• = Path (fun f• (• A•)) (fun g• (• A•)) 
+
+record isequiv• {ℓ} {A B : Set} {A• B• : Set• {ℓ}} (f• : A• →• B•) : 
+  Set (lsuc ℓ) where
+  constructor mkisequiv•
+  field
+    equi : isequiv (fun f•)  
+    path : Path (• A•) (• B•)
+
+_≈•_ : ∀ {ℓ} {A B : Set} (A• B• : Set• {ℓ}) → Set (lsuc ℓ)
+_≈•_ {_} {A} {B} A• B• = Σ (A• →• B•) (isequiv• {_} {A} {B})
+
+-- ∼• is an equivalence relation
+refl∼• : {ℓ ℓ' : Level} { A B : Set} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} {f• : A• →• B•} → f• ∼• f•
+refl∼• {A• = A•} {B•} {f•} = id⇛ (fun f• (• A•))
+
+sym∼• : {ℓ ℓ' : Level} {A B : Set} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} 
+  {f• g• : A• →• B•} → f• ∼• g• → g• ∼• f•
+sym∼• f•∼•g• = sym⇛ f•∼•g•
+
+trans∼• :  {ℓ ℓ' : Level} {A B : Set} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} 
+  {f• g• h• : A• →• B•} → f• ∼• g• → g• ∼• h• → f• ∼• h•
+trans∼• fg gh = trans⇛ fg gh
 
 ------------------------------------------------------------------------------
 -- Mappings from paths to functions
@@ -307,53 +355,7 @@ eval-gives-id⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
 eval-gives-id⇛ {b = b} c rewrite eval-resp-• c = id⇛ b
 
 ------------------------------------------------------------------------------
--- Functions and equivalences between pointed types
--- 
--- Univalence as a postulate for now but hopefully we can actually prove it
--- since the pi-combinators are sound and complete for isomorphisms between
--- finite types
-
-record _→•_ {ℓ ℓ' : Level} (A• : Set• {ℓ}) (B• : Set• {ℓ'}) 
-  : Set (ℓ ⊔ ℓ') where
-  field 
-    fun   : ∣ A• ∣ → ∣ B• ∣
-    resp• : fun (• A•) ≡ • B•
-
-open _→•_ public
-
--- composition of functions between pointed types
-_⊚_ : {ℓ₁ ℓ₂ ℓ₃ : Level} {A• : Set• {ℓ₁}} {B• : Set• {ℓ₂}} {C• : Set• {ℓ₃}} →
-      (A• →• B•) → (B• →• C•) → (A• →• C•)
-g ⊚ h = record { 
-          fun = fun h ∘ fun g ; 
-          resp• = trans (cong (fun h) (resp• g)) (resp• h) 
-        }
-
-_∼•_ : ∀ {ℓ ℓ'} → {A• : Set• {ℓ}} → {B• : Set• {ℓ'}} →
-      (A• →• B•) → (A• →• B•) → Set (lsuc ℓ')
-_∼•_ {ℓ} {ℓ'} {A•} {B•} f• g• = Path (fun f• (• A•)) (fun g• (• A•)) 
-
-record isequiv• {ℓ} {A B : Set} {A• B• : Set• {ℓ}} (f• : A• →• B•) : 
-  Set (lsuc ℓ) where
-  constructor mkisequiv•
-  field
-    equi : isequiv (fun f•)  
-    path : Path (• A•) (• B•)
-
-_≈•_ : ∀ {ℓ} {A B : Set} (A• B• : Set• {ℓ}) → Set (lsuc ℓ)
-_≈•_ {_} {A} {B} A• B• = Σ (A• →• B•) (isequiv• {_} {A} {B})
-
--- ∼• is an equivalence relation
-refl∼• : {ℓ ℓ' : Level} { A B : Set} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} {f• : A• →• B•} → f• ∼• f•
-refl∼• {A• = A•} {B•} {f•} = id⇛ (fun f• (• A•))
-
-sym∼• : {ℓ ℓ' : Level} {A B : Set} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} 
-  {f• g• : A• →• B•} → f• ∼• g• → g• ∼• f•
-sym∼• f•∼•g• = sym⇛ f•∼•g•
-
-trans∼• :  {ℓ ℓ' : Level} {A B : Set} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} 
-  {f• g• h• : A• →• B•} → f• ∼• g• → g• ∼• h• → f• ∼• h•
-trans∼• fg gh = trans⇛ fg gh
+-- Univalence for pointed types
 
 eval• :  {ℓ : Level} {A• B• : Set• {ℓ}} → A• ⇛ B• → (A• →• B•)
 eval• c = record { fun = eval c ; resp• = eval-resp-• c } 
