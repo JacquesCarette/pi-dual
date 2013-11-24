@@ -3,6 +3,7 @@
 module Paths where
 
 open import Agda.Prim
+open import Data.Bool
 open import Data.Unit
 open import Data.Sum 
 open import Data.Nat hiding (_⊔_)
@@ -128,14 +129,25 @@ _∎ a = id⇛ a
 test3 : {A : Set} {a : A} → Set•
 test3 {A} {a} = •[ Path a a , id⇛ a ] 
 
-test4 : {A : Set} {a : A} → Set•
-test4 {A} {a} = •[ 2Path (id⇛ a) (id⇛ a) , id⇛ (id⇛ a) ]
+test4 : Set•
+test4 = •[ Path ℕ ℕ , id⇛ ℕ ]
 
-test5 : {A B C D : Set} {a : A} {b : B} {c : C} {d : D} → 
+test5 : Set• 
+test5 = •[ Path (ℕ , Bool) (Bool , ℕ) , swap⋆⇛ ℕ Bool ]
+
+test6 : Set• 
+test6 = •[ Path (tt , ℕ) ℕ , unite⋆⇛ ℕ ] 
+
+test7 : {A : Set} {a : A} → Set•
+test7 {A} {a} = •[ 2Path (id⇛ a) (id⇛ a) , id⇛ (id⇛ a) ]
+
+test8 : {A B C D : Set} {a : A} {b : B} {c : C} {d : D} → 
         (p : Path a b) → (q : Path c d) → Set•
-test5 {A} {B} {C} {D} {a} {b} {c} {d} p q = 
+test8 {A} {B} {C} {D} {a} {b} {c} {d} p q = 
   •[ Path (a , c) (b , d) , times⇛ p q ]
       
+
+
 -- Propositional equality implies a path
 
 ≡Path : {ℓ : Level} {A : Set ℓ} {x y : A} → (x ≡ y) → Path x y
@@ -325,8 +337,8 @@ sym⇛ {ℓ} {A} {B} {a} {b} p =
     (λ _ _ p' q' → times⇛ p' q')
   {A} {B} {a} {b} p 
 
-test6 : {A : Set} {a : A} → Path (a , (tt , a)) ((tt , a) , a)
-test6 {A} {a} = sym⇛ (times⇛ (unite⋆⇛ a) (uniti⋆⇛ a)) 
+test9 : {A : Set} {a : A} → Path (a , (tt , a)) ((tt , a) , a)
+test9 {A} {a} = sym⇛ (times⇛ (unite⋆⇛ a) (uniti⋆⇛ a)) 
              -- evaluates to (times⇛ (uniti⋆⇛ a) (unite⋆⇛ a) 
 {-
 idright : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} {p : Path a b} →
