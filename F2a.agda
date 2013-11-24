@@ -147,102 +147,88 @@ swap₊ : {ℓ : Level} {A B : Set ℓ} → A ⊎ B → B ⊎ A
 swap₊ (inj₁ a) = inj₂ a
 swap₊ (inj₂ b) = inj₁ b
 
+assocl₊ : {ℓ : Level} {A B C : Set ℓ} → A ⊎ (B ⊎ C) → (A ⊎ B) ⊎ C
+assocl₊ (inj₁ a) = inj₁ (inj₁ a)
+assocl₊ (inj₂ (inj₁ b)) = inj₁ (inj₂ b)
+assocl₊ (inj₂ (inj₂ c)) = inj₂ c
+
+assocr₊ : {ℓ : Level} {A B C : Set ℓ} → (A ⊎ B) ⊎ C → A ⊎ (B ⊎ C)
+assocr₊ (inj₁ (inj₁ a)) = inj₁ a
+assocr₊ (inj₁ (inj₂ b)) = inj₂ (inj₁ b)
+assocr₊ (inj₂ c) = inj₂ (inj₂ c)
+
+unite⋆ : {ℓ : Level} {A : Set ℓ} → ⊤ × A → A
+unite⋆ (tt , a) = a
+
+uniti⋆ : {ℓ : Level} {A : Set ℓ} → A → ⊤ × A 
+uniti⋆ a = (tt , a)
+
+swap⋆ : {ℓ : Level} {A B : Set ℓ} → A × B → B × A
+swap⋆ (a , b) = (b , a) 
+
+assocl⋆ : {ℓ : Level} {A B C : Set ℓ} → A × (B × C) → (A × B) × C
+assocl⋆ (a , (b , c)) = ((a , b) , c) 
+
+assocr⋆ : {ℓ : Level} {A B C : Set ℓ} → (A × B) × C → A × (B × C)
+assocr⋆ ((a , b) , c) = (a , (b , c))
+
+dist : {ℓ : Level} {A B C : Set ℓ} → (A ⊎ B) × C → (A × C ⊎ B × C)
+dist (inj₁ a , c) = inj₁ (a , c)
+dist (inj₂ b , c) = inj₂ (b , c)
+
+fact : {ℓ : Level} {A B C : Set ℓ} → (A × C ⊎ B × C) → (A ⊎ B) × C
+fact (inj₁ (a , c)) = (inj₁ a , c) 
+fact (inj₂ (b , c)) = (inj₂ b , c) 
+
 eval : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → Path a b → (A → B)
---eval (swap₁₊⇛ a) (inj₁ x) = inj₂ x
---eval (swap₁₊⇛ a) (inj₂ y) = inj₁ y
---eval (swap₂₊⇛ b) (inj₁ x) = inj₂ x
---eval (swap₂₊⇛ b) (inj₂ y) = inj₁ y
--- I prefer the presentation below instead of the four commented lines above
--- It would be nice to rewrite the rest of the code in that style
-eval (swap₁₊⇛ _) = swap₊ 
-eval (swap₂₊⇛ _) = swap₊ 
-eval (assocl₁₊⇛ a) (inj₁ x) = inj₁ (inj₁ x)
-eval (assocl₁₊⇛ a) (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
-eval (assocl₁₊⇛ a) (inj₂ (inj₂ y)) = inj₂ y
-eval (assocl₂₁₊⇛ b) (inj₁ x) = inj₁ (inj₁ x)
-eval (assocl₂₁₊⇛ b) (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
-eval (assocl₂₁₊⇛ b) (inj₂ (inj₂ y)) = inj₂ y
-eval (assocl₂₂₊⇛ c) (inj₁ x) = inj₁ (inj₁ x)
-eval (assocl₂₂₊⇛ c) (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
-eval (assocl₂₂₊⇛ c) (inj₂ (inj₂ y)) = inj₂ y
-eval (assocr₁₁₊⇛ a) (inj₁ (inj₁ x)) = inj₁ x
-eval (assocr₁₁₊⇛ a) (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
-eval (assocr₁₁₊⇛ a) (inj₂ y) = inj₂ (inj₂ y)
-eval (assocr₁₂₊⇛ b) (inj₁ (inj₁ x)) = inj₁ x
-eval (assocr₁₂₊⇛ b) (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
-eval (assocr₁₂₊⇛ b) (inj₂ y) = inj₂ (inj₂ y)
-eval (assocr₂₊⇛ c) (inj₁ (inj₁ x)) = inj₁ x
-eval (assocr₂₊⇛ c) (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
-eval (assocr₂₊⇛ c) (inj₂ y) = inj₂ (inj₂ y)
-eval {b = b} (unite⋆⇛ .b) (tt , x) = x
-eval {a = a} (uniti⋆⇛ .a) x = tt , x
-eval (swap⋆⇛ a b) (x , y) = y , x
-eval (assocl⋆⇛ a b c) (x , y , z) = (x , y) , z
-eval (assocr⋆⇛ a b c) ((x , y) , z) = x , y , z
-eval (dist₁⇛ a c) (inj₁ x , y) = inj₁ (x , y)
-eval (dist₁⇛ a c) (inj₂ x , y) = inj₂ (x , y)
-eval (dist₂⇛ b c) (inj₁ x , z) = inj₁ (x , z)
-eval (dist₂⇛ b c) (inj₂ y , z) = inj₂ (y , z)
-eval (factor₁⇛ a c) (inj₁ (x , y)) = inj₁ x , y
-eval (factor₁⇛ a c) (inj₂ (x , y)) = inj₂ x , y
-eval (factor₂⇛ b c) (inj₁ (x , y)) = inj₁ x , y
-eval (factor₂⇛ b c) (inj₂ (x , y)) = inj₂ x , y
-eval {a = a} (id⇛ .a) x = x
-eval (trans⇛ c d) x = eval d (eval c x)
-eval (plus₁⇛ c d) (inj₁ x) = inj₁ (eval c x)
-eval (plus₁⇛ c d) (inj₂ x) = inj₂ (eval d x)
-eval (plus₂⇛ c d) (inj₁ x) = inj₁ (eval c x)
-eval (plus₂⇛ c d) (inj₂ x) = inj₂ (eval d x)
-eval (times⇛ c d) (x , y) = (eval c x , eval d y)
+eval (swap₁₊⇛ _)           = swap₊ 
+eval (swap₂₊⇛ _)           = swap₊ 
+eval (assocl₁₊⇛ _)         = assocl₊ 
+eval (assocl₂₁₊⇛ _)        = assocl₊ 
+eval (assocl₂₂₊⇛ _)        = assocl₊ 
+eval (assocr₁₁₊⇛ _)        = assocr₊
+eval (assocr₁₂₊⇛ _)        = assocr₊
+eval (assocr₂₊⇛ _)         = assocr₊
+eval (unite⋆⇛ _)           = unite⋆
+eval (uniti⋆⇛ _)           = uniti⋆
+eval (swap⋆⇛ _ _)          = swap⋆ 
+eval (assocl⋆⇛ _ _ _)      = assocl⋆
+eval (assocr⋆⇛ _ _ _)      = assocr⋆
+eval (dist₁⇛ _ _)          = dist
+eval (dist₂⇛ _ _)          = dist
+eval (factor₁⇛ _ _)        = fact
+eval (factor₂⇛ _ _)        = fact
+eval (id⇛ _)               = id
+eval (trans⇛ c d)          = eval d ∘ eval c
+eval (plus₁⇛ c d)          = Data.Sum.map (eval c) (eval d) 
+eval (plus₂⇛ c d)          = Data.Sum.map (eval c) (eval d) 
+eval (times⇛ c d)          = Data.Product.map (eval c) (eval d)
 
 -- Inverses
 
 evalB : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → Path a b → (B → A) 
---evalB (swap₂₊⇛ a) (inj₁ x) = inj₂ x
---evalB (swap₂₊⇛ a) (inj₂ y) = inj₁ y
---evalB (swap₁₊⇛ b) (inj₁ x) = inj₂ x
---evalB (swap₁₊⇛ b) (inj₂ y) = inj₁ y
--- Same comment as above
-evalB (swap₂₊⇛ _) = swap₊
-evalB (swap₁₊⇛ _) = swap₊
-evalB (assocr₂₊⇛ a) (inj₁ x) = inj₁ (inj₁ x)
-evalB (assocr₂₊⇛ a) (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
-evalB (assocr₂₊⇛ a) (inj₂ (inj₂ y)) = inj₂ y
-evalB (assocr₁₂₊⇛ b) (inj₁ x) = inj₁ (inj₁ x)
-evalB (assocr₁₂₊⇛ b) (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
-evalB (assocr₁₂₊⇛ b) (inj₂ (inj₂ y)) = inj₂ y
-evalB (assocr₁₁₊⇛ c) (inj₁ x) = inj₁ (inj₁ x)
-evalB (assocr₁₁₊⇛ c) (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
-evalB (assocr₁₁₊⇛ c) (inj₂ (inj₂ y)) = inj₂ y
-evalB (assocl₂₂₊⇛ a) (inj₁ (inj₁ x)) = inj₁ x
-evalB (assocl₂₂₊⇛ a) (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
-evalB (assocl₂₂₊⇛ a) (inj₂ y) = inj₂ (inj₂ y)
-evalB (assocl₂₁₊⇛ b) (inj₁ (inj₁ x)) = inj₁ x
-evalB (assocl₂₁₊⇛ b) (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
-evalB (assocl₂₁₊⇛ b) (inj₂ y) = inj₂ (inj₂ y)
-evalB (assocl₁₊⇛ c) (inj₁ (inj₁ x)) = inj₁ x
-evalB (assocl₁₊⇛ c) (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
-evalB (assocl₁₊⇛ c) (inj₂ y) = inj₂ (inj₂ y)
-evalB {a = a} (uniti⋆⇛ .a) (tt , x) = x
-evalB {b = b} (unite⋆⇛ .b) x = tt , x
-evalB (swap⋆⇛ a b) (x , y) = y , x
-evalB (assocr⋆⇛ a b c) (x , y , z) = (x , y) , z
-evalB (assocl⋆⇛ a b c) ((x , y) , z) = x , y , z
-evalB (dist₁⇛ a c) (inj₁ (x , y)) = inj₁ x , y
-evalB (dist₁⇛ a c) (inj₂ (x , y)) = inj₂ x , y
-evalB (dist₂⇛ b c) (inj₁ (x , z)) = inj₁ x , z
-evalB (dist₂⇛ b c) (inj₂ (y , z)) = inj₂ y , z
-evalB (factor₁⇛ a c) (inj₁ x , y) = inj₁ (x , y)
-evalB (factor₁⇛ a c) (inj₂ x , y) = inj₂ (x , y)
-evalB (factor₂⇛ b c) (inj₁ x , y) = inj₁ (x , y)
-evalB (factor₂⇛ b c) (inj₂ x , y) = inj₂ (x , y)
-evalB {a = a} (id⇛ .a) x = x
-evalB (trans⇛ c d) x = evalB c (evalB d x)
-evalB (plus₁⇛ c d) (inj₁ x) = inj₁ (evalB c x)
-evalB (plus₁⇛ c d) (inj₂ x) = inj₂ (evalB d x)
-evalB (plus₂⇛ c d) (inj₁ x) = inj₁ (evalB c x)
-evalB (plus₂⇛ c d) (inj₂ x) = inj₂ (evalB d x)
-evalB (times⇛ c d) (x , y) = (evalB c x , evalB d y)
+evalB (swap₂₊⇛ _)          = swap₊
+evalB (swap₁₊⇛ _)          = swap₊
+evalB (assocr₂₊⇛ _)        = assocl₊
+evalB (assocr₁₂₊⇛ _)       = assocl₊
+evalB (assocr₁₁₊⇛ _)       = assocl₊
+evalB (assocl₂₂₊⇛ _)       = assocr₊
+evalB (assocl₂₁₊⇛ _)       = assocr₊
+evalB (assocl₁₊⇛ _)        = assocr₊
+evalB (uniti⋆⇛ _)          = unite⋆
+evalB (unite⋆⇛ _)          = uniti⋆
+evalB (swap⋆⇛ _ _)         = swap⋆
+evalB (assocr⋆⇛ _ _ _)     = assocl⋆
+evalB (assocl⋆⇛ _ _ _)     = assocr⋆
+evalB (dist₁⇛ _ _)         = fact
+evalB (dist₂⇛ _ _)         = fact
+evalB (factor₁⇛ _ _)       = dist
+evalB (factor₂⇛ _ _)       = dist
+evalB (id⇛ _)              = id
+evalB (trans⇛ c d)         = evalB c ∘ evalB d
+evalB (plus₁⇛ c d)         = Data.Sum.map (evalB c) (evalB d) 
+evalB (plus₂⇛ c d)         = Data.Sum.map (evalB c) (evalB d) 
+evalB (times⇛ c d)         = Data.Product.map (evalB c) (evalB d) 
 
 eval-resp-• : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
               (c : Path a b) → eval c a ≡ b
