@@ -99,15 +99,15 @@ swap₊ : {ℓ : Level} {A B : Set ℓ} → A ⊎ B → B ⊎ A
 swap₊ (inj₁ a) = inj₂ a
 swap₊ (inj₂ b) = inj₁ b
 
-eval : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
-       •[ A , a ] ⇛ •[ B , b ] → A → B
+eval : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → Path a b → (A → B)
 --eval (swap₁₊⇛ a) (inj₁ x) = inj₂ x
 --eval (swap₁₊⇛ a) (inj₂ y) = inj₁ y
 --eval (swap₂₊⇛ b) (inj₁ x) = inj₂ x
 --eval (swap₂₊⇛ b) (inj₂ y) = inj₁ y
 -- I prefer the presentation below instead of the four commented lines above
-eval (swap₁₊⇛ a) = swap₊ 
-eval (swap₂₊⇛ b) = swap₊ 
+-- It would be nice to rewrite the rest of the code in that style
+eval (swap₁₊⇛ _) = swap₊ 
+eval (swap₂₊⇛ _) = swap₊ 
 eval (assocl₁₊⇛ a) (inj₁ x) = inj₁ (inj₁ x)
 eval (assocl₁₊⇛ a) (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
 eval (assocl₁₊⇛ a) (inj₂ (inj₂ y)) = inj₂ y
@@ -147,14 +147,16 @@ eval (plus₂⇛ c d) (inj₁ x) = inj₁ (eval c x)
 eval (plus₂⇛ c d) (inj₂ x) = inj₂ (eval d x)
 eval (times⇛ c d) (x , y) = (eval c x , eval d y)
 
--- and a backwards one too
+-- Inverses
 
-evalB : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
-       Path a b → B → A
-evalB (swap₂₊⇛ a) (inj₁ x) = inj₂ x
-evalB (swap₂₊⇛ a) (inj₂ y) = inj₁ y
-evalB (swap₁₊⇛ b) (inj₁ x) = inj₂ x
-evalB (swap₁₊⇛ b) (inj₂ y) = inj₁ y
+evalB : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → Path a b → (B → A) 
+--evalB (swap₂₊⇛ a) (inj₁ x) = inj₂ x
+--evalB (swap₂₊⇛ a) (inj₂ y) = inj₁ y
+--evalB (swap₁₊⇛ b) (inj₁ x) = inj₂ x
+--evalB (swap₁₊⇛ b) (inj₂ y) = inj₁ y
+-- Same comment as above
+evalB (swap₂₊⇛ _) = swap₊
+evalB (swap₁₊⇛ _) = swap₊
 evalB (assocr₂₊⇛ a) (inj₁ x) = inj₁ (inj₁ x)
 evalB (assocr₂₊⇛ a) (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
 evalB (assocr₂₊⇛ a) (inj₂ (inj₂ y)) = inj₂ y
@@ -195,7 +197,7 @@ evalB (plus₂⇛ c d) (inj₂ x) = inj₂ (evalB d x)
 evalB (times⇛ c d) (x , y) = (evalB c x , evalB d y)
 
 eval-resp-• : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
-              (c : •[ A , a ] ⇛ •[ B , b ]) → eval c a ≡ b
+              (c : Path a b) → eval c a ≡ b
 eval-resp-• (swap₁₊⇛ a) = refl
 eval-resp-• (swap₂₊⇛ b) = refl
 eval-resp-• (assocl₁₊⇛ a) = refl
@@ -220,7 +222,7 @@ eval-resp-• (plus₂⇛ c d) rewrite eval-resp-• d = refl
 eval-resp-• (times⇛ c d) rewrite eval-resp-• c | eval-resp-• d = refl 
 
 evalB-resp-• : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
-              (c : •[ A , a ] ⇛ •[ B , b ]) → evalB c b ≡ a
+              (c : Path a b) → evalB c b ≡ a
 evalB-resp-• (swap₁₊⇛ a) = refl
 evalB-resp-• (swap₂₊⇛ b) = refl
 evalB-resp-• (assocl₁₊⇛ a) = refl
@@ -301,7 +303,7 @@ eval∘evalB (plus₂⇛ {a = a} c₁ c₂) (inj₂ y) = plus₂⇛ (id⇛ a) (e
 eval∘evalB (times⇛ c₁ c₂) (x , y) = times⇛ (eval∘evalB c₁ x) (eval∘evalB c₂ y) 
 
 eval-gives-id⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → 
-  (c : •[ A , a ] ⇛ •[ B , b ]) → •[ B , eval c a ] ⇛ •[ B , b ]
+  (c : Path a b) → Path (eval c a) b 
 eval-gives-id⇛ {b = b} c rewrite eval-resp-• c = id⇛ b
 
 ------------------------------------------------------------------------------
