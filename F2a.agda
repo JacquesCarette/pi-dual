@@ -35,7 +35,7 @@ open import Paths
 ------------------------------------------------------------------------------
 -- Isomorphisms (or more accurately equivalences) between raw types
 -- eventually delete this entire section and only use the corresponding
--- notions for for pointed types below
+-- notions for pointed types below
 
 _∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
       (f g : (x : A) → P x) → Set (lsuc ℓ' ⊔ ℓ)
@@ -93,14 +93,21 @@ postulate
   univalence : {ℓ : Level} {A B : Set ℓ} → (Path A B) ≃ (A ≃ B)
 
 ------------------------------------------------------------------------------
--- We can extract a forward evaluator (i.e. paths really are functions)
+-- Mappings from paths to functions
 
-eval :  {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
-    •[ A , a ] ⇛ •[ B , b ] → A → B
-eval (swap₁₊⇛ a) (inj₁ x) = inj₂ x
-eval (swap₁₊⇛ a) (inj₂ y) = inj₁ y
-eval (swap₂₊⇛ b) (inj₁ x) = inj₂ x
-eval (swap₂₊⇛ b) (inj₂ y) = inj₁ y
+swap₊ : {ℓ : Level} {A B : Set ℓ} → A ⊎ B → B ⊎ A
+swap₊ (inj₁ a) = inj₂ a
+swap₊ (inj₂ b) = inj₁ b
+
+eval : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
+       •[ A , a ] ⇛ •[ B , b ] → A → B
+--eval (swap₁₊⇛ a) (inj₁ x) = inj₂ x
+--eval (swap₁₊⇛ a) (inj₂ y) = inj₁ y
+--eval (swap₂₊⇛ b) (inj₁ x) = inj₂ x
+--eval (swap₂₊⇛ b) (inj₂ y) = inj₁ y
+-- I prefer the presentation below instead of the four commented lines above
+eval (swap₁₊⇛ a) = swap₊ 
+eval (swap₂₊⇛ b) = swap₊ 
 eval (assocl₁₊⇛ a) (inj₁ x) = inj₁ (inj₁ x)
 eval (assocl₁₊⇛ a) (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
 eval (assocl₁₊⇛ a) (inj₂ (inj₂ y)) = inj₂ y
