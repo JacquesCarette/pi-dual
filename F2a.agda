@@ -96,7 +96,7 @@ idequiv = (id , equiv₁ idqinv)
 
 happly : ∀ {ℓ ℓ'} {A : Set ℓ} {B : A → Set ℓ'} {f g : (a : A) → B a} → 
          Path f g → (f ∼ g)
-happly {ℓ} {ℓ'} {A} {B} {f} {g} p = ?
+happly {ℓ} {ℓ'} {A} {B} {f} {g} p = {!!}
 {--
   (pathInd 
     (λ {_} {_} {f} {g} p → {!f!} ∼ {!!}) -- f ∼ g)
