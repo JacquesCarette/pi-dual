@@ -31,6 +31,9 @@ test0 = •[ ℕ , 3 ]
 test1 : Set• {lsuc lzero}
 test1 = •[ Set , ℕ ]
 
+test1' : {ℓ ℓ' : Level} {A : Set ℓ} {B : Set ℓ'} {a : A} → Set• {ℓ ⊔ ℓ'}
+test1' {ℓ} {ℓ'} {A} {B} {a} = •[ A ⊎ B , inj₁ a ]
+
 test2 : ∀ {ℓ} → Set• {lsuc (lsuc ℓ)}
 test2 {ℓ} = •[ Set (lsuc ℓ) , Set ℓ ]
 
@@ -111,8 +114,8 @@ Path {ℓ} {A} {B} a b = •[ A , a ] ⇛ •[ B , b ]
 
 2Path : {ℓ : Level} {A B C D : Set ℓ} {a : A} {b : B} {c : C} {d : D} → 
   (p : Path a b) → (q : Path c d) → Set (lsuc (lsuc ℓ))
-2Path {ℓ} {A} {B} {C} {D} {a} {b} {c} {d} p q = 
-  •[ Path a b , p ] ⇛ •[ Path c d , q ]
+2Path {ℓ} {A} {B} {C} {D} {a} {b} {c} {d} p q = Path p q 
+  --  •[ Path a b , p ] ⇛ •[ Path c d , q ]
 
 _≡⟨_⟩_ : ∀ {ℓ} → {A B C : Set ℓ} (a : A) {b : B} {c : C} → 
          Path a b → Path b c → Path a c
@@ -707,3 +710,4 @@ mutual
   ... | singleton .x | singleton .y = singleton (x , y)
 
 --}
+
