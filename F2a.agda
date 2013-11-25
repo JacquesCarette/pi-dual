@@ -28,13 +28,15 @@ open import Paths
 --   we consider, we hope to _prove_ univalence
 -- 
 -- An interesting question is whether functions between pointed types 
--- should use ≡ or if they should refer to paths?
+-- should use ≡ or if they should refer to paths
 -- 
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
--- Isomorphisms (or more accurately equivalences) between raw types
+-- Equivalences between raw functions and types
 -- This is generalized below to pointed types
+
+-- Two functions are ∼ is they map each argument to related results
 
 _∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
       (f g : (x : A) → P x) → Set (lsuc ℓ' ⊔ ℓ)
@@ -42,13 +44,15 @@ _∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → Path (f x) (g x)
 
 -- ∼ is an equivalence relation
 
-refl∼ : {A B : Set} {f : A → B} → (f ∼ f)
-refl∼ {A} {B} {f} x = id⇛ (f x)
+refl∼ : {ℓ ℓ' : Level} {A : Set ℓ} {B : Set ℓ'} {f : A → B} → (f ∼ f)
+refl∼ {ℓ} {ℓ'} {A} {B} {f} x = id⇛ (f x)
 
-sym∼ : {A B : Set} {f g : A → B} → (f ∼ g) → (g ∼ f)
+sym∼ : {ℓ ℓ' : Level} {A : Set ℓ} {B : Set ℓ'} {f g : A → B} → 
+       (f ∼ g) → (g ∼ f)
 sym∼ H x = sym⇛ (H x) 
 
-trans∼ : {A B : Set} {f g h : A → B} → (f ∼ g) → (g ∼ h) → (f ∼ h)
+trans∼ : {ℓ ℓ' : Level} {A : Set ℓ} {B : Set ℓ'} {f g h : A → B} → 
+        (f ∼ g) → (g ∼ h) → (f ∼ h)
 trans∼ H G x = trans⇛ (H x) (G x)
 
 -- quasi-inverses
@@ -106,39 +110,110 @@ record _→•_ {ℓ ℓ' : Level} (A• : Set• {ℓ}) (B• : Set• {ℓ'})
 
 open _→•_ public
 
+id• : {ℓ : Level} {A• : Set• {ℓ}} → (A• →• A•)
+id• = record { fun = id ; resp• = refl } 
+
 -- composition of functions between pointed types
+
 _⊚_ : {ℓ₁ ℓ₂ ℓ₃ : Level} {A• : Set• {ℓ₁}} {B• : Set• {ℓ₂}} {C• : Set• {ℓ₃}} →
-      (A• →• B•) → (B• →• C•) → (A• →• C•)
-g ⊚ h = record { 
-          fun = fun h ∘ fun g ; 
+      (B• →• C•) → (A• →• B•) → (A• →• C•)
+h ⊚ g = record { 
+          fun   = fun h ∘ fun g ; 
           resp• = trans (cong (fun h) (resp• g)) (resp• h) 
         }
 
-_∼•_ : ∀ {ℓ ℓ'} → {A• : Set• {ℓ}} → {B• : Set• {ℓ'}} →
-      (A• →• B•) → (A• →• B•) → Set (lsuc ℓ')
-_∼•_ {ℓ} {ℓ'} {A•} {B•} f• g• = Path (fun f• (• A•)) (fun g• (• A•)) 
+-- two pointed functions are ∼ if they are ∼ as regular functions and they
+-- agree on the basepoints
 
+record _∼•_ {ℓ ℓ'} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} (f• g• : A• →• B•) 
+  : Set (lsuc ℓ' ⊔ ℓ) where
+  field
+    fsim : fun f• ∼ fun g• 
+    bsim : fun f• (• A•) ≡ fun g• (• A•)
+
+open _∼•_ public
+
+-- ∼• is an equivalence relation
+
+refl∼• : {ℓ ℓ' : Level} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} {f• : A• →• B•} →
+         (f• ∼• f•)
+refl∼• {ℓ} {ℓ'} {A•} {B•} {f•} = record {
+    fsim = refl∼ {f = fun f•} ;
+    bsim = refl
+  } 
+
+sym∼• : {ℓ ℓ' : Level} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} 
+        {f• g• : A• →• B•} → (f• ∼• g•) → (g• ∼• f•)
+sym∼• f•∼•g• = record {
+    fsim = sym∼ (fsim f•∼•g•) ;
+    bsim = sym (bsim f•∼•g•)
+  } 
+
+trans∼• : {ℓ ℓ' : Level} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} 
+          {f• g• h• : A• →• B•} → (f• ∼• g•) → (g• ∼• h•) → (f• ∼• h•)
+trans∼• fg gh = record { 
+    fsim = trans∼ (fsim fg) (fsim gh) ; 
+    bsim = trans (bsim fg) (bsim gh) 
+  } 
+
+-- quasi-inverses
+
+record qinv• {ℓ ℓ'} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} (f• : A• →• B•) : 
+  Set (lsuc ℓ ⊔ lsuc ℓ') where
+  constructor mkqinv•
+  field
+    g• : B• →• A•
+    α• : (f• ⊚ g•) ∼• id•
+    β• : (g• ⊚ f•) ∼• id•
+
+idqinv• : ∀ {ℓ} → {A• : Set• {ℓ}} → qinv• {ℓ} {ℓ} {A•} {A•} id•
+idqinv• = record {
+           g• = id• ;
+           α• = record { 
+                  fsim = λ b → id⇛ b ; 
+                  bsim = refl
+                } ; 
+           β• = record { 
+                  fsim = λ a → id⇛ a ; 
+                  bsim = refl  
+                }
+         } 
+
+-- equivalences
+
+record isequiv• {ℓ ℓ'} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} (f• : A• →• B•) : 
+  Set (lsuc ℓ ⊔ lsuc ℓ') where
+  constructor mkisequiv•
+  field
+    g• : B• →• A• 
+    α• : (f• ⊚ g•) ∼• id•
+    h• : B• →• A•
+    β• : (h• ⊚ f•) ∼• id•
+
+equiv•₁ : ∀ {ℓ ℓ'} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} {f• : A• →• B•} → 
+          qinv• f• → isequiv• f•
+equiv•₁ (mkqinv• qg qα qβ) = mkisequiv• qg qα qg qβ 
+
+_≃•_ : ∀ {ℓ ℓ'} (A• : Set• {ℓ}) (B• : Set• {ℓ'}) → Set (lsuc ℓ ⊔ lsuc ℓ')
+A ≃• B = Σ (A →• B) isequiv•
+
+idequiv• : ∀ {ℓ} {A• : Set• {ℓ}} → A• ≃• A•
+idequiv• = ( id• , equiv•₁ idqinv•) 
+
+postulate 
+  univalence• : {ℓ : Level} {A• B• : Set• {ℓ}} → (Path A• B•) ≃ (A• ≃• B•)
+
+{--
 record isequiv• {ℓ} {A B : Set} {A• B• : Set• {ℓ}} (f• : A• →• B•) : 
   Set (lsuc ℓ) where
   constructor mkisequiv•
   field
     equi : isequiv (fun f•)  
-    path : Path (• A•) (• B•)
+    path' : Path (• A•) (• B•)
 
 _≈•_ : ∀ {ℓ} {A B : Set} (A• B• : Set• {ℓ}) → Set (lsuc ℓ)
 _≈•_ {_} {A} {B} A• B• = Σ (A• →• B•) (isequiv• {_} {A} {B})
-
--- ∼• is an equivalence relation
-refl∼• : {ℓ ℓ' : Level} { A B : Set} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} {f• : A• →• B•} → f• ∼• f•
-refl∼• {A• = A•} {B•} {f•} = id⇛ (fun f• (• A•))
-
-sym∼• : {ℓ ℓ' : Level} {A B : Set} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} 
-  {f• g• : A• →• B•} → f• ∼• g• → g• ∼• f•
-sym∼• f•∼•g• = sym⇛ f•∼•g•
-
-trans∼• :  {ℓ ℓ' : Level} {A B : Set} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} 
-  {f• g• h• : A• →• B•} → f• ∼• g• → g• ∼• h• → f• ∼• h•
-trans∼• fg gh = trans⇛ fg gh
+--}
 
 ------------------------------------------------------------------------------
 -- Mappings from paths to functions
@@ -291,6 +366,7 @@ cong⇚ : {ℓ : Level} {A B : Set ℓ} {a₁ a₂ : A}
        (f : Path a₁ a₂ ) → (x : A) → Path (evalB f x) (evalB f x)
 cong⇚ f x = id⇛ (evalB f x)
 
+{--
 eval∘evalB :  {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → 
   (c : Path a b) → (x : A) → Path (evalB c (eval c x)) x
 eval∘evalB (swap₁₊⇛ a) (inj₁ x) = id⇛ (inj₁ x)
@@ -335,6 +411,7 @@ eval∘evalB (plus₁⇛ {a = a} c₁ c₂) (inj₂ y) = plus₂⇛ (id⇛ a) (e
 eval∘evalB (plus₂⇛ {b = b} c₁ c₂) (inj₁ x) = plus₁⇛ (eval∘evalB c₁ x) (id⇛ b)
 eval∘evalB (plus₂⇛ {a = a} c₁ c₂) (inj₂ y) = plus₂⇛ (id⇛ a) (eval∘evalB c₂ y)
 eval∘evalB (times⇛ c₁ c₂) (x , y) = times⇛ (eval∘evalB c₁ x) (eval∘evalB c₂ y) 
+--}
 
 eval-gives-id⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → 
   (c : Path a b) → Path (eval c a) b 
@@ -352,8 +429,10 @@ evalB• c = record { fun = evalB c ; resp• = evalB-resp-• c }
 -- This is at the wrong level... We need to define equivalences ≃ between
 -- pointed sets too...
 
+{--
 path2iso : {ℓ : Level} {A• B• : Set• {ℓ}} → A• ⇛ B• → ∣ A• ∣ ≃ ∣ B• ∣
 path2iso {ℓ} {a} {b} p = (eval p , 
   mkisequiv (evalB p) (λ x → {!!}) (evalB p) (λ x → {!eval∘evalB p!}))
+--}
 
 ------------------------------------------------------------------------------
