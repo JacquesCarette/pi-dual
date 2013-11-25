@@ -38,9 +38,13 @@ open import Paths
 
 -- Two functions are ∼ is they map each argument to related results
 
-_∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
-      (f g : (x : A) → P x) → Set (lsuc ℓ' ⊔ ℓ)
-_∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → Path (f x) (g x)
+_∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {B : Set ℓ'} → 
+      (f g : A → B) → Set (lsuc ℓ' ⊔ ℓ)
+_∼_ {ℓ} {ℓ'} {A} {B} f g = (x : A) → Path (f x) (g x)
+
+--_∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
+--      (f g : (x : A) → P x) → Set (lsuc ℓ' ⊔ ℓ)
+--_∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → Path (f x) (g x)
 
 -- ∼ is an equivalence relation
 
@@ -94,25 +98,28 @@ idequiv = (id , equiv₁ idqinv)
 
 -- Function extensionality
 
-happly : ∀ {ℓ ℓ'} {A : Set ℓ} {B : A → Set ℓ'} {f g : (a : A) → B a} → 
-         Path f g → (f ∼ g)
-happly {ℓ} {ℓ'} {A} {B} {f} {g} p = {!!}
-{--
+--happly : ∀ {ℓ ℓ'} {A : Set ℓ} {B : A → Set ℓ'} {f g : (a : A) → B a} → 
+--         Path f g → (f ∼ g)
+happly : ∀ {ℓ} {A B : Set ℓ} {f g : A → B} → Path f g → (f ∼ g)
+happly {ℓ} {A} {B} {f} {g} p = 
   (pathInd 
-    (λ {_} {_} {f} {g} p → {!f!} ∼ {!!}) -- f ∼ g)
+    (λ {_} {_} {f} {g} p → {!!}) -- f ∼ g
     {!!} {!!} 
     {!!} {!!} {!!} {!!} {!!} {!!} 
     {!!} {!!} {!!} 
     {!!} {!!} {!!} {!!} {!!} {!!} 
     {!!} {!!} {!!} {!!} {!!})
-  {{!!}} {{!!}} {f} {g} p 
---}
+  {A → B} {A → B} {f} {g} p 
 
 postulate
-  funextP : {A : Set} {B : A → Set} {f g : (a : A) → B a} → 
+  funextP : {A : Set} {B : Set} {f g : A → B} → 
             isequiv {A = Path f g} {B = f ∼ g} happly
+--  funextP : {A : Set} {B : A → Set} {f g : (a : A) → B a} → 
+--            isequiv {A = Path f g} {B = f ∼ g} happly
 
-funext : {A : Set} {B : A → Set} {f g : (a : A) → B a} → 
+--funext : {A : Set} {B : A → Set} {f g : (a : A) → B a} → 
+--         (f ∼ g) → (Path f g)
+funext : {A : Set} {B : Set} {f g : A → B} → 
          (f ∼ g) → (Path f g)
 funext = isequiv.g funextP
 

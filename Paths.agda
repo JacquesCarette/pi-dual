@@ -34,6 +34,9 @@ test1 = •[ Set , ℕ ]
 test2 : ∀ {ℓ} → Set• {lsuc (lsuc ℓ)}
 test2 {ℓ} = •[ Set (lsuc ℓ) , Set ℓ ]
 
+test2' : Set• {lzero}
+test2' = •[ (Bool → Bool) , not ]
+
 ------------------------------------------------------------------------------
 -- Paths
 
@@ -100,16 +103,6 @@ data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc ℓ) wher
   times⇛     : {A B C D : Set ℓ} {a : A} {b : B} {c : C} {d : D} → 
                (•[ A , a ] ⇛ •[ C , c ]) → (•[ B , b ] ⇛ •[ D , d ]) →
                (•[ A × B , (a , b) ] ⇛ •[ C × D , (c , d) ])
-{--
-  -- should we have something like that too?
-  fun⇛     : {A B C D : Set ℓ} {a : A} {b : B} {c : C} {d : D} → 
-               (•[ A , a ] ⇛ •[ C , c ]) → (•[ B , b ] ⇛ •[ D , d ]) →
-               (•[ A → B , ??? ] ⇛ •[ C → D , ??? ])
-  -- Jacques says: no!  That would build-in functions, and we want to show
-  -- that we can do so 'by hand'.
-  -- Amr says: but we can experiment with that to understand the structure
-  -- of higher-order functions...
---}
 
 -- Abbreviations and small examples
 
