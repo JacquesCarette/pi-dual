@@ -92,15 +92,133 @@ A ≃ B = Σ (A → B) isequiv
 idequiv : ∀ {ℓ} {A : Set ℓ} → A ≃ A
 idequiv = (id , equiv₁ idqinv)
 
+-- Function extensionality
+
+happly : ∀ {ℓ ℓ'} {A : Set ℓ} {B : A → Set ℓ'} {f g : (a : A) → B a} → 
+         Path f g → (f ∼ g)
+happly {ℓ} {ℓ'} {A} {B} {f} {g} p = ?
+{--
+  (pathInd 
+    (λ {_} {_} {f} {g} p → {!f!} ∼ {!!}) -- f ∼ g)
+    {!!} {!!} 
+    {!!} {!!} {!!} {!!} {!!} {!!} 
+    {!!} {!!} {!!} 
+    {!!} {!!} {!!} {!!} {!!} {!!} 
+    {!!} {!!} {!!} {!!} {!!})
+  {{!!}} {{!!}} {f} {g} p 
+--}
+
+postulate
+  funextP : {A : Set} {B : A → Set} {f g : (a : A) → B a} → 
+            isequiv {A = Path f g} {B = f ∼ g} happly
+
+funext : {A : Set} {B : A → Set} {f g : (a : A) → B a} → 
+         (f ∼ g) → (Path f g)
+funext = isequiv.g funextP
+
+-- Universes; univalence
+
+idtoeqv : {ℓ : Level} {A B : Set ℓ} → (A ≡ B) → (A ≃ B)
+idtoeqv {ℓ} {A} {B} p = {!!}
+
 postulate 
   univalence : {ℓ : Level} {A B : Set ℓ} → (Path A B) ≃ (A ≃ B)
 
 ------------------------------------------------------------------------------
+-- For the usual situation, we can only establish one direction of univalence
+
+swap₊ : {ℓ : Level} {A B : Set ℓ} → A ⊎ B → B ⊎ A
+swap₊ (inj₁ a) = inj₂ a
+swap₊ (inj₂ b) = inj₁ b
+
+assocl₊ : {ℓ : Level} {A B C : Set ℓ} → A ⊎ (B ⊎ C) → (A ⊎ B) ⊎ C
+assocl₊ (inj₁ a) = inj₁ (inj₁ a)
+assocl₊ (inj₂ (inj₁ b)) = inj₁ (inj₂ b)
+assocl₊ (inj₂ (inj₂ c)) = inj₂ c
+
+assocr₊ : {ℓ : Level} {A B C : Set ℓ} → (A ⊎ B) ⊎ C → A ⊎ (B ⊎ C)
+assocr₊ (inj₁ (inj₁ a)) = inj₁ a
+assocr₊ (inj₁ (inj₂ b)) = inj₂ (inj₁ b)
+assocr₊ (inj₂ c) = inj₂ (inj₂ c)
+
+unite⋆ : {ℓ : Level} {A : Set ℓ} → ⊤ × A → A
+unite⋆ (tt , a) = a
+
+uniti⋆ : {ℓ : Level} {A : Set ℓ} → A → ⊤ × A 
+uniti⋆ a = (tt , a)
+
+swap⋆ : {ℓ : Level} {A B : Set ℓ} → A × B → B × A
+swap⋆ (a , b) = (b , a) 
+
+assocl⋆ : {ℓ : Level} {A B C : Set ℓ} → A × (B × C) → (A × B) × C
+assocl⋆ (a , (b , c)) = ((a , b) , c) 
+
+assocr⋆ : {ℓ : Level} {A B C : Set ℓ} → (A × B) × C → A × (B × C)
+assocr⋆ ((a , b) , c) = (a , (b , c))
+
+dist : {ℓ : Level} {A B C : Set ℓ} → (A ⊎ B) × C → (A × C ⊎ B × C)
+dist (inj₁ a , c) = inj₁ (a , c)
+dist (inj₂ b , c) = inj₂ (b , c)
+
+fact : {ℓ : Level} {A B C : Set ℓ} → (A × C ⊎ B × C) → (A ⊎ B) × C
+fact (inj₁ (a , c)) = (inj₁ a , c) 
+fact (inj₂ (b , c)) = (inj₂ b , c) 
+
+eval : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → Path a b → (A → B)
+eval (swap₁₊⇛ _)           = swap₊ 
+eval (swap₂₊⇛ _)           = swap₊ 
+eval (assocl₁₊⇛ _)         = assocl₊ 
+eval (assocl₂₁₊⇛ _)        = assocl₊ 
+eval (assocl₂₂₊⇛ _)        = assocl₊ 
+eval (assocr₁₁₊⇛ _)        = assocr₊
+eval (assocr₁₂₊⇛ _)        = assocr₊
+eval (assocr₂₊⇛ _)         = assocr₊
+eval (unite⋆⇛ _)           = unite⋆
+eval (uniti⋆⇛ _)           = uniti⋆
+eval (swap⋆⇛ _ _)          = swap⋆ 
+eval (assocl⋆⇛ _ _ _)      = assocl⋆
+eval (assocr⋆⇛ _ _ _)      = assocr⋆
+eval (dist₁⇛ _ _)          = dist
+eval (dist₂⇛ _ _)          = dist
+eval (factor₁⇛ _ _)        = fact
+eval (factor₂⇛ _ _)        = fact
+eval (id⇛ _)               = id
+eval (trans⇛ c d)          = eval d ∘ eval c
+eval (plus₁⇛ c d)          = Data.Sum.map (eval c) (eval d) 
+eval (plus₂⇛ c d)          = Data.Sum.map (eval c) (eval d) 
+eval (times⇛ c d)          = Data.Product.map (eval c) (eval d)
+
+-- Inverses
+
+evalB : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → Path a b → (B → A) 
+evalB (swap₂₊⇛ _)          = swap₊
+evalB (swap₁₊⇛ _)          = swap₊
+evalB (assocr₂₊⇛ _)        = assocl₊
+evalB (assocr₁₂₊⇛ _)       = assocl₊
+evalB (assocr₁₁₊⇛ _)       = assocl₊
+evalB (assocl₂₂₊⇛ _)       = assocr₊
+evalB (assocl₂₁₊⇛ _)       = assocr₊
+evalB (assocl₁₊⇛ _)        = assocr₊
+evalB (uniti⋆⇛ _)          = unite⋆
+evalB (unite⋆⇛ _)          = uniti⋆
+evalB (swap⋆⇛ _ _)         = swap⋆
+evalB (assocr⋆⇛ _ _ _)     = assocl⋆
+evalB (assocl⋆⇛ _ _ _)     = assocr⋆
+evalB (dist₁⇛ _ _)         = fact
+evalB (dist₂⇛ _ _)         = fact
+evalB (factor₁⇛ _ _)       = dist
+evalB (factor₂⇛ _ _)       = dist
+evalB (id⇛ _)              = id
+evalB (trans⇛ c d)         = evalB c ∘ evalB d
+evalB (plus₁⇛ c d)         = Data.Sum.map (evalB c) (evalB d) 
+evalB (plus₂⇛ c d)         = Data.Sum.map (evalB c) (evalB d) 
+evalB (times⇛ c d)         = Data.Product.map (evalB c) (evalB d) 
+
+path2fun : {ℓ : Level} {A B : Set ℓ} → (Path A B) → (A ≃ B)
+path2fun p = ( {!!} , {!!})
+
+------------------------------------------------------------------------------
 -- Functions and equivalences between pointed types
--- 
--- Univalence as a postulate for now but hopefully we can actually prove it
--- since the pi-combinators are sound and complete for isomorphisms between
--- finite types
 
 record _→•_ {ℓ ℓ' : Level} (A• : Set• {ℓ}) (B• : Set• {ℓ'}) 
   : Set (ℓ ⊔ ℓ') where
@@ -200,8 +318,18 @@ A ≃• B = Σ (A →• B) isequiv•
 idequiv• : ∀ {ℓ} {A• : Set• {ℓ}} → A• ≃• A•
 idequiv• = ( id• , equiv•₁ idqinv•) 
 
-postulate 
-  univalence• : {ℓ : Level} {A• B• : Set• {ℓ}} → (Path A• B•) ≃ (A• ≃• B•)
+-- 
+
+
+
+
+-- Univalence as a postulate for now but hopefully we can actually prove it
+-- since the pi-combinators are sound and complete for isomorphisms between
+-- finite types
+
+--postulate 
+--  univalence• : {ℓ : Level} {A• B• : Set• {ℓ}} → (Path A• B•) ≃• (A• ≃• B•)
+                
 
 {--
 record isequiv• {ℓ} {A B : Set} {A• B• : Set• {ℓ}} (f• : A• →• B•) : 
@@ -216,94 +344,7 @@ _≈•_ {_} {A} {B} A• B• = Σ (A• →• B•) (isequiv• {_} {A} {B})
 --}
 
 ------------------------------------------------------------------------------
--- Mappings from paths to functions
-
-swap₊ : {ℓ : Level} {A B : Set ℓ} → A ⊎ B → B ⊎ A
-swap₊ (inj₁ a) = inj₂ a
-swap₊ (inj₂ b) = inj₁ b
-
-assocl₊ : {ℓ : Level} {A B C : Set ℓ} → A ⊎ (B ⊎ C) → (A ⊎ B) ⊎ C
-assocl₊ (inj₁ a) = inj₁ (inj₁ a)
-assocl₊ (inj₂ (inj₁ b)) = inj₁ (inj₂ b)
-assocl₊ (inj₂ (inj₂ c)) = inj₂ c
-
-assocr₊ : {ℓ : Level} {A B C : Set ℓ} → (A ⊎ B) ⊎ C → A ⊎ (B ⊎ C)
-assocr₊ (inj₁ (inj₁ a)) = inj₁ a
-assocr₊ (inj₁ (inj₂ b)) = inj₂ (inj₁ b)
-assocr₊ (inj₂ c) = inj₂ (inj₂ c)
-
-unite⋆ : {ℓ : Level} {A : Set ℓ} → ⊤ × A → A
-unite⋆ (tt , a) = a
-
-uniti⋆ : {ℓ : Level} {A : Set ℓ} → A → ⊤ × A 
-uniti⋆ a = (tt , a)
-
-swap⋆ : {ℓ : Level} {A B : Set ℓ} → A × B → B × A
-swap⋆ (a , b) = (b , a) 
-
-assocl⋆ : {ℓ : Level} {A B C : Set ℓ} → A × (B × C) → (A × B) × C
-assocl⋆ (a , (b , c)) = ((a , b) , c) 
-
-assocr⋆ : {ℓ : Level} {A B C : Set ℓ} → (A × B) × C → A × (B × C)
-assocr⋆ ((a , b) , c) = (a , (b , c))
-
-dist : {ℓ : Level} {A B C : Set ℓ} → (A ⊎ B) × C → (A × C ⊎ B × C)
-dist (inj₁ a , c) = inj₁ (a , c)
-dist (inj₂ b , c) = inj₂ (b , c)
-
-fact : {ℓ : Level} {A B C : Set ℓ} → (A × C ⊎ B × C) → (A ⊎ B) × C
-fact (inj₁ (a , c)) = (inj₁ a , c) 
-fact (inj₂ (b , c)) = (inj₂ b , c) 
-
-eval : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → Path a b → (A → B)
-eval (swap₁₊⇛ _)           = swap₊ 
-eval (swap₂₊⇛ _)           = swap₊ 
-eval (assocl₁₊⇛ _)         = assocl₊ 
-eval (assocl₂₁₊⇛ _)        = assocl₊ 
-eval (assocl₂₂₊⇛ _)        = assocl₊ 
-eval (assocr₁₁₊⇛ _)        = assocr₊
-eval (assocr₁₂₊⇛ _)        = assocr₊
-eval (assocr₂₊⇛ _)         = assocr₊
-eval (unite⋆⇛ _)           = unite⋆
-eval (uniti⋆⇛ _)           = uniti⋆
-eval (swap⋆⇛ _ _)          = swap⋆ 
-eval (assocl⋆⇛ _ _ _)      = assocl⋆
-eval (assocr⋆⇛ _ _ _)      = assocr⋆
-eval (dist₁⇛ _ _)          = dist
-eval (dist₂⇛ _ _)          = dist
-eval (factor₁⇛ _ _)        = fact
-eval (factor₂⇛ _ _)        = fact
-eval (id⇛ _)               = id
-eval (trans⇛ c d)          = eval d ∘ eval c
-eval (plus₁⇛ c d)          = Data.Sum.map (eval c) (eval d) 
-eval (plus₂⇛ c d)          = Data.Sum.map (eval c) (eval d) 
-eval (times⇛ c d)          = Data.Product.map (eval c) (eval d)
-
--- Inverses
-
-evalB : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → Path a b → (B → A) 
-evalB (swap₂₊⇛ _)          = swap₊
-evalB (swap₁₊⇛ _)          = swap₊
-evalB (assocr₂₊⇛ _)        = assocl₊
-evalB (assocr₁₂₊⇛ _)       = assocl₊
-evalB (assocr₁₁₊⇛ _)       = assocl₊
-evalB (assocl₂₂₊⇛ _)       = assocr₊
-evalB (assocl₂₁₊⇛ _)       = assocr₊
-evalB (assocl₁₊⇛ _)        = assocr₊
-evalB (uniti⋆⇛ _)          = unite⋆
-evalB (unite⋆⇛ _)          = uniti⋆
-evalB (swap⋆⇛ _ _)         = swap⋆
-evalB (assocr⋆⇛ _ _ _)     = assocl⋆
-evalB (assocl⋆⇛ _ _ _)     = assocr⋆
-evalB (dist₁⇛ _ _)         = fact
-evalB (dist₂⇛ _ _)         = fact
-evalB (factor₁⇛ _ _)       = dist
-evalB (factor₂⇛ _ _)       = dist
-evalB (id⇛ _)              = id
-evalB (trans⇛ c d)         = evalB c ∘ evalB d
-evalB (plus₁⇛ c d)         = Data.Sum.map (evalB c) (evalB d) 
-evalB (plus₂⇛ c d)         = Data.Sum.map (evalB c) (evalB d) 
-evalB (times⇛ c d)         = Data.Product.map (evalB c) (evalB d) 
+-- Proving univalence•
 
 eval-resp-• : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
               (c : Path a b) → eval c a ≡ b
