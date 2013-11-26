@@ -92,6 +92,12 @@ open _→•_ public
 id• : {ℓ : Level} {A• : Set• ℓ} → (A• →• A•)
 id• = record { fun = id ; resp• = refl } 
 
+f1 : pt 2 →• pt 4
+f1 = record { fun = suc ∘ suc ; resp• = refl } 
+
+f2 : pt 2 →• pt 4
+f2 = record { fun = λ x → 2 * x ; resp• = refl } 
+
 -- composition of functions between pointed types
 _⊚_ : {ℓ₁ ℓ₂ ℓ₃ : Level} {A• : Set• ℓ₁} {B• : Set• ℓ₂} {C• : Set• ℓ₃} →
       (B• →• C•) → (A• →• B•) → (A• →• C•)
@@ -100,12 +106,24 @@ h ⊚ g = record {
           resp• = trans (cong (fun h) (resp• g)) (resp• h) 
         }
 
+f3 : pt 4 →• pt 2
+f3 = record { fun = pred ∘ pred ; resp• = refl } 
+
+f1∘f3 : pt 4 →• pt 4
+f1∘f3 = f1 ⊚ f3
+
 -- two pointed functions are ∼ if they agree on the basepoints; we DON'T CARE
 -- what they do on the rest of the type.
 
 _∼•_ : {ℓ ℓ' : Level} {A• : Set• ℓ} {B• : Set• ℓ'} → 
        (f• g• : A• →• B•) → Set ℓ'
 _∼•_ {ℓ} {ℓ'} {A•} {B•} f• g• = fun f• (• A•) ≡ fun g• (• A•)
+
+f1∼f2 : f1 ∼• f2
+f1∼f2 = refl
+
+f1∘f3∼id : f1∘f3 ∼• id•
+f1∘f3∼id = refl
 
 -- quasi-inverses
 
@@ -119,6 +137,9 @@ record qinv• {ℓ ℓ'} {A• : Set• ℓ} {B• : Set• ℓ'} (f• : A• 
 
 idqinv• : ∀ {ℓ} → {A• : Set• ℓ} → qinv• {ℓ} {ℓ} {A•} {A•} id•
 idqinv• = record { g• = id• ; α• = refl ; β• = refl }
+
+f1qinv : qinv• f1
+f1qinv = record { g• = f3 ; α• = refl ; β• = refl }
 
 -- equivalences
 
@@ -135,11 +156,17 @@ equiv•₁ : ∀ {ℓ ℓ'} {A• : Set• ℓ} {B• : Set• ℓ'} {f• : A�
           qinv• f• → isequiv• f•
 equiv•₁ (mkqinv• qg qα qβ) = mkisequiv• qg qα qg qβ 
 
+f1equiv : isequiv• f1
+f1equiv = equiv•₁ f1qinv
+
 _≃•_ : ∀ {ℓ ℓ'} (A• : Set• ℓ) (B• : Set• ℓ') → Set (ℓ ⊔ ℓ')
 A ≃• B = Σ (A →• B) isequiv•
 
 idequiv• : ∀ {ℓ} {A• : Set• ℓ} → A• ≃• A•
 idequiv• = ( id• , equiv•₁ idqinv•) 
+
+pt4equiv : pt 2 ≃• pt 4
+pt4equiv = (f1 , f1equiv) 
 
 ------------------------------------------------------------------------------
 {-- old stuff which we might need again
