@@ -27,9 +27,6 @@ open import Paths
 --   path constructors are sound and complete for the class of functions
 --   we consider, we hope to _prove_ univalence
 -- 
--- An interesting question is whether functions between pointed types 
--- should use ≡ or if they should refer to paths
--- 
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -38,31 +35,14 @@ open import Paths
 
 -- Two functions are ∼ is they map each argument to related results
 
-_∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {B : Set ℓ'} → 
-      (f g : A → B) → Set (lsuc ℓ' ⊔ ℓ)
-_∼_ {ℓ} {ℓ'} {A} {B} f g = (x : A) → Path (f x) (g x)
-
---_∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
---      (f g : (x : A) → P x) → Set (lsuc ℓ' ⊔ ℓ)
---_∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → Path (f x) (g x)
-
--- ∼ is an equivalence relation
-
-refl∼ : {ℓ ℓ' : Level} {A : Set ℓ} {B : Set ℓ'} {f : A → B} → (f ∼ f)
-refl∼ {ℓ} {ℓ'} {A} {B} {f} x = id⇛ (f x)
-
-sym∼ : {ℓ ℓ' : Level} {A : Set ℓ} {B : Set ℓ'} {f g : A → B} → 
-       (f ∼ g) → (g ∼ f)
-sym∼ H x = sym⇛ (H x) 
-
-trans∼ : {ℓ ℓ' : Level} {A : Set ℓ} {B : Set ℓ'} {f g h : A → B} → 
-        (f ∼ g) → (g ∼ h) → (f ∼ h)
-trans∼ H G x = trans⇛ (H x) (G x)
+_∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
+      (f g : (x : A) → P x) → Set (ℓ ⊔ ℓ')
+_∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → f x ≡ g x
 
 -- quasi-inverses
 
 record qinv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
-  Set (lsuc ℓ ⊔ lsuc ℓ') where
+  Set (ℓ ⊔ ℓ') where
   constructor mkqinv
   field
     g : B → A 
@@ -72,14 +52,14 @@ record qinv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) :
 idqinv : ∀ {ℓ} → {A : Set ℓ} → qinv {ℓ} {ℓ} {A} {A} id
 idqinv = record {
            g = id ;
-           α = λ b → id⇛ b ; 
-           β = λ a → id⇛ a
+           α = λ b → refl ; 
+           β = λ a → refl 
          } 
 
 -- equivalences
 
 record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
-  Set (lsuc ℓ ⊔ lsuc ℓ') where
+  Set (ℓ ⊔ ℓ') where
   constructor mkisequiv
   field
     g : B → A 
@@ -90,7 +70,7 @@ record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) :
 equiv₁ : ∀ {ℓ ℓ'} → {A : Set ℓ} {B : Set ℓ'} {f : A → B} → qinv f → isequiv f
 equiv₁ (mkqinv qg qα qβ) = mkisequiv qg qα qg qβ
 
-_≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (lsuc ℓ ⊔ lsuc ℓ')
+_≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ ⊔ ℓ')
 A ≃ B = Σ (A → B) isequiv
 
 idequiv : ∀ {ℓ} {A : Set ℓ} → A ≃ A
@@ -98,12 +78,11 @@ idequiv = (id , equiv₁ idqinv)
 
 -- Function extensionality
 
---happly : ∀ {ℓ ℓ'} {A : Set ℓ} {B : A → Set ℓ'} {f g : (a : A) → B a} → 
---         Path f g → (f ∼ g)
-happly : ∀ {ℓ} {A B : Set ℓ} {f g : A → B} → Path f g → (f ∼ g)
+{--
+happly : ∀ {ℓ} {A B : Set ℓ} {f g : A → B} → (Path f g) → (f ∼ g)
 happly {ℓ} {A} {B} {f} {g} p = 
   (pathInd 
-    (λ {_} {_} {f} {g} p → {!!}) -- f ∼ g
+    (λ {_} {_} {f} {g} p → {!!} ∼ {!!}) -- f ∼ g) 
     {!!} {!!} 
     {!!} {!!} {!!} {!!} {!!} {!!} 
     {!!} {!!} {!!} 
@@ -112,25 +91,31 @@ happly {ℓ} {A} {B} {f} {g} p =
   {A → B} {A → B} {f} {g} p 
 
 postulate
-  funextP : {A : Set} {B : Set} {f g : A → B} → 
+  funextP : {A B : Set} {f g : A → B} → 
             isequiv {A = Path f g} {B = f ∼ g} happly
---  funextP : {A : Set} {B : A → Set} {f g : (a : A) → B a} → 
---            isequiv {A = Path f g} {B = f ∼ g} happly
 
---funext : {A : Set} {B : A → Set} {f g : (a : A) → B a} → 
---         (f ∼ g) → (Path f g)
-funext : {A : Set} {B : Set} {f g : A → B} → 
-         (f ∼ g) → (Path f g)
+funext : {A B : Set} {f g : A → B} → (f ∼ g) → (Path f g)
 funext = isequiv.g funextP
 
 -- Universes; univalence
 
-idtoeqv : {ℓ : Level} {A B : Set ℓ} → (A ≡ B) → (A ≃ B)
-idtoeqv {ℓ} {A} {B} p = {!!}
+idtoeqv : {A B : Set} → (Path A B) → (A ≃ B)
+idtoeqv {A} {B} p = {!!}
+{--
+  (pathInd 
+    (λ {S₁} {S₂} {A} {B} p → {!!})
+    {!!} {!!} 
+    {!!} {!!} {!!} {!!} {!!} {!!} 
+    {!!} {!!} {!!} 
+    {!!} {!!} {!!} {!!} {!!} {!!} 
+    {!!} {!!} {!!} {!!} {!!})
+  {Set} {Set} {A} {B} p
+--}
 
 postulate 
   univalence : {ℓ : Level} {A B : Set ℓ} → (Path A B) ≃ (A ≃ B)
 
+--}
 ------------------------------------------------------------------------------
 -- For the usual situation, we can only establish one direction of univalence
 
@@ -172,7 +157,8 @@ fact (inj₁ (a , c)) = (inj₁ a , c)
 fact (inj₂ (b , c)) = (inj₂ b , c) 
 
 eval : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → Path a b → (A → B)
-eval (swap₁₊⇛ _)           = swap₊ 
+eval swap₁₊⇛               = swap₊ 
+{--
 eval (swap₂₊⇛ _)           = swap₊ 
 eval (assocl₁₊⇛ _)         = assocl₊ 
 eval (assocl₂₁₊⇛ _)        = assocl₊ 
@@ -194,11 +180,12 @@ eval (trans⇛ c d)          = eval d ∘ eval c
 eval (plus₁⇛ c d)          = Data.Sum.map (eval c) (eval d) 
 eval (plus₂⇛ c d)          = Data.Sum.map (eval c) (eval d) 
 eval (times⇛ c d)          = Data.Product.map (eval c) (eval d)
-
+--}
 -- Inverses
 
+{--
 evalB : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → Path a b → (B → A) 
-evalB (swap₂₊⇛ _)          = swap₊
+evalB swap₂₊⇛              = swap₊
 evalB (swap₁₊⇛ _)          = swap₊
 evalB (assocr₂₊⇛ _)        = assocl₊
 evalB (assocr₁₂₊⇛ _)       = assocl₊
@@ -220,6 +207,7 @@ evalB (trans⇛ c d)         = evalB c ∘ evalB d
 evalB (plus₁⇛ c d)         = Data.Sum.map (evalB c) (evalB d) 
 evalB (plus₂⇛ c d)         = Data.Sum.map (evalB c) (evalB d) 
 evalB (times⇛ c d)         = Data.Product.map (evalB c) (evalB d) 
+--}
 
 path2fun : {ℓ : Level} {A B : Set ℓ} → (Path A B) → (A ≃ B)
 path2fun p = ( {!!} , {!!})
@@ -258,29 +246,6 @@ record _∼•_ {ℓ ℓ'} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} (f• g�
 
 open _∼•_ public
 
--- ∼• is an equivalence relation
-
-refl∼• : {ℓ ℓ' : Level} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} {f• : A• →• B•} →
-         (f• ∼• f•)
-refl∼• {ℓ} {ℓ'} {A•} {B•} {f•} = record {
-    fsim = refl∼ {f = fun f•} ;
-    bsim = refl
-  } 
-
-sym∼• : {ℓ ℓ' : Level} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} 
-        {f• g• : A• →• B•} → (f• ∼• g•) → (g• ∼• f•)
-sym∼• f•∼•g• = record {
-    fsim = sym∼ (fsim f•∼•g•) ;
-    bsim = sym (bsim f•∼•g•)
-  } 
-
-trans∼• : {ℓ ℓ' : Level} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} 
-          {f• g• h• : A• →• B•} → (f• ∼• g•) → (g• ∼• h•) → (f• ∼• h•)
-trans∼• fg gh = record { 
-    fsim = trans∼ (fsim fg) (fsim gh) ; 
-    bsim = trans (bsim fg) (bsim gh) 
-  } 
-
 -- quasi-inverses
 
 record qinv• {ℓ ℓ'} {A• : Set• {ℓ}} {B• : Set• {ℓ'}} (f• : A• →• B•) : 
@@ -295,11 +260,11 @@ idqinv• : ∀ {ℓ} → {A• : Set• {ℓ}} → qinv• {ℓ} {ℓ} {A•} {
 idqinv• = record {
            g• = id• ;
            α• = record { 
-                  fsim = λ b → id⇛ b ; 
+                  fsim = {!!} ;
                   bsim = refl
                 } ; 
            β• = record { 
-                  fsim = λ a → id⇛ a ; 
+                  fsim = {!!} ; 
                   bsim = refl  
                 }
          } 
@@ -353,6 +318,7 @@ _≈•_ {_} {A} {B} A• B• = Σ (A• →• B•) (isequiv• {_} {A} {B})
 ------------------------------------------------------------------------------
 -- Proving univalence•
 
+{--
 eval-resp-• : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
               (c : Path a b) → eval c a ≡ b
 eval-resp-• (swap₁₊⇛ a) = refl
@@ -484,3 +450,4 @@ path2iso {ℓ} {a} {b} p = (eval p ,
 --}
 
 ------------------------------------------------------------------------------
+--}
