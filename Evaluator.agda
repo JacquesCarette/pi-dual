@@ -53,10 +53,11 @@ fact (inj₁ (a , c)) = (inj₁ a , c)
 fact (inj₂ (b , c)) = (inj₂ b , c) 
 
 eval : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → Path a b → (A → B)
-eval (swap₁₊⇛ _)           = swap₊ 
-eval (swap₂₊⇛ _)           = swap₊ 
-eval (assocl₁₊⇛ _)         = assocl₊ 
-eval (assocl₂₁₊⇛ _)        = assocl₊ 
+eval swap₁₊⇛              = swap₊ 
+eval swap₂₊⇛              = swap₊ 
+eval assocl₁₊⇛            = assocl₊ 
+eval assocl₁₊⇛'           = assocl₊ 
+{-- eval (assocl₂₁₊⇛ _)        = assocl₊ 
 eval (assocl₂₂₊⇛ _)        = assocl₊ 
 eval (assocr₁₁₊⇛ _)        = assocr₊
 eval (assocr₁₂₊⇛ _)        = assocr₊
@@ -75,18 +76,20 @@ eval (trans⇛ c d)          = eval d ∘ eval c
 eval (plus₁⇛ c d)          = Data.Sum.map (eval c) (eval d) 
 eval (plus₂⇛ c d)          = Data.Sum.map (eval c) (eval d) 
 eval (times⇛ c d)          = Data.Product.map (eval c) (eval d)
-
+--}
 -- Inverses
 
+
 evalB : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → Path a b → (B → A) 
-evalB (swap₂₊⇛ _)          = swap₊
-evalB (swap₁₊⇛ _)          = swap₊
-evalB (assocr₂₊⇛ _)        = assocl₊
+evalB swap₂₊⇛              = swap₊
+evalB swap₁₊⇛          = swap₊
+evalB assocl₁₊⇛        = assocr₊
+evalB assocl₁₊⇛'        = assocr₊
+{-- evalB (assocr₂₊⇛ _)        = assocl₊
 evalB (assocr₁₂₊⇛ _)       = assocl₊
 evalB (assocr₁₁₊⇛ _)       = assocl₊
 evalB (assocl₂₂₊⇛ _)       = assocr₊
 evalB (assocl₂₁₊⇛ _)       = assocr₊
-evalB (assocl₁₊⇛ _)        = assocr₊
 evalB (uniti⋆⇛ _)          = unite⋆
 evalB (unite⋆⇛ _)          = uniti⋆
 evalB (swap⋆⇛ _ _)         = swap⋆
@@ -101,16 +104,19 @@ evalB (trans⇛ c d)         = evalB c ∘ evalB d
 evalB (plus₁⇛ c d)         = Data.Sum.map (evalB c) (evalB d) 
 evalB (plus₂⇛ c d)         = Data.Sum.map (evalB c) (evalB d) 
 evalB (times⇛ c d)         = Data.Product.map (evalB c) (evalB d) 
+--}
 
 ------------------------------------------------------------------------------
 -- Proving univalence•
 
+
 eval-resp-• : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
               (c : Path a b) → eval c a ≡ b
-eval-resp-• (swap₁₊⇛ a) = refl
-eval-resp-• (swap₂₊⇛ b) = refl
-eval-resp-• (assocl₁₊⇛ a) = refl
-eval-resp-• (assocl₂₁₊⇛ b) = refl
+eval-resp-• swap₁₊⇛ = refl
+eval-resp-• swap₂₊⇛ = refl
+eval-resp-• assocl₁₊⇛ = refl
+eval-resp-• assocl₁₊⇛' = refl
+{-- eval-resp-• (assocl₂₁₊⇛ b) = refl
 eval-resp-• (assocl₂₂₊⇛ c) = refl
 eval-resp-• (assocr₁₁₊⇛ a) = refl
 eval-resp-• (assocr₁₂₊⇛ b) = refl
@@ -129,13 +135,14 @@ eval-resp-• {a = a} (trans⇛ c d) rewrite eval-resp-• c | eval-resp-• d =
 eval-resp-• (plus₁⇛ c d) rewrite eval-resp-• c = refl 
 eval-resp-• (plus₂⇛ c d) rewrite eval-resp-• d = refl 
 eval-resp-• (times⇛ c d) rewrite eval-resp-• c | eval-resp-• d = refl 
-
+--}
 evalB-resp-• : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} →
               (c : Path a b) → evalB c b ≡ a
-evalB-resp-• (swap₁₊⇛ a) = refl
-evalB-resp-• (swap₂₊⇛ b) = refl
-evalB-resp-• (assocl₁₊⇛ a) = refl
-evalB-resp-• (assocl₂₁₊⇛ b) = refl
+evalB-resp-• swap₁₊⇛ = refl
+evalB-resp-• swap₂₊⇛ = refl
+evalB-resp-• assocl₁₊⇛ = refl
+evalB-resp-• assocl₁₊⇛' = refl
+{-- evalB-resp-• (assocl₂₁₊⇛ b) = refl
 evalB-resp-• (assocl₂₂₊⇛ c) = refl
 evalB-resp-• (assocr₁₁₊⇛ a) = refl
 evalB-resp-• (assocr₁₂₊⇛ b) = refl
@@ -154,17 +161,19 @@ evalB-resp-• {a = a} (trans⇛ c d) rewrite evalB-resp-• d | evalB-resp-• 
 evalB-resp-• (plus₁⇛ c d) rewrite evalB-resp-• c = refl 
 evalB-resp-• (plus₂⇛ c d) rewrite evalB-resp-• d = refl 
 evalB-resp-• (times⇛ c d) rewrite evalB-resp-• c | evalB-resp-• d = refl 
-
+--}
 -- the proof that eval ∙ evalB x ≡ x will be useful below
 eval∘evalB≡id :  {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → 
   (c : Path a b) → evalB c (eval c a) ≡ a
 eval∘evalB≡id c rewrite eval-resp-• c | evalB-resp-• c = refl
 
+{--
 -- if this is useful, move it elsewhere
 -- but it might not be, as it appears to be 'level raising'
 cong⇚ : {ℓ : Level} {A B : Set ℓ} {a₁ a₂ : A}
        (f : Path a₁ a₂ ) → (x : A) → Path (evalB f x) (evalB f x)
 cong⇚ f x = id⇛ (evalB f x)
+--}
 
 {--
 eval∘evalB :  {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → 
@@ -213,6 +222,8 @@ eval∘evalB (plus₂⇛ {a = a} c₁ c₂) (inj₂ y) = plus₂⇛ (id⇛ a) (e
 eval∘evalB (times⇛ c₁ c₂) (x , y) = times⇛ (eval∘evalB c₁ x) (eval∘evalB c₂ y) 
 --}
 
+{--
 eval-gives-id⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → 
   (c : Path a b) → Path (eval c a) b 
 eval-gives-id⇛ {b = b} c rewrite eval-resp-• c = id⇛ b
+--}

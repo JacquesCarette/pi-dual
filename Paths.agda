@@ -11,8 +11,8 @@ open import Data.Product
 open import Function
 open import Relation.Binary.PropositionalEquality
 
-infix  2  _∎      -- equational reasoning
-infixr 2  _≡⟨_⟩_  -- equational reasoning
+--infix  2  _∎      -- equational reasoning
+--infixr 2  _≡⟨_⟩_  -- equational reasoning
 
 ------------------------------------------------------------------------------
 -- Pointed types
@@ -24,6 +24,18 @@ record Set• {ℓ : Level} : Set (lsuc ℓ) where
     • : ∣_∣
 
 open Set• public
+
+⊤• : Set• {lzero}
+⊤• = •[ ⊤ , tt ]
+
+_⊎•₁_ : {ℓ ℓ' : Level} → (A• : Set• {ℓ}) → (B• : Set• {ℓ'}) → Set• {ℓ ⊔ ℓ'}
+A• ⊎•₁ B• = •[ ∣ A• ∣ ⊎ ∣ B• ∣ , inj₁ (• A•) ]
+
+_⊎•₂_ : {ℓ ℓ' : Level} → (A• : Set• {ℓ}) → (B• : Set• {ℓ'}) → Set• {ℓ ⊔ ℓ'}
+A• ⊎•₂ B• = •[ ∣ A• ∣ ⊎ ∣ B• ∣ , inj₂ (• B•) ]
+
+_×•_ : {ℓ ℓ' : Level} → (A• : Set• {ℓ}) → (B• : Set• {ℓ'}) → Set• {ℓ ⊔ ℓ'}
+A• ×• B• = •[ ∣ A• ∣ × ∣ B• ∣ , (• A• , • B•) ]
 
 test0 : Set• {lzero}
 test0 = •[ ℕ , 3 ]
@@ -47,11 +59,13 @@ test2' = •[ (Bool → Bool) , not ]
 
 data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc ℓ) where
   -- additive structure
-  swap₁₊⇛    : {A B : Set ℓ} → (a : A) → 
-               •[ A ⊎ B , inj₁ a ] ⇛ •[ B ⊎ A , inj₂ a ]
-  swap₂₊⇛    : {A B : Set ℓ} → (b : B) → 
-               •[ A ⊎ B , inj₂ b ] ⇛ •[ B ⊎ A , inj₁ b ]
-  assocl₁₊⇛  : {A B C : Set ℓ} → (a : A) → 
+  swap₁₊⇛    : {A• B• : Set• {ℓ}} → (A• ⊎•₁ B•) ⇛ (B• ⊎•₂ A•)
+  swap₂₊⇛    : {A• B• : Set• {ℓ}} → (A• ⊎•₂ B•) ⇛ (B• ⊎•₁ A•)
+  assocl₁₊⇛  : {A• B• C• : Set• {ℓ}} → 
+               (A• ⊎•₁ (B• ⊎•₁ C•)) ⇛ ((A• ⊎•₁ B•) ⊎•₁ C•)
+  assocl₁₊⇛' : {A• B• C• : Set• {ℓ}} → 
+               (A• ⊎•₁ (B• ⊎•₂ C•)) ⇛ ((A• ⊎•₁ B•) ⊎•₁ C•)
+{--
                •[ A ⊎ (B ⊎ C) , inj₁ a ] ⇛ •[ (A ⊎ B) ⊎ C , inj₁ (inj₁ a) ]
   assocl₂₁₊⇛ : {A B C : Set ℓ} → (b : B) → 
                •[ A ⊎ (B ⊎ C) , inj₂ (inj₁ b) ] ⇛ 
@@ -106,6 +120,7 @@ data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc ℓ) wher
   times⇛     : {A B C D : Set ℓ} {a : A} {b : B} {c : C} {d : D} → 
                (•[ A , a ] ⇛ •[ C , c ]) → (•[ B , b ] ⇛ •[ D , d ]) →
                (•[ A × B , (a , b) ] ⇛ •[ C × D , (c , d) ])
+--}
 
 -- Abbreviations and small examples
 
@@ -117,6 +132,7 @@ Path {ℓ} {A} {B} a b = •[ A , a ] ⇛ •[ B , b ]
 2Path {ℓ} {A} {B} {C} {D} {a} {b} {c} {d} p q = Path p q 
   --  •[ Path a b , p ] ⇛ •[ Path c d , q ]
 
+{--
 _≡⟨_⟩_ : ∀ {ℓ} → {A B C : Set ℓ} (a : A) {b : B} {c : C} → 
          Path a b → Path b c → Path a c
 _ ≡⟨ p ⟩ q = trans⇛ p q
@@ -148,6 +164,7 @@ test8 {A} {B} {C} {D} {a} {b} {c} {d} p q =
 
 ≡Path : {ℓ : Level} {A : Set ℓ} {x y : A} → (x ≡ y) → Path x y
 ≡Path {ℓ} {A} {x} {.x} refl = id⇛ x
+--}
 
 -- See:
 -- http://homotopytypetheory.org/2012/11/21/on-heterogeneous-equality/
@@ -161,6 +178,10 @@ eta {ℓ} A• = refl
 ------------------------------------------------------------------------------
 -- Path induction
 
+{--
+pathInd : {ℓ ℓ' : Level} → 
+  (P : {A• B• : Set• {ℓ}} → (A• ⇛ B•) → Set ℓ') → 
+  ({A• B• : Set• {ℓ}} → P (swap₁₊⇛ {ℓ} {A•} {B•})) →
 pathInd : {ℓ ℓ' : Level} → 
   (P : {A B : Set ℓ} {a : A} {b : B} → 
     (•[ A , a ] ⇛ •[ B , b ]) → Set ℓ') → 
@@ -201,6 +222,7 @@ pathInd : {ℓ ℓ' : Level} →
     (q : (•[ B , b ] ⇛ •[ D , d ])) → 
     P p → P q → P (times⇛ p q)) → 
   {A B : Set ℓ} {a : A} {b : B} → (p : •[ A , a ] ⇛ •[ B , b ]) → P p
+  {A• B• : Set• {ℓ}} → (p : A• ⇛ B•) → P p
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
@@ -325,10 +347,12 @@ pathInd P swap₁₊ swap₂₊
        assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
        unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
        cid ctrans plus₁ plus₂ times q)
+pathInd P swap₁₊ swap₁₊⇛ = swap₁₊
+--}
 
 ------------------------------------------------------------------------------
 -- Groupoid structure (emerging...)
-
+{--
 sym⇛ : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} → Path a b → Path b a
 sym⇛ {ℓ} {A} {B} {a} {b} p = 
   (pathInd 
@@ -345,7 +369,7 @@ sym⇛ {ℓ} {A} {B} {a} {b} p =
 test9 : {A : Set} {a : A} → Path (a , (tt , a)) ((tt , a) , a)
 test9 {A} {a} = sym⇛ (times⇛ (unite⋆⇛ a) (uniti⋆⇛ a)) 
              -- evaluates to (times⇛ (uniti⋆⇛ a) (unite⋆⇛ a) 
-
+--}
 {--
 idright : {ℓ : Level} {A B : Set ℓ} {a : A} {b : B} {p : Path a b} →
           2Path (trans⇛ p (id⇛ b)) p
@@ -711,3 +735,4 @@ mutual
 
 --}
 
+--}
