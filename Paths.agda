@@ -60,12 +60,12 @@ test2' = •[ (Bool → Bool) , not ]
 data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc ℓ) where
   -- additive structure
   swap₁₊⇛    : {A• B• : Set• {ℓ}} → (A• ⊎•₁ B•) ⇛ (B• ⊎•₂ A•)
+  swap₂₊⇛    : {A• B• : Set• {ℓ}} → (A• ⊎•₂ B•) ⇛ (B• ⊎•₁ A•)
+  assocl₁₊⇛  : {A• B• C• : Set• {ℓ}} → 
+               (A• ⊎•₁ (B• ⊎•₁ C•)) ⇛ ((A• ⊎•₁ B•) ⊎•₁ C•)
+  assocl₁₊⇛' : {A• B• C• : Set• {ℓ}} → 
+               (A• ⊎•₁ (B• ⊎•₂ C•)) ⇛ ((A• ⊎•₁ B•) ⊎•₁ C•)
 {--
-  swap₁₊⇛    : {A B : Set ℓ} → (a : A) → 
-               •[ A ⊎ B , inj₁ a ] ⇛ •[ B ⊎ A , inj₂ a ]
-  swap₂₊⇛    : {A B : Set ℓ} → (b : B) → 
-               •[ A ⊎ B , inj₂ b ] ⇛ •[ B ⊎ A , inj₁ b ]
-  assocl₁₊⇛  : {A B C : Set ℓ} → (a : A) → 
                •[ A ⊎ (B ⊎ C) , inj₁ a ] ⇛ •[ (A ⊎ B) ⊎ C , inj₁ (inj₁ a) ]
   assocl₂₁₊⇛ : {A B C : Set ℓ} → (b : B) → 
                •[ A ⊎ (B ⊎ C) , inj₂ (inj₁ b) ] ⇛ 
@@ -178,10 +178,10 @@ eta {ℓ} A• = refl
 ------------------------------------------------------------------------------
 -- Path induction
 
+{--
 pathInd : {ℓ ℓ' : Level} → 
   (P : {A• B• : Set• {ℓ}} → (A• ⇛ B•) → Set ℓ') → 
   ({A• B• : Set• {ℓ}} → P (swap₁₊⇛ {ℓ} {A•} {B•})) →
-{--
 pathInd : {ℓ ℓ' : Level} → 
   (P : {A B : Set ℓ} {a : A} {b : B} → 
     (•[ A , a ] ⇛ •[ B , b ]) → Set ℓ') → 
@@ -222,9 +222,7 @@ pathInd : {ℓ ℓ' : Level} →
     (q : (•[ B , b ] ⇛ •[ D , d ])) → 
     P p → P q → P (times⇛ p q)) → 
   {A B : Set ℓ} {a : A} {b : B} → (p : •[ A , a ] ⇛ •[ B , b ]) → P p
---}
   {A• B• : Set• {ℓ}} → (p : A• ⇛ B•) → P p
-{--
 pathInd P swap₁₊ swap₂₊ 
   assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
   unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
@@ -349,8 +347,8 @@ pathInd P swap₁₊ swap₂₊
        assocl₁₊ assocl₂₁₊ assocl₂₂₊ assocr₁₁₊ assocr₁₂₊ assocr₂₊ 
        unite⋆ uniti⋆ swap⋆ assocl⋆ assocr⋆ dist₁ dist₂ factor₁ factor₂ 
        cid ctrans plus₁ plus₂ times q)
---}
 pathInd P swap₁₊ swap₁₊⇛ = swap₁₊
+--}
 
 ------------------------------------------------------------------------------
 -- Groupoid structure (emerging...)
