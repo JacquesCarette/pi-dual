@@ -5,7 +5,7 @@ module UnivalenceFiniteTypes where
 open import Agda.Prim
 open import Data.Empty
 open import Data.Unit
-open import Data.Sum
+open import Data.Sum renaming (map to _⊎→_)
 open import Data.Product
 open import Function renaming (_∘_ to _○_)
 
@@ -70,6 +70,9 @@ data _⇛_ : FT → FT → Set where
 data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
   refl : (a : A) → (a ≡ a)
 
+sym : ∀ {ℓ} {A : Set ℓ} {a b : A} → a ≡ b → b ≡ a
+sym (refl a) = refl a
+
 -- J
 pathInd : ∀ {u ℓ} → {A : Set u} → 
           (C : {x y : A} → x ≡ y → Set ℓ) → 
@@ -130,8 +133,8 @@ record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) :
 equiv₁ : ∀ {ℓ ℓ'} → {A : Set ℓ} {B : Set ℓ'} {f : A → B} → qinv f → isequiv f
 equiv₁ (mkqinv qg qα qβ) = mkisequiv qg qα qg qβ
        
-equiv₂ : {A B : Set} {f : A → B} → isequiv f → qinv f
-equiv₂ {A} {B} {f} (mkisequiv ig iα ih iβ) = 
+equiv₂ : ∀ {ℓ ℓ'} → {A : Set ℓ} {B : Set ℓ'} {f : A → B} → isequiv f → qinv f
+equiv₂ {f = f} (mkisequiv ig iα ih iβ) = 
   record {
     g = ig ;
     α = iα ;
@@ -143,8 +146,13 @@ equiv₂ {A} {B} {f} (mkisequiv ig iα ih iβ) =
                 ≡⟨ iβ x ⟩
               x ∎
   }
+
 _≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ ⊔ ℓ')
 A ≃ B = Σ (A → B) isequiv
+
+sym≃ :  ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (A ≃ B) → B ≃ A
+sym≃ (A→B , equiv) with equiv₂ equiv
+... | mkqinv g α β = g , equiv₁ (mkqinv A→B β α)
 
 ------------------------------------------------------------------------------
 -- Univalence
@@ -153,12 +161,57 @@ swap₊ : {A B : Set} → A ⊎ B → B ⊎ A
 swap₊ (inj₁ a) = inj₂ a
 swap₊ (inj₂ b) = inj₁ b
 
-swapswap : swap₊ ○ swap₊ ∼ id
-swapswap (inj₁ a) = refl a
-swapswap (inj₂ b) = refl b
+swapswap₊ : {A B : Set} → swap₊ ○ swap₊ {A} {B} ∼ id
+swapswap₊ (inj₁ a) = refl (inj₁ a)
+swapswap₊ (inj₂ b) = refl (inj₂ b)
 
 swap₊equiv : {A B : Set} → (A ⊎ B) ≃ (B ⊎ A)
-swap₊equiv = (swap₊ , equiv₁ (mkqinv swap₊ swapswap swapswap))
+swap₊equiv = (swap₊ , equiv₁ (mkqinv swap₊ swapswap₊ swapswap₊))
+
+unite₊ : {A : Set} → ⊥ ⊎ A → A
+unite₊ (inj₁ ())
+unite₊ (inj₂ y) = y
+
+uniti₊ : {A : Set} → A → ⊥ ⊎ A
+uniti₊ a = inj₂ a
+
+uniti₊∘unite₊ : {A : Set} → uniti₊ ○ unite₊ ∼ id {A = ⊥ ⊎ A}
+uniti₊∘unite₊ (inj₁ ())
+uniti₊∘unite₊ (inj₂ y) = refl (inj₂ y)
+
+-- this is so easy, Agda can figure it out by itself (see below)
+unite₊∙uniti₊ : {A : Set} → unite₊ ○ uniti₊ ∼ id {A = A}
+unite₊∙uniti₊ = refl
+
+unite₊equiv : {A : Set} → (⊥ ⊎ A) ≃ A
+unite₊equiv = (unite₊ , mkisequiv uniti₊ refl uniti₊ uniti₊∘unite₊)
+
+uniti₊equiv : {A : Set} → A ≃ (⊥ ⊎ A)
+uniti₊equiv = uniti₊ , mkisequiv unite₊ uniti₊∘unite₊ unite₊ unite₊∙uniti₊
+
+unite⋆ : {A : Set} → ⊤ × A → A
+unite⋆ (tt , x) = x
+
+uniti⋆ : {A : Set} → A → ⊤ × A
+uniti⋆ x = tt , x
+
+uniti⋆∘unite⋆ : {A : Set} → uniti⋆ ○ unite⋆ ∼ id {A = ⊤ × A}
+uniti⋆∘unite⋆ (tt , x) = refl (tt , x)
+
+unite⋆equiv : {A : Set} → (⊤ × A) ≃ A
+unite⋆equiv = unite⋆ , mkisequiv uniti⋆ refl uniti⋆ uniti⋆∘unite⋆
+
+uniti⋆equiv : {A : Set} → A ≃ (⊤ × A)
+uniti⋆equiv = uniti⋆ , mkisequiv unite⋆ uniti⋆∘unite⋆ unite⋆ refl
+
+swap⋆ : {A B : Set} → A × B → B × A
+swap⋆ (a , b) = (b , a)
+
+swapswap⋆ : {A B : Set} → swap⋆ ○ swap⋆ ∼ id {A = A × B}
+swapswap⋆ (a , b) = refl (a , b) 
+
+swap⋆equiv : {A B : Set} → (A × B) ≃ (B × A)
+swap⋆equiv = swap⋆ , mkisequiv swap⋆ swapswap⋆ swap⋆ swapswap⋆
 
 transequiv : {A B C : Set} → A ≃ B → B ≃ C → A ≃ C
 transequiv (f , feq) (g , geq) with equiv₂ feq | equiv₂ geq
@@ -176,25 +229,36 @@ transequiv (f , feq) (g , geq) with equiv₂ feq | equiv₂ geq
                              ≡⟨ fβ a ⟩
                            a ∎)))
 
+_⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} → 
+  (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → (f ⊎→ g) ○ (finv ⊎→ ginv) ∼ id {A = C ⊎ D}
+_⊎∼_ {A} {B} {C} {D} {f} {finv} {g} {ginv} α β (inj₁ x) = {!ap inj₁ (refl x)!}
+_⊎∼_ α β (inj₂ y) = {!!} 
+ 
+path⊎ : {A B C D : Set} → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
+path⊎ (fp , eqp) (fq , eqq) = 
+  Data.Sum.map fp fq , mkisequiv (P.g ⊎→ Q.g) {!Q.α!} (P.h ⊎→ Q.h) {!!}
+  where module P = isequiv eqp
+        module Q = isequiv eqq
+
 path2equiv : {B₁ B₂ : FT} → (B₁ ⇛ B₂) → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧)
-path2equiv unite₊⇛ = {!!}
-path2equiv uniti₊⇛ = {!!}
-path2equiv swap₊⇛ = {!!} --swap₊equiv
+path2equiv unite₊⇛ = unite₊equiv
+path2equiv uniti₊⇛ = uniti₊equiv
+path2equiv swap₊⇛ = swap₊equiv
 path2equiv assocl₊⇛ = {!!}
 path2equiv assocr₊⇛ = {!!}
-path2equiv unite⋆⇛ = {!!}
-path2equiv uniti⋆⇛ = {!!}
-path2equiv swap⋆⇛ = {!!}
+path2equiv unite⋆⇛ = unite⋆equiv
+path2equiv uniti⋆⇛ = uniti⋆equiv
+path2equiv swap⋆⇛ = swap⋆equiv
 path2equiv assocl⋆⇛ = {!!}
 path2equiv assocr⋆⇛ = {!!}
 path2equiv distz⇛ = {!!}
 path2equiv factorz⇛ = {!!}
 path2equiv dist⇛ = {!!}
 path2equiv factor⇛ = {!!}
-path2equiv id⇛ = {!!}
-path2equiv (sym⇛ p) = {!!}
+path2equiv id⇛ = id , mkisequiv id refl id refl
+path2equiv (sym⇛ p) = sym≃ (path2equiv p)
 path2equiv (p ◎ q) = transequiv (path2equiv p) (path2equiv q) 
-path2equiv (p ⊕ p₁) = {!!}
-path2equiv (p ⊗ p₁) = {!!} 
+path2equiv (p ⊕ q) = {!path2equiv p!}
+path2equiv (p ⊗ q) = {!!} 
 
 ------------------------------------------------------------------------------
