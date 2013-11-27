@@ -1,0 +1,26 @@
+
+Standard univalence:
+
+  (A \simeq B)   \simeq   (A \equiv B)
+
+The spaces A and B range over every type, including dependent
+functions, higher universes, etc. 
+
+We conjecture that for "FINITE TYPES" built from 0, 1, +, and *, univalence
+can be PROVED. Whether this will lead to a full version of univalence for
+functions and higher universes remains speculative at this point. 
+
+So let's proceed to prove univalence for finite types. 
+
+The definition of \simeq is the one from the HoTT book. It involves a
+function f : A -> B that is an equivalence, i.e., there exists g : B -> A and
+h : B -> A such that f o g ~ id and h o f ~ id. 
+
+The definition of \equiv is generalized from the HoTT book. In the HoTT book
+the only constructor for \equiv is refl. In our case we have an inductive
+type that includes the pi-combinators.
+
+In one direction: (A \equiv B) -> (A \simeq B) we have 'eval' that takes
+every path to the corresponding reversible function in (A \simeq B). The
+reverse direction is more complicated.
+
