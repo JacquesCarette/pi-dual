@@ -165,8 +165,8 @@ A ≃• B = Σ (A →• B) isequiv•
 idequiv• : ∀ {ℓ} {A• : Set• ℓ} → A• ≃• A•
 idequiv• = ( id• , equiv•₁ idqinv•) 
 
-pt4equiv : pt 2 ≃• pt 4
-pt4equiv = (f1 , f1equiv) 
+pt24equiv : pt 2 ≃• pt 4
+pt24equiv = (f1 , f1equiv) 
 
 ------------------------------------------------------------------------------
 {-- old stuff which we might need again

@@ -11,61 +11,49 @@ open import Data.Product
 open import Function
 open import Relation.Binary.PropositionalEquality
 
+open import PointedTypes
+
 --infix  2  _∎      -- equational reasoning
 --infixr 2  _≡⟨_⟩_  -- equational reasoning
 
 ------------------------------------------------------------------------------
--- Pointed types
-
-record Set• {ℓ : Level} : Set (lsuc ℓ) where
-  constructor •[_,_]
-  field
-    ∣_∣ : Set ℓ
-    • : ∣_∣
-
-open Set• public
-
-⊤• : Set• {lzero}
-⊤• = •[ ⊤ , tt ]
-
-_⊎•₁_ : {ℓ ℓ' : Level} → (A• : Set• {ℓ}) → (B• : Set• {ℓ'}) → Set• {ℓ ⊔ ℓ'}
-A• ⊎•₁ B• = •[ ∣ A• ∣ ⊎ ∣ B• ∣ , inj₁ (• A•) ]
-
-_⊎•₂_ : {ℓ ℓ' : Level} → (A• : Set• {ℓ}) → (B• : Set• {ℓ'}) → Set• {ℓ ⊔ ℓ'}
-A• ⊎•₂ B• = •[ ∣ A• ∣ ⊎ ∣ B• ∣ , inj₂ (• B•) ]
-
-_×•_ : {ℓ ℓ' : Level} → (A• : Set• {ℓ}) → (B• : Set• {ℓ'}) → Set• {ℓ ⊔ ℓ'}
-A• ×• B• = •[ ∣ A• ∣ × ∣ B• ∣ , (• A• , • B•) ]
-
-test0 : Set• {lzero}
-test0 = •[ ℕ , 3 ]
-
-test1 : Set• {lsuc lzero}
-test1 = •[ Set , ℕ ]
-
-test1' : {ℓ ℓ' : Level} {A : Set ℓ} {B : Set ℓ'} {a : A} → Set• {ℓ ⊔ ℓ'}
-test1' {ℓ} {ℓ'} {A} {B} {a} = •[ A ⊎ B , inj₁ a ]
-
-test2 : ∀ {ℓ} → Set• {lsuc (lsuc ℓ)}
-test2 {ℓ} = •[ Set (lsuc ℓ) , Set ℓ ]
-
-test2' : Set• {lzero}
-test2' = •[ (Bool → Bool) , not ]
-
-------------------------------------------------------------------------------
--- Paths
-
 -- Paths are pi-combinators
 
-data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc ℓ) where
+data _⇛_ {ℓ : Level} : 
+  (A• : Set• ℓ) → (B• : Set• ℓ) → Set (lsuc (lsuc ℓ)) where
   -- additive structure
-  swap₁₊⇛    : {A• B• : Set• {ℓ}} → (A• ⊎•₁ B•) ⇛ (B• ⊎•₂ A•)
+  swap₁₊⇛    : {A B : Set ℓ} {a : A} {b : B} → 
+               •[ A ⊎ B , inj₁ a ] ⇛ •[ B ⊎ A , inj₂ a ]
+  id⇛        : {A : Set ℓ} → (a : A) → •[ A , a ] ⇛ •[ A , a ]
+  η⋆⇛        : {A : Set ℓ} {a : A} → •[ A , a ] ⇛ •[ (A → A) , id ]
+  equiv⇛     : {A B : Set ℓ} {a : A} {b : B} → 
+               (f : •[ A , a ] →• •[ B , b ]) → 
+               (fequiv : isequiv• f) → 
+               •[ A , a ] ⇛ •[ B , b ]
+
+swap₊ : {ℓ : Level} {A B : Set ℓ} → A ⊎ B → B ⊎ A
+swap₊ (inj₁ a) = inj₂ a
+swap₊ (inj₂ b) = inj₁ b
+
+eval : {ℓ : Level} {A• B• : Set• ℓ} → A• ⇛ B• → (A• →• B•)
+eval swap₁₊⇛ = record { fun = swap₊ ; resp• = refl } 
+eval (id⇛ _) = id•
+eval η⋆⇛ = {!!} 
+eval (equiv⇛ _ _) = {!!}
+
+pInversion : {ℓ : Level} {A• B• : Set• ℓ} → (c : A• ⇛ B•) → fun (eval c) (• A•) ≡ • B•
+pInversion {ℓ} {A•} {B•} c = resp• (eval c) 
+
+funext : {ℓ : Level} {A• B• : Set• ℓ} {f g : A• →• B•} → 
+         (pt f ⇛ pt g) → (f ∼• g) 
+funext = {!!} 
+
+{--
   swap₂₊⇛    : {A• B• : Set• {ℓ}} → (A• ⊎•₂ B•) ⇛ (B• ⊎•₁ A•)
   assocl₁₊⇛  : {A• B• C• : Set• {ℓ}} → 
                (A• ⊎•₁ (B• ⊎•₁ C•)) ⇛ ((A• ⊎•₁ B•) ⊎•₁ C•)
   assocl₁₊⇛' : {A• B• C• : Set• {ℓ}} → 
                (A• ⊎•₁ (B• ⊎•₂ C•)) ⇛ ((A• ⊎•₁ B•) ⊎•₁ C•)
-{--
                •[ A ⊎ (B ⊎ C) , inj₁ a ] ⇛ •[ (A ⊎ B) ⊎ C , inj₁ (inj₁ a) ]
   assocl₂₁₊⇛ : {A B C : Set ℓ} → (b : B) → 
                •[ A ⊎ (B ⊎ C) , inj₂ (inj₁ b) ] ⇛ 
@@ -124,6 +112,7 @@ data _⇛_ {ℓ : Level} : Set• {ℓ} → Set• {ℓ} → Set (lsuc ℓ) wher
 
 -- Abbreviations and small examples
 
+{--
 Path : {ℓ : Level} {A B : Set ℓ} → (a : A) → (b : B) → Set (lsuc ℓ)
 Path {ℓ} {A} {B} a b = •[ A , a ] ⇛ •[ B , b ]
 
@@ -131,7 +120,7 @@ Path {ℓ} {A} {B} a b = •[ A , a ] ⇛ •[ B , b ]
   (p : Path a b) → (q : Path c d) → Set (lsuc (lsuc ℓ))
 2Path {ℓ} {A} {B} {C} {D} {a} {b} {c} {d} p q = Path p q 
   --  •[ Path a b , p ] ⇛ •[ Path c d , q ]
-
+--}
 {--
 _≡⟨_⟩_ : ∀ {ℓ} → {A B C : Set ℓ} (a : A) {b : B} {c : C} → 
          Path a b → Path b c → Path a c
@@ -165,15 +154,6 @@ test8 {A} {B} {C} {D} {a} {b} {c} {d} p q =
 ≡Path : {ℓ : Level} {A : Set ℓ} {x y : A} → (x ≡ y) → Path x y
 ≡Path {ℓ} {A} {x} {.x} refl = id⇛ x
 --}
-
--- See:
--- http://homotopytypetheory.org/2012/11/21/on-heterogeneous-equality/
-
-beta : {ℓ : Level} {A : Set ℓ} {a : A} → • •[ A , a ] ≡ a
-beta {ℓ} {A} {a} = refl
-
-eta : {ℓ : Level} → (A• : Set• {ℓ}) → •[ ∣ A• ∣ , • A• ] ≡ A•
-eta {ℓ} A• = refl
 
 ------------------------------------------------------------------------------
 -- Path induction
