@@ -7,11 +7,14 @@ open import Data.Empty
 open import Data.Unit
 open import Data.Sum
 open import Data.Product
-open import Function
+open import Function renaming (_∘_ to _○_)
 
+infixr 8  _∘_   -- path composition
 infix  4  _≡_   -- propositional equality
 infix  4  _∼_   -- homotopy between two functions 
 infix  4  _≃_   -- type of equivalences
+infix  2  _∎      -- equational reasoning
+infixr 2  _≡⟨_⟩_  -- equational reasoning
 
 ------------------------------------------------------------------------------
 -- Finite types
@@ -74,6 +77,35 @@ pathInd : ∀ {u ℓ} → {A : Set u} →
           ({x y : A} (p : x ≡ y) → C p)
 pathInd C c (refl x) = c x
 
+! : ∀ {u} → {A : Set u} {x y : A} → (x ≡ y) → (y ≡ x)
+! = pathInd (λ {x} {y} _ → y ≡ x) refl
+
+_∘_ : ∀ {u} → {A : Set u} → {x y z : A} → (x ≡ y) → (y ≡ z) → (x ≡ z)
+_∘_ {u} {A} {x} {y} {z} p q = 
+  pathInd {u}
+    (λ {x} {y} p → ((z : A) → (q : y ≡ z) → (x ≡ z)))
+    (λ x z q → pathInd (λ {x} {z} _ → x ≡ z) refl {x} {z} q)
+    {x} {y} p z q
+
+ap : ∀ {ℓ ℓ'} → {A : Set ℓ} {B : Set ℓ'} {x y : A} → 
+     (f : A → B) → (x ≡ y) → (f x ≡ f y)
+ap {ℓ} {ℓ'} {A} {B} {x} {y} f p = 
+  pathInd -- on p
+    (λ {x} {y} p → f x ≡ f y) 
+    (λ x → refl (f x))
+    {x} {y} p
+
+_≡⟨_⟩_ : ∀ {u} → {A : Set u} (x : A) {y z : A} → (x ≡ y) → (y ≡ z) → (x ≡ z)
+_ ≡⟨ p ⟩ q = p ∘ q
+
+bydef : ∀ {u} → {A : Set u} {x : A} → (x ≡ x)
+bydef {u} {A} {x} = refl x
+
+_∎ : ∀ {u} → {A : Set u} (x : A) → x ≡ x
+_∎ x = refl x
+
+--
+
 _∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
       (f g : (x : A) → P x) → Set (ℓ ⊔ ℓ')
 _∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → f x ≡ g x
@@ -83,21 +115,34 @@ record qinv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) :
   constructor mkqinv
   field
     g : B → A 
-    α : (f ∘ g) ∼ id
-    β : (g ∘ f) ∼ id
+    α : (f ○ g) ∼ id
+    β : (g ○ f) ∼ id
 
 record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
   Set (ℓ ⊔ ℓ') where
   constructor mkisequiv
   field
     g : B → A 
-    α : (f ∘ g) ∼ id
+    α : (f ○ g) ∼ id
     h : B → A
-    β : (h ∘ f) ∼ id
+    β : (h ○ f) ∼ id
 
 equiv₁ : ∀ {ℓ ℓ'} → {A : Set ℓ} {B : Set ℓ'} {f : A → B} → qinv f → isequiv f
 equiv₁ (mkqinv qg qα qβ) = mkisequiv qg qα qg qβ
        
+equiv₂ : {A B : Set} {f : A → B} → isequiv f → qinv f
+equiv₂ {A} {B} {f} (mkisequiv ig iα ih iβ) = 
+  record {
+    g = ig ;
+    α = iα ;
+    β = λ x → ig (f x)
+                ≡⟨ ! (iβ (ig (f x))) ⟩
+              ih (f (ig (f x)))
+                ≡⟨ ap ih (iα (f x)) ⟩
+              ih (f x)
+                ≡⟨ iβ x ⟩
+              x ∎
+  }
 _≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ ⊔ ℓ')
 A ≃ B = Σ (A → B) isequiv
 
@@ -108,17 +153,33 @@ swap₊ : {A B : Set} → A ⊎ B → B ⊎ A
 swap₊ (inj₁ a) = inj₂ a
 swap₊ (inj₂ b) = inj₁ b
 
-swapswap : swap₊ ∘ swap₊ ∼ id
+swapswap : swap₊ ○ swap₊ ∼ id
 swapswap (inj₁ a) = refl a
 swapswap (inj₂ b) = refl b
 
 swap₊equiv : {A B : Set} → (A ⊎ B) ≃ (B ⊎ A)
 swap₊equiv = (swap₊ , equiv₁ (mkqinv swap₊ swapswap swapswap))
 
+transequiv : {A B C : Set} → A ≃ B → B ≃ C → A ≃ C
+transequiv (f , feq) (g , geq) with equiv₂ feq | equiv₂ geq
+... | mkqinv ff fα fβ | mkqinv gg gα gβ = 
+  (g ○ f , equiv₁ (mkqinv 
+                    (ff ○ gg)
+                    (λ c → g (f (ff (gg c)))
+                             ≡⟨ ap g (fα (gg c)) ⟩
+                           g (gg c)
+                             ≡⟨ gα c ⟩
+                           c ∎)
+                    (λ a → ff (gg (g (f a)))
+                             ≡⟨ ap ff (gβ (f a)) ⟩
+                           ff (f a)
+                             ≡⟨ fβ a ⟩
+                           a ∎)))
+
 path2equiv : {B₁ B₂ : FT} → (B₁ ⇛ B₂) → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧)
 path2equiv unite₊⇛ = {!!}
 path2equiv uniti₊⇛ = {!!}
-path2equiv swap₊⇛ = swap₊equiv
+path2equiv swap₊⇛ = {!!} --swap₊equiv
 path2equiv assocl₊⇛ = {!!}
 path2equiv assocr₊⇛ = {!!}
 path2equiv unite⋆⇛ = {!!}
@@ -132,7 +193,7 @@ path2equiv dist⇛ = {!!}
 path2equiv factor⇛ = {!!}
 path2equiv id⇛ = {!!}
 path2equiv (sym⇛ p) = {!!}
-path2equiv (p ◎ p₁) = {!!}
+path2equiv (p ◎ q) = transequiv (path2equiv p) (path2equiv q) 
 path2equiv (p ⊕ p₁) = {!!}
 path2equiv (p ⊗ p₁) = {!!} 
 
