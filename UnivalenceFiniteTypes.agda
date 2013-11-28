@@ -4,6 +4,7 @@ module UnivalenceFiniteTypes where
 
 open import Agda.Prim
 open import Data.Empty
+open import Data.Maybe
 open import Data.Unit
 open import Data.Sum renaming (map to _⊎→_)
 open import Data.Product
@@ -33,7 +34,7 @@ data FT : Set where
 ⟦ TIMES B₁ B₂ ⟧ = ⟦ B₁ ⟧ × ⟦ B₂ ⟧
 
 ------------------------------------------------------------------------------
--- Paths are pi-combinators
+-- Generalized paths are pi-combinators
 
 data _⇛_ : FT → FT → Set where
   -- additive structure
@@ -65,14 +66,11 @@ data _⇛_ : FT → FT → Set where
            (b₁ ⇛ b₃) → (b₂ ⇛ b₄) → (TIMES b₁ b₂ ⇛ TIMES b₃ b₄)
 
 ------------------------------------------------------------------------------
--- Equivalences
+-- Equivalences a la HoTT (using HoTT paths and path induction)
 
 -- Our own version of refl that makes 'a' explicit
 data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
   refl : (a : A) → (a ≡ a)
-
-sym : ∀ {ℓ} {A : Set ℓ} {a b : A} → a ≡ b → b ≡ a
-sym (refl a) = refl a
 
 -- J
 pathInd : ∀ {u ℓ} → {A : Set u} → 
@@ -99,6 +97,8 @@ ap {ℓ} {ℓ'} {A} {B} {x} {y} f p =
     (λ x → refl (f x))
     {x} {y} p
 
+-- Abbreviations
+
 _≡⟨_⟩_ : ∀ {u} → {A : Set u} (x : A) {y z : A} → (x ≡ y) → (y ≡ z) → (x ≡ z)
 _ ≡⟨ p ⟩ q = p ∘ q
 
@@ -108,7 +108,7 @@ bydef {u} {A} {x} = refl x
 _∎ : ∀ {u} → {A : Set u} (x : A) → x ≡ x
 _∎ x = refl x
 
---
+-- Equivalences
 
 _∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
       (f g : (x : A) → P x) → Set (ℓ ⊔ ℓ')
@@ -155,8 +155,8 @@ sym≃ :  ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (A ≃ B) → B ≃ A
 sym≃ (A→B , equiv) with equiv₂ equiv
 ... | mkqinv g α β = g , equiv₁ (mkqinv A→B β α)
 
-transequiv : {A B C : Set} → A ≃ B → B ≃ C → A ≃ C
-transequiv (f , feq) (g , geq) with equiv₂ feq | equiv₂ geq
+trans≃ : {A B C : Set} → A ≃ B → B ≃ C → A ≃ C
+trans≃ (f , feq) (g , geq) with equiv₂ feq | equiv₂ geq
 ... | mkqinv ff fα fβ | mkqinv gg gα gβ = 
   (g ○ f , equiv₁ (mkqinv 
                     (ff ○ gg)
@@ -174,6 +174,11 @@ transequiv (f , feq) (g , geq) with equiv₂ feq | equiv₂ geq
 ------------------------------------------------------------------------------
 -- Univalence
 
+-- for each combinator, define two functions that are inverses, and
+-- establish an equivalence
+
+-- swap₊
+
 swap₊ : {A B : Set} → A ⊎ B → B ⊎ A
 swap₊ (inj₁ a) = inj₂ a
 swap₊ (inj₂ b) = inj₁ b
@@ -184,6 +189,8 @@ swapswap₊ (inj₂ b) = refl (inj₂ b)
 
 swap₊equiv : {A B : Set} → (A ⊎ B) ≃ (B ⊎ A)
 swap₊equiv = (swap₊ , equiv₁ (mkqinv swap₊ swapswap₊ swapswap₊))
+
+-- unite₊ and uniti₊
 
 unite₊ : {A : Set} → ⊥ ⊎ A → A
 unite₊ (inj₁ ())
@@ -206,6 +213,8 @@ unite₊equiv = (unite₊ , mkisequiv uniti₊ refl uniti₊ uniti₊∘unite₊
 uniti₊equiv : {A : Set} → A ≃ (⊥ ⊎ A)
 uniti₊equiv = uniti₊ , mkisequiv unite₊ uniti₊∘unite₊ unite₊ unite₊∙uniti₊
 
+-- unite⋆ and uniti⋆
+
 unite⋆ : {A : Set} → ⊤ × A → A
 unite⋆ (tt , x) = x
 
@@ -221,6 +230,8 @@ unite⋆equiv = unite⋆ , mkisequiv uniti⋆ refl uniti⋆ uniti⋆∘unite⋆
 uniti⋆equiv : {A : Set} → A ≃ (⊤ × A)
 uniti⋆equiv = uniti⋆ , mkisequiv unite⋆ uniti⋆∘unite⋆ unite⋆ refl
 
+-- swap⋆
+
 swap⋆ : {A B : Set} → A × B → B × A
 swap⋆ (a , b) = (b , a)
 
@@ -230,16 +241,22 @@ swapswap⋆ (a , b) = refl (a , b)
 swap⋆equiv : {A B : Set} → (A × B) ≃ (B × A)
 swap⋆equiv = swap⋆ , mkisequiv swap⋆ swapswap⋆ swap⋆ swapswap⋆
 
-_⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} → 
-  (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → (f ⊎→ g) ○ (finv ⊎→ ginv) ∼ id {A = C ⊎ D}
+-- 
+
+_⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
+  (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → 
+  (f ⊎→ g) ○ (finv ⊎→ ginv) ∼ id {A = C ⊎ D}
 _⊎∼_ α β (inj₁ x) = ap inj₁ (α x) 
 _⊎∼_ α β (inj₂ y) = ap inj₂ (β y)
  
 path⊎ : {A B C D : Set} → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
 path⊎ (fp , eqp) (fq , eqq) = 
-  Data.Sum.map fp fq , mkisequiv (P.g ⊎→ Q.g) (P.α ⊎∼ Q.α) (P.h ⊎→ Q.h) (P.β ⊎∼ Q.β)
+  Data.Sum.map fp fq , 
+  mkisequiv (P.g ⊎→ Q.g) (P.α ⊎∼ Q.α) (P.h ⊎→ Q.h) (P.β ⊎∼ Q.β)
   where module P = isequiv eqp
         module Q = isequiv eqq
+
+-- Now map each combinator to the corresponding equivalence
 
 path2equiv : {B₁ B₂ : FT} → (B₁ ⇛ B₂) → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧)
 path2equiv unite₊⇛ = unite₊equiv
@@ -258,9 +275,11 @@ path2equiv dist⇛ = {!!}
 path2equiv factor⇛ = {!!}
 path2equiv id⇛ = id , mkisequiv id refl id refl
 path2equiv (sym⇛ p) = sym≃ (path2equiv p)
-path2equiv (p ◎ q) = transequiv (path2equiv p) (path2equiv q) 
+path2equiv (p ◎ q) = trans≃ (path2equiv p) (path2equiv q) 
 path2equiv (p ⊕ q) = path⊎ (path2equiv p) (path2equiv q)
 path2equiv (p ⊗ q) = {!!} 
+
+-- Reverse direction
 
 max : ⊤ ⊎ ℕ → ⊤ ⊎ ℕ → ⊤ ⊎ ℕ
 max (inj₁ tt) b = b
@@ -272,15 +291,31 @@ dmult (inj₁ tt) _ = inj₁ tt
 dmult _ (inj₁ tt) = inj₁ tt
 dmult (inj₂ x) (inj₂ y) = inj₂ (x * y)
 
--- Reverse direction
 degree : (B : FT) → ⊤ ⊎ ℕ -- ⊤ for -∞ for the degree of ZERO
 degree ZERO = inj₁ tt
 degree ONE = inj₂ zero
 degree (PLUS b₀ b₁) =  max (degree b₀) (degree b₁)
 degree (TIMES b₀ b₁) = dmult (degree b₀) (degree b₁)
 
+witness : (B : FT) → Maybe ⟦ B ⟧
+witness ZERO = nothing
+witness ONE = just tt
+witness (PLUS B₁ B₂) with witness B₁ | witness B₂ 
+... | nothing | nothing = nothing
+... | nothing | just b  = just (inj₂ b)
+... | just b  | _ = just (inj₁ b) 
+witness (TIMES B₁ B₂) with witness B₁ | witness B₂ 
+... | nothing | _ = nothing
+... | just b  | nothing = nothing
+... | just b₁ | just b₂ = just (b₁ , b₂)
+
 equiv2path : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (B₁ ⇛ B₂)
 equiv2path {B₁} {B₂} (f , feq) with equiv₂ feq
+equiv2path {ZERO} {B} (f , feq) | mkqinv g α β with witness B 
+... | nothing = {!!} 
+... | just b with g b
+... | () 
+{--
 equiv2path {ZERO} {ZERO} (f , feq) | mkqinv g α β = id⇛
 equiv2path {ZERO} {ONE} (f , feq) | mkqinv g α β with g tt 
 ... | () 
@@ -295,6 +330,7 @@ equiv2path {ZERO} {PLUS ONE B₃} (f , feq) | mkqinv g α β = {!!}
 equiv2path {ZERO} {PLUS (PLUS B₂ B₃) B₄} (f , feq) | mkqinv g α β = {!!}
 equiv2path {ZERO} {PLUS (TIMES B₂ B₃) B₄} (f , feq) | mkqinv g α β = {!!} 
 equiv2path {ZERO} {TIMES B₂ B₃} (f , feq) | mkqinv g α β = {!!}
+--} 
 equiv2path {ONE} {ZERO} (f , feq) | mkqinv g α β with f tt
 ... | ()
 equiv2path {ONE} {ONE} (f , feq) | mkqinv g α β = id⇛
@@ -324,6 +360,5 @@ equiv2path {TIMES B₁ B₂} {TIMES B₃ B₄} (f , feq) | mkqinv g α β = {!!}
 
 univalence : {B₁ B₂ : FT} → (B₁ ⇛ B₂) ≃ (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) 
 univalence = (path2equiv , equiv₁ (mkqinv equiv2path {!!} {!!}))
-
 
 ------------------------------------------------------------------------------
