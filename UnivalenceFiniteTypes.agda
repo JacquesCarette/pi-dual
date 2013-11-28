@@ -231,12 +231,12 @@ transequiv (f , feq) (g , geq) with equiv₂ feq | equiv₂ geq
 
 _⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} → 
   (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → (f ⊎→ g) ○ (finv ⊎→ ginv) ∼ id {A = C ⊎ D}
-_⊎∼_ {A} {B} {C} {D} {f} {finv} {g} {ginv} α β (inj₁ x) = {!ap inj₁ (refl x)!}
-_⊎∼_ α β (inj₂ y) = {!!} 
+_⊎∼_ α β (inj₁ x) = ap inj₁ (α x) 
+_⊎∼_ α β (inj₂ y) = ap inj₂ (β y)
  
 path⊎ : {A B C D : Set} → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
 path⊎ (fp , eqp) (fq , eqq) = 
-  Data.Sum.map fp fq , mkisequiv (P.g ⊎→ Q.g) {!Q.α!} (P.h ⊎→ Q.h) {!!}
+  Data.Sum.map fp fq , mkisequiv (P.g ⊎→ Q.g) (P.α ⊎∼ Q.α) (P.h ⊎→ Q.h) (P.β ⊎∼ Q.β)
   where module P = isequiv eqp
         module Q = isequiv eqq
 
@@ -258,7 +258,7 @@ path2equiv factor⇛ = {!!}
 path2equiv id⇛ = id , mkisequiv id refl id refl
 path2equiv (sym⇛ p) = sym≃ (path2equiv p)
 path2equiv (p ◎ q) = transequiv (path2equiv p) (path2equiv q) 
-path2equiv (p ⊕ q) = {!path2equiv p!}
+path2equiv (p ⊕ q) = path⊎ (path2equiv p) (path2equiv q)
 path2equiv (p ⊗ q) = {!!} 
 
 ------------------------------------------------------------------------------
