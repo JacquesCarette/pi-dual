@@ -349,7 +349,7 @@ normalizeC {TIMES B₁ B₂} = {!!}
 ... | () 
 ⊥⇛ZERO {PLUS B₁ B₂} equiv = {!!}
 ⊥⇛ZERO {TIMES B₁ B₂} equiv with normalize B₁ | normalize (TIMES B₁ B₂)
-... | ZERO | ZERO = ? 
+... | ZERO | ZERO = {!!} 
 ... | NB₁ | _ = {!!} 
 
 
