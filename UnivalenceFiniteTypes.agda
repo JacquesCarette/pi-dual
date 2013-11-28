@@ -330,18 +330,17 @@ normalize (PLUS B₁ B₂) with normalize B₁
 ... | ONE = PLUS ONE (normalize B₂) 
 ... | PLUS B₃ B₄ = normalize (PLUS B₃ (PLUS B₄ B₂)) 
 ... | TIMES B₃ B₄ = normalize (PLUS B₂ (TIMES B₃ B₄))
-normalize (TIMES ZERO B₂) = ZERO
-normalize (TIMES ONE B₂) = normalize B₂
-normalize (TIMES (PLUS B₁ B₂) B₃) = 
-  normalize (PLUS (TIMES B₁ B₃) (TIMES B₂ B₃))
-normalize (TIMES (TIMES B₁ B₂) B₃) = 
-  normalize (TIMES B₁ (TIMES B₂ B₃))
+normalize (TIMES B₁ B₂) with normalize B₁
+... | ZERO = ZERO
+... | ONE  = normalize B₂
+... | PLUS B₃ B₄ = normalize (PLUS (TIMES B₃ B₂) (TIMES B₄ B₂))
+... | TIMES B₃ B₄ = normalize (TIMES B₃ (TIMES B₄ B₂))
 
 normalizeC : {B : FT} → ⟦ normalize B ⟧ ≃ ⟦ B ⟧
 normalizeC {ZERO} = id≃
 normalizeC {ONE} = {!!}
-normalizeC {PLUS B B₁} = {!!}
-normalizeC {TIMES B B₁} = {!!} 
+normalizeC {PLUS B₁ B₂} = {!!}
+normalizeC {TIMES B₁ B₂} = {!!} 
 
 ⊥⇛ZERO : {B : FT} → ⟦ normalize B ⟧ ≃ ⊥ → B ⇛ ZERO
 ⊥⇛ZERO {ZERO} equiv = id⇛
@@ -349,7 +348,9 @@ normalizeC {TIMES B B₁} = {!!}
 ... | mkqinv g α β with f (inj₁ tt) 
 ... | () 
 ⊥⇛ZERO {PLUS B₁ B₂} equiv = {!!}
-⊥⇛ZERO {TIMES B B₁} equiv = {!!} 
+⊥⇛ZERO {TIMES B₁ B₂} equiv with normalize B₁ | normalize (TIMES B₁ B₂)
+... | ZERO | ZERO = ? 
+... | NB₁ | _ = {!!} 
 
 
 equiv2path : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (B₁ ⇛ B₂)
