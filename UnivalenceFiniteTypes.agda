@@ -261,4 +261,40 @@ path2equiv (p ◎ q) = transequiv (path2equiv p) (path2equiv q)
 path2equiv (p ⊕ q) = path⊎ (path2equiv p) (path2equiv q)
 path2equiv (p ⊗ q) = {!!} 
 
+-- Reverse direction
+
+equiv2path : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (B₁ ⇛ B₂)
+equiv2path {B₁} {B₂} (f , feq) with equiv₂ feq
+equiv2path {ZERO} {ZERO} (f , feq) | mkqinv g α β = {!!}
+equiv2path {ZERO} {ONE} (f , feq) | mkqinv g α β = {!!}
+equiv2path {ZERO} {PLUS B₂ B₃} (f , feq) | mkqinv g α β = {!!}
+equiv2path {ZERO} {TIMES B₂ B₃} (f , feq) | mkqinv g α β = {!!}
+equiv2path {ONE} {ZERO} (f , feq) | mkqinv g α β = {!!}
+equiv2path {ONE} {ONE} (f , feq) | mkqinv g α β = {!!}
+equiv2path {ONE} {PLUS B₂ B₃} (f , feq) | mkqinv g α β = {!!}
+equiv2path {ONE} {TIMES B₂ B₃} (f , feq) | mkqinv g α β = 
+  {!!}
+  -- f : ⊤ → ⟦ B₂ ⟧ × ⟦ B₃ ⟧
+  -- g : ⟦ B₂ ⟧ × ⟦ B₃ ⟧ → ⊤ 
+  -- α : (f ○ g) ∼ id
+  -- β : (g ○ f) ∼ id
+equiv2path {PLUS ZERO B₁} {B₂} (f , feq) | mkqinv g α β = {!!}
+  -- f : ⟦ ⊥ ⟧ ⊎ ⟦ B₁ ⟧ → ⟦ B₂ ⟧
+  -- g : ⟦ B₂ ⟧ → ⟦ ⊥ ⟧ ⊎ ⟦ B₁ ⟧ 
+  -- α b₂ : f (g b₂) ≡ b₂
+  -- β (inj₂ b₁) : g (f (inj₂ b₁)) ≡ inj₂ b₁
+  -- can we use α and β to prove that B₁ must be equal to B₂
+  -- and in that case we can use unite₊⇛ to fill the above hole
+equiv2path {PLUS B₁ B₂} {B₃} (f , feq) | mkqinv g α β = {!!}
+equiv2path {TIMES B₁ B₂} {ZERO} (f , feq) | mkqinv g α β = {!!}
+equiv2path {TIMES B₁ B₂} {ONE} (f , feq) | mkqinv g α β = {!!}
+equiv2path {TIMES B₁ B₂} {PLUS B₃ B₄} (f , feq) | mkqinv g α β = {!!}
+equiv2path {TIMES B₁ B₂} {TIMES B₃ B₄} (f , feq) | mkqinv g α β = {!!}
+
+-- univalence
+
+univalence : {B₁ B₂ : FT} → (B₁ ⇛ B₂) ≃ (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) 
+univalence = (path2equiv , equiv₁ (mkqinv equiv2path {!!} {!!}))
+
+
 ------------------------------------------------------------------------------
