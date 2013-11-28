@@ -7,6 +7,7 @@ open import Data.Empty
 open import Data.Unit
 open import Data.Sum renaming (map to _⊎→_)
 open import Data.Product
+open import Data.Nat renaming (_⊔_ to _⊔ℕ_)
 open import Function renaming (_∘_ to _○_)
 
 infixr 8  _∘_   -- path composition
@@ -261,17 +262,45 @@ path2equiv (p ◎ q) = transequiv (path2equiv p) (path2equiv q)
 path2equiv (p ⊕ q) = path⊎ (path2equiv p) (path2equiv q)
 path2equiv (p ⊗ q) = {!!} 
 
+max : ⊤ ⊎ ℕ → ⊤ ⊎ ℕ → ⊤ ⊎ ℕ
+max (inj₁ tt) b = b
+max (inj₂ y) (inj₁ tt) = inj₂ y
+max (inj₂ x) (inj₂ y) = inj₂ (x ⊔ℕ y)
+
+dmult : ⊤ ⊎ ℕ → ⊤ ⊎ ℕ → ⊤ ⊎ ℕ
+dmult (inj₁ tt) _ = inj₁ tt
+dmult _ (inj₁ tt) = inj₁ tt
+dmult (inj₂ x) (inj₂ y) = inj₂ (x * y)
+
 -- Reverse direction
+degree : (B : FT) → ⊤ ⊎ ℕ -- ⊤ for -∞ for the degree of ZERO
+degree ZERO = inj₁ tt
+degree ONE = inj₂ zero
+degree (PLUS b₀ b₁) =  max (degree b₀) (degree b₁)
+degree (TIMES b₀ b₁) = dmult (degree b₀) (degree b₁)
 
 equiv2path : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (B₁ ⇛ B₂)
 equiv2path {B₁} {B₂} (f , feq) with equiv₂ feq
-equiv2path {ZERO} {ZERO} (f , feq) | mkqinv g α β = {!!}
-equiv2path {ZERO} {ONE} (f , feq) | mkqinv g α β = {!!}
-equiv2path {ZERO} {PLUS B₂ B₃} (f , feq) | mkqinv g α β = {!!}
+equiv2path {ZERO} {ZERO} (f , feq) | mkqinv g α β = id⇛
+equiv2path {ZERO} {ONE} (f , feq) | mkqinv g α β with g tt 
+... | () 
+equiv2path {ZERO} {PLUS ZERO ZERO} (f , feq) | mkqinv g α β = uniti₊⇛
+equiv2path {ZERO} {PLUS ZERO ONE} (f , feq) | mkqinv g α β with g (inj₂ tt)
+... | ()
+equiv2path {ZERO} {PLUS ZERO B₂} (f , feq) | mkqinv g α β with degree B₂ 
+equiv2path {ZERO} {PLUS ZERO B₂} (f , feq) | mkqinv g α β | inj₁ tt =  
+  equiv2path ({!!} , {!!}) ◎ uniti₊⇛ {B₂}
+equiv2path {ZERO} {PLUS ZERO B₂} (f , feq) | mkqinv g α β | inj₂ y = {!!}
+equiv2path {ZERO} {PLUS ONE B₃} (f , feq) | mkqinv g α β = {!!}
+equiv2path {ZERO} {PLUS (PLUS B₂ B₃) B₄} (f , feq) | mkqinv g α β = {!!}
+equiv2path {ZERO} {PLUS (TIMES B₂ B₃) B₄} (f , feq) | mkqinv g α β = {!!} 
 equiv2path {ZERO} {TIMES B₂ B₃} (f , feq) | mkqinv g α β = {!!}
-equiv2path {ONE} {ZERO} (f , feq) | mkqinv g α β = {!!}
-equiv2path {ONE} {ONE} (f , feq) | mkqinv g α β = {!!}
-equiv2path {ONE} {PLUS B₂ B₃} (f , feq) | mkqinv g α β = {!!}
+equiv2path {ONE} {ZERO} (f , feq) | mkqinv g α β with f tt
+... | ()
+equiv2path {ONE} {ONE} (f , feq) | mkqinv g α β = id⇛
+equiv2path {ONE} {PLUS B₂ B₃} (f , feq) | mkqinv g α β with f tt
+equiv2path {ONE} {PLUS B₂ B₃} (f , feq) | mkqinv g α β | inj₁ x = {!!}
+equiv2path {ONE} {PLUS B₂ B₃} (f , feq) | mkqinv g α β | inj₂ y = {!!}
 equiv2path {ONE} {TIMES B₂ B₃} (f , feq) | mkqinv g α β = 
   {!!}
   -- f : ⊤ → ⟦ B₂ ⟧ × ⟦ B₃ ⟧
