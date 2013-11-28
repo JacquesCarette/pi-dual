@@ -1,4 +1,5 @@
 {-# OPTIONS --without-K #-}
+{-# OPTIONS --no-termination-check #-}
 
 module UnivalenceFiniteTypes where
 
@@ -122,6 +123,13 @@ record qinv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) :
     α : (f ○ g) ∼ id
     β : (g ○ f) ∼ id
 
+idqinv : ∀ {ℓ} → {A : Set ℓ} → qinv {ℓ} {ℓ} {A} {A} id
+idqinv = record {
+           g = id ;
+           α = λ b → refl b ; 
+           β = λ a → refl a
+         } 
+
 record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
   Set (ℓ ⊔ ℓ') where
   constructor mkisequiv
@@ -150,6 +158,9 @@ equiv₂ {f = f} (mkisequiv ig iα ih iβ) =
 
 _≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ ⊔ ℓ')
 A ≃ B = Σ (A → B) isequiv
+
+id≃ : ∀ {ℓ} {A : Set ℓ} → A ≃ A
+id≃ = (id , equiv₁ idqinv)
 
 sym≃ :  ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (A ≃ B) → B ≃ A
 sym≃ (A→B , equiv) with equiv₂ equiv
@@ -309,8 +320,32 @@ witness (TIMES B₁ B₂) with witness B₁ | witness B₂
 ... | just b  | nothing = nothing
 ... | just b₁ | just b₂ = just (b₁ , b₂)
 
+-- normalize a finite type to (1 + (1 + (1 + ... + (1 + 0) ... )))
+-- a bunch of ones ending with zero with left biased + in between
+normalize : FT → FT
+normalize ZERO = ZERO
+normalize ONE = PLUS ONE ZERO
+normalize (PLUS B₁ B₂) with normalize B₁
+... | ZERO = normalize B₂ 
+... | ONE = PLUS ONE (normalize B₂) 
+... | PLUS B₃ B₄ = normalize (PLUS B₃ (PLUS B₄ B₂)) 
+... | TIMES B₃ B₄ = normalize (PLUS B₂ (TIMES B₃ B₄))
+normalize (TIMES ZERO B₂) = ZERO
+normalize (TIMES ONE B₂) = normalize B₂
+normalize (TIMES (PLUS B₁ B₂) B₃) = 
+  normalize (PLUS (TIMES B₁ B₃) (TIMES B₂ B₃))
+normalize (TIMES (TIMES B₁ B₂) B₃) = 
+  normalize (TIMES B₁ (TIMES B₂ B₃))
+
+normalizeC : {B : FT} → ⟦ normalize B ⟧ ≃ ⟦ B ⟧
+normalizeC {ZERO} = id≃
+normalizeC {ONE} = ?
+normalizeC {PLUS B B₁} = {!!}
+normalizeC {TIMES B B₁} = {!!} 
+
 equiv2path : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (B₁ ⇛ B₂)
 equiv2path {B₁} {B₂} (f , feq) with equiv₂ feq
+equiv2path {ZERO} {ZERO} (f , feq) | mkqinv g α β = id⇛
 equiv2path {ZERO} {B} (f , feq) | mkqinv g α β with witness B 
 ... | nothing = {!!} 
 ... | just b with g b
