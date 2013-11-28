@@ -264,6 +264,34 @@ swapswap⋆ (a , b) = refl (a , b)
 swap⋆equiv : {A B : Set} → (A × B) ≃ (B × A)
 swap⋆equiv = swap⋆ , mkisequiv swap⋆ swapswap⋆ swap⋆ swapswap⋆
 
+-- assocl₊ and assocr₊
+
+assocl₊ : {A B C : Set} → (A ⊎ (B ⊎ C)) → ((A ⊎ B) ⊎ C)
+assocl₊ (inj₁ a) = inj₁ (inj₁ a)
+assocl₊ (inj₂ (inj₁ b)) = inj₁ (inj₂ b)
+assocl₊ (inj₂ (inj₂ c)) = inj₂ c
+
+assocr₊ : {A B C : Set} → ((A ⊎ B) ⊎ C) → (A ⊎ (B ⊎ C))
+assocr₊ (inj₁ (inj₁ a)) = inj₁ a
+assocr₊ (inj₁ (inj₂ b)) = inj₂ (inj₁ b)
+assocr₊ (inj₂ c) = inj₂ (inj₂ c)
+
+assocl₊∘assocr₊ : {A B C : Set} → assocl₊ ○ assocr₊ ∼ id {A = ((A ⊎ B) ⊎ C)}
+assocl₊∘assocr₊ (inj₁ (inj₁ a)) = refl (inj₁ (inj₁ a))
+assocl₊∘assocr₊ (inj₁ (inj₂ b)) = refl (inj₁ (inj₂ b))
+assocl₊∘assocr₊ (inj₂ c) = refl (inj₂ c)
+
+assocr₊∘assocl₊ : {A B C : Set} → assocr₊ ○ assocl₊ ∼ id {A = (A ⊎ (B ⊎ C))}
+assocr₊∘assocl₊ (inj₁ a) = refl (inj₁ a)
+assocr₊∘assocl₊ (inj₂ (inj₁ b)) = refl (inj₂ (inj₁ b))
+assocr₊∘assocl₊ (inj₂ (inj₂ c)) = refl (inj₂ (inj₂ c))
+
+assocl₊equiv : {A B C : Set} → (A ⊎ (B ⊎ C)) ≃ ((A ⊎ B) ⊎ C)
+assocl₊equiv = assocl₊ , mkisequiv assocr₊ assocl₊∘assocr₊ assocr₊ assocr₊∘assocl₊
+
+assocr₊equiv : {A B C : Set} → ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C))
+assocr₊equiv = assocr₊ , mkisequiv assocl₊ assocr₊∘assocl₊ assocl₊ assocl₊∘assocr₊
+
 -- 
 
 _⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
@@ -297,8 +325,8 @@ path2equiv : {B₁ B₂ : FT} → (B₁ ⇛ B₂) → (⟦ B₁ ⟧ ≃ ⟦ B₂
 path2equiv unite₊⇛ = unite₊equiv
 path2equiv uniti₊⇛ = uniti₊equiv
 path2equiv swap₊⇛ = swap₊equiv
-path2equiv assocl₊⇛ = {!!}
-path2equiv assocr₊⇛ = {!!}
+path2equiv assocl₊⇛ = assocl₊equiv
+path2equiv assocr₊⇛ = assocr₊equiv
 path2equiv unite⋆⇛ = unite⋆equiv
 path2equiv uniti⋆⇛ = uniti⋆equiv
 path2equiv swap⋆⇛ = swap⋆equiv
