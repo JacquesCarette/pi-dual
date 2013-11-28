@@ -154,6 +154,22 @@ sym≃ :  ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (A ≃ B) → B ≃ A
 sym≃ (A→B , equiv) with equiv₂ equiv
 ... | mkqinv g α β = g , equiv₁ (mkqinv A→B β α)
 
+transequiv : {A B C : Set} → A ≃ B → B ≃ C → A ≃ C
+transequiv (f , feq) (g , geq) with equiv₂ feq | equiv₂ geq
+... | mkqinv ff fα fβ | mkqinv gg gα gβ = 
+  (g ○ f , equiv₁ (mkqinv 
+                    (ff ○ gg)
+                    (λ c → g (f (ff (gg c)))
+                             ≡⟨ ap g (fα (gg c)) ⟩
+                           g (gg c)
+                             ≡⟨ gα c ⟩
+                           c ∎)
+                    (λ a → ff (gg (g (f a)))
+                             ≡⟨ ap ff (gβ (f a)) ⟩
+                           ff (f a)
+                             ≡⟨ fβ a ⟩
+                           a ∎)))
+
 ------------------------------------------------------------------------------
 -- Univalence
 
@@ -212,22 +228,6 @@ swapswap⋆ (a , b) = refl (a , b)
 
 swap⋆equiv : {A B : Set} → (A × B) ≃ (B × A)
 swap⋆equiv = swap⋆ , mkisequiv swap⋆ swapswap⋆ swap⋆ swapswap⋆
-
-transequiv : {A B C : Set} → A ≃ B → B ≃ C → A ≃ C
-transequiv (f , feq) (g , geq) with equiv₂ feq | equiv₂ geq
-... | mkqinv ff fα fβ | mkqinv gg gα gβ = 
-  (g ○ f , equiv₁ (mkqinv 
-                    (ff ○ gg)
-                    (λ c → g (f (ff (gg c)))
-                             ≡⟨ ap g (fα (gg c)) ⟩
-                           g (gg c)
-                             ≡⟨ gα c ⟩
-                           c ∎)
-                    (λ a → ff (gg (g (f a)))
-                             ≡⟨ ap ff (gβ (f a)) ⟩
-                           ff (f a)
-                             ≡⟨ fβ a ⟩
-                           a ∎)))
 
 _⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} → 
   (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → (f ⊎→ g) ○ (finv ⊎→ ginv) ∼ id {A = C ⊎ D}
