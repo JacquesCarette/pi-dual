@@ -161,19 +161,11 @@ swap₊ : {A B : Set} → A ⊎ B → B ⊎ A
 swap₊ (inj₁ a) = inj₂ a
 swap₊ (inj₂ b) = inj₁ b
 
-<<<<<<< local
 swapswap₊ : {A B : Set} → swap₊ ○ swap₊ {A} {B} ∼ id
 swapswap₊ (inj₁ a) = refl (inj₁ a)
 swapswap₊ (inj₂ b) = refl (inj₂ b)
-=======
-{--
-swapswap : swap₊ ○ swap₊ ∼ id
-swapswap (inj₁ a) = refl a
-swapswap (inj₂ b) = refl b
->>>>>>> other
 
 swap₊equiv : {A B : Set} → (A ⊎ B) ≃ (B ⊎ A)
-<<<<<<< local
 swap₊equiv = (swap₊ , equiv₁ (mkqinv swap₊ swapswap₊ swapswap₊))
 
 unite₊ : {A : Set} → ⊥ ⊎ A → A
@@ -220,10 +212,6 @@ swapswap⋆ (a , b) = refl (a , b)
 
 swap⋆equiv : {A B : Set} → (A × B) ≃ (B × A)
 swap⋆equiv = swap⋆ , mkisequiv swap⋆ swapswap⋆ swap⋆ swapswap⋆
-=======
-swap₊equiv = (swap₊ , equiv₁ (mkqinv swap₊ swapswap swapswap))
---}
->>>>>>> other
 
 transequiv : {A B C : Set} → A ≃ B → B ≃ C → A ≃ C
 transequiv (f , feq) (g , geq) with equiv₂ feq | equiv₂ geq
