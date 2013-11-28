@@ -8,7 +8,7 @@ open import Data.Empty
 open import Data.Maybe
 open import Data.Unit
 open import Data.Sum renaming (map to _⊎→_)
-open import Data.Product
+open import Data.Product renaming (map to _×→_)
 open import Data.Nat renaming (_⊔_ to _⊔ℕ_)
 open import Function renaming (_∘_ to _○_)
 
@@ -97,6 +97,18 @@ ap {ℓ} {ℓ'} {A} {B} {x} {y} f p =
     (λ {x} {y} p → f x ≡ f y) 
     (λ x → refl (f x))
     {x} {y} p
+
+ap2 : ∀ {ℓ ℓ' ℓ''} → {A : Set ℓ} {B : Set ℓ'} {C : Set ℓ''} {x₁ y₁ : A} {x₂ y₂ : B} → 
+     (f : A → B → C) → (x₁ ≡ y₁) → (x₂ ≡ y₂) → (f x₁ x₂  ≡ f y₁ y₂)
+ap2 {ℓ} {ℓ'} {ℓ''} {A} {B} {C} {x₁} {y₁} {x₂} {y₂} f p₁ p₂ = 
+  pathInd -- on p₁
+    (λ {x₁} {y₁} p₁ → f x₁ x₂ ≡ f y₁ y₂) 
+    (λ x →
+      pathInd -- on p₂
+        (λ {x₂} {y₂} p₂ → f x x₂ ≡ f x y₂)
+        (λ y → refl (f x y))
+        {x₂} {y₂} p₂)
+    {x₁} {y₁} p₁
 
 -- Abbreviations
 
@@ -259,6 +271,11 @@ _⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : 
   (f ⊎→ g) ○ (finv ⊎→ ginv) ∼ id {A = C ⊎ D}
 _⊎∼_ α β (inj₁ x) = ap inj₁ (α x) 
 _⊎∼_ α β (inj₂ y) = ap inj₂ (β y)
+
+_×∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
+  (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → 
+  (f ×→ g) ○ (finv ×→ ginv) ∼ id {A = C × D}
+_×∼_ α β (x , y) = ap2 _,_ (α x) (β y)
  
 path⊎ : {A B C D : Set} → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
 path⊎ (fp , eqp) (fq , eqq) = 
@@ -266,7 +283,14 @@ path⊎ (fp , eqp) (fq , eqq) =
   mkisequiv (P.g ⊎→ Q.g) (P.α ⊎∼ Q.α) (P.h ⊎→ Q.h) (P.β ⊎∼ Q.β)
   where module P = isequiv eqp
         module Q = isequiv eqq
-
+        
+path× : {A B C D : Set} → A ≃ C → B ≃ D → (A × B) ≃ (C × D)
+path× {A} {B} {C} {D} (fp , eqp) (fq , eqq) = 
+  Data.Product.map fp fq , 
+--  mkisequiv (P.g ×→ Q.g) (P.α ×∼ Q.α) (P.h ×→ Q.h) (P.β ×∼ Q.β)
+  mkisequiv (P.g ×→ Q.g) (_×∼_ {A} {B} {C} {D} {fp} {P.g} {fq} {Q.g} P.α Q.α) (P.h ×→ Q.h) (_×∼_ {C} {D} {A} {B} {P.h} {fp} {Q.h} {fq} P.β Q.β)
+  where module P = isequiv eqp
+        module Q = isequiv eqq
 -- Now map each combinator to the corresponding equivalence
 
 path2equiv : {B₁ B₂ : FT} → (B₁ ⇛ B₂) → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧)
@@ -288,7 +312,7 @@ path2equiv id⇛ = id , mkisequiv id refl id refl
 path2equiv (sym⇛ p) = sym≃ (path2equiv p)
 path2equiv (p ◎ q) = trans≃ (path2equiv p) (path2equiv q) 
 path2equiv (p ⊕ q) = path⊎ (path2equiv p) (path2equiv q)
-path2equiv (p ⊗ q) = {!!} 
+path2equiv (p ⊗ q) = path× (path2equiv p) (path2equiv q) 
 
 -- Reverse direction
 

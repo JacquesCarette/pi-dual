@@ -10,6 +10,7 @@ record ∙_ (A : Set) : Set where
 
 open ∙_
 
+-- Paths between values---identical to dynamic semantics?
 data _⟷_ : {A B : Set} → ∙ A → ∙ B → Set1 where
   id : {A : Set} → (x : A) → (⇡ x) ⟷ (⇡ x)
   swap₊₁ : {A B : Set} → {x : A} → _⟷_ {A ⊎ B} {B ⊎ A} (⇡ (inj₁ x)) (⇡ (inj₂ x))
