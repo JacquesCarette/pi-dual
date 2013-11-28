@@ -292,6 +292,27 @@ assocl₊equiv = assocl₊ , mkisequiv assocr₊ assocl₊∘assocr₊ assocr₊
 assocr₊equiv : {A B C : Set} → ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C))
 assocr₊equiv = assocr₊ , mkisequiv assocl₊ assocr₊∘assocl₊ assocl₊ assocl₊∘assocr₊
 
+-- assocl⋆ and assocr⋆
+
+assocl⋆ : {A B C : Set} → (A × (B × C)) → ((A × B) × C)
+assocl⋆ (a , (b , c)) = ((a , b) , c)
+
+assocr⋆ : {A B C : Set} → ((A × B) × C) → (A × (B × C))
+assocr⋆ ((a , b) , c) = (a , (b , c))
+
+assocl⋆∘assocr⋆ : {A B C : Set} → assocl⋆ ○ assocr⋆ ∼ id {A = ((A × B) × C)}
+assocl⋆∘assocr⋆ x = refl x
+
+
+assocr⋆∘assocl⋆ : {A B C : Set} → assocr⋆ ○ assocl⋆ ∼ id {A = (A × (B × C))}
+assocr⋆∘assocl⋆ x = refl x
+
+assocl⋆equiv : {A B C : Set} → (A × (B × C)) ≃ ((A × B) × C)
+assocl⋆equiv = assocl⋆ , mkisequiv assocr⋆ assocl⋆∘assocr⋆ assocr⋆ assocr⋆∘assocl⋆
+
+assocr⋆equiv : {A B C : Set} → ((A × B) × C) ≃ (A × (B × C))
+assocr⋆equiv = assocr⋆ , mkisequiv assocl⋆ assocr⋆∘assocl⋆ assocl⋆ assocl⋆∘assocr⋆
+
 -- 
 
 _⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
@@ -330,8 +351,8 @@ path2equiv assocr₊⇛ = assocr₊equiv
 path2equiv unite⋆⇛ = unite⋆equiv
 path2equiv uniti⋆⇛ = uniti⋆equiv
 path2equiv swap⋆⇛ = swap⋆equiv
-path2equiv assocl⋆⇛ = {!!}
-path2equiv assocr⋆⇛ = {!!}
+path2equiv assocl⋆⇛ = assocl⋆equiv
+path2equiv assocr⋆⇛ = assocr⋆equiv
 path2equiv distz⇛ = {!!}
 path2equiv factorz⇛ = {!!}
 path2equiv dist⇛ = {!!}
