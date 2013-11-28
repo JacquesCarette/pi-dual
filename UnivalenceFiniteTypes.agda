@@ -161,11 +161,19 @@ swap₊ : {A B : Set} → A ⊎ B → B ⊎ A
 swap₊ (inj₁ a) = inj₂ a
 swap₊ (inj₂ b) = inj₁ b
 
+<<<<<<< local
 swapswap₊ : {A B : Set} → swap₊ ○ swap₊ {A} {B} ∼ id
 swapswap₊ (inj₁ a) = refl (inj₁ a)
 swapswap₊ (inj₂ b) = refl (inj₂ b)
+=======
+{--
+swapswap : swap₊ ○ swap₊ ∼ id
+swapswap (inj₁ a) = refl a
+swapswap (inj₂ b) = refl b
+>>>>>>> other
 
 swap₊equiv : {A B : Set} → (A ⊎ B) ≃ (B ⊎ A)
+<<<<<<< local
 swap₊equiv = (swap₊ , equiv₁ (mkqinv swap₊ swapswap₊ swapswap₊))
 
 unite₊ : {A : Set} → ⊥ ⊎ A → A
@@ -212,6 +220,10 @@ swapswap⋆ (a , b) = refl (a , b)
 
 swap⋆equiv : {A B : Set} → (A × B) ≃ (B × A)
 swap⋆equiv = swap⋆ , mkisequiv swap⋆ swapswap⋆ swap⋆ swapswap⋆
+=======
+swap₊equiv = (swap₊ , equiv₁ (mkqinv swap₊ swapswap swapswap))
+--}
+>>>>>>> other
 
 transequiv : {A B C : Set} → A ≃ B → B ≃ C → A ≃ C
 transequiv (f , feq) (g , geq) with equiv₂ feq | equiv₂ geq
@@ -260,5 +272,41 @@ path2equiv (sym⇛ p) = sym≃ (path2equiv p)
 path2equiv (p ◎ q) = transequiv (path2equiv p) (path2equiv q) 
 path2equiv (p ⊕ q) = {!path2equiv p!}
 path2equiv (p ⊗ q) = {!!} 
+
+-- Reverse direction
+
+equiv2path : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (B₁ ⇛ B₂)
+equiv2path {B₁} {B₂} (f , feq) with equiv₂ feq
+equiv2path {ZERO} {ZERO} (f , feq) | mkqinv g α β = {!!}
+equiv2path {ZERO} {ONE} (f , feq) | mkqinv g α β = {!!}
+equiv2path {ZERO} {PLUS B₂ B₃} (f , feq) | mkqinv g α β = {!!}
+equiv2path {ZERO} {TIMES B₂ B₃} (f , feq) | mkqinv g α β = {!!}
+equiv2path {ONE} {ZERO} (f , feq) | mkqinv g α β = {!!}
+equiv2path {ONE} {ONE} (f , feq) | mkqinv g α β = {!!}
+equiv2path {ONE} {PLUS B₂ B₃} (f , feq) | mkqinv g α β = {!!}
+equiv2path {ONE} {TIMES B₂ B₃} (f , feq) | mkqinv g α β = 
+  {!!}
+  -- f : ⊤ → ⟦ B₂ ⟧ × ⟦ B₃ ⟧
+  -- g : ⟦ B₂ ⟧ × ⟦ B₃ ⟧ → ⊤ 
+  -- α : (f ○ g) ∼ id
+  -- β : (g ○ f) ∼ id
+equiv2path {PLUS ZERO B₁} {B₂} (f , feq) | mkqinv g α β = {!!}
+  -- f : ⟦ ⊥ ⟧ ⊎ ⟦ B₁ ⟧ → ⟦ B₂ ⟧
+  -- g : ⟦ B₂ ⟧ → ⟦ ⊥ ⟧ ⊎ ⟦ B₁ ⟧ 
+  -- α b₂ : f (g b₂) ≡ b₂
+  -- β (inj₂ b₁) : g (f (inj₂ b₁)) ≡ inj₂ b₁
+  -- can we use α and β to prove that B₁ must be equal to B₂
+  -- and in that case we can use unite₊⇛ to fill the above hole
+equiv2path {PLUS B₁ B₂} {B₃} (f , feq) | mkqinv g α β = {!!}
+equiv2path {TIMES B₁ B₂} {ZERO} (f , feq) | mkqinv g α β = {!!}
+equiv2path {TIMES B₁ B₂} {ONE} (f , feq) | mkqinv g α β = {!!}
+equiv2path {TIMES B₁ B₂} {PLUS B₃ B₄} (f , feq) | mkqinv g α β = {!!}
+equiv2path {TIMES B₁ B₂} {TIMES B₃ B₄} (f , feq) | mkqinv g α β = {!!}
+
+-- univalence
+
+univalence : {B₁ B₂ : FT} → (B₁ ⇛ B₂) ≃ (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) 
+univalence = (path2equiv , equiv₁ (mkqinv equiv2path {!!} {!!}))
+
 
 ------------------------------------------------------------------------------
