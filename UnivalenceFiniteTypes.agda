@@ -339,9 +339,18 @@ normalize (TIMES (TIMES B₁ B₂) B₃) =
 
 normalizeC : {B : FT} → ⟦ normalize B ⟧ ≃ ⟦ B ⟧
 normalizeC {ZERO} = id≃
-normalizeC {ONE} = ?
+normalizeC {ONE} = {!!}
 normalizeC {PLUS B B₁} = {!!}
 normalizeC {TIMES B B₁} = {!!} 
+
+⊥⇛ZERO : {B : FT} → ⟦ normalize B ⟧ ≃ ⊥ → B ⇛ ZERO
+⊥⇛ZERO {ZERO} equiv = id⇛
+⊥⇛ZERO {ONE} (f , feq) with equiv₂ feq
+... | mkqinv g α β with f (inj₁ tt) 
+... | () 
+⊥⇛ZERO {PLUS B₁ B₂} equiv = {!!}
+⊥⇛ZERO {TIMES B B₁} equiv = {!!} 
+
 
 equiv2path : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (B₁ ⇛ B₂)
 equiv2path {B₁} {B₂} (f , feq) with equiv₂ feq
