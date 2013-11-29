@@ -413,30 +413,50 @@ witness (TIMES B₁ B₂) with witness B₁ | witness B₂
 ... | just b  | nothing = nothing
 ... | just b₁ | just b₂ = just (b₁ , b₂)
 
+toℕ : FT → ℕ
+toℕ ZERO = zero
+toℕ ONE = suc zero
+toℕ (PLUS b₀ b₁) = (toℕ b₀) + (toℕ b₁) 
+toℕ (TIMES b₀ b₁) = (toℕ b₀) * (toℕ b₁)
+
+fromℕ : ℕ → FT
+fromℕ zero = ZERO
+fromℕ (suc n) = PLUS ONE (fromℕ n)
+
+assocr : {m : ℕ} (n : ℕ) → (PLUS (fromℕ n) (fromℕ m)) ⇛ fromℕ (n + m)
+assocr zero = unite₊⇛
+assocr (suc n) = assocr₊⇛ ◎ (id⇛ ⊕ (assocr n))
+
+-- We need a chunk of data to get a proper normal form.
+record normalform (b : FT) : Set where
+  constructor NF
+  field
+    n : ℕ
+    p⇛ : b ⇛ (fromℕ n)
+    fwd : toℕ b ≡ n
+
 -- normalize a finite type to (1 + (1 + (1 + ... + (1 + 0) ... )))
 -- a bunch of ones ending with zero with left biased + in between
+
 normalize : FT → FT
-normalize ZERO = ZERO
-normalize ONE = PLUS ONE ZERO
-normalize (PLUS B₁ B₂) with normalize B₁
-... | ZERO = normalize B₂ 
-... | ONE = PLUS ONE (normalize B₂) 
-... | PLUS B₃ B₄ = normalize (PLUS B₃ (PLUS B₄ B₂)) 
-... | TIMES B₃ B₄ = normalize (PLUS B₂ (TIMES B₃ B₄))
-normalize (TIMES B₁ B₂) with normalize B₁
-... | ZERO = ZERO
-... | ONE  = normalize B₂
-... | PLUS B₃ B₄ = normalize (PLUS (TIMES B₃ B₂) (TIMES B₄ B₂))
-... | TIMES B₃ B₄ = normalize (TIMES B₃ (TIMES B₄ B₂))
+normalize = fromℕ ○ toℕ
+
+normal : (b : FT) → normalform b
+normal ZERO = NF zero id⇛ (refl zero)
+normal ONE = NF (suc zero) (uniti₊⇛ ◎ swap₊⇛) (refl (suc zero))
+normal (PLUS b₀ b₁) with normal b₀ | normal b₁ 
+... | NF n₀ p₀ pf₀ | NF n₁ p₁ pf₁ = NF (n₀ + n₁) ((p₀ ⊕ p₁) ◎ assocr n₀) (ap2 _+_ pf₀ pf₁)
+normal (TIMES b₀ b₁) with normal b₀ | normal b₁
+... | NF n₀ p₀ pf₀ | NF n₁ p₁ pf₁ = NF (n₀ * n₁) ((p₀ ⊗ p₁) ◎ {!!}) (ap2 _*_ pf₀ pf₁)
 
 norm : (B : FT) → Σ[ nf ∈ FT ] (B ⇛ nf)
 norm ZERO = ZERO , id⇛
 norm ONE = PLUS ONE ZERO , uniti₊⇛ ◎ swap₊⇛
 norm (PLUS B₁ B₂) with norm B₁
-... | ZERO , comb = ?
-... | ONE , comb = ?
-... | PLUS B₃ B₄ , comb = ?
-... | TIMES B₃ B₄ , comb = ?
+... | ZERO , comb = {!!}
+... | ONE , comb = {!!}
+... | PLUS B₃ B₄ , comb = {!!}
+... | TIMES B₃ B₄ , comb = {!!}
 norm (TIMES B B₁) = {!!}
 
 normalizeC : {B : FT} → ⟦ normalize B ⟧ ≃ ⟦ B ⟧
