@@ -313,6 +313,51 @@ assocl⋆equiv = assocl⋆ , mkisequiv assocr⋆ assocl⋆∘assocr⋆ assocr⋆
 assocr⋆equiv : {A B C : Set} → ((A × B) × C) ≃ (A × (B × C))
 assocr⋆equiv = assocr⋆ , mkisequiv assocl⋆ assocr⋆∘assocl⋆ assocl⋆ assocl⋆∘assocr⋆
 
+-- zero annihlation (distz and factorz)
+-- for some reason this is breaking agda
+
+distz : {A : Set} → (⊥ × A) → ⊥
+distz (bot , a) = bot
+
+factorz : {A : Set} → ⊥ → (⊥ × A)
+factorz ()
+
+distz∘factorz : {A : Set} → (distz {A}) ○ factorz ∼ id {A = ⊥}
+distz∘factorz ()
+
+factorz∘distz : {A : Set} → factorz ○ distz ∼ id {A = ⊥ × A}
+factorz∘distz (() , _)
+
+distzequiv : {A : Set} → (⊥ × A) ≃ ⊥
+distzequiv = distz , mkisequiv factorz distz∘factorz factorz factorz∘distz
+
+factorzequiv : {A : Set} → ⊥ ≃ (⊥ × A)
+factorzequiv = factorz , mkisequiv distz factorz∘distz distz distz∘factorz
+
+-- dist and factor
+
+dist : {A B C : Set} → (A ⊎ B) × C → (A × C) ⊎ (B × C)
+dist (inj₁ a , c) = inj₁ (a , c)
+dist (inj₂ b , c) = inj₂ (b , c)
+
+factor : {A B C : Set} → (A × C) ⊎ (B × C) → (A ⊎ B) × C
+factor (inj₁ (a , c)) = (inj₁ a , c)
+factor (inj₂ (b , c)) = (inj₂ b , c)
+
+dist∘factor : {A B C : Set} → dist ○ factor ∼ id {A = (A × C) ⊎ (B × C)}
+dist∘factor (inj₁ (a , c)) = refl (inj₁ (a , c))
+dist∘factor (inj₂ (b , c)) = refl (inj₂ (b , c))
+
+factor∘dist : {A B C : Set} → factor ○ dist ∼ id {A = (A ⊎ B) × C}
+factor∘dist (inj₁ a , c) = refl (inj₁ a , c)
+factor∘dist (inj₂ b , c) = refl (inj₂ b , c)
+
+distequiv : {A B C : Set} → ((A ⊎ B) × C) ≃ ((A × C) ⊎ (B × C))
+distequiv = dist , mkisequiv factor dist∘factor factor factor∘dist
+
+factorequiv : {A B C : Set} → ((A × C) ⊎ (B × C)) ≃ ((A ⊎ B) × C)
+factorequiv = factor , mkisequiv dist factor∘dist dist dist∘factor
+
 -- 
 
 _⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
@@ -353,10 +398,10 @@ path2equiv uniti⋆⇛ = uniti⋆equiv
 path2equiv swap⋆⇛ = swap⋆equiv
 path2equiv assocl⋆⇛ = assocl⋆equiv
 path2equiv assocr⋆⇛ = assocr⋆equiv
-path2equiv distz⇛ = {!!}
-path2equiv factorz⇛ = {!!}
-path2equiv dist⇛ = {!!}
-path2equiv factor⇛ = {!!}
+path2equiv distz⇛ = distzequiv
+path2equiv factorz⇛ = factorzequiv
+path2equiv dist⇛ = distequiv
+path2equiv factor⇛ = factorequiv
 path2equiv id⇛ = id , mkisequiv id refl id refl
 path2equiv (sym⇛ p) = sym≃ (path2equiv p)
 path2equiv (p ◎ q) = trans≃ (path2equiv p) (path2equiv q) 
