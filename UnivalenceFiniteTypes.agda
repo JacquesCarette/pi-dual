@@ -325,6 +325,28 @@ distz∘factorz ()
 factorz∘distz : {A : Set} → factorz {A} ○ distz ∼ id
 factorz∘distz (() , proj₂)
 
+dist : {A B C : Set} → ((A ⊎ B) × C) → (A × C) ⊎ (B × C)
+dist (inj₁ x , c) = inj₁ (x , c)
+dist (inj₂ y , c) = inj₂ (y , c)
+
+factor : {A B C : Set} → (A × C) ⊎ (B × C) → ((A ⊎ B) × C)
+factor (inj₁ (a , c)) = inj₁ a , c
+factor (inj₂ (b , c)) = inj₂ b , c
+
+dist∘factor : {A B C : Set} → dist {A} {B} {C} ○ factor ∼ id
+dist∘factor (inj₁ x) = refl (inj₁ x)
+dist∘factor (inj₂ y) = refl (inj₂ y)
+
+factor∘dist : {A B C : Set} → factor {A} {B} {C} ○ dist ∼ id
+factor∘dist (inj₁ x , c) = refl (inj₁ x , c)
+factor∘dist (inj₂ y , c) = refl (inj₂ y , c)
+
+distequiv : {A B C : Set} → ((A ⊎ B) × C) ≃ ((A × C) ⊎ (B × C))
+distequiv = dist , mkisequiv factor dist∘factor factor factor∘dist
+
+factorequiv : {A B C : Set} →  ((A × C) ⊎ (B × C)) ≃ ((A ⊎ B) × C)
+factorequiv = factor , (mkisequiv dist factor∘dist dist dist∘factor)
+
 _⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
   (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → 
   (f ⊎→ g) ○ (finv ⊎→ ginv) ∼ id {A = C ⊎ D}
@@ -350,8 +372,8 @@ path× {A} {B} {C} {D} (fp , eqp) (fq , eqq) =
   mkisequiv (P.g ×→ Q.g) (_×∼_ {A} {B} {C} {D} {fp} {P.g} {fq} {Q.g} P.α Q.α) (P.h ×→ Q.h) (_×∼_ {C} {D} {A} {B} {P.h} {fp} {Q.h} {fq} P.β Q.β)
   where module P = isequiv eqp
         module Q = isequiv eqq
--- Now map each combinator to the corresponding equivalence
 
+-- Now map each combinator to the corresponding equivalence
 path2equiv : {B₁ B₂ : FT} → (B₁ ⇛ B₂) → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧)
 path2equiv unite₊⇛ = unite₊equiv
 path2equiv uniti₊⇛ = uniti₊equiv
@@ -365,8 +387,8 @@ path2equiv assocl⋆⇛ = assocl⋆equiv
 path2equiv assocr⋆⇛ = assocr⋆equiv
 path2equiv distz⇛ = distz , mkisequiv factorz (distz∘factorz {FT}) factorz factorz∘distz
 path2equiv factorz⇛ = factorz , mkisequiv distz factorz∘distz distz (distz∘factorz {FT})
-path2equiv dist⇛ = {!!}
-path2equiv factor⇛ = {!!}
+path2equiv dist⇛ = distequiv
+path2equiv factor⇛ = factorequiv
 path2equiv id⇛ = id , mkisequiv id refl id refl
 path2equiv (sym⇛ p) = sym≃ (path2equiv p)
 path2equiv (p ◎ q) = trans≃ (path2equiv p) (path2equiv q) 
