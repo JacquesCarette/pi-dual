@@ -312,7 +312,6 @@ assocl⋆equiv = assocl⋆ , mkisequiv assocr⋆ assocl⋆∘assocr⋆ assocr⋆
 assocr⋆equiv : {A B C : Set} → ((A × B) × C) ≃ (A × (B × C))
 assocr⋆equiv = assocr⋆ , mkisequiv assocl⋆ assocr⋆∘assocl⋆ assocl⋆ assocl⋆∘assocr⋆
 
--- 
 distz : { A : Set} → (⊥ × A) → ⊥
 distz (() , _)
 
@@ -324,6 +323,12 @@ distz∘factorz ()
 
 factorz∘distz : {A : Set} → factorz {A} ○ distz ∼ id
 factorz∘distz (() , proj₂)
+
+distzequiv : {A : Set} → (⊥ × A) ≃ ⊥
+distzequiv {A} = distz , mkisequiv factorz (distz∘factorz {A}) factorz factorz∘distz
+
+factorzequiv : {A : Set} → ⊥ ≃ (⊥ × A)
+factorzequiv {A} = factorz , mkisequiv distz factorz∘distz distz (distz∘factorz {A})
 
 dist : {A B C : Set} → ((A ⊎ B) × C) → (A × C) ⊎ (B × C)
 dist (inj₁ x , c) = inj₁ (x , c)
@@ -385,8 +390,8 @@ path2equiv uniti⋆⇛ = uniti⋆equiv
 path2equiv swap⋆⇛ = swap⋆equiv
 path2equiv assocl⋆⇛ = assocl⋆equiv
 path2equiv assocr⋆⇛ = assocr⋆equiv
-path2equiv distz⇛ = distz , mkisequiv factorz (distz∘factorz {FT}) factorz factorz∘distz
-path2equiv factorz⇛ = factorz , mkisequiv distz factorz∘distz distz (distz∘factorz {FT})
+path2equiv distz⇛ = distzequiv
+path2equiv factorz⇛ = factorzequiv
 path2equiv dist⇛ = distequiv
 path2equiv factor⇛ = factorequiv
 path2equiv id⇛ = id , mkisequiv id refl id refl
@@ -426,8 +431,12 @@ normalize (TIMES B₁ B₂) with normalize B₁
 
 normalizeC : {B : FT} → ⟦ normalize B ⟧ ≃ ⟦ B ⟧
 normalizeC {ZERO} = id≃
-normalizeC {ONE} = {!!}
-normalizeC {PLUS B₁ B₂} = {!!}
+normalizeC {ONE} = trans≃ swap₊equiv unite₊equiv
+normalizeC {PLUS B₁ B₂} with normalize B₁
+... | ZERO = {!trans≃ uniti₊equiv (path⊎ (normalizeC {B₁}) (normalizeC {B₂}))!} -- normalize (PLUS B₁ B₂) = normalize B₂ 
+... | ONE = {!path⊎ (normalizeC {B₁}) (normalizeC {B₂})!} -- normalize (PLUS B₁ B₂) = PLUS (normalize B₁) (normalize B₂)
+... | PLUS B₃ B₄ = {!!}
+... | TIMES B₃ B₄ = {!!}
 normalizeC {TIMES B₁ B₂} = {!!} 
 
 ⊥⇛ZERO : {B : FT} → ⟦ normalize B ⟧ ≃ ⊥ → B ⇛ ZERO
