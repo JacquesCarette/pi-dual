@@ -429,6 +429,16 @@ normalize (TIMES B₁ B₂) with normalize B₁
 ... | PLUS B₃ B₄ = normalize (PLUS (TIMES B₃ B₂) (TIMES B₄ B₂))
 ... | TIMES B₃ B₄ = normalize (TIMES B₃ (TIMES B₄ B₂))
 
+norm : (B : FT) → Σ[ nf ∈ FT ] (B ⇛ nf)
+norm ZERO = ZERO , id⇛
+norm ONE = PLUS ONE ZERO , uniti₊⇛ ◎ swap₊⇛
+norm (PLUS B₁ B₂) with norm B₁
+... | ZERO , comb = ?
+... | ONE , comb = ?
+... | PLUS B₃ B₄ , comb = ?
+... | TIMES B₃ B₄ , comb = ?
+norm (TIMES B B₁) = {!!}
+
 normalizeC : {B : FT} → ⟦ normalize B ⟧ ≃ ⟦ B ⟧
 normalizeC {ZERO} = id≃
 normalizeC {ONE} = trans≃ swap₊equiv unite₊equiv
