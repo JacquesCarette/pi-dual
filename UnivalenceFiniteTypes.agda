@@ -303,7 +303,6 @@ assocr⋆ ((a , b) , c) = (a , (b , c))
 assocl⋆∘assocr⋆ : {A B C : Set} → assocl⋆ ○ assocr⋆ ∼ id {A = ((A × B) × C)}
 assocl⋆∘assocr⋆ x = refl x
 
-
 assocr⋆∘assocl⋆ : {A B C : Set} → assocr⋆ ○ assocl⋆ ∼ id {A = (A × (B × C))}
 assocr⋆∘assocl⋆ x = refl x
 
@@ -314,6 +313,17 @@ assocr⋆equiv : {A B C : Set} → ((A × B) × C) ≃ (A × (B × C))
 assocr⋆equiv = assocr⋆ , mkisequiv assocl⋆ assocr⋆∘assocl⋆ assocl⋆ assocl⋆∘assocr⋆
 
 -- 
+distz : { A : Set} → (⊥ × A) → ⊥
+distz (() , _)
+
+factorz : {A : Set} → ⊥ → (⊥ × A)
+factorz ()
+ 
+distz∘factorz : {A : Set} → distz ○ factorz {A} ∼ id
+distz∘factorz ()
+
+factorz∘distz : {A : Set} → factorz {A} ○ distz ∼ id
+factorz∘distz (() , proj₂)
 
 _⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
   (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → 
@@ -353,8 +363,8 @@ path2equiv uniti⋆⇛ = uniti⋆equiv
 path2equiv swap⋆⇛ = swap⋆equiv
 path2equiv assocl⋆⇛ = assocl⋆equiv
 path2equiv assocr⋆⇛ = assocr⋆equiv
-path2equiv distz⇛ = {!!}
-path2equiv factorz⇛ = {!!}
+path2equiv distz⇛ = distz , mkisequiv factorz (distz∘factorz {FT}) factorz factorz∘distz
+path2equiv factorz⇛ = factorz , mkisequiv distz factorz∘distz distz (distz∘factorz {FT})
 path2equiv dist⇛ = {!!}
 path2equiv factor⇛ = {!!}
 path2equiv id⇛ = id , mkisequiv id refl id refl
@@ -364,23 +374,6 @@ path2equiv (p ⊕ q) = path⊎ (path2equiv p) (path2equiv q)
 path2equiv (p ⊗ q) = path× (path2equiv p) (path2equiv q) 
 
 -- Reverse direction
-
-max : ⊤ ⊎ ℕ → ⊤ ⊎ ℕ → ⊤ ⊎ ℕ
-max (inj₁ tt) b = b
-max (inj₂ y) (inj₁ tt) = inj₂ y
-max (inj₂ x) (inj₂ y) = inj₂ (x ⊔ℕ y)
-
-dmult : ⊤ ⊎ ℕ → ⊤ ⊎ ℕ → ⊤ ⊎ ℕ
-dmult (inj₁ tt) _ = inj₁ tt
-dmult _ (inj₁ tt) = inj₁ tt
-dmult (inj₂ x) (inj₂ y) = inj₂ (x * y)
-
-degree : (B : FT) → ⊤ ⊎ ℕ -- ⊤ for -∞ for the degree of ZERO
-degree ZERO = inj₁ tt
-degree ONE = inj₂ zero
-degree (PLUS b₀ b₁) =  max (degree b₀) (degree b₁)
-degree (TIMES b₀ b₁) = dmult (degree b₀) (degree b₁)
-
 witness : (B : FT) → Maybe ⟦ B ⟧
 witness ZERO = nothing
 witness ONE = just tt
