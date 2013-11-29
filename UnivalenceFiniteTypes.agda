@@ -559,6 +559,11 @@ equiv2path {TIMES B₁ B₂} {TIMES B₃ B₄} (f , feq) | mkqinv g α β = {!!}
 
 -- univalence
 
+univalence₁ : {B₁ B₂ : FT} → 
+  (e : ⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → path2equiv (equiv2path e) ≡ e
+univalence₁ {B₁} {B₂} (f , feq) with equiv₂ feq
+... | mkqinv g  α  β = {!!} 
+
 univalence₂ : {B₁ B₂ : FT} → (p : B₁ ⇛ B₂) → equiv2path (path2equiv p) ≡ p
 univalence₂ unite₊⇛ = {!!}
 univalence₂ uniti₊⇛ = {!!}
@@ -576,18 +581,12 @@ univalence₂ dist⇛ = {!!}
 univalence₂ factor⇛ = {!!}
 univalence₂ id⇛ = {!!}
 univalence₂ (sym⇛ p) = {!!}
-univalence₂ (p ◎ p₁) = {!!}
-univalence₂ (p ⊕ p₁) = {!!}
-univalence₂ (p ⊗ p₁) = {!!} 
+univalence₂ (p ◎ q) = {!!} 
+univalence₂ (p ⊕ q) = {!!}
+univalence₂ (p ⊗ q) = {!!} 
 
 univalence : {B₁ B₂ : FT} → (B₁ ⇛ B₂) ≃ (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) 
 univalence = 
-  (path2equiv , 
-    equiv₁ (mkqinv 
-     equiv2path 
-     (λ e → path2equiv (equiv2path e)
-              ≡⟨ {!!} ⟩ 
-            e ∎)
-     univalence₂))
+  (path2equiv , equiv₁ (mkqinv equiv2path univalence₁ univalence₂))
 
 ------------------------------------------------------------------------------
