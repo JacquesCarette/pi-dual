@@ -456,8 +456,12 @@ normalize (TIMES B₁ B₂) with normalize B₁
 
 normalizeC : {B : FT} → ⟦ normalize B ⟧ ≃ ⟦ B ⟧
 normalizeC {ZERO} = id≃
-normalizeC {ONE} = {!!}
-normalizeC {PLUS B₁ B₂} = {!!}
+normalizeC {ONE} = trans≃ swap₊equiv unite₊equiv
+normalizeC {PLUS B₁ B₂} with normalize B₁
+... | ZERO = {!trans≃ uniti₊equiv (path⊎ (normalizeC {B₁}) (normalizeC {B₂}))!} -- normalize (PLUS B₁ B₂) = normalize B₂ 
+... | ONE = {!path⊎ (normalizeC {B₁}) (normalizeC {B₂})!} -- normalize (PLUS B₁ B₂) = PLUS (normalize B₁) (normalize B₂)
+... | PLUS B₃ B₄ = {!!}
+... | TIMES B₃ B₄ = {!!}
 normalizeC {TIMES B₁ B₂} = {!!} 
 
 ⊥⇛ZERO : {B : FT} → ⟦ normalize B ⟧ ≃ ⊥ → B ⇛ ZERO
