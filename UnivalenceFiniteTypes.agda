@@ -16,8 +16,10 @@ infixr 8  _∘_   -- path composition
 infix  4  _≡_   -- propositional equality
 infix  4  _∼_   -- homotopy between two functions 
 infix  4  _≃_   -- type of equivalences
-infix  2  _∎      -- equational reasoning
-infixr 2  _≡⟨_⟩_  -- equational reasoning
+infix  2  _∎       -- equational reasoning for paths
+infixr 2  _≡⟨_⟩_   -- equational reasoning for paths
+infix  2  _∎≃      -- equational reasoning for equivalences
+infixr 2  _≃⟨_⟩_   -- equational reasoning for equivalences
 
 ------------------------------------------------------------------------------
 -- Finite types
@@ -48,9 +50,11 @@ data _⇛_ : FT → FT → Set where
   unite⋆⇛  : { b : FT } → TIMES ONE b ⇛ b
   uniti⋆⇛  : { b : FT } → b ⇛ TIMES ONE b
   swap⋆⇛   : { b₁ b₂ : FT } → TIMES b₁ b₂ ⇛ TIMES b₂ b₁
-  assocl⋆⇛ : { b₁ b₂ b₃ : FT } → TIMES b₁ (TIMES b₂ b₃) ⇛ TIMES (TIMES b₁ b₂) b₃
-  assocr⋆⇛ : { b₁ b₂ b₃ : FT } → TIMES (TIMES b₁ b₂) b₃ ⇛ TIMES b₁ (TIMES b₂ b₃)
-  -- distributity
+  assocl⋆⇛ : { b₁ b₂ b₃ : FT } → 
+             TIMES b₁ (TIMES b₂ b₃) ⇛ TIMES (TIMES b₁ b₂) b₃
+  assocr⋆⇛ : { b₁ b₂ b₃ : FT } → 
+             TIMES (TIMES b₁ b₂) b₃ ⇛ TIMES b₁ (TIMES b₂ b₃)
+  -- distributivity
   distz⇛   : { b : FT } → TIMES ZERO b ⇛ ZERO
   factorz⇛ : { b : FT } → ZERO ⇛ TIMES ZERO b
   dist⇛    : { b₁ b₂ b₃ : FT } → 
@@ -98,7 +102,8 @@ ap {ℓ} {ℓ'} {A} {B} {x} {y} f p =
     (λ x → refl (f x))
     {x} {y} p
 
-ap2 : ∀ {ℓ ℓ' ℓ''} → {A : Set ℓ} {B : Set ℓ'} {C : Set ℓ''} {x₁ y₁ : A} {x₂ y₂ : B} → 
+ap2 : ∀ {ℓ ℓ' ℓ''} → {A : Set ℓ} {B : Set ℓ'} {C : Set ℓ''} 
+     {x₁ y₁ : A} {x₂ y₂ : B} → 
      (f : A → B → C) → (x₁ ≡ y₁) → (x₂ ≡ y₂) → (f x₁ x₂  ≡ f y₁ y₂)
 ap2 {ℓ} {ℓ'} {ℓ''} {A} {B} {C} {x₁} {y₁} {x₂} {y₂} f p₁ p₂ = 
   pathInd -- on p₁
@@ -110,13 +115,10 @@ ap2 {ℓ} {ℓ'} {ℓ''} {A} {B} {C} {x₁} {y₁} {x₂} {y₂} f p₁ p₂ =
         {x₂} {y₂} p₂)
     {x₁} {y₁} p₁
 
--- Abbreviations
+-- Abbreviations for path compositions
 
 _≡⟨_⟩_ : ∀ {u} → {A : Set u} (x : A) {y z : A} → (x ≡ y) → (y ≡ z) → (x ≡ z)
 _ ≡⟨ p ⟩ q = p ∘ q
-
-bydef : ∀ {u} → {A : Set u} {x : A} → (x ≡ x)
-bydef {u} {A} {x} = refl x
 
 _∎ : ∀ {u} → {A : Set u} (x : A) → x ≡ x
 _∎ x = refl x
@@ -193,6 +195,14 @@ trans≃ (f , feq) (g , geq) with equiv₂ feq | equiv₂ geq
                            ff (f a)
                              ≡⟨ fβ a ⟩
                            a ∎)))
+
+-- Abbreviations for equivalence compositions
+
+_≃⟨_⟩_ : (A : Set) {B C : Set} → (A ≃ B) → (B ≃ C) → (A ≃ C) 
+_ ≃⟨ p ⟩ q = trans≃ p q
+
+_∎≃ : {ℓ : Level} {A : Set ℓ} → A ≃ A
+_∎≃ {ℓ} {A} = id≃ {ℓ} {A} 
 
 ------------------------------------------------------------------------------
 -- Univalence
@@ -287,10 +297,12 @@ assocr₊∘assocl₊ (inj₂ (inj₁ b)) = refl (inj₂ (inj₁ b))
 assocr₊∘assocl₊ (inj₂ (inj₂ c)) = refl (inj₂ (inj₂ c))
 
 assocl₊equiv : {A B C : Set} → (A ⊎ (B ⊎ C)) ≃ ((A ⊎ B) ⊎ C)
-assocl₊equiv = assocl₊ , mkisequiv assocr₊ assocl₊∘assocr₊ assocr₊ assocr₊∘assocl₊
+assocl₊equiv = 
+  assocl₊ , mkisequiv assocr₊ assocl₊∘assocr₊ assocr₊ assocr₊∘assocl₊
 
 assocr₊equiv : {A B C : Set} → ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C))
-assocr₊equiv = assocr₊ , mkisequiv assocl₊ assocr₊∘assocl₊ assocl₊ assocl₊∘assocr₊
+assocr₊equiv = 
+  assocr₊ , mkisequiv assocl₊ assocr₊∘assocl₊ assocl₊ assocl₊∘assocr₊
 
 -- assocl⋆ and assocr⋆
 
@@ -307,10 +319,14 @@ assocr⋆∘assocl⋆ : {A B C : Set} → assocr⋆ ○ assocl⋆ ∼ id {A = (A
 assocr⋆∘assocl⋆ x = refl x
 
 assocl⋆equiv : {A B C : Set} → (A × (B × C)) ≃ ((A × B) × C)
-assocl⋆equiv = assocl⋆ , mkisequiv assocr⋆ assocl⋆∘assocr⋆ assocr⋆ assocr⋆∘assocl⋆
+assocl⋆equiv = 
+  assocl⋆ , mkisequiv assocr⋆ assocl⋆∘assocr⋆ assocr⋆ assocr⋆∘assocl⋆
 
 assocr⋆equiv : {A B C : Set} → ((A × B) × C) ≃ (A × (B × C))
-assocr⋆equiv = assocr⋆ , mkisequiv assocl⋆ assocr⋆∘assocl⋆ assocl⋆ assocl⋆∘assocr⋆
+assocr⋆equiv = 
+  assocr⋆ , mkisequiv assocl⋆ assocr⋆∘assocl⋆ assocl⋆ assocl⋆∘assocr⋆
+
+-- distz and factorz
 
 distz : { A : Set} → (⊥ × A) → ⊥
 distz (() , _)
@@ -325,10 +341,14 @@ factorz∘distz : {A : Set} → factorz {A} ○ distz ∼ id
 factorz∘distz (() , proj₂)
 
 distzequiv : {A : Set} → (⊥ × A) ≃ ⊥
-distzequiv {A} = distz , mkisequiv factorz (distz∘factorz {A}) factorz factorz∘distz
+distzequiv {A} = 
+  distz , mkisequiv factorz (distz∘factorz {A}) factorz factorz∘distz
 
 factorzequiv : {A : Set} → ⊥ ≃ (⊥ × A)
-factorzequiv {A} = factorz , mkisequiv distz factorz∘distz distz (distz∘factorz {A})
+factorzequiv {A} = 
+  factorz , mkisequiv distz factorz∘distz distz (distz∘factorz {A})
+
+-- dist and factor
 
 dist : {A B C : Set} → ((A ⊎ B) × C) → (A × C) ⊎ (B × C)
 dist (inj₁ x , c) = inj₁ (x , c)
@@ -352,17 +372,14 @@ distequiv = dist , mkisequiv factor dist∘factor factor factor∘dist
 factorequiv : {A B C : Set} →  ((A × C) ⊎ (B × C)) ≃ ((A ⊎ B) × C)
 factorequiv = factor , (mkisequiv dist factor∘dist dist dist∘factor)
 
+-- ⊕
+
 _⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
   (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → 
   (f ⊎→ g) ○ (finv ⊎→ ginv) ∼ id {A = C ⊎ D}
 _⊎∼_ α β (inj₁ x) = ap inj₁ (α x) 
 _⊎∼_ α β (inj₂ y) = ap inj₂ (β y)
 
-_×∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
-  (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → 
-  (f ×→ g) ○ (finv ×→ ginv) ∼ id {A = C × D}
-_×∼_ α β (x , y) = ap2 _,_ (α x) (β y)
- 
 path⊎ : {A B C D : Set} → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
 path⊎ (fp , eqp) (fq , eqq) = 
   Data.Sum.map fp fq , 
@@ -370,37 +387,49 @@ path⊎ (fp , eqp) (fq , eqq) =
   where module P = isequiv eqp
         module Q = isequiv eqq
         
+-- ⊗
+
+_×∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
+  (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → 
+  (f ×→ g) ○ (finv ×→ ginv) ∼ id {A = C × D}
+_×∼_ α β (x , y) = ap2 _,_ (α x) (β y)
+ 
 path× : {A B C D : Set} → A ≃ C → B ≃ D → (A × B) ≃ (C × D)
 path× {A} {B} {C} {D} (fp , eqp) (fq , eqq) = 
   Data.Product.map fp fq , 
---  mkisequiv (P.g ×→ Q.g) (P.α ×∼ Q.α) (P.h ×→ Q.h) (P.β ×∼ Q.β)
-  mkisequiv (P.g ×→ Q.g) (_×∼_ {A} {B} {C} {D} {fp} {P.g} {fq} {Q.g} P.α Q.α) (P.h ×→ Q.h) (_×∼_ {C} {D} {A} {B} {P.h} {fp} {Q.h} {fq} P.β Q.β)
+  mkisequiv 
+    (P.g ×→ Q.g) 
+    (_×∼_ {A} {B} {C} {D} {fp} {P.g} {fq} {Q.g} P.α Q.α) 
+    (P.h ×→ Q.h) 
+    (_×∼_ {C} {D} {A} {B} {P.h} {fp} {Q.h} {fq} P.β Q.β)
   where module P = isequiv eqp
         module Q = isequiv eqq
 
 -- Now map each combinator to the corresponding equivalence
+
 path2equiv : {B₁ B₂ : FT} → (B₁ ⇛ B₂) → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧)
-path2equiv unite₊⇛ = unite₊equiv
-path2equiv uniti₊⇛ = uniti₊equiv
-path2equiv swap₊⇛ = swap₊equiv
+path2equiv unite₊⇛  = unite₊equiv
+path2equiv uniti₊⇛  = uniti₊equiv
+path2equiv swap₊⇛   = swap₊equiv
 path2equiv assocl₊⇛ = assocl₊equiv
 path2equiv assocr₊⇛ = assocr₊equiv
-path2equiv unite⋆⇛ = unite⋆equiv
-path2equiv uniti⋆⇛ = uniti⋆equiv
-path2equiv swap⋆⇛ = swap⋆equiv
+path2equiv unite⋆⇛  = unite⋆equiv
+path2equiv uniti⋆⇛  = uniti⋆equiv
+path2equiv swap⋆⇛   = swap⋆equiv
 path2equiv assocl⋆⇛ = assocl⋆equiv
 path2equiv assocr⋆⇛ = assocr⋆equiv
-path2equiv distz⇛ = distzequiv
+path2equiv distz⇛   = distzequiv
 path2equiv factorz⇛ = factorzequiv
-path2equiv dist⇛ = distequiv
-path2equiv factor⇛ = factorequiv
-path2equiv id⇛ = id , mkisequiv id refl id refl
+path2equiv dist⇛    = distequiv
+path2equiv factor⇛  = factorequiv
+path2equiv id⇛      = id , mkisequiv id refl id refl
 path2equiv (sym⇛ p) = sym≃ (path2equiv p)
-path2equiv (p ◎ q) = trans≃ (path2equiv p) (path2equiv q) 
-path2equiv (p ⊕ q) = path⊎ (path2equiv p) (path2equiv q)
-path2equiv (p ⊗ q) = path× (path2equiv p) (path2equiv q) 
+path2equiv (p ◎ q)  = trans≃ (path2equiv p) (path2equiv q) 
+path2equiv (p ⊕ q)  = path⊎ (path2equiv p) (path2equiv q)
+path2equiv (p ⊗ q)  = path× (path2equiv p) (path2equiv q) 
 
 -- Reverse direction
+
 witness : (B : FT) → Maybe ⟦ B ⟧
 witness ZERO = nothing
 witness ONE = just tt
@@ -531,6 +560,15 @@ equiv2path {TIMES B₁ B₂} {TIMES B₃ B₄} (f , feq) | mkqinv g α β = {!!}
 -- univalence
 
 univalence : {B₁ B₂ : FT} → (B₁ ⇛ B₂) ≃ (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) 
-univalence = (path2equiv , equiv₁ (mkqinv equiv2path {!!} {!!}))
+univalence = 
+  (path2equiv , 
+    equiv₁ (mkqinv 
+     equiv2path 
+     (λ e → path2equiv (equiv2path e)
+              ≡⟨ {!!} ⟩ 
+            e ∎)
+     (λ p → equiv2path (path2equiv p)
+              ≡⟨ {!!} ⟩
+            p ∎)))
 
 ------------------------------------------------------------------------------
