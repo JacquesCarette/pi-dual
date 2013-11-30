@@ -460,35 +460,55 @@ distr : (n₀ : ℕ) {n₁ : ℕ} → TIMES (fromℕ n₀) (fromℕ n₁) ⇛ fr
 distr zero = distz⇛
 distr (suc n) {m} = dist⇛ ◎ ((unite⋆⇛ ⊕ id⇛) ◎ ((id⇛ ⊕ distr n) ◎ assocr m))
 
--- We need a chunk of data to get a proper normal form.
-record normalform (b : FT) : Set where
-  constructor NF
-  field
-    n : ℕ
-    p⇛ : b ⇛ (fromℕ n)
-
 -- normalize a finite type to (1 + (1 + (1 + ... + (1 + 0) ... )))
 -- a bunch of ones ending with zero with left biased + in between
 
 normalize : FT → FT
 normalize = fromℕ ○ toℕ
 
+-- We need a chunk of data to get a proper normal form.
+record normalform (b : FT) : Set where
+  constructor NF
+  field
+--    n : ℕ
+    p⇛ : b ⇛ (normalize b)
+
 normal : (b : FT) → normalform b
-normal ZERO = NF zero id⇛
-normal ONE = NF (suc zero) (uniti₊⇛ ◎ swap₊⇛)
+normal ZERO = NF id⇛
+normal ONE = NF (uniti₊⇛ ◎ swap₊⇛)
 normal (PLUS b₀ b₁) with normal b₀ | normal b₁ 
-... | NF n₀ p₀ | NF n₁ p₁ = NF (n₀ + n₁) ((p₀ ⊕ p₁) ◎ assocr n₀)
+... | NF p₀ | NF p₁ = NF ((p₀ ⊕ p₁) ◎ assocr (toℕ b₀))
 normal (TIMES b₀ b₁) with normal b₀ | normal b₁
-... | NF n₀ p₀ | NF n₁ p₁ = NF (n₀ * n₁) ((p₀ ⊗ p₁) ◎ distr n₀)
+... | NF p₀ | NF p₁ = NF  ((p₀ ⊗ p₁) ◎ distr (toℕ b₀))
+
+normalizeC : {B : FT} → ⟦ normalize B ⟧ ≃ ⟦ B ⟧
+normalizeC {B} with normal B
+... | NF p⇛ = path2equiv (sym⇛ p⇛)
+
+{--
+normPlus : {B₁ B₂ : FT} → ⟦ normalize (PLUS B₁ B₂) ⟧ ≃ (⟦ normalize B₁ ⟧ ⊎ ⟦ normalize B₂ ⟧)
+normPlus {ZERO} = uniti₊equiv
+normPlus {ONE}  = path⊎ (trans≃ uniti₊equiv swap₊equiv) id≃
+normPlus {PLUS B₃ B₄} {B₂} = {!!}
+-- normPlus {PLUS B₃ B₄} {B₂} with normPlus {B₄} {B₂}
+-- right associate, 
+-- ... | eq₄₂ = {!trans≃ !}
+normPlus {TIMES B₁ B₂} = {!!}
+
+normTimes : {B₁ B₂ : FT} → ⟦ normalize (TIMES B₁ B₂) ⟧ ≃ (⟦ normalize B₁ ⟧ × ⟦ normalize B₂ ⟧)
+normTimes {B₁} = {!!}
 
 normalizeC : {B : FT} → ⟦ normalize B ⟧ ≃ ⟦ B ⟧
 normalizeC {ZERO} = id≃
 normalizeC {ONE} = trans≃ swap₊equiv unite₊equiv
 normalizeC {PLUS B₁ B₂} with normalizeC {B₁} | normalizeC {B₂}
-... | eq₁ | eq₂ = trans≃ {!!} (path⊎ eq₁ eq₂)
+... | eq₁ | eq₂ = trans≃ (normPlus {B₁} {B₂}) (path⊎ eq₁ eq₂)
 normalizeC {TIMES B₁ B₂} with normalizeC {B₁} | normalizeC {B₂}
-... | eq₁ | eq₂ = trans≃ {!!} (path× eq₁ eq₂) 
+... | eq₁ | eq₂ = trans≃ (normTimes {B₁} {B₂}) (path× eq₁ eq₂) 
+--}
 
+{--
+-- I dont think this is necessary?
 ⊥⇛ZERO : {B : FT} → ⟦ normalize B ⟧ ≃ ⊥ → B ⇛ ZERO
 ⊥⇛ZERO {ZERO} equiv = id⇛
 ⊥⇛ZERO {ONE} (f , feq) with equiv₂ feq
@@ -498,7 +518,22 @@ normalizeC {TIMES B₁ B₂} with normalizeC {B₁} | normalizeC {B₂}
 ⊥⇛ZERO {TIMES B₁ B₂} equiv with normalize B₁ | normalize (TIMES B₁ B₂)
 ... | ZERO | ZERO = {!!} 
 ... | NB₁ | _ = {!!} 
+--}
 
+sameNorm : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (normalize B₁) ≡ (normalize B₂)
+sameNorm = {!!}
+
+nn : (B : FT) → B ⇛ (normalize B)
+nn B with normal B
+... | NF p⇛ = p⇛ 
+
+eq2p : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (B₁ ⇛ B₂)
+eq2p {B₁} {B₂} eq =
+  pathInd
+    (λ p → B₁ ⇛ B₂)
+--    (λ samenf → (nn B₁) ◎ (sym⇛ (nn B₂)))
+    {!!}
+    (sameNorm {B₁} {B₂} eq)
 
 equiv2path : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (B₁ ⇛ B₂)
 equiv2path {B₁} {B₂} (f , feq) with equiv₂ feq
