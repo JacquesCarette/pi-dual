@@ -502,8 +502,22 @@ normalizeC {B} = path2equiv (sym⇛ (normal B))
 mapNorm :  {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → ⟦ normalize B₁ ⟧ ≃ ⟦ normalize B₂ ⟧
 mapNorm {B₁} {B₂} eq = trans≃ (trans≃ (normalizeC {B₁}) eq) (sym≃ (normalizeC {B₂}))
 
+sub1 : {A B : Set} → ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A → B
+sub1 (f , mkisequiv g α h β) a with f (inj₂ a)
+... | inj₂ b = b
+sub1 (f , mkisequiv g α h β) a | inj₁ tt with f (inj₁ tt)
+sub1 (f , mkisequiv g α h β) a | inj₁ tt | inj₁ tt = {!!} -- impossible, but how to convince agda?
+sub1 (f , mkisequiv g α h β) a | inj₁ tt | inj₂ b  = b
+
+sub1congr : {A B : Set} → (eq : (⊤ ⊎ A) ≃ (⊤ ⊎ B)) → (((sub1 eq) ○ (sub1 (sym≃ eq))) ∼ id)
+sub1congr (f , mkisequiv g α h β) = {!!}
+
+sub1congl : {A B : Set} → (eq : (⊤ ⊎ A) ≃ (⊤ ⊎ B)) → ((sub1 (sym≃ eq)) ○ (sub1 eq) ∼ id)
+sub1congl (f , mkisequiv g α h β) = {!!}
+
 lemma⊤⊎ : {B₁ B₂ : FT} → ⟦ PLUS ONE B₁ ⟧ ≃ ⟦ PLUS ONE B₂ ⟧ → ⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧
-lemma⊤⊎ (f , mkisequiv g α h β) = {!!}
+lemma⊤⊎ eq with eq
+... | (f , mkisequiv g α h β) = sub1 eq , mkisequiv (sub1 (sym≃ eq)) (sub1congr eq) (sub1 (sym≃ eq)) (sub1congl eq)
 
 liftNormal : {B₁ B₂ : FT} →  ⟦ normalize B₁ ⟧ ≃ ⟦ normalize B₂ ⟧ → (normalize B₁) ≡ (normalize B₂)
 liftNormal {B₁} {B₂} eq with toℕ B₁ | toℕ B₂ 
@@ -512,8 +526,10 @@ liftNormal (_ , mkisequiv g α h β) | zero | suc n₂ with h (inj₁ tt)
 liftNormal (_ , mkisequiv g α h β) | zero | suc n₂ | ()
 liftNormal (f , _) | suc n₁ | zero with f (inj₁ tt)
 ... | ()
-liftNormal {B₁} {B₂} eq | suc n₁ | suc n₂ = 
-    ap (λ x → PLUS ONE x) (liftNormal (lemma⊤⊎ eq))
+liftNormal {B₁} {B₂} eq | suc n₁ | suc n₂ = -- {!!}
+--    ap {A = FT} {B = FT} {x = fromℕ n₁} {y = fromℕ n₂} (λ x → PLUS ONE x) (liftNormal {fromℕ n₁} {fromℕ n₂} (lemma⊤⊎ eq))
+-- Need a lemma---toℕ ○ fromℕ ∼ id
+  ap {A = FT} {B = FT} {x = fromℕ n₁} {y = fromℕ n₂} (λ x → PLUS ONE x) (liftNormal (lemma⊤⊎ eq)) 
 
 sameNorm : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (normalize B₁) ≡ (normalize B₂)
 sameNorm {B₁} {B₂} eq = liftNormal (mapNorm eq)
