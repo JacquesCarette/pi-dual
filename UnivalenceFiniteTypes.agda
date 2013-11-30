@@ -202,7 +202,7 @@ _≃⟨_⟩_ : (A : Set) {B C : Set} → (A ≃ B) → (B ≃ C) → (A ≃ C)
 _ ≃⟨ p ⟩ q = trans≃ p q
 
 _∎≃ : {ℓ : Level} {A : Set ℓ} → A ≃ A
-_∎≃ {ℓ} {A} = id≃ {ℓ} {A} 
+_∎≃ {ℓ} {A} = id≃ {ℓ} {A}
 
 ------------------------------------------------------------------------------
 -- Univalence
@@ -456,9 +456,9 @@ assocr : {m : ℕ} (n : ℕ) → (PLUS (fromℕ n) (fromℕ m)) ⇛ fromℕ (n +
 assocr zero = unite₊⇛
 assocr (suc n) = assocr₊⇛ ◎ (id⇛ ⊕ (assocr n))
 
-distr : (n₀ n₁ : ℕ) → TIMES (fromℕ n₀) (fromℕ n₁) ⇛ fromℕ (n₀ * n₁)
-distr zero m = distz⇛
-distr (suc n) m = dist⇛ ◎ ((unite⋆⇛ ⊕ id⇛) ◎ ((id⇛ ⊕ distr n m) ◎ assocr m))
+distr : (n₀ : ℕ) {n₁ : ℕ} → TIMES (fromℕ n₀) (fromℕ n₁) ⇛ fromℕ (n₀ * n₁)
+distr zero = distz⇛
+distr (suc n) {m} = dist⇛ ◎ ((unite⋆⇛ ⊕ id⇛) ◎ ((id⇛ ⊕ distr n) ◎ assocr m))
 
 -- We need a chunk of data to get a proper normal form.
 record normalform (b : FT) : Set where
@@ -466,7 +466,6 @@ record normalform (b : FT) : Set where
   field
     n : ℕ
     p⇛ : b ⇛ (fromℕ n)
-    fwd : toℕ b ≡ n
 
 -- normalize a finite type to (1 + (1 + (1 + ... + (1 + 0) ... )))
 -- a bunch of ones ending with zero with left biased + in between
@@ -475,22 +474,20 @@ normalize : FT → FT
 normalize = fromℕ ○ toℕ
 
 normal : (b : FT) → normalform b
-normal ZERO = NF zero id⇛ (refl zero)
-normal ONE = NF (suc zero) (uniti₊⇛ ◎ swap₊⇛) (refl (suc zero))
+normal ZERO = NF zero id⇛
+normal ONE = NF (suc zero) (uniti₊⇛ ◎ swap₊⇛)
 normal (PLUS b₀ b₁) with normal b₀ | normal b₁ 
-... | NF n₀ p₀ pf₀ | NF n₁ p₁ pf₁ = NF (n₀ + n₁) ((p₀ ⊕ p₁) ◎ assocr n₀) (ap2 _+_ pf₀ pf₁)
+... | NF n₀ p₀ | NF n₁ p₁ = NF (n₀ + n₁) ((p₀ ⊕ p₁) ◎ assocr n₀)
 normal (TIMES b₀ b₁) with normal b₀ | normal b₁
-... | NF n₀ p₀ pf₀ | NF n₁ p₁ pf₁ = NF (n₀ * n₁) ((p₀ ⊗ p₁) ◎ distr n₀ n₁) (ap2 _*_ pf₀ pf₁)
+... | NF n₀ p₀ | NF n₁ p₁ = NF (n₀ * n₁) ((p₀ ⊗ p₁) ◎ distr n₀)
 
 normalizeC : {B : FT} → ⟦ normalize B ⟧ ≃ ⟦ B ⟧
 normalizeC {ZERO} = id≃
 normalizeC {ONE} = trans≃ swap₊equiv unite₊equiv
-normalizeC {PLUS B₁ B₂} with normalize B₁
-... | ZERO = {!trans≃ uniti₊equiv (path⊎ (normalizeC {B₁}) (normalizeC {B₂}))!} -- normalize (PLUS B₁ B₂) = normalize B₂ 
-... | ONE = {!path⊎ (normalizeC {B₁}) (normalizeC {B₂})!} -- normalize (PLUS B₁ B₂) = PLUS (normalize B₁) (normalize B₂)
-... | PLUS B₃ B₄ = {!!}
-... | TIMES B₃ B₄ = {!!}
-normalizeC {TIMES B₁ B₂} = {!!} 
+normalizeC {PLUS B₁ B₂} with normalizeC {B₁} | normalizeC {B₂}
+... | eq₁ | eq₂ = trans≃ {!!} (path⊎ eq₁ eq₂)
+normalizeC {TIMES B₁ B₂} with normalizeC {B₁} | normalizeC {B₂}
+... | eq₁ | eq₂ = trans≃ {!!} (path× eq₁ eq₂) 
 
 ⊥⇛ZERO : {B : FT} → ⟦ normalize B ⟧ ≃ ⊥ → B ⇛ ZERO
 ⊥⇛ZERO {ZERO} equiv = id⇛
