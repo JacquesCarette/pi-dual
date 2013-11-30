@@ -5,11 +5,12 @@ module UnivalenceFiniteTypes where
 
 open import Agda.Prim
 open import Data.Empty
-open import Data.Maybe
 open import Data.Unit
+open import Data.Maybe hiding (map) 
+open import Data.Nat renaming (_⊔_ to _⊔ℕ_)
 open import Data.Sum renaming (map to _⊎→_)
 open import Data.Product renaming (map to _×→_)
-open import Data.Nat renaming (_⊔_ to _⊔ℕ_)
+open import Data.List
 open import Function renaming (_∘_ to _○_)
 
 infixr 8  _∘_   -- path composition
@@ -35,6 +36,15 @@ data FT : Set where
 ⟦ ONE ⟧ = ⊤
 ⟦ PLUS B₁ B₂ ⟧ = ⟦ B₁ ⟧ ⊎ ⟦ B₂ ⟧
 ⟦ TIMES B₁ B₂ ⟧ = ⟦ B₁ ⟧ × ⟦ B₂ ⟧
+
+BOOL-FT : Set
+BOOL-FT = ⟦ PLUS ONE ONE ⟧
+
+true-FT : BOOL-FT
+true-FT = inj₁ tt
+
+false-FT : BOOL-FT
+false-FT = inj₂ tt
 
 ------------------------------------------------------------------------------
 -- Generalized paths are pi-combinators
@@ -441,6 +451,20 @@ witness (TIMES B₁ B₂) with witness B₁ | witness B₂
 ... | nothing | _ = nothing
 ... | just b  | nothing = nothing
 ... | just b₁ | just b₂ = just (b₁ , b₂)
+
+elems : (B : FT) → List ⟦ B ⟧
+elems ZERO          = []
+elems ONE           = [ tt ]
+elems (PLUS B₁ B₂)  = map inj₁ (elems B₁) ++ map inj₂ (elems B₂) 
+elems (TIMES B₁ B₂) = concatMap 
+                        (λ e₁ → map (λ e₂ → (e₁ , e₂)) (elems B₂)) 
+                        (elems B₁)
+      
+expandF : {B₁ B₂ : FT} → (⟦ B₁ ⟧ → ⟦ B₂ ⟧) → List (⟦ B₁ ⟧ × ⟦ B₂ ⟧)
+expandF {B₁} {B₂} f = map (λ e → (e , f e)) (elems B₁)
+
+test0 : List ((⊤ × BOOL-FT) × BOOL-FT)
+test0 = expandF (unite⋆ {BOOL-FT})
 
 toℕ : FT → ℕ
 toℕ ZERO = zero
