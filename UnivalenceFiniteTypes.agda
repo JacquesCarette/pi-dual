@@ -532,7 +532,7 @@ liftNormal {B₁} {B₂} eq | suc n₁ | suc n₂ = -- {!!}
   ap {A = FT} {B = FT} {x = fromℕ n₁} {y = fromℕ n₂} (λ x → PLUS ONE x) (liftNormal (lemma⊤⊎ eq)) 
 
 sameNorm : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (normalize B₁) ≡ (normalize B₂)
-sameNorm {B₁} {B₂} eq = liftNormal (mapNorm eq)
+sameNorm {B₁} {B₂} eq = liftNormal {B₁} {B₂} (mapNorm eq)
 
 eq2p : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (B₁ ⇛ B₂)
 eq2p {B₁} {B₂} eq =
