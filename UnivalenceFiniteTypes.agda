@@ -456,6 +456,10 @@ assocr : {m : ℕ} (n : ℕ) → (PLUS (fromℕ n) (fromℕ m)) ⇛ fromℕ (n +
 assocr zero = unite₊⇛
 assocr (suc n) = assocr₊⇛ ◎ (id⇛ ⊕ (assocr n))
 
+distr : (n₀ n₁ : ℕ) → TIMES (fromℕ n₀) (fromℕ n₁) ⇛ fromℕ (n₀ * n₁)
+distr zero m = distz⇛
+distr (suc n) m = dist⇛ ◎ ((unite⋆⇛ ⊕ id⇛) ◎ ((id⇛ ⊕ distr n m) ◎ assocr m))
+
 -- We need a chunk of data to get a proper normal form.
 record normalform (b : FT) : Set where
   constructor NF
@@ -476,17 +480,7 @@ normal ONE = NF (suc zero) (uniti₊⇛ ◎ swap₊⇛) (refl (suc zero))
 normal (PLUS b₀ b₁) with normal b₀ | normal b₁ 
 ... | NF n₀ p₀ pf₀ | NF n₁ p₁ pf₁ = NF (n₀ + n₁) ((p₀ ⊕ p₁) ◎ assocr n₀) (ap2 _+_ pf₀ pf₁)
 normal (TIMES b₀ b₁) with normal b₀ | normal b₁
-... | NF n₀ p₀ pf₀ | NF n₁ p₁ pf₁ = NF (n₀ * n₁) ((p₀ ⊗ p₁) ◎ {!!}) (ap2 _*_ pf₀ pf₁)
-
-norm : (B : FT) → Σ[ nf ∈ FT ] (B ⇛ nf)
-norm ZERO = ZERO , id⇛
-norm ONE = PLUS ONE ZERO , uniti₊⇛ ◎ swap₊⇛
-norm (PLUS B₁ B₂) with norm B₁
-... | ZERO , comb = {!!}
-... | ONE , comb = {!!}
-... | PLUS B₃ B₄ , comb = {!!}
-... | TIMES B₃ B₄ , comb = {!!}
-norm (TIMES B B₁) = {!!}
+... | NF n₀ p₀ pf₀ | NF n₁ p₁ pf₁ = NF (n₀ * n₁) ((p₀ ⊗ p₁) ◎ distr n₀ n₁) (ap2 _*_ pf₀ pf₁)
 
 normalizeC : {B : FT} → ⟦ normalize B ⟧ ≃ ⟦ B ⟧
 normalizeC {ZERO} = id≃
