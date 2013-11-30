@@ -490,73 +490,40 @@ distr (suc n) {m} = dist⇛ ◎ ((unite⋆⇛ ⊕ id⇛) ◎ ((id⇛ ⊕ distr n
 normalize : FT → FT
 normalize = fromℕ ○ toℕ
 
--- We need a chunk of data to get a proper normal form.
-record normalform (b : FT) : Set where
-  constructor NF
-  field
---    n : ℕ
-    p⇛ : b ⇛ (normalize b)
-
-normal : (b : FT) → normalform b
-normal ZERO = NF id⇛
-normal ONE = NF (uniti₊⇛ ◎ swap₊⇛)
-normal (PLUS b₀ b₁) with normal b₀ | normal b₁ 
-... | NF p₀ | NF p₁ = NF ((p₀ ⊕ p₁) ◎ assocr (toℕ b₀))
-normal (TIMES b₀ b₁) with normal b₀ | normal b₁
-... | NF p₀ | NF p₁ = NF  ((p₀ ⊗ p₁) ◎ distr (toℕ b₀))
+normal : (b : FT) → b ⇛ normalize b
+normal ZERO = id⇛
+normal ONE = uniti₊⇛ ◎ swap₊⇛
+normal (PLUS b₀ b₁) = (normal b₀ ⊕ normal b₁) ◎ assocr (toℕ b₀)
+normal (TIMES b₀ b₁) = (normal b₀ ⊗ normal b₁) ◎ distr (toℕ b₀)
 
 normalizeC : {B : FT} → ⟦ normalize B ⟧ ≃ ⟦ B ⟧
-normalizeC {B} with normal B
-... | NF p⇛ = path2equiv (sym⇛ p⇛)
+normalizeC {B} = path2equiv (sym⇛ (normal B))
 
-{--
-normPlus : {B₁ B₂ : FT} → ⟦ normalize (PLUS B₁ B₂) ⟧ ≃ (⟦ normalize B₁ ⟧ ⊎ ⟦ normalize B₂ ⟧)
-normPlus {ZERO} = uniti₊equiv
-normPlus {ONE}  = path⊎ (trans≃ uniti₊equiv swap₊equiv) id≃
-normPlus {PLUS B₃ B₄} {B₂} = {!!}
--- normPlus {PLUS B₃ B₄} {B₂} with normPlus {B₄} {B₂}
--- right associate, 
--- ... | eq₄₂ = {!trans≃ !}
-normPlus {TIMES B₁ B₂} = {!!}
+mapNorm :  {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → ⟦ normalize B₁ ⟧ ≃ ⟦ normalize B₂ ⟧
+mapNorm {B₁} {B₂} eq = trans≃ (trans≃ (normalizeC {B₁}) eq) (sym≃ (normalizeC {B₂}))
 
-normTimes : {B₁ B₂ : FT} → ⟦ normalize (TIMES B₁ B₂) ⟧ ≃ (⟦ normalize B₁ ⟧ × ⟦ normalize B₂ ⟧)
-normTimes {B₁} = {!!}
+lemma⊤⊎ : {B₁ B₂ : FT} → ⟦ PLUS ONE B₁ ⟧ ≃ ⟦ PLUS ONE B₂ ⟧ → ⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧
+lemma⊤⊎ (f , mkisequiv g α h β) = {!!}
 
-normalizeC : {B : FT} → ⟦ normalize B ⟧ ≃ ⟦ B ⟧
-normalizeC {ZERO} = id≃
-normalizeC {ONE} = trans≃ swap₊equiv unite₊equiv
-normalizeC {PLUS B₁ B₂} with normalizeC {B₁} | normalizeC {B₂}
-... | eq₁ | eq₂ = trans≃ (normPlus {B₁} {B₂}) (path⊎ eq₁ eq₂)
-normalizeC {TIMES B₁ B₂} with normalizeC {B₁} | normalizeC {B₂}
-... | eq₁ | eq₂ = trans≃ (normTimes {B₁} {B₂}) (path× eq₁ eq₂) 
---}
-
-{--
--- I dont think this is necessary?
-⊥⇛ZERO : {B : FT} → ⟦ normalize B ⟧ ≃ ⊥ → B ⇛ ZERO
-⊥⇛ZERO {ZERO} equiv = id⇛
-⊥⇛ZERO {ONE} (f , feq) with equiv₂ feq
-... | mkqinv g α β with f (inj₁ tt) 
-... | () 
-⊥⇛ZERO {PLUS B₁ B₂} equiv = {!!}
-⊥⇛ZERO {TIMES B₁ B₂} equiv with normalize B₁ | normalize (TIMES B₁ B₂)
-... | ZERO | ZERO = {!!} 
-... | NB₁ | _ = {!!} 
---}
+liftNormal : {B₁ B₂ : FT} →  ⟦ normalize B₁ ⟧ ≃ ⟦ normalize B₂ ⟧ → (normalize B₁) ≡ (normalize B₂)
+liftNormal {B₁} {B₂} eq with toℕ B₁ | toℕ B₂ 
+liftNormal eq | zero | zero = refl ZERO
+liftNormal (_ , mkisequiv g α h β) | zero | suc n₂ with h (inj₁ tt)
+liftNormal (_ , mkisequiv g α h β) | zero | suc n₂ | ()
+liftNormal (f , _) | suc n₁ | zero with f (inj₁ tt)
+... | ()
+liftNormal {B₁} {B₂} eq | suc n₁ | suc n₂ = 
+    ap (λ x → PLUS ONE x) (liftNormal (lemma⊤⊎ eq))
 
 sameNorm : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (normalize B₁) ≡ (normalize B₂)
-sameNorm = {!!}
-
-nn : (B : FT) → B ⇛ (normalize B)
-nn B with normal B
-... | NF p⇛ = p⇛ 
+sameNorm {B₁} {B₂} eq = liftNormal (mapNorm eq)
 
 eq2p : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (B₁ ⇛ B₂)
 eq2p {B₁} {B₂} eq =
   pathInd
     (λ p → B₁ ⇛ B₂)
 --    (λ samenf → (nn B₁) ◎ (sym⇛ (nn B₂)))
-    {!!}
+    (λ B → {!!})
     (sameNorm {B₁} {B₂} eq)
 
 equiv2path : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (B₁ ⇛ B₂)
