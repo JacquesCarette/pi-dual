@@ -538,7 +538,6 @@ lemma⊤⊎ eq with eq
 lemmaℕ⊤⊎ : {n₁ n₂ : ℕ} → ⟦ suc n₁ ⟧ℕ ≃ ⟦ suc n₂ ⟧ℕ → ⟦ n₁ ⟧ℕ ≃ ⟦ n₂ ⟧ℕ
 lemmaℕ⊤⊎ eq with eq
 ... | (f , mkisequiv g α h β) = sub1 eq , mkisequiv (sub1 (sym≃ eq)) (sub1congr eq) (sub1 (sym≃ eq)) (sub1congl eq)
-
 {--
 lemmaℕ⊤⊎ {zero} {zero} eq = id≃
 lemmaℕ⊤⊎ {zero} {suc n₂} eq = {!!}
@@ -561,61 +560,17 @@ liftNormal {B₁} {B₂} eq =
 sameNorm : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (normalize B₁) ≡ (normalize B₂)
 sameNorm {B₁} {B₂} eq = liftNormal {B₁} {B₂} (mapNorm eq)
 
-eq2p : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (B₁ ⇛ B₂)
-eq2p {B₁} {B₂} eq =
+bridge : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (normalize B₁) ⇛ (normalize B₂)
+bridge eq =
   pathInd
-    (λ p → B₁ ⇛ B₂)
---    (λ samenf → (nn B₁) ◎ (sym⇛ (nn B₂)))
-    (λ B → {!!})
-    (sameNorm {B₁} {B₂} eq)
+    (λ {B₁} {B₂} p → B₁ ⇛ B₂)
+    (λ B → id⇛)
+    (sameNorm eq)
 
 equiv2path : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (B₁ ⇛ B₂)
-equiv2path {B₁} {B₂} (f , feq) with equiv₂ feq
-equiv2path {ZERO} {ZERO} (f , feq) | mkqinv g α β = id⇛
-equiv2path {ZERO} {B} (f , feq) | mkqinv g α β with witness B 
-... | nothing = {!!} 
-... | just b with g b
-... | () 
-{--
-equiv2path {ZERO} {ZERO} (f , feq) | mkqinv g α β = id⇛
-equiv2path {ZERO} {ONE} (f , feq) | mkqinv g α β with g tt 
-... | () 
-equiv2path {ZERO} {PLUS ZERO ZERO} (f , feq) | mkqinv g α β = uniti₊⇛
-equiv2path {ZERO} {PLUS ZERO ONE} (f , feq) | mkqinv g α β with g (inj₂ tt)
-... | ()
-equiv2path {ZERO} {PLUS ZERO B₂} (f , feq) | mkqinv g α β with degree B₂ 
-equiv2path {ZERO} {PLUS ZERO B₂} (f , feq) | mkqinv g α β | inj₁ tt =  
-  equiv2path ({!!} , {!!}) ◎ uniti₊⇛ {B₂}
-equiv2path {ZERO} {PLUS ZERO B₂} (f , feq) | mkqinv g α β | inj₂ y = {!!}
-equiv2path {ZERO} {PLUS ONE B₃} (f , feq) | mkqinv g α β = {!!}
-equiv2path {ZERO} {PLUS (PLUS B₂ B₃) B₄} (f , feq) | mkqinv g α β = {!!}
-equiv2path {ZERO} {PLUS (TIMES B₂ B₃) B₄} (f , feq) | mkqinv g α β = {!!} 
-equiv2path {ZERO} {TIMES B₂ B₃} (f , feq) | mkqinv g α β = {!!}
---} 
-equiv2path {ONE} {ZERO} (f , feq) | mkqinv g α β with f tt
-... | ()
-equiv2path {ONE} {ONE} (f , feq) | mkqinv g α β = id⇛
-equiv2path {ONE} {PLUS B₂ B₃} (f , feq) | mkqinv g α β with f tt
-equiv2path {ONE} {PLUS B₂ B₃} (f , feq) | mkqinv g α β | inj₁ x = {!!}
-equiv2path {ONE} {PLUS B₂ B₃} (f , feq) | mkqinv g α β | inj₂ y = {!!}
-equiv2path {ONE} {TIMES B₂ B₃} (f , feq) | mkqinv g α β = 
-  {!!}
-  -- f : ⊤ → ⟦ B₂ ⟧ × ⟦ B₃ ⟧
-  -- g : ⟦ B₂ ⟧ × ⟦ B₃ ⟧ → ⊤ 
-  -- α : (f ○ g) ∼ id
-  -- β : (g ○ f) ∼ id
-equiv2path {PLUS ZERO B₁} {B₂} (f , feq) | mkqinv g α β = {!!}
-  -- f : ⟦ ⊥ ⟧ ⊎ ⟦ B₁ ⟧ → ⟦ B₂ ⟧
-  -- g : ⟦ B₂ ⟧ → ⟦ ⊥ ⟧ ⊎ ⟦ B₁ ⟧ 
-  -- α b₂ : f (g b₂) ≡ b₂
-  -- β (inj₂ b₁) : g (f (inj₂ b₁)) ≡ inj₂ b₁
-  -- can we use α and β to prove that B₁ must be equal to B₂
-  -- and in that case we can use unite₊⇛ to fill the above hole
-equiv2path {PLUS B₁ B₂} {B₃} (f , feq) | mkqinv g α β = {!!}
-equiv2path {TIMES B₁ B₂} {ZERO} (f , feq) | mkqinv g α β = {!!}
-equiv2path {TIMES B₁ B₂} {ONE} (f , feq) | mkqinv g α β = {!!}
-equiv2path {TIMES B₁ B₂} {PLUS B₃ B₄} (f , feq) | mkqinv g α β = {!!}
-equiv2path {TIMES B₁ B₂} {TIMES B₃ B₄} (f , feq) | mkqinv g α β = {!!}
+-- not sure why typechecking this fails to terminate for me
+-- equiv2path {B₁} {B₂} eq = ((normal B₁) ◎ bridge eq) ◎ (sym⇛ (normal B₂))
+equiv2path {B₁} {B₂} eq = ?
 
 -- univalence
 
