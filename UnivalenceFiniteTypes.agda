@@ -476,6 +476,14 @@ fromℕ : ℕ → FT
 fromℕ zero = ZERO
 fromℕ (suc n) = PLUS ONE (fromℕ n)
 
+toℕ∘fromℕ : toℕ ○ fromℕ ∼ id
+toℕ∘fromℕ zero = refl zero
+toℕ∘fromℕ (suc n) =
+  pathInd
+    (λ {x} {y} p → suc x ≡ suc y)
+    (λ n → refl (suc n))
+    (toℕ∘fromℕ n)
+
 assocr : {m : ℕ} (n : ℕ) → (PLUS (fromℕ n) (fromℕ m)) ⇛ fromℕ (n + m)
 assocr zero = unite₊⇛
 assocr (suc n) = assocr₊⇛ ◎ (id⇛ ⊕ (assocr n))
@@ -519,17 +527,29 @@ lemma⊤⊎ : {B₁ B₂ : FT} → ⟦ PLUS ONE B₁ ⟧ ≃ ⟦ PLUS ONE B₂ �
 lemma⊤⊎ eq with eq
 ... | (f , mkisequiv g α h β) = sub1 eq , mkisequiv (sub1 (sym≃ eq)) (sub1congr eq) (sub1 (sym≃ eq)) (sub1congl eq)
 
+⟦_⟧ℕ : ℕ → Set
+⟦ zero ⟧ℕ = ⊥
+⟦ suc n ⟧ℕ = ⊤ ⊎ ⟦ n ⟧ℕ
+
+ℕrespects⟦⟧ : {n : ℕ} → ⟦ fromℕ n ⟧ ≃ ⟦ n ⟧ℕ
+ℕrespects⟦⟧ {zero} = id≃
+ℕrespects⟦⟧ {suc n} = path⊎ id≃ (ℕrespects⟦⟧ {n})
+
+lemmaℕ⊤⊎ : {n₁ n₂ : ℕ} → ⟦ suc n₁ ⟧ℕ ≃ ⟦ suc n₂ ⟧ℕ → ⟦ n₁ ⟧ℕ ≃ ⟦ n₂ ⟧ℕ
+lemmaℕ⊤⊎ = {!!}
+
+liftℕ : (n₁ n₂ : ℕ) → ⟦ n₁ ⟧ℕ ≃ ⟦ n₂ ⟧ℕ → (fromℕ n₁) ≡ (fromℕ n₂)
+liftℕ zero zero eq = refl ZERO
+liftℕ zero (suc n₂) (_ , mkisequiv g α h β) with h (inj₁ tt)
+liftℕ zero (suc n₂) (_ , mkisequiv g α h β) | ()
+liftℕ (suc n₁) zero (f , _) with f (inj₁ tt)
+liftℕ (suc n₁) zero (f , _) | ()
+liftℕ (suc n₁) (suc n₂) eq = ap (λ x → PLUS ONE x) (liftℕ n₁ n₂ (lemmaℕ⊤⊎ eq))
+
 liftNormal : {B₁ B₂ : FT} →  ⟦ normalize B₁ ⟧ ≃ ⟦ normalize B₂ ⟧ → (normalize B₁) ≡ (normalize B₂)
-liftNormal {B₁} {B₂} eq with toℕ B₁ | toℕ B₂ 
-liftNormal eq | zero | zero = refl ZERO
-liftNormal (_ , mkisequiv g α h β) | zero | suc n₂ with h (inj₁ tt)
-liftNormal (_ , mkisequiv g α h β) | zero | suc n₂ | ()
-liftNormal (f , _) | suc n₁ | zero with f (inj₁ tt)
-... | ()
-liftNormal {B₁} {B₂} eq | suc n₁ | suc n₂ = -- {!!}
---    ap {A = FT} {B = FT} {x = fromℕ n₁} {y = fromℕ n₂} (λ x → PLUS ONE x) (liftNormal {fromℕ n₁} {fromℕ n₂} (lemma⊤⊎ eq))
--- Need a lemma---toℕ ○ fromℕ ∼ id
-  ap {A = FT} {B = FT} {x = fromℕ n₁} {y = fromℕ n₂} (λ x → PLUS ONE x) (liftNormal (lemma⊤⊎ eq)) 
+liftNormal {B₁} {B₂} eq =
+  liftℕ (toℕ B₁) (toℕ B₂)
+    (⟦ toℕ B₁ ⟧ℕ ≃⟨ sym≃ (ℕrespects⟦⟧ {toℕ B₁}) ⟩ ⟦ normalize B₁ ⟧ ≃⟨ eq ⟩ ⟦ normalize B₂ ⟧ ≃⟨ ℕrespects⟦⟧ {toℕ B₂} ⟩ id≃)
 
 sameNorm : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (normalize B₁) ≡ (normalize B₂)
 sameNorm {B₁} {B₂} eq = liftNormal {B₁} {B₂} (mapNorm eq)
