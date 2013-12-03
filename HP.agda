@@ -5,7 +5,13 @@ module HP where
 -- Pi as a higher-order inductive type
 
 open import Agda.Prim
-open import Data.Product
+open import Data.Empty
+open import Data.Unit
+open import Data.Maybe hiding (map) 
+open import Data.Nat renaming (_⊔_ to _⊔ℕ_)
+open import Data.Sum renaming (map to _⊎→_)
+open import Data.Product renaming (map to _×→_)
+open import Data.List
 open import Function renaming (_∘_ to _○_)
 
 infixr 8  _∘_   -- path composition
@@ -14,6 +20,8 @@ infix  4  _∼_   -- homotopy between two functions
 infix  4  _≃_   -- type of equivalences
 infix  2  _∎      -- equational reasoning
 infixr 2  _≡⟨_⟩_  -- equational reasoning
+infix  2  _∎≃      -- equational reasoning for equivalences
+infixr 2  _≃⟨_⟩_   -- equational reasoning for equivalences
 
 ------------------------------------------------------------------------------
 -- Identity types
@@ -154,6 +162,19 @@ ap {ℓ} {ℓ'} {A} {B} {x} {y} f p =
     (λ x → refl (f x))
     {x} {y} p
 
+ap2 : ∀ {ℓ ℓ' ℓ''} → {A : Set ℓ} {B : Set ℓ'} {C : Set ℓ''} 
+     {x₁ y₁ : A} {x₂ y₂ : B} → 
+     (f : A → B → C) → (x₁ ≡ y₁) → (x₂ ≡ y₂) → (f x₁ x₂  ≡ f y₁ y₂)
+ap2 {ℓ} {ℓ'} {ℓ''} {A} {B} {C} {x₁} {y₁} {x₂} {y₂} f p₁ p₂ = 
+  pathInd -- on p₁
+    (λ {x₁} {y₁} p₁ → f x₁ x₂ ≡ f y₁ y₂) 
+    (λ x →
+      pathInd -- on p₂
+        (λ {x₂} {y₂} p₂ → f x x₂ ≡ f x y₂)
+        (λ y → refl (f x y))
+        {x₂} {y₂} p₂)
+    {x₁} {y₁} p₁
+
 -- Lemma 2.2.2
 
 -- f (p ∘ q) ≡ f p ∘ f q
@@ -253,13 +274,53 @@ record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) :
 equiv₁ : ∀ {ℓ ℓ'} → {A : Set ℓ} {B : Set ℓ'} {f : A → B} → qinv f → isequiv f
 equiv₁ (mkqinv qg qα qβ) = mkisequiv qg qα qg qβ
        
+equiv₂ : ∀ {ℓ ℓ'} → {A : Set ℓ} {B : Set ℓ'} {f : A → B} → isequiv f → qinv f
+equiv₂ {f = f} (mkisequiv ig iα ih iβ) = 
+  record {
+    g = ig ;
+    α = iα ;
+    β = λ x → ig (f x)
+                ≡⟨ ! (iβ (ig (f x))) ⟩
+              ih (f (ig (f x)))
+                ≡⟨ ap ih (iα (f x)) ⟩
+              ih (f x)
+                ≡⟨ iβ x ⟩
+              x ∎
+  }
+
 _≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (_⊔_ ℓ ℓ')
 A ≃ B = Σ (A → B) isequiv
 
--- Lemma 2.4.12
+id≃ : ∀ {ℓ} {A : Set ℓ} → A ≃ A
+id≃ = (id , equiv₁ idqinv)
 
-idequiv : ∀ {ℓ} {A : Set ℓ} → A ≃ A
-idequiv = (id , equiv₁ idqinv)
+sym≃ :  ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (A ≃ B) → B ≃ A
+sym≃ (A→B , equiv) with equiv₂ equiv
+... | mkqinv g α β = g , equiv₁ (mkqinv A→B β α)
+
+trans≃ : {A B C : Set} → A ≃ B → B ≃ C → A ≃ C
+trans≃ (f , feq) (g , geq) with equiv₂ feq | equiv₂ geq
+... | mkqinv ff fα fβ | mkqinv gg gα gβ = 
+  (g ○ f , equiv₁ (mkqinv 
+                    (ff ○ gg)
+                    (λ c → g (f (ff (gg c)))
+                             ≡⟨ ap g (fα (gg c)) ⟩
+                           g (gg c)
+                             ≡⟨ gα c ⟩
+                           c ∎)
+                    (λ a → ff (gg (g (f a)))
+                             ≡⟨ ap ff (gβ (f a)) ⟩
+                           ff (f a)
+                             ≡⟨ fβ a ⟩
+                           a ∎)))
+
+-- Abbreviations for equivalence compositions
+
+_≃⟨_⟩_ : (A : Set) {B C : Set} → (A ≃ B) → (B ≃ C) → (A ≃ C) 
+_ ≃⟨ p ⟩ q = trans≃ p q
+
+_∎≃ : {ℓ : Level} {A : Set ℓ} → A ≃ A
+_∎≃ {ℓ} {A} = id≃ {ℓ} {A}
 
 ------------------------------------------------------------------------------
 -- Sec. 2.11: Identity types
@@ -279,6 +340,171 @@ transportId {A} {B} {y} {z} f g p q =
                ≡⟨ unitTransL (q ∘ refl (g y)) ⟩
              refl (f y) ∘ q ∘ refl (g y) ∎)
     {y} {z} p q 
+
+------------------------------------------------------------------------------
+-- Type equivalences
+
+-- swap₊
+
+swap₊ : {A B : Set} → A ⊎ B → B ⊎ A
+swap₊ (inj₁ a) = inj₂ a
+swap₊ (inj₂ b) = inj₁ b
+
+swapswap₊ : {A B : Set} → swap₊ ○ swap₊ {A} {B} ∼ id
+swapswap₊ (inj₁ a) = refl (inj₁ a)
+swapswap₊ (inj₂ b) = refl (inj₂ b)
+
+swap₊≃ : {A B : Set} → (A ⊎ B) ≃ (B ⊎ A)
+swap₊≃ = (swap₊ , equiv₁ (mkqinv swap₊ swapswap₊ swapswap₊))
+
+-- unite₊ and uniti₊
+
+unite₊ : {A : Set} → ⊥ ⊎ A → A
+unite₊ (inj₁ ())
+unite₊ (inj₂ y) = y
+
+uniti₊ : {A : Set} → A → ⊥ ⊎ A
+uniti₊ a = inj₂ a
+
+uniti₊∘unite₊ : {A : Set} → uniti₊ ○ unite₊ ∼ id {A = ⊥ ⊎ A}
+uniti₊∘unite₊ (inj₁ ())
+uniti₊∘unite₊ (inj₂ y) = refl (inj₂ y)
+
+-- this is so easy, Agda can figure it out by itself (see below)
+unite₊∙uniti₊ : {A : Set} → unite₊ ○ uniti₊ ∼ id {A = A}
+unite₊∙uniti₊ = refl
+
+unite₊≃ : {A : Set} → (⊥ ⊎ A) ≃ A
+unite₊≃ = (unite₊ , mkisequiv uniti₊ refl uniti₊ uniti₊∘unite₊)
+
+uniti₊≃ : {A : Set} → A ≃ (⊥ ⊎ A)
+uniti₊≃ = uniti₊ , mkisequiv unite₊ uniti₊∘unite₊ unite₊ unite₊∙uniti₊
+
+-- unite⋆ and uniti⋆
+
+unite⋆ : {A : Set} → ⊤ × A → A
+unite⋆ (tt , x) = x
+
+uniti⋆ : {A : Set} → A → ⊤ × A
+uniti⋆ x = tt , x
+
+uniti⋆∘unite⋆ : {A : Set} → uniti⋆ ○ unite⋆ ∼ id {A = ⊤ × A}
+uniti⋆∘unite⋆ (tt , x) = refl (tt , x)
+
+unite⋆≃ : {A : Set} → (⊤ × A) ≃ A
+unite⋆≃ = unite⋆ , mkisequiv uniti⋆ refl uniti⋆ uniti⋆∘unite⋆
+
+uniti⋆≃ : {A : Set} → A ≃ (⊤ × A)
+uniti⋆≃ = uniti⋆ , mkisequiv unite⋆ uniti⋆∘unite⋆ unite⋆ refl
+
+-- swap⋆
+
+swap⋆ : {A B : Set} → A × B → B × A
+swap⋆ (a , b) = (b , a)
+
+swapswap⋆ : {A B : Set} → swap⋆ ○ swap⋆ ∼ id {A = A × B}
+swapswap⋆ (a , b) = refl (a , b) 
+
+swap⋆≃ : {A B : Set} → (A × B) ≃ (B × A)
+swap⋆≃ = swap⋆ , mkisequiv swap⋆ swapswap⋆ swap⋆ swapswap⋆
+
+-- assocl₊ and assocr₊
+
+assocl₊ : {A B C : Set} → (A ⊎ (B ⊎ C)) → ((A ⊎ B) ⊎ C)
+assocl₊ (inj₁ a) = inj₁ (inj₁ a)
+assocl₊ (inj₂ (inj₁ b)) = inj₁ (inj₂ b)
+assocl₊ (inj₂ (inj₂ c)) = inj₂ c
+
+assocr₊ : {A B C : Set} → ((A ⊎ B) ⊎ C) → (A ⊎ (B ⊎ C))
+assocr₊ (inj₁ (inj₁ a)) = inj₁ a
+assocr₊ (inj₁ (inj₂ b)) = inj₂ (inj₁ b)
+assocr₊ (inj₂ c) = inj₂ (inj₂ c)
+
+assocl₊∘assocr₊ : {A B C : Set} → assocl₊ ○ assocr₊ ∼ id {A = ((A ⊎ B) ⊎ C)}
+assocl₊∘assocr₊ (inj₁ (inj₁ a)) = refl (inj₁ (inj₁ a))
+assocl₊∘assocr₊ (inj₁ (inj₂ b)) = refl (inj₁ (inj₂ b))
+assocl₊∘assocr₊ (inj₂ c) = refl (inj₂ c)
+
+assocr₊∘assocl₊ : {A B C : Set} → assocr₊ ○ assocl₊ ∼ id {A = (A ⊎ (B ⊎ C))}
+assocr₊∘assocl₊ (inj₁ a) = refl (inj₁ a)
+assocr₊∘assocl₊ (inj₂ (inj₁ b)) = refl (inj₂ (inj₁ b))
+assocr₊∘assocl₊ (inj₂ (inj₂ c)) = refl (inj₂ (inj₂ c))
+
+assocl₊≃ : {A B C : Set} → (A ⊎ (B ⊎ C)) ≃ ((A ⊎ B) ⊎ C)
+assocl₊≃ = 
+  assocl₊ , mkisequiv assocr₊ assocl₊∘assocr₊ assocr₊ assocr₊∘assocl₊
+
+assocr₊≃ : {A B C : Set} → ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C))
+assocr₊≃ = 
+  assocr₊ , mkisequiv assocl₊ assocr₊∘assocl₊ assocl₊ assocl₊∘assocr₊
+
+-- assocl⋆ and assocr⋆
+
+assocl⋆ : {A B C : Set} → (A × (B × C)) → ((A × B) × C)
+assocl⋆ (a , (b , c)) = ((a , b) , c)
+
+assocr⋆ : {A B C : Set} → ((A × B) × C) → (A × (B × C))
+assocr⋆ ((a , b) , c) = (a , (b , c))
+
+assocl⋆∘assocr⋆ : {A B C : Set} → assocl⋆ ○ assocr⋆ ∼ id {A = ((A × B) × C)}
+assocl⋆∘assocr⋆ x = refl x
+
+assocr⋆∘assocl⋆ : {A B C : Set} → assocr⋆ ○ assocl⋆ ∼ id {A = (A × (B × C))}
+assocr⋆∘assocl⋆ x = refl x
+
+assocl⋆≃ : {A B C : Set} → (A × (B × C)) ≃ ((A × B) × C)
+assocl⋆≃ = 
+  assocl⋆ , mkisequiv assocr⋆ assocl⋆∘assocr⋆ assocr⋆ assocr⋆∘assocl⋆
+
+assocr⋆≃ : {A B C : Set} → ((A × B) × C) ≃ (A × (B × C))
+assocr⋆≃ = 
+  assocr⋆ , mkisequiv assocl⋆ assocr⋆∘assocl⋆ assocl⋆ assocl⋆∘assocr⋆
+
+-- distz and factorz
+
+distz : { A : Set} → (⊥ × A) → ⊥
+distz (() , _)
+
+factorz : {A : Set} → ⊥ → (⊥ × A)
+factorz ()
+ 
+distz∘factorz : {A : Set} → distz ○ factorz {A} ∼ id
+distz∘factorz ()
+
+factorz∘distz : {A : Set} → factorz {A} ○ distz ∼ id
+factorz∘distz (() , proj₂)
+
+distz≃ : {A : Set} → (⊥ × A) ≃ ⊥
+distz≃ {A} = 
+  distz , mkisequiv factorz (distz∘factorz {A}) factorz factorz∘distz
+
+factorz≃ : {A : Set} → ⊥ ≃ (⊥ × A)
+factorz≃ {A} = 
+  factorz , mkisequiv distz factorz∘distz distz (distz∘factorz {A})
+
+-- dist and factor
+
+dist : {A B C : Set} → ((A ⊎ B) × C) → (A × C) ⊎ (B × C)
+dist (inj₁ x , c) = inj₁ (x , c)
+dist (inj₂ y , c) = inj₂ (y , c)
+
+factor : {A B C : Set} → (A × C) ⊎ (B × C) → ((A ⊎ B) × C)
+factor (inj₁ (a , c)) = inj₁ a , c
+factor (inj₂ (b , c)) = inj₂ b , c
+
+dist∘factor : {A B C : Set} → dist {A} {B} {C} ○ factor ∼ id
+dist∘factor (inj₁ x) = refl (inj₁ x)
+dist∘factor (inj₂ y) = refl (inj₂ y)
+
+factor∘dist : {A B C : Set} → factor {A} {B} {C} ○ dist ∼ id
+factor∘dist (inj₁ x , c) = refl (inj₁ x , c)
+factor∘dist (inj₂ y , c) = refl (inj₂ y , c)
+
+dist≃ : {A B C : Set} → ((A ⊎ B) × C) ≃ ((A × C) ⊎ (B × C))
+dist≃ = dist , mkisequiv factor dist∘factor factor factor∘dist
+
+factor≃ : {A B C : Set} →  ((A × C) ⊎ (B × C)) ≃ ((A ⊎ B) × C)
+factor≃ = factor , (mkisequiv dist factor∘dist dist dist∘factor)
 
 ------------------------------------------------------------------------------
 -- Pi as a higher-order inductive type
@@ -330,197 +556,69 @@ module PI where
               PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) ≡ TIMES (PLUS b₁ b₂) b₃
     -- congruence is provable
 
-  recPI : {C : Set} → 
-    (czero : C) → 
-    (cone : C) → 
-    (cplus : C → C → C) → 
-    (ctimes : C → C → C) →
-    (cunite₊≡ : { b : C } → cplus czero b ≡ b) →
-    (cuniti₊≡ : { b : C } → b ≡ cplus czero b) →
-    (cswap₊≡ : { b₁ b₂ : C } → cplus b₁ b₂ ≡ cplus b₂ b₁) →
-    (cassocl₊≡ : { b₁ b₂ b₃ : C } → cplus b₁ (cplus b₂ b₃) ≡ cplus (cplus b₁ b₂) b₃) →
-    (cassocr₊≡ : { b₁ b₂ b₃ : C } → cplus (cplus b₁ b₂) b₃ ≡ cplus b₁ (cplus b₂ b₃)) →
-    (cunite⋆≡  : { b : C } → ctimes cone b ≡ b) →
-    (cuniti⋆≡  : { b : C } → b ≡ ctimes cone b) →
-    (cswap⋆≡   : { b₁ b₂ : C } → ctimes b₁ b₂ ≡ ctimes b₂ b₁) →
-    (cassocl⋆≡ : { b₁ b₂ b₃ : C } → 
-               ctimes b₁ (ctimes b₂ b₃) ≡ ctimes (ctimes b₁ b₂) b₃) →
-    (cassocr⋆≡ : { b₁ b₂ b₃ : C } → 
-               ctimes (ctimes b₁ b₂) b₃ ≡ ctimes b₁ (ctimes b₂ b₃)) →
-    (cdistz≡   : { b : C } → ctimes czero b ≡ czero) →
-    (cfactorz≡ : { b : C } → czero ≡ ctimes czero b) →
-    (cdist≡ : { b₁ b₂ b₃ : C } → 
-              ctimes (cplus b₁ b₂) b₃ ≡ cplus (ctimes b₁ b₃) (ctimes b₂ b₃)) →
-    (cfactor≡  : { b₁ b₂ b₃ : C } → 
-              cplus (ctimes b₁ b₃) (ctimes b₂ b₃) ≡ ctimes (cplus b₁ b₂) b₃) →
-    FT → C
-  recPI {C} czero cone cplus ctimes _ _ _ _ _ _ _ _ _ _ _ _ _ _ ZERO* = czero
-  recPI {C} czero cone cplus ctimes _ _ _ _ _ _ _ _ _ _ _ _ _ _ ONE* = cone
-  recPI {C} czero cone cplus ctimes 
-    cunite₊≡ cuniti₊≡ cswap₊≡ cassocl₊≡ cassocr₊≡
-    cunite⋆≡ cuniti⋆≡ cswap⋆≡ cassocl⋆≡ cassocr⋆≡
-    cdistz≡ cfactorz≡ cdist≡ cfactor≡ 
-    (PLUS* B₁ B₂) = 
-    cplus 
-      (recPI {C} czero cone cplus ctimes 
-         cunite₊≡ cuniti₊≡ cswap₊≡ cassocl₊≡ cassocr₊≡
-         cunite⋆≡ cuniti⋆≡ cswap⋆≡ cassocl⋆≡ cassocr⋆≡
-        cdistz≡ cfactorz≡ cdist≡ cfactor≡ B₁)
-      (recPI {C} czero cone cplus ctimes 
-         cunite₊≡ cuniti₊≡ cswap₊≡ cassocl₊≡ cassocr₊≡
-         cunite⋆≡ cuniti⋆≡ cswap⋆≡ cassocl⋆≡ cassocr⋆≡
-        cdistz≡ cfactorz≡ cdist≡ cfactor≡ B₂)
-  recPI {C} czero cone cplus ctimes 
-    cunite₊≡ cuniti₊≡ cswap₊≡ cassocl₊≡ cassocr₊≡
-    cunite⋆≡ cuniti⋆≡ cswap⋆≡ cassocl⋆≡ cassocr⋆≡
-    cdistz≡ cfactorz≡ cdist≡ cfactor≡ 
-    (TIMES* B₁ B₂) = 
-    ctimes 
-      (recPI {C} czero cone cplus ctimes 
-         cunite₊≡ cuniti₊≡ cswap₊≡ cassocl₊≡ cassocr₊≡
-         cunite⋆≡ cuniti⋆≡ cswap⋆≡ cassocl⋆≡ cassocr⋆≡
-        cdistz≡ cfactorz≡ cdist≡ cfactor≡ B₁)
-      (recPI {C} czero cone cplus ctimes 
-         cunite₊≡ cuniti₊≡ cswap₊≡ cassocl₊≡ cassocr₊≡
-         cunite⋆≡ cuniti⋆≡ cswap⋆≡ cassocl⋆≡ cassocr⋆≡
-        cdistz≡ cfactorz≡ cdist≡ cfactor≡ B₂)
+  record pi {ℓ : Level} {C : Set ℓ} : Set (lsuc ℓ) where
+    field
+      czero : C
+      cone : C
+      cplus : C → C → C
+      ctimes : C → C → C
+      cunite₊≡ : { b : C } → cplus czero b ≡ b
+      cuniti₊≡ : { b : C } → b ≡ cplus czero b
+      cswap₊≡ : { b₁ b₂ : C } → cplus b₁ b₂ ≡ cplus b₂ b₁
+      cassocl₊≡ : { b₁ b₂ b₃ : C } → 
+                  cplus b₁ (cplus b₂ b₃) ≡ cplus (cplus b₁ b₂) b₃
+      cassocr₊≡ : { b₁ b₂ b₃ : C } → 
+                  cplus (cplus b₁ b₂) b₃ ≡ cplus b₁ (cplus b₂ b₃)
+      cunite⋆≡  : { b : C } → ctimes cone b ≡ b
+      cuniti⋆≡  : { b : C } → b ≡ ctimes cone b
+      cswap⋆≡   : { b₁ b₂ : C } → ctimes b₁ b₂ ≡ ctimes b₂ b₁
+      cassocl⋆≡ : { b₁ b₂ b₃ : C } → 
+                  ctimes b₁ (ctimes b₂ b₃) ≡ ctimes (ctimes b₁ b₂) b₃
+      cassocr⋆≡ : { b₁ b₂ b₃ : C } → 
+                  ctimes (ctimes b₁ b₂) b₃ ≡ ctimes b₁ (ctimes b₂ b₃)
+      cdistz≡   : { b : C } → ctimes czero b ≡ czero
+      cfactorz≡ : { b : C } → czero ≡ ctimes czero b
+      cdist≡ : { b₁ b₂ b₃ : C } → 
+               ctimes (cplus b₁ b₂) b₃ ≡ cplus (ctimes b₁ b₃) (ctimes b₂ b₃)
+      cfactor≡  : { b₁ b₂ b₃ : C } → 
+                   cplus (ctimes b₁ b₃) (ctimes b₂ b₃) ≡ ctimes (cplus b₁ b₂) b₃
 
-{--
+  open pi
 
-  recS¹ cbase cloop base* = cbase
+  recPI : {ℓ : Level} {C : Set ℓ} → (pi {ℓ} {C}) → FT → C
+  recPI {ℓ} {C} pir ZERO* = czero pir
+  recPI {ℓ} {C} pir ONE* = cone pir
+  recPI {ℓ} {C} pir (PLUS* B₁ B₂) = 
+    cplus pir (recPI {ℓ} {C} pir B₁) (recPI {ℓ} {C} pir B₂)
+  recPI {ℓ} {C} pir (TIMES* B₁ B₂) = 
+    ctimes pir (recPI {ℓ} {C} pir B₁) (recPI {ℓ} {C} pir B₂)
 
   postulate
-    βrecS¹ : {C : Set} → (cbase : C) → (cloop : cbase ≡ cbase) → 
-      ap (recS¹ cbase cloop) loop ≡ cloop
- 
-  indS¹ : {C : S¹ → Set} → 
-    (cbase : C base) → (cloop : transport C loop cbase ≡ cbase) → 
-    (circle : S¹) → C circle
-  indS¹ cbase cloop base* = cbase
+    βreccunite₊≡ : {ℓ : Level} {C : Set ℓ} → (pir : pi {ℓ} {C}) → 
+      ap (recPI pir) unite₊≡ ≡ {!!} --cunite₊≡
+
+{--    βreccuniti₊≡ 
+    βreccswap₊≡ 
+    βreccassocl₊≡ 
+    βreccassocr₊≡
+    βreccunite⋆≡ 
+    βreccuniti⋆≡ 
+    βreccswap⋆≡ 
+    βreccassocl⋆≡ 
+    βreccassocr⋆≡
+    βreccdistz≡ 
+    βreccfactorz≡  
+    βreccdist≡ 
+    βreccfactor≡ 
 --}
 
 open PI public
 
-{--
-fcircle : S¹ → S¹'
-fcircle = recS¹ south (east ∘ ! west)
+------------------------------------------------------------------------------
+-- path2equiv
 
-floop : ap fcircle loop ≡ (east ∘ ! west)
-floop = βrecS¹ south (east ∘ ! west)
 
-gcircle : S¹' → S¹
-gcircle = recS¹' base base loop (refl base)
 
-geast : ap gcircle east ≡ loop
-geast = βreceastS¹' base base loop (refl base)
-
-gwest : ap gcircle west ≡ (refl base)
-gwest = βrecwestS¹' base base loop (refl base)
-
-gf : S¹ → S¹
-gf = gcircle ○ fcircle
-
-gfloop : ap gf loop ≡ loop
-gfloop = ap gf loop
-           ≡⟨ ! (apfComp fcircle gcircle loop) ⟩ 
-         ap gcircle (ap fcircle loop)
-           ≡⟨ ap (ap gcircle) floop ⟩
-         ap gcircle (east ∘ ! west)
-           ≡⟨ apfTrans gcircle east (! west) ⟩
-         ap gcircle east ∘ ap gcircle (! west) 
-           ≡⟨ ap (λ x → ap gcircle east ∘ x) (apfInv gcircle west) ⟩
-         ap gcircle east ∘ ! (ap gcircle west)
-           ≡⟨ ap (λ x → ap gcircle east ∘ ! x) gwest ⟩
-         ap gcircle east ∘ (refl base)
-           ≡⟨ ! (unitTransR (ap gcircle east)) ⟩ 
-         ap gcircle east
-           ≡⟨ geast ⟩ 
-         loop ∎
-
-αloop : transport (λ x → gf x ≡ x) loop (refl base) ≡ refl base
-αloop = transport (λ x → gf x ≡ x) loop (refl base) 
-          ≡⟨ transportId gf id loop (refl base) ⟩ -- Thm 2.11.3
-        ! (ap gf loop) ∘ refl base ∘ ap id loop
-          ≡⟨ ap (λ x → ! (ap gf loop) ∘ refl base ∘ x) (apfId loop) ⟩
-        ! (ap gf loop) ∘ refl base ∘ loop
-          ≡⟨ ap (λ x → ! (ap gf loop) ∘ x) (! (unitTransL loop)) ⟩ 
-        ! (ap gf loop) ∘ loop
-          ≡⟨ ap (λ x → ! x ∘ loop) gfloop ⟩ 
-        ! loop ∘ loop
-          ≡⟨ invTransL loop ⟩ 
-        refl base ∎
-
-βcircle : gf ∼ id
-βcircle = 
-  indS¹ {λ x → gf x ≡ x}
-    (refl base)  
-    αloop
-
-fg : S¹' → S¹'
-fg = fcircle ○ gcircle
-
-fgeast : ap fg east ≡ east ∘ ! west
-fgeast = ap fg east 
-           ≡⟨ ! (apfComp gcircle fcircle east) ⟩
-         ap fcircle (ap gcircle east)
-           ≡⟨ ap (ap fcircle) geast ⟩
-         ap fcircle loop
-           ≡⟨ floop ⟩
-         (east ∘ ! west) ∎
-
-fgwest : ap fg west ≡ refl south
-fgwest = ap fg west
-           ≡⟨ ! (apfComp gcircle fcircle west) ⟩ 
-         ap fcircle (ap gcircle west) 
-           ≡⟨ ap (ap fcircle) gwest ⟩
-         ap fcircle (refl base)
-           ≡⟨ bydef ⟩
-         refl south ∎
-
-αeast : transport (λ x → fg x ≡ x) east (refl south) ≡ west
-αeast = transport (λ x → fg x ≡ x) east (refl south) 
-          ≡⟨ transportId fg id east (refl south) ⟩ -- Thm 2.11.3
-        ! (ap fg east) ∘ refl south ∘ ap id east
-          ≡⟨ ap (λ x → ! (ap fg east) ∘ refl south ∘ x) (apfId east) ⟩
-        ! (ap fg east) ∘ refl south ∘ east
-           ≡⟨ ap (λ x → ! (ap fg east) ∘ x) (! (unitTransL east)) ⟩
-        ! (ap fg east) ∘ east
-           ≡⟨ ap (λ x → ! x ∘ east) fgeast ⟩
-        ! (east ∘ ! west) ∘ east
-          ≡⟨ ap (λ x → x ∘ east) (invComp east (! west)) ⟩
-        (! (! west) ∘ ! east) ∘ east
-          ≡⟨ ! (assocP (! (! west)) (! east) east) ⟩ 
-        ! (! west) ∘ ! east ∘ east
-          ≡⟨ ap (λ x → ! (! west) ∘ x) (invTransL east) ⟩
-        ! (! west) ∘ refl north
-          ≡⟨ ! (unitTransR (! (! west)))  ⟩
-        ! (! west)
-          ≡⟨ invId west ⟩
-        west ∎
-
-αwest : transport (λ x → fg x ≡ x) west (refl south) ≡ west
-αwest = transport (λ x → fg x ≡ x) west (refl south) 
-          ≡⟨ transportId fg id west (refl south) ⟩ -- Thm 2.11.3
-        ! (ap fg west) ∘ refl south ∘ ap id west
-          ≡⟨ ap (λ x → ! (ap fg west) ∘ refl south ∘ x) (apfId west) ⟩
-        ! (ap fg west) ∘ refl south ∘ west
-           ≡⟨ ap (λ x → ! (ap fg west) ∘ x) (! (unitTransL west)) ⟩
-        ! (ap fg west) ∘ west
-           ≡⟨ ap (λ x → ! x ∘ west) fgwest ⟩
-        ! (refl south) ∘ west
-          ≡⟨ ! (unitTransL west) ⟩
-        west ∎
-
-αcircle : fg ∼ id
-αcircle = 
-  indS¹' {λ x → fg x ≡ x}
-    (refl south) west
-    αeast
-    αwest
-
-sequiv : S¹ ≃ S¹'
-sequiv = (fcircle , equiv₁ (mkqinv gcircle αcircle βcircle))
---}
 ------------------------------------------------------------------------------
 -- Sec. 2.10: Universes; univalence
 
@@ -528,7 +626,7 @@ idtoeqv : {A B : Set} → (A ≡ B) → (A ≃ B)
 idtoeqv {A} {B} p = 
   pathInd 
     (λ {A} {B} p → A ≃ B)
-    (λ A → idequiv)
+    (λ A → id≃)
     {A} {B} p
 
 postulate 
