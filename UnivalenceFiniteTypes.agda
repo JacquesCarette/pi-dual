@@ -440,32 +440,6 @@ path2equiv (p ⊗ q)  = path× (path2equiv p) (path2equiv q)
 
 -- Reverse direction
 
-witness : (B : FT) → Maybe ⟦ B ⟧
-witness ZERO = nothing
-witness ONE = just tt
-witness (PLUS B₁ B₂) with witness B₁ | witness B₂ 
-... | nothing | nothing = nothing
-... | nothing | just b  = just (inj₂ b)
-... | just b  | _ = just (inj₁ b) 
-witness (TIMES B₁ B₂) with witness B₁ | witness B₂ 
-... | nothing | _ = nothing
-... | just b  | nothing = nothing
-... | just b₁ | just b₂ = just (b₁ , b₂)
-
-elems : (B : FT) → List ⟦ B ⟧
-elems ZERO          = []
-elems ONE           = [ tt ]
-elems (PLUS B₁ B₂)  = map inj₁ (elems B₁) ++ map inj₂ (elems B₂) 
-elems (TIMES B₁ B₂) = concatMap 
-                        (λ e₁ → map (λ e₂ → (e₁ , e₂)) (elems B₂)) 
-                        (elems B₁)
-      
-expandF : {B₁ B₂ : FT} → (⟦ B₁ ⟧ → ⟦ B₂ ⟧) → List (⟦ B₁ ⟧ × ⟦ B₂ ⟧)
-expandF {B₁} {B₂} f = map (λ e → (e , f e)) (elems B₁)
-
-test0 : List ((⊤ × BOOL-FT) × BOOL-FT)
-test0 = expandF (unite⋆ {BOOL-FT})
-
 toℕ : FT → ℕ
 toℕ ZERO = zero
 toℕ ONE = suc zero
@@ -509,6 +483,24 @@ normalizeC {B} = path2equiv (sym⇛ (normal B))
 
 mapNorm :  {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → ⟦ normalize B₁ ⟧ ≃ ⟦ normalize B₂ ⟧
 mapNorm {B₁} {B₂} eq = trans≃ (trans≃ (normalizeC {B₁}) eq) (sym≃ (normalizeC {B₂}))
+
+exf : ⊤ ⊎ ℕ → ⊤ ⊎ ℕ
+exf (inj₁ tt) = inj₂ 0
+exf (inj₂ n) = exf (inj₂ (suc n))
+
+exg : ⊤ ⊎ ℕ → ⊤ ⊎ ℕ
+exg (inj₁ tt) = exg (inj₁ tt)
+exg (inj₂ 0) = inj₁ tt
+exg (inj₂ (suc n)) = exg (inj₂ n)
+
+exα : exf ○ exg ∼ id
+exα x = exα x
+
+exβ : exg ○ exf ∼ id
+exβ x = exβ x
+
+ex : (⊤ ⊎ ℕ) ≃ (⊤ ⊎ ℕ)
+ex = (exf , equiv₁ (mkqinv exg exα exβ))
 
 sub1 : {A B : Set} → ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A → B
 sub1 (f , mkisequiv g α h β) a with f (inj₂ a)
@@ -570,7 +562,7 @@ bridge eq =
 equiv2path : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (B₁ ⇛ B₂)
 -- not sure why typechecking this fails to terminate for me
 -- equiv2path {B₁} {B₂} eq = ((normal B₁) ◎ bridge eq) ◎ (sym⇛ (normal B₂))
-equiv2path {B₁} {B₂} eq = ?
+equiv2path {B₁} {B₂} eq = {!!}
 
 -- univalence
 
@@ -605,3 +597,34 @@ univalence =
   (path2equiv , equiv₁ (mkqinv equiv2path univalence₁ univalence₂))
 
 ------------------------------------------------------------------------------
+
+{--
+
+Not used
+witness : (B : FT) → Maybe ⟦ B ⟧
+witness ZERO = nothing
+witness ONE = just tt
+witness (PLUS B₁ B₂) with witness B₁ | witness B₂ 
+... | nothing | nothing = nothing
+... | nothing | just b  = just (inj₂ b)
+... | just b  | _ = just (inj₁ b) 
+witness (TIMES B₁ B₂) with witness B₁ | witness B₂ 
+... | nothing | _ = nothing
+... | just b  | nothing = nothing
+... | just b₁ | just b₂ = just (b₁ , b₂)
+
+elems : (B : FT) → List ⟦ B ⟧
+elems ZERO          = []
+elems ONE           = [ tt ]
+elems (PLUS B₁ B₂)  = map inj₁ (elems B₁) ++ map inj₂ (elems B₂) 
+elems (TIMES B₁ B₂) = concatMap 
+                        (λ e₁ → map (λ e₂ → (e₁ , e₂)) (elems B₂)) 
+                        (elems B₁)
+      
+expandF : {B₁ B₂ : FT} → (⟦ B₁ ⟧ → ⟦ B₂ ⟧) → List (⟦ B₁ ⟧ × ⟦ B₂ ⟧)
+expandF {B₁} {B₂} f = map (λ e → (e , f e)) (elems B₁)
+
+test0 : List ((⊤ × BOOL-FT) × BOOL-FT)
+test0 = expandF (unite⋆ {BOOL-FT})
+
+--}
