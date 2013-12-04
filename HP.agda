@@ -156,11 +156,11 @@ _∎ x = refl x
 
 ap : ∀ {ℓ ℓ'} → {A : Set ℓ} {B : Set ℓ'} {x y : A} → 
      (f : A → B) → (x ≡ y) → (f x ≡ f y)
-ap {ℓ} {ℓ'} {A} {B} {x} {y} f p = 
+ap f p = 
   pathInd 
-    (λ {x} {y} p → f x ≡ f y) 
+    (λ {x} {y} _ → f x ≡ f y) 
     (λ x → refl (f x))
-    {x} {y} p
+    p
 
 ap2 : ∀ {ℓ ℓ' ℓ''} → {A : Set ℓ} {B : Set ℓ'} {C : Set ℓ''} 
      {x₁ y₁ : A} {x₂ y₂ : B} → 
@@ -197,11 +197,11 @@ apfTrans {u} {A} {B} {x} {y} {z} f p q =
 
 apfInv : ∀ {u} → {A B : Set u} {x y : A} → (f : A → B) → (p : x ≡ y) → 
          ap f (! p) ≡ ! (ap f p) 
-apfInv {u} {A} {B} {x} {y} f p =
-  pathInd {u}
-    (λ {x} {y} p → ap f (! p) ≡ ! (ap f p))
+apfInv f p =
+  pathInd
+    (λ p → ap f (! p) ≡ ! (ap f p))
     (λ x → refl (ap f (refl x)))
-    {x} {y} p
+    p
 
 -- g (f p) ≡ (g ○ f) p
 
@@ -228,9 +228,9 @@ apfId {A} {x} {y} p =
 
 transport : ∀ {ℓ ℓ'} → {A : Set ℓ} {x y : A} → 
   (P : A → Set ℓ') → (p : x ≡ y) → P x → P y
-transport {ℓ} {ℓ'} {A} {x} {y} P p = 
+transport {x = x} {y} P p = 
   pathInd 
-    (λ {x} {y} p → (P x → P y))
+    (λ {x'} {y'} _ → (P x' → P y'))
     (λ _ → id)
     {x} {y} p
 
@@ -595,7 +595,7 @@ module PI where
 
   postulate
     βreccunite₊≡ : {ℓ : Level} {C : Set ℓ} → (pir : pi {ℓ} {C}) → 
-      ap (recPI pir) unite₊≡ ≡ {!!} --cunite₊≡
+      ∀ {b} → ap {y = PLUS ONE b} (recPI pir) unite₊≡ ≡ cunite₊≡ pir  --cunite₊≡
 
 {--    βreccuniti₊≡ 
     βreccswap₊≡ 
@@ -625,8 +625,8 @@ open PI public
 idtoeqv : {A B : Set} → (A ≡ B) → (A ≃ B)
 idtoeqv {A} {B} p = 
   pathInd 
-    (λ {A} {B} p → A ≃ B)
-    (λ A → id≃)
+    (λ {A'} {B'} _ → A' ≃ B')
+    (λ _ → id≃)
     {A} {B} p
 
 postulate 
