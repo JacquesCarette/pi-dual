@@ -206,6 +206,15 @@ trans≃ (f , feq) (g , geq) with equiv₂ feq | equiv₂ geq
                              ≡⟨ fβ a ⟩
                            a ∎)))
 
+
+-- equivalences are injective
+
+_⋆_ : {A B : Set} → (A ≃ B) → (x : A) → B
+(f , _) ⋆ x = f x 
+
+inj≃ : {A B : Set} → (eq : A ≃ B) → (x y : A) → (eq ⋆ x ≡ eq ⋆ y → x ≡ y)
+inj≃ (f , mkisequiv g α h β) x y p = ! (β x) ∘ (ap h p ∘ β y)
+        
 -- Abbreviations for equivalence compositions
 
 _≃⟨_⟩_ : (A : Set) {B C : Set} → (A ≃ B) → (B ≃ C) → (A ≃ C) 
@@ -484,30 +493,28 @@ normalizeC {B} = path2equiv (sym⇛ (normal B))
 mapNorm :  {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → ⟦ normalize B₁ ⟧ ≃ ⟦ normalize B₂ ⟧
 mapNorm {B₁} {B₂} eq = trans≃ (trans≃ (normalizeC {B₁}) eq) (sym≃ (normalizeC {B₂}))
 
-exf : ⊤ ⊎ ℕ → ⊤ ⊎ ℕ
-exf (inj₁ tt) = inj₂ 0
-exf (inj₂ n) = exf (inj₂ (suc n))
+sub1 : {A B : Set} → ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A → B
+sub1 (f , mkisequiv g α h β) a with f (inj₁ tt) | f (inj₂ a) | g (inj₁ tt)
+... | inj₁ tt | inj₁ tt | inj₁ tt = {!!} 
+... | inj₁ tt | inj₁ tt | inj₂ a' = {!!} 
+... | inj₁ tt | inj₂ b | inj₁ tt = {!!} 
+... | inj₁ tt | inj₂ b | inj₂ a' = {!!} 
+... | inj₂ b | inj₁ tt | inj₁ tt = {!!} 
+... | inj₂ b | inj₁ tt | inj₂ a' = {!!} 
+... | inj₂ b₁ | inj₂ b₂ | inj₁ tt = {!!} 
+... | inj₂ b₁ | inj₂ b₂ | inj₂ a' = {!!} 
 
-exg : ⊤ ⊎ ℕ → ⊤ ⊎ ℕ
-exg (inj₁ tt) = exg (inj₁ tt)
-exg (inj₂ 0) = inj₁ tt
-exg (inj₂ (suc n)) = exg (inj₂ n)
 
-exα : exf ○ exg ∼ id
-exα x = exα x
-
-exβ : exg ○ exf ∼ id
-exβ x = exβ x
-
-ex : (⊤ ⊎ ℕ) ≃ (⊤ ⊎ ℕ)
-ex = (exf , equiv₁ (mkqinv exg exα exβ))
-
+{--
 sub1 : {A B : Set} → ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A → B
 sub1 (f , mkisequiv g α h β) a with f (inj₂ a)
 ... | inj₂ b = b
 sub1 (f , mkisequiv g α h β) a | inj₁ tt with f (inj₁ tt)
-sub1 (f , mkisequiv g α h β) a | inj₁ tt | inj₁ tt = {!!} -- impossible, but how to convince agda?
+sub1 (f , mkisequiv g α h β) a | inj₁ tt | inj₁ tt with g (inj₁ tt) 
+... | inj₁ tt = {!!} 
+... | inj₂ a' = {!!} 
 sub1 (f , mkisequiv g α h β) a | inj₁ tt | inj₂ b  = b
+--}
 
 sub1congr : {A B : Set} → (eq : (⊤ ⊎ A) ≃ (⊤ ⊎ B)) → (((sub1 eq) ○ (sub1 (sym≃ eq))) ∼ id)
 sub1congr (f , mkisequiv g α h β) = {!!}
@@ -626,5 +633,58 @@ expandF {B₁} {B₂} f = map (λ e → (e , f e)) (elems B₁)
 
 test0 : List ((⊤ × BOOL-FT) × BOOL-FT)
 test0 = expandF (unite⋆ {BOOL-FT})
+
+exf : ⊤ ⊎ ℕ → ℕ
+exf (inj₁ tt) = 0 
+exf (inj₂ n) = suc n
+
+exg : ℕ → ⊤ ⊎ ℕ
+exg 0 = inj₁ tt
+exg (suc n) = inj₂ n
+
+exα : exf ○ exg ∼ id
+exα 0 = refl 0
+exα (suc n) = refl (suc n)
+
+exβ : exg ○ exf ∼ id
+exβ (inj₁ tt) = refl (inj₁ tt)
+exβ (inj₂ n) = refl (inj₂ n) 
+
+ex : (⊤ ⊎ ℕ) ≃ ℕ
+ex = (exf , equiv₁ (mkqinv exg exα exβ))
+
+exf2 : (⊤ ⊎ (⊤ ⊎ ℕ)) → (⊤ ⊎ ℕ)
+exf2 (inj₁ tt) = inj₂ 0
+exf2 (inj₂ (inj₁ tt)) = inj₂ 1
+exf2 (inj₂ (inj₂ 0)) = inj₁ tt
+exf2 (inj₂ (inj₂ (suc n))) = inj₂ (suc (suc n))
+
+exg2 : (⊤ ⊎ ℕ) → (⊤ ⊎ (⊤ ⊎ ℕ))
+exg2 (inj₁ tt) = inj₂ (inj₂ 0)
+exg2 (inj₂ 0) = inj₁ tt
+exg2 (inj₂ 1) = inj₂ (inj₁ tt)
+exg2 (inj₂ (suc (suc n))) = inj₂ (inj₂ (suc n))
+
+exα2 : exf2 ○ exg2 ∼ id
+exα2 (inj₁ tt) = refl (inj₁ tt)
+exα2 (inj₂ 0) = refl (inj₂ 0) 
+exα2 (inj₂ 1) = refl (inj₂ 1) 
+exα2 (inj₂ (suc (suc n))) = refl (inj₂ (suc (suc n))) 
+
+exβ2 : exg2 ○ exf2 ∼ id
+exβ2 (inj₁ tt) = refl (inj₁ tt) 
+exβ2 (inj₂ (inj₁ tt)) = refl (inj₂ (inj₁ tt)) 
+exβ2 (inj₂ (inj₂ 0)) = refl (inj₂ (inj₂ 0)) 
+exβ2 (inj₂ (inj₂ (suc n))) = refl (inj₂ (inj₂ (suc n))) 
+
+ex2 : (⊤ ⊎ (⊤ ⊎ ℕ)) ≃ (⊤ ⊎ ℕ)
+ex2 = (exf2 , equiv₁ (mkqinv exg2 exα2 exβ2)) 
+
+s1 : {A B : Set} → ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A ≃ B
+s1 (f , mkisequiv g α h β) with f (inj₁ tt) | g (inj₁ tt) 
+... | inj₁ tt | inj₁ tt = {!!} 
+... | inj₁ tt | inj₂ x = {!!} 
+... | inj₂ x | inj₁ tt = {!!} 
+... | inj₂ x | inj₂ y = {!!} 
 
 --}
