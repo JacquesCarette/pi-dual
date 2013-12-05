@@ -654,7 +654,9 @@ sub1 (f , mkisequiv g α h β) a with f (inj₂ a) | inspect f (inj₂ a)
 ... | inj₂ b | _ = b
 ... | inj₁ tt | ⟪ eqa ⟫ with f (inj₁ tt) | inspect f (inj₁ tt)
 ...     | inj₁ tt | ⟪ eq ⟫ with inj≃ (f , mkisequiv g α h β) (inj₂ a) (inj₁ tt) (eqa ∘ (! eq))
-...         | eqc = {!!} -- impossible, but how to convince agda?
+...         | eqc with inj₁₂path tt a 
+...            | (p , _) with p (! eqc) 
+...               | ()
 sub1 (f , mkisequiv g α h β) a | inj₁ tt | ⟪ eqa ⟫ | inj₂ b | _ = b
 
 sub1congr : {A B : Set} → (eq : (⊤ ⊎ A) ≃ (⊤ ⊎ B)) → (((sub1 eq) ○ (sub1 (sym≃ eq))) ∼ id)
