@@ -1,11 +1,11 @@
 {-# OPTIONS --without-K #-}
-{-# OPTIONS --no-termination-check #-}
 
 module UnivalenceFiniteTypes where
 
 open import Agda.Prim
 open import Data.Empty
 open import Data.Unit
+open import Data.Unit.Core
 open import Data.Maybe hiding (map) 
 open import Data.Nat renaming (_⊔_ to _⊔ℕ_)
 open import Data.Sum renaming (map to _⊎→_)
@@ -222,7 +222,7 @@ _ ≃⟨ p ⟩ q = trans≃ p q
 
 _∎≃ : {ℓ : Level} {A : Set ℓ} → A ≃ A
 _∎≃ {ℓ} {A} = id≃ {ℓ} {A}
-
+ 
 ------------------------------------------------------------------------------
 -- Univalence
 
@@ -493,28 +493,27 @@ normalizeC {B} = path2equiv (sym⇛ (normal B))
 mapNorm :  {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → ⟦ normalize B₁ ⟧ ≃ ⟦ normalize B₂ ⟧
 mapNorm {B₁} {B₂} eq = trans≃ (trans≃ (normalizeC {B₁}) eq) (sym≃ (normalizeC {B₂}))
 
-sub1 : {A B : Set} → ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A → B
-sub1 (f , mkisequiv g α h β) a with f (inj₁ tt) | f (inj₂ a) | g (inj₁ tt)
-... | inj₁ tt | inj₁ tt | inj₁ tt = {!!} 
-... | inj₁ tt | inj₁ tt | inj₂ a' = {!!} 
-... | inj₁ tt | inj₂ b | inj₁ tt = {!!} 
-... | inj₁ tt | inj₂ b | inj₂ a' = {!!} 
-... | inj₂ b | inj₁ tt | inj₁ tt = {!!} 
-... | inj₂ b | inj₁ tt | inj₂ a' = {!!} 
-... | inj₂ b₁ | inj₂ b₂ | inj₁ tt = {!!} 
-... | inj₂ b₁ | inj₂ b₂ | inj₂ a' = {!!} 
+------------------------------------------------------------------------
+-- Inspect on steroids (borrowed from standard library)
 
+-- Inspect on steroids can be used when you want to pattern match on
+-- the result r of some expression e, and you also need to "remember"
+-- that r ≡ e.
 
-{--
+data Reveal_is_ {a} {A : Set a} (x : Hidden A) (y : A) : Set a where
+  ⟪_⟫ : (eq : reveal x ≡ y) → Reveal x is y
+
+inspect : ∀ {a b} {A : Set a} {B : A → Set b}
+          (f : (x : A) → B x) (x : A) → Reveal (hide f x) is (f x)
+inspect f x = ⟪ refl (f x) ⟫
+
 sub1 : {A B : Set} → ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A → B
-sub1 (f , mkisequiv g α h β) a with f (inj₂ a)
-... | inj₂ b = b
-sub1 (f , mkisequiv g α h β) a | inj₁ tt with f (inj₁ tt)
-sub1 (f , mkisequiv g α h β) a | inj₁ tt | inj₁ tt with g (inj₁ tt) 
-... | inj₁ tt = {!!} 
-... | inj₂ a' = {!!} 
-sub1 (f , mkisequiv g α h β) a | inj₁ tt | inj₂ b  = b
---}
+sub1 (f , mkisequiv g α h β) a with f (inj₂ a) | inspect f (inj₂ a)
+... | inj₂ b | _ = b
+... | inj₁ tt | ⟪ eqa ⟫ with f (inj₁ tt) | inspect f (inj₁ tt)
+...     | inj₁ tt | ⟪ eq ⟫ with inj≃ (f , mkisequiv g α h β) (inj₂ a) (inj₁ tt) (eqa ∘ (! eq))
+...         | eqc = {!!} -- impossible, but how to convince agda?
+sub1 (f , mkisequiv g α h β) a | inj₁ tt | ⟪ eqa ⟫ | inj₂ b | _ = b
 
 sub1congr : {A B : Set} → (eq : (⊤ ⊎ A) ≃ (⊤ ⊎ B)) → (((sub1 eq) ○ (sub1 (sym≃ eq))) ∼ id)
 sub1congr (f , mkisequiv g α h β) = {!!}
