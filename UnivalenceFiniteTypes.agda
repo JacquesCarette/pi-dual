@@ -350,8 +350,12 @@ codeqinv {A} {B} {a₀} {x} = record {
 thm2-12-5 : {A B : Set} → (a₀ : A) → (x : A ⊎ B) → (inj₁ a₀ ≡ x) ≃ code a₀ x
 thm2-12-5 {A} {B} a₀ x = (encode a₀ x , equiv₁ codeqinv)
 
---encode a0 x : inj1 a0 == x -> code a0 x
---decode a0 x : code a0 x -> inj1 a0 == x
+inj₁₁path : {A B : Set} → (a₁ a₂ : A) → 
+          (inj₁ {A = A} {B = B} a₁ ≡ inj₁ a₂) ≃ (a₁ ≡ a₂)
+inj₁₁path a₁ a₂ = thm2-12-5 a₁ (inj₁ a₂)
+
+inj₁₂path : {A B : Set} → (a : A) (b : B) → (inj₁ a ≡ inj₂ b) ≃ ⊥
+inj₁₂path a b = thm2-12-5 a (inj₂ b)
 
 -- Abbreviations for equivalence compositions
 
