@@ -516,10 +516,10 @@ sub1 (f , mkisequiv g α h β) a with f (inj₂ a) | inspect f (inj₂ a)
 sub1 (f , mkisequiv g α h β) a | inj₁ tt | ⟪ eqa ⟫ | inj₂ b | _ = b
 
 sub1congr : {A B : Set} → (eq : (⊤ ⊎ A) ≃ (⊤ ⊎ B)) → (((sub1 eq) ○ (sub1 (sym≃ eq))) ∼ id)
-sub1congr (f , mkisequiv g α h β) = {!!}
+sub1congr (f , mkisequiv g α h β) b = {!!}
 
 sub1congl : {A B : Set} → (eq : (⊤ ⊎ A) ≃ (⊤ ⊎ B)) → ((sub1 (sym≃ eq)) ○ (sub1 eq) ∼ id)
-sub1congl (f , mkisequiv g α h β) = {!!}
+sub1congl (f , mkisequiv g α h β) a = {!!}
 
 lemma⊤⊎ : {B₁ B₂ : FT} → ⟦ PLUS ONE B₁ ⟧ ≃ ⟦ PLUS ONE B₂ ⟧ → ⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧
 lemma⊤⊎ eq with eq
@@ -536,12 +536,7 @@ lemma⊤⊎ eq with eq
 lemmaℕ⊤⊎ : {n₁ n₂ : ℕ} → ⟦ suc n₁ ⟧ℕ ≃ ⟦ suc n₂ ⟧ℕ → ⟦ n₁ ⟧ℕ ≃ ⟦ n₂ ⟧ℕ
 lemmaℕ⊤⊎ eq with eq
 ... | (f , mkisequiv g α h β) = sub1 eq , mkisequiv (sub1 (sym≃ eq)) (sub1congr eq) (sub1 (sym≃ eq)) (sub1congl eq)
-{--
-lemmaℕ⊤⊎ {zero} {zero} eq = id≃
-lemmaℕ⊤⊎ {zero} {suc n₂} eq = {!!}
-lemmaℕ⊤⊎ {suc n₁} {zero} eq = {!!}
-lemmaℕ⊤⊎ {suc n₁} {suc n₂} eq = {!!}
---}
+
 liftℕ : (n₁ n₂ : ℕ) → ⟦ n₁ ⟧ℕ ≃ ⟦ n₂ ⟧ℕ → (fromℕ n₁) ≡ (fromℕ n₂)
 liftℕ zero zero eq = refl ZERO
 liftℕ zero (suc n₂) (_ , mkisequiv g α h β) with h (inj₁ tt)
