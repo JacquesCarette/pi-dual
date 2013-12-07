@@ -814,6 +814,48 @@ module PI where
 open PI public
 
 ------------------------------------------------------------------------------
--- path2equiv
+-- Semantics
+
+⟦_⟧ : FT → Set
+⟦ b ⟧ = recPI (record {
+          czero = ⊥ ; 
+          cone = ⊤ ; 
+          cplus = _⊎_ ; 
+          ctimes = _×_ ;
+          cunite₊≡ = {!!} ;
+          cuniti₊≡ = {!!} ;
+          cswap₊≡ = {!!} ;
+          cassocl₊≡ = {!!} ;
+          cassocr₊≡ = {!!} ;
+          cunite⋆≡ = {!!} ;
+          cuniti⋆≡ = {!!} ;
+          cswap⋆≡ = {!!} ;
+          cassocl⋆≡ = {!!} ;
+          cassocr⋆≡ = {!!} ;
+          cdistz≡ = {!!} ;
+          cfactorz≡ = {!!} ;
+          cdist≡ = {!!} ;
+          cfactor≡ = {!!} 
+        }) b
+
+{--
+?0 : {c : Set} → (⊥ ⊎ c) ≡ c
+?1 : {c : Set} → c ≡ (⊥ ⊎ c)
+?2 : {c₁ c₂ : Set} → (c₁ ⊎ c₂) ≡ (c₂ ⊎ c₁)
+?3 : {c₁ c₂ c₃ : Set} → (c₁ ⊎ c₂ ⊎ c₃) ≡ ((c₁ ⊎ c₂) ⊎ c₃)
+?4 : {c₁ c₂ c₃ : Set} → ((c₁ ⊎ c₂) ⊎ c₃) ≡ (c₁ ⊎ c₂ ⊎ c₃)
+?5 : {c : Set} → (⊤ × c) ≡ c
+?6 : {c : Set} → c ≡ (⊤ × c)
+?7 : {c₁ c₂ : Set} → (c₁ × c₂) ≡ (c₂ × c₁)
+?8 : {c₁ c₂ c₃ : Set} → (c₁ × c₂ × c₃) ≡ ((c₁ × c₂) × c₃)
+?9 : {c₁ c₂ c₃ : Set} → ((c₁ × c₂) × c₃) ≡ (c₁ × c₂ × c₃)
+?10 : {c : Set} → (⊥ × c) ≡ ⊥
+?11 : {c : Set} → ⊥ ≡ (⊥ × c)
+?12 : {c₁ c₂ c₃ : Set} → ((c₁ ⊎ c₂) × c₃) ≡ (c₁ × c₃ ⊎ c₂ × c₃)
+?13 : {c₁ c₂ c₃ : Set} → (c₁ × c₃ ⊎ c₂ × c₃) ≡ ((c₁ ⊎ c₂) × c₃)
+
+path2equiv : {B₁ B₂ : FT} → (B₁ ⇛ B₂) → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧)
+equiv2path : {b₁ b₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (B₁ ⇛ B₂)
+--}
 
 ------------------------------------------------------------------------------
