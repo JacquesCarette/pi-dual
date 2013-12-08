@@ -664,14 +664,7 @@ sub1 {A} {B} (f , mkisequiv g α h β) with f (inj₁ tt) | inspect f (inj₁ tt
          k eq a | inj₁ tt | ⟪ eq₂ ⟫ | ()
 -}
 sub2 : {A B : Set} →  ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A ≃ B
-sub2 {A} {B} eq with f ⊤₁ | inspect f ⊤₁ | g ⊤₂ | inspect g ⊤₂
-  where f = proj₁ eq
-        module EQ = isequiv (proj₂ eq)
-        g = EQ.g
-        ⊤₁ : ⊤ ⊎ A
-        ⊤₁ = inj₁ tt
-        ⊤₂ : ⊤ ⊎ B
-        ⊤₂ = inj₁ tt
+sub2 {A} {B}  (f₁ , mkisequiv g₁ α₁ h₁ β₁) with f₁ (inj₁ tt) | inspect f₁ (inj₁ tt) | g₁ (inj₁ tt) | inspect g₁ (inj₁ tt)
 sub2 {A} {B} (f₁ , mkisequiv g₁ α₁ h₁ β₁) | inj₁ tt | ⟪ eq₁ ⟫ | inj₁ tt | ⟪ eq₂ ⟫ = f , equiv₁ (mkqinv g α β)
   where 
         f : A → B
