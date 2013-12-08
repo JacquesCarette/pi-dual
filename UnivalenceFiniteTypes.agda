@@ -1,7 +1,7 @@
 
 module UnivalenceFiniteTypes where
 
-open import Agda.Prim
+open import Level
 open import Data.Empty
 open import Data.Unit
 open import Data.Unit.Core
