@@ -1,4 +1,3 @@
-{-# OPTIONS --without-K #-}
 
 module UnivalenceFiniteTypes where
 
@@ -649,25 +648,69 @@ inspect : ∀ {a b} {A : Set a} {B : A → Set b}
           (f : (x : A) → B x) (x : A) → Reveal (hide f x) is (f x)
 inspect f x = ⟪ refl (f x) ⟫
 
+{-
 sub1 : {A B : Set} → ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A → B
-sub1 (f , mkisequiv g α h β) a with f (inj₂ a) | inspect f (inj₂ a)
-... | inj₂ b | _ = b
-... | inj₁ tt | ⟪ eqa ⟫ with f (inj₁ tt) | inspect f (inj₁ tt)
-...     | inj₁ tt | ⟪ eq ⟫ with inj≃ (f , mkisequiv g α h β) (inj₂ a) (inj₁ tt) (eqa ∘ (! eq))
-...         | eqc with inj₁₂path tt a 
-...            | (p , _) with p (! eqc) 
-...               | ()
-sub1 (f , mkisequiv g α h β) a | inj₁ tt | ⟪ eqa ⟫ | inj₂ b | _ = b
+sub1 {A} {B} (f , mkisequiv g α h β) with f (inj₁ tt) | inspect f (inj₁ tt)
+... | inj₂ b  | _      = 
+       λ a → case f (inj₂ a) of λ
+              { (inj₁ tt) -> b
+              ; (inj₂ b') -> b' }
+... | inj₁ tt | ⟪ eq₁ ⟫ = k eq₁
+  where  k : f (inj₁ tt) ≡ inj₁ tt → A → B 
+         k eq a with f (inj₂ a) | inspect f (inj₂ a)
+         k eq a | inj₂ b  | _      = b
+         k eq a | inj₁ tt | ⟪ eq₂ ⟫ with (proj₁ (inj₁₂path tt a)) (! inject)
+            where inject = inj≃ (f , mkisequiv g α h β) (inj₂ a) (inj₁ tt) (eq₂ ∘ ! eq)
+         k eq a | inj₁ tt | ⟪ eq₂ ⟫ | ()
+-}
+sub2 : {A B : Set} →  ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A ≃ B
+sub2 {A} {B} eq with f ⊤₁ | inspect f ⊤₁ | g ⊤₂ | inspect g ⊤₂
+  where f = proj₁ eq
+        module EQ = isequiv (proj₂ eq)
+        g = EQ.g
+        ⊤₁ : ⊤ ⊎ A
+        ⊤₁ = inj₁ tt
+        ⊤₂ : ⊤ ⊎ B
+        ⊤₂ = inj₁ tt
+sub2 {A} {B} (f₁ , mkisequiv g₁ α₁ h₁ β₁) | inj₁ tt | ⟪ eq₁ ⟫ | inj₁ tt | ⟪ eq₂ ⟫ = f , equiv₁ (mkqinv g α β)
+  where 
+        f : A → B
+        f a with f₁ (inj₂ a) | inspect f₁ (inj₂ a)
+        f a | inj₂ b  | _ = b
+        f a | inj₁ tt | ⟪ eq ⟫ with (proj₁ (thm2-12-5 tt (inj₂ a)) inject)
+          where inject = inj≃ (f₁ , mkisequiv g₁ α₁ h₁ β₁) (inj₁ tt) (inj₂ a) (eq₁ ∘ ! eq)
+        f a | inj₁ tt | ⟪ eq ⟫ | ()
+        g : B → A
+        g b with g₁ (inj₂ b) | inspect g₁ (inj₂ b)
+        g b | inj₂ a  | _ = a
+        g b | inj₁ tt | ⟪ eq ⟫ with (proj₁ (thm2-12-5 tt (inj₂ b)) inject)
+          where equiv = (f₁ , mkisequiv g₁ α₁ h₁ β₁)
+                inject = inj≃ (sym≃ equiv) (inj₁ tt) (inj₂ b) (eq₂ ∘ ! eq) 
+        g b | inj₁ tt | ⟪ eq ⟫ | () 
+        α : f ○ g ∼ id
+        α b with g₁ (inj₂ b) | inspect g₁ (inj₂ b)
+        α b | inj₁ tt | ⟪ eq ⟫ with (proj₁ (thm2-12-5 tt (inj₂ b)) inject) 
+          where equiv = (f₁ , mkisequiv g₁ α₁ h₁ β₁)
+                inject = inj≃ (sym≃ equiv) (inj₁ tt) (inj₂ b) (eq₂ ∘ ! eq) 
+        α b | inj₁ tt | ⟪ eq ⟫ | ()
+        α b | inj₂ a  | ⟪ eq ⟫ with f₁ (inj₂ a) | inspect f₁ (inj₂ a) 
+        α b | inj₂ a | ⟪ eq ⟫ | inj₁ tt | ⟪ eq₃ ⟫ with (proj₁ (thm2-12-5 tt (inj₂ a)) inject)
+          where inject = inj≃ (f₁ , mkisequiv g₁ α₁ h₁ β₁) (inj₁ tt) (inj₂ a) (eq₁ ∘ ! eq₃)
+        α b | inj₂ a | ⟪ eq ⟫ | inj₁ tt | ⟪ eq₃ ⟫ | ()
+        α b | inj₂ a | ⟪ eq ⟫ | inj₂ b′ | ⟪ eq₃ ⟫ = proj₁ (inj₁₁path b′ b) (ap swap₊ (! (ap f₁ eq ∘ eq₃) ∘ α₁ (inj₂ b)))
+        β : g ○ f ∼ id
+        β = {!!}
 
-sub1congr : {A B : Set} → (eq : (⊤ ⊎ A) ≃ (⊤ ⊎ B)) → (((sub1 eq) ○ (sub1 (sym≃ eq))) ∼ id)
-sub1congr (f , mkisequiv g α h β) b = {!!}
+sub2 (f₁ , mkisequiv g α h β) | inj₁ tt | ⟪ eq₁ ⟫ | inj₂ a | ⟪ eq₂ ⟫ with (proj₁ (thm2-12-5 tt (inj₂ a)) inject)
+  where inject = inj≃ (f₁ , mkisequiv g α h β) (inj₁ tt) (inj₂ a) (eq₁ ∘ ! (α (inj₁ tt)) ∘ (ap f₁ eq₂))
+sub2 (f₁ , mkisequiv g α h β) | inj₁ tt | ⟪ eq₁ ⟫ | inj₂ a | ⟪ eq₂ ⟫ | ()
 
-sub1congl : {A B : Set} → (eq : (⊤ ⊎ A) ≃ (⊤ ⊎ B)) → ((sub1 (sym≃ eq)) ○ (sub1 eq) ∼ id)
-sub1congl (f , mkisequiv g α h β) a = {!!}
+sub2 (f₁ , mkisequiv g α h β) | inj₂ b | ⟪ eq₁ ⟫ | inj₁ tt | ⟪ eq₂ ⟫ with proj₁ (thm2-12-5 tt (inj₂ b)) (! (α (inj₁ tt)) ∘ (ap f₁ eq₂) ∘ eq₁ )
+... | ()
+sub2 (f , mkisequiv g α h β) | inj₂ b | ⟪ eq₁ ⟫ | inj₂ a | ⟪ eq₂ ⟫ = {!!}
 
 lemma⊤⊎ : {B₁ B₂ : FT} → ⟦ PLUS ONE B₁ ⟧ ≃ ⟦ PLUS ONE B₂ ⟧ → ⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧
-lemma⊤⊎ eq with eq
-... | (f , mkisequiv g α h β) = sub1 eq , mkisequiv (sub1 (sym≃ eq)) (sub1congr eq) (sub1 (sym≃ eq)) (sub1congl eq)
+lemma⊤⊎ eq = sub2 eq
 
 ⟦_⟧ℕ : ℕ → Set
 ⟦ zero ⟧ℕ = ⊥
@@ -678,8 +721,7 @@ lemma⊤⊎ eq with eq
 ℕrespects⟦⟧ {suc n} = path⊎ id≃ (ℕrespects⟦⟧ {n})
 
 lemmaℕ⊤⊎ : {n₁ n₂ : ℕ} → ⟦ suc n₁ ⟧ℕ ≃ ⟦ suc n₂ ⟧ℕ → ⟦ n₁ ⟧ℕ ≃ ⟦ n₂ ⟧ℕ
-lemmaℕ⊤⊎ eq with eq
-... | (f , mkisequiv g α h β) = sub1 eq , mkisequiv (sub1 (sym≃ eq)) (sub1congr eq) (sub1 (sym≃ eq)) (sub1congl eq)
+lemmaℕ⊤⊎ eq = sub2 eq
 
 liftℕ : (n₁ n₂ : ℕ) → ⟦ n₁ ⟧ℕ ≃ ⟦ n₂ ⟧ℕ → (fromℕ n₁) ≡ (fromℕ n₂)
 liftℕ zero zero eq = refl ZERO
