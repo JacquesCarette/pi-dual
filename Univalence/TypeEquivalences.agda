@@ -213,3 +213,6 @@ path× {A} {B} {C} {D} (fp , eqp) (fq , eqq) =
     (_×∼_ {C} {D} {A} {B} {P.h} {fp} {Q.h} {fq} P.β Q.β)
   where module P = isequiv eqp
         module Q = isequiv eqq
+
+idequiv : {A : Set} → A ≃ A
+idequiv = id≃
