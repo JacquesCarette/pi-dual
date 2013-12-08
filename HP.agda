@@ -814,28 +814,106 @@ module PI where
 open PI public
 
 ------------------------------------------------------------------------------
--- Semantics
+-- Semantics I
+-- The natural numbers are a model of PI
+
+unitPlus : (n : ℕ) -> (n + 0) ≡ n
+unitPlus 0       = refl 0
+unitPlus (suc m) = ap suc (unitPlus m)
+
+sPlus : (n m : ℕ) -> suc (n + m) ≡ (n + suc m)
+sPlus 0 m       = refl (suc m) 
+sPlus (suc n) m = ap suc (sPlus n m)
+
+commPlus : (m n : ℕ) -> (m + n) ≡ (n + m)
+commPlus 0 n       = ! (unitPlus n)
+commPlus (suc m) n = (ap suc (commPlus m n)) ∘ (sPlus n m)
+
+assocPlus : (m n o : ℕ) ->((m + n) + o) ≡ (m + (n + o))
+assocPlus 0 n o       = refl (n + o)
+assocPlus (suc m) n o = ap suc (assocPlus m n o)
+
+--
+
+unitMult : (i : ℕ) → 1 * i ≡ i
+unitMult 0       = refl 0
+unitMult (suc i) = ap suc (unitMult i) 
+
+mulSuc : (m n : ℕ) → m * suc n ≡ m + m * n
+mulSuc 0 n       = refl 0
+mulSuc (suc m) n = ap (λ x → suc n + x) (mulSuc m n) ∘ 
+                   ap suc (! (assocPlus n m (m * n))) ∘ 
+                   ap (λ x → suc (x + m * n)) (commPlus n m) ∘ 
+                   ap suc (assocPlus m n (m * n))
+                
+annMult : (i : ℕ) → i * 0 ≡ 0
+annMult 0       = refl 0
+annMult (suc i) = annMult i
+
+commMult : (i j : ℕ) → i * j ≡ j * i
+commMult 0 j       = ! (annMult j) 
+commMult (suc i) j = ap (λ x → j + x) (commMult i j) ∘ 
+                     (! (mulSuc j i))
+
+distrib : (i j k : ℕ) → (j + k) * i ≡ j * i + k * i
+distrib i 0 k       = refl (k * i)
+distrib i (suc j) k = ap (_+_ i) (distrib i j k) ∘ 
+                      (! (assocPlus i (j * i) (k * i))) 
+
+
+assocMult : (i j k : ℕ) → (i * j) * k ≡ i * (j * k)
+assocMult 0 j k       = refl 0
+assocMult (suc i) j k = distrib k j (i * j) ∘ 
+                        ap (λ x → j * k + x) (assocMult i j k)
+ 
+
+--
+
+toℕ : FT → ℕ
+toℕ b = recPI (record {
+          czero     = 0 ;
+          cone      = 1 ;
+          cplus     = _+_ ; 
+          ctimes    = _*_ ;
+          cunite₊≡  = λ {c} → refl c ;
+          cuniti₊≡  = λ {c} → refl c ;
+          cswap₊≡   = λ {a b} → commPlus a b ;
+          cassocl₊≡ = λ {a b c} → ! (assocPlus a b c) ;
+          cassocr₊≡ = λ {a b c} → assocPlus a b c ;
+          cunite⋆≡  = λ {a} → unitMult a ;
+          cuniti⋆≡  = λ {a} → ! (unitMult a) ;
+          cswap⋆≡   = λ {a b} → commMult a b  ;
+          cassocl⋆≡ = λ {a b c} → ! (assocMult a b c) ;
+          cassocr⋆≡ = λ {a b c} → assocMult a b c ;
+          cdistz≡   = refl 0  ;
+          cfactorz≡ = refl 0 ;
+          cdist≡    = λ {a b c} → distrib c a b ;
+          cfactor≡  = λ {a b c} → ! (distrib c a b)
+        }) b
+
+------------------------------------------------------------------------------
+-- Semantics II
 
 ⟦_⟧ : FT → Set
 ⟦ b ⟧ = recPI (record {
-          czero = ⊥ ; 
-          cone = ⊤ ; 
-          cplus = _⊎_ ; 
-          ctimes = _×_ ;
-          cunite₊≡ = {!!} ;
-          cuniti₊≡ = {!!} ;
-          cswap₊≡ = {!!} ;
+          czero     = ⊥ ; 
+          cone      = ⊤ ; 
+          cplus     = _⊎_ ; 
+          ctimes    = _×_ ;
+          cunite₊≡  = {!!} ;
+          cuniti₊≡  = {!!} ;
+          cswap₊≡   = {!!} ;
           cassocl₊≡ = {!!} ;
           cassocr₊≡ = {!!} ;
-          cunite⋆≡ = {!!} ;
-          cuniti⋆≡ = {!!} ;
-          cswap⋆≡ = {!!} ;
+          cunite⋆≡  = {!!} ;
+          cuniti⋆≡  = {!!} ;
+          cswap⋆≡   = {!!} ;
           cassocl⋆≡ = {!!} ;
           cassocr⋆≡ = {!!} ;
-          cdistz≡ = {!!} ;
+          cdistz≡   = {!!} ;
           cfactorz≡ = {!!} ;
-          cdist≡ = {!!} ;
-          cfactor≡ = {!!} 
+          cdist≡    = {!!} ;
+          cfactor≡  = {!!} 
         }) b
 
 {--
