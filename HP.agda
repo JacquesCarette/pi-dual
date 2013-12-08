@@ -10,9 +10,11 @@ open import Data.Unit
 open import Data.Unit.Core
 open import Data.Maybe hiding (map) 
 open import Data.Nat renaming (_⊔_ to _⊔ℕ_)
+open import Data.Integer hiding (_⊔_) 
 open import Data.Sum renaming (map to _⊎→_)
 open import Data.Product renaming (map to _×→_)
 open import Data.List
+open import Data.Rational hiding (_≃_)
 open import Function renaming (_∘_ to _○_)
 
 infixr 8  _∘_   -- path composition
@@ -167,10 +169,10 @@ ap f p =
     (λ x → refl (f x))
     p
 
-ap2 : ∀ {ℓ ℓ' ℓ''} → {A : Set ℓ} {B : Set ℓ'} {C : Set ℓ''} 
+ap₂ : ∀ {ℓ ℓ' ℓ''} → {A : Set ℓ} {B : Set ℓ'} {C : Set ℓ''} 
      {x₁ y₁ : A} {x₂ y₂ : B} → 
      (f : A → B → C) → (x₁ ≡ y₁) → (x₂ ≡ y₂) → (f x₁ x₂  ≡ f y₁ y₂)
-ap2 {ℓ} {ℓ'} {ℓ''} {A} {B} {C} {x₁} {y₁} {x₂} {y₂} f p₁ p₂ = 
+ap₂ {ℓ} {ℓ'} {ℓ''} {A} {B} {C} {x₁} {y₁} {x₂} {y₂} f p₁ p₂ = 
   pathInd -- on p₁
     (λ {x₁} {y₁} p₁ → f x₁ x₂ ≡ f y₁ y₂) 
     (λ x →
@@ -663,7 +665,7 @@ path⊎ (fp , eqp) (fq , eqq) =
 _×∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
   (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → 
   (f ×→ g) ○ (finv ×→ ginv) ∼ id {A = C × D}
-_×∼_ α β (x , y) = ap2 _,_ (α x) (β y)
+_×∼_ α β (x , y) = ap₂ _,_ (α x) (β y)
  
 path× : {A B C D : Set} → A ≃ C → B ≃ D → (A × B) ≃ (C × D)
 path× {A} {B} {C} {D} (fp , eqp) (fq , eqq) = 
@@ -689,6 +691,8 @@ module PI where
       ONE*   : FT*
       PLUS*  : FT* → FT* → FT*
       TIMES* : FT* → FT* → FT*
+      NEG*   : FT* → FT*
+      RECIP* : FT* → FT*
 
   -- exported
 
@@ -706,6 +710,12 @@ module PI where
 
   TIMES : FT → FT → FT
   TIMES = TIMES*
+
+  NEG : FT → FT
+  NEG = NEG*
+
+  RECIP : FT → FT
+  RECIP = RECIP*
 
   postulate 
     -- additive structure
@@ -729,6 +739,13 @@ module PI where
               TIMES (PLUS b₁ b₂) b₃ ≡ PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) 
     factor≡  : { b₁ b₂ b₃ : FT } → 
               PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) ≡ TIMES (PLUS b₁ b₂) b₃
+    -- negatives and fractionals
+    η₊       : { b : FT } → ZERO ≡ PLUS (NEG b) b
+    ε₊       : { b : FT } → PLUS (NEG b) b ≡ ZERO
+    refe⋆    : { b : FT } → RECIP (RECIP b) ≡ b
+    refi⋆    : { b : FT } → b ≡ RECIP (RECIP b) 
+    rile⋆    : { b : FT } → TIMES b (TIMES b (RECIP b)) ≡ b
+    rili⋆    : { b : FT } → b ≡ TIMES b (TIMES b (RECIP b)) 
     -- no need to postulate congruence; it will be provable
 
   -- Any function mapping PI to a type C must produce one of the following
@@ -740,6 +757,8 @@ module PI where
       cone      : C
       cplus     : C → C → C
       ctimes    : C → C → C
+      cneg      : C → C 
+      crecip    : C → C 
       cunite₊≡  : { c : C } → cplus czero c ≡ c
       cuniti₊≡  : { c : C } → c ≡ cplus czero c
       cswap₊≡   : { c₁ c₂ : C } → cplus c₁ c₂ ≡ cplus c₂ c₁
@@ -760,6 +779,12 @@ module PI where
                   ctimes (cplus c₁ c₂) c₃ ≡ cplus (ctimes c₁ c₃) (ctimes c₂ c₃)
       cfactor≡  : { c₁ c₂ c₃ : C } → 
                   cplus (ctimes c₁ c₃) (ctimes c₂ c₃) ≡ ctimes (cplus c₁ c₂) c₃
+      cη₊       : { c : C } → czero ≡ cplus (cneg c) c
+      cε₊       : { c : C } → cplus (cneg c) c ≡ czero
+      crefe⋆    : { c : C } → crecip (crecip c) ≡ c
+      crefi⋆    : { c : C } → c ≡ crecip (crecip c)
+      crile⋆    : { c : C } → ctimes c (ctimes c (crecip c)) ≡ c
+      crili⋆    : { c : C } → c ≡ ctimes c (ctimes c (crecip c))
 
   open PIR
 
@@ -773,8 +798,9 @@ module PI where
   recPI pir ONE*           = cone pir
   recPI pir (PLUS* B₁ B₂)  = cplus pir (recPI pir B₁) (recPI pir B₂)
   recPI pir (TIMES* B₁ B₂) = ctimes pir (recPI pir B₁) (recPI pir B₂)
-        
-
+  recPI pir (NEG* B)       = cneg pir (recPI pir B)
+  recPI pir (RECIP* B)     = crecip pir (recPI pir B)
+      
   postulate
     βreccunite₊≡  : {ℓ : Level} {C : Set ℓ} → (pir : PIR C) → 
       {b : FT} → ap (recPI pir) (unite₊≡ {b}) ≡ cunite₊≡ pir
@@ -810,13 +836,26 @@ module PI where
     βreccfactor≡  : {ℓ : Level} {C : Set ℓ} → (pir : PIR C) → 
       {b₁ b₂ b₃ : FT} → ap (recPI pir) (factor≡ {b₁} {b₂} {b₃}) ≡ 
       cfactor≡ pir
+    βreccη₊       : {ℓ : Level} {C : Set ℓ} → (pir : PIR C) → 
+      { b : FT } → ap (recPI pir) (η₊ {b}) ≡ cη₊ pir
+    βreccε₊       : {ℓ : Level} {C : Set ℓ} → (pir : PIR C) → 
+      { b : FT } → ap (recPI pir) (ε₊ {b}) ≡ cε₊ pir
+    βreccrefe⋆    : {ℓ : Level} {C : Set ℓ} → (pir : PIR C) → 
+      { b : FT } → ap (recPI pir) (refe⋆ {b}) ≡ crefe⋆ pir
+    βreccrefi⋆    : {ℓ : Level} {C : Set ℓ} → (pir : PIR C) → 
+      { b : FT } → ap (recPI pir) (refi⋆ {b}) ≡ crefi⋆ pir
+    βreccrile⋆    : {ℓ : Level} {C : Set ℓ} → (pir : PIR C) → 
+      { b : FT } → ap (recPI pir) (rile⋆ {b}) ≡ crile⋆ pir
+    βreccrili⋆    : {ℓ : Level} {C : Set ℓ} → (pir : PIR C) → 
+      { b : FT } → ap (recPI pir) (rili⋆ {b}) ≡ crili⋆ pir
 
 open PI public
 
 ------------------------------------------------------------------------------
 -- Semantics I
--- The natural numbers are a model of PI
+-- The rationals are a model of PI
 
+{--
 unitPlus : (n : ℕ) -> (n + 0) ≡ n
 unitPlus 0       = refl 0
 unitPlus (suc m) = ap suc (unitPlus m)
@@ -865,75 +904,39 @@ assocMult : (i j k : ℕ) → (i * j) * k ≡ i * (j * k)
 assocMult 0 j k       = refl 0
 assocMult (suc i) j k = distrib k j (i * j) ∘ 
                         ap (λ x → j * k + x) (assocMult i j k)
- 
+--}
 
 --
 
-toℕ : FT → ℕ
-toℕ b = recPI (record {
-          czero     = 0 ;
-          cone      = 1 ;
-          cplus     = _+_ ; 
-          ctimes    = _*_ ;
-          cunite₊≡  = λ {c} → refl c ;
-          cuniti₊≡  = λ {c} → refl c ;
-          cswap₊≡   = λ {a b} → commPlus a b ;
-          cassocl₊≡ = λ {a b c} → ! (assocPlus a b c) ;
-          cassocr₊≡ = λ {a b c} → assocPlus a b c ;
-          cunite⋆≡  = λ {a} → unitMult a ;
-          cuniti⋆≡  = λ {a} → ! (unitMult a) ;
-          cswap⋆≡   = λ {a b} → commMult a b  ;
-          cassocl⋆≡ = λ {a b c} → ! (assocMult a b c) ;
-          cassocr⋆≡ = λ {a b c} → assocMult a b c ;
-          cdistz≡   = refl 0  ;
-          cfactorz≡ = refl 0 ;
-          cdist≡    = λ {a b c} → distrib c a b ;
-          cfactor≡  = λ {a b c} → ! (distrib c a b)
+toℚ : FT → ℚ
+toℚ b = recPI (record {
+          czero     = + 0 ÷ 1 ;
+          cone      = + 1 ÷ 1 ;
+          cplus     = {!!} ; --_+_ ; 
+          ctimes    = {!!} ; --_*_ ;
+          cneg      = {!!} ;
+          crecip    = {!!} ;
+          cunite₊≡  = {!!} ; --λ {c} → refl c ;
+          cuniti₊≡  = {!!} ; --λ {c} → refl c ;
+          cswap₊≡   = {!!} ; --λ {a b} → commPlus a b ;
+          cassocl₊≡ = {!!} ; --λ {a b c} → ! (assocPlus a b c) ;
+          cassocr₊≡ = {!!} ; --λ {a b c} → assocPlus a b c ;
+          cunite⋆≡  = {!!} ; --λ {a} → unitMult a ;
+          cuniti⋆≡  = {!!} ; --λ {a} → ! (unitMult a) ;
+          cswap⋆≡   = {!!} ; --λ {a b} → commMult a b  ;
+          cassocl⋆≡ = {!!} ; --λ {a b c} → ! (assocMult a b c) ;
+          cassocr⋆≡ = {!!} ; --λ {a b c} → assocMult a b c ;
+          cdistz≡   = {!!} ; --refl 0  ;
+          cfactorz≡ = {!!} ; --refl 0 ;
+          cdist≡    = {!!} ; --λ {a b c} → distrib c a b ;
+          cfactor≡  = {!!} ; --λ {a b c} → ! (distrib c a b) ;
+          cη₊       = {!!} ;
+          cε₊       = {!!} ;
+          crefe⋆    = {!!} ;
+          crefi⋆    = {!!} ;
+          crile⋆    = {!!} ;
+          crili⋆    = {!!} 
         }) b
 
 ------------------------------------------------------------------------------
--- Semantics II
 
-⟦_⟧ : FT → Set
-⟦ b ⟧ = recPI (record {
-          czero     = ⊥ ; 
-          cone      = ⊤ ; 
-          cplus     = _⊎_ ; 
-          ctimes    = _×_ ;
-          cunite₊≡  = {!!} ;
-          cuniti₊≡  = {!!} ;
-          cswap₊≡   = {!!} ;
-          cassocl₊≡ = {!!} ;
-          cassocr₊≡ = {!!} ;
-          cunite⋆≡  = {!!} ;
-          cuniti⋆≡  = {!!} ;
-          cswap⋆≡   = {!!} ;
-          cassocl⋆≡ = {!!} ;
-          cassocr⋆≡ = {!!} ;
-          cdistz≡   = {!!} ;
-          cfactorz≡ = {!!} ;
-          cdist≡    = {!!} ;
-          cfactor≡  = {!!} 
-        }) b
-
-{--
-?0 : {c : Set} → (⊥ ⊎ c) ≡ c
-?1 : {c : Set} → c ≡ (⊥ ⊎ c)
-?2 : {c₁ c₂ : Set} → (c₁ ⊎ c₂) ≡ (c₂ ⊎ c₁)
-?3 : {c₁ c₂ c₃ : Set} → (c₁ ⊎ c₂ ⊎ c₃) ≡ ((c₁ ⊎ c₂) ⊎ c₃)
-?4 : {c₁ c₂ c₃ : Set} → ((c₁ ⊎ c₂) ⊎ c₃) ≡ (c₁ ⊎ c₂ ⊎ c₃)
-?5 : {c : Set} → (⊤ × c) ≡ c
-?6 : {c : Set} → c ≡ (⊤ × c)
-?7 : {c₁ c₂ : Set} → (c₁ × c₂) ≡ (c₂ × c₁)
-?8 : {c₁ c₂ c₃ : Set} → (c₁ × c₂ × c₃) ≡ ((c₁ × c₂) × c₃)
-?9 : {c₁ c₂ c₃ : Set} → ((c₁ × c₂) × c₃) ≡ (c₁ × c₂ × c₃)
-?10 : {c : Set} → (⊥ × c) ≡ ⊥
-?11 : {c : Set} → ⊥ ≡ (⊥ × c)
-?12 : {c₁ c₂ c₃ : Set} → ((c₁ ⊎ c₂) × c₃) ≡ (c₁ × c₃ ⊎ c₂ × c₃)
-?13 : {c₁ c₂ c₃ : Set} → (c₁ × c₃ ⊎ c₂ × c₃) ≡ ((c₁ ⊎ c₂) × c₃)
-
-path2equiv : {B₁ B₂ : FT} → (B₁ ⇛ B₂) → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧)
-equiv2path : {b₁ b₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (B₁ ⇛ B₂)
---}
-
-------------------------------------------------------------------------------
