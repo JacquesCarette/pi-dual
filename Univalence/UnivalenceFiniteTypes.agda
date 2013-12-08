@@ -14,52 +14,7 @@ open import HoTT
 open import Equivalences
 open import TypeEquivalences
 open import Path2Equiv
-
--- Reverse direction
-
-toℕ : FT → ℕ
-toℕ ZERO = zero
-toℕ ONE = suc zero
-toℕ (PLUS b₀ b₁) = (toℕ b₀) + (toℕ b₁) 
-toℕ (TIMES b₀ b₁) = (toℕ b₀) * (toℕ b₁)
-
-fromℕ : ℕ → FT
-fromℕ zero = ZERO
-fromℕ (suc n) = PLUS ONE (fromℕ n)
-
-toℕ∘fromℕ : toℕ ○ fromℕ ∼ id
-toℕ∘fromℕ zero = refl zero
-toℕ∘fromℕ (suc n) =
-  pathInd
-    (λ {x} {y} p → suc x ≡ suc y)
-    (λ n → refl (suc n))
-    (toℕ∘fromℕ n)
-
-assocr : {m : ℕ} (n : ℕ) → (PLUS (fromℕ n) (fromℕ m)) ⇛ fromℕ (n + m)
-assocr zero = unite₊⇛
-assocr (suc n) = assocr₊⇛ ◎ (id⇛ ⊕ (assocr n))
-
-distr : (n₀ : ℕ) {n₁ : ℕ} → TIMES (fromℕ n₀) (fromℕ n₁) ⇛ fromℕ (n₀ * n₁)
-distr zero = distz⇛
-distr (suc n) {m} = dist⇛ ◎ ((unite⋆⇛ ⊕ id⇛) ◎ ((id⇛ ⊕ distr n) ◎ assocr m))
-
--- normalize a finite type to (1 + (1 + (1 + ... + (1 + 0) ... )))
--- a bunch of ones ending with zero with left biased + in between
-
-normalize : FT → FT
-normalize = fromℕ ○ toℕ
-
-normal : (b : FT) → b ⇛ normalize b
-normal ZERO = id⇛
-normal ONE = uniti₊⇛ ◎ swap₊⇛
-normal (PLUS b₀ b₁) = (normal b₀ ⊕ normal b₁) ◎ assocr (toℕ b₀)
-normal (TIMES b₀ b₁) = (normal b₀ ⊗ normal b₁) ◎ distr (toℕ b₀)
-
-normalizeC : {B : FT} → ⟦ normalize B ⟧ ≃ ⟦ B ⟧
-normalizeC {B} = path2equiv (sym⇛ (normal B))
-
-mapNorm :  {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → ⟦ normalize B₁ ⟧ ≃ ⟦ normalize B₂ ⟧
-mapNorm {B₁} {B₂} eq = trans≃ (trans≃ (normalizeC {B₁}) eq) (sym≃ (normalizeC {B₂}))
+open import FT-Nat
 
 ------------------------------------------------------------------------
 -- Inspect on steroids (borrowed from standard library)
@@ -131,14 +86,6 @@ sub2 (f , mkisequiv g α h β) | inj₂ b | ⟪ eq₁ ⟫ | inj₂ a | ⟪ eq₂
 
 lemma⊤⊎ : {B₁ B₂ : FT} → ⟦ PLUS ONE B₁ ⟧ ≃ ⟦ PLUS ONE B₂ ⟧ → ⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧
 lemma⊤⊎ eq = sub2 eq
-
-⟦_⟧ℕ : ℕ → Set
-⟦ zero ⟧ℕ = ⊥
-⟦ suc n ⟧ℕ = ⊤ ⊎ ⟦ n ⟧ℕ
-
-ℕrespects⟦⟧ : {n : ℕ} → ⟦ fromℕ n ⟧ ≃ ⟦ n ⟧ℕ
-ℕrespects⟦⟧ {zero} = id≃
-ℕrespects⟦⟧ {suc n} = path⊎ id≃ (ℕrespects⟦⟧ {n})
 
 lemmaℕ⊤⊎ : {n₁ n₂ : ℕ} → ⟦ suc n₁ ⟧ℕ ≃ ⟦ suc n₂ ⟧ℕ → ⟦ n₁ ⟧ℕ ≃ ⟦ n₂ ⟧ℕ
 lemmaℕ⊤⊎ eq = sub2 eq
