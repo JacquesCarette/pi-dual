@@ -1,4 +1,4 @@
-
+{-# OPTIONS --without-K #-}
 module UnivalenceFiniteTypes where
 
 open import Agda.Prim
@@ -12,6 +12,8 @@ open import Data.Product renaming (map to _×→_)
 open import Data.List
 open import Function renaming (_∘_ to _○_)
 
+open import FT
+
 infixr 8  _∘_   -- path composition
 infix  4  _≡_   -- propositional equality
 infix  4  _∼_   -- homotopy between two functions 
@@ -20,55 +22,6 @@ infix  2  _∎       -- equational reasoning for paths
 infixr 2  _≡⟨_⟩_   -- equational reasoning for paths
 infix  2  _∎≃      -- equational reasoning for equivalences
 infixr 2  _≃⟨_⟩_   -- equational reasoning for equivalences
-
-------------------------------------------------------------------------------
--- Finite types
-
-data FT : Set where
-  ZERO  : FT
-  ONE   : FT
-  PLUS  : FT → FT → FT
-  TIMES : FT → FT → FT
-
-⟦_⟧ : FT → Set
-⟦ ZERO ⟧ = ⊥
-⟦ ONE ⟧ = ⊤
-⟦ PLUS B₁ B₂ ⟧ = ⟦ B₁ ⟧ ⊎ ⟦ B₂ ⟧
-⟦ TIMES B₁ B₂ ⟧ = ⟦ B₁ ⟧ × ⟦ B₂ ⟧
-
-------------------------------------------------------------------------------
--- Generalized paths are pi-combinators
-
-data _⇛_ : FT → FT → Set where
-  -- additive structure
-  unite₊⇛  : { b : FT } → PLUS ZERO b ⇛ b
-  uniti₊⇛  : { b : FT } → b ⇛ PLUS ZERO b
-  swap₊⇛   : { b₁ b₂ : FT } → PLUS b₁ b₂ ⇛ PLUS b₂ b₁
-  assocl₊⇛ : { b₁ b₂ b₃ : FT } → PLUS b₁ (PLUS b₂ b₃) ⇛ PLUS (PLUS b₁ b₂) b₃
-  assocr₊⇛ : { b₁ b₂ b₃ : FT } → PLUS (PLUS b₁ b₂) b₃ ⇛ PLUS b₁ (PLUS b₂ b₃)
-  -- multiplicative structure
-  unite⋆⇛  : { b : FT } → TIMES ONE b ⇛ b
-  uniti⋆⇛  : { b : FT } → b ⇛ TIMES ONE b
-  swap⋆⇛   : { b₁ b₂ : FT } → TIMES b₁ b₂ ⇛ TIMES b₂ b₁
-  assocl⋆⇛ : { b₁ b₂ b₃ : FT } → 
-             TIMES b₁ (TIMES b₂ b₃) ⇛ TIMES (TIMES b₁ b₂) b₃
-  assocr⋆⇛ : { b₁ b₂ b₃ : FT } → 
-             TIMES (TIMES b₁ b₂) b₃ ⇛ TIMES b₁ (TIMES b₂ b₃)
-  -- distributivity
-  distz⇛   : { b : FT } → TIMES ZERO b ⇛ ZERO
-  factorz⇛ : { b : FT } → ZERO ⇛ TIMES ZERO b
-  dist⇛    : { b₁ b₂ b₃ : FT } → 
-            TIMES (PLUS b₁ b₂) b₃ ⇛ PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) 
-  factor⇛  : { b₁ b₂ b₃ : FT } → 
-            PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) ⇛ TIMES (PLUS b₁ b₂) b₃
-  -- congruence
-  id⇛    : { b : FT } → b ⇛ b
-  sym⇛   : { b₁ b₂ : FT } → (b₁ ⇛ b₂) → (b₂ ⇛ b₁)
-  _◎_    : { b₁ b₂ b₃ : FT } → (b₁ ⇛ b₂) → (b₂ ⇛ b₃) → (b₁ ⇛ b₃)
-  _⊕_    : { b₁ b₂ b₃ b₄ : FT } → 
-           (b₁ ⇛ b₃) → (b₂ ⇛ b₄) → (PLUS b₁ b₂ ⇛ PLUS b₃ b₄)
-  _⊗_    : { b₁ b₂ b₃ b₄ : FT } → 
-           (b₁ ⇛ b₃) → (b₂ ⇛ b₄) → (TIMES b₁ b₂ ⇛ TIMES b₃ b₄)
 
 ------------------------------------------------------------------------------
 -- Equivalences a la HoTT (using HoTT paths and path induction)
