@@ -18,19 +18,13 @@ open import FT-Nat
 open import Inspect
 open import LeftCancellation
 
-lemma⊤⊎ : {B₁ B₂ : FT} → ⟦ PLUS ONE B₁ ⟧ ≃ ⟦ PLUS ONE B₂ ⟧ → ⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧
-lemma⊤⊎ eq = sub2 eq
-
-lemmaℕ⊤⊎ : {n₁ n₂ : ℕ} → ⟦ suc n₁ ⟧ℕ ≃ ⟦ suc n₂ ⟧ℕ → ⟦ n₁ ⟧ℕ ≃ ⟦ n₂ ⟧ℕ
-lemmaℕ⊤⊎ eq = sub2 eq
-
 liftℕ : (n₁ n₂ : ℕ) → ⟦ n₁ ⟧ℕ ≃ ⟦ n₂ ⟧ℕ → (fromℕ n₁) ≡ (fromℕ n₂)
 liftℕ zero zero eq = refl ZERO
 liftℕ zero (suc n₂) (_ , mkisequiv g α h β) with h (inj₁ tt)
 liftℕ zero (suc n₂) (_ , mkisequiv g α h β) | ()
 liftℕ (suc n₁) zero (f , _) with f (inj₁ tt)
 liftℕ (suc n₁) zero (f , _) | ()
-liftℕ (suc n₁) (suc n₂) eq = ap (λ x → PLUS ONE x) (liftℕ n₁ n₂ (lemmaℕ⊤⊎ eq))
+liftℕ (suc n₁) (suc n₂) eq = ap (λ x → PLUS ONE x) (liftℕ n₁ n₂ (left-cancel-⊤ eq))
 
 liftNormal : {B₁ B₂ : FT} →  ⟦ normalize B₁ ⟧ ≃ ⟦ normalize B₂ ⟧ → (normalize B₁) ≡ (normalize B₂)
 liftNormal {B₁} {B₂} eq =

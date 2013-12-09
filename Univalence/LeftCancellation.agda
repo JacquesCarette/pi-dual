@@ -25,9 +25,9 @@ injectivity equiv x path = inj≃ equiv (inj₁ tt) (inj₂ x) path
 bad-path : {A : Set} → (x : A) → inj₁ tt ≡ inj₂ x → ⊥
 bad-path x path = proj₁ (thm2-12-5 tt (inj₂ x)) path
 
-sub2 : {A B : Set} →  ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A ≃ B
-sub2 {A} {B}  (f₁ , mkisequiv g₁ α₁ h₁ β₁) with f₁ (inj₁ tt) | inspect f₁ (inj₁ tt) | g₁ (inj₁ tt) | inspect g₁ (inj₁ tt)
-sub2 {A} {B} (f₁ , mkisequiv g₁ α₁ h₁ β₁) | inj₁ tt | ⟪ eq₁ ⟫ | inj₁ tt | ⟪ eq₂ ⟫ = f , equiv₁ (mkqinv g α β)
+left-cancel-⊤ : {A B : Set} →  ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A ≃ B
+left-cancel-⊤ {A} {B}  (f₁ , mkisequiv g₁ α₁ h₁ β₁) with f₁ (inj₁ tt) | inspect f₁ (inj₁ tt) | g₁ (inj₁ tt) | inspect g₁ (inj₁ tt)
+left-cancel-⊤ {A} {B} (f₁ , mkisequiv g₁ α₁ h₁ β₁) | inj₁ tt | ⟪ eq₁ ⟫ | inj₁ tt | ⟪ eq₂ ⟫ = f , equiv₁ (mkqinv g α β)
   where equiv = (f₁ , mkisequiv g₁ α₁ h₁ β₁)
         f : A → B
         f a with f₁ (inj₂ a) | inspect f₁ (inj₂ a)
@@ -65,14 +65,14 @@ sub2 {A} {B} (f₁ , mkisequiv g₁ α₁ h₁ β₁) | inj₁ tt | ⟪ eq₁ �
             where module EQ = qinv (equiv₂ {f = f₁} (proj₂ equiv))
                   β₂ = EQ.β
 
-sub2 (f₁ , mkisequiv g α h β) | inj₁ tt | ⟪ eq₁ ⟫ | inj₂ a | ⟪ eq₂ ⟫ with bad-path a inject
+left-cancel-⊤ (f₁ , mkisequiv g α h β) | inj₁ tt | ⟪ eq₁ ⟫ | inj₂ a | ⟪ eq₂ ⟫ with bad-path a inject
   where equiv = (f₁ , mkisequiv g α h β)
         inject = injectivity equiv a (eq₁ ∘ ! (α (inj₁ tt)) ∘ (ap f₁ eq₂))
-sub2 (f₁ , mkisequiv g α h β) | inj₁ tt | ⟪ eq₁ ⟫ | inj₂ a | ⟪ eq₂ ⟫ | ()
+left-cancel-⊤ (f₁ , mkisequiv g α h β) | inj₁ tt | ⟪ eq₁ ⟫ | inj₂ a | ⟪ eq₂ ⟫ | ()
 
-sub2 (f₁ , mkisequiv g α h β) | inj₂ b | ⟪ eq₁ ⟫ | inj₁ tt | ⟪ eq₂ ⟫ with bad-path b (! (α (inj₁ tt)) ∘ (ap f₁ eq₂) ∘ eq₁ )
+left-cancel-⊤ (f₁ , mkisequiv g α h β) | inj₂ b | ⟪ eq₁ ⟫ | inj₁ tt | ⟪ eq₂ ⟫ with bad-path b (! (α (inj₁ tt)) ∘ (ap f₁ eq₂) ∘ eq₁ )
 ... | ()
-sub2 {A} {B} (f₁ , mkisequiv g₁ α₁ h₁ β₁) | inj₂ b₁ | ⟪ eq₁ ⟫ | inj₂ a₁ | ⟪ eq₂ ⟫ = f , equiv₁ (mkqinv g α β)
+left-cancel-⊤ {A} {B} (f₁ , mkisequiv g₁ α₁ h₁ β₁) | inj₂ b₁ | ⟪ eq₁ ⟫ | inj₂ a₁ | ⟪ eq₂ ⟫ = f , equiv₁ (mkqinv g α β)
   where equiv = (f₁ ,′ mkisequiv g₁ α₁ h₁ β₁)
         module EQ = qinv (equiv₂ {f = f₁} (proj₂ equiv))
         β₂ = EQ.β
