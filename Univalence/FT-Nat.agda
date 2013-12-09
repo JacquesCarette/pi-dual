@@ -10,7 +10,7 @@ open import Function renaming (_∘_ to _○_)
 open import FT
 open import HoTT using (refl; pathInd; _≡_)
 open import Equivalences
-open import TypeEquivalences
+open import TypeEquivalences using (path⊎)
 open import Path2Equiv
 
 ------------------------------------------------------------------

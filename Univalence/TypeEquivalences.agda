@@ -9,7 +9,8 @@ open import Data.Sum renaming (map to _⊎→_)
 open import Data.Product renaming (map to _×→_)
 open import Function renaming (_∘_ to _○_)
 
-open import HoTT using (refl; ap; ap2)  -- explicit using to show how little of HoTT is needed
+-- explicit using to show how little of HoTT is needed
+open import HoTT using (refl; ap; ap2)  
 open import Equivalences
 
 ------------------------------------------------------------------------------

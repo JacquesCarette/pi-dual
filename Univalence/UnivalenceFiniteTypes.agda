@@ -15,74 +15,8 @@ open import Equivalences
 open import TypeEquivalences
 open import Path2Equiv
 open import FT-Nat
-
-------------------------------------------------------------------------
--- Inspect on steroids (borrowed from standard library)
-
--- Inspect on steroids can be used when you want to pattern match on
--- the result r of some expression e, and you also need to "remember"
--- that r ≡ e.
-
-data Reveal_is_ {a} {A : Set a} (x : Hidden A) (y : A) : Set a where
-  ⟪_⟫ : (eq : reveal x ≡ y) → Reveal x is y
-
-inspect : ∀ {a b} {A : Set a} {B : A → Set b}
-          (f : (x : A) → B x) (x : A) → Reveal (hide f x) is (f x)
-inspect f x = ⟪ refl (f x) ⟫
-
-{-
-sub1 : {A B : Set} → ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A → B
-sub1 {A} {B} (f , mkisequiv g α h β) with f (inj₁ tt) | inspect f (inj₁ tt)
-... | inj₂ b  | _      = 
-       λ a → case f (inj₂ a) of λ
-              { (inj₁ tt) -> b
-              ; (inj₂ b') -> b' }
-... | inj₁ tt | ⟪ eq₁ ⟫ = k eq₁
-  where  k : f (inj₁ tt) ≡ inj₁ tt → A → B 
-         k eq a with f (inj₂ a) | inspect f (inj₂ a)
-         k eq a | inj₂ b  | _      = b
-         k eq a | inj₁ tt | ⟪ eq₂ ⟫ with (proj₁ (inj₁₂path tt a)) (! inject)
-            where inject = inj≃ (f , mkisequiv g α h β) (inj₂ a) (inj₁ tt) (eq₂ ∘ ! eq)
-         k eq a | inj₁ tt | ⟪ eq₂ ⟫ | ()
--}
-sub2 : {A B : Set} →  ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A ≃ B
-sub2 {A} {B}  (f₁ , mkisequiv g₁ α₁ h₁ β₁) with f₁ (inj₁ tt) | inspect f₁ (inj₁ tt) | g₁ (inj₁ tt) | inspect g₁ (inj₁ tt)
-sub2 {A} {B} (f₁ , mkisequiv g₁ α₁ h₁ β₁) | inj₁ tt | ⟪ eq₁ ⟫ | inj₁ tt | ⟪ eq₂ ⟫ = f , equiv₁ (mkqinv g α β)
-  where 
-        f : A → B
-        f a with f₁ (inj₂ a) | inspect f₁ (inj₂ a)
-        f a | inj₂ b  | _ = b
-        f a | inj₁ tt | ⟪ eq ⟫ with (proj₁ (thm2-12-5 tt (inj₂ a)) inject)
-          where inject = inj≃ (f₁ , mkisequiv g₁ α₁ h₁ β₁) (inj₁ tt) (inj₂ a) (eq₁ ∘ ! eq)
-        f a | inj₁ tt | ⟪ eq ⟫ | ()
-        g : B → A
-        g b with g₁ (inj₂ b) | inspect g₁ (inj₂ b)
-        g b | inj₂ a  | _ = a
-        g b | inj₁ tt | ⟪ eq ⟫ with (proj₁ (thm2-12-5 tt (inj₂ b)) inject)
-          where equiv = (f₁ , mkisequiv g₁ α₁ h₁ β₁)
-                inject = inj≃ (sym≃ equiv) (inj₁ tt) (inj₂ b) (eq₂ ∘ ! eq) 
-        g b | inj₁ tt | ⟪ eq ⟫ | () 
-        α : f ○ g ∼ id
-        α b with g₁ (inj₂ b) | inspect g₁ (inj₂ b)
-        α b | inj₁ tt | ⟪ eq ⟫ with (proj₁ (thm2-12-5 tt (inj₂ b)) inject) 
-          where equiv = (f₁ , mkisequiv g₁ α₁ h₁ β₁)
-                inject = inj≃ (sym≃ equiv) (inj₁ tt) (inj₂ b) (eq₂ ∘ ! eq) 
-        α b | inj₁ tt | ⟪ eq ⟫ | ()
-        α b | inj₂ a  | ⟪ eq ⟫ with f₁ (inj₂ a) | inspect f₁ (inj₂ a) 
-        α b | inj₂ a | ⟪ eq ⟫ | inj₁ tt | ⟪ eq₃ ⟫ with (proj₁ (thm2-12-5 tt (inj₂ a)) inject)
-          where inject = inj≃ (f₁ , mkisequiv g₁ α₁ h₁ β₁) (inj₁ tt) (inj₂ a) (eq₁ ∘ ! eq₃)
-        α b | inj₂ a | ⟪ eq ⟫ | inj₁ tt | ⟪ eq₃ ⟫ | ()
-        α b | inj₂ a | ⟪ eq ⟫ | inj₂ b′ | ⟪ eq₃ ⟫ = proj₁ (inj₁₁path b′ b) (ap swap₊ (! (ap f₁ eq ∘ eq₃) ∘ α₁ (inj₂ b)))
-        β : g ○ f ∼ id
-        β = {!!}
-
-sub2 (f₁ , mkisequiv g α h β) | inj₁ tt | ⟪ eq₁ ⟫ | inj₂ a | ⟪ eq₂ ⟫ with (proj₁ (thm2-12-5 tt (inj₂ a)) inject)
-  where inject = inj≃ (f₁ , mkisequiv g α h β) (inj₁ tt) (inj₂ a) (eq₁ ∘ ! (α (inj₁ tt)) ∘ (ap f₁ eq₂))
-sub2 (f₁ , mkisequiv g α h β) | inj₁ tt | ⟪ eq₁ ⟫ | inj₂ a | ⟪ eq₂ ⟫ | ()
-
-sub2 (f₁ , mkisequiv g α h β) | inj₂ b | ⟪ eq₁ ⟫ | inj₁ tt | ⟪ eq₂ ⟫ with proj₁ (thm2-12-5 tt (inj₂ b)) (! (α (inj₁ tt)) ∘ (ap f₁ eq₂) ∘ eq₁ )
-... | ()
-sub2 (f , mkisequiv g α h β) | inj₂ b | ⟪ eq₁ ⟫ | inj₂ a | ⟪ eq₂ ⟫ = {!!}
+open import Inspect
+open import LeftCancellation
 
 lemma⊤⊎ : {B₁ B₂ : FT} → ⟦ PLUS ONE B₁ ⟧ ≃ ⟦ PLUS ONE B₂ ⟧ → ⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧
 lemma⊤⊎ eq = sub2 eq
