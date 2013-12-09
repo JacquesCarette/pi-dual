@@ -1,5 +1,20 @@
 {-# OPTIONS --without-K #-}
 
+{--
+
+Make a version of this file with plain PI and ℕ as a model
+
+Make another version with PI+NEG+FRAC (meadow style) and ℚ as a model
+
+Keep extending; add imaginary numbers and try ℂ as a model
+
+then add square roots and try algebraic numbers as a model 
+
+An orthogonal direction is to try other models that are not numbers: in
+particular groupoid-based models like we started in F2.agda and F2a.agda
+
+--}
+
 module HP where
 
 -- Pi as a higher-order inductive type
