@@ -18,33 +18,10 @@ open import FT-Nat
 open import Inspect
 open import LeftCancellation
 
-liftℕ : (n₁ n₂ : ℕ) → ⟦ n₁ ⟧ℕ ≃ ⟦ n₂ ⟧ℕ → (fromℕ n₁) ≡ (fromℕ n₂)
-liftℕ zero zero eq = refl ZERO
-liftℕ zero (suc n₂) (_ , mkisequiv g α h β) with h (inj₁ tt)
-liftℕ zero (suc n₂) (_ , mkisequiv g α h β) | ()
-liftℕ (suc n₁) zero (f , _) with f (inj₁ tt)
-liftℕ (suc n₁) zero (f , _) | ()
-liftℕ (suc n₁) (suc n₂) eq = ap (λ x → PLUS ONE x) (liftℕ n₁ n₂ (left-cancel-⊤ eq))
-
-liftNormal : {B₁ B₂ : FT} →  ⟦ normalize B₁ ⟧ ≃ ⟦ normalize B₂ ⟧ → (normalize B₁) ≡ (normalize B₂)
-liftNormal {B₁} {B₂} eq =
-  liftℕ (toℕ B₁) (toℕ B₂)
-    (⟦ toℕ B₁ ⟧ℕ ≃⟨ sym≃ (ℕrespects⟦⟧ {toℕ B₁}) ⟩ ⟦ normalize B₁ ⟧ ≃⟨ eq ⟩ ⟦ normalize B₂ ⟧ ≃⟨ ℕrespects⟦⟧ {toℕ B₂} ⟩ id≃)
-
-sameNorm : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (normalize B₁) ≡ (normalize B₂)
-sameNorm {B₁} {B₂} eq = liftNormal {B₁} {B₂} (mapNorm eq)
-
-bridge : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (normalize B₁) ⇛ (normalize B₂)
-bridge eq =
-  pathInd
-    (λ {B₁} {B₂} p → B₁ ⇛ B₂)
-    (λ B → id⇛)
-    (sameNorm eq)
-
 equiv2path : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (B₁ ⇛ B₂)
 -- not sure why typechecking this fails to terminate for me
--- equiv2path {B₁} {B₂} eq = ((normal B₁) ◎ bridge eq) ◎ (sym⇛ (normal B₂))
-equiv2path {B₁} {B₂} eq = {!!}
+equiv2path {B₁} {B₂} eq = ((normal B₁) ◎ {!!}) ◎ (sym⇛ (normal B₂))
+-- equiv2path {B₁} {B₂} eq = {!!}
 
 -- univalence
 

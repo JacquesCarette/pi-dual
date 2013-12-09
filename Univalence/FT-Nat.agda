@@ -5,13 +5,15 @@ open import Data.Empty
 open import Data.Unit
 open import Data.Nat renaming (_⊔_ to _⊔ℕ_)
 open import Data.Sum renaming (map to _⊎→_)
+open import Data.Product
 open import Function renaming (_∘_ to _○_)
 
 open import FT
-open import HoTT using (refl; pathInd; _≡_)
+open import HoTT using (refl; pathInd; _≡_; ap)
 open import Equivalences
 open import TypeEquivalences using (path⊎)
 open import Path2Equiv
+open import LeftCancellation
 
 ------------------------------------------------------------------
 -- Finite Types and the natural numbers are intimately related.
@@ -78,6 +80,31 @@ mapNorm {B₁} {B₂} eq = trans≃ (trans≃ (normalizeC {B₁}) eq) (sym≃ (n
 ℕrespects⟦⟧ {suc n} = path⊎ id≃ (ℕrespects⟦⟧ {n})
 
 ------------------------------------------------------------------------------
+
+-- needs LeftCancellation
+
+liftℕ : (n₁ n₂ : ℕ) → ⟦ n₁ ⟧ℕ ≃ ⟦ n₂ ⟧ℕ → (fromℕ n₁) ≡ (fromℕ n₂)
+liftℕ zero zero eq = refl ZERO
+liftℕ zero (suc n₂) (_ , mkisequiv g α h β) with h (inj₁ tt)
+liftℕ zero (suc n₂) (_ , mkisequiv g α h β) | ()
+liftℕ (suc n₁) zero (f , _) with f (inj₁ tt)
+liftℕ (suc n₁) zero (f , _) | ()
+liftℕ (suc n₁) (suc n₂) eq = ap (λ x → PLUS ONE x) (liftℕ n₁ n₂ (left-cancel-⊤ eq))
+
+liftNormal : {B₁ B₂ : FT} →  ⟦ normalize B₁ ⟧ ≃ ⟦ normalize B₂ ⟧ → (normalize B₁) ≡ (normalize B₂)
+liftNormal {B₁} {B₂} eq =
+  liftℕ (toℕ B₁) (toℕ B₂)
+    (⟦ toℕ B₁ ⟧ℕ ≃⟨ sym≃ (ℕrespects⟦⟧ {toℕ B₁}) ⟩ ⟦ normalize B₁ ⟧ ≃⟨ eq ⟩ ⟦ normalize B₂ ⟧ ≃⟨ ℕrespects⟦⟧ {toℕ B₂} ⟩ id≃)
+
+sameNorm : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (normalize B₁) ≡ (normalize B₂)
+sameNorm {B₁} {B₂} eq = liftNormal {B₁} {B₂} (mapNorm eq)
+
+bridge : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (normalize B₁) ⇛ (normalize B₂)
+bridge eq =
+  pathInd
+    (λ {B₃} {B₄} _ → B₃ ⇛ B₄)
+    (λ _ → id⇛)
+    (sameNorm eq)
 
 {--
 
