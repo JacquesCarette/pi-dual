@@ -1,7 +1,7 @@
 {-# OPTIONS --without-K #-}
 module Equivalences where
 
-open import Agda.Prim
+open import Level
 open import Data.Empty
 open import Data.Sum renaming (map to _⊎→_)
 open import Data.Product renaming (map to _×→_)
