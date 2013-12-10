@@ -80,6 +80,31 @@ mapNorm {B₁} {B₂} eq = trans≃ (trans≃ (normalizeC {B₁}) eq) (sym≃ (n
 ℕrespects⟦⟧ {suc n} = path⊎ id≃ (ℕrespects⟦⟧ {n})
 
 ------------------------------------------------------------------------------
+-- Understanding the syntactic structure of pi combinators with respect
+-- to normalization
+
+normalize⇛ : {b₁ b₂ : FT} → (b₁ ⇛ b₂) → (normalize b₁ ⇛ normalize b₂)
+normalize⇛ unite₊⇛ = id⇛
+normalize⇛ uniti₊⇛ = id⇛
+normalize⇛ swap₊⇛ = {!!}
+normalize⇛ assocl₊⇛ = {!!}
+normalize⇛ assocr₊⇛ = {!!}
+normalize⇛ unite⋆⇛ = {!!}
+normalize⇛ uniti⋆⇛ = {!!}
+normalize⇛ swap⋆⇛ = {!!}
+normalize⇛ assocl⋆⇛ = {!!}
+normalize⇛ assocr⋆⇛ = {!!}
+normalize⇛ distz⇛ = id⇛
+normalize⇛ factorz⇛ = id⇛
+normalize⇛ dist⇛ = {!!}
+normalize⇛ factor⇛ = {!!}
+normalize⇛ id⇛ = id⇛
+normalize⇛ (sym⇛ c) = sym⇛ (normalize⇛ c)
+normalize⇛ (c₁ ◎ c₂) = normalize⇛ c₁ ◎ normalize⇛ c₂
+normalize⇛ (c ⊕ c₁) = {!!}
+normalize⇛ (c ⊗ c₁) = {!!} 
+
+------------------------------------------------------------------------------
 
 -- needs LeftCancellation
 

@@ -1,11 +1,13 @@
+{-# OPTIONS --without-K #-}
 -- Finite types and paths between them
 module FT where
 
 open import Data.Empty
 open import Data.Unit
-open import Data.Maybe hiding (map) 
-open import Data.Sum renaming (map to _⊎→_)
-open import Data.Product renaming (map to _×→_)
+open import Data.Nat
+open import Data.Sum 
+open import Data.Product 
+open import Function
 
 ------------------------------------------------------------------------------
 -- Finite types
@@ -55,6 +57,8 @@ data _⇛_ : FT → FT → Set where
            (b₁ ⇛ b₃) → (b₂ ⇛ b₄) → (PLUS b₁ b₂ ⇛ PLUS b₃ b₄)
   _⊗_    : { b₁ b₂ b₃ b₄ : FT } → 
            (b₁ ⇛ b₃) → (b₂ ⇛ b₄) → (TIMES b₁ b₂ ⇛ TIMES b₃ b₄)
+
+------------------------------------------------------------------------------
 
 {--
 
