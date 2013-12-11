@@ -83,6 +83,9 @@ mapNorm {B₁} {B₂} eq = trans≃ (trans≃ (normalizeC {B₁}) eq) (sym≃ (n
 -- Understanding the syntactic structure of pi combinators with respect
 -- to normalization
 
+-- in both the following two functions we are missing fundamental information
+-- about how a type relates to its normal form...
+
 normalize⇛ : {b₁ b₂ : FT} → (b₁ ⇛ b₂) → (normalize b₁ ⇛ normalize b₂)
 normalize⇛ unite₊⇛ = id⇛
 normalize⇛ uniti₊⇛ = id⇛
@@ -103,6 +106,12 @@ normalize⇛ (sym⇛ c) = sym⇛ (normalize⇛ c)
 normalize⇛ (c₁ ◎ c₂) = normalize⇛ c₁ ◎ normalize⇛ c₂
 normalize⇛ (c ⊕ c₁) = {!!}
 normalize⇛ (c ⊗ c₁) = {!!} 
+
+swapii+1 : {b : FT} → (i : ℕ) → (b ⇛ b)
+swapii+1 {PLUS ONE (PLUS ONE b)} 0 = 
+  (assocl₊⇛ {ONE} {ONE} {b}) ◎ (swap₊⇛ ⊕ id⇛) ◎ (assocr₊⇛ {ONE} {ONE} {b})
+swapii+1 {PLUS ONE b} (suc n) = id⇛ ⊕ swapii+1 n
+swapii+1 _ = {!!} 
 
 ------------------------------------------------------------------------------
 

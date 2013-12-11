@@ -9,6 +9,8 @@ open import Data.Sum
 open import Data.Product 
 open import Function
 
+infixl 10 _◎_
+
 ------------------------------------------------------------------------------
 -- Finite types
 
