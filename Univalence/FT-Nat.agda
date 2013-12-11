@@ -51,7 +51,7 @@ assocr (suc n) = assocr₊⇛ ◎ (id⇛ ⊕ (assocr n))
 
 distr : (n₀ : ℕ) {n₁ : ℕ} → TIMES (fromℕ n₀) (fromℕ n₁) ⇛ fromℕ (n₀ * n₁)
 distr zero = distz⇛
-distr (suc n) {m} = dist⇛ ◎ ((unite⋆⇛ ⊕ id⇛) ◎ ((id⇛ ⊕ distr n) ◎ assocr m))
+distr (suc n) {m} = dist⇛ ◎ (unite⋆⇛ ⊕ distr n) ◎ assocr m
 
 -- normalize a finite type to (1 + (1 + (1 + ... + (1 + 0) ... )))
 -- a bunch of ones ending with zero with left biased + in between
