@@ -83,6 +83,20 @@ mapNorm {B₁} {B₂} eq = trans≃ (trans≃ (normalizeC {B₁}) eq) (sym≃ (n
 -- Understanding the syntactic structure of pi combinators with respect
 -- to normalization
 
+data FTNF : Set where
+  Z : FTNF
+  S : FTNF → FTNF
+
+fromℕNF : ℕ → FTNF
+fromℕNF zero = Z
+fromℕNF (suc n) = S (fromℕNF n)
+
+normalizeNF : FT → FTNF
+normalizeNF = fromℕNF ○ toℕ
+
+data FTN : FT → Set where
+  normalized : (b : FT) → FTN (normalize b)  
+
 -- in both the following two functions we are missing fundamental information
 -- about how a type relates to its normal form...
 
