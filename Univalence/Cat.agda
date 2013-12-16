@@ -32,22 +32,6 @@ record Setoid (a b : L.Level) : Set (L.suc (a L.⊔ b)) where
     sym∼ : {x y : object} → x ∼ y → y ∼ x
     trans∼ : {x y z : object} → y ∼ z → x ∼ y → x ∼ z
 
-record　Fun∼ {a b} (X Y : Setoid a b) : Set (a L.⊔ b) where
-  field
-    function : Setoid.object X → Setoid.object Y
-    respects∼ : {x0 x1 : Setoid.object X} → (let open Setoid X in x0 ∼ x1) →
-            (let open Setoid Y in function x0 ∼ function x1)
-
-FunSetoid : ∀ {a b} → Setoid a b → Setoid a b → Setoid (a L.⊔ b) (a L.⊔ b)
-FunSetoid X Y = record { object = Fun∼ X Y
-                    ; _∼_ = λ F → λ G → (x : Setoid.object X) →
-                        Setoid._∼_  Y (Fun∼.function F x) (Fun∼.function G x)
-                    ; refl∼ = λ x → Setoid.refl∼ Y
-                    ; sym∼ = λ p → λ x → Setoid.sym∼ Y (p x)
-                    ; trans∼ = λ g∼h → λ f∼g → λ x →
-                               Setoid.trans∼ Y (g∼h x) (f∼g x)
-                    }
-
 strictSetoid : ∀ {a} → Set a → Setoid a a
 strictSetoid A = record
   { object = A
@@ -84,48 +68,65 @@ ob C = Cat.object C
 
 ------------------------------------------------------------------
 -- category (FinSet,bijections)
+-- M, N, L are finite sets
+-- F, G, H are bijections
 
-record FinBijection : Set where
+-- bijections between two sets M and N
+record Bijection (M N : Set) : Set where
   field 
-    f : Σ[ m ∈ ℕ ] (Fin m) → Σ[ n ∈ ℕ ] (Fin n)
-    g : Σ[ n ∈ ℕ ] (Fin n) → Σ[ m ∈ ℕ ] (Fin m)
-    injective  : {x y : Σ[ m ∈ ℕ ] (Fin m)} → f x ≡ f y → x ≡ y
-    surjective : {x : Σ[ n ∈ ℕ ] (Fin n)} → f (g x) ≡ x
+    f : M → N
+    g : N → M
+    injective  : {x y : M} → f x ≡ f y → x ≡ y
+    surjective : {x : N} → f (g x) ≡ x
 
-idBijection : (M : Σ[ m ∈ ℕ ] (Fin m)) → FinBijection 
+-- there is a bijection from each set to itself
+idBijection : (M : Set) → Bijection M M
 idBijection M = record {
     f = id ;
     g = id ;
-    injective = λ p → p ;
-    surjective = λ {M} → refl M 
+    injective = id ; 
+    surjective = λ {x} → refl x
+  } 
+
+-- composition of bijections
+∘Bijection : {M N L : Set} → Bijection N L → Bijection M N → Bijection M L
+∘Bijection G F = record {
+    f = Bijection.f G ○ Bijection.f F ;
+    g = Bijection.g F ○ Bijection.g G ;
+    injective = λ {x} {y} α → 
+                  Bijection.injective F (Bijection.injective G α) ;
+    surjective = λ {x} → 
+      Bijection.f G (Bijection.f F (Bijection.g F (Bijection.g G x)))
+        ≡⟨ ap (λ x → Bijection.f G x) (Bijection.surjective F) ⟩
+      Bijection.f G (Bijection.g G x) 
+        ≡⟨ Bijection.surjective G ⟩ 
+      x ∎
   } 
 
 -- two bijections are the "same" if they agree modulo ≡ 
-Bijection∼ : FinBijection → FinBijection → Set
-Bijection∼ M N = 
-  (let open FinBijection M in f) E.∼ (let open FinBijection N in f)
+Bijection∼ : {M N : Set} → Bijection M N → Bijection M N → Set
+Bijection∼ F G = (Bijection.f F) E.∼ (Bijection.f G)
 
--- the set of all morphisms between m and n taken modulo ≡
-BijectionSetoid : (M : Σ[ m ∈ ℕ ] (Fin m)) → (N : Σ[ n ∈ ℕ ] (Fin n)) → 
-                  Setoid L.zero L.zero
+-- the set of all bijections between two sets M and N taken modulo ≡
+BijectionSetoid : (M N : Set) → Setoid L.zero L.zero
 BijectionSetoid M N = record {
-    object = FinBijection ; 
+    object = Bijection M N ;
     _∼_ = Bijection∼ ; 
-    refl∼ = λ {B} → E.refl∼ {f = FinBijection.f B} ; 
-    sym∼ = λ {B₁} {B₂} → 
-             E.sym∼ {f = FinBijection.f B₁} {g = FinBijection.f B₂} ;
-    trans∼ = λ {B₁} {B₂} {B₃} F G → 
-               E.trans∼ {f = FinBijection.f B₁}
-                        {g = FinBijection.f B₂} 
-                        {h = FinBijection.f B₃}
-                        G F
+    refl∼ = λ {F} → E.refl∼ {f = Bijection.f F} ; 
+    sym∼ = λ {F} {G} → 
+             E.sym∼ {f = Bijection.f F} {g = Bijection.f G} ;
+    trans∼ = λ {F} {G} {H} P Q → 
+               E.trans∼ {f = Bijection.f F}
+                        {g = Bijection.f G} 
+                        {h = Bijection.f H}
+                        Q P 
     }
 
 FinCat : Cat L.zero L.zero L.zero
 FinCat = record {
           object = Σ[ n ∈ ℕ ] (Fin n) ; 
-          hom = λ M N → BijectionSetoid M N ;
-          identity = λ M → idBijection M ; 
+          hom = λ M N → {!!}  ; -- BijectionSetoid M N ;
+          identity = λ M → idBijection {!M!} ; -- idBijection (Σ[ m ∈ ℕ ] (Fin m)) ; 
           comp = {!!} ;
           comp∼ = {!!} ;
           associativity∼  = {!!} ;
