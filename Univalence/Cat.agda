@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+--{-# OPTIONS --without-K #-}
 module Cat where
 
 import Level as L
@@ -20,8 +20,14 @@ import Equivalences as E
 --}
 
 ------------------------------------------------------------------
--- Categories (adapated from:
--- http://wiki.portal.chalmers.se/agda/uploads/Main.Libraries/20110915Category.agda)
+{--
+Categories, adapted from:
+http://wiki.portal.chalmers.se/agda/uploads/Main.Libraries/20110915Category.agda
+
+Consider using: 
+https://github.com/tomprince/agda-categories
+https://github.com/tomprince/agda-categories/blob/master/Categories/Category.agda
+--}
 
 record Setoid (a b : L.Level) : Set (L.suc (a L.⊔ b)) where
   infix 2 _∼_
@@ -71,17 +77,21 @@ ob C = Cat.object C
 -- M, N, L are finite sets
 -- F, G, H are bijections
 
+
+-- finite sets ∀ m → Fin m 
+-- functions between finite sets 
+
 -- bijections between two sets M and N
-record Bijection (M N : Set) : Set where
+record Bijection (m n : ℕ) : Set where
   field 
-    f : M → N
-    g : N → M
-    injective  : {x y : M} → f x ≡ f y → x ≡ y
-    surjective : {x : N} → f (g x) ≡ x
+    f : Fin m → Fin n
+    g : Fin n → Fin m
+    injective  : {x y : Fin m} → f x ≡ f y → x ≡ y
+    surjective : {x : Fin n} → f (g x) ≡ x
 
 -- there is a bijection from each set to itself
-idBijection : (M : Set) → Bijection M M
-idBijection M = record {
+idBijection : (m : ℕ) → Bijection m m
+idBijection m = record {
     f = id ;
     g = id ;
     injective = id ; 
@@ -89,7 +99,7 @@ idBijection M = record {
   } 
 
 -- composition of bijections
-∘Bijection : {M N L : Set} → Bijection N L → Bijection M N → Bijection M L
+∘Bijection : {m n l : ℕ} → Bijection n l → Bijection m n → Bijection m l
 ∘Bijection G F = record {
     f = Bijection.f G ○ Bijection.f F ;
     g = Bijection.g F ○ Bijection.g G ;
@@ -104,14 +114,14 @@ idBijection M = record {
   } 
 
 -- two bijections are the "same" if they agree modulo ≡ 
-Bijection∼ : {M N : Set} → Bijection M N → Bijection M N → Set
-Bijection∼ F G = (Bijection.f F) E.∼ (Bijection.f G)
+∼Bijection : {m n : ℕ} → Bijection m n → Bijection m n → Set
+∼Bijection F G = (Bijection.f F) E.∼ (Bijection.f G)
 
 -- the set of all bijections between two sets M and N taken modulo ≡
-BijectionSetoid : (M N : Set) → Setoid L.zero L.zero
-BijectionSetoid M N = record {
-    object = Bijection M N ;
-    _∼_ = Bijection∼ ; 
+BijectionSetoid : (m n : ℕ) → Setoid L.zero L.zero
+BijectionSetoid m n = record {
+    object = Bijection m n ;
+    _∼_ = ∼Bijection ; 
     refl∼ = λ {F} → E.refl∼ {f = Bijection.f F} ; 
     sym∼ = λ {F} {G} → 
              E.sym∼ {f = Bijection.f F} {g = Bijection.f G} ;
@@ -124,17 +134,15 @@ BijectionSetoid M N = record {
 
 FinCat : Cat L.zero L.zero L.zero
 FinCat = record {
-          object = Σ[ n ∈ ℕ ] (Fin n) ; 
-          hom = λ M N → {!!}  ; -- BijectionSetoid M N ;
-          identity = λ M → idBijection {!M!} ; -- idBijection (Σ[ m ∈ ℕ ] (Fin m)) ; 
-          comp = {!!} ;
+          object = Σ[ m ∈ ℕ ] (Fin m) ;
+          hom = λ M N → BijectionSetoid (proj₁ M) (proj₁ N) ;
+          identity = λ M → idBijection (proj₁ M) ; 
+          comp = λ {M} {N} {L} G F → ∘Bijection G F ;
           comp∼ = {!!} ;
           associativity∼  = {!!} ;
           left-identity∼  = {!!} ;
           right-identity∼ = {!!} 
       }
-
-
 
 ------------------------------------------------------------------
 -- category (FT,path)
