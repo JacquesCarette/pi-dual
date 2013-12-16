@@ -121,9 +121,6 @@ BijectionSetoid M N = record {
                         G F
     }
 
-idBijectionSetoid : (M : Σ[ m ∈ ℕ ] (Fin m)) → Setoid L.zero L.zero
-idBijectionSetoid M = BijectionSetoid M M
-
 FinCat : Cat L.zero L.zero L.zero
 FinCat = record {
           object = Σ[ n ∈ ℕ ] (Fin n) ; 
