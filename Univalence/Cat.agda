@@ -74,12 +74,8 @@ ob C = Cat.object C
 
 ------------------------------------------------------------------
 -- category (FinSet,bijections)
--- M, N, L are finite sets
+-- M, N, L are finite sets witnessed by their sizes m, n, l
 -- F, G, H are bijections
-
-
--- finite sets ∀ m → Fin m 
--- functions between finite sets 
 
 -- bijections between two sets M and N
 record Bijection (m n : ℕ) : Set where
@@ -138,11 +134,23 @@ FinCat = record {
           hom = λ M N → BijectionSetoid (proj₁ M) (proj₁ N) ;
           identity = λ M → idBijection (proj₁ M) ; 
           comp = λ {M} {N} {L} G F → ∘Bijection G F ;
-          comp∼ = {!!} ;
+          comp∼ = λ {M} {N} {L} {G₀} {G₁} {F₀} {F₁} Q P x →
+                    Bijection.f (∘Bijection G₀ F₀) x
+                      ≡⟨ bydef ⟩
+                    Bijection.f G₀ (Bijection.f F₀ x)
+                      ≡⟨ ap (λ z → Bijection.f G₀ z) (P x) ⟩ 
+                    Bijection.f G₀ (Bijection.f F₁ x)
+                      ≡⟨ Q (Bijection.f F₁ x) ⟩ 
+                    Bijection.f (∘Bijection G₁ F₁) x ∎ ;
           associativity∼  = {!!} ;
           left-identity∼  = {!!} ;
           right-identity∼ = {!!} 
       }
+
+{--
+    f = Bijection.f G ○ Bijection.f F ;
+
+--}
 
 ------------------------------------------------------------------
 -- category (FT,path)
