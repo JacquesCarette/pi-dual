@@ -20,6 +20,19 @@ _∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} →
       (f g : (x : A) → P x) → Set (ℓ ⊔ ℓ')
 _∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → f x ≡ g x
 
+-- Lemma 2.4.2
+
+refl∼ : {A B : Set} {f : A → B} → (f ∼ f)
+refl∼ {A} {B} {f} x = refl (f x)
+
+sym∼ : {A B : Set} {f g : A → B} → (f ∼ g) → (g ∼ f)
+sym∼ H x = ! (H x) 
+
+trans∼ : {A B : Set} {f g h : A → B} → (f ∼ g) → (g ∼ h) → (f ∼ h)
+trans∼ H G x = H x ∘ G x
+
+--
+
 record qinv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
   Set (ℓ ⊔ ℓ') where
   constructor mkqinv

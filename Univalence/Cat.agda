@@ -4,11 +4,13 @@ module Cat where
 import Level as L
 open import Data.Fin
 open import Data.Nat
+open import Data.Product
 open import Data.List
 open import Function renaming (_∘_ to _○_)
 
 open import HoTT
 open import FT
+import Equivalences as E 
 
 {--
 1. postulate path2equiv
@@ -83,18 +85,50 @@ ob C = Cat.object C
 ------------------------------------------------------------------
 -- category (FinSet,bijections)
 
-record FinBijection {m n : ℕ} : Set where
+record FinBijection : Set where
   field 
-    f : Fin m → Fin n
-    g : Fin n → Fin m
-    injective  : {x y : Fin m} → f x ≡ f y → x ≡ y
-    surjective : {x : Fin n} → f (g x) ≡ x
+    f : Σ[ m ∈ ℕ ] (Fin m) → Σ[ n ∈ ℕ ] (Fin n)
+    g : Σ[ n ∈ ℕ ] (Fin n) → Σ[ m ∈ ℕ ] (Fin m)
+    injective  : {x y : Σ[ m ∈ ℕ ] (Fin m)} → f x ≡ f y → x ≡ y
+    surjective : {x : Σ[ n ∈ ℕ ] (Fin n)} → f (g x) ≡ x
+
+idBijection : (M : Σ[ m ∈ ℕ ] (Fin m)) → FinBijection 
+idBijection M = record {
+    f = id ;
+    g = id ;
+    injective = λ p → p ;
+    surjective = λ {M} → refl M 
+  } 
+
+-- two bijections are the "same" if they agree modulo ≡ 
+Bijection∼ : FinBijection → FinBijection → Set
+Bijection∼ M N = 
+  (let open FinBijection M in f) E.∼ (let open FinBijection N in f)
+
+-- the set of all morphisms between m and n taken modulo ≡
+BijectionSetoid : (M : Σ[ m ∈ ℕ ] (Fin m)) → (N : Σ[ n ∈ ℕ ] (Fin n)) → 
+                  Setoid L.zero L.zero
+BijectionSetoid M N = record {
+    object = FinBijection ; 
+    _∼_ = Bijection∼ ; 
+    refl∼ = λ {B} → E.refl∼ {f = FinBijection.f B} ; 
+    sym∼ = λ {B₁} {B₂} → 
+             E.sym∼ {f = FinBijection.f B₁} {g = FinBijection.f B₂} ;
+    trans∼ = λ {B₁} {B₂} {B₃} F G → 
+               E.trans∼ {f = FinBijection.f B₁}
+                        {g = FinBijection.f B₂} 
+                        {h = FinBijection.f B₃}
+                        G F
+    }
+
+idBijectionSetoid : (M : Σ[ m ∈ ℕ ] (Fin m)) → Setoid L.zero L.zero
+idBijectionSetoid M = BijectionSetoid M M
 
 FinCat : Cat L.zero L.zero L.zero
 FinCat = record {
-          object = {n : ℕ} → Fin n ;
-          hom = {!!} ;
-          identity = {!!} ;
+          object = Σ[ n ∈ ℕ ] (Fin n) ; 
+          hom = λ M N → BijectionSetoid M N ;
+          identity = λ M → idBijection M ; 
           comp = {!!} ;
           comp∼ = {!!} ;
           associativity∼  = {!!} ;
