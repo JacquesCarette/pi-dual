@@ -1,4 +1,4 @@
---{-# OPTIONS --without-K #-}
+{-# OPTIONS --without-K #-}
 module Cat where
 
 import Level as L
@@ -99,8 +99,7 @@ idBijection m = record {
 ∘Bijection G F = record {
     f = Bijection.f G ○ Bijection.f F ;
     g = Bijection.g F ○ Bijection.g G ;
-    injective = λ {x} {y} α → 
-                  Bijection.injective F (Bijection.injective G α) ;
+    injective = λ α → Bijection.injective F (Bijection.injective G α) ;
     surjective = λ {x} → 
       Bijection.f G (Bijection.f F (Bijection.g F (Bijection.g G x)))
         ≡⟨ ap (λ x → Bijection.f G x) (Bijection.surjective F) ⟩
@@ -134,7 +133,7 @@ FinCat = record {
           object = Σ[ m ∈ ℕ ] (Fin m) ;
           hom = λ M N → BijectionSetoid (proj₁ M) (proj₁ N) ;
           identity = λ M → idBijection (proj₁ M) ; 
-          comp = λ {M} {N} {L} G F → ∘Bijection G F ;
+          comp = λ G F → ∘Bijection G F ;
           comp∼ = λ {M} {N} {L} {G₀} {G₁} {F₀} {F₁} Q P x →
                     Bijection.f (∘Bijection G₀ F₀) x
                       ≡⟨ bydef ⟩
@@ -143,7 +142,7 @@ FinCat = record {
                     Bijection.f G₀ (Bijection.f F₁ x)
                       ≡⟨ Q (Bijection.f F₁ x) ⟩ 
                     Bijection.f (∘Bijection G₁ F₁) x ∎ ;
-          associativity∼  = λ {M} {N} {L} {O} F G H x →
+          associativity∼  = λ F G H x →
             Bijection.f (∘Bijection F G) (Bijection.f H x)
               ≡⟨ bydef ⟩
             Bijection.f F (Bijection.f G (Bijection.f H x)) ∎ ;
@@ -163,7 +162,25 @@ FinCat = record {
 -- evaluation
 
 evalF : {b₁ b₂ : FT} → (b₁ ⇛ b₂) → ⟦ b₁ ⟧ → ⟦ b₂ ⟧
-evalF c v = {!!} 
+evalF unite₊⇛ v = {!!}
+evalF uniti₊⇛ v = {!!}
+evalF swap₊⇛ v = {!!}
+evalF assocl₊⇛ v = {!!}
+evalF assocr₊⇛ v = {!!}
+evalF unite⋆⇛ v = {!!}
+evalF uniti⋆⇛ v = {!!}
+evalF swap⋆⇛ v = {!!}
+evalF assocl⋆⇛ v = {!!}
+evalF assocr⋆⇛ v = {!!}
+evalF distz⇛ v = {!!}
+evalF factorz⇛ v = {!!}
+evalF dist⇛ v = {!!}
+evalF factor⇛ v = {!!}
+evalF id⇛ v = v
+evalF (sym⇛ c) v = {!!}
+evalF (c₁ ◎ c₂) v = evalF c₂ (evalF c₁ v)
+evalF (c ⊕ c₁) v = {!!}
+evalF (c ⊗ c₁) v = {!!} 
 
 evalB : {b₁ b₂ : FT} → (b₁ ⇛ b₂) → ⟦ b₂ ⟧ → ⟦ b₁ ⟧
 evalB c v = {!!} 
@@ -174,28 +191,44 @@ _∼c_ : {b₁ b₂ : FT} → (c₁ c₂ : b₁ ⇛ b₂) → Set
 _∼c_ {b₁} {b₂} c₁ c₂ = (v : ⟦ b₁ ⟧) → evalF c₁ v ≡ evalF c₂ v
 
 -- equivalence class of paths between two types
-
 paths : FT → FT → Setoid L.zero L.zero 
 paths b₁ b₂ = record {
-               object = List (b₁ ⇛ b₂) ;
-               _∼_ = {!!} ;
-               refl∼  = {!!} ;
-               sym∼ = {!!} ;
-               trans∼ = {!!} 
+               object = b₁ ⇛ b₂ ;
+               _∼_ = _∼c_ ;
+               refl∼  = λ {c} v → refl (evalF c v) ;
+               sym∼ = λ p v → ! (p v) ;
+               trans∼ = λ q p v → (p v) ∘ (q v) 
              } 
 
+-- the category of finite types and paths
 FTCat : Cat L.zero L.zero L.zero
 FTCat = record {
           object = FT ;
-          hom = {!!} ;
-          identity = {!!} ;
-          comp = {!!} ;
-          comp∼ = {!!} ;
-          associativity∼  = {!!} ;
-          left-identity∼  = {!!} ;
-          right-identity∼ = {!!} 
+          hom = paths ;
+          identity = λ b → id⇛ {b}  ;
+          comp = λ {b₁} {b₂} {b₃} c₂ c₁ → c₁ ◎ c₂ ;
+          comp∼ = λ {b₀} {b₁} {b₂} {c₂} {c₂'} {c₁} {c₁'} q p v →
+                    evalF (c₁ ◎ c₂) v
+                      ≡⟨ bydef  ⟩
+                    evalF c₂ (evalF c₁ v)
+                      ≡⟨ ap (λ z → evalF c₂ z) (p v) ⟩ 
+                    evalF c₂ (evalF c₁' v)
+                      ≡⟨ q (evalF c₁' v) ⟩
+                    evalF (c₁' ◎ c₂') v ∎ ;
+          associativity∼  = λ r q p v →
+            evalF (p ◎ (q ◎ r)) v 
+              ≡⟨ bydef ⟩
+            evalF r (evalF q (evalF p v))
+              ≡⟨ bydef ⟩ 
+            evalF ((p ◎ q) ◎ r) v ∎ ;
+          left-identity∼  = λ p v → 
+            evalF id⇛ (evalF p v)
+              ≡⟨ bydef ⟩
+             evalF p v ∎ ; 
+          right-identity∼ = λ p v → 
+            evalF p (evalF id⇛ v) 
+              ≡⟨ bydef ⟩
+            evalF p v ∎
       }
-
-
 
 ------------------------------------------------------------------
