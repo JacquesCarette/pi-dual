@@ -232,3 +232,59 @@ FTCat = record {
       }
 
 ------------------------------------------------------------------
+{-- 
+
+Two categories C and D are equivalent if we have: 
+- a functor F : C -> D
+- a functor G : D -> C
+- two natural isomorphisms ε : F ∘ G -> I_D and η : G ∘ F -> I_C
+
+--} 
+
+_〈_,_〉 : ∀ {a b c} → (C : Cat a b c) → ob C → ob C → Set b
+C 〈 X , Y 〉 = ∥ Cat.hom C ∥ X Y
+_⟪_,_⟫ : ∀ {a b c} → (C : Cat a b c) → ob C → ob C → Setoid b c
+C ⟪ X , Y ⟫ = Cat.hom C X Y
+
+_!_∼_ :
+  ∀ {a b c} → (C : Cat a b c) → {X Y : ob C} → C 〈 X , Y 〉 → C 〈 X , Y 〉 → Set c
+_!_∼_ C {X} {Y} f g = Setoid._∼_ (Cat.hom C X Y) f g
+
+idC : ∀ {a b c} → (C : Cat a b c) → (x : ob C) → C 〈 x , x 〉
+idC C x = Cat.identity C x
+
+_!_∘_ : ∀ {a b c} → (C : Cat a b c) → {x y z : ob C } →
+        C 〈 y , z 〉 → C 〈 x , y 〉 → C 〈 x , z 〉
+C ! g ∘ f = Cat.comp C g f
+_!!_∘_ : ∀ {a b c} (C : Cat a b c) {x y z : ob C} →
+             {g0 g1 : C 〈 y , z 〉} → {f0 f1 : C 〈 x , y 〉} →
+             (g0∼g1 : let open Setoid (C ⟪ y , z ⟫) in g0 ∼ g1) →
+             (f0∼f1 : let open Setoid (C ⟪ x , y ⟫) in f0 ∼ f1) →
+             let open Cat C in let open Setoid (hom x z) in
+             comp g0 f0 ∼ comp g1 f1
+_!!_∘_ C {g0 = g0} {g1 = g1} {f0 = f0} {f1 = f1} g0∼g1 f0∼f1 =
+  Cat.comp∼ C g0∼g1 f0∼f1
+
+{- functors -}
+record _=>_ {a b c a' b' c'}
+  (C : Cat a b c) (D : Cat a' b' c') : Set (a L.⊔ a' L.⊔ b L.⊔ b' L.⊔ c L.⊔ c') where
+  field
+    object : ob C  → ob D 
+    hom : {X Y : ob C} →
+      C 〈 X , Y 〉 → D 〈 object X , object Y 〉
+    hom∼ : {X Y : ob C} → (f g : C 〈 X , Y 〉) →
+      (f∼g : C ! f ∼ g) → D ! hom f ∼ hom g
+    identity∼ : {X : ob C} →
+      D ! hom (idC C X) ∼ idC D (object X)
+{--
+    comp∼ : {X Y Z : ob C} → (f : C 〈 Y , Z 〉) → (g : C 〈 X , Y 〉) →
+      D ! hom (C ! f ∘ g) ∼ (D ! hom f ∘ hom g)
+--}
+_`_ : ∀ {a b c a' b' c'} {X : Cat a b c} → {Y : Cat a' b' c'} →
+  X => Y → ob X → ob Y
+F ` x = _=>_.object F x
+
+_``_ : ∀ {a b c a' b' c'} {X : Cat a b c} → {Y : Cat a' b' c'} →
+  {x0 x1 : ob X} → (F : X => Y) → X 〈 x0 , x1 〉 → Y 〈 F ` x0 , F ` x1 〉
+F `` f = _=>_.hom F f
+
