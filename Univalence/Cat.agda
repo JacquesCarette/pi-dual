@@ -11,6 +11,7 @@ open import Function renaming (_∘_ to _○_)
 open import HoTT
 open import FT
 import Equivalences as E 
+open import Path2Equiv
 
 {--
 1. postulate path2equiv
@@ -162,28 +163,11 @@ FinCat = record {
 -- evaluation
 
 evalF : {b₁ b₂ : FT} → (b₁ ⇛ b₂) → ⟦ b₁ ⟧ → ⟦ b₂ ⟧
-evalF unite₊⇛ v = {!!}
-evalF uniti₊⇛ v = {!!}
-evalF swap₊⇛ v = {!!}
-evalF assocl₊⇛ v = {!!}
-evalF assocr₊⇛ v = {!!}
-evalF unite⋆⇛ v = {!!}
-evalF uniti⋆⇛ v = {!!}
-evalF swap⋆⇛ v = {!!}
-evalF assocl⋆⇛ v = {!!}
-evalF assocr⋆⇛ v = {!!}
-evalF distz⇛ v = {!!}
-evalF factorz⇛ v = {!!}
-evalF dist⇛ v = {!!}
-evalF factor⇛ v = {!!}
-evalF id⇛ v = v
-evalF (sym⇛ c) v = {!!}
-evalF (c₁ ◎ c₂) v = evalF c₂ (evalF c₁ v)
-evalF (c ⊕ c₁) v = {!!}
-evalF (c ⊗ c₁) v = {!!} 
+evalF p = proj₁ (path2equiv p)
 
+-- could equivalently use sym≃ on the result of path2equiv p
 evalB : {b₁ b₂ : FT} → (b₁ ⇛ b₂) → ⟦ b₂ ⟧ → ⟦ b₁ ⟧
-evalB c v = {!!} 
+evalB p = proj₁ (path2equiv (sym⇛ p)) 
 
 -- equivalence of combinators
 
