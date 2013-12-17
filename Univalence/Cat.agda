@@ -2,7 +2,7 @@
 module Cat where
 
 import Level as L
-open import Data.Fin hiding (fromℕ)
+open import Data.Fin hiding (fromℕ; toℕ)
 open import Data.Nat
 open import Data.Product
 open import Data.List
@@ -282,7 +282,7 @@ fin2ft = record {
 -- functor from FTCat to FinCat 
 ft2fin : FTCat => FinCat
 ft2fin = record {
-    object = {!!} ;
+    object = toℕ ;
     hom = {!!} ;
     hom∼ = {!!} ;
     identity∼ = {!!} ;
