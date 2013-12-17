@@ -128,6 +128,7 @@ BijectionSetoid m n = record {
                         Q P 
     }
 
+-- the category of finite sets and bijections
 FinCat : Cat L.zero L.zero L.zero
 FinCat = record {
           object = Σ[ m ∈ ℕ ] (Fin m) ;
@@ -142,15 +143,19 @@ FinCat = record {
                     Bijection.f G₀ (Bijection.f F₁ x)
                       ≡⟨ Q (Bijection.f F₁ x) ⟩ 
                     Bijection.f (∘Bijection G₁ F₁) x ∎ ;
-          associativity∼  = {!!} ;
-          left-identity∼  = {!!} ;
-          right-identity∼ = {!!} 
+          associativity∼  = λ {M} {N} {L} {O} F G H x →
+            Bijection.f (∘Bijection F G) (Bijection.f H x)
+              ≡⟨ bydef ⟩
+            Bijection.f F (Bijection.f G (Bijection.f H x)) ∎ ;
+          left-identity∼  = λ {M} {N} F x →
+            Bijection.f (idBijection (proj₁ N)) (Bijection.f F x) 
+              ≡⟨ bydef ⟩ 
+            Bijection.f F x ∎ ;
+          right-identity∼ = λ {M} {N} F x →
+            Bijection.f F (Bijection.f (idBijection (proj₁ M)) x)
+              ≡⟨ bydef ⟩ 
+            Bijection.f F x ∎ 
       }
-
-{--
-    f = Bijection.f G ○ Bijection.f F ;
-
---}
 
 ------------------------------------------------------------------
 -- category (FT,path)
