@@ -2,7 +2,7 @@
 module Cat where
 
 import Level as L
-open import Data.Fin
+open import Data.Fin hiding (fromℕ)
 open import Data.Nat
 open import Data.Product
 open import Data.List
@@ -10,6 +10,7 @@ open import Function renaming (_∘_ to _○_)
 
 open import HoTT
 open import FT
+open import FT-Nat
 import Equivalences as E 
 open import Path2Equiv
 
@@ -20,15 +21,17 @@ open import Path2Equiv
    [where (Set is Agda's Set)].
 --}
 
-------------------------------------------------------------------
 {--
-Categories, adapted from:
+Categories, functors, etc. adapted from:
 http://wiki.portal.chalmers.se/agda/uploads/Main.Libraries/20110915Category.agda
 
 Consider using: 
 https://github.com/tomprince/agda-categories
 https://github.com/tomprince/agda-categories/blob/master/Categories/Category.agda
 --}
+
+------------------------------------------------------------------
+-- Categories
 
 record Setoid (a b : L.Level) : Set (L.suc (a L.⊔ b)) where
   infix 2 _∼_
@@ -93,7 +96,32 @@ _∣_∘_ : ∀ {a b c} → (C : Cat a b c) → {x y z : ob C } →
 C ∣ g ∘ f = Cat.comp C g f
 
 ------------------------------------------------------------------
--- category (FinSet,bijections)
+-- Functors
+record _=>_ {a b c a' b' c'} (C : Cat a b c) (D : Cat a' b' c') : 
+  Set (a L.⊔ a' L.⊔ b L.⊔ b' L.⊔ c L.⊔ c') where
+  field
+    object : ob C  → ob D 
+    hom : {X Y : ob C} →
+      C 〈 X , Y 〉 → D 〈 object X , object Y 〉
+    hom∼ : {X Y : ob C} → (f g : C 〈 X , Y 〉) →
+      (f∼g : C ∣ f ∼ g) → D ∣ hom f ∼ hom g
+    identity∼ : {X : ob C} →
+      D ∣ hom (idC C X) ∼ idC D (object X)
+    comp∼ : {X Y Z : ob C} → (f : C 〈 Y , Z 〉) → (g : C 〈 X , Y 〉) →
+      D ∣ hom (C ∣ f ∘ g) ∼ (D ∣ hom f ∘ hom g)
+
+-- Applying the functor to objects
+_`_ : ∀ {a b c a' b' c'} {X : Cat a b c} → {Y : Cat a' b' c'} →
+  X => Y → ob X → ob Y
+F ` x = _=>_.object F x
+
+-- Applying the functor to morphisms
+_``_ : ∀ {a b c a' b' c'} {X : Cat a b c} → {Y : Cat a' b' c'} →
+  {x0 x1 : ob X} → (F : X => Y) → X 〈 x0 , x1 〉 → Y 〈 F ` x0 , F ` x1 〉
+F `` f = _=>_.hom F f
+
+------------------------------------------------------------------
+-- The category (FinSet,bijections)
 -- M, N, L are finite sets witnessed by their sizes m, n, l
 -- F, G, H are bijections
 
@@ -150,11 +178,11 @@ BijectionSetoid m n = record {
 -- the category of finite sets and bijections
 FinCat : Cat L.zero L.zero L.zero
 FinCat = record {
-          object = Σ[ m ∈ ℕ ] (Fin m) ;
-          hom = λ M N → BijectionSetoid (proj₁ M) (proj₁ N) ;
-          identity = λ M → idBijection (proj₁ M) ; 
+          object = ℕ ; 
+          hom = λ m n → BijectionSetoid m n ; 
+          identity = idBijection ;
           comp = λ G F → ∘Bijection G F ;
-          comp∼ = λ {M} {N} {L} {G₀} {G₁} {F₀} {F₁} Q P x →
+          comp∼ = λ {m} {n} {l} {G₀} {G₁} {F₀} {F₁} Q P x →
                     Bijection.f (∘Bijection G₀ F₀) x
                       ≡⟨ bydef ⟩
                     Bijection.f G₀ (Bijection.f F₀ x)
@@ -166,18 +194,18 @@ FinCat = record {
             Bijection.f (∘Bijection F G) (Bijection.f H x)
               ≡⟨ bydef ⟩
             Bijection.f F (Bijection.f G (Bijection.f H x)) ∎ ;
-          left-identity∼  = λ {M} {N} F x →
-            Bijection.f (idBijection (proj₁ N)) (Bijection.f F x) 
+          left-identity∼  = λ {m} {n} F x →
+            Bijection.f (idBijection n) (Bijection.f F x) 
               ≡⟨ bydef ⟩ 
             Bijection.f F x ∎ ;
-          right-identity∼ = λ {M} {N} F x →
-            Bijection.f F (Bijection.f (idBijection (proj₁ M)) x)
+          right-identity∼ = λ {m} {n} F x →
+            Bijection.f F (Bijection.f (idBijection m) x)
               ≡⟨ bydef ⟩ 
             Bijection.f F x ∎ 
       }
 
 ------------------------------------------------------------------
--- category (FT,path)
+-- The category (FT,path)
 
 -- evaluation
 evalF : {b₁ b₂ : FT} → (b₁ ⇛ b₂) → ⟦ b₁ ⟧ → ⟦ b₂ ⟧
@@ -234,7 +262,6 @@ FTCat = record {
 
 ------------------------------------------------------------------
 {-- 
-
 Two categories C and D are equivalent if we have: 
 - a functor F : C -> D
 - a functor G : D -> C
@@ -242,29 +269,25 @@ Two categories C and D are equivalent if we have:
 
 --} 
 
--- Functors
-record _=>_ {a b c a' b' c'} (C : Cat a b c) (D : Cat a' b' c') : 
-  Set (a L.⊔ a' L.⊔ b L.⊔ b' L.⊔ c L.⊔ c') where
-  field
-    object : ob C  → ob D 
-    hom : {X Y : ob C} →
-      C 〈 X , Y 〉 → D 〈 object X , object Y 〉
-    hom∼ : {X Y : ob C} → (f g : C 〈 X , Y 〉) →
-      (f∼g : C ∣ f ∼ g) → D ∣ hom f ∼ hom g
-    identity∼ : {X : ob C} →
-      D ∣ hom (idC C X) ∼ idC D (object X)
-    comp∼ : {X Y Z : ob C} → (f : C 〈 Y , Z 〉) → (g : C 〈 X , Y 〉) →
-      D ∣ hom (C ∣ f ∘ g) ∼ (D ∣ hom f ∘ hom g)
+-- functor from FinCat to FTCat
+fin2ft : FinCat => FTCat
+fin2ft = record {
+    object = fromℕ ;
+    hom = {!!} ;
+    hom∼ = {!!} ;
+    identity∼ = {!!} ;
+    comp∼ = {!!}
+  }
 
--- Applying the functor to objects
-_`_ : ∀ {a b c a' b' c'} {X : Cat a b c} → {Y : Cat a' b' c'} →
-  X => Y → ob X → ob Y
-F ` x = _=>_.object F x
-
--- Applying the functor to morphisms
-_``_ : ∀ {a b c a' b' c'} {X : Cat a b c} → {Y : Cat a' b' c'} →
-  {x0 x1 : ob X} → (F : X => Y) → X 〈 x0 , x1 〉 → Y 〈 F ` x0 , F ` x1 〉
-F `` f = _=>_.hom F f
+-- functor from FTCat to FinCat 
+ft2fin : FTCat => FinCat
+ft2fin = record {
+    object = {!!} ;
+    hom = {!!} ;
+    hom∼ = {!!} ;
+    identity∼ = {!!} ;
+    comp∼ = {!!}
+  }
 
 ------------------------------------------------------------------
 

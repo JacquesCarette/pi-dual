@@ -100,6 +100,7 @@ data FTN : FT → Set where
 -- in both the following two functions we are missing fundamental information
 -- about how a type relates to its normal form...
 
+{--
 normalize⇛ : {b₁ b₂ : FT} → (b₁ ⇛ b₂) → (normalize b₁ ⇛ normalize b₂)
 normalize⇛ unite₊⇛ = id⇛
 normalize⇛ uniti₊⇛ = id⇛
@@ -126,7 +127,7 @@ swapii+1 {PLUS ONE (PLUS ONE b)} 0 =
   (assocl₊⇛ {ONE} {ONE} {b}) ◎ (swap₊⇛ ⊕ id⇛) ◎ (assocr₊⇛ {ONE} {ONE} {b})
 swapii+1 {PLUS ONE b} (suc n) = id⇛ ⊕ swapii+1 n
 swapii+1 _ = {!!} 
-
+--}
 ------------------------------------------------------------------------------
 
 -- needs LeftCancellation
