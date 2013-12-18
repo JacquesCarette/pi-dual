@@ -205,6 +205,35 @@ FinCat = record {
       }
 
 ------------------------------------------------------------------
+-- The category (FinSet,HoTT-equivalence)
+-- M, N, L are finite sets witnessed by their sizes m, n, l
+-- F, G, H are equivalences
+
+-- the set of all equivalences between two sets M and N taken modulo ≡
+EqSetoid : (m n : ℕ) → Setoid L.zero L.zero
+EqSetoid m n = record {
+    object = (Fin m) E.≃ (Fin n) ; 
+    _∼_ = {!!} ;
+    refl∼ = {!!} ;
+    sym∼ = {!!} ;
+    trans∼ = {!!} 
+    }
+
+
+
+FinCat' : Cat L.zero L.zero L.zero
+FinCat' = record {
+          object = ℕ ; 
+          hom = EqSetoid ;
+          identity = λ m → E.id≃ {A = Fin m} ;
+          comp = λ q p → E.trans≃ p q ;
+          comp∼ = {!!} ; 
+          associativity∼  = {!!} ;
+          left-identity∼  = {!!} ;
+          right-identity∼ = {!!} 
+      }
+
+------------------------------------------------------------------
 -- The category (FT,path)
 
 -- evaluation
@@ -235,7 +264,7 @@ FTCat = record {
           object = FT ;
           hom = paths ;
           identity = λ b → id⇛ {b}  ;
-          comp = λ {b₁} {b₂} {b₃} c₂ c₁ → c₁ ◎ c₂ ;
+          comp = λ c₂ c₁ → c₁ ◎ c₂ ;
           comp∼ = λ {b₀} {b₁} {b₂} {c₂} {c₂'} {c₁} {c₁'} q p v →
                     evalF (c₁ ◎ c₂) v
                       ≡⟨ bydef  ⟩
