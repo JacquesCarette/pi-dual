@@ -6,6 +6,9 @@ open import Data.Unit
 open import Data.Nat renaming (_⊔_ to _⊔ℕ_)
 open import Data.Sum renaming (map to _⊎→_)
 open import Data.Product
+import Data.Fin as F
+open import Data.Vec
+import Data.List as L
 open import Function renaming (_∘_ to _○_)
 
 open import FT
@@ -121,7 +124,9 @@ normalize⇛ (sym⇛ c) = sym⇛ (normalize⇛ c)
 normalize⇛ (c₁ ◎ c₂) = normalize⇛ c₁ ◎ normalize⇛ c₂
 normalize⇛ (c ⊕ c₁) = {!!}
 normalize⇛ (c ⊗ c₁) = {!!} 
+--}
 
+{--
 swapii+1 : {b : FT} → (i : ℕ) → (b ⇛ b)
 swapii+1 {PLUS ONE (PLUS ONE b)} 0 = 
   (assocl₊⇛ {ONE} {ONE} {b}) ◎ (swap₊⇛ ⊕ id⇛) ◎ (assocr₊⇛ {ONE} {ONE} {b})
