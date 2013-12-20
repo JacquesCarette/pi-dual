@@ -179,7 +179,7 @@ BijectionSetoid m n = record {
 FinCat : Cat L.zero L.zero L.zero
 FinCat = record {
           object = ℕ ; 
-          hom = λ m n → BijectionSetoid m n ; 
+          hom = BijectionSetoid ; 
           identity = idBijection ;
           comp = λ G F → ∘Bijection G F ;
           comp∼ = λ {m} {n} {l} {G₀} {G₁} {F₀} {F₁} Q P x →
@@ -209,28 +209,43 @@ FinCat = record {
 -- M, N, L are finite sets witnessed by their sizes m, n, l
 -- F, G, H are equivalences
 
+-- an equivalence (A ≃ B) consists of a function f : A → B 
+-- and a proof that it is an equivalence; the proof consists of
+-- two functions g and h : B → A together with two proofs that 
+-- (f ○ g) ∼ id and (h ○ f) ∼ id
+-- for now, I am suggesting that two such equivalences are the same 
+-- if the forward functions f are the same
+∼Equiv : {m n : ℕ} → (Fin m E.≃ Fin n) → (Fin m E.≃ Fin n) → Set
+∼Equiv F G = (proj₁ F) E.∼ (proj₁ G)
+
 -- the set of all equivalences between two sets M and N taken modulo ≡
-EqSetoid : (m n : ℕ) → Setoid L.zero L.zero
-EqSetoid m n = record {
+EquivSetoid : (m n : ℕ) → Setoid L.zero L.zero
+EquivSetoid m n = record {
     object = (Fin m) E.≃ (Fin n) ; 
-    _∼_ = {!!} ;
-    refl∼ = {!!} ;
-    sym∼ = {!!} ;
-    trans∼ = {!!} 
+    _∼_ = ∼Equiv ;
+    refl∼ = λ {F} → E.refl∼ {f = proj₁ F} ;
+    sym∼ = λ {F} {G} → E.sym∼ {f = proj₁ F} {g = proj₁ G} ;
+    trans∼ = λ {F} {G} {H} P Q → 
+                E.trans∼ {f = proj₁ F} {g = proj₁ G} {h = proj₁ H} Q P 
     }
-
-
 
 FinCat' : Cat L.zero L.zero L.zero
 FinCat' = record {
           object = ℕ ; 
-          hom = EqSetoid ;
+          hom = EquivSetoid ;
           identity = λ m → E.id≃ {A = Fin m} ;
           comp = λ q p → E.trans≃ p q ;
-          comp∼ = {!!} ; 
-          associativity∼  = {!!} ;
-          left-identity∼  = {!!} ;
-          right-identity∼ = {!!} 
+          comp∼ = λ {m} {n} {l} {G₀} {G₁} {F₀} {F₁} Q P x → 
+                    proj₁ (E.trans≃ F₀ G₀) x 
+                      ≡⟨ bydef ⟩
+                    proj₁ G₀ (proj₁ F₀ x)
+                      ≡⟨ ap (λ z → proj₁ G₀ z) (P x) ⟩
+                    proj₁ G₀ (proj₁ F₁ x)
+                      ≡⟨ Q (proj₁ F₁ x) ⟩
+                    proj₁ (E.trans≃ F₁ G₁) x ∎ ;
+          associativity∼  = λ F G H x → refl (proj₁ F (proj₁ G (proj₁ H x))) ;
+          left-identity∼  = λ {m} {n} F x → refl (proj₁ F x) ;
+          right-identity∼ = λ {m} {n} F x → refl (proj₁ F x) 
       }
 
 ------------------------------------------------------------------
@@ -298,8 +313,8 @@ Two categories C and D are equivalent if we have:
 
 --} 
 
--- functor from FinCat to FTCat
-fin2ft : FinCat => FTCat
+-- functor from FinCat' to FTCat
+fin2ft : FinCat' => FTCat
 fin2ft = record {
     object = fromℕ ;
     hom = {!!} ;
@@ -308,8 +323,8 @@ fin2ft = record {
     comp∼ = {!!}
   }
 
--- functor from FTCat to FinCat 
-ft2fin : FTCat => FinCat
+-- functor from FTCat to FinCat'
+ft2fin : FTCat => FinCat'
 ft2fin = record {
     object = toℕ ;
     hom = {!!} ;
