@@ -313,11 +313,17 @@ Two categories C and D are equivalent if we have:
 
 --} 
 
+ff : {X Y : ℕ} → (Fin X E.≃ Fin Y) → (fromℕ X ⇛ fromℕ Y)
+ff = {!!}
+
+gg : {X Y : FT} → (X ⇛ Y) → (Fin (toℕ X) E.≃ Fin (toℕ Y))
+gg = {!!}
+
 -- functor from FinCat' to FTCat
 fin2ft : FinCat' => FTCat
 fin2ft = record {
     object = fromℕ ;
-    hom = {!!} ;
+    hom = ff ;  -- 
     hom∼ = {!!} ;
     identity∼ = {!!} ;
     comp∼ = {!!}
@@ -327,7 +333,7 @@ fin2ft = record {
 ft2fin : FTCat => FinCat'
 ft2fin = record {
     object = toℕ ;
-    hom = {!!} ;
+    hom = gg ; 
     hom∼ = {!!} ;
     identity∼ = {!!} ;
     comp∼ = {!!}
