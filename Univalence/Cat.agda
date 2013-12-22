@@ -313,16 +313,16 @@ Two categories C and D are equivalent if we have:
 
 --} 
 
-ff : {X Y : ℕ} → (Fin X E.≃ Fin Y) → (fromℕ X ⇛ fromℕ Y)
+ff : {m n : ℕ} → (Fin m E.≃ Fin n) → (fromℕ m ⇛ fromℕ n)
 ff = {!!}
 
-gg : {X Y : FT} → (X ⇛ Y) → (Fin (toℕ X) E.≃ Fin (toℕ Y))
+gg : {b₀ b₁ : FT} → (b₀ ⇛ b₁) → (Fin (suc (toℕ b₀)) E.≃ Fin (suc (toℕ b₁)))
 gg = {!!}
 
 -- functor from FinCat' to FTCat
 fin2ft : FinCat' => FTCat
 fin2ft = record {
-    object = fromℕ ;
+    object = fromℕ ; -- (Fin 1) should map to ZERO
     hom = ff ;  -- 
     hom∼ = {!!} ;
     identity∼ = {!!} ;
@@ -332,7 +332,7 @@ fin2ft = record {
 -- functor from FTCat to FinCat'
 ft2fin : FTCat => FinCat'
 ft2fin = record {
-    object = toℕ ;
+    object = λ b → suc (toℕ b) ; -- ZERO maps to (Fin 1)
     hom = gg ; 
     hom∼ = {!!} ;
     identity∼ = {!!} ;
