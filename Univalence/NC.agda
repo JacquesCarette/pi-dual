@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+-- {-# OPTIONS --without-K #-}
 
 module NC where
 
@@ -34,50 +34,39 @@ toNormalNat (suc n) (F.suc f) = inj₂ (toNormalNat n f)
 equivToVec : {n : ℕ} → ⟦ n ⟧ℕ ≃ ⟦ n ⟧ℕ → Vec (F.Fin n) n
 equivToVec {n} (f , _) = tabulate ((fromNormalNat n) ○ f ○ (toNormalNat n))
 
--- Swap the thing here with the next thing; size of the type must be at least 2
-swapi : {n : ℕ} → F.Fin n → (fromℕ (suc (suc n))) ⇛ (fromℕ (suc (suc n)))
-swapi F.zero =
-  (assocl₊⇛) ◎ (swap₊⇛ ⊕ id⇛) ◎ (assocr₊⇛)
-swapi (F.suc n) = id⇛ ⊕ swapi n
+swapi : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
+swapi {zero} ()
+swapi {suc n} F.zero = assocl₊⇛ ◎ swap₊⇛ ⊕ id⇛ ◎ assocr₊⇛
+swapi {suc n} (F.suc i) = id⇛ ⊕ swapi {n} i
 
-upFrom : {lim : ℕ} → (m : F.Fin lim) → F.Fin′ m → L.List (F.Fin lim)
-upFrom max min = {!!}
--- fails due to --without-K
--- with max F.- (F.suc min)
--- ... | F.zero = []
--- ... | _ = min ∷ (upFrom max (F.suc min))
+-- swapUpTo i permutes the combinator left by one up to i
+-- if possible values are X a b c Y d e, swapUpTo 3's possible outputs are a b c X Y d e
+swapUpTo : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
+swapUpTo F.zero = id⇛
+swapUpTo (F.suc i) = swapi F.zero ◎ id⇛ ⊕ swapUpTo i
+
+-- swapDownFrom i permutes the combinator right by one up to i (the reverse of swapUpTo)
+swapDownFrom : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
+swapDownFrom F.zero = id⇛
+swapDownFrom (F.suc i) = id⇛ ⊕ swapUpTo i ◎ swapi F.zero  
 
 -- TODO: verify that this is actually correct
 -- Idea: To swap n < m with each other, swap n, n + 1, ... , m - 1, m, then go back down, so that m and n are swapped and everything else is in the same spot
-swapmn : {lim : ℕ} → (m : F.Fin lim) → F.Fin′ m → (fromℕ (suc (suc lim))) ⇛ (fromℕ (suc (suc lim)))
-swapmn m n = L.foldr (λ i p → p ◎ swapi i) (L.foldl (λ p i → p ◎ swapi i) (swapi m) (upFrom m n)) (upFrom m n) 
+swapmn : {lim : ℕ} → (m : F.Fin lim) → F.Fin′ m → (fromℕ lim) ⇛ (fromℕ lim)
+swapmn F.zero ()
+swapmn (F.suc m) (F.zero) = swapUpTo m ◎ swapi m ◎ swapDownFrom m
+swapmn (F.suc m) (F.suc n) = id⇛ ⊕ swapmn m n
 
--- Do a fold along the vector with buildPath to compute the path. Only add
--- something to the path if the item it maps to is strictly greater than the
--- index it's at---this eliminates duplication, and lets us compose the
--- combinators nicely.
+-- makeSingleComb {combinator size} (arrayElement) (arrayIndex)
+makeSingleComb : {n : ℕ} → F.Fin n → F.Fin n → (fromℕ n) ⇛ (fromℕ n)
+makeSingleComb j i with F.compare i j
+makeSingleComb .j .(F.inject i) | F.less j i = swapmn j i
+makeSingleComb j i | _ = id⇛
 
+-- upTo n returns [0, 1, ..., n-1] as Fins
+upTo : (n : ℕ) → Vec (F.Fin n) n
+upTo n = tabulate {n} id
 
--- TODO: this really needs to be the function for some sort of indexed fold that doesn't seem to be in the standard library
-buildPath : (max : ℕ) → {n : ℕ} → F.Fin max → (fromℕ n) ⇛ (fromℕ n) → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
-buildPath max {remSize} elem oldPath = {!!} -- with (F.fromℕ (max F.ℕ-ℕ (suc remSize)) < elem)
--- ... | p = ?
-
-makePath' : {max : ℕ} → (i : F.Fin max) → (j : F.Fin max) → (fromℕ (suc (suc max)) ⇛ (fromℕ (suc (suc max))) → (fromℕ (suc (suc max))) ⇛ (fromℕ (suc (suc max))))
-makePath' i j p with F.compare i j
-makePath' .(F.inject i') j p | F.less .j i' = swapmn j i' ◎ p
-makePath' i .i p | F.equal .i = p
-makePath' i .(F.inject j') p | F.greater .i j' = p
-
-{-- cleaner version of makePath' that again seems to be broken by --without-K 
-makePath : {max : ℕ} → (i : F.Fin max) → Vec (F.Fin max) max
-         → (fromℕ max) ⇛ (fromℕ max)
-makePath {zero} i [] = id⇛
-makePath {suc zero} i (j ∷ []) = id⇛
-makePath {suc (suc max)} i (j ∷ rest) = ?
---}
-
-vecToPath : {n : ℕ} → Vec (F.Fin n) n → (fromℕ n) ⇛ (fromℕ n)
-vecToPath = {!!} -- writing this to use makePath' should also run into --without-K
--- foldr (λ n → (fromℕ n) ⇛ (fromℕ n)) (buildPath n) id⇛ -- (buildPath n) id
+vecToComb : {n : ℕ} → Vec (F.Fin n) n → (fromℕ n) ⇛ (fromℕ n)
+vecToComb {n} vec = foldr (λ i → fromℕ n ⇛ fromℕ n) _◎_ id⇛ (zipWith makeSingleComb vec (upTo n))
 
