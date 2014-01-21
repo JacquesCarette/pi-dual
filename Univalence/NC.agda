@@ -20,6 +20,7 @@ open import Equivalences
 open import TypeEquivalences using (path⊎)
 open import Path2Equiv
 open import LeftCancellation
+open import Simplify
 
 fromNormalNat : (n : ℕ) → ⟦ n ⟧ℕ → F.Fin n
 fromNormalNat zero ()
@@ -79,3 +80,17 @@ vecToComb {n} vec = foldr (λ i → fromℕ n ⇛ fromℕ n) _◎_ id⇛ (zipWit
 -- TODO: this has already basically been defined elsewhere; find it & use that
 combToVec : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n
 combToVec = ?
+
+-- Testing
+
+z : ∀ {n} → F.Fin (suc n)
+z = F.zero
+
+o : ∀ {n} → F.Fin (suc (suc n))
+o = F.suc z
+
+t : ∀ {n} → F.Fin (suc (suc (suc n)))
+t = F.suc o
+
+test = simplify (vecToComb {3} (o ∷ t ∷ z ∷ []))
+
