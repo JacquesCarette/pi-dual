@@ -34,6 +34,12 @@ toNormalNat (suc n) (F.suc f) = inj₂ (toNormalNat n f)
 equivToVec : {n : ℕ} → ⟦ n ⟧ℕ ≃ ⟦ n ⟧ℕ → Vec (F.Fin n) n
 equivToVec {n} (f , _) = tabulate ((fromNormalNat n) ○ f ○ (toNormalNat n))
 
+-- TODO: vecToEquiv needs an extra proof that the vector is in fact "normal" in order
+-- to define it correctly
+-- Or we could just only use indices i such that vec[i] > i, like in vecToComb...should work
+vecToEquiv : {n : ℕ} → Vec (F.Fin n) n → ⟦ n ⟧ℕ ≃ ⟦ n ⟧ℕ
+vecToEquiv = {!!}
+
 swapi : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
 swapi {zero} ()
 swapi {suc n} F.zero = assocl₊⇛ ◎ swap₊⇛ ⊕ id⇛ ◎ assocr₊⇛
@@ -70,3 +76,6 @@ upTo n = tabulate {n} id
 vecToComb : {n : ℕ} → Vec (F.Fin n) n → (fromℕ n) ⇛ (fromℕ n)
 vecToComb {n} vec = foldr (λ i → fromℕ n ⇛ fromℕ n) _◎_ id⇛ (zipWith makeSingleComb vec (upTo n))
 
+-- TODO: this has already basically been defined elsewhere; find it & use that
+combToVec : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n
+combToVec = ?
