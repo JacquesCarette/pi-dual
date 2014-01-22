@@ -38,8 +38,12 @@ equivToVec {n} (f , _) = tabulate ((fromNormalNat n) ○ f ○ (toNormalNat n))
 -- TODO: vecToEquiv needs an extra proof that the vector is in fact "normal" in order
 -- to define it correctly
 -- Or we could just only use indices i such that vec[i] > i, like in vecToComb...should work
+--
+-- JC: below is the term which Agda more-or-less automatically fills in for this signature.
+-- So I am thinking that the signature is not really saying what you really want?
 vecToEquiv : {n : ℕ} → Vec (F.Fin n) n → ⟦ n ⟧ℕ ≃ ⟦ n ⟧ℕ
-vecToEquiv = {!!}
+vecToEquiv [] = id , mkisequiv (λ z → z) (λ ()) (λ z → z) (λ ())
+vecToEquiv (x ∷ v) = id , mkisequiv (λ z → z) refl (λ z → z) refl
 
 swapi : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
 swapi {zero} ()
@@ -79,7 +83,8 @@ vecToComb {n} vec = foldr (λ i → fromℕ n ⇛ fromℕ n) _◎_ id⇛ (zipWit
 
 -- TODO: this has already basically been defined elsewhere; find it & use that
 combToVec : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n
-combToVec = ?
+combToVec {zero} _ = []
+combToVec {suc n} c = {!!}
 
 -- Testing
 
