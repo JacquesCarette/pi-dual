@@ -2,6 +2,7 @@
 module Simplify where
 
 open import FT
+open import HoTT
 
 -- just flip.  It is he caller's responsibility to do other things
 flip : {b₁ b₂ : FT} → b₂ ⇛ b₁ → b₁ ⇛ b₂
@@ -24,6 +25,9 @@ flip (sym⇛ p) = p
 flip (p ◎ q) = flip q ◎ flip p
 flip (p ⊕ q) = flip p ⊕ flip q
 flip (p ⊗ q) = flip p ⊗ flip q
+
+flip-id-lemma : ∀ {b} → flip {b} {b} id⇛ ≡ id⇛
+flip-id-lemma = λ {b} → refl id⇛
 
 -- we're going to be pretty brute-force about this, for now
 -- All this is going to be one huge mutual definition.

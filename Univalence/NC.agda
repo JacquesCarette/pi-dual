@@ -39,11 +39,8 @@ equivToVec {n} (f , _) = tabulate ((fromNormalNat n) ○ f ○ (toNormalNat n))
 -- to define it correctly
 -- Or we could just only use indices i such that vec[i] > i, like in vecToComb...should work
 --
--- JC: below is the term which Agda more-or-less automatically fills in for this signature.
--- So I am thinking that the signature is not really saying what you really want?
 vecToEquiv : {n : ℕ} → Vec (F.Fin n) n → ⟦ n ⟧ℕ ≃ ⟦ n ⟧ℕ
-vecToEquiv [] = id , mkisequiv (λ z → z) (λ ()) (λ z → z) (λ ())
-vecToEquiv (x ∷ v) = id , mkisequiv (λ z → z) refl (λ z → z) refl
+vecToEquiv = {!!}
 
 swapi : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
 swapi {zero} ()
@@ -98,4 +95,18 @@ t : ∀ {n} → F.Fin (suc (suc (suc n)))
 t = F.suc o
 
 test = simplify (vecToComb {3} (o ∷ t ∷ z ∷ []))
+
+-- show that all combinators 1 -> 1 simplify to id
+lemma : (c : ONE ⇛ ONE) → simplify c ≡ id⇛
+lemma id⇛ = refl id⇛
+lemma (sym⇛ c) = ap Simplify.flip (lemma c)
+lemma (uniti₊⇛ ◎ unite₊⇛) = refl id⇛
+lemma (uniti₊⇛ ◎ sym⇛ c₂) = {!!}
+lemma (uniti₊⇛ ◎ (c₂ ◎ c₃)) = {!!}
+lemma (uniti⋆⇛ ◎ unite⋆⇛) = refl id⇛
+lemma (uniti⋆⇛ ◎ sym⇛ c₂) = {!!}
+lemma (uniti⋆⇛ ◎ (c₂ ◎ c₃)) = {!!}
+lemma (id⇛ ◎ c₂) = lemma c₂
+lemma (sym⇛ c₁ ◎ c₂) = {!!}
+lemma (c₁ ◎ c₂ ◎ c₃) = {!!}
 
