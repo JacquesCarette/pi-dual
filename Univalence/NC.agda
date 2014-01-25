@@ -101,10 +101,14 @@ lemma : (c : ONE ⇛ ONE) → simplify c ≡ id⇛
 lemma id⇛ = refl id⇛
 lemma (sym⇛ c) = ap Simplify.flip (lemma c)
 lemma (uniti₊⇛ ◎ unite₊⇛) = refl id⇛
-lemma (uniti₊⇛ ◎ sym⇛ c₂) = {!!}
+lemma (uniti₊⇛ ◎ sym⇛ uniti₊⇛) = refl id⇛
+lemma (uniti₊⇛ ◎ sym⇛ (sym⇛ c₂)) = {!lemma (uniti₊⇛ ◎ c₂)!}
+lemma (uniti₊⇛ ◎ sym⇛ (c₂ ◎ c₃)) = {!!}
 lemma (uniti₊⇛ ◎ (c₂ ◎ c₃)) = {!!}
 lemma (uniti⋆⇛ ◎ unite⋆⇛) = refl id⇛
-lemma (uniti⋆⇛ ◎ sym⇛ c₂) = {!!}
+lemma (uniti⋆⇛ ◎ sym⇛ uniti⋆⇛) = refl id⇛
+lemma (uniti⋆⇛ ◎ sym⇛ (sym⇛ c₂)) = {!!}
+lemma (uniti⋆⇛ ◎ sym⇛ (c₂ ◎ c₃)) = {!!}
 lemma (uniti⋆⇛ ◎ (c₂ ◎ c₃)) = {!!}
 lemma (id⇛ ◎ c₂) = lemma c₂
 lemma (sym⇛ c₁ ◎ c₂) = {!!}
