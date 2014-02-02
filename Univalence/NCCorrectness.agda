@@ -105,7 +105,9 @@ vecToCombWorks {n} v =
     {fromℕ n ⇛ fromℕ n}
     {n}
     (λ i → fromℕ n ⇛ fromℕ n)
-    (λ n′ v c → (i : Fin n′) → ?) -- (evalVec {n′} v i) ≡ (evalComb c (finToVal i)))
+    -- I think we need to rewrite vecToComb using an indexed fold to have all the information
+    -- here that we need for the correctness proof [Z]
+    (λ n′ v c → (i : Fin n′) → {!!}) -- (evalVec {n′} v i) ≡ (evalComb c (finToVal i)))
     _◎_
     id⇛
     {!!}
