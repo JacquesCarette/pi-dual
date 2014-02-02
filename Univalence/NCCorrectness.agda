@@ -77,6 +77,8 @@ foldrWorks B P combine base pcombine pbase (x ∷ v) =
 -- Would simplify the correctness condition we're trying to prove 
 
 -- Correctness specifically for the subset of combinators used in vecToComb
+-- Should be able to use these to build up all the important lemmas for the final
+-- proof, then use vecRepWorks to finish it off
 data vecRep : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (Fin n) n → Set where
   vr-id    : {n : ℕ} → vecRep (id⇛ {fromℕ n}) (upTo n)
   vr-swap  : {n : ℕ}
@@ -99,6 +101,8 @@ vecRepWorks (vr-plus {c = c} {v = v} vr) (suc i) =
   inj₂ (finToVal (v !! i)) ≡⟨ ap inj₂ (vecRepWorks vr i) ⟩
   (evalComb (id⇛ ⊕ c) (finToVal (suc i)) ∎)
 
+-- XXX: the predicate here should probably return a vecRep, and the proof should get finished
+-- off by vecRepWorks; might want to break that out into separate lemmas
 vecToCombWorks : {n : ℕ} → (v : Vec (Fin n) n) → (i : Fin n) → (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
 vecToCombWorks {n} v =
   foldrWorks
@@ -110,8 +114,8 @@ vecToCombWorks {n} v =
     (λ n′ v c → (i : Fin n′) → {!!}) -- (evalVec {n′} v i) ≡ (evalComb c (finToVal i)))
     _◎_
     id⇛
-    {!!}
-    {!!}
+    {!!} -- combination lemma
+    {!!} -- base case lemma
     (zipWith makeSingleComb v (upTo n))
 
 
