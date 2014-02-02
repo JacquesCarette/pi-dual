@@ -62,6 +62,17 @@ map!! {n = zero} f [] ()
 map!! {n = suc n} f (x ∷ xs) zero = refl (f x)
 map!! {n = suc n} f (x ∷ xs) (suc i) = map!! f xs i
 
+foldrWorks : {A : Set} → {m : ℕ} → (B : ℕ → Set) → (P : (n : ℕ) → Vec A n → B n → Set)
+           → (_⊕_ : {n : ℕ} → A → B n → B (suc n)) → (base : B zero)
+           → ({n : ℕ} → (a : A) → (v : Vec A n) → (b : B n) → P n v b
+              → P (suc n) (a ∷ v) (a ⊕ b))
+           → P zero [] base
+           → (v : Vec A m)
+           → P m v (foldr B _⊕_ base v)
+foldrWorks B P combine base pcombine pbase [] = pbase
+foldrWorks B P combine base pcombine pbase (x ∷ v) =
+  pcombine x v (foldr B combine base v) (foldrWorks B P combine base pcombine pbase v)
+
 -- IDEA: reformulate evaluation as a relation between a combinator and its output vector?
 -- Would simplify the correctness condition we're trying to prove 
 
@@ -89,7 +100,17 @@ vecRepWorks (vr-plus {c = c} {v = v} vr) (suc i) =
   (evalComb (id⇛ ⊕ c) (finToVal (suc i)) ∎)
 
 vecToCombWorks : {n : ℕ} → (v : Vec (Fin n) n) → (i : Fin n) → (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
-vecToCombWorks = {!!}
+vecToCombWorks {n} v =
+  foldrWorks
+    {fromℕ n ⇛ fromℕ n}
+    {n}
+    (λ i → fromℕ n ⇛ fromℕ n)
+    (λ n′ v c → (i : Fin n′) → ?) -- (evalVec {n′} v i) ≡ (evalComb c (finToVal i)))
+    _◎_
+    id⇛
+    {!!}
+    {!!}
+    (zipWith makeSingleComb v (upTo n))
 
 
 
