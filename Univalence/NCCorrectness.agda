@@ -1,9 +1,10 @@
 module NCCorrectness where
 
+open import Data.Unit
 open import Data.Vec
 open import Data.Fin hiding (fromℕ)
 open import Data.Nat using ( ℕ ; zero ; suc )
-open import Data.Sum
+open import Data.Sum hiding ( map )
 
 open import Function renaming (_∘_ to _○_)
 
@@ -55,6 +56,16 @@ liftFin f x (suc n) = f n
 _!!_ : {A : Set} → {n : ℕ} → Vec A n → Fin n → A
 _!!_ v i = lookup i v
 
+map!! : {A B : Set} → {n : ℕ} → (f : A → B) → (v : Vec A n) → (i : Fin n)
+      → (map f v) !! i ≡ f (v !! i)
+map!! {n = zero} f [] ()
+map!! {n = suc n} f (x ∷ xs) zero = refl (f x)
+map!! {n = suc n} f (x ∷ xs) (suc i) = map!! f xs i
+
+-- IDEA: reformulate evaluation as a relation between a combinator and its output vector?
+-- Would simplify the correctness condition we're trying to prove 
+
+-- Correctness specifically for the subset of combinators used in vecToComb
 data vecRep : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (Fin n) n → Set where
   vr-id    : {n : ℕ} → vecRep (id⇛ {fromℕ n}) (upTo n)
   vr-swap  : {n : ℕ}
@@ -65,7 +76,17 @@ data vecRep : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (Fin n) n → Se
            → vecRep (c₁ ◎ c₂) (tabulate {n} (λ i → (lookup (lookup i v₂) v₁)))
   vr-plus : {n : ℕ} → {c : (fromℕ n) ⇛ (fromℕ n)} → {v : Vec (Fin n) n}
           → vecRep {n} c v
-          → vecRep {suc n} (id⇛ ⊕ c) (tabulate (liftFin (λ i → suc (v !! i)) zero))
+          → vecRep {suc n} (id⇛ ⊕ c) (zero ∷ (Data.Vec.map suc v))
+
+vecRepWorks : {n : ℕ} → {c : (fromℕ n) ⇛ (fromℕ n)} → {v : Vec (Fin n) n} → vecRep c v → (i : Fin n) → (evalVec v i) ≡ (evalComb c (finToVal i))
+vecRepWorks vr-id i = ap finToVal (lookupTab i)
+vecRepWorks vr-swap i = {!!}
+vecRepWorks (vr-comp vr vr₁) i = {!!}
+vecRepWorks {suc n} (vr-plus vr) zero = refl (inj₁ tt)
+vecRepWorks (vr-plus {c = c} {v = v} vr) (suc i) =
+  evalVec (zero ∷ map suc v) (suc i) ≡⟨ ap finToVal (map!! suc v i) ⟩
+  inj₂ (finToVal (v !! i)) ≡⟨ ap inj₂ (vecRepWorks vr i) ⟩
+  (evalComb (id⇛ ⊕ c) (finToVal (suc i)) ∎)
 
 vecToCombWorks : {n : ℕ} → (v : Vec (Fin n) n) → (i : Fin n) → (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
 vecToCombWorks = {!!}
