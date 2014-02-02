@@ -1,6 +1,19 @@
 module NCCorrectness where
 
+open import Data.Vec
+open import Data.Fin hiding (fromℕ)
+open import Data.Nat using ( ℕ ; zero ; suc )
+open import Data.Sum
+
+
+open import FT
+open import FT-Nat
 open import NC
+open import HoTT
+
+
+
+-- open import NC
 
 -- Correctness proofs for normal combinators, to be used in a univalence proof
 
@@ -13,4 +26,36 @@ open import NC
 -- To show: a similar property for the composition in the other direction?
 
 -- To show: vecToComb and combToVec preserve meaning (so normalizing like this is safe)
+
+
+lookupTab : {A : Set} → {n : ℕ} → {f : Fin n → A} → (i : Fin n) → lookup i (tabulate f) ≡ (f i)
+lookupTab {f = f} zero = refl (f zero)
+lookupTab (suc i) = lookupTab i
+
+valToFinToVal : {n : ℕ} → (i : Fin n) → valToFin (finToVal i) ≡ i
+valToFinToVal zero = refl zero
+valToFinToVal (suc n) = ap suc (valToFinToVal n)
+
+finToValToFin : {n : ℕ} → (v : ⟦ fromℕ n ⟧) → finToVal (valToFin v) ≡ v
+finToValToFin {zero} ()
+finToValToFin {suc n} (inj₁ tt)  = refl (inj₁ tt)
+finToValToFin {suc n} (inj₂ v) = ap inj₂ (finToValToFin v)
+
+--  Might want to take a ⟦ fromℕ n ⟧ instead of a Fin n as the second argument here?
+combToVecWorks : {n : ℕ} → (c : (fromℕ n) ⇛ (fromℕ n)) → (i : Fin n) → (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
+combToVecWorks c i = (! (finToValToFin _)) ∘ (ap finToVal (! (lookupTab i)))
+
+-- The trickier one
+
+vecToCombWorks : {n : ℕ} → (v : Vec (Fin n) n) → (i : Fin n) → (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
+vecToCombWorks = ?
+
+
+
+
+
+
+
+
+
 
