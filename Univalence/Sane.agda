@@ -338,62 +338,6 @@ trans≃ (f , feq) (g , geq) with equiv₂ feq | equiv₂ geq
                              ≡⟨ fβ a ⟩
                            a ∎)))
 
--- equivalences are injective
-
-_⋆_ : {A B : Set} → (A ≃ B) → (x : A) → B
-(f , _) ⋆ x = f x 
-
-inj≃ : {A B : Set} → (eq : A ≃ B) → (x y : A) → (eq ⋆ x ≡ eq ⋆ y → x ≡ y)
-inj≃ (f , mkisequiv g α h β) x y p = ! (β x) ∘ (ap h p ∘ β y)
-        
--- equivalences for coproducts (Sec. 2.12) 
-
-codeqinv : {A B : Set} {a₀ : A} {x : A ⊎ B} → qinv (encode a₀ x)
-codeqinv {A} {B} {a₀} {x} = record {
-  g = decode a₀ x ; 
-  α = indCP 
-        (λ x → (c : code a₀ x) → encode a₀ x (decode a₀ x c) ≡ c)
-        (λ a c → encode a₀ (inj₁ a) (decode a₀ (inj₁ a) c) 
-                   ≡⟨ bydef ⟩
-                 encode a₀ (inj₁ a) (ap inj₁ c)
-                   ≡⟨ bydef ⟩
-                 transport (code a₀) (ap inj₁ c) (refl a₀)
-                   ≡⟨ ! (transport-f inj₁ (code a₀) c (refl a₀)) ⟩ 
-                 transport (λ a → code {A} {B} a₀ (inj₁ a)) c (refl a₀)
-                   ≡⟨ bydef ⟩ 
-                 transport (λ a → a₀ ≡ a) c (refl a₀)
-                   ≡⟨ transportIdR c (refl a₀) ⟩ 
-                 (refl a₀) ∘ c
-                   ≡⟨ ! (unitTransL c) ⟩
-                 c ∎)
-        (λ b ())
-        x ;
-  β = λ p → basedPathInd 
-              (inj₁ a₀) 
-              (λ x p → decode a₀ x (encode a₀ x p) ≡ p)
-              (decode a₀ (inj₁ a₀) 
-                (encode {A} {B} a₀ (inj₁ a₀) (refl (inj₁ a₀)))
-                 ≡⟨ bydef ⟩ 
-              (decode a₀ (inj₁ a₀) 
-                (transport (code {A} {B} a₀) (refl (inj₁ a₀)) (refl a₀)))
-                 ≡⟨ bydef ⟩ 
-              (decode a₀ (inj₁ a₀) (refl a₀))
-                 ≡⟨ bydef ⟩ 
-              (ap inj₁ (refl a₀))
-                 ≡⟨ bydef ⟩ 
-               refl (inj₁ a₀) ∎)
-              x p }
-
-thm2-12-5 : {A B : Set} → (a₀ : A) → (x : A ⊎ B) → (inj₁ a₀ ≡ x) ≃ code a₀ x
-thm2-12-5 {A} {B} a₀ x = (encode a₀ x , equiv₁ codeqinv)
-
-inj₁₁path : {A B : Set} → (a₁ a₂ : A) → 
-          (inj₁ {A = A} {B = B} a₁ ≡ inj₁ a₂) ≃ (a₁ ≡ a₂)
-inj₁₁path a₁ a₂ = thm2-12-5 a₁ (inj₁ a₂)
-
-inj₁₂path : {A B : Set} → (a : A) (b : B) → (inj₁ a ≡ inj₂ b) ≃ ⊥
-inj₁₂path a b = thm2-12-5 a (inj₂ b)
-
 -- Abbreviations for equivalence compositions
 
 _≃⟨_⟩_ : (A : Set) {B C : Set} → (A ≃ B) → (B ≃ C) → (A ≃ C) 
@@ -402,7 +346,7 @@ _ ≃⟨ p ⟩ q = trans≃ p q
 _∎≃ : {ℓ : U.Level} {A : Set ℓ} → A ≃ A
 _∎≃ {ℓ} {A} = id≃ {ℓ} {A}
 
-------------------------------------------------------------------
+--
 
 _⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
   (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → 
@@ -429,55 +373,16 @@ path⊎ (fp , eqp) (fq , eqq) =
 -- a fairly explicit manner, we can use all this to link up 
 -- normalization of natural-numbers expressions and Pi-based paths.
 
-toℕ : FT → ℕ
-toℕ ZERO = zero
-toℕ ONE = suc zero
-toℕ (PLUS b₀ b₁) = (toℕ b₀) + (toℕ b₁) 
-toℕ (TIMES b₀ b₁) = (toℕ b₀) * (toℕ b₁)
-
 fromℕ : ℕ → FT
 fromℕ zero = ZERO
 fromℕ (suc n) = PLUS ONE (fromℕ n)
 
-toℕ∘fromℕ : toℕ ○ fromℕ ∼ id
-toℕ∘fromℕ zero = refl zero
-toℕ∘fromℕ (suc n) =
-  pathInd
-    (λ {x} {y} _ → suc x ≡ suc y)
-    (λ m → refl (suc m))
-    (toℕ∘fromℕ n)
-
-assocr : {m : ℕ} (n : ℕ) → (PLUS (fromℕ n) (fromℕ m)) ⇛ fromℕ (n + m)
-assocr zero = unite₊⇛
-assocr (suc n) = assocr₊⇛ ◎ (id⇛ ⊕ (assocr n))
-
-distr : (n₀ : ℕ) {n₁ : ℕ} → TIMES (fromℕ n₀) (fromℕ n₁) ⇛ fromℕ (n₀ * n₁)
-distr zero = distz⇛
-distr (suc n) {m} = dist⇛ ◎ (unite⋆⇛ ⊕ distr n) ◎ assocr m
-
 -- normalize a finite type to (1 + (1 + (1 + ... + (1 + 0) ... )))
 -- a bunch of ones ending with zero with left biased + in between
-
-normalize : FT → FT
-normalize = fromℕ ○ toℕ
-
-normal : (b : FT) → b ⇛ normalize b
-normal ZERO = id⇛
-normal ONE = uniti₊⇛ ◎ swap₊⇛
-normal (PLUS b₀ b₁) = (normal b₀ ⊕ normal b₁) ◎ assocr (toℕ b₀)
-normal (TIMES b₀ b₁) = (normal b₀ ⊗ normal b₁) ◎ distr (toℕ b₀)
 
 ⟦_⟧ℕ : ℕ → Set
 ⟦ zero ⟧ℕ = ⊥
 ⟦ suc n ⟧ℕ = ⊤ ⊎ ⟦ n ⟧ℕ
-
-ℕrespects⟦⟧ : {n : ℕ} → ⟦ fromℕ n ⟧ ≃ ⟦ n ⟧ℕ
-ℕrespects⟦⟧ {zero} = id≃
-ℕrespects⟦⟧ {suc n} = path⊎ id≃ (ℕrespects⟦⟧ {n})
-
-------------------------------------------------------------------------------
-
--- XXX: rewrite evalcomb in a way that agda can check
 
 fromNormalNat : (n : ℕ) → ⟦ n ⟧ℕ → F.Fin n
 fromNormalNat zero ()
@@ -597,10 +502,6 @@ lookupTab : {A : Set} → {n : ℕ} → {f : F.Fin n → A} → (i : F.Fin n) �
 lookupTab {f = f} F.zero = refl (f F.zero)
 lookupTab (F.suc i) = lookupTab i
 
-valToFinToVal : {n : ℕ} → (i : F.Fin n) → valToFin (finToVal i) ≡ i
-valToFinToVal F.zero = refl F.zero
-valToFinToVal (F.suc n) = ap F.suc (valToFinToVal n)
-
 finToValToFin : {n : ℕ} → (v : ⟦ fromℕ n ⟧) → finToVal (valToFin v) ≡ v
 finToValToFin {zero} ()
 finToValToFin {suc n} (inj₁ tt)  = refl (inj₁ tt)
@@ -611,10 +512,6 @@ combToVecWorks : {n : ℕ} → (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin 
 combToVecWorks c i = (! (finToValToFin _)) ∘ (ap finToVal (! (lookupTab i)))
 
 -- The trickier one
-
-liftFin : {A : Set} → {n : ℕ} → (F.Fin n → A) → A → F.Fin (suc n) → A
-liftFin f x F.zero = x
-liftFin f x (F.suc n) = f n
 
 _!!_ : {A : Set} → {n : ℕ} → Vec A n → F.Fin n → A
 _!!_ v i = lookup i v
