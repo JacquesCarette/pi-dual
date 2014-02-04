@@ -252,88 +252,6 @@ flip (p ◎ q) = flip q ◎ flip p
 flip (p ⊕ q) = flip p ⊕ flip q
 flip (p ⊗ q) = flip p ⊗ flip q
 
-flip-id-lemma : ∀ {b} → flip {b} {b} id⇛ ≡ id⇛
-flip-id-lemma = λ {b} → refl id⇛
-
--- we're going to be pretty brute-force about this, for now
--- All this is going to be one huge mutual definition.
-mutual 
-  simplify : {b₁ b₂ : FT} → b₁ ⇛ b₂ → b₁ ⇛ b₂
-  -- all the basic (atomic) combinators simplify to themselves
-  simplify unite₊⇛ = unite₊⇛
-  simplify uniti₊⇛ = uniti₊⇛
-  simplify swap₊⇛ = swap₊⇛
-  simplify assocl₊⇛ = assocl₊⇛
-  simplify assocr₊⇛ = assocr₊⇛
-  simplify unite⋆⇛ = unite⋆⇛
-  simplify uniti⋆⇛ = uniti⋆⇛
-  simplify swap⋆⇛ = swap⋆⇛
-  simplify assocl⋆⇛ = assocl⋆⇛
-  simplify assocr⋆⇛ = assocr⋆⇛
-  simplify distz⇛ = distz⇛
-  simplify factorz⇛ = factorz⇛
-  simplify dist⇛ = dist⇛
-  simplify factor⇛ = factor⇛
-  simplify id⇛ = id⇛
-  simplify (sym⇛ p) = flip (simplify p)
-  simplify (p ◎ q) = scomp (simplify p)  (simplify q)
-  simplify (p ⊕ q) = simplify p ⊕ simplify q
-  simplify (p ⊗ q) = simplify p ⊗ simplify q
-
-  -- split on p, and then only on those q that we want to simplify
-  scomp : {b₁ b₂ b₃ : FT} → b₁ ⇛ b₂ → b₂ ⇛ b₃ → b₁ ⇛ b₃
-  scomp id⇛ p = p
-  scomp unite₊⇛ id⇛ = unite₊⇛
-  scomp unite₊⇛ uniti₊⇛ = id⇛
-  scomp unite₊⇛ q = unite₊⇛ ◎ q -- more?
-  scomp uniti₊⇛ unite₊⇛ = id⇛
-  scomp uniti₊⇛ id⇛ = uniti₊⇛
-  scomp uniti₊⇛ q = uniti₊⇛ ◎ q
-  scomp swap₊⇛ swap₊⇛ = id⇛
-  scomp swap₊⇛ id⇛ = swap₊⇛
-  scomp swap₊⇛ (q ◎ q₁) = scomp swap₊⇛ q ◎ q₁
-  scomp swap₊⇛ q = swap₊⇛ ◎ q
-  scomp assocl₊⇛ assocr₊⇛ = id⇛
-  scomp assocl₊⇛ id⇛ = assocl₊⇛
-  scomp assocl₊⇛ q = assocl₊⇛ ◎ q
-  scomp assocr₊⇛ assocl₊⇛ = id⇛
-  scomp assocr₊⇛ id⇛ = assocr₊⇛
-  scomp assocr₊⇛ q = assocr₊⇛ ◎ q
-  scomp unite⋆⇛ uniti⋆⇛ = id⇛
-  scomp unite⋆⇛ id⇛ = unite⋆⇛
-  scomp unite⋆⇛ q = unite⋆⇛ ◎ q
-  scomp uniti⋆⇛ unite⋆⇛ = id⇛
-  scomp uniti⋆⇛ id⇛ = uniti⋆⇛
-  scomp uniti⋆⇛ q = uniti⋆⇛ ◎ q
-  scomp swap⋆⇛ swap⋆⇛ = id⇛
-  scomp swap⋆⇛ id⇛ = swap⋆⇛
-  scomp swap⋆⇛ q = swap⋆⇛ ◎ q
-  scomp assocl⋆⇛ assocr⋆⇛ = id⇛
-  scomp assocl⋆⇛ id⇛ = assocl⋆⇛
-  scomp assocl⋆⇛ q = assocl⋆⇛ ◎ q
-  scomp assocr⋆⇛ assocl⋆⇛ = id⇛
-  scomp assocr⋆⇛ id⇛ = assocr⋆⇛
-  scomp assocr⋆⇛ q = assocr⋆⇛ ◎ q
-  scomp distz⇛ id⇛ = distz⇛
-  scomp distz⇛ q = distz⇛ ◎ q
-  scomp factorz⇛ distz⇛ = id⇛
-  scomp factorz⇛ id⇛ = factorz⇛
-  scomp factorz⇛ q = factorz⇛ ◎ q
-  scomp dist⇛ q = dist⇛ ◎ q -- Can't simplify?
-  scomp factor⇛ dist⇛ = id⇛
-  scomp factor⇛ id⇛ = factor⇛
-  scomp factor⇛ q = factor⇛ ◎ q
-  scomp (sym⇛ p) q = (flip p) ◎ q -- won't happen from simplify
-  scomp (p₁ ◎ p₂) id⇛ = scomp p₁ p₂
-  scomp (p₁ ◎ p₂) q = scomp p₁ p₂ ◎ q
-  scomp (p₁ ⊕ p₂) id⇛ = p₁ ⊕ p₂
-  scomp (p₁ ⊕ p₂) (q₁ ⊕ q₂) = scomp p₁ q₁ ⊕ scomp p₂ q₂
-  scomp (p₁ ⊕ p₂) q = (p₁ ⊕ p₂) ◎ q
-  scomp (p₁ ⊗ p₂) id⇛ = p₁ ⊗ p₂
-  scomp (p₁ ⊗ p₂) (q ◎ q₁) = scomp (p₁ ⊗ p₂) q ◎ q₁
-  scomp (p₁ ⊗ p₂) (q ⊗ q₁) = scomp p₁ q ⊗ scomp p₂ q₁
-  scomp (p₁ ⊗ p₂) q = (p₁ ⊗ p₂) ◎ q
-
 -- Equivalences
 
 _∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
@@ -484,176 +402,7 @@ _ ≃⟨ p ⟩ q = trans≃ p q
 _∎≃ : {ℓ : U.Level} {A : Set ℓ} → A ≃ A
 _∎≃ {ℓ} {A} = id≃ {ℓ} {A}
 
-------------------------------------------------------------------------------
--- Type Equivalences
-
--- for each type combinator, define two functions that are inverses, and
--- establish an equivalence.  These are all in the 'semantic space' with
--- respect to Pi combinators.
-
--- swap₊
-
-swap₊ : {A B : Set} → A ⊎ B → B ⊎ A
-swap₊ (inj₁ a) = inj₂ a
-swap₊ (inj₂ b) = inj₁ b
-
-swapswap₊ : {A B : Set} → swap₊ ○ swap₊ {A} {B} ∼ id
-swapswap₊ (inj₁ a) = refl (inj₁ a)
-swapswap₊ (inj₂ b) = refl (inj₂ b)
-
-swap₊equiv : {A B : Set} → (A ⊎ B) ≃ (B ⊎ A)
-swap₊equiv = (swap₊ , equiv₁ (mkqinv swap₊ swapswap₊ swapswap₊))
-
--- unite₊ and uniti₊
-
-unite₊ : {A : Set} → ⊥ ⊎ A → A
-unite₊ (inj₁ ())
-unite₊ (inj₂ y) = y
-
-uniti₊ : {A : Set} → A → ⊥ ⊎ A
-uniti₊ a = inj₂ a
-
-uniti₊∘unite₊ : {A : Set} → uniti₊ ○ unite₊ ∼ id {A = ⊥ ⊎ A}
-uniti₊∘unite₊ (inj₁ ())
-uniti₊∘unite₊ (inj₂ y) = refl (inj₂ y)
-
--- this is so easy, Agda can figure it out by itself (see below)
-unite₊∙uniti₊ : {A : Set} → unite₊ ○ uniti₊ ∼ id {A = A}
-unite₊∙uniti₊ = refl
-
-unite₊equiv : {A : Set} → (⊥ ⊎ A) ≃ A
-unite₊equiv = (unite₊ , mkisequiv uniti₊ refl uniti₊ uniti₊∘unite₊)
-
-uniti₊equiv : {A : Set} → A ≃ (⊥ ⊎ A)
-uniti₊equiv = uniti₊ , mkisequiv unite₊ uniti₊∘unite₊ unite₊ unite₊∙uniti₊
-
--- unite⋆ and uniti⋆
-
-unite⋆ : {A : Set} → ⊤ × A → A
-unite⋆ (tt , x) = x
-
-uniti⋆ : {A : Set} → A → ⊤ × A
-uniti⋆ x = tt , x
-
-uniti⋆∘unite⋆ : {A : Set} → uniti⋆ ○ unite⋆ ∼ id {A = ⊤ × A}
-uniti⋆∘unite⋆ (tt , x) = refl (tt , x)
-
-unite⋆equiv : {A : Set} → (⊤ × A) ≃ A
-unite⋆equiv = unite⋆ , mkisequiv uniti⋆ refl uniti⋆ uniti⋆∘unite⋆
-
-uniti⋆equiv : {A : Set} → A ≃ (⊤ × A)
-uniti⋆equiv = uniti⋆ , mkisequiv unite⋆ uniti⋆∘unite⋆ unite⋆ refl
-
--- swap⋆
-
-swap⋆ : {A B : Set} → A × B → B × A
-swap⋆ (a , b) = (b , a)
-
-swapswap⋆ : {A B : Set} → swap⋆ ○ swap⋆ ∼ id {A = A × B}
-swapswap⋆ (a , b) = refl (a , b) 
-
-swap⋆equiv : {A B : Set} → (A × B) ≃ (B × A)
-swap⋆equiv = swap⋆ , mkisequiv swap⋆ swapswap⋆ swap⋆ swapswap⋆
-
--- assocl₊ and assocr₊
-
-assocl₊ : {A B C : Set} → (A ⊎ (B ⊎ C)) → ((A ⊎ B) ⊎ C)
-assocl₊ (inj₁ a) = inj₁ (inj₁ a)
-assocl₊ (inj₂ (inj₁ b)) = inj₁ (inj₂ b)
-assocl₊ (inj₂ (inj₂ c)) = inj₂ c
-
-assocr₊ : {A B C : Set} → ((A ⊎ B) ⊎ C) → (A ⊎ (B ⊎ C))
-assocr₊ (inj₁ (inj₁ a)) = inj₁ a
-assocr₊ (inj₁ (inj₂ b)) = inj₂ (inj₁ b)
-assocr₊ (inj₂ c) = inj₂ (inj₂ c)
-
-assocl₊∘assocr₊ : {A B C : Set} → assocl₊ ○ assocr₊ ∼ id {A = ((A ⊎ B) ⊎ C)}
-assocl₊∘assocr₊ (inj₁ (inj₁ a)) = refl (inj₁ (inj₁ a))
-assocl₊∘assocr₊ (inj₁ (inj₂ b)) = refl (inj₁ (inj₂ b))
-assocl₊∘assocr₊ (inj₂ c) = refl (inj₂ c)
-
-assocr₊∘assocl₊ : {A B C : Set} → assocr₊ ○ assocl₊ ∼ id {A = (A ⊎ (B ⊎ C))}
-assocr₊∘assocl₊ (inj₁ a) = refl (inj₁ a)
-assocr₊∘assocl₊ (inj₂ (inj₁ b)) = refl (inj₂ (inj₁ b))
-assocr₊∘assocl₊ (inj₂ (inj₂ c)) = refl (inj₂ (inj₂ c))
-
-assocl₊equiv : {A B C : Set} → (A ⊎ (B ⊎ C)) ≃ ((A ⊎ B) ⊎ C)
-assocl₊equiv = 
-  assocl₊ , mkisequiv assocr₊ assocl₊∘assocr₊ assocr₊ assocr₊∘assocl₊
-
-assocr₊equiv : {A B C : Set} → ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C))
-assocr₊equiv = 
-  assocr₊ , mkisequiv assocl₊ assocr₊∘assocl₊ assocl₊ assocl₊∘assocr₊
-
--- assocl⋆ and assocr⋆
-
-assocl⋆ : {A B C : Set} → (A × (B × C)) → ((A × B) × C)
-assocl⋆ (a , (b , c)) = ((a , b) , c)
-
-assocr⋆ : {A B C : Set} → ((A × B) × C) → (A × (B × C))
-assocr⋆ ((a , b) , c) = (a , (b , c))
-
-assocl⋆∘assocr⋆ : {A B C : Set} → assocl⋆ ○ assocr⋆ ∼ id {A = ((A × B) × C)}
-assocl⋆∘assocr⋆ x = refl x
-
-assocr⋆∘assocl⋆ : {A B C : Set} → assocr⋆ ○ assocl⋆ ∼ id {A = (A × (B × C))}
-assocr⋆∘assocl⋆ x = refl x
-
-assocl⋆equiv : {A B C : Set} → (A × (B × C)) ≃ ((A × B) × C)
-assocl⋆equiv = 
-  assocl⋆ , mkisequiv assocr⋆ assocl⋆∘assocr⋆ assocr⋆ assocr⋆∘assocl⋆
-
-assocr⋆equiv : {A B C : Set} → ((A × B) × C) ≃ (A × (B × C))
-assocr⋆equiv = 
-  assocr⋆ , mkisequiv assocl⋆ assocr⋆∘assocl⋆ assocl⋆ assocl⋆∘assocr⋆
-
--- distz and factorz
-
-distz : { A : Set} → (⊥ × A) → ⊥
-distz (() , _)
-
-factorz : {A : Set} → ⊥ → (⊥ × A)
-factorz ()
- 
-distz∘factorz : {A : Set} → distz ○ factorz {A} ∼ id
-distz∘factorz ()
-
-factorz∘distz : {A : Set} → factorz {A} ○ distz ∼ id
-factorz∘distz (() , proj₂)
-
-distzequiv : {A : Set} → (⊥ × A) ≃ ⊥
-distzequiv {A} = 
-  distz , mkisequiv factorz (distz∘factorz {A}) factorz factorz∘distz
-
-factorzequiv : {A : Set} → ⊥ ≃ (⊥ × A)
-factorzequiv {A} = 
-  factorz , mkisequiv distz factorz∘distz distz (distz∘factorz {A})
-
--- dist and factor
-
-dist : {A B C : Set} → ((A ⊎ B) × C) → (A × C) ⊎ (B × C)
-dist (inj₁ x , c) = inj₁ (x , c)
-dist (inj₂ y , c) = inj₂ (y , c)
-
-factor : {A B C : Set} → (A × C) ⊎ (B × C) → ((A ⊎ B) × C)
-factor (inj₁ (a , c)) = inj₁ a , c
-factor (inj₂ (b , c)) = inj₂ b , c
-
-dist∘factor : {A B C : Set} → dist {A} {B} {C} ○ factor ∼ id
-dist∘factor (inj₁ x) = refl (inj₁ x)
-dist∘factor (inj₂ y) = refl (inj₂ y)
-
-factor∘dist : {A B C : Set} → factor {A} {B} {C} ○ dist ∼ id
-factor∘dist (inj₁ x , c) = refl (inj₁ x , c)
-factor∘dist (inj₂ y , c) = refl (inj₂ y , c)
-
-distequiv : {A B C : Set} → ((A ⊎ B) × C) ≃ ((A × C) ⊎ (B × C))
-distequiv = dist , mkisequiv factor dist∘factor factor factor∘dist
-
-factorequiv : {A B C : Set} →  ((A × C) ⊎ (B × C)) ≃ ((A ⊎ B) × C)
-factorequiv = factor , (mkisequiv dist factor∘dist dist dist∘factor)
-
--- ⊕
+------------------------------------------------------------------
 
 _⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
   (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → 
@@ -668,156 +417,6 @@ path⊎ (fp , eqp) (fq , eqq) =
   where module P = isequiv eqp
         module Q = isequiv eqq
         
--- ⊗
-
-_×∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
-  (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → 
-  (f ×→ g) ○ (finv ×→ ginv) ∼ id {A = C × D}
-_×∼_ α β (x , y) = ap2 _,_ (α x) (β y)
- 
-path× : {A B C D : Set} → A ≃ C → B ≃ D → (A × B) ≃ (C × D)
-path× {A} {B} {C} {D} (fp , eqp) (fq , eqq) = 
-  Data.Product.map fp fq , 
-  mkisequiv 
-    (P.g ×→ Q.g) 
-    (_×∼_ {A} {B} {C} {D} {fp} {P.g} {fq} {Q.g} P.α Q.α) 
-    (P.h ×→ Q.h) 
-    (_×∼_ {C} {D} {A} {B} {P.h} {fp} {Q.h} {fq} P.β Q.β)
-  where module P = isequiv eqp
-        module Q = isequiv eqq
-
-idequiv : {A : Set} → A ≃ A
-idequiv = id≃
-
--- We now have enough to map each Pi combinator to the corresponding type equivalence
-
-path2equiv : {B₁ B₂ : FT} → (B₁ ⇛ B₂) → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧)
-path2equiv unite₊⇛  = unite₊equiv
-path2equiv uniti₊⇛  = uniti₊equiv
-path2equiv swap₊⇛   = swap₊equiv
-path2equiv assocl₊⇛ = assocl₊equiv
-path2equiv assocr₊⇛ = assocr₊equiv
-path2equiv unite⋆⇛  = unite⋆equiv
-path2equiv uniti⋆⇛  = uniti⋆equiv
-path2equiv swap⋆⇛   = swap⋆equiv
-path2equiv assocl⋆⇛ = assocl⋆equiv
-path2equiv assocr⋆⇛ = assocr⋆equiv
-path2equiv distz⇛   = distzequiv
-path2equiv factorz⇛ = factorzequiv
-path2equiv dist⇛    = distequiv
-path2equiv factor⇛  = factorequiv
-path2equiv id⇛      = idequiv
-path2equiv (sym⇛ p) = sym≃ (path2equiv p)
-path2equiv (p ◎ q)  = trans≃ (path2equiv p) (path2equiv q) 
-path2equiv (p ⊕ q)  = path⊎ (path2equiv p) (path2equiv q)
-path2equiv (p ⊗ q)  = path× (path2equiv p) (path2equiv q) 
-
-------------------------------------------------------------------------
--- Inspect on steroids (borrowed from standard library)
-
--- Inspect on steroids can be used when you want to pattern match on
--- the result r of some expression e, and you also need to "remember"
--- that r ≡ e.
-
-data Reveal_is_ {a} {A : Set a} (x : Hidden A) (y : A) : Set a where
-  ⟪_⟫ : (eq : reveal x ≡ y) → Reveal x is y
-
-inspect : ∀ {a b} {A : Set a} {B : A → Set b}
-          (f : (x : A) → B x) (x : A) → Reveal (hide f x) is (f x)
-inspect f x = ⟪ refl (f x) ⟫
-
-----------------------------------------------------------------------------
--- Very complex proof that we can cancel units on the left of ⊎
-
--- Some repeated patterns:
--- use injectivity of equivalences to go from f x ≡ f y to x ≡ y
-injectivity : {A B : Set} (equiv : (⊤ ⊎ A) ≃ (⊤ ⊎ B)) → (a : A) → equiv ⋆ inj₁ tt ≡ equiv ⋆ inj₂ a → (inj₁ tt ≡ inj₂ a) 
-injectivity equiv x path = inj≃ equiv (inj₁ tt) (inj₂ x) path
-
--- Use that disjoint unions are, well, disjoint, to derive a contradiction
-bad-path : {A : Set} → (x : A) → inj₁ tt ≡ inj₂ x → ⊥
-bad-path x path = proj₁ (thm2-12-5 tt (inj₂ x)) path
-
-left-cancel-⊤ : {A B : Set} →  ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A ≃ B
-left-cancel-⊤ {A} {B}  (f₁ , mkisequiv g₁ α₁ h₁ β₁) with f₁ (inj₁ tt) | inspect f₁ (inj₁ tt) | g₁ (inj₁ tt) | inspect g₁ (inj₁ tt)
-left-cancel-⊤ {A} {B} (f₁ , mkisequiv g₁ α₁ h₁ β₁) | inj₁ tt | ⟪ eq₁ ⟫ | inj₁ tt | ⟪ eq₂ ⟫ = f , equiv₁ (mkqinv g α β)
-  where equiv = (f₁ , mkisequiv g₁ α₁ h₁ β₁)
-        f : A → B
-        f a with f₁ (inj₂ a) | inspect f₁ (inj₂ a)
-        f a | inj₂ b  | _ = b
-        f a | inj₁ tt | ⟪ eq ⟫ with bad-path a inject
-          where inject = injectivity equiv a (eq₁ ∘ ! eq)
-        f a | inj₁ tt | ⟪ eq ⟫ | ()
-        g : B → A
-        g b with g₁ (inj₂ b) | inspect g₁ (inj₂ b)
-        g b | inj₂ a  | _ = a
-        g b | inj₁ tt | ⟪ eq ⟫ with bad-path b inject
-          where inject = injectivity (sym≃ equiv) b (eq₂ ∘ ! eq) 
-        g b | inj₁ tt | ⟪ eq ⟫ | () 
-        α : f ○ g ∼ id
-        α b with g₁ (inj₂ b) | inspect g₁ (inj₂ b)
-        α b | inj₁ tt | ⟪ eq ⟫ with bad-path b inject 
-          where inject = injectivity (sym≃ equiv) b (eq₂ ∘ ! eq) 
-        α b | inj₁ tt | ⟪ eq ⟫ | ()
-        α b | inj₂ a  | ⟪ eq ⟫ with f₁ (inj₂ a) | inspect f₁ (inj₂ a) 
-        α b | inj₂ a | ⟪ eq ⟫ | inj₁ tt | ⟪ eq₃ ⟫ with bad-path a inject
-          where inject = injectivity equiv a (eq₁ ∘ ! eq₃)
-        α b | inj₂ a | ⟪ eq ⟫ | inj₁ tt | ⟪ eq₃ ⟫ | ()
-        α b | inj₂ a | ⟪ eq ⟫ | inj₂ b′ | ⟪ eq₃ ⟫ = 
-            proj₁ (inj₁₁path b′ b) (ap swap₊ (! (ap f₁ eq ∘ eq₃) ∘ α₁ (inj₂ b)))
-        β : g ○ f ∼ id
-        β a with f₁ (inj₂ a) | inspect f₁ (inj₂ a) 
-        β a | inj₁ tt | ⟪ eq ⟫ with bad-path a inject
-          where inject = injectivity equiv a (! (eq ∘ ! eq₁))
-        ... | ()
-        β a | inj₂ b | ⟪ eq ⟫ with g₁ (inj₂ b) | inspect g₁ (inj₂ b)
-        ... | inj₁ tt | ⟪ eq₃ ⟫ with bad-path a inject
-          where inject = injectivity equiv a (! (ap f₁ eq₃) ∘ (α₁ (inj₂ b)) ∘ ! eq)
-        β a | inj₂ b | ⟪ eq ⟫ | inj₁ tt | ⟪ eq₃ ⟫ | ()
-        β a | inj₂ b | ⟪ eq ⟫ | inj₂ a′ | ⟪ eq₃ ⟫ = proj₁ (inj₁₁path a′ a) (ap swap₊ ((! eq₃) ∘ ap g₁ (! eq) ∘ β₂ (inj₂ a)))
-            where module EQ = qinv (equiv₂ {f = f₁} (proj₂ equiv))
-                  β₂ = EQ.β
-
-left-cancel-⊤ (f₁ , mkisequiv g α h β) | inj₁ tt | ⟪ eq₁ ⟫ | inj₂ a | ⟪ eq₂ ⟫ with bad-path a inject
-  where equiv = (f₁ , mkisequiv g α h β)
-        inject = injectivity equiv a (eq₁ ∘ ! (α (inj₁ tt)) ∘ (ap f₁ eq₂))
-left-cancel-⊤ (f₁ , mkisequiv g α h β) | inj₁ tt | ⟪ eq₁ ⟫ | inj₂ a | ⟪ eq₂ ⟫ | ()
-
-left-cancel-⊤ (f₁ , mkisequiv g α h β) | inj₂ b | ⟪ eq₁ ⟫ | inj₁ tt | ⟪ eq₂ ⟫ with bad-path b (! (α (inj₁ tt)) ∘ (ap f₁ eq₂) ∘ eq₁ )
-... | ()
-left-cancel-⊤ {A} {B} (f₁ , mkisequiv g₁ α₁ h₁ β₁) | inj₂ b₁ | ⟪ eq₁ ⟫ | inj₂ a₁ | ⟪ eq₂ ⟫ = f , equiv₁ (mkqinv g α β)
-  where equiv = (f₁ ,′ mkisequiv g₁ α₁ h₁ β₁)
-        module EQ = qinv (equiv₂ {f = f₁} (proj₂ equiv))
-        β₂ = EQ.β
-        f : A → B
-        f a with f₁ (inj₂ a)
-        f a | inj₂ b′  = b′
-        f a | inj₁ tt  = b₁
-        g : B → A
-        g b with g₁ (inj₂ b)
-        g b | inj₂ a′ = a′
-        g b | inj₁ tt = a₁
-        α : f ○ g ∼ id
-        α b with g₁ (inj₂ b) | inspect g₁ (inj₂ b)
-        ... |  inj₂ a′ | ⟪ eq ⟫ with f₁ (inj₂ a′) | inspect f₁ (inj₂ a′)
-        ...     | inj₂ b′ | ⟪ eq₃ ⟫ = ! (proj₁ (inj₁₁path b b′) (ap swap₊ (! (α₁ (inj₂ b)) ∘ ap f₁ eq ∘ eq₃)))
-        ...     | inj₁ tt | ⟪ eq₃ ⟫ with bad-path b (! (! (α₁ (inj₂ b)) ∘ (ap f₁ eq) ∘ eq₃))
-        α b | inj₂ a′ | ⟪ eq ⟫ | inj₁ tt | ⟪ eq₃ ⟫ | ()
-        α b | inj₁ tt | ⟪ eq ⟫ with f₁ (inj₂ a₁) | inspect f₁ (inj₂ a₁)
-        α b | inj₁ tt | ⟪ eq ⟫ | inj₁ tt | ⟪ eq₃ ⟫ = proj₁ (inj₁₁path b₁ b) (ap swap₊ (!(! (α₁ (inj₂ b)) ∘ ap f₁ eq ∘ eq₁)))
-        α b | inj₁ tt | ⟪ eq ⟫ | inj₂ b′ | ⟪ eq₃ ⟫ with bad-path b′ (! (α₁ (inj₁ tt)) ∘ ap f₁ eq₂ ∘ eq₃)
-        ... | ()
-        β : g ○ f ∼ id
-        β a with f₁ (inj₂ a) | inspect f₁ (inj₂ a)
-        β a | inj₁ tt | ⟪ eq ⟫ with g₁ (inj₂ b₁) | inspect g₁ (inj₂ b₁)
-        ...    | inj₁ tt | ⟪ eq₃ ⟫ = proj₁ (inj₁₁path a₁ a) (ap swap₊ (! eq₂ ∘ ! (ap g₁ eq) ∘ β₂ (inj₂ a)))
-        β a | inj₁ tt | ⟪ eq ⟫ | inj₂ a′ | ⟪ eq₃ ⟫ with bad-path a′ ((! (β₂ (inj₁ tt)) ∘ ap g₁ eq₁) ∘ eq₃)
-        ... | () 
-        β a | inj₂ b | ⟪ eq ⟫ with g₁ (inj₂ b) | inspect g₁ (inj₂ b)
-        β a | inj₂ b | ⟪ eq₃ ⟫ | inj₁ tt | ⟪ eq ⟫ with bad-path a (! eq ∘ ap g₁ (! eq₃) ∘ β₂ (inj₂ a))
-        ... | ()
-        β a | inj₂ b | ⟪ eq₃ ⟫ | inj₂ a′ | ⟪ eq ⟫ = proj₁ (inj₁₁path a′ a) (ap swap₊ (! eq ∘ ap g₁ (! eq₃) ∘ β₂ (inj₂ a)))
-
 ------------------------------------------------------------------
 -- Finite Types and the natural numbers are intimately related.
 --
@@ -868,12 +467,6 @@ normal ONE = uniti₊⇛ ◎ swap₊⇛
 normal (PLUS b₀ b₁) = (normal b₀ ⊕ normal b₁) ◎ assocr (toℕ b₀)
 normal (TIMES b₀ b₁) = (normal b₀ ⊗ normal b₁) ◎ distr (toℕ b₀)
 
-normalizeC : {B : FT} → ⟦ normalize B ⟧ ≃ ⟦ B ⟧
-normalizeC {B} = path2equiv (sym⇛ (normal B))
-
-mapNorm :  {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → ⟦ normalize B₁ ⟧ ≃ ⟦ normalize B₂ ⟧
-mapNorm {B₁} {B₂} eq = trans≃ (trans≃ (normalizeC {B₁}) eq) (sym≃ (normalizeC {B₂}))
-
 ⟦_⟧ℕ : ℕ → Set
 ⟦ zero ⟧ℕ = ⊥
 ⟦ suc n ⟧ℕ = ⊤ ⊎ ⟦ n ⟧ℕ
@@ -883,48 +476,6 @@ mapNorm {B₁} {B₂} eq = trans≃ (trans≃ (normalizeC {B₁}) eq) (sym≃ (n
 ℕrespects⟦⟧ {suc n} = path⊎ id≃ (ℕrespects⟦⟧ {n})
 
 ------------------------------------------------------------------------------
--- Understanding the syntactic structure of pi combinators with respect
--- to normalization
-
-data FTNF : Set where
-  Z : FTNF
-  S : FTNF → FTNF
-
-fromℕNF : ℕ → FTNF
-fromℕNF zero = Z
-fromℕNF (suc n) = S (fromℕNF n)
-
-normalizeNF : FT → FTNF
-normalizeNF = fromℕNF ○ toℕ
-
-data FTN : FT → Set where
-  normalized : (b : FT) → FTN (normalize b)  
-
-------------------------------------------------------------------------------
--- needs LeftCancellation
-
-liftℕ : (n₁ n₂ : ℕ) → ⟦ n₁ ⟧ℕ ≃ ⟦ n₂ ⟧ℕ → (fromℕ n₁) ≡ (fromℕ n₂)
-liftℕ zero zero eq = refl ZERO
-liftℕ zero (suc n₂) (_ , mkisequiv g α h β) with h (inj₁ tt)
-liftℕ zero (suc n₂) (_ , mkisequiv g α h β) | ()
-liftℕ (suc n₁) zero (f , _) with f (inj₁ tt)
-liftℕ (suc n₁) zero (f , _) | ()
-liftℕ (suc n₁) (suc n₂) eq = ap (λ x → PLUS ONE x) (liftℕ n₁ n₂ (left-cancel-⊤ eq))
-
-liftNormal : {B₁ B₂ : FT} →  ⟦ normalize B₁ ⟧ ≃ ⟦ normalize B₂ ⟧ → (normalize B₁) ≡ (normalize B₂)
-liftNormal {B₁} {B₂} eq =
-  liftℕ (toℕ B₁) (toℕ B₂)
-    (⟦ toℕ B₁ ⟧ℕ ≃⟨ sym≃ (ℕrespects⟦⟧ {toℕ B₁}) ⟩ ⟦ normalize B₁ ⟧ ≃⟨ eq ⟩ ⟦ normalize B₂ ⟧ ≃⟨ ℕrespects⟦⟧ {toℕ B₂} ⟩ id≃)
-
-sameNorm : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (normalize B₁) ≡ (normalize B₂)
-sameNorm {B₁} {B₂} eq = liftNormal {B₁} {B₂} (mapNorm eq)
-
-bridge : {B₁ B₂ : FT} → (⟦ B₁ ⟧ ≃ ⟦ B₂ ⟧) → (normalize B₁) ⇛ (normalize B₂)
-bridge eq =
-  pathInd
-    (λ {B₃} {B₄} _ → B₃ ⇛ B₄)
-    (λ _ → id⇛)
-    (sameNorm eq)
 
 -- XXX: rewrite evalcomb in a way that agda can check
 
@@ -941,9 +492,9 @@ toNormalNat (suc n) (F.suc f) = inj₂ (toNormalNat n f)
 equivToVec : {n : ℕ} → ⟦ n ⟧ℕ ≃ ⟦ n ⟧ℕ → Vec (F.Fin n) n
 equivToVec {n} (f , _) = tabulate ((fromNormalNat n) ○ f ○ (toNormalNat n))
 
--- TODO: vecToEquiv needs an extra proof that the vector is in fact "normal" in order
--- to define it correctly
--- Or we could just only use indices i such that vec[i] > i, like in vecToComb...should work
+-- TODO: vecToEquiv needs an extra proof that the vector is in fact "normal"
+-- in order to define it correctly Or we could just only use indices i such
+-- that vec[i] > i, like in vecToComb...should work
 --
 --vecToEquiv : {n : ℕ} → Vec (F.Fin n) n → ⟦ n ⟧ℕ ≃ ⟦ n ⟧ℕ
 --vecToEquiv = {!!}
@@ -1093,17 +644,21 @@ foldrWorks B P combine base pcombine pbase (x ∷ v) =
 -- proof, then use vecRepWorks to finish it off
 data vecRep : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n → Set where
   vr-id    : {n : ℕ} → vecRep (id⇛ {fromℕ n}) (upTo n)
-  vr-swap  : {n : ℕ}
-           → vecRep {suc (suc n)} (swapi {suc n} F.zero)
-                    ((F.suc F.zero) ∷ F.zero ∷ (Data.Vec.map (λ i → F.suc (F.suc i)) (upTo n)))
-  vr-comp  : {n : ℕ} → {c₁ c₂ : (fromℕ n) ⇛ (fromℕ n)} → {v₁ v₂ : Vec (F.Fin n) n}
-           → vecRep c₁ v₁ → vecRep c₂ v₂
-           → vecRep (c₁ ◎ c₂) (tabulate {n} (λ i → (lookup (lookup i v₂) v₁)))
-  vr-plus : {n : ℕ} → {c : (fromℕ n) ⇛ (fromℕ n)} → {v : Vec (F.Fin n) n}
-          → vecRep {n} c v
-          → vecRep {suc n} (id⇛ ⊕ c) (F.zero ∷ (Data.Vec.map F.suc v))
+  vr-swap  : 
+    {n : ℕ} → 
+    vecRep {suc (suc n)} (swapi {suc n} F.zero)
+      ((F.suc F.zero) ∷ F.zero ∷ 
+       (Data.Vec.map (λ i → F.suc (F.suc i)) (upTo n)))
+  vr-comp  : 
+    {n : ℕ} → {c₁ c₂ : (fromℕ n) ⇛ (fromℕ n)} → {v₁ v₂ : Vec (F.Fin n) n} → 
+    vecRep c₁ v₁ → vecRep c₂ v₂ → 
+    vecRep (c₁ ◎ c₂) (tabulate {n} (λ i → (lookup (lookup i v₂) v₁)))
+  vr-plus : {n : ℕ} → {c : (fromℕ n) ⇛ (fromℕ n)} → {v : Vec (F.Fin n) n} → 
+    vecRep {n} c v → 
+    vecRep {suc n} (id⇛ ⊕ c) (F.zero ∷ (Data.Vec.map F.suc v))
 
-vecRepWorks : {n : ℕ} → {c : (fromℕ n) ⇛ (fromℕ n)} → {v : Vec (F.Fin n) n} → vecRep c v → (i : F.Fin n) → (evalVec v i) ≡ (evalComb c (finToVal i))
+vecRepWorks : {n : ℕ} → {c : (fromℕ n) ⇛ (fromℕ n)} → {v : Vec (F.Fin n) n} → 
+  vecRep c v → (i : F.Fin n) → (evalVec v i) ≡ (evalComb c (finToVal i))
 vecRepWorks vr-id i = {!!} -- ap finToVal (lookupTab i)
 vecRepWorks vr-swap i = {!!}
 vecRepWorks (vr-comp vr vr₁) i = {!!}
@@ -1115,18 +670,22 @@ vecRepWorks (vr-plus {c = c} {v = v} vr) (F.suc i) = {!!}
   (evalComb (id⇛ ⊕ c) (finToVal (F.suc i)) ∎)
 --}
 
--- XXX: the predicate here should probably return a vecRep, and the proof should get finished
--- off by vecRepWorks; might want to break that out into separate lemmas
-vecToCombWorks : {n : ℕ} → (v : Vec (F.Fin n) n) → (i : F.Fin n) → (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
+-- XXX: the predicate here should probably return a vecRep, and the proof
+-- should get finished off by vecRepWorks; might want to break that out into
+-- separate lemmas
+vecToCombWorks : {n : ℕ} → 
+  (v : Vec (F.Fin n) n) → (i : F.Fin n) → 
+  (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
 vecToCombWorks {n} v = {!!} 
 {--
   foldrWorks
     {fromℕ n ⇛ fromℕ n}
     {n}
     (λ i → fromℕ n ⇛ fromℕ n)
-    -- I think we need to rewrite vecToComb using an indexed fold to have all the information
-    -- here that we need for the correctness proof [Z]
-    (λ n′ v c → (i : F.Fin n′) → {!!}) -- (evalVec {n′} v i) ≡ (evalComb c (finToVal i)))
+    -- I think we need to rewrite vecToComb using an indexed fold to have all
+    -- the information here that we need for the correctness proof [Z]
+    (λ n′ v c → (i : F.Fin n′) → {!!}) 
+    -- (evalVec {n′} v i) ≡ (evalComb c (finToVal i)))
     _◎_
     id⇛
     {!!} -- combination lemma
