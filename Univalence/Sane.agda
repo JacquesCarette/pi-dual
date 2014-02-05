@@ -11,7 +11,7 @@ open import Data.Nat renaming (_⊔_ to _⊔ℕ_)
 open import Data.Sum renaming (map to _⊎→_)
 open import Data.Product renaming (map to _×→_)
 open import Data.Vec
-open import Function renaming (_∘_ to _○_) hiding (flip)
+open import Function hiding (flip) renaming (_∘_ to _○_) 
 
 infixl 10 _◎_
 infixr 8  _∘_     -- path composition
@@ -166,19 +166,30 @@ fromℕ (suc n) = PLUS ONE (fromℕ n)
 ⟦ zero ⟧ℕ = ⊥
 ⟦ suc n ⟧ℕ = ⊤ ⊎ ⟦ n ⟧ℕ
 
+-- Take a natural number n, and a value of the type represented by that n,
+-- and return the canonical finite set of size n.
 fromNormalNat : (n : ℕ) → ⟦ n ⟧ℕ → F.Fin n
 fromNormalNat zero ()
 fromNormalNat (suc n) (inj₁ tt) = F.zero
 fromNormalNat (suc n) (inj₂ x) = F.suc (fromNormalNat n x)
 
+-- Take a natural number n, a finite set of size n, and return a
+-- (canonical) value of the type represented by n
 toNormalNat : (n : ℕ) → F.Fin n → ⟦ n ⟧ℕ
 toNormalNat zero ()
 toNormalNat (suc n) F.zero = inj₁ tt
 toNormalNat (suc n) (F.suc f) = inj₂ (toNormalNat n f)
 
+-- tabulate an equivalence; this is basically a vector representation of 
+-- a permutation on sets of size n.
 equivToVec : {n : ℕ} → ⟦ n ⟧ℕ ≃ ⟦ n ⟧ℕ → Vec (F.Fin n) n
 equivToVec {n} (f , _) = tabulate ((fromNormalNat n) ○ f ○ (toNormalNat n))
 
+-- construct a combinator which represents the swapping of the i-th and 
+-- (i+1)-th 'bit' of a finite type.  
+-- Best to think of this as an 'elementary permutation', in the same way
+-- we have 'elementary matrices' (which turn out to be permutations when they
+-- are unitary).
 swapi : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
 swapi {zero} ()
 swapi {suc n} F.zero = assocl₊⇛ ◎ swap₊⇛ ⊕ id⇛ ◎ assocr₊⇛
@@ -206,7 +217,8 @@ swapmn F.zero ()
 swapmn (F.suc m) (F.zero) = swapUpTo m ◎ swapi m ◎ swapDownFrom m
 swapmn (F.suc m) (F.suc n) = id⇛ ⊕ swapmn m n
 
--- makeSingleComb {combinator size} (arrayElement) (arrayIndex)
+-- makeSingleComb {combinator size} (arrayElement) (arrayIndex),
+-- gives a combinator which 'does' that, assuming j<i, else id⇛
 makeSingleComb : {n : ℕ} → F.Fin n → F.Fin n → (fromℕ n) ⇛ (fromℕ n)
 makeSingleComb j i with F.compare i j
 makeSingleComb .j .(F.inject i) | F.less j i = swapmn j i
@@ -356,6 +368,7 @@ vecToCombWorks {n} v = {!!}
 ------------------------------------------------------------------
 -- Goal
 
+-- note that p₁ is independent of c.
 record mainLemma (n : ℕ) (v : Vec (F.Fin n) n) : Set where
   field
     c  : (fromℕ n) ⇛ (fromℕ n)
@@ -363,3 +376,18 @@ record mainLemma (n : ℕ) (v : Vec (F.Fin n) n) : Set where
     p₂ : ∀ i → (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
 
 ------------------------------------------------------------------
+
+-- Why not try to prove p₁ directly?
+lemma1 : {n : ℕ} (v : Vec (F.Fin n) n) → (i : F.Fin n) → (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
+-- we need the F.compare to make evalComb reduce, but then I don't know what to put in for t,
+-- at least, I can't convince Agda that anything I stick there works
+lemma1 (x ∷ v) F.zero with F.compare F.zero x 
+lemma1 (x ∷ v) F.zero | t = {!!}
+lemma1 (x ∷ v) (F.suc i) with F.compare (F.suc i) x
+... | t = {!!}
+
+-- and what about p₂ ?
+lemma2 : {n : ℕ} (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin n) → (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
+-- Agda can't figure out what c goes here, so we can't case-split.  I am guessing that this
+-- is what vecRep is supposed to be about.
+lemma2 c i = {!!}
