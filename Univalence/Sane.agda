@@ -154,15 +154,6 @@ A ≃ B = Σ (A → B) isequiv
 
 ------------------------------------------------------------------
 -- Finite Types and the natural numbers are intimately related.
---
--- Basically, this is because both of them are models of 
--- unital semirings, and the natural numbers are the initial object
--- in the category of unital semirings.  In this case, things are
--- deeper still, and so we record many of these facts here.
---
--- And, of course, as Pi records the proof-theory of semirings in
--- a fairly explicit manner, we can use all this to link up 
--- normalization of natural-numbers expressions and Pi-based paths.
 
 fromℕ : ℕ → FT
 fromℕ zero = ZERO
@@ -187,13 +178,6 @@ toNormalNat (suc n) (F.suc f) = inj₂ (toNormalNat n f)
 
 equivToVec : {n : ℕ} → ⟦ n ⟧ℕ ≃ ⟦ n ⟧ℕ → Vec (F.Fin n) n
 equivToVec {n} (f , _) = tabulate ((fromNormalNat n) ○ f ○ (toNormalNat n))
-
--- TODO: vecToEquiv needs an extra proof that the vector is in fact "normal"
--- in order to define it correctly Or we could just only use indices i such
--- that vec[i] > i, like in vecToComb...should work
---
---vecToEquiv : {n : ℕ} → Vec (F.Fin n) n → ⟦ n ⟧ℕ ≃ ⟦ n ⟧ℕ
---vecToEquiv = {!!}
 
 swapi : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
 swapi {zero} ()
@@ -281,20 +265,6 @@ combToVec c = tabulate (valToFin ○ (evalComb c) ○ finToVal)
 evalVec : {n : ℕ} → Vec (F.Fin n) n → F.Fin n → ⟦ fromℕ n ⟧
 evalVec vec i = finToVal (lookup i vec)
 
--- Correctness proofs for normal combinators, to be used in a univalence proof
-
--- TODO: define the "meaning" of a combinator (ideally somewhere else) There
--- seem to be a few functions that evaluate a combinator; we should probably
--- just choose one and call it "evalComb" or something so we have something
--- to work with here.
-
--- To show: equivToVec and vecToEquiv preserve meaning
--- To show: equivToVec ∘ vecToEquiv is the identity, on the nose
--- To show: a similar property for the composition in the other direction?
-
--- To show: vecToComb and combToVec preserve meaning (so normalizing like
--- this is safe)
-
 lookupTab : {A : Set} → {n : ℕ} → {f : F.Fin n → A} → 
   (i : F.Fin n) → lookup i (tabulate f) ≡ (f i)
 lookupTab {f = f} F.zero = refl (f F.zero)
@@ -335,13 +305,6 @@ foldrWorks B P combine base pcombine pbase (x ∷ v) =
   pcombine x v (foldr B combine base v) 
     (foldrWorks B P combine base pcombine pbase v)
 
--- IDEA: reformulate evaluation as a relation between a combinator and its
--- output vector?  Would simplify the correctness condition we're trying to
--- prove
-
--- Correctness specifically for the subset of combinators used in vecToComb
--- Should be able to use these to build up all the important lemmas for the
--- final proof, then use vecRepWorks to finish it off
 data vecRep : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n → Set where
   vr-id    : {n : ℕ} → vecRep (id⇛ {fromℕ n}) (upTo n)
   vr-swap  : 
@@ -370,9 +333,6 @@ vecRepWorks (vr-plus {c = c} {v = v} vr) (F.suc i) = {!!}
   (evalComb (id⇛ ⊕ c) (finToVal (F.suc i)) ∎)
 --}
 
--- XXX: the predicate here should probably return a vecRep, and the proof
--- should get finished off by vecRepWorks; might want to break that out into
--- separate lemmas
 vecToCombWorks : {n : ℕ} → 
   (v : Vec (F.Fin n) n) → (i : F.Fin n) → 
   (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
