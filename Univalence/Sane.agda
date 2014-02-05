@@ -352,3 +352,14 @@ vecToCombWorks {n} v = {!!}
     {!!} -- base case lemma
     (zipWith makeSingleComb v (upTo n))
 --}
+
+------------------------------------------------------------------
+-- Goal
+
+record mainLemma (n : ℕ) (v : Vec (F.Fin n) n) : Set where
+  field
+    c  : (fromℕ n) ⇛ (fromℕ n)
+    p₁ : ∀ i → (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
+    p₂ : ∀ i → (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
+
+------------------------------------------------------------------
