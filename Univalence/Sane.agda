@@ -232,35 +232,66 @@ vecToComb : {n : ℕ} → Vec (F.Fin n) n → (fromℕ n) ⇛ (fromℕ n)
 vecToComb {n} vec = 
   foldr (λ i → fromℕ n ⇛ fromℕ n) _◎_ id⇛ (zipWith makeSingleComb vec (upTo n))
 
-evalComb : {a b : FT} → a ⇛ b → ⟦ a ⟧ → ⟦ b ⟧
-evalComb unite₊⇛ (inj₁ ())
-evalComb unite₊⇛ (inj₂ y) = y
-evalComb uniti₊⇛ v = inj₂ v
-evalComb swap₊⇛ (inj₁ x) = inj₂ x
-evalComb swap₊⇛ (inj₂ y) = inj₁ y
-evalComb assocl₊⇛ (inj₁ x) = inj₁ (inj₁ x)
-evalComb assocl₊⇛ (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
-evalComb assocl₊⇛ (inj₂ (inj₂ y)) = inj₂ y
-evalComb assocr₊⇛ (inj₁ (inj₁ x)) = inj₁ x
-evalComb assocr₊⇛ (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
-evalComb assocr₊⇛ (inj₂ y) = inj₂ (inj₂ y)
-evalComb unite⋆⇛ (tt , proj₂) = proj₂
-evalComb uniti⋆⇛ v = tt , v
-evalComb swap⋆⇛ (proj₁ , proj₂) = proj₂ , proj₁
-evalComb assocl⋆⇛ (proj₁ , proj₂ , proj₃) = (proj₁ , proj₂) , proj₃
-evalComb assocr⋆⇛ ((proj₁ , proj₂) , proj₃) = proj₁ , proj₂ , proj₃
-evalComb distz⇛ (() , proj₂)
-evalComb factorz⇛ ()
-evalComb dist⇛ (inj₁ x , proj₂) = inj₁ (x , proj₂)
-evalComb dist⇛ (inj₂ y , proj₂) = inj₂ (y , proj₂)
-evalComb factor⇛ (inj₁ (proj₁ , proj₂)) = inj₁ proj₁ , proj₂
-evalComb factor⇛ (inj₂ (proj₁ , proj₂)) = inj₂ proj₁ , proj₂
-evalComb id⇛ v = v
-evalComb (sym⇛ c) v = evalComb (flip c) v -- TODO: use a backwards interpreter
-evalComb (c ◎ c₁) v = evalComb c₁ (evalComb c v)
-evalComb (c ⊕ c₁) (inj₁ x) = inj₁ (evalComb c x)
-evalComb (c ⊕ c₁) (inj₂ y) = inj₂ (evalComb c₁ y)
-evalComb (c ⊗ c₁) (proj₁ , proj₂) = evalComb c proj₁ , evalComb c₁ proj₂
+mutual
+  evalComb : {a b : FT} → a ⇛ b → ⟦ a ⟧ → ⟦ b ⟧
+  evalComb unite₊⇛ (inj₁ ())
+  evalComb unite₊⇛ (inj₂ y) = y
+  evalComb uniti₊⇛ v = inj₂ v
+  evalComb swap₊⇛ (inj₁ x) = inj₂ x
+  evalComb swap₊⇛ (inj₂ y) = inj₁ y
+  evalComb assocl₊⇛ (inj₁ x) = inj₁ (inj₁ x)
+  evalComb assocl₊⇛ (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
+  evalComb assocl₊⇛ (inj₂ (inj₂ y)) = inj₂ y
+  evalComb assocr₊⇛ (inj₁ (inj₁ x)) = inj₁ x
+  evalComb assocr₊⇛ (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
+  evalComb assocr₊⇛ (inj₂ y) = inj₂ (inj₂ y)
+  evalComb unite⋆⇛ (tt , proj₂) = proj₂
+  evalComb uniti⋆⇛ v = tt , v
+  evalComb swap⋆⇛ (proj₁ , proj₂) = proj₂ , proj₁
+  evalComb assocl⋆⇛ (proj₁ , proj₂ , proj₃) = (proj₁ , proj₂) , proj₃
+  evalComb assocr⋆⇛ ((proj₁ , proj₂) , proj₃) = proj₁ , proj₂ , proj₃
+  evalComb distz⇛ (() , proj₂)
+  evalComb factorz⇛ ()
+  evalComb dist⇛ (inj₁ x , proj₂) = inj₁ (x , proj₂)
+  evalComb dist⇛ (inj₂ y , proj₂) = inj₂ (y , proj₂)
+  evalComb factor⇛ (inj₁ (proj₁ , proj₂)) = inj₁ proj₁ , proj₂
+  evalComb factor⇛ (inj₂ (proj₁ , proj₂)) = inj₂ proj₁ , proj₂
+  evalComb id⇛ v = v
+  evalComb (sym⇛ c) v = evalBComb c v -- TODO: use a backwards interpreter
+  evalComb (c ◎ c₁) v = evalComb c₁ (evalComb c v)
+  evalComb (c ⊕ c₁) (inj₁ x) = inj₁ (evalComb c x)
+  evalComb (c ⊕ c₁) (inj₂ y) = inj₂ (evalComb c₁ y)
+  evalComb (c ⊗ c₁) (proj₁ , proj₂) = evalComb c proj₁ , evalComb c₁ proj₂
+
+  evalBComb : {a b : FT} → a ⇛ b → ⟦ b ⟧ → ⟦ a ⟧
+  evalBComb unite₊⇛ v = inj₂ v
+  evalBComb uniti₊⇛ (inj₁ ())
+  evalBComb uniti₊⇛ (inj₂ y) = y
+  evalBComb swap₊⇛ (inj₁ x) = inj₂ x
+  evalBComb swap₊⇛ (inj₂ y) = inj₁ y
+  evalBComb assocl₊⇛ (inj₁ (inj₁ x)) = inj₁ x
+  evalBComb assocl₊⇛ (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
+  evalBComb assocl₊⇛ (inj₂ y) = inj₂ (inj₂ y)
+  evalBComb assocr₊⇛ (inj₁ x) = inj₁ (inj₁ x)
+  evalBComb assocr₊⇛ (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
+  evalBComb assocr₊⇛ (inj₂ (inj₂ y)) = inj₂ y
+  evalBComb unite⋆⇛ x = tt , x
+  evalBComb uniti⋆⇛ x = proj₂ x
+  evalBComb swap⋆⇛ (x , y) = y , x
+  evalBComb assocl⋆⇛ ((x , y) , z) = x , y , z
+  evalBComb assocr⋆⇛ (x , y , z) = (x , y) , z
+  evalBComb distz⇛ ()
+  evalBComb factorz⇛ (() , _)
+  evalBComb dist⇛ (inj₁ (proj₁ , proj₂)) = inj₁ proj₁ , proj₂
+  evalBComb dist⇛ (inj₂ (proj₁ , proj₂)) = inj₂ proj₁ , proj₂
+  evalBComb factor⇛ (inj₁ x , proj₂) = inj₁ (x , proj₂)
+  evalBComb factor⇛ (inj₂ y , proj₂) = inj₂ (y , proj₂)
+  evalBComb id⇛ x = x
+  evalBComb (sym⇛ c) x = evalComb c x
+  evalBComb (c ◎ c₁) x = evalBComb c (evalBComb c₁ x)
+  evalBComb (c ⊕ c₁) (inj₁ x) = inj₁ (evalBComb c x)
+  evalBComb (c ⊕ c₁) (inj₂ y) = inj₂ (evalBComb c₁ y)
+  evalBComb (c ⊗ c₁) (proj₁ , proj₂) = evalBComb c proj₁ , evalBComb c₁ proj₂
 
 finToVal : {n : ℕ} → F.Fin n → ⟦ fromℕ n ⟧
 finToVal F.zero = inj₁ tt
