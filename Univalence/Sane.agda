@@ -410,12 +410,12 @@ record mainLemma (n : ℕ) (v : Vec (F.Fin n) n) : Set where
 
 -- Why not try to prove p₁ directly?
 lemma1 : {n : ℕ} (v : Vec (F.Fin n) n) → (i : F.Fin n) → (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
--- we need the F.compare to make evalComb reduce, but then I don't know what to put in for t,
--- at least, I can't convince Agda that anything I stick there works
-lemma1 (x ∷ v) F.zero with F.compare F.zero x 
-lemma1 (x ∷ v) F.zero | t = {!!}
-lemma1 (x ∷ v) (F.suc i) with F.compare (F.suc i) x
-... | t = {!!}
+lemma1 [] ()
+-- we need the F.compare to make evalComb reduce
+lemma1 (x ∷ v) i with F.compare i x 
+lemma1 (x ∷ v) .(F.inject least) | F.less .x least = {!!}
+lemma1 (x ∷ v) .x | F.equal .x = {!!}
+lemma1 (.(F.inject least) ∷ v) .greatest | F.greater greatest least = {!!} 
 
 -- and what about p₂ ?
 lemma2 : {n : ℕ} (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin n) → (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
