@@ -365,21 +365,23 @@ data vecRep : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n → 
 
 vecRepWorks : {n : ℕ} → {c : (fromℕ n) ⇛ (fromℕ n)} → {v : Vec (F.Fin n) n} → 
   vecRep c v → (i : F.Fin n) → (evalVec v i) ≡ (evalComb c (finToVal i))
-vecRepWorks vr-id i = {!!} -- ap finToVal (lookupTab i)
-vecRepWorks vr-swap i = {!!}
-vecRepWorks (vr-comp vr vr₁) i = {!!}
-vecRepWorks {suc n} (vr-plus vr) F.zero = {!!} -- refl (inj₁ tt)
-vecRepWorks (vr-plus {c = c} {v = v} vr) (F.suc i) = {!!} 
-{--
-  evalVec (F.zero ∷ map F.suc v) (F.suc i) ≡⟨ ap finToVal (map!! F.suc v i) ⟩
-  inj₂ (finToVal (v !! i)) ≡⟨ ap inj₂ (vecRepWorks vr i) ⟩
+vecRepWorks vr-id i = ap finToVal (lookupTab i) -- ap finToVal (lookupTab i)
+vecRepWorks vr-swap F.zero = refl (inj₂ (inj₁ tt))
+vecRepWorks vr-swap (F.suc F.zero) = refl (inj₁ tt)
+vecRepWorks vr-swap (F.suc (F.suc i)) = {!!} -- basically want: vecRepWorks vr-id (F.suc (F.suc i))
+vecRepWorks (vr-comp {n} {c₁} {c₂} {v₁} {v₂} vr vr₁) i = {!!} -- no idea on this one
+vecRepWorks {suc n} (vr-plus vr) F.zero = refl (inj₁ tt)
+vecRepWorks (vr-plus {c = c} {v = v} vr) (F.suc i) = 
+  evalVec (F.zero ∷ map F.suc v) (F.suc i)  ≡⟨ ap finToVal (map!! F.suc v i) ⟩
+  inj₂ (finToVal (v !! i))                  ≡⟨ ap inj₂ (vecRepWorks vr i) ⟩
   (evalComb (id⇛ ⊕ c) (finToVal (F.suc i)) ∎)
---}
 
 vecToCombWorks : {n : ℕ} → 
   (v : Vec (F.Fin n) n) → (i : F.Fin n) → 
   (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
-vecToCombWorks {n} v = {!!} 
+vecToCombWorks [] ()
+vecToCombWorks (x ∷ v) F.zero = {!evalVec (x ∷ v) F.zero!}
+vecToCombWorks (x ∷ v) (F.suc i) = {!!} 
 {--
   foldrWorks
     {fromℕ n ⇛ fromℕ n}
@@ -408,17 +410,9 @@ record mainLemma (n : ℕ) (v : Vec (F.Fin n) n) : Set where
 
 ------------------------------------------------------------------
 
--- Why not try to prove p₁ directly?
 lemma1 : {n : ℕ} (v : Vec (F.Fin n) n) → (i : F.Fin n) → (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
-lemma1 [] ()
--- we need the F.compare to make evalComb reduce
-lemma1 (x ∷ v) i with F.compare i x 
-lemma1 (x ∷ v) .(F.inject least) | F.less .x least = {!!}
-lemma1 (x ∷ v) .x | F.equal .x = {!!}
-lemma1 (.(F.inject least) ∷ v) .greatest | F.greater greatest least = {!!} 
+lemma1 = vecToCombWorks 
 
 -- and what about p₂ ?
 lemma2 : {n : ℕ} (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin n) → (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
--- Agda can't figure out what c goes here, so we can't case-split.  I am guessing that this
--- is what vecRep is supposed to be about.
-lemma2 c i = {!!}
+lemma2 c i = combToVecWorks c i
