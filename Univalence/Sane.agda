@@ -229,8 +229,11 @@ upTo : (n : ℕ) → Vec (F.Fin n) n
 upTo n = tabulate {n} id
 
 vecToComb : {n : ℕ} → Vec (F.Fin n) n → (fromℕ n) ⇛ (fromℕ n)
-vecToComb {n} vec = 
-  foldr (λ i → fromℕ n ⇛ fromℕ n) _◎_ id⇛ (zipWith makeSingleComb vec (upTo n))
+-- vecToComb {n} vec = 
+--  foldr (λ i → fromℕ n ⇛ fromℕ n) _◎_ id⇛ (zipWith makeSingleComb vec (upTo n))
+vecToComb {zero} _ = id⇛
+vecToComb {suc n} vec = 
+    foldr₁ _◎_ (zipWith makeSingleComb vec (upTo (suc n)))
 
 mutual
   evalComb : {a b : FT} → a ⇛ b → ⟦ a ⟧ → ⟦ b ⟧
@@ -379,9 +382,9 @@ vecRepWorks (vr-plus {c = c} {v = v} vr) (F.suc i) =
 vecToCombWorks : {n : ℕ} → 
   (v : Vec (F.Fin n) n) → (i : F.Fin n) → 
   (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
-vecToCombWorks [] ()
-vecToCombWorks (x ∷ v) F.zero = {!evalVec (x ∷ v) F.zero!}
-vecToCombWorks (x ∷ v) (F.suc i) = {!!} 
+vecToCombWorks {zero} [] ()
+vecToCombWorks {suc n} (x ∷ v) F.zero = {!makeSingleComb x F.zero!}
+vecToCombWorks {suc n} (x ∷ v) (F.suc i) = {!!} 
 {--
   foldrWorks
     {fromℕ n ⇛ fromℕ n}
