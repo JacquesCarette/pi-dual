@@ -1,0 +1,52 @@
+\documentclass[11pt]{article}
+\usepackage{fullpage}
+\usepackage{latexsym}
+\usepackage{verbatim}
+\usepackage{amsthm,amssymb,amsmath,stmaryrd}
+\usepackage{ifthen}
+\usepackage{url}
+
+\input{defs.tex}
+
+\title{Univalence Theorems with $\Pi$}
+
+\author{Zach Sparks}
+
+%% \newcommand{\code}[1]{\texttt{#1}}
+
+\begin{document}
+\maketitle
+
+We are trying to prove theorems that relate syntactic functions in our system
+(ie, combinators) with semantic functions (ie, vectors). That is:
+
+For all finite types $a$ and $b$ and all combinators $c : a \combarrow b$, there
+exists some semantic function $f : \tonat{a} \to \tonat{b}$ such that for all $x
+: a$, $\tonat{c\,x} \eq v\,\tonat{x}$.
+
+For all finite types $a$ and $b$ and all semantic functions $f : \tonat{a} \to
+\tonat{b}$, there exists some combinator $c : a \combarrow b$ such that for all
+$i : \tonat{a}$, $c\,\fromnat{a}{i} \eq \fromnat{b}{v\,i}$.
+
+In our case, we already know the transformations we are using (called $compile$
+and $decompile$), so we can rewrite these theorems as follows:
+
+For all finite types $a$ and $b$, combinators $c : a \combarrow b$, and all $x :
+a$, $\tonat{c\,x} \eq compile\,c\,\tonat{x}$.
+
+For all finite types $a$ and $b$, all semantic functions $f : \tonat{a} \to
+\tonat{b}$, and all $i : \tonat{a}$, $decompile\,v\,\fromnat{a}{i} \eq
+\fromnat{b}{v\,i}$.
+
+As an intermediate step, we are proving a slightly different theorem about
+combinators over \emph{normalized types}, since these are closer to the vector
+representation we are compiling to. Thus, the process looks something like:
+
+\begin{verbatim}
+combinator <===> combinator over normalized types <===> vector
+\end{verbatim}
+
+Right now, we are working on the arrow on the right; the arrow on the left
+should be somewhat easier.
+
+\end{document}
