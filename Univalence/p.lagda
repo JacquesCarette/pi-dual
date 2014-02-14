@@ -1,4 +1,6 @@
 \documentclass{llncs}
+\pagestyle{plain}
+
 \usepackage{agda}
 \usepackage{tikz}
 \usepackage{url}
@@ -13,6 +15,40 @@
 \usepackage{graphicx}
 \usepackage{textgreek}
 
+\newcommand{\identlp}{\mathit{identl}_+}
+\newcommand{\identrp}{\mathit{identr}_+}
+\newcommand{\swapp}{\mathit{swap}_+}
+\newcommand{\assoclp}{\mathit{assocl}_+}
+\newcommand{\assocrp}{\mathit{assocr}_+}
+\newcommand{\identlt}{\mathit{identl}_*}
+\newcommand{\identrt}{\mathit{identr}_*}
+\newcommand{\swapt}{\mathit{swap}_*}
+\newcommand{\assoclt}{\mathit{assocl}_*}
+\newcommand{\assocrt}{\mathit{assocr}_*}
+\newcommand{\distz}{\mathit{dist}_0}
+\newcommand{\factorz}{\mathit{factor}_0}
+\newcommand{\dist}{\mathit{dist}}
+\newcommand{\factor}{\mathit{factor}}
+\newcommand{\iso}{\leftrightarrow}
+\newcommand{\proves}{\vdash}
+\newcommand{\symc}[1]{\mathit{sym}~#1}
+\newcommand{\idc}{\mathit{id}}
+\newcommand{\ap}[2]{\mathit{ap}~#1~#2}
+\newcommand{\Rule}[4]{
+\makebox{{\rm #1}
+$\displaystyle
+\frac{\begin{array}{l}#2\\\end{array}}
+{\begin{array}{l}#3\\\end{array}}$
+ #4}}
+\newcommand{\jdg}[3]{#2 \proves_{#1} #3}
+\newcommand{\adjoint}[1]{#1^{\dagger}}
+\newcommand{\pc}{\fatsemi}                 % path composition
+
+\newenvironment{floatrule}
+    {\hrule width \hsize height .33pt \vspace{.5pc}}
+    {\par\addvspace{.5pc}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 \title{A Computational Interpretation of Univalence for Finite Types}
 \author{Zachary Sparks$^{1}$ \and Jacques Carette$^{2}$ \and Amr Sabry$^{1}$}
@@ -92,9 +128,9 @@ We are used to think of types as sets of values. So we think of the type
 \begin{center}
 \begin{tikzpicture}
   \draw (0,0) ellipse (2cm and 1cm);
-  \draw[fill] (-1,0) circle [radius=0.025];
+  \draw[fill] (-1,0) circle (0.025);
   \node[below] at (-1,0) {false};
-  \draw[fill] (1,0) circle [radius=0.025];
+  \draw[fill] (1,0) circle (0.025);
   \node[below] at (1,0) {true};
 \end{tikzpicture}
 \end{center}
@@ -104,11 +140,11 @@ In HoTT, we should instead think about it as:
 \begin{center}
 \begin{tikzpicture}
   \draw (0,0) ellipse (2cm and 1cm);
-  \draw[fill] (-1,0) circle [radius=0.025];
-  \draw[->,thick,cyan] (-1,0) arc [radius=0.2, start angle=0, end angle=320];
+  \draw[fill] (-1,0) circle (0.025);
+  \draw[->,thick,cyan] (-1,0) arc (0:320:0.2);
   \node[above right] at (-1,0) {false};
-  \draw[fill] (1,-0.2) circle [radius=0.025];
-  \draw[->,thick,cyan] (1,-0.2) arc [radius=0.2, start angle=0, end angle=320];
+  \draw[fill] (1,-0.2) circle (0.025);
+  \draw[->,thick,cyan] (1,-0.2) arc (0:320:0.2);
   \node[above right] at (1,-0.2) {true};
 \end{tikzpicture}
 \end{center}
@@ -120,11 +156,11 @@ or groupoids:
 \begin{center}
 \begin{tikzpicture}
   \draw (0,0) ellipse (5cm and 2.5cm);
-  \draw[fill] (-4,0) circle [radius=0.025];
-  \draw[->,thick,cyan] (-4,0) arc [radius=0.2, start angle=0, end angle=320];
-  \draw[fill] (0,0) circle [radius=0.025];
-  \draw[->,thick,cyan] (0,0) arc [radius=0.2, start angle=-180, end angle=140];
-  \draw[fill] (4,0) circle [radius=0.025];
+  \draw[fill] (-4,0) circle (0.025);
+  \draw[->,thick,cyan] (-4,0) arc (0:320:0.2);
+  \draw[fill] (0,0) circle (0.025);
+  \draw[->,thick,cyan] (0,0) arc (-180:140:0.2);
+  \draw[fill] (4,0) circle (0.025);
   \draw[->,double,thick,blue] (-2.3,0.8) to [out=225, in=135] (-2.3,-0.8);
   \draw[->,double,thick,blue] (-1.7,0.8) to [out=-45, in=45] (-1.7,-0.8);
   \draw[->,thick,red] (-2.4,0.1) -- (-1.6,0.1);
@@ -132,9 +168,9 @@ or groupoids:
   \draw[->,thick,red] (-2.4,-0.1) -- (-1.6,-0.1);
   \draw[->,thick,cyan] (-4,0) to [out=60, in=120] (0,0);
   \draw[->,thick,cyan] (0,0) to [out=-120, in=-60] (-4,0);
-  \draw[->,thick,cyan] (4,0) arc [radius=0.2, start angle=0, end angle=320];
-  \draw[->,thick,cyan] (4,0) arc [radius=0.7, start angle=0, end angle=330];
-  \draw[->,thick,cyan] (4,0) arc [radius=1.2, start angle=0, end angle=350];
+  \draw[->,thick,cyan] (4,0) arc (0:320:0.2);
+  \draw[->,thick,cyan] (4,0) arc (0:330:0.7);
+  \draw[->,thick,cyan] (4,0) arc (0:350:1.2);
   \draw[->,double,thick,blue] (1.8,0) -- (2.4,0);
 \end{tikzpicture}
 \end{center}
@@ -158,7 +194,7 @@ exists a path $p \circ q : x \equiv z$;
 \end{itemize}
 
 We cannot generate non-trivial groupoids starting from the usual type
-constructions. We need \empy{higher-order inductive types} for that purpose.
+constructions. We need \emph{higher-order inductive types} for that purpose.
 Example:
 
 \begin{code}
@@ -178,14 +214,12 @@ module Circle where
   postulate loop : base ≡ base
 \end{code}
 
-\end{frame}
-
 Here is the non-trivial structure of this example:
 
 \begin{center}
 \begin{tikzpicture}
   \draw (0,0) ellipse (5.5cm and 2.5cm);
-  \draw[fill] (0,0) circle [radius=0.025];
+  \draw[fill] (0,0) circle (0.025);
   \draw[->,thick,red] (0,0) arc (90:440:0.2);
   \node[above,red] at (0,0) {refl};
   \draw[->,thick,cyan] (0,0) arc (-180:140:0.7);
@@ -213,12 +247,12 @@ continuous.
 \begin{tikzpicture}
   \draw (-3,0) ellipse (1.5cm and 3cm);
   \draw (3,0) ellipse (1.5cm and 3cm);
-  \draw[fill] (-3,1.5) circle [radius=0.025];
-  \draw[fill] (-3,-1.5) circle [radius=0.025];
+  \draw[fill] (-3,1.5) circle (0.025);
+  \draw[fill] (-3,-1.5) circle (0.025);
   \node[above] at (-3,1.5) {$x$};
   \node[below] at (-3,-1.5) {$y$};
-  \draw[fill] (3,1.5) circle [radius=0.025];
-  \draw[fill] (3,-1.5) circle [radius=0.025];
+  \draw[fill] (3,1.5) circle (0.025);
+  \draw[fill] (3,-1.5) circle (0.025);
   \node[above] at (3,1.5) {$f(x)$};
   \node[below] at (3,-1.5) {$f(y)$};
   \draw[->,cyan,thick] (-3,1.5) -- (-3,-1.5);
@@ -262,13 +296,13 @@ becomes a path between $\mathit{transport}~(f(x))$ and $f(y)$.
   \draw (3,-1.4) ellipse (2cm and 2cm);
   \node[blue,ultra thick,above] at (3,3) {$P(x)$};
   \node[blue,ultra thick,below] at (3,-3.5) {$P(y)$};
-  \draw[fill] (-3,1.5) circle [radius=0.025];
-  \draw[fill] (-3,-1.5) circle [radius=0.025];
+  \draw[fill] (-3,1.5) circle (0.025);
+  \draw[fill] (-3,-1.5) circle (0.025);
   \node[above] at (-3,1.5) {$x$};
   \node[below] at (-3,-1.5) {$y$};
-  \draw[fill] (3,1.5) circle [radius=0.025];
-  \draw[fill] (3,-0.5) circle [radius=0.025];
-  \draw[fill] (3,-2.5) circle [radius=0.025];
+  \draw[fill] (3,1.5) circle (0.025);
+  \draw[fill] (3,-0.5) circle (0.025);
+  \draw[fill] (3,-2.5) circle (0.025);
   \node[above] at (3,1.5) {$f(x)$};
   \node[above] at (3,-0.5) {$\mathit{transport}~P~p~f(x)$};
   \node[below] at (3,-2.5) {$f(y)$};
@@ -291,7 +325,7 @@ $f : A \rightarrow B$, $g : \Pi_{a \in A} P(a) \rightarrow P'(a)$,
 $P : A \rightarrow \mathit{Set}$, 
 $P' : A \rightarrow \mathit{Set}$, $Q : B \rightarrow \mathit{Set}$, 
 $u : P(x)$, and $w : Q(f(x))$.
-\item The function \blue{$\mathit{transport}~P~p$} satisfies 
+\item The function $\mathit{transport}~P~p$ satisfies 
 the following properties:
   \[\begin{array}{rcl}
   \mathit{transport}~P~q~(\mathit{transport}~P~p~u) &\equiv&
@@ -411,7 +445,7 @@ Note that:
 in type theory (James and Sabry, POPL 2012).
 \end{itemize}
 
-subsection{Base isomorphisms}
+\subsection{Base isomorphisms}
 \[\begin{array}{rrcll}
 \identlp :&  0 + b & \iso & b &: \identrp \\
 \swapp :&  b_1 + b_2 & \iso & b_2 + b_1 &: \swapp \\
@@ -449,11 +483,10 @@ subsection{Base isomorphisms}
 {\jdg{}{}{c_1 \otimes c_2 : b_1 * b_3 \iso b_2 * b_4}}
 {}
 \end{center}
-\end{frame}
 
 These isomorphisms:
 \begin{itemize}
-\item Form an \red{inductive type}
+\item Form an inductive type
 \item Identify each isomorphism with a collection of paths
 \item For example:
 \[\begin{array}{rrcl}
