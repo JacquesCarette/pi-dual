@@ -336,17 +336,19 @@ combToVecWorks : {n : ℕ} → (c : (fromℕ n) ⇛ (fromℕ n)) →
   (i : F.Fin n) → (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
 combToVecWorks c i = (! (finToValToFin _)) ∘ (ap finToVal (! (lookupTab i)))
 
--- The trickier one
-
+-- Syntactic sugar for lookup that's a lot nicer
 _!!_ : {A : Set} → {n : ℕ} → Vec A n → F.Fin n → A
 _!!_ v i = lookup i v
 
+-- Important lemma about lookup; for some reason it doesn't seem to be in the
+-- library even though it's in the main agda tutorial, iirc
 map!! : {A B : Set} → {n : ℕ} → (f : A → B) → (v : Vec A n) → (i : F.Fin n) → 
         (vmap f v) !! i ≡ f (v !! i)
 map!! {n = zero} f [] ()
 map!! {n = suc n} f (x ∷ xs) F.zero = refl (f x)
 map!! {n = suc n} f (x ∷ xs) (F.suc i) = map!! f xs i
 
+-- Lemma for proving things about calls to foldr; possibly not needed.
 foldrWorks : {A : Set} → {m : ℕ} → 
              (B : ℕ → Set) → (P : (n : ℕ) → Vec A n → B n → Set)
            → (_⊕_ : {n : ℕ} → A → B n → B (suc n)) → (base : B zero)
@@ -360,6 +362,12 @@ foldrWorks B P combine base pcombine pbase (x ∷ v) =
   pcombine x v (foldr B combine base v) 
     (foldrWorks B P combine base pcombine pbase v)
 
+-- Maybe we won't end up needing these to plug in to vecToCombWorks,
+-- but I'm afraid we will, which means we'll have to fix them eventually.
+-- I'm not sure how to do this right now and I've spent too much time on
+-- it already when there are other, more tractable problems that need to
+-- be solved. If someone else wants to take a shot, be my guest. [Z]
+    
 foldri : {A : Set} → (B : ℕ → Set) → {m : ℕ} → 
        ({n : ℕ} → F.Fin m → A → B n → B (suc n)) →
        B zero →
@@ -396,6 +404,8 @@ foldriWorks {A} {m} B P combine base pcombine pbase vec =
     (Data.Vec.zip (upTo _) vec)
 --}              
 
+-- helper lemmas for vecRepWorks
+
 swapElsewhere : {n : ℕ} → (x : ⟦ fromℕ n ⟧) →
                 inj₂ (inj₂ x) ≡ (evalComb (swapi F.zero) (inj₂ (inj₂ x)))
 swapElsewhere x = refl _
@@ -408,6 +418,10 @@ tabMap {n} i =
   (λ i → F.suc (F.suc i)) (lookup i (upTo n)) ≡⟨ ap (λ i → F.suc (F.suc i)) (lookupTab i) ⟩
   F.suc (F.suc i) ∎ 
 
+
+-- vecRep c v relates a combinator c over normal types to the output
+-- vector it results in. This works only over a subset of combinators
+-- used in decompilation.
 data vecRep : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n → Set where
   vr-id    : {n : ℕ} → vecRep (id⇛ {fromℕ n}) (upTo n)
   vr-swap  : 
@@ -423,6 +437,9 @@ data vecRep : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n → 
     vecRep {n} c v → 
     vecRep {suc n} (id⇛ ⊕ c) (F.zero ∷ (vmap F.suc v))
 
+-- This lemma is the hammer that will let us use vecRep to (hopefully) simply
+-- prove some lemmas about the helper functions used in vecToComb, then apply
+-- vecRepWorks at the end to make sure they all "do the right thing"
 vecRepWorks : {n : ℕ} → {c : (fromℕ n) ⇛ (fromℕ n)} → {v : Vec (F.Fin n) n} → 
   vecRep c v → (i : F.Fin n) → (evalVec v i) ≡ (evalComb c (finToVal i))
 vecRepWorks vr-id i = ap finToVal (lookupTab i) -- ap finToVal (lookupTab i)
@@ -441,6 +458,15 @@ vecRepWorks (vr-plus {c = c} {v = v} vr) (F.suc i) =
   inj₂ (finToVal (v !! i))                  ≡⟨ ap inj₂ (vecRepWorks vr i) ⟩
   (evalComb (id⇛ ⊕ c) (finToVal (F.suc i)) ∎)
 
+-- Ideally the proof of vecToCombWorks will consist almost entirely
+-- of lemmas that use the vecRep type, then put them together with
+-- one final call to vecRepWorks to finish it all off.
+--
+-- I haven't written these lemmas yet, but will soon. I suspect they
+-- will just get plugged into foldrWorks or foldriWorks, but maybe
+-- there is a more straightforward version we could do with pattern
+-- matching, instead. [Z]
+  
 vecToCombWorks : {n : ℕ} → 
   (v : Vec (F.Fin n) n) → (i : F.Fin n) → 
   (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
