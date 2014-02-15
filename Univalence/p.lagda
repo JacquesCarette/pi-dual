@@ -58,11 +58,11 @@ $\displaystyle
 \begin{abstract}
 
 Homotopy type theory (HoTT) relates some aspects of topology, algebra,
-geometry, physics, logic, and type theory, in a unique foundational way that
-promises a new foundational perspective on mathematics and computation. The
-heart of HoTT the \emph{univalence axiom}, which informally states that
-isomorphic structures can be identified. One of the major open problems in
-HoTT is a computational interpretation of this axiom. 
+geometry, physics, logic, and type theory, in a unique novel way that
+promises a new and foundational perspective on mathematics and
+computation. The heart of HoTT the \emph{univalence axiom}, which informally
+states that isomorphic structures can be identified. One of the major open
+problems in HoTT is a computational interpretation of this axiom.
 
 We propose that, at least for the special case of finite types, reversible
 computation \emph{is} the computational interpretation of
