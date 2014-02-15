@@ -316,6 +316,15 @@ lookupTab : {A : Set} → {n : ℕ} → {f : F.Fin n → A} →
 lookupTab {f = f} F.zero = refl (f F.zero)
 lookupTab (F.suc i) = lookupTab i
 
+vmap : {n : ℕ} → {A B : Set} → (A → B) → Vec A n → Vec B n
+vmap f [] = []
+vmap f (x ∷ xs) = (f x) ∷ (vmap f xs)
+
+lookupMap : {A B : Set} → {n : ℕ} → {f : A → B} → (i : F.Fin n) → (v : Vec A n) →
+            lookup i (vmap f v) ≡ f (lookup i v)
+lookupMap F.zero (x ∷ v) = refl _
+lookupMap (F.suc i) (x ∷ v) = lookupMap i v
+
 finToValToFin : {n : ℕ} → (v : ⟦ fromℕ n ⟧) → finToVal (valToFin v) ≡ v
 finToValToFin {zero} ()
 finToValToFin {suc n} (inj₁ tt)  = refl (inj₁ tt)
@@ -333,7 +342,7 @@ _!!_ : {A : Set} → {n : ℕ} → Vec A n → F.Fin n → A
 _!!_ v i = lookup i v
 
 map!! : {A B : Set} → {n : ℕ} → (f : A → B) → (v : Vec A n) → (i : F.Fin n) → 
-        (map f v) !! i ≡ f (v !! i)
+        (vmap f v) !! i ≡ f (v !! i)
 map!! {n = zero} f [] ()
 map!! {n = suc n} f (x ∷ xs) F.zero = refl (f x)
 map!! {n = suc n} f (x ∷ xs) (F.suc i) = map!! f xs i
@@ -386,35 +395,49 @@ foldriWorks {A} {m} B P combine base pcombine pbase vec =
     pbase
     (Data.Vec.zip (upTo _) vec)
 --}              
-              
 
+swapElsewhere : {n : ℕ} → (x : ⟦ fromℕ n ⟧) →
+                inj₂ (inj₂ x) ≡ (evalComb (swapi F.zero) (inj₂ (inj₂ x)))
+swapElsewhere x = refl _
 
-    
+tabMap : {n : ℕ} → {j k : F.Fin (suc (suc n))} → (i : F.Fin n) →
+         (j ∷ k ∷ (vmap (λ i → F.suc (F.suc i)) (upTo n))) !! (F.suc (F.suc i))
+           ≡ (F.suc (F.suc i))
+tabMap {n} i =
+  lookup i (vmap (λ i → F.suc (F.suc i)) (upTo n)) ≡⟨ lookupMap i _ ⟩ 
+  (λ i → F.suc (F.suc i)) (lookup i (upTo n)) ≡⟨ ap (λ i → F.suc (F.suc i)) (lookupTab i) ⟩
+  F.suc (F.suc i) ∎ 
+
 data vecRep : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n → Set where
   vr-id    : {n : ℕ} → vecRep (id⇛ {fromℕ n}) (upTo n)
   vr-swap  : 
     {n : ℕ} → 
     vecRep {suc (suc n)} (swapi {suc n} F.zero)
       ((F.suc F.zero) ∷ F.zero ∷ 
-       (Data.Vec.map (λ i → F.suc (F.suc i)) (upTo n)))
+       (vmap (λ i → F.suc (F.suc i)) (upTo n)))
   vr-comp  : 
     {n : ℕ} → {c₁ c₂ : (fromℕ n) ⇛ (fromℕ n)} → {v₁ v₂ : Vec (F.Fin n) n} → 
     vecRep c₁ v₁ → vecRep c₂ v₂ → 
     vecRep (c₁ ◎ c₂) (tabulate {n} (λ i → (lookup (lookup i v₂) v₁)))
   vr-plus : {n : ℕ} → {c : (fromℕ n) ⇛ (fromℕ n)} → {v : Vec (F.Fin n) n} → 
     vecRep {n} c v → 
-    vecRep {suc n} (id⇛ ⊕ c) (F.zero ∷ (Data.Vec.map F.suc v))
+    vecRep {suc n} (id⇛ ⊕ c) (F.zero ∷ (vmap F.suc v))
 
 vecRepWorks : {n : ℕ} → {c : (fromℕ n) ⇛ (fromℕ n)} → {v : Vec (F.Fin n) n} → 
   vecRep c v → (i : F.Fin n) → (evalVec v i) ≡ (evalComb c (finToVal i))
 vecRepWorks vr-id i = ap finToVal (lookupTab i) -- ap finToVal (lookupTab i)
 vecRepWorks vr-swap F.zero = refl (inj₂ (inj₁ tt))
 vecRepWorks vr-swap (F.suc F.zero) = refl (inj₁ tt)
-vecRepWorks vr-swap (F.suc (F.suc i)) = {!!} -- basically want: vecRepWorks vr-id (F.suc (F.suc i))
+vecRepWorks {suc (suc n)} vr-swap (F.suc (F.suc i)) =
+    evalVec (F.suc F.zero ∷ F.zero ∷ vmap (λ i → F.suc (F.suc i)) (upTo n)) (F.suc (F.suc i))
+  ≡⟨ ap finToVal (tabMap {n} {F.suc F.zero} {F.zero} i) ⟩
+    finToVal (F.suc (F.suc i))
+  ≡⟨ swapElsewhere (finToVal i) ⟩
+    evalComb (assocl₊⇛ ◎ swap₊⇛ ⊕ id⇛ ◎ assocr₊⇛) (finToVal (F.suc (F.suc i))) ∎
 vecRepWorks (vr-comp {n} {c₁} {c₂} {v₁} {v₂} vr vr₁) i = {!!} -- no idea on this one
 vecRepWorks {suc n} (vr-plus vr) F.zero = refl (inj₁ tt)
 vecRepWorks (vr-plus {c = c} {v = v} vr) (F.suc i) = 
-  evalVec (F.zero ∷ map F.suc v) (F.suc i)  ≡⟨ ap finToVal (map!! F.suc v i) ⟩
+  evalVec (F.zero ∷ vmap F.suc v) (F.suc i)  ≡⟨ ap finToVal (map!! F.suc v i) ⟩
   inj₂ (finToVal (v !! i))                  ≡⟨ ap inj₂ (vecRepWorks vr i) ⟩
   (evalComb (id⇛ ⊕ c) (finToVal (F.suc i)) ∎)
 
