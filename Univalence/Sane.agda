@@ -351,6 +351,45 @@ foldrWorks B P combine base pcombine pbase (x ∷ v) =
   pcombine x v (foldr B combine base v) 
     (foldrWorks B P combine base pcombine pbase v)
 
+foldri : {A : Set} → (B : ℕ → Set) → {m : ℕ} → 
+       ({n : ℕ} → F.Fin m → A → B n → B (suc n)) →
+       B zero →
+       Vec A m → B m
+foldri {A} b {m} combine base vec =
+  foldr
+    b
+    (uncurry combine)
+    base
+    (Data.Vec.zip (upTo _) vec)
+
+postulate foldriWorks : {A : Set} → {m : ℕ} →
+              (B : ℕ → Set) → (P : (n : ℕ) → Vec A n → B n → Set) →
+              (combine : {n : ℕ} → F.Fin m → A → B n → B (suc n)) →
+              (base : B zero) →
+              ({n : ℕ} → (i : F.Fin m) → (a : A) → (v : Vec A n) → (b : B n)
+                → P n v b
+                → P (suc n) (a ∷ v) (combine i a b)) →
+              P zero [] base →
+              (v : Vec A m) →
+              P m v (foldri B combine base v)
+-- following definition doesn't work, or at least not obviously
+-- need a more straightforward definition of foldri, but none comes to mind
+-- help? [Z]
+{--               
+foldriWorks {A} {m} B P combine base pcombine pbase vec =
+  foldrWorks {F.Fin m × A}
+    B
+    (λ n v b → P n (map proj₂ v) b)
+    (uncurry combine)
+    base
+    ? -- (uncurry pcombine)
+    pbase
+    (Data.Vec.zip (upTo _) vec)
+--}              
+              
+
+
+    
 data vecRep : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n → Set where
   vr-id    : {n : ℕ} → vecRep (id⇛ {fromℕ n}) (upTo n)
   vr-swap  : 
