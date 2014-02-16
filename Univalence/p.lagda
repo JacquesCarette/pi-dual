@@ -57,6 +57,23 @@ $\displaystyle
 
 \begin{abstract}
 
+Homotopy type theory (HoTT) relates some aspects of topology, algebra,
+geometry, physics, logic, and type theory, in a unique novel way that
+promises a new and foundational perspective on mathematics and
+computation. The heart of HoTT is the \emph{univalence axiom}, which informally
+states that isomorphic structures can be identified. One of the major open
+problems in HoTT is a computational interpretation of this axiom.
+
+We propose that, at least for the special case of finite types, reversible
+computation \emph{is} the computational interpretation of
+univalence. Specifically, we show that, in this context of finite types,
+univalence specializes to a relationship between type isomorphisms on the
+side of syntactic identities and permutations in the symmetric group on the
+side of semantic equivalences. We formalize this connection in Agda as a
+compilation/decompilation theorem for our previously developed reversible
+language $\Pi$ based on type isomorphisms. 
+
+
 \end{abstract}
 
 \AgdaHide{
