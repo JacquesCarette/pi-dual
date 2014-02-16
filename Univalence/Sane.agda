@@ -261,7 +261,7 @@ mutual
   evalComb factor⇛ (inj₂ (proj₁ , proj₂)) = inj₂ proj₁ , proj₂
   evalComb id⇛ v = v
   evalComb (sym⇛ c) v = evalBComb c v -- TODO: use a backwards interpreter
-  evalComb (c ◎ c₁) v = evalComb c₁ (evalComb c v)
+  evalComb (c₁ ◎ c₂) v = evalComb c₂ (evalComb c₁ v)
   evalComb (c ⊕ c₁) (inj₁ x) = inj₁ (evalComb c x)
   evalComb (c ⊕ c₁) (inj₂ y) = inj₂ (evalComb c₁ y)
   evalComb (c ⊗ c₁) (proj₁ , proj₂) = evalComb c proj₁ , evalComb c₁ proj₂
@@ -305,6 +305,15 @@ valToFin {zero} ()
 valToFin {suc n} (inj₁ tt) = F.zero
 valToFin {suc n} (inj₂ v) = F.suc (valToFin v)
 
+finToValToFin : {n : ℕ} → (v : ⟦ fromℕ n ⟧) → finToVal (valToFin v) ≡ v
+finToValToFin {zero} ()
+finToValToFin {suc n} (inj₁ tt)  = refl (inj₁ tt)
+finToValToFin {suc n} (inj₂ v) = ap inj₂ (finToValToFin v)
+
+valToFinToVal : {n : ℕ} → (i : F.Fin n) → valToFin (finToVal i) ≡ i
+valToFinToVal F.zero = refl F.zero
+valToFinToVal (F.suc i) = ap F.suc (valToFinToVal i)
+
 combToVec : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n
 combToVec c = tabulate (valToFin ○ (evalComb c) ○ finToVal)
 
@@ -325,10 +334,12 @@ lookupMap : {A B : Set} → {n : ℕ} → {f : A → B} → (i : F.Fin n) → (v
 lookupMap F.zero (x ∷ v) = refl _
 lookupMap (F.suc i) (x ∷ v) = lookupMap i v
 
-finToValToFin : {n : ℕ} → (v : ⟦ fromℕ n ⟧) → finToVal (valToFin v) ≡ v
-finToValToFin {zero} ()
-finToValToFin {suc n} (inj₁ tt)  = refl (inj₁ tt)
-finToValToFin {suc n} (inj₂ v) = ap inj₂ (finToValToFin v)
+lookupToEvalVec : {n : ℕ} → (i : F.Fin n) → (v : Vec (F.Fin n) n) → lookup i v ≡ valToFin (evalVec v i)
+lookupToEvalVec i v = ! (valToFinToVal (lookup i v) )
+
+lookup∘tabulate : ∀ {a n} → {A : Set a} → (i : F.Fin n) → (f : F.Fin n → A) → lookup i (tabulate f) ≡ f i
+lookup∘tabulate F.zero f = refl (f F.zero)
+lookup∘tabulate (F.suc i) f = lookup∘tabulate i (f ○ F.suc)
 
 --  Might want to take a ⟦ fromℕ n ⟧ instead of a Fin n as the second
 --  argument here?
@@ -418,7 +429,6 @@ tabMap {n} i =
   (λ i → F.suc (F.suc i)) (lookup i (upTo n)) ≡⟨ ap (λ i → F.suc (F.suc i)) (lookupTab i) ⟩
   F.suc (F.suc i) ∎ 
 
-
 -- vecRep c v relates a combinator c over normal types to the output
 -- vector it results in. This works only over a subset of combinators
 -- used in decompilation.
@@ -432,7 +442,7 @@ data vecRep : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n → 
   vr-comp  : 
     {n : ℕ} → {c₁ c₂ : (fromℕ n) ⇛ (fromℕ n)} → {v₁ v₂ : Vec (F.Fin n) n} → 
     vecRep c₁ v₁ → vecRep c₂ v₂ → 
-    vecRep (c₁ ◎ c₂) (tabulate {n} (λ i → (lookup (lookup i v₂) v₁)))
+    vecRep (c₁ ◎ c₂) (tabulate {n} (λ i → (lookup (lookup i v₁) v₂)))
   vr-plus : {n : ℕ} → {c : (fromℕ n) ⇛ (fromℕ n)} → {v : Vec (F.Fin n) n} → 
     vecRep {n} c v → 
     vecRep {suc n} (id⇛ ⊕ c) (F.zero ∷ (vmap F.suc v))
@@ -451,7 +461,22 @@ vecRepWorks {suc (suc n)} vr-swap (F.suc (F.suc i)) =
     finToVal (F.suc (F.suc i))
   ≡⟨ swapElsewhere (finToVal i) ⟩
     evalComb (assocl₊⇛ ◎ swap₊⇛ ⊕ id⇛ ◎ assocr₊⇛) (finToVal (F.suc (F.suc i))) ∎
-vecRepWorks (vr-comp {n} {c₁} {c₂} {v₁} {v₂} vr vr₁) i = {!!} -- no idea on this one
+vecRepWorks (vr-comp {n} {c₁} {c₂} {v₁} {v₂} vr vr₁) i = 
+  finToVal (lookup i (tabulate (λ j → lookup (lookup j v₁) v₂))) 
+ ≡⟨ ap finToVal (lookup∘tabulate i (λ j → lookup (lookup j v₁) v₂)) ⟩ 
+  finToVal (lookup (lookup i v₁) v₂) 
+ ≡⟨ ap (λ x → finToVal (lookup x v₂)) (lookupToEvalVec i v₁) ⟩ 
+  finToVal (lookup (valToFin (evalVec v₁ i)) v₂) 
+ ≡⟨ ap (λ x → finToVal (lookup (valToFin x) v₂)) (vecRepWorks vr i) ⟩ 
+  finToVal (lookup (valToFin (evalComb c₁ (finToVal i))) v₂)
+ ≡⟨ ap finToVal (lookupToEvalVec (valToFin (evalComb c₁ (finToVal i))) v₂) ⟩ 
+  finToVal (valToFin (evalVec v₂ (valToFin (evalComb c₁ (finToVal i)))))
+ ≡⟨ finToValToFin (evalVec v₂ (valToFin (evalComb c₁ (finToVal i)))) ⟩ 
+ evalVec v₂ (valToFin (evalComb c₁ (finToVal i)))
+ ≡⟨ vecRepWorks vr₁ (valToFin (evalComb c₁ (finToVal i))) ⟩ 
+ evalComb c₂ (finToVal (valToFin (evalComb c₁ (finToVal i))))
+ ≡⟨ ap (evalComb c₂) (finToValToFin (evalComb c₁ (finToVal i))) ⟩ 
+ refl (evalComb (c₁ ◎ c₂) (finToVal i)) 
 vecRepWorks {suc n} (vr-plus vr) F.zero = refl (inj₁ tt)
 vecRepWorks (vr-plus {c = c} {v = v} vr) (F.suc i) = 
   evalVec (F.zero ∷ vmap F.suc v) (F.suc i)  ≡⟨ ap finToVal (map!! F.suc v i) ⟩
