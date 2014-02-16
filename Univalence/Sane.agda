@@ -229,11 +229,11 @@ upTo : (n : ℕ) → Vec (F.Fin n) n
 upTo n = tabulate {n} id
 
 vecToComb : {n : ℕ} → Vec (F.Fin n) n → (fromℕ n) ⇛ (fromℕ n)
--- vecToComb {n} vec = 
---  foldr (λ i → fromℕ n ⇛ fromℕ n) _◎_ id⇛ (zipWith makeSingleComb vec (upTo n))
-vecToComb {zero} _ = id⇛
+vecToComb {n} vec = 
+  foldr (λ i → fromℕ n ⇛ fromℕ n) _◎_ id⇛ (zipWith makeSingleComb vec (upTo n))
+{- vecToComb {zero} _ = id⇛
 vecToComb {suc n} vec = 
-    foldr₁ _◎_ (zipWith makeSingleComb vec (upTo (suc n)))
+    foldr₁ _◎_ (zipWith makeSingleComb vec (upTo (suc n))) -}
 
 mutual
   evalComb : {a b : FT} → a ⇛ b → ⟦ a ⟧ → ⟦ b ⟧
@@ -373,12 +373,24 @@ foldrWorks B P combine base pcombine pbase (x ∷ v) =
   pcombine x v (foldr B combine base v) 
     (foldrWorks B P combine base pcombine pbase v)
 
+-- evalComb on foldr becomes a foldl of flipped evalComb
+evalComb∘foldr : {n j : ℕ} → (i : ⟦ fromℕ n ⟧) → (c-vec : Vec (fromℕ n ⇛ fromℕ n) j) →  evalComb (foldr (λ _ → fromℕ n ⇛ fromℕ n) _◎_ id⇛ c-vec) i ≡ foldl (λ _ → ⟦ fromℕ n ⟧) (λ i c → evalComb c i) i c-vec
+evalComb∘foldr {zero} () v
+evalComb∘foldr {suc _} i [] = refl i
+evalComb∘foldr {suc n} i (c ∷ cv) = evalComb∘foldr {suc n} (evalComb c i) cv
+
+-- foldl on a zipWith: move the function in
+{-
+foldl∘zipWith : {A : Set → Set} {f : ?} {j : ?} {g : ? → ? → ?} foldl A f j (zipWith g v z) ≡ foldl (λ x → B x → A x) (λ i h → h i) j (zipWith (λ x₁ x₂ → f (g x₁ x₂)) v z)
+foldl∘zipWith  
+-}
 -- Maybe we won't end up needing these to plug in to vecToCombWorks,
 -- but I'm afraid we will, which means we'll have to fix them eventually.
 -- I'm not sure how to do this right now and I've spent too much time on
 -- it already when there are other, more tractable problems that need to
 -- be solved. If someone else wants to take a shot, be my guest. [Z]
-    
+
+{-    
 foldri : {A : Set} → (B : ℕ → Set) → {m : ℕ} → 
        ({n : ℕ} → F.Fin m → A → B n → B (suc n)) →
        B zero →
@@ -400,6 +412,7 @@ postulate foldriWorks : {A : Set} → {m : ℕ} →
               P zero [] base →
               (v : Vec A m) →
               P m v (foldri B combine base v)
+-}
 -- following definition doesn't work, or at least not obviously
 -- need a more straightforward definition of foldri, but none comes to mind
 -- help? [Z]
@@ -491,13 +504,16 @@ vecRepWorks (vr-plus {c = c} {v = v} vr) (F.suc i) =
 -- will just get plugged into foldrWorks or foldriWorks, but maybe
 -- there is a more straightforward version we could do with pattern
 -- matching, instead. [Z]
-  
+
+-- [JC] flip the conclusion around, as 'evalVec v i' is trivial.  Makes
+-- equational reasoning easier  
 vecToCombWorks : {n : ℕ} → 
   (v : Vec (F.Fin n) n) → (i : F.Fin n) → 
-  (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
-vecToCombWorks {zero} [] ()
-vecToCombWorks {suc n} (x ∷ v) F.zero = {!makeSingleComb x F.zero!}
-vecToCombWorks {suc n} (x ∷ v) (F.suc i) = {!!} 
+  (evalComb (vecToComb v) (finToVal i)) ≡ (evalVec v i)
+vecToCombWorks {n} v i = 
+  evalComb (vecToComb v) (finToVal i)
+ ≡⟨ evalComb∘foldr (finToVal i) (zipWith makeSingleComb v (upTo n)) ⟩
+ {!!} 
 {--
   foldrWorks
     {fromℕ n ⇛ fromℕ n}
@@ -527,7 +543,7 @@ record mainLemma (n : ℕ) (v : Vec (F.Fin n) n) : Set where
 ------------------------------------------------------------------
 
 lemma1 : {n : ℕ} (v : Vec (F.Fin n) n) → (i : F.Fin n) → (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
-lemma1 = vecToCombWorks 
+lemma1 v i = ! (vecToCombWorks v i)
 
 -- and what about p₂ ?
 lemma2 : {n : ℕ} (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin n) → (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
