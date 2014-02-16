@@ -228,6 +228,44 @@ makeSingleComb j i | _ = id⇛
 upTo : (n : ℕ) → Vec (F.Fin n) n
 upTo n = tabulate {n} id
 
+
+-- Correctness: after putting together i indices, the partial combinator c' is
+-- represented by the vector [1, 2, ... , n - (i +1)] ++ (last i v)
+--
+-- Might want to bake in the correctness proof here---have the output be a
+-- combinator c, a vector v, and a proof that vecRep c v, then we just prove
+-- that the vector at the end is just the vector from the beginning
+--
+-- Or just put them together and prove that they're related by vecRep with
+-- foldrWorks and that the end vector is the input vector; this is probably simpler
+-- (and is the approach currently reflected in the code below)
+
+makeSingleComb′ : {n : ℕ} → F.Fin n → F.Fin n → (fromℕ n) ⇛ (fromℕ n) × (F.Fin n × F.Fin n)
+makeSingleComb′ j i with F.compare i j
+makeSingleComb′ .j .(F.inject i) | F.less j i = (swapmn j i , (j , (F.inject i)))
+makeSingleComb′ j i | _ = (id⇛ , (j , j))
+
+-- swapInd v i j returns a vector v′ where v′[i] = j, v′[j] = i, and v′[k] = v[k]
+-- where k != j and k != i
+swapIndFn : {n : ℕ} → Vec (F.Fin n) n → F.Fin n → F.Fin n → (F.Fin n → F.Fin n)
+swapIndFn v i j k with F.compare i k
+swapIndFn v i j .i | F.equal .i = j
+swapIndFn v i j k | _ with F.compare j k
+swapIndFn v i j .j | _ | F.equal .j = i
+swapIndFn v i j k | _ | _ = lookup k v
+
+swapInd : {n : ℕ} → Vec (F.Fin n) n → (F.Fin n × F.Fin n) → Vec (F.Fin n) n
+swapInd v (i , j) = tabulate (swapIndFn v i j)
+
+vecToComb′ : {n : ℕ} → Vec (F.Fin n) n → ((fromℕ n) ⇛ (fromℕ n)) × Vec (F.Fin n) n
+vecToComb′ {n} vec =
+  foldr
+    {A = (fromℕ n ⇛ fromℕ n) × (F.Fin n × F.Fin n)}
+    (λ i → (fromℕ n ⇛ fromℕ n) × Vec (F.Fin n) n)
+    (λ cind → (_◎_ (proj₁ cind)) ×→ (λ v → swapInd v (proj₂ cind)))
+    (id⇛ , upTo n)
+    (zipWith makeSingleComb′ vec (upTo n))
+
 vecToComb : {n : ℕ} → Vec (F.Fin n) n → (fromℕ n) ⇛ (fromℕ n)
 vecToComb {n} vec = 
   foldr (λ i → fromℕ n ⇛ fromℕ n) _◎_ id⇛ (zipWith makeSingleComb vec (upTo n))
