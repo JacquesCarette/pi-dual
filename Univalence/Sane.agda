@@ -13,7 +13,8 @@ open import Data.Product renaming (map to _×→_)
 open import Data.Vec
 open import Function hiding (flip) renaming (_∘_ to _○_) 
 
-infixl 10 _◎_
+infixl 10 _◎_     -- combinator composition
+infixl 10 _∘̬_     -- vector composition
 infixr 8  _∘_     -- path composition
 infix  4  _≡_     -- propositional equality
 infix  4  _∼_     -- homotopy between two functions 
@@ -345,6 +346,7 @@ swapiWorks {suc n} F.zero = {!!} -- need to prove that the vec in vr-swap is the
 swapiWorks {suc n} (F.suc i) = {!vr-plus (swapiWorks i)!} 
 
 -- Permute the first i elements of the identity vector to the right one
+-- Should correspond with swapDownFrom
 permuteRight : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n
 permuteRight {zero} ()
 permuteRight {suc n} F.zero = upTo _
@@ -352,18 +354,28 @@ permuteRight {suc zero} (F.suc ())
 permuteRight {suc (suc n)} (F.suc i) with permuteRight i
 permuteRight {suc (suc n)} (F.suc i) | x ∷ xs = F.suc x ∷ F.zero ∷ vmap F.suc xs
 
+-- The opposite of permuteRight; should correspond with swapUpTo
 permuteLeft : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n
 permuteLeft F.zero = upTo _
-permuteLeft (F.suc i) = {!!}
+permuteLeft (F.suc i) = {!!} -- not sure of a simple way to define this like above
 
 -- NB: I added the F.suc in calls to permuteLeft/Right to get it to work
 -- with swapUpTo/DownFrom; I'm not sure that this is correct? It might
--- be a sign that the type of the swap functions is too specific, instead. [Z]
-swapUpToWorks : {n : ℕ} → (i : F.Fin n) → vecRep (swapUpTo i) (permuteRight (F.suc i))
+-- be a sign that the type of the swap functions is too specific, instead.
+-- (though now it looks like it will at least make the type of shuffle a bit nicer) [Z]
+swapUpToWorks : {n : ℕ} → (i : F.Fin n) → vecRep (swapUpTo i) (permuteLeft (F.suc i))
 swapUpToWorks = {!!}
 
-swapDownFromWorks : {n : ℕ} → (i : F.Fin n) → vecRep (swapDownFrom i) (permuteLeft (F.suc i))
+swapDownFromWorks : {n : ℕ} → (i : F.Fin n) → vecRep (swapDownFrom i) (permuteRight (F.suc i))
 swapDownFromWorks = {!!}
+
+-- Will probably be a key lemma in swapmnWorks
+shuffle : {n : ℕ} → (i : F.Fin n) →
+          (permuteLeft (F.inject₁ i)
+          ∘̬ swapInd (F.inject₁ i) (F.suc i)
+          ∘̬ permuteRight (F.inject₁ i))
+        ≡ swapInd F.zero (F.suc i)
+shuffle i = {!!}
 
 swapmnWorks : {n : ℕ} → (j : F.Fin n) → (i : F.Fin′ j) →
               vecRep (swapmn j i) (swapInd j (F.inject i))
