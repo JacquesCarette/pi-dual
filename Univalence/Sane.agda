@@ -418,10 +418,12 @@ evalComb∘foldr {suc _} i [] = refl i
 evalComb∘foldr {suc n} i (c ∷ cv) = evalComb∘foldr {suc n} (evalComb c i) cv
 
 -- foldl on a zipWith: move the function in
+
 {-
-foldl∘zipWith : {A : Set → Set} {f : ?} {j : ?} {g : ? → ? → ?} foldl A f j (zipWith g v z) ≡ foldl (λ x → B x → A x) (λ i h → h i) j (zipWith (λ x₁ x₂ → f (g x₁ x₂)) v z)
-foldl∘zipWith  
+foldl∘zipWith : {n m : ℕ} {A : Set} {B : ℕ → Set} (f :  (∀ {n} → B n → B m → B (suc n))) (j : B zero) (g : A → B n → ?) → (v : Vec A m) → (z : Vec (B n) m) → foldl B f j (zipWith g v z) ≡ foldl (λ x → (? → ?)) (λ {n} h i → h i) {!!} (zipWith (λ x₁ x₂ w → f w (g x₁ x₂)) v z)
+foldl∘zipWith f j g v z = {!!}
 -}
+
 -- Maybe we won't end up needing these to plug in to vecToCombWorks,
 -- but I'm afraid we will, which means we'll have to fix them eventually.
 -- I'm not sure how to do this right now and I've spent too much time on
