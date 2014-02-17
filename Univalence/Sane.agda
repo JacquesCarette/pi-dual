@@ -21,6 +21,10 @@ infix  4  _≃_     -- type of equivalences
 infix  2  _∎      -- equational reasoning for paths
 infixr 2  _≡⟨_⟩_  -- equational reasoning for paths
 
+vmap : {n : ℕ} → {A B : Set} → (A → B) → Vec A n → Vec B n
+vmap f [] = []
+vmap f (x ∷ xs) = (f x) ∷ (vmap f xs)
+
 ------------------------------------------------------------------------------
 -- Finite types
 
@@ -249,14 +253,31 @@ swapIndFn i j k | _ with F.compare j k
 swapIndFn i j .j | _ | F.equal .j = i
 swapIndFn i j k | _ | _ = k
 
+{--
+
+Agda's rejecting this and not telling me why; it's probably not worth
+trying to figure it out here rather than dealing with the problem
+this was trying to solve elsewhere (ie, trying to get the vectors in
+vr-swap and swapiWorks to match up)
+
+swapIndFn₁ : {n : ℕ} → F.Fin (suc n) → (F.Fin n → F.Fin (suc n))
+-- swapIndFn₁ {zero} ()
+swapIndFn₁ j k with F.compare j (F.suc k)
+swapIndFn₁ .(F.suc k) k | F.equal .(F.suc k) = F.zero
+swapIndFn₁ .(F.inject j) k | F.less .(F.suc k) j = {!!}
+swapIndFn₁ j .(F.inject k) | F.greater .j (F.suc k) = ?
+
+--}
+
+
 swapInd : {n : ℕ} → F.Fin n → F.Fin n → Vec (F.Fin n) n
 swapInd i j = tabulate (swapIndFn i j)
 
-makeSingleComb′ : {n : ℕ} → F.Fin n → F.Fin n → (fromℕ n) ⇛ (fromℕ n) × (Vec (F.Fin n) n)
-makeSingleComb′ j i with F.compare i j
-makeSingleComb′ .j .(F.inject i) | F.less j i = (swapmn j i , swapInd j (F.inject i))
-makeSingleComb′ {n} j i | _ = (id⇛ , upTo n)
-
+{--
+swapInd F.zero j = j ∷ (tabulate (swapIndFn₁ j))
+swapInd i F.zero = i ∷ (tabulate (swapIndFn₁ i))
+swapInd (F.suc i) (F.suc j) = F.zero ∷ (vmap F.suc (swapInd i j))
+--}
 
 -- Syntactic sugar for lookup that's a lot nicer
 _!!_ : {A : Set} → {n : ℕ} → Vec A n → F.Fin n → A
@@ -266,19 +287,65 @@ _!!_ v i = lookup i v
 _∘̬_ : {n : ℕ} → Vec (F.Fin n) n → Vec (F.Fin n) n → Vec (F.Fin n) n 
 v₁ ∘̬ v₂ = tabulate (λ i → v₂ !! (v₁ !! i))
 
-_◎∘̬_ : {n : ℕ} →
-       (fromℕ n ⇛ fromℕ n) × (Vec (F.Fin n) n) →
-       (fromℕ n ⇛ fromℕ n) × (Vec (F.Fin n) n) →
-       (fromℕ n ⇛ fromℕ n) × (Vec (F.Fin n) n)
-(c₁ , v₁) ◎∘̬ (c₂ , v₂) = (c₁ ◎ c₂ , v₁ ∘̬ v₂)              
-              
-vecToComb′ : {n : ℕ} → Vec (F.Fin n) n → ((fromℕ n) ⇛ (fromℕ n)) × Vec (F.Fin n) n
+-- vecRep c v relates a combinator c over normal types to the output
+-- vector it results in. This works only over a subset of combinators
+-- used in decompilation.
+data vecRep : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n → Set where
+  vr-id    : {n : ℕ} → vecRep (id⇛ {fromℕ n}) (upTo n)
+  vr-swap  : 
+    {n : ℕ} → 
+    vecRep {suc (suc n)} (swapi {suc n} F.zero)
+      ((F.suc F.zero) ∷ F.zero ∷ 
+       (vmap (λ i → F.suc (F.suc i)) (upTo n)))
+  vr-comp  : 
+    {n : ℕ} → {c₁ c₂ : (fromℕ n) ⇛ (fromℕ n)} → {v₁ v₂ : Vec (F.Fin n) n} → 
+    vecRep c₁ v₁ → vecRep c₂ v₂ → 
+    vecRep (c₁ ◎ c₂) (v₁ ∘̬ v₂)
+  vr-plus : {n : ℕ} → {c : (fromℕ n) ⇛ (fromℕ n)} → {v : Vec (F.Fin n) n} → 
+    vecRep {n} c v → 
+    vecRep {suc n} (id⇛ ⊕ c) (F.zero ∷ (vmap F.suc v))
+
+-- Record for keeping a combinator, a vector, and a proof that they compute
+-- the same function.
+record Compiled (n : ℕ) : Set where
+  constructor
+    _►_⟨_⟩
+  field
+    comb   : (fromℕ n) ⇛ (fromℕ n)
+    vec    : Vec (F.Fin n) n
+    proof  : vecRep comb vec
+
+{--
+
+swapi : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
+swapi {zero} ()
+swapi {suc n} F.zero = assocl₊⇛ ◎ swap₊⇛ ⊕ id⇛ ◎ assocr₊⇛
+swapi {suc n} (F.suc i) = id⇛ ⊕ swapi {n} i                  
+
+--}
+
+swapiWorks : {n : ℕ} → (i : F.Fin n) → vecRep (swapi i) (swapInd (F.inject₁ i) (F.suc i))
+swapiWorks {zero} ()
+swapiWorks {suc n} F.zero = {!!} -- need to prove that the vec in vr-swap is the same
+                                 -- as the vec here
+swapiWorks {suc n} (F.suc i) = {!vr-plus (swapiWorks i)!} 
+
+_◎∘̬_ : {n : ℕ} → Compiled n → Compiled n → Compiled n
+(c₁ ► v₁ ⟨ p₁ ⟩) ◎∘̬ (c₂ ► v₂ ⟨ p₂ ⟩) = ((c₁ ◎ c₂) ► v₁ ∘̬ v₂ ⟨ vr-comp p₁ p₂ ⟩ )
+
+makeSingleComb′ : {n : ℕ} → F.Fin n → F.Fin n → Compiled n
+makeSingleComb′ j i with F.compare i j
+makeSingleComb′ .j .(F.inject i) | F.less j i =
+  ((swapmn j i) ► (swapInd j (F.inject i)) ⟨ {!!} ⟩ )
+makeSingleComb′ {n} j i | _ = (id⇛ ► upTo n ⟨ {!!} ⟩)
+
+vecToComb′ : {n : ℕ} → Vec (F.Fin n) n → Compiled n
 vecToComb′ {n} vec =
   foldr
-    {A = (fromℕ n ⇛ fromℕ n) × Vec (F.Fin n) n}
-    (λ i → (fromℕ n ⇛ fromℕ n) × Vec (F.Fin n) n)
+    {A = Compiled n}
+    (λ i → Compiled n)
     _◎∘̬_
-    (id⇛ , upTo n)
+    (id⇛ ► upTo n ⟨ vr-id ⟩ )
     (zipWith makeSingleComb′ vec (upTo n))
 
 vecToComb : {n : ℕ} → Vec (F.Fin n) n → (fromℕ n) ⇛ (fromℕ n)
@@ -377,10 +444,6 @@ lookupTab : {A : Set} → {n : ℕ} → {f : F.Fin n → A} →
   (i : F.Fin n) → lookup i (tabulate f) ≡ (f i)
 lookupTab {f = f} F.zero = refl (f F.zero)
 lookupTab (F.suc i) = lookupTab i
-
-vmap : {n : ℕ} → {A B : Set} → (A → B) → Vec A n → Vec B n
-vmap f [] = []
-vmap f (x ∷ xs) = (f x) ∷ (vmap f xs)
 
 lookupMap : {A B : Set} → {n : ℕ} → {f : A → B} → (i : F.Fin n) → (v : Vec A n) →
             lookup i (vmap f v) ≡ f (lookup i v)
@@ -491,24 +554,6 @@ tabMap {n} i =
   (λ i → F.suc (F.suc i)) (lookup i (upTo n)) ≡⟨ ap (λ i → F.suc (F.suc i)) (lookupTab i) ⟩
   F.suc (F.suc i) ∎ 
 
--- vecRep c v relates a combinator c over normal types to the output
--- vector it results in. This works only over a subset of combinators
--- used in decompilation.
-data vecRep : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n → Set where
-  vr-id    : {n : ℕ} → vecRep (id⇛ {fromℕ n}) (upTo n)
-  vr-swap  : 
-    {n : ℕ} → 
-    vecRep {suc (suc n)} (swapi {suc n} F.zero)
-      ((F.suc F.zero) ∷ F.zero ∷ 
-       (vmap (λ i → F.suc (F.suc i)) (upTo n)))
-  vr-comp  : 
-    {n : ℕ} → {c₁ c₂ : (fromℕ n) ⇛ (fromℕ n)} → {v₁ v₂ : Vec (F.Fin n) n} → 
-    vecRep c₁ v₁ → vecRep c₂ v₂ → 
-    vecRep (c₁ ◎ c₂) (v₁ ∘̬ v₂)
-  vr-plus : {n : ℕ} → {c : (fromℕ n) ⇛ (fromℕ n)} → {v : Vec (F.Fin n) n} → 
-    vecRep {n} c v → 
-    vecRep {suc n} (id⇛ ⊕ c) (F.zero ∷ (vmap F.suc v))
-
 -- This lemma is the hammer that will let us use vecRep to (hopefully) simply
 -- prove some lemmas about the helper functions used in vecToComb, then apply
 -- vecRepWorks at the end to make sure they all "do the right thing"
@@ -559,15 +604,15 @@ vecRepWorks (vr-plus {c = c} {v = v} vr) (F.suc i) =
 -- other lemmas will be needed to write the new version of makeSingleComb′
 vecToComb′₁ : {n : ℕ} →
   (v : Vec (F.Fin n) n) →
-  vecRep (proj₁ (vecToComb′ v)) (proj₂ (vecToComb′ v))
+  vecRep (Compiled.comb (vecToComb′ v)) (Compiled.vec (vecToComb′ v))
 vecToComb′₁ {n} v =
   foldrWorks
-    {(fromℕ n ⇛ fromℕ n) × (Vec (F.Fin n) n)}
+    {Compiled n}
     {n}
-    (λ i → (fromℕ n ⇛ fromℕ n) × Vec (F.Fin n) n)
-    (λ _ _ cind → vecRep (proj₁ cind) (proj₂ cind)) -- theorem to prove at each step
+    (λ i → Compiled n)
+    (λ _ _ cind → vecRep (Compiled.comb cind) (Compiled.vec cind)) -- theorem to prove
     _◎∘̬_
-    (id⇛ , upTo n)
+    (id⇛ ► upTo n ⟨ vr-id ⟩)
     {!!} -- combination lemma
     vr-id -- base case lemma
     (zipWith makeSingleComb′ v (upTo n))
