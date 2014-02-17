@@ -315,20 +315,59 @@ record Compiled (n : ℕ) : Set where
     vec    : Vec (F.Fin n) n
     proof  : vecRep comb vec
 
-{--
+{-- For reference
 
 swapi : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
 swapi {zero} ()
 swapi {suc n} F.zero = assocl₊⇛ ◎ swap₊⇛ ⊕ id⇛ ◎ assocr₊⇛
 swapi {suc n} (F.suc i) = id⇛ ⊕ swapi {n} i                  
 
+swapUpTo : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
+swapUpTo F.zero = id⇛
+swapUpTo (F.suc i) = swapi F.zero ◎ id⇛ ⊕ swapUpTo i
+
+swapDownFrom : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
+swapDownFrom F.zero = id⇛
+swapDownFrom (F.suc i) = id⇛ ⊕ swapUpTo i ◎ swapi F.zero
+
+swapmn : {lim : ℕ} → (m : F.Fin lim) → F.Fin′ m → (fromℕ lim) ⇛ (fromℕ lim)
+swapmn F.zero ()
+swapmn (F.suc m) (F.zero) = swapUpTo m ◎ swapi m ◎ swapDownFrom m
+swapmn (F.suc m) (F.suc n) = id⇛ ⊕ swapmn m n                              
 --}
 
+-- TODO: there might be a better vector to put in the vecRep here
+-- we'll need to see what's most amenable to proving swapUpToWorks
 swapiWorks : {n : ℕ} → (i : F.Fin n) → vecRep (swapi i) (swapInd (F.inject₁ i) (F.suc i))
 swapiWorks {zero} ()
 swapiWorks {suc n} F.zero = {!!} -- need to prove that the vec in vr-swap is the same
                                  -- as the vec here
 swapiWorks {suc n} (F.suc i) = {!vr-plus (swapiWorks i)!} 
+
+-- Permute the first i elements of the identity vector to the right one
+permuteRight : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n
+permuteRight {zero} ()
+permuteRight {suc n} F.zero = upTo _
+permuteRight {suc zero} (F.suc ())
+permuteRight {suc (suc n)} (F.suc i) with permuteRight i
+permuteRight {suc (suc n)} (F.suc i) | x ∷ xs = F.suc x ∷ F.zero ∷ vmap F.suc xs
+
+permuteLeft : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n
+permuteLeft F.zero = upTo _
+permuteLeft (F.suc i) = {!!}
+
+-- NB: I added the F.suc in calls to permuteLeft/Right to get it to work
+-- with swapUpTo/DownFrom; I'm not sure that this is correct? It might
+-- be a sign that the type of the swap functions is too specific, instead. [Z]
+swapUpToWorks : {n : ℕ} → (i : F.Fin n) → vecRep (swapUpTo i) (permuteRight (F.suc i))
+swapUpToWorks = {!!}
+
+swapDownFromWorks : {n : ℕ} → (i : F.Fin n) → vecRep (swapDownFrom i) (permuteLeft (F.suc i))
+swapDownFromWorks = {!!}
+
+swapmnWorks : {n : ℕ} → (j : F.Fin n) → (i : F.Fin′ j) →
+              vecRep (swapmn j i) (swapInd j (F.inject i))
+swapmnWorks = {!!}
 
 _◎∘̬_ : {n : ℕ} → Compiled n → Compiled n → Compiled n
 (c₁ ► v₁ ⟨ p₁ ⟩) ◎∘̬ (c₂ ► v₂ ⟨ p₂ ⟩) = ((c₁ ◎ c₂) ► v₁ ∘̬ v₂ ⟨ vr-comp p₁ p₂ ⟩ )
@@ -336,8 +375,8 @@ _◎∘̬_ : {n : ℕ} → Compiled n → Compiled n → Compiled n
 makeSingleComb′ : {n : ℕ} → F.Fin n → F.Fin n → Compiled n
 makeSingleComb′ j i with F.compare i j
 makeSingleComb′ .j .(F.inject i) | F.less j i =
-  ((swapmn j i) ► (swapInd j (F.inject i)) ⟨ {!!} ⟩ )
-makeSingleComb′ {n} j i | _ = (id⇛ ► upTo n ⟨ {!!} ⟩)
+  ((swapmn j i) ► (swapInd j (F.inject i)) ⟨ swapmnWorks j i ⟩ )
+makeSingleComb′ {n} j i | _ = (id⇛ ► upTo n ⟨ vr-id ⟩)
 
 vecToComb′ : {n : ℕ} → Vec (F.Fin n) n → Compiled n
 vecToComb′ {n} vec =
