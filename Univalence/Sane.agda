@@ -240,29 +240,44 @@ upTo n = tabulate {n} id
 -- foldrWorks and that the end vector is the input vector; this is probably simpler
 -- (and is the approach currently reflected in the code below)
 
-makeSingleComb′ : {n : ℕ} → F.Fin n → F.Fin n → (fromℕ n) ⇛ (fromℕ n) × (F.Fin n × F.Fin n)
-makeSingleComb′ j i with F.compare i j
-makeSingleComb′ .j .(F.inject i) | F.less j i = (swapmn j i , (j , (F.inject i)))
-makeSingleComb′ j i | _ = (id⇛ , (j , j))
-
--- swapInd v i j returns a vector v′ where v′[i] = j, v′[j] = i, and v′[k] = v[k]
+-- swapInd i j returns a vector v′ where v′[i] = j, v′[j] = i, and v′[k] = k
 -- where k != j and k != i
-swapIndFn : {n : ℕ} → Vec (F.Fin n) n → F.Fin n → F.Fin n → (F.Fin n → F.Fin n)
-swapIndFn v i j k with F.compare i k
-swapIndFn v i j .i | F.equal .i = j
-swapIndFn v i j k | _ with F.compare j k
-swapIndFn v i j .j | _ | F.equal .j = i
-swapIndFn v i j k | _ | _ = lookup k v
+swapIndFn : {n : ℕ} → F.Fin n → F.Fin n → (F.Fin n → F.Fin n)
+swapIndFn i j k with F.compare i k
+swapIndFn i j .i | F.equal .i = j
+swapIndFn i j k | _ with F.compare j k
+swapIndFn i j .j | _ | F.equal .j = i
+swapIndFn i j k | _ | _ = k
 
-swapInd : {n : ℕ} → Vec (F.Fin n) n → (F.Fin n × F.Fin n) → Vec (F.Fin n) n
-swapInd v (i , j) = tabulate (swapIndFn v i j)
+swapInd : {n : ℕ} → F.Fin n → F.Fin n → Vec (F.Fin n) n
+swapInd i j = tabulate (swapIndFn i j)
 
+makeSingleComb′ : {n : ℕ} → F.Fin n → F.Fin n → (fromℕ n) ⇛ (fromℕ n) × (Vec (F.Fin n) n)
+makeSingleComb′ j i with F.compare i j
+makeSingleComb′ .j .(F.inject i) | F.less j i = (swapmn j i , swapInd j (F.inject i))
+makeSingleComb′ {n} j i | _ = (id⇛ , upTo n)
+
+
+-- Syntactic sugar for lookup that's a lot nicer
+_!!_ : {A : Set} → {n : ℕ} → Vec A n → F.Fin n → A
+_!!_ v i = lookup i v
+
+-- XXX: is this in the right order?
+_∘̬_ : {n : ℕ} → Vec (F.Fin n) n → Vec (F.Fin n) n → Vec (F.Fin n) n 
+v₁ ∘̬ v₂ = tabulate (λ i → v₂ !! (v₁ !! i))
+
+_◎∘̬_ : {n : ℕ} →
+       (fromℕ n ⇛ fromℕ n) × (Vec (F.Fin n) n) →
+       (fromℕ n ⇛ fromℕ n) × (Vec (F.Fin n) n) →
+       (fromℕ n ⇛ fromℕ n) × (Vec (F.Fin n) n)
+(c₁ , v₁) ◎∘̬ (c₂ , v₂) = (c₁ ◎ c₂ , v₁ ∘̬ v₂)              
+              
 vecToComb′ : {n : ℕ} → Vec (F.Fin n) n → ((fromℕ n) ⇛ (fromℕ n)) × Vec (F.Fin n) n
 vecToComb′ {n} vec =
   foldr
-    {A = (fromℕ n ⇛ fromℕ n) × (F.Fin n × F.Fin n)}
+    {A = (fromℕ n ⇛ fromℕ n) × Vec (F.Fin n) n}
     (λ i → (fromℕ n ⇛ fromℕ n) × Vec (F.Fin n) n)
-    (λ cind → (_◎_ (proj₁ cind)) ×→ (λ v → swapInd v (proj₂ cind)))
+    _◎∘̬_
     (id⇛ , upTo n)
     (zipWith makeSingleComb′ vec (upTo n))
 
@@ -385,10 +400,6 @@ combToVecWorks : {n : ℕ} → (c : (fromℕ n) ⇛ (fromℕ n)) →
   (i : F.Fin n) → (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
 combToVecWorks c i = (! (finToValToFin _)) ∘ (ap finToVal (! (lookupTab i)))
 
--- Syntactic sugar for lookup that's a lot nicer
-_!!_ : {A : Set} → {n : ℕ} → Vec A n → F.Fin n → A
-_!!_ v i = lookup i v
-
 -- Important lemma about lookup; for some reason it doesn't seem to be in the
 -- library even though it's in the main agda tutorial, iirc
 map!! : {A B : Set} → {n : ℕ} → (f : A → B) → (v : Vec A n) → (i : F.Fin n) → 
@@ -480,7 +491,7 @@ data vecRep : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n → 
   vr-comp  : 
     {n : ℕ} → {c₁ c₂ : (fromℕ n) ⇛ (fromℕ n)} → {v₁ v₂ : Vec (F.Fin n) n} → 
     vecRep c₁ v₁ → vecRep c₂ v₂ → 
-    vecRep (c₁ ◎ c₂) (tabulate {n} (λ i → (lookup (lookup i v₁) v₂)))
+    vecRep (c₁ ◎ c₂) (v₁ ∘̬ v₂)
   vr-plus : {n : ℕ} → {c : (fromℕ n) ⇛ (fromℕ n)} → {v : Vec (F.Fin n) n} → 
     vecRep {n} c v → 
     vecRep {suc n} (id⇛ ⊕ c) (F.zero ∷ (vmap F.suc v))
@@ -529,7 +540,25 @@ vecRepWorks (vr-plus {c = c} {v = v} vr) (F.suc i) =
 -- will just get plugged into foldrWorks or foldriWorks, but maybe
 -- there is a more straightforward version we could do with pattern
 -- matching, instead. [Z]
-  
+
+-- TODO: need to include the vecrep proof in the vector after all
+-- combination lemma is just a proof that ◎∘̬ preserves vecRep
+-- other lemmas will be needed to write the new version of makeSingleComb′
+vecToComb′₁ : {n : ℕ} →
+  (v : Vec (F.Fin n) n) →
+  vecRep (proj₁ (vecToComb′ v)) (proj₂ (vecToComb′ v))
+vecToComb′₁ {n} v =
+  foldrWorks
+    {(fromℕ n ⇛ fromℕ n) × (Vec (F.Fin n) n)}
+    {n}
+    (λ i → (fromℕ n ⇛ fromℕ n) × Vec (F.Fin n) n)
+    (λ _ _ cind → vecRep (proj₁ cind) (proj₂ cind)) -- theorem to prove at each step
+    _◎∘̬_
+    (id⇛ , upTo n)
+    {!!} -- combination lemma
+    vr-id -- base case lemma
+    (zipWith makeSingleComb′ v (upTo n))
+    
 vecToCombWorks : {n : ℕ} → 
   (v : Vec (F.Fin n) n) → (i : F.Fin n) → 
   (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
