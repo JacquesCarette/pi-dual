@@ -345,6 +345,13 @@ swapiWorks {suc n} F.zero = {!!} -- need to prove that the vec in vr-swap is the
                                  -- as the vec here
 swapiWorks {suc n} (F.suc i) = {!vr-plus (swapiWorks i)!} 
 
+-- XXX: it might be easier to rephrase these as permutations on actual arrays
+-- If we then wrote it all in terms of tabulate, we could get a composition
+-- of three functions that we have to prove is exensionally equal to a different
+-- function (probably swapIndFn). Once we have this, we can show the two tabulates
+-- are the same and prove shuffle (see below), which should let us finish
+-- swapmnWorks.
+
 -- Permute the first i elements of the identity vector to the right one
 -- Should correspond with swapDownFrom
 permuteRight : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n
