@@ -270,19 +270,21 @@ swapIndFn₁ j .(F.inject k) | F.greater .j (F.suc k) = ?
 
 --}
 
+-- Syntactic sugar for lookup that's a lot nicer
+_!!_ : {A : Set} → {n : ℕ} → Vec A n → F.Fin n → A
+_!!_ v i = lookup i v
 
 swapInd : {n : ℕ} → F.Fin n → F.Fin n → Vec (F.Fin n) n
 swapInd i j = tabulate (swapIndFn i j)
+
+swapIndVec : {n : ℕ} → F.Fin n → F.Fin n → Vec (F.Fin n) n → Vec (F.Fin n) n
+swapIndVec i j v = tabulate (λ k → v !! swapIndFn i j k)
 
 {--
 swapInd F.zero j = j ∷ (tabulate (swapIndFn₁ j))
 swapInd i F.zero = i ∷ (tabulate (swapIndFn₁ i))
 swapInd (F.suc i) (F.suc j) = F.zero ∷ (vmap F.suc (swapInd i j))
 --}
-
--- Syntactic sugar for lookup that's a lot nicer
-_!!_ : {A : Set} → {n : ℕ} → Vec A n → F.Fin n → A
-_!!_ v i = lookup i v
 
 -- XXX: is this in the right order?
 _∘̬_ : {n : ℕ} → Vec (F.Fin n) n → Vec (F.Fin n) n → Vec (F.Fin n) n 
@@ -352,35 +354,69 @@ swapiWorks {suc n} (F.suc i) = {!vr-plus (swapiWorks i)!}
 -- are the same and prove shuffle (see below), which should let us finish
 -- swapmnWorks.
 
--- Permute the first i elements of the identity vector to the right one
+subOneModN′ : {n : ℕ} → {n′ : F.Fin n} → F.Fin′ n′ → F.Fin n
+subOneModN′ {n′ = F.zero} ()
+subOneModN′ {n′ = F.suc n′} F.zero = F.inject₁ n′
+subOneModN′ {n′ = F.suc n′} (F.suc i) = F.inject₁ (F.inject i)
+
+permLeftFn : {n : ℕ} → Vec (F.Fin n) n → F.Fin n → (F.Fin n → F.Fin n)
+permLeftFn v max i with F.compare i max
+permLeftFn v max .(F.inject i) | F.less .max i = v !! (subOneModN′ i)
+permLeftFn v max i | _ = v !! i
+
+addOneModN′ : {n : ℕ} → {n′ : F.Fin n} → F.Fin′ n′ → F.Fin n
+addOneModN′ = {!!}
+
+-- I don't know if this is a useful helper or not; tried & failed to use it earlier
+zeroIfEqual : {n : ℕ} → (max i : F.Fin n) → F.Fin n
+zeroIfEqual {zero} ()
+zeroIfEqual {suc n} max i with F.compare max i
+zeroIfEqual {suc n} .(F.inject least) greatest | F.less .greatest least = greatest
+zeroIfEqual {suc n} max .max | F.equal .max = F.zero
+zeroIfEqual {suc n} max .(F.inject least) | F.greater .max least = F.inject least
+
+permRightFn : {n : ℕ} → Vec (F.Fin n) n → F.Fin n → (F.Fin n → F.Fin n)
+permRightFn v max i with F.compare i max
+permRightFn v max .(F.inject i) | F.less .max i = v !! addOneModN′ i
+permRightFn v max i | _ = v !! i
+
+-- Permute the first i elements of v to the right one
 -- Should correspond with swapDownFrom
-permuteRight : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n
+permuteRight : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n → Vec (F.Fin n) n
+permuteRight i v = tabulate (permRightFn v i)
+{--
 permuteRight {zero} ()
-permuteRight {suc n} F.zero = upTo _
+permuteRight {suc n} F.zero v = v
 permuteRight {suc zero} (F.suc ())
-permuteRight {suc (suc n)} (F.suc i) with permuteRight i
-permuteRight {suc (suc n)} (F.suc i) | x ∷ xs = F.suc x ∷ F.zero ∷ vmap F.suc xs
+permuteRight {suc (suc n)} (F.suc i) (v ∷ vs)  with permuteRight i vs
+permuteRight {suc (suc n)} (F.suc i) v | x ∷ xs = ? -- F.suc x ∷ F.zero ∷ vmap F.suc xs
+--}
 
 -- The opposite of permuteRight; should correspond with swapUpTo
-permuteLeft : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n
-permuteLeft F.zero = upTo _
-permuteLeft (F.suc i) = {!!} -- not sure of a simple way to define this like above
+permuteLeft : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n → Vec (F.Fin n) n
+permuteLeft i v = tabulate (permLeftFn v i)
 
--- NB: I added the F.suc in calls to permuteLeft/Right to get it to work
+
+-- NB: I added the F.inject₁ in calls to permuteLeft/Right to get it to work
 -- with swapUpTo/DownFrom; I'm not sure that this is correct? It might
 -- be a sign that the type of the swap functions is too specific, instead.
 -- (though now it looks like it will at least make the type of shuffle a bit nicer) [Z]
-swapUpToWorks : {n : ℕ} → (i : F.Fin n) → vecRep (swapUpTo i) (permuteLeft (F.suc i))
+swapUpToWorks : {n : ℕ} → (i : F.Fin n) →
+                vecRep (swapUpTo i) (permuteLeft (F.inject₁ i) (upTo (suc n)))
 swapUpToWorks = {!!}
 
-swapDownFromWorks : {n : ℕ} → (i : F.Fin n) → vecRep (swapDownFrom i) (permuteRight (F.suc i))
+swapDownFromWorks : {n : ℕ} → (i : F.Fin n) →
+                    vecRep (swapDownFrom i) (permuteRight (F.inject₁ i) (upTo (suc n)))
 swapDownFromWorks = {!!}
 
 -- Will probably be a key lemma in swapmnWorks
+-- XXX: probably should just be composed with ∘̬ after all instead of explicitly
+-- including the vector as an argument (whoops), with a helper lemma that says
+-- (tabulate f) ∘̬ (tabulate g) ≡ tabulate (g ○ f)
 shuffle : {n : ℕ} → (i : F.Fin n) →
-          (permuteLeft (F.inject₁ i)
-          ∘̬ swapInd (F.inject₁ i) (F.suc i)
-          ∘̬ permuteRight (F.inject₁ i))
+          (permuteRight (F.inject₁ i)
+            (swapIndVec (F.inject₁ i) (F.suc i)
+              (permuteLeft (F.inject₁ i) (upTo (suc n)))))
         ≡ swapInd F.zero (F.suc i)
 shuffle i = {!!}
 
