@@ -157,6 +157,13 @@ record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) :
 _≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ U.⊔ ℓ')
 A ≃ B = Σ (A → B) isequiv
 
+-- Some useful lemmas (should move others here, perhaps?)
+
+mapTab : {A B : Set} → {n : ℕ} → (f : A → B) → (g : F.Fin n → A) →
+         vmap f (tabulate g) ≡ tabulate (f ○ g)
+mapTab {n = zero} f g = refl _
+mapTab {n = suc n} f g = ap (_∷_ (f (g F.zero))) (mapTab {n = n} f (g ○ F.suc))
+
 ------------------------------------------------------------------
 -- Finite Types and the natural numbers are intimately related.
 
@@ -338,6 +345,28 @@ swapmn F.zero ()
 swapmn (F.suc m) (F.zero) = swapUpTo m ◎ swapi m ◎ swapDownFrom m
 swapmn (F.suc m) (F.suc n) = id⇛ ⊕ swapmn m n                              
 --}
+
+-- Lemma for proving that two vectors are equal if their tabulates agree
+-- on all inputs.
+tabf∼g : {n : ℕ} → {A : Set} → (f g : F.Fin n → A) → (∀ x → f x ≡ g x) →
+         tabulate f ≡ tabulate g
+tabf∼g {zero} f g p = refl _
+tabf∼g {suc n} f g p with f F.zero | g F.zero | p F.zero
+tabf∼g {suc n} f g p | x | .x | refl .x =
+  ap (_∷_ x) (tabf∼g {n} (f ○ F.suc) (g ○ F.suc) (p ○ F.suc))
+
+swapIndIdAfterOne : {n : ℕ} → (i : F.Fin n) →
+                    (F.suc (F.suc i)) ≡ (swapIndFn F.zero (F.suc F.zero) (F.suc (F.suc i)))
+swapIndIdAfterOne i = refl _ -- yesss finally it just works!
+  
+swap≡ind₀ : {n : ℕ} →
+            ((F.suc F.zero) ∷ F.zero ∷ (vmap (λ i → F.suc (F.suc i)) (upTo n)))
+            ≡ (swapInd F.zero (F.suc F.zero))
+swap≡ind₀ {n} = ap (λ v → F.suc F.zero ∷ F.zero ∷ v)
+               ((vmap (λ i → F.suc (F.suc i)) (upTo n)) ≡⟨ mapTab _ _ ⟩
+               (tabulate (id ○ (λ i → F.suc (F.suc i)))) ≡⟨ tabf∼g _ _ swapIndIdAfterOne ⟩
+               ((tabulate (((swapIndFn F.zero (F.suc F.zero)) ○ F.suc) ○ F.suc)) ∎))
+
 
 -- TODO: there might be a better vector to put in the vecRep here
 -- we'll need to see what's most amenable to proving swapUpToWorks
@@ -540,6 +569,8 @@ combToVec c = tabulate (valToFin ○ (evalComb c) ○ finToVal)
 
 evalVec : {n : ℕ} → Vec (F.Fin n) n → F.Fin n → ⟦ fromℕ n ⟧
 evalVec vec i = finToVal (lookup i vec)
+
+
 
 lookupTab : {A : Set} → {n : ℕ} → {f : F.Fin n → A} → 
   (i : F.Fin n) → lookup i (tabulate f) ≡ (f i)
