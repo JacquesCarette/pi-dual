@@ -384,6 +384,10 @@ permRightFn v max i | _ = v !! i
 -- Should correspond with swapDownFrom
 permuteRight : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n → Vec (F.Fin n) n
 permuteRight i v = tabulate (permRightFn v i)
+
+permRightID : {n : ℕ} → F.Fin n → Vec (F.Fin n) n
+permRightID i = permuteRight i (upTo _)
+
 {--
 permuteRight {zero} ()
 permuteRight {suc n} F.zero v = v
@@ -395,6 +399,9 @@ permuteRight {suc (suc n)} (F.suc i) v | x ∷ xs = ? -- F.suc x ∷ F.zero ∷ 
 -- The opposite of permuteRight; should correspond with swapUpTo
 permuteLeft : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n → Vec (F.Fin n) n
 permuteLeft i v = tabulate (permLeftFn v i)
+
+permLeftID : {n : ℕ} → F.Fin n → Vec (F.Fin n) n
+permLeftID i = permuteLeft i (upTo _)
 
 
 -- NB: I added the F.inject₁ in calls to permuteLeft/Right to get it to work
@@ -414,9 +421,9 @@ swapDownFromWorks = {!!}
 -- including the vector as an argument (whoops), with a helper lemma that says
 -- (tabulate f) ∘̬ (tabulate g) ≡ tabulate (g ○ f)
 shuffle : {n : ℕ} → (i : F.Fin n) →
-          (permuteRight (F.inject₁ i)
-            (swapIndVec (F.inject₁ i) (F.suc i)
-              (permuteLeft (F.inject₁ i) (upTo (suc n)))))
+           (permLeftID (F.inject₁ i)
+          ∘̬ swapInd (F.inject₁ i) (F.suc i)
+          ∘̬ permRightID (F.inject₁ i))
         ≡ swapInd F.zero (F.suc i)
 shuffle i = {!!}
 
