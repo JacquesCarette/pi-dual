@@ -544,16 +544,19 @@ foldrWorks B P combine base pcombine pbase (x ∷ v) =
     (foldrWorks B P combine base pcombine pbase v)
 
 -- evalComb on foldr becomes a foldl of flipped evalComb
-evalComb∘foldr : {n j : ℕ} → (i : ⟦ fromℕ n ⟧) → (c-vec : Vec (fromℕ n ⇛ fromℕ n) j) →  evalComb (foldr (λ _ → fromℕ n ⇛ fromℕ n) _◎_ id⇛ c-vec) i ≡ foldl (λ _ → ⟦ fromℕ n ⟧) (λ i c → evalComb c i) i c-vec
+evalComb∘foldr : {n j : ℕ} → (i : ⟦ fromℕ n ⟧ ) → (c-vec : Vec (fromℕ n ⇛ fromℕ n) j) →  evalComb (foldr (λ _ → fromℕ n ⇛ fromℕ n) _◎_ id⇛ c-vec) i ≡ foldl (λ _ → ⟦ fromℕ n ⟧) (λ i c → evalComb c i) i c-vec
 evalComb∘foldr {zero} () v
 evalComb∘foldr {suc _} i [] = refl i
 evalComb∘foldr {suc n} i (c ∷ cv) = evalComb∘foldr {suc n} (evalComb c i) cv
 
--- foldl on a zipWith: move the function in
-{-
-foldl∘zipWith : {A : Set → Set} {f : ?} {j : ?} {g : ? → ? → ?} foldl A f j (zipWith g v z) ≡ foldl (λ x → B x → A x) (λ i h → h i) j (zipWith (λ x₁ x₂ → f (g x₁ x₂)) v z)
-foldl∘zipWith  
--}
+-- foldl on a zipWith: move the function in; 
+foldl∘zipWith : {A B C : Set} (f : C → A → C) 
+    {m : ℕ} (j : C) (g : B → B → A) → (v : Vec B m) → (z : Vec B m) → 
+  foldl (λ _ → C) f j (zipWith g v z) ≡ 
+  foldl (λ _ → C) (λ h i → i h) j (zipWith (λ x₁ x₂ → λ w → f w (g x₁ x₂)) v z)
+foldl∘zipWith f {zero} j g v z = refl j
+foldl∘zipWith f {suc n₁} j g (x ∷ v) (y ∷ z) = foldl∘zipWith f (f j (g x y)) g v z
+
 -- Maybe we won't end up needing these to plug in to vecToCombWorks,
 -- but I'm afraid we will, which means we'll have to fix them eventually.
 -- I'm not sure how to do this right now and I've spent too much time on
@@ -683,7 +686,9 @@ vecToCombWorks : {n : ℕ} →
 vecToCombWorks {n} v i = 
   evalComb (vecToComb v) (finToVal i)
  ≡⟨ evalComb∘foldr (finToVal i) (zipWith makeSingleComb v (upTo n)) ⟩
- {!!} 
+  foldl (λ _ → ⟦ fromℕ n ⟧) (λ j c → evalComb c j) (finToVal i) (zipWith makeSingleComb v (upTo n)) 
+ ≡⟨ foldl∘zipWith (λ j c → evalComb c j) (finToVal i) makeSingleComb v (upTo n) ⟩ 
+  {!!} 
 {--
   foldrWorks
     {fromℕ n ⇛ fromℕ n}
