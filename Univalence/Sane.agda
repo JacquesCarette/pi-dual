@@ -367,6 +367,27 @@ swap≡ind₀ {n} = ap (λ v → F.suc F.zero ∷ F.zero ∷ v)
                (tabulate (id ○ (λ i → F.suc (F.suc i)))) ≡⟨ tabf∼g _ _ swapIndIdAfterOne ⟩
                ((tabulate (((swapIndFn F.zero (F.suc F.zero)) ○ F.suc) ○ F.suc)) ∎))
 
+swapIndSucComm : {n : ℕ} → (i : F.Fin n) →
+                 (x : F.Fin (suc n)) →
+                 (F.suc ○ swapIndFn (F.inject₁ i) (F.suc i)) x ≡
+                 (swapIndFn (F.inject₁ (F.suc i)) (F.suc (F.suc i)) ○ F.suc) x
+swapIndSucComm = {!!}
+               
+swap≡ind₁ : {n : ℕ} → (i : F.Fin n) →
+            F.zero ∷ vmap F.suc (swapInd (F.inject₁ i) (F.suc i)) ≡
+            swapInd (F.inject₁ (F.suc i)) (F.suc (F.suc i))
+swap≡ind₁ {n} i =
+  F.zero ∷ (vmap F.suc (swapInd (F.inject₁ i) (F.suc i)))
+    ≡⟨ ap (_∷_ F.zero)
+      (vmap F.suc (swapInd (F.inject₁ i) (F.suc i))
+        ≡⟨ mapTab F.suc (swapIndFn (F.inject₁ i) (F.suc i)) ⟩
+         tabulate (F.suc ○ swapIndFn (F.inject₁ i) (F.suc i))
+           ≡⟨ tabf∼g _ _ (swapIndSucComm i) ⟩
+         (tabulate
+          (swapIndFn (F.inject₁ (F.suc i)) (F.suc (F.suc i)) ○ F.suc)
+          ∎)) ⟩
+  ((swapInd (F.inject₁ (F.suc i)) (F.suc (F.suc i))) ∎)
+               
 hetType : {A B : Set} → (a : A) → A ≡ B → B
 hetType a (refl _) = a
 
@@ -375,7 +396,8 @@ hetType a (refl _) = a
 swapiWorks : {n : ℕ} → (i : F.Fin n) → vecRep (swapi i) (swapInd (F.inject₁ i) (F.suc i))
 swapiWorks {zero} ()
 swapiWorks {suc n} F.zero = hetType vr-swap (ap (vecRep (swapi F.zero)) swap≡ind₀)
-swapiWorks {suc n} (F.suc i) = {!vr-plus (swapiWorks i)!} 
+swapiWorks {suc n} (F.suc i) =
+  hetType (vr-plus (swapiWorks i)) (ap (vecRep (id⇛ ⊕ swapi i)) (swap≡ind₁ i)) 
 
 -- XXX: it might be easier to rephrase these as permutations on actual arrays
 -- If we then wrote it all in terms of tabulate, we could get a composition
