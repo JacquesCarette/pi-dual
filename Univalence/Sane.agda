@@ -367,13 +367,14 @@ swap≡ind₀ {n} = ap (λ v → F.suc F.zero ∷ F.zero ∷ v)
                (tabulate (id ○ (λ i → F.suc (F.suc i)))) ≡⟨ tabf∼g _ _ swapIndIdAfterOne ⟩
                ((tabulate (((swapIndFn F.zero (F.suc F.zero)) ○ F.suc) ○ F.suc)) ∎))
 
+hetType : {A B : Set} → (a : A) → A ≡ B → B
+hetType a (refl _) = a
 
 -- TODO: there might be a better vector to put in the vecRep here
 -- we'll need to see what's most amenable to proving swapUpToWorks
 swapiWorks : {n : ℕ} → (i : F.Fin n) → vecRep (swapi i) (swapInd (F.inject₁ i) (F.suc i))
 swapiWorks {zero} ()
-swapiWorks {suc n} F.zero = {!!} -- need to prove that the vec in vr-swap is the same
-                                 -- as the vec here
+swapiWorks {suc n} F.zero = hetType vr-swap (ap (vecRep (swapi F.zero)) swap≡ind₀)
 swapiWorks {suc n} (F.suc i) = {!vr-plus (swapiWorks i)!} 
 
 -- XXX: it might be easier to rephrase these as permutations on actual arrays
