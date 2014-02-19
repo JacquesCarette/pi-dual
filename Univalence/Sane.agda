@@ -22,6 +22,18 @@ infix  4  _≃_     -- type of equivalences
 infix  2  _∎      -- equational reasoning for paths
 infixr 2  _≡⟨_⟩_  -- equational reasoning for paths
 
+data Maybe (A : Set) : Set where
+  nothing : Maybe A
+  just : A → Maybe A
+
+data Dec (A : Set) : Set where
+  yes : A → Dec A
+  no : (A → ⊥) → Dec A
+  
+mmap : {A B : Set} → (A → B) → Maybe A → Maybe B
+mmap f nothing = nothing
+mmap f (just a) = just (f a)
+
 vmap : {n : ℕ} → {A B : Set} → (A → B) → Vec A n → Vec B n
 vmap f [] = []
 vmap f (x ∷ xs) = (f x) ∷ (vmap f xs)
@@ -157,6 +169,17 @@ record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) :
 _≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ U.⊔ ℓ')
 A ≃ B = Σ (A → B) isequiv
 
+sucEq : {n : ℕ} → (i j : F.Fin n) → (F.suc i) ≡ (F.suc j) → i ≡ j
+sucEq i .i (refl .(F.suc i)) = refl i
+
+_=F=_ : {n : ℕ} → (i j : F.Fin n) → Dec (i ≡ j)
+F.zero =F= F.zero = yes (refl F.zero)
+(F.suc i) =F= F.zero = no (λ ())
+F.zero =F= (F.suc j) = no (λ ())
+(F.suc i) =F= (F.suc j) with i =F= j
+(F.suc i) =F= (F.suc .i) | yes (refl .i) = yes (refl (F.suc i))
+(F.suc i) =F= (F.suc j) | no p = no (λ q → p (sucEq i j q))
+
 -- Some useful lemmas (should move others here, perhaps?)
 
 mapTab : {A B : Set} → {n : ℕ} → (f : A → B) → (g : F.Fin n → A) →
@@ -254,12 +277,29 @@ upTo n = tabulate {n} id
 
 -- swapInd i j returns a vector v′ where v′[i] = j, v′[j] = i, and v′[k] = k
 -- where k != j and k != i
+
+zeroIfEq : {n n′ : ℕ} → F.Fin n → F.Fin n → F.Fin (suc n′) → F.Fin (suc n′)
+zeroIfEq F.zero F.zero ret = F.zero
+zeroIfEq F.zero (F.suc j) ret = ret
+zeroIfEq (F.suc i) F.zero ret = ret
+zeroIfEq (F.suc i) (F.suc j) ret = zeroIfEq i j ret
+
 swapIndFn : {n : ℕ} → F.Fin n → F.Fin n → (F.Fin n → F.Fin n)
-swapIndFn i j k with F.compare i k
-swapIndFn i j .i | F.equal .i = j
-swapIndFn i j k | _ with F.compare j k
-swapIndFn i j .j | _ | F.equal .j = i
+swapIndFn F.zero j F.zero = j
+swapIndFn (F.suc i) F.zero F.zero = F.suc i
+swapIndFn (F.suc i) (F.suc j) F.zero = F.zero
+swapIndFn F.zero F.zero (F.suc x) = F.suc x
+swapIndFn {suc zero} F.zero (F.suc ()) (F.suc x)
+swapIndFn {suc (suc n)} F.zero (F.suc j) (F.suc x) = zeroIfEq j x (F.suc x)
+swapIndFn (F.suc i) F.zero (F.suc x) = zeroIfEq i x (F.suc x)
+swapIndFn (F.suc i) (F.suc j) (F.suc x) = F.suc (swapIndFn i j x)
+{--
+swapIndFn i j k with i =F= k
+swapIndFn i j .i | yes (refl .i) = j
+swapIndFn i j k | _ with j =F= k
+swapIndFn i j .j | _ | yes (refl .j) = i
 swapIndFn i j k | _ | _ = k
+--}
 
 {--
 
@@ -367,12 +407,33 @@ swap≡ind₀ {n} = ap (λ v → F.suc F.zero ∷ F.zero ∷ v)
                (tabulate (id ○ (λ i → F.suc (F.suc i)))) ≡⟨ tabf∼g _ _ swapIndIdAfterOne ⟩
                ((tabulate (((swapIndFn F.zero (F.suc F.zero)) ○ F.suc) ○ F.suc)) ∎))
 
-swapIndSucComm : {n : ℕ} → (i : F.Fin n) →
-                 (x : F.Fin (suc n)) →
-                 (F.suc ○ swapIndFn (F.inject₁ i) (F.suc i)) x ≡
-                 (swapIndFn (F.inject₁ (F.suc i)) (F.suc (F.suc i)) ○ F.suc) x
-swapIndSucComm = {!!}
-               
+{--
+
+swapIndFn : {n : ℕ} → F.Fin n → F.Fin n → (F.Fin n → F.Fin n)
+swapIndFn i j k with F.compare i k
+swapIndFn i j .i | F.equal .i = j
+swapIndFn i j k | _ with F.compare j k
+swapIndFn i j .j | _ | F.equal .j = i
+swapIndFn i j k | _ | _ = k
+
+--}
+
+{--
+eqReturnsEq : {n : ℕ} → (i j : F.Fin n) → (p : i ≡ j) → (i =F= j) ≡ (just p)
+eqReturnsEq F.zero F.zero (refl .F.zero) = refl (just (refl F.zero))
+eqReturnsEq F.zero (F.suc j) ()
+eqReturnsEq (F.suc i) F.zero ()
+eqReturnsEq (F.suc i) (F.suc .i) (refl .(F.suc i)) with eqReturnsEq i i (refl i)
+eqReturnsEq (F.suc i) (F.suc .i) (refl .(F.suc i)) | p = {!!} -- can't tell p is refl?
+--eqReturnsEq F.zero F.zero (refl _) = refl (just (refl F.zero))
+-- eqReturnsEq (F.suc i) (F.suc .i) (refl (F.suc .i)) = ?
+--}
+
+swapIndSucDist : {n : ℕ} → (i j x : F.Fin n) →
+                 (F.suc (swapIndFn i j x)) ≡
+                 (swapIndFn (F.suc i) (F.suc j) (F.suc x))
+swapIndSucDist i j x = refl _
+
 swap≡ind₁ : {n : ℕ} → (i : F.Fin n) →
             F.zero ∷ vmap F.suc (swapInd (F.inject₁ i) (F.suc i)) ≡
             swapInd (F.inject₁ (F.suc i)) (F.suc (F.suc i))
@@ -382,7 +443,7 @@ swap≡ind₁ {n} i =
       (vmap F.suc (swapInd (F.inject₁ i) (F.suc i))
         ≡⟨ mapTab F.suc (swapIndFn (F.inject₁ i) (F.suc i)) ⟩
          tabulate (F.suc ○ swapIndFn (F.inject₁ i) (F.suc i))
-           ≡⟨ tabf∼g _ _ (swapIndSucComm i) ⟩
+           ≡⟨ tabf∼g _ _ (swapIndSucDist (F.inject₁ i) (F.suc i)) ⟩
          (tabulate
           (swapIndFn (F.inject₁ (F.suc i)) (F.suc (F.suc i)) ○ F.suc)
           ∎)) ⟩
@@ -418,14 +479,6 @@ permLeftFn v max i | _ = v !! i
 
 addOneModN′ : {n : ℕ} → {n′ : F.Fin n} → F.Fin′ n′ → F.Fin n
 addOneModN′ = {!!}
-
--- I don't know if this is a useful helper or not; tried & failed to use it earlier
-zeroIfEqual : {n : ℕ} → (max i : F.Fin n) → F.Fin n
-zeroIfEqual {zero} ()
-zeroIfEqual {suc n} max i with F.compare max i
-zeroIfEqual {suc n} .(F.inject least) greatest | F.less .greatest least = greatest
-zeroIfEqual {suc n} max .max | F.equal .max = F.zero
-zeroIfEqual {suc n} max .(F.inject least) | F.greater .max least = F.inject least
 
 permRightFn : {n : ℕ} → Vec (F.Fin n) n → F.Fin n → (F.Fin n → F.Fin n)
 permRightFn v max i with F.compare i max
