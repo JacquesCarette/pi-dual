@@ -243,21 +243,18 @@ swapDownFrom : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
 swapDownFrom F.zero = id⇛
 swapDownFrom (F.suc i) = id⇛ ⊕ swapUpTo i ◎ swapi F.zero  
 
+
 -- TODO: verify that this is actually correct
 -- Idea: To swap n < m with each other, swap n, n + 1, ... , m - 1, m, then
 -- go back down, so that m and n are swapped and everything else is in the
 -- same spot
-swapmn : {lim : ℕ} → (m : F.Fin lim) → F.Fin′ m → (fromℕ lim) ⇛ (fromℕ lim)
-swapmn F.zero ()
-swapmn (F.suc m) (F.zero) = swapUpTo m ◎ swapi m ◎ swapDownFrom m
-swapmn (F.suc m) (F.suc n) = id⇛ ⊕ swapmn m n
-
 -- makeSingleComb {combinator size} (arrayElement) (arrayIndex),
--- gives a combinator which 'does' that, assuming j<i, else id⇛
+-- gives a combinator which 'does' that, assuming i<j, else id⇛
 makeSingleComb : {n : ℕ} → F.Fin n → F.Fin n → (fromℕ n) ⇛ (fromℕ n)
-makeSingleComb j i with F.compare i j
-makeSingleComb .j .(F.inject i) | F.less j i = swapmn j i
-makeSingleComb j i | _ = id⇛
+makeSingleComb F.zero F.zero = id⇛
+makeSingleComb F.zero (F.suc i) = id⇛
+makeSingleComb (F.suc j) F.zero = swapUpTo j ◎ swapi j ◎ swapDownFrom j
+makeSingleComb (F.suc j) (F.suc i) = id⇛ ⊕ makeSingleComb j i
 
 -- upTo n returns [0, 1, ..., n-1] as Fins
 upTo : (n : ℕ) → Vec (F.Fin n) n
@@ -594,30 +591,9 @@ shuffle {zero} ()
 shuffle {suc n} F.zero = {!!}
 shuffle {suc n} (F.suc i) = {!!}
 
-swapmnWorks : {n : ℕ} → (j : F.Fin n) → (i : F.Fin′ j) →
-              vecRep (swapmn j i) (swapInd j (F.inject i))
-swapmnWorks {zero} () i
-swapmnWorks {suc n} F.zero ()
-swapmnWorks {suc n} (F.suc j) F.zero = {!!}
-swapmnWorks {suc n} (F.suc j) (F.suc i) = {!!}
 
 _◎∘̬_ : {n : ℕ} → Compiled n → Compiled n → Compiled n
 (c₁ ► v₁ ⟨ p₁ ⟩) ◎∘̬ (c₂ ► v₂ ⟨ p₂ ⟩) = ((c₁ ◎ c₂) ► v₁ ∘̬ v₂ ⟨ vr-comp p₁ p₂ ⟩ )
-
-makeSingleComb′ : {n : ℕ} → F.Fin n → F.Fin n → Compiled n
-makeSingleComb′ j i with F.compare i j
-makeSingleComb′ .j .(F.inject i) | F.less j i =
-  ((swapmn j i) ► (swapInd j (F.inject i)) ⟨ swapmnWorks j i ⟩ )
-makeSingleComb′ {n} j i | _ = (id⇛ ► upTo n ⟨ vr-id ⟩)
-
-vecToComb′ : {n : ℕ} → Vec (F.Fin n) n → Compiled n
-vecToComb′ {n} vec =
-  foldr
-    {A = Compiled n}
-    (λ i → Compiled n)
-    _◎∘̬_
-    (id⇛ ► upTo n ⟨ vr-id ⟩ )
-    (zipWith makeSingleComb′ vec (upTo n))
 
 vecToComb : {n : ℕ} → Vec (F.Fin n) n → (fromℕ n) ⇛ (fromℕ n)
 vecToComb {n} vec = 
@@ -856,33 +832,6 @@ vecRepWorks (vr-plus {c = c} {v = v} vr) (F.suc i) =
   inj₂ (finToVal (v !! i))                  ≡⟨ ap inj₂ (vecRepWorks vr i) ⟩
   (evalComb (id⇛ ⊕ c) (finToVal (F.suc i)) ∎)
 
--- Ideally the proof of vecToCombWorks will consist almost entirely
--- of lemmas that use the vecRep type, then put them together with
--- one final call to vecRepWorks to finish it all off.
---
--- I haven't written these lemmas yet, but will soon. I suspect they
--- will just get plugged into foldrWorks or foldriWorks, but maybe
--- there is a more straightforward version we could do with pattern
--- matching, instead. [Z]
-
--- TODO: need to include the vecrep proof in the vector after all
--- combination lemma is just a proof that ◎∘̬ preserves vecRep
--- other lemmas will be needed to write the new version of makeSingleComb′
-vecToComb′₁ : {n : ℕ} →
-  (v : Vec (F.Fin n) n) →
-  vecRep (Compiled.comb (vecToComb′ v)) (Compiled.vec (vecToComb′ v))
-vecToComb′₁ {n} v =
-  foldrWorks
-    {Compiled n}
-    {n}
-    (λ i → Compiled n)
-    (λ _ _ cind → vecRep (Compiled.comb cind) (Compiled.vec cind)) -- theorem to prove
-    _◎∘̬_
-    (id⇛ ► upTo n ⟨ vr-id ⟩)
-    {!!} -- combination lemma
-    vr-id -- base case lemma
-    (zipWith makeSingleComb′ v (upTo n))
-    
 -- [JC] flip the conclusion around, as 'evalVec v i' is trivial.  Makes
 -- equational reasoning easier  
 vecToCombWorks : {n : ℕ} → 
