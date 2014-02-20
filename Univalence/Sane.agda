@@ -17,8 +17,6 @@ infixl 10 _◎_     -- combinator composition
 infixl 10 _∘̬_     -- vector composition
 infixr 8  _∘_     -- path composition
 infix  4  _≡_     -- propositional equality
-infix  4  _∼_     -- homotopy between two functions 
-infix  4  _≃_     -- type of equivalences
 infix  2  _∎      -- equational reasoning for paths
 infixr 2  _≡⟨_⟩_  -- equational reasoning for paths
 
@@ -153,22 +151,6 @@ _∎ x = refl x
 
 -- Equivalences
 
-_∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
-      (f g : (x : A) → P x) → Set (ℓ U.⊔ ℓ')
-_∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → f x ≡ g x
-
-record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
-  Set (ℓ U.⊔ ℓ') where
-  constructor mkisequiv
-  field
-    g : B → A 
-    α : (f ○ g) ∼ id
-    h : B → A
-    β : (h ○ f) ∼ id
-
-_≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ U.⊔ ℓ')
-A ≃ B = Σ (A → B) isequiv
-
 sucEq : {n : ℕ} → (i j : F.Fin n) → (F.suc i) ≡ (F.suc j) → i ≡ j
 sucEq i .i (refl .(F.suc i)) = refl i
 
@@ -215,10 +197,12 @@ toNormalNat zero ()
 toNormalNat (suc n) F.zero = inj₁ tt
 toNormalNat (suc n) (F.suc f) = inj₂ (toNormalNat n f)
 
+{--
 -- tabulate an equivalence; this is basically a vector representation of 
 -- a permutation on sets of size n.
 equivToVec : {n : ℕ} → ⟦ n ⟧ℕ ≃ ⟦ n ⟧ℕ → Vec (F.Fin n) n
 equivToVec {n} (f , _) = tabulate ((fromNormalNat n) ○ f ○ (toNormalNat n))
+--}
 
 -- construct a combinator which represents the swapping of the i-th and 
 -- (i+1)-th 'bit' of a finite type.  
