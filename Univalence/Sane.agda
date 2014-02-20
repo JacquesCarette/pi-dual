@@ -162,13 +162,49 @@ F.zero    =F= (F.suc j)                      = no (λ ())
 (F.suc i) =F= (F.suc .i) | yes (refl .i) = yes (refl (F.suc i))
 (F.suc i) =F= (F.suc j) | no p            = no (λ q → p (sucEq i j q))
 
--- Some useful lemmas (should move others here, perhaps?)
+------------------------------------------------------------------
+-- VECTOR LEMMAS AND HELPERS
+
+-- Syntactic sugar for lookup that's a lot nicer
+_!!_ : {A : Set} → {n : ℕ} → Vec A n → F.Fin n → A
+_!!_ v i = lookup i v
+
+-- XXX: is this in the right order?
+_∘̬_ : {n : ℕ} → Vec (F.Fin n) n → Vec (F.Fin n) n → Vec (F.Fin n) n 
+v₁ ∘̬ v₂ = tabulate (λ i → v₂ !! (v₁ !! i))
+
+-- Important lemma about lookup; for some reason it doesn't seem to be in the
+-- library even though it's in the main agda tutorial, iirc
+map!! : {A B : Set} → {n : ℕ} → (f : A → B) → (v : Vec A n) → (i : F.Fin n) → 
+        (vmap f v) !! i ≡ f (v !! i)
+map!! {n = zero} f [] ()
+map!! {n = suc n} f (x ∷ xs) F.zero = refl (f x)
+map!! {n = suc n} f (x ∷ xs) (F.suc i) = map!! f xs i
+
+lookupTab : {A : Set} → {n : ℕ} → {f : F.Fin n → A} → 
+  (i : F.Fin n) → (tabulate f) !! i ≡ (f i)
+lookupTab {f = f} F.zero = refl (f F.zero)
+lookupTab (F.suc i) = lookupTab i
 
 mapTab : {A B : Set} → {n : ℕ} → (f : A → B) → (g : F.Fin n → A) →
          vmap f (tabulate g) ≡ tabulate (f ○ g)
 mapTab {n = zero} f g = refl _
 mapTab {n = suc n} f g = ap (_∷_ (f (g F.zero))) (mapTab {n = n} f (g ○ F.suc))
 
+-- Lemma for proving that two vectors are equal if their tabulates agree
+-- on all inputs.
+tabf∼g : {n : ℕ} → {A : Set} → (f g : F.Fin n → A) → (∀ x → f x ≡ g x) →
+         tabulate f ≡ tabulate g
+tabf∼g {zero} f g p = refl _
+tabf∼g {suc n} f g p with f F.zero | g F.zero | p F.zero
+tabf∼g {suc n} f g p | x | .x | refl .x =
+  ap (_∷_ x) (tabf∼g {n} (f ○ F.suc) (g ○ F.suc) (p ○ F.suc))
+
+lookup∼vec : {n : ℕ} → {A : Set} → (v₁ v₂ : Vec A n) → (∀ i → v₁ !! i ≡ v₂ !! i) → v₁ ≡ v₂
+lookup∼vec [] [] p = refl []
+lookup∼vec (x ∷ v₁) (x₁ ∷ v₂) p with p F.zero
+lookup∼vec (x ∷ v₁) (.x ∷ v₂) p | (refl .x) = ap (_∷_ x) (lookup∼vec v₁ v₂ (p ○ F.suc))
+  
 ------------------------------------------------------------------
 -- Finite Types and the natural numbers are intimately related.
 
@@ -298,23 +334,6 @@ swapIndFn₁ j .(F.inject k) | F.greater .j (F.suc k) = ?
 
 --}
 
--- Syntactic sugar for lookup that's a lot nicer
-_!!_ : {A : Set} → {n : ℕ} → Vec A n → F.Fin n → A
-_!!_ v i = lookup i v
-
--- Important lemma about lookup; for some reason it doesn't seem to be in the
--- library even though it's in the main agda tutorial, iirc
-map!! : {A B : Set} → {n : ℕ} → (f : A → B) → (v : Vec A n) → (i : F.Fin n) → 
-        (vmap f v) !! i ≡ f (v !! i)
-map!! {n = zero} f [] ()
-map!! {n = suc n} f (x ∷ xs) F.zero = refl (f x)
-map!! {n = suc n} f (x ∷ xs) (F.suc i) = map!! f xs i
-
-lookupTab : {A : Set} → {n : ℕ} → {f : F.Fin n → A} → 
-  (i : F.Fin n) → (tabulate f) !! i ≡ (f i)
-lookupTab {f = f} F.zero = refl (f F.zero)
-lookupTab (F.suc i) = lookupTab i
-
 swapInd : {n : ℕ} → F.Fin n → F.Fin n → Vec (F.Fin n) n
 swapInd i j = tabulate (swapIndFn i j)
 
@@ -327,9 +346,6 @@ swapInd i F.zero = i ∷ (tabulate (swapIndFn₁ i))
 swapInd (F.suc i) (F.suc j) = F.zero ∷ (vmap F.suc (swapInd i j))
 --}
 
--- XXX: is this in the right order?
-_∘̬_ : {n : ℕ} → Vec (F.Fin n) n → Vec (F.Fin n) n → Vec (F.Fin n) n 
-v₁ ∘̬ v₂ = tabulate (λ i → v₂ !! (v₁ !! i))
 
 -- vecRep c v relates a combinator c over normal types to the output
 -- vector it results in. This works only over a subset of combinators
@@ -380,14 +396,6 @@ swapmn (F.suc m) (F.zero) = swapUpTo m ◎ swapi m ◎ swapDownFrom m
 swapmn (F.suc m) (F.suc n) = id⇛ ⊕ swapmn m n                              
 --}
 
--- Lemma for proving that two vectors are equal if their tabulates agree
--- on all inputs.
-tabf∼g : {n : ℕ} → {A : Set} → (f g : F.Fin n → A) → (∀ x → f x ≡ g x) →
-         tabulate f ≡ tabulate g
-tabf∼g {zero} f g p = refl _
-tabf∼g {suc n} f g p with f F.zero | g F.zero | p F.zero
-tabf∼g {suc n} f g p | x | .x | refl .x =
-  ap (_∷_ x) (tabf∼g {n} (f ○ F.suc) (g ○ F.suc) (p ○ F.suc))
 
 swapIndIdAfterOne : {n : ℕ} → (i : F.Fin n) →
                     (F.suc (F.suc i)) ≡ (swapIndFn F.zero (F.suc F.zero) (F.suc (F.suc i)))
@@ -474,7 +482,7 @@ dec<F (F.suc i) (F.suc j) | no x = no (λ p → x (<suc i j p))
 
 permLeftFn : {n : ℕ} → F.Fin n → (F.Fin n → F.Fin n)
 permLeftFn F.zero x = x
-permLeftFn (F.suc max) F.zero = F.inject₁ max
+permLeftFn (F.suc max) F.zero = F.suc max -- F.inject₁ max
 permLeftFn (F.suc max) (F.suc i) with dec<F i max
 permLeftFn (F.suc max) (F.suc i) | yes x = F.inject₁ i
 permLeftFn (F.suc max) (F.suc i) | no x = F.suc i
@@ -533,14 +541,41 @@ permLeftId₀ {n} =
   tabf∼g id (λ x → upTo (suc n) !! permLeftFn F.zero x)
          (λ x → ! (lookupTab {f = id} x))
 
--- I ran out of names for these like yesterday, sorry :/ [Z]
+permLeft₀ : {n : ℕ} →
+            F.suc F.zero ≡
+            tabulate (λ x → upTo (suc (suc (suc n))) !! permLeftFn (F.suc F.zero) x)
+              !! F.zero
+permLeft₀ {n} =
+  F.suc F.zero
+    ≡⟨ ! (lookupTab {f = id} (F.suc F.zero)) ⟩
+  upTo (suc (suc (suc n))) !! permLeftFn (F.suc F.zero) F.zero
+    ≡⟨ ! (lookupTab {f = (λ x → upTo (suc (suc (suc n))) !! permLeftFn (F.suc F.zero) x)} F.zero) ⟩
+  tabulate (λ x → upTo (suc (suc (suc n))) !! permLeftFn (F.suc F.zero) x) !! F.zero ∎
+  
+
+swapUp₀ : {n : ℕ} → (i : F.Fin (suc (suc (suc n)))) →
+          ((F.zero ∷ vmap F.suc ((permuteLeft F.zero) (upTo (suc (suc n)))))
+          ∘̬ (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n)))) !! i
+          ≡
+          permuteLeft (F.suc F.zero) (upTo (suc (suc (suc n)))) !! i
+swapUp₀ {n} F.zero =
+          ((F.zero ∷ vmap F.suc ((permuteLeft F.zero) (upTo (suc (suc n)))))
+          ∘̬ (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n)))) !! F.zero
+            ≡⟨ refl (F.suc F.zero) ⟩
+          F.suc F.zero
+            ≡⟨ permLeft₀ ⟩
+          tabulate (λ x → upTo (suc (suc (suc n))) !! (permLeftFn (F.suc F.zero) x))
+            !! F.zero ∎
+swapUp₀ (F.suc F.zero) = {!!}
+swapUp₀ (F.suc (F.suc i)) = {!!}
+         
 
 -- This should be true now. [Z]
 swapUpCompWorks : {n : ℕ} → (i : F.Fin n) →
                   (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ i) (upTo (suc n))))
                   ∘̬ (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo n))
                   ≡ permuteLeft (F.inject₁ (F.suc i)) (upTo (suc (suc n)))
-swapUpCompWorks {suc n} F.zero = {!!}
+swapUpCompWorks {suc n} F.zero = lookup∼vec _ _ swapUp₀
 swapUpCompWorks (F.suc i) = {!!}
          
 -- NB: I added the F.inject₁ in calls to permuteLeft/Right to get it to work
@@ -676,6 +711,9 @@ swapUpToTest : Vec (F.Fin five) five
 swapUpToTest = combToVec ((swapUpTo (F.suc (F.suc F.zero))))
                         -- (finToVal (F.suc (F.suc F.zero)))
 
+plfntest : F.Fin five
+plfntest = permLeftFn (F.suc F.zero) F.zero
+                        
 sdftest : Vec (F.Fin five) five
 sdftest = combToVec (swapDownFrom (F.suc (F.suc F.zero)))
 
