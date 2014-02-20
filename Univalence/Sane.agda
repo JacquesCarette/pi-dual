@@ -235,13 +235,13 @@ swapi {suc n} (F.suc i) = id⇛ ⊕ swapi {n} i
 -- are a b c X Y d e
 swapUpTo : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
 swapUpTo F.zero = id⇛
-swapUpTo (F.suc i) = swapi F.zero ◎ id⇛ ⊕ swapUpTo i
+swapUpTo (F.suc i) = (id⇛ ⊕ swapUpTo i) ◎ swapi F.zero  
 
 -- swapDownFrom i permutes the combinator right by one up to i (the reverse
 -- of swapUpTo)
 swapDownFrom : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
 swapDownFrom F.zero = id⇛
-swapDownFrom (F.suc i) = id⇛ ⊕ swapUpTo i ◎ swapi F.zero  
+swapDownFrom (F.suc i) = swapi F.zero ◎ (id⇛ ⊕ swapUpTo i)
 
 
 -- TODO: verify that this is actually correct
@@ -253,7 +253,7 @@ swapDownFrom (F.suc i) = id⇛ ⊕ swapUpTo i ◎ swapi F.zero
 makeSingleComb : {n : ℕ} → F.Fin n → F.Fin n → (fromℕ n) ⇛ (fromℕ n)
 makeSingleComb F.zero F.zero = id⇛
 makeSingleComb F.zero (F.suc i) = id⇛
-makeSingleComb (F.suc j) F.zero = swapUpTo j ◎ swapi j ◎ swapDownFrom j
+makeSingleComb (F.suc j) F.zero = swapDownFrom j ◎ swapi j ◎ swapUpTo j
 makeSingleComb (F.suc j) (F.suc i) = id⇛ ⊕ makeSingleComb j i
 
 -- upTo n returns [0, 1, ..., n-1] as Fins
@@ -551,10 +551,10 @@ permLeftId₀ {n} =
 
 -- I ran out of names for these like yesterday, sorry :/ [Z]
 
--- This one is wrong: see the F.zero case.
+-- This should be true now. [Z]
 swapUpCompWorks : {n : ℕ} → (i : F.Fin n) →
-                  (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo n))
-                  ∘̬ (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ i) (upTo (suc n))))
+                  (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ i) (upTo (suc n))))
+                  ∘̬ (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo n))
                   ≡ permuteLeft (F.inject₁ (F.suc i)) (upTo (suc (suc n)))
 swapUpCompWorks {suc n} F.zero = {!!}
 swapUpCompWorks (F.suc i) = {!!}
@@ -566,7 +566,8 @@ swapUpCompWorks (F.suc i) = {!!}
 swapUpToWorks : {n : ℕ} → (i : F.Fin n) →
                 vecRep (swapUpTo i) (permuteLeft (F.inject₁ i) (upTo (suc n)))
 swapUpToWorks F.zero = hetType vr-id (ap (vecRep id⇛) (permLeftId₀))
-swapUpToWorks (F.suc i) = hetType (vr-comp vr-swap (vr-plus (swapUpToWorks i)))
+-- swapUpToWorks (F.suc i) = {!!}
+swapUpToWorks (F.suc i) = hetType (vr-comp (vr-plus (swapUpToWorks i)) vr-swap)
                           (ap (vecRep (swapUpTo (F.suc i))) (swapUpCompWorks i))
 
 --vr-comp (hetType (vr-plus (swapUpToWorks i)) {!!})
@@ -684,10 +685,27 @@ valToFinToVal (F.suc i) = ap F.suc (valToFinToVal i)
 combToVec : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n
 combToVec c = tabulate (valToFin ○ (evalComb c) ○ finToVal)
 
+five : ℕ
+five = (suc (suc (suc (suc (suc zero)))))
+
+swapUpToTest : Vec (F.Fin five) five
+swapUpToTest = combToVec ((swapUpTo (F.suc (F.suc F.zero))))
+                        -- (finToVal (F.suc (F.suc F.zero)))
+
+sdftest : Vec (F.Fin five) five
+sdftest = combToVec (swapDownFrom (F.suc (F.suc F.zero)))
+
+sit : Vec (F.Fin five) five
+sit = combToVec (swapi (F.suc (F.suc F.zero)))
+                        
+mntest : Vec (F.Fin five) five
+mntest = combToVec (makeSingleComb (F.suc (F.suc (F.suc F.zero))) F.zero)
+                        
 evalVec : {n : ℕ} → Vec (F.Fin n) n → F.Fin n → ⟦ fromℕ n ⟧
 evalVec vec i = finToVal (lookup i vec)
 
-
+permLeftTest : F.Fin (suc (suc (suc (suc zero))))
+permLeftTest = valToFin (evalVec (permLeftID (F.suc (F.suc F.zero))) (F.zero))
 
 lookupMap : {A B : Set} → {n : ℕ} → {f : A → B} → (i : F.Fin n) → (v : Vec A n) →
             lookup i (vmap f v) ≡ f (lookup i v)
