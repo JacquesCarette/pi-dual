@@ -173,12 +173,12 @@ sucEq : {n : ℕ} → (i j : F.Fin n) → (F.suc i) ≡ (F.suc j) → i ≡ j
 sucEq i .i (refl .(F.suc i)) = refl i
 
 _=F=_ : {n : ℕ} → (i j : F.Fin n) → Dec (i ≡ j)
-F.zero =F= F.zero = yes (refl F.zero)
-(F.suc i) =F= F.zero = no (λ ())
-F.zero =F= (F.suc j) = no (λ ())
+F.zero    =F= F.zero                         = yes (refl F.zero)
+(F.suc i) =F= F.zero                         = no (λ ())
+F.zero    =F= (F.suc j)                      = no (λ ())
 (F.suc i) =F= (F.suc j) with i =F= j
 (F.suc i) =F= (F.suc .i) | yes (refl .i) = yes (refl (F.suc i))
-(F.suc i) =F= (F.suc j) | no p = no (λ q → p (sucEq i j q))
+(F.suc i) =F= (F.suc j) | no p            = no (λ q → p (sucEq i j q))
 
 -- Some useful lemmas (should move others here, perhaps?)
 
@@ -330,7 +330,7 @@ map!! {n = suc n} f (x ∷ xs) F.zero = refl (f x)
 map!! {n = suc n} f (x ∷ xs) (F.suc i) = map!! f xs i
 
 lookupTab : {A : Set} → {n : ℕ} → {f : F.Fin n → A} → 
-  (i : F.Fin n) → lookup i (tabulate f) ≡ (f i)
+  (i : F.Fin n) → (tabulate f) !! i ≡ (f i)
 lookupTab {f = f} F.zero = refl (f F.zero)
 lookupTab (F.suc i) = lookupTab i
 
@@ -554,11 +554,13 @@ permLeftId₀ {n} =
 
 -- I ran out of names for these like yesterday, sorry :/ [Z]
 
+-- This one is wrong: see the F.zero case.
 swapUpCompWorks : {n : ℕ} → (i : F.Fin n) →
                   (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo n))
                   ∘̬ (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ i) (upTo (suc n))))
                   ≡ permuteLeft (F.inject₁ (F.suc i)) (upTo (suc (suc n)))
-swapUpCompWorks i = {!!}
+swapUpCompWorks {suc n} F.zero = {!!}
+swapUpCompWorks (F.suc i) = {!!}
          
 -- NB: I added the F.inject₁ in calls to permuteLeft/Right to get it to work
 -- with swapUpTo/DownFrom; I'm not sure that this is correct? It might
@@ -575,7 +577,9 @@ swapUpToWorks (F.suc i) = hetType (vr-comp vr-swap (vr-plus (swapUpToWorks i)))
 
 swapDownFromWorks : {n : ℕ} → (i : F.Fin n) →
                     vecRep (swapDownFrom i) (permuteRight (F.inject₁ i))
-swapDownFromWorks = {!!}
+swapDownFromWorks {zero} ()
+swapDownFromWorks {suc n} F.zero = vr-id
+swapDownFromWorks {suc n} (F.suc i) = {!!}
 
 -- Will probably be a key lemma in swapmnWorks
 -- XXX: probably should just be composed with ∘̬ after all instead of explicitly
@@ -586,11 +590,16 @@ shuffle : {n : ℕ} → (i : F.Fin n) →
           ∘̬ swapInd (F.inject₁ i) (F.suc i)
           ∘̬ permRightID (F.inject₁ i))
         ≡ swapInd F.zero (F.suc i)
-shuffle i = {!!}
+shuffle {zero} ()
+shuffle {suc n} F.zero = {!!}
+shuffle {suc n} (F.suc i) = {!!}
 
 swapmnWorks : {n : ℕ} → (j : F.Fin n) → (i : F.Fin′ j) →
               vecRep (swapmn j i) (swapInd j (F.inject i))
-swapmnWorks = {!!}
+swapmnWorks {zero} () i
+swapmnWorks {suc n} F.zero ()
+swapmnWorks {suc n} (F.suc j) F.zero = {!!}
+swapmnWorks {suc n} (F.suc j) (F.suc i) = {!!}
 
 _◎∘̬_ : {n : ℕ} → Compiled n → Compiled n → Compiled n
 (c₁ ► v₁ ⟨ p₁ ⟩) ◎∘̬ (c₂ ► v₂ ⟨ p₂ ⟩) = ((c₁ ◎ c₂) ► v₁ ∘̬ v₂ ⟨ vr-comp p₁ p₂ ⟩ )
@@ -612,7 +621,7 @@ vecToComb′ {n} vec =
 
 vecToComb : {n : ℕ} → Vec (F.Fin n) n → (fromℕ n) ⇛ (fromℕ n)
 vecToComb {n} vec = 
-  foldr (λ i → fromℕ n ⇛ fromℕ n) _◎_ id⇛ (zipWith makeSingleComb vec (upTo n))
+  foldr (λ i → fromℕ n ⇛ fromℕ n) _◎_ id⇛ (map (λ i → makeSingleComb (vec !! i) i) (upTo n))
 {- vecToComb {zero} _ = id⇛
 vecToComb {suc n} vec = 
     foldr₁ _◎_ (zipWith makeSingleComb vec (upTo (suc n))) -}
@@ -642,7 +651,7 @@ mutual
   evalComb factor⇛ (inj₁ (proj₁ , proj₂)) = inj₁ proj₁ , proj₂
   evalComb factor⇛ (inj₂ (proj₁ , proj₂)) = inj₂ proj₁ , proj₂
   evalComb id⇛ v = v
-  evalComb (sym⇛ c) v = evalBComb c v -- TODO: use a backwards interpreter
+  evalComb (sym⇛ c) v = evalBComb c v 
   evalComb (c₁ ◎ c₂) v = evalComb c₂ (evalComb c₁ v)
   evalComb (c ⊕ c₁) (inj₁ x) = inj₁ (evalComb c x)
   evalComb (c ⊕ c₁) (inj₂ y) = inj₂ (evalComb c₁ y)
@@ -744,13 +753,14 @@ evalComb∘foldr {zero} () v
 evalComb∘foldr {suc _} i [] = refl i
 evalComb∘foldr {suc n} i (c ∷ cv) = evalComb∘foldr {suc n} (evalComb c i) cv
 
--- foldl on a zipWith: move the function in; 
-foldl∘zipWith : {A B C : Set} (f : C → A → C) 
-    {m : ℕ} (j : C) (g : B → B → A) → (v : Vec B m) → (z : Vec B m) → 
-  foldl (λ _ → C) f j (zipWith g v z) ≡ 
-  foldl (λ _ → C) (λ h i → i h) j (zipWith (λ x₁ x₂ → λ w → f w (g x₁ x₂)) v z)
-foldl∘zipWith f {zero} j g v z = refl j
-foldl∘zipWith f {suc n₁} j g (x ∷ v) (y ∷ z) = foldl∘zipWith f (f j (g x y)) g v z
+-- foldl on a map: move the function in; specialize to this case. 
+foldl∘map : {n m : ℕ} {A C : Set} (f : C → A → C) 
+    (j : C) (g : F.Fin m → F.Fin m → A) → (v : Vec (F.Fin m) m) → (z : Vec (F.Fin m) n) → 
+  foldl (λ _ → C) f j (map (λ i → g (v !! i) i) z) ≡ 
+  foldl (λ _ → C) (λ h i → i h) j (map (λ x₂ → λ w → f w (g (v !! x₂) x₂)) z)
+foldl∘map {zero} f j g v [] = refl j
+foldl∘map {suc n} {zero} f j g [] (() ∷ z)
+foldl∘map {suc n} {suc m} f j g v (x ∷ z) = foldl∘map f (f j (g (lookup x v) x)) g v z
 
 -- Maybe we won't end up needing these to plug in to vecToCombWorks,
 -- but I'm afraid we will, which means we'll have to fix them eventually.
@@ -880,9 +890,9 @@ vecToCombWorks : {n : ℕ} →
   (evalComb (vecToComb v) (finToVal i)) ≡ (evalVec v i)
 vecToCombWorks {n} v i = 
   evalComb (vecToComb v) (finToVal i)
- ≡⟨ evalComb∘foldr (finToVal i) (zipWith makeSingleComb v (upTo n)) ⟩
-  foldl (λ _ → ⟦ fromℕ n ⟧) (λ j c → evalComb c j) (finToVal i) (zipWith makeSingleComb v (upTo n)) 
- ≡⟨ foldl∘zipWith (λ j c → evalComb c j) (finToVal i) makeSingleComb v (upTo n) ⟩ 
+ ≡⟨ evalComb∘foldr (finToVal i) (map (λ i → makeSingleComb (v !! i) i) (upTo n)) ⟩
+  foldl (λ _ → ⟦ fromℕ n ⟧) (λ j c → evalComb c j) (finToVal i) (map (λ i → makeSingleComb (v !! i) i) (upTo n)) 
+ ≡⟨ foldl∘map (λ j c → evalComb c j) (finToVal i) makeSingleComb v (upTo n) ⟩ 
   {!!} 
 {--
   foldrWorks
