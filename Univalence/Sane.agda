@@ -321,6 +321,19 @@ swapIndFn₁ j .(F.inject k) | F.greater .j (F.suc k) = ?
 _!!_ : {A : Set} → {n : ℕ} → Vec A n → F.Fin n → A
 _!!_ v i = lookup i v
 
+-- Important lemma about lookup; for some reason it doesn't seem to be in the
+-- library even though it's in the main agda tutorial, iirc
+map!! : {A B : Set} → {n : ℕ} → (f : A → B) → (v : Vec A n) → (i : F.Fin n) → 
+        (vmap f v) !! i ≡ f (v !! i)
+map!! {n = zero} f [] ()
+map!! {n = suc n} f (x ∷ xs) F.zero = refl (f x)
+map!! {n = suc n} f (x ∷ xs) (F.suc i) = map!! f xs i
+
+lookupTab : {A : Set} → {n : ℕ} → {f : F.Fin n → A} → 
+  (i : F.Fin n) → lookup i (tabulate f) ≡ (f i)
+lookupTab {f = f} F.zero = refl (f F.zero)
+lookupTab (F.suc i) = lookupTab i
+
 swapInd : {n : ℕ} → F.Fin n → F.Fin n → Vec (F.Fin n) n
 swapInd i j = tabulate (swapIndFn i j)
 
@@ -460,23 +473,37 @@ swapiWorks {suc n} F.zero = hetType vr-swap (ap (vecRep (swapi F.zero)) swap≡i
 swapiWorks {suc n} (F.suc i) =
   hetType (vr-plus (swapiWorks i)) (ap (vecRep (id⇛ ⊕ swapi i)) (swap≡ind₁ i)) 
 
--- XXX: it might be easier to rephrase these as permutations on actual arrays
--- If we then wrote it all in terms of tabulate, we could get a composition
--- of three functions that we have to prove is exensionally equal to a different
--- function (probably swapIndFn). Once we have this, we can show the two tabulates
--- are the same and prove shuffle (see below), which should let us finish
--- swapmnWorks.
 
-subOneModN′ : {n : ℕ} → {n′ : F.Fin n} → F.Fin′ n′ → F.Fin n
-subOneModN′ {n′ = F.zero} ()
-subOneModN′ {n′ = F.suc n′} F.zero = F.inject₁ n′
-subOneModN′ {n′ = F.suc n′} (F.suc i) = F.inject₁ (F.inject i)
+-- permutations on vectors for specifying swapUpTo/DownFrom
+  
+data _<F_ : {n : ℕ} → F.Fin n → F.Fin n → Set where
+  zero-leq : {n : ℕ} → {i : F.Fin n} → F.zero <F (F.suc i)
+  suc-leq  : {n : ℕ} → {i j : F.Fin n} → i <F j → (F.suc i) <F (F.suc j)
 
-permLeftFn : {n : ℕ} → Vec (F.Fin n) n → F.Fin n → (F.Fin n → F.Fin n)
+<suc : {n : ℕ} → (i j : F.Fin n) → (F.suc i) <F (F.suc j) → i <F j
+<suc i j (suc-leq p) = p
+  
+dec<F : {n : ℕ} → (i j : F.Fin n) → Dec (i <F j)
+dec<F F.zero F.zero = no (λ ())
+dec<F F.zero (F.suc j) = yes zero-leq
+dec<F (F.suc i) F.zero = no (λ ())
+dec<F (F.suc i) (F.suc j) with dec<F i j
+dec<F (F.suc i) (F.suc j) | yes x = yes (suc-leq x)
+dec<F (F.suc i) (F.suc j) | no x = no (λ p → x (<suc i j p))
+
+permLeftFn : {n : ℕ} → F.Fin n → (F.Fin n → F.Fin n)
+permLeftFn F.zero x = x
+permLeftFn (F.suc max) F.zero = F.inject₁ max
+permLeftFn (F.suc max) (F.suc i) with dec<F i max
+permLeftFn (F.suc max) (F.suc i) | yes x = F.inject₁ i
+permLeftFn (F.suc max) (F.suc i) | no x = F.suc i
+{--
 permLeftFn v max i with F.compare i max
 permLeftFn v max .(F.inject i) | F.less .max i = v !! (subOneModN′ i)
 permLeftFn v max i | _ = v !! i
+--}
 
+{--
 addOneModN′ : {n : ℕ} → {n′ : F.Fin n} → F.Fin′ n′ → F.Fin n
 addOneModN′ = {!!}
 
@@ -484,41 +511,70 @@ permRightFn : {n : ℕ} → Vec (F.Fin n) n → F.Fin n → (F.Fin n → F.Fin n
 permRightFn v max i with F.compare i max
 permRightFn v max .(F.inject i) | F.less .max i = v !! addOneModN′ i
 permRightFn v max i | _ = v !! i
+--}
 
 -- Permute the first i elements of v to the right one
 -- Should correspond with swapDownFrom
-permuteRight : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n → Vec (F.Fin n) n
-permuteRight i v = tabulate (permRightFn v i)
+-- permuteRight : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n → Vec (F.Fin n) n
+-- permuteRight i v = tabulate (permRightFn v i)
 
-permRightID : {n : ℕ} → F.Fin n → Vec (F.Fin n) n
-permRightID i = permuteRight i (upTo _)
-
-{--
+permuteRight : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n
 permuteRight {zero} ()
-permuteRight {suc n} F.zero v = v
+permuteRight {suc n} F.zero = upTo _
 permuteRight {suc zero} (F.suc ())
-permuteRight {suc (suc n)} (F.suc i) (v ∷ vs)  with permuteRight i vs
-permuteRight {suc (suc n)} (F.suc i) v | x ∷ xs = ? -- F.suc x ∷ F.zero ∷ vmap F.suc xs
---}
+permuteRight {suc (suc n)} (F.suc i) with permuteRight {suc n} i
+permuteRight {suc (suc n)} (F.suc i) | x ∷ xs = F.suc x ∷ F.zero ∷ vmap F.suc xs
+
+-- redundant helper
+permRightID : {n : ℕ} → F.Fin n → Vec (F.Fin n) n
+permRightID i = permuteRight i
+
 
 -- The opposite of permuteRight; should correspond with swapUpTo
 permuteLeft : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n → Vec (F.Fin n) n
-permuteLeft i v = tabulate (permLeftFn v i)
+permuteLeft i v = tabulate (λ x → v !! (permLeftFn i x))
 
 permLeftID : {n : ℕ} → F.Fin n → Vec (F.Fin n) n
 permLeftID i = permuteLeft i (upTo _)
 
+{-- for reference, again
+swapUpTo : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
+swapUpTo F.zero = id⇛
+swapUpTo (F.suc i) = swapi F.zero ◎ id⇛ ⊕ swapUpTo i
 
+swapDownFrom : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
+swapDownFrom F.zero = id⇛
+swapDownFrom (F.suc i) = id⇛ ⊕ swapUpTo i ◎ swapi F.zero
+--}
+
+permLeftId₀ : {n : ℕ} → (upTo (suc n)) ≡ permuteLeft F.zero (upTo (suc n))
+permLeftId₀ {n} =
+  tabf∼g id (λ x → upTo (suc n) !! permLeftFn F.zero x)
+         (λ x → ! (lookupTab {f = id} x))
+
+-- I ran out of names for these like yesterday, sorry :/ [Z]
+
+swapUpCompWorks : {n : ℕ} → (i : F.Fin n) →
+                  (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo n))
+                  ∘̬ (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ i) (upTo (suc n))))
+                  ≡ permuteLeft (F.inject₁ (F.suc i)) (upTo (suc (suc n)))
+swapUpCompWorks i = {!!}
+         
 -- NB: I added the F.inject₁ in calls to permuteLeft/Right to get it to work
 -- with swapUpTo/DownFrom; I'm not sure that this is correct? It might
 -- be a sign that the type of the swap functions is too specific, instead.
 -- (though now it looks like it will at least make the type of shuffle a bit nicer) [Z]
 swapUpToWorks : {n : ℕ} → (i : F.Fin n) →
                 vecRep (swapUpTo i) (permuteLeft (F.inject₁ i) (upTo (suc n)))
-swapUpToWorks = {!!}
+swapUpToWorks F.zero = hetType vr-id (ap (vecRep id⇛) (permLeftId₀))
+swapUpToWorks (F.suc i) = hetType (vr-comp vr-swap (vr-plus (swapUpToWorks i)))
+                          (ap (vecRep (swapUpTo (F.suc i))) (swapUpCompWorks i))
+
+--vr-comp (hetType (vr-plus (swapUpToWorks i)) {!!})
+--                                  (hetType vr-swap {!!})
 
 swapDownFromWorks : {n : ℕ} → (i : F.Fin n) →
-                    vecRep (swapDownFrom i) (permuteRight (F.inject₁ i) (upTo (suc n)))
+                    vecRep (swapDownFrom i) (permuteRight (F.inject₁ i))
 swapDownFromWorks = {!!}
 
 -- Will probably be a key lemma in swapmnWorks
@@ -648,11 +704,6 @@ evalVec vec i = finToVal (lookup i vec)
 
 
 
-lookupTab : {A : Set} → {n : ℕ} → {f : F.Fin n → A} → 
-  (i : F.Fin n) → lookup i (tabulate f) ≡ (f i)
-lookupTab {f = f} F.zero = refl (f F.zero)
-lookupTab (F.suc i) = lookupTab i
-
 lookupMap : {A B : Set} → {n : ℕ} → {f : A → B} → (i : F.Fin n) → (v : Vec A n) →
             lookup i (vmap f v) ≡ f (lookup i v)
 lookupMap F.zero (x ∷ v) = refl _
@@ -671,13 +722,7 @@ combToVecWorks : {n : ℕ} → (c : (fromℕ n) ⇛ (fromℕ n)) →
   (i : F.Fin n) → (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
 combToVecWorks c i = (! (finToValToFin _)) ∘ (ap finToVal (! (lookupTab i)))
 
--- Important lemma about lookup; for some reason it doesn't seem to be in the
--- library even though it's in the main agda tutorial, iirc
-map!! : {A B : Set} → {n : ℕ} → (f : A → B) → (v : Vec A n) → (i : F.Fin n) → 
-        (vmap f v) !! i ≡ f (v !! i)
-map!! {n = zero} f [] ()
-map!! {n = suc n} f (x ∷ xs) F.zero = refl (f x)
-map!! {n = suc n} f (x ∷ xs) (F.suc i) = map!! f xs i
+
 
 -- Lemma for proving things about calls to foldr; possibly not needed.
 foldrWorks : {A : Set} → {m : ℕ} → 
