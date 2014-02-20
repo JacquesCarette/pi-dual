@@ -832,6 +832,31 @@ vecRepWorks (vr-plus {c = c} {v = v} vr) (F.suc i) =
   inj₂ (finToVal (v !! i))                  ≡⟨ ap inj₂ (vecRepWorks vr i) ⟩
   (evalComb (id⇛ ⊕ c) (finToVal (F.suc i)) ∎)
 
+lemma3 : {n : ℕ} → 
+  (v : Vec (F.Fin n) n) → (i : F.Fin n) → 
+  (evalComb (vecToComb v) (finToVal i)) ≡  foldl (λ _ → ⟦ fromℕ n ⟧) 
+      (λ h i₁ → i₁ h) (finToVal i)
+      (replicate (λ x₂ → evalComb (makeSingleComb (lookup x₂ v) x₂)) ⊛
+       tabulate (λ x → x))
+lemma3 {n} v i = 
+  evalComb (vecToComb v) (finToVal i)
+ ≡⟨ evalComb∘foldr (finToVal i) (map (λ i → makeSingleComb (v !! i) i) (upTo n)) ⟩
+  foldl (λ _ → ⟦ fromℕ n ⟧) (λ j c → evalComb c j) (finToVal i) (map (λ i → makeSingleComb (v !! i) i) (upTo n)) 
+ ≡⟨ foldl∘map (λ j c → evalComb c j) (finToVal i) makeSingleComb v (upTo n) ⟩ 
+    refl (
+      foldl (λ _ → ⟦ fromℕ n ⟧) (λ h i₁ → i₁ h) (finToVal i)
+        (replicate (λ x₂ → evalComb (makeSingleComb (lookup x₂ v) x₂)) ⊛
+         tabulate id)  )
+
+-- So this is not quite right, since the real lemma needs to 'apply' things to n
+-- because of the ambient tabulate.  But the idea is still essentially right.
+lemma4 :  {n : ℕ} → (v : Vec (F.Fin n) n) → (i : F.Fin n) → evalComb (makeSingleComb (lookup i v) i) ≡ {!!}
+lemma4 {zero} v ()
+lemma4 {suc n} (F.zero ∷ v) F.zero = {!!}
+lemma4 {suc n} (F.suc x ∷ v) F.zero = {!!}
+lemma4 {suc n} (F.zero ∷ v) (F.suc i) = {!!}
+lemma4 {suc n} (F.suc x ∷ v) (F.suc i) = {!!}
+
 -- [JC] flip the conclusion around, as 'evalVec v i' is trivial.  Makes
 -- equational reasoning easier  
 vecToCombWorks : {n : ℕ} → 
@@ -843,6 +868,7 @@ vecToCombWorks {n} v i =
   foldl (λ _ → ⟦ fromℕ n ⟧) (λ j c → evalComb c j) (finToVal i) (map (λ i → makeSingleComb (v !! i) i) (upTo n)) 
  ≡⟨ foldl∘map (λ j c → evalComb c j) (finToVal i) makeSingleComb v (upTo n) ⟩ 
   {!!} 
+
 {--
   foldrWorks
     {fromℕ n ⇛ fromℕ n}
