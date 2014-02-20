@@ -197,6 +197,13 @@ toNormalNat zero ()
 toNormalNat (suc n) F.zero = inj₁ tt
 toNormalNat (suc n) (F.suc f) = inj₂ (toNormalNat n f)
 
+{--
+-- tabulate an equivalence; this is basically a vector representation of 
+-- a permutation on sets of size n.
+equivToVec : {n : ℕ} → ⟦ n ⟧ℕ ≃ ⟦ n ⟧ℕ → Vec (F.Fin n) n
+equivToVec {n} (f , _) = tabulate ((fromNormalNat n) ○ f ○ (toNormalNat n))
+--}
+
 -- construct a combinator which represents the swapping of the i-th and 
 -- (i+1)-th 'bit' of a finite type.  
 -- Best to think of this as an 'elementary permutation', in the same way
