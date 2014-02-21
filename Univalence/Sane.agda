@@ -424,7 +424,7 @@ dec<F (F.suc i) (F.suc j) | no x = no (λ p → x (<suc i j p))
 
 permLeftFn : {n : ℕ} → F.Fin n → (F.Fin n → F.Fin n)
 permLeftFn F.zero          x         = x
-permLeftFn (F.suc max) F.zero = F.suc max -- F.inject₁ max
+permLeftFn (F.suc max) F.zero = ? -- F.suc F.zero -- F.suc max -- F.inject₁ max
 permLeftFn (F.suc max) (F.suc i) with dec<F i max
 permLeftFn (F.suc max) (F.suc i) | yes x = F.inject₁ i
 permLeftFn (F.suc max) (F.suc i) | no x = F.suc i
@@ -508,7 +508,42 @@ swapUp₀ {n} F.zero =
             ≡⟨ permLeft₀ ⟩
           tabulate (λ x → upTo (suc (suc (suc n))) !! (permLeftFn (F.suc F.zero) x))
             !! F.zero ∎
-swapUp₀ (F.suc F.zero) = {!!}
+swapUp₀ {n} (F.suc F.zero) =
+        ((F.zero ∷ vmap F.suc (permuteLeft F.zero (upTo (suc (suc n)))))
+        ∘̬ (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n)))) !! F.suc F.zero
+          ≡⟨ refl _ ⟩
+        (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !!
+        (((F.zero ∷ vmap F.suc (permuteLeft F.zero (upTo (suc (suc n))))) !! F.suc F.zero))
+          ≡⟨ refl _ ⟩
+        (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !!
+        (((vmap F.suc (permuteLeft F.zero (upTo (suc (suc n))))) !! F.zero))
+          ≡⟨ ap
+               (λ x →
+                  (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !!
+                  (vmap F.suc x !! F.zero))
+               (! permLeftId₀) ⟩
+        (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !!
+        (((vmap F.suc (upTo (suc (suc n)))) !! F.zero))
+          ≡⟨ ap
+               (λ x →
+                  (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !! x)
+               (map!! F.suc (upTo _) F.zero) -- F.suc (upTo (suc (suc n))) F.zero)
+               ⟩
+        (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !! (F.suc F.zero)
+          ≡⟨ refl _ ⟩
+        F.zero
+          ≡⟨ ! (lookupTab {f = id} F.zero) ⟩
+        (upTo (suc (suc (suc n)))) !! F.zero
+          ≡⟨ {!refl _!} ⟩
+        (upTo (suc (suc (suc n)))) !! (permLeftFn (F.suc F.zero) (F.suc F.zero))
+          ≡⟨ ! (lookupTab
+                 {f = λ x →
+                    (upTo (suc (suc (suc n)))) !!
+                      (permLeftFn (F.suc F.zero) x)}
+                 (F.suc F.zero)) ⟩
+        -- permuteLeft i v = tabulate (λ x → v !! (permLeftFn i x))
+        permuteLeft (F.suc F.zero) (upTo (suc (suc (suc n)))) !! F.suc F.zero ∎
+         
 swapUp₀ (F.suc (F.suc i)) = {!!}
          
 
@@ -654,6 +689,9 @@ swapUpToTest : Vec (F.Fin five) five
 swapUpToTest = combToVec ((swapUpTo (F.suc (F.suc F.zero))))
                         -- (finToVal (F.suc (F.suc F.zero)))
 
+pltest : Vec (F.Fin five) five
+pltest = permuteLeft (F.suc (F.suc (F.suc F.zero))) (upTo five)
+                        
 plfntest : F.Fin five
 plfntest = permLeftFn (F.suc F.zero) F.zero
                         
