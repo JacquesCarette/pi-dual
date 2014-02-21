@@ -177,14 +177,13 @@ v₁ ∘̬ v₂ = tabulate (λ i → v₂ !! (v₁ !! i))
 -- library even though it's in the main agda tutorial, iirc
 map!! : {A B : Set} → {n : ℕ} → (f : A → B) → (v : Vec A n) → (i : F.Fin n) → 
         (vmap f v) !! i ≡ f (v !! i)
-map!! {n = zero} f [] ()
-map!! {n = suc n} f (x ∷ xs) F.zero = refl (f x)
+map!! {n = zero}  f  [] ()
+map!! {n = suc n} f (x ∷ xs) F.zero    = refl (f x)
 map!! {n = suc n} f (x ∷ xs) (F.suc i) = map!! f xs i
 
-lookupTab : {A : Set} → {n : ℕ} → {f : F.Fin n → A} → 
-  (i : F.Fin n) → (tabulate f) !! i ≡ (f i)
-lookupTab {f = f} F.zero = refl (f F.zero)
-lookupTab (F.suc i) = lookupTab i
+lookupTab : {A : Set} {n : ℕ} {f : F.Fin n → A} →  (i : F.Fin n) → (tabulate f) !! i ≡ (f i)
+lookupTab {f = f} F.zero   = refl (f F.zero)
+lookupTab            (F.suc i) = lookupTab i
 
 mapTab : {A B : Set} → {n : ℕ} → (f : A → B) → (g : F.Fin n → A) →
          vmap f (tabulate g) ≡ tabulate (f ○ g)
@@ -201,7 +200,7 @@ tabf∼g {suc n} f g p | x | .x | refl .x =
   ap (_∷_ x) (tabf∼g {n} (f ○ F.suc) (g ○ F.suc) (p ○ F.suc))
 
 lookup∼vec : {n : ℕ} → {A : Set} → (v₁ v₂ : Vec A n) → (∀ i → v₁ !! i ≡ v₂ !! i) → v₁ ≡ v₂
-lookup∼vec [] [] p = refl []
+lookup∼vec []          []           p = refl []
 lookup∼vec (x ∷ v₁) (x₁ ∷ v₂) p with p F.zero
 lookup∼vec (x ∷ v₁) (.x ∷ v₂) p | (refl .x) = ap (_∷_ x) (lookup∼vec v₁ v₂ (p ○ F.suc))
   
@@ -209,27 +208,27 @@ lookup∼vec (x ∷ v₁) (.x ∷ v₂) p | (refl .x) = ap (_∷_ x) (lookup∼v
 -- Finite Types and the natural numbers are intimately related.
 
 fromℕ : ℕ → FT
-fromℕ zero = ZERO
+fromℕ zero    = ZERO
 fromℕ (suc n) = PLUS ONE (fromℕ n)
 
 -- normalize a finite type to (1 + (1 + (1 + ... + (1 + 0) ... )))
 -- a bunch of ones ending with zero with left biased + in between
 
 ⟦_⟧ℕ : ℕ → Set
-⟦ zero ⟧ℕ = ⊥
+⟦ zero ⟧ℕ  = ⊥
 ⟦ suc n ⟧ℕ = ⊤ ⊎ ⟦ n ⟧ℕ
 
 -- Take a natural number n, and a value of the type represented by that n,
 -- and return the canonical finite set of size n.
 fromNormalNat : (n : ℕ) → ⟦ n ⟧ℕ → F.Fin n
-fromNormalNat zero ()
+fromNormalNat zero     ()
 fromNormalNat (suc n) (inj₁ tt) = F.zero
 fromNormalNat (suc n) (inj₂ x) = F.suc (fromNormalNat n x)
 
 -- Take a natural number n, a finite set of size n, and return a
 -- (canonical) value of the type represented by n
 toNormalNat : (n : ℕ) → F.Fin n → ⟦ n ⟧ℕ
-toNormalNat zero ()
+toNormalNat zero     ()
 toNormalNat (suc n) F.zero = inj₁ tt
 toNormalNat (suc n) (F.suc f) = inj₂ (toNormalNat n f)
 
@@ -246,21 +245,21 @@ equivToVec {n} (f , _) = tabulate ((fromNormalNat n) ○ f ○ (toNormalNat n))
 -- we have 'elementary matrices' (which turn out to be permutations when they
 -- are unitary).
 swapi : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
-swapi {zero} ()
-swapi {suc n} F.zero = assocl₊⇛ ◎ swap₊⇛ ⊕ id⇛ ◎ assocr₊⇛
+swapi {zero}  ()
+swapi {suc n} F.zero    = assocl₊⇛ ◎ swap₊⇛ ⊕ id⇛ ◎ assocr₊⇛
 swapi {suc n} (F.suc i) = id⇛ ⊕ swapi {n} i
 
 -- swapUpTo i permutes the combinator left by one up to i 
 -- if possible values are X a b c Y d e, swapUpTo 3's possible outputs 
 -- are a b c X Y d e
 swapUpTo : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
-swapUpTo F.zero = id⇛
+swapUpTo F.zero    = id⇛
 swapUpTo (F.suc i) = (id⇛ ⊕ swapUpTo i) ◎ swapi F.zero  
 
 -- swapDownFrom i permutes the combinator right by one up to i (the reverse
 -- of swapUpTo)
 swapDownFrom : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
-swapDownFrom F.zero = id⇛
+swapDownFrom F.zero    = id⇛
 swapDownFrom (F.suc i) = swapi F.zero ◎ (id⇛ ⊕ swapUpTo i)
 
 
@@ -271,15 +270,14 @@ swapDownFrom (F.suc i) = swapi F.zero ◎ (id⇛ ⊕ swapUpTo i)
 -- makeSingleComb {combinator size} (arrayElement) (arrayIndex),
 -- gives a combinator which 'does' that, assuming i<j, else id⇛
 makeSingleComb : {n : ℕ} → F.Fin n → F.Fin n → (fromℕ n) ⇛ (fromℕ n)
-makeSingleComb F.zero F.zero = id⇛
-makeSingleComb F.zero (F.suc i) = id⇛
-makeSingleComb (F.suc j) F.zero = swapDownFrom j ◎ swapi j ◎ swapUpTo j
+makeSingleComb F.zero   F.zero     = id⇛
+makeSingleComb F.zero   (F.suc i)  = id⇛
+makeSingleComb (F.suc j) F.zero   = swapDownFrom j ◎ swapi j ◎ swapUpTo j
 makeSingleComb (F.suc j) (F.suc i) = id⇛ ⊕ makeSingleComb j i
 
 -- upTo n returns [0, 1, ..., n-1] as Fins
 upTo : (n : ℕ) → Vec (F.Fin n) n
 upTo n = tabulate {n} id
-
 
 -- Correctness: after putting together i indices, the partial combinator c' is
 -- represented by the vector [1, 2, ... , n - (i +1)] ++ (last i v)
@@ -296,43 +294,20 @@ upTo n = tabulate {n} id
 -- where k != j and k != i
 
 zeroIfEq : {n n′ : ℕ} → F.Fin n → F.Fin n → F.Fin (suc n′) → F.Fin (suc n′)
-zeroIfEq F.zero F.zero ret = F.zero
-zeroIfEq F.zero (F.suc j) ret = ret
-zeroIfEq (F.suc i) F.zero ret = ret
+zeroIfEq F.zero    F.zero   ret = F.zero
+zeroIfEq F.zero   (F.suc j) ret = ret
+zeroIfEq (F.suc i) F.zero   ret = ret
 zeroIfEq (F.suc i) (F.suc j) ret = zeroIfEq i j ret
 
 swapIndFn : {n : ℕ} → F.Fin n → F.Fin n → (F.Fin n → F.Fin n)
-swapIndFn F.zero j F.zero = j
-swapIndFn (F.suc i) F.zero F.zero = F.suc i
-swapIndFn (F.suc i) (F.suc j) F.zero = F.zero
-swapIndFn F.zero F.zero (F.suc x) = F.suc x
-swapIndFn {suc zero} F.zero (F.suc ()) (F.suc x)
-swapIndFn {suc (suc n)} F.zero (F.suc j) (F.suc x) = zeroIfEq j x (F.suc x)
-swapIndFn (F.suc i) F.zero (F.suc x) = zeroIfEq i x (F.suc x)
-swapIndFn (F.suc i) (F.suc j) (F.suc x) = F.suc (swapIndFn i j x)
-{--
-swapIndFn i j k with i =F= k
-swapIndFn i j .i | yes (refl .i) = j
-swapIndFn i j k | _ with j =F= k
-swapIndFn i j .j | _ | yes (refl .j) = i
-swapIndFn i j k | _ | _ = k
---}
-
-{--
-
-Agda's rejecting this and not telling me why; it's probably not worth
-trying to figure it out here rather than dealing with the problem
-this was trying to solve elsewhere (ie, trying to get the vectors in
-vr-swap and swapiWorks to match up)
-
-swapIndFn₁ : {n : ℕ} → F.Fin (suc n) → (F.Fin n → F.Fin (suc n))
--- swapIndFn₁ {zero} ()
-swapIndFn₁ j k with F.compare j (F.suc k)
-swapIndFn₁ .(F.suc k) k | F.equal .(F.suc k) = F.zero
-swapIndFn₁ .(F.inject j) k | F.less .(F.suc k) j = {!!}
-swapIndFn₁ j .(F.inject k) | F.greater .j (F.suc k) = ?
-
---}
+swapIndFn                       F.zero     j              F.zero   = j
+swapIndFn                       (F.suc i)  F.zero     F.zero   = F.suc i
+swapIndFn                       (F.suc i) (F.suc j)    F.zero   = F.zero
+swapIndFn                       F.zero     F.zero    (F.suc x) = F.suc x
+swapIndFn {suc zero}     F.zero   (F.suc ()) (F.suc x)
+swapIndFn {suc (suc n)} F.zero   (F.suc j)  (F.suc x) = zeroIfEq j x (F.suc x)
+swapIndFn                       (F.suc i)  F.zero    (F.suc x) = zeroIfEq i x (F.suc x)
+swapIndFn                       (F.suc i) (F.suc j)  (F.suc x) = F.suc (swapIndFn i j x)
 
 swapInd : {n : ℕ} → F.Fin n → F.Fin n → Vec (F.Fin n) n
 swapInd i j = tabulate (swapIndFn i j)
@@ -340,25 +315,16 @@ swapInd i j = tabulate (swapIndFn i j)
 swapIndVec : {n : ℕ} → F.Fin n → F.Fin n → Vec (F.Fin n) n → Vec (F.Fin n) n
 swapIndVec i j v = tabulate (λ k → v !! swapIndFn i j k)
 
-{--
-swapInd F.zero j = j ∷ (tabulate (swapIndFn₁ j))
-swapInd i F.zero = i ∷ (tabulate (swapIndFn₁ i))
-swapInd (F.suc i) (F.suc j) = F.zero ∷ (vmap F.suc (swapInd i j))
---}
-
-
 -- vecRep c v relates a combinator c over normal types to the output
 -- vector it results in. This works only over a subset of combinators
 -- used in decompilation.
 data vecRep : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n → Set where
   vr-id    : {n : ℕ} → vecRep (id⇛ {fromℕ n}) (upTo n)
-  vr-swap  : 
-    {n : ℕ} → 
+  vr-swap  :   {n : ℕ} → 
     vecRep {suc (suc n)} (swapi {suc n} F.zero)
       ((F.suc F.zero) ∷ F.zero ∷ 
        (vmap (λ i → F.suc (F.suc i)) (upTo n)))
-  vr-comp  : 
-    {n : ℕ} → {c₁ c₂ : (fromℕ n) ⇛ (fromℕ n)} → {v₁ v₂ : Vec (F.Fin n) n} → 
+  vr-comp  : {n : ℕ} → {c₁ c₂ : (fromℕ n) ⇛ (fromℕ n)} → {v₁ v₂ : Vec (F.Fin n) n} → 
     vecRep c₁ v₁ → vecRep c₂ v₂ → 
     vecRep (c₁ ◎ c₂) (v₁ ∘̬ v₂)
   vr-plus : {n : ℕ} → {c : (fromℕ n) ⇛ (fromℕ n)} → {v : Vec (F.Fin n) n} → 
@@ -396,7 +362,6 @@ swapmn (F.suc m) (F.zero) = swapUpTo m ◎ swapi m ◎ swapDownFrom m
 swapmn (F.suc m) (F.suc n) = id⇛ ⊕ swapmn m n                              
 --}
 
-
 swapIndIdAfterOne : {n : ℕ} → (i : F.Fin n) →
                     (F.suc (F.suc i)) ≡ (swapIndFn F.zero (F.suc F.zero) (F.suc (F.suc i)))
 swapIndIdAfterOne i = refl _ -- yesss finally it just works!
@@ -408,28 +373,6 @@ swap≡ind₀ {n} = ap (λ v → F.suc F.zero ∷ F.zero ∷ v)
                ((vmap (λ i → F.suc (F.suc i)) (upTo n)) ≡⟨ mapTab _ _ ⟩
                (tabulate (id ○ (λ i → F.suc (F.suc i)))) ≡⟨ tabf∼g _ _ swapIndIdAfterOne ⟩
                ((tabulate (((swapIndFn F.zero (F.suc F.zero)) ○ F.suc) ○ F.suc)) ∎))
-
-{--
-
-swapIndFn : {n : ℕ} → F.Fin n → F.Fin n → (F.Fin n → F.Fin n)
-swapIndFn i j k with F.compare i k
-swapIndFn i j .i | F.equal .i = j
-swapIndFn i j k | _ with F.compare j k
-swapIndFn i j .j | _ | F.equal .j = i
-swapIndFn i j k | _ | _ = k
-
---}
-
-{--
-eqReturnsEq : {n : ℕ} → (i j : F.Fin n) → (p : i ≡ j) → (i =F= j) ≡ (just p)
-eqReturnsEq F.zero F.zero (refl .F.zero) = refl (just (refl F.zero))
-eqReturnsEq F.zero (F.suc j) ()
-eqReturnsEq (F.suc i) F.zero ()
-eqReturnsEq (F.suc i) (F.suc .i) (refl .(F.suc i)) with eqReturnsEq i i (refl i)
-eqReturnsEq (F.suc i) (F.suc .i) (refl .(F.suc i)) | p = {!!} -- can't tell p is refl?
---eqReturnsEq F.zero F.zero (refl _) = refl (just (refl F.zero))
--- eqReturnsEq (F.suc i) (F.suc .i) (refl (F.suc .i)) = ?
---}
 
 swapIndSucDist : {n : ℕ} → (i j x : F.Fin n) →
                  (F.suc (swapIndFn i j x)) ≡
@@ -462,7 +405,6 @@ swapiWorks {suc n} F.zero = hetType vr-swap (ap (vecRep (swapi F.zero)) swap≡i
 swapiWorks {suc n} (F.suc i) =
   hetType (vr-plus (swapiWorks i)) (ap (vecRep (id⇛ ⊕ swapi i)) (swap≡ind₁ i)) 
 
-
 -- permutations on vectors for specifying swapUpTo/DownFrom
   
 data _<F_ : {n : ℕ} → F.Fin n → F.Fin n → Set where
@@ -473,15 +415,15 @@ data _<F_ : {n : ℕ} → F.Fin n → F.Fin n → Set where
 <suc i j (suc-leq p) = p
   
 dec<F : {n : ℕ} → (i j : F.Fin n) → Dec (i <F j)
-dec<F F.zero F.zero = no (λ ())
-dec<F F.zero (F.suc j) = yes zero-leq
-dec<F (F.suc i) F.zero = no (λ ())
+dec<F F.zero    F.zero   = no (λ ())
+dec<F F.zero   (F.suc j) = yes zero-leq
+dec<F (F.suc i) F.zero   = no (λ ())
 dec<F (F.suc i) (F.suc j) with dec<F i j
 dec<F (F.suc i) (F.suc j) | yes x = yes (suc-leq x)
 dec<F (F.suc i) (F.suc j) | no x = no (λ p → x (<suc i j p))
 
 permLeftFn : {n : ℕ} → F.Fin n → (F.Fin n → F.Fin n)
-permLeftFn F.zero x = x
+permLeftFn F.zero          x         = x
 permLeftFn (F.suc max) F.zero = F.suc max -- F.inject₁ max
 permLeftFn (F.suc max) (F.suc i) with dec<F i max
 permLeftFn (F.suc max) (F.suc i) | yes x = F.inject₁ i
@@ -576,7 +518,8 @@ swapUpCompWorks : {n : ℕ} → (i : F.Fin n) →
                   ∘̬ (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo n))
                   ≡ permuteLeft (F.inject₁ (F.suc i)) (upTo (suc (suc n)))
 swapUpCompWorks {suc n} F.zero = lookup∼vec _ _ swapUp₀
-swapUpCompWorks (F.suc i) = {!!}
+swapUpCompWorks (F.suc F.zero) = {!!}
+swapUpCompWorks (F.suc (F.suc i)) = {!!}
          
 -- NB: I added the F.inject₁ in calls to permuteLeft/Right to get it to work
 -- with swapUpTo/DownFrom; I'm not sure that this is correct? It might
