@@ -513,6 +513,8 @@ swapUp₀ (F.suc (F.suc i)) = {!!}
          
 
 -- This should be true now. [Z]
+-- It's false -- look at the first hole.  Plus "F.suc (F.suc F.zero) appears twice 
+-- in (both) lists, which is a clear sign that something is deeply wrong!
 swapUpCompWorks : {n : ℕ} → (i : F.Fin n) →
                   (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ i) (upTo (suc n))))
                   ∘̬ (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo n))
@@ -690,8 +692,6 @@ combToVecWorks : {n : ℕ} → (c : (fromℕ n) ⇛ (fromℕ n)) →
   (i : F.Fin n) → (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
 combToVecWorks c i = (! (finToValToFin _)) ∘ (ap finToVal (! (lookupTab i)))
 
-
-
 -- Lemma for proving things about calls to foldr; possibly not needed.
 foldrWorks : {A : Set} → {m : ℕ} → 
              (B : ℕ → Set) → (P : (n : ℕ) → Vec A n → B n → Set)
@@ -808,7 +808,7 @@ vecRepWorks (vr-comp {n} {c₁} {c₂} {v₁} {v₂} vr vr₁) i =
  ≡⟨ vecRepWorks vr₁ (valToFin (evalComb c₁ (finToVal i))) ⟩ 
  evalComb c₂ (finToVal (valToFin (evalComb c₁ (finToVal i))))
  ≡⟨ ap (evalComb c₂) (finToValToFin (evalComb c₁ (finToVal i))) ⟩ 
- refl (evalComb (c₁ ◎ c₂) (finToVal i)) 
+ evalComb (c₁ ◎ c₂) (finToVal i) ∎
 vecRepWorks {suc n} (vr-plus vr) F.zero = refl (inj₁ tt)
 vecRepWorks (vr-plus {c = c} {v = v} vr) (F.suc i) = 
   evalVec (F.zero ∷ vmap F.suc v) (F.suc i)  ≡⟨ ap finToVal (map!! F.suc v i) ⟩
@@ -833,12 +833,12 @@ lemma3 {n} v i =
 
 -- So this is not quite right, since the real lemma needs to 'apply' things to n
 -- because of the ambient tabulate.  But the idea is still essentially right.
-lemma4 :  {n : ℕ} → (v : Vec (F.Fin n) n) → (i : F.Fin n) → evalComb (makeSingleComb (lookup i v) i) ≡ {!!}
-lemma4 {zero} v ()
-lemma4 {suc n} (F.zero ∷ v) F.zero = {!!}
-lemma4 {suc n} (F.suc x ∷ v) F.zero = {!!}
-lemma4 {suc n} (F.zero ∷ v) (F.suc i) = {!!}
-lemma4 {suc n} (F.suc x ∷ v) (F.suc i) = {!!}
+lemma4 :  {n : ℕ} → (v : Vec (F.Fin n) n) → (i : F.Fin n) → (k : F.Fin n) → evalComb (makeSingleComb (lookup i v) i) (finToVal k) ≡ {!!}
+lemma4 {zero} v () k
+lemma4 {suc n} (F.zero ∷ v) F.zero k = {!!}
+lemma4 {suc n} (F.suc x ∷ v) F.zero k = {!!}
+lemma4 {suc n} (F.zero ∷ v) (F.suc i) k = {!!}
+lemma4 {suc n} (F.suc x ∷ v) (F.suc i) k = {!!}
 
 -- [JC] flip the conclusion around, as 'evalVec v i' is trivial.  Makes
 -- equational reasoning easier  
