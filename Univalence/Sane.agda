@@ -24,7 +24,7 @@ data Maybe (A : Set) : Set where
   nothing : Maybe A
   just : A → Maybe A
 
-data Dec {ℓ} (A : Set ℓ) : Set ℓ where
+data Dec (A : Set) : Set where
   yes : A → Dec A
   no : (A → ⊥) → Dec A
   
@@ -113,8 +113,8 @@ flip (p ⊗ q) = flip p ⊗ flip q
 
 -- Our own version of refl that makes 'a' explicit
 
-data _≡_ {ℓ} {A : Set ℓ} : {B : Set ℓ} → (a : A) → (b : B) → Set (U.suc ℓ) where
-  refl : (a : A) → (_≡_ {B = A} a a)
+data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
+  refl : (a : A) → (a ≡ a)
 
 -- J
 pathInd : ∀ {u ℓ} → {A : Set u} → 
@@ -1000,7 +1000,7 @@ vecToCombWorks {n} v i =
 -- Goal
 
 -- note that p₁ is independent of c.
-record mainLemma (n : ℕ) (v : Vec (F.Fin n) n) : Set₁ where
+record mainLemma (n : ℕ) (v : Vec (F.Fin n) n) : Set where
   field
     c  : (fromℕ n) ⇛ (fromℕ n)
     p₁ : ∀ i → (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
