@@ -479,6 +479,23 @@ plf′ (F.suc {suc m} max) (F.suc i) acc = -- we don't know what to do yet, so i
   hetType (plf′ max i (F.suc acc))
           (ap F.Fin ((m+1+n≡1+m+n m _)))
 
+data _h≡_ {A : Set} : {B : Set} → A → B → Set₁ where
+  hrefl : (x : A) → _h≡_ {A} {A} x x
+
+hetTypeIsID : {A B : Set} → (x : A) → (p : A ≡ B) → (hetType x p) h≡ x
+hetTypeIsID x (refl _) = hrefl x
+          
+-- the above, but with nats instead of fins          
+add1modn : ℕ → ℕ → ℕ → ℕ
+add1modn zero zero acc = zero
+add1modn zero (suc n) acc = (suc n) + acc
+add1modn (suc max) zero acc = suc acc
+add1modn (suc max) (suc n) acc = add1modn max n (suc acc)
+
+
+--add1modi : {n : ℕ} → F.Fin n → F.Fin n → F.Fin n
+--add1modi max i = {!!} -- F.fromℕ (add1modn (F.toℕ max) (F.toℕ i) zero)
+          
 permLeftFn : {n : ℕ} → F.Fin n → (F.Fin n → F.Fin n)
 permLeftFn {zero}        ()
 permLeftFn {suc n}       F.zero      i = i -- no longer permuting, so just be the id
@@ -547,7 +564,7 @@ swapDownFrom (F.suc i) = id⇛ ⊕ swapUpTo i ◎ swapi F.zero
 permLeftId₀ : {n : ℕ} → (upTo (suc n)) ≡ permuteLeft F.zero (upTo (suc n))
 permLeftId₀ {n} =
   tabf∼g id (λ x → upTo (suc n) !! permLeftFn F.zero x)
-            {!!} -- (λ x → ! (lookupTab {f = id} ?))
+            (λ x → ! (lookupTab {f = id} x))
 
 permLeft₀ : {n : ℕ} →
             F.suc F.zero ≡
@@ -596,18 +613,26 @@ swapUp₀ {n} (F.suc F.zero) =
                (map!! F.suc (upTo _) F.zero) -- F.suc (upTo (suc (suc n))) F.zero)
                ⟩
         (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !! (F.suc F.zero)
-          ≡⟨ refl _ ⟩
+          ≡⟨ refl F.zero ⟩
         F.zero
           ≡⟨ ! (lookupTab {f = id} F.zero) ⟩
         (upTo (suc (suc (suc n)))) !! F.zero
-          ≡⟨ {!refl _!} ⟩
+          ≡⟨ ap {A = F.Fin (suc (suc (suc n)))} {B = F.Fin (suc (suc (suc n)))}
+               {x = F.zero} {y = permLeftFn (F.suc F.zero) (F.suc F.zero)}
+               (_!!_ (upTo (suc (suc (suc n)))))
+               (! {A = F.Fin (suc (suc (suc n)))}
+                  {x = permLeftFn (F.suc F.zero) (F.suc F.zero)}
+                  {y = F.zero}
+                  {!!})⟩ --h≡to≡ (hetTypeIsID ? ?))) ⟩
         (upTo (suc (suc (suc n)))) !! (permLeftFn (F.suc F.zero) (F.suc F.zero))
-          ≡⟨ ! (lookupTab
-                 {f = λ x →
-                    (upTo (suc (suc (suc n)))) !!
-                      (permLeftFn (F.suc F.zero) x)}
-                 (F.suc F.zero)) ⟩
-        -- permuteLeft i v = tabulate (λ x → v !! (permLeftFn i x))
+          ≡⟨ !
+               (lookupTab
+                {f = λ x → upTo (suc (suc (suc n))) !! permLeftFn (F.suc F.zero) x}
+                (F.suc F.zero)) ⟩
+{--          ≡⟨ ! (lookupTab {f = id} (permLeftFn (F.suc F.zero) (F.suc F.zero)))⟩
+
+          ≡⟨ !  ⟩ --}
+        -- permuteLeft i v = tabulate (λ x → v !! (permLeftFn i x)) 
         permuteLeft (F.suc F.zero) (upTo (suc (suc (suc n)))) !! F.suc F.zero ∎
          
 swapUp₀ (F.suc (F.suc i)) = {!!}
@@ -753,13 +778,12 @@ five = (suc (suc (suc (suc (suc zero)))))
 
 swapUpToTest : Vec (F.Fin five) five
 swapUpToTest = combToVec ((swapUpTo (F.suc (F.suc F.zero))))
-                        -- (finToVal (F.suc (F.suc F.zero)))
 
 pltest : Vec (F.Fin five) five
 pltest = permuteLeft (F.suc (F.suc (F.suc F.zero))) (upTo five)
                         
 plfntest : F.Fin five
-plfntest = permLeftFn (F.suc (F.suc F.zero)) F.zero
+plfntest = permLeftFn (F.suc F.zero) (F.suc F.zero)
                         
 sdftest : Vec (F.Fin five) five
 sdftest = combToVec (swapDownFrom (F.suc (F.suc F.zero)))
