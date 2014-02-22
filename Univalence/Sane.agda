@@ -545,7 +545,7 @@ swapDownFrom (F.suc i) = id⇛ ⊕ swapUpTo i ◎ swapi F.zero
 --}
 
 permLeftId₀ : {n : ℕ} → (upTo (suc n)) ≡ permuteLeft F.zero (upTo (suc n))
-permLeftId₀ {n} = {!!}
+permLeftId₀ {n} = refl _
   
 swapUp₀ : {n : ℕ} → (i : F.Fin (suc (suc (suc n)))) →
           ((F.zero ∷ vmap F.suc ((permuteLeft F.zero) (upTo (suc (suc n)))))
@@ -557,7 +557,7 @@ swapUp₀ {n} F.zero =
           ∘̬ (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n)))) !! F.zero
             ≡⟨ refl (F.suc F.zero) ⟩
           F.suc F.zero
-            ≡⟨ {!!} ⟩
+            ≡⟨ refl _ ⟩
           permuteLeft (F.suc F.zero) (upTo (suc (suc (suc n))))
             !! F.zero ∎
 swapUp₀ {n} (F.suc F.zero) =
@@ -586,7 +586,7 @@ swapUp₀ {n} (F.suc F.zero) =
         F.zero
           ≡⟨ ! (lookupTab {f = id} F.zero) ⟩
         (upTo (suc (suc (suc n)))) !! F.zero
-          ≡⟨ {!!} ⟩
+          ≡⟨ refl _ ⟩
         permuteLeft (F.suc F.zero) (upTo (suc (suc (suc n)))) !! F.suc F.zero ∎
          
 swapUp₀ (F.suc (F.suc i)) = {!!}
