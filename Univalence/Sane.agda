@@ -422,12 +422,78 @@ dec<F (F.suc i) (F.suc j) with dec<F i j
 dec<F (F.suc i) (F.suc j) | yes x = yes (suc-leq x)
 dec<F (F.suc i) (F.suc j) | no x = no (λ p → x (<suc i j p))
 
+-- BEGIN CODE COPIED (AND SOMEWHAT MODIFIED) FROM Nat.Properties
+-- (for some reason +-comm is a private field so I can't get to it without
+-- importing superfluous files and going through a bunch of administrative
+-- garbage that isn't worth my time)
+
+m+1+n≡1+m+n : ∀ m n → m + suc n ≡ suc (m + n)
+m+1+n≡1+m+n zero    n = refl _
+m+1+n≡1+m+n (suc m) n = ap suc (m+1+n≡1+m+n m n)
+
++-identity : {n : ℕ} → n + zero ≡ n
++-identity = n+0≡n _
+  where
+  n+0≡n : (n : ℕ) → n + zero ≡ n
+  n+0≡n zero    = refl _
+  n+0≡n (suc n) = ap suc (n+0≡n n)
+
++-comm : (m n : ℕ) → m + n ≡ n + m 
++-comm zero    n = ! +-identity
++-comm (suc m) n =
+    suc m + n
+  ≡⟨ refl _ ⟩
+    suc (m + n)
+  ≡⟨ ap suc (+-comm m n) ⟩
+    suc (n + m)
+  ≡⟨ ! (m+1+n≡1+m+n n m) ⟩
+    n + suc m
+  ∎
+
+-- END CODE COPIED FROM Nat.Properties  
+
+-- swap args of F.inject+
+inj+ : {m n : ℕ} → F.Fin m → F.Fin (n + m)
+inj+ {m} {n} i = hetType (F.inject+ n i) (ap F.Fin (+-comm m n))
+
+-- the library definition of + on Fin isn't what we want here, ugh
+_+F_ : {m n : ℕ} → F.Fin (suc m) → F.Fin n → F.Fin (m + n)
+_+F_ {m} {zero} F.zero ()
+_+F_ {m} {suc n} F.zero j = inj+ {suc n} {m} j
+_+F_ {zero} {n} (F.suc ())
+_+F_ {suc m} {n} (F.suc i) j = F.suc (i +F j)
+
+-- Second argument is an accumulator
+-- plf′ max i acc = (i + acc) + 1 mod (max + acc) if (i + acc) <= (max + acc), (max + acc) ow
+-- This is the simplest way I could come up with to do this without
+-- using F.compare or something similar
+plf′ : {m n : ℕ} → F.Fin (suc m) → F.Fin (suc m) → F.Fin n → F.Fin (m + n)
+plf′ {n = zero} F.zero F.zero ()
+plf′ {m} {n = suc n} F.zero F.zero acc =
+  hetType F.zero (ap F.Fin (! (m+1+n≡1+m+n m _))) -- m mod m == 0
+plf′ F.zero (F.suc i) acc = (F.suc i) +F acc -- above the threshold, so just id
+plf′ (F.suc {zero} ())
+plf′ (F.suc {suc m} max) F.zero acc =  -- we're in range, so take succ of acc
+  hetType (inj+ {n = m} (F.suc acc)) (ap F.Fin (m+1+n≡1+m+n m _))
+plf′ (F.suc {suc m} max) (F.suc i) acc = -- we don't know what to do yet, so incr acc & recur
+  hetType (plf′ max i (F.suc acc))
+          (ap F.Fin ((m+1+n≡1+m+n m _)))
+
 permLeftFn : {n : ℕ} → F.Fin n → (F.Fin n → F.Fin n)
-permLeftFn F.zero          x         = x
-permLeftFn (F.suc max) F.zero = ? -- F.suc F.zero -- F.suc max -- F.inject₁ max
-permLeftFn (F.suc max) (F.suc i) with dec<F i max
-permLeftFn (F.suc max) (F.suc i) | yes x = F.inject₁ i
-permLeftFn (F.suc max) (F.suc i) | no x = F.suc i
+permLeftFn {zero}        ()
+permLeftFn {suc n}       F.zero      i = i -- no longer permuting, so just be the id
+permLeftFn {suc zero}    (F.suc ())
+permLeftFn {suc (suc n)} (F.suc max) F.zero = F.suc {suc n} F.zero -- {!F.suc F.zero!}
+permLeftFn {suc n}       (F.suc max) (F.suc i) =
+  hetType (plf′ (F.suc max) (F.suc i) (F.zero {zero}))
+          (ap F.Fin
+            (n + suc zero
+              ≡⟨ m+1+n≡1+m+n n zero ⟩
+             suc (n + zero)
+              ≡⟨ ap suc +-identity ⟩
+            suc n ∎)
+          ) -- plf′ max i F.zero
+
 {--
 permLeftFn v max i with F.compare i max
 permLeftFn v max .(F.inject i) | F.less .max i = v !! (subOneModN′ i)
@@ -481,7 +547,7 @@ swapDownFrom (F.suc i) = id⇛ ⊕ swapUpTo i ◎ swapi F.zero
 permLeftId₀ : {n : ℕ} → (upTo (suc n)) ≡ permuteLeft F.zero (upTo (suc n))
 permLeftId₀ {n} =
   tabf∼g id (λ x → upTo (suc n) !! permLeftFn F.zero x)
-         (λ x → ! (lookupTab {f = id} x))
+            {!!} -- (λ x → ! (lookupTab {f = id} ?))
 
 permLeft₀ : {n : ℕ} →
             F.suc F.zero ≡
@@ -693,7 +759,7 @@ pltest : Vec (F.Fin five) five
 pltest = permuteLeft (F.suc (F.suc (F.suc F.zero))) (upTo five)
                         
 plfntest : F.Fin five
-plfntest = permLeftFn (F.suc F.zero) F.zero
+plfntest = permLeftFn (F.suc (F.suc F.zero)) F.zero
                         
 sdftest : Vec (F.Fin five) five
 sdftest = combToVec (swapDownFrom (F.suc (F.suc F.zero)))
