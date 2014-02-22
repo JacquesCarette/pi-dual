@@ -422,17 +422,76 @@ dec<F (F.suc i) (F.suc j) with dec<F i j
 dec<F (F.suc i) (F.suc j) | yes x = yes (suc-leq x)
 dec<F (F.suc i) (F.suc j) | no x = no (λ p → x (<suc i j p))
 
-permLeftFn : {n : ℕ} → F.Fin n → (F.Fin n → F.Fin n)
-permLeftFn F.zero          x         = x
-permLeftFn (F.suc max) F.zero = F.suc max -- F.inject₁ max
-permLeftFn (F.suc max) (F.suc i) with dec<F i max
-permLeftFn (F.suc max) (F.suc i) | yes x = F.inject₁ i
-permLeftFn (F.suc max) (F.suc i) | no x = F.suc i
-{--
-permLeftFn v max i with F.compare i max
-permLeftFn v max .(F.inject i) | F.less .max i = v !! (subOneModN′ i)
-permLeftFn v max i | _ = v !! i
---}
+-- BEGIN CODE COPIED (AND SOMEWHAT MODIFIED) FROM Nat.Properties
+-- (for some reason +-comm is a private field so I can't get to it without
+-- importing superfluous files and going through a bunch of administrative
+-- garbage that isn't worth my time)
+
+m+1+n≡1+m+n : ∀ m n → m + suc n ≡ suc (m + n)
+m+1+n≡1+m+n zero    n = refl _
+m+1+n≡1+m+n (suc m) n = ap suc (m+1+n≡1+m+n m n)
+
++-identity : {n : ℕ} → n + zero ≡ n
++-identity = n+0≡n _
+  where
+  n+0≡n : (n : ℕ) → n + zero ≡ n
+  n+0≡n zero    = refl _
+  n+0≡n (suc n) = ap suc (n+0≡n n)
+
++-comm : (m n : ℕ) → m + n ≡ n + m 
++-comm zero    n = ! +-identity
++-comm (suc m) n =
+    suc m + n
+  ≡⟨ refl _ ⟩
+    suc (m + n)
+  ≡⟨ ap suc (+-comm m n) ⟩
+    suc (n + m)
+  ≡⟨ ! (m+1+n≡1+m+n n m) ⟩
+    n + suc m
+  ∎
+
+-- END CODE COPIED FROM Nat.Properties  
+
+-- swap args of F.inject+
+inj+ : {m n : ℕ} → F.Fin m → F.Fin (n + m)
+inj+ {m} {n} i = hetType (F.inject+ n i) (ap F.Fin (+-comm m n))
+
+-- the library definition of + on Fin isn't what we want here, ugh
+_+F_ : {m n : ℕ} → F.Fin (suc m) → F.Fin n → F.Fin (m + n)
+_+F_ {m} {zero} F.zero ()
+_+F_ {m} {suc n} F.zero j = inj+ {suc n} {m} j
+_+F_ {zero} {n} (F.suc ())
+_+F_ {suc m} {n} (F.suc i) j = F.suc (i +F j)
+
+-- Second argument is an accumulator
+-- plf′ max i acc = (i + acc) + 1 mod (max + acc) if (i + acc) <= (max + acc), (max + acc) ow
+-- This is the simplest way I could come up with to do this without
+-- using F.compare or something similar
+plf′ : {m n : ℕ} → F.Fin (suc m) → F.Fin (suc m) → F.Fin n → F.Fin (m + n)
+plf′ {n = zero} F.zero F.zero ()
+plf′ {m} {n = suc n} F.zero F.zero acc =
+  hetType F.zero (ap F.Fin (! (m+1+n≡1+m+n m _))) -- m mod m == 0
+plf′ F.zero (F.suc i) acc = (F.suc i) +F acc -- above the threshold, so just id
+plf′ (F.suc {zero} ())
+plf′ (F.suc {suc m} max) F.zero acc =  -- we're in range, so take succ of acc
+  hetType (inj+ {n = m} (F.suc acc)) (ap F.Fin (m+1+n≡1+m+n m _))
+plf′ (F.suc {suc m} max) (F.suc i) acc = -- we don't know what to do yet, so incr acc & recur
+  hetType (plf′ max i (F.suc acc))
+          (ap F.Fin ((m+1+n≡1+m+n m _)))
+
+data _h≡_ {A : Set} : {B : Set} → A → B → Set₁ where
+  hrefl : (x : A) → _h≡_ {A} {A} x x
+
+hetTypeIsID : {A B : Set} → (x : A) → (p : A ≡ B) → (hetType x p) h≡ x
+hetTypeIsID x (refl _) = hrefl x
+          
+-- the above, but with nats instead of fins          
+add1modn : ℕ → ℕ → ℕ → ℕ
+add1modn zero zero acc = zero
+add1modn zero (suc n) acc = (suc n) + acc
+add1modn (suc max) zero acc = suc acc
+add1modn (suc max) (suc n) acc = add1modn max n (suc acc)
+
 
 {--
 addOneModN′ : {n : ℕ} → {n′ : F.Fin n} → F.Fin′ n′ → F.Fin n
@@ -460,10 +519,17 @@ permuteRight {suc (suc n)} (F.suc i) | x ∷ xs = F.suc x ∷ F.zero ∷ vmap F.
 permRightID : {n : ℕ} → F.Fin n → Vec (F.Fin n) n
 permRightID i = permuteRight i
 
-
 -- The opposite of permuteRight; should correspond with swapUpTo
+pl′ : {m n : ℕ} → F.Fin m → Vec (F.Fin n) m → F.Fin n → Vec (F.Fin n) (suc m)
+pl′ {m = zero} ()
+pl′ {m = suc m} F.zero (x ∷ xs) first = x ∷ first ∷ xs
+pl′ (F.suc i) (x ∷ xs) first = x ∷ (pl′ i xs first)
+
 permuteLeft : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n → Vec (F.Fin n) n
-permuteLeft i v = tabulate (λ x → v !! (permLeftFn i x))
+permuteLeft {zero} ()
+permuteLeft {suc n} F.zero v = v
+permuteLeft {suc zero} (F.suc ())
+permuteLeft {suc (suc n)} (F.suc i) (a ∷ b ∷ rest) = pl′ i (b ∷ rest) a
 
 permLeftID : {n : ℕ} → F.Fin n → Vec (F.Fin n) n
 permLeftID i = permuteLeft i (upTo _)
@@ -479,22 +545,8 @@ swapDownFrom (F.suc i) = id⇛ ⊕ swapUpTo i ◎ swapi F.zero
 --}
 
 permLeftId₀ : {n : ℕ} → (upTo (suc n)) ≡ permuteLeft F.zero (upTo (suc n))
-permLeftId₀ {n} =
-  tabf∼g id (λ x → upTo (suc n) !! permLeftFn F.zero x)
-         (λ x → ! (lookupTab {f = id} x))
-
-permLeft₀ : {n : ℕ} →
-            F.suc F.zero ≡
-            tabulate (λ x → upTo (suc (suc (suc n))) !! permLeftFn (F.suc F.zero) x)
-              !! F.zero
-permLeft₀ {n} =
-  F.suc F.zero
-    ≡⟨ ! (lookupTab {f = id} (F.suc F.zero)) ⟩
-  upTo (suc (suc (suc n))) !! permLeftFn (F.suc F.zero) F.zero
-    ≡⟨ ! (lookupTab {f = (λ x → upTo (suc (suc (suc n))) !! permLeftFn (F.suc F.zero) x)} F.zero) ⟩
-  tabulate (λ x → upTo (suc (suc (suc n))) !! permLeftFn (F.suc F.zero) x) !! F.zero ∎
+permLeftId₀ {n} = {!!}
   
-
 swapUp₀ : {n : ℕ} → (i : F.Fin (suc (suc (suc n)))) →
           ((F.zero ∷ vmap F.suc ((permuteLeft F.zero) (upTo (suc (suc n)))))
           ∘̬ (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n)))) !! i
@@ -505,10 +557,38 @@ swapUp₀ {n} F.zero =
           ∘̬ (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n)))) !! F.zero
             ≡⟨ refl (F.suc F.zero) ⟩
           F.suc F.zero
-            ≡⟨ permLeft₀ ⟩
-          tabulate (λ x → upTo (suc (suc (suc n))) !! (permLeftFn (F.suc F.zero) x))
+            ≡⟨ {!!} ⟩
+          permuteLeft (F.suc F.zero) (upTo (suc (suc (suc n))))
             !! F.zero ∎
-swapUp₀ (F.suc F.zero) = {!!}
+swapUp₀ {n} (F.suc F.zero) =
+        ((F.zero ∷ vmap F.suc (permuteLeft F.zero (upTo (suc (suc n)))))
+        ∘̬ (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n)))) !! F.suc F.zero
+          ≡⟨ refl _ ⟩
+        (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !!
+        (((F.zero ∷ vmap F.suc (permuteLeft F.zero (upTo (suc (suc n))))) !! F.suc F.zero))
+          ≡⟨ refl _ ⟩
+        (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !!
+        (((vmap F.suc (permuteLeft F.zero (upTo (suc (suc n))))) !! F.zero))
+          ≡⟨ ap
+               (λ x →
+                  (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !!
+                  (vmap F.suc x !! F.zero))
+               (! permLeftId₀) ⟩
+        (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !!
+        (((vmap F.suc (upTo (suc (suc n)))) !! F.zero))
+          ≡⟨ ap
+               (λ x →
+                  (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !! x)
+               (map!! F.suc (upTo _) F.zero) -- F.suc (upTo (suc (suc n))) F.zero)
+               ⟩
+        (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !! (F.suc F.zero)
+          ≡⟨ refl F.zero ⟩
+        F.zero
+          ≡⟨ ! (lookupTab {f = id} F.zero) ⟩
+        (upTo (suc (suc (suc n)))) !! F.zero
+          ≡⟨ {!!} ⟩
+        permuteLeft (F.suc F.zero) (upTo (suc (suc (suc n)))) !! F.suc F.zero ∎
+         
 swapUp₀ (F.suc (F.suc i)) = {!!}
          
 
@@ -654,10 +734,12 @@ five = (suc (suc (suc (suc (suc zero)))))
 
 swapUpToTest : Vec (F.Fin five) five
 swapUpToTest = combToVec ((swapUpTo (F.suc (F.suc F.zero))))
-                        -- (finToVal (F.suc (F.suc F.zero)))
 
-plfntest : F.Fin five
-plfntest = permLeftFn (F.suc F.zero) F.zero
+pltest : Vec (F.Fin five) five
+pltest = permuteLeft (F.suc (F.suc (F.suc (F.suc F.zero)))) (upTo five)
+
+prtest : Vec (F.Fin five) five
+prtest = permuteRight (F.suc (F.suc (F.suc (F.suc F.zero))))
                         
 sdftest : Vec (F.Fin five) five
 sdftest = combToVec (swapDownFrom (F.suc (F.suc F.zero)))
