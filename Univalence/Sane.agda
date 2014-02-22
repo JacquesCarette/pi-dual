@@ -460,7 +460,7 @@ inj+ {m} {n} i = hetType (F.inject+ n i) (ap F.Fin (+-comm m n))
 _+F_ : {m n : ℕ} → F.Fin (suc m) → F.Fin n → F.Fin (m + n)
 _+F_ {m} {zero} F.zero ()
 _+F_ {m} {suc n} F.zero j = inj+ {suc n} {m} j
-_+F_ {zero} {n} (F.suc ())
+_+F_ {zero} {n} (F.suc ()) _
 _+F_ {suc m} {n} (F.suc i) j = F.suc (i +F j)
 
 -- Second argument is an accumulator
@@ -472,7 +472,7 @@ plf′ {n = zero} F.zero F.zero ()
 plf′ {m} {n = suc n} F.zero F.zero acc =
   hetType F.zero (ap F.Fin (! (m+1+n≡1+m+n m _))) -- m mod m == 0
 plf′ F.zero (F.suc i) acc = (F.suc i) +F acc -- above the threshold, so just id
-plf′ (F.suc {zero} ())
+plf′ (F.suc {zero} ()) _ _
 plf′ (F.suc {suc m} max) F.zero acc =  -- we're in range, so take succ of acc
   hetType (inj+ {n = m} (F.suc acc)) (ap F.Fin (m+1+n≡1+m+n m _))
 plf′ (F.suc {suc m} max) (F.suc i) acc = -- we don't know what to do yet, so incr acc & recur
@@ -521,14 +521,14 @@ permRightID i = permuteRight i
 
 -- The opposite of permuteRight; should correspond with swapUpTo
 pl′ : {m n : ℕ} → F.Fin m → Vec (F.Fin n) m → F.Fin n → Vec (F.Fin n) (suc m)
-pl′ {m = zero} ()
+pl′ {m = zero} () _ _
 pl′ {m = suc m} F.zero (x ∷ xs) first = x ∷ first ∷ xs
 pl′ (F.suc i) (x ∷ xs) first = x ∷ (pl′ i xs first)
 
 permuteLeft : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n → Vec (F.Fin n) n
-permuteLeft {zero} ()
+permuteLeft {zero} () _
 permuteLeft {suc n} F.zero v = v
-permuteLeft {suc zero} (F.suc ())
+permuteLeft {suc zero} (F.suc ()) _
 permuteLeft {suc (suc n)} (F.suc i) (a ∷ b ∷ rest) = pl′ i (b ∷ rest) a
 
 permLeftID : {n : ℕ} → F.Fin n → Vec (F.Fin n) n
@@ -545,7 +545,7 @@ swapDownFrom (F.suc i) = id⇛ ⊕ swapUpTo i ◎ swapi F.zero
 --}
 
 permLeftId₀ : {n : ℕ} → (upTo (suc n)) ≡ permuteLeft F.zero (upTo (suc n))
-permLeftId₀ {n} = {!!}
+permLeftId₀ {n} = refl (F.zero ∷ tabulate F.suc)
   
 swapUp₀ : {n : ℕ} → (i : F.Fin (suc (suc (suc n)))) →
           ((F.zero ∷ vmap F.suc ((permuteLeft F.zero) (upTo (suc (suc n)))))
@@ -557,7 +557,7 @@ swapUp₀ {n} F.zero =
           ∘̬ (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n)))) !! F.zero
             ≡⟨ refl (F.suc F.zero) ⟩
           F.suc F.zero
-            ≡⟨ {!!} ⟩
+            ≡⟨ refl (F.suc F.zero) ⟩
           permuteLeft (F.suc F.zero) (upTo (suc (suc (suc n))))
             !! F.zero ∎
 swapUp₀ {n} (F.suc F.zero) =
@@ -586,7 +586,7 @@ swapUp₀ {n} (F.suc F.zero) =
         F.zero
           ≡⟨ ! (lookupTab {f = id} F.zero) ⟩
         (upTo (suc (suc (suc n)))) !! F.zero
-          ≡⟨ {!!} ⟩
+          ≡⟨ refl F.zero ⟩
         permuteLeft (F.suc F.zero) (upTo (suc (suc (suc n)))) !! F.suc F.zero ∎
          
 swapUp₀ (F.suc (F.suc i)) = {!!}
