@@ -147,12 +147,12 @@ sucEq : {n : ℕ} → (i j : F.Fin n) → (F.suc i) ≡ (F.suc j) → i ≡ j
 sucEq i .i (refl .(F.suc i)) = refl i
 
 _=F=_ : {n : ℕ} → (i j : F.Fin n) → Dec (i ≡ j)
-F.zero    =F= F.zero                         = yes (refl F.zero)
-(F.suc i) =F= F.zero                         = no (λ ())
-F.zero    =F= (F.suc j)                      = no (λ ())
+F.zero    =F= F.zero                     = yes (refl F.zero)
+(F.suc i) =F= F.zero                     = no (λ ())
+F.zero    =F= (F.suc j)                  = no (λ ())
 (F.suc i) =F= (F.suc j) with i =F= j
 (F.suc i) =F= (F.suc .i) | yes (refl .i) = yes (refl (F.suc i))
-(F.suc i) =F= (F.suc j) | no p            = no (λ q → p (sucEq i j q))
+(F.suc i) =F= (F.suc j) | no p           = no (λ q → p (sucEq i j q))
 
 ------------------------------------------------------------------
 -- VECTOR LEMMAS AND HELPERS
@@ -162,7 +162,7 @@ _!!_ : {A : Set} → {n : ℕ} → Vec A n → F.Fin n → A
 _!!_ v i = lookup i v
 
 -- XXX: is this in the right order?
-_∘̬_ : {n : ℕ} → Vec (F.Fin n) n → Vec (F.Fin n) n → Vec (F.Fin n) n 
+_∘̬_ : {n : ℕ} {A : Set} → Vec (F.Fin n) n → Vec A n → Vec A n 
 v₁ ∘̬ v₂ = tabulate (λ i → v₂ !! (v₁ !! i))
 
 -- Important lemma about lookup; for some reason it doesn't seem to be in the
@@ -175,11 +175,11 @@ map!! {n = suc n} f (x ∷ xs) (F.suc i) = map!! f xs i
 
 lookupTab : {A : Set} {n : ℕ} {f : F.Fin n → A} →  (i : F.Fin n) → (tabulate f) !! i ≡ (f i)
 lookupTab {f = f} F.zero   = refl (f F.zero)
-lookupTab            (F.suc i) = lookupTab i
+lookupTab        (F.suc i) = lookupTab i
 
 mapTab : {A B : Set} → {n : ℕ} → (f : A → B) → (g : F.Fin n → A) →
          vmap f (tabulate g) ≡ tabulate (f ○ g)
-mapTab {n = zero} f g = refl _
+mapTab {n = zero}  f g = refl _
 mapTab {n = suc n} f g = ap (_∷_ (f (g F.zero))) (mapTab {n = n} f (g ○ F.suc))
 
 -- Lemma for proving that two vectors are equal if their tabulates agree
@@ -223,13 +223,6 @@ toNormalNat : (n : ℕ) → F.Fin n → ⟦ n ⟧ℕ
 toNormalNat zero     ()
 toNormalNat (suc n) F.zero = inj₁ tt
 toNormalNat (suc n) (F.suc f) = inj₂ (toNormalNat n f)
-
-{--
--- tabulate an equivalence; this is basically a vector representation of 
--- a permutation on sets of size n.
-equivToVec : {n : ℕ} → ⟦ n ⟧ℕ ≃ ⟦ n ⟧ℕ → Vec (F.Fin n) n
-equivToVec {n} (f , _) = tabulate ((fromNormalNat n) ○ f ○ (toNormalNat n))
---}
 
 -- construct a combinator which represents the swapping of the i-th and 
 -- (i+1)-th 'bit' of a finite type.  
@@ -314,7 +307,7 @@ data vecRep : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n → 
   vr-swap  :   {n : ℕ} → 
     vecRep {suc (suc n)} (swapi {suc n} F.zero)
       ((F.suc F.zero) ∷ F.zero ∷ 
-       (vmap (λ i → F.suc (F.suc i)) (upTo n)))
+       (tabulate (λ i → F.suc (F.suc i)) ))
   vr-comp  : {n : ℕ} → {c₁ c₂ : (fromℕ n) ⇛ (fromℕ n)} → {v₁ v₂ : Vec (F.Fin n) n} → 
     vecRep c₁ v₁ → vecRep c₂ v₂ → 
     vecRep (c₁ ◎ c₂) (v₁ ∘̬ v₂)
@@ -392,7 +385,7 @@ hetType a (refl _) = a
 -- we'll need to see what's most amenable to proving swapUpToWorks
 swapiWorks : {n : ℕ} → (i : F.Fin n) → vecRep (swapi i) (swapInd (F.inject₁ i) (F.suc i))
 swapiWorks {zero} ()
-swapiWorks {suc n} F.zero = hetType vr-swap (ap (vecRep (swapi F.zero)) swap≡ind₀)
+swapiWorks {suc n} F.zero = vr-swap
 swapiWorks {suc n} (F.suc i) =
   hetType (vr-plus (swapiWorks i)) (ap (vecRep (id⇛ ⊕ swapi i)) (swap≡ind₁ i)) 
 
@@ -484,17 +477,6 @@ add1modn zero (suc n) acc = (suc n) + acc
 add1modn (suc max) zero acc = suc acc
 add1modn (suc max) (suc n) acc = add1modn max n (suc acc)
 
-
-{--
-addOneModN′ : {n : ℕ} → {n′ : F.Fin n} → F.Fin′ n′ → F.Fin n
-addOneModN′ = {!!}
-
-permRightFn : {n : ℕ} → Vec (F.Fin n) n → F.Fin n → (F.Fin n → F.Fin n)
-permRightFn v max i with F.compare i max
-permRightFn v max .(F.inject i) | F.less .max i = v !! addOneModN′ i
-permRightFn v max i | _ = v !! i
---}
-
 -- Permute the first i elements of v to the right one
 -- Should correspond with swapDownFrom
 -- permuteRight : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n → Vec (F.Fin n) n
@@ -537,12 +519,11 @@ swapDownFrom (F.suc i) = id⇛ ⊕ swapUpTo i ◎ swapi F.zero
 --}
 
 permLeftId₀ : {n : ℕ} → (upTo (suc n)) ≡ permuteLeft F.zero (upTo (suc n))
-
 permLeftId₀ {n} = refl (F.zero ∷ tabulate F.suc)
   
 swapUp₀ : {n : ℕ} → (i : F.Fin (suc (suc (suc n)))) →
           ((F.zero ∷ vmap F.suc ((permuteLeft F.zero) (upTo (suc (suc n)))))
-          ∘̬ (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n)))) !! i
+          ∘̬ (F.suc F.zero ∷ F.zero ∷ tabulate (λ i → F.suc (F.suc i)))) !! i
           ≡
           permuteLeft (F.suc F.zero) (upTo (suc (suc (suc n)))) !! i
 swapUp₀ {n} F.zero =
@@ -585,12 +566,9 @@ swapUp₀ {n} (F.suc F.zero) =
 swapUp₀ {n} (F.suc (F.suc i)) = {!!}
          
 
--- This should be true now. [Z]
--- It's false -- look at the first hole.  Plus "F.suc (F.suc F.zero) appears twice 
--- in (both) lists, which is a clear sign that something is deeply wrong!
 swapUpCompWorks : {n : ℕ} → (i : F.Fin n) →
                   (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ i) (upTo (suc n))))
-                  ∘̬ (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo n))
+                  ∘̬ (F.suc F.zero ∷ F.zero ∷ tabulate (λ i → F.suc (F.suc i)))
                   ≡ permuteLeft (F.inject₁ (F.suc i)) (upTo (suc (suc n)))
 swapUpCompWorks {suc n} F.zero = lookup∼vec _ _ swapUp₀
 swapUpCompWorks (F.suc F.zero) = {!!}
@@ -614,7 +592,9 @@ swapDownFromWorks : {n : ℕ} → (i : F.Fin n) →
                     vecRep (swapDownFrom i) (permuteRight (F.inject₁ i))
 swapDownFromWorks {zero} ()
 swapDownFromWorks {suc n} F.zero = vr-id
-swapDownFromWorks {suc n} (F.suc i) = {!!}
+swapDownFromWorks {suc n} (F.suc i) with permuteRight (F.inject₁ i)
+swapDownFromWorks {suc n} (F.suc i) | F.zero ∷ z = {!vr-comp vr-swap ?!}
+swapDownFromWorks {suc n} (F.suc i) | F.suc x ∷ z = {!!}
 
 -- Will probably be a key lemma in swapmnWorks
 -- XXX: probably should just be composed with ∘̬ after all instead of explicitly
@@ -766,14 +746,14 @@ permLeftTest = valToFin (evalVec (permLeftID (F.suc (F.suc F.zero))) (F.zero))
 
 lookupMap : {A B : Set} → {n : ℕ} → {f : A → B} → (i : F.Fin n) → (v : Vec A n) →
             lookup i (vmap f v) ≡ f (lookup i v)
-lookupMap F.zero (x ∷ v) = refl _
-lookupMap (F.suc i) (x ∷ v) = lookupMap i v
+lookupMap F.zero    (x ∷ _)      = refl _
+lookupMap (F.suc i) (_ ∷ v) = lookupMap i v
 
 lookupToEvalVec : {n : ℕ} → (i : F.Fin n) → (v : Vec (F.Fin n) n) → lookup i v ≡ valToFin (evalVec v i)
 lookupToEvalVec i v = ! (valToFinToVal (lookup i v) )
 
 lookup∘tabulate : ∀ {a n} → {A : Set a} → (i : F.Fin n) → (f : F.Fin n → A) → lookup i (tabulate f) ≡ f i
-lookup∘tabulate F.zero f = refl (f F.zero)
+lookup∘tabulate F.zero    f = refl (f F.zero)
 lookup∘tabulate (F.suc i) f = lookup∘tabulate i (f ○ F.suc)
 
 --  Might want to take a ⟦ fromℕ n ⟧ instead of a Fin n as the second
@@ -861,28 +841,15 @@ swapElsewhere : {n : ℕ} → (x : ⟦ fromℕ n ⟧) →
                 inj₂ (inj₂ x) ≡ (evalComb (swapi F.zero) (inj₂ (inj₂ x)))
 swapElsewhere x = refl _
 
-tabMap : {n : ℕ} → {j k : F.Fin (suc (suc n))} → (i : F.Fin n) →
-         (j ∷ k ∷ (vmap (λ i → F.suc (F.suc i)) (upTo n))) !! (F.suc (F.suc i))
-           ≡ (F.suc (F.suc i))
-tabMap {n} i =
-  lookup i (vmap (λ i → F.suc (F.suc i)) (upTo n)) ≡⟨ lookupMap i _ ⟩ 
-  (λ i → F.suc (F.suc i)) (lookup i (upTo n)) ≡⟨ ap (λ i → F.suc (F.suc i)) (lookupTab i) ⟩
-  F.suc (F.suc i) ∎ 
-
 -- This lemma is the hammer that will let us use vecRep to (hopefully) simply
 -- prove some lemmas about the helper functions used in vecToComb, then apply
 -- vecRepWorks at the end to make sure they all "do the right thing"
 vecRepWorks : {n : ℕ} → {c : (fromℕ n) ⇛ (fromℕ n)} → {v : Vec (F.Fin n) n} → 
   vecRep c v → (i : F.Fin n) → (evalVec v i) ≡ (evalComb c (finToVal i))
-vecRepWorks vr-id i = ap finToVal (lookupTab i) -- ap finToVal (lookupTab i)
+vecRepWorks vr-id i = ap finToVal (lookupTab i)
 vecRepWorks vr-swap F.zero = refl (inj₂ (inj₁ tt))
 vecRepWorks vr-swap (F.suc F.zero) = refl (inj₁ tt)
-vecRepWorks {suc (suc n)} vr-swap (F.suc (F.suc i)) =
-    evalVec (F.suc F.zero ∷ F.zero ∷ vmap (λ i → F.suc (F.suc i)) (upTo n)) (F.suc (F.suc i))
-  ≡⟨ ap finToVal (tabMap {n} {F.suc F.zero} {F.zero} i) ⟩
-    finToVal (F.suc (F.suc i))
-  ≡⟨ swapElsewhere (finToVal i) ⟩
-    evalComb (assocl₊⇛ ◎ swap₊⇛ ⊕ id⇛ ◎ assocr₊⇛) (finToVal (F.suc (F.suc i))) ∎
+vecRepWorks {suc (suc n)} vr-swap (F.suc (F.suc i)) = ap finToVal (lookupTab i)
 vecRepWorks (vr-comp {n} {c₁} {c₂} {v₁} {v₂} vr vr₁) i = 
   finToVal (lookup i (tabulate (λ j → lookup (lookup j v₁) v₂))) 
  ≡⟨ ap finToVal (lookup∘tabulate i (λ j → lookup (lookup j v₁) v₂)) ⟩ 
@@ -921,15 +888,6 @@ lemma3 {n} v i =
         (replicate (λ x₂ → evalComb (makeSingleComb (lookup x₂ v) x₂)) ⊛
          tabulate id)  )
 
--- So this is not quite right, since the real lemma needs to 'apply' things to n
--- because of the ambient tabulate.  But the idea is still essentially right.
-lemma4 :  {n : ℕ} → (v : Vec (F.Fin n) n) → (i : F.Fin n) → (k : F.Fin n) → evalComb (makeSingleComb (lookup i v) i) (finToVal k) ≡ {!!}
-lemma4 {zero} v () k
-lemma4 {suc n} (F.zero ∷ v) F.zero k = {!!}
-lemma4 {suc n} (F.suc x ∷ v) F.zero k = {!!}
-lemma4 {suc n} (F.zero ∷ v) (F.suc i) k = {!!}
-lemma4 {suc n} (F.suc x ∷ v) (F.suc i) k = {!!}
-
 -- [JC] flip the conclusion around, as 'evalVec v i' is trivial.  Makes
 -- equational reasoning easier  
 vecToCombWorks : {n : ℕ} → 
@@ -959,20 +917,12 @@ vecToCombWorks {n} v i =
 --}
 
 ------------------------------------------------------------------
--- Goal
+-- Goal: 
 
--- note that p₁ is independent of c.
-record mainLemma (n : ℕ) (v : Vec (F.Fin n) n) : Set where
-  field
-    c  : (fromℕ n) ⇛ (fromℕ n)
-    p₁ : ∀ i → (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
-    p₂ : ∀ i → (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
-
-------------------------------------------------------------------
-
-lemma1 : {n : ℕ} (v : Vec (F.Fin n) n) → (i : F.Fin n) → (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
+lemma1 : {n : ℕ} (v : Vec (F.Fin n) n) → (i : F.Fin n) → 
+    (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
 lemma1 v i = ! (vecToCombWorks v i)
 
--- and what about p₂ ?
-lemma2 : {n : ℕ} (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin n) → (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
+lemma2 : {n : ℕ} (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin n) → 
+    (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
 lemma2 c i = combToVecWorks c i
