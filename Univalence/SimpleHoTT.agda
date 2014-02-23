@@ -1,5 +1,5 @@
 {-# OPTIONS --without-K #-}
-module HoTT where
+module SimpleHoTT where
 
 open import Data.Empty
 open import Data.Sum renaming (map to _⊎→_)
