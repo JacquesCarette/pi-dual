@@ -89,6 +89,35 @@ open import Function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
 
+Conventional HoTT/Agda
+
+We start with a computational framework: functions, pairs, etc. that has
+computational rules (beta, etc.)
+
+We then have a notion of identity: a process that equates two
+things. Initially we only have identities between beta-equivalent things.
+
+Then we postulate a process that identifies any two functions that are
+extensionally equivalent. We also postulate another process that identifies
+any two sets that are isomorphic.
+
+--
+
+Our approach is to start with a computational framework that has permutations
+with computational rules (use permutation p on item i to get item j)
+
+We then have a notion of identity based on PI.
+
+We prove that any two permutations that are extensionally equivalent are
+convertible using PI identities. We also prove that two sets that are
+permutations of one another are also convertible using PI identities.
+
+--
+
+How would that generalize to first-class functions? Using negative and
+fractionals? Groupoids? 
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Homotopy Type Theory}
 
