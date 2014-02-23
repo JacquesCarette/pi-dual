@@ -89,30 +89,36 @@ open import Function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
 
-Conventional HoTT/Agda
+paragraph*{Conventional HoTT/Agda approach}
 
-We start with a computational framework: functions, pairs, etc. that has
-computational rules (beta, etc.)
+We start with a computational framework: data (pairs, etc.) and functions
+between them. There are computational rules (beta, etc.) that explain what a
+function does on a given datum.
 
-We then have a notion of identity: a process that equates two
-things. Initially we only have identities between beta-equivalent things.
+We then have a notion of identity which we view as a process that equates two
+things and model as a new kind of data. Initially we only have identities
+between beta-equivalent things.
 
 Then we postulate a process that identifies any two functions that are
 extensionally equivalent. We also postulate another process that identifies
-any two sets that are isomorphic.
+any two sets that are isomorphic. This is done by adding new kinds of data
+for these kinds of identities.
 
---
+\paragraph*{Our approach} 
 
-Our approach is to start with a computational framework that has permutations
-with computational rules (use permutation p on item i to get item j)
+Our approach is to start with a computational framework that has finite data
+and permutations as the operations between them. The computational rules
+apply permutations.
 
-We then have a notion of identity based on PI.
+We then have a notion of identity based on PI. But we are not adding the type
+(b1 == b2) as a finite type in PI and we will not add a new kind of data to
+show that two permutations are equivalent either.
 
 We prove that any two permutations that are extensionally equivalent are
 convertible using PI identities. We also prove that two sets that are
 permutations of one another are also convertible using PI identities.
 
---
+\paragraph*{Generalization} 
 
 How would that generalize to first-class functions? Using negative and
 fractionals? Groupoids? 
