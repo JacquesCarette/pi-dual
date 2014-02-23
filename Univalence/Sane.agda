@@ -545,9 +545,14 @@ swapDownFrom (F.suc i) = id⇛ ⊕ swapUpTo i ◎ swapi F.zero
 --}
 
 permLeftId₀ : {n : ℕ} → (upTo (suc n)) ≡ permuteLeft F.zero (upTo (suc n))
-
 permLeftId₀ {n} = refl (F.zero ∷ tabulate F.suc)
-  
+
+permLeftIdPasti : {n : ℕ} → (v : Vec (F.Fin (suc (suc n))) (suc (suc n))) →
+                  (i : F.Fin n) →
+                  permuteLeft (F.suc F.zero) v !! (F.suc (F.suc i)) ≡ v !! (F.suc (F.suc i))
+permLeftIdPasti (x ∷ x₁ ∷ x₂ ∷ v) F.zero = refl _
+permLeftIdPasti (x ∷ x₁ ∷ x₂ ∷ v) (F.suc i) = refl _
+
 swapUp₀ : {n : ℕ} → (i : F.Fin (suc (suc (suc n)))) →
           ((F.zero ∷ vmap F.suc ((permuteLeft F.zero) (upTo (suc (suc n)))))
           ∘̬ (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n)))) !! i
@@ -590,7 +595,43 @@ swapUp₀ {n} (F.suc F.zero) =
           ≡⟨ refl F.zero ⟩
         permuteLeft (F.suc F.zero) (upTo (suc (suc (suc n)))) !! F.suc F.zero ∎
          
-swapUp₀ (F.suc (F.suc i)) = {!!}
+swapUp₀ {n} (F.suc (F.suc i)) =
+  ((F.zero ∷ vmap F.suc (permuteLeft F.zero (upTo (suc (suc n))))) ∘̬
+     (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))))
+    !! F.suc (F.suc i)
+    ≡⟨ lookupTab
+         {f = λ x →
+                (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !!
+                  ((F.zero ∷ vmap F.suc (permuteLeft F.zero (upTo (suc (suc n))))) !! x)}
+         (F.suc (F.suc i)) ⟩
+  (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !!
+    ((F.zero ∷ vmap F.suc (permuteLeft F.zero (upTo (suc (suc n))))) !! F.suc (F.suc i))
+    ≡⟨ ap (λ x →
+             (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !!
+               ((F.zero ∷ vmap F.suc x) !! F.suc (F.suc i)))
+           (! permLeftId₀) ⟩
+  (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !!
+     ((F.zero ∷ vmap F.suc (upTo (suc (suc n)))) !! F.suc (F.suc i))
+    ≡⟨ ap
+         (λ x →
+            (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !! x)
+         (map!! F.suc (upTo (suc (suc n))) (F.suc i)) ⟩
+  (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !!
+    F.suc (upTo (suc (suc n)) !! F.suc i)
+    ≡⟨ ap
+         (λ x →
+            (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo (suc n))) !!
+            F.suc x)
+         (lookupTab {f = id} (F.suc i)) ⟩
+  (vmap (F.suc ○ F.suc) (upTo (suc n))) !! i
+    ≡⟨ map!! (F.suc ○ F.suc) (upTo (suc n)) i ⟩
+  F.suc (F.suc (upTo (suc n) !! i))
+    ≡⟨ ap (F.suc ○ F.suc) (lookupTab {f = id} i) ⟩
+  F.suc (F.suc i)
+    ≡⟨ ! (lookupTab {f = id} (F.suc (F.suc i))) ⟩
+  upTo (suc (suc (suc n))) !! (F.suc (F.suc i))  
+    ≡⟨ ! (permLeftIdPasti (upTo (suc (suc (suc n)))) i) ⟩
+  permuteLeft (F.suc F.zero) (upTo (suc (suc (suc n)))) !! F.suc (F.suc i) ∎
          
 
 -- This should be true now. [Z]
@@ -736,14 +777,18 @@ five = (suc (suc (suc (suc (suc zero)))))
 swapUpToTest : Vec (F.Fin five) five
 swapUpToTest = combToVec ((swapUpTo (F.suc (F.suc F.zero))))
 
-pltest : Vec (F.Fin five) five
-pltest = permuteLeft (F.suc (F.suc (F.suc (F.suc F.zero)))) (upTo five)
+pltest : (n : ℕ) → (i : F.Fin n) → Vec (F.Fin n) n
+pltest n i = permuteLeft i (upTo n)
 
 prtest : Vec (F.Fin five) five
 prtest = permuteRight (F.suc (F.suc (F.suc (F.suc F.zero))))
                         
 sdftest : Vec (F.Fin five) five
 sdftest = combToVec (swapDownFrom (F.suc (F.suc F.zero)))
+
+sucomptest : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin (suc (suc n))) (suc (suc n))
+sucomptest {n} i = (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ i) (upTo (suc n))))
+                   ∘̬ (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo n))
 
 sit : Vec (F.Fin five) five
 sit = combToVec (swapi (F.suc (F.suc F.zero)))
