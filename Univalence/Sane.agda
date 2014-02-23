@@ -20,18 +20,10 @@ infix  4  _≡_     -- propositional equality
 infix  2  _∎      -- equational reasoning for paths
 infixr 2  _≡⟨_⟩_  -- equational reasoning for paths
 
-data Maybe (A : Set) : Set where
-  nothing : Maybe A
-  just : A → Maybe A
-
 data Dec (A : Set) : Set where
   yes : A → Dec A
   no : (A → ⊥) → Dec A
   
-mmap : {A B : Set} → (A → B) → Maybe A → Maybe B
-mmap f nothing = nothing
-mmap f (just a) = just (f a)
-
 vmap : {n : ℕ} → {A B : Set} → (A → B) → Vec A n → Vec B n
 vmap f [] = []
 vmap f (x ∷ xs) = (f x) ∷ (vmap f xs)
@@ -260,8 +252,7 @@ swapUpTo (F.suc i) = (id⇛ ⊕ swapUpTo i) ◎ swapi F.zero
 -- of swapUpTo)
 swapDownFrom : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
 swapDownFrom F.zero    = id⇛
-swapDownFrom (F.suc i) = swapi F.zero ◎ (id⇛ ⊕ swapUpTo i)
-
+swapDownFrom (F.suc i) = swapi F.zero ◎ (id⇛ ⊕ swapDownFrom i)
 
 -- TODO: verify that this is actually correct
 -- Idea: To swap n < m with each other, swap n, n + 1, ... , m - 1, m, then
@@ -425,7 +416,7 @@ dec<F (F.suc i) (F.suc j) | no x = no (λ p → x (<suc i j p))
 -- BEGIN CODE COPIED (AND SOMEWHAT MODIFIED) FROM Nat.Properties
 -- (for some reason +-comm is a private field so I can't get to it without
 -- importing superfluous files and going through a bunch of administrative
--- garbage that isn't worth my time)
+-- garbage that isn't worth of my time)
 
 m+1+n≡1+m+n : ∀ m n → m + suc n ≡ suc (m + n)
 m+1+n≡1+m+n zero    n = refl _
@@ -467,18 +458,19 @@ _+F_ {suc m} {n} (F.suc i) j = F.suc (i +F j)
 -- plf′ max i acc = (i + acc) + 1 mod (max + acc) if (i + acc) <= (max + acc), (max + acc) ow
 -- This is the simplest way I could come up with to do this without
 -- using F.compare or something similar
+{-
 plf′ : {m n : ℕ} → F.Fin (suc m) → F.Fin (suc m) → F.Fin n → F.Fin (m + n)
-plf′ {n = zero} F.zero F.zero ()
-plf′ {m} {n = suc n} F.zero F.zero acc =
+plf′ {n = zero}    F.zero           F.zero          ()
+plf′ {m} {suc n}   F.zero           F.zero          acc =
   hetType F.zero (ap F.Fin (! (m+1+n≡1+m+n m _))) -- m mod m == 0
-plf′ F.zero (F.suc i) acc = (F.suc i) +F acc -- above the threshold, so just id
-plf′ (F.suc {zero} ()) _ _
-plf′ (F.suc {suc m} max) F.zero acc =  -- we're in range, so take succ of acc
+plf′               F.zero          (F.suc i)        acc = (F.suc i) +F acc -- above the threshold, so just id
+plf′              (F.suc {zero} ()) _               _
+plf′              (F.suc {suc m} max) F.zero        acc =  -- we're in range, so take succ of acc
   hetType (inj+ {n = m} (F.suc acc)) (ap F.Fin (m+1+n≡1+m+n m _))
-plf′ (F.suc {suc m} max) (F.suc i) acc = -- we don't know what to do yet, so incr acc & recur
+plf′              (F.suc {suc m} max) (F.suc i)     acc = -- we don't know what to do yet, so incr acc & recur
   hetType (plf′ max i (F.suc acc))
           (ap F.Fin ((m+1+n≡1+m+n m _)))
-
+-}
 data _h≡_ {A : Set} : {B : Set} → A → B → Set₁ where
   hrefl : (x : A) → _h≡_ {A} {A} x x
 
@@ -590,7 +582,7 @@ swapUp₀ {n} (F.suc F.zero) =
           ≡⟨ refl F.zero ⟩
         permuteLeft (F.suc F.zero) (upTo (suc (suc (suc n)))) !! F.suc F.zero ∎
          
-swapUp₀ (F.suc (F.suc i)) = {!!}
+swapUp₀ {n} (F.suc (F.suc i)) = {!!}
          
 
 -- This should be true now. [Z]
@@ -610,10 +602,10 @@ swapUpCompWorks (F.suc (F.suc i)) = {!!}
 -- (though now it looks like it will at least make the type of shuffle a bit nicer) [Z]
 swapUpToWorks : {n : ℕ} → (i : F.Fin n) →
                 vecRep (swapUpTo i) (permuteLeft (F.inject₁ i) (upTo (suc n)))
-swapUpToWorks F.zero = hetType vr-id (ap (vecRep id⇛) (permLeftId₀))
--- swapUpToWorks (F.suc i) = {!!}
+swapUpToWorks F.zero = vr-id
 swapUpToWorks (F.suc i) = hetType (vr-comp (vr-plus (swapUpToWorks i)) vr-swap)
-                          (ap (vecRep (swapUpTo (F.suc i))) (swapUpCompWorks i))
+                         (ap (vecRep (swapUpTo (F.suc i))) (swapUpCompWorks i))
+-- swapUpToWorks (F.suc i) = {!(vr-comp (vr-plus (swapUpToWorks i)) vr-swap)!}
 
 --vr-comp (hetType (vr-plus (swapUpToWorks i)) {!!})
 --                                  (hetType vr-swap {!!})
@@ -730,20 +722,35 @@ valToFinToVal (F.suc i) = ap F.suc (valToFinToVal i)
 combToVec : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n
 combToVec c = tabulate (valToFin ○ (evalComb c) ○ finToVal)
 
+two : ℕ
+two = suc (suc zero)
+
+three : ℕ
+three = suc two
+
+four : ℕ
+four = suc three
+
 five : ℕ
-five = (suc (suc (suc (suc (suc zero)))))
+five = suc four
+
+twoF4 : F.Fin four
+twoF4 = F.suc (F.suc F.zero)
+
+fourF5 : F.Fin five
+fourF5 = F.suc (F.suc F.zero)
 
 swapUpToTest : Vec (F.Fin five) five
-swapUpToTest = combToVec ((swapUpTo (F.suc (F.suc F.zero))))
+swapUpToTest = combToVec (swapUpTo twoF4)
 
 pltest : Vec (F.Fin five) five
-pltest = permuteLeft (F.suc (F.suc (F.suc (F.suc F.zero)))) (upTo five)
+pltest = permuteLeft fourF5 (upTo five)
 
 prtest : Vec (F.Fin five) five
-prtest = permuteRight (F.suc (F.suc (F.suc (F.suc F.zero))))
+prtest = permuteRight fourF5 -- (F.suc (F.suc (F.suc (F.suc F.zero))))
                         
 sdftest : Vec (F.Fin five) five
-sdftest = combToVec (swapDownFrom (F.suc (F.suc F.zero)))
+sdftest = combToVec (swapDownFrom twoF4)
 
 sit : Vec (F.Fin five) five
 sit = combToVec (swapi (F.suc (F.suc F.zero)))
@@ -754,7 +761,7 @@ mntest = combToVec (makeSingleComb (F.suc (F.suc (F.suc F.zero))) F.zero)
 evalVec : {n : ℕ} → Vec (F.Fin n) n → F.Fin n → ⟦ fromℕ n ⟧
 evalVec vec i = finToVal (lookup i vec)
 
-permLeftTest : F.Fin (suc (suc (suc (suc zero))))
+permLeftTest : F.Fin four
 permLeftTest = valToFin (evalVec (permLeftID (F.suc (F.suc F.zero))) (F.zero))
 
 lookupMap : {A B : Set} → {n : ℕ} → {f : A → B} → (i : F.Fin n) → (v : Vec A n) →
