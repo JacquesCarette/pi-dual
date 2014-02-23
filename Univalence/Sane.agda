@@ -1,8 +1,6 @@
 module Sane where
 
-import Level as U
 import Data.Fin as F
-import Data.List as L
 --
 open import Data.Empty
 open import Data.Unit
@@ -18,52 +16,7 @@ open import Function renaming (_∘_ to _○_)
 open import FT
 open import SimpleHoTT using (_≡_ ; refl ; pathInd ; ! ; _∘_ ; ap ; _≡⟨_⟩_ ; _∎ )
 open import VecHelpers
-
-data Dec (A : Set) : Set where
-  yes : A → Dec A
-  no : (A → ⊥) → Dec A
-  
-------------------------------------------------------------------------------
--- Equivalences (not used)
-
-sucEq : {n : ℕ} → (i j : F.Fin n) → (F.suc i) ≡ (F.suc j) → i ≡ j
-sucEq i .i (refl .(F.suc i)) = refl i
-
-_=F=_ : {n : ℕ} → (i j : F.Fin n) → Dec (i ≡ j)
-F.zero    =F= F.zero                     = yes (refl F.zero)
-(F.suc i) =F= F.zero                     = no (λ ())
-F.zero    =F= (F.suc j)                  = no (λ ())
-(F.suc i) =F= (F.suc j) with i =F= j
-(F.suc i) =F= (F.suc .i) | yes (refl .i) = yes (refl (F.suc i))
-(F.suc i) =F= (F.suc j) | no p           = no (λ q → p (sucEq i j q))
-
-------------------------------------------------------------------
--- Finite Types and the natural numbers are intimately related.
-
-fromℕ : ℕ → FT
-fromℕ zero    = ZERO
-fromℕ (suc n) = PLUS ONE (fromℕ n)
-
--- normalize a finite type to (1 + (1 + (1 + ... + (1 + 0) ... )))
--- a bunch of ones ending with zero with left biased + in between
-
-⟦_⟧ℕ : ℕ → Set
-⟦ zero ⟧ℕ  = ⊥
-⟦ suc n ⟧ℕ = ⊤ ⊎ ⟦ n ⟧ℕ
-
--- Take a natural number n, and a value of the type represented by that n,
--- and return the canonical finite set of size n.
-fromNormalNat : (n : ℕ) → ⟦ n ⟧ℕ → F.Fin n
-fromNormalNat zero     ()
-fromNormalNat (suc n) (inj₁ tt) = F.zero
-fromNormalNat (suc n) (inj₂ x) = F.suc (fromNormalNat n x)
-
--- Take a natural number n, a finite set of size n, and return a
--- (canonical) value of the type represented by n
-toNormalNat : (n : ℕ) → F.Fin n → ⟦ n ⟧ℕ
-toNormalNat zero     ()
-toNormalNat (suc n) F.zero = inj₁ tt
-toNormalNat (suc n) (F.suc f) = inj₂ (toNormalNat n f)
+open import NatSimple
 
 -- construct a combinator which represents the swapping of the i-th and 
 -- (i+1)-th 'bit' of a finite type.  
@@ -243,36 +196,6 @@ dec<F (F.suc i) (F.suc j) with dec<F i j
 dec<F (F.suc i) (F.suc j) | yes x = yes (suc-leq x)
 dec<F (F.suc i) (F.suc j) | no x = no (λ p → x (<suc i j p))
 
--- BEGIN CODE COPIED (AND SOMEWHAT MODIFIED) FROM Nat.Properties
--- (for some reason +-comm is a private field so I can't get to it without
--- importing superfluous files and going through a bunch of administrative
--- garbage that isn't worth of my time)
-
-m+1+n≡1+m+n : ∀ m n → m + suc n ≡ suc (m + n)
-m+1+n≡1+m+n zero    n = refl _
-m+1+n≡1+m+n (suc m) n = ap suc (m+1+n≡1+m+n m n)
-
-+-identity : {n : ℕ} → n + zero ≡ n
-+-identity = n+0≡n _
-  where
-  n+0≡n : (n : ℕ) → n + zero ≡ n
-  n+0≡n zero    = refl _
-  n+0≡n (suc n) = ap suc (n+0≡n n)
-
-+-comm : (m n : ℕ) → m + n ≡ n + m 
-+-comm zero    n = ! +-identity
-+-comm (suc m) n =
-    suc m + n
-  ≡⟨ refl _ ⟩
-    suc (m + n)
-  ≡⟨ ap suc (+-comm m n) ⟩
-    suc (n + m)
-  ≡⟨ ! (m+1+n≡1+m+n n m) ⟩
-    n + suc m
-  ∎
-
--- END CODE COPIED FROM Nat.Properties  
-
 -- swap args of F.inject+
 inj+ : {m n : ℕ} → F.Fin m → F.Fin (n + m)
 inj+ {m} {n} i = hetType (F.inject+ n i) (ap F.Fin (+-comm m n))
@@ -307,13 +230,6 @@ data _h≡_ {A : Set} : {B : Set} → A → B → Set₁ where
 hetTypeIsID : {A B : Set} → (x : A) → (p : A ≡ B) → (hetType x p) h≡ x
 hetTypeIsID x (refl _) = hrefl x
           
--- the above, but with nats instead of fins          
-add1modn : ℕ → ℕ → ℕ → ℕ
-add1modn zero zero acc = zero
-add1modn zero (suc n) acc = (suc n) + acc
-add1modn (suc max) zero acc = suc acc
-add1modn (suc max) (suc n) acc = add1modn max n (suc acc)
-
 -- Permute the first i elements of v to the right one
 -- Should correspond with swapDownFrom
 -- permuteRight : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n → Vec (F.Fin n) n
@@ -577,18 +493,6 @@ valToFinToVal (F.suc i) = ap F.suc (valToFinToVal i)
 
 combToVec : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n
 combToVec c = tabulate (valToFin ○ (evalComb c) ○ finToVal)
-
-two : ℕ
-two = suc (suc zero)
-
-three : ℕ
-three = suc two
-
-four : ℕ
-four = suc three
-
-five : ℕ
-five = suc four
 
 twoF4 : F.Fin four
 twoF4 = F.suc (F.suc F.zero)
