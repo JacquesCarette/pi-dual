@@ -11,137 +11,20 @@ open import Data.Nat renaming (_⊔_ to _⊔ℕ_)
 open import Data.Sum renaming (map to _⊎→_)
 open import Data.Product renaming (map to _×→_)
 open import Data.Vec
-open import Function hiding (flip) renaming (_∘_ to _○_) 
+open import Function renaming (_∘_ to _○_) 
 
-infixl 10 _◎_     -- combinator composition
-infixl 10 _∘̬_     -- vector composition
-infixr 8  _∘_     -- path composition
-infix  4  _≡_     -- propositional equality
-infix  2  _∎      -- equational reasoning for paths
-infixr 2  _≡⟨_⟩_  -- equational reasoning for paths
+-- start re-splitting things up, as this is getting out of hand
+
+open import FT
+open import SimpleHoTT using (_≡_ ; refl ; pathInd ; ! ; _∘_ ; ap ; _≡⟨_⟩_ ; _∎ )
+open import VecHelpers
 
 data Dec (A : Set) : Set where
   yes : A → Dec A
   no : (A → ⊥) → Dec A
   
-vmap : {n : ℕ} → {A B : Set} → (A → B) → Vec A n → Vec B n
-vmap f [] = []
-vmap f (x ∷ xs) = (f x) ∷ (vmap f xs)
-
 ------------------------------------------------------------------------------
--- Finite types
-
-data FT : Set where
-  ZERO  : FT
-  ONE   : FT
-  PLUS  : FT → FT → FT
-  TIMES : FT → FT → FT
-
-⟦_⟧ : FT → Set
-⟦ ZERO ⟧ = ⊥
-⟦ ONE ⟧ = ⊤
-⟦ PLUS B₁ B₂ ⟧ = ⟦ B₁ ⟧ ⊎ ⟦ B₂ ⟧
-⟦ TIMES B₁ B₂ ⟧ = ⟦ B₁ ⟧ × ⟦ B₂ ⟧
-
-------------------------------------------------------------------------------
--- Generalized paths are pi-combinators
-
-data _⇛_ : FT → FT → Set where
-  -- additive structure
-  unite₊⇛  : { b : FT } → PLUS ZERO b ⇛ b
-  uniti₊⇛  : { b : FT } → b ⇛ PLUS ZERO b
-  swap₊⇛   : { b₁ b₂ : FT } → PLUS b₁ b₂ ⇛ PLUS b₂ b₁
-  assocl₊⇛ : { b₁ b₂ b₃ : FT } → PLUS b₁ (PLUS b₂ b₃) ⇛ PLUS (PLUS b₁ b₂) b₃
-  assocr₊⇛ : { b₁ b₂ b₃ : FT } → PLUS (PLUS b₁ b₂) b₃ ⇛ PLUS b₁ (PLUS b₂ b₃)
-  -- multiplicative structure
-  unite⋆⇛  : { b : FT } → TIMES ONE b ⇛ b
-  uniti⋆⇛  : { b : FT } → b ⇛ TIMES ONE b
-  swap⋆⇛   : { b₁ b₂ : FT } → TIMES b₁ b₂ ⇛ TIMES b₂ b₁
-  assocl⋆⇛ : { b₁ b₂ b₃ : FT } → 
-             TIMES b₁ (TIMES b₂ b₃) ⇛ TIMES (TIMES b₁ b₂) b₃
-  assocr⋆⇛ : { b₁ b₂ b₃ : FT } → 
-             TIMES (TIMES b₁ b₂) b₃ ⇛ TIMES b₁ (TIMES b₂ b₃)
-  -- distributivity
-  distz⇛   : { b : FT } → TIMES ZERO b ⇛ ZERO
-  factorz⇛ : { b : FT } → ZERO ⇛ TIMES ZERO b
-  dist⇛    : { b₁ b₂ b₃ : FT } → 
-            TIMES (PLUS b₁ b₂) b₃ ⇛ PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) 
-  factor⇛  : { b₁ b₂ b₃ : FT } → 
-            PLUS (TIMES b₁ b₃) (TIMES b₂ b₃) ⇛ TIMES (PLUS b₁ b₂) b₃
-  -- congruence
-  id⇛    : { b : FT } → b ⇛ b
-  sym⇛   : { b₁ b₂ : FT } → (b₁ ⇛ b₂) → (b₂ ⇛ b₁)
-  _◎_    : { b₁ b₂ b₃ : FT } → (b₁ ⇛ b₂) → (b₂ ⇛ b₃) → (b₁ ⇛ b₃)
-  _⊕_    : { b₁ b₂ b₃ b₄ : FT } → 
-           (b₁ ⇛ b₃) → (b₂ ⇛ b₄) → (PLUS b₁ b₂ ⇛ PLUS b₃ b₄)
-  _⊗_    : { b₁ b₂ b₃ b₄ : FT } → 
-           (b₁ ⇛ b₃) → (b₂ ⇛ b₄) → (TIMES b₁ b₂ ⇛ TIMES b₃ b₄)
-
--- just flip.  It is he caller's responsibility to do other things
-
-flip : {b₁ b₂ : FT} → b₂ ⇛ b₁ → b₁ ⇛ b₂
-flip unite₊⇛ = uniti₊⇛
-flip uniti₊⇛ = unite₊⇛
-flip swap₊⇛ = swap₊⇛
-flip assocl₊⇛ = assocr₊⇛
-flip assocr₊⇛ = assocl₊⇛
-flip unite⋆⇛ = uniti⋆⇛
-flip uniti⋆⇛ = unite⋆⇛
-flip swap⋆⇛ = swap⋆⇛
-flip assocl⋆⇛ = assocr⋆⇛
-flip assocr⋆⇛ = assocl⋆⇛
-flip distz⇛ = factorz⇛
-flip factorz⇛ = distz⇛
-flip dist⇛ = factor⇛
-flip factor⇛ = dist⇛
-flip id⇛ = id⇛
-flip (sym⇛ p) = p
-flip (p ◎ q) = flip q ◎ flip p
-flip (p ⊕ q) = flip p ⊕ flip q
-flip (p ⊗ q) = flip p ⊗ flip q
-
-------------------------------------------------------------------------------
--- Equivalences a la HoTT (using HoTT paths and path induction)
-
--- Our own version of refl that makes 'a' explicit
-
-data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
-  refl : (a : A) → (a ≡ a)
-
--- J
-pathInd : ∀ {u ℓ} → {A : Set u} → 
-          (C : {x y : A} → x ≡ y → Set ℓ) → 
-          (c : (x : A) → C (refl x)) → 
-          ({x y : A} (p : x ≡ y) → C p)
-pathInd C c (refl x) = c x
-
-! : ∀ {u} → {A : Set u} {x y : A} → (x ≡ y) → (y ≡ x)
-! = pathInd (λ {x} {y} _ → y ≡ x) refl
-
-_∘_ : ∀ {u} → {A : Set u} → {x y z : A} → (x ≡ y) → (y ≡ z) → (x ≡ z)
-_∘_ {u} {A} {x} {y} {z} p q = 
-  pathInd {u}
-    (λ {x} {y} p → ((z : A) → (q : y ≡ z) → (x ≡ z)))
-    (λ x z q → pathInd (λ {x} {z} _ → x ≡ z) refl {x} {z} q)
-    {x} {y} p z q
-
-ap : ∀ {ℓ ℓ'} → {A : Set ℓ} {B : Set ℓ'} {x y : A} → 
-     (f : A → B) → (x ≡ y) → (f x ≡ f y)
-ap {ℓ} {ℓ'} {A} {B} {x} {y} f p = 
-  pathInd -- on p
-    (λ {x} {y} p → f x ≡ f y) 
-    (λ x → refl (f x))
-    {x} {y} p
-
--- Abbreviations for path compositions
-
-_≡⟨_⟩_ : ∀ {u} → {A : Set u} (x : A) {y z : A} → (x ≡ y) → (y ≡ z) → (x ≡ z)
-_ ≡⟨ p ⟩ q = p ∘ q
-
-_∎ : ∀ {u} → {A : Set u} (x : A) → x ≡ x
-_∎ x = refl x
-
--- Equivalences
+-- Equivalences (not used)
 
 sucEq : {n : ℕ} → (i j : F.Fin n) → (F.suc i) ≡ (F.suc j) → i ≡ j
 sucEq i .i (refl .(F.suc i)) = refl i
@@ -154,48 +37,6 @@ F.zero    =F= (F.suc j)                  = no (λ ())
 (F.suc i) =F= (F.suc .i) | yes (refl .i) = yes (refl (F.suc i))
 (F.suc i) =F= (F.suc j) | no p           = no (λ q → p (sucEq i j q))
 
-------------------------------------------------------------------
--- VECTOR LEMMAS AND HELPERS
-
--- Syntactic sugar for lookup that's a lot nicer
-_!!_ : {A : Set} → {n : ℕ} → Vec A n → F.Fin n → A
-_!!_ v i = lookup i v
-
--- XXX: is this in the right order?
-_∘̬_ : {n : ℕ} {A : Set} → Vec (F.Fin n) n → Vec A n → Vec A n 
-v₁ ∘̬ v₂ = tabulate (λ i → v₂ !! (v₁ !! i))
-
--- Important lemma about lookup; for some reason it doesn't seem to be in the
--- library even though it's in the main agda tutorial, iirc
-map!! : {A B : Set} → {n : ℕ} → (f : A → B) → (v : Vec A n) → (i : F.Fin n) → 
-        (vmap f v) !! i ≡ f (v !! i)
-map!! {n = zero}  f  [] ()
-map!! {n = suc n} f (x ∷ xs) F.zero    = refl (f x)
-map!! {n = suc n} f (x ∷ xs) (F.suc i) = map!! f xs i
-
-lookupTab : {A : Set} {n : ℕ} {f : F.Fin n → A} →  (i : F.Fin n) → (tabulate f) !! i ≡ (f i)
-lookupTab {f = f} F.zero   = refl (f F.zero)
-lookupTab        (F.suc i) = lookupTab i
-
-mapTab : {A B : Set} → {n : ℕ} → (f : A → B) → (g : F.Fin n → A) →
-         vmap f (tabulate g) ≡ tabulate (f ○ g)
-mapTab {n = zero}  f g = refl _
-mapTab {n = suc n} f g = ap (_∷_ (f (g F.zero))) (mapTab {n = n} f (g ○ F.suc))
-
--- Lemma for proving that two vectors are equal if their tabulates agree
--- on all inputs.
-tabf∼g : {n : ℕ} → {A : Set} → (f g : F.Fin n → A) → (∀ x → f x ≡ g x) →
-         tabulate f ≡ tabulate g
-tabf∼g {zero} f g p = refl _
-tabf∼g {suc n} f g p with f F.zero | g F.zero | p F.zero
-tabf∼g {suc n} f g p | x | .x | refl .x =
-  ap (_∷_ x) (tabf∼g {n} (f ○ F.suc) (g ○ F.suc) (p ○ F.suc))
-
-lookup∼vec : {n : ℕ} → {A : Set} → (v₁ v₂ : Vec A n) → (∀ i → v₁ !! i ≡ v₂ !! i) → v₁ ≡ v₂
-lookup∼vec []          []           p = refl []
-lookup∼vec (x ∷ v₁) (x₁ ∷ v₂) p with p F.zero
-lookup∼vec (x ∷ v₁) (.x ∷ v₂) p | (refl .x) = ap (_∷_ x) (lookup∼vec v₁ v₂ (p ○ F.suc))
-  
 ------------------------------------------------------------------
 -- Finite Types and the natural numbers are intimately related.
 
@@ -258,10 +99,6 @@ makeSingleComb F.zero   F.zero     = id⇛
 makeSingleComb F.zero   (F.suc i)  = id⇛
 makeSingleComb (F.suc j) F.zero   = swapDownFrom j ◎ swapi j ◎ swapUpTo j
 makeSingleComb (F.suc j) (F.suc i) = id⇛ ⊕ makeSingleComb j i
-
--- upTo n returns [0, 1, ..., n-1] as Fins
-upTo : (n : ℕ) → Vec (F.Fin n) n
-upTo n = tabulate {n} id
 
 -- Correctness: after putting together i indices, the partial combinator c' is
 -- represented by the vector [1, 2, ... , n - (i +1)] ++ (last i v)
@@ -787,17 +624,8 @@ evalVec vec i = finToVal (lookup i vec)
 permLeftTest : F.Fin four
 permLeftTest = valToFin (evalVec (permLeftID (F.suc (F.suc F.zero))) (F.zero))
 
-lookupMap : {A B : Set} → {n : ℕ} → {f : A → B} → (i : F.Fin n) → (v : Vec A n) →
-            lookup i (vmap f v) ≡ f (lookup i v)
-lookupMap F.zero    (x ∷ _)      = refl _
-lookupMap (F.suc i) (_ ∷ v) = lookupMap i v
-
 lookupToEvalVec : {n : ℕ} → (i : F.Fin n) → (v : Vec (F.Fin n) n) → lookup i v ≡ valToFin (evalVec v i)
 lookupToEvalVec i v = ! (valToFinToVal (lookup i v) )
-
-lookup∘tabulate : ∀ {a n} → {A : Set a} → (i : F.Fin n) → (f : F.Fin n → A) → lookup i (tabulate f) ≡ f i
-lookup∘tabulate F.zero    f = refl (f F.zero)
-lookup∘tabulate (F.suc i) f = lookup∘tabulate i (f ○ F.suc)
 
 --  Might want to take a ⟦ fromℕ n ⟧ instead of a Fin n as the second
 --  argument here?
