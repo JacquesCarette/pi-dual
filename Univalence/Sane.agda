@@ -633,10 +633,6 @@ swapUp₀ {n} (F.suc (F.suc i)) =
     ≡⟨ ! (permLeftIdPasti (upTo (suc (suc (suc n)))) i) ⟩
   permuteLeft (F.suc F.zero) (upTo (suc (suc (suc n)))) !! F.suc (F.suc i) ∎
          
-
--- This should be true now. [Z]
--- It's false -- look at the first hole.  Plus "F.suc (F.suc F.zero) appears twice 
--- in (both) lists, which is a clear sign that something is deeply wrong!
 swapUpCompWorks : {n : ℕ} → (i : F.Fin n) →
                   (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ i) (upTo (suc n))))
                   ∘̬ (F.suc F.zero ∷ F.zero ∷ vmap (F.suc ○ F.suc) (upTo n))
