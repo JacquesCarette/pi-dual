@@ -7,7 +7,6 @@ open import Data.Unit
 open import Data.Nat
 open import Data.Sum 
 open import Data.Product 
--- open import Function
 
 infixl 10 _◎_
 

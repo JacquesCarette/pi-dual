@@ -12,8 +12,7 @@ open import Data.Vec
 open import Function renaming (_∘_ to _○_) 
 
 -- start re-splitting things up, as this is getting out of hand
-
-open import FT
+open import FT -- Finite Types
 open import SimpleHoTT using (_≡_ ; refl ; pathInd ; ! ; _∘_ ; ap ; _≡⟨_⟩_ ; _∎ )
 open import VecHelpers
 open import NatSimple
@@ -116,19 +115,6 @@ record Compiled (n : ℕ) : Set where
     proof  : vecRep comb vec
 
 {-- For reference
-
-swapi : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
-swapi {zero} ()
-swapi {suc n} F.zero = assocl₊⇛ ◎ swap₊⇛ ⊕ id⇛ ◎ assocr₊⇛
-swapi {suc n} (F.suc i) = id⇛ ⊕ swapi {n} i                  
-
-swapUpTo : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
-swapUpTo F.zero = id⇛
-swapUpTo (F.suc i) = swapi F.zero ◎ id⇛ ⊕ swapUpTo i
-
-swapDownFrom : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
-swapDownFrom F.zero = id⇛
-swapDownFrom (F.suc i) = id⇛ ⊕ swapUpTo i ◎ swapi F.zero
 
 swapmn : {lim : ℕ} → (m : F.Fin lim) → F.Fin′ m → (fromℕ lim) ⇛ (fromℕ lim)
 swapmn F.zero ()
@@ -260,16 +246,6 @@ permuteLeft {suc (suc n)} (F.suc i) (a ∷ b ∷ rest) = pl′ i (b ∷ rest) a
 
 permLeftID : {n : ℕ} → F.Fin n → Vec (F.Fin n) n
 permLeftID i = permuteLeft i (upTo _)
-
-{-- for reference, again
-swapUpTo : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
-swapUpTo F.zero = id⇛
-swapUpTo (F.suc i) = swapi F.zero ◎ id⇛ ⊕ swapUpTo i
-
-swapDownFrom : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
-swapDownFrom F.zero = id⇛
-swapDownFrom (F.suc i) = id⇛ ⊕ swapUpTo i ◎ swapi F.zero
---}
 
 permLeftId₀ : {n : ℕ} → (upTo (suc n)) ≡ permuteLeft F.zero (upTo (suc n))
 permLeftId₀ {n} = refl (F.zero ∷ tabulate F.suc)
