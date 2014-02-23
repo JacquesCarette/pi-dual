@@ -7,7 +7,7 @@ open import Data.Unit
 open import Data.Nat
 open import Data.Sum 
 open import Data.Product 
-open import Function
+-- open import Function
 
 infixl 10 _◎_
 
@@ -32,6 +32,7 @@ data FT : Set where
 data _⇛_ : FT → FT → Set where
   -- additive structure
   unite₊⇛  : { b : FT } → PLUS ZERO b ⇛ b
+
   uniti₊⇛  : { b : FT } → b ⇛ PLUS ZERO b
   swap₊⇛   : { b₁ b₂ : FT } → PLUS b₁ b₂ ⇛ PLUS b₂ b₁
   assocl₊⇛ : { b₁ b₂ b₃ : FT } → PLUS b₁ (PLUS b₂ b₃) ⇛ PLUS (PLUS b₁ b₂) b₃
