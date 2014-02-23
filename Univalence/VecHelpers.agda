@@ -28,8 +28,16 @@ _!!_ : {A : Set} → {n : ℕ} → Vec A n → F.Fin n → A
 _!!_ v i = lookup i v
 
 -- XXX: is this in the right order?
-_∘̬_ : {n : ℕ} {A : Set} → Vec (F.Fin n) n → Vec A n → Vec A n 
+_∘̬_ : {m n : ℕ} {A : Set} → Vec (F.Fin n) m → Vec A n → Vec A m 
 v₁ ∘̬ v₂ = tabulate (λ i → v₂ !! (v₁ !! i))
+
+_∘̬′_ : {m n : ℕ} {A : Set} → Vec (F.Fin n) m → Vec A n → Vec A m 
+[] ∘̬′ v₂ = []
+(i ∷ is) ∘̬′  v₂ = (v₂ !! i) ∷ (is ∘̬′ v₂)
+
+∘̬≡∘̬′ : {m n : ℕ} {A : Set} (v₁ : Vec (F.Fin n) m) (v₂ : Vec A n) → (v₁ ∘̬ v₂) ≡ (v₁ ∘̬′ v₂)
+∘̬≡∘̬′ [] v₂ = refl _
+∘̬≡∘̬′ (x ∷ v₁) v₂ = ap (_∷_ (v₂ !! x)) (∘̬≡∘̬′ v₁ v₂)
 
 -- Important lemma about lookup; for some reason it doesn't seem to be in the
 -- library even though it's in the main agda tutorial, iirc

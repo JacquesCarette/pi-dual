@@ -371,18 +371,27 @@ swapUpCompWorks {suc (suc n)} (F.suc (F.suc i)) =
   ∘̬ (F.suc F.zero ∷ F.zero ∷ tabulate (F.suc ○ F.suc))
     ≡⟨ ap (λ x →
                (F.zero ∷ vmap F.suc x) ∘̬
-               (F.suc F.zero ∷ F.zero ∷ tabulate (F.suc ○ F.suc))) (permLeft₁ i) ⟩ -- ap (λ x → (F.zero ∷ vmap F.suc x) ∘̬ (F.suc F.zero ∷ F.zero ∷ tabulate (F.suc ○ F.suc))) ? ⟩ -- (permLeft₁ i) ⟩
+               (F.suc F.zero ∷ F.zero ∷ tabulate (F.suc ○ F.suc))) (permLeft₁ i) ⟩
   (F.zero ∷ vmap F.suc (F.suc F.zero ∷
                         pl′ (F.inject₁ i) (tail (tail (upTo (suc (suc (suc n)))))) F.zero))
     ∘̬ (F.suc F.zero ∷ F.zero ∷ tabulate (F.suc ○ F.suc))
     ≡⟨ refl _ ⟩
-  (F.zero ∷ F.suc (F.suc F.zero) ∷ vmap F.suc (pl′ (F.inject₁ i) (tail (tail (upTo (suc (suc (suc n)))))) F.zero))
+  (F.zero ∷ F.suc (F.suc F.zero) ∷
+          vmap F.suc (pl′ (F.inject₁ i) (tail (tail (upTo (suc (suc (suc n)))))) F.zero))
     ∘̬ (F.suc F.zero ∷ F.zero ∷ tabulate {suc (suc n)} (F.suc ○ F.suc))
     ≡⟨ refl _ ⟩
   (F.zero ∷ F.suc (F.suc F.zero) ∷ vmap F.suc (pl′ (F.inject₁ i) (tail (tail (upTo (suc (suc (suc n)))))) F.zero))
     ∘̬ (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ (tabulate {suc n} (F.suc ○ F.suc ○ F.suc)))
-    ≡⟨ {!!} ⟩  
+    ≡⟨ ∘̬≡∘̬′ (F.zero ∷ F.suc (F.suc F.zero) ∷ vmap F.suc (pl′ (F.inject₁ i) (tail (tail (upTo (suc (suc (suc n)))))) F.zero))
+            (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ (tabulate {suc n} (F.suc ○ F.suc ○ F.suc))) ⟩
+  (F.zero ∷ F.suc (F.suc F.zero) ∷ vmap F.suc (pl′ (F.inject₁ i) (tail (tail (upTo (suc (suc (suc n)))))) F.zero))
+    ∘̬′ (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ (tabulate {suc n} (F.suc ○ F.suc ○ F.suc)))
+    ≡⟨ refl _ ⟩
   F.suc F.zero ∷ F.suc (F.suc F.zero) ∷
+    ((vmap F.suc (pl′ (F.inject₁ i) (tabulate (F.suc ○ F.suc)) F.zero)) ∘̬′
+      (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ (tabulate {suc n} (F.suc ○ F.suc ○ F.suc))))
+    ≡⟨ {!!} ⟩
+   F.suc F.zero ∷ F.suc (F.suc F.zero) ∷
     pl′ (F.inject₁ i) (tail (tail (tail (upTo (suc (suc (suc (suc n)))))))) F.zero
     ≡⟨ permLeft₂ i ⟩
   permuteLeft (F.inject₁ (F.suc (F.suc (F.suc i)))) (upTo (suc (suc (suc (suc n))))) ∎
