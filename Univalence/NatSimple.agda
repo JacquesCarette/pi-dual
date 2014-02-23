@@ -63,7 +63,7 @@ toNormalNat (suc n) (F.suc f) = inj₂ (toNormalNat n f)
 -- BEGIN CODE COPIED (AND SOMEWHAT MODIFIED) FROM Nat.Properties
 -- (for some reason +-comm is a private field so I can't get to it without
 -- importing superfluous files and going through a bunch of administrative
--- garbage that isn't worth of my time)
+-- garbage that isn't worth my time)
 
 m+1+n≡1+m+n : ∀ m n → m + suc n ≡ suc (m + n)
 m+1+n≡1+m+n zero    n = refl _

@@ -334,13 +334,59 @@ swapUp₀ {n} (F.suc (F.suc i)) =
     ≡⟨ ! (permLeftIdPasti (upTo (suc (suc (suc n)))) i) ⟩
   permuteLeft (F.suc F.zero) (upTo (suc (suc (suc n)))) !! F.suc (F.suc i) ∎
 
+{--
+pl′ : {m n : ℕ} → F.Fin m → Vec (F.Fin n) m → F.Fin n → Vec (F.Fin n) (suc m)
+pl′ {m = zero} () _ _
+pl′ {m = suc m} F.zero (x ∷ xs) first = x ∷ first ∷ xs
+pl′ (F.suc i) (x ∷ xs) first = x ∷ (pl′ i xs first)
+
+permuteLeft : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n → Vec (F.Fin n) n
+permuteLeft {zero} () _
+permuteLeft {suc n} F.zero v = v
+permuteLeft {suc zero} (F.suc ()) _
+permuteLeft {suc (suc n)} (F.suc i) (a ∷ b ∷ rest) = pl′ i (b ∷ rest) a
+--}
+
+permLeft₁ : {n : ℕ} → (i : F.Fin n) →
+            permuteLeft (F.inject₁ (F.suc (F.suc i))) (upTo (suc (suc (suc n)))) ≡
+            F.suc F.zero ∷ pl′ (F.inject₁ i) (tail (tail (upTo (suc (suc (suc n)))))) F.zero
+permLeft₁ i = refl _            
+
+-- makes sure we have at least two elements on the front of permLeft to reason about
+permLeft₂ : {n : ℕ} → (i : F.Fin n) →
+            F.suc F.zero ∷ F.suc (F.suc F.zero) ∷
+              pl′ (F.inject₁ i) (tail (tail (tail (upTo (suc (suc (suc (suc n)))))))) F.zero ≡
+            permuteLeft (F.inject₁ (F.suc (F.suc (F.suc i)))) (upTo (suc (suc (suc (suc n)))))
+permLeft₂ F.zero = refl _
+permLeft₂ (F.suc i) = refl _            
+  
 swapUpCompWorks : {n : ℕ} → (i : F.Fin n) →
                   (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ i) (upTo (suc n))))
                   ∘̬ (F.suc F.zero ∷ F.zero ∷ tabulate (λ i → F.suc (F.suc i)))
                   ≡ permuteLeft (F.inject₁ (F.suc i)) (upTo (suc (suc n)))
 swapUpCompWorks {suc n} F.zero = lookup∼vec _ _ swapUp₀
 swapUpCompWorks (F.suc F.zero) = {!!}
-swapUpCompWorks (F.suc (F.suc i)) = {!!}
+swapUpCompWorks {suc (suc n)} (F.suc (F.suc i)) =
+  (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ (F.suc (F.suc i))) (upTo (suc (suc (suc n))))))
+  ∘̬ (F.suc F.zero ∷ F.zero ∷ tabulate (F.suc ○ F.suc))
+    ≡⟨ ap (λ x →
+               (F.zero ∷ vmap F.suc x) ∘̬
+               (F.suc F.zero ∷ F.zero ∷ tabulate (F.suc ○ F.suc))) (permLeft₁ i) ⟩ -- ap (λ x → (F.zero ∷ vmap F.suc x) ∘̬ (F.suc F.zero ∷ F.zero ∷ tabulate (F.suc ○ F.suc))) ? ⟩ -- (permLeft₁ i) ⟩
+  (F.zero ∷ vmap F.suc (F.suc F.zero ∷
+                        pl′ (F.inject₁ i) (tail (tail (upTo (suc (suc (suc n)))))) F.zero))
+    ∘̬ (F.suc F.zero ∷ F.zero ∷ tabulate (F.suc ○ F.suc))
+    ≡⟨ refl _ ⟩
+  (F.zero ∷ F.suc (F.suc F.zero) ∷ vmap F.suc (pl′ (F.inject₁ i) (tail (tail (upTo (suc (suc (suc n)))))) F.zero))
+    ∘̬ (F.suc F.zero ∷ F.zero ∷ tabulate {suc (suc n)} (F.suc ○ F.suc))
+    ≡⟨ refl _ ⟩
+  (F.zero ∷ F.suc (F.suc F.zero) ∷ vmap F.suc (pl′ (F.inject₁ i) (tail (tail (upTo (suc (suc (suc n)))))) F.zero))
+    ∘̬ (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ (tabulate {suc n} (F.suc ○ F.suc ○ F.suc)))
+    ≡⟨ {!!} ⟩  
+  F.suc F.zero ∷ F.suc (F.suc F.zero) ∷
+    pl′ (F.inject₁ i) (tail (tail (tail (upTo (suc (suc (suc (suc n)))))))) F.zero
+    ≡⟨ permLeft₂ i ⟩
+  permuteLeft (F.inject₁ (F.suc (F.suc (F.suc i)))) (upTo (suc (suc (suc (suc n))))) ∎
+
          
 -- NB: I added the F.inject₁ in calls to permuteLeft/Right to get it to work
 -- with swapUpTo/DownFrom; I'm not sure that this is correct? It might
