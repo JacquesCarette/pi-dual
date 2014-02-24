@@ -89,7 +89,7 @@ open import Function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
 
-paragraph*{Conventional HoTT/Agda approach}
+\paragraph*{Conventional HoTT/Agda approach}
 
 We start with a computational framework: data (pairs, etc.) and functions
 between them. There are computational rules (beta, etc.) that explain what a

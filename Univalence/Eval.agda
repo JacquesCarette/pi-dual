@@ -1,7 +1,5 @@
 module Eval where
 
--- import Data.Fin as F
---
 open import Data.Empty
 open import Data.Unit
 open import Data.Unit.Core
@@ -9,13 +7,11 @@ open import Data.Nat renaming (_⊔_ to _⊔ℕ_)
 open import Data.Sum renaming (map to _⊎→_)
 open import Data.Product renaming (map to _×→_)
 open import Data.Vec
--- open import Function renaming (_∘_ to _○_) 
+open import Relation.Binary.PropositionalEquality
 
--- start re-splitting things up, as this is getting out of hand
 open import FT -- Finite Types
-open import SimpleHoTT using (_≡_ ; refl ; ! ; _∘_ ; _∎ ; ap ; ap2)
--- open import VecHelpers
--- open import NatSimple
+
+_∘_ = trans
 
 mutual
   evalComb : {a b : FT} → a ⇛ b → ⟦ a ⟧ → ⟦ b ⟧
@@ -61,7 +57,7 @@ mutual
   evalBComb assocr₊⇛ (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
   evalBComb assocr₊⇛ (inj₂ (inj₂ y)) = inj₂ y
   evalBComb unite⋆⇛ x = tt , x
-  evalBComb uniti⋆⇛ x = proj₂ x
+  evalBComb uniti⋆⇛ (tt , x) = x
   evalBComb swap⋆⇛ (x , y) = y , x
   evalBComb assocl⋆⇛ ((x , y) , z) = x , y , z
   evalBComb assocr⋆⇛ (x , y , z) = (x , y) , z
@@ -78,64 +74,66 @@ mutual
   evalBComb (c ⊕ c₁) (inj₂ y) = inj₂ (evalBComb c₁ y)
   evalBComb (c ⊗ c₁) (proj₁ , proj₂) = evalBComb c proj₁ , evalBComb c₁ proj₂
 
--- still need to prove reversibility!
 mutual
   Comb∘BComb : {a b : FT} → (c : a ⇛ b) → ∀ x → evalBComb c (evalComb c x) ≡ x
   Comb∘BComb unite₊⇛ (inj₁ ())
-  Comb∘BComb unite₊⇛ (inj₂ y) = inj₂ y ∎
-  Comb∘BComb uniti₊⇛ x = x ∎
-  Comb∘BComb swap₊⇛ (inj₁ x) = inj₁ x ∎
-  Comb∘BComb swap₊⇛ (inj₂ y) = inj₂ y ∎
-  Comb∘BComb assocl₊⇛ (inj₁ x) = inj₁ x ∎
-  Comb∘BComb assocl₊⇛ (inj₂ (inj₁ x)) = refl (inj₂ (inj₁ x))
-  Comb∘BComb assocl₊⇛ (inj₂ (inj₂ y)) = refl (inj₂ (inj₂ y))
-  Comb∘BComb assocr₊⇛ (inj₁ (inj₁ x)) = refl (inj₁ (inj₁ x))
-  Comb∘BComb assocr₊⇛ (inj₁ (inj₂ y)) = refl (inj₁ (inj₂ y))
-  Comb∘BComb assocr₊⇛ (inj₂ y) = refl (inj₂ y)
-  Comb∘BComb unite⋆⇛ (tt , y) = refl (tt , y)
-  Comb∘BComb uniti⋆⇛ x = refl x
-  Comb∘BComb swap⋆⇛ (x , y) = refl (x , y)
-  Comb∘BComb assocl⋆⇛ (x , y , z) = refl (x , y , z)
-  Comb∘BComb assocr⋆⇛ ((x , y) , z) = refl ((x , y) , z)
+  Comb∘BComb unite₊⇛ (inj₂ y) = refl 
+  Comb∘BComb uniti₊⇛ x = refl 
+  Comb∘BComb swap₊⇛ (inj₁ x) = refl
+  Comb∘BComb swap₊⇛ (inj₂ y) = refl
+  Comb∘BComb assocl₊⇛ (inj₁ x) = refl 
+  Comb∘BComb assocl₊⇛ (inj₂ (inj₁ x)) = refl 
+  Comb∘BComb assocl₊⇛ (inj₂ (inj₂ y)) = refl 
+  Comb∘BComb assocr₊⇛ (inj₁ (inj₁ x)) = refl 
+  Comb∘BComb assocr₊⇛ (inj₁ (inj₂ y)) = refl 
+  Comb∘BComb assocr₊⇛ (inj₂ y) = refl
+  Comb∘BComb unite⋆⇛ (tt , y) = refl
+  Comb∘BComb uniti⋆⇛ x = refl
+  Comb∘BComb swap⋆⇛ (x , y) = refl
+  Comb∘BComb assocl⋆⇛ (x , y , z) = refl
+  Comb∘BComb assocr⋆⇛ ((x , y) , z) = refl
   Comb∘BComb distz⇛ (() , _)
   Comb∘BComb factorz⇛ ()
-  Comb∘BComb dist⇛ (inj₁ x , y) = refl (inj₁ x , y)
-  Comb∘BComb dist⇛ (inj₂ x , y) = refl (inj₂ x , y)
-  Comb∘BComb factor⇛ (inj₁ (x , y)) = refl (inj₁ (x , y))
-  Comb∘BComb factor⇛ (inj₂ (x , y)) = refl (inj₂ (x , y))
-  Comb∘BComb id⇛ x = refl x
+  Comb∘BComb dist⇛ (inj₁ x , y) = refl
+  Comb∘BComb dist⇛ (inj₂ x , y) = refl
+  Comb∘BComb factor⇛ (inj₁ (x , y)) = refl
+  Comb∘BComb factor⇛ (inj₂ (x , y)) = refl
+  Comb∘BComb id⇛ x = refl 
   Comb∘BComb (sym⇛ c) x = BComb∘Comb c x
-  Comb∘BComb (c₀ ◎ c₁) x = ap (evalBComb c₀)  (Comb∘BComb c₁ (evalComb c₀ x)) ∘ Comb∘BComb c₀ x
-  Comb∘BComb (c₀ ⊕ c₁) (inj₁ x) = ap inj₁ (Comb∘BComb c₀ x)
-  Comb∘BComb (c₀ ⊕ c₁) (inj₂ y) = ap inj₂ (Comb∘BComb c₁ y)
-  Comb∘BComb (c₀ ⊗ c₁) (x , y) = ap2 _,_ (Comb∘BComb c₀ x) (Comb∘BComb c₁ y) 
+  Comb∘BComb (c₀ ◎ c₁) x = 
+    cong (evalBComb c₀)  (Comb∘BComb c₁ (evalComb c₀ x)) ∘ Comb∘BComb c₀ x
+  Comb∘BComb (c₀ ⊕ c₁) (inj₁ x) = cong inj₁ (Comb∘BComb c₀ x)
+  Comb∘BComb (c₀ ⊕ c₁) (inj₂ y) = cong inj₂ (Comb∘BComb c₁ y)
+  Comb∘BComb (c₀ ⊗ c₁) (x , y) = cong₂ _,_ (Comb∘BComb c₀ x) (Comb∘BComb c₁ y)
 
   BComb∘Comb : {a b : FT} → (c : a ⇛ b) → ∀ x → evalComb c (evalBComb c x) ≡ x
-  BComb∘Comb unite₊⇛ x = refl x
+  BComb∘Comb unite₊⇛ x = refl 
   BComb∘Comb uniti₊⇛ (inj₁ ())
-  BComb∘Comb uniti₊⇛ (inj₂ y) = refl (inj₂ y)
-  BComb∘Comb swap₊⇛ (inj₁ x) = refl (inj₁ x)
-  BComb∘Comb swap₊⇛ (inj₂ y) = refl (inj₂ y)
-  BComb∘Comb assocl₊⇛ (inj₁ (inj₁ x)) = refl (inj₁ (inj₁ x))
-  BComb∘Comb assocl₊⇛ (inj₁ (inj₂ y)) = refl (inj₁ (inj₂ y))
-  BComb∘Comb assocl₊⇛ (inj₂ y) = refl (inj₂ y)
-  BComb∘Comb assocr₊⇛ (inj₁ x) = refl (inj₁ x)
-  BComb∘Comb assocr₊⇛ (inj₂ (inj₁ x)) = refl (inj₂ (inj₁ x))
-  BComb∘Comb assocr₊⇛ (inj₂ (inj₂ y)) = refl (inj₂ (inj₂ y))
-  BComb∘Comb unite⋆⇛ x = refl x
-  BComb∘Comb uniti⋆⇛ (tt , proj₂) = refl (tt , proj₂)
-  BComb∘Comb swap⋆⇛ (proj₁ , proj₂) = refl (proj₁ , proj₂)
-  BComb∘Comb assocl⋆⇛ ((proj₁ , proj₂) , proj₃) = refl ((proj₁ , proj₂) , proj₃)
-  BComb∘Comb assocr⋆⇛ (proj₁ , proj₂ , proj₃) = refl (proj₁ , proj₂ , proj₃)
+  BComb∘Comb uniti₊⇛ (inj₂ y) = refl 
+  BComb∘Comb swap₊⇛ (inj₁ x) = refl 
+  BComb∘Comb swap₊⇛ (inj₂ y) = refl 
+  BComb∘Comb assocl₊⇛ (inj₁ (inj₁ x)) = refl 
+  BComb∘Comb assocl₊⇛ (inj₁ (inj₂ y)) = refl 
+  BComb∘Comb assocl₊⇛ (inj₂ y) = refl 
+  BComb∘Comb assocr₊⇛ (inj₁ x) = refl 
+  BComb∘Comb assocr₊⇛ (inj₂ (inj₁ x)) = refl 
+  BComb∘Comb assocr₊⇛ (inj₂ (inj₂ y)) = refl
+  BComb∘Comb unite⋆⇛ x = refl 
+  BComb∘Comb uniti⋆⇛ (tt , proj₂) = refl 
+  BComb∘Comb swap⋆⇛ (proj₁ , proj₂) = refl 
+  BComb∘Comb assocl⋆⇛ ((proj₁ , proj₂) , proj₃) = refl 
+  BComb∘Comb assocr⋆⇛ (proj₁ , proj₂ , proj₃) = refl 
   BComb∘Comb distz⇛ ()
   BComb∘Comb factorz⇛ (() , _)
-  BComb∘Comb dist⇛ (inj₁ (proj₁ , proj₂)) = refl (inj₁ (proj₁ , proj₂))
-  BComb∘Comb dist⇛ (inj₂ (proj₁ , proj₂)) = refl (inj₂ (proj₁ , proj₂))
-  BComb∘Comb factor⇛ (inj₁ x , proj₂) = refl (inj₁ x , proj₂)
-  BComb∘Comb factor⇛ (inj₂ y , proj₂) = refl (inj₂ y , proj₂)
-  BComb∘Comb id⇛ x = refl x
+  BComb∘Comb dist⇛ (inj₁ (proj₁ , proj₂)) = refl 
+  BComb∘Comb dist⇛ (inj₂ (proj₁ , proj₂)) = refl 
+  BComb∘Comb factor⇛ (inj₁ x , proj₂) = refl 
+  BComb∘Comb factor⇛ (inj₂ y , proj₂) = refl 
+  BComb∘Comb id⇛ x = refl 
   BComb∘Comb (sym⇛ c) x = Comb∘BComb c x
-  BComb∘Comb (c₀ ◎ c₁) x = ap (evalComb c₁) (BComb∘Comb c₀ (evalBComb c₁ x)) ∘ BComb∘Comb c₁ x
-  BComb∘Comb (c ⊕ c₁) (inj₁ x) = ap inj₁ (BComb∘Comb c x)
-  BComb∘Comb (c ⊕ c₁) (inj₂ y) = ap inj₂ (BComb∘Comb c₁ y)
-  BComb∘Comb (c ⊗ c₁) (x , y) = ap2 _,_ (BComb∘Comb c x) (BComb∘Comb c₁ y)
+  BComb∘Comb (c₀ ◎ c₁) x = 
+    cong (evalComb c₁) (BComb∘Comb c₀ (evalBComb c₁ x)) ∘ BComb∘Comb c₁ x
+  BComb∘Comb (c ⊕ c₁) (inj₁ x) = cong inj₁ (BComb∘Comb c x)
+  BComb∘Comb (c ⊕ c₁) (inj₂ y) = cong inj₂ (BComb∘Comb c₁ y)
+  BComb∘Comb (c ⊗ c₁) (x , y) = cong₂ _,_ (BComb∘Comb c x) (BComb∘Comb c₁ y)
+
