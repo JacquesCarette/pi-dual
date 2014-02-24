@@ -373,7 +373,29 @@ plcomp {suc n} F.zero =
   (((tabulate (F.suc ○ F.suc ○ F.suc ○ F.suc))) ∘̬′
   (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
     (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))
-    ≡⟨ {!!} ⟩    
+    ≡⟨ ap (λ x → F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷ x)
+       (! (∘̬≡∘̬′
+            (tabulate (F.suc ○ F.suc ○ F.suc ○ F.suc))
+            ((F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
+              (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc)))))) ⟩
+  F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷
+  (((tabulate (F.suc ○ F.suc ○ F.suc ○ F.suc))) ∘̬
+  (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
+    (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))
+    ≡⟨ ap (λ x → F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷ x)
+          (∘̬id (suc (suc (suc (suc zero))))
+               (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
+                 (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))  ⟩
+  {--F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷
+  (((tabulate (F.suc ○ F.suc ○ F.suc ○ F.suc))) ∘̬
+  (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
+    (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))--}
+  (F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷
+    tabulate {suc n}
+      (λ i → (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
+        (tabulate (F.suc ○ F.suc ○ F.suc))) !!
+          (ntimesD {ℕ} {F.Fin} {suc} (suc (suc (suc (suc zero)))) F.suc i)))
+  ≡⟨ ap (λ x → F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷ x) {!!} ⟩
   F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷ tabulate (F.suc ○ F.suc ○ F.suc ○ F.suc)
     ≡⟨ refl _ ⟩    
   pl′ (F.inject₁ F.zero) (tabulate (F.suc ○ F.suc ○ F.suc)) F.zero ∎  
