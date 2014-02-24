@@ -10,9 +10,11 @@ open import Data.Nat renaming (_⊔_ to _⊔ℕ_)
 open import Data.Sum renaming (map to _⊎→_)
 open import Data.Product renaming (map to _×→_)
 open import Function renaming (_∘_ to _○_) 
+open import Relation.Binary.PropositionalEquality
+open ≡-Reasoning
 
 open import FT
-open import SimpleHoTT using (_≡_ ; refl ; ! ; _∘_ ; ap ; _≡⟨_⟩_ ; _∎ )
+-- open import SimpleHoTT using (_≡_ ; refl ; ! ; _∘_ ; ap ; _≡⟨_⟩_ ; _∎ )
 
 ------------------------------------------------------------------------------
 -- Equivalences (not used)
@@ -22,14 +24,14 @@ data Dec (A : Set) : Set where
   no : (A → ⊥) → Dec A
   
 sucEq : {n : ℕ} → (i j : F.Fin n) → (F.suc i) ≡ (F.suc j) → i ≡ j
-sucEq i .i (refl .(F.suc i)) = refl i
+sucEq i .i refl = refl
 
 _=F=_ : {n : ℕ} → (i j : F.Fin n) → Dec (i ≡ j)
-F.zero    =F= F.zero                     = yes (refl F.zero)
+F.zero    =F= F.zero                     = yes refl
 (F.suc i) =F= F.zero                     = no (λ ())
 F.zero    =F= (F.suc j)                  = no (λ ())
 (F.suc i) =F= (F.suc j) with i =F= j
-(F.suc i) =F= (F.suc .i) | yes (refl .i) = yes (refl (F.suc i))
+(F.suc i) =F= (F.suc .i) | yes refl      = yes refl 
 (F.suc i) =F= (F.suc j) | no p           = no (λ q → p (sucEq i j q))
 
 ------------------------------------------------------------------
@@ -66,25 +68,25 @@ toNormalNat (suc n) (F.suc f) = inj₂ (toNormalNat n f)
 -- garbage that isn't worth my time)
 
 m+1+n≡1+m+n : ∀ m n → m + suc n ≡ suc (m + n)
-m+1+n≡1+m+n zero    n = refl _
-m+1+n≡1+m+n (suc m) n = ap suc (m+1+n≡1+m+n m n)
+m+1+n≡1+m+n zero    n = refl
+m+1+n≡1+m+n (suc m) n = cong suc (m+1+n≡1+m+n m n)
 
 +-identity : {n : ℕ} → n + zero ≡ n
 +-identity = n+0≡n _
   where
   n+0≡n : (n : ℕ) → n + zero ≡ n
-  n+0≡n zero    = refl _
-  n+0≡n (suc n) = ap suc (n+0≡n n)
+  n+0≡n zero    = refl
+  n+0≡n (suc n) = cong suc (n+0≡n n)
 
 +-comm : (m n : ℕ) → m + n ≡ n + m 
-+-comm zero    n = ! +-identity
-+-comm (suc m) n =
++-comm zero    n = sym +-identity
++-comm (suc m) n = begin
     suc m + n
-  ≡⟨ refl _ ⟩
+  ≡⟨ refl ⟩
     suc (m + n)
-  ≡⟨ ap suc (+-comm m n) ⟩
+  ≡⟨ cong suc (+-comm m n) ⟩
     suc (n + m)
-  ≡⟨ ! (m+1+n≡1+m+n n m) ⟩
+  ≡⟨ sym (m+1+n≡1+m+n n m) ⟩
     n + suc m
   ∎
 
