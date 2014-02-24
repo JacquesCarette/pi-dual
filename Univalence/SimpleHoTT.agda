@@ -17,6 +17,10 @@ infixr 2  _≡⟨_⟩_   -- equational reasoning for paths
 data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
   refl : (a : A) → (a ≡ a)
 
+-- not sure where else to put this [Z]
+hetType : {A B : Set} → (a : A) → A ≡ B → B
+hetType a (refl _) = a
+  
 -- J
 pathInd : ∀ {u ℓ} → {A : Set u} → 
           (C : {x y : A} → x ≡ y → Set ℓ) → 

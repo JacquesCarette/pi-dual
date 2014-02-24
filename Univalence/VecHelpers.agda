@@ -12,8 +12,7 @@ import Data.Fin as F
 open import Data.Vec
 open import Function renaming (_∘_ to _○_) 
 
-open import SimpleHoTT using (_≡_ ; refl ; ap)
-
+open import SimpleHoTT using (_≡_ ; refl ; pathInd ; ! ; _∘_ ; ap ; _≡⟨_⟩_ ; _∎ ; hetType)
 infixl 10 _∘̬_     -- vector composition
 
 ------------------------------------------------------------------
@@ -38,6 +37,26 @@ _∘̬′_ : {m n : ℕ} {A : Set} → Vec (F.Fin n) m → Vec A n → Vec A m
 ∘̬≡∘̬′ : {m n : ℕ} {A : Set} (v₁ : Vec (F.Fin n) m) (v₂ : Vec A n) → (v₁ ∘̬ v₂) ≡ (v₁ ∘̬′ v₂)
 ∘̬≡∘̬′ [] v₂ = refl _
 ∘̬≡∘̬′ (x ∷ v₁) v₂ = ap (_∷_ (v₂ !! x)) (∘̬≡∘̬′ v₁ v₂)
+
+ntimes : {A : Set} → ℕ → (f : A → A) → A → A
+ntimes zero f a = a
+ntimes (suc n) f a = f (ntimes n f a)
+
+ntimesD : {A : Set} → {B : A → Set} → {g : A → A} → (n : ℕ) →
+          (f : {a : A} → B a → B (g a)) →
+          {a : A} →
+          B a → B (ntimes n g a)
+ntimesD zero f b = b
+ntimesD {g = g} (suc n) f {a = a} b =
+  f {ntimes n g a} (ntimesD {g = g} n (λ {a} → f {a}) {a = a} b)
+
+ntails : {A : Set} → {n k : ℕ} → Vec A (ntimes k suc n) → Vec A n
+ntails {k = zero} v = v
+ntails {k = suc n} (x ∷ xs) = ntails {k = n} xs
+
+ntails₀ : {A : Set} → {k : ℕ} → (v : Vec A (ntimes k suc zero)) → [] ≡ ntails {k = k} v
+ntails₀ {k = zero} [] = refl _
+ntails₀ {k = suc k} (x ∷ v) = ntails₀ {k = k} v
 
 -- Important lemma about lookup; for some reason it doesn't seem to be in the
 -- library even though it's in the main agda tutorial, iirc
@@ -69,6 +88,19 @@ lookup∼vec : {n : ℕ} → {A : Set} → (v₁ v₂ : Vec A n) → (∀ i → 
 lookup∼vec []          []           p = refl []
 lookup∼vec (x ∷ v₁) (x₁ ∷ v₂) p with p F.zero
 lookup∼vec (x ∷ v₁) (.x ∷ v₂) p | (refl .x) = ap (_∷_ x) (lookup∼vec v₁ v₂ (p ○ F.suc))
+
+∘̬id : {A : Set} → {n : ℕ} → (k : ℕ) → (v : Vec A (ntimes k suc n)) →
+       (tabulate {n} (ntimesD {ℕ} {F.Fin} {suc} k F.suc)) ∘̬ v ≡
+       (tabulate (λ i → v !! (ntimesD {ℕ} {F.Fin} {suc} k F.suc i)))
+∘̬id {n = n} k v =
+       (tabulate {n} (ntimesD {ℕ} {F.Fin} {suc} k F.suc)) ∘̬ v
+         ≡⟨ refl _ ⟩
+       (tabulate (λ i → v !! (tabulate (ntimesD {ℕ} {F.Fin} {suc} k F.suc) !! i)))
+         ≡⟨ tabf∼g
+              (λ i → v !! (tabulate (ntimesD {ℕ} {F.Fin} {suc} k F.suc) !! i))
+              (λ i → v !! ntimesD {ℕ} {F.Fin} {suc} k F.suc i)
+              (λ i → ap (_!!_ v) (lookupTab i)) ⟩
+       (tabulate (λ i → v !! (ntimesD {ℕ} {F.Fin} {suc} k F.suc i))) ∎
   
 -- upTo n returns [0, 1, ..., n-1] as Fins
 upTo : (n : ℕ) → Vec (F.Fin n) n
