@@ -13,13 +13,10 @@ open import Function renaming (_∘_ to _○_)
 
 -- start re-splitting things up, as this is getting out of hand
 open import FT -- Finite Types
-open import SimpleHoTT using (_≡_ ; refl ; pathInd ; ! ; _∘_ ; ap ; _≡⟨_⟩_ ; _∎ )
+open import SimpleHoTT using (_≡_ ; refl ; pathInd ; ! ; _∘_ ; ap ; _≡⟨_⟩_ ; _∎ ; hetType)
 open import VecHelpers
 open import NatSimple
 open import Eval
-
-hetType : {A B : Set} → (a : A) → A ≡ B → B
-hetType a (refl _) = a
 
 -- construct a combinator which represents the swapping of the i-th and 
 -- (i+1)-th 'bit' of a finite type.  
@@ -322,6 +319,63 @@ swapUp₀ {n} (F.suc (F.suc i)) =
     ≡⟨ ! (permLeftIdPasti (upTo (3+ n)) i) ⟩
   permuteLeft (F.suc F.zero) (upTo (3+ n)) !! F2+ i ∎
 
+plcomp : {n : ℕ} → (i : F.Fin n) →
+         ((vmap F.suc (pl′ (F.inject₁ i) (tabulate (F.suc ○ F.suc)) F.zero)) ∘̬′
+           (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ (tabulate {suc n} (F.suc ○ F.suc ○ F.suc))))
+         ≡
+         pl′ (F.inject₁ i) (tabulate (F.suc ○ F.suc ○ F.suc)) F.zero
+plcomp {suc n} F.zero =
+  ((vmap F.suc (pl′ (F.inject₁ F.zero) (tabulate (F.suc ○ F.suc)) F.zero)) ∘̬′
+    (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))
+    ≡⟨ refl _ ⟩
+  ((vmap F.suc (F.suc (F.suc F.zero) ∷ F.zero ∷ tabulate (F.suc ○ F.suc ○ F.suc))) ∘̬′
+    (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))
+    ≡⟨ refl _ ⟩
+  ((F.suc (F.suc (F.suc F.zero)) ∷ F.suc F.zero ∷ vmap F.suc (tabulate (F.suc ○ F.suc ○ F.suc))) ∘̬′
+    (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))
+    ≡⟨ ap
+         (λ x →
+           ((F.suc (F.suc (F.suc F.zero)) ∷ F.suc F.zero ∷ x) ∘̬′
+             (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
+               (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc)))))
+         (mapTab F.suc (F.suc ○ F.suc ○ F.suc)) ⟩
+  ((F.suc (F.suc (F.suc F.zero)) ∷ F.suc F.zero ∷
+    (tabulate (F.suc ○ F.suc ○ F.suc ○ F.suc))) ∘̬′
+  (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
+    (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))
+    ≡⟨ refl _ ⟩
+  F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷
+  (((tabulate (F.suc ○ F.suc ○ F.suc ○ F.suc))) ∘̬′
+  (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
+    (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))
+    ≡⟨ ap (λ x → F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷ x)
+       (! (∘̬≡∘̬′
+            (tabulate (F.suc ○ F.suc ○ F.suc ○ F.suc))
+            ((F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
+              (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc)))))) ⟩
+  F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷
+  (((tabulate (F.suc ○ F.suc ○ F.suc ○ F.suc))) ∘̬
+  (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
+    (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))
+    ≡⟨ ap (λ x → F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷ x)
+          (∘̬id (suc (suc (suc (suc zero))))
+               (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
+                 (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))  ⟩
+  {--F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷
+  (((tabulate (F.suc ○ F.suc ○ F.suc ○ F.suc))) ∘̬
+  (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
+    (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))--}
+  (F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷
+    tabulate {suc n}
+      (λ i → (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
+        (tabulate (F.suc ○ F.suc ○ F.suc))) !!
+          (ntimesD {ℕ} {F.Fin} {suc} (suc (suc (suc (suc zero)))) F.suc i)))
+  ≡⟨ ap (λ x → F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷ x) {!!} ⟩
+  F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷ tabulate (F.suc ○ F.suc ○ F.suc ○ F.suc)
+    ≡⟨ refl _ ⟩    
+  pl′ (F.inject₁ F.zero) (tabulate (F.suc ○ F.suc ○ F.suc)) F.zero ∎  
+plcomp (F.suc i) = {!!}         
+
 permLeft₁ : {n : ℕ} → (i : F.Fin n) →
             permuteLeft (F.inject₁ (F2+ i)) (upTo (3+ n)) ≡
             F.suc F.zero ∷ pl′ (F.inject₁ i) (tabulate (F.suc ○ F.suc)) F.zero
@@ -363,9 +417,9 @@ swapUpCompWorks {suc (suc n)} (F.suc (F.suc i)) =
   F.suc F.zero ∷ F.suc (F.suc F.zero) ∷
     ((vmap F.suc (pl′ (F.inject₁ i) (tabulate (F.suc ○ F.suc)) F.zero)) ∘̬′
       (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ (tabulate {suc n} (F.suc ○ F.suc ○ F.suc))))
-    ≡⟨ {!!} ⟩
+    ≡⟨ ap (λ x → F.suc F.zero ∷ F.suc (F.suc F.zero) ∷ x) (plcomp i) ⟩
    F.suc F.zero ∷ F.suc (F.suc F.zero) ∷
-    pl′ (F.inject₁ i) (tail (tail (tail (upTo (suc (suc (suc (suc n)))))))) F.zero
+    pl′ (F.inject₁ i) (tabulate (F.suc ○ F.suc ○ F.suc)) F.zero
     ≡⟨ permLeft₂ i ⟩
   permuteLeft (F.inject₁ (F.suc (F.suc (F.suc i)))) (upTo (suc (suc (suc (suc n))))) ∎
 
