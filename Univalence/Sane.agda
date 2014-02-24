@@ -258,12 +258,12 @@ permRightID : {n : ℕ} → F.Fin n → Vec (F.Fin n) n
 permRightID i = permuteRight i
 
 -- The opposite of permuteRight; should correspond with swapUpTo
-pl′ : {m n : ℕ} → F.Fin m → Vec (F.Fin n) m → F.Fin n → Vec (F.Fin n) (suc m)
+pl′ : {m : ℕ} {A : Set} → F.Fin m → Vec A m → A → Vec A (suc m)
 pl′ {m = zero} () _ _
 pl′ {m = suc m} F.zero (x ∷ xs) first = x ∷ first ∷ xs
 pl′ (F.suc i) (x ∷ xs) first = x ∷ (pl′ i xs first)
 
-permuteLeft : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n → Vec (F.Fin n) n
+permuteLeft : {n : ℕ} {A : Set} → (i : F.Fin n) → Vec A n → Vec A n
 permuteLeft {zero} () _
 permuteLeft {suc n} F.zero v = v
 permuteLeft {suc zero} (F.suc ()) _
@@ -273,7 +273,7 @@ permLeftID : {n : ℕ} → F.Fin n → Vec (F.Fin n) n
 permLeftID i = permuteLeft i (upTo _)
 
 permLeftId₀ : {n : ℕ} → (upTo (suc n)) ≡ permuteLeft F.zero (upTo (suc n))
-permLeftId₀ {n} = refl -- (F.zero ∷ tabulate F.suc)
+permLeftId₀ {n} = refl
 
 permLeftIdPasti : {n : ℕ} → (v : Vec (F.Fin (2+ n)) (2+ n)) →
                   (i : F.Fin n) →
