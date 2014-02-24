@@ -2,7 +2,7 @@
 module NatSimple where
 
 import Data.Fin as F
---
+
 open import Data.Empty
 open import Data.Unit
 open import Data.Unit.Core
@@ -14,7 +14,6 @@ open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
 
 open import FT
--- open import SimpleHoTT using (_≡_ ; refl ; ! ; _∘_ ; ap ; _≡⟨_⟩_ ; _∎ )
 
 ------------------------------------------------------------------------------
 -- Equivalences (not used)
