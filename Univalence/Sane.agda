@@ -140,6 +140,9 @@ swapIndSucDist i j x = refl
 F1+swap : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin (2+ n)) (suc n)
 F1+swap i = vmap F.suc (swapInd (F.inject₁ i) (F.suc i))
 
+swapIndFn+ : {n : ℕ} → (i : F.Fin n) → F.Fin (suc n) → F.Fin (suc n) 
+swapIndFn+ i = swapIndFn (F.inject₁ i) (F.suc i)
+
 swapInd++ : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin (2+ n)) (2+ n)
 swapInd++ i = swapInd (F.inject₁ (F.suc i)) (F2+ i)
 
@@ -149,11 +152,10 @@ swap≡ind₁ {n} i = begin
     ≡⟨ cong (_∷_ F.zero)
       (begin 
           F1+swap i
-        ≡⟨ mapTab F.suc (swapIndFn (F.inject₁ i) (F.suc i)) ⟩
-          tabulate (F.suc ○ swapIndFn (F.inject₁ i) (F.suc i))
+        ≡⟨ mapTab F.suc (swapIndFn+ i) ⟩
+          tabulate (F.suc ○ swapIndFn+ i)
         ≡⟨ tabf∼g _ _ (swapIndSucDist (F.inject₁ i) (F.suc i)) ⟩
-          (tabulate
-            (swapIndFn (F.inject₁ (F.suc i)) (F.suc (F.suc i)) ○ F.suc)
+          (tabulate (swapIndFn+ (F.suc i) ○ F.suc)
           ∎)) ⟩
   swapInd++ i ∎
 
