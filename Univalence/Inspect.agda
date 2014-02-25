@@ -3,7 +3,7 @@ module Inspect where
 
 open import Data.Unit.Core
 
-open import HoTT using (refl;_≡_)
+open import SimpleHoTT using (refl;_≡_)
 
 ------------------------------------------------------------------------
 -- Inspect on steroids (borrowed from standard library)

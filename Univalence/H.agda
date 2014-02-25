@@ -1,5 +1,3 @@
--- high-level structure of proof
-
 module H where
 
 import Data.Fin as F
@@ -12,9 +10,8 @@ open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
 
 open import FT
-open import FT-Nat
 open import Eval
--- open import NatSimple
+open import NatSimple using (fromℕ; normal; normalize)
 
 ------------------------------------------------------------------------------
 {--
@@ -108,11 +105,9 @@ lemma2 c i = begin
 
 We need another lemma:
 
-vecToComb c = vecToComb c'
+combToVec c = combToVec c'
 
 if c and c' have the same normalized types
-
---}
 
 lemma2a : {A : FT} (c : A ⇛ A) (a : ⟦ normalize A ⟧) →
   let c′ = sym⇛ (normal A) ◎ c ◎ normal A in
@@ -124,4 +119,16 @@ lemma2a (sym⇛ c) a = {!!}
 lemma2a (c ◎ c₁) a = {!!}
 lemma2a (c ⊕ c₁) a = {!!}
 lemma2a (c ⊗ c₁) a = {!!}
+
+--}
+
+xx : {b : FT} → ⟦ b ⟧ → ⟦ normalize b ⟧
+xx = {!!}
+
+lemma2a : {b₁ b₂ : FT} → (c : b₁ ⇛ b₂) → (v₁ : ⟦ b₁ ⟧) →
+          let c' = sym⇛ (normal b₁) ◎ c ◎ normal b₂ in 
+          xx (evalComb c v₁) ≡ evalComb c' (xx v₁)
+lemma2a = {!!}
+
+
 ------------------------------------------------------------------------------

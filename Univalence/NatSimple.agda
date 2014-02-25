@@ -36,9 +36,32 @@ F.zero    =F= (F.suc j)                  = no (λ ())
 ------------------------------------------------------------------
 -- Finite Types and the natural numbers are intimately related.
 
+toℕ : FT → ℕ
+toℕ ZERO = zero
+toℕ ONE = suc zero
+toℕ (PLUS b₀ b₁) = (toℕ b₀) + (toℕ b₁) 
+toℕ (TIMES b₀ b₁) = (toℕ b₀) * (toℕ b₁)
+
 fromℕ : ℕ → FT
 fromℕ zero    = ZERO
 fromℕ (suc n) = PLUS ONE (fromℕ n)
+
+normalize : FT → FT
+normalize = fromℕ ○ toℕ
+
+assocr : {m : ℕ} (n : ℕ) → (PLUS (fromℕ n) (fromℕ m)) ⇛ fromℕ (n + m)
+assocr zero = unite₊⇛
+assocr (suc n) = assocr₊⇛ ◎ (id⇛ ⊕ (assocr n))
+
+distr : (n₀ : ℕ) {n₁ : ℕ} → TIMES (fromℕ n₀) (fromℕ n₁) ⇛ fromℕ (n₀ * n₁)
+distr zero = distz⇛
+distr (suc n) {m} = dist⇛ ◎ (unite⋆⇛ ⊕ distr n) ◎ assocr m
+
+normal : (b : FT) → b ⇛ normalize b
+normal ZERO = id⇛
+normal ONE = uniti₊⇛ ◎ swap₊⇛
+normal (PLUS b₀ b₁) = (normal b₀ ⊕ normal b₁) ◎ assocr (toℕ b₀)
+normal (TIMES b₀ b₁) = (normal b₀ ⊗ normal b₁) ◎ distr (toℕ b₀)
 
 -- normalize a finite type to (1 + (1 + (1 + ... + (1 + 0) ... )))
 -- a bunch of ones ending with zero with left biased + in between
