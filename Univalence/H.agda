@@ -56,20 +56,22 @@ We have two views of permutations:
   _bijectively_.
 * syntactically they are pi-combinators
 
-The semantic view is very simple as shown below.
+First, we implement the semantic view.
 
 --}
 
 _!!_ : {A : Set} → {n : ℕ} → Vec A n → F.Fin n → A
 _!!_ v i = lookup i v
 
-evalVec : {n : ℕ} → Vec (F.Fin n) n → F.Fin n → ⟦ fromℕ n ⟧
-evalVec vec i = finToVal (vec !! i)
-
-lookupTab : {A : Set} {n : ℕ} {f : F.Fin n → A} →  (i : F.Fin n) → 
-            (tabulate f) !! i ≡ (f i)
-lookupTab {f = f} F.zero   = refl
-lookupTab        (F.suc i) = lookupTab i
+record Permutation (n : ℕ) : Set where
+  field 
+    vecF : Vec (F.Fin n) n
+    vecB : Vec (F.Fin n) n
+    vecP : {i : F.Fin n} → vecB !! (vecF !! i) ≡ i
+open Permutation
+  
+evalPerm : {n : ℕ} → Permutation n → F.Fin n → F.Fin n
+evalPerm π i = vecF π !! i
 
 {-- 
 
@@ -88,9 +90,15 @@ permutations and syntactic ones.
 
 --}
 
+lookupTab : {A : Set} {n : ℕ} {f : F.Fin n → A} →  (i : F.Fin n) → 
+            (tabulate f) !! i ≡ (f i)
+lookupTab {f = f} F.zero   = refl
+lookupTab        (F.suc i) = lookupTab i
+
 combToVec : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n
 combToVec c = tabulate (valToFin ○ evalComb c ○ finToVal)
 
+{--
 lemma2 : {n : ℕ} (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin n) → 
          (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
 lemma2 c i = begin
@@ -102,6 +110,7 @@ lemma2 c i = begin
   ≡⟨ refl ⟩ 
     evalVec (combToVec c) i
   ∎
+--}
 
 {--
 
