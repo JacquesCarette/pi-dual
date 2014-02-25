@@ -103,6 +103,14 @@ lemma2 c i = begin
     evalVec (combToVec c) i
   ∎
 
+{--
 
+We need another lemma:
+
+vecToComb c = vecToComb c'
+
+if c and c' have the same normalized types
+
+--}
 
 ------------------------------------------------------------------------------
