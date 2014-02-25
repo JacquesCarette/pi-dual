@@ -104,6 +104,26 @@ lookup∼vec (x ∷ v₁) (.x ∷ v₂) p | refl =
               (λ i → cong (_!!_ v) (lookupTab i)) ⟩
        (tabulate (λ i → v !! (ntimesD {ℕ} {F.Fin} {suc} k F.suc i))) ∎
 
+map2+id : {m n : ℕ} → (v : Vec (F.Fin n) m) → {x y : F.Fin (suc (suc n))} →
+          (vmap F.suc (vmap F.suc v)) ∘̬′
+            (x ∷ y ∷ tabulate {n} (F.suc ○ F.suc)) ≡
+          (vmap F.suc (vmap F.suc v))
+map2+id [] = refl
+map2+id {suc m} {n} (i ∷ v) {x} {y} =
+  begin
+  (vmap F.suc (vmap F.suc (i ∷ v))) ∘̬′ (x ∷ y ∷ tabulate (F.suc ○ F.suc))
+    ≡⟨ refl ⟩
+  (tabulate (F.suc ○ F.suc) !! i) ∷
+    (vmap F.suc (vmap F.suc v)) ∘̬′ (x ∷ y ∷ tabulate (F.suc ○ F.suc))
+    ≡⟨ cong (λ z → z ∷ ((vmap F.suc (vmap F.suc v))) ∘̬′ (x ∷ y ∷ tabulate (F.suc ○ F.suc)))
+            (lookupTab i) ⟩
+  F.suc (F.suc i) ∷ (vmap F.suc (vmap F.suc v) ∘̬′ (x ∷ y ∷ tabulate (F.suc ○ F.suc)))
+    ≡⟨ cong (_∷_ (F.suc (F.suc i))) (map2+id v) ⟩
+  F.suc (F.suc i) ∷ (vmap F.suc (vmap F.suc v))
+    ≡⟨ refl ⟩
+  (vmap F.suc (vmap F.suc (i ∷ v))) ∎
+
+       
 -- upTo n returns [0, 1, ..., n-1] as Fins
 upTo : (n : ℕ) → Vec (F.Fin n) n
 upTo n = tabulate {n} id

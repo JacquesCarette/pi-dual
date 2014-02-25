@@ -283,9 +283,27 @@ permLeftIdPasti (x ∷ x₁ ∷ x₂ ∷ v) (F.suc i) = refl
 
 -- it should actually be possible to recur on this!
 -- and as an added bonus, it should actually be true! [Z]
-plCorr : {m n : ℕ} (v : Vec (F.Fin (suc m)) n) (i : F.Fin n) →
-         vmap F.suc (pl′ i v F.zero) ∘̬′ swap01 ≡ pl′ i (vmap F.suc v) F.zero
-plCorr = {!!}
+plCorr : {m n : ℕ} (v : Vec (F.Fin m) n) (i : F.Fin n) →
+         vmap F.suc (pl′ i (vmap F.suc v) F.zero) ∘̬′ swap01 ≡
+         pl′ i (vmap F.suc (vmap F.suc v)) F.zero
+plCorr [] ()
+plCorr (x ∷ v) F.zero =
+  begin
+  vmap F.suc (pl′ F.zero (vmap F.suc (x ∷ v)) F.zero) ∘̬′ swap01
+    ≡⟨ refl ⟩
+  (F.suc (F.suc x) ∷ F.suc F.zero ∷ vmap F.suc (vmap F.suc v)) ∘̬′ swap01
+    ≡⟨ refl ⟩
+  ((tabulate (F.suc ○ F.suc)) !! x) ∷ (F.suc F.zero ∷ vmap F.suc (vmap F.suc v)) ∘̬′ swap01
+    ≡⟨ cong (λ x → x ∷ (F.suc F.zero ∷ vmap F.suc (vmap F.suc v)) ∘̬′ swap01)
+            (lookupTab x) ⟩
+  (F.suc (F.suc x)) ∷ ((F.suc F.zero ∷ vmap F.suc (vmap F.suc v)) ∘̬′ swap01)
+    ≡⟨ refl ⟩
+  (F.suc (F.suc x)) ∷ F.zero ∷ ((vmap F.suc (vmap F.suc v)) ∘̬′ swap01)
+    ≡⟨ cong (λ q → F.suc (F.suc x) ∷ F.zero ∷ q) (map2+id v) ⟩
+  F.suc (F.suc x) ∷ F.zero ∷ vmap F.suc (vmap F.suc v)
+    ≡⟨ refl ⟩
+  pl′ F.zero (vmap F.suc (vmap F.suc (x ∷ v))) F.zero ∎
+plCorr (x ∷ v) (F.suc i) = {!!}
 
 fzero : F.Fin 7
 fzero = F.zero
@@ -452,7 +470,11 @@ sucWorks {suc (suc n)} (F.suc i) =
     (F.suc F.zero) ∷
       ((vmap F.suc (pl′ (F.inject₁ i) (tail (upTo (suc (suc (suc n))))) F.zero))
       ∘̬′ swap01)
-      ≡⟨ cong (_∷_ (F.suc F.zero)) (plCorr (tail (upTo (suc (suc (suc n))))) (F.inject₁ i)) ⟩
+      ≡⟨ {!!} ⟩
+    {!!}
+--      ≡⟨ cong (_∷_ (F.suc F.zero)) (plCorr (tail (upTo (suc (suc (suc n))))) (F.inject₁ i)) ⟩
+--    ?
+      ≡⟨ {!!} ⟩
     (F.suc F.zero) ∷ pl′ (F.inject₁ i) (vmap F.suc (tail (upTo (suc (suc (suc n)))))) F.zero
       ≡⟨ cong (λ x → (F.suc F.zero) ∷ pl′ (F.inject₁ i) x F.zero)
                (sym (upToTail (suc (suc n)))) ⟩
