@@ -521,8 +521,8 @@ swapDownFromWorks : {n : ℕ} → (i : F.Fin n) →
 swapDownFromWorks {zero} ()
 swapDownFromWorks {suc n} F.zero = vr-id
 swapDownFromWorks {suc n} (F.suc i) with permuteRight (F.inject₁ i)
-swapDownFromWorks {suc n} (F.suc i) | F.zero ∷ z = {!vr-comp vr-swap ?!}
-swapDownFromWorks {suc n} (F.suc i) | F.suc x ∷ z = {!!}
+swapDownFromWorks {suc n} (F.suc i) | F.zero ∷ z = hetType (vr-comp vr-swap (vr-plus (swapDownFromWorks i))) (cong (vecRep (swapDownFrom (F.suc i))) {!!})
+swapDownFromWorks {suc n} (F.suc i) | F.suc x ∷ z = hetType (vr-comp vr-swap (vr-plus (swapDownFromWorks i))) (cong (vecRep (swapDownFrom (F.suc i))) {!!})
 
 -- Will probably be a key lemma in swapmnWorks
 -- XXX: probably should just be composed with ∘̬ after all instead of explicitly
