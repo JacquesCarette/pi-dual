@@ -1,10 +1,12 @@
 module H where
 
 import Data.Fin as F
+open import Data.Empty
 open import Data.Unit
 open import Data.Nat
 open import Data.Vec
 open import Data.Sum
+open import Data.Product
 open import Function renaming (_∘_ to _○_) 
 open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
@@ -122,12 +124,84 @@ lemma2a (c ⊗ c₁) a = {!!}
 
 --}
 
-xx : {b : FT} → ⟦ b ⟧ → ⟦ normalize b ⟧
-xx = {!!}
+unite₊ : {A : Set} → ⊥ ⊎ A → A
+unite₊ (inj₁ ())
+unite₊ (inj₂ y) = y
+
+uniti₊ : {A : Set} → A → ⊥ ⊎ A
+uniti₊ a = inj₂ a
+
+swap₊ : {A B : Set} → A ⊎ B → B ⊎ A
+swap₊ (inj₁ a) = inj₂ a
+swap₊ (inj₂ b) = inj₁ b
+
+unite⋆ : {A : Set} → ⊤ × A → A
+unite⋆ (tt , x) = x
+
+uniti⋆ : {A : Set} → A → ⊤ × A
+uniti⋆ x = tt , x
+
+swap⋆ : {A B : Set} → A × B → B × A
+swap⋆ (a , b) = (b , a)
+
+assocl₊ : {A B C : Set} → (A ⊎ (B ⊎ C)) → ((A ⊎ B) ⊎ C)
+assocl₊ (inj₁ a) = inj₁ (inj₁ a)
+assocl₊ (inj₂ (inj₁ b)) = inj₁ (inj₂ b)
+assocl₊ (inj₂ (inj₂ c)) = inj₂ c
+
+assocr₊ : {A B C : Set} → ((A ⊎ B) ⊎ C) → (A ⊎ (B ⊎ C))
+assocr₊ (inj₁ (inj₁ a)) = inj₁ a
+assocr₊ (inj₁ (inj₂ b)) = inj₂ (inj₁ b)
+assocr₊ (inj₂ c) = inj₂ (inj₂ c)
+
+assocl⋆ : {A B C : Set} → (A × (B × C)) → ((A × B) × C)
+assocl⋆ (a , (b , c)) = ((a , b) , c)
+
+assocr⋆ : {A B C : Set} → ((A × B) × C) → (A × (B × C))
+assocr⋆ ((a , b) , c) = (a , (b , c))
+
+distz : { A : Set} → (⊥ × A) → ⊥
+distz (() , _)
+
+factorz : {A : Set} → ⊥ → (⊥ × A)
+factorz ()
+
+dist : {A B C : Set} → ((A ⊎ B) × C) → (A × C) ⊎ (B × C)
+dist (inj₁ x , c) = inj₁ (x , c)
+dist (inj₂ y , c) = inj₂ (y , c)
+
+factor : {A B C : Set} → (A × C) ⊎ (B × C) → ((A ⊎ B) × C)
+factor (inj₁ (a , c)) = inj₁ a , c
+factor (inj₂ (b , c)) = inj₂ b , c
+
+path2Fun : {b₁ b₂ : FT} → (b₁ ⇛ b₂) → ⟦ b₁ ⟧ → ⟦ b₂ ⟧
+path2Fun unite₊⇛ = unite₊
+path2Fun uniti₊⇛ = uniti₊
+path2Fun swap₊⇛ = swap₊
+path2Fun assocl₊⇛ = assocl₊
+path2Fun assocr₊⇛ = assocr₊
+path2Fun unite⋆⇛ = unite⋆
+path2Fun uniti⋆⇛ = uniti⋆
+path2Fun swap⋆⇛ = swap⋆
+path2Fun assocl⋆⇛ = assocl⋆
+path2Fun assocr⋆⇛ = assocr⋆
+path2Fun distz⇛ = distz
+path2Fun factorz⇛ = factorz
+path2Fun dist⇛ = dist
+path2Fun factor⇛ = factor
+path2Fun id⇛ = id
+path2Fun (sym⇛ c) = {!!}
+path2Fun (c ◎ c₁) = {!!}
+path2Fun (c ⊕ c₁) = {!!}
+path2Fun (c ⊗ c₁) = {!!}
+
+normalV : {b : FT} → ⟦ b ⟧ → ⟦ normalize b ⟧
+normalV {b} = path2Fun (normal b)
+
 
 lemma2a : {b₁ b₂ : FT} → (c : b₁ ⇛ b₂) → (v₁ : ⟦ b₁ ⟧) →
           let c' = sym⇛ (normal b₁) ◎ c ◎ normal b₂ in 
-          xx (evalComb c v₁) ≡ evalComb c' (xx v₁)
+          normalV (evalComb c v₁) ≡ evalComb c' (normalV v₁)
 lemma2a = {!!}
 
 
