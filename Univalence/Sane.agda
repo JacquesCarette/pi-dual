@@ -250,8 +250,10 @@ permuteRight : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n
 permuteRight {zero} ()
 permuteRight {suc n} F.zero = upTo _
 permuteRight {suc zero} (F.suc ())
-permuteRight {suc (suc n)} (F.suc i) with permuteRight {suc n} i
-permuteRight {suc (suc n)} (F.suc i) | x ∷ xs = F.suc x ∷ F.zero ∷ vmap F.suc xs
+--permuteRight {suc (suc n)} (F.suc i) with permuteRight {suc n} i
+--permuteRight {suc (suc n)} (F.suc i) | x ∷ xs = F.suc x ∷ F.zero ∷ vmap F.suc xs
+permuteRight {suc (suc n)} (F.suc i) =
+  F.suc (head (permuteRight i)) ∷ F.zero ∷ vmap F.suc (tail (permuteRight i))
 
 -- redundant helper
 permRightID : {n : ℕ} → F.Fin n → Vec (F.Fin n) n
@@ -516,18 +518,61 @@ swapUpToWorks (F.suc i) = hetType (vr-comp (vr-plus (swapUpToWorks i)) vr-swap)
 --vr-comp (hetType (vr-plus (swapUpToWorks i)) {!!})
 --                                  (hetType vr-swap {!!})
 
+
+sdfWorks : {n : ℕ} → (i : F.Fin (suc n)) →
+           swap01 ∘̬ (F.zero ∷ vmap F.suc (permuteRight i)) ≡
+           permuteRight (F.suc i)
+sdfWorks i =
+  begin
+  swap01 ∘̬ (F.zero ∷ vmap F.suc (permuteRight i))
+    ≡⟨ ∘̬≡∘̬′ swap01 (F.zero ∷ vmap F.suc (permuteRight i)) ⟩
+  swap01 ∘̬′ (F.zero ∷ vmap F.suc (permuteRight i))
+    ≡⟨ refl ⟩
+  (vmap F.suc (permuteRight i) !! F.zero) ∷ F.zero ∷
+    (tabulate (F.suc ○ F.suc) ∘̬′ (F.zero ∷ vmap F.suc (permuteRight i)))
+    ≡⟨ cong
+         (λ q →
+            q ∷
+            F.zero ∷
+            tabulate (F.suc ○ F.suc) ∘̬′
+            (F.zero ∷ vmap F.suc (permuteRight i)))
+         (head!!0 (vmap F.suc (permuteRight i))) ⟩
+  (head (vmap F.suc (permuteRight i))) ∷ F.zero ∷
+    (tabulate (F.suc ○ F.suc) ∘̬′ (F.zero ∷ vmap F.suc (permuteRight i)))
+    ≡⟨ cong
+         (λ q →
+            q ∷
+            F.zero ∷
+            tabulate (F.suc ○ F.suc) ∘̬′
+            (F.zero ∷ vmap F.suc (permuteRight i)))
+         (headmap (permuteRight i)) ⟩
+  (F.suc (head (permuteRight i))) ∷ F.zero ∷
+    (tabulate (F.suc ○ F.suc) ∘̬′ (F.zero ∷ vmap F.suc (permuteRight i)))
+    ≡⟨ cong (λ q → F.suc (head (permuteRight i)) ∷ F.zero ∷ q)
+         (sym
+          (∘̬≡∘̬′ (tabulate (F.suc ○ F.suc))
+           (F.zero ∷ vmap F.suc (permuteRight i)))) ⟩
+  (F.suc (head (permuteRight i))) ∷ F.zero ∷
+    (tabulate (F.suc ○ F.suc) ∘̬ (F.zero ∷ vmap F.suc (permuteRight i)))
+    ≡⟨ cong (λ q → F.suc (head (permuteRight i)) ∷ F.zero ∷ q)
+         (2suc∘̬2tail (F.zero ∷ vmap F.suc (permuteRight i))) ⟩
+  (F.suc (head (permuteRight i))) ∷ F.zero ∷
+    (tail (vmap F.suc (permuteRight i)))
+    ≡⟨ cong (λ q → F.suc (head (permuteRight i)) ∷ F.zero ∷ q)
+         (tailmap (permuteRight i)) ⟩
+  (F.suc (head (permuteRight i))) ∷ F.zero ∷ (vmap F.suc (tail (permuteRight i)))
+    ≡⟨ refl ⟩    
+  permuteRight (F.suc i) ∎
+
 swapDownFromWorks : {n : ℕ} → (i : F.Fin n) →
                     vecRep (swapDownFrom i) (permuteRight (F.inject₁ i))
-swapDownFromWorks {zero} ()
-swapDownFromWorks {suc n} F.zero = vr-id
-swapDownFromWorks {suc n} (F.suc i) with permuteRight (F.inject₁ i)
-swapDownFromWorks {suc n} (F.suc i) | F.zero ∷ z = {!vr-comp vr-swap ?!}
-swapDownFromWorks {suc n} (F.suc i) | F.suc x ∷ z = {!!}
+swapDownFromWorks F.zero = vr-id
+swapDownFromWorks (F.suc i) =
+  hetType (vr-comp vr-swap (vr-plus (swapDownFromWorks i)))
+          (cong (vecRep (swapDownFrom (F.suc i))) (sdfWorks (F.inject₁ i)))
 
--- Will probably be a key lemma in swapmnWorks
--- XXX: probably should just be composed with ∘̬ after all instead of explicitly
--- including the vector as an argument (whoops), with a helper lemma that says
--- (tabulate f) ∘̬ (tabulate g) ≡ tabulate (g ○ f)
+
+-- Seems important to prove!
 shuffle : {n : ℕ} → (i : F.Fin n) →
            (permLeftID (F.inject₁ i)
           ∘̬ swapInd (F.inject₁ i) (F.suc i)
