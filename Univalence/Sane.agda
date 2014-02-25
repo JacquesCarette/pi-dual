@@ -303,7 +303,20 @@ plCorr (x ∷ v) F.zero =
   F.suc (F.suc x) ∷ F.zero ∷ vmap F.suc (vmap F.suc v)
     ≡⟨ refl ⟩
   pl′ F.zero (vmap F.suc (vmap F.suc (x ∷ v))) F.zero ∎
-plCorr (x ∷ v) (F.suc i) = {!!}
+plCorr (x ∷ v) (F.suc i) =
+  begin
+  vmap F.suc (pl′ (F.suc i) (vmap F.suc (x ∷ v)) F.zero) ∘̬′ swap01
+    ≡⟨ refl ⟩
+  (tabulate (F.suc ○ F.suc) !! x) ∷
+    ((vmap F.suc (pl′ i (vmap F.suc v) F.zero)) ∘̬′ swap01)
+    ≡⟨ cong (λ q → q ∷ ((vmap F.suc (pl′ i (vmap F.suc v) F.zero)) ∘̬′ swap01))
+            (lookupTab x) ⟩
+  F.suc (F.suc x) ∷
+    ((vmap F.suc (pl′ i (vmap F.suc v) F.zero)) ∘̬′ swap01)
+    ≡⟨ cong (_∷_ (F.suc (F.suc x))) (plCorr v i) ⟩
+  F.suc (F.suc x) ∷ pl′ i (vmap F.suc (vmap F.suc v)) F.zero
+    ≡⟨ refl ⟩
+  pl′ (F.suc i) (vmap F.suc (vmap F.suc (x ∷ v))) F.zero ∎
 
 fzero : F.Fin 7
 fzero = F.zero
@@ -468,13 +481,20 @@ sucWorks {suc (suc n)} (F.suc i) =
     ∘̬′ swap01
       ≡⟨ refl ⟩
     (F.suc F.zero) ∷
-      ((vmap F.suc (pl′ (F.inject₁ i) (tail (upTo (suc (suc (suc n))))) F.zero))
+      ((vmap F.suc (pl′ (F.inject₁ i) (tabulate F.suc) F.zero))
       ∘̬′ swap01)
-      ≡⟨ {!!} ⟩
-    {!!}
---      ≡⟨ cong (_∷_ (F.suc F.zero)) (plCorr (tail (upTo (suc (suc (suc n))))) (F.inject₁ i)) ⟩
---    ?
-      ≡⟨ {!!} ⟩
+      ≡⟨ cong
+           (λ q →
+              F.suc F.zero ∷ vmap F.suc (pl′ (F.inject₁ i) q F.zero) ∘̬′ swap01)
+           (sym (mapTab F.suc id)) ⟩
+    (F.suc F.zero) ∷
+      ((vmap F.suc (pl′ (F.inject₁ i) (vmap F.suc (tabulate id)) F.zero))
+      ∘̬′ swap01)
+      ≡⟨ cong (_∷_ (F.suc F.zero)) (plCorr (tabulate id) (F.inject₁ i)) ⟩
+    (F.suc F.zero) ∷
+      (pl′ (F.inject₁ i) (vmap F.suc (vmap F.suc (tabulate id))) F.zero)
+      ≡⟨ cong (λ q → F.suc F.zero ∷ pl′ (F.inject₁ i) (vmap F.suc q) F.zero)
+           (mapTab F.suc id) ⟩
     (F.suc F.zero) ∷ pl′ (F.inject₁ i) (vmap F.suc (tail (upTo (suc (suc (suc n)))))) F.zero
       ≡⟨ cong (λ x → (F.suc F.zero) ∷ pl′ (F.inject₁ i) x F.zero)
                (sym (upToTail (suc (suc n)))) ⟩
