@@ -12,8 +12,9 @@ open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
 
 open import FT
+open import FT-Nat
 open import Eval
-open import NatSimple
+-- open import NatSimple
 
 ------------------------------------------------------------------------------
 {--
@@ -113,4 +114,14 @@ if c and c' have the same normalized types
 
 --}
 
+lemma2a : {A : FT} (c : A ⇛ A) (a : ⟦ normalize A ⟧) →
+  let c′ = sym⇛ (normal A) ◎ c ◎ normal A in
+    evalComb c′ a ≡ evalVec (combToVec c′) (valToFin a)
+lemma2a (swap₊⇛ {b}) a = {!!}
+lemma2a swap⋆⇛ a = {!!}
+lemma2a id⇛ a = {!!}
+lemma2a (sym⇛ c) a = {!!}
+lemma2a (c ◎ c₁) a = {!!}
+lemma2a (c ⊕ c₁) a = {!!}
+lemma2a (c ⊗ c₁) a = {!!}
 ------------------------------------------------------------------------------
