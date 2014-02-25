@@ -509,40 +509,29 @@ v₁ ∘̬ v₂ = tabulate (λ i → v₂ !! (v₁ !! i))
 
 --}
 
-swapUpCompWorks : {n : ℕ} → (i : F.Fin n) →
+-- swapUpCompWorks : {n : ℕ} → (i : F.Fin n) →
+
+sucWorks : {n : ℕ} → (i : F.Fin n) →
                   (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ i) (upTo (suc n))))
                   ∘̬ swap01
-                  ≡ permuteLeft (F.inject₁ (F.suc i)) (upTo (2+ n))
-swapUpCompWorks {suc n} F.zero = lookup∼vec _ _ swapUp₀
-swapUpCompWorks (F.suc F.zero) = {!!}
-swapUpCompWorks {suc (suc n)} (F.suc (F.suc i)) = begin
-  (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ (F.suc (F.suc i))) (upTo (suc (suc (suc n))))))
-  ∘̬ swap01
-    ≡⟨ cong (λ x →(F.zero ∷ vmap F.suc x) ∘̬ swap01) (permLeft₁ i) ⟩
-  (F.zero ∷ vmap F.suc (F.suc F.zero ∷
-                        pl′ (F.inject₁ i) (tail (tail (upTo (suc (suc (suc n)))))) F.zero))
+                  ≡ pl′ {suc n} (F.inject₁ i) (tail (upTo (suc (suc n)))) F.zero
+sucWorks {suc n} F.zero =
+  begin
+    (F.zero ∷ vmap F.suc (permuteLeft F.zero (upTo (suc (suc n)))))
     ∘̬ swap01
-    ≡⟨ refl ⟩
-  (F.zero ∷ F.suc (F.suc F.zero) ∷
-          vmap F.suc (pl′ (F.inject₁ i) (tail (tail (upTo (suc (suc (suc n)))))) F.zero))
+      ≡⟨ cong (λ x → (F.zero ∷ vmap F.suc x) ∘̬ swap01)
+               (sym (permLeftId₀)) ⟩
+    (F.zero ∷ vmap F.suc (upTo (suc (suc n))))
     ∘̬ swap01
-    ≡⟨ refl ⟩
-  (F.zero ∷ F.suc (F.suc F.zero) ∷ vmap F.suc (pl′ (F.inject₁ i) (tail (tail (upTo (suc (suc (suc n)))))) F.zero))
-    ∘̬ (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ (tabulate {suc n} (F.suc ○ F.suc ○ F.suc)))
-    ≡⟨ ∘̬≡∘̬′ (F.zero ∷ F.suc (F.suc F.zero) ∷ vmap F.suc (pl′ (F.inject₁ i) (tail (tail (upTo (suc (suc (suc n)))))) F.zero))
-            (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ (tabulate {suc n} (F.suc ○ F.suc ○ F.suc))) ⟩
-  (F.zero ∷ F.suc (F.suc F.zero) ∷ vmap F.suc (pl′ (F.inject₁ i) (tail (tail (upTo (suc (suc (suc n)))))) F.zero))
-    ∘̬′ (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ (tabulate {suc n} (F.suc ○ F.suc ○ F.suc)))
-    ≡⟨ refl ⟩
-  F.suc F.zero ∷ F.suc (F.suc F.zero) ∷
-    ((vmap F.suc (pl′ (F.inject₁ i) (tabulate (F.suc ○ F.suc)) F.zero)) ∘̬′
-      (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ (tabulate {suc n} (F.suc ○ F.suc ○ F.suc))))
-    ≡⟨ cong (λ x → F.suc F.zero ∷ F.suc (F.suc F.zero) ∷ x) (plcomp i) ⟩
-   F.suc F.zero ∷ F.suc (F.suc F.zero) ∷
-    pl′ (F.inject₁ i) (tabulate (F.suc ○ F.suc ○ F.suc)) F.zero
-    ≡⟨ permLeft₂ i ⟩
-  permuteLeft (F.inject₁ (F.suc (F.suc (F.suc i)))) (upTo (suc (suc (suc (suc n))))) ∎
-
+       ≡⟨ cong (λ x → (F.zero ∷ x) ∘̬ swap01) ((mapTab F.suc id)) ⟩
+    upTo (suc (suc (suc n))) ∘̬ swap01
+      ≡⟨ ∘̬simpleid swap01 ⟩
+    swap01
+      ≡⟨ refl ⟩
+    pl′ F.zero (tail (upTo (suc (suc (suc n))))) F.zero ∎
+sucWorks {suc zero} (F.suc ())
+sucWorks {suc (suc n)} (F.suc i) = {!!}
+  
 -- NB: I added the F.inject₁ in calls to permuteLeft/Right to get it to work
 -- with swapUpTo/DownFrom; I'm not sure that this is correct? It might
 -- be a sign that the type of the swap functions is too specific, instead.
@@ -551,7 +540,7 @@ swapUpToWorks : {n : ℕ} → (i : F.Fin n) →
                 vecRep (swapUpTo i) (permuteLeft (F.inject₁ i) (upTo (suc n)))
 swapUpToWorks F.zero = vr-id
 swapUpToWorks (F.suc i) = hetType (vr-comp (vr-plus (swapUpToWorks i)) vr-swap)
-                         (cong (vecRep (swapUpTo (F.suc i))) (swapUpCompWorks i))
+                         (cong (vecRep (swapUpTo (F.suc i))) (sucWorks i))
 -- swapUpToWorks (F.suc i) = {!(vr-comp (vr-plus (swapUpToWorks i)) vr-swap)!}
 
 --vr-comp (hetType (vr-plus (swapUpToWorks i)) {!!})
