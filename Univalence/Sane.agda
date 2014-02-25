@@ -397,6 +397,118 @@ permLeft₂ : {n : ℕ} → (i : F.Fin n) →
 permLeft₂ F.zero = refl
 permLeft₂ (F.suc i) = refl
   
+fzero : F.Fin 7
+fzero = F.zero
+
+fone : F.Fin 7
+fone = F.suc F.zero
+
+ftwo : F.Fin 7
+ftwo = F.suc (F.suc F.zero)
+
+fthree : F.Fin 7
+fthree = F.suc (F.suc (F.suc F.zero))
+
+ffour : F.Fin 7
+ffour = F.suc (F.suc (F.suc (F.suc F.zero)))
+
+ffive : F.Fin 7
+ffive = F.suc (F.suc (F.suc (F.suc (F.suc F.zero))))
+
+fsix : F.Fin 7
+fsix = F.suc (F.suc (F.suc (F.suc (F.suc (F.suc F.zero)))))
+
+--
+
+gzero : F.Fin 6
+gzero = F.zero
+
+gone : F.Fin 6
+gone = F.suc F.zero
+
+gtwo : F.Fin 6
+gtwo = F.suc (F.suc F.zero)
+
+gthree : F.Fin 6
+gthree = F.suc (F.suc (F.suc F.zero))
+
+gfour : F.Fin 6
+gfour = F.suc (F.suc (F.suc (F.suc F.zero)))
+
+gfive : F.Fin 6
+gfive = F.suc (F.suc (F.suc (F.suc (F.suc F.zero))))
+
+-- i=3
+-- n=5
+
+test1 : Vec (F.Fin 7) 7
+test1 = permuteLeft 
+          ffour 
+          (fzero ∷ fone ∷ ftwo ∷ fthree ∷ ffour ∷ ffive ∷ fsix ∷ [])
+
+{--
+test1 = (0 1)
+        (1 2)
+        (2 3)
+        (3 4)
+        (4 0)
+        (5 5)
+        (6 6)
+--}
+
+test2 : Vec (F.Fin 6) 6
+test2 = permuteLeft 
+          gthree
+          (gzero ∷ gone ∷ gtwo ∷ gthree ∷ gfour ∷ gfive ∷ [])
+
+{--
+test2 = (0 1)
+        (1 2)
+        (2 3)
+        (3 0)
+        (4 4)
+        (5 5)
+
+vmap F.suc test2 = 
+        (0 2)
+        (1 3)
+        (2 4)
+        (3 5)
+        (4 6)
+        (5 7)
+
+F.zero ∷ vmap F.suc test2 = 
+        (0 0)
+        (1 2)
+        (2 3)
+        (3 4)
+        (4 5)
+        (5 6)
+        (6 7)
+
+swap01 = 
+        (0 1)
+        (1 0)
+        (2 2)
+        (3 3)
+        (4 4)
+        (5 5)
+        (6 6)
+
+(F.zero ∷ vmap F.suc test2) ∘̬ swap01 = 
+        (0 1)
+        (1 2)
+        (2 3)
+        (3 4)
+        (4 5)
+        (5 6)
+        (6 ERROR)
+
+_∘̬_ : {m n : ℕ} {A : Set} → Vec (F.Fin n) m → Vec A n → Vec A m 
+v₁ ∘̬ v₂ = tabulate (λ i → v₂ !! (v₁ !! i))
+
+--}
+
 swapUpCompWorks : {n : ℕ} → (i : F.Fin n) →
                   (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ i) (upTo (suc n))))
                   ∘̬ swap01
