@@ -19,8 +19,8 @@ open import NatSimple
 {--
 We have two views of the type 4:
 
-* semantically this is the set {0,1,2,3}
-* syntactically this is the pi-type 
+* semantically as the set {0,1,2,3} 
+* syntactically as a family of pi-types with a canonical representative:
     PLUS ONE (PLUS ONE (PLUS ONE (PLUS ONE ZERO)))
   whose elements are:
     inj₁ tt
@@ -29,7 +29,7 @@ We have two views of the type 4:
     inj₂ (inj₂ (inj₂ (inj₁ tt)))
 
 The following two functions map between a semantic value and a syntactic
-element.
+element from the canonical representative.
 
 The two functions are inverses.
 
@@ -53,18 +53,18 @@ finToValToFin {suc n} (inj₂ v) = cong inj₂ (finToValToFin v)
 
 We have two views of permutations:
 * semantically they are vectors 'v' such that 'i' maps to (v !! i)
-     _bijectively_.
+  _bijectively_.
 * syntactically they are pi-combinators
 
 The semantic view is very simple as shown below.
 
 --}
 
-evalVec : {n : ℕ} → Vec (F.Fin n) n → F.Fin n → ⟦ fromℕ n ⟧
-evalVec vec i = finToVal (lookup i vec)
-
 _!!_ : {A : Set} → {n : ℕ} → Vec A n → F.Fin n → A
 _!!_ v i = lookup i v
+
+evalVec : {n : ℕ} → Vec (F.Fin n) n → F.Fin n → ⟦ fromℕ n ⟧
+evalVec vec i = finToVal (vec !! i)
 
 lookupTab : {A : Set} {n : ℕ} {f : F.Fin n → A} →  (i : F.Fin n) → 
             (tabulate f) !! i ≡ (f i)
@@ -76,7 +76,7 @@ lookupTab        (F.suc i) = lookupTab i
 A pi-combinator 'c : 4 => 4' can be converted to a 
 vector 'v' = combToVec c where:
 
-v !! i = valToFin (evalComb c (finToVal i))
+  v !! i = valToFin (evalComb c (finToVal i))
 
 The following lemma shows that:
   evaluating a syntactic combinator on a syntactic value
@@ -89,12 +89,20 @@ permutations and syntactic ones.
 --}
 
 combToVec : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n
-combToVec c = tabulate (valToFin ○ (evalComb c) ○ finToVal)
+combToVec c = tabulate (valToFin ○ evalComb c ○ finToVal)
 
 lemma2 : {n : ℕ} (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin n) → 
          (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
-lemma2 c i = 
-  (sym (finToValToFin _)) ∘ 
-  (cong finToVal (sym (lookupTab {f = λ i → valToFin (evalComb c (finToVal i))} i)))
+lemma2 c i = begin
+    (evalComb c ○ finToVal) i
+  ≡⟨ sym (finToValToFin _) ⟩
+    finToVal ((valToFin ○ evalComb c ○ finToVal) i)
+  ≡⟨ cong finToVal (sym (lookupTab {f = valToFin ○ evalComb c ○ finToVal} i)) ⟩
+    finToVal ((tabulate (valToFin ○ evalComb c ○ finToVal)) !!  i)
+  ≡⟨ refl ⟩ 
+    evalVec (combToVec c) i
+  ∎
+
+
 
 ------------------------------------------------------------------------------
