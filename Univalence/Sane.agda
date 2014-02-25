@@ -281,122 +281,12 @@ permLeftIdPasti : {n : ℕ} → (v : Vec (F.Fin (2+ n)) (2+ n)) →
 permLeftIdPasti (x ∷ x₁ ∷ x₂ ∷ v) F.zero = refl
 permLeftIdPasti (x ∷ x₁ ∷ x₂ ∷ v) (F.suc i) = refl
 
-swapUp₀ : {n : ℕ} → (i : F.Fin (3+ n)) →
-          ((F.zero ∷ vmap F.suc ((permuteLeft F.zero) (upTo (2+ n))))
-          ∘̬ swap01) !! i
-          ≡
-          permuteLeft (F.suc F.zero) (upTo (3+ n)) !! i
-swapUp₀ {n} F.zero = refl -- (F.suc F.zero)
-swapUp₀ {n} (F.suc F.zero) = begin
-        ((F.zero ∷ vmap F.suc (permuteLeft F.zero (upTo (2+ n))))
-        ∘̬ swap01 ) !! F.suc F.zero
-          ≡⟨ refl ⟩
-        swap01 !!
-        (((F.zero ∷ vmap F.suc (permuteLeft F.zero (upTo (2+ n)))) !! F.suc F.zero))
-          ≡⟨ refl ⟩
-        swap01 !!
-        (((vmap F.suc (permuteLeft F.zero (upTo (2+ n)))) !! F.zero))
-          ≡⟨ cong (λ x → swap01 !! (vmap F.suc x !! F.zero))
-                (sym permLeftId₀) ⟩
-        swap01 !!
-        (((vmap F.suc (upTo (2+ n))) !! F.zero))
-          ≡⟨ cong (λ x → swap01 !! x) (map!! F.suc (upTo _) F.zero) ⟩
-        swap01 !! (F.suc F.zero)
-          ≡⟨ refl {--F.zero--} ⟩
-        F.zero
-          ≡⟨ sym (lookupTab {f = id} F.zero) ⟩
-        upTo (3+ n) !! F.zero
-          ≡⟨ refl {--F.zero--} ⟩
-        permuteLeft (F.suc F.zero) (upTo (3+ n)) !! F.suc F.zero ∎
-         
-swapUp₀ {n} (F.suc (F.suc i)) = begin
-  ((F.zero ∷ vmap F.suc (permuteLeft F.zero (upTo (suc (suc n))))) ∘̬
-     swap01) !! F.suc (F.suc i)
-    ≡⟨ lookupTab
-         {f = λ x → swap01 !!
-                  ((F.zero ∷ vmap F.suc (permuteLeft F.zero (upTo (2+ n)))) !! x)}
-         (F2+ i) ⟩
-  swap01 !! ((F.zero ∷ vmap F.suc (permuteLeft F.zero (upTo (2+ n)))) !! F2+ i)
-    ≡⟨ cong (λ x → swap01 !! ((F.zero ∷ vmap F.suc x) !! F2+ i)) (sym permLeftId₀) ⟩
-  swap01 !! ((F.zero ∷ vmap F.suc (upTo (2+ n))) !! F2+ i)
-    ≡⟨ cong (λ x → swap01 !! x)
-          (map!! F.suc (upTo (2+ n)) (F.suc i)) ⟩
-   swap01 !! F.suc (upTo (2+ n) !! F.suc i)
-    ≡⟨ cong (λ x → swap01 !! F.suc x) (lookupTab {f = id} (F.suc i)) ⟩
-  tabulate F2+ !! i
-    ≡⟨ sym (permLeftIdPasti (upTo (3+ n)) i) ⟩
-  permuteLeft (F.suc F.zero) (upTo (3+ n)) !! F2+ i ∎
+-- it should actually be possible to recur on this!
+-- and as an added bonus, it should actually be true! [Z]
+plCorr : {m n : ℕ} (v : Vec (F.Fin (suc m)) n) (i : F.Fin n) →
+         vmap F.suc (pl′ i v F.zero) ∘̬′ swap01 ≡ pl′ i (vmap F.suc v) F.zero
+plCorr = {!!}
 
-plcomp : {n : ℕ} → (i : F.Fin n) →
-         ((vmap F.suc (pl′ (F.inject₁ i) (tabulate (F.suc ○ F.suc)) F.zero)) ∘̬′
-           (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ (tabulate {suc n} (F.suc ○ F.suc ○ F.suc))))
-         ≡
-         pl′ (F.inject₁ i) (tabulate (F.suc ○ F.suc ○ F.suc)) F.zero
-plcomp {suc n} F.zero = begin
-  ((vmap F.suc (pl′ (F.inject₁ F.zero) (tabulate (F.suc ○ F.suc)) F.zero)) ∘̬′
-    (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))
-    ≡⟨ refl ⟩
-  ((vmap F.suc (F.suc (F.suc F.zero) ∷ F.zero ∷ tabulate (F.suc ○ F.suc ○ F.suc))) ∘̬′
-    (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))
-    ≡⟨ refl ⟩
-  ((F.suc (F.suc (F.suc F.zero)) ∷ F.suc F.zero ∷ vmap F.suc (tabulate (F.suc ○ F.suc ○ F.suc))) ∘̬′
-    (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))
-    ≡⟨ cong
-         (λ x →
-           ((F.suc (F.suc (F.suc F.zero)) ∷ F.suc F.zero ∷ x) ∘̬′
-             (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
-               (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc)))))
-         (mapTab F.suc (F.suc ○ F.suc ○ F.suc)) ⟩
-  ((F.suc (F.suc (F.suc F.zero)) ∷ F.suc F.zero ∷
-    (tabulate (F.suc ○ F.suc ○ F.suc ○ F.suc))) ∘̬′
-  (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
-    (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))
-    ≡⟨ refl ⟩
-  F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷
-  (((tabulate (F.suc ○ F.suc ○ F.suc ○ F.suc))) ∘̬′
-  (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
-    (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))
-    ≡⟨ cong (λ x → F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷ x)
-       (sym (∘̬≡∘̬′
-            (tabulate (F.suc ○ F.suc ○ F.suc ○ F.suc))
-            ((F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
-              (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc)))))) ⟩
-  F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷
-  (((tabulate (F.suc ○ F.suc ○ F.suc ○ F.suc))) ∘̬
-  (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
-    (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))
-    ≡⟨ cong (λ x → F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷ x)
-          (∘̬id (suc (suc (suc (suc zero))))
-               (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
-                 (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))  ⟩
-  {--F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷
-  (((tabulate (F.suc ○ F.suc ○ F.suc ○ F.suc))) ∘̬
-  (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
-    (tabulate {suc (suc n)} (F.suc ○ F.suc ○ F.suc))))--}
-  (F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷
-    tabulate {suc n}
-      (λ i → (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷
-        (tabulate (F.suc ○ F.suc ○ F.suc))) !!
-          (ntimesD {ℕ} {F.Fin} {suc} (suc (suc (suc (suc zero)))) F.suc i)))
-  ≡⟨ cong (λ x → F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷ x) {!!} ⟩
-  F.suc (F.suc (F.suc F.zero)) ∷ F.zero ∷ tabulate (F.suc ○ F.suc ○ F.suc ○ F.suc)
-    ≡⟨ refl ⟩    
-  pl′ (F.inject₁ F.zero) (tabulate (F.suc ○ F.suc ○ F.suc)) F.zero ∎  
-plcomp (F.suc i) = {!!}         
-
-permLeft₁ : {n : ℕ} → (i : F.Fin n) →
-            permuteLeft (F.inject₁ (F2+ i)) (upTo (3+ n)) ≡
-            F.suc F.zero ∷ pl′ (F.inject₁ i) (tabulate (F.suc ○ F.suc)) F.zero
-permLeft₁ i = refl
-
--- makes sure we have at least two elements on the front of permLeft to reason about
-permLeft₂ : {n : ℕ} → (i : F.Fin n) →
-            F.suc F.zero ∷ F.suc (F.suc F.zero) ∷
-              pl′ (F.inject₁ i) (tabulate (F.suc ○ F.suc ○ F.suc)) F.zero ≡
-            permuteLeft (F.inject₁ (F3+ i)) (upTo (suc (3+ n)))
-permLeft₂ F.zero = refl
-permLeft₂ (F.suc i) = refl
-  
 fzero : F.Fin 7
 fzero = F.zero
 
@@ -473,18 +363,18 @@ vmap F.suc test2 =
         (0 2)
         (1 3)
         (2 4)
-        (3 5)
-        (4 6)
-        (5 7)
+        (3 1)
+        (4 5)
+        (5 6)
 
 F.zero ∷ vmap F.suc test2 = 
         (0 0)
         (1 2)
         (2 3)
         (3 4)
-        (4 5)
-        (5 6)
-        (6 7)
+        (4 1)
+        (5 5)
+        (6 6)
 
 swap01 = 
         (0 1)
@@ -500,17 +390,22 @@ swap01 =
         (1 2)
         (2 3)
         (3 4)
-        (4 5)
-        (5 6)
-        (6 ERROR)
+        (4 0)
+        (5 5)
+        (6 6)
 
 _∘̬_ : {m n : ℕ} {A : Set} → Vec (F.Fin n) m → Vec A n → Vec A m 
 v₁ ∘̬ v₂ = tabulate (λ i → v₂ !! (v₁ !! i))
 
 --}
 
--- swapUpCompWorks : {n : ℕ} → (i : F.Fin n) →
-
+-- glue lemma between plCorr and swapUpToWorks to deal with the difference between
+-- the result type of swapUpToWorks and the result type of the VecRep combinators
+-- We need this glue here to get from swapUpToWorks (which has two calls to permuteLeft)
+-- to plCorr (which has two calls to pl′), since permuteLeft is a wrapper around pl′.
+-- Once we've removed the wrapper, we can eat the delicious candy^W^W^W^Wactually do
+-- induction; hopefully the type of plCorr is general enough for this but not too general
+-- to, er, be true. [Z]
 sucWorks : {n : ℕ} → (i : F.Fin n) →
                   (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ i) (upTo (suc n))))
                   ∘̬ swap01
@@ -530,7 +425,31 @@ sucWorks {suc n} F.zero =
       ≡⟨ refl ⟩
     pl′ F.zero (tail (upTo (suc (suc (suc n))))) F.zero ∎
 sucWorks {suc zero} (F.suc ())
-sucWorks {suc (suc n)} (F.suc i) = {!!}
+sucWorks {suc (suc n)} (F.suc i) =
+  begin
+    (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ (F.suc i)) (upTo (suc (suc (suc n))))))
+    ∘̬ swap01
+      ≡⟨ ∘̬≡∘̬′
+           (F.zero ∷
+            vmap F.suc
+            (permuteLeft (F.inject₁ (F.suc i)) (upTo (suc (suc (suc n))))))
+           swap01 ⟩
+    (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ (F.suc i)) (upTo (suc (suc (suc n))))))
+    ∘̬′ swap01
+      ≡⟨ refl ⟩
+    (F.zero ∷ vmap F.suc (pl′ (F.inject₁ i) (tail (upTo (suc (suc (suc n))))) F.zero))
+    ∘̬′ swap01
+      ≡⟨ refl ⟩
+    (F.suc F.zero) ∷
+      ((vmap F.suc (pl′ (F.inject₁ i) (tail (upTo (suc (suc (suc n))))) F.zero))
+      ∘̬′ swap01)
+      ≡⟨ cong (_∷_ (F.suc F.zero)) (plCorr (tail (upTo (suc (suc (suc n))))) (F.inject₁ i)) ⟩
+    (F.suc F.zero) ∷ pl′ (F.inject₁ i) (vmap F.suc (tail (upTo (suc (suc (suc n)))))) F.zero
+      ≡⟨ cong (λ x → (F.suc F.zero) ∷ pl′ (F.inject₁ i) x F.zero)
+               (sym (upToTail (suc (suc n)))) ⟩
+    F.suc F.zero ∷ pl′ (F.inject₁ i) (tail (tail (upTo (suc (suc (suc (suc n))))))) F.zero
+      ≡⟨ refl ⟩
+    pl′ (F.inject₁ (F.suc i)) (tail (upTo (suc (suc (suc (suc n)))))) F.zero ∎
   
 -- NB: I added the F.inject₁ in calls to permuteLeft/Right to get it to work
 -- with swapUpTo/DownFrom; I'm not sure that this is correct? It might

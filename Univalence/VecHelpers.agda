@@ -108,6 +108,15 @@ lookup∼vec (x ∷ v₁) (.x ∷ v₂) p | refl =
 upTo : (n : ℕ) → Vec (F.Fin n) n
 upTo n = tabulate {n} id
 
+upToTail : (n : ℕ) → (tail (tail (upTo (suc (suc n))))) ≡ (vmap F.suc (tail (upTo (suc n))))
+upToTail n =
+  begin
+  tail (tail (upTo (suc (suc n))))
+    ≡⟨ refl ⟩
+  tabulate (F.suc ○ F.suc)
+    ≡⟨ sym (mapTab F.suc F.suc) ⟩    
+  vmap F.suc (tabulate F.suc) ∎
+
 sidfn : {A : Set} {n : ℕ} (v : Vec A n) (i : F.Fin n) →
         ((upTo n) ∘̬ v) !! i ≡ v !! i
 sidfn {n = n} v i =
