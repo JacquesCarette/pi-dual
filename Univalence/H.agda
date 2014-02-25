@@ -53,6 +53,7 @@ finToValToFin {suc n} (inj₂ v) = cong inj₂ (finToValToFin v)
 
 We have two views of permutations:
 * semantically they are vectors 'v' such that 'i' maps to (v !! i)
+     _bijectively_.
 * syntactically they are pi-combinators
 
 The semantic view is very simple as shown below.
@@ -72,7 +73,8 @@ lookupTab        (F.suc i) = lookupTab i
 
 {-- 
 
-A pi-combinator 'c : 4 => 4' can be converted to a vector 'v' where:
+A pi-combinator 'c : 4 => 4' can be converted to a 
+vector 'v' = combToVec c where:
 
 v !! i = valToFin (evalComb c (finToVal i))
 
@@ -91,6 +93,8 @@ combToVec c = tabulate (valToFin ○ (evalComb c) ○ finToVal)
 
 lemma2 : {n : ℕ} (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin n) → 
          (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
-lemma2 c i = (sym (finToValToFin _)) ∘ (cong finToVal (sym (lookupTab i)))
+lemma2 c i = 
+  (sym (finToValToFin _)) ∘ 
+  (cong finToVal (sym (lookupTab {f = λ i → valToFin (evalComb c (finToVal i))} i)))
 
 ------------------------------------------------------------------------------
