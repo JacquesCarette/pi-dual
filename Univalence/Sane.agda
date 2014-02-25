@@ -281,6 +281,14 @@ permLeftIdPasti : {n : ℕ} → (v : Vec (F.Fin (2+ n)) (2+ n)) →
 permLeftIdPasti (x ∷ x₁ ∷ x₂ ∷ v) F.zero = refl
 permLeftIdPasti (x ∷ x₁ ∷ x₂ ∷ v) (F.suc i) = refl
 
+-- it should actually be possible to recur on this!
+-- and as an added bonus, it should actually be true! [Z]
+plCorr : {m n : ℕ} (v : Vec (F.Fin (suc m)) n) (i : F.Fin n) →
+         vmap F.suc (pl′ i v F.zero) ∘̬′ swap01 ≡ pl′ i (vmap F.suc v) F.zero
+plCorr = {!!}
+
+-- glue lemma between plCorr and swapUpToWorks to deal with the difference betwe
+-- the result type of swapUpToWorks and the result type of the VecRep combinators
 sucWorks : {n : ℕ} → (i : F.Fin n) →
                   (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ i) (upTo (suc n))))
                   ∘̬ swap01
@@ -300,7 +308,31 @@ sucWorks {suc n} F.zero =
       ≡⟨ refl ⟩
     pl′ F.zero (tail (upTo (suc (suc (suc n))))) F.zero ∎
 sucWorks {suc zero} (F.suc ())
-sucWorks {suc (suc n)} (F.suc i) = {!!}
+sucWorks {suc (suc n)} (F.suc i) =
+  begin
+    (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ (F.suc i)) (upTo (suc (suc (suc n))))))
+    ∘̬ swap01
+      ≡⟨ ∘̬≡∘̬′
+           (F.zero ∷
+            vmap F.suc
+            (permuteLeft (F.inject₁ (F.suc i)) (upTo (suc (suc (suc n))))))
+           swap01 ⟩
+    (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ (F.suc i)) (upTo (suc (suc (suc n))))))
+    ∘̬′ swap01
+      ≡⟨ refl ⟩
+    (F.zero ∷ vmap F.suc (pl′ (F.inject₁ i) (tail (upTo (suc (suc (suc n))))) F.zero))
+    ∘̬′ swap01
+      ≡⟨ refl ⟩
+    (F.suc F.zero) ∷
+      ((vmap F.suc (pl′ (F.inject₁ i) (tail (upTo (suc (suc (suc n))))) F.zero))
+      ∘̬′ swap01)
+      ≡⟨ cong (_∷_ (F.suc F.zero)) (plCorr (tail (upTo (suc (suc (suc n))))) (F.inject₁ i)) ⟩
+    (F.suc F.zero) ∷ pl′ (F.inject₁ i) (vmap F.suc (tail (upTo (suc (suc (suc n)))))) F.zero
+      ≡⟨ cong (λ x → (F.suc F.zero) ∷ pl′ (F.inject₁ i) x F.zero)
+               (sym (upToTail (suc (suc n)))) ⟩
+    F.suc F.zero ∷ pl′ (F.inject₁ i) (tail (tail (upTo (suc (suc (suc (suc n))))))) F.zero
+      ≡⟨ refl ⟩
+    pl′ (F.inject₁ (F.suc i)) (tail (upTo (suc (suc (suc (suc n)))))) F.zero ∎
   
 -- NB: I added the F.inject₁ in calls to permuteLeft/Right to get it to work
 -- with swapUpTo/DownFrom; I'm not sure that this is correct? It might
