@@ -10,7 +10,7 @@ open import Data.Product renaming (map to _×→_)
 open import Function renaming (_∘_ to _○_)
 
 -- explicit using to show how little of HoTT is needed
-open import HoTT using (refl; ap; ap2)  
+open import SimpleHoTT using (refl; ap; ap2)  
 open import Equivalences
 
 ------------------------------------------------------------------------------

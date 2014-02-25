@@ -7,7 +7,7 @@ open import Data.Sum renaming (map to _⊎→_)
 open import Data.Product renaming (map to _×→_)
 open import Function renaming (_∘_ to _○_)
 
-open import HoTT
+open import SimpleHoTT
 
 infix  4  _∼_   -- homotopy between two functions 
 infix  4  _≃_   -- type of equivalences
