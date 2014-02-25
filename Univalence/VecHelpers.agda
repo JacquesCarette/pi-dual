@@ -103,11 +103,24 @@ lookup∼vec (x ∷ v₁) (.x ∷ v₂) p | refl =
               (λ i → v !! ntimesD {ℕ} {F.Fin} {suc} k F.suc i)
               (λ i → cong (_!!_ v) (lookupTab i)) ⟩
        (tabulate (λ i → v !! (ntimesD {ℕ} {F.Fin} {suc} k F.suc i))) ∎
-  
+
 -- upTo n returns [0, 1, ..., n-1] as Fins
 upTo : (n : ℕ) → Vec (F.Fin n) n
 upTo n = tabulate {n} id
 
+sidfn : {A : Set} {n : ℕ} (v : Vec A n) (i : F.Fin n) →
+        ((upTo n) ∘̬ v) !! i ≡ v !! i
+sidfn {n = n} v i =
+  begin
+  ((upTo n) ∘̬ v) !! i
+    ≡⟨ lookupTab {f = λ x → v !! ((upTo n) !! x)} i ⟩
+  v !! ((upTo n) !! i)
+    ≡⟨ cong (_!!_ v) (lookupTab {f = id} i) ⟩
+  v !! i ∎
+
+∘̬simpleid : {A : Set} {n : ℕ} (v : Vec A n) → (upTo n) ∘̬ v ≡ v
+∘̬simpleid {n = n} v = lookup∼vec (upTo n ∘̬ v) v (sidfn v)
+       
 lookupMap : {A B : Set} → {n : ℕ} → {f : A → B} → 
             (i : F.Fin n) → (v : Vec A n) → 
             lookup i (vmap f v) ≡ f (lookup i v)
