@@ -287,9 +287,6 @@ plCorr : {m n : ℕ} (v : Vec (F.Fin (suc m)) n) (i : F.Fin n) →
          vmap F.suc (pl′ i v F.zero) ∘̬′ swap01 ≡ pl′ i (vmap F.suc v) F.zero
 plCorr = {!!}
 
--- glue lemma between plCorr and swapUpToWorks to deal with the difference betwe
--- the result type of swapUpToWorks and the result type of the VecRep combinators
-  
 fzero : F.Fin 7
 fzero = F.zero
 
@@ -401,6 +398,14 @@ _∘̬_ : {m n : ℕ} {A : Set} → Vec (F.Fin n) m → Vec A n → Vec A m
 v₁ ∘̬ v₂ = tabulate (λ i → v₂ !! (v₁ !! i))
 
 --}
+
+-- glue lemma between plCorr and swapUpToWorks to deal with the difference between
+-- the result type of swapUpToWorks and the result type of the VecRep combinators
+-- We need this glue here to get from swapUpToWorks (which has two calls to permuteLeft)
+-- to plCorr (which has two calls to pl′), since permuteLeft is a wrapper around pl′.
+-- Once we've removed the wrapper, we can eat the delicious candy^W^W^W^Wactually do
+-- induction; hopefully the type of plCorr is general enough for this but not too general
+-- to, er, be true. [Z]
 sucWorks : {n : ℕ} → (i : F.Fin n) →
                   (F.zero ∷ vmap F.suc (permuteLeft (F.inject₁ i) (upTo (suc n))))
                   ∘̬ swap01
