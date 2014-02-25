@@ -393,7 +393,16 @@ swap01 =
         (4 0)
         (5 5)
         (6 6)
+        
+test1 = (0 1)
+        (1 2)
+        (2 3)
+        (3 4)
+        (4 0)
+        (5 5)
+        (6 6)
 
+        
 _∘̬_ : {m n : ℕ} {A : Set} → Vec (F.Fin n) m → Vec A n → Vec A m 
 v₁ ∘̬ v₂ = tabulate (λ i → v₂ !! (v₁ !! i))
 
