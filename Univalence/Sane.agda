@@ -823,18 +823,20 @@ pl2 = permuteLeft (F.suc (F.suc F.zero)) (upTo 5)
 pr2 : Vec (F.Fin 5) 5
 pr2 = permuteRight (F.suc (F.suc F.zero))
  
-magic1 : {n : ℕ} (v : Vec (F.Fin n) n) → vecRep (vecToComb v) v
+magic1 : {n : ℕ} (v : Vec (F.Fin n) n) → vecRep (vtc′ v) v
 magic1 {zero} [] = vr-id
+magic1 {suc zero} (F.zero ∷ []) = vr-id
+magic1 {suc zero} (F.suc () ∷ [])
 -- this will need something reminiscent of LeftCancellation?
-magic1 {suc n} (F.zero ∷ v) = hetType (vr-plus {!!}) {!!}
+magic1 {suc (suc n)} (F.zero ∷ v) = hetType (vr-plus (magic1 {suc n} (vmap pred′ v))) {!!}
 -- swap and recurse?
-magic1 {suc n} (F.suc x ∷ v) = {!!}
+magic1 {suc (suc n)} (F.suc x ∷ v) = {!!}
 
 -- [JC] flip the conclusion around, as 'evalVec v i' is trivial.  Makes
 -- equational reasoning easier  
 vecToCombWorks : {n : ℕ} → 
   (v : Vec (F.Fin n) n) → (i : F.Fin n) → 
-  (evalComb (vecToComb v) (finToVal i)) ≡ (evalVec v i)
+  (evalComb (vtc′ v) (finToVal i)) ≡ (evalVec v i)
 vecToCombWorks v i = sym (vecRepWorks (magic1 v) i)
 
 {--
@@ -857,7 +859,7 @@ vecToCombWorks v i = sym (vecRepWorks (magic1 v) i)
 -- Goal: 
 
 lemma1 : {n : ℕ} (v : Vec (F.Fin n) n) → (i : F.Fin n) → 
-    (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
+    (evalVec v i) ≡ (evalComb (vtc′ v) (finToVal i))
 lemma1 v i = sym (vecToCombWorks v i)
 
 lemma2 : {n : ℕ} (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin n) → 
