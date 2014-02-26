@@ -828,7 +828,9 @@ magic1 {zero} [] = vr-id
 magic1 {suc zero} (F.zero ∷ []) = vr-id
 magic1 {suc zero} (F.suc () ∷ [])
 -- this will need something reminiscent of LeftCancellation?
-magic1 {suc (suc n)} (F.zero ∷ v) = hetType (vr-plus (magic1 {suc n} (vmap pred′ v))) {!!}
+magic1 {suc (suc n)} (F.zero ∷ v) = hetType 
+    (vr-plus (magic1 {suc n} (vmap pred′ v))) 
+    (cong (λ x → vecRep (id⇛ ⊕ vtc′ (vmap pred′ v)) (F.zero ∷ x)) {!!})
 -- swap and recurse?
 magic1 {suc (suc n)} (F.suc x ∷ v) = {!!}
 
