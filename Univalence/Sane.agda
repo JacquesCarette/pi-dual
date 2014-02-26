@@ -58,6 +58,11 @@ makeSingleComb F.zero   (F.suc i)  = id⇛
 makeSingleComb (F.suc j) F.zero   = swapDownFrom j ◎ swapi j ◎ swapUpTo j
 makeSingleComb (F.suc j) (F.suc i) = id⇛ ⊕ makeSingleComb j i
 
+-- swapm i returns a combinator that swaps 0 and i
+swapm : {n : ℕ} → F.Fin n → (fromℕ n) ⇛ (fromℕ n)
+swapm F.zero = id⇛
+swapm (F.suc i) = swapUpTo i ◎ swapi i ◎ swapDownFrom i
+
 -- Correctness: after putting together i indices, the partial combinator c' is
 -- represented by the vector [1, 2, ... , n - (i +1)] ++ (last i v)
 --
@@ -793,6 +798,31 @@ lemma3 {n} v i = begin
           tabulate id)
  ∎
 
+
+pred′ : {n : ℕ} (i : F.Fin (suc (suc n))) → F.Fin (suc n)
+pred′ F.zero = F.zero
+pred′ (F.suc i) = i
+
+vtc′ : {n : ℕ} (v : Vec (F.Fin n) n) → (fromℕ n) ⇛ (fromℕ n)
+vtc′ {zero} [] = id⇛
+vtc′ {suc zero} (x ∷ []) = id⇛ -- can only swap with itself
+vtc′ {suc (suc n)} (F.zero ∷ v) = id⇛ ⊕ (vtc′ (vmap pred′ v))
+vtc′ {suc (suc n)} ((F.suc i) ∷ v) =
+  (id⇛ ⊕ (vtc′ (vmap pred′ v))) ◎ (swapm (F.suc i))
+
+
+testvtc : {n : ℕ} → Vec (F.Fin n) n → Vec (F.Fin n) n
+testvtc v = combToVec (vtc′ v)
+
+testvtc0 : {n : ℕ} → Vec (F.Fin n) n → Vec (F.Fin n) n
+testvtc0 v = combToVec (vecToComb v)
+
+pl2 : Vec (F.Fin 5) 5
+pl2 = permuteLeft (F.suc (F.suc F.zero)) (upTo 5)
+
+pr2 : Vec (F.Fin 5) 5
+pr2 = permuteRight (F.suc (F.suc F.zero))
+ 
 magic1 : {n : ℕ} (v : Vec (F.Fin n) n) → vecRep (vecToComb v) v
 magic1 {zero} [] = vr-id
 -- this will need something reminiscent of LeftCancellation?
