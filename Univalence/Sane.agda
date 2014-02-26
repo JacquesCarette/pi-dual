@@ -577,7 +577,8 @@ swapDownFromWorks (F.suc i) =
           (cong (vecRep (swapDownFrom (F.suc i))) (sdfWorks (F.inject₁ i)))
 
 
--- Seems important to prove!
+-- Seems important to prove!  (but not used, so commenting it out [JC])
+{-
 shuffle : {n : ℕ} → (i : F.Fin n) →
            (permLeftID (F.inject₁ i)
           ∘̬ swapInd (F.inject₁ i) (F.suc i)
@@ -586,6 +587,7 @@ shuffle : {n : ℕ} → (i : F.Fin n) →
 shuffle {zero} ()
 shuffle {suc n} F.zero = {!!}
 shuffle {suc n} (F.suc i) = {!!}
+-}
 
 _◎∘̬_ : {n : ℕ} → Compiled n → Compiled n → Compiled n
 (c₁ ► v₁ ⟨ p₁ ⟩) ◎∘̬ (c₂ ► v₂ ⟨ p₂ ⟩) = ((c₁ ◎ c₂) ► v₁ ∘̬ v₂ ⟨ vr-comp p₁ p₂ ⟩ )
@@ -869,16 +871,3 @@ lemma2 : {n : ℕ} (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin n) →
 lemma2 c i = combToVecWorks c i
 
 ----------------------------------------------------------------
-
-lemma14 : {n : ℕ} → (i j k : F.Fin n) → 
-    evalComb (makeSingleComb i j) (finToVal k) ≡ finToVal (swapIndFn i j k)
-lemma14 {zero} () () ()
-lemma14 {suc n} F.zero F.zero F.zero = refl
-lemma14 {suc n} F.zero F.zero (F.suc k) = refl
-lemma14 {suc n} F.zero (F.suc j) F.zero = {!!}
-lemma14 {suc n} F.zero (F.suc j) (F.suc k) = {!!}
-lemma14 {suc n} (F.suc i) F.zero F.zero = {!!}
-lemma14 {suc n} (F.suc i) F.zero (F.suc k) = {!!}
-lemma14 {suc n} (F.suc i) (F.suc j) F.zero = refl
-lemma14 {suc n} (F.suc i) (F.suc j) (F.suc k) = cong inj₂ (lemma14 i j k)
-
