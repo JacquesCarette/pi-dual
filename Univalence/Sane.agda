@@ -582,7 +582,6 @@ shuffle {zero} ()
 shuffle {suc n} F.zero = {!!}
 shuffle {suc n} (F.suc i) = {!!}
 
-
 _◎∘̬_ : {n : ℕ} → Compiled n → Compiled n → Compiled n
 (c₁ ► v₁ ⟨ p₁ ⟩) ◎∘̬ (c₂ ► v₂ ⟨ p₂ ⟩) = ((c₁ ◎ c₂) ► v₁ ∘̬ v₂ ⟨ vr-comp p₁ p₂ ⟩ )
 
@@ -794,17 +793,19 @@ lemma3 {n} v i = begin
           tabulate id)
  ∎
 
+magic1 : {n : ℕ} (v : Vec (F.Fin n) n) → vecRep (vecToComb v) v
+magic1 {zero} [] = vr-id
+-- this will need something reminiscent of LeftCancellation?
+magic1 {suc n} (F.zero ∷ v) = hetType (vr-plus {!!}) {!!}
+-- swap and recurse?
+magic1 {suc n} (F.suc x ∷ v) = {!!}
+
 -- [JC] flip the conclusion around, as 'evalVec v i' is trivial.  Makes
 -- equational reasoning easier  
 vecToCombWorks : {n : ℕ} → 
   (v : Vec (F.Fin n) n) → (i : F.Fin n) → 
   (evalComb (vecToComb v) (finToVal i)) ≡ (evalVec v i)
-vecToCombWorks {n} v i = begin
-  evalComb (vecToComb v) (finToVal i)
- ≡⟨ evalComb∘foldr (finToVal i) (map (λ i → makeSingleComb (v !! i) i) (upTo n)) ⟩
-  foldl (λ _ → ⟦ fromℕ n ⟧) (λ j c → evalComb c j) (finToVal i) (map (λ i → makeSingleComb (v !! i) i) (upTo n)) 
- ≡⟨ foldl∘map (λ j c → evalComb c j) (finToVal i) makeSingleComb v (upTo n) ⟩ 
-  {!!} 
+vecToCombWorks v i = sym (vecRepWorks (magic1 v) i)
 
 {--
   foldrWorks
