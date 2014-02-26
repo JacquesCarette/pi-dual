@@ -2,7 +2,6 @@ module H where
 
 import Data.Fin as F
 open import Data.Empty
-open import Data.Unit
 open import Data.Nat
 open import Data.Vec
 open import Data.Sum
@@ -13,28 +12,75 @@ open ≡-Reasoning
 
 open import FT
 open import Eval
-open import NatSimple using (fromℕ; normal; normalize)
+open import NatSimple using (normal)
 
 ------------------------------------------------------------------------------
 {--
 We have two views of the type 4:
 
-* semantically as the set {0,1,2,3} 
+* semantically as the set {0,1,2,3} which is represented in Agda as 
+  Fin 4 and has elements 
+    F.zero 
+    F.suc F.zero
+    F.suc (F.suc F.zero)
+    F.suc (F.suc (F.suc F.zero))
+
 * syntactically as a family of pi-types with a canonical representative:
     PLUS ONE (PLUS ONE (PLUS ONE (PLUS ONE ZERO)))
+  This type maps to the Agda type:
+    ⊤ ⊎ (⊤ ⊎ (⊤ ⊎ (⊤ ⊎ ⊥)))
   whose elements are:
     inj₁ tt
     inj₂ (inj₁ tt)
     inj₂ (inj₂ (inj₁ tt))
     inj₂ (inj₂ (inj₂ (inj₁ tt)))
+  
+Other equivalent pi-types are: 
+  TIMES (PLUS ONE ONE) (PLUS ONE ONE) 
+  PLUS (TIMES ONE (PLUS ONE ONE)) (PLUS ZERO (PLUS ONE ONE))
+  etc.
+Each of pi-types of size 4 maps to:
+  PLUS ONE (PLUS ONE (PLUS ONE (PLUS ONE ZERO)))
+The general picture is as follows:
 
-The following two functions map between a semantic value and a syntactic
-element from the canonical representative.
+  pi-t1  ----------\
+                    \
+  pi-t2  -normalize--\ canonical-pi-t <----toℕ / fromℕ----> Fin n
+                     /
+  pi-t3  -----------/
 
-The two functions are inverses.
+   ...
+
 
 --}
 
+toℕ : FT → ℕ
+toℕ ZERO          = 0
+toℕ ONE           = 1
+toℕ (PLUS b₀ b₁)  = toℕ b₀ + toℕ b₁ 
+toℕ (TIMES b₀ b₁) = toℕ b₀ * toℕ b₁
+
+fromℕ : ℕ → FT
+fromℕ 0       = ZERO
+fromℕ (suc n) = PLUS ONE (fromℕ n)
+
+normalize : FT → FT
+normalize = fromℕ ○ toℕ
+
+data FV : Set where
+  Unit  : FV
+  Left  : FV → FV
+  Right : FV → FV
+  Pair  : FV → FV → FV
+
+data Type : FV → FT → Set where
+  UnitT  : Type Unit ONE 
+  LeftT  : {v : FV} {b₀ b₁ : FT} → Type v b₀ → Type (Left v) (PLUS b₀ b₁)
+  RightT : {v : FV} {b₀ b₁ : FT} → Type v b₁ → Type (Right v) (PLUS b₀ b₁)
+  PairT  : {v₁ v₂ : FV} {b₁ b₂ : FT} → Type v₁ b₁ → Type v₂ b₂ → 
+           Type (Pair v₁ v₂) (TIMES b₁ b₂)
+
+{--
 finToVal : {n : ℕ} → F.Fin n → ⟦ fromℕ n ⟧
 finToVal F.zero = inj₁ tt
 finToVal (F.suc n) = inj₂ (finToVal n)
@@ -48,7 +94,7 @@ finToValToFin : {n : ℕ} → (v : ⟦ fromℕ n ⟧) → finToVal (valToFin v) 
 finToValToFin {zero} ()
 finToValToFin {suc n} (inj₁ tt)  = refl 
 finToValToFin {suc n} (inj₂ v) = cong inj₂ (finToValToFin v)
-
+--}
 {--
 
 We have two views of permutations:
@@ -89,7 +135,7 @@ This establishes the easy part of the equivalence between semantic
 permutations and syntactic ones.
 
 --}
-
+{--
 lookupTab : {A : Set} {n : ℕ} {f : F.Fin n → A} →  (i : F.Fin n) → 
             (tabulate f) !! i ≡ (f i)
 lookupTab {f = f} F.zero   = refl
@@ -97,7 +143,7 @@ lookupTab        (F.suc i) = lookupTab i
 
 combToVec : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n
 combToVec c = tabulate (valToFin ○ evalComb c ○ finToVal)
-
+--}
 {--
 lemma2 : {n : ℕ} (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin n) → 
          (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
@@ -132,7 +178,7 @@ lemma2a (c ⊕ c₁) a = {!!}
 lemma2a (c ⊗ c₁) a = {!!}
 
 --}
-
+{--
 unite₊ : {A : Set} → ⊥ ⊎ A → A
 unite₊ (inj₁ ())
 unite₊ (inj₂ y) = y
@@ -203,15 +249,16 @@ path2Fun (sym⇛ c) = {!!}
 path2Fun (c ◎ c₁) = {!!}
 path2Fun (c ⊕ c₁) = {!!}
 path2Fun (c ⊗ c₁) = {!!}
-
+--}
+{--
 normalV : {b : FT} → ⟦ b ⟧ → ⟦ normalize b ⟧
 normalV {b} = path2Fun (normal b)
-
 
 lemma2a : {b₁ b₂ : FT} → (c : b₁ ⇛ b₂) → (v₁ : ⟦ b₁ ⟧) →
           let c' = sym⇛ (normal b₁) ◎ c ◎ normal b₂ in 
           normalV (evalComb c v₁) ≡ evalComb c' (normalV v₁)
 lemma2a = {!!}
+--}
 
 
 ------------------------------------------------------------------------------
