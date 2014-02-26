@@ -822,7 +822,12 @@ pl2 = permuteLeft (F.suc (F.suc F.zero)) (upTo 5)
 
 pr2 : Vec (F.Fin 5) 5
 pr2 = permuteRight (F.suc (F.suc F.zero))
- 
+
+
+-- Assumptions we need so far:
+-- - If the first element of a vec is zero, no other element is zero
+--   (to prove that "vmap F.suc (vmap pred′ v) == v")
+-- - Probably something for the last case, too
 magic1 : {n : ℕ} (v : Vec (F.Fin n) n) → vecRep (vtc′ v) v
 magic1 {zero} [] = vr-id
 magic1 {suc zero} (F.zero ∷ []) = vr-id
