@@ -58,6 +58,11 @@ makeSingleComb F.zero   (F.suc i)  = id⇛
 makeSingleComb (F.suc j) F.zero   = swapDownFrom j ◎ swapi j ◎ swapUpTo j
 makeSingleComb (F.suc j) (F.suc i) = id⇛ ⊕ makeSingleComb j i
 
+-- swapm i returns a combinator that swaps 0 and i
+swapm : {n : ℕ} → F.Fin n → (fromℕ n) ⇛ (fromℕ n)
+swapm F.zero = id⇛
+swapm (F.suc i) = swapUpTo i ◎ swapi i ◎ swapDownFrom i
+
 -- Correctness: after putting together i indices, the partial combinator c' is
 -- represented by the vector [1, 2, ... , n - (i +1)] ++ (last i v)
 --
@@ -250,8 +255,10 @@ permuteRight : {n : ℕ} → (i : F.Fin n) → Vec (F.Fin n) n
 permuteRight {zero} ()
 permuteRight {suc n} F.zero = upTo _
 permuteRight {suc zero} (F.suc ())
-permuteRight {suc (suc n)} (F.suc i) with permuteRight {suc n} i
-permuteRight {suc (suc n)} (F.suc i) | x ∷ xs = F.suc x ∷ F.zero ∷ vmap F.suc xs
+--permuteRight {suc (suc n)} (F.suc i) with permuteRight {suc n} i
+--permuteRight {suc (suc n)} (F.suc i) | x ∷ xs = F.suc x ∷ F.zero ∷ vmap F.suc xs
+permuteRight {suc (suc n)} (F.suc i) =
+  F.suc (head (permuteRight i)) ∷ F.zero ∷ vmap F.suc (tail (permuteRight i))
 
 -- redundant helper
 permRightID : {n : ℕ} → F.Fin n → Vec (F.Fin n) n
@@ -283,9 +290,40 @@ permLeftIdPasti (x ∷ x₁ ∷ x₂ ∷ v) (F.suc i) = refl
 
 -- it should actually be possible to recur on this!
 -- and as an added bonus, it should actually be true! [Z]
-plCorr : {m n : ℕ} (v : Vec (F.Fin (suc m)) n) (i : F.Fin n) →
-         vmap F.suc (pl′ i v F.zero) ∘̬′ swap01 ≡ pl′ i (vmap F.suc v) F.zero
-plCorr = {!!}
+plCorr : {m n : ℕ} (v : Vec (F.Fin m) n) (i : F.Fin n) →
+         vmap F.suc (pl′ i (vmap F.suc v) F.zero) ∘̬′ swap01 ≡
+         pl′ i (vmap F.suc (vmap F.suc v)) F.zero
+plCorr [] ()
+plCorr (x ∷ v) F.zero =
+  begin
+  vmap F.suc (pl′ F.zero (vmap F.suc (x ∷ v)) F.zero) ∘̬′ swap01
+    ≡⟨ refl ⟩
+  (F.suc (F.suc x) ∷ F.suc F.zero ∷ vmap F.suc (vmap F.suc v)) ∘̬′ swap01
+    ≡⟨ refl ⟩
+  ((tabulate (F.suc ○ F.suc)) !! x) ∷ (F.suc F.zero ∷ vmap F.suc (vmap F.suc v)) ∘̬′ swap01
+    ≡⟨ cong (λ x → x ∷ (F.suc F.zero ∷ vmap F.suc (vmap F.suc v)) ∘̬′ swap01)
+            (lookupTab x) ⟩
+  (F.suc (F.suc x)) ∷ ((F.suc F.zero ∷ vmap F.suc (vmap F.suc v)) ∘̬′ swap01)
+    ≡⟨ refl ⟩
+  (F.suc (F.suc x)) ∷ F.zero ∷ ((vmap F.suc (vmap F.suc v)) ∘̬′ swap01)
+    ≡⟨ cong (λ q → F.suc (F.suc x) ∷ F.zero ∷ q) (map2+id v) ⟩
+  F.suc (F.suc x) ∷ F.zero ∷ vmap F.suc (vmap F.suc v)
+    ≡⟨ refl ⟩
+  pl′ F.zero (vmap F.suc (vmap F.suc (x ∷ v))) F.zero ∎
+plCorr (x ∷ v) (F.suc i) =
+  begin
+  vmap F.suc (pl′ (F.suc i) (vmap F.suc (x ∷ v)) F.zero) ∘̬′ swap01
+    ≡⟨ refl ⟩
+  (tabulate (F.suc ○ F.suc) !! x) ∷
+    ((vmap F.suc (pl′ i (vmap F.suc v) F.zero)) ∘̬′ swap01)
+    ≡⟨ cong (λ q → q ∷ ((vmap F.suc (pl′ i (vmap F.suc v) F.zero)) ∘̬′ swap01))
+            (lookupTab x) ⟩
+  F.suc (F.suc x) ∷
+    ((vmap F.suc (pl′ i (vmap F.suc v) F.zero)) ∘̬′ swap01)
+    ≡⟨ cong (_∷_ (F.suc (F.suc x))) (plCorr v i) ⟩
+  F.suc (F.suc x) ∷ pl′ i (vmap F.suc (vmap F.suc v)) F.zero
+    ≡⟨ refl ⟩
+  pl′ (F.suc i) (vmap F.suc (vmap F.suc (x ∷ v))) F.zero ∎
 
 fzero : F.Fin 7
 fzero = F.zero
@@ -393,7 +431,16 @@ swap01 =
         (4 0)
         (5 5)
         (6 6)
+        
+test1 = (0 1)
+        (1 2)
+        (2 3)
+        (3 4)
+        (4 0)
+        (5 5)
+        (6 6)
 
+        
 _∘̬_ : {m n : ℕ} {A : Set} → Vec (F.Fin n) m → Vec A n → Vec A m 
 v₁ ∘̬ v₂ = tabulate (λ i → v₂ !! (v₁ !! i))
 
@@ -441,9 +488,20 @@ sucWorks {suc (suc n)} (F.suc i) =
     ∘̬′ swap01
       ≡⟨ refl ⟩
     (F.suc F.zero) ∷
-      ((vmap F.suc (pl′ (F.inject₁ i) (tail (upTo (suc (suc (suc n))))) F.zero))
+      ((vmap F.suc (pl′ (F.inject₁ i) (tabulate F.suc) F.zero))
       ∘̬′ swap01)
-      ≡⟨ cong (_∷_ (F.suc F.zero)) (plCorr (tail (upTo (suc (suc (suc n))))) (F.inject₁ i)) ⟩
+      ≡⟨ cong
+           (λ q →
+              F.suc F.zero ∷ vmap F.suc (pl′ (F.inject₁ i) q F.zero) ∘̬′ swap01)
+           (sym (mapTab F.suc id)) ⟩
+    (F.suc F.zero) ∷
+      ((vmap F.suc (pl′ (F.inject₁ i) (vmap F.suc (tabulate id)) F.zero))
+      ∘̬′ swap01)
+      ≡⟨ cong (_∷_ (F.suc F.zero)) (plCorr (tabulate id) (F.inject₁ i)) ⟩
+    (F.suc F.zero) ∷
+      (pl′ (F.inject₁ i) (vmap F.suc (vmap F.suc (tabulate id))) F.zero)
+      ≡⟨ cong (λ q → F.suc F.zero ∷ pl′ (F.inject₁ i) (vmap F.suc q) F.zero)
+           (mapTab F.suc id) ⟩
     (F.suc F.zero) ∷ pl′ (F.inject₁ i) (vmap F.suc (tail (upTo (suc (suc (suc n)))))) F.zero
       ≡⟨ cong (λ x → (F.suc F.zero) ∷ pl′ (F.inject₁ i) x F.zero)
                (sym (upToTail (suc (suc n)))) ⟩
@@ -465,18 +523,61 @@ swapUpToWorks (F.suc i) = hetType (vr-comp (vr-plus (swapUpToWorks i)) vr-swap)
 --vr-comp (hetType (vr-plus (swapUpToWorks i)) {!!})
 --                                  (hetType vr-swap {!!})
 
+
+sdfWorks : {n : ℕ} → (i : F.Fin (suc n)) →
+           swap01 ∘̬ (F.zero ∷ vmap F.suc (permuteRight i)) ≡
+           permuteRight (F.suc i)
+sdfWorks i =
+  begin
+  swap01 ∘̬ (F.zero ∷ vmap F.suc (permuteRight i))
+    ≡⟨ ∘̬≡∘̬′ swap01 (F.zero ∷ vmap F.suc (permuteRight i)) ⟩
+  swap01 ∘̬′ (F.zero ∷ vmap F.suc (permuteRight i))
+    ≡⟨ refl ⟩
+  (vmap F.suc (permuteRight i) !! F.zero) ∷ F.zero ∷
+    (tabulate (F.suc ○ F.suc) ∘̬′ (F.zero ∷ vmap F.suc (permuteRight i)))
+    ≡⟨ cong
+         (λ q →
+            q ∷
+            F.zero ∷
+            tabulate (F.suc ○ F.suc) ∘̬′
+            (F.zero ∷ vmap F.suc (permuteRight i)))
+         (head!!0 (vmap F.suc (permuteRight i))) ⟩
+  (head (vmap F.suc (permuteRight i))) ∷ F.zero ∷
+    (tabulate (F.suc ○ F.suc) ∘̬′ (F.zero ∷ vmap F.suc (permuteRight i)))
+    ≡⟨ cong
+         (λ q →
+            q ∷
+            F.zero ∷
+            tabulate (F.suc ○ F.suc) ∘̬′
+            (F.zero ∷ vmap F.suc (permuteRight i)))
+         (headmap (permuteRight i)) ⟩
+  (F.suc (head (permuteRight i))) ∷ F.zero ∷
+    (tabulate (F.suc ○ F.suc) ∘̬′ (F.zero ∷ vmap F.suc (permuteRight i)))
+    ≡⟨ cong (λ q → F.suc (head (permuteRight i)) ∷ F.zero ∷ q)
+         (sym
+          (∘̬≡∘̬′ (tabulate (F.suc ○ F.suc))
+           (F.zero ∷ vmap F.suc (permuteRight i)))) ⟩
+  (F.suc (head (permuteRight i))) ∷ F.zero ∷
+    (tabulate (F.suc ○ F.suc) ∘̬ (F.zero ∷ vmap F.suc (permuteRight i)))
+    ≡⟨ cong (λ q → F.suc (head (permuteRight i)) ∷ F.zero ∷ q)
+         (2suc∘̬2tail (F.zero ∷ vmap F.suc (permuteRight i))) ⟩
+  (F.suc (head (permuteRight i))) ∷ F.zero ∷
+    (tail (vmap F.suc (permuteRight i)))
+    ≡⟨ cong (λ q → F.suc (head (permuteRight i)) ∷ F.zero ∷ q)
+         (tailmap (permuteRight i)) ⟩
+  (F.suc (head (permuteRight i))) ∷ F.zero ∷ (vmap F.suc (tail (permuteRight i)))
+    ≡⟨ refl ⟩    
+  permuteRight (F.suc i) ∎
+
 swapDownFromWorks : {n : ℕ} → (i : F.Fin n) →
                     vecRep (swapDownFrom i) (permuteRight (F.inject₁ i))
-swapDownFromWorks {zero} ()
-swapDownFromWorks {suc n} F.zero = vr-id
-swapDownFromWorks {suc n} (F.suc i) with permuteRight (F.inject₁ i)
-swapDownFromWorks {suc n} (F.suc i) | F.zero ∷ z = {!vr-comp vr-swap ?!}
-swapDownFromWorks {suc n} (F.suc i) | F.suc x ∷ z = {!!}
+swapDownFromWorks F.zero = vr-id
+swapDownFromWorks (F.suc i) =
+  hetType (vr-comp vr-swap (vr-plus (swapDownFromWorks i)))
+          (cong (vecRep (swapDownFrom (F.suc i))) (sdfWorks (F.inject₁ i)))
 
--- Will probably be a key lemma in swapmnWorks
--- XXX: probably should just be composed with ∘̬ after all instead of explicitly
--- including the vector as an argument (whoops), with a helper lemma that says
--- (tabulate f) ∘̬ (tabulate g) ≡ tabulate (g ○ f)
+
+-- Seems important to prove!
 shuffle : {n : ℕ} → (i : F.Fin n) →
            (permLeftID (F.inject₁ i)
           ∘̬ swapInd (F.inject₁ i) (F.suc i)
@@ -485,7 +586,6 @@ shuffle : {n : ℕ} → (i : F.Fin n) →
 shuffle {zero} ()
 shuffle {suc n} F.zero = {!!}
 shuffle {suc n} (F.suc i) = {!!}
-
 
 _◎∘̬_ : {n : ℕ} → Compiled n → Compiled n → Compiled n
 (c₁ ► v₁ ⟨ p₁ ⟩) ◎∘̬ (c₂ ► v₂ ⟨ p₂ ⟩) = ((c₁ ◎ c₂) ► v₁ ∘̬ v₂ ⟨ vr-comp p₁ p₂ ⟩ )
@@ -698,17 +798,46 @@ lemma3 {n} v i = begin
           tabulate id)
  ∎
 
+
+pred′ : {n : ℕ} (i : F.Fin (suc (suc n))) → F.Fin (suc n)
+pred′ F.zero = F.zero
+pred′ (F.suc i) = i
+
+vtc′ : {n : ℕ} (v : Vec (F.Fin n) n) → (fromℕ n) ⇛ (fromℕ n)
+vtc′ {zero} [] = id⇛
+vtc′ {suc zero} (x ∷ []) = id⇛ -- can only swap with itself
+vtc′ {suc (suc n)} (F.zero ∷ v) = id⇛ ⊕ (vtc′ (vmap pred′ v))
+vtc′ {suc (suc n)} ((F.suc i) ∷ v) =
+  (id⇛ ⊕ (vtc′ (vmap pred′ v))) ◎ (swapm (F.suc i))
+
+
+testvtc : {n : ℕ} → Vec (F.Fin n) n → Vec (F.Fin n) n
+testvtc v = combToVec (vtc′ v)
+
+testvtc0 : {n : ℕ} → Vec (F.Fin n) n → Vec (F.Fin n) n
+testvtc0 v = combToVec (vecToComb v)
+
+pl2 : Vec (F.Fin 5) 5
+pl2 = permuteLeft (F.suc (F.suc F.zero)) (upTo 5)
+
+pr2 : Vec (F.Fin 5) 5
+pr2 = permuteRight (F.suc (F.suc F.zero))
+ 
+magic1 : {n : ℕ} (v : Vec (F.Fin n) n) → vecRep (vtc′ v) v
+magic1 {zero} [] = vr-id
+magic1 {suc zero} (F.zero ∷ []) = vr-id
+magic1 {suc zero} (F.suc () ∷ [])
+-- this will need something reminiscent of LeftCancellation?
+magic1 {suc (suc n)} (F.zero ∷ v) = hetType (vr-plus (magic1 {suc n} (vmap pred′ v))) {!!}
+-- swap and recurse?
+magic1 {suc (suc n)} (F.suc x ∷ v) = {!!}
+
 -- [JC] flip the conclusion around, as 'evalVec v i' is trivial.  Makes
 -- equational reasoning easier  
 vecToCombWorks : {n : ℕ} → 
   (v : Vec (F.Fin n) n) → (i : F.Fin n) → 
-  (evalComb (vecToComb v) (finToVal i)) ≡ (evalVec v i)
-vecToCombWorks {n} v i = begin
-  evalComb (vecToComb v) (finToVal i)
- ≡⟨ evalComb∘foldr (finToVal i) (map (λ i → makeSingleComb (v !! i) i) (upTo n)) ⟩
-  foldl (λ _ → ⟦ fromℕ n ⟧) (λ j c → evalComb c j) (finToVal i) (map (λ i → makeSingleComb (v !! i) i) (upTo n)) 
- ≡⟨ foldl∘map (λ j c → evalComb c j) (finToVal i) makeSingleComb v (upTo n) ⟩ 
-  {!!} 
+  (evalComb (vtc′ v) (finToVal i)) ≡ (evalVec v i)
+vecToCombWorks v i = sym (vecRepWorks (magic1 v) i)
 
 {--
   foldrWorks
@@ -730,7 +859,7 @@ vecToCombWorks {n} v i = begin
 -- Goal: 
 
 lemma1 : {n : ℕ} (v : Vec (F.Fin n) n) → (i : F.Fin n) → 
-    (evalVec v i) ≡ (evalComb (vecToComb v) (finToVal i))
+    (evalVec v i) ≡ (evalComb (vtc′ v) (finToVal i))
 lemma1 v i = sym (vecToCombWorks v i)
 
 lemma2 : {n : ℕ} (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin n) → 

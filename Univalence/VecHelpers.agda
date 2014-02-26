@@ -73,7 +73,7 @@ mapTab : {A B : Set} → {n : ℕ} → (f : A → B) → (g : F.Fin n → A) →
 mapTab {n = zero}  f g = refl
 mapTab {n = suc n} f g = 
   cong (_∷_ (f (g F.zero))) (mapTab {n = n} f (g ○ F.suc))
-
+  
 -- Lemma for proving that two vectors are equal if their tabulates agree
 -- on all inputs.
 tabf∼g : {n : ℕ} → {A : Set} → (f g : F.Fin n → A) → (∀ x → f x ≡ g x) →
@@ -103,6 +103,55 @@ lookup∼vec (x ∷ v₁) (.x ∷ v₂) p | refl =
               (λ i → v !! ntimesD {ℕ} {F.Fin} {suc} k F.suc i)
               (λ i → cong (_!!_ v) (lookupTab i)) ⟩
        (tabulate (λ i → v !! (ntimesD {ℕ} {F.Fin} {suc} k F.suc i))) ∎
+
+map2+id : {m n : ℕ} → (v : Vec (F.Fin n) m) → {x y : F.Fin (suc (suc n))} →
+          (vmap F.suc (vmap F.suc v)) ∘̬′
+            (x ∷ y ∷ tabulate {n} (F.suc ○ F.suc)) ≡
+          (vmap F.suc (vmap F.suc v))
+map2+id [] = refl
+map2+id {suc m} {n} (i ∷ v) {x} {y} =
+  begin
+  (vmap F.suc (vmap F.suc (i ∷ v))) ∘̬′ (x ∷ y ∷ tabulate (F.suc ○ F.suc))
+    ≡⟨ refl ⟩
+  (tabulate (F.suc ○ F.suc) !! i) ∷
+    (vmap F.suc (vmap F.suc v)) ∘̬′ (x ∷ y ∷ tabulate (F.suc ○ F.suc))
+    ≡⟨ cong (λ z → z ∷ ((vmap F.suc (vmap F.suc v))) ∘̬′ (x ∷ y ∷ tabulate (F.suc ○ F.suc)))
+            (lookupTab i) ⟩
+  F.suc (F.suc i) ∷ (vmap F.suc (vmap F.suc v) ∘̬′ (x ∷ y ∷ tabulate (F.suc ○ F.suc)))
+    ≡⟨ cong (_∷_ (F.suc (F.suc i))) (map2+id v) ⟩
+  F.suc (F.suc i) ∷ (vmap F.suc (vmap F.suc v))
+    ≡⟨ refl ⟩
+  (vmap F.suc (vmap F.suc (i ∷ v))) ∎
+
+head!!0 : {n : ℕ} {A : Set} (v : Vec A (suc n)) → v !! F.zero ≡ head v
+head!!0 (x ∷ v) = refl
+
+headmap : {n : ℕ} {A B : Set} {f : A → B} (v : Vec A (suc n)) →
+          head (vmap f v) ≡ f (head v)
+headmap (x ∷ v) = refl
+
+tailmap : {n : ℕ} {A B : Set} {f : A → B} (v : Vec A (suc n)) →
+          tail (vmap f v) ≡ vmap f (tail v)
+tailmap (x ∷ v) = refl
+
+2suc∘̬2tail : {n : ℕ} {A : Set} (v : Vec A (suc (suc n))) →
+             (tabulate (F.suc ○ F.suc)) ∘̬ v ≡ (tail (tail v))
+2suc∘̬2tail (x ∷ x₁ ∷ v) =
+  begin
+  (tabulate (F.suc ○ F.suc)) ∘̬ (x ∷ x₁ ∷ v)
+    ≡⟨ refl ⟩
+  tabulate (λ i → (x ∷ x₁ ∷ v) !! (tabulate (F.suc ○ F.suc) !! i))
+    ≡⟨ lookup∼vec
+         (tabulate (λ i → (x ∷ x₁ ∷ v) !! (tabulate (F.suc ○ F.suc) !! i)))
+         v
+         (λ i →
+           begin
+           tabulate (λ j → (x ∷ x₁ ∷ v) !! (tabulate (F.suc ○ F.suc) !! j)) !! i
+             ≡⟨ lookupTab i ⟩
+           (x ∷ x₁ ∷ v) !! (tabulate (F.suc ○ F.suc) !! i)
+             ≡⟨ cong (λ q → (x ∷ x₁ ∷ v) !! q) (lookupTab i) ⟩
+           v !! i ∎) ⟩
+  v ∎
 
 -- upTo n returns [0, 1, ..., n-1] as Fins
 upTo : (n : ℕ) → Vec (F.Fin n) n
