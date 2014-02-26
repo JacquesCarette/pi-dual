@@ -12,7 +12,7 @@ import Data.List as L
 open import Function renaming (_∘_ to _○_)
 
 open import FT
-open import HoTT using (refl; pathInd; _≡_; ap)
+open import SimpleHoTT using (refl; pathInd; _≡_; ap)
 open import Equivalences
 open import TypeEquivalences using (path⊎)
 open import Path2Equiv

@@ -8,7 +8,7 @@ open import Data.Product using (_,_; _,′_; proj₁; proj₂)
 open import Function renaming (_∘_ to _○_)
 
 -- explicit 'using', to show how little of HoTT is needed
-open import HoTT using (refl; ap; _∘_; !; _≡_; _≡⟨_⟩_ ; _∎)  
+open import SimpleHoTT using (refl; ap; _∘_; !; _≡_; _≡⟨_⟩_ ; _∎)  
 open import Equivalences
 open import TypeEquivalences using (swap₊)
 open import Inspect
