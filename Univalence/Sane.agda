@@ -800,7 +800,13 @@ lemma3 {n} v i = begin
           tabulate id)
  ∎
 
+record Permut (n : ℕ) : Set where
+  constructor per
+  field
+    vec : Vec (F.Fin n) n
+    uniq : ∀ {i j : F.Fin n} → (vec !! i) ≡ (vec !! j) → i ≡ j
 
+-- this should also take a proof that i>0.
 pred′ : {n : ℕ} (i : F.Fin (suc (suc n))) → F.Fin (suc n)
 pred′ F.zero = F.zero
 pred′ (F.suc i) = i
@@ -838,7 +844,6 @@ vtc′ {suc (suc n)} (F.zero ∷ v) = id⇛ ⊕ (vtc′ (vmap pred′ v))
 vtc′ {suc (suc n)} ((F.suc i) ∷ v) =
   (id⇛ ⊕ (vtc′ (vmap pred′ v))) ◎ (swapm (F.suc i))
 
-
 testvtc : {n : ℕ} → Vec (F.Fin n) n → Vec (F.Fin n) n
 testvtc v = combToVec (vtc′ v)
 
@@ -851,11 +856,9 @@ pl2 = permuteLeft (F.suc (F.suc F.zero)) (upTo 5)
 pr2 : Vec (F.Fin 5) 5
 pr2 = permuteRight (F.suc (F.suc F.zero))
 
--- as written, this is false.  What is really needed is that x>0 !
-pred∘suc : {n : ℕ} {x : F.Fin (suc (suc n))} → F.suc (pred′ x) ≡ x
-pred∘suc {zero} {F.zero} = {!!}
-pred∘suc {zero} {F.suc x} = refl
-pred∘suc {suc n} {x} = {!!}
+pred∘suc : {n : ℕ} (x : F.Fin (suc (suc n))) → ((F.toℕ x) > zero) → F.suc (pred′ x) ≡ x
+pred∘suc F.zero ()
+pred∘suc (F.suc _)  _ = refl
 
 -- Assumptions we need so far:
 -- - If the first element of a vec is zero, no other element is zero
