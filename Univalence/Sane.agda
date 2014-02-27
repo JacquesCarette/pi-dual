@@ -805,6 +805,32 @@ pred′ : {n : ℕ} (i : F.Fin (suc (suc n))) → F.Fin (suc n)
 pred′ F.zero = F.zero
 pred′ (F.suc i) = i
 
+record NormComb (n : ℕ) : Set where
+  constructor ⟪_,_⟫
+  field
+    v : Vec (F.Fin n) n
+    -- We can't actually have it be the stronger condition and still be
+    -- able to properly recur on it as in vtc′.
+    p : ∀ (i : F.Fin n) (j : F.Fin′ i) → (v !! (F.inject j) ≡ i) → (v !! i ≡ (F.inject j))
+
+predToSuc : {n : ℕ} (i : F.Fin (suc n)) (j : F.Fin′ i) (x : F.Fin (suc (suc n)))
+            (v : Vec (F.Fin (suc (suc n))) (suc n)) →
+            vmap pred′ v !! F.inject j ≡ i →
+            (∀ (i : F.Fin (suc (suc n))) (j : F.Fin′ i) →
+              ((x ∷ v) !! (F.inject j) ≡ i) → ((x ∷ v) !! i ≡ (F.inject j))) →
+            (x ∷ v) !! F.inject (F.suc j) ≡ F.suc i
+predToSuc i j x v p p₁ =
+  begin
+    (x ∷ v) !! F.inject (F.suc j)
+      ≡⟨ refl ⟩
+    v !! F.inject j
+      ≡⟨ {!refl!} ⟩      
+    F.suc i ∎ 
+    
+nctail : {n : ℕ} → NormComb (suc n) → NormComb n
+nctail {zero}  ⟪ x ∷ [] , p ⟫ = ⟪ [] , (λ ()) ⟫
+nctail {suc n} ⟪ x ∷ v , p ⟫ = ⟪ vmap pred′ v , {!!} ⟫
+
 vtc′ : {n : ℕ} (v : Vec (F.Fin n) n) → (fromℕ n) ⇛ (fromℕ n)
 vtc′ {zero} [] = id⇛
 vtc′ {suc zero} (x ∷ []) = id⇛ -- can only swap with itself
