@@ -851,6 +851,11 @@ pl2 = permuteLeft (F.suc (F.suc F.zero)) (upTo 5)
 pr2 : Vec (F.Fin 5) 5
 pr2 = permuteRight (F.suc (F.suc F.zero))
 
+-- as written, this is false.  What is really needed is that x>0 !
+pred∘suc : {n : ℕ} {x : F.Fin (suc (suc n))} → F.suc (pred′ x) ≡ x
+pred∘suc {zero} {F.zero} = {!!}
+pred∘suc {zero} {F.suc x} = refl
+pred∘suc {suc n} {x} = {!!}
 
 -- Assumptions we need so far:
 -- - If the first element of a vec is zero, no other element is zero
@@ -863,7 +868,8 @@ magic1 {suc zero} (F.suc () ∷ [])
 -- this will need something reminiscent of LeftCancellation?
 magic1 {suc (suc n)} (F.zero ∷ v) = hetType 
     (vr-plus (magic1 {suc n} (vmap pred′ v))) 
-    (cong (λ x → vecRep (id⇛ ⊕ vtc′ (vmap pred′ v)) (F.zero ∷ x)) {!!})
+    (cong (λ x → vecRep (id⇛ ⊕ vtc′ (vmap pred′ v)) (F.zero ∷ x)) 
+    ((vmap∘vmap F.suc pred′ v) ∘ (vmap∘id {!!}) ))
 -- swap and recurse?
 magic1 {suc (suc n)} (F.suc x ∷ v) = {!!}
 

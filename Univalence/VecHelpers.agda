@@ -191,3 +191,11 @@ lookup∘tabulate : ∀ {a n} → {A : Set a} →
 lookup∘tabulate F.zero    f = refl
 lookup∘tabulate (F.suc i) f = lookup∘tabulate i (f ○ F.suc)
 
+vmap∘vmap : {n : ℕ} {A B C : Set} (f : B → C) (g : A → B) (v : Vec A n) → 
+    vmap f (vmap g v) ≡ vmap (f ○ g) v
+vmap∘vmap {zero} f g [] = refl
+vmap∘vmap {suc n} f g (x ∷ v) = cong (λ y → f (g x) ∷ y) (vmap∘vmap f g v)
+
+vmap∘id : {n : ℕ} {A : Set} {v : Vec A n} {f : A → A } → (∀ {x} → f x ≡ x) → vmap f v ≡ v
+vmap∘id {zero} {v = []} eq = refl
+vmap∘id {suc n} {v = (x ∷ v)} {f} eq = cong₂ _∷_  eq (vmap∘id {v = v} eq)
