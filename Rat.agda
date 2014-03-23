@@ -1,5 +1,9 @@
 module Rat where
            
+-------------------------------------------------
+-- TRIM the following imports to what's necessary
+-------------------------------------------------
+
 open import Data.Bool
 open import Data.Unit
 import Data.Sign as S
@@ -29,7 +33,7 @@ open ≡-Reasoning
 -- returns them normalized as 2 and 7 and a proof that they are coprime
 
 normalize : ∀ {m n g} → {g≢0 : False (g ℕ≟ 0)} → 
-            GCD m n g → Σ[ p ∈ ℕ ] Σ[ q ∈ ℕ ] Coprime p q
+            GCD m n g → Σ[ p ∈ ℕ ] Σ[ q ∈ ℕ ] Coprime p q × False (q ℕ≟ 0)
 normalize {m} {n} {0} {()}
 normalize {m} {n} {ℕ.suc g} {_} G with Bézout.identity G 
 normalize {m} {n} {ℕ.suc g} {_} (GCD.is (divides p m≡pg' , divides q n≡qg') _)
@@ -42,7 +46,8 @@ normalize {m} {n} {ℕ.suc g} {_} (GCD.is (divides p m≡pg' , divides q n≡qg'
                ≡⟨ eq ⟩
                  x ℕ* m
                ≡⟨ cong (λ h → x ℕ* h) m≡pg' ⟩
-                 x ℕ* (p ℕ* ℕ.suc g) ∎)))
+                 x ℕ* (p ℕ* ℕ.suc g) ∎)) , 
+             {!!})
 normalize {m} {n} {ℕ.suc g} {_} (GCD.is (divides p m≡pg' , divides q n≡qg') _) 
   | Bézout.-+ x y eq = 
     (p , q , Bézout-coprime {p} {q} {g} (Bézout.-+ x y
@@ -53,7 +58,8 @@ normalize {m} {n} {ℕ.suc g} {_} (GCD.is (divides p m≡pg' , divides q n≡qg'
                ≡⟨ eq ⟩ 
                  y ℕ* n
                ≡⟨ cong (λ h → y ℕ* h) n≡qg' ⟩ 
-                 y ℕ* (q ℕ* ℕ.suc g) ∎)))
+                 y ℕ* (q ℕ* ℕ.suc g) ∎)) , 
+             {!!})
 
 -- multiplying non-zero integers gives non-zero result
 
@@ -134,9 +140,7 @@ helper* n₁ d₁ n₂ d₂ {n≢0} =
   let n = n₁ ℤ* n₂
       d = d₁ ℕ* d₂
       (g , G , g≢0) = gcdz ∣ n ∣ d {n≢0}
-      (nn , nd , nc) = normalize {∣ n ∣} {d} {g} {g≢0} G
-      nd≢0 : False (nd ℕ≟ 0)
-      nd≢0 = {!!} 
+      (nn , nd , nc , nd≢0) = normalize {∣ n ∣} {d} {g} {g≢0} G
   in ((sign n ◃ nn) ÷ nd) {fromWitness (λ {i} → sCoprime nc)} {nd≢0} 
 
 _ℚ*_ : ℚ → ℚ → ℚ
@@ -166,15 +170,11 @@ helper+ : (n : ℤ) → (d : ℕ) → ℚ
 helper+ (+ 0) d = + 0 ÷ 1
 helper+ (+ ℕ.suc n) d = 
   let (g , G , g≢0) = gcdz ∣ + ℕ.suc n ∣ d {tt}
-      (nn , nd , nc) = normalize {∣ + ℕ.suc n ∣} {d} {g} {g≢0} G
-      nd≢0 : False (nd ℕ≟ 0)
-      nd≢0 = {!!} 
+      (nn , nd , nc , nd≢0) = normalize {∣ + ℕ.suc n ∣} {d} {g} {g≢0} G
   in ((S.+ ◃ nn) ÷ nd) {fromWitness (λ {i} → sCoprime nc)} {nd≢0}
 helper+ -[1+ n ] d = 
   let (g , G , g≢0) = gcdz ∣ -[1+ n ] ∣ d {tt}
-      (nn , nd , nc) = normalize {∣ -[1+ n ] ∣} {d} {g} {g≢0} G
-      nd≢0 : False (nd ℕ≟ 0)
-      nd≢0 = {!!} 
+      (nn , nd , nc , nd≢0) = normalize {∣ -[1+ n ] ∣} {d} {g} {g≢0} G
   in ((S.- ◃ nn) ÷ nd) {fromWitness (λ {i} → sCoprime nc)} {nd≢0}
 
 
