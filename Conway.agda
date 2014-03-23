@@ -1,8 +1,8 @@
 module Conway where
 
 open import Data.Bool
-open import Data.Nat 
-open import Data.Integer
+open import Data.Nat renaming (_+_ to _ℕ+_ ; _*_ to _ℕ*_)
+open import Data.Integer renaming (_+_ to _ℤ+_ ; _*_ to _ℤ*_)
 open import Data.Rational
 
 open import Rat -- operations on rationals
@@ -34,12 +34,12 @@ q2U p = TIMES (z2U (ℚ.numerator p)) (RECIP (n2U (ℕ.suc (ℚ.denominator-1 p)
 -- Conversion from the universe of games to the rationals
 
 u2q : U → ℚ
-u2q ZERO        = ℚ0
-u2q ONE         = ℚ1
-u2q (PLUS g h)  = (u2q g) ℚ+ (u2q h)
-u2q (TIMES g h) = (u2q g) ℚ* (u2q h)
-u2q (NEG g)     = ℚN (u2q g)
-u2q (RECIP g)   = ℚR (u2q g) {{!!}} 
+u2q ZERO        = 0ℚ
+u2q ONE         = 1ℚ
+u2q (PLUS g h)  = (u2q g) + (u2q h)
+u2q (TIMES g h) = (u2q g) * (u2q h)
+u2q (NEG g)     = neg (u2q g)
+u2q (RECIP g)   = 1/ (u2q g) {{!!}} 
 -- need to know that | numerator (u2q g) | is not 0
 
 -- decidable syntactic equality of games
