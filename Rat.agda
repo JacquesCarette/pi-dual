@@ -90,8 +90,8 @@ sCoprime {s} {n} {d} c {i} (divides q eq , i|d) =
 -- improve on the current heuristics. I recorded this as a bug
 -- http://code.google.com/p/agda/issues/detail?id=1079
 -- 
-ℚ- : ℚ → ℚ
-ℚ- p with ℚ.numerator p | ℚ.denominator-1 p | toWitness (ℚ.isCoprime p)
+ℚN : ℚ → ℚ
+ℚN p with ℚ.numerator p | ℚ.denominator-1 p | toWitness (ℚ.isCoprime p)
 ... | -[1+ n ]  | d | c = (+ ℕ.suc n ÷ ℕ.suc d) {fromWitness (λ {i} → c)}
 ... | + 0       | d | _ = p
 ... | + ℕ.suc n | d | c = (-[1+ n ]  ÷ ℕ.suc d) {fromWitness (λ {i} → c)}
@@ -163,6 +163,14 @@ p₁ ℚ+ p₂ =
       d = d₁ ℕ* d₂
   in helper+ n d
 
+-- subtraction and division
+
+_ℚ-_ : ℚ → ℚ → ℚ
+p₁ ℚ- p₂ = p₁ ℚ+ (ℚN p₂)
+
+_ℚ/_ : (p₁ p₂ : ℚ) → {n≢0 : False (∣ ℚ.numerator p₂ ∣ ℕ≟ 0)} → ℚ
+p₁ ℚ/ p₂ = p₁ ℚ* (ℚR p₂)
+
 ------------------------------------------------------------------------------
 -- Testing
 
@@ -178,7 +186,7 @@ p₇ = + 1 ÷ 2
 p₈ = + 1 ÷ 2
 p₉ = + 1 ÷ 2
 
-test₁ = ℚ- p₂       -- 3/4
+test₁ = ℚN p₂       -- 3/4
 test₂ = ℚR p₂       -- -4/3
 test₃ = p₀ ℚ+ p₀
 test₄ = p₁ ℚ* p₂
