@@ -6,13 +6,17 @@ open import Data.Nat renaming (_+_ to _ℕ+_ ; _*_ to _ℕ*_ ; _≟_ to _ℕ≟_
 open import Data.Nat.Coprimality renaming (sym to symCoprime)
 open import Data.Nat.GCD
 open import Data.Nat.Divisibility
-open import Data.Integer hiding (_-_) 
+open import Data.Integer hiding (_-_ ; -_) 
                          renaming (_+_ to _ℤ+_ ; _*_ to _ℤ*_ ; _≟_ to _ℤ≟_)
 open import Data.Rational
 open import Data.Product
 open import Relation.Nullary.Decidable
 open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
+
+infix  8 -_ 1/_
+infixl 7 _*_ _/_
+infixl 6 _-_ _+_
 
 ------------------------------------------------------------------------------
 -- Some lemmas to help with operations on rationals
@@ -91,17 +95,17 @@ sCoprime {s} {n} {d} c {i} (divides q eq , i|d) =
 -- improve on the current heuristics. I recorded this as a bug
 -- http://code.google.com/p/agda/issues/detail?id=1079
 --
-neg : ℚ → ℚ
-neg p with ℚ.numerator p | ℚ.denominator-1 p | toWitness (ℚ.isCoprime p)
+-_ : ℚ → ℚ
+-_ p with ℚ.numerator p | ℚ.denominator-1 p | toWitness (ℚ.isCoprime p)
 ... | -[1+ n ]  | d | c = (+ ℕ.suc n ÷ ℕ.suc d) {fromWitness (λ {i} → c)}
 ... | + 0       | d | _ = p
 ... | + ℕ.suc n | d | c = (-[1+ n ]  ÷ ℕ.suc d) {fromWitness (λ {i} → c)}
 
 -- reciprocal: requires a proof that the numerator is not zero
 
-1/ : (p : ℚ) → {n≢0 : False (∣ ℚ.numerator p ∣ ℕ≟ 0)} → ℚ
-1/ p {n≢0} with ℚ.numerator p | ℚ.denominator-1 p | toWitness (ℚ.isCoprime p)
-1/ p {()} | + 0 | d | c
+1/_ : (p : ℚ) → {n≢0 : False (∣ ℚ.numerator p ∣ ℕ≟ 0)} → ℚ
+1/_ p {n≢0} with ℚ.numerator p | ℚ.denominator-1 p | toWitness (ℚ.isCoprime p)
+1/_ p {()} | + 0 | d | c
 ... | + (ℕ.suc n) | d | c =
   ((S.+ ◃ ℕ.suc d) ÷ ℕ.suc n)
   {fromWitness (λ {i} →
@@ -167,10 +171,10 @@ p₁ + p₂ =
 -- subtraction and division
 
 _-_ : ℚ → ℚ → ℚ
-p₁ - p₂ = p₁ + (neg p₂)
+p₁ - p₂ = p₁ + (- p₂)
 
 _/_ : (p₁ p₂ : ℚ) → {n≢0 : False (∣ ℚ.numerator p₂ ∣ ℕ≟ 0)} → ℚ
-_/_ p₁ p₂ {pf} = p₁ * (1/ p₂ {pf})
+_/_ p₁ p₂ {n≢0} = p₁ * (1/_ p₂ {n≢0})
 
 ------------------------------------------------------------------------------
 -- A few constants and some small tests
@@ -187,9 +191,9 @@ private
   p₂ = -[1+ 2 ] ÷ 4  -- -3/4
   p₃ = + 3 ÷ 4
 
-  test₁ = neg p₂       -- 3/4
-  test₂ = 1/ p₂       -- -4/3
-  test₃ = p₀ + p₀
-  test₄ = p₁ * p₂
+  test₁ = - p₂       -- 3/4
+  test₂ = 1/ p₂      -- -4/3
+  test₃ = p₀ + p₀    -- 1
+  test₄ = p₁ * p₂    -- -1/4
 
 ------------------------------------------------------------------------------
