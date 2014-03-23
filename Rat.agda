@@ -73,6 +73,9 @@ sCoprime {s} {n} {d} c {i} (divides q eq , i|d) =
         absSign {S.-} {ℕ.suc n} = refl
         absSign {S.+} {ℕ.suc n} = refl 
 
+------------------------------------------------------------------------------
+-- Operations on rationals: unary -, reciprocal, multiplication, addition
+
 -- unary negation
 -- 
 -- Andreas Abel says: Agda's type-checker is incomplete when it has to handle
@@ -104,7 +107,7 @@ sCoprime {s} {n} {d} c {i} (divides q eq , i|d) =
      sCoprime {S.-} {ℕ.suc d} {ℕ.suc n} (coprimeSym c))} 
   {tt} 
 
--- multiplication and addition
+-- multiplication 
 
 _ℚ*_ : ℚ → ℚ → ℚ
 p₁ ℚ* p₂ with ℚ.numerator p₁ | ℚ.numerator p₂
@@ -122,6 +125,8 @@ p₁ ℚ* p₂ with ℚ.numerator p₁ | ℚ.numerator p₂
       nd≢0 : False (nd ℕ≟ 0)
       nd≢0 = {!!} 
   in ((sign n ◃ nn) ÷ nd) {fromWitness (λ {i} → sCoprime nc)} {nd≢0} 
+
+-- addition
 
 _ℚ+_ : ℚ → ℚ → ℚ
 p₁ ℚ+ p₂ = 
