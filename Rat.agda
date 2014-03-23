@@ -2,11 +2,12 @@ module Rat where
            
 open import Data.Bool
 open import Data.Unit
+import Data.Sign as S
 open import Data.Nat renaming (_+_ to _ℕ+_ ; _*_ to _ℕ*_ ; _≟_ to _ℕ≟_)
-open import Data.Nat.Coprimality hiding (sym)
+open import Data.Nat.Coprimality renaming (sym to coprimeSym)
 open import Data.Nat.GCD
 open import Data.Nat.Divisibility
-open import Data.Integer renaming (_*_ to _ℤ*_)
+open import Data.Integer renaming (_+_ to _ℤ+_ ; _*_ to _ℤ*_)
 open import Data.Integer.Properties
 open import Data.Rational
 open import Data.Product
@@ -22,55 +23,142 @@ private module CS = CommutativeSemiring NatProp.commutativeSemiring
 open ≡-Reasoning
 
 ------------------------------------------------------------------------------
--- Appears private in Nat.Properties
+-- Some lemmas to help with operations on rationals
 
-m*1+n≡m+mn : ∀ m n → m ℕ* ℕ.suc n ≡ m ℕ+ m ℕ* n
-m*1+n≡m+mn zero    n = refl
-m*1+n≡m+mn (ℕ.suc m) n =
-    begin
-      ℕ.suc m ℕ* ℕ.suc n
-    ≡⟨ refl ⟩
-      ℕ.suc n ℕ+ m ℕ* ℕ.suc n
-    ≡⟨ cong (λ x → ℕ.suc n ℕ+ x) (m*1+n≡m+mn m n) ⟩
-      ℕ.suc n ℕ+ (m ℕ+ m ℕ* n)
-    ≡⟨ refl ⟩
-      ℕ.suc (n ℕ+ (m ℕ+ m ℕ* n))
-    ≡⟨ cong ℕ.suc (sym $ CS.+-assoc n m (m ℕ* n)) ⟩
-      ℕ.suc (n ℕ+ m ℕ+ m ℕ* n)
-    ≡⟨ cong (λ x → ℕ.suc (x ℕ+ m ℕ* n)) (CS.+-comm n m) ⟩
-      ℕ.suc (m ℕ+ n ℕ+ m ℕ* n)
-    ≡⟨ cong ℕ.suc (CS.+-assoc m n (m ℕ* n)) ⟩
-      ℕ.suc (m ℕ+ (n ℕ+ m ℕ* n))
-    ≡⟨ refl ⟩
-      ℕ.suc m ℕ+ ℕ.suc m ℕ* n
-    ∎
+-- normalize takes two natural numbers, say 6 and 21 and their gcd 3, and
+-- returns them normalized as 2 and 7 and a proof that they are coprime
 
-------------------------------------------------------------------------------
--- Operations on rationals
+normalize : ∀ {m n g} → {g≢0 : False (g ℕ≟ 0)} → 
+            GCD m n g → Σ[ p ∈ ℕ ] Σ[ q ∈ ℕ ] Coprime p q
+normalize {m} {n} {0} {()}
+normalize {m} {n} {ℕ.suc g} {_} G with Bézout.identity G 
+normalize {m} {n} {ℕ.suc g} {_} (GCD.is (divides p m≡pg' , divides q n≡qg') _)
+  | Bézout.+- x y eq = 
+    (p , q , Bézout-coprime {p} {q} {g} (Bézout.+- x y
+               (begin 
+                 ℕ.suc g ℕ+ y ℕ* (q ℕ* ℕ.suc g) 
+               ≡⟨ cong (λ h → ℕ.suc g ℕ+ y ℕ* h) (sym n≡qg') ⟩
+                 ℕ.suc g ℕ+ y ℕ* n
+               ≡⟨ eq ⟩
+                 x ℕ* m
+               ≡⟨ cong (λ h → x ℕ* h) m≡pg' ⟩
+                 x ℕ* (p ℕ* ℕ.suc g) ∎)))
+normalize {m} {n} {ℕ.suc g} {_} (GCD.is (divides p m≡pg' , divides q n≡qg') _) 
+  | Bézout.-+ x y eq = 
+    (p , q , Bézout-coprime {p} {q} {g} (Bézout.-+ x y
+               (begin
+                 ℕ.suc g ℕ+ x ℕ* (p ℕ* ℕ.suc g) 
+               ≡⟨ cong (λ h → ℕ.suc g ℕ+ x ℕ* h) (sym m≡pg') ⟩ 
+                 ℕ.suc g ℕ+ x ℕ* m
+               ≡⟨ eq ⟩ 
+                 y ℕ* n
+               ≡⟨ cong (λ h → y ℕ* h) n≡qg' ⟩ 
+                 y ℕ* (q ℕ* ℕ.suc g) ∎)))
+
+-- once we have a proof of coprimality for natural numbers we can get a proof
+-- for absolute values of integers
+
+sCoprime : ∀ {s n d} → Coprime n d → Coprime ∣ s ◃ n ∣ d
+sCoprime {s} {n} {d} c {i} (divides q eq , i|d) = 
+  c {i} 
+    (divides q (begin
+                  n
+                ≡⟨ sym absSign ⟩
+                  ∣ s ◃ n ∣
+                ≡⟨ eq ⟩ 
+                  q ℕ* i ∎) , 
+     i|d)
+  where absSign : ∀ {s n} → ∣ s ◃ n ∣ ≡ n 
+        absSign {_} {zero} = refl
+        absSign {S.-} {ℕ.suc n} = refl
+        absSign {S.+} {ℕ.suc n} = refl 
 
 -- unary negation
+-- 
+-- Andreas Abel says: Agda's type-checker is incomplete when it has to handle
+-- types with leading hidden quantification, such as the ones of Coprime m n
+-- and c.  A work around is to use hidden abstraction explicitly.  In your
+-- case, giving λ {i} -> c works.  Not pretty, but unavoidable until we
+-- improve on the current heuristics. I recorded this as a bug
+-- http://code.google.com/p/agda/issues/detail?id=1079
+-- 
 ℚ- : ℚ → ℚ
 ℚ- p with ℚ.numerator p | ℚ.denominator-1 p | toWitness (ℚ.isCoprime p)
 ... | -[1+ n ]  | d | c = (+ ℕ.suc n ÷ ℕ.suc d) {fromWitness (λ {i} → c)}
 ... | + 0       | d | _ = p
 ... | + ℕ.suc n | d | c = (-[1+ n ]  ÷ ℕ.suc d) {fromWitness (λ {i} → c)}
 
-{-- 
+-- reciprocal: requires a proof that the numerator is not zero
 
-Andreas Abel: Agda's type-checker is incomplete when it has to handle types
-with leading hidden quantification, such as the ones of Coprime m n and c.  A
-work around is to use hidden abstraction explicitly.  In your case, giving
+ℚR : (p : ℚ) → {n≢0 : False (∣ ℚ.numerator p ∣ ℕ≟ 0)} → ℚ
+ℚR p {n≢0} with ℚ.numerator p | ℚ.denominator-1 p | toWitness (ℚ.isCoprime p)
+ℚR p {()} | + 0 | d | c 
+... | + (ℕ.suc n) | d | c = 
+  ((S.+ ◃ ℕ.suc d) ÷ ℕ.suc n) 
+  {fromWitness (λ {i} → 
+     sCoprime {S.+} {ℕ.suc d} {ℕ.suc n} (coprimeSym c))} 
+  {tt} 
+... | -[1+ n ] | d | c = 
+  ((S.- ◃ ℕ.suc d) ÷ ℕ.suc n) 
+  {fromWitness (λ {i} → 
+     sCoprime {S.-} {ℕ.suc d} {ℕ.suc n} (coprimeSym c))} 
+  {tt} 
 
-  λ {i} -> c
+-- multiplication and addition
 
-works.  Not pretty, but unavoidable until we improve on the current heuristics.
+_ℚ*_ : ℚ → ℚ → ℚ
+p₁ ℚ* p₂ with ℚ.numerator p₁ | ℚ.numerator p₂
+... | _    | + 0  = + 0 ÷ 1
+... | + 0  | _    = + 0 ÷ 1
+... | n₁   | n₂   = 
+  let d₁ = ℕ.suc (ℚ.denominator-1 p₁)
+      d₂ = ℕ.suc (ℚ.denominator-1 p₂)
+      n = n₁ ℤ* n₂
+      d = d₁ ℕ* d₂
+      (g , G) = gcd ∣ n ∣ d
+      g≢0 : False (g ℕ≟ 0)
+      g≢0 = {!!} 
+      (nn , nd , nc) = normalize {∣ n ∣} {d} {g} {g≢0} G
+      nd≢0 : False (nd ℕ≟ 0)
+      nd≢0 = {!!} 
+  in ((sign n ◃ nn) ÷ nd) {fromWitness (λ {i} → sCoprime nc)} {nd≢0} 
 
-I recorded this as a bug
+_ℚ+_ : ℚ → ℚ → ℚ
+p₁ ℚ+ p₂ = 
+  let n₁ = ℚ.numerator p₁
+      d₁ = ℕ.suc (ℚ.denominator-1 p₁)
+      n₂ = ℚ.numerator p₂
+      d₂ = ℕ.suc (ℚ.denominator-1 p₂)
+      n = (n₁ ℤ* + d₂) ℤ+ (n₂ ℤ* + d₁)
+      d = d₁ ℕ* d₂
+      (g , G) = gcd ∣ n ∣ d
+      g≢0 : False (g ℕ≟ 0)
+      g≢0 = {!!} 
+      (nn , nd , nc) = normalize {∣ n ∣} {d} {g} {g≢0} G
+      nd≢0 : False (nd ℕ≟ 0)
+      nd≢0 = {!!} 
+  in ((sign n ◃ nn) ÷ nd) {fromWitness (λ {i} → sCoprime nc)} {nd≢0}
 
-  http://code.google.com/p/agda/issues/detail?id=1079
+------------------------------------------------------------------------------
+-- Testing
 
---}
+p₀ p₁ p₂ p₃ p₄ p₅ p₆ p₇ p₈ p₉ : ℚ
+p₀ = + 1 ÷ 2
+p₁ = + 1 ÷ 3
+p₂ = -[1+ 2 ] ÷ 4  -- -3/4
+p₃ = + 3 ÷ 4
+p₄ = + 1 ÷ 2
+p₅ = + 1 ÷ 2
+p₆ = + 1 ÷ 2
+p₇ = + 1 ÷ 2
+p₈ = + 1 ÷ 2
+p₉ = + 1 ÷ 2
 
+test₁ = ℚ- p₂       -- 3/4
+test₂ = ℚR p₂ {tt}  -- -4/3
+
+------------------------------------------------------------------------------
+{--
 -- multiplying two non-zero numbers yields a non-zero number
 
 nz* : (m n : ℕ) → (m≢0 : False (m ℕ≟ 0)) → (n≢0 : False (n ℕ≟ 0)) → 
@@ -158,57 +246,6 @@ coprimeR* {m} {n} {k} {l} {i} c (divides p mk≡pi) (divides q nl≡qi) =
                 (q ℕ* k) ℕ* i ∎)
   in coprime-factors c (i|mkl , i|nkl)
 
--- normalize: given 6 and 21 and their gcd of 3 then return 2 and 7, a proof
--- that they divide the original numbers and a proof that they are coprime
-normalize : ∀ {m n g} → (g≢0 : False (g ℕ≟ 0)) → 
-            GCD m n g → Σ[ p ∈ ℕ ] Σ[ q ∈ ℕ ] (p ∣ m) × (q ∣ n) × Coprime p q
-normalize {m} {n} {0} ()
-normalize {m} {n} {ℕ.suc g} _ G with Bézout.identity G 
-normalize {m} {n} {ℕ.suc g} _ (GCD.is (divides p m≡pg' , divides q n≡qg') _) 
-  | Bézout.+- x y eq = 
-    (p , q , divides (ℕ.suc g) (begin
-               m 
-             ≡⟨ m≡pg' ⟩
-               p ℕ* (ℕ.suc g)
-             ≡⟨ m*1+n≡m+mn p g ⟩ 
-               p ℕ+ p ℕ* g 
-             ≡⟨ cong (λ h → p ℕ+ h) (CS.*-comm p g) ⟩ 
-               p ℕ+ g ℕ* p ∎) , 
-             divides (ℕ.suc g) (begin
-               n
-             ≡⟨ {!!} ⟩
-               ℕ.suc g ℕ* q ∎) , 
-             Bézout-coprime {p} {q} {g} (Bézout.+- x y
-               (begin 
-                 ℕ.suc g ℕ+ y ℕ* (q ℕ* ℕ.suc g) 
-               ≡⟨ cong (λ h → ℕ.suc g ℕ+ y ℕ* h) (sym n≡qg') ⟩
-                 ℕ.suc g ℕ+ y ℕ* n
-               ≡⟨ eq ⟩
-                 x ℕ* m
-               ≡⟨ cong (λ h → x ℕ* h) m≡pg' ⟩
-                 x ℕ* (p ℕ* ℕ.suc g) ∎)))
-normalize {m} {n} {ℕ.suc g} _ (GCD.is (divides p m≡pg' , divides q n≡qg') _) 
-  | Bézout.-+ x y eq = 
-    (p , q , divides (ℕ.suc g) (begin
-               m 
-             ≡⟨ {!!} ⟩
-               ℕ.suc g ℕ* p ∎) , 
-             divides (ℕ.suc g) (begin
-               n
-             ≡⟨ {!!} ⟩ 
-               ℕ.suc g ℕ* q ∎) , 
-      Bézout-coprime {p} {q} {g} (Bézout.-+ x y
-               (begin
-                 ℕ.suc g ℕ+ x ℕ* (p ℕ* ℕ.suc g) 
-               ≡⟨ cong (λ h → ℕ.suc g ℕ+ x ℕ* h) (sym m≡pg') ⟩ 
-                 ℕ.suc g ℕ+ x ℕ* m
-               ≡⟨ eq ⟩ 
-                 y ℕ* n
-               ≡⟨ cong (λ h → y ℕ* h) n≡qg' ⟩ 
-                 y ℕ* (q ℕ* ℕ.suc g) ∎)))
-
--- multiplication of rational numbers
-
 _ℚ*_ : ℚ → ℚ → ℚ
 p₁ ℚ* p₂ = 
   let num₁ = P₁.numerator
@@ -256,24 +293,4 @@ p₁ ℚ* p₂ =
           (num₂' , den₁' , num₂'|num₂ , den₁'|den₁ , c₂₁') = 
             normalize {!!} gcd₂₁
       in {!!} 
-{--
-((num₁' ℤ* num₂') ÷ (den₁' ℕ* den₂'))
--- multiply num₁' by the sign of num₁
-{fromWitness (λ {i} → helper2 {num₁'} {den₁'} {num₂'} {den₂'} 
-                      c₁ c₂ c₁₂ c₂₁)}
-{nz* den₁ den₂ den₁≢0 den₂≢0}
-
-/-cong : k → suc k * i | suc k * j → i | j
 --}
-
---}
-
-{--
-_ℚ+_ : ℚ → ℚ → ℚ
-p ℚ+ q = record { numerator = {!!} ;
-                  denominator-1 = {!!} ;
-                  isCoprime = {!!} }
-  where module P = ℚ p ; module Q = ℚ q
-
---}
-------------------------------------------------------------------------------
