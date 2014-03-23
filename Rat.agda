@@ -1,10 +1,5 @@
 module Rat where
            
--------------------------------------------------
--- TRIM the following imports to what's necessary
--------------------------------------------------
-
-open import Data.Bool
 open import Data.Unit
 import Data.Sign as S
 open import Data.Nat renaming (_+_ to _ℕ+_ ; _*_ to _ℕ*_ ; _≟_ to _ℕ≟_)
@@ -12,18 +7,10 @@ open import Data.Nat.Coprimality renaming (sym to symCoprime)
 open import Data.Nat.GCD
 open import Data.Nat.Divisibility
 open import Data.Integer renaming (_+_ to _ℤ+_ ; _*_ to _ℤ*_ ; _≟_ to _ℤ≟_)
-open import Data.Integer.Properties
 open import Data.Rational
 open import Data.Product
-open import Relation.Nullary.Core
 open import Relation.Nullary.Decidable
-open import Relation.Binary.Core
 open import Relation.Binary.PropositionalEquality
-open import Function
-open import Algebra
-import Data.Nat.Properties as NatProp
-open NatProp.SemiringSolver
-private module CS = CommutativeSemiring NatProp.commutativeSemiring
 open ≡-Reasoning
 
 ------------------------------------------------------------------------------
