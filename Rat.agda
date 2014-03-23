@@ -4,10 +4,10 @@ open import Data.Bool
 open import Data.Unit
 import Data.Sign as S
 open import Data.Nat renaming (_+_ to _ℕ+_ ; _*_ to _ℕ*_ ; _≟_ to _ℕ≟_)
-open import Data.Nat.Coprimality renaming (sym to coprimeSym)
+open import Data.Nat.Coprimality renaming (sym to symCoprime)
 open import Data.Nat.GCD
 open import Data.Nat.Divisibility
-open import Data.Integer renaming (_+_ to _ℤ+_ ; _*_ to _ℤ*_)
+open import Data.Integer renaming (_+_ to _ℤ+_ ; _*_ to _ℤ*_ ; _≟_ to _ℤ≟_)
 open import Data.Integer.Properties
 open import Data.Rational
 open import Data.Product
@@ -55,6 +55,27 @@ normalize {m} {n} {ℕ.suc g} {_} (GCD.is (divides p m≡pg' , divides q n≡qg'
                ≡⟨ cong (λ h → y ℕ* h) n≡qg' ⟩ 
                  y ℕ* (q ℕ* ℕ.suc g) ∎)))
 
+-- multiplying non-zero integers gives non-zero result
+
+nzℤ* : (m n : ℤ) → {m≢0 : False (m ℤ≟ + 0)} → {n≢0 : False (n ℤ≟ + 0)} → 
+       False (m ℤ* n ℤ≟ + 0)
+nzℤ* (+ 0)       n           {()} {_}
+nzℤ* m           (+ 0)       {_}  {()}
+nzℤ* (+ ℕ.suc m) (+ ℕ.suc n) {_}  {_} = tt
+nzℤ* (+ ℕ.suc m) -[1+ n ]    {_}  {_} = tt 
+nzℤ* -[1+ m ]    (+ ℕ.suc n) {_}  {_} = tt
+nzℤ* -[1+ m ]    -[1+ n ]    {_}  {_} = tt
+
+-- a version of gcd that returns a proof that the result is non-zero given
+-- that one of the inputs is non-zero
+
+gcdz : (m n : ℕ) → {m≢0 : False (m ℕ≟ 0)} → 
+       ∃ λ d → GCD m n d × False (d ℕ≟ 0)
+gcdz m  n {m≢0} with gcd m n 
+gcdz m  n {m≢0} | (0 , GCD.is (0|m , _) _) with 0∣⇒≡0 0|m
+gcdz .0 n {()}  | (0 , GCD.is (0|m , _) _) | refl
+gcdz m  n {_}   | (ℕ.suc d , G) = (ℕ.suc d , G , tt)
+
 -- once we have a proof of coprimality for natural numbers we can get a proof
 -- for absolute values of integers
 
@@ -69,7 +90,7 @@ sCoprime {s} {n} {d} c {i} (divides q eq , i|d) =
                   q ℕ* i ∎) , 
      i|d)
   where absSign : ∀ {s n} → ∣ s ◃ n ∣ ≡ n 
-        absSign {_} {zero} = refl
+        absSign {_}   {0}       = refl
         absSign {S.-} {ℕ.suc n} = refl
         absSign {S.+} {ℕ.suc n} = refl 
 
@@ -99,34 +120,63 @@ sCoprime {s} {n} {d} c {i} (divides q eq , i|d) =
 ... | + (ℕ.suc n) | d | c = 
   ((S.+ ◃ ℕ.suc d) ÷ ℕ.suc n) 
   {fromWitness (λ {i} → 
-     sCoprime {S.+} {ℕ.suc d} {ℕ.suc n} (coprimeSym c))} 
-  {tt} 
+     sCoprime {S.+} {ℕ.suc d} {ℕ.suc n} (symCoprime c))} 
 ... | -[1+ n ] | d | c = 
   ((S.- ◃ ℕ.suc d) ÷ ℕ.suc n) 
   {fromWitness (λ {i} → 
-     sCoprime {S.-} {ℕ.suc d} {ℕ.suc n} (coprimeSym c))} 
-  {tt} 
+     sCoprime {S.-} {ℕ.suc d} {ℕ.suc n} (symCoprime c))} 
 
 -- multiplication 
 
-_ℚ*_ : ℚ → ℚ → ℚ
-p₁ ℚ* p₂ with ℚ.numerator p₁ | ℚ.numerator p₂
-... | _    | + 0  = + 0 ÷ 1
-... | + 0  | _    = + 0 ÷ 1
-... | n₁   | n₂   = 
-  let d₁ = ℕ.suc (ℚ.denominator-1 p₁)
-      d₂ = ℕ.suc (ℚ.denominator-1 p₂)
-      n = n₁ ℤ* n₂
+helper* : (n₁ : ℤ) → (d₁ : ℕ) → (n₂ : ℤ) → (d₂ : ℕ) → 
+          {n≢0 : False (∣ n₁ ℤ* n₂ ∣ ℕ≟ 0)} → ℚ
+helper* n₁ d₁ n₂ d₂ {n≢0} = 
+  let n = n₁ ℤ* n₂
       d = d₁ ℕ* d₂
-      (g , G) = gcd ∣ n ∣ d
-      g≢0 : False (g ℕ≟ 0)
-      g≢0 = {!!} 
+      (g , G , g≢0) = gcdz ∣ n ∣ d {n≢0}
       (nn , nd , nc) = normalize {∣ n ∣} {d} {g} {g≢0} G
       nd≢0 : False (nd ℕ≟ 0)
       nd≢0 = {!!} 
   in ((sign n ◃ nn) ÷ nd) {fromWitness (λ {i} → sCoprime nc)} {nd≢0} 
 
+_ℚ*_ : ℚ → ℚ → ℚ
+p₁ ℚ* p₂ with ℚ.numerator p₁ | ℚ.numerator p₂
+... | + 0  | _    = + 0 ÷ 1
+... | _    | + 0  = + 0 ÷ 1
+... | + ℕ.suc n₁ | + ℕ.suc n₂ = 
+  helper* (+ ℕ.suc n₁) (ℕ.suc (ℚ.denominator-1 p₁))
+          (+ ℕ.suc n₂) (ℕ.suc (ℚ.denominator-1 p₂))
+          {nzℤ* (+ ℕ.suc n₁) (+ ℕ.suc n₂)}
+... | + ℕ.suc n₁ | -[1+ n₂ ] = 
+  helper* (+ ℕ.suc n₁) (ℕ.suc (ℚ.denominator-1 p₁))
+          -[1+ n₂ ] (ℕ.suc (ℚ.denominator-1 p₂))
+          {nzℤ* (+ ℕ.suc n₁) -[1+ n₂ ]}
+... | -[1+ n₁ ] | + ℕ.suc n₂ = 
+  helper* -[1+ n₁ ] (ℕ.suc (ℚ.denominator-1 p₁))
+          (+ ℕ.suc n₂) (ℕ.suc (ℚ.denominator-1 p₂))
+          {nzℤ* -[1+ n₁ ] (+ ℕ.suc n₂)}
+... | -[1+ n₁ ] | -[1+ n₂ ] = 
+  helper* -[1+ n₁ ] (ℕ.suc (ℚ.denominator-1 p₁))
+          -[1+ n₂ ] (ℕ.suc (ℚ.denominator-1 p₂))
+          {nzℤ* -[1+ n₁ ] -[1+ n₂ ]}
+
 -- addition
+
+helper+ : (n : ℤ) → (d : ℕ) → ℚ
+helper+ (+ 0) d = + 0 ÷ 1
+helper+ (+ ℕ.suc n) d = 
+  let (g , G , g≢0) = gcdz ∣ + ℕ.suc n ∣ d {tt}
+      (nn , nd , nc) = normalize {∣ + ℕ.suc n ∣} {d} {g} {g≢0} G
+      nd≢0 : False (nd ℕ≟ 0)
+      nd≢0 = {!!} 
+  in ((S.+ ◃ nn) ÷ nd) {fromWitness (λ {i} → sCoprime nc)} {nd≢0}
+helper+ -[1+ n ] d = 
+  let (g , G , g≢0) = gcdz ∣ -[1+ n ] ∣ d {tt}
+      (nn , nd , nc) = normalize {∣ -[1+ n ] ∣} {d} {g} {g≢0} G
+      nd≢0 : False (nd ℕ≟ 0)
+      nd≢0 = {!!} 
+  in ((S.- ◃ nn) ÷ nd) {fromWitness (λ {i} → sCoprime nc)} {nd≢0}
+
 
 _ℚ+_ : ℚ → ℚ → ℚ
 p₁ ℚ+ p₂ = 
@@ -136,13 +186,7 @@ p₁ ℚ+ p₂ =
       d₂ = ℕ.suc (ℚ.denominator-1 p₂)
       n = (n₁ ℤ* + d₂) ℤ+ (n₂ ℤ* + d₁)
       d = d₁ ℕ* d₂
-      (g , G) = gcd ∣ n ∣ d
-      g≢0 : False (g ℕ≟ 0)
-      g≢0 = {!!} 
-      (nn , nd , nc) = normalize {∣ n ∣} {d} {g} {g≢0} G
-      nd≢0 : False (nd ℕ≟ 0)
-      nd≢0 = {!!} 
-  in ((sign n ◃ nn) ÷ nd) {fromWitness (λ {i} → sCoprime nc)} {nd≢0}
+  in helper+ n d
 
 ------------------------------------------------------------------------------
 -- Testing
@@ -160,17 +204,11 @@ p₈ = + 1 ÷ 2
 p₉ = + 1 ÷ 2
 
 test₁ = ℚ- p₂       -- 3/4
-test₂ = ℚR p₂ {tt}  -- -4/3
+test₂ = ℚR p₂       -- -4/3
 
 ------------------------------------------------------------------------------
 {--
 -- multiplying two non-zero numbers yields a non-zero number
-
-nz* : (m n : ℕ) → (m≢0 : False (m ℕ≟ 0)) → (n≢0 : False (n ℕ≟ 0)) → 
-      False (m ℕ* n ℕ≟ 0)
-nz* zero n () _
-nz* (ℕ.suc m) zero _ ()
-nz* (ℕ.suc m) (ℕ.suc n) _ _ = tt 
 
 -- if i|m then i|nm
 
@@ -298,4 +336,11 @@ p₁ ℚ* p₂ =
           (num₂' , den₁' , num₂'|num₂ , den₁'|den₁ , c₂₁') = 
             normalize {!!} gcd₂₁
       in {!!} 
+
+nzℕ* : (m n : ℕ) → {m≢0 : False (m ℕ≟ 0)} → {n≢0 : False (n ℕ≟ 0)} → 
+       False (m ℕ* n ℕ≟ 0)
+nzℕ* m 0 {_} {()}
+nzℕ* 0 n {()} {_}
+nzℕ* (ℕ.suc m) (ℕ.suc n) {_} {_} = tt 
+
 --}
