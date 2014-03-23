@@ -1,8 +1,8 @@
 module Rat where
 
-open import Data.Unit
+open import Data.Unit 
 import Data.Sign as S
-open import Data.String
+open import Data.String 
 open import Data.Nat renaming (_+_ to _ℕ+_ ; _*_ to _ℕ*_ ; _≟_ to _ℕ≟_)
 open import Data.Nat.Coprimality renaming (sym to symCoprime)
 open import Data.Nat.GCD
