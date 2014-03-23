@@ -22,7 +22,7 @@ open ≡-Reasoning
 
 normalize : ∀ {m n g} → {n≢0 : False (n ℕ≟ 0)} → {g≢0 : False (g ℕ≟ 0)} →
             GCD m n g → Σ[ p ∈ ℕ ] Σ[ q ∈ ℕ ] Coprime p q × False (q ℕ≟ 0)
-normalize {m} {n} {0} {_} {()}
+normalize {m} {n} {0} {_} {()} _
 normalize {m} {n} {ℕ.suc g} {_} {_} G with Bézout.identity G
 normalize {m} {.0} {ℕ.suc g} {()} {_}
   (GCD.is (divides p m≡pg' , divides 0 refl) _) | _
@@ -170,7 +170,7 @@ _-_ : ℚ → ℚ → ℚ
 p₁ - p₂ = p₁ + (neg p₂)
 
 _/_ : (p₁ p₂ : ℚ) → {n≢0 : False (∣ ℚ.numerator p₂ ∣ ℕ≟ 0)} → ℚ
-p₁ / p₂ = p₁ * (1/ p₂)
+_/_ p₁ p₂ {pf} = p₁ * (1/ p₂ {pf})
 
 ------------------------------------------------------------------------------
 -- A few constants and some small tests
