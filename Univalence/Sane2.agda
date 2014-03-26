@@ -11,7 +11,8 @@ open import Data.Sum using (inj₁ ; inj₂ ; _⊎_)
 -- open import Data.Product renaming (map to _×→_)
 open import Data.Vec
 open import Function using ( id ) renaming (_∘_ to _○_) 
-open import Relation.Binary.PropositionalEquality using ( _≡_ ; refl ; sym ; cong ; module ≡-Reasoning )
+open import Relation.Binary  -- to make certain goals look nicer
+open import Relation.Binary.PropositionalEquality using ( _≡_ ; refl ; sym ; cong ; trans ; module ≡-Reasoning )
 open ≡-Reasoning
 
 -- start re-splitting things up, as this is getting out of hand
@@ -221,37 +222,39 @@ tests02 = permToComb (swap01 five)
 tests03 : Vec ⟦ PLUS ONE (PLUS ONE (PLUS ONE (PLUS ONE (PLUS ONE ZERO)))) ⟧ five
 tests03 = tabulate (λ i → evalComb tests02 (finToVal i))
 
+vmap-insert : {n : ℕ} {A B : Set} {x : A} → (v : Vec A n) → (f : A → B) → (i : F.Fin (suc n)) → vmap f (insert v i x) ≡ insert (vmap f v) i (f x)
+vmap-insert {zero} [] f F.zero = refl
+vmap-insert {zero} [] f (F.suc ())
+vmap-insert {suc n} v f F.zero = refl
+vmap-insert {suc n} {x = x} (y ∷ v) f (F.suc i) = cong (_∷_ (f y)) (vmap-insert v f i)
+
+vmap-permute : {n : ℕ} {A B : Set} → (p : Permutation n) → (v : Vec A n) → (f : A → B) → vmap f (permute p v) ≡ permute p (vmap f v)
+vmap-permute {zero} [] [] f = refl
+vmap-permute {suc n} (i ∷ p) (x ∷ v) f = trans (vmap-insert (permute p v) f i) (cong (λ y → insert y i (f x)) (vmap-permute p v f))
+
 evalPerm : {n : ℕ} → Permutation n → F.Fin n → F.Fin n
 evalPerm {zero} _ ()
 evalPerm {suc n} p k = lookup k (permute p (allFin (suc n)))
 
-lemma10 : {n : ℕ} → (i : F.Fin (suc n)) → evalComb (swapm i) (inj₁ tt) ≡ {!!}
-lemma10 F.zero = {!!}
-lemma10 (F.suc i) = {!!}
-
-lemma11 : {n : ℕ} {A : Set} → (i : F.Fin n) → (p : Permutation n) → ∀ {v : Vec A n} → lookup i (permute p v) ≡ {!!}
-lemma11 {zero} () p
-lemma11 {suc n} F.zero (F.zero ∷ p₁) = {!!}
-lemma11 {suc .0} F.zero (F.suc () ∷ [])
-lemma11 {suc (suc n)} F.zero (F.suc p ∷ p₁ ∷ p₂) = {!!}
-lemma11 {suc n} (F.suc i) (F.zero ∷ p₁) = {!lemma11 i p₁!}
-lemma11 {suc n} (F.suc i) (F.suc p ∷ p₁) = {!!}
-
 lemma1 : {n : ℕ} (p : Permutation n) → (i : F.Fin n) → 
     valToFin (evalComb (permToComb p) (finToVal i)) ≡ evalPerm p i 
 lemma1 {zero} [] ()
-lemma1 {suc n} (j ∷ p) i = {!!}
+lemma1 {suc n} (F.zero ∷ p) F.zero = refl
+lemma1 {suc zero} (F.zero ∷ p) (F.suc ())
+lemma1 {suc (suc n)} (F.zero ∷ p) (F.suc i) =  begin
+    F.suc (valToFin (evalComb (permToComb p) (finToVal i))) 
+         ≡⟨ cong F.suc (lemma1 p i) ⟩
+    F.suc (evalPerm p i)
+         ≡⟨ refl ⟩
+    F.suc (lookup i (permute p (tabulate id)))
+         ≡⟨ sym (map!! F.suc (permute p (tabulate id)) i) ⟩
+    lookup i (vmap F.suc (permute p (tabulate id)))
+         ≡⟨ cong (lookup i) (vmap-permute p (tabulate id) F.suc) ⟩
+    lookup i (permute p (vmap F.suc (tabulate id)))
+         ≡⟨ cong (λ x -> lookup i (permute p x)) (mapTab F.suc id) ⟩ 
+    evalPerm (F.zero ∷ p) (F.suc i) ∎
+lemma1 {suc n} (F.suc j ∷ p) i = {!!}
 
 lemma2 : {n : ℕ} (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin n) → 
     (evalComb c (finToVal i)) ≡ finToVal (evalPerm (combToPerm c) i)
 lemma2 c i = {!!}
-
-perm-tab : {n : ℕ} {B : Set} → (f : F.Fin n → B) → (p : Permutation n) → permute p (tabulate f) ≡ map f (permute p (tabulate id))
-perm-tab {zero} f [] = refl
-perm-tab {suc n} f (k ∷ p) =  begin
-    permute (k ∷ p) (tabulate f)                                     
-                                       ≡⟨ cong (λ x → insert x k (f F.zero)) (perm-tab (f ○ F.suc) p) ⟩ 
-    insert (map (f ○ F.suc) (permute p (tabulate id))) k (f F.zero)
-      -- need to pull out just the map f out of the insert, then piece things back together 
-                                       ≡⟨ {!!} ⟩ 
-    map f (permute (k ∷ p) (tabulate id)) ∎ 
