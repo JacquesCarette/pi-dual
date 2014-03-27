@@ -48,18 +48,24 @@ swapUpTo : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
 swapUpTo F.zero    = id⇛
 swapUpTo (F.suc i) = (id⇛ ⊕ swapUpTo i) ◎ swapi F.zero
 
+-- The permutation we need:
+-- [i, i-1, i-2, ..., i-i, 0, 0, 0, ...]
 swapUpToPerm : {n : ℕ} → F.Fin n → Permutation (suc n)
-swapUpToPerm {zero} ()
-swapUpToPerm {suc zero} F.zero = idP
-swapUpToPerm {suc zero} (F.suc ())
-swapUpToPerm {suc (suc n)} F.zero = idP
-swapUpToPerm {suc (suc n)} (F.suc j) = {!(F.inject {suc (suc n)} (F.suc j)) ∷ idP  !}
+swapUpToPerm F.zero    = idP
+swapUpToPerm (F.suc j) = (F.inject₁ (F.suc j)) ∷ swapUpToPerm j
 
 -- swapDownFrom i permutes the combinator right by one up to i (the reverse
 -- of swapUpTo)
 swapDownFrom : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
 swapDownFrom F.zero    = id⇛
 swapDownFrom (F.suc i) = swapi F.zero ◎ (id⇛ ⊕ swapDownFrom i)
+
+-- The permutation we need:
+-- [1, 1, 1, ..., 1, 0, 0, 0, ...]
+-- |--i-1 times---|
+swapDownFromPerm : {n : ℕ} → F.Fin n → Permutation (suc n)
+swapDownFromPerm F.zero = idP
+swapDownFromPerm (F.suc i) = (F.suc F.zero) ∷ swapDownFromPerm i
 
 -- TODO: verify that this is actually correct
 -- Idea: To swap n < m with each other, swap n, n + 1, ... , m - 1, m, then
@@ -223,7 +229,15 @@ lemma2 c i = combToVecWorks c i
 ----------------------------------------------------------------
 -}
 
-postulate combToPerm : {n : ℕ} → (fromℕ n ⇛ fromℕ n) → Permutation n
+combToPermi : {n : ℕ} (c : fromℕ (suc n) ⇛ fromℕ (suc n))
+                      (i : F.Fin (suc n)) →
+                      Permutation (suc (n F.ℕ-ℕ i))
+combToPermi c F.zero = {!max - evalCombB c max ∷ []!}
+combToPermi c (F.suc i) = {!? ∷ combToPermi c i!}
+
+combToPerm : {n : ℕ} → (fromℕ n ⇛ fromℕ n) → Permutation n
+combToPerm {zero} c = []
+combToPerm {suc n} c = {!!}
 
 permToComb : {n : ℕ} → Permutation n → (fromℕ n ⇛ fromℕ n)
 permToComb [] = id⇛
