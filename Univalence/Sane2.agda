@@ -235,6 +235,18 @@ combToPermi : {n : ℕ} (c : fromℕ (suc n) ⇛ fromℕ (suc n))
 combToPermi c F.zero = {!max - evalCombB c max ∷ []!}
 combToPermi c (F.suc i) = {!? ∷ combToPermi c i!}
 
+
+-- Suppose we have some combinator c, its output vector v, and the corresponding
+-- permutation p. We construct p by looking at how many places each element is
+-- displaced from its index in v *to the right* (if it's where it "should" be or
+-- to the left, just return 0).
+
+-- In other words, if v[i] = j, then p[j] = j - i. That is, if j is in location
+-- i, j - i is how many spaces to the right (if any) j appears from its own
+-- index. Note that if v[i] = j, then c(i) = j, and inv(c)(j) = i. This suggests
+-- that if I can write a tabulate function for permutations, the permutation for
+-- a combinator c will be "tabulate (∩ -> i - (evalCombB c i))", modulo type
+-- coercions.
 combToPerm : {n : ℕ} → (fromℕ n ⇛ fromℕ n) → Permutation n
 combToPerm {zero} c = []
 combToPerm {suc n} c = {!!}
