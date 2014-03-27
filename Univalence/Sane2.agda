@@ -46,7 +46,14 @@ swapiPerm {suc n} (F.suc i) = F.zero ∷ swapiPerm {n} i
 -- are a b c X Y d e
 swapUpTo : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
 swapUpTo F.zero    = id⇛
-swapUpTo (F.suc i) = (id⇛ ⊕ swapUpTo i) ◎ swapi F.zero  
+swapUpTo (F.suc i) = (id⇛ ⊕ swapUpTo i) ◎ swapi F.zero
+
+swapUpToPerm : {n : ℕ} → F.Fin n → Permutation (suc n)
+swapUpToPerm {zero} ()
+swapUpToPerm {suc zero} F.zero = idP
+swapUpToPerm {suc zero} (F.suc ())
+swapUpToPerm {suc (suc n)} F.zero = idP
+swapUpToPerm {suc (suc n)} (F.suc j) = {!(F.inject {suc (suc n)} (F.suc j)) ∷ idP  !}
 
 -- swapDownFrom i permutes the combinator right by one up to i (the reverse
 -- of swapUpTo)
