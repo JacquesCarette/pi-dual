@@ -122,8 +122,11 @@ add1modn (suc max) zero acc = suc acc
 add1modn (suc max) (suc n) acc = add1modn max n (suc acc)
 
 -- Useful for testing
+one : ℕ
+one = suc (zero)
+
 two : ℕ
-two = suc (suc zero)
+two = suc one
 
 three : ℕ
 three = suc two
@@ -133,3 +136,6 @@ four = suc three
 
 five : ℕ
 five = suc four
+
+six : ℕ
+six = suc five
