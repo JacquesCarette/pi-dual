@@ -125,3 +125,4 @@ reverseP-reverse {suc n} {_} {A} (x ∷ xs) =
       reverse (x ∷ xs)
     ∎
   where open EqReasoning (≡-setoid (Vec A (1 + n)))
+

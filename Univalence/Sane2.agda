@@ -48,11 +48,11 @@ swapUpTo : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
 swapUpTo F.zero    = id⇛
 swapUpTo (F.suc i) = (id⇛ ⊕ swapUpTo i) ◎ swapi F.zero
 
-swapUpToPerm : {n : ℕ} → F.Fin n → Permutation (1 + n)
-swapUpToPerm {zero} ()
-swapUpToPerm F.zero = idP
-swapUpToPerm {suc zero} (F.suc ())
-swapUpToPerm {suc (suc n)} (F.suc j) = F.inject₁ (F.suc j) ∷ idP
+-- The permutation we need:
+-- [i, i-1, i-2, ..., i-i, 0, 0, 0, ...]
+swapUpToPerm : {n : ℕ} → F.Fin n → Permutation (suc n)
+swapUpToPerm F.zero    = idP
+swapUpToPerm (F.suc j) = (F.inject₁ (F.suc j)) ∷ swapUpToPerm j
 
 -- swapDownFrom i permutes the combinator right by one up to i (the reverse
 -- of swapUpTo)
@@ -60,8 +60,12 @@ swapDownFrom : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
 swapDownFrom F.zero    = id⇛
 swapDownFrom (F.suc i) = swapi F.zero ◎ (id⇛ ⊕ swapDownFrom i)
 
-swapDownFromPerm : { n : ℕ} → F.Fin n → Permutation (1 + n)
-swapDownFromPerm i = {!!}
+-- The permutation we need:
+-- [1, 1, 1, ..., 1, 0, 0, 0, ...]
+-- |--i-1 times---|
+swapDownFromPerm : {n : ℕ} → F.Fin n → Permutation (suc n)
+swapDownFromPerm F.zero = idP
+swapDownFromPerm (F.suc i) = (F.suc F.zero) ∷ swapDownFromPerm i
 
 -- TODO: verify that this is actually correct
 -- Idea: To swap n < m with each other, swap n, n + 1, ... , m - 1, m, then
@@ -225,7 +229,27 @@ lemma2 c i = combToVecWorks c i
 ----------------------------------------------------------------
 -}
 
-postulate combToPerm : {n : ℕ} → (fromℕ n ⇛ fromℕ n) → Permutation n
+combToPermi : {n : ℕ} (c : fromℕ (suc n) ⇛ fromℕ (suc n))
+                      (i : F.Fin (suc n)) →
+                      Permutation (suc (n F.ℕ-ℕ i))
+combToPermi c F.zero = {!max - evalCombB c max ∷ []!}
+combToPermi c (F.suc i) = {!? ∷ combToPermi c i!}
+
+
+-- Suppose we have some combinator c, its output vector v, and the corresponding
+-- permutation p. We construct p by looking at how many places each element is
+-- displaced from its index in v *to the right* (if it's where it "should" be or
+-- to the left, just return 0).
+
+-- In other words, if v[i] = j, then p[j] = j - i. That is, if j is in location
+-- i, j - i is how many spaces to the right (if any) j appears from its own
+-- index. Note that if v[i] = j, then c(i) = j, and inv(c)(j) = i. This suggests
+-- that if I can write a tabulate function for permutations, the permutation for
+-- a combinator c will be "tabulate (∩ -> i - (evalCombB c i))", modulo type
+-- coercions.
+combToPerm : {n : ℕ} → (fromℕ n ⇛ fromℕ n) → Permutation n
+combToPerm {zero} c = []
+combToPerm {suc n} c = {!!}
 
 permToComb : {n : ℕ} → Permutation n → (fromℕ n ⇛ fromℕ n)
 permToComb [] = id⇛
@@ -314,7 +338,7 @@ swapUpCorrect {suc (suc n)} F.zero j = cong finToVal (
     j                            ≡⟨ sym (lookupTab {f = id} j) ⟩
     lookup j (tabulate id)       ≡⟨ cong (λ x → lookup j (F.zero ∷ F.suc F.zero ∷ F.suc (F.suc F.zero) ∷ x)) (sym (idP-id (tabulate (F.suc ○ F.suc ○ F.suc)))) ⟩
     evalPerm (swapUpToPerm F.zero) j ∎ )
-swapUpCorrect {suc (suc n)} (F.suc i) F.zero = refl
+swapUpCorrect {suc (suc n)} (F.suc i) F.zero = {!!}
 swapUpCorrect {suc (suc n)} (F.suc i) (F.suc j) = 
   begin
     evalComb (assocl₊⇛ ◎ (swap₊⇛ ⊕ id⇛) ◎ assocr₊⇛) (inj₂ (evalComb (swapUpTo i) (finToVal j)))
