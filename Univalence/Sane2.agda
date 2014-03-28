@@ -231,6 +231,15 @@ swapiCorrect {suc (suc n)} (F.suc i) (F.suc j) =
                                    ≡⟨ cong finToVal (push-f-through F.suc j (swapiPerm i) id) ⟩
    finToVal (lookup j (permute (swapiPerm i) (tabulate F.suc))) ∎
 
+lookup-insert : {n : ℕ} {A : Set} → (v : Vec A (suc n)) → {i : F.Fin (suc n)} → {a : A} → lookup F.zero (insert v (F.suc i) a) ≡ lookup F.zero v
+lookup-insert (x ∷ v) = refl
+
+swapUp0 : {n : ℕ} {A : Set} → (v : Vec A (suc n)) → (i : F.Fin n) → lookup F.zero (permute (swapUpToPerm i) v) ≡ lookup (F.inject₁ i) v
+swapUp0 (x ∷ v) F.zero = refl
+swapUp0 (x ∷ v) (F.suc i) = trans (lookup-insert (permute (swapUpToPerm i) v)) (swapUp0 v i)
+
+-- this pseudo-proof shows that swapUpTo and swapUpToPerm do not do the same thing
+-- the (F.suc i) F.zero case fails.
 swapUpCorrect : {n : ℕ} → (i : F.Fin n) → (j : F.Fin (1 + n)) → evalComb (swapUpTo i) (finToVal j) ≡ finToVal (evalPerm (swapUpToPerm i) j)
 swapUpCorrect {zero} () j
 swapUpCorrect {suc zero} F.zero F.zero = refl
@@ -242,7 +251,16 @@ swapUpCorrect {suc (suc n)} F.zero j = cong finToVal (
     j                            ≡⟨ sym (lookupTab {f = id} j) ⟩
     lookup j (tabulate id)       ≡⟨ cong (λ x → lookup j (F.zero ∷ F.suc F.zero ∷ F.suc (F.suc F.zero) ∷ x)) (sym (idP-id (tabulate (F.suc ○ F.suc ○ F.suc)))) ⟩
     evalPerm (swapUpToPerm F.zero) j ∎ )
-swapUpCorrect {suc (suc n)} (F.suc i) F.zero = {!!}
+swapUpCorrect {suc (suc n)} (F.suc i) F.zero = sym (begin
+  finToVal (lookup F.zero (insert (permute (swapUpToPerm i) (tabulate F.suc)) (F.suc (F.inject₁ i)) F.zero)) 
+                          ≡⟨ cong finToVal (lookup-insert (permute (swapUpToPerm i) (tabulate F.suc))) ⟩
+  finToVal (lookup F.zero (permute (swapUpToPerm i) (tabulate F.suc)))
+                          ≡⟨ cong finToVal (swapUp0 (tabulate F.suc) i) ⟩
+  finToVal (lookup (F.inject₁ i)
+     (F.suc F.zero ∷
+      F.suc (F.suc F.zero) ∷ tabulate (λ z → F.suc (F.suc (F.suc z)))))
+                          ≡⟨ {!evalComb (swapUpTo (F.suc i)) (inj₁ tt)!} ⟩
+  inj₂ (inj₁ tt) ∎ )
 swapUpCorrect {suc (suc n)} (F.suc i) (F.suc j) = 
   begin
     evalComb (assocl₊⇛ ◎ (swap₊⇛ ⊕ id⇛) ◎ assocr₊⇛) (inj₂ (evalComb (swapUpTo i) (finToVal j)))
