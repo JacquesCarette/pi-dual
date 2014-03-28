@@ -22,10 +22,6 @@ open import NatSimple
 open import Eval
 open import Permutations
 
--- not sure where else to put this [Z][A]
-hetType : {A B : Set} → (a : A) → A ≡ B → B
-hetType a refl = a
-
 -- construct a combinator which represents the swapping of the i-th and 
 -- (i+1)-th 'bit' of a finite type.  
 -- Best to think of this as an 'elementary permutation', in the same way
@@ -94,17 +90,6 @@ swapmPerm : {n : ℕ} → F.Fin n → Permutation n
 swapmPerm F.zero = idP
 swapmPerm {suc n} (F.suc i) = F.suc i ∷ swapOne i
 
--- Correctness: after putting together i indices, the partial combinator c' is
--- represented by the vector [1, 2, ... , n - (i +1)] ++ (last i v)
---
--- Might want to bake in the correctness proof here---have the output be a
--- combinator c, a vector v, and a proof that vecRep c v, then we just prove
--- that the vector at the end is just the vector from the beginning
---
--- Or just put them together and prove that they're related by vecRep with
--- foldrWorks and that the end vector is the input vector; this is probably simpler
--- (and is the approach currently reflected in the code below)
-
 -- swapInd i j returns a vector v′ where v′[i] = j, v′[j] = i, and v′[k] = k
 -- where k != j and k != i
 
@@ -124,37 +109,8 @@ swapIndFn {suc zero}    F.zero   (F.suc ()) (F.suc x)
 swapIndFn {suc (suc n)} F.zero   (F.suc j)  (F.suc x) = zeroIfEq j x (F.suc x)
 swapIndFn               (F.suc i)  F.zero    (F.suc x) = zeroIfEq i x (F.suc x)
 swapIndFn               (F.suc i) (F.suc j)  (F.suc x) = F.suc (swapIndFn i j x)
-
-swapInd : {n : ℕ} → F.Fin n → F.Fin n → Vec (F.Fin n) n
-swapInd i j = tabulate (swapIndFn i j)
-
-swapIndVec : {n : ℕ} → F.Fin n → F.Fin n → Vec (F.Fin n) n → Vec (F.Fin n) n
-swapIndVec i j v = tabulate (λ k → v !! swapIndFn i j k)
-
--- vecRep c v relates a combinator c over normal types to the output
--- vector it results in. This works only over a subset of combinators
--- used in decompilation.
-data vecRep : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n → Set where
-  vr-id    : {n : ℕ} → vecRep (id⇛ {fromℕ n}) (upTo n)
-  vr-swap  : {n : ℕ} → vecRep {suc (suc n)} (swapi {suc n} F.zero) swap01
-  vr-comp  : {n : ℕ} {c₁ c₂ : (fromℕ n) ⇛ (fromℕ n)} {v₁ v₂ : Vec (F.Fin n) n} → 
-    vecRep c₁ v₁ → vecRep c₂ v₂ → 
-    vecRep (c₁ ◎ c₂) (v₁ ∘̬ v₂)
-  vr-plus : {n : ℕ} → {c : (fromℕ n) ⇛ (fromℕ n)} → {v : Vec (F.Fin n) n} → 
-    vecRep {n} c v → 
-    vecRep {suc n} (id⇛ ⊕ c) (F.zero ∷ (vmap F.suc v))
-
--- the library definition of + on Fin isn't what we want here, ugh
-_+F_ : {m n : ℕ} → F.Fin (suc m) → F.Fin n → F.Fin (m + n)
-_+F_ {m} {zero} F.zero ()
-_+F_ {m} {suc n} F.zero j = inj+ {suc n} {m} j
-_+F_ {zero} {n} (F.suc ()) _
-_+F_ {suc m} {n} (F.suc i) j = F.suc (i +F j)
-
-vecToComb : {n : ℕ} → Vec (F.Fin n) n → (fromℕ n) ⇛ (fromℕ n)
-vecToComb {n} vec = 
-  foldr (λ i → fromℕ n ⇛ fromℕ n) _◎_ id⇛ (map (λ i → makeSingleComb (vec !! i) i) (upTo n))
 -}
+
 finToVal : {n : ℕ} → F.Fin n → ⟦ fromℕ n ⟧
 finToVal F.zero = inj₁ tt
 finToVal (F.suc n) = inj₂ (finToVal n)
@@ -172,62 +128,6 @@ finToValToFin {suc n} (inj₂ v) = cong inj₂ (finToValToFin v)
 valToFinToVal : {n : ℕ} → (i : F.Fin n) → valToFin (finToVal i) ≡ i
 valToFinToVal F.zero = refl -- F.zero
 valToFinToVal (F.suc i) = cong F.suc (valToFinToVal i)
-
-{-
-combToVec : {n : ℕ} → (fromℕ n) ⇛ (fromℕ n) → Vec (F.Fin n) n
-combToVec c = tabulate (valToFin ○ (evalComb c) ○ finToVal)
-
---  Might want to take a ⟦ fromℕ n ⟧ instead of a Fin n as the second
---  argument here?
-combToVecWorks : {n : ℕ} → (c : (fromℕ n) ⇛ (fromℕ n)) → 
-  (i : F.Fin n) → (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
-combToVecWorks c i = (sym (finToValToFin _)) ∘ (cong finToVal (sym (lookupTab i)))
-
--- This lemma is the hammer that will let us use vecRep to (hopefully) simply
--- prove some lemmas about the helper functions used in vecToComb, then apply
--- vecRepWorks at the end to make sure they all "do the right thing"
-vecRepWorks : {n : ℕ} → {c : (fromℕ n) ⇛ (fromℕ n)} → {v : Vec (F.Fin n) n} → 
-  vecRep c v → (i : F.Fin n) → (evalVec v i) ≡ (evalComb c (finToVal i))
-vecRepWorks vr-id i = cong finToVal (lookupTab i)
-vecRepWorks vr-swap F.zero = refl -- (inj₂ (inj₁ tt))
-vecRepWorks vr-swap (F.suc F.zero) = refl -- (inj₁ tt)
-vecRepWorks {suc (suc n)} vr-swap (F.suc (F.suc i)) = cong finToVal (lookupTab i)
-vecRepWorks (vr-comp {n} {c₁} {c₂} {v₁} {v₂} vr vr₁) i = begin
-  finToVal (lookup i (tabulate (λ j → lookup (lookup j v₁) v₂))) 
- ≡⟨ cong finToVal (lookup∘tabulate i (λ j → lookup (lookup j v₁) v₂)) ⟩ 
-  finToVal (lookup (lookup i v₁) v₂) 
- ≡⟨ cong (λ x → finToVal (lookup x v₂)) (lookupToEvalVec i v₁) ⟩ 
-  finToVal (lookup (valToFin (evalVec v₁ i)) v₂) 
- ≡⟨ cong (λ x → finToVal (lookup (valToFin x) v₂)) (vecRepWorks vr i) ⟩ 
-  finToVal (lookup (valToFin (evalComb c₁ (finToVal i))) v₂)
- ≡⟨ cong finToVal (lookupToEvalVec (valToFin (evalComb c₁ (finToVal i))) v₂) ⟩ 
-  finToVal (valToFin (evalVec v₂ (valToFin (evalComb c₁ (finToVal i)))))
- ≡⟨ finToValToFin (evalVec v₂ (valToFin (evalComb c₁ (finToVal i)))) ⟩ 
- evalVec v₂ (valToFin (evalComb c₁ (finToVal i)))
- ≡⟨ vecRepWorks vr₁ (valToFin (evalComb c₁ (finToVal i))) ⟩ 
- evalComb c₂ (finToVal (valToFin (evalComb c₁ (finToVal i))))
- ≡⟨ cong (evalComb c₂) (finToValToFin (evalComb c₁ (finToVal i))) ⟩ 
- evalComb (c₁ ◎ c₂) (finToVal i) ∎
-vecRepWorks {suc n} (vr-plus vr) F.zero = refl -- (inj₁ tt)
-vecRepWorks (vr-plus {c = c} {v = v} vr) (F.suc i) = begin
-  evalVec (F.zero ∷ vmap F.suc v) (F.suc i)  ≡⟨ cong finToVal (map!! F.suc v i) ⟩
-  inj₂ (finToVal (v !! i))                  ≡⟨ cong inj₂ (vecRepWorks vr i) ⟩
-  (evalComb (id⇛ ⊕ c) (finToVal (F.suc i)) ∎)
-
-
-------------------------------------------------------------------
--- Goal: 
-
-lemma1 : {n : ℕ} (v : Vec (F.Fin n) n) → (i : F.Fin n) → 
-    (evalVec v i) ≡ (evalComb (vtc′ v) (finToVal i))
-lemma1 v i = sym (vecToCombWorks v i)
-
-lemma2 : {n : ℕ} (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin n) → 
-    (evalComb c (finToVal i)) ≡ evalVec (combToVec c) i
-lemma2 c i = combToVecWorks c i
-
-----------------------------------------------------------------
--}
 
 combToPermi : {n : ℕ} (c : fromℕ (suc n) ⇛ fromℕ (suc n))
                       (i : F.Fin (suc n)) →
