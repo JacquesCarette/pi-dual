@@ -147,6 +147,10 @@ combToPermi c (F.suc i) = {!? ∷ combToPermi c i!}
 -- that if I can write a tabulate function for permutations, the permutation for
 -- a combinator c will be "tabulate (∩ -> i - (evalCombB c i))", modulo type
 -- coercions.
+--
+-- JC: I think an even easier way is to use LeftCancellation and build it
+--    recursively!  By this I mean something which gives a
+--    (fromℕ n ⇛ fromℕ n) given a (fromℕ (suc n) ⇛ fromℕ (suc n))
 combToPerm : {n : ℕ} → (fromℕ n ⇛ fromℕ n) → Permutation n
 combToPerm {zero} c = []
 combToPerm {suc n} c = {!!}
