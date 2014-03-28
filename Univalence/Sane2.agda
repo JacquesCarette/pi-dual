@@ -48,18 +48,20 @@ swapUpTo : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
 swapUpTo F.zero    = id⇛
 swapUpTo (F.suc i) = (id⇛ ⊕ swapUpTo i) ◎ swapi F.zero
 
-swapUpToPerm : {n : ℕ} → F.Fin n → Permutation (suc n)
+swapUpToPerm : {n : ℕ} → F.Fin n → Permutation (1 + n)
 swapUpToPerm {zero} ()
-swapUpToPerm {suc zero} F.zero = idP
+swapUpToPerm F.zero = idP
 swapUpToPerm {suc zero} (F.suc ())
-swapUpToPerm {suc (suc n)} F.zero = idP
-swapUpToPerm {suc (suc n)} (F.suc j) = {!(F.inject {suc (suc n)} (F.suc j)) ∷ idP  !}
+swapUpToPerm {suc (suc n)} (F.suc j) = F.inject₁ (F.suc j) ∷ idP
 
 -- swapDownFrom i permutes the combinator right by one up to i (the reverse
 -- of swapUpTo)
 swapDownFrom : {n : ℕ} → F.Fin n → (fromℕ (suc n)) ⇛ (fromℕ (suc n))
 swapDownFrom F.zero    = id⇛
 swapDownFrom (F.suc i) = swapi F.zero ◎ (id⇛ ⊕ swapDownFrom i)
+
+swapDownFromPerm : { n : ℕ} → F.Fin n → Permutation (1 + n)
+swapDownFromPerm i = {!!}
 
 -- TODO: verify that this is actually correct
 -- Idea: To swap n < m with each other, swap n, n + 1, ... , m - 1, m, then
@@ -261,9 +263,14 @@ evalPerm {suc n} p k = lookup k (permute p (allFin (suc n)))
 testP5 : Vec (F.Fin five) five
 testP5 = permute (swapmPerm (F.inject (F.fromℕ three))) (allFin five)
 
-pushVal : {n : ℕ} → (j : ⟦ fromℕ n ⟧) → {k : F.Fin n} → valToFin j ≡ k → j ≡ finToVal k
-pushVal j pf = trans (sym (finToValToFin j)) (cong finToVal pf)
-
+push-f-through : {n : ℕ} {A B : Set} → (f : A → B) → (j : F.Fin n) → (p : Permutation n) → (g : F.Fin n → A) → f (lookup j (permute p (tabulate g))) ≡ lookup j (permute p (tabulate (f ○ g)))
+push-f-through {zero} f () p g
+push-f-through {suc n} f j p g = begin
+   f (lookup j (permute p (tabulate g)))            ≡⟨ sym (map!! f (permute p (tabulate g)) j) ⟩
+   lookup j (vmap f (permute p (tabulate g)))       ≡⟨ cong (lookup j) (vmap-permute p (tabulate g) f) ⟩
+   lookup j (permute p (vmap f (tabulate g)))       ≡⟨ cong (λ x → lookup j (permute p x)) (mapTab f g) ⟩
+   lookup j (permute p (tabulate (f ○ g))) ∎
+ 
 swapiCorrect : {n : ℕ} → (i : F.Fin n) → (j : F.Fin (1 + n)) → evalComb (swapi i) (finToVal j) ≡ finToVal (evalPerm (swapiPerm i) j)
 swapiCorrect {zero} () _
 swapiCorrect {suc n} F.zero F.zero = refl
@@ -278,11 +285,9 @@ swapiCorrect {suc (suc n)} F.zero (F.suc (F.suc j)) = cong finToVal
     F2 j
                                  ≡⟨ cong F2 (sym (lookupTab {f = id} j)) ⟩
     F2 (lookup j (tabulate id))
-                                 ≡⟨ sym (map!! F2 (tabulate id) j) ⟩
-    lookup j (vmap F2 (tabulate id))
-                                 ≡⟨ cong (lookup j) (mapTab F2 id) ⟩
-    lookup j (tabulate F2)
-                                 ≡⟨ cong (lookup j) (sym (idP-id (tabulate F2))) ⟩
+                                 ≡⟨ cong (λ x → F2 (lookup j x)) (sym (idP-id (tabulate id))) ⟩
+    F2 (lookup j (permute idP (tabulate id)))
+                                 ≡⟨ push-f-through F2 j idP id ⟩
     lookup j (permute idP (tabulate F2)) ∎ 
 swapiCorrect {suc (suc n)} (F.suc i) (F.suc j) =
   begin
@@ -294,41 +299,41 @@ swapiCorrect {suc (suc n)} (F.suc i) (F.suc j) =
                                    ≡⟨ refl ⟩
    inj₂ (finToVal (lookup j (permute (swapiPerm i) (tabulate id))))
                                    ≡⟨ refl ⟩
-   finToVal (F.suc (lookup j (permute (swapiPerm i) (tabulate id))))
-                                   ≡⟨ cong finToVal (sym (map!! F.suc (permute (swapiPerm i) (tabulate id)) j)) ⟩
-   finToVal (lookup j (vmap F.suc (permute (swapiPerm i) (tabulate id))))
-                                   ≡⟨ cong (λ x → finToVal (lookup j x)) (vmap-permute (swapiPerm i) (tabulate id) F.suc) ⟩
-   finToVal (lookup j (permute (swapiPerm i) (vmap F.suc (tabulate id))))
-                                   ≡⟨ cong (λ x → finToVal (lookup j (permute (swapiPerm i) x))) (mapTab F.suc id) ⟩
+   finToVal (F.suc (lookup j (permute (swapiPerm i) (tabulate id)))) 
+                                   ≡⟨ cong finToVal (push-f-through F.suc j (swapiPerm i) id) ⟩
    finToVal (lookup j (permute (swapiPerm i) (tabulate F.suc))) ∎
 
+swapUpCorrect : {n : ℕ} → (i : F.Fin n) → (j : F.Fin (1 + n)) → evalComb (swapUpTo i) (finToVal j) ≡ finToVal (evalPerm (swapUpToPerm i) j)
+swapUpCorrect {zero} () j
+swapUpCorrect {suc zero} F.zero F.zero = refl
+swapUpCorrect {suc zero} F.zero (F.suc F.zero) = refl
+swapUpCorrect {suc zero} F.zero (F.suc (F.suc ()))
+swapUpCorrect {suc zero} (F.suc ()) j
+swapUpCorrect {suc (suc n)} F.zero j = cong finToVal (
+  begin
+    j                            ≡⟨ sym (lookupTab {f = id} j) ⟩
+    lookup j (tabulate id)       ≡⟨ cong (λ x → lookup j (F.zero ∷ F.suc F.zero ∷ F.suc (F.suc F.zero) ∷ x)) (sym (idP-id (tabulate (F.suc ○ F.suc ○ F.suc)))) ⟩
+    evalPerm (swapUpToPerm F.zero) j ∎ )
+swapUpCorrect {suc (suc n)} (F.suc i) F.zero = refl
+swapUpCorrect {suc (suc n)} (F.suc i) (F.suc j) = 
+  begin
+    evalComb (assocl₊⇛ ◎ (swap₊⇛ ⊕ id⇛) ◎ assocr₊⇛) (inj₂ (evalComb (swapUpTo i) (finToVal j)))
+         ≡⟨ cong (λ x → evalComb (assocl₊⇛ ◎ (swap₊⇛ ⊕ id⇛) ◎ assocr₊⇛) (inj₂ x)) (swapUpCorrect i j) ⟩
+    evalComb (assocl₊⇛ ◎ (swap₊⇛ ⊕ id⇛) ◎ assocr₊⇛) (inj₂ (finToVal (evalPerm (swapUpToPerm i) j)))
+         ≡⟨ {!!} ⟩ -- need behavior of evalComb assocl₊⇛ (inj₂ ...) to move forward. 
+    finToVal (evalPerm (swapUpToPerm (F.suc i)) (F.suc j))
+  ∎ 
 
-swapmCorrect : {n : ℕ} → (i j : F.Fin n) → valToFin (evalComb (swapm i) (finToVal j)) ≡ evalPerm (swapmPerm i) j
+swapmCorrect : {n : ℕ} → (i j : F.Fin n) → evalComb (swapm i) (finToVal j) ≡ finToVal (evalPerm (swapmPerm i) j)
 swapmCorrect {zero} () _
-swapmCorrect {suc n} F.zero j = begin
-    valToFin (finToVal j)
-                              ≡⟨ valToFinToVal j ⟩
-    j
-                              ≡⟨ sym (lookupTab {f = id} j) ⟩
-    lookup j (tabulate id)
-                              ≡⟨ sym (cong (lookup j) (idP-id (tabulate id))) ⟩
-    lookup j (permute idP (tabulate id)) ∎
+swapmCorrect {suc n} F.zero j = 
+ begin
+    finToVal j                                       ≡⟨ cong finToVal (sym (lookupTab {f = id} j)) ⟩
+    finToVal (lookup j (tabulate id))                ≡⟨ cong (λ x → finToVal (lookup j x)) (sym (idP-id (tabulate id))) ⟩
+    finToVal (lookup j (permute idP (tabulate id)))  ∎
 swapmCorrect {suc zero} (F.suc ()) F.zero
-swapmCorrect {suc (suc n)} (F.suc i) F.zero =
-    -- this isn't really the right way to do it (need to deal with swapDownFrom first), 
-    -- but it shows how to use swapiCorrect and pushVal together.  
-    let k = (evalComb (swapDownFrom i) (inj₁ tt)) in
-    begin
-    valToFin (evalComb (swapm (F.suc i)) (inj₁ tt)) 
-                             ≡⟨ refl ⟩
-    valToFin (evalComb (swapUpTo i) (evalComb (swapi i) k))
-                             ≡⟨ {!!} ⟩
-    valToFin (evalComb (swapUpTo i) (evalComb (swapi i) (finToVal (valToFin k))))
-                             ≡⟨ cong (λ x → valToFin (evalComb (swapUpTo i) x)) (swapiCorrect i (valToFin k)) ⟩
-    valToFin (evalComb (swapUpTo i) (finToVal (evalPerm (swapiPerm i) (valToFin k))))
-                             ≡⟨ {!!} ⟩
-    {!!} ∎
-swapmCorrect {suc n} (F.suc i) (F.suc j) = {!!}
+swapmCorrect {suc (suc n)} (F.suc i) F.zero = {!!} -- requires the breakdown of swapm
+swapmCorrect {suc n} (F.suc i) (F.suc j) = {!!} -- as does this
 
 lemma1 : {n : ℕ} (p : Permutation n) → (i : F.Fin n) → 
     valToFin (evalComb (permToComb p) (finToVal i)) ≡ evalPerm p i 
@@ -341,13 +346,9 @@ lemma1 {suc (suc n)} (F.zero ∷ p) (F.suc i) =  begin
     F.suc (evalPerm p i)
          ≡⟨ refl ⟩
     F.suc (lookup i (permute p (tabulate id)))
-         ≡⟨ sym (map!! F.suc (permute p (tabulate id)) i) ⟩
-    lookup i (vmap F.suc (permute p (tabulate id)))
-         ≡⟨ cong (lookup i) (vmap-permute p (tabulate id) F.suc) ⟩
-    lookup i (permute p (vmap F.suc (tabulate id)))
-         ≡⟨ cong (λ x -> lookup i (permute p x)) (mapTab F.suc id) ⟩ 
+         ≡⟨ push-f-through F.suc i p id ⟩ 
     evalPerm (F.zero ∷ p) (F.suc i) ∎
-lemma1 {suc n} (F.suc j ∷ p) i = {!!}
+lemma1 {suc n} (F.suc j ∷ p) i = {!!} -- needs all the previous ones first.
 
 lemma2 : {n : ℕ} (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin n) → 
     (evalComb c (finToVal i)) ≡ finToVal (evalPerm (combToPerm c) i)
