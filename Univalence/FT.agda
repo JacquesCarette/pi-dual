@@ -62,6 +62,13 @@ data _⇛_ : FT → FT → Set where
 
 ------------------------------------------------------------------------------
 
+-- An alternative interpretation
+⟦_⟧′ : FT → Set → Set
+⟦ ZERO ⟧′ A = ⊥
+⟦ ONE ⟧′ A = A
+⟦ PLUS B₁ B₂ ⟧′ A = ⟦ B₁ ⟧′ A ⊎ ⟦ B₂ ⟧′ A
+⟦ TIMES B₁ B₂ ⟧′ A = ⟦ B₁ ⟧′ A × ⟦ B₂ ⟧′ A
+
 {--
 
 Not used
