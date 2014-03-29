@@ -240,18 +240,16 @@ swapiCorrect {suc (suc n)} (F.suc i) (F.suc j) =
 lookup-insert : {n : ℕ} {A : Set} → (v : Vec A (suc n)) → {i : F.Fin (suc n)} → {a : A} → lookup F.zero (insert v (F.suc i) a) ≡ lookup F.zero v
 lookup-insert (x ∷ v) = refl
 
+lookup-idP-id : {n : ℕ} → (i : F.Fin n) → lookup i (permute idP (tabulate id)) ≡ i
+lookup-idP-id i = trans (cong (lookup i) (idP-id (tabulate id))) (lookupTab i)
+
 1iP0 : {n : ℕ} {A : Set} {a : A} → (v : Vec A (suc n)) → (i : F.Fin n) → lookup F.zero (permute (1iP i) v) ≡ lookup (F.inject₁ i) v
 1iP0 (x ∷ v) F.zero = refl
 1iP0 (x ∷ v) (F.suc i) = trans (lookup-insert (permute (1iP i) v)) (1iP0 {a = x} v i)
 
--- to capture the behaviour of some of the combinators
-l₊2 : {A B C : Set} → A ⊎ B → (C ⊎ A) ⊎ B
-l₊2 (inj₁ x) = inj₁ (inj₂ x)
-l₊2 (inj₂ x) = inj₂ x
-
-lemmaA : {n : ℕ} → (x : ⟦ fromℕ (1 + (1 + n)) ⟧) → evalComb (assocl₊⇛ {b₁ = ONE})  (inj₂ x) ≡ l₊2 x 
-lemmaA (inj₁ x) = refl
-lemmaA (inj₂ y) = refl
+swapUpToAct : {n : ℕ} → (i : F.Fin n) → permute (swapUpToPerm i) (tabulate {suc n} id) ≡ insert (tabulate F.suc) (F.inject₁ i) F.zero
+swapUpToAct F.zero = cong (λ x → F.zero ∷ F.suc F.zero ∷ x) (idP-id (tabulate (F.suc ○ F.suc)))
+swapUpToAct (F.suc i) = cong (λ x → F.suc F.zero ∷ insert x (F.inject₁ i) F.zero) (idP-id (tabulate (F.suc ○ F.suc)))
 
 swapi≡swap01 : {n : ℕ} → (j : F.Fin (suc (suc n))) →  evalComb (assocl₊⇛ ◎ (swap₊⇛ ⊕ id⇛) ◎ assocr₊⇛) (finToVal j) ≡ finToVal (evalPerm (swap01 (suc (suc n))) j)
 swapi≡swap01 F.zero = refl
@@ -279,12 +277,33 @@ swapUpCorrect {suc (suc n)} (F.suc i) (F.suc j) =
     evalComb (assocl₊⇛ ◎ (swap₊⇛ ⊕ id⇛) ◎ assocr₊⇛) (inj₂ (finToVal (evalPerm (swapUpToPerm i) j)))
          ≡⟨ swapi≡swap01 (F.suc (evalPerm (swapUpToPerm i) j)) ⟩
     finToVal (evalPerm (swap01 (suc (suc (suc n)))) (F.suc (evalPerm (swapUpToPerm i) j))) 
-         ≡⟨ {!!} ⟩
-    finToVal (lookup j (insert (tabulate (F.suc ○ F.suc)) (F.inject₁ i) F.zero))
-         ≡⟨ cong (λ x → finToVal (lookup j (insert (F.suc (F.suc F.zero) ∷ x) (F.inject₁ i) F.zero))) (sym (idP-id (tabulate (F.suc ○ F.suc ○ F.suc)))) ⟩
+         ≡⟨ cong (λ x → finToVal (evalPerm (swap01 (suc (suc (suc n)))) (F.suc (lookup j x)))) (swapUpToAct i ) ⟩
+    finToVal (lookup
+       (lookup j (insert (tabulate (λ z → F.suc z)) (F.inject₁ i) F.zero))
+       (F.zero ∷ F.suc (F.suc F.zero) ∷ permute idP (tabulate (λ z → F.suc (F.suc (F.suc z))))))
+         ≡⟨ cong finToVal (lemma6 i j) ⟩
     finToVal (evalPerm (swapUpToPerm (F.suc i)) (F.suc j))
   ∎ 
-
+  where
+    -- since this is all about swap01 (in disguise), need to go 2 out on i for things to stabilise (not j, fix that)
+    lemma6 :  {n : ℕ} → (i : F.Fin n) → (j : F.Fin (1 + n)) → 
+       lookup
+       (lookup j (insert (tabulate {n} F.suc) (F.inject₁ i) F.zero))
+       (F.zero ∷ permute idP (tabulate (λ z → F.suc (F.suc z))))
+      ≡
+       lookup j (insert (permute idP (tabulate (λ x → F.suc (F.suc x)))) (F.inject₁ i) F.zero)
+    lemma6 {zero} () j₁
+    lemma6 F.zero F.zero = refl
+    lemma6 F.zero (F.suc F.zero) = refl
+    lemma6 {suc n} F.zero (F.suc (F.suc j₁)) =  cong (λ x → lookup x (F.zero ∷ permute idP (tabulate (F.suc ○ F.suc)))) 
+       (lookupTab {f = F.suc ○ F.suc} j₁) 
+    lemma6 (F.suc i₁) F.zero = refl
+    lemma6 (F.suc F.zero) (F.suc F.zero) = refl
+    lemma6 (F.suc (F.suc i₁)) (F.suc F.zero) = refl
+    lemma6 (F.suc F.zero) (F.suc (F.suc j₁)) = cong (λ x → lookup x (F.zero ∷ permute idP (tabulate (F.suc ○ F.suc))))
+        (lookupTab {f = F.suc ○ F.suc} j₁)
+    lemma6 (F.suc (F.suc i₁)) (F.suc (F.suc j₁)) = {!!}
+ 
 swapmCorrect : {n : ℕ} → (i j : F.Fin n) → evalComb (swapm i) (finToVal j) ≡ finToVal (evalPerm (swapmPerm i) j)
 swapmCorrect {zero} () _
 swapmCorrect {suc n} F.zero j = 
