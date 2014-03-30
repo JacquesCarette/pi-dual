@@ -10,7 +10,7 @@ open import Data.Product renaming (map to _×→_)
 open import Function renaming (_∘_ to _○_)
 
 open import FT
-open import HoTT
+open import SimpleHoTT
 open import Equivalences
 open import TypeEquivalences
 open import Path2Equiv

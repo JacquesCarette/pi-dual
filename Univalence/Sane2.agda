@@ -233,7 +233,7 @@ combToPermi : {n : ℕ} (c : fromℕ (suc n) ⇛ fromℕ (suc n))
                       (i : F.Fin (suc n)) →
                       Permutation (suc (n F.ℕ-ℕ i))
 combToPermi c F.zero = {!max - evalCombB c max ∷ []!}
-combToPermi c (F.suc i) = {!? ∷ combToPermi c i!}
+combToPermi c (F.suc i) = ? ∷ ? -- combToPermi c (F.inject₁ i)
 
 
 -- Suppose we have some combinator c, its output vector v, and the corresponding
