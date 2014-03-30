@@ -137,3 +137,66 @@ mutual
   BComb∘Comb (c ⊕ c₁) (inj₂ y) = cong inj₂ (BComb∘Comb c₁ y)
   BComb∘Comb (c ⊗ c₁) (x , y) = cong₂ _,_ (BComb∘Comb c x) (BComb∘Comb c₁ y)
 
+-----------------------------------------------------------------------------------
+
+-- evaluate the alternative interpretation; A needs to be a pointed type.
+mutual
+  evalComb′ : {a b : FT} {A : Set} {pt : A} → a ⇛ b → ⟦ a ⟧′ A → ⟦ b ⟧′ A
+  evalComb′ unite₊⇛ (inj₁ ())
+  evalComb′ unite₊⇛ (inj₂ y) = y
+  evalComb′ uniti₊⇛ x = inj₂ x
+  evalComb′ swap₊⇛ (inj₁ x) = inj₂ x
+  evalComb′ swap₊⇛ (inj₂ y) = inj₁ y
+  evalComb′ assocl₊⇛ (inj₁ x) = inj₁ (inj₁ x)
+  evalComb′ assocl₊⇛ (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
+  evalComb′ assocl₊⇛ (inj₂ (inj₂ y)) = inj₂ y
+  evalComb′ assocr₊⇛ (inj₁ (inj₁ x)) = inj₁ x
+  evalComb′ assocr₊⇛ (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
+  evalComb′ assocr₊⇛ (inj₂ y) = inj₂ (inj₂ y)
+  evalComb′ unite⋆⇛ (_ , x) = x
+  evalComb′ {pt = a} uniti⋆⇛ x = a , x
+  evalComb′ swap⋆⇛ (x , y) = y , x
+  evalComb′ assocl⋆⇛ (x , y , z) = (x , y) , z
+  evalComb′ assocr⋆⇛ ((x , y) , z) = x , y , z
+  evalComb′ distz⇛ (() , _)
+  evalComb′ factorz⇛ ()
+  evalComb′ dist⇛ (inj₁ x , z) = inj₁ (x , z)
+  evalComb′ dist⇛ (inj₂ y , z) = inj₂ (y , z)
+  evalComb′ factor⇛ (inj₁ (x , y)) = inj₁ x , y
+  evalComb′ factor⇛ (inj₂ (x , y)) = inj₂ x , y
+  evalComb′ id⇛ x = x
+  evalComb′ {pt = a} (sym⇛ c) x = evalBComb′ {pt = a} c x
+  evalComb′ {pt = a} (c₀ ◎ c₁) x = evalComb′ {pt = a} c₁ (evalComb′ {pt = a} c₀ x)
+  evalComb′ {pt = a} (c₀ ⊕ c₁) (inj₁ x) = inj₁ (evalComb′ {pt = a} c₀ x)
+  evalComb′ {pt = a} (c₀ ⊕ c₁) (inj₂ y) = inj₂ (evalComb′ {pt = a} c₁ y)
+  evalComb′ {pt = a} (c₀ ⊗ c₁) (x , y) = evalComb′ {pt = a} c₀ x , evalComb′ {pt = a} c₁ y
+
+  evalBComb′ : {a b : FT} {A : Set} {pt : A} → a ⇛ b → ⟦ b ⟧′ A → ⟦ a ⟧′ A
+  evalBComb′ unite₊⇛ x = inj₂ x
+  evalBComb′ uniti₊⇛ (inj₁ ())
+  evalBComb′ uniti₊⇛ (inj₂ y) = y
+  evalBComb′ swap₊⇛ (inj₁ x) = inj₂ x
+  evalBComb′ swap₊⇛ (inj₂ y) = inj₁ y
+  evalBComb′ assocl₊⇛ (inj₁ (inj₁ x)) = inj₁ x
+  evalBComb′ assocl₊⇛ (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
+  evalBComb′ assocl₊⇛ (inj₂ y) = inj₂ (inj₂ y)
+  evalBComb′ assocr₊⇛ (inj₁ x) = inj₁ (inj₁ x)
+  evalBComb′ assocr₊⇛ (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
+  evalBComb′ assocr₊⇛ (inj₂ (inj₂ y)) = inj₂ y
+  evalBComb′ {pt = a} unite⋆⇛ x = a , x
+  evalBComb′ uniti⋆⇛ (_ , y) = y
+  evalBComb′ swap⋆⇛ (x , y) = y , x
+  evalBComb′ assocl⋆⇛ ((x , y) , z) = x , y , z
+  evalBComb′ assocr⋆⇛ (x , y , z) = (x , y) , z
+  evalBComb′ distz⇛ ()
+  evalBComb′ factorz⇛ (() , _)
+  evalBComb′ dist⇛ (inj₁ (x , y)) = inj₁ x , y
+  evalBComb′ dist⇛ (inj₂ (x , y)) = inj₂ x , y
+  evalBComb′ factor⇛ (inj₁ x , z) = inj₁ (x , z)
+  evalBComb′ factor⇛ (inj₂ y , z) = inj₂ (y , z)
+  evalBComb′ id⇛ x = x
+  evalBComb′ {pt = a} (sym⇛ c) x = evalComb′ {pt = a} c x
+  evalBComb′ {pt = a} (c₀ ◎ c₁) x = evalBComb′ {pt = a} c₀ (evalBComb′ {pt = a} c₁ x)
+  evalBComb′ {pt = a} (c₀ ⊕ c₁) (inj₁ x) = inj₁ (evalBComb′ {pt = a} c₀ x)
+  evalBComb′ {pt = a} (c₀ ⊕ c₁) (inj₂ y) = inj₂ (evalBComb′ {pt = a} c₁ y)
+  evalBComb′ {pt = a} (c₀ ⊗ c₁) (x , y) = evalBComb′ {pt = a} c₀ x , evalBComb′ {pt = a} c₁ y
