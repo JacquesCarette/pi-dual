@@ -431,6 +431,35 @@ lemma1 {suc (suc n)} (F.zero ∷ p) (F.suc i) =  begin
     evalPerm (F.zero ∷ p) (F.suc i) ∎
 lemma1 {suc n} (F.suc j ∷ p) i = {!!} -- needs all the previous ones first.
 
+-- this alternate version of lemma1 might, in the long term, but a better
+-- way to go?
+lemma1′ : {n : ℕ} → (i : F.Fin n) → vmap (evalComb (swapm i)) (tabulate finToVal) ≡ vmap finToVal (permute (swapmPerm i) (tabulate id))
+lemma1′ {zero} ()
+lemma1′ {suc n} F.zero = cong (_∷_ (inj₁ tt)) (
+  begin
+    vmap id (tabulate (inj₂ ○ finToVal))
+               ≡⟨ mapTab id (inj₂ ○ finToVal) ⟩
+    tabulate (inj₂ ○ finToVal)
+               ≡⟨ cong tabulate refl ⟩
+    tabulate (finToVal ○ F.suc)
+               ≡⟨ sym (mapTab finToVal F.suc) ⟩
+    vmap finToVal (tabulate F.suc)
+               ≡⟨ cong (vmap finToVal) (sym (idP-id _)) ⟩
+    vmap finToVal (permute idP (tabulate F.suc))
+  ∎ )
+lemma1′ {suc n} (F.suc i) = 
+  begin
+    vmap (evalComb (swapm (F.suc i))) (tabulate finToVal)
+        ≡⟨ refl ⟩
+    evalComb (swapm (F.suc i)) (inj₁ tt) ∷ vmap (evalComb (swapm (F.suc i))) (tabulate (inj₂ ○ finToVal))
+       ≡⟨ cong (λ x → x ∷ vmap (evalComb (swapm (F.suc i))) (tabulate (inj₂ ○ finToVal))) (swapmCorrect {suc n} (F.suc i) F.zero) ⟩
+    (finToVal (evalPerm (swapmPerm (F.suc i)) F.zero)) ∷ vmap (evalComb (swapm (F.suc i))) (tabulate (inj₂ ○ finToVal))
+       ≡⟨ cong (λ x → (finToVal (evalPerm (swapmPerm (F.suc i)) F.zero)) ∷ x ) {!!} ⟩ -- need to generalize the inductive hyp. for this to work
+    {!!}
+       ≡⟨ {!!} ⟩
+    vmap finToVal (insert (permute (swapOne i) (tabulate F.suc)) (F.suc i) F.zero)
+  ∎
+ 
 lemma2 : {n : ℕ} (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin n) → 
     (evalComb c (finToVal i)) ≡ finToVal (evalPerm (combToPerm c) i)
 lemma2 c i = {!!}
