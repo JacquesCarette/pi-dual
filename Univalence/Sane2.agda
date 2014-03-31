@@ -287,8 +287,21 @@ newlemma6 F.zero (x ∷ v) =
     ≡⟨ refl ⟩
   insert (vmap F.suc (vmap F.suc (x ∷ v))) F.zero F.zero ∎
 
-newlemma6 (F.suc i) (x ∷ v) = {!!}          
-
+newlemma6 (F.suc i) (x ∷ v) =
+  begin
+  vmap F.suc (insert (vmap F.suc (x ∷ v)) (F.inject₁ (F.suc i)) F.zero) ∘̬′ swap01vec
+    ≡⟨ refl ⟩
+  (tabulate (F.suc ○ F.suc) !! x) ∷
+    ((vmap F.suc (insert (vmap F.suc v) (F.inject₁ i) F.zero)) ∘̬′ swap01vec)
+    ≡⟨ cong (λ q → q ∷ ((vmap F.suc (insert (vmap F.suc v) (F.inject₁ i) F.zero)) ∘̬′ swap01vec))
+            (lookupTab x) ⟩
+  F.suc (F.suc x) ∷
+    ((vmap F.suc (insert (vmap F.suc v) (F.inject₁ i) F.zero)) ∘̬′ swap01vec)
+    ≡⟨ cong (_∷_ (F.suc (F.suc x))) (newlemma6 i v) ⟩
+  F.suc (F.suc x) ∷ insert (vmap F.suc (vmap F.suc v)) (F.inject₁ i) F.zero
+    ≡⟨ refl ⟩
+  insert (vmap F.suc (vmap F.suc (x ∷ v))) (F.inject₁ (F.suc i)) F.zero ∎
+  
 swapUpCorrect : {n : ℕ} → (i : F.Fin n) → (j : F.Fin (1 + n)) → evalComb (swapUpTo i) (finToVal j) ≡ finToVal (evalPerm (swapUpToPerm i) j)
 swapUpCorrect {zero} () j
 swapUpCorrect {suc zero} F.zero F.zero = refl
