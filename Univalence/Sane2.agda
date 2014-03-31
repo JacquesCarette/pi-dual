@@ -286,7 +286,6 @@ newlemma6 F.zero (x ∷ v) =
   F.zero ∷ F.suc (F.suc x) ∷ vmap F.suc (vmap F.suc v)
     ≡⟨ refl ⟩
   insert (vmap F.suc (vmap F.suc (x ∷ v))) F.zero F.zero ∎
-
 newlemma6 (F.suc i) (x ∷ v) =
   begin
   vmap F.suc (insert (vmap F.suc (x ∷ v)) (F.inject₁ (F.suc i)) F.zero) ∘̬′ swap01vec
@@ -325,29 +324,71 @@ swapUpCorrect {suc (suc n)} (F.suc i) (F.suc j) =
     finToVal (lookup
        (F.suc (lookup j (insert (tabulate (λ z → F.suc z)) (F.inject₁ i) F.zero)))
        (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ permute idP (tabulate (λ z → F.suc (F.suc (F.suc z))))))
---         ≡⟨ cong finToVal (lemma6 i j) ⟩
-         ≡⟨ {!!} ⟩
-    finToVal (evalPerm (swapUpToPerm (F.suc i)) (F.suc j))
+         ≡⟨ cong
+              (λ x →
+                 finToVal
+                 (lookup
+                  (F.suc
+                   (lookup j
+                    (insert (tabulate (λ z → F.suc z)) (F.inject₁ i) F.zero)))
+                  (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ x)))
+              (idP-id _) ⟩
+    finToVal
+      (swap01vec !! 
+        (F.suc ((insert (tabulate (λ z → F.suc z)) (F.inject₁ i) F.zero) !! j)))
+       ≡⟨ cong (λ x → finToVal (swap01vec !! x)) (sym (map!! F.suc _ j)) ⟩
+    finToVal
+      (swap01vec !! 
+        (vmap F.suc (insert (tabulate (λ z → F.suc z)) (F.inject₁ i) F.zero) !! j))
+       ≡⟨ cong finToVal (sym (lookupTab {f = (λ j → 
+          (swap01vec !! 
+            (vmap F.suc (insert (tabulate (λ z → F.suc z)) (F.inject₁ i) F.zero) !! j)))} j)) ⟩
+    finToVal
+      (tabulate
+        (λ j → 
+          (swap01vec !! 
+            (vmap F.suc (insert (tabulate (λ z → F.suc z)) (F.inject₁ i) F.zero) !! j))) !! j)
+       ≡⟨ refl ⟩
+    finToVal
+      (((vmap F.suc (insert (tabulate (λ z → F.suc z)) (F.inject₁ i) F.zero)) ∘̬ swap01vec)
+        !! j)
+       ≡⟨ cong (λ x → finToVal (x !! j)) (∘̬≡∘̬′ _ _) ⟩
+    finToVal
+      (((vmap F.suc (insert (tabulate F.suc) (F.inject₁ i) F.zero)) ∘̬′ swap01vec)
+        !! j)
+       ≡⟨ cong
+            (λ x →
+               finToVal
+               ((vmap F.suc (insert x (F.inject₁ i) F.zero) ∘̬′ swap01vec) !! j))
+            (sym (mapTab F.suc id)) ⟩ 
+{-- For reference:
+newlemma6 : {m n : ℕ} → (i : F.Fin n) → (v : Vec (F.Fin m) n) →
+            (vmap F.suc (insert (vmap F.suc v) (F.inject₁ i) F.zero)) ∘̬′ swap01vec
+          ≡ insert (vmap F.suc (vmap F.suc v)) (F.inject₁ i) F.zero
+--}          
+    finToVal
+      (((vmap F.suc (insert (vmap F.suc (tabulate id)) (F.inject₁ i) F.zero)) ∘̬′ swap01vec)
+        !! j)
+       ≡⟨ cong (λ x → finToVal (x !! j)) (newlemma6 i (tabulate id)) ⟩
+     finToVal
+       (insert (vmap F.suc (vmap F.suc (tabulate id))) (F.inject₁ i) F.zero !! j)
+       ≡⟨ cong
+            (λ x → finToVal (insert (vmap F.suc x) (F.inject₁ i) F.zero !! j))
+            (mapTab F.suc id) ⟩
+     finToVal
+       (insert (vmap F.suc (tabulate F.suc)) (F.inject₁ i) F.zero !! j)
+       ≡⟨ cong (λ x → finToVal (insert x (F.inject₁ i) F.zero !! j))
+            (mapTab F.suc F.suc) ⟩
+     finToVal
+       (insert (tabulate (λ x → F.suc (F.suc x))) (F.inject₁ i) F.zero !! j)
+       ≡⟨ cong (λ x → finToVal (lookup j (insert x (F.inject₁ i) F.zero)))
+            (sym (idP-id _)) ⟩
+     finToVal
+       (lookup j
+         (insert (permute idP (tabulate (λ x → F.suc (F.suc x)))) (F.inject₁ i) F.zero))
+       ≡⟨ refl ⟩
+       finToVal (evalPerm (swapUpToPerm (F.suc i)) (F.suc j))
   ∎ 
-  where
-    -- since this is all about swap01 (in disguise), need to go 2 out on i for things to stabilise (not j, fix that)
-    lemma6 :  {n : ℕ} → (i : F.Fin n) → (j : F.Fin (1 + n)) → 
-       lookup
-       (lookup j (insert (tabulate {n} F.suc) (F.inject₁ i) F.zero))
-       (F.zero ∷ permute idP (tabulate (λ z → F.suc (F.suc z))))
-      ≡
-       lookup j (insert (permute idP (tabulate (λ x → F.suc (F.suc x)))) (F.inject₁ i) F.zero)
-    lemma6 {zero} () j₁
-    lemma6 F.zero F.zero = refl
-    lemma6 F.zero (F.suc F.zero) = refl
-    lemma6 {suc n} F.zero (F.suc (F.suc j₁)) =  cong (λ x → lookup x (F.zero ∷ permute idP (tabulate (F.suc ○ F.suc)))) 
-       (lookupTab {f = F.suc ○ F.suc} j₁) 
-    lemma6 (F.suc i₁) F.zero = refl
-    lemma6 (F.suc F.zero) (F.suc F.zero) = refl
-    lemma6 (F.suc (F.suc i₁)) (F.suc F.zero) = refl
-    lemma6 (F.suc F.zero) (F.suc (F.suc j₁)) = cong (λ x → lookup x (F.zero ∷ permute idP (tabulate (F.suc ○ F.suc))))
-        (lookupTab {f = F.suc ○ F.suc} j₁)
-    lemma6 (F.suc (F.suc i₁)) (F.suc (F.suc j₁)) = {!!}
 
 l6test1 : _
 l6test1 = (vmap F.suc (insert (tabulate {4} F.suc) (F.suc (F.suc F.zero)) F.zero)) ∘̬ (F.suc F.zero ∷ F.zero ∷ tabulate (F.suc ○ F.suc))
