@@ -243,59 +243,57 @@ lookup-insert (x ∷ v) = refl
 lookup-idP-id : {n : ℕ} → (i : F.Fin n) → lookup i (permute idP (tabulate id)) ≡ i
 lookup-idP-id i = trans (cong (lookup i) (idP-id (tabulate id))) (lookupTab i)
 
-1iP0 : {n : ℕ} {A : Set} {a : A} → (v : Vec A (suc n)) → (i : F.Fin n) → lookup F.zero (permute (1iP i) v) ≡ lookup (F.inject₁ i) v
-1iP0 (x ∷ v) F.zero = refl
-1iP0 (x ∷ v) (F.suc i) = trans (lookup-insert (permute (1iP i) v)) (1iP0 {a = x} v i)
-
 swapUpToAct : {n : ℕ} → (i : F.Fin n) → permute (swapUpToPerm i) (tabulate {suc n} id) ≡ insert (tabulate F.suc) (F.inject₁ i) F.zero
-swapUpToAct F.zero = cong (λ x → F.zero ∷ F.suc F.zero ∷ x) (idP-id (tabulate (F.suc ○ F.suc)))
-swapUpToAct (F.suc i) = cong (λ x → F.suc F.zero ∷ insert x (F.inject₁ i) F.zero) (idP-id (tabulate (F.suc ○ F.suc)))
+swapUpToAct F.zero = cong (λ x → F.zero ∷ F.suc F.zero ∷ x) (idP-id _)
+swapUpToAct (F.suc i) = cong (λ x → F.suc F.zero ∷ insert x (F.inject₁ i) F.zero) (idP-id _)
 
 swapi≡swap01 : {n : ℕ} → (j : F.Fin (suc (suc n))) →  evalComb (assocl₊⇛ ◎ (swap₊⇛ ⊕ id⇛) ◎ assocr₊⇛) (finToVal j) ≡ finToVal (evalPerm (swap01 (suc (suc n))) j)
 swapi≡swap01 F.zero = refl
 swapi≡swap01 (F.suc F.zero) = refl
 swapi≡swap01 (F.suc (F.suc j)) = sym (trans 
-    (cong (λ x → finToVal (lookup j x)) (idP-id (tabulate (F.suc ○ F.suc)))) 
+    (cong (λ x → finToVal (lookup j x)) (idP-id _)) 
     (cong finToVal (lookupTab j)))
 
-{--
-lemma6glue : {m n : ℕ} → (i : F.Fin n) → (j : F.Fin (1 + n)) → (v : Vec (F.Fin (suc m)) n) →
-             (((insert (map F.suc v) (F.inject₁ i) F.zero))) ∘̬ (F.zero ∷ v) ≡
-             (insert (map F.suc (map F.suc v)) (F.inject₁ i) F.zero)
-lemma6glue = ?             --}
-
+-- this is the raw swap01 vector
 swap01vec : {n : ℕ} → Vec (F.Fin (2 + n)) (2 + n)
 swap01vec = F.suc F.zero ∷ F.zero ∷ tabulate (F.suc ○ F.suc)
+
+-- this is the one we 'naturally' get via permutation
+swap01vec′ : (n : ℕ) → Vec (F.Fin (2 + n)) (2 + n)
+swap01vec′ n = permute (swap01 (suc (suc n))) (tabulate id)
+
+-- but they are the same!
+swap01Correct : (n : ℕ) → swap01vec′ n ≡ swap01vec {n}
+swap01Correct zero = refl
+swap01Correct (suc n) = cong (λ x → F.suc F.zero ∷ F.zero ∷ x) (idP-id _)
 
 newlemma6 : {m n : ℕ} → (i : F.Fin n) → (v : Vec (F.Fin m) n) →
             (vmap F.suc (insert (vmap F.suc v) (F.inject₁ i) F.zero)) ∘̬′ swap01vec
           ≡ insert (vmap F.suc (vmap F.suc v)) (F.inject₁ i) F.zero
 newlemma6 F.zero (x ∷ v) =
+  let suc2v = vmap F.suc (vmap F.suc v) in
   begin
   vmap F.suc (insert (vmap F.suc (x ∷ v)) F.zero F.zero) ∘̬′ swap01vec
     ≡⟨ refl ⟩
-  (F.suc F.zero ∷ F.suc (F.suc x) ∷ vmap F.suc (vmap F.suc v)) ∘̬′ swap01vec
+  (F.suc F.zero ∷ F.suc (F.suc x) ∷ suc2v) ∘̬′ swap01vec
     ≡⟨ refl ⟩
-  F.zero ∷ ((F.suc (F.suc x) ∷ vmap F.suc (vmap F.suc v)) ∘̬′ swap01vec)
+  F.zero ∷ ((F.suc (F.suc x) ∷ suc2v) ∘̬′ swap01vec)
     ≡⟨ refl ⟩
-  F.zero ∷ ((tabulate (F.suc ○ F.suc)) !! x) ∷ ((vmap F.suc (vmap F.suc v)) ∘̬′ swap01vec)
-    ≡⟨ cong (λ x → F.zero ∷ x ∷ (vmap F.suc (vmap F.suc v)) ∘̬′ swap01vec)
-            (lookupTab x) ⟩
-  F.zero ∷ F.suc (F.suc x) ∷ ((vmap F.suc (vmap F.suc v)) ∘̬′ swap01vec)
+  F.zero ∷ ((tabulate (F.suc ○ F.suc)) !! x) ∷ (suc2v ∘̬′ swap01vec)
+    ≡⟨ cong (λ x → F.zero ∷ x ∷ suc2v ∘̬′ swap01vec) (lookupTab x) ⟩
+  F.zero ∷ F.suc (F.suc x) ∷ (suc2v ∘̬′ swap01vec)
     ≡⟨ cong (λ q → F.zero ∷ F.suc (F.suc x) ∷ q) (map2+id v) ⟩
-  F.zero ∷ F.suc (F.suc x) ∷ vmap F.suc (vmap F.suc v)
+  F.zero ∷ F.suc (F.suc x) ∷ suc2v
     ≡⟨ refl ⟩
   insert (vmap F.suc (vmap F.suc (x ∷ v))) F.zero F.zero ∎
 newlemma6 (F.suc i) (x ∷ v) =
+  let v′ = insert (vmap F.suc v) (F.inject₁ i) F.zero in
   begin
   vmap F.suc (insert (vmap F.suc (x ∷ v)) (F.inject₁ (F.suc i)) F.zero) ∘̬′ swap01vec
     ≡⟨ refl ⟩
-  (tabulate (F.suc ○ F.suc) !! x) ∷
-    ((vmap F.suc (insert (vmap F.suc v) (F.inject₁ i) F.zero)) ∘̬′ swap01vec)
-    ≡⟨ cong (λ q → q ∷ ((vmap F.suc (insert (vmap F.suc v) (F.inject₁ i) F.zero)) ∘̬′ swap01vec))
-            (lookupTab x) ⟩
-  F.suc (F.suc x) ∷
-    ((vmap F.suc (insert (vmap F.suc v) (F.inject₁ i) F.zero)) ∘̬′ swap01vec)
+  (tabulate (F.suc ○ F.suc) !! x) ∷ ((vmap F.suc v′) ∘̬′ swap01vec)
+    ≡⟨ cong (λ q → q ∷ ((vmap F.suc v′) ∘̬′ swap01vec)) (lookupTab x) ⟩
+  F.suc (F.suc x) ∷ ((vmap F.suc v′) ∘̬′ swap01vec)
     ≡⟨ cong (_∷_ (F.suc (F.suc x))) (newlemma6 i v) ⟩
   F.suc (F.suc x) ∷ insert (vmap F.suc (vmap F.suc v)) (F.inject₁ i) F.zero
     ≡⟨ refl ⟩
@@ -319,75 +317,58 @@ swapUpCorrect {suc (suc n)} (F.suc i) (F.suc j) =
          ≡⟨ cong (λ x → evalComb (assocl₊⇛ ◎ (swap₊⇛ ⊕ id⇛) ◎ assocr₊⇛) (inj₂ x)) (swapUpCorrect i j) ⟩
     evalComb (assocl₊⇛ ◎ (swap₊⇛ ⊕ id⇛) ◎ assocr₊⇛) (inj₂ (finToVal (evalPerm (swapUpToPerm i) j)))
          ≡⟨ swapi≡swap01 (F.suc (evalPerm (swapUpToPerm i) j)) ⟩
-    finToVal (evalPerm (swap01 (suc (suc (suc n)))) (F.suc (evalPerm (swapUpToPerm i) j))) 
-         ≡⟨ cong (λ x → finToVal (evalPerm (swap01 (suc (suc (suc n)))) (F.suc (lookup j x)))) (swapUpToAct i ) ⟩
-    finToVal (lookup
-       (F.suc (lookup j (insert (tabulate (λ z → F.suc z)) (F.inject₁ i) F.zero)))
-       (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ permute idP (tabulate (λ z → F.suc (F.suc (F.suc z))))))
-         ≡⟨ cong
-              (λ x →
-                 finToVal
-                 (lookup
-                  (F.suc
-                   (lookup j
-                    (insert (tabulate (λ z → F.suc z)) (F.inject₁ i) F.zero)))
-                  (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ x)))
-              (idP-id _) ⟩
-    finToVal
-      (swap01vec !! 
-        (F.suc ((insert (tabulate (λ z → F.suc z)) (F.inject₁ i) F.zero) !! j)))
-       ≡⟨ cong (λ x → finToVal (swap01vec !! x)) (sym (map!! F.suc _ j)) ⟩
-    finToVal
-      (swap01vec !! 
-        (vmap F.suc (insert (tabulate (λ z → F.suc z)) (F.inject₁ i) F.zero) !! j))
-       ≡⟨ cong finToVal (sym (lookupTab {f = (λ j → 
-          (swap01vec !! 
-            (vmap F.suc (insert (tabulate (λ z → F.suc z)) (F.inject₁ i) F.zero) !! j)))} j)) ⟩
-    finToVal
-      (tabulate
-        (λ j → 
-          (swap01vec !! 
-            (vmap F.suc (insert (tabulate (λ z → F.suc z)) (F.inject₁ i) F.zero) !! j))) !! j)
-       ≡⟨ refl ⟩
-    finToVal
-      (((vmap F.suc (insert (tabulate (λ z → F.suc z)) (F.inject₁ i) F.zero)) ∘̬ swap01vec)
-        !! j)
-       ≡⟨ cong (λ x → finToVal (x !! j)) (∘̬≡∘̬′ _ _) ⟩
-    finToVal
-      (((vmap F.suc (insert (tabulate F.suc) (F.inject₁ i) F.zero)) ∘̬′ swap01vec)
-        !! j)
-       ≡⟨ cong
-            (λ x →
-               finToVal
-               ((vmap F.suc (insert x (F.inject₁ i) F.zero) ∘̬′ swap01vec) !! j))
-            (sym (mapTab F.suc id)) ⟩ 
+    finToVal (evalPerm (swap01 (suc (suc (suc n)))) (F.suc (evalPerm (swapUpToPerm i) j)))
+         ≡⟨ cong finToVal ( begin
+             evalPerm (swap01 (suc (suc (suc n)))) (F.suc (evalPerm (swapUpToPerm i) j))
+                 ≡⟨ cong (λ x → evalPerm (swap01 (suc (suc (suc n)))) (F.suc (lookup j x))) (swapUpToAct i ) ⟩
+             lookup
+                (F.suc (lookup j (insert (tabulate (λ z → F.suc z)) (F.inject₁ i) F.zero)))
+                (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ permute idP (tabulate (λ z → F.suc (F.suc (F.suc z)))))
+                  ≡⟨ cong (λ x → (lookup
+                    (F.suc
+                     (lookup j
+                      (insert (tabulate F.suc) (F.inject₁ i) F.zero)))
+                      (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ x)))
+                    (idP-id _) ⟩
+             (swap01vec !! 
+                 (F.suc ((insert (tabulate F.suc) (F.inject₁ i) F.zero) !! j)))
+                  ≡⟨ cong (λ x → swap01vec !! x) (sym (map!! F.suc _ j)) ⟩
+             (swap01vec !! 
+                 (vmap F.suc (insert (tabulate F.suc) (F.inject₁ i) F.zero) !! j))
+                  ≡⟨ sym (lookupTab {f = (λ j → 
+                       (swap01vec !! 
+                          (vmap F.suc (insert (tabulate F.suc) (F.inject₁ i) F.zero) !! j)))} j) ⟩
+             (tabulate (λ k → (swap01vec !! 
+                 (vmap F.suc (insert (tabulate F.suc) (F.inject₁ i) F.zero) !! k))) !! j)
+                  ≡⟨ refl ⟩
+             (((vmap F.suc (insert (tabulate F.suc) (F.inject₁ i) F.zero)) ∘̬ swap01vec) !! j)
+                  ≡⟨ cong (λ x → x !! j) (∘̬≡∘̬′ _ _) ⟩
+             (((vmap F.suc (insert (tabulate F.suc) (F.inject₁ i) F.zero)) ∘̬′ swap01vec) !! j)
+                  ≡⟨ cong (λ x →
+                       ((vmap F.suc (insert x (F.inject₁ i) F.zero) ∘̬′ swap01vec) !! j))
+                       (sym (mapTab F.suc id)) ⟩ 
 {-- For reference:
 newlemma6 : {m n : ℕ} → (i : F.Fin n) → (v : Vec (F.Fin m) n) →
             (vmap F.suc (insert (vmap F.suc v) (F.inject₁ i) F.zero)) ∘̬′ swap01vec
           ≡ insert (vmap F.suc (vmap F.suc v)) (F.inject₁ i) F.zero
 --}          
-    finToVal
-      (((vmap F.suc (insert (vmap F.suc (tabulate id)) (F.inject₁ i) F.zero)) ∘̬′ swap01vec)
-        !! j)
-       ≡⟨ cong (λ x → finToVal (x !! j)) (newlemma6 i (tabulate id)) ⟩
-     finToVal
-       (insert (vmap F.suc (vmap F.suc (tabulate id))) (F.inject₁ i) F.zero !! j)
-       ≡⟨ cong
-            (λ x → finToVal (insert (vmap F.suc x) (F.inject₁ i) F.zero !! j))
-            (mapTab F.suc id) ⟩
-     finToVal
-       (insert (vmap F.suc (tabulate F.suc)) (F.inject₁ i) F.zero !! j)
-       ≡⟨ cong (λ x → finToVal (insert x (F.inject₁ i) F.zero !! j))
-            (mapTab F.suc F.suc) ⟩
-     finToVal
-       (insert (tabulate (λ x → F.suc (F.suc x))) (F.inject₁ i) F.zero !! j)
-       ≡⟨ cong (λ x → finToVal (lookup j (insert x (F.inject₁ i) F.zero)))
-            (sym (idP-id _)) ⟩
-     finToVal
-       (lookup j
-         (insert (permute idP (tabulate (λ x → F.suc (F.suc x)))) (F.inject₁ i) F.zero))
-       ≡⟨ refl ⟩
-       finToVal (evalPerm (swapUpToPerm (F.suc i)) (F.suc j))
+             (((vmap F.suc (insert (vmap F.suc (tabulate id)) (F.inject₁ i) F.zero)) ∘̬′ swap01vec) !! j)
+                 ≡⟨ cong (λ x → x !! j) (newlemma6 i (tabulate id)) ⟩
+             (insert (vmap F.suc (vmap F.suc (tabulate id))) (F.inject₁ i) F.zero !! j)
+                 ≡⟨ cong (λ x → insert (vmap F.suc x) (F.inject₁ i) F.zero !! j)
+                         (mapTab F.suc id) ⟩
+             (insert (vmap F.suc (tabulate F.suc)) (F.inject₁ i) F.zero !! j)
+                 ≡⟨ cong (λ x → insert x (F.inject₁ i) F.zero !! j)
+                         (mapTab F.suc F.suc) ⟩
+             (insert (tabulate (λ x → F.suc (F.suc x))) (F.inject₁ i) F.zero !! j)
+                 ≡⟨ cong (λ x → lookup j (insert x (F.inject₁ i) F.zero))
+                        (sym (idP-id _)) ⟩
+             (lookup j
+                 (insert (permute idP (tabulate (λ x → F.suc (F.suc x)))) (F.inject₁ i) F.zero))
+                 ≡⟨ refl ⟩
+             evalPerm (swapUpToPerm (F.suc i)) (F.suc j)
+           ∎ ) ⟩
+    finToVal (evalPerm (swapUpToPerm (F.suc i)) (F.suc j))
   ∎ 
 
 l6test1 : _
