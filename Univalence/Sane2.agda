@@ -268,10 +268,26 @@ swap01vec : {n : ℕ} → Vec (F.Fin (2 + n)) (2 + n)
 swap01vec = F.suc F.zero ∷ F.zero ∷ tabulate (F.suc ○ F.suc)
 
 newlemma6 : {m n : ℕ} → (i : F.Fin n) → (v : Vec (F.Fin m) n) →
-            (vmap F.suc (insert (vmap F.suc v) (F.inject₁ i) F.zero)) ∘̬ swap01vec
+            (vmap F.suc (insert (vmap F.suc v) (F.inject₁ i) F.zero)) ∘̬′ swap01vec
           ≡ insert (vmap F.suc (vmap F.suc v)) (F.inject₁ i) F.zero
-newlemma6 F.zero (x ∷ v) = ?
-newlemma6 (F.suc i) (x ∷ v) = ?          
+newlemma6 F.zero (x ∷ v) =
+  begin
+  vmap F.suc (insert (vmap F.suc (x ∷ v)) F.zero F.zero) ∘̬′ swap01vec
+    ≡⟨ refl ⟩
+  (F.suc F.zero ∷ F.suc (F.suc x) ∷ vmap F.suc (vmap F.suc v)) ∘̬′ swap01vec
+    ≡⟨ refl ⟩
+  F.zero ∷ ((F.suc (F.suc x) ∷ vmap F.suc (vmap F.suc v)) ∘̬′ swap01vec)
+    ≡⟨ refl ⟩
+  F.zero ∷ ((tabulate (F.suc ○ F.suc)) !! x) ∷ ((vmap F.suc (vmap F.suc v)) ∘̬′ swap01vec)
+    ≡⟨ cong (λ x → F.zero ∷ x ∷ (vmap F.suc (vmap F.suc v)) ∘̬′ swap01vec)
+            (lookupTab x) ⟩
+  F.zero ∷ F.suc (F.suc x) ∷ ((vmap F.suc (vmap F.suc v)) ∘̬′ swap01vec)
+    ≡⟨ cong (λ q → F.zero ∷ F.suc (F.suc x) ∷ q) (map2+id v) ⟩
+  F.zero ∷ F.suc (F.suc x) ∷ vmap F.suc (vmap F.suc v)
+    ≡⟨ refl ⟩
+  insert (vmap F.suc (vmap F.suc (x ∷ v))) F.zero F.zero ∎
+
+newlemma6 (F.suc i) (x ∷ v) = {!!}          
 
 swapUpCorrect : {n : ℕ} → (i : F.Fin n) → (j : F.Fin (1 + n)) → evalComb (swapUpTo i) (finToVal j) ≡ finToVal (evalPerm (swapUpToPerm i) j)
 swapUpCorrect {zero} () j
