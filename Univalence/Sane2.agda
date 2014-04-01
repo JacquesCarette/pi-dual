@@ -397,6 +397,10 @@ swapDownCorrect (F.suc i) F.zero =
     evalComb (id⇛ ⊕ swapDownFrom i) (finToVal (F.suc F.zero))
       ≡⟨ refl ⟩
     inj₂ (evalComb (swapDownFrom i) (finToVal F.zero))
+      ≡⟨ cong inj₂ (swapDownCorrect i F.zero) ⟩
+    inj₂ (finToVal (evalPerm (swapDownFromPerm i) F.zero))
+      ≡⟨ refl ⟩
+    finToVal (F.suc (evalPerm (swapDownFromPerm i) F.zero))
       ≡⟨ {!!} ⟩      
     finToVal (evalPerm (swapDownFromPerm (F.suc i)) F.zero) ∎
 swapDownCorrect (F.suc i) (F.suc F.zero) =
@@ -406,6 +410,12 @@ swapDownCorrect (F.suc i) (F.suc F.zero) =
     evalComb (swapi F.zero ◎ (id⇛ ⊕ swapDownFrom i)) (finToVal (F.suc F.zero))
       ≡⟨ refl ⟩
     evalComb (id⇛ ⊕ swapDownFrom i) (evalComb (swapi F.zero) (finToVal (F.suc F.zero)))
+      ≡⟨ refl ⟩
+    evalComb (id⇛ ⊕ swapDownFrom i) (inj₁ tt)
+      ≡⟨ refl ⟩
+    inj₁ tt
+      ≡⟨ refl ⟩
+    finToVal (F.zero)
       ≡⟨ {!!} ⟩
     finToVal (evalPerm (swapDownFromPerm (F.suc i)) (F.suc F.zero)) ∎
 swapDownCorrect (F.suc i) (F.suc (F.suc j)) =
@@ -415,6 +425,14 @@ swapDownCorrect (F.suc i) (F.suc (F.suc j)) =
     evalComb (swapi F.zero ◎ (id⇛ ⊕ swapDownFrom i)) (finToVal (F.suc (F.suc j)))
       ≡⟨ refl ⟩
     evalComb (id⇛ ⊕ swapDownFrom i) (evalComb (swapi F.zero) (finToVal (F.suc (F.suc j))))
+      ≡⟨ refl ⟩
+    evalComb (id⇛ ⊕ swapDownFrom i) (finToVal (F.suc (F.suc j)))
+      ≡⟨ refl ⟩
+    evalComb (id⇛ ⊕ swapDownFrom i) (inj₂ (finToVal (F.suc j)))
+      ≡⟨ refl ⟩
+    inj₂ (evalComb (swapDownFrom i) (finToVal (F.suc j)))
+      ≡⟨ cong inj₂ (swapDownCorrect i (F.suc j)) ⟩
+    inj₂ (finToVal (evalPerm (swapDownFromPerm i) (F.suc j)))
       ≡⟨ {!!} ⟩
     finToVal (evalPerm (swapDownFromPerm (F.suc i)) (F.suc (F.suc j))) ∎    
   
