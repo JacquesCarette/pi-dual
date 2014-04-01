@@ -237,8 +237,21 @@ swapiCorrect {suc (suc n)} (F.suc i) (F.suc j) =
                                    ≡⟨ cong finToVal (push-f-through F.suc j (swapiPerm i) id) ⟩
    finToVal (lookup j (permute (swapiPerm i) (tabulate F.suc))) ∎
 
+
+-- JC: Need seriously better names for the next 3 lemmas!!
 lookup-insert : {n : ℕ} {A : Set} → (v : Vec A (suc n)) → {i : F.Fin (suc n)} → {a : A} → lookup F.zero (insert v (F.suc i) a) ≡ lookup F.zero v
 lookup-insert (x ∷ v) = refl
+
+lookup-insert′ : {n : ℕ} {A : Set} (i : F.Fin (suc n)) {a : A} → (v : Vec A n) → lookup i (insert v i a) ≡ a
+lookup-insert′ F.zero [] = refl
+lookup-insert′ (F.suc ()) []
+lookup-insert′ F.zero (x ∷ v) = refl
+lookup-insert′ (F.suc i) (x ∷ v) = lookup-insert′ i v
+
+-- this is what is needed in swaDownCorrect, but would be true for any j < i instead of F.suc F.zero < F.suc i
+lookup-insert′′ : {n : ℕ} {A : Set} {a : A} → (i : F.Fin n) → (v : Vec A (suc n)) → lookup (F.suc i) v ≡ lookup (F.suc (F.suc i)) (insert v (F.suc F.zero) a)
+lookup-insert′′ {zero} () v
+lookup-insert′′ {suc n} i (x ∷ v) = refl
 
 lookup-idP-id : {n : ℕ} → (i : F.Fin n) → lookup i (permute idP (tabulate id)) ≡ i
 lookup-idP-id i = trans (cong (lookup i) (idP-id (tabulate id))) (lookupTab i)
@@ -401,7 +414,11 @@ swapDownCorrect (F.suc i) F.zero =
     inj₂ (finToVal (evalPerm (swapDownFromPerm i) F.zero))
       ≡⟨ refl ⟩
     finToVal (F.suc (evalPerm (swapDownFromPerm i) F.zero))
-      ≡⟨ {!!} ⟩      
+      ≡⟨ refl ⟩ -- beta
+    finToVal (F.suc (permute (swapDownFromPerm i) (tabulate id) !! F.zero))
+      ≡⟨ cong finToVal (push-f-through F.suc F.zero (swapDownFromPerm i) id ) ⟩
+    finToVal (lookup F.zero (permute (swapDownFromPerm i) (tabulate F.suc)))
+      ≡⟨ cong finToVal (sym (lookup-insert (permute (swapDownFromPerm i) (tabulate F.suc))))  ⟩
     finToVal (evalPerm (swapDownFromPerm (F.suc i)) F.zero) ∎
 swapDownCorrect (F.suc i) (F.suc F.zero) =
   begin
@@ -416,7 +433,7 @@ swapDownCorrect (F.suc i) (F.suc F.zero) =
     inj₁ tt
       ≡⟨ refl ⟩
     finToVal (F.zero)
-      ≡⟨ {!!} ⟩
+      ≡⟨ cong finToVal (sym (lookup-insert′ (F.suc F.zero) (permute (swapDownFromPerm i) (tabulate F.suc)))) ⟩
     finToVal (evalPerm (swapDownFromPerm (F.suc i)) (F.suc F.zero)) ∎
 swapDownCorrect (F.suc i) (F.suc (F.suc j)) =
   begin
@@ -433,7 +450,12 @@ swapDownCorrect (F.suc i) (F.suc (F.suc j)) =
     inj₂ (evalComb (swapDownFrom i) (finToVal (F.suc j)))
       ≡⟨ cong inj₂ (swapDownCorrect i (F.suc j)) ⟩
     inj₂ (finToVal (evalPerm (swapDownFromPerm i) (F.suc j)))
-      ≡⟨ {!!} ⟩
+      ≡⟨ refl ⟩
+    finToVal (F.suc (evalPerm (swapDownFromPerm i) (F.suc j)))
+      ≡⟨ cong finToVal (push-f-through F.suc (F.suc j) (swapDownFromPerm i) id) ⟩
+      -- need to do a little β-expansion to see this
+    finToVal (lookup (F.suc j) (permute (1iP i) (tabulate F.suc)))
+      ≡⟨ cong finToVal (lookup-insert′′ j (permute (1iP i) (tabulate F.suc))) ⟩
     finToVal (evalPerm (swapDownFromPerm (F.suc i)) (F.suc (F.suc j))) ∎    
   
 l6test1 : _
@@ -465,18 +487,18 @@ swapmCorrect {suc (suc n)} (F.suc i) F.zero = {!!} -- requires the breakdown of 
 swapmCorrect {suc n} (F.suc i) (F.suc j) = {!!} -- as does this
 
 lemma1 : {n : ℕ} (p : Permutation n) → (i : F.Fin n) → 
-    valToFin (evalComb (permToComb p) (finToVal i)) ≡ evalPerm p i 
+    evalComb (permToComb p) (finToVal i) ≡ finToVal (evalPerm p i)
 lemma1 {zero} [] ()
 lemma1 {suc n} (F.zero ∷ p) F.zero = refl
 lemma1 {suc zero} (F.zero ∷ p) (F.suc ())
-lemma1 {suc (suc n)} (F.zero ∷ p) (F.suc i) =  begin
-    F.suc (valToFin (evalComb (permToComb p) (finToVal i))) 
-         ≡⟨ cong F.suc (lemma1 p i) ⟩
-    F.suc (evalPerm p i)
+lemma1 {suc (suc n)} (F.zero ∷ p) (F.suc i) = begin
+    inj₂ (evalComb (permToComb p) (finToVal i))
+         ≡⟨ cong inj₂ (lemma1 p i) ⟩
+     inj₂ (finToVal (evalPerm p i)) 
          ≡⟨ refl ⟩
-    F.suc (lookup i (permute p (tabulate id)))
-         ≡⟨ push-f-through F.suc i p id ⟩ 
-    evalPerm (F.zero ∷ p) (F.suc i) ∎
+      finToVal (F.suc (evalPerm p i))
+         ≡⟨ cong finToVal (push-f-through F.suc i p id) ⟩ 
+      finToVal (evalPerm (F.zero ∷ p) (F.suc i)) ∎
 lemma1 {suc n} (F.suc j ∷ p) i = {!!} -- needs all the previous ones first.
 
 -- this alternate version of lemma1 might, in the long term, but a better
