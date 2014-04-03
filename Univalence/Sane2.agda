@@ -256,9 +256,47 @@ lookup-insert′′ {suc n} i (x ∷ v) = refl
 lookup-idP-id : {n : ℕ} → (i : F.Fin n) → lookup i (permute idP (tabulate id)) ≡ i
 lookup-idP-id i = trans (cong (lookup i) (idP-id (tabulate id))) (lookupTab i)
 
-swapUpToAct : {n : ℕ} → (i : F.Fin n) → permute (swapUpToPerm i) (tabulate {suc n} id) ≡ insert (tabulate F.suc) (F.inject₁ i) F.zero
+swapUpToAct : {n : ℕ} → (i : F.Fin n) →
+              permute (swapUpToPerm i) (tabulate {suc n} id) ≡
+                insert (tabulate F.suc) (F.inject₁ i) F.zero
 swapUpToAct F.zero = cong (λ x → F.zero ∷ F.suc F.zero ∷ x) (idP-id _)
 swapUpToAct (F.suc i) = cong (λ x → F.suc F.zero ∷ insert x (F.inject₁ i) F.zero) (idP-id _)
+
+remove : {n : ℕ} → {A : Set} → (i : F.Fin (suc n)) → Vec A (suc n) → Vec A n
+remove {n} F.zero (x ∷ v) = v
+remove {zero} (F.suc ())
+remove {suc n} (F.suc i) (x ∷ v) = x ∷ remove i v
+
+swapDownFromVec : {n : ℕ} {A : Set} → (i : F.Fin (suc n)) → Vec A (suc n) →
+                  Vec A (suc n)
+swapDownFromVec i v = (v !! i) ∷ remove i v
+
+swapDownFromAct : {n : ℕ} → {A : Set} → (i : F.Fin n) → (v : Vec A (suc n)) →
+                  permute (swapDownFromPerm i) v ≡
+                    swapDownFromVec (F.inject₁ i) v
+swapDownFromAct {zero} ()                    
+swapDownFromAct {suc n} F.zero (x ∷ v) =
+  begin
+    permute (swapDownFromPerm F.zero) (x ∷ v)
+      ≡⟨ refl ⟩
+    permute idP (x ∷ v)
+      ≡⟨ idP-id (x ∷ v) ⟩
+    swapDownFromVec F.zero (x ∷ v) ∎
+swapDownFromAct {suc zero} (F.suc ())    
+swapDownFromAct {suc (suc n)} (F.suc i) (x ∷ y ∷ v) =
+  begin
+    permute (swapDownFromPerm (F.suc i)) (x ∷ y ∷ v)
+      ≡⟨ refl ⟩
+    permute (F.suc F.zero ∷ 1iP i) (x ∷ y ∷ v)
+      ≡⟨ refl ⟩
+    insert (permute (swapDownFromPerm i) (y ∷ v)) (F.suc F.zero) x
+      ≡⟨ cong (λ q → insert q (F.suc F.zero) x) (swapDownFromAct i (y ∷ v)) ⟩
+    insert (swapDownFromVec (F.inject₁ i) (y ∷ v)) (F.suc F.zero) x
+      ≡⟨ refl ⟩
+    ((y ∷ v) !! (F.inject₁ i)) ∷ x ∷ remove (F.inject₁ i) (y ∷ v)
+      ≡⟨ refl ⟩
+    swapDownFromVec (F.inject₁ (F.suc i)) (x ∷ y ∷ v) ∎
+
 
 swapi≡swap01 : {n : ℕ} → (j : F.Fin (suc (suc n))) →  evalComb (assocl₊⇛ ◎ (swap₊⇛ ⊕ id⇛) ◎ assocr₊⇛) (finToVal j) ≡ finToVal (evalPerm (swap01 (suc (suc n))) j)
 swapi≡swap01 F.zero = refl
