@@ -297,7 +297,34 @@ swapDownFromAct {suc (suc n)} (F.suc i) (x ∷ y ∷ v) =
       ≡⟨ refl ⟩
     swapDownFromVec (F.inject₁ (F.suc i)) (x ∷ y ∷ v) ∎
 
+swapmVec : {n : ℕ} {A : Set} → F.Fin n → Vec A n → Vec A n
+swapmVec {zero} ()
+swapmVec {suc n} F.zero v = v
+swapmVec {suc zero} (F.suc ())
+swapmVec {suc (suc n)} (F.suc i) (x ∷ v) =
+  (v !! i) ∷ (insert (remove i v) i x)
 
+swapmAct : {n : ℕ} {A : Set} → (i : F.Fin n) → (v : Vec A n) →
+           permute (swapmPerm i) v ≡ swapmVec i v
+swapmAct {zero} ()
+swapmAct {suc n} F.zero (x ∷ v) =
+  begin
+    permute (swapmPerm F.zero) (x ∷ v)
+      ≡⟨ idP-id (x ∷ v) ⟩
+    swapmVec F.zero (x ∷ v) ∎
+swapmAct {suc zero} (F.suc ())
+swapmAct {suc (suc n)} (F.suc i) (x ∷ y ∷ v) =
+  begin
+    permute (swapmPerm (F.suc i)) (x ∷ y ∷ v)
+      ≡⟨ refl ⟩
+    permute (F.suc i ∷ swapOne i) (x ∷ y ∷ v)
+      ≡⟨ refl ⟩
+    insert (permute (swapOne i) (y ∷ v)) (F.suc i) x
+      ≡⟨ {!!} ⟩
+    ((y ∷ v) !! i) ∷ (insert (remove i (y ∷ v)) i x)
+      ≡⟨ refl ⟩
+    swapmVec (F.suc i) (x ∷ y ∷ v) ∎
+  
 swapi≡swap01 : {n : ℕ} → (j : F.Fin (suc (suc n))) →  evalComb (assocl₊⇛ ◎ (swap₊⇛ ⊕ id⇛) ◎ assocr₊⇛) (finToVal j) ≡ finToVal (evalPerm (swap01 (suc (suc n))) j)
 swapi≡swap01 F.zero = refl
 swapi≡swap01 (F.suc F.zero) = refl
