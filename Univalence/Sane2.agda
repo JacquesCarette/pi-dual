@@ -3,12 +3,9 @@ module Sane2 where
 
 import Data.Fin as F
 --
--- open import Data.Empty
 open import Data.Unit
--- open import Data.Unit.Core
 open import Data.Nat using (ℕ ; zero ; suc ; _+_ ; _>_ )
 open import Data.Sum using (inj₁ ; inj₂ ; _⊎_)
--- open import Data.Product renaming (map to _×→_)
 open import Data.Vec
 open import Function using ( id ) renaming (_∘_ to _○_) 
 open import Relation.Binary  -- to make certain goals look nicer
@@ -75,11 +72,13 @@ swapDownFromPerm = 1iP
 -- same spot
 -- makeSingleComb {combinator size} (arrayElement) (arrayIndex),
 -- gives a combinator which 'does' that, assuming i<j, else id⇛
+{-
 makeSingleComb : {n : ℕ} → F.Fin n → F.Fin n → (fromℕ n) ⇛ (fromℕ n)
 makeSingleComb F.zero   F.zero     = id⇛
 makeSingleComb F.zero   (F.suc i)  = id⇛
 makeSingleComb (F.suc j) F.zero   = swapDownFrom j ◎ swapi j ◎ swapUpTo j
 makeSingleComb (F.suc j) (F.suc i) = id⇛ ⊕ makeSingleComb j i
+-}
 
 -- swapm i returns a combinator that swaps 0 and i
 swapm : {n : ℕ} → F.Fin n → (fromℕ n) ⇛ (fromℕ n)
@@ -95,27 +94,6 @@ swapOne {suc (suc n)} (F.suc i) = (F.suc F.zero) ∷ swapOne i
 swapmPerm : {n : ℕ} → F.Fin n → Permutation n
 swapmPerm F.zero = idP
 swapmPerm {suc n} (F.suc i) = F.suc i ∷ swapOne i
-
--- swapInd i j returns a vector v′ where v′[i] = j, v′[j] = i, and v′[k] = k
--- where k != j and k != i
-
-zeroIfEq : {n n′ : ℕ} → F.Fin n → F.Fin n → F.Fin (suc n′) → F.Fin (suc n′)
-zeroIfEq F.zero    F.zero   ret = F.zero
-zeroIfEq F.zero   (F.suc j) ret = ret
-zeroIfEq (F.suc i) F.zero   ret = ret
-zeroIfEq (F.suc i) (F.suc j) ret = zeroIfEq i j ret
-
-{-
-swapIndFn : {n : ℕ} → F.Fin n → F.Fin n → (F.Fin n → F.Fin n)
-swapIndFn               F.zero     j          F.zero   = j
-swapIndFn               (F.suc i)  F.zero     F.zero   = F.suc i
-swapIndFn               (F.suc i) (F.suc j)   F.zero   = F.zero
-swapIndFn               F.zero     F.zero    (F.suc x) = F.suc x
-swapIndFn {suc zero}    F.zero   (F.suc ()) (F.suc x)
-swapIndFn {suc (suc n)} F.zero   (F.suc j)  (F.suc x) = zeroIfEq j x (F.suc x)
-swapIndFn               (F.suc i)  F.zero    (F.suc x) = zeroIfEq i x (F.suc x)
-swapIndFn               (F.suc i) (F.suc j)  (F.suc x) = F.suc (swapIndFn i j x)
--}
 
 finToVal : {n : ℕ} → F.Fin n → ⟦ fromℕ n ⟧
 finToVal F.zero = inj₁ tt
@@ -135,13 +113,6 @@ valToFinToVal : {n : ℕ} → (i : F.Fin n) → valToFin (finToVal i) ≡ i
 valToFinToVal F.zero = refl -- F.zero
 valToFinToVal (F.suc i) = cong F.suc (valToFinToVal i)
 
-combToPermi : {n : ℕ} (c : fromℕ (suc n) ⇛ fromℕ (suc n))
-                      (i : F.Fin (suc n)) →
-                      Permutation (suc (n F.ℕ-ℕ i))
-combToPermi c F.zero = {!max - evalCombB c max ∷ []!}
-combToPermi c (F.suc i) = {!!} ∷ {!!} -- combToPermi c (F.inject₁ i)
-
-
 -- Suppose we have some combinator c, its output vector v, and the corresponding
 -- permutation p. We construct p by looking at how many places each element is
 -- displaced from its index in v *to the right* (if it's where it "should" be or
@@ -159,7 +130,7 @@ combToPermi c (F.suc i) = {!!} ∷ {!!} -- combToPermi c (F.inject₁ i)
 --    (fromℕ n ⇛ fromℕ n) given a (fromℕ (suc n) ⇛ fromℕ (suc n))
 combToPerm : {n : ℕ} → (fromℕ n ⇛ fromℕ n) → Permutation n
 combToPerm {zero} c = []
-combToPerm {suc n} c = {!!}
+combToPerm {suc n} c = valToFin (evalComb c (inj₁ tt)) ∷ {!!}
 
 permToComb : {n : ℕ} → Permutation n → (fromℕ n ⇛ fromℕ n)
 permToComb [] = id⇛
@@ -575,7 +546,7 @@ swapmCorrect {suc (suc n)} (F.suc i) j = -- requires the breakdown of swapm
       (permute (swapUpToPerm i) (tabulate id) !!
         (permute (swapiPerm i) (tabulate id) !!
           (permute (swapDownFromPerm i) (tabulate id) !! j)))
-      ≡⟨ {!cong (λ x → evalComb (swapUpTo i) x) (swapiCorrect i j)!} ⟩
+      ≡⟨ {!!} ⟩
     finToVal (evalPerm (swapmPerm (F.suc i)) j) ∎
 
 lemma1 : {n : ℕ} (p : Permutation n) → (i : F.Fin n) → 
