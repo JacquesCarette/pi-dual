@@ -126,3 +126,38 @@ reverseP-reverse {suc n} {_} {A} (x ∷ xs) =
     ∎
   where open EqReasoning (≡-setoid (Vec A (1 + n)))
 
+{-
+_◌_ : ∀ {n} → Permutation n → Permutation n → Permutation n
+[] ◌ [] = []
+(zero ∷ p₁) ◌ (q ∷ q₁) = q ∷ (p₁ ◌ q₁)
+(suc p ∷ p₁) ◌ (zero ∷ q₁) = {!!}
+(suc p ∷ p₁) ◌ (suc q ∷ q₁) = {!!}
+
+perm◌perm : ∀ {n} {A : Set} → (p q : Permutation n) → (v : Vec A n) → permute q (permute p v) ≡ permute (p ◌ q) v
+perm◌perm [] [] [] = refl
+perm◌perm (zero ∷ p₁) (q ∷ q₁) (x ∷ v) = cong (λ y → insert y q x) (perm◌perm p₁ q₁ v) 
+perm◌perm (suc p ∷ p₁) (q ∷ q₁) (x ∷ v) with permute ((suc p) ∷ p₁) (x ∷ v)
+perm◌perm (suc p ∷ p₁) (zero ∷ q₁) (x ∷ v) | y ∷ w = {!!}
+perm◌perm (suc p ∷ p₁) (suc q ∷ q₁) (x ∷ v) | y ∷ w = {!!}
+
+p1 : Permutation 5
+p1 =  suc (suc zero) ∷ suc (suc zero)  ∷ zero ∷ suc zero ∷ zero ∷ []
+
+p2 : Permutation 5
+p2 = suc (suc (suc zero)) ∷ suc (suc (suc zero)) ∷ zero ∷ zero ∷ zero ∷ []
+
+p3 : Permutation 5
+p3 = suc (suc (suc (suc zero))) ∷ suc zero ∷ suc zero ∷ suc zero ∷ zero ∷ []
+
+test1 : Vec (Fin 5) 5
+test1 = permute p1 (tabulate {5} (λ x → x))
+
+test2 : Vec (Fin 5 ) 5
+test2 = permute p2 (tabulate (λ x → x))
+
+test3 : Vec (Fin 5) 5
+test3 = permute p1 (test2)
+
+test4 : test3 ≡ permute p3 (tabulate (λ x → x))
+test4 = refl
+-}
