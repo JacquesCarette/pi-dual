@@ -227,16 +227,19 @@ lookup-insert′′ {suc n} i (x ∷ v) = refl
 lookup-idP-id : {n : ℕ} → (i : F.Fin n) → lookup i (permute idP (tabulate id)) ≡ i
 lookup-idP-id i = trans (cong (lookup i) (idP-id (tabulate id))) (lookupTab i)
 
-swapUpToAct : {n : ℕ} → (i : F.Fin n) →
-              permute (swapUpToPerm i) (tabulate {suc n} id) ≡
-                insert (tabulate F.suc) (F.inject₁ i) F.zero
-swapUpToAct F.zero = cong (λ x → F.zero ∷ F.suc F.zero ∷ x) (idP-id _)
-swapUpToAct (F.suc i) = cong (λ x → F.suc F.zero ∷ insert x (F.inject₁ i) F.zero) (idP-id _)
-
 remove : {n : ℕ} → {A : Set} → (i : F.Fin (suc n)) → Vec A (suc n) → Vec A n
 remove {n} F.zero (x ∷ v) = v
 remove {zero} (F.suc ()) _
 remove {suc n} (F.suc i) (x ∷ v) = x ∷ remove i v
+
+remove0 : {n : ℕ} {A : Set} → (v : Vec A (suc n)) → v ≡ (v !! F.zero) ∷ remove F.zero v
+remove0 (x ∷ v) = refl
+ 
+swapUpToAct : {n : ℕ} {A : Set} → (i : F.Fin n) → (v : Vec A (suc n)) → 
+              permute (swapUpToPerm i) v ≡
+                insert (remove F.zero v) (F.inject₁ i) (v !! F.zero)
+swapUpToAct F.zero v = trans (idP-id v) (remove0 v)
+swapUpToAct (F.suc i) (x ∷ v) = cong (λ z → insert z (F.suc (F.inject₁ i)) x) (idP-id v)
 
 swapDownFromVec : {n : ℕ} {A : Set} → (i : F.Fin (suc n)) → Vec A (suc n) →
                   Vec A (suc n)
@@ -285,7 +288,19 @@ swapOneAct : {n : ℕ} {A : Set} → (i : F.Fin n) → (v : Vec A n) →
 swapOneAct {zero} () _
 swapOneAct {suc n} F.zero (x ∷ v) = cong (_∷_ x) (idP-id v)
 swapOneAct {suc zero} (F.suc ()) v
-swapOneAct {suc (suc n)} (F.suc i) (x ∷ v) = {!!}
+swapOneAct {suc (suc n)} (F.suc F.zero) (x ∷ y ∷ v) = cong (λ z → y ∷ x ∷ z) (idP-id v)
+swapOneAct {suc (suc n)} (F.suc (F.suc i)) (x ∷ v) = 
+  begin
+    permute (swapOne (F.suc (F.suc i))) (x ∷ v)
+        ≡⟨ refl ⟩
+    insert (permute (swapOne (F.suc i)) v) (F.suc F.zero) x
+        ≡⟨ cong (λ y → insert y (F.suc F.zero) x) (swapOneAct (F.suc i) v) ⟩
+    insert (swapOneVec (F.suc i) v) (F.suc F.zero) x
+        ≡⟨ refl ⟩ -- lots of β reduction
+    ((x ∷ v) !! (F.suc (F.suc i))) ∷ (remove (F.suc (F.suc i)) (x ∷ v))
+        ≡⟨ refl ⟩
+    swapOneVec (F.suc (F.suc i)) (x ∷ v)
+  ∎
 
 swapmAct : {n : ℕ} {A : Set} → (i : F.Fin n) → (v : Vec A n) →
            permute (swapmPerm i) v ≡ swapmVec i v
@@ -385,7 +400,7 @@ swapUpCorrect {suc (suc n)} (F.suc i) (F.suc j) =
     finToVal (evalPerm (swap01 (suc (suc (suc n)))) (F.suc (evalPerm (swapUpToPerm i) j)))
          ≡⟨ cong finToVal ( begin
              evalPerm (swap01 (suc (suc (suc n)))) (F.suc (evalPerm (swapUpToPerm i) j))
-                 ≡⟨ cong (λ x → evalPerm (swap01 (suc (suc (suc n)))) (F.suc (lookup j x))) (swapUpToAct i ) ⟩
+                 ≡⟨ cong (λ x → evalPerm (swap01 (suc (suc (suc n)))) (F.suc (lookup j x))) (swapUpToAct i (tabulate id)) ⟩
              lookup
                 (F.suc (lookup j (insert (tabulate (λ z → F.suc z)) (F.inject₁ i) F.zero)))
                 (F.suc F.zero ∷ F.zero ∷ F.suc (F.suc F.zero) ∷ permute idP (tabulate (λ z → F.suc (F.suc (F.suc z)))))
@@ -561,6 +576,11 @@ swapmCorrect {suc (suc n)} (F.suc i) j = -- requires the breakdown of swapm
       (permute (swapUpToPerm i) (tabulate id) !!
         (permute (swapiPerm i) (tabulate id) !!
           (permute (swapDownFromPerm i) (tabulate id) !! j)))
+      ≡⟨ cong (λ x → finToVal (x !! (permute (swapiPerm i) (tabulate id) !! (permute (swapDownFromPerm i) (tabulate id) !! j)))) (swapUpToAct i (tabulate id)) ⟩
+    finToVal
+       (insert (tabulate F.suc) (F.inject₁ i) F.zero !!
+         (permute (swapiPerm i) (tabulate id) !!
+           (permute (swapDownFromPerm i) (tabulate id) !! j)))
       ≡⟨ {!!} ⟩
     finToVal (evalPerm (swapmPerm (F.suc i)) j) ∎
 
@@ -579,6 +599,7 @@ lemma1 {suc (suc n)} (F.zero ∷ p) (F.suc i) = begin
       finToVal (evalPerm (F.zero ∷ p) (F.suc i)) ∎
 lemma1 {suc n} (F.suc j ∷ p) i = {!!} -- needs all the previous ones first.
 
+{-
 -- this alternate version of lemma1 might, in the long term, but a better
 -- way to go?
 lemma1′ : {n : ℕ} → (i : F.Fin n) → vmap (evalComb (swapm i)) (tabulate finToVal) ≡ vmap finToVal (permute (swapmPerm i) (tabulate id))
@@ -611,7 +632,7 @@ lemma1′ {suc n} (F.suc i) =
 lemma2 : {n : ℕ} (c : (fromℕ n) ⇛ (fromℕ n)) → (i : F.Fin n) → 
     (evalComb c (finToVal i)) ≡ finToVal (evalPerm (combToPerm c) i)
 lemma2 c i = {!!}
-
+-}
 --------------
 -- testing
 
