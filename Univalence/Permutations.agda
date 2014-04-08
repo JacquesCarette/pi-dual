@@ -126,6 +126,14 @@ reverseP-reverse {suc n} {_} {A} (x ∷ xs) =
     ∎
   where open EqReasoning (≡-setoid (Vec A (1 + n)))
 
+remove : {n : ℕ} → {A : Set} → (i : Fin (suc n)) → Vec A (suc n) → Vec A n
+remove {n} zero (x ∷ v) = v
+remove {zero} (suc ()) _
+remove {suc n} (suc i) (x ∷ v) = x ∷ remove i v
+
+remove0 : {n : ℕ} {A : Set} → (v : Vec A (suc n)) → v ≡ (lookup zero v) ∷ remove zero v
+remove0 (x ∷ v) = refl
+
 {-
 _◌_ : ∀ {n} → Permutation n → Permutation n → Permutation n
 [] ◌ [] = []

@@ -34,6 +34,12 @@ swapiPerm {zero} ()
 swapiPerm {suc n} F.zero = F.suc F.zero ∷ idP
 swapiPerm {suc n} (F.suc i) = F.zero ∷ swapiPerm {n} i
 
+swapiAct : {n : ℕ} {A : Set} → (i : F.Fin n) → (v : Vec A (suc n)) →
+    permute (swapiPerm i) v ≡ insert (remove (F.inject₁ i) v) (F.suc i) (v !! (F.inject₁ i))
+swapiAct {zero} () v
+swapiAct {suc n} F.zero (x ∷ y ∷ v) = cong (λ z → y ∷ x ∷ z) (idP-id v)
+swapiAct {suc n} (F.suc i) (x ∷ v) = cong (_∷_ x) (swapiAct i v)
+ 
 -- swapUpTo i permutes the combinator left by one up to i 
 -- if possible values are X a b c Y d e, swapUpTo 3's possible outputs 
 -- are a b c X Y d e
@@ -227,14 +233,6 @@ lookup-insert′′ {suc n} i (x ∷ v) = refl
 lookup-idP-id : {n : ℕ} → (i : F.Fin n) → lookup i (permute idP (tabulate id)) ≡ i
 lookup-idP-id i = trans (cong (lookup i) (idP-id (tabulate id))) (lookupTab i)
 
-remove : {n : ℕ} → {A : Set} → (i : F.Fin (suc n)) → Vec A (suc n) → Vec A n
-remove {n} F.zero (x ∷ v) = v
-remove {zero} (F.suc ()) _
-remove {suc n} (F.suc i) (x ∷ v) = x ∷ remove i v
-
-remove0 : {n : ℕ} {A : Set} → (v : Vec A (suc n)) → v ≡ (v !! F.zero) ∷ remove F.zero v
-remove0 (x ∷ v) = refl
- 
 swapUpToAct : {n : ℕ} {A : Set} → (i : F.Fin n) → (v : Vec A (suc n)) → 
               permute (swapUpToPerm i) v ≡
                 insert (remove F.zero v) (F.inject₁ i) (v !! F.zero)
@@ -581,6 +579,18 @@ swapmCorrect {suc (suc n)} (F.suc i) j = -- requires the breakdown of swapm
        (insert (tabulate F.suc) (F.inject₁ i) F.zero !!
          (permute (swapiPerm i) (tabulate id) !!
            (permute (swapDownFromPerm i) (tabulate id) !! j)))
+      ≡⟨ cong (λ z → finToVal (insert (tabulate F.suc) (F.inject₁ i) F.zero !! (z !! (permute (swapDownFromPerm i) (tabulate id) !! j)))) (swapiAct i (tabulate id)) ⟩
+    finToVal
+       (insert (tabulate F.suc) (F.inject₁ i) F.zero !!
+         (insert (remove (F.inject₁ i) (tabulate id)) (F.suc i) ((tabulate id) !! (F.inject₁ i)) !!
+           (permute (swapDownFromPerm i) (tabulate id) !! j)))
+      ≡⟨ cong (λ z → finToVal (insert (tabulate F.suc) (F.inject₁ i) F.zero !!
+         (insert (remove (F.inject₁ i) (tabulate id)) (F.suc i) ((tabulate id) !! (F.inject₁ i)) !!
+           (z !! j)))) (swapDownFromAct i (tabulate id)) ⟩
+    finToVal
+       (insert (tabulate F.suc) (F.inject₁ i) F.zero !!
+         (insert (remove (F.inject₁ i) (tabulate id)) (F.suc i) ((tabulate id) !! (F.inject₁ i)) !!
+           ( swapDownFromVec (F.inject₁ i) (tabulate id) !! j)))
       ≡⟨ {!!} ⟩
     finToVal (evalPerm (swapmPerm (F.suc i)) j) ∎
 
