@@ -175,19 +175,37 @@ swapiCorrect {suc (suc n)} (F.suc i) (F.suc j) =
 
 
 -- JC: Need seriously better names for the next 3 lemmas!!
-lookup-insert : {n : ℕ} {A : Set} → (v : Vec A (suc n)) → {i : F.Fin (suc n)} → {a : A} → lookup F.zero (insert v (F.suc i) a) ≡ lookup F.zero v
+lookup-insert : {n : ℕ} {A : Set} → (v : Vec A (suc n)) → {i : F.Fin (suc n)} → {a : A} → 
+    lookup F.zero (insert v (F.suc i) a) ≡ lookup F.zero v
 lookup-insert (x ∷ v) = refl
 
-lookup-insert′ : {n : ℕ} {A : Set} (i : F.Fin (suc n)) {a : A} → (v : Vec A n) → lookup i (insert v i a) ≡ a
+lookup-insert′ : {n : ℕ} {A : Set} (i : F.Fin (suc n)) {a : A} → (v : Vec A n) → 
+    lookup i (insert v i a) ≡ a
 lookup-insert′ F.zero [] = refl
 lookup-insert′ (F.suc ()) []
 lookup-insert′ F.zero (x ∷ v) = refl
 lookup-insert′ (F.suc i) (x ∷ v) = lookup-insert′ i v
 
--- this is what is needed in swaDownCorrect, but would be true for any j < i instead of F.suc F.zero < F.suc i
-lookup-insert′′ : {n : ℕ} {A : Set} {a : A} → (i : F.Fin n) → (v : Vec A (suc n)) → lookup (F.suc i) v ≡ lookup (F.suc (F.suc i)) (insert v (F.suc F.zero) a)
+-- this is what is needed in swapDownCorrect, but would be true for any j < i instead of F.suc F.zero < F.suc i
+lookup-insert′′ : {n : ℕ} {A : Set} {a : A} → (i : F.Fin n) → (v : Vec A (suc n)) →
+    lookup (F.suc i) v ≡ lookup (F.suc (F.suc i)) (insert v (F.suc F.zero) a)
 lookup-insert′′ {zero} () v
 lookup-insert′′ {suc n} i (x ∷ v) = refl
+
+-- this should be unified with the previous
+lookup-insert3 : {n : ℕ} {A : Set} {a : A} → (i : F.Fin n) → (v : Vec A n) →
+    lookup i v ≡ lookup (F.suc i) (insert v (F.inject₁ i) a)
+lookup-insert3 {zero} () v
+lookup-insert3 {suc n} F.zero (x ∷ v) = refl
+lookup-insert3 {suc n} (F.suc i) (x ∷ v) = lookup-insert3 i v
+
+lookup+1-insert-remove : {n : ℕ} {A : Set} {a : A} → (i : F.Fin n) → (v : Vec A (suc n)) → 
+  lookup (F.inject₁ i) (insert (remove (F.inject₁ i) v) (F.suc i) a) ≡ lookup (F.suc i) v
+lookup+1-insert-remove {zero} () _
+lookup+1-insert-remove {suc n} F.zero (x ∷ x₁ ∷ v) = refl
+lookup+1-insert-remove {suc n} (F.suc i) (x ∷ v) = lookup+1-insert-remove i v
+
+-- insert (remove (F.inject₁ (F.suc i)) (tabulate id)) (F.suc (F.suc i)) (F.inject₁ (F.suc i)) !! (F.inject₁ (F.suc i))
 
 lookup-idP-id : {n : ℕ} → (i : F.Fin n) → lookup i (permute idP (tabulate id)) ≡ i
 lookup-idP-id i = trans (cong (lookup i) (idP-id (tabulate id))) (lookupTab i)
