@@ -196,7 +196,7 @@ swapmCorrect {suc n} F.zero j =
       ≡⟨ cong (λ x → finToVal (lookup j x)) (sym (idP-id (tabulate id))) ⟩
     finToVal (lookup j (permute idP (tabulate id)))  ∎
 swapmCorrect {suc zero} (F.suc ()) _
-swapmCorrect {suc (suc n)} (F.suc i) j = -- requires the breakdown of swapm
+swapmCorrect {suc (suc n)} (F.suc i) j = -- requires the breakdown of swapm ?
   begin
     evalComb (swapm (F.suc i)) (finToVal j)
       ≡⟨ refl ⟩
@@ -240,6 +240,19 @@ swapmCorrect {suc (suc n)} (F.suc i) j = -- requires the breakdown of swapm
        (insert (tabulate F.suc) (F.inject₁ i) F.zero !!
          (insert (remove (F.inject₁ i) (tabulate id)) (F.suc i) ((tabulate id) !! (F.inject₁ i)) !!
            ( swapDownFromVec (F.inject₁ i) (tabulate id) !! j)))
+      ≡⟨ cong (λ z →  finToVal
+       (insert (tabulate F.suc) (F.inject₁ i) F.zero !!
+         (insert (remove (F.inject₁ i) (tabulate id)) (F.suc i) z !!
+           ( swapDownFromVec (F.inject₁ i) (tabulate id) !! j)))) (lookupTab {f = id} (F.inject₁ i)) ⟩
+     finToVal
+       (insert (tabulate F.suc) (F.inject₁ i) F.zero !!
+         (insert (remove (F.inject₁ i) (tabulate id)) (F.suc i) (F.inject₁ i) !!
+           ( swapDownFromVec (F.inject₁ i) (tabulate id) !! j)))
+      ≡⟨ refl ⟩
+    finToVal
+       (insert (tabulate F.suc) (F.inject₁ i) F.zero !!
+         (insert (remove (F.inject₁ i) (tabulate id)) (F.suc i) (F.inject₁ i) !!
+           ( (((tabulate id) !! (F.inject₁ i)) ∷ (remove (F.inject₁ i) (tabulate id))) !! j)))
       ≡⟨ {!!} ⟩
     finToVal (evalPerm (swapmPerm (F.suc i)) j) ∎
 
@@ -257,6 +270,52 @@ lemma1 {suc (suc n)} (F.zero ∷ p) (F.suc i) = begin
          ≡⟨ cong finToVal (push-f-through F.suc i p id) ⟩ 
       finToVal (evalPerm (F.zero ∷ p) (F.suc i)) ∎
 lemma1 {suc n} (F.suc j ∷ p) i = {!!} -- needs all the previous ones first.
+
+swapmCorrect2 : {n : ℕ} → (i j : F.Fin n) → evalComb (swapm i) (finToVal j) ≡ finToVal (evalPerm (swapmPerm i) j)
+swapmCorrect2 {zero} () _
+swapmCorrect2 {suc zero} F.zero F.zero = refl
+swapmCorrect2 {suc zero} F.zero (F.suc ())
+swapmCorrect2 {suc zero} (F.suc ()) _
+swapmCorrect2 {suc (suc n)} F.zero j = sym (
+    trans (cong (λ x → finToVal (lookup j (F.zero ∷ F.suc F.zero ∷ x))) (idP-id (tabulate (F.suc ○ F.suc))))
+          (cong finToVal (lookupTab {f = id} j)))
+swapmCorrect2 {suc (suc n)} (F.suc F.zero) F.zero = refl
+swapmCorrect2 {suc (suc n)} (F.suc (F.suc i)) F.zero = 
+  let up = λ x → evalComb (swapUpTo (F.suc i)) x
+      swap = λ x → evalComb (swapi (F.suc i)) x
+      down = λ x → evalComb (swapDownFrom (F.suc i)) x in
+  begin
+    evalComb (swapm (F.suc (F.suc i))) (inj₁ tt)
+        ≡⟨ refl ⟩
+    evalComb (swapDownFrom (F.suc i) ◎ swapi (F.suc i) ◎ swapUpTo (F.suc i)) (inj₁ tt)
+        ≡⟨ refl ⟩
+    up (swap (down (inj₁ tt)))
+        ≡⟨ cong (up ○ swap) (swapDownCorrect (F.suc i) F.zero) ⟩
+    up (swap ( finToVal (evalPerm (swapDownFromPerm (F.suc i)) F.zero) ))
+        ≡⟨ refl ⟩
+    up (swap (finToVal (permute (swapDownFromPerm (F.suc i)) (tabulate id) !! F.zero)))
+        ≡⟨ cong (λ x → up (swap (finToVal (x !! F.zero )))) (swapDownFromAct (F.suc i) (tabulate id)) ⟩
+    up (swap (finToVal (swapDownFromVec (F.inject₁ (F.suc i)) (tabulate id) !! F.zero)))
+        ≡⟨ refl ⟩
+    up (swap (finToVal ( (((tabulate id) !! (F.inject₁ (F.suc i))) ∷ remove (F.inject₁ (F.suc i)) (tabulate id)) !! F.zero )))
+        ≡⟨ refl ⟩
+    up (swap (finToVal ((tabulate id) !! (F.inject₁ (F.suc i)))))
+        ≡⟨ cong (up ○ swap ○ finToVal) (lookupTab {f = id} (F.inject₁ (F.suc i))) ⟩
+    up (swap (finToVal (F.inject₁ (F.suc i))))
+        ≡⟨ {!!} ⟩
+    finToVal (evalPerm (swapmPerm (F.suc (F.suc i))) F.zero)
+  ∎
+swapmCorrect2 {suc (suc n)} (F.suc F.zero) (F.suc j) = 
+  begin
+    evalComb (swapi F.zero) (inj₂ (finToVal j))
+      ≡⟨ swapi≡swap01 (F.suc j) ⟩
+    finToVal
+      (lookup j
+       (F.zero ∷ permute idP (tabulate (λ z → F.suc (F.suc z)))))
+      ≡⟨ refl ⟩
+    finToVal (permute (F.suc F.zero ∷ idP) (tabulate id) !! (F.suc j))
+  ∎
+swapmCorrect2 {suc (suc n)} (F.suc (F.suc i)) (F.suc j) = {!!}
 
 {-
 -- this alternate version of lemma1 might, in the long term, but a better
