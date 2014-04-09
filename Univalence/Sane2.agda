@@ -302,6 +302,14 @@ swapmCorrect2 {suc (suc n)} (F.suc (F.suc i)) F.zero =
     up (swap (finToVal ((tabulate id) !! (F.inject₁ (F.suc i)))))
         ≡⟨ cong (up ○ swap ○ finToVal) (lookupTab {f = id} (F.inject₁ (F.suc i))) ⟩
     up (swap (finToVal (F.inject₁ (F.suc i))))
+        ≡⟨ cong up (swapiCorrect (F.suc i) (F.inject₁ (F.suc i))) ⟩
+    up (finToVal (evalPerm (swapiPerm (F.suc i)) (F.inject₁ (F.suc i))))
+        ≡⟨ refl ⟩
+    up (finToVal (permute (swapiPerm (F.suc i)) (tabulate id) !! (F.inject₁ (F.suc i))))
+        ≡⟨ cong (λ x → up (finToVal( x !! (F.inject₁ (F.suc i))))) (swapiAct (F.suc i) (tabulate id)) ⟩
+    up (finToVal (insert (remove (F.inject₁ (F.suc i)) (tabulate id)) (F.suc (F.suc i)) ((tabulate id) !! (F.inject₁ (F.suc i))) !! (F.inject₁ (F.suc i))))
+        ≡⟨ cong (λ x →  up (finToVal (insert (remove (F.inject₁ (F.suc i)) (tabulate id)) (F.suc (F.suc i)) x !! (F.inject₁ (F.suc i))))) (lookupTab {f = id} (F.inject₁ (F.suc i))) ⟩
+    up (finToVal (insert (remove (F.inject₁ (F.suc i)) (tabulate id)) (F.suc (F.suc i)) (F.inject₁ (F.suc i)) !! (F.inject₁ (F.suc i))))
         ≡⟨ {!!} ⟩
     finToVal (evalPerm (swapmPerm (F.suc (F.suc i))) F.zero)
   ∎
