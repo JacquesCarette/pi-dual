@@ -40,6 +40,15 @@ combToPerm : {n : ℕ} → (fromℕ n ⇛ fromℕ n) → Permutation n
 combToPerm {zero} c = []
 combToPerm {suc n} c = valToFin (evalComb c (inj₁ tt)) ∷ {!!}
 
+--------------------------------------------------------------------------------------------------------------
+
+-- shuffle is like permute, but takes a combinator rather than a permutation as input
+
+shuffle : {n : ℕ} {A : Set} → (fromℕ n ⇛ fromℕ n) → Vec A n → Vec A n
+shuffle c v = tabulate (λ x → v !! valToFin (evalComb c (finToVal x)))
+
+--------------------------------------------------------------------------------------------------------------
+
 swapUpCorrect : {n : ℕ} → (i : F.Fin n) → (j : F.Fin (1 + n)) →
                 evalComb (swapUpTo i) (finToVal j) ≡ finToVal (evalPerm (swapUpToPerm i) j)
 swapUpCorrect {zero} () j
