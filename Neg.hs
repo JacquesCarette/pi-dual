@@ -1,4 +1,5 @@
 {-# LANGUAGE GADTs, TypeOperators #-} 
+{-# OPTIONS -Wall #-}
 
 module Neg where
 
@@ -44,8 +45,11 @@ class TD td where
   zero  :: td Zero
   unit  :: td ()
   pair  :: td a -> td b -> td (a,b)
+  fst   :: td (a, b) -> td a
+  snd   :: td (a, b) -> td b
   left  :: td a -> td (Either a b)
   right :: td b -> td (Either a b)
+  eithr :: td (Either a b) -> (td a -> td c) -> (td b -> td c) -> td c
 
 -- denotations of isos
 
@@ -106,22 +110,26 @@ instance TD I where
   zero              = error "Impossible: empty type"
   unit              = I ()
   pair  (I a) (I b) = I (a,b)
+  fst   (I (a,_))   = I a
+  snd   (I (_,b))   = I b
   left  (I a)       = I (Left a)
   right (I b)       = I (Right b)
+  eithr (I (Left a))  = \f _ -> f (I a)
+  eithr (I (Right a)) = \_ g -> g (I a)
+
   
 instance MD (:<=>) where
+  Id !@ x                         = x
 {--
-  Id @! a = a
   (Sym f) @! b                    = f !@ b
   (f :.: g) @! a                  = g @! (f @! a)
   (f :*: g) @! (a,b)              = (f @! a, g @! b) 
   (f :+: g) @! (Left a)           = Left (f @! a) 
   (f :+: g) @! (Right b)          = Right (g @! b) 
   PlusZeroL @! (Right a)          = a
---}
   PlusZeroR @! a                  = right a
-  CommutePlus @! (Left a)         = right a
-  CommutePlus @! (Right b)        = left b 
+--}
+  CommutePlus @! x                = eithr x right left
 {--
   AssocPlusL @! (Left a)          = Left (Left a) 
   AssocPlusL @! (Right (Left b))  = Left (Right b) 
@@ -146,8 +154,8 @@ instance MD (:<=>) where
         loop c (Right v) = v
 --}
 
-  Id !@ (I b)                         = I b
 {--
+  Id @! a = a
   (Sym f) !@ a                    = f @! a
   (f :.: g) !@ b                  = f !@ (g !@ b)
   (f :*: g) !@ (a,b)              = (f !@ a, g !@ b) 
@@ -210,7 +218,7 @@ timesR (R f) (R g) = R $ \(a,c) ->
 
 traceR :: R (Either a b) (Either a c) -> R a c
 traceR f = R $ \a -> loop f (Left a)
-  where loop (R f) v = case f v of
+  where loop (R g) v = case g v of
                          (Left a , f')  -> loop f' (Left a)
                          (Right c , f') -> (c , traceR f')
 
