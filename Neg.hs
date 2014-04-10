@@ -117,9 +117,8 @@ instance TD I where
   eithr (I (Left a))  = \f _ -> f (I a)
   eithr (I (Right a)) = \_ g -> g (I a)
 
-  
 instance MD (:<=>) where
-  Id !@ x                         = x
+  Id @! x                         = x
 {--
   (Sym f) @! b                    = f !@ b
   (f :.: g) @! a                  = g @! (f @! a)
@@ -154,8 +153,8 @@ instance MD (:<=>) where
         loop c (Right v) = v
 --}
 
+  Id !@ a                         = a
 {--
-  Id @! a = a
   (Sym f) !@ a                    = f @! a
   (f :.: g) !@ b                  = f !@ (g !@ b)
   (f :*: g) !@ (a,b)              = (f !@ a, g !@ b) 
@@ -222,6 +221,31 @@ traceR f = R $ \a -> loop f (Left a)
                          (Left a , f')  -> loop f' (Left a)
                          (Right c , f') -> (c , traceR f')
 
+instance Pi R where
+  idIso        = idR
+  sym          = undefined
+  (%.)         = composeR
+  (%*)         = timesR
+  (%+)         = plusR
+  plusZeroL    = undefined
+  plusZeroR    = undefined
+  commutePlus  = undefined
+  assocPlusL   = undefined
+  assocPlusR   = undefined
+  timesOneL    = undefined
+  timesOneR    = undefined
+  commuteTimes = undefined
+  assocTimesL  = undefined
+  assocTimesR  = undefined
+  timesZeroL   = undefined
+  timesZeroR   = undefined
+  distribute   = undefined
+  factor       = undefined
+  tracePlus    = undefined
+  
+instance MD R where
+  (R f) @! v = undefined
+  (R f) !@ v = undefined
+  
 
 -----------------------------------------------------------------------
---}
