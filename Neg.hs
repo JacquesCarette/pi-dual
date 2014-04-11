@@ -3,6 +3,9 @@
 
 module Neg where
 
+import qualified Prelude
+import Prelude (Either(..), undefined, error, ($), (.), id)
+
 -----------------------------------------------------------------------
 -- The abstract type of isomorphisms and their semantics
 
@@ -118,75 +121,57 @@ instance TD I where
   eithr (I (Right a)) = \_ g -> g (I a)
 
 instance MD (:<=>) where
-  Id @! x                         = x
-{--
-  (Sym f) @! b                    = f !@ b
-  (f :.: g) @! a                  = g @! (f @! a)
-  (f :*: g) @! (a,b)              = (f @! a, g @! b) 
-  (f :+: g) @! (Left a)           = Left (f @! a) 
-  (f :+: g) @! (Right b)          = Right (g @! b) 
-  PlusZeroL @! (Right a)          = a
-  PlusZeroR @! a                  = right a
---}
-  CommutePlus @! x                = eithr x right left
-{--
-  AssocPlusL @! (Left a)          = Left (Left a) 
-  AssocPlusL @! (Right (Left b))  = Left (Right b) 
-  AssocPlusL @! (Right (Right c)) = Right c
-  AssocPlusR @! (Left (Left a))   = Left a
-  AssocPlusR @! (Left (Right b))  = Right (Left b)
-  AssocPlusR @! (Right c)         = Right (Right c)
-  TimesOneL @! ((), a)            = a
-  TimesOneR @! a                  = ((), a)
-  CommuteTimes @! (a,b)           = (b,a) 
-  AssocTimesL @! (a,(b,c))        = ((a,b),c) 
-  AssocTimesR @! ((a,b),c)        = (a,(b,c))
-  TimesZeroL @! _                 = error "Impossible: empty type"
-  TimesZeroR @! _                 = error "Impossible: empty type"
-  Distribute @! (Left b, a)       = Left (b, a) 
-  Distribute @! (Right c, a)      = Right (c, a) 
-  Factor @! (Left (b, a))         = (Left b, a) 
-  Factor @! (Right (c, a))        = (Right c, a) 
-  (TracePlus c) @! v              = loop c (c @! (Right v))
+  Id @! x           = x
+  (Sym f) @! b      = f !@ b
+  (f :.: g) @! a    = g @! (f @! a)
+  (f :*: g) @! x    = pair (f @! (fst x)) (g @! (snd x)) 
+  (f :+: g) @! x    = eithr x (left . (f @!)) (right . (g @!))
+  PlusZeroL @! x    = eithr x (undefined) (id)
+  PlusZeroR @! a    = right a
+  CommutePlus @! x  = eithr x right left
+  AssocPlusL @! x   = eithr x (left . left) 
+                              (\z -> eithr z (left . right) (right))
+  AssocPlusR @! x   = eithr x (\z -> eithr z left (right . left)) (right . right)
+  TimesOneL @! x    = snd x
+  TimesOneR @! x    = pair unit x
+  CommuteTimes @! x = pair (snd x) (fst x)
+  AssocTimesL @! x  = pair (pair (fst x) (fst (snd x))) (snd (snd x))
+  AssocTimesR @! x  = pair (fst (fst x)) (pair (snd (fst x)) (snd x))
+  TimesZeroL @! _   = error "Impossible: empty type"
+  TimesZeroR @! _   = error "Impossible: empty type"
+  Distribute @! x   = eithr (fst x) (\z -> left (pair z (snd x)))
+                                    (\z -> right (pair z (snd x)))
+  Factor @! x       = eithr x (\z -> pair (left (fst z)) (snd z))
+                              (\z -> pair (right (fst z)) (snd z))
+  (TracePlus c) @! v = loop (c @! (right v))
       where
-        loop c (Left v) = loop c (c @! (Left v))
-        loop c (Right v) = v
---}
+        loop w = eithr w (\z -> loop (c @! (left z))) id
 
-  Id !@ a                         = a
-{--
-  (Sym f) !@ a                    = f @! a
-  (f :.: g) !@ b                  = f !@ (g !@ b)
-  (f :*: g) !@ (a,b)              = (f !@ a, g !@ b) 
-  (f :+: g) !@ (Left a)           = Left (f !@ a) 
-  (f :+: g) !@ (Right b)          = Right (g !@ b) 
-  PlusZeroL !@ a                  = Right a
-  PlusZeroR !@ (Right a)          = a
-  CommutePlus !@ (Left a)         = Right a
-  CommutePlus !@ (Right b)        = Left b 
-  AssocPlusL !@ (Left (Left a))   = Left a
-  AssocPlusL !@ (Left (Right b))  = Right (Left b)
-  AssocPlusL !@ (Right c)         = Right (Right c)
-  AssocPlusR !@ (Left a)          = Left (Left a) 
-  AssocPlusR !@ (Right (Left b))  = Left (Right b) 
-  AssocPlusR !@ (Right (Right c)) = Right c
-  TimesOneL !@ a                  = ((), a)
-  TimesOneR !@ ((), a)            = a
-  CommuteTimes !@ (a,b)           = (b,a) 
-  AssocTimesL !@ ((a,b),c)        = (a,(b,c))
-  AssocTimesR !@ (a,(b,c))        = ((a,b),c) 
-  TimesZeroL !@ _                 = error "Impossible: empty type"
-  TimesZeroR !@ _                 = error "Impossible: empty type"
-  Distribute !@ (Left (b, a))     = (Left b, a) 
-  Distribute !@ (Right (c, a))    = (Right c, a) 
-  Factor !@ (Left b, a)           = Left (b, a) 
-  Factor !@ (Right c, a)          = Right (c, a) 
-  (TracePlus c) !@ v              = loop c (c !@ (Right v))
+  Id !@ x           = x
+  (Sym f) !@ b      = f @! b
+  (f :.: g) !@ a    = f !@ (g !@ a)
+  (f :*: g) !@ x    = pair (f !@ (fst x)) (g !@ (snd x)) 
+  (f :+: g) !@ x    = eithr x (left . (f !@)) (right . (g !@))
+  PlusZeroL !@ a    = right a
+  PlusZeroR !@ x    = eithr x (undefined) (id)
+  CommutePlus !@ x  = eithr x right left
+  AssocPlusL !@ x   = eithr x (\z -> eithr z left (right . left)) (right . right)
+  AssocPlusR !@ x   = eithr x (left . left) 
+                              (\z -> eithr z (left . right) (right))
+  TimesOneL !@ x    = pair unit x
+  TimesOneR !@ x    = snd x
+  CommuteTimes !@ x = pair (snd x) (fst x)
+  AssocTimesL !@ x  = pair (fst (fst x)) (pair (snd (fst x)) (snd x))
+  AssocTimesR !@ x  = pair (pair (fst x) (fst (snd x))) (snd (snd x))
+  TimesZeroL !@ _   = error "Impossible: empty type"
+  TimesZeroR !@ _   = error "Impossible: empty type"
+  Distribute !@ x   = eithr x (\z -> pair (left (fst z)) (snd z))
+                              (\z -> pair (right (fst z)) (snd z))
+  Factor !@ x       = eithr (fst x) (\z -> left (pair z (snd x)))
+                                    (\z -> right (pair z (snd x)))
+  (TracePlus c) !@ v = loop (c !@ (right v))
       where
-        loop c (Left v) = loop c (c !@ (Left v))
-        loop c (Right v) = v
---}
-
+        loop w = eithr w (\z -> loop (c !@ (left z))) id
 -----------------------------------------------------------------------
 -- Resumptions
 
