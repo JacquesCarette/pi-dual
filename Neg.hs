@@ -200,11 +200,11 @@ timesR (R f) (R g) = R $ \(a,c) ->
       (d , g') = g c
   in ((b,d) , timesR f' g')
 
-traceR :: R (Either a b) (Either a c) -> R a c
-traceR f = R $ \a -> loop f (Left a)
+traceR :: R (Either a b) (Either a c) -> R b c
+traceR f = R $ \a -> loop f (Right a)
   where loop (R g) v = case g v of
-                         (Left a , f')  -> loop f' (Left a)
-                         (Right c , f') -> (c , traceR f')
+                         (Left b , f') -> loop f' (Left b)
+                         (Right c , f')  -> (c , traceR f')
 
 instance Pi R where
   idIso        = idR
@@ -226,7 +226,7 @@ instance Pi R where
   timesZeroR   = undefined
   distribute   = undefined
   factor       = undefined
-  tracePlus    = undefined
+  tracePlus    = traceR
   
 instance MD R where
   (R f) @! v = undefined
