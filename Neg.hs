@@ -1,4 +1,4 @@
-{-# LANGUAGE GADTs, TypeOperators #-} 
+{-# LANGUAGE GADTs, TypeOperators, DataKinds #-} 
 {-# OPTIONS -Wall #-}
 
 module Neg where
@@ -181,11 +181,20 @@ data R i o = R (i -> (o, R i o))
 idR :: R a a 
 idR = R (\a -> (a, idR))
 
+-- symR :: R a b -> R b a
+-- symR = ???
+
 composeR :: R a b -> R b c -> R a c
 composeR (R f) (R g) = R $ \a -> 
   let (b , f') = f a
       (c , g') = g b
   in (c , composeR f' g')
+
+timesR :: R a b -> R c d -> R (a,c) (b,d)
+timesR (R f) (R g) = R $ \(a,c) -> 
+  let (b , f') = f a
+      (d , g') = g c
+  in ((b,d) , timesR f' g')
 
 plusR :: R a b -> R c d -> R (Either a c) (Either b d)
 plusR (R f) (R g) = R $ \x -> 
@@ -195,11 +204,54 @@ plusR (R f) (R g) = R $ \x ->
     Right c -> let (d , g') = g c
                in (Right d , plusR (R f) g')
 
-timesR :: R a b -> R c d -> R (a,c) (b,d)
-timesR (R f) (R g) = R $ \(a,c) -> 
-  let (b , f') = f a
-      (d , g') = g c
-  in ((b,d) , timesR f' g')
+plusZeroLR :: R (Either Zero a) a
+plusZeroLR = R $ \ (Right a) -> (a , plusZeroLR)
+
+plusZeroRR :: R a (Either Zero a) 
+plusZeroRR = R $ \a -> (Right a , plusZeroRR)
+
+assocPlusLR :: R (Either a (Either b c)) (Either (Either a b) c)
+assocPlusLR = R $ \v -> case v of 
+  Left a          -> (Left (Left a)  , assocPlusLR)
+  Right (Left b)  -> (Left (Right b) , assocPlusLR)
+  Right (Right c) -> (Right c        , assocPlusLR)
+
+assocPlusRR :: R (Either (Either a b) c) (Either a (Either b c)) 
+assocPlusRR = R $ \v -> case v of 
+  Left (Left a)  -> (Left a          , assocPlusRR)
+  Left (Right b) -> (Right (Left b)  , assocPlusRR)
+  Right c        -> (Right (Right c) , assocPlusRR)
+
+timesOneLR :: R ((),a) a
+timesOneLR = R $ \((),a) -> (a , timesOneLR)
+
+timesOneRR :: R a ((),a)
+timesOneRR = R $ \a -> (((),a) , timesOneRR)
+
+commuteTimesR :: R (a,b) (b,a)
+commuteTimesR = R $ \(a,b) -> ((b,a) , commuteTimesR)
+
+assocTimesLR :: R (a,(b,c)) ((a,b),c)
+assocTimesLR = R $ \(a,(b,c)) -> (((a,b),c) , assocTimesLR)
+
+assocTimesRR :: R ((a,b),c) (a,(b,c))
+assocTimesRR = R $ \((a,b),c) -> ((a,(b,c)) , assocTimesRR)
+
+timesZeroLR :: R (Zero,a) Zero
+timesZeroLR = R $ \_ -> error "Impossible: empty type"
+
+timesZeroRR :: R Zero (Zero,a)
+timesZeroRR = R $ \_ -> error "Impossible: empty type"
+
+distributeR :: R (Either b c , a) (Either (b,a) (c,a))
+distributeR = R $ \(v,a) -> case v of 
+  Left b  -> (Left (b,a) , distributeR)
+  Right c -> (Right (c,a) , distributeR)    
+
+factorR :: R (Either (b,a) (c,a)) (Either b c , a)
+factorR = R $ \v -> case v of 
+  Left (b,a)  -> ((Left b, a)  , factorR)
+  Right (c,a) -> ((Right c, a) , factorR)
 
 traceR :: R (Either a b) (Either a c) -> R b c
 traceR f = R $ \a -> loop f (Right a)
@@ -207,39 +259,44 @@ traceR f = R $ \a -> loop f (Right a)
                          (Left b , f') -> loop f' (Left b)
                          (Right c , f')  -> (c , traceR f')
 
+commutePlusR :: R (Either a b) (Either b a)
+commutePlusR = R $ \v -> (commuteEither v , commutePlusR)
+  where commuteEither (Left a) = Right a
+        commuteEither (Right a) = Left a
+
 instance Pi R where
   idIso        = idR
   sym          = undefined
   (%.)         = composeR
   (%*)         = timesR
   (%+)         = plusR
-  plusZeroL    = undefined
-  plusZeroR    = undefined
-  commutePlus  = undefined
-  assocPlusL   = undefined
-  assocPlusR   = undefined
-  timesOneL    = undefined
-  timesOneR    = undefined
-  commuteTimes = undefined
-  assocTimesL  = undefined
-  assocTimesR  = undefined
-  timesZeroL   = undefined
-  timesZeroR   = undefined
-  distribute   = undefined
-  factor       = undefined
+  plusZeroL    = plusZeroLR
+  plusZeroR    = plusZeroRR
+  commutePlus  = commutePlusR
+  assocPlusL   = assocPlusLR
+  assocPlusR   = assocPlusRR
+  timesOneL    = timesOneLR
+  timesOneR    = timesOneRR
+  commuteTimes = commuteTimesR
+  assocTimesL  = assocTimesLR
+  assocTimesR  = assocTimesRR
+  timesZeroL   = timesZeroLR
+  timesZeroR   = timesZeroRR
+  distribute   = distributeR
+  factor       = factorR
   tracePlus    = traceR
   
 instance MD R where -- with TD = I 
   (R f) @! ia = undefined -- let (b , f') = f a in b
   (R f) !@ v = undefined
 
-{--
--- want another instance with TD being a pair of types
-instance MD R where -- with TD = I 
-  (R f) @! ia = undefined -- let (b , f') = f a in b
-  (R f) !@ v = undefined
---}  
+-----------------------------------------------------------------------
+-- Int (or G) construction
+
+data G ap am bp bm = G (R (Either ap bm) (Either am bp))
+
+
+idG :: G ap am ap am
+idG = G commutePlusR
 
 -----------------------------------------------------------------------
--- data R a b = R (a -> (b, R a b))
--- (@!) :: R a b -> I a -> I b
