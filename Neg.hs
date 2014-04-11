@@ -210,6 +210,11 @@ plusZeroLR = R $ \ (Right a) -> (a , plusZeroLR)
 plusZeroRR :: R a (Either Zero a) 
 plusZeroRR = R $ \a -> (Right a , plusZeroRR)
 
+commutePlusR :: R (Either a b) (Either b a)
+commutePlusR = R $ \v -> (commuteEither v , commutePlusR)
+  where commuteEither (Left a) = Right a
+        commuteEither (Right a) = Left a
+
 assocPlusLR :: R (Either a (Either b c)) (Either (Either a b) c)
 assocPlusLR = R $ \v -> case v of 
   Left a          -> (Left (Left a)  , assocPlusLR)
@@ -259,11 +264,6 @@ traceR f = R $ \a -> loop f (Right a)
                          (Left b , f') -> loop f' (Left b)
                          (Right c , f')  -> (c , traceR f')
 
-commutePlusR :: R (Either a b) (Either b a)
-commutePlusR = R $ \v -> (commuteEither v , commutePlusR)
-  where commuteEither (Left a) = Right a
-        commuteEither (Right a) = Left a
-
 instance Pi R where
   idIso        = idR
   sym          = undefined
@@ -299,4 +299,39 @@ data G ap am bp bm = G (R (Either ap bm) (Either am bp))
 idG :: G ap am ap am
 idG = G commutePlusR
 
+composeG :: G ap am bp bm -> G bp bm cp cm -> G ap bm cp cm
+composeG (G f) (G g) = G $ traceR h 
+  where h :: R (Either (Either bm bp) (Either ap cm)) 
+               (Either (Either bm bp) (Either am cp))
+        h = composeR assoc1 (composeR (plusR f g) assoc2)
+        assoc1 = undefined
+          -- (Either (Either bm bp) (Either ap cm))
+          -- (Either (Either ap bm) (Either bp cm))
+        assoc2 = undefined
+          -- (Either (Either am bp) (Either bm cp))
+          -- (Either (Either bm bp) (Either am cp))
+
+{--
+
+f :: R (Either ap bm) (Either am bp)
+g :: R (Either bp cm) (Either bm cp)
+
+traceR h 
+h :: 
+
+assoc1 :: R (Either bm bp , Either ap cm)
+            (Either ap bm , Either bp cm) 
+
+plusR :: R a b -> R c d -> R (Either a c) (Either b d)
+
+timesR f g :: R (Either ap bm , Either bp cm) 
+                (Either am bp , Either bm cp)
+
+assoc2 :: R (Either am bp , Either bm cp)
+            (Either bm bp , Either am cp)
+
+--}
+                       
+--timesR :: R a b -> R c d -> R (a,c) (b,d)
+--traceR :: R (Either a b) (Either a c) -> R b c
 -----------------------------------------------------------------------
