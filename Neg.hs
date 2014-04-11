@@ -172,6 +172,7 @@ instance MD (:<=>) where
   (TracePlus c) !@ v = loop (c !@ (right v))
       where
         loop w = eithr w (\z -> loop (c !@ (left z))) id
+
 -----------------------------------------------------------------------
 -- Resumptions
 
@@ -228,9 +229,17 @@ instance Pi R where
   factor       = undefined
   tracePlus    = traceR
   
-instance MD R where
-  (R f) @! v = undefined
+instance MD R where -- with TD = I 
+  (R f) @! ia = undefined -- let (b , f') = f a in b
   (R f) !@ v = undefined
-  
+
+{--
+-- want another instance with TD being a pair of types
+instance MD R where -- with TD = I 
+  (R f) @! ia = undefined -- let (b , f') = f a in b
+  (R f) !@ v = undefined
+--}  
 
 -----------------------------------------------------------------------
+-- data R a b = R (a -> (b, R a b))
+-- (@!) :: R a b -> I a -> I b
