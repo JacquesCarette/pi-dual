@@ -172,6 +172,7 @@ instance MD (:<=>) where
   (TracePlus c) !@ v = loop (c !@ (right v))
       where
         loop w = eithr w (\z -> loop (c !@ (left z))) id
+
 -----------------------------------------------------------------------
 -- Resumptions
 
@@ -200,8 +201,8 @@ timesR (R f) (R g) = R $ \(a,c) ->
       (d , g') = g c
   in ((b,d) , timesR f' g')
 
-traceR :: R (Either a b) (Either a c) -> R a c
-traceR f = R $ \a -> loop f (Left a)
+traceR :: R (Either a b) (Either a c) -> R b c
+traceR f = R $ \b -> loop f (Right b)
   where loop (R g) v = case g v of
                          (Left a , f')  -> loop f' (Left a)
                          (Right c , f') -> (c , traceR f')
@@ -226,11 +227,19 @@ instance Pi R where
   timesZeroR   = undefined
   distribute   = undefined
   factor       = undefined
-  tracePlus    = undefined
+  tracePlus    = traceR
   
-instance MD R where
-  (R f) @! v = undefined
+instance MD R where -- with TD = I 
+  (R f) @! ia = undefined -- let (b , f') = f a in b
   (R f) !@ v = undefined
-  
+
+{--
+-- want another instance with TD being a pair of types
+instance MD R where -- with TD = I 
+  (R f) @! ia = undefined -- let (b , f') = f a in b
+  (R f) !@ v = undefined
+--}  
 
 -----------------------------------------------------------------------
+-- data R a b = R (a -> (b, R a b))
+-- (@!) :: R a b -> I a -> I b
