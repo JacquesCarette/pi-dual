@@ -1,4 +1,5 @@
-{-# LANGUAGE GADTs, TypeOperators, DataKinds #-} 
+{-# LANGUAGE GADTs, TypeOperators, DataKinds #-}
+{-# LANGUAGE TypeFamilies, MultiParamTypeClasses, FlexibleInstances #-}
 {-# OPTIONS -Wall #-}
 
 module Neg where
@@ -9,7 +10,10 @@ import Prelude (Either(..), undefined, error, ($), (.), id)
 -----------------------------------------------------------------------
 -- The abstract type of isomorphisms and their semantics
 
-data Zero 
+data Zero
+
+abort :: a
+abort = error "Impossible: Empty type"
 
 class Pi iso where 
 -- Congruence
@@ -36,29 +40,7 @@ class Pi iso where
   distribute   :: iso (Either b c, a) (Either (b, a) (c, a))
   factor       :: iso (Either (b, a) (c, a)) (Either b c, a)
 -- Trace operators for looping/recursion
-  tracePlus    :: iso (Either a b1) (Either a b2) -> iso b1 b2
-
--- Any semantics must:
---   map each type 'a' to a denotation 'td a'
---   map each iso 'a :<=> b' to a morphism (td a -> td b)
-
--- denotations of types
-
-class TD td where
-  zero  :: td Zero
-  unit  :: td ()
-  pair  :: td a -> td b -> td (a,b)
-  fst   :: td (a, b) -> td a
-  snd   :: td (a, b) -> td b
-  left  :: td a -> td (Either a b)
-  right :: td b -> td (Either a b)
-  eithr :: td (Either a b) -> (td a -> td c) -> (td b -> td c) -> td c
-
--- denotations of isos
-
-class MD iso where
-  (@!) :: TD td => iso a b -> td a -> td b
-  (!@) :: TD td => iso a b -> td b -> td a
+  trace        :: iso (Either a b) (Either a c) -> iso b c
 
 -----------------------------------------------------------------------
 -- Term model and rewriting semantics
@@ -83,7 +65,7 @@ data a :<=> b where
   TimesZeroR   :: Zero :<=> (Zero, a)
   Distribute   :: (Either b c, a) :<=> Either (b, a) (c, a)
   Factor       :: Either (b, a) (c, a) :<=> (Either b c, a)
-  TracePlus    :: (Either a b1 :<=> Either a b2) -> (b1 :<=> b2)
+  Trace        :: (Either a b :<=> Either a c) -> (b :<=> c)
 
 instance Pi (:<=>) where
   idIso        = Id
@@ -105,20 +87,45 @@ instance Pi (:<=>) where
   timesZeroR   = TimesZeroR
   distribute   = Distribute
   factor       = Factor
-  tracePlus    = TracePlus
+  trace        = Trace
   
+-- The basic semantics:
+--   maps each syntactic type 'a' to a denotation 'td a'
+--   maps each iso 'a :<=> b' to a morphism (td a -> td b)
+--     and another morphism (td b -> td a)
+
+-- Denotations of types
+
+class TD td where
+  zero  :: td Zero
+  unit  :: td ()
+  pair  :: td a -> td b -> td (a,b)
+  fst   :: td (a, b) -> td a
+  snd   :: td (a, b) -> td b
+  left  :: td a -> td (Either a b)
+  right :: td b -> td (Either a b)
+  eithr :: td (Either a b) -> (td a -> td c) -> (td b -> td c) -> td c
+
+-- Standard interpretation of types
+
 newtype I a = I a
 
 instance TD I where
-  zero              = error "Impossible: empty type"
-  unit              = I ()
-  pair  (I a) (I b) = I (a,b)
-  fst   (I (a,_))   = I a
-  snd   (I (_,b))   = I b
-  left  (I a)       = I (Left a)
-  right (I b)       = I (Right b)
+  zero                = abort
+  unit                = I ()
+  pair  (I a) (I b)   = I (a,b)
+  fst   (I (a,_))     = I a
+  snd   (I (_,b))     = I b
+  left  (I a)         = I (Left a)
+  right (I b)         = I (Right b)
   eithr (I (Left a))  = \f _ -> f (I a)
   eithr (I (Right a)) = \_ g -> g (I a)
+
+-- Denotations of isos
+
+class MD iso where
+  (@!) :: TD td => iso a b -> td a -> td b
+  (!@) :: TD td => iso a b -> td b -> td a
 
 instance MD (:<=>) where
   Id @! x           = x
@@ -126,26 +133,31 @@ instance MD (:<=>) where
   (f :.: g) @! a    = g @! (f @! a)
   (f :*: g) @! x    = pair (f @! (fst x)) (g @! (snd x)) 
   (f :+: g) @! x    = eithr x (left . (f @!)) (right . (g @!))
-  PlusZeroL @! x    = eithr x (undefined) (id)
+  PlusZeroL @! x    = eithr x abort id
   PlusZeroR @! a    = right a
   CommutePlus @! x  = eithr x right left
-  AssocPlusL @! x   = eithr x (left . left) 
-                              (\z -> eithr z (left . right) (right))
-  AssocPlusR @! x   = eithr x (\z -> eithr z left (right . left)) (right . right)
+  AssocPlusL @! x   = eithr x 
+                        (left . left) 
+                        (\z -> eithr z (left . right) (right))
+  AssocPlusR @! x   = eithr x 
+                        (\z -> eithr z left (right . left)) 
+                        (right . right)
   TimesOneL @! x    = snd x
   TimesOneR @! x    = pair unit x
   CommuteTimes @! x = pair (snd x) (fst x)
   AssocTimesL @! x  = pair (pair (fst x) (fst (snd x))) (snd (snd x))
   AssocTimesR @! x  = pair (fst (fst x)) (pair (snd (fst x)) (snd x))
-  TimesZeroL @! _   = error "Impossible: empty type"
-  TimesZeroR @! _   = error "Impossible: empty type"
-  Distribute @! x   = eithr (fst x) (\z -> left (pair z (snd x)))
-                                    (\z -> right (pair z (snd x)))
-  Factor @! x       = eithr x (\z -> pair (left (fst z)) (snd z))
-                              (\z -> pair (right (fst z)) (snd z))
-  (TracePlus c) @! v = loop (c @! (right v))
-      where
-        loop w = eithr w (\z -> loop (c @! (left z))) id
+  TimesZeroL @! _   = abort
+  TimesZeroR @! _   = abort
+  Distribute @! x   = eithr (fst x) 
+                        (\z -> left (pair z (snd x)))
+                        (\z -> right (pair z (snd x)))
+  Factor @! x       = eithr x 
+                        (\z -> pair (left (fst z)) (snd z))
+                        (\z -> pair (right (fst z)) (snd z))
+  (Trace c) @! v    = loop (c @! (right v))
+    where loop w = eithr w (\z -> loop (c @! (left z))) id
+        
 
   Id !@ x           = x
   (Sym f) !@ b      = f @! b
@@ -153,36 +165,37 @@ instance MD (:<=>) where
   (f :*: g) !@ x    = pair (f !@ (fst x)) (g !@ (snd x)) 
   (f :+: g) !@ x    = eithr x (left . (f !@)) (right . (g !@))
   PlusZeroL !@ a    = right a
-  PlusZeroR !@ x    = eithr x (undefined) (id)
+  PlusZeroR !@ x    = eithr x abort id
   CommutePlus !@ x  = eithr x right left
-  AssocPlusL !@ x   = eithr x (\z -> eithr z left (right . left)) (right . right)
-  AssocPlusR !@ x   = eithr x (left . left) 
-                              (\z -> eithr z (left . right) (right))
+  AssocPlusL !@ x   = eithr x 
+                        (\z -> eithr z left (right . left)) 
+                        (right . right)
+  AssocPlusR !@ x   = eithr x 
+                        (left . left) 
+                        (\z -> eithr z (left . right) (right))
   TimesOneL !@ x    = pair unit x
   TimesOneR !@ x    = snd x
   CommuteTimes !@ x = pair (snd x) (fst x)
   AssocTimesL !@ x  = pair (fst (fst x)) (pair (snd (fst x)) (snd x))
   AssocTimesR !@ x  = pair (pair (fst x) (fst (snd x))) (snd (snd x))
-  TimesZeroL !@ _   = error "Impossible: empty type"
-  TimesZeroR !@ _   = error "Impossible: empty type"
-  Distribute !@ x   = eithr x (\z -> pair (left (fst z)) (snd z))
-                              (\z -> pair (right (fst z)) (snd z))
-  Factor !@ x       = eithr (fst x) (\z -> left (pair z (snd x)))
-                                    (\z -> right (pair z (snd x)))
-  (TracePlus c) !@ v = loop (c !@ (right v))
-      where
-        loop w = eithr w (\z -> loop (c !@ (left z))) id
+  TimesZeroL !@ _   = abort
+  TimesZeroR !@ _   = abort
+  Distribute !@ x   = eithr x 
+                        (\z -> pair (left (fst z)) (snd z))
+                        (\z -> pair (right (fst z)) (snd z))
+  Factor !@ x       = eithr (fst x) 
+                        (\z -> left (pair z (snd x)))
+                        (\z -> right (pair z (snd x)))
+  (Trace c) !@ v    = loop (c !@ (right v))
+    where loop w = eithr w (\z -> loop (c !@ (left z))) id
 
 -----------------------------------------------------------------------
 -- Resumptions
 
-data R i o = R (i -> (o, R i o))
+newtype R i o = R { r :: i -> (o, R i o) }
 
 idR :: R a a 
-idR = R (\a -> (a, idR))
-
--- symR :: R a b -> R b a
--- symR = ???
+idR = R $ \a -> (a, idR)
 
 composeR :: R a b -> R b c -> R a c
 composeR (R f) (R g) = R $ \a -> 
@@ -211,9 +224,9 @@ plusZeroRR :: R a (Either Zero a)
 plusZeroRR = R $ \a -> (Right a , plusZeroRR)
 
 commutePlusR :: R (Either a b) (Either b a)
-commutePlusR = R $ \v -> (commuteEither v , commutePlusR)
-  where commuteEither (Left a) = Right a
-        commuteEither (Right a) = Left a
+commutePlusR = R $ \v -> case v of 
+  Left a  -> (Right a , commutePlusR)
+  Right b -> (Left b  , commutePlusR)
 
 assocPlusLR :: R (Either a (Either b c)) (Either (Either a b) c)
 assocPlusLR = R $ \v -> case v of 
@@ -243,10 +256,10 @@ assocTimesRR :: R ((a,b),c) (a,(b,c))
 assocTimesRR = R $ \((a,b),c) -> ((a,(b,c)) , assocTimesRR)
 
 timesZeroLR :: R (Zero,a) Zero
-timesZeroLR = R $ \_ -> error "Impossible: empty type"
+timesZeroLR = R $ \_ -> abort
 
 timesZeroRR :: R Zero (Zero,a)
-timesZeroRR = R $ \_ -> error "Impossible: empty type"
+timesZeroRR = R $ \_ -> abort
 
 distributeR :: R (Either b c , a) (Either (b,a) (c,a))
 distributeR = R $ \(v,a) -> case v of 
@@ -261,77 +274,66 @@ factorR = R $ \v -> case v of
 traceR :: R (Either a b) (Either a c) -> R b c
 traceR f = R $ \a -> loop f (Right a)
   where loop (R g) v = case g v of
-                         (Left b , f') -> loop f' (Left b)
-                         (Right c , f')  -> (c , traceR f')
-
-instance Pi R where
-  idIso        = idR
-  sym          = undefined
-  (%.)         = composeR
-  (%*)         = timesR
-  (%+)         = plusR
-  plusZeroL    = plusZeroLR
-  plusZeroR    = plusZeroRR
-  commutePlus  = commutePlusR
-  assocPlusL   = assocPlusLR
-  assocPlusR   = assocPlusRR
-  timesOneL    = timesOneLR
-  timesOneR    = timesOneRR
-  commuteTimes = commuteTimesR
-  assocTimesL  = assocTimesLR
-  assocTimesR  = assocTimesRR
-  timesZeroL   = timesZeroLR
-  timesZeroR   = timesZeroRR
-  distribute   = distributeR
-  factor       = factorR
-  tracePlus    = traceR
-  
-instance MD R where -- with TD = I 
-  (R f) @! ia = undefined -- let (b , f') = f a in b
-  (R f) !@ v = undefined
+                         (Left b  , f') -> loop f' (Left b)
+                         (Right c , f') -> (c , traceR f')
 
 -----------------------------------------------------------------------
 -- Int (or G) construction
 
-data G ap am bp bm = G (R (Either ap bm) (Either am bp))
+-- Objects in the G category are pairs of objects 
 
+class GT p where
+  type Pos p :: *
+  type Neg p :: *
 
-idG :: G ap am ap am
-idG = G commutePlusR
+instance GT (ap,am) where
+  type Pos (ap,am) = ap
+  type Neg (ap,am) = am
 
-composeG :: G ap am bp bm -> G bp bm cp cm -> G ap bm cp cm
-composeG (G f) (G g) = G $ traceR h 
-  where h :: R (Either (Either bm bp) (Either ap cm)) 
-               (Either (Either bm bp) (Either am cp))
-        h = composeR assoc1 (composeR (plusR f g) assoc2)
-        assoc1 = undefined
-          -- (Either (Either bm bp) (Either ap cm))
-          -- (Either (Either ap bm) (Either bp cm))
-        assoc2 = undefined
-          -- (Either (Either am bp) (Either bm cp))
-          -- (Either (Either bm bp) (Either am cp))
+-- Morphisms in the G category
 
-{--
+newtype GM a b = 
+  GM { rg :: R (Either (Pos a) (Neg b)) (Either (Neg a) (Pos b)) } 
 
-f :: R (Either ap bm) (Either am bp)
-g :: R (Either bp cm) (Either bm cp)
+-- 
 
-traceR h 
-h :: 
+idG :: GM a a
+idG = GM commutePlusR
 
-assoc1 :: R (Either bm bp , Either ap cm)
-            (Either ap bm , Either bp cm) 
+composeG :: GM a b -> GM b c -> GM a c
+composeG (GM f) (GM g) = GM $ traceR h 
+  where 
+    (>>) = composeR
+    h = 
+    -- (Either (Neg b) (Either (Pos a) (Neg c))
+       assoc1 >>
+    -- (Either (Either (Pos a) (Neg b)) (Neg c))
+       (plusR f idR) >>
+    -- (Either (Either (Neg a) (Pos b)) (Neg c))
+       assoc2 >>
+    -- (Either (Either (Pos b) (Neg c)) (Neg a))
+       (plusR g idR) >>
+    -- (Either (Either (Neg b) (Pos c)) (Neg a))
+       assoc3
+    -- (Neither (Neg b) (Either (Neg a) (Pos c))
+    assoc1 = R $ \v -> case v of 
+      Left nb -> (Left (Right nb) , assoc1)
+      Right (Left pa) -> (Left (Left pa) , assoc1)
+      Right (Right nc) -> (Right nc , assoc1)
+    assoc2 = R $ \v -> case v of 
+      Left (Left na) -> (Right na , assoc2)
+      Left (Right pb) -> (Left (Left pb) , assoc2)
+      Right nc -> (Left (Right nc) , assoc2)
+    assoc3 = R $ \v -> case v of 
+      Left (Left nb) -> (Left nb , assoc3)
+      Left (Right pc) -> (Right (Right pc) , assoc3)
+      Right na -> (Right (Left na) , assoc3)
 
-plusR :: R a b -> R c d -> R (Either a c) (Either b d)
+plusG :: GM a b -> GM c d -> GM (Either a c) (Either b d)
+plusG = undefined
 
-timesR f g :: R (Either ap bm , Either bp cm) 
-                (Either am bp , Either bm cp)
+-- dualize :: 
+                            
+              
 
-assoc2 :: R (Either am bp , Either bm cp)
-            (Either bm bp , Either am cp)
-
---}
-                       
---timesR :: R a b -> R c d -> R (a,c) (b,d)
---traceR :: R (Either a b) (Either a c) -> R b c
 -----------------------------------------------------------------------
