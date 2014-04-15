@@ -285,10 +285,29 @@ traceR f = R $ \a -> loop f (Right a)
 class GT p where
   type Pos p :: *
   type Neg p :: *
+  type PlusG p q :: *
+  type TimesG p q :: *
+  type DualG p :: *
+  type LolliG p q :: *
+
+data UNDEFINED
 
 instance GT (ap,am) where
   type Pos (ap,am) = ap
   type Neg (ap,am) = am
+  type PlusG (ap,am) (bp,bm) = (Either ap bp , Either am bm)
+  type TimesG (ap,am) (bp,bm) = UNDEFINED
+  type DualG (ap,am) = (am,ap)
+  type LolliG (ap,am) (bp,bm) = Either (DualG (ap,am)) (bp,bm)
+
+{--
+Need to know things like:
+
+  Pos (PlusG a b) = Either (Pos a) (Pos b)
+  Neg (PlusG a b) = Either (Neg a) (Neg b)
+  DualG (Pos a) = Neg a
+
+--}
 
 -- Morphisms in the G category
 
@@ -299,6 +318,9 @@ newtype GM a b =
 
 idG :: GM a a
 idG = GM commutePlusR
+
+symG :: GM a b -> GM b a
+symG = undefined
 
 composeG :: GM a b -> GM b c -> GM a c
 composeG (GM f) (GM g) = GM $ traceR h 
@@ -329,11 +351,86 @@ composeG (GM f) (GM g) = GM $ traceR h
       Left (Right pc) -> (Right (Right pc) , assoc3)
       Right na -> (Right (Left na) , assoc3)
 
-plusG :: GM a b -> GM c d -> GM (Either a c) (Either b d)
-plusG = undefined
+timesG :: GM a b -> GM c d -> GM (TimesG a c) (TimesG b c)
+timesG = undefined
 
--- dualize :: 
+{--
+plusG :: GM a b -> GM c d -> GM (PlusG a c) (PlusG b d)
+plusG (GM f) (GM g) = GM h
+  where
+    (>>) = composeR
+    h = 
+    -- Either (Either ap cp) (Either bm dm)
+       assoc1 >>
+    -- Either (Either ap bm) (Either cp dm)
+       plusR f g >>
+    -- Either (Either am bp) (Either cm dp)
+       assoc2 
+    -- Either (Either am cm) (Either bp dp)
+    assoc1 = R $ \v -> case v of 
+      Left (Left ap) -> (Left (Left ap) , assoc1)
+      Left (Right cp) -> (Right (Left cp) , assoc1)
+      Right (Left bm) -> (Left (Right bm) , assoc1)
+      Right (Right dm) -> (Right (Right dm) , assoc1)
+    assoc2 = R $ \v -> case v of 
+      Left (Left am) -> (Left (Left am) , assoc2)
+      Left (Right bp) -> (Right (Left bp) , assoc2)
+      Right (Left cm) -> (Left (Right cm) , assoc2)
+      Right (Right dp) -> (Right (Right dp) , assoc2)
+--}
+
+plusZeroLG :: GM (PlusG Zero a) a
+plusZeroLG = undefined
+
+plusZeroRG :: GM a (PlusG Zero a)
+plusZeroRG = undefined
+
+commutePlusG :: GM (PlusG a b) (PlusG b a)
+commutePlusG = undefined
+
+assocPlusLG :: GM (PlusG a (PlusG b c)) (PlusG (PlusG a b) c)
+assocPlusLG = undefined
+
+assocPlusRG :: GM (PlusG (PlusG a b) c) (PlusG a (PlusG b c))
+assocPlusRG = undefined
+
+timesOneLG :: GM (TimesG () a) a
+timesOneLG = undefined
+
+timesOneRG :: GM a (TimesG () a)
+timesOneRG = undefined
+
+commuteTimesG :: GM (TimesG a b) (TimesG b a)
+commuteTimesG = undefined
+
+assocTimesLG :: GM (TimesG a (TimesG b c)) (TimesG (TimesG a b) c)
+assocTimesLG = undefined
+
+assocTimesRG :: GM (TimesG (TimesG a b) c) (TimesG a (TimesG b c))
+assocTimesRG = undefined
+
+timesZeroLG :: GM (TimesG Zero a) Zero
+timesZeroLG = undefined
+
+timesZeroRG :: GM Zero (TimesG Zero a)
+timesZeroRG = undefined
+
+distributeG :: GM (TimesG (PlusG b c) a) (PlusG (TimesG b a) (TimesG c a))
+distributeG = undefined
+
+factorG :: GM (PlusG (TimesG b a) (TimesG c a)) (TimesG (PlusG b c) a)
+factorG = undefined
+
+traceG :: GM (PlusG a b) (PlusG a c) -> GM b c
+traceG = undefined
+
+dualG :: GM a b -> GM (DualG b) (DualG a)
+dualG = undefined
                             
-              
+curryG :: GM (PlusG a b) c -> GM a (LolliG b c)
+curryG = undefined
+
+uncurryG :: GM a (LolliG b c) -> GM (PlusG a b) c
+uncurryG = undefined
 
 -----------------------------------------------------------------------
