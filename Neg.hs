@@ -290,13 +290,15 @@ class GT p where
   type DualG p :: *
   type LolliG p q :: *
 
-data UNDEFINED
+-- need to represent products in the underlying semiring
+data Pair a b = P a b
 
 instance GT (ap,am) where
   type Pos (ap,am) = ap
   type Neg (ap,am) = am
   type PlusG (ap,am) (bp,bm) = (Either ap bp , Either am bm)
-  type TimesG (ap,am) (bp,bm) = UNDEFINED
+  type TimesG (ap,am) (bp,bm) = 
+    (Either (Pair ap bp) (Pair am bm), Either (Pair am bp) (Pair ap bm))
   type DualG (ap,am) = (am,ap)
   type LolliG (ap,am) (bp,bm) = Either (DualG (ap,am)) (bp,bm)
 
