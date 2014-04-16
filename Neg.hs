@@ -373,6 +373,12 @@ plusG (GM f) (GM g) = GM h
       Right (Left cm) -> (Left (Right cm) , assoc2)
       Right (Right dp) -> (Right (Right dp) , assoc2)
 
+-- If we instantiate the abstract G types to pairs, the contraints are
+-- automatically satisfied.
+test :: GM (ap,am) (bp,bm) -> GM (cp,cm) (dp,dm) -> 
+        GM (PlusG (ap,am) (cp,cm)) (PlusG (bp,bm) (dp,dm))
+test = plusG 
+
 plusZeroLG :: GM (PlusG Zero a) a
 plusZeroLG = undefined
 
