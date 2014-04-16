@@ -1,4 +1,4 @@
-{-# LANGUAGE GADTs, TypeOperators, DataKinds #-}
+{-# LANGUAGE GADTs, TypeOperators, DataKinds, RankNTypes #-}
 {-# LANGUAGE TypeFamilies, MultiParamTypeClasses, FlexibleInstances #-}
 {-# OPTIONS -Wall #-}
 
@@ -290,7 +290,6 @@ class GT p where
   type DualG p :: *
   type LolliG p q :: *
 
--- need to represent products in the underlying semiring
 data Pair a b = P a b
 
 instance GT (ap,am) where
@@ -301,15 +300,6 @@ instance GT (ap,am) where
     (Either (Pair ap bp) (Pair am bm), Either (Pair am bp) (Pair ap bm))
   type DualG (ap,am) = (am,ap)
   type LolliG (ap,am) (bp,bm) = Either (DualG (ap,am)) (bp,bm)
-
-{--
-Need to know things like:
-
-  Pos (PlusG a b) = Either (Pos a) (Pos b)
-  Neg (PlusG a b) = Either (Neg a) (Neg b)
-  DualG (Pos a) = Neg a
-
---}
 
 -- Morphisms in the G category
 
@@ -356,8 +346,11 @@ composeG (GM f) (GM g) = GM $ traceR h
 timesG :: GM a b -> GM c d -> GM (TimesG a c) (TimesG b c)
 timesG = undefined
 
-{--
-plusG :: GM a b -> GM c d -> GM (PlusG a c) (PlusG b d)
+plusG :: (Neg (PlusG b d) ~ Either (Neg b) (Neg d),
+          Neg (PlusG a c) ~ Either (Neg a) (Neg c),
+          Pos (PlusG a c) ~ Either (Pos a) (Pos c),
+          Pos (PlusG b d) ~ Either (Pos b) (Pos d)) =>
+         GM a b -> GM c d -> GM (PlusG a c) (PlusG b d)
 plusG (GM f) (GM g) = GM h
   where
     (>>) = composeR
@@ -379,7 +372,6 @@ plusG (GM f) (GM g) = GM h
       Left (Right bp) -> (Right (Left bp) , assoc2)
       Right (Left cm) -> (Left (Right cm) , assoc2)
       Right (Right dp) -> (Right (Right dp) , assoc2)
---}
 
 plusZeroLG :: GM (PlusG Zero a) a
 plusZeroLG = undefined
