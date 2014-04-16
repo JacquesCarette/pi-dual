@@ -210,84 +210,154 @@ composeR (R f fr) (R g gr) = R {
              in (a , composeR gr' fr') 
   }
 
-{--
 timesR :: R a b -> R c d -> R (a,c) (b,d)
-timesR (R f) (R g) = R $ \(a,c) -> 
-  let (b , f') = f a
-      (d , g') = g c
-  in ((b,d) , timesR f' g')
+timesR (R f fr) (R g gr) = R {
+  r = \(a,c) -> let (b , f') = f a
+                    (d , g') = g c
+                in ((b,d) , timesR f' g'), 
+  rr = \(b,d) -> let (a , fr') = fr b
+                     (c , gr') = gr d
+                 in ((a,c) , timesR fr' gr')
+  }
 
 plusR :: R a b -> R c d -> R (Either a c) (Either b d)
-plusR (R f) (R g) = R $ \x -> 
-  case x of 
-    Left a  -> let (b , f') = f a 
-               in (Left b , plusR f' (R g))
-    Right c -> let (d , g') = g c
-               in (Right d , plusR (R f) g')
+plusR (R f fr) (R g gr) = R {
+  r = \x -> case x of 
+              Left a  -> let (b , f') = f a 
+                         in (Left b , plusR f' (R g gr))
+              Right c -> let (d , g') = g c
+                         in (Right d , plusR (R f fr) g'), 
+  rr = \x -> case x of 
+              Left b  -> let (a , fr') = fr b 
+                         in (Left a , plusR fr' (R gr g))
+              Right d -> let (c , gr') = gr d
+                         in (Right c , plusR (R fr f) gr')
+  }                  
 
 plusZeroLR :: R (Either Zero a) a
-plusZeroLR = R $ \ (Right a) -> (a , plusZeroLR)
+plusZeroLR = R {
+  r = \ (Right a) -> (a , plusZeroLR) ,
+  rr = \ a -> (Right a , plusZeroRR)
+  } 
 
 plusZeroRR :: R a (Either Zero a) 
-plusZeroRR = R $ \a -> (Right a , plusZeroRR)
+plusZeroRR = R {
+  r = \a -> (Right a , plusZeroRR), 
+  rr = \ (Right a) -> (a , plusZeroLR) 
+  } 
 
 commutePlusR :: R (Either a b) (Either b a)
-commutePlusR = R $ \v -> case v of 
-  Left a  -> (Right a , commutePlusR)
-  Right b -> (Left b  , commutePlusR)
+commutePlusR = R f fr where
+  f (Left a) = (Right a , commutePlusR)
+  f (Right b) = (Left b  , commutePlusR)
+  fr (Left b) = (Right b , commutePlusR)
+  fr (Right a) = (Left a  , commutePlusR)
 
 assocPlusLR :: R (Either a (Either b c)) (Either (Either a b) c)
-assocPlusLR = R $ \v -> case v of 
-  Left a          -> (Left (Left a)  , assocPlusLR)
-  Right (Left b)  -> (Left (Right b) , assocPlusLR)
-  Right (Right c) -> (Right c        , assocPlusLR)
+assocPlusLR = R {
+  r = \v -> case v of 
+              Left a          -> (Left (Left a)  , assocPlusLR)
+              Right (Left b)  -> (Left (Right b) , assocPlusLR)
+              Right (Right c) -> (Right c        , assocPlusLR), 
+  rr = \v -> case v of 
+               Left (Left a)  -> (Left a          , assocPlusRR)
+               Left (Right b) -> (Right (Left b)  , assocPlusRR)
+               Right c        -> (Right (Right c) , assocPlusRR)
+  } 
 
 assocPlusRR :: R (Either (Either a b) c) (Either a (Either b c)) 
-assocPlusRR = R $ \v -> case v of 
-  Left (Left a)  -> (Left a          , assocPlusRR)
-  Left (Right b) -> (Right (Left b)  , assocPlusRR)
-  Right c        -> (Right (Right c) , assocPlusRR)
+assocPlusRR = R {
+  r = \v -> case v of 
+              Left (Left a)  -> (Left a          , assocPlusRR)
+              Left (Right b) -> (Right (Left b)  , assocPlusRR)
+              Right c        -> (Right (Right c) , assocPlusRR),
+  rr = \v -> case v of 
+              Left a          -> (Left (Left a)  , assocPlusLR)
+              Right (Left b)  -> (Left (Right b) , assocPlusLR)
+              Right (Right c) -> (Right c        , assocPlusLR)
+  }
 
 timesOneLR :: R ((),a) a
-timesOneLR = R $ \((),a) -> (a , timesOneLR)
+timesOneLR = R {
+  r = \((),a) -> (a , timesOneLR), 
+  rr = \a -> (((),a) , timesOneRR)
+  }
 
 timesOneRR :: R a ((),a)
-timesOneRR = R $ \a -> (((),a) , timesOneRR)
+timesOneRR = R {
+  r = \a -> (((),a) , timesOneRR),
+  rr = \((),a) -> (a , timesOneLR)
+  }
 
 commuteTimesR :: R (a,b) (b,a)
-commuteTimesR = R $ \(a,b) -> ((b,a) , commuteTimesR)
+commuteTimesR = R {
+  r = \(a,b) -> ((b,a) , commuteTimesR),
+  rr = \(b,a) -> ((a,b) , commuteTimesR)
+  }
 
 assocTimesLR :: R (a,(b,c)) ((a,b),c)
-assocTimesLR = R $ \(a,(b,c)) -> (((a,b),c) , assocTimesLR)
+assocTimesLR = R {
+  r = \(a,(b,c)) -> (((a,b),c) , assocTimesLR),
+  rr = \((a,b),c) -> ((a,(b,c)) , assocTimesRR)
+  } 
 
 assocTimesRR :: R ((a,b),c) (a,(b,c))
-assocTimesRR = R $ \((a,b),c) -> ((a,(b,c)) , assocTimesRR)
+assocTimesRR = R {
+  r = \((a,b),c) -> ((a,(b,c)) , assocTimesRR),
+  rr = \(a,(b,c)) -> (((a,b),c) , assocTimesLR)
+  } 
 
 timesZeroLR :: R (Zero,a) Zero
-timesZeroLR = R $ \_ -> abort
+timesZeroLR = R {
+  r = \_ -> abort,
+  rr = \_ -> abort
+  }
 
 timesZeroRR :: R Zero (Zero,a)
-timesZeroRR = R $ \_ -> abort
+timesZeroRR = R {
+  r = \_ -> abort,
+  rr = \_ -> abort
+  }
 
 distributeR :: R (Either b c , a) (Either (b,a) (c,a))
-distributeR = R $ \(v,a) -> case v of 
-  Left b  -> (Left (b,a) , distributeR)
-  Right c -> (Right (c,a) , distributeR)    
+distributeR = R {
+  r = \(v,a) -> case v of 
+                  Left b  -> (Left (b,a) , distributeR)
+                  Right c -> (Right (c,a) , distributeR),
+  rr = \v -> case v of 
+               Left (b,a)  -> ((Left b, a)  , factorR)
+               Right (c,a) -> ((Right c, a) , factorR)
+  }
 
 factorR :: R (Either (b,a) (c,a)) (Either b c , a)
-factorR = R $ \v -> case v of 
-  Left (b,a)  -> ((Left b, a)  , factorR)
-  Right (c,a) -> ((Right c, a) , factorR)
+factorR = R {
+  r = \v -> case v of 
+               Left (b,a)  -> ((Left b, a)  , factorR)
+               Right (c,a) -> ((Right c, a) , factorR),
+  rr = \(v,a) -> case v of 
+                  Left b  -> (Left (b,a) , distributeR)
+                  Right c -> (Right (c,a) , distributeR)
+  }
 
 traceR :: R (Either a b) (Either a c) -> R b c
-traceR f = R $ \a -> loop f (Right a)
-  where loop (R g) v = case g v of
-                         (Left b  , f') -> loop f' (Left b)
-                         (Right c , f') -> (c , traceR f')
+traceR f = R {
+  r = \b -> loop1 f (Right b),
+  rr = \c -> loop2 f (Right c)
+  } 
+  where 
+    loop1 :: R (Either a b) (Either a c) -> Either a b -> (c , R b c)
+    loop1 (R g _) v = case g v of
+                        (Left a  , f') -> loop1 f' (Left a)
+                        (Right c , f') -> (c , traceR f')
+
+    loop2 :: R (Either a b) (Either a c) -> Either a c -> (b , R c b) 
+    loop2 (R _ gr) v = case gr v of
+                         (Left a  , g') -> loop1 g' (Left a)
+                         (Right b , g') -> (b , traceR g')
 
 instance Pi R where
   idIso        = idR
-  sym          = undefined -- ???
+  sym          = symR
   (%.)         = composeR
   (%*)         = timesR
   (%+)         = plusR
@@ -307,6 +377,7 @@ instance Pi R where
   factor       = factorR
   trace        = traceR
   
+{--
 -----------------------------------------------------------------------
 -- Int (or G) construction
 
