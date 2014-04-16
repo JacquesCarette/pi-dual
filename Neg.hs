@@ -123,11 +123,11 @@ instance TD I where
 
 -- Denotations of isos
 
-class MD iso where
-  (@!) :: TD td => iso a b -> td a -> td b
-  (!@) :: TD td => iso a b -> td b -> td a
+class TD td => MD iso td where
+  (@!) :: iso a b -> td a -> td b
+  (!@) :: iso a b -> td b -> td a
 
-instance MD (:<=>) where
+instance TD td => MD (:<=>) td where
   Id @! x           = x
   (Sym f) @! b      = f !@ b
   (f :.: g) @! a    = g @! (f @! a)
