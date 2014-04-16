@@ -123,11 +123,11 @@ instance TD I where
 
 -- Denotations of isos
 
-class MD iso where
-  (@!) :: TD td => iso a b -> td a -> td b
-  (!@) :: TD td => iso a b -> td b -> td a
+class TD td => MD iso td where
+  (@!) :: iso a b -> td a -> td b
+  (!@) :: iso a b -> td b -> td a
 
-instance MD (:<=>) where
+instance TD td => MD (:<=>) td where
   Id @! x           = x
   (Sym f) @! b      = f !@ b
   (f :.: g) @! a    = g @! (f @! a)
@@ -196,6 +196,9 @@ newtype R i o = R { r :: i -> (o, R i o) }
 
 idR :: R a a 
 idR = R $ \a -> (a, idR)
+
+-- symR :: R a b -> R b a
+-- symR (R f) = R $ \b ->  ???
 
 composeR :: R a b -> R b c -> R a c
 composeR (R f) (R g) = R $ \a -> 
@@ -277,6 +280,28 @@ traceR f = R $ \a -> loop f (Right a)
                          (Left b  , f') -> loop f' (Left b)
                          (Right c , f') -> (c , traceR f')
 
+instance Pi R where
+  idIso        = idR
+  sym          = undefined -- ???
+  (%.)         = composeR
+  (%*)         = timesR
+  (%+)         = plusR
+  plusZeroL    = plusZeroLR
+  plusZeroR    = plusZeroRR
+  commutePlus  = commutePlusR
+  assocPlusL   = assocPlusLR
+  assocPlusR   = assocPlusRR
+  timesOneL    = timesOneLR
+  timesOneR    = timesOneRR
+  commuteTimes = commuteTimesR
+  assocTimesL  = assocTimesLR
+  assocTimesR  = assocTimesRR
+  timesZeroL   = timesZeroLR
+  timesZeroR   = timesZeroRR
+  distribute   = distributeR
+  factor       = factorR
+  trace        = traceR
+  
 -----------------------------------------------------------------------
 -- Int (or G) construction
 
