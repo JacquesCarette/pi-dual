@@ -308,18 +308,22 @@ instance Pi R where
 -- Objects in the G category are pairs of objects 
 
 class GT p where
-  type Pos p :: *
-  type Neg p :: *
-  type PlusG p q :: *
+  type Pos p      :: *  -- to access the components
+  type Neg p      :: *  
+  type ZeroG      :: *  -- the new structure 0,1,+,* 
+  type OneG       :: *
+  type PlusG p q  :: *
   type TimesG p q :: *
-  type DualG p :: *
-  type LolliG p q :: *
+  type DualG p    :: *  -- as a bonus we get DualG (unary negation) and
+  type LolliG p q :: *  -- linear functions
 
 data Pair a b = P a b
 
 instance GT (ap,am) where
   type Pos (ap,am) = ap
   type Neg (ap,am) = am
+  type ZeroG = (Zero,Zero)
+  type OneG = ((),())
   type PlusG (ap,am) (bp,bm) = (Either ap bp , Either am bm)
   type TimesG (ap,am) (bp,bm) = 
     (Either (Pair ap bp) (Pair am bm), Either (Pair am bp) (Pair ap bm))
@@ -405,10 +409,10 @@ test :: GM (ap,am) (bp,bm) -> GM (cp,cm) (dp,dm) ->
         GM (PlusG (ap,am) (cp,cm)) (PlusG (bp,bm) (dp,dm))
 test = plusG 
 
-plusZeroLG :: GM (PlusG Zero a) a
+plusZeroLG :: GM (PlusG ZeroG a) a
 plusZeroLG = undefined
 
-plusZeroRG :: GM a (PlusG Zero a)
+plusZeroRG :: GM a (PlusG ZeroG a)
 plusZeroRG = undefined
 
 commutePlusG :: GM (PlusG a b) (PlusG b a)
@@ -420,10 +424,10 @@ assocPlusLG = undefined
 assocPlusRG :: GM (PlusG (PlusG a b) c) (PlusG a (PlusG b c))
 assocPlusRG = undefined
 
-timesOneLG :: GM (TimesG () a) a
+timesOneLG :: GM (TimesG OneG a) a
 timesOneLG = undefined
 
-timesOneRG :: GM a (TimesG () a)
+timesOneRG :: GM a (TimesG OneG a)
 timesOneRG = undefined
 
 commuteTimesG :: GM (TimesG a b) (TimesG b a)
@@ -435,10 +439,10 @@ assocTimesLG = undefined
 assocTimesRG :: GM (TimesG (TimesG a b) c) (TimesG a (TimesG b c))
 assocTimesRG = undefined
 
-timesZeroLG :: GM (TimesG Zero a) Zero
+timesZeroLG :: GM (TimesG ZeroG a) ZeroG
 timesZeroLG = undefined
 
-timesZeroRG :: GM Zero (TimesG Zero a)
+timesZeroRG :: GM ZeroG (TimesG ZeroG a)
 timesZeroRG = undefined
 
 distributeG :: GM (TimesG (PlusG b c) a) (PlusG (TimesG b a) (TimesG c a))
@@ -495,3 +499,10 @@ uncurryG (GM f) = GM (uncurry f)
         assoc2 (Right v) = Right (Right v)
 
 -----------------------------------------------------------------------
+{--
+Neel's post:
+http://semantic-domain.blogspot.com/2012/11/in-this-post-ill-show-how-to-turn.html
+
+See also: 
+http://www.kurims.kyoto-u.ac.jp/~hassei/papers/tmcc.pdf
+--}
