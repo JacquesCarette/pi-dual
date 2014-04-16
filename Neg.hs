@@ -192,20 +192,25 @@ instance TD td => MD (:<=>) td where
 -----------------------------------------------------------------------
 -- Resumptions
 
-newtype R i o = R { r :: i -> (o, R i o) }
+data R i o = R { r :: i -> (o, R i o), rr :: o -> (i, R o i) }
 
 idR :: R a a 
-idR = R $ \a -> (a, idR)
+idR = R f f where f a = (a, idR)
 
--- symR :: R a b -> R b a
--- symR (R f) = R $ \b ->  ???
+symR :: R a b -> R b a
+symR (R f fr) = R fr f
 
 composeR :: R a b -> R b c -> R a c
-composeR (R f) (R g) = R $ \a -> 
-  let (b , f') = f a
-      (c , g') = g b
-  in (c , composeR f' g')
+composeR (R f fr) (R g gr) = R {
+  r = \a -> let (b , f') = f a
+                (c , g') = g b
+            in (c , composeR f' g'),
+  rr = \c -> let (b , gr') = gr c
+                 (a , fr') = fr b
+             in (a , composeR gr' fr') 
+  }
 
+{--
 timesR :: R a b -> R c d -> R (a,c) (b,d)
 timesR (R f) (R g) = R $ \(a,c) -> 
   let (b , f') = f a
@@ -497,7 +502,7 @@ uncurryG (GM f) = GM (uncurry f)
         assoc2 (Left (Left v)) = Left v
         assoc2 (Left (Right v)) = Right (Left v)
         assoc2 (Right v) = Right (Right v)
-
+--}
 -----------------------------------------------------------------------
 {--
 Neel's post:
