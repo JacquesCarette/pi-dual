@@ -299,7 +299,8 @@ instance GT (ap,am) where
   type TimesG (ap,am) (bp,bm) = 
     (Either (Pair ap bp) (Pair am bm), Either (Pair am bp) (Pair ap bm))
   type DualG (ap,am) = (am,ap)
-  type LolliG (ap,am) (bp,bm) = Either (DualG (ap,am)) (bp,bm)
+  type LolliG (ap,am) (bp,bm) = (Either am bp , Either ap bm)
+                              -- PlusG (DualG (ap,am)) (bp,bm)
 
 -- Morphisms in the G category
 
@@ -424,13 +425,48 @@ factorG = undefined
 traceG :: GM (PlusG a b) (PlusG a c) -> GM b c
 traceG = undefined
 
-dualG :: GM a b -> GM (DualG b) (DualG a)
-dualG = undefined
+dualG :: (Pos (DualG a) ~ Neg a, Pos (DualG b) ~ Neg b, 
+          Neg (DualG a) ~ Pos a, Neg (DualG b) ~ Pos b) => 
+         GM a b -> GM (DualG b) (DualG a)
+dualG (GM (R f)) = GM (dual f) 
+  where dual h = R $ \v -> 
+                 let (v',_) = h (swap v)
+                 in (swap v', dual h)
+        swap (Left a) = Right a
+        swap (Right a) = Left a
                             
-curryG :: GM (PlusG a b) c -> GM a (LolliG b c)
-curryG = undefined
-
-uncurryG :: GM a (LolliG b c) -> GM (PlusG a b) c
-uncurryG = undefined
+curryG :: (Pos (PlusG a b) ~ Either (Pos a) (Pos b),
+           Neg (PlusG a b) ~ Either (Neg a) (Neg b),
+           Pos (LolliG b c) ~ Either (Neg b) (Pos c),
+           Neg (LolliG b c) ~ Either (Pos b) (Neg c)) =>
+          GM (PlusG a b) c -> GM a (LolliG b c)
+curryG (GM f) = GM (curry f)
+  where curry (R h) = R $ \v -> 
+          let (v',h') = h (assoc1 v)
+              v'' = assoc2 v'
+          in (v'' , curry h')
+        assoc1 (Left v) = Left (Left v)
+        assoc1 (Right (Left v)) = Left (Right v)
+        assoc1 (Right (Right v)) = Right v
+        assoc2 (Left (Left v)) = Left v
+        assoc2 (Left (Right v)) = Right (Left v)
+        assoc2 (Right v) = Right (Right v)
+                                   
+uncurryG :: (Pos (PlusG a b) ~ Either (Pos a) (Pos b),
+             Neg (PlusG a b) ~ Either (Neg a) (Neg b),
+             Pos (LolliG b c) ~ Either (Neg b) (Pos c),
+             Neg (LolliG b c) ~ Either (Pos b) (Neg c)) => 
+            GM a (LolliG b c) -> GM (PlusG a b) c
+uncurryG (GM f) = GM (uncurry f) 
+  where uncurry (R h) = R $ \v -> 
+          let (v',h') = h (assoc2 v)
+              v'' = assoc1 v'
+          in (v'' , uncurry h')
+        assoc1 (Left v) = Left (Left v)
+        assoc1 (Right (Left v)) = Left (Right v)
+        assoc1 (Right (Right v)) = Right v
+        assoc2 (Left (Left v)) = Left v
+        assoc2 (Left (Right v)) = Right (Left v)
+        assoc2 (Right v) = Right (Right v)
 
 -----------------------------------------------------------------------
