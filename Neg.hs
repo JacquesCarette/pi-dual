@@ -412,7 +412,6 @@ instance Pi R I where
   factor       = factorR
   trace        = traceR
   
-{--
 -----------------------------------------------------------------------
 -- Int (or G) construction
 
@@ -440,7 +439,7 @@ instance GT (ap,am) where
     (Either (Pair ap bp) (Pair am bm), Either (Pair am bp) (Pair ap bm))
   type DualG (ap,am) = (am,ap)
   type LolliG (ap,am) (bp,bm) = (Either am bp , Either ap bm)
-                              -- PlusG (DualG (ap,am)) (bp,bm)
+                              -- expansion of 'PlusG (DualG (ap,am)) (bp,bm)'
 
 -- Morphisms in the G category
 
@@ -453,7 +452,10 @@ idG :: GM a a
 idG = GM commutePlusR
 
 symG :: GM a b -> GM b a
-symG = undefined
+symG (GM f) = GM h where
+  (>>) = composeR
+  h = commutePlusR >> symR f >> commutePlusR
+      
 
 composeG :: GM a b -> GM b c -> GM a c
 composeG (GM f) (GM g) = GM $ traceR h 
@@ -471,21 +473,141 @@ composeG (GM f) (GM g) = GM $ traceR h
     -- (Either (Either (Neg b) (Pos c)) (Neg a))
        assoc3
     -- (Neither (Neg b) (Either (Neg a) (Pos c))
-    assoc1 = R $ \v -> case v of 
-      Left nb -> (Left (Right nb) , assoc1)
-      Right (Left pa) -> (Left (Left pa) , assoc1)
-      Right (Right nc) -> (Right nc , assoc1)
-    assoc2 = R $ \v -> case v of 
-      Left (Left na) -> (Right na , assoc2)
-      Left (Right pb) -> (Left (Left pb) , assoc2)
-      Right nc -> (Left (Right nc) , assoc2)
-    assoc3 = R $ \v -> case v of 
-      Left (Left nb) -> (Left nb , assoc3)
-      Left (Right pc) -> (Right (Right pc) , assoc3)
-      Right na -> (Right (Left na) , assoc3)
+    assoc1 = R { 
+      r = \v -> case v of 
+                  Left nb -> (Left (Right nb) , assoc1)
+                  Right (Left pa) -> (Left (Left pa) , assoc1)
+                  Right (Right nc) -> (Right nc , assoc1), 
+      rr = \v -> case v of 
+                   Left (Right nb) -> (Left nb , assoc1R)
+                   Left (Left pa) -> (Right (Left pa) , assoc1R)
+                   Right nc -> (Right (Right nc) , assoc1R)
+      }
+    assoc1R = R { 
+      r = \v -> case v of 
+                   Left (Right nb) -> (Left nb , assoc1R)
+                   Left (Left pa) -> (Right (Left pa) , assoc1R)
+                   Right nc -> (Right (Right nc) , assoc1R),
+      rr = \v -> case v of 
+                  Left nb -> (Left (Right nb) , assoc1)
+                  Right (Left pa) -> (Left (Left pa) , assoc1)
+                  Right (Right nc) -> (Right nc , assoc1)
+      }
+    assoc2 = R {
+      r = \v -> case v of 
+                  Left (Left na) -> (Right na , assoc2)
+                  Left (Right pb) -> (Left (Left pb) , assoc2)
+                  Right nc -> (Left (Right nc) , assoc2), 
+      rr = \v -> case v of 
+                  Right na -> (Left (Left na) , assoc2R)
+                  Left (Left pb) -> (Left (Right pb) , assoc2R)
+                  Left (Right nc) -> (Right nc , assoc2R)
+      }
+    assoc2R = R {
+      r = \v -> case v of 
+                  Right na -> (Left (Left na) , assoc2R)
+                  Left (Left pb) -> (Left (Right pb) , assoc2R)
+                  Left (Right nc) -> (Right nc , assoc2R),
+      rr = \v -> case v of 
+                  Left (Left na) -> (Right na , assoc2)
+                  Left (Right pb) -> (Left (Left pb) , assoc2)
+                  Right nc -> (Left (Right nc) , assoc2)
+      }
+
+    assoc3 = R {
+      r = \v -> case v of 
+                  Left (Left nb) -> (Left nb , assoc3)
+                  Left (Right pc) -> (Right (Right pc) , assoc3)
+                  Right na -> (Right (Left na) , assoc3), 
+      rr = \v -> case v of 
+                  Left nb -> (Left (Left nb) , assoc3R)
+                  Right (Right pc) -> (Left (Right pc) , assoc3R)
+                  Right (Left na) -> (Right na , assoc3R)
+      }
+    assoc3R = R {
+      r = \v -> case v of 
+                  Left nb -> (Left (Left nb) , assoc3R)
+                  Right (Right pc) -> (Left (Right pc) , assoc3R)
+                  Right (Left na) -> (Right na , assoc3R),
+      rr = \v -> case v of 
+                  Left (Left nb) -> (Left nb , assoc3)
+                  Left (Right pc) -> (Right (Right pc) , assoc3)
+                  Right na -> (Right (Left na) , assoc3)
+      }
 
 timesG :: GM a b -> GM c d -> GM (TimesG a c) (TimesG b c)
-timesG = undefined
+timesG (GM f) (GM g) = GM h
+  where h = undefined
+
+{--
+Have:
+f :: R (ap + bm) (am + bp)
+g :: R (cp + dm) (cm + dp)
+
+Want:
+
+h :: R ((ap,cp) + (am,cm) + (bm,cp) + (bp,cm))
+       ((am,cp) + (ap,cm) + (bp,cp) + (bm,cm))
+
+The forward component of R is a function that maps:
+
+h :: ((ap,cp) + (am,cm) + (bm,cp) + (bp,cm)) -> 
+     ((am,cp) + (ap,cm) + (bp,cp) + (bm,cm))  
+     and the recursive component
+
+We are given one of four possible inputs:
+  A. (ap,cp)
+  B. (am,cm)
+  C. (bm,cp)
+  D. (bp,cm)
+
+We need to produce of four possible outputs:
+  X. (am,cp)
+  Y. (ap,cm)
+  Z. (bp,cp)
+  W. (bm,cm)
+       
+Consider input A. we have 'ap' and 'cp'. Among the four functions realizing
+the resumptions f and g, there is only one function that consumes 'ap' and it
+produces 'am' or 'bp'. There is also only function that consumes 'cp' and it
+produces 'cm' or 'dp'. So our ouput is a pair of (am + bp) and (cm + dp)
+which is (am,cm) + (am,dp) + (bp,cm) + (bp,dp).
+
+We are not allowed to produce 'dp' at all so we have to get rid of it by
+passing it to the only function that would accept it. That function returns
+(cp + dm) but we are not allowed to produce dm so we must go back again and
+hope to get cm. 
+
+So this is messy and I thought doesn't work. However multiplication of Conway
+games might help here. That multiplication would correspond to:
+
+f :: R (ap + bm) (am + bp)
+`times`
+g :: R (cp + dm) (cm + dp)
+
+gives:
+
+R 
+
+  (ap + bm) `times` R (cp + dm) (cm + dp)
++ R (ap + bm) (am + bp) `times` (cp + dm)
+- (ap + bm) `times` (cp + dm)
++ (am + bp) `times` R (cp + dm) (cm + dp)
++ R (ap + bm) (am + bp) `times` (cm + dp)
+- (am + cp) `times` (cm + dp)
+
+  (ap + bm) `times` R (cp + dm) (cm + dp)
++ R (ap + bm) (am + bp) `times` (cm + dp)
+- (ap + bm) `times` (cm + dp)
++ (am + bp) `times` R (cp + dm) (cm + dp)
++ R (ap + bm) (am + bp) `times` (cp + dm)
+- (am + bp) `times` (cp + dm)
+
+Look again at the definition in the book and its justification...
+--}
+
+
+{--
 
 plusG :: (Neg (PlusG b d) ~ Either (Neg b) (Neg d),
           Neg (PlusG a c) ~ Either (Neg a) (Neg c),
