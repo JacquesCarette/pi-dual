@@ -40,12 +40,15 @@ class Type td where
 -- The abstract type of isomorphisms and their semantics
 -- An even more general version of same
 
-class TD rep => Pi iso rep where 
+class Equiv iso where
 -- Congruence
   idIso       :: iso a a
   sym         :: iso a b -> iso b a
   (%.)        :: iso a b -> iso b c -> iso a c
-  (%*)        :: iso a b -> iso c d -> iso (Prod rep a c) (Prod rep b d)
+
+-- Haskell does not support renaming, so we have to specify 2 monoid
+-- structures, additive and multiplicative
+class (TD rep) => AddMonoid iso rep where
   (%+)        :: iso a b -> iso c d -> iso (Sum rep a c) (Sum rep b d)
 -- (+) is associative, commutative, and has a unit
   plusZeroL   :: iso (Sum rep (Zero rep) a) a
@@ -53,12 +56,18 @@ class TD rep => Pi iso rep where
   commutePlus :: iso (Sum rep a b) (Sum rep b a)
   assocPlusL  :: iso (Sum rep a (Sum rep b c)) (Sum rep (Sum rep a b) c)
   assocPlusR  :: iso (Sum rep (Sum rep a b) c) (Sum rep a (Sum rep b c))
+
+class (TD rep) => MulMonoid iso rep where
+  (%*)        :: iso a b -> iso c d -> iso (Prod rep a c) (Prod rep b d)
 -- (*) is associative, commutative, and has a unit
   timesOneL   :: iso (Prod rep (One rep) a) a
   timesOneR   :: iso a (Prod rep (One rep) a)
   commuteTimes:: iso (Prod rep a b) (Prod rep b a) 
   assocTimesL :: iso (Prod rep a (Prod rep b c)) (Prod rep (Prod rep a b) c)
   assocTimesR :: iso (Prod rep (Prod rep a b) c) (Prod rep a (Prod rep b c))
+
+-- and now put them together.
+class (TD rep, Equiv iso, AddMonoid iso rep, MulMonoid iso rep) => Pi iso rep where 
 -- (*) distributes over (+) 
   timesZeroL  :: iso (Prod rep (Zero rep) a) (Zero rep)
   timesZeroR  :: iso (Zero rep) (Prod rep (Zero rep) a)
@@ -94,22 +103,28 @@ data a :<=> b where
   Factor       :: Either (b, a) (c, a) :<=> (Either b c, a)
   Trace        :: (Either a b :<=> Either a c) -> (b :<=> c)
 
-instance Pi (:<=>) I where
+instance Equiv (:<=>) where
   idIso        = Id
   sym          = Sym
   (%.)         = (:.:)
-  (%*)         = (:*:)
+
+instance AddMonoid (:<=>) I where
   (%+)         = (:+:)
   plusZeroL    = PlusZeroL
   plusZeroR    = PlusZeroR
   commutePlus  = CommutePlus
   assocPlusL   = AssocPlusL
   assocPlusR   = AssocPlusR
+
+instance MulMonoid (:<=>) I where
+  (%*)         = (:*:)
   timesOneL    = TimesOneL
   timesOneR    = TimesOneR
   commuteTimes = CommuteTimes
   assocTimesL  = AssocTimesL
   assocTimesR  = AssocTimesR
+
+instance Pi (:<=>) I where
   timesZeroL   = TimesZeroL
   timesZeroR   = TimesZeroR
   distribute   = Distribute
@@ -390,22 +405,28 @@ traceR f = R {
                          (Left a  , g') -> loop1 g' (Left a)
                          (Right b , g') -> (b , traceR g')
 
-instance Pi R I where
+instance Equiv R where
   idIso        = idR
   sym          = symR
   (%.)         = composeR
-  (%*)         = timesR
+
+instance AddMonoid R I where
   (%+)         = plusR
   plusZeroL    = plusZeroLR
   plusZeroR    = plusZeroRR
   commutePlus  = commutePlusR
   assocPlusL   = assocPlusLR
   assocPlusR   = assocPlusRR
+
+instance MulMonoid R I where
+  (%*)         = timesR
   timesOneL    = timesOneLR
   timesOneR    = timesOneRR
   commuteTimes = commuteTimesR
   assocTimesL  = assocTimesLR
   assocTimesR  = assocTimesRR
+
+instance Pi R I where
   timesZeroL   = timesZeroLR
   timesZeroR   = timesZeroRR
   distribute   = distributeR
