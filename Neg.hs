@@ -8,42 +8,69 @@ import qualified Prelude
 import Prelude (Either(..), undefined, error, ($), (.), id)
 
 -----------------------------------------------------------------------
+-- Some very abstract kit that will allow lots of different instances
+-- First, the two normal monoidal structures
+type family Zero (rep :: * -> *) :: *
+type family Prod (rep :: * -> *) :: * -> * -> *
+
+type family One (rep :: * -> *) :: *
+type family Sum (rep :: * -> *) :: * -> * -> *
+
+-- Second, Polarized is a pair (+A,-A) of positive and negative 'parts'
+type family Polarized (rep :: * -> *) :: * -> * -> *
+
+-- Third, Dual and linear functions
+type family Dual (rep :: * -> *) :: * -> *
+type family Lolli (rep :: * -> *) :: * -> * -> *
+
+-----------------------------------------------------------------------
+-- Very general notion of Type
+
+class Type td where
+  zeroT  :: td (Zero rep)
+  unitT  :: td (One rep)
+  pairT  :: td a -> td b -> td (Prod rep a b)
+  fstT   :: td (Prod rep a b) -> td a
+  sndT   :: td (Prod rep a b) -> td b
+  leftT  :: td a -> td (Sum rep a b)
+  rightT :: td b -> td (Sum rep a b)
+  eithrT :: td (Sum rep a b) -> (td a -> td c) -> (td b -> td c) -> td c
+
+-----------------------------------------------------------------------
 -- The abstract type of isomorphisms and their semantics
+-- An even more general version of same
 
-data Zero
-
-abort :: a
-abort = error "Impossible: Empty type"
-
-class Pi iso where 
+class TD rep => Pi iso rep where 
 -- Congruence
-  idIso        :: iso a a
-  sym          :: iso a b -> iso b a
-  (%.)         :: iso a b -> iso b c -> iso a c
-  (%*)         :: iso a b -> iso c d -> iso (a,c) (b,d)
-  (%+)         :: iso a b -> iso c d -> iso (Either a c) (Either b d)
+  idIso       :: iso a a
+  sym         :: iso a b -> iso b a
+  (%.)        :: iso a b -> iso b c -> iso a c
+  (%*)        :: iso a b -> iso c d -> iso (Prod rep a c) (Prod rep b d)
+  (%+)        :: iso a b -> iso c d -> iso (Sum rep a c) (Sum rep b d)
 -- (+) is associative, commutative, and has a unit
-  plusZeroL    :: iso (Either Zero a) a
-  plusZeroR    :: iso a (Either Zero a)
-  commutePlus  :: iso (Either a b) (Either b a)
-  assocPlusL   :: iso (Either a (Either b c)) (Either (Either a b) c)
-  assocPlusR   :: iso (Either (Either a b) c) (Either a (Either b c))
+  plusZeroL   :: iso (Sum rep (Zero rep) a) a
+  plusZeroR   :: iso a (Sum rep (Zero rep) a)
+  commutePlus :: iso (Sum rep a b) (Sum rep b a)
+  assocPlusL  :: iso (Sum rep a (Sum rep b c)) (Sum rep (Sum rep a b) c)
+  assocPlusR  :: iso (Sum rep (Sum rep a b) c) (Sum rep a (Sum rep b c))
 -- (*) is associative, commutative, and has a unit
-  timesOneL    :: iso ((), a) a
-  timesOneR    :: iso a ((), a)
-  commuteTimes :: iso (a,b) (b,a) 
-  assocTimesL  :: iso (a,(b,c)) ((a,b),c)
-  assocTimesR  :: iso ((a,b),c) (a,(b,c))
+  timesOneL   :: iso (Prod rep (One rep) a) a
+  timesOneR   :: iso a (Prod rep (One rep) a)
+  commuteTimes:: iso (Prod rep a b) (Prod rep b a) 
+  assocTimesL :: iso (Prod rep a (Prod rep b c)) (Prod rep (Prod rep a b) c)
+  assocTimesR :: iso (Prod rep (Prod rep a b) c) (Prod rep a (Prod rep b c))
 -- (*) distributes over (+) 
-  timesZeroL   :: iso (Zero, a) Zero
-  timesZeroR   :: iso Zero (Zero, a)
-  distribute   :: iso (Either b c, a) (Either (b, a) (c, a))
-  factor       :: iso (Either (b, a) (c, a)) (Either b c, a)
+  timesZeroL  :: iso (Prod rep (Zero rep) a) (Zero rep)
+  timesZeroR  :: iso (Zero rep) (Prod rep (Zero rep) a)
+  distribute  :: iso (Prod rep (Sum rep b c) a) (Sum rep (Prod rep b a) (Prod rep c a))
+  factor      :: iso (Sum rep (Prod rep b a) (Prod rep c a)) (Prod rep (Sum rep b c) a)
 -- Trace operators for looping/recursion
-  trace        :: iso (Either a b) (Either a c) -> iso b c
+  trace       :: iso (Sum rep a b) (Sum rep a c) -> iso b c
 
 -----------------------------------------------------------------------
 -- Term model and rewriting semantics
+
+data Void
 
 data a :<=> b where 
   Id           :: a :<=> a
@@ -51,8 +78,8 @@ data a :<=> b where
   (:.:)        :: (a :<=> b) -> (b :<=> c) -> (a :<=> c)
   (:*:)        :: (a :<=> b) -> (c :<=> d) -> ((a,c) :<=> (b,d))
   (:+:)        :: (a :<=> b) -> (c :<=> d) -> (Either a c :<=> Either b d)
-  PlusZeroL    :: Either Zero a :<=> a
-  PlusZeroR    :: a :<=> Either Zero a
+  PlusZeroL    :: Either Void a :<=> a
+  PlusZeroR    :: a :<=> Either Void a
   CommutePlus  :: Either a b :<=> Either b a
   AssocPlusL   :: Either a (Either b c) :<=> Either (Either a b) c 
   AssocPlusR   :: Either (Either a b) c :<=> Either a (Either b c) 
@@ -61,13 +88,13 @@ data a :<=> b where
   CommuteTimes :: (a,b) :<=> (b,a) 
   AssocTimesL  :: (a,(b,c)) :<=> ((a,b),c)
   AssocTimesR  :: ((a,b),c) :<=> (a,(b,c))
-  TimesZeroL   :: (Zero, a) :<=> Zero
-  TimesZeroR   :: Zero :<=> (Zero, a)
+  TimesZeroL   :: (Void, a) :<=> Void
+  TimesZeroR   :: Void :<=> (Void, a)
   Distribute   :: (Either b c, a) :<=> Either (b, a) (c, a)
   Factor       :: Either (b, a) (c, a) :<=> (Either b c, a)
   Trace        :: (Either a b :<=> Either a c) -> (b :<=> c)
 
-instance Pi (:<=>) where
+instance Pi (:<=>) I where
   idIso        = Id
   sym          = Sym
   (%.)         = (:.:)
@@ -97,7 +124,7 @@ instance Pi (:<=>) where
 -- Denotations of types
 
 class TD td where
-  zero  :: td Zero
+  zero  :: td Void
   unit  :: td ()
   pair  :: td a -> td b -> td (a,b)
   fst   :: td (a, b) -> td a
@@ -110,6 +137,9 @@ class TD td where
 
 newtype I a = I a
 
+abort :: a
+abort = error "Impossible: Empty type"
+
 instance TD I where
   zero                = abort
   unit                = I ()
@@ -120,6 +150,11 @@ instance TD I where
   right (I b)         = I (Right b)
   eithr (I (Left a))  = \f _ -> f (I a)
   eithr (I (Right a)) = \_ g -> g (I a)
+
+type instance Prod I = (,)
+type instance Sum I = Either
+type instance Zero I = Void
+type instance One I = ()
 
 -- Denotations of isos
 
@@ -234,13 +269,13 @@ plusR (R f fr) (R g gr) = R {
                          in (Right c , plusR (R fr f) gr')
   }                  
 
-plusZeroLR :: R (Either Zero a) a
+plusZeroLR :: R (Either Void a) a
 plusZeroLR = R {
   r = \ (Right a) -> (a , plusZeroLR) ,
   rr = \ a -> (Right a , plusZeroRR)
   } 
 
-plusZeroRR :: R a (Either Zero a) 
+plusZeroRR :: R a (Either Void a) 
 plusZeroRR = R {
   r = \a -> (Right a , plusZeroRR), 
   rr = \ (Right a) -> (a , plusZeroLR) 
@@ -307,13 +342,13 @@ assocTimesRR = R {
   rr = \(a,(b,c)) -> (((a,b),c) , assocTimesLR)
   } 
 
-timesZeroLR :: R (Zero,a) Zero
+timesZeroLR :: R (Void,a) Void
 timesZeroLR = R {
   r = \_ -> abort,
   rr = \_ -> abort
   }
 
-timesZeroRR :: R Zero (Zero,a)
+timesZeroRR :: R Void (Void,a)
 timesZeroRR = R {
   r = \_ -> abort,
   rr = \_ -> abort
@@ -355,7 +390,7 @@ traceR f = R {
                          (Left a  , g') -> loop1 g' (Left a)
                          (Right b , g') -> (b , traceR g')
 
-instance Pi R where
+instance Pi R I where
   idIso        = idR
   sym          = symR
   (%.)         = composeR
@@ -398,7 +433,7 @@ data Pair a b = P a b
 instance GT (ap,am) where
   type Pos (ap,am) = ap
   type Neg (ap,am) = am
-  type ZeroG = (Zero,Zero)
+  type ZeroG = (Void,Void)
   type OneG = ((),())
   type PlusG (ap,am) (bp,bm) = (Either ap bp , Either am bm)
   type TimesG (ap,am) (bp,bm) = 
