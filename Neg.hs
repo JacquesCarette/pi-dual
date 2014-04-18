@@ -460,10 +460,26 @@ instance GT (PolarizedPair ap am) where
   type ZeroG                                              = (Void,Void)
   type OneG                                               = PolarizedPair () ()
   type PlusG  (PolarizedPair ap am) (PolarizedPair bp bm) = (Either ap bp , Either am bm)
-  type TimesG (PolarizedPair ap am) (PolarizedPair bp bm) = 
-    (Either (Pair ap bp) (Pair am bm), Either (Pair am bp) (Pair ap bm))
   type DualG  (PolarizedPair ap am)                       = (am,ap)
   type LolliG (PolarizedPair ap am) (PolarizedPair bp bm) = (Either am bp , Either ap bm)
+  -- the obvious definition: 
+  -- (Either (Pair ap bp) (Pair am bm), Either (Pair am bp) (Pair ap bm))
+  -- does not work [JC: ?????]
+  -- type TimesG (PolarizedPair ap am) (PolarizedPair bp bm) = 
+  --   (Either (Pair ap bp) (Pair am bm), Either (Pair am bp) (Pair ap bm))
+  type TimesG (PolarizedPair ap am) (PolarizedPair bp bm) = 
+    (Either (ap,(bp,bm))
+     (Either ((ap,bp),bp)
+      (Either (bp,ap)
+       (Either (am,(bp,bm))
+        (Either ((ap,am),bm) 
+         (bm,am))))),
+     Either (ap,(bp,bm))
+      (Either ((ap,am),bm)
+       (Either (bm,ap)
+        (Either (am,(bp,bm))
+         (Either ((ap,am),bp)
+          (bp,am))))))
                               -- expansion of 'PlusG (DualG (ap,am)) (bp,bm)'
 -- Morphisms in the G category
 
@@ -562,8 +578,36 @@ composeG (GM f) (GM g) = GM $ traceR h
 timesG :: GM a b -> GM c d -> GM (TimesG a c) (TimesG b c)
 timesG (GM f) (GM g) = GM h
   where h = undefined
+        -- Either (Pos (TimesG a c)) (Neg (TimesG b c))
+
+        -- Either (Neg (TimesG a c)) (Pos (TimesG b c))
 
 {--
+newtype GM a b = 
+  GM { rg :: R (Either (Pos a) (Neg b)) (Either (Neg a) (Pos b)) } 
+
+
+
+Multiplication of conway games: interpret left as Pos and right as Neg
+(xp , xm) * (yp , ym) = 
+
+  (  xp * y 
+   + x * yp
+   - xp * yp
+   + xm * y
+   + x * ym
+   - xm * ym
+  , 
+     xp * y 
+   + x * ym
+   - xp * ym
+   + xm * y
+   + x * yp
+   - xm * yp
+  )
+
+
+
 Have:
 f :: R (ap + bm) (am + bp)
 g :: R (cp + dm) (cm + dp)
