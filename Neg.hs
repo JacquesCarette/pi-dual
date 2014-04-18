@@ -284,17 +284,19 @@ plusR (R f fr) (R g gr) = R {
                          in (Right c , plusR (R fr f) gr')
   }                  
 
-plusZeroLR :: R (Either Void a) a
-plusZeroLR = R {
-  r = \ (Right a) -> (a , plusZeroLR) ,
-  rr = \ a -> (Right a , plusZeroRR)
-  } 
+lift1 :: (i -> o) -> (o -> i) -> (R i o , R o i)
+lift1 f g = let (ls, rs) = lift1 f g in -- left-self, right-self
+  (R { 
+  r  = \x -> (f x, ls) ,
+  rr = \x -> (g x, rs)
+  } , R {
+  r  = \x -> (g x, rs) ,
+  rr = \x -> (f x, ls)
+  } )
 
+plusZeroLR :: R (Either Void a) a
 plusZeroRR :: R a (Either Void a) 
-plusZeroRR = R {
-  r = \a -> (Right a , plusZeroRR), 
-  rr = \ (Right a) -> (a , plusZeroLR) 
-  } 
+(plusZeroLR, plusZeroRR) = lift1 (\(Right a) -> a) (Right)
 
 commutePlusR :: R (Either a b) (Either b a)
 commutePlusR = R f fr where
