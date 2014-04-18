@@ -448,8 +448,6 @@ class GT p where
   type DualG p    :: *  -- as a bonus we get DualG (unary negation) and
   type LolliG p q :: *  -- linear functions
 
-data Pair a b = P a b
-
 instance GT (ap,am) where
   type Pos (ap,am) = ap
   type Neg (ap,am) = am
@@ -457,7 +455,21 @@ instance GT (ap,am) where
   type OneG = ((),())
   type PlusG (ap,am) (bp,bm) = (Either ap bp , Either am bm)
   type TimesG (ap,am) (bp,bm) = 
-    (Either (Pair ap bp) (Pair am bm), Either (Pair am bp) (Pair ap bm))
+    (Either (ap,(bp,bm))
+     (Either ((ap,bp),bp)
+      (Either (bp,ap)
+       (Either (am,(bp,bm))
+        (Either ((ap,am),bm) 
+         (bm,am))))),
+     Either (ap,(bp,bm))
+      (Either ((ap,am),bm)
+       (Either (bm,ap)
+        (Either (am,(bp,bm))
+         (Either ((ap,am),bp)
+          (bp,am))))))
+  -- the obvious definition: 
+  -- (Either (Pair ap bp) (Pair am bm), Either (Pair am bp) (Pair ap bm))
+  -- does not work
   type DualG (ap,am) = (am,ap)
   type LolliG (ap,am) (bp,bm) = (Either am bp , Either ap bm)
                               -- expansion of 'PlusG (DualG (ap,am)) (bp,bm)'
@@ -559,8 +571,36 @@ composeG (GM f) (GM g) = GM $ traceR h
 timesG :: GM a b -> GM c d -> GM (TimesG a c) (TimesG b c)
 timesG (GM f) (GM g) = GM h
   where h = undefined
+        -- Either (Pos (TimesG a c)) (Neg (TimesG b c))
+
+        -- Either (Neg (TimesG a c)) (Pos (TimesG b c))
 
 {--
+newtype GM a b = 
+  GM { rg :: R (Either (Pos a) (Neg b)) (Either (Neg a) (Pos b)) } 
+
+
+
+Multiplication of conway games: interpret left as Pos and right as Neg
+(xp , xm) * (yp , ym) = 
+
+  (  xp * y 
+   + x * yp
+   - xp * yp
+   + xm * y
+   + x * ym
+   - xm * ym
+  , 
+     xp * y 
+   + x * ym
+   - xp * ym
+   + xm * y
+   + x * yp
+   - xm * yp
+  )
+
+
+
 Have:
 f :: R (ap + bm) (am + bp)
 g :: R (cp + dm) (cm + dp)
