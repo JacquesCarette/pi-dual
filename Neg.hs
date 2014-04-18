@@ -450,18 +450,21 @@ class GT p where
 
 data Pair a b = P a b
 
-instance GT (ap,am) where
-  type Pos (ap,am) = ap
-  type Neg (ap,am) = am
-  type ZeroG = (Void,Void)
-  type OneG = ((),())
-  type PlusG (ap,am) (bp,bm) = (Either ap bp , Either am bm)
-  type TimesG (ap,am) (bp,bm) = 
-    (Either (Pair ap bp) (Pair am bm), Either (Pair am bp) (Pair ap bm))
-  type DualG (ap,am) = (am,ap)
-  type LolliG (ap,am) (bp,bm) = (Either am bp , Either ap bm)
-                              -- expansion of 'PlusG (DualG (ap,am)) (bp,bm)'
+-- use this to make a syntactic difference between a product and a pair which
+-- denotes the positive/negative parts of a *sum*.
+data PolarizedPair a b = PP a b
 
+instance GT (PolarizedPair ap am) where
+  type Pos    (PolarizedPair ap am)                       = ap
+  type Neg    (PolarizedPair ap am)                       = am
+  type ZeroG                                              = (Void,Void)
+  type OneG                                               = PolarizedPair () ()
+  type PlusG  (PolarizedPair ap am) (PolarizedPair bp bm) = (Either ap bp , Either am bm)
+  type TimesG (PolarizedPair ap am) (PolarizedPair bp bm) = 
+    (Either (Pair ap bp) (Pair am bm), Either (Pair am bp) (Pair ap bm))
+  type DualG  (PolarizedPair ap am)                       = (am,ap)
+  type LolliG (PolarizedPair ap am) (PolarizedPair bp bm) = (Either am bp , Either ap bm)
+                              -- expansion of 'PlusG (DualG (ap,am)) (bp,bm)'
 -- Morphisms in the G category
 
 newtype GM a b = 
