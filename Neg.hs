@@ -240,6 +240,35 @@ instance TD td => MD (:<=>) td where
     where loop w = eithr w (\z -> loop (c !@ (left z))) id
 
 -----------------------------------------------------------------------
+-- Some generic routines on Haskell types.  In many ways these are
+-- specialization of the ones above, but it is not worth unifying 
+-- all of that quite yet.
+swapEither :: (Either c d) -> (Either d c)
+swapEither (Left a)  = Right a
+swapEither (Right a) = Left a
+
+assocEitherLR :: Either a (Either b c) -> Either (Either a b) c
+assocEitherLR (Left a         ) = Left (Left a)
+assocEitherLR (Right (Left b) ) = Left (Right b)
+assocEitherLR (Right (Right c)) = Right c
+
+assocEitherRR :: Either (Either a b) c -> Either a (Either b c)
+assocEitherRR (Left (Left a)  ) = Left a
+assocEitherRR (Left (Right b) ) = Right (Left b)
+assocEitherRR (Right c        ) = Right (Right c)
+
+swapPair :: (a,b) -> (b,a)
+swapPair (a,b) = (b,a)
+
+distR :: (Either a b, c) -> Either (a,c) (b,c)
+distR (Left b,a)  = Left (b,a)
+distR (Right b,a) = Right (b,a)
+
+distL :: Either (a,c) (b,c) -> (Either a b, c)
+distL (Left (a,b))  = (Left a, b)
+distL (Right (a,b)) = (Right a, b)
+
+-----------------------------------------------------------------------
 -- Resumptions
 
 data R i o = R { r :: i -> (o, R i o), rr :: o -> (i, R o i) }
@@ -285,111 +314,42 @@ plusR (R f fr) (R g gr) = R {
   }                  
 
 lift1 :: (i -> o) -> (o -> i) -> (R i o , R o i)
-lift1 f g = let (ls, rs) = lift1 f g in -- left-self, right-self
-  (R { 
-  r  = \x -> (f x, ls) ,
-  rr = \x -> (g x, rs)
-  } , R {
-  r  = \x -> (g x, rs) ,
-  rr = \x -> (f x, ls)
-  } )
+lift1 f g = 
+  let (ls, rs) = lift1 f g  -- left-self, right-self
+      rf x  = (f x, ls)
+      rrg x = (g x, rs) in
+  (R rf rrg, R rrg rf)
 
 plusZeroLR :: R (Either Void a) a
 plusZeroRR :: R a (Either Void a) 
 (plusZeroLR, plusZeroRR) = lift1 (\(Right a) -> a) (Right)
 
 commutePlusR :: R (Either a b) (Either b a)
-commutePlusR = R f fr where
-  f (Left a) = (Right a , commutePlusR)
-  f (Right b) = (Left b  , commutePlusR)
-  fr (Left b) = (Right b , commutePlusR)
-  fr (Right a) = (Left a  , commutePlusR)
+commutePlusR = Prelude.fst (lift1 swapEither swapEither)
 
 assocPlusLR :: R (Either a (Either b c)) (Either (Either a b) c)
-assocPlusLR = R {
-  r = \v -> case v of 
-              Left a          -> (Left (Left a)  , assocPlusLR)
-              Right (Left b)  -> (Left (Right b) , assocPlusLR)
-              Right (Right c) -> (Right c        , assocPlusLR), 
-  rr = \v -> case v of 
-               Left (Left a)  -> (Left a          , assocPlusRR)
-               Left (Right b) -> (Right (Left b)  , assocPlusRR)
-               Right c        -> (Right (Right c) , assocPlusRR)
-  } 
-
 assocPlusRR :: R (Either (Either a b) c) (Either a (Either b c)) 
-assocPlusRR = R {
-  r = \v -> case v of 
-              Left (Left a)  -> (Left a          , assocPlusRR)
-              Left (Right b) -> (Right (Left b)  , assocPlusRR)
-              Right c        -> (Right (Right c) , assocPlusRR),
-  rr = \v -> case v of 
-              Left a          -> (Left (Left a)  , assocPlusLR)
-              Right (Left b)  -> (Left (Right b) , assocPlusLR)
-              Right (Right c) -> (Right c        , assocPlusLR)
-  }
+(assocPlusLR, assocPlusRR) = lift1 assocEitherLR assocEitherRR
 
 timesOneLR :: R ((),a) a
-timesOneLR = R {
-  r = \((),a) -> (a , timesOneLR), 
-  rr = \a -> (((),a) , timesOneRR)
-  }
-
 timesOneRR :: R a ((),a)
-timesOneRR = R {
-  r = \a -> (((),a) , timesOneRR),
-  rr = \((),a) -> (a , timesOneLR)
-  }
+(timesOneLR, timesOneRR) = lift1 (\((),a)->a) (\a->((),a))
 
 commuteTimesR :: R (a,b) (b,a)
-commuteTimesR = R {
-  r = \(a,b) -> ((b,a) , commuteTimesR),
-  rr = \(b,a) -> ((a,b) , commuteTimesR)
-  }
+commuteTimesR = Prelude.fst (lift1 swapPair swapPair)
 
 assocTimesLR :: R (a,(b,c)) ((a,b),c)
-assocTimesLR = R {
-  r = \(a,(b,c)) -> (((a,b),c) , assocTimesLR),
-  rr = \((a,b),c) -> ((a,(b,c)) , assocTimesRR)
-  } 
-
 assocTimesRR :: R ((a,b),c) (a,(b,c))
-assocTimesRR = R {
-  r = \((a,b),c) -> ((a,(b,c)) , assocTimesRR),
-  rr = \(a,(b,c)) -> (((a,b),c) , assocTimesLR)
-  } 
+(assocTimesLR, assocTimesRR) = lift1 (\(a,(b,c))->((a,b),c))
+                                     (\((a,b),c)->(a,(b,c)))
 
 timesZeroLR :: R (Void,a) Void
-timesZeroLR = R {
-  r = \_ -> abort,
-  rr = \_ -> abort
-  }
-
 timesZeroRR :: R Void (Void,a)
-timesZeroRR = R {
-  r = \_ -> abort,
-  rr = \_ -> abort
-  }
+(timesZeroLR, timesZeroRR) = lift1 (\_ -> abort) (\_ -> abort)
 
 distributeR :: R (Either b c , a) (Either (b,a) (c,a))
-distributeR = R {
-  r = \(v,a) -> case v of 
-                  Left b  -> (Left (b,a) , distributeR)
-                  Right c -> (Right (c,a) , distributeR),
-  rr = \v -> case v of 
-               Left (b,a)  -> ((Left b, a)  , factorR)
-               Right (c,a) -> ((Right c, a) , factorR)
-  }
-
 factorR :: R (Either (b,a) (c,a)) (Either b c , a)
-factorR = R {
-  r = \v -> case v of 
-               Left (b,a)  -> ((Left b, a)  , factorR)
-               Right (c,a) -> ((Right c, a) , factorR),
-  rr = \(v,a) -> case v of 
-                  Left b  -> (Left (b,a) , distributeR)
-                  Right c -> (Right (c,a) , distributeR)
-  }
+(distributeR, factorR) = lift1 distR distL
 
 traceR :: R (Either a b) (Either a c) -> R b c
 traceR f = R {
@@ -404,8 +364,8 @@ traceR f = R {
 
     loop2 :: R (Either a b) (Either a c) -> Either a c -> (b , R c b) 
     loop2 (R _ gr) v = case gr v of
-                         (Left a  , g') -> loop1 g' (Left a)
-                         (Right b , g') -> (b , traceR g')
+                         (Left a  , R x y) -> loop2 (R y x) (Left a)
+                         (Right b , g')    -> (b , traceR g')
 
 instance Equiv R where
   idIso        = idR
@@ -514,7 +474,7 @@ composeG (GM f) (GM g) = GM $ traceR h
        (plusR g idR) >>
     -- (Either (Either (Neg b) (Pos c)) (Neg a))
        assoc3
-    -- (Neither (Neg b) (Either (Neg a) (Pos c))
+    -- (Either (Neg b) (Either (Neg a) (Pos c))
     assoc1 = R { 
       r = \v -> case v of 
                   Left nb -> (Left (Right nb) , assoc1)
