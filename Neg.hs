@@ -1,5 +1,6 @@
 {-# LANGUAGE GADTs, TypeOperators, DataKinds, RankNTypes #-}
 {-# LANGUAGE TypeFamilies, MultiParamTypeClasses, FlexibleInstances #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# OPTIONS -Wall #-}
 
 module Neg where
@@ -445,6 +446,7 @@ instance GT (PolarizedPair ap am) where
                               -- expansion of 'PlusG (DualG (ap,am)) (bp,bm)'
 -- Morphisms in the G category
 
+-- This is "the same" as PlusG a b, expanded out and uncurried
 newtype GM a b = 
   GM { rg :: R (Either (Pos a) (Neg b)) (Either (Neg a) (Pos b)) } 
 
@@ -459,10 +461,15 @@ symG (GM f) = GM h where
   h = commutePlusR >> symR f >> commutePlusR
       
 
-composeG :: GM a b -> GM b c -> GM a c
+composeG :: forall a b c. GM a b -> GM b c -> GM a c
 composeG (GM f) (GM g) = GM $ traceR h 
   where 
     (>>) = composeR
+    assoc1 = (assocPlusLR >> (commutePlusR `plusR` idR))
+    assoc2 = (commutePlusR `plusR` idR) >> assocPlusRR >>
+             (idR `plusR` commutePlusR) >> assocPlusLR
+    assoc3 = assocPlusRR >> (idR `plusR` commutePlusR)
+    h :: R (Either (Neg b) (Either (Pos a) (Neg c))) (Either (Neg b) (Either (Neg a) (Pos c)))
     h = 
     -- (Either (Neg b) (Either (Pos a) (Neg c))
        assoc1 >>
@@ -475,67 +482,6 @@ composeG (GM f) (GM g) = GM $ traceR h
     -- (Either (Either (Neg b) (Pos c)) (Neg a))
        assoc3
     -- (Either (Neg b) (Either (Neg a) (Pos c))
-    assoc1 = R { 
-      r = \v -> case v of 
-                  Left nb -> (Left (Right nb) , assoc1)
-                  Right (Left pa) -> (Left (Left pa) , assoc1)
-                  Right (Right nc) -> (Right nc , assoc1), 
-      rr = \v -> case v of 
-                   Left (Right nb) -> (Left nb , assoc1R)
-                   Left (Left pa) -> (Right (Left pa) , assoc1R)
-                   Right nc -> (Right (Right nc) , assoc1R)
-      }
-    assoc1R = R { 
-      r = \v -> case v of 
-                   Left (Right nb) -> (Left nb , assoc1R)
-                   Left (Left pa) -> (Right (Left pa) , assoc1R)
-                   Right nc -> (Right (Right nc) , assoc1R),
-      rr = \v -> case v of 
-                  Left nb -> (Left (Right nb) , assoc1)
-                  Right (Left pa) -> (Left (Left pa) , assoc1)
-                  Right (Right nc) -> (Right nc , assoc1)
-      }
-    assoc2 = R {
-      r = \v -> case v of 
-                  Left (Left na) -> (Right na , assoc2)
-                  Left (Right pb) -> (Left (Left pb) , assoc2)
-                  Right nc -> (Left (Right nc) , assoc2), 
-      rr = \v -> case v of 
-                  Right na -> (Left (Left na) , assoc2R)
-                  Left (Left pb) -> (Left (Right pb) , assoc2R)
-                  Left (Right nc) -> (Right nc , assoc2R)
-      }
-    assoc2R = R {
-      r = \v -> case v of 
-                  Right na -> (Left (Left na) , assoc2R)
-                  Left (Left pb) -> (Left (Right pb) , assoc2R)
-                  Left (Right nc) -> (Right nc , assoc2R),
-      rr = \v -> case v of 
-                  Left (Left na) -> (Right na , assoc2)
-                  Left (Right pb) -> (Left (Left pb) , assoc2)
-                  Right nc -> (Left (Right nc) , assoc2)
-      }
-
-    assoc3 = R {
-      r = \v -> case v of 
-                  Left (Left nb) -> (Left nb , assoc3)
-                  Left (Right pc) -> (Right (Right pc) , assoc3)
-                  Right na -> (Right (Left na) , assoc3), 
-      rr = \v -> case v of 
-                  Left nb -> (Left (Left nb) , assoc3R)
-                  Right (Right pc) -> (Left (Right pc) , assoc3R)
-                  Right (Left na) -> (Right na , assoc3R)
-      }
-    assoc3R = R {
-      r = \v -> case v of 
-                  Left nb -> (Left (Left nb) , assoc3R)
-                  Right (Right pc) -> (Left (Right pc) , assoc3R)
-                  Right (Left na) -> (Right na , assoc3R),
-      rr = \v -> case v of 
-                  Left (Left nb) -> (Left nb , assoc3)
-                  Left (Right pc) -> (Right (Right pc) , assoc3)
-                  Right na -> (Right (Left na) , assoc3)
-      }
 
 timesG :: GM a b -> GM c d -> GM (TimesG a c) (TimesG b c)
 timesG (GM f) (GM g) = GM h
@@ -547,7 +493,6 @@ timesG (GM f) (GM g) = GM h
 {--
 newtype GM a b = 
   GM { rg :: R (Either (Pos a) (Neg b)) (Either (Neg a) (Pos b)) } 
-
 
 
 Multiplication of conway games: interpret left as Pos and right as Neg
