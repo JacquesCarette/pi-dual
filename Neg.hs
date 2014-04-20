@@ -275,7 +275,7 @@ distL (Right (a,b)) = (Right a, b)
 data R i o = R { r :: i -> (o, R i o), rr :: o -> (i, R o i) }
 
 idR :: R a a 
-idR = R f f where f a = (a, idR)
+idR = Prelude.fst (lift1 id id)
 
 symR :: R a b -> R b a
 symR (R f fr) = R fr f
@@ -411,8 +411,6 @@ class GT p where
   type DualG p    :: *  -- as a bonus we get DualG (unary negation) and
   type LolliG p q :: *  -- linear functions
 
-data Pair a b = P a b
-
 -- use this to make a syntactic difference between a product and a pair which
 -- denotes the positive/negative parts of a *sum*.
 data PolarizedPair a b = PP a b
@@ -420,16 +418,15 @@ data PolarizedPair a b = PP a b
 instance GT (PolarizedPair ap am) where
   type Pos    (PolarizedPair ap am)                       = ap
   type Neg    (PolarizedPair ap am)                       = am
-  type ZeroG                                              = (Void,Void)
+  type ZeroG                                              = PolarizedPair Void Void
   type OneG                                               = PolarizedPair () ()
-  type PlusG  (PolarizedPair ap am) (PolarizedPair bp bm) = (Either ap bp , Either am bm)
-  type DualG  (PolarizedPair ap am)                       = (am,ap)
-  type LolliG (PolarizedPair ap am) (PolarizedPair bp bm) = (Either am bp , Either ap bm)
-  -- the obvious definition: 
-  -- (Either (Pair ap bp) (Pair am bm), Either (Pair am bp) (Pair ap bm))
-  -- does not work [JC: ?????]
-  -- type TimesG (PolarizedPair ap am) (PolarizedPair bp bm) = 
-  --   (Either (Pair ap bp) (Pair am bm), Either (Pair am bp) (Pair ap bm))
+  type PlusG  (PolarizedPair ap am) (PolarizedPair bp bm) = PolarizedPair (Either ap bp) (Either am bm)
+  type DualG  (PolarizedPair ap am)                       = PolarizedPair am ap
+  type LolliG (PolarizedPair ap am) (PolarizedPair bp bm) = PolarizedPair (Either am bp) (Either ap bm)
+  -- re-used (,) for product
+  type TimesG (PolarizedPair ap am) (PolarizedPair bp bm) = 
+    (Either (ap,bp) (am,bm), Either (am,bp) (ap,bm))
+  {-
   type TimesG (PolarizedPair ap am) (PolarizedPair bp bm) = 
     (Either (ap,(bp,bm))
      (Either ((ap,bp),bp)
@@ -442,7 +439,7 @@ instance GT (PolarizedPair ap am) where
        (Either (bm,ap)
         (Either (am,(bp,bm))
          (Either ((ap,am),bp)
-          (bp,am))))))
+          (bp,am)))))) -}
                               -- expansion of 'PlusG (DualG (ap,am)) (bp,bm)'
 -- Morphisms in the G category
 
@@ -482,6 +479,29 @@ composeG (GM f) (GM g) = GM $ traceR h
     -- (Either (Either (Neg b) (Pos c)) (Neg a))
        assoc3
     -- (Either (Neg b) (Either (Neg a) (Pos c))
+
+plusG :: (a ~ PolarizedPair ap am,
+          b ~ PolarizedPair bp bm,
+          c ~ PolarizedPair cp cm,
+          d ~ PolarizedPair dp dm) =>
+    GM a b -> GM c d -> GM (PlusG a c) (PlusG b d)
+plusG (GM f) (GM g) = GM h
+  where
+    (>>) = composeR
+    h = 
+    -- Either (Either ap cp) (Either bm dm)
+       assoc1 >>
+    -- Either (Either ap bm) (Either cp dm)
+       plusR f g >>
+    -- Either (Either am bp) (Either cm dp)
+       assoc2 
+    -- Either (Either am cm) (Either bp dp)
+    assoc1 :: R (Either (Either ap cp) (Either bm dm)) (Either (Either ap bm) (Either cp dm))
+    assoc1 = assocPlusRR >> (idR `plusR` 
+                 (assocPlusLR >> (commutePlusR `plusR` idR) >> assocPlusRR)) >> 
+             assocPlusLR
+    assoc2 :: R (Either (Either am bp) (Either cm dp)) (Either (Either am cm) (Either bp dp))
+    assoc2 = undefined
 
 timesG :: GM a b -> GM c d -> GM (TimesG a c) (TimesG b c)
 timesG (GM f) (GM g) = GM h
@@ -583,33 +603,6 @@ Look again at the definition in the book and its justification...
 
 
 {--
-
-plusG :: (Neg (PlusG b d) ~ Either (Neg b) (Neg d),
-          Neg (PlusG a c) ~ Either (Neg a) (Neg c),
-          Pos (PlusG a c) ~ Either (Pos a) (Pos c),
-          Pos (PlusG b d) ~ Either (Pos b) (Pos d)) =>
-         GM a b -> GM c d -> GM (PlusG a c) (PlusG b d)
-plusG (GM f) (GM g) = GM h
-  where
-    (>>) = composeR
-    h = 
-    -- Either (Either ap cp) (Either bm dm)
-       assoc1 >>
-    -- Either (Either ap bm) (Either cp dm)
-       plusR f g >>
-    -- Either (Either am bp) (Either cm dp)
-       assoc2 
-    -- Either (Either am cm) (Either bp dp)
-    assoc1 = R $ \v -> case v of 
-      Left (Left ap) -> (Left (Left ap) , assoc1)
-      Left (Right cp) -> (Right (Left cp) , assoc1)
-      Right (Left bm) -> (Left (Right bm) , assoc1)
-      Right (Right dm) -> (Right (Right dm) , assoc1)
-    assoc2 = R $ \v -> case v of 
-      Left (Left am) -> (Left (Left am) , assoc2)
-      Left (Right bp) -> (Right (Left bp) , assoc2)
-      Right (Left cm) -> (Left (Right cm) , assoc2)
-      Right (Right dp) -> (Right (Right dp) , assoc2)
 
 -- If we instantiate the abstract G types to pairs, the contraints are
 -- automatically satisfied.
