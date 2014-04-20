@@ -494,14 +494,12 @@ plusG (GM f) (GM g) = GM h
     -- Either (Either ap bm) (Either cp dm)
        plusR f g >>
     -- Either (Either am bp) (Either cm dp)
-       assoc2 
+       assoc1 
     -- Either (Either am cm) (Either bp dp)
     assoc1 :: R (Either (Either ap cp) (Either bm dm)) (Either (Either ap bm) (Either cp dm))
     assoc1 = assocPlusRR >> (idR `plusR` 
                  (assocPlusLR >> (commutePlusR `plusR` idR) >> assocPlusRR)) >> 
              assocPlusLR
-    assoc2 :: R (Either (Either am bp) (Either cm dp)) (Either (Either am cm) (Either bp dp))
-    assoc2 = undefined
 
 timesG :: GM a b -> GM c d -> GM (TimesG a c) (TimesG b c)
 timesG (GM f) (GM g) = GM h
