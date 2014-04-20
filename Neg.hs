@@ -508,6 +508,14 @@ timesG (GM f) (GM g) = GM h
 
         -- Either (Neg (TimesG a c)) (Pos (TimesG b c))
 
+dualG :: (Pos (DualG a) ~ Neg a, Pos (DualG b) ~ Neg b,
+          Neg (DualG a) ~ Pos a, Neg (DualG b) ~ Pos b) =>
+  GM a b -> GM (DualG b) (DualG a)
+dualG (GM (R f g)) = GM (dual f g) 
+  where dual h i = Prelude.fst 
+         (lift1 (swapEither . Prelude.fst . h . swapEither)
+                (swapEither . Prelude.fst . i . swapEither))
+
 {--
 newtype GM a b = 
   GM { rg :: R (Either (Pos a) (Neg b)) (Either (Neg a) (Pos b)) } 
@@ -653,16 +661,6 @@ factorG = undefined
 traceG :: GM (PlusG a b) (PlusG a c) -> GM b c
 traceG = undefined
 
-dualG :: (Pos (DualG a) ~ Neg a, Pos (DualG b) ~ Neg b, 
-          Neg (DualG a) ~ Pos a, Neg (DualG b) ~ Pos b) => 
-         GM a b -> GM (DualG b) (DualG a)
-dualG (GM (R f)) = GM (dual f) 
-  where dual h = R $ \v -> 
-                 let (v',_) = h (swap v)
-                 in (swap v', dual h)
-        swap (Left a) = Right a
-        swap (Right a) = Left a
-                            
 curryG :: (Pos (PlusG a b) ~ Either (Pos a) (Pos b),
            Neg (PlusG a b) ~ Either (Neg a) (Neg b),
            Pos (LolliG b c) ~ Either (Neg b) (Pos c),
