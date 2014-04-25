@@ -419,14 +419,15 @@ instance GT (PolarizedPair ap am) where
   type Pos    (PolarizedPair ap am)                       = ap
   type Neg    (PolarizedPair ap am)                       = am
   type ZeroG                                              = PolarizedPair Void Void
-  type OneG                                               = PolarizedPair () ()
+  type OneG                                               = PolarizedPair () Void
   type PlusG  (PolarizedPair ap am) (PolarizedPair bp bm) = PolarizedPair (Either ap bp) (Either am bm)
   type DualG  (PolarizedPair ap am)                       = PolarizedPair am ap
   type LolliG (PolarizedPair ap am) (PolarizedPair bp bm) = PolarizedPair (Either am bp) (Either ap bm)
+  -- expansion of 'PlusG (DualG (ap,am)) (bp,bm)'
   -- re-used (,) for product
   type TimesG (PolarizedPair ap am) (PolarizedPair bp bm) = 
-    (Either (ap,bp) (am,bm), Either (am,bp) (ap,bm))
-  {-
+    PolarizedPair (Either (ap,bp) (am,bm)) (Either (am,bp) (ap,bm))
+{--
   type TimesG (PolarizedPair ap am) (PolarizedPair bp bm) = 
     (Either (ap,(bp,bm))
      (Either ((ap,bp),bp)
@@ -439,8 +440,9 @@ instance GT (PolarizedPair ap am) where
        (Either (bm,ap)
         (Either (am,(bp,bm))
          (Either ((ap,am),bp)
-          (bp,am)))))) -}
-                              -- expansion of 'PlusG (DualG (ap,am)) (bp,bm)'
+          (bp,am)))))) 
+--}
+                              
 -- Morphisms in the G category
 
 -- This is "the same" as PlusG a b, expanded out and uncurried
@@ -478,7 +480,7 @@ composeG (GM f) (GM g) = GM $ traceR h
        (plusR g idR) >>
     -- (Either (Either (Neg b) (Pos c)) (Neg a))
        assoc3
-    -- (Either (Neg b) (Either (Neg a) (Pos c))
+    -- (Either (Neg b) (Either (Neg a) (Pos c)))
 
 plusG :: (a ~ PolarizedPair ap am,
           b ~ PolarizedPair bp bm,
@@ -501,13 +503,6 @@ plusG (GM f) (GM g) = GM h
                  (assocPlusLR >> (commutePlusR `plusR` idR) >> assocPlusRR)) >> 
              assocPlusLR
 
-timesG :: GM a b -> GM c d -> GM (TimesG a c) (TimesG b c)
-timesG (GM f) (GM g) = GM h
-  where h = undefined
-        -- Either (Pos (TimesG a c)) (Neg (TimesG b c))
-
-        -- Either (Neg (TimesG a c)) (Pos (TimesG b c))
-
 dualG :: (Pos (DualG a) ~ Neg a, Pos (DualG b) ~ Neg b,
           Neg (DualG a) ~ Pos a, Neg (DualG b) ~ Pos b) =>
   GM a b -> GM (DualG b) (DualG a)
@@ -516,7 +511,37 @@ dualG (GM (R f g)) = GM (dual f g)
          (lift1 (swapEither . Prelude.fst . h . swapEither)
                 (swapEither . Prelude.fst . i . swapEither))
 
+timesG :: (Pos (TimesG a c) ~ Either (Pos a,Pos c) (Neg a,Neg c),
+           Pos (TimesG b d) ~ Either (Pos b,Pos d) (Neg b,Neg d),
+           Neg (TimesG b d) ~ Either (Neg b,Pos d) (Pos b,Neg d)) =>
+          GM a b -> GM c d -> GM (TimesG a c) (TimesG b d)
+timesG (GM (R f f')) (GM (R g g')) = GM (traceR h)
+  -- have f  :: (Either ap bm) <-> (Either am bp)  ::  f'
+  --      g  :: (Either cp dm) <-> (Either cm dp)  ::  g'
+  --
+  -- traceR h :: X -> Y
+  -- where X = Either (Either (ap,cp) (am,cm)) (Either (bm,dp) (bp,dm))
+  --       Y = Either (Either (am,cp) (ap,cm)) (Either (bp,dp) (bm,dm))
+  where h = R { r = rh, rr = rrh }
+        -- r :: (intermediate + X) -> (intermediate + Y , R...)
+        -- rr :: (intermediate + Y) -> (intermediate + X , R...)
+        rh (Right (Left (Left (ap,cp)))) = 
+          case (f (Left ap) , g (Left cp)) of 
+            ((Left am,fR) , (Left cm,gR)) -> 
+              let (res,_) = rh (Right (Left (Right (am,cm))))
+              in (res,undefined)
+            ((Left am,fR) , (Right dp,gR)) -> undefined
+            ((Right bp,fR) , (Left cm,gR)) -> undefined
+            ((Right bp,fR) , (Right dp,gR)) -> 
+                (Right (Right (Left (bp,dp))), undefined)
+        rh (Right (Left (Right (am,cm)))) = undefined
+        rh (Right (Right (Left (bm,dp)))) = undefined
+        rh (Right (Right (Right (bp,dm)))) = undefined
+        rh (Left _) = undefined
+        rrh = undefined
+
 {--
+data R i o = R { r :: i -> (o, R i o), rr :: o -> (i, R o i) }
 newtype GM a b = 
   GM { rg :: R (Either (Pos a) (Neg b)) (Either (Neg a) (Pos b)) } 
 
