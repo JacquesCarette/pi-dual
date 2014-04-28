@@ -1,3 +1,5 @@
+{-# OPTIONS --allow-unsolved-metas #-}
+
 {- This is a copy of Sane, but building upon a rather different notion of permutation -}
 module Sane2 where
 
@@ -39,6 +41,68 @@ open import CombPerm
 combToPerm : {n : ℕ} → (fromℕ n ⇛ fromℕ n) → Permutation n
 combToPerm {zero} c = []
 combToPerm {suc n} c = valToFin (evalComb c (inj₁ tt)) ∷ {!!}
+
+-- This is just nasty, prove it 'directly'
+key-lemma : {n : ℕ} (i : F.Fin (suc n)) (j : F.Fin (suc (suc n))) → 
+      (lookup
+       (lookup
+        (lookup j
+         (F.inject₁ i ∷ remove (F.inject₁ i) (tabulate id)))
+        (insert
+         (remove (F.inject₁ i) (tabulate id))
+         (F.suc i) (F.inject₁ i)))
+       (insert (tabulate F.suc)
+        (F.inject₁ i) F.zero))
+      ≡
+       (F.suc i ∷ insert (remove i (tabulate F.suc)) i F.zero) !! j
+key-lemma {zero} F.zero F.zero = refl
+key-lemma {zero} F.zero (F.suc F.zero) = refl
+key-lemma {zero} F.zero (F.suc (F.suc ()))
+key-lemma {zero} (F.suc ()) j
+key-lemma {suc n} F.zero F.zero = refl
+key-lemma {suc n} F.zero (F.suc j) = 
+  begin
+    lookup (lookup (lookup j (tabulate F.suc)) swap01vec) (tabulate id)
+      ≡⟨ lookupTab {f = id} (lookup (lookup j (tabulate F.suc)) swap01vec) ⟩
+    lookup (lookup j (tabulate F.suc)) swap01vec
+      ≡⟨ cong (λ z → lookup z swap01vec) (lookupTab {f = F.suc} j) ⟩
+    lookup (F.suc j) swap01vec
+      ≡⟨ refl ⟩
+     lookup j (F.zero ∷ tabulate (F.suc ○ F.suc))
+  ∎
+key-lemma {suc n} (F.suc i) F.zero = 
+  begin
+    lookup
+      (lookup (F.inject₁ i)
+       (insert (remove (F.inject₁ i) (tabulate F.suc)) (F.suc i) (F.suc (F.inject₁ i))))
+      (F.suc F.zero ∷
+       insert (tabulate (F.suc ○ F.suc)) (F.inject₁ i) F.zero)
+      ≡⟨ cong (λ z → lookup z (F.suc F.zero ∷ insert (tabulate (F.suc ○ F.suc)) (F.inject₁ i) F.zero)) (lookup+1-insert-remove i (tabulate F.suc)) ⟩
+    lookup (lookup (F.suc i) (tabulate F.suc)) (F.suc F.zero ∷ insert (tabulate (F.suc ○ F.suc)) (F.inject₁ i) F.zero)
+      ≡⟨ cong (λ z → lookup z  (F.suc F.zero ∷ insert (tabulate (F.suc ○ F.suc)) (F.inject₁ i) F.zero)) (lookupTab {f = F.suc} (F.suc i)) ⟩
+   lookup (F.suc (F.suc i))  (F.suc F.zero ∷ insert (tabulate (F.suc ○ F.suc)) (F.inject₁ i) F.zero)
+      ≡⟨ refl ⟩
+   lookup (F.suc i)  (insert (tabulate (F.suc ○ F.suc)) (F.inject₁ i) F.zero)
+      ≡⟨ sym (lookup-insert3 i (tabulate (F.suc ○ F.suc))) ⟩
+   lookup i (tabulate (F.suc ○ F.suc))
+      ≡⟨ lookupTab {f = F.suc ○ F.suc} i ⟩
+    F.suc (F.suc i)
+  ∎
+key-lemma {suc n} (F.suc i) (F.suc F.zero) = refl
+key-lemma {suc n} (F.suc i) (F.suc (F.suc j)) = 
+  begin
+     (lookup
+       (lookup
+        (lookup (F.suc j)
+         (remove (F.inject₁ (F.suc i)) (tabulate id)))
+        (insert
+         (remove (F.inject₁ (F.suc i)) (tabulate id))
+         (F.suc (F.suc i)) (F.inject₁ (F.suc i))))
+       (insert (tabulate F.suc)
+        (F.inject₁ (F.suc i)) F.zero))
+        ≡⟨ {!!} ⟩
+    (insert (remove (F.suc i) (tabulate F.suc)) (F.suc i) F.zero) !! (F.suc j)
+  ∎
 
 --------------------------------------------------------------------------------------------------------------
 
@@ -262,7 +326,23 @@ swapmCorrect {suc (suc n)} (F.suc i) j = -- requires the breakdown of swapm ?
        (insert (tabulate F.suc) (F.inject₁ i) F.zero !!
          (insert (remove (F.inject₁ i) (tabulate id)) (F.suc i) (F.inject₁ i) !!
            ( (((tabulate id) !! (F.inject₁ i)) ∷ (remove (F.inject₁ i) (tabulate id))) !! j)))
-      ≡⟨ {!!} ⟩
+      ≡⟨ cong (λ z →     finToVal
+       (insert (tabulate F.suc) (F.inject₁ i) F.zero !!
+         (insert (remove (F.inject₁ i) (tabulate id)) (F.suc i) (F.inject₁ i) !!
+           ( (z ∷ (remove (F.inject₁ i) (tabulate id))) !! j)))) (lookupTab {f = id} (F.inject₁ i)) ⟩
+    finToVal
+      (insert (tabulate F.suc) (F.inject₁ i) F.zero !!
+         (insert (remove (F.inject₁ i) (tabulate id)) (F.suc i) (F.inject₁ i) !!
+           ( ((F.inject₁ i) ∷ (remove (F.inject₁ i) (tabulate id))) !! j)))
+      ≡⟨ cong finToVal (key-lemma i j) ⟩
+    finToVal ( ((F.suc i) ∷ (insert (remove i (tabulate F.suc)) i F.zero)) !! j)
+      ≡⟨ cong (λ z → finToVal ((z ∷  (insert (remove i (tabulate F.suc)) i F.zero)) !! j)) (sym (lookupTab {f = F.suc} i)) ⟩
+    finToVal ( (((tabulate F.suc) !! i) ∷ (insert (remove i (tabulate F.suc)) i F.zero)) !! j)
+      ≡⟨ refl ⟩ 
+    finToVal (swapmVec (F.suc i) (tabulate id) !! j)
+      ≡⟨ cong (λ z → finToVal (z !! j)) (sym (swapmAct (F.suc i) (tabulate id))) ⟩
+    finToVal (permute (swapmPerm (F.suc i)) (tabulate id) !! j)
+      ≡⟨ refl ⟩  
     finToVal (evalPerm (swapmPerm (F.suc i)) j) ∎
 
 lemma1 : {n : ℕ} (p : Permutation n) → (i : F.Fin n) → 
@@ -280,6 +360,7 @@ lemma1 {suc (suc n)} (F.zero ∷ p) (F.suc i) = begin
       finToVal (evalPerm (F.zero ∷ p) (F.suc i)) ∎
 lemma1 {suc n} (F.suc j ∷ p) i = {!!} -- needs all the previous ones first.
 
+{-  This is cleaner as a proof, but is not headed the right way as the cases are not the 'right' ones
 swapmCorrect2 : {n : ℕ} → (i j : F.Fin n) → evalComb (swapm i) (finToVal j) ≡ finToVal (evalPerm (swapmPerm i) j)
 swapmCorrect2 {zero} () _
 swapmCorrect2 {suc zero} F.zero F.zero = refl
@@ -349,7 +430,7 @@ swapmCorrect2 {suc (suc n)} (F.suc F.zero) (F.suc j) =
     finToVal (permute (F.suc F.zero ∷ idP) (tabulate id) !! (F.suc j))
   ∎
 swapmCorrect2 {suc (suc n)} (F.suc (F.suc i)) (F.suc j) = {!!}
-
+-}
 {-
 -- this alternate version of lemma1 might, in the long term, but a better
 -- way to go?
