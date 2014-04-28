@@ -411,41 +411,23 @@ class GT p where
   type DualG p    :: *  -- as a bonus we get DualG (unary negation) and
   type LolliG p q :: *  -- linear functions
 
--- use this to make a syntactic difference between a product and a pair which
--- denotes the positive/negative parts of a *sum*.
-data PolarizedPair a b = PP a b
+-- think of a :- b as "a-b"
+data a :- b = a :- b
 
-instance GT (PolarizedPair ap am) where
-  type Pos    (PolarizedPair ap am)                       = ap
-  type Neg    (PolarizedPair ap am)                       = am
-  type ZeroG                                              = PolarizedPair Void Void
-  type OneG                                               = PolarizedPair () Void
-  type PlusG  (PolarizedPair ap am) (PolarizedPair bp bm) = PolarizedPair (Either ap bp) (Either am bm)
-  type DualG  (PolarizedPair ap am)                       = PolarizedPair am ap
-  type LolliG (PolarizedPair ap am) (PolarizedPair bp bm) = PolarizedPair (Either am bp) (Either ap bm)
+instance GT (ap :- am) where
+  type Pos (ap :- am) = ap
+  type Neg (ap :- am) = am
+  type ZeroG = Void :- Void
+  type OneG = () :- Void
+  type PlusG  (ap :- am) (bp :- bm) = (Either ap bp) :- (Either am bm)
+  type TimesG (ap :- am) (bp :- bm) = 
+    (Either (ap,bp) (am,bm)) :- (Either (am,bp) (ap,bm))
+  type DualG  (ap :- am) = am :- ap
+  type LolliG (ap :- am) (bp :- bm) = (Either am bp) :- (Either ap bm)
   -- expansion of 'PlusG (DualG (ap,am)) (bp,bm)'
-  -- re-used (,) for product
-  type TimesG (PolarizedPair ap am) (PolarizedPair bp bm) = 
-    PolarizedPair (Either (ap,bp) (am,bm)) (Either (am,bp) (ap,bm))
-{--
-  type TimesG (PolarizedPair ap am) (PolarizedPair bp bm) = 
-    (Either (ap,(bp,bm))
-     (Either ((ap,bp),bp)
-      (Either (bp,ap)
-       (Either (am,(bp,bm))
-        (Either ((ap,am),bm) 
-         (bm,am))))),
-     Either (ap,(bp,bm))
-      (Either ((ap,am),bm)
-       (Either (bm,ap)
-        (Either (am,(bp,bm))
-         (Either ((ap,am),bp)
-          (bp,am)))))) 
---}
                               
 -- Morphisms in the G category
 
--- This is "the same" as PlusG a b, expanded out and uncurried
 newtype GM a b = 
   GM { rg :: R (Either (Pos a) (Neg b)) (Either (Neg a) (Pos b)) } 
 
@@ -459,7 +441,6 @@ symG (GM f) = GM h where
   (>>) = composeR
   h = commutePlusR >> symR f >> commutePlusR
       
-
 composeG :: forall a b c. GM a b -> GM b c -> GM a c
 composeG (GM f) (GM g) = GM $ traceR h 
   where 
@@ -468,7 +449,8 @@ composeG (GM f) (GM g) = GM $ traceR h
     assoc2 = (commutePlusR `plusR` idR) >> assocPlusRR >>
              (idR `plusR` commutePlusR) >> assocPlusLR
     assoc3 = assocPlusRR >> (idR `plusR` commutePlusR)
-    h :: R (Either (Neg b) (Either (Pos a) (Neg c))) (Either (Neg b) (Either (Neg a) (Pos c)))
+    h :: R (Either (Neg b) (Either (Pos a) (Neg c))) 
+           (Either (Neg b) (Either (Neg a) (Pos c)))
     h = 
     -- (Either (Neg b) (Either (Pos a) (Neg c))
        assoc1 >>
@@ -482,11 +464,8 @@ composeG (GM f) (GM g) = GM $ traceR h
        assoc3
     -- (Either (Neg b) (Either (Neg a) (Pos c)))
 
-plusG :: (a ~ PolarizedPair ap am,
-          b ~ PolarizedPair bp bm,
-          c ~ PolarizedPair cp cm,
-          d ~ PolarizedPair dp dm) =>
-    GM a b -> GM c d -> GM (PlusG a c) (PlusG b d)
+plusG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm), d ~ (dp :- dm)) =>
+         GM a b -> GM c d -> GM (PlusG a c) (PlusG b d)
 plusG (GM f) (GM g) = GM h
   where
     (>>) = composeR
@@ -498,9 +477,11 @@ plusG (GM f) (GM g) = GM h
     -- Either (Either am bp) (Either cm dp)
        assoc1 
     -- Either (Either am cm) (Either bp dp)
-    assoc1 :: R (Either (Either ap cp) (Either bm dm)) (Either (Either ap bm) (Either cp dm))
-    assoc1 = assocPlusRR >> (idR `plusR` 
-                 (assocPlusLR >> (commutePlusR `plusR` idR) >> assocPlusRR)) >> 
+    assoc1 :: R (Either (Either ap cp) (Either bm dm)) 
+                (Either (Either ap bm) (Either cp dm))
+    assoc1 = assocPlusRR >> 
+             (idR `plusR` 
+              (assocPlusLR >> (commutePlusR `plusR` idR) >> assocPlusRR)) >> 
              assocPlusLR
 
 dualG :: (Pos (DualG a) ~ Neg a, Pos (DualG b) ~ Neg b,
