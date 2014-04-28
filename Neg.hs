@@ -3,6 +3,14 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# OPTIONS -Wall #-}
 
+{--
+Neel's post:
+http://semantic-domain.blogspot.com/2012/11/in-this-post-ill-show-how-to-turn.html
+
+See also: 
+http://www.kurims.kyoto-u.ac.jp/~hassei/papers/tmcc.pdf
+--}
+
 module Neg where
 
 import qualified Prelude
@@ -11,6 +19,7 @@ import Prelude (Either(..), undefined, error, ($), (.), id)
 -----------------------------------------------------------------------
 -- Some very abstract kit that will allow lots of different instances
 -- First, the two normal monoidal structures
+
 type family Zero (rep :: * -> *) :: *
 type family Prod (rep :: * -> *) :: * -> * -> *
 
@@ -68,12 +77,15 @@ class (TD rep) => MulMonoid iso rep where
   assocTimesR :: iso (Prod rep (Prod rep a b) c) (Prod rep a (Prod rep b c))
 
 -- and now put them together.
-class (TD rep, Equiv iso, AddMonoid iso rep, MulMonoid iso rep) => Pi iso rep where 
+class (TD rep, Equiv iso, AddMonoid iso rep, MulMonoid iso rep) => 
+    Pi iso rep where 
 -- (*) distributes over (+) 
   timesZeroL  :: iso (Prod rep (Zero rep) a) (Zero rep)
   timesZeroR  :: iso (Zero rep) (Prod rep (Zero rep) a)
-  distribute  :: iso (Prod rep (Sum rep b c) a) (Sum rep (Prod rep b a) (Prod rep c a))
-  factor      :: iso (Sum rep (Prod rep b a) (Prod rep c a)) (Prod rep (Sum rep b c) a)
+  distribute  :: iso (Prod rep (Sum rep b c) a) 
+                     (Sum rep (Prod rep b a) (Prod rep c a))
+  factor      :: iso (Sum rep (Prod rep b a) (Prod rep c a)) 
+                     (Prod rep (Sum rep b c) a)
 -- Trace operators for looping/recursion
   trace       :: iso (Sum rep a b) (Sum rep a c) -> iso b c
 
@@ -244,6 +256,7 @@ instance TD td => MD (:<=>) td where
 -- Some generic routines on Haskell types.  In many ways these are
 -- specialization of the ones above, but it is not worth unifying 
 -- all of that quite yet.
+
 swapEither :: (Either c d) -> (Either d c)
 swapEither (Left a)  = Right a
 swapEither (Right a) = Left a
@@ -484,21 +497,13 @@ plusG (GM f) (GM g) = GM h
               (assocPlusLR >> (commutePlusR `plusR` idR) >> assocPlusRR)) >> 
              assocPlusLR
 
-dualG :: (Pos (DualG a) ~ Neg a, Pos (DualG b) ~ Neg b,
-          Neg (DualG a) ~ Pos a, Neg (DualG b) ~ Pos b) =>
-  GM a b -> GM (DualG b) (DualG a)
-dualG (GM (R f g)) = GM (dual f g) 
-  where dual h i = Prelude.fst 
-         (lift1 (swapEither . Prelude.fst . h . swapEither)
-                (swapEither . Prelude.fst . i . swapEither))
-
-timesG :: (Pos (TimesG a c) ~ Either (Pos a,Pos c) (Neg a,Neg c),
-           Pos (TimesG b d) ~ Either (Pos b,Pos d) (Neg b,Neg d),
-           Neg (TimesG b d) ~ Either (Neg b,Pos d) (Pos b,Neg d)) =>
+timesG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm), d ~ (dp :- dm)) =>
           GM a b -> GM c d -> GM (TimesG a c) (TimesG b d)
 timesG (GM (R f f')) (GM (R g g')) = GM (traceR h)
-  -- have f  :: (Either ap bm) <-> (Either am bp)  ::  f'
-  --      g  :: (Either cp dm) <-> (Either cm dp)  ::  g'
+  -- have f  :: (Either ap bm) <-> (Either am bp , R)  
+  --      f' :: (Either am bp) <-> (Either ap bm , R)  
+  --      g  :: (Either cp dm) <-> (Either cm dp , R)  
+  --      g' :: (Either cm dp) <-> (Either cp dm , R)  
   --
   -- traceR h :: X -> Y
   -- where X = Either (Either (ap,cp) (am,cm)) (Either (bm,dp) (bp,dm))
@@ -521,158 +526,70 @@ timesG (GM (R f f')) (GM (R g g')) = GM (traceR h)
         rh (Left _) = undefined
         rrh = undefined
 
-{--
-data R i o = R { r :: i -> (o, R i o), rr :: o -> (i, R o i) }
-newtype GM a b = 
-  GM { rg :: R (Either (Pos a) (Neg b)) (Either (Neg a) (Pos b)) } 
+plusZeroLG :: (a ~ (ap :- am)) => GM (PlusG ZeroG a) a
+plusZeroLG = GM h
+  where (>>) = composeR 
+        h = assocPlusRR >> (idR `plusR` commutePlusR) >> assocPlusLR
 
-
-Multiplication of conway games: interpret left as Pos and right as Neg
-(xp , xm) * (yp , ym) = 
-
-  (  xp * y 
-   + x * yp
-   - xp * yp
-   + xm * y
-   + x * ym
-   - xm * ym
-  , 
-     xp * y 
-   + x * ym
-   - xp * ym
-   + xm * y
-   + x * yp
-   - xm * yp
-  )
-
-
-
-Have:
-f :: R (ap + bm) (am + bp)
-g :: R (cp + dm) (cm + dp)
-
-Want:
-
-h :: R ((ap,cp) + (am,cm) + (bm,cp) + (bp,cm))
-       ((am,cp) + (ap,cm) + (bp,cp) + (bm,cm))
-
-The forward component of R is a function that maps:
-
-h :: ((ap,cp) + (am,cm) + (bm,cp) + (bp,cm)) -> 
-     ((am,cp) + (ap,cm) + (bp,cp) + (bm,cm))  
-     and the recursive component
-
-We are given one of four possible inputs:
-  A. (ap,cp)
-  B. (am,cm)
-  C. (bm,cp)
-  D. (bp,cm)
-
-We need to produce of four possible outputs:
-  X. (am,cp)
-  Y. (ap,cm)
-  Z. (bp,cp)
-  W. (bm,cm)
-       
-Consider input A. we have 'ap' and 'cp'. Among the four functions realizing
-the resumptions f and g, there is only one function that consumes 'ap' and it
-produces 'am' or 'bp'. There is also only function that consumes 'cp' and it
-produces 'cm' or 'dp'. So our ouput is a pair of (am + bp) and (cm + dp)
-which is (am,cm) + (am,dp) + (bp,cm) + (bp,dp).
-
-We are not allowed to produce 'dp' at all so we have to get rid of it by
-passing it to the only function that would accept it. That function returns
-(cp + dm) but we are not allowed to produce dm so we must go back again and
-hope to get cm. 
-
-So this is messy and I thought doesn't work. However multiplication of Conway
-games might help here. That multiplication would correspond to:
-
-f :: R (ap + bm) (am + bp)
-`times`
-g :: R (cp + dm) (cm + dp)
-
-gives:
-
-R 
-
-  (ap + bm) `times` R (cp + dm) (cm + dp)
-+ R (ap + bm) (am + bp) `times` (cp + dm)
-- (ap + bm) `times` (cp + dm)
-+ (am + bp) `times` R (cp + dm) (cm + dp)
-+ R (ap + bm) (am + bp) `times` (cm + dp)
-- (am + cp) `times` (cm + dp)
-
-  (ap + bm) `times` R (cp + dm) (cm + dp)
-+ R (ap + bm) (am + bp) `times` (cm + dp)
-- (ap + bm) `times` (cm + dp)
-+ (am + bp) `times` R (cp + dm) (cm + dp)
-+ R (ap + bm) (am + bp) `times` (cp + dm)
-- (am + bp) `times` (cp + dm)
-
-Look again at the definition in the book and its justification...
---}
-
-
-{--
-
--- If we instantiate the abstract G types to pairs, the contraints are
--- automatically satisfied.
-test :: GM (ap,am) (bp,bm) -> GM (cp,cm) (dp,dm) -> 
-        GM (PlusG (ap,am) (cp,cm)) (PlusG (bp,bm) (dp,dm))
-test = plusG 
-
-plusZeroLG :: GM (PlusG ZeroG a) a
-plusZeroLG = undefined
-
-plusZeroRG :: GM a (PlusG ZeroG a)
+plusZeroRG :: (a ~ (ap :- am)) => GM a (PlusG ZeroG a)
 plusZeroRG = undefined
 
-commutePlusG :: GM (PlusG a b) (PlusG b a)
+commutePlusG :: (a ~ (ap :- am), b ~ (bp :- bm)) => GM (PlusG a b) (PlusG b a)
 commutePlusG = undefined
 
-assocPlusLG :: GM (PlusG a (PlusG b c)) (PlusG (PlusG a b) c)
+assocPlusLG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
+               GM (PlusG a (PlusG b c)) (PlusG (PlusG a b) c)
 assocPlusLG = undefined
 
-assocPlusRG :: GM (PlusG (PlusG a b) c) (PlusG a (PlusG b c))
+assocPlusRG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
+               GM (PlusG (PlusG a b) c) (PlusG a (PlusG b c))
 assocPlusRG = undefined
 
-timesOneLG :: GM (TimesG OneG a) a
+timesOneLG :: (a ~ (ap :- am)) => GM (TimesG OneG a) a
 timesOneLG = undefined
 
-timesOneRG :: GM a (TimesG OneG a)
+timesOneRG :: (a ~ (ap :- am)) => GM a (TimesG OneG a)
 timesOneRG = undefined
 
-commuteTimesG :: GM (TimesG a b) (TimesG b a)
+commuteTimesG :: (a ~ (ap :- am), b ~ (bp :- bm)) => 
+                  GM (TimesG a b) (TimesG b a)
 commuteTimesG = undefined
 
-assocTimesLG :: GM (TimesG a (TimesG b c)) (TimesG (TimesG a b) c)
+assocTimesLG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
+                GM (TimesG a (TimesG b c)) (TimesG (TimesG a b) c)
 assocTimesLG = undefined
 
-assocTimesRG :: GM (TimesG (TimesG a b) c) (TimesG a (TimesG b c))
+assocTimesRG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
+                GM (TimesG (TimesG a b) c) (TimesG a (TimesG b c))
 assocTimesRG = undefined
 
-timesZeroLG :: GM (TimesG ZeroG a) ZeroG
+timesZeroLG :: (a ~ (ap :- am)) => GM (TimesG ZeroG a) ZeroG
 timesZeroLG = undefined
 
-timesZeroRG :: GM ZeroG (TimesG ZeroG a)
+timesZeroRG :: (a ~ (ap :- am)) => GM ZeroG (TimesG ZeroG a)
 timesZeroRG = undefined
 
-distributeG :: GM (TimesG (PlusG b c) a) (PlusG (TimesG b a) (TimesG c a))
+distributeG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
+               GM (TimesG (PlusG b c) a) (PlusG (TimesG b a) (TimesG c a))
 distributeG = undefined
 
-factorG :: GM (PlusG (TimesG b a) (TimesG c a)) (TimesG (PlusG b c) a)
+factorG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
+           GM (PlusG (TimesG b a) (TimesG c a)) (TimesG (PlusG b c) a)
 factorG = undefined
 
-traceG :: GM (PlusG a b) (PlusG a c) -> GM b c
+traceG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
+          GM (PlusG a b) (PlusG a c) -> GM b c
 traceG = undefined
 
-curryG :: (Pos (PlusG a b) ~ Either (Pos a) (Pos b),
-           Neg (PlusG a b) ~ Either (Neg a) (Neg b),
-           Pos (LolliG b c) ~ Either (Neg b) (Pos c),
-           Neg (LolliG b c) ~ Either (Pos b) (Neg c)) =>
+dualG :: (a ~ (ap :- am), b ~ (bp :- bm)) => GM a b -> GM (DualG b) (DualG a)
+dualG (GM (R f g)) = GM (dual f g) 
+  where dual h i = Prelude.fst 
+         (lift1 (swapEither . Prelude.fst . h . swapEither)
+                (swapEither . Prelude.fst . i . swapEither))
+
+curryG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
           GM (PlusG a b) c -> GM a (LolliG b c)
-curryG (GM f) = GM (curry f)
+curryG (GM f) = undefined {-- GM (curry f)
   where curry (R h) = R $ \v -> 
           let (v',h') = h (assoc1 v)
               v'' = assoc2 v'
@@ -682,14 +599,11 @@ curryG (GM f) = GM (curry f)
         assoc1 (Right (Right v)) = Right v
         assoc2 (Left (Left v)) = Left v
         assoc2 (Left (Right v)) = Right (Left v)
-        assoc2 (Right v) = Right (Right v)
+        assoc2 (Right v) = Right (Right v)--}
                                    
-uncurryG :: (Pos (PlusG a b) ~ Either (Pos a) (Pos b),
-             Neg (PlusG a b) ~ Either (Neg a) (Neg b),
-             Pos (LolliG b c) ~ Either (Neg b) (Pos c),
-             Neg (LolliG b c) ~ Either (Pos b) (Neg c)) => 
+uncurryG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
             GM a (LolliG b c) -> GM (PlusG a b) c
-uncurryG (GM f) = GM (uncurry f) 
+uncurryG (GM f) = undefined {--GM (uncurry f) 
   where uncurry (R h) = R $ \v -> 
           let (v',h') = h (assoc2 v)
               v'' = assoc1 v'
@@ -699,13 +613,6 @@ uncurryG (GM f) = GM (uncurry f)
         assoc1 (Right (Right v)) = Right v
         assoc2 (Left (Left v)) = Left v
         assoc2 (Left (Right v)) = Right (Left v)
-        assoc2 (Right v) = Right (Right v)
---}
------------------------------------------------------------------------
-{--
-Neel's post:
-http://semantic-domain.blogspot.com/2012/11/in-this-post-ill-show-how-to-turn.html
+        assoc2 (Right v) = Right (Right v)--}
 
-See also: 
-http://www.kurims.kyoto-u.ac.jp/~hassei/papers/tmcc.pdf
---}
+-----------------------------------------------------------------------
