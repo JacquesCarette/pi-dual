@@ -589,7 +589,19 @@ assocTimesLG =
 
 assocTimesRG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
                 GM (TimesG (TimesG a b) c) (TimesG a (TimesG b c))
-assocTimesRG = GM undefined
+assocTimesRG = 
+  GM $ ((distributeR `plusR` distributeR) `plusR`
+        (distributeR' `plusR` distributeR')) >>
+       commutePlusR >>
+       (idR `plusR` (idR `plusR` commutePlusR)) >>
+       (assoc4 `plusR` assoc4) >> 
+       ((idR `plusR` commutePlusR) `plusR` idR) >>
+       (((assocTimesLR `plusR` assocTimesLR) `plusR` 
+         (assocTimesLR `plusR` assocTimesLR)) `plusR` 
+        ((assocTimesRR `plusR` assocTimesRR) `plusR` 
+         (assocTimesRR `plusR` assocTimesRR))) >>
+       ((factorR `plusR` factorR) `plusR`
+        (factorR' `plusR` factorR'))
 
 timesZeroLG :: (a ~ (ap :- am)) => GM (TimesG ZeroG a) ZeroG
 timesZeroLG = GM idR
