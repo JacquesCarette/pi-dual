@@ -14,7 +14,7 @@ http://www.kurims.kyoto-u.ac.jp/~hassei/papers/tmcc.pdf
 module Neg where
 
 import qualified Prelude
-import Prelude (Either(..), undefined, error, ($), (.), id)
+import Prelude (Either(..), error, ($), (.), id)
 
 -----------------------------------------------------------------------
 -- Some very abstract kit that will allow lots of different instances
@@ -524,7 +524,11 @@ plusG (GM f) (GM g) = GM h
 timesG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm), d ~ (dp :- dm)) =>
           GM a b -> GM c d -> GM (TimesG a c) (TimesG b d)
 timesG (GM f) (GM g) = GM (traceR h)
-  where h = undefined
+  -- f :: R (ap+bm) (am+bp)
+  -- g :: R (cp+dm) (cm+dp)
+  -- traceR h :: R (((ap,cp)+(am,cm))+((bm,dp)+(bp,dm)))
+  --               (((am,cp)+(ap,cm))+((bp,dp)+(bm,dm)))
+  where h = error "todo"
 
 plusZeroLG :: (a ~ (ap :- am)) => GM (PlusG ZeroG a) a
 plusZeroLG = 
