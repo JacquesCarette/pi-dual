@@ -411,6 +411,10 @@ distributeR' :: R (a , Either b c) (Either (a,b) (a,c))
 distributeR' = commuteTimesR >> distributeR >> 
                (commuteTimesR `plusR` commuteTimesR)
 
+factorR' :: R (Either (a,b) (a,c)) (a , Either b c) 
+factorR' = (commuteTimesR `plusR` commuteTimesR) >> 
+           factorR >> commuteTimesR 
+               
 -- 
 
 instance Equiv R where
@@ -569,7 +573,19 @@ commuteTimesG =
 
 assocTimesLG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
                 GM (TimesG a (TimesG b c)) (TimesG (TimesG a b) c)
-assocTimesLG = GM undefined
+assocTimesLG = 
+  GM $ ((distributeR' `plusR` distributeR') `plusR`
+        (distributeR `plusR` distributeR)) >>
+       commutePlusR >>
+       ((idR `plusR` commutePlusR) `plusR` idR) >>
+       (assoc4 `plusR` assoc4) >> 
+       (idR `plusR` (idR `plusR` commutePlusR)) >>
+       (((assocTimesRR `plusR` assocTimesRR) `plusR` 
+         (assocTimesRR `plusR` assocTimesRR)) `plusR` 
+        ((assocTimesLR `plusR` assocTimesLR) `plusR` 
+         (assocTimesLR `plusR` assocTimesLR))) >>
+       ((factorR' `plusR` factorR') `plusR`
+        (factorR `plusR` factorR))
 
 assocTimesRG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
                 GM (TimesG (TimesG a b) c) (TimesG a (TimesG b c))
