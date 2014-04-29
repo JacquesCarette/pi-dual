@@ -543,11 +543,15 @@ commutePlusG = GM h
 
 assocPlusLG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
                GM (PlusG a (PlusG b c)) (PlusG (PlusG a b) c)
-assocPlusLG = undefined
+assocPlusLG = GM h
+  where (>>) = composeR
+        h = commutePlusR >> (assocPlusRR `plusR` assocPlusLR)
 
 assocPlusRG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
                GM (PlusG (PlusG a b) c) (PlusG a (PlusG b c))
-assocPlusRG = undefined
+assocPlusRG = GM h
+  where (>>) = composeR
+        h = commutePlusR >> (assocPlusLR `plusR` assocPlusRR)
 
 timesOneLG :: (a ~ (ap :- am)) => GM (TimesG OneG a) a
 timesOneLG = GM h 
@@ -568,7 +572,12 @@ timesOneRG = GM h
 
 commuteTimesG :: (a ~ (ap :- am), b ~ (bp :- bm)) => 
                   GM (TimesG a b) (TimesG b a)
-commuteTimesG = undefined
+commuteTimesG = GM h
+  where (>>) = composeR
+        h = ((commuteTimesR `plusR` commuteTimesR) `plusR`
+             (commuteTimesR `plusR` commuteTimesR)) >>
+            commutePlusR >>
+            (commutePlusR `plusR` idR)
 
 assocTimesLG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
                 GM (TimesG a (TimesG b c)) (TimesG (TimesG a b) c)
