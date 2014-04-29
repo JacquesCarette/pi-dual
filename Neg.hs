@@ -365,6 +365,11 @@ distributeR :: R (Either b c , a) (Either (b,a) (c,a))
 factorR :: R (Either (b,a) (c,a)) (Either b c , a)
 (distributeR, factorR) = lift1 distR distL
 
+distributeR' :: R (a , Either b c) (Either (a,b) (a,c))
+distributeR' = commuteTimesR >> distributeR >> 
+               (commuteTimesR `plusR` commuteTimesR)
+  where (>>) = composeR
+
 traceR :: R (Either a b) (Either a c) -> R b c
 traceR f = R {
   r = \b -> loop1 f (Right b),
@@ -581,17 +586,25 @@ commuteTimesG = GM h
 
 assocTimesLG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
                 GM (TimesG a (TimesG b c)) (TimesG (TimesG a b) c)
-assocTimesLG = undefined
+assocTimesLG = GM h
+  where (>>) = composeR
+        h = ((distributeR' `plusR` distributeR') `plusR` 
+             (distributeR `plusR` distributeR)) >> 
+            -- (((ap,(bp,cp)) + (ap,(bm,cm))) + ((am,(bm,cp)) + (am,(bp,cm)))) + 
+            -- ((((am,bp),cp) + ((ap,bm),cp)) + (((ap,bp),cm) + ((am,bm),cm)))
+            undefined
+            -- ((am,((bp,cp)+(bm,cm))) + (ap,((bm,cp) + (bp,cm)))) +  
+           -- (((ap,bp) + (am,bm),cp) + (((am,bp) + (ap,bm)),cm))
 
 assocTimesRG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
                 GM (TimesG (TimesG a b) c) (TimesG a (TimesG b c))
 assocTimesRG = undefined
 
 timesZeroLG :: (a ~ (ap :- am)) => GM (TimesG ZeroG a) ZeroG
-timesZeroLG = undefined
+timesZeroLG = GM idR
 
 timesZeroRG :: (a ~ (ap :- am)) => GM ZeroG (TimesG ZeroG a)
-timesZeroRG = undefined
+timesZeroRG = GM idR
 
 distributeG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
                GM (TimesG (PlusG b c) a) (PlusG (TimesG b a) (TimesG c a))
