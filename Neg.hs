@@ -303,6 +303,10 @@ composeR (R f fr) (R g gr) = R {
              in (a , composeR gr' fr') 
   }
 
+-- convenient abbreviation
+(>>) :: R a b -> R b c -> R a c
+(>>) = composeR
+
 timesR :: R a b -> R c d -> R (a,c) (b,d)
 timesR (R f fr) (R g gr) = R {
   r = \(a,c) -> let (b , f') = f a
@@ -365,11 +369,6 @@ distributeR :: R (Either b c , a) (Either (b,a) (c,a))
 factorR :: R (Either (b,a) (c,a)) (Either b c , a)
 (distributeR, factorR) = lift1 distR distL
 
-distributeR' :: R (a , Either b c) (Either (a,b) (a,c))
-distributeR' = commuteTimesR >> distributeR >> 
-               (commuteTimesR `plusR` commuteTimesR)
-  where (>>) = composeR
-
 traceR :: R (Either a b) (Either a c) -> R b c
 traceR f = R {
   r = \b -> loop1 f (Right b),
@@ -385,6 +384,31 @@ traceR f = R {
     loop2 (R _ gr) v = case gr v of
                          (Left a  , R x y) -> loop2 (R y x) (Left a)
                          (Right b , g')    -> (b , traceR g')
+
+-- Some useful helpers
+
+assoc1 :: R (Either a (Either b c)) (Either (Either b a) c)
+assoc1 = assocPlusLR >> (commutePlusR `plusR` idR)
+
+assoc2 :: R (Either (Either a b) c) (Either (Either b c) a)
+assoc2 = (commutePlusR `plusR` idR) >> assocPlusRR >>
+         (idR `plusR` commutePlusR) >> assocPlusLR
+
+assoc3 :: R (Either (Either a b) c) (Either a (Either c b))
+assoc3 = assocPlusRR >> (idR `plusR` commutePlusR)
+
+assoc4 :: R (Either (Either a b) (Either c d)) 
+            (Either (Either a c) (Either b d))
+assoc4 = assocPlusRR >> 
+         (idR `plusR` 
+          (assocPlusLR >> (commutePlusR `plusR` idR) >> assocPlusRR)) >> 
+         assocPlusLR
+
+distributeR' :: R (a , Either b c) (Either (a,b) (a,c))
+distributeR' = commuteTimesR >> distributeR >> 
+               (commuteTimesR `plusR` commuteTimesR)
+
+-- 
 
 instance Equiv R where
   idIso        = idR
@@ -456,51 +480,39 @@ idG = GM commutePlusR
 
 symG :: GM a b -> GM b a
 symG (GM f) = GM h where
-  (>>) = composeR
   h = commutePlusR >> symR f >> commutePlusR
       
-composeG :: forall a b c. GM a b -> GM b c -> GM a c
+composeG :: forall a b c ap am bp bm cp cm. 
+            (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
+            GM a b -> GM b c -> GM a c
 composeG (GM f) (GM g) = GM $ traceR h 
   where 
-    (>>) = composeR
-    assoc1 = (assocPlusLR >> (commutePlusR `plusR` idR))
-    assoc2 = (commutePlusR `plusR` idR) >> assocPlusRR >>
-             (idR `plusR` commutePlusR) >> assocPlusLR
-    assoc3 = assocPlusRR >> (idR `plusR` commutePlusR)
-    h :: R (Either (Neg b) (Either (Pos a) (Neg c))) 
-           (Either (Neg b) (Either (Neg a) (Pos c)))
+    h :: R (Either bm (Either ap cm)) (Either bm (Either am cp))
     h = 
-    -- (Either (Neg b) (Either (Pos a) (Neg c))
+    -- (Either bm (Either ap cm)
        assoc1 >>
-    -- (Either (Either (Pos a) (Neg b)) (Neg c))
-       (plusR f idR) >>
-    -- (Either (Either (Neg a) (Pos b)) (Neg c))
+    -- (Either (Either ap bm) cm)
+       plusR f idR >>
+    -- (Either (Either am bp) cm)
        assoc2 >>
-    -- (Either (Either (Pos b) (Neg c)) (Neg a))
-       (plusR g idR) >>
-    -- (Either (Either (Neg b) (Pos c)) (Neg a))
+    -- (Either (Either bp cm) am)
+       plusR g idR >>
+    -- (Either (Either bm cp) am)
        assoc3
-    -- (Either (Neg b) (Either (Neg a) (Pos c)))
+    -- (Either bm (Either am cp))
 
 plusG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm), d ~ (dp :- dm)) =>
          GM a b -> GM c d -> GM (PlusG a c) (PlusG b d)
 plusG (GM f) (GM g) = GM h
   where
-    (>>) = composeR
     h = 
     -- Either (Either ap cp) (Either bm dm)
-       assoc1 >>
+       assoc4 >>
     -- Either (Either ap bm) (Either cp dm)
        plusR f g >>
     -- Either (Either am bp) (Either cm dp)
-       assoc1 
+       assoc4 
     -- Either (Either am cm) (Either bp dp)
-    assoc1 :: R (Either (Either ap cp) (Either bm dm)) 
-                (Either (Either ap bm) (Either cp dm))
-    assoc1 = assocPlusRR >> 
-             (idR `plusR` 
-              (assocPlusLR >> (commutePlusR `plusR` idR) >> assocPlusRR)) >> 
-             assocPlusLR
 
 timesG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm), d ~ (dp :- dm)) =>
           GM a b -> GM c d -> GM (TimesG a c) (TimesG b d)
@@ -532,63 +544,54 @@ timesG (GM (R f f')) (GM (R g g')) = GM (traceR h)
         rrh = undefined
 
 plusZeroLG :: (a ~ (ap :- am)) => GM (PlusG ZeroG a) a
-plusZeroLG = GM h
-  where (>>) = composeR 
-        h = assocPlusRR >> (idR `plusR` commutePlusR) >> assocPlusLR
+plusZeroLG = 
+  GM $ assocPlusRR >> (idR `plusR` commutePlusR) >> assocPlusLR
 
 plusZeroRG :: (a ~ (ap :- am)) => GM a (PlusG ZeroG a)
-plusZeroRG = GM h 
-  where (>>) = composeR 
-        h = assocPlusLR >> commutePlusR >> (idR `plusR` commutePlusR) 
+plusZeroRG = 
+  GM $ assocPlusLR >> commutePlusR >> (idR `plusR` commutePlusR) 
 
 commutePlusG :: (a ~ (ap :- am), b ~ (bp :- bm)) => GM (PlusG a b) (PlusG b a)
-commutePlusG = GM h
-  where (>>) = composeR
-        h = commutePlusR >> (commutePlusR `plusR` commutePlusR)
+commutePlusG = 
+  GM $ commutePlusR >> (commutePlusR `plusR` commutePlusR)
 
 assocPlusLG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
                GM (PlusG a (PlusG b c)) (PlusG (PlusG a b) c)
-assocPlusLG = GM h
-  where (>>) = composeR
-        h = commutePlusR >> (assocPlusRR `plusR` assocPlusLR)
+assocPlusLG = 
+  GM $ commutePlusR >> (assocPlusRR `plusR` assocPlusLR)
 
 assocPlusRG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
                GM (PlusG (PlusG a b) c) (PlusG a (PlusG b c))
-assocPlusRG = GM h
-  where (>>) = composeR
-        h = commutePlusR >> (assocPlusLR `plusR` assocPlusRR)
+assocPlusRG = 
+  GM $ commutePlusR >> (assocPlusLR `plusR` assocPlusRR)
 
 timesOneLG :: (a ~ (ap :- am)) => GM (TimesG OneG a) a
-timesOneLG = GM h 
-  where (>>) = composeR
-        h = (((timesOneLR `plusR` timesZeroLR) >> commutePlusR >> plusZeroLR)
-             `plusR` idR) >>
-            commutePlusR >>
-            ((plusZeroRR >> (timesZeroRR `plusR` timesOneRR)) `plusR` idR)
+timesOneLG = 
+  GM $ (((timesOneLR `plusR` timesZeroLR) >> commutePlusR >> plusZeroLR)
+        `plusR` idR) >>
+       commutePlusR >>
+       ((plusZeroRR >> (timesZeroRR `plusR` timesOneRR)) `plusR` idR)
 
 timesOneRG :: (a ~ (ap :- am)) => GM a (TimesG OneG a)
-timesOneRG = GM h
-  where (>>) = composeR
-        h = (idR `plusR` ((timesZeroLR `plusR` timesOneLR) >> plusZeroLR)) >>
-            commutePlusR >>
-            (idR `plusR` (plusZeroRR >> 
-                          commutePlusR >> 
-                          (timesOneRR `plusR` timesZeroRR)))
+timesOneRG = 
+  GM $ (idR `plusR` ((timesZeroLR `plusR` timesOneLR) >> plusZeroLR)) >>
+       commutePlusR >>
+       (idR `plusR` (plusZeroRR >> 
+                     commutePlusR >> 
+                     (timesOneRR `plusR` timesZeroRR)))
 
 commuteTimesG :: (a ~ (ap :- am), b ~ (bp :- bm)) => 
                   GM (TimesG a b) (TimesG b a)
-commuteTimesG = GM h
-  where (>>) = composeR
-        h = ((commuteTimesR `plusR` commuteTimesR) `plusR`
-             (commuteTimesR `plusR` commuteTimesR)) >>
-            commutePlusR >>
-            (commutePlusR `plusR` idR)
+commuteTimesG = 
+  GM $ ((commuteTimesR `plusR` commuteTimesR) `plusR`
+        (commuteTimesR `plusR` commuteTimesR)) >>
+       commutePlusR >>
+       (commutePlusR `plusR` idR)
 
 assocTimesLG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
                 GM (TimesG a (TimesG b c)) (TimesG (TimesG a b) c)
 assocTimesLG = GM h
-  where (>>) = composeR
-        h = ((distributeR' `plusR` distributeR') `plusR` 
+  where h = ((distributeR' `plusR` distributeR') `plusR` 
              (distributeR `plusR` distributeR)) >> 
             -- (((ap,(bp,cp)) + (ap,(bm,cm))) + ((am,(bm,cp)) + (am,(bp,cm)))) + 
             -- ((((am,bp),cp) + ((ap,bm),cp)) + (((ap,bp),cm) + ((am,bm),cm)))
@@ -608,48 +611,46 @@ timesZeroRG = GM idR
 
 distributeG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
                GM (TimesG (PlusG b c) a) (PlusG (TimesG b a) (TimesG c a))
-distributeG = undefined
+distributeG = 
+  GM $ -- ((bp+cp)ap + (bm+cm)am) + (((bm,ap)+(bp,am))+((cm,ap)+(cp,am)))
+       ((distributeR `plusR` distributeR) `plusR` assoc4) >>
+       -- (((bp,ap)+(cp,ap)) + ((bm,am)+(cm,am))) + 
+       -- (((bm,ap)+(cm,ap)) + ((bp,am)+(cp,am)))
+       commutePlusR >> 
+       -- (((bm,ap)+(cm,ap)) + ((bp,am)+(cp,am))) + 
+       -- (((bp,ap)+(cp,ap)) + ((bm,am)+(cm,am))) 
+       ((factorR `plusR` factorR) `plusR` assoc4)
+       -- ((bm+cm)ap + (bp+cp)am) + (((bp,ap)+(bm,am))+((cp,ap)+(cm,am)))
 
 factorG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
            GM (PlusG (TimesG b a) (TimesG c a)) (TimesG (PlusG b c) a)
-factorG = undefined
+factorG = 
+  GM $ -- (((bp,ap)+(bm,am))+((cp,ap)+(cm,am))) + ((bm+cm)ap + (bp+cp)am)
+       commutePlusR >>
+       -- ((bm+cm)ap + (bp+cp)am) + (((bp,ap)+(bm,am))+((cp,ap)+(cm,am)))
+       ((distributeR `plusR` distributeR) `plusR` assoc4) >>
+       -- (((bm,ap)+(cm,ap)) + ((bp,am)+(cp,am)) + 
+       -- (((bp,ap)+(cp,ap)) + ((bm,am)+(cm,am)))
+       (assoc4 `plusR` (factorR `plusR` factorR))
+       -- (((bm,ap)+(bp,am))+((cm,ap)+(cp,am))) + ((bp+cp)ap + (bm+cm)am)
 
-traceG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
+traceG :: forall a b c ap am bp bm cp cm. 
+          (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
           GM (PlusG a b) (PlusG a c) -> GM b c
-traceG = undefined
+traceG (GM f) = GM $ traceR h 
+  where h :: R (Either (Either ap am) (Either bp cm)) 
+               (Either (Either ap am) (Either bm cp))
+        h = assoc4 >> f >> assoc4 >> (commutePlusR `plusR` idR)
 
 dualG :: (a ~ (ap :- am), b ~ (bp :- bm)) => GM a b -> GM (DualG b) (DualG a)
-dualG (GM (R f g)) = GM (dual f g) 
-  where dual h i = Prelude.fst 
-         (lift1 (swapEither . Prelude.fst . h . swapEither)
-                (swapEither . Prelude.fst . i . swapEither))
+dualG (GM f) = GM $ commutePlusR >> f >> commutePlusR
 
 curryG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
           GM (PlusG a b) c -> GM a (LolliG b c)
-curryG (GM f) = undefined {-- GM (curry f)
-  where curry (R h) = R $ \v -> 
-          let (v',h') = h (assoc1 v)
-              v'' = assoc2 v'
-          in (v'' , curry h')
-        assoc1 (Left v) = Left (Left v)
-        assoc1 (Right (Left v)) = Left (Right v)
-        assoc1 (Right (Right v)) = Right v
-        assoc2 (Left (Left v)) = Left v
-        assoc2 (Left (Right v)) = Right (Left v)
-        assoc2 (Right v) = Right (Right v)--}
+curryG (GM f) = GM $ assocPlusLR >> f >> assocPlusRR
                                    
 uncurryG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
             GM a (LolliG b c) -> GM (PlusG a b) c
-uncurryG (GM f) = undefined {--GM (uncurry f) 
-  where uncurry (R h) = R $ \v -> 
-          let (v',h') = h (assoc2 v)
-              v'' = assoc1 v'
-          in (v'' , uncurry h')
-        assoc1 (Left v) = Left (Left v)
-        assoc1 (Right (Left v)) = Left (Right v)
-        assoc1 (Right (Right v)) = Right v
-        assoc2 (Left (Left v)) = Left v
-        assoc2 (Left (Right v)) = Right (Left v)
-        assoc2 (Right v) = Right (Right v)--}
+uncurryG (GM f) = GM $ assocPlusRR >> f >> assocPlusLR
 
 -----------------------------------------------------------------------
