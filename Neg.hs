@@ -558,7 +558,13 @@ timesOneLG = GM h
             ((plusZeroRR >> (timesZeroRR `plusR` timesOneRR)) `plusR` idR)
 
 timesOneRG :: (a ~ (ap :- am)) => GM a (TimesG OneG a)
-timesOneRG = undefined
+timesOneRG = GM h
+  where (>>) = composeR
+        h = (idR `plusR` ((timesZeroLR `plusR` timesOneLR) >> plusZeroLR)) >>
+            commutePlusR >>
+            (idR `plusR` (plusZeroRR >> 
+                          commutePlusR >> 
+                          (timesOneRR `plusR` timesZeroRR)))
 
 commuteTimesG :: (a ~ (ap :- am), b ~ (bp :- bm)) => 
                   GM (TimesG a b) (TimesG b a)
