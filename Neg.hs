@@ -27,9 +27,11 @@ type family One (rep :: * -> *) :: *
 type family Sum (rep :: * -> *) :: * -> * -> *
 
 -- Second, Polarized is a pair (+A,-A) of positive and negative 'parts'
+
 type family Polarized (rep :: * -> *) :: * -> * -> *
 
 -- Third, Dual and linear functions
+
 type family Dual (rep :: * -> *) :: * -> *
 type family Lolli (rep :: * -> *) :: * -> * -> *
 
@@ -58,6 +60,7 @@ class Equiv iso where
 
 -- Haskell does not support renaming, so we have to specify 2 monoid
 -- structures, additive and multiplicative
+
 class (TD rep) => AddMonoid iso rep where
   (%+)        :: iso a b -> iso c d -> iso (Sum rep a c) (Sum rep b d)
 -- (+) is associative, commutative, and has a unit
@@ -77,6 +80,7 @@ class (TD rep) => MulMonoid iso rep where
   assocTimesR :: iso (Prod rep (Prod rep a b) c) (Prod rep a (Prod rep b c))
 
 -- and now put them together.
+
 class (TD rep, Equiv iso, AddMonoid iso rep, MulMonoid iso rep) => 
     Pi iso rep where 
 -- (*) distributes over (+) 
@@ -287,6 +291,13 @@ distL (Right (a,b)) = (Right a, b)
 
 data R i o = R { r :: i -> (o, R i o), rr :: o -> (i, R o i) }
 
+lift1 :: (i -> o) -> (o -> i) -> (R i o , R o i)
+lift1 f g = 
+  let (ls, rs) = lift1 f g  -- left-self, right-self
+      rf x  = (f x, ls)
+      rrg x = (g x, rs) in
+  (R rf rrg, R rrg rf)
+
 idR :: R a a 
 idR = Prelude.fst (lift1 id id)
 
@@ -302,10 +313,6 @@ composeR (R f fr) (R g gr) = R {
                  (a , fr') = fr b
              in (a , composeR gr' fr') 
   }
-
--- convenient abbreviation
-(>>) :: R a b -> R b c -> R a c
-(>>) = composeR
 
 timesR :: R a b -> R c d -> R (a,c) (b,d)
 timesR (R f fr) (R g gr) = R {
@@ -330,13 +337,6 @@ plusR (R f fr) (R g gr) = R {
               Right d -> let (c , gr') = gr d
                          in (Right c , plusR (R fr f) gr')
   }                  
-
-lift1 :: (i -> o) -> (o -> i) -> (R i o , R o i)
-lift1 f g = 
-  let (ls, rs) = lift1 f g  -- left-self, right-self
-      rf x  = (f x, ls)
-      rrg x = (g x, rs) in
-  (R rf rrg, R rrg rf)
 
 plusZeroLR :: R (Either Void a) a
 plusZeroRR :: R a (Either Void a) 
@@ -385,7 +385,10 @@ traceR f = R {
                          (Left a  , R x y) -> loop2 (R y x) (Left a)
                          (Right b , g')    -> (b , traceR g')
 
--- Some useful helpers
+-- Some abbreviations and helpers
+
+(>>) :: R a b -> R b c -> R a c
+(>>) = composeR
 
 assoc1 :: R (Either a (Either b c)) (Either (Either b a) c)
 assoc1 = assocPlusLR >> (commutePlusR `plusR` idR)
@@ -516,32 +519,8 @@ plusG (GM f) (GM g) = GM h
 
 timesG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm), d ~ (dp :- dm)) =>
           GM a b -> GM c d -> GM (TimesG a c) (TimesG b d)
-timesG (GM (R f f')) (GM (R g g')) = GM (traceR h)
-  -- have f  :: (Either ap bm) <-> (Either am bp , R)  
-  --      f' :: (Either am bp) <-> (Either ap bm , R)  
-  --      g  :: (Either cp dm) <-> (Either cm dp , R)  
-  --      g' :: (Either cm dp) <-> (Either cp dm , R)  
-  --
-  -- traceR h :: X -> Y
-  -- where X = Either (Either (ap,cp) (am,cm)) (Either (bm,dp) (bp,dm))
-  --       Y = Either (Either (am,cp) (ap,cm)) (Either (bp,dp) (bm,dm))
-  where h = R { r = rh, rr = rrh }
-        -- r :: (intermediate + X) -> (intermediate + Y , R...)
-        -- rr :: (intermediate + Y) -> (intermediate + X , R...)
-        rh (Right (Left (Left (ap,cp)))) = 
-          case (f (Left ap) , g (Left cp)) of 
-            ((Left am,fR) , (Left cm,gR)) -> 
-              let (res,_) = rh (Right (Left (Right (am,cm))))
-              in (res,undefined)
-            ((Left am,fR) , (Right dp,gR)) -> undefined
-            ((Right bp,fR) , (Left cm,gR)) -> undefined
-            ((Right bp,fR) , (Right dp,gR)) -> 
-                (Right (Right (Left (bp,dp))), undefined)
-        rh (Right (Left (Right (am,cm)))) = undefined
-        rh (Right (Right (Left (bm,dp)))) = undefined
-        rh (Right (Right (Right (bp,dm)))) = undefined
-        rh (Left _) = undefined
-        rrh = undefined
+timesG (GM f) (GM g) = GM (traceR h)
+  where h = undefined
 
 plusZeroLG :: (a ~ (ap :- am)) => GM (PlusG ZeroG a) a
 plusZeroLG = 
@@ -590,18 +569,11 @@ commuteTimesG =
 
 assocTimesLG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
                 GM (TimesG a (TimesG b c)) (TimesG (TimesG a b) c)
-assocTimesLG = GM h
-  where h = ((distributeR' `plusR` distributeR') `plusR` 
-             (distributeR `plusR` distributeR)) >> 
-            -- (((ap,(bp,cp)) + (ap,(bm,cm))) + ((am,(bm,cp)) + (am,(bp,cm)))) + 
-            -- ((((am,bp),cp) + ((ap,bm),cp)) + (((ap,bp),cm) + ((am,bm),cm)))
-            undefined
-            -- ((am,((bp,cp)+(bm,cm))) + (ap,((bm,cp) + (bp,cm)))) +  
-           -- (((ap,bp) + (am,bm),cp) + (((am,bp) + (ap,bm)),cm))
+assocTimesLG = GM undefined
 
 assocTimesRG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
                 GM (TimesG (TimesG a b) c) (TimesG a (TimesG b c))
-assocTimesRG = undefined
+assocTimesRG = GM undefined
 
 timesZeroLG :: (a ~ (ap :- am)) => GM (TimesG ZeroG a) ZeroG
 timesZeroLG = GM idR
