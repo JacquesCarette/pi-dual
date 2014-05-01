@@ -523,12 +523,7 @@ plusG (GM f) (GM g) = GM h
 
 timesG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm), d ~ (dp :- dm)) =>
           GM a b -> GM c d -> GM (TimesG a c) (TimesG b d)
-timesG (GM f) (GM g) = GM (traceR h)
-  -- f :: R (ap+bm) (am+bp)
-  -- g :: R (cp+dm) (cm+dp)
-  -- traceR h :: R (((ap,cp)+(am,cm))+((bm,dp)+(bp,dm)))
-  --               (((am,cp)+(ap,cm))+((bp,dp)+(bm,dm)))
-  where h = error "todo"
+timesG = error "try something else!"
 
 plusZeroLG :: (a ~ (ap :- am)) => GM (PlusG ZeroG a) a
 plusZeroLG = 
