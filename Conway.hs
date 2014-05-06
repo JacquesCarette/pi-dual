@@ -20,13 +20,10 @@ oneG    = Game [zeroG] []
 negoneG = Game []      [zeroG]
 starG   = Game [zeroG] [zeroG]
 
-nat2Game :: Int -> Game
-nat2Game 0 = zeroG
-nat2Game n = Game [nat2Game (n-1)] []
-
-nnat2Game :: Int -> Game
-nnat2Game 0 = zeroG
-nnat2Game n = Game [] [nnat2Game (n+1)]
+int2Game :: Int -> Game
+int2Game n | n < 0 = Game []               [int2Game (n+1)]
+int2Game n | n > 0 = Game [int2Game (n-1)] []
+int2Game n | otherwise = zeroG
 
 --
 
