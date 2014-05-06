@@ -17,6 +17,7 @@
 \newcommand{\twog}{$\mathbb{2}$}
 \newcommand{\threeg}{$\mathbb{3}$}
 \newcommand{\fourg}{$\mathbb{4}$}
+\newcommand{\fiveg}{$\mathbb{5}$}
 
 %%
 
@@ -140,10 +141,12 @@ neg :: ConwayNumber -> ConwayNumber
 neg (CN xls xrs) = 
   CN [ neg xr | xr <- xrs ] [ neg xl | xl <- xls ]
 \end{code}
-
 Conway numbers also come equipped with addition and multiplication operations
-defined as follows:
+defined as follows. 
 
+\noindent\textbf{Addition and subtraction.} Addition of two games intuitively
+gives the player the choice of selecting an option from either
+game. Substraction is simply the addition of the dual of a game. Formally:
 \begin{code}
 (:+:) :: ConwayNumber -> ConwayNumber -> ConwayNumber
 x@(CN xls xrs) :+: y@(CN yls yrs) = 
@@ -155,7 +158,27 @@ x@(CN xls xrs) :+: y@(CN yls yrs) =
 
 (:-:) :: ConwayNumber -> ConwayNumber -> ConwayNumber
 x :-: y = x :+: (neg y) 
+\end{code}
+It is easy to check that adding two positive numbers like \twog\ and
+\threeg\ gives \fiveg\ as desired, and similarly for two negative
+numbers. When mixing positive and negative numbers, e.g., adding \threeg\ and
+$-$\twog, the result appears much more complicated:
+\begin{code}
+CN [CN  [CN  [-/+\twog+/] 
+             [CN [-/+\oneg+/] [/+\oneg+/]]] 
+        [CN  [CN [-/+\oneg+/] [/+\oneg+/]] 
+             [/+\twog+/]]] 
+   [CN  [CN  [CN [-/+\oneg+/] [/+\oneg+/]] 
+             [/+\twog+/]] 
+        [/+\threeg+/]]
+\end{code}
+There is however an intuitive way to understand why the game above is
+equivalent to the game \oneg\ (which is formalized below). Consider the game
+\lstinline{CN [-1] [1]}: it is equivalent to the game \zerog.
 
+\noindent\textbf{Multiplication.} 
+
+\begin{code}
 (:*:) :: ConwayNumber -> ConwayNumber -> ConwayNumber
 x@(CN xls xrs) :*: y@(CN yls yrs) = 
   CN 
