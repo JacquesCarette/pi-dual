@@ -13,8 +13,9 @@ http://www.kurims.kyoto-u.ac.jp/~hassei/papers/tmcc.pdf
 
 module Neg1 where
 
+import Data.Maybe hiding (mapMaybe)
 import qualified Prelude
-import Prelude (Either(..), error, ($), (.), id)
+import Prelude (Either(..), error, ($), (.), id, Eq, Show)
 
 -----------------------------------------------------------------------
 -- Some very abstract kit that will allow lots of different instances
@@ -448,40 +449,55 @@ instance Pi R I where
 -----------------------------------------------------------------------
 -- Int (or G) construction
 
--- Objects in the G category are pairs of objects 
+-- Objects in the G category are nested pairs of objects 
 
-class GT p where
-  type Pos p      :: *  -- to access the components
-  type Neg p      :: *  
-  type ZeroG      :: *  -- the new structure 0,1,+,* 
-  type OneG       :: *
-  type PlusG p q  :: *
-  type TimesG p q :: *
-  type DualG p    :: *  -- as a bonus we get DualG (unary negation) and
-  type LolliG p q :: *  -- linear functions
+data GO a = Pair (Maybe (GO a)) (Maybe (GO a))
+  deriving (Eq,Show)
 
--- think of a :- b as "a-b"
-data a :- b = a :- b
+zeroG = Pair Nothing Nothing
+oneG = Pair (Just zeroG) Nothing
+moneG = Pair Nothing (Just zeroG)
 
-data Quadrants a b c d = Quadrants a b c d -- ++, +-, -+, --
+leftG :: GO a -> Maybe (GO a)
+leftG (Pair l _) = l
 
-instance GT (ap :- am) where
-  type Pos (ap :- am) = ap
-  type Neg (ap :- am) = am
-  type ZeroG = Void :- Void
-  type OneG = () :- Void
-  type PlusG  (ap :- am) (bp :- bm) = (Either ap bp) :- (Either am bm)
-  type TimesG (ap :- am) (bp :- bm) = Quadrants (ap,bp) (ap,bm) (am,bp) (am,bm)
-  type DualG  (ap :- am) = am :- ap
-  type LolliG (ap :- am) (bp :- bm) = (Either am bp) :- (Either ap bm)
-  -- expansion of 'PlusG (DualG (ap,am)) (bp,bm)'
-                              
+rightG :: GO a -> Maybe (GO a)
+rightG (Pair _ r) = r
+
+mapMaybe :: (a -> b) -> Maybe a -> Maybe b
+mapMaybe f Nothing = Nothing
+mapMaybe f (Just a) = Just (f a)
+
+negG :: GO a -> GO a
+negG (Pair l r) = Pair (mapMaybe negG r) (mapMaybe negG l)
+
+unionM :: Maybe a -> Maybe b -> Maybe (Either a b)
+unionM Nothing Nothing = Nothing
+unionM Nothing (Just b) = Just (Right b)
+unionM (Just a) Nothing = Just (Left a)
+unionM (Just a) (Just b) = Prelude.undefined
+
+sumG :: GO a -> GO b -> GO (Either a b)
+sumG g@(Pair lg rg) h@(Pair lh rh) = 
+  Pair 
+    ((mapMaybe (`sumG` h) lg) `unionM` (mapMaybe (g `sumG`) lh))
+    ((mapMaybe (`sumG` h) rg) `unionM` (mapMaybe (g `sumG`) rh))
+
 -- Morphisms in the G category
+
+
+
+-- right starts; left wins
+--class Right_LeftW go where
+   
+
+--data GM a b = Right_LeftW (b `gminus` a)
+{--
+
 
 newtype GM a b = 
   GM { rg :: R (Either (Pos a) (Neg b)) (Either (Neg a) (Pos b)) } 
 
--- 
 
 idG :: GM a a
 idG = GM commutePlusR
@@ -522,11 +538,18 @@ plusG (GM f) (GM g) = GM h
        assoc4 
     -- Either (Either am cm) (Either bp dp)
 
-{--
+-- the two arguments are +/- and +/-; the result is ++, +-, -+, and --
+
 timesG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm), d ~ (dp :- dm)) =>
-          GM a b -> GM c d -> GM (TimesG a c) (TimesG b d)
-timesG = error "try something else!"
---}
+          GM a b -> GM c d -> GM4 (TimesG a c) (TimesG b d)
+timesG = undefined
+
+
+TimesG a c = Quadrants (ap,cp) (ap,cm) (am,cp) (am,cm)
+TimesG b d = Quadrants (bp,dp) (bp,dm) (bm,dp) (bm,dm)
+
+GM4 (TimesG a c) (TimesG b d) = ???
+
 
 plusZeroLG :: (a ~ (ap :- am)) => GM (PlusG ZeroG a) a
 plusZeroLG = 
@@ -550,7 +573,6 @@ assocPlusRG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
 assocPlusRG = 
   GM $ commutePlusR >> (assocPlusLR `plusR` assocPlusRR)
 
-{--
 timesOneLG :: (a ~ (ap :- am)) => GM (TimesG OneG a) a
 timesOneLG = 
   GM $ (((timesOneLR `plusR` timesZeroLR) >> commutePlusR >> plusZeroLR)
@@ -636,7 +658,6 @@ factorG =
        -- (((bp,ap)+(cp,ap)) + ((bm,am)+(cm,am)))
        (assoc4 `plusR` (factorR `plusR` factorR))
        -- (((bm,ap)+(bp,am))+((cm,ap)+(cp,am))) + ((bp+cp)ap + (bm+cm)am)
---}
 
 traceG :: forall a b c ap am bp bm cp cm. 
           (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
@@ -658,3 +679,4 @@ uncurryG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) =>
 uncurryG (GM f) = GM $ assocPlusRR >> f >> assocPlusLR
 
 -----------------------------------------------------------------------
+--}
