@@ -1,0 +1,136 @@
+\documentclass[authoryear,preprint]{sigplanconf}
+\usepackage{amsmath}
+\usepackage{listings} 
+\usepackage{stmaryrd}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{courier}
+\usepackage{thmtools}
+\usepackage{bbold}
+
+%%
+
+\newcommand{\game}[2]{\langle #1 ~|~ #2 \rangle}
+\newcommand{\zerog}{$\mathbb{0}$}
+\newcommand{\oneg}{$\mathbb{1}$}
+\newcommand{\twog}{$\mathbb{2}$}
+\newcommand{\threeg}{$\mathbb{3}$}
+\newcommand{\fourg}{$\mathbb{4}$}
+
+%%
+
+\begin{document}
+\special{papersize=8.5in,11in}
+\setlength{\pdfpageheight}{\paperheight}
+\setlength{\pdfpagewidth}{\paperwidth}
+
+\newcommand{\alt}{~|~}
+\lstnewenvironment{code}{\lstset{basicstyle={\sffamily\footnotesize}}}{}
+
+\lstset{frame=none,
+         language=Haskell,
+         basicstyle=\sffamily, 
+         numberstyle=\tiny,
+         numbersep=5pt,
+         tabsize=2,    
+         extendedchars=true,
+         breaklines=true,   
+         breakautoindent=true,
+         keywordstyle=\color{black},
+         captionpos=b,
+         stringstyle=\color{black}\ttfamily,
+         showspaces=false,  
+         showtabs=false,    
+         framexleftmargin=2em,
+         framexbottommargin=1ex,
+         showstringspaces=false
+         basicstyle=\sffamily,
+         columns=[l]flexible,
+         flexiblecolumns=true,
+         aboveskip=\smallskipamount,
+         belowskip=\smallskipamount,
+         lineskip=-1pt,
+         xleftmargin=1em,
+         escapeinside={/+}{+/},
+         keywords=[1]{Monad,Just,Nothing,type,data,right,left,id,where,do,
+                     if,then,else,let,in},
+         literate={+*}{{$+*$}}1 {+}{{$\;+\;$}}1 {/}{{$/$}}1 {*}{{$\;*\;$}}1
+           {=}{{$=\ $}}1 {/=}{{$\not=$}}2
+           {[]}{$[\;]$}2
+           {<}{{$<$}}1 {>}{{$\rangle$}}1 
+           {++}{{$+\!\!\!+\;$}}1 {::}{{$:\mkern -2.5mu:\;$}}1
+           {:+:}{{$:\mkern -5mu+\mkern -5mu:\;$}}2
+           {$}{{\texttt{\$}\hspace{0.5em}}}1
+           {`}{$^\backprime$}1
+           {==}{{$=\!=\;$}}2
+           {===}{{$\equiv\;$}}2
+           {->}{{$\rightarrow\;$}}2 {>=}{{$\geq$}}2 {<-}{{$\leftarrow$}}2
+           {<=}{{$\leq$}}2 {=>}{{$\Rightarrow\;$}}2
+           {<<}{{$\ll$}}2 {>>}{{$\gg\;$}}2
+           {>>>}{{$\ggg\;$}}3 {<<<}{{$\lll\;$}}3
+           {>>=}{{$\gg\mkern -2.5mu=\;$}}3
+           {=<<}{{$=\mkern -2.5mu\ll\;$}}3
+           {<|}{$\lhd\;$}2
+           {<||}{$\unlhd\;$}2
+           {\ ||\ }{$\|$}1
+           {\\}{$\lambda$}1
+           {:>}{{$\rhd$}}2
+           {||>}{{$\unrhd$}}2
+           {_}{{$\_$}}1
+           {_B}{{$_b$}}2
+           {forall}{{$\forall$}}1
+}
+
+\lstset{postbreak=\raisebox{0ex}[0ex][0ex]
+        {\ensuremath{\hookrightarrow}}}
+\lstset{breaklines=true, breakatwhitespace=true}
+\lstset{numbers=none, numbersep=5pt, stepnumber=2, numberstyle=\scriptsize}
+\lstset{rangeprefix=/*!\ , rangesuffix=\ !*\/, includerangemarker=false}
+
+%% double-blind reviewing...
+\title{Negative Types}
+\authorinfo{}{}{}
+\maketitle
+
+\begin{abstract}
+\ldots
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conway Numbers}
+
+A Conway number is a game consisting of left and right options where each
+option leads to another game. In Haskell, one might define the datatype of
+Conway numbers as:
+\begin{code}
+data ConwayNumber = CN [ConwayNumber] [ConwayNumber]
+\end{code}
+The simplest Conway number is \lstinline|CN [] []| with empty left and right
+options. We call this number \zerog. Once we have defined \zerog, we can also
+define the following:
+\begin{code}
+/+ \oneg +/  = CN  [ /+ \zerog +/ ]  []
+/+ \twog +/  = CN  [ /+ \oneg +/ ]  []
+/+ \threeg +/  = CN  [ /+ \twog +/ ]  []
+\end{code}
+and so on. Intuitively, the number $\mathbb{n}$ represents a game in which
+the left player has an $n$-move advantage over the right player. Dually, we
+can define the following numbers where the left player has $n$-move
+\emph{disadvantage} over the right player:
+\begin{code}
+/+ -\oneg +/  = CN  [] [ /+ \zerog +/ ]
+/+ -\twog +/  = CN  [] [ /+ \oneg +/ ]
+/+ -\threeg +/  = CN  [] [ /+ \twog +/ ]
+\end{code}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{abbrvnat}
+\softraggedright
+\bibliography{cites}
+
+\end{document}
+
