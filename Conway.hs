@@ -177,12 +177,12 @@ introduceReversibleShortcuts g@(Game gls grs) =
         helperL g (gl:gls) = 
           case find (`leqG` g) (rightOptions gl) of 
             Nothing  -> gl : helperL g gls
-            Just glr -> leftOptions glr ++ helperL g gls
+            Just glr -> leftOptions glr `union` helperL g gls
         helperR g [] = []
         helperR g (gr:grs) = 
           case find (`geqG` g) (leftOptions gr) of 
             Nothing  -> gr : helperR g grs
-            Just grl -> rightOptions grl ++ helperR g grs
+            Just grl -> rightOptions grl `union` helperR g grs
 
 ------------------------------------------------------------------------------
 -- Number games
@@ -193,6 +193,7 @@ isNumberGame (Game gls grs) =
   and [ gl `lessG` gr | gl <- gls, gr <- grs ]
 
 halfG         = Game [zeroG] [oneG]  -- 1/2 + 1/2 is indeed 1 
+quarterG = Game [zeroG] [halfG]
 
 -- If we have three player games, we can presumably get multiples of 3
 -- easily. If we have five player games, we can presumably get multiples of 5
@@ -205,11 +206,11 @@ timesG :: Game -> Game -> Game
 x@(Game xls xrs) `timesG` y@(Game yls yrs) = 
   Game 
     ([ (xl `timesG` y) `plusG` (x `timesG` yl) `minusG` (xl `timesG` yl)
-     | xl <- xls, yl <- yls] ++ 
+     | xl <- xls, yl <- yls] `union`
      [ (xr `timesG` y) `plusG` (x `timesG` yr) `minusG` (xr `timesG` yr)
      | xr <- xrs, yr <- yrs])
     ([ (xl `timesG` y) `plusG` (x `timesG` yr) `minusG` (xl `timesG` yr)
-     | xl <- xls, yr <- yrs] ++ 
+     | xl <- xls, yr <- yrs] `union`
      [ (xr `timesG` y) `plusG` (x `timesG` yl) `minusG` (xr `timesG` yl)
      | xr <- xrs, yl <- yls])
 

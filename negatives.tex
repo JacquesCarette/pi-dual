@@ -60,7 +60,11 @@
            {[]}{$[\;]$}2
            {<}{{$<$}}1 {>}{{$\rangle$}}1 
            {++}{{$+\!\!\!+\;$}}1 {::}{{$:\mkern -2.5mu:\;$}}1
+           {&&}{{$\&\!\!\!\&$}}2
+           {:=:}{{$:\mkern -2mu=\mkern -2mu:\;$}}2
            {:+:}{{$:\mkern -5mu+\mkern -5mu:\;$}}2
+           {:-:}{{$:\mkern -5mu-\mkern -5mu:\;$}}2
+           {:*:}{{$:\mkern -5mu*\mkern -5mu:\;$}}2
            {$}{{\texttt{\$}\hspace{0.5em}}}1
            {`}{$^\backprime$}1
            {==}{{$=\!=\;$}}2
@@ -104,14 +108,18 @@
 \section{Conway Numbers}
 
 A Conway number is a game consisting of left and right options where each
-option leads to another game. In Haskell, one might define the datatype of
-Conway numbers as:
+option models a move to another game. Players alternate taking options and
+the player with no available options loses. In Haskell, one might define the
+datatype of Conway numbers as:
 \begin{code}
 data ConwayNumber = CN [ConwayNumber] [ConwayNumber]
 \end{code}
 The simplest Conway number is \lstinline|CN [] []| with empty left and right
-options. We call this number \zerog. Once we have defined \zerog, we can also
-define the following:
+options. We call this number \zerog: 
+\begin{code}
+/+ \zerog +/  = CN  [] []
+\end{code}
+Once we have defined \zerog, we can also define the following:
 \begin{code}
 /+ \oneg +/  = CN  [ /+ \zerog +/ ]  []
 /+ \twog +/  = CN  [ /+ \oneg +/ ]  []
@@ -123,9 +131,56 @@ can define the following numbers where the left player has $n$-move
 \emph{disadvantage} over the right player:
 \begin{code}
 /+ -\oneg +/  = CN  [] [ /+ \zerog +/ ]
-/+ -\twog +/  = CN  [] [ /+ \oneg +/ ]
-/+ -\threeg +/  = CN  [] [ /+ \twog +/ ]
+/+ -\twog +/  = CN  [] [ /+ -\oneg +/ ]
+/+ -\threeg +/  = CN  [] [ /+ -\twog +/ ]
 \end{code}
+More generally, the \emph{unary negation} of a number is defined as follows:
+\begin{code}
+neg :: ConwayNumber -> ConwayNumber
+neg (CN xls xrs) = 
+  CN [ neg xr | xr <- xrs ] [ neg xl | xl <- xls ]
+\end{code}
+
+Conway numbers also come equipped with addition and multiplication operations
+defined as follows:
+
+\begin{code}
+(:+:) :: ConwayNumber -> ConwayNumber -> ConwayNumber
+x@(CN xls xrs) :+: y@(CN yls yrs) = 
+  CN 
+    ([ xl :+: y | xl <- xls ] `union`
+     [ x :+: yl | yl <- yls ])
+    ([ xr :+: y | xr <- xrs ] `union`
+     [ x :+: yr | yr <- yrs ])
+
+(:-:) :: ConwayNumber -> ConwayNumber -> ConwayNumber
+x :-: y = x :+: (neg y) 
+
+(:*:) :: ConwayNumber -> ConwayNumber -> ConwayNumber
+x@(CN xls xrs) :*: y@(CN yls yrs) = 
+  CN 
+    ([ (xl :*: y) :+: (x :*: yl) :-: (xl :*: yl)
+     | xl <- xls, yl <- yls] `union`
+     [ (xr :*: y) :+: (x :*: yr) :-: (xr :*: yr)
+     | xr <- xrs, yr <- yrs])
+    ([ (xl :*: y) :+: (x :*: yr) :-: (xl :*: yr)
+     | xl <- xls, yr <- yrs] `union`
+     [ (xr :*: y) :+: (x :*: yl) :-: (xr :*: yl)
+     | xr <- xrs, yl <- yls])
+\end{code}
+
+Conway numbers form a \emph{ring} under the semantic notion of equality
+\lstinline$:=:$ defined below:
+\begin{code}
+geq/+\zerog+/, leq/+\zerog+/, eq/+\zerog+/ :: ConwayNumber -> Bool
+geq/+\zerog+/ (CN _ xrs)  = not $ or (map leq/+\zerog+/ xrs) 
+leq/+\zerog+/ (CN xls _)  = not $ or (map geq/+\zerog+/ xls) 
+eq/+\zerog+/ x            = geq/+\zerog+/ x && leq/+\zerog+/ x 
+
+(:=:) :: ConwayNumber -> ConwayNumber -> ConwayNumber
+x :=: y = eq/+\zerog+/ (x :-: y)
+\end{code}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliographystyle{abbrvnat}
