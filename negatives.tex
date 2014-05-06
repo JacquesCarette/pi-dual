@@ -11,13 +11,14 @@
 
 %%
 
-\newcommand{\game}[2]{\langle #1 ~|~ #2 \rangle}
-\newcommand{\zerog}{$\mathbb{0}$}
-\newcommand{\oneg}{$\mathbb{1}$}
-\newcommand{\twog}{$\mathbb{2}$}
-\newcommand{\threeg}{$\mathbb{3}$}
-\newcommand{\fourg}{$\mathbb{4}$}
-\newcommand{\fiveg}{$\mathbb{5}$}
+\newcommand{\geqz}{\geq\zerog}
+\newcommand{\leqz}{\leq\zerog}
+\newcommand{\zerog}{\mathbb{0}}
+\newcommand{\oneg}{\mathbb{1}}
+\newcommand{\twog}{\mathbb{2}}
+\newcommand{\threeg}{\mathbb{3}}
+\newcommand{\fourg}{\mathbb{4}}
+\newcommand{\fiveg}{\mathbb{5}}
 
 %%
 
@@ -56,24 +57,40 @@
          escapeinside={/+}{+/},
          keywords=[1]{Monad,Just,Nothing,type,data,right,left,id,where,do,
                      if,then,else,let,in},
-         literate={+*}{{$+*$}}1 {+}{{$\;+\;$}}1 {/}{{$/$}}1 {*}{{$\;*\;$}}1
-           {=}{{$=\ $}}1 {/=}{{$\not=$}}2
+         literate=
+           {+}{{$\;+\;$}}1 
+           {/}{{$/$}}1 
+           {*}{{$\;*\;$}}1
+           {=}{{$=\ $}}1 
+           {/=}{{$\not=$}}1
            {[]}{$[\;]$}2
-           {<}{{$<$}}1 {>}{{$\rangle$}}1 
-           {++}{{$+\!\!\!+\;$}}1 {::}{{$:\mkern -2.5mu:\;$}}1
+           {<}{{$<$}}1 
+           {>}{{$>$}}1 
+           {++}{{$+\!\!\!+\;$}}1 
+           {::}{{$:\mkern -2.5mu:\;$}}1
            {&&}{{$\&\!\!\!\&$}}2
-           {:=:}{{$:\mkern -2mu=\mkern -2mu:\;$}}2
-           {:+:}{{$:\mkern -5mu+\mkern -5mu:\;$}}2
-           {:-:}{{$:\mkern -5mu-\mkern -5mu:\;$}}2
-           {:*:}{{$:\mkern -5mu*\mkern -5mu:\;$}}2
+           {:=:}{{$:\mkern -2mu=\mkern -2mu:\;$}}3
+           {:+:}{{$:\mkern -5mu+\mkern -5mu:\;$}}3
+           {:-:}{{$:\mkern -5mu-\mkern -5mu:\;$}}3
+           {:*:}{{$:\mkern -5mu*\mkern -5mu:\;$}}3
            {$}{{\texttt{\$}\hspace{0.5em}}}1
            {`}{$^\backprime$}1
            {==}{{$=\!=\;$}}2
            {===}{{$\equiv\;$}}2
-           {->}{{$\rightarrow\;$}}2 {>=}{{$\geq$}}2 {<-}{{$\leftarrow$}}2
-           {<=}{{$\leq$}}2 {=>}{{$\Rightarrow\;$}}2
-           {<<}{{$\ll$}}2 {>>}{{$\gg\;$}}2
-           {>>>}{{$\ggg\;$}}3 {<<<}{{$\lll\;$}}3
+           {->}{{$\rightarrow\;$}}2 
+           {>=}{{$\geq$}}2 
+           {<=}{{$\leq$}}2 
+           {>=0}{{$\geq_\zerog\;$}}2 
+           {<=0}{{$\leq_\zerog\;$}}2 
+           {==0}{{$=_\zerog\;$}}2 
+           {>0}{{$>_\zerog\;$}}2 
+           {<0}{{$<_\zerog\;$}}2 
+           {<-}{{$\leftarrow$}}2
+           {=>}{{$\Rightarrow\;$}}2
+           {<<}{{$\ll$}}2 
+           {>>}{{$\gg\;$}}2
+           {>>>}{{$\ggg\;$}}3 
+           {<<<}{{$\lll\;$}}3
            {>>=}{{$\gg\mkern -2.5mu=\;$}}3
            {=<<}{{$=\mkern -2.5mu\ll\;$}}3
            {<|}{$\lhd\;$}2
@@ -109,44 +126,92 @@
 \section{Conway Numbers}
 
 A Conway number is a game consisting of left and right options where each
-option models a move to another game. Players alternate taking options and
-the player with no available options loses. In Haskell, one might define the
-datatype of Conway numbers as:
+option models a move to another game. There is another technical condition
+given below that constrains every left option to be ``less than'' every right
+option but that can be ignored for the moment. Players alternate taking
+options and the player with no available options loses. In Haskell, ignoring
+the additional technical condition, one might define the datatype of Conway
+numbers as:
 \begin{code}
 data ConwayNumber = CN [ConwayNumber] [ConwayNumber]
 \end{code}
 The simplest Conway number is \lstinline|CN [] []| with empty left and right
-options. We call this number \zerog: 
+options. We call this number $\zerog$: 
 \begin{code}
-/+ \zerog +/  = CN  [] []
+/+ $\zerog$ +/  = CN  [] []
 \end{code}
-Once we have defined \zerog, we can also define the following:
+Once we have defined $\zerog$, we can also define the following:
 \begin{code}
-/+ \oneg +/  = CN  [ /+ \zerog +/ ]  []
-/+ \twog +/  = CN  [ /+ \oneg +/ ]  []
-/+ \threeg +/  = CN  [ /+ \twog +/ ]  []
+/+ $\oneg$ +/  = CN  [ /+ $\zerog$ +/ ]  []
+/+ $\twog$ +/  = CN  [ /+ $\oneg$ +/ ]  []
+/+ $\threeg$ +/  = CN  [ /+ $\twog$ +/ ]  []
 \end{code}
 and so on. Intuitively, the number $\mathbb{n}$ represents a game in which
 the left player has an $n$-move advantage over the right player. Dually, we
 can define the following numbers where the left player has $n$-move
 \emph{disadvantage} over the right player:
 \begin{code}
-/+ -\oneg +/  = CN  [] [ /+ \zerog +/ ]
-/+ -\twog +/  = CN  [] [ /+ -\oneg +/ ]
-/+ -\threeg +/  = CN  [] [ /+ -\twog +/ ]
+/+ -$\oneg$ +/  = CN  [] [ /+ $\zerog$ +/ ]
+/+ -$\twog$ +/  = CN  [] [ /+ -$\oneg$ +/ ]
+/+ -$\threeg$ +/  = CN  [] [ /+ -$\twog$ +/ ]
 \end{code}
-More generally, the \emph{unary negation} of a number is defined as follows:
+More generally, the \emph{unary negation} of a number or its \emph{dual} is
+defined as follows:
 \begin{code}
 neg :: ConwayNumber -> ConwayNumber
 neg (CN xls xrs) = 
   CN [ neg xr | xr <- xrs ] [ neg xl | xl <- xls ]
 \end{code}
-Conway numbers also come equipped with addition and multiplication operations
-defined as follows. 
+
+\textbf{Comparing numbers.} There are three outcomes to games represented by
+Conway numbers $\mathbb{n}$:
+\begin{itemize}
+\item $\mathbb{n} > \zerog$ which indicates that the \emph{left} player can
+  enforce a win, no matter who starts;
+\item $\mathbb{n} < \zerog$ which indicates that the \emph{right} player can
+  enforce a win, no matter who starts;
+\item $\mathbb{n} = \zerog$ which indicates that the \emph{second}
+  player can enforce a win, no matter who.
+\end{itemize}
+For example, we have $\threeg > \zerog$ because the right player would have
+no options (i.e., would lose) on the first or second turn depending on who
+starts. Similarly, we have $-\threeg < \zerog$ because the left player would
+have no options on on the first or second turn depending on who starts. For
+$\zerog$, it is evident that the first player to take a turn must lose, i.e.,
+that the second player wins. More interestingly, consider the game
+$\textsf{CN}~[-\oneg]~[\oneg]$ which we claim is $= \zerog$. Indeed, if the
+left player starts, the only option is to move to the game $-\oneg$ which the
+right player wins. If however the right player moves first, the only option
+is to move to the game $\oneg$ which the left player wins. In both cases, the
+second player wins. To ensure that these three outcomes are the only possible
+outcomes, Conway numbers have an additional restriction: for every left
+option $x$ and right option $y$, we require that $x < y$. If that restriction
+is lifted we could construct games such that $\textsf{CN}~[\zerog]~[\zerog]$
+for which none of the relations $> \zerog$, $< \zerog$, or $= \zerog$
+holds. Instead for this game, the first player always wins, which means that
+the left player cannot enforce a win (in case the right player starts) and
+vice-versa.
+
+The formal definitions of the comparison operators are:
+\begin{code}
+>=0 (CN _ xrs)  = not $ or (map <=0 xrs)
+<=0 (CN xls _)  = not $ or (map >=0 xls) 
+==0 x           = >=0 x && <=0 x
+<0 x            = <=0 x && not (>=0 x)
+>0 x            = >=0 x && not (<=0 x)
+\end{code}
+Only $\geq_\zerog$ and $\leq_\zerog$ are fundamental. The predicate
+$\geq_\zerog$ means that the left player can win as second player and
+$\leq_\zerog$ means that the right player can win as second player. If the
+left player can win as second player, it means that the right player has no
+good opening move, i.e., that there is no right option that is $\leq_\zerog$.
+
+Conway numbers also come equipped with addition, subtraction, and
+multiplication operations defined as follows.
 
 \noindent\textbf{Addition and subtraction.} Addition of two games intuitively
-gives the player the choice of selecting an option from either
-game. Substraction is simply the addition of the dual of a game. Formally:
+gives each player the choice of selecting an option from either
+game. Subtraction is simply the addition of the dual of a game. Formally:
 \begin{code}
 (:+:) :: ConwayNumber -> ConwayNumber -> ConwayNumber
 x@(CN xls xrs) :+: y@(CN yls yrs) = 
@@ -159,25 +224,47 @@ x@(CN xls xrs) :+: y@(CN yls yrs) =
 (:-:) :: ConwayNumber -> ConwayNumber -> ConwayNumber
 x :-: y = x :+: (neg y) 
 \end{code}
-It is easy to check that adding two positive numbers like \twog\ and
-\threeg\ gives \fiveg\ as desired, and similarly for two negative
-numbers. When mixing positive and negative numbers, e.g., adding \threeg\ and
-$-$\twog, the result appears much more complicated:
+It is easy to check that $\zerog$ is the unit of addition and that addition
+is commutative. Furthermore, adding two positive numbers like~$\twog$
+and~$\threeg$ gives $\fiveg$ as desired, and similarly for two negative
+numbers. When mixing positive and negative numbers, e.g., adding $\threeg$
+and $-\twog$, the result appears much more complicated:
 \begin{code}
-CN [CN  [CN  [-/+\twog+/] 
-             [CN [-/+\oneg+/] [/+\oneg+/]]] 
-        [CN  [CN [-/+\oneg+/] [/+\oneg+/]] 
-             [/+\twog+/]]] 
-   [CN  [CN  [CN [-/+\oneg+/] [/+\oneg+/]] 
-             [/+\twog+/]] 
-        [/+\threeg+/]]
+CN [CN  [CN  [-/+ $\twog$ +/] 
+             [CN [-/+ $\oneg$ +/] [/+ $\oneg$ +/]]]
+        [CN  [CN [-/+ $\oneg$ +/] [/+ $\oneg$ +/]] 
+             [/+ $\twog$ +/]]] 
+   [CN  [CN  [CN [-/+ $\oneg$ +/] [/+ $\oneg$ +/]] 
+             [/+ $\twog$ +/]] 
+        [/+ $\threeg$ +/]]
 \end{code}
-There is however an intuitive way to understand why the game above is
-equivalent to the game \oneg\ (which is formalized below). Consider the game
-\lstinline{CN [-1] [1]}: it is equivalent to the game \zerog.
+We will formalize the sense in which the game above is equivalent to the game
+$\oneg$, but for now we can intuitively reason as follows. We have already
+seen that the game $\textsf{CN}~[-\oneg]~[\oneg]$ is equivalent to $\zerog$
+which simplifies the above to:
+\begin{code}
+CN [CN  [CN  [-/+ $\twog$ +/] [/+ $\zerog$ +/]]
+        [CN  [/+ $\zerog$ +/] [/+ $\twog$ +/]]]
+   [CN  [CN  [/+ $\zerog$ +/] [/+ $\twog$ +/]]
+        [/+ $\threeg$ +/]]
+\end{code}
+Now consider the game $\textsf{CN}~[\zerog]~[\twog]$. If the left player
+starts, the game proceeds to $\zerog$ and the right player loses. If the
+right player starts, the game proceeds to $\twog$ which is an even stronger
+position for the left player. In other words, the right option is useless and
+the right player always loses: the game is equivalent to
+$\textsf{CN}~[\zerog]~[\;]$, i.e., to~$\oneg$. By a similar reasoning,
+$\textsf{CN}~[-\twog]~[\zerog]$ simplifies to $-\oneg$, and the whole
+expression becomes:
+\begin{code}
+CN [CN  [/+ -$\oneg$ +/] [/+ $\oneg$ +/]]
+   [CN  [/+ $\oneg$ +/] [/+ $\threeg$ +/]]
+\end{code}
+The left option is equivalent to $\zerog$ and the right one is equivalent to
+$\twog$, and the entire expression is equivalent to $\oneg$.
 
-\noindent\textbf{Multiplication.} 
-
+\noindent\textbf{Multiplication.} The most complicated operation on Conway
+numbers is multiplication. It is defined as follows:
 \begin{code}
 (:*:) :: ConwayNumber -> ConwayNumber -> ConwayNumber
 x@(CN xls xrs) :*: y@(CN yls yrs) = 
@@ -195,13 +282,8 @@ x@(CN xls xrs) :*: y@(CN yls yrs) =
 Conway numbers form a \emph{ring} under the semantic notion of equality
 \lstinline$:=:$ defined below:
 \begin{code}
-geq/+\zerog+/, leq/+\zerog+/, eq/+\zerog+/ :: ConwayNumber -> Bool
-geq/+\zerog+/ (CN _ xrs)  = not $ or (map leq/+\zerog+/ xrs) 
-leq/+\zerog+/ (CN xls _)  = not $ or (map geq/+\zerog+/ xls) 
-eq/+\zerog+/ x            = geq/+\zerog+/ x && leq/+\zerog+/ x 
-
 (:=:) :: ConwayNumber -> ConwayNumber -> ConwayNumber
-x :=: y = eq/+\zerog+/ (x :-: y)
+x :=: y = ==0 (x :-: y)
 \end{code}
 
 
