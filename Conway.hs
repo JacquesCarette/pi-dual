@@ -226,6 +226,37 @@ divG :: Game -> Game -> Game
 x `divG` y = x `timesG` (recipG y)
 
 ------------------------------------------------------------------------------
+-- A morphism between games < xls | xrs > and < yls | yrs > 
+-- is a game < yls + xrs | xls + yrs > 
+
+-- Joyal: focus on strategies which are sequences of moves
+
+{-- 
+
+A strategy is a rule that tells us how to choose a move. 
+
+Given a game < x1=< z1, z2 | w1, w2, w3 >, x2, x3 | y1, y2 > 
+
+A strategy for left consists of choosing one of x1, x2, or x3 and then
+choosing a new strategy for each possible response from right. Say left chose
+x1 which is < z1, z2 | w1, w2, w3 >. Then the rest of left's strategy
+consists of the product of three strategies (Sw1, Sw2, Sw3) which are left's
+responses to each possible move from right. If we get to a game where right
+has no moves, then left's response is (). Let's assume that w1=<a1,a2|>,
+w2=<b|>, and that w3=<|c>. So we can say a strategy for left in the above
+game is:
+
+  ((S(a1) + S(a2)),b,0) + S(x2) + S(x3)
+
+The 0 means that we have lost in this branch.
+
+So instead of sets of games in left and right positions, we should think of
+sums and pairs of games!!!
+
+--}
+
+
+------------------------------------------------------------------------------
 -- Pi
 
 {--
