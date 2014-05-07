@@ -1,3 +1,5 @@
+{-# LANGUAGE TypeFamilies #-}
+
 module Conway where
 
 import Data.List
@@ -5,9 +7,79 @@ import Data.List
 ------------------------------------------------------------------------------
 -- Definition; a few constants; several show functions
 
+{--
+Conventional definition:
+
 data Game = Game [Game] [Game]
   deriving (Eq, Show)
+--}
 
+data Game a b = Game a b
+
+data Void
+
+type ZERO  = Game Void () 
+
+type ONE   = Game ZERO ()
+type TWO   = Game ONE  ()
+type THREE = Game TWO  ()
+
+type NEG_ONE   = Game Void ZERO
+type NEG_TWO   = Game Void NEG_ONE
+type NEG_THREE = Game Void NEG_TWO
+
+zeroG :: ZERO
+zeroG = Game undefined ()
+
+oneG :: ONE
+oneG = Game zeroG ()
+
+twoG :: TWO
+twoG = Game oneG ()
+
+threeG :: THREE
+threeG = Game twoG ()
+
+neg_oneG :: NEG_ONE
+neg_oneG = Game undefined zeroG
+
+neg_twoG :: NEG_TWO
+neg_twoG = Game undefined neg_oneG
+
+neg_threeG :: NEG_THREE
+neg_threeG = Game undefined neg_twoG
+
+--
+
+class G a where
+  type Neg a :: *
+
+instance G Void where
+  type Neg Void = ()
+
+instance G () where
+  type Neg () = Void
+
+negG :: Game a b -> Game (Neg a) (Neg b) 
+negG (Game x y) = Game (negG x) (negG y) 
+
+{--
+plusG :: Game -> Game -> Game
+g@(Game gls grs) `plusG` h@(Game hls hrs) = 
+  Game 
+    ((map (`plusG` h) gls) `union` (map (g `plusG`) hls))
+    ((map (`plusG` h) grs) `union` (map (g `plusG`) hrs))
+
+negG :: Game -> Game
+negG (Game gls grs) = Game (map negG grs) (map negG gls) 
+--}
+
+
+
+
+
+
+{--
 leftOptions :: Game -> [Game]
 leftOptions (Game gls _) = gls
 
@@ -282,3 +354,4 @@ data Combinator =
 
 -- data Val = ???
 
+--}
