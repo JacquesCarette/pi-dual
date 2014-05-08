@@ -5,13 +5,8 @@ module Conway where
 import Data.List
 
 ------------------------------------------------------------------------------
--- Definition; a few constants; several show functions
-
 {--
-Conventional definition:
-
-data Game = Game [Game] [Game]
-  deriving (Eq, Show)
+Some random thoughts about how to "type" Conway games
 
 Our definition:
 
@@ -21,8 +16,6 @@ Our definition:
   S ::= 0 | GR | S + S
 
   P ::= 1 | GL | P * P
-
---}
 
 data GL = GL S P
 data GR = GR P S
@@ -94,8 +87,6 @@ plusLP gl (Opponent p1 p2) = Opponent (plusLP gl p1) (plusLP gl p2)
 --    ((map (`plusG` h) gls) `union` (map (g `plusG`) hls))
 --    ((map (`plusG` h) grs) `union` (map (g `plusG`) hrs))
 
-
-{--
 -- A morphism between games < xls | xrs > and < yls | yrs > 
 -- is a game < yls + xrs | xls + yrs > 
 
@@ -161,8 +152,6 @@ data Combinator =
 ------------------------------------------------------------------------------
 -- Using conventional definition of Conway games...
 
-{--
-
 data Game = Game [Game] [Game]
   deriving (Eq, Show)
 
@@ -182,8 +171,6 @@ int2Game :: Int -> Game
 int2Game n | n < 0 = Game []               [int2Game (n+1)]
 int2Game n | n > 0 = Game [int2Game (n-1)] []
 int2Game n | otherwise = zeroG
-
---
 
 showG :: Game -> String
 showG (Game [] []) = "0"
@@ -209,46 +196,9 @@ showT s (Game [g1] [g2,g3]) =
            showT "'*" g1 ++ showT "#\\space" (Game [g2] [g3]) ++ ")"
 
 ------------------------------------------------------------------------------
--- addition and subtraction
-
-plusG :: Game -> Game -> Game
-g@(Game gls grs) `plusG` h@(Game hls hrs) = 
-  Game 
-    ((map (`plusG` h) gls) `union` (map (g `plusG`) hls))
-    ((map (`plusG` h) grs) `union` (map (g `plusG`) hrs))
-
-negG :: Game -> Game
-negG (Game gls grs) = Game (map negG grs) (map negG gls) 
-
-minusG :: Game -> Game -> Game
-g1 `minusG` g2 = g1 `plusG` (negG g2) 
-
--- zeroG is a unit for addition
--- negG o negG is the identity
--- negG (G `plusG` H) = (negG G) `plusG` (negG H)
--- addition is also associative and commutative
-
-twoG, threeG, fourG, negtwoG :: Game
-twoG    = oneG `plusG` oneG
-threeG  = twoG `plusG` oneG
-fourG   = threeG `plusG` oneG
-negtwoG = negoneG `minusG` oneG
-
-{--
-*Conway> twoG
-<1,>
-*Conway> threeG
-<<1,>,>
-*Conway> fourG
-<<<1,>,>,>
-*Conway> negtwoG
-<,-1>
---}
-
-------------------------------------------------------------------------------
 -- Predicates: players must alternate
 -- Equivalence relation on games
--- two games are equal if `eqG` holds
+-- Two games are equal if `eqG` holds
 
 geq0, leq0 :: Game -> Bool
 -- left wins as second player; right has no good opening move
@@ -271,23 +221,29 @@ fuzzy0   g = not (geq0 g) && not (leq0 g)
 right0   g = not (leq0 g)
 left0    g = not (geq0 g)
 
-{--
+------------------------------------------------------------------------------
+-- Addition and subtraction
 
-*Conway> eq0 $ oneG `plusG` negoneG
-True
-*Conway> eq0 $ starG `plusG` starG
-True
+plusG :: Game -> Game -> Game
+g@(Game gls grs) `plusG` h@(Game hls hrs) = 
+  Game 
+    ((map (`plusG` h) gls) `union` (map (g `plusG`) hls))
+    ((map (`plusG` h) grs) `union` (map (g `plusG`) hrs))
 
-*Conway> eq0 zeroG
-True
-*Conway> greater0 oneG
-True
-*Conway> less0 negoneG
-True
-*Conway> fuzzy0 starG
-True
+negG :: Game -> Game
+negG (Game gls grs) = Game (map negG grs) (map negG gls) 
 
---}
+minusG :: Game -> Game -> Game
+g1 `minusG` g2 = g1 `plusG` (negG g2) 
+
+twoG, threeG, fourG, negtwoG :: Game
+twoG    = oneG `plusG` oneG
+threeG  = twoG `plusG` oneG
+fourG   = threeG `plusG` oneG
+negtwoG = negoneG `minusG` oneG
+
+------------------------------------------------------------------------------
+-- Congruence relation on games
 
 geqG, leqG, eqG, greaterG, lessG, fuzzyG, rightG, leftG :: Game -> Game -> Bool
 geqG     g1 g2 = geq0     (g1 `minusG` g2)
@@ -299,6 +255,10 @@ fuzzyG   g1 g2 = fuzzy0   (g1 `minusG` g2)
 rightG   g1 g2 = right0   (g1 `minusG` g2) 
 leftG    g1 g2 = left0    (g1 `minusG` g2) 
 
+-- zeroG is a unit for addition
+-- negG o negG is the identity
+-- negG (G `plusG` H) = (negG G) `plusG` (negG H)
+-- addition is also associative and commutative
 -- if G >= 0 and H >= 0 then G+H >= 0
 -- if G >= 0 and H right 0 then G+H right 0
 
@@ -316,7 +276,7 @@ normalizeG = fix (introduceReversibleShortcuts . deleteDominatedOptions)
 deleteDominatedOptions :: Game -> Game
 deleteDominatedOptions (Game gls grs) = 
   Game (helper gls gls leftDominatedBy) (helper grs grs rightDominatedBy)
-  where helper [] gls _ = []
+  where helper [] allgs _ = []
         helper (g:gs) allgs pred = 
             if any (pred g) (delete g allgs)
             then helper gs allgs pred
@@ -347,13 +307,18 @@ isNumberGame (Game gls grs) =
   all isNumberGame gls && all isNumberGame grs && 
   and [ gl `lessG` gr | gl <- gls, gr <- grs ]
 
-halfG         = Game [zeroG] [oneG]  -- 1/2 + 1/2 is indeed 1 
-quarterG = Game [zeroG] [halfG]
+halfG    = Game [zeroG] [oneG]  -- 1/2 + 1/2 is indeed 1 
 
--- If we have three player games, we can presumably get multiples of 3
--- easily. If we have five player games, we can presumably get multiples of 5
--- and so on. Is that related to the p-adics? Is there a groupoid structure
--- here? 
+-- short numbers are of the of the following four forms:
+-- Game [] []
+-- Game [x] []
+-- Game [] [y]
+-- Game [x] [y]
+-- in other words, there is at most one position in each set of options
+-- the first two gives us the natural numbers
+-- the third one gives us the integers
+-- the fourth one gives us the dyadic fractions; to get other fractions,
+--   we need to have infinite sequences
 
 -- multiplication (only defined for number games)
 
@@ -372,16 +337,4 @@ x@(Game xls xrs) `timesG` y@(Game yls yrs) =
 testM0 = zeroG `timesG` oneG   -- zeroG
 testM1 = oneG  `timesG` oneG   -- oneG
 testM2 = twoG  `timesG` twoG   -- fourG
-
--- remove negative options
-
--- reciprocal (x is not 0)
-recipG :: Game -> Game
-recipG = undefined
-
--- division (h is not 0)
-divG :: Game -> Game -> Game
-x `divG` y = x `timesG` (recipG y)
-
---}
 

@@ -19,6 +19,8 @@
 \newcommand{\threeg}{\mathbb{3}}
 \newcommand{\fourg}{\mathbb{4}}
 \newcommand{\fiveg}{\mathbb{5}}
+\newcommand{\bck}{\triangleleft}
+\newcommand{\fwd}{\triangleright}
 
 %%
 
@@ -123,6 +125,115 @@
 \section{Introduction}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{$\Pi$: Operational and Denotational Semantics}
+
+Present $\Pi$ with an interpreter specifying the operational semantics. For a
+model or denotational semantics, the minimum requirement is that every type
+maps to some kind of space; a value $v : t$ maps to an element of that space;
+and a combinator $c : t_1 \leftrightarrow t_2$ maps to a function between the
+spaces denoting $t_1$ and $t_2$. The simplest model one can think of is to
+map a type of size $n$ to a finite set of $n$ elements; a value $v : t$ maps
+to an element in the set denoting $t$; a combinator maps to a permutation on
+that set. One could also build other models, e.g. vector spaces but that
+model is fine. Perhaps show correspondence between operational and
+denotational semantics.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{$\Pi^{-}$: Operational Semantics}
+
+Extend $\Pi$ with negative types and $\eta$ and $\epsilon$. Present the
+operational semantics that uses two interpreters forwards and backwards.  
+
+For the model or denotational semantics, we need to map every type to some
+space. If type $t$ maps to space $S$, we need to have an operation that maps
+that space to another space that acts like ``negative'' $S$ so that we can
+satisfy for example that $S-S=0$. Using the cardinality of the set like we
+did for $\Pi$ does not directly work (footnote on papers that describe sets
+with negative cardinality). Another idea is to generalize spaces to have two
+components (a producer and a consumer; a left player and a right player) and
+to describe the space using the relative ``strength'' of the two
+components. (This is the idea of the Int or G construction but that doesn't
+directly work if we have two monoidal structures.) A natural and beautiful
+theory is that of Conway games which model two player games: left and
+right. In that setting we can talk about games in which the left player has
+an $n$-move advantage (summarized by the number $n$) and games in which the
+right player has an $n$-move advantage (summarized by the number $-n$ which
+denotes that the left player has an $n$-move disadvantage). It is therefore
+possible to map a type of size $n$ where $n$ is an integer to the class
+Conway games where the left player has an $n$-move (dis-)advantage; the
+negative of a space $S$ is the space in which all the games are flipped with
+left and right players exchanging positions; a value $v : t$ maps to a Conway
+number in the set denoting $t$; all combinators preserve the size of the type
+and hence will be the identity. Note that the space corresponds to type $0$
+is not empty in this denotation: it consists of all the games in which the
+left player has a $0$-move advantage over the the right player and
+symmetrically, i.e., the set of games which are always lost by the first
+player to move.
+
+Given that our language is reversible, a backward evaluator is relatively
+straightforward to implement: using the backward evaluator to calculate
+$c(v)$ is equivalent to $c^{\dagger}(v)$ in the forward evaluator.
+
+\begin{figure*}
+\[\begin{array}{rclr}
+[\mathit{iso}, v, C, s]_{\bck} &\longmapsto& 
+  \langle \mathit{iso}, v', C, s'\rangle_{\bck} 
+  \quad\textrm{where}~\mathit{iso}^{\dagger}~s~v \longmapsto (v', s') \\
+\langle c_1, v, \mathit{Fst}~C~c_2, s \rangle_{\bck} &\longmapsto& 
+  \langle c_1 \fatsemi c_2, v, C, s \rangle_{\bck} \\
+\langle c_2, v, \mathit{Snd}~c_1~C, s \rangle_{\bck} &\longmapsto& 
+  [c_1, v, \mathit{Fst}~C~c_2, s]_{\bck} \\
+[ c_1 \fatsemi c_2, v, C, s ]_{\bck} &\longmapsto& 
+  [c_2, v, \mathit{Snd}~c_1~C, s]_{\bck} \\
+\langle c_1, v, \mathit{LeftP}~C~c_2, s \rangle_{\bck} &\longmapsto& 
+  \langle c_1 \oplus c_2, \mathit{left}~v, C \rangle_{\bck} \\
+[c_1 \oplus c_2, v', C, s ]_{\bck} &\longmapsto& 
+  [ c_1, v, \mathit{LeftP}~C~c_2, s[v' \approx left v] ]_{\bck} \\
+\langle c_2, v, \mathit{RightP}~c_1~C, s\rangle_{\bck} &\longmapsto& 
+  \langle c_1 \oplus c_2, \mathit{right}~v, C \rangle_{\bck} \\
+[c_1 \oplus c_2, v', C,s ]_{\bck} &\longmapsto& 
+  [ c_2, v, \mathit{RightP}~c_1~C, s[v' \approx right v] ]_{\bck} \\
+\langle c_1, v_1, \mathit{LeftT}~C~c_2~v_2, s \rangle_{\bck} &\longmapsto& 
+  \langle c_1 \otimes c_2, (v_1, v_2), C, s \rangle_{\bck} \\
+\langle c_2, v_2, \mathit{RightT}~c_1~v_1~C, s \rangle_{\bck} &\longmapsto& 
+  [ c_1, v_1, \mathit{LeftT}~C~c_2~v_2, s ]_{\bck} \\
+[ c_1 \otimes c_2, v, C, s ]_{\bck} &\longmapsto& 
+  [ c_2, v_2, \mathit{RightT}~c_1~v_1~C, S' ]_{\bck} 
+  \quad\textrm{where}~ s' = s[v \approx (v_1, v_2)] \\
+\\
+\\
+\langle \epsilon, v, C, s \rangle_{\fwd} &\longmapsto& 
+  \langle \epsilon, \mathit{left}~(-v'), C, s[v \approx right v'] \rangle_{\bck} \\
+\langle \epsilon, v, C, s \rangle_{\fwd} &\longmapsto& 
+  \langle \epsilon, \mathit{right}~v', C, s[v \approx left (-v')] \rangle_{\bck} \\
+\\
+\\
+\langle \eta, v, C, s \rangle_{\bck} &\longmapsto& 
+  \langle \eta, \mathit{left}~(-v'), C, s[v \approx right v'] \rangle_{\fwd} \\
+\langle \eta, v, C, s \rangle_{\bck} &\longmapsto& 
+  \langle \eta, \mathit{right}~v', C, s[v \approx left (-v')] \rangle_{\fwd}
+\end{array}\]
+\end{figure*}
+
+We add the following rules to the reductions above. 
+\begin{enumerate}
+\item The rules for $\epsilon$ essentially transfer control from the forward
+  evaluator (whose states are tagged by $\triangleright$) to the backward
+  evaluator (whose states are tagged by $\triangleleft$). In other words,
+  after an $\epsilon$ the direction of the world is reversed. The pattern
+  matching done by the unification ensures that a value on the right wire is
+  tagged to be negative and transferred to the left wire, and vice versa.
+  Note that there is no evaluation rule for $\eta$ in the forward
+  evaluator. This corresponds to the fact that there is no value of type 0
+  and hence the forward evaluator can never execute an $\eta$.
+
+\item The rules for $eta$ are added to the backward evaluator. A program
+  executing backwards starts executing forwards after the execution of the
+  $\eta$. Dual to the previous case, there is no rule for $\epsilon$ in the
+  backward evaluator since the output type of $\epsilon$ is 0.
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conway Numbers}
 
 A Conway number is a game consisting of left and right options where each
@@ -163,8 +274,8 @@ neg (CN xls xrs) =
   CN [ neg xr | xr <- xrs ] [ neg xl | xl <- xls ]
 \end{code}
 
-\textbf{Comparing numbers.} There are three outcomes to games represented by
-Conway numbers $\mathbb{n}$:
+\smallskip\noindent\textbf{Comparing numbers.} There are three outcomes to
+games represented by Conway numbers $\mathbb{n}$:
 \begin{itemize}
 \item $\mathbb{n} > \zerog$ which indicates that the \emph{left} player can
   enforce a win, no matter who starts;
@@ -209,8 +320,8 @@ good opening move, i.e., that there is no right option that is $\leq_\zerog$.
 Conway numbers also come equipped with addition, subtraction, and
 multiplication operations defined as follows.
 
-\noindent\textbf{Addition and subtraction.} Addition of two games intuitively
-gives each player the choice of selecting an option from either
+\smallskip\noindent\textbf{Addition and subtraction.} Addition of two games
+intuitively gives each player the choice of selecting an option from either
 game. Subtraction is simply the addition of the dual of a game. Formally:
 \begin{code}
 (:+:) :: ConwayNumber -> ConwayNumber -> ConwayNumber
@@ -263,8 +374,8 @@ CN [CN  [/+ -$\oneg$ +/] [/+ $\oneg$ +/]]
 The left option is equivalent to $\zerog$ and the right one is equivalent to
 $\twog$, and the entire expression is equivalent to $\oneg$.
 
-\noindent\textbf{Multiplication.} The most complicated operation on Conway
-numbers is multiplication. It is defined as follows:
+\smallskip\noindent\textbf{Multiplication.} The most complicated operation on
+Conway numbers is multiplication. It is defined as follows:
 \begin{code}
 (:*:) :: ConwayNumber -> ConwayNumber -> ConwayNumber
 x@(CN xls xrs) :*: y@(CN yls yrs) = 
@@ -286,6 +397,14 @@ Conway numbers form a \emph{ring} under the semantic notion of equality
 x :=: y = ==0 (x :-: y)
 \end{code}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Correspondence} 
+
+Show correspondence between operational and denotational semantics for
+$\Pi^{-}$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliographystyle{abbrvnat}
