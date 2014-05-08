@@ -12,74 +12,160 @@ Conventional definition:
 
 data Game = Game [Game] [Game]
   deriving (Eq, Show)
+
+Our definition:
+
+ GL ::= < S | P >
+ GR ::= < P | S >
+
+  S ::= 0 | GR | S + S
+
+  P ::= 1 | GL | P * P
+
 --}
 
-data Game a b = Game a b
+data GL = GL S P
+data GR = GR P S
+data S  = Lose | S GR | Choice S S 
+data P  = Win  | P GL | Opponent P P 
 
-data Void
+dualL :: GL -> GR
+dualL (GL s p) = GR (dualS s) (dualP p)
 
-type ZERO  = Game Void () 
+dualR :: GR -> GL
+dualR (GR p s) = GL (dualP p) (dualS s)
 
-type ONE   = Game ZERO ()
-type TWO   = Game ONE  ()
-type THREE = Game TWO  ()
+dualP :: P -> S
+dualP Win = Lose
+dualP (P gl) = S (dualL gl)
+dualP (Opponent p1 p2) = Choice (dualP p1) (dualP p2)
 
-type NEG_ONE   = Game Void ZERO
-type NEG_TWO   = Game Void NEG_ONE
-type NEG_THREE = Game Void NEG_TWO
-
-zeroG :: ZERO
-zeroG = Game undefined ()
-
-oneG :: ONE
-oneG = Game zeroG ()
-
-twoG :: TWO
-twoG = Game oneG ()
-
-threeG :: THREE
-threeG = Game twoG ()
-
-neg_oneG :: NEG_ONE
-neg_oneG = Game undefined zeroG
-
-neg_twoG :: NEG_TWO
-neg_twoG = Game undefined neg_oneG
-
-neg_threeG :: NEG_THREE
-neg_threeG = Game undefined neg_twoG
+dualS :: S -> P
+dualS Lose = Win
+dualS (S gr) = P (dualR gr)
+dualS (Choice s1 s2) = Opponent (dualS s1) (dualS s2)
 
 --
 
-class G a where
-  type Neg a :: *
+zeroGL, oneGL, twoGL, threeGL :: GL
+zeroGL  = GL Lose Win
+oneGL   = GL (S (dualL zeroGL)) Win
+twoGL   = GL (S (dualL oneGL)) Win
+threeGL = GL (S (dualL twoGL)) Win
 
-instance G Void where
-  type Neg Void = ()
+neg_oneGL, neg_twoGL, neg_threeGL :: GL
+neg_oneGL   = GL Lose (P zeroGL)
+neg_twoGL   = GL Lose (P neg_oneGL)
+neg_threeGL = GL Lose (P neg_twoGL)
 
-instance G () where
-  type Neg () = Void
+-- unary negation
 
-negG :: Game a b -> Game (Neg a) (Neg b) 
-negG (Game x y) = Game (negG x) (negG y) 
+negGL :: GL -> GL
+negGL (GL s p) = GL (dualP p) (dualS s)
+
+plusGL :: GL -> GL -> GL
+g@(GL s1 p1) `plusGL` h@(GL s2 p2) = 
+  GL (Choice (s1 `plusSL` h) (g `plusLS` s2))
+     (Opponent (p1 `plusPL` h) (g `plusLP` p2))
+
+plusSL :: S -> GL -> S
+plusSL Lose gl = Lose
+plusSL (S gr) gl = undefined
+plusSL (Choice s1 s2) gl = Choice (plusSL s1 gl) (plusSL s2 gl)
+
+plusLS :: GL -> S -> S
+plusLS gl Lose = Lose
+plusLS gl (S gr) = undefined
+plusLS gl (Choice s1 s2) = Choice (plusLS gl s1) (plusLS gl s2)
+
+plusPL :: P -> GL -> P
+plusPL Win gl = Win
+plusPL (P gl1) gl2 = undefined
+plusPL (Opponent p1 p2) gl = Opponent (plusPL p1 gl) (plusPL p2 gl)
+
+plusLP :: GL -> P -> P
+plusLP gl Win = Win
+plusLP gl1 (P gl2) = undefined
+plusLP gl (Opponent p1 p2) = Opponent (plusLP gl p1) (plusLP gl p2)
+
+--plusG :: Game -> Game -> Game
+--g@(Game gls grs) `plusG` h@(Game hls hrs) = 
+--  Game 
+--    ((map (`plusG` h) gls) `union` (map (g `plusG`) hls))
+--    ((map (`plusG` h) grs) `union` (map (g `plusG`) hrs))
+
 
 {--
-plusG :: Game -> Game -> Game
-g@(Game gls grs) `plusG` h@(Game hls hrs) = 
-  Game 
-    ((map (`plusG` h) gls) `union` (map (g `plusG`) hls))
-    ((map (`plusG` h) grs) `union` (map (g `plusG`) hrs))
+-- A morphism between games < xls | xrs > and < yls | yrs > 
+-- is a game < yls + xrs | xls + yrs > 
 
-negG :: Game -> Game
-negG (Game gls grs) = Game (map negG grs) (map negG gls) 
+-- Joyal: focus on strategies which are sequences of moves
+
+A strategy is a rule that tells us how to choose a move. 
+
+Given a game < x1=< z1, z2 | w1, w2, w3 >, x2, x3 | y1, y2 > 
+
+A strategy for left consists of choosing one of x1, x2, or x3 and then
+choosing a new strategy for each possible response from right. Say left chose
+x1 which is < z1, z2 | w1, w2, w3 >. Then the rest of left's strategy
+consists of the product of three strategies (Sw1, Sw2, Sw3) which are left's
+responses to each possible move from right. If we get to a game where right
+has no moves, then left's response is (). Let's assume that w1=<a1,a2|>,
+w2=<b|>, and that w3=<|c>. So we can say a strategy for left in the above
+game is:
+
+  ((S(a1) + S(a2)),b,0) + S(x2) + S(x3)
+
+The 0 means that we have lost in this branch.
+
+So instead of sets of games in left and right positions, we should think of
+sums and pairs of games!!!
+
+So games (from left perspective) are sums of products of sums of products
+etc. So their types would be:
+
+  G ::= S 
+
+  S ::= 0 | P | S + S
+
+  P ::= 1 | S | P * P 
+
+------------------------------------------------------------------------------
+-- Pi
+
+types ::= 0 | 1 | t+t | -t 
+c ::= unit+ | commute+ | assoc+ 
+    | id | sym c | c;c | c + c 
+meaning of the type 0 is all the games g such that (eq0 g)
+meaning of the type 1 is all the games g such that (eq0 (g `minusG` oneG))
+meaning of the type 2 ...
+meaning of the type constructor + is plusG
+meaning of the type constructor neg is negG
+semantics justifies commutatity, associativity, equivalence, etc. 
+
+data Combinator = 
+  Id | Sym Combinator | 
+  (:.:) Combinator Combinator | 
+  (:*:) Combinator Combinator | 
+  (:+:) Combinator Combinator | 
+  ZeroE | ZeroI | SwapP | AssocLP | AssocRP |
+  UnitE | UnitI | SwapT | AssocLT | AssocRT | 
+  DistribZ | FactorZ | Distrib | Factor 
+
+-- data Val = ???
+
 --}
 
-
-
-
-
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+-- Using conventional definition of Conway games...
 
 {--
+
+data Game = Game [Game] [Game]
+  deriving (Eq, Show)
+
 leftOptions :: Game -> [Game]
 leftOptions (Game gls _) = gls
 
@@ -297,61 +383,5 @@ recipG = undefined
 divG :: Game -> Game -> Game
 x `divG` y = x `timesG` (recipG y)
 
-------------------------------------------------------------------------------
--- A morphism between games < xls | xrs > and < yls | yrs > 
--- is a game < yls + xrs | xls + yrs > 
-
--- Joyal: focus on strategies which are sequences of moves
-
-{-- 
-
-A strategy is a rule that tells us how to choose a move. 
-
-Given a game < x1=< z1, z2 | w1, w2, w3 >, x2, x3 | y1, y2 > 
-
-A strategy for left consists of choosing one of x1, x2, or x3 and then
-choosing a new strategy for each possible response from right. Say left chose
-x1 which is < z1, z2 | w1, w2, w3 >. Then the rest of left's strategy
-consists of the product of three strategies (Sw1, Sw2, Sw3) which are left's
-responses to each possible move from right. If we get to a game where right
-has no moves, then left's response is (). Let's assume that w1=<a1,a2|>,
-w2=<b|>, and that w3=<|c>. So we can say a strategy for left in the above
-game is:
-
-  ((S(a1) + S(a2)),b,0) + S(x2) + S(x3)
-
-The 0 means that we have lost in this branch.
-
-So instead of sets of games in left and right positions, we should think of
-sums and pairs of games!!!
-
 --}
 
-
-------------------------------------------------------------------------------
--- Pi
-
-{--
-types ::= 0 | 1 | t+t | -t 
-c ::= unit+ | commute+ | assoc+ 
-    | id | sym c | c;c | c + c 
-meaning of the type 0 is all the games g such that (eq0 g)
-meaning of the type 1 is all the games g such that (eq0 (g `minusG` oneG))
-meaning of the type 2 ...
-meaning of the type constructor + is plusG
-meaning of the type constructor neg is negG
-semantics justifies commutatity, associativity, equivalence, etc. 
---}
-
-data Combinator = 
-  Id | Sym Combinator | 
-  (:.:) Combinator Combinator | 
-  (:*:) Combinator Combinator | 
-  (:+:) Combinator Combinator | 
-  ZeroE | ZeroI | SwapP | AssocLP | AssocRP |
-  UnitE | UnitI | SwapT | AssocLT | AssocRT | 
-  DistribZ | FactorZ | Distrib | Factor 
-
--- data Val = ???
-
---}
