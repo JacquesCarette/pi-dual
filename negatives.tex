@@ -125,50 +125,68 @@
 \section{Introduction}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{$\Pi$: Operational and Denotational Semantics}
+\section{\textsc{LET}: Operational Semantics}
 
-Present $\Pi$ with an interpreter specifying the operational semantics. For a
-model or denotational semantics, the minimum requirement is that every type
-maps to some kind of space; a value $v : t$ maps to an element of that space;
-and a combinator $c : t_1 \leftrightarrow t_2$ maps to a function between the
-spaces denoting $t_1$ and $t_2$. The simplest model one can think of is to
-map a type of size $n$ to a finite set of $n$ elements; a value $v : t$ maps
-to an element in the set denoting $t$; a combinator maps to a permutation on
-that set. One could also build other models, e.g. vector spaces but that
-model is fine. Perhaps show correspondence between operational and
-denotational semantics.
+We introduce a toy functional language. Separate the first-order from the
+higher-order component.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{$\Pi^{-}$: Operational Semantics}
+\section{$\Pi^{o}$: Operational and Denotational Semantics}
 
-Extend $\Pi$ with negative types and $\eta$ and $\epsilon$. Present the
-operational semantics that uses two interpreters forwards and backwards.  
+Present $\Pi^{o}$ with an interpreter specifying the operational
+semantics. This is $\Pi$ with recursive types and a trace operator. (It might
+be enough to have just one recursive type $\mathbb{N}$.) We know
+\emph{first-order} \textsc{LET} can be translated to this language: we cannot
+translate higher-order functions. That requires compact closure but we live a
+plain symmetric bimonoidal category.
 
-For the model or denotational semantics, we need to map every type to some
-space. If type $t$ maps to space $S$, we need to have an operation that maps
-that space to another space that acts like ``negative'' $S$ so that we can
-satisfy for example that $S-S=0$. Using the cardinality of the set like we
-did for $\Pi$ does not directly work (footnote on papers that describe sets
-with negative cardinality). Another idea is to generalize spaces to have two
+For a concrete model or denotational semantics that instantiates the
+categorical framework, the minimum requirement is that every type maps to
+some kind of space; a value $v : t$ maps to an element of that space; and a
+combinator $c : t_1 \leftrightarrow t_2$ maps to a function between the
+spaces denoting $t_1$ and $t_2$. The simplest model one can think of is to
+map a type of size $n$ to a set of $n$ elements (including the infinite set
+of $\omega$ elements; a value $v : t$ maps to an element in the set denoting
+$t$; a combinator maps to a permutation on that set. One could also build
+other models, e.g. vector spaces (infinite dimensional however) but that
+model is fine. Perhaps show the details of the model and the correspondence
+between operational and denotational semantics.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{$\Pi^{o-}$: Operational Semantics}
+
+Extend $\Pi^{o}$ with negative types and $\eta$ and $\epsilon$. Present the
+operational semantics that uses two interpreters forwards and backwards. Do
+we have such a semantics that we like? 
+
+The categorical model is now supposed to be a ring category. This is
+complicated so we will work directly with a concrete model that gives us more
+operational intuition. We need to map every type to some space. If type $t$
+maps to space $S$, we need to have an operation that maps that space to
+another space that acts like ``negative'' $S$ so that we can satisfy for
+example that $S-S=0$. Using the cardinality of the set like we did for
+$\Pi^{o}$ does not directly work (footnote on papers that describe sets with
+negative cardinality). Another idea is to generalize spaces to have two
 components (a producer and a consumer; a left player and a right player) and
 to describe the space using the relative ``strength'' of the two
 components. (This is the idea of the Int or G construction but that doesn't
-directly work if we have two monoidal structures.) A natural and beautiful
-theory is that of Conway games which model two player games: left and
-right. In that setting we can talk about games in which the left player has
-an $n$-move advantage (summarized by the number $n$) and games in which the
-right player has an $n$-move advantage (summarized by the number $-n$ which
-denotes that the left player has an $n$-move disadvantage). It is therefore
-possible to map a type of size $n$ where $n$ is an integer to the class
-Conway games where the left player has an $n$-move (dis-)advantage; the
-negative of a space $S$ is the space in which all the games are flipped with
-left and right players exchanging positions; a value $v : t$ maps to a Conway
-number in the set denoting $t$; all combinators preserve the size of the type
-and hence will be the identity. Note that the space corresponds to type $0$
-is not empty in this denotation: it consists of all the games in which the
-left player has a $0$-move advantage over the the right player and
-symmetrically, i.e., the set of games which are always lost by the first
-player to move.
+directly work if we have two monoidal structures and needs a complicated
+completion to ring categories.) A natural and beautiful theory is that of
+Conway games which model two player games: left and right. In that setting we
+can talk about games in which the left player has an $n$-move advantage
+(summarized by the number $n$) and games in which the right player has an
+$n$-move advantage (summarized by the number $-n$ which denotes that the left
+player has an $n$-move disadvantage). It is therefore possible to map a type
+of size $n$ where $n$ is an integer to the class Conway games where the left
+player has an $n$-move (dis-)advantage; the negative of a space $S$ is the
+space in which all the games are flipped with left and right players
+exchanging positions; following common terminology, we call the target of the
+type an \emph{arena}; a value $v : t$ maps to a \emph{strategy} for the left
+player in the arena for type $t$. Combinators transform strategies. Note that
+the space corresponds to type $0$ is an arena with no possible moves.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Operational Semantics}
 
 Given that our language is reversible, a backward evaluator is relatively
 straightforward to implement: using the backward evaluator to calculate
@@ -234,7 +252,7 @@ We add the following rules to the reductions above.
 \end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conway Numbers}
+\section{Conway Numbers: Arenas}
 
 A Conway number is a game consisting of left and right options where each
 option models a move to another game. There is another technical condition
@@ -398,10 +416,18 @@ x :=: y = ==0 (x :-: y)
 \end{code}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Correspondence} 
+\section{$\Pi^{o-}$: Denotational Semantics} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{$\Pi^{o-}$: Correspondence} 
 
 Show correspondence between operational and denotational semantics for
-$\Pi^{-}$.
+$\Pi^{o-}$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Back to $\textsc{LET}$}
+
+Now work out the full translation from \textsc{LET} to $\Pi^{o-}$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}

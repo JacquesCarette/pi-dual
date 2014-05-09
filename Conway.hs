@@ -6,6 +6,51 @@ import Data.List
 
 ------------------------------------------------------------------------------
 {--
+Game semantics:
+
+- types t are modeled by arenas [t]
+- terms e:t are modeled by strategies for left for playing in the arena [t]
+- evaluation of e corresponds to a play between left and right in the arena
+
+----------------
+type 0 => arena is the equivalence class of 'Game [] []'
+ 
+no terms of type 0 which is consistent with the fact that there is 
+no strategy for left for playing in the empty arena
+
+--
+
+type 1 ==> arena is the equivalence class of 'Game [zeroG] []'
+there is only one strategy for left: move left
+
+-- 
+
+type A + B ==> arena is the Conway sum of the arenas for A and B
+
+give S_A : A, there is a strategy left S_A that selects a move in A 
+  according to S_A
+there is also another strategy right S_B that selects a move in B 
+  according to S_B
+
+To summarize:
+
+  Our types map to the corresponding (equivalence classes of) Conway numbers
+  These Conway numbers are the arenas
+
+  The values (), L v, R v, (v,v), and -v 
+  map to the following strategies: 
+  () ==> the unique strategy for left when there is exactly one left option
+  L v ==> the strategy for left that plays 'v' in the left game of a sum
+  R v ==> the strategy for left that plays 'v' in the right game of a sum
+  (v1,v2) ==> the strategy for left that plays ... in a product game
+  -v ==> the strategy for left that mimics right ???
+
+  Our combinators transform strategies: for example swap+ transforms L v to R v
+
+  Do eta/epsilon allow backtracking in strategies?
+
+----------------
+
 Some random thoughts about how to "type" Conway games
 
 Our definition:
