@@ -77,21 +77,26 @@ test2 = game (arena (Plus One One)) Null
 test3 = game (arena (Plus three negTwo)) (R 0 (L 0 (R 0 (L 0 Null))))
 
 ------------------------------------------------------------------------------
--- Every value corresponds to a strategy
+-- Every value corresponds to a strategy; so our strategies are deterministic
+-- and precomputed; we are not allowed to select our move based on the
+-- opponent's move; hopefully with negatives we can backtrack and hence make
+-- our strategies more flexible
 
--- A strategy is a left move for each possible right move
-
-data Strategy = S (Int -> Strategy) 
+type Strategy = Play -- only left moves
 
 data Val = Unit | InL Val | InR Val | Pair Val Val
 
 val2Strategy :: (Val,T) -> (Strategy,Arena)
 val2Strategy (Unit,One) = (s,a)
   where a = arena One 
-        s = S (\_ -> undefined)
+        s = L 0 Null -- select the only possible move left has
 val2Strategy (InL v, Plus t1 t2) = (s,a)
   where a = arena (Plus t1 t2)
-        s = undefined
+        (s1,a1) = val2Strategy (v,t1)
+        -- s1 is strategy for t1
+        -- looking at plusA, left has the following options:
+        -- t1L + t2 or t1 + t2L
+        s = L undefined s1
 val2Strategy (InR v, Plus t1 t2) = (s,a)
   where a = arena (Plus t1 t2)
         s = undefined
@@ -101,20 +106,20 @@ val2Strategy (Pair v1 v2, Times t1 t2) = (s,a)
 
 -- take left strategy and right moves; right starts
 gameWithStrategy :: Arena -> Strategy -> Play -> Result
-gameWithStrategy (Arena ls []) (S s) Null = LeftWins
-gameWithStrategy (Arena ls rs) (S s) Null = Incomplete
-gameWithStrategy (Arena ls rs) (S s) (R i p) = 
-  gameWithStrategy (rs !! i) (s i) p
+gameWithStrategy = gameR
+  where gameL (Arena [] rs) _ _ = RightWins
+        gameL (Arena ls rs) (L i s) p = gameR (ls !! i) s p
+        gameL _ _ _ = error "malformed game"
+
+        gameR (Arena ls []) _ _ = LeftWins
+        gameR (Arena ls rs) s (R i p) = gameL (rs !! i) s p
+        gameR _ _ _ = error "malformed game"
 
 test4 = gameWithStrategy a s Null
   where (s,a) = val2Strategy (Unit,One)
 
 ------------------------------------------------------------------------------
 {--
-arena One = Arena [ Arena [] [] ] []
-arena (Plus t1 t2) = arena t1 `plusA` arena t2
-arena (Times t1 t2) = arena t1 `timesA` arena t2
-
 g@(Arena gls grs) `plusA` h@(Arena hls hrs) = 
   Arena
     ((map (`plusA` h) gls) `union` (map (g `plusA`) hls))
