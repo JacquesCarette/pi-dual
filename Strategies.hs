@@ -52,7 +52,7 @@ x@(Arena xls xrs) `timesA` y@(Arena yls yrs) =
 
 -- alternate L/R
 data Play = Null | L Int Play | R Int Play
-data Result = LeftWins | RightWins | Incomplete
+data Result = LeftWins | RightWins 
   deriving Show
 
 -- play starts with right move
@@ -60,13 +60,11 @@ game :: Arena -> Play -> Result
 game = gameR
   where gameL (Arena [] rs) _ = RightWins
         gameL (Arena ls rs) (L i p) = gameR (ls !! i) p
-        gameL (Arena ls rs) Null = Incomplete
-        gameL (Arena ls rs) (R i p) = error "malformed play"
+        gameL _ _ = error "malformed play"
 
         gameR (Arena ls []) _ = LeftWins
         gameR (Arena ls rs) (R i p) = gameL (rs !! i) p
-        gameR (Arena ls rs) Null = Incomplete
-        gameR (Arena ls rs) (L i p) = error "malformed play"
+        gameR _ _ = error "malformed play"
 
 three  = Plus One (Plus One One)
 negTwo = Neg (Plus One One)
@@ -102,7 +100,6 @@ val2Strategy (Pair v1 v2, Times t1 t2) = (s,a)
 -- take left strategy and right moves; right starts
 gameWithStrategy :: Arena -> Strategy -> Play -> Result
 gameWithStrategy (Arena ls []) (S s) Null = LeftWins
-gameWithStrategy (Arena ls rs) (S s) Null = Incomplete
 gameWithStrategy (Arena ls rs) (S s) (R i p) = 
   gameWithStrategy (rs !! i) (s i) p
 
