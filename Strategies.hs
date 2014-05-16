@@ -1,12 +1,10 @@
 module Strategies where
 
-import Data.List
-
 ------------------------------------------------------------------------------
 -- Every type corresponds to an arena 
 
 data Arena = Arena [Arena] [Arena]
-  deriving (Show,Eq)
+  deriving Show
 
 leftOptions :: Arena -> [Arena]
 leftOptions (Arena gls _) = gls
@@ -18,7 +16,7 @@ data T = Zero | One | Plus T T | Times T T | Neg T
 
 arena :: T -> Arena
 arena Zero = Arena [] []
-arena One = Arena [ Arena [] [] ] []
+arena One = Arena [ arena Zero ] []
 arena (Plus t1 t2) = arena t1 `plusA` arena t2
 arena (Times t1 t2) = arena t1 `timesA` arena t2
 arena (Neg t) = negA (arena t) 
@@ -26,8 +24,8 @@ arena (Neg t) = negA (arena t)
 plusA :: Arena -> Arena -> Arena
 g@(Arena gls grs) `plusA` h@(Arena hls hrs) = 
   Arena
-    ((map (`plusA` h) gls) `union` (map (g `plusA`) hls))
-    ((map (`plusA` h) grs) `union` (map (g `plusA`) hrs))
+    ((map (`plusA` h) gls) ++ (map (g `plusA`) hls))
+    ((map (`plusA` h) grs) ++ (map (g `plusA`) hrs))
 
 negA :: Arena -> Arena
 negA (Arena gls grs) = Arena (map negA grs) (map negA gls) 
@@ -39,11 +37,11 @@ timesA :: Arena -> Arena -> Arena
 x@(Arena xls xrs) `timesA` y@(Arena yls yrs) = 
   Arena 
     ([ (xl `timesA` y) `plusA` (x `timesA` yl) `minusA` (xl `timesA` yl)
-     | xl <- xls, yl <- yls] `union`
+     | xl <- xls, yl <- yls] ++
      [ (xr `timesA` y) `plusA` (x `timesA` yr) `minusA` (xr `timesA` yr)
      | xr <- xrs, yr <- yrs])
     ([ (xl `timesA` y) `plusA` (x `timesA` yr) `minusA` (xl `timesA` yr)
-     | xl <- xls, yr <- yrs] `union`
+     | xl <- xls, yr <- yrs] ++
      [ (xr `timesA` y) `plusA` (x `timesA` yl) `minusA` (xr `timesA` yl)
      | xr <- xrs, yl <- yls])
 
@@ -75,18 +73,17 @@ test2 = game (arena (Plus One One)) Null
 test3 = game (arena (Plus three negTwo)) (R 0 (L 0 (R 0 (L 0 Null))))
 
 ------------------------------------------------------------------------------
--- Every value corresponds to a strategy
+-- Every value corresponds to a strategy; our strategies are deterministic;
+-- hopefully negatives allow backtracking and hence more flexible strategies
 
--- A strategy is a left move for each possible right move
-
-data Strategy = S (Int -> Strategy) 
+type Strategy = Play -- with only left moves
 
 data Val = Unit | InL Val | InR Val | Pair Val Val
 
 val2Strategy :: (Val,T) -> (Strategy,Arena)
 val2Strategy (Unit,One) = (s,a)
   where a = arena One 
-        s = S (\_ -> undefined)
+        s = L 0 Null
 val2Strategy (InL v, Plus t1 t2) = (s,a)
   where a = arena (Plus t1 t2)
         s = undefined
@@ -99,32 +96,17 @@ val2Strategy (Pair v1 v2, Times t1 t2) = (s,a)
 
 -- take left strategy and right moves; right starts
 gameWithStrategy :: Arena -> Strategy -> Play -> Result
-gameWithStrategy (Arena ls []) (S s) Null = LeftWins
-gameWithStrategy (Arena ls rs) (S s) (R i p) = 
-  gameWithStrategy (rs !! i) (s i) p
+gameWithStrategy = gameR
+  where gameL (Arena [] rs) _ _ = RightWins
+        gameL (Arena ls rs) (L i s) p = gameR (ls !! i) s p
+        gameL _ _ _ = error "malformed play"
+
+        gameR (Arena ls []) _ _ = LeftWins
+        gameR (Arena ls rs) s (R i p) = gameL (rs !! i) s p
+        gameR _ _ _ = error "malformed play"
 
 test4 = gameWithStrategy a s Null
   where (s,a) = val2Strategy (Unit,One)
 
 ------------------------------------------------------------------------------
-{--
-arena One = Arena [ Arena [] [] ] []
-arena (Plus t1 t2) = arena t1 `plusA` arena t2
-arena (Times t1 t2) = arena t1 `timesA` arena t2
 
-g@(Arena gls grs) `plusA` h@(Arena hls hrs) = 
-  Arena
-    ((map (`plusA` h) gls) `union` (map (g `plusA`) hls))
-    ((map (`plusA` h) grs) `union` (map (g `plusA`) hrs))
-
-x@(Arena xls xrs) `timesA` y@(Arena yls yrs) = 
-  Arena 
-    ([ (xl `timesA` y) `plusA` (x `timesA` yl) `minusA` (xl `timesA` yl)
-     | xl <- xls, yl <- yls] `union`
-     [ (xr `timesA` y) `plusA` (x `timesA` yr) `minusA` (xr `timesA` yr)
-     | xr <- xrs, yr <- yrs])
-    ([ (xl `timesA` y) `plusA` (x `timesA` yr) `minusA` (xl `timesA` yr)
-     | xl <- xls, yr <- yrs] `union`
-     [ (xr `timesA` y) `plusA` (x `timesA` yl) `minusA` (xr `timesA` yl)
-     | xr <- xrs, yl <- yls])
---}
