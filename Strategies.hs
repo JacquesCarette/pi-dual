@@ -5,33 +5,91 @@ import Data.List
 ------------------------------------------------------------------------------
 -- Every type corresponds to an arena 
 
-data Arena = Arena [Arena] [Arena]
+data Arena = Arena Options Options
   deriving (Show,Eq)
 
-leftOptions :: Arena -> [Arena]
+data Options = None 
+             | Singleton Arena 
+             | Choose Options Options
+             | Both Options Options
+             | Flip Options
+  deriving (Show,Eq)
+
+leftOptions :: Arena -> Options
 leftOptions (Arena gls _) = gls
 
-rightOptions :: Arena -> [Arena]
+rightOptions :: Arena -> Options
 rightOptions (Arena _ grs) = grs
+
+-- simplify so that we can understand the results (for now)
+
+simplifyA :: Arena -> Arena
+simplifyA (Arena lo ro) = Arena (simplifyO lo) (simplifyO ro)
+
+simplifyO :: Options -> Options
+simplifyO None = None
+simplifyO (Singleton a) = Singleton (simplifyA a)
+simplifyO (Choose o1 o2) = case (so1,so2) of
+  (None,None) -> None
+  (None,so) -> so
+  (so,None) -> so
+  (so1,so2) -> if so1 == so2 then so1 else Choose so1 so2
+  where so1 = simplifyO o1
+        so2 = simplifyO o2
+simplifyO (Both o1 o2) = Both (simplifyO o1) (simplifyO o2)
+simplifyO (Flip o) = Flip (simplifyO o)
+
+-- 
 
 data T = Zero | One | Plus T T | Times T T | Neg T
 
 arena :: T -> Arena
-arena Zero = Arena [] []
-arena One = Arena [ Arena [] [] ] []
+arena Zero = Arena None None
+arena One = Arena (Singleton (arena Zero)) None
 arena (Plus t1 t2) = arena t1 `plusA` arena t2
 arena (Times t1 t2) = arena t1 `timesA` arena t2
 arena (Neg t) = negA (arena t) 
 
 plusA :: Arena -> Arena -> Arena
 g@(Arena gls grs) `plusA` h@(Arena hls hrs) = 
-  Arena
-    ((map (`plusA` h) gls) `union` (map (g `plusA`) hls))
-    ((map (`plusA` h) grs) `union` (map (g `plusA`) hrs))
+  Arena (Choose (gls `leftPlus` h) (g `rightPlus` hls))
+        (Choose (grs `leftPlus` h) (g `rightPlus` hrs))
+
+leftPlus :: Options -> Arena -> Options
+leftPlus None _ = None
+leftPlus (Singleton a) a' = Singleton (a `plusA` a')
+leftPlus (Choose o1 o2) a = Choose (o1 `leftPlus` a) (o2 `leftPlus` a)
+leftPlus (Both o1 o2) a = undefined
+leftPlus (Flip o) a = undefined
+
+rightPlus :: Arena -> Options -> Options
+rightPlus _ None = None
+rightPlus a (Singleton a') = Singleton (a `plusA` a')
+rightPlus a (Choose o1 o2) = Choose (a `rightPlus` o1) (a `rightPlus` o2)
+rightPlus a (Both o1 o2) = undefined
+rightPlus a (Flip o) = undefined
+
+{-- 
+simplifyA (arena (Plus One One))  ==> 
+  Arena (Singleton (Arena (Singleton (Arena None None)) None)) None
+--}
+
+timesA :: Arena -> Arena -> Arena
+timesA = undefined
 
 negA :: Arena -> Arena
-negA (Arena gls grs) = Arena (map negA grs) (map negA gls) 
+negA (Arena gls grs) = undefined -- Arena (negO grs) (negO gls) 
 
+{--
+negO :: Options -> Options
+negO None = None
+negO (Singleton a) = Singleton (negA a)
+negO (Choose a1 a2) = Choose (negA a1) (negA a2)
+negO (Both a1 a2) = Both (negA a1) (negA a2)
+negO (Flip a) = Flip (negA a)
+--}
+         
+{--
 minusA :: Arena -> Arena -> Arena
 g1 `minusA` g2 = g1 `plusA` (negA g2) 
 
@@ -117,6 +175,8 @@ gameWithStrategy = gameR
 
 test4 = gameWithStrategy a s Null
   where (s,a) = val2Strategy (Unit,One)
+
+--}
 
 ------------------------------------------------------------------------------
 {--
