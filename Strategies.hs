@@ -1,4 +1,4 @@
-{-# LANGUAGE TypeFamilies, TypeOperators #-}
+{-# LANGUAGE TypeFamilies, TypeOperators, GADTs #-}
 
 module Strategies where
 
@@ -47,7 +47,21 @@ data black :|: white = black :|: white
 
 data Void 
 
-data TODO
+data BlackProduct bw1 bw2 = 
+    BlackBlackLeft (BlackView bw1) 
+  | BlackBlackRight (BlackView bw2)
+  | BlackBlackBlack (BlackView bw1) (BlackView bw2) -- negated
+  | BlackWhiteLeft (WhiteView bw1)
+  | BlackWhiteRight (WhiteView bw2)
+  | BlackWhiteWhite (WhiteView bw1) (WhiteView bw2) -- negated
+
+data WhiteProduct bw1 bw2 = 
+    WhiteBlackLeft (BlackView bw1)
+  | WhiteWhiteRight (WhiteView bw2)
+  | WhiteBlackWhite (BlackView bw1) (WhiteView bw2) -- negated
+  | WhiteWhiteLeft (WhiteView bw1)
+  | WhiteBlackRight (BlackView bw2)
+  | WhiteWhiteBlack (WhiteView bw1) (BlackView bw2) -- negated
 
 instance Arena (black :|: white) where
 
@@ -66,7 +80,9 @@ instance Arena (black :|: white) where
      (Either black1 black2 :|: Either white1 white2)
 
   -- in the product arena, it is complicated
-  type TimesA (black1 :|: white1) (black2 :|: white2) = TODO
+  type TimesA (black1 :|: white1) (black2 :|: white2) = 
+    (BlackProduct (black1 :|: white1) (black2 :|: white2) :|:
+     WhiteProduct (black1 :|: white1) (black2 :|: white2))
 
   -- in the dual arena, the roles of Black and White are reversed
   type NegA (black :|: white) = (white :|: black) 
@@ -120,5 +136,75 @@ move in arena OneA we are now in arena ZeroA. This is weird
 --}
 
 ------------------------------------------------------------------------------
+-- Pi 
+-- Types are arenas
+-- Values are moves for Black
+-- combinators are black arrows mapping black moves to black moves
 
+type BlackArrow a b = BlackView a -> BlackView b
+
+plusZeroL :: (a ~ (aBlack :|: aWhite)) => BlackArrow (PlusA ZeroA a) a
+plusZeroL (Right m) = m
+
+plusZeroR :: (a ~ (aBlack :|: aWhite)) => BlackArrow a (PlusA ZeroA a) 
+plusZeroR m = Right m
+
+commutePlus :: (a ~ (aBlack :|: aWhite), b ~ (bBlack :|: bWhite)) => 
+               BlackArrow (PlusA a b) (PlusA b a)
+commutePlus (Left m) = Right m
+commutePlus (Right m) = Left m
+
+timesOneL :: (a ~ (aBlack :|: aWhite)) => BlackArrow (TimesA OneA a) a
+timesOneL (BlackBlackLeft ()) = undefined
+timesOneL (BlackBlackRight mB) = mB
+timesOneL (BlackBlackBlack () mB) = undefined -- negated
+timesOneL (BlackWhiteLeft _) = error "Impossible"
+timesOneL (BlackWhiteRight mW) = undefined
+timesOneL (BlackWhiteWhite _ mW) = error "Impossible"
+
+{--
+BlackProduct (() :|: Void) (aB :|: aW) = 
+    BlackBlackLeft ()
+  | BlackBlackRight aBlack
+  | BlackBlackBlack () aBlack -- negated
+  | BlackWhiteLeft Void
+  | BlackWhiteRight aWhite
+  | BlackWhiteWhite Void aWhite -- negated
+-> 
+aBlack
+--}
+
+
+{--
+
+  assocPlusL   :: PlusA a (PlusA b c) :<=> PlusA (PlusA a b) c 
+  assocPlusR   :: PlusA (PlusA a b) c :<=> PlusA a (PlusA b c) 
+  TimesOneL    :: TimesA OneA a :<=> a
+  TimesOneR    :: a :<=> TimesA OneA a
+  CommuteTimes :: TimesA a b :<=> TimesA b a
+  AssocTimesL  :: TimesA a (TimesA b c) :<=> TimesA (TimesA a b) c
+  AssocTimesR  :: TimesA (TimesA a b) c :<=> TimesA a (TimesA b c)
+  TimesZeroL   :: TimesA ZeroA a :<=> ZeroA
+  TimesZeroR   :: ZeroA :<=> TimesA ZeroA a
+  Distribute   :: TimesA (PlusA b c) a :<=> PlusA (TimesA b a) (TimesA c a)
+  Factor       :: PlusA (TimesA b a) (TimesA c a) :<=> TimesA (PlusA b c) a
+
+  Id           :: a :<=> a
+  Sym          :: (a :<=> b) -> (b :<=> a) 
+  (:.:)        :: (a :<=> b) -> (b :<=> c) -> (a :<=> c)
+  (:*:)        :: (a :<=> b) -> (c :<=> d) -> ((a,c) :<=> (b,d))
+  (:+:)        :: (a :<=> b) -> (c :<=> d) -> (Either a c :<=> Either b d)
+
+  Fold
+  Unfold
+  TracePlus
+  TraceTimes
+  EtaPlus
+  EpsilonPlus
+  EtaTimes
+  EpsilonTimes
+
+--}
+
+-----------------------------------------------------------------------
 
