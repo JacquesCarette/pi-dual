@@ -124,22 +124,32 @@ whiteMoveComplicatedOneA = Right (Left ())
 
 {--
 
-Since the game ComplicatedOneA is presumably equivalent to the game OneA,
-it should be possible to have a 1-1 correspondence between the moves in OneA
-and the moves in ComplicatedOneA. That's what the pi combinators witness.
-Computationally given that I know how to win OneA, I can derive moves 
-for ComplicatedOneA that are guaranteed to win.
+Since the game ComplicatedOneA is presumably equivalent to the game OneA, it
+should be possible to have a 1-1 correspondence between the moves in OneA and
+the moves in ComplicatedOneA. However it is clear that in OneA, White has no
+moves but that in ComplicatedOneA, White has a move. So a 1-1 correspondence
+between moves won't work. What will work is matching winning
+strategies. White has no winning strategy in OneA (obvious) but White also
+has no winning strategy in ComplicatedOneA. That's what the pi combinators
+witness.  Computationally given that I know how to win OneA, I can derive
+a strategy for ComplicatedOneA that is guaranteed to win.
 
 Note that actually playing games changes the types of the arenas: if I make a
-move in arena OneA we are now in arena ZeroA. This is weird
+move in arena OneA we are now in arena ZeroA. This is weird.
 
 --}
+
+-- Strategies
 
 ------------------------------------------------------------------------------
 -- Pi 
 -- Types are arenas
--- Values are moves for Black
--- combinators are black arrows mapping black moves to black moves
+-- Values are winning strategies for Black
+-- combinators are black arrows mapping winning black strategies to winning
+-- black strategies
+
+{--
+to fix...
 
 type BlackArrow a b = BlackView a -> BlackView b
 
@@ -162,7 +172,7 @@ timesOneL (BlackWhiteLeft _) = error "Impossible"
 timesOneL (BlackWhiteRight mW) = undefined
 timesOneL (BlackWhiteWhite _ mW) = error "Impossible"
 
-{--
+
 BlackProduct (() :|: Void) (aB :|: aW) = 
     BlackBlackLeft ()
   | BlackBlackRight aBlack
