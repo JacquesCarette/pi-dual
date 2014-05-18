@@ -210,36 +210,76 @@ data a :<=> b where
 plusZeroL :: (a ~ (aBlack :|: aWhite)) => M (PlusA ZeroA a) a
 plusZeroL = AssocPlusR :.: (Id :+: CommutePlus) :.: AssocPlusL
 
+timesOneL :: (a ~ (aBlack :|: aWhite)) => M (TimesA OneA a) a
+timesOneL = undefined
+
 {--
 
-plusZeroR :: (a ~ (aBlack :|: aWhite)) => BlackArrow a (PlusA ZeroA a) 
-plusZeroR m = Right m
+Either (BlackProduct (() :|: Void) (aB :|: aW)) aWhite 
+:<=> 
+Either (WhiteProduct (() :|: Void) (aB :|: aW)) aBlack
 
-commutePlus :: (a ~ (aBlack :|: aWhite), b ~ (bBlack :|: bWhite)) => 
-               BlackArrow (PlusA a b) (PlusA b a)
-commutePlus (Left m) = Right m
-commutePlus (Right m) = Left m
+and we have that:
+BlackProduct (() :|: Void) (aB :|: aW) has values:
+  BBL ()
+  BBR aB
+  BBB () aB
+  BWL Void
+  BWR aW
+  BWW Void aW
+WhiteProduct (() :|: Void) (aB :|: aW) has values:
+  WBL ()
+  WWR aW
+  WBW () aW
+  WWL Void
+  WBR aB
+  WWB Void aB
 
-timesOneL :: (a ~ (aBlack :|: aWhite)) => BlackArrow (TimesA OneA a) a
-timesOneL (BlackBlackLeft ()) = undefined
-timesOneL (BlackBlackRight mB) = mB
-timesOneL (BlackBlackBlack () mB) = undefined -- negated
-timesOneL (BlackWhiteLeft _) = error "Impossible"
-timesOneL (BlackWhiteRight mW) = undefined
-timesOneL (BlackWhiteWhite _ mW) = error "Impossible"
+LHS has values:
+  Right aW
+  Left (BBL ())
+  Left (BBR aB)
+  Left (BBB () aB)
+  Left (BWL Void)
+  Left (BWR aW)
+  Left (BWW Void aW)
 
+RHS has values:
+  Right aB
+  Left (WBL ())
+  Left (WWR aW)
+  Left (WBW () aW)
+  Left (WWL Void)
+  Left (WBR aB)
+  Left (WWB Void aB)
 
-BlackProduct (() :|: Void) (aB :|: aW) = 
-    BlackBlackLeft ()
-  | BlackBlackRight aBlack
-  | BlackBlackBlack () aBlack -- negated
-  | BlackWhiteLeft Void
-  | BlackWhiteRight aWhite
-  | BlackWhiteWhite Void aWhite -- negated
--> 
-aBlack
+Get rid of the voids:
+
+LHS has values:
+  Right aW
+  Left (BBL ())
+  Left (BBR aB)
+  Left (BBB () aB)
+  Left (BWR aW)
+
+RHS has values:
+  Right aB
+  Left (WBL ())
+  Left (WWR aW)
+  Left (WBW () aW)
+  Left (WBR aB)
+
+Do they match up? Here is a possible match:
+
+  Right aW            Left (WWR aW)
+  Left (BBL ())       Left (WBL ())
+  Left (BBR aB)       Right aB
+  Left (BBB () aB)    Left (WBR aB)
+  Left (BWR aW)       Left (WBW () aW)
+
 --}
 
+  
 
 {--
 
