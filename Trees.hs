@@ -82,3 +82,10 @@ Node (Node (Leaf (Plus (Name "x+") (Name "a+")))
 
 -- What are the morphisms between these cubes? 
 
+{--
+
+mor :: NCube -> NCube -> NMorphism
+mor (Leaf t1) (Leaf t2) = Base (t1 :<=> t2) 
+mor (Node o1 o2) (Node o3 o4) = mor (Either o1 o4) (Either o3 o2)
+
+--}
