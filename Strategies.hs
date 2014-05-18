@@ -222,10 +222,10 @@ Either (WhiteProduct (() :|: Void) (aB :|: aW)) aBlack
 and we have that:
 BlackProduct (() :|: Void) (aB :|: aW) has values:
   BBL ()
-  BBR aB
+  BWR aW
   - BBB () aB
   BWL Void
-  BWR aW
+  BBR aB
   - BWW Void aW
 WhiteProduct (() :|: Void) (aB :|: aW) has values:
   WBL ()
@@ -238,10 +238,10 @@ WhiteProduct (() :|: Void) (aB :|: aW) has values:
 LHS has values:
   Right aW
   Left (BBL ())
-  Left (BBR aB)
+  Left (BWR aW)
   - Left (BBB () aB)
   Left (BWL Void)
-  Left (BWR aW)
+  Left (BBR aB)
   - Left (BWW Void aW)
 
 RHS has values:
@@ -258,9 +258,9 @@ Get rid of the voids:
 LHS has values:
   Right aW
   Left (BBL ())
-  Left (BBR aB)
-  - Left (BBB () aB)
   Left (BWR aW)
+  - Left (BBB () aB)
+  Left (BBR aB)
 
 RHS has values:
   Right aB
@@ -272,6 +272,7 @@ RHS has values:
 Do they match up? No. We have three incoming aW on the left and one outgoing
 on the right!
 
+JC: uh?  It's now 2 and 2.
 --}
 
 timesA :: (a ~ (aBlack :|: aWhite), b ~ (bBlack :|: bWhite), 
