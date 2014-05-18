@@ -1,16 +1,18 @@
 module Trees where
 
-{-- Our objects are complete binary trees of different heights. This is a
-tree of types and we want a function to summarize that whole tree using one
-type. 
+{-- 
+
+Our objects are n-dimensional cubes represented as complete binary trees of
+different heights. 
+
 --}
 
 -- plain types: the names are for testing
 data T = Zero | One | Plus T T | Times T T | Name String
   deriving Show
 
-data Obj = Leaf T 
-         | Node Obj Obj -- left is plus; right is minus
+data NCube = Leaf T 
+           | Node NCube NCube -- left is plus; right is minus
   deriving Show
 
 -- examples
@@ -33,7 +35,7 @@ ttt1 = Node tt1 tt2
 
 -- multiplication
 
-times :: Obj -> Obj -> Obj
+times :: NCube -> NCube -> NCube
 times (Leaf t1) (Leaf t2) = Leaf (Times t1 t2)
 times (Leaf t) (Node o1 o2) = Node (times (Leaf t) o1) (times (Leaf t) o2)
 times (Node o1 o2) o = Node (times o1 o) (times o2 o)
@@ -58,7 +60,7 @@ Node (Node
 
 -- addition (extend the shorter tree) 
 
-add :: Obj -> Obj -> Obj
+add :: NCube -> NCube -> NCube
 add (Leaf t1) (Leaf t2) = Leaf (Plus t1 t2)
 add (Leaf t) (Node o1 o2) = add (Node (Leaf t) (Leaf Zero)) (Node o1 o2)
 add (Node o1 o2) (Leaf t) = add (Node o1 o2) (Node (Leaf t) (Leaf Zero))
@@ -77,3 +79,6 @@ Node (Node (Leaf (Plus (Name "x+") (Name "a+")))
            (Leaf (Plus Zero (Name "d+"))))
 
 --}
+
+-- What are the morphisms between these cubes? 
+
