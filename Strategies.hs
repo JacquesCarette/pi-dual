@@ -134,27 +134,83 @@ has no winning strategy in ComplicatedOneA. That's what the pi combinators
 witness.  Computationally given that I know how to win OneA, I can derive
 a strategy for ComplicatedOneA that is guaranteed to win.
 
-Note that actually playing games changes the types of the arenas: if I make a
-move in arena OneA we are now in arena ZeroA. This is weird.
+In ComplicatedOneA, White has two opening moves 
+  Right (Left ()) or Right (Right ()). 
+They are really similar. Consider the following game:
+-- original arena: 
+-- = PlusA (PlusA (() :|: Void) (PlusA (() :|: Void) (() :|: Void)))
+--         (Neg (PlusA (() :|: Void) (() :|: Void)))
+-- White's has two similar moves, say White chooses Right (Left ())
+-- new arena
+-- = PlusA (PlusA (() :|: Void) (PlusA (() :|: Void) (() :|: Void)))
+--         (Neg (PlusA (Void :|: Void) (() :|: Void)))
+-- Black has three moves in the left part of the game. They are all similar
+-- so assume black chooses Left (Left ())
+-- new arena is:
+-- = PlusA (PlusA (Void :|: Void) (PlusA (() :|: Void) (() :|: Void)))
+--         (Neg (PlusA (Void :|: Void) (() :|: Void)))
+-- White has only one possible move Right (Right ()) which leads to:
+-- = PlusA (PlusA (Void :|: Void) (PlusA (() :|: Void) (() :|: Void)))
+--         (Neg (PlusA (Void :|: Void) (Void :|: Void)))
+-- Black has two moves to choose from; we move to:
+-- = PlusA (PlusA (Void :|: Void) (PlusA (Void :|: Void) (() :|: Void)))
+--         (Neg (PlusA (Void :|: Void) (Void :|: Void)))
+-- White has no moves; Black wins
+-- To summarize, Black's strategy in the game (ThreeA `plusA` MTwoA) is to
+-- counter any move by White in MTwoA by a move in ThreeA
+
+There should be a Pi combinator mapping 3-2 to 1. That circuit is probably
+what we want to compute the above:
+
+3 - 2 <==> 1
+(3 :|: 0) + (0 :|: 2) <==> (1 :|: 0)
+(3 + 0 :|: 0 + 2) <==> (1 :|: 0)
+
+A map (b1 :|: w1) <==> (b2 :|: w2)
+is a map (b1 + w2 <==> b2 + w1) in plain Pi
+
+So the above is the following map in plain Pi
+(3 + 0) + 0 <==> 1 + (0 + 2)
+which is easy to implement in Pi
+It show that the one move advantage for Black in the arena '1' plus the two
+move advantage for white in the arena '-2' are equivalent to the '3' move
+advantage for black in the arena 3.
+
+So we are back to mapping moves to moves but in a way that balances the
+advantage for black against the advantage for white
 
 --}
 
--- Strategies
+-- So what we want is to map between (b1 :|: w1) and (b2 :|: w2) as follows:
 
-------------------------------------------------------------------------------
--- Pi 
--- Types are arenas
--- Values are winning strategies for Black
--- combinators are black arrows mapping winning black strategies to winning
--- black strategies
+type M a b = 
+  Either (BlackView a) (WhiteView b) :<=> Either (WhiteView a) (BlackView b)
+
+data a :<=> b where 
+  Id           :: a :<=> a
+  Sym          :: (a :<=> b) -> (b :<=> a) 
+  (:.:)        :: (a :<=> b) -> (b :<=> c) -> (a :<=> c)
+  (:*:)        :: (a :<=> b) -> (c :<=> d) -> ((a,c) :<=> (b,d))
+  (:+:)        :: (a :<=> b) -> (c :<=> d) -> (Either a c :<=> Either b d)
+  PlusZeroL    :: Either Void a :<=> a
+  PlusZeroR    :: a :<=> Either Void a
+  CommutePlus  :: Either a b :<=> Either b a
+  AssocPlusL   :: Either a (Either b c) :<=> Either (Either a b) c 
+  AssocPlusR   :: Either (Either a b) c :<=> Either a (Either b c) 
+  TimesOneL    :: ((), a) :<=> a
+  TimesOneR    :: a :<=> ((), a)
+  CommuteTimes :: (a,b) :<=> (b,a) 
+  AssocTimesL  :: (a,(b,c)) :<=> ((a,b),c)
+  AssocTimesR  :: ((a,b),c) :<=> (a,(b,c))
+  TimesZeroL   :: (Void, a) :<=> Void
+  TimesZeroR   :: Void :<=> (Void, a)
+  Distribute   :: (Either b c, a) :<=> Either (b, a) (c, a)
+  Factor       :: Either (b, a) (c, a) :<=> (Either b c, a)
+
+plusZeroL :: (a ~ (aBlack :|: aWhite)) => M (PlusA ZeroA a) a
+plusZeroL = AssocPlusR :.: (Id :+: CommutePlus) :.: AssocPlusL
 
 {--
-to fix...
-
-type BlackArrow a b = BlackView a -> BlackView b
-
-plusZeroL :: (a ~ (aBlack :|: aWhite)) => BlackArrow (PlusA ZeroA a) a
-plusZeroL (Right m) = m
 
 plusZeroR :: (a ~ (aBlack :|: aWhite)) => BlackArrow a (PlusA ZeroA a) 
 plusZeroR m = Right m
