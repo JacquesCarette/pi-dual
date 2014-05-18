@@ -1,0 +1,152 @@
+\documentclass[authoryear,preprint]{sigplanconf}
+\usepackage{amsmath}
+\usepackage{listings} 
+\usepackage{stmaryrd}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{courier}
+\usepackage{thmtools}
+\usepackage{bbold}
+
+\newtheorem{definition}{Definition}
+\begin{document}
+\special{papersize=8.5in,11in}
+\setlength{\pdfpageheight}{\paperheight}
+\setlength{\pdfpagewidth}{\paperwidth}
+
+\newcommand{\alt}{~|~}
+\lstnewenvironment{code}{\lstset{basicstyle={\sffamily\footnotesize}}}{}
+
+\lstset{frame=none,
+         language=Haskell,
+         basicstyle=\sffamily, 
+         numberstyle=\tiny,
+         numbersep=5pt,
+         tabsize=2,    
+         extendedchars=true,
+         breaklines=true,   
+         breakautoindent=true,
+         keywordstyle=\color{black},
+         captionpos=b,
+         stringstyle=\color{black}\ttfamily,
+         showspaces=false,  
+         showtabs=false,    
+         framexleftmargin=2em,
+         framexbottommargin=1ex,
+         showstringspaces=false
+         basicstyle=\sffamily,
+         columns=[l]flexible,
+         flexiblecolumns=true,
+         aboveskip=\smallskipamount,
+         belowskip=\smallskipamount,
+         lineskip=-1pt,
+         xleftmargin=1em,
+         escapeinside={/+}{+/},
+         keywords=[1]{Monad,Just,Nothing,type,data,right,left,id,where,do,
+                     if,then,else,let,in},
+         literate=
+           {+}{{$\;+\;$}}1 
+           {/}{{$/$}}1 
+           {*}{{$\;*\;$}}1
+           {=}{{$=\ $}}1 
+           {/=}{{$\not=$}}1
+           {[]}{$[\;]$}2
+           {<}{{$<$}}1 
+           {>}{{$>$}}1 
+           {++}{{$+\!\!\!+\;$}}1 
+           {::}{{$:\mkern -2.5mu:\;$}}1
+           {&&}{{$\&\!\!\!\&$}}2
+           {:=:}{{$:\mkern -2mu=\mkern -2mu:\;$}}3
+           {:+:}{{$:\mkern -5mu+\mkern -5mu:\;$}}3
+           {:-:}{{$:\mkern -5mu-\mkern -5mu:\;$}}3
+           {:*:}{{$:\mkern -5mu*\mkern -5mu:\;$}}3
+           {$}{{\texttt{\$}\hspace{0.5em}}}1
+           {`}{$^\backprime$}1
+           {==}{{$=\!=\;$}}2
+           {===}{{$\equiv\;$}}2
+           {->}{{$\rightarrow\;$}}2 
+           {>=}{{$\geq$}}2 
+           {<=}{{$\leq$}}2 
+           {>=0}{{$\geq_\zerog\;$}}2 
+           {<=0}{{$\leq_\zerog\;$}}2 
+           {==0}{{$=_\zerog\;$}}2 
+           {>0}{{$>_\zerog\;$}}2 
+           {<0}{{$<_\zerog\;$}}2 
+           {<-}{{$\leftarrow$}}2
+           {=>}{{$\Rightarrow\;$}}2
+           {<<}{{$\ll$}}2 
+           {>>}{{$\gg\;$}}2
+           {>>>}{{$\ggg\;$}}3 
+           {<<<}{{$\lll\;$}}3
+           {>>=}{{$\gg\mkern -2.5mu=\;$}}3
+           {=<<}{{$=\mkern -2.5mu\ll\;$}}3
+           {<|}{$\lhd\;$}2
+           {<||}{$\unlhd\;$}2
+           {\ ||\ }{$\|$}1
+           {\\}{$\lambda$}1
+           {:>}{{$\rhd$}}2
+           {||>}{{$\unrhd$}}2
+           {_}{{$\_$}}1
+           {_B}{{$_b$}}2
+           {forall}{{$\forall$}}1
+}
+
+\lstset{postbreak=\raisebox{0ex}[0ex][0ex]
+        {\ensuremath{\hookrightarrow}}}
+\lstset{breaklines=true, breakatwhitespace=true}
+\lstset{numbers=none, numbersep=5pt, stepnumber=2, numberstyle=\scriptsize}
+\lstset{rangeprefix=/*!\ , rangesuffix=\ !*\/, includerangemarker=false}
+
+%% double-blind reviewing...
+\title{Negative Types}
+\authorinfo{}{}{}
+\maketitle
+
+\begin{abstract}
+\ldots
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+Ignore function types for now. Finite algebraic types (constructed from 0, 1,
+sum, and product) are positive types; they represent the program (as opposed
+to the environment), the player (as opposed to the opponent), the producer
+(as opposed to the consumer). Negative types represent the environment, the
+opponent, the consumer, etc. There is a nice symmetry here but that is
+difficult to see if the computational model has information
+effects. Intuitively, if the computational infrastructure allows arbitrary
+things to be discarded or duplicated then ``loans'' or ``debts'' must be
+introduced with extreme care. However in settings where resources are
+maintained, it is conceptually simpler to introduce ``debts'' and liberally
+compute with ``positive'' and ``negative'' values knowing that every demand
+for a value will be eventually matched up with a corresponding positive
+flow. 
+
+Other than semantic elegance, the immediate significance is that we get
+higher-order functions for free as objects of type $-a+b$ expressing the
+demand for a value of type $a$ and the production of a value of type $b$.  We
+can see this beautiful symmetry and the emergence of functions from symmetry
+in linear logic. The geometry of interaction construction takes a fragment of
+linear logic and builds higher-order functions. It however doesn't work for
+full linear logic. The related Int construction does not work if we have two
+functors. This turns out to be a long-standing open problem in algebraic
+topology that was recently solved in the ``ring completion'' paper. So the
+technical question is how to take computational infrastructure where
+information is conserved and add these symmetries that lead to higher-order
+functions without losing the product structure.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Conclusion}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{abbrvnat}
+\softraggedright
+\bibliography{cites}
+
+\end{document}
+
+
+
