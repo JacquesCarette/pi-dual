@@ -223,35 +223,35 @@ and we have that:
 BlackProduct (() :|: Void) (aB :|: aW) has values:
   BBL ()
   BBR aB
-  BBB () aB
+  - BBB () aB
   BWL Void
   BWR aW
-  BWW Void aW
+  - BWW Void aW
 WhiteProduct (() :|: Void) (aB :|: aW) has values:
   WBL ()
   WWR aW
-  WBW () aW
+  - WBW () aW
   WWL Void
   WBR aB
-  WWB Void aB
+  - WWB Void aB
 
 LHS has values:
   Right aW
   Left (BBL ())
   Left (BBR aB)
-  Left (BBB () aB)
+  - Left (BBB () aB)
   Left (BWL Void)
   Left (BWR aW)
-  Left (BWW Void aW)
+  - Left (BWW Void aW)
 
 RHS has values:
   Right aB
   Left (WBL ())
   Left (WWR aW)
-  Left (WBW () aW)
+  - Left (WBW () aW)
   Left (WWL Void)
   Left (WBR aB)
-  Left (WWB Void aB)
+  - Left (WWB Void aB)
 
 Get rid of the voids:
 
@@ -259,27 +259,116 @@ LHS has values:
   Right aW
   Left (BBL ())
   Left (BBR aB)
-  Left (BBB () aB)
+  - Left (BBB () aB)
   Left (BWR aW)
 
 RHS has values:
   Right aB
   Left (WBL ())
   Left (WWR aW)
-  Left (WBW () aW)
+  - Left (WBW () aW)
   Left (WBR aB)
 
-Do they match up? Here is a possible match:
-
-  Right aW            Left (WWR aW)
-  Left (BBL ())       Left (WBL ())
-  Left (BBR aB)       Right aB
-  Left (BBB () aB)    Left (WBR aB)
-  Left (BWR aW)       Left (WBW () aW)
+Do they match up? No. We have three incoming aW on the left and one outgoing
+on the right!
 
 --}
 
+timesA :: (a ~ (aBlack :|: aWhite), b ~ (bBlack :|: bWhite), 
+           c ~ (cBlack :|: cWhite), d ~ (dBlack :|: dWhite)) =>
+          M a b -> M c d -> M (TimesA a c) (TimesA b d)
+timesA = undefined
   
+{--
+Given f : Either aBlack bWhite :<=> Either aWhite bBlack
+Given g : Either cBlack dWhite :<=> Either cWhite dBlack
+
+TimesA a c = BlackProduct a c :|: WhiteProduct a c
+TimesA b d = BlackProduct b d :|: WhiteProduct b d
+M (TimesA a c) (TimesA b d) = 
+  Either (BlackProduct a c) (WhiteProduct b d) :<=>
+  Either (WhiteProduct a c) (BlackProduct b d)
+
+LHS has values:
+  Left (BBL aB)
+  Left (BBR cB)
+  - Left (BBB aB cB)
+  Left (BWL aW)
+  Left (BWR cW)
+  - Left (BWW aW cW)
+  Right (WBL bB)
+  Right (WWR dW)
+  - Right (WBW bB dW)
+  Right (WWL bW)
+  Right (WBR dB)
+  - Right (WWB bW dB)
+
+RHS has values:
+  Left (WBL aB)
+  Left (WWR cW)
+  - Left (WBW aB cW)
+  Left (WWL aW)
+  Left (WBR cB)
+  - Left (WWB aW cB)
+  Right (BBL bB)
+  Right (BBR dB)
+  - Right (BBB dB dB)
+  Right (BWL bW)
+  Right (BWR dW)
+  - Right (BWW bW dW)
+
+Re-arrange:
+LHS:
+  Left (WBW aB cW)
+  Left (WWB aW cB)
+  Right (BBB dB dB)
+  Right (BWW bW dW)
+  Left (BBL aB)
+  Left (BBR cB)
+  Left (BWL aW)
+  Left (BWR cW)
+  Right (WBL bB)
+  Right (WWR dW)
+  Right (WWL bW)
+  Right (WBR dB)
+
+RHS:
+  Left (BBB aB cB)
+  Left (BWW aW cW)
+  Right (WBW bB dW)
+  Right (WWB bW dB)
+  Left (WBL aB)
+  Left (WWR cW)
+  Left (WWL aW)
+  Left (WBR cB)
+  Right (BBL bB)
+  Right (BBR dB)
+  Right (BWL bW)
+  Right (BWR dW)
+
+Look for a match:
+  Left (WBW aB cW) feed to f and ginv get (aW + bB) (cB + dW)
+  Left (WWB aW cB)
+  Right (BBB dB dB)
+  Right (BWW bW dW)
+  Left (BBL aB)       Left (WBL aB)
+  Left (BBR cB)       Left (WBR cB)
+  Left (BWL aW)       Left (WWL aW)
+  Left (BWR cW)       Left (WWR cW)
+  Right (WBL bB)      Right (BBL bB)
+  Right (WWR dW)      Right (BWR dW)
+  Right (WWL bW)      Right (BWL bW)
+  Right (WBR dB)      Right (BBR dB)
+
+                      Left (BBB aB cB)
+                      Left (BWW aW cW)
+                      Right (WBW bB dW)
+                      Right (WWB bW dB)
+  
+Given f : Either aB bW :<=> Either aW bB
+Given g : Either cB dW :<=> Either cW dB
+--}
+
 
 {--
 
