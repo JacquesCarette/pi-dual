@@ -12,6 +12,8 @@
 
 \newcommand{\lolli}{\multimap} 
 \newcommand{\cubt}{\mathbb{T}}
+\newcommand{\den}[1]{\llbracket #1 \rrbracket}
+\newcommand{\denc}[1]{\llbracket #1 \rrbracket^c}
 \newcommand{\nodet}[2]{\fcolorbox{black}{white}{$#1$}\fcolorbox{black}{gray!20}{$#2$}}
 
 \begin{document}
@@ -144,42 +146,67 @@ $n$-dimensional cubes.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Formal Construction} 
 
-We use $\tau$ for regular first-order types which include the empty type, the
-unit type, and conventional sum and product types.  We use $\cubt$ for
-general $n$-dimensional cubical types. An $n$-dimensional cubical type
-$\nodet{\cubt_1}{\cubt_2}$ consists of a positive subspace $\cubt_1$ and a
-negative subspace $\cubt_2$ (shaded in gray). Each of the subspaces are
-cubical types of a lower dimension; the 1-dimensional case reduces to plain
-first-order types. As we explain below, cubical types are closed under sums,
-differences, products, and can express higher-order functions $\cubt_1 \lolli
-\cubt_2$ as $(\ominus \cubt_1) \oplus \cubt_2$. The syntax of the types is
-summarized below:
+We use $t$ for regular first-order types which include the empty type, the
+unit type, and conventional sum and product types.  We use $\tau$ for cubical
+types: these have the same formal structure as regular types but also include
+\emph{negative} types. The syntax of the types is summarized below:
 \[\begin{array}{rcl}
-\tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
-\\
-\cubt &::=& \tau \alt \nodet{\cubt_1}{\cubt_2} 
-      \alt \cubt \oplus \cubt 
-      \alt \cubt \otimes \cubt 
-      \alt \ominus \cubt 
+t &::=& 0 \alt 1 \alt t_1 + t_2 \alt t_1 * t_2 \\
+\tau &::=& t \alt 
+      \alt \tau_1 + \tau_2
+      \alt \tau_1 * \tau_2
+      \alt - \tau
 \end{array}\]
-Examples of 1-dimensional cubical types include all the regular first-order
-types $\tau$. A 2-dimensional cubical type looks like
-$\nodet{\tau_1}{\tau_2}$ which intuitively corresponds to the difference
-$\tau_1 - \tau_2$ of the two types. A 3-dimensional cubical type looks like
-$\nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}$ which
-intuitively corresponds to the iterated difference of types
-$(\tau_1-\tau_2)-(\tau_3-\tau_4)$ where the successive colors from the root
-encode the sign as follows: white in the outermost box corresponds to a
-positive polarity and gray in the outermost box corresponds to a negative
-polarity; then, as we move inwards the polarities alternate for every change
-of color. It is possible for cubical types not be balanced in general but it
-is always possible to extend the shorter subtree to an arbitrary depth using
-the fact (to be justified later) that~$\tau$ is equivalent to
-$\nodet{\tau}{0}$.
+We use $\tau_1 - \tau_2$ to abbreviate $\tau_1 + (- \tau_2)$ and more
+interestingly $\tau_1 \lolli \tau_2$ to abbreviate $(- \tau_1) + \tau_2$.
 
-We now explain how cubical types are closed under sum, difference, and
-products. In the recursive definitions below, we assume that the types have
-been extended to be balanced as needed:
+It is easy to find a model for regular types: finite sets are such a
+model. In more detail:
+\[\begin{array}{rcl}
+\den{0} &=& \emptyset \\
+\den{1} &=& \{ \bullet \} \\
+\den{t_1 + t_2} &=& \den{t_1} \uplus \den{t_2} \\
+\den{t_1 * t_2} &=& \den{t_1} \times \den{t_2} 
+\end{array}\]
+The type 0 maps to the empty set. The type 1 maps to a singleton set. The sum
+of types maps to disjoint union of sets. The product of types maps to the
+cartesian product of sets. 
+
+For cubical types, their denotations are $n$-dimensional cubical sets with
+polarities, written as $\nodet{\cubt_1}{\cubt_2}$ An $n$-dimensional cubical
+set $\nodet{\cubt_1}{\cubt_2}$ consists of a positive subspace $\cubt_1$ and
+a negative subspace $\cubt_2$ (shaded in gray). Each of the subspaces are
+cubical set of a lower dimension; the 1-dimensional case reduces to plain
+sets (which are the denotations of first-order types). As we explain below,
+cubical sets are closed under sums, differences, products.
+
+Examples of 1-dimensional cubical sets include all the finite sets $S$
+denoting regular first-order types $t$. A 2-dimensional cubical set looks
+like $\nodet{S_1}{S_2}$ which intuitively corresponds to the difference $t_1
+- t_2$ of the two types whose denotations are $S_1$ and $S_2$ respectively. A
+3-dimensional cubical type looks like
+$\nodet{(\nodet{S_1}{S_2})}{(\nodet{S_3}{S_4})}$ which intuitively
+corresponds to the iterated difference of the appropriate types
+$(t_1-t_2)-(t_3-t_4)$ where the successive colors from the root encode the
+sign as follows: white in the outermost box corresponds to a positive
+polarity and gray in the outermost box corresponds to a negative polarity;
+then, as we move inwards the polarities alternate for every change of
+color. 
+
+We now give the denotation of cubical types:
+\[\begin{array}{rcl}
+\denc{t} &=& \den{t} = \nodet{\den{t}}{0} = 
+  \nodet{\nodet{\den{t}}{0}}{0} = \ldots \\
+\denc{\tau_1 + \tau_2} &=& \denc{\tau_1} \oplus \denc{\tau_2} \\
+\denc{\tau_1 * \tau_2} &=& \denc{\tau_1} \otimes \denc{\tau_2} \\
+\denc{- \tau} &=& \ominus \denc{\tau}
+\end{array}\]
+where the operations $\oplus$, $\otimes$, and $\ominus$ are defined below.
+It is possible for cubical types not be balanced in general but it is always
+possible to extend the shorter subtree to an arbitrary depth using the first
+clause which formalizes that $t$ is equivalent to $t-0$ and to $(t-0)-0$ etc.
+In the recursive definitions below, we assume that the types have been
+extended to be balanced as needed:
 \[\begin{array}{rcl}
 \ominus~\tau &=& \tau \\
 \ominus~\nodet{\cubt_1}{\cubt_2} &=& \nodet{\ominus~\cubt_2}{\ominus~\cubt_1} \\
@@ -197,55 +224,56 @@ been extended to be balanced as needed:
 
 \begin{figure*}
 \[\begin{array}{c}
-\nodet{\tau_1}{\tau_2}
+\nodet{S_1}{S_2}
 \quad\otimes\quad
-\nodet{(\nodet{\tau_3}{\tau_4})}{(\nodet{\tau_5}{\tau_6})} = 
+\nodet{(\nodet{S_3}{S_4})}{(\nodet{S_5}{S_6})} = 
 \\
-\nodet{(\nodet{{(\nodet{\tau_1*\tau_3}{\tau_1*\tau_4})}}
-              {{(\nodet{\tau_1*\tau_5}{\tau_1*\tau_6})}})}
-      {(\nodet{{(\nodet{\tau_2*\tau_3}{\tau_2*\tau_4})}}
-              {{(\nodet{\tau_2*\tau_5}{\tau_2*\tau_6})}})}
+\nodet{(\nodet{{(\nodet{S_1 \times S_3}{S_1 \times S_4})}}
+              {{(\nodet{S_1 \times S_5}{S_1 \times S_6})}})}
+      {(\nodet{{(\nodet{S_2 \times S_3}{S_2 \times S_4})}}
+              {{(\nodet{S_2 \times S_5}{S_2 \times S_6})}})}
 \end{array}\]
 \caption{\label{mult}Example of multiplication of two cubical types.}
 \end{figure*}
 
-A few examples might provide some needed intuition. First we note that the
-general definitions of sum and product reduce to the conventional sums and
-products for 1-dimensional types. Also the sum of 2-dimensional types reduces
-to the sum used in the \textbf{Int} construction. The interesting new
-development is the product definition. The example in Fig.~\ref{mult} shows
-that in general the product of an $n$-dimensional type with an
-$m$-dimensional type gives an $(n+m)$-dimensional type. For low dimensions
-such as the ones used in the example above, it is possible to visualize what
-is happening in coordinate space (see Fig.~\ref{multv}).
+The definition of negation is natural: it recursively swaps the positive and
+negative subspaces. We note that the general definitions of sum and product
+reduce to the conventional sums and products for 1-dimensional types. Also
+the sum of 2-dimensional types reduces to the sum used in the \textbf{Int}
+construction. The interesting new development is the product definition. The
+example in Fig.~\ref{mult} shows that in general the product of an
+$n$-dimensional type with an $m$-dimensional type gives an
+$(n+m)$-dimensional type. For low dimensions such as the ones used in the
+example above, it is possible to visualize what is happening in coordinate
+space (see Fig.~\ref{multv}).
 
 \begin{figure*}
 \begin{tikzpicture}
-\node[left] at (0,0) {$\tau_1^+$};
-\node[right] at (0.6,0) {$\tau_2^-$};
+\node[left] at (0,0) {$S_1^+$};
+\node[right] at (0.6,0) {$S_2^-$};
 \draw[-] (0,0) -- (0.6,0);
 \node at (1.6,0) {$\otimes$}; 
 %%
-\node[below left] at (2.5,-0.5) {$\tau_3^+$};
-\node[below right] at (3.5,-0.5) {$\tau_4^-$};
+\node[below left] at (2.5,-0.5) {$S_3^+$};
+\node[below right] at (3.5,-0.5) {$S_4^-$};
 \draw[-] (2.5,-0.5) -- (3.5,-0.5);
 \draw[-] (2.5,-0.5) -- (2.5,0.5);
-\node[above left] at (2.5,0.5) {$\tau_6^-$};
-\node[above right] at (3.5,0.5) {$\tau_5^+$};
+\node[above left] at (2.5,0.5) {$S_6^-$};
+\node[above right] at (3.5,0.5) {$S_5^+$};
 \draw[-] (2.5,0.5) -- (3.5,0.5);
 \draw[-] (3.5,-0.5) -- (3.5,0.5);
 %% 
 \node at (4.5,0) {$=$};
 %% 
-\node[left] at (7.5,0.75) {$(\tau_2*\tau_3)^-$};
-\node[right] at (9.5,0.75) {$(\tau_2*\tau_4)^+$};
-\node[above right] at (10.2,1.2) {$(\tau_2*\tau_5)^-$};
-\node[above left] at (8.2,1.2) {$(\tau_2*\tau_6)^+$};
+\node[left] at (7.5,0.75) {$(S_2 \times S_3)^-$};
+\node[right] at (9.5,0.75) {$(S_2 \times S_4)^+$};
+\node[above right] at (10.2,1.2) {$(S_2 \times S_5)^-$};
+\node[above left] at (8.2,1.2) {$(S_2 \times S_6)^+$};
 %%
-\node[left] at (7.5,-0.75) {$(\tau_1*\tau_3)^+$};
-\node[right] at (9.5,-0.75) {$(\tau_1*\tau_4)^-$};
-\node[above right] at (10.2,-0.3) {$(\tau_1*\tau_5)^+$};
-\node[above] at (8.2,-0.3) {$(\tau_1*\tau_6)^-$};
+\node[left] at (7.5,-0.75) {$(S_1 \times S_3)^+$};
+\node[right] at (9.5,-0.75) {$(S_1 \times S_4)^-$};
+\node[above right] at (10.2,-0.3) {$(S_1 \times S_5)^+$};
+\node[above] at (8.2,-0.3) {$(S_1 \times S_6)^-$};
 %%
 \draw[-] (7.5,0.75) -- (9.5,0.75);
 \draw[-] (9.5,0.75) -- (10.2,1.2);
