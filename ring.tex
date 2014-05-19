@@ -257,30 +257,45 @@ space (see Fig.~\ref{multv}).
 \begin{figure*}
 \begin{tikzpicture}
 \node[left] at (0,0) {$S_1^+$};
+\draw[fill] (0,0) circle [radius=0.05];
 \node[right] at (0.6,0) {$S_2^-$};
+\draw[fill] (0.6,0) circle [radius=0.05];
 \draw[-] (0,0) -- (0.6,0);
 \node at (1.6,0) {$\otimes$}; 
+
 %%
 \node[below left] at (2.5,-0.5) {$S_3^+$};
+\draw[fill] (2.5,-0.5) circle [radius=0.05];
 \node[below right] at (3.5,-0.5) {$S_4^-$};
+\draw[fill] (3.5,-0.5) circle [radius=0.05];
 \draw[-] (2.5,-0.5) -- (3.5,-0.5);
 \draw[-] (2.5,-0.5) -- (2.5,0.5);
 \node[above left] at (2.5,0.5) {$S_5^-$};
+\draw[fill] (2.5,0.5) circle [radius=0.05];
 \node[above right] at (3.5,0.5) {$S_6^+$};
+\draw[fill] (3.5,0.5) circle [radius=0.05];
 \draw[-] (2.5,0.5) -- (3.5,0.5);
 \draw[-] (3.5,-0.5) -- (3.5,0.5);
 %% 
 \node at (5,0) {$=$};
 %% 
 \node[left] at (7.5,0.75) {$(S_2 \times S_3)^-$};
+\draw[fill] (7.5,0.75) circle [radius=0.05];
 \node[right] at (9.5,0.75) {$(S_2 \times S_4)^+$};
+\draw[fill] (9.5,0.75) circle [radius=0.05];
 \node[above right] at (10.2,1.2) {$(S_2 \times S_6)^-$};
+\draw[fill] (10.2,1.2) circle [radius=0.05];
 \node[above left] at (8.2,1.2) {$(S_2 \times S_5)^+$};
+\draw[fill] (8.2,1.2) circle [radius=0.05];
 %%
 \node[left] at (7.5,-0.75) {$(S_1 \times S_3)^+$};
+\draw[fill] (7.5,-0.75) circle [radius=0.05];
 \node[right] at (9.5,-0.75) {$(S_1 \times S_4)^-$};
+\draw[fill] (9.5,-0.75) circle [radius=0.05];
 \node[above right] at (10.2,-0.3) {$(S_1 \times S_6)^+$};
+\draw[fill] (10.2,-0.3) circle [radius=0.05];
 \node[above] at (8.2,-0.3) {$(S_1 \times S_5)^-$};
+\draw[fill] (8.2,-0.3) circle [radius=0.05];
 %%
 \draw[-] (7.5,0.75) -- (9.5,0.75);
 \draw[-] (9.5,0.75) -- (10.2,1.2);
