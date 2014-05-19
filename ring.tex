@@ -158,7 +158,10 @@ t &::=& 0 \alt 1 \alt t_1 + t_2 \alt t_1 * t_2 \\
       \alt - \tau
 \end{array}\]
 We use $\tau_1 - \tau_2$ to abbreviate $\tau_1 + (- \tau_2)$ and more
-interestingly $\tau_1 \lolli \tau_2$ to abbreviate $(- \tau_1) + \tau_2$.
+interestingly $\tau_1 \lolli \tau_2$ to abbreviate $(- \tau_1) + \tau_2$. At
+the level of cubical types, we can write types such as
+$(t_1-t_2)-(t_3-t_4*t_5)$ which mix negative types with the usual type
+constructors.
 
 It is easy to find a model for regular types: finite sets are such a
 model. In more detail:
@@ -170,54 +173,55 @@ model. In more detail:
 \end{array}\]
 The type 0 maps to the empty set. The type 1 maps to a singleton set. The sum
 of types maps to disjoint union of sets. The product of types maps to the
-cartesian product of sets. 
+cartesian product of sets. We usually use $S$ for the denotation of a
+conventional first-order type.
 
-For cubical types, their denotations are $n$-dimensional cubical sets with
-polarities, written as $\nodet{\cubt_1}{\cubt_2}$ An $n$-dimensional cubical
-set $\nodet{\cubt_1}{\cubt_2}$ consists of a positive subspace $\cubt_1$ and
-a negative subspace $\cubt_2$ (shaded in gray). Each of the subspaces are
-cubical set of a lower dimension; the 1-dimensional case reduces to plain
-sets (which are the denotations of first-order types). As we explain below,
-cubical sets are closed under sums, differences, products.
+For cubical types, their denotations, usually written as $\cubt$, are
+$n$-dimensional cubical sets with polarities. An $n$-dimensional cubical set
+$\nodet{\cubt_1}{\cubt_2}$ consists of a positive subspace $\cubt_1$ and a
+negative subspace $\cubt_2$ (shaded in gray). Each of the subspaces are
+cubical set of a lower dimension; the 1-dimensional case reduces to
+$\nodet{S}{\emptyset}$ which is essentially the denotation of conventional
+first-order types. As we explain below, cubical sets are closed under sums,
+differences, products.
 
-Examples of 1-dimensional cubical sets include all the finite sets $S$
-denoting regular first-order types $t$. A 2-dimensional cubical set looks
-like $\nodet{S_1}{S_2}$ which intuitively corresponds to the difference $t_1
-- t_2$ of the two types whose denotations are $S_1$ and $S_2$ respectively. A
-3-dimensional cubical type looks like
-$\nodet{(\nodet{S_1}{S_2})}{(\nodet{S_3}{S_4})}$ which intuitively
+Examples of 1-dimensional cubical sets include all the sets of the form
+$\nodet{S}{\emptyset}$ where $S$ is finite set denoting a regular first-order
+types $t$. A 2-dimensional cubical set looks like $\nodet{S_1}{S_2}$ which
+intuitively corresponds to the difference $t_1 - t_2$ of the two types whose
+denotations are $S_1$ and $S_2$ respectively. A 3-dimensional cubical type
+looks like $\nodet{(\nodet{S_1}{S_2})}{(\nodet{S_3}{S_4})}$ which intuitively
 corresponds to the iterated difference of the appropriate types
 $(t_1-t_2)-(t_3-t_4)$ where the successive colors from the root encode the
 sign as follows: white in the outermost box corresponds to a positive
 polarity and gray in the outermost box corresponds to a negative polarity;
-then, as we move inwards the polarities alternate for every change of
-color. 
+then, as we move inwards the polarities alternate for every change of color.
 
 We now give the denotation of cubical types:
 \[\begin{array}{rcl}
-\denc{t} &=& \den{t} = \nodet{\den{t}}{0} = 
-  \nodet{\nodet{\den{t}}{0}}{0} = \ldots \\
+\denc{t} &=& \nodet{\den{t}}{\emptyset} = 
+  \nodet{\nodet{\den{t}}{\emptyset}}{\emptyset} = \ldots \\
 \denc{\tau_1 + \tau_2} &=& \denc{\tau_1} \oplus \denc{\tau_2} \\
 \denc{\tau_1 * \tau_2} &=& \denc{\tau_1} \otimes \denc{\tau_2} \\
 \denc{- \tau} &=& \ominus \denc{\tau}
 \end{array}\]
 where the operations $\oplus$, $\otimes$, and $\ominus$ are defined below.
 It is possible for cubical types not be balanced in general but it is always
-possible to extend the shorter subtree to an arbitrary depth using the first
-clause which formalizes that $t$ is equivalent to $t-0$ and to $(t-0)-0$ etc.
-In the recursive definitions below, we assume that the types have been
-extended to be balanced as needed:
+possible to embed an $n$-dimensional set into a larger dimension using the
+equivalence in the first clause which formalizes that $t$ is equivalent to
+$t-0$ and to $(t-0)-0$ etc.  In the recursive definitions below, we assume
+that the types have been extended to be balanced as needed:
 \[\begin{array}{rcl}
-\ominus~\tau &=& \tau \\
+\ominus~S &=& S \\
 \ominus~\nodet{\cubt_1}{\cubt_2} &=& \nodet{\ominus~\cubt_2}{\ominus~\cubt_1} \\
 \\
-\tau_1 \oplus \tau_2 &=& \tau_1 + \tau_2 \\
+S_1 \oplus S_2 &=& S_1 \uplus S_2 \\
 (\nodet{\cubt_1}{\cubt_2}) \oplus (\nodet{\cubt_3}{\cubt_4}) &=& 
   \nodet{\cubt_1 \oplus \cubt_3}{\cubt_2 \oplus \cubt_4} \\
 \\
-\tau_1 \otimes \tau_2 &=& \tau_1 * \tau_2 \\
-\tau \otimes (\nodet{\cubt_1}{\cubt_2}) &=& 
-  \nodet{\tau \otimes \cubt_1}{\tau \otimes \cubt_2} \\
+S_1 \otimes S_2 &=& S_1 \times S_2 \\
+S \otimes (\nodet{\cubt_1}{\cubt_2}) &=& 
+  \nodet{S \otimes \cubt_1}{S \otimes \cubt_2} \\
 (\nodet{\cubt_1}{\cubt_2}) \otimes \cubt &=& 
   \nodet{\cubt_1 \otimes \cubt}{\cubt_2 \otimes \cubt}
 \end{array}\]
