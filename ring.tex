@@ -103,7 +103,7 @@
 \lstset{rangeprefix=/*!\ , rangesuffix=\ !*\/, includerangemarker=false}
 
 %% double-blind reviewing...
-\title{Cubical Types}
+\title{Cubical Types with Positive and Negative Polarities}
 \authorinfo{}{}{}
 \maketitle
 
@@ -114,17 +114,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-Int construction of G construction is neat. As Neel explains, given
-first-order types and feedback you get higher-order functions. But if you do
-the construction on the additive structure, you lose the multiplicative
-structure. It turns out that this is related to a deep open problem in
-algebraic topology and homotopy theory that was recently solved. We
-``translate'' that solution to a computational type-theoretic world. This has
-evident connections to homotopy (type?) theory that remain to be
-investigated.
+The \textbf{Int} construction or the $\mathcal{G}$ construction are neat. As
+Neel K. explains, given first-order types and feedback you get higher-order
+functions. But if you do the construction on the additive structure, you lose
+the multiplicative structure. It turns out that this is related to a deep
+open problem in algebraic topology and homotopy theory that was recently
+solved. We ``translate'' that solution to a computational type-theoretic
+world. This has evident connections to homotopy (type?) theory that remain to
+be investigated.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Int Construction} 
+\section{The \textbf{Int} Construction} 
 
 Explain in detail perhaps with Haskell embedding and type functions etc. The
 key insight it to add ``negative'' types representing demand for values. This
@@ -169,11 +169,13 @@ $\tau_1 - \tau_2$ of the two types. A 3-dimensional cubical type looks like
 $\nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}$ which
 intuitively corresponds to the iterated difference of types
 $(\tau_1-\tau_2)-(\tau_3-\tau_4)$ where the successive colors from the root
-encode the sign as follows: a color that is the same as its enclosing color
-is positive and a color that differs from its enclosing color is negative. It
-is possible for cubical types not be balanced in general but it is always
-possible to extend the shorter subtree to an arbitrary depth using the fact
-(to be justified later) that~$\tau$ is equivalent to $\nodet{\tau}{0}$.
+encode the sign as follows: white in the outermost box corresponds to a
+positive polarity and gray in the outermost box corresponds to a negative
+polarity; then, as we move inwards the polarities alternate for every change
+of color. It is possible for cubical types not be balanced in general but it
+is always possible to extend the shorter subtree to an arbitrary depth using
+the fact (to be justified later) that~$\tau$ is equivalent to
+$\nodet{\tau}{0}$.
 
 We now explain how cubical types are closed under sum, difference, and
 products. In the recursive definitions below, we assume that the types have
@@ -213,9 +215,9 @@ products for 1-dimensional types. Also the sum of 2-dimensional types reduces
 to the sum used in the \textbf{Int} construction. The interesting new
 development is the product definition. The example in Fig.~\ref{mult} shows
 that in general the product of an $n$-dimensional type with an
-$m$-dimensional type gives an $n+m$-dimensional type. For low dimensions such
-as the ones used in the example above, it is possible to visualize what is
-happening in coordinate space.
+$m$-dimensional type gives an $(n+m)$-dimensional type. For low dimensions
+such as the ones used in the example above, it is possible to visualize what
+is happening in coordinate space (see Fig.~\ref{multv}).
 
 \begin{figure*}
 \begin{tikzpicture}
