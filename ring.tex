@@ -140,7 +140,7 @@ multiplication functor. Perhaps there is a clever way. But this turns out to
 be a well-known open problem. Review the problem and tell the story from the
 algebraic topology perspective.
 
-Regular first-order types are viewed as 1-dimensional cubes. Generalize to
+Regular first-order types are viewed as 0-dimensional cubes. Generalize to
 $n$-dimensional cubes. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -180,30 +180,23 @@ For cubical types, their denotations, usually written as $\cubt$, are
 $n$-dimensional cubical sets with polarities. An $n$-dimensional cubical set
 $\nodet{\cubt_1}{\cubt_2}$ consists of a positive subspace $\cubt_1$ and a
 negative subspace $\cubt_2$ (shaded in gray). Each of the subspaces are
-cubical set of a lower dimension; the 1-dimensional case reduces to
-$\nodet{S}{\phantom{S}}$ which is essentially the denotation of
-conventional first-order types. As we explain below, cubical sets are closed
-under sums, differences, products.
+cubical set of a lower dimension; the 0-dimensional case reduces to the
+denotation of conventional first-order types. As we explain below, cubical
+sets are closed under sums, differences, products.
 
-Examples of 1-dimensional cubical sets include all the sets of the form
-$\nodet{S}{\phantom{S}}$ where $S$ is finite set denoting a regular
-first-order types $t$. A 2-dimensional cubical set looks like
+Examples of 0-dimensional cubical sets include all the finite sets denoting a
+regular first-order type. A 1-dimensional cubical set looks like
 $\nodet{S_1}{S_2}$ which intuitively corresponds to the difference $t_1 -
 t_2$ of the two types whose denotations are $S_1$ and $S_2$ respectively. A
-3-dimensional cubical type looks like
+2-dimensional cubical type looks like
 $\nodet{(\nodet{S_1}{S_2})}{(\nodet{S_3}{S_4})}$ which intuitively
 corresponds to the iterated difference of the appropriate types
-$(t_1-t_2)-(t_3-t_4)$ where the successive colors from the root encode the
-sign as follows: white in the outermost box corresponds to a positive
-polarity and gray in the outermost box corresponds to a negative polarity;
-then, as we move inwards the polarities alternate for every change of color.
+$(t_1-t_2)-(t_3-t_4)$ where the product of the successive signs from the
+outermost box encodes the sign.
 
 We now give the denotation of cubical types:
 \[\begin{array}{rcl}
-\denc{t} &=& \nodet{\den{t}}{\phantom{\den{t}}} = 
-  \nodet{\nodet{\den{t}}{\phantom{\den{t}}}}
-        {\phantom{{\nodet{\den{t}}{\phantom{\den{t}}}}}} = \ldots \\
-\\
+\denc{t} &=& \den{t} \\
 \denc{\tau_1 + \tau_2} &=& \denc{\tau_1} \oplus \denc{\tau_2} \\
 \denc{\tau_1 * \tau_2} &=& \denc{\tau_1} \otimes \denc{\tau_2} \\
 \denc{- \tau} &=& \ominus \denc{\tau}
@@ -211,9 +204,15 @@ We now give the denotation of cubical types:
 where the operations $\oplus$, $\otimes$, and $\ominus$ are defined below.
 It is possible for cubical types not be balanced in general but it is always
 possible to embed an $n$-dimensional set into a larger dimension using the
-equivalence in the first clause which formalizes that $t$ is equivalent to
-$t-0$ and to $(t-0)-0$ etc.  In the recursive definitions below, we assume
-that the types have been extended to be balanced as needed:
+fact (to be justified later) that $t$ is equivalent to $t-0$ and to $(t-0)-0$
+and so on, i.e.,
+\[
+\den{t} = \nodet{\den{t}}{\phantom{\den{t}}} = 
+  \nodet{\nodet{\den{t}}{\phantom{\den{t}}}}
+        {\phantom{{\nodet{\den{t}}{\phantom{\den{t}}}}}} = \ldots \\
+\]
+In the recursive definitions below, we assume that the types have been
+extended to be balanced as needed:
 \[\begin{array}{rcl}
 \ominus~S &=& S \\
 \ominus~\nodet{\cubt_1}{\cubt_2} &=& \nodet{\ominus~\cubt_2}{\ominus~\cubt_1} \\
@@ -233,22 +232,23 @@ S \otimes (\nodet{\cubt_1}{\cubt_2}) &=&
 \[\begin{array}{c}
 \nodet{S_1}{S_2}
 \quad\otimes\quad
-\nodet{(\nodet{S_3}{S_4})}{(\nodet{S_5}{S_6})} = 
+\nodet{(\nodet{S_3}{S_4})}{(\nodet{S_5}{S_6})} \quad= \\
 \\
 \nodet{(\nodet{{(\nodet{S_1 \times S_3}{S_1 \times S_4})}}
               {{(\nodet{S_1 \times S_5}{S_1 \times S_6})}})}
       {(\nodet{{(\nodet{S_2 \times S_3}{S_2 \times S_4})}}
               {{(\nodet{S_2 \times S_5}{S_2 \times S_6})}})}
 \end{array}\]
-\caption{\label{mult}Example of multiplication of two cubical types.}
+\caption{\label{mult}Example of multiplication of two cubical sets.}
 \end{figure*}
 
-The definition of negation is natural: it recursively swaps the positive and
-negative subspaces. We note that the general definitions of sum and product
-reduce to the conventional sums and products for 1-dimensional types. Also
-the sum of 2-dimensional types reduces to the sum used in the \textbf{Int}
-construction. The interesting new development is the product definition. The
-example in Fig.~\ref{mult} shows that in general the product of an
+\noindent The definition of negation is natural: it recursively swaps the
+positive and negative subspaces. We note that the general definitions of sum
+and product reduce to the conventional sums and products for 0-dimensional
+types. Also the sum of 1-dimensional types reduces to the sum used in the
+\textbf{Int} construction and that addition and negation do not increase the
+dimensions. The interesting new development is the product definition. The
+example in Fig.~\ref{mult} illustrates a general pattern: the product of an
 $n$-dimensional type with an $m$-dimensional type gives an
 $(n+m)$-dimensional type. For low dimensions such as the ones used in the
 example above, it is possible to visualize what is happening in coordinate
@@ -265,22 +265,22 @@ space (see Fig.~\ref{multv}).
 \node[below right] at (3.5,-0.5) {$S_4^-$};
 \draw[-] (2.5,-0.5) -- (3.5,-0.5);
 \draw[-] (2.5,-0.5) -- (2.5,0.5);
-\node[above left] at (2.5,0.5) {$S_6^-$};
-\node[above right] at (3.5,0.5) {$S_5^+$};
+\node[above left] at (2.5,0.5) {$S_5^-$};
+\node[above right] at (3.5,0.5) {$S_6^+$};
 \draw[-] (2.5,0.5) -- (3.5,0.5);
 \draw[-] (3.5,-0.5) -- (3.5,0.5);
 %% 
-\node at (4.5,0) {$=$};
+\node at (5,0) {$=$};
 %% 
 \node[left] at (7.5,0.75) {$(S_2 \times S_3)^-$};
 \node[right] at (9.5,0.75) {$(S_2 \times S_4)^+$};
-\node[above right] at (10.2,1.2) {$(S_2 \times S_5)^-$};
-\node[above left] at (8.2,1.2) {$(S_2 \times S_6)^+$};
+\node[above right] at (10.2,1.2) {$(S_2 \times S_6)^-$};
+\node[above left] at (8.2,1.2) {$(S_2 \times S_5)^+$};
 %%
 \node[left] at (7.5,-0.75) {$(S_1 \times S_3)^+$};
 \node[right] at (9.5,-0.75) {$(S_1 \times S_4)^-$};
-\node[above right] at (10.2,-0.3) {$(S_1 \times S_5)^+$};
-\node[above] at (8.2,-0.3) {$(S_1 \times S_6)^-$};
+\node[above right] at (10.2,-0.3) {$(S_1 \times S_6)^+$};
+\node[above] at (8.2,-0.3) {$(S_1 \times S_5)^-$};
 %%
 \draw[-] (7.5,0.75) -- (9.5,0.75);
 \draw[-] (9.5,0.75) -- (10.2,1.2);
@@ -297,7 +297,7 @@ space (see Fig.~\ref{multv}).
 \draw[-] (10.2,1.2) -- (10.2,-0.3);
 \draw[-,dashed] (8.2,1.2) -- (8.2,-0.3);
 \end{tikzpicture}
-\caption{\label{multv}Visualization of multiplication of two cubical types.}
+\caption{\label{multv}Visualization of multiplication of two cubical sets.}
 \end{figure*}
 
 \begin{verbatim}
