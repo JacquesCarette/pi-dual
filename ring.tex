@@ -181,12 +181,12 @@ $n$-dimensional cubical sets with polarities. An $n$-dimensional cubical set
 $\nodet{\cubt_1}{\cubt_2}$ consists of a positive subspace $\cubt_1$ and a
 negative subspace $\cubt_2$ (shaded in gray). Each of the subspaces are
 cubical set of a lower dimension; the 1-dimensional case reduces to
-$\nodet{S}{\emptyset}$ which is essentially the denotation of conventional
+$\nodet{S}{~}$ which is essentially the denotation of conventional
 first-order types. As we explain below, cubical sets are closed under sums,
 differences, products.
 
 Examples of 1-dimensional cubical sets include all the sets of the form
-$\nodet{S}{\emptyset}$ where $S$ is finite set denoting a regular first-order
+$\nodet{S}{~}$ where $S$ is finite set denoting a regular first-order
 types $t$. A 2-dimensional cubical set looks like $\nodet{S_1}{S_2}$ which
 intuitively corresponds to the difference $t_1 - t_2$ of the two types whose
 denotations are $S_1$ and $S_2$ respectively. A 3-dimensional cubical type
@@ -199,8 +199,9 @@ then, as we move inwards the polarities alternate for every change of color.
 
 We now give the denotation of cubical types:
 \[\begin{array}{rcl}
-\denc{t} &=& \nodet{\den{t}}{\emptyset} = 
-  \nodet{\nodet{\den{t}}{\emptyset}}{\emptyset} = \ldots \\
+\denc{t} &=& \nodet{\den{t}}{~} = 
+  \nodet{\nodet{\den{t}}{~}}{~} = \ldots \\
+\\
 \denc{\tau_1 + \tau_2} &=& \denc{\tau_1} \oplus \denc{\tau_2} \\
 \denc{\tau_1 * \tau_2} &=& \denc{\tau_1} \otimes \denc{\tau_2} \\
 \denc{- \tau} &=& \ominus \denc{\tau}
