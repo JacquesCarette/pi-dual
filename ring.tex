@@ -9,7 +9,11 @@
 \usepackage{thmtools}
 \usepackage{bbold}
 \usepackage{tikz}
+\usepackage{proof}
 
+\newcommand{\negp}[1]{\textit{neg}(#1)}
+\newcommand{\inl}[1]{\textsf{inl}~#1}
+\newcommand{\inr}[1]{\textsf{inr}~#1}
 \newcommand{\lolli}{\multimap} 
 \newcommand{\cubt}{\mathbb{T}}
 \newcommand{\den}[1]{\llbracket #1 \rrbracket}
@@ -105,7 +109,7 @@
 \lstset{rangeprefix=/*!\ , rangesuffix=\ !*\/, includerangemarker=false}
 
 %% double-blind reviewing...
-\title{Cubical Types with Positive and Negative Polarities}
+\title{Cubical Polarized Types}
 \authorinfo{}{}{}
 \maketitle
 
@@ -144,7 +148,13 @@ Regular first-order types are viewed as 0-dimensional cubes. Generalize to
 $n$-dimensional cubes. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Formal Construction} 
+\section{The Type Structure}
+
+We first define the syntax and semantics of types and then discuss type
+isomorphisms.
+
+%%%%%%%%%%%%%%%%%%%%
+\subsection{Negative and Cubical Types}
 
 We use $t$ for regular first-order types which include the empty type, the
 unit type, and conventional sum and product types.  We use $\tau$ for cubical
@@ -315,6 +325,9 @@ space (see Fig.~\ref{multv}).
 \caption{\label{multv}Visualization of multiplication of two cubical sets.}
 \end{figure*}
 
+%%%%%%%%%%%%%%%%%%%%
+\subsection{Type Isomorphisms}
+
 \begin{verbatim}
 To complete the story we need to 
 define morphisms. (More on this below.)
@@ -335,12 +348,92 @@ How to generalize this?
 Why is there no trace in the ring 
 completion paper??? What are 
 the morphisms in that paper?
+
+The ring completion paper produces
+a simplicial category.
+
+p. 3 talks about the group cancellation
+as subcubes along the diagonal... 
+
+We shouldn't focus on denotations. We want
+an operational semantics for pi with 
+negatives. The same way that Neel turned
+the G construction into code that does
+something neat; we want to turn that 
+ring completion construction into code
+that produces h.o. functions without
+losing the multiplicative structure.
+
+Show how to embed a square in 2D into
+each of the faces of the 3D cube.
+
+1D into 2D:
+
+(a-b) => (a-b)-(0-0)
+(a-b) => (a-0)-(b-0)
+(a-b) => (0-b)-(0-a)
+(a-b) => (0-0)-(b-a)
+
+
+
 \end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A Reversible Language with Cubical Types} 
 
-Pi with cubical types
+Now that the type structure is defined, we turn our attention to the notion
+of values. For conventional first-order types, the values are also
+conventional:
+\[
+\infer{() : 1}{} 
+\qquad
+\infer{\inl{v} : t_1 + t_2}{v : t_1}
+\qquad
+\infer{\inr{v} : t_1 + t_2}{v : t_2}
+\qquad
+\infer{(v_1,v_2) : t_1 * t_2}{v_1 : t_1 & v_2 : t_2}
+\]
+For cubical types, the values are more involved. Intuitively, a value of the
+$n$-dimensional type $\tau$ is an element of one of the sets located in a
+corner of the $n$-dimensional cube denoted by $\tau$. Thus to specify a
+value, we must specify one of the corners of the cube which can easily be
+done using a sequence $p$ of $+$ and $-$ polarities indicating how to
+navigate the cube in each successive dimension starting from a fixed origin
+to reach the desired corner. We denote such values as $v^{p}$ and use
+$\epsilon$ for the empty sequence of polarities. One can think of the
+sequence of signs as denoting a path in the binary tree representation of
+cubical types. Formally:
+\[\begin{array}{c}
+\infer[\textit{base}]{v^{\epsilon} : t}{v : t} \\
+\\
+\infer[\textit{left}]{(\inl{v^p})^{p} : \tau_1 + \tau_2}{v^{p} : \tau_1}
+\qquad
+\infer[\textit{right}]{(\inr{v^p})^{p} : \tau_1 + \tau_2}{v^{p} : \tau_2} \\
+\\
+\infer[\textit{prod}]{(v_1^{p_1},v_2^{p_2})^{p_1 \bullet p_2} : \tau_1 * \tau_2}
+      {v_1^{p_1} : \tau_1 & v_2^{p_2} : \tau_2} \\
+\\
+\infer[\textit{neg}]{v^{\negp{p}} : - \tau}{v^p : \tau} 
+\end{array}\]
+The rule \textit{base} states that a conventional first-order value can be
+viewed as trivial 0-dimensional cubical value. The rules \textit{left} and
+\textit{right} reflect the fact that sums do not increase the dimension and
+works pointwise. The rule \textit{prod} is the most involved one: it
+increases the dimension as calculated below:
+\[\begin{array}{rcl}
+\epsilon \bullet p &=& p \\
+(+p_1) \bullet p_2 &=& + (p_1 \bullet p_2) \\
+(-p_1) \bullet p_2 &=& - (p_1 \bullet p_2) 
+\end{array}\]
+The rule \textit{neg} shows that a negative value $v$ is located at the
+``opposite'' corner of $v$ which is calculated as follows:
+\[\begin{array}{rcl}
+\negp{\epsilon} &=& -\epsilon \\
+\negp{+p} &=& -\negp{p} \\
+\negp{-p} &=& +\negp{p}
+\end{array}\]
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work and Context}
