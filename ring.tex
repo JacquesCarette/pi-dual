@@ -49,7 +49,6 @@ $\displaystyle
 \newcommand{\lolli}{\multimap} 
 \newcommand{\cubt}{\mathbb{T}}
 \newcommand{\den}[1]{\llbracket #1 \rrbracket}
-\newcommand{\denc}[1]{\llbracket #1 \rrbracket^c}
 \newcommand{\nodet}[2]{\fcolorbox{black}{white}{$#1$}\fcolorbox{black}{gray!20}{$#2$}}
 
 \begin{document}
@@ -141,7 +140,7 @@ $\displaystyle
 \lstset{rangeprefix=/*!\ , rangesuffix=\ !*\/, includerangemarker=false}
 
 %% double-blind reviewing...
-\title{Cubical Polarized Types}
+\title{Polarized Cubical Types}
 \authorinfo{}{}{}
 \maketitle
 
@@ -186,100 +185,25 @@ isomorphisms.
 %%%%%%%%%%%%%%%%%%%%
 \subsection{Negative and Cubical Types}
 
-We use $t$ for regular first-order types which include the empty type, the
-unit type, and conventional sum and product types. We call these types
-$0$-dimensional. We use $\tau$ for cubical types of dimension 1 or higher:
-these have the same syntactic structure as regular types except that they
-also include \emph{negative} types. The syntax of the types is summarized
-below:
-\[\begin{array}{lrcl}
-\textit{types of dimension $0$} & 
-  t &::=& 0 \alt 1 \alt t_1 + t_2 \alt t_1 * t_2 \\
-\textit{types of dimensions $\geq 1$} & 
-  \tau &::=& \Box t \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \alt - \tau
+Our cubical types $\tau$ include the empty type 0, the unit type 1,
+conventional sum and product types, as well as \emph{negative} types:
+\[\begin{array}{rcl}
+\tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \alt - \tau
 \end{array}\]
 We use $\tau_1 - \tau_2$ to abbreviate $\tau_1 + (- \tau_2)$ and more
 interestingly $\tau_1 \lolli \tau_2$ to abbreviate $(- \tau_1) + \tau_2$.
-The $\Box$ is used to make explicit the injection of a first-order type into
-a 1-dimensional type. We omit the explicit injection when
-convenient. Formally, the \emph{dimension} of a type is defined as follows:
+The \emph{dimension} of a type is defined as follows:
 \[\begin{array}{rcl}
-\bdim{t} &=& 0 \\
-\bdim{\Box t} &=& 1 \\
+\bdim{0} &=& 0 \\
+\bdim{1} &=& 0 \\
 \bdim{\tau_1 + \tau_2} &=& \max(\bdim{\tau_1},\bdim{\tau_2}) \\
 \bdim{\tau_1 * \tau_2} &=& \bdim{\tau_1} + \bdim{\tau_2} \\
-\bdim{- \tau} &=& \bdim{\tau}
+\bdim{- \tau} &=& \max(1,\bdim{\tau})
 \end{array}\]
-
-It is easy to find a model for $0$-dimensional types: finite sets are such a
-model. In more detail:
-\[\begin{array}{rcl}
-\den{0} &=& \emptyset \\
-\den{1} &=& \{ \star \} \\
-\den{t_1 + t_2} &=& \den{t_1} \uplus \den{t_2} \\
-\den{t_1 * t_2} &=& \den{t_1} \times \den{t_2} 
-\end{array}\]
-The type 0 maps to the empty set. The type 1 maps to a singleton set. The sum
-of types maps to disjoint union of sets. The product of types maps to the
-cartesian product of sets. We usually use $S$ for the denotation of these
-conventional first-order types. Note that our (simple) semantics of types
-identifies several structurally different types such as $(1+(1+1))$ and
-$((1+1)+1)$. In some sense, this is innocent as the types are
-isomorphic. However, in the operational semantics discussed in the next
-section, we make the computational content of such type isomorphisms
-explicit.
-
-For cubical types of dimension $n \geq 1$, their denotations, usually written
-as $\cubt$, are $n$-dimensional ``polarized cubes.'' Such an $n$-dimensional
-cube $\nodet{\cubt_1}{\cubt_2}$ consists of a positive subspace $\cubt_1$ and
-a negative subspace $\cubt_2$ (shaded in gray). Each of the subspaces are
-cubes of a lower dimension; the $0$-dimensional case reduces to the
-denotation of conventional first-order types. As we explain below, cubical
-sets are closed under sums, differences, products.
-
-A 1-dimensional cube looks like $\nodet{S_1}{S_2}$ which intuitively
-corresponds to the difference $t_1 - t_2$ (formally $\Box t_1 + (- \Box
-t_2)$) of the two types whose denotations are $S_1$ and $S_2$ respectively. A
-2-dimensional cube looks like
-$\nodet{(\nodet{S_1}{S_2})}{(\nodet{S_3}{S_4})}$ which intuitively
-corresponds to the iterated difference of the appropriate types
-$(t_1-t_2)-(t_3-t_4)$ where the product of the successive signs from the
-outermost box encodes the sign.
-
-We now give the full denotation of cubical types:
-\[\begin{array}{rcl}
-\denc{\Box t} &=& \nodet{\den{t}}{\phantom{\den{t}}} \\
-\denc{\tau_1 + \tau_2} &=& \denc{\tau_1} \oplus \denc{\tau_2} \\
-\denc{\tau_1 * \tau_2} &=& \denc{\tau_1} \otimes \denc{\tau_2} \\
-\denc{- \tau} &=& \ominus \denc{\tau}
-\end{array}\]
-where the operations $\oplus$, $\otimes$, and $\ominus$ are defined below.
-It is possible, in general, for the binary trees representing the cubes not
-be balanced. It is however always possible to embed an $n$-dimensional cube
-into a cube of a larger dimension using the fact (to be justified using a
-$\Pi$-combinator that witnesses this isomorphism in the next section) that
-$t$ is equivalent to $t-0$ and to $(t-0)-0$ and so on, i.e.,
-\[
-S = \nodet{S}{\phantom{S}} = 
-  \nodet{\nodet{S}{\phantom{S}}}
-        {\phantom{{\nodet{S}{\phantom{S}}}}} = \ldots \\
-\]
-In the recursive definition of addition below, we assume that the smaller
-cube has been extended to the dimension of the larger one: 
-\[\begin{array}{rcl}
-\ominus~S &=& \nodet{\phantom{S}}{S} \\
-\ominus~\nodet{\cubt_1}{\cubt_2} &=& \nodet{\ominus~\cubt_2}{\ominus~\cubt_1} \\
-\\
-S_1 \oplus S_2 &=& S_1 \uplus S_2 \\
-(\nodet{\cubt_1}{\cubt_2}) \oplus (\nodet{\cubt_3}{\cubt_4}) &=& 
-  \nodet{\cubt_1 \oplus \cubt_3}{\cubt_2 \oplus \cubt_4} \\
-\\
-S_1 \otimes S_2 &=& S_1 \times S_2 \\
-S \otimes (\nodet{\cubt_1}{\cubt_2}) &=& 
-  \nodet{S \otimes \cubt_1}{S \otimes \cubt_2} \\
-(\nodet{\cubt_1}{\cubt_2}) \otimes \cubt &=& 
-  \nodet{\cubt_1 \otimes \cubt}{\cubt_2 \otimes \cubt}
-\end{array}\]
+The base types have dimension 0. Using negative types but no product types
+raises the dimension to 1. This is the situation with the \textbf{Int} or
+$\mathcal{G}$ construction. Once product types are used, the dimension can
+increase without bounds.
 
 \begin{figure*}
 \[\begin{array}{c}
@@ -294,18 +218,6 @@ S \otimes (\nodet{\cubt_1}{\cubt_2}) &=&
 \end{array}\]
 \caption{\label{mult}Example of multiplication of two cubical sets.}
 \end{figure*}
-
-\noindent The definition of negation is natural: it recursively swaps the
-positive and negative subspaces. We note that the general definitions of sums
-and products reduce to the conventional sums and products for $0$-dimensional
-types. Also the sum of 1-dimensional types reduces to the sum used in the
-\textbf{Int} construction and that addition and negation do not increase the
-dimensions. The interesting new development is the definition of
-products. The example in Fig.~\ref{mult} illustrates a general pattern: the
-product of an $n$-dimensional type with an $m$-dimensional type gives an
-$(n+m)$-dimensional type. For low dimensions such as the ones used in the
-example above, it is possible to visualize what is happening in coordinate
-space (see Fig.~\ref{multv}).
 
 \begin{figure*}
 \begin{tikzpicture}
@@ -373,6 +285,81 @@ space (see Fig.~\ref{multv}).
 \end{tikzpicture}
 \caption{\label{multv}Visualization of multiplication of two cubical sets.}
 \end{figure*}
+
+This point is made precise in the denotation of types which maps a type of
+dimension $n$ to $n$-dimensional cube. We represent such a cube syntactically
+as a binary tree of maximum depth $n$ with nodes of the form
+$\nodet{\cubt_1}{\cubt_2}$. In such a node, $\cubt_1$ is the positive
+subspace and $\cubt_2$ (shaded in gray) is the negative subspace along the
+first dimension. Each of these subspaces is itself a cube of a lower
+dimension. The $0$-dimensional cubes are the conventional denotation of
+first-order types as sets. We use $S$ to denote the denotations of such
+types. For example, 1-dimensional cube looks like $\nodet{S_1}{S_2}$ which
+intuitively corresponds to the difference $t_1 - t_2$ of the two types whose
+denotations are $S_1$ and $S_2$ respectively. A full 2-dimensional cube looks
+like $\nodet{(\nodet{S_1}{S_2})}{(\nodet{S_3}{S_4})}$ which intuitively
+corresponds to the iterated difference of the appropriate types
+$(t_1-t_2)-(t_3-t_4)$ where the product of the successive signs from the
+outermost box encodes the sign.
+
+Formally, the denotation of types is as follows:
+\[\begin{array}{rcl}
+\den{0} &=& \emptyset \\
+\den{1} &=& \{ \star \} \\
+\den{\tau_1 + \tau_2} &=& \den{\tau_1} \oplus \den{\tau_2} \\
+\den{\tau_1 * \tau_2} &=& \den{\tau_1} \otimes \den{\tau_2} \\
+\den{- \tau} &=& \ominus \den{\tau} \\
+\\
+\noalign{\mbox{where:}\hfill}
+\\
+S_1 \oplus S_2 &=& S_1 \uplus S_2 \\
+S \oplus (\nodet{\cubt_1}{\cubt_2}) &=& 
+  (\nodet{S}{\phantom{S}}) \oplus (\nodet{\cubt_1}{\cubt_2}) \\
+(\nodet{\cubt_1}{\cubt_2}) \oplus S &=& 
+  (\nodet{\cubt_1}{\cubt_2}) \oplus (\nodet{S}{\phantom{S}}) \\
+(\nodet{\cubt_1}{\cubt_2}) \oplus (\nodet{\cubt_3}{\cubt_4}) &=& 
+  \nodet{\cubt_1 \oplus \cubt_3}{\cubt_2 \oplus \cubt_4} \\
+\\
+S_1 \otimes S_2 &=& S_1 \times S_2 \\
+S \otimes (\nodet{\cubt_1}{\cubt_2}) &=& 
+  \nodet{S \otimes \cubt_1}{S \otimes \cubt_2} \\
+(\nodet{\cubt_1}{\cubt_2}) \otimes \cubt &=& 
+  \nodet{\cubt_1 \otimes \cubt}{\cubt_2 \otimes \cubt} \\
+\\
+\ominus~S &=& \nodet{\phantom{S}}{S} \\
+\ominus~\nodet{\cubt_1}{\cubt_2} &=& \nodet{\ominus~\cubt_2}{\ominus~\cubt_1} 
+\end{array}\]
+The type 0 maps to the empty set. The type 1 maps to a singleton set. The sum
+of $0$-dimensional types is the disjoint union as expected. For cubes of
+higher dimensions, the subspaces are recursively added. If the two types to
+be added are of different dimensions, it is necessary to embed the smaller
+type in the larger dimension using the fact (to be justified using a
+$\Pi$-combinator that witnesses this isomorphism in the next section) that
+$t$ is equivalent to $t-0$ and to $(t-0)-0$ and so on, i.e.,
+\[
+S = \nodet{S}{\phantom{S}} = 
+  \nodet{\nodet{S}{\phantom{S}}}
+        {\phantom{{\nodet{S}{\phantom{S}}}}} = \ldots \\
+\]
+The product of 0-dimensional types is the cartesian product of sets. The
+definition of negation is natural: it recursively swaps the positive and
+negative subspaces. We note that the general definitions of sums and products
+reduce to the conventional sums and products for $0$-dimensional types. Also
+the sum of 1-dimensional types reduces to the sum used in the \textbf{Int}
+construction and that addition and negation do not increase the
+dimensions. The interesting new development is the definition of
+products. The example in Fig.~\ref{mult} illustrates the general pattern: the
+product of an $n$-dimensional type with an $m$-dimensional type gives an
+$(n+m)$-dimensional type. For low dimensions such as the ones used in the
+example above, it is possible to visualize what is happening in coordinate
+space (see Fig.~\ref{multv}).
+
+\paragraph*{Note.} 
+Our (simple) semantics of types identifies several structurally different
+types such as $(1+(1+1))$ and $((1+1)+1)$. In some sense, this is innocent as
+the types are isomorphic. However, in the operational semantics discussed in
+the next section, we make the computational content of such type isomorphisms
+explicit.
 
 %%%%%%%%%%%%%%%%%%%%
 \subsection{Type Isomorphisms}
@@ -487,8 +474,23 @@ follows:
 \subsection{Combinators} 
 
 The terms of $\Pi$ witness type isomorphisms of the form $b \iso b$. They
-consist of base isomorphisms, as defined below, and their composition.
-\[\begin{array}{rrcll}
+consist of base isomorphisms, as defined below, and their composition. Each
+line of the above table introduces a pair of dual constants\footnote{where
+  $\swapp$ and $\swapt$ are self-dual.} that witness the type isomorphism in
+the middle.  These are the base (non-reducible) terms of the second,
+principal level of $\Pi$. Note how the above has two readings: first as a set
+of typing relations for a set of constants. Second, if these axioms are seen
+as universally quantified, orientable statements, they also induce
+transformations of the (traditional) values. The (categorical or homotopical)
+intuition here is that these axioms have computational content because they
+witness isomorphisms rather than merely stating an extensional equality.
+
+The isomorphisms are extended to form a congruence relation by adding the
+following constructors that witness equivalence and compatible closure:
+
+\begin{table*}[t]
+\[\begin{array}{cc}
+\begin{array}{rrcll}
 \identlp :&  0 + b & \iso & b &: \identrp \\
 \swapp :&  b_1 + b_2 & \iso & b_2 + b_1 &: \swapp \\
 \assoclp :&  b_1 + (b_2 + b_3) & \iso & (b_1 + b_2) + b_3 &: \assocrp \\
@@ -496,35 +498,22 @@ consist of base isomorphisms, as defined below, and their composition.
 \swapt :&  b_1 * b_2 & \iso & b_2 * b_1 &: \swapt \\
 \assoclt :&  b_1 * (b_2 * b_3) & \iso & (b_1 * b_2) * b_3 &: \assocrt \\
 \distz :&~ 0 * b & \iso & 0 &: \factorz \\
-\dist :&~ (b_1 + b_2) * b_3 & \iso & (b_1 * b_3) + (b_2 * b_3)~ &: \factor
-\end{array}\]
-Each line of the above table introduces a pair of dual
-constants\footnote{where $\swapp$ and $\swapt$ are self-dual.} that witness
-the type isomorphism in the middle.  These are the base (non-reducible) terms
-of the second, principal level of $\Pi$. Note how the above has two readings:
-first as a set of typing relations for a set of constants. Second, if these
-axioms are seen as universally quantified, orientable statements, they also
-induce transformations of the (traditional) values. The (categorical or
-homotopical) intuition here is that these axioms have computational content
-because they witness isomorphisms rather than merely stating an extensional
-equality.
-
-The isomorphisms are extended to form a congruence relation by adding the
-following constructors that witness equivalence and compatible closure:
-
-\begin{table}[t]
-\hrule\medskip
+\dist :&~ (b_1 + b_2) * b_3 & \iso & (b_1 * b_3) + (b_2 * b_3)~ &: \factor \\
+\eta :&~ 0 & \iso & b + (-b)~ & : \epsilon
+\end{array}
+& 
+\begin{minipage}{0.5\textwidth}
 \begin{center} 
 \Rule{}
 {}
 {\jdg{}{}{\idc : b \iso b}}
 {}
-\quad 
+\qquad\qquad
 \Rule{}
 {\jdg{}{}{c : b_1 \iso b_2}}
 {\jdg{}{}{\symc{c} : b_2 \iso b_1}}
 {}
-\quad
+\\ \bigskip
 \Rule{}
 {\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_2 \iso b_3}
 {\jdg{}{}{c_1 \fatsemi c_2 : b_1 \iso b_3}}
@@ -534,15 +523,16 @@ following constructors that witness equivalence and compatible closure:
 {\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_3 \iso b_4}
 {\jdg{}{}{c_1 \oplus c_2 : b_1 + b_3 \iso b_2 + b_4}}
 {}
-\quad 
+\\ \bigskip
 \Rule{}
 {\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_3 \iso b_4}
 {\jdg{}{}{c_1 \otimes c_2 : b_1 * b_3 \iso b_2 * b_4}}
 {}
 \end{center}
+\end{minipage}
+\end{array}\]
 \caption{Combinators\label{pi-combinators}}
-\medskip\hrule
-\end{table}
+\end{table*}
 
 It is important to note that ``values'' and ``isomorphisms'' are completely
 separate syntactic categories which do not intermix. The semantics of the
