@@ -12,6 +12,7 @@
 \usepackage{proof}
 \usepackage{graphicx}
 
+\newcommand{\bdim}[1]{\textsf{dim}(#1)}
 \newcommand{\Rule}[4]{
 \makebox{{\rm #1}
 $\displaystyle
@@ -195,16 +196,26 @@ below:
 \textit{types of dimension $0$} & 
   t &::=& 0 \alt 1 \alt t_1 + t_2 \alt t_1 * t_2 \\
 \textit{types of dimensions $\geq 1$} & 
-  \tau &::=& t \alt \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \alt - \tau
+  \tau &::=& \Box t \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \alt - \tau
 \end{array}\]
 We use $\tau_1 - \tau_2$ to abbreviate $\tau_1 + (- \tau_2)$ and more
-interestingly $\tau_1 \lolli \tau_2$ to abbreviate $(- \tau_1) + \tau_2$. 
+interestingly $\tau_1 \lolli \tau_2$ to abbreviate $(- \tau_1) + \tau_2$.
+The $\Box$ is used to make explicit the injection of a first-order type into
+a 1-dimensional type. We omit the explicit injection when
+convenient. Formally, the \emph{dimension} of a type is defined as follows:
+\[\begin{array}{rcl}
+\bdim{t} &=& 0 \\
+\bdim{\Box t} &=& 1 \\
+\bdim{\tau_1 + \tau_2} &=& \max(\bdim{\tau_1},\bdim{\tau_2}) \\
+\bdim{\tau_1 * \tau_2} &=& \bdim{\tau_1} + \bdim{\tau_2} \\
+\bdim{- \tau} &=& \bdim{\tau}
+\end{array}\]
 
 It is easy to find a model for $0$-dimensional types: finite sets are such a
 model. In more detail:
 \[\begin{array}{rcl}
 \den{0} &=& \emptyset \\
-\den{1} &=& \{ \bullet \} \\
+\den{1} &=& \{ \star \} \\
 \den{t_1 + t_2} &=& \den{t_1} \uplus \den{t_2} \\
 \den{t_1 * t_2} &=& \den{t_1} \times \den{t_2} 
 \end{array}\]
@@ -218,17 +229,18 @@ isomorphic. However, in the operational semantics discussed in the next
 section, we make the computational content of such type isomorphisms
 explicit.
 
-For cubical types of dimension 1 or higher, their denotations, usually
-written as $\cubt$, are $n$-dimensional ``polarized cubes.'' Such an
-$n$-dimensional cube $\nodet{\cubt_1}{\cubt_2}$ consists of a positive
-subspace $\cubt_1$ and a negative subspace $\cubt_2$ (shaded in gray). Each
-of the subspaces are cubes of a lower dimension; the $0$-dimensional case
-reduces to the denotation of conventional first-order types. As we explain
-below, cubical sets are closed under sums, differences, products.
+For cubical types of dimension $n \geq 1$, their denotations, usually written
+as $\cubt$, are $n$-dimensional ``polarized cubes.'' Such an $n$-dimensional
+cube $\nodet{\cubt_1}{\cubt_2}$ consists of a positive subspace $\cubt_1$ and
+a negative subspace $\cubt_2$ (shaded in gray). Each of the subspaces are
+cubes of a lower dimension; the $0$-dimensional case reduces to the
+denotation of conventional first-order types. As we explain below, cubical
+sets are closed under sums, differences, products.
 
 A 1-dimensional cube looks like $\nodet{S_1}{S_2}$ which intuitively
-corresponds to the difference $t_1 - t_2$ of the two types whose denotations
-are $S_1$ and $S_2$ respectively. A 2-dimensional cube looks like
+corresponds to the difference $t_1 - t_2$ (formally $\Box t_1 + (- \Box
+t_2)$) of the two types whose denotations are $S_1$ and $S_2$ respectively. A
+2-dimensional cube looks like
 $\nodet{(\nodet{S_1}{S_2})}{(\nodet{S_3}{S_4})}$ which intuitively
 corresponds to the iterated difference of the appropriate types
 $(t_1-t_2)-(t_3-t_4)$ where the product of the successive signs from the
@@ -236,7 +248,7 @@ outermost box encodes the sign.
 
 We now give the full denotation of cubical types:
 \[\begin{array}{rcl}
-\denc{t} &=& \nodet{\den{t}}{\phantom{\den{t}}} \\
+\denc{\Box t} &=& \nodet{\den{t}}{\phantom{\den{t}}} \\
 \denc{\tau_1 + \tau_2} &=& \denc{\tau_1} \oplus \denc{\tau_2} \\
 \denc{\tau_1 * \tau_2} &=& \denc{\tau_1} \otimes \denc{\tau_2} \\
 \denc{- \tau} &=& \ominus \denc{\tau}
@@ -252,8 +264,8 @@ S = \nodet{S}{\phantom{S}} =
   \nodet{\nodet{S}{\phantom{S}}}
         {\phantom{{\nodet{S}{\phantom{S}}}}} = \ldots \\
 \]
-In the recursive definitions below, we assume that the cubical sets have been
-extended to be balanced as needed:
+In the recursive definition of addition below, we assume that the smaller
+cube has been extended to the dimension of the larger one: 
 \[\begin{array}{rcl}
 \ominus~S &=& \nodet{\phantom{S}}{S} \\
 \ominus~\nodet{\cubt_1}{\cubt_2} &=& \nodet{\ominus~\cubt_2}{\ominus~\cubt_1} \\
@@ -451,7 +463,7 @@ cubical types. Formally:
 \qquad
 \infer[\textit{right}]{(\inr{v})^{p} : \tau_1 + \tau_2}{v^{p} : \tau_2} \\
 \\
-\infer[\textit{prod}]{(v_1^{p_1},v_2^{p_2})^{p_1 \cdot p_2} : \tau_1 * \tau_2}
+\infer[\textit{prod}]{(v_1,v_2)^{p_1 \cdot p_2} : \tau_1 * \tau_2}
       {v_1^{p_1} : \tau_1 & v_2^{p_2} : \tau_2} \\
 \\
 \infer[\textit{neg}]{v^{\negp{p}} : - \tau}{v^p : \tau} 
