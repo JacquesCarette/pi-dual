@@ -180,8 +180,8 @@ $0$-dimensional cubes. Generalize to $n$-dimensional cubes.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Type Structure}
 
-We first define the syntax a semantic model of types and then discuss type
-isomorphisms.
+We first define the syntax and then present a simple semantic model of types
+which is then refined.
 
 %%%%%%%%%%%%%%%%%%%%
 \subsection{Negative and Cubical Types}
@@ -407,6 +407,62 @@ structure. We explain the details below.
 
 
 \begin{verbatim}
+So the story is that as we are building
+the denotations of types, we add these
+paths making up the cubes. The only
+case where we add new paths is multiplication
+(see Fig.1 again). We take the paths p in S1
+and the paths q in S2 and build paths (p,q)
+in the product space.
+
+Once we have this structure, we do this 
+homotopy completion which turns our inductive
+type into a higher-inductive type. We 
+start adding 2-paths between any path 
+connecting (S-S) and the refl path on 0.
+
+Technically this is a functor between (S-S) 
+and the empty type mapping S to 0, the 
+other S to 0, and the path between them
+to refl. 
+
+Now consider (a-b)-(c-c). We have a 
+functor to (a-b)-0 that contracts the
+path between c and -c. We want to 
+reduce the dimension of that space
+and map to (a-b). 
+
+original space
+
+    c ------ c
+    |        |  
+p1  |        | p2
+    |        |  
+    a ------ b
+       p3
+
+after collapsing the two c's
+
+      0
+     /\
+    /  \
+   a -- b
+
+or because path compose
+
+  a ---- b
+    ---- 
+
+where the top path is p1;p2
+and the bottom path is p3
+
+I think we should have a 2-path
+between them to say that these
+paths are equivalent which will 
+then collapse the square to a 
+line as desired.
+
+
 A critical isomorphism that is 
 not reflected at all in the semantics
 is that 1-1 = 0 
