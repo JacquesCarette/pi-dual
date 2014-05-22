@@ -50,6 +50,7 @@ $\displaystyle
 \newcommand{\cubt}{\mathbb{T}}
 \newcommand{\den}[1]{\llbracket #1 \rrbracket}
 \newcommand{\nodet}[2]{\fcolorbox{black}{white}{$#1$}\fcolorbox{black}{gray!20}{$#2$}}
+\newcommand{\hast}{$:\mkern -2.5mu:\;$}
 
 \begin{document}
 \special{papersize=8.5in,11in}
@@ -216,10 +217,7 @@ increase without bounds.
       {(\nodet{{(\nodet{S_2 \times S_3}{S_2 \times S_4})}}
               {{(\nodet{S_2 \times S_5}{S_2 \times S_6})}})}
 \end{array}\]
-\caption{\label{mult}Example of multiplication of two cubical sets.}
-\end{figure*}
 
-\begin{figure*}
 \begin{tikzpicture}
 \node[above] at (0,0) {\pp};
 \node[left] at (0,0) {$S_1$};
@@ -283,7 +281,7 @@ increase without bounds.
 \draw[-] (10.2,1.2) -- (10.2,-0.3);
 \draw[-,dashed] (8.2,1.2) -- (8.2,-0.3);
 \end{tikzpicture}
-\caption{\label{multv}Visualization of multiplication of two cubical sets.}
+\caption{\label{mult}Example of multiplication of two cubical sets.}
 \end{figure*}
 
 This point is made precise in the denotation of types which maps a type of
@@ -313,10 +311,8 @@ Formally, the denotation of types is as follows:
 \noalign{\mbox{where:}\hfill}
 \\
 S_1 \oplus S_2 &=& S_1 \uplus S_2 \\
-S \oplus (\nodet{\cubt_1}{\cubt_2}) &=& 
-  (\nodet{S}{\phantom{S}}) \oplus (\nodet{\cubt_1}{\cubt_2}) \\
-(\nodet{\cubt_1}{\cubt_2}) \oplus S &=& 
-  (\nodet{\cubt_1}{\cubt_2}) \oplus (\nodet{S}{\phantom{S}}) \\
+S \oplus (\nodet{\cubt_1}{\cubt_2}) &=& \nodet{S \oplus \cubt_1}{\cubt_2} \\
+(\nodet{\cubt_1}{\cubt_2}) \oplus S &=& \nodet{\cubt_1 \oplus S}{\cubt_2} \\
 (\nodet{\cubt_1}{\cubt_2}) \oplus (\nodet{\cubt_3}{\cubt_4}) &=& 
   \nodet{\cubt_1 \oplus \cubt_3}{\cubt_2 \oplus \cubt_4} \\
 \\
@@ -331,28 +327,14 @@ S \otimes (\nodet{\cubt_1}{\cubt_2}) &=&
 \end{array}\]
 The type 0 maps to the empty set. The type 1 maps to a singleton set. The sum
 of $0$-dimensional types is the disjoint union as expected. For cubes of
-higher dimensions, the subspaces are recursively added. If the two types to
-be added are of different dimensions, it is necessary to embed the smaller
-type in the larger dimension using the fact (to be justified using a
-$\Pi$-combinator that witnesses this isomorphism in the next section) that
-$t$ is equivalent to $t-0$ and to $(t-0)-0$ and so on, i.e.,
-\[
-S = \nodet{S}{\phantom{S}} = 
-  \nodet{\nodet{S}{\phantom{S}}}
-        {\phantom{{\nodet{S}{\phantom{S}}}}} = \ldots \\
-\]
-The product of 0-dimensional types is the cartesian product of sets. The
-definition of negation is natural: it recursively swaps the positive and
-negative subspaces. We note that the general definitions of sums and products
-reduce to the conventional sums and products for $0$-dimensional types. Also
-the sum of 1-dimensional types reduces to the sum used in the \textbf{Int}
-construction and that addition and negation do not increase the
-dimensions. The interesting new development is the definition of
-products. The example in Fig.~\ref{mult} illustrates the general pattern: the
-product of an $n$-dimensional type with an $m$-dimensional type gives an
-$(n+m)$-dimensional type. For low dimensions such as the ones used in the
-example above, it is possible to visualize what is happening in coordinate
-space (see Fig.~\ref{multv}).
+higher dimensions, the subspaces are recursively added. Note that the sum of
+1-dimensional types reduces to the sum used in the \textbf{Int} construction.
+The definition of negation is natural: it recursively swaps the positive and
+negative subspaces. The product of 0-dimensional types is the cartesian
+product of sets. For cubes of higher-dimensions $n$ and $m$, the result is of
+dimension $(n+m)$. The example in Fig.~\ref{mult} illustrates the idea using
+the product of 1-dimensional cube (i.e., a line) with a 2-dimensional cube
+(i.e., a square). The result is a 3-dimensional cube as illustrated. 
 
 \paragraph*{Note.} 
 Our (simple) semantics of types identifies several structurally different
@@ -360,6 +342,49 @@ types such as $(1+(1+1))$ and $((1+1)+1)$. In some sense, this is innocent as
 the types are isomorphic. However, in the operational semantics discussed in
 the next section, we make the computational content of such type isomorphisms
 explicit.
+
+\begin{verbatim}
+A critical isomorphism that is 
+not reflected at all in the semantics
+is that 1-1 = 0 
+
+The denotation of 1-1 is a line;
+the denotation of 0 is the empty set
+
+[ {*} | {*} ] --> []
+
+Something like the simplification
+of Conway games here perhaps?
+
+There are two values of type
+1-1
+
+() 
+and 
+()^-
+
+epsilon should take one and map
+to the other because it can
+never produce something of type 0
+
+In general, we have several direction
+not just left and right like in the
+Int construction. In 3D we have
+8 directions: +++, ++-, ..., ---
+We have an epsilon that 
+takes ++- and flips it to --+
+and another that flips
++++ to --- and so on
+
+So we should have 8 interpreters
+for 3D one for each direction!!!
+
+The ++- interpreter would 
+manipulates values like
+(v1,v2,v3) and would apply
+the normal combinators to v1, v2, 
+and the adjoint to v3 and so on.
+\end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%
 \subsection{Type Isomorphisms}
@@ -422,56 +447,78 @@ the type isomorphisms.
 \subsection{Values} 
 
 Now that the type structure is defined, we turn our attention to the notion
-of values. For conventional first-order types, the values are also
-conventional:
-\[
-\infer{() : 1}{} 
-\qquad
-\infer{\inl{v} : t_1 + t_2}{v : t_1}
-\qquad
-\infer{\inr{v} : t_1 + t_2}{v : t_2}
-\qquad
-\infer{(v_1,v_2) : t_1 * t_2}{v_1 : t_1 & v_2 : t_2}
-\]
-For cubical types, the values are more involved. Intuitively, a value of the
-$n$-dimensional type $\tau$ is an element of one of the sets located in a
-corner of the $n$-dimensional cube denoted by $\tau$. Thus to specify a
-value, we must specify one of the corners of the cube which can easily be
-done using a sequence $p$ of $+$ and $-$ polarities indicating how to
-navigate the cube in each successive dimension starting from a fixed origin
-to reach the desired corner. We denote such values as $v^{p}$ and use
-$\epsilon$ for the empty sequence of polarities. One can think of the
-sequence of signs as denoting a path in the binary tree representation of
-cubical types. Formally:
+of values. Intuitively, a value of the $n$-dimensional type $\tau$ is an
+element of one of the sets located in one of the corners of the
+$n$-dimensional cube denoted by $\tau$. Thus to specify a value, we must
+first specify one of the corners of the cube (or equivalently one of the
+leaves in the binary tree representation) which can easily be done using a
+sequence $p$ of $+$ and $-$ polarities indicating how to navigate the cube in
+each successive dimension starting from a fixed origin to reach the desired
+corner. We write $v^{p}$ for the value $v$ located at corner $p$ of the cube
+associated with its type. We use $\epsilon$ for the empty sequence of
+polarities and identify $v$ with $v^\epsilon$. Note that the polarities
+doesn't completely specify the type since different types like $(1+(1+1))$
+and $((1+1)+1)$ are assigned the same denotation. What the path $p$ specifies
+is the \emph{polarity} of the value, or its ``orientation'' in the space
+denoted by its type. Formally:
 \[\begin{array}{c}
-\infer[\textit{base}]{v^{+} : t}{v : t} \\
+\infer{() : 1}{} \\
+\qquad
+\infer[\textit{neg}]{v^{\negp{p}} : - \tau}{v^p : \tau} 
 \\
 \infer[\textit{left}]{(\inl{v})^{p} : \tau_1 + \tau_2}{v^{p} : \tau_1}
 \qquad
-\infer[\textit{right}]{(\inr{v})^{p} : \tau_1 + \tau_2}{v^{p} : \tau_2} \\
+\infer[\textit{right}]{(\inr{v})^{p} : \tau_1 + \tau_2}{v^{p} : \tau_2} 
 \\
 \infer[\textit{prod}]{(v_1,v_2)^{p_1 \cdot p_2} : \tau_1 * \tau_2}
-      {v_1^{p_1} : \tau_1 & v_2^{p_2} : \tau_2} \\
-\\
-\infer[\textit{neg}]{v^{\negp{p}} : - \tau}{v^p : \tau} 
+      {v_1^{p_1} : \tau_1 & v_2^{p_2} : \tau_2} 
 \end{array}\]
-The rule \textit{base} states that a conventional first-order value can be
-viewed as trivial $0$-dimensional cubical value. The rules \textit{left} and
-\textit{right} reflect the fact that sums do not increase the dimension and
-works pointwise. The rule \textit{prod} is the most involved one: it
-increases the dimension by \emph{concatenating} the two dimensions in its
-arguments. For example, if we pair $v_1^{\pp}$ and $v_2^{\mm\pp}$ we get
-$(v_1,v_2)^{\pp\mm\pp}$. The rule \textit{neg} shows that a negative value
-$v$ is located at the ``opposite'' corner of $v$ which is calculated as
-follows:
+The rules \textit{left} and \textit{right} reflect the fact that sums do not
+increase the dimension. Note that when $p$ is $\epsilon$, we get the
+conventional values for the 0-dimensional sum type. The rule \textit{prod} is
+the most involved one: it increases the dimension by \emph{concatenating} the
+two dimensions of its arguments. For example, if we pair $v_1^{\pp}$ and
+$v_2^{\mm\pp}$ we get $(v_1,v_2)^{\pp\mm\pp}$. (See Fig.~\ref{mult} for the
+illustration.) Note again that if both components are 0-dimensional, the pair
+remains 0-dimensional and we recover the usual rule for typing values of
+product types. The rule \textit{neg} uses the function below which states
+that the negation of a value $v$ is the same value $v$ located at the
+``opposite'' corner of the cube:
 \[\begin{array}{rcl}
 \negp{\epsilon} &=& \epsilon \\
 \negp{+p} &=& -\negp{p} \\
 \negp{-p} &=& +\negp{p}
 \end{array}\]
 
+\begin{verbatim}
+We only have -
+which flips ALL the directions simultaneously.
+So from ++-+--+ you can only go to
+        --+-++-
+What if you wanted to go to
+        ++++--+
+I think we use the * functor to flip the 
+direction we want. 
+\end{verbatim}
+
 %%%%%%%%%%%%%%%%%%
-\subsection{Combinators} 
+\subsection{Combinators: Example} 
+
+Consider the following simple function on 0-dimensional sum types:
+\[\begin{array}{rcl}
+\textsf{swapP} &\hast& (\tau_1 + \tau_2) \rightarrow (\tau_2 + \tau_1) \\
+\textsf{swapP} (\inl{v}) &=& inr{v} \\
+\textsf{swapP} (\inr{v}) &=& inl{v}
+\end{code}
+Given our setup, this just works $n$-dimensional types. And so do most of the
+$\Pi$ combinators for that matter. Only $\eta$ and $\epsilon$ seem to need
+thinking. How and why would $1-1$ which is a 1-dimensional line be the same
+as the empty type which is a 0-dimensional thing. And how do we generalize
+for arbitrary group identities at higher dimensions. We need a mechanism for
+cubes with subspaces that ``cancel'' to map to equivalent smaller subcubes.
+
+%%%%%%%%%%%%%%%%%%
+\subsection{$\Pi$ Combinators} 
 
 The terms of $\Pi$ witness type isomorphisms of the form $b \iso b$. They
 consist of base isomorphisms, as defined below, and their composition. Each
