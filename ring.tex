@@ -50,7 +50,7 @@ $\displaystyle
 \newcommand{\cubt}{\mathbb{T}}
 \newcommand{\den}[1]{\llbracket #1 \rrbracket}
 \newcommand{\nodet}[2]{\fcolorbox{black}{white}{$#1$}\fcolorbox{black}{gray!20}{$#2$}}
-\newcommand{\hast}{$:\mkern -2.5mu:\;$}
+\newcommand{\hast}{:\mkern -2.5mu:\;}
 
 \begin{document}
 \special{papersize=8.5in,11in}
@@ -509,7 +509,7 @@ Consider the following simple function on 0-dimensional sum types:
 \textsf{swapP} &\hast& (\tau_1 + \tau_2) \rightarrow (\tau_2 + \tau_1) \\
 \textsf{swapP} (\inl{v}) &=& inr{v} \\
 \textsf{swapP} (\inr{v}) &=& inl{v}
-\end{code}
+\end{array}\]
 Given our setup, this just works $n$-dimensional types. And so do most of the
 $\Pi$ combinators for that matter. Only $\eta$ and $\epsilon$ seem to need
 thinking. How and why would $1-1$ which is a 1-dimensional line be the same
