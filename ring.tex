@@ -195,6 +195,7 @@ We use $\tau_1 - \tau_2$ to abbreviate $\tau_1 + (- \tau_2)$ and more
 interestingly $\tau_1 \lolli \tau_2$ to abbreviate $(- \tau_1) + \tau_2$.
 The \emph{dimension} of a type is defined as follows:
 \[\begin{array}{rcl}
+\bdim{\cdot} &\hast& \tau \rightarrow \mathbb{N} \\
 \bdim{0} &=& 0 \\
 \bdim{1} &=& 0 \\
 \bdim{\tau_1 + \tau_2} &=& \max(\bdim{\tau_1},\bdim{\tau_2}) \\
@@ -217,7 +218,8 @@ increase without bounds.
       {(\nodet{{(\nodet{S_2 \times S_3}{S_2 \times S_4})}}
               {{(\nodet{S_2 \times S_5}{S_2 \times S_6})}})}
 \end{array}\]
-
+\\
+\\
 \begin{tikzpicture}
 \node[above] at (0,0) {\pp};
 \node[left] at (0,0) {$S_1$};
@@ -281,24 +283,29 @@ increase without bounds.
 \draw[-] (10.2,1.2) -- (10.2,-0.3);
 \draw[-,dashed] (8.2,1.2) -- (8.2,-0.3);
 \end{tikzpicture}
-\caption{\label{mult}Example of multiplication of two cubical sets.}
+\caption{\label{mult}Example of multiplication of two cubical types.}
 \end{figure*}
 
 This point is made precise in the denotation of types which maps a type of
 dimension $n$ to $n$-dimensional cube. We represent such a cube syntactically
-as a binary tree of maximum depth $n$ with nodes of the form
+as a binary tree of maximum depth~$n$ with nodes of the form
 $\nodet{\cubt_1}{\cubt_2}$. In such a node, $\cubt_1$ is the positive
 subspace and $\cubt_2$ (shaded in gray) is the negative subspace along the
 first dimension. Each of these subspaces is itself a cube of a lower
-dimension. The $0$-dimensional cubes are the conventional denotation of
-first-order types as sets. We use $S$ to denote the denotations of such
-types. For example, 1-dimensional cube looks like $\nodet{S_1}{S_2}$ which
+dimension. The $0$-dimensional cubes are plain sets representing the
+denotation of conventional first-order types. We use $S$ to denote the
+denotations of these plain types. A 1-dimensional cube, $\nodet{S_1}{S_2}$,
 intuitively corresponds to the difference $t_1 - t_2$ of the two types whose
-denotations are $S_1$ and $S_2$ respectively. A full 2-dimensional cube looks
-like $\nodet{(\nodet{S_1}{S_2})}{(\nodet{S_3}{S_4})}$ which intuitively
-corresponds to the iterated difference of the appropriate types
-$(t_1-t_2)-(t_3-t_4)$ where the product of the successive signs from the
-outermost box encodes the sign.
+denotations are $S_1$ and $S_2$ respectively. The type can be visualized as a
+``line'' with polarized endpoints connecting the two points $S_1$ and
+$S_2$. A full 2-dimensional cube,
+$\nodet{(\nodet{S_1}{S_2})}{(\nodet{S_3}{S_4})}$, intuitively corresponds to
+the iterated difference of the appropriate types $(t_1-t_2)-(t_3-t_4)$ where
+the product of the successive signs from the outermost box encodes the
+sign. The type can be visualized as a ``square'' with polarized corners
+connecting the two lines corresponding to $(t_1-t_2)$ and $(t_3-t_4)$. (See
+Fig.~\ref{mult} which is further explained after we discuss multiplication
+below.)
 
 Formally, the denotation of types is as follows:
 \[\begin{array}{rcl}
@@ -326,22 +333,78 @@ S \otimes (\nodet{\cubt_1}{\cubt_2}) &=&
 \ominus~\nodet{\cubt_1}{\cubt_2} &=& \nodet{\ominus~\cubt_2}{\ominus~\cubt_1} 
 \end{array}\]
 The type 0 maps to the empty set. The type 1 maps to a singleton set. The sum
-of $0$-dimensional types is the disjoint union as expected. For cubes of
-higher dimensions, the subspaces are recursively added. Note that the sum of
+of $0$-dimensional types is the disjoint union as usual. For cubes of higher
+dimensions, the subspaces are recursively added. Note that the sum of
 1-dimensional types reduces to the sum used in the \textbf{Int} construction.
 The definition of negation is natural: it recursively swaps the positive and
 negative subspaces. The product of 0-dimensional types is the cartesian
 product of sets. For cubes of higher-dimensions $n$ and $m$, the result is of
 dimension $(n+m)$. The example in Fig.~\ref{mult} illustrates the idea using
 the product of 1-dimensional cube (i.e., a line) with a 2-dimensional cube
-(i.e., a square). The result is a 3-dimensional cube as illustrated. 
+(i.e., a square). The result is a 3-dimensional cube as illustrated.
 
-\paragraph*{Note.} 
+%%%%%%%%%%%%%%%%%%%%
+\subsection{Type Isomorphisms}
+
 Our (simple) semantics of types identifies several structurally different
 types such as $(1+(1+1))$ and $((1+1)+1)$. In some sense, this is innocent as
 the types are isomorphic. However, in the operational semantics discussed in
 the next section, we make the computational content of such type isomorphisms
-explicit.
+explicit. Some other isomorphic types like $(t_1*t_2)$ and $(t_2*t_1)$ map to
+different cubes and are \emph{not} identified: explicit isomorphisms are
+needed to mediate between them. In most cases, the isomorphisms are easy to
+define except for the isomorphisms involving the empty type. In particular,
+if negative types are to be interpreted as their name suggests, we must have
+an isomorphism between $(t-t)$ and the empty type 0. Semantically the former
+denotes $\nodet{\cubt}{\cubt}$ and the latter denotes the empty set. Their
+denotations are different and there is no way so far to express the fact that
+these two cubes should be identified. Intuitively, what is needed is the
+ability to contract a line whose endpoints are identical to a single
+point. It should then follow that a square where one edge contracts to a
+point would itself contract to a line, and a 3-dimensional cube in which one
+face contracts to a point would itself contract to a square, etc. This is, of
+course, where the ideas of homotopy (type) theory enter the development.
+
+Consider the situation with the simplest instance of the desired isomorphism
+which is between $(1-1)$ and the empty type:
+\begin{center}
+\begin{tikzpicture}
+\node[above] at (0,0) {\pp};
+\node[left] at (-0.2,0) {$1$};
+\draw[fill] (0,0) circle [radius=0.05];
+\node[above] at (2.6,0) {\mm};
+\node[right] at (2.8,0) {$1$};
+\draw[fill] (2.6,0) circle [radius=0.05];
+\draw[->,red] (0.1,0) -- (2.5,0);
+\draw[->,red] (-0.1,-0.1) arc (135:405:0.2);
+\node[below,red] at (0,-0.4) {\textsf{refl}};
+\draw[->,red] (2.5,-0.1) arc (135:405:0.2);
+\node[below,red] at (2.6,-0.4) {\textsf{refl}};
+\node[above] at (1.3,0) {$I$};
+\node[right] at (1.3,-0.5) {$q$};
+%%
+\node[below] at (1.3,-1.5) {$\emptyset$};
+\draw[fill] (1.3,-1.5) circle [radius=0.05];
+\draw[->,red] (1.4,-1.4) arc (-45:225:0.2);
+\node[right,red] at (1.5,-1.3) {\textsf{refl}};
+%% 
+\draw[->,double,blue] (1.3,-0.1) -- (1.3,-1);
+\end{tikzpicture}
+\end{center}
+The top of the figure is the 1-dimensional cube representing the type $(1-1)$
+except that we view the edge connecting the two endpoints as a \emph{path}
+$I$ that is initially non-contractible, i.e., it is different from the
+identity paths labeled \textsf{refl} that are the trivial paths asserting
+that $1$ is contractible to itself. The bottom of the figure is the
+0-dimensional cube representing the empty type. There is a trivial path
+\textsf{refl} connecting that point to itself. To express the equivalence of
+$(1-1)$ to 0, we add a 2-path, i.e. a path between paths, that asserts the
+equivalence of the path $I$ with \textsf{refl} on the empty type. That
+effectively contracts the two points and collapses them to a single
+point. Surprisingly, that is everthing that we need. The extension to higher
+dimensions just ``works'' because paths in homotopy type theory have a rich
+structure. We explain the details below. 
+
 
 \begin{verbatim}
 A critical isomorphism that is 
@@ -386,8 +449,9 @@ the normal combinators to v1, v2,
 and the adjoint to v3 and so on.
 \end{verbatim}
 
-%%%%%%%%%%%%%%%%%%%%
-\subsection{Type Isomorphisms}
+
+
+
 
 \begin{verbatim}
 To complete the story we need to 
