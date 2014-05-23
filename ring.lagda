@@ -9,6 +9,7 @@
 \usepackage{amssymb}
 \usepackage{xcolor}
 \usepackage{courier}
+\usepackage{url}
 \usepackage{thmtools}
 \usepackage{bbold}
 \usepackage{tikz}
@@ -63,7 +64,7 @@ $\displaystyle
 \setlength{\pdfpagewidth}{\paperwidth}
 
 \newcommand{\alt}{~|~}
-\lstnewenvironment{haskell}{\lstset{basicstyle={\sffamily\footnotesize}}}{}
+\lstnewenvironment{haskellcode}{\lstset{basicstyle={\sffamily\footnotesize}}}{}
 
 \lstset{frame=none,
          language=Haskell,
@@ -85,8 +86,8 @@ $\displaystyle
          basicstyle=\sffamily,
          columns=[l]flexible,
          flexiblecolumns=true,
-         aboveskip=\smallskipamount,
-         belowskip=\smallskipamount,
+         aboveskip=\medskipamount,
+         belowskip=\medskipamount,
          lineskip=-1pt,
          xleftmargin=1em,
          escapeinside={/+}{+/},
@@ -168,59 +169,97 @@ open import Function
 \section{Introduction}
 
 The \textbf{Int} construction or the $\mathcal{G}$ construction are neat. As
-Neel K. explains, given first-order types and feedback you get higher-order
-functions. But if you do the construction on the additive structure, you lose
-the multiplicative structure. It turns out that this is related to a deep
-open problem in algebraic topology and homotopy theory that was recently
-solved. We ``translate'' that solution to a computational type-theoretic
-world. This has evident connections to homotopy (type) theory that remain to
-be investigated in more depth.
+Neel K. explains~\cite{neelblog}, given first-order types and feedback you
+get higher-order functions. But if you do the construction on the additive
+structure, you lose the multiplicative structure. It turns out that this is
+related to a deep open problem in algebraic topology and homotopy theory that
+was recently solved~\cite{ringcompletion}. We ``translate'' that solution to
+a computational type-theoretic world. This has evident connections to
+homotopy (type) theory that remain to be investigated in more depth.
+
+Make sure we introduce the abbreviation HoTT in the
+introduction~\cite{hottbook}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The \textbf{Int} Construction} 
 
-Explain in detail perhaps with Haskell embedding and type functions etc. The
-key insight it to add ``negative'' types representing demand for values. This
-is how you get functions.
+We may or may not want to explain the construction using Haskell. In case we
+do, the most relevant code is below. The key insight it to enrich types to
+consist of pairs that intuitively represent $(t_1 - t_2)$ where the values of
+type $t_1$ flow in the ``normal'' direction (from producers to consumers) and
+the values of type $t_2$ flow backwards (representing a \emph{demand} for a
+value). This is expressive enough to represent functions which are viewed as
+expressions that convert a demand for an argument to the production of a
+result. The problem is that the obvious definition of multiplication is not
+functorial. This turns out to be intimately related to a well-known open
+problem in algebraic topology that goes back at least thirty
+years~\cite{thomason}.
 
-We lose the multiplicative structure. No evident way to define the
-multiplication functor. Perhaps there is a clever way. But this turns out to
-be a well-known open problem. Review the problem and tell the story from the
-algebraic topology perspective. Regular first-order types are viewed as
-$0$-dimensional cubes. The \textbf{Int} construction generalizes types to
-1-dimensional cubes. Our work here generalizes types to $n$-dimensional
-cubes.
+\begin{haskellcode}
+class GT p where
+  type Pos p      :: *  -- a type has a positive component
+  type Neg p      :: *  -- and a negative component
+  type ZeroG      :: *  -- we want all the usual type 
+  type OneG       :: *  -- constructors including 0, 1,
+  type PlusG p q  :: *  -- sums, and 
+  type ProdG p q  :: *  -- products
+  type DualG p    :: *  -- as a bonus we get negation and
+  type LolliG p q :: *  -- linear functions
+
+-- A definition of the composite types with a 
+-- positive and negative components
+
+data a :- b = a :- b
+
+instance GT (ap :- am) where
+  type Pos (ap :- am) = ap
+  type Neg (ap :- am) = am
+  type ZeroG = Void :- Void
+  type OneG = () :- Void
+  type PlusG  (ap :- am) (bp :- bm) = 
+    (Either ap bp) :- (Either am bm)
+  type TimesG (ap :- am) (bp :- bm) = 
+    -- the "obvious" but broken multiplication
+    (Either (ap,bp) (am,bm)) :- (Either (am,bp) (ap,bm))
+  type DualG  (ap :- am) = am :- ap
+  type LolliG (ap :- am) (bp :- bm) = 
+    (Either am bp) :- (Either ap bm)
+
+-- Functions between composite types with positive 
+-- and negative components; implemented using 
+-- resumptions (i.e., feedback)
+newtype GM a b = 
+  GM { rg :: R  (Either (Pos a) (Neg b)) 
+                (Either (Neg a) (Pos b)) } 
+
+data R i o = R { r  :: i -> (o, R i o), 
+                 rr :: o -> (i, R o i) }
+
+plusG :: (a ~ (ap :- am), b ~ (bp :- bm), 
+         c ~ (cp :- cm), d ~ (dp :- dm)) =>
+  GM a b -> GM c d -> GM (PlusG a c) (PlusG b d)
+plusG (GM f) (GM g) = -- short definition omitted
+
+timesG :: (a ~ (ap :- am), b ~ (bp :- bm), 
+          c ~ (cp :- cm), d ~ (dp :- dm)) =>
+  GM a b -> GM c d -> GM (TimesG a c) (TimesG b d)
+timesG = -- IMPOSSIBLE
+
+\end{haskellcode}
+
+The main ingredient of the recent solution to this problem can intuitively
+explained as follows. We regard conventional types as $0$-dimensional
+cubes. By adding composite types consisting of two types, the \textbf{Int}
+construction effectively creates 1-dimensional cubes (i.e., lines). The key
+to the general solution, and the approach we adopt here, is to generalize
+types to $n$-dimensional cubes.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Type Structure}
+\section{Cubes}
+\label{cubes}
 
 We first define the syntax and then present a simple semantic model of types
 which is then refined.
-
-%%%%%%%%%%%%%%%%%%%%
-\subsection{Negative and Cubical Types}
-
-Our types $\tau$ include the empty type 0, the unit type 1, conventional sum
-and product types, as well as \emph{negative} types:
-\[\begin{array}{rcl}
-\tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \alt - \tau
-\end{array}\]
-We use $\tau_1 - \tau_2$ to abbreviate $\tau_1 + (- \tau_2)$ and more
-interestingly $\tau_1 \lolli \tau_2$ to abbreviate $(- \tau_1) + \tau_2$.
-The \emph{dimension} of a type is defined as follows:
-\[\begin{array}{rcl}
-\bdim{\cdot} &\hast& \tau \rightarrow \mathbb{N} \\
-\bdim{0} &=& 0 \\
-\bdim{1} &=& 0 \\
-\bdim{\tau_1 + \tau_2} &=& \max(\bdim{\tau_1},\bdim{\tau_2}) \\
-\bdim{\tau_1 * \tau_2} &=& \bdim{\tau_1} + \bdim{\tau_2} \\
-\bdim{- \tau} &=& \max(1,\bdim{\tau})
-\end{array}\]
-The base types have dimension 0. If negative types are not used, all
-dimensions remain at 0. If negative types are used but no products of
-negative types appear anywhere, the dimension is raised to 1. This is the
-situation with the \textbf{Int} or $\mathcal{G}$ construction. Once negative
-and product types are freely used, the dimension can increase without bounds.
 
 \begin{figure*}
 \[\begin{array}{c}
@@ -303,6 +342,31 @@ and product types are freely used, the dimension can increase without bounds.
 \caption{\label{mult}Example of multiplication of two cubical types.}
 \end{figure*}
 
+%%%%%%%%%%%%%%%%%%%%
+\subsection{Negative and Cubical Types}
+
+Our types $\tau$ include the empty type 0, the unit type 1, conventional sum
+and product types, as well as \emph{negative} types:
+\[\begin{array}{rcl}
+\tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \alt - \tau
+\end{array}\]
+We use $\tau_1 - \tau_2$ to abbreviate $\tau_1 + (- \tau_2)$ and more
+interestingly $\tau_1 \lolli \tau_2$ to abbreviate $(- \tau_1) + \tau_2$.
+The \emph{dimension} of a type is defined as follows:
+\[\begin{array}{rcl}
+\bdim{\cdot} &\hast& \tau \rightarrow \mathbb{N} \\
+\bdim{0} &=& 0 \\
+\bdim{1} &=& 0 \\
+\bdim{\tau_1 + \tau_2} &=& \max(\bdim{\tau_1},\bdim{\tau_2}) \\
+\bdim{\tau_1 * \tau_2} &=& \bdim{\tau_1} + \bdim{\tau_2} \\
+\bdim{- \tau} &=& \max(1,\bdim{\tau})
+\end{array}\]
+The base types have dimension 0. If negative types are not used, all
+dimensions remain at 0. If negative types are used but no products of
+negative types appear anywhere, the dimension is raised to 1. This is the
+situation with the \textbf{Int} or $\mathcal{G}$ construction. Once negative
+and product types are freely used, the dimension can increase without bounds.
+
 This point is made precise in the following tentative denotation of types (to
 be refined in the next section) which maps a type of dimension $n$ to an
 $n$-dimensional cube. We represent such a cube syntactically as a binary tree
@@ -371,21 +435,20 @@ explicit. Some other isomorphic types like $(\tau_1*\tau_2)$ and
 $(\tau_2*\tau_1)$ map to different cubes and are \emph{not} identified:
 explicit isomorphisms are needed to mediate between them. We therefore need
 to enrich our model of types with isomorphisms connecting types we deem
-equivalent.
-
-So far, our types are modeled as cubes which are really sets indexed by
-polarities. An isomorphism between $(\tau_1*\tau_2)$ and $(\tau_2*\tau_1)$
-requires nothing more than a pair of set-theoretic functions between the
-spaces that compose to the identity. What is much more interesting are the
-isomorphisms involving the empty type~0. In particular, if negative types are
-to be interpreted as their name suggests, we must have an isomorphism between
-$(t-t)$ and the empty type 0. Semantically the former denotes the ``line''
-$\nodet{\cubt}{\cubt}$ and the latter denotes the empty set. Their
-denotations are different and there is no way, in the world of plain sets, to
-express the fact that these two spaces should be identified. What is needed
-is the ability to \emph{contract} the \emph{path} between the endpoints of
-the line to the trivial path on the empty type. This is, of course, where the
-ideas of homotopy (type) theory enter the development.
+equivalent. So far, our types are modeled as cubes which are really sets
+indexed by polarities. An isomorphism between $(\tau_1*\tau_2)$ and
+$(\tau_2*\tau_1)$ requires nothing more than a pair of set-theoretic
+functions between the spaces, and that compose to the identity. What is much
+more interesting are the isomorphisms involving the empty type~0. In
+particular, if negative types are to be interpreted as their name suggests,
+we must have an isomorphism between $(t-t)$ and the empty type
+0. Semantically the former denotes the ``line'' $\nodet{\cubt}{\cubt}$ and
+the latter denotes the empty set. Their denotations are different and there
+is no way, in the world of plain sets, to express the fact that these two
+spaces should be identified. What is needed is the ability to \emph{contract}
+the \emph{path} between the endpoints of the line to the trivial path on the
+empty type. This is, of course, where the ideas of homotopy (type) theory
+enter the development.
 
 Consider the situation above in which we want to identify the spaces
 corresponding to the types $(1-1)$ and the empty type:
@@ -415,47 +478,38 @@ corresponding to the types $(1-1)$ and the empty type:
 \end{center}
 The top of the figure is the 1-dimensional cube representing the type $(1-1)$
 as before except that we now add a path $\seg{1}$ to connect the two
-endpoints. (Note that previously, the dotted lines in the figures were a
-visualization aid and were \emph{not} meant to represent paths.) We also make
-explicit the trivial identity paths from every space to itself.  The bottom
-of the figure is the 0-dimensional cube representing the empty type. The path
-$\seg{1}$ identifies the two occurrences of 1. To express the equivalence of
+endpoints. This path identifies the two occurrences of 1. (Note that
+previously, the dotted lines in the figures were a visualization aid and were
+\emph{not} meant to represent paths.) We also make explicit the trivial
+identity paths from every space to itself.  The bottom of the figure is the
+0-dimensional cube representing the empty type. To express the equivalence of
 $(1-1)$ and 0, we add a 2-path $q$, i.e. a path between paths, that connects
 the path $\seg{1}$ to the trivial path $\refl{0}$. That effectively makes the
 two points ``disappear.''  Surprisingly, that is everything that we need. The
-extension to higher dimensions just ``works'' because paths in homotopy type
-theory have a rich structure. We explain the details after we include a short
-introduction of the necessary concepts from homotopy type theory. 
+extension to higher dimensions just ``works'' because paths in HoTT have a
+rich structure. We explain the details after we include a short introduction
+of the necessary concepts from HoTT.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Homotopy Type Theory}
+\section{Condensend Background on HoTT}
 
-Informally, and as a first approximation, one may think of \emph{homotopy
-  type theory} (HoTT) as mathematics, type theory, or computation but with
-all equalities replaced by isomorphisms, i.e., with equalities given
-computational content. A bit more formally, one starts with Martin-L\"of type
-theory, interprets the types as topological spaces or weak
-$\infty$-groupoids, and interprets identities between elements of a type as
-\emph{paths}.  In more detail, one interprets the witnesses of the identity
-$x \equiv y$ as paths from $x$ to $y$. If $x$ and $y$ are themselves paths,
-then witnesses of the identity $x \equiv y$ become paths between paths, or
-homotopies in the topological language. 
+Informally, and as a first approximation, one may think of HoTT as
+mathematics, type theory, or computation but with all equalities replaced by
+isomorphisms, i.e., with equalities given computational content. We explain
+some of the basic ideas below.
 
-Formally, Martin-L\"of type theory, is based on the principle that every
-proposition, i.e., every statement that is susceptible to proof, can be
-viewed as a type. The correspondence is validated by the following
-properties: if a proposition $P$ is true, the corresponding type is
-inhabited, i.e., it is possible to provide evidence for $P$ using one of the
-elements of the type $P$. If, however, the proposition $P$ is false, the
-corresponding type is empty, i.e., it is impossible to provide evidence for
-$P$. The type theory is rich enough to allow propositions denoting
-conjunction, disjunction, implication, and existential and universal
-quantifications.
+%%%%%%%%%%%%%%%%%
+\subsection{Types as Spaces}
 
-It is clear that the question of whether two elements of a type are equal is
-a proposition, and hence that this proposition must correspond to a type. In
-Agda notation, we can formally express this as follows:
+One starts with Martin-L\"of type theory, interprets the types as topological
+spaces or weak $\infty$-groupoids, and interprets identities between elements
+of a type as \emph{paths}.  In more detail, one interprets the witnesses of
+the identity $x \equiv y$ as paths from $x$ to $y$. If $x$ and $y$ are
+themselves paths, then witnesses of the identity $x \equiv y$ become paths
+between paths, or homotopies in the topological language. In Agda notation,
+we can formally express this as follows:
 
+\medskip
 \begin{code}
 data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
   refl : (a : A) → (a ≡ a)
@@ -469,19 +523,20 @@ i1 = refl 3
 i2 : ℕ ≡ ℕ
 i2 = refl ℕ
 \end{code}
+\medskip
 
-It is important to note that the notion of proposition equality $\equiv$
-relates any two terms that are \emph{definitionally equal} as shown in
-example $i1$ above. In general, there may be \emph{many} proofs (i.e., paths)
-showing that two particular values are identical and that proofs are not
-necessarily identical. This gives rise to a structure of great combinatorial
-complexity.
+\noindent It is important to note that the notion of proposition
+equality~$\equiv$ relates any two terms that are \emph{definitionally equal}
+as shown in example \AgdaFunction{i1} above. In general, there may be
+\emph{many} proofs (i.e., paths) showing that two particular values are
+identical and that proofs are not necessarily identical. This gives rise to a
+structure of great combinatorial complexity.
 
 We are used to think of types as sets of values. So we think of the type
-\texttt{Bool} as the figure on the left but HoTT, we should instead think
-about it as the figure on the right:
+\AgdaPrimitiveType{Bool} as the figure on the left but in HoTT we should
+instead think about it as the figure on the right:
 \[
-\begin{tikzpicture}[scale=0.5]
+\begin{tikzpicture}[scale=0.7]
   \draw (0,0) ellipse (2cm and 1cm);
   \draw[fill] (-1,0) circle (0.025);
   \node[below] at (-1,0) {false};
@@ -499,30 +554,32 @@ about it as the figure on the right:
   \node[above right] at (1,-0.2) {true};
 \end{tikzpicture}
 \]
+In this particular case, it makes no difference, but in general we may have a
+much more complicated path structure. 
 
-In this particular case, it makes no difference, but in general we might have
-something like which shows that types are to be viewed as topological spaces
-or groupoids:
+
+We cannot generate non-trivial groupoids starting from the usual type
+constructions. We need \emph{higher-order inductive types} for that purpose.
+The classical example is the \emph{circle} that is a space consisting of a
+point \AgdaFunction{base} and a path \AgdaFunction{loop} from
+\AgdaFunction{base} to itself. As stated, this does not amount to
+much. However, because path carry additional structures (explained below),
+that space has the following non-trivial structure:
 
 \begin{center}
-\begin{tikzpicture}[scale=0.7]
-  \draw (0,0) ellipse (5cm and 2.5cm);
-  \draw[fill] (-4,0) circle (0.025);
-  \draw[->,thick,cyan] (-4,0) arc (0:320:0.2);
+\begin{tikzpicture}[scale=0.78]
+  \draw (0,0) ellipse (5.5cm and 2.5cm);
   \draw[fill] (0,0) circle (0.025);
-  \draw[->,thick,cyan] (0,0) arc (-180:140:0.2);
-  \draw[fill] (4,0) circle (0.025);
-  \draw[->,double,thick,blue] (-2.3,0.8) to [out=225, in=135] (-2.3,-0.8);
-  \draw[->,double,thick,blue] (-1.7,0.8) to [out=-45, in=45] (-1.7,-0.8);
-  \draw[->,thick,red] (-2.4,0.1) -- (-1.6,0.1);
-  \draw[->,thick,red] (-2.4,0) -- (-1.6,0);
-  \draw[->,thick,red] (-2.4,-0.1) -- (-1.6,-0.1);
-  \draw[->,thick,cyan] (-4,0) to [out=60, in=120] (0,0);
-  \draw[->,thick,cyan] (0,0) to [out=-120, in=-60] (-4,0);
-  \draw[->,thick,cyan] (4,0) arc (0:320:0.2);
-  \draw[->,thick,cyan] (4,0) arc (0:330:0.7);
-  \draw[->,thick,cyan] (4,0) arc (0:350:1.2);
-  \draw[->,double,thick,blue] (1.8,0) -- (2.4,0);
+  \draw[->,thick,red] (0,0) arc (90:440:0.2);
+  \node[above,red] at (0,0) {refl};
+  \draw[->,thick,cyan] (0,0) arc (-180:140:0.7);
+  \draw[->,thick,cyan] (0,0) arc (-180:150:1.2);
+  \node[left,cyan] at (1.4,0) {loop};
+  \node[right,cyan] at (2.4,0) {loop $\circ$ loop $\ldots$};
+  \draw[->,thick,blue] (0,0) arc (360:40:0.7);
+  \draw[->,thick,blue] (0,0) arc (360:30:1.2);
+  \node[right,blue] at (-1.4,0) {!~loop};
+  \node[left,blue] at (-2.4,0) {$\ldots$ !~loop $\circ$ !~loop};
 \end{tikzpicture}
 \end{center}
 
@@ -544,45 +601,8 @@ exists a path $p \circ q : x \equiv z$;
 \item With similar conditions one level up and so on and so forth.
 \end{itemize}
 
-We cannot generate non-trivial groupoids starting from the usual type
-constructions. We need \emph{higher-order inductive types} for that purpose.
-Example:
-
-\begin{code}
--- data Circle : Set where
---   base : Circle
---   loop : base ≡ base
-
-module Circle where
-  private data S¹* : Set where base* : S¹*
-
-  S¹ : Set
-  S¹ = S¹*
-
-  base : S¹
-  base = base*
-
-  postulate loop : base ≡ base
-\end{code}
-
-Here is the non-trivial structure of this example:
-
-\begin{center}
-\begin{tikzpicture}[scale=0.78]
-  \draw (0,0) ellipse (5.5cm and 2.5cm);
-  \draw[fill] (0,0) circle (0.025);
-  \draw[->,thick,red] (0,0) arc (90:440:0.2);
-  \node[above,red] at (0,0) {refl};
-  \draw[->,thick,cyan] (0,0) arc (-180:140:0.7);
-  \draw[->,thick,cyan] (0,0) arc (-180:150:1.2);
-  \node[left,cyan] at (1.4,0) {loop};
-  \node[right,cyan] at (2.4,0) {loop $\circ$ loop $\ldots$};
-  \draw[->,thick,blue] (0,0) arc (360:40:0.7);
-  \draw[->,thick,blue] (0,0) arc (360:30:1.2);
-  \node[right,blue] at (-1.4,0) {!~loop};
-  \node[left,blue] at (-2.4,0) {$\ldots$ !~loop $\circ$ !~loop};
-\end{tikzpicture}
-\end{center}
+%%%%%%%%%%%%%%
+\subsection{Functions}
 
 \begin{itemize}
 \item A function from space $A$ to space $B$ must map the points of $A$
@@ -697,34 +717,24 @@ $\mathit{transport}~P~p~(f(x))$ and $f(y)$.
 $\mathit{transport}~P~p~(f(x)) : P(y)$ relates to $x$;
 \item We do not generally know how the paths in $P(y)$ are
 related to the paths in $A$.
-\item First ``crack'' in the theory.
-\end{itemize}
-
-Structure of Paths:
-\begin{itemize}
-\item What do paths in $A \times B$ look like?  We can
-prove that $(a_1,b_1) \equiv (a_2,b_2)$ in $A \times B$ iff $a_1 \equiv
+\item We know that paths in $A \times B$ are pairs of paths, i.e.,
+we can prove that $(a_1,b_1) \equiv (a_2,b_2)$ in $A \times B$ iff $a_1 \equiv
 a_2$ in $A$ and $b_1 \equiv b_2$ in $B$.
-\item What do paths in $A_1 \uplus A_2$ look like? 
-We can prove that $\mathit{inj}_i~x \equiv \mathit{inj}_j~y$ 
- in $A_1 \uplus A_2$ iff $i=j$ and $x \equiv y$ in $A_i$.
-\item What do paths in $A \rightarrow B$ look like?
-We cannot prove anything. Postulate function
-extensionality axiom.
-\item What do paths in $\mathrm{Set}_{\ell}$ look like?
-We cannot prove anything. Postulate univalence axiom.
+\item We know that paths in $A_1 \uplus A_2$ are tagged, i.e., 
+we can prove that $\mathit{inj}_i~x \equiv \mathit{inj}_j~y$ 
+in $A_1 \uplus A_2$ iff $i=j$ and $x \equiv y$ in $A_i$.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Universe of Types}
+\section{Homotopy Types}
 
 We describe the construction of our universe of types. Our starting point is
-the construction in the previous section which we summarize again. We start
-with all finite sets built from the empty set, a singleton set, disjoint
-unions, and cartesian products. All these sets are thought of being indexed
-by the empty sequence of polarities $\epsilon$. We then constructs new spaces
-that consist of pairs of finite sets $\nodet{S_1}{S_2}$ indexed by positive
-and negative polarities. These are the 1-dimensional spaces. We iterate this
+the construction in Sec.~\ref{cubes} which we summarize again. We start with
+all finite sets built from the empty set, a singleton set, disjoint unions,
+and cartesian products. All these sets are thought of being indexed by the
+empty sequence of polarities $\epsilon$. We then constructs new spaces that
+consist of pairs of finite sets $\nodet{S_1}{S_2}$ indexed by positive and
+negative polarities. These are the 1-dimensional spaces. We iterate this
 construction to the limit to get $n$-dimensional cubes for all natural
 numbers $n$.
 
@@ -738,7 +748,8 @@ equivalent. We itemize the paths we add next:
 \item Then we add paths $\seg{\cubt}$ that connect all occurrences of the
   same type $\cubt$ in various positions in $n$-dimensional cubes. For
   example, the 1-dimensional space corresponding to $(1-1)$ would now include
-  a path connecting the two endpoints at the end of the previous section;
+  a path connecting the two endpoints as illustrated at the end of 
+  Sec.~\ref{cubes}.
 \item We then add paths for witnessing the usual type isomorphisms between
   finite types such as associativity and commutativity of sums and
   products. The complete list of these isomorphisms is given in the next
@@ -752,20 +763,154 @@ equivalent. We itemize the paths we add next:
   \negp{-s} &=& +\negp{s}
   \end{array}\]
 \item The groupoid structure forces other paths to be added as described in
-  detail in the recent book on Homotopy Type Theory~\cite{hottbook}. In
-  particular, for every path $p$, the groupoid structure requires an inverse
-  path $p^{-1}$ in the opposite direction; and for every two paths with
-  common ending and starting point, a path corresponding to the composition
-  of the two paths is included and so on. These paths obey various coherence
-  conditions that ensure for example that composing a path and its inverse is
-  equivalent to the trivial path, and that composition is associative, up to
-  path equivalences at higher levels.
+  the previous section. 
 \end{itemize}
 
 Now the structure of path spaces is complicated in general. Let's look at
 some examples.
 
-\begin{verbatim}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A Reversible Language with Cubical Types} 
+\label{opsem}
+
+We first define values then combinators that manipulate the values to witness
+the type isomorphisms.
+
+%%%%%%%%%%%%%%%%%%
+\subsection{Values} 
+
+Now that the type structure is defined, we turn our attention to the notion
+of values. Intuitively, a value of the $n$-dimensional type $\tau$ is an
+element of one of the sets located in one of the corners of the
+$n$-dimensional cube denoted by $\tau$ (taking into that there are non-trivial
+paths relating these sets to other sets, etc.) Thus to specify a value, we must
+first specify one of the corners of the cube (or equivalently one of the
+leaves in the binary tree representation) which can easily be done using a
+sequence $s$ of $+$ and $-$ polarities indicating how to navigate the cube in
+each successive dimension starting from a fixed origin to reach the desired
+corner. We write $v^{s}$ for the value $v$ located at corner $s$ of the cube
+associated with its type. We use $\epsilon$ for the empty sequence of
+polarities and identify $v$ with $v^\epsilon$. Note that the polarities
+doesn't completely specify the type since different types like $(1+(1+1))$
+and $((1+1)+1)$ are assigned the same denotation. What the path $s$ specifies
+is the \emph{polarity} of the value, or its ``orientation'' in the space
+denoted by its type. Formally:
+\[\begin{array}{c}
+\infer{() : 1}{} 
+\qquad
+\infer[\textit{neg}]{v^{\negp{s}} : - \tau}{v^s : \tau} 
+\\
+\infer[\textit{left}]{(\inl{v})^{s} : \tau_1 + \tau_2}{v^{s} : \tau_1}
+\qquad
+\infer[\textit{right}]{(\inr{v})^{s} : \tau_1 + \tau_2}{v^{s} : \tau_2} 
+\\
+\infer[\textit{prod}]{(v_1,v_2)^{s_1 \cdot s_2} : \tau_1 * \tau_2}
+      {v_1^{s_1} : \tau_1 & v_2^{s_2} : \tau_2} 
+\end{array}\]
+The rules \textit{left} and \textit{right} reflect the fact that sums do not
+increase the dimension. Note that when $s$ is $\epsilon$, we get the
+conventional values for the 0-dimensional sum type. The rule \textit{prod} is
+the most involved one: it increases the dimension by \emph{concatenating} the
+two dimensions of its arguments. For example, if we pair $v_1^{\pp}$ and
+$v_2^{\mm\pp}$ we get $(v_1,v_2)^{\pp\mm\pp}$. (See Fig.~\ref{mult} for the
+illustration.) Note again that if both components are 0-dimensional, the pair
+remains 0-dimensional and we recover the usual rule for typing values of
+product types. The rule \textit{neg} uses the function below which states
+that the negation of a value $v$ is the same value $v$ located at the
+``opposite'' corner of the cube.
+
+\begin{table*}[t]
+\[\begin{array}{cc}
+\begin{array}{rrcll}
+\identlp :&  0 + b & \iso & b &: \identrp \\
+\swapp :&  b_1 + b_2 & \iso & b_2 + b_1 &: \swapp \\
+\assoclp :&  b_1 + (b_2 + b_3) & \iso & (b_1 + b_2) + b_3 &: \assocrp \\
+\identlt :&  1 * b & \iso & b &: \identrt \\
+\swapt :&  b_1 * b_2 & \iso & b_2 * b_1 &: \swapt \\
+\assoclt :&  b_1 * (b_2 * b_3) & \iso & (b_1 * b_2) * b_3 &: \assocrt \\
+\distz :&~ 0 * b & \iso & 0 &: \factorz \\
+\dist :&~ (b_1 + b_2) * b_3 & \iso & (b_1 * b_3) + (b_2 * b_3)~ &: \factor \\
+\eta :&~ 0 & \iso & b + (-b)~ & : \epsilon
+\end{array}
+& 
+\begin{minipage}{0.5\textwidth}
+\begin{center} 
+\Rule{}
+{}
+{\jdg{}{}{\idc : b \iso b}}
+{}
+\qquad\qquad
+\Rule{}
+{\jdg{}{}{c : b_1 \iso b_2}}
+{\jdg{}{}{\symc{c} : b_2 \iso b_1}}
+{}
+\\ \bigskip
+\Rule{}
+{\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_2 \iso b_3}
+{\jdg{}{}{c_1 \fatsemi c_2 : b_1 \iso b_3}}
+{}
+\\ \bigskip
+\Rule{}
+{\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_3 \iso b_4}
+{\jdg{}{}{c_1 \oplus c_2 : b_1 + b_3 \iso b_2 + b_4}}
+{}
+\\ \bigskip
+\Rule{}
+{\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_3 \iso b_4}
+{\jdg{}{}{c_1 \otimes c_2 : b_1 * b_3 \iso b_2 * b_4}}
+{}
+\end{center}
+\end{minipage}
+\end{array}\]
+\caption{Combinators\label{pi-combinators}}
+\end{table*}
+
+%%%%%%%%%%%%%%%%%%
+\subsection{$\Pi$ Combinators} 
+
+The terms of $\Pi$ witness type isomorphisms of the form $b \iso b$. They
+consist of base isomorphisms, as defined in Table~\ref{pi-combinators} and
+their composition. Each line of the table introduces a pair of dual
+constants\footnote{where $\swapp$ and $\swapt$ are self-dual.} that witness
+the type isomorphism in the middle.  These are the base (non-reducible) terms
+of the second, principal level of $\Pi$. Note how the above has two readings:
+first as a set of typing relations for a set of constants. Second, if these
+axioms are seen as universally quantified, orientable statements, they also
+induce transformations of the (traditional) values. The (categorical or
+homotopical) intuition here is that these axioms have computational content
+because they witness isomorphisms rather than merely stating an extensional
+equality. The isomorphisms are extended to form a congruence relation by
+adding constructors that witness equivalence and compatible closure.
+
+It is important to note that ``values'' and ``isomorphisms'' are completely
+separate syntactic categories which do not intermix. The semantics of the
+language come when these are made to interact at the ``top level'' via
+\emph{application}: 
+\[\begin{array}{lrcl}
+\textit{top level term}, l &::=& c~v
+\end{array}\]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Related Work and Context}
+
+A ton of stuff here. 
+
+Connection to our work on univalence for finite types. We didn't have to rely
+on sets for 0-dimensional types. We could have used groupoids again. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{abbrvnat}
+\softraggedright
+\bibliography{cites}
+
+\end{document}
+
+
+
+
 be careful about that 2-path. Are we 
 allowed to do that given that the 
 empty type is, well, empty.
@@ -777,27 +922,8 @@ to a line, and a 3-dimensional cube
 in which one face contracts to a point 
 would itself contract to a square, etc. 
 
-So the story is that as we are building
-the denotations of types, we add these
-paths making up the cubes. The only
-case where we add new paths is multiplication
-(see Fig.1 again). We take the paths p in S1
-and the paths q in S2 and build paths (p,q)
-in the product space.
-
-Once we have this structure, we do this 
-homotopy completion which turns our inductive
-type into a higher-inductive type. We 
-start adding 2-paths between any path 
-connecting (S-S) and the refl path on 0.
-
-Technically this is a functor between (S-S) 
-and the empty type mapping S to 0, the 
-other S to 0, and the path between them
-to refl. 
-
 Now consider (a-b)-(c-c). We have a 
-functor to (a-b)-0 that contracts the
+path to (a-b)-0 that contracts the
 path between c and -c. We want to 
 reduce the dimension of that space
 and map to (a-b). 
@@ -831,19 +957,6 @@ between them to say that these
 paths are equivalent which will 
 then collapse the square to a 
 line as desired.
-
-
-A critical isomorphism that is 
-not reflected at all in the semantics
-is that 1-1 = 0 
-
-The denotation of 1-1 is a line;
-the denotation of 0 is the empty set
-
-[ {*} | {*} ] --> []
-
-Something like the simplification
-of Conway games here perhaps?
 
 There are two values of type
 1-1
@@ -919,58 +1032,7 @@ each of the faces of the 3D cube.
 (a-b) => (0-b)-(0-a)
 (a-b) => (0-0)-(b-a)
 
-\end{verbatim}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{A Reversible Language with Cubical Types} 
-\label{opsem}
-
-We first define values then combinators that manipulate the values to witness
-the type isomorphisms.
-
-%%%%%%%%%%%%%%%%%%
-\subsection{Values} 
-
-Now that the type structure is defined, we turn our attention to the notion
-of values. Intuitively, a value of the $n$-dimensional type $\tau$ is an
-element of one of the sets located in one of the corners of the
-$n$-dimensional cube denoted by $\tau$. Thus to specify a value, we must
-first specify one of the corners of the cube (or equivalently one of the
-leaves in the binary tree representation) which can easily be done using a
-sequence $s$ of $+$ and $-$ polarities indicating how to navigate the cube in
-each successive dimension starting from a fixed origin to reach the desired
-corner. We write $v^{s}$ for the value $v$ located at corner $s$ of the cube
-associated with its type. We use $\epsilon$ for the empty sequence of
-polarities and identify $v$ with $v^\epsilon$. Note that the polarities
-doesn't completely specify the type since different types like $(1+(1+1))$
-and $((1+1)+1)$ are assigned the same denotation. What the path $s$ specifies
-is the \emph{polarity} of the value, or its ``orientation'' in the space
-denoted by its type. Formally:
-\[\begin{array}{c}
-\infer{() : 1}{} \\
-\qquad
-\infer[\textit{neg}]{v^{\negp{s}} : - \tau}{v^s : \tau} 
-\\
-\infer[\textit{left}]{(\inl{v})^{s} : \tau_1 + \tau_2}{v^{s} : \tau_1}
-\qquad
-\infer[\textit{right}]{(\inr{v})^{s} : \tau_1 + \tau_2}{v^{s} : \tau_2} 
-\\
-\infer[\textit{prod}]{(v_1,v_2)^{s_1 \cdot s_2} : \tau_1 * \tau_2}
-      {v_1^{s_1} : \tau_1 & v_2^{s_2} : \tau_2} 
-\end{array}\]
-The rules \textit{left} and \textit{right} reflect the fact that sums do not
-increase the dimension. Note that when $s$ is $\epsilon$, we get the
-conventional values for the 0-dimensional sum type. The rule \textit{prod} is
-the most involved one: it increases the dimension by \emph{concatenating} the
-two dimensions of its arguments. For example, if we pair $v_1^{\pp}$ and
-$v_2^{\mm\pp}$ we get $(v_1,v_2)^{\pp\mm\pp}$. (See Fig.~\ref{mult} for the
-illustration.) Note again that if both components are 0-dimensional, the pair
-remains 0-dimensional and we recover the usual rule for typing values of
-product types. The rule \textit{neg} uses the function below which states
-that the negation of a value $v$ is the same value $v$ located at the
-``opposite'' corner of the cube.
-
-\begin{verbatim}
 We only have -
 which flips ALL the directions simultaneously.
 So from ++-+--+ you can only go to
@@ -979,9 +1041,7 @@ What if you wanted to go to
         ++++--+
 I think we use the * functor to flip the 
 direction we want. 
-\end{verbatim}
 
-%%%%%%%%%%%%%%%%%%
 \subsection{Combinators: Example} 
 
 Consider the following simple function on 0-dimensional sum types:
@@ -996,96 +1056,4 @@ thinking. How and why would $1-1$ which is a 1-dimensional line be the same
 as the empty type which is a 0-dimensional thing. And how do we generalize
 for arbitrary group identities at higher dimensions. We need a mechanism for
 cubes with subspaces that ``cancel'' to map to equivalent smaller subcubes.
-
-%%%%%%%%%%%%%%%%%%
-\subsection{$\Pi$ Combinators} 
-
-The terms of $\Pi$ witness type isomorphisms of the form $b \iso b$. They
-consist of base isomorphisms, as defined below, and their composition. Each
-line of the above table introduces a pair of dual constants\footnote{where
-  $\swapp$ and $\swapt$ are self-dual.} that witness the type isomorphism in
-the middle.  These are the base (non-reducible) terms of the second,
-principal level of $\Pi$. Note how the above has two readings: first as a set
-of typing relations for a set of constants. Second, if these axioms are seen
-as universally quantified, orientable statements, they also induce
-transformations of the (traditional) values. The (categorical or homotopical)
-intuition here is that these axioms have computational content because they
-witness isomorphisms rather than merely stating an extensional equality.
-
-The isomorphisms are extended to form a congruence relation by adding the
-following constructors that witness equivalence and compatible closure:
-
-\begin{table*}[t]
-\[\begin{array}{cc}
-\begin{array}{rrcll}
-\identlp :&  0 + b & \iso & b &: \identrp \\
-\swapp :&  b_1 + b_2 & \iso & b_2 + b_1 &: \swapp \\
-\assoclp :&  b_1 + (b_2 + b_3) & \iso & (b_1 + b_2) + b_3 &: \assocrp \\
-\identlt :&  1 * b & \iso & b &: \identrt \\
-\swapt :&  b_1 * b_2 & \iso & b_2 * b_1 &: \swapt \\
-\assoclt :&  b_1 * (b_2 * b_3) & \iso & (b_1 * b_2) * b_3 &: \assocrt \\
-\distz :&~ 0 * b & \iso & 0 &: \factorz \\
-\dist :&~ (b_1 + b_2) * b_3 & \iso & (b_1 * b_3) + (b_2 * b_3)~ &: \factor \\
-\eta :&~ 0 & \iso & b + (-b)~ & : \epsilon
-\end{array}
-& 
-\begin{minipage}{0.5\textwidth}
-\begin{center} 
-\Rule{}
-{}
-{\jdg{}{}{\idc : b \iso b}}
-{}
-\qquad\qquad
-\Rule{}
-{\jdg{}{}{c : b_1 \iso b_2}}
-{\jdg{}{}{\symc{c} : b_2 \iso b_1}}
-{}
-\\ \bigskip
-\Rule{}
-{\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_2 \iso b_3}
-{\jdg{}{}{c_1 \fatsemi c_2 : b_1 \iso b_3}}
-{}
-\\ \bigskip
-\Rule{}
-{\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_3 \iso b_4}
-{\jdg{}{}{c_1 \oplus c_2 : b_1 + b_3 \iso b_2 + b_4}}
-{}
-\\ \bigskip
-\Rule{}
-{\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_3 \iso b_4}
-{\jdg{}{}{c_1 \otimes c_2 : b_1 * b_3 \iso b_2 * b_4}}
-{}
-\end{center}
-\end{minipage}
-\end{array}\]
-\caption{Combinators\label{pi-combinators}}
-\end{table*}
-
-It is important to note that ``values'' and ``isomorphisms'' are completely
-separate syntactic categories which do not intermix. The semantics of the
-language come when these are made to interact at the ``top level'' via
-\emph{application}: 
-\[\begin{array}{lrcl}
-\textit{top level term}, l &::=& c~v
-\end{array}\]
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Related Work and Context}
-
-A ton of stuff here. 
-
-Connection to our work on univalence for finite types. We didn't have to rely
-on sets for 0-dimensional types. We could have used groupoids again. 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusion}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\bibliographystyle{abbrvnat}
-\softraggedright
-\bibliography{cites}
-
-\end{document}
-
-
 
