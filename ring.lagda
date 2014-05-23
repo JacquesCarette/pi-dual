@@ -174,7 +174,7 @@ the multiplicative structure. It turns out that this is related to a deep
 open problem in algebraic topology and homotopy theory that was recently
 solved. We ``translate'' that solution to a computational type-theoretic
 world. This has evident connections to homotopy (type) theory that remain to
-be investigated.
+be investigated in more depth.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The \textbf{Int} Construction} 
@@ -217,7 +217,7 @@ The \emph{dimension} of a type is defined as follows:
 \bdim{- \tau} &=& \max(1,\bdim{\tau})
 \end{array}\]
 The base types have dimension 0. If negative types are not used, all
-dimensions remain at 0. If negative types are used but no product types of
+dimensions remain at 0. If negative types are used but no products of
 negative types appear anywhere, the dimension is raised to 1. This is the
 situation with the \textbf{Int} or $\mathcal{G}$ construction. Once negative
 and product types are freely used, the dimension can increase without bounds.
@@ -313,18 +313,18 @@ subspaces is itself a cube of a lower dimension. The $0$-dimensional cubes
 are plain sets representing the denotation of conventional first-order
 types. We use $S$ to denote the denotations of these plain types. A
 1-dimensional cube, $\nodet{S_1}{S_2}$, intuitively corresponds to the
-difference $t_1 - t_2$ of the two types whose denotations are $S_1$ and $S_2$
-respectively. The type can be visualized as a ``line'' with polarized
+difference $\tau_1 - \tau_2$ of the two types whose denotations are $S_1$ and
+$S_2$ respectively. The type can be visualized as a ``line'' with polarized
 endpoints connecting the two points~$S_1$ and $S_2$. A full 2-dimensional
 cube, $\nodet{(\nodet{S_1}{S_2})}{(\nodet{S_3}{S_4})}$, intuitively
 corresponds to the iterated difference of the appropriate types
-$(t_1-t_2)-(t_3-t_4)$ where the successive ``colors'' from the outermost box
-encode the sign. The type can be visualized as a ``square'' with polarized
-corners connecting the two lines corresponding to $(t_1-t_2)$ and
-$(t_3-t_4)$. (See Fig.~\ref{mult} which is further explained after we discuss
-multiplication below.)
+$(\tau_1-\tau_2)-(\tau_3-\tau_4)$ where the successive ``colors'' from the
+outermost box encode the sign. The type can be visualized as a ``square''
+with polarized corners connecting the two lines corresponding to
+$(\tau_1-\tau_2)$ and $(\tau_3-\tau_4)$. (See Fig.~\ref{mult} which is
+further explained after we discuss multiplication below.)
 
-Formally, the denotation of types is as follows:
+Formally, the denotation of types discussed so far is as follows:
 \[\begin{array}{rcl}
 \den{0} &=& \emptyset \\
 \den{1} &=& \{ \star \} \\
@@ -366,18 +366,19 @@ the product of 1-dimensional cube (i.e., a line) with a 2-dimensional cube
 Our proposed semantics of types identifies several structurally different
 types such as $(1+(1+1))$ and $((1+1)+1)$. In some sense, this is innocent as
 the types are isomorphic. However, in the operational semantics discussed in
-the next section, we make the computational content of such type isomorphisms
-explicit. Some other isomorphic types like $(t_1*t_2)$ and $(t_2*t_1)$ map to
-different cubes and are \emph{not} identified: explicit isomorphisms are
-needed to mediate between them. We therefore need to enrich our model of
-types with isomorphisms connecting types we deem equivalent.
+Sec.~\ref{opsem}, we make the computational content of such type isomorphisms
+explicit. Some other isomorphic types like $(\tau_1*\tau_2)$ and
+$(\tau_2*\tau_1)$ map to different cubes and are \emph{not} identified:
+explicit isomorphisms are needed to mediate between them. We therefore need
+to enrich our model of types with isomorphisms connecting types we deem
+equivalent.
 
 So far, our types are modeled as cubes which are really sets indexed by
-polarities. An isomorphism between $(t_1*t_2)$ and $(t_2*t_1)$ requires
-nothing more than a pair of set-theoretic functions between the spaces that
-compose to the identity. What is much more interesting are the isomorphisms
-involving the empty type~0. In particular, if negative types are to be
-interpreted as their name suggests, we must have an isomorphism between
+polarities. An isomorphism between $(\tau_1*\tau_2)$ and $(\tau_2*\tau_1)$
+requires nothing more than a pair of set-theoretic functions between the
+spaces that compose to the identity. What is much more interesting are the
+isomorphisms involving the empty type~0. In particular, if negative types are
+to be interpreted as their name suggests, we must have an isomorphism between
 $(t-t)$ and the empty type 0. Semantically the former denotes the ``line''
 $\nodet{\cubt}{\cubt}$ and the latter denotes the empty set. Their
 denotations are different and there is no way, in the world of plain sets, to
@@ -922,6 +923,7 @@ each of the faces of the 3D cube.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A Reversible Language with Cubical Types} 
+\label{opsem}
 
 We first define values then combinators that manipulate the values to witness
 the type isomorphisms.
