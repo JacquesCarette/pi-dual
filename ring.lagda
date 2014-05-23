@@ -1,6 +1,8 @@
 \documentclass[authoryear,preprint]{sigplanconf}
 \usepackage{agda}
+\usepackage{bbm}
 \usepackage{amsmath}
+\usepackage{textgreek}
 \usepackage{listings} 
 \usepackage{stmaryrd}
 \usepackage{latexsym}
@@ -421,10 +423,299 @@ $(1-1)$ and 0, we add a 2-path $q$, i.e. a path between paths, that connects
 the path $\seg{1}$ to the trivial path $\refl{0}$. That effectively makes the
 two points ``disappear.''  Surprisingly, that is everything that we need. The
 extension to higher dimensions just ``works'' because paths in homotopy type
-theory have a rich structure. We explain the details below.
+theory have a rich structure. We explain the details after we include a short
+introduction of the necessary concepts from homotopy type theory. 
 
-%%%%%%%%%%%%%%%%%%%%
-\subsection{The Universe of Types}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Homotopy Type Theory}
+
+Informally, and as a first approximation, one may think of \emph{homotopy
+  type theory} (HoTT) as mathematics, type theory, or computation but with
+all equalities replaced by isomorphisms, i.e., with equalities given
+computational content. A bit more formally, one starts with Martin-L\"of type
+theory, interprets the types as topological spaces or weak
+$\infty$-groupoids, and interprets identities between elements of a type as
+\emph{paths}.  In more detail, one interprets the witnesses of the identity
+$x \equiv y$ as paths from $x$ to $y$. If $x$ and $y$ are themselves paths,
+then witnesses of the identity $x \equiv y$ become paths between paths, or
+homotopies in the topological language. 
+
+Formally, Martin-L\"of type theory, is based on the principle that every
+proposition, i.e., every statement that is susceptible to proof, can be
+viewed as a type. The correspondence is validated by the following
+properties: if a proposition $P$ is true, the corresponding type is
+inhabited, i.e., it is possible to provide evidence for $P$ using one of the
+elements of the type $P$. If, however, the proposition $P$ is false, the
+corresponding type is empty, i.e., it is impossible to provide evidence for
+$P$. The type theory is rich enough to allow propositions denoting
+conjunction, disjunction, implication, and existential and universal
+quantifications.
+
+It is clear that the question of whether two elements of a type are equal is
+a proposition, and hence that this proposition must correspond to a type. In
+Agda notation, we can formally express this as follows:
+
+\begin{code}
+data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
+  refl : (a : A) → (a ≡ a)
+
+i0 : 3 ≡ 3
+i0 = refl 3
+
+i1 : (1 + 2) ≡ (3 * 1)
+i1 = refl 3
+
+i2 : ℕ ≡ ℕ
+i2 = refl ℕ
+\end{code}
+
+It is important to note that the notion of proposition equality $\equiv$
+relates any two terms that are \emph{definitionally equal} as shown in
+example $i1$ above. In general, there may be \emph{many} proofs (i.e., paths)
+showing that two particular values are identical and that proofs are not
+necessarily identical. This gives rise to a structure of great combinatorial
+complexity.
+
+We are used to think of types as sets of values. So we think of the type
+\texttt{Bool} as the figure on the left but HoTT, we should instead think
+about it as the figure on the right:
+\[
+\begin{tikzpicture}[scale=0.5]
+  \draw (0,0) ellipse (2cm and 1cm);
+  \draw[fill] (-1,0) circle (0.025);
+  \node[below] at (-1,0) {false};
+  \draw[fill] (1,0) circle (0.025);
+  \node[below] at (1,0) {true};
+\end{tikzpicture}
+\qquad\qquad
+\begin{tikzpicture}[scale=0.7]
+  \draw (0,0) ellipse (2cm and 1cm);
+  \draw[fill] (-1,0) circle (0.025);
+  \draw[->,thick,cyan] (-1,0) arc (0:320:0.2);
+  \node[above right] at (-1,0) {false};
+  \draw[fill] (1,-0.2) circle (0.025);
+  \draw[->,thick,cyan] (1,-0.2) arc (0:320:0.2);
+  \node[above right] at (1,-0.2) {true};
+\end{tikzpicture}
+\]
+
+In this particular case, it makes no difference, but in general we might have
+something like which shows that types are to be viewed as topological spaces
+or groupoids:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7]
+  \draw (0,0) ellipse (5cm and 2.5cm);
+  \draw[fill] (-4,0) circle (0.025);
+  \draw[->,thick,cyan] (-4,0) arc (0:320:0.2);
+  \draw[fill] (0,0) circle (0.025);
+  \draw[->,thick,cyan] (0,0) arc (-180:140:0.2);
+  \draw[fill] (4,0) circle (0.025);
+  \draw[->,double,thick,blue] (-2.3,0.8) to [out=225, in=135] (-2.3,-0.8);
+  \draw[->,double,thick,blue] (-1.7,0.8) to [out=-45, in=45] (-1.7,-0.8);
+  \draw[->,thick,red] (-2.4,0.1) -- (-1.6,0.1);
+  \draw[->,thick,red] (-2.4,0) -- (-1.6,0);
+  \draw[->,thick,red] (-2.4,-0.1) -- (-1.6,-0.1);
+  \draw[->,thick,cyan] (-4,0) to [out=60, in=120] (0,0);
+  \draw[->,thick,cyan] (0,0) to [out=-120, in=-60] (-4,0);
+  \draw[->,thick,cyan] (4,0) arc (0:320:0.2);
+  \draw[->,thick,cyan] (4,0) arc (0:330:0.7);
+  \draw[->,thick,cyan] (4,0) arc (0:350:1.2);
+  \draw[->,double,thick,blue] (1.8,0) -- (2.4,0);
+\end{tikzpicture}
+\end{center}
+
+The additional structure of types is formalized as follows:
+\begin{itemize}
+\item For every path $p : x \equiv y$, there exists a path $! p : y
+\equiv x$;
+\item For every $p : x \equiv y$ and $q : y \equiv z$, there
+exists a path $p \circ q : x \equiv z$;
+\item Subject to the following conditions:
+ \[\begin{array}{rcl}
+  p \circ \mathit{refl}~y &\equiv& p \\
+  p &\equiv& \mathit{refl}~x \circ p \\
+  !p \circ p &\equiv& \mathit{refl}~y \\
+  p ~\circ~ !p &\equiv& \mathit{refl}~x \\
+  !~(!p) &\equiv& p \\
+  p \circ (q \circ r) &\equiv& (p \circ q) \circ r
+ \end{array}\]
+\item With similar conditions one level up and so on and so forth.
+\end{itemize}
+
+We cannot generate non-trivial groupoids starting from the usual type
+constructions. We need \emph{higher-order inductive types} for that purpose.
+Example:
+
+\begin{code}
+-- data Circle : Set where
+--   base : Circle
+--   loop : base ≡ base
+
+module Circle where
+  private data S¹* : Set where base* : S¹*
+
+  S¹ : Set
+  S¹ = S¹*
+
+  base : S¹
+  base = base*
+
+  postulate loop : base ≡ base
+\end{code}
+
+Here is the non-trivial structure of this example:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.78]
+  \draw (0,0) ellipse (5.5cm and 2.5cm);
+  \draw[fill] (0,0) circle (0.025);
+  \draw[->,thick,red] (0,0) arc (90:440:0.2);
+  \node[above,red] at (0,0) {refl};
+  \draw[->,thick,cyan] (0,0) arc (-180:140:0.7);
+  \draw[->,thick,cyan] (0,0) arc (-180:150:1.2);
+  \node[left,cyan] at (1.4,0) {loop};
+  \node[right,cyan] at (2.4,0) {loop $\circ$ loop $\ldots$};
+  \draw[->,thick,blue] (0,0) arc (360:40:0.7);
+  \draw[->,thick,blue] (0,0) arc (360:30:1.2);
+  \node[right,blue] at (-1.4,0) {!~loop};
+  \node[left,blue] at (-2.4,0) {$\ldots$ !~loop $\circ$ !~loop};
+\end{tikzpicture}
+\end{center}
+
+\begin{itemize}
+\item A function from space $A$ to space $B$ must map the points of $A$
+to the points of $B$ as usual but it must also \emph{respect the path
+structure};
+\item Logically, this corresponds to saying that every function
+respects equality;
+\item Topologically, this corresponds to saying that every function is
+continuous.
+\end{itemize}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.6]
+  \draw (-3,0) ellipse (1.5cm and 3cm);
+  \draw (3,0) ellipse (1.5cm and 3cm);
+  \draw[fill] (-3,1.5) circle (0.025);
+  \draw[fill] (-3,-1.5) circle (0.025);
+  \node[above] at (-3,1.5) {$x$};
+  \node[below] at (-3,-1.5) {$y$};
+  \draw[fill] (3,1.5) circle (0.025);
+  \draw[fill] (3,-1.5) circle (0.025);
+  \node[above] at (3,1.5) {$f(x)$};
+  \node[below] at (3,-1.5) {$f(y)$};
+  \draw[->,cyan,thick] (-3,1.5) -- (-3,-1.5);
+  \node[left,cyan] at (-3,0) {$p$};
+  \draw[->,cyan,thick] (3,1.5) -- (3,-1.5);
+  \node[right,cyan] at (3,0) {$\mathit{ap}~f~p$};
+  \draw[->,red,dashed,ultra thick] (-2,2.5) to [out=45, in=135] (2,2.5);
+  \node[red,below] at (0,3) {$f$};
+\end{tikzpicture}
+\end{center}
+
+\begin{itemize}
+\item $\mathit{ap}~f~p$ is the action of $f$ on a path $p$;
+\item This satisfies the following properties:
+  \[\begin{array}{rcl}
+  \mathit{ap}~f~(p \circ q) &\equiv&
+                (\mathit{ap}~f~p) \circ (\mathit{ap}~f~q) \\
+  \mathit{ap}~f~(!~p) &\equiv& ~!~(\mathit{ap}~f~p)  \\
+  \mathit{ap}~g~(\mathit{ap}~f~p) &\equiv&
+                \mathit{ap}~(g \circ f)~p  \\
+  \mathit{ap}~\mathit{id}~p &\equiv& p
+  \end{array}\]
+\end{itemize}
+
+Type families as fibrations. 
+\begin{itemize}
+\item A more complicated version of the previous idea for dependent
+functions;
+\item The problem is that for dependent functions, $f(x)$ and $f(y)$ may
+not be in the same type, i.e., they live in different spaces;
+\item Idea is to \emph{transport} $f(x)$ to the space of $f(y)$;
+\item Because everything is ``continuous'', the path $p$ induces a
+transport function that does the right thing: the action of $f$ on $p$
+becomes a path between $\mathit{transport}~(f(x))$ and $f(y)$.
+\end{itemize} 
+
+\begin{center}
+\begin{tikzpicture}[scale=0.82]
+  \draw (-3,0) ellipse (1.5cm and 3cm);
+  \draw (3,2) ellipse (0.5cm and 1cm);
+  \draw (3,-1.4) ellipse (2cm and 2cm);
+  \node[blue,ultra thick,above] at (3,3) {$P(x)$};
+  \node[blue,ultra thick,below] at (3,-3.5) {$P(y)$};
+  \draw[fill] (-3,1.5) circle (0.025);
+  \draw[fill] (-3,-1.5) circle (0.025);
+  \node[above] at (-3,1.5) {$x$};
+  \node[below] at (-3,-1.5) {$y$};
+  \draw[fill] (3,1.5) circle (0.025);
+  \draw[fill] (3,-0.5) circle (0.025);
+  \draw[fill] (3,-2.5) circle (0.025);
+  \node[above] at (3,1.5) {$f(x)$};
+  \node[above] at (3,-0.5) {$\mathit{transport}~P~p~f(x)$};
+  \node[below] at (3,-2.5) {$f(y)$};
+  \draw[left,cyan,thick] (-3,1.5) -- (-3,-1.5);
+  \node[left,cyan] at (-3,0) {$p$};
+  \draw[->,cyan,thick] (3,-0.5) -- (3,-2.5);
+  \node[right,cyan] at (3,-1.5) {$\mathit{apd}~f~p$};
+  \draw[->,red,dashed,ultra thick] (-2,2.5) to [out=45, in=135] (2.3,2.5);
+  \node[red,below] at (0,3) {$f$ (fiber over $x$)};
+  \draw[->,red,dashed,ultra thick] (-2,-2.5) to [out=-45, in=-135] (1.2,-2.5);
+  \node[red,above] at (-0.5,-2.5) {$f$ (fiber over $y$)};
+  \draw[->,red,dashed,ultra thick] (3.6,2.3) to [out=-45, in=45] (3.5,0.6);
+  \node[red,right] at (3.9,1.45) {$\mathit{transport}~P~p$};
+\end{tikzpicture}
+\end{center}
+
+\begin{itemize}
+\item Let $x, y, z : A$, $p : x \equiv y$, $q : y \equiv z$, 
+$f : A \rightarrow B$, $g : \Pi_{a \in A} P(a) \rightarrow P'(a)$, 
+$P : A \rightarrow \mathit{Set}$, 
+$P' : A \rightarrow \mathit{Set}$, $Q : B \rightarrow \mathit{Set}$, 
+$u : P(x)$, and $w : Q(f(x))$.
+\item The function $\mathit{transport}~P~p$ satisfies 
+the following properties:
+  \[\begin{array}{rcl}
+  \mathit{transport}~P~q~(\mathit{transport}~P~p~u) &\equiv&
+               \mathit{transport}~P~(p \circ q)~u \\
+  \mathit{transport}~(Q \circ f)~p~w &\equiv&
+               \mathit{transport}~Q~(\mathit{ap}~f~p)~w  \\
+  \mathit{transport}~P'~p~(g~x~u) &\equiv&
+               g~y~(\mathit{transport}~P~p~u)
+  \end{array}\]
+\end{itemize}
+
+\begin{itemize}
+\item Let $x,y : A$, $p : x \equiv y$, $P : A \rightarrow
+\mathit{Set}$, and $f : \Pi_{a \in A} P(a)$;
+\item We know we have a path in $P(y)$ between
+$\mathit{transport}~P~p~(f(x))$ and $f(y)$.  
+\item We do not generally know how the point 
+$\mathit{transport}~P~p~(f(x)) : P(y)$ relates to $x$;
+\item We do not generally know how the paths in $P(y)$ are
+related to the paths in $A$.
+\item First ``crack'' in the theory.
+\end{itemize}
+
+Structure of Paths:
+\begin{itemize}
+\item What do paths in $A \times B$ look like?  We can
+prove that $(a_1,b_1) \equiv (a_2,b_2)$ in $A \times B$ iff $a_1 \equiv
+a_2$ in $A$ and $b_1 \equiv b_2$ in $B$.
+\item What do paths in $A_1 \uplus A_2$ look like? 
+We can prove that $\mathit{inj}_i~x \equiv \mathit{inj}_j~y$ 
+ in $A_1 \uplus A_2$ iff $i=j$ and $x \equiv y$ in $A_i$.
+\item What do paths in $A \rightarrow B$ look like?
+We cannot prove anything. Postulate function
+extensionality axiom.
+\item What do paths in $\mathrm{Set}_{\ell}$ look like?
+We cannot prove anything. Postulate univalence axiom.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Universe of Types}
 
 We describe the construction of our universe of types. Our starting point is
 the construction in the previous section which we summarize again. We start
@@ -469,6 +760,9 @@ equivalent. We itemize the paths we add next:
   equivalent to the trivial path, and that composition is associative, up to
   path equivalences at higher levels.
 \end{itemize}
+
+Now the structure of path spaces is complicated in general. Let's look at
+some examples.
 
 \begin{verbatim}
 be careful about that 2-path. Are we 
@@ -578,13 +872,7 @@ manipulates values like
 (v1,v2,v3) and would apply
 the normal combinators to v1, v2, 
 and the adjoint to v3 and so on.
-\end{verbatim}
 
-
-
-
-
-\begin{verbatim}
 To complete the story we need to 
 define morphisms. (More on this below.)
 Once we have a notion of morphism we 
