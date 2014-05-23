@@ -12,6 +12,8 @@
 \usepackage{proof}
 \usepackage{graphicx}
 
+\newcommand{\refl}[1]{\textsf{refl}_{#1}}
+\newcommand{\seg}[1]{\textsf{seg}_{#1}}
 \newcommand{\bdim}[1]{\textsf{dim}(#1)}
 \newcommand{\Rule}[4]{
 \makebox{{\rm #1}
@@ -141,7 +143,7 @@ $\displaystyle
 \lstset{rangeprefix=/*!\ , rangesuffix=\ !*\/, includerangemarker=false}
 
 %% double-blind reviewing...
-\title{Polarized Cubical Types}
+\title{Negative Types}
 \authorinfo{}{}{}
 \maketitle
 
@@ -158,7 +160,7 @@ functions. But if you do the construction on the additive structure, you lose
 the multiplicative structure. It turns out that this is related to a deep
 open problem in algebraic topology and homotopy theory that was recently
 solved. We ``translate'' that solution to a computational type-theoretic
-world. This has evident connections to homotopy (type?) theory that remain to
+world. This has evident connections to homotopy (type) theory that remain to
 be investigated.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -168,14 +170,13 @@ Explain in detail perhaps with Haskell embedding and type functions etc. The
 key insight it to add ``negative'' types representing demand for values. This
 is how you get functions.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Problem and the Intuitive Solution}
-
 We lose the multiplicative structure. No evident way to define the
 multiplication functor. Perhaps there is a clever way. But this turns out to
 be a well-known open problem. Review the problem and tell the story from the
 algebraic topology perspective. Regular first-order types are viewed as
-$0$-dimensional cubes. Generalize to $n$-dimensional cubes.
+$0$-dimensional cubes. The \textbf{Int} construction generalizes types to
+1-dimensional cubes. Our work here generalizes types to $n$-dimensional
+cubes.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Type Structure}
@@ -186,8 +187,8 @@ which is then refined.
 %%%%%%%%%%%%%%%%%%%%
 \subsection{Negative and Cubical Types}
 
-Our cubical types $\tau$ include the empty type 0, the unit type 1,
-conventional sum and product types, as well as \emph{negative} types:
+Our types $\tau$ include the empty type 0, the unit type 1, conventional sum
+and product types, as well as \emph{negative} types:
 \[\begin{array}{rcl}
 \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \alt - \tau
 \end{array}\]
@@ -202,10 +203,11 @@ The \emph{dimension} of a type is defined as follows:
 \bdim{\tau_1 * \tau_2} &=& \bdim{\tau_1} + \bdim{\tau_2} \\
 \bdim{- \tau} &=& \max(1,\bdim{\tau})
 \end{array}\]
-The base types have dimension 0. Using negative types but no product types
-raises the dimension to 1. This is the situation with the \textbf{Int} or
-$\mathcal{G}$ construction. Once product types are used, the dimension can
-increase without bounds.
+The base types have dimension 0. If negative types are not used, all
+dimensions remain at 0. If negative types are used but no product types of
+negative types appear anywhere, the dimension is raised to 1. This is the
+situation with the \textbf{Int} or $\mathcal{G}$ construction. Once negative
+and product types are freely used, the dimension can increase without bounds.
 
 \begin{figure*}
 \[\begin{array}{c}
@@ -220,6 +222,7 @@ increase without bounds.
 \end{array}\]
 \\
 \\
+\begin{center}
 \begin{tikzpicture}
 \node[above] at (0,0) {\pp};
 \node[left] at (0,0) {$S_1$};
@@ -227,7 +230,7 @@ increase without bounds.
 \node[above] at (0.6,0) {\mm};
 \node[right] at (0.6,0) {$S_2$};
 \draw[fill] (0.6,0) circle [radius=0.05];
-\draw[-] (0,0) -- (0.6,0);
+\draw[-,dotted] (0,0) -- (0.6,0);
 \node at (1.6,0) {$\otimes$}; 
 
 %%
@@ -237,16 +240,16 @@ increase without bounds.
 \node[right] at (3.5,-0.5) {\pp\mm};
 \node[below] at (3.5,-0.5) {$S_4$};
 \draw[fill] (3.5,-0.5) circle [radius=0.05];
-\draw[-] (2.5,-0.5) -- (3.5,-0.5);
-\draw[-] (2.5,-0.5) -- (2.5,0.5);
+\draw[-,dotted] (2.5,-0.5) -- (3.5,-0.5);
+\draw[-,dotted] (2.5,-0.5) -- (2.5,0.5);
 \node[left] at (2.5,0.5) {\mm\pp};
 \node[above] at (2.5,0.5) {$S_5$};
 \draw[fill] (2.5,0.5) circle [radius=0.05];
 \node[right] at (3.5,0.5) {\mm\mm};
 \node[above] at (3.5,0.5) {$S_6$};
 \draw[fill] (3.5,0.5) circle [radius=0.05];
-\draw[-] (2.5,0.5) -- (3.5,0.5);
-\draw[-] (3.5,-0.5) -- (3.5,0.5);
+\draw[-,dotted] (2.5,0.5) -- (3.5,0.5);
+\draw[-,dotted] (3.5,-0.5) -- (3.5,0.5);
 %% 
 \node at (5,0) {$=$};
 %% 
@@ -268,44 +271,45 @@ increase without bounds.
 \node[left] at (8.2,-0.3) {$(S_1 \times S_5)$\,\pp\mm\pp};
 \draw[fill] (8.2,-0.3) circle [radius=0.05];
 %%
-\draw[-] (7.5,0.75) -- (9.5,0.75);
-\draw[-] (9.5,0.75) -- (10.2,1.2);
-\draw[-] (10.2,1.2) -- (8.2,1.2);
-\draw[-] (8.2,1.2) -- (7.5,0.75);
+\draw[-,dotted] (7.5,0.75) -- (9.5,0.75);
+\draw[-,dotted] (9.5,0.75) -- (10.2,1.2);
+\draw[-,dotted] (10.2,1.2) -- (8.2,1.2);
+\draw[-,dotted] (8.2,1.2) -- (7.5,0.75);
 %%
-\draw[-] (7.5,-0.75) -- (9.5,-0.75);
-\draw[-] (9.5,-0.75) -- (10.2,-0.3);
-\draw[-,dashed] (10.2,-0.3) -- (8.2,-0.3);
-\draw[-,dashed] (8.2,-0.3) -- (7.5,-0.75);
+\draw[-,dotted] (7.5,-0.75) -- (9.5,-0.75);
+\draw[-,dotted] (9.5,-0.75) -- (10.2,-0.3);
+\draw[-,dotted,dashed] (10.2,-0.3) -- (8.2,-0.3);
+\draw[-,dotted,dashed] (8.2,-0.3) -- (7.5,-0.75);
 %%
-\draw[-] (7.5,0.75) -- (7.5,-0.75);
-\draw[-] (9.5,0.75) -- (9.5,-0.75);
-\draw[-] (10.2,1.2) -- (10.2,-0.3);
-\draw[-,dashed] (8.2,1.2) -- (8.2,-0.3);
+\draw[-,dotted] (7.5,0.75) -- (7.5,-0.75);
+\draw[-,dotted] (9.5,0.75) -- (9.5,-0.75);
+\draw[-,dotted] (10.2,1.2) -- (10.2,-0.3);
+\draw[-,dotted,dashed] (8.2,1.2) -- (8.2,-0.3);
 \end{tikzpicture}
+\end{center}
 \caption{\label{mult}Example of multiplication of two cubical types.}
 \end{figure*}
 
-This point is made precise in the denotation of types which maps a type of
-dimension $n$ to $n$-dimensional cube. We represent such a cube syntactically
-as a binary tree of maximum depth~$n$ with nodes of the form
-$\nodet{\cubt_1}{\cubt_2}$. In such a node, $\cubt_1$ is the positive
-subspace and $\cubt_2$ (shaded in gray) is the negative subspace along the
-first dimension. Each of these subspaces is itself a cube of a lower
-dimension. The $0$-dimensional cubes are plain sets representing the
-denotation of conventional first-order types. We use $S$ to denote the
-denotations of these plain types. A 1-dimensional cube, $\nodet{S_1}{S_2}$,
-intuitively corresponds to the difference $t_1 - t_2$ of the two types whose
-denotations are $S_1$ and $S_2$ respectively. The type can be visualized as a
-``line'' with polarized endpoints connecting the two points $S_1$ and
-$S_2$. A full 2-dimensional cube,
-$\nodet{(\nodet{S_1}{S_2})}{(\nodet{S_3}{S_4})}$, intuitively corresponds to
-the iterated difference of the appropriate types $(t_1-t_2)-(t_3-t_4)$ where
-the product of the successive signs from the outermost box encodes the
-sign. The type can be visualized as a ``square'' with polarized corners
-connecting the two lines corresponding to $(t_1-t_2)$ and $(t_3-t_4)$. (See
-Fig.~\ref{mult} which is further explained after we discuss multiplication
-below.)
+This point is made precise in the following tentative denotation of types (to
+be refined in the next section) which maps a type of dimension $n$ to an
+$n$-dimensional cube. We represent such a cube syntactically as a binary tree
+of maximum depth~$n$ with nodes of the form $\nodet{\cubt_1}{\cubt_2}$. In
+such a node, $\cubt_1$ is the positive subspace and $\cubt_2$ (shaded in
+gray) is the negative subspace along the first dimension. Each of these
+subspaces is itself a cube of a lower dimension. The $0$-dimensional cubes
+are plain sets representing the denotation of conventional first-order
+types. We use $S$ to denote the denotations of these plain types. A
+1-dimensional cube, $\nodet{S_1}{S_2}$, intuitively corresponds to the
+difference $t_1 - t_2$ of the two types whose denotations are $S_1$ and $S_2$
+respectively. The type can be visualized as a ``line'' with polarized
+endpoints connecting the two points~$S_1$ and $S_2$. A full 2-dimensional
+cube, $\nodet{(\nodet{S_1}{S_2})}{(\nodet{S_3}{S_4})}$, intuitively
+corresponds to the iterated difference of the appropriate types
+$(t_1-t_2)-(t_3-t_4)$ where the successive ``colors'' from the outermost box
+encode the sign. The type can be visualized as a ``square'' with polarized
+corners connecting the two lines corresponding to $(t_1-t_2)$ and
+$(t_3-t_4)$. (See Fig.~\ref{mult} which is further explained after we discuss
+multiplication below.)
 
 Formally, the denotation of types is as follows:
 \[\begin{array}{rcl}
@@ -344,29 +348,33 @@ the product of 1-dimensional cube (i.e., a line) with a 2-dimensional cube
 (i.e., a square). The result is a 3-dimensional cube as illustrated.
 
 %%%%%%%%%%%%%%%%%%%%
-\subsection{Type Isomorphisms}
+\subsection{Type Isomorphisms: Paths to the Rescue}
 
-Our (simple) semantics of types identifies several structurally different
+Our proposed semantics of types identifies several structurally different
 types such as $(1+(1+1))$ and $((1+1)+1)$. In some sense, this is innocent as
 the types are isomorphic. However, in the operational semantics discussed in
 the next section, we make the computational content of such type isomorphisms
 explicit. Some other isomorphic types like $(t_1*t_2)$ and $(t_2*t_1)$ map to
 different cubes and are \emph{not} identified: explicit isomorphisms are
-needed to mediate between them. In most cases, the isomorphisms are easy to
-define except for the isomorphisms involving the empty type. In particular,
-if negative types are to be interpreted as their name suggests, we must have
-an isomorphism between $(t-t)$ and the empty type 0. Semantically the former
-denotes $\nodet{\cubt}{\cubt}$ and the latter denotes the empty set. Their
-denotations are different and there is no way so far to express the fact that
-these two cubes should be identified. Intuitively, what is needed is the
-ability to contract a line whose endpoints are identical to a single
-point. It should then follow that a square where one edge contracts to a
-point would itself contract to a line, and a 3-dimensional cube in which one
-face contracts to a point would itself contract to a square, etc. This is, of
-course, where the ideas of homotopy (type) theory enter the development.
+needed to mediate between them. We therefore need to enrich our model of
+types with isomorphisms connecting types we deem equivalent.
 
-Consider the situation with the simplest instance of the desired isomorphism
-which is between $(1-1)$ and the empty type:
+So far, our types are modeled as cubes which are really sets indexed by
+polarities. An isomorphism between $(t_1*t_2)$ and $(t_2*t_1)$ requires
+nothing more than a pair of set-theoretic functions between the spaces that
+compose to the identity. What is much more interesting are the isomorphisms
+involving the empty type~0. In particular, if negative types are to be
+interpreted as their name suggests, we must have an isomorphism between
+$(t-t)$ and the empty type 0. Semantically the former denotes the ``line''
+$\nodet{\cubt}{\cubt}$ and the latter denotes the empty set. Their
+denotations are different and there is no way, in the world of plain sets, to
+express the fact that these two spaces should be identified. What is needed
+is the ability to \emph{contract} the \emph{path} between the endpoints of
+the line to the trivial path on the empty type. This is, of course, where the
+ideas of homotopy (type) theory enter the development.
+
+Consider the situation above in which we want to identify the spaces
+corresponding to the types $(1-1)$ and the empty type:
 \begin{center}
 \begin{tikzpicture}
 \node[above] at (0,0) {\pp};
@@ -377,36 +385,93 @@ which is between $(1-1)$ and the empty type:
 \draw[fill] (2.6,0) circle [radius=0.05];
 \draw[->,red] (0.1,0) -- (2.5,0);
 \draw[->,red] (-0.1,-0.1) arc (135:405:0.2);
-\node[below,red] at (0,-0.4) {\textsf{refl}};
+\node[below,red] at (0,-0.4) {$\refl{1}$};
 \draw[->,red] (2.5,-0.1) arc (135:405:0.2);
-\node[below,red] at (2.6,-0.4) {\textsf{refl}};
-\node[above] at (1.3,0) {$I$};
+\node[below,red] at (2.6,-0.4) {$\refl{1}$};
+\node[above] at (1.3,0) {$\seg{1}$};
 \node[right] at (1.3,-0.5) {$q$};
 %%
 \node[below] at (1.3,-1.5) {$\emptyset$};
 \draw[fill] (1.3,-1.5) circle [radius=0.05];
 \draw[->,red] (1.4,-1.4) arc (-45:225:0.2);
-\node[right,red] at (1.5,-1.3) {\textsf{refl}};
+\node[right,red] at (1.5,-1.3) {$\refl{0}$};
 %% 
 \draw[->,double,blue] (1.3,-0.1) -- (1.3,-1);
 \end{tikzpicture}
 \end{center}
 The top of the figure is the 1-dimensional cube representing the type $(1-1)$
-except that we view the edge connecting the two endpoints as a \emph{path}
-$I$ that is initially non-contractible, i.e., it is different from the
-identity paths labeled \textsf{refl} that are the trivial paths asserting
-that $1$ is contractible to itself. The bottom of the figure is the
-0-dimensional cube representing the empty type. There is a trivial path
-\textsf{refl} connecting that point to itself. To express the equivalence of
-$(1-1)$ to 0, we add a 2-path, i.e. a path between paths, that asserts the
-equivalence of the path $I$ with \textsf{refl} on the empty type. That
-effectively contracts the two points and collapses them to a single
-point. Surprisingly, that is everthing that we need. The extension to higher
-dimensions just ``works'' because paths in homotopy type theory have a rich
-structure. We explain the details below. 
+as before except that we now add a path $\seg{1}$ to connect the two
+endpoints. (Note that previously, the dotted lines in the figures were a
+visualization aid and were \emph{not} meant to represent paths.) We also make
+explicit the trivial identity paths from every space to itself.  The bottom
+of the figure is the 0-dimensional cube representing the empty type. The path
+$\seg{1}$ identifies the two occurrences of 1. To express the
+equivalence of $(1-1)$ and 0, we add a 2-path, i.e. a path between paths,
+that asserts connects the path $\seg{1}$ to the trivial path
+$\refl{0}$ on the empty type. That effectively makes the two points
+``disappear.''  Surprisingly, that is everything that we need. The extension
+to higher dimensions just ``works'' because paths in homotopy type theory
+have a rich structure. We explain the details below.
 
+%%%%%%%%%%%%%%%%%%%%
+\subsection{The Universe of Types}
+
+We describe the construction of our universe of types. Our starting point is
+the construction in the previous section which we summarize again. We start
+with all finite sets built from the empty set, a singleton set, disjoint
+unions, and cartesian products. All these sets are thought of being indexed
+by the empty sequence of polarities $\epsilon$. We then constructs new spaces
+that consist of pairs of finite sets $\nodet{S_1}{S_2}$ indexed by positive
+and negative polarities. These are the 1-dimensional spaces. We iterate this
+construction to the limit to get $n$-dimensional cubes for all natural
+numbers $n$.
+
+At this point, we switch from viewing the universe of types as an
+unstructured collection of spaces to a viewing it as a \emph{groupoid} with
+explicit \emph{paths} connecting spaces that we want to consider as
+equivalent. We itemize the paths we add next:
+\begin{itemize}
+\item The first step is to identify each space with itself by adding trivial
+  identity paths $\refl{\cubt}$ for each space $\cubt$;
+\item Then we add paths $\seg{\cubt}$ that connect all occurrences of the
+  same type $\cubt$ in various positions in $n$-dimensional cubes. For
+  example, the 1-dimensional space corresponding to $(1-1)$ would now include
+  a path connecting the two endpoints at the end of the previous section;
+\item We then add paths for witnessing the usual type isomorphisms between
+  finite types such as associativity and commutativity of sums and
+  products. The complete list of these isomorphisms is given in the next
+  section.
+\item Finally, we add \emph{2-paths} between $\refl{0}$ and any path
+  $\seg{\cubt}$ whose endpoints are of opposite polarities, i.e., of
+  polarities $s$ and $\negp{s}$ where:
+  \[\begin{array}{rcl}
+  \negp{\epsilon} &=& \epsilon \\
+  \negp{+s} &=& -\negp{s} \\
+  \negp{-s} &=& +\negp{s}
+  \end{array}\]
+\item The groupoid structure forces other paths to be added as described in
+  detail in the recent book on Homotopy Type Theory~\cite{hottbook}. In
+  particular, for every path $p$, the groupoid structure requires an inverse
+  path $p^{-1}$ in the opposite direction; and for every two paths with
+  common ending and starting point, a path corresponding to the composition
+  of the two paths is included and so on. These paths obey various coherence
+  conditions that ensure for example that composing a path and its inverse is
+  equivalent to the trivial path, and that composition is associative, up to
+  path equivalences at higher levels.
+\end{itemize}
 
 \begin{verbatim}
+be careful about that 2-path. Are we 
+allowed to do that given that the 
+empty type is, well, empty.
+
+identical to a single point. It should 
+then follow that a square where one edge 
+contracts to a point would itself contract 
+to a line, and a 3-dimensional cube 
+in which one face contracts to a point 
+would itself contract to a square, etc. 
+
 So the story is that as we are building
 the denotations of types, we add these
 paths making up the cubes. The only
@@ -572,29 +637,29 @@ element of one of the sets located in one of the corners of the
 $n$-dimensional cube denoted by $\tau$. Thus to specify a value, we must
 first specify one of the corners of the cube (or equivalently one of the
 leaves in the binary tree representation) which can easily be done using a
-sequence $p$ of $+$ and $-$ polarities indicating how to navigate the cube in
+sequence $s$ of $+$ and $-$ polarities indicating how to navigate the cube in
 each successive dimension starting from a fixed origin to reach the desired
-corner. We write $v^{p}$ for the value $v$ located at corner $p$ of the cube
+corner. We write $v^{s}$ for the value $v$ located at corner $s$ of the cube
 associated with its type. We use $\epsilon$ for the empty sequence of
 polarities and identify $v$ with $v^\epsilon$. Note that the polarities
 doesn't completely specify the type since different types like $(1+(1+1))$
-and $((1+1)+1)$ are assigned the same denotation. What the path $p$ specifies
+and $((1+1)+1)$ are assigned the same denotation. What the path $s$ specifies
 is the \emph{polarity} of the value, or its ``orientation'' in the space
 denoted by its type. Formally:
 \[\begin{array}{c}
 \infer{() : 1}{} \\
 \qquad
-\infer[\textit{neg}]{v^{\negp{p}} : - \tau}{v^p : \tau} 
+\infer[\textit{neg}]{v^{\negp{s}} : - \tau}{v^s : \tau} 
 \\
-\infer[\textit{left}]{(\inl{v})^{p} : \tau_1 + \tau_2}{v^{p} : \tau_1}
+\infer[\textit{left}]{(\inl{v})^{s} : \tau_1 + \tau_2}{v^{s} : \tau_1}
 \qquad
-\infer[\textit{right}]{(\inr{v})^{p} : \tau_1 + \tau_2}{v^{p} : \tau_2} 
+\infer[\textit{right}]{(\inr{v})^{s} : \tau_1 + \tau_2}{v^{s} : \tau_2} 
 \\
-\infer[\textit{prod}]{(v_1,v_2)^{p_1 \cdot p_2} : \tau_1 * \tau_2}
-      {v_1^{p_1} : \tau_1 & v_2^{p_2} : \tau_2} 
+\infer[\textit{prod}]{(v_1,v_2)^{s_1 \cdot s_2} : \tau_1 * \tau_2}
+      {v_1^{s_1} : \tau_1 & v_2^{s_2} : \tau_2} 
 \end{array}\]
 The rules \textit{left} and \textit{right} reflect the fact that sums do not
-increase the dimension. Note that when $p$ is $\epsilon$, we get the
+increase the dimension. Note that when $s$ is $\epsilon$, we get the
 conventional values for the 0-dimensional sum type. The rule \textit{prod} is
 the most involved one: it increases the dimension by \emph{concatenating} the
 two dimensions of its arguments. For example, if we pair $v_1^{\pp}$ and
@@ -603,12 +668,7 @@ illustration.) Note again that if both components are 0-dimensional, the pair
 remains 0-dimensional and we recover the usual rule for typing values of
 product types. The rule \textit{neg} uses the function below which states
 that the negation of a value $v$ is the same value $v$ located at the
-``opposite'' corner of the cube:
-\[\begin{array}{rcl}
-\negp{\epsilon} &=& \epsilon \\
-\negp{+p} &=& -\negp{p} \\
-\negp{-p} &=& +\negp{p}
-\end{array}\]
+``opposite'' corner of the cube.
 
 \begin{verbatim}
 We only have -
@@ -713,6 +773,9 @@ language come when these are made to interact at the ``top level'' via
 \section{Related Work and Context}
 
 A ton of stuff here. 
+
+Connection to our work on univalence for finite types. We didn't have to rely
+on sets for 0-dimensional types. We could have used groupoids again. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
