@@ -1,4 +1,5 @@
 \documentclass[authoryear,preprint]{sigplanconf}
+\usepackage{agda}
 \usepackage{amsmath}
 \usepackage{listings} 
 \usepackage{stmaryrd}
@@ -60,7 +61,7 @@ $\displaystyle
 \setlength{\pdfpagewidth}{\paperwidth}
 
 \newcommand{\alt}{~|~}
-\lstnewenvironment{code}{\lstset{basicstyle={\sffamily\footnotesize}}}{}
+\lstnewenvironment{haskell}{\lstset{basicstyle={\sffamily\footnotesize}}}{}
 
 \lstset{frame=none,
          language=Haskell,
@@ -150,6 +151,16 @@ $\displaystyle
 \begin{abstract}
 \ldots
 \end{abstract}
+
+\AgdaHide{
+\begin{code}
+module ring where
+open import Level
+open import Data.Nat hiding (_⊔_)
+open import Data.Product
+open import Function 
+\end{code}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
