@@ -26,10 +26,12 @@ $\displaystyle
 {\begin{array}{l}#3\\\end{array}}$
  #4}}
 \newcommand{\proves}{\vdash}
+\newcommand{\trace}[1]{\mathit{trace}~#1}
 \newcommand{\symc}[1]{\mathit{sym}~#1}
 \newcommand{\jdg}[3]{#2 \proves_{#1} #3}
 \newcommand{\adjoint}[1]{#1^{\dagger}}
 \newcommand{\iso}{\leftrightarrow}
+\newcommand{\isoone}{\stackrel{1}{\leftrightarrow}}
 \newcommand{\identlp}{\mathit{identl}_+}
 \newcommand{\identrp}{\mathit{identr}_+}
 \newcommand{\swapp}{\mathit{swap}_+}
@@ -54,6 +56,10 @@ $\displaystyle
 \newcommand{\inr}[1]{\textsf{inr}~#1}
 \newcommand{\lolli}{\multimap} 
 \newcommand{\cubt}{\mathbb{T}}
+\newcommand{\ztone}{\mathbb{0}}
+\newcommand{\otone}{\mathbb{1}}
+\newcommand{\ptone}[2]{#1 \boxplus #2}
+\newcommand{\ttone}[2]{#1 \boxtimes #2}
 \newcommand{\den}[1]{\llbracket #1 \rrbracket}
 \newcommand{\nodet}[2]{\fcolorbox{black}{white}{$#1$}\fcolorbox{black}{gray!20}{$#2$}}
 \newcommand{\hast}{:\mkern -2.5mu:\;}
@@ -168,83 +174,405 @@ open import Function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-The \textbf{Int} construction or the $\mathcal{G}$ construction are neat. As
-Neel K. explains~\cite{neelblog}, given first-order types and feedback you
-get higher-order functions. But if you do the construction on the additive
-structure, you lose the multiplicative structure. It turns out that this is
-related to a deep open problem in algebraic topology and homotopy theory that
-was recently solved~\cite{ringcompletion}. We ``translate'' that solution to
-a computational type-theoretic world. This has evident connections to
-homotopy (type) theory that remain to be investigated in more depth.
-
 Make sure we introduce the abbreviation HoTT in the
 introduction~\cite{hottbook}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Computing with Type Isomorphisms}
+
+In a computational model in which resources are carefully maintained,
+programs are reduced to type isomorphisms. Although this is apparently a
+limiting idea, it turns out that conventional computation can be viewed as a
+special case of such resource-preserving isomorphisms that silently consumes
+some resources and discards others. This thesis has been explored for many
+years from different
+perspectives~\cite{fredkin1982conservative,Toffoli:1980,bennett2010notes,bennett2003notes,Bennett:1973:LRC,Landauer:1961,Landauer}.
+We build on the work of James and
+Sabry~\citeyearpar{James:2012:IE:2103656.2103667} which expresses this thesis in
+a type theoretic computational framework. Unlike the case for their
+development, we will however not consider recursive types in this paper but
+we will develop an extension with higher-order \emph{linear} functions.
+
+\begin{table*}[t]
+\[\begin{array}{cc}
+\begin{array}{rrcll}
+\identlp :&  0 + \tau & \iso & \tau &: \identrp \\
+\swapp :&  \tau_1 + \tau_2 & \iso & \tau_2 + \tau_1 &: \swapp \\
+\assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 &: \assocrp \\
+\identlt :&  1 * \tau & \iso & \tau &: \identrt \\
+\swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
+\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\
+\distz :&~ 0 * \tau & \iso & 0 &: \factorz \\
+\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor 
+\end{array}
+& 
+\begin{minipage}{0.5\textwidth}
+\begin{center} 
+\Rule{}
+{}
+{\jdg{}{}{\idc : \tau \iso \tau}}
+{}
+\qquad
+\Rule{}
+{\jdg{}{}{c : \tau_1 \iso \tau_2}}
+{\jdg{}{}{\symc{c} : \tau_2 \iso \tau_1}}
+{}
+\\ \bigskip
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad c_2 : \tau_2 \iso \tau_3}
+{\jdg{}{}{c_1 \fatsemi c_2 : \tau_1 \iso \tau_3}}
+{}
+\\ \bigskip
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad c_2 : \tau_3 \iso \tau_4}
+{\jdg{}{}{c_1 \oplus c_2 : \tau_1 + \tau_3 \iso \tau_2 + \tau_4}}
+{}
+\\ \bigskip
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad c_2 : \tau_3 \iso \tau_4}
+{\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
+{}
+\\ \bigskip
+\Rule{}
+{\jdg{}{}{c : \tau_1 \oplus \tau \iso \tau_2 \oplus \tau}}
+{\jdg{}{}{\trace{c} : : \tau_1 \iso \tau_2}}
+{}
+\end{center}
+\end{minipage}
+\end{array}\]
+\caption{$\Pi$-combinators~\cite{James:2012:IE:2103656.2103667}\label{pi-combinators}}
+\end{table*}
+
+The main syntactic vehicle for the developments in this paper is a simple
+language called $\Pi$ whose only computations are isomorphisms between finite
+types. The set of types $\tau$ includes the empty type 0, the unit type 1,
+and conventional sum and product types:
+\[\begin{array}{rcl}
+\tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 
+\end{array}\]
+Values $v$ are the expected ones: \lstinline|()| of type 1, $\inl{v}$ and
+$\inr{v}$ for injections into sum types, and $(v_1,v_2)$ for product
+types.
+
+The interesting syntactic category of $\Pi$ is that of \emph{combinators}
+which are witnesses for type isomorphisms of the form $b \iso b$. They
+consist of base isomorphisms (on the left side of Table~\ref{pi-combinators})
+and compositions (on the right side of the same table). Each line of the
+table on the left introduces a pair of dual constants\footnote{where $\swapp$
+  and $\swapt$ are self-dual.} that witness the type isomorphism in the
+middle. This set of isomorphisms is known to be
+complete~\cite{Fiore:2004,fiore-remarks} and the language is universal for
+hardware combinational circuits~\cite{James:2012:IE:2103656.2103667}.  Note
+that we have $\trace{c}$ which in the current setting is a bounded iteration
+construct: it adds no expressiveness for now but will be important to model
+functions later. If recursive types are added, the bounded iteration becomes
+Turing-complete~\cite{James:2012:IE:2103656.2103667,rc2011} but we will not
+be concerned with recursive types in this paper.
+
+From the perspective of category theory, the language $\Pi$ models what is
+called a \emph{symmetric bimonoidal category} or a \emph{commutative rig
+  category}. These are categories with two binary operations $\oplus$ and
+$\otimes$ satisfying the axioms of a rig (i.e., a ring without negative
+elements also known as a semiring) up to coherent isomorphisms. And indeed
+the combinators of $\Pi$ are precisely the semiring axioms. A simple
+(slightly degenerate) example of such categories is the category of finite
+sets and permutations. Indeed, it is possible to interpret every $\Pi$-type
+as a finite set, the values as elements in these finite sets, and the
+combinators as permutations.
+
+The previous interpretation of $\Pi$, although valid, misses the point of
+taking isomorphisms seriously as \emph{the} essence of computation. Luckily,
+an impressive amount of work has been happening in HoTT that builds around
+the computational content of equalities, equivalences, and isomorphisms. We
+discuss our HoTT re-interpretation of $\Pi$ semantics after we briefly review
+some of the essential concepts. The definitive reference is the recently
+published comprehensive book~\cite{hottbook}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Condensed Background on HoTT}
+\label{hott}
+
+Informally, and as a first approximation, one may think of HoTT as
+mathematics, type theory, or computation but with all equalities replaced by
+isomorphisms, i.e., with equalities given computational content. We explain
+some of the basic ideas below.
+
+One starts with Martin-L\"of type theory, interprets the types as topological
+spaces or weak $\infty$-groupoids, and interprets identities between elements
+of a type as \emph{paths}.  In more detail, one interprets the witnesses of
+the identity $x \equiv y$ as paths from $x$ to $y$. If $x$ and $y$ are
+themselves paths, then witnesses of the identity $x \equiv y$ become paths
+between paths, or homotopies in the topological language. In Agda notation,
+we can formally express this as follows:
+
+\medskip
+\begin{code}
+data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
+  refl : (a : A) → (a ≡ a)
+
+i0 : 3 ≡ 3
+i0 = refl 3
+
+i1 : (1 + 2) ≡ (3 * 1)
+i1 = refl 3
+
+i2 : ℕ ≡ ℕ
+i2 = refl ℕ
+\end{code}
+\medskip
+
+\noindent It is important to note that the notion of proposition
+equality~$\equiv$ relates any two terms that are \emph{definitionally equal}
+as shown in example \AgdaFunction{i1} above. In general, there may be
+\emph{many} proofs (i.e., paths) showing that two particular values are
+identical and that proofs are not necessarily identical. This gives rise to a
+structure of great combinatorial complexity. To be explicit, we will use
+$\equiv_U$ to refer to the space in which the path lives.
+
+We are used to thinking of types as sets of values. So we typically view the
+type \AgdaPrimitiveType{Bool} as the figure on the left but in HoTT we should
+instead think about it as the figure on the right:
+\[
+\begin{tikzpicture}[scale=0.7]
+  \draw (0,0) ellipse (2cm and 1cm);
+  \draw[fill] (-1,0) circle (0.025);
+  \node[below] at (-1,0) {false};
+  \draw[fill] (1,0) circle (0.025);
+  \node[below] at (1,0) {true};
+\end{tikzpicture}
+\qquad\qquad
+\begin{tikzpicture}[scale=0.7]
+  \draw (0,0) ellipse (2cm and 1cm);
+  \draw[fill] (-1,0) circle (0.025);
+  \draw[->,thick,cyan] (-1,0) arc (0:320:0.2);
+  \node[above right] at (-1,0) {false};
+  \draw[fill] (1,-0.2) circle (0.025);
+  \draw[->,thick,cyan] (1,-0.2) arc (0:320:0.2);
+  \node[above right] at (1,-0.2) {true};
+\end{tikzpicture}
+\]
+In this particular case, it makes no difference, but in general we may have a
+much more complicated path structure. 
+
+
+We cannot generate non-trivial groupoids starting from the usual type
+constructions. We need \emph{higher-order inductive types} for that purpose.
+The classical example is the \emph{circle} that is a space consisting of a
+point \AgdaFunction{base} and a path \AgdaFunction{loop} from
+\AgdaFunction{base} to itself. As stated, this does not amount to
+much. However, because paths carry additional structure (explained below),
+that space has the following non-trivial structure:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.78]
+  \draw (0,0) ellipse (5.5cm and 2.5cm);
+  \draw[fill] (0,0) circle (0.025);
+  \draw[->,thick,red] (0,0) arc (90:440:0.2);
+  \node[above,red] at (0,0) {refl};
+  \draw[->,thick,cyan] (0,0) arc (-180:140:0.7);
+  \draw[->,thick,cyan] (0,0) arc (-180:150:1.2);
+  \node[left,cyan] at (1.4,0) {loop};
+  \node[right,cyan] at (2.4,0) {loop $\circ$ loop $\ldots$};
+  \draw[->,thick,blue] (0,0) arc (360:40:0.7);
+  \draw[->,thick,blue] (0,0) arc (360:30:1.2);
+  \node[right,blue] at (-1.4,0) {!~loop};
+  \node[left,blue] at (-2.4,0) {$\ldots$ !~loop $\circ$ !~loop};
+\end{tikzpicture}
+\end{center}
+
+The additional structure of types is formalized as follows. Let $x$, $y$, and
+$z$ be elements of some $U$:
+\begin{itemize}
+\item For every path $p : x \equiv_U y$, there exists a path $! p : y
+  \equiv_U x$;
+\item For every $p : x \equiv_U y$ and $q : y \equiv_U z$, there exists a
+  path $p \circ q : x \equiv_U z$;
+\item Subject to the following conditions:
+ \[\begin{array}{rcl}
+  p \circ \mathit{refl}~y &\equiv_{{x \equiv_U y}} & p \\
+  p &\equiv_{{x \equiv_U y}} & \mathit{refl}~x \circ p \\
+  !p \circ p &\equiv_{{y \equiv_U y}} & \mathit{refl}~y \\
+  p ~\circ~ !p &\equiv_{{x \equiv_U x}} & \mathit{refl}~x \\
+  !~(!p) &\equiv_{{x \equiv_U y}} & p \\
+  p \circ (q \circ r) &\equiv_{{x \equiv_U z}} & (p \circ q) \circ r
+ \end{array}\]
+\item With similar conditions one level up and so on and so forth.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Space of $\Pi$-Types}
+
+Instead of modeling the semantics of $\Pi$ using \emph{permutations}, which
+are are set-theoretic functions after all, we use \emph{paths} from the HoTT
+framework. More precisely, we model the universe of $\Pi$ types as a space
+whose points are the individual $\Pi$-types and we will consider that there
+is path between two points $\tau_1$ and $\tau_2$ if there is a $\Pi$
+combinator $c : \tau_1 \iso \tau_2$. If we focus on 1-paths, this is perfect
+as we explain next. 
+
+\paragraph*{Note.} 
+But first, we note that this is a significant deviation from the HoTT
+framework which fundamentally includes functions, which are specialized to
+equivalences, which are then postulated to be paths by the univalence
+axiom. This axiom has no satisfactory computational interpretation,
+however. Instead we completely bypass the idea of extensional functions and
+use paths directly. Another way to understanding what is going on is the
+following. In the conventional HoTT framework:
+\begin{itemize}
+\item We start with two different notions: paths and functions;
+\item We use extensional non-constructive methods to identify a
+particular class of functions that form isomorphisms;
+\item We postulate that this particular class of functions can be
+identified with paths.
+\end{itemize}
+In our case, 
+\begin{itemize}
+\item We start with a constructive characterization of \emph{reversible
+  functions} or \emph{isomorphisms} built using inductively defined
+  combinators; 
+\item We blur the distinction between such combinators and paths from the
+  beginning. We view computation as nothing more than \emph{following paths}!
+  As explained earlier, although this appears limiting, it is universal and
+  regular computation can be viewed as a special case of that.
+\end{itemize}
+
+\paragraph*{Construction.} 
+We have a universe $U$ viewed as a groupoid whose points are the types
+$\Pi$-types $\tau$. The $\Pi$-combinators of Table~\ref{pi-combinators} are
+viewed as syntax for the paths in the space $U$. We need to show that the
+groupoid path structure is faithfully represented. The combinator $\idc$
+introduces all the $\refl{\tau} : \tau \equiv \tau$ paths in $U$. The adjoint
+$\symc{c}$ introduces an inverse path $!p$ for each path $p$ introduced by
+$c$. The composition operator $\fatsemi$ introduce a path $p \circ q$ for
+every pair of paths whose endpoints match. In addition, we get paths like
+$\swapp$ between $\tau_1+\tau_2$ and $\tau_2+\tau_1$. The existence of such
+paths in the conventional HoTT developed is \emph{postulated} by the
+univalence axiom. The $\otimes$-composition gives a path $(p,q) :
+(\tau_1*\tau_2) \equiv (\tau_3*\tau_4)$ whenever we have paths $p : \tau_1
+\equiv \tau_3$ and $q : \tau_2 \equiv \tau_4$. A similar situation for the
+$\oplus$-composition. The structure of these paths must be discovered and
+these paths must be \emph{proved} to exist using path induction in the
+conventional HoTT development. So far, this appears too good to be true, and
+it is. The problem is that paths in HoTT are subject to rules discussed at
+the end of Sec.~\ref{hott}. For example, it must be the case that if $p :
+\tau_1 \equiv_U \tau_2$ that $(p \circ \refl{\tau_2})
+\equiv_{\tau_1\equiv_U\tau_2} p$.  This path lives in a higher universe:
+nothing in our $\Pi$-combinators would justify adding such a path as all our
+combinators map types to types. No combinator works one level up at the space
+of combinators and there is no such space in the first place. Clearly we are
+stuck unless we manage to express a notion of higher-order functions in
+$\Pi$. This would allow us to internalize the type $\tau_1\iso\tau_2$ as a
+$\Pi$-type which is then manipulated by the same combinators one level higher
+and so on.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The \textbf{Int} Construction} 
 
-We may or may not want to explain the construction using Haskell. In case we
-do, the most relevant code is below. The key insight it to enrich types to
-forms of the shape $(t_1 - t_2)$ which represent a sum type of $t_1$ flowing
-in the ``normal'' direction (from producers to consumers) and $t_2$ flowing
-backwards (representing \emph{demands} for values). This is expressive enough
-to represent functions which are viewed as expressions that convert a demand
-for an argument to the production of a result. The problem is that the
-obvious definition of multiplication is not functorial. This turns out to be
-intimately related to a well-known open problem in algebraic topology that
-goes back at least thirty years~\cite{thomason}.
+The \textbf{Int} construction~\cite{joyal1996traced} or the closely related
+$\mathcal{G}$ construction~\cite{gcons} are fascinating ideas. As
+Krishnaswami~\citeyearpar{neelblog} explains, given first-order types and
+feedback, it is possible to higher-order \emph{linear} functions. The key
+insight it to enrich types to be of the shape $(\tau_1 - \tau_2)$ which
+represent a sum type of $\tau_1$ flowing in the ``normal'' direction (from
+producers to consumers) and $\tau_2$ flowing backwards (representing
+\emph{demands} for values). This is expressive enough to represent functions
+which are viewed as expressions that convert a demand for an argument to the
+production of a result. Since we already have $\trace{c}$ to provide
+feedback, the next immediate step is extend the $\Pi$ types as follows:
+\[\begin{array}{rcl}
+\tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
+\cubt &::=& \tau_1-\tau_2
+\end{array}\]
 
-\begin{haskellcode}
-class GT p where
-  type Pos p      :: *  -- a type has a positive component
-  type Neg p      :: *  -- and a negative component
-  type ZeroG      :: *  -- we want all the usual type 
-  type OneG       :: *  -- constructors including 0, 1,
-  type PlusG p q  :: *  -- sums, and 
-  type ProdG p q  :: *  -- products
-  type DualG p    :: *  -- as a bonus we get negation and
-  type LolliG p q :: *  -- linear functions
+In anticipation of future developments, we will call the original types
+$\tau$ 0-dimensional and the new types $\cubt$ 1-dimensional. The previous
+combinators all work on 0-dimensional types. The punchline will be that a
+0-level combinator $c : \tau_1 \iso \tau_2$ on 0-dimensional types can be
+expressed as a value $v_c$ of the 1-dimensional type
+$\tau_2-\tau_1$. Furthermore, we will have lifted versions of most of the
+combinators to work on the 1-dimensional types. These lifted versions will
+allow us to manipulate combinators on 0-dimensional types as first-class
+values.
 
--- A definition of the composite types with a 
--- positive and negative components
+Before we define the construction in any detail, let's take one simple
+example $\identlp : 0+1 \iso 1$ and see how to represent as a value of type
+$1-(0+1)$. We visually represent the type itself as a line with 0-dimensional
+types attached at the endpoints (which are distinguished by polarities):
+\begin{center}
+\begin{tikzpicture}
+\node[above] at (0,0) {\pp};
+\draw[fill] (0,0) circle [radius=0.05];
+\node[above] at (2.6,0) {\mm};
+\draw[fill] (2.6,0) circle [radius=0.05];
+\draw[-,dotted] (0,0) -- (2.6,0);
+\draw (0,-1.1) ellipse (0.5cm and 1cm);
+\draw (2.6,-1.1) ellipse (0.5cm and 1cm);
+\node at (0,-1.1) {1};
+\node at (2.6,-1.1) {0+1};
+\end{tikzpicture}
+\end{center}
+The value representing $\identlp$ is simply:
+\begin{center}
+\begin{tikzpicture}
+\node[above] at (0,0) {\pp};
+\draw[fill] (0,0) circle [radius=0.05];
+\node[above] at (2.6,0) {\mm};
+\draw[fill] (2.6,0) circle [radius=0.05];
+\draw[-,dotted] (0,0) -- (2.6,0);
+\draw (0,-1.1) ellipse (0.5cm and 1cm);
+\draw (2.6,-1.1) ellipse (0.5cm and 1cm);
+\draw[->,thick,blue] (2.0,-1.1) -- (0.6,-1.1);
+\node[above] at (1.3,-1.1) {$\identlp$};
+\node at (0,-1.1) {1};
+\node at (2.6,-1.1) {0+1};
+\end{tikzpicture}
+\end{center}
+This entire package is a value, an atomic entity with invisible internal
+structure and that can only be manipulated via the level 1 combinators
+described next.
 
-data a :- b = a :- b
+The next order of business is to define a few abbreviations of 1-dimensional
+types:
+\[\begin{array}{rcl}
+\ztone &=& 0 - 0 \\
+\otone &=& 1 - 0 \\
+\ptone{(\tau_1-\tau_2)}{(\tau_3-\tau_4)} &= & (\tau_1+\tau_3)-(\tau_2+\tau_4)\\
+\ttone{(\tau_1-\tau_2)}{(\tau_3-\tau_4)} &= & 
+  ((\tau_1*\tau_3)+(\tau_2*\tau_4))- \\
+  && ((\tau_1*\tau_4)+(\tau_2*\tau_3))
+\end{array}\]
+The level 1 combinators are now exactly identical to the combinators in
+Table~\ref{pi-combinators} changing all the 0 dimensional types $\tau$ to 1
+dimensional types $\cubt$ and hence replacing all occurrences of 0 by
+$\ztone$, 1 by $\otone$, $+$ by $\boxplus$, and $*$ by $\boxtimes$. 
 
-instance GT (ap :- am) where
-  type Pos (ap :- am) = ap
-  type Neg (ap :- am) = am
-  type ZeroG = Void :- Void
-  type OneG = () :- Void
-  type PlusG  (ap :- am) (bp :- bm) = 
-    (Either ap bp) :- (Either am bm)
-  type TimesG (ap :- am) (bp :- bm) = 
-    -- the "obvious" but broken multiplication
-    (Either (ap,bp) (am,bm)) :- (Either (am,bp) (ap,bm))
-  type DualG  (ap :- am) = am :- ap
-  type LolliG (ap :- am) (bp :- bm) = 
-    (Either am bp) :- (Either ap bm)
+Most of the time, the level 1 combinators are oblivious to the fact that they
+are manipulating first class functions. Formally, the action of a level 1
+combinator of type $(\tau_1-\tau_2) \isoone (\tau_3-\tau_4)$ is derived from
+the action of 0 level combinators of type $(\tau_1+\tau_4) \iso
+(\tau_3+\tau_2)$. Thus to take a trivial example $\identlp^1 : \ztone
+\boxplus \cubt \isoone \cubt$ is realized as $\assocrp \fatsemi (\idc \oplus
+\swapp) \fatsemi \assoclp$ which evidently knows nothing specific about
+higher order functions. The interesting idea is that it is possible to define
+a new level 1 combinator that exposes the internal structure of values as
+functions:
+\[\begin{array}{rrcll}
+\eta :&  0-0 & \isoone & \tau - \tau &: \varepsilon 
+\end{array}\]
+What this does is essentially provide an input and output port which are
+connected by the internal hidden function.
 
--- Functions between composite types with positive 
--- and negative components; implemented using 
--- resumptions (i.e., feedback)
-newtype GM a b = 
-  GM { rg :: R  (Either (Pos a) (Neg b)) 
-                (Either (Neg a) (Pos b)) } 
+The problem is that the obvious definition of multiplication is not
+functorial. This turns out to be intimately related to a well-known open
+problem in algebraic topology that goes back at least thirty
+years~\cite{thomason}.
 
-data R i o = R { r  :: i -> (o, R i o), 
-                 rr :: o -> (i, R o i) }
-
-plusG :: (a ~ (ap :- am), b ~ (bp :- bm), 
-         c ~ (cp :- cm), d ~ (dp :- dm)) =>
-  GM a b -> GM c d -> GM (PlusG a c) (PlusG b d)
-plusG (GM f) (GM g) = -- short definition omitted
-
-timesG :: (a ~ (ap :- am), b ~ (bp :- bm), 
-          c ~ (cp :- cm), d ~ (dp :- dm)) =>
-  GM a b -> GM c d -> GM (TimesG a c) (TimesG b d)
-timesG = -- IMPOSSIBLE
-
-\end{haskellcode}
+But if you do the construction on the additive structure, you lose the
+multiplicative structure. It turns out that this is related to a deep problem
+in algebraic topology and homotopy theory identified in 1980~\cite{thomason}
+and that was recently solved~\cite{ringcompletion}. We ``translate'' that
+solution to a computational type-theoretic world. This has evident
+connections to homotopy (type) theory that we investigate in some depth.
 
 The main ingredient of the recent solution to this problem can intuitively
 explained as follows. We regard conventional types as $0$-dimensional
@@ -367,7 +695,7 @@ situation with the \textbf{Int} or $\mathcal{G}$ construction. Once negative
 and product types are freely used, the dimension can increase without bounds.
 
 This point is made precise in the following tentative denotation of types (to
-be refined in the next section) which maps a type of dimension $n$ to an
+be refined in Sec.~\ref{hottypes}) which maps a type of dimension $n$ to an
 $n$-dimensional cube. We represent such a cube syntactically as a binary tree
 of maximum depth~$n$ with nodes of the form $\nodet{\cubt_1}{\cubt_2}$. In
 such a node, $\cubt_1$ is the positive subspace and $\cubt_2$ (shaded in
@@ -535,243 +863,9 @@ extension to higher dimensions just ``works'' because paths in HoTT have a
 rich structure. We explain the details after we include a short introduction
 of the necessary concepts from HoTT.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Condensed Background on HoTT}
-
-Informally, and as a first approximation, one may think of HoTT as
-mathematics, type theory, or computation but with all equalities replaced by
-isomorphisms, i.e., with equalities given computational content. We explain
-some of the basic ideas below.
-
-%%%%%%%%%%%%%%%%%
-\subsection{Types as Spaces}
-
-One starts with Martin-L\"of type theory, interprets the types as topological
-spaces or weak $\infty$-groupoids, and interprets identities between elements
-of a type as \emph{paths}.  In more detail, one interprets the witnesses of
-the identity $x \equiv y$ as paths from $x$ to $y$. If $x$ and $y$ are
-themselves paths, then witnesses of the identity $x \equiv y$ become paths
-between paths, or homotopies in the topological language. In Agda notation,
-we can formally express this as follows:
-
-\medskip
-\begin{code}
-data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
-  refl : (a : A) → (a ≡ a)
-
-i0 : 3 ≡ 3
-i0 = refl 3
-
-i1 : (1 + 2) ≡ (3 * 1)
-i1 = refl 3
-
-i2 : ℕ ≡ ℕ
-i2 = refl ℕ
-\end{code}
-\medskip
-
-\noindent It is important to note that the notion of proposition
-equality~$\equiv$ relates any two terms that are \emph{definitionally equal}
-as shown in example \AgdaFunction{i1} above. In general, there may be
-\emph{many} proofs (i.e., paths) showing that two particular values are
-identical and that proofs are not necessarily identical. This gives rise to a
-structure of great combinatorial complexity.
-
-We are used to think of types as sets of values. So we think of the type
-\AgdaPrimitiveType{Bool} as the figure on the left but in HoTT we should
-instead think about it as the figure on the right:
-\[
-\begin{tikzpicture}[scale=0.7]
-  \draw (0,0) ellipse (2cm and 1cm);
-  \draw[fill] (-1,0) circle (0.025);
-  \node[below] at (-1,0) {false};
-  \draw[fill] (1,0) circle (0.025);
-  \node[below] at (1,0) {true};
-\end{tikzpicture}
-\qquad\qquad
-\begin{tikzpicture}[scale=0.7]
-  \draw (0,0) ellipse (2cm and 1cm);
-  \draw[fill] (-1,0) circle (0.025);
-  \draw[->,thick,cyan] (-1,0) arc (0:320:0.2);
-  \node[above right] at (-1,0) {false};
-  \draw[fill] (1,-0.2) circle (0.025);
-  \draw[->,thick,cyan] (1,-0.2) arc (0:320:0.2);
-  \node[above right] at (1,-0.2) {true};
-\end{tikzpicture}
-\]
-In this particular case, it makes no difference, but in general we may have a
-much more complicated path structure. 
-
-
-We cannot generate non-trivial groupoids starting from the usual type
-constructions. We need \emph{higher-order inductive types} for that purpose.
-The classical example is the \emph{circle} that is a space consisting of a
-point \AgdaFunction{base} and a path \AgdaFunction{loop} from
-\AgdaFunction{base} to itself. As stated, this does not amount to
-much. However, because path carry additional structures (explained below),
-that space has the following non-trivial structure:
-
-\begin{center}
-\begin{tikzpicture}[scale=0.78]
-  \draw (0,0) ellipse (5.5cm and 2.5cm);
-  \draw[fill] (0,0) circle (0.025);
-  \draw[->,thick,red] (0,0) arc (90:440:0.2);
-  \node[above,red] at (0,0) {refl};
-  \draw[->,thick,cyan] (0,0) arc (-180:140:0.7);
-  \draw[->,thick,cyan] (0,0) arc (-180:150:1.2);
-  \node[left,cyan] at (1.4,0) {loop};
-  \node[right,cyan] at (2.4,0) {loop $\circ$ loop $\ldots$};
-  \draw[->,thick,blue] (0,0) arc (360:40:0.7);
-  \draw[->,thick,blue] (0,0) arc (360:30:1.2);
-  \node[right,blue] at (-1.4,0) {!~loop};
-  \node[left,blue] at (-2.4,0) {$\ldots$ !~loop $\circ$ !~loop};
-\end{tikzpicture}
-\end{center}
-
-The additional structure of types is formalized as follows:
-\begin{itemize}
-\item For every path $p : x \equiv y$, there exists a path $! p : y
-\equiv x$;
-\item For every $p : x \equiv y$ and $q : y \equiv z$, there
-exists a path $p \circ q : x \equiv z$;
-\item Subject to the following conditions:
- \[\begin{array}{rcl}
-  p \circ \mathit{refl}~y &\equiv& p \\
-  p &\equiv& \mathit{refl}~x \circ p \\
-  !p \circ p &\equiv& \mathit{refl}~y \\
-  p ~\circ~ !p &\equiv& \mathit{refl}~x \\
-  !~(!p) &\equiv& p \\
-  p \circ (q \circ r) &\equiv& (p \circ q) \circ r
- \end{array}\]
-\item With similar conditions one level up and so on and so forth.
-\end{itemize}
-
-%%%%%%%%%%%%%%
-\subsection{Functions}
-
-\begin{itemize}
-\item A function from space $A$ to space $B$ must map the points of $A$
-to the points of $B$ as usual but it must also \emph{respect the path
-structure};
-\item Logically, this corresponds to saying that every function
-respects equality;
-\item Topologically, this corresponds to saying that every function is
-continuous.
-\end{itemize}
-
-\begin{center}
-\begin{tikzpicture}[scale=0.6]
-  \draw (-3,0) ellipse (1.5cm and 3cm);
-  \draw (3,0) ellipse (1.5cm and 3cm);
-  \draw[fill] (-3,1.5) circle (0.025);
-  \draw[fill] (-3,-1.5) circle (0.025);
-  \node[above] at (-3,1.5) {$x$};
-  \node[below] at (-3,-1.5) {$y$};
-  \draw[fill] (3,1.5) circle (0.025);
-  \draw[fill] (3,-1.5) circle (0.025);
-  \node[above] at (3,1.5) {$f(x)$};
-  \node[below] at (3,-1.5) {$f(y)$};
-  \draw[->,cyan,thick] (-3,1.5) -- (-3,-1.5);
-  \node[left,cyan] at (-3,0) {$p$};
-  \draw[->,cyan,thick] (3,1.5) -- (3,-1.5);
-  \node[right,cyan] at (3,0) {$\mathit{ap}~f~p$};
-  \draw[->,red,dashed,ultra thick] (-2,2.5) to [out=45, in=135] (2,2.5);
-  \node[red,below] at (0,3) {$f$};
-\end{tikzpicture}
-\end{center}
-
-\begin{itemize}
-\item $\mathit{ap}~f~p$ is the action of $f$ on a path $p$;
-\item This satisfies the following properties:
-  \[\begin{array}{rcl}
-  \mathit{ap}~f~(p \circ q) &\equiv&
-                (\mathit{ap}~f~p) \circ (\mathit{ap}~f~q) \\
-  \mathit{ap}~f~(!~p) &\equiv& ~!~(\mathit{ap}~f~p)  \\
-  \mathit{ap}~g~(\mathit{ap}~f~p) &\equiv&
-                \mathit{ap}~(g \circ f)~p  \\
-  \mathit{ap}~\mathit{id}~p &\equiv& p
-  \end{array}\]
-\end{itemize}
-
-Type families as fibrations. 
-\begin{itemize}
-\item A more complicated version of the previous idea for dependent
-functions;
-\item The problem is that for dependent functions, $f(x)$ and $f(y)$ may
-not be in the same type, i.e., they live in different spaces;
-\item Idea is to \emph{transport} $f(x)$ to the space of $f(y)$;
-\item Because everything is ``continuous'', the path $p$ induces a
-transport function that does the right thing: the action of $f$ on $p$
-becomes a path between $\mathit{transport}~(f(x))$ and $f(y)$.
-\end{itemize} 
-
-\begin{center}
-\begin{tikzpicture}[scale=0.82]
-  \draw (-3,0) ellipse (1.5cm and 3cm);
-  \draw (3,2) ellipse (0.5cm and 1cm);
-  \draw (3,-1.4) ellipse (2cm and 2cm);
-  \node[blue,ultra thick,above] at (3,3) {$P(x)$};
-  \node[blue,ultra thick,below] at (3,-3.5) {$P(y)$};
-  \draw[fill] (-3,1.5) circle (0.025);
-  \draw[fill] (-3,-1.5) circle (0.025);
-  \node[above] at (-3,1.5) {$x$};
-  \node[below] at (-3,-1.5) {$y$};
-  \draw[fill] (3,1.5) circle (0.025);
-  \draw[fill] (3,-0.5) circle (0.025);
-  \draw[fill] (3,-2.5) circle (0.025);
-  \node[above] at (3,1.5) {$f(x)$};
-  \node[above] at (3,-0.5) {$\mathit{transport}~P~p~f(x)$};
-  \node[below] at (3,-2.5) {$f(y)$};
-  \draw[left,cyan,thick] (-3,1.5) -- (-3,-1.5);
-  \node[left,cyan] at (-3,0) {$p$};
-  \draw[->,cyan,thick] (3,-0.5) -- (3,-2.5);
-  \node[right,cyan] at (3,-1.5) {$\mathit{apd}~f~p$};
-  \draw[->,red,dashed,ultra thick] (-2,2.5) to [out=45, in=135] (2.3,2.5);
-  \node[red,below] at (0,3) {$f$ (fiber over $x$)};
-  \draw[->,red,dashed,ultra thick] (-2,-2.5) to [out=-45, in=-135] (1.2,-2.5);
-  \node[red,above] at (-0.5,-2.5) {$f$ (fiber over $y$)};
-  \draw[->,red,dashed,ultra thick] (3.6,2.3) to [out=-45, in=45] (3.5,0.6);
-  \node[red,right] at (3.9,1.45) {$\mathit{transport}~P~p$};
-\end{tikzpicture}
-\end{center}
-
-\begin{itemize}
-\item Let $x, y, z : A$, $p : x \equiv y$, $q : y \equiv z$, 
-$f : A \rightarrow B$, $g : \Pi_{a \in A} P(a) \rightarrow P'(a)$, 
-$P : A \rightarrow \mathit{Set}$, 
-$P' : A \rightarrow \mathit{Set}$, $Q : B \rightarrow \mathit{Set}$, 
-$u : P(x)$, and $w : Q(f(x))$.
-\item The function $\mathit{transport}~P~p$ satisfies 
-the following properties:
-  \[\begin{array}{rcl}
-  \mathit{transport}~P~q~(\mathit{transport}~P~p~u) &\equiv&
-               \mathit{transport}~P~(p \circ q)~u \\
-  \mathit{transport}~(Q \circ f)~p~w &\equiv&
-               \mathit{transport}~Q~(\mathit{ap}~f~p)~w  \\
-  \mathit{transport}~P'~p~(g~x~u) &\equiv&
-               g~y~(\mathit{transport}~P~p~u)
-  \end{array}\]
-\end{itemize}
-
-\begin{itemize}
-\item Let $x,y : A$, $p : x \equiv y$, $P : A \rightarrow
-\mathit{Set}$, and $f : \Pi_{a \in A} P(a)$;
-\item We know we have a path in $P(y)$ between
-$\mathit{transport}~P~p~(f(x))$ and $f(y)$.  
-\item We do not generally know how the point 
-$\mathit{transport}~P~p~(f(x)) : P(y)$ relates to $x$;
-\item We do not generally know how the paths in $P(y)$ are
-related to the paths in $A$.
-\item We know that paths in $A \times B$ are pairs of paths, i.e.,
-we can prove that $(a_1,b_1) \equiv (a_2,b_2)$ in $A \times B$ iff $a_1 \equiv
-a_2$ in $A$ and $b_1 \equiv b_2$ in $B$.
-\item We know that paths in $A_1 \uplus A_2$ are tagged, i.e., 
-we can prove that $\mathit{inj}_i~x \equiv \mathit{inj}_j~y$ 
-in $A_1 \uplus A_2$ iff $i=j$ and $x \equiv y$ in $A_i$.
-\end{itemize}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Homotopy Types and Univalence}
+\label{hottypes}
 
 We describe the construction of our universe of types. 
 
@@ -866,34 +960,6 @@ postulate
   univalence : {A B : Set} → (A ≡ B) ≃ (A ≃ B)
 \end{code}
 
-In the conventional setting, this is not executable!
-
-Analysis:
-\begin{itemize}
-\item We start with two different notions: paths and functions;
-\item We use extensional non-constructive methods to identify a
-particular class of functions that form isomorphisms;
-\item We postulate that this particular class of functions can be
-identified with paths.
-\end{itemize}
-
-Insight:
-\begin{itemize}
-\item Start with a constructive characterization of \emph{reversible
-functions} or \emph{isomorphisms};
-\item Blur the distinction between such reversible functions and paths
-from the beginning.
-\end{itemize}
-
-Note that:
-\begin{itemize}
-\item Reversible functions are computationally universal
-(Bennett's reversible Turing Machine from 1973!)
-\item \emph{First-order} reversible functions can be inductively defined
-in type theory (James and Sabry, POPL 2012).
-\end{itemize}
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A Reversible Language with Cubical Types} 
 \label{opsem}
@@ -943,77 +1009,6 @@ remains 0-dimensional and we recover the usual rule for typing values of
 product types. The rule \textit{neg} uses the function below which states
 that the negation of a value $v$ is the same value $v$ located at the
 ``opposite'' corner of the cube.
-
-\begin{table*}[t]
-\[\begin{array}{cc}
-\begin{array}{rrcll}
-\identlp :&  0 + b & \iso & b &: \identrp \\
-\swapp :&  b_1 + b_2 & \iso & b_2 + b_1 &: \swapp \\
-\assoclp :&  b_1 + (b_2 + b_3) & \iso & (b_1 + b_2) + b_3 &: \assocrp \\
-\identlt :&  1 * b & \iso & b &: \identrt \\
-\swapt :&  b_1 * b_2 & \iso & b_2 * b_1 &: \swapt \\
-\assoclt :&  b_1 * (b_2 * b_3) & \iso & (b_1 * b_2) * b_3 &: \assocrt \\
-\distz :&~ 0 * b & \iso & 0 &: \factorz \\
-\dist :&~ (b_1 + b_2) * b_3 & \iso & (b_1 * b_3) + (b_2 * b_3)~ &: \factor \\
-\eta :&~ 0 & \iso & b + (-b)~ & : \epsilon
-\end{array}
-& 
-\begin{minipage}{0.5\textwidth}
-\begin{center} 
-\Rule{}
-{}
-{\jdg{}{}{\idc : b \iso b}}
-{}
-\qquad\qquad
-\Rule{}
-{\jdg{}{}{c : b_1 \iso b_2}}
-{\jdg{}{}{\symc{c} : b_2 \iso b_1}}
-{}
-\\ \bigskip
-\Rule{}
-{\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_2 \iso b_3}
-{\jdg{}{}{c_1 \fatsemi c_2 : b_1 \iso b_3}}
-{}
-\\ \bigskip
-\Rule{}
-{\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_3 \iso b_4}
-{\jdg{}{}{c_1 \oplus c_2 : b_1 + b_3 \iso b_2 + b_4}}
-{}
-\\ \bigskip
-\Rule{}
-{\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_3 \iso b_4}
-{\jdg{}{}{c_1 \otimes c_2 : b_1 * b_3 \iso b_2 * b_4}}
-{}
-\end{center}
-\end{minipage}
-\end{array}\]
-\caption{Combinators\label{pi-combinators}}
-\end{table*}
-
-%%%%%%%%%%%%%%%%%%
-\subsection{$\Pi$ Combinators} 
-
-The terms of $\Pi$ witness type isomorphisms of the form $b \iso b$. They
-consist of base isomorphisms, as defined in Table~\ref{pi-combinators} and
-their composition. Each line of the table introduces a pair of dual
-constants\footnote{where $\swapp$ and $\swapt$ are self-dual.} that witness
-the type isomorphism in the middle.  These are the base (non-reducible) terms
-of the second, principal level of $\Pi$. Note how the above has two readings:
-first as a set of typing relations for a set of constants. Second, if these
-axioms are seen as universally quantified, orientable statements, they also
-induce transformations of the (traditional) values. The (categorical or
-homotopical) intuition here is that these axioms have computational content
-because they witness isomorphisms rather than merely stating an extensional
-equality. The isomorphisms are extended to form a congruence relation by
-adding constructors that witness equivalence and compatible closure.
-
-It is important to note that ``values'' and ``isomorphisms'' are completely
-separate syntactic categories which do not intermix. The semantics of the
-language come when these are made to interact at the ``top level'' via
-\emph{application}: 
-\[\begin{array}{lrcl}
-\textit{top level term}, l &::=& c~v
-\end{array}\]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work and Context}
@@ -1181,4 +1176,180 @@ thinking. How and why would $1-1$ which is a 1-dimensional line be the same
 as the empty type which is a 0-dimensional thing. And how do we generalize
 for arbitrary group identities at higher dimensions. We need a mechanism for
 cubes with subspaces that ``cancel'' to map to equivalent smaller subcubes.
+
+%%%%%%%%%%%%%%
+\subsection{Functions}
+
+\begin{itemize}
+\item A function from space $A$ to space $B$ must map the points of $A$
+to the points of $B$ as usual but it must also \emph{respect the path
+structure};
+\item Logically, this corresponds to saying that every function
+respects equality;
+\item Topologically, this corresponds to saying that every function is
+continuous.
+\end{itemize}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.6]
+  \draw (-3,0) ellipse (1.5cm and 3cm);
+  \draw (3,0) ellipse (1.5cm and 3cm);
+  \draw[fill] (-3,1.5) circle (0.025);
+  \draw[fill] (-3,-1.5) circle (0.025);
+  \node[above] at (-3,1.5) {$x$};
+  \node[below] at (-3,-1.5) {$y$};
+  \draw[fill] (3,1.5) circle (0.025);
+  \draw[fill] (3,-1.5) circle (0.025);
+  \node[above] at (3,1.5) {$f(x)$};
+  \node[below] at (3,-1.5) {$f(y)$};
+  \draw[->,cyan,thick] (-3,1.5) -- (-3,-1.5);
+  \node[left,cyan] at (-3,0) {$p$};
+  \draw[->,cyan,thick] (3,1.5) -- (3,-1.5);
+  \node[right,cyan] at (3,0) {$\mathit{ap}~f~p$};
+  \draw[->,red,dashed,ultra thick] (-2,2.5) to [out=45, in=135] (2,2.5);
+  \node[red,below] at (0,3) {$f$};
+\end{tikzpicture}
+\end{center}
+
+\begin{itemize}
+\item $\mathit{ap}~f~p$ is the action of $f$ on a path $p$;
+\item This satisfies the following properties:
+  \[\begin{array}{rcl}
+  \mathit{ap}~f~(p \circ q) &\equiv&
+                (\mathit{ap}~f~p) \circ (\mathit{ap}~f~q) \\
+  \mathit{ap}~f~(!~p) &\equiv& ~!~(\mathit{ap}~f~p)  \\
+  \mathit{ap}~g~(\mathit{ap}~f~p) &\equiv&
+                \mathit{ap}~(g \circ f)~p  \\
+  \mathit{ap}~\mathit{id}~p &\equiv& p
+  \end{array}\]
+\end{itemize}
+
+Type families as fibrations. 
+\begin{itemize}
+\item A more complicated version of the previous idea for dependent
+functions;
+\item The problem is that for dependent functions, $f(x)$ and $f(y)$ may
+not be in the same type, i.e., they live in different spaces;
+\item Idea is to \emph{transport} $f(x)$ to the space of $f(y)$;
+\item Because everything is ``continuous'', the path $p$ induces a
+transport function that does the right thing: the action of $f$ on $p$
+becomes a path between $\mathit{transport}~(f(x))$ and $f(y)$.
+\end{itemize} 
+
+\begin{center}
+\begin{tikzpicture}[scale=0.82]
+  \draw (-3,0) ellipse (1.5cm and 3cm);
+  \draw (3,2) ellipse (0.5cm and 1cm);
+  \draw (3,-1.4) ellipse (2cm and 2cm);
+  \node[blue,ultra thick,above] at (3,3) {$P(x)$};
+  \node[blue,ultra thick,below] at (3,-3.5) {$P(y)$};
+  \draw[fill] (-3,1.5) circle (0.025);
+  \draw[fill] (-3,-1.5) circle (0.025);
+  \node[above] at (-3,1.5) {$x$};
+  \node[below] at (-3,-1.5) {$y$};
+  \draw[fill] (3,1.5) circle (0.025);
+  \draw[fill] (3,-0.5) circle (0.025);
+  \draw[fill] (3,-2.5) circle (0.025);
+  \node[above] at (3,1.5) {$f(x)$};
+  \node[above] at (3,-0.5) {$\mathit{transport}~P~p~f(x)$};
+  \node[below] at (3,-2.5) {$f(y)$};
+  \draw[left,cyan,thick] (-3,1.5) -- (-3,-1.5);
+  \node[left,cyan] at (-3,0) {$p$};
+  \draw[->,cyan,thick] (3,-0.5) -- (3,-2.5);
+  \node[right,cyan] at (3,-1.5) {$\mathit{apd}~f~p$};
+  \draw[->,red,dashed,ultra thick] (-2,2.5) to [out=45, in=135] (2.3,2.5);
+  \node[red,below] at (0,3) {$f$ (fiber over $x$)};
+  \draw[->,red,dashed,ultra thick] (-2,-2.5) to [out=-45, in=-135] (1.2,-2.5);
+  \node[red,above] at (-0.5,-2.5) {$f$ (fiber over $y$)};
+  \draw[->,red,dashed,ultra thick] (3.6,2.3) to [out=-45, in=45] (3.5,0.6);
+  \node[red,right] at (3.9,1.45) {$\mathit{transport}~P~p$};
+\end{tikzpicture}
+\end{center}
+
+\begin{itemize}
+\item Let $x, y, z : A$, $p : x \equiv y$, $q : y \equiv z$, 
+$f : A \rightarrow B$, $g : \Pi_{a \in A} P(a) \rightarrow P'(a)$, 
+$P : A \rightarrow \mathit{Set}$, 
+$P' : A \rightarrow \mathit{Set}$, $Q : B \rightarrow \mathit{Set}$, 
+$u : P(x)$, and $w : Q(f(x))$.
+\item The function $\mathit{transport}~P~p$ satisfies 
+the following properties:
+  \[\begin{array}{rcl}
+  \mathit{transport}~P~q~(\mathit{transport}~P~p~u) &\equiv&
+               \mathit{transport}~P~(p \circ q)~u \\
+  \mathit{transport}~(Q \circ f)~p~w &\equiv&
+               \mathit{transport}~Q~(\mathit{ap}~f~p)~w  \\
+  \mathit{transport}~P'~p~(g~x~u) &\equiv&
+               g~y~(\mathit{transport}~P~p~u)
+  \end{array}\]
+\end{itemize}
+
+\begin{itemize}
+\item Let $x,y : A$, $p : x \equiv y$, $P : A \rightarrow
+\mathit{Set}$, and $f : \Pi_{a \in A} P(a)$;
+\item We know we have a path in $P(y)$ between
+$\mathit{transport}~P~p~(f(x))$ and $f(y)$.  
+\item We do not generally know how the point 
+$\mathit{transport}~P~p~(f(x)) : P(y)$ relates to $x$;
+\item We do not generally know how the paths in $P(y)$ are
+related to the paths in $A$.
+\item We know that paths in $A \times B$ are pairs of paths, i.e.,
+we can prove that $(a_1,b_1) \equiv (a_2,b_2)$ in $A \times B$ iff $a_1 \equiv
+a_2$ in $A$ and $b_1 \equiv b_2$ in $B$.
+\item We know that paths in $A_1 \uplus A_2$ are tagged, i.e., 
+we can prove that $\mathit{inj}_i~x \equiv \mathit{inj}_j~y$ 
+in $A_1 \uplus A_2$ iff $i=j$ and $x \equiv y$ in $A_i$.
+\end{itemize}
+
+\begin{haskellcode}
+class GT p where
+  type Pos p      :: *  -- a type has a positive component
+  type Neg p      :: *  -- and a negative component
+  type ZeroG      :: *  -- we want all the usual type 
+  type OneG       :: *  -- constructors including 0, 1,
+  type PlusG p q  :: *  -- sums, and 
+  type ProdG p q  :: *  -- products
+  type DualG p    :: *  -- as a bonus we get negation and
+  type LolliG p q :: *  -- linear functions
+
+-- A definition of the composite types with a 
+-- positive and negative components
+
+data a :- b = a :- b
+
+instance GT (ap :- am) where
+  type Pos (ap :- am) = ap
+  type Neg (ap :- am) = am
+  type ZeroG = Void :- Void
+  type OneG = () :- Void
+  type PlusG  (ap :- am) (bp :- bm) = 
+    (Either ap bp) :- (Either am bm)
+  type TimesG (ap :- am) (bp :- bm) = 
+    -- the "obvious" but broken multiplication
+    (Either (ap,bp) (am,bm)) :- (Either (am,bp) (ap,bm))
+  type DualG  (ap :- am) = am :- ap
+  type LolliG (ap :- am) (bp :- bm) = 
+    (Either am bp) :- (Either ap bm)
+
+-- Functions between composite types with positive 
+-- and negative components; implemented using 
+-- resumptions (i.e., feedback)
+newtype GM a b = 
+  GM { rg :: R  (Either (Pos a) (Neg b)) 
+                (Either (Neg a) (Pos b)) } 
+
+data R i o = R { r  :: i -> (o, R i o), 
+                 rr :: o -> (i, R o i) }
+
+plusG :: (a ~ (ap :- am), b ~ (bp :- bm), 
+         c ~ (cp :- cm), d ~ (dp :- dm)) =>
+  GM a b -> GM c d -> GM (PlusG a c) (PlusG b d)
+plusG (GM f) (GM g) = -- short definition omitted
+
+timesG :: (a ~ (ap :- am), b ~ (bp :- bm), 
+          c ~ (cp :- cm), d ~ (dp :- dm)) =>
+  GM a b -> GM c d -> GM (TimesG a c) (TimesG b d)
+timesG = -- IMPOSSIBLE
+
+\end{haskellcode}
 
