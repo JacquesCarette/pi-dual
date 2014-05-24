@@ -726,17 +726,21 @@ in $A_1 \uplus A_2$ iff $i=j$ and $x \equiv y$ in $A_i$.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Homotopy Types}
+\section{Homotopy Types and Univalence}
 
-We describe the construction of our universe of types. Our starting point is
-the construction in Sec.~\ref{cubes} which we summarize again. We start with
-all finite sets built from the empty set, a singleton set, disjoint unions,
-and cartesian products. All these sets are thought of being indexed by the
-empty sequence of polarities $\epsilon$. We then constructs new spaces that
-consist of pairs of finite sets $\nodet{S_1}{S_2}$ indexed by positive and
-negative polarities. These are the 1-dimensional spaces. We iterate this
-construction to the limit to get $n$-dimensional cubes for all natural
-numbers $n$.
+We describe the construction of our universe of types. 
+
+%%%%%%%%%%%%%%%%%%%%
+\subsection{Homotopy Types}
+
+Our starting point is the construction in Sec.~\ref{cubes} which we summarize
+again. We start with all finite sets built from the empty set, a singleton
+set, disjoint unions, and cartesian products. All these sets are thought of
+being indexed by the empty sequence of polarities $\epsilon$. We then
+constructs new spaces that consist of pairs of finite sets $\nodet{S_1}{S_2}$
+indexed by positive and negative polarities. These are the 1-dimensional
+spaces. We iterate this construction to the limit to get $n$-dimensional
+cubes for all natural numbers $n$.
 
 At this point, we switch from viewing the universe of types as an
 unstructured collection of spaces to a viewing it as a \emph{groupoid} with
@@ -768,6 +772,78 @@ equivalent. We itemize the paths we add next:
 
 Now the structure of path spaces is complicated in general. Let's look at
 some examples.
+
+%%%%%%%%%%%%%%%%%%%%
+\subsection{Univalence} 
+
+The heart of HoTT is the \emph{univalence axiom}, which informally states
+that isomorphic structures can be identified. One of the major open problems
+in HoTT is a computational interpretation of this axiom. We propose that, at
+least for the special case of finite types, reversible computation \emph{is}
+the computational interpretation of univalence. Specifically, in the context
+of finite types, univalence specializes to a relationship between type
+isomorphisms on the side of syntactic identities and permutations in the
+symmetric group on the side of semantic equivalences. 
+
+In conventional HoTT:
+
+\begin{code}
+-- f ∼ g iff ∀ x. f x ≡ g x
+_∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
+      (f g : (x : A) → P x) → Set (ℓ ⊔ ℓ')
+_∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → f x ≡ g x
+
+-- f is an equivalence if we have g and h such that
+-- the compositions with f in both ways are ∼ id
+record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
+  Set (ℓ ⊔ ℓ') where
+  constructor mkisequiv
+  field
+    g : B → A 
+    α : (f ∘ g) ∼ id
+    h : B → A
+    β : (h ∘ f) ∼ id
+
+-- Two spaces are equivalent if we have functions 
+-- f, g, and h that compose to id
+_≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ ⊔ ℓ')
+A ≃ B = Σ (A → B) isequiv
+
+-- A path between spaces implies their equivalence
+idtoeqv : {A B : Set} → (A ≡ B) → (A ≃ B)
+idtoeqv {A} {B} p = {!!}
+
+postulate -- that equivalence of spaces implies a path 
+  univalence : {A B : Set} → (A ≡ B) ≃ (A ≃ B)
+\end{code}
+
+In the conventional setting, this is not executable!
+
+Analysis:
+\begin{itemize}
+\item We start with two different notions: paths and functions;
+\item We use extensional non-constructive methods to identify a
+particular class of functions that form isomorphisms;
+\item We postulate that this particular class of functions can be
+identified with paths.
+\end{itemize}
+
+Insight:
+\begin{itemize}
+\item Start with a constructive characterization of \emph{reversible
+functions} or \emph{isomorphisms};
+\item Blur the distinction between such reversible functions and paths
+from the beginning.
+\end{itemize}
+
+Note that:
+\begin{itemize}
+\item Reversible functions are computationally universal
+(Bennett's reversible Turing Machine from 1973!)
+\item \emph{First-order} reversible functions can be inductively defined
+in type theory (James and Sabry, POPL 2012).
+\end{itemize}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A Reversible Language with Cubical Types} 
