@@ -458,12 +458,14 @@ below shows:
 &=& \nodet{(\nodet{\tau_4}{\tau_3})\oplus(\nodet{\tau_5}{\tau_6})}
            {(\nodet{\tau_2}{\tau_1})\oplus(\nodet{\tau_7}{\tau_8})} \\
 &=& \nodet{(\nodet{\tau_4\oplus\tau_5}{\tau_3\oplus\tau_6})}
-          {(\nodet{\tau_2\oplus\tau_7}{\tau_1\oplus\tau_8})}
+          {(\nodet{\tau_2\oplus\tau_7}{\tau_1\oplus\tau_8})} \\
+&=& \nodet{(\nodet{\tau_4\uplus\tau_5}{\tau_3\uplus\tau_6})}
+          {(\nodet{\tau_2\uplus\tau_7}{\tau_1\uplus\tau_8})}
 \end{array}\]
 This may be better understood by visualizing each of the argument type and 
 result types as two squares. The square representing the argument type
 is flipped in both dimensions effectively swapping the labels on both 
-digonals. The resulting square is then superimposed on the square 
+diagonals. The resulting square is then superimposed on the square 
 for the result type to give the representation of the function as a first-class
 object.
 
@@ -534,7 +536,7 @@ rich structure. We explain the details after we include a short introduction
 of the necessary concepts from HoTT.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Condensend Background on HoTT}
+\section{Condensed Background on HoTT}
 
 Informally, and as a first approximation, one may think of HoTT as
 mathematics, type theory, or computation but with all equalities replaced by
@@ -1120,7 +1122,7 @@ ring equivalences.
 Ok so what are the morphisms between 
 these cubical objects? We know what
 they are for 1-dimensional cubes: 
-they are the pi combinabors. We also
+they are the pi combinators. We also
 know what they are for the 2-dimensional 
 cubes: a maps (A-B) ==> (C-D) 
 is a Pi map between A+D <=> C+B. 
