@@ -185,15 +185,14 @@ introduction~\cite{hottbook}.
 
 We may or may not want to explain the construction using Haskell. In case we
 do, the most relevant code is below. The key insight it to enrich types to
-consist of pairs that intuitively represent $(t_1 - t_2)$ where the values of
-type $t_1$ flow in the ``normal'' direction (from producers to consumers) and
-the values of type $t_2$ flow backwards (representing a \emph{demand} for a
-value). This is expressive enough to represent functions which are viewed as
-expressions that convert a demand for an argument to the production of a
-result. The problem is that the obvious definition of multiplication is not
-functorial. This turns out to be intimately related to a well-known open
-problem in algebraic topology that goes back at least thirty
-years~\cite{thomason}.
+forms of the shape $(t_1 - t_2)$ which represent a sum type of $t_1$ flowing
+in the ``normal'' direction (from producers to consumers) and $t_2$ flowing
+backwards (representing \emph{demands} for values). This is expressive enough
+to represent functions which are viewed as expressions that convert a demand
+for an argument to the production of a result. The problem is that the
+obvious definition of multiplication is not functorial. This turns out to be
+intimately related to a well-known open problem in algebraic topology that
+goes back at least thirty years~\cite{thomason}.
 
 \begin{haskellcode}
 class GT p where
@@ -423,6 +422,50 @@ product of sets. For cubes of higher-dimensions $n$ and $m$, the result is of
 dimension $(n+m)$. The example in Fig.~\ref{mult} illustrates the idea using
 the product of 1-dimensional cube (i.e., a line) with a 2-dimensional cube
 (i.e., a square). The result is a 3-dimensional cube as illustrated.
+
+%%%%%%%%%%%%%%%%%%%%
+\subsection{Higher-Order Functions}
+
+In the \textbf{Int} construction a function from $T_1=(t_1-t_2)$ to
+$T_2=(t_3-t_4)$ is represented as an object of type $-T_1+T_2$. Expanding the
+definitions, we get:
+\[\begin{array}{rcl}
+-T_1+T_2 &=& -(t_1-t_2) + (t_3-t_4) \\
+         &=& (t_2-t_1) + (t_3-t_4) \\
+         &=& (t_2+t_3) - (t_1+t_4)
+\end{array}\]
+The above calculation is consistent with our definitions specialized to 
+1-dimensional types. Note that the function is represented as an object
+of the same dimension as its input and output types. The situation
+generalizes to higher-dimensions. For example, consider a function of type
+\[
+\nodet{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} 
+\lolli
+\nodet{\nodet{\tau_5}{\tau_6}}{\nodet{\tau_7}{\tau_8}} 
+\]
+This function is represent by an object of dimension 2 as the calculation
+below shows:
+\[\begin{array}{rcl}
+&& \nodet{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} 
+\lolli
+\nodet{\nodet{\tau_5}{\tau_6}}{\nodet{\tau_7}{\tau_8}} \\
+&=& (\ominus \nodet{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}}) 
+    \oplus (\nodet{\nodet{\tau_5}{\tau_6}}{\nodet{\tau_7}{\tau_8}}) \\
+&=& (\nodet{\ominus(\nodet{\tau_3}{\tau_4})}{\ominus(\nodet{\tau_1}{\tau_2})})
+    \oplus (\nodet{\nodet{\tau_5}{\tau_6}}{\nodet{\tau_7}{\tau_8}}) \\
+&=&     (\nodet{\nodet{\tau_4}{\tau_3}}{\nodet{\tau_2}{\tau_1}})
+ \oplus (\nodet{\nodet{\tau_5}{\tau_6}}{\nodet{\tau_7}{\tau_8}}) \\
+&=& \nodet{(\nodet{\tau_4}{\tau_3})\oplus(\nodet{\tau_5}{\tau_6})}
+           {(\nodet{\tau_2}{\tau_1})\oplus(\nodet{\tau_7}{\tau_8})} \\
+&=& \nodet{(\nodet{\tau_4\oplus\tau_5}{\tau_3\oplus\tau_6})}
+          {(\nodet{\tau_2\oplus\tau_7}{\tau_1\oplus\tau_8})}
+\end{array}\]
+This may be better understood by visualizing each of the argument type and 
+result types as two squares. The square representing the argument type
+is flipped in both dimensions effectively swapping the labels on both 
+digonals. The resulting square is then superimposed on the square 
+for the result type to give the representation of the function as a first-class
+object.
 
 %%%%%%%%%%%%%%%%%%%%
 \subsection{Type Isomorphisms: Paths to the Rescue}
@@ -793,8 +836,9 @@ _∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} →
       (f g : (x : A) → P x) → Set (ℓ ⊔ ℓ')
 _∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → f x ≡ g x
 
--- f is an equivalence if we have g and h such that
--- the compositions with f in both ways are ∼ id
+-- f is an equivalence if we have g and h 
+-- such that the compositions with f in 
+-- both ways are ∼ id
 record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
   Set (ℓ ⊔ ℓ') where
   constructor mkisequiv
@@ -804,16 +848,19 @@ record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) :
     h : B → A
     β : (h ∘ f) ∼ id
 
--- Two spaces are equivalent if we have functions 
--- f, g, and h that compose to id
+-- Two spaces are equivalent if we have 
+-- functions f, g, and h that compose 
+-- to id
 _≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ ⊔ ℓ')
 A ≃ B = Σ (A → B) isequiv
 
--- A path between spaces implies their equivalence
+-- A path between spaces implies their 
+-- equivalence
 idtoeqv : {A B : Set} → (A ≡ B) → (A ≃ B)
 idtoeqv {A} {B} p = {!!}
 
-postulate -- that equivalence of spaces implies a path 
+-- equivalence of spaces implies a path 
+postulate 
   univalence : {A B : Set} → (A ≡ B) ≃ (A ≃ B)
 \end{code}
 
