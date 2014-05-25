@@ -77,7 +77,7 @@ data a :<=> b where
                    (a :<=> b) -> (b :<=> c) -> (a :<=> c)
   (:++:)        :: 
     (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm), d ~ (dp :- dm)) => 
-    (a :<=> b) -> (c :<=> d) -> (Either a c :<=> Either b d)
+    (a :<=> b) -> (c :<=> d) -> (Plus1 a c :<=> Plus1 b d)
   PlusZeroL1    :: (a ~ (ap :- am)) => Plus1 Zero1 a :<=> a
   PlusZeroR1    :: (a ~ (ap :- am)) => a :<=> Plus1 Zero1 a
   CommutePlus1  :: (a ~ (ap :- am), b ~ (bp :- bm)) => Plus1 a b :<=> Plus1 b a
@@ -117,6 +117,8 @@ as well as name/coname, compose/apply, etc. won't work just yet.
    
 --}
 
+{-- Not sure if I get a 2-path between c;id and c ??? --}
+
 data Val1 p = Val1 { c :: Neg p :<-> Pos p }
 
 eval1 :: (a ~ (ap :- am), b ~ (bp :- bm)) => 
@@ -124,6 +126,7 @@ eval1 :: (a ~ (ap :- am), b ~ (bp :- bm)) =>
 eval1 Id1 v = v
 eval1 (Sym1 c) v = eval1B c v
 eval1 (c1 :..: c2) v = eval1 c2 (eval1 c1 v)
+eval1 (c1 :++: c2) v = 
 eval1 PlusZeroL1 (Val1 c0) = 
   Val1 { c = PlusZeroR :.: c0 :.: PlusZeroL }
 eval1 PlusZeroR1 (Val1 c0) = 
@@ -141,6 +144,7 @@ eval1B :: (a ~ (ap :- am), b ~ (bp :- bm)) =>
 eval1B Id1 v = v
 eval1B (Sym1 c) v = eval1 c v
 eval1B (c1 :..: c2) v = eval1B c1 (eval1B c2 v)
+eval1 (c1 :++: c2) v = undefined
 eval1B PlusZeroL1 (Val1 c0) =
   Val1 { c = PlusZeroL :.: c0 :.: PlusZeroR }
 eval1B PlusZeroR1 (Val1 c0) =
