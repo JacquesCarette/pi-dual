@@ -56,8 +56,6 @@ class Type1 p where
   type Zero1      :: * 
   type One1       :: *
   type Plus1 p q  :: *
-  type Dual1 p    :: * 
-  type Lolli1 p q :: * 
 
 data a :- b = a :- b
 
@@ -67,8 +65,6 @@ instance Type1 (ap :- am) where
   type Zero1 = Zero :- Zero
   type One1 = () :- Zero
   type Plus1  (ap :- am) (bp :- bm) = (Either ap bp) :- (Either am bm)
-  type Dual1  (ap :- am) = am :- ap
-  type Lolli1 (ap :- am) (bp :- bm) = (Either am bp) :- (Either ap bm)
 
 data a :<=> b where 
   Id1           :: (a ~ (ap :- am)) => a :<=> a
@@ -76,8 +72,8 @@ data a :<=> b where
   (:..:)        :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
                    (a :<=> b) -> (b :<=> c) -> (a :<=> c)
   (:++:)        :: 
-    (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm), d ~ (dp :- dm)) => 
-    (a :<=> b) -> (c :<=> d) -> (Plus1 a c :<=> Plus1 b d)
+    (p ~ (a :- b), q ~ (c :- d), r ~ (e :- f), s ~ (g :- h)) => 
+    (p :<=> q) -> (r :<=> s) -> (Plus1 p r :<=> Plus1 q s)
   PlusZeroL1    :: (a ~ (ap :- am)) => Plus1 Zero1 a :<=> a
   PlusZeroR1    :: (a ~ (ap :- am)) => a :<=> Plus1 Zero1 a
   CommutePlus1  :: (a ~ (ap :- am), b ~ (bp :- bm)) => Plus1 a b :<=> Plus1 b a
@@ -85,7 +81,6 @@ data a :<=> b where
                    Plus1 a (Plus1 b c) :<=> Plus1 (Plus1 a b) c 
   AssocPlusR1   :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
                    Plus1 (Plus1 a b) c :<=> Plus1 a (Plus1 b c) 
-  Dual :: (a ~ (ap :- am)) => a :<=> Dual1 a
 
 {-- 
 
@@ -115,9 +110,15 @@ Similarly we are not compact closed yet so
 
 as well as name/coname, compose/apply, etc. won't work just yet.
    
+Remove Dual: it adds a 2-path between c and !c trivializing all proofs
+
+  Dual :: (a ~ (ap :- am)) => a :<=> Dual1 a
+
 --}
 
-{-- Not sure if I get a 2-path between c;id and c ??? --}
+{-- 
+Not sure if I get a 2-path between c;id and c ??? 
+--}
 
 data Val1 p = Val1 { c :: Neg p :<-> Pos p }
 
@@ -126,8 +127,12 @@ eval1 :: (a ~ (ap :- am), b ~ (bp :- bm)) =>
 eval1 Id1 v = v
 eval1 (Sym1 c1) v = eval1B c1 v
 eval1 (c1 :..: c2) v = eval1 c2 (eval1 c1 v)
-eval1 (c1 :++: c2) (Val1 c0) = 
-  Val1 { c = undefined }
+eval1 (alpha :++: beta) (Val1 pOPLUSr) = 
+  -- alpha   :: p => q where p : a -> b, q : c -> d
+  -- beta    :: r => s where r : e -> f, s : g -> h
+  -- pOPLUSr :: a+e -> b+f
+  -- want    :: c+g -> h+d
+  error "is that possible?"
 eval1 PlusZeroL1 (Val1 c0) = 
   Val1 { c = PlusZeroR :.: c0 :.: PlusZeroL }
 eval1 PlusZeroR1 (Val1 c0) = 
@@ -138,7 +143,6 @@ eval1 AssocPlusL1 (Val1 c0) =
   Val1 { c = AssocPlusR :.: c0 :.: AssocPlusL }
 eval1 AssocPlusR1 (Val1 c0) =
   Val1 { c = AssocPlusL :.: c0 :.: AssocPlusR }
-eval1 Dual (Val1 ca) = Val1 { c = Sym ca }
 
 eval1B :: (a ~ (ap :- am), b ~ (bp :- bm)) => 
           (a :<=> b) -> Val1 b -> Val1 a
@@ -156,6 +160,5 @@ eval1B AssocPlusL1 (Val1 c0) =
   Val1 { c = AssocPlusL :.: c0 :.: AssocPlusR }
 eval1B AssocPlusR1 (Val1 c0) =
   Val1 { c = AssocPlusR :.: c0 :.: AssocPlusL }
-eval1B Dual (Val1 ca) = Val1 { c = Sym ca }
 
 ------------------------------------------------------------------------------
