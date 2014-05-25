@@ -94,6 +94,10 @@ allow to introduce a 2-path between any 1-path : t -> t and refl_t --}
 allid :: (a :- a) :<=> (a :- a)
 allid = Epsilon :..: Eta
 
+-- Not compact closed yet... need to iterate this construction for every
+-- so curry/uncurry, name/coname, compose/apply, etc won't work just yet
+-- remember that we only have 2nd-order functions...
+
 data Val1 p = Val1 { c :: Neg p :<-> Pos p }
 
 eval1 :: (a ~ (ap :- am), b ~ (bp :- bm)) => 
