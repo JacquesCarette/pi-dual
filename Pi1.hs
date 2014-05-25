@@ -88,6 +88,12 @@ data a :<=> b where
   Eta :: Zero1 :<=> (ap :- ap)
   Epsilon :: (ap :- ap) :<=> Zero1
 
+{-- Not sure if Eta/Epsilon are the right thing in this context. They do
+allow to introduce a 2-path between any 1-path : t -> t and refl_t --}
+
+allid :: (a :- a) :<=> (a :- a)
+allid = Epsilon :..: Eta
+
 data Val1 p = Val1 { c :: Neg p :<-> Pos p }
 
 eval1 :: (a ~ (ap :- am), b ~ (bp :- bm)) => 
