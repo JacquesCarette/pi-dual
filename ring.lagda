@@ -16,6 +16,11 @@
 \usepackage{proof}
 \usepackage{graphicx}
 
+\newcommand{\todo}[1]{\textbf{Todo:} #1}
+
+\newcommand{\onepath}[2]{#1 \rightarrow #2}
+\newcommand{\twopath}[2]{#1 \Rightarrow #2}
+\newcommand{\threepath}[2]{#1 \Rrightarrow #2}
 \newcommand{\refl}[1]{\textsf{refl}_{#1}}
 \newcommand{\seg}[1]{\textsf{seg}_{#1}}
 \newcommand{\bdim}[1]{\textsf{dim}(#1)}
@@ -26,7 +31,6 @@ $\displaystyle
 {\begin{array}{l}#3\\\end{array}}$
  #4}}
 \newcommand{\proves}{\vdash}
-\newcommand{\trace}[1]{\mathit{trace}~#1}
 \newcommand{\symc}[1]{\mathit{sym}~#1}
 \newcommand{\jdg}[3]{#2 \proves_{#1} #3}
 \newcommand{\adjoint}[1]{#1^{\dagger}}
@@ -56,6 +60,7 @@ $\displaystyle
 \newcommand{\inr}[1]{\textsf{inr}~#1}
 \newcommand{\lolli}{\multimap} 
 \newcommand{\cubt}{\mathbb{T}}
+\newcommand{\patht}{\mathbb{P}}
 \newcommand{\ztone}{\mathbb{0}}
 \newcommand{\otone}{\mathbb{1}}
 \newcommand{\ptone}[2]{#1 \boxplus #2}
@@ -153,7 +158,7 @@ $\displaystyle
 \lstset{rangeprefix=/*!\ , rangesuffix=\ !*\/, includerangemarker=false}
 
 %% double-blind reviewing...
-\title{Negative Types}
+\title{Path Types}
 \authorinfo{}{}{}
 \maketitle
 
@@ -232,11 +237,6 @@ we will develop an extension with higher-order \emph{linear} functions.
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad c_2 : \tau_3 \iso \tau_4}
 {\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
 {}
-\\ \bigskip
-\Rule{}
-{\jdg{}{}{c : \tau_1 \oplus \tau \iso \tau_2 \oplus \tau}}
-{\jdg{}{}{\trace{c} : : \tau_1 \iso \tau_2}}
-{}
 \end{center}
 \end{minipage}
 \end{array}\]
@@ -262,12 +262,10 @@ table on the left introduces a pair of dual constants\footnote{where $\swapp$
   and $\swapt$ are self-dual.} that witness the type isomorphism in the
 middle. This set of isomorphisms is known to be
 complete~\cite{Fiore:2004,fiore-remarks} and the language is universal for
-hardware combinational circuits~\cite{James:2012:IE:2103656.2103667}.  Note
-that we have $\trace{c}$ which in the current setting is a bounded iteration
-construct: it adds no expressiveness for now but will be important to model
-functions later. If recursive types are added, the bounded iteration becomes
-Turing-complete~\cite{James:2012:IE:2103656.2103667,rc2011} but we will not
-be concerned with recursive types in this paper.
+hardware combinational circuits~\cite{James:2012:IE:2103656.2103667}.  If
+recursive types and a trace operator (i.e., looping construct) are added, the
+language becomes Turing-complete~\cite{James:2012:IE:2103656.2103667,rc2011}
+but we will not be concerned with recursive types in this paper.
 
 From the perspective of category theory, the language $\Pi$ models what is
 called a \emph{symmetric bimonoidal category} or a \emph{commutative rig
@@ -321,7 +319,7 @@ i2 = refl ℕ
 \end{code}
 \medskip
 
-\noindent It is important to note that the notion of proposition
+\noindent It is important to note that the notion of propositional
 equality~$\equiv$ relates any two terms that are \emph{definitionally equal}
 as shown in example \AgdaFunction{i1} above. In general, there may be
 \emph{many} proofs (i.e., paths) showing that two particular values are
@@ -353,7 +351,6 @@ instead think about it as the figure on the right:
 \]
 In this particular case, it makes no difference, but in general we may have a
 much more complicated path structure. 
-
 
 We cannot generate non-trivial groupoids starting from the usual type
 constructions. We need \emph{higher-order inductive types} for that purpose.
@@ -465,124 +462,69 @@ $\Pi$. This would allow us to internalize the type $\tau_1\iso\tau_2$ as a
 $\Pi$-type which is then manipulated by the same combinators one level higher
 and so on.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The \textbf{Int} Construction} 
+To make the correspondence between $\Pi$ and the HoTT concepts more apparent
+we will, in the remainder of the paper, use \textsf{refl} instead of $\idc$
+and $!$ instead of $\mathit{sym}$ when referring to $\Pi$ combinators when
+viewed as paths.  Similarly we will use $\rightarrow$ instead of the
+$\Pi$-notation $\iso$ or the HoTT notation $\equiv$ to refer to paths.
 
-The \textbf{Int} construction~\cite{joyal1996traced} or the closely related
-$\mathcal{G}$ construction~\cite{gcons} are fascinating ideas. As
-Krishnaswami~\citeyearpar{neelblog} explains, given first-order types and
-feedback, it is possible to higher-order \emph{linear} functions. The key
-insight it to enrich types to be of the shape $(\tau_1 - \tau_2)$ which
-represent a sum type of $\tau_1$ flowing in the ``normal'' direction (from
-producers to consumers) and $\tau_2$ flowing backwards (representing
-\emph{demands} for values). This is expressive enough to represent functions
-which are viewed as expressions that convert a demand for an argument to the
-production of a result. Since we already have $\trace{c}$ to provide
-feedback, the next immediate step is extend the $\Pi$ types as follows:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{First Level of Path Types}
+
+The following extension to $\P$ is motivated by the \textbf{Int}
+construction~\cite{joyal1996traced} or the closely related $\mathcal{G}$
+construction~\cite{gcons} but differs significantly in some of the details.
+
+Since we are identifying isomorphisms with paths, it follows that in order to
+get higher-order functions we need to get (at least) paths between paths. We
+therefore extend $\Pi$ with a new type $\onepath{\tau_1}{\tau_2}$ of paths
+between $\tau_1$ and $\tau_2$. The new type lives in a different universe so
+to speak:
 \[\begin{array}{rcl}
 \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
-\cubt &::=& \tau_1-\tau_2
+\patht &::=& \onepath{\tau_1}{\tau_2}
 \end{array}\]
-
 In anticipation of future developments, we will call the original types
-$\tau$ 0-dimensional and the new types $\cubt$ 1-dimensional. The previous
-combinators all work on 0-dimensional types. The punchline will be that a
-0-level combinator $c : \tau_1 \iso \tau_2$ on 0-dimensional types can be
-expressed as a value $v_c$ of the 1-dimensional type
-$\tau_2-\tau_1$. Furthermore, we will have lifted versions of most of the
-combinators to work on the 1-dimensional types. These lifted versions will
-allow us to manipulate combinators on 0-dimensional types as first-class
-values.
+$\tau$ 0-dimensional and the new types $\patht$ 1-dimensional. The previous
+combinators all work on 0-dimensional types. A 0-level combinator $c : \tau_1
+\iso \tau_2$ on 0-dimensional types is a value of the 1-dimensional type
+$\patht{\tau_1}{\tau_2}$. We then essentially duplicate $\Pi$ one level up
+with lifted versions of the combinators to work on the 1-dimensional
+types. 
 
-Before we define the construction in any detail, let's take one simple
-example $\identlp : 0+1 \iso 1$ and see how to represent as a value of type
-$1-(0+1)$. We visually represent the type itself as a line with 0-dimensional
-types attached at the endpoints (which are distinguished by polarities):
-\begin{center}
-\begin{tikzpicture}
-\node[above] at (0,0) {\pp};
-\draw[fill] (0,0) circle [radius=0.05];
-\node[above] at (2.6,0) {\mm};
-\draw[fill] (2.6,0) circle [radius=0.05];
-\draw[-,dotted] (0,0) -- (2.6,0);
-\draw (0,-1.1) ellipse (0.5cm and 1cm);
-\draw (2.6,-1.1) ellipse (0.5cm and 1cm);
-\node at (0,-1.1) {1};
-\node at (2.6,-1.1) {0+1};
-\end{tikzpicture}
-\end{center}
-The value representing $\identlp$ is simply:
-\begin{center}
-\begin{tikzpicture}
-\node[above] at (0,0) {\pp};
-\draw[fill] (0,0) circle [radius=0.05];
-\node[above] at (2.6,0) {\mm};
-\draw[fill] (2.6,0) circle [radius=0.05];
-\draw[-,dotted] (0,0) -- (2.6,0);
-\draw (0,-1.1) ellipse (0.5cm and 1cm);
-\draw (2.6,-1.1) ellipse (0.5cm and 1cm);
-\draw[->,thick,blue] (2.0,-1.1) -- (0.6,-1.1);
-\node[above] at (1.3,-1.1) {$\identlp$};
-\node at (0,-1.1) {1};
-\node at (2.6,-1.1) {0+1};
-\end{tikzpicture}
-\end{center}
-This entire package is a value, an atomic entity with invisible internal
-structure and that can only be manipulated via the level 1 combinators
-described next.
-
-The next order of business is to define a few abbreviations of 1-dimensional
-types:
+For convenience, the first order of business is to define a few abbreviations
+of 1-dimensional types:
 \[\begin{array}{rcl}
-\ztone &=& 0 - 0 \\
-\otone &=& 1 - 0 \\
-\ptone{(\tau_1-\tau_2)}{(\tau_3-\tau_4)} &= & (\tau_1+\tau_3)-(\tau_2+\tau_4)\\
-\ttone{(\tau_1-\tau_2)}{(\tau_3-\tau_4)} &= & 
-  ((\tau_1*\tau_3)+(\tau_2*\tau_4))- \\
-  && ((\tau_1*\tau_4)+(\tau_2*\tau_3))
+\ztone &=& \onepath{0}{0} \\
+\otone &=& \onepath{1}{0} \\
+\ptone{(\onepath{\tau_1}{\tau_2})}{(\onepath{\tau_3}{\tau_4})} &= & 
+  \onepath{tau_1+\tau_3}{\tau_2+\tau_4} 
 \end{array}\]
 The level 1 combinators are now exactly identical to the combinators in
-Table~\ref{pi-combinators} changing all the 0 dimensional types $\tau$ to 1
-dimensional types $\cubt$ and hence replacing all occurrences of 0 by
-$\ztone$, 1 by $\otone$, $+$ by $\boxplus$, and $*$ by $\boxtimes$. 
+Table~\ref{pi-combinators} changing all the 0 dimensional types $\tau$ to
+1-dimensional types $\patht$ and hence replacing all occurrences of 0 by
+$\ztone$, 1 by $\otone$, and $+$ by $\boxplus$. For reasons explained below,
+we have lost the multiplicative structure, so for now we only get the
+combinators that only mention additive types. 
 
-Most of the time, the level 1 combinators are oblivious to the fact that they
-are manipulating first class functions. Formally, the action of a level 1
-combinator of type $(\tau_1-\tau_2) \isoone (\tau_3-\tau_4)$ is derived from
-the action of 0 level combinators of type $(\tau_1+\tau_4) \iso
-(\tau_3+\tau_2)$. Thus to take a trivial example $\identlp^1 : \ztone
-\boxplus \cubt \isoone \cubt$ is realized as $\assocrp \fatsemi (\idc \oplus
-\swapp) \fatsemi \assoclp$ which evidently knows nothing specific about
-higher order functions. The interesting idea is that it is possible to define
-a new level 1 combinator that exposes the internal structure of values as
-functions:
-\[\begin{array}{rrcll}
-\eta :&  0-0 & \isoone & \tau - \tau &: \varepsilon 
-\end{array}\]
-What this does is essentially provide an input and output port which are
-connected by the internal hidden function.
+\todo{Discuss what this achieves in more detail.}
 
-The problem is that the obvious definition of multiplication is not
-functorial. This turns out to be intimately related to a well-known open
-problem in algebraic topology that goes back at least thirty
-years~\cite{thomason}.
-
-But if you do the construction on the additive structure, you lose the
-multiplicative structure. It turns out that this is related to a deep problem
-in algebraic topology and homotopy theory identified in 1980~\cite{thomason}
-and that was recently solved~\cite{ringcompletion}. We ``translate'' that
-solution to a computational type-theoretic world. This has evident
-connections to homotopy (type) theory that we investigate in some depth.
-
-The main ingredient of the recent solution to this problem can intuitively
-explained as follows. We regard conventional types as $0$-dimensional
-cubes. By adding composite types consisting of two types, the \textbf{Int}
-construction effectively creates 1-dimensional cubes (i.e., lines). The key
-to the general solution, and the approach we adopt here, is to generalize
-types to $n$-dimensional cubes.
+\paragraph*{The phony multiplication.} 
+The ``obvious'' definition of multiplication is:
+\[
+\ttone{(\onepath{\tau_1}{\tau_2})}{(\onepath{\tau_3}{\tau_4})} \quad=\quad
+  \onepath{((tau_1*\tau_3)+(\tau_2*\tau_4))}
+          {((tau_1*\tau_3)+(\tau_2*\tau_4))}
+\]
+This definition of multiplication is not functorial and this turns out to be
+intimately related to a well-known open problem in algebraic topology that
+goes back at least thirty years~\cite{thomason}. This problem was recently
+solved~\cite{ringcompletion}. The main ingredient of this recent solution is
+to more paths between paths between paths etc. to express multiplication as
+explained next. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Cubes}
+\section{Multiplication of Paths} 
 \label{cubes}
 
 We first define the syntax and then present a simple semantic model of types
@@ -1353,3 +1295,55 @@ timesG = -- IMPOSSIBLE
 
 \end{haskellcode}
 
+Before we define the construction in any detail, let's take one simple
+example $\identlp : 0+1 \iso 1$ and see how to represent as a value of type
+$1-(0+1)$. We visually represent the type itself as a line with 0-dimensional
+types attached at the endpoints (which are distinguished by polarities):
+\begin{center}
+\begin{tikzpicture}
+\node[above] at (0,0) {\pp};
+\draw[fill] (0,0) circle [radius=0.05];
+\node[above] at (2.6,0) {\mm};
+\draw[fill] (2.6,0) circle [radius=0.05];
+\draw[-,dotted] (0,0) -- (2.6,0);
+\draw (0,-1.1) ellipse (0.5cm and 1cm);
+\draw (2.6,-1.1) ellipse (0.5cm and 1cm);
+\node at (0,-1.1) {1};
+\node at (2.6,-1.1) {0+1};
+\end{tikzpicture}
+\end{center}
+The value representing $\identlp$ is simply:
+\begin{center}
+\begin{tikzpicture}
+\node[above] at (0,0) {\pp};
+\draw[fill] (0,0) circle [radius=0.05];
+\node[above] at (2.6,0) {\mm};
+\draw[fill] (2.6,0) circle [radius=0.05];
+\draw[-,dotted] (0,0) -- (2.6,0);
+\draw (0,-1.1) ellipse (0.5cm and 1cm);
+\draw (2.6,-1.1) ellipse (0.5cm and 1cm);
+\draw[->,thick,blue] (2.0,-1.1) -- (0.6,-1.1);
+\node[above] at (1.3,-1.1) {$\identlp$};
+\node at (0,-1.1) {1};
+\node at (2.6,-1.1) {0+1};
+\end{tikzpicture}
+\end{center}
+This entire package is a value, an atomic entity with invisible internal
+structure and that can only be manipulated via the level 1 combinators
+described next.
+
+Most of the time, the level 1 combinators are oblivious to the fact that they
+are manipulating first class functions. Formally, the action of a level 1
+combinator of type $(\tau_1-\tau_2) \isoone (\tau_3-\tau_4)$ is derived from
+the action of 0 level combinators of type $(\tau_1+\tau_4) \iso
+(\tau_3+\tau_2)$. Thus to take a trivial example $\identlp^1 : \ztone
+\boxplus \cubt \isoone \cubt$ is realized as $\assocrp \fatsemi (\idc \oplus
+\swapp) \fatsemi \assoclp$ which evidently knows nothing specific about
+higher order functions. The interesting idea is that it is possible to define
+a new level 1 combinator that exposes the internal structure of values as
+functions:
+\[\begin{array}{rrcll}
+\eta :&  0-0 & \isoone & \tau - \tau &: \varepsilon 
+\end{array}\]
+What this does is essentially provide an input and output port which are
+connected by the internal hidden function.
