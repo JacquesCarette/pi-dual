@@ -89,7 +89,7 @@ data a :<=> b where
   Epsilon :: (ap :- ap) :<=> Zero1
 
 {-- Not sure if Eta/Epsilon are the right thing in this context. They do
-allow to introduce a 2-path between any 1-path : t -> t and refl_t --}
+allow to introduce a 2-path between any 1-path : t -> t and refl_t. If correct, one of the nice things is that we get 2-paths between c;refl and c !!! --}
 
 allid :: (a :- a) :<=> (a :- a)
 allid = Epsilon :..: Eta
