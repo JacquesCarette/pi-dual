@@ -6,7 +6,12 @@ module Pi1 where
 
 -- Pi1 is the next up based on the Int construction (only possible after we
 -- liberate ourselves from the brain-damaging notion that t1-t2 is a sum
--- type)
+-- type). In particular we only do part of the Int construction by adding the
+-- types t1-t2 but keeping them separate. We don't get a compact closed
+-- category. We only get 2nd-order functions. Note that the Int construction
+-- gives you integers but without multiplication. If you want multiplication
+-- you have to do something much more involved like the ring completion
+-- paper.
 
 ------------------------------------------------------------------------------
 -- Pi0
@@ -80,23 +85,37 @@ data a :<=> b where
                    Plus1 a (Plus1 b c) :<=> Plus1 (Plus1 a b) c 
   AssocPlusR1   :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
                    Plus1 (Plus1 a b) c :<=> Plus1 a (Plus1 b c) 
-  Curry1 :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
-            (Plus1 a b :<=> c) -> (a :<=> Lolli1 b c)
-  Uncurry1 :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
-              (a :<=> Lolli1 b c) -> (Plus1 a b :<=> c)
   Dual :: (a ~ (ap :- am)) => a :<=> Dual1 a
+
+{-- 
+
+Adding:
+
   Eta :: Zero1 :<=> (ap :- ap)
   Epsilon :: (ap :- ap) :<=> Zero1
 
-{-- Not sure if Eta/Epsilon are the right thing in this context. They do
-allow to introduce a 2-path between any 1-path : t -> t and refl_t. If correct, one of the nice things is that we get 2-paths between c;refl and c !!! --}
+eval1 Eta (Val1 ca) = Val1 { c = Id } 
+eval1 Epsilon (Val1 ca) = Val1 { c = Id } 
+
+is definitely wrong as it would allow us to introduce a 2-path 
+between any 1-path : t -> t and refl_t. 
 
 allid :: (a :- a) :<=> (a :- a)
 allid = Epsilon :..: Eta
 
--- Not compact closed yet... need to iterate this construction for every
--- so curry/uncurry, name/coname, compose/apply, etc won't work just yet
--- remember that we only have 2nd-order functions...
+This would identify id and not on Bool. 
+
+Similarly we are not compact closed yet so 
+
+  Curry1 :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
+            (Plus1 a b :<=> c) -> (a :<=> Lolli1 b c)
+
+  Uncurry1 :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
+              (a :<=> Lolli1 b c) -> (Plus1 a b :<=> c)
+
+as well as name/coname, compose/apply, etc. won't work just yet.
+   
+--}
 
 data Val1 p = Val1 { c :: Neg p :<-> Pos p }
 
@@ -106,36 +125,32 @@ eval1 Id1 v = v
 eval1 (Sym1 c) v = eval1B c v
 eval1 (c1 :..: c2) v = eval1 c2 (eval1 c1 v)
 eval1 PlusZeroL1 (Val1 c0) = 
-  -- c0 :: 0+am <-> 0+ap
-  -- want :: am <-> ap
   Val1 { c = PlusZeroR :.: c0 :.: PlusZeroL }
-eval1 PlusZeroR1 v = undefined
+eval1 PlusZeroR1 (Val1 c0) = 
+  Val1 { c = PlusZeroL :.: c0 :.: PlusZeroR }
 eval1 CommutePlus1 (Val1 c0) = 
-  -- c0 :: am+bm <-> ap+bp
-  -- want :: bm+am <-> bp+ap
   Val1 { c = CommutePlus :.: c0 :.: CommutePlus } 
-eval1 AssocPlusL1 v = undefined
-eval1 AssocPlusR1 v = undefined
-eval1 (Curry1 c1) (Val1 ca) = undefined
--- (Plus1 a b :<=> c) -> (a :<=> Lolli1 b c)
-eval1 (Uncurry1 c) (Val1 ca) = undefined
---  Uncurry1 :: (a :<=> Lolli1 b c) -> (Plus1 a b :<=> c)
+eval1 AssocPlusL1 (Val1 c0) =
+  Val1 { c = AssocPlusR :.: c0 :.: AssocPlusL }
+eval1 AssocPlusR1 (Val1 c0) =
+  Val1 { c = AssocPlusL :.: c0 :.: AssocPlusR }
 eval1 Dual (Val1 ca) = Val1 { c = Sym ca }
-eval1 Eta (Val1 ca) = Val1 { c = Id } 
--- Eta :: Zero1 :<=> (ap :- ap)
-eval1 Epsilon (Val1 ca) = Val1 { c = Id } 
--- Epsilon :: (ap :- ap) :<=> Zero1
 
 eval1B :: (a ~ (ap :- am), b ~ (bp :- bm)) => 
           (a :<=> b) -> Val1 b -> Val1 a
 eval1B Id1 v = v
 eval1B (Sym1 c) v = eval1 c v
-eval1B (c1 :..: c2) v = undefined
-eval1B PlusZeroL1 v = undefined
-eval1B PlusZeroR1 v = undefined
-eval1B CommutePlus1 v = undefined
-eval1B AssocPlusL1 v = undefined
-eval1B AssocPlusR1 v = undefined
+eval1B (c1 :..: c2) v = eval1B c1 (eval1B c2 v)
+eval1B PlusZeroL1 (Val1 c0) =
+  Val1 { c = PlusZeroL :.: c0 :.: PlusZeroR }
+eval1B PlusZeroR1 (Val1 c0) =
+  Val1 { c = PlusZeroR :.: c0 :.: PlusZeroL }
+eval1B CommutePlus1 (Val1 c0) =
+  Val1 { c = CommutePlus :.: c0 :.: CommutePlus }
+eval1B AssocPlusL1 (Val1 c0) =
+  Val1 { c = AssocPlusL :.: c0 :.: AssocPlusR }
+eval1B AssocPlusR1 (Val1 c0) =
+  Val1 { c = AssocPlusR :.: c0 :.: AssocPlusL }
 eval1B Dual (Val1 ca) = Val1 { c = Sym ca }
 
 ------------------------------------------------------------------------------
