@@ -72,7 +72,7 @@ data a :<=> b where
   (:..:)        :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
                    (a :<=> b) -> (b :<=> c) -> (a :<=> c)
   (:++:)        :: 
-    (p ~ (a :- b), q ~ (c :- d), r ~ (e :- f), s ~ (g :- h)) => 
+    -- (p ~ (a :- b), q ~ (c :- d), r ~ (e :- f), s ~ (g :- h)) => 
     (p :<=> q) -> (r :<=> s) -> (Plus1 p r :<=> Plus1 q s)
   PlusZeroL1    :: (a ~ (ap :- am)) => Plus1 Zero1 a :<=> a
   PlusZeroR1    :: (a ~ (ap :- am)) => a :<=> Plus1 Zero1 a
@@ -122,7 +122,8 @@ Not sure if I get a 2-path between c;id and c ???
 
 data Val1 p = Val1 { c :: Neg p :<-> Pos p }
 
-eval1 :: (a ~ (ap :- am), b ~ (bp :- bm)) => 
+-- eval1 :: (a ~ (ap :- am), b ~ (bp :- bm)) => 
+eval1 :: (Type1 a, Type1 b) =>
          (a :<=> b) -> Val1 a -> Val1 b
 eval1 Id1 v = v
 eval1 (Sym1 c1) v = eval1B c1 v
