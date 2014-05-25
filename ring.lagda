@@ -488,7 +488,7 @@ In anticipation of future developments, we will call the original types
 $\tau$ 0-dimensional and the new types $\patht$ 1-dimensional. The previous
 combinators all work on 0-dimensional types. A 0-level combinator $c : \tau_1
 \iso \tau_2$ on 0-dimensional types is a value of the 1-dimensional type
-$\patht{\tau_1}{\tau_2}$. We then essentially duplicate $\Pi$ one level up
+$\onepath{\tau_1}{\tau_2}$. We then essentially duplicate $\Pi$ one level up
 with lifted versions of the combinators to work on the 1-dimensional
 types. 
 
@@ -496,9 +496,9 @@ For convenience, the first order of business is to define a few abbreviations
 of 1-dimensional types:
 \[\begin{array}{rcl}
 \ztone &=& \onepath{0}{0} \\
-\otone &=& \onepath{1}{0} \\
+\otone &=& \onepath{0}{1} \\
 \ptone{(\onepath{\tau_1}{\tau_2})}{(\onepath{\tau_3}{\tau_4})} &= & 
-  \onepath{tau_1+\tau_3}{\tau_2+\tau_4} 
+  \onepath{(\tau_1+\tau_3)}{(\tau_2+\tau_4)} 
 \end{array}\]
 The level 1 combinators are now exactly identical to the combinators in
 Table~\ref{pi-combinators} changing all the 0 dimensional types $\tau$ to
@@ -507,15 +507,15 @@ $\ztone$, 1 by $\otone$, and $+$ by $\boxplus$. For reasons explained below,
 we have lost the multiplicative structure, so for now we only get the
 combinators that only mention additive types. 
 
-\todo{Discuss what this achieves in more detail.}
+\fbox{\todo{Discuss what this achieves in more detail.}}
 
 \paragraph*{The phony multiplication.} 
 The ``obvious'' definition of multiplication is:
-\[
-\ttone{(\onepath{\tau_1}{\tau_2})}{(\onepath{\tau_3}{\tau_4})} \quad=\quad
-  \onepath{((tau_1*\tau_3)+(\tau_2*\tau_4))}
-          {((tau_1*\tau_3)+(\tau_2*\tau_4))}
-\]
+\[\begin{array}{l}
+\ttone{(\onepath{\tau_1}{\tau_2})}{(\onepath{\tau_3}{\tau_4})} = \\
+\onepath{((\tau_1*\tau_3)+(\tau_2*\tau_4))}
+  {((\tau_1*\tau_3)+(\tau_2*\tau_4))}
+\end{array}\]
 This definition of multiplication is not functorial and this turns out to be
 intimately related to a well-known open problem in algebraic topology that
 goes back at least thirty years~\cite{thomason}. This problem was recently
