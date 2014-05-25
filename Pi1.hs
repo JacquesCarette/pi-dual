@@ -45,7 +45,7 @@ type Val0 a = a
 
 eval0 :: (a :<-> b) -> Val0 a -> Val0 b
 eval0 Id a = a
-eval0 c _ = error "I am not writing this again; get it from somewhere"
+eval0 c0 _ = error "I am not writing this again; get it from somewhere"
 
 ------------------------------------------------------------------------------
 -- Pi1 
@@ -124,9 +124,10 @@ data Val1 p = Val1 { c :: Neg p :<-> Pos p }
 eval1 :: (a ~ (ap :- am), b ~ (bp :- bm)) => 
          (a :<=> b) -> Val1 a -> Val1 b
 eval1 Id1 v = v
-eval1 (Sym1 c) v = eval1B c v
+eval1 (Sym1 c1) v = eval1B c1 v
 eval1 (c1 :..: c2) v = eval1 c2 (eval1 c1 v)
-eval1 (c1 :++: c2) v = error "is that possible?"
+eval1 (c1 :++: c2) (Val1 c0) = 
+  Val1 { c = undefined }
 eval1 PlusZeroL1 (Val1 c0) = 
   Val1 { c = PlusZeroR :.: c0 :.: PlusZeroL }
 eval1 PlusZeroR1 (Val1 c0) = 
@@ -142,7 +143,7 @@ eval1 Dual (Val1 ca) = Val1 { c = Sym ca }
 eval1B :: (a ~ (ap :- am), b ~ (bp :- bm)) => 
           (a :<=> b) -> Val1 b -> Val1 a
 eval1B Id1 v = v
-eval1B (Sym1 c) v = eval1 c v
+eval1B (Sym1 c1) v = eval1 c1 v
 eval1B (c1 :..: c2) v = eval1B c1 (eval1B c2 v)
 eval1B (c1 :++: c2) v = undefined
 eval1B PlusZeroL1 (Val1 c0) =
