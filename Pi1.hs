@@ -66,15 +66,27 @@ instance Type1 (ap :- am) where
   type Lolli1 (ap :- am) (bp :- bm) = (Either am bp) :- (Either ap bm)
 
 data a :<=> b where 
-  Id1           :: a :<=> a
-  Sym1          :: (a :<=> b) -> (b :<=> a) 
-  (:..:)        :: (a :<=> b) -> (b :<=> c) -> (a :<=> c)
-  (:++:)        :: (a :<=> b) -> (c :<=> d) -> (Either a c :<=> Either b d)
-  PlusZeroL1    :: Plus1 Zero1 a :<=> a
-  PlusZeroR1    :: a :<=> Plus1 Zero1 a
-  CommutePlus1  :: Plus1 a b :<=> Plus1 b a
-  AssocPlusL1   :: Plus1 a (Plus1 b c) :<=> Plus1 (Plus1 a b) c 
-  AssocPlusR1   :: Plus1 (Plus1 a b) c :<=> Plus1 a (Plus1 b c) 
+  Id1           :: (a ~ (ap :- am)) => a :<=> a
+  Sym1          :: (a ~ (ap :- am), b ~ (bp :- bm)) => (a :<=> b) -> (b :<=> a) 
+  (:..:)        :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
+                   (a :<=> b) -> (b :<=> c) -> (a :<=> c)
+  (:++:)        :: 
+    (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm), d ~ (dp :- dm)) => 
+    (a :<=> b) -> (c :<=> d) -> (Either a c :<=> Either b d)
+  PlusZeroL1    :: (a ~ (ap :- am)) => Plus1 Zero1 a :<=> a
+  PlusZeroR1    :: (a ~ (ap :- am)) => a :<=> Plus1 Zero1 a
+  CommutePlus1  :: (a ~ (ap :- am), b ~ (bp :- bm)) => Plus1 a b :<=> Plus1 b a
+  AssocPlusL1   :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
+                   Plus1 a (Plus1 b c) :<=> Plus1 (Plus1 a b) c 
+  AssocPlusR1   :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
+                   Plus1 (Plus1 a b) c :<=> Plus1 a (Plus1 b c) 
+  Curry1 :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
+            (Plus1 a b :<=> c) -> (a :<=> Lolli1 b c)
+  Uncurry1 :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
+              (a :<=> Lolli1 b c) -> (Plus1 a b :<=> c)
+  Dual :: (a ~ (ap :- am)) => a :<=> Dual1 a
+  Eta :: Zero1 :<=> (ap :- ap)
+  Epsilon :: (ap :- ap) :<=> Zero1
 
 data Val1 p = Val1 { c :: Neg p :<-> Pos p }
 
@@ -82,17 +94,27 @@ eval1 :: (a ~ (ap :- am), b ~ (bp :- bm)) =>
          (a :<=> b) -> Val1 a -> Val1 b
 eval1 Id1 v = v
 eval1 (Sym1 c) v = eval1B c v
-eval1 (c1 :..: c2) v = undefined
+eval1 (c1 :..: c2) v = eval1 c2 (eval1 c1 v)
 eval1 PlusZeroL1 (Val1 c0) = 
-    -- c :: 0+am <-> 0+ap
-    -- we want :: am <-> ap
-    Val1 {
-       c = PlusZeroR :.: c0 :.: PlusZeroL
-    }
+  -- c0 :: 0+am <-> 0+ap
+  -- want :: am <-> ap
+  Val1 { c = PlusZeroR :.: c0 :.: PlusZeroL }
 eval1 PlusZeroR1 v = undefined
-eval1 CommutePlus1 v = undefined
+eval1 CommutePlus1 (Val1 c0) = 
+  -- c0 :: am+bm <-> ap+bp
+  -- want :: bm+am <-> bp+ap
+  Val1 { c = CommutePlus :.: c0 :.: CommutePlus } 
 eval1 AssocPlusL1 v = undefined
 eval1 AssocPlusR1 v = undefined
+eval1 (Curry1 c1) (Val1 ca) = undefined
+-- (Plus1 a b :<=> c) -> (a :<=> Lolli1 b c)
+eval1 (Uncurry1 c) (Val1 ca) = undefined
+--  Uncurry1 :: (a :<=> Lolli1 b c) -> (Plus1 a b :<=> c)
+eval1 Dual (Val1 ca) = Val1 { c = Sym ca }
+eval1 Eta (Val1 ca) = Val1 { c = Id } 
+-- Eta :: Zero1 :<=> (ap :- ap)
+eval1 Epsilon (Val1 ca) = Val1 { c = Id } 
+-- Epsilon :: (ap :- ap) :<=> Zero1
 
 eval1B :: (a ~ (ap :- am), b ~ (bp :- bm)) => 
           (a :<=> b) -> Val1 b -> Val1 a
@@ -104,5 +126,6 @@ eval1B PlusZeroR1 v = undefined
 eval1B CommutePlus1 v = undefined
 eval1B AssocPlusL1 v = undefined
 eval1B AssocPlusR1 v = undefined
+eval1B Dual (Val1 ca) = Val1 { c = Sym ca }
 
 ------------------------------------------------------------------------------
