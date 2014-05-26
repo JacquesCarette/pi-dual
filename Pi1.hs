@@ -167,6 +167,33 @@ eval1B :: (Type1 p, Type1 q) =>
 eval1B = undefined
 {--
 eval1B Id1 (Val1 c) a = eval0B c a
+data Val1 p = Val1 { c :: Neg p :<-> Pos p }
+
+-- eval1 :: (a ~ (ap :- am), b ~ (bp :- bm)) => 
+eval1 :: (a :<=> b) -> Val1 a -> Val1 b
+eval1 Id1 v = v
+eval1 (Sym1 c1) v = eval1B c1 v
+eval1 (c1 :..: c2) v = eval1 c2 (eval1 c1 v)
+eval1 (alpha :++: beta) (Val1 pOPLUSr) = 
+  -- alpha   :: p => q where p : a -> b, q : c -> d
+  -- beta    :: r => s where r : e -> f, s : g -> h
+  -- pOPLUSr :: a+e -> b+f
+  -- want    :: c+g -> h+d
+  error "is that possible?"
+eval1 PlusZeroL1 (Val1 c0) = 
+  Val1 { c = PlusZeroR :.: c0 :.: PlusZeroL }
+eval1 PlusZeroR1 (Val1 c0) = 
+  Val1 { c = PlusZeroL :.: c0 :.: PlusZeroR }
+eval1 CommutePlus1 (Val1 c0) = 
+  Val1 { c = CommutePlus :.: c0 :.: CommutePlus } 
+eval1 AssocPlusL1 (Val1 c0) =
+  Val1 { c = AssocPlusR :.: c0 :.: AssocPlusL }
+eval1 AssocPlusR1 (Val1 c0) =
+  Val1 { c = AssocPlusL :.: c0 :.: AssocPlusR }
+
+-- eval1B :: (a ~ (ap :- am), b ~ (bp :- bm)) => 
+eval1B :: (a :<=> b) -> Val1 b -> Val1 a
+eval1B Id1 v = v
 eval1B (Sym1 c1) v = eval1 c1 v
 eval1B (c1 :..: c2) v = eval1B c1 (eval1B c2 v)
 eval1B (c1 :++: c2) v = undefined
