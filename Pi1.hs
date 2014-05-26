@@ -52,29 +52,26 @@ eval0 c0 _ = error "I am not writing this again; get it from somewhere"
 
 type family Pos p :: *
 type family Neg p :: *
-type family Zero1 :: *
-type family One1  :: *
 type family Plus1 q r :: *
 
 type instance Pos (ap :- am) = ap
 type instance Neg (ap :- am) = am
-type instance Zero1          = Zero :- Zero
-type instance One1           = () :- Zero
 type instance Plus1 (ap :- am) (bp :- bm) = (Either ap bp) :- (Either am bm)
-
-class Type1 (p :: * -> * -> *) q where
-  elimPlus1 :: (q a c -> r) -> (q b d -> s) -> (Plus1 (p a b) (p c d)) -> p r s
 
 data a :- b = a :- b
 
-instance Type1 (:-) Either where
-  elimPlus1 f g (a :- b)  = (f a) :- (g b)
+class T1 a b where
+  type Neg1 p :: * 
+
+type Zero1 = Zero :- Zero
+type One1  = ()   :- Zero
 
 data a :<=> b where 
-  Id1           :: a :<=> a
-  Sym1          :: (a :<=> b) -> (b :<=> a) 
-  (:..:)        :: (a :<=> b) -> (b :<=> c) -> (a :<=> c)
-  (:++:)        :: (p ~ (a :- b), q ~ (c :- d), r ~ (e :- f), s ~ (g :- h)) =>
+  Id1           :: (a ~ (ap :- am)) => a :<=> a
+  Sym1          :: (a ~ (ap :- am), b ~ (bp :- bm)) => (a :<=> b) -> (b :<=> a) 
+  (:..:)        :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
+                   (a :<=> b) -> (b :<=> c) -> (a :<=> c)
+  (:++:)        :: (p ~ (a :- b), q ~ (c :- d), r ~ (e :- f), s ~ (g :- h)) => 
                    (p :<=> q) -> (r :<=> s) -> (Plus1 p r :<=> Plus1 q s)
   PlusZeroL1    :: (a ~ (ap :- am)) => Plus1 Zero1 a :<=> a
   PlusZeroR1    :: (a ~ (ap :- am)) => a :<=> Plus1 Zero1 a
@@ -162,5 +159,5 @@ eval1B AssocPlusL1 (Val1 c0) =
   Val1 { c = AssocPlusL :.: c0 :.: AssocPlusR }
 eval1B AssocPlusR1 (Val1 c0) =
   Val1 { c = AssocPlusR :.: c0 :.: AssocPlusL }
-
+--}
 ------------------------------------------------------------------------------

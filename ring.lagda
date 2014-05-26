@@ -16,6 +16,14 @@
 \usepackage{proof}
 \usepackage{graphicx}
 
+\newcommand{\todo}[1]{\textbf{Todo:} #1}
+
+\newcommand{\evalone}[2]{#1~\triangleright~#2}
+\newcommand{\evaloneb}[2]{#1~\triangleleft~#2}
+\newcommand{\eqdef}{\stackrel{\triangle}{=}}
+\newcommand{\onepath}[2]{#1 \rightarrow #2}
+\newcommand{\twopath}[2]{#1 \Rightarrow #2}
+\newcommand{\threepath}[2]{#1 \Rrightarrow #2}
 \newcommand{\refl}[1]{\textsf{refl}_{#1}}
 \newcommand{\seg}[1]{\textsf{seg}_{#1}}
 \newcommand{\bdim}[1]{\textsf{dim}(#1)}
@@ -26,12 +34,11 @@ $\displaystyle
 {\begin{array}{l}#3\\\end{array}}$
  #4}}
 \newcommand{\proves}{\vdash}
-\newcommand{\trace}[1]{\mathit{trace}~#1}
 \newcommand{\symc}[1]{\mathit{sym}~#1}
 \newcommand{\jdg}[3]{#2 \proves_{#1} #3}
 \newcommand{\adjoint}[1]{#1^{\dagger}}
 \newcommand{\iso}{\leftrightarrow}
-\newcommand{\isoone}{\stackrel{1}{\leftrightarrow}}
+\newcommand{\isoone}{\Leftrightarrow}
 \newcommand{\identlp}{\mathit{identl}_+}
 \newcommand{\identrp}{\mathit{identr}_+}
 \newcommand{\swapp}{\mathit{swap}_+}
@@ -56,6 +63,9 @@ $\displaystyle
 \newcommand{\inr}[1]{\textsf{inr}~#1}
 \newcommand{\lolli}{\multimap} 
 \newcommand{\cubt}{\mathbb{T}}
+\newcommand{\cubv}{\mathbb{V}}
+\newcommand{\cubc}{\mathbb{C}}
+\newcommand{\patht}{\mathbb{P}}
 \newcommand{\ztone}{\mathbb{0}}
 \newcommand{\otone}{\mathbb{1}}
 \newcommand{\ptone}[2]{#1 \boxplus #2}
@@ -153,7 +163,7 @@ $\displaystyle
 \lstset{rangeprefix=/*!\ , rangesuffix=\ !*\/, includerangemarker=false}
 
 %% double-blind reviewing...
-\title{Negative Types}
+\title{Polarized Cubical Types}
 \authorinfo{}{}{}
 \maketitle
 
@@ -174,24 +184,24 @@ open import Function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
+In a computational world in which the laws of physics are embraced and
+resources are carefully maintained (e.g., quantum
+computing~\cite{NC00,Abramsky:2004:CSQ:1018438.1021878}), programs must be
+reversible. Although this is apparently a limiting idea, it turns out that
+conventional computation can be viewed as a special case of such
+resource-preserving reversible programs. This thesis has been explored for
+many years from different
+perspectives~\cite{fredkin1982conservative,Toffoli:1980,bennett2010notes,bennett2003notes,Bennett:1973:LRC,Landauer:1961,Landauer}.
+We build on the work of James and
+Sabry~\citeyearpar{James:2012:IE:2103656.2103667} which expresses this thesis
+in a type theoretic computational framework, expressing computation via type
+isomorphisms.
+
 Make sure we introduce the abbreviation HoTT in the
 introduction~\cite{hottbook}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Computing with Type Isomorphisms}
-
-In a computational model in which resources are carefully maintained,
-programs are reduced to type isomorphisms. Although this is apparently a
-limiting idea, it turns out that conventional computation can be viewed as a
-special case of such resource-preserving isomorphisms that silently consumes
-some resources and discards others. This thesis has been explored for many
-years from different
-perspectives~\cite{fredkin1982conservative,Toffoli:1980,bennett2010notes,bennett2003notes,Bennett:1973:LRC,Landauer:1961,Landauer}.
-We build on the work of James and
-Sabry~\citeyearpar{James:2012:IE:2103656.2103667} which expresses this thesis in
-a type theoretic computational framework. Unlike the case for their
-development, we will however not consider recursive types in this paper but
-we will develop an extension with higher-order \emph{linear} functions.
 
 \begin{table*}[t]
 \[\begin{array}{cc}
@@ -232,11 +242,6 @@ we will develop an extension with higher-order \emph{linear} functions.
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad c_2 : \tau_3 \iso \tau_4}
 {\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
 {}
-\\ \bigskip
-\Rule{}
-{\jdg{}{}{c : \tau_1 \oplus \tau \iso \tau_2 \oplus \tau}}
-{\jdg{}{}{\trace{c} : : \tau_1 \iso \tau_2}}
-{}
 \end{center}
 \end{minipage}
 \end{array}\]
@@ -246,340 +251,242 @@ we will develop an extension with higher-order \emph{linear} functions.
 The main syntactic vehicle for the developments in this paper is a simple
 language called $\Pi$ whose only computations are isomorphisms between finite
 types. The set of types $\tau$ includes the empty type 0, the unit type 1,
-and conventional sum and product types:
-\[\begin{array}{rcl}
-\tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 
+and conventional sum and product types. The values of these are the
+conventional ones: \lstinline|()| of type 1, $\inl{v}$ and $\inr{v}$ for
+injections into sum types, and $(v_1,v_2)$ for product types:
+\[\begin{array}{lrcl}
+(\textit{Types}) & 
+  \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
+(\textit{Values}) & 
+  v &::=& () \alt \inl{v} \alt \inr{v} \alt (v_1,v_2) \\
+(\textit{Combinator types}) &&& \tau_1 \iso \tau_2 \\
+(\textit{Combinators}) & 
+  c &::=& [\textit{see Table~\ref{pi-combinators}}]
 \end{array}\]
-Values $v$ are the expected ones: \lstinline|()| of type 1, $\inl{v}$ and
-$\inr{v}$ for injections into sum types, and $(v_1,v_2)$ for product
-types.
-
 The interesting syntactic category of $\Pi$ is that of \emph{combinators}
-which are witnesses for type isomorphisms of the form $b \iso b$. They
-consist of base isomorphisms (on the left side of Table~\ref{pi-combinators})
-and compositions (on the right side of the same table). Each line of the
-table on the left introduces a pair of dual constants\footnote{where $\swapp$
-  and $\swapt$ are self-dual.} that witness the type isomorphism in the
+which are witnesses for type isomorphisms $\tau_1 \iso \tau_2$. They consist
+of base combinators (on the left side of Table~\ref{pi-combinators}) and
+compositions (on the right side of the same table). Each line of the table on
+the left introduces a pair of dual constants\footnote{where $\swapp$ and
+  $\swapt$ are self-dual.} that witness the type isomorphism in the
 middle. This set of isomorphisms is known to be
 complete~\cite{Fiore:2004,fiore-remarks} and the language is universal for
-hardware combinational circuits~\cite{James:2012:IE:2103656.2103667}.  Note
-that we have $\trace{c}$ which in the current setting is a bounded iteration
-construct: it adds no expressiveness for now but will be important to model
-functions later. If recursive types are added, the bounded iteration becomes
-Turing-complete~\cite{James:2012:IE:2103656.2103667,rc2011} but we will not
-be concerned with recursive types in this paper.
+hardware combinational circuits~\cite{James:2012:IE:2103656.2103667}.  If
+recursive types and a trace operator (i.e., looping construct) are added, the
+language becomes Turing-complete~\cite{James:2012:IE:2103656.2103667,rc2011}
+but we will not be concerned with recursive types in this paper.
 
 From the perspective of category theory, the language $\Pi$ models what is
 called a \emph{symmetric bimonoidal category} or a \emph{commutative rig
   category}. These are categories with two binary operations $\oplus$ and
 $\otimes$ satisfying the axioms of a rig (i.e., a ring without negative
 elements also known as a semiring) up to coherent isomorphisms. And indeed
-the combinators of $\Pi$ are precisely the semiring axioms. A simple
-(slightly degenerate) example of such categories is the category of finite
-sets and permutations. Indeed, it is possible to interpret every $\Pi$-type
-as a finite set, the values as elements in these finite sets, and the
-combinators as permutations.
-
-The previous interpretation of $\Pi$, although valid, misses the point of
-taking isomorphisms seriously as \emph{the} essence of computation. Luckily,
-an impressive amount of work has been happening in HoTT that builds around
-the computational content of equalities, equivalences, and isomorphisms. We
-discuss our HoTT re-interpretation of $\Pi$ semantics after we briefly review
-some of the essential concepts. The definitive reference is the recently
-published comprehensive book~\cite{hottbook}.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Condensed Background on HoTT}
-\label{hott}
-
-Informally, and as a first approximation, one may think of HoTT as
-mathematics, type theory, or computation but with all equalities replaced by
-isomorphisms, i.e., with equalities given computational content. We explain
-some of the basic ideas below.
-
-One starts with Martin-L\"of type theory, interprets the types as topological
-spaces or weak $\infty$-groupoids, and interprets identities between elements
-of a type as \emph{paths}.  In more detail, one interprets the witnesses of
-the identity $x \equiv y$ as paths from $x$ to $y$. If $x$ and $y$ are
-themselves paths, then witnesses of the identity $x \equiv y$ become paths
-between paths, or homotopies in the topological language. In Agda notation,
-we can formally express this as follows:
-
-\medskip
-\begin{code}
-data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
-  refl : (a : A) → (a ≡ a)
-
-i0 : 3 ≡ 3
-i0 = refl 3
-
-i1 : (1 + 2) ≡ (3 * 1)
-i1 = refl 3
-
-i2 : ℕ ≡ ℕ
-i2 = refl ℕ
-\end{code}
-\medskip
-
-\noindent It is important to note that the notion of proposition
-equality~$\equiv$ relates any two terms that are \emph{definitionally equal}
-as shown in example \AgdaFunction{i1} above. In general, there may be
-\emph{many} proofs (i.e., paths) showing that two particular values are
-identical and that proofs are not necessarily identical. This gives rise to a
-structure of great combinatorial complexity. To be explicit, we will use
-$\equiv_U$ to refer to the space in which the path lives.
-
-We are used to thinking of types as sets of values. So we typically view the
-type \AgdaPrimitiveType{Bool} as the figure on the left but in HoTT we should
-instead think about it as the figure on the right:
-\[
-\begin{tikzpicture}[scale=0.7]
-  \draw (0,0) ellipse (2cm and 1cm);
-  \draw[fill] (-1,0) circle (0.025);
-  \node[below] at (-1,0) {false};
-  \draw[fill] (1,0) circle (0.025);
-  \node[below] at (1,0) {true};
-\end{tikzpicture}
-\qquad\qquad
-\begin{tikzpicture}[scale=0.7]
-  \draw (0,0) ellipse (2cm and 1cm);
-  \draw[fill] (-1,0) circle (0.025);
-  \draw[->,thick,cyan] (-1,0) arc (0:320:0.2);
-  \node[above right] at (-1,0) {false};
-  \draw[fill] (1,-0.2) circle (0.025);
-  \draw[->,thick,cyan] (1,-0.2) arc (0:320:0.2);
-  \node[above right] at (1,-0.2) {true};
-\end{tikzpicture}
-\]
-In this particular case, it makes no difference, but in general we may have a
-much more complicated path structure. 
-
-
-We cannot generate non-trivial groupoids starting from the usual type
-constructions. We need \emph{higher-order inductive types} for that purpose.
-The classical example is the \emph{circle} that is a space consisting of a
-point \AgdaFunction{base} and a path \AgdaFunction{loop} from
-\AgdaFunction{base} to itself. As stated, this does not amount to
-much. However, because paths carry additional structure (explained below),
-that space has the following non-trivial structure:
-
-\begin{center}
-\begin{tikzpicture}[scale=0.78]
-  \draw (0,0) ellipse (5.5cm and 2.5cm);
-  \draw[fill] (0,0) circle (0.025);
-  \draw[->,thick,red] (0,0) arc (90:440:0.2);
-  \node[above,red] at (0,0) {refl};
-  \draw[->,thick,cyan] (0,0) arc (-180:140:0.7);
-  \draw[->,thick,cyan] (0,0) arc (-180:150:1.2);
-  \node[left,cyan] at (1.4,0) {loop};
-  \node[right,cyan] at (2.4,0) {loop $\circ$ loop $\ldots$};
-  \draw[->,thick,blue] (0,0) arc (360:40:0.7);
-  \draw[->,thick,blue] (0,0) arc (360:30:1.2);
-  \node[right,blue] at (-1.4,0) {!~loop};
-  \node[left,blue] at (-2.4,0) {$\ldots$ !~loop $\circ$ !~loop};
-\end{tikzpicture}
-\end{center}
-
-The additional structure of types is formalized as follows. Let $x$, $y$, and
-$z$ be elements of some $U$:
-\begin{itemize}
-\item For every path $p : x \equiv_U y$, there exists a path $! p : y
-  \equiv_U x$;
-\item For every $p : x \equiv_U y$ and $q : y \equiv_U z$, there exists a
-  path $p \circ q : x \equiv_U z$;
-\item Subject to the following conditions:
- \[\begin{array}{rcl}
-  p \circ \mathit{refl}~y &\equiv_{{x \equiv_U y}} & p \\
-  p &\equiv_{{x \equiv_U y}} & \mathit{refl}~x \circ p \\
-  !p \circ p &\equiv_{{y \equiv_U y}} & \mathit{refl}~y \\
-  p ~\circ~ !p &\equiv_{{x \equiv_U x}} & \mathit{refl}~x \\
-  !~(!p) &\equiv_{{x \equiv_U y}} & p \\
-  p \circ (q \circ r) &\equiv_{{x \equiv_U z}} & (p \circ q) \circ r
- \end{array}\]
-\item With similar conditions one level up and so on and so forth.
-\end{itemize}
+the types of the $\Pi$-combinators are precisely the semiring axioms. A
+simple (slightly degenerate) example of such categories is the category of
+finite sets and permutations. Indeed, it is possible to interpret every
+$\Pi$-type as a finite set, the values as elements in these finite sets, and
+the combinators as permutations. This interpretation of $\Pi$, although
+valid, misses the point of taking isomorphisms seriously as \emph{the}
+essence of computation. Luckily, an impressive amount of work has been
+happening in HoTT that builds around the computational content of equalities,
+equivalences, and isomorphisms, and this work will enable us to develop a
+more accurate model of $\Pi$ that also supports higher-order functions and
+that additionally resolves some issues regarding the computational
+interpretation of functional extensionality and the univalence axiom of
+HoTT. For the readers familiar with the basic ideas of HoTT, a good intuition
+to keep in mind --- to be further justified and explained in the remainder of
+the paper -- is that the $\Pi$-combinators are syntax for \emph{paths} in
+HoTT, and hence that computation in $\Pi$ is nothing more than following
+paths in some complex combinatorial space.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Space of $\Pi$-Types}
+\section{The Int-Construction}
 
-Instead of modeling the semantics of $\Pi$ using \emph{permutations}, which
-are are set-theoretic functions after all, we use \emph{paths} from the HoTT
-framework. More precisely, we model the universe of $\Pi$ types as a space
-whose points are the individual $\Pi$-types and we will consider that there
-is path between two points $\tau_1$ and $\tau_2$ if there is a $\Pi$
-combinator $c : \tau_1 \iso \tau_2$. If we focus on 1-paths, this is perfect
-as we explain next. 
-
-\paragraph*{Note.} 
-But first, we note that this is a significant deviation from the HoTT
-framework which fundamentally includes functions, which are specialized to
-equivalences, which are then postulated to be paths by the univalence
-axiom. This axiom has no satisfactory computational interpretation,
-however. Instead we completely bypass the idea of extensional functions and
-use paths directly. Another way to understanding what is going on is the
-following. In the conventional HoTT framework:
-\begin{itemize}
-\item We start with two different notions: paths and functions;
-\item We use extensional non-constructive methods to identify a
-particular class of functions that form isomorphisms;
-\item We postulate that this particular class of functions can be
-identified with paths.
-\end{itemize}
-In our case, 
-\begin{itemize}
-\item We start with a constructive characterization of \emph{reversible
-  functions} or \emph{isomorphisms} built using inductively defined
-  combinators; 
-\item We blur the distinction between such combinators and paths from the
-  beginning. We view computation as nothing more than \emph{following paths}!
-  As explained earlier, although this appears limiting, it is universal and
-  regular computation can be viewed as a special case of that.
-\end{itemize}
-
-\paragraph*{Construction.} 
-We have a universe $U$ viewed as a groupoid whose points are the types
-$\Pi$-types $\tau$. The $\Pi$-combinators of Table~\ref{pi-combinators} are
-viewed as syntax for the paths in the space $U$. We need to show that the
-groupoid path structure is faithfully represented. The combinator $\idc$
-introduces all the $\refl{\tau} : \tau \equiv \tau$ paths in $U$. The adjoint
-$\symc{c}$ introduces an inverse path $!p$ for each path $p$ introduced by
-$c$. The composition operator $\fatsemi$ introduce a path $p \circ q$ for
-every pair of paths whose endpoints match. In addition, we get paths like
-$\swapp$ between $\tau_1+\tau_2$ and $\tau_2+\tau_1$. The existence of such
-paths in the conventional HoTT developed is \emph{postulated} by the
-univalence axiom. The $\otimes$-composition gives a path $(p,q) :
-(\tau_1*\tau_2) \equiv (\tau_3*\tau_4)$ whenever we have paths $p : \tau_1
-\equiv \tau_3$ and $q : \tau_2 \equiv \tau_4$. A similar situation for the
-$\oplus$-composition. The structure of these paths must be discovered and
-these paths must be \emph{proved} to exist using path induction in the
-conventional HoTT development. So far, this appears too good to be true, and
-it is. The problem is that paths in HoTT are subject to rules discussed at
-the end of Sec.~\ref{hott}. For example, it must be the case that if $p :
-\tau_1 \equiv_U \tau_2$ that $(p \circ \refl{\tau_2})
-\equiv_{\tau_1\equiv_U\tau_2} p$.  This path lives in a higher universe:
-nothing in our $\Pi$-combinators would justify adding such a path as all our
-combinators map types to types. No combinator works one level up at the space
-of combinators and there is no such space in the first place. Clearly we are
-stuck unless we manage to express a notion of higher-order functions in
-$\Pi$. This would allow us to internalize the type $\tau_1\iso\tau_2$ as a
-$\Pi$-type which is then manipulated by the same combinators one level higher
-and so on.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The \textbf{Int} Construction} 
-
-The \textbf{Int} construction~\cite{joyal1996traced} or the closely related
-$\mathcal{G}$ construction~\cite{gcons} are fascinating ideas. As
-Krishnaswami~\citeyearpar{neelblog} explains, given first-order types and
-feedback, it is possible to higher-order \emph{linear} functions. The key
-insight it to enrich types to be of the shape $(\tau_1 - \tau_2)$ which
-represent a sum type of $\tau_1$ flowing in the ``normal'' direction (from
-producers to consumers) and $\tau_2$ flowing backwards (representing
-\emph{demands} for values). This is expressive enough to represent functions
-which are viewed as expressions that convert a demand for an argument to the
-production of a result. Since we already have $\trace{c}$ to provide
-feedback, the next immediate step is extend the $\Pi$ types as follows:
-\[\begin{array}{rcl}
-\tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
-\cubt &::=& \tau_1-\tau_2
-\end{array}\]
-
-In anticipation of future developments, we will call the original types
-$\tau$ 0-dimensional and the new types $\cubt$ 1-dimensional. The previous
-combinators all work on 0-dimensional types. The punchline will be that a
-0-level combinator $c : \tau_1 \iso \tau_2$ on 0-dimensional types can be
-expressed as a value $v_c$ of the 1-dimensional type
-$\tau_2-\tau_1$. Furthermore, we will have lifted versions of most of the
-combinators to work on the 1-dimensional types. These lifted versions will
-allow us to manipulate combinators on 0-dimensional types as first-class
-values.
-
-Before we define the construction in any detail, let's take one simple
-example $\identlp : 0+1 \iso 1$ and see how to represent as a value of type
-$1-(0+1)$. We visually represent the type itself as a line with 0-dimensional
-types attached at the endpoints (which are distinguished by polarities):
-\begin{center}
-\begin{tikzpicture}
-\node[above] at (0,0) {\pp};
-\draw[fill] (0,0) circle [radius=0.05];
-\node[above] at (2.6,0) {\mm};
-\draw[fill] (2.6,0) circle [radius=0.05];
-\draw[-,dotted] (0,0) -- (2.6,0);
-\draw (0,-1.1) ellipse (0.5cm and 1cm);
-\draw (2.6,-1.1) ellipse (0.5cm and 1cm);
-\node at (0,-1.1) {1};
-\node at (2.6,-1.1) {0+1};
-\end{tikzpicture}
+\begin{table*}[t]
+\[\begin{array}{cc}
+\begin{array}{rrcll}
+\identlp :&  (0-0) \boxplus \cubt & \isoone & \cubt &: \identrp \\
+\swapp :&  \cubt_1 \boxplus \cubt_2 & \isoone & \cubt_2 \boxplus \cubt_1 &: \swapp \\
+\assoclp :&  \cubt_1 \boxplus (\cubt_2 \boxplus \cubt_3) & \isoone & (\cubt_1 \boxplus \cubt_2) \boxplus \cubt_3 &: \assocrp 
+\end{array}
+& 
+\begin{minipage}{0.5\textwidth}
+\begin{center} 
+\Rule{}
+{}
+{\jdg{1}{}{\idc : \cubt \isoone \cubt}}
+{}
+\qquad
+\Rule{}
+{\jdg{1}{}{\cubc : \cubt_1 \isoone \cubt_2}}
+{\jdg{1}{}{\symc{\cubc} : \cubt_2 \isoone \cubt_1}}
+{}
+\\ \bigskip
+\Rule{}
+{\jdg{1}{}{\cubc_1 : \cubt_1 \isoone \cubt_2} \quad \cubc_2 : \cubt_2 \isoone \cubt_3}
+{\jdg{1}{}{\cubc_1 \fatsemi \cubc_2 : \cubt_1 \isoone \cubt_3}}
+{}
+\\ \bigskip
+\Rule{}
+{\jdg{1}{}{\cubc_1 : \cubt_1 \isoone \cubt_2} \quad \cubc_2 : \cubt_3 \isoone \cubt_4}
+{\jdg{1}{}{\cubc_1 \oplus \cubc_2 : \cubt_1 \boxplus \cubt_3 \isoone \cubt_2 \boxplus \cubt_4}}
+{}
 \end{center}
-The value representing $\identlp$ is simply:
-\begin{center}
-\begin{tikzpicture}
-\node[above] at (0,0) {\pp};
-\draw[fill] (0,0) circle [radius=0.05];
-\node[above] at (2.6,0) {\mm};
-\draw[fill] (2.6,0) circle [radius=0.05];
-\draw[-,dotted] (0,0) -- (2.6,0);
-\draw (0,-1.1) ellipse (0.5cm and 1cm);
-\draw (2.6,-1.1) ellipse (0.5cm and 1cm);
-\draw[->,thick,blue] (2.0,-1.1) -- (0.6,-1.1);
-\node[above] at (1.3,-1.1) {$\identlp$};
-\node at (0,-1.1) {1};
-\node at (2.6,-1.1) {0+1};
-\end{tikzpicture}
-\end{center}
-This entire package is a value, an atomic entity with invisible internal
-structure and that can only be manipulated via the level 1 combinators
-described next.
-
-The next order of business is to define a few abbreviations of 1-dimensional
-types:
-\[\begin{array}{rcl}
-\ztone &=& 0 - 0 \\
-\otone &=& 1 - 0 \\
-\ptone{(\tau_1-\tau_2)}{(\tau_3-\tau_4)} &= & (\tau_1+\tau_3)-(\tau_2+\tau_4)\\
-\ttone{(\tau_1-\tau_2)}{(\tau_3-\tau_4)} &= & 
-  ((\tau_1*\tau_3)+(\tau_2*\tau_4))- \\
-  && ((\tau_1*\tau_4)+(\tau_2*\tau_3))
+\end{minipage}
 \end{array}\]
-The level 1 combinators are now exactly identical to the combinators in
-Table~\ref{pi-combinators} changing all the 0 dimensional types $\tau$ to 1
-dimensional types $\cubt$ and hence replacing all occurrences of 0 by
-$\ztone$, 1 by $\otone$, $+$ by $\boxplus$, and $*$ by $\boxtimes$. 
+\caption{1d combinators\label{combinators1}}
+\end{table*}
 
-Most of the time, the level 1 combinators are oblivious to the fact that they
-are manipulating first class functions. Formally, the action of a level 1
-combinator of type $(\tau_1-\tau_2) \isoone (\tau_3-\tau_4)$ is derived from
-the action of 0 level combinators of type $(\tau_1+\tau_4) \iso
-(\tau_3+\tau_2)$. Thus to take a trivial example $\identlp^1 : \ztone
-\boxplus \cubt \isoone \cubt$ is realized as $\assocrp \fatsemi (\idc \oplus
-\swapp) \fatsemi \assoclp$ which evidently knows nothing specific about
-higher order functions. The interesting idea is that it is possible to define
-a new level 1 combinator that exposes the internal structure of values as
-functions:
-\[\begin{array}{rrcll}
-\eta :&  0-0 & \isoone & \tau - \tau &: \varepsilon 
+Our immediate technical goal is to extend $\Pi$ with a notion of higher-order
+functions. In the context of monoidal categories, it is known that a notion
+of higher-order functions emerges from having an additional degree of
+\emph{symmetry}. In particular, the \textbf{Int}-construction of Joyal,
+Street, and Verity~\citeyearpar{joyal1996traced} or the closely related
+$\mathcal{G}$ construction of linear logic~\cite{gcons} construct
+higher-order \emph{linear} functions by considering a new category built on
+top of a given base monoidal category. The objects of the new category are of
+the form $(\tau_1-\tau_2)$ where~$\tau_1$ and~$\tau_2$ are objects in the
+base category. Intuitively, the component $\tau_1$ is viewed as a
+conventional type whose elements represent values flowing, as usual, from
+producers to consumers. The component $\tau_2$ is viewed as a \emph{negative
+  type} whose elements represent demands for values or equivalently values
+flowing backwards. Under this interpretation, a function is nothing but an
+object that converts a demand for an argument into the production of a
+result.
+
+We therefore begin our development by extending $\Pi$ with a new universe of
+types $\cubt$ that includes the composite types $(\tau_1-\tau_2)$. Naturally,
+this new layer of types should have appropriate notions of sum and product
+types to be computationally interesting. As discussed near the end of this
+section, product types will require a much more extensive construction to be
+developed in the remainder of the paper. Thus, for the moment, we confine our
+discussion to sum types in the new universe of types:
+\[\begin{array}{lrcl}
+(\textit{{1d} types}) & 
+  \cubt &::=& (\tau_1-\tau_2) \alt \cubt_1 \boxplus \cubt_2 
 \end{array}\]
-What this does is essentially provide an input and output port which are
-connected by the internal hidden function.
+In anticipation of future developments, we will refer to the original types
+$\tau$ as 0-dimensional (0d) types and to the new types $\cubt$ as
+1-dimensional (1d) types. The combinators of Table~\ref{pi-combinators} all
+work on 0d types. These 0d combinators will be the base \emph{values} of 1d
+types and will be manipulated by a new layer of 1d combinators:
+\[\begin{array}{lrcl}
+(\textit{{1d} values}) & \cubv &::=& 
+  c \alt \inl{\cubv} \alt \inr{\cubv} \\
+(\textit{{1d} Combinator types}) &&& \cubt_1 \isoone \cubt_2 \\
+(\textit{{1d} combinators}) & \cubc &::=& 
+  [\textit{see Table~\ref{combinators1}}]
+\end{array}\]
+We use the same names for the 0d and 1d combinators which should not lead to
+confusion as the types will always be clear from context. The new layer of 1d
+combinators consists of lifted versions of all the 0d combinators that do not
+refer to product types. The lifting of the empty type 0 is the type $(0-0)$
+which is no longer empty since we have (at least) $\idc : 0 \iso 0$. We
+return to this subtle point below.
 
-The problem is that the obvious definition of multiplication is not
-functorial. This turns out to be intimately related to a well-known open
-problem in algebraic topology that goes back at least thirty
-years~\cite{thomason}.
+The 1d values have the following type rules:
 
-But if you do the construction on the additive structure, you lose the
-multiplicative structure. It turns out that this is related to a deep problem
-in algebraic topology and homotopy theory identified in 1980~\cite{thomason}
-and that was recently solved~\cite{ringcompletion}. We ``translate'' that
-solution to a computational type-theoretic world. This has evident
-connections to homotopy (type) theory that we investigate in some depth.
+\medskip
+\begin{tabular}{c}
+\Rule{}
+{\jdg{}{}{c : \tau_1 \iso \tau_2}}
+{\jdg{1}{}{c : \tau_2 - \tau_1}}
+{}
+\\
+\Rule{}
+{\jdg{1}{}{\cubv : \cubt_1}}
+{\jdg{1}{}{\inl{\cubv} : \cubt_1 \boxplus \cubt_2}}
+{}
+\qquad
+\Rule{}
+{\jdg{1}{}{\cubv : \cubt_2}}
+{\jdg{1}{}{\inr{\cubv} : \cubt_1 \boxplus \cubt_2}}
+{}
+\end{tabular}
+\medskip
 
-The main ingredient of the recent solution to this problem can intuitively
-explained as follows. We regard conventional types as $0$-dimensional
-cubes. By adding composite types consisting of two types, the \textbf{Int}
-construction effectively creates 1-dimensional cubes (i.e., lines). The key
-to the general solution, and the approach we adopt here, is to generalize
-types to $n$-dimensional cubes.
+\noindent A 0d-combinator $\tau_1\iso\tau_2$ is viewed as a function
+demanding $\tau_1$ and producing $\tau_2$ which is encoded by putting
+$\tau_1$ in the negative position. The values $\inl{\cubv}$ and $\inr{\cubv}$
+are the usual injection into the sum type. Before presenting the formal
+semantics of the 1d level of $\Pi$, we consider a small example showing we
+can reason about equivalence of 0d combinators. Consider a 0d-combinator $c :
+\tau_1+\tau_2 \iso \tau_3+\tau_4$. In the 1d world, this combinator has type
+$(\tau_3+\tau_4)-(\tau_1+\tau_2)$.
+
+
+
+
+in the int construction the problem with 0 is avoided because boxplus expands
+to plus in the base category where the 0 cancels. we don't want to expand in
+the base category and lose the structure of paths. instead we add a new 2path
+that eliminates the 0-0
+
+we need combinator that use neg and that show that we have firstclass
+function (at least 2nd order). we need to show some identities on paths that are validated by the semantics
+
+
+The semantics consist of a pair of mutually recursive evaluators that take a
+1d combinator and a 1d value and either propagate the value in the
+``forward'' $\triangleright$ direction or in the ``backwards''
+$\triangleleft$ direction:
+\[\begin{array}{rlcl}
+\evalone{\identlp}{&(\inl{\cubv})} &=& ?? \\
+\evalone{\identlp}{&(\inr{\cubv})} &=& \cubv \\
+\evalone{\identrp}{&\cubv} &=& \inr{\cubv} \\
+\evalone{\swapp}{&(\inl{\cubv})} &=& \inr{\cubv} \\
+\evalone{\swapp}{&(\inr{\cubv})} &=& \inl{\cubv} \\
+\evalone{\assoclp}{&(\inl{\cubv})} &=& \inl{(\inl{\cubv})} \\
+\evalone{\assoclp}{&(\inr{(\inl{\cubv})})} &=& \inl{(\inr{\cubv})} \\
+\evalone{\assoclp}{&(\inr{(\inr{\cubv})})} &=& \inr{\cubv} \\
+\evalone{\assocrp}{&(\inl{(\inl{\cubv})})} &=& \inl{\cubv} \\
+\evalone{\assocrp}{&(\inl{(\inr{\cubv})})} &=& \inr{(\inl{\cubv})} \\
+\evalone{\assocrp}{&(\inr{\cubv})} &=& \inr{(\inr{\cubv})} \\
+\evalone{\idc}{&\cubv} &=& \cubv \\
+\evalone{(\symc{\cubc})}{&\cubv} &=& \evaloneb{\cubc}{\cubv} \\
+\evalone{(\cubc_1\fatsemi\cubc_2)}{&\cubv} &=& 
+  \evalone{\cubc_2}{(\evalone{\cubc_1}{\cubv})} \\
+\evalone{(\cubc_1\oplus\cubc_2)}{&(\inl{\cubv})} &=& 
+  \inl{(\evalone{\cubc_1}{\cubv})} \\
+\evalone{(\cubc_1\oplus\cubc_2)}{&(\inr{\cubv})} &=& 
+  \inr{(\evalone{\cubc_2}{\cubv})} \\
+\\
+\evaloneb{\identlp}{&\cubv} &=& \inr{\cubv} \\
+\evaloneb{\identrp}{&(\inl{\cubv})} &=& ?? \\
+\evaloneb{\identrp}{&(\inr{\cubv})} &=& \cubv \\
+\evaloneb{\swapp}{&(\inl{\cubv})} &=& \inr{\cubv} \\
+\evaloneb{\swapp}{&(\inr{\cubv})} &=& \inl{\cubv} \\
+\evaloneb{\assoclp}{&(\inl{(\inl{\cubv})})} &=& \inl{\cubv} \\
+\evaloneb{\assoclp}{&(\inl{(\inr{\cubv})})} &=& \inr{(\inl{\cubv})} \\
+\evaloneb{\assoclp}{&(\inr{\cubv})} &=& \inr{(\inr{\cubv})} \\
+\evaloneb{\assocrp}{&(\inl{\cubv})} &=& \inl{(\inl{\cubv})} \\
+\evaloneb{\assocrp}{&(\inr{(\inl{\cubv})})} &=& \inl{(\inr{\cubv})} \\
+\evaloneb{\assocrp}{&(\inr{(\inr{\cubv})})} &=& \inr{\cubv} \\
+\evaloneb{\idc}{&\cubv} &=& \cubv \\
+\evaloneb{(\symc{\cubc})}{&\cubv} &=& \evalone{\cubc}{\cubv} \\
+\evaloneb{(\cubc_1\fatsemi\cubc_2)}{&\cubv} &=& 
+  \evaloneb{\cubc_1}{(\evaloneb{\cubc_2}{\cubv})} \\
+\evaloneb{(\cubc_1\oplus\cubc_2)}{&(\inl{\cubv})} &=& 
+  \inl{(\evaloneb{\cubc_1}{\cubv})} \\
+\evaloneb{(\cubc_1\oplus\cubc_2)}{&(\inr{\cubv})} &=& 
+  \inr{(\evaloneb{\cubc_2}{\cubv})} \\
+\end{array}\]
+
+\paragraph*{The ``phony'' multiplication.} 
+The ``obvious'' definition for the product of 1d types is:
+\[\begin{array}{l}
+\ttone{({\tau_1}-{\tau_2})}{({\tau_3}-{\tau_4})} = \\
+{((\tau_1*\tau_3)+(\tau_2*\tau_4))}-
+  {((\tau_1*\tau_4)+(\tau_2*\tau_3))}
+\end{array}\]
+This definition of multiplication is not functorial which means that we have
+built a limited notion of higher-order functions at the expense of losing the
+multiplicative structure at higher-levels. This problem turns out to be
+intimately related to a well-known problem in algebraic topology that goes
+back at least thirty years~\cite{thomason}. This problem was recently
+solved~\cite{ringcompletion} using a technique whose fundamental ingredient
+is to add more dimensions. We exploit this idea in the remainder of the
+paper.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Cubes}
@@ -862,153 +769,6 @@ two points ``disappear.''  Surprisingly, that is everything that we need. The
 extension to higher dimensions just ``works'' because paths in HoTT have a
 rich structure. We explain the details after we include a short introduction
 of the necessary concepts from HoTT.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Homotopy Types and Univalence}
-\label{hottypes}
-
-We describe the construction of our universe of types. 
-
-%%%%%%%%%%%%%%%%%%%%
-\subsection{Homotopy Types}
-
-Our starting point is the construction in Sec.~\ref{cubes} which we summarize
-again. We start with all finite sets built from the empty set, a singleton
-set, disjoint unions, and cartesian products. All these sets are thought of
-being indexed by the empty sequence of polarities $\epsilon$. We then
-constructs new spaces that consist of pairs of finite sets $\nodet{S_1}{S_2}$
-indexed by positive and negative polarities. These are the 1-dimensional
-spaces. We iterate this construction to the limit to get $n$-dimensional
-cubes for all natural numbers $n$.
-
-At this point, we switch from viewing the universe of types as an
-unstructured collection of spaces to a viewing it as a \emph{groupoid} with
-explicit \emph{paths} connecting spaces that we want to consider as
-equivalent. We itemize the paths we add next:
-\begin{itemize}
-\item The first step is to identify each space with itself by adding trivial
-  identity paths $\refl{\cubt}$ for each space $\cubt$;
-\item Then we add paths $\seg{\cubt}$ that connect all occurrences of the
-  same type $\cubt$ in various positions in $n$-dimensional cubes. For
-  example, the 1-dimensional space corresponding to $(1-1)$ would now include
-  a path connecting the two endpoints as illustrated at the end of 
-  Sec.~\ref{cubes}.
-\item We then add paths for witnessing the usual type isomorphisms between
-  finite types such as associativity and commutativity of sums and
-  products. The complete list of these isomorphisms is given in the next
-  section.
-\item Finally, we add \emph{2-paths} between $\refl{0}$ and any path
-  $\seg{\cubt}$ whose endpoints are of opposite polarities, i.e., of
-  polarities $s$ and $\negp{s}$ where:
-  \[\begin{array}{rcl}
-  \negp{\epsilon} &=& \epsilon \\
-  \negp{+s} &=& -\negp{s} \\
-  \negp{-s} &=& +\negp{s}
-  \end{array}\]
-\item The groupoid structure forces other paths to be added as described in
-  the previous section. 
-\end{itemize}
-
-Now the structure of path spaces is complicated in general. Let's look at
-some examples.
-
-%%%%%%%%%%%%%%%%%%%%
-\subsection{Univalence} 
-
-The heart of HoTT is the \emph{univalence axiom}, which informally states
-that isomorphic structures can be identified. One of the major open problems
-in HoTT is a computational interpretation of this axiom. We propose that, at
-least for the special case of finite types, reversible computation \emph{is}
-the computational interpretation of univalence. Specifically, in the context
-of finite types, univalence specializes to a relationship between type
-isomorphisms on the side of syntactic identities and permutations in the
-symmetric group on the side of semantic equivalences. 
-
-In conventional HoTT:
-
-\begin{code}
--- f ∼ g iff ∀ x. f x ≡ g x
-_∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
-      (f g : (x : A) → P x) → Set (ℓ ⊔ ℓ')
-_∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → f x ≡ g x
-
--- f is an equivalence if we have g and h 
--- such that the compositions with f in 
--- both ways are ∼ id
-record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
-  Set (ℓ ⊔ ℓ') where
-  constructor mkisequiv
-  field
-    g : B → A 
-    α : (f ∘ g) ∼ id
-    h : B → A
-    β : (h ∘ f) ∼ id
-
--- Two spaces are equivalent if we have 
--- functions f, g, and h that compose 
--- to id
-_≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ ⊔ ℓ')
-A ≃ B = Σ (A → B) isequiv
-
--- A path between spaces implies their 
--- equivalence
-idtoeqv : {A B : Set} → (A ≡ B) → (A ≃ B)
-idtoeqv {A} {B} p = {!!}
-
--- equivalence of spaces implies a path 
-postulate 
-  univalence : {A B : Set} → (A ≡ B) ≃ (A ≃ B)
-\end{code}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{A Reversible Language with Cubical Types} 
-\label{opsem}
-
-We first define values then combinators that manipulate the values to witness
-the type isomorphisms.
-
-%%%%%%%%%%%%%%%%%%
-\subsection{Values} 
-
-Now that the type structure is defined, we turn our attention to the notion
-of values. Intuitively, a value of the $n$-dimensional type $\tau$ is an
-element of one of the sets located in one of the corners of the
-$n$-dimensional cube denoted by $\tau$ (taking into that there are non-trivial
-paths relating these sets to other sets, etc.) Thus to specify a value, we must
-first specify one of the corners of the cube (or equivalently one of the
-leaves in the binary tree representation) which can easily be done using a
-sequence $s$ of $+$ and $-$ polarities indicating how to navigate the cube in
-each successive dimension starting from a fixed origin to reach the desired
-corner. We write $v^{s}$ for the value $v$ located at corner $s$ of the cube
-associated with its type. We use $\epsilon$ for the empty sequence of
-polarities and identify $v$ with $v^\epsilon$. Note that the polarities
-doesn't completely specify the type since different types like $(1+(1+1))$
-and $((1+1)+1)$ are assigned the same denotation. What the path $s$ specifies
-is the \emph{polarity} of the value, or its ``orientation'' in the space
-denoted by its type. Formally:
-\[\begin{array}{c}
-\infer{() : 1}{} 
-\qquad
-\infer[\textit{neg}]{v^{\negp{s}} : - \tau}{v^s : \tau} 
-\\
-\infer[\textit{left}]{(\inl{v})^{s} : \tau_1 + \tau_2}{v^{s} : \tau_1}
-\qquad
-\infer[\textit{right}]{(\inr{v})^{s} : \tau_1 + \tau_2}{v^{s} : \tau_2} 
-\\
-\infer[\textit{prod}]{(v_1,v_2)^{s_1 \cdot s_2} : \tau_1 * \tau_2}
-      {v_1^{s_1} : \tau_1 & v_2^{s_2} : \tau_2} 
-\end{array}\]
-The rules \textit{left} and \textit{right} reflect the fact that sums do not
-increase the dimension. Note that when $s$ is $\epsilon$, we get the
-conventional values for the 0-dimensional sum type. The rule \textit{prod} is
-the most involved one: it increases the dimension by \emph{concatenating} the
-two dimensions of its arguments. For example, if we pair $v_1^{\pp}$ and
-$v_2^{\mm\pp}$ we get $(v_1,v_2)^{\pp\mm\pp}$. (See Fig.~\ref{mult} for the
-illustration.) Note again that if both components are 0-dimensional, the pair
-remains 0-dimensional and we recover the usual rule for typing values of
-product types. The rule \textit{neg} uses the function below which states
-that the negation of a value $v$ is the same value $v$ located at the
-``opposite'' corner of the cube.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work and Context}
@@ -1353,3 +1113,384 @@ timesG = -- IMPOSSIBLE
 
 \end{haskellcode}
 
+Before we define the construction in any detail, let's take one simple
+example $\identlp : 0+1 \iso 1$ and see how to represent as a value of type
+$1-(0+1)$. We visually represent the type itself as a line with 0-dimensional
+types attached at the endpoints (which are distinguished by polarities):
+\begin{center}
+\begin{tikzpicture}
+\node[above] at (0,0) {\pp};
+\draw[fill] (0,0) circle [radius=0.05];
+\node[above] at (2.6,0) {\mm};
+\draw[fill] (2.6,0) circle [radius=0.05];
+\draw[-,dotted] (0,0) -- (2.6,0);
+\draw (0,-1.1) ellipse (0.5cm and 1cm);
+\draw (2.6,-1.1) ellipse (0.5cm and 1cm);
+\node at (0,-1.1) {1};
+\node at (2.6,-1.1) {0+1};
+\end{tikzpicture}
+\end{center}
+The value representing $\identlp$ is simply:
+\begin{center}
+\begin{tikzpicture}
+\node[above] at (0,0) {\pp};
+\draw[fill] (0,0) circle [radius=0.05];
+\node[above] at (2.6,0) {\mm};
+\draw[fill] (2.6,0) circle [radius=0.05];
+\draw[-,dotted] (0,0) -- (2.6,0);
+\draw (0,-1.1) ellipse (0.5cm and 1cm);
+\draw (2.6,-1.1) ellipse (0.5cm and 1cm);
+\draw[->,thick,blue] (2.0,-1.1) -- (0.6,-1.1);
+\node[above] at (1.3,-1.1) {$\identlp$};
+\node at (0,-1.1) {1};
+\node at (2.6,-1.1) {0+1};
+\end{tikzpicture}
+\end{center}
+This entire package is a value, an atomic entity with invisible internal
+structure and that can only be manipulated via the level 1 combinators
+described next.
+
+Most of the time, the level 1 combinators are oblivious to the fact that they
+are manipulating first class functions. Formally, the action of a level 1
+combinator of type $(\tau_1-\tau_2) \isoone (\tau_3-\tau_4)$ is derived from
+the action of 0 level combinators of type $(\tau_1+\tau_4) \iso
+(\tau_3+\tau_2)$. Thus to take a trivial example $\identlp^1 : \ztone
+\boxplus \cubt \isoone \cubt$ is realized as $\assocrp \fatsemi (\idc \oplus
+\swapp) \fatsemi \assoclp$ which evidently knows nothing specific about
+higher order functions. The interesting idea is that it is possible to define
+a new level 1 combinator that exposes the internal structure of values as
+functions:
+\[\begin{array}{rrcll}
+\eta :&  0-0 & \isoone & \tau - \tau &: \varepsilon 
+\end{array}\]
+What this does is essentially provide an input and output port which are
+connected by the internal hidden function.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Condensed Background on HoTT}
+\label{hott}
+
+Informally, and as a first approximation, one may think of HoTT as
+mathematics, type theory, or computation but with all equalities replaced by
+isomorphisms, i.e., with equalities given computational content. We explain
+some of the basic ideas below.
+
+One starts with Martin-L\"of type theory, interprets the types as topological
+spaces or weak $\infty$-groupoids, and interprets identities between elements
+of a type as \emph{paths}.  In more detail, one interprets the witnesses of
+the identity $x \equiv y$ as paths from $x$ to $y$. If $x$ and $y$ are
+themselves paths, then witnesses of the identity $x \equiv y$ become paths
+between paths, or homotopies in the topological language. In Agda notation,
+we can formally express this as follows:
+
+\medskip
+\begin{code}
+data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
+  refl : (a : A) → (a ≡ a)
+
+i0 : 3 ≡ 3
+i0 = refl 3
+
+i1 : (1 + 2) ≡ (3 * 1)
+i1 = refl 3
+
+i2 : ℕ ≡ ℕ
+i2 = refl ℕ
+\end{code}
+\medskip
+
+\noindent It is important to note that the notion of propositional
+equality~$\equiv$ relates any two terms that are \emph{definitionally equal}
+as shown in example \AgdaFunction{i1} above. In general, there may be
+\emph{many} proofs (i.e., paths) showing that two particular values are
+identical and that proofs are not necessarily identical. This gives rise to a
+structure of great combinatorial complexity. To be explicit, we will use
+$\equiv_U$ to refer to the space in which the path lives.
+
+We are used to thinking of types as sets of values. So we typically view the
+type \AgdaPrimitiveType{Bool} as the figure on the left but in HoTT we should
+instead think about it as the figure on the right:
+\[
+\begin{tikzpicture}[scale=0.7]
+  \draw (0,0) ellipse (2cm and 1cm);
+  \draw[fill] (-1,0) circle (0.025);
+  \node[below] at (-1,0) {false};
+  \draw[fill] (1,0) circle (0.025);
+  \node[below] at (1,0) {true};
+\end{tikzpicture}
+\qquad\qquad
+\begin{tikzpicture}[scale=0.7]
+  \draw (0,0) ellipse (2cm and 1cm);
+  \draw[fill] (-1,0) circle (0.025);
+  \draw[->,thick,cyan] (-1,0) arc (0:320:0.2);
+  \node[above right] at (-1,0) {false};
+  \draw[fill] (1,-0.2) circle (0.025);
+  \draw[->,thick,cyan] (1,-0.2) arc (0:320:0.2);
+  \node[above right] at (1,-0.2) {true};
+\end{tikzpicture}
+\]
+In this particular case, it makes no difference, but in general we may have a
+much more complicated path structure. 
+
+We cannot generate non-trivial groupoids starting from the usual type
+constructions. We need \emph{higher-order inductive types} for that purpose.
+The classical example is the \emph{circle} that is a space consisting of a
+point \AgdaFunction{base} and a path \AgdaFunction{loop} from
+\AgdaFunction{base} to itself. As stated, this does not amount to
+much. However, because paths carry additional structure (explained below),
+that space has the following non-trivial structure:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.78]
+  \draw (0,0) ellipse (5.5cm and 2.5cm);
+  \draw[fill] (0,0) circle (0.025);
+  \draw[->,thick,red] (0,0) arc (90:440:0.2);
+  \node[above,red] at (0,0) {refl};
+  \draw[->,thick,cyan] (0,0) arc (-180:140:0.7);
+  \draw[->,thick,cyan] (0,0) arc (-180:150:1.2);
+  \node[left,cyan] at (1.4,0) {loop};
+  \node[right,cyan] at (2.4,0) {loop $\circ$ loop $\ldots$};
+  \draw[->,thick,blue] (0,0) arc (360:40:0.7);
+  \draw[->,thick,blue] (0,0) arc (360:30:1.2);
+  \node[right,blue] at (-1.4,0) {!~loop};
+  \node[left,blue] at (-2.4,0) {$\ldots$ !~loop $\circ$ !~loop};
+\end{tikzpicture}
+\end{center}
+
+The additional structure of types is formalized as follows. Let $x$, $y$, and
+$z$ be elements of some $U$:
+\begin{itemize}
+\item For every path $p : x \equiv_U y$, there exists a path $! p : y
+  \equiv_U x$;
+\item For every $p : x \equiv_U y$ and $q : y \equiv_U z$, there exists a
+  path $p \circ q : x \equiv_U z$;
+\item Subject to the following conditions:
+ \[\begin{array}{rcl}
+  p \circ \mathit{refl}~y &\equiv_{{x \equiv_U y}} & p \\
+  p &\equiv_{{x \equiv_U y}} & \mathit{refl}~x \circ p \\
+  !p \circ p &\equiv_{{y \equiv_U y}} & \mathit{refl}~y \\
+  p ~\circ~ !p &\equiv_{{x \equiv_U x}} & \mathit{refl}~x \\
+  !~(!p) &\equiv_{{x \equiv_U y}} & p \\
+  p \circ (q \circ r) &\equiv_{{x \equiv_U z}} & (p \circ q) \circ r
+ \end{array}\]
+\item With similar conditions one level up and so on and so forth.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Space of Types}
+
+Instead of modeling the semantics of $\Pi$ using \emph{permutations}, which
+are are set-theoretic functions after all, we use \emph{paths} from the HoTT
+framework. More precisely, we model the universe of $\Pi$ types as a space
+whose points are the individual $\Pi$-types and we will consider that there
+is path between two points $\tau_1$ and $\tau_2$ if there is a $\Pi$
+combinator $c : \tau_1 \iso \tau_2$. If we focus on 1-paths, this is perfect
+as we explain next. 
+
+\paragraph*{Note.} 
+But first, we note that this is a significant deviation from the HoTT
+framework which fundamentally includes functions, which are specialized to
+equivalences, which are then postulated to be paths by the univalence
+axiom. This axiom has no satisfactory computational interpretation,
+however. Instead we completely bypass the idea of extensional functions and
+use paths directly. Another way to understanding what is going on is the
+following. In the conventional HoTT framework:
+\begin{itemize}
+\item We start with two different notions: paths and functions;
+\item We use extensional non-constructive methods to identify a
+particular class of functions that form isomorphisms;
+\item We postulate that this particular class of functions can be
+identified with paths.
+\end{itemize}
+In our case, 
+\begin{itemize}
+\item We start with a constructive characterization of \emph{reversible
+  functions} or \emph{isomorphisms} built using inductively defined
+  combinators; 
+\item We blur the distinction between such combinators and paths from the
+  beginning. We view computation as nothing more than \emph{following paths}!
+  As explained earlier, although this appears limiting, it is universal and
+  regular computation can be viewed as a special case of that.
+\end{itemize}
+
+\paragraph*{Construction.} 
+We have a universe $U$ viewed as a groupoid whose points are the types
+$\Pi$-types $\tau$. The $\Pi$-combinators of Table~\ref{pi-combinators} are
+viewed as syntax for the paths in the space $U$. We need to show that the
+groupoid path structure is faithfully represented. The combinator $\idc$
+introduces all the $\refl{\tau} : \tau \equiv \tau$ paths in $U$. The adjoint
+$\symc{c}$ introduces an inverse path $!p$ for each path $p$ introduced by
+$c$. The composition operator $\fatsemi$ introduce a path $p \circ q$ for
+every pair of paths whose endpoints match. In addition, we get paths like
+$\swapp$ between $\tau_1+\tau_2$ and $\tau_2+\tau_1$. The existence of such
+paths in the conventional HoTT developed is \emph{postulated} by the
+univalence axiom. The $\otimes$-composition gives a path $(p,q) :
+(\tau_1*\tau_2) \equiv (\tau_3*\tau_4)$ whenever we have paths $p : \tau_1
+\equiv \tau_3$ and $q : \tau_2 \equiv \tau_4$. A similar situation for the
+$\oplus$-composition. The structure of these paths must be discovered and
+these paths must be \emph{proved} to exist using path induction in the
+conventional HoTT development. So far, this appears too good to be true, and
+it is. The problem is that paths in HoTT are subject to rules discussed at
+the end of Sec.~\ref{hott}. For example, it must be the case that if $p :
+\tau_1 \equiv_U \tau_2$ that $(p \circ \refl{\tau_2})
+\equiv_{\tau_1\equiv_U\tau_2} p$.  This path lives in a higher universe:
+nothing in our $\Pi$-combinators would justify adding such a path as all our
+combinators map types to types. No combinator works one level up at the space
+of combinators and there is no such space in the first place. Clearly we are
+stuck unless we manage to express a notion of higher-order functions in
+$\Pi$. This would allow us to internalize the type $\tau_1\iso\tau_2$ as a
+$\Pi$-type which is then manipulated by the same combinators one level higher
+and so on.
+
+To make the correspondence between $\Pi$ and the HoTT concepts more apparent
+we will, in the remainder of the paper, use \textsf{refl} instead of $\idc$
+and $!$ instead of $\mathit{sym}$ when referring to $\Pi$ combinators when
+viewed as paths.  Similarly we will use $\rightarrow$ instead of the
+$\Pi$-notation $\iso$ or the HoTT notation $\equiv$ to refer to paths.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Homotopy Types and Univalence}
+\label{hottypes}
+
+We describe the construction of our universe of types. 
+
+%%%%%%%%%%%%%%%%%%%%
+\subsection{Homotopy Types}
+
+Our starting point is the construction in Sec.~\ref{cubes} which we summarize
+again. We start with all finite sets built from the empty set, a singleton
+set, disjoint unions, and cartesian products. All these sets are thought of
+being indexed by the empty sequence of polarities $\epsilon$. We then
+constructs new spaces that consist of pairs of finite sets $\nodet{S_1}{S_2}$
+indexed by positive and negative polarities. These are the 1-dimensional
+spaces. We iterate this construction to the limit to get $n$-dimensional
+cubes for all natural numbers $n$.
+
+At this point, we switch from viewing the universe of types as an
+unstructured collection of spaces to a viewing it as a \emph{groupoid} with
+explicit \emph{paths} connecting spaces that we want to consider as
+equivalent. We itemize the paths we add next:
+\begin{itemize}
+\item The first step is to identify each space with itself by adding trivial
+  identity paths $\refl{\cubt}$ for each space $\cubt$;
+\item Then we add paths $\seg{\cubt}$ that connect all occurrences of the
+  same type $\cubt$ in various positions in $n$-dimensional cubes. For
+  example, the 1-dimensional space corresponding to $(1-1)$ would now include
+  a path connecting the two endpoints as illustrated at the end of 
+  Sec.~\ref{cubes}.
+\item We then add paths for witnessing the usual type isomorphisms between
+  finite types such as associativity and commutativity of sums and
+  products. The complete list of these isomorphisms is given in the next
+  section.
+\item Finally, we add \emph{2-paths} between $\refl{0}$ and any path
+  $\seg{\cubt}$ whose endpoints are of opposite polarities, i.e., of
+  polarities $s$ and $\negp{s}$ where:
+  \[\begin{array}{rcl}
+  \negp{\epsilon} &=& \epsilon \\
+  \negp{+s} &=& -\negp{s} \\
+  \negp{-s} &=& +\negp{s}
+  \end{array}\]
+\item The groupoid structure forces other paths to be added as described in
+  the previous section. 
+\end{itemize}
+
+Now the structure of path spaces is complicated in general. Let's look at
+some examples.
+
+%%%%%%%%%%%%%%%%%%%%
+\subsection{Univalence} 
+
+The heart of HoTT is the \emph{univalence axiom}, which informally states
+that isomorphic structures can be identified. One of the major open problems
+in HoTT is a computational interpretation of this axiom. We propose that, at
+least for the special case of finite types, reversible computation \emph{is}
+the computational interpretation of univalence. Specifically, in the context
+of finite types, univalence specializes to a relationship between type
+isomorphisms on the side of syntactic identities and permutations in the
+symmetric group on the side of semantic equivalences. 
+
+In conventional HoTT:
+
+\begin{code}
+-- f ∼ g iff ∀ x. f x ≡ g x
+_∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
+      (f g : (x : A) → P x) → Set (ℓ ⊔ ℓ')
+_∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → f x ≡ g x
+
+-- f is an equivalence if we have g and h 
+-- such that the compositions with f in 
+-- both ways are ∼ id
+record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
+  Set (ℓ ⊔ ℓ') where
+  constructor mkisequiv
+  field
+    g : B → A 
+    α : (f ∘ g) ∼ id
+    h : B → A
+    β : (h ∘ f) ∼ id
+
+-- Two spaces are equivalent if we have 
+-- functions f, g, and h that compose 
+-- to id
+_≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ ⊔ ℓ')
+A ≃ B = Σ (A → B) isequiv
+
+-- A path between spaces implies their 
+-- equivalence
+idtoeqv : {A B : Set} → (A ≡ B) → (A ≃ B)
+idtoeqv {A} {B} p = {!!}
+
+-- equivalence of spaces implies a path 
+postulate 
+  univalence : {A B : Set} → (A ≡ B) ≃ (A ≃ B)
+\end{code}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A Reversible Language with Cubical Types} 
+\label{opsem}
+
+We first define values then combinators that manipulate the values to witness
+the type isomorphisms.
+
+%%%%%%%%%%%%%%%%%%
+\subsection{Values} 
+
+Now that the type structure is defined, we turn our attention to the notion
+of values. Intuitively, a value of the $n$-dimensional type $\tau$ is an
+element of one of the sets located in one of the corners of the
+$n$-dimensional cube denoted by $\tau$ (taking into that there are non-trivial
+paths relating these sets to other sets, etc.) Thus to specify a value, we must
+first specify one of the corners of the cube (or equivalently one of the
+leaves in the binary tree representation) which can easily be done using a
+sequence $s$ of $+$ and $-$ polarities indicating how to navigate the cube in
+each successive dimension starting from a fixed origin to reach the desired
+corner. We write $v^{s}$ for the value $v$ located at corner $s$ of the cube
+associated with its type. We use $\epsilon$ for the empty sequence of
+polarities and identify $v$ with $v^\epsilon$. Note that the polarities
+doesn't completely specify the type since different types like $(1+(1+1))$
+and $((1+1)+1)$ are assigned the same denotation. What the path $s$ specifies
+is the \emph{polarity} of the value, or its ``orientation'' in the space
+denoted by its type. Formally:
+\[\begin{array}{c}
+\infer{() : 1}{} 
+\qquad
+\infer[\textit{neg}]{v^{\negp{s}} : - \tau}{v^s : \tau} 
+\\
+\infer[\textit{left}]{(\inl{v})^{s} : \tau_1 + \tau_2}{v^{s} : \tau_1}
+\qquad
+\infer[\textit{right}]{(\inr{v})^{s} : \tau_1 + \tau_2}{v^{s} : \tau_2} 
+\\
+\infer[\textit{prod}]{(v_1,v_2)^{s_1 \cdot s_2} : \tau_1 * \tau_2}
+      {v_1^{s_1} : \tau_1 & v_2^{s_2} : \tau_2} 
+\end{array}\]
+The rules \textit{left} and \textit{right} reflect the fact that sums do not
+increase the dimension. Note that when $s$ is $\epsilon$, we get the
+conventional values for the 0-dimensional sum type. The rule \textit{prod} is
+the most involved one: it increases the dimension by \emph{concatenating} the
+two dimensions of its arguments. For example, if we pair $v_1^{\pp}$ and
+$v_2^{\mm\pp}$ we get $(v_1,v_2)^{\pp\mm\pp}$. (See Fig.~\ref{mult} for the
+illustration.) Note again that if both components are 0-dimensional, the pair
+remains 0-dimensional and we recover the usual rule for typing values of
+product types. The rule \textit{neg} uses the function below which states
+that the negation of a value $v$ is the same value $v$ located at the
+``opposite'' corner of the cube.
