@@ -1,4 +1,4 @@
-{-# LANGUAGE TypeOperators, GADTs, TypeFamilies #-}
+{-# LANGUAGE TypeOperators, GADTs, TypeFamilies, MultiParamTypeClasses #-}
 
 module Pi1 where
 
@@ -50,6 +50,30 @@ eval0 c0 _ = error "I am not writing this again; get it from somewhere"
 ------------------------------------------------------------------------------
 -- Pi1 
 
+class T1 a b where
+  type a :- b :: * 
+  type Plus1 p q :: * 
+  type Neg1 p :: * 
+
+type Zero1 = Zero :- Zero
+type One1  = ()   :- Zero
+
+data a :<=> b where 
+  Id1           :: (a ~ (ap :- am)) => a :<=> a
+  Sym1          :: (a ~ (ap :- am), b ~ (bp :- bm)) => (a :<=> b) -> (b :<=> a) 
+  (:..:)        :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
+                   (a :<=> b) -> (b :<=> c) -> (a :<=> c)
+  (:++:)        :: (p ~ (a :- b), q ~ (c :- d), r ~ (e :- f), s ~ (g :- h)) => 
+                   (p :<=> q) -> (r :<=> s) -> (Plus1 p r :<=> Plus1 q s)
+  PlusZeroL1    :: (a ~ (ap :- am)) => Plus1 Zero1 a :<=> a
+  PlusZeroR1    :: (a ~ (ap :- am)) => a :<=> Plus1 Zero1 a
+  CommutePlus1  :: (a ~ (ap :- am), b ~ (bp :- bm)) => Plus1 a b :<=> Plus1 b a
+  AssocPlusL1   :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
+                   Plus1 a (Plus1 b c) :<=> Plus1 (Plus1 a b) c 
+  AssocPlusR1   :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
+                   Plus1 (Plus1 a b) c :<=> Plus1 a (Plus1 b c) 
+
+{--
 class Type1 p where
   type Pos p      :: *
   type Neg p      :: *  
@@ -66,21 +90,6 @@ instance Type1 (ap :- am) where
   type One1 = () :- Zero
   type Plus1  (ap :- am) (bp :- bm) = (Either ap bp) :- (Either am bm)
 
-data a :<=> b where 
-  Id1           :: (a ~ (ap :- am)) => a :<=> a
-  Sym1          :: (a ~ (ap :- am), b ~ (bp :- bm)) => (a :<=> b) -> (b :<=> a) 
-  (:..:)        :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
-                   (a :<=> b) -> (b :<=> c) -> (a :<=> c)
-  (:++:)        :: 
-    -- (p ~ (a :- b), q ~ (c :- d), r ~ (e :- f), s ~ (g :- h)) => 
-    (p :<=> q) -> (r :<=> s) -> (Plus1 p r :<=> Plus1 q s)
-  PlusZeroL1    :: (a ~ (ap :- am)) => Plus1 Zero1 a :<=> a
-  PlusZeroR1    :: (a ~ (ap :- am)) => a :<=> Plus1 Zero1 a
-  CommutePlus1  :: (a ~ (ap :- am), b ~ (bp :- bm)) => Plus1 a b :<=> Plus1 b a
-  AssocPlusL1   :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
-                   Plus1 a (Plus1 b c) :<=> Plus1 (Plus1 a b) c 
-  AssocPlusR1   :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm)) => 
-                   Plus1 (Plus1 a b) c :<=> Plus1 a (Plus1 b c) 
 
 {-- 
 
@@ -161,5 +170,5 @@ eval1B AssocPlusL1 (Val1 c0) =
   Val1 { c = AssocPlusL :.: c0 :.: AssocPlusR }
 eval1B AssocPlusR1 (Val1 c0) =
   Val1 { c = AssocPlusR :.: c0 :.: AssocPlusL }
-
+--}
 ------------------------------------------------------------------------------
