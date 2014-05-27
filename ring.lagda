@@ -323,14 +323,14 @@ element and hence the type behaves like the unit of addition and the
 annihilator of multiplication as desired.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Int-Construction}
+\section{The Int Construction}
 \label{intc}
 
 Our immediate technical goal is to explore an extension of $\Pi$ with a
 notion of higher-order functions. In the context of monoidal categories, it
 is known that a notion of higher-order functions emerges from having an
 additional degree of \emph{symmetry}. In particular, both the
-\textbf{Int}-construction of Joyal, Street, and
+\textbf{Int} construction of Joyal, Street, and
 Verity~\citeyearpar{joyal1996traced} and the closely related $\mathcal{G}$
 construction of linear logic~\cite{gcons} construct higher-order
 \emph{linear} functions by considering a new category built on top of a given
@@ -369,11 +369,11 @@ Our next step is to define lifted versions of the 0d types:
 \end{array}\]
 Building on the idea that $\Pi$ is a categorification of the natural numbers
 and following a long tradition that relates type isomorphisms and arithmetic
-identities~\cite{DiCosmo:2005:SSI:1090732.1090734}, a useful intuition is
-that the \textbf{Int} construction is a categorification of the
-integers. Using that connection, the definitions above can be intuitively
-understood as arithmetic identities. The same arithmetic intuition explains
-the lifting of isomorphisms to 1d types:
+identities~\cite{DiCosmo:2005:SSI:1090732.1090734}, one is tempted to think
+that the \textbf{Int} construction (as its name suggests) produces a
+categorification of the integers. Based on this hypothesis, the definitions
+above can be intuitively understood as arithmetic identities. The same
+arithmetic intuition explains the lifting of isomorphisms to 1d types:
 \[\begin{array}{rcl}
 (\tau_1-\tau_2) \isoone (\tau_3-\tau_4) &\eqdef& 
   (\tau_1+\tau_4) \iso (\tau_2+\tau_3)
@@ -481,15 +481,15 @@ lift all the 0d combinators involving products \emph{except} the functor:
 \]
 After a few failed attempts, we suspected that this definition of
 multiplication is not functorial which would mean that the
-\textbf{Int}-construction provides a limited notion of higher-order functions
-at the expense of losing the multiplicative structure at
-higher-levels. Further investigation revealed that this problem is intimately
-related to a well-known problem in algebraic topology that was identified
-thirty years ago as the ``phony'' multiplication~\cite{thomason} in a special
-class categories related to ours. This problem was recently
-solved~\cite{ringcompletion} using a technique whose fundamental ingredient
-is to add more dimensions. We exploit this idea in the remainder of the
-paper.
+\textbf{Int} construction provides a limited notion of higher-order functions
+at the expense of losing the multiplicative structure at higher-levels. This
+observation is less well-known that it should be. Further investigation
+reveals that this observation is intimately related to a well-known problem
+in algebraic topology that was identified thirty years ago as the ``phony''
+multiplication~\cite{thomason} in a special class categories related to
+ours. This problem was recently solved~\cite{ringcompletion} using a
+technique whose fundamental ingredient is to add more dimensions. We exploit
+this idea in the remainder of the paper.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Cubes}
@@ -587,8 +587,7 @@ and product types, as well as \emph{negative} types:
 \[\begin{array}{rcl}
 \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \alt - \tau
 \end{array}\]
-We use $\tau_1 - \tau_2$ to abbreviate $\tau_1 + (- \tau_2)$ and more
-interestingly $\tau_1 \lolli \tau_2$ to abbreviate $(- \tau_1) + \tau_2$.
+We use $\tau_1 - \tau_2$ to abbreviate $\tau_1 + (- \tau_2)$.
 The \emph{dimension} of a type is defined as follows:
 \[\begin{array}{rcl}
 \bdim{\cdot} &\hast& \tau \rightarrow \mathbb{N} \\
@@ -604,21 +603,21 @@ negative types appear anywhere, the dimension is raised to 1. This is the
 situation with the \textbf{Int} or $\mathcal{G}$ construction. Once negative
 and product types are freely used, the dimension can increase without bounds.
 
-This point is made precise in the following tentative denotation of types (to
-be refined in Sec.~\ref{hottypes}) which maps a type of dimension $n$ to an
-$n$-dimensional cube. We represent such a cube syntactically as a binary tree
-of maximum depth~$n$ with nodes of the form $\nodet{\cubt_1}{\cubt_2}$. In
-such a node, $\cubt_1$ is the positive subspace and $\cubt_2$ (shaded in
-gray) is the negative subspace along the first dimension. Each of these
-subspaces is itself a cube of a lower dimension. The $0$-dimensional cubes
-are plain sets representing the denotation of conventional first-order
-types. We use $S$ to denote the denotations of these plain types. A
-1-dimensional cube, $\nodet{S_1}{S_2}$, intuitively corresponds to the
-difference $\tau_1 - \tau_2$ of the two types whose denotations are $S_1$ and
-$S_2$ respectively. The type can be visualized as a ``line'' with polarized
-endpoints connecting the two points~$S_1$ and $S_2$. A full 2-dimensional
-cube, $\nodet{(\nodet{S_1}{S_2})}{(\nodet{S_3}{S_4})}$, intuitively
-corresponds to the iterated difference of the appropriate types
+This point is made precise in the following denotation of types which maps a
+type of dimension $n$ to an $n$-dimensional cube. We represent such a cube
+syntactically as a binary tree of maximum depth~$n$ with nodes of the form
+$\nodet{\cubt_1}{\cubt_2}$. In such a node, $\cubt_1$ is the positive
+subspace and $\cubt_2$ (shaded in gray) is the negative subspace along the
+first dimension. Each of these subspaces is itself a cube of a lower
+dimension. The $0$-dimensional cubes are plain sets representing the
+denotation of conventional first-order types. We use $S$ to denote the
+denotations of these plain types. A 1-dimensional cube, $\nodet{S_1}{S_2}$,
+intuitively corresponds to the difference $\tau_1 - \tau_2$ of the two types
+whose denotations are $S_1$ and $S_2$ respectively. The type can be
+visualized as a ``line'' with polarized endpoints connecting the two
+points~$S_1$ and $S_2$. A full 2-dimensional cube,
+$\nodet{(\nodet{S_1}{S_2})}{(\nodet{S_3}{S_4})}$, intuitively corresponds to
+the iterated difference of the appropriate types
 $(\tau_1-\tau_2)-(\tau_3-\tau_4)$ where the successive ``colors'' from the
 outermost box encode the sign. The type can be visualized as a ``square''
 with polarized corners connecting the two lines corresponding to
@@ -661,125 +660,10 @@ dimension $(n+m)$. The example in Fig.~\ref{mult} illustrates the idea using
 the product of 1-dimensional cube (i.e., a line) with a 2-dimensional cube
 (i.e., a square). The result is a 3-dimensional cube as illustrated.
 
-%%%%%%%%%%%%%%%%%%%%
-\subsection{Higher-Order Functions}
-
-In the \textbf{Int} construction a function from $T_1=(t_1-t_2)$ to
-$T_2=(t_3-t_4)$ is represented as an object of type $-T_1+T_2$. Expanding the
-definitions, we get:
-\[\begin{array}{rcl}
--T_1+T_2 &=& -(t_1-t_2) + (t_3-t_4) \\
-         &=& (t_2-t_1) + (t_3-t_4) \\
-         &=& (t_2+t_3) - (t_1+t_4)
-\end{array}\]
-The above calculation is consistent with our definitions specialized to 
-1-dimensional types. Note that the function is represented as an object
-of the same dimension as its input and output types. The situation
-generalizes to higher-dimensions. For example, consider a function of type
-\[
-\nodet{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} 
-\lolli
-\nodet{\nodet{\tau_5}{\tau_6}}{\nodet{\tau_7}{\tau_8}} 
-\]
-This function is represent by an object of dimension 2 as the calculation
-below shows:
-\[\begin{array}{rcl}
-&& \nodet{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} 
-\lolli
-\nodet{\nodet{\tau_5}{\tau_6}}{\nodet{\tau_7}{\tau_8}} \\
-&=& (\ominus \nodet{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}}) 
-    \oplus (\nodet{\nodet{\tau_5}{\tau_6}}{\nodet{\tau_7}{\tau_8}}) \\
-&=& (\nodet{\ominus(\nodet{\tau_3}{\tau_4})}{\ominus(\nodet{\tau_1}{\tau_2})})
-    \oplus (\nodet{\nodet{\tau_5}{\tau_6}}{\nodet{\tau_7}{\tau_8}}) \\
-&=&     (\nodet{\nodet{\tau_4}{\tau_3}}{\nodet{\tau_2}{\tau_1}})
- \oplus (\nodet{\nodet{\tau_5}{\tau_6}}{\nodet{\tau_7}{\tau_8}}) \\
-&=& \nodet{(\nodet{\tau_4}{\tau_3})\oplus(\nodet{\tau_5}{\tau_6})}
-           {(\nodet{\tau_2}{\tau_1})\oplus(\nodet{\tau_7}{\tau_8})} \\
-&=& \nodet{(\nodet{\tau_4\oplus\tau_5}{\tau_3\oplus\tau_6})}
-          {(\nodet{\tau_2\oplus\tau_7}{\tau_1\oplus\tau_8})} \\
-&=& \nodet{(\nodet{\tau_4\uplus\tau_5}{\tau_3\uplus\tau_6})}
-          {(\nodet{\tau_2\uplus\tau_7}{\tau_1\uplus\tau_8})}
-\end{array}\]
-This may be better understood by visualizing each of the argument type and 
-result types as two squares. The square representing the argument type
-is flipped in both dimensions effectively swapping the labels on both 
-diagonals. The resulting square is then superimposed on the square 
-for the result type to give the representation of the function as a first-class
-object.
-
-%%%%%%%%%%%%%%%%%%%%
-\subsection{Type Isomorphisms: Paths to the Rescue}
-
-Our proposed semantics of types identifies several structurally different
-types such as $(1+(1+1))$ and $((1+1)+1)$. In some sense, this is innocent as
-the types are isomorphic. However, in the operational semantics discussed in
-Sec.~\ref{opsem}, we make the computational content of such type isomorphisms
-explicit. Some other isomorphic types like $(\tau_1*\tau_2)$ and
-$(\tau_2*\tau_1)$ map to different cubes and are \emph{not} identified:
-explicit isomorphisms are needed to mediate between them. We therefore need
-to enrich our model of types with isomorphisms connecting types we deem
-equivalent. So far, our types are modeled as cubes which are really sets
-indexed by polarities. An isomorphism between $(\tau_1*\tau_2)$ and
-$(\tau_2*\tau_1)$ requires nothing more than a pair of set-theoretic
-functions between the spaces, and that compose to the identity. What is much
-more interesting are the isomorphisms involving the empty type~0. In
-particular, if negative types are to be interpreted as their name suggests,
-we must have an isomorphism between $(t-t)$ and the empty type
-0. Semantically the former denotes the ``line'' $\nodet{\cubt}{\cubt}$ and
-the latter denotes the empty set. Their denotations are different and there
-is no way, in the world of plain sets, to express the fact that these two
-spaces should be identified. What is needed is the ability to \emph{contract}
-the \emph{path} between the endpoints of the line to the trivial path on the
-empty type. This is, of course, where the ideas of homotopy (type) theory
-enter the development.
-
-Consider the situation above in which we want to identify the spaces
-corresponding to the types $(1-1)$ and the empty type:
-\begin{center}
-\begin{tikzpicture}
-\node[above] at (0,0) {\pp};
-\node[left] at (-0.2,0) {$1$};
-\draw[fill] (0,0) circle [radius=0.05];
-\node[above] at (2.6,0) {\mm};
-\node[right] at (2.8,0) {$1$};
-\draw[fill] (2.6,0) circle [radius=0.05];
-\draw[->,red] (0.1,0) -- (2.5,0);
-\draw[->,red] (-0.1,-0.1) arc (135:405:0.2);
-\node[below,red] at (0,-0.4) {$\refl{1}$};
-\draw[->,red] (2.5,-0.1) arc (135:405:0.2);
-\node[below,red] at (2.6,-0.4) {$\refl{1}$};
-\node[above] at (1.3,0) {$\seg{1}$};
-\node[right] at (1.3,-0.5) {$q$};
-%%
-\node[below] at (1.3,-1.5) {$\emptyset$};
-\draw[fill] (1.3,-1.5) circle [radius=0.05];
-\draw[->,red] (1.4,-1.4) arc (-45:225:0.2);
-\node[right,red] at (1.5,-1.3) {$\refl{0}$};
-%% 
-\draw[->,double,blue] (1.3,-0.1) -- (1.3,-1);
-\end{tikzpicture}
-\end{center}
-The top of the figure is the 1-dimensional cube representing the type $(1-1)$
-as before except that we now add a path $\seg{1}$ to connect the two
-endpoints. This path identifies the two occurrences of 1. (Note that
-previously, the dotted lines in the figures were a visualization aid and were
-\emph{not} meant to represent paths.) We also make explicit the trivial
-identity paths from every space to itself.  The bottom of the figure is the
-0-dimensional cube representing the empty type. To express the equivalence of
-$(1-1)$ and 0, we add a 2-path $q$, i.e. a path between paths, that connects
-the path $\seg{1}$ to the trivial path $\refl{0}$. That effectively makes the
-two points ``disappear.''  Surprisingly, that is everything that we need. The
-extension to higher dimensions just ``works'' because paths in HoTT have a
-rich structure. We explain the details after we include a short introduction
-of the necessary concepts from HoTT.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work and Context}
 
 A ton of stuff here. 
-
-Connection to our work on univalence for finite types. We didn't have to rely
-on sets for 0-dimensional types. We could have used groupoids again. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
@@ -1656,4 +1540,116 @@ $\triangleleft$ direction:
 \evaloneb{(\cubc_1\oplus\cubc_2)}{&(\inr{\cubv})} &=& 
   \inr{(\evaloneb{\cubc_2}{\cubv})} \\
 \end{array}\]
+
+%%%%%%%%%%%%%%%%%%%%
+\subsection{Higher-Order Functions}
+
+In the \textbf{Int} construction a function from $T_1=(t_1-t_2)$ to
+$T_2=(t_3-t_4)$ is represented as an object of type $-T_1+T_2$. Expanding the
+definitions, we get:
+\[\begin{array}{rcl}
+-T_1+T_2 &=& -(t_1-t_2) + (t_3-t_4) \\
+         &=& (t_2-t_1) + (t_3-t_4) \\
+         &=& (t_2+t_3) - (t_1+t_4)
+\end{array}\]
+The above calculation is consistent with our definitions specialized to 
+1-dimensional types. Note that the function is represented as an object
+of the same dimension as its input and output types. The situation
+generalizes to higher-dimensions. For example, consider a function of type
+\[
+\nodet{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} 
+\lolli
+\nodet{\nodet{\tau_5}{\tau_6}}{\nodet{\tau_7}{\tau_8}} 
+\]
+This function is represent by an object of dimension 2 as the calculation
+below shows:
+\[\begin{array}{rcl}
+&& \nodet{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} 
+\lolli
+\nodet{\nodet{\tau_5}{\tau_6}}{\nodet{\tau_7}{\tau_8}} \\
+&=& (\ominus \nodet{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}}) 
+    \oplus (\nodet{\nodet{\tau_5}{\tau_6}}{\nodet{\tau_7}{\tau_8}}) \\
+&=& (\nodet{\ominus(\nodet{\tau_3}{\tau_4})}{\ominus(\nodet{\tau_1}{\tau_2})})
+    \oplus (\nodet{\nodet{\tau_5}{\tau_6}}{\nodet{\tau_7}{\tau_8}}) \\
+&=&     (\nodet{\nodet{\tau_4}{\tau_3}}{\nodet{\tau_2}{\tau_1}})
+ \oplus (\nodet{\nodet{\tau_5}{\tau_6}}{\nodet{\tau_7}{\tau_8}}) \\
+&=& \nodet{(\nodet{\tau_4}{\tau_3})\oplus(\nodet{\tau_5}{\tau_6})}
+           {(\nodet{\tau_2}{\tau_1})\oplus(\nodet{\tau_7}{\tau_8})} \\
+&=& \nodet{(\nodet{\tau_4\oplus\tau_5}{\tau_3\oplus\tau_6})}
+          {(\nodet{\tau_2\oplus\tau_7}{\tau_1\oplus\tau_8})} \\
+&=& \nodet{(\nodet{\tau_4\uplus\tau_5}{\tau_3\uplus\tau_6})}
+          {(\nodet{\tau_2\uplus\tau_7}{\tau_1\uplus\tau_8})}
+\end{array}\]
+This may be better understood by visualizing each of the argument type and 
+result types as two squares. The square representing the argument type
+is flipped in both dimensions effectively swapping the labels on both 
+diagonals. The resulting square is then superimposed on the square 
+for the result type to give the representation of the function as a first-class
+object.
+
+%%%%%%%%%%%%%%%%%%%%
+\subsection{Type Isomorphisms: Paths to the Rescue}
+
+Our proposed semantics of types identifies several structurally different
+types such as $(1+(1+1))$ and $((1+1)+1)$. In some sense, this is innocent as
+the types are isomorphic. However, in the operational semantics discussed in
+Sec.~\ref{opsem}, we make the computational content of such type isomorphisms
+explicit. Some other isomorphic types like $(\tau_1*\tau_2)$ and
+$(\tau_2*\tau_1)$ map to different cubes and are \emph{not} identified:
+explicit isomorphisms are needed to mediate between them. We therefore need
+to enrich our model of types with isomorphisms connecting types we deem
+equivalent. So far, our types are modeled as cubes which are really sets
+indexed by polarities. An isomorphism between $(\tau_1*\tau_2)$ and
+$(\tau_2*\tau_1)$ requires nothing more than a pair of set-theoretic
+functions between the spaces, and that compose to the identity. What is much
+more interesting are the isomorphisms involving the empty type~0. In
+particular, if negative types are to be interpreted as their name suggests,
+we must have an isomorphism between $(t-t)$ and the empty type
+0. Semantically the former denotes the ``line'' $\nodet{\cubt}{\cubt}$ and
+the latter denotes the empty set. Their denotations are different and there
+is no way, in the world of plain sets, to express the fact that these two
+spaces should be identified. What is needed is the ability to \emph{contract}
+the \emph{path} between the endpoints of the line to the trivial path on the
+empty type. This is, of course, where the ideas of homotopy (type) theory
+enter the development.
+
+Consider the situation above in which we want to identify the spaces
+corresponding to the types $(1-1)$ and the empty type:
+\begin{center}
+\begin{tikzpicture}
+\node[above] at (0,0) {\pp};
+\node[left] at (-0.2,0) {$1$};
+\draw[fill] (0,0) circle [radius=0.05];
+\node[above] at (2.6,0) {\mm};
+\node[right] at (2.8,0) {$1$};
+\draw[fill] (2.6,0) circle [radius=0.05];
+\draw[->,red] (0.1,0) -- (2.5,0);
+\draw[->,red] (-0.1,-0.1) arc (135:405:0.2);
+\node[below,red] at (0,-0.4) {$\refl{1}$};
+\draw[->,red] (2.5,-0.1) arc (135:405:0.2);
+\node[below,red] at (2.6,-0.4) {$\refl{1}$};
+\node[above] at (1.3,0) {$\seg{1}$};
+\node[right] at (1.3,-0.5) {$q$};
+%%
+\node[below] at (1.3,-1.5) {$\emptyset$};
+\draw[fill] (1.3,-1.5) circle [radius=0.05];
+\draw[->,red] (1.4,-1.4) arc (-45:225:0.2);
+\node[right,red] at (1.5,-1.3) {$\refl{0}$};
+%% 
+\draw[->,double,blue] (1.3,-0.1) -- (1.3,-1);
+\end{tikzpicture}
+\end{center}
+The top of the figure is the 1-dimensional cube representing the type $(1-1)$
+as before except that we now add a path $\seg{1}$ to connect the two
+endpoints. This path identifies the two occurrences of 1. (Note that
+previously, the dotted lines in the figures were a visualization aid and were
+\emph{not} meant to represent paths.) We also make explicit the trivial
+identity paths from every space to itself.  The bottom of the figure is the
+0-dimensional cube representing the empty type. To express the equivalence of
+$(1-1)$ and 0, we add a 2-path $q$, i.e. a path between paths, that connects
+the path $\seg{1}$ to the trivial path $\refl{0}$. That effectively makes the
+two points ``disappear.''  Surprisingly, that is everything that we need. The
+extension to higher dimensions just ``works'' because paths in HoTT have a
+rich structure. We explain the details after we include a short introduction
+of the necessary concepts from HoTT.
 
