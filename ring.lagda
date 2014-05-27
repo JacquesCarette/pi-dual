@@ -231,22 +231,22 @@ introduction~\cite{hottbook}.
 {}
 \\ \bigskip
 \Rule{}
-{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad c_2 : \tau_2 \iso \tau_3}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
 {\jdg{}{}{c_1 \fatsemi c_2 : \tau_1 \iso \tau_3}}
 {}
 \\ \bigskip
 \Rule{}
-{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad c_2 : \tau_3 \iso \tau_4}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
 {\jdg{}{}{c_1 \oplus c_2 : \tau_1 + \tau_3 \iso \tau_2 + \tau_4}}
 {}
 \\ \bigskip
 \Rule{}
-{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad c_2 : \tau_3 \iso \tau_4}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
 {\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
 {}
 \\ \bigskip
 \Rule{}
-{\jdg{}{}{c : \tau_1+\tau \iso \tau_2+\tau}}
+{\jdg{}{}{c : \tau+\tau_1 \iso \tau+\tau_2}}
 {\jdg{}{}{\trace{c} : \tau_1 \iso \tau_2}}
 {}
 \end{center}
@@ -258,7 +258,7 @@ introduction~\cite{hottbook}.
 The main syntactic vehicle for the developments in this paper is a simple
 language called $\Pi$ whose only computations are isomorphisms between finite
 types. The set of types $\tau$ includes the empty type 0, the unit type 1,
-and conventional sum and product types. The values of these are the
+and conventional sum and product types. The values of these types are the
 conventional ones: \lstinline|()| of type 1, $\inl{v}$ and $\inr{v}$ for
 injections into sum types, and $(v_1,v_2)$ for product types:
 \[\begin{array}{lrcl}
@@ -316,7 +316,7 @@ sets and permutations in which we interpret every $\Pi$-type as a finite set,
 the values as elements in these finite sets, and the combinators as
 permutations. Another common example of such categories is the category of
 finite dimensional vector spaces and linear maps over any field. Note that in
-this interpretation, the $\Pi$-type 0 maps to the 0-dimensional vector space
+this interpretation, the $\Pi$-type~0 maps to the 0-dimensional vector space
 which is \emph{not} empty. Its unique element, the zero vector --- which is
 present in every vector space --- acts like a ``bottom'' everywhere-undefined
 element and hence the type behaves like the unit of addition and the
@@ -357,7 +357,7 @@ below, the 1d level is a ``lifted'' instance of $\Pi$ with its own notions of
 empty, unit, sum, and product types, and its corresponding notion of
 isomorphisms on these 1d types.
 
-We begin by defining the lifted versions of the 0d types:
+Our next step is to define lifted versions of the 0d types:
 \[\begin{array}{rcl}
 \ztone &\eqdef& (0-0) \\
 \otone &\eqdef& (1-0) \\
@@ -384,8 +384,8 @@ as an output and the negative output $\tau_4$ is viewed as an input. Using
 these ideas, it is now a fairly standard exercise to define the lifted
 versions of most of the combinators in
 Table~\ref{pi-combinators}.\footnote{See
-  Krishnaswami's~\citeyearpar{neelblog} excellent blog post explaining this
-  idea in OCaml.} There are however a few interesting cases whose
+  Krishnaswami's~\citeyearpar{neelblog} excellent blog post implementing this
+  construction in OCaml.} There are however a few interesting cases whose
 appreciation is essential for the remainder of the paper that we discuss
 below.
 
@@ -395,7 +395,7 @@ level. For example:
 \idc &\hast& \cubt \isoone \cubt \\
      &\hast& (\tau_1-\tau_2) \isoone (\tau_1-\tau_2) \\
      &\eqdef& (\tau_1+\tau_2) \iso (\tau_2+\tau_1) \\
-     &=& \swapp \\
+\idc &=& \swapp \\
 \\
 \identlp &\hast& \ztone \boxplus \cubt \isoone \cubt \\
 %%         &\eqdef& (0+\tau_1)-(0+\tau_2) \isoone (\tau_1-\tau_2) \\
