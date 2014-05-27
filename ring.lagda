@@ -24,6 +24,7 @@
 \newcommand{\onepath}[2]{#1 \rightarrow #2}
 \newcommand{\twopath}[2]{#1 \Rightarrow #2}
 \newcommand{\threepath}[2]{#1 \Rrightarrow #2}
+\newcommand{\trace}[1]{\mathit{trace}~{#1}}
 \newcommand{\refl}[1]{\textsf{refl}_{#1}}
 \newcommand{\seg}[1]{\textsf{seg}_{#1}}
 \newcommand{\bdim}[1]{\textsf{dim}(#1)}
@@ -202,6 +203,7 @@ introduction~\cite{hottbook}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Computing with Type Isomorphisms}
+\label{pi}
 
 \begin{table*}[t]
 \[\begin{array}{cc}
@@ -242,6 +244,11 @@ introduction~\cite{hottbook}.
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad c_2 : \tau_3 \iso \tau_4}
 {\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
 {}
+\\ \bigskip
+\Rule{}
+{\jdg{}{}{c : \tau_1+\tau \iso \tau_2+\tau}}
+{\jdg{}{}{\trace{c} : \tau_1 \iso \tau_2}}
+{}
 \end{center}
 \end{minipage}
 \end{array}\]
@@ -271,219 +278,215 @@ the left introduces a pair of dual constants\footnote{where $\swapp$ and
   $\swapt$ are self-dual.} that witness the type isomorphism in the
 middle. This set of isomorphisms is known to be
 complete~\cite{Fiore:2004,fiore-remarks} and the language is universal for
-hardware combinational circuits~\cite{James:2012:IE:2103656.2103667}.  If
-recursive types and a trace operator (i.e., looping construct) are added, the
-language becomes Turing-complete~\cite{James:2012:IE:2103656.2103667,rc2011}
-but we will not be concerned with recursive types in this paper.
+hardware combinational circuits~\cite{James:2012:IE:2103656.2103667}.  The
+$\mathit{trace}$ operator provides a bounded iteration facility which adds no
+expressiveness in the current context but will be needed in
+Sec.~\ref{intc}.\footnote{If recursive types are added, the trace operator
+  provides unbounded iteration and the language becomes Turing
+  complete~\cite{James:2012:IE:2103656.2103667,rc2011}. We will not be
+  concerned with recursive types in this paper.}
+
+As simple illustrative examples of ``programming'' in $\Pi$, here are three
+useful combinators that we define here for future reference:
+\[\begin{array}{r@{\,\,\!}cl}
+\mathit{assoc}_1 &\hast& 
+  \tau_1 + (\tau_2 + \tau_3) \iso (\tau_2 + \tau_1) + \tau_3 \\
+\mathit{assoc}_1 &=& \assoclp \fatsemi (\swapp \oplus \idc) \\
+\\
+\mathit{assoc}_2 &\hast& 
+  (\tau_1 + \tau_2) + \tau_3 \iso (\tau_2 + \tau_3) + \tau_1 \\
+\mathit{assoc}_2 &=& (\swapp \oplus \idc) \fatsemi \assocrp 
+  \fatsemi (\idc \oplus \swapp) \fatsemi \assoclp \\
+\\
+\mathit{assoc}_3 &\hast& 
+  (\tau_1 + \tau_2) + \tau_3 \iso \tau_1 + (\tau_3 + \tau_2) \\
+\mathit{assoc}_3 &=& \assocrp \fatsemi (\idc \oplus \swapp)
+\end{array}\]
 
 From the perspective of category theory, the language $\Pi$ models what is
-called a \emph{symmetric bimonoidal category} or a \emph{commutative rig
-  category}. These are categories with two binary operations $\oplus$ and
+called a traced \emph{symmetric bimonoidal category} or a \emph{commutative
+  rig category}. These are categories with two binary operations $\oplus$ and
 $\otimes$ satisfying the axioms of a rig (i.e., a ring without negative
 elements also known as a semiring) up to coherent isomorphisms. And indeed
 the types of the $\Pi$-combinators are precisely the semiring axioms. A
-simple (slightly degenerate) example of such categories is the category of
-finite sets and permutations. Indeed, it is possible to interpret every
-$\Pi$-type as a finite set, the values as elements in these finite sets, and
-the combinators as permutations. This interpretation of $\Pi$, although
-valid, misses the point of taking isomorphisms seriously as \emph{the}
-essence of computation. Luckily, an impressive amount of work has been
-happening in HoTT that builds around the computational content of equalities,
-equivalences, and isomorphisms, and this work will enable us to develop a
-more accurate model of $\Pi$ that also supports higher-order functions and
-that additionally resolves some issues regarding the computational
-interpretation of functional extensionality and the univalence axiom of
-HoTT. For the readers familiar with the basic ideas of HoTT, a good intuition
-to keep in mind --- to be further justified and explained in the remainder of
-the paper -- is that the $\Pi$-combinators are syntax for \emph{paths} in
-HoTT, and hence that computation in $\Pi$ is nothing more than following
-paths in some complex combinatorial space.
+formal way of saying this is that $\Pi$ is the
+\emph{categorification}~\cite{math/9802029} of the natural numbers. A simple
+(slightly degenerate) example of such categories is the category of finite
+sets and permutations in which we interpret every $\Pi$-type as a finite set,
+the values as elements in these finite sets, and the combinators as
+permutations. Another common example of such categories is the category of
+finite dimensional vector spaces and linear maps over any field. Note that in
+this interpretation, the $\Pi$-type 0 maps to the 0-dimensional vector space
+which is \emph{not} empty. Its unique element, the zero vector --- which is
+present in every vector space --- acts like a ``bottom'' everywhere-undefined
+element and hence the type behaves like the unit of addition and the
+annihilator of multiplication as desired.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Int-Construction}
+\label{intc}
 
-\begin{table*}[t]
-\[\begin{array}{cc}
-\begin{array}{rrcll}
-\identlp :&  (0-0) \boxplus \cubt & \isoone & \cubt &: \identrp \\
-\swapp :&  \cubt_1 \boxplus \cubt_2 & \isoone & \cubt_2 \boxplus \cubt_1 &: \swapp \\
-\assoclp :&  \cubt_1 \boxplus (\cubt_2 \boxplus \cubt_3) & \isoone & (\cubt_1 \boxplus \cubt_2) \boxplus \cubt_3 &: \assocrp 
-\end{array}
-& 
-\begin{minipage}{0.5\textwidth}
-\begin{center} 
-\Rule{}
-{}
-{\jdg{1}{}{\idc : \cubt \isoone \cubt}}
-{}
-\qquad
-\Rule{}
-{\jdg{1}{}{\cubc : \cubt_1 \isoone \cubt_2}}
-{\jdg{1}{}{\symc{\cubc} : \cubt_2 \isoone \cubt_1}}
-{}
-\\ \bigskip
-\Rule{}
-{\jdg{1}{}{\cubc_1 : \cubt_1 \isoone \cubt_2} \quad \cubc_2 : \cubt_2 \isoone \cubt_3}
-{\jdg{1}{}{\cubc_1 \fatsemi \cubc_2 : \cubt_1 \isoone \cubt_3}}
-{}
-\\ \bigskip
-\Rule{}
-{\jdg{1}{}{\cubc_1 : \cubt_1 \isoone \cubt_2} \quad \cubc_2 : \cubt_3 \isoone \cubt_4}
-{\jdg{1}{}{\cubc_1 \oplus \cubc_2 : \cubt_1 \boxplus \cubt_3 \isoone \cubt_2 \boxplus \cubt_4}}
-{}
-\end{center}
-\end{minipage}
-\end{array}\]
-\caption{1d combinators\label{combinators1}}
-\end{table*}
+Our immediate technical goal is to explore an extension of $\Pi$ with a
+notion of higher-order functions. In the context of monoidal categories, it
+is known that a notion of higher-order functions emerges from having an
+additional degree of \emph{symmetry}. In particular, both the
+\textbf{Int}-construction of Joyal, Street, and
+Verity~\citeyearpar{joyal1996traced} and the closely related $\mathcal{G}$
+construction of linear logic~\cite{gcons} construct higher-order
+\emph{linear} functions by considering a new category built on top of a given
+base traced monoidal category. The objects of the new category are of the
+form $(\tau_1-\tau_2)$ where~$\tau_1$ and~$\tau_2$ are objects in the base
+category. Intuitively, the component $\tau_1$ is viewed as a conventional
+type whose elements represent values flowing, as usual, from producers to
+consumers. The component $\tau_2$ is viewed as a \emph{negative type} whose
+elements represent demands for values or equivalently values flowing
+backwards. Under this interpretation, and as we explain below, a function is
+nothing but an object that converts a demand for an argument into production
+of a result.
 
-Our immediate technical goal is to extend $\Pi$ with a notion of higher-order
-functions. In the context of monoidal categories, it is known that a notion
-of higher-order functions emerges from having an additional degree of
-\emph{symmetry}. In particular, the \textbf{Int}-construction of Joyal,
-Street, and Verity~\citeyearpar{joyal1996traced} or the closely related
-$\mathcal{G}$ construction of linear logic~\cite{gcons} construct
-higher-order \emph{linear} functions by considering a new category built on
-top of a given base monoidal category. The objects of the new category are of
-the form $(\tau_1-\tau_2)$ where~$\tau_1$ and~$\tau_2$ are objects in the
-base category. Intuitively, the component $\tau_1$ is viewed as a
-conventional type whose elements represent values flowing, as usual, from
-producers to consumers. The component $\tau_2$ is viewed as a \emph{negative
-  type} whose elements represent demands for values or equivalently values
-flowing backwards. Under this interpretation, a function is nothing but an
-object that converts a demand for an argument into the production of a
-result.
-
-We therefore begin our development by extending $\Pi$ with a new universe of
-types $\cubt$ that includes the composite types $(\tau_1-\tau_2)$. Naturally,
-this new layer of types should have appropriate notions of sum and product
-types to be computationally interesting. As discussed near the end of this
-section, product types will require a much more extensive construction to be
-developed in the remainder of the paper. Thus, for the moment, we confine our
-discussion to sum types in the new universe of types:
+We begin our formal development by extending $\Pi$ with a new universe of
+types $\cubt$ that consists of composite types $(\tau_1-\tau_2)$:
 \[\begin{array}{lrcl}
 (\textit{{1d} types}) & 
-  \cubt &::=& (\tau_1-\tau_2) \alt \cubt_1 \boxplus \cubt_2 
+  \cubt &::=& (\tau_1-\tau_2) 
 \end{array}\]
 In anticipation of future developments, we will refer to the original types
 $\tau$ as 0-dimensional (0d) types and to the new types $\cubt$ as
-1-dimensional (1d) types. The combinators of Table~\ref{pi-combinators} all
-work on 0d types. These 0d combinators will be the base \emph{values} of 1d
-types and will be manipulated by a new layer of 1d combinators:
-\[\begin{array}{lrcl}
-(\textit{{1d} values}) & \cubv &::=& 
-  c \alt \inl{\cubv} \alt \inr{\cubv} \\
-(\textit{{1d} Combinator types}) &&& \cubt_1 \isoone \cubt_2 \\
-(\textit{{1d} combinators}) & \cubc &::=& 
-  [\textit{see Table~\ref{combinators1}}]
+1-dimensional (1d) types. It turns out that, except for one case discussed
+below, the 1d level is a ``lifted'' instance of $\Pi$ with its own notions of
+empty, unit, sum, and product types, and its corresponding notion of
+isomorphisms on these 1d types.
+
+We begin by defining the lifted versions of the 0d types:
+\[\begin{array}{rcl}
+\ztone &\eqdef& (0-0) \\
+\otone &\eqdef& (1-0) \\
+\ptone{(\tau_1-\tau_2)}{(\tau_3-\tau_4)} &\eqdef& 
+  (\tau_1+\tau_3)-(\tau_2+\tau_4) \\
+\ttone{({\tau_1}-{\tau_2})}{({\tau_3}-{\tau_4})} &\eqdef&
+{((\tau_1*\tau_3)+(\tau_2*\tau_4))}-\\
+&& {((\tau_1*\tau_4)+(\tau_2*\tau_3))}
 \end{array}\]
-We use the same names for the 0d and 1d combinators which should not lead to
-confusion as the types will always be clear from context. The new layer of 1d
-combinators consists of lifted versions of all the 0d combinators that do not
-refer to product types. The lifting of the empty type 0 is the type $(0-0)$
-which is no longer empty since we have (at least) $\idc : 0 \iso 0$. We
-return to this subtle point below.
+Building on the idea that $\Pi$ is a categorification of the natural numbers
+and following a long tradition that relates type isomorphisms and arithmetic
+identities~\cite{DiCosmo:2005:SSI:1090732.1090734}, a useful intuition is
+that the \textbf{Int} construction is a categorification of the
+integers. Using that connection, the definitions above can be intuitively
+understood as arithmetic identities. The same arithmetic intuition explains
+the lifting of isomorphisms to 1d types:
+\[\begin{array}{rcl}
+(\tau_1-\tau_2) \isoone (\tau_3-\tau_4) &\eqdef& 
+  (\tau_1+\tau_4) \iso (\tau_2+\tau_3)
+\end{array}\]
+In other words, an isomorphism between 1d types is really an isomorphism
+between ``re-arranged'' 0d types where the negative input $\tau_2$ is viewed
+as an output and the negative output $\tau_4$ is viewed as an input. Using
+these ideas, it is now a fairly standard exercise to define the lifted
+versions of most of the combinators in
+Table~\ref{pi-combinators}.\footnote{See
+  Krishnaswami's~\citeyearpar{neelblog} excellent blog post explaining this
+  idea in OCaml.} There are however a few interesting cases whose
+appreciation is essential for the remainder of the paper that we discuss
+below.
 
-The 1d values have the following type rules:
-
-\medskip
-\begin{tabular}{c}
-\Rule{}
-{\jdg{}{}{c : \tau_1 \iso \tau_2}}
-{\jdg{1}{}{c : \tau_2 - \tau_1}}
-{}
+\paragraph*{Easy Lifting.} Many of the 0d combinators lift easily to the 1d
+level. For example:
+\[\begin{array}{rcl}
+\idc &\hast& \cubt \isoone \cubt \\
+     &\hast& (\tau_1-\tau_2) \isoone (\tau_1-\tau_2) \\
+     &\eqdef& (\tau_1+\tau_2) \iso (\tau_2+\tau_1) \\
+     &=& \swapp \\
 \\
-\Rule{}
-{\jdg{1}{}{\cubv : \cubt_1}}
-{\jdg{1}{}{\inl{\cubv} : \cubt_1 \boxplus \cubt_2}}
-{}
-\qquad
-\Rule{}
-{\jdg{1}{}{\cubv : \cubt_2}}
-{\jdg{1}{}{\inr{\cubv} : \cubt_1 \boxplus \cubt_2}}
-{}
-\end{tabular}
-\medskip
-
-\noindent A 0d-combinator $\tau_1\iso\tau_2$ is viewed as a function
-demanding $\tau_1$ and producing $\tau_2$ which is encoded by putting
-$\tau_1$ in the negative position. The values $\inl{\cubv}$ and $\inr{\cubv}$
-are the usual injection into the sum type. Before presenting the formal
-semantics of the 1d level of $\Pi$, we consider a small example showing we
-can reason about equivalence of 0d combinators. Consider a 0d-combinator $c :
-\tau_1+\tau_2 \iso \tau_3+\tau_4$. In the 1d world, this combinator has type
-$(\tau_3+\tau_4)-(\tau_1+\tau_2)$.
-
-
-
-
-in the int construction the problem with 0 is avoided because boxplus expands
-to plus in the base category where the 0 cancels. we don't want to expand in
-the base category and lose the structure of paths. instead we add a new 2path
-that eliminates the 0-0
-
-we need combinator that use neg and that show that we have firstclass
-function (at least 2nd order). we need to show some identities on paths that are validated by the semantics
-
-
-The semantics consist of a pair of mutually recursive evaluators that take a
-1d combinator and a 1d value and either propagate the value in the
-``forward'' $\triangleright$ direction or in the ``backwards''
-$\triangleleft$ direction:
-\[\begin{array}{rlcl}
-\evalone{\identlp}{&(\inl{\cubv})} &=& ?? \\
-\evalone{\identlp}{&(\inr{\cubv})} &=& \cubv \\
-\evalone{\identrp}{&\cubv} &=& \inr{\cubv} \\
-\evalone{\swapp}{&(\inl{\cubv})} &=& \inr{\cubv} \\
-\evalone{\swapp}{&(\inr{\cubv})} &=& \inl{\cubv} \\
-\evalone{\assoclp}{&(\inl{\cubv})} &=& \inl{(\inl{\cubv})} \\
-\evalone{\assoclp}{&(\inr{(\inl{\cubv})})} &=& \inl{(\inr{\cubv})} \\
-\evalone{\assoclp}{&(\inr{(\inr{\cubv})})} &=& \inr{\cubv} \\
-\evalone{\assocrp}{&(\inl{(\inl{\cubv})})} &=& \inl{\cubv} \\
-\evalone{\assocrp}{&(\inl{(\inr{\cubv})})} &=& \inr{(\inl{\cubv})} \\
-\evalone{\assocrp}{&(\inr{\cubv})} &=& \inr{(\inr{\cubv})} \\
-\evalone{\idc}{&\cubv} &=& \cubv \\
-\evalone{(\symc{\cubc})}{&\cubv} &=& \evaloneb{\cubc}{\cubv} \\
-\evalone{(\cubc_1\fatsemi\cubc_2)}{&\cubv} &=& 
-  \evalone{\cubc_2}{(\evalone{\cubc_1}{\cubv})} \\
-\evalone{(\cubc_1\oplus\cubc_2)}{&(\inl{\cubv})} &=& 
-  \inl{(\evalone{\cubc_1}{\cubv})} \\
-\evalone{(\cubc_1\oplus\cubc_2)}{&(\inr{\cubv})} &=& 
-  \inr{(\evalone{\cubc_2}{\cubv})} \\
-\\
-\evaloneb{\identlp}{&\cubv} &=& \inr{\cubv} \\
-\evaloneb{\identrp}{&(\inl{\cubv})} &=& ?? \\
-\evaloneb{\identrp}{&(\inr{\cubv})} &=& \cubv \\
-\evaloneb{\swapp}{&(\inl{\cubv})} &=& \inr{\cubv} \\
-\evaloneb{\swapp}{&(\inr{\cubv})} &=& \inl{\cubv} \\
-\evaloneb{\assoclp}{&(\inl{(\inl{\cubv})})} &=& \inl{\cubv} \\
-\evaloneb{\assoclp}{&(\inl{(\inr{\cubv})})} &=& \inr{(\inl{\cubv})} \\
-\evaloneb{\assoclp}{&(\inr{\cubv})} &=& \inr{(\inr{\cubv})} \\
-\evaloneb{\assocrp}{&(\inl{\cubv})} &=& \inl{(\inl{\cubv})} \\
-\evaloneb{\assocrp}{&(\inr{(\inl{\cubv})})} &=& \inl{(\inr{\cubv})} \\
-\evaloneb{\assocrp}{&(\inr{(\inr{\cubv})})} &=& \inr{\cubv} \\
-\evaloneb{\idc}{&\cubv} &=& \cubv \\
-\evaloneb{(\symc{\cubc})}{&\cubv} &=& \evalone{\cubc}{\cubv} \\
-\evaloneb{(\cubc_1\fatsemi\cubc_2)}{&\cubv} &=& 
-  \evaloneb{\cubc_1}{(\evaloneb{\cubc_2}{\cubv})} \\
-\evaloneb{(\cubc_1\oplus\cubc_2)}{&(\inl{\cubv})} &=& 
-  \inl{(\evaloneb{\cubc_1}{\cubv})} \\
-\evaloneb{(\cubc_1\oplus\cubc_2)}{&(\inr{\cubv})} &=& 
-  \inr{(\evaloneb{\cubc_2}{\cubv})} \\
+\identlp &\hast& \ztone \boxplus \cubt \isoone \cubt \\
+%%         &\eqdef& (0+\tau_1)-(0+\tau_2) \isoone (\tau_1-\tau_2) \\
+%%         &\eqdef& ((0+\tau_1)+\tau_2) \iso ((0+\tau_2)+\tau_1) \\
+         &=& \assocrp \fatsemi (\idc \oplus \swapp) \fatsemi \assoclp
 \end{array}\]
 
-\paragraph*{The ``phony'' multiplication.} 
-The ``obvious'' definition for the product of 1d types is:
+\paragraph*{Composition using $\mathit{trace}$.} 
+
+\[\begin{array}{r@{\,\,\!}cl}
+(\fatsemi) &\hast& 
+  (\cubt_1 \isoone \cubt_2) \rightarrow 
+  (\cubt_2 \isoone \cubt_3) \rightarrow 
+  (\cubt_1 \isoone \cubt_3) \\
+%% \mathit{seq} &\hast& 
+%%   ((\tau_1-\tau_2) \isoone (\tau_3-\tau_4)) \rightarrow
+%%   ((\tau_3-\tau_4) \isoone (\tau_5-\tau_6)) \rightarrow
+%%   ((\tau_1-\tau_2) \isoone (\tau_5-\tau_6)) \\
+%%   &\eqdef& 
+%%   ((\tau_1+\tau_4) \iso (\tau_2+\tau_3)) \rightarrow
+%%   ((\tau_3+\tau_6) \iso (\tau_4+\tau_5)) \rightarrow
+%%   ((\tau_1+\tau_6) \iso (\tau_2+\tau_5)) \\
+f \fatsemi g &=& \mathit{trace}~(\mathit{assoc}_1 \fatsemi 
+  (f \oplus \idc) \fatsemi \mathit{assoc}_2 \fatsemi (g \oplus \idc) 
+  \fatsemi \mathit{assoc}_3)
+\end{array}\]
+
+\paragraph*{New combinators $\mathit{curry}$ and $\mathit{uncurry}$ for higher-order functions.}
+
+\[\begin{array}{rcl}
+\boxminus(\tau_1-\tau_2) &\eqdef& \tau_2-\tau_1 \\
+(\tau_1-\tau_2) \lolli (\tau_3-\tau_4) &\eqdef& 
+           \boxminus(\tau_1-\tau_2) \boxplus (\tau_3-\tau_4) \\
+  &\eqdef& (\tau_2+\tau_3) - (\tau_1+\tau_4) 
+\end{array}\]
+\[\begin{array}{rcl}
+\mathit{flip} &\hast& (\cubt_1 \isoone \cubt_2)
+  \rightarrow (\boxminus\cubt_2 \isoone \boxminus\cubt_1) \\
+%% \mathit{flip} &\hast& ((\tau_1-\tau_2) \isoone (\tau_3-\tau_4))
+%%   \rightarrow (\boxminus(\tau_3-\tau_4) \isoone \boxminus(\tau_1-\tau_2)) \\
+%%   &\eqdef& ((\tau_1-\tau_2) \isoone (\tau_3-\tau_4))
+%%   \rightarrow ((\tau_4-\tau_3) \isoone (\tau_2-\tau_1)) \\
+%%   &\eqdef& ((\tau_1+\tau_4) \iso (\tau_2+\tau_3))
+%%   \rightarrow ((\tau_4+\tau_1) \iso (\tau_3+\tau_2)) \\
+\mathit{flip}~f &=& \swapp \fatsemi f \fatsemi \swapp \\
+\\
+\mathit{curry} &\hast& 
+  ((\cubt_1\boxplus\cubt_2) \isoone \cubt_3) \rightarrow
+  (\cubt_1 \isoone (\cubt_2 \lolli \cubt_3)) \\
+%% \mathit{curry} &\hast& 
+%%   (((\tau_1-\tau_2)\boxplus(\tau_3-\tau_4)) \isoone (\tau_5-\tau_6)) \rightarrow
+%%   ((\tau_1-\tau_2) \isoone ((\tau_3-\tau_4) \lolli (\tau_5-\tau_6))) \\
+%%   &\eqdef& 
+%%   (((\tau_1+\tau_3)-(\tau_2+\tau_4)) \isoone (\tau_5-\tau_6)) \rightarrow
+%%   ((\tau_1-\tau_2) \isoone ((\tau_4+\tau_5)-(\tau_3+\tau_6))) \\
+%%   &\eqdef& 
+%%   (((\tau_1+\tau_3)+\tau_6) \iso ((\tau_2+\tau_4)+\tau_5)) \rightarrow
+%%   ((\tau_1+(\tau_4+\tau_5)) \iso (\tau_2+(\tau_3+\tau_6))) \\
+\mathit{curry}~f &=& \assoclp \fatsemi f \fatsemi \assocrp \\
+\\
+\mathit{uncurry} &\hast& 
+  (\cubt_1 \isoone (\cubt_2 \lolli \cubt_3)) \rightarrow
+  ((\cubt_1\boxplus\cubt_2) \isoone \cubt_3) \\
+\mathit{uncurry}~f &=& \assocrp \fatsemi f \fatsemi \assoclp 
+\end{array}\]
+
+
+\paragraph*{The ``phony'' multiplication that is not a functor.} 
+The definition for the product of 1d types used above is:
 \[\begin{array}{l}
 \ttone{({\tau_1}-{\tau_2})}{({\tau_3}-{\tau_4})} = \\
 {((\tau_1*\tau_3)+(\tau_2*\tau_4))}-
   {((\tau_1*\tau_4)+(\tau_2*\tau_3))}
 \end{array}\]
-This definition of multiplication is not functorial which means that we have
-built a limited notion of higher-order functions at the expense of losing the
-multiplicative structure at higher-levels. This problem turns out to be
-intimately related to a well-known problem in algebraic topology that goes
-back at least thirty years~\cite{thomason}. This problem was recently
+That definition is ``obvious'' in some sense as it matches the usual
+understanding of types as modeling arithmetic. Using it, it is possible to
+lift all the 0d combinators involving products \emph{except} the functor:
+\[ (\otimes) \hast 
+  (\cubt_1\isoone\cubt_2) \rightarrow 
+  (\cubt_3\isoone\cubt_4) \rightarrow 
+  ((\cubt_1\boxtimes\cubt_3) \isoone
+   (\cubt_2\boxtimes\cubt_4))
+\]
+After a few failed attempts, we suspected that this definition of
+multiplication is not functorial which would mean that the
+\textbf{Int}-construction provides a limited notion of higher-order functions
+at the expense of losing the multiplicative structure at
+higher-levels. Further investigation revealed that this problem is intimately
+related to a well-known problem in algebraic topology that was identified
+thirty years ago as the ``phony'' multiplication~\cite{thomason} in a special
+class categories related to ours. This problem was recently
 solved~\cite{ringcompletion} using a technique whose fundamental ingredient
 is to add more dimensions. We exploit this idea in the remainder of the
 paper.
@@ -1494,3 +1497,163 @@ remains 0-dimensional and we recover the usual rule for typing values of
 product types. The rule \textit{neg} uses the function below which states
 that the negation of a value $v$ is the same value $v$ located at the
 ``opposite'' corner of the cube.
+
+Luckily, an impressive amount of work has been
+happening in HoTT that builds around the computational content of equalities,
+equivalences, and isomorphisms, and this work will enable us to develop a
+more accurate model of $\Pi$ that also supports higher-order functions and
+that additionally resolves some issues regarding the computational
+interpretation of functional extensionality and the univalence axiom of
+HoTT. For the readers familiar with the basic ideas of HoTT, a good intuition
+to keep in mind --- to be further justified and explained in the remainder of
+the paper -- is that the $\Pi$-combinators are syntax for \emph{paths} in
+HoTT, and hence that computation in $\Pi$ is nothing more than following
+paths in some complex combinatorial space.
+
+\begin{table*}[t]
+\[\begin{array}{cc}
+\begin{array}{rrcll}
+\identlp :&  (0-0) \boxplus \cubt & \isoone & \cubt &: \identrp \\
+\swapp :&  \cubt_1 \boxplus \cubt_2 & \isoone & \cubt_2 \boxplus \cubt_1 &: \swapp \\
+\assoclp :&  \cubt_1 \boxplus (\cubt_2 \boxplus \cubt_3) & \isoone & (\cubt_1 \boxplus \cubt_2) \boxplus \cubt_3 &: \assocrp 
+\end{array}
+& 
+\begin{minipage}{0.5\textwidth}
+\begin{center} 
+\Rule{}
+{}
+{\jdg{1}{}{\idc : \cubt \isoone \cubt}}
+{}
+\qquad
+\Rule{}
+{\jdg{1}{}{\cubc : \cubt_1 \isoone \cubt_2}}
+{\jdg{1}{}{\symc{\cubc} : \cubt_2 \isoone \cubt_1}}
+{}
+\\ \bigskip
+\Rule{}
+{\jdg{1}{}{\cubc_1 : \cubt_1 \isoone \cubt_2} \quad \cubc_2 : \cubt_2 \isoone \cubt_3}
+{\jdg{1}{}{\cubc_1 \fatsemi \cubc_2 : \cubt_1 \isoone \cubt_3}}
+{}
+\\ \bigskip
+\Rule{}
+{\jdg{1}{}{\cubc_1 : \cubt_1 \isoone \cubt_2} \quad \cubc_2 : \cubt_3 \isoone \cubt_4}
+{\jdg{1}{}{\cubc_1 \oplus \cubc_2 : \cubt_1 \boxplus \cubt_3 \isoone \cubt_2 \boxplus \cubt_4}}
+{}
+\end{center}
+\end{minipage}
+\end{array}\]
+\caption{1d combinators\label{combinators1}}
+\end{table*}
+
+
+Naturally,
+this new layer of types should have appropriate notions of sum and product
+types to be computationally interesting. As discussed near the end of this
+section, product types will require a much more extensive construction to be
+developed in the remainder of the paper. Thus, for the moment, we confine our
+discussion to sum types in the new universe of types:
+The combinators of Table~\ref{pi-combinators} all
+work on 0d types. These 0d combinators will be the base \emph{values} of 1d
+types and will be manipulated by a new layer of 1d combinators:
+\[\begin{array}{lrcl}
+(\textit{{1d} values}) & \cubv &::=& 
+  c \alt \inl{\cubv} \alt \inr{\cubv} \\
+(\textit{{1d} Combinator types}) &&& \cubt_1 \isoone \cubt_2 \\
+(\textit{{1d} combinators}) & \cubc &::=& 
+  [\textit{see Table~\ref{combinators1}}]
+\end{array}\]
+We use the same names for the 0d and 1d combinators which should not lead to
+confusion as the types will always be clear from context. The new layer of 1d
+combinators consists of lifted versions of all the 0d combinators that do not
+refer to product types. The lifting of the empty type 0 is the type $(0-0)$
+which is no longer empty since we have (at least) $\idc : 0 \iso 0$. We
+return to this subtle point below.
+
+The 1d values have the following type rules:
+
+\medskip
+\begin{tabular}{c}
+\Rule{}
+{\jdg{}{}{c : \tau_1 \iso \tau_2}}
+{\jdg{1}{}{c : \tau_2 - \tau_1}}
+{}
+\\
+\Rule{}
+{\jdg{1}{}{\cubv : \cubt_1}}
+{\jdg{1}{}{\inl{\cubv} : \cubt_1 \boxplus \cubt_2}}
+{}
+\qquad
+\Rule{}
+{\jdg{1}{}{\cubv : \cubt_2}}
+{\jdg{1}{}{\inr{\cubv} : \cubt_1 \boxplus \cubt_2}}
+{}
+\end{tabular}
+\medskip
+
+\noindent A 0d-combinator $\tau_1\iso\tau_2$ is viewed as a function
+demanding $\tau_1$ and producing $\tau_2$ which is encoded by putting
+$\tau_1$ in the negative position. The values $\inl{\cubv}$ and $\inr{\cubv}$
+are the usual injection into the sum type. Before presenting the formal
+semantics of the 1d level of $\Pi$, we consider a small example showing we
+can reason about equivalence of 0d combinators. Consider a 0d-combinator $c :
+\tau_1+\tau_2 \iso \tau_3+\tau_4$. In the 1d world, this combinator has type
+$(\tau_3+\tau_4)-(\tau_1+\tau_2)$.
+
+
+
+
+in the int construction the problem with 0 is avoided because boxplus expands
+to plus in the base category where the 0 cancels. we don't want to expand in
+the base category and lose the structure of paths. instead we add a new 2path
+that eliminates the 0-0
+
+we need combinator that use neg and that show that we have firstclass
+function (at least 2nd order). we need to show some identities on paths that are validated by the semantics
+
+
+The semantics consist of a pair of mutually recursive evaluators that take a
+1d combinator and a 1d value and either propagate the value in the
+``forward'' $\triangleright$ direction or in the ``backwards''
+$\triangleleft$ direction:
+\[\begin{array}{rlcl}
+\evalone{\identlp}{&(\inl{\cubv})} &=& ?? \\
+\evalone{\identlp}{&(\inr{\cubv})} &=& \cubv \\
+\evalone{\identrp}{&\cubv} &=& \inr{\cubv} \\
+\evalone{\swapp}{&(\inl{\cubv})} &=& \inr{\cubv} \\
+\evalone{\swapp}{&(\inr{\cubv})} &=& \inl{\cubv} \\
+\evalone{\assoclp}{&(\inl{\cubv})} &=& \inl{(\inl{\cubv})} \\
+\evalone{\assoclp}{&(\inr{(\inl{\cubv})})} &=& \inl{(\inr{\cubv})} \\
+\evalone{\assoclp}{&(\inr{(\inr{\cubv})})} &=& \inr{\cubv} \\
+\evalone{\assocrp}{&(\inl{(\inl{\cubv})})} &=& \inl{\cubv} \\
+\evalone{\assocrp}{&(\inl{(\inr{\cubv})})} &=& \inr{(\inl{\cubv})} \\
+\evalone{\assocrp}{&(\inr{\cubv})} &=& \inr{(\inr{\cubv})} \\
+\evalone{\idc}{&\cubv} &=& \cubv \\
+\evalone{(\symc{\cubc})}{&\cubv} &=& \evaloneb{\cubc}{\cubv} \\
+\evalone{(\cubc_1\fatsemi\cubc_2)}{&\cubv} &=& 
+  \evalone{\cubc_2}{(\evalone{\cubc_1}{\cubv})} \\
+\evalone{(\cubc_1\oplus\cubc_2)}{&(\inl{\cubv})} &=& 
+  \inl{(\evalone{\cubc_1}{\cubv})} \\
+\evalone{(\cubc_1\oplus\cubc_2)}{&(\inr{\cubv})} &=& 
+  \inr{(\evalone{\cubc_2}{\cubv})} \\
+\\
+\evaloneb{\identlp}{&\cubv} &=& \inr{\cubv} \\
+\evaloneb{\identrp}{&(\inl{\cubv})} &=& ?? \\
+\evaloneb{\identrp}{&(\inr{\cubv})} &=& \cubv \\
+\evaloneb{\swapp}{&(\inl{\cubv})} &=& \inr{\cubv} \\
+\evaloneb{\swapp}{&(\inr{\cubv})} &=& \inl{\cubv} \\
+\evaloneb{\assoclp}{&(\inl{(\inl{\cubv})})} &=& \inl{\cubv} \\
+\evaloneb{\assoclp}{&(\inl{(\inr{\cubv})})} &=& \inr{(\inl{\cubv})} \\
+\evaloneb{\assoclp}{&(\inr{\cubv})} &=& \inr{(\inr{\cubv})} \\
+\evaloneb{\assocrp}{&(\inl{\cubv})} &=& \inl{(\inl{\cubv})} \\
+\evaloneb{\assocrp}{&(\inr{(\inl{\cubv})})} &=& \inl{(\inr{\cubv})} \\
+\evaloneb{\assocrp}{&(\inr{(\inr{\cubv})})} &=& \inr{\cubv} \\
+\evaloneb{\idc}{&\cubv} &=& \cubv \\
+\evaloneb{(\symc{\cubc})}{&\cubv} &=& \evalone{\cubc}{\cubv} \\
+\evaloneb{(\cubc_1\fatsemi\cubc_2)}{&\cubv} &=& 
+  \evaloneb{\cubc_1}{(\evaloneb{\cubc_2}{\cubv})} \\
+\evaloneb{(\cubc_1\oplus\cubc_2)}{&(\inl{\cubv})} &=& 
+  \inl{(\evaloneb{\cubc_1}{\cubv})} \\
+\evaloneb{(\cubc_1\oplus\cubc_2)}{&(\inr{\cubv})} &=& 
+  \inr{(\evaloneb{\cubc_2}{\cubv})} \\
+\end{array}\]
+
