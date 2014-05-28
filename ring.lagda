@@ -495,8 +495,8 @@ this idea in the remainder of the paper.
 \section{Cubes}
 \label{cubes}
 
-We first define the syntax and then present a simple semantic model of types
-which is then refined.
+We present the syntax of generalized $n$-dimensional types and isomorphisms
+between them.
 
 \begin{figure*}
 \[\begin{array}{c}
@@ -582,10 +582,12 @@ which is then refined.
 %%%%%%%%%%%%%%%%%%%%
 \subsection{Negative and Cubical Types}
 
-Our types $\tau$ include the empty type 0, the unit type 1, conventional sum
-and product types, as well as \emph{negative} types:
-\[\begin{array}{rcl}
-\tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \alt - \tau
+Our types $\cubt$ are ``cubes'' defined as follows:
+\[\begin{array}{lrcl}
+(\textit{0d types}) & \tau &::=& 
+  0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
+(\textit{nd types}) & \cubt &::=& 
+  \tau \alt \nodet{\cubt}{\cubt}
 \end{array}\]
 We use $\tau_1 - \tau_2$ to abbreviate $\tau_1 + (- \tau_2)$.
 The \emph{dimension} of a type is defined as follows:
