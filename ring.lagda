@@ -564,14 +564,18 @@ while the second map embeds $\qn{1}$ into the right column of $\qn{2}$.
 The main indexing objects are the result of the Grothendieck construction
 described below. An indexing object is of the form $(\textbf{n},S)$ where $S$
 is one of the labeling sets in $\qn{n}$. Examples of indexing objects are
-$(\emptyset,\emptyset)$, $(\textbf{1},\{1\})$, $(\textbf{1},\{-1\})$,
-$(\textbf{2},\{1\})$, $(\textbf{2},\{-1,-2\})$, etc. An indexing object
-$(\textbf{n},S)$ embeds into $(\textbf{m},T)$ if there is an injection
-between the finite sets $\textbf{n}$ and $\textbf{m}$ that maps $S$ to a
-subset of $T$. For example, we have seen above that it is possible to map the
-set $\{-1\}$ in $\qn{1}$ to the set $\{-1,2\}$ in $\qn{2}$ and hence in
-$\qn{3}$. Thus there is an embedding of $(\textbf{1},\{-1\})$ into
-$(\textbf{3},\{-1,2,3\})$.
+$(\emptyset,\emptyset)$, $(\textbf{1},\{-1\})$, $(\textbf{2},\{1\})$,
+$(\textbf{2},\{-1,-2\})$, etc. An indexing object $(\textbf{n},S)$ embeds
+into $(\textbf{m},T)$ if there is an injection between the finite sets
+$\textbf{n}$ and $\textbf{m}$ that maps $S$ to a subset of~$T$. For example,
+we have seen above that it is possible to map the set $\{-1\}$ in $\qn{1}$ to
+the set $\{-1,2\}$ in $\qn{2}$ and hence in $\qn{3}$. Thus there is an
+embedding of $(\textbf{1},\{-1\})$ into $(\textbf{3},\{-1,2,3\})$.
+
+%%%%%%%%%%%%%%
+\subsection{The Cube Construction}
+
+
 
 \newpage
 ~
