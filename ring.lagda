@@ -21,7 +21,9 @@
 \newcommand{\todo}[1]{\textbf{Todo:} #1}
 \newcommand{\ignore}[1]{}
 
-\newcommand{\Pin}[1]{\Pi_{\textbf{#1}}}
+\newcommand{\embed}{\mathit{embed}}
+\newcommand{\Pin}[1]{\Pi{\textbf{#1}}}
+\newcommand{\taun}[1]{\tau\textbf{#1}}
 \newcommand{\pn}[1]{\mathcal{P}\textbf{#1}}
 \newcommand{\qn}[1]{\mathcal{Q}\textbf{#1}}
 \newcommand{\cpath}[2]{\textit{path}~\{#1\}~\{#2\}}
@@ -506,8 +508,8 @@ As hinted at in the previous section, one can think of the \textbf{Int}
 construction as generalizing conventional (0-dimensional) types to a
 higher-dimension. The types in the higher-dimension are indexed by a polarity
 which specifies their position in a 1-dimensional space. Generalizing this
-idea further, we view types as being indexed by a dimension $\textbf{n}$ and
-a position in the corresponding $n$-dimensional space.
+idea further, we view types as being indexed by a dimension $n$ and a
+position in the corresponding $n$-dimensional space.
 
 %%%%%%%%%%%%%%
 \subsection{Indexing}
@@ -529,8 +531,8 @@ with one object, the empty set. The category $\qn{1}$ is depicted below:
 \draw[->] (Z) -- (N);
 \end{tikzpicture}
 \end{center}
-It consists of 3 objects. The category $\pn{1}$ consists of the two objects
-in the right part of the diagram. The category $\qn{2}$ is depicted below:
+It consists of 3 objects. The category $\pn{1}$ consists of the right part of
+the diagram. The category $\qn{2}$ is depicted below:
 \begin{center}
 \begin{tikzpicture}[node distance=1.7cm]
 \node (ZZ) at (5.5,0) {$\emptyset$};
@@ -561,9 +563,10 @@ The category $\pn{2}$ is the upper right square.
 Our types will be indexed by objects from the categories $\qn{n}$, i.e., by
 pairs $(\textbf{n},S)$ specifying the category $\qn{n}$ and the selected
 object in it. Examples of such indexing objects are $(\textbf{0},\emptyset)$,
-$(\textbf{1},\{-1\})$ which is the object $\{-1\}$ in $\qn{1}$, and
-$(\textbf{2},\{-1,-2\})$ which is the object in $\{-1,-2\}$ in $\qn{2}$. By
-the Grothendieck construction~\cite[Ch.12]{DBLP:books/daglib/0080381}, these
+$(\textbf{1},\{-1\})$ which is the object $\{-1\}$ in $\qn{1}$,
+$(\textbf{2},\{-1\})$ which is also the object $\{-1\}$ but in $\qn{2}$, and
+$(\textbf{2},\{-1,-2\})$ which is the object $\{-1,-2\}$ in $\qn{2}$. By the
+Grothendieck construction~\cite[Ch.12]{DBLP:books/daglib/0080381}, these
 indexing objects form a category with morphisms from $(\textbf{n},S)$ to
 $(\textbf{m},T)$ if there is an injection between the finite sets
 $\textbf{n}$ and $\textbf{m}$ that maps $S$ to a subset of~$T$. For example,
@@ -595,12 +598,39 @@ finally a type in $\Pin{2}(\{1,2\})$ is a collection of four $\Pi$-types
 indexed by $\emptyset$, $\{1\}$, $\{2\}$, and $\{1,2\}$. In general, for a
 given $\textbf{n}$, there are $2^n$ versions of $\Pin{n}$ viewed as being
 spread out over the corners of an $n$-dimensional cube. The various copies of
-$\Pin{n}(S)$ can be embedded in other another following the morphisms in the
+$\Pin{n}(S)$ can be embedded in one another following the morphisms in the
 indexing category. Thus the two $\Pi$-types in $\Pin{2}(\{1\})$ embed in the
 four $\Pi$-types in $\Pin{2}(\{1,2\})$ as follows. We get two copies of the
-type indexed by $\emptyset$ one indexed by $\emptyset$ and one by $\{2\}$;
-and we get two copies of the type indexed by $\{1\}$ one indexed by $\{1\}$
-and one by $\{1,2\}$. 
+type indexed by $\emptyset$; one indexed by $\emptyset$ and one indexed by
+$\{2\}$; and we get two copies of the type indexed by $\{1\}$; one indexed by
+$\{1\}$ and one indexed by $\{1,2\}$.
+
+\begin{center}
+\begin{tikzpicture}[node distance=3.3cm]
+\node[text width=1cm] (A) at (0,0) {$\Pin{2}(\emptyset) = \Pi_{\emptyset}$};
+\node[text width=2cm] (B) [right of=A] {$\Pin{2}(\{1\}) = \Pi_{\emptyset}\times\Pi_{\{1\}}$};
+\node[text width=1.5cm] (C) [above of=A] {$\Pin{2}(\{2\}) = \Pi_{\emptyset}\times\Pi_{\{2\}}$};
+\node[text width=3cm] (D) [right of=C] {$\Pin{2}(\{1,2\}) = \Pi_{\emptyset}\times\Pi_{\{1\}}\times\Pi_{\{2\}}\times\Pi_{\{1,2\}}$};
+\draw[->] (A) -- (B);
+\draw[->] (A) -- (C);
+\draw[->] (C) -- (D);
+\draw[->] (B) -- (D);
+\end{tikzpicture}
+\end{center}
+
+
+
+Formally the set of types in $\Pin{n}(S)$ is:
+\[\begin{array}{rcl}
+\taun{n}(S) &::=& \bigotimes_n \{ \tau_s ~|~ s \textrm{~subset~of~} S \} \\
+  &\alt& \taun{n}(S) + \taun{n}(S) \\
+  &\alt& \taun{i}(S) * \taun{j}(S) \quad\mbox{where~} n=i+j\\
+  &\alt& \embed(\textbf{m}\mapsto\textbf{n}){\taun{m}(T)}
+\end{array}\]
+
+indexing by qn
+
+show functors on the pi-n types and then isos
 
 \newpage
 ~
