@@ -21,6 +21,7 @@
 \newcommand{\todo}[1]{\textbf{Todo:} #1}
 \newcommand{\ignore}[1]{}
 
+\newcommand{\Pin}[1]{\Pi_{\textbf{#1}}}
 \newcommand{\pn}[1]{\mathcal{P}\textbf{#1}}
 \newcommand{\qn}[1]{\mathcal{Q}\textbf{#1}}
 \newcommand{\cpath}[2]{\textit{path}~\{#1\}~\{#2\}}
@@ -504,18 +505,21 @@ this idea in the remainder of the paper.
 As hinted at in the previous section, one can think of the \textbf{Int}
 construction as generalizing conventional (0-dimensional) types to a
 higher-dimension. The types in the higher-dimension are indexed by a polarity
-which specificies their position in a 1-dimensional space. Generalizing this
-idea further, we view types as being indexed by a dimension $n$ and a
-position in the corresponding $n$-dimensional space. 
+which specifies their position in a 1-dimensional space. Generalizing this
+idea further, we view types as being indexed by a dimension $\textbf{n}$ and
+a position in the corresponding $n$-dimensional space.
 
 %%%%%%%%%%%%%%
 \subsection{Indexing}
 
-We will have two kinds of $n$-dimensional spaces: spaces $\pn{n}$ with $2^n$
-points labeled by certain subsets of $\textbf{n}=\{1,\ldots,n\}$, and spaces
-$\qn{n}$ with $3^n$ points labeled by certain subsets of $\{\pm 1,\ldots,\pm
-n\}$. Both 0d spaces consist of just one point. The 1d space $\qn{1}$ is
-depicted below:
+We will refer to two kinds of $n$-dimensional cubical diagrams with~$2^n$ and
+$3^n$ vertices respectively. These diagrams will be indexed by the categories
+$\pn{n}$ and $\qn{n}$ defined below. The category $\pn{n}$ has subsets of
+$\textbf{n}=\{1,\ldots,n\}$ as objects and set inclusions as morphisms. The
+category $\qn{n}$ has subsets of $\{\pm 1,\ldots,\pm n\}$ in which no number
+appears with both positive and negative polarities as objects and set
+inclusions as morphisms. Both $\pn{0}$ and $\qn{0}$ consist of the category
+with one object, the empty set. The category $\qn{1}$ is depicted below:
 \begin{center}
 \begin{tikzpicture}
 \node (Z) at (0,0) {$\emptyset$};
@@ -525,8 +529,8 @@ depicted below:
 \draw[->] (Z) -- (N);
 \end{tikzpicture}
 \end{center}
-It consists of 3 points. The space $\pn{1}$ is the right half of the space
-without the node $\{-1\}$. The space $\qn{2}$ is depicted below:
+It consists of 3 objects. The category $\pn{1}$ consists of the two objects
+in the right part of the diagram. The category $\qn{2}$ is depicted below:
 \begin{center}
 \begin{tikzpicture}[node distance=1.7cm]
 \node (ZZ) at (5.5,0) {$\emptyset$};
@@ -552,30 +556,51 @@ without the node $\{-1\}$. The space $\qn{2}$ is depicted below:
 \draw[->] (ZN2) -- (ZNN);
 \end{tikzpicture}
 \end{center}
-The space $\pn{2}$ is the upper right square. The arrows in the figures are
-\emph{inclusions} of sets.
+The category $\pn{2}$ is the upper right square. 
 
-There are two ways of embedding $\qn{1}$ into $\qn{2}$ determined by how one
+Our types will be indexed by objects from the categories $\qn{n}$, i.e., by
+pairs $(\textbf{n},S)$ specifying the category $\qn{n}$ and the selected
+object in it. Examples of such indexing objects are $(\textbf{0},\emptyset)$,
+$(\textbf{1},\{-1\})$ which is the object $\{-1\}$ in $\qn{1}$, and
+$(\textbf{2},\{-1,-2\})$ which is the object in $\{-1,-2\}$ in $\qn{2}$. By
+the Grothendieck construction~\cite[Ch.12]{DBLP:books/daglib/0080381}, these
+indexing objects form a category with morphisms from $(\textbf{n},S)$ to
+$(\textbf{m},T)$ if there is an injection between the finite sets
+$\textbf{n}$ and $\textbf{m}$ that maps $S$ to a subset of~$T$. For example,
+there are two ways of embedding $\qn{1}$ into $\qn{2}$ determined by how one
 chooses to inject the set $\{1\}$ into the set $\{1,2\}$. One can choose to
 send the element 1 in the first set to either the element 1 or the element 2
 in the second set. The first map embeds $\qn{1}$ into the top row of $\qn{2}$
-while the second map embeds $\qn{1}$ into the right column of $\qn{2}$.
-
-The main indexing objects are the result of the Grothendieck construction
-described below. An indexing object is of the form $(\textbf{n},S)$ where $S$
-is one of the labeling sets in $\qn{n}$. Examples of indexing objects are
-$(\emptyset,\emptyset)$, $(\textbf{1},\{-1\})$, $(\textbf{2},\{1\})$,
-$(\textbf{2},\{-1,-2\})$, etc. An indexing object $(\textbf{n},S)$ embeds
-into $(\textbf{m},T)$ if there is an injection between the finite sets
-$\textbf{n}$ and $\textbf{m}$ that maps $S$ to a subset of~$T$. For example,
-we have seen above that it is possible to map the set $\{-1\}$ in $\qn{1}$ to
-the set $\{-1,2\}$ in $\qn{2}$ and hence in $\qn{3}$. Thus there is an
-embedding of $(\textbf{1},\{-1\})$ into $(\textbf{3},\{-1,2,3\})$.
+while the second map embeds $\qn{1}$ into the right column of $\qn{2}$. Each
+of these possibilities gives a morphism between $(\textbf{1},\{-1\})$ and
+$(\textbf{2},\{-1,2\})$.
 
 %%%%%%%%%%%%%%
 \subsection{The Cube Construction}
 
+Having defined our indexing objects, we now proceed to define the generalized
+$n$-dimensional types. We do this in two stages, first for the special case
+of indexing objects in $\pn{n}$ and then for general indexing objects in
+$\qn{n}$.
 
+Given $(\textbf{n},S)$ for the special case of $S \in \pn{n}$, we construct a
+$n$-dimensional extension of $\Pi$ denoted $\Pin{n}(S)$. The types in
+$\Pin{n}(S)$ are as many copies as there are subsets of $S$ of the types in
+$\Pi$ labeled by the subsets of $S$. For example, a type in
+$\Pin{2}(\emptyset)$ is just a plain $\Pi$ type (technically indexed by
+$\emptyset$); a type in $\Pin{2}(\{1\})$ is a collection of two $\Pi$-types
+indexed by $\emptyset$ and $\{1\}$; a type in $\Pin{2}(\{2\})$ is also a
+collection of two $\Pi$-types but indexed by $\emptyset$ and $\{2\}$; and
+finally a type in $\Pin{2}(\{1,2\})$ is a collection of four $\Pi$-types
+indexed by $\emptyset$, $\{1\}$, $\{2\}$, and $\{1,2\}$. In general, for a
+given $\textbf{n}$, there are $2^n$ versions of $\Pin{n}$ viewed as being
+spread out over the corners of an $n$-dimensional cube. The various copies of
+$\Pin{n}(S)$ can be embedded in other another following the morphisms in the
+indexing category. Thus the two $\Pi$-types in $\Pin{2}(\{1\})$ embed in the
+four $\Pi$-types in $\Pin{2}(\{1,2\})$ as follows. We get two copies of the
+type indexed by $\emptyset$ one indexed by $\emptyset$ and one by $\{2\}$;
+and we get two copies of the type indexed by $\{1\}$ one indexed by $\{1\}$
+and one by $\{1,2\}$. 
 
 \newpage
 ~
