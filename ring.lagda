@@ -15,9 +15,13 @@
 \usepackage{tikz}
 \usepackage{proof}
 \usepackage{graphicx}
+\usepackage{tikz-qtree}
+
 
 \newcommand{\todo}[1]{\textbf{Todo:} #1}
+\newcommand{\ignore}[1]{}
 
+\newcommand{\cpath}[2]{\textit{path}~\{#1\}~\{#2\}}
 \newcommand{\evalone}[2]{#1~\triangleright~#2}
 \newcommand{\evaloneb}[2]{#1~\triangleleft~#2}
 \newcommand{\eqdef}{\stackrel{\triangle}{=}}
@@ -495,6 +499,7 @@ this idea in the remainder of the paper.
 \section{Cubes}
 \label{cubes}
 
+\ignore{
 p.10
 
 Category of indices n: the objects are finite sets with a commutative +. The
@@ -559,11 +564,40 @@ is included in {-1,2,3} as desired.
 
 Now the fun begins. The above Grothendieck construction provides the SHAPES
 of our types.
+}
+
+We begin by specifying a way to denote a corner in an $n$-dimensional cube
+with $3^n$ corners. Examples are $\cpath{0}{}$, $\cpath{1}{-1}$,
+$\cpath{1}{1}$, $\cpath{2}{-1,2}$, and $\cpath{3}{-1,2,3}$ which have the
+following meaning:
+\begin{itemize}
+\item $\cpath{0}{}$ is a specification in a 0d space, i.e., a point. It
+  selects that point.
+\item $\cpath{1}{-1}$ is a specification in a 1d space, i.e., a line with 3
+  possible positions: a center with no label and two endpoints labeled $-1$
+  and $1$; it chooses the endpoint labeled $-1$.
+\item $\cpath{1}{1}$ is a specification in the same space as above which
+  selects the other endpoint.
+\item $\cpath{1,2}{-1,2}$ is a specification in a 2d space with 9 points
+  arranged in a grid. It selects the point labeled $(-1,2)$ in that grid.
+\item $\cpath{1,2,3}{-1,2,3}$ is a specification in a 3d space with 27 points
+  which selects the point labeled $(-1,2,3)$ in the space.
+\end{itemize}
+One way to represent this information is by drawing the space as a tree of
+degree 3 with a star at the desired location:
+\[
+\emptyset
+\qquad
+\Tree [.$\emptyset$ $-1*$ $\emptyset$ 1 ]
+\qquad
+\Tree [.$\emptyset$ $-1$ $\emptyset$ $1*$ ]
+\qquad
+\Tree [.$\emptyset$ [.$-1$ $-2$ $\emptyset$ $2*$ ] 
+                  [.$\emptyset$ $-2$ $\emptyset$ $2$ ] 
+                  [.1 $-2$ $\emptyset$ $2$ ] ]
+\]
 
 
-\newpage
-~
-\newpage
 
 We present the syntax of generalized $n$-dimensional types and isomorphisms
 between them.
