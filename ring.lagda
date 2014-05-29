@@ -21,6 +21,8 @@
 \newcommand{\todo}[1]{\textbf{Todo:} #1}
 \newcommand{\ignore}[1]{}
 
+\newcommand{\pn}[1]{\mathcal{P}\textbf{#1}}
+\newcommand{\qn}[1]{\mathcal{Q}\textbf{#1}}
 \newcommand{\cpath}[2]{\textit{path}~\{#1\}~\{#2\}}
 \newcommand{\evalone}[2]{#1~\triangleright~#2}
 \newcommand{\evaloneb}[2]{#1~\triangleleft~#2}
@@ -499,105 +501,81 @@ this idea in the remainder of the paper.
 \section{Cubes}
 \label{cubes}
 
-\ignore{
-p.10
+As hinted at in the previous section, one can think of the \textbf{Int}
+construction as generalizing conventional (0-dimensional) types to a
+higher-dimension. The types in the higher-dimension are indexed by a polarity
+which specificies their position in a 1-dimensional space. Generalizing this
+idea further, we view types as being indexed by a dimension $n$ and a
+position in the corresponding $n$-dimensional space. 
 
-Category of indices n: the objects are finite sets with a commutative +. The
-morphisms are embeddings of n into m >= n. So we have two maps from {1} to
-{1,2}. The map phi(1) = 2 or the map phi'(1) = 1.
+%%%%%%%%%%%%%%
+\subsection{Indexing}
 
---
+We will have two kinds of $n$-dimensional spaces: spaces $\pn{n}$ with $2^n$
+points labeled by certain subsets of $\textbf{n}=\{1,\ldots,n\}$, and spaces
+$\qn{n}$ with $3^n$ points labeled by certain subsets of $\{\pm 1,\ldots,\pm
+n\}$. Both 0d spaces consist of just one point. The 1d space $\qn{1}$ is
+depicted below:
+\begin{center}
+\begin{tikzpicture}
+\node (Z) at (0,0) {$\emptyset$};
+\node (P) [right of=Z] {$\{1\}$};
+\node (N) [left of=Z] {$\{-1\}$};
+\draw[->] (Z) -- (P);
+\draw[->] (Z) -- (N);
+\end{tikzpicture}
+\end{center}
+It consists of 3 points. The space $\pn{1}$ is the right half of the space
+without the node $\{-1\}$. The space $\qn{2}$ is depicted below:
+\begin{center}
+\begin{tikzpicture}[node distance=1.7cm]
+\node (ZZ) at (5.5,0) {$\emptyset$};
+\node (ZP) [right of=ZZ] {$\{1\}$};
+\node (ZN) [left of=ZZ] {$\{-1\}$};
+\node (ZNP) [above of=ZN] {$\{-1,2\}$};
+\node (ZP2) [above of=ZZ] {$\{2\}$};
+\node (ZPP) [above of=ZP] {$\{1,2\}$};
+\node (ZNN) [below of=ZN] {$\{-1,-2\}$};
+\node (ZN2) [below of=ZZ] {$\{-2\}$};
+\node (ZPN) [below of=ZP] {$\{1,-2\}$};
+\draw[->] (ZZ) -- (ZP);
+\draw[->] (ZZ) -- (ZN);
+\draw[->] (ZZ) -- (ZP2);
+\draw[->] (ZZ) -- (ZN2);
+\draw[->] (ZP2) -- (ZNP);
+\draw[->] (ZP2) -- (ZPP);
+\draw[->] (ZN) -- (ZNP);
+\draw[->] (ZP) -- (ZPP);
+\draw[->] (ZN) -- (ZNN);
+\draw[->] (ZP) -- (ZPN);
+\draw[->] (ZN2) -- (ZPN);
+\draw[->] (ZN2) -- (ZNN);
+\end{tikzpicture}
+\end{center}
+The space $\pn{2}$ is the upper right square. The arrows in the figures are
+\emph{inclusions} of sets.
 
-Categories Pn and Qn: The objects of Qn are subsets of {-n,...,-1,1,...n}
-such that no number appears with both + and - signs. Morphisms are inclusions
-of subsets. Pn does not have any negative elements.
+There are two ways of embedding $\qn{1}$ into $\qn{2}$ determined by how one
+chooses to inject the set $\{1\}$ into the set $\{1,2\}$. One can choose to
+send the element 1 in the first set to either the element 1 or the element 2
+in the second set. The first map embeds $\qn{1}$ into the top row of $\qn{2}$
+while the second map embeds $\qn{1}$ into the right column of $\qn{2}$.
 
-Q0 is      {}
-P0 is the same
+The main indexing objects are the result of the Grothendieck construction
+described below. An indexing object is of the form $(\textbf{n},S)$ where $S$
+is one of the labeling sets in $\qn{n}$. Examples of indexing objects are
+$(\emptyset,\emptyset)$, $(\textbf{1},\{1\})$, $(\textbf{1},\{-1\})$,
+$(\textbf{2},\{1\})$, $(\textbf{2},\{-1,-2\})$, etc. An indexing object
+$(\textbf{n},S)$ embeds into $(\textbf{m},T)$ if there is an injection
+between the finite sets $\textbf{n}$ and $\textbf{m}$ that maps $S$ to a
+subset of $T$. For example, we have seen above that it is possible to map the
+set $\{-1\}$ in $\qn{1}$ to the set $\{-1,2\}$ in $\qn{2}$ and hence in
+$\qn{3}$. Thus there is an embedding of $(\textbf{1},\{-1\})$ into
+$(\textbf{3},\{-1,2,3\})$.
 
-Q1 is 
-           {-1} <-- {} --> {1}
-P1 is the right half
-
-Q2 is
-          {-1,2} <-- {2} --> {1,2}
-             |       |       |
-            {-1} <-- {} --> {1}
-             |       |       |
-         {-1,-2} <-- {-2} --> {1,-2}
-P2 is the top right qudrant
-
-Q3 has 27 objects... In general Pn has 2^n objects and Qn has 3^n objects.
-
---
-
-If we embed the index n into m >= n, this induces an embedding of Qn into Qm.
-For example, if we look at phi and phi' above. Recall phi(1) = 2. Its action
-on the objects in Q1 is the following. Let C be the subset that's not the
-image of phi which would be {1} in our case. Extend phi such that
-phi(-x)=-phi(x). Then for each object of Q1, apply the extended phi and add C.
-So {-1} ==> {-2,1}
-   {}   ==> {1}
-   {1}  ==> {2,1}
-So this embeds Q1 into the right column of Q2. 
-Let's repeat with phi'(1)=1. The action on Q1 is the following. C={2} and
-  {-1} ==> {-1,2}
-  {}   ==> {2}
-  {1}  ==> {1,2}
-which embeds Q1 into the top row of Q2.
-
-All of this is functorial and nice.
-
---
-
-All the above is also just helpers. The main indexing category is the
-Grothendieck construction. The objects are (n,S) where n is a finite set from
-the category of finite sets and S is one of the sets in Qn. The morphisms
-(n,S) to (m,T) are some phi that embeds n into m and an inclusion of Qphi(S)
-into T. Example:
-
-Here are some objects in the main indexing category: (0,{}), (1,{-1}), (1,{1}),
-(2,{-1,2}), (2,{1}), (3,{-1,2,3}), etc. 
-The morphism (1,{-1}) -> (3,{-1,2,3}) 
-consists of phi(1)=1 which embeds {-1} into {-1,2} as shown above which
-is included in {-1,2,3} as desired.
-
-Now the fun begins. The above Grothendieck construction provides the SHAPES
-of our types.
-}
-
-We begin by specifying a way to denote a corner in an $n$-dimensional cube
-with $3^n$ corners. Examples are $\cpath{0}{}$, $\cpath{1}{-1}$,
-$\cpath{1}{1}$, $\cpath{2}{-1,2}$, and $\cpath{3}{-1,2,3}$ which have the
-following meaning:
-\begin{itemize}
-\item $\cpath{0}{}$ is a specification in a 0d space, i.e., a point. It
-  selects that point.
-\item $\cpath{1}{-1}$ is a specification in a 1d space, i.e., a line with 3
-  possible positions: a center with no label and two endpoints labeled $-1$
-  and $1$; it chooses the endpoint labeled $-1$.
-\item $\cpath{1}{1}$ is a specification in the same space as above which
-  selects the other endpoint.
-\item $\cpath{1,2}{-1,2}$ is a specification in a 2d space with 9 points
-  arranged in a grid. It selects the point labeled $(-1,2)$ in that grid.
-\item $\cpath{1,2,3}{-1,2,3}$ is a specification in a 3d space with 27 points
-  which selects the point labeled $(-1,2,3)$ in the space.
-\end{itemize}
-One way to represent this information is by drawing the space as a tree of
-degree 3 with a star at the desired location:
-\[
-\emptyset
-\qquad
-\Tree [.$\emptyset$ $-1*$ $\emptyset$ 1 ]
-\qquad
-\Tree [.$\emptyset$ $-1$ $\emptyset$ $1*$ ]
-\qquad
-\Tree [.$\emptyset$ [.$-1$ $-2$ $\emptyset$ $2*$ ] 
-                  [.$\emptyset$ $-2$ $\emptyset$ $2$ ] 
-                  [.1 $-2$ $\emptyset$ $2$ ] ]
-\]
-
-
+\newpage
+~
+\newpage
 
 We present the syntax of generalized $n$-dimensional types and isomorphisms
 between them.
@@ -1758,4 +1736,40 @@ two points ``disappear.''  Surprisingly, that is everything that we need. The
 extension to higher dimensions just ``works'' because paths in HoTT have a
 rich structure. We explain the details after we include a short introduction
 of the necessary concepts from HoTT.
+
+We will need a way of indexing types by the space they live in and their
+position in that space. \ldots
+
+We begin by specifying a way to denote a corner in an $n$-dimensional cube
+with $3^n$ corners. Examples are $\cpath{0}{}$, $\cpath{1}{-1}$,
+$\cpath{1}{1}$, $\cpath{2}{-1,2}$, and $\cpath{3}{-1,2,3}$ which have the
+following meaning:
+\begin{itemize}
+\item $\cpath{0}{}$ is a specification in a 0d space, i.e., a point. It
+  selects that point.
+\item $\cpath{1}{-1}$ is a specification in a 1d space, i.e., a line with 3
+  possible positions: a center with no label and two endpoints labeled $-1$
+  and $1$; it chooses the endpoint labeled $-1$.
+\item $\cpath{1}{1}$ is a specification in the same space as above which
+  selects the other endpoint.
+\item $\cpath{1,2}{-1,2}$ is a specification in a 2d space with 9 points
+  arranged in a grid. It selects the point labeled $(-1,2)$ in that grid.
+\item $\cpath{1,2,3}{-1,2,3}$ is a specification in a 3d space with 27 points
+  which selects the point labeled $(-1,2,3)$ in the space.
+\end{itemize}
+One way to represent this information is by drawing the space as a tree of
+degree 3 with a star at the desired location:
+\[
+\emptyset
+\qquad
+\Tree [.$\emptyset$ $-1*$ $\emptyset$ 1 ]
+\qquad
+\Tree [.$\emptyset$ $-1$ $\emptyset$ $1*$ ]
+\qquad
+\Tree [.$\emptyset$ [.$-1$ $-2$ $\emptyset$ $2*$ ] 
+                  [.$\emptyset$ $-2$ $\emptyset$ $2$ ] 
+                  [.1 $-2$ $\emptyset$ $2$ ] ]
+\]
+
+
 
