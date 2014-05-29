@@ -495,6 +495,76 @@ this idea in the remainder of the paper.
 \section{Cubes}
 \label{cubes}
 
+p.10
+
+Category of indices n: the objects are finite sets with a commutative +. The
+morphisms are embeddings of n into m >= n. So we have two maps from {1} to
+{1,2}. The map phi(1) = 2 or the map phi'(1) = 1.
+
+--
+
+Categories Pn and Qn: The objects of Qn are subsets of {-n,...,-1,1,...n}
+such that no number appears with both + and - signs. Morphisms are inclusions
+of subsets. Pn does not have any negative elements.
+
+Q0 is      {}
+P0 is the same
+
+Q1 is 
+           {-1} <-- {} --> {1}
+P1 is the right half
+
+Q2 is
+          {-1,2} <-- {2} --> {1,2}
+             |       |       |
+            {-1} <-- {} --> {1}
+             |       |       |
+         {-1,-2} <-- {-2} --> {1,-2}
+P2 is the top right qudrant
+
+Q3 has 27 objects... In general Pn has 2^n objects and Qn has 3^n objects.
+
+--
+
+If we embed the index n into m >= n, this induces an embedding of Qn into Qm.
+For example, if we look at phi and phi' above. Recall phi(1) = 2. Its action
+on the objects in Q1 is the following. Let C be the subset that's not the
+image of phi which would be {1} in our case. Extend phi such that
+phi(-x)=-phi(x). Then for each object of Q1, apply the extended phi and add C.
+So {-1} ==> {-2,1}
+   {}   ==> {1}
+   {1}  ==> {2,1}
+So this embeds Q1 into the right column of Q2. 
+Let's repeat with phi'(1)=1. The action on Q1 is the following. C={2} and
+  {-1} ==> {-1,2}
+  {}   ==> {2}
+  {1}  ==> {1,2}
+which embeds Q1 into the top row of Q2.
+
+All of this is functorial and nice.
+
+--
+
+All the above is also just helpers. The main indexing category is the
+Grothendieck construction. The objects are (n,S) where n is a finite set from
+the category of finite sets and S is one of the sets in Qn. The morphisms
+(n,S) to (m,T) are some phi that embeds n into m and an inclusion of Qphi(S)
+into T. Example:
+
+Here are some objects in the main indexing category: (0,{}), (1,{-1}), (1,{1}),
+(2,{-1,2}), (2,{1}), (3,{-1,2,3}), etc. 
+The morphism (1,{-1}) -> (3,{-1,2,3}) 
+consists of phi(1)=1 which embeds {-1} into {-1,2} as shown above which
+is included in {-1,2,3} as desired.
+
+Now the fun begins. The above Grothendieck construction provides the SHAPES
+of our types.
+
+
+\newpage
+~
+\newpage
+
 We present the syntax of generalized $n$-dimensional types and isomorphisms
 between them.
 
@@ -583,13 +653,13 @@ between them.
 \subsection{Negative and Cubical Types}
 
 Our types $\cubt$ are ``cubes'' defined as follows:
-\[\begin{array}{lrcl}
-(\textit{0d types}) & \tau &::=& 
-  0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
-(\textit{nd types}) & \cubt &::=& 
-  \tau \alt \nodet{\cubt}{\cubt}
+\[\begin{array}{rcl}
+\tau &::=& 0 \alt 1 \alt \tau_1+\tau_1 \alt \tau_1*\tau_2 \\
+\cubt &::=& \tau \alt \nodet{\cubt_1}{\cubt_2} \alt
+  \cubt_1\boxplus\cubt_2 \alt \cubt_1\boxtimes\cubt_2 \alt 
+  \boxminus\cubt
 \end{array}\]
-We use $\tau_1 - \tau_2$ to abbreviate $\tau_1 + (- \tau_2)$.
+
 The \emph{dimension} of a type is defined as follows:
 \[\begin{array}{rcl}
 \bdim{\cdot} &\hast& \tau \rightarrow \mathbb{N} \\
