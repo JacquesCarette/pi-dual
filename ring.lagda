@@ -2,6 +2,7 @@
 \usepackage{agda}
 \usepackage{bbm}
 \usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{textgreek}
 \usepackage{listings} 
 \usepackage{stmaryrd}
@@ -17,6 +18,10 @@
 \usepackage{graphicx}
 \usepackage{tikz-qtree}
 
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{proposition}[theorem]{Proposition}
 
 \newcommand{\todo}[1]{\textbf{Todo:} #1}
 \newcommand{\ignore}[1]{}
@@ -36,7 +41,7 @@
 \newcommand{\trace}[1]{\mathit{trace}~{#1}}
 \newcommand{\refl}[1]{\textsf{refl}_{#1}}
 \newcommand{\seg}[1]{\textsf{seg}_{#1}}
-\newcommand{\bdim}[1]{\textsf{dim}(#1)}
+\newcommand{\bdim}[1]{\textsf{maxHeight}(#1)}
 \newcommand{\Rule}[4]{
 \makebox{{\rm #1}
 $\displaystyle
@@ -625,17 +630,17 @@ defined as follows:
 \tau \boxplus (\nodet{\cubt_1}{\cubt_2}) &=& 
   \nodet{\tau \boxplus \cubt_1}{\cubt_2} \\
 (\nodet{\cubt_1}{\cubt_2}) \boxplus \tau &=& 
-  \nodet{\cubt_1 \boxplus S}{\cubt_2} \\
+  \nodet{\cubt_1 \boxplus \tau}{\cubt_2} \\
 (\nodet{\cubt_1}{\cubt_2}) \boxplus (\nodet{\cubt_3}{\cubt_4}) &=& 
   \nodet{\cubt_1 \boxplus \cubt_3}{\cubt_2 \boxplus \cubt_4} \\
 \\
 \tau_1 \boxtimes \tau_2 &=& \tau_1 \times \tau_2 \\
 \tau \boxtimes (\nodet{\cubt_1}{\cubt_2}) &=& 
-  \nodet{\tau \boxtimes \cubt_1}{S \boxtimes \cubt_2} \\
+  \nodet{\tau \boxtimes \cubt_1}{\tau \boxtimes \cubt_2} \\
 (\nodet{\cubt_1}{\cubt_2}) \boxtimes \cubt &=& 
   \nodet{\cubt_1 \boxtimes \cubt}{\cubt_2 \boxtimes \cubt} \\
 \\
-\boxminus~\tau &=& \nodet{\phantom{S}}{\tau} \\
+\boxminus~\tau &=& \nodet{\phantom{\tau}}{\tau} \\
 \boxminus~\nodet{\cubt_1}{\cubt_2} &=& 
   \nodet{\boxminus~\cubt_2}{\boxminus~\cubt_1} 
 \end{array}\]
@@ -649,24 +654,23 @@ dimension $(n+m)$. The example in Fig.~\ref{mult} illustrates the idea using
 the product of 1-dimensional cube (i.e., a line) with a 2-dimensional cube
 (i.e., a square). The result is a 3-dimensional cube as illustrated.
 
-\begin{verbatim}
-write a proposition that the dimensions
-are as follows:
+We recall that the dimension of a type $\nodet{\cubt_1}{\cubt_2}$ is the
+maximum height its tree representation with 0d types at the leaves. The sum,
+product, and negation operations affect this maximum height as follows.
 
-dim(tau) = 0
-
-\bdim{\cubt_1 + \cubt_2} &=& \max(\bdim{\cubt_1},\bdim{\cubt_2}) \\
-\bdim{\cubt_1 * \cubt_2} &=& \bdim{\cubt_1} + \bdim{\cubt_2} \\
-\bdim{- \cubt} &=& \max(1,\bdim{\cubt})
-
-Prove it
+\begin{proposition}[Dimensions]
+The dimensions of sums, products, and negations are:
+\[\begin{array}{rcl}
+\bdim{\cubt_1 \boxplus \cubt_2} &=& \max(\bdim{\cubt_1},\bdim{\cubt_2}) \\
+\bdim{\cubt_1 \boxtimes \cubt_2} &=& \bdim{\cubt_1} + \bdim{\cubt_2} \\
+\bdim{\boxminus \cubt} &=& \max(1,\bdim{\cubt})
+\end{array}\]
+\end{proposition}
 The base types have dimension 0. If negative types are not used, all
 dimensions remain at 0. If negative types are used but no products of
 negative types appear anywhere, the dimension is raised to 1. This is the
 situation with the \textbf{Int} or $\mathcal{G}$ construction. Once negative
 and product types are freely used, the dimension can increase without bounds.
-\end{verbatim}
-
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{Isomorphisms} 
@@ -679,16 +683,15 @@ negative types introduce new isomorphisms.
 \begin{verbatim}
 need obvious things to get started: id, seq-comp
 
-now go to sec. 2.3. 
-
 need multiplication functor: 
-t1 (dim n1) x t2 (dim n2) => (t1 x t2) (dim n1+n2)
+given f : a -> a', g : b -> b', there is a morphism fxg : axb -> a'xb'
+satisfying associativity etc.
 
+go through all the requirements in sec. 2.3
+
+add the t-t=0 conditions...
 
 \end{verbatim}
-
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work and Context}
