@@ -505,139 +505,10 @@ this idea in the remainder of the paper.
 \label{cubes}
 
 As hinted at in the previous section, one can think of the \textbf{Int}
-construction as generalizing conventional (0-dimensional) types to a
-higher-dimension. The types in the higher-dimension are indexed by a polarity
-which specifies their position in a 1-dimensional space. Generalizing this
-idea further, we view types as being indexed by a dimension $n$ and a
-position in the corresponding $n$-dimensional space.
-
-%%%%%%%%%%%%%%
-\subsection{Indexing}
-
-We will refer to two kinds of $n$-dimensional cubical diagrams with~$2^n$ and
-$3^n$ vertices respectively. These diagrams will be indexed by the categories
-$\pn{n}$ and $\qn{n}$ defined below. The category $\pn{n}$ has subsets of
-$\textbf{n}=\{1,\ldots,n\}$ as objects and set inclusions as morphisms. The
-category $\qn{n}$ has subsets of $\{\pm 1,\ldots,\pm n\}$ in which no number
-appears with both positive and negative polarities as objects and set
-inclusions as morphisms. Both $\pn{0}$ and $\qn{0}$ consist of the category
-with one object, the empty set. The category $\qn{1}$ is depicted below:
-\begin{center}
-\begin{tikzpicture}
-\node (Z) at (0,0) {$\emptyset$};
-\node (P) [right of=Z] {$\{1\}$};
-\node (N) [left of=Z] {$\{-1\}$};
-\draw[->] (Z) -- (P);
-\draw[->] (Z) -- (N);
-\end{tikzpicture}
-\end{center}
-It consists of 3 objects. The category $\pn{1}$ consists of the right part of
-the diagram. The category $\qn{2}$ is depicted below:
-\begin{center}
-\begin{tikzpicture}[node distance=1.7cm]
-\node (ZZ) at (5.5,0) {$\emptyset$};
-\node (ZP) [right of=ZZ] {$\{1\}$};
-\node (ZN) [left of=ZZ] {$\{-1\}$};
-\node (ZNP) [above of=ZN] {$\{-1,2\}$};
-\node (ZP2) [above of=ZZ] {$\{2\}$};
-\node (ZPP) [above of=ZP] {$\{1,2\}$};
-\node (ZNN) [below of=ZN] {$\{-1,-2\}$};
-\node (ZN2) [below of=ZZ] {$\{-2\}$};
-\node (ZPN) [below of=ZP] {$\{1,-2\}$};
-\draw[->] (ZZ) -- (ZP);
-\draw[->] (ZZ) -- (ZN);
-\draw[->] (ZZ) -- (ZP2);
-\draw[->] (ZZ) -- (ZN2);
-\draw[->] (ZP2) -- (ZNP);
-\draw[->] (ZP2) -- (ZPP);
-\draw[->] (ZN) -- (ZNP);
-\draw[->] (ZP) -- (ZPP);
-\draw[->] (ZN) -- (ZNN);
-\draw[->] (ZP) -- (ZPN);
-\draw[->] (ZN2) -- (ZPN);
-\draw[->] (ZN2) -- (ZNN);
-\end{tikzpicture}
-\end{center}
-The category $\pn{2}$ is the upper right square. 
-
-Our types will be indexed by objects from the categories $\qn{n}$, i.e., by
-pairs $(\textbf{n},S)$ specifying the category $\qn{n}$ and the selected
-object in it. Examples of such indexing objects are $(\textbf{0},\emptyset)$,
-$(\textbf{1},\{-1\})$ which is the object $\{-1\}$ in $\qn{1}$,
-$(\textbf{2},\{-1\})$ which is also the object $\{-1\}$ but in $\qn{2}$, and
-$(\textbf{2},\{-1,-2\})$ which is the object $\{-1,-2\}$ in $\qn{2}$. By the
-Grothendieck construction~\cite[Ch.12]{DBLP:books/daglib/0080381}, these
-indexing objects form a category with morphisms from $(\textbf{n},S)$ to
-$(\textbf{m},T)$ if there is an injection between the finite sets
-$\textbf{n}$ and $\textbf{m}$ that maps $S$ to a subset of~$T$. For example,
-there are two ways of embedding $\qn{1}$ into $\qn{2}$ determined by how one
-chooses to inject the set $\{1\}$ into the set $\{1,2\}$. One can choose to
-send the element 1 in the first set to either the element 1 or the element 2
-in the second set. The first map embeds $\qn{1}$ into the top row of $\qn{2}$
-while the second map embeds $\qn{1}$ into the right column of $\qn{2}$. Each
-of these possibilities gives a morphism between $(\textbf{1},\{-1\})$ and
-$(\textbf{2},\{-1,2\})$.
-
-%%%%%%%%%%%%%%
-\subsection{The Cube Construction}
-
-Having defined our indexing objects, we now proceed to define the generalized
-$n$-dimensional types. We do this in two stages, first for the special case
-of indexing objects in $\pn{n}$ and then for general indexing objects in
-$\qn{n}$.
-
-Given $(\textbf{n},S)$ for the special case of $S \in \pn{n}$, we construct a
-$n$-dimensional extension of $\Pi$ denoted $\Pin{n}(S)$. The types in
-$\Pin{n}(S)$ are as many copies as there are subsets of $S$ of the types in
-$\Pi$ labeled by the subsets of $S$. For example, a type in
-$\Pin{2}(\emptyset)$ is just a plain $\Pi$ type (technically indexed by
-$\emptyset$); a type in $\Pin{2}(\{1\})$ is a collection of two $\Pi$-types
-indexed by $\emptyset$ and $\{1\}$; a type in $\Pin{2}(\{2\})$ is also a
-collection of two $\Pi$-types but indexed by $\emptyset$ and $\{2\}$; and
-finally a type in $\Pin{2}(\{1,2\})$ is a collection of four $\Pi$-types
-indexed by $\emptyset$, $\{1\}$, $\{2\}$, and $\{1,2\}$. In general, for a
-given $\textbf{n}$, there are $2^n$ versions of $\Pin{n}$ viewed as being
-spread out over the corners of an $n$-dimensional cube. The various copies of
-$\Pin{n}(S)$ can be embedded in one another following the morphisms in the
-indexing category. Thus the two $\Pi$-types in $\Pin{2}(\{1\})$ embed in the
-four $\Pi$-types in $\Pin{2}(\{1,2\})$ as follows. We get two copies of the
-type indexed by $\emptyset$; one indexed by $\emptyset$ and one indexed by
-$\{2\}$; and we get two copies of the type indexed by $\{1\}$; one indexed by
-$\{1\}$ and one indexed by $\{1,2\}$.
-
-\begin{center}
-\begin{tikzpicture}[node distance=3.3cm]
-\node[text width=1cm] (A) at (0,0) {$\Pin{2}(\emptyset) = \Pi_{\emptyset}$};
-\node[text width=2cm] (B) [right of=A] {$\Pin{2}(\{1\}) = \Pi_{\emptyset}\times\Pi_{\{1\}}$};
-\node[text width=1.5cm] (C) [above of=A] {$\Pin{2}(\{2\}) = \Pi_{\emptyset}\times\Pi_{\{2\}}$};
-\node[text width=3cm] (D) [right of=C] {$\Pin{2}(\{1,2\}) = \Pi_{\emptyset}\times\Pi_{\{1\}}\times\Pi_{\{2\}}\times\Pi_{\{1,2\}}$};
-\draw[->] (A) -- (B);
-\draw[->] (A) -- (C);
-\draw[->] (C) -- (D);
-\draw[->] (B) -- (D);
-\end{tikzpicture}
-\end{center}
-
-
-
-Formally the set of types in $\Pin{n}(S)$ is:
-\[\begin{array}{rcl}
-\taun{n}(S) &::=& \bigotimes_n \{ \tau_s ~|~ s \textrm{~subset~of~} S \} \\
-  &\alt& \taun{n}(S) + \taun{n}(S) \\
-  &\alt& \taun{i}(S) * \taun{j}(S) \quad\mbox{where~} n=i+j\\
-  &\alt& \embed(\textbf{m}\mapsto\textbf{n}){\taun{m}(T)}
-\end{array}\]
-
-indexing by qn
-
-show functors on the pi-n types and then isos
-
-\newpage
-~
-\newpage
-
-We present the syntax of generalized $n$-dimensional types and isomorphisms
-between them.
+construction as generalizing conventional (0-dimensional) types to
+1-dimensional types indexed by a positive or negative polarity. Generalizing
+this idea further, we now view types as $n$-dimensional cubes polarized by
+all $2^n$ combinations of positive and negative polarities. 
 
 \begin{figure*}
 \[\begin{array}{c}
@@ -720,81 +591,56 @@ between them.
 \caption{\label{mult}Example of multiplication of two cubical types.}
 \end{figure*}
 
-%%%%%%%%%%%%%%%%%%%%
-\subsection{Negative and Cubical Types}
+%%%%%%%%%%%%%%
+\subsection{Syntax} 
 
 Our types $\cubt$ are ``cubes'' defined as follows:
 \[\begin{array}{rcl}
-\tau &::=& 0 \alt 1 \alt \tau_1+\tau_1 \alt \tau_1*\tau_2 \\
-\cubt &::=& \tau \alt \nodet{\cubt_1}{\cubt_2} \alt
-  \cubt_1\boxplus\cubt_2 \alt \cubt_1\boxtimes\cubt_2 \alt 
-  \boxminus\cubt
+\tau &::=& 0 \alt 1 \alt \tau_1+\tau_2 \alt \tau_1*\tau_2 \\
+\cubt &::=& \tau \alt \nodet{\cubt_1}{\cubt_2} 
 \end{array}\]
-
-The \emph{dimension} of a type is defined as follows:
-\[\begin{array}{rcl}
-\bdim{\cdot} &\hast& \tau \rightarrow \mathbb{N} \\
-\bdim{0} &=& 0 \\
-\bdim{1} &=& 0 \\
-\bdim{\tau_1 + \tau_2} &=& \max(\bdim{\tau_1},\bdim{\tau_2}) \\
-\bdim{\tau_1 * \tau_2} &=& \bdim{\tau_1} + \bdim{\tau_2} \\
-\bdim{- \tau} &=& \max(1,\bdim{\tau})
-\end{array}\]
-The base types have dimension 0. If negative types are not used, all
-dimensions remain at 0. If negative types are used but no products of
-negative types appear anywhere, the dimension is raised to 1. This is the
-situation with the \textbf{Int} or $\mathcal{G}$ construction. Once negative
-and product types are freely used, the dimension can increase without bounds.
-
-This point is made precise in the following denotation of types which maps a
-type of dimension $n$ to an $n$-dimensional cube. We represent such a cube
-syntactically as a binary tree of maximum depth~$n$ with nodes of the form
-$\nodet{\cubt_1}{\cubt_2}$. In such a node, $\cubt_1$ is the positive
-subspace and $\cubt_2$ (shaded in gray) is the negative subspace along the
-first dimension. Each of these subspaces is itself a cube of a lower
-dimension. The $0$-dimensional cubes are plain sets representing the
-denotation of conventional first-order types. We use $S$ to denote the
-denotations of these plain types. A 1-dimensional cube, $\nodet{S_1}{S_2}$,
-intuitively corresponds to the difference $\tau_1 - \tau_2$ of the two types
-whose denotations are $S_1$ and $S_2$ respectively. The type can be
-visualized as a ``line'' with polarized endpoints connecting the two
-points~$S_1$ and $S_2$. A full 2-dimensional cube,
-$\nodet{(\nodet{S_1}{S_2})}{(\nodet{S_3}{S_4})}$, intuitively corresponds to
-the iterated difference of the appropriate types
+The syntax $\nodet{\cubt_1}{\cubt_2}$ represents $n$-dimensional cubes as
+binary trees of maximum depth~$n$. The subspace $\cubt_1$ is the positive
+subspace along the first dimension and the subspace $\cubt_2$ (shaded in
+gray) is the negative subspace along that same dimension. Each of these
+subspaces is itself a cube of a lower dimension. The $0$-dimensional cubes
+are the conventional first-order types $\tau$. A 1-dimensional cube,
+$\nodet{\tau_1}{\tau_2}$, intuitively corresponds to the difference $\tau_1 -
+\tau_2$ of the two types. The type can be visualized as a ``line'' with
+polarized endpoints connecting the two points~$\tau_1$ and $\tau_2$. A full
+2-dimensional cube,
+$\nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}$, intuitively
+corresponds to the iterated difference of the types
 $(\tau_1-\tau_2)-(\tau_3-\tau_4)$ where the successive ``colors'' from the
 outermost box encode the sign. The type can be visualized as a ``square''
 with polarized corners connecting the two lines corresponding to
 $(\tau_1-\tau_2)$ and $(\tau_3-\tau_4)$. (See Fig.~\ref{mult} which is
-further explained after we discuss multiplication below.)
+further explained after we discuss multiplication below.) 
 
-Formally, the denotation of types discussed so far is as follows:
+There are notions of sum $\boxplus$, product $\boxtimes$, and negation
+$\boxminus$ on $n$-dimensional types. These operations are inductively
+defined as follows:
 \[\begin{array}{rcl}
-\den{0} &=& \emptyset \\
-\den{1} &=& \{ \star \} \\
-\den{\tau_1 + \tau_2} &=& \den{\tau_1} \oplus \den{\tau_2} \\
-\den{\tau_1 * \tau_2} &=& \den{\tau_1} \otimes \den{\tau_2} \\
-\den{- \tau} &=& \ominus \den{\tau} \\
+\tau_1 \boxplus \tau_2 &=& \tau_1 + \tau_2 \\
+\tau \boxplus (\nodet{\cubt_1}{\cubt_2}) &=& 
+  \nodet{\tau \boxplus \cubt_1}{\cubt_2} \\
+(\nodet{\cubt_1}{\cubt_2}) \boxplus \tau &=& 
+  \nodet{\cubt_1 \boxplus S}{\cubt_2} \\
+(\nodet{\cubt_1}{\cubt_2}) \boxplus (\nodet{\cubt_3}{\cubt_4}) &=& 
+  \nodet{\cubt_1 \boxplus \cubt_3}{\cubt_2 \boxplus \cubt_4} \\
 \\
-\noalign{\mbox{where:}\hfill}
+\tau_1 \boxtimes \tau_2 &=& \tau_1 \times \tau_2 \\
+\tau \boxtimes (\nodet{\cubt_1}{\cubt_2}) &=& 
+  \nodet{\tau \boxtimes \cubt_1}{S \boxtimes \cubt_2} \\
+(\nodet{\cubt_1}{\cubt_2}) \boxtimes \cubt &=& 
+  \nodet{\cubt_1 \boxtimes \cubt}{\cubt_2 \boxtimes \cubt} \\
 \\
-S_1 \oplus S_2 &=& S_1 \uplus S_2 \\
-S \oplus (\nodet{\cubt_1}{\cubt_2}) &=& \nodet{S \oplus \cubt_1}{\cubt_2} \\
-(\nodet{\cubt_1}{\cubt_2}) \oplus S &=& \nodet{\cubt_1 \oplus S}{\cubt_2} \\
-(\nodet{\cubt_1}{\cubt_2}) \oplus (\nodet{\cubt_3}{\cubt_4}) &=& 
-  \nodet{\cubt_1 \oplus \cubt_3}{\cubt_2 \oplus \cubt_4} \\
-\\
-S_1 \otimes S_2 &=& S_1 \times S_2 \\
-S \otimes (\nodet{\cubt_1}{\cubt_2}) &=& 
-  \nodet{S \otimes \cubt_1}{S \otimes \cubt_2} \\
-(\nodet{\cubt_1}{\cubt_2}) \otimes \cubt &=& 
-  \nodet{\cubt_1 \otimes \cubt}{\cubt_2 \otimes \cubt} \\
-\\
-\ominus~S &=& \nodet{\phantom{S}}{S} \\
-\ominus~\nodet{\cubt_1}{\cubt_2} &=& \nodet{\ominus~\cubt_2}{\ominus~\cubt_1} 
+\boxminus~\tau &=& \nodet{\phantom{S}}{\tau} \\
+\boxminus~\nodet{\cubt_1}{\cubt_2} &=& 
+  \nodet{\boxminus~\cubt_2}{\boxminus~\cubt_1} 
 \end{array}\]
-The type 0 maps to the empty set. The type 1 maps to a singleton set. The sum
-of $0$-dimensional types is the disjoint union as usual. For cubes of higher
-dimensions, the subspaces are recursively added. Note that the sum of
+The sum of $0$-dimensional types is the disjoint union as usual. For cubes of
+higher dimensions, the subspaces are recursively added. Note that the sum of
 1-dimensional types reduces to the sum used in the \textbf{Int} construction.
 The definition of negation is natural: it recursively swaps the positive and
 negative subspaces. The product of 0-dimensional types is the cartesian
@@ -802,6 +648,47 @@ product of sets. For cubes of higher-dimensions $n$ and $m$, the result is of
 dimension $(n+m)$. The example in Fig.~\ref{mult} illustrates the idea using
 the product of 1-dimensional cube (i.e., a line) with a 2-dimensional cube
 (i.e., a square). The result is a 3-dimensional cube as illustrated.
+
+\begin{verbatim}
+write a proposition that the dimensions
+are as follows:
+
+dim(tau) = 0
+
+\bdim{\cubt_1 + \cubt_2} &=& \max(\bdim{\cubt_1},\bdim{\cubt_2}) \\
+\bdim{\cubt_1 * \cubt_2} &=& \bdim{\cubt_1} + \bdim{\cubt_2} \\
+\bdim{- \cubt} &=& \max(1,\bdim{\cubt})
+
+Prove it
+The base types have dimension 0. If negative types are not used, all
+dimensions remain at 0. If negative types are used but no products of
+negative types appear anywhere, the dimension is raised to 1. This is the
+situation with the \textbf{Int} or $\mathcal{G}$ construction. Once negative
+and product types are freely used, the dimension can increase without bounds.
+\end{verbatim}
+
+
+%%%%%%%%%%%%%%%%%%%%%
+\subsection{Isomorphisms} 
+
+The $\Pi$ isomorphisms are, in spirit, isomorphisms of $n$-dimentional
+cubical types. For example, we still expect addition $\boxplus$ to be
+associative, commutative, etc. The situation is however more involved and the
+negative types introduce new isomorphisms. 
+
+\begin{verbatim}
+need obvious things to get started: id, seq-comp
+
+now go to sec. 2.3. 
+
+need multiplication functor: 
+t1 (dim n1) x t2 (dim n2) => (t1 x t2) (dim n1+n2)
+
+
+\end{verbatim}
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work and Context}
@@ -1831,4 +1718,129 @@ degree 3 with a star at the desired location:
 \]
 
 
+
+%%%%%%%%%%%%%%
+\subsection{Indexing}
+
+We will refer to two kinds of $n$-dimensional cubical diagrams with~$2^n$ and
+$3^n$ vertices respectively. These diagrams will be indexed by the categories
+$\pn{n}$ and $\qn{n}$ defined below. The category $\pn{n}$ has subsets of
+$\textbf{n}=\{1,\ldots,n\}$ as objects and set inclusions as morphisms. The
+category $\qn{n}$ has subsets of $\{\pm 1,\ldots,\pm n\}$ in which no number
+appears with both positive and negative polarities as objects and set
+inclusions as morphisms. Both $\pn{0}$ and $\qn{0}$ consist of the category
+with one object, the empty set. The category $\qn{1}$ is depicted below:
+\begin{center}
+\begin{tikzpicture}
+\node (Z) at (0,0) {$\emptyset$};
+\node (P) [right of=Z] {$\{1\}$};
+\node (N) [left of=Z] {$\{-1\}$};
+\draw[->] (Z) -- (P);
+\draw[->] (Z) -- (N);
+\end{tikzpicture}
+\end{center}
+It consists of 3 objects. The category $\pn{1}$ consists of the right part of
+the diagram. The category $\qn{2}$ is depicted below:
+\begin{center}
+\begin{tikzpicture}[node distance=1.7cm]
+\node (ZZ) at (5.5,0) {$\emptyset$};
+\node (ZP) [right of=ZZ] {$\{1\}$};
+\node (ZN) [left of=ZZ] {$\{-1\}$};
+\node (ZNP) [above of=ZN] {$\{-1,2\}$};
+\node (ZP2) [above of=ZZ] {$\{2\}$};
+\node (ZPP) [above of=ZP] {$\{1,2\}$};
+\node (ZNN) [below of=ZN] {$\{-1,-2\}$};
+\node (ZN2) [below of=ZZ] {$\{-2\}$};
+\node (ZPN) [below of=ZP] {$\{1,-2\}$};
+\draw[->] (ZZ) -- (ZP);
+\draw[->] (ZZ) -- (ZN);
+\draw[->] (ZZ) -- (ZP2);
+\draw[->] (ZZ) -- (ZN2);
+\draw[->] (ZP2) -- (ZNP);
+\draw[->] (ZP2) -- (ZPP);
+\draw[->] (ZN) -- (ZNP);
+\draw[->] (ZP) -- (ZPP);
+\draw[->] (ZN) -- (ZNN);
+\draw[->] (ZP) -- (ZPN);
+\draw[->] (ZN2) -- (ZPN);
+\draw[->] (ZN2) -- (ZNN);
+\end{tikzpicture}
+\end{center}
+The category $\pn{2}$ is the upper right square. 
+
+Our types will be indexed by objects from the categories $\qn{n}$, i.e., by
+pairs $(\textbf{n},S)$ specifying the category $\qn{n}$ and the selected
+object in it. Examples of such indexing objects are $(\textbf{0},\emptyset)$,
+$(\textbf{1},\{-1\})$ which is the object $\{-1\}$ in $\qn{1}$,
+$(\textbf{2},\{-1\})$ which is also the object $\{-1\}$ but in $\qn{2}$, and
+$(\textbf{2},\{-1,-2\})$ which is the object $\{-1,-2\}$ in $\qn{2}$. By the
+Grothendieck construction~\cite[Ch.12]{DBLP:books/daglib/0080381}, these
+indexing objects form a category with morphisms from $(\textbf{n},S)$ to
+$(\textbf{m},T)$ if there is an injection between the finite sets
+$\textbf{n}$ and $\textbf{m}$ that maps $S$ to a subset of~$T$. For example,
+there are two ways of embedding $\qn{1}$ into $\qn{2}$ determined by how one
+chooses to inject the set $\{1\}$ into the set $\{1,2\}$. One can choose to
+send the element 1 in the first set to either the element 1 or the element 2
+in the second set. The first map embeds $\qn{1}$ into the top row of $\qn{2}$
+while the second map embeds $\qn{1}$ into the right column of $\qn{2}$. Each
+of these possibilities gives a morphism between $(\textbf{1},\{-1\})$ and
+$(\textbf{2},\{-1,2\})$.
+
+%%%%%%%%%%%%%%
+\subsection{The Cube Construction}
+
+Having defined our indexing objects, we now proceed to define the generalized
+$n$-dimensional types. We do this in two stages, first for the special case
+of indexing objects in $\pn{n}$ and then for general indexing objects in
+$\qn{n}$.
+
+Given $(\textbf{n},S)$ for the special case of $S \in \pn{n}$, we construct a
+$n$-dimensional extension of $\Pi$ denoted $\Pin{n}(S)$. The types in
+$\Pin{n}(S)$ are as many copies as there are subsets of $S$ of the types in
+$\Pi$ labeled by the subsets of $S$. For example, a type in
+$\Pin{2}(\emptyset)$ is just a plain $\Pi$ type (technically indexed by
+$\emptyset$); a type in $\Pin{2}(\{1\})$ is a collection of two $\Pi$-types
+indexed by $\emptyset$ and $\{1\}$; a type in $\Pin{2}(\{2\})$ is also a
+collection of two $\Pi$-types but indexed by $\emptyset$ and $\{2\}$; and
+finally a type in $\Pin{2}(\{1,2\})$ is a collection of four $\Pi$-types
+indexed by $\emptyset$, $\{1\}$, $\{2\}$, and $\{1,2\}$. In general, for a
+given $\textbf{n}$, there are $2^n$ versions of $\Pin{n}$ viewed as being
+spread out over the corners of an $n$-dimensional cube. The various copies of
+$\Pin{n}(S)$ can be embedded in one another following the morphisms in the
+indexing category. Thus the two $\Pi$-types in $\Pin{2}(\{1\})$ embed in the
+four $\Pi$-types in $\Pin{2}(\{1,2\})$ as follows. We get two copies of the
+type indexed by $\emptyset$; one indexed by $\emptyset$ and one indexed by
+$\{2\}$; and we get two copies of the type indexed by $\{1\}$; one indexed by
+$\{1\}$ and one indexed by $\{1,2\}$.
+
+\begin{center}
+\begin{tikzpicture}[node distance=3.3cm]
+\node[text width=1cm] (A) at (0,0) {$\Pin{2}(\emptyset) = \Pi_{\emptyset}$};
+\node[text width=2cm] (B) [right of=A] {$\Pin{2}(\{1\}) = \Pi_{\emptyset}\times\Pi_{\{1\}}$};
+\node[text width=1.5cm] (C) [above of=A] {$\Pin{2}(\{2\}) = \Pi_{\emptyset}\times\Pi_{\{2\}}$};
+\node[text width=3cm] (D) [right of=C] {$\Pin{2}(\{1,2\}) = \Pi_{\emptyset}\times\Pi_{\{1\}}\times\Pi_{\{2\}}\times\Pi_{\{1,2\}}$};
+\draw[->] (A) -- (B);
+\draw[->] (A) -- (C);
+\draw[->] (C) -- (D);
+\draw[->] (B) -- (D);
+\end{tikzpicture}
+\end{center}
+
+
+
+Formally the set of types in $\Pin{n}(S)$ is:
+\[\begin{array}{rcl}
+\taun{n}(S) &::=& \bigotimes_n \{ \tau_s ~|~ s \textrm{~subset~of~} S \} \\
+  &\alt& \taun{n}(S) + \taun{n}(S) \\
+  &\alt& \taun{i}(S) * \taun{j}(S) \quad\mbox{where~} n=i+j\\
+  &\alt& \embed(\textbf{m}\mapsto\textbf{n}){\taun{m}(T)}
+\end{array}\]
+
+indexing by qn
+
+show functors on the pi-n types and then isos
+
+\newpage
+~
+\newpage
 
