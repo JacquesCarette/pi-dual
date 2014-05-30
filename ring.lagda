@@ -41,7 +41,7 @@
 \newcommand{\trace}[1]{\mathit{trace}~{#1}}
 \newcommand{\refl}[1]{\textsf{refl}_{#1}}
 \newcommand{\seg}[1]{\textsf{seg}_{#1}}
-\newcommand{\bdim}[1]{\textsf{maxHeight}(#1)}
+\newcommand{\bdim}[1]{\textsf{dim}(#1)}
 \newcommand{\Rule}[4]{
 \makebox{{\rm #1}
 $\displaystyle
@@ -303,16 +303,16 @@ Sec.~\ref{intc}.\footnote{If recursive types are added, the trace operator
 As simple illustrative examples of ``programming'' in $\Pi$, here are three
 useful combinators that we define here for future reference:
 \[\begin{array}{r@{\,\,\!}cl}
-\mathit{assoc}_1 &\hast& 
+\mathit{assoc}_1 &:& 
   \tau_1 + (\tau_2 + \tau_3) \iso (\tau_2 + \tau_1) + \tau_3 \\
 \mathit{assoc}_1 &=& \assoclp \fatsemi (\swapp \oplus \idc) \\
 \\
-\mathit{assoc}_2 &\hast& 
+\mathit{assoc}_2 &:& 
   (\tau_1 + \tau_2) + \tau_3 \iso (\tau_2 + \tau_3) + \tau_1 \\
 \mathit{assoc}_2 &=& (\swapp \oplus \idc) \fatsemi \assocrp 
   \fatsemi (\idc \oplus \swapp) \fatsemi \assoclp \\
 \\
-\mathit{assoc}_3 &\hast& 
+\mathit{assoc}_3 &:& 
   (\tau_1 + \tau_2) + \tau_3 \iso \tau_1 + (\tau_3 + \tau_2) \\
 \mathit{assoc}_3 &=& \assocrp \fatsemi (\idc \oplus \swapp)
 \end{array}\]
@@ -406,12 +406,12 @@ below.
 \paragraph*{Easy Lifting.} Many of the 0d combinators lift easily to the 1d
 level. For example:
 \[\begin{array}{rcl}
-\idc &\hast& \cubt \isoone \cubt \\
-     &\hast& (\tau_1-\tau_2) \isoone (\tau_1-\tau_2) \\
+\idc &:& \cubt \isoone \cubt \\
+     &:& (\tau_1-\tau_2) \isoone (\tau_1-\tau_2) \\
      &\eqdef& (\tau_1+\tau_2) \iso (\tau_2+\tau_1) \\
 \idc &=& \swapp \\
 \\
-\identlp &\hast& \ztone \boxplus \cubt \isoone \cubt \\
+\identlp &:& \ztone \boxplus \cubt \isoone \cubt \\
 %%         &\eqdef& (0+\tau_1)-(0+\tau_2) \isoone (\tau_1-\tau_2) \\
 %%         &\eqdef& ((0+\tau_1)+\tau_2) \iso ((0+\tau_2)+\tau_1) \\
          &=& \assocrp \fatsemi (\idc \oplus \swapp) \fatsemi \assoclp
@@ -420,11 +420,11 @@ level. For example:
 \paragraph*{Composition using $\mathit{trace}$.} 
 
 \[\begin{array}{r@{\,\,\!}cl}
-(\fatsemi) &\hast& 
+(\fatsemi) &:& 
   (\cubt_1 \isoone \cubt_2) \rightarrow 
   (\cubt_2 \isoone \cubt_3) \rightarrow 
   (\cubt_1 \isoone \cubt_3) \\
-%% \mathit{seq} &\hast& 
+%% \mathit{seq} &:& 
 %%   ((\tau_1-\tau_2) \isoone (\tau_3-\tau_4)) \rightarrow
 %%   ((\tau_3-\tau_4) \isoone (\tau_5-\tau_6)) \rightarrow
 %%   ((\tau_1-\tau_2) \isoone (\tau_5-\tau_6)) \\
@@ -446,9 +446,9 @@ f \fatsemi g &=& \mathit{trace}~(\mathit{assoc}_1 \fatsemi
   &\eqdef& (\tau_2+\tau_3) - (\tau_1+\tau_4) 
 \end{array}\]
 \[\begin{array}{rcl}
-\mathit{flip} &\hast& (\cubt_1 \isoone \cubt_2)
+\mathit{flip} &:& (\cubt_1 \isoone \cubt_2)
   \rightarrow (\boxminus\cubt_2 \isoone \boxminus\cubt_1) \\
-%% \mathit{flip} &\hast& ((\tau_1-\tau_2) \isoone (\tau_3-\tau_4))
+%% \mathit{flip} &:& ((\tau_1-\tau_2) \isoone (\tau_3-\tau_4))
 %%   \rightarrow (\boxminus(\tau_3-\tau_4) \isoone \boxminus(\tau_1-\tau_2)) \\
 %%   &\eqdef& ((\tau_1-\tau_2) \isoone (\tau_3-\tau_4))
 %%   \rightarrow ((\tau_4-\tau_3) \isoone (\tau_2-\tau_1)) \\
@@ -456,10 +456,10 @@ f \fatsemi g &=& \mathit{trace}~(\mathit{assoc}_1 \fatsemi
 %%   \rightarrow ((\tau_4+\tau_1) \iso (\tau_3+\tau_2)) \\
 \mathit{flip}~f &=& \swapp \fatsemi f \fatsemi \swapp \\
 \\
-\mathit{curry} &\hast& 
+\mathit{curry} &:& 
   ((\cubt_1\boxplus\cubt_2) \isoone \cubt_3) \rightarrow
   (\cubt_1 \isoone (\cubt_2 \lolli \cubt_3)) \\
-%% \mathit{curry} &\hast& 
+%% \mathit{curry} &:& 
 %%   (((\tau_1-\tau_2)\boxplus(\tau_3-\tau_4)) \isoone (\tau_5-\tau_6)) \rightarrow
 %%   ((\tau_1-\tau_2) \isoone ((\tau_3-\tau_4) \lolli (\tau_5-\tau_6))) \\
 %%   &\eqdef& 
@@ -470,7 +470,7 @@ f \fatsemi g &=& \mathit{trace}~(\mathit{assoc}_1 \fatsemi
 %%   ((\tau_1+(\tau_4+\tau_5)) \iso (\tau_2+(\tau_3+\tau_6))) \\
 \mathit{curry}~f &=& \assoclp \fatsemi f \fatsemi \assocrp \\
 \\
-\mathit{uncurry} &\hast& 
+\mathit{uncurry} &:& 
   (\cubt_1 \isoone (\cubt_2 \lolli \cubt_3)) \rightarrow
   ((\cubt_1\boxplus\cubt_2) \isoone \cubt_3) \\
 \mathit{uncurry}~f &=& \assocrp \fatsemi f \fatsemi \assoclp 
@@ -487,7 +487,7 @@ The definition for the product of 1d types used above is:
 That definition is ``obvious'' in some sense as it matches the usual
 understanding of types as modeling arithmetic. Using it, it is possible to
 lift all the 0d combinators involving products \emph{except} the functor:
-\[ (\otimes) \hast 
+\[ (\otimes) : 
   (\cubt_1\isoone\cubt_2) \rightarrow 
   (\cubt_3\isoone\cubt_4) \rightarrow 
   ((\cubt_1\boxtimes\cubt_3) \isoone
@@ -510,71 +510,71 @@ this idea in the remainder of the paper.
 \label{cubes}
 
 As hinted at in the previous section, one can think of the \textbf{Int}
-construction as generalizing conventional (0-dimensional) types to
-1-dimensional types indexed by a positive or negative polarity. Generalizing
-this idea further, we now view types as $n$-dimensional cubes polarized by
-all $2^n$ combinations of positive and negative polarities. 
+construction as generalizing conventional 0d types to 1d types indexed by a
+positive or negative polarity. Generalizing this idea further, we now view
+types as $n$-dimensional cubes indexed by all $2^n$ combinations of positive
+and negative polarities.
 
 \begin{figure*}
 \[\begin{array}{c}
-\nodet{S_1}{S_2}
-\quad\otimes\quad
-\nodet{(\nodet{S_3}{S_4})}{(\nodet{S_5}{S_6})} \quad= \\
+\nodet{\tau_1}{\tau_2}
+\quad\boxtimes\quad
+\nodet{(\nodet{\tau_3}{\tau_4})}{(\nodet{\tau_5}{\tau_6})} \quad= \\
 \\
-\nodet{(\nodet{{(\nodet{S_1 \times S_3}{S_1 \times S_4})}}
-              {{(\nodet{S_1 \times S_5}{S_1 \times S_6})}})}
-      {(\nodet{{(\nodet{S_2 \times S_3}{S_2 \times S_4})}}
-              {{(\nodet{S_2 \times S_5}{S_2 \times S_6})}})}
+\nodet{(\nodet{{(\nodet{\tau_1 * \tau_3}{\tau_1 * \tau_4})}}
+              {{(\nodet{\tau_1 * \tau_5}{\tau_1 * \tau_6})}})}
+      {(\nodet{{(\nodet{\tau_2 * \tau_3}{\tau_2 * \tau_4})}}
+              {{(\nodet{\tau_2 * \tau_5}{\tau_2 * \tau_6})}})}
 \end{array}\]
 \\
 \\
 \begin{center}
 \begin{tikzpicture}
 \node[above] at (0,0) {\pp};
-\node[left] at (0,0) {$S_1$};
+\node[left] at (0,0) {$\tau_1$};
 \draw[fill] (0,0) circle [radius=0.05];
 \node[above] at (0.6,0) {\mm};
-\node[right] at (0.6,0) {$S_2$};
+\node[right] at (0.6,0) {$\tau_2$};
 \draw[fill] (0.6,0) circle [radius=0.05];
 \draw[-,dotted] (0,0) -- (0.6,0);
-\node at (1.6,0) {$\otimes$}; 
+\node at (1.6,0) {$\boxtimes$}; 
 
 %%
 \node[left] at (2.5,-0.5) {\pp\pp};
-\node[below] at (2.5,-0.5) {$S_3$};
+\node[below] at (2.5,-0.5) {$\tau_3$};
 \draw[fill] (2.5,-0.5) circle [radius=0.05];
 \node[right] at (3.5,-0.5) {\pp\mm};
-\node[below] at (3.5,-0.5) {$S_4$};
+\node[below] at (3.5,-0.5) {$\tau_4$};
 \draw[fill] (3.5,-0.5) circle [radius=0.05];
 \draw[-,dotted] (2.5,-0.5) -- (3.5,-0.5);
 \draw[-,dotted] (2.5,-0.5) -- (2.5,0.5);
 \node[left] at (2.5,0.5) {\mm\pp};
-\node[above] at (2.5,0.5) {$S_5$};
+\node[above] at (2.5,0.5) {$\tau_5$};
 \draw[fill] (2.5,0.5) circle [radius=0.05];
 \node[right] at (3.5,0.5) {\mm\mm};
-\node[above] at (3.5,0.5) {$S_6$};
+\node[above] at (3.5,0.5) {$\tau_6$};
 \draw[fill] (3.5,0.5) circle [radius=0.05];
 \draw[-,dotted] (2.5,0.5) -- (3.5,0.5);
 \draw[-,dotted] (3.5,-0.5) -- (3.5,0.5);
 %% 
 \node at (5,0) {$=$};
 %% 
-\node[left] at (7.5,0.75) {$(S_2 \times S_3)$\,\mm\pp\pp};
+\node[left] at (7.5,0.75) {$(\tau_2 * \tau_3)$\,\mm\pp\pp};
 \draw[fill] (7.5,0.75) circle [radius=0.05];
-\node[right] at (9.5,0.75) {$(S_2 \times S_4)$\,\mm\pp\mm};
+\node[right] at (9.5,0.75) {$(\tau_2 * \tau_4)$\,\mm\pp\mm};
 \draw[fill] (9.5,0.75) circle [radius=0.05];
-\node[above right] at (10.2,1.2) {$(S_2 \times S_6)$\,\mm\mm\mm};
+\node[above right] at (10.2,1.2) {$(\tau_2 * \tau_6)$\,\mm\mm\mm};
 \draw[fill] (10.2,1.2) circle [radius=0.05];
-\node[above left] at (8.2,1.2) {$(S_2 \times S_5)$\,\mm\mm\pp};
+\node[above left] at (8.2,1.2) {$(\tau_2 * \tau_5)$\,\mm\mm\pp};
 \draw[fill] (8.2,1.2) circle [radius=0.05];
 %%
-\node[left] at (7.5,-0.75) {$(S_1 \times S_3)$\,\pp\pp\pp};
+\node[left] at (7.5,-0.75) {$(\tau_1 * \tau_3)$\,\pp\pp\pp};
 \draw[fill] (7.5,-0.75) circle [radius=0.05];
-\node[right] at (9.5,-0.75) {$(S_1 \times S_4)$\,\pp\pp\mm};
+\node[right] at (9.5,-0.75) {$(\tau_1 * \tau_4)$\,\pp\pp\mm};
 \draw[fill] (9.5,-0.75) circle [radius=0.05];
-\node[above right] at (10.2,-0.3) {$(S_1 \times S_6)$\,\pp\mm\mm};
+\node[above right] at (10.2,-0.3) {$(\tau_1 * \tau_6)$\,\pp\mm\mm};
 \draw[fill] (10.2,-0.3) circle [radius=0.05];
-\node[left] at (8.2,-0.3) {$(S_1 \times S_5)$\,\pp\mm\pp};
+\node[left] at (8.2,-0.3) {$(\tau_1 * \tau_5)$\,\pp\mm\pp};
 \draw[fill] (8.2,-0.3) circle [radius=0.05];
 %%
 \draw[-,dotted] (7.5,0.75) -- (9.5,0.75);
@@ -605,22 +605,22 @@ Our types $\cubt$ are ``cubes'' defined as follows:
 \cubt &::=& \tau \alt \nodet{\cubt_1}{\cubt_2} 
 \end{array}\]
 The syntax $\nodet{\cubt_1}{\cubt_2}$ represents $n$-dimensional cubes as
-binary trees of maximum depth~$n$. The subspace $\cubt_1$ is the positive
-subspace along the first dimension and the subspace $\cubt_2$ (shaded in
+binary trees of maximum height~$n$. The subspace $\cubt_1$ is the positive
+subspace along one of the dimensions and the subspace $\cubt_2$ (shaded in
 gray) is the negative subspace along that same dimension. Each of these
-subspaces is itself a cube of a lower dimension. The $0$-dimensional cubes
-are the conventional first-order types $\tau$. A 1-dimensional cube,
-$\nodet{\tau_1}{\tau_2}$, intuitively corresponds to the difference $\tau_1 -
-\tau_2$ of the two types. The type can be visualized as a ``line'' with
-polarized endpoints connecting the two points~$\tau_1$ and $\tau_2$. A full
-2-dimensional cube,
+subspaces is itself a cube of a lower dimension. The 0d cubes are ``points''
+representing the conventional first-order types~$\tau$. Like in the case for
+the \textbf{Int} construction, a 1d cube, $\nodet{\tau_1}{\tau_2}$,
+intuitively corresponds to the difference $\tau_1 - \tau_2$ of the two
+types. The type can be visualized as a ``line'' with polarized endpoints
+positive $\tau_1$ and negative $\tau_2$. A full 2d cube,
 $\nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}$, intuitively
 corresponds to the iterated difference of the types
 $(\tau_1-\tau_2)-(\tau_3-\tau_4)$ where the successive ``colors'' from the
-outermost box encode the sign. The type can be visualized as a ``square''
+outermost box encode the signs. The type can be visualized as a ``square''
 with polarized corners connecting the two lines corresponding to
 $(\tau_1-\tau_2)$ and $(\tau_3-\tau_4)$. (See Fig.~\ref{mult} which is
-further explained after we discuss multiplication below.) 
+further explained after we discuss multiplication below.)
 
 There are notions of sum $\boxplus$, product $\boxtimes$, and negation
 $\boxminus$ on $n$-dimensional types. These operations are inductively
@@ -634,7 +634,7 @@ defined as follows:
 (\nodet{\cubt_1}{\cubt_2}) \boxplus (\nodet{\cubt_3}{\cubt_4}) &=& 
   \nodet{\cubt_1 \boxplus \cubt_3}{\cubt_2 \boxplus \cubt_4} \\
 \\
-\tau_1 \boxtimes \tau_2 &=& \tau_1 \times \tau_2 \\
+\tau_1 \boxtimes \tau_2 &=& \tau_1 * \tau_2 \\
 \tau \boxtimes (\nodet{\cubt_1}{\cubt_2}) &=& 
   \nodet{\tau \boxtimes \cubt_1}{\tau \boxtimes \cubt_2} \\
 (\nodet{\cubt_1}{\cubt_2}) \boxtimes \cubt &=& 
@@ -644,19 +644,19 @@ defined as follows:
 \boxminus~\nodet{\cubt_1}{\cubt_2} &=& 
   \nodet{\boxminus~\cubt_2}{\boxminus~\cubt_1} 
 \end{array}\]
-The sum of $0$-dimensional types is the disjoint union as usual. For cubes of
-higher dimensions, the subspaces are recursively added. Note that the sum of
-1-dimensional types reduces to the sum used in the \textbf{Int} construction.
-The definition of negation is natural: it recursively swaps the positive and
-negative subspaces. The product of 0-dimensional types is the cartesian
-product of sets. For cubes of higher-dimensions $n$ and $m$, the result is of
-dimension $(n+m)$. The example in Fig.~\ref{mult} illustrates the idea using
-the product of 1-dimensional cube (i.e., a line) with a 2-dimensional cube
-(i.e., a square). The result is a 3-dimensional cube as illustrated.
+The sum of 0d types is the disjoint union as usual. For cubes of higher
+dimensions, the subspaces are recursively added. Note that the sum of 1d
+types reduces to the sum used in the \textbf{Int} construction.  The
+definition of negation is natural: it recursively swaps the positive and
+negative subspaces. The product of 0d types is the cartesian product of
+sets. For cubes of higher-dimensions $n$ and $m$, the result is of dimension
+$(n+m)$. The example in Fig.~\ref{mult} illustrates the idea using the
+product of 1d cube (i.e., a line) with a 2d cube (i.e., a square). The result
+is a 3d cube as illustrated.
 
 We recall that the dimension of a type $\nodet{\cubt_1}{\cubt_2}$ is the
-maximum height its tree representation with 0d types at the leaves. The sum,
-product, and negation operations affect this maximum height as follows.
+maximum height of its tree representation with 0d types at the leaves. The
+sum, product, and negation operations affect this maximum height as follows.
 
 \begin{proposition}[Dimensions]
 The dimensions of sums, products, and negations are:
@@ -666,31 +666,138 @@ The dimensions of sums, products, and negations are:
 \bdim{\boxminus \cubt} &=& \max(1,\bdim{\cubt})
 \end{array}\]
 \end{proposition}
-The base types have dimension 0. If negative types are not used, all
+\noindent The base types have dimension 0. If negative types are not used, all
 dimensions remain at 0. If negative types are used but no products of
 negative types appear anywhere, the dimension is raised to 1. This is the
 situation with the \textbf{Int} or $\mathcal{G}$ construction. Once negative
 and product types are freely used, the dimension can increase without bounds.
 
+\begin{table*}[t]
+\[\begin{array}{cc}
+\begin{array}{rrcll}
+\identlp :&  0 \boxplus \cubt & \isoone & \cubt &: \identrp \\
+\swapp :&  \cubt_1 \boxplus \cubt_2 & \isoone & 
+           \cubt_2 \boxplus \cubt_1 &: \swapp \\
+\assoclp :&  \cubt_1 \boxplus (\cubt_2 \boxplus \cubt_3) & \isoone & 
+             (\cubt_1 \boxplus \cubt_2) \boxplus \cubt_3 &: \assocrp \\
+\identlt :&  1 \boxtimes \cubt & \isoone & \cubt &: \identrt \\
+\swapt :&  \cubt_1 \boxtimes \cubt_2 & \isoone & 
+           \cubt_2 \boxtimes \cubt_1 &: \swapt \\
+\assoclt :&  \cubt_1 \boxtimes (\cubt_2 \boxtimes \cubt_3) & \isoone & 
+             (\cubt_1 \boxtimes \cubt_2) \boxtimes \cubt_3 &: \assocrt \\
+\distz :&~ 0 \boxtimes \cubt & \isoone & 0 &: \factorz \\
+\dist :&~ (\cubt_1 \boxplus \cubt_2) \boxtimes \cubt_3 & \isoone & 
+  (\cubt_1 \boxtimes \cubt_3) \boxplus (\cubt_2 \boxtimes \cubt_3)~ &: \factor 
+\end{array}
+& 
+\begin{minipage}{0.4\textwidth}
+\begin{center} 
+\Rule{}
+{}
+{\jdg{}{}{\idc : \cubt \isoone \cubt}}
+{}
+\qquad
+\Rule{}
+{\jdg{}{}{c : \cubt_1 \isoone \cubt_2}}
+{\jdg{}{}{\symc{c} : \cubt_2 \isoone \cubt_1}}
+{}
+\\ \bigskip
+\Rule{}
+{\jdg{}{}{c_1 : \cubt_1 \isoone \cubt_2} \quad 
+         \vdash c_2 : \cubt_2 \isoone \cubt_3}
+{\jdg{}{}{c_1 \fatsemi c_2 : \cubt_1 \isoone \cubt_3}}
+{}
+\\ \bigskip
+\Rule{}
+{\jdg{}{}{c_1 : \cubt_1 \isoone \cubt_2} \quad 
+         \vdash c_2 : \cubt_3 \isoone \cubt_4}
+{\jdg{}{}{c_1 \oplus c_2 : \cubt_1 \boxplus \cubt_3 \isoone 
+         \cubt_2 \boxplus \cubt_4}}
+{}
+\\ \bigskip
+\Rule{}
+{\jdg{}{}{c_1 : \cubt_1 \isoone \cubt_2} \quad 
+         \vdash c_2 : \cubt_3 \isoone \cubt_4}
+{\jdg{}{}{c_1 \otimes c_2 : \cubt_1 \boxtimes \cubt_3 \isoone 
+         \cubt_2 \boxtimes \cubt_4}}
+{}
+\end{center}
+\end{minipage}
+\end{array}\]
+\caption{Combinators on cubical types\label{cube-combinators}}
+\end{table*}
+
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{Isomorphisms} 
 
-The $\Pi$ isomorphisms are, in spirit, isomorphisms of $n$-dimentional
+The main point of the generalization to arbitrary dimensions beyond the
+\textbf{Int} construction is that all higher-dimensions would have the full
+computational power of $\Pi$. In other words, all type isomorphisms
+(including the ones involving products) should lift to the higher
+dimensions. The lifting is surprisingly simple: everything is defined
+pointwise. For example, there is an isomorphism between
+$\nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}$ and
+$\nodet{(\nodet{\tau'_1}{\tau'_2})}{(\nodet{\tau'_3}{\tau'_4})}$ if there are
+$\Pi$-isomorphisms between each of the corresponding $\tau_i$ and $\tau'_i$.
+
+Table~\ref{cube-combinators} replicates all the $\Pi$-isomorphisms for
+higher-dimensional cubical types. Because everything is defined pointwise,
+most of the new combinators are just families of base combinators. As an
+example, consider:
+\[\begin{array}{r@{\!}cl}
+\swapp &:& 
+         \nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}
+  \boxplus
+         \nodet{(\nodet{\tau'_1}{\tau'_2})}{(\nodet{\tau'_3}{\tau'_4})} \\
+  &\isoone& 
+         \nodet{(\nodet{\tau'_1}{\tau'_2})}{(\nodet{\tau'_3}{\tau'_4})}
+  \boxplus
+         \nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})} \\
+\\
+&:& \nodet{(\nodet{\tau_1+\tau'_1}{\tau_2+\tau'_2})}
+          {(\nodet{\tau_3+\tau'_3}{\tau_4+\tau'_4})} \\
+  &\isoone&
+    \nodet{(\nodet{\tau'_1+\tau_1}{\tau'_2+\tau_2})}
+          {(\nodet{\tau'_3+\tau_3}{\tau'_4+\tau_4})} \\
+\\
+&=& \nodet{(\nodet{\swapp}{\swapp})}
+          {(\nodet{\swapp}{\swapp})} 
+\end{array}\]
+In other words, the definition of $\swapp$ at a 2d dimensional type reduces
+to a family of $\swapp$ combinators at each of the vertices of the 2d cube.
+
+
+
+Start with table. 0 boxplus cubt is the same as t for all high dimensions; when you get
+0d you need the explicit iso. So express it using regular + and tau instead
+boxplus and cubt.
+
+The $\Pi$ isomorphisms are, in spirit, isomorphisms of $n$-dimensional
 cubical types. For example, we still expect addition $\boxplus$ to be
 associative, commutative, etc. The situation is however more involved and the
 negative types introduce new isomorphisms. 
 
 \begin{verbatim}
-need obvious things to get started: id, seq-comp
+how to formalize that n-dim comb
+are families of pi-comb
 
-need multiplication functor: 
-given f : a -> a', g : b -> b', there is a morphism fxg : axb -> a'xb'
-satisfying associativity etc.
+subtle point: need 0 and 1 at
+all dimensions. Can add
+new iso 0 = [0|0] but
+not sure is the best idea
 
-go through all the requirements in sec. 2.3
+need to understand and then add
+the t-t=0 equations
 
-add the t-t=0 conditions...
+need to make sure there are
+no other isos implied by
+the development in secs 2 
+and 3.
 
+finally need to move on to 
+sec. 4 and beyond 
+and understand what they
+add in terms of isos
 \end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -846,7 +953,7 @@ direction we want.
 
 Consider the following simple function on 0-dimensional sum types:
 \[\begin{array}{rcl}
-\textsf{swapP} &\hast& (\tau_1 + \tau_2) \rightarrow (\tau_2 + \tau_1) \\
+\textsf{swapP} &:& (\tau_1 + \tau_2) \rightarrow (\tau_2 + \tau_1) \\
 \textsf{swapP} (\inl{v}) &=& inr{v} \\
 \textsf{swapP} (\inr{v}) &=& inl{v}
 \end{array}\]
