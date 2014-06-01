@@ -26,6 +26,10 @@
 \newcommand{\todo}[1]{\textbf{Todo:} #1}
 \newcommand{\ignore}[1]{}
 
+\newcommand{\raisez}{\mathit{raise0}}
+\newcommand{\lowerz}{\mathit{lower0}}
+\newcommand{\raiseo}{\mathit{raise1}}
+\newcommand{\lowero}{\mathit{lower1}}
 \newcommand{\embed}{\mathit{embed}}
 \newcommand{\Pin}[1]{\Pi{\textbf{#1}}}
 \newcommand{\taun}[1]{\tau\textbf{#1}}
@@ -50,6 +54,7 @@ $\displaystyle
  #4}}
 \newcommand{\proves}{\vdash}
 \newcommand{\symc}[1]{\mathit{sym}~#1}
+\newcommand{\symcn}[2]{\mathit{sym}^{#1}~#2}
 \newcommand{\jdg}[3]{#2 \proves_{#1} #3}
 \newcommand{\adjoint}[1]{#1^{\dagger}}
 \newcommand{\iso}{\leftrightarrow}
@@ -521,7 +526,7 @@ but the idea is fundamentally simple as everything is defined pointwise.
 \begin{figure*}
 \[\begin{array}{c}
 \nodet{\tau_1}{\tau_2}
-\quad\boxtimes^{1,2} \quad
+\quad\boxtimes^{1}_{2} \quad
 \nodet{(\nodet{\tau_3}{\tau_4})}{(\nodet{\tau_5}{\tau_6})} \quad= \\
 \\
 \nodet{(\nodet{{(\nodet{\tau_1 * \tau_3}{\tau_1 * \tau_4})}}
@@ -538,7 +543,7 @@ but the idea is fundamentally simple as everything is defined pointwise.
 \node[right] at (0.6,0) {$\tau_2$};
 \draw[fill] (0.6,0) circle [radius=0.05];
 \draw[-,dotted] (0,0) -- (0.6,0);
-\node at (1.6,0) {$\boxtimes^{1,2}$}; 
+\node at (1.6,0) {$\boxtimes^{1}_{2}$}; 
 
 %%
 \node[below] at (2.5,-0.5) {$\tau_3$};
@@ -619,11 +624,11 @@ Even though the type constants 0 and 1 and the sums and products operations
 are only defined at dimension 0, cubes of all dimensions inherit this
 structure.  We have constants $\ztn^{n}$ and $\otn^{n}$ at every
 dimension and we also have families of sum $\boxplus^n$ and product
-$\boxtimes^{m,n}$ operations on higher dimensional cubes. The sum operation
+$\boxtimes^{m}_{n}$ operations on higher dimensional cubes. The sum operation
 $\boxplus^n$ takes two $n$-dimensional cubes and produces another
 $n$-dimensional cube. Note that for the case of 1d types, the definition
 coincides with the one used in the \textbf{Int} construction. The product
-operation $\boxtimes^{m,n}$ takes two cubes of dimensions $m$ and $n$
+operation $\boxtimes^{m}_{n}$ takes two cubes of dimensions $m$ and $n$
 respectively and as confirmed in Prop.~\ref{dimprop} below and illustrated
 with a small example in Fig.~\ref{mult}, produces a cube of dimension $m+n$.
 \[\begin{array}{rcl}
@@ -639,16 +644,17 @@ with a small example in Fig.~\ref{mult}, produces a cube of dimension $m+n$.
   \nodet{\cubt_1^{n} \boxplus^n \cubt_3^{n}}
         {\cubt_2^{n} \boxplus^n \cubt_4^{n}} \\
 \\
-\tau_1 \boxtimes^{0,0} \tau_2 &=& \tau_1 * \tau_2 \\
-\tau \boxtimes^{0,n+1} (\nodet{\cubt_1^n}{\cubt_2^n}) &=& 
-  \nodet{\tau \boxtimes^{0,n} \cubt_1}{\tau \boxtimes^{0,n} \cubt_2} \\
-(\nodet{\cubt_1^m}{\cubt_2^m}) \boxtimes^{m+1,n} \cubt^n &=& 
-  \nodet{\cubt_1^m \boxtimes^{m,n} \cubt^n}{\cubt_2^m \boxtimes^{m,n} \cubt^n} 
+\tau_1 \boxtimes^{0}_{0} \tau_2 &=& \tau_1 * \tau_2 \\
+\tau \boxtimes^{0}_{n+1} (\nodet{\cubt_1^n}{\cubt_2^n}) &=& 
+  \nodet{\tau \boxtimes^{0}_{n} \cubt_1}{\tau \boxtimes^{0}_{n} \cubt_2} \\
+(\nodet{\cubt_1^m}{\cubt_2^m}) \boxtimes^{m+1}_{n} \cubt^n &=& 
+  \nodet{\cubt_1^m \boxtimes^{m}_{n} \cubt^n}{\cubt_2^m 
+  \boxtimes^{m}_{n} \cubt^n} 
 \end{array}\]
 
 \begin{proposition}[Dimensions]
 \label{dimprop}
-The dimension of $\cubt^m \boxtimes^{m,n} \cubt^n$ is $m+n$.
+The dimension of $\cubt^m \boxtimes^{m}_{n} \cubt^n$ is $m+n$.
 \end{proposition}
 \begin{proof}
 By a simple induction on $m$. 
@@ -659,51 +665,61 @@ By a simple induction on $m$.
 \begin{table*}[t]
 \[\begin{array}{cc}
 \begin{array}{rrcll}
-\identlp :&  0 \boxplus \cubt & \isoone & \cubt &: \identrp \\
-\swapp :&  \cubt_1 \boxplus \cubt_2 & \isoone & 
-           \cubt_2 \boxplus \cubt_1 &: \swapp \\
-\assoclp :&  \cubt_1 \boxplus (\cubt_2 \boxplus \cubt_3) & \isoone & 
-             (\cubt_1 \boxplus \cubt_2) \boxplus \cubt_3 &: \assocrp \\
-\identlt :&  1 \boxtimes \cubt & \isoone & \cubt &: \identrt \\
-\swapt :&  \cubt_1 \boxtimes \cubt_2 & \isoone & 
-           \cubt_2 \boxtimes \cubt_1 &: \swapt \\
-\assoclt :&  \cubt_1 \boxtimes (\cubt_2 \boxtimes \cubt_3) & \isoone & 
-             (\cubt_1 \boxtimes \cubt_2) \boxtimes \cubt_3 &: \assocrt \\
-\distz :&~ 0 \boxtimes \cubt & \isoone & 0 &: \factorz \\
-\dist :&~ (\cubt_1 \boxplus \cubt_2) \boxtimes \cubt_3 & \isoone & 
-  (\cubt_1 \boxtimes \cubt_3) \boxplus (\cubt_2 \boxtimes \cubt_3)~ &: \factor 
+\identlp^n :&  \ztn^n \boxplus^n \cubt^n & \isoone & \cubt^n &: \identrp^n \\
+\swapp^n :&  \cubt_1^n \boxplus^n \cubt_2^n & \isoone & 
+           \cubt_2^n \boxplus^n \cubt_1^n &: \swapp^n \\
+\assoclp^n :&  \cubt_1^n \boxplus^n (\cubt_2^n \boxplus^n \cubt_3^n) & \isoone & 
+           (\cubt_1^n \boxplus^n \cubt_2^n) \boxplus^n \cubt_3^n &: \assocrp^n \\
+\identlt^{m,n} :&  \otn^m \boxtimes^m_n \cubt^n & \isoone & \cubt^{m+n} &: 
+  \identrt^{m,n} \\
+\swapt^{m,n} :&  \cubt_1^m \boxtimes^m_n \cubt_2^n & \isoone & 
+           \cubt_2^n \boxtimes^n_m \cubt_1^m &: \swapt^{m,n} \\
+\assoclt^{m,n,k} :&  
+  \cubt_1^m \boxtimes^m_{n+k} (\cubt_2^n \boxtimes^n_k \cubt_3^k) 
+  & \isoone & 
+  (\cubt_1^m \boxtimes^m_n \cubt_2^n) \boxtimes^{m+n}_k \cubt_3^k &: 
+  \assocrt^{m,n,k} \\
+\distz^{m,n} :&~ 
+  \ztn^m \boxtimes^m_n \cubt^n & \isoone & \ztn^{m+n} &: \factorz^{m,n} \\
+\dist^{m,n} :&~ 
+  (\cubt_1^m \boxplus^m \cubt_2^m) \boxtimes^m_n \cubt_3^n & \isoone & 
+  (\cubt_1^m \boxtimes^m_n \cubt_3^n) \boxplus^{m+n} 
+  (\cubt_2^m \boxtimes^m_n \cubt_3^n)~ &: \factor^{m,n} \\
+\raisez^n :&~ \ztn^{n} & \isoone& \ztn^{n+1} &: \lowerz^n \\
+\raiseo^n :&~ \otn^{n} & \isoone& \otn^{n+1} &: \lowero^n
 \end{array}
-& 
-\begin{minipage}{0.4\textwidth}
+\\
+\\
+\begin{minipage}{0.6\textwidth}
 \begin{center} 
 \Rule{}
 {}
-{\jdg{}{}{\idc : \cubt \isoone \cubt}}
+{\jdg{}{}{\idc^n : \cubt^n \isoone \cubt^n}}
 {}
 \qquad
 \Rule{}
-{\jdg{}{}{c : \cubt_1 \isoone \cubt_2}}
-{\jdg{}{}{\symc{c} : \cubt_2 \isoone \cubt_1}}
+{\jdg{}{}{c : \cubt_1^m \isoone \cubt_2^n}}
+{\jdg{}{}{\symcn{n,m}{c} : \cubt_2^n \isoone \cubt_1^m}}
 {}
 \\ \bigskip
 \Rule{}
-{\jdg{}{}{c_1 : \cubt_1 \isoone \cubt_2} \quad 
-         \vdash c_2 : \cubt_2 \isoone \cubt_3}
-{\jdg{}{}{c_1 \fatsemi c_2 : \cubt_1 \isoone \cubt_3}}
+{\jdg{}{}{c_1 : \cubt_1^m \isoone \cubt_2^n} \quad 
+         \vdash c_2 : \cubt_2^n \isoone \cubt_3^k}
+{\jdg{}{}{c_1 \fatsemi^{m,n,k} c_2 : \cubt_1^m \isoone \cubt_3^k}}
 {}
 \\ \bigskip
 \Rule{}
-{\jdg{}{}{c_1 : \cubt_1 \isoone \cubt_2} \quad 
-         \vdash c_2 : \cubt_3 \isoone \cubt_4}
-{\jdg{}{}{c_1 \oplus c_2 : \cubt_1 \boxplus \cubt_3 \isoone 
-         \cubt_2 \boxplus \cubt_4}}
+{\jdg{}{}{c_1 : \cubt_1^m \isoone \cubt_2^n} \quad 
+         \vdash c_2 : \cubt_3^m \isoone \cubt_4^n}
+{\jdg{}{}{c_1 \oplus^{m,n} c_2 : \cubt_1^m \boxplus^m \cubt_3^m \isoone 
+         \cubt_2^n \boxplus^n \cubt_4^n}}
 {}
 \\ \bigskip
 \Rule{}
-{\jdg{}{}{c_1 : \cubt_1 \isoone \cubt_2} \quad 
-         \vdash c_2 : \cubt_3 \isoone \cubt_4}
-{\jdg{}{}{c_1 \otimes c_2 : \cubt_1 \boxtimes \cubt_3 \isoone 
-         \cubt_2 \boxtimes \cubt_4}}
+{\jdg{}{}{c_1 : \cubt_1^m \isoone \cubt_2^n} \quad 
+         \vdash c_2 : \cubt_3^k \isoone \cubt_4^p}
+{\jdg{}{}{c_1 \otimes^{m,n,k,p} c_2 : \cubt_1^m \boxtimes^m_k \cubt_3^k \isoone 
+         \cubt_2^n \boxtimes^n_p \cubt_4^p}}
 {}
 \end{center}
 \end{minipage}
@@ -719,23 +735,30 @@ The main point of the generalization to arbitrary dimensions beyond the
 computational power of $\Pi$. In other words, all type isomorphisms
 (including the ones involving products) should lift to the higher
 dimensions. The lifting is surprisingly simple: everything is defined
-pointwise. For example, there is an isomorphism between
+pointwise. As an example, there is an isomorphism between
 $\nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}$ and
 $\nodet{(\nodet{\tau'_1}{\tau'_2})}{(\nodet{\tau'_3}{\tau'_4})}$ if there are
-$\Pi$-isomorphisms between each of the corresponding $\tau_i$ and $\tau'_i$.
+0-dimensional $\Pi$-isomorphisms between each of the corresponding $\tau_i$
+and $\tau'_i$.
 
-Table~\ref{cube-combinators} replicates all the $\Pi$-isomorphisms for
-higher-dimensional cubical types. Because everything is defined pointwise,
-most of the new combinators are just families of base combinators. As an
+Table~\ref{cube-combinators} replicates all the $\Pi$-combinators for
+higher-dimensional cubical types with a small modification: all the
+combinators and isomorphisms are indexed by the appropriate dimensions. In
+addition, we add explicit combinators to mediate between all the
+representations of the empty type and the unit type at different dimensions
+Note that because of these new isomorphisms and also because multiplication
+changes dimensions, it is possible to have isomorphisms between types of
+different dimensions. Generally speaking, because everything is defined
+pointwise, the new combinators are just families of base combinators. As an
 example, consider:
 \[\begin{array}{r@{\!}cl}
-\swapp &:& 
+\swapp^2 &:& 
          \nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}
-  \boxplus
+  \boxplus^2
          \nodet{(\nodet{\tau'_1}{\tau'_2})}{(\nodet{\tau'_3}{\tau'_4})} \\
   &\isoone& 
          \nodet{(\nodet{\tau'_1}{\tau'_2})}{(\nodet{\tau'_3}{\tau'_4})}
-  \boxplus
+  \boxplus^2
          \nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})} \\
 \\
 &:& \nodet{(\nodet{\tau_1+\tau'_1}{\tau_2+\tau'_2})}
@@ -748,35 +771,51 @@ example, consider:
           {(\nodet{\swapp}{\swapp})} 
 \end{array}\]
 In other words, the definition of $\swapp$ at a 2d dimensional type reduces
-to a family of $\swapp$ combinators at each of the vertices of the 2d cube.
+to a family of 0-dimensional $\swapp$ $\Pi$-combinators at each of the
+vertices of the 2d cube.
 
-
-
-Start with table. 0 boxplus cubt is the same as t for all high dimensions; when you get
-0d you need the explicit iso. So express it using regular + and tau instead
-boxplus and cubt.
-
-The $\Pi$ isomorphisms are, in spirit, isomorphisms of $n$-dimensional
-cubical types. For example, we still expect addition $\boxplus$ to be
-associative, commutative, etc. The situation is however more involved and the
-negative types introduce new isomorphisms. 
+It is possible to embed any type $\cubt^m$ into several equivalent types of a
+higher dimension $n > m$ by padding it with empty types in the appropriate
+subspaces. For example, consider the 1d type $\nodet{\tau_1}{\tau_2}$ and the
+following embedding in 2d types:
+\[\begin{array}{rcl}
+&& \nodet{\tau_1}{\tau_2} \\
+&\identrp^{0,1}& \otn^{0} \boxtimes^{0}_{1} \nodet{\tau_1}{\tau_2} \\
+&(\raiseo^{0} \otimes^{0,1,1,1} \idc^1)& 
+  \otn^{1} \boxtimes^{1}_{1} \nodet{\tau_1}{\tau_2} \\
+&=& 
+  \nodet{(\nodet{1*\tau_1}{1*\tau_2})}{(\nodet{0*\tau_1}{0*\tau_2})} \\
+&&  
+  \nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{0}{0})}
+\end{array}\]
+If we simply introduce a swap after the second step, the resulting embedding
+is:
+\[
+  \nodet{(\nodet{\tau_1}{\phantom{\tau_1}0})}{(\nodet{\tau_2}{\phantom{\tau_2}0})}
+\]
+More generally it is possible to embed a type of dimension $n$ in $n+1$
+different ways into a type of dimension $n+1$. 
 
 \begin{verbatim}
-how to formalize that n-dim comb
+formalize that n-dim comb
 are families of pi-comb
 
-subtle point: need 0 and 1 at
-all dimensions. Can add
-new iso 0 = [0|0] but
-not sure is the best idea
-
-need to understand and then add
-the t-t=0 equations
+formalize embedding on
+n-dim types into
+n+1-dim types
 
 need to make sure there are
 no other isos implied by
 the development in secs 2 
 and 3.
+\end{verbatim}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Polarities} 
+
+\begin{verbatim} 
+need to understand and then add
+the t-t=0 equations
 
 finally need to move on to 
 sec. 4 and beyond 
