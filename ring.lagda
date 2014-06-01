@@ -83,6 +83,8 @@ $\displaystyle
 \newcommand{\patht}{\mathbb{P}}
 \newcommand{\ztone}{\mathbb{0}}
 \newcommand{\otone}{\mathbb{1}}
+\newcommand{\ztn}{\mathbb{0}}
+\newcommand{\otn}{\mathbb{1}}
 \newcommand{\ptone}[2]{#1 \boxplus #2}
 \newcommand{\ttone}[2]{#1 \boxtimes #2}
 \newcommand{\den}[1]{\llbracket #1 \rrbracket}
@@ -511,14 +513,15 @@ this idea in the remainder of the paper.
 
 As hinted at in the previous section, one can think of the \textbf{Int}
 construction as generalizing conventional 0d types to 1d types indexed by a
-positive or negative polarity. Generalizing this idea further, we now view
-types as $n$-dimensional cubes indexed by all $2^n$ combinations of positive
-and negative polarities.
+positive or negative polarity. We will generalize this idea further in
+steps. The first step is to extend from 1d to arbitrary dimensions without
+consideration for polarities at this point. The extension is somewhat tedious
+but the idea is fundamentally simple as everything is defined pointwise.
 
 \begin{figure*}
 \[\begin{array}{c}
 \nodet{\tau_1}{\tau_2}
-\quad\boxtimes\quad
+\quad\boxtimes^{1,2} \quad
 \nodet{(\nodet{\tau_3}{\tau_4})}{(\nodet{\tau_5}{\tau_6})} \quad= \\
 \\
 \nodet{(\nodet{{(\nodet{\tau_1 * \tau_3}{\tau_1 * \tau_4})}}
@@ -530,28 +533,22 @@ and negative polarities.
 \\
 \begin{center}
 \begin{tikzpicture}
-\node[above] at (0,0) {\pp};
 \node[left] at (0,0) {$\tau_1$};
 \draw[fill] (0,0) circle [radius=0.05];
-\node[above] at (0.6,0) {\mm};
 \node[right] at (0.6,0) {$\tau_2$};
 \draw[fill] (0.6,0) circle [radius=0.05];
 \draw[-,dotted] (0,0) -- (0.6,0);
-\node at (1.6,0) {$\boxtimes$}; 
+\node at (1.6,0) {$\boxtimes^{1,2}$}; 
 
 %%
-\node[left] at (2.5,-0.5) {\pp\pp};
 \node[below] at (2.5,-0.5) {$\tau_3$};
 \draw[fill] (2.5,-0.5) circle [radius=0.05];
-\node[right] at (3.5,-0.5) {\pp\mm};
 \node[below] at (3.5,-0.5) {$\tau_4$};
 \draw[fill] (3.5,-0.5) circle [radius=0.05];
 \draw[-,dotted] (2.5,-0.5) -- (3.5,-0.5);
 \draw[-,dotted] (2.5,-0.5) -- (2.5,0.5);
-\node[left] at (2.5,0.5) {\mm\pp};
 \node[above] at (2.5,0.5) {$\tau_5$};
 \draw[fill] (2.5,0.5) circle [radius=0.05];
-\node[right] at (3.5,0.5) {\mm\mm};
 \node[above] at (3.5,0.5) {$\tau_6$};
 \draw[fill] (3.5,0.5) circle [radius=0.05];
 \draw[-,dotted] (2.5,0.5) -- (3.5,0.5);
@@ -559,22 +556,22 @@ and negative polarities.
 %% 
 \node at (5,0) {$=$};
 %% 
-\node[left] at (7.5,0.75) {$(\tau_2 * \tau_3)$\,\mm\pp\pp};
+\node[left] at (7.5,0.75) {$(\tau_2 * \tau_3)$};
 \draw[fill] (7.5,0.75) circle [radius=0.05];
-\node[right] at (9.5,0.75) {$(\tau_2 * \tau_4)$\,\mm\pp\mm};
+\node[right] at (9.5,0.75) {$(\tau_2 * \tau_4)$};
 \draw[fill] (9.5,0.75) circle [radius=0.05];
-\node[above right] at (10.2,1.2) {$(\tau_2 * \tau_6)$\,\mm\mm\mm};
+\node[above right] at (10.2,1.2) {$(\tau_2 * \tau_6)$};
 \draw[fill] (10.2,1.2) circle [radius=0.05];
-\node[above left] at (8.2,1.2) {$(\tau_2 * \tau_5)$\,\mm\mm\pp};
+\node[above left] at (8.2,1.2) {$(\tau_2 * \tau_5)$};
 \draw[fill] (8.2,1.2) circle [radius=0.05];
 %%
-\node[left] at (7.5,-0.75) {$(\tau_1 * \tau_3)$\,\pp\pp\pp};
+\node[left] at (7.5,-0.75) {$(\tau_1 * \tau_3)$};
 \draw[fill] (7.5,-0.75) circle [radius=0.05];
-\node[right] at (9.5,-0.75) {$(\tau_1 * \tau_4)$\,\pp\pp\mm};
+\node[right] at (9.5,-0.75) {$(\tau_1 * \tau_4)$};
 \draw[fill] (9.5,-0.75) circle [radius=0.05];
-\node[above right] at (10.2,-0.3) {$(\tau_1 * \tau_6)$\,\pp\mm\mm};
+\node[above right] at (10.2,-0.3) {$(\tau_1 * \tau_6)$};
 \draw[fill] (10.2,-0.3) circle [radius=0.05];
-\node[left] at (8.2,-0.3) {$(\tau_1 * \tau_5)$\,\pp\mm\pp};
+\node[left] at (8.2,-0.3) {$(\tau_1 * \tau_5)$};
 \draw[fill] (8.2,-0.3) circle [radius=0.05];
 %%
 \draw[-,dotted] (7.5,0.75) -- (9.5,0.75);
@@ -599,78 +596,65 @@ and negative polarities.
 %%%%%%%%%%%%%%
 \subsection{Syntax} 
 
-Our types $\cubt$ are ``cubes'' defined as follows:
+The set of types is now indexed by a dimension $n$:
 \[\begin{array}{rcl}
-\tau &::=& 0 \alt 1 \alt \tau_1+\tau_2 \alt \tau_1*\tau_2 \\
-\cubt &::=& \tau \alt \nodet{\cubt_1}{\cubt_2} 
+\tau, \cubt^0 &::=& 0 \alt 1 \alt \tau_1+\tau_2 \alt \tau_1*\tau_2 \\
+\cubt^{n+1} &::=& \nodet{\cubt_1^n}{\cubt_2^n} 
 \end{array}\]
-The syntax $\nodet{\cubt_1}{\cubt_2}$ represents $n$-dimensional cubes as
-binary trees of maximum height~$n$. The subspace $\cubt_1$ is the positive
-subspace along one of the dimensions and the subspace $\cubt_2$ (shaded in
-gray) is the negative subspace along that same dimension. Each of these
-subspaces is itself a cube of a lower dimension. The 0d cubes are ``points''
-representing the conventional first-order types~$\tau$. Like in the case for
+At dimension 0, we have the usual first-order types $\tau$ representing
+``points.'' At higher dimensions, a type is a pair of subspaces
+$\nodet{\cubt_1}{\cubt_2}$, each of a lower dimension. Like in the case for
 the \textbf{Int} construction, a 1d cube, $\nodet{\tau_1}{\tau_2}$,
 intuitively corresponds to the difference $\tau_1 - \tau_2$ of the two
-types. The type can be visualized as a ``line'' with polarized endpoints
-positive $\tau_1$ and negative $\tau_2$. A full 2d cube,
+types. The type can be visualized as a ``line.''  A 2d cube,
 $\nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}$, intuitively
 corresponds to the iterated difference of the types
 $(\tau_1-\tau_2)-(\tau_3-\tau_4)$ where the successive ``colors'' from the
 outermost box encode the signs. The type can be visualized as a ``square''
-with polarized corners connecting the two lines corresponding to
-$(\tau_1-\tau_2)$ and $(\tau_3-\tau_4)$. (See Fig.~\ref{mult} which is
-further explained after we discuss multiplication below.)
+connecting the two lines corresponding to $(\tau_1-\tau_2)$ and
+$(\tau_3-\tau_4)$. (See Fig.~\ref{mult} which is further explained after we
+discuss multiplication below.) 
 
-There are notions of sum $\boxplus$, product $\boxtimes$, and negation
-$\boxminus$ on $n$-dimensional types. These operations are inductively
-defined as follows:
+Even though the type constants 0 and 1 and the sums and products operations
+are only defined at dimension 0, cubes of all dimensions inherit this
+structure.  We have constants $\ztn^{n}$ and $\otn^{n}$ at every
+dimension and we also have families of sum $\boxplus^n$ and product
+$\boxtimes^{m,n}$ operations on higher dimensional cubes. The sum operation
+$\boxplus^n$ takes two $n$-dimensional cubes and produces another
+$n$-dimensional cube. Note that for the case of 1d types, the definition
+coincides with the one used in the \textbf{Int} construction. The product
+operation $\boxtimes^{m,n}$ takes two cubes of dimensions $m$ and $n$
+respectively and as confirmed in Prop.~\ref{dimprop} below and illustrated
+with a small example in Fig.~\ref{mult}, produces a cube of dimension $m+n$.
 \[\begin{array}{rcl}
-\tau_1 \boxplus \tau_2 &=& \tau_1 + \tau_2 \\
-\tau \boxplus (\nodet{\cubt_1}{\cubt_2}) &=& 
-  \nodet{\tau \boxplus \cubt_1}{\cubt_2} \\
-(\nodet{\cubt_1}{\cubt_2}) \boxplus \tau &=& 
-  \nodet{\cubt_1 \boxplus \tau}{\cubt_2} \\
-(\nodet{\cubt_1}{\cubt_2}) \boxplus (\nodet{\cubt_3}{\cubt_4}) &=& 
-  \nodet{\cubt_1 \boxplus \cubt_3}{\cubt_2 \boxplus \cubt_4} \\
+\ztn^{0} &=& 0 \\
+\ztn^{n+1} &=& \nodet{\ztn^n}{\ztn^n} \\
 \\
-\tau_1 \boxtimes \tau_2 &=& \tau_1 * \tau_2 \\
-\tau \boxtimes (\nodet{\cubt_1}{\cubt_2}) &=& 
-  \nodet{\tau \boxtimes \cubt_1}{\tau \boxtimes \cubt_2} \\
-(\nodet{\cubt_1}{\cubt_2}) \boxtimes \cubt &=& 
-  \nodet{\cubt_1 \boxtimes \cubt}{\cubt_2 \boxtimes \cubt} \\
+\otn^{0} &=& 1 \\
+\otn^{n+1} &=& \nodet{\otn^n}{\ztn^n} \\
 \\
-\boxminus~\tau &=& \nodet{\phantom{\tau}}{\tau} \\
-\boxminus~\nodet{\cubt_1}{\cubt_2} &=& 
-  \nodet{\boxminus~\cubt_2}{\boxminus~\cubt_1} 
+\tau_1 \boxplus^{0} \tau_2 &=& \tau_1 + \tau_2 \\
+(\nodet{\cubt_1^{n}}{\cubt_2^{n}}) \boxplus^{n+1} 
+  (\nodet{\cubt_3^{n}}{\cubt_4^{n}}) &=& 
+  \nodet{\cubt_1^{n} \boxplus^n \cubt_3^{n}}
+        {\cubt_2^{n} \boxplus^n \cubt_4^{n}} \\
+\\
+\tau_1 \boxtimes^{0,0} \tau_2 &=& \tau_1 * \tau_2 \\
+\tau \boxtimes^{0,n+1} (\nodet{\cubt_1^n}{\cubt_2^n}) &=& 
+  \nodet{\tau \boxtimes^{0,n} \cubt_1}{\tau \boxtimes^{0,n} \cubt_2} \\
+(\nodet{\cubt_1^m}{\cubt_2^m}) \boxtimes^{m+1,n} \cubt^n &=& 
+  \nodet{\cubt_1^m \boxtimes^{m,n} \cubt^n}{\cubt_2^m \boxtimes^{m,n} \cubt^n} 
 \end{array}\]
-The sum of 0d types is the disjoint union as usual. For cubes of higher
-dimensions, the subspaces are recursively added. Note that the sum of 1d
-types reduces to the sum used in the \textbf{Int} construction.  The
-definition of negation is natural: it recursively swaps the positive and
-negative subspaces. The product of 0d types is the cartesian product of
-sets. For cubes of higher-dimensions $n$ and $m$, the result is of dimension
-$(n+m)$. The example in Fig.~\ref{mult} illustrates the idea using the
-product of 1d cube (i.e., a line) with a 2d cube (i.e., a square). The result
-is a 3d cube as illustrated.
-
-We recall that the dimension of a type $\nodet{\cubt_1}{\cubt_2}$ is the
-maximum height of its tree representation with 0d types at the leaves. The
-sum, product, and negation operations affect this maximum height as follows.
 
 \begin{proposition}[Dimensions]
-The dimensions of sums, products, and negations are:
-\[\begin{array}{rcl}
-\bdim{\cubt_1 \boxplus \cubt_2} &=& \max(\bdim{\cubt_1},\bdim{\cubt_2}) \\
-\bdim{\cubt_1 \boxtimes \cubt_2} &=& \bdim{\cubt_1} + \bdim{\cubt_2} \\
-\bdim{\boxminus \cubt} &=& \max(1,\bdim{\cubt})
-\end{array}\]
+\label{dimprop}
+The dimension of $\cubt^m \boxtimes^{m,n} \cubt^n$ is $m+n$.
 \end{proposition}
-\noindent The base types have dimension 0. If negative types are not used, all
-dimensions remain at 0. If negative types are used but no products of
-negative types appear anywhere, the dimension is raised to 1. This is the
-situation with the \textbf{Int} or $\mathcal{G}$ construction. Once negative
-and product types are freely used, the dimension can increase without bounds.
+\begin{proof}
+By a simple induction on $m$. 
+\end{proof}
+
+%%
 
 \begin{table*}[t]
 \[\begin{array}{cc}
@@ -1954,3 +1938,216 @@ show functors on the pi-n types and then isos
 ~
 \newpage
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Cubes}
+\label{cubes}
+
+As hinted at in the previous section, one can think of the \textbf{Int}
+construction as generalizing conventional 0d types to 1d types indexed by a
+positive or negative polarity. Generalizing this idea further, we now view
+types as $n$-dimensional cubes indexed by all $2^n$ combinations of positive
+and negative polarities.
+
+%%%%%%%%%%%%%%
+\subsection{Syntax} 
+
+Our types $\cubt$ are ``cubes'' defined as follows:
+\[\begin{array}{rcl}
+\tau &::=& 0 \alt 1 \alt \tau_1+\tau_2 \alt \tau_1*\tau_2 \\
+\cubt &::=& \tau \alt \nodet{\cubt_1}{\cubt_2} 
+\end{array}\]
+The syntax $\nodet{\cubt_1}{\cubt_2}$ represents $n$-dimensional cubes as
+binary trees of maximum height~$n$. The subspace $\cubt_1$ is the positive
+subspace along one of the dimensions and the subspace $\cubt_2$ (shaded in
+gray) is the negative subspace along that same dimension. Each of these
+subspaces is itself a cube of a lower dimension. The 0d cubes are ``points''
+representing the conventional first-order types~$\tau$. Like in the case for
+the \textbf{Int} construction, a 1d cube, $\nodet{\tau_1}{\tau_2}$,
+intuitively corresponds to the difference $\tau_1 - \tau_2$ of the two
+types. The type can be visualized as a ``line'' with polarized endpoints
+positive $\tau_1$ and negative $\tau_2$. A full 2d cube,
+$\nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}$, intuitively
+corresponds to the iterated difference of the types
+$(\tau_1-\tau_2)-(\tau_3-\tau_4)$ where the successive ``colors'' from the
+outermost box encode the signs. The type can be visualized as a ``square''
+with polarized corners connecting the two lines corresponding to
+$(\tau_1-\tau_2)$ and $(\tau_3-\tau_4)$. (See Fig.~\ref{mult} which is
+further explained after we discuss multiplication below.)
+
+There are notions of sum $\boxplus$, product $\boxtimes$, and negation
+$\boxminus$ on $n$-dimensional types. These operations are inductively
+defined as follows:
+\[\begin{array}{rcl}
+\tau_1 \boxplus \tau_2 &=& \tau_1 + \tau_2 \\
+\tau \boxplus (\nodet{\cubt_1}{\cubt_2}) &=& 
+  \nodet{\tau \boxplus \cubt_1}{\cubt_2} \\
+(\nodet{\cubt_1}{\cubt_2}) \boxplus \tau &=& 
+  \nodet{\cubt_1 \boxplus \tau}{\cubt_2} \\
+(\nodet{\cubt_1}{\cubt_2}) \boxplus (\nodet{\cubt_3}{\cubt_4}) &=& 
+  \nodet{\cubt_1 \boxplus \cubt_3}{\cubt_2 \boxplus \cubt_4} \\
+\\
+\tau_1 \boxtimes \tau_2 &=& \tau_1 * \tau_2 \\
+\tau \boxtimes (\nodet{\cubt_1}{\cubt_2}) &=& 
+  \nodet{\tau \boxtimes \cubt_1}{\tau \boxtimes \cubt_2} \\
+(\nodet{\cubt_1}{\cubt_2}) \boxtimes \cubt &=& 
+  \nodet{\cubt_1 \boxtimes \cubt}{\cubt_2 \boxtimes \cubt} \\
+\\
+\boxminus~\tau &=& \nodet{\phantom{\tau}}{\tau} \\
+\boxminus~\nodet{\cubt_1}{\cubt_2} &=& 
+  \nodet{\boxminus~\cubt_2}{\boxminus~\cubt_1} 
+\end{array}\]
+The sum of 0d types is the disjoint union as usual. For cubes of higher
+dimensions, the subspaces are recursively added. Note that the sum of 1d
+types reduces to the sum used in the \textbf{Int} construction.  The
+definition of negation is natural: it recursively swaps the positive and
+negative subspaces. The product of 0d types is the cartesian product of
+sets. For cubes of higher-dimensions $n$ and $m$, the result is of dimension
+$(n+m)$. The example in Fig.~\ref{mult} illustrates the idea using the
+product of 1d cube (i.e., a line) with a 2d cube (i.e., a square). The result
+is a 3d cube as illustrated.
+
+We recall that the dimension of a type $\nodet{\cubt_1}{\cubt_2}$ is the
+maximum height of its tree representation with 0d types at the leaves. The
+sum, product, and negation operations affect this maximum height as follows.
+
+\begin{proposition}[Dimensions]
+The dimensions of sums, products, and negations are:
+\[\begin{array}{rcl}
+\bdim{\cubt_1 \boxplus \cubt_2} &=& \max(\bdim{\cubt_1},\bdim{\cubt_2}) \\
+\bdim{\cubt_1 \boxtimes \cubt_2} &=& \bdim{\cubt_1} + \bdim{\cubt_2} \\
+\bdim{\boxminus \cubt} &=& \max(1,\bdim{\cubt})
+\end{array}\]
+\end{proposition}
+\noindent The base types have dimension 0. If negative types are not used, all
+dimensions remain at 0. If negative types are used but no products of
+negative types appear anywhere, the dimension is raised to 1. This is the
+situation with the \textbf{Int} or $\mathcal{G}$ construction. Once negative
+and product types are freely used, the dimension can increase without bounds.
+
+\begin{table*}[t]
+\[\begin{array}{cc}
+\begin{array}{rrcll}
+\identlp :&  0 \boxplus \cubt & \isoone & \cubt &: \identrp \\
+\swapp :&  \cubt_1 \boxplus \cubt_2 & \isoone & 
+           \cubt_2 \boxplus \cubt_1 &: \swapp \\
+\assoclp :&  \cubt_1 \boxplus (\cubt_2 \boxplus \cubt_3) & \isoone & 
+             (\cubt_1 \boxplus \cubt_2) \boxplus \cubt_3 &: \assocrp \\
+\identlt :&  1 \boxtimes \cubt & \isoone & \cubt &: \identrt \\
+\swapt :&  \cubt_1 \boxtimes \cubt_2 & \isoone & 
+           \cubt_2 \boxtimes \cubt_1 &: \swapt \\
+\assoclt :&  \cubt_1 \boxtimes (\cubt_2 \boxtimes \cubt_3) & \isoone & 
+             (\cubt_1 \boxtimes \cubt_2) \boxtimes \cubt_3 &: \assocrt \\
+\distz :&~ 0 \boxtimes \cubt & \isoone & 0 &: \factorz \\
+\dist :&~ (\cubt_1 \boxplus \cubt_2) \boxtimes \cubt_3 & \isoone & 
+  (\cubt_1 \boxtimes \cubt_3) \boxplus (\cubt_2 \boxtimes \cubt_3)~ &: \factor 
+\end{array}
+& 
+\begin{minipage}{0.4\textwidth}
+\begin{center} 
+\Rule{}
+{}
+{\jdg{}{}{\idc : \cubt \isoone \cubt}}
+{}
+\qquad
+\Rule{}
+{\jdg{}{}{c : \cubt_1 \isoone \cubt_2}}
+{\jdg{}{}{\symc{c} : \cubt_2 \isoone \cubt_1}}
+{}
+\\ \bigskip
+\Rule{}
+{\jdg{}{}{c_1 : \cubt_1 \isoone \cubt_2} \quad 
+         \vdash c_2 : \cubt_2 \isoone \cubt_3}
+{\jdg{}{}{c_1 \fatsemi c_2 : \cubt_1 \isoone \cubt_3}}
+{}
+\\ \bigskip
+\Rule{}
+{\jdg{}{}{c_1 : \cubt_1 \isoone \cubt_2} \quad 
+         \vdash c_2 : \cubt_3 \isoone \cubt_4}
+{\jdg{}{}{c_1 \oplus c_2 : \cubt_1 \boxplus \cubt_3 \isoone 
+         \cubt_2 \boxplus \cubt_4}}
+{}
+\\ \bigskip
+\Rule{}
+{\jdg{}{}{c_1 : \cubt_1 \isoone \cubt_2} \quad 
+         \vdash c_2 : \cubt_3 \isoone \cubt_4}
+{\jdg{}{}{c_1 \otimes c_2 : \cubt_1 \boxtimes \cubt_3 \isoone 
+         \cubt_2 \boxtimes \cubt_4}}
+{}
+\end{center}
+\end{minipage}
+\end{array}\]
+\caption{Combinators on cubical types\label{cube-combinators}}
+\end{table*}
+
+%%%%%%%%%%%%%%%%%%%%%
+\subsection{Isomorphisms} 
+
+The main point of the generalization to arbitrary dimensions beyond the
+\textbf{Int} construction is that all higher-dimensions would have the full
+computational power of $\Pi$. In other words, all type isomorphisms
+(including the ones involving products) should lift to the higher
+dimensions. The lifting is surprisingly simple: everything is defined
+pointwise. For example, there is an isomorphism between
+$\nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}$ and
+$\nodet{(\nodet{\tau'_1}{\tau'_2})}{(\nodet{\tau'_3}{\tau'_4})}$ if there are
+$\Pi$-isomorphisms between each of the corresponding $\tau_i$ and $\tau'_i$.
+
+Table~\ref{cube-combinators} replicates all the $\Pi$-isomorphisms for
+higher-dimensional cubical types. Because everything is defined pointwise,
+most of the new combinators are just families of base combinators. As an
+example, consider:
+\[\begin{array}{r@{\!}cl}
+\swapp &:& 
+         \nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}
+  \boxplus
+         \nodet{(\nodet{\tau'_1}{\tau'_2})}{(\nodet{\tau'_3}{\tau'_4})} \\
+  &\isoone& 
+         \nodet{(\nodet{\tau'_1}{\tau'_2})}{(\nodet{\tau'_3}{\tau'_4})}
+  \boxplus
+         \nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})} \\
+\\
+&:& \nodet{(\nodet{\tau_1+\tau'_1}{\tau_2+\tau'_2})}
+          {(\nodet{\tau_3+\tau'_3}{\tau_4+\tau'_4})} \\
+  &\isoone&
+    \nodet{(\nodet{\tau'_1+\tau_1}{\tau'_2+\tau_2})}
+          {(\nodet{\tau'_3+\tau_3}{\tau'_4+\tau_4})} \\
+\\
+&=& \nodet{(\nodet{\swapp}{\swapp})}
+          {(\nodet{\swapp}{\swapp})} 
+\end{array}\]
+In other words, the definition of $\swapp$ at a 2d dimensional type reduces
+to a family of $\swapp$ combinators at each of the vertices of the 2d cube.
+
+
+
+Start with table. 0 boxplus cubt is the same as t for all high dimensions; when you get
+0d you need the explicit iso. So express it using regular + and tau instead
+boxplus and cubt.
+
+The $\Pi$ isomorphisms are, in spirit, isomorphisms of $n$-dimensional
+cubical types. For example, we still expect addition $\boxplus$ to be
+associative, commutative, etc. The situation is however more involved and the
+negative types introduce new isomorphisms. 
+
+\begin{verbatim}
+how to formalize that n-dim comb
+are families of pi-comb
+
+subtle point: need 0 and 1 at
+all dimensions. Can add
+new iso 0 = [0|0] but
+not sure is the best idea
+
+need to understand and then add
+the t-t=0 equations
+
+need to make sure there are
+no other isos implied by
+the development in secs 2 
+and 3.
+
+finally need to move on to 
+sec. 4 and beyond 
+and understand what they
+add in terms of isos
+\end{verbatim}
