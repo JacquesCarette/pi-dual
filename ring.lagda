@@ -745,34 +745,9 @@ Table~\ref{cube-combinators} replicates all the $\Pi$-combinators for
 higher-dimensional cubical types with a small modification: all the
 combinators and isomorphisms are indexed by the appropriate dimensions. In
 addition, we add explicit combinators to mediate between all the
-representations of the empty type and the unit type at different dimensions
-Note that because of these new isomorphisms and also because multiplication
-changes dimensions, it is possible to have isomorphisms between types of
-different dimensions. Generally speaking, because everything is defined
-pointwise, the new combinators are just families of base combinators. As an
-example, consider:
-\[\begin{array}{r@{\!}cl}
-\swapp^2 &:& 
-         \nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}
-  \boxplus^2
-         \nodet{(\nodet{\tau'_1}{\tau'_2})}{(\nodet{\tau'_3}{\tau'_4})} \\
-  &\isoone& 
-         \nodet{(\nodet{\tau'_1}{\tau'_2})}{(\nodet{\tau'_3}{\tau'_4})}
-  \boxplus^2
-         \nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})} \\
-\\
-&:& \nodet{(\nodet{\tau_1+\tau'_1}{\tau_2+\tau'_2})}
-          {(\nodet{\tau_3+\tau'_3}{\tau_4+\tau'_4})} \\
-  &\isoone&
-    \nodet{(\nodet{\tau'_1+\tau_1}{\tau'_2+\tau_2})}
-          {(\nodet{\tau'_3+\tau_3}{\tau'_4+\tau_4})} \\
-\\
-&=& \nodet{(\nodet{\swapp}{\swapp})}
-          {(\nodet{\swapp}{\swapp})} 
-\end{array}\]
-In other words, the definition of $\swapp$ at a 2d dimensional type reduces
-to a family of 0-dimensional $\swapp$ $\Pi$-combinators at each of the
-vertices of the 2d cube.
+representations of the empty at different dimensions (and similarly for the
+unit type). Note that in general it is possible to have isomorphisms between
+types of different dimensions.
 
 It is possible to embed any type $\cubt^m$ into several equivalent types of a
 higher dimension $n > m$ by padding it with empty types in the appropriate
@@ -802,12 +777,56 @@ are families of pi-comb
 
 formalize embedding on
 n-dim types into
-n+1-dim types
+n+1-dim types; I think we 
+can get all of the embeddings
+into the various faces by
+use T x 1 or 1 x T
+recursively at each level
+\end{verbatim}
+
+%%%%%%%%%%%%%%%%%%%%%
+\subsection{Operational Semantics}
+
+Because everything is defined pointwise, the new combinators are just
+families of base combinators. As an example, consider:
+\[\begin{array}{r@{\!}cl}
+\swapp^2 &:& 
+         \nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}
+  \boxplus^2
+         \nodet{(\nodet{\tau'_1}{\tau'_2})}{(\nodet{\tau'_3}{\tau'_4})} \\
+  &\isoone& 
+         \nodet{(\nodet{\tau'_1}{\tau'_2})}{(\nodet{\tau'_3}{\tau'_4})}
+  \boxplus^2
+         \nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})} \\
+\\
+&:& \nodet{(\nodet{\tau_1+\tau'_1}{\tau_2+\tau'_2})}
+          {(\nodet{\tau_3+\tau'_3}{\tau_4+\tau'_4})} \\
+  &\isoone&
+    \nodet{(\nodet{\tau'_1+\tau_1}{\tau'_2+\tau_2})}
+          {(\nodet{\tau'_3+\tau_3}{\tau'_4+\tau_4})} \\
+\\
+&=& \nodet{(\nodet{\swapp}{\swapp})}
+          {(\nodet{\swapp}{\swapp})} 
+\end{array}\]
+In other words, the definition of $\swapp$ at a 2d dimensional type reduces
+to a family of 0-dimensional $\swapp$ $\Pi$-combinators at each of the
+vertices of the 2d cube.
+
+\begin{verbatim}
+Implement op. sem. in Agda.
+Basically a version of pi indexed 
+by dimensions!
+
+Check and implement all the 
+various isos: embeddings of
+n-dim into n+1-dim etc.
 
 need to make sure there are
 no other isos implied by
 the development in secs 2 
-and 3.
+and 3; and that we don't have 
+any isos that are not justified
+by the math
 \end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
