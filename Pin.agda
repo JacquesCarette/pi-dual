@@ -222,21 +222,30 @@ swapN⋆ : { m n : ℕ } { c₁ : C m } { c₂ : C n } → times c₁ c₂ ⟺ t
 
 ------------------------------------------------------------------------------
 
-{--
 -- Semantics
 ⟦_⟧C : {n : ℕ} → C n → Set
 ⟦_⟧C {zero} (ZD x) = ⟦ x ⟧
 ⟦_⟧C {suc n} (Node c c₁) = ⟦ c ⟧C × ⟦ c₁ ⟧C -- probably should have our own × ?
 
+{--
 -- combinators respect dimension:
 ∙⟺∙⇒m≡n : {m n : ℕ} {c₁ : C m} {c₂ : C n} → c₁ ⟺ c₂ → m ≡ n
 ∙⟺∙⇒m≡n {zero} {zero} (baseC _) = refl
 ∙⟺∙⇒m≡n {zero} {suc n} ()
 ∙⟺∙⇒m≡n {suc m} {zero} ()
 ∙⟺∙⇒m≡n {suc m} {suc n} (nodeC c _) = cong suc (∙⟺∙⇒m≡n c)
-
--- WLOG, use the same dimension
-evalC : {n : ℕ} {c₁ c₂ : C n} → c₁ ⟺ c₂ → ⟦ c₁ ⟧C → ⟦ c₂ ⟧C
-evalC {zero} (baseC c) v =  eval c v
-evalC {suc n} (nodeC d₀ d₁) (x₀ , x₁) = evalC d₀ x₀ , evalC d₁ x₁
 --}
+
+-- This is odd - there are 3 cases which should be 'impossible' but Agda can't see it.
+evalC : {n m : ℕ} {c₁ : C n} {c₂ : C m} → c₁ ⟺ c₂ → ⟦ c₁ ⟧C → ⟦ c₂ ⟧C
+evalC {zero} {zero} (baseC x) v = eval x v
+evalC {zero} {zero} raise0 ()
+evalC {zero} {zero} raise1 tt = tt
+evalC {zero} {suc m} raise0 ()
+evalC {zero} {suc m} raise1 tt = evalC {zero} {m} raise1 tt , evalC {zero} {m} raise0 {!!} -- hole is ⊥
+evalC {suc n} {zero} raise0 (v , _) = evalC {n} {zero} raise0 v  -- v is a shape full of ⊥
+evalC {suc n} {zero} raise1 v = tt -- v is a pair where snd is ⊥ ?
+evalC {suc n} {suc m} (nodeC c c′) (x , y) = evalC c x , evalC c′ y
+evalC {suc n} {suc m} raise0 (proj₁ , proj₂) = evalC {n} {m} raise0 proj₁ , evalC {n} {m} raise0 proj₂
+evalC {suc n} {suc m} raise1 (proj₁ , proj₂) = evalC {n} {m} raise1 proj₁ , evalC {n} {m} raise0 proj₂
+
