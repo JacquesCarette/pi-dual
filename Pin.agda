@@ -150,6 +150,10 @@ data _⟺_ : {m n : ℕ} → C m → C n → Set where
   nodeC : { m n : ℕ } { c₁ c₃ : C m } { c₂ c₄ : C n } → 
            (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (Node c₁ c₃ ⟺ Node c₂ c₄)
 
+raiseC : {m n : ℕ} → C n → C (m + n)
+raiseC {0} {n} c = c
+raiseC {suc m} {n} c = {!!} -- raiseC {m} {suc n} (Node c (zeroN n))
+
 uniteN₊ : { n : ℕ } { c : C n } → plus (zeroN n) c ⟺ c
 uniteN₊ {0} {ZD t} = baseC (unite₊ {t})
 uniteN₊ {suc n} {Node c₁ c₂} = 
@@ -165,15 +169,38 @@ swapN₊ {0} {ZD t₁} {ZD t₂} = baseC (swap₊ {t₁} {t₂})
 swapN₊ {suc n} {Node c₁ c₂} {Node c₁' c₂'} = 
   nodeC (swapN₊ {n} {c₁} {c₁'}) (swapN₊ {n} {c₂} {c₂'})
 
+assoclN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
+           plus c₁ (plus c₂ c₃) ⟺ plus (plus c₁ c₂) c₃
+assoclN₊ {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (assocl₊ {t₁} {t₂} {t₃})
+assoclN₊ {suc n} {Node c₁ c₂} {Node c₃ c₄} {Node c₅ c₆} = 
+  nodeC (assoclN₊ {n} {c₁} {c₃} {c₅}) (assoclN₊ {n} {c₂} {c₄} {c₆})
+
+assocrN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
+           plus (plus c₁ c₂) c₃ ⟺ plus c₁ (plus c₂ c₃)
+assocrN₊ {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (assocr₊ {t₁} {t₂} {t₃})
+assocrN₊ {suc n} {Node c₁ c₂} {Node c₃ c₄} {Node c₅ c₆} = 
+  nodeC (assocrN₊ {n} {c₁} {c₃} {c₅}) (assocrN₊ {n} {c₂} {c₄} {c₆})
+
+distzN : {m n : ℕ} {c : C n} → times (zeroN m) c ⟺ zeroN (m + n)
+distzN {0} {0} {ZD t} = baseC (distz {t})
+distzN {0} {suc n} {Node c₁ c₂} = 
+  nodeC (distzN {0} {n} {c₁}) (distzN {0} {n} {c₂})
+distzN {suc m} {n} {c} = 
+  nodeC (distzN {m} {n} {c}) (distzN {m} {n} {c})
+
+uniteN⋆ : { m n : ℕ } { c : C n } → times (oneN m) c ⟺ c
+uniteN⋆ {0} {0} {ZD t} = baseC (unite⋆ {t})
+uniteN⋆ {0} {suc n} {Node c₁ c₂} = 
+  nodeC (uniteN⋆ {0} {n} {c₁}) (uniteN⋆ {0} {n} {c₂})
+uniteN⋆ {suc m} {n} {c} = {!!} 
+  -- nodeC (uniteN⋆ {m} {n} {c}) (distzN {m} {n} {c})
+
+
 ------------------------------------------------------------------------------
 
 {--
 
-  assocl₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
-            plus c₁ (plus c₂ c₃) ⟺ plus (plus c₁ c₂) c₃
-  assocr₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
-            plus (plus c₁ c₂) c₃ ⟺ plus c₁ (plus c₂ c₃)
-  unite⋆  : { m n : ℕ } { c : C n } → times (oneN m) c ⟺ c
+
   uniti⋆  : { m n : ℕ } { c : C n } → c ⟺ times (oneN m) c
   swap⋆   : { m n : ℕ } { c₁ : C m } { c₂ : C n } → times c₁ c₂ ⟺ times c₂ c₁
   assocl⋆ : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → 
