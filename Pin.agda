@@ -1,54 +1,24 @@
 module Pin where 
 
+-- N-dimensional version of Pi
+
 open import Data.Nat
 open import Data.Empty
 open import Data.Unit
-open import Data.Sum hiding (map)
-open import Data.Product hiding (map)
+open import Data.Sum 
+open import Data.Product 
 
 infixr 30 _⟷_
 infixr 30 _⟺_
 
--- N-dimensional version of Pi
-
--- Types indexed by dimension... n-dimensional cubes
-
--- base are 0d types which are the usual finite types
+------------------------------------------------------------------------------
+-- base types (or 0d types) are the usual finite types
 
 data T : Set where
   Zero  : T
   One   : T
   Plus  : T → T → T
   Times : T → T → T
-
-⟦_⟧ : T → Set
-⟦ Zero ⟧         = ⊥
-⟦ One ⟧          = ⊤
-⟦ Plus t1 t2 ⟧   = ⟦ t1 ⟧ ⊎ ⟦ t2 ⟧
-⟦ Times t1 t2 ⟧  = ⟦ t1 ⟧ × ⟦ t2 ⟧
-
--- n-dimensional types represented as trees of depth n
-
-data C : (n : ℕ) → Set where
-  ZD   : T → C 0
-  Node : {n : ℕ} → C n → C n → C (suc n)
-
-zeroN : (n : ℕ) → C n
-zeroN 0 = ZD Zero
-zeroN (suc n) = Node (zeroN n) (zeroN n)
-
-oneN : (n : ℕ) → C n
-oneN 0 = ZD One
-oneN (suc n) = Node (oneN n) (zeroN n)
-
-plus : {n : ℕ} → C n → C n → C n
-plus (ZD t1) (ZD t2) = ZD (Plus t1 t2)
-plus (Node c1 c2) (Node c1' c2') = Node (plus c1 c1') (plus c2 c2')
-
-times : {m n : ℕ} → C m → C n → C (m + n)
-times (ZD t1) (ZD t2) = ZD (Times t1 t2)
-times (ZD t) (Node c1 c2) = Node (times (ZD t) c1) (times (ZD t) c2)
-times (Node c1 c2) c = Node (times c1 c) (times c2 c)
 
 -- Combinators on 0d types
 
@@ -77,10 +47,117 @@ data _⟷_ : T → T → Set where
   _⊗_    : { t₁ t₂ t₃ t₄ : T } → 
            (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (Times t₁ t₂ ⟷ Times t₃ t₄)
 
+-- Semantics 
+
+⟦_⟧ : T → Set
+⟦ Zero ⟧         = ⊥
+⟦ One ⟧          = ⊤
+⟦ Plus t1 t2 ⟧   = ⟦ t1 ⟧ ⊎ ⟦ t2 ⟧
+⟦ Times t1 t2 ⟧  = ⟦ t1 ⟧ × ⟦ t2 ⟧
+
+mutual
+
+  eval : {t₁ t₂ : T} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
+  eval unite₊ (inj₁ ())
+  eval unite₊ (inj₂ v) = v
+  eval uniti₊ v = inj₂ v
+  eval swap₊ (inj₁ v) = inj₂ v
+  eval swap₊ (inj₂ v) = inj₁ v
+  eval assocl₊ (inj₁ v) = inj₁ (inj₁ v)
+  eval assocl₊ (inj₂ (inj₁ v)) = inj₁ (inj₂ v)
+  eval assocl₊ (inj₂ (inj₂ v)) = inj₂ v
+  eval assocr₊ (inj₁ (inj₁ v)) = inj₁ v
+  eval assocr₊ (inj₁ (inj₂ v)) = inj₂ (inj₁ v)
+  eval assocr₊ (inj₂ v) = inj₂ (inj₂ v)
+  eval unite⋆ (tt , v) = v
+  eval uniti⋆ v = (tt , v)
+  eval swap⋆ (v1 , v2) = (v2 , v1)
+  eval assocl⋆ (v1 , (v2 , v3)) = ((v1 , v2) , v3)
+  eval assocr⋆ ((v1 , v2) , v3) = (v1 , (v2 , v3))
+  eval distz (() , v)
+  eval factorz ()
+  eval dist (inj₁ v1 , v3) = inj₁ (v1 , v3)
+  eval dist (inj₂ v2 , v3) = inj₂ (v2 , v3)
+  eval factor (inj₁ (v1 , v3)) = (inj₁ v1 , v3)
+  eval factor (inj₂ (v2 , v3)) = (inj₂ v2 , v3)
+  eval id⟷ v = v
+  eval (sym c) v = evalB c v
+  eval (c₁ ◎ c₂) v = eval c₂ (eval c₁ v)
+  eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
+  eval (c₁ ⊕ c₂) (inj₂ v) = inj₂ (eval c₂ v)
+  eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
+
+  evalB : {t₁ t₂ : T} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧
+  evalB unite₊ v = inj₂ v
+  evalB uniti₊ (inj₁ ())
+  evalB uniti₊ (inj₂ v) = v
+  evalB swap₊ (inj₁ v) = inj₂ v
+  evalB swap₊ (inj₂ v) = inj₁ v
+  evalB assocl₊ (inj₁ (inj₁ v)) = inj₁ v
+  evalB assocl₊ (inj₁ (inj₂ v)) = inj₂ (inj₁ v)
+  evalB assocl₊ (inj₂ v) = inj₂ (inj₂ v)
+  evalB assocr₊ (inj₁ v) = inj₁ (inj₁ v)
+  evalB assocr₊ (inj₂ (inj₁ v)) = inj₁ (inj₂ v)
+  evalB assocr₊ (inj₂ (inj₂ v)) = inj₂ v
+  evalB unite⋆ v = (tt , v)
+  evalB uniti⋆ (tt , v) = v
+  evalB swap⋆ (v1 , v2) = (v2 , v1)
+  evalB assocl⋆ ((v1 , v2) , v3) = (v1 , (v2 , v3))
+  evalB assocr⋆ (v1 , (v2 , v3)) = ((v1 , v2) , v3)
+  evalB distz ()
+  evalB factorz (() , v)
+  evalB dist (inj₁ (v1 , v3)) = (inj₁ v1 , v3)
+  evalB dist (inj₂ (v2 , v3)) = (inj₂ v2 , v3)
+  evalB factor (inj₁ v1 , v3) = inj₁ (v1 , v3)
+  evalB factor (inj₂ v2 , v3) = inj₂ (v2 , v3)
+  evalB id⟷ v = v
+  evalB (sym c) v = eval c v
+  evalB (c₁ ◎ c₂) v = evalB c₁ (evalB c₂ v)
+  evalB (c₁ ⊕ c₂) (inj₁ v) = inj₁ (evalB c₁ v)
+  evalB (c₁ ⊕ c₂) (inj₂ v) = inj₂ (evalB c₂ v)
+  evalB (c₁ ⊗ c₂) (v₁ , v₂) = (evalB c₁ v₁ , evalB c₂ v₂)
+
+------------------------------------------------------------------------------
+-- Types indexed by dimension... n-dimensional cubes
+-- n-dimensional types represented as trees of depth n
+
+data C : (n : ℕ) → Set where
+  ZD   : T → C 0
+  Node : {n : ℕ} → C n → C n → C (suc n)
+
+zeroN : (n : ℕ) → C n
+zeroN 0 = ZD Zero
+zeroN (suc n) = Node (zeroN n) (zeroN n)
+
+oneN : (n : ℕ) → C n
+oneN 0 = ZD One
+oneN (suc n) = Node (oneN n) (zeroN n)
+
+plus : {n : ℕ} → C n → C n → C n
+plus (ZD t1) (ZD t2) = ZD (Plus t1 t2)
+plus (Node c1 c2) (Node c1' c2') = Node (plus c1 c1') (plus c2 c2')
+
+times : {m n : ℕ} → C m → C n → C (m + n)
+times (ZD t1) (ZD t2) = ZD (Times t1 t2)
+times (ZD t) (Node c1 c2) = Node (times (ZD t) c1) (times (ZD t) c2)
+times (Node c1 c2) c = Node (times c1 c) (times c2 c)
+
+
 -- Combinators on nd types
   
 data _⟺_ : {m n : ℕ} → C m → C n → Set where
-  base : { t₁ t₂ : T } → (t₁ ⟷ t₂) → (ZD t₁ ⟺ ZD t₂)
+  baseC : { t₁ t₂ : T } → (t₁ ⟷ t₂) → (ZD t₁ ⟺ ZD t₂)
+  nodeC : { m n : ℕ } { c₁ c₃ : C m } { c₂ c₄ : C n } → 
+           (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (Node c₁ c₃ ⟺ Node c₂ c₄)
+
+uniteN₊ : { n : ℕ } { c : C n } → plus (zeroN n) c ⟺ c
+uniteN₊ {0} {ZD t} = baseC (unite₊ {t})
+uniteN₊ {suc n} {Node c₁ c₂} = 
+  nodeC (uniteN₊ {n} {c₁}) (uniteN₊ {n} {c₂})
+
+------------------------------------------------------------------------------
+
+{--
   unite₊  : { n : ℕ } { c : C n } → plus (zeroN n) c ⟺ c
   uniti₊  : { n : ℕ } { c : C n } → c ⟺ plus (zeroN n) c 
   swap₊   : { n : ℕ } { c₁ c₂ : C n } → plus c₁ c₂ ⟺ plus c₂ c₁
@@ -109,4 +186,7 @@ data _⟺_ : {m n : ℕ} → C m → C n → Set where
            (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (plus c₁ c₃ ⟺ plus c₂ c₄)
   _⊗_    : { m n k p : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } { c₄ : C p } → 
            (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (times c₁ c₃ ⟺ times c₂ c₄)
+--}
+
+------------------------------------------------------------------------------
 
