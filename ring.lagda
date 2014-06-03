@@ -670,7 +670,7 @@ By a simple induction on $m$.
            \cubt_2^n \boxplus^n \cubt_1^n &: \swapp^n \\
 \assoclp^n :&  \cubt_1^n \boxplus^n (\cubt_2^n \boxplus^n \cubt_3^n) & \isoone & 
            (\cubt_1^n \boxplus^n \cubt_2^n) \boxplus^n \cubt_3^n &: \assocrp^n \\
-\identlt^{m,n} :&  \otn^m \boxtimes^m_n \cubt^n & \isoone & \cubt^{m+n} &: 
+\identlt^{m,n} :&  \otn^m \boxtimes^m_n \cubt^n & \isoone & \cubt^{n} &: 
   \identrt^{m,n} \\
 \swapt^{m,n} :&  \cubt_1^m \boxtimes^m_n \cubt_2^n & \isoone & 
            \cubt_2^n \boxtimes^n_m \cubt_1^m &: \swapt^{m,n} \\
@@ -680,7 +680,7 @@ By a simple induction on $m$.
   (\cubt_1^m \boxtimes^m_n \cubt_2^n) \boxtimes^{m+n}_k \cubt_3^k &: 
   \assocrt^{m,n,k} \\
 \distz^{m,n} :&~ 
-  \ztn^m \boxtimes^m_n \cubt^n & \isoone & \ztn^{m+n} &: \factorz^{m,n} \\
+  \ztn^m \boxtimes^m_n \cubt^n & \isoone & \ztn^{m} &: \factorz^{m,n} \\
 \dist^{m,n} :&~ 
   (\cubt_1^m \boxplus^m \cubt_2^m) \boxtimes^m_n \cubt_3^n & \isoone & 
   (\cubt_1^m \boxtimes^m_n \cubt_3^n) \boxplus^{m+n} 
