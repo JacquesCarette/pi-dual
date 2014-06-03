@@ -150,10 +150,8 @@ data _⟺_ : {m n : ℕ} → C m → C n → Set where
   baseC : { t₁ t₂ : T } → (t₁ ⟷ t₂) → (ZD t₁ ⟺ ZD t₂)
   nodeC : { m n : ℕ } { c₁ c₃ : C m } { c₂ c₄ : C n } → 
            (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (Node c₁ c₃ ⟺ Node c₂ c₄)
-
-raiseC : {m n : ℕ} → C n → C (m + n)
-raiseC {0} {n} c = c
-raiseC {suc m} {n} c = {!!} -- raiseC {m} {suc n} (Node c (zeroN n))
+  raise0 : { m n : ℕ } → (zeroN m ⟺ zeroN n)
+  raise1 : { m n : ℕ } → (oneN m ⟺ oneN n)
 
 uniteN₊ : { n : ℕ } { c : C n } → plus (zeroN n) c ⟺ c
 uniteN₊ {0} {ZD t} = baseC (unite₊ {t})
@@ -193,17 +191,15 @@ uniteN⋆ : { m n : ℕ } { c : C n } → times (oneN m) c ⟺ c
 uniteN⋆ {0} {0} {ZD t} = baseC (unite⋆ {t})
 uniteN⋆ {0} {suc n} {Node c₁ c₂} = 
   nodeC (uniteN⋆ {0} {n} {c₁}) (uniteN⋆ {0} {n} {c₂})
-uniteN⋆ {suc m} {n} {c} = {!!} 
-  -- nodeC (uniteN⋆ {m} {n} {c}) (distzN {m} {n} {c})
-
+uniteN⋆ {suc m} {n} {c} = {!!}
+  -- nodeC (uniteN⋆ {m} {n} {c}) (distzN {m} {n} {c}) ◎ raiseo
 
 ------------------------------------------------------------------------------
 
 {--
 
-
-  uniti⋆  : { m n : ℕ } { c : C n } → c ⟺ times (oneN m) c
-  swap⋆   : { m n : ℕ } { c₁ : C m } { c₂ : C n } → times c₁ c₂ ⟺ times c₂ c₁
+uniti⋆  : { m n : ℕ } { c : C n } → c ⟺ times (oneN m) c
+swapN⋆ : { m n : ℕ } { c₁ : C m } { c₂ : C n } → times c₁ c₂ ⟺ times c₂ c₁
   assocl⋆ : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → 
             times c₁ (times c₂ c₃) ⟺ times (times c₁ c₂) c₃
   assocr⋆ : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → 
@@ -226,6 +222,7 @@ uniteN⋆ {suc m} {n} {c} = {!!}
 
 ------------------------------------------------------------------------------
 
+{--
 -- Semantics
 ⟦_⟧C : {n : ℕ} → C n → Set
 ⟦_⟧C {zero} (ZD x) = ⟦ x ⟧
@@ -242,3 +239,4 @@ uniteN⋆ {suc m} {n} {c} = {!!}
 evalC : {n : ℕ} {c₁ c₂ : C n} → c₁ ⟺ c₂ → ⟦ c₁ ⟧C → ⟦ c₂ ⟧C
 evalC {zero} (baseC c) v =  eval c v
 evalC {suc n} (nodeC d₀ d₁) (x₀ , x₁) = evalC d₀ x₀ , evalC d₁ x₁
+--}
