@@ -7,6 +7,7 @@ open import Data.Empty
 open import Data.Unit
 open import Data.Sum 
 open import Data.Product 
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
 
 infixr 30 _⟷_
 infixr 30 _⟺_
@@ -121,7 +122,7 @@ mutual
 -- Types indexed by dimension... n-dimensional cubes
 -- n-dimensional types represented as trees of depth n
 
-data C : (n : ℕ) → Set where
+data C : ℕ → Set where
   ZD   : T → C 0
   Node : {n : ℕ} → C n → C n → C (suc n)
 
@@ -225,3 +226,19 @@ uniteN⋆ {suc m} {n} {c} = {!!}
 
 ------------------------------------------------------------------------------
 
+-- Semantics
+⟦_⟧C : {n : ℕ} → C n → Set
+⟦_⟧C {zero} (ZD x) = ⟦ x ⟧
+⟦_⟧C {suc n} (Node c c₁) = ⟦ c ⟧C × ⟦ c₁ ⟧C -- probably should have our own × ?
+
+-- combinators respect dimension:
+∙⟺∙⇒m≡n : {m n : ℕ} {c₁ : C m} {c₂ : C n} → c₁ ⟺ c₂ → m ≡ n
+∙⟺∙⇒m≡n {zero} {zero} (baseC _) = refl
+∙⟺∙⇒m≡n {zero} {suc n} ()
+∙⟺∙⇒m≡n {suc m} {zero} ()
+∙⟺∙⇒m≡n {suc m} {suc n} (nodeC c _) = cong suc (∙⟺∙⇒m≡n c)
+
+-- WLOG, use the same dimension
+evalC : {n : ℕ} {c₁ c₂ : C n} → c₁ ⟺ c₂ → ⟦ c₁ ⟧C → ⟦ c₂ ⟧C
+evalC {zero} (baseC c) v =  eval c v
+evalC {suc n} (nodeC d₀ d₁) (x₀ , x₁) = evalC d₀ x₀ , evalC d₁ x₁
