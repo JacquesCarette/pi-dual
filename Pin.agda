@@ -155,12 +155,20 @@ uniteN₊ {0} {ZD t} = baseC (unite₊ {t})
 uniteN₊ {suc n} {Node c₁ c₂} = 
   nodeC (uniteN₊ {n} {c₁}) (uniteN₊ {n} {c₂})
 
+unitiN₊ : { n : ℕ } { c : C n } → c ⟺ plus (zeroN n) c 
+unitiN₊ {0} {ZD t} = baseC (uniti₊ {t})
+unitiN₊ {suc n} {Node c₁ c₂} = 
+  nodeC (unitiN₊ {n} {c₁}) (unitiN₊ {n} {c₂})
+
+swapN₊ : { n : ℕ } { c₁ c₂ : C n } → plus c₁ c₂ ⟺ plus c₂ c₁
+swapN₊ {0} {ZD t₁} {ZD t₂} = baseC (swap₊ {t₁} {t₂})
+swapN₊ {suc n} {Node c₁ c₂} {Node c₁' c₂'} = 
+  nodeC (swapN₊ {n} {c₁} {c₁'}) (swapN₊ {n} {c₂} {c₂'})
+
 ------------------------------------------------------------------------------
 
 {--
-  unite₊  : { n : ℕ } { c : C n } → plus (zeroN n) c ⟺ c
-  uniti₊  : { n : ℕ } { c : C n } → c ⟺ plus (zeroN n) c 
-  swap₊   : { n : ℕ } { c₁ c₂ : C n } → plus c₁ c₂ ⟺ plus c₂ c₁
+
   assocl₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
             plus c₁ (plus c₂ c₃) ⟺ plus (plus c₁ c₂) c₃
   assocr₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
