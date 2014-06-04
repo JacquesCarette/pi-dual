@@ -183,7 +183,7 @@ data _⟺_ : {m n : ℕ} → C m → C n → (m ≡ n) → Set where
 
 uniteN₊ : {m : ℕ} {c : C m} → _⟺_ (plus (zeroN m) c refl) c refl
 uniteN₊ {0} {ZD t} = baseC (unite₊ {t})
-uniteN₊ {suc .n₂} {Node {n₁} {n₂} c₁ c₂ n₁≡n₂} = ?
+uniteN₊ {suc .n₂} {Node {n₁} {n₂} c₁ c₂ n₁≡n₂} = {!!}
 
 {--
 unitiN₊ : { n : ℕ } { c : C n } → c ⟺ plus (zeroN n) c 
