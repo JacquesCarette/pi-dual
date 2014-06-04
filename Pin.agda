@@ -7,7 +7,8 @@ open import Data.Empty
 open import Data.Unit
 open import Data.Sum 
 open import Data.Product 
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
+open import Relation.Binary.PropositionalEquality 
+  using (_≡_; refl; cong; cong₂; trans)
 
 infixr 30 _⟷_
 infixr 30 _⟺_
@@ -124,35 +125,34 @@ mutual
 
 data C : ℕ → Set where
   ZD   : T → C 0
-  Node : {n : ℕ} → C n → C n → C (suc n)
+  Node : {m n : ℕ} → C m → C n → (m ≡ n) → C (suc n)
 
-zeroN : (n : ℕ) → C n
-zeroN 0 = ZD Zero
-zeroN (suc n) = Node (zeroN n) (zeroN n)
-
-oneN : (n : ℕ) → C n
-oneN 0 = ZD One
-oneN (suc n) = Node (oneN n) (zeroN n)
-
-plus : {n : ℕ} → C n → C n → C n
-plus (ZD t1) (ZD t2) = ZD (Plus t1 t2)
-plus (Node c1 c2) (Node c1' c2') = Node (plus c1 c1') (plus c2 c2')
+plus : {m n : ℕ} → C m → C n → (m ≡ n) → C n
+plus (ZD t1) (ZD t2) refl = ZD (Plus t1 t2)
+plus (Node c1 c2 p₁) (Node c1' c2' p₁') p = 
+  Node (plus c1 c1' {!!}) (plus c2 c2' {!!}) {!!}
+plus _ _ _ = {!!}
 
 times : {m n : ℕ} → C m → C n → C (m + n)
 times (ZD t1) (ZD t2) = ZD (Times t1 t2)
-times (ZD t) (Node c1 c2) = Node (times (ZD t) c1) (times (ZD t) c2)
-times (Node c1 c2) c = Node (times c1 c) (times c2 c)
-
+times (ZD t) (Node c1 c2 p) = Node (times (ZD t) c1) (times (ZD t) c2) {!!} 
+times (Node c1 c2 p) c = Node (times c1 c) (times c2 c) {!!} 
 
 -- Combinators on nd types
   
-data _⟺_ : {m n : ℕ} → C m → C n → Set where
-  baseC : { t₁ t₂ : T } → (t₁ ⟷ t₂) → (ZD t₁ ⟺ ZD t₂)
-  nodeC : { m n : ℕ } { c₁ c₃ : C m } { c₂ c₄ : C n } → 
-           (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (Node c₁ c₃ ⟺ Node c₂ c₄)
-  raise0 : { m n : ℕ } → (zeroN m ⟺ zeroN n)
-  raise1 : { m n : ℕ } → (oneN m ⟺ oneN n)
+data _⟺_ : {m n : ℕ} → C m → C n → (m ≡ n) → Set where
+  baseC : { t₁ t₂ : T } → (t₁ ⟷ t₂) → (_⟺_ (ZD t₁) (ZD t₂) refl)
+  nodeC : {m n k l : ℕ} {c₁ : C m} {c₂ : C n} {c₃ : C k} {c₄ : C l} 
+          {p₁ : m ≡ n} {p₂ : k ≡ l} {p : k ≡ m} → 
+           (_⟺_ c₁ c₂ p₁) → (_⟺_ c₃ c₄ p₂) → 
+           (_⟺_ (Node c₁ c₃ {!!}) (Node c₂ c₄ {!!}) {!!})
 
+-- Def. 2.1 lists the conditions for J-graded bipermutative category
+
+-- (0)
+-- the additive unit and assoc are implicit in the paper
+
+{--
 uniteN₊ : { n : ℕ } { c : C n } → plus (zeroN n) c ⟺ c
 uniteN₊ {0} {ZD t} = baseC (unite₊ {t})
 uniteN₊ {suc n} {Node c₁ c₂} = 
@@ -162,11 +162,6 @@ unitiN₊ : { n : ℕ } { c : C n } → c ⟺ plus (zeroN n) c
 unitiN₊ {0} {ZD t} = baseC (uniti₊ {t})
 unitiN₊ {suc n} {Node c₁ c₂} = 
   nodeC (unitiN₊ {n} {c₁}) (unitiN₊ {n} {c₂})
-
-swapN₊ : { n : ℕ } { c₁ c₂ : C n } → plus c₁ c₂ ⟺ plus c₂ c₁
-swapN₊ {0} {ZD t₁} {ZD t₂} = baseC (swap₊ {t₁} {t₂})
-swapN₊ {suc n} {Node c₁ c₂} {Node c₁' c₂'} = 
-  nodeC (swapN₊ {n} {c₁} {c₁'}) (swapN₊ {n} {c₂} {c₂'})
 
 assoclN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
            plus c₁ (plus c₂ c₃) ⟺ plus (plus c₁ c₂) c₃
@@ -180,6 +175,47 @@ assocrN₊ {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (assocr₊ {t₁} {t₂} {t
 assocrN₊ {suc n} {Node c₁ c₂} {Node c₃ c₄} {Node c₅ c₆} = 
   nodeC (assocrN₊ {n} {c₁} {c₃} {c₅}) (assocrN₊ {n} {c₂} {c₄} {c₆})
 
+-- (1) have times functor on objects
+-- define times functor on combinators
+-- timesF should satisfying assoc and unitality conditions...
+-- diagram on top of p.6 should commute
+
+timesF : { m n : ℕ } { c₁ : C m } { c₂ : C m } { c₃ : C n } { c₄ : C n } → 
+         (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (times c₁ c₃ ⟺ times c₂ c₄)
+timesF {0} {0} {ZD t₁} {ZD t₂} {ZD t₃} {ZD t₄} (baseC f) (baseC g) = 
+  baseC (_⊗_ {t₁} {t₃} {t₂} {t₄} f g)
+timesF {0} {suc n} {ZD t₁} {ZD t₂} {Node c₁ c₂} {Node c₃ c₄} 
+       (baseC f) (nodeC g₁ g₂) = nodeC (timesF (baseC f) g₁) (timesF (baseC f) g₂)
+timesF {suc m} {n} {Node c₁ c₂} {Node c₃ c₄} {c₅} {c₆} 
+       (nodeC f₁ f₂) g = nodeC (timesF f₁ g) (timesF f₂ g)
+
+-- (2) there is a unit object One of dimension 0
+
+uniteN⋆ : {n : ℕ} {c : C n} → times (ZD One) c ⟺ c
+uniteN⋆ {0} {ZD t} = baseC (unite⋆ {t})
+uniteN⋆ {suc n} {Node c₁ c₂} = nodeC (uniteN⋆ {n} {c₁}) (uniteN⋆ {n} {c₂})
+
+unitiN⋆ : {n : ℕ} {c : C n} → c ⟺ times (ZD One) c
+unitiN⋆ {0} {ZD t} = baseC (uniti⋆ {t})
+unitiN⋆ {suc n} {Node c₁ c₂} = nodeC (unitiN⋆ {n} {c₁}) (unitiN⋆ {n} {c₂})
+
+-- (3) swap
+
+swapN⋆ : {m n : ℕ} {c₁ : C m} {c₂ : C n} → times c₁ c₂ ⟺ times c₂ c₁
+swapN⋆ {0} {0} {ZD t₁} {ZD t₂} = baseC (swap⋆ {t₁} {t₂})
+swapN⋆ = ? 
+
+
+
+
+
+swapN₊ : { n : ℕ } { c₁ c₂ : C n } → plus c₁ c₂ ⟺ plus c₂ c₁
+swapN₊ {0} {ZD t₁} {ZD t₂} = baseC (swap₊ {t₁} {t₂})
+swapN₊ {suc n} {Node c₁ c₂} {Node c₁' c₂'} = 
+  nodeC (swapN₊ {n} {c₁} {c₁'}) (swapN₊ {n} {c₂} {c₂'})
+
+
+
 distzN : {m n : ℕ} {c : C n} → times (zeroN m) c ⟺ zeroN (m + n)
 distzN {0} {0} {ZD t} = baseC (distz {t})
 distzN {0} {suc n} {Node c₁ c₂} = 
@@ -187,19 +223,12 @@ distzN {0} {suc n} {Node c₁ c₂} =
 distzN {suc m} {n} {c} = 
   nodeC (distzN {m} {n} {c}) (distzN {m} {n} {c})
 
-uniteN⋆ : { m n : ℕ } { c : C n } → times (oneN m) c ⟺ c
-uniteN⋆ {0} {0} {ZD t} = baseC (unite⋆ {t})
-uniteN⋆ {0} {suc n} {Node c₁ c₂} = 
-  nodeC (uniteN⋆ {0} {n} {c₁}) (uniteN⋆ {0} {n} {c₂})
-uniteN⋆ {suc m} {n} {c} = {!!}
-  -- nodeC (uniteN⋆ {m} {n} {c}) (distzN {m} {n} {c}) ◎ raiseo
+--}
 
 ------------------------------------------------------------------------------
 
 {--
 
-uniti⋆  : { m n : ℕ } { c : C n } → c ⟺ times (oneN m) c
-swapN⋆ : { m n : ℕ } { c₁ : C m } { c₂ : C n } → times c₁ c₂ ⟺ times c₂ c₁
   assocl⋆ : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → 
             times c₁ (times c₂ c₃) ⟺ times (times c₁ c₂) c₃
   assocr⋆ : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → 
@@ -216,16 +245,16 @@ swapN⋆ : { m n : ℕ } { c₁ : C m } { c₂ : C n } → times c₁ c₂ ⟺ t
            (c₁ ⟺ c₂) → (c₂ ⟺ c₃) → (c₁ ⟺ c₃) 
   _⊕_    : { m n : ℕ } { c₁ c₃ : C m } { c₂ c₄ : C n } → 
            (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (plus c₁ c₃ ⟺ plus c₂ c₄)
-  _⊗_    : { m n k p : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } { c₄ : C p } → 
-           (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (times c₁ c₃ ⟺ times c₂ c₄)
 --}
 
 ------------------------------------------------------------------------------
 
+{--
 -- Semantics
 ⟦_⟧C : {n : ℕ} → C n → Set
 ⟦_⟧C {zero} (ZD x) = ⟦ x ⟧
 ⟦_⟧C {suc n} (Node c c₁) = ⟦ c ⟧C × ⟦ c₁ ⟧C -- probably should have our own × ?
+--}
 
 {--
 -- combinators respect dimension:
@@ -236,16 +265,18 @@ swapN⋆ : { m n : ℕ } { c₁ : C m } { c₂ : C n } → times c₁ c₂ ⟺ t
 ∙⟺∙⇒m≡n {suc m} {suc n} (nodeC c _) = cong suc (∙⟺∙⇒m≡n c)
 --}
 
+{--
 -- This is odd - there are 3 cases which should be 'impossible' but Agda can't see it.
 evalC : {n m : ℕ} {c₁ : C n} {c₂ : C m} → c₁ ⟺ c₂ → ⟦ c₁ ⟧C → ⟦ c₂ ⟧C
 evalC {zero} {zero} (baseC x) v = eval x v
-evalC {zero} {zero} raise0 ()
-evalC {zero} {zero} raise1 tt = tt
-evalC {zero} {suc m} raise0 ()
-evalC {zero} {suc m} raise1 tt = evalC {zero} {m} raise1 tt , evalC {zero} {m} raise0 {!!} -- hole is ⊥
-evalC {suc n} {zero} raise0 (v , _) = evalC {n} {zero} raise0 v  -- v is a shape full of ⊥
-evalC {suc n} {zero} raise1 v = tt -- v is a pair where snd is ⊥ ?
+--evalC {zero} {zero} raise0 ()
+--evalC {zero} {zero} raise1 tt = tt
+--evalC {zero} {suc m} raise0 ()
+--evalC {zero} {suc m} raise1 tt = evalC {zero} {m} raise1 tt , evalC {zero} {m} raise0 {!!} -- hole is ⊥
+--evalC {suc n} {zero} raise0 (v , _) = evalC {n} {zero} raise0 v  -- v is a shape full of ⊥
+--evalC {suc n} {zero} raise1 v = tt -- v is a pair where snd is ⊥ ?
 evalC {suc n} {suc m} (nodeC c c′) (x , y) = evalC c x , evalC c′ y
-evalC {suc n} {suc m} raise0 (proj₁ , proj₂) = evalC {n} {m} raise0 proj₁ , evalC {n} {m} raise0 proj₂
-evalC {suc n} {suc m} raise1 (proj₁ , proj₂) = evalC {n} {m} raise1 proj₁ , evalC {n} {m} raise0 proj₂
+--evalC {suc n} {suc m} raise0 (proj₁ , proj₂) = evalC {n} {m} raise0 proj₁ , evalC {n} {m} raise0 proj₂
+--evalC {suc n} {suc m} raise1 (proj₁ , proj₂) = evalC {n} {m} raise1 proj₁ , evalC {n} {m} raise0 proj₂
+--}
 
