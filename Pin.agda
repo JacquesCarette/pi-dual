@@ -8,7 +8,8 @@ open import Data.Unit
 open import Data.Sum 
 open import Data.Product 
 open import Relation.Binary.PropositionalEquality 
-  using (_≡_; refl; cong; cong₂; trans; sym)
+  using (_≡_; refl; cong; cong₂; trans; sym; module ≡-Reasoning)
+open ≡-Reasoning
 
 infixr 30 _⟷_
 infixr 30 _⟺_
@@ -120,6 +121,14 @@ mutual
   evalB (c₁ ⊗ c₂) (v₁ , v₂) = (evalB c₁ v₁ , evalB c₂ v₂)
 
 ------------------------------------------------------------------------------
+-- Silly lemmas that should be in the library somewhere
+
+suc-inj : {m n : ℕ} → suc m ≡ suc n → m ≡ n
+suc-inj {0} {0} refl = refl
+suc-inj {0} {suc i} ()
+suc-inj {suc i} {suc .i} refl = refl
+
+------------------------------------------------------------------------------
 -- Types indexed by dimension... n-dimensional cubes
 -- n-dimensional types represented as trees of depth n
 
@@ -127,16 +136,34 @@ data C : ℕ → Set where
   ZD   : T → C 0
   Node : {m n : ℕ} → C m → C n → (m ≡ n) → C (suc n)
 
+zeroN : (n : ℕ) → C n
+zeroN 0 = ZD Zero
+zeroN (suc n) = Node (zeroN n) (zeroN n) refl
+
 plus : {m n : ℕ} → C m → C n → (m ≡ n) → C n
+plus (ZD _) (Node _ _ _) ()
+plus (Node _ _ _) (ZD _) ()
 plus (ZD t1) (ZD t2) refl = ZD (Plus t1 t2)
-plus (Node c1 c2 p₁) (Node c1' c2' p₁') p = 
-  Node (plus c1 c1' {!!}) (plus c2 c2' {!!}) p₁'
-plus _ _ _ = {!!}
+plus {suc .m₂} {suc .m₂'} 
+     (Node {m₁} {m₂} c1 c2 p₁) 
+     (Node {m₁'} {m₂'} c1' c2' p₁') p = 
+  Node (plus c1 c1' q)
+       (plus c2 c2' (suc-inj p)) 
+       p₁'
+  where q = begin
+             m₁ 
+              ≡⟨ p₁ ⟩ 
+             m₂
+              ≡⟨ suc-inj p ⟩
+             m₂'
+              ≡⟨ sym p₁' ⟩
+             m₁' ∎
 
 times : {m n : ℕ} → C m → C n → C (m + n)
 times (ZD t1) (ZD t2) = ZD (Times t1 t2)
 times (ZD t) (Node c1 c2 p) = Node (times (ZD t) c1) (times (ZD t) c2) p 
-times {n = n} (Node c1 c2 p) c = Node (times c1 c) (times c2 c) (cong (λ z → z + n) p) 
+times {n = n} (Node c1 c2 p) c = 
+  Node (times c1 c) (times c2 c) (cong (λ z → z + n) p) 
 
 -- Combinators on nd types
   
@@ -145,19 +172,20 @@ data _⟺_ : {m n : ℕ} → C m → C n → (m ≡ n) → Set where
   nodeC : {m n k l : ℕ} {c₁ : C m} {c₂ : C n} {c₃ : C k} {c₄ : C l} 
           {p₁ : m ≡ n} {p₂ : k ≡ l} {p : k ≡ m} → 
            (_⟺_ c₁ c₂ p₁) → (_⟺_ c₃ c₄ p₂) → 
-           (_⟺_ (Node c₁ c₃ (sym p)) (Node c₂ c₄ (trans (trans (sym p₁) (sym p)) p₂)) (cong suc p₂))
+           (_⟺_ (Node c₁ c₃ (sym p)) 
+                (Node c₂ c₄ (trans (trans (sym p₁) (sym p)) p₂)) 
+                (cong suc p₂))
 
 -- Def. 2.1 lists the conditions for J-graded bipermutative category
 
 -- (0)
 -- the additive unit and assoc are implicit in the paper
 
-{--
-uniteN₊ : { n : ℕ } { c : C n } → plus (zeroN n) c ⟺ c
+uniteN₊ : {m : ℕ} {c : C m} → _⟺_ (plus (zeroN m) c refl) c refl
 uniteN₊ {0} {ZD t} = baseC (unite₊ {t})
-uniteN₊ {suc n} {Node c₁ c₂} = 
-  nodeC (uniteN₊ {n} {c₁}) (uniteN₊ {n} {c₂})
+uniteN₊ {suc .n₂} {Node {n₁} {n₂} c₁ c₂ n₁≡n₂} = ?
 
+{--
 unitiN₊ : { n : ℕ } { c : C n } → c ⟺ plus (zeroN n) c 
 unitiN₊ {0} {ZD t} = baseC (uniti₊ {t})
 unitiN₊ {suc n} {Node c₁ c₂} = 
