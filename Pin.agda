@@ -8,7 +8,7 @@ open import Data.Unit
 open import Data.Sum 
 open import Data.Product 
 open import Relation.Binary.PropositionalEquality 
-  using (_≡_; refl; cong; cong₂; trans)
+  using (_≡_; refl; cong; cong₂; trans; sym)
 
 infixr 30 _⟷_
 infixr 30 _⟺_
@@ -42,7 +42,7 @@ data _⟷_ : T → T → Set where
   factor  : { t₁ t₂ t₃ : T } → 
             Plus (Times t₁ t₃) (Times t₂ t₃) ⟷ Times (Plus t₁ t₂) t₃
   id⟷   : { t : T } → t ⟷ t
-  sym    : { t₁ t₂ : T } → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
+  sym⟷    : { t₁ t₂ : T } → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
   _◎_    : { t₁ t₂ t₃ : T } → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
   _⊕_    : { t₁ t₂ t₃ t₄ : T } → 
            (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (Plus t₁ t₂ ⟷ Plus t₃ t₄)
@@ -83,7 +83,7 @@ mutual
   eval factor (inj₁ (v1 , v3)) = (inj₁ v1 , v3)
   eval factor (inj₂ (v2 , v3)) = (inj₂ v2 , v3)
   eval id⟷ v = v
-  eval (sym c) v = evalB c v
+  eval (sym⟷ c) v = evalB c v
   eval (c₁ ◎ c₂) v = eval c₂ (eval c₁ v)
   eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
   eval (c₁ ⊕ c₂) (inj₂ v) = inj₂ (eval c₂ v)
@@ -113,7 +113,7 @@ mutual
   evalB factor (inj₁ v1 , v3) = inj₁ (v1 , v3)
   evalB factor (inj₂ v2 , v3) = inj₂ (v2 , v3)
   evalB id⟷ v = v
-  evalB (sym c) v = eval c v
+  evalB (sym⟷ c) v = eval c v
   evalB (c₁ ◎ c₂) v = evalB c₁ (evalB c₂ v)
   evalB (c₁ ⊕ c₂) (inj₁ v) = inj₁ (evalB c₁ v)
   evalB (c₁ ⊕ c₂) (inj₂ v) = inj₂ (evalB c₂ v)
@@ -130,13 +130,13 @@ data C : ℕ → Set where
 plus : {m n : ℕ} → C m → C n → (m ≡ n) → C n
 plus (ZD t1) (ZD t2) refl = ZD (Plus t1 t2)
 plus (Node c1 c2 p₁) (Node c1' c2' p₁') p = 
-  Node (plus c1 c1' {!!}) (plus c2 c2' {!!}) {!!}
+  Node (plus c1 c1' {!!}) (plus c2 c2' {!!}) p₁'
 plus _ _ _ = {!!}
 
 times : {m n : ℕ} → C m → C n → C (m + n)
 times (ZD t1) (ZD t2) = ZD (Times t1 t2)
-times (ZD t) (Node c1 c2 p) = Node (times (ZD t) c1) (times (ZD t) c2) {!!} 
-times (Node c1 c2 p) c = Node (times c1 c) (times c2 c) {!!} 
+times (ZD t) (Node c1 c2 p) = Node (times (ZD t) c1) (times (ZD t) c2) p 
+times {n = n} (Node c1 c2 p) c = Node (times c1 c) (times c2 c) (cong (λ z → z + n) p) 
 
 -- Combinators on nd types
   
@@ -145,7 +145,7 @@ data _⟺_ : {m n : ℕ} → C m → C n → (m ≡ n) → Set where
   nodeC : {m n k l : ℕ} {c₁ : C m} {c₂ : C n} {c₃ : C k} {c₄ : C l} 
           {p₁ : m ≡ n} {p₂ : k ≡ l} {p : k ≡ m} → 
            (_⟺_ c₁ c₂ p₁) → (_⟺_ c₃ c₄ p₂) → 
-           (_⟺_ (Node c₁ c₃ {!!}) (Node c₂ c₄ {!!}) {!!})
+           (_⟺_ (Node c₁ c₃ (sym p)) (Node c₂ c₄ (trans (trans (sym p₁) (sym p)) p₂)) (cong suc p₂))
 
 -- Def. 2.1 lists the conditions for J-graded bipermutative category
 
