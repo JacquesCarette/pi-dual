@@ -24,9 +24,7 @@
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{proposition}[theorem]{Proposition}
 
-\newcommand{\todo}[1]{\textbf{Todo:} #1}
-\newcommand{\ignore}[1]{}
-
+\newcommand{\boolt}{\textsf{bool}}
 \newcommand{\nboxplus}[1]{\,\,~{^{#1}\boxplus^{#1}}~\,\,}
 \newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
 \newcommand{\raisez}{\mathit{raise0}}
@@ -235,12 +233,15 @@ introduction~\cite{hottbook}.
 \begin{array}{rrcll}
 \identlp :&  0 + \tau & \iso & \tau &: \identrp \\
 \swapp :&  \tau_1 + \tau_2 & \iso & \tau_2 + \tau_1 &: \swapp \\
-\assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 &: \assocrp \\
+\assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 
+  &: \assocrp \\
 \identlt :&  1 * \tau & \iso & \tau &: \identrt \\
 \swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
-\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\
+\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 
+  &: \assocrt \\
 \distz :&~ 0 * \tau & \iso & 0 &: \factorz \\
-\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor 
+\dist :&~ (\tau_1 + \tau_2) * \tau_3 & 
+  \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor 
 \end{array}
 & 
 \begin{minipage}{0.5\textwidth}
@@ -277,7 +278,8 @@ introduction~\cite{hottbook}.
 \end{center}
 \end{minipage}
 \end{array}\]
-\caption{$\Pi$-combinators~\cite{James:2012:IE:2103656.2103667}\label{pi-combinators}}
+\caption{$\Pi$-combinators~\cite{James:2012:IE:2103656.2103667}
+\label{pi-combinators}}
 \end{table*}
 
 The main syntactic vehicle for the developments in this paper is a simple
@@ -528,7 +530,7 @@ but the idea is fundamentally simple as everything is defined pointwise.
 \begin{figure*}
 \[\begin{array}{c}
 \nodet{\tau_1}{\tau_2}
-\quad\boxtimes\quad
+\quad\nboxtimes{1}{2}\quad
 \nodet{(\nodet{\tau_3}{\tau_4})}{(\nodet{\tau_5}{\tau_6})} \quad= \\
 \\
 \nodet{(\nodet{{(\nodet{\tau_1 * \tau_3}{\tau_1 * \tau_4})}}
@@ -547,7 +549,7 @@ but the idea is fundamentally simple as everything is defined pointwise.
 \node[below] at (0.6,0) {$\tau_2$};
 \draw[fill] (0.6,0) circle [radius=0.05];
 \draw[-,dotted] (-0.4,0) -- (0.6,0);
-\node at (1.6,0) {$\boxtimes$}; 
+\node at (1.6,0) {$\nboxtimes{1}{2}$}; 
 
 %%
 \node[below] at (2.5,-0.5) {$\tau_3$};
@@ -765,6 +767,8 @@ $n$-dimensional combinators: each combinator in the table is constructed by
 induction on the dimension. 
 
 \begin{verbatim}
+TODO
+
 say that the labels on isos
 implicitly say that 
 m+n = n+m etc
@@ -780,9 +784,12 @@ Finish implement op. sem. in Agda.
 Basically a version of pi indexed 
 by dimensions!
 
-Check and implement all the 
-various isos: embeddings of
-n-dim into n+1-dim etc.
+present the evaluator!!!
+the two lines from the Agda code
+Values are indexed by polarities
+evaluator never changes polarities
+of values; it just moves them
+along their own fixed dimension
 
 need to make sure there are
 no other isos implied by
@@ -790,20 +797,48 @@ the development in secs 2
 and 3; and that we don't have 
 any isos that are not justified
 by the math
+
+check all the axioms and commuting
+diagrams in Sec. 2
 \end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Polarities} 
+\section{Paths}
 
-\begin{verbatim} 
-need to understand and then add
-the t-t=0 equations
+The development in the previous section resulted in an $n$-dimensional
+version of $\Pi$ where everything is defined pointwise. For example, an
+interpreter starting with a 3d value indexed by $\pp\mm\pp$ will always
+result in a value indexed by the same polarities $\pp\mm\pp$. It is not
+possible for the computation in one dimension to migrate to or to interact in
+any way with another dimension. In some sense, the polarities are not
+interpreted yet. More precisely, if the polarities are to indicate
+``forward'' and ``backwards'' flow of information, it should be the case that
+identical positive and negative flows cancel each other. Technically, we want
+the \emph{ring completion} of our set of isomoprhisms which means having
+combinators witnessing isomorphisms such as $\nodet{\tau}{\tau} \ison{1}
+\ztn^1$. Recalling the connection to elementary algebra, this just means that
+we are now categorifying identities such as $\tau - \tau = 0$. Operationally,
+this would, for example, allow an interpreter manipulating a value indexed by
+$\pp\mm\pp$ to execute in reverse along the dimension $\mm\pp\mm$.
 
-finally need to move on to 
-sec. 4 and beyond 
-and understand what they
-add in terms of isos
-\end{verbatim}
+%%%%%%%%%%%%%%%%%%
+\subsection{Recovering the Int Construction}
+
+As motivated in the previous paragraph, we begin by adding the following 1d
+isomorphism:
+\begin{center}
+\Rule{}
+{\jdg{}{}{\tau \iso \tau}}
+{\jdg{}{}{\nodet{\tau}{\tau} \ison{1} \ztn^1}}
+{}
+\end{center}
+As a concrete example, let us abbreviate $1+1$ as $\boolt$, the type of
+booleans. There are several isomorphisms $\boolt \iso \boolt$ including the
+trivial one witnessed by the combinator $\idc$ and the boolean negation
+witnessed by the combinator $\swapp$. Each of these isomorphisms gives rise
+to a \emph{different} 1d isomorphism between $\nodet{\boolt}{\boolt}$ and
+$\ztn^1$.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work and Context}
