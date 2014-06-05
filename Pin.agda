@@ -8,7 +8,7 @@ open import Data.Unit
 open import Data.Sum 
 open import Data.Product 
 open import Relation.Binary.PropositionalEquality 
-  using (_≡_; refl; cong; cong₂; trans; sym; module ≡-Reasoning)
+  using (_≡_; refl; cong; cong₂; subst; trans; sym; module ≡-Reasoning)
 open ≡-Reasoning
 
 infixr 30 _⟷_
@@ -183,14 +183,14 @@ data _⟺_ : {m n : ℕ} → C m → C n → (m ≡ n) → Set where
 
 uniteN₊ : {m : ℕ} {c : C m} → _⟺_ (plus (zeroN m) c refl) c refl
 uniteN₊ {0} {ZD t} = baseC (unite₊ {t})
-uniteN₊ {suc .n₂} {Node {n₁} {n₂} c₁ c₂ n₁≡n₂} = {!!}
+uniteN₊ {suc m} {Node {n} {.m} c₁ c₂ n≡m} = {!!} 
+
+unitiN₊ : {m : ℕ} {c : C m} → _⟺_ c (plus (zeroN m) c refl) refl
+unitiN₊ {0} {ZD t} = baseC (uniti₊ {t})
+unitiN₊ {suc m} {Node {n} {.m} c₁ c₂ n≡m} = {!!}
+--  nodeC (unitiN₊ {n} {c₁}) (unitiN₊ {n} {c₂})
 
 {--
-unitiN₊ : { n : ℕ } { c : C n } → c ⟺ plus (zeroN n) c 
-unitiN₊ {0} {ZD t} = baseC (uniti₊ {t})
-unitiN₊ {suc n} {Node c₁ c₂} = 
-  nodeC (unitiN₊ {n} {c₁}) (unitiN₊ {n} {c₂})
-
 assoclN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
            plus c₁ (plus c₂ c₃) ⟺ plus (plus c₁ c₂) c₃
 assoclN₊ {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (assocl₊ {t₁} {t₂} {t₃})
@@ -233,10 +233,6 @@ swapN⋆ : {m n : ℕ} {c₁ : C m} {c₂ : C n} → times c₁ c₂ ⟺ times c
 swapN⋆ {0} {0} {ZD t₁} {ZD t₂} = baseC (swap⋆ {t₁} {t₂})
 swapN⋆ = ? 
 
-
-
-
-
 swapN₊ : { n : ℕ } { c₁ c₂ : C n } → plus c₁ c₂ ⟺ plus c₂ c₁
 swapN₊ {0} {ZD t₁} {ZD t₂} = baseC (swap₊ {t₁} {t₂})
 swapN₊ {suc n} {Node c₁ c₂} {Node c₁' c₂'} = 
@@ -276,35 +272,20 @@ distzN {suc m} {n} {c} =
 --}
 
 ------------------------------------------------------------------------------
-
-{--
 -- Semantics
+
+-- should be a sum ! 
+-- we have a value in one of the corners; not in all of them at once
+-- probably should have our own × ?
+
 ⟦_⟧C : {n : ℕ} → C n → Set
 ⟦_⟧C {zero} (ZD x) = ⟦ x ⟧
-⟦_⟧C {suc n} (Node c c₁) = ⟦ c ⟧C × ⟦ c₁ ⟧C -- probably should have our own × ?
---}
+⟦_⟧C {suc n} (Node c₁ c₂ _) = ⟦ c₁ ⟧C ⊎ ⟦ c₂ ⟧C 
 
-{--
--- combinators respect dimension:
-∙⟺∙⇒m≡n : {m n : ℕ} {c₁ : C m} {c₂ : C n} → c₁ ⟺ c₂ → m ≡ n
-∙⟺∙⇒m≡n {zero} {zero} (baseC _) = refl
-∙⟺∙⇒m≡n {zero} {suc n} ()
-∙⟺∙⇒m≡n {suc m} {zero} ()
-∙⟺∙⇒m≡n {suc m} {suc n} (nodeC c _) = cong suc (∙⟺∙⇒m≡n c)
---}
+evalC : {n m : ℕ} {c₁ : C n} {c₂ : C m} {p : n ≡ m} → 
+        _⟺_ c₁ c₂ p → ⟦ c₁ ⟧C → ⟦ c₂ ⟧C
+evalC (baseC iso) v = eval iso v 
+evalC (nodeC isoL isoR) (inj₁ v) = inj₁ (evalC isoL v) 
+evalC (nodeC isoL isoR) (inj₂ v) = inj₂ (evalC isoR v) 
 
-{--
--- This is odd - there are 3 cases which should be 'impossible' but Agda can't see it.
-evalC : {n m : ℕ} {c₁ : C n} {c₂ : C m} → c₁ ⟺ c₂ → ⟦ c₁ ⟧C → ⟦ c₂ ⟧C
-evalC {zero} {zero} (baseC x) v = eval x v
---evalC {zero} {zero} raise0 ()
---evalC {zero} {zero} raise1 tt = tt
---evalC {zero} {suc m} raise0 ()
---evalC {zero} {suc m} raise1 tt = evalC {zero} {m} raise1 tt , evalC {zero} {m} raise0 {!!} -- hole is ⊥
---evalC {suc n} {zero} raise0 (v , _) = evalC {n} {zero} raise0 v  -- v is a shape full of ⊥
---evalC {suc n} {zero} raise1 v = tt -- v is a pair where snd is ⊥ ?
-evalC {suc n} {suc m} (nodeC c c′) (x , y) = evalC c x , evalC c′ y
---evalC {suc n} {suc m} raise0 (proj₁ , proj₂) = evalC {n} {m} raise0 proj₁ , evalC {n} {m} raise0 proj₂
---evalC {suc n} {suc m} raise1 (proj₁ , proj₂) = evalC {n} {m} raise1 proj₁ , evalC {n} {m} raise0 proj₂
---}
-
+-- now add etas and epsilons...
