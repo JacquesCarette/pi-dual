@@ -135,6 +135,7 @@ suc-inj {suc i} {suc .i} refl = refl
 data C : ℕ → Set where
   ZD   : T → C 0
   Node : {m n : ℕ} → C m → C n → (m ≡ n) → C (suc n)
+  Lower : {n : ℕ} → (c₁ c₂ : C n) → (c₁ ≡ c₂) → C 0
 
 zeroN : (n : ℕ) → C n
 zeroN 0 = ZD Zero
@@ -158,12 +159,14 @@ plus {suc .m₂} {suc .m₂'}
              m₂'
               ≡⟨ sym p₁' ⟩
              m₁' ∎
+plus _ _ _ = {!!}
 
 times : {m n : ℕ} → C m → C n → C (m + n)
 times (ZD t1) (ZD t2) = ZD (Times t1 t2)
 times (ZD t) (Node c1 c2 p) = Node (times (ZD t) c1) (times (ZD t) c2) p 
 times {n = n} (Node c1 c2 p) c = 
   Node (times c1 c) (times c2 c) (cong (λ z → z + n) p) 
+times _ _ = {!!} 
 
 -- Combinators on nd types
   
@@ -175,6 +178,7 @@ data _⟺_ : {m n : ℕ} → C m → C n → (m ≡ n) → Set where
            (_⟺_ (Node c₁ c₃ (sym p)) 
                 (Node c₂ c₄ (trans (trans (sym p₁) (sym p)) p₂)) 
                 (cong suc p₂))
+  eta : {m : ℕ} {c : C m} → _⟺_ (ZD Zero) (Lower c c refl) refl
 
 -- Def. 2.1 lists the conditions for J-graded bipermutative category
 
@@ -184,11 +188,13 @@ data _⟺_ : {m n : ℕ} → C m → C n → (m ≡ n) → Set where
 uniteN₊ : {m : ℕ} {c : C m} → _⟺_ (plus (zeroN m) c refl) c refl
 uniteN₊ {0} {ZD t} = baseC (unite₊ {t})
 uniteN₊ {suc m} {Node {n} {.m} c₁ c₂ n≡m} = {!!} 
+uniteN₊ {_} {_} = {!!} 
 
 unitiN₊ : {m : ℕ} {c : C m} → _⟺_ c (plus (zeroN m) c refl) refl
 unitiN₊ {0} {ZD t} = baseC (uniti₊ {t})
 unitiN₊ {suc m} {Node {n} {.m} c₁ c₂ n≡m} = {!!}
 --  nodeC (unitiN₊ {n} {c₁}) (unitiN₊ {n} {c₂})
+unitiN₊ {_} {_} = {!!} 
 
 {--
 assoclN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
@@ -274,18 +280,20 @@ distzN {suc m} {n} {c} =
 ------------------------------------------------------------------------------
 -- Semantics
 
+-- probably should have our own × ?
 -- should be a sum ! 
 -- we have a value in one of the corners; not in all of them at once
--- probably should have our own × ?
 
 ⟦_⟧C : {n : ℕ} → C n → Set
-⟦_⟧C {zero} (ZD x) = ⟦ x ⟧
-⟦_⟧C {suc n} (Node c₁ c₂ _) = ⟦ c₁ ⟧C ⊎ ⟦ c₂ ⟧C 
+⟦_⟧C (ZD t) = ⟦ t ⟧
+⟦_⟧C (Node c₁ c₂ _) = ⟦ c₁ ⟧C ⊎ ⟦ c₂ ⟧C 
+⟦_⟧C (Lower c₁ c₂ _) = ⊥
 
 evalC : {n m : ℕ} {c₁ : C n} {c₂ : C m} {p : n ≡ m} → 
         _⟺_ c₁ c₂ p → ⟦ c₁ ⟧C → ⟦ c₂ ⟧C
 evalC (baseC iso) v = eval iso v 
 evalC (nodeC isoL isoR) (inj₁ v) = inj₁ (evalC isoL v) 
 evalC (nodeC isoL isoR) (inj₂ v) = inj₂ (evalC isoR v) 
+evalC _ _ = {!!} 
 
 -- now add etas and epsilons...
