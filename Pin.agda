@@ -1,6 +1,7 @@
 module Pin where 
 
 -- N-dimensional version of Pi
+-- not keeping track of dimensions very carefully
 
 open import Data.Nat
 open import Data.Empty
@@ -11,8 +12,8 @@ open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; cong; cong₂; subst; trans; sym; module ≡-Reasoning)
 open ≡-Reasoning
 
-infixr 30 _⟷_
-infixr 30 _⟺_
+--infixr 30 _⟷_
+--infixr 30 _⟺_
 
 ------------------------------------------------------------------------------
 -- base types (or 0d types) are the usual finite types
@@ -121,16 +122,173 @@ mutual
   evalB (c₁ ⊗ c₂) (v₁ , v₂) = (evalB c₁ v₁ , evalB c₂ v₂)
 
 ------------------------------------------------------------------------------
+-- N dimensional version
+
+data C : ℕ → Set where
+  ZD   : T → C 0
+  Node : {m n k : ℕ} → C m → C n → C k 
+
+zeroN : (n : ℕ) → C n
+zeroN 0 = ZD Zero
+zeroN (suc n) = Node (zeroN n) (zeroN n) 
+
+plus : {m n k : ℕ} → C m → C n → C k
+plus (ZD t₁) (ZD t₂) = {!!} -- ZD (Plus t₁ t₂)
+plus (ZD t) (Node c₁ c₂) = Node (plus (ZD t) c₁) c₂
+plus (Node c₁ c₂) (ZD t) = Node (plus c₁ (ZD t)) c₂ 
+plus (Node c₁ c₂) (Node c₁' c₂') = Node (plus c₁ c₁') (plus c₁ c₂')
+
+times : {m n : ℕ} → C m → C n → C (m + n)
+times (ZD t1) (ZD t2) = ZD (Times t1 t2)
+times (ZD t) (Node c1 c2) = Node (times (ZD t) c1) (times (ZD t) c2) 
+times (Node c1 c2) c = Node (times c1 c) (times c2 c) 
+
+-- Combinators on nd types
+  
+data _⟺_ : {m n : ℕ} → C m → C n → Set where
+  baseC : { t₁ t₂ : T } → (t₁ ⟷ t₂) → ((ZD t₁) ⟺ (ZD t₂))
+  nodeC : {m n k l i j : ℕ} {c₁ : C m} {c₂ : C n} {c₃ : C k} {c₄ : C l} → 
+          (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → ((Node {k = i} c₁ c₃) ⟺ (Node {k = j} c₂ c₄))
+             
+-- Def. 2.1 lists the conditions for J-graded bipermutative category
+
+-- (0)
+-- the additive unit and assoc are implicit in the paper
+
+{--
+
+uniteN₊ : {m : ℕ} {c : C m} → (plus (zeroN m) c) ⟺ c
+uniteN₊ {c = ZD t} = baseC (unite₊ {t})
+uniteN₊ {c = Node c₁ c₂} = nodeC (uniteN₊ {?} {?}) (uniteN₊ {?} {?}) 
+
+unitiN₊ : {m : ℕ} {c : C m} → c ⟺ (plus (zeroN m) c)
+unitiN₊ {c = ZD t} = baseC (uniti₊ {t})
+unitiN₊ {c = Node c₁ c₂} = {!!} 
+--  nodeC (unitiN₊ {n} {c₁}) (unitiN₊ {n} {c₂})
+
+
+
+{--
+assoclN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
+           plus c₁ (plus c₂ c₃) ⟺ plus (plus c₁ c₂) c₃
+assoclN₊ {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (assocl₊ {t₁} {t₂} {t₃})
+assoclN₊ {suc n} {Node c₁ c₂} {Node c₃ c₄} {Node c₅ c₆} = 
+  nodeC (assoclN₊ {n} {c₁} {c₃} {c₅}) (assoclN₊ {n} {c₂} {c₄} {c₆})
+
+assocrN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
+           plus (plus c₁ c₂) c₃ ⟺ plus c₁ (plus c₂ c₃)
+assocrN₊ {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (assocr₊ {t₁} {t₂} {t₃})
+assocrN₊ {suc n} {Node c₁ c₂} {Node c₃ c₄} {Node c₅ c₆} = 
+  nodeC (assocrN₊ {n} {c₁} {c₃} {c₅}) (assocrN₊ {n} {c₂} {c₄} {c₆})
+
+-- (1) have times functor on objects
+-- define times functor on combinators
+-- timesF should satisfying assoc and unitality conditions...
+-- diagram on top of p.6 should commute
+
+timesF : { m n : ℕ } { c₁ : C m } { c₂ : C m } { c₃ : C n } { c₄ : C n } → 
+         (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (times c₁ c₃ ⟺ times c₂ c₄)
+timesF {0} {0} {ZD t₁} {ZD t₂} {ZD t₃} {ZD t₄} (baseC f) (baseC g) = 
+  baseC (_⊗_ {t₁} {t₃} {t₂} {t₄} f g)
+timesF {0} {suc n} {ZD t₁} {ZD t₂} {Node c₁ c₂} {Node c₃ c₄} 
+       (baseC f) (nodeC g₁ g₂) = nodeC (timesF (baseC f) g₁) (timesF (baseC f) g₂)
+timesF {suc m} {n} {Node c₁ c₂} {Node c₃ c₄} {c₅} {c₆} 
+       (nodeC f₁ f₂) g = nodeC (timesF f₁ g) (timesF f₂ g)
+
+-- (2) there is a unit object One of dimension 0
+
+uniteN⋆ : {n : ℕ} {c : C n} → times (ZD One) c ⟺ c
+uniteN⋆ {0} {ZD t} = baseC (unite⋆ {t})
+uniteN⋆ {suc n} {Node c₁ c₂} = nodeC (uniteN⋆ {n} {c₁}) (uniteN⋆ {n} {c₂})
+
+unitiN⋆ : {n : ℕ} {c : C n} → c ⟺ times (ZD One) c
+unitiN⋆ {0} {ZD t} = baseC (uniti⋆ {t})
+unitiN⋆ {suc n} {Node c₁ c₂} = nodeC (unitiN⋆ {n} {c₁}) (unitiN⋆ {n} {c₂})
+
+-- (3) swap
+
+swapN⋆ : {m n : ℕ} {c₁ : C m} {c₂ : C n} → times c₁ c₂ ⟺ times c₂ c₁
+swapN⋆ {0} {0} {ZD t₁} {ZD t₂} = baseC (swap⋆ {t₁} {t₂})
+swapN⋆ = ? 
+
+swapN₊ : { n : ℕ } { c₁ c₂ : C n } → plus c₁ c₂ ⟺ plus c₂ c₁
+swapN₊ {0} {ZD t₁} {ZD t₂} = baseC (swap₊ {t₁} {t₂})
+swapN₊ {suc n} {Node c₁ c₂} {Node c₁' c₂'} = 
+  nodeC (swapN₊ {n} {c₁} {c₁'}) (swapN₊ {n} {c₂} {c₂'})
+
+
+
+distzN : {m n : ℕ} {c : C n} → times (zeroN m) c ⟺ zeroN (m + n)
+distzN {0} {0} {ZD t} = baseC (distz {t})
+distzN {0} {suc n} {Node c₁ c₂} = 
+  nodeC (distzN {0} {n} {c₁}) (distzN {0} {n} {c₂})
+distzN {suc m} {n} {c} = 
+  nodeC (distzN {m} {n} {c}) (distzN {m} {n} {c})
+
+--}
+
+------------------------------------------------------------------------------
+
+{--
+
+  assocl⋆ : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → 
+            times c₁ (times c₂ c₃) ⟺ times (times c₁ c₂) c₃
+  assocr⋆ : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → 
+            times (times c₁ c₂) c₃ ⟺ times c₁ (times c₂ c₃)
+  distz    : { m n : ℕ } { c : C n } → times (zeroN m) c ⟺ zeroN m
+  factorz  : { m n : ℕ } { c : C n } → zeroN m ⟺ times (zeroN m) c
+  dist    : { m n : ℕ } { c₁ c₂ : C m } { c₃ : C n } → 
+            times (plus c₁ c₂) c₃ ⟺ plus (times c₁ c₃) (times c₂ c₃) 
+  factor  : { m n : ℕ } { c₁ c₂ : C m } { c₃ : C n } → 
+            plus (times c₁ c₃) (times c₂ c₃) ⟺ times (plus c₁ c₂) c₃
+  id⟷   : { n : ℕ } { c : C n } → c ⟺ c
+  sym    : { m n : ℕ } { c₁ : C m } { c₂ : C n } → (c₁ ⟺ c₂) → (c₂ ⟺ c₁)
+  _◎_    : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → 
+           (c₁ ⟺ c₂) → (c₂ ⟺ c₃) → (c₁ ⟺ c₃) 
+  _⊕_    : { m n : ℕ } { c₁ c₃ : C m } { c₂ c₄ : C n } → 
+           (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (plus c₁ c₃ ⟺ plus c₂ c₄)
+--}
+
+------------------------------------------------------------------------------
+-- Semantics
+
+-- probably should have our own × ?
+-- should be a sum ! 
+-- we have a value in one of the corners; not in all of them at once
+
+⟦_⟧C : {n : ℕ} → C n → Set
+⟦_⟧C (ZD t) = ⟦ t ⟧
+⟦_⟧C (Node c₁ c₂ _) = ⟦ c₁ ⟧C ⊎ ⟦ c₂ ⟧C 
+⟦_⟧C (Lower c₁ c₂ _) = ⊥
+
+evalC : {n m : ℕ} {c₁ : C n} {c₂ : C m} {p : n ≡ m} → 
+        _⟺_ c₁ c₂ p → ⟦ c₁ ⟧C → ⟦ c₂ ⟧C
+evalC (baseC iso) v = eval iso v 
+evalC (nodeC isoL isoR) (inj₁ v) = inj₁ (evalC isoL v) 
+evalC (nodeC isoL isoR) (inj₂ v) = inj₂ (evalC isoR v) 
+evalC _ _ = {!!} 
+
+-- now add etas and epsilons...
+
+--}
+
+
+
+
+{--
+CODE THAT TRIED TO KEEP PROOF THAT DIMENSIONS ARE EQUAL
+
+
+------------------------------------------------------------------------------
+-- Types indexed by dimension... n-dimensional cubes
+-- n-dimensional types represented as trees of depth n
+
 -- Silly lemmas that should be in the library somewhere
 
 suc-inj : {m n : ℕ} → suc m ≡ suc n → m ≡ n
 suc-inj {0} {0} refl = refl
 suc-inj {0} {suc i} ()
 suc-inj {suc i} {suc .i} refl = refl
-
-------------------------------------------------------------------------------
--- Types indexed by dimension... n-dimensional cubes
--- n-dimensional types represented as trees of depth n
 
 data C : ℕ → Set where
   ZD   : T → C 0
@@ -297,3 +455,4 @@ evalC (nodeC isoL isoR) (inj₂ v) = inj₂ (evalC isoR v)
 evalC _ _ = {!!} 
 
 -- now add etas and epsilons...
+--}

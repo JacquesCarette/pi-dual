@@ -37,6 +37,8 @@
 \newcommand{\pn}[1]{\mathcal{P}\textbf{#1}}
 \newcommand{\qn}[1]{\mathcal{Q}\textbf{#1}}
 \newcommand{\cpath}[2]{\textit{path}~\{#1\}~\{#2\}}
+\newcommand{\evaln}[3]{#2~\triangleright^{#1}~#3}
+\newcommand{\evalnb}[3]{#2~\trianglerleft^{#1}~#3}
 \newcommand{\evalone}[2]{#1~\triangleright~#2}
 \newcommand{\evaloneb}[2]{#1~\triangleleft~#2}
 \newcommand{\eqdef}{\stackrel{\triangle}{=}}
@@ -228,6 +230,10 @@ introduction~\cite{hottbook}.
 \section{Computing with Type Isomorphisms}
 \label{pi}
 
+The main syntactic vehicle for the developments in this paper is a simple
+language called $\Pi$ whose only computations are isomorphisms between finite
+types. We review this language in this section.
+
 \begin{table*}[t]
 \[\begin{array}{cc}
 \begin{array}{rrcll}
@@ -282,10 +288,11 @@ introduction~\cite{hottbook}.
 \label{pi-combinators}}
 \end{table*}
 
-The main syntactic vehicle for the developments in this paper is a simple
-language called $\Pi$ whose only computations are isomorphisms between finite
-types. The set of types $\tau$ includes the empty type 0, the unit type 1,
-and conventional sum and product types. The values of these types are the
+%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Syntax and Examples}
+
+The set of types $\tau$ includes the empty type 0, the unit type 1, and
+conventional sum and product types. The values of these types are the
 conventional ones: \lstinline|()| of type 1, $\inl{v}$ and $\inr{v}$ for
 injections into sum types, and $(v_1,v_2)$ for product types:
 \[\begin{array}{lrcl}
@@ -330,6 +337,10 @@ useful combinators that we define here for future reference:
 \mathit{assoc}_3 &=& \assocrp \fatsemi (\idc \oplus \swapp)
 \end{array}\]
 
+%%%%%%%%%%%%%%%%%%
+\subsection{Semantics}
+\label{opsempi}
+
 From the perspective of category theory, the language $\Pi$ models what is
 called a traced \emph{symmetric bimonoidal category} or a \emph{commutative
   rig category}. These are categories with two binary operations $\oplus$ and
@@ -348,6 +359,43 @@ which is \emph{not} empty. Its unique element, the zero vector --- which is
 present in every vector space --- acts like a ``bottom'' everywhere-undefined
 element and hence the type behaves like the unit of addition and the
 annihilator of multiplication as desired.
+
+Operationally, the semantics consists of a pair of mutually recursive
+evaluators that take a combinator and a value and propagate the value in the
+``forward'' $\triangleright$ direction or in the ``backwards''
+$\triangleleft$ direction. We show the complete forward evaluator; the
+backwards evaluator consists of trivial modifications:
+\[\begin{array}{rlcl}
+\evalone{\identlp}{&(\inr{v})} &=& v \\
+\evalone{\identrp}{&v} &=& \inr{v} \\
+\evalone{\swapp}{&(\inl{v})} &=& \inr{v} \\
+\evalone{\swapp}{&(\inr{v})} &=& \inl{v} \\
+\evalone{\assoclp}{&(\inl{v})} &=& \inl{(\inl{v})} \\
+\evalone{\assoclp}{&(\inr{(\inl{v})})} &=& \inl{(\inr{v})} \\
+\evalone{\assoclp}{&(\inr{(\inr{v})})} &=& \inr{v} \\
+\evalone{\assocrp}{&(\inl{(\inl{v})})} &=& \inl{v} \\
+\evalone{\assocrp}{&(\inl{(\inr{v})})} &=& \inr{(\inl{v})} \\
+\evalone{\assocrp}{&(\inr{v})} &=& \inr{(\inr{v})} \\
+\evalone{\identlt}{&((),v)} &=& v \\
+\evalone{\identrt}{&v} &=& ((),v) \\
+\evalone{\swapt}{&(v_1,v_2)} &=& (v_2,v_1) \\
+\evalone{\assoclt}{&(v_1,(v_2,v_3))} &=& ((v_1,v_2),v_3) \\
+\evalone{\assocrt}{&((v_1,v_2),v_3)} &=& (v_1,(v_2,v_3)) \\
+\evalone{\dist}{&(\inl{v_1},v_3)} &=& \inl{(v_1,v_3)} \\
+\evalone{\dist}{&(\inr{v_2},v_3)} &=& \inr{(v_2,v_3)} \\
+\evalone{\factor}{&(\inl{(v_1,v_3)})} &=& (\inl{v_1},v_3) \\
+\evalone{\factor}{&(\inr{(v_2,v_3)})} &=& (\inr{v_2},v_3) \\
+\evalone{\idc}{&v} &=& v \\
+\evalone{(\symc{c})}{&v} &=& \evaloneb{c}{v} \\
+\evalone{(c_1 \fatsemi c_2)}{&v} &=& 
+  \evalone{c_2}{(\evalone{c_1}{v})} \\
+\evalone{(c_1\oplus c_2)}{&(\inl{v})} &=& 
+  \inl{(\evalone{c_1}{v})} \\
+\evalone{(c_1\oplus c_2)}{&(\inr{v})} &=& 
+  \inr{(\evalone{c_2}{v})} \\
+\evalone{(c_1\otimes c_2)}{&(v_1,v_2)} &=& 
+  \evalone{c_1}(v_1) \otimes \evalone{c_2}(v_2) \\
+\end{array}\]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Int Construction}
@@ -751,20 +799,37 @@ defined as follows:
 
 \begin{center}
 \Rule{}
-{\jdg{}{}{\tau_1 \iso \tau_2}}
-{\jdg{}{}{\tau_1 \ison{0} \tau_2}}
+{\jdg{}{}{c : \tau_1 \iso \tau_2}}
+{\jdg{}{}{c : \tau_1 \ison{0} \tau_2}}
 {}
 \qquad
 \Rule{}
-{\jdg{}{}{\cubt^n_1 \ison{n} \cubt^n_2 \qquad
-  \vdash \cubt^n_3 \ison{n} \cubt^n_4}}
-{\jdg{}{}{\nodet{\cubt^n_1}{\cubt^n_3} \ison{n+1} \nodet{\cubt^n_2}{\cubt^n_4}}}
+{\jdg{}{}{c_1 : \cubt^n_1 \ison{n} \cubt^n_2 \qquad
+  \vdash c_2 : \cubt^n_3 \ison{n} \cubt^n_4}}
+{\jdg{}{}{\nodet{c_1}{c_2} : 
+  \nodet{\cubt^n_1}{\cubt^n_3} \ison{n+1} \nodet{\cubt^n_2}{\cubt^n_4}}}
 {}
 \end{center}
 
 For reference, Table~\ref{cube-combinators} gives the full list of
 $n$-dimensional combinators: each combinator in the table is constructed by
 induction on the dimension. 
+
+%%%%%%%%%%%%%%%%%%%%%
+\subsection{Operational Semantics} 
+
+A value of an $n$-dimensional type is a 0d value located at one of the $2^n$
+vertices. To keep the correspondence between values and types evident, and to
+prepare for the generalization in the next section, we denote $n$-dimensional
+values using a sequence of polarities that end with a 0d value. For example,
+the values of type $\nodet{1\phantom{+}}{1+1}$ are $\pp()$, $\mm\inl{()}$, and
+$\mm\inr{()}$. Generalizing the operational semantics of Sec.~\ref{opsempi}
+is straightforward:
+\[\begin{array}{rcl} 
+\evaln{0}{c}{v} &=& \evalone{c}{v} \\
+\evaln{n+1}{\nodet{c_1}{c_2}}{\pp v} &=& \pp(\evaln{n}{c_1}{v}) \\
+\evaln{n+1}{\nodet{c_1}{c_2}}{\mm v} &=& \mm(\evaln{n}{c_2}{v})
+\end{array}\]
 
 \begin{verbatim}
 TODO
@@ -814,7 +879,7 @@ any way with another dimension. In some sense, the polarities are not
 interpreted yet. More precisely, if the polarities are to indicate
 ``forward'' and ``backwards'' flow of information, it should be the case that
 identical positive and negative flows cancel each other. Technically, we want
-the \emph{ring completion} of our set of isomoprhisms which means having
+the \emph{ring completion} of our set of isomorphisms which means having
 combinators witnessing isomorphisms such as $\nodet{\tau}{\tau} \ison{1}
 \ztn^1$. Recalling the connection to elementary algebra, this just means that
 we are now categorifying identities such as $\tau - \tau = 0$. Operationally,
