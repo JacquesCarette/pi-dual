@@ -367,7 +367,7 @@ evaluators that take a combinator and a value and propagate the value in the
 ``forward'' $\triangleright$ direction or in the ``backwards''
 $\triangleleft$ direction. We show the complete forward evaluator; the
 backwards evaluator consists of trivial modifications:
-\[\begin{array}{rlcl}
+\[\begin{array}{r@{\!}lcl}
 \evalone{\identlp}{&(\inr{v})} &=& v \\
 \evalone{\identrp}{&v} &=& \inr{v} \\
 \evalone{\swapp}{&(\inl{v})} &=& \inr{v} \\
@@ -397,6 +397,10 @@ backwards evaluator consists of trivial modifications:
   \inr{(\evalone{c_2}{v})} \\
 \evalone{(c_1\otimes c_2)}{&(v_1,v_2)} &=& 
   (\evalone{c_1}v_1, \evalone{c_2}v_2) \\
+\evalone{(\trace{c})}{&v} &=& \textsf{loop}~(\evalone{c}{(\inr{v})}) \\
+\noalign{$\qquad\textbf{where}~\textsf{loop}~(\inl{v}) = 
+  \textsf{loop}~(\evalone{c}{(\inl{v})})$}
+\noalign{$\qquad\phantom{\textbf{where}~}\textsf{loop}~(\inr{v}) = v$}
 \end{array}\]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -925,16 +929,23 @@ to a \emph{different} 1d isomorphism between $\nodet{\boolt}{\boolt}$ and
 $\ztn^1$. Before presenting the formal evaluation rules, we show the intuition
 of how the new combinators behave operationally:
 \[\begin{array}{rcl} 
-\evaln{1}{\promote{\idc}}{+\inl{()}} &=& -\inl{()} \\
-\evaln{1}{\promote{\swapp}}{+\inl{()}} &=& -\inr{()} 
+\evaln{1}{(\promote{\idc})}{(+\inl{()})} &=& -\inl{()} \\
+\evaln{1}{(\promote{\swapp})}{(+\inl{()})} &=& -\inr{()} 
 \end{array}\]
 The evaluation of the new combinators does not simply keep recurring until
-dimension 0; instead the combinators act as ``bridges'' that transfer
-values from one vertex in dimension 1 to another vertex. 
+dimension 0; instead the combinators act as ``bridges'' that transfer values
+from one vertex in dimension 1 to another vertex. 
 
+\begin{verbatim}
+Need to have abort or
+something and need to transfer control to the evaluator in the other
+dimension? How do I get hold of that evaluator; keep all the n-dim code
+around and index into it? 
 
 evaluator
 curry...
+\end{verbatim}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work and Context}

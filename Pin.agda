@@ -1,7 +1,6 @@
 module Pin where 
 
 -- N-dimensional version of Pi
--- not keeping track of dimensions very carefully
 
 open import Data.Nat
 open import Data.Empty
@@ -11,9 +10,14 @@ open import Data.Product
 open import Relation.Binary.PropositionalEquality 
   using (_≡_; refl; cong; cong₂; subst; trans; sym; module ≡-Reasoning)
 open ≡-Reasoning
+open import Algebra
+open import Data.Nat.Properties
+open CommutativeSemiring commutativeSemiring using (+-commutativeMonoid)
+open CommutativeMonoid +-commutativeMonoid using () 
+  renaming (comm to +-comm) -- ; identityʳ to +-idr)
 
---infixr 30 _⟷_
---infixr 30 _⟺_
+infixr 30 _⟷_
+infixr 30 _⟺_
 
 ------------------------------------------------------------------------------
 -- base types (or 0d types) are the usual finite types
@@ -126,17 +130,19 @@ mutual
 
 data C : ℕ → Set where
   ZD   : T → C 0
-  Node : {m n k : ℕ} → C m → C n → C k 
+  Node : {n : ℕ} → C n → C n → C (suc n)
 
 zeroN : (n : ℕ) → C n
 zeroN 0 = ZD Zero
 zeroN (suc n) = Node (zeroN n) (zeroN n) 
 
-plus : {m n k : ℕ} → C m → C n → C k
-plus (ZD t₁) (ZD t₂) = {!!} -- ZD (Plus t₁ t₂)
-plus (ZD t) (Node c₁ c₂) = Node (plus (ZD t) c₁) c₂
-plus (Node c₁ c₂) (ZD t) = Node (plus c₁ (ZD t)) c₂ 
-plus (Node c₁ c₂) (Node c₁' c₂') = Node (plus c₁ c₁') (plus c₁ c₂')
+oneN : (n : ℕ) → C n
+oneN 0 = ZD One
+oneN (suc n) = Node (oneN n) (zeroN n) 
+
+plus : {n : ℕ} → C n → C n → C n
+plus (ZD t₁) (ZD t₂) = ZD (Plus t₁ t₂)
+plus (Node c₁ c₂) (Node c₁' c₂') = Node (plus c₁ c₁') (plus c₂ c₂')
 
 times : {m n : ℕ} → C m → C n → C (m + n)
 times (ZD t1) (ZD t2) = ZD (Times t1 t2)
@@ -145,30 +151,27 @@ times (Node c1 c2) c = Node (times c1 c) (times c2 c)
 
 -- Combinators on nd types
   
-data _⟺_ : {m n : ℕ} → C m → C n → Set where
+data _⟺_ : {n : ℕ} → C n → C n → Set where
   baseC : { t₁ t₂ : T } → (t₁ ⟷ t₂) → ((ZD t₁) ⟺ (ZD t₂))
-  nodeC : {m n k l i j : ℕ} {c₁ : C m} {c₂ : C n} {c₃ : C k} {c₄ : C l} → 
-          (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → ((Node {k = i} c₁ c₃) ⟺ (Node {k = j} c₂ c₄))
+  nodeC : {n : ℕ} {c₁ : C n} {c₂ : C n} {c₃ : C n} {c₄ : C n} → 
+          (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → 
+          ((Node c₁ c₃) ⟺ (Node c₂ c₄))
              
 -- Def. 2.1 lists the conditions for J-graded bipermutative category
 
--- (0)
--- the additive unit and assoc are implicit in the paper
+uniteN₊ : {n : ℕ} {c : C n} → (plus (zeroN n) c) ⟺ c
+uniteN₊ {0} {ZD t} = baseC (unite₊ {t})
+uniteN₊ {suc n} {Node c₁ c₂} = nodeC (uniteN₊ {n} {c₁}) (uniteN₊ {n} {c₂}) 
 
-{--
+unitiN₊ : {n : ℕ} {c : C n} → c ⟺ (plus (zeroN n) c)
+unitiN₊ {0} {ZD t} = baseC (uniti₊ {t})
+unitiN₊ {suc n} {Node c₁ c₂} = nodeC (unitiN₊ {n} {c₁}) (unitiN₊ {n} {c₂})
 
-uniteN₊ : {m : ℕ} {c : C m} → (plus (zeroN m) c) ⟺ c
-uniteN₊ {c = ZD t} = baseC (unite₊ {t})
-uniteN₊ {c = Node c₁ c₂} = nodeC (uniteN₊ {?} {?}) (uniteN₊ {?} {?}) 
+swapN₊ : { n : ℕ } { c₁ c₂ : C n } → plus c₁ c₂ ⟺ plus c₂ c₁
+swapN₊ {0} {ZD t₁} {ZD t₂} = baseC (swap₊ {t₁} {t₂})
+swapN₊ {suc n} {Node c₁ c₂} {Node c₁' c₂'} = 
+  nodeC ((swapN₊ {n} {c₁} {c₁'})) ((swapN₊ {n} {c₂} {c₂'})) 
 
-unitiN₊ : {m : ℕ} {c : C m} → c ⟺ (plus (zeroN m) c)
-unitiN₊ {c = ZD t} = baseC (uniti₊ {t})
-unitiN₊ {c = Node c₁ c₂} = {!!} 
---  nodeC (unitiN₊ {n} {c₁}) (unitiN₊ {n} {c₂})
-
-
-
-{--
 assoclN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
            plus c₁ (plus c₂ c₃) ⟺ plus (plus c₁ c₂) c₃
 assoclN₊ {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (assocl₊ {t₁} {t₂} {t₃})
@@ -181,10 +184,30 @@ assocrN₊ {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (assocr₊ {t₁} {t₂} {t
 assocrN₊ {suc n} {Node c₁ c₂} {Node c₃ c₄} {Node c₅ c₆} = 
   nodeC (assocrN₊ {n} {c₁} {c₃} {c₅}) (assocrN₊ {n} {c₂} {c₄} {c₆})
 
--- (1) have times functor on objects
--- define times functor on combinators
--- timesF should satisfying assoc and unitality conditions...
--- diagram on top of p.6 should commute
+uniteN⋆ : {n : ℕ} {c : C n} → times (ZD One) c ⟺ c
+uniteN⋆ {0} {ZD t} = baseC (unite⋆ {t})
+uniteN⋆ {suc n} {Node c₁ c₂} = nodeC (uniteN⋆ {n} {c₁}) (uniteN⋆ {n} {c₂})
+
+unitiN⋆ : {n : ℕ} {c : C n} → c ⟺ times (ZD One) c
+unitiN⋆ {0} {ZD t} = baseC (uniti⋆ {t})
+unitiN⋆ {suc n} {Node c₁ c₂} = nodeC (unitiN⋆ {n} {c₁}) (unitiN⋆ {n} {c₂})
+
+-- Ugly hack or feature ???
+
+times' : {m n : ℕ} → C n → C m → C (m + n)
+times' {m} {n} c₁ c₂ rewrite +-comm m n = times c₁ c₂
+
+swapN⋆ : {m n : ℕ} {c₁ : C m} {c₂ : C n} → times c₁ c₂ ⟺ times' c₂ c₁
+swapN⋆ {0} {0} {ZD t₁} {ZD t₂} = baseC (swap⋆ {t₁} {t₂})
+swapN⋆ {0} {suc n} {ZD t} {Node c₁ c₂} = ? 
+--nodeC (swapN⋆ {0} {n} {ZD t} {c₁}) (swapN⋆ {0} {n} {ZD t} {c₂})
+swapN⋆ {suc m} {0} {Node c₁ c₂} {ZD t} = ? 
+--nodeC (swapN⋆ {0} {n} {c₁} {ZD t}) (swapN⋆ {0} {n} {c₂} {ZD t})
+swapN⋆ {suc m} {n} {Node c₁ c₂} {c} = ?
+--nodeC (swapN⋆ {m} {n} {c₁} {c}) (swapN⋆ {m} {n} {c₂} {c})
+
+{--
+{--
 
 timesF : { m n : ℕ } { c₁ : C m } { c₂ : C m } { c₃ : C n } { c₄ : C n } → 
          (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (times c₁ c₃ ⟺ times c₂ c₄)
@@ -194,28 +217,6 @@ timesF {0} {suc n} {ZD t₁} {ZD t₂} {Node c₁ c₂} {Node c₃ c₄}
        (baseC f) (nodeC g₁ g₂) = nodeC (timesF (baseC f) g₁) (timesF (baseC f) g₂)
 timesF {suc m} {n} {Node c₁ c₂} {Node c₃ c₄} {c₅} {c₆} 
        (nodeC f₁ f₂) g = nodeC (timesF f₁ g) (timesF f₂ g)
-
--- (2) there is a unit object One of dimension 0
-
-uniteN⋆ : {n : ℕ} {c : C n} → times (ZD One) c ⟺ c
-uniteN⋆ {0} {ZD t} = baseC (unite⋆ {t})
-uniteN⋆ {suc n} {Node c₁ c₂} = nodeC (uniteN⋆ {n} {c₁}) (uniteN⋆ {n} {c₂})
-
-unitiN⋆ : {n : ℕ} {c : C n} → c ⟺ times (ZD One) c
-unitiN⋆ {0} {ZD t} = baseC (uniti⋆ {t})
-unitiN⋆ {suc n} {Node c₁ c₂} = nodeC (unitiN⋆ {n} {c₁}) (unitiN⋆ {n} {c₂})
-
--- (3) swap
-
-swapN⋆ : {m n : ℕ} {c₁ : C m} {c₂ : C n} → times c₁ c₂ ⟺ times c₂ c₁
-swapN⋆ {0} {0} {ZD t₁} {ZD t₂} = baseC (swap⋆ {t₁} {t₂})
-swapN⋆ = ? 
-
-swapN₊ : { n : ℕ } { c₁ c₂ : C n } → plus c₁ c₂ ⟺ plus c₂ c₁
-swapN₊ {0} {ZD t₁} {ZD t₂} = baseC (swap₊ {t₁} {t₂})
-swapN₊ {suc n} {Node c₁ c₂} {Node c₁' c₂'} = 
-  nodeC (swapN₊ {n} {c₁} {c₁'}) (swapN₊ {n} {c₂} {c₂'})
-
 
 
 distzN : {m n : ℕ} {c : C n} → times (zeroN m) c ⟺ zeroN (m + n)
