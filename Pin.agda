@@ -156,6 +156,10 @@ data _⟺_ : {n : ℕ} → C n → C n → Set where
   nodeC : {n : ℕ} {c₁ : C n} {c₂ : C n} {c₃ : C n} {c₄ : C n} → 
           (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → 
           ((Node c₁ c₃) ⟺ (Node c₂ c₄))
+  promoteC : {n : ℕ} {c : C n} → (c ⟺ c) → 
+             (Node c c ⟺ zeroN (suc n))
+  demoteC : {n : ℕ} {c : C n} → (c ⟺ c) → 
+             (zeroN (suc n) ⟺ Node c c)
              
 -- Def. 2.1 lists the conditions for J-graded bipermutative category
 
@@ -206,15 +210,16 @@ swapN⋆ {suc m} {0} {Node c₁ c₂} {ZD t} = {!!}
 swapN⋆ {suc m} {n} {Node c₁ c₂} {c} = {!!}
 --nodeC (swapN⋆ {m} {n} {c₁} {c}) (swapN⋆ {m} {n} {c₂} {c})
 
-{--
-  assocl⋆ : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → 
-            times c₁ (times c₂ c₃) ⟺ times (times c₁ c₂) c₃
---}
+TODO : Set
+TODO = {!!} 
 
-{--
-  assocr⋆ : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → 
-            times (times c₁ c₂) c₃ ⟺ times c₁ (times c₂ c₃)
---}
+assoclN⋆ : {m n k : ℕ} {c₁ : C m} {c₂ : C n} {c₃ : C k} → TODO
+--           times c₁ (times c₂ c₃) ⟺ times (times c₁ c₂) c₃
+assoclN⋆ = {!!} 
+
+assocrN⋆ : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → TODO
+--            times (times c₁ c₂) c₃ ⟺ times c₁ (times c₂ c₃)
+assocrN⋆ = {!!} 
 
 distzN : {m n : ℕ} {c : C n} → times (zeroN m) c ⟺ zeroN (m + n)
 distzN {0} {0} {ZD t} = baseC (distz {t})
@@ -223,71 +228,101 @@ distzN {0} {suc n} {Node c₁ c₂} =
 distzN {suc m} {n} {c} = 
   nodeC (distzN {m} {n} {c}) (distzN {m} {n} {c})
 
-{--
-  factorz  : { m n : ℕ } { c : C n } → zeroN m ⟺ times (zeroN m) c
---}
+factorzN : { m n : ℕ } { c : C n } → zeroN (m + n) ⟺ times (zeroN m) c
+factorzN {0} {0} {ZD t} = baseC (factorz {t})
+factorzN {0} {suc n} {Node c₁ c₂} = 
+  nodeC (factorzN {0} {n} {c₁}) (factorzN {0} {n} {c₂})
+factorzN {suc m} {n} {c} = 
+  nodeC (factorzN {m} {n} {c}) (factorzN {m} {n} {c})
 
-{--
-  dist    : { m n : ℕ } { c₁ c₂ : C m } { c₃ : C n } → 
-            times (plus c₁ c₂) c₃ ⟺ plus (times c₁ c₃) (times c₂ c₃) 
---}
+distN : {m n : ℕ} {c₁ c₂ : C m} {c₃ : C n} → 
+        times (plus c₁ c₂) c₃ ⟺ plus (times c₁ c₃) (times c₂ c₃) 
+distN = {!!} 
 
-{--
-  factor  : { m n : ℕ } { c₁ c₂ : C m } { c₃ : C n } → 
-            plus (times c₁ c₃) (times c₂ c₃) ⟺ times (plus c₁ c₂) c₃
---}
+factorN : {m n : ℕ} {c₁ c₂ : C m} {c₃ : C n} → 
+          plus (times c₁ c₃) (times c₂ c₃) ⟺ times (plus c₁ c₂) c₃
+factorN = {!!}
 
 idN⟷ : {n : ℕ} {c : C n} → c ⟺ c
-idN⟷ = {!!}
+idN⟷ {0} {ZD t} = baseC (id⟷ {t})
+idN⟷ {suc n} {Node c₁ c₂} = nodeC (idN⟷ {n} {c₁}) (idN⟷ {n} {c₂})
 
-{--
-  sym    : { m n : ℕ } { c₁ : C m } { c₂ : C n } → (c₁ ⟺ c₂) → (c₂ ⟺ c₁)
---}
+symN⟷ : {n : ℕ} {c₁ c₂ : C n} → (c₁ ⟺ c₂) → (c₂ ⟺ c₁)
+symN⟷ (baseC f) = baseC (sym⟷ f)
+symN⟷ (nodeC f g) = nodeC (symN⟷ f) (symN⟷ g)
+symN⟷ (promoteC f) = {!!} 
+symN⟷ (demoteC f) = {!!} 
 
-{--
-  _◎_    : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → 
-           (c₁ ⟺ c₂) → (c₂ ⟺ c₃) → (c₁ ⟺ c₃) 
---}
+seqF : {n : ℕ} {c₁ c₂ c₃ : C n} → 
+       (c₁ ⟺ c₂) → (c₂ ⟺ c₃) → (c₁ ⟺ c₃) 
+seqF (baseC f) (baseC g) = baseC (f ◎ g)
+seqF (nodeC f f') (nodeC g g') = nodeC (seqF f g) (seqF f' g')
+seqF (nodeC f f') (promoteC c) = {!!}
+seqF (nodeC f f') (demoteC c) = {!!}
+seqF (promoteC c) (nodeC f f') = {!!}
+seqF (promoteC c) (promoteC c') = {!!}
+seqF (promoteC c) (demoteC c') = {!!}
+seqF (demoteC c) (nodeC f f') = {!!}
+seqF (demoteC c) (promoteC c') = {!!}
+seqF (demoteC c) (demoteC c') = {!!} 
 
-{--
-  _⊕_    : { m n : ℕ } { c₁ c₃ : C m } { c₂ c₄ : C n } → 
-           (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (plus c₁ c₃ ⟺ plus c₂ c₄)
---}
+plusF : {n : ℕ} {c₁ c₂ c₃ c₄ : C n} → 
+        (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (plus c₁ c₃ ⟺ plus c₂ c₄)
+plusF (baseC f) (baseC g) = baseC (f ⊕ g)
+plusF (nodeC f₁ f₂) (nodeC g₁ g₂) = nodeC (plusF f₁ g₁) (plusF f₂ g₂) 
+plusF (nodeC f₁ f₂) (promoteC c) = {!!}
+plusF (nodeC f₁ f₂) (demoteC c) = {!!}
+plusF (promoteC c) (nodeC f₁ f₂) = {!!}
+plusF (promoteC c) (promoteC c') = {!!}
+plusF (promoteC c) (demoteC c') = {!!}
+plusF (demoteC c) (nodeC f₁ f₂) = {!!}
+plusF (demoteC c) (promoteC c') = {!!}
+plusF (demoteC c) (demoteC c') = {!!} 
 
-timesF : { m n : ℕ } { c₁ : C m } { c₂ : C m } { c₃ : C n } { c₄ : C n } → 
+timesF : {m n : ℕ} {c₁ c₂ : C m} {c₃ c₄ : C n} → 
          (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (times c₁ c₃ ⟺ times c₂ c₄)
-timesF {0} {0} {ZD t₁} {ZD t₂} {ZD t₃} {ZD t₄} (baseC f) (baseC g) = 
-  baseC (_⊗_ {t₁} {t₃} {t₂} {t₄} f g)
-timesF {0} {suc n} {ZD t₁} {ZD t₂} {Node c₁ c₂} {Node c₃ c₄} 
-       (baseC f) (nodeC g₁ g₂) = nodeC (timesF (baseC f) g₁) (timesF (baseC f) g₂)
-timesF {suc m} {n} {Node c₁ c₂} {Node c₃ c₄} {c₅} {c₆} 
-       (nodeC f₁ f₂) g = nodeC (timesF f₁ g) (timesF f₂ g)
+timesF (baseC f) (baseC g) = baseC (f ⊗ g)
+timesF (baseC f) (nodeC g₁ g₂) = 
+  nodeC (timesF (baseC f) g₁) (timesF (baseC f) g₂) 
+timesF (nodeC f₁ f₂) g = nodeC (timesF f₁ g) (timesF f₂ g) 
+timesF (baseC f) (promoteC c) = {!!}
+timesF (baseC f) (demoteC c) = {!!}
+timesF (promoteC c) (baseC f) = {!!}
+timesF (promoteC c) (nodeC f₁ f₂) = {!!}
+timesF (promoteC c) (promoteC c') = {!!}
+timesF (promoteC c) (demoteC c') = {!!}
+timesF (demoteC c) (baseC f) = {!!}
+timesF (demoteC c) (nodeC f₁ f₂) = {!!}
+timesF (demoteC c) (promoteC c') = {!!}
+timesF (demoteC c) (demoteC c') = {!!} 
 
-
-
-{--
 ------------------------------------------------------------------------------
 -- Semantics
 
--- probably should have our own × ?
--- should be a sum ! 
--- we have a value in one of the corners; not in all of them at once
-
 ⟦_⟧C : {n : ℕ} → C n → Set
 ⟦_⟧C (ZD t) = ⟦ t ⟧
-⟦_⟧C (Node c₁ c₂ _) = ⟦ c₁ ⟧C ⊎ ⟦ c₂ ⟧C 
-⟦_⟧C (Lower c₁ c₂ _) = ⊥
+⟦_⟧C (Node c₁ c₂) = ⟦ c₁ ⟧C ⊎ ⟦ c₂ ⟧C 
 
-evalC : {n m : ℕ} {c₁ : C n} {c₂ : C m} {p : n ≡ m} → 
-        _⟺_ c₁ c₂ p → ⟦ c₁ ⟧C → ⟦ c₂ ⟧C
-evalC (baseC iso) v = eval iso v 
+evalC : {n : ℕ} {c₁ c₂ : C n} → (c₁ ⟺ c₂) → ⟦ c₁ ⟧C → ⟦ c₂ ⟧C
+evalC (baseC iso) v = eval iso v
 evalC (nodeC isoL isoR) (inj₁ v) = inj₁ (evalC isoL v) 
 evalC (nodeC isoL isoR) (inj₂ v) = inj₂ (evalC isoR v) 
-evalC _ _ = {!!} 
+evalC (promoteC c) v = {!!}
+evalC (demoteC c) v = {!!} 
 
--- now add etas and epsilons...
 
---}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
