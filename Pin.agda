@@ -199,15 +199,60 @@ times' {m} {n} c₁ c₂ rewrite +-comm m n = times c₁ c₂
 
 swapN⋆ : {m n : ℕ} {c₁ : C m} {c₂ : C n} → times c₁ c₂ ⟺ times' c₂ c₁
 swapN⋆ {0} {0} {ZD t₁} {ZD t₂} = baseC (swap⋆ {t₁} {t₂})
-swapN⋆ {0} {suc n} {ZD t} {Node c₁ c₂} = ? 
+swapN⋆ {0} {suc n} {ZD t} {Node c₁ c₂} = {!!} 
 --nodeC (swapN⋆ {0} {n} {ZD t} {c₁}) (swapN⋆ {0} {n} {ZD t} {c₂})
-swapN⋆ {suc m} {0} {Node c₁ c₂} {ZD t} = ? 
+swapN⋆ {suc m} {0} {Node c₁ c₂} {ZD t} = {!!} 
 --nodeC (swapN⋆ {0} {n} {c₁} {ZD t}) (swapN⋆ {0} {n} {c₂} {ZD t})
-swapN⋆ {suc m} {n} {Node c₁ c₂} {c} = ?
+swapN⋆ {suc m} {n} {Node c₁ c₂} {c} = {!!}
 --nodeC (swapN⋆ {m} {n} {c₁} {c}) (swapN⋆ {m} {n} {c₂} {c})
 
 {--
+  assocl⋆ : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → 
+            times c₁ (times c₂ c₃) ⟺ times (times c₁ c₂) c₃
+--}
+
 {--
+  assocr⋆ : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → 
+            times (times c₁ c₂) c₃ ⟺ times c₁ (times c₂ c₃)
+--}
+
+distzN : {m n : ℕ} {c : C n} → times (zeroN m) c ⟺ zeroN (m + n)
+distzN {0} {0} {ZD t} = baseC (distz {t})
+distzN {0} {suc n} {Node c₁ c₂} = 
+  nodeC (distzN {0} {n} {c₁}) (distzN {0} {n} {c₂})
+distzN {suc m} {n} {c} = 
+  nodeC (distzN {m} {n} {c}) (distzN {m} {n} {c})
+
+{--
+  factorz  : { m n : ℕ } { c : C n } → zeroN m ⟺ times (zeroN m) c
+--}
+
+{--
+  dist    : { m n : ℕ } { c₁ c₂ : C m } { c₃ : C n } → 
+            times (plus c₁ c₂) c₃ ⟺ plus (times c₁ c₃) (times c₂ c₃) 
+--}
+
+{--
+  factor  : { m n : ℕ } { c₁ c₂ : C m } { c₃ : C n } → 
+            plus (times c₁ c₃) (times c₂ c₃) ⟺ times (plus c₁ c₂) c₃
+--}
+
+idN⟷ : {n : ℕ} {c : C n} → c ⟺ c
+idN⟷ = {!!}
+
+{--
+  sym    : { m n : ℕ } { c₁ : C m } { c₂ : C n } → (c₁ ⟺ c₂) → (c₂ ⟺ c₁)
+--}
+
+{--
+  _◎_    : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → 
+           (c₁ ⟺ c₂) → (c₂ ⟺ c₃) → (c₁ ⟺ c₃) 
+--}
+
+{--
+  _⊕_    : { m n : ℕ } { c₁ c₃ : C m } { c₂ c₄ : C n } → 
+           (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (plus c₁ c₃ ⟺ plus c₂ c₄)
+--}
 
 timesF : { m n : ℕ } { c₁ : C m } { c₂ : C m } { c₃ : C n } { c₄ : C n } → 
          (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (times c₁ c₃ ⟺ times c₂ c₄)
@@ -219,37 +264,8 @@ timesF {suc m} {n} {Node c₁ c₂} {Node c₃ c₄} {c₅} {c₆}
        (nodeC f₁ f₂) g = nodeC (timesF f₁ g) (timesF f₂ g)
 
 
-distzN : {m n : ℕ} {c : C n} → times (zeroN m) c ⟺ zeroN (m + n)
-distzN {0} {0} {ZD t} = baseC (distz {t})
-distzN {0} {suc n} {Node c₁ c₂} = 
-  nodeC (distzN {0} {n} {c₁}) (distzN {0} {n} {c₂})
-distzN {suc m} {n} {c} = 
-  nodeC (distzN {m} {n} {c}) (distzN {m} {n} {c})
-
---}
-
-------------------------------------------------------------------------------
 
 {--
-
-  assocl⋆ : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → 
-            times c₁ (times c₂ c₃) ⟺ times (times c₁ c₂) c₃
-  assocr⋆ : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → 
-            times (times c₁ c₂) c₃ ⟺ times c₁ (times c₂ c₃)
-  distz    : { m n : ℕ } { c : C n } → times (zeroN m) c ⟺ zeroN m
-  factorz  : { m n : ℕ } { c : C n } → zeroN m ⟺ times (zeroN m) c
-  dist    : { m n : ℕ } { c₁ c₂ : C m } { c₃ : C n } → 
-            times (plus c₁ c₂) c₃ ⟺ plus (times c₁ c₃) (times c₂ c₃) 
-  factor  : { m n : ℕ } { c₁ c₂ : C m } { c₃ : C n } → 
-            plus (times c₁ c₃) (times c₂ c₃) ⟺ times (plus c₁ c₂) c₃
-  id⟷   : { n : ℕ } { c : C n } → c ⟺ c
-  sym    : { m n : ℕ } { c₁ : C m } { c₂ : C n } → (c₁ ⟺ c₂) → (c₂ ⟺ c₁)
-  _◎_    : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → 
-           (c₁ ⟺ c₂) → (c₂ ⟺ c₃) → (c₁ ⟺ c₃) 
-  _⊕_    : { m n : ℕ } { c₁ c₃ : C m } { c₂ c₄ : C n } → 
-           (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (plus c₁ c₃ ⟺ plus c₂ c₄)
---}
-
 ------------------------------------------------------------------------------
 -- Semantics
 
@@ -276,7 +292,17 @@ evalC _ _ = {!!}
 
 
 
+
+
+
+
+
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+
 {--
+
 CODE THAT TRIED TO KEEP PROOF THAT DIMENSIONS ARE EQUAL
 
 
@@ -355,7 +381,6 @@ unitiN₊ {suc m} {Node {n} {.m} c₁ c₂ n≡m} = {!!}
 --  nodeC (unitiN₊ {n} {c₁}) (unitiN₊ {n} {c₂})
 unitiN₊ {_} {_} = {!!} 
 
-{--
 assoclN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
            plus c₁ (plus c₂ c₃) ⟺ plus (plus c₁ c₂) c₃
 assoclN₊ {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (assocl₊ {t₁} {t₂} {t₃})
@@ -412,11 +437,7 @@ distzN {0} {suc n} {Node c₁ c₂} =
 distzN {suc m} {n} {c} = 
   nodeC (distzN {m} {n} {c}) (distzN {m} {n} {c})
 
---}
-
 ------------------------------------------------------------------------------
-
-{--
 
   assocl⋆ : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → 
             times c₁ (times c₂ c₃) ⟺ times (times c₁ c₂) c₃
@@ -434,7 +455,6 @@ distzN {suc m} {n} {c} =
            (c₁ ⟺ c₂) → (c₂ ⟺ c₃) → (c₁ ⟺ c₃) 
   _⊕_    : { m n : ℕ } { c₁ c₃ : C m } { c₂ c₄ : C n } → 
            (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (plus c₁ c₃ ⟺ plus c₂ c₄)
---}
 
 ------------------------------------------------------------------------------
 -- Semantics
