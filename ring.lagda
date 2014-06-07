@@ -27,6 +27,8 @@
 \newcommand{\boolt}{\textsf{bool}}
 \newcommand{\nboxplus}[1]{\,\,~{^{#1}\boxplus^{#1}}~\,\,}
 \newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
+\newcommand{\promote}[1]{\mathit{promote}~#1}
+\newcommand{\demote}[1]{\mathit{demote}~#1}
 \newcommand{\raisez}{\mathit{raise0}}
 \newcommand{\lowerz}{\mathit{lower0}}
 \newcommand{\raiseo}{\mathit{raise1}}
@@ -394,7 +396,7 @@ backwards evaluator consists of trivial modifications:
 \evalone{(c_1\oplus c_2)}{&(\inr{v})} &=& 
   \inr{(\evalone{c_2}{v})} \\
 \evalone{(c_1\otimes c_2)}{&(v_1,v_2)} &=& 
-  \evalone{c_1}(v_1) \otimes \evalone{c_2}(v_2) \\
+  (\evalone{c_1}v_1, \evalone{c_2}v_2) \\
 \end{array}\]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -544,8 +546,9 @@ The definition for the product of 1d types used above is:
   {((\tau_1*\tau_4)+(\tau_2*\tau_3))}
 \end{array}\]
 That definition is ``obvious'' in some sense as it matches the usual
-understanding of types as modeling arithmetic. Using it, it is possible to
-lift all the 0d combinators involving products \emph{except} the functor:
+understanding of types as modeling arithmetic identities. Using this
+definition, it is possible to lift all the 0d combinators involving products
+\emph{except} the functor:
 \[ (\otimes) : 
   (\cubt_1\isoone\cubt_2) \rightarrow 
   (\cubt_3\isoone\cubt_4) \rightarrow 
@@ -554,15 +557,16 @@ lift all the 0d combinators involving products \emph{except} the functor:
 \]
 After a few failed attempts, we suspected that this definition of
 multiplication is not functorial which would mean that the \textbf{Int}
-construction provides a limited notion of higher-order functions at the
-expense of losing the multiplicative structure at higher-levels. This
+construction only provides a limited notion of higher-order functions at the
+cost of losing the multiplicative structure at higher-levels. This
 observation is less well-known that it should be. Further investigation
 reveals that this observation is intimately related to a well-known problem
-in algebraic topology that was identified thirty years ago as the ``phony''
-multiplication~\cite{thomason} in a special class categories related to
-ours. This problem was recently solved~\cite{ringcompletion} using a
-technique whose fundamental ingredients are to add more dimensions and then
-to homotopy colimits. We exploit this idea in the remainder of the paper.
+in algebraic topology and homotopy theory that was identified thirty years
+ago as the ``phony'' multiplication~\cite{thomason} in a special class
+categories related to ours. This problem was recently
+solved~\cite{ringcompletion} using a technique whose fundamental ingredients
+are to add more dimensions and then take various homotopy colimits. We
+exploit this idea in the remainder of the paper.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Polarized Cubes}
@@ -667,7 +671,7 @@ The set of types is now indexed by a dimension $n$:
 At dimension 0, we have the usual first-order types $\tau$ representing
 ``points.'' At dimension $n+1$, a type is a pair of subspaces
 $\nodet{\cubt_1^n}{\cubt_2^n}$, each of a lower dimension $n$. The subspace
-$\cubt_1^n$ is the positive subspace along the $n+1$st dimension and the
+$\cubt_1^n$ is the positive subspace along the $(n+1)$st dimension and the
 subspace $\cubt_2^n$, shaded in gray, is the negative subspace along that
 same dimension. Like in the case for the \textbf{Int} construction, a 1d
 cube, $\nodet{\tau_1}{\tau_2}$, intuitively corresponds to the difference
@@ -715,7 +719,7 @@ in Fig.~\ref{mult}, produces a cube of dimension $m+n$.
 
 \begin{proposition}[Dimensions]
 \label{dimprop}
-The dimension of $\cubt^m \nboxtimes{m}{n} \cubt^n$ is $m+n$.
+The type $(\cubt^m \nboxtimes{m}{n} \cubt^n)$ has dimension $m+n$.
 \end{proposition}
 \begin{proof}
 By a simple induction on $m$. 
@@ -794,8 +798,8 @@ The main point of the generalization to arbitrary dimensions beyond the
 computational power of $\Pi$. In other words, all type isomorphisms
 (including the ones involving products) should lift to the higher
 dimensions. The lifting is surprisingly simple: everything is defined
-pointwise. Formally, the isomorphisms $\ison{n}$ on $n$-dimensional cubes are
-defined as follows:
+pointwise. Formally, the combinators of type $\ison{n}$ on $n$-dimensional
+cubes are defined as follows:
 
 \begin{center}
 \Rule{}
@@ -811,25 +815,41 @@ defined as follows:
 {}
 \end{center}
 
-For reference, Table~\ref{cube-combinators} gives the full list of
-$n$-dimensional combinators: each combinator in the table is constructed by
-induction on the dimension. 
+In other words, a combinator at dimension $n$ is defined by induction on $n$
+and consists of a family of $2^n$ 0d combinators. As an example, the
+combinator $\swapp$ at dimension 2 of type:
+\[
+\nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}
+\ison{2}
+\nodet{(\nodet{\tau_1'}{\tau_2'})}{(\nodet{\tau_3'}{\tau_4'})}
+\] 
+is defined as $\nodet{(\nodet{\swapp}{\swapp})}{(\nodet{\swapp}{\swapp})}$
+where each of the internal 0d $\swapp$ combinators is of type $\tau_i \iso
+\tau_i'$. For completeness, Table~\ref{cube-combinators} shows the types of
+the lifted versions of all the $\Pi$ combinators.
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{Operational Semantics} 
 
-A value of an $n$-dimensional type is a 0d value located at one of the $2^n$
-vertices. To keep the correspondence between values and types evident, and to
-prepare for the generalization in the next section, we denote $n$-dimensional
-values using a sequence of polarities that end with a 0d value. For example,
-the values of type $\nodet{1\phantom{+}}{1+1}$ are $\pp()$, $\mm\inl{()}$, and
-$\mm\inr{()}$. Generalizing the operational semantics of Sec.~\ref{opsempi}
-is straightforward:
+A value $\bullet v$ of an $n$-dimensional type is a 0d value located at one
+of the $2^n$ vertices. To keep the correspondence between values and types
+evident, and to prepare for the generalization in the next section, we denote
+$n$-dimensional values $\bullet v$ using a (possibly empty) sequence of
+polarities $\bullet$ that ends with a 0d value $v$. For example, the values
+of type
+$\nodet{(\nodet{1\phantom{+}}{1\phantom{+}})}{(\nodet{1\phantom{+}}{1+1})}$
+are $\pp\pp()$, $\pp\mm()$, $\mm\pp()$, $\mm\mm\inl{()}$, and
+$\mm\mm\inr{()}$. Generalizing the operational semantics of
+Sec.~\ref{opsempi} is straightforward:
 \[\begin{array}{rcl} 
 \evaln{0}{c}{v} &=& \evalone{c}{v} \\
-\evaln{n+1}{\nodet{c_1}{c_2}}{\pp v} &=& \pp(\evaln{n}{c_1}{v}) \\
-\evaln{n+1}{\nodet{c_1}{c_2}}{\mm v} &=& \mm(\evaln{n}{c_2}{v})
+\evaln{n+1}{\nodet{c_1}{c_2}}{(\pp\bullet v)} &=& 
+  \pp(\evaln{n}{c_1}{\bullet v}) \\
+\evaln{n+1}{\nodet{c_1}{c_2}}{(\mm\bullet v)} &=& 
+  \mm(\evaln{n}{c_2}{\bullet v})
 \end{array}\]
+The evaluator is essentially a 0d evaluator operating in one fixed dimension
+and ignoring all others. Note that values never change their polarities. 
 
 \begin{verbatim}
 TODO
@@ -849,13 +869,6 @@ Finish implement op. sem. in Agda.
 Basically a version of pi indexed 
 by dimensions!
 
-present the evaluator!!!
-the two lines from the Agda code
-Values are indexed by polarities
-evaluator never changes polarities
-of values; it just moves them
-along their own fixed dimension
-
 need to make sure there are
 no other isos implied by
 the development in secs 2 
@@ -868,7 +881,7 @@ diagrams in Sec. 2
 \end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Paths}
+\section{Homotopies} 
 
 The development in the previous section resulted in an $n$-dimensional
 version of $\Pi$ where everything is defined pointwise. For example, an
@@ -884,26 +897,44 @@ combinators witnessing isomorphisms such as $\nodet{\tau}{\tau} \ison{1}
 \ztn^1$. Recalling the connection to elementary algebra, this just means that
 we are now categorifying identities such as $\tau - \tau = 0$. Operationally,
 this would, for example, allow an interpreter manipulating a value indexed by
-$\pp\mm\pp$ to execute in reverse along the dimension $\mm\pp\mm$.
+$\pp\mm\pp$ to reverse its flow among one of the three dimensions, i.e., to
+migrate to the vertex indexed by $\mm\mm\pp$, $\pp\pp\pp$, or $\pp\mm\mm$,
+and be processed by the code indexed by that new sequence of polarities
+instead of the original code indexed by $\pp\mm\pp$.
 
 %%%%%%%%%%%%%%%%%%
 \subsection{Recovering the Int Construction}
 
-As motivated in the previous paragraph, we begin by adding the following 1d
-isomorphism:
+As motivated in the previous paragraph, we begin by adding a new way to
+create 1d combinators that witnesses the interpretation of negative types as
+additive inverses to conventional positive types:
 \begin{center}
 \Rule{}
-{\jdg{}{}{\tau \iso \tau}}
-{\jdg{}{}{\nodet{\tau}{\tau} \ison{1} \ztn^1}}
+{\jdg{}{}{c : \tau \iso \tau}}
+{\jdg{}{}{\promote{c} : \nodet{\tau}{\tau} \ison{1} \ztn^1} : \demote{c}}
 {}
 \end{center}
-As a concrete example, let us abbreviate $1+1$ as $\boolt$, the type of
-booleans. There are several isomorphisms $\boolt \iso \boolt$ including the
-trivial one witnessed by the combinator $\idc$ and the boolean negation
+Unlike the case in the previous section, 1d combinators are no longer
+exclusively a family of $2^1$ combinators of dimension 0. There are now some
+inherently 1d combinators that mediate between $\nodet{\tau}{\tau}$ and
+$\ztn^1$. As a concrete example, let us abbreviate $1+1$ as $\boolt$, the type
+of booleans. There are several isomorphisms $\boolt \iso \boolt$ including
+the trivial one witnessed by the combinator $\idc$ and the boolean negation
 witnessed by the combinator $\swapp$. Each of these isomorphisms gives rise
 to a \emph{different} 1d isomorphism between $\nodet{\boolt}{\boolt}$ and
-$\ztn^1$.
+$\ztn^1$. Before presenting the formal evaluation rules, we show the intuition
+of how the new combinators behave operationally:
+\[\begin{array}{rcl} 
+\evaln{1}{\promote{\idc}}{+\inl{()}} &=& -\inl{()} \\
+\evaln{1}{\promote{\swapp}}{+\inl{()}} &=& -\inr{()} 
+\end{array}\]
+The evaluation of the new combinators does not simply keep recurring until
+dimension 0; instead the combinators act as ``bridges'' that transfer
+values from one vertex in dimension 1 to another vertex. 
 
+
+evaluator
+curry...
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work and Context}
