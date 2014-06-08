@@ -14,7 +14,7 @@ open import Algebra
 open import Data.Nat.Properties
 open CommutativeSemiring commutativeSemiring using (+-commutativeMonoid)
 open CommutativeMonoid +-commutativeMonoid using () 
-  renaming (comm to +-comm) -- ; identityʳ to +-idr)
+     renaming (comm to +-comm) 
 
 infixr 30 _⟷_
 infixr 30 _⟺_
@@ -237,11 +237,27 @@ factorzN {suc m} {n} {c} =
 
 distN : {m n : ℕ} {c₁ c₂ : C m} {c₃ : C n} → 
         times (plus c₁ c₂) c₃ ⟺ plus (times c₁ c₃) (times c₂ c₃) 
-distN = {!!} 
+distN {0} {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (dist {t₁} {t₂} {t₃})
+distN {0} {suc n} {ZD t₁} {ZD t₂} {Node c₁ c₂} = 
+  nodeC 
+    (distN {0} {n} {ZD t₁} {ZD t₂} {c₁}) 
+    (distN {0} {n} {ZD t₁} {ZD t₂} {c₂})
+distN {suc m} {n} {Node c₁ c₂} {Node c₃ c₄} {c} =
+  nodeC 
+    ((distN {m} {n} {c₁} {c₃} {c})) 
+    ((distN {m} {n} {c₂} {c₄} {c})) 
 
 factorN : {m n : ℕ} {c₁ c₂ : C m} {c₃ : C n} → 
           plus (times c₁ c₃) (times c₂ c₃) ⟺ times (plus c₁ c₂) c₃
-factorN = {!!}
+factorN {0} {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (factor {t₁} {t₂} {t₃})
+factorN {0} {suc n} {ZD t₁} {ZD t₂} {Node c₁ c₂} = 
+  nodeC 
+    (factorN {0} {n} {ZD t₁} {ZD t₂} {c₁}) 
+    (factorN {0} {n} {ZD t₁} {ZD t₂} {c₂})
+factorN {suc m} {n} {Node c₁ c₂} {Node c₃ c₄} {c} =
+  nodeC 
+    ((factorN {m} {n} {c₁} {c₃} {c})) 
+    ((factorN {m} {n} {c₂} {c₄} {c})) 
 
 idN⟷ : {n : ℕ} {c : C n} → c ⟺ c
 idN⟷ {0} {ZD t} = baseC (id⟷ {t})
