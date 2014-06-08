@@ -337,13 +337,20 @@ evalC (demoteC c) v = {!!}
 Bool : T
 Bool = Plus One One
 
+vtrue : ⟦ Bool ⟧
+vtrue = inj₁ tt
+
+vfalse : ⟦ Bool ⟧
+vfalse = inj₂ tt
+
 Bool² : T
 Bool² = Times Bool Bool
 
 Bool³ : T
 Bool³ = Times Bool² Bool
 
-cond : {t₁ t₂ : T} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → ((Times Bool t₁) ⟷ (Times Bool t₂))
+cond : {t₁ t₂ : T} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → 
+       ((Times Bool t₁) ⟷ (Times Bool t₂))
 cond f g = dist ◎ ((id⟷ ⊗ f) ⊕ (id⟷ ⊗ g)) ◎ factor 
 
 controlled : {t : T} → (t ⟷ t) → ((Times Bool t) ⟷ (Times Bool t))
@@ -354,6 +361,9 @@ cnot = controlled swap₊
 
 toffoli : Bool³ ⟷ Bool³
 toffoli = assocr⋆ ◎ controlled cnot ◎ assocl⋆ 
+
+test₁ : ⟦ Bool³ ⟧
+test₁ = eval toffoli ((vtrue , vtrue) , vfalse)
 
 --
 
@@ -370,53 +380,40 @@ controlledN : {n : ℕ} {c : C n} →
               (c ⟺ c) → ((times (ZD Bool) c) ⟺ (times (ZD Bool) c))
 controlledN f = condN f idN⟷
 
-Bool²N : {n : ℕ} → C n
-Bool²N {n} = plus (liftN n Bool) (liftN n Bool)
-
-Bool³N : {n : ℕ} → C n
-Bool³N {n} = plus (liftN n Bool) (Bool²N {n})
-
-cnotN : {n : ℕ} → ((times (ZD Bool) Bool²N) ⟺ (times (ZD Bool) Bool²N))
-cnotN {n} = controlledN {n} 
-            (swapN₊ {n} {liftN n Bool} {liftN n Bool})
-
+BoolN : (n : ℕ) → C n
+BoolN n = plus (oneN n) (oneN n)
 {--
-toffoliN : {n : ℕ} → Bool³N ⟺ Bool³N
-toffoliN {n} = 
-  (seqF (assocrN₊ {n} {liftN n Bool} {liftN n Bool} {liftN n Bool})
-  (seqF (controlledN {n} (cnotN {n}))
-  (assoclN₊ {n})))
+Note: liftN 3 Bool is not quite the same as plus (oneN 3) (oneN 3)
 
---assocr⋆ ◎ controlled cnot ◎ assocl⋆ 
+plus (oneN 3) (oneN 3) 
+= 
+Node
+(Node 
+  (Node (ZD (Plus One One)) (ZD (Plus Zero Zero)))
+  (Node (ZD (Plus Zero Zero)) (ZD (Plus Zero Zero))))
+(Node 
+  (Node (ZD (Plus Zero Zero)) (ZD (Plus Zero Zero)))
+  (Node (ZD (Plus Zero Zero)) (ZD (Plus Zero Zero))))
 
---assocrN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
---           plus (plus c₁ c₂) c₃ ⟺ plus c₁ (plus c₂ c₃)
-
---assoclN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
---           plus c₁ (plus c₂ c₃) ⟺ plus (plus c₁ c₂) c₃
-
-
--- swapN₊ : { n : ℕ } { c₁ c₂ : C n } → plus c₁ c₂ ⟺ plus c₂ c₁
-
-idN⟷ : {n : ℕ} {c : C n} → c ⟺ c
-
-distN : {c₁ c₂ : C 0} {c₃ : C n} → 
-        times (plus c₁ c₂) c₃ ⟺ plus (times c₁ c₃) (times c₂ c₃) 
-
-factorN : {m n : ℕ} {c₁ c₂ : C m} {c₃ : C n} → 
-          plus (times c₁ c₃) (times c₂ c₃) ⟺ times (plus c₁ c₂) c₃
-
-plusF : {n : ℕ} {c₁ c₂ c₃ c₄ : C n} → 
-        (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (plus c₁ c₃ ⟺ plus c₂ c₄)
-
-timesF : {m n : ℕ} {c₁ c₂ : C m} {c₃ c₄ : C n} → 
-         (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (times c₁ c₃ ⟺ times c₂ c₄)
-
-seqF : {n : ℕ} {c₁ c₂ c₃ : C n} → 
-       (c₁ ⟺ c₂) → (c₂ ⟺ c₃) → (c₁ ⟺ c₃) 
-
+liftN 3 Bool
+= 
+Node
+(Node 
+  (Node (ZD (Plus One One)) (ZD Zero))
+  (Node (ZD Zero) (ZD Zero)))
+(Node 
+  (Node (ZD Zero) (ZD Zero)) 
+  (Node (ZD Zero) (ZD Zero)))
 --}
 
+cnotN : {n : ℕ} → ((times (ZD Bool) (BoolN n)) ⟺ (times (ZD Bool) (BoolN n)))
+cnotN {n} = controlledN {n} (swapN₊ {n} {oneN n} {oneN n})
+
+{--
+
+Can't do toffoliN until we get all the products done
+
+--}
 
 
 
@@ -603,3 +600,4 @@ evalC _ _ = {!!}
 
 -- now add etas and epsilons...
 --}
+

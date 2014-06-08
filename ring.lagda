@@ -24,6 +24,8 @@
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{proposition}[theorem]{Proposition}
 
+\newcommand{\hide}[1]{}
+
 \newcommand{\boolt}{\textsf{bool}}
 \newcommand{\nboxplus}[1]{\,\,~{^{#1}\boxplus^{#1}}~\,\,}
 \newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
@@ -193,7 +195,7 @@ $\displaystyle
 %% double-blind reviewing...
 \title{Higher-Order Functions via \\ 
   Polarized Cubical Types and Homotopies}
-\authorinfo{}{}{}
+\authorinfo{DRAFT IN PROGRESS (Jacques Carette and Amr Sabry)}{}{}
 \maketitle
 
 \begin{abstract}
@@ -226,8 +228,16 @@ Sabry~\citeyearpar{James:2012:IE:2103656.2103667} which expresses this thesis
 in a type theoretic computational framework, expressing computation via type
 isomorphisms.
 
-Make sure we introduce the abbreviation HoTT in the
-introduction~\cite{hottbook}.
+\begin{verbatim}
+
+Introduce the abbreviation 'HoTT' 
+\cite{hottbook}.
+
+I have been assuming that the ring
+category is compact closed. It is,
+right?
+
+\end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Computing with Type Isomorphisms}
@@ -235,7 +245,7 @@ introduction~\cite{hottbook}.
 
 The main syntactic vehicle for the developments in this paper is a simple
 language called $\Pi$ whose only computations are isomorphisms between finite
-types. We review this language in this section.
+types. 
 
 \begin{table*}[t]
 \[\begin{array}{cc}
@@ -295,8 +305,8 @@ types. We review this language in this section.
 \subsection{Syntax and Examples}
 
 The set of types $\tau$ includes the empty type 0, the unit type 1, and
-conventional sum and product types. The values of these types are the
-conventional ones: \lstinline|()| of type 1, $\inl{v}$ and $\inr{v}$ for
+conventional sum and product types. The values classified by these types are
+the conventional ones: \lstinline|()| of type 1, $\inl{v}$ and $\inr{v}$ for
 injections into sum types, and $(v_1,v_2)$ for product types:
 \[\begin{array}{lrcl}
 (\textit{Types}) & 
@@ -367,7 +377,7 @@ Operationally, the semantics consists of a pair of mutually recursive
 evaluators that take a combinator and a value and propagate the value in the
 ``forward'' $\triangleright$ direction or in the ``backwards''
 $\triangleleft$ direction. We show the complete forward evaluator; the
-backwards evaluator consists of trivial modifications:
+backwards evaluator differs in trivial ways:
 \[\begin{array}{r@{\!}lcl}
 \evalone{\identlp}{&(\inr{v})} &=& v \\
 \evalone{\identrp}{&v} &=& \inr{v} \\
@@ -569,8 +579,13 @@ in algebraic topology and homotopy theory that was identified thirty years
 ago as the ``phony'' multiplication~\cite{thomason} in a special class
 categories related to ours. This problem was recently
 solved~\cite{ringcompletion} using a technique whose fundamental ingredients
-are to add more dimensions and then take various homotopy colimits. We
-exploit this idea in the remainder of the paper.
+are to add more dimensions and then take homotopy colimits. We exploit this
+solution in the remainder of the paper.
+
+\begin{verbatim}
+Explain the definitions in this 
+section much better...
+\end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Polarized Cubes}
@@ -833,6 +848,39 @@ where each of the internal 0d $\swapp$ combinators is of type $\tau_i \iso
 \tau_i'$. For completeness, Table~\ref{cube-combinators} shows the types of
 the lifted versions of all the $\Pi$ combinators.
 
+\begin{verbatim}
+That table should coincide with 
+sec 2 of the ring completion paper
+modulo the fact that we are not
+strict so we have extra isos that
+are assumed to be id in the 
+ring completion paper.
+Check everything again... and 
+state the formal result
+
+say that the labels on isos
+implicitly say that 
+m+n = n+m etc we are
+assuming some monoidal
+structure on dimensions
+
+explain why identl* 
+only works on 0dim unit
+
+do we need embedding of
+n-dim types into
+n+1-dim types at 
+this point:
+t embeds in 1d as (t-0)
+(t1-t2) embeds in 2d in 
+several ways; at least
+(t1-t2)-(0-0)
+and 
+(t1-0)-(t2-0)
+What is the status of 
+these embeddings?
+\end{verbatim}
+
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{Operational Semantics} 
 
@@ -857,54 +905,45 @@ The evaluator is essentially a 0d evaluator operating in one fixed dimension
 and ignoring all others. Note that values never change their polarities. 
 
 \begin{verbatim}
-TODO
-
-say that the labels on isos
-implicitly say that 
-m+n = n+m etc
-
-explain why identl* 
-only works on 0dim unit
-
-do we need embedding of
-n-dim types into
-n+1-dim types ??
-I think we should. We need
-
-t1-t2 to be embedded in different ways to
-(t1-t2)-(0-0)
-and 
-(t1-0)-(t2-0)
-
 Finish implement op. sem. in Agda.
-Basically a version of pi indexed 
-by dimensions!
+Perhaps provide some Agda code
+in the paper? Would need major
+rewrites...
 
 need to make sure there are
 no other isos implied by
 the development in secs 2 
-and 3; and that we don't have 
-any isos that are not justified
-by the math
+and 3 of the ring completion paper; 
+and that we don't have 
+any extra isos
 
-check all the axioms and commuting
-diagrams in Sec. 2
+There is definitely a need to
+have something morphisms
+that relate an n-dimensional bool 
+and the sum of two n-dimensional
+ones etc.
 \end{verbatim}
+
+Can we use the isos in table 2 to prove these two equal:
+\[\begin{array}{c}
+\nodet{(\nodet{\tau}{0+0})}{(\nodet{0+0}{0+0})} \\
+\nodet{(\nodet{\tau}{0})}{(\nodet{0}{0})}
+\end{array}\]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Homotopies} 
 
-The development in the previous section resulted in an $n$-dimensional
-version of $\Pi$ where everything is defined pointwise. For example, an
-interpreter starting with a 3d value indexed by $\pp\mm\pp$ will always
-result in a value indexed by the same polarities $\pp\mm\pp$. It is not
-possible for the computation in one dimension to migrate to or to interact in
-any way with another dimension. In some sense, the polarities are not
-interpreted yet. More precisely, if the polarities are to indicate
-``forward'' and ``backwards'' flow of information, it should be the case that
-identical positive and negative flows cancel each other. Technically, we want
-the \emph{ring completion} of our set of isomorphisms which means having
-combinators witnessing isomorphisms such as $\nodet{\tau}{\tau} \ison{1}
+The development has so far resulted in an $n$-dimensional version of $\Pi$
+where everything is defined pointwise. For example, an interpreter starting
+with a 3d value indexed by $\pp\mm\pp$ will always result in a value indexed
+by the same polarities $\pp\mm\pp$. It is not possible for the computation in
+one dimension to migrate to or to interact in any way with another
+dimension. In some sense, the polarities are not interpreted yet. More
+precisely, if the polarities are to indicate ``forward'' and ``backwards''
+flow of information, it should be the case that identical positive and
+negative flows cancel each other. Technically, we want the \emph{ring
+  completion} of our set of isomorphisms which means at least having
+combinators witnessing the isomorphism $\nodet{\tau}{\tau} \ison{1}
 \ztn^1$. Recalling the connection to elementary algebra, this just means that
 we are now categorifying identities such as $\tau - \tau = 0$. Operationally,
 this would, for example, allow an interpreter manipulating a value indexed by
@@ -933,7 +972,11 @@ of booleans. There are several isomorphisms $\boolt \iso \boolt$ including
 the trivial one witnessed by the combinator $\idc$ and the boolean negation
 witnessed by the combinator $\swapp$. Each of these isomorphisms gives rise
 to a \emph{different} 1d isomorphism between $\nodet{\boolt}{\boolt}$ and
-$\ztn^1$. Before presenting the formal evaluation rules, we show the intuition
+$\ztn^1$. 
+
+\hide{
+
+Before presenting the formal evaluation rules, we show the intuition
 of how the new combinators behave operationally:
 \[\begin{array}{rcl} 
 \evaln{1}{(\promote{\idc})}{(+\inl{()})} &=& -\inl{()} \\
@@ -952,12 +995,18 @@ around and index into it?
 evaluator
 curry...
 \end{verbatim}
-
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work and Context}
 
+\begin{verbatim}
 A ton of stuff here. 
+
+All these isomorphims are paths 
+and higher-paths etc. 
+in the HoTT world.
+\end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
