@@ -16,6 +16,7 @@ open CommutativeSemiring commutativeSemiring using (+-commutativeMonoid)
 open CommutativeMonoid +-commutativeMonoid using () 
      renaming (comm to +-comm) 
 
+infixr 10 _◎_
 infixr 30 _⟷_
 infixr 30 _⟺_
 
@@ -132,13 +133,15 @@ data C : ℕ → Set where
   ZD   : T → C 0
   Node : {n : ℕ} → C n → C n → C (suc n)
 
+liftN : (n : ℕ) → (t : T) → C n
+liftN 0 t = ZD t
+liftN (suc n) t = Node (liftN n t) (liftN n Zero)
+
 zeroN : (n : ℕ) → C n
-zeroN 0 = ZD Zero
-zeroN (suc n) = Node (zeroN n) (zeroN n) 
+zeroN n = liftN n Zero
 
 oneN : (n : ℕ) → C n
-oneN 0 = ZD One
-oneN (suc n) = Node (oneN n) (zeroN n) 
+oneN n = liftN n One
 
 plus : {n : ℕ} → C n → C n → C n
 plus (ZD t₁) (ZD t₂) = ZD (Plus t₁ t₂)
@@ -326,21 +329,93 @@ evalC (nodeC isoL isoR) (inj₂ v) = inj₂ (evalC isoR v)
 evalC (promoteC c) v = {!!}
 evalC (demoteC c) v = {!!} 
 
+------------------------------------------------------------------------------
+-- Example
+
+-- Let's try a 3d program
+
+Bool : T
+Bool = Plus One One
+
+Bool² : T
+Bool² = Times Bool Bool
+
+Bool³ : T
+Bool³ = Times Bool² Bool
+
+cond : {t₁ t₂ : T} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → ((Times Bool t₁) ⟷ (Times Bool t₂))
+cond f g = dist ◎ ((id⟷ ⊗ f) ⊕ (id⟷ ⊗ g)) ◎ factor 
+
+controlled : {t : T} → (t ⟷ t) → ((Times Bool t) ⟷ (Times Bool t))
+controlled f = cond f id⟷
+
+cnot : Bool² ⟷ Bool²
+cnot = controlled swap₊
+
+toffoli : Bool³ ⟷ Bool³
+toffoli = assocr⋆ ◎ controlled cnot ◎ assocl⋆ 
+
+--
+
+condN : {n : ℕ} {c₁ c₂ : C n} → (c₁ ⟺ c₂) → (c₁ ⟺ c₂) → 
+        ((times (ZD Bool) c₁) ⟺ (times (ZD Bool) c₂))
+condN {n} {c₁} {c₂} f g = 
+  (seqF (distN {0} {n} {ZD One} {ZD One} {c₁})
+  (seqF (plusF {n} 
+          (timesF {0} {n} (idN⟷ {0} {ZD One}) f) 
+          (timesF {0} {n} (idN⟷ {0} {ZD One}) g))
+  (factorN {0} {n} {ZD One} {ZD One} {c₂})))
+
+controlledN : {n : ℕ} {c : C n} → 
+              (c ⟺ c) → ((times (ZD Bool) c) ⟺ (times (ZD Bool) c))
+controlledN f = condN f idN⟷
+
+Bool²N : {n : ℕ} → C n
+Bool²N {n} = plus (liftN n Bool) (liftN n Bool)
+
+Bool³N : {n : ℕ} → C n
+Bool³N {n} = plus (liftN n Bool) (Bool²N {n})
+
+cnotN : {n : ℕ} → ((times (ZD Bool) Bool²N) ⟺ (times (ZD Bool) Bool²N))
+cnotN {n} = controlledN {n} 
+            (swapN₊ {n} {liftN n Bool} {liftN n Bool})
+
+{--
+toffoliN : {n : ℕ} → Bool³N ⟺ Bool³N
+toffoliN {n} = 
+  (seqF (assocrN₊ {n} {liftN n Bool} {liftN n Bool} {liftN n Bool})
+  (seqF (controlledN {n} (cnotN {n}))
+  (assoclN₊ {n})))
+
+--assocr⋆ ◎ controlled cnot ◎ assocl⋆ 
+
+--assocrN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
+--           plus (plus c₁ c₂) c₃ ⟺ plus c₁ (plus c₂ c₃)
+
+--assoclN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
+--           plus c₁ (plus c₂ c₃) ⟺ plus (plus c₁ c₂) c₃
 
 
+-- swapN₊ : { n : ℕ } { c₁ c₂ : C n } → plus c₁ c₂ ⟺ plus c₂ c₁
 
+idN⟷ : {n : ℕ} {c : C n} → c ⟺ c
 
+distN : {c₁ c₂ : C 0} {c₃ : C n} → 
+        times (plus c₁ c₂) c₃ ⟺ plus (times c₁ c₃) (times c₂ c₃) 
 
+factorN : {m n : ℕ} {c₁ c₂ : C m} {c₃ : C n} → 
+          plus (times c₁ c₃) (times c₂ c₃) ⟺ times (plus c₁ c₂) c₃
 
+plusF : {n : ℕ} {c₁ c₂ c₃ c₄ : C n} → 
+        (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (plus c₁ c₃ ⟺ plus c₂ c₄)
 
+timesF : {m n : ℕ} {c₁ c₂ : C m} {c₃ c₄ : C n} → 
+         (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (times c₁ c₃ ⟺ times c₂ c₄)
 
+seqF : {n : ℕ} {c₁ c₂ c₃ : C n} → 
+       (c₁ ⟺ c₂) → (c₂ ⟺ c₃) → (c₁ ⟺ c₃) 
 
-
-
-
-
-
-
+--}
 
 
 

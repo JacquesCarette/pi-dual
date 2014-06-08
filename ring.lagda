@@ -191,7 +191,8 @@ $\displaystyle
 \lstset{rangeprefix=/*!\ , rangesuffix=\ !*\/, includerangemarker=false}
 
 %% double-blind reviewing...
-\title{Polarized Cubical Types}
+\title{Higher-Order Functions via \\ 
+  Polarized Cubical Types and Homotopies}
 \authorinfo{}{}{}
 \maketitle
 
@@ -541,7 +542,6 @@ f \fatsemi g &=& \mathit{trace}~(\mathit{assoc}_1 \fatsemi
 \mathit{uncurry}~f &=& \assocrp \fatsemi f \fatsemi \assoclp 
 \end{array}\]
 
-
 \paragraph*{The ``phony'' multiplication that is not a functor.} 
 The definition for the product of 1d types used above is:
 \[\begin{array}{l}
@@ -675,7 +675,7 @@ The set of types is now indexed by a dimension $n$:
 At dimension 0, we have the usual first-order types $\tau$ representing
 ``points.'' At dimension $n+1$, a type is a pair of subspaces
 $\nodet{\cubt_1^n}{\cubt_2^n}$, each of a lower dimension $n$. The subspace
-$\cubt_1^n$ is the positive subspace along the $(n+1)$st dimension and the
+$\cubt_1^n$ is the positive subspace along the $(n+1)$-st dimension and the
 subspace $\cubt_2^n$, shaded in gray, is the negative subspace along that
 same dimension. Like in the case for the \textbf{Int} construction, a 1d
 cube, $\nodet{\tau_1}{\tau_2}$, intuitively corresponds to the difference
@@ -819,6 +819,7 @@ cubes are defined as follows:
 {}
 \end{center}
 
+\noindent 
 In other words, a combinator at dimension $n$ is defined by induction on $n$
 and consists of a family of $2^n$ 0d combinators. As an example, the
 combinator $\swapp$ at dimension 2 of type:
@@ -868,6 +869,12 @@ only works on 0dim unit
 do we need embedding of
 n-dim types into
 n+1-dim types ??
+I think we should. We need
+
+t1-t2 to be embedded in different ways to
+(t1-t2)-(0-0)
+and 
+(t1-0)-(t2-0)
 
 Finish implement op. sem. in Agda.
 Basically a version of pi indexed 
