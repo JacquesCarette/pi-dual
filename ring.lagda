@@ -746,6 +746,15 @@ By a simple induction on $m$.
 
 %%
 
+Moreover, a type at dimension $n$ naturally embeds in dimension $n+1$ with
+some spaces zeroed out. For example, the 0d type $\tau$ is ``the same as''
+the 1d type $\nodet{ tau}{0}$; the 1d type $\nodet{ tau_1}{\tau_2}$ is the
+same as both the following two 2d types:
+$\nodet{(\nodet{ tau_1}{\tau_2})}{(\nodet{0}{0})}$ and
+$\nodet{(\nodet{ tau_1}{0})}{(\nodet{\tau_2}{0})}$. More generally, \ldots
+
+%%
+
 \begin{table*}[t]
 \[\begin{array}{cc}
 \begin{array}{rrcll}
@@ -922,6 +931,13 @@ have something morphisms
 that relate an n-dimensional bool 
 and the sum of two n-dimensional
 ones etc.
+
+I think the only thing we need at this point
+is the embedding of n dim types
+into n+1 dim types
+
+The diagonal things and maps to 0 come later
+when we do hocolim
 \end{verbatim}
 
 Can we use the isos in table 2 to prove these two equal:
