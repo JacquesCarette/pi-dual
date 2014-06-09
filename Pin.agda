@@ -1,14 +1,17 @@
+{-# OPTIONS --without-K #-}
+
 module Pin where 
 
 -- N-dimensional version of Pi
 
+open import Data.Fin
 open import Data.Nat
 open import Data.Empty
 open import Data.Unit
 open import Data.Sum 
 open import Data.Product 
-open import Relation.Binary.PropositionalEquality 
-  using (_≡_; refl; cong; cong₂; subst; trans; sym; module ≡-Reasoning)
+open import Function renaming (_∘_ to _○_)
+open import Relation.Binary.PropositionalEquality using (module ≡-Reasoning)
 open ≡-Reasoning
 open import Algebra
 open import Data.Nat.Properties
@@ -16,9 +19,11 @@ open CommutativeSemiring commutativeSemiring using (+-commutativeMonoid)
 open CommutativeMonoid +-commutativeMonoid using () 
      renaming (comm to +-comm) 
 
+infix  4  _≡_   -- propositional equality
+infixr 8  _∘_   -- path composition
 infixr 10 _◎_
 infixr 30 _⟷_
-infixr 30 _⟺_
+-- infixr 30 _⟺_
 
 ------------------------------------------------------------------------------
 -- base types (or 0d types) are the usual finite types
@@ -127,11 +132,240 @@ mutual
   evalB (c₁ ⊗ c₂) (v₁ , v₂) = (evalB c₁ v₁ , evalB c₂ v₂)
 
 ------------------------------------------------------------------------------
+-- Paths; HoTT
+
+-- Our own version of refl that makes 'a' explicit
+
+data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
+  refl : (a : A) → (a ≡ a)
+
+pathInd : ∀ {ℓ ℓ'} → {A : Set ℓ} → 
+          (C : {x y : A} → (x ≡ y) → Set ℓ') → 
+          (c : (x : A) → C (refl x)) → 
+          ({x y : A} (p : x ≡ y) → C p)
+pathInd C c (refl x) = c x
+
+! : ∀ {ℓ} → {A : Set ℓ} {x y : A} → (x ≡ y) → (y ≡ x)
+! = pathInd (λ {x} {y} _ → y ≡ x) refl
+
+_∘_ : ∀ {ℓ} → {A : Set ℓ} → {x y z : A} → (x ≡ y) → (y ≡ z) → (x ≡ z)
+_∘_ {ℓ} {A} {x} {y} {z} p q = 
+  pathInd 
+    (λ {x} {y} p → ((z : A) → (q : y ≡ z) → (x ≡ z)))
+    (λ x z q → pathInd (λ {x} {z} _ → x ≡ z) refl {x} {z} q)
+    {x} {y} p z q
+
+-- p ≡ p ∘ refl
+
+unitTransR : {A : Set} {x y : A} → (p : x ≡ y) → (p ≡ p ∘ refl y) 
+unitTransR {A} {x} {y} p = 
+  pathInd
+    (λ {x} {y} p → p ≡ p ∘ (refl y)) 
+    (λ x → refl (refl x))
+    {x} {y} p 
+
+-- p ≡ refl ∘ p
+
+unitTransL : {A : Set} {x y : A} → (p : x ≡ y) → (p ≡ refl x ∘ p) 
+unitTransL {A} {x} {y} p = 
+  pathInd
+    (λ {x} {y} p → p ≡ (refl x) ∘ p)
+    (λ x → refl (refl x))
+    {x} {y} p 
+
+-- ! p ∘ p ≡ refl
+
+invTransL : {A : Set} {x y : A} → (p : x ≡ y) → (! p ∘ p ≡ refl y)
+invTransL {A} {x} {y} p = 
+  pathInd 
+    (λ {x} {y} p → ! p ∘ p ≡ refl y)
+    (λ x → refl (refl x))
+    {x} {y} p
+
+-- ! (! p) ≡ p
+
+invId : {A : Set} {x y : A} → (p : x ≡ y) → (! (! p) ≡ p)
+invId {A} {x} {y} p =
+  pathInd 
+    (λ {x} {y} p → ! (! p) ≡ p)
+    (λ x → refl (refl x))
+    {x} {y} p
+
+-- p ∘ (q ∘ r) ≡ (p ∘ q) ∘ r
+
+assocP : {A : Set} {x y z w : A} → (p : x ≡ y) → (q : y ≡ z) → (r : z ≡ w) →
+         (p ∘ (q ∘ r) ≡ (p ∘ q) ∘ r)
+assocP {A} {x} {y} {z} {w} p q r =
+  pathInd
+    (λ {x} {y} p → (z : A) → (w : A) → (q : y ≡ z) → (r : z ≡ w) → 
+      p ∘ (q ∘ r) ≡ (p ∘ q) ∘ r)
+    (λ x z w q r → 
+      pathInd
+        (λ {x} {z} q → (w : A) → (r : z ≡ w) → 
+          (refl x) ∘ (q ∘ r) ≡ ((refl x) ∘ q) ∘ r)
+        (λ x w r → 
+          pathInd
+            (λ {x} {w} r → 
+              (refl x) ∘ ((refl x) ∘ r) ≡ 
+              ((refl x) ∘ (refl x)) ∘ r)
+            (λ x → (refl (refl x)))
+            {x} {w} r)
+        {x} {z} q w r)
+    {x} {y} p z w q r
+
+-- ! (p ∘ q) ≡ ! q ∘ ! p
+
+invComp : {A : Set} {x y z : A} → (p : x ≡ y) → (q : y ≡ z) → 
+          ! (p ∘ q) ≡ ! q ∘ ! p
+invComp {A} {x} {y} {z} p q = 
+  pathInd
+    (λ {x} {y} p → (z : A) → (q : y ≡ z) → ! (p ∘ q) ≡ ! q ∘ ! p)
+    (λ x z q → 
+      pathInd 
+        (λ {x} {z} q → ! (refl x ∘ q) ≡ ! q ∘ ! (refl x))
+        (λ x → refl (refl x)) 
+        {x} {z} q)
+    {x} {y} p z q
+
+-- computation rule: ap f (refl x) = refl (f x)
+
+ap : ∀ {ℓ ℓ'} → {A : Set ℓ} {B : Set ℓ'} {x y : A} → 
+     (f : A → B) → (x ≡ y) → (f x ≡ f y)
+ap {ℓ} {ℓ'} {A} {B} {x} {y} f p = 
+  pathInd 
+    (λ {x} {y} p → f x ≡ f y) 
+    (λ x → refl (f x))
+    {x} {y} p
+
+-- f (p ∘ q) ≡ f p ∘ f q
+
+apfTrans : ∀ {ℓ} → {A B : Set ℓ} {x y z : A} → 
+  (f : A → B) → (p : x ≡ y) → (q : y ≡ z) → ap f (p ∘ q) ≡ (ap f p) ∘ (ap f q)
+apfTrans {ℓ} {A} {B} {x} {y} {z} f p q = 
+  pathInd {ℓ}
+    (λ {x} {y} p → (z : A) → (q : y ≡ z) → 
+      ap f (p ∘ q) ≡ (ap f p) ∘ (ap f q))
+    (λ x z q → 
+      pathInd {ℓ}
+        (λ {x} {z} q → 
+          ap f (refl x ∘ q) ≡ (ap f (refl x)) ∘ (ap f q))
+        (λ x → refl (refl (f x)))
+        {x} {z} q)
+    {x} {y} p z q
+
+-- f (! p) ≡ ! (f p)
+
+apfInv : ∀ {ℓ} → {A B : Set ℓ} {x y : A} → (f : A → B) → (p : x ≡ y) → 
+         ap f (! p) ≡ ! (ap f p) 
+apfInv {ℓ} {A} {B} {x} {y} f p =
+  pathInd {ℓ}
+    (λ {x} {y} p → ap f (! p) ≡ ! (ap f p))
+    (λ x → refl (ap f (refl x)))
+    {x} {y} p
+
+-- g (f p) ≡ (g ○ f) p
+
+apfComp : {A B C : Set} {x y : A} → (f : A → B) → (g : B → C) → (p : x ≡ y) → 
+          ap g (ap f p) ≡ ap (g ○ f) p 
+apfComp {A} {B} {C} {x} {y} f g p =
+  pathInd 
+    (λ {x} {y} p → ap g (ap f p) ≡ ap (g ○ f) p)
+    (λ x → refl (ap g (ap f (refl x))))
+    {x} {y} p
+
+-- id p ≡ p
+
+apfId : {A : Set} {x y : A} → (p : x ≡ y) → ap id p ≡ p
+apfId {A} {x} {y} p = 
+  pathInd 
+    (λ {x} {y} p → ap id p ≡ p)
+    (λ x → refl (refl x))
+    {x} {y} p
+
+-- Transport
+
+transport : ∀ {ℓ ℓ'} → {A : Set ℓ} {x y : A} → 
+  (P : A → Set ℓ') → (p : x ≡ y) → P x → P y
+transport {ℓ} {ℓ'} {A} {x} {y} P p = 
+  pathInd 
+    (λ {x} {y} p → (P x → P y))
+    (λ _ → id)
+    {x} {y} p
+
+------------------------------------------------------------------------------
+-- Dimensions
+
+module Dim where
+  private
+    data D* : Set where
+      0d* : D*
+      1d* : D*
+      plusd* : D* → D* → D*
+
+  D : Set
+  D = D*
+
+  0d : D
+  0d = 0d*
+
+  1d : D
+  1d = 1d*
+
+  plusd : D → D → D
+  plusd = plusd*
+
+  postulate 
+    united  : {d : D} → plusd 0d d ≡ d
+    unitid  : {d : D} → d ≡ plusd 0d d
+    swapd   : {d₁ d₂ : D} → plusd d₁ d₂ ≡ plusd d₂ d₁
+    assocld : {d₁ d₂ d₃ : D} → plusd d₁ (plusd d₂ d₃) ≡ plusd (plusd d₁ d₂) d₃
+    assocrd : {d₁ d₂ d₃ : D} → plusd (plusd d₁ d₂) d₃ ≡ plusd d₁ (plusd d₂ d₃)
+
+  recD : {C : Set} → 
+         (c0d : C) → (c1d : C) → 
+         (cplusd : C → C → C) → 
+         (cunited  : {c : C} → cplusd c0d c ≡ c) → 
+         (cunitid  : {c : C} → c ≡ cplusd c0d c) → 
+         (cswapd   : {c₁ c₂ : C} → cplusd c₁ c₂ ≡ cplusd c₂ c₁) → 
+         (cassocld : {c₁ c₂ c₃ : C} → 
+           cplusd c₁ (cplusd c₂ c₃) ≡ cplusd (cplusd c₁ c₂) c₃) → 
+         (cassocrd : {c₁ c₂ c₃ : C} → 
+           cplusd (cplusd c₁ c₂) c₃ ≡ cplusd c₁ (cplusd c₂ c₃)) → 
+         D → C
+  recD c0d c1d cplusd _ _ _ _ _ 0d* = c0d
+  recD c0d c1d cplusd _ _ _ _ _ 1d* = c1d
+  recD c0d c1d cplusd p₁ p₂ p₃ p₄ p₅ (plusd* d₁ d₂) =  
+    cplusd 
+      (recD c0d c1d cplusd p₁ p₂ p₃ p₄ p₅ d₁)
+      (recD c0d c1d cplusd p₁ p₂ p₃ p₄ p₅ d₁)
+
+open Dim public
+
+------------------------------------------------------------------------------
 -- N dimensional version
 
-data C : ℕ → Set where
-  ZD   : T → C 0
-  Node : {n : ℕ} → C n → C n → C (suc n)
+data C : D → Set where
+  ZD   : T → C 0d
+  Node : {d : D} → C d → C d → C (plusd 1d d)
+
+{--
+zeroN : (d : D) → C d
+zeroN d = 
+  recD {C d}
+    (ZD Zero) -- what dim 0 maps to
+    ? -- what dim 1 maps to
+    (λ c₁ c₂ → -- type at d1 and type at d2; construct type at d1+d2
+      ?)
+    -- proof that the type construct at 0+d is the same as the one
+    -- constructed at d
+    ?
+    -- etc.
+    ?
+    ?
+    ?
+    ?          
+
+--    
 
 liftN : (n : ℕ) → (t : T) → C n
 liftN 0 t = ZD t
@@ -418,7 +652,7 @@ Can't do toffoliN until we get all the products done
 
 
 
-
+--}
 
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
