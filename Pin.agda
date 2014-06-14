@@ -167,19 +167,24 @@ data _⟺_ : {n : ℕ} → C n → C n → Set where
 
 seqF : {n : ℕ} {c₁ c₂ c₃ : C n} → 
        (c₁ ⟺ c₂) → (c₂ ⟺ c₃) → (c₁ ⟺ c₃) 
-seqF (baseC f) (baseC g) = baseC (f ◎ g)
-seqF (nodeC f) (nodeC g) = nodeC {!!} 
+seqF {0} (baseC f) (baseC g) = baseC (f ◎ g)
+seqF {suc n} (nodeC f) (nodeC g) = nodeC (seqF {!!} {!!}) 
 -- nodeC (seqF f g) (seqF f' g')
 
 plusF : {n : ℕ} {c₁ c₂ c₃ c₄ : C n} → 
         (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (plus c₁ c₃ ⟺ plus c₂ c₄)
 plusF (baseC f) (baseC g) = baseC (f ⊕ g)
-plusF (nodeC f) (nodeC g) = nodeC {!!} 
+plusF (nodeC f) (nodeC g) = nodeC (plusF {!!} {!!}) 
 -- nodeC (plusF f₁ g₁) (plusF f₂ g₂) 
+
+swapN₊ : { n : ℕ } { c₁ c₂ : C n } → plus c₁ c₂ ⟺ plus c₂ c₁
+swapN₊ {0} {ZD t₁} {ZD t₂} = baseC (swap₊ {t₁} {t₂})
+swapN₊ {suc n} {Node c₁ c₂} {Node c₁' c₂'} = nodeC  {!swapN₊ !} 
+--  nodeC ((swapN₊ {n} {c₁} {c₁'})) ((swapN₊ {n} {c₂} {c₂'})) 
 
 idN⟷ : {n : ℕ} {c : C n} → c ⟺ c
 idN⟷ {0} {ZD t} = baseC (id⟷ {t})
-idN⟷ {suc n} {Node c₁ c₂} = nodeC {!!} 
+idN⟷ {suc n} {Node c₁ c₂} = nodeC swapN₊ 
 -- nodeC (idN⟷ {n} {c₁}) (idN⟷ {n} {c₂})
 
 assocrN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
@@ -193,11 +198,6 @@ assoclN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } →
 assoclN₊ {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (assocl₊ {t₁} {t₂} {t₃})
 assoclN₊ {suc n} {Node c₁ c₂} {Node c₃ c₄} {Node c₅ c₆} = nodeC {!!} 
 --  nodeC (assoclN₊ {n} {c₁} {c₃} {c₅}) (assoclN₊ {n} {c₂} {c₄} {c₆})
-
-swapN₊ : { n : ℕ } { c₁ c₂ : C n } → plus c₁ c₂ ⟺ plus c₂ c₁
-swapN₊ {0} {ZD t₁} {ZD t₂} = baseC (swap₊ {t₁} {t₂})
-swapN₊ {suc n} {Node c₁ c₂} {Node c₁' c₂'} = nodeC  {!!} 
---  nodeC ((swapN₊ {n} {c₁} {c₁'})) ((swapN₊ {n} {c₂} {c₂'})) 
 
 --
 
@@ -301,7 +301,8 @@ timesF (baseC f) (nodeC g) =
   seqF (timesF idN⟷ g) (
   seqF (seqF distN (plusF swapN⋆ swapN⋆)) 
   ((plusF (timesF (baseC (sym⟷ f)) idN⟷) idN⟷))))))
-timesF (nodeC f) g = nodeC {!!}
+timesF (nodeC f) (baseC g) = {!!}
+timesF (nodeC f) (nodeC g) = nodeC {!!}
 -- nodeC (timesF f₁ g) (timesF f₂ g) 
 
 -- f : t1 <-> t2
