@@ -1,10 +1,8 @@
-{-# OPTIONS --without-K #-}
-
 module Pin where 
 
 -- N-dimensional version of Pi
 
-open import Data.Fin
+-- open import Data.Fin
 open import Data.Nat
 open import Data.Empty
 open import Data.Unit
@@ -19,8 +17,8 @@ open CommutativeSemiring commutativeSemiring using (+-commutativeMonoid)
 open CommutativeMonoid +-commutativeMonoid using () 
      renaming (comm to +-comm) 
 
-infix  4  _≡_   -- propositional equality
-infixr 8  _∘_   -- path composition
+--infix  4  _≡_   -- propositional equality
+--infixr 8  _∘_   -- path composition
 infixr 10 _◎_
 infixr 30 _⟷_
 -- infixr 30 _⟺_
@@ -132,240 +130,11 @@ mutual
   evalB (c₁ ⊗ c₂) (v₁ , v₂) = (evalB c₁ v₁ , evalB c₂ v₂)
 
 ------------------------------------------------------------------------------
--- Paths; HoTT
-
--- Our own version of refl that makes 'a' explicit
-
-data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
-  refl : (a : A) → (a ≡ a)
-
-pathInd : ∀ {ℓ ℓ'} → {A : Set ℓ} → 
-          (C : {x y : A} → (x ≡ y) → Set ℓ') → 
-          (c : (x : A) → C (refl x)) → 
-          ({x y : A} (p : x ≡ y) → C p)
-pathInd C c (refl x) = c x
-
-! : ∀ {ℓ} → {A : Set ℓ} {x y : A} → (x ≡ y) → (y ≡ x)
-! = pathInd (λ {x} {y} _ → y ≡ x) refl
-
-_∘_ : ∀ {ℓ} → {A : Set ℓ} → {x y z : A} → (x ≡ y) → (y ≡ z) → (x ≡ z)
-_∘_ {ℓ} {A} {x} {y} {z} p q = 
-  pathInd 
-    (λ {x} {y} p → ((z : A) → (q : y ≡ z) → (x ≡ z)))
-    (λ x z q → pathInd (λ {x} {z} _ → x ≡ z) refl {x} {z} q)
-    {x} {y} p z q
-
--- p ≡ p ∘ refl
-
-unitTransR : {A : Set} {x y : A} → (p : x ≡ y) → (p ≡ p ∘ refl y) 
-unitTransR {A} {x} {y} p = 
-  pathInd
-    (λ {x} {y} p → p ≡ p ∘ (refl y)) 
-    (λ x → refl (refl x))
-    {x} {y} p 
-
--- p ≡ refl ∘ p
-
-unitTransL : {A : Set} {x y : A} → (p : x ≡ y) → (p ≡ refl x ∘ p) 
-unitTransL {A} {x} {y} p = 
-  pathInd
-    (λ {x} {y} p → p ≡ (refl x) ∘ p)
-    (λ x → refl (refl x))
-    {x} {y} p 
-
--- ! p ∘ p ≡ refl
-
-invTransL : {A : Set} {x y : A} → (p : x ≡ y) → (! p ∘ p ≡ refl y)
-invTransL {A} {x} {y} p = 
-  pathInd 
-    (λ {x} {y} p → ! p ∘ p ≡ refl y)
-    (λ x → refl (refl x))
-    {x} {y} p
-
--- ! (! p) ≡ p
-
-invId : {A : Set} {x y : A} → (p : x ≡ y) → (! (! p) ≡ p)
-invId {A} {x} {y} p =
-  pathInd 
-    (λ {x} {y} p → ! (! p) ≡ p)
-    (λ x → refl (refl x))
-    {x} {y} p
-
--- p ∘ (q ∘ r) ≡ (p ∘ q) ∘ r
-
-assocP : {A : Set} {x y z w : A} → (p : x ≡ y) → (q : y ≡ z) → (r : z ≡ w) →
-         (p ∘ (q ∘ r) ≡ (p ∘ q) ∘ r)
-assocP {A} {x} {y} {z} {w} p q r =
-  pathInd
-    (λ {x} {y} p → (z : A) → (w : A) → (q : y ≡ z) → (r : z ≡ w) → 
-      p ∘ (q ∘ r) ≡ (p ∘ q) ∘ r)
-    (λ x z w q r → 
-      pathInd
-        (λ {x} {z} q → (w : A) → (r : z ≡ w) → 
-          (refl x) ∘ (q ∘ r) ≡ ((refl x) ∘ q) ∘ r)
-        (λ x w r → 
-          pathInd
-            (λ {x} {w} r → 
-              (refl x) ∘ ((refl x) ∘ r) ≡ 
-              ((refl x) ∘ (refl x)) ∘ r)
-            (λ x → (refl (refl x)))
-            {x} {w} r)
-        {x} {z} q w r)
-    {x} {y} p z w q r
-
--- ! (p ∘ q) ≡ ! q ∘ ! p
-
-invComp : {A : Set} {x y z : A} → (p : x ≡ y) → (q : y ≡ z) → 
-          ! (p ∘ q) ≡ ! q ∘ ! p
-invComp {A} {x} {y} {z} p q = 
-  pathInd
-    (λ {x} {y} p → (z : A) → (q : y ≡ z) → ! (p ∘ q) ≡ ! q ∘ ! p)
-    (λ x z q → 
-      pathInd 
-        (λ {x} {z} q → ! (refl x ∘ q) ≡ ! q ∘ ! (refl x))
-        (λ x → refl (refl x)) 
-        {x} {z} q)
-    {x} {y} p z q
-
--- computation rule: ap f (refl x) = refl (f x)
-
-ap : ∀ {ℓ ℓ'} → {A : Set ℓ} {B : Set ℓ'} {x y : A} → 
-     (f : A → B) → (x ≡ y) → (f x ≡ f y)
-ap {ℓ} {ℓ'} {A} {B} {x} {y} f p = 
-  pathInd 
-    (λ {x} {y} p → f x ≡ f y) 
-    (λ x → refl (f x))
-    {x} {y} p
-
--- f (p ∘ q) ≡ f p ∘ f q
-
-apfTrans : ∀ {ℓ} → {A B : Set ℓ} {x y z : A} → 
-  (f : A → B) → (p : x ≡ y) → (q : y ≡ z) → ap f (p ∘ q) ≡ (ap f p) ∘ (ap f q)
-apfTrans {ℓ} {A} {B} {x} {y} {z} f p q = 
-  pathInd {ℓ}
-    (λ {x} {y} p → (z : A) → (q : y ≡ z) → 
-      ap f (p ∘ q) ≡ (ap f p) ∘ (ap f q))
-    (λ x z q → 
-      pathInd {ℓ}
-        (λ {x} {z} q → 
-          ap f (refl x ∘ q) ≡ (ap f (refl x)) ∘ (ap f q))
-        (λ x → refl (refl (f x)))
-        {x} {z} q)
-    {x} {y} p z q
-
--- f (! p) ≡ ! (f p)
-
-apfInv : ∀ {ℓ} → {A B : Set ℓ} {x y : A} → (f : A → B) → (p : x ≡ y) → 
-         ap f (! p) ≡ ! (ap f p) 
-apfInv {ℓ} {A} {B} {x} {y} f p =
-  pathInd {ℓ}
-    (λ {x} {y} p → ap f (! p) ≡ ! (ap f p))
-    (λ x → refl (ap f (refl x)))
-    {x} {y} p
-
--- g (f p) ≡ (g ○ f) p
-
-apfComp : {A B C : Set} {x y : A} → (f : A → B) → (g : B → C) → (p : x ≡ y) → 
-          ap g (ap f p) ≡ ap (g ○ f) p 
-apfComp {A} {B} {C} {x} {y} f g p =
-  pathInd 
-    (λ {x} {y} p → ap g (ap f p) ≡ ap (g ○ f) p)
-    (λ x → refl (ap g (ap f (refl x))))
-    {x} {y} p
-
--- id p ≡ p
-
-apfId : {A : Set} {x y : A} → (p : x ≡ y) → ap id p ≡ p
-apfId {A} {x} {y} p = 
-  pathInd 
-    (λ {x} {y} p → ap id p ≡ p)
-    (λ x → refl (refl x))
-    {x} {y} p
-
--- Transport
-
-transport : ∀ {ℓ ℓ'} → {A : Set ℓ} {x y : A} → 
-  (P : A → Set ℓ') → (p : x ≡ y) → P x → P y
-transport {ℓ} {ℓ'} {A} {x} {y} P p = 
-  pathInd 
-    (λ {x} {y} p → (P x → P y))
-    (λ _ → id)
-    {x} {y} p
-
-------------------------------------------------------------------------------
--- Dimensions
-
-module Dim where
-  private
-    data D* : Set where
-      0d* : D*
-      1d* : D*
-      plusd* : D* → D* → D*
-
-  D : Set
-  D = D*
-
-  0d : D
-  0d = 0d*
-
-  1d : D
-  1d = 1d*
-
-  plusd : D → D → D
-  plusd = plusd*
-
-  postulate 
-    united  : {d : D} → plusd 0d d ≡ d
-    unitid  : {d : D} → d ≡ plusd 0d d
-    swapd   : {d₁ d₂ : D} → plusd d₁ d₂ ≡ plusd d₂ d₁
-    assocld : {d₁ d₂ d₃ : D} → plusd d₁ (plusd d₂ d₃) ≡ plusd (plusd d₁ d₂) d₃
-    assocrd : {d₁ d₂ d₃ : D} → plusd (plusd d₁ d₂) d₃ ≡ plusd d₁ (plusd d₂ d₃)
-
-  recD : {C : Set} → 
-         (c0d : C) → (c1d : C) → 
-         (cplusd : C → C → C) → 
-         (cunited  : {c : C} → cplusd c0d c ≡ c) → 
-         (cunitid  : {c : C} → c ≡ cplusd c0d c) → 
-         (cswapd   : {c₁ c₂ : C} → cplusd c₁ c₂ ≡ cplusd c₂ c₁) → 
-         (cassocld : {c₁ c₂ c₃ : C} → 
-           cplusd c₁ (cplusd c₂ c₃) ≡ cplusd (cplusd c₁ c₂) c₃) → 
-         (cassocrd : {c₁ c₂ c₃ : C} → 
-           cplusd (cplusd c₁ c₂) c₃ ≡ cplusd c₁ (cplusd c₂ c₃)) → 
-         D → C
-  recD c0d c1d cplusd _ _ _ _ _ 0d* = c0d
-  recD c0d c1d cplusd _ _ _ _ _ 1d* = c1d
-  recD c0d c1d cplusd p₁ p₂ p₃ p₄ p₅ (plusd* d₁ d₂) =  
-    cplusd 
-      (recD c0d c1d cplusd p₁ p₂ p₃ p₄ p₅ d₁)
-      (recD c0d c1d cplusd p₁ p₂ p₃ p₄ p₅ d₁)
-
-open Dim public
-
-------------------------------------------------------------------------------
 -- N dimensional version
 
-data C : D → Set where
-  ZD   : T → C 0d
-  Node : {d : D} → C d → C d → C (plusd 1d d)
-
-{--
-zeroN : (d : D) → C d
-zeroN d = 
-  recD {C d}
-    (ZD Zero) -- what dim 0 maps to
-    ? -- what dim 1 maps to
-    (λ c₁ c₂ → -- type at d1 and type at d2; construct type at d1+d2
-      ?)
-    -- proof that the type construct at 0+d is the same as the one
-    -- constructed at d
-    ?
-    -- etc.
-    ?
-    ?
-    ?
-    ?          
-
---    
+data C : ℕ → Set where
+  ZD   : T → C 0
+  Node : {n : ℕ} → C n → C n → C (suc n) 
 
 liftN : (n : ℕ) → (t : T) → C n
 liftN 0 t = ZD t
@@ -389,49 +158,70 @@ times (Node c1 c2) c = Node (times c1 c) (times c2 c)
 -- Combinators on nd types
   
 data _⟺_ : {n : ℕ} → C n → C n → Set where
-  baseC : { t₁ t₂ : T } → (t₁ ⟷ t₂) → ((ZD t₁) ⟺ (ZD t₂))
+  baseC : {t₁ t₂ : T} → (t₁ ⟷ t₂) → ((ZD t₁) ⟺ (ZD t₂))
   nodeC : {n : ℕ} {c₁ : C n} {c₂ : C n} {c₃ : C n} {c₄ : C n} → 
-          (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → 
+          (plus c₁ c₄ ⟺ plus c₃ c₂) → 
           ((Node c₁ c₃) ⟺ (Node c₂ c₄))
-  promoteC : {n : ℕ} {c : C n} → (c ⟺ c) → 
-             (Node c c ⟺ zeroN (suc n))
-  demoteC : {n : ℕ} {c : C n} → (c ⟺ c) → 
-             (zeroN (suc n) ⟺ Node c c)
              
 -- Def. 2.1 lists the conditions for J-graded bipermutative category
 
-uniteN₊ : {n : ℕ} {c : C n} → (plus (zeroN n) c) ⟺ c
-uniteN₊ {0} {ZD t} = baseC (unite₊ {t})
-uniteN₊ {suc n} {Node c₁ c₂} = nodeC (uniteN₊ {n} {c₁}) (uniteN₊ {n} {c₂}) 
+seqF : {n : ℕ} {c₁ c₂ c₃ : C n} → 
+       (c₁ ⟺ c₂) → (c₂ ⟺ c₃) → (c₁ ⟺ c₃) 
+seqF (baseC f) (baseC g) = baseC (f ◎ g)
+seqF (nodeC f) (nodeC g) = nodeC {!!} 
+-- nodeC (seqF f g) (seqF f' g')
 
-unitiN₊ : {n : ℕ} {c : C n} → c ⟺ (plus (zeroN n) c)
-unitiN₊ {0} {ZD t} = baseC (uniti₊ {t})
-unitiN₊ {suc n} {Node c₁ c₂} = nodeC (unitiN₊ {n} {c₁}) (unitiN₊ {n} {c₂})
+plusF : {n : ℕ} {c₁ c₂ c₃ c₄ : C n} → 
+        (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (plus c₁ c₃ ⟺ plus c₂ c₄)
+plusF (baseC f) (baseC g) = baseC (f ⊕ g)
+plusF (nodeC f) (nodeC g) = nodeC {!!} 
+-- nodeC (plusF f₁ g₁) (plusF f₂ g₂) 
 
-swapN₊ : { n : ℕ } { c₁ c₂ : C n } → plus c₁ c₂ ⟺ plus c₂ c₁
-swapN₊ {0} {ZD t₁} {ZD t₂} = baseC (swap₊ {t₁} {t₂})
-swapN₊ {suc n} {Node c₁ c₂} {Node c₁' c₂'} = 
-  nodeC ((swapN₊ {n} {c₁} {c₁'})) ((swapN₊ {n} {c₂} {c₂'})) 
-
-assoclN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
-           plus c₁ (plus c₂ c₃) ⟺ plus (plus c₁ c₂) c₃
-assoclN₊ {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (assocl₊ {t₁} {t₂} {t₃})
-assoclN₊ {suc n} {Node c₁ c₂} {Node c₃ c₄} {Node c₅ c₆} = 
-  nodeC (assoclN₊ {n} {c₁} {c₃} {c₅}) (assoclN₊ {n} {c₂} {c₄} {c₆})
+idN⟷ : {n : ℕ} {c : C n} → c ⟺ c
+idN⟷ {0} {ZD t} = baseC (id⟷ {t})
+idN⟷ {suc n} {Node c₁ c₂} = nodeC {!!} 
+-- nodeC (idN⟷ {n} {c₁}) (idN⟷ {n} {c₂})
 
 assocrN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
            plus (plus c₁ c₂) c₃ ⟺ plus c₁ (plus c₂ c₃)
 assocrN₊ {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (assocr₊ {t₁} {t₂} {t₃})
-assocrN₊ {suc n} {Node c₁ c₂} {Node c₃ c₄} {Node c₅ c₆} = 
-  nodeC (assocrN₊ {n} {c₁} {c₃} {c₅}) (assocrN₊ {n} {c₂} {c₄} {c₆})
+assocrN₊ {suc n} {Node c₁ c₂} {Node c₃ c₄} {Node c₅ c₆} = nodeC {!!} 
+--  nodeC (assocrN₊ {n} {c₁} {c₃} {c₅}) (assocrN₊ {n} {c₂} {c₄} {c₆})
+
+assoclN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
+           plus c₁ (plus c₂ c₃) ⟺ plus (plus c₁ c₂) c₃
+assoclN₊ {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (assocl₊ {t₁} {t₂} {t₃})
+assoclN₊ {suc n} {Node c₁ c₂} {Node c₃ c₄} {Node c₅ c₆} = nodeC {!!} 
+--  nodeC (assoclN₊ {n} {c₁} {c₃} {c₅}) (assoclN₊ {n} {c₂} {c₄} {c₆})
+
+swapN₊ : { n : ℕ } { c₁ c₂ : C n } → plus c₁ c₂ ⟺ plus c₂ c₁
+swapN₊ {0} {ZD t₁} {ZD t₂} = baseC (swap₊ {t₁} {t₂})
+swapN₊ {suc n} {Node c₁ c₂} {Node c₁' c₂'} = nodeC  {!!} 
+--  nodeC ((swapN₊ {n} {c₁} {c₁'})) ((swapN₊ {n} {c₂} {c₂'})) 
+
+--
+
+uniteN₊ : {n : ℕ} {c : C n} → (plus (zeroN n) c) ⟺ c
+uniteN₊ {0} {ZD t} = baseC (unite₊ {t})
+uniteN₊ {suc n} {Node c₁ c₂} = -- same code from Neg.hs
+  -- so we can copy all the code from Neg.hs
+  -- and if the times tensor works we are done!
+  nodeC (seqF assocrN₊ (seqF (plusF idN⟷ swapN₊) assoclN₊))
+
+unitiN₊ : {n : ℕ} {c : C n} → c ⟺ (plus (zeroN n) c)
+unitiN₊ {0} {ZD t} = baseC (uniti₊ {t})
+unitiN₊ {suc n} {Node c₁ c₂} = nodeC {!!}
+-- nodeC (unitiN₊ {n} {c₁}) (unitiN₊ {n} {c₂})
 
 uniteN⋆ : {n : ℕ} {c : C n} → times (ZD One) c ⟺ c
 uniteN⋆ {0} {ZD t} = baseC (unite⋆ {t})
-uniteN⋆ {suc n} {Node c₁ c₂} = nodeC (uniteN⋆ {n} {c₁}) (uniteN⋆ {n} {c₂})
+uniteN⋆ {suc n} {Node c₁ c₂} = nodeC {!!} 
+-- nodeC (uniteN⋆ {n} {c₁}) (uniteN⋆ {n} {c₂})
 
 unitiN⋆ : {n : ℕ} {c : C n} → c ⟺ times (ZD One) c
 unitiN⋆ {0} {ZD t} = baseC (uniti⋆ {t})
-unitiN⋆ {suc n} {Node c₁ c₂} = nodeC (unitiN⋆ {n} {c₁}) (unitiN⋆ {n} {c₂})
+unitiN⋆ {suc n} {Node c₁ c₂} = nodeC {!!} 
+-- nodeC (unitiN⋆ {n} {c₁}) (unitiN⋆ {n} {c₂})
 
 -- Ugly hack or feature ???
 
@@ -460,94 +250,92 @@ assocrN⋆ = {!!}
 
 distzN : {m n : ℕ} {c : C n} → times (zeroN m) c ⟺ zeroN (m + n)
 distzN {0} {0} {ZD t} = baseC (distz {t})
-distzN {0} {suc n} {Node c₁ c₂} = 
-  nodeC (distzN {0} {n} {c₁}) (distzN {0} {n} {c₂})
-distzN {suc m} {n} {c} = 
-  nodeC (distzN {m} {n} {c}) (distzN {m} {n} {c})
+distzN {0} {suc n} {Node c₁ c₂} = nodeC {!!} 
+--  nodeC (distzN {0} {n} {c₁}) (distzN {0} {n} {c₂})
+distzN {suc m} {n} {c} = nodeC {!!} 
+--  nodeC (distzN {m} {n} {c}) (distzN {m} {n} {c})
 
 factorzN : { m n : ℕ } { c : C n } → zeroN (m + n) ⟺ times (zeroN m) c
 factorzN {0} {0} {ZD t} = baseC (factorz {t})
-factorzN {0} {suc n} {Node c₁ c₂} = 
-  nodeC (factorzN {0} {n} {c₁}) (factorzN {0} {n} {c₂})
-factorzN {suc m} {n} {c} = 
-  nodeC (factorzN {m} {n} {c}) (factorzN {m} {n} {c})
+factorzN {0} {suc n} {Node c₁ c₂} = nodeC {!!} 
+--  nodeC (factorzN {0} {n} {c₁}) (factorzN {0} {n} {c₂})
+factorzN {suc m} {n} {c} = nodeC {!!} 
+--  nodeC (factorzN {m} {n} {c}) (factorzN {m} {n} {c})
 
 distN : {m n : ℕ} {c₁ c₂ : C m} {c₃ : C n} → 
         times (plus c₁ c₂) c₃ ⟺ plus (times c₁ c₃) (times c₂ c₃) 
 distN {0} {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (dist {t₁} {t₂} {t₃})
-distN {0} {suc n} {ZD t₁} {ZD t₂} {Node c₁ c₂} = 
-  nodeC 
-    (distN {0} {n} {ZD t₁} {ZD t₂} {c₁}) 
-    (distN {0} {n} {ZD t₁} {ZD t₂} {c₂})
-distN {suc m} {n} {Node c₁ c₂} {Node c₃ c₄} {c} =
-  nodeC 
-    ((distN {m} {n} {c₁} {c₃} {c})) 
-    ((distN {m} {n} {c₂} {c₄} {c})) 
+distN {0} {suc n} {ZD t₁} {ZD t₂} {Node c₁ c₂} = nodeC {!!} 
+--  nodeC 
+--    (distN {0} {n} {ZD t₁} {ZD t₂} {c₁}) 
+--    (distN {0} {n} {ZD t₁} {ZD t₂} {c₂})
+distN {suc m} {n} {Node c₁ c₂} {Node c₃ c₄} {c} = nodeC {!!} 
+--  nodeC 
+--    ((distN {m} {n} {c₁} {c₃} {c})) 
+--    ((distN {m} {n} {c₂} {c₄} {c})) 
 
 factorN : {m n : ℕ} {c₁ c₂ : C m} {c₃ : C n} → 
           plus (times c₁ c₃) (times c₂ c₃) ⟺ times (plus c₁ c₂) c₃
 factorN {0} {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (factor {t₁} {t₂} {t₃})
-factorN {0} {suc n} {ZD t₁} {ZD t₂} {Node c₁ c₂} = 
-  nodeC 
-    (factorN {0} {n} {ZD t₁} {ZD t₂} {c₁}) 
-    (factorN {0} {n} {ZD t₁} {ZD t₂} {c₂})
-factorN {suc m} {n} {Node c₁ c₂} {Node c₃ c₄} {c} =
-  nodeC 
-    ((factorN {m} {n} {c₁} {c₃} {c})) 
-    ((factorN {m} {n} {c₂} {c₄} {c})) 
-
-idN⟷ : {n : ℕ} {c : C n} → c ⟺ c
-idN⟷ {0} {ZD t} = baseC (id⟷ {t})
-idN⟷ {suc n} {Node c₁ c₂} = nodeC (idN⟷ {n} {c₁}) (idN⟷ {n} {c₂})
+factorN {0} {suc n} {ZD t₁} {ZD t₂} {Node c₁ c₂} = nodeC {!!}
+--  nodeC 
+--    (factorN {0} {n} {ZD t₁} {ZD t₂} {c₁}) 
+--    (factorN {0} {n} {ZD t₁} {ZD t₂} {c₂})
+factorN {suc m} {n} {Node c₁ c₂} {Node c₃ c₄} {c} = nodeC {!!}
+--  nodeC 
+--    ((factorN {m} {n} {c₁} {c₃} {c})) 
+--    ((factorN {m} {n} {c₂} {c₄} {c})) 
 
 symN⟷ : {n : ℕ} {c₁ c₂ : C n} → (c₁ ⟺ c₂) → (c₂ ⟺ c₁)
 symN⟷ (baseC f) = baseC (sym⟷ f)
-symN⟷ (nodeC f g) = nodeC (symN⟷ f) (symN⟷ g)
-symN⟷ (promoteC f) = {!!} 
-symN⟷ (demoteC f) = {!!} 
-
-seqF : {n : ℕ} {c₁ c₂ c₃ : C n} → 
-       (c₁ ⟺ c₂) → (c₂ ⟺ c₃) → (c₁ ⟺ c₃) 
-seqF (baseC f) (baseC g) = baseC (f ◎ g)
-seqF (nodeC f f') (nodeC g g') = nodeC (seqF f g) (seqF f' g')
-seqF (nodeC f f') (promoteC c) = {!!}
-seqF (nodeC f f') (demoteC c) = {!!}
-seqF (promoteC c) (nodeC f f') = {!!}
-seqF (promoteC c) (promoteC c') = {!!}
-seqF (promoteC c) (demoteC c') = {!!}
-seqF (demoteC c) (nodeC f f') = {!!}
-seqF (demoteC c) (promoteC c') = {!!}
-seqF (demoteC c) (demoteC c') = {!!} 
-
-plusF : {n : ℕ} {c₁ c₂ c₃ c₄ : C n} → 
-        (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (plus c₁ c₃ ⟺ plus c₂ c₄)
-plusF (baseC f) (baseC g) = baseC (f ⊕ g)
-plusF (nodeC f₁ f₂) (nodeC g₁ g₂) = nodeC (plusF f₁ g₁) (plusF f₂ g₂) 
-plusF (nodeC f₁ f₂) (promoteC c) = {!!}
-plusF (nodeC f₁ f₂) (demoteC c) = {!!}
-plusF (promoteC c) (nodeC f₁ f₂) = {!!}
-plusF (promoteC c) (promoteC c') = {!!}
-plusF (promoteC c) (demoteC c') = {!!}
-plusF (demoteC c) (nodeC f₁ f₂) = {!!}
-plusF (demoteC c) (promoteC c') = {!!}
-plusF (demoteC c) (demoteC c') = {!!} 
+symN⟷ (nodeC f) = nodeC {!!} 
+-- nodeC (symN⟷ f) (symN⟷ g)
 
 timesF : {m n : ℕ} {c₁ c₂ : C m} {c₃ c₄ : C n} → 
          (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (times c₁ c₃ ⟺ times c₂ c₄)
 timesF (baseC f) (baseC g) = baseC (f ⊗ g)
-timesF (baseC f) (nodeC g₁ g₂) = 
-  nodeC (timesF (baseC f) g₁) (timesF (baseC f) g₂) 
-timesF (nodeC f₁ f₂) g = nodeC (timesF f₁ g) (timesF f₂ g) 
-timesF (baseC f) (promoteC c) = {!!}
-timesF (baseC f) (demoteC c) = {!!}
-timesF (promoteC c) (baseC f) = {!!}
-timesF (promoteC c) (nodeC f₁ f₂) = {!!}
-timesF (promoteC c) (promoteC c') = {!!}
-timesF (promoteC c) (demoteC c') = {!!}
-timesF (demoteC c) (baseC f) = {!!}
-timesF (demoteC c) (nodeC f₁ f₂) = {!!}
-timesF (demoteC c) (promoteC c') = {!!}
-timesF (demoteC c) (demoteC c') = {!!} 
+timesF (baseC f) (nodeC g) = 
+  nodeC (
+  seqF (plusF (timesF (baseC f) idN⟷) idN⟷) (
+  seqF (seqF (plusF swapN⋆ swapN⋆) factorN) (
+  seqF (timesF idN⟷ g) (
+  seqF (seqF distN (plusF swapN⋆ swapN⋆)) 
+  ((plusF (timesF (baseC (sym⟷ f)) idN⟷) idN⟷))))))
+timesF (nodeC f) g = nodeC {!!}
+-- nodeC (timesF f₁ g) (timesF f₂ g) 
+
+-- f : t1 <-> t2
+-- g : c1 + c4 <=> c3 + c2
+--?24 : plus (times (ZD t₁) c₁) (times (ZD t₂) c₄) ⟺
+--      plus (times (ZD t₁) c₃) (times (ZD t₂) c₂)
+{--
+plus (times (ZD t₁) c₁) (times (ZD t₂) c₄) ⟺
+-> s1
+plus (times (ZD t2) c₁) (times (ZD t₂) c₄) ⟺
+-> s2
+times (ZD t2) (plus c1 c4)
+-> s3
+times (ZD t2) (plus c3 c2)
+-> s4
+plus (times (ZD t2) c3) (times (ZD t2) c2)
+-> s5
+plus (times (ZD t1) c3) (times (ZD t2) c2)
+--}
+
+
+--?25 : plus (times .c₁ .c₃) (times .c₆ .c₄) ⟺
+--      plus (times .c₅ .c₃) (times .c₂ .c₄)
+
+{--
+data _⟺_ : {n : ℕ} → C n → C n → Set where
+  baseC : {t₁ t₂ : T} → (t₁ ⟷ t₂) → ((ZD t₁) ⟺ (ZD t₂))
+  nodeC : {n : ℕ} {c₁ : C n} {c₂ : C n} {c₃ : C n} {c₄ : C n} → 
+          (plus c₁ c₄ ⟺ plus c₃ c₂) → 
+          ((Node c₁ c₃) ⟺ (Node c₂ c₄))
+
+--}
+
+-- eta/epsilon/trace
 
 ------------------------------------------------------------------------------
 -- Semantics
@@ -558,10 +346,8 @@ timesF (demoteC c) (demoteC c') = {!!}
 
 evalC : {n : ℕ} {c₁ c₂ : C n} → (c₁ ⟺ c₂) → ⟦ c₁ ⟧C → ⟦ c₂ ⟧C
 evalC (baseC iso) v = eval iso v
-evalC (nodeC isoL isoR) (inj₁ v) = inj₁ (evalC isoL v) 
-evalC (nodeC isoL isoR) (inj₂ v) = inj₂ (evalC isoR v) 
-evalC (promoteC c) v = {!!}
-evalC (demoteC c) v = {!!} 
+evalC (nodeC iso) (inj₁ v) = {!!} -- inj₁ (evalC iso v) 
+evalC (nodeC iso) (inj₂ v) = {!!} -- inj₂ (evalC iso v) 
 
 ------------------------------------------------------------------------------
 -- Example
@@ -616,6 +402,7 @@ controlledN f = condN f idN⟷
 
 BoolN : (n : ℕ) → C n
 BoolN n = plus (oneN n) (oneN n)
+
 {--
 Note: liftN 3 Bool is not quite the same as plus (oneN 3) (oneN 3)
 
@@ -643,16 +430,7 @@ Node
 cnotN : {n : ℕ} → ((times (ZD Bool) (BoolN n)) ⟺ (times (ZD Bool) (BoolN n)))
 cnotN {n} = controlledN {n} (swapN₊ {n} {oneN n} {oneN n})
 
-{--
-
-Can't do toffoliN until we get all the products done
-
---}
-
-
-
-
---}
+-- Can't do toffoliN until we get all the products done
 
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
@@ -834,4 +612,3 @@ evalC _ _ = {!!}
 
 -- now add etas and epsilons...
 --}
-
