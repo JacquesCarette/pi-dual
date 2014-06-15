@@ -21,6 +21,7 @@ open CommutativeMonoid +-commutativeMonoid using ()
 --infixr 8  _∘_   -- path composition
 infixr 10 _◎_
 infixr 30 _⟷_
+infixr 9 _>>>_
 -- infixr 30 _⟺_
 
 ------------------------------------------------------------------------------
@@ -165,172 +166,167 @@ data _⟺_ : {n : ℕ} → C n → C n → Set where
              
 -- Def. 2.1 lists the conditions for J-graded bipermutative category
 
-seqF : {n : ℕ} {c₁ c₂ c₃ : C n} → 
-       (c₁ ⟺ c₂) → (c₂ ⟺ c₃) → (c₁ ⟺ c₃) 
-seqF {0} (baseC f) (baseC g) = baseC (f ◎ g)
-seqF {suc n} (nodeC f) (nodeC g) = nodeC (seqF {!!} {!!}) 
--- nodeC (seqF f g) (seqF f' g')
+mutual
 
-plusF : {n : ℕ} {c₁ c₂ c₃ c₄ : C n} → 
-        (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (plus c₁ c₃ ⟺ plus c₂ c₄)
-plusF (baseC f) (baseC g) = baseC (f ⊕ g)
-plusF (nodeC f) (nodeC g) = nodeC (plusF {!!} {!!}) 
--- nodeC (plusF f₁ g₁) (plusF f₂ g₂) 
+  _>>>_ = seqF
 
-swapN₊ : { n : ℕ } { c₁ c₂ : C n } → plus c₁ c₂ ⟺ plus c₂ c₁
-swapN₊ {0} {ZD t₁} {ZD t₂} = baseC (swap₊ {t₁} {t₂})
-swapN₊ {suc n} {Node c₁ c₂} {Node c₁' c₂'} = nodeC  {!swapN₊ !} 
---  nodeC ((swapN₊ {n} {c₁} {c₁'})) ((swapN₊ {n} {c₂} {c₂'})) 
+  idN⟷ : {n : ℕ} {c : C n} → c ⟺ c
+  idN⟷ {0} {ZD t} = baseC (id⟷ {t})
+  idN⟷ {suc n} {Node c₁ c₂} = nodeC swapN₊ 
 
-idN⟷ : {n : ℕ} {c : C n} → c ⟺ c
-idN⟷ {0} {ZD t} = baseC (id⟷ {t})
-idN⟷ {suc n} {Node c₁ c₂} = nodeC swapN₊ 
--- nodeC (idN⟷ {n} {c₁}) (idN⟷ {n} {c₂})
+  symN⟷ : {n : ℕ} {c₁ c₂ : C n} → (c₁ ⟺ c₂) → (c₂ ⟺ c₁)
+  symN⟷ (baseC f) = baseC (sym⟷ f)
+  symN⟷ (nodeC f) = nodeC (swapN₊ >>> symN⟷ f >>> swapN₊ ) 
 
-assocrN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
-           plus (plus c₁ c₂) c₃ ⟺ plus c₁ (plus c₂ c₃)
-assocrN₊ {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (assocr₊ {t₁} {t₂} {t₃})
-assocrN₊ {suc n} {Node c₁ c₂} {Node c₃ c₄} {Node c₅ c₆} = nodeC {!!} 
---  nodeC (assocrN₊ {n} {c₁} {c₃} {c₅}) (assocrN₊ {n} {c₂} {c₄} {c₆})
-
-assoclN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
-           plus c₁ (plus c₂ c₃) ⟺ plus (plus c₁ c₂) c₃
-assoclN₊ {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (assocl₊ {t₁} {t₂} {t₃})
-assoclN₊ {suc n} {Node c₁ c₂} {Node c₃ c₄} {Node c₅ c₆} = nodeC {!!} 
---  nodeC (assoclN₊ {n} {c₁} {c₃} {c₅}) (assoclN₊ {n} {c₂} {c₄} {c₆})
-
---
-
-uniteN₊ : {n : ℕ} {c : C n} → (plus (zeroN n) c) ⟺ c
-uniteN₊ {0} {ZD t} = baseC (unite₊ {t})
-uniteN₊ {suc n} {Node c₁ c₂} = -- same code from Neg.hs
-  -- so we can copy all the code from Neg.hs
-  -- and if the times tensor works we are done!
-  nodeC (seqF assocrN₊ (seqF (plusF idN⟷ swapN₊) assoclN₊))
-
-unitiN₊ : {n : ℕ} {c : C n} → c ⟺ (plus (zeroN n) c)
-unitiN₊ {0} {ZD t} = baseC (uniti₊ {t})
-unitiN₊ {suc n} {Node c₁ c₂} = nodeC {!!}
--- nodeC (unitiN₊ {n} {c₁}) (unitiN₊ {n} {c₂})
-
-uniteN⋆ : {n : ℕ} {c : C n} → times (ZD One) c ⟺ c
-uniteN⋆ {0} {ZD t} = baseC (unite⋆ {t})
-uniteN⋆ {suc n} {Node c₁ c₂} = nodeC {!!} 
--- nodeC (uniteN⋆ {n} {c₁}) (uniteN⋆ {n} {c₂})
-
-unitiN⋆ : {n : ℕ} {c : C n} → c ⟺ times (ZD One) c
-unitiN⋆ {0} {ZD t} = baseC (uniti⋆ {t})
-unitiN⋆ {suc n} {Node c₁ c₂} = nodeC {!!} 
--- nodeC (unitiN⋆ {n} {c₁}) (unitiN⋆ {n} {c₂})
-
--- Ugly hack or feature ???
-
-times' : {m n : ℕ} → C n → C m → C (m + n)
-times' {m} {n} c₁ c₂ rewrite +-comm m n = times c₁ c₂
-
-swapN⋆ : {m n : ℕ} {c₁ : C m} {c₂ : C n} → times c₁ c₂ ⟺ times' c₂ c₁
-swapN⋆ {0} {0} {ZD t₁} {ZD t₂} = baseC (swap⋆ {t₁} {t₂})
-swapN⋆ {0} {suc n} {ZD t} {Node c₁ c₂} = {!!} 
---nodeC (swapN⋆ {0} {n} {ZD t} {c₁}) (swapN⋆ {0} {n} {ZD t} {c₂})
-swapN⋆ {suc m} {0} {Node c₁ c₂} {ZD t} = {!!} 
---nodeC (swapN⋆ {0} {n} {c₁} {ZD t}) (swapN⋆ {0} {n} {c₂} {ZD t})
-swapN⋆ {suc m} {n} {Node c₁ c₂} {c} = {!!}
---nodeC (swapN⋆ {m} {n} {c₁} {c}) (swapN⋆ {m} {n} {c₂} {c})
-
-TODO : Set
-TODO = {!!} 
-
-assoclN⋆ : {m n k : ℕ} {c₁ : C m} {c₂ : C n} {c₃ : C k} → TODO
---           times c₁ (times c₂ c₃) ⟺ times (times c₁ c₂) c₃
-assoclN⋆ = {!!} 
-
-assocrN⋆ : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → TODO
---            times (times c₁ c₂) c₃ ⟺ times c₁ (times c₂ c₃)
-assocrN⋆ = {!!} 
-
-distzN : {m n : ℕ} {c : C n} → times (zeroN m) c ⟺ zeroN (m + n)
-distzN {0} {0} {ZD t} = baseC (distz {t})
-distzN {0} {suc n} {Node c₁ c₂} = nodeC {!!} 
---  nodeC (distzN {0} {n} {c₁}) (distzN {0} {n} {c₂})
-distzN {suc m} {n} {c} = nodeC {!!} 
---  nodeC (distzN {m} {n} {c}) (distzN {m} {n} {c})
-
-factorzN : { m n : ℕ } { c : C n } → zeroN (m + n) ⟺ times (zeroN m) c
-factorzN {0} {0} {ZD t} = baseC (factorz {t})
-factorzN {0} {suc n} {Node c₁ c₂} = nodeC {!!} 
---  nodeC (factorzN {0} {n} {c₁}) (factorzN {0} {n} {c₂})
-factorzN {suc m} {n} {c} = nodeC {!!} 
---  nodeC (factorzN {m} {n} {c}) (factorzN {m} {n} {c})
-
-distN : {m n : ℕ} {c₁ c₂ : C m} {c₃ : C n} → 
-        times (plus c₁ c₂) c₃ ⟺ plus (times c₁ c₃) (times c₂ c₃) 
-distN {0} {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (dist {t₁} {t₂} {t₃})
-distN {0} {suc n} {ZD t₁} {ZD t₂} {Node c₁ c₂} = nodeC {!!} 
---  nodeC 
---    (distN {0} {n} {ZD t₁} {ZD t₂} {c₁}) 
---    (distN {0} {n} {ZD t₁} {ZD t₂} {c₂})
-distN {suc m} {n} {Node c₁ c₂} {Node c₃ c₄} {c} = nodeC {!!} 
---  nodeC 
---    ((distN {m} {n} {c₁} {c₃} {c})) 
---    ((distN {m} {n} {c₂} {c₄} {c})) 
-
-factorN : {m n : ℕ} {c₁ c₂ : C m} {c₃ : C n} → 
-          plus (times c₁ c₃) (times c₂ c₃) ⟺ times (plus c₁ c₂) c₃
-factorN {0} {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (factor {t₁} {t₂} {t₃})
-factorN {0} {suc n} {ZD t₁} {ZD t₂} {Node c₁ c₂} = nodeC {!!}
---  nodeC 
---    (factorN {0} {n} {ZD t₁} {ZD t₂} {c₁}) 
---    (factorN {0} {n} {ZD t₁} {ZD t₂} {c₂})
-factorN {suc m} {n} {Node c₁ c₂} {Node c₃ c₄} {c} = nodeC {!!}
---  nodeC 
---    ((factorN {m} {n} {c₁} {c₃} {c})) 
---    ((factorN {m} {n} {c₂} {c₄} {c})) 
-
-symN⟷ : {n : ℕ} {c₁ c₂ : C n} → (c₁ ⟺ c₂) → (c₂ ⟺ c₁)
-symN⟷ (baseC f) = baseC (sym⟷ f)
-symN⟷ (nodeC f) = nodeC {!!} 
--- nodeC (symN⟷ f) (symN⟷ g)
-
-timesF : {m n : ℕ} {c₁ c₂ : C m} {c₃ c₄ : C n} → 
-         (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (times c₁ c₃ ⟺ times c₂ c₄)
-timesF (baseC f) (baseC g) = baseC (f ⊗ g)
-timesF (baseC f) (nodeC g) = 
-  nodeC (
-  seqF (plusF (timesF (baseC f) idN⟷) idN⟷) (
-  seqF (seqF (plusF swapN⋆ swapN⋆) factorN) (
-  seqF (timesF idN⟷ g) (
-  seqF (seqF distN (plusF swapN⋆ swapN⋆)) 
-  ((plusF (timesF (baseC (sym⟷ f)) idN⟷) idN⟷))))))
-timesF (nodeC f) (baseC g) = {!!}
-timesF (nodeC f) (nodeC g) = nodeC {!!}
--- nodeC (timesF f₁ g) (timesF f₂ g) 
-
--- f : t1 <-> t2
--- g : c1 + c4 <=> c3 + c2
---?24 : plus (times (ZD t₁) c₁) (times (ZD t₂) c₄) ⟺
---      plus (times (ZD t₁) c₃) (times (ZD t₂) c₂)
+  seqF : {n : ℕ} {c₁ c₂ c₃ : C n} → 
+         (c₁ ⟺ c₂) → (c₂ ⟺ c₃) → (c₁ ⟺ c₃) 
+  seqF {0} (baseC f) (baseC g) = baseC (f ◎ g)
+  seqF {suc n} (nodeC f) (nodeC g) = nodeC {!!} -- needs trace
+  
+  plusF : {n : ℕ} {c₁ c₂ c₃ c₄ : C n} → 
+          (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (plus c₁ c₃ ⟺ plus c₂ c₄)
+  plusF (baseC f) (baseC g) = baseC (f ⊕ g)
+  plusF (nodeC f) (nodeC g) = nodeC {!!}
+  
+  timesF : {m n : ℕ} {c₁ c₂ : C m} {c₃ c₄ : C n} → 
+           (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (times c₁ c₃ ⟺ times c₂ c₄)
+  timesF (baseC f) (baseC g) = baseC (f ⊗ g)
+  timesF (baseC f) (nodeC g) = nodeC {!!} 
 {--
-plus (times (ZD t₁) c₁) (times (ZD t₂) c₄) ⟺
--> s1
-plus (times (ZD t2) c₁) (times (ZD t₂) c₄) ⟺
--> s2
-times (ZD t2) (plus c1 c4)
--> s3
-times (ZD t2) (plus c3 c2)
--> s4
-plus (times (ZD t2) c3) (times (ZD t2) c2)
--> s5
-plus (times (ZD t1) c3) (times (ZD t2) c2)
+    nodeC (
+    seqF (plusF (timesF (baseC f) idN⟷) idN⟷) (
+    seqF (seqF (plusF swapN⋆ swapN⋆) factorN) (
+    seqF (timesF idN⟷ g) (
+    seqF (seqF distN (plusF swapN⋆ swapN⋆)) 
+    ((plusF (timesF (baseC (sym⟷ f)) idN⟷) idN⟷))))))
 --}
+  timesF (nodeC f) (baseC g) = {!!}
+  timesF (nodeC f) (nodeC g) = nodeC {!!}
+  -- nodeC (timesF f₁ g) (timesF f₂ g) 
+  -- f : t1 <-> t2
+  -- g : c1 + c4 <=> c3 + c2
+  --?24 : plus (times (ZD t₁) c₁) (times (ZD t₂) c₄) ⟺
+  --      plus (times (ZD t₁) c₃) (times (ZD t₂) c₂)
+  {--
+  plus (times (ZD t₁) c₁) (times (ZD t₂) c₄) ⟺
+  -> s1
+  plus (times (ZD t2) c₁) (times (ZD t₂) c₄) ⟺
+  -> s2
+  times (ZD t2) (plus c1 c4)
+  -> s3
+  times (ZD t2) (plus c3 c2)
+  -> s4
+  plus (times (ZD t2) c3) (times (ZD t2) c2)
+  -> s5
+  plus (times (ZD t1) c3) (times (ZD t2) c2)
+  --}
+  
+  uniteN₊ : {n : ℕ} {c : C n} → (plus (zeroN n) c) ⟺ c
+  uniteN₊ {0} {ZD t} = baseC (unite₊ {t})
+  uniteN₊ {suc n} {Node c₁ c₂} = 
+    nodeC (seqF assocrN₊ (seqF (plusF idN⟷ swapN₊) assoclN₊))
+  
+  unitiN₊ : {n : ℕ} {c : C n} → c ⟺ (plus (zeroN n) c)
+  unitiN₊ {0} {ZD t} = baseC (uniti₊ {t})
+  unitiN₊ {suc n} {Node c₁ c₂} = 
+    nodeC (assoclN₊ >>> swapN₊ >>> (plusF idN⟷ swapN₊))
 
+  swapN₊ : { n : ℕ } { c₁ c₂ : C n } → plus c₁ c₂ ⟺ plus c₂ c₁
+  swapN₊ {0} {ZD t₁} {ZD t₂} = baseC (swap₊ {t₁} {t₂})
+  swapN₊ {suc n} {Node c₁ c₂} {Node c₁' c₂'} = 
+    nodeC (swapN₊ >>> (plusF swapN₊ swapN₊))
+  
+  assoclN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
+             plus c₁ (plus c₂ c₃) ⟺ plus (plus c₁ c₂) c₃
+  assoclN₊ {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (assocl₊ {t₁} {t₂} {t₃})
+  assoclN₊ {suc n} {Node c₁ c₂} {Node c₃ c₄} {Node c₅ c₆} = 
+      nodeC (swapN₊ >>> (plusF assocrN₊ assoclN₊))
 
---?25 : plus (times .c₁ .c₃) (times .c₆ .c₄) ⟺
---      plus (times .c₅ .c₃) (times .c₂ .c₄)
-
-{--
-data _⟺_ : {n : ℕ} → C n → C n → Set where
-  baseC : {t₁ t₂ : T} → (t₁ ⟷ t₂) → ((ZD t₁) ⟺ (ZD t₂))
-  nodeC : {n : ℕ} {c₁ : C n} {c₂ : C n} {c₃ : C n} {c₄ : C n} → 
+  assocrN₊ : { n : ℕ } { c₁ c₂ c₃ : C n } → 
+             plus (plus c₁ c₂) c₃ ⟺ plus c₁ (plus c₂ c₃)
+  assocrN₊ {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (assocr₊ {t₁} {t₂} {t₃})
+  assocrN₊ {suc n} {Node c₁ c₂} {Node c₃ c₄} {Node c₅ c₆} = 
+    nodeC (swapN₊ >>> (plusF assoclN₊ assocrN₊))
+  
+  uniteN⋆ : {n : ℕ} {c : C n} → times (ZD One) c ⟺ c
+  uniteN⋆ {0} {ZD t} = baseC (unite⋆ {t})
+  uniteN⋆ {suc n} {Node c₁ c₂} = nodeC ?
+  
+  unitiN⋆ : {n : ℕ} {c : C n} → c ⟺ times (ZD One) c
+  unitiN⋆ {0} {ZD t} = baseC (uniti⋆ {t})
+  unitiN⋆ {suc n} {Node c₁ c₂} = nodeC {!!} 
+  
+  -- Ugly hack or feature ???
+  
+  times' : {m n : ℕ} → C n → C m → C (m + n)
+  times' {m} {n} c₁ c₂ rewrite +-comm m n = times c₁ c₂
+  
+  swapN⋆ : {m n : ℕ} {c₁ : C m} {c₂ : C n} → times c₁ c₂ ⟺ times' c₂ c₁
+  swapN⋆ {0} {0} {ZD t₁} {ZD t₂} = baseC (swap⋆ {t₁} {t₂})
+  swapN⋆ {0} {suc n} {ZD t} {Node c₁ c₂} = {!!} 
+  --nodeC (swapN⋆ {0} {n} {ZD t} {c₁}) (swapN⋆ {0} {n} {ZD t} {c₂})
+  swapN⋆ {suc m} {0} {Node c₁ c₂} {ZD t} = {!!} 
+  --nodeC (swapN⋆ {0} {n} {c₁} {ZD t}) (swapN⋆ {0} {n} {c₂} {ZD t})
+  swapN⋆ {suc m} {n} {Node c₁ c₂} {c} = {!!}
+  --nodeC (swapN⋆ {m} {n} {c₁} {c}) (swapN⋆ {m} {n} {c₂} {c})
+  
+  TODO : Set
+  TODO = {!!} 
+  
+  assoclN⋆ : {m n k : ℕ} {c₁ : C m} {c₂ : C n} {c₃ : C k} → TODO
+  --           times c₁ (times c₂ c₃) ⟺ times (times c₁ c₂) c₃
+  assoclN⋆ = {!!} 
+  
+  assocrN⋆ : { m n k : ℕ } { c₁ : C m } { c₂ : C n } { c₃ : C k } → TODO
+  --            times (times c₁ c₂) c₃ ⟺ times c₁ (times c₂ c₃)
+  assocrN⋆ = {!!} 
+  
+  distzN : {m n : ℕ} {c : C n} → times (zeroN m) c ⟺ zeroN (m + n)
+  distzN {0} {0} {ZD t} = baseC (distz {t})
+  distzN {0} {suc n} {Node c₁ c₂} = nodeC {!!} 
+  --  nodeC (distzN {0} {n} {c₁}) (distzN {0} {n} {c₂})
+  distzN {suc m} {n} {c} = nodeC {!!} 
+  --  nodeC (distzN {m} {n} {c}) (distzN {m} {n} {c})
+  
+  factorzN : { m n : ℕ } { c : C n } → zeroN (m + n) ⟺ times (zeroN m) c
+  factorzN {0} {0} {ZD t} = baseC (factorz {t})
+  factorzN {0} {suc n} {Node c₁ c₂} = nodeC {!!} 
+  --  nodeC (factorzN {0} {n} {c₁}) (factorzN {0} {n} {c₂})
+  factorzN {suc m} {n} {c} = nodeC {!!} 
+  --  nodeC (factorzN {m} {n} {c}) (factorzN {m} {n} {c})
+  
+  distN : {m n : ℕ} {c₁ c₂ : C m} {c₃ : C n} → 
+          times (plus c₁ c₂) c₃ ⟺ plus (times c₁ c₃) (times c₂ c₃) 
+  distN {0} {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (dist {t₁} {t₂} {t₃})
+  distN {0} {suc n} {ZD t₁} {ZD t₂} {Node c₁ c₂} = nodeC {!!} 
+  --  nodeC 
+  --    (distN {0} {n} {ZD t₁} {ZD t₂} {c₁}) 
+  --    (distN {0} {n} {ZD t₁} {ZD t₂} {c₂})
+  distN {suc m} {n} {Node c₁ c₂} {Node c₃ c₄} {c} = nodeC {!!} 
+  --  nodeC 
+  --    ((distN {m} {n} {c₁} {c₃} {c})) 
+  --    ((distN {m} {n} {c₂} {c₄} {c})) 
+  
+  factorN : {m n : ℕ} {c₁ c₂ : C m} {c₃ : C n} → 
+            plus (times c₁ c₃) (times c₂ c₃) ⟺ times (plus c₁ c₂) c₃
+  factorN {0} {0} {ZD t₁} {ZD t₂} {ZD t₃} = baseC (factor {t₁} {t₂} {t₃})
+  factorN {0} {suc n} {ZD t₁} {ZD t₂} {Node c₁ c₂} = nodeC {!!}
+  --  nodeC 
+  --    (factorN {0} {n} {ZD t₁} {ZD t₂} {c₁}) 
+  --    (factorN {0} {n} {ZD t₁} {ZD t₂} {c₂})
+  factorN {suc m} {n} {Node c₁ c₂} {Node c₃ c₄} {c} = nodeC {!!}
+  --  nodeC 
+  --    ((factorN {m} {n} {c₁} {c₃} {c})) 
+  --    ((factorN {m} {n} {c₂} {c₄} {c})) 
+  
+  
+  --?25 : plus (times .c₁ .c₃) (times .c₆ .c₄) ⟺
+  --      plus (times .c₅ .c₃) (times .c₂ .c₄)
+  
+  {--
+  data _⟺_ : {n : ℕ} → C n → C n → Set where
+    baseC : {t₁ t₂ : T} → (t₁ ⟷ t₂) → ((ZD t₁) ⟺ (ZD t₂))
+    nodeC : {n : ℕ} {c₁ : C n} {c₂ : C n} {c₃ : C n} {c₄ : C n} → 
           (plus c₁ c₄ ⟺ plus c₃ c₂) → 
           ((Node c₁ c₃) ⟺ (Node c₂ c₄))
 
