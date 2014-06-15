@@ -250,7 +250,7 @@ mutual
   
   uniteN⋆ : {n : ℕ} {c : C n} → times (ZD One) c ⟺ c
   uniteN⋆ {0} {ZD t} = baseC (unite⋆ {t})
-  uniteN⋆ {suc n} {Node c₁ c₂} = nodeC ?
+  uniteN⋆ {suc n} {Node c₁ c₂} = nodeC {!!}
   
   unitiN⋆ : {n : ℕ} {c : C n} → c ⟺ times (ZD One) c
   unitiN⋆ {0} {ZD t} = baseC (uniti⋆ {t})
