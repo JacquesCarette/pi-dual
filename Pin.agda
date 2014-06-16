@@ -161,8 +161,9 @@ times (Node c1 c2) c = Node (times c1 c) (times c2 c)
 data _⟺_ : {n : ℕ} → C n → C n → Set where
   baseC : {t₁ t₂ : T} → (t₁ ⟷ t₂) → ((ZD t₁) ⟺ (ZD t₂))
   nodeC : {n : ℕ} {c₁ : C n} {c₂ : C n} {c₃ : C n} {c₄ : C n} → 
-          (plus c₁ c₄ ⟺ plus c₃ c₂) → 
-          ((Node c₁ c₃) ⟺ (Node c₂ c₄))
+          (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → ((Node c₁ c₃) ⟺ (Node c₂ c₄))
+  zerolC : {n : ℕ} {c : C n} → ((Node c c) ⟺ (zeroN (suc n)))
+  zerorC : {n : ℕ} {c : C n} → ((zeroN (suc n)) ⟺ (Node c c))
              
 -- Def. 2.1 lists the conditions for J-graded bipermutative category
 
@@ -172,17 +173,30 @@ mutual
 
   idN⟷ : {n : ℕ} {c : C n} → c ⟺ c
   idN⟷ {0} {ZD t} = baseC (id⟷ {t})
-  idN⟷ {suc n} {Node c₁ c₂} = nodeC swapN₊ 
+  idN⟷ {suc n} {Node c₁ c₂} = nodeC (idN⟷ {n} {c₁}) (idN⟷ {n} {c₂}) 
 
   symN⟷ : {n : ℕ} {c₁ c₂ : C n} → (c₁ ⟺ c₂) → (c₂ ⟺ c₁)
   symN⟷ (baseC f) = baseC (sym⟷ f)
-  symN⟷ (nodeC f) = nodeC (swapN₊ >>> symN⟷ f >>> swapN₊ ) 
+  symN⟷ (nodeC f g) = nodeC (symN⟷ f) (symN⟷ g)
+  symN⟷ (zerolC {n} {c}) = zerorC {n} {c}
+  symN⟷ (zerorC {n} {c}) = zerolC {n} {c}
 
   seqF : {n : ℕ} {c₁ c₂ c₃ : C n} → 
          (c₁ ⟺ c₂) → (c₂ ⟺ c₃) → (c₁ ⟺ c₃) 
   seqF {0} (baseC f) (baseC g) = baseC (f ◎ g)
-  seqF {suc n} (nodeC f) (nodeC g) = nodeC {!!} -- needs trace
-  
+  seqF {suc n} (nodeC f g) (nodeC f' g') = nodeC (seqF f f') (seqF g g')
+  seqF {suc n} (nodeC f g) zerolC = nodeC (seqF f {!!}) (seqF g {!!})
+  seqF {suc n} (nodeC f g) zerorC = {!!}
+  seqF {suc n} zerolC (nodeC f g) = {!!}
+  seqF {suc n} zerolC zerolC = {!!}
+  seqF {suc n} zerolC zerorC = {!!}
+  seqF {suc n} zerorC (nodeC f g) = {!!}
+  seqF {suc n} zerorC zerolC = {!!}
+  seqF {suc n} zerorC zerorC = {!!} 
+
+
+{--
+
   plusF : {n : ℕ} {c₁ c₂ c₃ c₄ : C n} → 
           (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → (plus c₁ c₃ ⟺ plus c₂ c₄)
   plusF (baseC f) (baseC g) = baseC (f ⊕ g)
@@ -428,6 +442,7 @@ cnotN : {n : ℕ} → ((times (ZD Bool) (BoolN n)) ⟺ (times (ZD Bool) (BoolN n
 cnotN {n} = controlledN {n} (swapN₊ {n} {oneN n} {oneN n})
 
 -- Can't do toffoliN until we get all the products done
+--}
 
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------

@@ -373,6 +373,12 @@ present in every vector space --- acts like a ``bottom'' everywhere-undefined
 element and hence the type behaves like the unit of addition and the
 annihilator of multiplication as desired.
 
+\begin{verbatim}
+the spectrum of this category is 
+equivalent to the sphere 
+spectrum ?
+\end{verbatim}
+
 Operationally, the semantics consists of a pair of mutually recursive
 evaluators that take a combinator and a value and propagate the value in the
 ``forward'' $\triangleright$ direction or in the ``backwards''
@@ -425,20 +431,21 @@ Street, and Verity~\citeyearpar{joyal1996traced} and the closely related
 $\mathcal{G}$ construction of linear logic~\cite{gcons} construct
 higher-order \emph{linear} functions by considering a new category built on
 top of a given base traced monoidal category. The objects of the new category
-are of the form $(\tau_1-\tau_2)$ where~$\tau_1$ and~$\tau_2$ are objects in
-the base category. Intuitively, the component $\tau_1$ is viewed as a
+are of the form $\nodet{\tau_1}{\tau_2}$ where~$\tau_1$ and~$\tau_2$ are
+objects in the base category. Intuitively, this object represents the
+\emph{difference} $\tau_1-\tau_2$ with the component $\tau_1$ viewed as
 conventional type whose elements represent values flowing, as usual, from
-producers to consumers. The component $\tau_2$ is viewed as a \emph{negative
+producers to consumers, and the component $\tau_2$ viewed as a \emph{negative
   type} whose elements represent demands for values or equivalently values
 flowing backwards. Under this interpretation, and as we explain below, a
 function is nothing but an object that converts a demand for an argument into
 the production of a result.
 
 We begin our formal development by extending $\Pi$ with a new universe of
-types $\cubt$ that consists of composite types $(\tau_1-\tau_2)$:
+types $\cubt$ that consists of composite types $\nodet{\tau_1}{\tau_2}$:
 \[\begin{array}{lrcl}
 (\textit{{1d} types}) & 
-  \cubt &::=& (\tau_1-\tau_2) 
+  \cubt &::=& \nodet{\tau_1}{\tau_2}
 \end{array}\]
 In anticipation of future developments, we will refer to the original types
 $\tau$ as 0-dimensional (0d) types and to the new types $\cubt$ as
@@ -449,13 +456,12 @@ isomorphisms on these 1d types.
 
 Our next step is to define lifted versions of the 0d types:
 \[\begin{array}{rcl}
-\ztone &\eqdef& (0-0) \\
-\otone &\eqdef& (1-0) \\
-\ptone{(\tau_1-\tau_2)}{(\tau_3-\tau_4)} &\eqdef& 
-  (\tau_1+\tau_3)-(\tau_2+\tau_4) \\
-\ttone{({\tau_1}-{\tau_2})}{({\tau_3}-{\tau_4})} &\eqdef&
-{((\tau_1*\tau_3)+(\tau_2*\tau_4))}-\\
-&& {((\tau_1*\tau_4)+(\tau_2*\tau_3))}
+\ztone &\eqdef& \nodet{0}{0} \\
+\otone &\eqdef& \nodet{1}{0} \\
+\ptone{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} &\eqdef& 
+  \nodet{\tau_1+\tau_3}{\tau_2+\tau_4} \\
+\ttone{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} &\eqdef& \\
+\noalign{\hfill$\nodet{(\tau_1*\tau_3)+(\tau_2*\tau_4)}{(\tau_1*\tau_4)+(\tau_2*\tau_3)}$}
 \end{array}\]
 Building on the idea that $\Pi$ is a categorification of the natural numbers
 and following a long tradition that relates type isomorphisms and arithmetic
@@ -465,7 +471,7 @@ categorification of the integers. Based on this hypothesis, the definitions
 above can be intuitively understood as arithmetic identities. The same
 arithmetic intuition explains the lifting of isomorphisms to 1d types:
 \[\begin{array}{rcl}
-(\tau_1-\tau_2) \isoone (\tau_3-\tau_4) &\eqdef& 
+\nodet{\tau_1}{\tau_2} \isoone \nodet{\tau_3}{\tau_4} &\eqdef& 
   (\tau_1+\tau_4) \iso (\tau_2+\tau_3)
 \end{array}\]
 In other words, an isomorphism between 1d types is really an isomorphism
@@ -483,7 +489,7 @@ below.
 level. For example:
 \[\begin{array}{rcl}
 \idc &:& \cubt \isoone \cubt \\
-     &:& (\tau_1-\tau_2) \isoone (\tau_1-\tau_2) \\
+     &:& \nodet{\tau_1}{\tau_2} \isoone \nodet{\tau_1}{\tau_2} \\
      &\eqdef& (\tau_1+\tau_2) \iso (\tau_2+\tau_1) \\
 \idc &=& \swapp \\
 \\
@@ -516,10 +522,10 @@ f \fatsemi g &=& \mathit{trace}~(\mathit{assoc}_1 \fatsemi
 \paragraph*{New combinators $\mathit{curry}$ and $\mathit{uncurry}$ for higher-order functions.}
 
 \[\begin{array}{rcl}
-\boxminus(\tau_1-\tau_2) &\eqdef& \tau_2-\tau_1 \\
-(\tau_1-\tau_2) \lolli (\tau_3-\tau_4) &\eqdef& 
-           \boxminus(\tau_1-\tau_2) \boxplus (\tau_3-\tau_4) \\
-  &\eqdef& (\tau_2+\tau_3) - (\tau_1+\tau_4) 
+\boxminus(\nodet{\tau_1}{\tau_2}) &\eqdef& \nodet{\tau_2}{\tau_1} \\
+\nodet{\tau_1}{\tau_2} \lolli \nodet{\tau_3}{\tau_4} &\eqdef& 
+           \boxminus(\nodet{\tau_1}{\tau_2}) \boxplus \nodet{\tau_3}{\tau_4} \\
+  &\eqdef& \nodet{\tau_2+\tau_3}{\tau_1+\tau_4}
 \end{array}\]
 \[\begin{array}{rcl}
 \mathit{flip} &:& (\cubt_1 \isoone \cubt_2)
@@ -555,9 +561,8 @@ f \fatsemi g &=& \mathit{trace}~(\mathit{assoc}_1 \fatsemi
 \paragraph*{The ``phony'' multiplication that is not a functor.} 
 The definition for the product of 1d types used above is:
 \[\begin{array}{l}
-\ttone{({\tau_1}-{\tau_2})}{({\tau_3}-{\tau_4})} = \\
-{((\tau_1*\tau_3)+(\tau_2*\tau_4))}-
-  {((\tau_1*\tau_4)+(\tau_2*\tau_3))}
+\ttone{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} \eqdef \\
+\noalign{$\hfill\nodet{(\tau_1*\tau_3)+(\tau_2*\tau_4)}{(\tau_1*\tau_4)+(\tau_2*\tau_3)}$}
 \end{array}\]
 That definition is ``obvious'' in some sense as it matches the usual
 understanding of types as modeling arithmetic identities. Using this
@@ -583,6 +588,9 @@ are to add more dimensions and then take homotopy colimits. We exploit this
 solution in the remainder of the paper.
 
 \begin{verbatim}
+Add eta/epsilon and trace to Int 
+category
+
 Explain the definitions in this 
 section much better...
 \end{verbatim}
@@ -738,7 +746,7 @@ in Fig.~\ref{mult}, produces a cube of dimension $m+n$.
 
 \begin{proposition}[Dimensions]
 \label{dimprop}
-The type $(\cubt^m \nboxtimes{m}{n} \cubt^n)$ has dimension $m+n$.
+The type $(\cubt^m \nboxtimes{m}{n} \cubt^n)$ has dimension $(m+n)$.
 \end{proposition}
 \begin{proof}
 By a simple induction on $m$. 
@@ -748,10 +756,10 @@ By a simple induction on $m$.
 
 Moreover, a type at dimension $n$ naturally embeds in dimension $n+1$ with
 some spaces zeroed out. For example, the 0d type $\tau$ is ``the same as''
-the 1d type $\nodet{ tau}{0}$; the 1d type $\nodet{ tau_1}{\tau_2}$ is the
+the 1d type $\nodet{\tau}{0}$; the 1d type $\nodet{\tau_1}{\tau_2}$ is the
 same as both the following two 2d types:
-$\nodet{(\nodet{ tau_1}{\tau_2})}{(\nodet{0}{0})}$ and
-$\nodet{(\nodet{ tau_1}{0})}{(\nodet{\tau_2}{0})}$. More generally, \ldots
+$\nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{0}{0})}$ and
+$\nodet{(\nodet{\tau_1}{0})}{(\nodet{\tau_2}{0})}$. More generally, \ldots
 
 %%
 
