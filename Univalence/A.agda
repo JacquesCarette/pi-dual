@@ -61,49 +61,8 @@ TRUE = inj₁ tt
 FALSE : ⟦ BOOL ⟧
 FALSE = inj₂ tt
 
--- Space of paths between each pair of points in some type t : U
-
-Paths : {t : U} → ⟦ t ⟧ → ⟦ t ⟧ → Set
-Paths {ZERO} () ()
-Paths {ONE} tt tt = (tt ≡ tt)
-Paths {PLUS t t'} (inj₁ a) (inj₁ a') = Paths a a'
-Paths {PLUS t t'} (inj₁ a) (inj₂ b) = ⊥
-Paths {PLUS t t'} (inj₂ b) (inj₁ a) = ⊥
-Paths {PLUS t t'} (inj₂ b) (inj₂ b') = Paths b b'
-Paths {TIMES t t'} (a , b) (a' , b') = Paths a a' × Paths b b'
-
--- Examples of actual paths for some types
-
-pathU : Paths tt tt
-pathU = refl tt
-
-pathFF : Paths FALSE FALSE
-pathFF = refl tt
-
--- space of paths is empty; cannot produce any path; can 
--- use pattern matching to confirm that the space is empty
-pathFT : Paths FALSE TRUE → ⊤
-pathFT ()
-
--- space of paths is empty; cannot produce any path; can 
--- use pattern matching to confirm that the space is empty
-pathTF : Paths TRUE FALSE → ⊤
-pathTF ()
-
-pathTT : Paths TRUE TRUE
-pathTT = refl tt
-
-pathFFFF : Paths (FALSE , FALSE) (FALSE , FALSE) 
-pathFFFF = (refl tt , refl tt)
-
--- space of paths is empty; cannot produce any path; can 
--- use pattern matching to confirm that the space is empty
-pathFFTT : Paths (FALSE , FALSE) (TRUE , TRUE) → ⊤
-pathFFTT (() , ())
-
 ------------------------------------------------------------------------------
--- Next step up:
--- paths connecting points in t₁ and t₂ if there is an isomorphism between
+-- Paths connecting points in t₁ and t₂ if there is an isomorphism between
 -- them
 
 data _⟷_ : U → U → Set where
@@ -147,49 +106,49 @@ mutual
 
   IsoPaths : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧ → Set
   IsoPaths unite₊ (inj₁ ()) 
-  IsoPaths unite₊ (inj₂ v) v' = Paths v v'
+  IsoPaths unite₊ (inj₂ v) v' = (v ≡ v')
   IsoPaths uniti₊ v (inj₁ ())
-  IsoPaths uniti₊ v (inj₂ v') = Paths v v'
+  IsoPaths uniti₊ v (inj₂ v') = (v ≡ v')
   IsoPaths swap₊ (inj₁ v) (inj₁ v') = ⊥
-  IsoPaths swap₊ (inj₁ v) (inj₂ v') = Paths v v'
-  IsoPaths swap₊ (inj₂ v) (inj₁ v') = Paths v v'
+  IsoPaths swap₊ (inj₁ v) (inj₂ v') = (v ≡ v')
+  IsoPaths swap₊ (inj₂ v) (inj₁ v') = (v ≡ v')
   IsoPaths swap₊ (inj₂ v) (inj₂ v') = ⊥
-  IsoPaths assocl₊ (inj₁ v) (inj₁ (inj₁ v')) = Paths v v'
+  IsoPaths assocl₊ (inj₁ v) (inj₁ (inj₁ v')) = (v ≡ v')
   IsoPaths assocl₊ (inj₁ v) (inj₁ (inj₂ v')) = ⊥
   IsoPaths assocl₊ (inj₁ v) (inj₂ v') = ⊥
   IsoPaths assocl₊ (inj₂ (inj₁ v)) (inj₁ (inj₁ v')) = ⊥
-  IsoPaths assocl₊ (inj₂ (inj₁ v)) (inj₁ (inj₂ v')) = Paths v v'
+  IsoPaths assocl₊ (inj₂ (inj₁ v)) (inj₁ (inj₂ v')) = (v ≡ v')
   IsoPaths assocl₊ (inj₂ (inj₁ v)) (inj₂ v') = ⊥
   IsoPaths assocl₊ (inj₂ (inj₂ v)) (inj₁ v') = ⊥
-  IsoPaths assocl₊ (inj₂ (inj₂ v)) (inj₂ v') = Paths v v'
-  IsoPaths assocr₊ (inj₁ (inj₁ v)) (inj₁ v') = Paths v v'
+  IsoPaths assocl₊ (inj₂ (inj₂ v)) (inj₂ v') = (v ≡ v')
+  IsoPaths assocr₊ (inj₁ (inj₁ v)) (inj₁ v') = (v ≡ v')
   IsoPaths assocr₊ (inj₁ (inj₁ v)) (inj₂ v') = ⊥
   IsoPaths assocr₊ (inj₁ (inj₂ v)) (inj₁ v') = ⊥
-  IsoPaths assocr₊ (inj₁ (inj₂ v)) (inj₂ (inj₁ v')) = Paths v v'
+  IsoPaths assocr₊ (inj₁ (inj₂ v)) (inj₂ (inj₁ v')) = (v ≡ v')
   IsoPaths assocr₊ (inj₁ (inj₂ v)) (inj₂ (inj₂ v')) = ⊥
   IsoPaths assocr₊ (inj₂ v) (inj₁ v') = ⊥
   IsoPaths assocr₊ (inj₂ v) (inj₂ (inj₁ v')) = ⊥
-  IsoPaths assocr₊ (inj₂ v) (inj₂ (inj₂ v')) = Paths v v'
-  IsoPaths unite⋆ (tt , v) v' = Paths v v'
-  IsoPaths uniti⋆ v (tt , v') = Paths v v'
-  IsoPaths swap⋆ (v₁ , v₂) (v₂' , v₁') = Paths v₁ v₁' × Paths v₂ v₂'
+  IsoPaths assocr₊ (inj₂ v) (inj₂ (inj₂ v')) = (v ≡ v')
+  IsoPaths unite⋆ (tt , v) v' = (v ≡ v')
+  IsoPaths uniti⋆ v (tt , v') = (v ≡ v')
+  IsoPaths swap⋆ (v₁ , v₂) (v₂' , v₁') = (v₁ ≡ v₁') × (v₂ ≡ v₂')
   IsoPaths assocl⋆ (v₁ , (v₂ , v₃)) ((v₁' , v₂') , v₃') = 
-    Paths v₁ v₁' × Paths v₂ v₂' × Paths v₃ v₃'
+    (v₁ ≡ v₁') × (v₂ ≡ v₂') × (v₃ ≡ v₃')
   IsoPaths assocr⋆ ((v₁ , v₂) , v₃) (v₁' , (v₂' , v₃')) = 
-    Paths v₁ v₁' × Paths v₂ v₂' × Paths v₃ v₃'
+    (v₁ ≡ v₁') × (v₂ ≡ v₂') × (v₃ ≡ v₃')
   IsoPaths distz (() , v)
   IsoPaths factorz ()
-  IsoPaths dist (inj₁ v₁ , v₃) (inj₁ (v₁' , v₃')) = Paths v₁ v₁' × Paths v₃ v₃'
+  IsoPaths dist (inj₁ v₁ , v₃) (inj₁ (v₁' , v₃')) = (v₁ ≡ v₁') × (v₃ ≡ v₃')
   IsoPaths dist (inj₁ v₁ , v₃) (inj₂ (v₂' , v₃')) = ⊥
   IsoPaths dist (inj₂ v₂ , v₃) (inj₁ (v₁' , v₃')) = ⊥
-  IsoPaths dist (inj₂ v₂ , v₃) (inj₂ (v₂' , v₃')) = Paths v₂ v₂' × Paths v₃ v₃'
+  IsoPaths dist (inj₂ v₂ , v₃) (inj₂ (v₂' , v₃')) = (v₂ ≡ v₂') × (v₃ ≡ v₃')
   IsoPaths factor (inj₁ (v₁ , v₃)) (inj₁ v₁' , v₃') = 
-    Paths v₁ v₁' × Paths v₃ v₃'
+    (v₁ ≡ v₁') × (v₃ ≡ v₃')
   IsoPaths factor (inj₁ (v₁ , v₃)) (inj₂ v₂' , v₃') = ⊥
   IsoPaths factor (inj₂ (v₂ , v₃)) (inj₁ v₁' , v₃') = ⊥
   IsoPaths factor (inj₂ (v₂ , v₃)) (inj₂ v₂' , v₃') = 
-    Paths v₂ v₂' × Paths v₃ v₃'
-  IsoPaths {t} id⟷ v v' = Paths v v'
+    (v₂ ≡ v₂') × (v₃ ≡ v₃')
+  IsoPaths {t} id⟷ v v' = (v ≡ v')
   IsoPaths (sym⟷ c) v = IsoPathsB c v
   IsoPaths (_◎_ {t₁} {t₂} {t₃} c₁ c₂) v v' = 
     Σ[ u ∈ ⟦ t₂ ⟧ ] (IsoPaths c₁ v u × IsoPaths c₂ u v')
@@ -202,51 +161,51 @@ mutual
 
   IsoPathsB : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧ → Set
   IsoPathsB unite₊ v (inj₁ ())
-  IsoPathsB unite₊ v (inj₂ v') = Paths v v'
+  IsoPathsB unite₊ v (inj₂ v') = (v ≡ v')
   IsoPathsB uniti₊ (inj₁ ()) 
-  IsoPathsB uniti₊ (inj₂ v) v' = Paths v v'
+  IsoPathsB uniti₊ (inj₂ v) v' = (v ≡ v')
   IsoPathsB swap₊ (inj₁ v) (inj₁ v') = ⊥
-  IsoPathsB swap₊ (inj₁ v) (inj₂ v') = Paths v v'
-  IsoPathsB swap₊ (inj₂ v) (inj₁ v') = Paths v v'
+  IsoPathsB swap₊ (inj₁ v) (inj₂ v') = (v ≡ v')
+  IsoPathsB swap₊ (inj₂ v) (inj₁ v') = (v ≡ v')
   IsoPathsB swap₊ (inj₂ v) (inj₂ v') = ⊥
-  IsoPathsB assocl₊ (inj₁ (inj₁ v)) (inj₁ v') = Paths v v'
+  IsoPathsB assocl₊ (inj₁ (inj₁ v)) (inj₁ v') = (v ≡ v')
   IsoPathsB assocl₊ (inj₁ (inj₁ v)) (inj₂ v') = ⊥
   IsoPathsB assocl₊ (inj₁ (inj₂ v)) (inj₁ v') = ⊥
-  IsoPathsB assocl₊ (inj₁ (inj₂ v)) (inj₂ (inj₁ v')) = Paths v v'
+  IsoPathsB assocl₊ (inj₁ (inj₂ v)) (inj₂ (inj₁ v')) = (v ≡ v')
   IsoPathsB assocl₊ (inj₁ (inj₂ v)) (inj₂ (inj₂ v')) = ⊥
   IsoPathsB assocl₊ (inj₂ v) (inj₁ v') = ⊥
   IsoPathsB assocl₊ (inj₂ v) (inj₂ (inj₁ v')) = ⊥
-  IsoPathsB assocl₊ (inj₂ v) (inj₂ (inj₂ v')) = Paths v v'
-  IsoPathsB assocr₊ (inj₁ v) (inj₁ (inj₁ v')) = Paths v v'
+  IsoPathsB assocl₊ (inj₂ v) (inj₂ (inj₂ v')) = (v ≡ v')
+  IsoPathsB assocr₊ (inj₁ v) (inj₁ (inj₁ v')) = (v ≡ v')
   IsoPathsB assocr₊ (inj₁ v) (inj₁ (inj₂ v')) = ⊥
   IsoPathsB assocr₊ (inj₁ v) (inj₂ v') = ⊥
   IsoPathsB assocr₊ (inj₂ (inj₁ v)) (inj₁ (inj₁ v')) = ⊥
-  IsoPathsB assocr₊ (inj₂ (inj₁ v)) (inj₁ (inj₂ v')) = Paths v v'
+  IsoPathsB assocr₊ (inj₂ (inj₁ v)) (inj₁ (inj₂ v')) = (v ≡ v')
   IsoPathsB assocr₊ (inj₂ (inj₁ v)) (inj₂ v') = ⊥
   IsoPathsB assocr₊ (inj₂ (inj₂ v)) (inj₁ v') = ⊥
-  IsoPathsB assocr₊ (inj₂ (inj₂ v)) (inj₂ v') = Paths v v'
-  IsoPathsB unite⋆ v (tt , v') = Paths v v'
-  IsoPathsB uniti⋆ (tt , v) v' = Paths v v'
-  IsoPathsB swap⋆ (v₁ , v₂) (v₂' , v₁') = Paths v₁ v₁' × Paths v₂ v₂'
+  IsoPathsB assocr₊ (inj₂ (inj₂ v)) (inj₂ v') = (v ≡ v')
+  IsoPathsB unite⋆ v (tt , v') = (v ≡ v')
+  IsoPathsB uniti⋆ (tt , v) v' = (v ≡ v')
+  IsoPathsB swap⋆ (v₁ , v₂) (v₂' , v₁') = (v₁ ≡ v₁') × (v₂ ≡ v₂')
   IsoPathsB assocl⋆ ((v₁ , v₂) , v₃) (v₁' , (v₂' , v₃')) = 
-    Paths v₁ v₁' × Paths v₂ v₂' × Paths v₃ v₃'
+    (v₁ ≡ v₁') × (v₂ ≡ v₂') × (v₃ ≡ v₃')
   IsoPathsB assocr⋆ (v₁ , (v₂ , v₃)) ((v₁' , v₂') , v₃') = 
-    Paths v₁ v₁' × Paths v₂ v₂' × Paths v₃ v₃'
+    (v₁ ≡ v₁') × (v₂ ≡ v₂') × (v₃ ≡ v₃')
   IsoPathsB distz ()
   IsoPathsB factorz (() , v)
   IsoPathsB dist (inj₁ (v₁ , v₃)) (inj₁ v₁' , v₃') = 
-    Paths v₁ v₁' × Paths v₃ v₃'
+    (v₁ ≡ v₁') × (v₃ ≡ v₃')
   IsoPathsB dist (inj₁ (v₁ , v₃)) (inj₂ v₂' , v₃') = ⊥
   IsoPathsB dist (inj₂ (v₂ , v₃)) (inj₁ v₁' , v₃') = ⊥
   IsoPathsB dist (inj₂ (v₂ , v₃)) (inj₂ v₂' , v₃') = 
-    Paths v₂ v₂' × Paths v₃ v₃'
+    (v₂ ≡ v₂') × (v₃ ≡ v₃')
   IsoPathsB factor (inj₁ v₁ , v₃) (inj₁ (v₁' , v₃')) = 
-    Paths v₁ v₁' × Paths v₃ v₃'
+    (v₁ ≡ v₁') × (v₃ ≡ v₃')
   IsoPathsB factor (inj₁ v₁ , v₃) (inj₂ (v₂' , v₃')) = ⊥
   IsoPathsB factor (inj₂ v₂ , v₃) (inj₁ (v₁' , v₃')) = ⊥
   IsoPathsB factor (inj₂ v₂ , v₃) (inj₂ (v₂' , v₃')) = 
-    Paths v₂ v₂' × Paths v₃ v₃'
-  IsoPathsB {t} id⟷ v v' = Paths v v'
+    (v₂ ≡ v₂') × (v₃ ≡ v₃')
+  IsoPathsB {t} id⟷ v v' = (v ≡ v')
   IsoPathsB (sym⟷ c) v = IsoPaths c v
   IsoPathsB (_◎_ {t₁} {t₂} {t₃} c₁ c₂) v v' = 
     Σ[ u ∈ ⟦ t₂ ⟧ ] (IsoPathsB c₂ v u × IsoPathsB c₁ u v')
@@ -261,11 +220,41 @@ mutual
 -- IsoPaths c v₁ v₂ gives us the space of paths that could connect v₁ and v₂
 -- Examples:
 
--- only one path
+pathIdtt : IsoPaths id⟷ tt tt
+pathIdtt = refl tt
+
+-- three different ways of relating F to F:
+
+pathIdFF : IsoPaths id⟷ FALSE FALSE
+pathIdFF = refl FALSE
+
+pathNotNotFF : IsoPaths (swap₊ ◎ swap₊) FALSE FALSE
+pathNotNotFF = TRUE , refl tt , refl tt
+
+pathPlusFF : IsoPaths (id⟷ ⊕ id⟷) FALSE FALSE
+pathPlusFF = refl tt
+
+-- are there 2-paths between the above 3 paths???
+
+-- space of paths is empty; cannot produce any path; can 
+-- use pattern matching to confirm that the space is empty
+pathIdFT : IsoPaths id⟷ FALSE TRUE → ⊤
+pathIdFT ()
+
+pathIdFFFF : IsoPaths id⟷ (FALSE , FALSE) (FALSE , FALSE) 
+pathIdFFFF = refl (FALSE , FALSE) 
+
+pathTimesFFFF : IsoPaths (id⟷ ⊗ id⟷) (FALSE , FALSE) (FALSE , FALSE) 
+pathTimesFFFF = (refl FALSE , refl FALSE) 
+
+pathTimesPlusFFFF : IsoPaths 
+                      ((id⟷ ⊕ id⟷) ⊗ (id⟷ ⊕ id⟷)) 
+                      (FALSE , FALSE) (FALSE , FALSE) 
+pathTimesPlusFFFF = (refl tt , refl tt)
+
 pathSwap₊FT : IsoPaths swap₊ FALSE TRUE
 pathSwap₊FT = refl tt
 
--- only one path
 pathSwap₊TF : IsoPaths swap₊ TRUE FALSE
 pathSwap₊TF = refl tt
 
@@ -273,38 +262,22 @@ pathSwap₊TF = refl tt
 pathSwap₊FF : IsoPaths swap₊ FALSE FALSE → ⊤
 pathSwap₊FF ()
 
--- only one path
-pathIdFF : IsoPaths id⟷ FALSE FALSE
-pathIdFF = refl tt
-
 pathCnotTF : IsoPaths cnot (TRUE , FALSE) (TRUE , TRUE)
 pathCnotTF = inj₁ (tt , FALSE) , -- first intermediate value
              -- path using dist from (T,F) to (inj₁ (tt , F)) 
-             (refl tt , refl tt) , 
+             (refl tt , refl FALSE) , 
              -- path from (inj₁ (tt , F)) to (T,T)
              (inj₁ (tt , TRUE) , -- next intermediate value
              (refl tt , refl tt) , 
-             (refl tt , refl tt))
+             (refl tt , refl TRUE))
 
 -- here is a completely different path between (T,F) and (T,T)
 pathIdNotTF : IsoPaths (id⟷ ⊗ swap₊) (TRUE , FALSE) (TRUE , TRUE)
-pathIdNotTF = refl tt , refl tt
+pathIdNotTF = refl TRUE , refl tt
 
--- at some point we want to reason about whether there is a 2Path
--- between pathIdNotTF and pathCnotTF
+-- is there a 2-path between the two paths above? 
 
--- a simpler example; not;not vs. id
-
-pathIdF : IsoPaths id⟷ FALSE FALSE
-pathIdF = refl tt
-
-pathNotNotF : IsoPaths (swap₊ ◎ swap₊) FALSE FALSE
-pathNotNotF = TRUE , refl tt , refl tt
-
--- is there a reasonable argument that pathIdF and pathNotNotF are the same, 
--- i.e., there there should be a 2Path between them?
-
-pathUnite₊ : {t : U} {v : ⟦ t ⟧} → Paths v v → IsoPaths unite₊ (inj₂ v) v
+pathUnite₊ : {t : U} {v v' : ⟦ t ⟧} → (v ≡ v') → IsoPaths unite₊ (inj₂ v) v'
 pathUnite₊ p = p
 
 -- If we have a path between v₁ and v₁' and a combinator that connects v₁ to
@@ -312,7 +285,7 @@ pathUnite₊ p = p
 -- path between v₂ and v₂'
 
 pathFunctor : {t₁ t₂ : U} {v₁ v₁' : ⟦ t₁ ⟧} {v₂ v₂' : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} →
-  Paths v₁ v₁' → IsoPaths c v₁ v₂ → Paths v₂ v₂' → IsoPaths c v₁' v₂'
+  (v₁ ≡ v₁') → IsoPaths c v₁ v₂ → (v₂ ≡ v₂') → IsoPaths c v₁' v₂'
 pathFunctor = {!!} 
 
   
