@@ -15,6 +15,7 @@
 \usepackage{graphicx}
 \usepackage{textgreek}
 
+\newcommand{\AgdaArgument}[1]{#1}
 \newcommand{\identlp}{\mathit{identl}_+}
 \newcommand{\identrp}{\mathit{identr}_+}
 \newcommand{\swapp}{\mathit{swap}_+}
@@ -50,7 +51,7 @@ $\displaystyle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
-\title{A Computational Interpretation of Univalence for Finite Types}
+\title{A Computational Interpretation of \\ Univalence for Finite Types}
 \author{Zachary Sparks$^{1}$ \and Jacques Carette$^{2}$ \and Amr Sabry$^{1}$}
 \institute{$^{(1)}$~Indiana University \qquad $^{(2)}$~McMaster University}
 \maketitle
