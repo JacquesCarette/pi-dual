@@ -423,14 +423,38 @@ pathBTrans {v₂ = v₂} p q = (v₂ , q , p)
 -- Can we show:
 -- p : Paths c v₁ v₂ == pathTrans p (refl v₂) 
 
-{--
-2Paths = _≡_ -- for now but it should be something else
+2Paths : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c₁ c₂ : t₁ ⟷ t₂} → 
+         Paths c₁ v₁ v₂ → Paths c₂ v₁ v₂ → Set
+2Paths p q = {!!} 
 
 reflR : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} 
         {p : Paths c v₁ v₂} → {q : Paths (c ◎ id⟷) v₁ v₂} → 
-        2Paths p q
-reflR = {!!} 
---}
+        2Paths {t₁} {t₂} {v₁} {v₂} {c} {c ◎ id⟷} p q
+reflR {c = unite₊} = {!!}
+-- p : Paths unite₊ .v₁ .v₂
+-- q : Paths (unite₊ ◎ id⟷) .v₁ .v₂
+-- 2Paths p q
+reflR {c = uniti₊} = {!!}
+reflR {c = swap₊} = {!!}
+reflR {c = assocl₊} = {!!}
+reflR {c = assocr₊} = {!!}
+reflR {c = unite⋆} = {!!}
+reflR {c = uniti⋆} = {!!}
+reflR {c = swap⋆} = {!!}
+reflR {c = assocl⋆} = {!!}
+reflR {c = assocr⋆} = {!!}
+reflR {c = distz} = {!!}
+reflR {c = factorz} = {!!}
+reflR {c = dist} = {!!}
+reflR {c = factor} = {!!}
+reflR {c = id⟷} = {!!}
+reflR {c = sym⟷ c} = {!!}
+reflR {c = c₁ ◎ c₂} = {!!}
+reflR {c = c₁ ⊕ c₂} = {!!}
+reflR {c = c₁ ⊗ c₂} = {!!} 
+
+
+
 {--
 -- If we have a path between v₁ and v₁' and a combinator that connects v₁ to
 -- v₂, then the combinator also connects v₁' to some v₂' such that there is
