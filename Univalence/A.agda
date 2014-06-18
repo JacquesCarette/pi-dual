@@ -290,63 +290,125 @@ pathUnite₊ p = p
 
 -- For every path between v₁ and v₂ there is a path between v₂ and v₁
 
-pathInv : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} → 
-          Paths c v₁ v₂ → Paths (sym⟷ c) v₂ v₁
-pathInv {v₁ = inj₁ ()} {v₂ = v} {unite₊}
-pathInv {v₁ = inj₂ v} {v₂ = v'} {unite₊} p = sym p
-pathInv {v₁ = v} {v₂ = inj₁ ()} {uniti₊} 
-pathInv {v₁ = v} {v₂ = inj₂ v'} {uniti₊} p = sym p 
-pathInv {v₁ = inj₁ v} {v₂ = inj₁ v'} {swap₊} ()
-pathInv {v₁ = inj₁ v} {v₂ = inj₂ v'} {swap₊} p = sym p
-pathInv {v₁ = inj₂ v} {v₂ = inj₁ v'} {swap₊} p = sym p
-pathInv {v₁ = inj₂ v} {v₂ = inj₂ v'} {swap₊} ()
-pathInv {v₁ = inj₁ v} {v₂ = inj₁ (inj₁ v')} {assocl₊} p = sym p
-pathInv {v₁ = inj₁ v} {v₂ = inj₁ (inj₂ v')} {assocl₊} ()
-pathInv {v₁ = inj₁ v} {v₂ = inj₂ v'} {assocl₊} ()
-pathInv {v₁ = inj₂ (inj₁ v)} {v₂ = inj₁ (inj₁ v')} {assocl₊} ()
-pathInv {v₁ = inj₂ (inj₁ v)} {v₂ = inj₁ (inj₂ v')} {assocl₊} p = sym p
-pathInv {v₁ = inj₂ (inj₁ v)} {v₂ = inj₂ v'} {assocl₊} ()
-pathInv {v₁ = inj₂ (inj₂ v)} {v₂ = inj₁ v'} {assocl₊} ()
-pathInv {v₁ = inj₂ (inj₂ v)} {v₂ = inj₂ v'} {assocl₊} p = sym p
-pathInv {v₁ = inj₁ (inj₁ v)} {v₂ = inj₁ v'} {assocr₊} p = sym p
-pathInv {v₁ = inj₁ (inj₁ v)} {v₂ = inj₂ v'} {assocr₊} ()
-pathInv {v₁ = inj₁ (inj₂ v)} {v₂ = inj₁ v'} {assocr₊} ()
-pathInv {v₁ = inj₁ (inj₂ v)} {v₂ = inj₂ (inj₁ v')} {assocr₊} p = sym p
-pathInv {v₁ = inj₁ (inj₂ v)} {v₂ = inj₂ (inj₂ v')} {assocr₊} ()
-pathInv {v₁ = inj₂ v} {v₂ = inj₁ v'} {assocr₊} ()
-pathInv {v₁ = inj₂ v} {v₂ = inj₂ (inj₁ v')} {assocr₊} ()
-pathInv {v₁ = inj₂ v} {v₂ = inj₂ (inj₂ v')} {assocr₊} p = sym p
-pathInv {v₁ = (tt , v)} {v₂ = v'} {unite⋆} p = sym p
-pathInv {v₁ = v} {v₂ = (tt , v')} {uniti⋆} p = sym p
-pathInv {v₁ = (u , v)} {v₂ = (v' , u')} {swap⋆} (p₁ , p₂) = (sym p₂ , sym p₁)
-pathInv {v₁ = (u , (v , w))} {v₂ = ((u' , v') , w')} {assocl⋆} (p₁ , p₂ , p₃) = 
-  (sym p₁ , sym p₂ , sym p₃)
-pathInv {v₁ = ((u , v) , w)} {v₂ = (u' , (v' , w'))} {assocr⋆} (p₁ , p₂ , p₃) = 
-  (sym p₁ , sym p₂ , sym p₃)
-pathInv {v₁ = _} {v₂ = ()} {distz}
-pathInv {v₁ = ()} {v₂ = _} {factorz} 
-pathInv {v₁ = (inj₁ v₁ , v₃)} {v₂ = inj₁ (v₁' , v₃')} {dist} (p₁ , p₂) = 
-  (sym p₁ , sym p₂)
-pathInv {v₁ = (inj₁ v₁ , v₃)} {v₂ = inj₂ (v₂' , v₃')} {dist} ()
-pathInv {v₁ = (inj₂ v₂ , v₃)} {v₂ = inj₁ (v₁' , v₃')} {dist} ()
-pathInv {v₁ = (inj₂ v₂ , v₃)} {v₂ = inj₂ (v₂' , v₃')} {dist} (p₁ , p₂) = 
-  (sym p₁ , sym p₂)
-pathInv {v₁ = inj₁ (v₁ , v₃)} {v₂ = (inj₁ v₁' , v₃')} {factor} (p₁ , p₂) = 
-  (sym p₁ , sym p₂)
-pathInv {v₁ = inj₁ (v₁ , v₃)} {v₂ = (inj₂ v₂' , v₃')} {factor} ()
-pathInv {v₁ = inj₂ (v₂ , v₃)} {v₂ = (inj₁ v₁' , v₃')} {factor} ()
-pathInv {v₁ = inj₂ (v₂ , v₃)} {v₂ = (inj₂ v₂' , v₃')} {factor} (p₁ , p₂) = 
-  (sym p₁ , sym p₂)
-pathInv {v₁ = v} {v₂ = v'} {id⟷} p = sym p
-pathInv {v₁ = v} {v₂ = v'} {sym⟷ c} p = {!!} 
-pathInv {v₁ = v} {v₂ = v'} {c₁ ◎ c₂} (u , (p₁ , p₂)) = 
-  (u , (pathInv {c = c₂} p₂  , pathInv {c = c₁} p₁))
-pathInv {v₁ = inj₁ v} {v₂ = inj₁ v'} {c₁ ⊕ c₂} p = pathInv {c = c₁} p
-pathInv {v₁ = inj₁ v} {v₂ = inj₂ v'} {c₁ ⊕ c₂} ()
-pathInv {v₁ = inj₂ v} {v₂ = inj₁ v'} {c₁ ⊕ c₂} ()
-pathInv {v₁ = inj₂ v} {v₂ = inj₂ v'} {c₁ ⊕ c₂} p = pathInv {c = c₂} p 
-pathInv {v₁ = (u , v)} {v₂ = (u' , v')} {c₁ ⊗ c₂} (p₁ , p₂) = 
-  (pathInv {c = c₁} p₁ , pathInv {c = c₂} p₂)
+mutual 
+
+  pathInv : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} → 
+            Paths c v₁ v₂ → Paths (sym⟷ c) v₂ v₁
+  pathInv {v₁ = inj₁ ()} {v₂ = v} {unite₊}
+  pathInv {v₁ = inj₂ v} {v₂ = v'} {unite₊} p = sym p
+  pathInv {v₁ = v} {v₂ = inj₁ ()} {uniti₊} 
+  pathInv {v₁ = v} {v₂ = inj₂ v'} {uniti₊} p = sym p 
+  pathInv {v₁ = inj₁ v} {v₂ = inj₁ v'} {swap₊} ()
+  pathInv {v₁ = inj₁ v} {v₂ = inj₂ v'} {swap₊} p = sym p
+  pathInv {v₁ = inj₂ v} {v₂ = inj₁ v'} {swap₊} p = sym p
+  pathInv {v₁ = inj₂ v} {v₂ = inj₂ v'} {swap₊} ()
+  pathInv {v₁ = inj₁ v} {v₂ = inj₁ (inj₁ v')} {assocl₊} p = sym p
+  pathInv {v₁ = inj₁ v} {v₂ = inj₁ (inj₂ v')} {assocl₊} ()
+  pathInv {v₁ = inj₁ v} {v₂ = inj₂ v'} {assocl₊} ()
+  pathInv {v₁ = inj₂ (inj₁ v)} {v₂ = inj₁ (inj₁ v')} {assocl₊} ()
+  pathInv {v₁ = inj₂ (inj₁ v)} {v₂ = inj₁ (inj₂ v')} {assocl₊} p = sym p
+  pathInv {v₁ = inj₂ (inj₁ v)} {v₂ = inj₂ v'} {assocl₊} ()
+  pathInv {v₁ = inj₂ (inj₂ v)} {v₂ = inj₁ v'} {assocl₊} ()
+  pathInv {v₁ = inj₂ (inj₂ v)} {v₂ = inj₂ v'} {assocl₊} p = sym p
+  pathInv {v₁ = inj₁ (inj₁ v)} {v₂ = inj₁ v'} {assocr₊} p = sym p
+  pathInv {v₁ = inj₁ (inj₁ v)} {v₂ = inj₂ v'} {assocr₊} ()
+  pathInv {v₁ = inj₁ (inj₂ v)} {v₂ = inj₁ v'} {assocr₊} ()
+  pathInv {v₁ = inj₁ (inj₂ v)} {v₂ = inj₂ (inj₁ v')} {assocr₊} p = sym p
+  pathInv {v₁ = inj₁ (inj₂ v)} {v₂ = inj₂ (inj₂ v')} {assocr₊} ()
+  pathInv {v₁ = inj₂ v} {v₂ = inj₁ v'} {assocr₊} ()
+  pathInv {v₁ = inj₂ v} {v₂ = inj₂ (inj₁ v')} {assocr₊} ()
+  pathInv {v₁ = inj₂ v} {v₂ = inj₂ (inj₂ v')} {assocr₊} p = sym p
+  pathInv {v₁ = (tt , v)} {v₂ = v'} {unite⋆} p = sym p
+  pathInv {v₁ = v} {v₂ = (tt , v')} {uniti⋆} p = sym p
+  pathInv {v₁ = (u , v)} {v₂ = (v' , u')} {swap⋆} (p₁ , p₂) = (sym p₂ , sym p₁)
+  pathInv {v₁ = (u , (v , w))} {v₂ = ((u' , v') , w')} {assocl⋆} (p₁ , p₂ , p₃) = 
+    (sym p₁ , sym p₂ , sym p₃)
+  pathInv {v₁ = ((u , v) , w)} {v₂ = (u' , (v' , w'))} {assocr⋆} (p₁ , p₂ , p₃) = 
+    (sym p₁ , sym p₂ , sym p₃)
+  pathInv {v₁ = _} {v₂ = ()} {distz}
+  pathInv {v₁ = ()} {v₂ = _} {factorz} 
+  pathInv {v₁ = (inj₁ v₁ , v₃)} {v₂ = inj₁ (v₁' , v₃')} {dist} (p₁ , p₂) = 
+    (sym p₁ , sym p₂)
+  pathInv {v₁ = (inj₁ v₁ , v₃)} {v₂ = inj₂ (v₂' , v₃')} {dist} ()
+  pathInv {v₁ = (inj₂ v₂ , v₃)} {v₂ = inj₁ (v₁' , v₃')} {dist} ()
+  pathInv {v₁ = (inj₂ v₂ , v₃)} {v₂ = inj₂ (v₂' , v₃')} {dist} (p₁ , p₂) = 
+    (sym p₁ , sym p₂)
+  pathInv {v₁ = inj₁ (v₁ , v₃)} {v₂ = (inj₁ v₁' , v₃')} {factor} (p₁ , p₂) = 
+    (sym p₁ , sym p₂)
+  pathInv {v₁ = inj₁ (v₁ , v₃)} {v₂ = (inj₂ v₂' , v₃')} {factor} ()
+  pathInv {v₁ = inj₂ (v₂ , v₃)} {v₂ = (inj₁ v₁' , v₃')} {factor} ()
+  pathInv {v₁ = inj₂ (v₂ , v₃)} {v₂ = (inj₂ v₂' , v₃')} {factor} (p₁ , p₂) = 
+    (sym p₁ , sym p₂)
+  pathInv {v₁ = v} {v₂ = v'} {id⟷} p = sym p
+  pathInv {v₁ = v} {v₂ = v'} {sym⟷ c} p = pathBInv {v₁ = v'} {v₂ = v} {c} p
+  pathInv {v₁ = v} {v₂ = v'} {c₁ ◎ c₂} (u , (p₁ , p₂)) = 
+    (u , (pathInv {c = c₂} p₂  , pathInv {c = c₁} p₁))
+  pathInv {v₁ = inj₁ v} {v₂ = inj₁ v'} {c₁ ⊕ c₂} p = pathInv {c = c₁} p
+  pathInv {v₁ = inj₁ v} {v₂ = inj₂ v'} {c₁ ⊕ c₂} ()
+  pathInv {v₁ = inj₂ v} {v₂ = inj₁ v'} {c₁ ⊕ c₂} ()
+  pathInv {v₁ = inj₂ v} {v₂ = inj₂ v'} {c₁ ⊕ c₂} p = pathInv {c = c₂} p 
+  pathInv {v₁ = (u , v)} {v₂ = (u' , v')} {c₁ ⊗ c₂} (p₁ , p₂) = 
+    (pathInv {c = c₁} p₁ , pathInv {c = c₂} p₂)
+
+  pathBInv : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} → 
+             PathsB c v₂ v₁ → PathsB (sym⟷ c) v₁ v₂
+  pathBInv {v₁ = inj₁ ()} {v₂ = v} {unite₊}
+  pathBInv {v₁ = inj₂ v} {v₂ = v'} {unite₊} p = sym p
+  pathBInv {v₁ = v} {v₂ = inj₁ ()} {uniti₊} 
+  pathBInv {v₁ = v} {v₂ = inj₂ v'} {uniti₊} p = sym p 
+  pathBInv {v₁ = inj₁ v} {v₂ = inj₁ v'} {swap₊} ()
+  pathBInv {v₁ = inj₁ v} {v₂ = inj₂ v'} {swap₊} p = sym p
+  pathBInv {v₁ = inj₂ v} {v₂ = inj₁ v'} {swap₊} p = sym p
+  pathBInv {v₁ = inj₂ v} {v₂ = inj₂ v'} {swap₊} ()
+
+  pathBInv {v₁ = inj₁ v} {v₂ = inj₁ (inj₁ v')} {assocl₊} p = sym p
+  pathBInv {v₁ = inj₂ v} {v₂ = inj₁ (inj₁ v')} {assocl₊} ()
+  pathBInv {v₁ = inj₁ v} {v₂ = inj₁ (inj₂ v')} {assocl₊} ()
+  pathBInv {v₁ = inj₂ (inj₁ v)} {v₂ = inj₁ (inj₂ v')} {assocl₊} p = sym p
+  pathBInv {v₁ = inj₂ (inj₂ v)} {v₂ = inj₁ (inj₂ v')} {assocl₊} ()
+  pathBInv {v₁ = inj₁ v} {v₂ = inj₂ v'} {assocl₊} ()
+  pathBInv {v₁ = inj₂ (inj₁ v)} {v₂ = inj₂ v'} {assocl₊} ()
+  pathBInv {v₁ = inj₂ (inj₂ v)} {v₂ = inj₂ v'} {assocl₊} p = sym p
+  pathBInv {v₁ = inj₁ (inj₁ v)} {v₂ = inj₁ v'} {assocr₊} p = sym p
+  pathBInv {v₁ = inj₁ (inj₂ v)} {v₂ = inj₁ v'} {assocr₊} ()
+  pathBInv {v₁ = inj₂ v} {v₂ = inj₁ v'} {assocr₊} ()
+  pathBInv {v₁ = inj₁ (inj₁ v)} {v₂ = inj₂ (inj₁ v')} {assocr₊} ()
+  pathBInv {v₁ = inj₁ (inj₂ v)} {v₂ = inj₂ (inj₁ v')} {assocr₊} p = sym p
+  pathBInv {v₁ = inj₂ v} {v₂ = inj₂ (inj₁ v')} {assocr₊} ()
+  pathBInv {v₁ = inj₁ v} {v₂ = inj₂ (inj₂ v')} {assocr₊} ()
+  pathBInv {v₁ = inj₂ v} {v₂ = inj₂ (inj₂ v')} {assocr₊} p = sym p
+  pathBInv {v₁ = (tt , v)} {v₂ = v'} {unite⋆} p = sym p
+  pathBInv {v₁ = v} {v₂ = (tt , v')} {uniti⋆} p = sym p
+  pathBInv {v₁ = (u , v)} {v₂ = (v' , u')} {swap⋆} (p₁ , p₂) = (sym p₂ , sym p₁)
+  pathBInv {v₁ = (u , (v , w))} {v₂ = ((u' , v') , w')} {assocl⋆} (p₁ , p₂ , p₃) 
+    = (sym p₁ , sym p₂ , sym p₃)
+  pathBInv {v₁ = ((u , v) , w)} {v₂ = (u' , (v' , w'))} {assocr⋆} (p₁ , p₂ , p₃) 
+    = (sym p₁ , sym p₂ , sym p₃)
+  pathBInv {v₁ = _} {v₂ = ()} {distz}
+  pathBInv {v₁ = ()} {v₂ = _} {factorz} 
+  pathBInv {v₁ = (inj₁ v₁ , v₃)} {v₂ = inj₁ (v₁' , v₃')} {dist} (p₁ , p₂) = 
+    (sym p₁ , sym p₂)
+  pathBInv {v₁ = (inj₁ v₁ , v₃)} {v₂ = inj₂ (v₂' , v₃')} {dist} ()
+  pathBInv {v₁ = (inj₂ v₂ , v₃)} {v₂ = inj₁ (v₁' , v₃')} {dist} ()
+  pathBInv {v₁ = (inj₂ v₂ , v₃)} {v₂ = inj₂ (v₂' , v₃')} {dist} (p₁ , p₂) = 
+    (sym p₁ , sym p₂)
+  pathBInv {v₁ = inj₁ (v₁ , v₃)} {v₂ = (inj₁ v₁' , v₃')} {factor} (p₁ , p₂) = 
+    (sym p₁ , sym p₂)
+  pathBInv {v₁ = inj₁ (v₁ , v₃)} {v₂ = (inj₂ v₂' , v₃')} {factor} ()
+  pathBInv {v₁ = inj₂ (v₂ , v₃)} {v₂ = (inj₁ v₁' , v₃')} {factor} ()
+  pathBInv {v₁ = inj₂ (v₂ , v₃)} {v₂ = (inj₂ v₂' , v₃')} {factor} (p₁ , p₂) = 
+    (sym p₁ , sym p₂)
+  pathBInv {v₁ = v} {v₂ = v'} {id⟷} p = sym p
+  pathBInv {v₁ = v} {v₂ = v'} {sym⟷ c} p = pathInv {v₁ = v'} {v₂ = v} {c} p
+  pathBInv {t₁} {t₂} {v₁} {v₂} {c₁ ◎ c₂} (u , (p₂ , p₁)) = 
+    (u , (pathBInv {v₁ = v₁} {v₂ = u} {c = c₁} p₁ , 
+          pathBInv {v₁ = u} {v₂ = v₂} {c = c₂} p₂))
+  pathBInv {v₁ = inj₁ v} {v₂ = inj₁ v'} {c₁ ⊕ c₂} p = pathBInv {c = c₁} p
+  pathBInv {v₁ = inj₁ v} {v₂ = inj₂ v'} {c₁ ⊕ c₂} ()
+  pathBInv {v₁ = inj₂ v} {v₂ = inj₁ v'} {c₁ ⊕ c₂} ()
+  pathBInv {v₁ = inj₂ v} {v₂ = inj₂ v'} {c₁ ⊕ c₂} p = pathBInv {c = c₂} p 
+  pathBInv {v₁ = (u , v)} {v₂ = (u' , v')} {c₁ ⊗ c₂} (p₁ , p₂) = 
+    (pathBInv {c = c₁} p₁ , pathBInv {c = c₂} p₂)
 
 {--
 -- If we have a path between v₁ and v₁' and a combinator that connects v₁ to
@@ -398,8 +460,8 @@ data _⟺_ : {n : ℕ} → C n → C n → Set where
   baseC : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ((ZD t₁) ⟺ (ZD t₂))
   nodeC : {n : ℕ} {c₁ : C n} {c₂ : C n} {c₃ : C n} {c₄ : C n} → 
           (c₁ ⟺ c₂) → (c₃ ⟺ c₄) → ((Node c₁ c₃) ⟺ (Node c₂ c₄))
-  zerolC : {n : ℕ} {c : C n} → ((Node c c) ⟺ (zeroN (suc n)))
-  zerorC : {n : ℕ} {c : C n} → ((zeroN (suc n)) ⟺ (Node c c))
+--  zerolC : {n : ℕ} {c : C n} → ((Node c c) ⟺ (zeroN (suc n)))
+--  zerorC : {n : ℕ} {c : C n} → ((zeroN (suc n)) ⟺ (Node c c))
 
 NPaths : {n : ℕ} {c₁ c₂ : C n} → (c₁ ⟺ c₂) → ⟦ c₁ ⟧N → ⟦ c₂ ⟧N → Set
 NPaths (baseC c) v₁ v₂ = Paths c v₁ v₂
@@ -407,5 +469,7 @@ NPaths (nodeC α₁ α₂) (inj₁ v₁) (inj₁ v₂) = NPaths α₁ v₁ v₂
 NPaths (nodeC α₁ α₂) (inj₁ v₁) (inj₂ v₂) = ⊥ 
 NPaths (nodeC α₁ α₂) (inj₂ v₁) (inj₁ v₂) = ⊥ 
 NPaths (nodeC α₁ α₂) (inj₂ v₁) (inj₂ v₂) = NPaths α₂ v₁ v₂
-NPaths zerolC v₁ v₂ = {!!}
-NPaths zerorC v₁ v₂ = {!!}
+--NPaths zerolC v₁ v₂ = {!!}
+--NPaths zerorC v₁ v₂ = {!!}
+
+------------------------------------------------------------------------------
