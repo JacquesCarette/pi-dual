@@ -321,10 +321,10 @@ mutual
   pathInv {v₁ = (tt , v)} {v₂ = v'} {unite⋆} p = sym p
   pathInv {v₁ = v} {v₂ = (tt , v')} {uniti⋆} p = sym p
   pathInv {v₁ = (u , v)} {v₂ = (v' , u')} {swap⋆} (p₁ , p₂) = (sym p₂ , sym p₁)
-  pathInv {v₁ = (u , (v , w))} {v₂ = ((u' , v') , w')} {assocl⋆} (p₁ , p₂ , p₃) = 
-    (sym p₁ , sym p₂ , sym p₃)
-  pathInv {v₁ = ((u , v) , w)} {v₂ = (u' , (v' , w'))} {assocr⋆} (p₁ , p₂ , p₃) = 
-    (sym p₁ , sym p₂ , sym p₃)
+  pathInv {v₁ = (u , (v , w))} {v₂ = ((u' , v') , w')} {assocl⋆} (p₁ , p₂ , p₃) 
+    = (sym p₁ , sym p₂ , sym p₃)
+  pathInv {v₁ = ((u , v) , w)} {v₂ = (u' , (v' , w'))} {assocr⋆} (p₁ , p₂ , p₃) 
+    = (sym p₁ , sym p₂ , sym p₃)
   pathInv {v₁ = _} {v₂ = ()} {distz}
   pathInv {v₁ = ()} {v₂ = _} {factorz} 
   pathInv {v₁ = (inj₁ v₁ , v₃)} {v₂ = inj₁ (v₁' , v₃')} {dist} (p₁ , p₂) = 
@@ -409,6 +409,26 @@ mutual
   pathBInv {v₁ = inj₂ v} {v₂ = inj₂ v'} {c₁ ⊕ c₂} p = pathBInv {c = c₂} p 
   pathBInv {v₁ = (u , v)} {v₂ = (u' , v')} {c₁ ⊗ c₂} (p₁ , p₂) = 
     (pathBInv {c = c₁} p₁ , pathBInv {c = c₂} p₂)
+
+pathTrans : {t₁ t₂ t₃ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {v₃ : ⟦ t₃ ⟧} 
+            {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} → 
+            Paths c₁ v₁ v₂ → Paths c₂ v₂ v₃ → Paths (c₁ ◎ c₂) v₁ v₃
+pathTrans {v₂ = v₂} p q = (v₂ , p , q)
+
+pathBTrans : {t₁ t₂ t₃ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {v₃ : ⟦ t₃ ⟧} 
+             {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} → 
+             PathsB c₁ v₂ v₁ → PathsB c₂ v₃ v₂ → PathsB (c₁ ◎ c₂) v₃ v₁
+pathBTrans {v₂ = v₂} p q = (v₂ , q , p)
+
+-- Can we show:
+-- p : Paths c v₁ v₂ == pathTrans p (refl v₂) 
+
+2Paths = _≡_ -- for now but it should be something else
+
+reflR : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} 
+        {p : Paths c v₁ v₂} → {q : Paths (c ◎ id⟷) v₁ v₂} → 
+        2Paths p q
+reflR = {!!} 
 
 {--
 -- If we have a path between v₁ and v₁' and a combinator that connects v₁ to
