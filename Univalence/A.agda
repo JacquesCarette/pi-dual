@@ -423,13 +423,14 @@ pathBTrans {v₂ = v₂} p q = (v₂ , q , p)
 -- Can we show:
 -- p : Paths c v₁ v₂ == pathTrans p (refl v₂) 
 
+{--
 2Paths = _≡_ -- for now but it should be something else
 
 reflR : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} 
         {p : Paths c v₁ v₂} → {q : Paths (c ◎ id⟷) v₁ v₂} → 
         2Paths p q
 reflR = {!!} 
-
+--}
 {--
 -- If we have a path between v₁ and v₁' and a combinator that connects v₁ to
 -- v₂, then the combinator also connects v₁' to some v₂' such that there is
