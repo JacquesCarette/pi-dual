@@ -538,6 +538,8 @@ idD = swap₊
 
 -- Groupoid structure (i.e. laws), for 2Paths.  Some of the rest of
 -- the structure is given above already
+-- If the following is right, we can come up with syntax (like _[_]⟺[_]_ ) for  p₁ [c₁]⟺[c₂] p₂ .  We really do
+-- need to index the ⟺ by the combinators 'explicitly' as Agda can never infer them.
 data 2P : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧ } (c₁ c₂ : t₁ ⟷ t₂) → Paths c₁ v₁ v₂ → Paths c₂ v₁ v₂ → Set where
   lid : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} {p : Paths c v₁ v₂} → 2P (id⟷ ◎ c) c  (pathTrans {c₁ = id⟷} {c} pathId p) p
   rid : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} {p : Paths c v₁ v₂} → 2P (c ◎ id⟷) c  (pathTrans {c₁ = c} {id⟷} p pathId) p
