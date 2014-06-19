@@ -410,6 +410,9 @@ mutual
   pathBInv {v₁ = (u , v)} {v₂ = (u' , v')} {c₁ ⊗ c₂} (p₁ , p₂) = 
     (pathBInv {c = c₁} p₁ , pathBInv {c = c₂} p₂)
 
+-- for every paths from v1 to v2 and from v2 to v3, there is a path from v1
+-- to v3 that (obviously) goes through v2
+
 pathTrans : {t₁ t₂ t₃ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {v₃ : ⟦ t₃ ⟧} 
             {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} → 
             Paths c₁ v₁ v₂ → Paths c₂ v₂ v₃ → Paths (c₁ ◎ c₂) v₁ v₃
@@ -420,9 +423,56 @@ pathBTrans : {t₁ t₂ t₃ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {v
              PathsB c₁ v₂ v₁ → PathsB c₂ v₃ v₂ → PathsB (c₁ ◎ c₂) v₃ v₁
 pathBTrans {v₂ = v₂} p q = (v₂ , q , p)
 
+------------------------------------------------------------------------------
+-- Int construction
+-- this will allow us to represents paths as values and then define 2paths
+-- between them
+
+data DU : Set where
+  diff : U → U → DU
+
+pos : DU → U
+pos (diff t₁ t₂) = t₁
+
+neg : DU → U
+neg (diff t₁ t₂) = t₂
+
+zeroD : DU
+zeroD = diff ZERO ZERO
+
+oneD : DU
+oneD = diff ONE ZERO
+
+plusD : DU → DU → DU
+plusD (diff t₁ t₂) (diff t₁' t₂') = diff (PLUS t₁ t₁') (PLUS t₂ t₂')
+
+timesD : DU → DU → DU
+timesD (diff t₁ t₂) (diff t₁' t₂') = 
+  diff (PLUS (TIMES t₁ t₁') (TIMES t₂ t₂'))
+       (PLUS (TIMES t₂ t₁') (TIMES t₁ t₂'))
+
+dualD : DU → DU
+dualD (diff t₁ t₂) = diff t₂ t₁
+
+lolliD : DU → DU → DU
+lolliD (diff t₁ t₂) (diff t₁' t₂') = diff (PLUS t₂ t₁') (PLUS t₁ t₂')
+
+_≤=>_ : DU → DU → Set
+d₁ ≤=> d₂ = PLUS (pos d₁) (neg d₂) ⟷ PLUS (neg d₁) (pos d₂)
+  
+idD : {d : DU} → d ≤=> d
+idD = swap₊
+
+--curryD : {d₁ d₂ d₃ : DU} → (plusD d₁ d₂ ≤=> d₃) → (d₁ ≤=> lolliD d₂ d₃)
+--curryD f = assocl₊ ◎ f ◎ assocr₊
+-- take a path and represent it as a value of type lolli and then use
+-- ≤=> between these values as the definition of 2paths???
+
+------------------------------------------------------------------------------
 -- Can we show:
 -- p : Paths c v₁ v₂ == pathTrans p (refl v₂) 
 
+{--
 2Paths : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c₁ c₂ : t₁ ⟷ t₂} → 
          Paths c₁ v₁ v₂ → Paths c₂ v₁ v₂ → Set
 2Paths p q = {!!} 
@@ -452,8 +502,7 @@ reflR {c = sym⟷ c} = {!!}
 reflR {c = c₁ ◎ c₂} = {!!}
 reflR {c = c₁ ⊕ c₂} = {!!}
 reflR {c = c₁ ⊗ c₂} = {!!} 
-
-
+--}
 
 {--
 -- If we have a path between v₁ and v₁' and a combinator that connects v₁ to
