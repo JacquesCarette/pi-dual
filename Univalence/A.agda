@@ -235,10 +235,13 @@ mutual
 pathIdtt : Paths id⟷ tt tt
 pathIdtt = refl tt
 
--- three different ways of relating F to F:
+-- four different ways of relating F to F:
 
 pathIdFF : Paths id⟷ FALSE FALSE
 pathIdFF = refl FALSE
+
+pathIdIdFF : Paths (id⟷ ◎ id⟷) FALSE FALSE
+pathIdIdFF = (FALSE , refl FALSE , refl FALSE)
 
 pathNotNotFF : Paths (swap₊ ◎ swap₊) FALSE FALSE
 pathNotNotFF = TRUE , refl tt , refl tt
@@ -554,6 +557,11 @@ data 2P : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧ } (c₁ c�
 2Paths lid (a , refl .a , p₂) p₃ = p₂ ≡ p₃
 2Paths rid (a , p₂ , refl .a) p₃ = p₂ ≡ p₃
  
+example : 2Paths {t₁ = BOOL} {t₂ = BOOL} {v₁ = FALSE} {v₂ = FALSE} 
+          {c₁ = id⟷ ◎ id⟷} {c₂ = id⟷} {p₁ = pathIdIdFF}
+          lid pathIdIdFF pathIdFF
+example = refl (refl FALSE) 
+
 {-
 data _⟷_ : U → U → Set where
   unite₊  : {t : U} → PLUS ZERO t ⟷ t
