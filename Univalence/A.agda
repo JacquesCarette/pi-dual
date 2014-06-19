@@ -65,6 +65,14 @@ TRUE = inj₁ tt
 FALSE : ⟦ BOOL ⟧
 FALSE = inj₂ tt
 
+NOT : ⟦ BOOL ⟧ → ⟦ BOOL ⟧
+NOT (inj₁ tt) = FALSE
+NOT (inj₂ tt) = TRUE
+
+CNOT : ⟦ BOOL ⟧ → ⟦ BOOL ⟧ → ⟦ BOOL ⟧ × ⟦ BOOL ⟧
+CNOT (inj₁ tt) b = (TRUE , NOT b)
+CNOT (inj₂ tt) b = (FALSE , b)
+
 ------------------------------------------------------------------------------
 -- Paths connect points in t₁ and t₂ if there is an isomorphism between the
 -- types t₁ and t₂. The family ⟷ plays the role of identity types in HoTT
@@ -268,6 +276,57 @@ pathSwap₊TF = refl tt
 pathSwap₊FF : Paths swap₊ FALSE FALSE → ⊤
 pathSwap₊FF ()
 
+-- intuitively the two paths below should not be related by a 2-path because
+-- pathCnotTF is "essentially" cnot which would map (F,F) to (F,F) but
+-- pathIdNotTF would map (F,F) to (F,T).
+
+pathIdNotFF : Paths (id⟷ ⊗ swap₊) (FALSE , FALSE) (FALSE , TRUE)
+pathIdNotFF = refl FALSE , refl tt
+
+pathIdNotFT : Paths (id⟷ ⊗ swap₊) (FALSE , TRUE) (FALSE , FALSE)
+pathIdNotFT = refl FALSE , refl tt
+
+pathIdNotTF : Paths (id⟷ ⊗ swap₊) (TRUE , FALSE) (TRUE , TRUE)
+pathIdNotTF = refl TRUE , refl tt
+
+pathIdNotTT : Paths (id⟷ ⊗ swap₊) (TRUE , TRUE) (TRUE , FALSE)
+pathIdNotTT = refl TRUE , refl tt
+
+pathIdNotb : {b₁ b₂ : ⟦ BOOL ⟧} → Paths (id⟷ ⊗ swap₊) (b₁ , b₂) (b₁ , NOT b₂)
+pathIdNotb {b₁} {inj₁ tt} = refl b₁ , refl tt
+pathIdNotb {b₁} {inj₂ tt} = refl b₁ , refl tt
+
+pathCnotbb : {b₁ b₂ : ⟦ BOOL ⟧} → Paths cnot (b₁ , b₂) (CNOT b₁ b₂)
+pathCnotbb {inj₁ tt} {inj₁ tt} = inj₁ (tt , TRUE) ,
+                                 (refl tt , refl TRUE) , 
+                                 (inj₁ (tt , FALSE) ,
+                                 (refl tt , refl tt) , 
+                                 (refl tt , refl FALSE))
+pathCnotbb {inj₁ tt} {inj₂ tt} = inj₁ (tt , FALSE) ,
+                                 (refl tt , refl FALSE) , 
+                                 (inj₁ (tt , TRUE) ,
+                                 (refl tt , refl tt) , 
+                                 (refl tt , refl TRUE))
+pathCnotbb {inj₂ tt} {b₂} = inj₂ (tt , b₂) , 
+                            (refl tt , refl b₂) , 
+                            (inj₂ (tt , b₂) , 
+                            (refl tt , refl b₂) , 
+                            (refl tt , refl b₂))
+
+pathCnotFF : Paths cnot (FALSE , FALSE) (FALSE , FALSE)
+pathCnotFF = inj₂ (tt , FALSE) , 
+             (refl tt , refl FALSE) , 
+             (inj₂ (tt , FALSE) , 
+             (refl tt , refl FALSE) , 
+             (refl tt , refl FALSE))
+
+pathCnotFT : Paths cnot (FALSE , TRUE) (FALSE , TRUE)
+pathCnotFT = inj₂ (tt , TRUE) ,
+             (refl tt , refl TRUE) , 
+             (inj₂ (tt , TRUE) ,
+             (refl tt , refl TRUE) , 
+             (refl tt , refl TRUE))
+
 pathCnotTF : Paths cnot (TRUE , FALSE) (TRUE , TRUE)
 pathCnotTF = inj₁ (tt , FALSE) , -- first intermediate value
              -- path using dist from (T,F) to (inj₁ (tt , F)) 
@@ -277,11 +336,12 @@ pathCnotTF = inj₁ (tt , FALSE) , -- first intermediate value
              (refl tt , refl tt) , 
              (refl tt , refl TRUE))
 
--- here is a completely different path between (T,F) and (T,T)
-pathIdNotTF : Paths (id⟷ ⊗ swap₊) (TRUE , FALSE) (TRUE , TRUE)
-pathIdNotTF = refl TRUE , refl tt
-
--- is there a 2-path between the two paths above? 
+pathCnotTT : Paths cnot (TRUE , TRUE) (TRUE , FALSE)
+pathCnotTT = inj₁ (tt , TRUE) ,
+             (refl tt , refl TRUE) , 
+             (inj₁ (tt , FALSE) ,
+             (refl tt , refl tt) , 
+             (refl tt , refl FALSE))
 
 pathUnite₊ : {t : U} {v v' : ⟦ t ⟧} → (v ≡ v') → Paths unite₊ (inj₂ v) v'
 pathUnite₊ p = p
