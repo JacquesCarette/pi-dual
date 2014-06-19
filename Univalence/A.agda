@@ -483,6 +483,10 @@ pathBTrans : {t₁ t₂ t₃ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {v
              PathsB c₁ v₂ v₁ → PathsB c₂ v₃ v₂ → PathsB (c₁ ◎ c₂) v₃ v₁
 pathBTrans {v₂ = v₂} p q = (v₂ , q , p)
 
+-- we always have a canonical path from v to v
+pathId : {t : U} {v : ⟦ t ⟧} → Paths id⟷ v v
+pathId {v = v} = refl v
+
 ------------------------------------------------------------------------------
 -- Int construction
 -- this will allow us to represents paths as values and then define 2paths
@@ -532,6 +536,30 @@ idD = swap₊
 -- Can we show:
 -- p : Paths c v₁ v₂ == pathTrans p (refl v₂) 
 
+-- Groupoid structure (i.e. laws), for 2Paths.  Some of the rest of
+-- the structure is given above already
+data 2P : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧ } (c₁ c₂ : t₁ ⟷ t₂) → Paths c₁ v₁ v₂ → Paths c₂ v₁ v₂ → Set where
+  lid : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} {p : Paths c v₁ v₂} → 2P (id⟷ ◎ c) c  (pathTrans {c₁ = id⟷} {c} pathId p) p
+  rid : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} {p : Paths c v₁ v₂} → 2P (c ◎ id⟷) c  (pathTrans {c₁ = c} {id⟷} p pathId) p
+-- also need:
+-- assoc
+-- equiv (i.e refl, sym, trans)
+-- linv
+-- rinv
+-- and perhaps cong, i.e. ◎-resp-2P
+
+2Paths :  {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧ } {c₁ c₂ : t₁ ⟷ t₂} {p₁ : Paths c₁ v₁ v₂} {p₂ : Paths c₂ v₁ v₂} → 2P c₁ c₂ p₁ p₂ → Paths c₁ v₁ v₂ → Paths c₂ v₁ v₂ → Set
+2Paths lid (a , refl .a , p₂) p₃ = p₂ ≡ p₃
+2Paths rid (a , p₂ , refl .a) p₃ = p₂ ≡ p₃
+ 
+{-
+data _⟷_ : U → U → Set where
+  unite₊  : {t : U} → PLUS ZERO t ⟷ t
+  uniti₊  : {t : U} → t ⟷ PLUS ZERO t
+  swap₊   : {t₁ t₂ : U} → PLUS t₁ t₂ ⟷ PLUS t₂ t₁
+  assocl₊ : {t₁ t₂ t₃ : U} → PLUS t₁ (PLUS t₂ t₃) ⟷ PLUS (PLUS t₁ t₂) t₃
+  assocr₊ : {t₁ t₂ t₃ : U} → PLUS (PLUS t₁ t₂) t₃ ⟷ PLUS t₁ (PLUS t₂ t₃)
+-}
 {--
 2Paths : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c₁ c₂ : t₁ ⟷ t₂} → 
          Paths c₁ v₁ v₂ → Paths c₂ v₁ v₂ → Set
@@ -580,6 +608,7 @@ with cubical types though...
 ------------------------------------------------------------------------------
 -- N dimensional version
 
+{-
 data C : ℕ → Set where
   ZD   : U → C 0
   Node : {n : ℕ} → C n → C n → C (suc n) 
@@ -626,4 +655,5 @@ NPaths (nodeC α₁ α₂) (inj₂ v₁) (inj₂ v₂) = NPaths α₂ v₁ v₂
 --NPaths zerolC v₁ v₂ = {!!}
 --NPaths zerorC v₁ v₂ = {!!}
 
+-}
 ------------------------------------------------------------------------------
