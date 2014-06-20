@@ -1,6 +1,4 @@
-\documentclass{llncs}
-\pagestyle{plain}
-
+\documentclass[authoryear,preprint]{sigplanconf}
 \usepackage{agda}
 \usepackage{tikz}
 \usepackage{url}
@@ -51,13 +49,15 @@ $\displaystyle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
+\special{papersize=8.5in,11in}
+\setlength{\pdfpageheight}{\paperheight}
+\setlength{\pdfpagewidth}{\paperwidth}
+
 \title{A Computational Interpretation of \\ Univalence for Finite Types}
-\author{Zachary Sparks$^{1}$ \and Jacques Carette$^{2}$ \and Amr Sabry$^{1}$}
-\institute{$^{(1)}$~Indiana University \qquad $^{(2)}$~McMaster University}
+\authorinfo{}{}{}
 \maketitle
 
 \begin{abstract}
-
 Homotopy type theory (HoTT) relates some aspects of topology, algebra,
 geometry, physics, logic, and type theory, in a unique novel way that
 promises a new and foundational perspective on mathematics and
@@ -73,8 +73,6 @@ side of syntactic identities and permutations in the symmetric group on the
 side of semantic equivalences. We formalize this connection in Agda as a
 compilation/decompilation theorem for our previously developed reversible
 language $\Pi$ based on type isomorphisms. 
-
-
 \end{abstract}
 
 \AgdaHide{
@@ -554,8 +552,8 @@ becomes:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-{\small
-\bibliographystyle{splncs03} 
+\bibliographystyle{abbrvnat}
+\softraggedright
 \bibliography{cites}
-}
+
 \end{document}
