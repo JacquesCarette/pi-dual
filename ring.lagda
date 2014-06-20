@@ -17,15 +17,20 @@
 \usepackage{proof}
 \usepackage{graphicx}
 \usepackage{tikz-qtree}
+\usepackage{extarrows}
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{proposition}[theorem]{Proposition}
 
-\newcommand{\todo}[1]{\textbf{Todo:} #1}
-\newcommand{\ignore}[1]{}
+\newcommand{\hide}[1]{}
 
+\newcommand{\boolt}{\textsf{bool}}
+\newcommand{\nboxplus}[1]{\,\,~{^{#1}\boxplus^{#1}}~\,\,}
+\newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
+\newcommand{\promote}[1]{\mathit{promote}~#1}
+\newcommand{\demote}[1]{\mathit{demote}~#1}
 \newcommand{\raisez}{\mathit{raise0}}
 \newcommand{\lowerz}{\mathit{lower0}}
 \newcommand{\raiseo}{\mathit{raise1}}
@@ -36,6 +41,8 @@
 \newcommand{\pn}[1]{\mathcal{P}\textbf{#1}}
 \newcommand{\qn}[1]{\mathcal{Q}\textbf{#1}}
 \newcommand{\cpath}[2]{\textit{path}~\{#1\}~\{#2\}}
+\newcommand{\evaln}[3]{#2~\triangleright^{#1}~#3}
+\newcommand{\evalnb}[3]{#2~\trianglerleft^{#1}~#3}
 \newcommand{\evalone}[2]{#1~\triangleright~#2}
 \newcommand{\evaloneb}[2]{#1~\triangleleft~#2}
 \newcommand{\eqdef}{\stackrel{\triangle}{=}}
@@ -59,6 +66,7 @@ $\displaystyle
 \newcommand{\adjoint}[1]{#1^{\dagger}}
 \newcommand{\iso}{\leftrightarrow}
 \newcommand{\isoone}{\Leftrightarrow}
+\newcommand{\ison}[1]{\xLongleftrightarrow{#1}}
 \newcommand{\identlp}{\mathit{identl}_+}
 \newcommand{\identrp}{\mathit{identr}_+}
 \newcommand{\swapp}{\mathit{swap}_+}
@@ -185,8 +193,9 @@ $\displaystyle
 \lstset{rangeprefix=/*!\ , rangesuffix=\ !*\/, includerangemarker=false}
 
 %% double-blind reviewing...
-\title{Polarized Cubical Types}
-\authorinfo{}{}{}
+\title{Higher-Order Functions via \\ 
+  Polarized Cubical Types and Homotopies}
+\authorinfo{DRAFT IN PROGRESS (Jacques Carette and Amr Sabry)}{}{}
 \maketitle
 
 \begin{abstract}
@@ -219,24 +228,39 @@ Sabry~\citeyearpar{James:2012:IE:2103656.2103667} which expresses this thesis
 in a type theoretic computational framework, expressing computation via type
 isomorphisms.
 
-Make sure we introduce the abbreviation HoTT in the
-introduction~\cite{hottbook}.
+\begin{verbatim}
+
+Introduce the abbreviation 'HoTT' 
+\cite{hottbook}.
+
+I have been assuming that the ring
+category is compact closed. It is,
+right?
+
+\end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Computing with Type Isomorphisms}
 \label{pi}
+
+The main syntactic vehicle for the developments in this paper is a simple
+language called $\Pi$ whose only computations are isomorphisms between finite
+types. 
 
 \begin{table*}[t]
 \[\begin{array}{cc}
 \begin{array}{rrcll}
 \identlp :&  0 + \tau & \iso & \tau &: \identrp \\
 \swapp :&  \tau_1 + \tau_2 & \iso & \tau_2 + \tau_1 &: \swapp \\
-\assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 &: \assocrp \\
+\assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 
+  &: \assocrp \\
 \identlt :&  1 * \tau & \iso & \tau &: \identrt \\
 \swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
-\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\
+\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 
+  &: \assocrt \\
 \distz :&~ 0 * \tau & \iso & 0 &: \factorz \\
-\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor 
+\dist :&~ (\tau_1 + \tau_2) * \tau_3 & 
+  \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor 
 \end{array}
 & 
 \begin{minipage}{0.5\textwidth}
@@ -250,22 +274,22 @@ introduction~\cite{hottbook}.
 {\jdg{}{}{c : \tau_1 \iso \tau_2}}
 {\jdg{}{}{\symc{c} : \tau_2 \iso \tau_1}}
 {}
-\\ \bigskip
+\qquad
 \Rule{}
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
 {\jdg{}{}{c_1 \fatsemi c_2 : \tau_1 \iso \tau_3}}
 {}
-\\ \bigskip
+\qquad
 \Rule{}
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
 {\jdg{}{}{c_1 \oplus c_2 : \tau_1 + \tau_3 \iso \tau_2 + \tau_4}}
 {}
-\\ \bigskip
+\qquad
 \Rule{}
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
 {\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
 {}
-\\ \bigskip
+\qquad
 \Rule{}
 {\jdg{}{}{c : \tau+\tau_1 \iso \tau+\tau_2}}
 {\jdg{}{}{\trace{c} : \tau_1 \iso \tau_2}}
@@ -273,14 +297,16 @@ introduction~\cite{hottbook}.
 \end{center}
 \end{minipage}
 \end{array}\]
-\caption{$\Pi$-combinators~\cite{James:2012:IE:2103656.2103667}\label{pi-combinators}}
+\caption{$\Pi$-combinators~\cite{James:2012:IE:2103656.2103667}
+\label{pi-combinators}}
 \end{table*}
 
-The main syntactic vehicle for the developments in this paper is a simple
-language called $\Pi$ whose only computations are isomorphisms between finite
-types. The set of types $\tau$ includes the empty type 0, the unit type 1,
-and conventional sum and product types. The values of these types are the
-conventional ones: \lstinline|()| of type 1, $\inl{v}$ and $\inr{v}$ for
+%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Syntax and Examples}
+
+The set of types $\tau$ includes the empty type 0, the unit type 1, and
+conventional sum and product types. The values classified by these types are
+the conventional ones: \lstinline|()| of type 1, $\inl{v}$ and $\inr{v}$ for
 injections into sum types, and $(v_1,v_2)$ for product types:
 \[\begin{array}{lrcl}
 (\textit{Types}) & 
@@ -324,6 +350,10 @@ useful combinators that we define here for future reference:
 \mathit{assoc}_3 &=& \assocrp \fatsemi (\idc \oplus \swapp)
 \end{array}\]
 
+%%%%%%%%%%%%%%%%%%
+\subsection{Semantics}
+\label{opsempi}
+
 From the perspective of category theory, the language $\Pi$ models what is
 called a traced \emph{symmetric bimonoidal category} or a \emph{commutative
   rig category}. These are categories with two binary operations $\oplus$ and
@@ -343,33 +373,79 @@ present in every vector space --- acts like a ``bottom'' everywhere-undefined
 element and hence the type behaves like the unit of addition and the
 annihilator of multiplication as desired.
 
+\begin{verbatim}
+the spectrum of this category is 
+equivalent to the sphere 
+spectrum ?
+\end{verbatim}
+
+Operationally, the semantics consists of a pair of mutually recursive
+evaluators that take a combinator and a value and propagate the value in the
+``forward'' $\triangleright$ direction or in the ``backwards''
+$\triangleleft$ direction. We show the complete forward evaluator; the
+backwards evaluator differs in trivial ways:
+\[\begin{array}{r@{\!}lcl}
+\evalone{\identlp}{&(\inr{v})} &=& v \\
+\evalone{\identrp}{&v} &=& \inr{v} \\
+\evalone{\swapp}{&(\inl{v})} &=& \inr{v} \\
+\evalone{\swapp}{&(\inr{v})} &=& \inl{v} \\
+\evalone{\assoclp}{&(\inl{v})} &=& \inl{(\inl{v})} \\
+\evalone{\assoclp}{&(\inr{(\inl{v})})} &=& \inl{(\inr{v})} \\
+\evalone{\assoclp}{&(\inr{(\inr{v})})} &=& \inr{v} \\
+\evalone{\assocrp}{&(\inl{(\inl{v})})} &=& \inl{v} \\
+\evalone{\assocrp}{&(\inl{(\inr{v})})} &=& \inr{(\inl{v})} \\
+\evalone{\assocrp}{&(\inr{v})} &=& \inr{(\inr{v})} \\
+\evalone{\identlt}{&((),v)} &=& v \\
+\evalone{\identrt}{&v} &=& ((),v) \\
+\evalone{\swapt}{&(v_1,v_2)} &=& (v_2,v_1) \\
+\evalone{\assoclt}{&(v_1,(v_2,v_3))} &=& ((v_1,v_2),v_3) \\
+\evalone{\assocrt}{&((v_1,v_2),v_3)} &=& (v_1,(v_2,v_3)) \\
+\evalone{\dist}{&(\inl{v_1},v_3)} &=& \inl{(v_1,v_3)} \\
+\evalone{\dist}{&(\inr{v_2},v_3)} &=& \inr{(v_2,v_3)} \\
+\evalone{\factor}{&(\inl{(v_1,v_3)})} &=& (\inl{v_1},v_3) \\
+\evalone{\factor}{&(\inr{(v_2,v_3)})} &=& (\inr{v_2},v_3) \\
+\evalone{\idc}{&v} &=& v \\
+\evalone{(\symc{c})}{&v} &=& \evaloneb{c}{v} \\
+\evalone{(c_1 \fatsemi c_2)}{&v} &=& 
+  \evalone{c_2}{(\evalone{c_1}{v})} \\
+\evalone{(c_1\oplus c_2)}{&(\inl{v})} &=& 
+  \inl{(\evalone{c_1}{v})} \\
+\evalone{(c_1\oplus c_2)}{&(\inr{v})} &=& 
+  \inr{(\evalone{c_2}{v})} \\
+\evalone{(c_1\otimes c_2)}{&(v_1,v_2)} &=& 
+  (\evalone{c_1}v_1, \evalone{c_2}v_2) \\
+\evalone{(\trace{c})}{&v} &=& \textsf{loop}~(\evalone{c}{(\inr{v})}) \\
+\noalign{$\qquad\textbf{where}~\textsf{loop}~(\inl{v}) = 
+  \textsf{loop}~(\evalone{c}{(\inl{v})})$}
+\noalign{$\qquad\phantom{\textbf{where}~}\textsf{loop}~(\inr{v}) = v$}
+\end{array}\]
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Int Construction}
 \label{intc}
 
-Our immediate technical goal is to explore an extension of $\Pi$ with a
-notion of higher-order functions. In the context of monoidal categories, it
-is known that a notion of higher-order functions emerges from having an
-additional degree of \emph{symmetry}. In particular, both the
-\textbf{Int} construction of Joyal, Street, and
-Verity~\citeyearpar{joyal1996traced} and the closely related $\mathcal{G}$
-construction of linear logic~\cite{gcons} construct higher-order
-\emph{linear} functions by considering a new category built on top of a given
-base traced monoidal category. The objects of the new category are of the
-form $(\tau_1-\tau_2)$ where~$\tau_1$ and~$\tau_2$ are objects in the base
-category. Intuitively, the component $\tau_1$ is viewed as a conventional
-type whose elements represent values flowing, as usual, from producers to
-consumers. The component $\tau_2$ is viewed as a \emph{negative type} whose
-elements represent demands for values or equivalently values flowing
-backwards. Under this interpretation, and as we explain below, a function is
-nothing but an object that converts a demand for an argument into production
-of a result.
+In the context of monoidal categories, it is known that a notion of
+higher-order functions emerges from having an additional degree of
+\emph{symmetry}. In particular, both the \textbf{Int} construction of Joyal,
+Street, and Verity~\citeyearpar{joyal1996traced} and the closely related
+$\mathcal{G}$ construction of linear logic~\cite{gcons} construct
+higher-order \emph{linear} functions by considering a new category built on
+top of a given base traced monoidal category. The objects of the new category
+are of the form $\nodet{\tau_1}{\tau_2}$ where~$\tau_1$ and~$\tau_2$ are
+objects in the base category. Intuitively, this object represents the
+\emph{difference} $\tau_1-\tau_2$ with the component $\tau_1$ viewed as
+conventional type whose elements represent values flowing, as usual, from
+producers to consumers, and the component $\tau_2$ viewed as a \emph{negative
+  type} whose elements represent demands for values or equivalently values
+flowing backwards. Under this interpretation, and as we explain below, a
+function is nothing but an object that converts a demand for an argument into
+the production of a result.
 
 We begin our formal development by extending $\Pi$ with a new universe of
-types $\cubt$ that consists of composite types $(\tau_1-\tau_2)$:
+types $\cubt$ that consists of composite types $\nodet{\tau_1}{\tau_2}$:
 \[\begin{array}{lrcl}
 (\textit{{1d} types}) & 
-  \cubt &::=& (\tau_1-\tau_2) 
+  \cubt &::=& \nodet{\tau_1}{\tau_2}
 \end{array}\]
 In anticipation of future developments, we will refer to the original types
 $\tau$ as 0-dimensional (0d) types and to the new types $\cubt$ as
@@ -380,13 +456,12 @@ isomorphisms on these 1d types.
 
 Our next step is to define lifted versions of the 0d types:
 \[\begin{array}{rcl}
-\ztone &\eqdef& (0-0) \\
-\otone &\eqdef& (1-0) \\
-\ptone{(\tau_1-\tau_2)}{(\tau_3-\tau_4)} &\eqdef& 
-  (\tau_1+\tau_3)-(\tau_2+\tau_4) \\
-\ttone{({\tau_1}-{\tau_2})}{({\tau_3}-{\tau_4})} &\eqdef&
-{((\tau_1*\tau_3)+(\tau_2*\tau_4))}-\\
-&& {((\tau_1*\tau_4)+(\tau_2*\tau_3))}
+\ztone &\eqdef& \nodet{0}{0} \\
+\otone &\eqdef& \nodet{1}{0} \\
+\ptone{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} &\eqdef& 
+  \nodet{\tau_1+\tau_3}{\tau_2+\tau_4} \\
+\ttone{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} &\eqdef& \\
+\noalign{\hfill$\nodet{(\tau_1*\tau_3)+(\tau_2*\tau_4)}{(\tau_1*\tau_4)+(\tau_2*\tau_3)}$}
 \end{array}\]
 Building on the idea that $\Pi$ is a categorification of the natural numbers
 and following a long tradition that relates type isomorphisms and arithmetic
@@ -396,7 +471,7 @@ categorification of the integers. Based on this hypothesis, the definitions
 above can be intuitively understood as arithmetic identities. The same
 arithmetic intuition explains the lifting of isomorphisms to 1d types:
 \[\begin{array}{rcl}
-(\tau_1-\tau_2) \isoone (\tau_3-\tau_4) &\eqdef& 
+\nodet{\tau_1}{\tau_2} \isoone \nodet{\tau_3}{\tau_4} &\eqdef& 
   (\tau_1+\tau_4) \iso (\tau_2+\tau_3)
 \end{array}\]
 In other words, an isomorphism between 1d types is really an isomorphism
@@ -414,7 +489,7 @@ below.
 level. For example:
 \[\begin{array}{rcl}
 \idc &:& \cubt \isoone \cubt \\
-     &:& (\tau_1-\tau_2) \isoone (\tau_1-\tau_2) \\
+     &:& \nodet{\tau_1}{\tau_2} \isoone \nodet{\tau_1}{\tau_2} \\
      &\eqdef& (\tau_1+\tau_2) \iso (\tau_2+\tau_1) \\
 \idc &=& \swapp \\
 \\
@@ -447,10 +522,10 @@ f \fatsemi g &=& \mathit{trace}~(\mathit{assoc}_1 \fatsemi
 \paragraph*{New combinators $\mathit{curry}$ and $\mathit{uncurry}$ for higher-order functions.}
 
 \[\begin{array}{rcl}
-\boxminus(\tau_1-\tau_2) &\eqdef& \tau_2-\tau_1 \\
-(\tau_1-\tau_2) \lolli (\tau_3-\tau_4) &\eqdef& 
-           \boxminus(\tau_1-\tau_2) \boxplus (\tau_3-\tau_4) \\
-  &\eqdef& (\tau_2+\tau_3) - (\tau_1+\tau_4) 
+\boxminus(\nodet{\tau_1}{\tau_2}) &\eqdef& \nodet{\tau_2}{\tau_1} \\
+\nodet{\tau_1}{\tau_2} \lolli \nodet{\tau_3}{\tau_4} &\eqdef& 
+           \boxminus(\nodet{\tau_1}{\tau_2}) \boxplus \nodet{\tau_3}{\tau_4} \\
+  &\eqdef& \nodet{\tau_2+\tau_3}{\tau_1+\tau_4}
 \end{array}\]
 \[\begin{array}{rcl}
 \mathit{flip} &:& (\cubt_1 \isoone \cubt_2)
@@ -483,17 +558,16 @@ f \fatsemi g &=& \mathit{trace}~(\mathit{assoc}_1 \fatsemi
 \mathit{uncurry}~f &=& \assocrp \fatsemi f \fatsemi \assoclp 
 \end{array}\]
 
-
 \paragraph*{The ``phony'' multiplication that is not a functor.} 
 The definition for the product of 1d types used above is:
 \[\begin{array}{l}
-\ttone{({\tau_1}-{\tau_2})}{({\tau_3}-{\tau_4})} = \\
-{((\tau_1*\tau_3)+(\tau_2*\tau_4))}-
-  {((\tau_1*\tau_4)+(\tau_2*\tau_3))}
+\ttone{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} \eqdef \\
+\noalign{$\hfill\nodet{(\tau_1*\tau_3)+(\tau_2*\tau_4)}{(\tau_1*\tau_4)+(\tau_2*\tau_3)}$}
 \end{array}\]
 That definition is ``obvious'' in some sense as it matches the usual
-understanding of types as modeling arithmetic. Using it, it is possible to
-lift all the 0d combinators involving products \emph{except} the functor:
+understanding of types as modeling arithmetic identities. Using this
+definition, it is possible to lift all the 0d combinators involving products
+\emph{except} the functor:
 \[ (\otimes) : 
   (\cubt_1\isoone\cubt_2) \rightarrow 
   (\cubt_3\isoone\cubt_4) \rightarrow 
@@ -501,32 +575,41 @@ lift all the 0d combinators involving products \emph{except} the functor:
    (\cubt_2\boxtimes\cubt_4))
 \]
 After a few failed attempts, we suspected that this definition of
-multiplication is not functorial which would mean that the
-\textbf{Int} construction provides a limited notion of higher-order functions
-at the expense of losing the multiplicative structure at higher-levels. This
+multiplication is not functorial which would mean that the \textbf{Int}
+construction only provides a limited notion of higher-order functions at the
+cost of losing the multiplicative structure at higher-levels. This
 observation is less well-known that it should be. Further investigation
 reveals that this observation is intimately related to a well-known problem
-in algebraic topology that was identified thirty years ago as the ``phony''
-multiplication~\cite{thomason} in a special class categories related to
-ours. This problem was recently solved~\cite{ringcompletion} using a
-technique whose fundamental ingredient is to add more dimensions. We exploit
-this idea in the remainder of the paper.
+in algebraic topology and homotopy theory that was identified thirty years
+ago as the ``phony'' multiplication~\cite{thomason} in a special class
+categories related to ours. This problem was recently
+solved~\cite{ringcompletion} using a technique whose fundamental ingredients
+are to add more dimensions and then take homotopy colimits. We exploit this
+solution in the remainder of the paper.
+
+\begin{verbatim}
+Add eta/epsilon and trace to Int 
+category
+
+Explain the definitions in this 
+section much better...
+\end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Cubes}
+\section{Polarized Cubes}
 \label{cubes}
 
 As hinted at in the previous section, one can think of the \textbf{Int}
 construction as generalizing conventional 0d types to 1d types indexed by a
-positive or negative polarity. We will generalize this idea further in
-steps. The first step is to extend from 1d to arbitrary dimensions without
-consideration for polarities at this point. The extension is somewhat tedious
+positive or negative polarity. We will generalize this idea further by
+considering types of arbitrary dimensions $n$ indexed by sequences of length
+$n$ of positive and negative polarities. The extension is somewhat tedious
 but the idea is fundamentally simple as everything is defined pointwise.
 
 \begin{figure*}
 \[\begin{array}{c}
 \nodet{\tau_1}{\tau_2}
-\quad\boxtimes^{1}_{2} \quad
+\quad\nboxtimes{1}{2}\quad
 \nodet{(\nodet{\tau_3}{\tau_4})}{(\nodet{\tau_5}{\tau_6})} \quad= \\
 \\
 \nodet{(\nodet{{(\nodet{\tau_1 * \tau_3}{\tau_1 * \tau_4})}}
@@ -538,45 +621,51 @@ but the idea is fundamentally simple as everything is defined pointwise.
 \\
 \begin{center}
 \begin{tikzpicture}
-\node[left] at (0,0) {$\tau_1$};
-\draw[fill] (0,0) circle [radius=0.05];
-\node[right] at (0.6,0) {$\tau_2$};
+\node[left] at (-0.4,0) {$\pp$};
+\node[below] at (-0.4,0) {$\tau_1$};
+\draw[fill] (-0.4,0) circle [radius=0.05];
+\node[right] at (0.6,0) {$\mm$};
+\node[below] at (0.6,0) {$\tau_2$};
 \draw[fill] (0.6,0) circle [radius=0.05];
-\draw[-,dotted] (0,0) -- (0.6,0);
-\node at (1.6,0) {$\boxtimes^{1}_{2}$}; 
+\draw[-,dotted] (-0.4,0) -- (0.6,0);
+\node at (1.6,0) {$\nboxtimes{1}{2}$}; 
 
 %%
 \node[below] at (2.5,-0.5) {$\tau_3$};
+\node[left] at (2.5,-0.5) {$\pp\pp$};
 \draw[fill] (2.5,-0.5) circle [radius=0.05];
 \node[below] at (3.5,-0.5) {$\tau_4$};
+\node[right] at (3.5,-0.5) {$\pp\mm$};
 \draw[fill] (3.5,-0.5) circle [radius=0.05];
 \draw[-,dotted] (2.5,-0.5) -- (3.5,-0.5);
 \draw[-,dotted] (2.5,-0.5) -- (2.5,0.5);
 \node[above] at (2.5,0.5) {$\tau_5$};
+\node[left] at (2.5,0.5) {$\mm\pp$};
 \draw[fill] (2.5,0.5) circle [radius=0.05];
 \node[above] at (3.5,0.5) {$\tau_6$};
+\node[right] at (3.5,0.5) {$\mm\mm$};
 \draw[fill] (3.5,0.5) circle [radius=0.05];
 \draw[-,dotted] (2.5,0.5) -- (3.5,0.5);
 \draw[-,dotted] (3.5,-0.5) -- (3.5,0.5);
 %% 
 \node at (5,0) {$=$};
 %% 
-\node[left] at (7.5,0.75) {$(\tau_2 * \tau_3)$};
+\node[left] at (7.5,0.75) {$(\tau_2 * \tau_3)\mm\pp\pp$};
 \draw[fill] (7.5,0.75) circle [radius=0.05];
-\node[right] at (9.5,0.75) {$(\tau_2 * \tau_4)$};
+\node[right] at (9.5,0.75) {$\mm\pp\mm(\tau_2 * \tau_4)$};
 \draw[fill] (9.5,0.75) circle [radius=0.05];
-\node[above right] at (10.2,1.2) {$(\tau_2 * \tau_6)$};
+\node[above right] at (10.2,1.2) {$\mm\mm\mm(\tau_2 * \tau_6)$};
 \draw[fill] (10.2,1.2) circle [radius=0.05];
-\node[above left] at (8.2,1.2) {$(\tau_2 * \tau_5)$};
+\node[above left] at (8.2,1.2) {$(\tau_2 * \tau_5)\mm\mm\pp$};
 \draw[fill] (8.2,1.2) circle [radius=0.05];
 %%
-\node[left] at (7.5,-0.75) {$(\tau_1 * \tau_3)$};
+\node[left] at (7.5,-0.75) {$(\tau_1 * \tau_3)\pp\pp\pp$};
 \draw[fill] (7.5,-0.75) circle [radius=0.05];
-\node[right] at (9.5,-0.75) {$(\tau_1 * \tau_4)$};
+\node[right] at (9.5,-0.75) {$\pp\pp\mm(\tau_1 * \tau_4)$};
 \draw[fill] (9.5,-0.75) circle [radius=0.05];
-\node[above right] at (10.2,-0.3) {$(\tau_1 * \tau_6)$};
+\node[above right] at (10.2,-0.3) {$\pp\mm\mm(\tau_1 * \tau_6)$};
 \draw[fill] (10.2,-0.3) circle [radius=0.05];
-\node[left] at (8.2,-0.3) {$(\tau_1 * \tau_5)$};
+\node[left] at (8.2,-0.3) {$(\tau_1 * \tau_5)\pp\mm\pp$};
 \draw[fill] (8.2,-0.3) circle [radius=0.05];
 %%
 \draw[-,dotted] (7.5,0.75) -- (9.5,0.75);
@@ -607,30 +696,32 @@ The set of types is now indexed by a dimension $n$:
 \cubt^{n+1} &::=& \nodet{\cubt_1^n}{\cubt_2^n} 
 \end{array}\]
 At dimension 0, we have the usual first-order types $\tau$ representing
-``points.'' At higher dimensions, a type is a pair of subspaces
-$\nodet{\cubt_1}{\cubt_2}$, each of a lower dimension. Like in the case for
-the \textbf{Int} construction, a 1d cube, $\nodet{\tau_1}{\tau_2}$,
-intuitively corresponds to the difference $\tau_1 - \tau_2$ of the two
-types. The type can be visualized as a ``line.''  A 2d cube,
-$\nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}$, intuitively
-corresponds to the iterated difference of the types
-$(\tau_1-\tau_2)-(\tau_3-\tau_4)$ where the successive ``colors'' from the
+``points.'' At dimension $n+1$, a type is a pair of subspaces
+$\nodet{\cubt_1^n}{\cubt_2^n}$, each of a lower dimension $n$. The subspace
+$\cubt_1^n$ is the positive subspace along the $(n+1)$-st dimension and the
+subspace $\cubt_2^n$, shaded in gray, is the negative subspace along that
+same dimension. Like in the case for the \textbf{Int} construction, a 1d
+cube, $\nodet{\tau_1}{\tau_2}$, intuitively corresponds to the difference
+$\tau_1 - \tau_2$ of the two types. The type can be visualized as a ``line.''
+A 2d cube, $\nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}$,
+intuitively corresponds to the iterated difference of the types
+$(\tau_1-\tau_2)-(\tau_3-\tau_4)$ where the successive shades from the
 outermost box encode the signs. The type can be visualized as a ``square''
 connecting the two lines corresponding to $(\tau_1-\tau_2)$ and
 $(\tau_3-\tau_4)$. (See Fig.~\ref{mult} which is further explained after we
-discuss multiplication below.) 
+discuss multiplication below.)
 
 Even though the type constants 0 and 1 and the sums and products operations
 are only defined at dimension 0, cubes of all dimensions inherit this
-structure.  We have constants $\ztn^{n}$ and $\otn^{n}$ at every
-dimension and we also have families of sum $\boxplus^n$ and product
-$\boxtimes^{m}_{n}$ operations on higher dimensional cubes. The sum operation
-$\boxplus^n$ takes two $n$-dimensional cubes and produces another
-$n$-dimensional cube. Note that for the case of 1d types, the definition
-coincides with the one used in the \textbf{Int} construction. The product
-operation $\boxtimes^{m}_{n}$ takes two cubes of dimensions $m$ and $n$
-respectively and as confirmed in Prop.~\ref{dimprop} below and illustrated
-with a small example in Fig.~\ref{mult}, produces a cube of dimension $m+n$.
+structure.  We have constants $\ztn^{n}$ and $\otn^{n}$ at every dimension
+and we also have families of sum $^n\boxplus^n$ and product $^m\boxtimes^n$
+operations on higher dimensional cubes. The sum operation $^n\boxplus^n$
+takes two $n$-dimensional cubes and produces another $n$-dimensional
+cube. Note that for the case of 1d types, the definition coincides with the
+one used in the \textbf{Int} construction. The product operation
+$^m\boxtimes^n$ takes two cubes of dimensions $m$ and $n$ respectively and as
+confirmed in Prop.~\ref{dimprop} below and illustrated with a small example
+in Fig.~\ref{mult}, produces a cube of dimension $m+n$.
 \[\begin{array}{rcl}
 \ztn^{0} &=& 0 \\
 \ztn^{n+1} &=& \nodet{\ztn^n}{\ztn^n} \\
@@ -638,23 +729,24 @@ with a small example in Fig.~\ref{mult}, produces a cube of dimension $m+n$.
 \otn^{0} &=& 1 \\
 \otn^{n+1} &=& \nodet{\otn^n}{\ztn^n} \\
 \\
-\tau_1 \boxplus^{0} \tau_2 &=& \tau_1 + \tau_2 \\
-(\nodet{\cubt_1^{n}}{\cubt_2^{n}}) \boxplus^{n+1} 
-  (\nodet{\cubt_3^{n}}{\cubt_4^{n}}) &=& 
-  \nodet{\cubt_1^{n} \boxplus^n \cubt_3^{n}}
-        {\cubt_2^{n} \boxplus^n \cubt_4^{n}} \\
+\tau_1 \nboxplus{0} \tau_2 &=& \tau_1 + \tau_2 \\
+(\nodet{\cubt_1^{n}}{\cubt_2^{n}}) \nboxplus{n+1}
+  (\nodet{\cubt_3^{n}}{\cubt_4^{n}}) &=& \\
+  \noalign{\hfill$\nodet{\cubt_1^{n} \nboxplus{n} \cubt_3^{n}}
+        {\cubt_2^{n} \nboxplus{n} \cubt_4^{n}}$} 
 \\
-\tau_1 \boxtimes^{0}_{0} \tau_2 &=& \tau_1 * \tau_2 \\
-\tau \boxtimes^{0}_{n+1} (\nodet{\cubt_1^n}{\cubt_2^n}) &=& 
-  \nodet{\tau \boxtimes^{0}_{n} \cubt_1}{\tau \boxtimes^{0}_{n} \cubt_2} \\
-(\nodet{\cubt_1^m}{\cubt_2^m}) \boxtimes^{m+1}_{n} \cubt^n &=& 
-  \nodet{\cubt_1^m \boxtimes^{m}_{n} \cubt^n}{\cubt_2^m 
-  \boxtimes^{m}_{n} \cubt^n} 
+\tau_1 \nboxtimes{0}{0} \tau_2 &=& \tau_1 * \tau_2 \\
+\tau \nboxtimes{0}{n+1} (\nodet{\cubt_1^n}{\cubt_2^n}) &=& \\
+  \noalign{\hfill$\nodet{\tau \nboxtimes{0}{n} \cubt_1^n}
+          {\tau \nboxtimes{0}{n} \cubt_2^n}$} 
+(\nodet{\cubt_1^m}{\cubt_2^m}) \nboxtimes{m+1}{n} \cubt^n &=& \\
+  \noalign{\hfill$\nodet{\cubt_1^m \nboxtimes{m}{n} \cubt^n}{\cubt_2^m 
+  \nboxtimes{m}{n} \cubt^n}$} 
 \end{array}\]
 
 \begin{proposition}[Dimensions]
 \label{dimprop}
-The dimension of $\cubt^m \boxtimes^{m}_{n} \cubt^n$ is $m+n$.
+The type $(\cubt^m \nboxtimes{m}{n} \cubt^n)$ has dimension $(m+n)$.
 \end{proposition}
 \begin{proof}
 By a simple induction on $m$. 
@@ -662,64 +754,71 @@ By a simple induction on $m$.
 
 %%
 
+Moreover, a type at dimension $n$ naturally embeds in dimension $n+1$ with
+some spaces zeroed out. For example, the 0d type $\tau$ is ``the same as''
+the 1d type $\nodet{\tau}{0}$; the 1d type $\nodet{\tau_1}{\tau_2}$ is the
+same as both the following two 2d types:
+$\nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{0}{0})}$ and
+$\nodet{(\nodet{\tau_1}{0})}{(\nodet{\tau_2}{0})}$. More generally, \ldots
+
+%%
+
 \begin{table*}[t]
 \[\begin{array}{cc}
 \begin{array}{rrcll}
-\identlp^n :&  \ztn^n \boxplus^n \cubt^n & \isoone & \cubt^n &: \identrp^n \\
-\swapp^n :&  \cubt_1^n \boxplus^n \cubt_2^n & \isoone & 
-           \cubt_2^n \boxplus^n \cubt_1^n &: \swapp^n \\
-\assoclp^n :&  \cubt_1^n \boxplus^n (\cubt_2^n \boxplus^n \cubt_3^n) & \isoone & 
-           (\cubt_1^n \boxplus^n \cubt_2^n) \boxplus^n \cubt_3^n &: \assocrp^n \\
-\identlt^{m,n} :&  \otn^m \boxtimes^m_n \cubt^n & \isoone & \cubt^{n} &: 
-  \identrt^{m,n} \\
-\swapt^{m,n} :&  \cubt_1^m \boxtimes^m_n \cubt_2^n & \isoone & 
-           \cubt_2^n \boxtimes^n_m \cubt_1^m &: \swapt^{m,n} \\
-\assoclt^{m,n,k} :&  
-  \cubt_1^m \boxtimes^m_{n+k} (\cubt_2^n \boxtimes^n_k \cubt_3^k) 
-  & \isoone & 
-  (\cubt_1^m \boxtimes^m_n \cubt_2^n) \boxtimes^{m+n}_k \cubt_3^k &: 
-  \assocrt^{m,n,k} \\
-\distz^{m,n} :&~ 
-  \ztn^m \boxtimes^m_n \cubt^n & \isoone & \ztn^{m} &: \factorz^{m,n} \\
-\dist^{m,n} :&~ 
-  (\cubt_1^m \boxplus^m \cubt_2^m) \boxtimes^m_n \cubt_3^n & \isoone & 
-  (\cubt_1^m \boxtimes^m_n \cubt_3^n) \boxplus^{m+n} 
-  (\cubt_2^m \boxtimes^m_n \cubt_3^n)~ &: \factor^{m,n} \\
-\raisez^n :&~ \ztn^{n} & \isoone& \ztn^{n+1} &: \lowerz^n \\
-\raiseo^n :&~ \otn^{n} & \isoone& \otn^{n+1} &: \lowero^n
+\identlp :&  \ztn^n \nboxplus{n} \cubt^n & \ison{n} & \cubt^n &: \identrp \\
+\swapp :&  \cubt_1^n \nboxplus{n} \cubt_2^n & \ison{n} & 
+           \cubt_2^n \nboxplus{n} \cubt_1^n &: \swapp \\
+\assoclp :&  \cubt_1^n \nboxplus{n} (\cubt_2^n \nboxplus{n} \cubt_3^n) &\ison{n}& 
+           (\cubt_1^n \nboxplus{n} \cubt_2^n) \nboxplus{n} \cubt_3^n &: \assocrp \\
+\identlt :&  \otn^0 \nboxtimes{0}{n} \cubt^n & \ison{n} & \cubt^{n} &: 
+  \identrt \\
+\swapt :&  \cubt_1^m \nboxtimes{m}{n} \cubt_2^n & \ison{m+n} & 
+           \cubt_2^n \nboxtimes{n}{m} \cubt_1^m &: \swapt \\
+\assoclt :&  
+  \cubt_1^m \nboxtimes{m}{n+k} (\cubt_2^n \nboxtimes{n}{k} \cubt_3^k) 
+  & \ison{m+n+k} & 
+  (\cubt_1^m \nboxtimes{m}{n} \cubt_2^n) \nboxtimes{m+n}{k} \cubt_3^k &: 
+  \assocrt \\
+\distz :&~ 
+  \ztn^m \nboxtimes{m}{n} \cubt^n & \ison{m+n} & \ztn^{m+n} &: \factorz \\
+\dist :&~ 
+  (\cubt_1^m \nboxplus{m} \cubt_2^m) \nboxtimes{m}{n} \cubt_3^n &\ison{m+n}& 
+  (\cubt_1^m \nboxtimes{m}{n} \cubt_3^n) \nboxplus{m+n} 
+  (\cubt_2^m \nboxtimes{m}{n} \cubt_3^n)~ &: \factor
 \end{array}
 \\
 \\
-\begin{minipage}{0.6\textwidth}
+\begin{minipage}{\textwidth}
 \begin{center} 
 \Rule{}
 {}
-{\jdg{}{}{\idc^n : \cubt^n \isoone \cubt^n}}
+{\jdg{}{}{\idc : \cubt^n \ison{n} \cubt^n}}
 {}
 \qquad
 \Rule{}
-{\jdg{}{}{c : \cubt_1^m \isoone \cubt_2^n}}
-{\jdg{}{}{\symcn{n,m}{c} : \cubt_2^n \isoone \cubt_1^m}}
+{\jdg{}{}{c : \cubt_1^n \ison{n} \cubt_2^n}}
+{\jdg{}{}{\symc{c} : \cubt_2^n \ison{n} \cubt_1^n}}
 {}
-\\ \bigskip
+\qquad
 \Rule{}
-{\jdg{}{}{c_1 : \cubt_1^m \isoone \cubt_2^n} \quad 
-         \vdash c_2 : \cubt_2^n \isoone \cubt_3^k}
-{\jdg{}{}{c_1 \fatsemi^{m,n,k} c_2 : \cubt_1^m \isoone \cubt_3^k}}
+{\jdg{}{}{c_1 : \cubt_1^n \ison{n} \cubt_2^n} \quad 
+         \vdash c_2 : \cubt_2^n \ison{n} \cubt_3^n}
+{\jdg{}{}{c_1 \fatsemi c_2 : \cubt_1^n \ison{n} \cubt_3^n}}
 {}
-\\ \bigskip
+\qquad
 \Rule{}
-{\jdg{}{}{c_1 : \cubt_1^m \isoone \cubt_2^n} \quad 
-         \vdash c_2 : \cubt_3^m \isoone \cubt_4^n}
-{\jdg{}{}{c_1 \oplus^{m,n} c_2 : \cubt_1^m \boxplus^m \cubt_3^m \isoone 
-         \cubt_2^n \boxplus^n \cubt_4^n}}
+{\jdg{}{}{c_1 : \cubt_1^n \ison{n} \cubt_2^n} \quad 
+         \vdash c_2 : \cubt_3^n \ison{n} \cubt_4^n}
+{\jdg{}{}{c_1 \oplus c_2 : \cubt_1^n \nboxplus{n} \cubt_3^n \ison{n}
+         \cubt_2^n \nboxplus{n} \cubt_4^n}}
 {}
-\\ \bigskip
+\qquad
 \Rule{}
-{\jdg{}{}{c_1 : \cubt_1^m \isoone \cubt_2^n} \quad 
-         \vdash c_2 : \cubt_3^k \isoone \cubt_4^p}
-{\jdg{}{}{c_1 \otimes^{m,n,k,p} c_2 : \cubt_1^m \boxtimes^m_k \cubt_3^k \isoone 
-         \cubt_2^n \boxtimes^n_p \cubt_4^p}}
+{\jdg{}{}{c_1 : \cubt_1^m \ison{m} \cubt_2^m} \quad 
+         \vdash c_2 : \cubt_3^n \ison{n} \cubt_4^n}
+{\jdg{}{}{c_1 \otimes c_2 : \cubt_1^m \nboxtimes{m}{n} \cubt_3^n \ison{m+n} 
+         \cubt_2^m \nboxtimes{m}{n} \cubt_4^n}}
 {}
 \end{center}
 \end{minipage}
@@ -735,117 +834,203 @@ The main point of the generalization to arbitrary dimensions beyond the
 computational power of $\Pi$. In other words, all type isomorphisms
 (including the ones involving products) should lift to the higher
 dimensions. The lifting is surprisingly simple: everything is defined
-pointwise. As an example, there is an isomorphism between
-$\nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}$ and
-$\nodet{(\nodet{\tau'_1}{\tau'_2})}{(\nodet{\tau'_3}{\tau'_4})}$ if there are
-0-dimensional $\Pi$-isomorphisms between each of the corresponding $\tau_i$
-and $\tau'_i$.
+pointwise. Formally, the combinators of type $\ison{n}$ on $n$-dimensional
+cubes are defined as follows:
 
-Table~\ref{cube-combinators} replicates all the $\Pi$-combinators for
-higher-dimensional cubical types with a small modification: all the
-combinators and isomorphisms are indexed by the appropriate dimensions. In
-addition, we add explicit combinators to mediate between all the
-representations of the empty at different dimensions (and similarly for the
-unit type). Note that in general it is possible to have isomorphisms between
-types of different dimensions.
+\begin{center}
+\Rule{}
+{\jdg{}{}{c : \tau_1 \iso \tau_2}}
+{\jdg{}{}{c : \tau_1 \ison{0} \tau_2}}
+{}
+\qquad
+\Rule{}
+{\jdg{}{}{c_1 : \cubt^n_1 \ison{n} \cubt^n_2 \qquad
+  \vdash c_2 : \cubt^n_3 \ison{n} \cubt^n_4}}
+{\jdg{}{}{\nodet{c_1}{c_2} : 
+  \nodet{\cubt^n_1}{\cubt^n_3} \ison{n+1} \nodet{\cubt^n_2}{\cubt^n_4}}}
+{}
+\end{center}
 
-It is possible to embed any type $\cubt^m$ into several equivalent types of a
-higher dimension $n > m$ by padding it with empty types in the appropriate
-subspaces. For example, consider the 1d type $\nodet{\tau_1}{\tau_2}$ and the
-following embedding in 2d types:
-\[\begin{array}{rcl}
-&& \nodet{\tau_1}{\tau_2} \\
-&\identrp^{0,1}& \otn^{0} \boxtimes^{0}_{1} \nodet{\tau_1}{\tau_2} \\
-&(\raiseo^{0} \otimes^{0,1,1,1} \idc^1)& 
-  \otn^{1} \boxtimes^{1}_{1} \nodet{\tau_1}{\tau_2} \\
-&=& 
-  \nodet{(\nodet{1*\tau_1}{1*\tau_2})}{(\nodet{0*\tau_1}{0*\tau_2})} \\
-&&  
-  \nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{0}{0})}
-\end{array}\]
-If we simply introduce a swap after the second step, the resulting embedding
-is:
+\noindent 
+In other words, a combinator at dimension $n$ is defined by induction on $n$
+and consists of a family of $2^n$ 0d combinators. As an example, the
+combinator $\swapp$ at dimension 2 of type:
 \[
-  \nodet{(\nodet{\tau_1}{\phantom{\tau_1}0})}{(\nodet{\tau_2}{\phantom{\tau_2}0})}
-\]
-More generally it is possible to embed a type of dimension $n$ in $n+1$
-different ways into a type of dimension $n+1$. 
+\nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}
+\ison{2}
+\nodet{(\nodet{\tau_1'}{\tau_2'})}{(\nodet{\tau_3'}{\tau_4'})}
+\] 
+is defined as $\nodet{(\nodet{\swapp}{\swapp})}{(\nodet{\swapp}{\swapp})}$
+where each of the internal 0d $\swapp$ combinators is of type $\tau_i \iso
+\tau_i'$. For completeness, Table~\ref{cube-combinators} shows the types of
+the lifted versions of all the $\Pi$ combinators.
 
 \begin{verbatim}
-formalize that n-dim comb
-are families of pi-comb
+That table should coincide with 
+sec 2 of the ring completion paper
+modulo the fact that we are not
+strict so we have extra isos that
+are assumed to be id in the 
+ring completion paper.
+Check everything again... and 
+state the formal result
 
-formalize embedding on
+say that the labels on isos
+implicitly say that 
+m+n = n+m etc we are
+assuming some monoidal
+structure on dimensions
+
+explain why identl* 
+only works on 0dim unit
+
+do we need embedding of
 n-dim types into
-n+1-dim types; I think we 
-can get all of the embeddings
-into the various faces by
-use T x 1 or 1 x T
-recursively at each level
+n+1-dim types at 
+this point:
+t embeds in 1d as (t-0)
+(t1-t2) embeds in 2d in 
+several ways; at least
+(t1-t2)-(0-0)
+and 
+(t1-0)-(t2-0)
+What is the status of 
+these embeddings?
 \end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%
-\subsection{Operational Semantics}
+\subsection{Operational Semantics} 
 
-Because everything is defined pointwise, the new combinators are just
-families of base combinators. As an example, consider:
-\[\begin{array}{r@{\!}cl}
-\swapp^2 &:& 
-         \nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})}
-  \boxplus^2
-         \nodet{(\nodet{\tau'_1}{\tau'_2})}{(\nodet{\tau'_3}{\tau'_4})} \\
-  &\isoone& 
-         \nodet{(\nodet{\tau'_1}{\tau'_2})}{(\nodet{\tau'_3}{\tau'_4})}
-  \boxplus^2
-         \nodet{(\nodet{\tau_1}{\tau_2})}{(\nodet{\tau_3}{\tau_4})} \\
-\\
-&:& \nodet{(\nodet{\tau_1+\tau'_1}{\tau_2+\tau'_2})}
-          {(\nodet{\tau_3+\tau'_3}{\tau_4+\tau'_4})} \\
-  &\isoone&
-    \nodet{(\nodet{\tau'_1+\tau_1}{\tau'_2+\tau_2})}
-          {(\nodet{\tau'_3+\tau_3}{\tau'_4+\tau_4})} \\
-\\
-&=& \nodet{(\nodet{\swapp}{\swapp})}
-          {(\nodet{\swapp}{\swapp})} 
+A value $\bullet v$ of an $n$-dimensional type is a 0d value located at one
+of the $2^n$ vertices. To keep the correspondence between values and types
+evident, and to prepare for the generalization in the next section, we denote
+$n$-dimensional values $\bullet v$ using a (possibly empty) sequence of
+polarities $\bullet$ that ends with a 0d value $v$. For example, the values
+of type
+$\nodet{(\nodet{1\phantom{+}}{1\phantom{+}})}{(\nodet{1\phantom{+}}{1+1})}$
+are $\pp\pp()$, $\pp\mm()$, $\mm\pp()$, $\mm\mm\inl{()}$, and
+$\mm\mm\inr{()}$. Generalizing the operational semantics of
+Sec.~\ref{opsempi} is straightforward:
+\[\begin{array}{rcl} 
+\evaln{0}{c}{v} &=& \evalone{c}{v} \\
+\evaln{n+1}{\nodet{c_1}{c_2}}{(\pp\bullet v)} &=& 
+  \pp(\evaln{n}{c_1}{\bullet v}) \\
+\evaln{n+1}{\nodet{c_1}{c_2}}{(\mm\bullet v)} &=& 
+  \mm(\evaln{n}{c_2}{\bullet v})
 \end{array}\]
-In other words, the definition of $\swapp$ at a 2d dimensional type reduces
-to a family of 0-dimensional $\swapp$ $\Pi$-combinators at each of the
-vertices of the 2d cube.
+The evaluator is essentially a 0d evaluator operating in one fixed dimension
+and ignoring all others. Note that values never change their polarities. 
 
 \begin{verbatim}
-Implement op. sem. in Agda.
-Basically a version of pi indexed 
-by dimensions!
-
-Check and implement all the 
-various isos: embeddings of
-n-dim into n+1-dim etc.
+Finish implement op. sem. in Agda.
+Perhaps provide some Agda code
+in the paper? Would need major
+rewrites...
 
 need to make sure there are
 no other isos implied by
 the development in secs 2 
-and 3; and that we don't have 
-any isos that are not justified
-by the math
+and 3 of the ring completion paper; 
+and that we don't have 
+any extra isos
+
+There is definitely a need to
+have something morphisms
+that relate an n-dimensional bool 
+and the sum of two n-dimensional
+ones etc.
+
+I think the only thing we need at this point
+is the embedding of n dim types
+into n+1 dim types
+
+The diagonal things and maps to 0 come later
+when we do hocolim
 \end{verbatim}
+
+Can we use the isos in table 2 to prove these two equal:
+\[\begin{array}{c}
+\nodet{(\nodet{\tau}{0+0})}{(\nodet{0+0}{0+0})} \\
+\nodet{(\nodet{\tau}{0})}{(\nodet{0}{0})}
+\end{array}\]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Polarities} 
+\section{Homotopies} 
 
-\begin{verbatim} 
-need to understand and then add
-the t-t=0 equations
+The development has so far resulted in an $n$-dimensional version of $\Pi$
+where everything is defined pointwise. For example, an interpreter starting
+with a 3d value indexed by $\pp\mm\pp$ will always result in a value indexed
+by the same polarities $\pp\mm\pp$. It is not possible for the computation in
+one dimension to migrate to or to interact in any way with another
+dimension. In some sense, the polarities are not interpreted yet. More
+precisely, if the polarities are to indicate ``forward'' and ``backwards''
+flow of information, it should be the case that identical positive and
+negative flows cancel each other. Technically, we want the \emph{ring
+  completion} of our set of isomorphisms which means at least having
+combinators witnessing the isomorphism $\nodet{\tau}{\tau} \ison{1}
+\ztn^1$. Recalling the connection to elementary algebra, this just means that
+we are now categorifying identities such as $\tau - \tau = 0$. Operationally,
+this would, for example, allow an interpreter manipulating a value indexed by
+$\pp\mm\pp$ to reverse its flow among one of the three dimensions, i.e., to
+migrate to the vertex indexed by $\mm\mm\pp$, $\pp\pp\pp$, or $\pp\mm\mm$,
+and be processed by the code indexed by that new sequence of polarities
+instead of the original code indexed by $\pp\mm\pp$.
 
-finally need to move on to 
-sec. 4 and beyond 
-and understand what they
-add in terms of isos
+%%%%%%%%%%%%%%%%%%
+\subsection{Recovering the Int Construction}
+
+As motivated in the previous paragraph, we begin by adding a new way to
+create 1d combinators that witnesses the interpretation of negative types as
+additive inverses to conventional positive types:
+\begin{center}
+\Rule{}
+{\jdg{}{}{c : \tau \iso \tau}}
+{\jdg{}{}{\promote{c} : \nodet{\tau}{\tau} \ison{1} \ztn^1} : \demote{c}}
+{}
+\end{center}
+Unlike the case in the previous section, 1d combinators are no longer
+exclusively a family of $2^1$ combinators of dimension 0. There are now some
+inherently 1d combinators that mediate between $\nodet{\tau}{\tau}$ and
+$\ztn^1$. As a concrete example, let us abbreviate $1+1$ as $\boolt$, the type
+of booleans. There are several isomorphisms $\boolt \iso \boolt$ including
+the trivial one witnessed by the combinator $\idc$ and the boolean negation
+witnessed by the combinator $\swapp$. Each of these isomorphisms gives rise
+to a \emph{different} 1d isomorphism between $\nodet{\boolt}{\boolt}$ and
+$\ztn^1$. 
+
+\hide{
+
+Before presenting the formal evaluation rules, we show the intuition
+of how the new combinators behave operationally:
+\[\begin{array}{rcl} 
+\evaln{1}{(\promote{\idc})}{(+\inl{()})} &=& -\inl{()} \\
+\evaln{1}{(\promote{\swapp})}{(+\inl{()})} &=& -\inr{()} 
+\end{array}\]
+The evaluation of the new combinators does not simply keep recurring until
+dimension 0; instead the combinators act as ``bridges'' that transfer values
+from one vertex in dimension 1 to another vertex. 
+
+\begin{verbatim}
+Need to have abort or
+something and need to transfer control to the evaluator in the other
+dimension? How do I get hold of that evaluator; keep all the n-dim code
+around and index into it? 
+
+evaluator
+curry...
 \end{verbatim}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work and Context}
 
+\begin{verbatim}
 A ton of stuff here. 
+
+All these isomorphims are paths 
+and higher-paths etc. 
+in the HoTT world.
+\end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
@@ -1595,12 +1780,12 @@ paths in some complex combinatorial space.
 {\jdg{1}{}{\cubc : \cubt_1 \isoone \cubt_2}}
 {\jdg{1}{}{\symc{\cubc} : \cubt_2 \isoone \cubt_1}}
 {}
-\\ \bigskip
+\qquad
 \Rule{}
 {\jdg{1}{}{\cubc_1 : \cubt_1 \isoone \cubt_2} \quad \cubc_2 : \cubt_2 \isoone \cubt_3}
 {\jdg{1}{}{\cubc_1 \fatsemi \cubc_2 : \cubt_1 \isoone \cubt_3}}
 {}
-\\ \bigskip
+\qquad
 \Rule{}
 {\jdg{1}{}{\cubc_1 : \cubt_1 \isoone \cubt_2} \quad \cubc_2 : \cubt_3 \isoone \cubt_4}
 {\jdg{1}{}{\cubc_1 \oplus \cubc_2 : \cubt_1 \boxplus \cubt_3 \isoone \cubt_2 \boxplus \cubt_4}}

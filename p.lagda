@@ -1,6 +1,4 @@
-\documentclass{llncs}
-\pagestyle{plain}
-
+\documentclass[authoryear,preprint]{sigplanconf}
 \usepackage{agda}
 \usepackage{tikz}
 \usepackage{url}
@@ -15,6 +13,7 @@
 \usepackage{graphicx}
 \usepackage{textgreek}
 
+\newcommand{\AgdaArgument}[1]{#1}
 \newcommand{\identlp}{\mathit{identl}_+}
 \newcommand{\identrp}{\mathit{identr}_+}
 \newcommand{\swapp}{\mathit{swap}_+}
@@ -50,36 +49,33 @@ $\displaystyle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
-\title{A Computational Interpretation of Univalence for Finite Types}
-\author{Zachary Sparks$^{1}$ \and Jacques Carette$^{2}$ \and Amr Sabry$^{1}$}
-\institute{$^{(1)}$~Indiana University \qquad $^{(2)}$~McMaster University}
+\special{papersize=8.5in,11in}
+\setlength{\pdfpageheight}{\paperheight}
+\setlength{\pdfpagewidth}{\paperwidth}
+
+\title{A Computational Interpretation of \\ Univalence for Finite Types}
+\authorinfo{}{}{}
 \maketitle
 
 \begin{abstract}
-
 Homotopy type theory (HoTT) relates some aspects of topology, algebra,
 geometry, physics, logic, and type theory, in a unique novel way that
 promises a new and foundational perspective on mathematics and
-computation. The heart of HoTT is the \emph{univalence axiom}, which informally
-states that isomorphic structures can be identified. One of the major open
-problems in HoTT is a computational interpretation of this axiom.
-
+computation. The heart of HoTT is the \emph{univalence axiom}, which
+informally states that isomorphic structures can be identified. One of the
+major open problems in HoTT is a computational interpretation of this axiom.
 We propose that, at least for the special case of finite types, reversible
-computation \emph{is} the computational interpretation of
-univalence. Specifically, we show that, in this context of finite types,
-univalence specializes to a relationship between type isomorphisms on the
-side of syntactic identities and permutations in the symmetric group on the
-side of semantic equivalences. We formalize this connection in Agda as a
-compilation/decompilation theorem for our previously developed reversible
-language $\Pi$ based on type isomorphisms. 
-
-
+computation via type isomorphisms \emph{is} the computational interpretation
+of univalence.
 \end{abstract}
 
 \AgdaHide{
 \begin{code}
 module p where
 open import Level
+open import Data.Empty
+open import Data.Unit
+open import Data.Sum
 open import Data.Nat hiding (_⊔_)
 open import Data.Product
 open import Function 
@@ -110,19 +106,15 @@ Our approach is to start with a computational framework that has finite data
 and permutations as the operations between them. The computational rules
 apply permutations.
 
-We then have a notion of identity based on PI. But we are not adding the type
-(b1 == b2) as a finite type in PI and we will not add a new kind of data to
-show that two permutations are equivalent either.
-
-We prove that any two permutations that are extensionally equivalent are
-convertible using PI identities. We also prove that two sets that are
-permutations of one another are also convertible using PI identities.
+HoTT says id types are an inductively defined type family with refl as
+constructor. We say it is a family defined with pi combinators as
+constructors. Replace path induction with refl as base case with our
+induction.
 
 \paragraph*{Generalization} 
 
 How would that generalize to first-class functions? Using negative and
 fractionals? Groupoids? 
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Homotopy Type Theory}
@@ -497,6 +489,78 @@ Note that:
 in type theory (James and Sabry, POPL 2012).
 \end{itemize}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Examples} 
+
+Let's start with a few simple types built from the empty type, the unit type,
+sums, and products, and let's study the paths postulated by HoTT.
+
+For every value in a type (point in a space) we have a trivial path from the
+value to itself:
+
+\begin{code}
+data U : Set where
+  ZERO  : U
+  ONE   : U
+  PLUS  : U → U → U
+  TIMES : U → U → U
+
+-- Points 
+
+⟦_⟧ : U → Set
+⟦ ZERO ⟧       = ⊥
+⟦ ONE ⟧        = ⊤
+⟦ PLUS t t' ⟧  = ⟦ t ⟧ ⊎ ⟦ t' ⟧
+⟦ TIMES t t' ⟧ = ⟦ t ⟧ × ⟦ t' ⟧
+
+BOOL : U
+BOOL = PLUS ONE ONE
+
+BOOL² : U
+BOOL² = TIMES BOOL BOOL
+
+TRUE : ⟦ BOOL ⟧
+TRUE = inj₁ tt
+
+FALSE : ⟦ BOOL ⟧
+FALSE = inj₂ tt
+
+NOT : ⟦ BOOL ⟧ → ⟦ BOOL ⟧
+NOT (inj₁ tt) = FALSE
+NOT (inj₂ tt) = TRUE
+
+CNOT : ⟦ BOOL ⟧ → ⟦ BOOL ⟧ → ⟦ BOOL ⟧ × ⟦ BOOL ⟧
+CNOT (inj₁ tt) b = (TRUE , NOT b)
+CNOT (inj₂ tt) b = (FALSE , b)
+
+p₁ : FALSE ≡ FALSE
+p₁ = refl FALSE
+
+p₂ : _≡_ {A = ⟦ BOOL² ⟧} (FALSE , TRUE) (FALSE , (NOT FALSE))
+p₂ = refl (FALSE , TRUE) 
+
+p₃ : ⟦ BOOL ⟧ ≡ ⟦ BOOL ⟧
+p₃ = refl ⟦ BOOL ⟧
+\end{code}
+
+In addition to all these trivial paths, there are structured paths. In
+particular, paths in product spaces can be viewed as pair of paths. So in
+addition to the path above, we also have:
+
+\begin{code}
+p₂' : (FALSE ≡ FALSE) × (TRUE ≡ TRUE) 
+p₂' = (refl FALSE , refl TRUE) 
+
+--α : p₂ ≡ p₂' not quite but something like that
+--α = ? by some theorem in book
+
+-- then talk about paths between bool and bool based on id / not;not
+-- etc.
+\end{code}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Pi}
+
 \subsection{Base isomorphisms}
 \[\begin{array}{rrcll}
 \identlp :&  0 + b & \iso & b &: \identrp \\
@@ -553,8 +617,8 @@ becomes:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-{\small
-\bibliographystyle{splncs03} 
+\bibliographystyle{abbrvnat}
+\softraggedright
 \bibliography{cites}
-}
+
 \end{document}

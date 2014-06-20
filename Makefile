@@ -1,10 +1,9 @@
 
-all : ring.pdf
+all : p.pdf
 
-ring.pdf : latex/ring.tex
-#	export TEXINPUTS=".//:" ; pdflatex latex/ring.tex
-	pdflatex latex/ring.tex ; bibtex ring
+p.pdf : latex/p.tex
+	pdflatex latex/p.tex
 
-latex/ring.tex : ring.lagda
-	agda --allow-unsolved-metas --latex -i . -i $(AGDALIB) ring.lagda
+latex/p.tex : p.lagda
+	agda --allow-unsolved-metas --latex -i . -i /u/sabry/include/agda2/src p.lagda
 
