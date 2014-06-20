@@ -543,33 +543,37 @@ idD = swap₊
 -- the structure is given above already
 -- If the following is right, we can come up with syntax (like _[_]⟺[_]_ ) for  p₁ [c₁]⟺[c₂] p₂ .  We really do
 -- need to index the ⟺ by the combinators 'explicitly' as Agda can never infer them.
-data 2P : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧ } (c₁ c₂ : t₁ ⟷ t₂) → Paths c₁ v₁ v₂ → Paths c₂ v₁ v₂ → Set where
-  lid : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} {p : Paths c v₁ v₂} → 2P (id⟷ ◎ c) c  (pathTrans {c₁ = id⟷} {c} pathId p) p
-  rid : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} {p : Paths c v₁ v₂} → 2P (c ◎ id⟷) c  (pathTrans {c₁ = c} {id⟷} p pathId) p
+data 2P {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧ } : {c₁ c₂ : t₁ ⟷ t₂} → Paths c₁ v₁ v₂ → Paths c₂ v₁ v₂ → Set where
+  id2 : {c : t₁ ⟷ t₂} {p : Paths c v₁ v₂} → 2P {c₁ = c} {c} p p
+  inv2  : {c₁ c₂ : t₁ ⟷ t₂} {p₁ : Paths c₁ v₁ v₂} {p₂ : Paths c₂ v₁ v₂} → 2P {c₁ = c₁} {c₂} p₁ p₂ → 2P {c₁ = c₂} {c₁} p₂ p₁
+  -- should define composition which effectively does as below??
+  lid : {c : t₁ ⟷ t₂} {p : Paths c v₁ v₂} → 2P {c₁ = id⟷ ◎ c} {c} (pathTrans {c₁ = id⟷} {c} pathId p) p
+  rid : {c : t₁ ⟷ t₂} {p : Paths c v₁ v₂} → 2P {c₁ = c ◎ id⟷} {c} (pathTrans {c₁ = c} {id⟷} p pathId) p
 -- also need:
 -- assoc
--- equiv (i.e refl, sym, trans)
+--  linv : {c : t₁ ⟷ t₂} {p : Paths c v₁ v₂} → 2P {c₁ = c} 
 -- linv
 -- rinv
 -- and perhaps cong, i.e. ◎-resp-2P
 
-2Paths :  {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧ } {c₁ c₂ : t₁ ⟷ t₂} {p₁ : Paths c₁ v₁ v₂} {p₂ : Paths c₂ v₁ v₂} → 2P c₁ c₂ p₁ p₂ → Paths c₁ v₁ v₂ → Paths c₂ v₁ v₂ → Set
-2Paths lid (a , refl .a , p₂) p₃ = p₂ ≡ p₃
-2Paths rid (a , p₂ , refl .a) p₃ = p₂ ≡ p₃
- 
+mutual 
+  2Paths :  {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧ } {c₁ c₂ : t₁ ⟷ t₂} {p₁ : Paths c₁ v₁ v₂} {p₂ : Paths c₂ v₁ v₂} → 2P {c₁ = c₁} {c₂} p₁ p₂ → Paths c₁ v₁ v₂ → Paths c₂ v₁ v₂ → Set
+  2Paths id2 p₁ p₂ = p₁ ≡ p₂
+  2Paths (inv2 p) p₁ p₂ = 2PathsB p p₁ p₂
+  2Paths lid (a , refl .a , p₂) p₃ = p₂ ≡ p₃
+  2Paths rid (a , p₂ , refl .a) p₃ = p₂ ≡ p₃
+
+  2PathsB : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧ } {c₁ c₂ : t₁ ⟷ t₂} {p₁ : Paths c₁ v₁ v₂} {p₂ : Paths c₂ v₁ v₂} → 2P {c₁ = c₁} {c₂} p₁ p₂ → Paths c₂ v₁ v₂ → Paths c₁ v₁ v₂ → Set
+  2PathsB id2 p q = q ≡ p
+  2PathsB (inv2 p) p₁ p₂ = 2PathsB p p₂ p₁
+  2PathsB lid p (a , refl .a , p₃) = p ≡ p₃
+  2PathsB rid p (a , p₂ , refl .a) = p ≡ p₂
+
 example : 2Paths {t₁ = BOOL} {t₂ = BOOL} {v₁ = FALSE} {v₂ = FALSE} 
           {c₁ = id⟷ ◎ id⟷} {c₂ = id⟷} {p₁ = pathIdIdFF}
           lid pathIdIdFF pathIdFF
 example = refl (refl FALSE) 
 
-{-
-data _⟷_ : U → U → Set where
-  unite₊  : {t : U} → PLUS ZERO t ⟷ t
-  uniti₊  : {t : U} → t ⟷ PLUS ZERO t
-  swap₊   : {t₁ t₂ : U} → PLUS t₁ t₂ ⟷ PLUS t₂ t₁
-  assocl₊ : {t₁ t₂ t₃ : U} → PLUS t₁ (PLUS t₂ t₃) ⟷ PLUS (PLUS t₁ t₂) t₃
-  assocr₊ : {t₁ t₂ t₃ : U} → PLUS (PLUS t₁ t₂) t₃ ⟷ PLUS t₁ (PLUS t₂ t₃)
--}
 {--
 2Paths : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c₁ c₂ : t₁ ⟷ t₂} → 
          Paths c₁ v₁ v₂ → Paths c₂ v₁ v₂ → Set
