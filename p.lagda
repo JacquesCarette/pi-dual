@@ -65,14 +65,17 @@ computation. The heart of HoTT is the \emph{univalence axiom}, which
 informally states that isomorphic structures can be identified. One of the
 major open problems in HoTT is a computational interpretation of this axiom.
 We propose that, at least for the special case of finite types, reversible
-computation \emph{is} the computational interpretation of
-univalence. 
+computation via type isomorphisms \emph{is} the computational interpretation
+of univalence.
 \end{abstract}
 
 \AgdaHide{
 \begin{code}
 module p where
 open import Level
+open import Data.Empty
+open import Data.Unit
+open import Data.Sum
 open import Data.Nat hiding (_⊔_)
 open import Data.Product
 open import Function 
@@ -102,6 +105,11 @@ for these kinds of identities.
 Our approach is to start with a computational framework that has finite data
 and permutations as the operations between them. The computational rules
 apply permutations.
+
+HoTT says id types are an inductively defined type family with refl as
+constructor. We say it is a family defined with pi combinators as
+constructors. Replace path induction with refl as base case with our
+induction.
 
 \paragraph*{Generalization} 
 
@@ -480,6 +488,78 @@ Note that:
 \item \emph{First-order} reversible functions can be inductively defined
 in type theory (James and Sabry, POPL 2012).
 \end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Examples} 
+
+Let's start with a few simple types built from the empty type, the unit type,
+sums, and products, and let's study the paths postulated by HoTT.
+
+For every value in a type (point in a space) we have a trivial path from the
+value to itself:
+
+\begin{code}
+data U : Set where
+  ZERO  : U
+  ONE   : U
+  PLUS  : U → U → U
+  TIMES : U → U → U
+
+-- Points 
+
+⟦_⟧ : U → Set
+⟦ ZERO ⟧       = ⊥
+⟦ ONE ⟧        = ⊤
+⟦ PLUS t t' ⟧  = ⟦ t ⟧ ⊎ ⟦ t' ⟧
+⟦ TIMES t t' ⟧ = ⟦ t ⟧ × ⟦ t' ⟧
+
+BOOL : U
+BOOL = PLUS ONE ONE
+
+BOOL² : U
+BOOL² = TIMES BOOL BOOL
+
+TRUE : ⟦ BOOL ⟧
+TRUE = inj₁ tt
+
+FALSE : ⟦ BOOL ⟧
+FALSE = inj₂ tt
+
+NOT : ⟦ BOOL ⟧ → ⟦ BOOL ⟧
+NOT (inj₁ tt) = FALSE
+NOT (inj₂ tt) = TRUE
+
+CNOT : ⟦ BOOL ⟧ → ⟦ BOOL ⟧ → ⟦ BOOL ⟧ × ⟦ BOOL ⟧
+CNOT (inj₁ tt) b = (TRUE , NOT b)
+CNOT (inj₂ tt) b = (FALSE , b)
+
+p₁ : FALSE ≡ FALSE
+p₁ = refl FALSE
+
+p₂ : _≡_ {A = ⟦ BOOL² ⟧} (FALSE , TRUE) (FALSE , (NOT FALSE))
+p₂ = refl (FALSE , TRUE) 
+
+p₃ : ⟦ BOOL ⟧ ≡ ⟦ BOOL ⟧
+p₃ = refl ⟦ BOOL ⟧
+\end{code}
+
+In addition to all these trivial paths, there are structured paths. In
+particular, paths in product spaces can be viewed as pair of paths. So in
+addition to the path above, we also have:
+
+\begin{code}
+p₂' : (FALSE ≡ FALSE) × (TRUE ≡ TRUE) 
+p₂' = (refl FALSE , refl TRUE) 
+
+--α : p₂ ≡ p₂' not quite but something like that
+--α = ? by some theorem in book
+
+-- then talk about paths between bool and bool based on id / not;not
+-- etc.
+\end{code}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Pi}
 
 \subsection{Base isomorphisms}
 \[\begin{array}{rrcll}

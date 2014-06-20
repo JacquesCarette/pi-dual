@@ -21,6 +21,9 @@ data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
 sym : ∀ {ℓ} {A : Set ℓ} {a b : A} → (a ≡ b) → (b ≡ a)
 sym {a = a} {b = .a} (refl .a) = refl a
 
+trans : ∀ {ℓ} {A : Set ℓ} {a b c : A} → (a ≡ b) → (b ≡ c) → (a ≡ c)
+trans {a = a} {b = .a} {c = .a} (refl .a) (refl .a) = refl a
+
 ------------------------------------------------------------------------------
 {--
 Types are higher groupoids:
@@ -70,16 +73,21 @@ mutual
               (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
     _⊗_     : {t₁ t₂ t₃ t₄ : U} → 
               (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
--- isos involving id types:
-    -- prodId says (ID_a x ID_b) = ID_(a x b) etc.
-    -- also need to add unitId, sumId, ... sections 2.6 - 2.12
-    prodId : {t₁ t₂ t₁' t₂' : U} 
-             {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {v₁' : ⟦ t₁' ⟧} {v₂' : ⟦ t₂' ⟧} 
-             {c : t₁ ⟷ t₂} {c' : t₁' ⟷ t₂'} → 
-             (TIMES (ID {t₁} {t₂} c v₁ v₂) (ID {t₁'} {t₂'} c' v₁' v₂')) ⟷ 
-             (ID {TIMES t₁ t₁'} {TIMES t₂ t₂'} (c ⊗ c') (v₁ , v₁') (v₂ , v₂'))
-    -- groupoid structure ???
-    -- 2Paths = Paths {ID {t₁} {t₂} c v₁ v₂} {ID {t₁} {t₂} c v₁ v₂} ???
+    lid : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} → 
+          ID (id⟷ ◎ c) v₁ v₂ ⟷ ID c v₁ v₂
+    rid : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} → 
+          ID (c ◎ id⟷) v₁ v₂ ⟷ ID c v₁ v₂
+    linv : {t₁ t₂ : U} {v : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} → 
+           ID (sym⟷ c ◎ c) v v ⟷ ID {t₂} {t₂} id⟷ v v
+    rinv : {t₁ t₂ : U} {v : ⟦ t₁ ⟧} {c : t₁ ⟷ t₂} → 
+           ID (c ◎ sym⟷ c) v v ⟷ ID {t₁} {t₁} id⟷ v v
+    invinv : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} → 
+           ID (sym⟷ (sym⟷ c)) v₁ v₂ ⟷ ID {t₁} {t₂} c v₁ v₂
+    assoc : {t₁ t₂ t₃ t₄ : U} 
+            {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {v₃ : ⟦ t₃ ⟧} {v₄ : ⟦ t₄ ⟧} 
+            {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+            ID (c₁ ◎ (c₂ ◎ c₃)) v₁ v₄ ⟷ ID ((c₁ ◎ c₂) ◎ c₃) v₁ v₄
+-- add the other direction for lid, rid, linv, rinv, invinv, and assoc
 
   Paths : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧ → Set
   Paths unite₊ (inj₁ ()) 
@@ -135,7 +143,12 @@ mutual
   Paths (c₁ ⊕ c₂) (inj₂ v) (inj₂ v') = Paths c₂ v v'
   Paths (c₁ ⊗ c₂) (v₁ , v₂) (v₁' , v₂') = 
     Paths c₁ v₁ v₁' × Paths c₂ v₂ v₂'
-  Paths prodId (p , q) (r , s) = (p ≡ r) × (q ≡ s) 
+  Paths lid (v , refl .v , p) q = (p ≡ q) 
+  Paths rid (v , p , refl .v) q = (p ≡ q) 
+  Paths linv (v , pinv , p) q = {!!}
+  Paths rinv = {!!} 
+  Paths invinv = {!!} 
+  Paths assoc = {!!} 
 
   PathsB : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧ → Set
   PathsB unite₊ v (inj₁ ())
@@ -193,40 +206,12 @@ mutual
   PathsB (c₁ ⊕ c₂) (inj₂ v) (inj₂ v') = PathsB c₂ v v'
   PathsB (c₁ ⊗ c₂) (v₁ , v₂) (v₁' , v₂') = 
     PathsB c₁ v₁ v₁' × PathsB c₂ v₂ v₂'
-  PathsB prodId (p , q) (r , s) = (p ≡ r) × (q ≡ s)
-
-------------------------------------------------------------------------------
--- Lemma 2.1.1
-
-{--
-If we have a path between v₁ and v₂, then we have a path between v₂ and v₁
-
-Semantically, if we have:
-  p : ⟦ ID {t₁} {t₂} c v₁ v₂ ⟧
-then we have:
-  !p : ⟦ ID {t₂} {t₁} (sym⟷ c) v₂ v₁ ⟧
-
-Syntactically, what is the connection between the types:
-  ID {t₁} {t₂} c v₁ v₂
-and 
-  ID {t₂} {t₁} (sym⟷ c) v₂ v₁
-
-???
-
-This is not an iso, because from !p we can only go to !!p which is not the
-same as p but of course equivalent to it...
-
-    ID    : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧ → U
-
-  ⟦_⟧ : U → Set
-  ⟦ ZERO ⟧        = ⊥
-  ⟦ ONE ⟧         = ⊤
-  ⟦ PLUS t t' ⟧   = ⟦ t ⟧ ⊎ ⟦ t' ⟧
-  ⟦ TIMES t t' ⟧  = ⟦ t ⟧ × ⟦ t' ⟧
-  ⟦ ID {t₁} {t₂} c v₁ v₂ ⟧ = Paths {t₁} {t₂} c v₁ v₂
-
---}
-
+  PathsB rid = {!!} 
+  PathsB lid = {!!} 
+  PathsB linv = {!!} 
+  PathsB rinv = {!!} 
+  PathsB invinv = {!!} 
+  PathsB assoc = {!!} 
 
 ------------------------------------------------------------------------------
 -- Examples...
@@ -248,12 +233,5 @@ e₁ = refl (FALSE , TRUE)
 
 e₂ : ⟦ ID {BOOL²} {BOOL²} (id⟷ ⊗ id⟷) (FALSE , TRUE) (FALSE , TRUE) ⟧
 e₂ = (refl FALSE , refl TRUE)
-
-e₃ : ⟦ ID (prodId {BOOL} {BOOL} {BOOL} {BOOL}
-          {FALSE} {FALSE} {TRUE} {TRUE}
-          {id⟷} {id⟷})
-          (refl FALSE , refl TRUE)
-          (refl FALSE , refl TRUE) ⟧
-e₃ = ( refl (refl FALSE) , refl (refl TRUE) )
 
 ------------------------------------------------------------------------------
