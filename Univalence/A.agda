@@ -546,6 +546,8 @@ idD = swap₊
 data 2P {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧ } : {c₁ c₂ : t₁ ⟷ t₂} → Paths c₁ v₁ v₂ → Paths c₂ v₁ v₂ → Set where
   id2 : {c : t₁ ⟷ t₂} {p : Paths c v₁ v₂} → 2P {c₁ = c} {c} p p
   inv2  : {c₁ c₂ : t₁ ⟷ t₂} {p₁ : Paths c₁ v₁ v₂} {p₂ : Paths c₂ v₁ v₂} → 2P {c₁ = c₁} {c₂} p₁ p₂ → 2P {c₁ = c₂} {c₁} p₂ p₁
+  comp2 : {c₁ c₂ c₃ : t₁ ⟷ t₂} {p₁ : Paths c₁ v₁ v₂} {p₂ : Paths c₂ v₁ v₂} {p₃ : Paths c₃ v₁ v₂} →
+    2P {c₁ = c₁} {c₂} p₁ p₂ → 2P {c₁ = c₂} {c₃} p₂ p₃ → 2P {c₁ = c₁} {c₃} p₁ p₃
   -- should define composition which effectively does as below??
   lid : {c : t₁ ⟷ t₂} {p : Paths c v₁ v₂} → 2P {c₁ = id⟷ ◎ c} {c} (pathTrans {c₁ = id⟷} {c} pathId p) p
   rid : {c : t₁ ⟷ t₂} {p : Paths c v₁ v₂} → 2P {c₁ = c ◎ id⟷} {c} (pathTrans {c₁ = c} {id⟷} p pathId) p
@@ -560,12 +562,15 @@ mutual
   2Paths :  {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧ } {c₁ c₂ : t₁ ⟷ t₂} {p₁ : Paths c₁ v₁ v₂} {p₂ : Paths c₂ v₁ v₂} → 2P {c₁ = c₁} {c₂} p₁ p₂ → Paths c₁ v₁ v₂ → Paths c₂ v₁ v₂ → Set
   2Paths id2 p₁ p₂ = p₁ ≡ p₂
   2Paths (inv2 p) p₁ p₂ = 2PathsB p p₁ p₂
+  2Paths {t₁} {t₂} {v₁} {v₂} (comp2 {c₁ = c₁} {c₂} {c₃} {p₁} {p₂} {p₃} p q) α₁ α₂ = 
+      Σ[ r ∈ Paths c₂ v₁ v₂ ] (2P {c₁ = c₁} {c₂} α₁ r × 2P {c₁ = c₂} {c₃} r α₂) 
   2Paths lid (a , refl .a , p₂) p₃ = p₂ ≡ p₃
   2Paths rid (a , p₂ , refl .a) p₃ = p₂ ≡ p₃
 
   2PathsB : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧ } {c₁ c₂ : t₁ ⟷ t₂} {p₁ : Paths c₁ v₁ v₂} {p₂ : Paths c₂ v₁ v₂} → 2P {c₁ = c₁} {c₂} p₁ p₂ → Paths c₂ v₁ v₂ → Paths c₁ v₁ v₂ → Set
   2PathsB id2 p q = q ≡ p
   2PathsB (inv2 p) p₁ p₂ = 2PathsB p p₂ p₁
+  2PathsB (comp2 p q) p₁ p₂ = {!!}
   2PathsB lid p (a , refl .a , p₃) = p ≡ p₃
   2PathsB rid p (a , p₂ , refl .a) = p ≡ p₂
 
