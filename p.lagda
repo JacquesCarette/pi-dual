@@ -61,18 +61,12 @@ $\displaystyle
 Homotopy type theory (HoTT) relates some aspects of topology, algebra,
 geometry, physics, logic, and type theory, in a unique novel way that
 promises a new and foundational perspective on mathematics and
-computation. The heart of HoTT is the \emph{univalence axiom}, which informally
-states that isomorphic structures can be identified. One of the major open
-problems in HoTT is a computational interpretation of this axiom.
-
+computation. The heart of HoTT is the \emph{univalence axiom}, which
+informally states that isomorphic structures can be identified. One of the
+major open problems in HoTT is a computational interpretation of this axiom.
 We propose that, at least for the special case of finite types, reversible
 computation \emph{is} the computational interpretation of
-univalence. Specifically, we show that, in this context of finite types,
-univalence specializes to a relationship between type isomorphisms on the
-side of syntactic identities and permutations in the symmetric group on the
-side of semantic equivalences. We formalize this connection in Agda as a
-compilation/decompilation theorem for our previously developed reversible
-language $\Pi$ based on type isomorphisms. 
+univalence. 
 \end{abstract}
 
 \AgdaHide{
@@ -109,19 +103,10 @@ Our approach is to start with a computational framework that has finite data
 and permutations as the operations between them. The computational rules
 apply permutations.
 
-We then have a notion of identity based on PI. But we are not adding the type
-(b1 == b2) as a finite type in PI and we will not add a new kind of data to
-show that two permutations are equivalent either.
-
-We prove that any two permutations that are extensionally equivalent are
-convertible using PI identities. We also prove that two sets that are
-permutations of one another are also convertible using PI identities.
-
 \paragraph*{Generalization} 
 
 How would that generalize to first-class functions? Using negative and
 fractionals? Groupoids? 
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Homotopy Type Theory}
