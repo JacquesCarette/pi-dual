@@ -46,8 +46,6 @@ mutual
   ⟦ TIMES t t' ⟧  = ⟦ t ⟧ × ⟦ t' ⟧
   ⟦ ID {t₁} {t₂} c v₁ v₂ ⟧ = Paths {t₁} {t₂} c v₁ v₂
 
--- 2Paths = Paths {ID {t₁} {t₂} c v₁ v₂} {ID {t₁} {t₂} c v₁ v₂} ???
-
   data _⟷_ : U → U → Set where
     unite₊  : {t : U} → PLUS ZERO t ⟷ t
     uniti₊  : {t : U} → t ⟷ PLUS ZERO t
@@ -81,6 +79,7 @@ mutual
              (TIMES (ID {t₁} {t₂} c v₁ v₂) (ID {t₁'} {t₂'} c' v₁' v₂')) ⟷ 
              (ID {TIMES t₁ t₁'} {TIMES t₂ t₂'} (c ⊗ c') (v₁ , v₁') (v₂ , v₂'))
     -- groupoid structure ???
+    -- 2Paths = Paths {ID {t₁} {t₂} c v₁ v₂} {ID {t₁} {t₂} c v₁ v₂} ???
 
   Paths : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧ → Set
   Paths unite₊ (inj₁ ()) 
@@ -136,7 +135,7 @@ mutual
   Paths (c₁ ⊕ c₂) (inj₂ v) (inj₂ v') = Paths c₂ v v'
   Paths (c₁ ⊗ c₂) (v₁ , v₂) (v₁' , v₂') = 
     Paths c₁ v₁ v₁' × Paths c₂ v₂ v₂'
-  Paths prodId (p , q) r = ((p , q) ≡ r)
+  Paths prodId (p , q) (r , s) = (p ≡ r) × (q ≡ s) 
 
   PathsB : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧ → Set
   PathsB unite₊ v (inj₁ ())
@@ -194,6 +193,67 @@ mutual
   PathsB (c₁ ⊕ c₂) (inj₂ v) (inj₂ v') = PathsB c₂ v v'
   PathsB (c₁ ⊗ c₂) (v₁ , v₂) (v₁' , v₂') = 
     PathsB c₁ v₁ v₁' × PathsB c₂ v₂ v₂'
-  PathsB prodId (p , q) r = ((p , q) ≡ r)
+  PathsB prodId (p , q) (r , s) = (p ≡ r) × (q ≡ s)
+
+------------------------------------------------------------------------------
+-- Lemma 2.1.1
+
+{--
+If we have a path between v₁ and v₂, then we have a path between v₂ and v₁
+
+Semantically, if we have:
+  p : ⟦ ID {t₁} {t₂} c v₁ v₂ ⟧
+then we have:
+  !p : ⟦ ID {t₂} {t₁} (sym⟷ c) v₂ v₁ ⟧
+
+Syntactically, what is the connection between the types:
+  ID {t₁} {t₂} c v₁ v₂
+and 
+  ID {t₂} {t₁} (sym⟷ c) v₂ v₁
+
+???
+
+This is not an iso, because from !p we can only go to !!p which is not the
+same as p but of course equivalent to it...
+
+    ID    : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧ → U
+
+  ⟦_⟧ : U → Set
+  ⟦ ZERO ⟧        = ⊥
+  ⟦ ONE ⟧         = ⊤
+  ⟦ PLUS t t' ⟧   = ⟦ t ⟧ ⊎ ⟦ t' ⟧
+  ⟦ TIMES t t' ⟧  = ⟦ t ⟧ × ⟦ t' ⟧
+  ⟦ ID {t₁} {t₂} c v₁ v₂ ⟧ = Paths {t₁} {t₂} c v₁ v₂
+
+--}
+
+
+------------------------------------------------------------------------------
+-- Examples...
+
+BOOL : U
+BOOL = PLUS ONE ONE
+
+BOOL² : U
+BOOL² = TIMES BOOL BOOL
+
+FALSE : ⟦ BOOL ⟧
+FALSE = inj₂ tt
+
+TRUE : ⟦ BOOL ⟧
+TRUE = inj₁ tt
+
+e₁ : ⟦ ID {BOOL²} {BOOL²} id⟷ (FALSE , TRUE) (FALSE , TRUE) ⟧
+e₁ = refl (FALSE , TRUE)
+
+e₂ : ⟦ ID {BOOL²} {BOOL²} (id⟷ ⊗ id⟷) (FALSE , TRUE) (FALSE , TRUE) ⟧
+e₂ = (refl FALSE , refl TRUE)
+
+e₃ : ⟦ ID (prodId {BOOL} {BOOL} {BOOL} {BOOL}
+          {FALSE} {FALSE} {TRUE} {TRUE}
+          {id⟷} {id⟷})
+          (refl FALSE , refl TRUE)
+          (refl FALSE , refl TRUE) ⟧
+e₃ = ( refl (refl FALSE) , refl (refl TRUE) )
 
 ------------------------------------------------------------------------------
