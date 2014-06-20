@@ -140,7 +140,17 @@ push-f-through {suc n} f j p g = begin
    lookup j (vmap f (permute p (tabulate g)))       ≡⟨ cong (lookup j) (vmap-permute p (tabulate g) f) ⟩
    lookup j (permute p (vmap f (tabulate g)))       ≡⟨ cong (λ x → lookup j (permute p x)) (mapTab f g) ⟩
    lookup j (permute p (tabulate (f ○ g))) ∎
- 
+
+-- Just to make a lot of the proofs look nicer
+vId : {n : ℕ} → Vec (F.Fin n) n
+vId = tabulate id
+
+vS : {n : ℕ} → Vec (F.Fin (suc n)) n
+vS = tabulate F.suc
+
+vSS : {n : ℕ} → Vec (F.Fin (suc (suc n))) n
+vSS = tabulate (F.suc ○ F.suc)
+
 swapiCorrect : {n : ℕ} → (i : F.Fin n) → (j : F.Fin (1 + n)) → evalComb (swapi i) (finToVal j) ≡ finToVal (evalPerm (swapiPerm i) j)
 swapiCorrect {zero} () _
 swapiCorrect {suc n} F.zero F.zero = refl
@@ -207,12 +217,11 @@ lookup+1-insert-remove {suc n} (F.suc i) (x ∷ v) = lookup+1-insert-remove i v
 
 -- insert (remove (F.inject₁ (F.suc i)) (tabulate id)) (F.suc (F.suc i)) (F.inject₁ (F.suc i)) !! (F.inject₁ (F.suc i))
 
-lookup-idP-id : {n : ℕ} → (i : F.Fin n) → lookup i (permute idP (tabulate id)) ≡ i
-lookup-idP-id i = trans (cong (lookup i) (idP-id (tabulate id))) (lookupTab i)
+lookup-idP-id : {n : ℕ} → (i : F.Fin n) → lookup i (permute idP vId) ≡ i
+lookup-idP-id i = trans (cong (lookup i) (idP-id vId)) (lookupTab i)
 
 swapUpToAct : {n : ℕ} {A : Set} → (i : F.Fin n) → (v : Vec A (suc n)) → 
-              permute (swapUpToPerm i) v ≡
-                insert (remove F.zero v) (F.inject₁ i) (v !! F.zero)
+    permute (swapUpToPerm i) v ≡ insert (remove F.zero v) (F.inject₁ i) (v !! F.zero)
 swapUpToAct F.zero v = trans (idP-id v) (remove0 v)
 swapUpToAct (F.suc i) (x ∷ v) = cong (λ z → insert z (F.suc (F.inject₁ i)) x) (idP-id v)
 
@@ -305,16 +314,16 @@ swapi≡swap01 : {n : ℕ} → (j : F.Fin (suc (suc n))) →  evalComb (assocl�
 swapi≡swap01 F.zero = refl
 swapi≡swap01 (F.suc F.zero) = refl
 swapi≡swap01 (F.suc (F.suc j)) = sym (trans 
-    (cong (λ x → finToVal (lookup j x)) (idP-id _)) 
+    (cong (λ x → finToVal (x !! j)) (idP-id _)) 
     (cong finToVal (lookupTab j)))
 
 -- this is the raw swap01 vector
 swap01vec : {n : ℕ} → Vec (F.Fin (2 + n)) (2 + n)
-swap01vec = F.suc F.zero ∷ F.zero ∷ tabulate (F.suc ○ F.suc)
+swap01vec = F.suc F.zero ∷ F.zero ∷ vSS
 
 -- this is the one we 'naturally' get via permutation
 swap01vec′ : (n : ℕ) → Vec (F.Fin (2 + n)) (2 + n)
-swap01vec′ n = permute (swap01 (suc (suc n))) (tabulate id)
+swap01vec′ n = permute (swap01 (suc (suc n))) vId
 
 -- but they are the same!
 swap01Correct : (n : ℕ) → swap01vec′ n ≡ swap01vec {n}
@@ -333,7 +342,7 @@ newlemma6 F.zero (x ∷ v) =
     ≡⟨ refl ⟩
   F.zero ∷ ((F.suc (F.suc x) ∷ suc2v) ∘̬′ swap01vec)
     ≡⟨ refl ⟩
-  F.zero ∷ ((tabulate (F.suc ○ F.suc)) !! x) ∷ (suc2v ∘̬′ swap01vec)
+  F.zero ∷ (vSS !! x) ∷ (suc2v ∘̬′ swap01vec)
     ≡⟨ cong (λ x → F.zero ∷ x ∷ suc2v ∘̬′ swap01vec) (lookupTab x) ⟩
   F.zero ∷ F.suc (F.suc x) ∷ (suc2v ∘̬′ swap01vec)
     ≡⟨ cong (λ q → F.zero ∷ F.suc (F.suc x) ∷ q) (map2+id v) ⟩
