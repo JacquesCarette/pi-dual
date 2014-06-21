@@ -12,8 +12,22 @@
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{textgreek}
+\usepackage{extarrows}
 
 \newcommand{\AgdaArgument}[1]{#1}
+\newcommand{\inl}[1]{\textsf{inl}~#1}
+\newcommand{\inr}[1]{\textsf{inr}~#1}
+\newcommand{\idv}[3]{#2 \xrightarrow{#1} #3}
+\newcommand{\cp}[3]{#1\stackrel{#2}{\bullet}#3}
+\newcommand{\idt}[3]{#2 \equiv_{#1} #3}
+\newcommand{\idrt}[3]{#3 \equiv_{#1} #2}
+\newcommand{\refl}[1]{\textsf{refl}~#1}
+\newcommand{\lid}{\textsf{lid}}
+\newcommand{\rid}{\textsf{rid}}
+\newcommand{\linv}{l!}
+\newcommand{\rinv}{r!}
+\newcommand{\invinv}{!!}
+\newcommand{\assoc}{\circ}
 \newcommand{\identlp}{\mathit{identl}_+}
 \newcommand{\identrp}{\mathit{identr}_+}
 \newcommand{\swapp}{\mathit{swap}_+}
@@ -561,18 +575,6 @@ addition to the path above, we also have:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Theory} 
 
-\newcommand{\inl}[1]{\textsf{inl}~#1}
-\newcommand{\inr}[1]{\textsf{inr}~#1}
-\newcommand{\idt}[3]{#2 \equiv_{#1} #3}
-\newcommand{\idrt}[3]{#3 \equiv_{#1} #2}
-\newcommand{\refl}[1]{\textsf{refl}~#1}
-\newcommand{\lid}{\textsf{lid}}
-\newcommand{\rid}{\textsf{rid}}
-\newcommand{\linv}{l!}
-\newcommand{\rinv}{r!}
-\newcommand{\invinv}{!!}
-\newcommand{\assoc}{\circ}
-
 \begin{figure*}
 \Rule{}{}{() : 1}{} 
 \qquad
@@ -582,69 +584,81 @@ addition to the path above, we also have:
 \qquad
 \Rule{}{v_1 : t_1 \quad v_2 : t_2}{(v_1,v_2) : t_1 * t_2}{} 
 \qquad
-\Rule{}{}{\refl{v} : \idt{\identlp}{\inr{v}}{v}}{}
+\Rule{}{}{\idv{\identlp}{\inr{v}}{v} : \idt{\identlp}{\inr{v}}{v}}{}
 \qquad
-\Rule{}{}{\refl{v} : \idt{\identrp}{v}{\inr{v}}}{}
+\Rule{}{}{\idv{\identrp}{v}{\inr{v}} : \idt{\identrp}{v}{\inr{v}}}{}
 \qquad
-\Rule{}{}{\refl{v} : \idt{\swapp}{\inl{v}}{\inr{v}}}{}
+\Rule{}{}{\idv{\swapp}{\inl{v}}{\inr{v}} : \idt{\swapp}{\inl{v}}{\inr{v}}}{}
 \qquad
-\Rule{}{}{\refl{v} : \idt{\swapp}{\inr{v}}{\inl{v}}}{}
+\Rule{}{}{\idv{\swapp}{\inr{v}}{\inl{v}} : \idt{\swapp}{\inr{v}}{\inl{v}}}{}
 \qquad
-\Rule{}{}{\refl{v} : \idt{\assoclp}{\inl{v}}{\inl{(\inl{v})}}}{}
+\Rule{}{}{\idv{\assoclp}{\inl{v}}{\inl{(\inl{v})}} : 
+  \idt{\assoclp}{\inl{v}}{\inl{(\inl{v})}}}{}
 \qquad
-\Rule{}{}{\refl{v} : \idt{\assoclp}{\inr{(\inl{v})}}{\inl{(\inr{v})}}}{}
+\Rule{}{}{\idv{\assoclp}{\inr{(\inl{v})}}{\inl{(\inr{v})}} : 
+  \idt{\assoclp}{\inr{(\inl{v})}}{\inl{(\inr{v})}}}{}
 \qquad
-\Rule{}{}{\refl{v} : \idt{\assoclp}{\inr{(\inr{v})}}{\inr{v}}}{}
+\Rule{}{}{\idv{\assoclp}{\inr{(\inr{v})}}{\inr{v}} : 
+  \idt{\assoclp}{\inr{(\inr{v})}}{\inr{v}}}{}
 \qquad
-\Rule{}{}{\refl{v} : \idt{\assocrp}{\inl{(\inl{v})}}{\inl{v}}}{}
+\Rule{}{}{\idv{\assocrp}{\inl{(\inl{v})}}{\inl{v}} : 
+  \idt{\assocrp}{\inl{(\inl{v})}}{\inl{v}}}{}
 \qquad
-\Rule{}{}{\refl{v} : \idt{\assocrp}{\inl{(\inr{v})}}{\inr{(\inl{v})}}}{}
+\Rule{}{}{\idv{\assocrp}{\inl{(\inr{v})}}{\inr{(\inl{v})}} : 
+  \idt{\assocrp}{\inl{(\inr{v})}}{\inr{(\inl{v})}}}{}
 \qquad
-\Rule{}{}{\refl{v} : \idt{\assocrp}{\inr{v}}{\inr{(\inr{v})}}}{}
+\Rule{}{}{\idv{\assocrp}{\inr{v}}{\inr{(\inr{v})}} : 
+  \idt{\assocrp}{\inr{v}}{\inr{(\inr{v})}}}{}
 \qquad
-\Rule{}{}{\refl{v} : \idt{\identlt}{((),v)}{v}}{}
+\Rule{}{}{\idv{\identlt}{((),v)}{v} : 
+  \idt{\identlt}{((),v)}{v}}{}
 \qquad
-\Rule{}{}{\refl{v} : \idt{\identrt}{v}{((),v)}}{}
+\Rule{}{}{\idv{\identrt}{v}{((),v)} : 
+  \idt{\identrt}{v}{((),v)}}{}
 \qquad
-\Rule{}{}{(\refl{v_1},\refl{v_2}) : \idt{\swapt}{(v_1,v_2)}{(v_2,v_1)}}{}
+\Rule{}{}{(\idv{\swapt}{(v_1,v_2)}{(v_2,v_1)} :
+  \idt{\swapt}{(v_1,v_2)}{(v_2,v_1)}}{}
 \qquad
-\Rule{}{}{(\refl{v_1},\refl{v_2},\refl{v_3}) : 
+\Rule{}{}{\idv{\assoclt}{(v_1,(v_2,v_3))}{((v_1,v_2),v_3)} : 
   \idt{\assoclt}{(v_1,(v_2,v_3))}{((v_1,v_2),v_3)}}{}
 \qquad
-\Rule{}{}{(\refl{v_1},\refl{v_2},\refl{v_3}) : 
+\Rule{}{}{\idv{\assocrt}{((v_1,v_2),v_3)}{(v_1,(v_2,v_3))} : 
   \idt{\assocrt}{((v_1,v_2),v_3)}{(v_1,(v_2,v_3))}}{}
 \qquad
-\Rule{}{}{(\refl{v_1},\refl{v_2}) : 
+\Rule{}{}{\idv{\dist}{(\inl{v_1},v_2)}{\inl{(v_1,v_2)}} : 
   \idt{\dist}{(\inl{v_1},v_2)}{\inl{(v_1,v_2)}}}{}
 \qquad
-\Rule{}{}{(\refl{v_1},\refl{v_2}) : 
+\Rule{}{}{\idv{\dist}{(\inr{v_1},v_2)}{\inr{(v_1,v_2)}} : 
   \idt{\dist}{(\inr{v_1},v_2)}{\inr{(v_1,v_2)}}}{}
 \qquad
-\Rule{}{}{(\refl{v_1},\refl{v_2}) : 
+\Rule{}{}{\idv{\factor}{\inl{(v_1,v_2)}}{(\inl{v_1},v_2)} : 
   \idt{\factor}{\inl{(v_1,v_2)}}{(\inl{v_1},v_2)}}{}
 \qquad
-\Rule{}{}{(\refl{v_1},\refl{v_2}) : 
+\Rule{}{}{\idv{\factor}{\inr{(v_1,v_2)}}{(\inr{v_1},v_2)} : 
   \idt{\factor}{\inr{(v_1,v_2)}}{(\inr{v_1},v_2)}}{}
 \qquad
-\Rule{}{}{\refl{v} : \idt{\idc}{v}{v}}{}
+\Rule{}{}{\idv{\idc}{v}{v} : 
+  \idt{\idc}{v}{v}}{}
 \qquad
-\Rule{}{p : \idrt{c}{v_1}{v_2}}{p : \idt{\symc{c}}{v_1}{v_2}}{}
+\Rule{}{p : \idrt{c}{v_1}{v_2}}{!p : \idt{\symc{c}}{v_1}{v_2}}{}
 \qquad
 \Rule{}{p : \idt{c_1}{v_1}{v_2} \quad q : \idt{c_2}{v_2}{v_3}}
-  {(p,v_2,q) : \idt{c_1\fatsemi c_2}{v_1}{v_3}}{}
+  {\cp{p}{v_2}{q} : \idt{c_1\fatsemi c_2}{v_1}{v_3}}{}
 \qquad
 \Rule{}{p : \idt{c_1}{v}{v'}}
-  {p : \idt{c_1 \oplus c_2}{\inl{v}}{\inl{v'}}}{}
+  {\inl{p} : \idt{c_1 \oplus c_2}{\inl{v}}{\inl{v'}}}{}
 \qquad
 \Rule{}{p : \idt{c_2}{v}{v'}}
-  {p : \idt{c_1 \oplus c_2}{\inr{v}}{\inr{v'}}}{}
+  {\inr{p} : \idt{c_1 \oplus c_2}{\inr{v}}{\inr{v'}}}{}
 \qquad
 \Rule{}{p : \idt{c_1}{v_1}{v_1'} \quad q : \idt{c_2}{v_2}{v_2'}}
   {(p,q) : \idt{c_1 \otimes c_2}{(v_1,v_2)}{(v_1',v_2')}}{}
 \qquad
-\Rule{}{}{\refl{p} : \idt{\lid}{(\refl{v},v,p)}{p}}{}
+\Rule{}{}{\idv{\lid}{\cp{(\idv{\idc}{v}{v})}{v}{p}}{p} : 
+  \idt{\lid}{\cp{(\idv{\idc}{v}{v})}{v}{p}}{p}}{}
 \qquad
-\Rule{}{}{\refl{p} : \idt{\rid}{(p,v,\refl{v})}{p}}{}
+\Rule{}{}{\idv{\rid}{\cp{p}{v}{(\idv{\idc}{v}{v})}}{p} : 
+  \idt{\rid}{\cp{p}{v}{(\idv{\idc}{v}{v})}}{p}}{}
 \qquad
 \Rule{}{}{? : \idt{\linv}{?}{?}}{}
 \qquad
