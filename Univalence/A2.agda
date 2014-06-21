@@ -89,9 +89,12 @@ mutual
             ID (c₁ ◎ (c₂ ◎ c₃)) v₁ v₄ ⟷ ID ((c₁ ◎ c₂) ◎ c₃) v₁ v₄
 -- add the other direction for lid, rid, linv, rinv, invinv, and assoc
 
+  data Unite₊ {t : U} : ⊥ ⊎ ⟦ t ⟧ → ⟦ t ⟧ → Set where
+    val_unite₊ : (v₁ : ⊥ ⊎ ⟦ t ⟧) → (v₂ : ⟦ t ⟧) → Unite₊ v₁ v₂
+
   Paths : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧ → Set
   Paths unite₊ (inj₁ ()) 
-  Paths unite₊ (inj₂ v) v' = (v ≡ v')
+  Paths {PLUS ZERO t} {.t} unite₊ (inj₂ v) v' = (v ≡ v') × Unite₊ {t} (inj₂ v) v'
   Paths uniti₊ v (inj₁ ())
   Paths uniti₊ v (inj₂ v') = (v ≡ v')
   Paths swap₊ (inj₁ v) (inj₁ v') = ⊥
@@ -143,9 +146,9 @@ mutual
   Paths (c₁ ⊕ c₂) (inj₂ v) (inj₂ v') = Paths c₂ v v'
   Paths (c₁ ⊗ c₂) (v₁ , v₂) (v₁' , v₂') = 
     Paths c₁ v₁ v₁' × Paths c₂ v₂ v₂'
-  Paths lid (v , refl .v , p) q = (p ≡ q) 
-  Paths rid (v , p , refl .v) q = (p ≡ q) 
-  Paths linv (v , pinv , p) q = {!!}
+  Paths lid = {!!} -- (v , refl .v , p) q = (p ≡ q) 
+  Paths rid = {!!} -- (v , p , refl .v) q = (p ≡ q) 
+  Paths linv = {!!} -- (v , pinv , p) q = {!!}
   Paths rinv = {!!} 
   Paths invinv = {!!} 
   Paths assoc = {!!} 
