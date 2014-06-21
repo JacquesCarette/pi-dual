@@ -498,65 +498,162 @@ sums, and products, and let's study the paths postulated by HoTT.
 For every value in a type (point in a space) we have a trivial path from the
 value to itself:
 
-\begin{code}
-data U : Set where
-  ZERO  : U
-  ONE   : U
-  PLUS  : U → U → U
-  TIMES : U → U → U
+%% \begin{code}
+%% data U : Set where
+%%   ZERO  : U
+%%   ONE   : U
+%%   PLUS  : U → U → U
+%%   TIMES : U → U → U
 
--- Points 
+%% -- Points 
 
-⟦_⟧ : U → Set
-⟦ ZERO ⟧       = ⊥
-⟦ ONE ⟧        = ⊤
-⟦ PLUS t t' ⟧  = ⟦ t ⟧ ⊎ ⟦ t' ⟧
-⟦ TIMES t t' ⟧ = ⟦ t ⟧ × ⟦ t' ⟧
+%% ⟦_⟧ : U → Set
+%% ⟦ ZERO ⟧       = ⊥
+%% ⟦ ONE ⟧        = ⊤
+%% ⟦ PLUS t t' ⟧  = ⟦ t ⟧ ⊎ ⟦ t' ⟧
+%% ⟦ TIMES t t' ⟧ = ⟦ t ⟧ × ⟦ t' ⟧
 
-BOOL : U
-BOOL = PLUS ONE ONE
+%% BOOL : U
+%% BOOL = PLUS ONE ONE
 
-BOOL² : U
-BOOL² = TIMES BOOL BOOL
+%% BOOL² : U
+%% BOOL² = TIMES BOOL BOOL
 
-TRUE : ⟦ BOOL ⟧
-TRUE = inj₁ tt
+%% TRUE : ⟦ BOOL ⟧
+%% TRUE = inj₁ tt
 
-FALSE : ⟦ BOOL ⟧
-FALSE = inj₂ tt
+%% FALSE : ⟦ BOOL ⟧
+%% FALSE = inj₂ tt
 
-NOT : ⟦ BOOL ⟧ → ⟦ BOOL ⟧
-NOT (inj₁ tt) = FALSE
-NOT (inj₂ tt) = TRUE
+%% NOT : ⟦ BOOL ⟧ → ⟦ BOOL ⟧
+%% NOT (inj₁ tt) = FALSE
+%% NOT (inj₂ tt) = TRUE
 
-CNOT : ⟦ BOOL ⟧ → ⟦ BOOL ⟧ → ⟦ BOOL ⟧ × ⟦ BOOL ⟧
-CNOT (inj₁ tt) b = (TRUE , NOT b)
-CNOT (inj₂ tt) b = (FALSE , b)
+%% CNOT : ⟦ BOOL ⟧ → ⟦ BOOL ⟧ → ⟦ BOOL ⟧ × ⟦ BOOL ⟧
+%% CNOT (inj₁ tt) b = (TRUE , NOT b)
+%% CNOT (inj₂ tt) b = (FALSE , b)
 
-p₁ : FALSE ≡ FALSE
-p₁ = refl FALSE
+%% p₁ : FALSE ≡ FALSE
+%% p₁ = refl FALSE
 
-p₂ : _≡_ {A = ⟦ BOOL² ⟧} (FALSE , TRUE) (FALSE , (NOT FALSE))
-p₂ = refl (FALSE , TRUE) 
+%% \end{code}
 
-p₃ : ⟦ BOOL ⟧ ≡ ⟦ BOOL ⟧
-p₃ = refl ⟦ BOOL ⟧
-\end{code}
+%% p₂ : _≡_ {A = ⟦ BOOL² ⟧} (FALSE , TRUE) (FALSE , (NOT FALSE))
+%% p₂ = refl (FALSE , TRUE) 
+%% p₃ : ⟦ BOOL ⟧ ≡ ⟦ BOOL ⟧
+%% p₃ = refl ⟦ BOOL ⟧
 
 In addition to all these trivial paths, there are structured paths. In
 particular, paths in product spaces can be viewed as pair of paths. So in
 addition to the path above, we also have:
 
-\begin{code}
-p₂' : (FALSE ≡ FALSE) × (TRUE ≡ TRUE) 
-p₂' = (refl FALSE , refl TRUE) 
+%% \begin{code}
+%% p₂' : (FALSE ≡ FALSE) × (TRUE ≡ TRUE) 
+%% p₂' = (refl FALSE , refl TRUE) 
 
---α : p₂ ≡ p₂' not quite but something like that
---α = ? by some theorem in book
+%% --α : p₂ ≡ p₂' not quite but something like that
+%% --α = ? by some theorem in book
 
--- then talk about paths between bool and bool based on id / not;not
--- etc.
-\end{code}
+%% -- then talk about paths between bool and bool based on id / not;not
+%% -- etc.
+%% \end{code}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Theory} 
+
+\newcommand{\inl}[1]{\textsf{inl}~#1}
+\newcommand{\inr}[1]{\textsf{inr}~#1}
+\newcommand{\idt}[3]{#2 \equiv_{#1} #3}
+\newcommand{\idrt}[3]{#3 \equiv_{#1} #2}
+\newcommand{\refl}[1]{\textsf{refl}~#1}
+\newcommand{\lid}{\textsf{lid}}
+\newcommand{\rid}{\textsf{rid}}
+\newcommand{\linv}{l!}
+\newcommand{\rinv}{r!}
+\newcommand{\invinv}{!!}
+\newcommand{\assoc}{\circ}
+
+\begin{figure*}
+\Rule{}{}{() : 1}{} 
+\qquad
+\Rule{}{v_1 : t_1}{\inl{v_1} : t_1 + t_2}{} 
+\qquad
+\Rule{}{v_2 : t_2}{\inr{v_2} : t_1 + t_2}{} 
+\qquad
+\Rule{}{v_1 : t_1 \quad v_2 : t_2}{(v_1,v_2) : t_1 * t_2}{} 
+\qquad
+\Rule{}{}{\refl{v} : \idt{\identlp}{\inr{v}}{v}}{}
+\qquad
+\Rule{}{}{\refl{v} : \idt{\identrp}{v}{\inr{v}}}{}
+\qquad
+\Rule{}{}{\refl{v} : \idt{\swapp}{\inl{v}}{\inr{v}}}{}
+\qquad
+\Rule{}{}{\refl{v} : \idt{\swapp}{\inr{v}}{\inl{v}}}{}
+\qquad
+\Rule{}{}{\refl{v} : \idt{\assoclp}{\inl{v}}{\inl{(\inl{v})}}}{}
+\qquad
+\Rule{}{}{\refl{v} : \idt{\assoclp}{\inr{(\inl{v})}}{\inl{(\inr{v})}}}{}
+\qquad
+\Rule{}{}{\refl{v} : \idt{\assoclp}{\inr{(\inr{v})}}{\inr{v}}}{}
+\qquad
+\Rule{}{}{\refl{v} : \idt{\assocrp}{\inl{(\inl{v})}}{\inl{v}}}{}
+\qquad
+\Rule{}{}{\refl{v} : \idt{\assocrp}{\inl{(\inr{v})}}{\inr{(\inl{v})}}}{}
+\qquad
+\Rule{}{}{\refl{v} : \idt{\assocrp}{\inr{v}}{\inr{(\inr{v})}}}{}
+\qquad
+\Rule{}{}{\refl{v} : \idt{\identlt}{((),v)}{v}}{}
+\qquad
+\Rule{}{}{\refl{v} : \idt{\identrt}{v}{((),v)}}{}
+\qquad
+\Rule{}{}{(\refl{v_1},\refl{v_2}) : \idt{\swapt}{(v_1,v_2)}{(v_2,v_1)}}{}
+\qquad
+\Rule{}{}{(\refl{v_1},\refl{v_2},\refl{v_3}) : 
+  \idt{\assoclt}{(v_1,(v_2,v_3))}{((v_1,v_2),v_3)}}{}
+\qquad
+\Rule{}{}{(\refl{v_1},\refl{v_2},\refl{v_3}) : 
+  \idt{\assocrt}{((v_1,v_2),v_3)}{(v_1,(v_2,v_3))}}{}
+\qquad
+\Rule{}{}{(\refl{v_1},\refl{v_2}) : 
+  \idt{\dist}{(\inl{v_1},v_2)}{\inl{(v_1,v_2)}}}{}
+\qquad
+\Rule{}{}{(\refl{v_1},\refl{v_2}) : 
+  \idt{\dist}{(\inr{v_1},v_2)}{\inr{(v_1,v_2)}}}{}
+\qquad
+\Rule{}{}{(\refl{v_1},\refl{v_2}) : 
+  \idt{\factor}{\inl{(v_1,v_2)}}{(\inl{v_1},v_2)}}{}
+\qquad
+\Rule{}{}{(\refl{v_1},\refl{v_2}) : 
+  \idt{\factor}{\inr{(v_1,v_2)}}{(\inr{v_1},v_2)}}{}
+\qquad
+\Rule{}{}{\refl{v} : \idt{\idc}{v}{v}}{}
+\qquad
+\Rule{}{p : \idrt{c}{v_1}{v_2}}{p : \idt{\symc{c}}{v_1}{v_2}}{}
+\qquad
+\Rule{}{p : \idt{c_1}{v_1}{v_2} \quad q : \idt{c_2}{v_2}{v_3}}
+  {(p,v_2,q) : \idt{c_1\fatsemi c_2}{v_1}{v_3}}{}
+\qquad
+\Rule{}{p : \idt{c_1}{v}{v'}}
+  {p : \idt{c_1 \oplus c_2}{\inl{v}}{\inl{v'}}}{}
+\qquad
+\Rule{}{p : \idt{c_2}{v}{v'}}
+  {p : \idt{c_1 \oplus c_2}{\inr{v}}{\inr{v'}}}{}
+\qquad
+\Rule{}{p : \idt{c_1}{v_1}{v_1'} \quad q : \idt{c_2}{v_2}{v_2'}}
+  {(p,q) : \idt{c_1 \otimes c_2}{(v_1,v_2)}{(v_1',v_2')}}{}
+\qquad
+\Rule{}{}{\refl{p} : \idt{\lid}{(\refl{v},v,p)}{p}}{}
+\qquad
+\Rule{}{}{\refl{p} : \idt{\rid}{(p,v,\refl{v})}{p}}{}
+\qquad
+\Rule{}{}{? : \idt{\linv}{?}{?}}{}
+\qquad
+\Rule{}{}{? : \idt{\rinv}{?}{?}}{}
+\qquad
+\Rule{}{}{? : \idt{\invinv}{?}{?}}{}
+\qquad
+\Rule{}{}{? : \idt{\assoc}{?}{?}}{}
+\end{figure*}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Pi}
