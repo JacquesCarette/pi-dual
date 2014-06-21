@@ -77,10 +77,10 @@ mutual
           ID (id⟷ ◎ c) v₁ v₂ ⟷ ID c v₁ v₂
     rid : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} → 
           ID (c ◎ id⟷) v₁ v₂ ⟷ ID c v₁ v₂
-    linv : {t₁ t₂ : U} {v : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} → 
-           ID (sym⟷ c ◎ c) v v ⟷ ID {t₂} {t₂} id⟷ v v
+    linv : {t₁ t₂ : U} {v : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} →
+           ID ((sym⟷ c) ◎ c) v v ⟷ ID {t₂} {t₂} id⟷ v v
     rinv : {t₁ t₂ : U} {v : ⟦ t₁ ⟧} {c : t₁ ⟷ t₂} → 
-           ID (c ◎ sym⟷ c) v v ⟷ ID {t₁} {t₁} id⟷ v v
+           ID (c ◎ (sym⟷ c)) v v ⟷ ID {t₁} {t₁} id⟷ v v
     invinv : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} {c : t₁ ⟷ t₂} → 
            ID (sym⟷ (sym⟷ c)) v₁ v₂ ⟷ ID {t₁} {t₂} c v₁ v₂
     assoc : {t₁ t₂ t₃ t₄ : U} 
@@ -145,10 +145,10 @@ mutual
     Paths c₁ v₁ v₁' × Paths c₂ v₂ v₂'
   Paths lid (v , refl .v , p) q = (p ≡ q) 
   Paths rid (v , p , refl .v) q = (p ≡ q) 
-  Paths linv (v , pinv , p) q = {!!}
-  Paths rinv = {!!} 
-  Paths invinv = {!!} 
-  Paths assoc = {!!} 
+  Paths (linv {t₁} {v = v} {c}) (w , proj₂ , proj₃) y = {!!}
+  Paths rinv (proj₁ , proj₂ , proj₃) y = {!!} 
+  Paths (invinv {c = c}) x y = {!!}
+  Paths assoc (v₂ , proj₂ , v₃ , proj₄ , proj₅) (w₃ , (w₂ , proj₈ , proj₉) , proj₁₀) = v₂ ≡ w₂ × v₃ ≡ w₃ 
 
   PathsB : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧ → Set
   PathsB unite₊ v (inj₁ ())
@@ -206,9 +206,9 @@ mutual
   PathsB (c₁ ⊕ c₂) (inj₂ v) (inj₂ v') = PathsB c₂ v v'
   PathsB (c₁ ⊗ c₂) (v₁ , v₂) (v₁' , v₂') = 
     PathsB c₁ v₁ v₁' × PathsB c₂ v₂ v₂'
-  PathsB rid = {!!} 
-  PathsB lid = {!!} 
-  PathsB linv = {!!} 
+  PathsB rid q (a , p , refl .a) = q ≡ p 
+  PathsB lid x y = {!!} 
+  PathsB linv x y = {!!} 
   PathsB rinv = {!!} 
   PathsB invinv = {!!} 
   PathsB assoc = {!!} 
@@ -233,5 +233,4 @@ e₁ = refl (FALSE , TRUE)
 
 e₂ : ⟦ ID {BOOL²} {BOOL²} (id⟷ ⊗ id⟷) (FALSE , TRUE) (FALSE , TRUE) ⟧
 e₂ = (refl FALSE , refl TRUE)
-
-------------------------------------------------------------------------------
+---------------
