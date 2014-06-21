@@ -94,9 +94,12 @@ mutual
 -}
 -- add the other direction for lid, rid, linv, rinv, invinv, and assoc
 
+  data Unite₊ {t : U} : ⊥ ⊎ ⟦ t ⟧ → ⟦ t ⟧ → Set where
+    val_unite₊ : (v₁ : ⊥ ⊎ ⟦ t ⟧) → (v₂ : ⟦ t ⟧) → Unite₊ v₁ v₂
+
   Paths : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧ → Set
   Paths unite₊ (inj₁ ()) 
-  Paths unite₊ (inj₂ v) v' = (v ≡ v')
+  Paths {PLUS ZERO t} {.t} unite₊ (inj₂ v) v' = (v ≡ v') × Unite₊ {t} (inj₂ v) v'
   Paths uniti₊ v (inj₁ ())
   Paths uniti₊ v (inj₂ v') = (v ≡ v')
   Paths swap₊ (inj₁ v) (inj₁ v') = ⊥
