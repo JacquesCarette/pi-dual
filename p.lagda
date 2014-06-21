@@ -654,13 +654,17 @@ addition to the path above, we also have:
 \Rule{}{p : \idt{c_1}{v_1}{v_1'} \quad q : \idt{c_2}{v_2}{v_2'}}
   {(p,q) : \idt{c_1 \otimes c_2}{(v_1,v_2)}{(v_1',v_2')}}{}
 \qquad
-\Rule{}{}{\idv{\lid}{\cp{(\idv{\idc}{v}{v})}{v}{p}}{p} : 
+\Rule{}{p : \idt{c}{v}{v'}}
+  {\idv{\lid}{\cp{(\idv{\idc}{v}{v})}{v}{p}}{p} : 
   \idt{\lid}{\cp{(\idv{\idc}{v}{v})}{v}{p}}{p}}{}
 \qquad
-\Rule{}{}{\idv{\rid}{\cp{p}{v}{(\idv{\idc}{v}{v})}}{p} : 
+\Rule{}{p : \idt{c}{v'}{v}}
+  {\idv{\rid}{\cp{p}{v}{(\idv{\idc}{v}{v})}}{p} : 
   \idt{\rid}{\cp{p}{v}{(\idv{\idc}{v}{v})}}{p}}{}
 \qquad
-\Rule{}{}{? : \idt{\linv}{?}{?}}{}
+\Rule{}{p : \idt{c}{v'}{v}}
+  {\idv{\linv}{(\cp{!p}{v'}{p})}{(\idv{\idc}{v}{v})} : 
+  \idt{\linv}{(\cp{!p}{v'}{p})}{(\idv{\idc}{v}{v})}}{}
 \qquad
 \Rule{}{}{? : \idt{\rinv}{?}{?}}{}
 \qquad
