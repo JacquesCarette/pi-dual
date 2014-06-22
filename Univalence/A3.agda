@@ -179,14 +179,30 @@ module Pi2 where
   ⟦ ONE ⟧           = ⊤
   ⟦ PLUS t₁ t₂ ⟧    = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
   ⟦ TIMES t₁ t₂ ⟧   = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
---   ⟦ EQUIV {Pi1.PLUS Pi1.ZERO t} Pi1.unite₊ (inj₁ ()) v₂ ⟧
---   ⟦ EQUIV {Pi1.PLUS Pi1.ZERO t} Pi1.unite₊ (inj₂ y) v₂ ⟧ = Unite₊ {t} (inj₂ y) v₂ × (y ≡ v₂)
-  -- ⟦ EQUIV Pi1.unite₊ v v' ⟧ = {!!} 
-  ⟦ EQUIV (Pi1.id⟷ {t}) v v' ⟧ = Id⟷ {t} v v' × (v ≡ v')
-  ⟦ EQUIV (Pi1._◎_ {t₂ = t₂} c₁ c₂) v₁ v₃ ⟧ = 
-    Σ[ v₂ ∈ Pi1.⟦ t₂ ⟧ ] (⟦ EQUIV c₁ v₁ v₂ ⟧ × ⟦ EQUIV c₂ v₂ v₃ ⟧)
-  ⟦ EQUIV Pi1.lid v₁ v₂ ⟧ = {!!} 
-  ⟦ EQUIV c v₁ v₂ ⟧ = ⊥ -- to do 
+  ⟦ EQUIV c t₁ t₂ ⟧ = f c t₁ t₂
+    where
+      f : {s₁ s₂ : Pi1.U} → (s₁ Pi1.⟷ s₂) → Pi1.⟦ s₁ ⟧ → Pi1.⟦ s₂ ⟧ → Set
+      f Pi1.unite₊ (inj₁ ()) y
+      f {s₂ = t} Pi1.unite₊ (inj₂ y) v = Unite₊ {t} (inj₂ y) v × (y ≡ v)
+      f Pi1.uniti₊ x y = {!!}
+      f Pi1.swap₊ x y = {!!}
+      f Pi1.assocl₊ x y = {!!}
+      f Pi1.assocr₊ x y = {!!}
+      f Pi1.unite⋆ x y = {!!}
+      f Pi1.uniti⋆ x y = {!!}
+      f Pi1.swap⋆ x y = {!!}
+      f Pi1.assocl⋆ x y = {!!}
+      f Pi1.assocr⋆ x y = {!!}
+      f Pi1.distz x y = {!!}
+      f Pi1.factorz x y = {!!}
+      f Pi1.dist x y = {!!}
+      f Pi1.factor x y = {!!}
+      f {t} Pi1.id⟷ x y = Id⟷ {t} x y × (x ≡ y)
+      f (Pi1.sym⟷ d) x y = {!!}
+      f (Pi1._◎_ {t₂ = s} c₁ c₂ ) x y = Σ[ v₂ ∈ Pi1.⟦ s ⟧ ] (f c₁ x v₂ × f c₂ v₂ y)
+      f (d Pi1.⊕ d₁) x y = {!!}
+      f (d Pi1.⊗ d₁) x y = {!!}
+      f Pi1.lid (v₁ , (c₁ , refl .v₁) , p₁₂) y = {!!}  -- not entirely sure what we want to record here
 
   -- combinators 
   data _⟷_ : U → U → Set where
