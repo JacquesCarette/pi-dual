@@ -107,24 +107,9 @@ module Pi1 where
     f : {t₃ t₄ : Pi0.U} → (t₃ Pi0.⟷ t₄) → Pi0.⟦ t₃ ⟧ → Pi0.⟦ t₄ ⟧ → Set
     f Pi0.unite₊ (inj₁ ()) w₂
     f Pi0.unite₊ (inj₂ y) w₂ = Unite₊ (inj₂ y) w₂ × (y ≡ w₂)
-    f Pi0.uniti₊ w₁ w₂ = {!!}
-    f Pi0.swap₊ w₁ w₂ = {!!}
-    f Pi0.assocl₊ w₁ w₂ = {!!}
-    f Pi0.assocr₊ w₁ w₂ = {!!}
-    f Pi0.unite⋆ w₁ w₂ = {!!}
-    f Pi0.uniti⋆ w₁ w₂ = {!!}
-    f Pi0.swap⋆ w₁ w₂ = {!!}
-    f Pi0.assocl⋆ w₁ w₂ = {!!}
-    f Pi0.assocr⋆ w₁ w₂ = {!!}
-    f Pi0.distz w₁ w₂ = {!!}
-    f Pi0.factorz w₁ w₂ = {!!}
-    f Pi0.dist w₁ w₂ = {!!}
-    f Pi0.factor w₁ w₂ = {!!}
     f Pi0.id⟷ w₁ w₂ = Id⟷ w₁ w₂ × (w₁ ≡ w₂)
-    f (Pi0.sym⟷ x) w₁ w₂ = {!!}
     f (Pi0._◎_ {t₂ = s} x₁ x₂) w₁ w₂ = Σ Pi0.⟦ s ⟧ (λ t → f x₁ w₁ t × f x₂ t w₂)
-    f (x Pi0.⊕ x₁) w₁ w₂ = {!!}
-    f (x Pi0.⊗ x₁) w₁ w₂ = {!!}
+    f c w₁ w₂ = ⊥ -- todo
  
   -- combinators 
   data _⟷_ : U → U → Set where
@@ -174,19 +159,22 @@ module Pi2 where
     path_id⟷ : (v₁ : Pi1.⟦ t ⟧) → (v₂ : Pi1.⟦ t ⟧) → Id⟷ v₁ v₂
 
   -- values
-  ⟦_⟧ : U → Set
-  ⟦ ZERO ⟧          = ⊥
-  ⟦ ONE ⟧           = ⊤
-  ⟦ PLUS t₁ t₂ ⟧    = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
-  ⟦ TIMES t₁ t₂ ⟧   = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
---   ⟦ EQUIV {Pi1.PLUS Pi1.ZERO t} Pi1.unite₊ (inj₁ ()) v₂ ⟧
---   ⟦ EQUIV {Pi1.PLUS Pi1.ZERO t} Pi1.unite₊ (inj₂ y) v₂ ⟧ = Unite₊ {t} (inj₂ y) v₂ × (y ≡ v₂)
-  -- ⟦ EQUIV Pi1.unite₊ v v' ⟧ = {!!} 
-  ⟦ EQUIV (Pi1.id⟷ {t}) v v' ⟧ = Id⟷ {t} v v' × (v ≡ v')
-  ⟦ EQUIV (Pi1._◎_ {t₂ = t₂} c₁ c₂) v₁ v₃ ⟧ = 
-    Σ[ v₂ ∈ Pi1.⟦ t₂ ⟧ ] (⟦ EQUIV c₁ v₁ v₂ ⟧ × ⟦ EQUIV c₂ v₂ v₃ ⟧)
-  ⟦ EQUIV Pi1.lid v₁ v₂ ⟧ = {!!} 
-  ⟦ EQUIV c v₁ v₂ ⟧ = ⊥ -- to do 
+  mutual 
+
+    ⟦_⟧ : U → Set
+    ⟦ ZERO ⟧          = ⊥
+    ⟦ ONE ⟧           = ⊤
+    ⟦ PLUS t₁ t₂ ⟧    = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
+    ⟦ TIMES t₁ t₂ ⟧   = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+    ⟦ EQUIV c v₁ v₂ ⟧ = f c v₁ v₂
+
+    f : {t₁ t₂ : Pi1.U} → (t₁ Pi1.⟷ t₂) → Pi1.⟦ t₁ ⟧ → Pi1.⟦ t₂ ⟧ → Set
+    f (Pi1.id⟷ {t}) v v' = Id⟷ {t} v v' × (v ≡ v')
+    f (Pi1._◎_ {t₂ = t₂} c₁ c₂) v₁ v₃ = 
+      Σ[ v₂ ∈ Pi1.⟦ t₂ ⟧ ] (f c₁ v₁ v₂ × f c₂ v₂ v₃)
+    f (Pi1.lid {t₁} {t₂} {v₁} {v₂} {c})
+      (.v₁ , ((Pi1.path_id⟷ .v₁ .v₁ , refl .v₁) , q)) q' = (q ≡ q')
+    f c v₁ v₂ = ⊥ -- to do 
 
   -- combinators 
   data _⟷_ : U → U → Set where
