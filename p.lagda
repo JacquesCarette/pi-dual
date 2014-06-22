@@ -662,6 +662,8 @@ addition to the path above, we also have:
   {\idv{\rid}{\cp{p}{v}{(\idv{\idc}{v}{v})}}{p} : 
   \idt{\rid}{\cp{p}{v}{(\idv{\idc}{v}{v})}}{p}}{}
 \qquad
+\Rule{}{}{\idv{!1}{!(\idv{\identlp}{\inr{v}}{v})}{\idv{\identrp}{v}{\inr{v}}}}{}
+\qquad
 \Rule{}{p : \idt{c}{v'}{v}}
   {\idv{\linv}{(\cp{!p}{v'}{p})}{(\idv{\idc}{v}{v})} : 
   \idt{\linv}{(\cp{!p}{v'}{p})}{(\idv{\idc}{v}{v})}}{}
