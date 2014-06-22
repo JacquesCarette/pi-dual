@@ -1,3 +1,4 @@
+{-# OPTIONS --termination-depth=3 #-}
 module A3 where
 
 open import Data.Nat
@@ -105,7 +106,8 @@ module Pi1 where
   ⟦ EQUIV Pi0.unite₊ (inj₂ v) v' ⟧ = Unite₊ (inj₂ v) v' × (v ≡ v')
   ⟦ EQUIV Pi0.id⟷ v v' ⟧ = Id⟷ v v' × (v ≡ v')
   ⟦ EQUIV (Pi0._◎_ {t₂ = t₂} c₁ c₂) v₁ v₃ ⟧ = 
-    Σ[ v₂ ∈ Pi0.⟦ t₂ ⟧ ] (⟦ EQUIV c₁ v₁ v₂ ⟧ × ⟦ EQUIV c₂ v₂ v₃ ⟧)
+    -- Σ[ v₂ ∈ Pi0.⟦ t₂ ⟧ ] (⟦ EQUIV c₁ v₁ v₂ ⟧ × ⟦ EQUIV c₂ v₂ v₃ ⟧)
+    Σ[ v₂ ∈ Pi0.⟦ t₂ ⟧ ] ⊥
   ⟦ EQUIV c v₁ v₂ ⟧ = ⊥ -- to do
   
   -- combinators 
@@ -149,8 +151,8 @@ module Pi2 where
     TIMES : U → U → U
     EQUIV : {t₁ t₂ : Pi1.U} → (t₁ Pi1.⟷ t₂) → Pi1.⟦ t₁ ⟧ → Pi1.⟦ t₂ ⟧ → U
 
-  data Unite₊ {t : Pi1.U} : ⊥ ⊎ Pi1.⟦ t ⟧ → Pi1.⟦ t ⟧ → Set where
-    path_unite₊ : (v₁ : ⊥ ⊎ Pi1.⟦ t ⟧) → (v₂ : Pi1.⟦ t ⟧) → Unite₊ v₁ v₂
+  data Unite₊ {t : Pi1.U} : Pi1.⟦ Pi1.PLUS Pi1.ZERO t ⟧ → Pi1.⟦ t ⟧ → Set where
+    path_unite₊ : (v₁ : Pi1.⟦ Pi1.PLUS Pi1.ZERO t ⟧) → (v₂ : Pi1.⟦ t ⟧) → Unite₊ v₁ v₂
 
   data Id⟷ {t : Pi1.U} : Pi1.⟦ t ⟧ → Pi1.⟦ t ⟧ → Set where
     path_id⟷ : (v₁ : Pi1.⟦ t ⟧) → (v₂ : Pi1.⟦ t ⟧) → Id⟷ v₁ v₂
@@ -161,9 +163,10 @@ module Pi2 where
   ⟦ ONE ⟧           = ⊤
   ⟦ PLUS t₁ t₂ ⟧    = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
   ⟦ TIMES t₁ t₂ ⟧   = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
-  ⟦ EQUIV {Pi1.PLUS Pi1.ZERO t} {.t} Pi1.unite₊ (inj₁ ()) v₂ ⟧
-  ⟦ EQUIV Pi1.unite₊ (inj₂ v) v' ⟧ = {!!} 
-  ⟦ EQUIV Pi1.id⟷ v v' ⟧ = Id⟷ v v' × (v ≡ v')
+  ⟦ EQUIV {Pi1.PLUS Pi1.ZERO t} Pi1.unite₊ (inj₁ ()) v₂ ⟧
+  ⟦ EQUIV {Pi1.PLUS Pi1.ZERO t} Pi1.unite₊ (inj₂ y) v₂ ⟧ = Unite₊ {t} (inj₂ y) v₂ × (y ≡ v₂)
+  -- ⟦ EQUIV Pi1.unite₊ v v' ⟧ = {!!} 
+  ⟦ EQUIV (Pi1.id⟷ {t}) v v' ⟧ = Id⟷ {t} v v' × (v ≡ v')
   ⟦ EQUIV (Pi1._◎_ {t₂ = t₂} c₁ c₂) v₁ v₃ ⟧ = 
     Σ[ v₂ ∈ Pi1.⟦ t₂ ⟧ ] (⟦ EQUIV c₁ v₁ v₂ ⟧ × ⟦ EQUIV c₂ v₂ v₃ ⟧)
   ⟦ EQUIV Pi1.lid v₁ v₂ ⟧ = {!!} 
