@@ -1,4 +1,3 @@
-{-# OPTIONS --termination-depth=3 #-}
 module A3 where
 
 open import Data.Nat
@@ -90,26 +89,43 @@ module Pi1 where
     TIMES : U → U → U
     EQUIV : {t₁ t₂ : Pi0.U} → (t₁ Pi0.⟷ t₂) → Pi0.⟦ t₁ ⟧ → Pi0.⟦ t₂ ⟧ → U
 
-  data Unite₊ {t : Pi0.U} : ⊥ ⊎ Pi0.⟦ t ⟧ → Pi0.⟦ t ⟧ → Set where
-    path_unite₊ : (v₁ : ⊥ ⊎ Pi0.⟦ t ⟧) → (v₂ : Pi0.⟦ t ⟧) → Unite₊ v₁ v₂
+  data Unite₊ {t : Pi0.U} : Pi0.⟦ Pi0.PLUS Pi0.ZERO t ⟧ → Pi0.⟦ t ⟧ → Set where
+    path_unite₊ : (v₁ : Pi0.⟦ Pi0.PLUS Pi0.ZERO t ⟧) → (v₂ : Pi0.⟦ t ⟧) → Unite₊ v₁ v₂
 
   data Id⟷ {t : Pi0.U} : Pi0.⟦ t ⟧ → Pi0.⟦ t ⟧ → Set where
     path_id⟷ : (v₁ : Pi0.⟦ t ⟧) → (v₂ : Pi0.⟦ t ⟧) → Id⟷ v₁ v₂
 
   -- values
-  ⟦_⟧ : U → Set
-  ⟦ ZERO ⟧          = ⊥
-  ⟦ ONE ⟧           = ⊤
-  ⟦ PLUS t₁ t₂ ⟧    = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
-  ⟦ TIMES t₁ t₂ ⟧   = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
-  ⟦ EQUIV Pi0.unite₊ (inj₁ ()) v' ⟧ 
-  ⟦ EQUIV Pi0.unite₊ (inj₂ v) v' ⟧ = Unite₊ (inj₂ v) v' × (v ≡ v')
-  ⟦ EQUIV Pi0.id⟷ v v' ⟧ = Id⟷ v v' × (v ≡ v')
-  ⟦ EQUIV (Pi0._◎_ {t₂ = t₂} c₁ c₂) v₁ v₃ ⟧ = 
-    -- Σ[ v₂ ∈ Pi0.⟦ t₂ ⟧ ] (⟦ EQUIV c₁ v₁ v₂ ⟧ × ⟦ EQUIV c₂ v₂ v₃ ⟧)
-    Σ[ v₂ ∈ Pi0.⟦ t₂ ⟧ ] ⊥
-  ⟦ EQUIV c v₁ v₂ ⟧ = ⊥ -- to do
-  
+  mutual
+    ⟦_⟧ : U → Set
+    ⟦ ZERO ⟧          = ⊥
+    ⟦ ONE ⟧           = ⊤
+    ⟦ PLUS t₁ t₂ ⟧    = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
+    ⟦ TIMES t₁ t₂ ⟧   = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+    ⟦ EQUIV c v₁ v₂ ⟧ = f c v₁ v₂
+
+    f : {t₃ t₄ : Pi0.U} → (t₃ Pi0.⟷ t₄) → Pi0.⟦ t₃ ⟧ → Pi0.⟦ t₄ ⟧ → Set
+    f Pi0.unite₊ (inj₁ ()) w₂
+    f Pi0.unite₊ (inj₂ y) w₂ = Unite₊ (inj₂ y) w₂ × (y ≡ w₂)
+    f Pi0.uniti₊ w₁ w₂ = {!!}
+    f Pi0.swap₊ w₁ w₂ = {!!}
+    f Pi0.assocl₊ w₁ w₂ = {!!}
+    f Pi0.assocr₊ w₁ w₂ = {!!}
+    f Pi0.unite⋆ w₁ w₂ = {!!}
+    f Pi0.uniti⋆ w₁ w₂ = {!!}
+    f Pi0.swap⋆ w₁ w₂ = {!!}
+    f Pi0.assocl⋆ w₁ w₂ = {!!}
+    f Pi0.assocr⋆ w₁ w₂ = {!!}
+    f Pi0.distz w₁ w₂ = {!!}
+    f Pi0.factorz w₁ w₂ = {!!}
+    f Pi0.dist w₁ w₂ = {!!}
+    f Pi0.factor w₁ w₂ = {!!}
+    f Pi0.id⟷ w₁ w₂ = Id⟷ w₁ w₂ × (w₁ ≡ w₂)
+    f (Pi0.sym⟷ x) w₁ w₂ = {!!}
+    f (Pi0._◎_ {t₂ = s} x₁ x₂) w₁ w₂ = Σ Pi0.⟦ s ⟧ (λ t → f x₁ w₁ t × f x₂ t w₂)
+    f (x Pi0.⊕ x₁) w₁ w₂ = {!!}
+    f (x Pi0.⊗ x₁) w₁ w₂ = {!!}
+ 
   -- combinators 
   data _⟷_ : U → U → Set where
     unite₊  : {t : U} → PLUS ZERO t ⟷ t
@@ -163,8 +179,8 @@ module Pi2 where
   ⟦ ONE ⟧           = ⊤
   ⟦ PLUS t₁ t₂ ⟧    = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
   ⟦ TIMES t₁ t₂ ⟧   = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
-  ⟦ EQUIV {Pi1.PLUS Pi1.ZERO t} Pi1.unite₊ (inj₁ ()) v₂ ⟧
-  ⟦ EQUIV {Pi1.PLUS Pi1.ZERO t} Pi1.unite₊ (inj₂ y) v₂ ⟧ = Unite₊ {t} (inj₂ y) v₂ × (y ≡ v₂)
+--   ⟦ EQUIV {Pi1.PLUS Pi1.ZERO t} Pi1.unite₊ (inj₁ ()) v₂ ⟧
+--   ⟦ EQUIV {Pi1.PLUS Pi1.ZERO t} Pi1.unite₊ (inj₂ y) v₂ ⟧ = Unite₊ {t} (inj₂ y) v₂ × (y ≡ v₂)
   -- ⟦ EQUIV Pi1.unite₊ v v' ⟧ = {!!} 
   ⟦ EQUIV (Pi1.id⟷ {t}) v v' ⟧ = Id⟷ {t} v v' × (v ≡ v')
   ⟦ EQUIV (Pi1._◎_ {t₂ = t₂} c₁ c₂) v₁ v₃ ⟧ = 
