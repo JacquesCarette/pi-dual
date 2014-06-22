@@ -87,7 +87,7 @@ module Pi1 where
     ONE   : U
     PLUS  : U → U → U
     TIMES : U → U → U
-    EQUIV : {t₁ t₂ : Pi0.U} → Pi0.⟦ t₁ ⟧ → (t₁ Pi0.⟷ t₂) → Pi0.⟦ t₂ ⟧ → U
+    EQUIV : {t₁ t₂ : Pi0.U} → (t₁ Pi0.⟷ t₂) → Pi0.⟦ t₁ ⟧ → Pi0.⟦ t₂ ⟧ → U
 
   data Unite₊ {t : Pi0.U} : ⊥ ⊎ Pi0.⟦ t ⟧ → Pi0.⟦ t ⟧ → Set where
     path_unite₊ : (v₁ : ⊥ ⊎ Pi0.⟦ t ⟧) → (v₂ : Pi0.⟦ t ⟧) → Unite₊ v₁ v₂
@@ -101,27 +101,12 @@ module Pi1 where
   ⟦ ONE ⟧           = ⊤
   ⟦ PLUS t₁ t₂ ⟧    = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
   ⟦ TIMES t₁ t₂ ⟧   = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
-  ⟦ EQUIV (inj₁ ()) Pi0.unite₊ v' ⟧ 
-  ⟦ EQUIV (inj₂ v) Pi0.unite₊ v' ⟧ = Unite₊ (inj₂ v) v' × (v ≡ v')
-  ⟦ EQUIV v₁ Pi0.uniti₊ v₂ ⟧ = {!!}
-  ⟦ EQUIV v₁ Pi0.swap₊ v₂ ⟧ = {!!}
-  ⟦ EQUIV v₁ Pi0.assocl₊ v₂ ⟧ = {!!}
-  ⟦ EQUIV v₁ Pi0.assocr₊ v₂ ⟧ = {!!}
-  ⟦ EQUIV v₁ Pi0.unite⋆ v₂ ⟧ = {!!}
-  ⟦ EQUIV v₁ Pi0.uniti⋆ v₂ ⟧ = {!!}
-  ⟦ EQUIV v₁ Pi0.swap⋆ v₂ ⟧ = {!!}
-  ⟦ EQUIV v₁ Pi0.assocl⋆ v₂ ⟧ = {!!}
-  ⟦ EQUIV v₁ Pi0.assocr⋆ v₂ ⟧ = {!!}
-  ⟦ EQUIV v₁ Pi0.distz v₂ ⟧ = {!!}
-  ⟦ EQUIV v₁ Pi0.factorz v₂ ⟧ = {!!}
-  ⟦ EQUIV v₁ Pi0.dist v₂ ⟧ = {!!}
-  ⟦ EQUIV v₁ Pi0.factor v₂ ⟧ = {!!}
-  ⟦ EQUIV v Pi0.id⟷ v' ⟧ = Id⟷ v v' × (v ≡ v')
-  ⟦ EQUIV v₁ (Pi0.sym⟷ c) v₂ ⟧ = {!!}
-  ⟦ EQUIV v₁ (Pi0._◎_ {t₂ = t₂} c₁ c₂) v₃ ⟧ = 
-    Σ[ v₂ ∈ Pi0.⟦ t₂ ⟧ ] (⟦ EQUIV v₁ c₁ v₂ ⟧ × ⟦ EQUIV v₂ c₂ v₃ ⟧)
-  ⟦ EQUIV v₁ (c₁ Pi0.⊕ c₂) v₂ ⟧ = {!!}
-  ⟦ EQUIV v₁ (c₁ Pi0.⊗ c₂) v₂ ⟧ = {!!} 
+  ⟦ EQUIV Pi0.unite₊ (inj₁ ()) v' ⟧ 
+  ⟦ EQUIV Pi0.unite₊ (inj₂ v) v' ⟧ = Unite₊ (inj₂ v) v' × (v ≡ v')
+  ⟦ EQUIV Pi0.id⟷ v v' ⟧ = Id⟷ v v' × (v ≡ v')
+  ⟦ EQUIV (Pi0._◎_ {t₂ = t₂} c₁ c₂) v₁ v₃ ⟧ = 
+    Σ[ v₂ ∈ Pi0.⟦ t₂ ⟧ ] (⟦ EQUIV c₁ v₁ v₂ ⟧ × ⟦ EQUIV c₂ v₂ v₃ ⟧)
+  ⟦ EQUIV c v₁ v₂ ⟧ = ⊥ -- to do
   
   -- combinators 
   data _⟷_ : U → U → Set where
@@ -150,7 +135,68 @@ module Pi1 where
               (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
     lid     : {t₁ t₂ : Pi0.U} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} 
               {c : t₁ Pi0.⟷ t₂} → 
-              EQUIV v₁ (Pi0.id⟷ Pi0.◎ c) v₂ ⟷ EQUIV v₁ c v₂
+              EQUIV (Pi0.id⟷ Pi0.◎ c) v₁ v₂ ⟷ EQUIV c v₁ v₂
+
+------------------------------------------------------------------------------
+-- Level 2 explicitly...
+
+module Pi2 where
+  -- types
+  data U : Set where
+    ZERO  : U
+    ONE   : U
+    PLUS  : U → U → U
+    TIMES : U → U → U
+    EQUIV : {t₁ t₂ : Pi1.U} → (t₁ Pi1.⟷ t₂) → Pi1.⟦ t₁ ⟧ → Pi1.⟦ t₂ ⟧ → U
+
+  data Unite₊ {t : Pi1.U} : ⊥ ⊎ Pi1.⟦ t ⟧ → Pi1.⟦ t ⟧ → Set where
+    path_unite₊ : (v₁ : ⊥ ⊎ Pi1.⟦ t ⟧) → (v₂ : Pi1.⟦ t ⟧) → Unite₊ v₁ v₂
+
+  data Id⟷ {t : Pi1.U} : Pi1.⟦ t ⟧ → Pi1.⟦ t ⟧ → Set where
+    path_id⟷ : (v₁ : Pi1.⟦ t ⟧) → (v₂ : Pi1.⟦ t ⟧) → Id⟷ v₁ v₂
+
+  -- values
+  ⟦_⟧ : U → Set
+  ⟦ ZERO ⟧          = ⊥
+  ⟦ ONE ⟧           = ⊤
+  ⟦ PLUS t₁ t₂ ⟧    = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
+  ⟦ TIMES t₁ t₂ ⟧   = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+  ⟦ EQUIV {Pi1.PLUS Pi1.ZERO t} {.t} Pi1.unite₊ (inj₁ ()) v₂ ⟧
+  ⟦ EQUIV Pi1.unite₊ (inj₂ v) v' ⟧ = {!!} 
+  ⟦ EQUIV Pi1.id⟷ v v' ⟧ = Id⟷ v v' × (v ≡ v')
+  ⟦ EQUIV (Pi1._◎_ {t₂ = t₂} c₁ c₂) v₁ v₃ ⟧ = 
+    Σ[ v₂ ∈ Pi1.⟦ t₂ ⟧ ] (⟦ EQUIV c₁ v₁ v₂ ⟧ × ⟦ EQUIV c₂ v₂ v₃ ⟧)
+  ⟦ EQUIV Pi1.lid v₁ v₂ ⟧ = {!!} 
+  ⟦ EQUIV c v₁ v₂ ⟧ = ⊥ -- to do 
+
+  -- combinators 
+  data _⟷_ : U → U → Set where
+    unite₊  : {t : U} → PLUS ZERO t ⟷ t
+    uniti₊  : {t : U} → t ⟷ PLUS ZERO t
+    swap₊   : {t₁ t₂ : U} → PLUS t₁ t₂ ⟷ PLUS t₂ t₁
+    assocl₊ : {t₁ t₂ t₃ : U} → PLUS t₁ (PLUS t₂ t₃) ⟷ PLUS (PLUS t₁ t₂) t₃
+    assocr₊ : {t₁ t₂ t₃ : U} → PLUS (PLUS t₁ t₂) t₃ ⟷ PLUS t₁ (PLUS t₂ t₃)
+    unite⋆  : {t : U} → TIMES ONE t ⟷ t
+    uniti⋆  : {t : U} → t ⟷ TIMES ONE t
+    swap⋆   : {t₁ t₂ : U} → TIMES t₁ t₂ ⟷ TIMES t₂ t₁
+    assocl⋆ : {t₁ t₂ t₃ : U} → TIMES t₁ (TIMES t₂ t₃) ⟷ TIMES (TIMES t₁ t₂) t₃
+    assocr⋆ : {t₁ t₂ t₃ : U} → TIMES (TIMES t₁ t₂) t₃ ⟷ TIMES t₁ (TIMES t₂ t₃)
+    distz   : {t : U} → TIMES ZERO t ⟷ ZERO
+    factorz : {t : U} → ZERO ⟷ TIMES ZERO t
+    dist    : {t₁ t₂ t₃ : U} → 
+              TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) 
+    factor  : {t₁ t₂ t₃ : U} → 
+              PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
+    id⟷     : {t : U} → t ⟷ t
+    sym⟷    : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
+    _◎_     : {t₁ t₂ t₃ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+    _⊕_     : {t₁ t₂ t₃ t₄ : U} → 
+              (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
+    _⊗_     : {t₁ t₂ t₃ t₄ : U} → 
+              (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
+    lid     : {t₁ t₂ : Pi1.U} {v₁ : Pi1.⟦ t₁ ⟧} {v₂ : Pi1.⟦ t₂ ⟧} 
+              {c : t₁ Pi1.⟷ t₂} → 
+              EQUIV (Pi1.id⟷ Pi1.◎ c) v₁ v₂ ⟷ EQUIV c v₁ v₂
 
 ------------------------------------------------------------------------------
 
