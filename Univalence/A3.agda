@@ -1,3 +1,5 @@
+{-# OPTIONS --without-K #-}
+
 module A3 where
 
 open import Data.Nat
@@ -5,31 +7,6 @@ open import Data.Empty
 open import Data.Unit
 open import Data.Sum
 open import Data.Product
-
-infix  4  _≡_     -- propositional equality
-infix  2  _∎      -- equational reasoning
-infixr 2  _≡⟨_⟩_  -- equational reasoning
-
-------------------------------------------------------------------------------
--- Basic definitions
-
-data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
-  refl : (a : A) → (a ≡ a)
-
-sym : ∀ {ℓ} {A : Set ℓ} {a b : A} → (a ≡ b) → (b ≡ a)
-sym {a = a} {b = .a} (refl .a) = refl a
-
-trans : ∀ {ℓ} {A : Set ℓ} {a b c : A} → (a ≡ b) → (b ≡ c) → (a ≡ c)
-trans {a = a} {b = .a} {c = .a} (refl .a) (refl .a) = refl a
-
-_≡⟨_⟩_ : ∀ {ℓ} → {A : Set ℓ} (x : A) {y z : A} → (x ≡ y) → (y ≡ z) → (x ≡ z)
-_ ≡⟨ p ⟩ q = trans p q
-
-bydef : ∀ {ℓ} → {A : Set ℓ} {x : A} → (x ≡ x)
-bydef {ℓ} {A} {x} = refl x
-
-_∎ : ∀ {ℓ} → {A : Set ℓ} (x : A) → (x ≡ x)
-_∎ x = refl x
 
 ------------------------------------------------------------------------------
 -- Level 0 
@@ -77,8 +54,7 @@ module Pi0 where
               (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
 
 ------------------------------------------------------------------------------
--- Levels n+1 for all n should all be uniform
--- do level 1 explicitly though
+-- Level 1 includes level 0 equivalences...
 
 module Pi1 where
   -- types
@@ -89,28 +65,119 @@ module Pi1 where
     TIMES : U → U → U
     EQUIV : {t₁ t₂ : Pi0.U} → (t₁ Pi0.⟷ t₂) → Pi0.⟦ t₁ ⟧ → Pi0.⟦ t₂ ⟧ → U
 
+  -- Path types and values
+
   data Unite₊ {t : Pi0.U} : Pi0.⟦ Pi0.PLUS Pi0.ZERO t ⟧ → Pi0.⟦ t ⟧ → Set where
-    path_unite₊ : (v₁ : Pi0.⟦ Pi0.PLUS Pi0.ZERO t ⟧) → (v₂ : Pi0.⟦ t ⟧) → Unite₊ v₁ v₂
+    pathUnite₊ : (v : Pi0.⟦ t ⟧) → Unite₊ (inj₂ v) v
 
+  data Uniti₊ {t : Pi0.U} : Pi0.⟦ t ⟧ → Pi0.⟦ Pi0.PLUS Pi0.ZERO t ⟧ → Set where
+    pathUniti₊ : (v : Pi0.⟦ t ⟧) → Uniti₊ v (inj₂ v)
+
+  data Swap₊ {t₁ t₂ : Pi0.U} : 
+    Pi0.⟦ Pi0.PLUS t₁ t₂ ⟧ → Pi0.⟦ Pi0.PLUS t₂ t₁ ⟧ → Set where
+    path1Swap₊ : (v₁ : Pi0.⟦ t₁ ⟧) → Swap₊ (inj₁ v₁) (inj₂ v₁)
+    path2Swap₊ : (v₂ : Pi0.⟦ t₂ ⟧) → Swap₊ (inj₂ v₂) (inj₁ v₂)
+
+  data Assocl₊ {t₁ t₂ t₃ : Pi0.U} : 
+    Pi0.⟦ Pi0.PLUS t₁ (Pi0.PLUS t₂ t₃) ⟧ → 
+    Pi0.⟦ Pi0.PLUS (Pi0.PLUS t₁ t₂) t₃ ⟧ → Set where
+    path1Assocl₊ : (v₁ : Pi0.⟦ t₁ ⟧) → Assocl₊ (inj₁ v₁) (inj₁ (inj₁ v₁))
+    path2Assocl₊ : (v₂ : Pi0.⟦ t₂ ⟧) → Assocl₊ (inj₂ (inj₁ v₂)) (inj₁ (inj₂ v₂))
+    path3Assocl₊ : (v₃ : Pi0.⟦ t₃ ⟧) → Assocl₊ (inj₂ (inj₂ v₃)) (inj₂ v₃)
+
+  data Assocr₊ {t₁ t₂ t₃ : Pi0.U} : 
+    Pi0.⟦ Pi0.PLUS (Pi0.PLUS t₁ t₂) t₃ ⟧ → 
+    Pi0.⟦ Pi0.PLUS t₁ (Pi0.PLUS t₂ t₃) ⟧ → Set where
+    path1Assocr₊ : (v₁ : Pi0.⟦ t₁ ⟧) → Assocr₊ (inj₁ (inj₁ v₁)) (inj₁ v₁)
+    path2Assocr₊ : (v₂ : Pi0.⟦ t₂ ⟧) → 
+      Assocr₊ (inj₁ (inj₂ v₂)) (inj₂ (inj₁ v₂)) 
+    path3Assocr₊ : (v₃ : Pi0.⟦ t₃ ⟧) → Assocr₊ (inj₂ v₃) (inj₂ (inj₂ v₃))
+
+  data Unite⋆ {t : Pi0.U} : Pi0.⟦ Pi0.TIMES Pi0.ONE t ⟧ → Pi0.⟦ t ⟧ → Set where
+    pathUnite⋆ : (v : Pi0.⟦ t ⟧) → Unite⋆ (tt , v) v
+
+  data Uniti⋆ {t : Pi0.U} : Pi0.⟦ t ⟧ → Pi0.⟦ Pi0.TIMES Pi0.ONE t ⟧ → Set where
+    pathUniti⋆ : (v : Pi0.⟦ t ⟧) → Uniti⋆ v (tt , v)
+
+  data Swap⋆ {t₁ t₂ : Pi0.U} : 
+    Pi0.⟦ Pi0.TIMES t₁ t₂ ⟧ → Pi0.⟦ Pi0.TIMES t₂ t₁ ⟧ → Set where
+    pathSwap⋆ : 
+      (v₁ : Pi0.⟦ t₁ ⟧) → (v₂ : Pi0.⟦ t₂ ⟧) → Swap⋆ (v₁ , v₂) (v₂ , v₁)
+
+  data Assocl⋆ {t₁ t₂ t₃ : Pi0.U} : 
+    Pi0.⟦ Pi0.TIMES t₁ (Pi0.TIMES t₂ t₃) ⟧ →
+    Pi0.⟦ Pi0.TIMES (Pi0.TIMES t₁ t₂) t₃ ⟧ → Set where
+    pathAssocl⋆ : 
+      (v₁ : Pi0.⟦ t₁ ⟧) → (v₂ : Pi0.⟦ t₂ ⟧) → (v₃ : Pi0.⟦ t₃ ⟧) → 
+      Assocl⋆ (v₁ , (v₂ , v₃)) ((v₁ , v₂) , v₃)
+
+  data Assocr⋆ {t₁ t₂ t₃ : Pi0.U} : 
+    Pi0.⟦ Pi0.TIMES (Pi0.TIMES t₁ t₂) t₃ ⟧ → 
+    Pi0.⟦ Pi0.TIMES t₁ (Pi0.TIMES t₂ t₃) ⟧ → Set where
+    pathAssocr⋆ : 
+      (v₁ : Pi0.⟦ t₁ ⟧) → (v₂ : Pi0.⟦ t₂ ⟧) → (v₃ : Pi0.⟦ t₃ ⟧) → 
+      Assocr⋆ ((v₁ , v₂) , v₃) (v₁ , (v₂ , v₃))
+
+  data Dist {t₁ t₂ t₃ : Pi0.U} : 
+    Pi0.⟦ Pi0.TIMES (Pi0.PLUS t₁ t₂) t₃ ⟧ → 
+    Pi0.⟦ Pi0.PLUS (Pi0.TIMES t₁ t₃) (Pi0.TIMES t₂ t₃) ⟧ → Set where
+    path1Dist : 
+      (v₁ : Pi0.⟦ t₁ ⟧) → (v₃ : Pi0.⟦ t₃ ⟧) → 
+      Dist (inj₁ v₁ , v₃) (inj₁ (v₁ , v₃))
+    path2Dist : 
+      (v₂ : Pi0.⟦ t₂ ⟧) → (v₃ : Pi0.⟦ t₃ ⟧) → 
+      Dist (inj₂ v₂ , v₃) (inj₂ (v₂ , v₃))
+        
+  data Factor {t₁ t₂ t₃ : Pi0.U} : 
+    Pi0.⟦ Pi0.PLUS (Pi0.TIMES t₁ t₃) (Pi0.TIMES t₂ t₃) ⟧ → 
+    Pi0.⟦ Pi0.TIMES (Pi0.PLUS t₁ t₂) t₃ ⟧ → Set where
+    path1Factor : 
+      (v₁ : Pi0.⟦ t₁ ⟧) → (v₃ : Pi0.⟦ t₃ ⟧) → 
+      Factor (inj₁ (v₁ , v₃)) (inj₁ v₁ , v₃)
+    path2Factor : 
+      (v₂ : Pi0.⟦ t₂ ⟧) → (v₃ : Pi0.⟦ t₃ ⟧) → 
+      Factor (inj₂ (v₂ , v₃)) (inj₂ v₂ , v₃)
+        
   data Id⟷ {t : Pi0.U} : Pi0.⟦ t ⟧ → Pi0.⟦ t ⟧ → Set where
-    path_id⟷ : (v₁ : Pi0.⟦ t ⟧) → (v₂ : Pi0.⟦ t ⟧) → Id⟷ v₁ v₂
+    pathId⟷ : (v : Pi0.⟦ t ⟧) → Id⟷ v v
 
-  -- values
+  -- General values
   mutual
     ⟦_⟧ : U → Set
     ⟦ ZERO ⟧          = ⊥
     ⟦ ONE ⟧           = ⊤
     ⟦ PLUS t₁ t₂ ⟧    = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
     ⟦ TIMES t₁ t₂ ⟧   = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
-    ⟦ EQUIV c v₁ v₂ ⟧ = f c v₁ v₂
+    ⟦ EQUIV c v₁ v₂ ⟧ = Paths c v₁ v₂
 
-    f : {t₃ t₄ : Pi0.U} → (t₃ Pi0.⟷ t₄) → Pi0.⟦ t₃ ⟧ → Pi0.⟦ t₄ ⟧ → Set
-    f Pi0.unite₊ (inj₁ ()) w₂
-    f Pi0.unite₊ (inj₂ y) w₂ = Unite₊ (inj₂ y) w₂ × (y ≡ w₂)
-    f Pi0.id⟷ w₁ w₂ = Id⟷ w₁ w₂ × (w₁ ≡ w₂)
-    f (Pi0._◎_ {t₂ = s} x₁ x₂) w₁ w₂ = Σ Pi0.⟦ s ⟧ (λ t → f x₁ w₁ t × f x₂ t w₂)
-    f c w₁ w₂ = ⊥ -- todo
- 
+    Paths : {t₁ t₂ : Pi0.U} → (t₁ Pi0.⟷ t₂) → Pi0.⟦ t₁ ⟧ → Pi0.⟦ t₂ ⟧ → Set
+    Paths Pi0.unite₊ (inj₁ ()) 
+    Paths Pi0.unite₊ (inj₂ v) v' = Unite₊ (inj₂ v) v'
+    Paths Pi0.uniti₊ v (inj₁ ())
+    Paths Pi0.uniti₊ v (inj₂ v') = Uniti₊ v (inj₂ v')
+    Paths Pi0.swap₊ v v' = Swap₊ v v'
+    Paths Pi0.assocl₊ v v' = Assocl₊ v v'
+    Paths Pi0.assocr₊ v v' = Assocr₊ v v'
+    Paths Pi0.unite⋆ v v' = Unite⋆ v v'
+    Paths Pi0.uniti⋆ v v' = Uniti⋆ v v'
+    Paths Pi0.swap⋆ v v' = Swap⋆ v v'
+    Paths Pi0.assocl⋆ v v' = Assocl⋆ v v'
+    Paths Pi0.assocr⋆ v v' = Assocr⋆ v v'
+    Paths Pi0.distz v ()
+    Paths Pi0.factorz () v'
+    Paths Pi0.dist v v' = Dist v v'
+    Paths Pi0.factor v v' = Factor v v'
+    Paths Pi0.id⟷ v v' = Id⟷ v v'
+    Paths (Pi0.sym⟷ c) v v' = Paths c v' v
+    Paths (Pi0._◎_ {t₂ = t₂} c₁ c₂) v₁ v₃ = 
+      Σ[ v₂ ∈ Pi0.⟦ t₂ ⟧ ] (Paths c₁ v₁ v₂ × Paths c₂ v₂ v₃)
+    Paths (c₁ Pi0.⊕ c₂) (inj₁ v₁) (inj₁ v₁') = Paths c₁ v₁ v₁'
+    Paths (c₁ Pi0.⊕ c₂) (inj₁ v₁) (inj₂ v₂') = ⊥
+    Paths (c₁ Pi0.⊕ c₂) (inj₂ v₂) (inj₁ v₁') = ⊥
+    Paths (c₁ Pi0.⊕ c₂) (inj₂ v₂) (inj₂ v₂') = Paths c₂ v₂ v₂'
+    Paths (c₁ Pi0.⊗ c₂) (v₁ , v₂) (v₁' , v₂') = 
+      Paths c₁ v₁ v₁' × Paths c₂ v₂ v₂'
+
   -- combinators 
   data _⟷_ : U → U → Set where
     unite₊  : {t : U} → PLUS ZERO t ⟷ t
@@ -153,10 +220,10 @@ module Pi2 where
     EQUIV : {t₁ t₂ : Pi1.U} → (t₁ Pi1.⟷ t₂) → Pi1.⟦ t₁ ⟧ → Pi1.⟦ t₂ ⟧ → U
 
   data Unite₊ {t : Pi1.U} : Pi1.⟦ Pi1.PLUS Pi1.ZERO t ⟧ → Pi1.⟦ t ⟧ → Set where
-    path_unite₊ : (v₁ : Pi1.⟦ Pi1.PLUS Pi1.ZERO t ⟧) → (v₂ : Pi1.⟦ t ⟧) → Unite₊ v₁ v₂
+    pathUnite₊ : (v₁ : Pi1.⟦ Pi1.PLUS Pi1.ZERO t ⟧) → (v₂ : Pi1.⟦ t ⟧) → Unite₊ v₁ v₂
 
   data Id⟷ {t : Pi1.U} : Pi1.⟦ t ⟧ → Pi1.⟦ t ⟧ → Set where
-    path_id⟷ : (v₁ : Pi1.⟦ t ⟧) → (v₂ : Pi1.⟦ t ⟧) → Id⟷ v₁ v₂
+    pathId⟷ : (v₁ : Pi1.⟦ t ⟧) → (v₂ : Pi1.⟦ t ⟧) → Id⟷ v₁ v₂
 
   -- values
   mutual 
@@ -169,11 +236,10 @@ module Pi2 where
     ⟦ EQUIV c v₁ v₂ ⟧ = f c v₁ v₂
 
     f : {t₁ t₂ : Pi1.U} → (t₁ Pi1.⟷ t₂) → Pi1.⟦ t₁ ⟧ → Pi1.⟦ t₂ ⟧ → Set
-    f (Pi1.id⟷ {t}) v v' = Id⟷ {t} v v' × (v ≡ v')
+    f (Pi1.id⟷ {t}) v v' = Id⟷ {t} v v' 
     f (Pi1._◎_ {t₂ = t₂} c₁ c₂) v₁ v₃ = 
       Σ[ v₂ ∈ Pi1.⟦ t₂ ⟧ ] (f c₁ v₁ v₂ × f c₂ v₂ v₃)
-    f (Pi1.lid {t₁} {t₂} {v₁} {v₂} {c})
-      (.v₁ , ((Pi1.path_id⟷ .v₁ .v₁ , refl .v₁) , q)) q' = (q ≡ q')
+    f (Pi1.lid {v₁ = v₁}) (.v₁ , (Pi1.pathId⟷ .v₁ , q)) q' = ⊥ -- todo
     f c v₁ v₂ = ⊥ -- to do 
 
   -- combinators 
