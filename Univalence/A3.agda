@@ -170,6 +170,9 @@ module Pi1 where
   data Id⟷ {t : Pi0.U} : Pi0.⟦ t ⟧ → Pi0.⟦ t ⟧ → Set where
     pathId⟷ : (v : Pi0.⟦ t ⟧) → Id⟷ v v
 
+  data Rev : Set where
+    ! : Rev
+
   -- General values
   mutual
     ⟦_⟧ : U → Set
@@ -197,13 +200,13 @@ module Pi1 where
     Paths Pi0.dist v v' = Dist v v'
     Paths Pi0.factor v v' = Factor v v'
     Paths Pi0.id⟷ v v' = Id⟷ v v'
-    Paths (Pi0.sym⟷ c) v v' = Paths c v' v
+    Paths (Pi0.sym⟷ c) v v' = Rev × Paths c v' v
     Paths (Pi0._◎_ {t₂ = t₂} c₁ c₂) v₁ v₃ = 
       Σ[ v₂ ∈ Pi0.⟦ t₂ ⟧ ] (Paths c₁ v₁ v₂ × Paths c₂ v₂ v₃)
-    Paths (c₁ Pi0.⊕ c₂) (inj₁ v₁) (inj₁ v₁') = Paths c₁ v₁ v₁'
+    Paths (c₁ Pi0.⊕ c₂) (inj₁ v₁) (inj₁ v₁') = Paths c₁ v₁ v₁' ⊎ ⊥
     Paths (c₁ Pi0.⊕ c₂) (inj₁ v₁) (inj₂ v₂') = ⊥
     Paths (c₁ Pi0.⊕ c₂) (inj₂ v₂) (inj₁ v₁') = ⊥
-    Paths (c₁ Pi0.⊕ c₂) (inj₂ v₂) (inj₂ v₂') = Paths c₂ v₂ v₂'
+    Paths (c₁ Pi0.⊕ c₂) (inj₂ v₂) (inj₂ v₂') = ⊥ ⊎ Paths c₂ v₂ v₂'
     Paths (c₁ Pi0.⊗ c₂) (v₁ , v₂) (v₁' , v₂') = 
       Paths c₁ v₁ v₁' × Paths c₂ v₂ v₂'
 
@@ -220,7 +223,7 @@ module Pi1 where
   p₃ = (Pi0.TRUE , (path2Swap₊ tt , path1Swap₊ tt))
 
   p₄ : ⟦ EQUIV (Pi0.id⟷ Pi0.⊕ Pi0.id⟷) Pi0.FALSE Pi0.FALSE ⟧
-  p₄ = pathId⟷ tt
+  p₄ = inj₂ (pathId⟷ tt)
 
   -- A few paths between (TRUE,TRUE) and (TRUE,TRUE)
 
@@ -241,7 +244,7 @@ module Pi1 where
   p₈ = ((inj₁ (tt , Pi0.FALSE)) , 
         (path1Dist tt Pi0.FALSE ,
         ((inj₁ (tt , Pi0.TRUE)) , 
-        ((pathId⟷ tt , path2Swap₊ tt) , 
+        ((inj₁ (pathId⟷ tt , path2Swap₊ tt)) , 
          path1Factor tt Pi0.TRUE))))
 
   -- combinators 
