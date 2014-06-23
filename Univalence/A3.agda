@@ -180,7 +180,7 @@ module Pi1 where
     ⟦ EQUIV c v₁ v₂ ⟧ = Paths c v₁ v₂
 
     Paths : {t₁ t₂ : Pi0.U} → (t₁ Pi0.⟷ t₂) → Pi0.⟦ t₁ ⟧ → Pi0.⟦ t₂ ⟧ → Set
-    Paths Pi0.unite₊ (inj₁ ()) 
+    Paths Pi0.unite₊ (inj₁ ()) _
     Paths Pi0.unite₊ (inj₂ v) v' = Unite₊ (inj₂ v) v'
     Paths Pi0.uniti₊ v (inj₁ ())
     Paths Pi0.uniti₊ v (inj₂ v') = Uniti₊ v (inj₂ v')
