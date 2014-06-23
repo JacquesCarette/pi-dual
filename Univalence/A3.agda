@@ -13,6 +13,9 @@ open import Data.Product
 
 module Pi0 where
 
+  infixr 10 _◎_
+  infixr 30 _⟷_
+
   -- types
   data U : Set where
     ZERO  : U
@@ -26,6 +29,20 @@ module Pi0 where
   ⟦ ONE ⟧         = ⊤
   ⟦ PLUS t₁ t₂ ⟧  = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
   ⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+
+  -- Examples
+
+  BOOL : U
+  BOOL = PLUS ONE ONE
+
+  BOOL² : U
+  BOOL² = TIMES BOOL BOOL
+
+  TRUE : ⟦ BOOL ⟧
+  TRUE = inj₁ tt
+
+  FALSE : ⟦ BOOL ⟧
+  FALSE = inj₂ tt
 
   -- combinators 
   data _⟷_ : U → U → Set where
@@ -52,6 +69,18 @@ module Pi0 where
               (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
     _⊗_     : {t₁ t₂ t₃ t₄ : U} → 
               (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
+
+  -- Examples
+
+  COND : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → 
+         ((TIMES BOOL t₁) ⟷ (TIMES BOOL t₂))
+  COND f g = dist ◎ ((id⟷ ⊗ f) ⊕ (id⟷ ⊗ g)) ◎ factor 
+
+  CONTROLLED : {t : U} → (t ⟷ t) → ((TIMES BOOL t) ⟷ (TIMES BOOL t))
+  CONTROLLED f = COND f id⟷
+  
+  CNOT : BOOL² ⟷ BOOL²
+  CNOT = CONTROLLED swap₊
 
 ------------------------------------------------------------------------------
 -- Level 1 includes level 0 equivalences...
@@ -177,6 +206,43 @@ module Pi1 where
     Paths (c₁ Pi0.⊕ c₂) (inj₂ v₂) (inj₂ v₂') = Paths c₂ v₂ v₂'
     Paths (c₁ Pi0.⊗ c₂) (v₁ , v₂) (v₁' , v₂') = 
       Paths c₁ v₁ v₁' × Paths c₂ v₂ v₂'
+
+  -- Examples
+  -- A few paths between FALSE and FALSE
+
+  p₁ : ⟦ EQUIV Pi0.id⟷ Pi0.FALSE Pi0.FALSE ⟧
+  p₁ = pathId⟷ Pi0.FALSE 
+
+  p₂ : ⟦ EQUIV (Pi0.id⟷ Pi0.◎ Pi0.id⟷) Pi0.FALSE Pi0.FALSE ⟧
+  p₂ = (Pi0.FALSE , (p₁ , p₁))
+
+  p₃ : ⟦ EQUIV (Pi0.swap₊ Pi0.◎ Pi0.swap₊) Pi0.FALSE Pi0.FALSE ⟧
+  p₃ = (Pi0.TRUE , (path2Swap₊ tt , path1Swap₊ tt))
+
+  p₄ : ⟦ EQUIV (Pi0.id⟷ Pi0.⊕ Pi0.id⟷) Pi0.FALSE Pi0.FALSE ⟧
+  p₄ = pathId⟷ tt
+
+  -- A few paths between (TRUE,TRUE) and (TRUE,TRUE)
+
+  p₅ : ⟦ EQUIV Pi0.id⟷ (Pi0.TRUE , Pi0.TRUE) (Pi0.TRUE , Pi0.TRUE) ⟧
+  p₅ = pathId⟷ (Pi0.TRUE , Pi0.TRUE)
+
+  p₆ : ⟦ EQUIV (Pi0.id⟷ Pi0.⊗ Pi0.id⟷) 
+        (Pi0.TRUE , Pi0.TRUE) (Pi0.TRUE , Pi0.TRUE) ⟧
+  p₆ = (pathId⟷ Pi0.TRUE , pathId⟷ Pi0.TRUE)
+
+  -- A few paths between (TRUE,FALSE) and (TRUE,TRUE)
+
+  p₇ : ⟦ EQUIV (Pi0.id⟷ Pi0.⊗ Pi0.swap₊) 
+        (Pi0.TRUE , Pi0.FALSE) (Pi0.TRUE , Pi0.TRUE) ⟧
+  p₇ = (pathId⟷ Pi0.TRUE , path2Swap₊ tt)
+
+  p₈ : ⟦ EQUIV Pi0.CNOT (Pi0.TRUE , Pi0.FALSE) (Pi0.TRUE , Pi0.TRUE) ⟧
+  p₈ = ((inj₁ (tt , Pi0.FALSE)) , 
+        (path1Dist tt Pi0.FALSE ,
+        ((inj₁ (tt , Pi0.TRUE)) , 
+        ((pathId⟷ tt , path2Swap₊ tt) , 
+         path1Factor tt Pi0.TRUE))))
 
   -- combinators 
   data _⟷_ : U → U → Set where
