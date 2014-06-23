@@ -96,6 +96,16 @@ module Pi1 where
 
   -- Path types and values
 
+  data Path⊤ : Set where
+    pathtt : Path⊤
+
+  data Path⊎ (A B : Set) : Set where
+    pathLeft  : A → Path⊎ A B
+    pathRight : B → Path⊎ A B
+
+  data Path× (A B : Set) : Set where
+    pathPair : A → B → Path× A B
+
   data Unite₊ {t : Pi0.U} : Pi0.⟦ Pi0.PLUS Pi0.ZERO t ⟧ → Pi0.⟦ t ⟧ → Set where
     pathUnite₊ : (v : Pi0.⟦ t ⟧) → Unite₊ (inj₂ v) v
 
@@ -170,16 +180,23 @@ module Pi1 where
   data Id⟷ {t : Pi0.U} : Pi0.⟦ t ⟧ → Pi0.⟦ t ⟧ → Set where
     pathId⟷ : (v : Pi0.⟦ t ⟧) → Id⟷ v v
 
-  data Rev : Set where
-    ! : Rev
+  data PathRev (A : Set) : Set where
+    pathRev : A → PathRev A
+
+  record PathTrans (A : Set) (B C : A → Set) : Set where
+    constructor pathTrans
+    field
+      anchor : A
+      pre    : B anchor
+      post   : C anchor
 
   -- General values
   mutual
     ⟦_⟧ : U → Set
     ⟦ ZERO ⟧          = ⊥
-    ⟦ ONE ⟧           = ⊤
-    ⟦ PLUS t₁ t₂ ⟧    = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
-    ⟦ TIMES t₁ t₂ ⟧   = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+    ⟦ ONE ⟧           = Path⊤
+    ⟦ PLUS t₁ t₂ ⟧    = Path⊎ ⟦ t₁ ⟧ ⟦ t₂ ⟧
+    ⟦ TIMES t₁ t₂ ⟧   = Path× ⟦ t₁ ⟧ ⟦ t₂ ⟧
     ⟦ EQUIV c v₁ v₂ ⟧ = Paths c v₁ v₂
 
     Paths : {t₁ t₂ : Pi0.U} → (t₁ Pi0.⟷ t₂) → Pi0.⟦ t₁ ⟧ → Pi0.⟦ t₂ ⟧ → Set
@@ -200,15 +217,16 @@ module Pi1 where
     Paths Pi0.dist v v' = Dist v v'
     Paths Pi0.factor v v' = Factor v v'
     Paths Pi0.id⟷ v v' = Id⟷ v v'
-    Paths (Pi0.sym⟷ c) v v' = Rev × Paths c v' v
+    Paths (Pi0.sym⟷ c) v v' = PathRev (Paths c v' v)
     Paths (Pi0._◎_ {t₂ = t₂} c₁ c₂) v₁ v₃ = 
-      Σ[ v₂ ∈ Pi0.⟦ t₂ ⟧ ] (Paths c₁ v₁ v₂ × Paths c₂ v₂ v₃)
-    Paths (c₁ Pi0.⊕ c₂) (inj₁ v₁) (inj₁ v₁') = Paths c₁ v₁ v₁' ⊎ ⊥
+      PathTrans Pi0.⟦ t₂ ⟧ (λ v₂ → Paths c₁ v₁ v₂) (λ v₂ → Paths c₂ v₂ v₃)
+      -- Σ[ v₂ ∈ Pi0.⟦ t₂ ⟧ ] (Paths c₁ v₁ v₂ × Paths c₂ v₂ v₃)
+    Paths (c₁ Pi0.⊕ c₂) (inj₁ v₁) (inj₁ v₁') = Path⊎ (Paths c₁ v₁ v₁') ⊥
     Paths (c₁ Pi0.⊕ c₂) (inj₁ v₁) (inj₂ v₂') = ⊥
     Paths (c₁ Pi0.⊕ c₂) (inj₂ v₂) (inj₁ v₁') = ⊥
-    Paths (c₁ Pi0.⊕ c₂) (inj₂ v₂) (inj₂ v₂') = ⊥ ⊎ Paths c₂ v₂ v₂'
+    Paths (c₁ Pi0.⊕ c₂) (inj₂ v₂) (inj₂ v₂') = Path⊎ ⊥ (Paths c₂ v₂ v₂')
     Paths (c₁ Pi0.⊗ c₂) (v₁ , v₂) (v₁' , v₂') = 
-      Paths c₁ v₁ v₁' × Paths c₂ v₂ v₂'
+      Path× (Paths c₁ v₁ v₁') (Paths c₂ v₂ v₂')
 
   -- Examples
   -- A few paths between FALSE and FALSE
@@ -217,13 +235,13 @@ module Pi1 where
   p₁ = pathId⟷ Pi0.FALSE 
 
   p₂ : ⟦ EQUIV (Pi0.id⟷ Pi0.◎ Pi0.id⟷) Pi0.FALSE Pi0.FALSE ⟧
-  p₂ = (Pi0.FALSE , (p₁ , p₁))
+  p₂ = pathTrans Pi0.FALSE p₁ p₁
 
   p₃ : ⟦ EQUIV (Pi0.swap₊ Pi0.◎ Pi0.swap₊) Pi0.FALSE Pi0.FALSE ⟧
-  p₃ = (Pi0.TRUE , (path2Swap₊ tt , path1Swap₊ tt))
+  p₃ = pathTrans Pi0.TRUE (path2Swap₊ tt) (path1Swap₊ tt)
 
   p₄ : ⟦ EQUIV (Pi0.id⟷ Pi0.⊕ Pi0.id⟷) Pi0.FALSE Pi0.FALSE ⟧
-  p₄ = inj₂ (pathId⟷ tt)
+  p₄ = pathRight (pathId⟷ tt)
 
   -- A few paths between (TRUE,TRUE) and (TRUE,TRUE)
 
@@ -232,20 +250,20 @@ module Pi1 where
 
   p₆ : ⟦ EQUIV (Pi0.id⟷ Pi0.⊗ Pi0.id⟷) 
         (Pi0.TRUE , Pi0.TRUE) (Pi0.TRUE , Pi0.TRUE) ⟧
-  p₆ = (pathId⟷ Pi0.TRUE , pathId⟷ Pi0.TRUE)
+  p₆ = pathPair (pathId⟷ Pi0.TRUE) (pathId⟷ Pi0.TRUE)
 
   -- A few paths between (TRUE,FALSE) and (TRUE,TRUE)
 
   p₇ : ⟦ EQUIV (Pi0.id⟷ Pi0.⊗ Pi0.swap₊) 
         (Pi0.TRUE , Pi0.FALSE) (Pi0.TRUE , Pi0.TRUE) ⟧
-  p₇ = (pathId⟷ Pi0.TRUE , path2Swap₊ tt)
+  p₇ = pathPair (pathId⟷ Pi0.TRUE) (path2Swap₊ tt)
 
   p₈ : ⟦ EQUIV Pi0.CNOT (Pi0.TRUE , Pi0.FALSE) (Pi0.TRUE , Pi0.TRUE) ⟧
-  p₈ = ((inj₁ (tt , Pi0.FALSE)) , 
-        (path1Dist tt Pi0.FALSE ,
-        ((inj₁ (tt , Pi0.TRUE)) , 
-        ((inj₁ (pathId⟷ tt , path2Swap₊ tt)) , 
-         path1Factor tt Pi0.TRUE))))
+  p₈ = pathTrans (inj₁ (tt , Pi0.FALSE))
+         (path1Dist tt Pi0.FALSE)
+         (pathTrans (inj₁ (tt , Pi0.TRUE))
+            (pathLeft (pathPair (pathId⟷ tt) (path2Swap₊ tt)))
+            (path1Factor tt Pi0.TRUE))
 
   -- combinators 
   data _⟷_ : U → U → Set where
@@ -317,7 +335,7 @@ module Pi2 where
     f (Pi1.id⟷ {t}) v v' = Id⟷ {t} v v' 
     f (Pi1._◎_ {t₂ = t₂} c₁ c₂) v₁ v₃ = 
       Σ[ v₂ ∈ Pi1.⟦ t₂ ⟧ ] (f c₁ v₁ v₂ × f c₂ v₂ v₃)
-    f (Pi1.lidl {v₁ = v₁}) (.v₁ , (Pi1.pathId⟷ .v₁ , q)) q' = ⊥ -- todo
+--    f (Pi1.lidl {v₁ = v₁}) (pathTrans .v₁ (Pi1.pathId⟷ .v₁) q) q' = ⊥ -- todo
     f c v₁ v₂ = ⊥ -- to do 
 
   -- combinators 
