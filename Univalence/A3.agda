@@ -62,8 +62,8 @@ module Pi0 where
               TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) 
     factor  : {t₁ t₂ t₃ : U} → 
               PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
-    id⟷     : {t : U} → t ⟷ t
-    sym⟷    : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
+    id⟷    : {t : U} → t ⟷ t
+    sym⟷   : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
     _◎_     : {t₁ t₂ t₃ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
     _⊕_     : {t₁ t₂ t₃ t₄ : U} → 
               (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
@@ -262,16 +262,25 @@ module Pi1 where
               TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) 
     factor  : {t₁ t₂ t₃ : U} → 
               PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
-    id⟷     : {t : U} → t ⟷ t
-    sym⟷    : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
+    id⟷    : {t : U} → t ⟷ t
+    sym⟷   : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
     _◎_     : {t₁ t₂ t₃ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
     _⊕_     : {t₁ t₂ t₃ t₄ : U} → 
               (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
     _⊗_     : {t₁ t₂ t₃ t₄ : U} → 
               (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
-    lid     : {t₁ t₂ : Pi0.U} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} 
-              {c : t₁ Pi0.⟷ t₂} → 
+    lidl    : {t₁ t₂ : Pi0.U} 
+              {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} → 
               EQUIV (Pi0.id⟷ Pi0.◎ c) v₁ v₂ ⟷ EQUIV c v₁ v₂
+    lidr    : {t₁ t₂ : Pi0.U} 
+              {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} → 
+              EQUIV c v₁ v₂ ⟷ EQUIV (Pi0.id⟷ Pi0.◎ c) v₁ v₂
+
+  -- Examples
+  -- id;swap₊ is equivalent to swap₊
+  e₁ : EQUIV (Pi0.id⟷ Pi0.◎ Pi0.swap₊) Pi0.FALSE Pi0.TRUE ⟷ 
+       EQUIV Pi0.swap₊ Pi0.FALSE Pi0.TRUE
+  e₁ = lidl
 
 ------------------------------------------------------------------------------
 -- Level 2 explicitly...
@@ -305,7 +314,7 @@ module Pi2 where
     f (Pi1.id⟷ {t}) v v' = Id⟷ {t} v v' 
     f (Pi1._◎_ {t₂ = t₂} c₁ c₂) v₁ v₃ = 
       Σ[ v₂ ∈ Pi1.⟦ t₂ ⟧ ] (f c₁ v₁ v₂ × f c₂ v₂ v₃)
-    f (Pi1.lid {v₁ = v₁}) (.v₁ , (Pi1.pathId⟷ .v₁ , q)) q' = ⊥ -- todo
+    f (Pi1.lidl {v₁ = v₁}) (.v₁ , (Pi1.pathId⟷ .v₁ , q)) q' = ⊥ -- todo
     f c v₁ v₂ = ⊥ -- to do 
 
   -- combinators 
