@@ -358,6 +358,14 @@ module Pi1 where
               {v₁ : Pi0.⟦ t₁ ⟧} {v₄ : Pi0.⟦ t₄ ⟧} → 
               EQUIV ((c₁ Pi0.◎ c₂) Pi0.◎ c₃) v₁ v₄ ⟷ 
               EQUIV (c₁ Pi0.◎ (c₂ Pi0.◎ c₃)) v₁ v₄ 
+    -- this is closely related to Eckmann-Hilton
+    resp◎   : {t₁ t₂ t₃ : Pi0.U} 
+              {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} 
+              {c₃ : t₁ Pi0.⟷ t₂} {c₄ : t₂ Pi0.⟷ t₃} 
+              {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} {v₃ : Pi0.⟦ t₃ ⟧} → 
+              (EQUIV c₁ v₁ v₂ ⟷ EQUIV c₃ v₁ v₂) → 
+              (EQUIV c₂ v₂ v₃ ⟷ EQUIV c₄ v₂ v₃) → 
+               EQUIV (c₁ Pi0.◎ c₂) v₁ v₃ ⟷ EQUIV (c₃ Pi0.◎ c₄) v₁ v₃
 
   -- Examples
   -- id;swap₊ is equivalent to swap₊
@@ -391,7 +399,9 @@ module Pi1 where
                                    ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
         ; linv = λ α → invrl {c = α}
         ; rinv = λ α → invll {c = α}
-        ; ∘-resp-≈ = λ f⟷h g⟷i {v₀} {v₁} → {!!}
+        ; ∘-resp-≈ = λ {x} {y} {z} {f} {h} {g} {i} f⟷h g⟷i {v₀} {v₁} → 
+                     resp◎ {x} {y} {z} {g} {f} {i} {h} {v₀} {{!!}} {v₁} 
+                       g⟷i f⟷h 
         }
 
 ------------------------------------------------------------------------------
