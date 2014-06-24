@@ -100,6 +100,9 @@ module Pi1 where
 
   -- values
 
+  data Path⊥ : Set where
+    path0 : Path⊥
+
   data Path⊤ : Set where
     pathtt : Path⊤
 
@@ -196,7 +199,7 @@ module Pi1 where
 
   mutual
     ⟦_⟧ : U → Set
-    ⟦ ZERO ⟧          = ⊥
+    ⟦ ZERO ⟧          = Path⊥
     ⟦ ONE ⟧           = Path⊤
     ⟦ PLUS t₁ t₂ ⟧    = Path⊎ ⟦ t₁ ⟧ ⟦ t₂ ⟧
     ⟦ TIMES t₁ t₂ ⟧   = Path× ⟦ t₁ ⟧ ⟦ t₂ ⟧
