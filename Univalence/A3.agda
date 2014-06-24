@@ -197,7 +197,7 @@ module Pi1 where
     ⟦ ONE ⟧           = Path⊤
     ⟦ PLUS t₁ t₂ ⟧    = Path⊎ ⟦ t₁ ⟧ ⟦ t₂ ⟧
     ⟦ TIMES t₁ t₂ ⟧   = Path× ⟦ t₁ ⟧ ⟦ t₂ ⟧
-    ⟦ EQUIV c v₁ v₂ ⟧ = Paths c v₁ v₂
+    ⟦ EQUIV c v₁ v₂ ⟧ = Paths c v₁ v₂ -- space of paths from v₁ to v₂ using c
 
     Paths : {t₁ t₂ : Pi0.U} → (t₁ Pi0.⟷ t₂) → Pi0.⟦ t₁ ⟧ → Pi0.⟦ t₂ ⟧ → Set
     Paths Pi0.unite₊ (inj₁ ()) _
