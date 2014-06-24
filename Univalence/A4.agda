@@ -101,6 +101,10 @@ module Pi1 where
 -}
     EQUIV : {t₁ t₂ : Pi0.U} → (t₁ Pi0.⟷ t₂) → Pi0.⟦ t₁ ⟧ → Pi0.⟦ t₂ ⟧ → U
 
+  -- extractor, dependently typed.
+  srcU : U → Σ Pi0.U Pi0.⟦_⟧
+  srcU (EQUIV {t₁} {t₂} c x y) = t₁ , x
+
   -- values
 
   data Path⊤ : Set where
@@ -313,7 +317,7 @@ module Pi1 where
     factor  : {t₁ t₂ t₃ : U} → 
               PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
 -} 
-    id⟷    : {t : U} → t ⟷ t
+    id⟷    : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₀ : Pi0.⟦ t₁ ⟧} {v₁ : Pi0.⟦ t₂ ⟧} → EQUIV c v₀ v₁ ⟷ EQUIV c v₀ v₁
     sym⟷  : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
     _◎_     : {t₁ t₂ t₃ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
 {-
@@ -367,6 +371,25 @@ module Pi1 where
               (EQUIV c₂ v₂ v₃ ⟷ EQUIV c₄ v₂ v₃) → 
                EQUIV (c₁ Pi0.◎ c₂) v₁ v₃ ⟷ EQUIV (c₃ Pi0.◎ c₄) v₁ v₃
 
+  -- extractor for ⟷
+  src : {t₁ t₂ : U} → t₁ ⟷ t₂ → Σ Pi0.U Pi0.⟦_⟧
+  src (id⟷ {t₁} {v₀ = v₀}) = t₁ , v₀
+  src (sym⟷ c) = {!!}
+  src (c₀ ◎ c₁) = {!!}
+  src (lidl {t₁} {v₁ = v₁}) = t₁ , v₁
+  src lidr = {!!}
+  src ridl = {!!}
+  src ridr = {!!}
+  src invll = {!!}
+  src invlr = {!!}
+  src invrl = {!!}
+  src invrr = {!!}
+  src invinvl = {!!}
+  src invinvr = {!!}
+  src tassocl = {!!}
+  src tassocr = {!!}
+  src (resp◎ c c₅) = {!!}
+
   -- Examples
   -- id;swap₊ is equivalent to swap₊
   e₁ : EQUIV (Pi0.id⟷ Pi0.◎ Pi0.swap₊) Pi0.FALSE Pi0.TRUE ⟷ 
@@ -394,13 +417,13 @@ module Pi1 where
         ; lneutr = λ α → ridl {c = α}
         ; rneutr = λ α → lidl { c = α}
         ; assoc = λ α β δ {v₁} {v₄} → tassocl 
-        ; equiv = record { refl = id⟷ 
+        ; equiv = record { refl = λ {c} {v₀} {v₁} → id⟷
                                    ; sym = λ c → sym⟷ c 
                                    ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
         ; linv = λ α → invrl {c = α}
         ; rinv = λ α → invll {c = α}
         ; ∘-resp-≈ = λ {x} {y} {z} {f} {h} {g} {i} f⟷h g⟷i {v₀} {v₁} → 
-                     resp◎ {x} {y} {z} {g} {f} {i} {h} {v₀} {{!!}} {v₁} 
+                     resp◎ {x} {y} {z} {g} {f} {i} {h} {v₀} {{!proj₂ (src f⟷h)!}} {v₁} 
                        g⟷i f⟷h 
         }
 
