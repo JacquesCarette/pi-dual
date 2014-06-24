@@ -9,7 +9,9 @@ open import Data.Sum
 open import Data.Product
 
 ------------------------------------------------------------------------------
--- Level 0 
+-- Level 0: 
+-- types are collections of points
+-- equivalences are between points
 
 module Pi0 where
 
@@ -83,7 +85,9 @@ module Pi0 where
   CNOT = CONTROLLED swap₊
 
 ------------------------------------------------------------------------------
--- Level 1 includes level 0 equivalences...
+-- Level 1 
+-- types are collections of paths (where paths are equivalences between points)
+-- equivalences are between paths
 
 module Pi1 where
   -- types
@@ -94,7 +98,7 @@ module Pi1 where
     TIMES : U → U → U
     EQUIV : {t₁ t₂ : Pi0.U} → (t₁ Pi0.⟷ t₂) → Pi0.⟦ t₁ ⟧ → Pi0.⟦ t₂ ⟧ → U
 
-  -- Path types and values
+  -- values
 
   data Path⊤ : Set where
     pathtt : Path⊤
@@ -190,7 +194,6 @@ module Pi1 where
       pre    : B anchor
       post   : C anchor
 
-  -- General values
   mutual
     ⟦_⟧ : U → Set
     ⟦ ZERO ⟧          = ⊥
@@ -265,7 +268,22 @@ module Pi1 where
             (pathLeft (pathPair (pathId⟷ tt) (path2Swap₊ tt)))
             (path1Factor tt Pi0.TRUE))
 
-  -- combinators 
+  -- Examples using sum and products of paths
+
+  q₀ : ⟦ TIMES ONE (EQUIV Pi0.id⟷ Pi0.FALSE Pi0.FALSE) ⟧
+  q₀ = pathPair pathtt p₁
+
+  q₁ : ⟦ PLUS (EQUIV Pi0.id⟷ Pi0.FALSE Pi0.FALSE) 
+              (EQUIV (Pi0.id⟷ Pi0.⊗ Pi0.swap₊) 
+                     (Pi0.TRUE , Pi0.FALSE) (Pi0.TRUE , Pi0.TRUE)) ⟧
+  q₁ = pathRight p₇
+
+  q₂ : ⟦ PLUS (EQUIV Pi0.id⟷ Pi0.FALSE Pi0.FALSE) ZERO ⟧
+  q₂ = pathLeft p₁
+
+  -- combinators
+  -- the usual semiring combinators to reason about 0, 1, +, and *, and
+  -- the groupoid combinators to reason about id, rev, and trans
   data _⟷_ : U → U → Set where
     unite₊  : {t : U} → PLUS ZERO t ⟷ t
     uniti₊  : {t : U} → t ⟷ PLUS ZERO t
@@ -296,12 +314,49 @@ module Pi1 where
     lidr    : {t₁ t₂ : Pi0.U} 
               {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} → 
               EQUIV c v₁ v₂ ⟷ EQUIV (Pi0.id⟷ Pi0.◎ c) v₁ v₂
+    ridl    : {t₁ t₂ : Pi0.U} 
+              {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} → 
+              EQUIV (c Pi0.◎ Pi0.id⟷) v₁ v₂ ⟷ EQUIV c v₁ v₂
+    ridr    : {t₁ t₂ : Pi0.U} 
+              {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} → 
+              EQUIV c v₁ v₂ ⟷ EQUIV (c Pi0.◎ Pi0.id⟷) v₁ v₂
+    invll   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₂ : Pi0.⟦ t₂ ⟧}  → 
+              EQUIV (Pi0.sym⟷ c Pi0.◎ c) v₂ v₂ ⟷ EQUIV Pi0.id⟷ v₂ v₂
+    invlr   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₂ : Pi0.⟦ t₂ ⟧}  → 
+              EQUIV Pi0.id⟷ v₂ v₂ ⟷ EQUIV (Pi0.sym⟷ c Pi0.◎ c) v₂ v₂ 
+    invrl   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧}  → 
+              EQUIV (c Pi0.◎ Pi0.sym⟷ c) v₁ v₁ ⟷ EQUIV Pi0.id⟷ v₁ v₁
+    invrr   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧}  → 
+              EQUIV Pi0.id⟷ v₁ v₁ ⟷ EQUIV (c Pi0.◎ Pi0.sym⟷ c) v₁ v₁
+    invinvl : {t₁ t₂ : Pi0.U} 
+              {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} → 
+              EQUIV (Pi0.sym⟷ (Pi0.sym⟷ c)) v₁ v₂ ⟷ EQUIV c v₁ v₂
+    invinvr : {t₁ t₂ : Pi0.U} 
+              {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} → 
+              EQUIV c v₁ v₂ ⟷ EQUIV (Pi0.sym⟷ (Pi0.sym⟷ c)) v₁ v₂ 
+    tassocl : {t₁ t₂ t₃ t₄ : Pi0.U} 
+              {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} {c₃ : t₃ Pi0.⟷ t₄}
+              {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} 
+              {v₃ : Pi0.⟦ t₃ ⟧} {v₄ : Pi0.⟦ t₄ ⟧} → 
+              EQUIV (c₁ Pi0.◎ (c₂ Pi0.◎ c₃)) v₁ v₄ ⟷ 
+              EQUIV ((c₁ Pi0.◎ c₂) Pi0.◎ c₃) v₁ v₄
+    tassocr : {t₁ t₂ t₃ t₄ : Pi0.U} 
+              {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} {c₃ : t₃ Pi0.⟷ t₄}
+              {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} 
+              {v₃ : Pi0.⟦ t₃ ⟧} {v₄ : Pi0.⟦ t₄ ⟧} → 
+              EQUIV ((c₁ Pi0.◎ c₂) Pi0.◎ c₃) v₁ v₄ ⟷ 
+              EQUIV (c₁ Pi0.◎ (c₂ Pi0.◎ c₃)) v₁ v₄ 
 
   -- Examples
   -- id;swap₊ is equivalent to swap₊
   e₁ : EQUIV (Pi0.id⟷ Pi0.◎ Pi0.swap₊) Pi0.FALSE Pi0.TRUE ⟷ 
        EQUIV Pi0.swap₊ Pi0.FALSE Pi0.TRUE
   e₁ = lidl
+
+  -- swap₊;id;swap₊ is equivalent to id
+  e₂ : EQUIV (Pi0.swap₊ Pi0.◎ (Pi0.id⟷ Pi0.◎ Pi0.swap₊)) Pi0.FALSE Pi0.FALSE ⟷ 
+       EQUIV Pi0.id⟷ Pi0.FALSE Pi0.FALSE 
+  e₂ = {!!}
 
 ------------------------------------------------------------------------------
 -- Level 2 explicitly...
