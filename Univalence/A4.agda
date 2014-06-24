@@ -315,8 +315,8 @@ module Pi1 where
 -} 
     id⟷    : {t : U} → t ⟷ t
     sym⟷  : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
-{- 
-   _◎_     : {t₁ t₂ t₃ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+    _◎_     : {t₁ t₂ t₃ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+{-
     _⊕_     : {t₁ t₂ t₃ t₄ : U} → 
               (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
     _⊗_     : {t₁ t₂ t₃ t₄ : U} → 
@@ -334,14 +334,14 @@ module Pi1 where
     ridr    : {t₁ t₂ : Pi0.U} 
               {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} → 
               EQUIV c v₁ v₂ ⟷ EQUIV (c Pi0.◎ Pi0.id⟷) v₁ v₂
-    invll   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₂ : Pi0.⟦ t₂ ⟧}  → 
-              EQUIV (Pi0.sym⟷ c Pi0.◎ c) v₂ v₂ ⟷ EQUIV Pi0.id⟷ v₂ v₂
+    invll   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₀ v₂ : Pi0.⟦ t₂ ⟧}  → 
+              EQUIV (Pi0.sym⟷ c Pi0.◎ c) v₀ v₂ ⟷ EQUIV Pi0.id⟷ v₀ v₂
     invlr   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₀ v₂ : Pi0.⟦ t₂ ⟧}  → 
               EQUIV Pi0.id⟷ v₀ v₂ ⟷ EQUIV (Pi0.sym⟷ c Pi0.◎ c) v₀ v₂ 
     invrl   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₀ v₁ : Pi0.⟦ t₁ ⟧}  → 
               EQUIV (c Pi0.◎ Pi0.sym⟷ c) v₀ v₁ ⟷ EQUIV Pi0.id⟷ v₀ v₁
-    invrr   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧}  → 
-              EQUIV Pi0.id⟷ v₁ v₁ ⟷ EQUIV (c Pi0.◎ Pi0.sym⟷ c) v₁ v₁
+    invrr   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₀ v₁ : Pi0.⟦ t₁ ⟧}  → 
+              EQUIV Pi0.id⟷ v₀ v₁ ⟷ EQUIV (c Pi0.◎ Pi0.sym⟷ c) v₀ v₁
     invinvl : {t₁ t₂ : Pi0.U} 
               {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} → 
               EQUIV (Pi0.sym⟷ (Pi0.sym⟷ c)) v₁ v₂ ⟷ EQUIV c v₁ v₂
@@ -350,14 +350,12 @@ module Pi1 where
               EQUIV c v₁ v₂ ⟷ EQUIV (Pi0.sym⟷ (Pi0.sym⟷ c)) v₁ v₂ 
     tassocl : {t₁ t₂ t₃ t₄ : Pi0.U} 
               {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} {c₃ : t₃ Pi0.⟷ t₄}
-              {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} 
-              {v₃ : Pi0.⟦ t₃ ⟧} {v₄ : Pi0.⟦ t₄ ⟧} → 
+              {v₁ : Pi0.⟦ t₁ ⟧} {v₄ : Pi0.⟦ t₄ ⟧} → 
               EQUIV (c₁ Pi0.◎ (c₂ Pi0.◎ c₃)) v₁ v₄ ⟷ 
               EQUIV ((c₁ Pi0.◎ c₂) Pi0.◎ c₃) v₁ v₄
     tassocr : {t₁ t₂ t₃ t₄ : Pi0.U} 
               {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} {c₃ : t₃ Pi0.⟷ t₄}
-              {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} 
-              {v₃ : Pi0.⟦ t₃ ⟧} {v₄ : Pi0.⟦ t₄ ⟧} → 
+              {v₁ : Pi0.⟦ t₁ ⟧} {v₄ : Pi0.⟦ t₄ ⟧} → 
               EQUIV ((c₁ Pi0.◎ c₂) Pi0.◎ c₃) v₁ v₄ ⟷ 
               EQUIV (c₁ Pi0.◎ (c₂ Pi0.◎ c₃)) v₁ v₄ 
 
@@ -381,19 +379,19 @@ module Pi1 where
   G = record
         { set = Pi0.U
         ; _↝_ = Pi0._⟷_
-        ; _≈_ = λ {A} {B} c₀ c₁ → ∀ {v₀ v₁} → EQUIV c₀ v₀ v₁ ⟷ EQUIV c₁ v₀ v₁
+        ; _≈_ = λ c₀ c₁ → ∀ {v₀ v₁} → EQUIV c₀ v₀ v₁ ⟷ EQUIV c₁ v₀ v₁
         ; id = Pi0.id⟷
         ; _∘_ = λ c₀ c₁ → c₁ Pi0.◎ c₀
         ; _⁻¹ = Pi0.sym⟷
-        ; lneutr = λ {x} {y} α → ridl
-        ; rneutr = λ {x} {y} α → lidl
-        ; assoc = λ {A} {B} α β δ → tassocl 
+        ; lneutr = λ α → ridl {c = α}
+        ; rneutr = λ α → lidl { c = α}
+        ; assoc = λ α β δ {v₁} {v₄} → tassocl 
         ; equiv = record { refl = id⟷ 
                                    ; sym = λ c → sym⟷ c 
-                                   ; trans = {!!} }
-        ; linv = λ {x} {y} α {v₀} {v₁} → invrl {c = α} {v₀} {v₁}
-        ; rinv = {!!}
-        ; ∘-resp-≈ = {!!}
+                                   ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
+        ; linv = λ α → invrl {c = α}
+        ; rinv = λ α → invll {c = α}
+        ; ∘-resp-≈ = λ f⟷h g⟷i {v₀} {v₁} → {!!}
         }
 
 ------------------------------------------------------------------------------
