@@ -90,6 +90,9 @@ module Pi0 where
 -- equivalences are between paths
 
 module Pi1 where
+
+  infixr 10 _◎_
+
   -- types
   data U : Set where
     ZERO  : U
@@ -264,6 +267,10 @@ module Pi1 where
         (Pi0.TRUE , Pi0.FALSE) (Pi0.TRUE , Pi0.TRUE) ⟧
   p₇ = pathPair (pathId⟷ Pi0.TRUE) (path2Swap₊ tt)
 
+  p₇' : ⟦ EQUIV (Pi0.swap₊ Pi0.⊗ Pi0.id⟷)
+        (Pi0.FALSE , Pi0.TRUE) (Pi0.TRUE , Pi0.TRUE) ⟧
+  p₇' = pathPair (path2Swap₊ tt) (pathId⟷ Pi0.TRUE) 
+
   p₈ : ⟦ EQUIV Pi0.CNOT (Pi0.TRUE , Pi0.FALSE) (Pi0.TRUE , Pi0.TRUE) ⟧
   p₈ = pathTrans (inj₁ (tt , Pi0.FALSE))
          (path1Dist tt Pi0.FALSE)
@@ -349,7 +356,19 @@ module Pi1 where
               {v₃ : Pi0.⟦ t₃ ⟧} {v₄ : Pi0.⟦ t₄ ⟧} → 
               EQUIV ((c₁ Pi0.◎ c₂) Pi0.◎ c₃) v₁ v₄ ⟷ 
               EQUIV (c₁ Pi0.◎ (c₂ Pi0.◎ c₃)) v₁ v₄ 
-
+    pairl : {t₁ t₂ t₃ t₄ : Pi0.U} 
+              {c₁ : t₁ Pi0.⟷ t₃} {c₂ : t₂ Pi0.⟷ t₄} 
+              {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} 
+              {v₃ : Pi0.⟦ t₃ ⟧} {v₄ : Pi0.⟦ t₄ ⟧} → 
+              EQUIV (c₁ Pi0.⊗ c₂) (v₁ , v₂) (v₃ , v₄) ⟷ 
+              TIMES (EQUIV c₁ v₁ v₃) (EQUIV c₂ v₂ v₄)
+    pairr : {t₁ t₂ t₃ t₄ : Pi0.U} 
+              {c₁ : t₁ Pi0.⟷ t₃} {c₂ : t₂ Pi0.⟷ t₄} 
+              {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} 
+              {v₃ : Pi0.⟦ t₃ ⟧} {v₄ : Pi0.⟦ t₄ ⟧} → 
+              TIMES (EQUIV c₁ v₁ v₃) (EQUIV c₂ v₂ v₄) ⟷ 
+              EQUIV (c₁ Pi0.⊗ c₂) (v₁ , v₂) (v₃ , v₄) 
+              
   -- Examples
   -- id;swap₊ is equivalent to swap₊
   e₁ : EQUIV (Pi0.id⟷ Pi0.◎ Pi0.swap₊) Pi0.FALSE Pi0.TRUE ⟷ 
@@ -360,6 +379,12 @@ module Pi1 where
   e₂ : EQUIV (Pi0.swap₊ Pi0.◎ (Pi0.id⟷ Pi0.◎ Pi0.swap₊)) Pi0.FALSE Pi0.FALSE ⟷ 
        EQUIV Pi0.id⟷ Pi0.FALSE Pi0.FALSE 
   e₂ = {!!}
+
+  e₃ : EQUIV (Pi0.id⟷ Pi0.⊗ Pi0.swap₊) 
+         (Pi0.TRUE , Pi0.FALSE) (Pi0.TRUE , Pi0.TRUE) ⟷ 
+       EQUIV (Pi0.swap₊ Pi0.⊗ Pi0.id⟷)
+        (Pi0.FALSE , Pi0.TRUE) (Pi0.TRUE , Pi0.TRUE)
+  e₃ = pairl ◎ swap⋆ ◎ pairr
 
 ------------------------------------------------------------------------------
 -- Level 2 explicitly...

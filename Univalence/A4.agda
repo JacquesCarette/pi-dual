@@ -267,6 +267,10 @@ module Pi1 where
         (Pi0.TRUE , Pi0.FALSE) (Pi0.TRUE , Pi0.TRUE) ⟧
   p₇ = pathPair (pathId⟷ Pi0.TRUE) (path2Swap₊ tt)
 
+  p₇' : ⟦ EQUIV (Pi0.swap₊ Pi0.⊗ Pi0.id⟷)
+        (Pi0.FALSE , Pi0.TRUE) (Pi0.TRUE , Pi0.TRUE) ⟧
+  p₇' = pathPair (path2Swap₊ tt) (pathId⟷ Pi0.TRUE) 
+
   p₈ : ⟦ EQUIV Pi0.CNOT (Pi0.TRUE , Pi0.FALSE) (Pi0.TRUE , Pi0.TRUE) ⟧
   p₈ = pathTrans (inj₁ (tt , Pi0.FALSE))
          (path1Dist tt Pi0.FALSE)
