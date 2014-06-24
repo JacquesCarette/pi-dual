@@ -2,11 +2,13 @@
 
 module A4 where
 
-open import Data.Nat
+-- open import Data.Nat
 open import Data.Empty
 open import Data.Unit
 open import Data.Sum
 open import Data.Product
+
+open import Groupoid
 
 ------------------------------------------------------------------------------
 -- Level 0: 
@@ -306,9 +308,11 @@ module Pi1 where
               TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) 
     factor  : {t₁ t₂ t₃ : U} → 
               PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
+-} 
     id⟷    : {t : U} → t ⟷ t
-    sym⟷   : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
-    _◎_     : {t₁ t₂ t₃ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+    sym⟷  : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
+{- 
+   _◎_     : {t₁ t₂ t₃ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
     _⊕_     : {t₁ t₂ t₃ t₄ : U} → 
               (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
     _⊗_     : {t₁ t₂ t₃ t₄ : U} → 
@@ -328,10 +332,10 @@ module Pi1 where
               EQUIV c v₁ v₂ ⟷ EQUIV (c Pi0.◎ Pi0.id⟷) v₁ v₂
     invll   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₂ : Pi0.⟦ t₂ ⟧}  → 
               EQUIV (Pi0.sym⟷ c Pi0.◎ c) v₂ v₂ ⟷ EQUIV Pi0.id⟷ v₂ v₂
-    invlr   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₂ : Pi0.⟦ t₂ ⟧}  → 
-              EQUIV Pi0.id⟷ v₂ v₂ ⟷ EQUIV (Pi0.sym⟷ c Pi0.◎ c) v₂ v₂ 
-    invrl   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧}  → 
-              EQUIV (c Pi0.◎ Pi0.sym⟷ c) v₁ v₁ ⟷ EQUIV Pi0.id⟷ v₁ v₁
+    invlr   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₀ v₂ : Pi0.⟦ t₂ ⟧}  → 
+              EQUIV Pi0.id⟷ v₀ v₂ ⟷ EQUIV (Pi0.sym⟷ c Pi0.◎ c) v₀ v₂ 
+    invrl   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₀ v₁ : Pi0.⟦ t₁ ⟧}  → 
+              EQUIV (c Pi0.◎ Pi0.sym⟷ c) v₀ v₁ ⟷ EQUIV Pi0.id⟷ v₀ v₁
     invrr   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧}  → 
               EQUIV Pi0.id⟷ v₁ v₁ ⟷ EQUIV (c Pi0.◎ Pi0.sym⟷ c) v₁ v₁
     invinvl : {t₁ t₂ : Pi0.U} 
@@ -363,6 +367,30 @@ module Pi1 where
   e₂ : EQUIV (Pi0.swap₊ Pi0.◎ (Pi0.id⟷ Pi0.◎ Pi0.swap₊)) Pi0.FALSE Pi0.FALSE ⟷ 
        EQUIV Pi0.id⟷ Pi0.FALSE Pi0.FALSE 
   e₂ = {!!}
+
+
+  arr : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} → Pi0.⟦ t₁ ⟧ → Pi0.⟦ t₂ ⟧ → Set
+  arr {t₁} {t₂} {c} v₁ v₂ = ⟦ EQUIV c v₁ v₂ ⟧
+ 
+  -- we have a 1Groupoid structure
+  G : 1Groupoid
+  G = record
+        { set = Pi0.U
+        ; _↝_ = Pi0._⟷_
+        ; _≈_ = λ {A} {B} c₀ c₁ → ∀ {v₀ v₁} → EQUIV c₀ v₀ v₁ ⟷ EQUIV c₁ v₀ v₁
+        ; id = Pi0.id⟷
+        ; _∘_ = λ c₀ c₁ → c₁ Pi0.◎ c₀
+        ; _⁻¹ = Pi0.sym⟷
+        ; lneutr = λ {x} {y} α → ridl
+        ; rneutr = λ {x} {y} α → lidl
+        ; assoc = λ {A} {B} α β δ → tassocl 
+        ; equiv = record { refl = id⟷ 
+                                   ; sym = λ c → sym⟷ c 
+                                   ; trans = {!!} }
+        ; linv = λ {x} {y} α {v₀} {v₁} → invrl {c = α} {v₀} {v₁}
+        ; rinv = {!!}
+        ; ∘-resp-≈ = {!!}
+        }
 
 ------------------------------------------------------------------------------
 -- Level 2 explicitly...
