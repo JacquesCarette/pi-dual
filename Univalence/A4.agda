@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+
 
 module A4 where
 
@@ -372,11 +372,11 @@ module Pi1 where
                EQUIV (c₁ Pi0.◎ c₂) v₁ v₃ ⟷ EQUIV (c₃ Pi0.◎ c₄) v₁ v₃
 
   -- extractor for ⟷
-  src : {t₁ t₂ : U} → t₁ ⟷ t₂ → Σ Pi0.U Pi0.⟦_⟧
-  src (id⟷ {t₁} {v₀ = v₀}) = t₁ , v₀
+  src : {t₁ t₂ : U} → t₁ ⟷ t₂ → Pi0.U
+  src (id⟷ {t₁}) = t₁
   src (sym⟷ c) = {!!}
-  src (c₀ ◎ c₁) = {!!}
-  src (lidl {t₁} {v₁ = v₁}) = t₁ , v₁
+  src (c ◎ c₁) = {!!}
+  src lidl = {!!}
   src lidr = {!!}
   src ridl = {!!}
   src ridr = {!!}
@@ -389,6 +389,24 @@ module Pi1 where
   src tassocl = {!!}
   src tassocr = {!!}
   src (resp◎ c c₅) = {!!}
+
+  val : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Pi0.⟦ src c ⟧
+  val (id⟷ {t₁} {_} {_} {v₀}) = v₀
+  val (sym⟷ c) = {!!}
+  val (c ◎ c₁) = {!!}
+  val lidl = {!!}
+  val lidr = {!!}
+  val ridl = {!!}
+  val ridr = {!!}
+  val invll = {!!}
+  val invlr = {!!}
+  val invrl = {!!}
+  val invrr = {!!}
+  val invinvl = {!!}
+  val invinvr = {!!}
+  val tassocl = {!!}
+  val tassocr = {!!}
+  val (resp◎ c c₅) = {!!}
 
   -- Examples
   -- id;swap₊ is equivalent to swap₊
@@ -423,7 +441,7 @@ module Pi1 where
         ; linv = λ α → invrl {c = α}
         ; rinv = λ α → invll {c = α}
         ; ∘-resp-≈ = λ {x} {y} {z} {f} {h} {g} {i} f⟷h g⟷i {v₀} {v₁} → 
-                     resp◎ {x} {y} {z} {g} {f} {i} {h} {v₀} {{!proj₂ (src f⟷h)!}} {v₁} 
+                     resp◎ {x} {y} {z} {g} {f} {i} {h} {v₀} {{!val f⟷h!}} {v₁} 
                        g⟷i f⟷h 
         }
 
