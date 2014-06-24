@@ -356,7 +356,7 @@ module Pi1 where
   -- swap₊;id;swap₊ is equivalent to id
   e₂ : EQUIV (Pi0.swap₊ Pi0.◎ (Pi0.id⟷ Pi0.◎ Pi0.swap₊)) Pi0.FALSE Pi0.FALSE ⟷ 
        EQUIV Pi0.id⟷ Pi0.FALSE Pi0.FALSE 
-  e₂ = ?
+  e₂ = {!!}
 
 ------------------------------------------------------------------------------
 -- Level 2 explicitly...
