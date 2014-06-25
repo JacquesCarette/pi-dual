@@ -233,16 +233,15 @@ module Pi1 where
         ; id = Pi0.id⟷
         ; _∘_ = λ c₀ c₁ → c₁ Pi0.◎ c₀
         ; _⁻¹ = Pi0.sym⟷
-        ; lneutr = λ α → ridl {c = α}
-        ; rneutr = λ α → lidl { c = α}
-        ; assoc = λ α β δ → tassocl 
-        ; equiv = record { refl = λ {c} → id⟷
-                                  ; sym = λ c → sym⟷ c 
-                                  ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
-        ; linv = λ α → invrl {c = α}
-        ; rinv = λ α → invll {c = α}
-        ; ∘-resp-≈ = λ {x} {y} {z} {f} {h} {g} {i} f⟷h g⟷i → 
-                     resp◎ {x} {y} {z} {g} {f} {i} {h} g⟷i f⟷h 
+        ; lneutr = λ _ → ridl 
+        ; rneutr = λ _ → lidl 
+        ; assoc = λ _ _ _ → tassocl 
+        ; equiv = record { refl = id⟷ 
+                                ; sym = λ c → sym⟷ c 
+                                ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
+        ; linv = λ _ → invrl 
+        ; rinv = λ _ → invll 
+        ; ∘-resp-≈ = λ f⟷h g⟷i → resp◎ g⟷i f⟷h 
         }
 
 ------------------------------------------------------------------------------
