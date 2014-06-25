@@ -11,6 +11,7 @@ open import Groupoid
 -- Level 0: 
 -- types are collections of points
 -- equivalences are commutative semiring combinators between points
+-- so we use pointed types to express them
 
 module Pi0 where
 
@@ -49,7 +50,10 @@ module Pi0 where
   point : (t• : U•) → Space t• 
   point •[ t , v ] = v
 
-  -- Examples
+  -- examples
+
+  ONE• : U•
+  ONE• = •[ ONE , tt ]
 
   BOOL : U
   BOOL = PLUS ONE ONE
@@ -69,7 +73,7 @@ module Pi0 where
   BOOL•T : U•
   BOOL•T = •[ BOOL , TRUE ]
 
-  -- combinators between pointed types
+  -- equivalences between pointed types
 
   data _⟷_ : U• → U• → Set where
     unite₊  : {t : U•} → •[ PLUS ZERO ∣ t ∣ , inj₂ (• t) ] ⟷ t
@@ -137,7 +141,7 @@ module Pi0 where
             (•[ TIMES ∣ t₁ ∣ ∣ t₂ ∣ , (• t₁ , • t₂ ) ] ⟷ 
              •[ TIMES ∣ t₃ ∣ ∣ t₄ ∣ , (• t₃ , • t₄ ) ])
 
-  -- Examples
+  -- examples
 
   NOT•T : •[ BOOL , TRUE ] ⟷ •[ BOOL , FALSE ]
   NOT•T = swap1₊
@@ -161,10 +165,10 @@ module Pi0 where
 
 ------------------------------------------------------------------------------
 -- Level 1 
--- types are collections of paths (where paths are the commutative semiring
--- equivalences between points)
--- equivalences are between paths are groupoid combinators
--- we then add commutative semiring combinators on top
+-- types are collections of paths, where these paths are the level 0 
+-- commutative semiring equivalences between points
+-- equivalences are groupoid combinators in addition to another layer
+-- of commutative semiring combinators 
 
 module Pi1 where
 
@@ -178,61 +182,46 @@ module Pi1 where
     ONE   : U
     PLUS  : U → U → U
     TIMES : U → U → U
-    PATH : {t₁ t₂ : Pi0.U•} → (t₁ Pi0.⟷ t₂) → U
+    PATH  : {t₁ t₂ : Pi0.U•} → (t₁ Pi0.⟷ t₂) → U
 
   -- values
-
-{--
-  data Path {t₁ t₂ : Pi0.U•} : 
-    (t₁ Pi0.⟷ t₂) → (Pi0.Space t₁) → (Pi0.Space t₂) → Set where
-    path : (c : t₁ Pi0.⟷ t₂) → Path c (Pi0.point t₁) (Pi0.point t₂)
---}
 
   data Path {t₁ t₂ : Pi0.U•} : (Pi0.Space t₁) → (Pi0.Space t₂) → Set where
     path : (c : t₁ Pi0.⟷ t₂) → Path (Pi0.point t₁) (Pi0.point t₂)
 
   ⟦_⟧ : U → Set
-  ⟦ ZERO ⟧          = ⊥
-  ⟦ ONE ⟧           = ⊤
-  ⟦ PLUS t₁ t₂ ⟧    = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
-  ⟦ TIMES t₁ t₂ ⟧   = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+  ⟦ ZERO ⟧             = ⊥
+  ⟦ ONE ⟧              = ⊤
+  ⟦ PLUS t₁ t₂ ⟧       = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
+  ⟦ TIMES t₁ t₂ ⟧      = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
   ⟦ PATH {t₁} {t₂} c ⟧ = Path {t₁} {t₂} (Pi0.point t₁) (Pi0.point t₂) 
 
   -- examples
-  -- several paths
+  -- several paths between T and F; some of these will be equivalent
   
-  p₁ : Path Pi0.TRUE Pi0.FALSE
+  p₁ p₂ p₃ p₄ : Path Pi0.TRUE Pi0.FALSE
   p₁ = path Pi0.swap1₊ 
-
-  p₂ : Path Pi0.TRUE Pi0.FALSE
   p₂ = path (Pi0.swap1₊ Pi0.◎ Pi0.id⟷)
-  
-  -- groupoid combinators to reason about id, rev, and trans
+  p₃ = path (Pi0.swap1₊ Pi0.◎ Pi0.swap2₊ Pi0.◎ Pi0.swap1₊)
+  p₄ = path (Pi0.uniti⋆ Pi0.◎ 
+             Pi0.swap⋆ Pi0.◎ 
+             (Pi0.swap1₊ Pi0.⊗ Pi0.id⟷) Pi0.◎ 
+             Pi0.swap⋆ Pi0.◎ 
+             Pi0.unite⋆)
+
+  -- groupoid combinators to reason about id, sym, and trans
+  -- commutative semiring combinators for 0, 1, +, *
 
   data _⟷_ : U → U → Set where
-    unite₊  : {t : U} → PLUS ZERO t ⟷ t
-    uniti₊  : {t : U} → t ⟷ PLUS ZERO t
-    swap₊   : {t₁ t₂ : U} → PLUS t₁ t₂ ⟷ PLUS t₂ t₁
-    assocl₊ : {t₁ t₂ t₃ : U} → PLUS t₁ (PLUS t₂ t₃) ⟷ PLUS (PLUS t₁ t₂) t₃
-    assocr₊ : {t₁ t₂ t₃ : U} → PLUS (PLUS t₁ t₂) t₃ ⟷ PLUS t₁ (PLUS t₂ t₃)
-    unite⋆  : {t : U} → TIMES ONE t ⟷ t
-    uniti⋆  : {t : U} → t ⟷ TIMES ONE t
-    swap⋆   : {t₁ t₂ : U} → TIMES t₁ t₂ ⟷ TIMES t₂ t₁
-    assocl⋆ : {t₁ t₂ t₃ : U} → TIMES t₁ (TIMES t₂ t₃) ⟷ TIMES (TIMES t₁ t₂) t₃
-    assocr⋆ : {t₁ t₂ t₃ : U} → TIMES (TIMES t₁ t₂) t₃ ⟷ TIMES t₁ (TIMES t₂ t₃)
-    distz   : {t : U} → TIMES ZERO t ⟷ ZERO
-    factorz : {t : U} → ZERO ⟷ TIMES ZERO t
-    dist    : {t₁ t₂ t₃ : U} → 
-              TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) 
-    factor  : {t₁ t₂ t₃ : U} → 
-              PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
-    _⊕_     : {t₁ t₂ t₃ t₄ : U} → 
-              (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
-    _⊗_     : {t₁ t₂ t₃ t₄ : U} → 
-              (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
+
+    -- common combinators
+
     id⟷    : {t : U} → t ⟷ t
     sym⟷   : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
-    _◎_     : {t₁ t₂ t₃ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+    _◎_    : {t₁ t₂ t₃ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+
+    -- groupoid combinators
+
     lidl    : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
               PATH (Pi0.id⟷ Pi0.◎ c) ⟷ PATH c 
     lidr    : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
@@ -266,7 +255,30 @@ module Pi1 where
               (PATH c₁ ⟷ PATH c₃) → (PATH c₂ ⟷ PATH c₄) → 
               PATH (c₁ Pi0.◎ c₂) ⟷ PATH (c₃ Pi0.◎ c₄) 
 
-  -- we have a 1Groupoid structure
+    -- commutative semiring combinators
+
+    unite₊  : {t : U} → PLUS ZERO t ⟷ t
+    uniti₊  : {t : U} → t ⟷ PLUS ZERO t
+    swap₊   : {t₁ t₂ : U} → PLUS t₁ t₂ ⟷ PLUS t₂ t₁
+    assocl₊ : {t₁ t₂ t₃ : U} → PLUS t₁ (PLUS t₂ t₃) ⟷ PLUS (PLUS t₁ t₂) t₃
+    assocr₊ : {t₁ t₂ t₃ : U} → PLUS (PLUS t₁ t₂) t₃ ⟷ PLUS t₁ (PLUS t₂ t₃)
+    unite⋆  : {t : U} → TIMES ONE t ⟷ t
+    uniti⋆  : {t : U} → t ⟷ TIMES ONE t
+    swap⋆   : {t₁ t₂ : U} → TIMES t₁ t₂ ⟷ TIMES t₂ t₁
+    assocl⋆ : {t₁ t₂ t₃ : U} → TIMES t₁ (TIMES t₂ t₃) ⟷ TIMES (TIMES t₁ t₂) t₃
+    assocr⋆ : {t₁ t₂ t₃ : U} → TIMES (TIMES t₁ t₂) t₃ ⟷ TIMES t₁ (TIMES t₂ t₃)
+    distz   : {t : U} → TIMES ZERO t ⟷ ZERO
+    factorz : {t : U} → ZERO ⟷ TIMES ZERO t
+    dist    : {t₁ t₂ t₃ : U} → 
+              TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) 
+    factor  : {t₁ t₂ t₃ : U} → 
+              PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
+    _⊕_     : {t₁ t₂ t₃ t₄ : U} → 
+              (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
+    _⊗_     : {t₁ t₂ t₃ t₄ : U} → 
+              (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
+
+  -- proof that we have a 1Groupoid structure
 
   G : 1Groupoid
   G = record
@@ -286,6 +298,11 @@ module Pi1 where
         ; rinv = λ _ → invll 
         ; ∘-resp-≈ = λ f⟷h g⟷i → resp◎ g⟷i f⟷h 
         }
+
+  -- examples
+
+  e₁ : PATH {Pi0.BOOL•T} Pi0.swap1₊ ⟷ PATH {Pi0.BOOL•T} (Pi0.swap1₊ Pi0.◎ Pi0.id⟷)
+  e₁ = ridr
 
 ------------------------------------------------------------------------------
 
