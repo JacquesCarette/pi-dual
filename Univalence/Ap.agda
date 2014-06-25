@@ -271,7 +271,31 @@ module Pi1 where
     ⟦ EQUIV c ⟧ = Paths c -- space of paths corresponding to c
 
     Paths : {t₁ t₂ : Pi0.U•} → (t₁ Pi0.⟷ t₂) → Set
-    Paths _ = {!!} 
+    Paths {Pi0.•[ .(Pi0.PLUS Pi0.ZERO ∣_∣) , .(inj₂ •) ]} {Pi0.•[ ∣_∣ , • ]} Pi0.unite₊ = Unite₊ (inj₂ •) •
+    Paths {Pi0.•[ ∣_∣ , • ]} {Pi0.•[ .(Pi0.PLUS Pi0.ZERO ∣_∣) , .(inj₂ •) ]} Pi0.uniti₊ = {!!}
+    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.swap1₊ = {!!}
+    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.swap2₊ = {!!}
+    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.assocl1₊ = {!!}
+    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.assocl2₊ = {!!}
+    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.assocl3₊ = {!!}
+    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.assocr1₊ = {!!}
+    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.assocr2₊ = {!!}
+    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.assocr3₊ = {!!}
+    Paths {Pi0.•[ .(Pi0.TIMES Pi0.ONE ∣_∣) , .(tt , •) ]} {Pi0.•[ ∣_∣ , • ]} Pi0.unite⋆ = {!!}
+    Paths {Pi0.•[ ∣_∣ , • ]} {Pi0.•[ .(Pi0.TIMES Pi0.ONE ∣_∣) , .(tt , •) ]} Pi0.uniti⋆ = {!!}
+    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.swap⋆ = {!!}
+    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.assocl⋆ = {!!}
+    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.assocr⋆ = {!!}
+    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.dist1 = {!!}
+    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.dist2 = {!!}
+    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.factor1 = {!!}
+    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.factor2 = {!!}
+    Paths {Pi0.•[ ∣_∣ , • ]} {Pi0.•[ .∣_∣ , .• ]} Pi0.id⟷ = {!!}
+    Paths {Pi0.•[ ∣_∣ , • ]} {Pi0.•[ ∣_∣₁ , •₁ ]} (Pi0.sym⟷ c) = {!!}
+    Paths {Pi0.•[ ∣_∣ , • ]} {Pi0.•[ ∣_∣₁ , •₁ ]} (c Pi0.◎ c₁) = {!!}
+    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} (c Pi0.⊕1 c₁) = {!!}
+    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} (c Pi0.⊕2 c₁) = {!!}
+    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} (c Pi0.⊗ c₁) = {!!} 
 {--
     Paths Pi0.unite₊ (inj₁ ()) v 
     Paths Pi0.unite₊ (inj₂ v') v = Unite₊ v (inj₂ v')
