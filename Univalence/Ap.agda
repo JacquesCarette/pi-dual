@@ -1,6 +1,5 @@
 module Ap where
 
-open import Level as L
 open import Data.Empty
 open import Data.Unit
 open import Data.Sum
@@ -154,8 +153,6 @@ module Pi0 where
             ((id⟷ ⊗ NOT•T) ⊕1 (id⟷ {•[ TIMES ONE BOOL , (tt , TRUE) ]})) ◎ 
             factor1
 
-{--
-
 ------------------------------------------------------------------------------
 -- Level 1 
 -- types are collections of paths (where paths are the commutative semiring
@@ -164,9 +161,14 @@ module Pi0 where
 -- we will then also add commutative semiring combinators on top
 
 module Pi1 where
+
+--  infixr 10 _◎_
+--  infixr 30 _⟷_
+
   -- types
+
   data U : Set where
-    EQUIV : {t₁ t₂ : Pi0.U} → (t₁ Pi0.⟷ t₂) → Pi0.⟦ t₁ ⟧ → Pi0.⟦ t₂ ⟧ → U
+    EQUIV : {t₁ t₂ : Pi0.U•} → (t₁ Pi0.⟷ t₂) → U
 
   -- values
 
@@ -266,11 +268,13 @@ module Pi1 where
 
   mutual
     ⟦_⟧ : U → Set
-    ⟦ EQUIV c v₁ v₂ ⟧ = Paths c v₁ v₂ -- space of paths from v₁ to v₂ using c
+    ⟦ EQUIV c ⟧ = Paths c -- space of paths corresponding to c
 
-    Paths : {t₁ t₂ : Pi0.U} → (t₁ Pi0.⟷ t₂) → Pi0.⟦ t₁ ⟧ → Pi0.⟦ t₂ ⟧ → Set
-    Paths Pi0.unite₊ (inj₁ ()) _
-    Paths Pi0.unite₊ (inj₂ v) v' = Unite₊ (inj₂ v) v'
+    Paths : {t₁ t₂ : Pi0.U•} → (t₁ Pi0.⟷ t₂) → Set
+    Paths _ = {!!} 
+{--
+    Paths Pi0.unite₊ (inj₁ ()) v 
+    Paths Pi0.unite₊ (inj₂ v') v = Unite₊ v (inj₂ v')
     Paths Pi0.uniti₊ v (inj₁ ())
     Paths Pi0.uniti₊ v (inj₂ v') = Uniti₊ v (inj₂ v')
     Paths Pi0.swap₊ v v' = Swap₊ v v'
