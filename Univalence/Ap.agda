@@ -43,6 +43,12 @@ module Pi0 where
 
   open U•
 
+  Space : (t• : U•) → Set
+  Space •[ t , v ] = ⟦ t ⟧
+
+  point : (t• : U•) → Space t• 
+  point •[ t , v ] = v
+
   -- Examples
 
   BOOL : U
@@ -162,283 +168,82 @@ module Pi0 where
 
 module Pi1 where
 
---  infixr 10 _◎_
 --  infixr 30 _⟷_
 
   -- types
 
   data U : Set where
-    EQUIV : {t₁ t₂ : Pi0.U•} → (t₁ Pi0.⟷ t₂) → U
+    PATH : {t₁ t₂ : Pi0.U•} → (t₁ Pi0.⟷ t₂) → U
 
   -- values
 
-  data Path⊤ : Set where
-    pathtt : Path⊤
+  data Path {t₁ t₂ : Pi0.U•} : 
+    (t₁ Pi0.⟷ t₂) → (Pi0.Space t₁) → (Pi0.Space t₂) → Set where
+    path : (c : t₁ Pi0.⟷ t₂) → Path c (Pi0.point t₁) (Pi0.point t₂)
 
-  data Path⊎ (A B : Set) : Set where
-    pathLeft  : A → Path⊎ A B
-    pathRight : B → Path⊎ A B
-
-  data Path× (A B : Set) : Set where
-    pathPair : A → B → Path× A B
-
-  data Unite₊ {t : Pi0.U} : Pi0.⟦ Pi0.PLUS Pi0.ZERO t ⟧ → Pi0.⟦ t ⟧ → Set where
-    pathUnite₊ : (v : Pi0.⟦ t ⟧) → Unite₊ (inj₂ v) v
-
-  data Uniti₊ {t : Pi0.U} : Pi0.⟦ t ⟧ → Pi0.⟦ Pi0.PLUS Pi0.ZERO t ⟧ → Set where
-    pathUniti₊ : (v : Pi0.⟦ t ⟧) → Uniti₊ v (inj₂ v)
-
-  data Swap₊ {t₁ t₂ : Pi0.U} : 
-    Pi0.⟦ Pi0.PLUS t₁ t₂ ⟧ → Pi0.⟦ Pi0.PLUS t₂ t₁ ⟧ → Set where
-    path1Swap₊ : (v₁ : Pi0.⟦ t₁ ⟧) → Swap₊ (inj₁ v₁) (inj₂ v₁)
-    path2Swap₊ : (v₂ : Pi0.⟦ t₂ ⟧) → Swap₊ (inj₂ v₂) (inj₁ v₂)
-
-  data Assocl₊ {t₁ t₂ t₃ : Pi0.U} : 
-    Pi0.⟦ Pi0.PLUS t₁ (Pi0.PLUS t₂ t₃) ⟧ → 
-    Pi0.⟦ Pi0.PLUS (Pi0.PLUS t₁ t₂) t₃ ⟧ → Set where
-    path1Assocl₊ : (v₁ : Pi0.⟦ t₁ ⟧) → Assocl₊ (inj₁ v₁) (inj₁ (inj₁ v₁))
-    path2Assocl₊ : (v₂ : Pi0.⟦ t₂ ⟧) → Assocl₊ (inj₂ (inj₁ v₂)) (inj₁ (inj₂ v₂))
-    path3Assocl₊ : (v₃ : Pi0.⟦ t₃ ⟧) → Assocl₊ (inj₂ (inj₂ v₃)) (inj₂ v₃)
-
-  data Assocr₊ {t₁ t₂ t₃ : Pi0.U} : 
-    Pi0.⟦ Pi0.PLUS (Pi0.PLUS t₁ t₂) t₃ ⟧ → 
-    Pi0.⟦ Pi0.PLUS t₁ (Pi0.PLUS t₂ t₃) ⟧ → Set where
-    path1Assocr₊ : (v₁ : Pi0.⟦ t₁ ⟧) → Assocr₊ (inj₁ (inj₁ v₁)) (inj₁ v₁)
-    path2Assocr₊ : (v₂ : Pi0.⟦ t₂ ⟧) → 
-      Assocr₊ (inj₁ (inj₂ v₂)) (inj₂ (inj₁ v₂)) 
-    path3Assocr₊ : (v₃ : Pi0.⟦ t₃ ⟧) → Assocr₊ (inj₂ v₃) (inj₂ (inj₂ v₃))
-
-  data Unite⋆ {t : Pi0.U} : Pi0.⟦ Pi0.TIMES Pi0.ONE t ⟧ → Pi0.⟦ t ⟧ → Set where
-    pathUnite⋆ : (v : Pi0.⟦ t ⟧) → Unite⋆ (tt , v) v
-
-  data Uniti⋆ {t : Pi0.U} : Pi0.⟦ t ⟧ → Pi0.⟦ Pi0.TIMES Pi0.ONE t ⟧ → Set where
-    pathUniti⋆ : (v : Pi0.⟦ t ⟧) → Uniti⋆ v (tt , v)
-
-  data Swap⋆ {t₁ t₂ : Pi0.U} : 
-    Pi0.⟦ Pi0.TIMES t₁ t₂ ⟧ → Pi0.⟦ Pi0.TIMES t₂ t₁ ⟧ → Set where
-    pathSwap⋆ : 
-      (v₁ : Pi0.⟦ t₁ ⟧) → (v₂ : Pi0.⟦ t₂ ⟧) → Swap⋆ (v₁ , v₂) (v₂ , v₁)
-
-  data Assocl⋆ {t₁ t₂ t₃ : Pi0.U} : 
-    Pi0.⟦ Pi0.TIMES t₁ (Pi0.TIMES t₂ t₃) ⟧ →
-    Pi0.⟦ Pi0.TIMES (Pi0.TIMES t₁ t₂) t₃ ⟧ → Set where
-    pathAssocl⋆ : 
-      (v₁ : Pi0.⟦ t₁ ⟧) → (v₂ : Pi0.⟦ t₂ ⟧) → (v₃ : Pi0.⟦ t₃ ⟧) → 
-      Assocl⋆ (v₁ , (v₂ , v₃)) ((v₁ , v₂) , v₃)
-
-  data Assocr⋆ {t₁ t₂ t₃ : Pi0.U} : 
-    Pi0.⟦ Pi0.TIMES (Pi0.TIMES t₁ t₂) t₃ ⟧ → 
-    Pi0.⟦ Pi0.TIMES t₁ (Pi0.TIMES t₂ t₃) ⟧ → Set where
-    pathAssocr⋆ : 
-      (v₁ : Pi0.⟦ t₁ ⟧) → (v₂ : Pi0.⟦ t₂ ⟧) → (v₃ : Pi0.⟦ t₃ ⟧) → 
-      Assocr⋆ ((v₁ , v₂) , v₃) (v₁ , (v₂ , v₃))
-
-  data Dist {t₁ t₂ t₃ : Pi0.U} : 
-    Pi0.⟦ Pi0.TIMES (Pi0.PLUS t₁ t₂) t₃ ⟧ → 
-    Pi0.⟦ Pi0.PLUS (Pi0.TIMES t₁ t₃) (Pi0.TIMES t₂ t₃) ⟧ → Set where
-    path1Dist : 
-      (v₁ : Pi0.⟦ t₁ ⟧) → (v₃ : Pi0.⟦ t₃ ⟧) → 
-      Dist (inj₁ v₁ , v₃) (inj₁ (v₁ , v₃))
-    path2Dist : 
-      (v₂ : Pi0.⟦ t₂ ⟧) → (v₃ : Pi0.⟦ t₃ ⟧) → 
-      Dist (inj₂ v₂ , v₃) (inj₂ (v₂ , v₃))
-        
-  data Factor {t₁ t₂ t₃ : Pi0.U} : 
-    Pi0.⟦ Pi0.PLUS (Pi0.TIMES t₁ t₃) (Pi0.TIMES t₂ t₃) ⟧ → 
-    Pi0.⟦ Pi0.TIMES (Pi0.PLUS t₁ t₂) t₃ ⟧ → Set where
-    path1Factor : 
-      (v₁ : Pi0.⟦ t₁ ⟧) → (v₃ : Pi0.⟦ t₃ ⟧) → 
-      Factor (inj₁ (v₁ , v₃)) (inj₁ v₁ , v₃)
-    path2Factor : 
-      (v₂ : Pi0.⟦ t₂ ⟧) → (v₃ : Pi0.⟦ t₃ ⟧) → 
-      Factor (inj₂ (v₂ , v₃)) (inj₂ v₂ , v₃)
-        
-  data Id⟷ {t : Pi0.U} : Pi0.⟦ t ⟧ → Pi0.⟦ t ⟧ → Set where
-    pathId⟷ : (v : Pi0.⟦ t ⟧) → Id⟷ v v
-
-  data PathRev (A : Set) : Set where
-    pathRev : A → PathRev A
-
-  record PathTrans (A• : Pi0.U•) (B C : Pi0.⟦ Pi0.U•.∣ A• ∣ ⟧ → Set) : Set where
-    constructor pathTrans
-    field
-      anchor : Pi0.⟦ Pi0.U•.∣ A• ∣ ⟧
-      pre    : B anchor
-      post   : C anchor
-
-  mutual
-    ⟦_⟧ : U → Set
-    ⟦ EQUIV c ⟧ = Paths c -- space of paths corresponding to c
-
-    Paths : {t₁ t₂ : Pi0.U•} → (t₁ Pi0.⟷ t₂) → Set
-    Paths {Pi0.•[ .(Pi0.PLUS Pi0.ZERO ∣_∣) , .(inj₂ •) ]} {Pi0.•[ ∣_∣ , • ]} 
-          Pi0.unite₊ = Unite₊ (inj₂ •) •
-    Paths {Pi0.•[ ∣_∣ , • ]} {Pi0.•[ .(Pi0.PLUS Pi0.ZERO ∣_∣) , .(inj₂ •) ]} 
-          Pi0.uniti₊ = Uniti₊ • (inj₂ •)
-    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.swap1₊ = {!!}
-    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.swap2₊ = {!!}
-    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.assocl1₊ = {!!}
-    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.assocl2₊ = {!!}
-    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.assocl3₊ = {!!}
-    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.assocr1₊ = {!!}
-    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.assocr2₊ = {!!}
-    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.assocr3₊ = {!!}
-    Paths {Pi0.•[ .(Pi0.TIMES Pi0.ONE ∣_∣) , .(tt , •) ]} {Pi0.•[ ∣_∣ , • ]} Pi0.unite⋆ = {!!}
-    Paths {Pi0.•[ ∣_∣ , • ]} {Pi0.•[ .(Pi0.TIMES Pi0.ONE ∣_∣) , .(tt , •) ]} Pi0.uniti⋆ = {!!}
-    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.swap⋆ = {!!}
-    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.assocl⋆ = {!!}
-    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.assocr⋆ = {!!}
-    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.dist1 = {!!}
-    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.dist2 = {!!}
-    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.factor1 = {!!}
-    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} Pi0.factor2 = {!!}
-    Paths {Pi0.•[ ∣_∣ , • ]} {Pi0.•[ .∣_∣ , .• ]} Pi0.id⟷ = {!!}
-    Paths {Pi0.•[ ∣_∣ , • ]} {Pi0.•[ ∣_∣₁ , •₁ ]} (Pi0.sym⟷ c) = {!!}
-    Paths {Pi0.•[ t₁ , •₁ ]} {Pi0.•[ t₃ , •₃ ]} 
-      (Pi0._◎_ {t₂ = Pi0.•[ t₂ , •₂ ]} c₁ c₂) = 
-      PathTrans Pi0.•[ t₂ , •₂ ] (λ v → Paths c₁) (λ v → Paths c₂)
-    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} (c Pi0.⊕1 c₁) = {!!}
-    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} (c Pi0.⊕2 c₁) = {!!}
-    Paths {Pi0.•[ ._ , ._ ]} {Pi0.•[ ._ , ._ ]} (c Pi0.⊗ c₁) = {!!} 
-
-  -- pointed types
-
-  record U• : Set where
-    constructor •[_,_]
-    field
-      ∣_∣ : U
-      • : ⟦ ∣_∣ ⟧
-
-  open U•
-
-  -- Examples
-  -- A few paths between FALSE and FALSE
-
---  p₁ : ⟦ EQUIV Pi0.id⟷ Pi0.FALSE Pi0.FALSE ⟧
---  p₁ = pathId⟷ Pi0.FALSE 
-
---  p₂ : ⟦ EQUIV (Pi0.id⟷ Pi0.◎ Pi0.id⟷) Pi0.FALSE Pi0.FALSE ⟧
---  p₂ = pathTrans Pi0.FALSE p₁ p₁
-
---  p₃ : ⟦ EQUIV (Pi0.swap₊ Pi0.◎ Pi0.swap₊) Pi0.FALSE Pi0.FALSE ⟧
---  p₃ = pathTrans Pi0.TRUE (path2Swap₊ tt) (path1Swap₊ tt)
-
---  p₄ : ⟦ EQUIV (Pi0.id⟷ Pi0.⊕ Pi0.id⟷) Pi0.FALSE Pi0.FALSE ⟧
---  p₄ = pathRight (pathId⟷ tt)
-
-  -- A few paths between (TRUE,TRUE) and (TRUE,TRUE)
-
---  p₅ : ⟦ EQUIV Pi0.id⟷ (Pi0.TRUE , Pi0.TRUE) (Pi0.TRUE , Pi0.TRUE) ⟧
---  p₅ = pathId⟷ (Pi0.TRUE , Pi0.TRUE)
-
---  p₆ : ⟦ EQUIV (Pi0.id⟷ Pi0.⊗ Pi0.id⟷) 
---        (Pi0.TRUE , Pi0.TRUE) (Pi0.TRUE , Pi0.TRUE) ⟧
---  p₆ = pathPair (pathId⟷ Pi0.TRUE) (pathId⟷ Pi0.TRUE)
-
-  -- A few paths between (TRUE,FALSE) and (TRUE,TRUE)
-
---  p₇ : ⟦ EQUIV (Pi0.id⟷ Pi0.⊗ Pi0.swap₊) 
---        (Pi0.TRUE , Pi0.FALSE) (Pi0.TRUE , Pi0.TRUE) ⟧
---  p₇ = pathPair (pathId⟷ Pi0.TRUE) (path2Swap₊ tt)
-
---  p₇' : ⟦ EQUIV (Pi0.swap₊ Pi0.⊗ Pi0.id⟷)
---        (Pi0.FALSE , Pi0.TRUE) (Pi0.TRUE , Pi0.TRUE) ⟧
---  p₇' = pathPair (path2Swap₊ tt) (pathId⟷ Pi0.TRUE) 
-
---  p₈ : ⟦ EQUIV Pi0.CNOT (Pi0.TRUE , Pi0.FALSE) (Pi0.TRUE , Pi0.TRUE) ⟧
---  p₈ = pathTrans (inj₁ (tt , Pi0.FALSE))
---         (path1Dist tt Pi0.FALSE)
---         (pathTrans (inj₁ (tt , Pi0.TRUE))
---            (pathLeft (pathPair (pathId⟷ tt) (path2Swap₊ tt)))
---            (path1Factor tt Pi0.TRUE))
+  ⟦_⟧ : U → Set
+  ⟦ PATH {t₁} {t₂} c ⟧ = Path c (Pi0.point t₁) (Pi0.point t₂) 
 
   -- groupoid combinators to reason about id, rev, and trans
-  data _⟷_ : U• → U• → Set where
-    id⟷    : {t₁ t₂ : U•} → t₁ ⟷ t₂
-    sym⟷   : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
-    _◎_     : {t₁ t₂ t₃ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
-    lidl    : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} {p : ⟦ EQUIV c ⟧} → 
-              •[ EQUIV (Pi0.id⟷ Pi0.◎ c) , pathTrans {!!} (pathId⟷ {!!}) p ] ⟷ 
-              •[ EQUIV c , p ]
-{--
-    lidr    : {t₁ t₂ : Pi0.U} 
-              {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} → 
-              EQUIV c v₁ v₂ ⟷ EQUIV (Pi0.id⟷ Pi0.◎ c) v₁ v₂
-    ridl    : {t₁ t₂ : Pi0.U} 
-              {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} → 
-              EQUIV (c Pi0.◎ Pi0.id⟷) v₁ v₂ ⟷ EQUIV c v₁ v₂
-    ridr    : {t₁ t₂ : Pi0.U} 
-              {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} → 
-              EQUIV c v₁ v₂ ⟷ EQUIV (c Pi0.◎ Pi0.id⟷) v₁ v₂
-    invll   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₀ v₂ : Pi0.⟦ t₂ ⟧}  → 
-              EQUIV (Pi0.sym⟷ c Pi0.◎ c) v₀ v₂ ⟷ EQUIV Pi0.id⟷ v₀ v₂
-    invlr   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₀ v₂ : Pi0.⟦ t₂ ⟧}  → 
-              EQUIV Pi0.id⟷ v₀ v₂ ⟷ EQUIV (Pi0.sym⟷ c Pi0.◎ c) v₀ v₂ 
-    invrl   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₀ v₁ : Pi0.⟦ t₁ ⟧}  → 
-              EQUIV (c Pi0.◎ Pi0.sym⟷ c) v₀ v₁ ⟷ EQUIV Pi0.id⟷ v₀ v₁
-    invrr   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₀ v₁ : Pi0.⟦ t₁ ⟧}  → 
-              EQUIV Pi0.id⟷ v₀ v₁ ⟷ EQUIV (c Pi0.◎ Pi0.sym⟷ c) v₀ v₁
-    invinvl : {t₁ t₂ : Pi0.U} 
-              {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} → 
-              EQUIV (Pi0.sym⟷ (Pi0.sym⟷ c)) v₁ v₂ ⟷ EQUIV c v₁ v₂
-    invinvr : {t₁ t₂ : Pi0.U} 
-              {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} → 
-              EQUIV c v₁ v₂ ⟷ EQUIV (Pi0.sym⟷ (Pi0.sym⟷ c)) v₁ v₂ 
-    tassocl : {t₁ t₂ t₃ t₄ : Pi0.U} 
-              {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} {c₃ : t₃ Pi0.⟷ t₄}
-              {v₁ : Pi0.⟦ t₁ ⟧} {v₄ : Pi0.⟦ t₄ ⟧} → 
-              EQUIV (c₁ Pi0.◎ (c₂ Pi0.◎ c₃)) v₁ v₄ ⟷ 
-              EQUIV ((c₁ Pi0.◎ c₂) Pi0.◎ c₃) v₁ v₄
-    tassocr : {t₁ t₂ t₃ t₄ : Pi0.U} 
-              {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} {c₃ : t₃ Pi0.⟷ t₄}
-              {v₁ : Pi0.⟦ t₁ ⟧} {v₄ : Pi0.⟦ t₄ ⟧} → 
-              EQUIV ((c₁ Pi0.◎ c₂) Pi0.◎ c₃) v₁ v₄ ⟷ 
-              EQUIV (c₁ Pi0.◎ (c₂ Pi0.◎ c₃)) v₁ v₄ 
-    -- this is closely related to Eckmann-Hilton
-    resp◎   : {t₁ t₂ t₃ : Pi0.U} 
+
+  data _⟷_ : U → U → Set where
+    id⟷    : {t₁ t₂ : U} → t₁ ⟷ t₂
+    sym⟷   : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
+    _◎_     : {t₁ t₂ t₃ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+    lidl    : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PATH (Pi0.id⟷ Pi0.◎ c) ⟷ PATH c 
+    lidr    : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PATH c ⟷ PATH (Pi0.id⟷ Pi0.◎ c) 
+    ridl    : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PATH (c Pi0.◎ Pi0.id⟷) ⟷ PATH c
+    ridr    : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PATH c ⟷ PATH (c Pi0.◎ Pi0.id⟷) 
+    invll   : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PATH (Pi0.sym⟷ c Pi0.◎ c) ⟷ PATH {t₂} {t₂} Pi0.id⟷ 
+    invlr   : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PATH {t₂} {t₂} Pi0.id⟷ ⟷ PATH (Pi0.sym⟷ c Pi0.◎ c) 
+    invrl   : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PATH (c Pi0.◎ Pi0.sym⟷ c) ⟷ PATH {t₁} {t₁} Pi0.id⟷ 
+    invrr   : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PATH {t₁} {t₁} Pi0.id⟷ ⟷ PATH (c Pi0.◎ Pi0.sym⟷ c) 
+    invinvl : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} →
+              PATH (Pi0.sym⟷ (Pi0.sym⟷ c)) ⟷ PATH c
+    invinvr : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PATH c ⟷ PATH (Pi0.sym⟷ (Pi0.sym⟷ c))
+    tassocl : {t₁ t₂ t₃ t₄ : Pi0.U•} 
+              {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} {c₃ : t₃ Pi0.⟷ t₄} → 
+              PATH (c₁ Pi0.◎ (c₂ Pi0.◎ c₃)) ⟷ PATH ((c₁ Pi0.◎ c₂) Pi0.◎ c₃) 
+    tassocr : {t₁ t₂ t₃ t₄ : Pi0.U•} 
+              {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} {c₃ : t₃ Pi0.⟷ t₄} → 
+              PATH ((c₁ Pi0.◎ c₂) Pi0.◎ c₃) ⟷ PATH (c₁ Pi0.◎ (c₂ Pi0.◎ c₃))
+    -- resp◎ is closely related to Eckmann-Hilton
+    resp◎   : {t₁ t₂ t₃ : Pi0.U•} 
               {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} 
-              {c₃ : t₁ Pi0.⟷ t₂} {c₄ : t₂ Pi0.⟷ t₃} 
-              {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} {v₃ : Pi0.⟦ t₃ ⟧} → 
-              (EQUIV c₁ v₁ v₂ ⟷ EQUIV c₃ v₁ v₂) → 
-              (EQUIV c₂ v₂ v₃ ⟷ EQUIV c₄ v₂ v₃) → 
-               EQUIV (c₁ Pi0.◎ c₂) v₁ v₃ ⟷ EQUIV (c₃ Pi0.◎ c₄) v₁ v₃
---}
+              {c₃ : t₁ Pi0.⟷ t₂} {c₄ : t₂ Pi0.⟷ t₃} → 
+              (PATH c₁ ⟷ PATH c₃) → (PATH c₂ ⟷ PATH c₄) → 
+              PATH (c₁ Pi0.◎ c₂) ⟷ PATH (c₃ Pi0.◎ c₄) 
 
-  -- Examples
-  -- id;swap₊ is equivalent to swap₊
---  e₁ : EQUIV (Pi0.id⟷ Pi0.◎ Pi0.swap₊) Pi0.FALSE Pi0.TRUE ⟷ 
---       EQUIV Pi0.swap₊ Pi0.FALSE Pi0.TRUE
---  e₁ = lidl
-
-  -- swap₊;id;swap₊ is equivalent to id
---  e₂ : EQUIV (Pi0.swap₊ Pi0.◎ (Pi0.id⟷ Pi0.◎ Pi0.swap₊)) Pi0.FALSE Pi0.FALSE ⟷ 
---       EQUIV Pi0.id⟷ Pi0.FALSE Pi0.FALSE 
---  e₂ = {!!}
-
---  arr : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} → Pi0.⟦ t₁ ⟧ → Pi0.⟦ t₂ ⟧ → Set
---  arr {t₁} {t₂} {c} v₁ v₂ = ⟦ EQUIV c v₁ v₂ ⟧
- {--
   -- we have a 1Groupoid structure
+
   G : 1Groupoid
   G = record
-        { set = Pi0.U
+        { set = Pi0.U•
         ; _↝_ = Pi0._⟷_
-        ; _≈_ = λ c₀ c₁ → ∀ {v₀ v₁} → EQUIV c₀ v₀ v₁ ⟷ EQUIV c₁ v₀ v₁
+        ; _≈_ = λ c₀ c₁ → PATH c₀ ⟷ PATH c₁
         ; id = Pi0.id⟷
         ; _∘_ = λ c₀ c₁ → c₁ Pi0.◎ c₀
         ; _⁻¹ = Pi0.sym⟷
         ; lneutr = λ α → ridl {c = α}
         ; rneutr = λ α → lidl { c = α}
-        ; assoc = λ α β δ {v₁} {v₄} → tassocl 
-        ; equiv = record { refl = λ {c} {v₀} {v₁} → id⟷
-                                   ; sym = λ c → sym⟷ c 
-                                   ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
+        ; assoc = λ α β δ → tassocl 
+        ; equiv = record { refl = λ {c} → id⟷
+                                  ; sym = λ c → sym⟷ c 
+                                  ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
         ; linv = λ α → invrl {c = α}
         ; rinv = λ α → invll {c = α}
-        ; ∘-resp-≈ = λ {x} {y} {z} {f} {h} {g} {i} f⟷h g⟷i {v₀} {v₁} → 
-                     resp◎ {x} {y} {z} {g} {f} {i} {h} {v₀} {{!val f⟷h!}} {v₁} 
-                       g⟷i f⟷h 
+        ; ∘-resp-≈ = λ {x} {y} {z} {f} {h} {g} {i} f⟷h g⟷i → 
+                     resp◎ {x} {y} {z} {g} {f} {i} {h} g⟷i f⟷h 
         }
---}
+
 ------------------------------------------------------------------------------
 
