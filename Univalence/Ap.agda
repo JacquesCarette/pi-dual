@@ -184,6 +184,15 @@ module Pi1 where
   ⟦_⟧ : U → Set
   ⟦ PATH {t₁} {t₂} c ⟧ = Path c (Pi0.point t₁) (Pi0.point t₂) 
 
+  -- examples
+  -- several paths
+  
+  p₁ : Path Pi0.swap1₊ Pi0.TRUE Pi0.FALSE
+  p₁ = path Pi0.swap1₊ 
+
+  p₂ : Path (Pi0.swap1₊ Pi0.◎ Pi0.id⟷) Pi0.TRUE Pi0.FALSE
+  p₂ = path (Pi0.swap1₊ Pi0.◎ Pi0.id⟷)
+  
   -- groupoid combinators to reason about id, rev, and trans
 
   data _⟷_ : U → U → Set where
