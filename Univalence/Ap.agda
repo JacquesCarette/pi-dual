@@ -164,39 +164,73 @@ module Pi0 where
 -- types are collections of paths (where paths are the commutative semiring
 -- equivalences between points)
 -- equivalences are between paths are groupoid combinators
--- we will then also add commutative semiring combinators on top
+-- we then add commutative semiring combinators on top
 
 module Pi1 where
 
---  infixr 30 _⟷_
+  infixr 10 _◎_
+  infixr 30 _⟷_
 
   -- types
 
   data U : Set where
+    ZERO  : U
+    ONE   : U
+    PLUS  : U → U → U
+    TIMES : U → U → U
     PATH : {t₁ t₂ : Pi0.U•} → (t₁ Pi0.⟷ t₂) → U
 
   -- values
 
+{--
   data Path {t₁ t₂ : Pi0.U•} : 
     (t₁ Pi0.⟷ t₂) → (Pi0.Space t₁) → (Pi0.Space t₂) → Set where
     path : (c : t₁ Pi0.⟷ t₂) → Path c (Pi0.point t₁) (Pi0.point t₂)
+--}
+
+  data Path {t₁ t₂ : Pi0.U•} : (Pi0.Space t₁) → (Pi0.Space t₂) → Set where
+    path : (c : t₁ Pi0.⟷ t₂) → Path (Pi0.point t₁) (Pi0.point t₂)
 
   ⟦_⟧ : U → Set
-  ⟦ PATH {t₁} {t₂} c ⟧ = Path c (Pi0.point t₁) (Pi0.point t₂) 
+  ⟦ ZERO ⟧          = ⊥
+  ⟦ ONE ⟧           = ⊤
+  ⟦ PLUS t₁ t₂ ⟧    = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
+  ⟦ TIMES t₁ t₂ ⟧   = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+  ⟦ PATH {t₁} {t₂} c ⟧ = Path {t₁} {t₂} (Pi0.point t₁) (Pi0.point t₂) 
 
   -- examples
   -- several paths
   
-  p₁ : Path Pi0.swap1₊ Pi0.TRUE Pi0.FALSE
+  p₁ : Path Pi0.TRUE Pi0.FALSE
   p₁ = path Pi0.swap1₊ 
 
-  p₂ : Path (Pi0.swap1₊ Pi0.◎ Pi0.id⟷) Pi0.TRUE Pi0.FALSE
+  p₂ : Path Pi0.TRUE Pi0.FALSE
   p₂ = path (Pi0.swap1₊ Pi0.◎ Pi0.id⟷)
   
   -- groupoid combinators to reason about id, rev, and trans
 
   data _⟷_ : U → U → Set where
-    id⟷    : {t₁ t₂ : U} → t₁ ⟷ t₂
+    unite₊  : {t : U} → PLUS ZERO t ⟷ t
+    uniti₊  : {t : U} → t ⟷ PLUS ZERO t
+    swap₊   : {t₁ t₂ : U} → PLUS t₁ t₂ ⟷ PLUS t₂ t₁
+    assocl₊ : {t₁ t₂ t₃ : U} → PLUS t₁ (PLUS t₂ t₃) ⟷ PLUS (PLUS t₁ t₂) t₃
+    assocr₊ : {t₁ t₂ t₃ : U} → PLUS (PLUS t₁ t₂) t₃ ⟷ PLUS t₁ (PLUS t₂ t₃)
+    unite⋆  : {t : U} → TIMES ONE t ⟷ t
+    uniti⋆  : {t : U} → t ⟷ TIMES ONE t
+    swap⋆   : {t₁ t₂ : U} → TIMES t₁ t₂ ⟷ TIMES t₂ t₁
+    assocl⋆ : {t₁ t₂ t₃ : U} → TIMES t₁ (TIMES t₂ t₃) ⟷ TIMES (TIMES t₁ t₂) t₃
+    assocr⋆ : {t₁ t₂ t₃ : U} → TIMES (TIMES t₁ t₂) t₃ ⟷ TIMES t₁ (TIMES t₂ t₃)
+    distz   : {t : U} → TIMES ZERO t ⟷ ZERO
+    factorz : {t : U} → ZERO ⟷ TIMES ZERO t
+    dist    : {t₁ t₂ t₃ : U} → 
+              TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) 
+    factor  : {t₁ t₂ t₃ : U} → 
+              PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
+    _⊕_     : {t₁ t₂ t₃ t₄ : U} → 
+              (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
+    _⊗_     : {t₁ t₂ t₃ t₄ : U} → 
+              (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
+    id⟷    : {t : U} → t ⟷ t
     sym⟷   : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
     _◎_     : {t₁ t₂ t₃ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
     lidl    : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
