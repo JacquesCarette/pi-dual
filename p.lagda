@@ -67,7 +67,8 @@ $\displaystyle
 \setlength{\pdfpageheight}{\paperheight}
 \setlength{\pdfpagewidth}{\paperwidth}
 
-\title{A Computational Interpretation of \\ Univalence for Finite Types}
+\title{A Computational Reconstruction of \\ 
+  Homotopy Type Theory for Finite Types}
 \authorinfo{}{}{}
 \maketitle
 

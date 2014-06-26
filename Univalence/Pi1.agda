@@ -1,12 +1,9 @@
-module Ap where
+module Pim2 where
 
 open import Data.Empty
 open import Data.Unit
 open import Data.Sum
 open import Data.Product
-
--- only used for the 'fake' Groupoid structure
-open import Relation.Binary.PropositionalEquality
 
 open import Groupoid
 
