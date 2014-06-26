@@ -5,6 +5,9 @@ open import Data.Unit
 open import Data.Sum
 open import Data.Product
 
+-- only used for the 'fake' Groupoid structure
+open import Relation.Binary.PropositionalEquality
+
 open import Groupoid
 
 ------------------------------------------------------------------------------
@@ -163,8 +166,36 @@ module Pi0 where
             ((id⟷ ⊗ NOT•T) ⊕1 (id⟷ {•[ TIMES ONE BOOL , (tt , TRUE) ]})) ◎ 
             factor1
 
-  --  proof that we have a groupoid structure ???
+  mutual
+    eval : {t₁ t₂ : U•} → t₁ ⟷ t₂ → ⟦ ∣ t₁ ∣ ⟧ → ⟦ ∣ t₂ ∣ ⟧
+    eval c x = {!!}
 
+    evalB : {t₁ t₂ : U•} → t₁ ⟷ t₂ → ⟦ ∣ t₂ ∣ ⟧ → ⟦ ∣ t₁ ∣ ⟧
+    evalB c x = {!!}
+
+  -- extensional equality of two combinators.
+  record _≈_ {t₁ t₂ : U•} (c₀ : t₁ ⟷ t₂) (c₁ : t₁ ⟷ t₂) : Set where
+    field
+      fwd : ∀ {x} → eval c₀ x ≡ eval c₁ x
+      bwd : ∀ {y} → evalB c₀ y ≡ evalB c₁ y
+
+  --  proof that we have _a_ groupoid structure
+  G : 1Groupoid
+  G = record
+        { set = U•
+        ; _↝_ = _⟷_
+        ; _≈_ = _≈_
+        ; id = id⟷
+        ; _∘_ = λ z₁ z₂ → z₂ ◎ z₁
+        ; _⁻¹ = sym⟷
+        ; lneutr = {!!}
+        ; rneutr = {!!}
+        ; assoc = {!!}
+        ; equiv = {!!}
+        ; linv = {!!}
+        ; rinv = {!!}
+        ; ∘-resp-≈ = {!!}
+        }
 ------------------------------------------------------------------------------
 -- Level 1 
 -- types are collections of paths, where these paths are the level 0 
