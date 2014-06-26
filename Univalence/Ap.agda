@@ -196,6 +196,186 @@ module Pi1 where
   ⟦ TIMES t₁ t₂ ⟧      = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
   ⟦ PATH {t₁} {t₂} c ⟧ = Path {t₁} {t₂} (Pi0.point t₁) (Pi0.point t₂) 
 
+  -- pointed types
+
+  record U• : Set where
+    constructor •[_,_]
+    field
+      ∣_∣ : U
+      • : ⟦ ∣_∣ ⟧
+
+  open U•
+
+  Space : (t• : U•) → Set
+  Space •[ t , p ] = ⟦ t ⟧
+
+  point : (t• : U•) → Space t• 
+  point •[ t , p ] = p
+
+  -- examples
+  -- several paths between T and F; some of these will be equivalent
+  
+  p₁ p₂ p₃ p₄ : Path Pi0.TRUE Pi0.FALSE
+  p₁ = path Pi0.swap1₊ 
+  p₂ = path (Pi0.swap1₊ Pi0.◎ Pi0.id⟷)
+  p₃ = path (Pi0.swap1₊ Pi0.◎ Pi0.swap2₊ Pi0.◎ Pi0.swap1₊)
+  p₄ = path (Pi0.uniti⋆ Pi0.◎ 
+             Pi0.swap⋆ Pi0.◎ 
+             (Pi0.swap1₊ Pi0.⊗ Pi0.id⟷) Pi0.◎ 
+             Pi0.swap⋆ Pi0.◎ 
+             Pi0.unite⋆)
+
+  -- groupoid combinators to reason about id, sym, and trans
+  -- commutative semiring combinators for 0, 1, +, *
+
+  data _⟷_ : U• → U• → Set where
+
+    -- common combinators
+
+    id⟷    : {t : U•} → t ⟷ t
+    sym⟷   : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
+    _◎_    : {t₁ t₂ t₃ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+
+    -- groupoid combinators
+
+    lidl    : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} 
+              {p : Path (Pi0.point t₁) (Pi0.point t₂)} → 
+              •[ PATH (Pi0.id⟷ Pi0.◎ c) , p ] ⟷ •[ PATH c , p ]
+    lidr    : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} 
+              {p : Path (Pi0.point t₁) (Pi0.point t₂)} → 
+              •[ PATH c , p ] ⟷ •[ PATH (Pi0.id⟷ Pi0.◎ c) , p ]
+    ridl    : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} 
+              {p : Path (Pi0.point t₁) (Pi0.point t₂)} → 
+              •[ PATH (c Pi0.◎ Pi0.id⟷) , p ] ⟷ •[ PATH c , p ]
+    ridr    : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} 
+              {p : Path (Pi0.point t₁) (Pi0.point t₂)} → 
+              •[ PATH c , p ] ⟷ •[ PATH (c Pi0.◎ Pi0.id⟷) , p ]
+    invll   : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} 
+              {p : Path (Pi0.point t₂) (Pi0.point t₂)} → 
+              •[ PATH (Pi0.sym⟷ c Pi0.◎ c) , p ] ⟷ •[ PATH {t₂} {t₂} Pi0.id⟷ , p ]
+    invlr   : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} 
+              {p : Path (Pi0.point t₂) (Pi0.point t₂)} → 
+              •[ PATH {t₂} {t₂} Pi0.id⟷ , p ] ⟷ •[ PATH (Pi0.sym⟷ c Pi0.◎ c) , p ]
+    invrl   : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} 
+              {p : Path (Pi0.point t₁) (Pi0.point t₁)} → 
+              •[ PATH (c Pi0.◎ Pi0.sym⟷ c) , p ] ⟷ •[ PATH {t₁} {t₁} Pi0.id⟷ , p ]
+    invrr   : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} 
+              {p : Path (Pi0.point t₁) (Pi0.point t₁)} → 
+              •[ PATH {t₁} {t₁} Pi0.id⟷ , p ] ⟷ •[ PATH (c Pi0.◎ Pi0.sym⟷ c) , p ]
+    invinvl : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} 
+              {p : Path (Pi0.point t₁) (Pi0.point t₂)} → 
+              •[ PATH (Pi0.sym⟷ (Pi0.sym⟷ c)) , p ] ⟷ •[ PATH c , p ]
+    invinvr : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} 
+              {p : Path (Pi0.point t₁) (Pi0.point t₂)} → 
+              •[ PATH c , p ] ⟷ •[ PATH (Pi0.sym⟷ (Pi0.sym⟷ c)), p ]
+{--
+    tassocl : {t₁ t₂ t₃ t₄ : Pi0.U•} 
+              {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} {c₃ : t₃ Pi0.⟷ t₄} 
+              {p : Path (Pi0.point t₁) (Pi0.point t₂)} 
+              {q : Path (Pi0.point t₂) (Pi0.point t₃)} 
+              {r : Path (Pi0.point t₃) (Pi0.point t₄)} → 
+              PATH (c₁ Pi0.◎ (c₂ Pi0.◎ c₃)) ⟷ PATH ((c₁ Pi0.◎ c₂) Pi0.◎ c₃) 
+    tassocr : {t₁ t₂ t₃ t₄ : Pi0.U•} 
+              {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} {c₃ : t₃ Pi0.⟷ t₄} 
+              {p : Path (Pi0.point t₁) (Pi0.point t₂)} 
+              {q : Path (Pi0.point t₂) (Pi0.point t₃)} 
+              {r : Path (Pi0.point t₃) (Pi0.point t₄)} → 
+              PATH ((c₁ Pi0.◎ c₂) Pi0.◎ c₃) ⟷ PATH (c₁ Pi0.◎ (c₂ Pi0.◎ c₃))
+    -- resp◎ is closely related to Eckmann-Hilton
+    resp◎   : {t₁ t₂ t₃ : Pi0.U•} 
+              {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} 
+              {c₃ : t₁ Pi0.⟷ t₂} {c₄ : t₂ Pi0.⟷ t₃} 
+              {p : Path (Pi0.point t₁) (Pi0.point t₂)} 
+              {q : Path (Pi0.point t₂) (Pi0.point t₃)} 
+              {r : Path (Pi0.point t₁) (Pi0.point t₂)} 
+              {s : Path (Pi0.point t₂) (Pi0.point t₃)} → 
+              (PATH c₁ ⟷ PATH c₃) → (PATH c₂ ⟷ PATH c₄) → 
+              PATH (c₁ Pi0.◎ c₂) ⟷ PATH (c₃ Pi0.◎ c₄) 
+
+    -- commutative semiring combinators
+
+    unite₊  : {t : U} → PLUS ZERO t ⟷ t
+    uniti₊  : {t : U} → t ⟷ PLUS ZERO t
+    swap₊   : {t₁ t₂ : U} → PLUS t₁ t₂ ⟷ PLUS t₂ t₁
+    assocl₊ : {t₁ t₂ t₃ : U} → PLUS t₁ (PLUS t₂ t₃) ⟷ PLUS (PLUS t₁ t₂) t₃
+    assocr₊ : {t₁ t₂ t₃ : U} → PLUS (PLUS t₁ t₂) t₃ ⟷ PLUS t₁ (PLUS t₂ t₃)
+    unite⋆  : {t : U} → TIMES ONE t ⟷ t
+    uniti⋆  : {t : U} → t ⟷ TIMES ONE t
+    swap⋆   : {t₁ t₂ : U} → TIMES t₁ t₂ ⟷ TIMES t₂ t₁
+    assocl⋆ : {t₁ t₂ t₃ : U} → TIMES t₁ (TIMES t₂ t₃) ⟷ TIMES (TIMES t₁ t₂) t₃
+    assocr⋆ : {t₁ t₂ t₃ : U} → TIMES (TIMES t₁ t₂) t₃ ⟷ TIMES t₁ (TIMES t₂ t₃)
+    distz   : {t : U} → TIMES ZERO t ⟷ ZERO
+    factorz : {t : U} → ZERO ⟷ TIMES ZERO t
+    dist    : {t₁ t₂ t₃ : U} → 
+              TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) 
+    factor  : {t₁ t₂ t₃ : U} → 
+              PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
+    _⊕_     : {t₁ t₂ t₃ t₄ : U} → 
+              (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
+    _⊗_     : {t₁ t₂ t₃ t₄ : U} → 
+              (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
+
+  -- proof that we have a 1Groupoid structure
+
+  G : 1Groupoid
+  G = record
+        { set = Pi0.U•
+        ; _↝_ = Pi0._⟷_
+        ; _≈_ = λ c₀ c₁ → PATH c₀ ⟷ PATH c₁
+        ; id = Pi0.id⟷
+        ; _∘_ = λ c₀ c₁ → c₁ Pi0.◎ c₀
+        ; _⁻¹ = Pi0.sym⟷
+        ; lneutr = λ _ → ridl 
+        ; rneutr = λ _ → lidl 
+        ; assoc = λ _ _ _ → tassocl 
+        ; equiv = record { refl = id⟷ 
+                                ; sym = λ c → sym⟷ c 
+                                ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
+        ; linv = λ _ → invrl 
+        ; rinv = λ _ → invll 
+        ; ∘-resp-≈ = λ f⟷h g⟷i → resp◎ g⟷i f⟷h 
+        }
+
+  -- examples
+
+  e₁ : PATH {Pi0.BOOL•T} Pi0.swap1₊ ⟷ PATH {Pi0.BOOL•T} (Pi0.swap1₊ Pi0.◎ Pi0.id⟷)
+  e₁ = ridr
+--}
+
+{--
+------------------------------------------------------------------------------
+-- Level 2 
+-- types are collections of 2paths, where these 2paths are the level 1
+-- groupoid and commutative semiring equivalences between 1paths
+-- equivalences are groupoid combinators in addition to another layer
+-- of commutative semiring combinators 
+
+module Pi2 where
+
+--  infixr 10 _◎_
+--  infixr 30 _⟷_
+
+  -- types
+
+  data U : Set where
+    ZERO   : U
+    ONE    : U
+    PLUS   : U → U → U
+    TIMES  : U → U → U
+    2PATH  : {t₁ t₂ : Pi1.U} → (t₁ Pi1.⟷ t₂) → U
+
+  -- values
+
+  data 2Path {t₁ t₂ : Pi0.U} : Pi1.⟦ t₁ ⟧ → Pi1.⟦ t₂ ⟧ → Set where
+    2path : (c : t₁ Pi1.⟷ t₂) → 2Path (Pi0.point t₁) (Pi0.point t₂)
+
+  ⟦_⟧ : U → Set
+  ⟦ ZERO ⟧             = ⊥
+  ⟦ ONE ⟧              = ⊤
+  ⟦ PLUS t₁ t₂ ⟧       = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
+  ⟦ TIMES t₁ t₂ ⟧      = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+  ⟦ PATH {t₁} {t₂} c ⟧ = Path {t₁} {t₂} (Pi0.point t₁) (Pi0.point t₂) 
+
   -- examples
   -- several paths between T and F; some of these will be equivalent
   
@@ -303,6 +483,6 @@ module Pi1 where
 
   e₁ : PATH {Pi0.BOOL•T} Pi0.swap1₊ ⟷ PATH {Pi0.BOOL•T} (Pi0.swap1₊ Pi0.◎ Pi0.id⟷)
   e₁ = ridr
-
+--}
 ------------------------------------------------------------------------------
 
