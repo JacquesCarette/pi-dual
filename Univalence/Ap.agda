@@ -11,10 +11,50 @@ open import Relation.Binary.PropositionalEquality
 open import Groupoid
 
 ------------------------------------------------------------------------------
+-- Level -2: 
+-- types contains one point only
+-- 
+-- We can prove that all types are equivalent to the unit type (i.e., they
+-- are contractible)
+
+module Pi-2 where
+
+  data U : Set where
+    ONE : U
+    TIMES : U → U → U
+
+  ⟦_⟧ : U → Set
+  ⟦ ONE ⟧ = ⊤
+  ⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+
+------------------------------------------------------------------------------
+-- Level -1: 
+-- if types are non-empty they must contain one point only like above
+-- types may however be empty
+-- 
+-- We can prove that all types are either empty or equivalent to the unit
+-- type (i.e., they are mere propositions) 
+
+module Pi-1 where
+
+  data U : Set where
+    ZERO : U
+    ONE : U
+    TIMES : U → U → U
+
+  ⟦_⟧ : U → Set
+  ⟦ ZERO ⟧ = ⊥
+  ⟦ ONE ⟧ = ⊤
+  ⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+
+------------------------------------------------------------------------------
 -- Level 0: 
--- types are collections of points
--- equivalences are commutative semiring combinators between points
--- so we use pointed types to express them
+-- types may contain any number of points (including none)
+-- they are sets
+-- 
+-- We define isomorphisms between these sets that are reified to paths in the
+-- next level (level 1). These isomorphisms are the combinators for a
+-- commutative semiring structure which is sound and complete for sets.
 
 module Pi0 where
 
@@ -76,7 +116,7 @@ module Pi0 where
   BOOL•T : U•
   BOOL•T = •[ BOOL , TRUE ]
 
-  -- equivalences between pointed types
+  -- isomorphisms between pointed types
 
   data _⟷_ : U• → U• → Set where
     unite₊  : {t : U•} → •[ PLUS ZERO ∣ t ∣ , inj₂ (• t) ] ⟷ t
@@ -113,8 +153,10 @@ module Pi0 where
     assocr⋆ : {t₁ t₂ t₃ : U•} → 
            •[ TIMES (TIMES ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , ((• t₁ , • t₂) , • t₃) ] ⟷ 
            •[ TIMES ∣ t₁ ∣ (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , (• t₁ , (• t₂ , • t₃)) ]
-    -- distz   EMPTY
-    -- factorz EMPTY
+    distz : {t : U•} {absurd : ⟦ ZERO ⟧} → 
+            •[ TIMES ZERO ∣ t ∣ , (absurd , • t) ] ⟷ •[ ZERO , absurd ]
+    factorz : {t : U•} {absurd : ⟦ ZERO ⟧} → 
+            •[ ZERO , absurd ] ⟷ •[ TIMES ZERO ∣ t ∣ , (absurd , • t) ] 
     dist1   : {t₁ t₂ t₃ : U•} → 
               •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₁ (• t₁) , • t₃) ] ⟷ 
               •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
@@ -166,42 +208,15 @@ module Pi0 where
             ((id⟷ ⊗ NOT•T) ⊕1 (id⟷ {•[ TIMES ONE BOOL , (tt , TRUE) ]})) ◎ 
             factor1
 
-  mutual
-    eval : {t₁ t₂ : U•} → t₁ ⟷ t₂ → ⟦ ∣ t₁ ∣ ⟧ → ⟦ ∣ t₂ ∣ ⟧
-    eval c x = {!!}
-
-    evalB : {t₁ t₂ : U•} → t₁ ⟷ t₂ → ⟦ ∣ t₂ ∣ ⟧ → ⟦ ∣ t₁ ∣ ⟧
-    evalB c x = {!!}
-
-  -- extensional equality of two combinators.
-  record _≈_ {t₁ t₂ : U•} (c₀ : t₁ ⟷ t₂) (c₁ : t₁ ⟷ t₂) : Set where
-    field
-      fwd : ∀ {x} → eval c₀ x ≡ eval c₁ x
-      bwd : ∀ {y} → evalB c₀ y ≡ evalB c₁ y
-
-  --  proof that we have _a_ groupoid structure
-  G : 1Groupoid
-  G = record
-        { set = U•
-        ; _↝_ = _⟷_
-        ; _≈_ = _≈_
-        ; id = id⟷
-        ; _∘_ = λ z₁ z₂ → z₂ ◎ z₁
-        ; _⁻¹ = sym⟷
-        ; lneutr = {!!}
-        ; rneutr = {!!}
-        ; assoc = {!!}
-        ; equiv = {!!}
-        ; linv = {!!}
-        ; rinv = {!!}
-        ; ∘-resp-≈ = {!!}
-        }
 ------------------------------------------------------------------------------
 -- Level 1 
--- types are collections of paths, where these paths are the level 0 
--- commutative semiring equivalences between points
--- equivalences are groupoid combinators in addition to another layer
--- of commutative semiring combinators 
+-- types are 1groupoids; they consist of points with collections of
+-- non-trivial paths between them; the paths are defined at the previous
+-- level (level 0).
+-- 
+-- We define isomorphisms between these level 1 paths that are reified as
+-- 2paths in the next level (level 2). These isomorphisms include groupoid
+-- combinators and commutative semiring combinators
 
 module Pi1 where
 
@@ -352,8 +367,10 @@ module Pi1 where
     assocr⋆ : {t₁ t₂ t₃ : U•} → 
            •[ TIMES (TIMES ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , ((• t₁ , • t₂) , • t₃) ] ⟷ 
            •[ TIMES ∣ t₁ ∣ (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , (• t₁ , (• t₂ , • t₃)) ]
-    -- distz   EMPTY
-    -- factorz EMPTY
+    distz : {t : U•} {absurd : ⟦ ZERO ⟧} → 
+            •[ TIMES ZERO ∣ t ∣ , (absurd , • t) ] ⟷ •[ ZERO , absurd ]
+    factorz : {t : U•} {absurd : ⟦ ZERO ⟧} → 
+            •[ ZERO , absurd ] ⟷ •[ TIMES ZERO ∣ t ∣ , (absurd , • t) ] 
     dist1   : {t₁ t₂ t₃ : U•} → 
               •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₁ (• t₁) , • t₃) ] ⟷ 
               •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
@@ -403,15 +420,13 @@ module Pi1 where
 
 ------------------------------------------------------------------------------
 -- Level 2 
--- types are collections of 2paths, where these 2paths are the level 1
--- groupoid and commutative semiring equivalences between 1paths
--- equivalences are groupoid combinators in addition to another layer
--- of commutative semiring combinators 
+-- types are 2groupoids; they are points with non-trivial paths between them
+-- and non-trivial 2paths between the paths
 
 module Pi2 where
 
---  infixr 10 _◎_
---  infixr 30 _⟷_
+  infixr 10 _◎_
+  infixr 30 _⟷_
 
   -- types
 
@@ -420,9 +435,13 @@ module Pi2 where
     ONE    : U
     PLUS   : U → U → U
     TIMES  : U → U → U
+    PATH   : {t₁ t₂ : Pi0.U•} → (t₁ Pi0.⟷ t₂) → U
     2PATH  : {t₁ t₂ : Pi1.U•} → (t₁ Pi1.⟷ t₂) → U
 
   -- values
+
+  data Path {t₁ t₂ : Pi0.U•} : (Pi0.Space t₁) → (Pi0.Space t₂) → Set where
+    path : (c : t₁ Pi0.⟷ t₂) → Path (Pi0.point t₁) (Pi0.point t₂)
 
   data 2Path {t₁ t₂ : Pi1.U•} : Pi1.Space t₁ → Pi1.Space t₂ → Set where
     2path : (c : t₁ Pi1.⟷ t₂) → 2Path (Pi1.point t₁) (Pi1.point t₂)
@@ -432,6 +451,7 @@ module Pi2 where
   ⟦ ONE ⟧              = ⊤
   ⟦ PLUS t₁ t₂ ⟧       = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
   ⟦ TIMES t₁ t₂ ⟧      = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+  ⟦ PATH {t₁} {t₂} c ⟧ = Path {t₁} {t₂} (Pi0.point t₁) (Pi0.point t₂) 
   ⟦ 2PATH {t₁} {t₂} c ⟧ = 2Path {t₁} {t₂} (Pi1.point t₁) (Pi1.point t₂) 
 
   -- pointed types
@@ -450,11 +470,20 @@ module Pi2 where
   point : (t• : U•) → Space t• 
   point •[ t , p ] = p
 
-  _∘_ : {t₁ t₂ t₃ : Pi1.U•} → 
+  _∘1_ : {t₁ t₂ t₃ : Pi0.U•} → 
+        Path (Pi0.point t₁) (Pi0.point t₂) → 
+        Path (Pi0.point t₂) (Pi0.point t₃) →
+        Path (Pi0.point t₁) (Pi0.point t₃)
+  path c₁ ∘1 path c₂ = path (c₁ Pi0.◎ c₂)
+
+  _∘2_ : {t₁ t₂ t₃ : Pi1.U•} → 
         2Path (Pi1.point t₁) (Pi1.point t₂) → 
         2Path (Pi1.point t₂) (Pi1.point t₃) →
         2Path (Pi1.point t₁) (Pi1.point t₃)
-  2path c₁ ∘ 2path c₂ = 2path (c₁ Pi1.◎ c₂)
+  2path c₁ ∘2 2path c₂ = 2path (c₁ Pi1.◎ c₂)
+
+  PathSpace : {t₁ t₂ : Pi0.U•} → (c : t₁ Pi0.⟷ t₂) → U•
+  PathSpace c = •[ PATH c , path c ]
 
   2PathSpace : {t₁ t₂ : Pi1.U•} → (c : t₁ Pi1.⟷ t₂) → U•
   2PathSpace c = •[ 2PATH c , 2path c ]
@@ -472,7 +501,45 @@ module Pi2 where
     sym⟷   : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
     _◎_     : {t₁ t₂ t₃ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
 
-    -- groupoid combinators
+    -- 1groupoid combinators
+
+    1lidl    : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PathSpace (Pi0.id⟷ Pi0.◎ c) ⟷ PathSpace c
+    1lidr    : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PathSpace c ⟷ PathSpace (Pi0.id⟷ Pi0.◎ c)
+    1ridl    : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PathSpace (c Pi0.◎ Pi0.id⟷) ⟷ PathSpace c
+    1ridr    : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PathSpace c ⟷ PathSpace (c Pi0.◎ Pi0.id⟷)
+    1invll   : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PathSpace (Pi0.sym⟷ c Pi0.◎ c) ⟷ PathSpace {t₂} {t₂} Pi0.id⟷ 
+    1invlr   : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PathSpace {t₂} {t₂} Pi0.id⟷ ⟷ PathSpace (Pi0.sym⟷ c Pi0.◎ c)
+    1invrl   : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PathSpace (c Pi0.◎ Pi0.sym⟷ c) ⟷ PathSpace {t₁} {t₁} Pi0.id⟷
+    1invrr   : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PathSpace {t₁} {t₁} Pi0.id⟷ ⟷ PathSpace (c Pi0.◎ Pi0.sym⟷ c)
+    1invinvl : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PathSpace (Pi0.sym⟷ (Pi0.sym⟷ c)) ⟷ PathSpace c
+    1invinvr : {t₁ t₂ : Pi0.U•} {c : t₁ Pi0.⟷ t₂} → 
+              PathSpace c ⟷ PathSpace (Pi0.sym⟷ (Pi0.sym⟷ c))
+    1tassocl : {t₁ t₂ t₃ t₄ : Pi0.U•} 
+              {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} {c₃ : t₃ Pi0.⟷ t₄} → 
+              PathSpace (c₁ Pi0.◎ (c₂ Pi0.◎ c₃)) ⟷ 
+              PathSpace ((c₁ Pi0.◎ c₂) Pi0.◎ c₃)
+    1tassocr : {t₁ t₂ t₃ t₄ : Pi0.U•} 
+              {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} {c₃ : t₃ Pi0.⟷ t₄} → 
+              PathSpace ((c₁ Pi0.◎ c₂) Pi0.◎ c₃) ⟷ 
+              PathSpace (c₁ Pi0.◎ (c₂ Pi0.◎ c₃))
+    -- resp◎ is closely related to Eckmann-Hilton
+    1resp◎   : {t₁ t₂ t₃ : Pi0.U•} 
+              {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} 
+              {c₃ : t₁ Pi0.⟷ t₂} {c₄ : t₂ Pi0.⟷ t₃} → 
+              (PathSpace c₁ ⟷ PathSpace c₃) → 
+              (PathSpace c₂ ⟷ PathSpace c₄) → 
+              PathSpace (c₁ Pi0.◎ c₂) ⟷ PathSpace (c₃ Pi0.◎ c₄)
+
+    -- 2groupoid combinators
 
     lidl    : {t₁ t₂ : Pi1.U•} {c : t₁ Pi1.⟷ t₂} → 
               2PathSpace (Pi1.id⟷ Pi1.◎ c) ⟷ 2PathSpace c
@@ -546,8 +613,10 @@ module Pi2 where
     assocr⋆ : {t₁ t₂ t₃ : U•} → 
            •[ TIMES (TIMES ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , ((• t₁ , • t₂) , • t₃) ] ⟷ 
            •[ TIMES ∣ t₁ ∣ (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , (• t₁ , (• t₂ , • t₃)) ]
-    -- distz   EMPTY
-    -- factorz EMPTY
+    distz : {t : U•} {absurd : ⟦ ZERO ⟧} → 
+            •[ TIMES ZERO ∣ t ∣ , (absurd , • t) ] ⟷ •[ ZERO , absurd ]
+    factorz : {t : U•} {absurd : ⟦ ZERO ⟧} → 
+            •[ ZERO , absurd ] ⟷ •[ TIMES ZERO ∣ t ∣ , (absurd , • t) ] 
     dist1   : {t₁ t₂ t₃ : U•} → 
               •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₁ (• t₁) , • t₃) ] ⟷ 
               •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
@@ -574,7 +643,8 @@ module Pi2 where
             (•[ TIMES ∣ t₁ ∣ ∣ t₂ ∣ , (• t₁ , • t₂ ) ] ⟷ 
              •[ TIMES ∣ t₃ ∣ ∣ t₄ ∣ , (• t₃ , • t₄ ) ])
 
-  -- proof that we have a 1Groupoid structure
+  -- proof that we have a 2Groupoid structure; this is 1Groupoid whose
+  -- equivalences are themselves a 1Groupoid
 
   G : 1Groupoid
   G = record
