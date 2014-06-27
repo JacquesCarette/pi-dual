@@ -132,9 +132,13 @@ c₃ = uniti⋆ ◎ uniti⋆ ◎ assocl⋆ ◎ (swap⋆ ⊗ (sym⟷ id⟷)) ◎
 -- figure out the output value. Both the input and output values are encoded
 -- in the type of the program; what the evaluation does is follow the path to
 -- constructively reach the ouput value from the input value. Even though the
--- programs are observationally equivalent, the follow different paths. The
+-- programs are observationally equivalent, they follow different paths. The
 -- next level will allow us to reason about which of these paths are
--- connected by 2paths etc.
+-- connected by 2paths etc. In general, one write programs at level i, and
+-- reasons about their (observational) equivalence at levels i+1 and
+-- higher. It is always possible to stop this game and use extensional
+-- equality at some level, i.e., to equate all programs that connect the same
+-- input and output values.
 
 c₄ : ONE×ONE• ⟷ ONE•
 c₄ = unite⋆
