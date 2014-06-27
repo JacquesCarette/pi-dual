@@ -40,34 +40,18 @@ isContr (PATH {t} v₁ v₂) with isContr t
 isContr (PATH {t} v₁ v₂) | (v' , f') = (p , λ q → proof-irrelevance p q)
   where p = trans (sym (f' v₁))  (f' v₂) 
 
--- Proof that we have a groupoid; this does not depend on the definition of
--- programs
+-- Proof that every type is a groupoid; this does not depend on the
+-- definition of programs
 
-G : 1Groupoid
-G = record
-      { set = U
-      ; _↝_ = _≡_
-      ; _≈_ = _≡_ 
-      ; id = refl 
-      ; _∘_ = λ y≡z x≡y → trans x≡y y≡z 
-      ; _⁻¹ = sym 
-      ; lneutr = λ x≡y → proof-irrelevance (trans x≡y refl) x≡y
-      ; rneutr = λ _ → refl 
-      ; assoc = λ y≡z x≡y w≡x → 
-          proof-irrelevance 
-            (trans w≡x (trans x≡y y≡z)) 
-            (trans (trans w≡x x≡y) y≡z) 
-      ; equiv = isEquivalence
-      ; linv = λ x≡y → proof-irrelevance (trans x≡y (sym x≡y)) refl 
-      ; rinv = λ x≡y → proof-irrelevance (trans (sym x≡y) x≡y) refl 
-      ; ∘-resp-≈ = λ f≡h g≡i → cong₂ trans g≡i f≡h 
-      }
+isGroupoid : U → 1Groupoid
+isGroupoid ONE              = discrete ⊤ 
+isGroupoid (TIMES t₁ t₂)    = isGroupoid t₁ ×G isGroupoid t₂
+isGroupoid (PATH {t} v₁ v₂) = discrete (v₁ ≡ v₂)
 
 -- Programs
 -- We use pointed types; programs map a pointed type to another
--- Programs should respect paths; if there is a path from v₁ to v₂ and
--- program c maps v₁ to v₁' then it maps v₂ to v₂' and there is a path from
--- v₂ to v₂'
+-- In other words, each program takes one particular value to another; if we
+-- want to work on another value, we generally use another program
 
 record U• : Set where
   constructor •[_,_]
@@ -76,6 +60,12 @@ record U• : Set where
     • : ⟦ ∣_∣ ⟧
 
 open U•
+
+Space : (t• : U•) → Set
+Space •[ t , v ] = ⟦ t ⟧
+
+point : (t• : U•) → Space t• 
+point •[ t , v ] = v
 
 data _⟷_ : U• → U• → Set where
   id⟷    : {t : U•} → t ⟷ t
@@ -95,10 +85,35 @@ data _⟷_ : U• → U• → Set where
             (•[ TIMES ∣ t₁ ∣ ∣ t₂ ∣ , (• t₁ , • t₂ ) ] ⟷ 
              •[ TIMES ∣ t₃ ∣ ∣ t₄ ∣ , (• t₃ , • t₄ ) ])
 
+-- Proof that the universe is itself a groupoid; this DOES depend on the
+-- definition of programs; the morphisms between types ARE the programs; all
+-- programs between the same types are forced to be the same using a
+-- degenerate observational equivalence relation.
+
+_obs≅_ : {t₁ t₂ : U•} → (c₁ c₂ : t₁ ⟷ t₂) → Set
+c₁ obs≅ c₂ = ⊤ 
+
+UG : 1Groupoid
+UG = record
+       { set = U•
+       ; _↝_ = _⟷_
+       ; _≈_ = _obs≅_
+       ; id = id⟷
+       ; _∘_ = λ y⟷z x⟷y → x⟷y ◎ y⟷z 
+       ; _⁻¹ = sym⟷
+       ; lneutr = λ _ →  tt 
+       ; rneutr = λ _ → tt 
+       ; assoc = λ _ _ _ → tt
+       ; equiv = record { refl = tt 
+                        ; sym = λ _ → tt 
+                        ; trans = λ _ _ → tt 
+                        } 
+       ; linv = λ _ → tt 
+       ; rinv = λ _ → tt 
+       ; ∘-resp-≈ = λ _ _ → tt
+       }
 
 -- Examples
-
--- Some types
 
 ONE• ONE×ONE• : U•
 ONE•     = •[ ONE , tt ]
@@ -118,6 +133,13 @@ c₄ = unite⋆
 
 c₅ : PathSpace tt ⟷ PathSpace tt
 c₅ = id⟷ 
+
+c₁≅c₂ : c₁ obs≅ c₂
+c₁≅c₂ = tt
+
+-- the following does not typecheck
+-- c₁≅c₄ : c₁ obs≅ c₄
+-- it is not possible to equate programs that go between different types/values.
 
 ------------------------------------------------------------------------------
 
