@@ -6,7 +6,7 @@
 
 module Groupoid where
 
-open import Agda.Prim
+open import Level
 open import Data.Empty
 open import Data.Sum
 open import Data.Product
@@ -15,7 +15,7 @@ open import Relation.Binary
 
 -- Useful
 Rel0 : Set → Set₁
-Rel0 A = Rel A lzero
+Rel0 A = Rel A zero
  
 -- 1-groupoids are those where the various laws hold up to ≈.
 record 1Groupoid : Set₁ where

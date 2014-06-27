@@ -1,12 +1,14 @@
-{-# OPTIONS --without-K #-}
 
-module A3 where
 
-open import Data.Nat
+module A4 where
+
+-- open import Data.Nat
 open import Data.Empty
 open import Data.Unit
 open import Data.Sum
 open import Data.Product
+
+open import Groupoid
 
 ------------------------------------------------------------------------------
 -- Level 0: 
@@ -90,21 +92,20 @@ module Pi0 where
 -- equivalences are between paths
 
 module Pi1 where
-
-  infixr 10 _◎_
-
   -- types
   data U : Set where
-    ZERO  : U
-    ONE   : U
-    PLUS  : U → U → U
+{-
+    LIFT : Pi0.U → U
+    PLUS : U → U → U
     TIMES : U → U → U
+-}
     EQUIV : {t₁ t₂ : Pi0.U} → (t₁ Pi0.⟷ t₂) → Pi0.⟦ t₁ ⟧ → Pi0.⟦ t₂ ⟧ → U
 
-  -- values
+  -- extractor, dependently typed.
+  srcU : U → Σ Pi0.U Pi0.⟦_⟧
+  srcU (EQUIV {t₁} {t₂} c x y) = t₁ , x
 
-  data Path⊥ : Set where
-    path0 : Path⊥
+  -- values
 
   data Path⊤ : Set where
     pathtt : Path⊤
@@ -202,10 +203,13 @@ module Pi1 where
 
   mutual
     ⟦_⟧ : U → Set
-    ⟦ ZERO ⟧          = Path⊥
+{-
+    ⟦ LIFT u ⟧             = Pi0.⟦ u ⟧
+    ⟦ ZERO ⟧          = ⊥
     ⟦ ONE ⟧           = Path⊤
     ⟦ PLUS t₁ t₂ ⟧    = Path⊎ ⟦ t₁ ⟧ ⟦ t₂ ⟧
     ⟦ TIMES t₁ t₂ ⟧   = Path× ⟦ t₁ ⟧ ⟦ t₂ ⟧
+-}
     ⟦ EQUIV c v₁ v₂ ⟧ = Paths c v₁ v₂ -- space of paths from v₁ to v₂ using c
 
     Paths : {t₁ t₂ : Pi0.U} → (t₁ Pi0.⟷ t₂) → Pi0.⟦ t₁ ⟧ → Pi0.⟦ t₂ ⟧ → Set
@@ -279,22 +283,23 @@ module Pi1 where
             (path1Factor tt Pi0.TRUE))
 
   -- Examples using sum and products of paths
-
-  q₀ : ⟦ TIMES ONE (EQUIV Pi0.id⟷ Pi0.FALSE Pi0.FALSE) ⟧
+{-
+  q₀ : ⟦ TIMES (LIFT Pi0.ONE) (EQUIV Pi0.id⟷ Pi0.FALSE Pi0.FALSE) ⟧
   q₀ = pathPair pathtt p₁
 
-  q₁ : ⟦ PLUS (EQUIV Pi0.id⟷ Pi0.FALSE Pi0.FALSE) 
+  q₁ : ⟦ (LIFT Pi0.PLUS) (EQUIV Pi0.id⟷ Pi0.FALSE Pi0.FALSE) 
               (EQUIV (Pi0.id⟷ Pi0.⊗ Pi0.swap₊) 
                      (Pi0.TRUE , Pi0.FALSE) (Pi0.TRUE , Pi0.TRUE)) ⟧
   q₁ = pathRight p₇
 
-  q₂ : ⟦ PLUS (EQUIV Pi0.id⟷ Pi0.FALSE Pi0.FALSE) ZERO ⟧
+  q₂ : ⟦ (LIFT Pi0.PLUS) (EQUIV Pi0.id⟷ Pi0.FALSE Pi0.FALSE) (LIFT Pi0.ZERO) ⟧
   q₂ = pathLeft p₁
-
+-}
   -- combinators
   -- the usual semiring combinators to reason about 0, 1, +, and *, and
   -- the groupoid combinators to reason about id, rev, and trans
   data _⟷_ : U → U → Set where
+{-
     unite₊  : {t : U} → PLUS ZERO t ⟷ t
     uniti₊  : {t : U} → t ⟷ PLUS ZERO t
     swap₊   : {t₁ t₂ : U} → PLUS t₁ t₂ ⟷ PLUS t₂ t₁
@@ -311,13 +316,16 @@ module Pi1 where
               TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) 
     factor  : {t₁ t₂ t₃ : U} → 
               PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
-    id⟷    : {t : U} → t ⟷ t
-    sym⟷   : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
+-} 
+    id⟷    : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₀ : Pi0.⟦ t₁ ⟧} {v₁ : Pi0.⟦ t₂ ⟧} → EQUIV c v₀ v₁ ⟷ EQUIV c v₀ v₁
+    sym⟷  : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
     _◎_     : {t₁ t₂ t₃ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+{-
     _⊕_     : {t₁ t₂ t₃ t₄ : U} → 
               (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
     _⊗_     : {t₁ t₂ t₃ t₄ : U} → 
               (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
+-}
     lidl    : {t₁ t₂ : Pi0.U} 
               {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} → 
               EQUIV (Pi0.id⟷ Pi0.◎ c) v₁ v₂ ⟷ EQUIV c v₁ v₂
@@ -330,14 +338,14 @@ module Pi1 where
     ridr    : {t₁ t₂ : Pi0.U} 
               {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} → 
               EQUIV c v₁ v₂ ⟷ EQUIV (c Pi0.◎ Pi0.id⟷) v₁ v₂
-    invll   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₂ : Pi0.⟦ t₂ ⟧}  → 
-              EQUIV (Pi0.sym⟷ c Pi0.◎ c) v₂ v₂ ⟷ EQUIV Pi0.id⟷ v₂ v₂
-    invlr   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₂ : Pi0.⟦ t₂ ⟧}  → 
-              EQUIV Pi0.id⟷ v₂ v₂ ⟷ EQUIV (Pi0.sym⟷ c Pi0.◎ c) v₂ v₂ 
-    invrl   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧}  → 
-              EQUIV (c Pi0.◎ Pi0.sym⟷ c) v₁ v₁ ⟷ EQUIV Pi0.id⟷ v₁ v₁
-    invrr   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧}  → 
-              EQUIV Pi0.id⟷ v₁ v₁ ⟷ EQUIV (c Pi0.◎ Pi0.sym⟷ c) v₁ v₁
+    invll   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₀ v₂ : Pi0.⟦ t₂ ⟧}  → 
+              EQUIV (Pi0.sym⟷ c Pi0.◎ c) v₀ v₂ ⟷ EQUIV Pi0.id⟷ v₀ v₂
+    invlr   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₀ v₂ : Pi0.⟦ t₂ ⟧}  → 
+              EQUIV Pi0.id⟷ v₀ v₂ ⟷ EQUIV (Pi0.sym⟷ c Pi0.◎ c) v₀ v₂ 
+    invrl   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₀ v₁ : Pi0.⟦ t₁ ⟧}  → 
+              EQUIV (c Pi0.◎ Pi0.sym⟷ c) v₀ v₁ ⟷ EQUIV Pi0.id⟷ v₀ v₁
+    invrr   : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₀ v₁ : Pi0.⟦ t₁ ⟧}  → 
+              EQUIV Pi0.id⟷ v₀ v₁ ⟷ EQUIV (c Pi0.◎ Pi0.sym⟷ c) v₀ v₁
     invinvl : {t₁ t₂ : Pi0.U} 
               {c : t₁ Pi0.⟷ t₂} {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} → 
               EQUIV (Pi0.sym⟷ (Pi0.sym⟷ c)) v₁ v₂ ⟷ EQUIV c v₁ v₂
@@ -346,29 +354,60 @@ module Pi1 where
               EQUIV c v₁ v₂ ⟷ EQUIV (Pi0.sym⟷ (Pi0.sym⟷ c)) v₁ v₂ 
     tassocl : {t₁ t₂ t₃ t₄ : Pi0.U} 
               {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} {c₃ : t₃ Pi0.⟷ t₄}
-              {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} 
-              {v₃ : Pi0.⟦ t₃ ⟧} {v₄ : Pi0.⟦ t₄ ⟧} → 
+              {v₁ : Pi0.⟦ t₁ ⟧} {v₄ : Pi0.⟦ t₄ ⟧} → 
               EQUIV (c₁ Pi0.◎ (c₂ Pi0.◎ c₃)) v₁ v₄ ⟷ 
               EQUIV ((c₁ Pi0.◎ c₂) Pi0.◎ c₃) v₁ v₄
     tassocr : {t₁ t₂ t₃ t₄ : Pi0.U} 
               {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} {c₃ : t₃ Pi0.⟷ t₄}
-              {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} 
-              {v₃ : Pi0.⟦ t₃ ⟧} {v₄ : Pi0.⟦ t₄ ⟧} → 
+              {v₁ : Pi0.⟦ t₁ ⟧} {v₄ : Pi0.⟦ t₄ ⟧} → 
               EQUIV ((c₁ Pi0.◎ c₂) Pi0.◎ c₃) v₁ v₄ ⟷ 
               EQUIV (c₁ Pi0.◎ (c₂ Pi0.◎ c₃)) v₁ v₄ 
-    pairl : {t₁ t₂ t₃ t₄ : Pi0.U} 
-              {c₁ : t₁ Pi0.⟷ t₃} {c₂ : t₂ Pi0.⟷ t₄} 
-              {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} 
-              {v₃ : Pi0.⟦ t₃ ⟧} {v₄ : Pi0.⟦ t₄ ⟧} → 
-              EQUIV (c₁ Pi0.⊗ c₂) (v₁ , v₂) (v₃ , v₄) ⟷ 
-              TIMES (EQUIV c₁ v₁ v₃) (EQUIV c₂ v₂ v₄)
-    pairr : {t₁ t₂ t₃ t₄ : Pi0.U} 
-              {c₁ : t₁ Pi0.⟷ t₃} {c₂ : t₂ Pi0.⟷ t₄} 
-              {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} 
-              {v₃ : Pi0.⟦ t₃ ⟧} {v₄ : Pi0.⟦ t₄ ⟧} → 
-              TIMES (EQUIV c₁ v₁ v₃) (EQUIV c₂ v₂ v₄) ⟷ 
-              EQUIV (c₁ Pi0.⊗ c₂) (v₁ , v₂) (v₃ , v₄) 
-              
+    -- this is closely related to Eckmann-Hilton
+    resp◎   : {t₁ t₂ t₃ : Pi0.U} 
+              {c₁ : t₁ Pi0.⟷ t₂} {c₂ : t₂ Pi0.⟷ t₃} 
+              {c₃ : t₁ Pi0.⟷ t₂} {c₄ : t₂ Pi0.⟷ t₃} 
+              {v₁ : Pi0.⟦ t₁ ⟧} {v₂ : Pi0.⟦ t₂ ⟧} {v₃ : Pi0.⟦ t₃ ⟧} → 
+              (EQUIV c₁ v₁ v₂ ⟷ EQUIV c₃ v₁ v₂) → 
+              (EQUIV c₂ v₂ v₃ ⟷ EQUIV c₄ v₂ v₃) → 
+               EQUIV (c₁ Pi0.◎ c₂) v₁ v₃ ⟷ EQUIV (c₃ Pi0.◎ c₄) v₁ v₃
+
+  -- extractor for ⟷
+  src : {t₁ t₂ : U} → t₁ ⟷ t₂ → Pi0.U
+  src (id⟷ {t₁}) = t₁
+  src (sym⟷ c) = {!!}
+  src (c ◎ c₁) = {!!}
+  src lidl = {!!}
+  src lidr = {!!}
+  src ridl = {!!}
+  src ridr = {!!}
+  src invll = {!!}
+  src invlr = {!!}
+  src invrl = {!!}
+  src invrr = {!!}
+  src invinvl = {!!}
+  src invinvr = {!!}
+  src tassocl = {!!}
+  src tassocr = {!!}
+  src (resp◎ c c₅) = {!!}
+
+  val : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Pi0.⟦ src c ⟧
+  val (id⟷ {t₁} {_} {_} {v₀}) = v₀
+  val (sym⟷ c) = {!!}
+  val (c ◎ c₁) = {!!}
+  val lidl = {!!}
+  val lidr = {!!}
+  val ridl = {!!}
+  val ridr = {!!}
+  val invll = {!!}
+  val invlr = {!!}
+  val invrl = {!!}
+  val invrr = {!!}
+  val invinvl = {!!}
+  val invinvr = {!!}
+  val tassocl = {!!}
+  val tassocr = {!!}
+  val (resp◎ c c₅) = {!!}
+
   -- Examples
   -- id;swap₊ is equivalent to swap₊
   e₁ : EQUIV (Pi0.id⟷ Pi0.◎ Pi0.swap₊) Pi0.FALSE Pi0.TRUE ⟷ 
@@ -380,15 +419,35 @@ module Pi1 where
        EQUIV Pi0.id⟷ Pi0.FALSE Pi0.FALSE 
   e₂ = {!!}
 
-  e₃ : EQUIV (Pi0.id⟷ Pi0.⊗ Pi0.swap₊) 
-         (Pi0.TRUE , Pi0.FALSE) (Pi0.TRUE , Pi0.TRUE) ⟷ 
-       EQUIV (Pi0.swap₊ Pi0.⊗ Pi0.id⟷)
-        (Pi0.FALSE , Pi0.TRUE) (Pi0.TRUE , Pi0.TRUE)
-  e₃ = pairl ◎ swap⋆ ◎ pairr
+
+  arr : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} → Pi0.⟦ t₁ ⟧ → Pi0.⟦ t₂ ⟧ → Set
+  arr {t₁} {t₂} {c} v₁ v₂ = ⟦ EQUIV c v₁ v₂ ⟧
+ 
+  -- we have a 1Groupoid structure
+  G : 1Groupoid
+  G = record
+        { set = Pi0.U
+        ; _↝_ = Pi0._⟷_
+        ; _≈_ = λ c₀ c₁ → ∀ {v₀ v₁} → EQUIV c₀ v₀ v₁ ⟷ EQUIV c₁ v₀ v₁
+        ; id = Pi0.id⟷
+        ; _∘_ = λ c₀ c₁ → c₁ Pi0.◎ c₀
+        ; _⁻¹ = Pi0.sym⟷
+        ; lneutr = λ α → ridl {c = α}
+        ; rneutr = λ α → lidl { c = α}
+        ; assoc = λ α β δ {v₁} {v₄} → tassocl 
+        ; equiv = record { refl = λ {c} {v₀} {v₁} → id⟷
+                                   ; sym = λ c → sym⟷ c 
+                                   ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
+        ; linv = λ α → invrl {c = α}
+        ; rinv = λ α → invll {c = α}
+        ; ∘-resp-≈ = λ {x} {y} {z} {f} {h} {g} {i} f⟷h g⟷i {v₀} {v₁} → 
+                     resp◎ {x} {y} {z} {g} {f} {i} {h} {v₀} {{!val f⟷h!}} {v₁} 
+                       g⟷i f⟷h 
+        }
 
 ------------------------------------------------------------------------------
 -- Level 2 explicitly...
-
+{-
 module Pi2 where
   -- types
   data U : Set where
@@ -449,6 +508,6 @@ module Pi2 where
     lid     : {t₁ t₂ : Pi1.U} {v₁ : Pi1.⟦ t₁ ⟧} {v₂ : Pi1.⟦ t₂ ⟧} 
               {c : t₁ Pi1.⟷ t₂} → 
               EQUIV (Pi1.id⟷ Pi1.◎ c) v₁ v₂ ⟷ EQUIV c v₁ v₂
-
+-}
 ------------------------------------------------------------------------------
 
