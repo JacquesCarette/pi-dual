@@ -128,6 +128,14 @@ c₂ = uniti⋆ ◎ swap⋆ ◎ unite⋆
 c₃ = uniti⋆ ◎ uniti⋆ ◎ assocl⋆ ◎ (swap⋆ ⊗ (sym⟷ id⟷)) ◎ 
      assocr⋆ ◎ unite⋆ ◎ unite⋆
 
+-- The evaluation of a program like c₁, c₂, c₃ above is not done in order to
+-- figure out the output value. Both the input and output values are encoded
+-- in the type of the program; what the evaluation does is follow the path to
+-- constructively reach the ouput value from the input value. Even though the
+-- programs are observationally equivalent, the follow different paths. The
+-- next level will allow us to reason about which of these paths are
+-- connected by 2paths etc.
+
 c₄ : ONE×ONE• ⟷ ONE•
 c₄ = unite⋆
 
