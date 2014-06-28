@@ -11,10 +11,14 @@ infixr 30 _⟷_
 
 ------------------------------------------------------------------------------
 -- Level -2
--- Types are -2 groupoids or equivalently all types are contractible
+-- Types are -2 groupoids or equivalently all types are contractible or
+-- equivalently all types have exactly one point
 
--- Types and values are defined mutually without reference to programs
--- Types always include PATHs in addition to the usual types.
+-- There is no interesting path structure but we have the trivial paths
+-- explicitly below.
+
+-- Types and values are defined mutually without reference to programs Types
+-- always include PATHs in addition to the usual types.
 
 mutual
 
