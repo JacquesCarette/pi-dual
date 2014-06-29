@@ -52,7 +52,8 @@ T⇔F = Path P.BOOL•T P.BOOL•F
 F⇔T : Set
 F⇔T = Path P.BOOL•F P.BOOL•T
 
--- all the following are paths from T to F
+-- all the following are paths from T to F; we will show below that they
+-- are equivalent using 2paths
 
 p₁ p₂ p₃ p₄ p₅ : T⇔F
 p₁ = path P.NOT•T
@@ -92,6 +93,10 @@ data _⟷_ : U• → U• → Set where
   _◎_     : {t₁ t₂ t₃ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
 
   -- groupoid combinators
+
+-- these are defined by induction on P.⟷ !!!
+-- they should be up to 2 paths; for examples of 2 paths look at proofs of 
+-- path assoc; triangle and pentagon rules
 
   lidl    : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
             Path• (P.id⟷ P.◎ c) ⟷ Path• c
@@ -173,8 +178,10 @@ data _⟷_ : U• → U• → Set where
             Path• (P.sym⟷ (P.uniti⋆ {t})) ⟷ Path• (P.unite⋆ {t})
   invuniti⋆r : {t : P.U•} → 
             Path• (P.unite⋆ {t}) ⟷ Path• (P.sym⟷ (P.uniti⋆ {t}))
-  invswap⋆ : {t₁ t₂ : P.U•} → 
+  invswap⋆l : {t₁ t₂ : P.U•} → 
             Path• (P.sym⟷ (P.swap⋆ {t₁} {t₂})) ⟷ Path• (P.swap⋆ {t₂} {t₁})
+  invswap⋆r : {t₁ t₂ : P.U•} → 
+            Path• (P.swap⋆ {t₂} {t₁}) ⟷ Path• (P.sym⟷ (P.swap⋆ {t₁} {t₂}))
   invassocl⋆l : {t₁ t₂ t₃ : P.U•} → 
             Path• (P.sym⟷ (P.assocl⋆ {t₁} {t₂} {t₃})) ⟷ 
             Path• (P.assocr⋆ {t₁} {t₂} {t₃})
@@ -261,6 +268,22 @@ data _⟷_ : U• → U• → Set where
             {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} {c₃ : t₃ P.⟷ t₄} → 
             Path• ((c₁ P.◎ c₂) P.◎ c₃) ⟷ 
             Path• (c₁ P.◎ (c₂ P.◎ c₃))
+-- Need rules that look at every compatible c₁ ◎ c₂ and produces a simplified
+-- version. Examples:
+  --(c₁ ⊗ c₂) ◎ swap⋆ = swap⋆ ◎ (c₂ ⊗ c₁)
+  ⊗swap⋆l : {t₁ t₂ t₃ t₄ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₃ P.⟷ t₄} → 
+            Path• ((c₁ P.⊗ c₂) P.◎ P.swap⋆) ⟷ 
+            Path• (P.swap⋆ P.◎ (c₂ P.⊗ c₁))
+  ⊗swap⋆r : {t₁ t₂ t₃ t₄ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₃ P.⟷ t₄} → 
+            Path• (P.swap⋆ P.◎ (c₂ P.⊗ c₁)) ⟷ 
+            Path• ((c₁ P.⊗ c₂) P.◎ P.swap⋆) 
+  --(c₁ ⊗ c₂) ◎ unite⋆ = unite⋆ ◎ c₂ 
+  ⊗unite⋆l : {t₃ t₄ : P.U•} {c₁ : P.ONE• P.⟷ P.ONE•} {c₂ : t₃ P.⟷ t₄} → 
+            Path• ((c₁ P.⊗ c₂) P.◎ P.unite⋆) ⟷ 
+            Path• (P.unite⋆ P.◎ c₂) 
+  ⊗unite⋆r : {t₃ t₄ : P.U•} {c₁ : P.ONE• P.⟷ P.ONE•} {c₂ : t₃ P.⟷ t₄} → 
+            Path• (P.unite⋆ P.◎ c₂) ⟷ 
+            Path• ((c₁ P.⊗ c₂) P.◎ P.unite⋆) 
   -- resp◎ is closely related to Eckmann-Hilton
   resp◎   : {t₁ t₂ t₃ : P.U•} 
             {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} 
@@ -361,7 +384,32 @@ data _⟷_ : U• → U• → Set where
      •[ PATH (P.NOT•T P.◎ P.id⟷) , p₄ ]
 α₆ = resp◎ id⟷ ((resp◎ invswap1₊r id⟷) ◎ invll)
 
--- probably not possible to show that any of these is equal to p₅
+-- p₅ ~> p₁
+
+α₈ : •[ PATH (P.uniti⋆ P.◎ P.swap⋆ P.◎ 
+             (P.NOT•T P.⊗ P.id⟷) P.◎ P.swap⋆ P.◎ P.unite⋆) , 
+        p₅ ] ⟷ 
+     •[ PATH P.NOT•T , p₁ ] 
+α₈ = resp◎ id⟷ (resp◎ id⟷ tassocl) ◎ 
+     resp◎ id⟷ (resp◎ id⟷ (resp◎ ⊗swap⋆l id⟷)) ◎ 
+     resp◎ id⟷ (resp◎ id⟷ tassocr) ◎
+     resp◎ id⟷ tassocl ◎
+     resp◎ id⟷ (resp◎ (resp◎ invswap⋆r id⟷) id⟷) ◎
+     resp◎ id⟷ (resp◎ invll id⟷) ◎
+     resp◎ id⟷ lidl ◎
+     resp◎ id⟷ ⊗unite⋆l ◎
+     resp◎ invunite⋆r id⟷ ◎
+     tassocl ◎ 
+     resp◎ invll id⟷ ◎
+     lidl 
+
+-- p₄ ~> p₅
+
+α₇ : •[ PATH (P.NOT•T P.◎ P.id⟷) , p₄ ] ⟷ 
+     •[ PATH (P.uniti⋆ P.◎ P.swap⋆ P.◎ 
+             (P.NOT•T P.⊗ P.id⟷) P.◎ P.swap⋆ P.◎ P.unite⋆) , 
+        p₅ ]
+α₇ = ridl ◎ (sym⟷ α₈)
 
 -- level 0 is a groupoid with a non-trivial path equivalence the various inv*
 -- rules are not justified by the groupoid proof; they are justified by the
