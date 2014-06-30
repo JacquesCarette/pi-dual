@@ -99,14 +99,22 @@ data _⟷_ : U• → U• → Set where
 
   -- groupoid combinators
 
--- these are defined by induction on P.⟷ !!!
--- they should be up to 2 paths; for examples of 2 paths look at proofs of 
+-- they are defined by induction on P.⟷ 
+
+-- for examples of 2 paths look at proofs of 
 -- path assoc; triangle and pentagon rules
 
-  simplify◎ : {t₁ t₂ t₃ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} → 
+  simplify◎l : {t₁ t₂ t₃ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} → 
     Path• (c₁ P.◎ c₂) ⟷ Path• (P.simplify◎ c₁ c₂)
 
---  simplifySym
+  simplify◎r : {t₁ t₂ t₃ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} → 
+    Path• (P.simplify◎ c₁ c₂) ⟷ Path• (c₁ P.◎ c₂)
+
+  simplifySyml : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
+    Path• (P.sym⟷ c) ⟷ Path• (P.simplifySym c)
+
+  simplifySymr : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
+    Path• (P.simplifySym c) ⟷ Path• (P.sym⟷ c)
 
   lidl    : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
             Path• (P.id⟷ P.◎ c) ⟷ Path• c
@@ -124,152 +132,6 @@ data _⟷_ : U• → U• → Set where
             Path• (c P.◎ P.sym⟷ c) ⟷ Path• (P.id⟷ {t₁})
   invrr   : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
             Path• (P.id⟷ {t₁}) ⟷ Path• (c P.◎ P.sym⟷ c)
-  invunite₊l : {t : P.U•} → 
-            Path• (P.sym⟷ (P.unite₊ {t})) ⟷ Path• (P.uniti₊ {t})
-  invunite₊r : {t : P.U•} → 
-            Path• (P.uniti₊ {t}) ⟷ Path• (P.sym⟷ (P.unite₊ {t}))
-  invuniti₊l : {t : P.U•} → 
-            Path• (P.sym⟷ (P.uniti₊ {t})) ⟷ Path• (P.unite₊ {t})
-  invuniti₊r : {t : P.U•} → 
-            Path• (P.unite₊ {t}) ⟷ Path• (P.sym⟷ (P.uniti₊ {t}))
-  invswap1₊l : {t₁ t₂ : P.U•} → 
-            Path• (P.sym⟷ (P.swap1₊ {t₁} {t₂})) ⟷ 
-            Path• (P.swap2₊ {t₂} {t₁})
-  invswap1₊r : {t₁ t₂ : P.U•} → 
-            Path• (P.swap2₊ {t₂} {t₁}) ⟷ 
-            Path• (P.sym⟷ (P.swap1₊ {t₁} {t₂})) 
-  invswap2₊l : {t₁ t₂ : P.U•} → 
-            Path• (P.sym⟷ (P.swap2₊ {t₂} {t₁})) ⟷ 
-            Path• (P.swap1₊ {t₁} {t₂})
-  invswap2₊r : {t₁ t₂ : P.U•} → 
-            Path• (P.swap1₊ {t₁} {t₂}) ⟷ 
-            Path• (P.sym⟷ (P.swap2₊ {t₂} {t₁})) 
-  invassocl1₊l : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.sym⟷ (P.assocl1₊ {t₁} {t₂} {t₃})) ⟷
-            Path• (P.assocr1₊ {t₁} {t₂} {t₃})
-  invassocl1₊r : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.assocr1₊ {t₁} {t₂} {t₃}) ⟷ 
-            Path• (P.sym⟷ (P.assocl1₊ {t₁} {t₂} {t₃})) 
-  invassocl2₊l : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.sym⟷ (P.assocl2₊ {t₁} {t₂} {t₃})) ⟷
-            Path• (P.assocr2₊ {t₁} {t₂} {t₃})
-  invassocl2₊r : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.assocr2₊ {t₁} {t₂} {t₃}) ⟷ 
-            Path• (P.sym⟷ (P.assocl2₊ {t₁} {t₂} {t₃})) 
-  invassocl3₊l : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.sym⟷ (P.assocl3₊ {t₁} {t₂} {t₃})) ⟷
-            Path• (P.assocr3₊ {t₁} {t₂} {t₃})
-  invassocl3₊r : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.assocr3₊ {t₁} {t₂} {t₃}) ⟷ 
-            Path• (P.sym⟷ (P.assocl3₊ {t₁} {t₂} {t₃})) 
-  invassocr1₊l : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.sym⟷ (P.assocr1₊ {t₁} {t₂} {t₃})) ⟷
-            Path• (P.assocl1₊ {t₁} {t₂} {t₃})
-  invassocr1₊r : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.assocl1₊ {t₁} {t₂} {t₃}) ⟷ 
-            Path• (P.sym⟷ (P.assocr1₊ {t₁} {t₂} {t₃})) 
-  invassocr2₊l : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.sym⟷ (P.assocr2₊ {t₁} {t₂} {t₃})) ⟷
-            Path• (P.assocl2₊ {t₁} {t₂} {t₃})
-  invassocr2₊r : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.assocl2₊ {t₁} {t₂} {t₃}) ⟷ 
-            Path• (P.sym⟷ (P.assocr2₊ {t₁} {t₂} {t₃})) 
-  invassocr3₊l : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.sym⟷ (P.assocr3₊ {t₁} {t₂} {t₃})) ⟷
-            Path• (P.assocl3₊ {t₁} {t₂} {t₃})
-  invassocr3₊r : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.assocl3₊ {t₁} {t₂} {t₃}) ⟷ 
-            Path• (P.sym⟷ (P.assocr3₊ {t₁} {t₂} {t₃})) 
-  invunite⋆l : {t : P.U•} → 
-            Path• (P.sym⟷ (P.unite⋆ {t})) ⟷ Path• (P.uniti⋆ {t})
-  invunite⋆r : {t : P.U•} → 
-            Path• (P.uniti⋆ {t}) ⟷ Path• (P.sym⟷ (P.unite⋆ {t}))
-  invuniti⋆l : {t : P.U•} → 
-            Path• (P.sym⟷ (P.uniti⋆ {t})) ⟷ Path• (P.unite⋆ {t})
-  invuniti⋆r : {t : P.U•} → 
-            Path• (P.unite⋆ {t}) ⟷ Path• (P.sym⟷ (P.uniti⋆ {t}))
-  invswap⋆l : {t₁ t₂ : P.U•} → 
-            Path• (P.sym⟷ (P.swap⋆ {t₁} {t₂})) ⟷ Path• (P.swap⋆ {t₂} {t₁})
-  invswap⋆r : {t₁ t₂ : P.U•} → 
-            Path• (P.swap⋆ {t₂} {t₁}) ⟷ Path• (P.sym⟷ (P.swap⋆ {t₁} {t₂}))
-  invassocl⋆l : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.sym⟷ (P.assocl⋆ {t₁} {t₂} {t₃})) ⟷ 
-            Path• (P.assocr⋆ {t₁} {t₂} {t₃})
-  invassocl⋆r : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.assocr⋆ {t₁} {t₂} {t₃}) ⟷ 
-            Path• (P.sym⟷ (P.assocl⋆ {t₁} {t₂} {t₃})) 
-  invassocr⋆l : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.sym⟷ (P.assocr⋆ {t₁} {t₂} {t₃})) ⟷ 
-            Path• (P.assocl⋆ {t₁} {t₂} {t₃})
-  invassocr⋆r : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.assocl⋆ {t₁} {t₂} {t₃}) ⟷ 
-            Path• (P.sym⟷ (P.assocr⋆ {t₁} {t₂} {t₃})) 
-  invdistzl : {t : P.U•} {absurd : P.⟦ P.ZERO ⟧} → 
-            Path• (P.sym⟷ (P.distz {t} {absurd})) ⟷ 
-            Path• (P.factorz {t} {absurd})
-  invdistzr : {t : P.U•} {absurd : P.⟦ P.ZERO ⟧} → 
-            Path• (P.factorz {t} {absurd}) ⟷ 
-            Path• (P.sym⟷ (P.distz {t} {absurd})) 
-  invfactorzl : {t : P.U•} {absurd : P.⟦ P.ZERO ⟧} → 
-            Path• (P.sym⟷ (P.factorz {t} {absurd})) ⟷ 
-            Path• (P.distz {t} {absurd})
-  invfactorzr : {t : P.U•} {absurd : P.⟦ P.ZERO ⟧} → 
-            Path• (P.distz {t} {absurd}) ⟷ 
-            Path• (P.sym⟷ (P.factorz {t} {absurd})) 
-  invdist1l : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.sym⟷ (P.dist1 {t₁} {t₂} {t₃})) ⟷ 
-            Path• (P.factor1 {t₁} {t₂} {t₃})
-  invdist1r : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.factor1 {t₁} {t₂} {t₃}) ⟷ 
-            Path• (P.sym⟷ (P.dist1 {t₁} {t₂} {t₃})) 
-  invdist2l : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.sym⟷ (P.dist2 {t₁} {t₂} {t₃})) ⟷ 
-            Path• (P.factor2 {t₁} {t₂} {t₃})
-  invdist2r : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.factor2 {t₁} {t₂} {t₃}) ⟷ 
-            Path• (P.sym⟷ (P.dist2 {t₁} {t₂} {t₃})) 
-  invfactor1l : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.sym⟷ (P.factor1 {t₁} {t₂} {t₃})) ⟷ 
-            Path• (P.dist1 {t₁} {t₂} {t₃})
-  invfactor1r : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.dist1 {t₁} {t₂} {t₃}) ⟷ 
-            Path• (P.sym⟷ (P.factor1 {t₁} {t₂} {t₃})) 
-  invfactor2l : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.sym⟷ (P.factor2 {t₁} {t₂} {t₃})) ⟷ 
-            Path• (P.dist2 {t₁} {t₂} {t₃})
-  invfactor2r : {t₁ t₂ t₃ : P.U•} → 
-            Path• (P.dist2 {t₁} {t₂} {t₃}) ⟷ 
-            Path• (P.sym⟷ (P.factor2 {t₁} {t₂} {t₃})) 
-  invid : {t : P.U•} → 
-            Path• (P.sym⟷ (P.id⟷ {t})) ⟷ Path• (P.id⟷ {t})
-  invsyml : {t₁ t₂ : P.U•} → (c : t₁ P.⟷ t₂) → 
-            Path• (P.sym⟷ (P.sym⟷ c)) ⟷  Path• c
-  invsymr : {t₁ t₂ : P.U•} → (c : t₁ P.⟷ t₂) → 
-            Path• c ⟷ Path• (P.sym⟷ (P.sym⟷ c)) 
-  inv◎l : {t₁ t₂ t₃ : P.U•} → (c₁ : t₁ P.⟷ t₂) (c₂ : t₂ P.⟷ t₃) → 
-            Path• (P.sym⟷ (c₁ P.◎ c₂)) ⟷ 
-            Path• (P.sym⟷ c₂ P.◎ P.sym⟷ c₁)
-  inv◎r : {t₁ t₂ t₃ : P.U•} → (c₁ : t₁ P.⟷ t₂) (c₂ : t₂ P.⟷ t₃) → 
-            Path• (P.sym⟷ c₂ P.◎ P.sym⟷ c₁) ⟷ 
-            Path• (P.sym⟷ (c₁ P.◎ c₂)) 
-  inv⊕1l : {t₁ t₂ t₃ t₄ : P.U•} → (c₁ : t₁ P.⟷ t₃) → (c₂ : t₂ P.⟷ t₄) → 
-            Path• (P.sym⟷ (c₁ P.⊕1 c₂)) ⟷ 
-            Path• (P.sym⟷ c₁ P.⊕1 P.sym⟷ c₂)
-  inv⊕1r : {t₁ t₂ t₃ t₄ : P.U•} → (c₁ : t₁ P.⟷ t₃) → (c₂ : t₂ P.⟷ t₄) → 
-            Path• (P.sym⟷ c₁ P.⊕1 P.sym⟷ c₂) ⟷ 
-            Path• (P.sym⟷ (c₁ P.⊕1 c₂)) 
-  inv⊕2l : {t₁ t₂ t₃ t₄ : P.U•} → (c₁ : t₁ P.⟷ t₃) → (c₂ : t₂ P.⟷ t₄) → 
-            Path• (P.sym⟷ (c₁ P.⊕2 c₂)) ⟷ 
-            Path• (P.sym⟷ c₁ P.⊕2 P.sym⟷ c₂)
-  inv⊕2r : {t₁ t₂ t₃ t₄ : P.U•} → (c₁ : t₁ P.⟷ t₃) → (c₂ : t₂ P.⟷ t₄) → 
-            Path• (P.sym⟷ c₁ P.⊕2 P.sym⟷ c₂) ⟷ 
-            Path• (P.sym⟷ (c₁ P.⊕2 c₂)) 
-  inv⊗l : {t₁ t₂ t₃ t₄ : P.U•} → (c₁ : t₁ P.⟷ t₃) → (c₂ : t₂ P.⟷ t₄) → 
-            Path• (P.sym⟷ (c₁ P.⊗ c₂)) ⟷ 
-            Path• (P.sym⟷ c₁ P.⊗ P.sym⟷ c₂)
-  inv⊗r : {t₁ t₂ t₃ t₄ : P.U•} → (c₁ : t₁ P.⟷ t₃) → (c₂ : t₂ P.⟷ t₄) → 
-            Path• (P.sym⟷ c₁ P.⊗ P.sym⟷ c₂) ⟷ 
-            Path• (P.sym⟷ (c₁ P.⊗ c₂)) 
   tassocl : {t₁ t₂ t₃ t₄ : P.U•} 
             {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} {c₃ : t₃ P.⟷ t₄} → 
             Path• (c₁ P.◎ (c₂ P.◎ c₃)) ⟷ 
@@ -278,6 +140,7 @@ data _⟷_ : U• → U• → Set where
             {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} {c₃ : t₃ P.⟷ t₄} → 
             Path• ((c₁ P.◎ c₂) P.◎ c₃) ⟷ 
             Path• (c₁ P.◎ (c₂ P.◎ c₃))
+
 -- Need rules that look at every compatible c₁ ◎ c₂ and produces a simplified
 -- version. Examples:
   -- anything followed by a swap can be simplified???
@@ -389,12 +252,12 @@ data _⟷_ : U• → U• → Set where
 -- p₂ ~> p₃
 α₅ : •[ PATH (P.id⟷ P.◎ P.NOT•T) , p₂ ] ⟷ 
      •[ PATH (P.NOT•T P.◎ P.NOT•F P.◎ P.NOT•T) , p₃ ]
-α₅ = lidl ◎ ridr ◎ (resp◎ id⟷ (invrr {c = P.NOT•F} ◎ resp◎ id⟷ invswap2₊l))
+α₅ = lidl ◎ ridr ◎ (resp◎ id⟷ (invrr {c = P.NOT•F} ◎ resp◎ id⟷ simplifySyml))
 
 -- p₃ ~> p₄
 α₆ : •[ PATH (P.NOT•T P.◎ P.NOT•F P.◎ P.NOT•T) , p₃ ] ⟷ 
      •[ PATH (P.NOT•T P.◎ P.id⟷) , p₄ ]
-α₆ = resp◎ id⟷ ((resp◎ invswap1₊r id⟷) ◎ invll)
+α₆ = resp◎ id⟷ ((resp◎ simplifySymr id⟷) ◎ invll)
 
 -- p₅ ~> p₁
 
@@ -406,11 +269,11 @@ data _⟷_ : U• → U• → Set where
      resp◎ id⟷ (resp◎ id⟷ (resp◎ ⊗swap⋆l id⟷)) ◎ 
      resp◎ id⟷ (resp◎ id⟷ tassocr) ◎
      resp◎ id⟷ tassocl ◎
-     resp◎ id⟷ (resp◎ (resp◎ invswap⋆r id⟷) id⟷) ◎
+     resp◎ id⟷ (resp◎ (resp◎ simplifySymr id⟷) id⟷) ◎
      resp◎ id⟷ (resp◎ invll id⟷) ◎
      resp◎ id⟷ lidl ◎
      resp◎ id⟷ ⊗unite⋆l ◎
-     resp◎ invunite⋆r id⟷ ◎
+     resp◎ simplifySymr id⟷ ◎
      tassocl ◎ 
      resp◎ invll id⟷ ◎
      lidl 

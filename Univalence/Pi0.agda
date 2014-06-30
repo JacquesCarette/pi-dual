@@ -73,72 +73,66 @@ BOOL•T = •[ BOOL , TRUE ]
 -- pointed types.
 
 data _⟷_ : U• → U• → Set where
-  unite₊  : {t : U•} → •[ PLUS ZERO ∣ t ∣ , inj₂ (• t) ] ⟷ t
-  uniti₊  : {t : U•} → t ⟷ •[ PLUS ZERO ∣ t ∣ , inj₂ (• t) ]
-  swap1₊  : {t₁ t₂ : U•} → •[ PLUS ∣ t₁ ∣ ∣ t₂ ∣ , inj₁ (• t₁) ] ⟷ 
-                           •[ PLUS ∣ t₂ ∣ ∣ t₁ ∣ , inj₂ (• t₁) ]
-  swap2₊  : {t₁ t₂ : U•} → •[ PLUS ∣ t₁ ∣ ∣ t₂ ∣ , inj₂ (• t₂) ] ⟷ 
-                           •[ PLUS ∣ t₂ ∣ ∣ t₁ ∣ , inj₁ (• t₂) ]
-  assocl1₊ : {t₁ t₂ t₃ : U•} → 
-             •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₁ (• t₁) ] ⟷ 
-             •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₁ (inj₁ (• t₁)) ]
-  assocl2₊ : {t₁ t₂ t₃ : U•} → 
-             •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₂ (inj₁ (• t₂)) ] ⟷ 
-             •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₁ (inj₂ (• t₂)) ]
-  assocl3₊ : {t₁ t₂ t₃ : U•} → 
-             •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₂ (inj₂ (• t₃)) ] ⟷ 
-             •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₂ (• t₃) ]
-  assocr1₊ : {t₁ t₂ t₃ : U•} → 
-             •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₁ (inj₁ (• t₁)) ] ⟷ 
-             •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₁ (• t₁) ] 
-  assocr2₊ : {t₁ t₂ t₃ : U•} → 
-             •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₁ (inj₂ (• t₂)) ] ⟷ 
-             •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₂ (inj₁ (• t₂)) ] 
-  assocr3₊ : {t₁ t₂ t₃ : U•} → 
-             •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₂ (• t₃) ] ⟷ 
-             •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₂ (inj₂ (• t₃)) ]
-  unite⋆  : {t : U•} → •[ TIMES ONE ∣ t ∣ , (tt , • t) ] ⟷ t               
-  uniti⋆  : {t : U•} → t ⟷ •[ TIMES ONE ∣ t ∣ , (tt , • t) ] 
-  swap⋆   : {t₁ t₂ : U•} → •[ TIMES ∣ t₁ ∣ ∣ t₂ ∣ , (• t₁ , • t₂) ] ⟷ 
-                           •[ TIMES ∣ t₂ ∣ ∣ t₁ ∣ , (• t₂ , • t₁) ]
-  assocl⋆ : {t₁ t₂ t₃ : U•} → 
-         •[ TIMES ∣ t₁ ∣ (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , (• t₁ , (• t₂ , • t₃)) ] ⟷ 
-         •[ TIMES (TIMES ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , ((• t₁ , • t₂) , • t₃) ]
-  assocr⋆ : {t₁ t₂ t₃ : U•} → 
-         •[ TIMES (TIMES ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , ((• t₁ , • t₂) , • t₃) ] ⟷ 
-         •[ TIMES ∣ t₁ ∣ (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , (• t₁ , (• t₂ , • t₃)) ]
-  distz : {t : U•} {absurd : ⟦ ZERO ⟧} → 
-          •[ TIMES ZERO ∣ t ∣ , (absurd , • t) ] ⟷ •[ ZERO , absurd ]
-  factorz : {t : U•} {absurd : ⟦ ZERO ⟧} → 
-          •[ ZERO , absurd ] ⟷ •[ TIMES ZERO ∣ t ∣ , (absurd , • t) ] 
-  dist1   : {t₁ t₂ t₃ : U•} → 
-            •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₁ (• t₁) , • t₃) ] ⟷ 
-            •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
-               inj₁ (• t₁ , • t₃) ]
-  dist2   : {t₁ t₂ t₃ : U•} → 
-            •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₂ (• t₂) , • t₃) ] ⟷ 
-            •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
-               inj₂ (• t₂ , • t₃) ]
-  factor1   : {t₁ t₂ t₃ : U•} → 
-            •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
-               inj₁ (• t₁ , • t₃) ] ⟷ 
-            •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₁ (• t₁) , • t₃) ]
-  factor2   : {t₁ t₂ t₃ : U•} → 
-            •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
-               inj₂ (• t₂ , • t₃) ] ⟷ 
-            •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₂ (• t₂) , • t₃) ]
-  id⟷    : {t : U•} → t ⟷ t
-  sym⟷   : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
-  _◎_    : {t₁ t₂ t₃ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
-  _⊕1_   : {t₁ t₂ t₃ t₄ : U•} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → 
+  unite₊  : ∀ {t v} → •[ PLUS ZERO t , inj₂ v ] ⟷ •[ t , v ]
+  uniti₊  : ∀ {t v} → •[ t , v ] ⟷ •[ PLUS ZERO t , inj₂ v ]
+  swap1₊  : ∀ {t₁ t₂ v₁} → •[ PLUS t₁ t₂ , inj₁ v₁ ] ⟷ •[ PLUS t₂ t₁ , inj₂ v₁ ]
+  swap2₊  : ∀ {t₁ t₂ v₂} → •[ PLUS t₁ t₂ , inj₂ v₂ ] ⟷ •[ PLUS t₂ t₁ , inj₁ v₂ ]
+  assocl1₊ : ∀ {t₁ t₂ t₃ v₁} → 
+             •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] ⟷ 
+             •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₁ v₁) ]
+  assocl2₊ : ∀ {t₁ t₂ t₃ v₂} → 
+             •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] ⟷ 
+             •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₂ v₂) ]
+  assocl3₊ : ∀ {t₁ t₂ t₃ v₃} → 
+             •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] ⟷ 
+             •[ PLUS (PLUS t₁ t₂) t₃ , inj₂ v₃ ]
+  assocr1₊ : ∀ {t₁ t₂ t₃ v₁} → 
+             •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₁ v₁) ] ⟷ 
+             •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] 
+  assocr2₊ : ∀ {t₁ t₂ t₃ v₂} → 
+             •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₂ v₂) ] ⟷ 
+             •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] 
+  assocr3₊ : ∀ {t₁ t₂ t₃ v₃} → 
+             •[ PLUS (PLUS t₁ t₂) t₃ , inj₂ v₃ ] ⟷ 
+             •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
+  unite⋆  : ∀ {t v} → •[ TIMES ONE t , (tt , v) ] ⟷ •[ t , v ]
+  uniti⋆  : ∀ {t v} → •[ t , v ] ⟷ •[ TIMES ONE t , (tt , v) ] 
+  swap⋆   : ∀ {t₁ t₂ v₁ v₂} → 
+              •[ TIMES t₁ t₂ , (v₁ , v₂) ] ⟷ •[ TIMES t₂ t₁ , (v₂ , v₁) ]
+  assocl⋆ : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → 
+            •[ TIMES t₁ (TIMES t₂ t₃) , (v₁ , (v₂ , v₃)) ] ⟷ 
+            •[ TIMES (TIMES t₁ t₂) t₃ , ((v₁ , v₂) , v₃) ]
+  assocr⋆ : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → 
+            •[ TIMES (TIMES t₁ t₂) t₃ , ((v₁ , v₂) , v₃) ] ⟷ 
+            •[ TIMES t₁ (TIMES t₂ t₃) , (v₁ , (v₂ , v₃)) ]
+  distz : ∀ {t v absurd} → 
+            •[ TIMES ZERO t , (absurd , v) ] ⟷ •[ ZERO , absurd ]
+  factorz : ∀ {t v absurd} → 
+            •[ ZERO , absurd ] ⟷ •[ TIMES ZERO t , (absurd , v) ]
+  dist1   : ∀ {t₁ t₂ t₃ v₁ v₃} → 
+            •[ TIMES (PLUS t₁ t₂) t₃ , (inj₁ v₁ , v₃) ] ⟷ 
+            •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₁ (v₁ , v₃) ]
+  dist2   : ∀ {t₁ t₂ t₃ v₂ v₃} → 
+            •[ TIMES (PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ] ⟷ 
+            •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₂ (v₂ , v₃) ]
+  factor1   : ∀ {t₁ t₂ t₃ v₁ v₃} → 
+            •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₁ (v₁ , v₃) ] ⟷ 
+            •[ TIMES (PLUS t₁ t₂) t₃ , (inj₁ v₁ , v₃) ]
+  factor2   : ∀ {t₁ t₂ t₃ v₂ v₃} → 
+            •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₂ (v₂ , v₃) ] ⟷ 
+            •[ TIMES (PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ]
+  id⟷    : ∀ {t : U•} → t ⟷ t
+  sym⟷   : ∀ {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
+  _◎_    : ∀ {t₁ t₂ t₃ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+  _⊕1_   : ∀ {t₁ t₂ t₃ t₄ : U•} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → 
            (•[ PLUS ∣ t₁ ∣ ∣ t₂ ∣ , inj₁ (• t₁) ] ⟷ 
             •[ PLUS ∣ t₃ ∣ ∣ t₄ ∣ , inj₁ (• t₃) ])
-  _⊕2_   : {t₁ t₂ t₃ t₄ : U•} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → 
+  _⊕2_   : ∀ {t₁ t₂ t₃ t₄ : U•} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → 
            (•[ PLUS ∣ t₁ ∣ ∣ t₂ ∣ , inj₂ (• t₂) ] ⟷ 
             •[ PLUS ∣ t₃ ∣ ∣ t₄ ∣ , inj₂ (• t₄) ])
-  _⊗_     : {t₁ t₂ t₃ t₄ : U•} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → 
-          (•[ TIMES ∣ t₁ ∣ ∣ t₂ ∣ , (• t₁ , • t₂ ) ] ⟷ 
-           •[ TIMES ∣ t₃ ∣ ∣ t₄ ∣ , (• t₃ , • t₄ ) ])
+  _⊗_     : ∀ {t₁ t₂ t₃ t₄ : U•} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → 
+          (•[ TIMES ∣ t₁ ∣ ∣ t₂ ∣ , (• t₁ , • t₂) ] ⟷ 
+           •[ TIMES ∣ t₃ ∣ ∣ t₄ ∣ , (• t₃ , • t₄) ])
 
 -- example programs
 
@@ -207,25 +201,25 @@ UG = record
 simplifySym : {t₁ t₂ : U•} → (c₁ : t₁ ⟷ t₂) → (t₂ ⟷ t₁)
 simplifySym unite₊ = uniti₊
 simplifySym uniti₊ = unite₊
-simplifySym swap1₊ = {!!}
-simplifySym swap2₊ = {!!}
-simplifySym assocl1₊ = {!!}
-simplifySym assocl2₊ = {!!}
-simplifySym assocl3₊ = {!!}
-simplifySym assocr1₊ = {!!}
-simplifySym assocr2₊ = {!!}
-simplifySym assocr3₊ = {!!}
-simplifySym unite⋆ = {!!}
-simplifySym uniti⋆ = {!!}
-simplifySym swap⋆ = {!!}
-simplifySym assocl⋆ = {!!}
-simplifySym assocr⋆ = {!!}
-simplifySym distz = {!!}
-simplifySym factorz = {!!}
-simplifySym dist1 = {!!}
-simplifySym dist2 = {!!}
-simplifySym factor1 = {!!}
-simplifySym factor2 = {!!}
+simplifySym swap1₊ = swap2₊
+simplifySym swap2₊ = swap1₊
+simplifySym assocl1₊ = assocr1₊
+simplifySym assocl2₊ = assocr2₊
+simplifySym assocl3₊ = assocr3₊
+simplifySym assocr1₊ = assocl1₊
+simplifySym assocr2₊ = assocl2₊
+simplifySym assocr3₊ = assocl3₊
+simplifySym unite⋆ = uniti⋆
+simplifySym uniti⋆ = unite⋆
+simplifySym swap⋆ = swap⋆
+simplifySym assocl⋆ = assocr⋆
+simplifySym assocr⋆ = assocl⋆
+simplifySym distz = factorz
+simplifySym factorz = distz
+simplifySym dist1 = factor1 
+simplifySym dist2 = factor2 
+simplifySym factor1 = dist1 
+simplifySym factor2 = dist2 
 simplifySym id⟷ = id⟷
 simplifySym (sym⟷ c) = c
 simplifySym (c₁ ◎ c₂) = simplifySym c₂ ◎ simplifySym c₁ 
@@ -236,35 +230,10 @@ simplifySym (c₁ ⊗ c₂) = simplifySym c₁ ⊗ simplifySym c₂
 simplify◎ : {t₁ t₂ t₃ : U•} → (c₁ : t₁ ⟷ t₂) → (c₂ : t₂ ⟷ t₃) → (t₁ ⟷ t₃)
 simplify◎ id⟷ c₂ = c₂
 simplify◎ (c₁ ◎ c₂) c₃ = simplify◎ c₁ (c₂ ◎ c₃)
---
-simplify◎ unite₊ unite₊ = {!!}
-simplify◎ unite₊ uniti₊ = {!!}
-simplify◎ unite₊ swap1₊ = {!!}
-simplify◎ unite₊ swap2₊ = {!!}
-simplify◎ unite₊ assocl1₊ = {!!}
-simplify◎ unite₊ assocl2₊ = {!!}
-simplify◎ unite₊ assocl3₊ = {!!}
-simplify◎ unite₊ assocr1₊ = {!!}
-simplify◎ unite₊ assocr2₊ = {!!}
-simplify◎ unite₊ assocr3₊ = {!!}
-simplify◎ unite₊ unite⋆ = {!!}
-simplify◎ unite₊ uniti⋆ = {!!}
-simplify◎ unite₊ swap⋆ = {!!}
-simplify◎ unite₊ assocl⋆ = {!!}
-simplify◎ unite₊ assocr⋆ = {!!}
-simplify◎ unite₊ distz = {!!}
-simplify◎ unite₊ factorz = {!!}
-simplify◎ unite₊ dist1 = {!!}
-simplify◎ unite₊ dist2 = {!!}
-simplify◎ unite₊ factor1 = {!!}
-simplify◎ unite₊ factor2 = {!!}
-simplify◎ unite₊ id⟷ = {!!}
-simplify◎ unite₊ (sym⟷ c₂) = {!!}
-simplify◎ unite₊ (c₂ ◎ c₃) = {!!}
-simplify◎ unite₊ (c₂ ⊕1 c₃) = {!!}
-simplify◎ unite₊ (c₂ ⊕2 c₃) = {!!}
-simplify◎ unite₊ (c₂ ⊗ c₃) = {!!}
---
+simplify◎ c₁ c₂ = c₁ ◎ c₂
+
+{--
+simplify◎ unite₊ c₂ = {!!} 
 simplify◎ uniti₊ c₂ = {!!}
 simplify◎ swap1₊ c₂ = {!!}
 simplify◎ swap2₊ c₂ = {!!}
@@ -289,11 +258,10 @@ simplify◎ (sym⟷ c₁) c₂ = {!!}
 simplify◎ (c₁ ⊕1 c₂) c₃ = {!!}
 simplify◎ (c₁ ⊕2 c₂) c₃ = {!!}
 simplify◎ (c₁ ⊗ c₂) c₃ = {!!} 
+--}
 
-simplify⊗ : {t₁ t₂ t₃ : U•} → (c₁ : t₁ ⟷ t₂) → (c₂ : t₂ ⟷ t₃) → (t₁ ⟷ t₃)
-simplify⊗ = {!!} 
-
-
+--simplify⊗ : {t₁ t₂ t₃ : U•} → (c₁ : t₁ ⟷ t₂) → (c₂ : t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+--simplify⊗ c₁ c₂ = {!!} 
 
 ------------------------------------------------------------------------------
 
