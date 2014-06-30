@@ -1,5 +1,10 @@
 module Pi1 where
 
+-- the idea I guess is that instead of having the usual evaluator where
+-- values flow, we want an evaluator that rewrites the circuit to primitive
+-- isos; for that we need some normal form for permutations and a proof that
+-- we can rewrite any circuit to this normal form
+
 -- plan after that: add trace; this make obs equiv much more interesting and
 -- allows a limited form of h.o. functions via the int construction and then
 -- do the ring completion to get more complete notion of h.o. functions
@@ -97,6 +102,11 @@ data _⟷_ : U• → U• → Set where
 -- these are defined by induction on P.⟷ !!!
 -- they should be up to 2 paths; for examples of 2 paths look at proofs of 
 -- path assoc; triangle and pentagon rules
+
+  simplify◎ : {t₁ t₂ t₃ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} → 
+    Path• (c₁ P.◎ c₂) ⟷ Path• (P.simplify◎ c₁ c₂)
+
+--  simplifySym
 
   lidl    : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
             Path• (P.id⟷ P.◎ c) ⟷ Path• c
@@ -270,6 +280,8 @@ data _⟷_ : U• → U• → Set where
             Path• (c₁ P.◎ (c₂ P.◎ c₃))
 -- Need rules that look at every compatible c₁ ◎ c₂ and produces a simplified
 -- version. Examples:
+  -- anything followed by a swap can be simplified???
+
   --(c₁ ⊗ c₂) ◎ swap⋆ = swap⋆ ◎ (c₂ ⊗ c₁)
   ⊗swap⋆l : {t₁ t₂ t₃ t₄ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₃ P.⟷ t₄} → 
             Path• ((c₁ P.⊗ c₂) P.◎ P.swap⋆) ⟷ 

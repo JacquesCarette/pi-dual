@@ -202,4 +202,98 @@ UG = record
        }
 
 ------------------------------------------------------------------------------
+-- Simplifiy various compositions
+
+simplifySym : {t₁ t₂ : U•} → (c₁ : t₁ ⟷ t₂) → (t₂ ⟷ t₁)
+simplifySym unite₊ = uniti₊
+simplifySym uniti₊ = unite₊
+simplifySym swap1₊ = {!!}
+simplifySym swap2₊ = {!!}
+simplifySym assocl1₊ = {!!}
+simplifySym assocl2₊ = {!!}
+simplifySym assocl3₊ = {!!}
+simplifySym assocr1₊ = {!!}
+simplifySym assocr2₊ = {!!}
+simplifySym assocr3₊ = {!!}
+simplifySym unite⋆ = {!!}
+simplifySym uniti⋆ = {!!}
+simplifySym swap⋆ = {!!}
+simplifySym assocl⋆ = {!!}
+simplifySym assocr⋆ = {!!}
+simplifySym distz = {!!}
+simplifySym factorz = {!!}
+simplifySym dist1 = {!!}
+simplifySym dist2 = {!!}
+simplifySym factor1 = {!!}
+simplifySym factor2 = {!!}
+simplifySym id⟷ = id⟷
+simplifySym (sym⟷ c) = c
+simplifySym (c₁ ◎ c₂) = simplifySym c₂ ◎ simplifySym c₁ 
+simplifySym (c₁ ⊕1 c₂) = simplifySym c₁ ⊕1 simplifySym c₂ 
+simplifySym (c₁ ⊕2 c₂) = simplifySym c₁ ⊕2 simplifySym c₂ 
+simplifySym (c₁ ⊗ c₂) = simplifySym c₁ ⊗ simplifySym c₂ 
+
+simplify◎ : {t₁ t₂ t₃ : U•} → (c₁ : t₁ ⟷ t₂) → (c₂ : t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+simplify◎ id⟷ c₂ = c₂
+simplify◎ (c₁ ◎ c₂) c₃ = simplify◎ c₁ (c₂ ◎ c₃)
+--
+simplify◎ unite₊ unite₊ = {!!}
+simplify◎ unite₊ uniti₊ = {!!}
+simplify◎ unite₊ swap1₊ = {!!}
+simplify◎ unite₊ swap2₊ = {!!}
+simplify◎ unite₊ assocl1₊ = {!!}
+simplify◎ unite₊ assocl2₊ = {!!}
+simplify◎ unite₊ assocl3₊ = {!!}
+simplify◎ unite₊ assocr1₊ = {!!}
+simplify◎ unite₊ assocr2₊ = {!!}
+simplify◎ unite₊ assocr3₊ = {!!}
+simplify◎ unite₊ unite⋆ = {!!}
+simplify◎ unite₊ uniti⋆ = {!!}
+simplify◎ unite₊ swap⋆ = {!!}
+simplify◎ unite₊ assocl⋆ = {!!}
+simplify◎ unite₊ assocr⋆ = {!!}
+simplify◎ unite₊ distz = {!!}
+simplify◎ unite₊ factorz = {!!}
+simplify◎ unite₊ dist1 = {!!}
+simplify◎ unite₊ dist2 = {!!}
+simplify◎ unite₊ factor1 = {!!}
+simplify◎ unite₊ factor2 = {!!}
+simplify◎ unite₊ id⟷ = {!!}
+simplify◎ unite₊ (sym⟷ c₂) = {!!}
+simplify◎ unite₊ (c₂ ◎ c₃) = {!!}
+simplify◎ unite₊ (c₂ ⊕1 c₃) = {!!}
+simplify◎ unite₊ (c₂ ⊕2 c₃) = {!!}
+simplify◎ unite₊ (c₂ ⊗ c₃) = {!!}
+--
+simplify◎ uniti₊ c₂ = {!!}
+simplify◎ swap1₊ c₂ = {!!}
+simplify◎ swap2₊ c₂ = {!!}
+simplify◎ assocl1₊ c₂ = {!!}
+simplify◎ assocl2₊ c₂ = {!!}
+simplify◎ assocl3₊ c₂ = {!!}
+simplify◎ assocr1₊ c₂ = {!!}
+simplify◎ assocr2₊ c₂ = {!!}
+simplify◎ assocr3₊ c₂ = {!!}
+simplify◎ unite⋆ c₂ = {!!}
+simplify◎ uniti⋆ c₂ = {!!}
+simplify◎ swap⋆ c₂ = {!!}
+simplify◎ assocl⋆ c₂ = {!!}
+simplify◎ assocr⋆ c₂ = {!!}
+simplify◎ distz c₂ = {!!}
+simplify◎ factorz c₂ = {!!}
+simplify◎ dist1 c₂ = {!!}
+simplify◎ dist2 c₂ = {!!}
+simplify◎ factor1 c₂ = {!!}
+simplify◎ factor2 c₂ = {!!}
+simplify◎ (sym⟷ c₁) c₂ = {!!}
+simplify◎ (c₁ ⊕1 c₂) c₃ = {!!}
+simplify◎ (c₁ ⊕2 c₂) c₃ = {!!}
+simplify◎ (c₁ ⊗ c₂) c₃ = {!!} 
+
+simplify⊗ : {t₁ t₂ t₃ : U•} → (c₁ : t₁ ⟷ t₂) → (c₂ : t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+simplify⊗ = {!!} 
+
+
+
+------------------------------------------------------------------------------
 
