@@ -1,5 +1,8 @@
 module Pi1 where
 
+-- for examples of 2 paths look at proofs of 
+-- path assoc; triangle and pentagon rules
+
 -- the idea I guess is that instead of having the usual evaluator where
 -- values flow, we want an evaluator that rewrites the circuit to primitive
 -- isos; for that we need some normal form for permutations and a proof that
@@ -97,18 +100,23 @@ data _⟷_ : U• → U• → Set where
   sym⟷   : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
   _◎_     : {t₁ t₂ t₃ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
 
-  -- groupoid combinators
+  -- groupoid combinators defined by induction on P.⟷ in Pi0.agda
 
--- they are defined by induction on P.⟷ 
+  simplifyl◎l : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} 
+             {c₁ : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} 
+             {c₂ : P.U•.•[ t₂ , v₂ ] P.⟷ P.U•.•[ t₃ , v₃ ]} → 
+    Path• (c₁ P.◎ c₂) ⟷ Path• (P.simplifyl◎ c₁ c₂)
 
--- for examples of 2 paths look at proofs of 
--- path assoc; triangle and pentagon rules
+  simplifyl◎r : {t₁ t₂ t₃ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} → 
+    Path• (P.simplifyl◎ c₁ c₂) ⟷ Path• (c₁ P.◎ c₂)
 
-  simplify◎l : {t₁ t₂ t₃ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} → 
-    Path• (c₁ P.◎ c₂) ⟷ Path• (P.simplify◎ c₁ c₂)
+  simplifyr◎l : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} 
+             {c₁ : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} 
+             {c₂ : P.U•.•[ t₂ , v₂ ] P.⟷ P.U•.•[ t₃ , v₃ ]} → 
+    Path• (c₁ P.◎ c₂) ⟷ Path• (P.simplifyr◎ c₁ c₂)
 
-  simplify◎r : {t₁ t₂ t₃ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} → 
-    Path• (P.simplify◎ c₁ c₂) ⟷ Path• (c₁ P.◎ c₂)
+  simplifyr◎r : {t₁ t₂ t₃ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} → 
+    Path• (P.simplifyr◎ c₁ c₂) ⟷ Path• (c₁ P.◎ c₂)
 
   simplifySyml : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
     Path• (P.sym⟷ c) ⟷ Path• (P.simplifySym c)
@@ -116,22 +124,14 @@ data _⟷_ : U• → U• → Set where
   simplifySymr : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
     Path• (P.simplifySym c) ⟷ Path• (P.sym⟷ c)
 
-  lidl    : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
-            Path• (P.id⟷ P.◎ c) ⟷ Path• c
-  lidr    : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
-            Path• c ⟷ Path• (P.id⟷ P.◎ c)
-  ridl    : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
-            Path• (c P.◎ P.id⟷) ⟷ Path• c
-  ridr    : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
-            Path• c ⟷ Path• (c P.◎ P.id⟷)
-  invll   : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
-            Path• (P.sym⟷ c P.◎ c) ⟷ Path• (P.id⟷ {t₂})
-  invlr   : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
-            Path• (P.id⟷ {t₂}) ⟷ Path• (P.sym⟷ c P.◎ c)
-  invrl   : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
-            Path• (c P.◎ P.sym⟷ c) ⟷ Path• (P.id⟷ {t₁})
-  invrr   : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
-            Path• (P.id⟷ {t₁}) ⟷ Path• (c P.◎ P.sym⟷ c)
+  invll   : ∀ {t₁ t₂ v₁ v₂} → {c : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} → 
+            Path• (P.sym⟷ c P.◎ c) ⟷ Path• (P.id⟷ {t₂} {v₂})
+  invlr   : ∀ {t₁ t₂ v₁ v₂} → {c : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} → 
+            Path• (P.id⟷ {t₂} {v₂}) ⟷ Path• (P.sym⟷ c P.◎ c)
+  invrl   : ∀ {t₁ t₂ v₁ v₂} → {c : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} → 
+            Path• (c P.◎ P.sym⟷ c) ⟷ Path• (P.id⟷ {t₁} {v₁})
+  invrr   : ∀ {t₁ t₂ v₁ v₂} → {c : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} → 
+            Path• (P.id⟷ {t₁} {v₁}) ⟷ Path• (c P.◎ P.sym⟷ c)
   tassocl : {t₁ t₂ t₃ t₄ : P.U•} 
             {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} {c₃ : t₃ P.⟷ t₄} → 
             Path• (c₁ P.◎ (c₂ P.◎ c₃)) ⟷ 
@@ -141,24 +141,6 @@ data _⟷_ : U• → U• → Set where
             Path• ((c₁ P.◎ c₂) P.◎ c₃) ⟷ 
             Path• (c₁ P.◎ (c₂ P.◎ c₃))
 
--- Need rules that look at every compatible c₁ ◎ c₂ and produces a simplified
--- version. Examples:
-  -- anything followed by a swap can be simplified???
-
-  --(c₁ ⊗ c₂) ◎ swap⋆ = swap⋆ ◎ (c₂ ⊗ c₁)
-  ⊗swap⋆l : {t₁ t₂ t₃ t₄ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₃ P.⟷ t₄} → 
-            Path• ((c₁ P.⊗ c₂) P.◎ P.swap⋆) ⟷ 
-            Path• (P.swap⋆ P.◎ (c₂ P.⊗ c₁))
-  ⊗swap⋆r : {t₁ t₂ t₃ t₄ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₃ P.⟷ t₄} → 
-            Path• (P.swap⋆ P.◎ (c₂ P.⊗ c₁)) ⟷ 
-            Path• ((c₁ P.⊗ c₂) P.◎ P.swap⋆) 
-  --(c₁ ⊗ c₂) ◎ unite⋆ = unite⋆ ◎ c₂ 
-  ⊗unite⋆l : {t₃ t₄ : P.U•} {c₁ : P.ONE• P.⟷ P.ONE•} {c₂ : t₃ P.⟷ t₄} → 
-            Path• ((c₁ P.⊗ c₂) P.◎ P.unite⋆) ⟷ 
-            Path• (P.unite⋆ P.◎ c₂) 
-  ⊗unite⋆r : {t₃ t₄ : P.U•} {c₁ : P.ONE• P.⟷ P.ONE•} {c₂ : t₃ P.⟷ t₄} → 
-            Path• (P.unite⋆ P.◎ c₂) ⟷ 
-            Path• ((c₁ P.⊗ c₂) P.◎ P.unite⋆) 
   -- resp◎ is closely related to Eckmann-Hilton
   resp◎   : {t₁ t₂ t₃ : P.U•} 
             {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} 
@@ -235,25 +217,26 @@ data _⟷_ : U• → U• → Set where
 
 -- example programs
 
+{--
 α₁ : Path• P.NOT•T ⟷ Path• (P.id⟷ P.◎ P.NOT•T)
-α₁ = lidr 
+α₁ = simplify◎r
 
 α₂ α₃ : •[ TIMES (PATH P.NOT•T) (PATH (P.NOT•T P.◎ P.id⟷)) , (p₁ , p₄) ] ⟷ 
         •[ TIMES (PATH P.NOT•T) (PATH P.NOT•T) , (p₁ , p₁) ] 
-α₂ = id⟷ ⊗ ridl 
-α₃ = swap⋆ ◎ (ridl ⊗ id⟷) 
+α₂ = id⟷ ⊗ simplify◎l
+α₃ = swap⋆ ◎ (simplify◎l ⊗ id⟷) 
 
 -- let's try to prove that p₁ = p₂ = p₃ = p₄ = p₅
 
 -- p₁ ~> p₂
 α₄ : •[ PATH P.NOT•T , p₁ ] ⟷ •[ PATH (P.id⟷ P.◎ P.NOT•T) , p₂ ]
-α₄ = lidr
+α₄ = simplify◎r
 
 -- p₂ ~> p₃
 α₅ : •[ PATH (P.id⟷ P.◎ P.NOT•T) , p₂ ] ⟷ 
      •[ PATH (P.NOT•T P.◎ P.NOT•F P.◎ P.NOT•T) , p₃ ]
-α₅ = lidl ◎ ridr ◎ (resp◎ id⟷ (invrr {c = P.NOT•F} ◎ resp◎ id⟷ simplifySyml))
-
+α₅ = simplify◎l ◎ simplify◎r ◎ (resp◎ id⟷ (invrr {c = P.NOT•F} ◎ resp◎ id⟷ simplifySyml))
+--}
 -- p₃ ~> p₄
 α₆ : •[ PATH (P.NOT•T P.◎ P.NOT•F P.◎ P.NOT•T) , p₃ ] ⟷ 
      •[ PATH (P.NOT•T P.◎ P.id⟷) , p₄ ]
@@ -261,22 +244,23 @@ data _⟷_ : U• → U• → Set where
 
 -- p₅ ~> p₁
 
+{--
 α₈ : •[ PATH (P.uniti⋆ P.◎ P.swap⋆ P.◎ 
              (P.NOT•T P.⊗ P.id⟷) P.◎ P.swap⋆ P.◎ P.unite⋆) , 
         p₅ ] ⟷ 
      •[ PATH P.NOT•T , p₁ ] 
 α₈ = resp◎ id⟷ (resp◎ id⟷ tassocl) ◎ 
-     resp◎ id⟷ (resp◎ id⟷ (resp◎ ⊗swap⋆l id⟷)) ◎ 
+     resp◎ id⟷ (resp◎ id⟷ (resp◎ simplify◎l id⟷)) ◎ 
      resp◎ id⟷ (resp◎ id⟷ tassocr) ◎
      resp◎ id⟷ tassocl ◎
      resp◎ id⟷ (resp◎ (resp◎ simplifySymr id⟷) id⟷) ◎
      resp◎ id⟷ (resp◎ invll id⟷) ◎
-     resp◎ id⟷ lidl ◎
-     resp◎ id⟷ ⊗unite⋆l ◎
-     resp◎ simplifySymr id⟷ ◎
+     resp◎ id⟷ simplify◎l ◎
+     resp◎ id⟷ simplify◎l ◎
+     resp◎ simplifySyml id⟷ ◎
      tassocl ◎ 
      resp◎ invll id⟷ ◎
-     lidl 
+     simplify◎l 
 
 -- p₄ ~> p₅
 
@@ -284,7 +268,8 @@ data _⟷_ : U• → U• → Set where
      •[ PATH (P.uniti⋆ P.◎ P.swap⋆ P.◎ 
              (P.NOT•T P.⊗ P.id⟷) P.◎ P.swap⋆ P.◎ P.unite⋆) , 
         p₅ ]
-α₇ = ridl ◎ (sym⟷ α₈)
+α₇ = simplify◎l ◎ (sym⟷ α₈)
+--}
 
 -- level 0 is a groupoid with a non-trivial path equivalence the various inv*
 -- rules are not justified by the groupoid proof; they are justified by the
@@ -303,14 +288,20 @@ G = record
         ; id = P.id⟷
         ; _∘_ = λ c₀ c₁ → c₁ P.◎ c₀
         ; _⁻¹ = P.sym⟷
-        ; lneutr = λ _ → ridl
-        ; rneutr = λ _ → lidl
+        ; lneutr = λ {t₁} {t₂} c → simplifyr◎l 
+           {P.U•.∣ t₁ ∣} {P.U•.∣ t₂ ∣} {P.U•.∣ t₂ ∣} 
+           {P.U•.• t₁} {P.U•.• t₂} {P.U•.• t₂} {c} {P.id⟷} 
+        ; rneutr = λ {t₁} {t₂} c → simplifyl◎l 
+           {P.U•.∣ t₁ ∣} {P.U•.∣ t₁ ∣} {P.U•.∣ t₂ ∣} 
+           {P.U•.• t₁} {P.U•.• t₁} {P.U•.• t₂} {P.id⟷} {c}
         ; assoc = λ _ _ _ → tassocl
         ; equiv = record { refl = id⟷ 
                                 ; sym = λ c → sym⟷ c 
                                 ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
-        ; linv = λ _ → invrl 
-        ; rinv = λ _ → invll 
+        ; linv = λ {t₁} {t₂} c → 
+                   invrl {P.U•.∣ t₁ ∣} {P.U•.∣ t₂ ∣} {P.U•.• t₁} {P.U•.• t₂}
+        ; rinv = λ {t₁} {t₂} c → 
+                   invll {P.U•.∣ t₁ ∣} {P.U•.∣ t₂ ∣} {P.U•.• t₁} {P.U•.• t₂}
         ; ∘-resp-≈ = λ f⟷h g⟷i → resp◎ g⟷i f⟷h 
         }
 
