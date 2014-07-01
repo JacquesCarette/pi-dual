@@ -104,18 +104,22 @@ of univalence.
 \AgdaHide{
 \begin{code}
 module p where
-open import Level
+open import Level 
 open import Data.Empty
 open import Data.Unit
 open import Data.Sum
+open import Data.Bool
 open import Data.Product
 open import Data.Nat hiding (_⊔_)
-open import Function 
+open import Function
 
 open import Groupoid
 
-infixr 10 _◎_
 infixr 30 _⟷_
+infixr 10 _◎_
+infix  4  _≡_   -- propositional equality
+infix  4  _∼_   -- homotopy between two functions (the same as ≡ by univalence)
+infix  4  _≃_   -- type of equivalences
 
 data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
   refl : (a : A) → (a ≡ a)
@@ -146,9 +150,9 @@ Our approach is to start with a computational framework that has finite data
 and permutations as the operations between them. The computational rules
 apply permutations.
 
-HoTT says id types are an inductively defined type family with refl as
-constructor. We say it is a family defined with pi combinators as
-constructors. Replace path induction with refl as base case with our
+HoTT~\cite{hottbook} says id types are an inductively defined type family
+with refl as constructor. We say it is a family defined with pi combinators
+as constructors. Replace path induction with refl as base case with our
 induction.
 
 \paragraph*{Generalization} 
@@ -177,11 +181,14 @@ Informally, and as a first approximation, one may think of HoTT as a
 variation on Martin-L\"of type theory in which all equalities are given
 \emph{computational content}. We explain the basic ideas below.
 
+%%%%%%%%%%%%%%%%%%
+\subsection{Paths}
+
 Formally, Martin-L\"of type theory, is based on the principle that every
 proposition, i.e., every statement that is susceptible to proof, can be
 viewed as a type. Indeed, if a proposition $P$ is true, the corresponding
 type is inhabited and it is possible to provide evidence or proof for $P$
-using one of the elements of the type $P$. If, however, a proposition $P$ is
+using one of the elements of the type~$P$. If, however, a proposition $P$ is
 false, the corresponding type is empty and it is impossible to provide a
 proof for $P$. The type theory is rich enough to express the standard logical
 propositions denoting conjunction, disjunction, implication, and existential
@@ -218,16 +225,18 @@ in more familiar terms, given two proofs of some proposition $P$, are these
 two proofs themselves ``equal.'' In some situations, the only interesting
 property of proofs is their existence, i.e., all proofs of the same
 proposition are considered equivalent. The twist that dates back to the paper
-by \citep{Hofmann96thegroupoid} is that proofs actually possess a structure
+by \citet{Hofmann96thegroupoid} is that proofs actually possess a structure
 of great combinatorial complexity. HoTT builds on this idea by interpreting
 types as topological spaces or weak $\infty$-groupoids, and interpreting
-identities between elements of a type \AgdaBound{x} \AgdaDatatype{≡}
-\AgdaBound{y} as \emph{paths} from \AgdaBound{x} to \AgdaBound{y}. If
-\AgdaBound{x} and \AgdaBound{y} are themselves paths, the elements of
-\AgdaBound{x} \AgdaDatatype{≡} \AgdaBound{y} become paths between paths, or
-homotopies in the topological language. To be explicit, we will often use
-$\AgdaDatatype{≡}_\AgdaBound{A}$ to refer to the space in which the path
-lives.
+identities between elements of a type
+\AgdaBound{x}~\AgdaDatatype{≡}~\AgdaBound{y} as \emph{paths} from the point
+\AgdaBound{x} to the point \AgdaBound{y}. If \AgdaBound{x} and \AgdaBound{y}
+are themselves paths, the elements of
+\AgdaBound{x}~\AgdaDatatype{≡}~\AgdaBound{y} become paths between paths, or
+homotopies in the topological language. To be explicit, we will often refer
+to types as \emph{spaces} composed of \emph{points}, paths, 2-paths, etc. and
+write $\AgdaDatatype{≡}_\AgdaBound{A}$ for the type of paths in space
+\AgdaBound{A}.
 
 As a simple example, we are used to thinking of types as sets of values. So
 we typically view the type \AgdaPrimitiveType{Bool} as the figure on the left
@@ -289,142 +298,159 @@ The additional structure of types is formalized as follows. Let
 \item For every pair of paths \AgdaBound{p} \AgdaSymbol{:} \AgdaBound{x}
   $\AgdaDatatype{≡}_\AgdaBound{A}$ \AgdaBound{y} and \AgdaBound{q}
   \AgdaSymbol{:} \AgdaBound{y} $\AgdaDatatype{≡}_\AgdaBound{A}$
-  \AgdaBound{z}, there exists a path \AgdaBound{p} \AgdaSymbol{∘}
+  \AgdaBound{z}, there exists a path \AgdaBound{p} \AgdaSymbol{⊙}
   \AgdaBound{q} \AgdaSymbol{:} \AgdaBound{x} $\AgdaDatatype{≡}_\AgdaBound{A}$
   \AgdaBound{z};
 \item Subject to the following conditions:
 \begin{itemize}
-\item \AgdaBound{p} \AgdaSymbol{∘} \AgdaInductiveConstructor{refl}
+\item \AgdaBound{p} \AgdaSymbol{⊙} \AgdaInductiveConstructor{refl}
   \AgdaBound{y} $\AgdaDatatype{≡}_{(\AgdaBound{x} \AgdaDatatype{≡}_A
     \AgdaBound{y})}$ \AgdaBound{p}; 
 \item \AgdaBound{p} $\AgdaDatatype{≡}_{(\AgdaBound{x} \AgdaDatatype{≡}_A
   \AgdaBound{y})}$ \AgdaInductiveConstructor{refl} \AgdaBound{x}
-  \AgdaSymbol{∘} \AgdaBound{p}
-\item \AgdaSymbol{!} \AgdaBound{p} \AgdaSymbol{∘} \AgdaBound{p}
+  \AgdaSymbol{⊙} \AgdaBound{p}
+\item \AgdaSymbol{!} \AgdaBound{p} \AgdaSymbol{⊙} \AgdaBound{p}
   $\AgdaDatatype{≡}_{(\AgdaBound{y} \AgdaDatatype{≡}_A \AgdaBound{y})}$
   \AgdaInductiveConstructor{refl} \AgdaBound{y}
-\item \AgdaBound{p} \AgdaSymbol{∘} \AgdaSymbol{!} \AgdaBound{p}
+\item \AgdaBound{p} \AgdaSymbol{⊙} \AgdaSymbol{!} \AgdaBound{p}
   $\AgdaDatatype{≡}_{(\AgdaBound{x} \AgdaDatatype{≡}_A \AgdaBound{x})}$
   \AgdaInductiveConstructor{refl} \AgdaBound{x}
 \item \AgdaSymbol{!} (\AgdaSymbol{!} \AgdaBound{p})
   $\AgdaDatatype{≡}_{(\AgdaBound{x} \AgdaDatatype{≡}_A \AgdaBound{y})}$
   \AgdaBound{p} 
-\item \AgdaBound{p} \AgdaSymbol{∘} (\AgdaBound{q} \AgdaSymbol{∘}
+\item \AgdaBound{p} \AgdaSymbol{⊙} (\AgdaBound{q} \AgdaSymbol{⊙}
   \AgdaBound{r}) $\AgdaDatatype{≡}_{(\AgdaBound{x} \AgdaDatatype{≡}_A
-    \AgdaBound{z})}$ (\AgdaBound{p} \AgdaSymbol{∘} \AgdaBound{q})
-  \AgdaSymbol{∘} \AgdaBound{r}
+    \AgdaBound{z})}$ (\AgdaBound{p} \AgdaSymbol{⊙} \AgdaBound{q})
+  \AgdaSymbol{⊙} \AgdaBound{r}
 \end{itemize} 
 \item This structure repeats one level up and so on ad infinitum.
 \end{itemize}
 
-\newpage
-~
-\newpage
+%%%%%%%%%%%%%%%%%%
+\subsection{Univalence} 
 
-Structure of Paths:
-\begin{itemize}
-\item What do paths in $A \times B$ look like?  We can
-prove that $(a_1,b_1) \equiv (a_2,b_2)$ in $A \times B$ iff $a_1 \equiv
-a_2$ in $A$ and $b_1 \equiv b_2$ in $B$.
-\item What do paths in $A_1 \uplus A_2$ look like? 
-We can prove that $\mathit{inj}_i~x \equiv \mathit{inj}_j~y$ 
- in $A_1 \uplus A_2$ iff $i=j$ and $x \equiv y$ in $A_i$.
-\item What do paths in $A \rightarrow B$ look like?
-We cannot prove anything. Postulate function
-extensionality axiom.
-\item What do paths in $\mathrm{Set}_{\ell}$ look like?
-We cannot prove anything. Postulate univalence axiom.
-\end{itemize}
+In addition to paths between the points \AgdaInductiveConstructor{false} and
+\AgdaInductiveConstructor{true} in the space \AgdaPrimitiveType{Bool}, it is
+also possible to consider paths between the space \AgdaPrimitiveType{Bool}
+and itself by considering \AgdaPrimitiveType{Bool} as a ``point'' in the
+universe \AgdaPrimitiveType{Set} of types. As usual, we have the trivial path
+which is given by the constructor \AgdaInductiveConstructor{refl}:
 
-Function Extensionality:
-
+\smallskip
 \begin{code}
--- f ∼ g iff ∀ x. f x ≡ g x
+p : Bool ≡ Bool
+p = refl Bool
+\end{code}
+\smallskip
+
+\noindent There are, however, other non trivial paths between
+\AgdaPrimitiveType{Bool} and itself and they are justified by
+\emph{univalence \textbf{postulate}}. As an example, the remainder of this
+section justifies that there is a path between \AgdaPrimitiveType{Bool} and
+itself corresponding to the boolean negation function.
+
+We begin by formalizing the equivalence of functions
+\AgdaSymbol{∼}. Intuitively, two functions are equivalent if their results
+are propositionally equal for all inputs. A function \AgdaBound{f}
+\AgdaSymbol{:} \AgdaBound{A} \AgdaSymbol{→} \AgdaBound{B} is called an
+\emph{equivalence} if there are functions \AgdaBound{g} and \AgdaBound{h}
+with whom its composition is the identity. Finally we say \AgdaBound{A}
+\AgdaSymbol{≃} \AgdaBound{B} if there is an equivalence between them:
+
+\smallskip
+\begin{code}
 _∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
       (f g : (x : A) → P x) → Set (ℓ ⊔ ℓ')
 _∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → f x ≡ g x
 
--- f is an equivalence if we have g and h such that
--- the compositions with f in both ways are ∼ id
-record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
-  Set (ℓ ⊔ ℓ') where
+record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) 
+  : Set (ℓ ⊔ ℓ') where
   constructor mkisequiv
   field
     g : B → A 
     α : (f ∘ g) ∼ id
     h : B → A
     β : (h ∘ f) ∼ id
-\end{code}
 
-\begin{code}
--- a path between f and g implies f ∼ g
-happly : ∀ {ℓ ℓ'} {A : Set ℓ} {B : A → Set ℓ'} {f g : (a : A) → B a} → 
-         (f ≡ g) → (f ∼ g)
-happly {ℓ} {ℓ'} {A} {B} {f} {g} p = {!!}
-
-postulate -- that f ∼ g implies a path between f and g
-  funextP :  {A : Set} {B : A → Set} {f g : (a : A) → B a} → 
-             isequiv {A = f ≡ g} {B = f ∼ g} happly
-
-funext :  {A : Set} {B : A → Set} {f g : (a : A) → B a} → 
-          (f ∼ g) → (f ≡ g)
-funext = isequiv.g funextP
-\end{code}
-
-A path between $f$ and $g$ is a collection of paths from $f(x)$ to $g(x)$.
-We are no longer executable!
-
-Univalence:
-
-\begin{code}
--- Two spaces are equivalent if we have functions 
--- f, g, and h that compose to id
 _≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ ⊔ ℓ')
 A ≃ B = Σ (A → B) isequiv
-
--- A path between spaces implies their equivalence
-idtoeqv : {A B : Set} → (A ≡ B) → (A ≃ B)
-idtoeqv {A} {B} p = {!!}
-
-postulate -- that equivalence of spaces implies a path 
-  univalence : {A B : Set} → (A ≡ B) ≃ (A ≃ B)
 \end{code}
+\smallskip
 
-Again, we are no longer executable!
+We can now formally state the univalence axiom:
 
-Analysis:
-\begin{itemize}
-\item We start with two different notions: paths and functions;
-\item We use extensional non-constructive methods to identify a
-particular class of functions that form isomorphisms;
-\item We postulate that this particular class of functions can be
-identified with paths.
-\end{itemize}
+\smallskip
+\begin{code}
+postulate univalence : {A B : Set} → (A ≡ B) ≃ (A ≃ B)
+\end{code}
+\smallskip
 
-Insight:
-\begin{itemize}
-\item Start with a constructive characterization of \emph{reversible
-functions} or \emph{isomorphisms};
-\item Blur the distinction between such reversible functions and paths
-from the beginning.
-\end{itemize}
+\noindent A consequence of univalence is that equivalence of spaces implies a
+path between the spaces. In other words, in order to assert the existence of
+a path other than the trivial \AgdaInductiveConstructor{refl} between
+\AgdaPrimitiveType{Bool} and itself, we need to find an equivalence between
+the space \AgdaPrimitiveType{Bool} and itself:
 
-Note that:
-\begin{itemize}
-\item Reversible functions are computationally universal
-(Bennett's reversible Turing Machine from 1973!)
-\item \emph{First-order} reversible functions can be inductively defined
-in type theory (James and Sabry, POPL 2012).
-\end{itemize}
+\smallskip
+\begin{code}
+not2∼id : (not ∘ not) ∼ id 
+not2∼id false  =  refl false
+not2∼id true   =  refl true
 
+notequiv : Bool ≃ Bool
+notequiv = (not , record {
+                    g = not ;
+                    α = λ b → not2∼id b ; 
+                    h = not ; 
+                    β = λ a → not2∼id a
+                  })
+
+not≡ : Bool ≡ Bool
+not≡ with univalence
+... | (_ , eq) = isequiv.g eq notequiv
+\end{code}
+\smallskip
+
+%%%%%%%%%%%%%%%%%%
+\subsection{Reversible Functions} 
+
+Although the code asserting the existence of a non trivial path between
+\AgdaPrimitiveType{Bool} and itself ``compiles,'' it is no longer executable
+as it relies on an Agda postulate. We analyze the situation from the
+perspective of reversible programming languages based on type
+isomorphisms~\cite{James:2012:IE:2103656.2103667,rc2011,rc2012}.
+
+The conventional HoTT approach starts with two, a priori, different notions:
+functions and paths, and then postulates an equivalence between a particular
+class of functions and paths. As illustrated above, functions like
+\AgdaBound{not} correspond to a path like \AgdaBound{not≡}. Most functions,
+however, are evidently unrelated to paths. In particular, any function
+\AgdaBound{A} \AgdaSymbol{→} \AgdaBound{B} that does not have an inverse
+\AgdaBound{B} \AgdaSymbol{→} \AgdaBound{A} cannot have any direct
+correspondence to paths. An interesting question poses itself though: since
+reversible computational models --- in which all functions have inverses ---
+are known to be universal computational models, what would happen if we
+considered a variant of HoTT based exclusively on reversible functions?
+Presumably in such a variant, all functions being reversible, would
+correspond to paths and the distinction between the two notions would vanish
+making the univalence postulate unnecessary. This is the precise idea we
+investigate in detail in the remainder of the paper. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Computing with Type Isomorphisms}
 \label{pi}
 
-The main syntactic vehicle for the developments in this paper is a simple
-language called $\Pi$ whose only computations are isomorphisms between finite
-types. 
+In a computational world in which the laws of physics are embraced and
+resources are carefully maintained (e.g., quantum
+computing~\cite{NC00,Abramsky:2004:CSQ:1018438.1021878}), programs must be
+reversible. Although this is apparently a limiting idea, it turns out that
+conventional computation can be viewed as a special case of such
+resource-preserving reversible programs. This thesis has been explored for
+many years from different
+perspectives~\cite{fredkin1982conservative,Toffoli:1980,bennett2010notes,bennett2003notes,Bennett:1973:LRC,Landauer:1961,Landauer}.
+The main syntactic vehicle for the technical developments in this paper is a
+simple language called $\Pi$ whose only computations are isomorphisms between
+finite types~\citeyearpar{James:2012:IE:2103656.2103667}.
 
 \begin{table*}[t]
 \[\begin{array}{cc}
@@ -926,6 +952,21 @@ simplifyr◎ c₁ c₂ = c₁ ◎ c₂
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Examples} 
 
+%% Structure of Paths:
+%% \begin{itemize}
+%% \item What do paths in $A \times B$ look like?  We can
+%% prove that $(a_1,b_1) \equiv (a_2,b_2)$ in $A \times B$ iff $a_1 \equiv
+%% a_2$ in $A$ and $b_1 \equiv b_2$ in $B$.
+%% \item What do paths in $A_1 \uplus A_2$ look like? 
+%% We can prove that $\mathit{inj}_i~x \equiv \mathit{inj}_j~y$ 
+%%  in $A_1 \uplus A_2$ iff $i=j$ and $x \equiv y$ in $A_i$.
+%% \item What do paths in $A \rightarrow B$ look like?
+%% We cannot prove anything. Postulate function
+%% extensionality axiom.
+%% \item What do paths in $\mathrm{Set}_{\ell}$ look like?
+%% We cannot prove anything. Postulate univalence axiom.
+%% \end{itemize}
+
 Let's start with a few simple types built from the empty type, the unit type,
 sums, and products, and let's study the paths postulated by HoTT.
 
@@ -1094,63 +1135,6 @@ addition to the path above, we also have:
 \qquad
 \Rule{}{}{? : \idt{\assoc}{?}{?}}{}
 \end{figure*}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Pi}
-
-\subsection{Base isomorphisms}
-\[\begin{array}{rrcll}
-\identlp :&  0 + b & \iso & b &: \identrp \\
-\swapp :&  b_1 + b_2 & \iso & b_2 + b_1 &: \swapp \\
-\assoclp :&  b_1 + (b_2 + b_3) & \iso & (b_1 + b_2) + b_3 &: \assocrp \\
-\identlt :&  1 * b & \iso & b &: \identrt \\
-\swapt :&  b_1 * b_2 & \iso & b_2 * b_1 &: \swapt \\
-\assoclt :&  b_1 * (b_2 * b_3) & \iso & (b_1 * b_2) * b_3 &: \assocrt \\
-\distz :&~ 0 * b & \iso & 0 &: \factorz \\
-\dist :&~ (b_1 + b_2) * b_3 & \iso & (b_1 * b_3) + (b_2 * b_3)~ &: \factor
-\end{array}\]
-
-\begin{center} 
-\Rule{}
-{}
-{\jdg{}{}{\idc : b \iso b}}
-{}
-\quad 
-\Rule{}
-{\jdg{}{}{c : b_1 \iso b_2}}
-{\jdg{}{}{\symc{c} : b_2 \iso b_1}}
-{}
-\\ \bigskip
-\Rule{}
-{\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_2 \iso b_3}
-{\jdg{}{}{c_1 \fatsemi c_2 : b_1 \iso b_3}}
-{}
-\\ \bigskip
-\Rule{}
-{\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_3 \iso b_4}
-{\jdg{}{}{c_1 \oplus c_2 : b_1 + b_3 \iso b_2 + b_4}}
-{}
-\quad 
-\Rule{}
-{\jdg{}{}{c_1 : b_1 \iso b_2} \quad c_2 : b_3 \iso b_4}
-{\jdg{}{}{c_1 \otimes c_2 : b_1 * b_3 \iso b_2 * b_4}}
-{}
-\end{center}
-
-These isomorphisms:
-\begin{itemize}
-\item Form an inductive type
-\item Identify each isomorphism with a collection of paths
-\item For example:
-\[\begin{array}{rrcl}
-\swapp :&  b_1 + b_2 & \iso & b_2 + b_1 
-\end{array}\]
-becomes:
-\[\begin{array}{rrcll}
-\swapp^1 :&  \mathit{inj}_1 v & \equiv & \mathit{inj}_2 v \\
-\swapp^2 :&  \mathit{inj}_2 v & \equiv & \mathit{inj}_1 v 
-\end{array}\]
-\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
