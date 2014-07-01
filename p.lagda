@@ -21,6 +21,8 @@
 \usepackage{textgreek}
 \usepackage{extarrows}
 
+\renewcommand{\AgdaCodeStyle}{\small}
+
 \newcommand{\AgdaArgument}[1]{#1}
 \newcommand{\inl}[1]{\textsf{inl}~#1}
 \newcommand{\inr}[1]{\textsf{inr}~#1}
@@ -71,10 +73,10 @@ $\displaystyle
     {\hrule width \hsize height .33pt \vspace{.5pc}}
     {\par\addvspace{.5pc}}
 
-\DeclareUnicodeCharacter{9678}{9678}
-\DeclareUnicodeCharacter{10231}{10231}
-\DeclareUnicodeCharacter{10214}{10214}
-\DeclareUnicodeCharacter{10215}{10215}
+\DeclareUnicodeCharacter{9678}{$\circledcirc$}
+\DeclareUnicodeCharacter{10231}{$\leftrightarrow$}
+\DeclareUnicodeCharacter{10214}{$\llbracket$} 
+\DeclareUnicodeCharacter{10215}{$\rrbracket$} 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
@@ -114,6 +116,9 @@ open import Groupoid
 
 infixr 10 _◎_
 infixr 30 _⟷_
+
+data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
+  refl : (a : A) → (a ≡ a)
 \end{code}
 }
 
@@ -168,46 +173,67 @@ isomorphisms.
 \section{Condensed Background on HoTT}
 \label{hott}
 
-Informally, and as a first approximation, one may think of HoTT as
-mathematics, type theory, or computation but with all equalities replaced by
-isomorphisms, i.e., with equalities given computational content. We explain
-some of the basic ideas below.
+Informally, and as a first approximation, one may think of HoTT as a
+variation on Martin-L\"of type theory in which all equalities are given
+\emph{computational content}. We explain the basic ideas below.
 
-One starts with Martin-L\"of type theory, interprets the types as topological
-spaces or weak $\infty$-groupoids, and interprets identities between elements
-of a type as \emph{paths}.  In more detail, one interprets the witnesses of
-the identity $x \equiv y$ as paths from $x$ to $y$. If $x$ and $y$ are
-themselves paths, then witnesses of the identity $x \equiv y$ become paths
-between paths, or homotopies in the topological language. In Agda notation,
-we can formally express this as follows:
+Formally, Martin-L\"of type theory, is based on the principle that every
+proposition, i.e., every statement that is susceptible to proof, can be
+viewed as a type. Indeed, if a proposition $P$ is true, the corresponding
+type is inhabited and it is possible to provide evidence or proof for $P$
+using one of the elements of the type $P$. If, however, a proposition $P$ is
+false, the corresponding type is empty and it is impossible to provide a
+proof for $P$. The type theory is rich enough to express the standard logical
+propositions denoting conjunction, disjunction, implication, and existential
+and universal quantifications. In addition, it is clear that the question of
+whether two elements of a type are equal is a proposition, and hence that
+this proposition must correspond to a type. In Agda, one may write proofs of
+this proposition as shown in the two small examples below:
 
-\medskip
+\smallskip
 \begin{code}
-data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
-  refl : (a : A) → (a ≡ a)
-
 i0 : 3 ≡ 3
 i0 = refl 3
 
 i1 : (1 + 2) ≡ (3 * 1)
 i1 = refl 3
-
-i2 : ℕ ≡ ℕ
-i2 = refl ℕ
 \end{code}
-\medskip
+\smallskip
 
-\noindent It is important to note that the notion of propositional
-equality~$\equiv$ relates any two terms that are \emph{definitionally equal}
-as shown in example \AgdaFunction{i1} above. In general, there may be
-\emph{many} proofs (i.e., paths) showing that two particular values are
-identical and that proofs are not necessarily identical. This gives rise to a
-structure of great combinatorial complexity. To be explicit, we will use
-$\equiv_U$ to refer to the space in which the path lives.
+\noindent More generally, given two values \AgdaBound{m} and \AgdaBound{n} of
+type \AgdaPrimitiveType{ℕ}, it is possible to construct an element
+\AgdaInductiveConstructor{refl} \AgdaBound{k} of the type \AgdaBound{m}
+\AgdaDatatype{≡} \AgdaBound{n} if and only if \AgdaBound{m}, \AgdaBound{n},
+and \AgdaBound{k} are all ``equal.'' As shown in example \AgdaFunction{i1},
+this notion of \emph{propositional equality} is not just syntactic equality
+but generalizes to \emph{definitional equality}, i.e., to equality that can
+be established by normalizing the two values to their normal forms.
 
-We are used to thinking of types as sets of values. So we typically view the
-type \AgdaPrimitiveType{Bool} as the figure on the left but in HoTT we should
-instead think about it as the figure on the right:
+The important question from the HoTT perspective is the following: given two
+elements \AgdaBound{p} and \AgdaBound{q} of some type \AgdaBound{x}
+\AgdaDatatype{≡} \AgdaBound{y} with
+\AgdaBound{x}~\AgdaBound{y}~\AgdaSymbol{:}~\AgdaBound{A}, what can we say
+about the elements of type \AgdaBound{p} \AgdaDatatype{≡} \AgdaBound{q}. Or,
+in more familiar terms, given two proofs of some proposition $P$, are these
+two proofs themselves ``equal.'' In some situations, the only interesting
+property of proofs is their existence, i.e., all proofs of the same
+proposition are considered equivalent. The twist that dates back to the paper
+by \citep{Hofmann96thegroupoid} is that proofs actually possess a structure
+of great combinatorial complexity. HoTT builds on this idea by interpreting
+types as topological spaces or weak $\infty$-groupoids, and interpreting
+identities between elements of a type \AgdaBound{x} \AgdaDatatype{≡}
+\AgdaBound{y} as \emph{paths} from \AgdaBound{x} to \AgdaBound{y}. If
+\AgdaBound{x} and \AgdaBound{y} are themselves paths, the elements of
+\AgdaBound{x} \AgdaDatatype{≡} \AgdaBound{y} become paths between paths, or
+homotopies in the topological language. To be explicit, we will often use
+$\AgdaDatatype{≡}_\AgdaBound{A}$ to refer to the space in which the path
+lives.
+
+As a simple example, we are used to thinking of types as sets of values. So
+we typically view the type \AgdaPrimitiveType{Bool} as the figure on the left
+but in HoTT we should instead think about it as the figure on the right where
+there is a (trivial) path \AgdaInductiveConstructor{refl} \AgdaBound{b} from
+each point \AgdaBound{b} to itself:
 \[
 \begin{tikzpicture}[scale=0.7]
   \draw (0,0) ellipse (2cm and 1cm);
@@ -228,18 +254,15 @@ instead think about it as the figure on the right:
 \end{tikzpicture}
 \]
 In this particular case, it makes no difference, but in general we may have a
-much more complicated path structure. 
-
-We cannot generate non-trivial groupoids starting from the usual type
-constructions. We need \emph{higher-order inductive types} for that purpose.
-The classical example is the \emph{circle} that is a space consisting of a
-point \AgdaFunction{base} and a path \AgdaFunction{loop} from
+much more complicated path structure. The classical such example is the
+topological \emph{circle} which is a space consisting of a point
+\AgdaFunction{base} and a \emph{non trivial} path \AgdaFunction{loop} from
 \AgdaFunction{base} to itself. As stated, this does not amount to
 much. However, because paths carry additional structure (explained below),
 that space has the following non-trivial structure:
 
 \begin{center}
-\begin{tikzpicture}[scale=0.78]
+\begin{tikzpicture}[scale=0.74]
   \draw (0,0) ellipse (5.5cm and 2.5cm);
   \draw[fill] (0,0) circle (0.025);
   \draw[->,thick,red] (0,0) arc (90:440:0.2);
@@ -251,28 +274,149 @@ that space has the following non-trivial structure:
   \draw[->,thick,blue] (0,0) arc (360:40:0.7);
   \draw[->,thick,blue] (0,0) arc (360:30:1.2);
   \node[right,blue] at (-1.4,0) {!~loop};
-  \node[left,blue] at (-2.4,0) {$\ldots$ !~loop $\circ$ !~loop};
+  \node[left,blue] at (-2.3,0) {$\ldots$ !~loop $\circ$ !~loop};
 \end{tikzpicture}
 \end{center}
 
-The additional structure of types is formalized as follows. Let $x$, $y$, and
-$z$ be elements of some $U$:
+The additional structure of types is formalized as follows. Let
+\AgdaBound{x}, \AgdaBound{y}, and \AgdaBound{z} be elements of some space
+\AgdaBound{A}:
 \begin{itemize}
-\item For every path $p : x \equiv_U y$, there exists a path $! p : y
-  \equiv_U x$;
-\item For every $p : x \equiv_U y$ and $q : y \equiv_U z$, there exists a
-  path $p \circ q : x \equiv_U z$;
+\item For every path \AgdaBound{p} \AgdaSymbol{:} \AgdaBound{x}
+  $\AgdaDatatype{≡}_\AgdaBound{A}$ \AgdaBound{y}, there exists a path
+  \AgdaSymbol{!}  \AgdaBound{p} \AgdaSymbol{:} \AgdaBound{y}
+  $\AgdaDatatype{≡}_\AgdaBound{A}$ \AgdaBound{x}; 
+\item For every pair of paths \AgdaBound{p} \AgdaSymbol{:} \AgdaBound{x}
+  $\AgdaDatatype{≡}_\AgdaBound{A}$ \AgdaBound{y} and \AgdaBound{q}
+  \AgdaSymbol{:} \AgdaBound{y} $\AgdaDatatype{≡}_\AgdaBound{A}$
+  \AgdaBound{z}, there exists a path \AgdaBound{p} \AgdaSymbol{∘}
+  \AgdaBound{q} \AgdaSymbol{:} \AgdaBound{x} $\AgdaDatatype{≡}_\AgdaBound{A}$
+  \AgdaBound{z};
 \item Subject to the following conditions:
- \[\begin{array}{rcl}
-  p \circ \mathit{refl}~y &\equiv_{{x \equiv_U y}} & p \\
-  p &\equiv_{{x \equiv_U y}} & \mathit{refl}~x \circ p \\
-  !p \circ p &\equiv_{{y \equiv_U y}} & \mathit{refl}~y \\
-  p ~\circ~ !p &\equiv_{{x \equiv_U x}} & \mathit{refl}~x \\
-  !~(!p) &\equiv_{{x \equiv_U y}} & p \\
-  p \circ (q \circ r) &\equiv_{{x \equiv_U z}} & (p \circ q) \circ r
- \end{array}\]
-\item With similar conditions one level up and so on and so forth.
+\begin{itemize}
+\item \AgdaBound{p} \AgdaSymbol{∘} \AgdaInductiveConstructor{refl}
+  \AgdaBound{y} $\AgdaDatatype{≡}_{(\AgdaBound{x} \AgdaDatatype{≡}_A
+    \AgdaBound{y})}$ \AgdaBound{p}; 
+\item \AgdaBound{p} $\AgdaDatatype{≡}_{(\AgdaBound{x} \AgdaDatatype{≡}_A
+  \AgdaBound{y})}$ \AgdaInductiveConstructor{refl} \AgdaBound{x}
+  \AgdaSymbol{∘} \AgdaBound{p}
+\item \AgdaSymbol{!} \AgdaBound{p} \AgdaSymbol{∘} \AgdaBound{p}
+  $\AgdaDatatype{≡}_{(\AgdaBound{y} \AgdaDatatype{≡}_A \AgdaBound{y})}$
+  \AgdaInductiveConstructor{refl} \AgdaBound{y}
+\item \AgdaBound{p} \AgdaSymbol{∘} \AgdaSymbol{!} \AgdaBound{p}
+  $\AgdaDatatype{≡}_{(\AgdaBound{x} \AgdaDatatype{≡}_A \AgdaBound{x})}$
+  \AgdaInductiveConstructor{refl} \AgdaBound{x}
+\item \AgdaSymbol{!} (\AgdaSymbol{!} \AgdaBound{p})
+  $\AgdaDatatype{≡}_{(\AgdaBound{x} \AgdaDatatype{≡}_A \AgdaBound{y})}$
+  \AgdaBound{p} 
+\item \AgdaBound{p} \AgdaSymbol{∘} (\AgdaBound{q} \AgdaSymbol{∘}
+  \AgdaBound{r}) $\AgdaDatatype{≡}_{(\AgdaBound{x} \AgdaDatatype{≡}_A
+    \AgdaBound{z})}$ (\AgdaBound{p} \AgdaSymbol{∘} \AgdaBound{q})
+  \AgdaSymbol{∘} \AgdaBound{r}
+\end{itemize} 
+\item This structure repeats one level up and so on ad infinitum.
 \end{itemize}
+
+\newpage
+~
+\newpage
+
+Structure of Paths:
+\begin{itemize}
+\item What do paths in $A \times B$ look like?  We can
+prove that $(a_1,b_1) \equiv (a_2,b_2)$ in $A \times B$ iff $a_1 \equiv
+a_2$ in $A$ and $b_1 \equiv b_2$ in $B$.
+\item What do paths in $A_1 \uplus A_2$ look like? 
+We can prove that $\mathit{inj}_i~x \equiv \mathit{inj}_j~y$ 
+ in $A_1 \uplus A_2$ iff $i=j$ and $x \equiv y$ in $A_i$.
+\item What do paths in $A \rightarrow B$ look like?
+We cannot prove anything. Postulate function
+extensionality axiom.
+\item What do paths in $\mathrm{Set}_{\ell}$ look like?
+We cannot prove anything. Postulate univalence axiom.
+\end{itemize}
+
+Function Extensionality:
+
+\begin{code}
+-- f ∼ g iff ∀ x. f x ≡ g x
+_∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
+      (f g : (x : A) → P x) → Set (ℓ ⊔ ℓ')
+_∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → f x ≡ g x
+
+-- f is an equivalence if we have g and h such that
+-- the compositions with f in both ways are ∼ id
+record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
+  Set (ℓ ⊔ ℓ') where
+  constructor mkisequiv
+  field
+    g : B → A 
+    α : (f ∘ g) ∼ id
+    h : B → A
+    β : (h ∘ f) ∼ id
+\end{code}
+
+\begin{code}
+-- a path between f and g implies f ∼ g
+happly : ∀ {ℓ ℓ'} {A : Set ℓ} {B : A → Set ℓ'} {f g : (a : A) → B a} → 
+         (f ≡ g) → (f ∼ g)
+happly {ℓ} {ℓ'} {A} {B} {f} {g} p = {!!}
+
+postulate -- that f ∼ g implies a path between f and g
+  funextP :  {A : Set} {B : A → Set} {f g : (a : A) → B a} → 
+             isequiv {A = f ≡ g} {B = f ∼ g} happly
+
+funext :  {A : Set} {B : A → Set} {f g : (a : A) → B a} → 
+          (f ∼ g) → (f ≡ g)
+funext = isequiv.g funextP
+\end{code}
+
+A path between $f$ and $g$ is a collection of paths from $f(x)$ to $g(x)$.
+We are no longer executable!
+
+Univalence:
+
+\begin{code}
+-- Two spaces are equivalent if we have functions 
+-- f, g, and h that compose to id
+_≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ ⊔ ℓ')
+A ≃ B = Σ (A → B) isequiv
+
+-- A path between spaces implies their equivalence
+idtoeqv : {A B : Set} → (A ≡ B) → (A ≃ B)
+idtoeqv {A} {B} p = {!!}
+
+postulate -- that equivalence of spaces implies a path 
+  univalence : {A B : Set} → (A ≡ B) ≃ (A ≃ B)
+\end{code}
+
+Again, we are no longer executable!
+
+Analysis:
+\begin{itemize}
+\item We start with two different notions: paths and functions;
+\item We use extensional non-constructive methods to identify a
+particular class of functions that form isomorphisms;
+\item We postulate that this particular class of functions can be
+identified with paths.
+\end{itemize}
+
+Insight:
+\begin{itemize}
+\item Start with a constructive characterization of \emph{reversible
+functions} or \emph{isomorphisms};
+\item Blur the distinction between such reversible functions and paths
+from the beginning.
+\end{itemize}
+
+Note that:
+\begin{itemize}
+\item Reversible functions are computationally universal
+(Bennett's reversible Turing Machine from 1973!)
+\item \emph{First-order} reversible functions can be inductively defined
+in type theory (James and Sabry, POPL 2012).
+\end{itemize}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Computing with Type Isomorphisms}
@@ -650,7 +794,7 @@ CNOT•TT = dist1 ◎
 -- The evaluation of a program is not done in order to figure out the output
 -- value. Both the input and output values are encoded in the type of the
 -- program; what the evaluation does is follow the path to constructively
--- reach the ouput value from the input value. Even though programs of the
+-- reach the output value from the input value. Even though programs of the
 -- same pointed types are, by definition, observationally equivalent, they
 -- may follow different paths. At this point, we simply declare that all such
 -- programs are "the same." At the next level, we will weaken this "path
@@ -687,7 +831,7 @@ UG = record
        }
 
 ------------------------------------------------------------------------------
--- Simplifiy various compositions
+-- Simplify various compositions
 
 simplifySym : {t₁ t₂ : U•} → (c₁ : t₁ ⟷ t₂) → (t₂ ⟷ t₁)
 simplifySym unite₊ = uniti₊
@@ -778,362 +922,6 @@ simplifyr◎ (c₁ ⊗ c₂) swap⋆ = swap⋆ ◎ (c₂ ⊗ c₁)
 simplifyr◎ (c₁ ⊗ c₂) (c₃ ⊗ c₄) = (c₁ ◎ c₃) ⊗ (c₂ ◎ c₄) 
 simplifyr◎ c₁ c₂ = c₁ ◎ c₂
 \end{code} 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Homotopy Type Theory}
-
-Informally, and as a first approximation, one may think of \emph{homotopy
-  type theory} (HoTT) as mathematics, type theory, or computation but with
-all equalities replaced by isomorphisms, i.e., with equalities given
-computational content. A bit more formally, one starts with Martin-L\"of type
-theory, interprets the types as topological spaces or weak
-$\infty$-groupoids, and interprets identities between elements of a type as
-\emph{paths}.  In more detail, one interprets the witnesses of the identity
-$x \equiv y$ as paths from $x$ to $y$. If $x$ and $y$ are themselves paths,
-then witnesses of the identity $x \equiv y$ become paths between paths, or
-homotopies in the topological language. 
-
-Formally, Martin-L\"of type theory, is based on the principle that every
-proposition, i.e., every statement that is susceptible to proof, can be
-viewed as a type. The correspondence is validated by the following
-properties: if a proposition $P$ is true, the corresponding type is
-inhabited, i.e., it is possible to provide evidence for $P$ using one of the
-elements of the type $P$. If, however, the proposition $P$ is false, the
-corresponding type is empty, i.e., it is impossible to provide evidence for
-$P$. The type theory is rich enough to allow propositions denoting
-conjunction, disjunction, implication, and existential and universal
-quantifications.
-
-It is clear that the question of whether two elements of a type are equal is
-a proposition, and hence that this proposition must correspond to a type.  It
-is important to note that the notion of proposition equality $\equiv$ relates
-any two terms that are \emph{definitionally equal} as shown in example $i1$
-above. In general, there may be \emph{many} proofs (i.e., paths) showing that
-two particular values are identical and that proofs are not necessarily
-identical. This gives rise to a structure of great combinatorial complexity.
-
-We are used to think of types as sets of values. So we think of the type
-\texttt{Bool} as:
-
-\begin{center}
-\begin{tikzpicture}
-  \draw (0,0) ellipse (2cm and 1cm);
-  \draw[fill] (-1,0) circle (0.025);
-  \node[below] at (-1,0) {false};
-  \draw[fill] (1,0) circle (0.025);
-  \node[below] at (1,0) {true};
-\end{tikzpicture}
-\end{center}
-
-In HoTT, we should instead think about it as:
-
-\begin{center}
-\begin{tikzpicture}
-  \draw (0,0) ellipse (2cm and 1cm);
-  \draw[fill] (-1,0) circle (0.025);
-  \draw[->,thick,cyan] (-1,0) arc (0:320:0.2);
-  \node[above right] at (-1,0) {false};
-  \draw[fill] (1,-0.2) circle (0.025);
-  \draw[->,thick,cyan] (1,-0.2) arc (0:320:0.2);
-  \node[above right] at (1,-0.2) {true};
-\end{tikzpicture}
-\end{center}
-
-In this particular case, it makes no difference, but in general we might have
-something like which shows that types are to be viewed as topological spaces
-or groupoids:
-
-\begin{center}
-\begin{tikzpicture}
-  \draw (0,0) ellipse (5cm and 2.5cm);
-  \draw[fill] (-4,0) circle (0.025);
-  \draw[->,thick,cyan] (-4,0) arc (0:320:0.2);
-  \draw[fill] (0,0) circle (0.025);
-  \draw[->,thick,cyan] (0,0) arc (-180:140:0.2);
-  \draw[fill] (4,0) circle (0.025);
-  \draw[->,double,thick,blue] (-2.3,0.8) to [out=225, in=135] (-2.3,-0.8);
-  \draw[->,double,thick,blue] (-1.7,0.8) to [out=-45, in=45] (-1.7,-0.8);
-  \draw[->,thick,red] (-2.4,0.1) -- (-1.6,0.1);
-  \draw[->,thick,red] (-2.4,0) -- (-1.6,0);
-  \draw[->,thick,red] (-2.4,-0.1) -- (-1.6,-0.1);
-  \draw[->,thick,cyan] (-4,0) to [out=60, in=120] (0,0);
-  \draw[->,thick,cyan] (0,0) to [out=-120, in=-60] (-4,0);
-  \draw[->,thick,cyan] (4,0) arc (0:320:0.2);
-  \draw[->,thick,cyan] (4,0) arc (0:330:0.7);
-  \draw[->,thick,cyan] (4,0) arc (0:350:1.2);
-  \draw[->,double,thick,blue] (1.8,0) -- (2.4,0);
-\end{tikzpicture}
-\end{center}
-
-The additional structure of types is formalized as follows:
-\begin{itemize}
-\item For every path $p : x \equiv y$, there exists a path $! p : y
-\equiv x$;
-\item For every $p : x \equiv y$ and $q : y \equiv z$, there
-exists a path $p \circ q : x \equiv z$;
-\item Subject to the following conditions:
- \[\begin{array}{rcl}
-  p \circ \mathit{refl}~y &\equiv& p \\
-  p &\equiv& \mathit{refl}~x \circ p \\
-  !p \circ p &\equiv& \mathit{refl}~y \\
-  p ~\circ~ !p &\equiv& \mathit{refl}~x \\
-  !~(!p) &\equiv& p \\
-  p \circ (q \circ r) &\equiv& (p \circ q) \circ r
- \end{array}\]
-\item With similar conditions one level up and so on and so forth.
-\end{itemize}
-
-We cannot generate non-trivial groupoids starting from the usual type
-constructions. We need \emph{higher-order inductive types} for that purpose.
-Example:
-
-\begin{code}
--- data Circle : Set where
---   base : Circle
---   loop : base ≡ base
-
-module Circle where
-  private data S¹* : Set where base* : S¹*
-
-  S¹ : Set
-  S¹ = S¹*
-
-  base : S¹
-  base = base*
-
-  postulate loop : base ≡ base
-\end{code}
-
-Here is the non-trivial structure of this example:
-
-\begin{center}
-\begin{tikzpicture}
-  \draw (0,0) ellipse (5.5cm and 2.5cm);
-  \draw[fill] (0,0) circle (0.025);
-  \draw[->,thick,red] (0,0) arc (90:440:0.2);
-  \node[above,red] at (0,0) {refl};
-  \draw[->,thick,cyan] (0,0) arc (-180:140:0.7);
-  \draw[->,thick,cyan] (0,0) arc (-180:150:1.2);
-  \node[left,cyan] at (1.4,0) {loop};
-  \node[right,cyan] at (2.4,0) {loop $\circ$ loop $\ldots$};
-  \draw[->,thick,blue] (0,0) arc (360:40:0.7);
-  \draw[->,thick,blue] (0,0) arc (360:30:1.2);
-  \node[right,blue] at (-1.4,0) {!~loop};
-  \node[left,blue] at (-2.4,0) {$\ldots$ !~loop $\circ$ !~loop};
-\end{tikzpicture}
-\end{center}
-
-\begin{itemize}
-\item A function from space $A$ to space $B$ must map the points of $A$
-to the points of $B$ as usual but it must also \emph{respect the path
-structure};
-\item Logically, this corresponds to saying that every function
-respects equality;
-\item Topologically, this corresponds to saying that every function is
-continuous.
-\end{itemize}
-
-\begin{center}
-\begin{tikzpicture}
-  \draw (-3,0) ellipse (1.5cm and 3cm);
-  \draw (3,0) ellipse (1.5cm and 3cm);
-  \draw[fill] (-3,1.5) circle (0.025);
-  \draw[fill] (-3,-1.5) circle (0.025);
-  \node[above] at (-3,1.5) {$x$};
-  \node[below] at (-3,-1.5) {$y$};
-  \draw[fill] (3,1.5) circle (0.025);
-  \draw[fill] (3,-1.5) circle (0.025);
-  \node[above] at (3,1.5) {$f(x)$};
-  \node[below] at (3,-1.5) {$f(y)$};
-  \draw[->,cyan,thick] (-3,1.5) -- (-3,-1.5);
-  \node[left,cyan] at (-3,0) {$p$};
-  \draw[->,cyan,thick] (3,1.5) -- (3,-1.5);
-  \node[right,cyan] at (3,0) {$\mathit{ap}~f~p$};
-  \draw[->,red,dashed,ultra thick] (-2,2.5) to [out=45, in=135] (2,2.5);
-  \node[red,below] at (0,3) {$f$};
-\end{tikzpicture}
-\end{center}
-
-\begin{itemize}
-\item $\mathit{ap}~f~p$ is the action of $f$ on a path $p$;
-\item This satisfies the following properties:
-  \[\begin{array}{rcl}
-  \mathit{ap}~f~(p \circ q) &\equiv&
-                (\mathit{ap}~f~p) \circ (\mathit{ap}~f~q) \\
-  \mathit{ap}~f~(!~p) &\equiv& ~!~(\mathit{ap}~f~p)  \\
-  \mathit{ap}~g~(\mathit{ap}~f~p) &\equiv&
-                \mathit{ap}~(g \circ f)~p  \\
-  \mathit{ap}~\mathit{id}~p &\equiv& p
-  \end{array}\]
-\end{itemize}
-
-Type families as fibrations. 
-\begin{itemize}
-\item A more complicated version of the previous idea for dependent
-functions;
-\item The problem is that for dependent functions, $f(x)$ and $f(y)$ may
-not be in the same type, i.e., they live in different spaces;
-\item Idea is to \emph{transport} $f(x)$ to the space of $f(y)$;
-\item Because everything is ``continuous'', the path $p$ induces a
-transport function that does the right thing: the action of $f$ on $p$
-becomes a path between $\mathit{transport}~(f(x))$ and $f(y)$.
-\end{itemize} 
-
-\begin{center}
-\begin{tikzpicture}
-  \draw (-3,0) ellipse (1.5cm and 3cm);
-  \draw (3,2) ellipse (0.5cm and 1cm);
-  \draw (3,-1.4) ellipse (2cm and 2cm);
-  \node[blue,ultra thick,above] at (3,3) {$P(x)$};
-  \node[blue,ultra thick,below] at (3,-3.5) {$P(y)$};
-  \draw[fill] (-3,1.5) circle (0.025);
-  \draw[fill] (-3,-1.5) circle (0.025);
-  \node[above] at (-3,1.5) {$x$};
-  \node[below] at (-3,-1.5) {$y$};
-  \draw[fill] (3,1.5) circle (0.025);
-  \draw[fill] (3,-0.5) circle (0.025);
-  \draw[fill] (3,-2.5) circle (0.025);
-  \node[above] at (3,1.5) {$f(x)$};
-  \node[above] at (3,-0.5) {$\mathit{transport}~P~p~f(x)$};
-  \node[below] at (3,-2.5) {$f(y)$};
-  \draw[left,cyan,thick] (-3,1.5) -- (-3,-1.5);
-  \node[left,cyan] at (-3,0) {$p$};
-  \draw[->,cyan,thick] (3,-0.5) -- (3,-2.5);
-  \node[right,cyan] at (3,-1.5) {$\mathit{apd}~f~p$};
-  \draw[->,red,dashed,ultra thick] (-2,2.5) to [out=45, in=135] (2.3,2.5);
-  \node[red,below] at (0,3) {$f$ (fiber over $x$)};
-  \draw[->,red,dashed,ultra thick] (-2,-2.5) to [out=-45, in=-135] (1.2,-2.5);
-  \node[red,above] at (-0.5,-2.5) {$f$ (fiber over $y$)};
-  \draw[->,red,dashed,ultra thick] (3.6,2.3) to [out=-45, in=45] (3.5,0.6);
-  \node[red,right] at (3.9,1.45) {$\mathit{transport}~P~p$};
-\end{tikzpicture}
-\end{center}
-
-\begin{itemize}
-\item Let $x, y, z : A$, $p : x \equiv y$, $q : y \equiv z$, 
-$f : A \rightarrow B$, $g : \Pi_{a \in A} P(a) \rightarrow P'(a)$, 
-$P : A \rightarrow \mathit{Set}$, 
-$P' : A \rightarrow \mathit{Set}$, $Q : B \rightarrow \mathit{Set}$, 
-$u : P(x)$, and $w : Q(f(x))$.
-\item The function $\mathit{transport}~P~p$ satisfies 
-the following properties:
-  \[\begin{array}{rcl}
-  \mathit{transport}~P~q~(\mathit{transport}~P~p~u) &\equiv&
-               \mathit{transport}~P~(p \circ q)~u \\
-  \mathit{transport}~(Q \circ f)~p~w &\equiv&
-               \mathit{transport}~Q~(\mathit{ap}~f~p)~w  \\
-  \mathit{transport}~P'~p~(g~x~u) &\equiv&
-               g~y~(\mathit{transport}~P~p~u)
-  \end{array}\]
-\end{itemize}
-
-\begin{itemize}
-\item Let $x,y : A$, $p : x \equiv y$, $P : A \rightarrow
-\mathit{Set}$, and $f : \Pi_{a \in A} P(a)$;
-\item We know we have a path in $P(y)$ between
-$\mathit{transport}~P~p~(f(x))$ and $f(y)$.  
-\item We do not generally know how the point 
-$\mathit{transport}~P~p~(f(x)) : P(y)$ relates to $x$;
-\item We do not generally know how the paths in $P(y)$ are
-related to the paths in $A$.
-\item First ``crack'' in the theory.
-\end{itemize}
-
-Structure of Paths:
-\begin{itemize}
-\item What do paths in $A \times B$ look like?  We can
-prove that $(a_1,b_1) \equiv (a_2,b_2)$ in $A \times B$ iff $a_1 \equiv
-a_2$ in $A$ and $b_1 \equiv b_2$ in $B$.
-\item What do paths in $A_1 \uplus A_2$ look like? 
-We can prove that $\mathit{inj}_i~x \equiv \mathit{inj}_j~y$ 
- in $A_1 \uplus A_2$ iff $i=j$ and $x \equiv y$ in $A_i$.
-\item What do paths in $A \rightarrow B$ look like?
-We cannot prove anything. Postulate function
-extensionality axiom.
-\item What do paths in $\mathrm{Set}_{\ell}$ look like?
-We cannot prove anything. Postulate univalence axiom.
-\end{itemize}
-
-Function Extensionality:
-
-\begin{code}
--- f ∼ g iff ∀ x. f x ≡ g x
-_∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
-      (f g : (x : A) → P x) → Set (ℓ ⊔ ℓ')
-_∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → f x ≡ g x
-
--- f is an equivalence if we have g and h such that
--- the compositions with f in both ways are ∼ id
-record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
-  Set (ℓ ⊔ ℓ') where
-  constructor mkisequiv
-  field
-    g : B → A 
-    α : (f ∘ g) ∼ id
-    h : B → A
-    β : (h ∘ f) ∼ id
-\end{code}
-
-\begin{code}
--- a path between f and g implies f ∼ g
-happly : ∀ {ℓ ℓ'} {A : Set ℓ} {B : A → Set ℓ'} {f g : (a : A) → B a} → 
-         (f ≡ g) → (f ∼ g)
-happly {ℓ} {ℓ'} {A} {B} {f} {g} p = {!!}
-
-postulate -- that f ∼ g implies a path between f and g
-  funextP :  {A : Set} {B : A → Set} {f g : (a : A) → B a} → 
-             isequiv {A = f ≡ g} {B = f ∼ g} happly
-
-funext :  {A : Set} {B : A → Set} {f g : (a : A) → B a} → 
-          (f ∼ g) → (f ≡ g)
-funext = isequiv.g funextP
-\end{code}
-
-A path between $f$ and $g$ is a collection of paths from $f(x)$ to $g(x)$.
-We are no longer executable!
-
-Univalence:
-
-\begin{code}
--- Two spaces are equivalent if we have functions 
--- f, g, and h that compose to id
-_≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ ⊔ ℓ')
-A ≃ B = Σ (A → B) isequiv
-
--- A path between spaces implies their equivalence
-idtoeqv : {A B : Set} → (A ≡ B) → (A ≃ B)
-idtoeqv {A} {B} p = {!!}
-
-postulate -- that equivalence of spaces implies a path 
-  univalence : {A B : Set} → (A ≡ B) ≃ (A ≃ B)
-\end{code}
-
-Again, we are no longer executable!
-
-Analysis:
-\begin{itemize}
-\item We start with two different notions: paths and functions;
-\item We use extensional non-constructive methods to identify a
-particular class of functions that form isomorphisms;
-\item We postulate that this particular class of functions can be
-identified with paths.
-\end{itemize}
-
-Insight:
-\begin{itemize}
-\item Start with a constructive characterization of \emph{reversible
-functions} or \emph{isomorphisms};
-\item Blur the distinction between such reversible functions and paths
-from the beginning.
-\end{itemize}
-
-Note that:
-\begin{itemize}
-\item Reversible functions are computationally universal
-(Bennett's reversible Turing Machine from 1973!)
-\item \emph{First-order} reversible functions can be inductively defined
-in type theory (James and Sabry, POPL 2012).
-\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Examples} 
