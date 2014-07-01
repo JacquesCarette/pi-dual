@@ -121,18 +121,21 @@ data _⟷_ : U• → U• → Set where
   factor2   : ∀ {t₁ t₂ t₃ v₂ v₃} → 
             •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₂ (v₂ , v₃) ] ⟷ 
             •[ TIMES (PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ]
-  id⟷    : ∀ {t : U•} → t ⟷ t
-  sym⟷   : ∀ {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
-  _◎_    : ∀ {t₁ t₂ t₃ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
-  _⊕1_   : ∀ {t₁ t₂ t₃ t₄ : U•} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → 
-           (•[ PLUS ∣ t₁ ∣ ∣ t₂ ∣ , inj₁ (• t₁) ] ⟷ 
-            •[ PLUS ∣ t₃ ∣ ∣ t₄ ∣ , inj₁ (• t₃) ])
-  _⊕2_   : ∀ {t₁ t₂ t₃ t₄ : U•} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → 
-           (•[ PLUS ∣ t₁ ∣ ∣ t₂ ∣ , inj₂ (• t₂) ] ⟷ 
-            •[ PLUS ∣ t₃ ∣ ∣ t₄ ∣ , inj₂ (• t₄) ])
-  _⊗_     : ∀ {t₁ t₂ t₃ t₄ : U•} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → 
-          (•[ TIMES ∣ t₁ ∣ ∣ t₂ ∣ , (• t₁ , • t₂) ] ⟷ 
-           •[ TIMES ∣ t₃ ∣ ∣ t₄ ∣ , (• t₃ , • t₄) ])
+  id⟷    : ∀ {t v} → •[ t , v ] ⟷ •[ t , v ]
+  sym⟷   : ∀ {t₁ t₂ v₁ v₂} → (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) → 
+           (•[ t₂ , v₂ ] ⟷ •[ t₁ , v₁ ])
+  _◎_    : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) → 
+           (•[ t₂ , v₂ ] ⟷ •[ t₃ , v₃ ]) → 
+           (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ])
+  _⊕1_   : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
+           (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
+           (•[ PLUS t₁ t₂ , inj₁ v₁ ] ⟷ •[ PLUS t₃ t₄ , inj₁ v₃ ])
+  _⊕2_   : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
+           (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
+           (•[ PLUS t₁ t₂ , inj₂ v₂ ] ⟷ •[ PLUS t₃ t₄ , inj₂ v₄ ])
+  _⊗_     : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
+           (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
+          (•[ TIMES t₁ t₂ , (v₁ , v₂) ] ⟷ •[ TIMES t₃ t₄ , (v₃ , v₄) ])
 
 -- example programs
 
@@ -148,12 +151,12 @@ CNOT•Fx = dist2 ◎ ((id⟷ ⊗ NOT•F) ⊕2 id⟷) ◎ factor2
 
 CNOT•TF : •[ BOOL² , (TRUE , FALSE) ] ⟷ •[ BOOL² , (TRUE , TRUE) ]
 CNOT•TF = dist1 ◎ 
-          ((id⟷ ⊗ NOT•F) ⊕1 (id⟷ {•[ TIMES ONE BOOL , (tt , FALSE) ]})) ◎ 
+          ((id⟷ ⊗ NOT•F) ⊕1 (id⟷ {TIMES ONE BOOL} {(tt , TRUE)})) ◎
           factor1
 
 CNOT•TT : •[ BOOL² , (TRUE , TRUE) ] ⟷ •[ BOOL² , (TRUE , FALSE) ]
 CNOT•TT = dist1 ◎ 
-          ((id⟷ ⊗ NOT•T) ⊕1 (id⟷ {•[ TIMES ONE BOOL , (tt , TRUE) ]})) ◎ 
+          ((id⟷ ⊗ NOT•T) ⊕1 (id⟷ {TIMES ONE BOOL} {(tt , TRUE)})) ◎ 
           factor1
 
 -- The evaluation of a program is not done in order to figure out the output
@@ -228,40 +231,212 @@ simplifySym (c₁ ⊕2 c₂) = simplifySym c₁ ⊕2 simplifySym c₂
 simplifySym (c₁ ⊗ c₂) = simplifySym c₁ ⊗ simplifySym c₂ 
 
 simplify◎ : {t₁ t₂ t₃ : U•} → (c₁ : t₁ ⟷ t₂) → (c₂ : t₂ ⟷ t₃) → (t₁ ⟷ t₃)
-simplify◎ id⟷ c₂ = c₂
-simplify◎ (c₁ ◎ c₂) c₃ = simplify◎ c₁ (c₂ ◎ c₃)
+simplify◎ unite₊ unite₊ = {!!}
+simplify◎ unite₊ uniti₊ = id⟷
+simplify◎ unite₊ swap1₊ = {!!}
+simplify◎ unite₊ swap2₊ = {!!}
+simplify◎ unite₊ assocl1₊ = {!!}
+simplify◎ unite₊ assocl2₊ = {!!}
+simplify◎ unite₊ assocl3₊ = {!!}
+simplify◎ unite₊ assocr1₊ = {!!}
+simplify◎ unite₊ assocr2₊ = {!!}
+simplify◎ unite₊ assocr3₊ = {!!}
+simplify◎ unite₊ unite⋆ = {!!}
+simplify◎ unite₊ uniti⋆ = {!!}
+simplify◎ unite₊ swap⋆ = {!!}
+simplify◎ unite₊ assocl⋆ = {!!}
+simplify◎ unite₊ assocr⋆ = {!!}
+simplify◎ unite₊ distz = {!!}
+simplify◎ unite₊ factorz = {!!}
+simplify◎ unite₊ dist1 = {!!}
+simplify◎ unite₊ dist2 = {!!}
+simplify◎ unite₊ factor1 = {!!}
+simplify◎ unite₊ factor2 = {!!}
+simplify◎ unite₊ (c₂ ⊕1 c₃) = {!!}
+simplify◎ unite₊ (c₂ ⊕2 c₃) = {!!}
+simplify◎ unite₊ (c₂ ⊗ c₃) = {!!}
+simplify◎ uniti₊ unite₊ = id⟷ 
+simplify◎ uniti₊ uniti₊ = {!!}
+simplify◎ uniti₊ swap2₊ = {!!}
+simplify◎ uniti₊ assocl2₊ = {!!}
+simplify◎ uniti₊ assocl3₊ = {!!}
+simplify◎ uniti₊ uniti⋆ = {!!}
+simplify◎ uniti₊ (c₂ ⊕2 c₃) = {!!}
+simplify◎ swap1₊ unite₊ = {!!}
+simplify◎ swap1₊ uniti₊ = {!!}
+simplify◎ swap1₊ swap2₊ = id⟷ 
+simplify◎ swap1₊ assocl2₊ = {!!}
+simplify◎ swap1₊ assocl3₊ = {!!}
+simplify◎ swap1₊ assocr3₊ = {!!}
+simplify◎ swap1₊ uniti⋆ = {!!}
+simplify◎ swap1₊ factor2 = {!!}
+simplify◎ swap1₊ (c₂ ⊕2 c₃) = {!!}
+simplify◎ swap2₊ uniti₊ = {!!}
+simplify◎ swap2₊ swap1₊ = id⟷ 
+simplify◎ swap2₊ assocl1₊ = {!!}
+simplify◎ swap2₊ assocr1₊ = {!!}
+simplify◎ swap2₊ assocr2₊ = {!!}
+simplify◎ swap2₊ uniti⋆ = {!!}
+simplify◎ swap2₊ factor1 = {!!}
+simplify◎ swap2₊ (c₂ ⊕1 c₃) = {!!}
+simplify◎ assocl1₊ uniti₊ = {!!}
+simplify◎ assocl1₊ swap1₊ = {!!}
+simplify◎ assocl1₊ assocl1₊ = {!!}
+simplify◎ assocl1₊ assocr1₊ = id⟷ 
+simplify◎ assocl1₊ uniti⋆ = {!!}
+simplify◎ assocl1₊ (c₂ ⊕1 c₃) = {!!}
+simplify◎ assocl2₊ uniti₊ = {!!}
+simplify◎ assocl2₊ swap1₊ = {!!}
+simplify◎ assocl2₊ assocl1₊ = {!!}
+simplify◎ assocl2₊ assocr2₊ = id⟷ 
+simplify◎ assocl2₊ uniti⋆ = {!!}
+simplify◎ assocl2₊ (c₂ ⊕1 c₃) = {!!}
+simplify◎ assocl3₊ uniti₊ = {!!}
+simplify◎ assocl3₊ swap2₊ = {!!}
+simplify◎ assocl3₊ assocl2₊ = {!!}
+simplify◎ assocl3₊ assocl3₊ = {!!}
+simplify◎ assocl3₊ assocr3₊ = id⟷ 
+simplify◎ assocl3₊ uniti⋆ = {!!}
+simplify◎ assocl3₊ (c₂ ⊕2 c₃) = {!!}
+simplify◎ assocr1₊ uniti₊ = {!!}
+simplify◎ assocr1₊ swap1₊ = {!!}
+simplify◎ assocr1₊ assocl1₊ = id⟷ 
+simplify◎ assocr1₊ assocr1₊ = {!!}
+simplify◎ assocr1₊ assocr2₊ = {!!}
+simplify◎ assocr1₊ uniti⋆ = {!!}
+simplify◎ assocr1₊ (c₂ ⊕1 c₃) = {!!}
+simplify◎ assocr2₊ unite₊ = {!!}
+simplify◎ assocr2₊ uniti₊ = {!!}
+simplify◎ assocr2₊ swap2₊ = {!!}
+simplify◎ assocr2₊ assocl2₊ = id⟷ 
+simplify◎ assocr2₊ assocr3₊ = {!!}
+simplify◎ assocr2₊ uniti⋆ = {!!}
+simplify◎ assocr2₊ (c₂ ⊕2 c₃) = {!!}
+simplify◎ assocr3₊ unite₊ = {!!}
+simplify◎ assocr3₊ uniti₊ = {!!}
+simplify◎ assocr3₊ swap2₊ = {!!}
+simplify◎ assocr3₊ assocl3₊ = id⟷ 
+simplify◎ assocr3₊ assocr3₊ = {!!}
+simplify◎ assocr3₊ uniti⋆ = {!!}
+simplify◎ assocr3₊ (c₂ ⊕2 c₃) = {!!}
+simplify◎ unite⋆ unite₊ = {!!}
+simplify◎ unite⋆ uniti₊ = {!!}
+simplify◎ unite⋆ swap1₊ = {!!}
+simplify◎ unite⋆ swap2₊ = {!!}
+simplify◎ unite⋆ assocl1₊ = {!!}
+simplify◎ unite⋆ assocl2₊ = {!!}
+simplify◎ unite⋆ assocl3₊ = {!!}
+simplify◎ unite⋆ assocr1₊ = {!!}
+simplify◎ unite⋆ assocr2₊ = {!!}
+simplify◎ unite⋆ assocr3₊ = {!!}
+simplify◎ unite⋆ unite⋆ = {!!}
+simplify◎ unite⋆ uniti⋆ = id⟷ 
+simplify◎ unite⋆ swap⋆ = {!!}
+simplify◎ unite⋆ assocl⋆ = {!!}
+simplify◎ unite⋆ assocr⋆ = {!!}
+simplify◎ unite⋆ distz = {!!}
+simplify◎ unite⋆ factorz = {!!}
+simplify◎ unite⋆ dist1 = {!!}
+simplify◎ unite⋆ dist2 = {!!}
+simplify◎ unite⋆ factor1 = {!!}
+simplify◎ unite⋆ factor2 = {!!}
+simplify◎ unite⋆ (c₂ ⊕1 c₃) = {!!}
+simplify◎ unite⋆ (c₂ ⊕2 c₃) = {!!}
+simplify◎ unite⋆ (c₂ ⊗ c₃) = {!!}
+simplify◎ uniti⋆ uniti₊ = {!!}
+simplify◎ uniti⋆ unite⋆ = id⟷ 
+simplify◎ uniti⋆ uniti⋆ = {!!}
+simplify◎ uniti⋆ swap⋆ = {!!}
+simplify◎ uniti⋆ assocl⋆ = {!!}
+simplify◎ uniti⋆ (c₂ ⊗ c₃) = {!!}
+simplify◎ swap⋆ uniti₊ = {!!}
+simplify◎ swap⋆ unite⋆ = {!!}
+simplify◎ swap⋆ uniti⋆ = {!!}
+simplify◎ swap⋆ swap⋆ = id⟷ 
+simplify◎ swap⋆ assocl⋆ = {!!}
+simplify◎ swap⋆ assocr⋆ = {!!}
+simplify◎ swap⋆ distz = {!!}
+simplify◎ swap⋆ dist1 = {!!}
+simplify◎ swap⋆ dist2 = {!!}
+simplify◎ swap⋆ (c₂ ⊗ c₃) = {!!}
+simplify◎ assocl⋆ uniti₊ = {!!}
+simplify◎ assocl⋆ uniti⋆ = {!!}
+simplify◎ assocl⋆ swap⋆ = {!!}
+simplify◎ assocl⋆ assocl⋆ = {!!}
+simplify◎ assocl⋆ assocr⋆ = id⟷ 
+simplify◎ assocl⋆ (c₂ ⊗ c₃) = {!!}
+simplify◎ assocr⋆ uniti₊ = {!!}
+simplify◎ assocr⋆ unite⋆ = {!!}
+simplify◎ assocr⋆ uniti⋆ = {!!}
+simplify◎ assocr⋆ swap⋆ = {!!}
+simplify◎ assocr⋆ assocl⋆ = id⟷ 
+simplify◎ assocr⋆ assocr⋆ = {!!}
+simplify◎ assocr⋆ distz = {!!}
+simplify◎ assocr⋆ dist1 = {!!}
+simplify◎ assocr⋆ dist2 = {!!}
+simplify◎ assocr⋆ (c₂ ⊗ c₃) = {!!}
+simplify◎ distz uniti₊ = {!!}
+simplify◎ distz uniti⋆ = {!!}
+simplify◎ distz factorz = {!!}
+simplify◎ factorz uniti₊ = {!!}
+simplify◎ factorz uniti⋆ = {!!}
+simplify◎ factorz swap⋆ = {!!}
+simplify◎ factorz assocl⋆ = {!!}
+simplify◎ factorz distz = id⟷ 
+simplify◎ factorz (c₂ ⊗ c₃) = {!!}
+simplify◎ dist1 uniti₊ = {!!}
+simplify◎ dist1 swap1₊ = {!!}
+simplify◎ dist1 uniti⋆ = {!!}
+simplify◎ dist1 factor1 = id⟷ 
+simplify◎ dist1 (c₂ ⊕1 c₃) = {!!}
+simplify◎ dist2 uniti₊ = {!!}
+simplify◎ dist2 swap2₊ = {!!}
+simplify◎ dist2 uniti⋆ = {!!}
+simplify◎ dist2 factor2 = id⟷ 
+simplify◎ dist2 (c₂ ⊕2 c₃) = {!!}
+simplify◎ factor1 uniti₊ = {!!}
+simplify◎ factor1 uniti⋆ = {!!}
+simplify◎ factor1 swap⋆ = {!!}
+simplify◎ factor1 assocl⋆ = {!!}
+simplify◎ factor1 dist1 = id⟷ 
+simplify◎ factor1 (c₂ ⊗ c₃) = {!!}
+simplify◎ factor2 uniti₊ = {!!}
+simplify◎ factor2 uniti⋆ = {!!}
+simplify◎ factor2 swap⋆ = {!!}
+simplify◎ factor2 assocl⋆ = {!!}
+simplify◎ factor2 dist2 = id⟷ 
+simplify◎ factor2 (c₂ ⊗ c₃) = {!!}
+simplify◎ id⟷ c = c 
+simplify◎ (c₁ ◎ c₂) c₃ = simplify◎ c₁ (c₂ ◎ c₃) 
+simplify◎ (c₁ ⊕1 c₂) uniti₊ = {!!}
+simplify◎ (c₁ ⊕1 c₂) swap1₊ = {!!}
+simplify◎ (c₁ ⊕1 c₂) assocl1₊ = {!!}
+simplify◎ (c₂ ⊕1 c₁) assocr1₊ = {!!}
+simplify◎ (c₂ ⊕1 c₁) assocr2₊ = {!!}
+simplify◎ (c₁ ⊕1 c₂) uniti⋆ = {!!}
+simplify◎ (c₂ ⊕1 c₁) factor1 = {!!}
+simplify◎ (c₁ ⊕1 c₂) (c₃ ◎ c₄) = {!!}
+simplify◎ (c₁ ⊕1 c₂) (c₃ ⊕1 c₄) = {!!}
+simplify◎ (c₁ ⊕2 c₂) unite₊ = {!!}
+simplify◎ (c₁ ⊕2 c₂) uniti₊ = {!!}
+simplify◎ (c₁ ⊕2 c₂) swap2₊ = {!!}
+simplify◎ (c₁ ⊕2 c₂) assocl2₊ = {!!}
+simplify◎ (c₁ ⊕2 c₂) assocl3₊ = {!!}
+simplify◎ (c₂ ⊕2 c₁) assocr3₊ = {!!}
+simplify◎ (c₁ ⊕2 c₂) uniti⋆ = {!!}
+simplify◎ (c₁ ⊕2 c₂) factor2 = {!!}
+simplify◎ (c₁ ⊕2 c₂) (c₃ ◎ c₄) = {!!}
+simplify◎ (c₁ ⊕2 c₂) (c₃ ⊕2 c₄) = {!!}
+simplify◎ (c₁ ⊗ c₂) uniti₊ = {!!}
+simplify◎ (c₁ ⊗ c₂) unite⋆ = {!!}
+simplify◎ (c₁ ⊗ c₂) uniti⋆ = {!!}
+simplify◎ (c₁ ⊗ c₂) swap⋆ = {!!}
+simplify◎ (c₁ ⊗ c₂) assocl⋆ = {!!}
+simplify◎ (c₂ ⊗ c₁) assocr⋆ = {!!}
+simplify◎ (c₁ ⊗ c₂) distz = {!!}
+simplify◎ (c₂ ⊗ c₁) dist1 = {!!}
+simplify◎ (c₂ ⊗ c₁) dist2 = {!!}
+simplify◎ (c₁ ⊗ c₂) (c₃ ◎ c₄) = {!!}
+simplify◎ (c₁ ⊗ c₂) (c₃ ⊗ c₄) = {!!} 
+simplify◎ c id⟷ = c
 simplify◎ c₁ c₂ = c₁ ◎ c₂
-
-{--
-simplify◎ unite₊ c₂ = {!!} 
-simplify◎ uniti₊ c₂ = {!!}
-simplify◎ swap1₊ c₂ = {!!}
-simplify◎ swap2₊ c₂ = {!!}
-simplify◎ assocl1₊ c₂ = {!!}
-simplify◎ assocl2₊ c₂ = {!!}
-simplify◎ assocl3₊ c₂ = {!!}
-simplify◎ assocr1₊ c₂ = {!!}
-simplify◎ assocr2₊ c₂ = {!!}
-simplify◎ assocr3₊ c₂ = {!!}
-simplify◎ unite⋆ c₂ = {!!}
-simplify◎ uniti⋆ c₂ = {!!}
-simplify◎ swap⋆ c₂ = {!!}
-simplify◎ assocl⋆ c₂ = {!!}
-simplify◎ assocr⋆ c₂ = {!!}
-simplify◎ distz c₂ = {!!}
-simplify◎ factorz c₂ = {!!}
-simplify◎ dist1 c₂ = {!!}
-simplify◎ dist2 c₂ = {!!}
-simplify◎ factor1 c₂ = {!!}
-simplify◎ factor2 c₂ = {!!}
-simplify◎ (sym⟷ c₁) c₂ = {!!}
-simplify◎ (c₁ ⊕1 c₂) c₃ = {!!}
-simplify◎ (c₁ ⊕2 c₂) c₃ = {!!}
-simplify◎ (c₁ ⊗ c₂) c₃ = {!!} 
---}
-
---simplify⊗ : {t₁ t₂ t₃ : U•} → (c₁ : t₁ ⟷ t₂) → (c₂ : t₂ ⟷ t₃) → (t₁ ⟷ t₃)
---simplify⊗ c₁ c₂ = {!!} 
-
-------------------------------------------------------------------------------
-
