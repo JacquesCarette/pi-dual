@@ -20,6 +20,7 @@
 \usepackage{graphicx}
 \usepackage{textgreek}
 \usepackage{extarrows}
+\usepackage{multicol}
 
 \renewcommand{\AgdaCodeStyle}{\small}
 
@@ -116,9 +117,9 @@ open import Function
 open import Groupoid
 
 infixr 30 _⟷_
-infixr 30 _⟷1_
+--infixr 30 _⟷1_
 infixr 10 _◎_
-infixr 10 _◎1_
+--infixr 10 _◎1_
 infix  4  _≡_   -- propositional equality
 infix  4  _∼_   -- homotopy between two functions (the same as ≡ by univalence)
 infix  4  _≃_   -- type of equivalences
@@ -597,78 +598,42 @@ Instead of modeling the types of $\Pi$ using sets and the combinators using
 permutations on the sets, we use a semantics that identifies $\Pi$
 combinators with \emph{paths}. More precisely, we model the universe of $\Pi$
 types as a space \AgdaBound{U} whose points are the individual $\Pi$-types
-(which are themselves spaces \AgdaBound{t} containings points). We then
+(which are themselves spaces \AgdaBound{t} containing points). We then
 postulate that there is path between the spaces \AgdaBound{t₁} and
 \AgdaBound{t₂} if there is a $\Pi$ combinator $c : t_1 \iso t_2$. Our
 postulate is similar in spirit to the univalence axiom but, unlike the
 latter, it has a simple computational interpretation. A path directly
-corresponds to a type isomorphism with a clear operational semantics
+corresponds to a type isomorphism with a clear operational semantics as
 presented in the previous section. As we will explain in more detail below,
 this approach replaces the datatype \AgdaSymbol{≡} modeling propositional
-equality with the datatype \AgdaSymbol{⟷} modeling type isomorphisms. 
+equality with the datatype \AgdaSymbol{⟷} modeling type isomorphisms. With
+this switch, the $\Pi$-combinators of Table~\ref{pi-combinators} become
+\emph{syntax} for the paths in the space $U$. Put differently, instead of
+having exactly one constructor \AgdaInductiveConstructor{refl} for paths with
+all other paths discovered by proofs (see Secs. 2.5--2.12 of the HoTT
+book~\citeyearpar{hott}) or postulated by the univalence axiom, we have an
+\emph{inductive definition} that completely specifies all the paths in the
+space $U$.
 
-We have a universe $U$ viewed as a groupoid whose points are the types
-$\Pi$-types $\tau$. The $\Pi$-combinators of Table~\ref{pi-combinators} are
-viewed as syntax for the paths in the space $U$. We need to show that the
-groupoid path structure is faithfully represented. The combinator $\idc$
-introduces all the $\refl{\tau} : \tau \equiv \tau$ paths in $U$. The adjoint
-$\symc{c}$ introduces an inverse path $!p$ for each path $p$ introduced by
-$c$. The composition operator $\fatsemi$ introduces a path $p \circ q$ for
-every pair of paths whose endpoints match. In addition, we get paths like
-$\swapp$ between $\tau_1+\tau_2$ and $\tau_2+\tau_1$. The existence of such
-paths in the conventional HoTT needs to proved from first principles for some
-types and \emph{postulated} for the universe type by the univalence
-axiom. The $\otimes$-composition gives a path $(p,q) : (\tau_1*\tau_2) \equiv
-(\tau_3*\tau_4)$ whenever we have paths $p : \tau_1 \equiv \tau_3$ and $q :
-\tau_2 \equiv \tau_4$. A similar situation for the $\oplus$-composition. The
-structure of these paths must be discovered and these paths must be
-\emph{proved} to exist using path induction in the conventional HoTT
-development. So far, this appears too good to be true, and it is. The problem
-is that paths in HoTT are subject to rules discussed at the end of
-Sec.~\ref{hott}. For example, it must be the case that if $p : \tau_1
-\equiv_U \tau_2$ that $(p \circ \refl{\tau_2}) \equiv_{\tau_1\equiv_U\tau_2}
-p$.  This path lives in a higher universe: nothing in our $\Pi$-combinators
-would justify adding such a path as all our combinators map types to
-types. No combinator works one level up at the space of combinators and there
-is no such space in the first place. Clearly we are stuck unless we manage to
-express a notion of higher-order functions in $\Pi$. This would allow us to
-internalize the type $\tau_1\iso\tau_2$ as a $\Pi$-type which is then
-manipulated by the same combinators one level higher and so on.
-
-Structure of Paths:
-\begin{itemize}
-\item What do paths in $A \times B$ look like?  We can
-prove that $(a_1,b_1) \equiv (a_2,b_2)$ in $A \times B$ iff $a_1 \equiv
-a_2$ in $A$ and $b_1 \equiv b_2$ in $B$.
-\item What do paths in $A_1 \uplus A_2$ look like? 
-We can prove that $\mathit{inj}_i~x \equiv \mathit{inj}_j~y$ 
- in $A_1 \uplus A_2$ iff $i=j$ and $x \equiv y$ in $A_i$.
-\item What do paths in $A \rightarrow B$ look like?
-We cannot prove anything. Postulate function
-extensionality axiom.
-\item What do paths in $\mathrm{Set}_{\ell}$ look like?
-We cannot prove anything. Postulate univalence axiom.
-\end{itemize}
-
-Let's start with a few simple types built from the empty type, the unit type,
-sums, and products, and let's study the paths postulated by HoTT.
-
-For every value in a type (point in a space) we have a trivial path from the
-value to itself:
-
-heteregneous eq
-
-Level 0: 
-Types at this level are just plain sets with no interesting path structure. 
-The path structure is defined at levels 1 and beyond. 
+We begin with the datatype definition of the universe \AgdaBound{U} of finite
+types which are constructed using \AgdaInductiveConstructor{ZERO},
+\AgdaInductiveConstructor{ONE}, \AgdaInductiveConstructor{PLUS}, and
+\AgdaInductiveConstructor{TIMES}. Each of these finite types will correspond
+to a set of points with paths connecting some of the points. The underlying
+set is computed by \AgdaSymbol{⟦}\_\AgdaSymbol{⟧} as follows:
+\AgdaInductiveConstructor{ZERO} maps to the empty set \AgdaSymbol{⊥},
+\AgdaInductiveConstructor{ONE} maps to the singleton set \AgdaSymbol{⊤},
+\AgdaInductiveConstructor{PLUS} maps to the disjoint union \AgdaSymbol{⊎},
+and \AgdaInductiveConstructor{TIMES} maps to the cartesian product
+\AgdaSymbol{×}.
 
 \smallskip
 \begin{code} 
 data U : Set where
-  ZERO  : U
-  ONE   : U
-  PLUS  : U → U → U
-  TIMES : U → U → U
+  ZERO   : U
+  ONE    : U
+  PLUS   : U → U → U
+  TIMES  : U → U → U
 
 ⟦_⟧ : U → Set
 ⟦ ZERO ⟧         = ⊥ 
@@ -677,12 +642,14 @@ data U : Set where
 ⟦ TIMES t₁ t₂ ⟧  = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
 \end{code} 
 
-Programs
-We use pointed types; programs map a pointed type to another
-In other words, each program takes one particular value to another; if we
-want to work on another value, we generally use another program
-The actual programs are the commutative semiring isomorphisms between
-pointed types.
+\newcommand{\pointed}[2]{\AgdaSymbol{•}\AgdaSymbol{[} \AgdaSymbol{∣} \AgdaBound{#1} \AgdaSymbol{∣} \AgdaSymbol{,} \AgdaBound{#2} \AgdaSymbol{]}}
+
+Paths are ultimately defined between points: in order to be able to identify
+them with $\Pi$ combinators, we refine the latter to operate on \emph{pointed
+  sets} (or referred to as pointed types or pointed spaces) instead of the
+unpointed sets above. A pointed set \pointed{t}{v} is a set \AgdaBound{t}
+\AgdaSymbol{:} \AgdaBound{U} with a distinguished value \AgdaBound{v}
+\AgdaSymbol{:} \AgdaSymbol{⟦} \AgdaBound{t} \AgdaSymbol{⟧}:
 
 \smallskip
 \begin{code} 
@@ -699,7 +666,8 @@ open U•
 \end{code}
 }
 
-\smallskip
+\begin{table*}
+\begin{multicols}{2}
 \begin{code} 
 data _⟷_ : U• → U• → Set where
   unite₊ : ∀ {t v} → •[ PLUS ZERO t , inj₂ v ] ⟷ •[ t , v ]
@@ -756,21 +724,61 @@ data _⟷_ : U• → U• → Set where
   sym⟷ : ∀ {t₁ t₂ v₁ v₂} → (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) → 
            (•[ t₂ , v₂ ] ⟷ •[ t₁ , v₁ ])
   _◎_ : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) → 
-           (•[ t₂ , v₂ ] ⟷ •[ t₃ , v₃ ]) → 
-           (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ])
+    (•[ t₂ , v₂ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ])
   _⊕1_ : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
-    (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → 
-    (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
+    (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
     (•[ PLUS t₁ t₂ , inj₁ v₁ ] ⟷ •[ PLUS t₃ t₄ , inj₁ v₃ ])
   _⊕2_ : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
-    (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → 
-    (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
+    (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
     (•[ PLUS t₁ t₂ , inj₂ v₂ ] ⟷ •[ PLUS t₃ t₄ , inj₂ v₄ ])
   _⊗_ : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
-    (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → 
-    (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
+    (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
     (•[ TIMES t₁ t₂ , (v₁ , v₂) ] ⟷ •[ TIMES t₃ t₄ , (v₃ , v₄) ])
 \end{code} 
+\end{multicols}
+\caption{Pointed version of $\Pi$-combinators or inductive definition of paths
+\label{pointecomb}}
+\end{table*}
+
+\noindent The refinement of the $\Pi$ combinators to combinators on pointed
+spaces is given by the inductive family in Table~\ref{pointedcomb}. The
+definition effectively folds the operational semantics of each combinator
+into a path that connects its input to its output. The definition also
+evidently generalizes the usual propositional equality into a
+\emph{heterogeneous} equality that connects points that may be in different
+spaces. What used to be the only constructor for paths
+\AgdaInductiveConstructor{refl} is now just one of the many constructors
+(named \AgdaBound{id⟷} in the Table). Among the new constructors, we have
+\AgdaBound{sym⟷} that constructs path inverses, \AgdaBound{◎} that constructs
+path compositions, and \AgdaBound{swap1₊} and \AgdaBound{swap2₊} that are
+essentially the encoding of the path \AgdaBound{notpath} from the space
+\AgdaBound{Bool} to itself. To see this, note that \AgdaBound{Bool} can be
+viewed as a shorthand for \AgdaInductiveConstructor{PLUS}
+\AgdaInductiveConstructor{ONE} \AgdaInductiveConstructor{ONE} with
+\AgdaInductiveConstructor{true} and \AgdaInductiveConstructor{false} as
+shorthands for \AgdaInductiveConstructor{inj₁} \AgdaInductiveConstructor{tt}
+and \AgdaInductiveConstructor{inj₂} \AgdaInductiveConstructor{tt}. With this
+in mind, the path corresponding to boolean negation consists of two
+``fibers:'' 
+
+\smallskip
+\begin{code}
+BOOL : U
+BOOL = PLUS ONE ONE
+
+TRUE FALSE : ⟦ BOOL ⟧
+TRUE   = inj₁ tt
+FALSE  = inj₂ tt
+
+notpath1 : •[ BOOL , TRUE ] ⟷ •[ BOOL , FALSE ]
+notpath1 = swap1₊
+
+notpath2 : •[ BOOL , FALSE ] ⟷ •[ BOOL , TRUE ]
+notpath2 = swap2₊
+\end{code} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Computing with Paths} 
 
 The evaluation of a program is not done in order to figure out the output
 value. Both the input and output values are encoded in the type of the
@@ -782,37 +790,6 @@ programs are "the same." At the next level, we will weaken this "path
 irrelevant" equivalence and reason about which paths can be equated to
 other paths via 2paths etc.
 
-Even though individual types are sets, the universe of types is a
-groupoid. The objects of this groupoid are the pointed types; the
-morphisms are the programs; and the equivalence of programs is the
-degenerate observational equivalence that equates every two programs that
-are extensionally equivalent.
-
-\smallskip
-\begin{code}
-_obs≅_ : {t₁ t₂ : U•} → (c₁ c₂ : t₁ ⟷ t₂) → Set
-c₁ obs≅ c₂ = ⊤ 
-
-UG : 1Groupoid
-UG = record
-       { set = U•
-       ; _↝_ = _⟷_
-       ; _≈_ = _obs≅_
-       ; id = id⟷
-       ; _∘_ = λ y⟷z x⟷y → x⟷y ◎ y⟷z 
-       ; _⁻¹ = sym⟷
-       ; lneutr = λ _ → tt 
-       ; rneutr = λ _ → tt 
-       ; assoc = λ _ _ _ → tt
-       ; equiv = record { refl = tt 
-                        ; sym = λ _ → tt 
-                        ; trans = λ _ _ → tt 
-                        } 
-       ; linv = λ _ → tt 
-       ; rinv = λ _ → tt 
-       ; ∘-resp-≈ = λ _ _ → tt
-       }
-\end{code} 
 
 Simplify various compositions
 
@@ -913,8 +890,61 @@ simplifyr◎ c₁ c₂ = c₁ ◎ c₂
 \end{code} 
 } 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Computing with Paths} 
+We need to show that the groupoid path structure is faithfully
+represented. The combinator $\idc$ introduces all the $\refl{\tau} : \tau
+\equiv \tau$ paths in $U$. The adjoint $\symc{c}$ introduces an inverse path
+$!p$ for each path $p$ introduced by $c$. The composition operator $\fatsemi$
+introduces a path $p \circ q$ for every pair of paths whose endpoints
+match. In addition, we get paths like $\swapp$ between $\tau_1+\tau_2$ and
+$\tau_2+\tau_1$. The existence of such paths in the conventional HoTT needs
+to proved from first principles for some types and \emph{postulated} for the
+universe type by the univalence axiom. The $\otimes$-composition gives a path
+$(p,q) : (\tau_1*\tau_2) \equiv (\tau_3*\tau_4)$ whenever we have paths $p :
+\tau_1 \equiv \tau_3$ and $q : \tau_2 \equiv \tau_4$. A similar situation for
+the $\oplus$-composition. The structure of these paths must be discovered and
+these paths must be \emph{proved} to exist using path induction in the
+conventional HoTT development. So far, this appears too good to be true, and
+it is. The problem is that paths in HoTT are subject to rules discussed at
+the end of Sec.~\ref{hott}. For example, it must be the case that if $p :
+\tau_1 \equiv_U \tau_2$ that $(p \circ \refl{\tau_2})
+\equiv_{\tau_1\equiv_U\tau_2} p$.  This path lives in a higher universe:
+nothing in our $\Pi$-combinators would justify adding such a path as all our
+combinators map types to types. No combinator works one level up at the space
+of combinators and there is no such space in the first place. Clearly we are
+stuck unless we manage to express a notion of higher-order functions in
+$\Pi$. This would allow us to internalize the type $\tau_1\iso\tau_2$ as a
+$\Pi$-type which is then manipulated by the same combinators one level higher
+and so on.
+
+Structure of Paths:
+\begin{itemize}
+\item What do paths in $A \times B$ look like?  We can
+prove that $(a_1,b_1) \equiv (a_2,b_2)$ in $A \times B$ iff $a_1 \equiv
+a_2$ in $A$ and $b_1 \equiv b_2$ in $B$.
+\item What do paths in $A_1 \uplus A_2$ look like? 
+We can prove that $\mathit{inj}_i~x \equiv \mathit{inj}_j~y$ 
+ in $A_1 \uplus A_2$ iff $i=j$ and $x \equiv y$ in $A_i$.
+\item What do paths in $A \rightarrow B$ look like?
+We cannot prove anything. Postulate function
+extensionality axiom.
+\item What do paths in $\mathrm{Set}_{\ell}$ look like?
+We cannot prove anything. Postulate univalence axiom.
+\end{itemize}
+
+Let's start with a few simple types built from the empty type, the unit type,
+sums, and products, and let's study the paths postulated by HoTT.
+
+For every value in a type (point in a space) we have a trivial path from the
+value to itself:
+
+
+
+Level 0: 
+Types at this level are just plain sets with no interesting path structure. 
+The path structure is defined at levels 1 and beyond. 
+
+
+
 
 for examples of 2 paths look at proofs of 
 path assoc; triangle and pentagon rules
@@ -935,272 +965,272 @@ the perspective of level 0, we have points with non-trivial paths between
 them, i.e., we have a groupoid. The paths cross type boundaries, i.e., we
 have heterogeneous equality
 
-\begin{code}
-data U : Set where
-  ZERO  : U              -- empty set of paths
-  ONE   : U              -- a trivial path
-  PLUS  : U → U → U      -- disjoint union of paths
-  TIMES : U → U → U      -- pairs of paths
-  PATH  : {t₁ t₂ : P.U•} → (t₁ P.⟷ t₂) → U -- level 0 paths between values
+%% \begin{code}
+%% data U : Set where
+%%   ZERO  : U              -- empty set of paths
+%%   ONE   : U              -- a trivial path
+%%   PLUS  : U → U → U      -- disjoint union of paths
+%%   TIMES : U → U → U      -- pairs of paths
+%%   PATH  : {t₁ t₂ : P.U•} → (t₁ P.⟷ t₂) → U -- level 0 paths between values
 
-data Path (t₁ t₂ : P.U•) : Set where
-  path : (c : t₁ P.⟷ t₂) → Path t₁ t₂
+%% data Path (t₁ t₂ : P.U•) : Set where
+%%   path : (c : t₁ P.⟷ t₂) → Path t₁ t₂
 
-⟦_⟧ : U → Set
-⟦ ZERO ⟧             = ⊥
-⟦ ONE ⟧              = ⊤
-⟦ PLUS t₁ t₂ ⟧       = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
-⟦ TIMES t₁ t₂ ⟧      = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
-⟦ PATH {t₁} {t₂} c ⟧ = Path t₁ t₂
+%% ⟦_⟧ : U → Set
+%% ⟦ ZERO ⟧             = ⊥
+%% ⟦ ONE ⟧              = ⊤
+%% ⟦ PLUS t₁ t₂ ⟧       = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
+%% ⟦ TIMES t₁ t₂ ⟧      = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+%% ⟦ PATH {t₁} {t₂} c ⟧ = Path t₁ t₂
 
--- examples
+%% -- examples
 
-T⇔F : Set
-T⇔F = Path P.BOOL•T P.BOOL•F
+%% T⇔F : Set
+%% T⇔F = Path P.BOOL•T P.BOOL•F
 
-F⇔T : Set
-F⇔T = Path P.BOOL•F P.BOOL•T
+%% F⇔T : Set
+%% F⇔T = Path P.BOOL•F P.BOOL•T
 
--- all the following are paths from T to F; we will show below that they
--- are equivalent using 2paths
+%% -- all the following are paths from T to F; we will show below that they
+%% -- are equivalent using 2paths
 
-p₁ p₂ p₃ p₄ p₅ : T⇔F
-p₁ = path P.NOT•T
-p₂ = path (P.id⟷ P.◎ P.NOT•T)
-p₃ = path (P.NOT•T P.◎ P.NOT•F P.◎ P.NOT•T)
-p₄ = path (P.NOT•T P.◎ P.id⟷)
-p₅ = path (P.uniti⋆ P.◎ P.swap⋆ P.◎ (P.NOT•T P.⊗ P.id⟷) P.◎ P.swap⋆ P.◎ P.unite⋆)
+%% p₁ p₂ p₃ p₄ p₅ : T⇔F
+%% p₁ = path P.NOT•T
+%% p₂ = path (P.id⟷ P.◎ P.NOT•T)
+%% p₃ = path (P.NOT•T P.◎ P.NOT•F P.◎ P.NOT•T)
+%% p₄ = path (P.NOT•T P.◎ P.id⟷)
+%% p₅ = path (P.uniti⋆ P.◎ P.swap⋆ P.◎ (P.NOT•T P.⊗ P.id⟷) P.◎ P.swap⋆ P.◎ P.unite⋆)
    
-p₆ : (T⇔F × T⇔F) ⊎ F⇔T
-p₆ = inj₁ (p₁ , p₂)
+%% p₆ : (T⇔F × T⇔F) ⊎ F⇔T
+%% p₆ = inj₁ (p₁ , p₂)
 
--- Programs map paths to paths. We also use pointed types.
+%% -- Programs map paths to paths. We also use pointed types.
 
-record U• : Set where
-  constructor •[_,_]
-  field
-    ∣_∣ : U
-    • : ⟦ ∣_∣ ⟧
+%% record U• : Set where
+%%   constructor •[_,_]
+%%   field
+%%     ∣_∣ : U
+%%     • : ⟦ ∣_∣ ⟧
 
-open U•
+%% open U•
 
-Path• : {t₁ t₂ : P.U•} → (c : t₁ P.⟷ t₂) → U•
-Path• c = •[ PATH c , path c ]
+%% Path• : {t₁ t₂ : P.U•} → (c : t₁ P.⟷ t₂) → U•
+%% Path• c = •[ PATH c , path c ]
 
-data _⟷_ : U• → U• → Set where
+%% data _⟷_ : U• → U• → Set where
 
-  -- common combinators
+%%   -- common combinators
 
-  id⟷    : {t : U•} → t ⟷ t
-  sym⟷   : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
-  _◎_     : {t₁ t₂ t₃ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+%%   id⟷    : {t : U•} → t ⟷ t
+%%   sym⟷   : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
+%%   _◎_     : {t₁ t₂ t₃ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
 
-  -- groupoid combinators defined by induction on P.⟷ in Pi0.agda
+%%   -- groupoid combinators defined by induction on P.⟷ in Pi0.agda
 
-  simplifyl◎l : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} 
-             {c₁ : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} 
-             {c₂ : P.U•.•[ t₂ , v₂ ] P.⟷ P.U•.•[ t₃ , v₃ ]} → 
-    Path• (c₁ P.◎ c₂) ⟷ Path• (P.simplifyl◎ c₁ c₂)
+%%   simplifyl◎l : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} 
+%%              {c₁ : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} 
+%%              {c₂ : P.U•.•[ t₂ , v₂ ] P.⟷ P.U•.•[ t₃ , v₃ ]} → 
+%%     Path• (c₁ P.◎ c₂) ⟷ Path• (P.simplifyl◎ c₁ c₂)
 
-  simplifyl◎r : {t₁ t₂ t₃ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} → 
-    Path• (P.simplifyl◎ c₁ c₂) ⟷ Path• (c₁ P.◎ c₂)
+%%   simplifyl◎r : {t₁ t₂ t₃ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} → 
+%%     Path• (P.simplifyl◎ c₁ c₂) ⟷ Path• (c₁ P.◎ c₂)
 
-  simplifyr◎l : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} 
-             {c₁ : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} 
-             {c₂ : P.U•.•[ t₂ , v₂ ] P.⟷ P.U•.•[ t₃ , v₃ ]} → 
-    Path• (c₁ P.◎ c₂) ⟷ Path• (P.simplifyr◎ c₁ c₂)
+%%   simplifyr◎l : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} 
+%%              {c₁ : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} 
+%%              {c₂ : P.U•.•[ t₂ , v₂ ] P.⟷ P.U•.•[ t₃ , v₃ ]} → 
+%%     Path• (c₁ P.◎ c₂) ⟷ Path• (P.simplifyr◎ c₁ c₂)
 
-  simplifyr◎r : {t₁ t₂ t₃ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} → 
-    Path• (P.simplifyr◎ c₁ c₂) ⟷ Path• (c₁ P.◎ c₂)
+%%   simplifyr◎r : {t₁ t₂ t₃ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} → 
+%%     Path• (P.simplifyr◎ c₁ c₂) ⟷ Path• (c₁ P.◎ c₂)
 
-  simplifySyml : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
-    Path• (P.sym⟷ c) ⟷ Path• (P.simplifySym c)
+%%   simplifySyml : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
+%%     Path• (P.sym⟷ c) ⟷ Path• (P.simplifySym c)
 
-  simplifySymr : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
-    Path• (P.simplifySym c) ⟷ Path• (P.sym⟷ c)
+%%   simplifySymr : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
+%%     Path• (P.simplifySym c) ⟷ Path• (P.sym⟷ c)
 
-  invll   : ∀ {t₁ t₂ v₁ v₂} → {c : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} → 
-            Path• (P.sym⟷ c P.◎ c) ⟷ Path• (P.id⟷ {t₂} {v₂})
-  invlr   : ∀ {t₁ t₂ v₁ v₂} → {c : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} → 
-            Path• (P.id⟷ {t₂} {v₂}) ⟷ Path• (P.sym⟷ c P.◎ c)
-  invrl   : ∀ {t₁ t₂ v₁ v₂} → {c : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} → 
-            Path• (c P.◎ P.sym⟷ c) ⟷ Path• (P.id⟷ {t₁} {v₁})
-  invrr   : ∀ {t₁ t₂ v₁ v₂} → {c : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} → 
-            Path• (P.id⟷ {t₁} {v₁}) ⟷ Path• (c P.◎ P.sym⟷ c)
-  tassocl : {t₁ t₂ t₃ t₄ : P.U•} 
-            {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} {c₃ : t₃ P.⟷ t₄} → 
-            Path• (c₁ P.◎ (c₂ P.◎ c₃)) ⟷ 
-            Path• ((c₁ P.◎ c₂) P.◎ c₃)
-  tassocr : {t₁ t₂ t₃ t₄ : P.U•} 
-            {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} {c₃ : t₃ P.⟷ t₄} → 
-            Path• ((c₁ P.◎ c₂) P.◎ c₃) ⟷ 
-            Path• (c₁ P.◎ (c₂ P.◎ c₃))
+%%   invll   : ∀ {t₁ t₂ v₁ v₂} → {c : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} → 
+%%             Path• (P.sym⟷ c P.◎ c) ⟷ Path• (P.id⟷ {t₂} {v₂})
+%%   invlr   : ∀ {t₁ t₂ v₁ v₂} → {c : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} → 
+%%             Path• (P.id⟷ {t₂} {v₂}) ⟷ Path• (P.sym⟷ c P.◎ c)
+%%   invrl   : ∀ {t₁ t₂ v₁ v₂} → {c : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} → 
+%%             Path• (c P.◎ P.sym⟷ c) ⟷ Path• (P.id⟷ {t₁} {v₁})
+%%   invrr   : ∀ {t₁ t₂ v₁ v₂} → {c : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} → 
+%%             Path• (P.id⟷ {t₁} {v₁}) ⟷ Path• (c P.◎ P.sym⟷ c)
+%%   tassocl : {t₁ t₂ t₃ t₄ : P.U•} 
+%%             {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} {c₃ : t₃ P.⟷ t₄} → 
+%%             Path• (c₁ P.◎ (c₂ P.◎ c₃)) ⟷ 
+%%             Path• ((c₁ P.◎ c₂) P.◎ c₃)
+%%   tassocr : {t₁ t₂ t₃ t₄ : P.U•} 
+%%             {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} {c₃ : t₃ P.⟷ t₄} → 
+%%             Path• ((c₁ P.◎ c₂) P.◎ c₃) ⟷ 
+%%             Path• (c₁ P.◎ (c₂ P.◎ c₃))
 
-  -- resp◎ is closely related to Eckmann-Hilton
-  resp◎   : {t₁ t₂ t₃ : P.U•} 
-            {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} 
-            {c₃ : t₁ P.⟷ t₂} {c₄ : t₂ P.⟷ t₃} → 
-            (Path• c₁ ⟷ Path• c₃) → 
-            (Path• c₂ ⟷ Path• c₄) → 
-            Path• (c₁ P.◎ c₂) ⟷ Path• (c₃ P.◎ c₄)
+%%   -- resp◎ is closely related to Eckmann-Hilton
+%%   resp◎   : {t₁ t₂ t₃ : P.U•} 
+%%             {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} 
+%%             {c₃ : t₁ P.⟷ t₂} {c₄ : t₂ P.⟷ t₃} → 
+%%             (Path• c₁ ⟷ Path• c₃) → 
+%%             (Path• c₂ ⟷ Path• c₄) → 
+%%             Path• (c₁ P.◎ c₂) ⟷ Path• (c₃ P.◎ c₄)
 
-  -- commutative semiring combinators
+%%   -- commutative semiring combinators
 
-  unite₊  : {t : U•} → •[ PLUS ZERO ∣ t ∣ , inj₂ (• t) ] ⟷ t
-  uniti₊  : {t : U•} → t ⟷ •[ PLUS ZERO ∣ t ∣ , inj₂ (• t) ]
-  swap1₊  : {t₁ t₂ : U•} → •[ PLUS ∣ t₁ ∣ ∣ t₂ ∣ , inj₁ (• t₁) ] ⟷ 
-                           •[ PLUS ∣ t₂ ∣ ∣ t₁ ∣ , inj₂ (• t₁) ]
-  swap2₊  : {t₁ t₂ : U•} → •[ PLUS ∣ t₁ ∣ ∣ t₂ ∣ , inj₂ (• t₂) ] ⟷ 
-                           •[ PLUS ∣ t₂ ∣ ∣ t₁ ∣ , inj₁ (• t₂) ]
-  assocl1₊ : {t₁ t₂ t₃ : U•} → 
-             •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₁ (• t₁) ] ⟷ 
-             •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₁ (inj₁ (• t₁)) ]
-  assocl2₊ : {t₁ t₂ t₃ : U•} → 
-             •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₂ (inj₁ (• t₂)) ] ⟷ 
-             •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₁ (inj₂ (• t₂)) ]
-  assocl3₊ : {t₁ t₂ t₃ : U•} → 
-             •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₂ (inj₂ (• t₃)) ] ⟷ 
-             •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₂ (• t₃) ]
-  assocr1₊ : {t₁ t₂ t₃ : U•} → 
-             •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₁ (inj₁ (• t₁)) ] ⟷ 
-             •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₁ (• t₁) ] 
-  assocr2₊ : {t₁ t₂ t₃ : U•} → 
-             •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₁ (inj₂ (• t₂)) ] ⟷ 
-             •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₂ (inj₁ (• t₂)) ] 
-  assocr3₊ : {t₁ t₂ t₃ : U•} → 
-             •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₂ (• t₃) ] ⟷ 
-             •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₂ (inj₂ (• t₃)) ]
-  unite⋆  : {t : U•} → •[ TIMES ONE ∣ t ∣ , (tt , • t) ] ⟷ t               
-  uniti⋆  : {t : U•} → t ⟷ •[ TIMES ONE ∣ t ∣ , (tt , • t) ] 
-  swap⋆   : {t₁ t₂ : U•} → •[ TIMES ∣ t₁ ∣ ∣ t₂ ∣ , (• t₁ , • t₂) ] ⟷ 
-                           •[ TIMES ∣ t₂ ∣ ∣ t₁ ∣ , (• t₂ , • t₁) ]
-  assocl⋆ : {t₁ t₂ t₃ : U•} → 
-           •[ TIMES ∣ t₁ ∣ (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , (• t₁ , (• t₂ , • t₃)) ] ⟷ 
-           •[ TIMES (TIMES ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , ((• t₁ , • t₂) , • t₃) ]
-  assocr⋆ : {t₁ t₂ t₃ : U•} → 
-           •[ TIMES (TIMES ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , ((• t₁ , • t₂) , • t₃) ] ⟷ 
-           •[ TIMES ∣ t₁ ∣ (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , (• t₁ , (• t₂ , • t₃)) ]
-  distz : {t : U•} {absurd : ⟦ ZERO ⟧} → 
-          •[ TIMES ZERO ∣ t ∣ , (absurd , • t) ] ⟷ •[ ZERO , absurd ]
-  factorz : {t : U•} {absurd : ⟦ ZERO ⟧} → 
-            •[ ZERO , absurd ] ⟷ •[ TIMES ZERO ∣ t ∣ , (absurd , • t) ] 
-  dist1   : {t₁ t₂ t₃ : U•} → 
-            •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₁ (• t₁) , • t₃) ] ⟷ 
-            •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
-               inj₁ (• t₁ , • t₃) ]
-  dist2   : {t₁ t₂ t₃ : U•} → 
-            •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₂ (• t₂) , • t₃) ] ⟷ 
-            •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
-               inj₂ (• t₂ , • t₃) ]
-  factor1   : {t₁ t₂ t₃ : U•} → 
-            •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
-               inj₁ (• t₁ , • t₃) ] ⟷ 
-            •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₁ (• t₁) , • t₃) ]
-  factor2   : {t₁ t₂ t₃ : U•} → 
-            •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
-               inj₂ (• t₂ , • t₃) ] ⟷ 
-            •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₂ (• t₂) , • t₃) ]
-  _⊕1_   : {t₁ t₂ t₃ t₄ : U•} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → 
-           (•[ PLUS ∣ t₁ ∣ ∣ t₂ ∣ , inj₁ (• t₁) ] ⟷ 
-            •[ PLUS ∣ t₃ ∣ ∣ t₄ ∣ , inj₁ (• t₃) ])
-  _⊕2_   : {t₁ t₂ t₃ t₄ : U•} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → 
-           (•[ PLUS ∣ t₁ ∣ ∣ t₂ ∣ , inj₂ (• t₂) ] ⟷ 
-            •[ PLUS ∣ t₃ ∣ ∣ t₄ ∣ , inj₂ (• t₄) ])
-  _⊗_     : {t₁ t₂ t₃ t₄ : U•} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → 
-            (•[ TIMES ∣ t₁ ∣ ∣ t₂ ∣ , (• t₁ , • t₂ ) ] ⟷ 
-             •[ TIMES ∣ t₃ ∣ ∣ t₄ ∣ , (• t₃ , • t₄ ) ])
+%%   unite₊  : {t : U•} → •[ PLUS ZERO ∣ t ∣ , inj₂ (• t) ] ⟷ t
+%%   uniti₊  : {t : U•} → t ⟷ •[ PLUS ZERO ∣ t ∣ , inj₂ (• t) ]
+%%   swap1₊  : {t₁ t₂ : U•} → •[ PLUS ∣ t₁ ∣ ∣ t₂ ∣ , inj₁ (• t₁) ] ⟷ 
+%%                            •[ PLUS ∣ t₂ ∣ ∣ t₁ ∣ , inj₂ (• t₁) ]
+%%   swap2₊  : {t₁ t₂ : U•} → •[ PLUS ∣ t₁ ∣ ∣ t₂ ∣ , inj₂ (• t₂) ] ⟷ 
+%%                            •[ PLUS ∣ t₂ ∣ ∣ t₁ ∣ , inj₁ (• t₂) ]
+%%   assocl1₊ : {t₁ t₂ t₃ : U•} → 
+%%              •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₁ (• t₁) ] ⟷ 
+%%              •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₁ (inj₁ (• t₁)) ]
+%%   assocl2₊ : {t₁ t₂ t₃ : U•} → 
+%%              •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₂ (inj₁ (• t₂)) ] ⟷ 
+%%              •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₁ (inj₂ (• t₂)) ]
+%%   assocl3₊ : {t₁ t₂ t₃ : U•} → 
+%%              •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₂ (inj₂ (• t₃)) ] ⟷ 
+%%              •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₂ (• t₃) ]
+%%   assocr1₊ : {t₁ t₂ t₃ : U•} → 
+%%              •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₁ (inj₁ (• t₁)) ] ⟷ 
+%%              •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₁ (• t₁) ] 
+%%   assocr2₊ : {t₁ t₂ t₃ : U•} → 
+%%              •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₁ (inj₂ (• t₂)) ] ⟷ 
+%%              •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₂ (inj₁ (• t₂)) ] 
+%%   assocr3₊ : {t₁ t₂ t₃ : U•} → 
+%%              •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₂ (• t₃) ] ⟷ 
+%%              •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₂ (inj₂ (• t₃)) ]
+%%   unite⋆  : {t : U•} → •[ TIMES ONE ∣ t ∣ , (tt , • t) ] ⟷ t               
+%%   uniti⋆  : {t : U•} → t ⟷ •[ TIMES ONE ∣ t ∣ , (tt , • t) ] 
+%%   swap⋆   : {t₁ t₂ : U•} → •[ TIMES ∣ t₁ ∣ ∣ t₂ ∣ , (• t₁ , • t₂) ] ⟷ 
+%%                            •[ TIMES ∣ t₂ ∣ ∣ t₁ ∣ , (• t₂ , • t₁) ]
+%%   assocl⋆ : {t₁ t₂ t₃ : U•} → 
+%%            •[ TIMES ∣ t₁ ∣ (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , (• t₁ , (• t₂ , • t₃)) ] ⟷ 
+%%            •[ TIMES (TIMES ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , ((• t₁ , • t₂) , • t₃) ]
+%%   assocr⋆ : {t₁ t₂ t₃ : U•} → 
+%%            •[ TIMES (TIMES ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , ((• t₁ , • t₂) , • t₃) ] ⟷ 
+%%            •[ TIMES ∣ t₁ ∣ (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , (• t₁ , (• t₂ , • t₃)) ]
+%%   distz : {t : U•} {absurd : ⟦ ZERO ⟧} → 
+%%           •[ TIMES ZERO ∣ t ∣ , (absurd , • t) ] ⟷ •[ ZERO , absurd ]
+%%   factorz : {t : U•} {absurd : ⟦ ZERO ⟧} → 
+%%             •[ ZERO , absurd ] ⟷ •[ TIMES ZERO ∣ t ∣ , (absurd , • t) ] 
+%%   dist1   : {t₁ t₂ t₃ : U•} → 
+%%             •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₁ (• t₁) , • t₃) ] ⟷ 
+%%             •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
+%%                inj₁ (• t₁ , • t₃) ]
+%%   dist2   : {t₁ t₂ t₃ : U•} → 
+%%             •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₂ (• t₂) , • t₃) ] ⟷ 
+%%             •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
+%%                inj₂ (• t₂ , • t₃) ]
+%%   factor1   : {t₁ t₂ t₃ : U•} → 
+%%             •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
+%%                inj₁ (• t₁ , • t₃) ] ⟷ 
+%%             •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₁ (• t₁) , • t₃) ]
+%%   factor2   : {t₁ t₂ t₃ : U•} → 
+%%             •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
+%%                inj₂ (• t₂ , • t₃) ] ⟷ 
+%%             •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₂ (• t₂) , • t₃) ]
+%%   _⊕1_   : {t₁ t₂ t₃ t₄ : U•} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → 
+%%            (•[ PLUS ∣ t₁ ∣ ∣ t₂ ∣ , inj₁ (• t₁) ] ⟷ 
+%%             •[ PLUS ∣ t₃ ∣ ∣ t₄ ∣ , inj₁ (• t₃) ])
+%%   _⊕2_   : {t₁ t₂ t₃ t₄ : U•} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → 
+%%            (•[ PLUS ∣ t₁ ∣ ∣ t₂ ∣ , inj₂ (• t₂) ] ⟷ 
+%%             •[ PLUS ∣ t₃ ∣ ∣ t₄ ∣ , inj₂ (• t₄) ])
+%%   _⊗_     : {t₁ t₂ t₃ t₄ : U•} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → 
+%%             (•[ TIMES ∣ t₁ ∣ ∣ t₂ ∣ , (• t₁ , • t₂ ) ] ⟷ 
+%%              •[ TIMES ∣ t₃ ∣ ∣ t₄ ∣ , (• t₃ , • t₄ ) ])
 
--- example programs
+%% -- example programs
 
-{--
-α₁ : Path• P.NOT•T ⟷ Path• (P.id⟷ P.◎ P.NOT•T)
-α₁ = simplify◎r
+%% {--
+%% α₁ : Path• P.NOT•T ⟷ Path• (P.id⟷ P.◎ P.NOT•T)
+%% α₁ = simplify◎r
 
-α₂ α₃ : •[ TIMES (PATH P.NOT•T) (PATH (P.NOT•T P.◎ P.id⟷)) , (p₁ , p₄) ] ⟷ 
-        •[ TIMES (PATH P.NOT•T) (PATH P.NOT•T) , (p₁ , p₁) ] 
-α₂ = id⟷ ⊗ simplify◎l
-α₃ = swap⋆ ◎ (simplify◎l ⊗ id⟷) 
+%% α₂ α₃ : •[ TIMES (PATH P.NOT•T) (PATH (P.NOT•T P.◎ P.id⟷)) , (p₁ , p₄) ] ⟷ 
+%%         •[ TIMES (PATH P.NOT•T) (PATH P.NOT•T) , (p₁ , p₁) ] 
+%% α₂ = id⟷ ⊗ simplify◎l
+%% α₃ = swap⋆ ◎ (simplify◎l ⊗ id⟷) 
 
--- let's try to prove that p₁ = p₂ = p₃ = p₄ = p₅
+%% -- let's try to prove that p₁ = p₂ = p₃ = p₄ = p₅
 
--- p₁ ~> p₂
-α₄ : •[ PATH P.NOT•T , p₁ ] ⟷ •[ PATH (P.id⟷ P.◎ P.NOT•T) , p₂ ]
-α₄ = simplify◎r
+%% -- p₁ ~> p₂
+%% α₄ : •[ PATH P.NOT•T , p₁ ] ⟷ •[ PATH (P.id⟷ P.◎ P.NOT•T) , p₂ ]
+%% α₄ = simplify◎r
 
--- p₂ ~> p₃
-α₅ : •[ PATH (P.id⟷ P.◎ P.NOT•T) , p₂ ] ⟷ 
-     •[ PATH (P.NOT•T P.◎ P.NOT•F P.◎ P.NOT•T) , p₃ ]
-α₅ = simplify◎l ◎ simplify◎r ◎ (resp◎ id⟷ (invrr {c = P.NOT•F} ◎ resp◎ id⟷ simplifySyml))
---}
--- p₃ ~> p₄
-α₆ : •[ PATH (P.NOT•T P.◎ P.NOT•F P.◎ P.NOT•T) , p₃ ] ⟷ 
-     •[ PATH (P.NOT•T P.◎ P.id⟷) , p₄ ]
-α₆ = resp◎ id⟷ ((resp◎ simplifySymr id⟷) ◎ invll)
+%% -- p₂ ~> p₃
+%% α₅ : •[ PATH (P.id⟷ P.◎ P.NOT•T) , p₂ ] ⟷ 
+%%      •[ PATH (P.NOT•T P.◎ P.NOT•F P.◎ P.NOT•T) , p₃ ]
+%% α₅ = simplify◎l ◎ simplify◎r ◎ (resp◎ id⟷ (invrr {c = P.NOT•F} ◎ resp◎ id⟷ simplifySyml))
+%% --}
+%% -- p₃ ~> p₄
+%% α₆ : •[ PATH (P.NOT•T P.◎ P.NOT•F P.◎ P.NOT•T) , p₃ ] ⟷ 
+%%      •[ PATH (P.NOT•T P.◎ P.id⟷) , p₄ ]
+%% α₆ = resp◎ id⟷ ((resp◎ simplifySymr id⟷) ◎ invll)
 
--- p₅ ~> p₁
+%% -- p₅ ~> p₁
 
-{--
-α₈ : •[ PATH (P.uniti⋆ P.◎ P.swap⋆ P.◎ 
-             (P.NOT•T P.⊗ P.id⟷) P.◎ P.swap⋆ P.◎ P.unite⋆) , 
-        p₅ ] ⟷ 
-     •[ PATH P.NOT•T , p₁ ] 
-α₈ = resp◎ id⟷ (resp◎ id⟷ tassocl) ◎ 
-     resp◎ id⟷ (resp◎ id⟷ (resp◎ simplify◎l id⟷)) ◎ 
-     resp◎ id⟷ (resp◎ id⟷ tassocr) ◎
-     resp◎ id⟷ tassocl ◎
-     resp◎ id⟷ (resp◎ (resp◎ simplifySymr id⟷) id⟷) ◎
-     resp◎ id⟷ (resp◎ invll id⟷) ◎
-     resp◎ id⟷ simplify◎l ◎
-     resp◎ id⟷ simplify◎l ◎
-     resp◎ simplifySyml id⟷ ◎
-     tassocl ◎ 
-     resp◎ invll id⟷ ◎
-     simplify◎l 
+%% {--
+%% α₈ : •[ PATH (P.uniti⋆ P.◎ P.swap⋆ P.◎ 
+%%              (P.NOT•T P.⊗ P.id⟷) P.◎ P.swap⋆ P.◎ P.unite⋆) , 
+%%         p₅ ] ⟷ 
+%%      •[ PATH P.NOT•T , p₁ ] 
+%% α₈ = resp◎ id⟷ (resp◎ id⟷ tassocl) ◎ 
+%%      resp◎ id⟷ (resp◎ id⟷ (resp◎ simplify◎l id⟷)) ◎ 
+%%      resp◎ id⟷ (resp◎ id⟷ tassocr) ◎
+%%      resp◎ id⟷ tassocl ◎
+%%      resp◎ id⟷ (resp◎ (resp◎ simplifySymr id⟷) id⟷) ◎
+%%      resp◎ id⟷ (resp◎ invll id⟷) ◎
+%%      resp◎ id⟷ simplify◎l ◎
+%%      resp◎ id⟷ simplify◎l ◎
+%%      resp◎ simplifySyml id⟷ ◎
+%%      tassocl ◎ 
+%%      resp◎ invll id⟷ ◎
+%%      simplify◎l 
 
--- p₄ ~> p₅
+%% -- p₄ ~> p₅
 
-α₇ : •[ PATH (P.NOT•T P.◎ P.id⟷) , p₄ ] ⟷ 
-     •[ PATH (P.uniti⋆ P.◎ P.swap⋆ P.◎ 
-             (P.NOT•T P.⊗ P.id⟷) P.◎ P.swap⋆ P.◎ P.unite⋆) , 
-        p₅ ]
-α₇ = simplify◎l ◎ (sym⟷ α₈)
---}
+%% α₇ : •[ PATH (P.NOT•T P.◎ P.id⟷) , p₄ ] ⟷ 
+%%      •[ PATH (P.uniti⋆ P.◎ P.swap⋆ P.◎ 
+%%              (P.NOT•T P.⊗ P.id⟷) P.◎ P.swap⋆ P.◎ P.unite⋆) , 
+%%         p₅ ]
+%% α₇ = simplify◎l ◎ (sym⟷ α₈)
+%% --}
 
--- level 0 is a groupoid with a non-trivial path equivalence the various inv*
--- rules are not justified by the groupoid proof; they are justified by the
--- need for computational rules. So it is important to have not just a
--- groupoid structure but a groupoid structure that we can compute with. So
--- if we say that we want p ◎ p⁻¹ to be id, we must have computational rules
--- that allow us to derive this for any path p, and similarly for all the
--- other groupoid rules. (cf. The canonicity for 2D type theory by Licata and
--- Harper)
+%% -- level 0 is a groupoid with a non-trivial path equivalence the various inv*
+%% -- rules are not justified by the groupoid proof; they are justified by the
+%% -- need for computational rules. So it is important to have not just a
+%% -- groupoid structure but a groupoid structure that we can compute with. So
+%% -- if we say that we want p ◎ p⁻¹ to be id, we must have computational rules
+%% -- that allow us to derive this for any path p, and similarly for all the
+%% -- other groupoid rules. (cf. The canonicity for 2D type theory by Licata and
+%% -- Harper)
 
-G : 1Groupoid
-G = record
-        { set = P.U•
-        ; _↝_ = P._⟷_
-        ; _≈_ = λ c₀ c₁ → Path• c₀ ⟷ Path• c₁
-        ; id = P.id⟷
-        ; _∘_ = λ c₀ c₁ → c₁ P.◎ c₀
-        ; _⁻¹ = P.sym⟷
-        ; lneutr = λ {t₁} {t₂} c → simplifyr◎l 
-           {P.U•.∣ t₁ ∣} {P.U•.∣ t₂ ∣} {P.U•.∣ t₂ ∣} 
-           {P.U•.• t₁} {P.U•.• t₂} {P.U•.• t₂} {c} {P.id⟷} 
-        ; rneutr = λ {t₁} {t₂} c → simplifyl◎l 
-           {P.U•.∣ t₁ ∣} {P.U•.∣ t₁ ∣} {P.U•.∣ t₂ ∣} 
-           {P.U•.• t₁} {P.U•.• t₁} {P.U•.• t₂} {P.id⟷} {c}
-        ; assoc = λ _ _ _ → tassocl
-        ; equiv = record { refl = id⟷ 
-                                ; sym = λ c → sym⟷ c 
-                                ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
-        ; linv = λ {t₁} {t₂} c → 
-                   invrl {P.U•.∣ t₁ ∣} {P.U•.∣ t₂ ∣} {P.U•.• t₁} {P.U•.• t₂}
-        ; rinv = λ {t₁} {t₂} c → 
-                   invll {P.U•.∣ t₁ ∣} {P.U•.∣ t₂ ∣} {P.U•.• t₁} {P.U•.• t₂}
-        ; ∘-resp-≈ = λ f⟷h g⟷i → resp◎ g⟷i f⟷h 
-        }
+%% G : 1Groupoid
+%% G = record
+%%         { set = P.U•
+%%         ; _↝_ = P._⟷_
+%%         ; _≈_ = λ c₀ c₁ → Path• c₀ ⟷ Path• c₁
+%%         ; id = P.id⟷
+%%         ; _∘_ = λ c₀ c₁ → c₁ P.◎ c₀
+%%         ; _⁻¹ = P.sym⟷
+%%         ; lneutr = λ {t₁} {t₂} c → simplifyr◎l 
+%%            {P.U•.∣ t₁ ∣} {P.U•.∣ t₂ ∣} {P.U•.∣ t₂ ∣} 
+%%            {P.U•.• t₁} {P.U•.• t₂} {P.U•.• t₂} {c} {P.id⟷} 
+%%         ; rneutr = λ {t₁} {t₂} c → simplifyl◎l 
+%%            {P.U•.∣ t₁ ∣} {P.U•.∣ t₁ ∣} {P.U•.∣ t₂ ∣} 
+%%            {P.U•.• t₁} {P.U•.• t₁} {P.U•.• t₂} {P.id⟷} {c}
+%%         ; assoc = λ _ _ _ → tassocl
+%%         ; equiv = record { refl = id⟷ 
+%%                                 ; sym = λ c → sym⟷ c 
+%%                                 ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
+%%         ; linv = λ {t₁} {t₂} c → 
+%%                    invrl {P.U•.∣ t₁ ∣} {P.U•.∣ t₂ ∣} {P.U•.• t₁} {P.U•.• t₂}
+%%         ; rinv = λ {t₁} {t₂} c → 
+%%                    invll {P.U•.∣ t₁ ∣} {P.U•.∣ t₂ ∣} {P.U•.• t₁} {P.U•.• t₂}
+%%         ; ∘-resp-≈ = λ f⟷h g⟷i → resp◎ g⟷i f⟷h 
+%%         }
 
-\end{code}
+%% \end{code}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
