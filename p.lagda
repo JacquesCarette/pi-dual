@@ -772,11 +772,26 @@ TRUE FALSE : ⟦ BOOL ⟧
 TRUE   = inj₁ tt
 FALSE  = inj₂ tt
 
-notpath1 : •[ BOOL , TRUE ] ⟷ •[ BOOL , FALSE ]
-notpath1 = swap1₊
+BOOL•F : U•
+BOOL•F = •[ BOOL , FALSE ]
 
-notpath2 : •[ BOOL , FALSE ] ⟷ •[ BOOL , TRUE ]
-notpath2 = swap2₊
+BOOL•T : U•
+BOOL•T = •[ BOOL , TRUE ]
+
+NOT•T : BOOL•T ⟷ BOOL•F
+NOT•T = swap1₊
+
+NOT•F : BOOL•F ⟷ BOOL•T
+NOT•F = swap2₊
+
+data Path (t₁ t₂ : U•) : Set where
+  path : (c : t₁ ⟷ t₂) → Path t₁ t₂
+
+notpath•T : Path BOOL•T BOOL•F
+notpath•T = path NOT•T
+
+notpath•F : Path BOOL•F BOOL•T
+notpath•F = path NOT•F
 \end{code} 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -811,7 +826,18 @@ We start with a few examples...
 
 \smallskip
 \begin{code}
---
+T⇔F : Set
+T⇔F = Path BOOL•T BOOL•F
+
+F⇔T : Set
+F⇔T = Path BOOL•F BOOL•T
+
+p₁ p₂ p₃ p₄ p₅ : T⇔F
+p₁ = path NOT•T
+p₂ = path (id⟷ ◎ NOT•T)
+p₃ = path (NOT•T ◎ NOT•F ◎ NOT•T)
+p₄ = path (NOT•T ◎ id⟷)
+p₅ = path (uniti⋆ ◎ swap⋆ ◎ (NOT•T ⊗ id⟷) ◎ swap⋆ ◎ unite⋆)
 \end{code}
 
 the paths p1 to p5
