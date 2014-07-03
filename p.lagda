@@ -743,15 +743,17 @@ data _⟷_ : U• → U• → Set where
 \noindent The refinement of the $\Pi$ combinators to combinators on pointed
 spaces is given by the inductive family in Table~\ref{pointedcomb}. The
 definition effectively folds the operational semantics of each combinator
-into a path that connects its input to its output. The definition also
-evidently generalizes the usual propositional equality into a
-\emph{heterogeneous} equality that connects points that may be in different
-spaces. What used to be the only constructor for paths
-\AgdaInductiveConstructor{refl} is now just one of the many constructors
-(named \AgdaBound{id⟷} in the Table). Among the new constructors, we have
-\AgdaBound{sym⟷} that constructs path inverses, \AgdaBound{◎} that constructs
-path compositions, and \AgdaBound{swap1₊} and \AgdaBound{swap2₊} that are
-essentially the encoding of the path \AgdaBound{notpath} from the space
+into the type of the path which explicitly connects its input point to its
+output point. The definition also evidently generalizes the usual
+propositional equality into a \emph{heterogeneous} equality that connects
+points that may be in different spaces. Put differently, what used to be the
+only constructor for paths \AgdaInductiveConstructor{refl} is now just one of
+the many constructors (named \AgdaBound{id⟷} in the Table). Among the new
+constructors, we have \AgdaBound{sym⟷} that constructs path inverses,
+\AgdaBound{◎} that constructs path compositions. These are sufficient to
+guarantee that the universe \AgdaBound{U} is a groupoid. Additionally, we
+have paths \AgdaBound{swap1₊} and \AgdaBound{swap2₊} that are essentially the
+encoding of the path \AgdaBound{notpath} above from the space
 \AgdaBound{Bool} to itself. To see this, note that \AgdaBound{Bool} can be
 viewed as a shorthand for \AgdaInductiveConstructor{PLUS}
 \AgdaInductiveConstructor{ONE} \AgdaInductiveConstructor{ONE} with
@@ -759,7 +761,7 @@ viewed as a shorthand for \AgdaInductiveConstructor{PLUS}
 shorthands for \AgdaInductiveConstructor{inj₁} \AgdaInductiveConstructor{tt}
 and \AgdaInductiveConstructor{inj₂} \AgdaInductiveConstructor{tt}. With this
 in mind, the path corresponding to boolean negation consists of two
-``fibers:'' 
+``fibers'', one for each boolean value as shown below:
 
 \smallskip
 \begin{code}
@@ -779,6 +781,41 @@ notpath2 = swap2₊
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Computing with Paths} 
+
+The previous section presented a language $\Pi$ whose computations are all
+the possible isomorphisms between finite types. (Recall that the commutative
+semiring structure is sound and complete for isomorphisms between finite
+types~\cite{Fiore:2004,fiore-remarks}.) Instead of working with arbitrary
+functions, then restricting them to equivalences, and then postulating that
+these equivalences give rise to paths, the approach based on $\Pi$ starts
+directly with the full set of possible isomorphisms and encodes it as an
+inductive datatype of paths between pointed spaces. The resulting structure
+is evidently a 1-groupoid as the isomorphisms are closed under inverses and
+composition. We now investigate the higher groupoid structure. 
+
+The pleasant result will be that the higher groupoid structure will result
+from another ``lifted'' version of $\Pi$ in which computations manipulate
+paths. The lifted version will have all the combinators from
+Table~\ref{pointedcomb} to manipulate collections of paths (e.g., sums of
+products of paths) in addition to combinators that work on individual
+paths. The latter combinators will capture the higher groupoid structure
+relating for example, the path \AgdaBound{id⟷} \AgdaSymbol{◎} \AgdaBound{c}
+with \AgdaBound{c}. Computations in the lifted $\Pi$ will therefore
+correspond to 2-paths and the entire scheme can be repeated over and over to
+capture the concept of weak $\infty$-groupoids.
+
+%%%%%%%%%%%%%%%%%
+\subsection{Examples}
+
+We start with a few examples...
+
+\smallskip
+\begin{code}
+--
+\end{code}
+
+the paths p1 to p5
+and then the proofs that they are the same using 2 paths
 
 The evaluation of a program is not done in order to figure out the output
 value. Both the input and output values are encoded in the type of the

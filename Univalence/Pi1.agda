@@ -20,6 +20,8 @@ open import Data.Product
 open import Groupoid
 import Pi0 as P
 
+infix  2  _∎       -- equational reasoning for paths
+infixr 2  _≡⟨_⟩_   -- equational reasoning for paths
 infixr 10 _◎_
 infixr 30 _⟷_
 
@@ -132,14 +134,6 @@ data _⟷_ : U• → U• → Set where
             Path• (c P.◎ P.sym⟷ c) ⟷ Path• (P.id⟷ {t₁} {v₁})
   invrr   : ∀ {t₁ t₂ v₁ v₂} → {c : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} → 
             Path• (P.id⟷ {t₁} {v₁}) ⟷ Path• (c P.◎ P.sym⟷ c)
-  tassocl : {t₁ t₂ t₃ t₄ : P.U•} 
-            {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} {c₃ : t₃ P.⟷ t₄} → 
-            Path• (c₁ P.◎ (c₂ P.◎ c₃)) ⟷ 
-            Path• ((c₁ P.◎ c₂) P.◎ c₃)
-  tassocr : {t₁ t₂ t₃ t₄ : P.U•} 
-            {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} {c₃ : t₃ P.⟷ t₄} → 
-            Path• ((c₁ P.◎ c₂) P.◎ c₃) ⟷ 
-            Path• (c₁ P.◎ (c₂ P.◎ c₃))
 
   -- resp◎ is closely related to Eckmann-Hilton
   resp◎   : {t₁ t₂ t₃ : P.U•} 
@@ -215,52 +209,79 @@ data _⟷_ : U• → U• → Set where
             (•[ TIMES ∣ t₁ ∣ ∣ t₂ ∣ , (• t₁ , • t₂ ) ] ⟷ 
              •[ TIMES ∣ t₃ ∣ ∣ t₄ ∣ , (• t₃ , • t₄ ) ])
 
+-- sane syntax
+
+_≡⟨_⟩_ : {t₁ t₂ : P.U•} (c₁ : t₁ P.⟷ t₂) {c₂ : t₁ P.⟷ t₂} {c₃ : t₁ P.⟷ t₂} → 
+         (•[ PATH c₁ , path c₁ ] ⟷ •[ PATH c₂ , path c₂ ]) → 
+         (•[ PATH c₂ , path c₂ ] ⟷ •[ PATH c₃ , path c₃ ]) → 
+         (•[ PATH c₁ , path c₁ ] ⟷ •[ PATH c₃ , path c₃ ])
+_ ≡⟨ α ⟩ β = α ◎ β
+
+_∎ : {t₁ t₂ : P.U•} → (c : t₁ P.⟷ t₂) → 
+     •[ PATH c , path c ] ⟷ •[ PATH c , path c ]
+_∎ c = id⟷ 
+
 -- example programs
 
-{--
 α₁ : Path• P.NOT•T ⟷ Path• (P.id⟷ P.◎ P.NOT•T)
-α₁ = simplify◎r
+α₁ = simplifyl◎r
 
 α₂ α₃ : •[ TIMES (PATH P.NOT•T) (PATH (P.NOT•T P.◎ P.id⟷)) , (p₁ , p₄) ] ⟷ 
         •[ TIMES (PATH P.NOT•T) (PATH P.NOT•T) , (p₁ , p₁) ] 
-α₂ = id⟷ ⊗ simplify◎l
-α₃ = swap⋆ ◎ (simplify◎l ⊗ id⟷) 
+α₂ = id⟷ ⊗ simplifyr◎l
+α₃ = swap⋆ ◎ (simplifyr◎l ⊗ id⟷) 
 
 -- let's try to prove that p₁ = p₂ = p₃ = p₄ = p₅
 
 -- p₁ ~> p₂
 α₄ : •[ PATH P.NOT•T , p₁ ] ⟷ •[ PATH (P.id⟷ P.◎ P.NOT•T) , p₂ ]
-α₄ = simplify◎r
+α₄ = simplifyl◎r
 
 -- p₂ ~> p₃
 α₅ : •[ PATH (P.id⟷ P.◎ P.NOT•T) , p₂ ] ⟷ 
      •[ PATH (P.NOT•T P.◎ P.NOT•F P.◎ P.NOT•T) , p₃ ]
-α₅ = simplify◎l ◎ simplify◎r ◎ (resp◎ id⟷ (invrr {c = P.NOT•F} ◎ resp◎ id⟷ simplifySyml))
---}
+α₅ = P.id⟷ P.◎ P.NOT•T
+       ≡⟨ simplifyl◎l ⟩ 
+     P.NOT•T
+       ≡⟨ simplifyr◎r ⟩ 
+     P.NOT•T P.◎ P.id⟷ 
+       ≡⟨ resp◎ id⟷ simplifyl◎r ⟩ 
+     P.NOT•T P.◎ P.NOT•F P.◎ P.NOT•T ∎
+
 -- p₃ ~> p₄
 α₆ : •[ PATH (P.NOT•T P.◎ P.NOT•F P.◎ P.NOT•T) , p₃ ] ⟷ 
      •[ PATH (P.NOT•T P.◎ P.id⟷) , p₄ ]
-α₆ = resp◎ id⟷ ((resp◎ simplifySymr id⟷) ◎ invll)
+α₆ = resp◎ id⟷ simplifyl◎l
 
 -- p₅ ~> p₁
 
-{--
 α₈ : •[ PATH (P.uniti⋆ P.◎ P.swap⋆ P.◎ 
              (P.NOT•T P.⊗ P.id⟷) P.◎ P.swap⋆ P.◎ P.unite⋆) , 
         p₅ ] ⟷ 
      •[ PATH P.NOT•T , p₁ ] 
-α₈ = resp◎ id⟷ (resp◎ id⟷ tassocl) ◎ 
-     resp◎ id⟷ (resp◎ id⟷ (resp◎ simplify◎l id⟷)) ◎ 
-     resp◎ id⟷ (resp◎ id⟷ tassocr) ◎
-     resp◎ id⟷ tassocl ◎
-     resp◎ id⟷ (resp◎ (resp◎ simplifySymr id⟷) id⟷) ◎
-     resp◎ id⟷ (resp◎ invll id⟷) ◎
-     resp◎ id⟷ simplify◎l ◎
-     resp◎ id⟷ simplify◎l ◎
-     resp◎ simplifySyml id⟷ ◎
-     tassocl ◎ 
-     resp◎ invll id⟷ ◎
-     simplify◎l 
+α₈ = P.uniti⋆ P.◎ P.swap⋆ P.◎ (P.NOT•T P.⊗ P.id⟷) P.◎ P.swap⋆ P.◎ P.unite⋆
+       ≡⟨ resp◎ id⟷ (resp◎ id⟷ simplifyl◎r) ⟩
+     P.uniti⋆ P.◎ (P.swap⋆ P.◎ ((P.NOT•T P.⊗ P.id⟷) P.◎ (P.swap⋆ P.◎ P.unite⋆)))
+       ≡⟨ resp◎ id⟷ (resp◎ id⟷ simplifyl◎r) ⟩ 
+     P.uniti⋆ P.◎ (P.swap⋆ P.◎ (((P.NOT•T P.⊗ P.id⟷) P.◎ P.swap⋆) P.◎ P.unite⋆))
+       ≡⟨ resp◎ id⟷ (resp◎ id⟷ (resp◎ simplifyl◎l id⟷ )) ⟩
+     P.uniti⋆ P.◎ (P.swap⋆ P.◎ ((P.swap⋆ P.◎ (P.id⟷ P.⊗ P.NOT•T)) P.◎ P.unite⋆))
+       ≡⟨ resp◎ id⟷ (resp◎ id⟷ simplifyl◎l) ⟩
+     P.uniti⋆ P.◎ (P.swap⋆ P.◎ (P.swap⋆ P.◎ ((P.id⟷ P.⊗ P.NOT•T) P.◎ P.unite⋆)))
+       ≡⟨ resp◎ id⟷ simplifyl◎r ⟩
+     P.uniti⋆ P.◎ ((P.swap⋆ P.◎ P.swap⋆) P.◎ ((P.id⟷ P.⊗ P.NOT•T) P.◎ P.unite⋆))
+       ≡⟨ resp◎ id⟷ (resp◎ simplifyl◎l id⟷) ⟩
+     P.uniti⋆ P.◎ (P.id⟷ P.◎ ((P.id⟷ P.⊗ P.NOT•T) P.◎ P.unite⋆))
+       ≡⟨ resp◎ id⟷ simplifyl◎l ⟩
+     P.uniti⋆ P.◎ ((P.id⟷ P.⊗ P.NOT•T) P.◎ P.unite⋆)
+       ≡⟨ resp◎ id⟷ simplifyl◎l  ⟩
+     P.uniti⋆ P.◎ (P.unite⋆ P.◎ P.NOT•T)
+       ≡⟨ simplifyl◎r ⟩
+     (P.uniti⋆ P.◎ P.unite⋆) P.◎ P.NOT•T
+       ≡⟨ resp◎ simplifyl◎l id⟷ ⟩
+     P.id⟷ P.◎ P.NOT•T
+       ≡⟨ simplifyl◎l ⟩
+     P.NOT•T ∎
 
 -- p₄ ~> p₅
 
@@ -268,8 +289,7 @@ data _⟷_ : U• → U• → Set where
      •[ PATH (P.uniti⋆ P.◎ P.swap⋆ P.◎ 
              (P.NOT•T P.⊗ P.id⟷) P.◎ P.swap⋆ P.◎ P.unite⋆) , 
         p₅ ]
-α₇ = simplify◎l ◎ (sym⟷ α₈)
---}
+α₇ = simplifyr◎l ◎ (sym⟷ α₈)
 
 -- level 0 is a groupoid with a non-trivial path equivalence the various inv*
 -- rules are not justified by the groupoid proof; they are justified by the
@@ -294,7 +314,7 @@ G = record
         ; rneutr = λ {t₁} {t₂} c → simplifyl◎l 
            {P.U•.∣ t₁ ∣} {P.U•.∣ t₁ ∣} {P.U•.∣ t₂ ∣} 
            {P.U•.• t₁} {P.U•.• t₁} {P.U•.• t₂} {P.id⟷} {c}
-        ; assoc = λ _ _ _ → tassocl
+        ; assoc = λ _ _ _ → simplifyl◎r
         ; equiv = record { refl = id⟷ 
                                 ; sym = λ c → sym⟷ c 
                                 ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
