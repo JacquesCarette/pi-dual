@@ -24,6 +24,7 @@
 
 \renewcommand{\AgdaCodeStyle}{\small}
 
+\newcommand{\pointed}[2]{\AgdaSymbol{•}\AgdaSymbol{[} #1 \AgdaSymbol{,} #2 \AgdaSymbol{]}}
 \newcommand{\AgdaArgument}[1]{#1}
 \newcommand{\inl}[1]{\textsf{inl}~#1}
 \newcommand{\inr}[1]{\textsf{inr}~#1}
@@ -132,6 +133,15 @@ data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
 
+In a computational world in which the laws of physics are embraced and
+resources are carefully maintained (e.g., quantum
+computing~\cite{NC00,Abramsky:2004:CSQ:1018438.1021878}), programs must be
+reversible. Although this is apparently a limiting idea, it turns out that
+conventional computation can be viewed as a special case of such
+resource-preserving reversible programs. This thesis has been explored for
+many years from different
+perspectives~\cite{fredkin1982conservative,Toffoli:1980,bennett2010notes,bennett2003notes,Bennett:1973:LRC,Landauer:1961,Landauer}. 
+
 \paragraph*{Conventional HoTT/Agda approach}
 
 We start with a computational framework: data (pairs, etc.) and functions
@@ -200,7 +210,7 @@ whether two elements of a type are equal is a proposition, and hence that
 this proposition must correspond to a type. In Agda, one may write proofs of
 these propositions as shown in the two examples below:
 
-\smallskip
+\begin{multicols}{2}
 \begin{code}
 i0 : 3 ≡ 3
 i0 = refl 3
@@ -208,6 +218,7 @@ i0 = refl 3
 i1 : (1 + 2) ≡ (3 * 1)
 i1 = refl 3
 \end{code}
+\end{multicols}
 
 \noindent More generally, given two values \AgdaBound{m} and \AgdaBound{n} of
 type \AgdaPrimitiveType{ℕ}, it is possible to construct an element
@@ -216,7 +227,7 @@ type \AgdaPrimitiveType{ℕ}, it is possible to construct an element
 and \AgdaBound{k} are all ``equal.'' As shown in example \AgdaFunction{i1},
 this notion of \emph{propositional equality} is not just syntactic equality
 but generalizes to \emph{definitional equality}, i.e., to equality that can
-be established by normalizing the two values to their normal forms.
+be established by normalizing the values to their normal forms.
 
 The important question from the HoTT perspective is the following: given two
 elements \AgdaBound{p} and \AgdaBound{q} of some type \AgdaBound{x}
@@ -225,18 +236,19 @@ elements \AgdaBound{p} and \AgdaBound{q} of some type \AgdaBound{x}
 about the elements of type \AgdaBound{p} \AgdaDatatype{≡} \AgdaBound{q}. Or,
 in more familiar terms, given two proofs of some proposition $P$, are these
 two proofs themselves ``equal.'' In some situations, the only interesting
-property of proofs is their existence, i.e., all proofs of the same
-proposition are considered equivalent. A twist that dates back to a paper by
-\citet{Hofmann96thegroupoid} is that proofs actually possess a structure of
-great combinatorial complexity. HoTT builds on this idea by interpreting
-types as topological spaces or weak $\infty$-groupoids, and interpreting
-identities between elements of a type
+property of proofs is their existence, and therefore the exact construction
+of the proof becomes irrelevant, and all proofs of the same proposition
+become equivalent. This is however neither necessary nor desirable. A twist
+that dates back to a paper by \citet{Hofmann96thegroupoid} is that proofs
+actually possess a structure of great combinatorial complexity. HoTT builds
+on this idea by interpreting types as topological spaces or weak
+$\infty$-groupoids, and interpreting identities between elements of a type
 \AgdaBound{x}~\AgdaDatatype{≡}~\AgdaBound{y} as \emph{paths} from the point
 \AgdaBound{x} to the point \AgdaBound{y}. If \AgdaBound{x} and \AgdaBound{y}
 are themselves paths, the elements of
 \AgdaBound{x}~\AgdaDatatype{≡}~\AgdaBound{y} become paths between paths, or
 homotopies in the topological language. To be explicit, we will often refer
-to types as \emph{spaces} which consist of \emph{points}, paths, 2-paths,
+to types as \emph{spaces} which consist of \emph{points}, paths, 2paths,
 etc. and write $\AgdaDatatype{≡}_\AgdaBound{A}$ for the type of paths in
 space \AgdaBound{A}.
 
@@ -247,7 +259,7 @@ there is a (trivial) path \AgdaInductiveConstructor{refl} \AgdaBound{b} from
 each point \AgdaBound{b} to itself:
 \[
 \begin{tikzpicture}[scale=0.7]
-  \draw (-0.2,0) ellipse (2cm and 1cm);
+  \draw (0,0) ellipse (2cm and 1cm);
   \draw[fill] (-1,0) circle (0.025);
   \node[below] at (-1,0) {false};
   \draw[fill] (1,0) circle (0.025);
@@ -274,7 +286,7 @@ that space has the following non-trivial structure:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.74]
-  \draw (0,0) ellipse (5.5cm and 2.5cm);
+  \draw (-0.2,0) ellipse (5.5cm and 2.5cm);
   \draw[fill] (0,0) circle (0.025);
   \draw[->,thick,red] (0,0) arc (90:440:0.2);
   \node[above,red] at (0,0) {refl};
@@ -328,6 +340,9 @@ The additional structure of types is formalized as follows. Let
 \item This structure repeats one level up and so on ad infinitum.
 \end{itemize}
 
+\noindent A space that satisfies the properties above for $n$ levels is
+called an $n$-groupoid.
+
 %%%%%%%%%%%%%%%%%%
 \subsection{Univalence} 
 
@@ -343,12 +358,13 @@ which is given by the constructor \AgdaInductiveConstructor{refl}:
 p : Bool ≡ Bool
 p = refl Bool
 \end{code}
+\smallskip
 
 \noindent There are, however, other (non trivial) paths between
 \AgdaPrimitiveType{Bool} and itself and they are justified by the
-\emph{univalence} axiom. As an example, the remainder of this section
-justifies that there is a path between \AgdaPrimitiveType{Bool} and itself
-corresponding to the boolean negation function.
+\emph{univalence} \textbf{axiom}. As an example, the remainder of this
+section justifies that there is a path between \AgdaPrimitiveType{Bool} and
+itself corresponding to the boolean negation function.
 
 We begin by formalizing the equivalence of functions
 \AgdaSymbol{∼}. Intuitively, two functions are equivalent if their results
@@ -377,6 +393,7 @@ record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B)
 _≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ ⊔ ℓ')
 A ≃ B = Σ (A → B) isequiv
 \end{code}
+\smallskip
 
 We can now formally state the univalence axiom:
 
@@ -384,13 +401,14 @@ We can now formally state the univalence axiom:
 \begin{code}
 postulate univalence : {A B : Set} → (A ≡ B) ≃ (A ≃ B)
 \end{code}
+\smallskip
 
 \noindent For our purposes, the important consequence of the univalence axiom
 is that equivalence of spaces implies the existence of a path between the
 spaces. In other words, in order to assert the existence of a path
-\AgdaBound{notpath} between \AgdaPrimitiveType{Bool} and itself, we need to
-prove that the boolean negation function is an equivalence between the space
-\AgdaPrimitiveType{Bool} and itself, as shown below:
+\AgdaFunction{notpath} between \AgdaPrimitiveType{Bool} and itself, we need
+to prove that the boolean negation function is an equivalence between the
+space \AgdaPrimitiveType{Bool} and itself. This is easy as shown below:
 
 \smallskip
 \begin{code}
@@ -401,21 +419,19 @@ not2∼id true   =  refl true
 notequiv : Bool ≃ Bool
 notequiv = (not , 
             record {
-              g = not ; α = not2∼id ; h = not ; β = not2∼id
-           })
-                      
-                      
+            g = not ; α = not2∼id ; h = not ; β = not2∼id })
 
 notpath : Bool ≡ Bool
 notpath with univalence
 ... | (_ , eq) = isequiv.g eq notequiv
 \end{code}
+\smallskip
 
 \noindent Although the code asserting the existence of a non trivial path
 between \AgdaPrimitiveType{Bool} and itself ``compiles,'' it is no longer
-executable as it relies on an Agda postulate. We analyze the situation from
-the perspective of reversible programming languages based on type
-isomorphisms~\cite{James:2012:IE:2103656.2103667,rc2011,rc2012}.
+executable as it relies on an Agda postulate. In the next section, we analyze
+this situation from the perspective of reversible programming languages based
+on type isomorphisms~\cite{James:2012:IE:2103656.2103667,rc2011,rc2012}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Computing with Type Isomorphisms}
@@ -430,34 +446,7 @@ and semantics.
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{Reversibility} 
 
-In a computational world in which the laws of physics are embraced and
-resources are carefully maintained (e.g., quantum
-computing~\cite{NC00,Abramsky:2004:CSQ:1018438.1021878}), programs must be
-reversible. Although this is apparently a limiting idea, it turns out that
-conventional computation can be viewed as a special case of such
-resource-preserving reversible programs. This thesis has been explored for
-many years from different
-perspectives~\cite{fredkin1982conservative,Toffoli:1980,bennett2010notes,bennett2003notes,Bennett:1973:LRC,Landauer:1961,Landauer}. 
-
-The relevance of reversibility to HoTT is based on the following
-analysis. The conventional HoTT approach starts with two, a priori, different
-notions: functions and paths, and then postulates an equivalence between a
-particular class of functions and paths. As illustrated above, some functions
-like \AgdaBound{not} correspond to paths. Most functions, however, are
-evidently unrelated to paths. In particular, any function of type
-\AgdaBound{A}~\AgdaSymbol{→}~\AgdaBound{B} that does not have an inverse of
-type \AgdaBound{B}~\AgdaSymbol{→}~\AgdaBound{A} cannot have any direct
-correspondence to paths as all paths have inverses. An interesting question
-then poses itself: since reversible computational models --- in which all
-functions have inverses --- are known to be universal computational models,
-what would happen if we considered a variant of HoTT based exclusively on
-reversible functions?  Presumably in such a variant, all functions --- being
-reversible --- would potentially correspond to paths and the distinction
-between the two notions would vanish making the univalence postulate
-unnecessary. This is the precise idea we investigate in detail in the
-remainder of the paper.
-
-\begin{table*}[t]
+\begin{figure*}[t]
 \[\begin{array}{cc}
 \begin{array}{rrcll}
 \identlp :&  0 + \tau & \iso & \tau &: \identrp \\
@@ -504,7 +493,25 @@ remainder of the paper.
 \end{array}\]
 \caption{$\Pi$-combinators~\cite{James:2012:IE:2103656.2103667}
 \label{pi-combinators}}
-\end{table*}
+\end{figure*}
+
+The relevance of reversibility to HoTT is based on the following
+analysis. The conventional HoTT approach starts with two, a priori, different
+notions: functions and paths, and then postulates an equivalence between a
+particular class of functions and paths. As illustrated above, some functions
+like \AgdaFunction{not} correspond to paths. Most functions, however, are
+evidently unrelated to paths. In particular, any function of type
+\AgdaBound{A}~\AgdaSymbol{→}~\AgdaBound{B} that does not have an inverse of
+type \AgdaBound{B}~\AgdaSymbol{→}~\AgdaBound{A} cannot have any direct
+correspondence to paths as all paths have inverses. An interesting question
+then poses itself: since reversible computational models --- in which all
+functions have inverses --- are known to be universal computational models,
+what would happen if we considered a variant of HoTT based exclusively on
+reversible functions?  Presumably in such a variant, all functions --- being
+reversible --- would potentially correspond to paths and the distinction
+between the two notions would vanish making the univalence postulate
+unnecessary. This is the precise technical idea we investigate in detail in
+the remainder of the paper.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Syntax and Semantics of $\Pi$}
@@ -522,12 +529,12 @@ injections into sum types, and $(v_1,v_2)$ for product types:
   v &::=& () \alt \inl{v} \alt \inr{v} \alt (v_1,v_2) \\
 (\textit{Combinator types}) &&& \tau_1 \iso \tau_2 \\
 (\textit{Combinators}) & 
-  c &::=& [\textit{see Table~\ref{pi-combinators}}]
+  c &::=& [\textit{see Fig.~\ref{pi-combinators}}]
 \end{array}\]
 The interesting syntactic category of $\Pi$ is that of \emph{combinators}
 which are witnesses for type isomorphisms $\tau_1 \iso \tau_2$. They consist
-of base combinators (on the left side of Table~\ref{pi-combinators}) and
-compositions (on the right side of the same table). Each line of the table on
+of base combinators (on the left side of Fig.~\ref{pi-combinators}) and
+compositions (on the right side of the same figure). Each line of the figure on
 the left introduces a pair of dual constants\footnote{where $\swapp$ and
   $\swapt$ are self-dual.} that witness the type isomorphism in the
 middle. This set of isomorphisms is known to be
@@ -542,23 +549,20 @@ circuits~\cite{James:2012:IE:2103656.2103667}.\footnote{If recursive types
 From the perspective of category theory, the language $\Pi$ models what is
 called a \emph{symmetric bimonoidal category} or a \emph{commutative rig
 category}. These are categories with two binary operations $\oplus$ and
-$\otimes$ satisfying the axioms of a rig (i.e., a ring without negative
-elements also known as a semiring) up to coherent isomorphisms. And indeed
-the types of the $\Pi$-combinators are precisely the semiring axioms. A
-formal way of saying this is that $\Pi$ is the
-\emph{categorification}~\cite{math/9802029} of the natural numbers. A simple
-(slightly degenerate) example of such categories is the category of finite
-sets and permutations in which we interpret every $\Pi$-type as a finite set,
-the values as elements in these finite sets, and the combinators as
-permutations. In the remainder of this paper, we will more interested in a
-model based on groupoids. But first, we give an operational semantics for
-$\Pi$.
+$\otimes$ satisfying the axioms of a commutative rig (i.e., a commutative
+ring without negative elements also known as a commutative semiring) up to
+coherent isomorphisms. And indeed the types of the $\Pi$-combinators are
+precisely the commutative semiring axioms. A formal way of saying this is
+that $\Pi$ is the \emph{categorification}~\cite{math/9802029} of the natural
+numbers. A simple (slightly degenerate) example of such categories is the
+category of finite sets and permutations in which we interpret every
+$\Pi$-type as a finite set, the values as elements in these finite sets, and
+the combinators as permutations. In the remainder of this paper, we will be
+more interested in a model based on groupoids. But first, we give an
+operational semantics for $\Pi$.
 
-Operationally, the semantics consists of a pair of mutually recursive
-evaluators that take a combinator and a value and propagate the value in the
-``forward'' $\triangleright$ direction or in the ``backwards''
-$\triangleleft$ direction. We show the complete forward evaluator; the
-backwards evaluator differs in trivial ways:
+
+\begin{figure}[ht]
 \[\begin{array}{r@{\!}lcl}
 \evalone{\identlp}{&(\inr{v})} &=& v \\
 \evalone{\identrp}{&v} &=& \inr{v} \\
@@ -590,6 +594,15 @@ backwards evaluator differs in trivial ways:
 \evalone{(c_1\otimes c_2)}{&(v_1,v_2)} &=& 
   (\evalone{c_1}v_1, \evalone{c_2}v_2) 
 \end{array}\]
+\caption{\label{opsem}Operation Semantics}
+\end{figure}
+
+Operationally, the semantics consists of a pair of mutually recursive
+evaluators that take a combinator and a value and propagate the value in the
+``forward'' $\triangleright$ direction or in the
+``backwards''~$\triangleleft$ direction. We show the complete forward
+evaluator in Fig.~\ref{opsem}; the backwards evaluator differs in trivial
+ways.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Groupoid Model} 
@@ -597,7 +610,7 @@ backwards evaluator differs in trivial ways:
 Instead of modeling the types of $\Pi$ using sets and the combinators using
 permutations on the sets, we use a semantics that identifies $\Pi$
 combinators with \emph{paths}. More precisely, we model the universe of $\Pi$
-types as a space \AgdaBound{U} whose points are the individual $\Pi$-types
+types as a space \AgdaFunction{U} whose points are the individual $\Pi$-types
 (which are themselves spaces \AgdaBound{t} containing points). We then
 postulate that there is path between the spaces \AgdaBound{t₁} and
 \AgdaBound{t₂} if there is a $\Pi$ combinator $c : t_1 \iso t_2$. Our
@@ -607,20 +620,20 @@ corresponds to a type isomorphism with a clear operational semantics as
 presented in the previous section. As we will explain in more detail below,
 this approach replaces the datatype \AgdaSymbol{≡} modeling propositional
 equality with the datatype \AgdaSymbol{⟷} modeling type isomorphisms. With
-this switch, the $\Pi$-combinators of Table~\ref{pi-combinators} become
+this switch, the $\Pi$-combinators of Fig.~\ref{pi-combinators} become
 \emph{syntax} for the paths in the space $U$. Put differently, instead of
 having exactly one constructor \AgdaInductiveConstructor{refl} for paths with
 all other paths discovered by proofs (see Secs. 2.5--2.12 of the HoTT
-book~\citeyearpar{hott}) or postulated by the univalence axiom, we have an
+book~\citeyearpar{hottbook}) or postulated by the univalence axiom, we have an
 \emph{inductive definition} that completely specifies all the paths in the
 space $U$.
 
-We begin with the datatype definition of the universe \AgdaBound{U} of finite
+We begin with the datatype definition of the universe \AgdaFunction{U} of finite
 types which are constructed using \AgdaInductiveConstructor{ZERO},
 \AgdaInductiveConstructor{ONE}, \AgdaInductiveConstructor{PLUS}, and
 \AgdaInductiveConstructor{TIMES}. Each of these finite types will correspond
 to a set of points with paths connecting some of the points. The underlying
-set is computed by \AgdaSymbol{⟦}\_\AgdaSymbol{⟧} as follows:
+set of points is computed by \AgdaSymbol{⟦}\_\AgdaSymbol{⟧} as follows:
 \AgdaInductiveConstructor{ZERO} maps to the empty set \AgdaSymbol{⊥},
 \AgdaInductiveConstructor{ONE} maps to the singleton set \AgdaSymbol{⊤},
 \AgdaInductiveConstructor{PLUS} maps to the disjoint union \AgdaSymbol{⊎},
@@ -641,15 +654,15 @@ data U : Set where
 ⟦ PLUS t₁ t₂ ⟧   = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
 ⟦ TIMES t₁ t₂ ⟧  = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
 \end{code} 
+\smallskip
 
-\newcommand{\pointed}[2]{\AgdaSymbol{•}\AgdaSymbol{[} \AgdaSymbol{∣} \AgdaBound{#1} \AgdaSymbol{∣} \AgdaSymbol{,} \AgdaBound{#2} \AgdaSymbol{]}}
-
-Paths are ultimately defined between points: in order to be able to identify
-them with $\Pi$ combinators, we refine the latter to operate on \emph{pointed
-  sets} (or referred to as pointed types or pointed spaces) instead of the
-unpointed sets above. A pointed set \pointed{t}{v} is a set \AgdaBound{t}
-\AgdaSymbol{:} \AgdaBound{U} with a distinguished value \AgdaBound{v}
-\AgdaSymbol{:} \AgdaSymbol{⟦} \AgdaBound{t} \AgdaSymbol{⟧}:
+We want to identify paths with $\Pi$ combinators. There is a small
+complication however: paths are ultimately defined between points but the
+$\Pi$ combinators of Fig.~\ref{pi-combinators} are defined between spaces. We
+can bridge this gap using a popular HoTT concept, that of \emph{pointed
+  spaces}. A pointed space \pointed{\AgdaBound{t}}{\AgdaBound{v}} is a space
+\AgdaBound{t} \AgdaSymbol{:} \AgdaFunction{U} with a distinguished value
+\AgdaBound{v} \AgdaSymbol{:} \AgdaSymbol{⟦} \AgdaBound{t} \AgdaSymbol{⟧}:
 
 \smallskip
 \begin{code} 
@@ -659,6 +672,7 @@ record U• : Set where
     ∣_∣  : U
     •    : ⟦ ∣_∣ ⟧
 \end{code}
+\smallskip
 
 \AgdaHide{
 \begin{code}
@@ -666,7 +680,7 @@ open U•
 \end{code}
 }
 
-\begin{table*}
+\begin{figure*}
 \begin{multicols}{2}
 \begin{code} 
 data _⟷_ : U• → U• → Set where
@@ -737,31 +751,42 @@ data _⟷_ : U• → U• → Set where
 \end{code} 
 \end{multicols}
 \caption{Pointed version of $\Pi$-combinators or inductive definition of paths
-\label{pointecomb}}
-\end{table*}
+\label{pointedcomb}}
+\end{figure*}
 
-\noindent The refinement of the $\Pi$ combinators to combinators on pointed
-spaces is given by the inductive family in Table~\ref{pointedcomb}. The
-definition effectively folds the operational semantics of each combinator
-into the type of the path which explicitly connects its input point to its
-output point. The definition also evidently generalizes the usual
-propositional equality into a \emph{heterogeneous} equality that connects
-points that may be in different spaces. Put differently, what used to be the
-only constructor for paths \AgdaInductiveConstructor{refl} is now just one of
-the many constructors (named \AgdaBound{id⟷} in the Table). Among the new
-constructors, we have \AgdaBound{sym⟷} that constructs path inverses,
-\AgdaBound{◎} that constructs path compositions. These are sufficient to
-guarantee that the universe \AgdaBound{U} is a groupoid. Additionally, we
-have paths \AgdaBound{swap1₊} and \AgdaBound{swap2₊} that are essentially the
-encoding of the path \AgdaBound{notpath} above from the space
-\AgdaBound{Bool} to itself. To see this, note that \AgdaBound{Bool} can be
-viewed as a shorthand for \AgdaInductiveConstructor{PLUS}
-\AgdaInductiveConstructor{ONE} \AgdaInductiveConstructor{ONE} with
-\AgdaInductiveConstructor{true} and \AgdaInductiveConstructor{false} as
-shorthands for \AgdaInductiveConstructor{inj₁} \AgdaInductiveConstructor{tt}
-and \AgdaInductiveConstructor{inj₂} \AgdaInductiveConstructor{tt}. With this
-in mind, the path corresponding to boolean negation consists of two
-``fibers'', one for each boolean value as shown below:
+\noindent Given pointed spaces, it is possible to re-express the $\Pi$
+combinators as shown in Fig.~\ref{pointedcomb}. The new presentation of
+combinators directly relates points to points and in fact subsumes the
+operational semantics of Fig.~\ref{opsem}. For example
+\AgdaInductiveConstructor{swap1₊} is still an operation from the space
+\AgdaInductiveConstructor{PLUS} \AgdaBound{t₁} \AgdaBound{t₂} to itself but
+in addition it specifies that, within that spaces, it maps the point
+\AgdaInductiveConstructor{inj₁} \AgdaBound{v₁} to the point
+\AgdaInductiveConstructor{inj₂} \AgdaBound{v₁}.
+
+We note that the refinement of the $\Pi$ combinators to combinators on
+pointed spaces is given by an inductive family for \emph{heterogeneous}
+equality that that generalizes the usual inductive family for propositional
+equality. Put differently, what used to be the only constructor for paths
+\AgdaInductiveConstructor{refl} is now just one of the many constructors
+(named \AgdaInductiveConstructor{id⟷} in the figure). Among the new
+constructors, we have \AgdaInductiveConstructor{sym⟷} that constructs path
+inverses, and \AgdaInductiveConstructor{◎} that constructs path
+compositions. These are sufficient to guarantee that the universe
+\AgdaFunction{U} is a groupoid. Additionally, we have paths that connect
+values in different spaces.
+
+The example \AgdaFunction{notpath} which earlier required the use of the
+univalence axiom can now be directly defined using
+\AgdaInductiveConstructor{swap1₊} and \AgdaInductiveConstructor{swap2₊}. To
+see this, note that \AgdaPrimitiveType{Bool} can be viewed as a shorthand for
+\AgdaInductiveConstructor{PLUS} \AgdaInductiveConstructor{ONE}
+\AgdaInductiveConstructor{ONE} with \AgdaInductiveConstructor{true} and
+\AgdaInductiveConstructor{false} as shorthands for
+\AgdaInductiveConstructor{inj₁} \AgdaInductiveConstructor{tt} and
+\AgdaInductiveConstructor{inj₂} \AgdaInductiveConstructor{tt}. With this in
+mind, the path corresponding to boolean negation consists of two ``fibers'',
+one for each boolean value as shown below:
 
 \smallskip
 \begin{code}
@@ -793,6 +818,11 @@ notpath•T = path NOT•T
 notpath•F : Path BOOL•F BOOL•T
 notpath•F = path NOT•F
 \end{code} 
+\smallskip
+
+\noindent In other words, a path between spaces is really a collection of
+paths connecting the various points. Note however that we never need to
+``collect'' these paths using a universal quantification.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Computing with Paths} 
@@ -811,47 +841,65 @@ composition. We now investigate the higher groupoid structure.
 The pleasant result will be that the higher groupoid structure will result
 from another ``lifted'' version of $\Pi$ in which computations manipulate
 paths. The lifted version will have all the combinators from
-Table~\ref{pointedcomb} to manipulate collections of paths (e.g., sums of
+Fig.~\ref{pointedcomb} to manipulate collections of paths (e.g., sums of
 products of paths) in addition to combinators that work on individual
 paths. The latter combinators will capture the higher groupoid structure
-relating for example, the path \AgdaBound{id⟷} \AgdaSymbol{◎} \AgdaBound{c}
-with \AgdaBound{c}. Computations in the lifted $\Pi$ will therefore
-correspond to 2-paths and the entire scheme can be repeated over and over to
-capture the concept of weak $\infty$-groupoids.
+relating for example, the path \AgdaInductiveConstructor{id⟷} \AgdaSymbol{◎}
+\AgdaBound{c} with \AgdaBound{c}. Computations in the lifted $\Pi$ will
+therefore correspond to 2paths and the entire scheme can be repeated over
+and over to capture the concept of weak $\infty$-groupoids.
 
 %%%%%%%%%%%%%%%%%
 \subsection{Examples}
 
-We start with a few examples...
+We start with a few examples where we define a collection of paths
+\AgdaFunction{p₁} to \AgdaFunction{p₅} all from the pointed space
+\pointed{\AgdaFunction{BOOL}}{\AgdaFunction{TRUE}} to the pointed space
+\pointed{\AgdaFunction{BOOL}}{\AgdaFunction{FALSE}}:
 
 \smallskip
 \begin{code}
-T⇔F : Set
-T⇔F = Path BOOL•T BOOL•F
+T⟷F : Set
+T⟷F = Path BOOL•T BOOL•F
 
-F⇔T : Set
-F⇔T = Path BOOL•F BOOL•T
-
-p₁ p₂ p₃ p₄ p₅ : T⇔F
+p₁ p₂ p₃ p₄ p₅ : T⟷F
 p₁ = path NOT•T
 p₂ = path (id⟷ ◎ NOT•T)
 p₃ = path (NOT•T ◎ NOT•F ◎ NOT•T)
 p₄ = path (NOT•T ◎ id⟷)
 p₅ = path (uniti⋆ ◎ swap⋆ ◎ (NOT•T ⊗ id⟷) ◎ swap⋆ ◎ unite⋆)
 \end{code}
+\smallskip
 
-the paths p1 to p5
-and then the proofs that they are the same using 2 paths
+\noindent All the paths start at \AgdaFunction{TRUE} and end at
+\AgdaFunction{FALSE} but follow different intermediate paths along the
+way. Informally \AgdaFunction{p₁} is the most ``efficient'' canonical way of
+connecting \AgdaFunction{TRUE} to \AgdaFunction{FALSE} via the appropriate
+fiber of the boolean negation. Path \AgdaFunction{p₂} starts with the trivial
+path from \AgdaFunction{TRUE} to itself and then uses the boolean
+negation. The first step is clearly superfluous and hence we expect, via the
+groupoid laws, to have a 2path connecting \AgdaFunction{p₂} to
+\AgdaFunction{p₁}. Path \AgdaFunction{p₃} does not syntactically refer to a
+trivial path but instead uses what is effectively a trivial path that follows
+a path and then its inverse. We also expect to have 2paths between this path
+and the other ones. Path \AgdaFunction{p₄} is also evidently equivalent to
+the others but the situation with Path \AgdaFunction{p₅} is more subtle. We
+defer the discussion until we formally define 2paths. For now, we note that
+--- viewed extensionally --- each path connects \AgdaFunction{TRUE} to
+\AgdaFunction{FALSE} and hence all the paths are extensionally equivalent.
+In the conventional approach to programming language semantics, which is also
+followed in the current formalization of HoTT, this extensional equivalence
+would then be used to justify the existence of the 2paths. In our setting, we
+do \emph{not} need to reason using extensional methods since all functions
+(paths) are between pointed spaces (i.e., are point to point).
 
-The evaluation of a program is not done in order to figure out the output
-value. Both the input and output values are encoded in the type of the
-program; what the evaluation does is follow the path to constructively
-reach the output value from the input value. Even though programs of the
-same pointed types are, by definition, observationally equivalent, they
-may follow different paths. At this point, we simply declare that all such
-programs are "the same." At the next level, we will weaken this "path
-irrelevant" equivalence and reason about which paths can be equated to
-other paths via 2paths etc.
+%%%%%%%%%%%%%%%%%
+\subsection{Path Induction}
+
+groupoid laws not enough
+
+the equivalent of path induction is the induction principle for the type
+family defining paths
 
 
 Simplify various compositions
@@ -918,6 +966,7 @@ simplifyl◎ (c₁ ⊗ c₂) swap⋆ = swap⋆ ◎ (c₂ ⊗ c₁)
 simplifyl◎ (c₁ ⊗ c₂) (c₃ ⊗ c₄) = (c₁ ◎ c₃) ⊗ (c₂ ◎ c₄) 
 simplifyl◎ c₁ c₂ = c₁ ◎ c₂
 \end{code}
+\smallskip
 
 \AgdaHide{
 \begin{code}
