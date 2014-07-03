@@ -118,12 +118,12 @@ open import Function
 open import Groupoid
 
 infixr 30 _⟷_
---infixr 30 _⟷1_
 infixr 10 _◎_
---infixr 10 _◎1_
 infix  4  _≡_   -- propositional equality
 infix  4  _∼_   -- homotopy between two functions (the same as ≡ by univalence)
 infix  4  _≃_   -- type of equivalences
+infix  2  _∎       -- equational reasoning for paths
+infixr 2  _≡⟨_⟩_   -- equational reasoning for paths
 
 data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
   refl : (a : A) → (a ≡ a)
@@ -867,7 +867,8 @@ p₁ = path NOT•T
 p₂ = path (id⟷ ◎ NOT•T)
 p₃ = path (NOT•T ◎ NOT•F ◎ NOT•T)
 p₄ = path (NOT•T ◎ id⟷)
-p₅ = path (uniti⋆ ◎ swap⋆ ◎ (NOT•T ⊗ id⟷) ◎ swap⋆ ◎ unite⋆)
+p₅ = path  (uniti⋆ ◎ swap⋆ ◎ (NOT•T ⊗ id⟷) ◎ 
+           swap⋆ ◎ unite⋆)
 \end{code}
 \smallskip
 
@@ -881,62 +882,73 @@ negation. The first step is clearly superfluous and hence we expect, via the
 groupoid laws, to have a 2path connecting \AgdaFunction{p₂} to
 \AgdaFunction{p₁}. Path \AgdaFunction{p₃} does not syntactically refer to a
 trivial path but instead uses what is effectively a trivial path that follows
-a path and then its inverse. We also expect to have 2paths between this path
-and the other ones. Path \AgdaFunction{p₄} is also evidently equivalent to
-the others but the situation with Path \AgdaFunction{p₅} is more subtle. We
-defer the discussion until we formally define 2paths. For now, we note that
---- viewed extensionally --- each path connects \AgdaFunction{TRUE} to
-\AgdaFunction{FALSE} and hence all the paths are extensionally equivalent.
-In the conventional approach to programming language semantics, which is also
-followed in the current formalization of HoTT, this extensional equivalence
-would then be used to justify the existence of the 2paths. In our setting, we
-do \emph{not} need to reason using extensional methods since all functions
-(paths) are between pointed spaces (i.e., are point to point).
+a negation path and then its inverse. We also expect to have a 2path between
+this path and the other ones. Path \AgdaFunction{p₄} is also evidently
+equivalent to the others but the situation with path \AgdaFunction{p₅} is
+more subtle. We defer the discussion until we formally define 2paths. For
+now, we note that --- viewed extensionally --- each path connects
+\AgdaFunction{TRUE} to \AgdaFunction{FALSE} and hence all the paths are
+extensionally equivalent.  In the conventional approach to programming
+language semantics, which is also followed in the current formalization of
+HoTT, this extensional equivalence would then be used to justify the
+existence of the 2paths. In our setting, we do \emph{not} need to reason
+using extensional methods since all functions (paths) are between pointed
+spaces (i.e., are point to point) and we have an inductive definition of
+paths which can be used to define computational rules that simplify paths as
+shown next.
 
 %%%%%%%%%%%%%%%%%
 \subsection{Path Induction}
 
-groupoid laws not enough
+In the conventional formalization to HoTT, the groupoid laws are a
+consequence of \emph{path induction}. The situation is similar in our case
+but with an important difference: our inductively defined type family of
+paths includes many more constructors than just
+\AgdaInductiveConstructor{refl}. Consider for example, the inductively
+defined function \AgdaFunction{simplifySym} in Fig.~\ref{sym} which shows
+that each path has an inverse by giving the computational rule for
+calculating that inverse.
 
-the equivalent of path induction is the induction principle for the type
-family defining paths
-
-
-Simplify various compositions
-
-\smallskip
+\begin{figure}
 \begin{code}
-simplifySym : {t₁ t₂ : U•} → (c₁ : t₁ ⟷ t₂) → (t₂ ⟷ t₁)
-simplifySym unite₊ = uniti₊
-simplifySym uniti₊ = unite₊
-simplifySym swap1₊ = swap2₊
-simplifySym swap2₊ = swap1₊
-simplifySym assocl1₊ = assocr1₊
-simplifySym assocl2₊ = assocr2₊
-simplifySym assocl3₊ = assocr3₊
-simplifySym assocr1₊ = assocl1₊
-simplifySym assocr2₊ = assocl2₊
-simplifySym assocr3₊ = assocl3₊
-simplifySym unite⋆ = uniti⋆
-simplifySym uniti⋆ = unite⋆
-simplifySym swap⋆ = swap⋆
-simplifySym assocl⋆ = assocr⋆
-simplifySym assocr⋆ = assocl⋆
-simplifySym distz = factorz
-simplifySym factorz = distz
-simplifySym dist1 = factor1 
-simplifySym dist2 = factor2 
-simplifySym factor1 = dist1 
-simplifySym factor2 = dist2 
-simplifySym id⟷ = id⟷
-simplifySym (sym⟷ c) = c
-simplifySym (c₁ ◎ c₂) = simplifySym c₂ ◎ simplifySym c₁ 
-simplifySym (c₁ ⊕1 c₂) = simplifySym c₁ ⊕1 simplifySym c₂ 
-simplifySym (c₁ ⊕2 c₂) = simplifySym c₁ ⊕2 simplifySym c₂ 
-simplifySym (c₁ ⊗ c₂) = simplifySym c₁ ⊗ simplifySym c₂ 
+simplifySym : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
+simplifySym unite₊      = uniti₊
+simplifySym uniti₊      = unite₊
+simplifySym swap1₊      = swap2₊
+simplifySym swap2₊      = swap1₊
+simplifySym assocl1₊    = assocr1₊
+simplifySym assocl2₊    = assocr2₊
+simplifySym assocl3₊    = assocr3₊
+simplifySym assocr1₊    = assocl1₊
+simplifySym assocr2₊    = assocl2₊
+simplifySym assocr3₊    = assocl3₊
+simplifySym unite⋆      = uniti⋆
+simplifySym uniti⋆      = unite⋆
+simplifySym swap⋆       = swap⋆
+simplifySym assocl⋆     = assocr⋆
+simplifySym assocr⋆     = assocl⋆
+simplifySym distz       = factorz
+simplifySym factorz     = distz
+simplifySym dist1       = factor1 
+simplifySym dist2       = factor2 
+simplifySym factor1     = dist1 
+simplifySym factor2     = dist2 
+simplifySym id⟷        = id⟷
+simplifySym (sym⟷ c)   = c
+simplifySym (c₁ ◎ c₂)   = simplifySym c₂ ◎ simplifySym c₁ 
+simplifySym (c₁ ⊕1 c₂)  = simplifySym c₁ ⊕1 simplifySym c₂ 
+simplifySym (c₁ ⊕2 c₂)  = simplifySym c₁ ⊕2 simplifySym c₂ 
+simplifySym (c₁ ⊗ c₂)   = simplifySym c₁ ⊗ simplifySym c₂ 
+\end{code}
+\caption{\label{sym}Path inverses}
+\end{figure}
 
-simplifyl◎ : {t₁ t₂ t₃ : U•} → 
-  (c₁ : t₁ ⟷ t₂) → (c₂ : t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+We can similarly perform nested induction to simplify path composition. We
+omit this large function but show a couple of interesting cases:
+
+\AgdaHide{
+\begin{code}
+simplifyl◎ : {t₁ t₂ t₃ : U•} → (c₁ : t₁ ⟷ t₂) → (c₂ : t₂ ⟷ t₃) → (t₁ ⟷ t₃)
 simplifyl◎ id⟷ c = c 
 simplifyl◎ unite₊ uniti₊ = id⟷
 simplifyl◎ uniti₊ unite₊ = id⟷ 
@@ -961,15 +973,11 @@ simplifyl◎ factor2 dist2 = id⟷
 simplifyl◎ (c₁ ◎ c₂) c₃ = c₁ ◎ (c₂ ◎ c₃) 
 simplifyl◎ (c₁ ⊕1 c₂) swap1₊ = swap1₊ ◎ (c₂ ⊕2 c₁)
 simplifyl◎ (c₁ ⊕2 c₂) swap2₊ = swap2₊ ◎ (c₂ ⊕1 c₁)
-simplifyl◎ (_⊗_ {ONE} {ONE} c₁ c₂) unite⋆ = unite⋆ ◎ c₂
+simplifyl◎ (_⊗_ {ONE} c₁ c₂) unite⋆ = unite⋆ ◎ c₂
 simplifyl◎ (c₁ ⊗ c₂) swap⋆ = swap⋆ ◎ (c₂ ⊗ c₁)
 simplifyl◎ (c₁ ⊗ c₂) (c₃ ⊗ c₄) = (c₁ ◎ c₃) ⊗ (c₂ ◎ c₄) 
 simplifyl◎ c₁ c₂ = c₁ ◎ c₂
-\end{code}
-\smallskip
 
-\AgdaHide{
-\begin{code}
 simplifyr◎ : {t₁ t₂ t₃ : U•} → (c₁ : t₁ ⟷ t₂) → (c₂ : t₂ ⟷ t₃) → (t₁ ⟷ t₃)
 simplifyr◎ c id⟷ = c
 simplifyr◎ unite₊ uniti₊ = id⟷
@@ -999,8 +1007,112 @@ simplifyr◎ (_⊗_ {ONE} {ONE} c₁ c₂) unite⋆ = unite⋆ ◎ c₂
 simplifyr◎ (c₁ ⊗ c₂) swap⋆ = swap⋆ ◎ (c₂ ⊗ c₁)
 simplifyr◎ (c₁ ⊗ c₂) (c₃ ⊗ c₄) = (c₁ ◎ c₃) ⊗ (c₂ ◎ c₄) 
 simplifyr◎ c₁ c₂ = c₁ ◎ c₂
-\end{code} 
-} 
+\end{code}
+}
+
+%%%%%%%%%%%%%%%%%%%%%
+\subsection{Level 2 $\Pi$}
+
+\begin{code}
+data 2U : Set where
+  2ZERO  : 2U
+  2ONE   : 2U
+  2PLUS  : 2U → 2U → 2U
+  2TIMES : 2U → 2U → 2U
+  PATH  : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → 2U
+
+2⟦_⟧ : 2U → Set
+2⟦ 2ZERO ⟧             = ⊥
+2⟦ 2ONE ⟧              = ⊤
+2⟦ 2PLUS t₁ t₂ ⟧       = 2⟦ t₁ ⟧ ⊎ 2⟦ t₂ ⟧
+2⟦ 2TIMES t₁ t₂ ⟧      = 2⟦ t₁ ⟧ × 2⟦ t₂ ⟧
+2⟦ PATH {t₁} {t₂} c ⟧ = Path t₁ t₂
+
+\end{code}
+              -- empty set of paths
+              -- a trivial path
+      -- disjoint union of paths
+      -- pairs of paths
+ -- level 0 paths between values
+groupoid laws not enough
+
+the equivalent of path induction is the induction principle for the type
+family defining paths
+
+\begin{code}
+record 2U• : Set where
+  constructor 2•[_,_]
+  field
+    2∣_∣ : 2U
+    2• : 2⟦ 2∣_∣ ⟧
+\end{code}
+\smallskip
+
+\AgdaHide{
+\begin{code}
+open 2U•
+\end{code}
+}
+
+
+\begin{code}
+Path• : {t₁ t₂ : U•} → (c : t₁ ⟷ t₂) → 2U•
+Path• c = 2•[ PATH c , path c ]
+
+data _⇔_ : 2U• → 2U• → Set where
+  id⟷    : {t : 2U•} → t ⇔ t
+  sym⟷   : {t₁ t₂ : 2U•} → (t₁ ⇔ t₂) → (t₂ ⇔ t₁)
+  _◎_     : {t₁ t₂ t₃ : 2U•} → (t₁ ⇔ t₂) → (t₂ ⇔ t₃) → (t₁ ⇔ t₃)
+
+  simplifyl◎l : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} 
+             {c₁ : •[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]} 
+             {c₂ : •[ t₂ , v₂ ] ⟷ •[ t₃ , v₃ ]} → 
+    Path• (c₁ ◎ c₂) ⇔ Path• (simplifyl◎ c₁ c₂)
+  simplifyl◎r : {t₁ t₂ t₃ : U•} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} → 
+    Path• (simplifyl◎ c₁ c₂) ⇔ Path• (c₁ ◎ c₂)
+  simplifyr◎l : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} 
+             {c₁ : •[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]} 
+             {c₂ : •[ t₂ , v₂ ] ⟷ •[ t₃ , v₃ ]} → 
+    Path• (c₁ ◎ c₂) ⇔ Path• (simplifyr◎ c₁ c₂)
+  simplifyr◎r : {t₁ t₂ t₃ : U•} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} → 
+    Path• (simplifyr◎ c₁ c₂) ⇔ Path• (c₁ ◎ c₂)
+  simplifySyml : {t₁ t₂ : U•} {c : t₁ ⟷ t₂} → 
+    Path• (sym⟷ c) ⇔ Path• (simplifySym c)
+  simplifySymr : {t₁ t₂ : U•} {c : t₁ ⟷ t₂} → 
+    Path• (simplifySym c) ⇔ Path• (sym⟷ c)
+  invll   : ∀ {t₁ t₂ v₁ v₂} → {c : •[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]} → 
+            Path• (sym⟷ c ◎ c) ⇔ Path• (id⟷ {t₂} {v₂})
+  invlr   : ∀ {t₁ t₂ v₁ v₂} → {c : •[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]} → 
+            Path• (id⟷ {t₂} {v₂}) ⇔ Path• (sym⟷ c ◎ c)
+  invrl   : ∀ {t₁ t₂ v₁ v₂} → {c : •[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]} → 
+            Path• (c ◎ sym⟷ c) ⇔ Path• (id⟷ {t₁} {v₁})
+  invrr   : ∀ {t₁ t₂ v₁ v₂} → {c : •[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]} → 
+            Path• (id⟷ {t₁} {v₁}) ⇔ Path• (c ◎ sym⟷ c)
+  resp◎   : {t₁ t₂ t₃ : U•} 
+            {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} 
+            {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
+            (Path• c₁ ⇔ Path• c₃) → 
+            (Path• c₂ ⇔ Path• c₄) → 
+            Path• (c₁ ◎ c₂) ⇔ Path• (c₃ ◎ c₄)
+\end{code}
+\smallskip
+
+\AgdaHide{
+\begin{code}
+_≡⟨_⟩_ : {t₁ t₂ : U•} (c₁ : t₁ ⟷ t₂) {c₂ : t₁ ⟷ t₂} {c₃ : t₁ ⟷ t₂} → 
+         (2•[ PATH c₁ , path c₁ ] ⇔ 2•[ PATH c₂ , path c₂ ]) → 
+         (2•[ PATH c₂ , path c₂ ] ⇔ 2•[ PATH c₃ , path c₃ ]) → 
+         (2•[ PATH c₁ , path c₁ ] ⇔ 2•[ PATH c₃ , path c₃ ])
+_ ≡⟨ α ⟩ β = α ◎ β
+
+_∎ : {t₁ t₂ : U•} → (c : t₁ ⟷ t₂) → 
+     2•[ PATH c , path c ] ⇔ 2•[ PATH c , path c ]
+_∎ c = id⟷ 
+\end{code}
+}
+
+
+Simplify various compositions
 
 We need to show that the groupoid path structure is faithfully
 represented. The combinator $\idc$ introduces all the $\refl{\tau} : \tau
@@ -1076,6 +1188,94 @@ Types are sets of paths. The paths are defined at the previous level
 the perspective of level 0, we have points with non-trivial paths between
 them, i.e., we have a groupoid. The paths cross type boundaries, i.e., we
 have heterogeneous equality
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{2Paths}
+
+
+\begin{code}
+-- let's try to prove that p₁ = p₂ = p₃ = p₄ = p₅
+
+-- p₁ ~> p₂
+α₄ : 2•[ PATH NOT•T , p₁ ] ⇔ 2•[ PATH (id⟷ ◎ NOT•T) , p₂ ]
+α₄ = simplifyl◎r
+
+-- p₂ ~> p₃
+α₅ : 2•[ PATH (id⟷ ◎ NOT•T) , p₂ ] ⇔
+     2•[ PATH (NOT•T ◎ NOT•F ◎ NOT•T) , p₃ ]
+α₅ = id⟷ ◎ NOT•T
+       ≡⟨ simplifyl◎l ⟩ 
+     NOT•T
+       ≡⟨ simplifyr◎r ⟩ 
+     NOT•T ◎ id⟷ 
+       ≡⟨ resp◎ id⟷ simplifyl◎r ⟩ 
+     NOT•T ◎ NOT•F ◎ NOT•T ∎
+
+-- p₃ ~> p₄
+α₆ : 2•[ PATH (NOT•T ◎ NOT•F ◎ NOT•T) , p₃ ] ⇔
+     2•[ PATH (NOT•T ◎ id⟷) , p₄ ]
+α₆ = resp◎ id⟷ simplifyl◎l
+
+-- p₅ ~> p₁
+
+α₈ : 2•[ PATH (uniti⋆ ◎ swap⋆ ◎ 
+             (NOT•T ⊗ id⟷) ◎ swap⋆ ◎ unite⋆) , 
+        p₅ ] ⇔
+     2•[ PATH NOT•T , p₁ ] 
+α₈ = uniti⋆ ◎ swap⋆ ◎ (NOT•T ⊗ id⟷) ◎ swap⋆ ◎ unite⋆
+       ≡⟨ resp◎ id⟷ (resp◎ id⟷ simplifyl◎r) ⟩
+     uniti⋆ ◎ (swap⋆ ◎ ((NOT•T ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆)))
+       ≡⟨ resp◎ id⟷ (resp◎ id⟷ simplifyl◎r) ⟩ 
+     uniti⋆ ◎ (swap⋆ ◎ (((NOT•T ⊗ id⟷) ◎ swap⋆) ◎ unite⋆))
+       ≡⟨ resp◎ id⟷ (resp◎ id⟷ (resp◎ simplifyl◎l id⟷ )) ⟩
+     uniti⋆ ◎ (swap⋆ ◎ ((swap⋆ ◎ (id⟷ ⊗ NOT•T)) ◎ unite⋆))
+       ≡⟨ resp◎ id⟷ (resp◎ id⟷ simplifyl◎l) ⟩
+     uniti⋆ ◎ (swap⋆ ◎ (swap⋆ ◎ ((id⟷ ⊗ NOT•T) ◎ unite⋆)))
+       ≡⟨ resp◎ id⟷ simplifyl◎r ⟩
+     uniti⋆ ◎ ((swap⋆ ◎ swap⋆) ◎ ((id⟷ ⊗ NOT•T) ◎ unite⋆))
+       ≡⟨ resp◎ id⟷ (resp◎ simplifyl◎l id⟷) ⟩
+     uniti⋆ ◎ (id⟷ ◎ ((id⟷ ⊗ NOT•T) ◎ unite⋆))
+       ≡⟨ resp◎ id⟷ simplifyl◎l ⟩
+     uniti⋆ ◎ ((id⟷ ⊗ NOT•T) ◎ unite⋆)
+       ≡⟨ resp◎ id⟷ simplifyl◎l  ⟩
+     uniti⋆ ◎ (unite⋆ ◎ NOT•T)
+       ≡⟨ simplifyl◎r ⟩
+     (uniti⋆ ◎ unite⋆) ◎ NOT•T
+       ≡⟨ resp◎ simplifyl◎l id⟷ ⟩
+     id⟷ ◎ NOT•T
+       ≡⟨ simplifyl◎l ⟩
+     NOT•T ∎
+
+-- p₄ ~> p₅
+
+α₇ : 2•[ PATH (NOT•T ◎ id⟷) , p₄ ] ⇔
+     2•[ PATH (uniti⋆ ◎ swap⋆ ◎ 
+             (NOT•T ⊗ id⟷) ◎ swap⋆ ◎ unite⋆) , 
+        p₅ ]
+α₇ = simplifyr◎l ◎ (sym⟷ α₈)
+\end{code}
+
+\begin{code}
+G : 1Groupoid
+G = record
+        { set = U•
+        ; _↝_ = _⟷_
+        ; _≈_ = λ c₀ c₁ → Path• c₀ ⇔ Path• c₁
+        ; id = id⟷
+        ; _∘_ = λ c₀ c₁ → c₁ ◎ c₀
+        ; _⁻¹ = sym⟷
+        ; lneutr = λ _ → simplifyr◎l 
+        ; rneutr = λ _ → simplifyl◎l 
+        ; assoc = λ _ _ _ → simplifyl◎r
+        ; equiv = record  { refl = id⟷ 
+                          ; sym = λ c → sym⟷ c 
+                          ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
+        ; linv = λ _ → invrl 
+        ; rinv = λ _ → invll 
+        ; ∘-resp-≈ = λ f⟷h g⟷i → resp◎ g⟷i f⟷h 
+        }
+\end{code}
+
 
 %% \begin{code}
 %% data U : Set where
