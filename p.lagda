@@ -1,5 +1,7 @@
 \documentclass[authoryear,preprint]{sigplanconf}
 \usepackage{agda}
+%% \usepackage{fixltx2e}
+\usepackage{fix2col}
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
 \usepackage{tikz}
@@ -24,6 +26,15 @@
 
 \renewcommand{\AgdaCodeStyle}{\small}
 
+\newcommand{\nodet}[2]{\fcolorbox{black}{white}{$#1$}\fcolorbox{black}{gray!20}{$#2$}}
+\newcommand{\cubt}{\mathbb{T}}
+\newcommand{\ztone}{\mathbb{0}}
+\newcommand{\otone}{\mathbb{1}}
+\newcommand{\eqdef}{\stackrel{\triangle}{=}}
+\newcommand{\ptone}[2]{#1 \boxplus #2}
+\newcommand{\ttone}[2]{#1 \boxtimes #2}
+\newcommand{\isoone}{\Leftrightarrow}
+\newcommand{\lolli}{\multimap} 
 \newcommand{\pointed}[2]{\AgdaSymbol{•}\AgdaSymbol{[} #1 \AgdaSymbol{,} #2 \AgdaSymbol{]}}
 \newcommand{\AgdaArgument}[1]{#1}
 \newcommand{\inl}[1]{\textsf{inl}~#1}
@@ -55,7 +66,6 @@
 \newcommand{\factor}{\mathit{factor}}
 \newcommand{\iso}{\leftrightarrow}
 \newcommand{\proves}{\vdash}
-\newcommand{\symc}[1]{\mathit{sym}~#1}
 \newcommand{\idc}{\mathit{id}}
 \newcommand{\ap}[2]{\mathit{ap}~#1~#2}
 \newcommand{\alt}{~|~}
@@ -122,8 +132,8 @@ infixr 10 _◎_
 infix  4  _≡_   -- propositional equality
 infix  4  _∼_   -- homotopy between two functions (the same as ≡ by univalence)
 infix  4  _≃_   -- type of equivalences
-infix  2  _∎       -- equational reasoning for paths
-infixr 2  _≡⟨_⟩_   -- equational reasoning for paths
+-- infix  2  _∎       -- equational reasoning for paths
+-- infixr 2  _≡⟨_⟩_   -- equational reasoning for paths
 
 data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
   refl : (a : A) → (a ≡ a)
@@ -229,28 +239,29 @@ this notion of \emph{propositional equality} is not just syntactic equality
 but generalizes to \emph{definitional equality}, i.e., to equality that can
 be established by normalizing the values to their normal forms.
 
-The important question from the HoTT perspective is the following: given two
+An important question from the HoTT perspective is the following: given two
 elements \AgdaBound{p} and \AgdaBound{q} of some type \AgdaBound{x}
 \AgdaDatatype{≡} \AgdaBound{y} with
 \AgdaBound{x}~\AgdaBound{y}~\AgdaSymbol{:}~\AgdaBound{A}, what can we say
 about the elements of type \AgdaBound{p} \AgdaDatatype{≡} \AgdaBound{q}. Or,
 in more familiar terms, given two proofs of some proposition $P$, are these
 two proofs themselves ``equal.'' In some situations, the only interesting
-property of proofs is their existence, and therefore the exact construction
-of the proof becomes irrelevant, and all proofs of the same proposition
-become equivalent. This is however neither necessary nor desirable. A twist
-that dates back to a paper by \citet{Hofmann96thegroupoid} is that proofs
-actually possess a structure of great combinatorial complexity. HoTT builds
-on this idea by interpreting types as topological spaces or weak
-$\infty$-groupoids, and interpreting identities between elements of a type
+property of proofs is their existence. This therefore suggests that the exact
+sequence of logical steps in the proof is irrelevant, and ultimately that all
+proofs of the same proposition are equivalent. This is however neither
+necessary nor desirable. A twist that dates back to a paper by
+\citet{Hofmann96thegroupoid} is that proofs actually possess a structure of
+great combinatorial complexity. HoTT builds on this idea by interpreting
+types as topological spaces or weak $\infty$-groupoids, and interpreting
+identities between elements of a type
 \AgdaBound{x}~\AgdaDatatype{≡}~\AgdaBound{y} as \emph{paths} from the point
 \AgdaBound{x} to the point \AgdaBound{y}. If \AgdaBound{x} and \AgdaBound{y}
 are themselves paths, the elements of
-\AgdaBound{x}~\AgdaDatatype{≡}~\AgdaBound{y} become paths between paths, or
-homotopies in the topological language. To be explicit, we will often refer
-to types as \emph{spaces} which consist of \emph{points}, paths, 2paths,
-etc. and write $\AgdaDatatype{≡}_\AgdaBound{A}$ for the type of paths in
-space \AgdaBound{A}.
+\AgdaBound{x}~\AgdaDatatype{≡}~\AgdaBound{y} become paths between paths
+(2paths), or homotopies in the topological language. To be explicit, we will
+often refer to types as \emph{spaces} which consist of \emph{points}, paths,
+2paths, etc. and write $\AgdaDatatype{≡}_\AgdaBound{A}$ for the type of paths
+in space \AgdaBound{A}.
 
 As a simple example, we are used to thinking of types as sets of values. So
 we typically view the type \AgdaPrimitiveType{Bool} as the figure on the left
@@ -293,11 +304,11 @@ that space has the following non-trivial structure:
   \draw[->,thick,cyan] (0,0) arc (-180:140:0.7);
   \draw[->,thick,cyan] (0,0) arc (-180:150:1.2);
   \node[left,cyan] at (1.4,0) {loop};
-  \node[right,cyan] at (2.4,0) {loop $\circ$ loop $\ldots$};
+  \node[right,cyan] at (2.4,0) {loop \AgdaSymbol{⊙} loop $\ldots$};
   \draw[->,thick,blue] (0,0) arc (360:40:0.7);
   \draw[->,thick,blue] (0,0) arc (360:30:1.2);
   \node[right,blue] at (-1.4,0) {!~loop};
-  \node[left,blue] at (-2.3,0) {$\ldots$ !~loop $\circ$ !~loop};
+  \node[left,blue] at (-2.3,0) {$\ldots$ !~loop \AgdaSymbol{⊙} !~loop};
 \end{tikzpicture}
 \end{center}
 
@@ -346,12 +357,12 @@ called an $n$-groupoid.
 %%%%%%%%%%%%%%%%%%
 \subsection{Univalence} 
 
-In addition to paths between the points \AgdaInductiveConstructor{false} and
-\AgdaInductiveConstructor{true} in the space \AgdaPrimitiveType{Bool}, it is
-also possible to consider paths between the space \AgdaPrimitiveType{Bool}
-and itself by considering \AgdaPrimitiveType{Bool} as a ``point'' in the
-universe \AgdaPrimitiveType{Set} of types. As usual, we have the trivial path
-which is given by the constructor \AgdaInductiveConstructor{refl}:
+In addition to paths between the points within a space like
+\AgdaPrimitiveType{Bool}, it is also possible to consider paths between the
+space \AgdaPrimitiveType{Bool} and itself by considering
+\AgdaPrimitiveType{Bool} as a ``point'' in the universe
+\AgdaPrimitiveType{Set} of types. As usual, we have the trivial path which is
+given by the constructor \AgdaInductiveConstructor{refl}:
 
 \smallskip
 \begin{code}
@@ -408,7 +419,7 @@ is that equivalence of spaces implies the existence of a path between the
 spaces. In other words, in order to assert the existence of a path
 \AgdaFunction{notpath} between \AgdaPrimitiveType{Bool} and itself, we need
 to prove that the boolean negation function is an equivalence between the
-space \AgdaPrimitiveType{Bool} and itself. This is easy as shown below:
+space \AgdaPrimitiveType{Bool} and itself. This is easy to show:
 
 \smallskip
 \begin{code}
@@ -443,10 +454,7 @@ finite types~\citeyearpar{James:2012:IE:2103656.2103667}. After reviewing the
 motivation for this language and its relevance to HoTT, we present its syntax
 and semantics.
 
-%%%%%%%%%%%%%%%%%%%%%
-\subsection{Reversibility} 
-
-\begin{figure*}[t]
+\begin{figure*}[ht]
 \[\begin{array}{cc}
 \begin{array}{rrcll}
 \identlp :&  0 + \tau & \iso & \tau &: \identrp \\
@@ -470,11 +478,6 @@ and semantics.
 {}
 \qquad
 \Rule{}
-{\jdg{}{}{c : \tau_1 \iso \tau_2}}
-{\jdg{}{}{\symc{c} : \tau_2 \iso \tau_1}}
-{}
-\qquad
-\Rule{}
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
 {\jdg{}{}{c_1 \fatsemi c_2 : \tau_1 \iso \tau_3}}
 {}
@@ -494,6 +497,9 @@ and semantics.
 \caption{$\Pi$-combinators~\cite{James:2012:IE:2103656.2103667}
 \label{pi-combinators}}
 \end{figure*}
+
+%%%%%%%%%%%%%%%%%%%%%
+\subsection{Reversibility} 
 
 The relevance of reversibility to HoTT is based on the following
 analysis. The conventional HoTT approach starts with two, a priori, different
@@ -534,33 +540,30 @@ injections into sum types, and $(v_1,v_2)$ for product types:
 The interesting syntactic category of $\Pi$ is that of \emph{combinators}
 which are witnesses for type isomorphisms $\tau_1 \iso \tau_2$. They consist
 of base combinators (on the left side of Fig.~\ref{pi-combinators}) and
-compositions (on the right side of the same figure). Each line of the figure on
-the left introduces a pair of dual constants\footnote{where $\swapp$ and
-  $\swapt$ are self-dual.} that witness the type isomorphism in the
+compositions (on the right side of the same figure). Each line of the figure
+on the left introduces a pair of dual constants\footnote{where $\swapp$ and
+$\swapt$ are self-dual.} that witness the type isomorphism in the
 middle. This set of isomorphisms is known to be
 complete~\cite{Fiore:2004,fiore-remarks} and the language is universal for
 hardware combinational
 circuits~\cite{James:2012:IE:2103656.2103667}.\footnote{If recursive types
-  and a trace operator are added, the language becomes Turing
-  complete~\cite{James:2012:IE:2103656.2103667,rc2011}. We will not be
-  concerned with this extension in the main body of this paper but it will be
-  briefly discussed in the conclusion.}
+and a trace operator are added, the language becomes Turing
+complete~\cite{James:2012:IE:2103656.2103667,rc2011}. We will not be
+concerned with this extension in the main body of this paper but it will be
+briefly discussed in the conclusion.}
 
 From the perspective of category theory, the language $\Pi$ models what is
 called a \emph{symmetric bimonoidal category} or a \emph{commutative rig
-category}. These are categories with two binary operations $\oplus$ and
-$\otimes$ satisfying the axioms of a commutative rig (i.e., a commutative
-ring without negative elements also known as a commutative semiring) up to
-coherent isomorphisms. And indeed the types of the $\Pi$-combinators are
-precisely the commutative semiring axioms. A formal way of saying this is
-that $\Pi$ is the \emph{categorification}~\cite{math/9802029} of the natural
-numbers. A simple (slightly degenerate) example of such categories is the
-category of finite sets and permutations in which we interpret every
-$\Pi$-type as a finite set, the values as elements in these finite sets, and
-the combinators as permutations. In the remainder of this paper, we will be
-more interested in a model based on groupoids. But first, we give an
-operational semantics for $\Pi$.
-
+category}. These are categories with two binary operations and satisfying the
+axioms of a commutative rig (i.e., a commutative ring without negative
+elements also known as a commutative semiring) up to coherent
+isomorphisms. And indeed the types of the $\Pi$-combinators are precisely the
+commutative semiring axioms. A formal way of saying this is that $\Pi$ is the
+\emph{categorification}~\cite{math/9802029} of the natural numbers. A simple
+(slightly degenerate) example of such categories is the category of finite
+sets and permutations in which we interpret every $\Pi$-type as a finite set,
+interpret the values as elements in these finite sets, and interpret the
+combinators as permutations. 
 
 \begin{figure}[ht]
 \[\begin{array}{r@{\!}lcl}
@@ -584,7 +587,6 @@ operational semantics for $\Pi$.
 \evalone{\factor}{&(\inl{(v_1,v_3)})} &=& (\inl{v_1},v_3) \\
 \evalone{\factor}{&(\inr{(v_2,v_3)})} &=& (\inr{v_2},v_3) \\
 \evalone{\idc}{&v} &=& v \\
-\evalone{(\symc{c})}{&v} &=& \evaloneb{c}{v} \\
 \evalone{(c_1 \fatsemi c_2)}{&v} &=& 
   \evalone{c_2}{(\evalone{c_1}{v})} \\
 \evalone{(c_1\oplus c_2)}{&(\inl{v})} &=& 
@@ -594,38 +596,40 @@ operational semantics for $\Pi$.
 \evalone{(c_1\otimes c_2)}{&(v_1,v_2)} &=& 
   (\evalone{c_1}v_1, \evalone{c_2}v_2) 
 \end{array}\]
-\caption{\label{opsem}Operation Semantics}
+\caption{\label{opsem}Operational Semantics}
 \end{figure}
 
+In the remainder of this paper, we will be more interested in a model based
+on groupoids. But first, we give an operational semantics for $\Pi$.
 Operationally, the semantics consists of a pair of mutually recursive
 evaluators that take a combinator and a value and propagate the value in the
 ``forward'' $\triangleright$ direction or in the
 ``backwards''~$\triangleleft$ direction. We show the complete forward
 evaluator in Fig.~\ref{opsem}; the backwards evaluator differs in trivial
-ways.
+ways. 
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Groupoid Model} 
 
 Instead of modeling the types of $\Pi$ using sets and the combinators using
-permutations on the sets, we use a semantics that identifies $\Pi$
-combinators with \emph{paths}. More precisely, we model the universe of $\Pi$
-types as a space \AgdaFunction{U} whose points are the individual $\Pi$-types
-(which are themselves spaces \AgdaBound{t} containing points). We then
-postulate that there is path between the spaces \AgdaBound{t₁} and
-\AgdaBound{t₂} if there is a $\Pi$ combinator $c : t_1 \iso t_2$. Our
-postulate is similar in spirit to the univalence axiom but, unlike the
-latter, it has a simple computational interpretation. A path directly
-corresponds to a type isomorphism with a clear operational semantics as
-presented in the previous section. As we will explain in more detail below,
-this approach replaces the datatype \AgdaSymbol{≡} modeling propositional
-equality with the datatype \AgdaSymbol{⟷} modeling type isomorphisms. With
-this switch, the $\Pi$-combinators of Fig.~\ref{pi-combinators} become
-\emph{syntax} for the paths in the space $U$. Put differently, instead of
-having exactly one constructor \AgdaInductiveConstructor{refl} for paths with
-all other paths discovered by proofs (see Secs. 2.5--2.12 of the HoTT
-book~\citeyearpar{hottbook}) or postulated by the univalence axiom, we have an
-\emph{inductive definition} that completely specifies all the paths in the
+permutations we use a semantics that identifies $\Pi$-combinators with
+\emph{paths}. More precisely, we model the universe of $\Pi$-types as a space
+\AgdaFunction{U} whose points are the individual $\Pi$-types (which are
+themselves spaces \AgdaBound{t} containing points). We then postulate that
+there is path between the spaces \AgdaBound{t₁} and \AgdaBound{t₂} if there
+is a $\Pi$-combinator $c : t_1 \iso t_2$. Our postulate is similar in spirit
+to the univalence axiom but, unlike the latter, it has a simple computational
+interpretation. A path directly corresponds to a type isomorphism with a
+clear operational semantics as presented in the previous section. As we will
+explain in more detail below, this approach replaces the datatype
+\AgdaSymbol{≡} modeling propositional equality with the datatype
+\AgdaSymbol{⟷} modeling type isomorphisms. With this switch, the
+$\Pi$-combinators of Fig.~\ref{pi-combinators} become \emph{syntax} for the
+paths in the space $U$. Put differently, instead of having exactly one
+constructor \AgdaInductiveConstructor{refl} for paths with all other paths
+discovered by proofs (see Secs. 2.5--2.12 of the HoTT
+book~\citeyearpar{hottbook}) or postulated by the univalence axiom, we have
+an \emph{inductive definition} that completely specifies all the paths in the
 space $U$.
 
 We begin with the datatype definition of the universe \AgdaFunction{U} of finite
@@ -634,7 +638,7 @@ types which are constructed using \AgdaInductiveConstructor{ZERO},
 \AgdaInductiveConstructor{TIMES}. Each of these finite types will correspond
 to a set of points with paths connecting some of the points. The underlying
 set of points is computed by \AgdaSymbol{⟦}\_\AgdaSymbol{⟧} as follows:
-\AgdaInductiveConstructor{ZERO} maps to the empty set \AgdaSymbol{⊥},
+\AgdaInductiveConstructor{ZERO} maps to the empty set~\AgdaSymbol{⊥},
 \AgdaInductiveConstructor{ONE} maps to the singleton set \AgdaSymbol{⊤},
 \AgdaInductiveConstructor{PLUS} maps to the disjoint union \AgdaSymbol{⊎},
 and \AgdaInductiveConstructor{TIMES} maps to the cartesian product
@@ -656,9 +660,9 @@ data U : Set where
 \end{code} 
 \smallskip
 
-We want to identify paths with $\Pi$ combinators. There is a small
+We want to identify paths with $\Pi$-combinators. There is a small
 complication however: paths are ultimately defined between points but the
-$\Pi$ combinators of Fig.~\ref{pi-combinators} are defined between spaces. We
+$\Pi$-combinators of Fig.~\ref{pi-combinators} are defined between spaces. We
 can bridge this gap using a popular HoTT concept, that of \emph{pointed
   spaces}. A pointed space \pointed{\AgdaBound{t}}{\AgdaBound{v}} is a space
 \AgdaBound{t} \AgdaSymbol{:} \AgdaFunction{U} with a distinguished value
@@ -680,7 +684,7 @@ open U•
 \end{code}
 }
 
-\begin{figure*}
+\begin{figure*}[ht]
 \begin{multicols}{2}
 \begin{code} 
 data _⟷_ : U• → U• → Set where
@@ -735,8 +739,6 @@ data _⟷_ : U• → U• → Set where
     •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₂ (v₂ , v₃) ] ⟷ 
     •[ TIMES (PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ]
   id⟷ : ∀ {t v} → •[ t , v ] ⟷ •[ t , v ]
-  sym⟷ : ∀ {t₁ t₂ v₁ v₂} → (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) → 
-           (•[ t₂ , v₂ ] ⟷ •[ t₁ , v₁ ])
   _◎_ : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) → 
     (•[ t₂ , v₂ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ])
   _⊕1_ : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
@@ -754,8 +756,8 @@ data _⟷_ : U• → U• → Set where
 \label{pointedcomb}}
 \end{figure*}
 
-\noindent Given pointed spaces, it is possible to re-express the $\Pi$
-combinators as shown in Fig.~\ref{pointedcomb}. The new presentation of
+\noindent Given pointed spaces, it is possible to re-express the
+$\Pi$-combinators as shown in Fig.~\ref{pointedcomb}. The new presentation of
 combinators directly relates points to points and in fact subsumes the
 operational semantics of Fig.~\ref{opsem}. For example
 \AgdaInductiveConstructor{swap1₊} is still an operation from the space
@@ -764,17 +766,62 @@ in addition it specifies that, within that spaces, it maps the point
 \AgdaInductiveConstructor{inj₁} \AgdaBound{v₁} to the point
 \AgdaInductiveConstructor{inj₂} \AgdaBound{v₁}.
 
-We note that the refinement of the $\Pi$ combinators to combinators on
+We note that the refinement of the $\Pi$-combinators to combinators on
 pointed spaces is given by an inductive family for \emph{heterogeneous}
-equality that that generalizes the usual inductive family for propositional
+equality that generalizes the usual inductive family for propositional
 equality. Put differently, what used to be the only constructor for paths
 \AgdaInductiveConstructor{refl} is now just one of the many constructors
 (named \AgdaInductiveConstructor{id⟷} in the figure). Among the new
-constructors, we have \AgdaInductiveConstructor{sym⟷} that constructs path
-inverses, and \AgdaInductiveConstructor{◎} that constructs path
-compositions. These are sufficient to guarantee that the universe
-\AgdaFunction{U} is a groupoid. Additionally, we have paths that connect
-values in different spaces.
+constructors and we have \AgdaInductiveConstructor{◎} that constructs path
+compositions. By construction, every combinator has an inverse calculated as
+shown in Fig.~\ref{sym}. These constructions are sufficient to guarantee that
+the universe~\AgdaFunction{U} is a groupoid. Additionally, we have paths that
+connect values in different but isomorphic spaces like
+\pointed{{\AgdaInductiveConstructor{TIMES} \AgdaBound{t₁}
+\AgdaBound{t₂}}}{{\AgdaSymbol{(} \AgdaBound{v₁} \AgdaSymbol{,} \AgdaBound{v₂}
+\AgdaSymbol{)}}} and \pointed{{\AgdaInductiveConstructor{TIMES}
+\AgdaBound{t₂} \AgdaBound{t₁}}}{{\AgdaSymbol{(} \AgdaBound{v₂} \AgdaSymbol{,}
+\AgdaBound{v₁} \AgdaSymbol{)}}}.
+
+\begin{figure}[ht]
+\setlength{\columnsep}{15pt}
+\begin{multicols}{2}
+\begin{code}
+! : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
+! unite₊      = uniti₊
+! uniti₊      = unite₊
+! swap1₊      = swap2₊
+! swap2₊      = swap1₊
+! assocl1₊    = assocr1₊
+! assocl2₊    = assocr2₊
+! assocl3₊    = assocr3₊
+! assocr1₊    = assocl1₊
+! assocr2₊    = assocl2₊
+! assocr3₊    = assocl3₊
+! unite⋆      = uniti⋆
+! uniti⋆      = unite⋆
+! swap⋆       = swap⋆
+
+
+! assocl⋆     = assocr⋆
+! assocr⋆     = assocl⋆
+! distz       = factorz
+! factorz     = distz
+! dist1       = factor1 
+! dist2       = factor2 
+! factor1     = dist1 
+! factor2     = dist2 
+! id⟷         = id⟷
+! (c₁ ◎ c₂)   = ! c₂ ◎ ! c₁ 
+! (c₁ ⊕1 c₂)  = ! c₁ ⊕1 ! c₂ 
+! (c₁ ⊕2 c₂)  = ! c₁ ⊕2 ! c₂ 
+! (c₁ ⊗ c₂)   = ! c₁ ⊗ ! c₂ 
+\end{code}
+\end{multicols}
+\caption{\label{sym}Pointed Combinators or paths inverses}
+\end{figure}
+
+
 
 The example \AgdaFunction{notpath} which earlier required the use of the
 univalence axiom can now be directly defined using
@@ -790,6 +837,9 @@ one for each boolean value as shown below:
 
 \smallskip
 \begin{code}
+data Path (t₁ t₂ : U•) : Set where
+  path : (c : t₁ ⟷ t₂) → Path t₁ t₂
+
 BOOL : U
 BOOL = PLUS ONE ONE
 
@@ -808,9 +858,6 @@ NOT•T = swap1₊
 
 NOT•F : BOOL•F ⟷ BOOL•T
 NOT•F = swap2₊
-
-data Path (t₁ t₂ : U•) : Set where
-  path : (c : t₁ ⟷ t₂) → Path t₁ t₂
 
 notpath•T : Path BOOL•T BOOL•F
 notpath•T = path NOT•T
@@ -848,6 +895,10 @@ relating for example, the path \AgdaInductiveConstructor{id⟷} \AgdaSymbol{◎}
 \AgdaBound{c} with \AgdaBound{c}. Computations in the lifted $\Pi$ will
 therefore correspond to 2paths and the entire scheme can be repeated over
 and over to capture the concept of weak $\infty$-groupoids.
+
+%% Note:
+%% x : {A B : Set} → (A ≃ B) ≃ (A ≃ B)
+%% x = (id , mkisequiv id refl id refl)
 
 %%%%%%%%%%%%%%%%%
 \subsection{Examples}
@@ -900,118 +951,52 @@ shown next.
 %%%%%%%%%%%%%%%%%
 \subsection{Path Induction}
 
+only REVERSIBLE functions from paths to paths are allowed. we could write
+these functions as functions and prove inverses etc but then we are back to
+the extensional view. better to axiomatize the groupoid laws using
+combinators
+
 In the conventional formalization to HoTT, the groupoid laws are a
 consequence of \emph{path induction}. The situation is similar in our case
 but with an important difference: our inductively defined type family of
 paths includes many more constructors than just
 \AgdaInductiveConstructor{refl}. Consider for example, the inductively
-defined function \AgdaFunction{simplifySym} in Fig.~\ref{sym} which shows
+defined function \AgdaFunction{!} in Fig.~\ref{sym} which shows
 that each path has an inverse by giving the computational rule for
-calculating that inverse.
+calculating that inverse. We will use this definition to postulate a 2path
+between \AgdaInductiveConstructor{??} \AgdaBound{c} and
+\AgdaFunction{!} \AgdaBound{c}. More generally, we can postulate a
+2-path between any path \AgdaBound{c} \AgdaSymbol{:} \AgdaSymbol{(}
+\AgdaBound{t₁} \AgdaFunction{⟷} \AgdaBound{t₂} \AgdaSymbol{)} and the result
+of replacing any constructor \AgdaInductiveConstructor{cons} in \AgdaBound{c}
+by an inductively defined function \AgdaFunction{fcons}. The intuitive reason
+this is correct is that the functional version of the constructor
+\AgdaFunction{fcons} must respect the types which means it is extensionally
+equivalent to the constructor itself as all the types are pointed. For
+example, if \AgdaInductiveConstructor{??} \AgdaBound{c} maps
+\AgdaFunction{FALSE} to \AgdaFunction{TRUE}, the result of
+\AgdaFunction{!} \AgdaBound{c} must also do the same.
 
-\begin{figure}
-\begin{code}
-simplifySym : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
-simplifySym unite₊      = uniti₊
-simplifySym uniti₊      = unite₊
-simplifySym swap1₊      = swap2₊
-simplifySym swap2₊      = swap1₊
-simplifySym assocl1₊    = assocr1₊
-simplifySym assocl2₊    = assocr2₊
-simplifySym assocl3₊    = assocr3₊
-simplifySym assocr1₊    = assocl1₊
-simplifySym assocr2₊    = assocl2₊
-simplifySym assocr3₊    = assocl3₊
-simplifySym unite⋆      = uniti⋆
-simplifySym uniti⋆      = unite⋆
-simplifySym swap⋆       = swap⋆
-simplifySym assocl⋆     = assocr⋆
-simplifySym assocr⋆     = assocl⋆
-simplifySym distz       = factorz
-simplifySym factorz     = distz
-simplifySym dist1       = factor1 
-simplifySym dist2       = factor2 
-simplifySym factor1     = dist1 
-simplifySym factor2     = dist2 
-simplifySym id⟷        = id⟷
-simplifySym (sym⟷ c)   = c
-simplifySym (c₁ ◎ c₂)   = simplifySym c₂ ◎ simplifySym c₁ 
-simplifySym (c₁ ⊕1 c₂)  = simplifySym c₁ ⊕1 simplifySym c₂ 
-simplifySym (c₁ ⊕2 c₂)  = simplifySym c₁ ⊕2 simplifySym c₂ 
-simplifySym (c₁ ⊗ c₂)   = simplifySym c₁ ⊗ simplifySym c₂ 
-\end{code}
-\caption{\label{sym}Path inverses}
-\end{figure}
+In the following we will use, without giving the full definitions, the
+following inductive functions that can be used to replace various patterns of
+constructors:
+\begin{itemize}
+\item \AgdaFunction{simplifyl◎} 
+\item \AgdaFunction{simplifyr◎} 
+\item 
+\item 
+\item 
+
+\end{itemize}
+
 
 We can similarly perform nested induction to simplify path composition. We
 omit this large function but show a couple of interesting cases:
 
-\AgdaHide{
-\begin{code}
-simplifyl◎ : {t₁ t₂ t₃ : U•} → (c₁ : t₁ ⟷ t₂) → (c₂ : t₂ ⟷ t₃) → (t₁ ⟷ t₃)
-simplifyl◎ id⟷ c = c 
-simplifyl◎ unite₊ uniti₊ = id⟷
-simplifyl◎ uniti₊ unite₊ = id⟷ 
-simplifyl◎ swap1₊ swap2₊ = id⟷ 
-simplifyl◎ swap2₊ swap1₊ = id⟷ 
-simplifyl◎ assocl1₊ assocr1₊ = id⟷ 
-simplifyl◎ assocl2₊ assocr2₊ = id⟷ 
-simplifyl◎ assocl3₊ assocr3₊ = id⟷ 
-simplifyl◎ assocr1₊ assocl1₊ = id⟷ 
-simplifyl◎ assocr2₊ assocl2₊ = id⟷ 
-simplifyl◎ assocr3₊ assocl3₊ = id⟷ 
-simplifyl◎ unite⋆ uniti⋆ = id⟷ 
-simplifyl◎ uniti⋆ unite⋆ = id⟷ 
-simplifyl◎ swap⋆ swap⋆ = id⟷ 
-simplifyl◎ assocl⋆ assocr⋆ = id⟷ 
-simplifyl◎ assocr⋆ assocl⋆ = id⟷ 
-simplifyl◎ factorz distz = id⟷ 
-simplifyl◎ dist1 factor1 = id⟷ 
-simplifyl◎ dist2 factor2 = id⟷ 
-simplifyl◎ factor1 dist1 = id⟷ 
-simplifyl◎ factor2 dist2 = id⟷ 
-simplifyl◎ (c₁ ◎ c₂) c₃ = c₁ ◎ (c₂ ◎ c₃) 
-simplifyl◎ (c₁ ⊕1 c₂) swap1₊ = swap1₊ ◎ (c₂ ⊕2 c₁)
-simplifyl◎ (c₁ ⊕2 c₂) swap2₊ = swap2₊ ◎ (c₂ ⊕1 c₁)
-simplifyl◎ (_⊗_ {ONE} c₁ c₂) unite⋆ = unite⋆ ◎ c₂
-simplifyl◎ (c₁ ⊗ c₂) swap⋆ = swap⋆ ◎ (c₂ ⊗ c₁)
-simplifyl◎ (c₁ ⊗ c₂) (c₃ ⊗ c₄) = (c₁ ◎ c₃) ⊗ (c₂ ◎ c₄) 
-simplifyl◎ c₁ c₂ = c₁ ◎ c₂
-
-simplifyr◎ : {t₁ t₂ t₃ : U•} → (c₁ : t₁ ⟷ t₂) → (c₂ : t₂ ⟷ t₃) → (t₁ ⟷ t₃)
-simplifyr◎ c id⟷ = c
-simplifyr◎ unite₊ uniti₊ = id⟷
-simplifyr◎ uniti₊ unite₊ = id⟷ 
-simplifyr◎ swap1₊ swap2₊ = id⟷ 
-simplifyr◎ swap2₊ swap1₊ = id⟷ 
-simplifyr◎ assocl1₊ assocr1₊ = id⟷ 
-simplifyr◎ assocl2₊ assocr2₊ = id⟷ 
-simplifyr◎ assocl3₊ assocr3₊ = id⟷ 
-simplifyr◎ assocr1₊ assocl1₊ = id⟷ 
-simplifyr◎ assocr2₊ assocl2₊ = id⟷ 
-simplifyr◎ assocr3₊ assocl3₊ = id⟷ 
-simplifyr◎ unite⋆ uniti⋆ = id⟷ 
-simplifyr◎ uniti⋆ unite⋆ = id⟷ 
-simplifyr◎ swap⋆ swap⋆ = id⟷ 
-simplifyr◎ assocl⋆ assocr⋆ = id⟷ 
-simplifyr◎ assocr⋆ assocl⋆ = id⟷ 
-simplifyr◎ factorz distz = id⟷ 
-simplifyr◎ dist1 factor1 = id⟷ 
-simplifyr◎ dist2 factor2 = id⟷ 
-simplifyr◎ factor1 dist1 = id⟷ 
-simplifyr◎ factor2 dist2 = id⟷ 
-simplifyr◎ (c₁ ◎ c₂) c₃ = c₁ ◎ (c₂ ◎ c₃) 
-simplifyr◎ (c₁ ⊕1 c₂) swap1₊ = swap1₊ ◎ (c₂ ⊕2 c₁)
-simplifyr◎ (c₁ ⊕2 c₂) swap2₊ = swap2₊ ◎ (c₂ ⊕1 c₁)
-simplifyr◎ (_⊗_ {ONE} {ONE} c₁ c₂) unite⋆ = unite⋆ ◎ c₂
-simplifyr◎ (c₁ ⊗ c₂) swap⋆ = swap⋆ ◎ (c₂ ⊗ c₁)
-simplifyr◎ (c₁ ⊗ c₂) (c₃ ⊗ c₄) = (c₁ ◎ c₃) ⊗ (c₂ ◎ c₄) 
-simplifyr◎ c₁ c₂ = c₁ ◎ c₂
-\end{code}
-}
-
 %%%%%%%%%%%%%%%%%%%%%
-\subsection{Level 2 $\Pi$}
+\subsection{Level 1 $\Pi$}
+
+regular pi is level 0
 
 \begin{code}
 data 2U : Set where
@@ -1019,14 +1004,14 @@ data 2U : Set where
   2ONE   : 2U
   2PLUS  : 2U → 2U → 2U
   2TIMES : 2U → 2U → 2U
-  PATH  : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → 2U
+  PATH   : (t₁ t₂ : U•) → 2U
 
 2⟦_⟧ : 2U → Set
-2⟦ 2ZERO ⟧             = ⊥
-2⟦ 2ONE ⟧              = ⊤
-2⟦ 2PLUS t₁ t₂ ⟧       = 2⟦ t₁ ⟧ ⊎ 2⟦ t₂ ⟧
-2⟦ 2TIMES t₁ t₂ ⟧      = 2⟦ t₁ ⟧ × 2⟦ t₂ ⟧
-2⟦ PATH {t₁} {t₂} c ⟧ = Path t₁ t₂
+2⟦ 2ZERO ⟧         = ⊥
+2⟦ 2ONE ⟧          = ⊤
+2⟦ 2PLUS t₁ t₂ ⟧   = 2⟦ t₁ ⟧ ⊎ 2⟦ t₂ ⟧
+2⟦ 2TIMES t₁ t₂ ⟧  = 2⟦ t₁ ⟧ × 2⟦ t₂ ⟧
+2⟦ PATH t₁ t₂ ⟧    = Path t₁ t₂
 
 \end{code}
               -- empty set of paths
@@ -1055,70 +1040,15 @@ open 2U•
 }
 
 
-\begin{code}
-Path• : {t₁ t₂ : U•} → (c : t₁ ⟷ t₂) → 2U•
-Path• c = 2•[ PATH c , path c ]
-
-data _⇔_ : 2U• → 2U• → Set where
-  id⟷    : {t : 2U•} → t ⇔ t
-  sym⟷   : {t₁ t₂ : 2U•} → (t₁ ⇔ t₂) → (t₂ ⇔ t₁)
-  _◎_     : {t₁ t₂ t₃ : 2U•} → (t₁ ⇔ t₂) → (t₂ ⇔ t₃) → (t₁ ⇔ t₃)
-
-  simplifyl◎l : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} 
-             {c₁ : •[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]} 
-             {c₂ : •[ t₂ , v₂ ] ⟷ •[ t₃ , v₃ ]} → 
-    Path• (c₁ ◎ c₂) ⇔ Path• (simplifyl◎ c₁ c₂)
-  simplifyl◎r : {t₁ t₂ t₃ : U•} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} → 
-    Path• (simplifyl◎ c₁ c₂) ⇔ Path• (c₁ ◎ c₂)
-  simplifyr◎l : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} 
-             {c₁ : •[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]} 
-             {c₂ : •[ t₂ , v₂ ] ⟷ •[ t₃ , v₃ ]} → 
-    Path• (c₁ ◎ c₂) ⇔ Path• (simplifyr◎ c₁ c₂)
-  simplifyr◎r : {t₁ t₂ t₃ : U•} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} → 
-    Path• (simplifyr◎ c₁ c₂) ⇔ Path• (c₁ ◎ c₂)
-  simplifySyml : {t₁ t₂ : U•} {c : t₁ ⟷ t₂} → 
-    Path• (sym⟷ c) ⇔ Path• (simplifySym c)
-  simplifySymr : {t₁ t₂ : U•} {c : t₁ ⟷ t₂} → 
-    Path• (simplifySym c) ⇔ Path• (sym⟷ c)
-  invll   : ∀ {t₁ t₂ v₁ v₂} → {c : •[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]} → 
-            Path• (sym⟷ c ◎ c) ⇔ Path• (id⟷ {t₂} {v₂})
-  invlr   : ∀ {t₁ t₂ v₁ v₂} → {c : •[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]} → 
-            Path• (id⟷ {t₂} {v₂}) ⇔ Path• (sym⟷ c ◎ c)
-  invrl   : ∀ {t₁ t₂ v₁ v₂} → {c : •[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]} → 
-            Path• (c ◎ sym⟷ c) ⇔ Path• (id⟷ {t₁} {v₁})
-  invrr   : ∀ {t₁ t₂ v₁ v₂} → {c : •[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]} → 
-            Path• (id⟷ {t₁} {v₁}) ⇔ Path• (c ◎ sym⟷ c)
-  resp◎   : {t₁ t₂ t₃ : U•} 
-            {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} 
-            {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
-            (Path• c₁ ⇔ Path• c₃) → 
-            (Path• c₂ ⇔ Path• c₄) → 
-            Path• (c₁ ◎ c₂) ⇔ Path• (c₃ ◎ c₄)
-\end{code}
-\smallskip
-
-\AgdaHide{
-\begin{code}
-_≡⟨_⟩_ : {t₁ t₂ : U•} (c₁ : t₁ ⟷ t₂) {c₂ : t₁ ⟷ t₂} {c₃ : t₁ ⟷ t₂} → 
-         (2•[ PATH c₁ , path c₁ ] ⇔ 2•[ PATH c₂ , path c₂ ]) → 
-         (2•[ PATH c₂ , path c₂ ] ⇔ 2•[ PATH c₃ , path c₃ ]) → 
-         (2•[ PATH c₁ , path c₁ ] ⇔ 2•[ PATH c₃ , path c₃ ])
-_ ≡⟨ α ⟩ β = α ◎ β
-
-_∎ : {t₁ t₂ : U•} → (c : t₁ ⟷ t₂) → 
-     2•[ PATH c , path c ] ⇔ 2•[ PATH c , path c ]
-_∎ c = id⟷ 
-\end{code}
-}
 
 
 Simplify various compositions
 
 We need to show that the groupoid path structure is faithfully
 represented. The combinator $\idc$ introduces all the $\refl{\tau} : \tau
-\equiv \tau$ paths in $U$. The adjoint $\symc{c}$ introduces an inverse path
+\equiv \tau$ paths in $U$. The adjoint introduces an inverse path
 $!p$ for each path $p$ introduced by $c$. The composition operator $\fatsemi$
-introduces a path $p \circ q$ for every pair of paths whose endpoints
+introduces a path $p$ \AgdaSymbol{⊙} $q$ for every pair of paths whose endpoints
 match. In addition, we get paths like $\swapp$ between $\tau_1+\tau_2$ and
 $\tau_2+\tau_1$. The existence of such paths in the conventional HoTT needs
 to proved from first principles for some types and \emph{postulated} for the
@@ -1192,361 +1122,193 @@ have heterogeneous equality
 %%%%%%%%%%%%%%%%%%%%%%
 \subsection{2Paths}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Int Construction}
+\label{intc}
 
-\begin{code}
--- let's try to prove that p₁ = p₂ = p₃ = p₄ = p₅
+2paths are functions on paths; the int construction reifies these
+functions/2paths as 1paths
 
--- p₁ ~> p₂
-α₄ : 2•[ PATH NOT•T , p₁ ] ⇔ 2•[ PATH (id⟷ ◎ NOT•T) , p₂ ]
-α₄ = simplifyl◎r
+In the context of monoidal categories, it is known that a notion of
+higher-order functions emerges from having an additional degree of
+\emph{symmetry}. In particular, both the \textbf{Int} construction of Joyal,
+Street, and Verity~\citeyearpar{joyal1996traced} and the closely related
+$\mathcal{G}$ construction of linear logic~\cite{gcons} construct
+higher-order \emph{linear} functions by considering a new category built on
+top of a given base traced monoidal category. The objects of the new category
+are of the form $\nodet{\tau_1}{\tau_2}$ where~$\tau_1$ and~$\tau_2$ are
+objects in the base category. Intuitively, this object represents the
+\emph{difference} $\tau_1-\tau_2$ with the component $\tau_1$ viewed as
+conventional type whose elements represent values flowing, as usual, from
+producers to consumers, and the component $\tau_2$ viewed as a \emph{negative
+  type} whose elements represent demands for values or equivalently values
+flowing backwards. Under this interpretation, and as we explain below, a
+function is nothing but an object that converts a demand for an argument into
+the production of a result.
 
--- p₂ ~> p₃
-α₅ : 2•[ PATH (id⟷ ◎ NOT•T) , p₂ ] ⇔
-     2•[ PATH (NOT•T ◎ NOT•F ◎ NOT•T) , p₃ ]
-α₅ = id⟷ ◎ NOT•T
-       ≡⟨ simplifyl◎l ⟩ 
-     NOT•T
-       ≡⟨ simplifyr◎r ⟩ 
-     NOT•T ◎ id⟷ 
-       ≡⟨ resp◎ id⟷ simplifyl◎r ⟩ 
-     NOT•T ◎ NOT•F ◎ NOT•T ∎
+We begin our formal development by extending $\Pi$ with a new universe of
+types $\cubt$ that consists of composite types $\nodet{\tau_1}{\tau_2}$:
+\[\begin{array}{lrcl}
+(\textit{{1d} types}) & 
+  \cubt &::=& \nodet{\tau_1}{\tau_2}
+\end{array}\]
+In anticipation of future developments, we will refer to the original types
+$\tau$ as 0-dimensional (0d) types and to the new types $\cubt$ as
+1-dimensional (1d) types. It turns out that, except for one case discussed
+below, the 1d level is a ``lifted'' instance of $\Pi$ with its own notions of
+empty, unit, sum, and product types, and its corresponding notion of
+isomorphisms on these 1d types.
 
--- p₃ ~> p₄
-α₆ : 2•[ PATH (NOT•T ◎ NOT•F ◎ NOT•T) , p₃ ] ⇔
-     2•[ PATH (NOT•T ◎ id⟷) , p₄ ]
-α₆ = resp◎ id⟷ simplifyl◎l
+Our next step is to define lifted versions of the 0d types:
+\[\begin{array}{rcl}
+\ztone &\eqdef& \nodet{0}{0} \\
+\otone &\eqdef& \nodet{1}{0} \\
+\ptone{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} &\eqdef& 
+  \nodet{\tau_1+\tau_3}{\tau_2+\tau_4} \\
+\ttone{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} &\eqdef& \\
+\noalign{\hfill$\nodet{(\tau_1*\tau_3)+(\tau_2*\tau_4)}{(\tau_1*\tau_4)+(\tau_2*\tau_3)}$}
+\end{array}\]
+Building on the idea that $\Pi$ is a categorification of the natural numbers
+and following a long tradition that relates type isomorphisms and arithmetic
+identities~\cite{DiCosmo:2005:SSI:1090732.1090734}, one is tempted to think
+that the \textbf{Int} construction (as its name suggests) produces a
+categorification of the integers. Based on this hypothesis, the definitions
+above can be intuitively understood as arithmetic identities. The same
+arithmetic intuition explains the lifting of isomorphisms to 1d types:
+\[\begin{array}{rcl}
+\nodet{\tau_1}{\tau_2} \isoone \nodet{\tau_3}{\tau_4} &\eqdef& 
+  (\tau_1+\tau_4) \iso (\tau_2+\tau_3)
+\end{array}\]
+In other words, an isomorphism between 1d types is really an isomorphism
+between ``re-arranged'' 0d types where the negative input $\tau_2$ is viewed
+as an output and the negative output $\tau_4$ is viewed as an input. Using
+these ideas, it is now a fairly standard exercise to define the lifted
+versions of most of the combinators in
+Table~\ref{pi-combinators}.\footnote{See
+  Krishnaswami's~\citeyearpar{neelblog} excellent blog post implementing this
+  construction in OCaml.} There are however a few interesting cases whose
+appreciation is essential for the remainder of the paper that we discuss
+below.
 
--- p₅ ~> p₁
+\paragraph*{Easy Lifting.} Many of the 0d combinators lift easily to the 1d
+level. For example:
+\[\begin{array}{rcl}
+\idc &:& \cubt \isoone \cubt \\
+     &:& \nodet{\tau_1}{\tau_2} \isoone \nodet{\tau_1}{\tau_2} \\
+     &\eqdef& (\tau_1+\tau_2) \iso (\tau_2+\tau_1) \\
+\idc &=& \swapp \\
+\\
+\identlp &:& \ztone \boxplus \cubt \isoone \cubt \\
+%%         &\eqdef& (0+\tau_1)-(0+\tau_2) \isoone (\tau_1-\tau_2) \\
+%%         &\eqdef& ((0+\tau_1)+\tau_2) \iso ((0+\tau_2)+\tau_1) \\
+         &=& \assocrp \fatsemi (\idc \oplus \swapp) \fatsemi \assoclp
+\end{array}\]
 
-α₈ : 2•[ PATH (uniti⋆ ◎ swap⋆ ◎ 
-             (NOT•T ⊗ id⟷) ◎ swap⋆ ◎ unite⋆) , 
-        p₅ ] ⇔
-     2•[ PATH NOT•T , p₁ ] 
-α₈ = uniti⋆ ◎ swap⋆ ◎ (NOT•T ⊗ id⟷) ◎ swap⋆ ◎ unite⋆
-       ≡⟨ resp◎ id⟷ (resp◎ id⟷ simplifyl◎r) ⟩
-     uniti⋆ ◎ (swap⋆ ◎ ((NOT•T ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆)))
-       ≡⟨ resp◎ id⟷ (resp◎ id⟷ simplifyl◎r) ⟩ 
-     uniti⋆ ◎ (swap⋆ ◎ (((NOT•T ⊗ id⟷) ◎ swap⋆) ◎ unite⋆))
-       ≡⟨ resp◎ id⟷ (resp◎ id⟷ (resp◎ simplifyl◎l id⟷ )) ⟩
-     uniti⋆ ◎ (swap⋆ ◎ ((swap⋆ ◎ (id⟷ ⊗ NOT•T)) ◎ unite⋆))
-       ≡⟨ resp◎ id⟷ (resp◎ id⟷ simplifyl◎l) ⟩
-     uniti⋆ ◎ (swap⋆ ◎ (swap⋆ ◎ ((id⟷ ⊗ NOT•T) ◎ unite⋆)))
-       ≡⟨ resp◎ id⟷ simplifyl◎r ⟩
-     uniti⋆ ◎ ((swap⋆ ◎ swap⋆) ◎ ((id⟷ ⊗ NOT•T) ◎ unite⋆))
-       ≡⟨ resp◎ id⟷ (resp◎ simplifyl◎l id⟷) ⟩
-     uniti⋆ ◎ (id⟷ ◎ ((id⟷ ⊗ NOT•T) ◎ unite⋆))
-       ≡⟨ resp◎ id⟷ simplifyl◎l ⟩
-     uniti⋆ ◎ ((id⟷ ⊗ NOT•T) ◎ unite⋆)
-       ≡⟨ resp◎ id⟷ simplifyl◎l  ⟩
-     uniti⋆ ◎ (unite⋆ ◎ NOT•T)
-       ≡⟨ simplifyl◎r ⟩
-     (uniti⋆ ◎ unite⋆) ◎ NOT•T
-       ≡⟨ resp◎ simplifyl◎l id⟷ ⟩
-     id⟷ ◎ NOT•T
-       ≡⟨ simplifyl◎l ⟩
-     NOT•T ∎
+\paragraph*{Composition using $\mathit{trace}$.} 
 
--- p₄ ~> p₅
+\[\begin{array}{r@{\,\,\!}cl}
+(\fatsemi) &:& 
+  (\cubt_1 \isoone \cubt_2) \rightarrow 
+  (\cubt_2 \isoone \cubt_3) \rightarrow 
+  (\cubt_1 \isoone \cubt_3) \\
+%% \mathit{seq} &:& 
+%%   ((\tau_1-\tau_2) \isoone (\tau_3-\tau_4)) \rightarrow
+%%   ((\tau_3-\tau_4) \isoone (\tau_5-\tau_6)) \rightarrow
+%%   ((\tau_1-\tau_2) \isoone (\tau_5-\tau_6)) \\
+%%   &\eqdef& 
+%%   ((\tau_1+\tau_4) \iso (\tau_2+\tau_3)) \rightarrow
+%%   ((\tau_3+\tau_6) \iso (\tau_4+\tau_5)) \rightarrow
+%%   ((\tau_1+\tau_6) \iso (\tau_2+\tau_5)) \\
+f \fatsemi g &=& \mathit{trace}~(\mathit{assoc}_1 \fatsemi 
+  (f \oplus \idc) \fatsemi \mathit{assoc}_2 \fatsemi (g \oplus \idc) 
+  \fatsemi \mathit{assoc}_3)
+\end{array}\]
 
-α₇ : 2•[ PATH (NOT•T ◎ id⟷) , p₄ ] ⇔
-     2•[ PATH (uniti⋆ ◎ swap⋆ ◎ 
-             (NOT•T ⊗ id⟷) ◎ swap⋆ ◎ unite⋆) , 
-        p₅ ]
-α₇ = simplifyr◎l ◎ (sym⟷ α₈)
-\end{code}
+\paragraph*{New combinators $\mathit{curry}$ and $\mathit{uncurry}$ for higher-order functions.}
 
-\begin{code}
-G : 1Groupoid
-G = record
-        { set = U•
-        ; _↝_ = _⟷_
-        ; _≈_ = λ c₀ c₁ → Path• c₀ ⇔ Path• c₁
-        ; id = id⟷
-        ; _∘_ = λ c₀ c₁ → c₁ ◎ c₀
-        ; _⁻¹ = sym⟷
-        ; lneutr = λ _ → simplifyr◎l 
-        ; rneutr = λ _ → simplifyl◎l 
-        ; assoc = λ _ _ _ → simplifyl◎r
-        ; equiv = record  { refl = id⟷ 
-                          ; sym = λ c → sym⟷ c 
-                          ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
-        ; linv = λ _ → invrl 
-        ; rinv = λ _ → invll 
-        ; ∘-resp-≈ = λ f⟷h g⟷i → resp◎ g⟷i f⟷h 
-        }
-\end{code}
+\[\begin{array}{rcl}
+\boxminus(\nodet{\tau_1}{\tau_2}) &\eqdef& \nodet{\tau_2}{\tau_1} \\
+\nodet{\tau_1}{\tau_2} \lolli \nodet{\tau_3}{\tau_4} &\eqdef& 
+           \boxminus(\nodet{\tau_1}{\tau_2}) \boxplus \nodet{\tau_3}{\tau_4} \\
+  &\eqdef& \nodet{\tau_2+\tau_3}{\tau_1+\tau_4}
+\end{array}\]
+\[\begin{array}{rcl}
+\mathit{flip} &:& (\cubt_1 \isoone \cubt_2)
+  \rightarrow (\boxminus\cubt_2 \isoone \boxminus\cubt_1) \\
+%% \mathit{flip} &:& ((\tau_1-\tau_2) \isoone (\tau_3-\tau_4))
+%%   \rightarrow (\boxminus(\tau_3-\tau_4) \isoone \boxminus(\tau_1-\tau_2)) \\
+%%   &\eqdef& ((\tau_1-\tau_2) \isoone (\tau_3-\tau_4))
+%%   \rightarrow ((\tau_4-\tau_3) \isoone (\tau_2-\tau_1)) \\
+%%   &\eqdef& ((\tau_1+\tau_4) \iso (\tau_2+\tau_3))
+%%   \rightarrow ((\tau_4+\tau_1) \iso (\tau_3+\tau_2)) \\
+\mathit{flip}~f &=& \swapp \fatsemi f \fatsemi \swapp \\
+\\
+\mathit{curry} &:& 
+  ((\cubt_1\boxplus\cubt_2) \isoone \cubt_3) \rightarrow
+  (\cubt_1 \isoone (\cubt_2 \lolli \cubt_3)) \\
+%% \mathit{curry} &:& 
+%%   (((\tau_1-\tau_2)\boxplus(\tau_3-\tau_4)) \isoone (\tau_5-\tau_6)) \rightarrow
+%%   ((\tau_1-\tau_2) \isoone ((\tau_3-\tau_4) \lolli (\tau_5-\tau_6))) \\
+%%   &\eqdef& 
+%%   (((\tau_1+\tau_3)-(\tau_2+\tau_4)) \isoone (\tau_5-\tau_6)) \rightarrow
+%%   ((\tau_1-\tau_2) \isoone ((\tau_4+\tau_5)-(\tau_3+\tau_6))) \\
+%%   &\eqdef& 
+%%   (((\tau_1+\tau_3)+\tau_6) \iso ((\tau_2+\tau_4)+\tau_5)) \rightarrow
+%%   ((\tau_1+(\tau_4+\tau_5)) \iso (\tau_2+(\tau_3+\tau_6))) \\
+\mathit{curry}~f &=& \assoclp \fatsemi f \fatsemi \assocrp \\
+\\
+\mathit{uncurry} &:& 
+  (\cubt_1 \isoone (\cubt_2 \lolli \cubt_3)) \rightarrow
+  ((\cubt_1\boxplus\cubt_2) \isoone \cubt_3) \\
+\mathit{uncurry}~f &=& \assocrp \fatsemi f \fatsemi \assoclp 
+\end{array}\]
 
+\paragraph*{The ``phony'' multiplication that is not a functor.} 
+The definition for the product of 1d types used above is:
+\[\begin{array}{l}
+\ttone{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} \eqdef \\
+\noalign{$\hfill\nodet{(\tau_1*\tau_3)+(\tau_2*\tau_4)}{(\tau_1*\tau_4)+(\tau_2*\tau_3)}$}
+\end{array}\]
+That definition is ``obvious'' in some sense as it matches the usual
+understanding of types as modeling arithmetic identities. Using this
+definition, it is possible to lift all the 0d combinators involving products
+\emph{except} the functor:
+\[ (\otimes) : 
+  (\cubt_1\isoone\cubt_2) \rightarrow 
+  (\cubt_3\isoone\cubt_4) \rightarrow 
+  ((\cubt_1\boxtimes\cubt_3) \isoone
+   (\cubt_2\boxtimes\cubt_4))
+\]
+After a few failed attempts, we suspected that this definition of
+multiplication is not functorial which would mean that the \textbf{Int}
+construction only provides a limited notion of higher-order functions at the
+cost of losing the multiplicative structure at higher-levels. This
+observation is less well-known that it should be. Further investigation
+reveals that this observation is intimately related to a well-known problem
+in algebraic topology and homotopy theory that was identified thirty years
+ago as the ``phony'' multiplication~\cite{thomason} in a special class
+categories related to ours. This problem was recently
+solved~\cite{ringcompletion} using a technique whose fundamental ingredients
+are to add more dimensions and then take homotopy colimits. We exploit this
+solution in the remainder of the paper.
 
-%% \begin{code}
-%% data U : Set where
-%%   ZERO  : U              -- empty set of paths
-%%   ONE   : U              -- a trivial path
-%%   PLUS  : U → U → U      -- disjoint union of paths
-%%   TIMES : U → U → U      -- pairs of paths
-%%   PATH  : {t₁ t₂ : P.U•} → (t₁ P.⟷ t₂) → U -- level 0 paths between values
+\begin{verbatim}
+Add eta/epsilon and trace to Int 
+category
 
-%% data Path (t₁ t₂ : P.U•) : Set where
-%%   path : (c : t₁ P.⟷ t₂) → Path t₁ t₂
-
-%% ⟦_⟧ : U → Set
-%% ⟦ ZERO ⟧             = ⊥
-%% ⟦ ONE ⟧              = ⊤
-%% ⟦ PLUS t₁ t₂ ⟧       = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
-%% ⟦ TIMES t₁ t₂ ⟧      = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
-%% ⟦ PATH {t₁} {t₂} c ⟧ = Path t₁ t₂
-
-%% -- examples
-
-%% T⇔F : Set
-%% T⇔F = Path P.BOOL•T P.BOOL•F
-
-%% F⇔T : Set
-%% F⇔T = Path P.BOOL•F P.BOOL•T
-
-%% -- all the following are paths from T to F; we will show below that they
-%% -- are equivalent using 2paths
-
-%% p₁ p₂ p₃ p₄ p₅ : T⇔F
-%% p₁ = path P.NOT•T
-%% p₂ = path (P.id⟷ P.◎ P.NOT•T)
-%% p₃ = path (P.NOT•T P.◎ P.NOT•F P.◎ P.NOT•T)
-%% p₄ = path (P.NOT•T P.◎ P.id⟷)
-%% p₅ = path (P.uniti⋆ P.◎ P.swap⋆ P.◎ (P.NOT•T P.⊗ P.id⟷) P.◎ P.swap⋆ P.◎ P.unite⋆)
-   
-%% p₆ : (T⇔F × T⇔F) ⊎ F⇔T
-%% p₆ = inj₁ (p₁ , p₂)
-
-%% -- Programs map paths to paths. We also use pointed types.
-
-%% record U• : Set where
-%%   constructor •[_,_]
-%%   field
-%%     ∣_∣ : U
-%%     • : ⟦ ∣_∣ ⟧
-
-%% open U•
-
-%% Path• : {t₁ t₂ : P.U•} → (c : t₁ P.⟷ t₂) → U•
-%% Path• c = •[ PATH c , path c ]
-
-%% data _⟷_ : U• → U• → Set where
-
-%%   -- common combinators
-
-%%   id⟷    : {t : U•} → t ⟷ t
-%%   sym⟷   : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
-%%   _◎_     : {t₁ t₂ t₃ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
-
-%%   -- groupoid combinators defined by induction on P.⟷ in Pi0.agda
-
-%%   simplifyl◎l : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} 
-%%              {c₁ : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} 
-%%              {c₂ : P.U•.•[ t₂ , v₂ ] P.⟷ P.U•.•[ t₃ , v₃ ]} → 
-%%     Path• (c₁ P.◎ c₂) ⟷ Path• (P.simplifyl◎ c₁ c₂)
-
-%%   simplifyl◎r : {t₁ t₂ t₃ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} → 
-%%     Path• (P.simplifyl◎ c₁ c₂) ⟷ Path• (c₁ P.◎ c₂)
-
-%%   simplifyr◎l : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} 
-%%              {c₁ : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} 
-%%              {c₂ : P.U•.•[ t₂ , v₂ ] P.⟷ P.U•.•[ t₃ , v₃ ]} → 
-%%     Path• (c₁ P.◎ c₂) ⟷ Path• (P.simplifyr◎ c₁ c₂)
-
-%%   simplifyr◎r : {t₁ t₂ t₃ : P.U•} {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} → 
-%%     Path• (P.simplifyr◎ c₁ c₂) ⟷ Path• (c₁ P.◎ c₂)
-
-%%   simplifySyml : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
-%%     Path• (P.sym⟷ c) ⟷ Path• (P.simplifySym c)
-
-%%   simplifySymr : {t₁ t₂ : P.U•} {c : t₁ P.⟷ t₂} → 
-%%     Path• (P.simplifySym c) ⟷ Path• (P.sym⟷ c)
-
-%%   invll   : ∀ {t₁ t₂ v₁ v₂} → {c : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} → 
-%%             Path• (P.sym⟷ c P.◎ c) ⟷ Path• (P.id⟷ {t₂} {v₂})
-%%   invlr   : ∀ {t₁ t₂ v₁ v₂} → {c : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} → 
-%%             Path• (P.id⟷ {t₂} {v₂}) ⟷ Path• (P.sym⟷ c P.◎ c)
-%%   invrl   : ∀ {t₁ t₂ v₁ v₂} → {c : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} → 
-%%             Path• (c P.◎ P.sym⟷ c) ⟷ Path• (P.id⟷ {t₁} {v₁})
-%%   invrr   : ∀ {t₁ t₂ v₁ v₂} → {c : P.U•.•[ t₁ , v₁ ] P.⟷ P.U•.•[ t₂ , v₂ ]} → 
-%%             Path• (P.id⟷ {t₁} {v₁}) ⟷ Path• (c P.◎ P.sym⟷ c)
-%%   tassocl : {t₁ t₂ t₃ t₄ : P.U•} 
-%%             {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} {c₃ : t₃ P.⟷ t₄} → 
-%%             Path• (c₁ P.◎ (c₂ P.◎ c₃)) ⟷ 
-%%             Path• ((c₁ P.◎ c₂) P.◎ c₃)
-%%   tassocr : {t₁ t₂ t₃ t₄ : P.U•} 
-%%             {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} {c₃ : t₃ P.⟷ t₄} → 
-%%             Path• ((c₁ P.◎ c₂) P.◎ c₃) ⟷ 
-%%             Path• (c₁ P.◎ (c₂ P.◎ c₃))
-
-%%   -- resp◎ is closely related to Eckmann-Hilton
-%%   resp◎   : {t₁ t₂ t₃ : P.U•} 
-%%             {c₁ : t₁ P.⟷ t₂} {c₂ : t₂ P.⟷ t₃} 
-%%             {c₃ : t₁ P.⟷ t₂} {c₄ : t₂ P.⟷ t₃} → 
-%%             (Path• c₁ ⟷ Path• c₃) → 
-%%             (Path• c₂ ⟷ Path• c₄) → 
-%%             Path• (c₁ P.◎ c₂) ⟷ Path• (c₃ P.◎ c₄)
-
-%%   -- commutative semiring combinators
-
-%%   unite₊  : {t : U•} → •[ PLUS ZERO ∣ t ∣ , inj₂ (• t) ] ⟷ t
-%%   uniti₊  : {t : U•} → t ⟷ •[ PLUS ZERO ∣ t ∣ , inj₂ (• t) ]
-%%   swap1₊  : {t₁ t₂ : U•} → •[ PLUS ∣ t₁ ∣ ∣ t₂ ∣ , inj₁ (• t₁) ] ⟷ 
-%%                            •[ PLUS ∣ t₂ ∣ ∣ t₁ ∣ , inj₂ (• t₁) ]
-%%   swap2₊  : {t₁ t₂ : U•} → •[ PLUS ∣ t₁ ∣ ∣ t₂ ∣ , inj₂ (• t₂) ] ⟷ 
-%%                            •[ PLUS ∣ t₂ ∣ ∣ t₁ ∣ , inj₁ (• t₂) ]
-%%   assocl1₊ : {t₁ t₂ t₃ : U•} → 
-%%              •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₁ (• t₁) ] ⟷ 
-%%              •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₁ (inj₁ (• t₁)) ]
-%%   assocl2₊ : {t₁ t₂ t₃ : U•} → 
-%%              •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₂ (inj₁ (• t₂)) ] ⟷ 
-%%              •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₁ (inj₂ (• t₂)) ]
-%%   assocl3₊ : {t₁ t₂ t₃ : U•} → 
-%%              •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₂ (inj₂ (• t₃)) ] ⟷ 
-%%              •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₂ (• t₃) ]
-%%   assocr1₊ : {t₁ t₂ t₃ : U•} → 
-%%              •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₁ (inj₁ (• t₁)) ] ⟷ 
-%%              •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₁ (• t₁) ] 
-%%   assocr2₊ : {t₁ t₂ t₃ : U•} → 
-%%              •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₁ (inj₂ (• t₂)) ] ⟷ 
-%%              •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₂ (inj₁ (• t₂)) ] 
-%%   assocr3₊ : {t₁ t₂ t₃ : U•} → 
-%%              •[ PLUS (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , inj₂ (• t₃) ] ⟷ 
-%%              •[ PLUS ∣ t₁ ∣ (PLUS ∣ t₂ ∣ ∣ t₃ ∣) , inj₂ (inj₂ (• t₃)) ]
-%%   unite⋆  : {t : U•} → •[ TIMES ONE ∣ t ∣ , (tt , • t) ] ⟷ t               
-%%   uniti⋆  : {t : U•} → t ⟷ •[ TIMES ONE ∣ t ∣ , (tt , • t) ] 
-%%   swap⋆   : {t₁ t₂ : U•} → •[ TIMES ∣ t₁ ∣ ∣ t₂ ∣ , (• t₁ , • t₂) ] ⟷ 
-%%                            •[ TIMES ∣ t₂ ∣ ∣ t₁ ∣ , (• t₂ , • t₁) ]
-%%   assocl⋆ : {t₁ t₂ t₃ : U•} → 
-%%            •[ TIMES ∣ t₁ ∣ (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , (• t₁ , (• t₂ , • t₃)) ] ⟷ 
-%%            •[ TIMES (TIMES ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , ((• t₁ , • t₂) , • t₃) ]
-%%   assocr⋆ : {t₁ t₂ t₃ : U•} → 
-%%            •[ TIMES (TIMES ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , ((• t₁ , • t₂) , • t₃) ] ⟷ 
-%%            •[ TIMES ∣ t₁ ∣ (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , (• t₁ , (• t₂ , • t₃)) ]
-%%   distz : {t : U•} {absurd : ⟦ ZERO ⟧} → 
-%%           •[ TIMES ZERO ∣ t ∣ , (absurd , • t) ] ⟷ •[ ZERO , absurd ]
-%%   factorz : {t : U•} {absurd : ⟦ ZERO ⟧} → 
-%%             •[ ZERO , absurd ] ⟷ •[ TIMES ZERO ∣ t ∣ , (absurd , • t) ] 
-%%   dist1   : {t₁ t₂ t₃ : U•} → 
-%%             •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₁ (• t₁) , • t₃) ] ⟷ 
-%%             •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
-%%                inj₁ (• t₁ , • t₃) ]
-%%   dist2   : {t₁ t₂ t₃ : U•} → 
-%%             •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₂ (• t₂) , • t₃) ] ⟷ 
-%%             •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
-%%                inj₂ (• t₂ , • t₃) ]
-%%   factor1   : {t₁ t₂ t₃ : U•} → 
-%%             •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
-%%                inj₁ (• t₁ , • t₃) ] ⟷ 
-%%             •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₁ (• t₁) , • t₃) ]
-%%   factor2   : {t₁ t₂ t₃ : U•} → 
-%%             •[ PLUS (TIMES ∣ t₁ ∣ ∣ t₃ ∣) (TIMES ∣ t₂ ∣ ∣ t₃ ∣) , 
-%%                inj₂ (• t₂ , • t₃) ] ⟷ 
-%%             •[ TIMES (PLUS ∣ t₁ ∣ ∣ t₂ ∣) ∣ t₃ ∣ , (inj₂ (• t₂) , • t₃) ]
-%%   _⊕1_   : {t₁ t₂ t₃ t₄ : U•} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → 
-%%            (•[ PLUS ∣ t₁ ∣ ∣ t₂ ∣ , inj₁ (• t₁) ] ⟷ 
-%%             •[ PLUS ∣ t₃ ∣ ∣ t₄ ∣ , inj₁ (• t₃) ])
-%%   _⊕2_   : {t₁ t₂ t₃ t₄ : U•} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → 
-%%            (•[ PLUS ∣ t₁ ∣ ∣ t₂ ∣ , inj₂ (• t₂) ] ⟷ 
-%%             •[ PLUS ∣ t₃ ∣ ∣ t₄ ∣ , inj₂ (• t₄) ])
-%%   _⊗_     : {t₁ t₂ t₃ t₄ : U•} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → 
-%%             (•[ TIMES ∣ t₁ ∣ ∣ t₂ ∣ , (• t₁ , • t₂ ) ] ⟷ 
-%%              •[ TIMES ∣ t₃ ∣ ∣ t₄ ∣ , (• t₃ , • t₄ ) ])
-
-%% -- example programs
-
-%% {--
-%% α₁ : Path• P.NOT•T ⟷ Path• (P.id⟷ P.◎ P.NOT•T)
-%% α₁ = simplify◎r
-
-%% α₂ α₃ : •[ TIMES (PATH P.NOT•T) (PATH (P.NOT•T P.◎ P.id⟷)) , (p₁ , p₄) ] ⟷ 
-%%         •[ TIMES (PATH P.NOT•T) (PATH P.NOT•T) , (p₁ , p₁) ] 
-%% α₂ = id⟷ ⊗ simplify◎l
-%% α₃ = swap⋆ ◎ (simplify◎l ⊗ id⟷) 
-
-%% -- let's try to prove that p₁ = p₂ = p₃ = p₄ = p₅
-
-%% -- p₁ ~> p₂
-%% α₄ : •[ PATH P.NOT•T , p₁ ] ⟷ •[ PATH (P.id⟷ P.◎ P.NOT•T) , p₂ ]
-%% α₄ = simplify◎r
-
-%% -- p₂ ~> p₃
-%% α₅ : •[ PATH (P.id⟷ P.◎ P.NOT•T) , p₂ ] ⟷ 
-%%      •[ PATH (P.NOT•T P.◎ P.NOT•F P.◎ P.NOT•T) , p₃ ]
-%% α₅ = simplify◎l ◎ simplify◎r ◎ (resp◎ id⟷ (invrr {c = P.NOT•F} ◎ resp◎ id⟷ simplifySyml))
-%% --}
-%% -- p₃ ~> p₄
-%% α₆ : •[ PATH (P.NOT•T P.◎ P.NOT•F P.◎ P.NOT•T) , p₃ ] ⟷ 
-%%      •[ PATH (P.NOT•T P.◎ P.id⟷) , p₄ ]
-%% α₆ = resp◎ id⟷ ((resp◎ simplifySymr id⟷) ◎ invll)
-
-%% -- p₅ ~> p₁
-
-%% {--
-%% α₈ : •[ PATH (P.uniti⋆ P.◎ P.swap⋆ P.◎ 
-%%              (P.NOT•T P.⊗ P.id⟷) P.◎ P.swap⋆ P.◎ P.unite⋆) , 
-%%         p₅ ] ⟷ 
-%%      •[ PATH P.NOT•T , p₁ ] 
-%% α₈ = resp◎ id⟷ (resp◎ id⟷ tassocl) ◎ 
-%%      resp◎ id⟷ (resp◎ id⟷ (resp◎ simplify◎l id⟷)) ◎ 
-%%      resp◎ id⟷ (resp◎ id⟷ tassocr) ◎
-%%      resp◎ id⟷ tassocl ◎
-%%      resp◎ id⟷ (resp◎ (resp◎ simplifySymr id⟷) id⟷) ◎
-%%      resp◎ id⟷ (resp◎ invll id⟷) ◎
-%%      resp◎ id⟷ simplify◎l ◎
-%%      resp◎ id⟷ simplify◎l ◎
-%%      resp◎ simplifySyml id⟷ ◎
-%%      tassocl ◎ 
-%%      resp◎ invll id⟷ ◎
-%%      simplify◎l 
-
-%% -- p₄ ~> p₅
-
-%% α₇ : •[ PATH (P.NOT•T P.◎ P.id⟷) , p₄ ] ⟷ 
-%%      •[ PATH (P.uniti⋆ P.◎ P.swap⋆ P.◎ 
-%%              (P.NOT•T P.⊗ P.id⟷) P.◎ P.swap⋆ P.◎ P.unite⋆) , 
-%%         p₅ ]
-%% α₇ = simplify◎l ◎ (sym⟷ α₈)
-%% --}
-
-%% -- level 0 is a groupoid with a non-trivial path equivalence the various inv*
-%% -- rules are not justified by the groupoid proof; they are justified by the
-%% -- need for computational rules. So it is important to have not just a
-%% -- groupoid structure but a groupoid structure that we can compute with. So
-%% -- if we say that we want p ◎ p⁻¹ to be id, we must have computational rules
-%% -- that allow us to derive this for any path p, and similarly for all the
-%% -- other groupoid rules. (cf. The canonicity for 2D type theory by Licata and
-%% -- Harper)
-
-%% G : 1Groupoid
-%% G = record
-%%         { set = P.U•
-%%         ; _↝_ = P._⟷_
-%%         ; _≈_ = λ c₀ c₁ → Path• c₀ ⟷ Path• c₁
-%%         ; id = P.id⟷
-%%         ; _∘_ = λ c₀ c₁ → c₁ P.◎ c₀
-%%         ; _⁻¹ = P.sym⟷
-%%         ; lneutr = λ {t₁} {t₂} c → simplifyr◎l 
-%%            {P.U•.∣ t₁ ∣} {P.U•.∣ t₂ ∣} {P.U•.∣ t₂ ∣} 
-%%            {P.U•.• t₁} {P.U•.• t₂} {P.U•.• t₂} {c} {P.id⟷} 
-%%         ; rneutr = λ {t₁} {t₂} c → simplifyl◎l 
-%%            {P.U•.∣ t₁ ∣} {P.U•.∣ t₁ ∣} {P.U•.∣ t₂ ∣} 
-%%            {P.U•.• t₁} {P.U•.• t₁} {P.U•.• t₂} {P.id⟷} {c}
-%%         ; assoc = λ _ _ _ → tassocl
-%%         ; equiv = record { refl = id⟷ 
-%%                                 ; sym = λ c → sym⟷ c 
-%%                                 ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
-%%         ; linv = λ {t₁} {t₂} c → 
-%%                    invrl {P.U•.∣ t₁ ∣} {P.U•.∣ t₂ ∣} {P.U•.• t₁} {P.U•.• t₂}
-%%         ; rinv = λ {t₁} {t₂} c → 
-%%                    invll {P.U•.∣ t₁ ∣} {P.U•.∣ t₂ ∣} {P.U•.• t₁} {P.U•.• t₂}
-%%         ; ∘-resp-≈ = λ f⟷h g⟷i → resp◎ g⟷i f⟷h 
-%%         }
-
-%% \end{code}
-
+Explain the definitions in this 
+section much better...
+\end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
+
+Talk about trace and recursive types
+
+talk about h.o. functions, negative types, int construction, ring completion
+paper
+
+canonicity for 2d type theory; licata harper
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

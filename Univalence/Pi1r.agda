@@ -1,16 +1,4 @@
-module Pi1 where
-
--- for examples of 2 paths look at proofs of 
--- path assoc; triangle and pentagon rules
-
--- the idea I guess is that instead of having the usual evaluator where
--- values flow, we want an evaluator that rewrites the circuit to primitive
--- isos; for that we need some normal form for permutations and a proof that
--- we can rewrite any circuit to this normal form
-
--- plan after that: add trace; this make obs equiv much more interesting and
--- allows a limited form of h.o. functions via the int construction and then
--- do the ring completion to get more complete notion of h.o. functions
+module Pi1r where
 
 open import Data.Empty
 open import Data.Unit
@@ -146,6 +134,7 @@ data _⟷_ : U• → U• → Set where
   _⊗_     : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
            (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
           (•[ TIMES t₁ t₂ , (v₁ , v₂) ] ⟷ •[ TIMES t₃ t₄ , (v₃ , v₄) ])
+  loop : ∀ {t v} → •[ t , v ] ⟷ •[ t , v ]
 
 ! : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
 ! unite₊ = uniti₊
@@ -174,6 +163,7 @@ data _⟷_ : U• → U• → Set where
 ! (c₁ ⊕1 c₂) = ! c₁ ⊕1 ! c₂ 
 ! (c₁ ⊕2 c₂) = ! c₁ ⊕2 ! c₂ 
 ! (c₁ ⊗ c₂) = ! c₁ ⊗ ! c₂ 
+! loop = loop
 
 -- example programs
 
@@ -526,7 +516,7 @@ linv (c ◎ c₁) = {!!}
 linv (c ⊕1 c₁) = {!!}
 linv (c ⊕2 c₁) = {!!}
 linv (c ⊗ c₁) = {!!} 
-
+linv loop = {!!} 
 
 G : 1Groupoid
 G = record
