@@ -5,6 +5,7 @@
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
 \usepackage{tikz}
+\usepackage[all]{xy}
 \usepackage{amsthm}
 \usepackage{latexsym}
 \usepackage{courier}
@@ -23,6 +24,57 @@
 \usepackage{textgreek}
 \usepackage{extarrows}
 \usepackage{multicol}
+
+\newtheorem{theorem}{Theorem}
+
+% XY-Pic definitions for making ``wire charts''
+
+\def\wirechart#1#2{\let\labelstyle\objectstyle\xy*[*1.0]\xybox{\small%
+\xymatrix@C=10mm@R=4mm#1{#2}}\endxy}
+\def\wire#1#2{\ar@{-}[#1]^<>(.5){#2}}
+\def\wireright#1#2{\wire{#1}{#2}\ar@{}[#1]|<>(.5)/.6ex/{\dir2{>}}}
+\def\wireleft#1#2{\wire{#1}{#2}\ar@{}[#1]|<>(.5)/-.6ex/{\dir2{<}}}
+\def\wwblank#1{*=<#1,0mm>{~}}
+\def\wblank{\wwblank{11mm}}
+\def\blank{\wwblank{8mm}}
+\def\vublank{*=<0mm,2.3mm>!D{}}
+\def\vdblank{*=<0mm,2.3mm>!U{}}
+\def\vsblank{*=<0mm,5.6mm>{}}
+\def\wirecross#1{\save[]!L;[#1]!R**@{-}\restore}
+\def\wirebraid#1#2{\save[]!L;[#1]!R**{}?(#2)**@{-}\restore\save[#1]!R;[]!L**{}?(#2)**@{-}\restore}
+\def\wireopen#1{\save[]!R;[#1]!R**\crv{[]!C&[#1]!C}\restore}
+\def\wireclose#1{\save[]!L;[#1]!L**\crv{[]!C&[#1]!C}\restore}
+\def\wireopenlabel#1#2{\save[]!R;[#1]!R**\crv{[]!C&[#1]!C}?<>(.5)*^+!R{#2}\restore}
+\def\wirecloselabel#1#2{\save[]!L;[#1]!L**\crv{[]!C&[#1]!C}?<>(.5)*^+!L{#2}\restore}
+\def\wireid{\blank\save[]!L*{};[]!R*{}**@{-}\restore}
+\def\wwireid{\wblank\save[]!L*{};[]!R*{}**@{-}\restore}
+\def\wwwireid#1{\wwblank{#1}\save[]!L*{};[]!R*{}**@{-}\restore}
+\newcommand{\corner}{\rule{2.5mm}{2.5mm}}
+\def\minheight{8mm}
+\def\addheight{8mm}
+\def\cornerbox#1#2#3{  % draw a box with a marked corner around
+                   % the object #1. #2=label
+                   % usage:   \ulbox{[ll].[].[ul]}{f}
+  \save#1="box";
+  "box"!C*+<0mm,\addheight>+=<0mm,\minheight>[|(5)]\frm{-}="box1";
+  "box1"*{#2};
+  ={"box1"!LU*!LU[]{\corner}}"ul";
+  ={"box1"!RU*!RU[]{\corner}}"ur";
+  ={"box1"!LD*!LD[]{\corner}}"dl";
+  ={"box1"!RD*!RD[]{\corner}}"dr";
+  #3
+  \restore
+}
+\def\nnbox#1#2{\cornerbox{#1}{#2}{}}
+\def\ulbox#1#2{\cornerbox{#1}{#2}{"ul"}}
+\def\urbox#1#2{\cornerbox{#1}{#2}{"ur"}}
+\def\dlbox#1#2{\cornerbox{#1}{#2}{"dl"}}
+\def\drbox#1#2{\cornerbox{#1}{#2}{"dr"}}
+\def\ubox#1#2{\cornerbox{#1}{#2}{"ul","ur"}}
+\def\dbox#1#2{\cornerbox{#1}{#2}{"dl","dr"}}
+\def\lbox#1#2{\cornerbox{#1}{#2}{"ul","dl"}}
+\def\rbox#1#2{\cornerbox{#1}{#2}{"ur","dr"}}
+\def\circbox#1{*+[o][F-]{#1}}
 
 \renewcommand{\AgdaCodeStyle}{\small}
 
@@ -115,6 +167,8 @@ of univalence.
 
 \AgdaHide{
 \begin{code}
+{-# OPTIONS --without-K #-}
+
 module p where
 open import Level 
 open import Data.Empty
@@ -143,58 +197,40 @@ data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
 
-In a computational world in which the laws of physics are embraced and
-resources are carefully maintained (e.g., quantum
+Homotopy type theory (HoTT)~\cite{hottbook} has a convoluted treatment of
+functions. It starts with a class of arbitrary functions, singles out a
+smaller class of ``equivalences'' via extensional methods, and then asserts
+via the \emph{univalence} \textbf{axiom} that the class of singled out
+functions is equivalent to paths. Why not start with functions that are, by
+construction, equivalences?
+
+The idea that computation should be based on ``equivalences'' is an old one
+and is motivated by physical considerations. Because physics requires various
+conservation principles (including conservation of information) and because
+computation is fundamentally a physical process, every computation is
+fundamentally an equivalence that preserves information. This idea fits well
+with the HoTT philosophy that emphasizes equalities, isomorphisms,
+equivalences, and their computational content.
+
+In more detail, a computational world in which the laws of physics are
+embraced and resources are carefully maintained (e.g., quantum
 computing~\cite{NC00,Abramsky:2004:CSQ:1018438.1021878}), programs must be
 reversible. Although this is apparently a limiting idea, it turns out that
 conventional computation can be viewed as a special case of such
 resource-preserving reversible programs. This thesis has been explored for
 many years from different
-perspectives~\cite{fredkin1982conservative,Toffoli:1980,bennett2010notes,bennett2003notes,Bennett:1973:LRC,Landauer:1961,Landauer}. 
+perspectives~\cite{fredkin1982conservative,Toffoli:1980,bennett2010notes,bennett2003notes,Bennett:1973:LRC,Landauer:1961,Landauer}
+and more recently in the context of type
+isomorphisms~\cite{James:2012:IE:2103656.2103667}. 
 
-\paragraph*{Conventional HoTT/Agda approach}
-
-We start with a computational framework: data (pairs, etc.) and functions
-between them. There are computational rules (beta, etc.) that explain what a
-function does on a given datum.
-
-We then have a notion of identity which we view as a process that equates two
-things and model as a new kind of data. Initially we only have identities
-between beta-equivalent things.
-
-Then we postulate a process that identifies any two functions that are
-extensionally equivalent. We also postulate another process that identifies
-any two sets that are isomorphic. This is done by adding new kinds of data
-for these kinds of identities.
-
-\paragraph*{Our approach} 
-
-Our approach is to start with a computational framework that has finite data
-and permutations as the operations between them. The computational rules
-apply permutations.
-
-HoTT~\cite{hottbook} says id types are an inductively defined type family
-with refl as constructor. We say it is a family defined with pi combinators
-as constructors. Replace path induction with refl as base case with our
-induction.
-
-\paragraph*{Generalization} 
-
-How would that generalize to first-class functions? Using negative and
-fractionals? Groupoids? 
-
-In a computational world in which the laws of physics are embraced and
-resources are carefully maintained (e.g., quantum
-computing~\cite{NC00,Abramsky:2004:CSQ:1018438.1021878}), programs must be
-reversible. Although this is apparently a limiting idea, it turns out that
-conventional computation can be viewed as a special case of such
-resource-preserving reversible programs. This thesis has been explored for
-many years from different
-perspectives~\cite{fredkin1982conservative,Toffoli:1980,bennett2010notes,bennett2003notes,Bennett:1973:LRC,Landauer:1961,Landauer}.
-We build on the work of James and
-Sabry~\citeyearpar{James:2012:IE:2103656.2103667} which expresses this thesis
-in a type theoretic computational framework, expressing computation via type
-isomorphisms.
+This paper explores the basic ingredients of HoTT from the perspective that
+computation is all about type isomorphisms. Because of the issues are subtle,
+the paper is an executable Agda 2.4.0 file with the global
+\AgdaComment{without-K} option enabled. The main body of the paper
+reconstructs the main features of HoTT for the limited universe of finite
+types consisting of the empty type, the unit type, and sums and products of
+types. Sec.~\ref{intc} outlines directions for extending the result to richer
+types.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Condensed Background on HoTT}
@@ -476,7 +512,7 @@ and semantics.
 {}
 {\jdg{}{}{\idc : \tau \iso \tau}}
 {}
-\qquad
+~
 \Rule{}
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
 {\jdg{}{}{c_1 \fatsemi c_2 : \tau_1 \iso \tau_3}}
@@ -784,7 +820,7 @@ connect values in different but isomorphic spaces like
 \AgdaBound{v₁} \AgdaSymbol{)}}}.
 
 \begin{figure}[ht]
-\setlength{\columnsep}{15pt}
+\setlength{\columnsep}{12pt}
 \begin{multicols}{2}
 \begin{code}
 ! : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
@@ -818,10 +854,8 @@ connect values in different but isomorphic spaces like
 ! (c₁ ⊗ c₂)   = ! c₁ ⊗ ! c₂ 
 \end{code}
 \end{multicols}
-\caption{\label{sym}Pointed Combinators or paths inverses}
+\caption{\label{sym}Pointed Combinators (or paths) inverses}
 \end{figure}
-
-
 
 The example \AgdaFunction{notpath} which earlier required the use of the
 univalence axiom can now be directly defined using
@@ -885,21 +919,6 @@ inductive datatype of paths between pointed spaces. The resulting structure
 is evidently a 1-groupoid as the isomorphisms are closed under inverses and
 composition. We now investigate the higher groupoid structure. 
 
-The pleasant result will be that the higher groupoid structure will result
-from another ``lifted'' version of $\Pi$ in which computations manipulate
-paths. The lifted version will have all the combinators from
-Fig.~\ref{pointedcomb} to manipulate collections of paths (e.g., sums of
-products of paths) in addition to combinators that work on individual
-paths. The latter combinators will capture the higher groupoid structure
-relating for example, the path \AgdaInductiveConstructor{id⟷} \AgdaSymbol{◎}
-\AgdaBound{c} with \AgdaBound{c}. Computations in the lifted $\Pi$ will
-therefore correspond to 2paths and the entire scheme can be repeated over
-and over to capture the concept of weak $\infty$-groupoids.
-
-%% Note:
-%% x : {A B : Set} → (A ≃ B) ≃ (A ≃ B)
-%% x = (id , mkisequiv id refl id refl)
-
 %%%%%%%%%%%%%%%%%
 \subsection{Examples}
 
@@ -924,7 +943,7 @@ p₅ = path  (uniti⋆ ◎ swap⋆ ◎ (NOT•T ⊗ id⟷) ◎
 \smallskip
 
 \noindent All the paths start at \AgdaFunction{TRUE} and end at
-\AgdaFunction{FALSE} but follow different intermediate paths along the
+\AgdaFunction{FALSE} but follow different intermediate steps along the
 way. Informally \AgdaFunction{p₁} is the most ``efficient'' canonical way of
 connecting \AgdaFunction{TRUE} to \AgdaFunction{FALSE} via the appropriate
 fiber of the boolean negation. Path \AgdaFunction{p₂} starts with the trivial
@@ -935,199 +954,544 @@ groupoid laws, to have a 2path connecting \AgdaFunction{p₂} to
 trivial path but instead uses what is effectively a trivial path that follows
 a negation path and then its inverse. We also expect to have a 2path between
 this path and the other ones. Path \AgdaFunction{p₄} is also evidently
-equivalent to the others but the situation with path \AgdaFunction{p₅} is
-more subtle. We defer the discussion until we formally define 2paths. For
-now, we note that --- viewed extensionally --- each path connects
-\AgdaFunction{TRUE} to \AgdaFunction{FALSE} and hence all the paths are
-extensionally equivalent.  In the conventional approach to programming
-language semantics, which is also followed in the current formalization of
-HoTT, this extensional equivalence would then be used to justify the
-existence of the 2paths. In our setting, we do \emph{not} need to reason
-using extensional methods since all functions (paths) are between pointed
-spaces (i.e., are point to point) and we have an inductive definition of
-paths which can be used to define computational rules that simplify paths as
-shown next.
+equivalent to the others as it composes the negation path with the trivial
+path. 
+
+The situation with path \AgdaFunction{p₅} is more subtle. Viewed
+extensionally, path \AgdaFunction{p₅} is obviously equivalent to the other
+paths as it has the same input-output behavior connecting \AgdaFunction{TRUE}
+to \AgdaFunction{FALSE}. In the conventional approach to programming language
+semantics, this extensional equivalence would then be used to justify the
+existence of a 2path. In our setting, we do \emph{not} want to reason using
+extensional methods. Instead, we would like to think of 2paths are resulting
+from homotopies (i.e., ``smooth deformations'') of paths into each other.
 
 %%%%%%%%%%%%%%%%%
-\subsection{Path Induction}
+\subsection{Graphical Languages and Isotopies} 
 
-only REVERSIBLE functions from paths to paths are allowed. we could write
-these functions as functions and prove inverses etc but then we are back to
-the extensional view. better to axiomatize the groupoid laws using
-combinators
+The question of ``smooth deformations'' of paths can be addressed in many
+ways. A particularly appealing way is our setting is to use the graphical
+languages associated with monoidal categories. (See Selinger's
+paper~\citeyearpar{selinger-graphical} for an excellent survey and the papers
+by Joyal and Street~\citeyearpar{planardiagrams,geometrytensor} for the
+original development.) 
 
-In the conventional formalization to HoTT, the groupoid laws are a
-consequence of \emph{path induction}. The situation is similar in our case
-but with an important difference: our inductively defined type family of
-paths includes many more constructors than just
-\AgdaInductiveConstructor{refl}. Consider for example, the inductively
-defined function \AgdaFunction{!} in Fig.~\ref{sym} which shows
-that each path has an inverse by giving the computational rule for
-calculating that inverse. We will use this definition to postulate a 2path
-between \AgdaInductiveConstructor{??} \AgdaBound{c} and
-\AgdaFunction{!} \AgdaBound{c}. More generally, we can postulate a
-2-path between any path \AgdaBound{c} \AgdaSymbol{:} \AgdaSymbol{(}
-\AgdaBound{t₁} \AgdaFunction{⟷} \AgdaBound{t₂} \AgdaSymbol{)} and the result
-of replacing any constructor \AgdaInductiveConstructor{cons} in \AgdaBound{c}
-by an inductively defined function \AgdaFunction{fcons}. The intuitive reason
-this is correct is that the functional version of the constructor
-\AgdaFunction{fcons} must respect the types which means it is extensionally
-equivalent to the constructor itself as all the types are pointed. For
-example, if \AgdaInductiveConstructor{??} \AgdaBound{c} maps
-\AgdaFunction{FALSE} to \AgdaFunction{TRUE}, the result of
-\AgdaFunction{!} \AgdaBound{c} must also do the same.
-
-In the following we will use, without giving the full definitions, the
-following inductive functions that can be used to replace various patterns of
-constructors:
+The general idea of the graphical notation is that points are represented as
+``wires'' and that combinators (i.e., paths) are modeled as operations
+that ``shuffle'' the wires. 
 \begin{itemize}
-\item \AgdaFunction{simplifyl◎} 
-\item \AgdaFunction{simplifyr◎} 
-\item 
-\item 
-\item 
-
+\item Points in the space \AgdaBound{b₁} \AgdaSymbol{×} \AgdaBound{b₂} are
+  represented using two parallel wires labeled \AgdaBound{b₁} and
+  \AgdaBound{b₂}:
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/product-two-wires.pdf}
+}
+\end{center}
+\item Points in the space \AgdaBound{b₁} \AgdaSymbol{⊎} \AgdaBound{b₂} are
+may similarly represented using two parallel wires but with a $+$ between
+them:
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/sum-two-wires.pdf}
+}
+\end{center}
+When dealing with pointed spaces, one and exactly one of the choices becomes
+``activated.''
+\item Knowing how points are represented, we now show how various combinators
+  (i.e., paths) are represented. The simplest path is
+  \AgdaInductiveConstructor{id⟷} which is simply represented as a 
+  no-op on the wire representing the point it acts on:
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/b-wire.pdf}
+}
+\end{center}
+\item Associativity is implicit in the graphical language. Three parallel
+  wires represent both \AgdaBound{b₁} \AgdaSymbol{×} (\AgdaBound{b₂}
+  \AgdaSymbol{×} \AgdaBound{b₃}) and (\AgdaBound{b₁} \AgdaSymbol{×}
+  \AgdaBound{b₂}) \AgdaSymbol{×} \AgdaBound{b₃}.
+\begin{center}
+\scalebox{1.0}{
+\includegraphics{diagrams/thesis/assoc.pdf}
+}
+\end{center}
+Associativity for sum types is similarly represented. Note again that
+for pointed spaces only one of the wires becomes activated.
+\item Commutativity is represented by crisscrossing wires:
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/swap_times.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/swap_plus.pdf}
+}
+\end{center}
+\end{multicols}
+\item The additive and multiplicative units are represented as follows:
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/uniti.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/unite.pdf}
+}
+\end{center}  
+\end{multicols}
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/zeroi.pdf}
+}
+\end{center}
+\columnbreak
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/thesis/zeroe.pdf}
+}
+\end{center}
+\end{multicols}
+For pointed spaces, the wire labeled 0 can never be the active one.
+\item Finally, distributivity and factoring are represented using the dual
+  boxes shown below:
+\begin{multicols}{2}
+\begin{center}
+  \includegraphics{diagrams/thesis/dist.pdf}
+\end{center}
+\begin{center}
+  \includegraphics{diagrams/thesis/factor.pdf}
+\end{center}
+\end{multicols}
 \end{itemize}
 
+The graphical notation is justified by \emph{coherence theorems}. To get an
+intuition, we quote the theorem for the special case of a plain monoidal
+category (assuming either sum types or product types but not both and
+dropping the commutativity combinators). The theorem is originally due to
+Joyal and Street. We quote the statement from Selinger's paper.
 
-We can similarly perform nested induction to simplify path composition. We
-omit this large function but show a couple of interesting cases:
+\begin{theorem}
+A well-formed equation between morphism terms in the language of monoidal
+categories follows from the axioms of monoidal categories if and only if it
+holds, up to planar isotopy, in the graphical language.
+\end{theorem}
+
+Translating to our language and notation, the theorem says the following. We
+are given two wiring diagrams representing two paths and we are asking
+whether the paths should be treated as equivalent. The answer is yes if it
+possible to transform one diagram to the other by moving wires and boxes
+around without crossing, cutting, or gluing any wires and without detaching
+them from the plane.  As an example, consider the paths \AgdaFunction{p₁} to
+\AgdaBound{p₅} introduced in the previous section. The three paths
+\AgdaFunction{p₁}, \AgdaFunction{p₂}, and \AgdaFunction{p₄} have identical
+diagrams (shown on the left below) and hence should be treated as
+equivalent. Path \AgdaFunction{p₃} (shown on the right) is also equivalent to
+them as one of the level shifts can be flattened:
+
+\begin{tikzpicture}
+\node[left] (T) at (-0.2,0) {\AgdaFunction{TRUE}};
+\node (F) at (1.2,-0.75) {};
+\node at (1,-1.1) {\AgdaFunction{FALSE}};
+\draw (T) -- (0.25,0) -- (0.75,-0.75) -- (F);
+%%
+\node[left] (T1) at (3.3,0) {\AgdaFunction{TRUE}};
+\node at (4.5,-0.75) {};
+\node at (4.3,-1.1) {\AgdaFunction{FALSE}};
+\node at (5.5,0.2) {\AgdaFunction{TRUE}};
+\node (F2) at (6.7,-0.75) {};
+\node at (6.5,-1.1) {\AgdaFunction{FALSE}};
+\draw (T1) -- (3.75,0) -- (4.25,-0.75) -- (4.75,-0.75) 
+   -- (5.25,0) -- (5.75,0) -- (6.25,-0.75) -- (F2);
+\end{tikzpicture}
+
+\noindent Path \AgdaFunction{p₅} is more subtle as it includes two
+occurrences of \AgdaInductiveConstructor{swap⋆}. Consider the following
+diagram for \AgdaInductiveConstructor{swap⋆} where we added a third dimension
+making explicit which path is crossing over which during the swap operation:
+\[
+ \vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
+        *{}\wire{r}{}&\blank\wirecross{d}\wire{r}{}&\\
+        *{}\wire{r}{}&\blank\wirebraid{u}{.3}\wire{r}{}&
+        }}
+\]
+It follows that a sequence of two swaps might represent one of the following
+two diagrams:
+\[
+\vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
+    *{}\wire{r}{}&
+    \blank\wirecross{d}\wire{r}{}&
+    \blank\wirecross{d}\wire{r}{}&
+    \\
+    *{}\wire{r}{}&
+    \blank\wirebraid{u}{.3}\wire{r}{}&
+    \blank\wirebraid{u}{.3}\wire{r}{}&
+    \\
+    }}
+\]
+\[
+\vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
+     *{}\wire{r}{}&
+     \blank\wirecross{d}\wire{r}{}&
+     \blank\wirebraid{d}{.3}\wire{r}{}&
+     \\
+     *{}\wire{r}{}&
+     \blank\wirebraid{u}{.3}\wire{r}{}&
+     \blank\wirecross{u}\wire{r}{}&
+     \\
+     }}
+\]
+In 3 dimensions, the first diagram creates a ``knot'' but the second reduces
+to trivial identity paths. In 2 dimensions, the distinction between the two
+diagrams vanishes and they become equivalent. 
+
+The original presentation of $\Pi$ assumes the simple planar situation and we
+will continue our development with that assumption, leaving the possible
+investigation of other notions of homotopies to future work. The relevant
+coherence theorem in our situation is that two diagrams are equivalent if and
+only if they are isomorphic, i.e., if and only the wires and boxes are in
+bijective correspondence that preserves the connections between boxes and
+wires. Formally this means that we have the most conservative equivalence of
+paths that uses the groupoid axioms and nothing but the groupoid axioms.
 
 %%%%%%%%%%%%%%%%%%%%%
-\subsection{Level 1 $\Pi$}
+\subsection{$\Pi$ Lifted and with Groupoid Axioms}
 
-regular pi is level 0
+To summarize, we will consider two paths to be equivalent, i.e., to be
+related by a 2path, if and only if the paths are related by the groupoid
+axioms. So there will be 2paths between \AgdaFunction{p₁}, \AgdaFunction{p₂},
+\AgdaFunction{p₃}, and \AgdaFunction{p₄}, but not \AgdaFunction{p₅}. More
+generally, we lift the entire $\Pi$ language from representing 1paths between
+points to representing 2paths between 1paths. The only difference between the
+two levels is that points had no structure and hence there were no
+non-trivial paths between the points themselves. However for 1paths are built
+using \AgdaInductiveConstructor{id⟷}, inverses \AgdaSymbol{!}, and
+compositions \AgdaSymbol{◎} that are subject to the groupoid laws. What is
+pleasant is that 2paths have a similar structure, and hence the entire scheme
+can be repeated over and over lifting $\Pi$ to higher and higher levels to
+capture the concept of weak $\infty$-groupoids.
+
+We now present the detailed construction of the next level of $\Pi$. 
 
 \begin{code}
-data 2U : Set where
-  2ZERO  : 2U
-  2ONE   : 2U
-  2PLUS  : 2U → 2U → 2U
-  2TIMES : 2U → 2U → 2U
-  PATH   : (t₁ t₂ : U•) → 2U
+data 1U : Set where
+  1ZERO   : 1U
+  1ONE    : 1U
+  1PLUS   : 1U → 1U → 1U
+  1TIMES  : 1U → 1U → 1U
+  PATH    : U• → U• → 1U
 
-2⟦_⟧ : 2U → Set
-2⟦ 2ZERO ⟧         = ⊥
-2⟦ 2ONE ⟧          = ⊤
-2⟦ 2PLUS t₁ t₂ ⟧   = 2⟦ t₁ ⟧ ⊎ 2⟦ t₂ ⟧
-2⟦ 2TIMES t₁ t₂ ⟧  = 2⟦ t₁ ⟧ × 2⟦ t₂ ⟧
-2⟦ PATH t₁ t₂ ⟧    = Path t₁ t₂
-
+1⟦_⟧ : 1U → Set
+1⟦ 1ZERO ⟧         = ⊥
+1⟦ 1ONE ⟧          = ⊤
+1⟦ 1PLUS t₁ t₂ ⟧   = 1⟦ t₁ ⟧ ⊎ 1⟦ t₂ ⟧
+1⟦ 1TIMES t₁ t₂ ⟧  = 1⟦ t₁ ⟧ × 1⟦ t₂ ⟧
+1⟦ PATH t₁ t₂ ⟧    = Path t₁ t₂
 \end{code}
-              -- empty set of paths
-              -- a trivial path
-      -- disjoint union of paths
-      -- pairs of paths
- -- level 0 paths between values
-groupoid laws not enough
 
-the equivalent of path induction is the induction principle for the type
-family defining paths
+The new universe \AgdaFunction{1U} is a universe whose spaces are path
+spaces. The space \AgdaInductiveConstructor{1ZERO} is the empty set of
+paths. The space \AgdaInductiveConstructor{1ONE} is the space of paths
+containing one path that is the identity for path products. Sums and products
+of paths are representing using disjoint union and cartesian products. In
+addition, all paths from Fig.~\ref{pointedcomb} are reifed as values in
+\AgdaFunction{1U}.
 
+As before, we define pointed spaces (now of paths instead of points) and
+define introduce $\Pi$ combinators on these pointed path spaces. In addition
+to the commutative semiring combinators, there are also combinators that
+witness the groupoid equivalences. (See Fig.~\ref{pointedcomb2}.) 
+
+\smallskip
 \begin{code}
-record 2U• : Set where
-  constructor 2•[_,_]
+record 1U• : Set where
+  constructor 1•[_,_]
   field
-    2∣_∣ : 2U
-    2• : 2⟦ 2∣_∣ ⟧
+    1∣_∣ : 1U
+    1• : 1⟦ 1∣_∣ ⟧
 \end{code}
 \smallskip
-
 \AgdaHide{
 \begin{code}
-open 2U•
+open 1U•
 \end{code}
 }
 
+\begin{figure*}
+\begin{multicols}{2}
+\begin{code} 
+data _⇔_ : 1U• → 1U• → Set where
 
+  -- Commutative semiring combinators
 
+  unite₊ : ∀ {t v} → 1•[ 1PLUS 1ZERO t , inj₂ v ] ⇔ 1•[ t , v ]
+  uniti₊ : ∀ {t v} → 1•[ t , v ] ⇔ 1•[ 1PLUS 1ZERO t , inj₂ v ]
+  swap1₊ : ∀ {t₁ t₂ v₁} → 
+    1•[ 1PLUS t₁ t₂ , inj₁ v₁ ] ⇔ 1•[ 1PLUS t₂ t₁ , inj₂ v₁ ]
+  swap2₊  : ∀ {t₁ t₂ v₂} → 
+    1•[ 1PLUS t₁ t₂ , inj₂ v₂ ] ⇔ 1•[ 1PLUS t₂ t₁ , inj₁ v₂ ]
+  assocl1₊ : ∀ {t₁ t₂ t₃ v₁} → 
+    1•[ 1PLUS t₁ (1PLUS t₂ t₃) , inj₁ v₁ ] ⇔ 
+    1•[ 1PLUS (1PLUS t₁ t₂) t₃ , inj₁ (inj₁ v₁) ]
+  assocl2₊ : ∀ {t₁ t₂ t₃ v₂} → 
+    1•[ 1PLUS t₁ (1PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] ⇔ 
+    1•[ 1PLUS (1PLUS t₁ t₂) t₃ , inj₁ (inj₂ v₂) ]
+  assocl3₊ : ∀ {t₁ t₂ t₃ v₃} → 
+    1•[ 1PLUS t₁ (1PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] ⇔ 
+    1•[ 1PLUS (1PLUS t₁ t₂) t₃ , inj₂ v₃ ]
+  assocr1₊ : ∀ {t₁ t₂ t₃ v₁} → 
+    1•[ 1PLUS (1PLUS t₁ t₂) t₃ , inj₁ (inj₁ v₁) ] ⇔ 
+    1•[ 1PLUS t₁ (1PLUS t₂ t₃) , inj₁ v₁ ] 
+  assocr2₊ : ∀ {t₁ t₂ t₃ v₂} → 
+    1•[ 1PLUS (1PLUS t₁ t₂) t₃ , inj₁ (inj₂ v₂) ] ⇔ 
+    1•[ 1PLUS t₁ (1PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] 
+  assocr3₊ : ∀ {t₁ t₂ t₃ v₃} → 
+    1•[ 1PLUS (1PLUS t₁ t₂) t₃ , inj₂ v₃ ] ⇔ 
+    1•[ 1PLUS t₁ (1PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
+  unite⋆ : ∀ {t v} → 1•[ 1TIMES 1ONE t , (tt , v) ] ⇔ 1•[ t , v ]
+  uniti⋆ : ∀ {t v} → 1•[ t , v ] ⇔ 1•[ 1TIMES 1ONE t , (tt , v) ] 
+  swap⋆ : ∀ {t₁ t₂ v₁ v₂} → 
+    1•[ 1TIMES t₁ t₂ , (v₁ , v₂) ] ⇔ 1•[ 1TIMES t₂ t₁ , (v₂ , v₁) ]
+  assocl⋆ : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → 
+    1•[ 1TIMES t₁ (1TIMES t₂ t₃) , (v₁ , (v₂ , v₃)) ] ⇔ 
+    1•[ 1TIMES (1TIMES t₁ t₂) t₃ , ((v₁ , v₂) , v₃) ]
+  assocr⋆ : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → 
+    1•[ 1TIMES (1TIMES t₁ t₂) t₃ , ((v₁ , v₂) , v₃) ] ⇔ 
+    1•[ 1TIMES t₁ (1TIMES t₂ t₃) , (v₁ , (v₂ , v₃)) ]
+  distz : ∀ {t v absurd} → 
+    1•[ 1TIMES 1ZERO t , (absurd , v) ] ⇔ 1•[ 1ZERO , absurd ]
+  factorz : ∀ {t v absurd} → 
+    1•[ 1ZERO , absurd ] ⇔ 1•[ 1TIMES 1ZERO t , (absurd , v) ]
+  dist1 : ∀ {t₁ t₂ t₃ v₁ v₃} → 
+    1•[ 1TIMES (1PLUS t₁ t₂) t₃ , (inj₁ v₁ , v₃) ] ⇔ 
+    1•[ 1PLUS (1TIMES t₁ t₃) (1TIMES t₂ t₃) , inj₁ (v₁ , v₃) ]
+  dist2 : ∀ {t₁ t₂ t₃ v₂ v₃} → 
+    1•[ 1TIMES (1PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ] ⇔ 
+    1•[ 1PLUS (1TIMES t₁ t₃) (1TIMES t₂ t₃) , inj₂ (v₂ , v₃) ]
+  factor1 : ∀ {t₁ t₂ t₃ v₁ v₃} → 
+    1•[ 1PLUS (1TIMES t₁ t₃) (1TIMES t₂ t₃) , inj₁ (v₁ , v₃) ] ⇔ 
+    1•[ 1TIMES (1PLUS t₁ t₂) t₃ , (inj₁ v₁ , v₃) ]
+  factor2 : ∀ {t₁ t₂ t₃ v₂ v₃} → 
+    1•[ 1PLUS (1TIMES t₁ t₃) (1TIMES t₂ t₃) , inj₂ (v₂ , v₃) ] ⇔ 
+    1•[ 1TIMES (1PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ]
+  id⇔ : ∀ {t v} → 1•[ t , v ] ⇔ 1•[ t , v ]
+  _◎_ : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → (1•[ t₁ , v₁ ] ⇔ 1•[ t₂ , v₂ ]) → 
+    (1•[ t₂ , v₂ ] ⇔ 1•[ t₃ , v₃ ]) → 
+    (1•[ t₁ , v₁ ] ⇔ 1•[ t₃ , v₃ ])
+  _⊕1_   : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
+    (1•[ t₁ , v₁ ] ⇔ 1•[ t₃ , v₃ ]) → (1•[ t₂ , v₂ ] ⇔ 1•[ t₄ , v₄ ]) → 
+    (1•[ 1PLUS t₁ t₂ , inj₁ v₁ ] ⇔ 1•[ 1PLUS t₃ t₄ , inj₁ v₃ ])
+  _⊕2_   : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
+    (1•[ t₁ , v₁ ] ⇔ 1•[ t₃ , v₃ ]) → (1•[ t₂ , v₂ ] ⇔ 1•[ t₄ , v₄ ]) → 
+    (1•[ 1PLUS t₁ t₂ , inj₂ v₂ ] ⇔ 1•[ 1PLUS t₃ t₄ , inj₂ v₄ ])
+  _⊗_     : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
+    (1•[ t₁ , v₁ ] ⇔ 1•[ t₃ , v₃ ]) → (1•[ t₂ , v₂ ] ⇔ 1•[ t₄ , v₄ ]) → 
+    (1•[ 1TIMES t₁ t₂ , (v₁ , v₂) ] ⇔ 1•[ 1TIMES t₃ t₄ , (v₃ , v₄) ])
 
-Simplify various compositions
+  -- Groupoid combinators
 
-We need to show that the groupoid path structure is faithfully
-represented. The combinator $\idc$ introduces all the $\refl{\tau} : \tau
-\equiv \tau$ paths in $U$. The adjoint introduces an inverse path
-$!p$ for each path $p$ introduced by $c$. The composition operator $\fatsemi$
-introduces a path $p$ \AgdaSymbol{⊙} $q$ for every pair of paths whose endpoints
-match. In addition, we get paths like $\swapp$ between $\tau_1+\tau_2$ and
-$\tau_2+\tau_1$. The existence of such paths in the conventional HoTT needs
-to proved from first principles for some types and \emph{postulated} for the
-universe type by the univalence axiom. The $\otimes$-composition gives a path
-$(p,q) : (\tau_1*\tau_2) \equiv (\tau_3*\tau_4)$ whenever we have paths $p :
-\tau_1 \equiv \tau_3$ and $q : \tau_2 \equiv \tau_4$. A similar situation for
-the $\oplus$-composition. The structure of these paths must be discovered and
-these paths must be \emph{proved} to exist using path induction in the
-conventional HoTT development. So far, this appears too good to be true, and
-it is. The problem is that paths in HoTT are subject to rules discussed at
-the end of Sec.~\ref{hott}. For example, it must be the case that if $p :
-\tau_1 \equiv_U \tau_2$ that $(p \circ \refl{\tau_2})
-\equiv_{\tau_1\equiv_U\tau_2} p$.  This path lives in a higher universe:
-nothing in our $\Pi$-combinators would justify adding such a path as all our
-combinators map types to types. No combinator works one level up at the space
-of combinators and there is no such space in the first place. Clearly we are
-stuck unless we manage to express a notion of higher-order functions in
-$\Pi$. This would allow us to internalize the type $\tau_1\iso\tau_2$ as a
-$\Pi$-type which is then manipulated by the same combinators one level higher
-and so on.
+  lidl : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
+    1•[ PATH t₁ t₂ , path (id⟷ ◎ c) ] ⇔ 1•[ PATH t₁ t₂ , path c ]
+  lidr : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
+    1•[ PATH t₁ t₂ , path c ] ⇔ 1•[ PATH t₁ t₂ , path (id⟷ ◎ c) ] 
+  ridl : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
+    1•[ PATH t₁ t₂ , path (c ◎ id⟷) ] ⇔ 1•[ PATH t₁ t₂ , path c ]
+  ridr : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
+    1•[ PATH t₁ t₂ , path c ] ⇔ 1•[ PATH t₁ t₂ , path (c ◎ id⟷) ] 
+  assocl : ∀ {t₁ t₂ t₃ t₄}  → 
+    {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+    1•[ PATH t₁ t₄ , path (c₁ ◎ (c₂ ◎ c₃)) ] ⇔ 
+    1•[ PATH t₁ t₄ , path ((c₁ ◎ c₂) ◎ c₃) ]
+  assocr : ∀ {t₁ t₂ t₃ t₄}  → 
+    {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+    1•[ PATH t₁ t₄ , path ((c₁ ◎ c₂) ◎ c₃) ] ⇔ 
+    1•[ PATH t₁ t₄ , path (c₁ ◎ (c₂ ◎ c₃)) ] 
+  unite₊l : ∀ {t v} → 
+    1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
+        path (unite₊ ◎ uniti₊) ] ⇔ 
+    1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
+        path id⟷ ] 
+  unite₊r : ∀ {t v} → 
+    1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
+        path id⟷ ] ⇔ 
+    1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
+        path (unite₊ ◎ uniti₊) ] 
+  resp◎ : ∀ {t₁ t₂ t₃} →
+    {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
+    (1•[ PATH t₁ t₂ , path c₁ ] ⇔ 1•[ PATH t₁ t₂ , path c₃ ]) → 
+    (1•[ PATH t₂ t₃ , path c₂ ] ⇔ 1•[ PATH t₂ t₃ , path c₄ ]) → 
+    1•[ PATH t₁ t₃ , path (c₁ ◎ c₂) ] ⇔ 1•[ PATH t₁ t₃ , path (c₃ ◎ c₄) ]
+\end{code}
+\end{multicols}
+\caption{Inductive definition of 2paths\label{pointedcomb2}}
+\end{figure*}
 
-Structure of Paths:
-\begin{itemize}
-\item What do paths in $A \times B$ look like?  We can
-prove that $(a_1,b_1) \equiv (a_2,b_2)$ in $A \times B$ iff $a_1 \equiv
-a_2$ in $A$ and $b_1 \equiv b_2$ in $B$.
-\item What do paths in $A_1 \uplus A_2$ look like? 
-We can prove that $\mathit{inj}_i~x \equiv \mathit{inj}_j~y$ 
- in $A_1 \uplus A_2$ iff $i=j$ and $x \equiv y$ in $A_i$.
-\item What do paths in $A \rightarrow B$ look like?
-We cannot prove anything. Postulate function
-extensionality axiom.
-\item What do paths in $\mathrm{Set}_{\ell}$ look like?
-We cannot prove anything. Postulate univalence axiom.
-\end{itemize}
+\AgdaHide{
+\begin{code}
+1! : {t₁ t₂ : 1U•} → (t₁ ⇔ t₂) → (t₂ ⇔ t₁)
+1! unite₊ = uniti₊
+1! uniti₊ = unite₊
+1! swap1₊ = swap2₊
+1! swap2₊ = swap1₊
+1! assocl1₊ = assocr1₊
+1! assocl2₊ = assocr2₊
+1! assocl3₊ = assocr3₊
+1! assocr1₊ = assocl1₊
+1! assocr2₊ = assocl2₊
+1! assocr3₊ = assocl3₊
+1! unite⋆ = uniti⋆
+1! uniti⋆ = unite⋆
+1! swap⋆ = swap⋆
+1! assocl⋆ = assocr⋆
+1! assocr⋆ = assocl⋆
+1! distz = factorz
+1! factorz = distz
+1! dist1 = factor1 
+1! dist2 = factor2 
+1! factor1 = dist1 
+1! factor2 = dist2 
+1! id⇔ = id⇔
+1! (c₁ ◎ c₂) = 1! c₂ ◎ 1! c₁ 
+1! (c₁ ⊕1 c₂) = 1! c₁ ⊕1 1! c₂ 
+1! (c₁ ⊕2 c₂) = 1! c₁ ⊕2 1! c₂ 
+1! (c₁ ⊗ c₂) = 1! c₁ ⊗ 1! c₂ 
+1! (resp◎ c₁ c₂) = resp◎ (1! c₁) (1! c₂)
+1! ridl = ridr
+1! ridr = ridl
+1! lidl = lidr
+1! lidr = lidl
+1! assocl = assocr
+1! assocr = assocl
+1! unite₊l = unite₊r
+1! unite₊r = unite₊l
 
-Let's start with a few simple types built from the empty type, the unit type,
-sums, and products, and let's study the paths postulated by HoTT.
+linv : {t₁ t₂ : U•} → (c : t₁ ⟷ t₂) → 
+       1•[ PATH t₁ t₁ , path (c ◎ ! c) ] ⇔ 1•[ PATH t₁ t₁ , path id⟷ ]
+linv unite₊ = unite₊l
+linv uniti₊ = {!!}
+linv swap1₊ = {!!}
+linv swap2₊ = {!!}
+linv assocl1₊ = {!!}
+linv assocl2₊ = {!!}
+linv assocl3₊ = {!!}
+linv assocr1₊ = {!!}
+linv assocr2₊ = {!!}
+linv assocr3₊ = {!!}
+linv unite⋆ = {!!}
+linv uniti⋆ = {!!}
+linv swap⋆ = {!!}
+linv assocl⋆ = {!!}
+linv assocr⋆ = {!!}
+linv distz = {!!}
+linv factorz = {!!}
+linv dist1 = {!!}
+linv dist2 = {!!}
+linv factor1 = {!!}
+linv factor2 = {!!}
+linv id⟷ = {!!}
+linv (c ◎ c₁) = {!!}
+linv (c ⊕1 c₁) = {!!}
+linv (c ⊕2 c₁) = {!!}
+linv (c ⊗ c₁) = {!!} 
 
-For every value in a type (point in a space) we have a trivial path from the
-value to itself:
+rinv : {t₁ t₂ : U•} → (c : t₁ ⟷ t₂) → 
+       1•[ PATH t₂ t₂ , path (! c ◎ c) ] ⇔ 1•[ PATH t₂ t₂ , path id⟷ ]
+rinv unite₊ = {!!}
+rinv uniti₊ = unite₊l
+rinv swap1₊ = {!!}
+rinv swap2₊ = {!!}
+rinv assocl1₊ = {!!}
+rinv assocl2₊ = {!!}
+rinv assocl3₊ = {!!}
+rinv assocr1₊ = {!!}
+rinv assocr2₊ = {!!}
+rinv assocr3₊ = {!!}
+rinv unite⋆ = {!!}
+rinv uniti⋆ = {!!}
+rinv swap⋆ = {!!}
+rinv assocl⋆ = {!!}
+rinv assocr⋆ = {!!}
+rinv distz = {!!}
+rinv factorz = {!!}
+rinv dist1 = {!!}
+rinv dist2 = {!!}
+rinv factor1 = {!!}
+rinv factor2 = {!!}
+rinv id⟷ = {!!}
+rinv (c ◎ c₁) = {!!}
+rinv (c ⊕1 c₁) = {!!}
+rinv (c ⊕2 c₁) = {!!}
+rinv (c ⊗ c₁) = {!!} 
+\end{code}
+}
 
+To verify that the universe \AgdaFunction{U•} with \AgdaSymbol{⟷} as 1paths
+and \AgdaSymbol{⇔} as 2paths is indeed a groupoid, we have developed a small
+library inspired by Thorsten Altenkirch's definition of groupoids (see
+\url{http://github.com/txa/OmegaCats}) and copumpkin's definition of
+category (see \url{http://github.com/copumpkin/categories}). The proof is
+shown below:
 
+\begin{code}
+G : 1Groupoid
+G = record
+        { set = U•
+        ; _↝_ = _⟷_
+        ; _≈_ = λ {t₁} {t₂} c₀ c₁ → 
+                1•[ PATH t₁ t₂ , path c₀ ] ⇔ 1•[ PATH t₁ t₂ , path c₁ ]
+        ; id = id⟷
+        ; _∘_ = λ c₀ c₁ → c₁ ◎ c₀
+        ; _⁻¹ = ! 
+        ; lneutr = λ _ → ridl 
+        ; rneutr = λ _ → lidl 
+        ; assoc = λ _ _ _ → assocl
+        ; equiv = record { refl = id⇔
+                                ; sym = λ c → 1! c 
+                                ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
+        ; linv = λ {t₁} {t₂} c → linv c
+        ; rinv = λ {t₁} {t₂} c → rinv c
+        ; ∘-resp-≈ = λ f⟷h g⟷i → resp◎ g⟷i f⟷h 
+        }
+\end{code}
 
-Level 0: 
-Types at this level are just plain sets with no interesting path structure. 
-The path structure is defined at levels 1 and beyond. 
+The proof refers to two simple (and omitted) functions \AgdaFunction{linv}
+and \AgdaFunction{rinv} with the following types:
 
+{\small{
+\AgdaFunction{linv} \AgdaSymbol{:} \AgdaSymbol{\{}\AgdaBound{t₁}
+\AgdaBound{t₂} \AgdaSymbol{:} \AgdaRecord{U•}\AgdaSymbol{\}} \AgdaSymbol{→}
+\AgdaSymbol{(}\AgdaBound{c} \AgdaSymbol{:} \AgdaBound{t₁} \AgdaDatatype{⟷}
+\AgdaBound{t₂}\AgdaSymbol{)} \AgdaSymbol{→}
 
+\quad\AgdaInductiveConstructor{1•[} \AgdaInductiveConstructor{PATH}
+  \AgdaBound{t₁} \AgdaBound{t₁} \AgdaInductiveConstructor{,}
+  \AgdaInductiveConstructor{path} \AgdaSymbol{(}\AgdaBound{c}
+  \AgdaInductiveConstructor{◎} \AgdaFunction{!}  \AgdaBound{c}\AgdaSymbol{)}
+  \AgdaInductiveConstructor{]} \AgdaDatatype{⇔}
+\AgdaInductiveConstructor{1•[} \AgdaInductiveConstructor{PATH} \AgdaBound{t₁}
+  \AgdaBound{t₁} \AgdaInductiveConstructor{,} \AgdaInductiveConstructor{path}
+  \AgdaInductiveConstructor{id⟷} \AgdaInductiveConstructor{]}
+}}
 
+\smallskip
 
-for examples of 2 paths look at proofs of 
-path assoc; triangle and pentagon rules
+{\small{
+\AgdaFunction{rinv} \AgdaSymbol{:} \AgdaSymbol{\{}\AgdaBound{t₁}
+\AgdaBound{t₂} \AgdaSymbol{:} \AgdaRecord{U•}\AgdaSymbol{\}} \AgdaSymbol{→}
+\AgdaSymbol{(}\AgdaBound{c} \AgdaSymbol{:} \AgdaBound{t₁} \AgdaDatatype{⟷}
+\AgdaBound{t₂}\AgdaSymbol{)} \AgdaSymbol{→}
 
-the idea I guess is that instead of having the usual evaluator where
-values flow, we want an evaluator that rewrites the circuit to primitive
-isos; for that we need some normal form for permutations and a proof that
-we can rewrite any circuit to this normal form
-
-plan after that: add trace; this make obs equiv much more interesting and
-allows a limited form of h.o. functions via the int construction and then
-do the ring completion to get more complete notion of h.o. functions
-
-Level 1: 
-Types are sets of paths. The paths are defined at the previous level
-(level 0). At level 1, there is no interesting 2path structure. From
-the perspective of level 0, we have points with non-trivial paths between
-them, i.e., we have a groupoid. The paths cross type boundaries, i.e., we
-have heterogeneous equality
-
-%%%%%%%%%%%%%%%%%%%%%%
-\subsection{2Paths}
+\quad\AgdaInductiveConstructor{1•[} \AgdaInductiveConstructor{PATH} \AgdaBound{t₂} \AgdaBound{t₂} \AgdaInductiveConstructor{,} \AgdaInductiveConstructor{path} \AgdaSymbol{(}\AgdaFunction{!} \AgdaBound{c} \AgdaInductiveConstructor{◎} \AgdaBound{c}\AgdaSymbol{)} \AgdaInductiveConstructor{]} \AgdaDatatype{⇔} \AgdaInductiveConstructor{1•[} \AgdaInductiveConstructor{PATH} \AgdaBound{t₂} \AgdaBound{t₂} \AgdaInductiveConstructor{,} \AgdaInductiveConstructor{path} \AgdaInductiveConstructor{id⟷} \AgdaInductiveConstructor{]}
+}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Int Construction}
 \label{intc}
-
-2paths are functions on paths; the int construction reifies these
-functions/2paths as 1paths
 
 In the context of monoidal categories, it is known that a notion of
 higher-order functions emerges from having an additional degree of
@@ -1289,19 +1653,18 @@ in algebraic topology and homotopy theory that was identified thirty years
 ago as the ``phony'' multiplication~\cite{thomason} in a special class
 categories related to ours. This problem was recently
 solved~\cite{ringcompletion} using a technique whose fundamental ingredients
-are to add more dimensions and then take homotopy colimits. We exploit this
-solution in the remainder of the paper.
-
-\begin{verbatim}
-Add eta/epsilon and trace to Int 
-category
-
-Explain the definitions in this 
-section much better...
-\end{verbatim}
+are to add more dimensions and then take homotopy colimits. It remains to
+investigate whether this idea can be integrated with our development to get
+higher-order functions while retaining the multiplicative structure.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
+
+2paths are functions on paths; the int construction reifies these
+functions/2paths as 1paths
+
+Add eta/epsilon and trace to Int 
+category
 
 Talk about trace and recursive types
 
@@ -1309,6 +1672,8 @@ talk about h.o. functions, negative types, int construction, ring completion
 paper
 
 canonicity for 2d type theory; licata harper
+
+triangle; pentagon rules; eckmann-hilton
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
