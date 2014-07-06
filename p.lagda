@@ -968,7 +968,7 @@ extensional methods. Instead, we would like to think of 2paths are resulting
 from homotopies (i.e., ``smooth deformations'') of paths into each other.
 
 %%%%%%%%%%%%%%%%%
-\subsection{Graphical Languages and Isotopies} 
+\subsection{Graphical Language}
 
 The question of ``smooth deformations'' of paths can be addressed in many
 ways. A particularly appealing way is our setting is to use the graphical
@@ -1116,8 +1116,9 @@ combinator ``shuffles'' or ``transforms'' the wires:
 \end{itemize}
 
 Let us draw the five paths \AgdaFunction{p₁} to \AgdaFunction{p₅} introduced
-in the previous section. The three paths \AgdaFunction{p₁},
-\AgdaFunction{p₂}, and \AgdaFunction{p₄}, are all represented as follows:
+in the previous section. Since \AgdaInductiveConstructor{id⟷} is invisible, 
+the three paths \AgdaFunction{p₁}, \AgdaFunction{p₂}, and 
+\AgdaFunction{p₄}, are all represented as follows:
 \[
 \vcenter{
 \wirechart{}{\wire{r}{\AgdaFunction{TRUE}}&
@@ -1157,8 +1158,41 @@ since one of the wires is invisible. The occurrences of
 \AgdaInductiveConstructor{id⟷} that acts on the invisible wire does
 \emph{not}, however, disappear.
 
+The diagrammatic notation is justified by the following \emph{coherence
+theorems}.
+
+\begin{theorem}[Joyal and Street~\citeyearpar{geometrytensor}]
+A well-formed equation between morphisms in the language of symmetric
+monoidal categories follows from the axioms of symmetric monoidal categories
+if and only if it holds, up to isomorphisms of diagrams, in the graphical
+language. 
+\end{theorem}
+
+Two diagrams are considered isomorphic, if their wires and boxes are in
+bijective correspondence that preserves the connections between boxes and
+wires. 
+
+%%%%%%%%%%%%%%%%%
+\subsection{Isotopies}
 
 
+\begin{theorem}
+A well-formed equation between morphism terms in the language of monoidal
+categories follows from the axioms of monoidal categories if and only if it
+holds, up to planar isotopy, in the graphical language.
+\end{theorem}
+
+Translating to our language and notation, the theorem says the following. We
+are given two wiring diagrams representing two paths and we are asking
+whether the paths should be treated as equivalent. The answer is yes if it
+possible to transform one diagram to the other by moving wires and boxes
+around without crossing, cutting, or gluing any wires and without detaching
+them from the plane.  As an example, consider the paths \AgdaFunction{p₁} to
+\AgdaBound{p₅} introduced in the previous section. The three paths
+\AgdaFunction{p₁}, \AgdaFunction{p₂}, and \AgdaFunction{p₄} have identical
+diagrams (shown on the left below) and hence should be treated as
+equivalent. Path \AgdaFunction{p₃} (shown on the right) is also equivalent to
+them as one of the level shifts can be flattened:
 
 
 
@@ -1200,29 +1234,6 @@ right diagram = f ; ((uniti* ; swap* ; (id_A x h) ; swap* ; unite*) x id_B) ; g
 
 \end{verbatim}
 
-The graphical notation is justified by \emph{coherence theorems}. To get an
-intuition, we quote the theorem for the special case of a plain monoidal
-category (assuming either sum types or product types but not both and
-dropping the commutativity combinators). The theorem is originally due to
-Joyal and Street. We quote the statement from Selinger's paper.
-
-\begin{theorem}
-A well-formed equation between morphism terms in the language of monoidal
-categories follows from the axioms of monoidal categories if and only if it
-holds, up to planar isotopy, in the graphical language.
-\end{theorem}
-
-Translating to our language and notation, the theorem says the following. We
-are given two wiring diagrams representing two paths and we are asking
-whether the paths should be treated as equivalent. The answer is yes if it
-possible to transform one diagram to the other by moving wires and boxes
-around without crossing, cutting, or gluing any wires and without detaching
-them from the plane.  As an example, consider the paths \AgdaFunction{p₁} to
-\AgdaBound{p₅} introduced in the previous section. The three paths
-\AgdaFunction{p₁}, \AgdaFunction{p₂}, and \AgdaFunction{p₄} have identical
-diagrams (shown on the left below) and hence should be treated as
-equivalent. Path \AgdaFunction{p₃} (shown on the right) is also equivalent to
-them as one of the level shifts can be flattened:
 
 \begin{tikzpicture}
 \node[left] (T) at (-0.2,0) {\AgdaFunction{TRUE}};
@@ -1284,10 +1295,6 @@ The original presentation of $\Pi$ assumes the simple planar situation and we
 will continue our development with that assumption, leaving the possible
 investigation of other notions of homotopies to future work. The relevant
 coherence theorem in our situation is that two diagrams are equivalent if and
-only if they are isomorphic, i.e., if and only the wires and boxes are in
-bijective correspondence that preserves the connections between boxes and
-wires. Formally this means that we have the most conservative equivalence of
-paths that uses the groupoid axioms and nothing but the groupoid axioms.
 
 \begin{verbatim}
 check axioms:
@@ -1460,37 +1467,8 @@ data _⇔_ : 1U• → 1U• → Set where
 
   -- Groupoid combinators
 
-  lidl : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
-    1•[ PATH t₁ t₂ , path (id⟷ ◎ c) ] ⇔ 1•[ PATH t₁ t₂ , path c ]
-  lidr : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
-    1•[ PATH t₁ t₂ , path c ] ⇔ 1•[ PATH t₁ t₂ , path (id⟷ ◎ c) ] 
-  ridl : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
-    1•[ PATH t₁ t₂ , path (c ◎ id⟷) ] ⇔ 1•[ PATH t₁ t₂ , path c ]
-  ridr : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
-    1•[ PATH t₁ t₂ , path c ] ⇔ 1•[ PATH t₁ t₂ , path (c ◎ id⟷) ] 
-  assocl : ∀ {t₁ t₂ t₃ t₄}  → 
-    {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
-    1•[ PATH t₁ t₄ , path (c₁ ◎ (c₂ ◎ c₃)) ] ⇔ 
-    1•[ PATH t₁ t₄ , path ((c₁ ◎ c₂) ◎ c₃) ]
-  assocr : ∀ {t₁ t₂ t₃ t₄}  → 
-    {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
-    1•[ PATH t₁ t₄ , path ((c₁ ◎ c₂) ◎ c₃) ] ⇔ 
-    1•[ PATH t₁ t₄ , path (c₁ ◎ (c₂ ◎ c₃)) ] 
-  unite₊l : ∀ {t v} → 
-    1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
-        path (unite₊ ◎ uniti₊) ] ⇔ 
-    1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
-        path id⟷ ] 
-  unite₊r : ∀ {t v} → 
-    1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
-        path id⟷ ] ⇔ 
-    1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
-        path (unite₊ ◎ uniti₊) ] 
-  resp◎ : ∀ {t₁ t₂ t₃} →
-    {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
-    (1•[ PATH t₁ t₂ , path c₁ ] ⇔ 1•[ PATH t₁ t₂ , path c₃ ]) → 
-    (1•[ PATH t₂ t₃ , path c₂ ] ⇔ 1•[ PATH t₂ t₃ , path c₄ ]) → 
-    1•[ PATH t₁ t₃ , path (c₁ ◎ c₂) ] ⇔ 1•[ PATH t₁ t₃ , path (c₃ ◎ c₄) ]
+  xxx : ∀ {t₁ t₂} → {c₁ c₂ : t₁ ⟷ t₂} → 
+    1•[ PATH t₁ t₂ , path c₁ ] ⇔ 1•[ PATH t₁ t₂ , path c₂ ]
 \end{code}
 \end{multicols}
 \caption{Inductive definition of 2paths\label{pointedcomb2}}
@@ -1499,6 +1477,7 @@ data _⇔_ : 1U• → 1U• → Set where
 \AgdaHide{
 \begin{code}
 1! : {t₁ t₂ : 1U•} → (t₁ ⇔ t₂) → (t₂ ⇔ t₁)
+1! xxx = xxx
 1! unite₊ = uniti₊
 1! uniti₊ = unite₊
 1! swap1₊ = swap2₊
@@ -1525,6 +1504,7 @@ data _⇔_ : 1U• → 1U• → Set where
 1! (c₁ ⊕1 c₂) = 1! c₁ ⊕1 1! c₂ 
 1! (c₁ ⊕2 c₂) = 1! c₁ ⊕2 1! c₂ 
 1! (c₁ ⊗ c₂) = 1! c₁ ⊗ 1! c₂ 
+{--
 1! (resp◎ c₁ c₂) = resp◎ (1! c₁) (1! c₂)
 1! ridl = ridr
 1! ridr = ridl
@@ -1534,10 +1514,12 @@ data _⇔_ : 1U• → 1U• → Set where
 1! assocr = assocl
 1! unite₊l = unite₊r
 1! unite₊r = unite₊l
+--}
 
+{--
 linv : {t₁ t₂ : U•} → (c : t₁ ⟷ t₂) → 
        1•[ PATH t₁ t₁ , path (c ◎ ! c) ] ⇔ 1•[ PATH t₁ t₁ , path id⟷ ]
-linv unite₊ = unite₊l
+linv unite₊ = {!!} -- unite₊l
 linv uniti₊ = {!!}
 linv swap1₊ = {!!}
 linv swap2₊ = {!!}
@@ -1567,7 +1549,7 @@ linv (c ⊗ c₁) = {!!}
 rinv : {t₁ t₂ : U•} → (c : t₁ ⟷ t₂) → 
        1•[ PATH t₂ t₂ , path (! c ◎ c) ] ⇔ 1•[ PATH t₂ t₂ , path id⟷ ]
 rinv unite₊ = {!!}
-rinv uniti₊ = unite₊l
+rinv uniti₊ = {!!} -- unite₊l
 rinv swap1₊ = {!!}
 rinv swap2₊ = {!!}
 rinv assocl1₊ = {!!}
@@ -1592,6 +1574,7 @@ rinv (c ◎ c₁) = {!!}
 rinv (c ⊕1 c₁) = {!!}
 rinv (c ⊕2 c₁) = {!!}
 rinv (c ⊗ c₁) = {!!} 
+--}
 \end{code}
 }
 
@@ -1612,15 +1595,15 @@ G = record
         ; id = id⟷
         ; _∘_ = λ c₀ c₁ → c₁ ◎ c₀
         ; _⁻¹ = ! 
-        ; lneutr = λ _ → ridl 
-        ; rneutr = λ _ → lidl 
-        ; assoc = λ _ _ _ → assocl
+        ; lneutr = λ _ → xxx -- ridl 
+        ; rneutr = λ _ → xxx -- lidl 
+        ; assoc = λ _ _ _ → xxx -- assocl
         ; equiv = record { refl = id⇔
                                 ; sym = λ c → 1! c 
                                 ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
-        ; linv = λ {t₁} {t₂} c → linv c
-        ; rinv = λ {t₁} {t₂} c → rinv c
-        ; ∘-resp-≈ = λ f⟷h g⟷i → resp◎ g⟷i f⟷h 
+        ; linv = λ {t₁} {t₂} c → xxx -- linv c
+        ; rinv = λ {t₁} {t₂} c → xxx -- rinv c
+        ; ∘-resp-≈ = λ f⟷h g⟷i → xxx -- resp◎ g⟷i f⟷h 
         }
 \end{code}
 
@@ -1847,3 +1830,38 @@ triangle; pentagon rules; eckmann-hilton
 \bibliography{cites}
 
 \end{document}
+
+{--
+part of fig.5
+  lidl : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
+    1•[ PATH t₁ t₂ , path (id⟷ ◎ c) ] ⇔ 1•[ PATH t₁ t₂ , path c ]
+  lidr : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
+    1•[ PATH t₁ t₂ , path c ] ⇔ 1•[ PATH t₁ t₂ , path (id⟷ ◎ c) ] 
+  ridl : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
+    1•[ PATH t₁ t₂ , path (c ◎ id⟷) ] ⇔ 1•[ PATH t₁ t₂ , path c ]
+  ridr : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
+    1•[ PATH t₁ t₂ , path c ] ⇔ 1•[ PATH t₁ t₂ , path (c ◎ id⟷) ] 
+  assocl : ∀ {t₁ t₂ t₃ t₄}  → 
+    {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+    1•[ PATH t₁ t₄ , path (c₁ ◎ (c₂ ◎ c₃)) ] ⇔ 
+    1•[ PATH t₁ t₄ , path ((c₁ ◎ c₂) ◎ c₃) ]
+  assocr : ∀ {t₁ t₂ t₃ t₄}  → 
+    {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+    1•[ PATH t₁ t₄ , path ((c₁ ◎ c₂) ◎ c₃) ] ⇔ 
+    1•[ PATH t₁ t₄ , path (c₁ ◎ (c₂ ◎ c₃)) ] 
+  unite₊l : ∀ {t v} → 
+    1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
+        path (unite₊ ◎ uniti₊) ] ⇔ 
+    1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
+        path id⟷ ] 
+  unite₊r : ∀ {t v} → 
+    1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
+        path id⟷ ] ⇔ 
+    1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
+        path (unite₊ ◎ uniti₊) ] 
+  resp◎ : ∀ {t₁ t₂ t₃} →
+    {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
+    (1•[ PATH t₁ t₂ , path c₁ ] ⇔ 1•[ PATH t₁ t₂ , path c₃ ]) → 
+    (1•[ PATH t₂ t₃ , path c₂ ] ⇔ 1•[ PATH t₂ t₃ , path c₄ ]) → 
+    1•[ PATH t₁ t₃ , path (c₁ ◎ c₂) ] ⇔ 1•[ PATH t₁ t₃ , path (c₃ ◎ c₄) ]
+--}
