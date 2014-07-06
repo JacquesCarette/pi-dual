@@ -31,6 +31,8 @@ infixr 30 _⟷_
 -- Types at this level are just plain sets with no interesting path structure. 
 -- The path structure is defined at levels 1 and beyond. 
 
+-- do int construction and see if we can reify level 1 here using it
+
 data U : Set where
   ZERO  : U
   ONE   : U
@@ -376,16 +378,84 @@ data _⇔_ : 1U• → 1U• → Set where
           {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
           1•[ PATH t₁ t₄ , path ((c₁ ◎ c₂) ◎ c₃) ] ⇔ 
           1•[ PATH t₁ t₄ , path (c₁ ◎ (c₂ ◎ c₃)) ] 
-  unit₊l : ∀ {t v} → 
+  unite₊l : ∀ {t v} → 
           1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
           path (unite₊ ◎ uniti₊) ] ⇔ 
           1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
           path id⟷ ] 
-  unit₊r : ∀ {t v} → 
+  unite₊r : ∀ {t v} → 
           1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
           path id⟷ ] ⇔ 
           1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
           path (unite₊ ◎ uniti₊) ] 
+  uniti₊l : ∀ {t v} → 
+          1•[ PATH (•[ t , v ]) (•[ t , v ]) , path (uniti₊ ◎ unite₊) ] ⇔ 
+          1•[ PATH (•[ t , v ]) (•[ t , v ]) , path id⟷ ] 
+  uniti₊r : ∀ {t v} → 
+          1•[ PATH (•[ t , v ]) (•[ t , v ]) , path id⟷ ] ⇔ 
+          1•[ PATH (•[ t , v ]) (•[ t , v ]) , path (uniti₊ ◎ unite₊) ] 
+  swap1₊l : ∀ {t₁ t₂ v₁} → 
+          1•[ PATH •[ PLUS t₁ t₂ , inj₁ v₁ ] •[ PLUS t₁ t₂ , inj₁ v₁ ] ,
+          path (swap1₊ ◎ ! swap1₊) ] ⇔
+          1•[ PATH •[ PLUS t₁ t₂ , inj₁ v₁ ] •[ PLUS t₁ t₂ , inj₁ v₁ ] , 
+          path id⟷ ]
+  swap1₊r : ∀ {t₁ t₂ v₁} → 
+          1•[ PATH •[ PLUS t₁ t₂ , inj₁ v₁ ] •[ PLUS t₁ t₂ , inj₁ v₁ ] , 
+          path id⟷ ] ⇔
+          1•[ PATH •[ PLUS t₁ t₂ , inj₁ v₁ ] •[ PLUS t₁ t₂ , inj₁ v₁ ] ,
+          path (swap1₊ ◎ ! swap1₊) ] 
+  swap2₊l : ∀ {t₁ t₂ v₂} → 
+          1•[ PATH •[ PLUS t₁ t₂ , inj₂ v₂ ] •[ PLUS t₁ t₂ , inj₂ v₂ ] , 
+          path (swap2₊ ◎ ! swap2₊) ] ⇔
+          1•[ PATH •[ PLUS t₁ t₂ , inj₂ v₂ ] •[ PLUS t₁ t₂ , inj₂ v₂ ] , 
+          path id⟷ ]
+  swap2₊r : ∀ {t₁ t₂ v₂} → 
+          1•[ PATH •[ PLUS t₁ t₂ , inj₂ v₂ ] •[ PLUS t₁ t₂ , inj₂ v₂ ] , 
+          path id⟷ ] ⇔
+          1•[ PATH •[ PLUS t₁ t₂ , inj₂ v₂ ] •[ PLUS t₁ t₂ , inj₂ v₂ ] , 
+          path (swap2₊ ◎ ! swap2₊) ] 
+  assocl1₊l : ∀ {t₁ t₂ t₃ v₁} → 
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] , 
+          path (assocl1₊ ◎ ! assocl1₊) ] ⇔
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] , 
+          path id⟷ ]
+  assocl1₊r : ∀ {t₁ t₂ t₃ v₁} → 
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] , 
+          path id⟷ ] ⇔
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] , 
+          path (assocl1₊ ◎ ! assocl1₊) ] 
+  assocl2₊l : ∀ {t₁ t₂ t₃ v₂} → 
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] , 
+          path (assocl2₊ ◎ ! assocl2₊) ] ⇔
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] , 
+          path id⟷ ]
+  assocl2₊r : ∀ {t₁ t₂ t₃ v₂} → 
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] , 
+          path id⟷ ] ⇔
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] , 
+          path (assocl2₊ ◎ ! assocl2₊) ] 
+  assocl3₊l : ∀ {t₁ t₂ t₃ v₃} → 
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] , 
+          path (assocl3₊ ◎ ! assocl3₊) ] ⇔
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] , 
+          path id⟷ ]
+  assocl3₊r : ∀ {t₁ t₂ t₃ v₃} → 
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] , 
+          path id⟷ ] ⇔
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] , 
+          path (assocl3₊ ◎ ! assocl3₊) ] 
   resp◎   : ∀ {t₁ t₂ t₃} →
            {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
            (1•[ PATH t₁ t₂ , path c₁ ] ⇔ 1•[ PATH t₁ t₂ , path c₃ ]) → 
@@ -426,8 +496,20 @@ data _⇔_ : 1U• → 1U• → Set where
 1! lidr = lidl
 1! assocl = assocr
 1! assocr = assocl
-1! unit₊l = unit₊r
-1! unit₊r = unit₊l
+1! unite₊l = unite₊r
+1! unite₊r = unite₊l
+1! uniti₊l = uniti₊r
+1! uniti₊r = uniti₊l
+1! swap1₊l = swap1₊r
+1! swap1₊r = swap1₊l
+1! swap2₊l = swap2₊r
+1! swap2₊r = swap2₊l
+1! assocl1₊l = assocl1₊r
+1! assocl1₊r = assocl1₊l
+1! assocl2₊l = assocl2₊r
+1! assocl2₊r = assocl2₊l
+1! assocl3₊l = assocl3₊r
+1! assocl3₊r = assocl3₊l
 
 1!≡ : {t₁ t₂ : 1U•} → (c : t₁ ⇔ t₂) → 1! (1! c) ≡ c
 1!≡ unite₊ = refl
@@ -463,8 +545,20 @@ data _⇔_ : 1U• → 1U• → Set where
 1!≡ (resp◎ c₁ c₂) = cong₂ (λ c₁ c₂ → resp◎ c₁ c₂) (1!≡ c₁) (1!≡ c₂)
 1!≡ assocl = refl
 1!≡ assocr = refl
-1!≡ unit₊l = refl
-1!≡ unit₊r = refl
+1!≡ unite₊l = refl
+1!≡ unite₊r = refl
+1!≡ uniti₊l = refl
+1!≡ uniti₊r = refl
+1!≡ swap1₊l = refl 
+1!≡ swap1₊r = refl 
+1!≡ swap2₊l = refl 
+1!≡ swap2₊r = refl 
+1!≡ assocl1₊l = refl
+1!≡ assocl1₊r = refl
+1!≡ assocl2₊l = refl
+1!≡ assocl2₊r = refl
+1!≡ assocl3₊l = refl
+1!≡ assocl3₊r = refl
 
 -- sane syntax
 
@@ -500,13 +594,13 @@ _∎ c = id⟷
 
 linv : {t₁ t₂ : U•} → (c : t₁ ⟷ t₂) → 
        1•[ PATH t₁ t₁ , path (c ◎ ! c) ] ⇔ 1•[ PATH t₁ t₁ , path id⟷ ]
-linv unite₊ = unit₊l
-linv uniti₊ = {!!}
-linv swap1₊ = {!!}
-linv swap2₊ = {!!}
-linv assocl1₊ = {!!}
-linv assocl2₊ = {!!}
-linv assocl3₊ = {!!}
+linv unite₊ = unite₊l
+linv uniti₊ = uniti₊l
+linv swap1₊ = swap1₊l
+linv swap2₊ = swap2₊l
+linv assocl1₊ = assocl1₊l
+linv assocl2₊ = assocl2₊l
+linv assocl3₊ = assocl3₊l
 linv assocr1₊ = {!!}
 linv assocr2₊ = {!!}
 linv assocr3₊ = {!!}
@@ -527,6 +621,35 @@ linv (c ⊕1 c₁) = {!!}
 linv (c ⊕2 c₁) = {!!}
 linv (c ⊗ c₁) = {!!} 
 
+rinv : {t₁ t₂ : U•} → (c : t₁ ⟷ t₂) → 
+       1•[ PATH t₂ t₂ , path (! c ◎ c) ] ⇔ 1•[ PATH t₂ t₂ , path id⟷ ]
+rinv unite₊ = uniti₊l 
+rinv uniti₊ = unite₊l
+rinv swap1₊ = swap2₊l
+rinv swap2₊ = swap1₊l
+rinv assocl1₊ = {!!}
+rinv assocl2₊ = {!!}
+rinv assocl3₊ = {!!}
+rinv assocr1₊ = assocl1₊l
+rinv assocr2₊ = assocl2₊l
+rinv assocr3₊ = assocl3₊l
+rinv unite⋆ = {!!}
+rinv uniti⋆ = {!!}
+rinv swap⋆ = {!!}
+rinv assocl⋆ = {!!}
+rinv assocr⋆ = {!!}
+rinv distz = {!!}
+rinv factorz = {!!}
+rinv dist1 = {!!}
+rinv dist2 = {!!}
+rinv factor1 = {!!}
+rinv factor2 = {!!}
+rinv id⟷ = {!!}
+rinv (c ◎ c₁) = {!!}
+rinv (c ⊕1 c₁) = {!!}
+rinv (c ⊕2 c₁) = {!!}
+rinv (c ⊗ c₁) = {!!} 
+
 
 G : 1Groupoid
 G = record
@@ -544,7 +667,7 @@ G = record
                                 ; sym = λ c → 1! c 
                                 ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
         ; linv = λ {t₁} {t₂} c → linv c
-        ; rinv = λ {t₁} {t₂} c → {!!}
+        ; rinv = λ {t₁} {t₂} c → rinv c
         ; ∘-resp-≈ = λ f⟷h g⟷i → resp◎ g⟷i f⟷h 
         }
 
