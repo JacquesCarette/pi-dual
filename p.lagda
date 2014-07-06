@@ -28,6 +28,7 @@
 \newtheorem{theorem}{Theorem}
 
 % XY-Pic definitions for making ``wire charts''
+\newcommand{\sep}{\hspace{2em}} 
 
 \def\wirechart#1#2{\let\labelstyle\objectstyle\xy*[*1.0]\xybox{\small%
 \xymatrix@C=10mm@R=4mm#1{#2}}\endxy}
@@ -971,104 +972,233 @@ from homotopies (i.e., ``smooth deformations'') of paths into each other.
 
 The question of ``smooth deformations'' of paths can be addressed in many
 ways. A particularly appealing way is our setting is to use the graphical
-languages associated with monoidal categories. (See Selinger's
+languages (or wiring diagrams) associated with monoidal categories and the
+associated \emph{coherence theorems} that relate them to various special
+cases of homotopies called isotopies. (See Selinger's
 paper~\citeyearpar{selinger-graphical} for an excellent survey and the papers
 by Joyal and Street~\citeyearpar{planardiagrams,geometrytensor} for the
-original development.) 
+original development.)
 
-The general idea of the graphical notation is that points are represented as
-``wires'' and that combinators (i.e., paths) are modeled as operations
-that ``shuffle'' the wires. 
+The conventional presentation of wiring diagrams is for unpointed spaces. We
+adapt it for pointed spaces. First we show how to represent each possible
+pointed space as a collection of ``wires'' and then we show how each
+combinator ``shuffles'' or ``transforms'' the wires:
 \begin{itemize}
-\item Points in the space \AgdaBound{b₁} \AgdaSymbol{×} \AgdaBound{b₂} are
-  represented using two parallel wires labeled \AgdaBound{b₁} and
-  \AgdaBound{b₂}:
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/thesis/product-two-wires.pdf}
-}
-\end{center}
-\item Points in the space \AgdaBound{b₁} \AgdaSymbol{⊎} \AgdaBound{b₂} are
-may similarly represented using two parallel wires but with a $+$ between
-them:
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/thesis/sum-two-wires.pdf}
-}
-\end{center}
-When dealing with pointed spaces, one and exactly one of the choices becomes
-``activated.''
+\item It is not possible to produce a pointed space
+  \pointed{\AgdaInductiveConstructor{ZERO}}{\AgdaBound{v}} for any
+  \AgdaBound{v}.
+\item The pointed space
+  \pointed{\AgdaInductiveConstructor{ONE}}{\AgdaInductiveConstructor{tt}} is
+  invisible in the graphical notation.
+\item The pointed space \pointed{\AgdaInductiveConstructor{TIMES}
+  \AgdaBound{t₁} \AgdaBound{t₂}}{\AgdaBound{(v₁ , v₂)}} is
+  represented using two parallel wires labeled \AgdaBound{v₁} and
+  \AgdaBound{v₂}:
+\[
+ \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
+        *{}\wire{r}{\AgdaBound{v₁}}&\\
+        *{}\wire{r}{\AgdaBound{v₂}}&
+        }}
+\]
+ Note that if one of the types is \AgdaInductiveConstructor{ONE}, the
+ corresponding wire disappears. If both the wires are
+ \AgdaInductiveConstructor{ONE}, they both disappear.
+\item The pointed space \pointed{\AgdaInductiveConstructor{PLUS}
+  \AgdaBound{t₁} \AgdaBound{t₂}}{\AgdaInductiveConstructor{inj₁}
+  \AgdaBound{v₁}} is represented by a wire labeled with
+  \AgdaInductiveConstructor{inj₁} \AgdaBound{v₁}. The pointed space
+  \pointed{\AgdaInductiveConstructor{PLUS} \AgdaBound{t₁}
+    \AgdaBound{t₂}}{\AgdaInductiveConstructor{inj₂} \AgdaBound{v₂}} is
+  similarly represented by a wire labeled with
+  \AgdaInductiveConstructor{inj₂} \AgdaBound{v₂}. 
+\[
+ \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
+        *{}\wire{r}{\AgdaInductiveConstructor{inj₁}~\AgdaBound{v₁}}&
+        }}
+\qquad
+ \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
+        *{}\wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v₂}}&
+        }}
+\]
 \item Knowing how points are represented, we now show how various combinators
-  (i.e., paths) are represented. The simplest path is
-  \AgdaInductiveConstructor{id⟷} which is simply represented as a 
-  no-op on the wire representing the point it acts on:
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/thesis/b-wire.pdf}
+  act on the wires. The combinator \AgdaInductiveConstructor{id⟷} is
+  invisible. The combinator \AgdaInductiveConstructor{◎} connects the
+  outgoing wires of one diagram to the input wires of the other. The
+  associativity of \AgdaInductiveConstructor{◎} is implicit in the graphical
+  notation. 
+\item The combinators \AgdaInductiveConstructor{unite₊} and
+  \AgdaInductiveConstructor{uniti₊} are represented as follows:
+\[
+\vcenter{
+\wirechart{}{\wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaInductiveConstructor{unite₊}}
+  \wire{r}{\AgdaBound{v}}&}
 }
-\end{center}
-\item Associativity is implicit in the graphical language. Three parallel
-  wires represent both \AgdaBound{b₁} \AgdaSymbol{×} (\AgdaBound{b₂}
-  \AgdaSymbol{×} \AgdaBound{b₃}) and (\AgdaBound{b₁} \AgdaSymbol{×}
-  \AgdaBound{b₂}) \AgdaSymbol{×} \AgdaBound{b₃}.
-\begin{center}
-\scalebox{1.0}{
-\includegraphics{diagrams/thesis/assoc.pdf}
+\qquad
+\vcenter{
+\wirechart{}{\wire{r}{\AgdaBound{v}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaInductiveConstructor{uniti₊}}
+  \wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v}}&}
 }
-\end{center}
-Associativity for sum types is similarly represented. Note again that
-for pointed spaces only one of the wires becomes activated.
-\item Commutativity is represented by crisscrossing wires:
-\begin{multicols}{2}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/thesis/swap_times.pdf}
+\]
+\item All other combinators that just re-label a value are similarly
+  represented as one box with one incoming wire labeled by the input value
+  and one outgoing wires labeled by the resulting value.
+\item The combinators that operate on \AgdaInductiveConstructor{TIMES} types
+  are a bit more involved as shown below. First, although the unit value
+  \AgdaInductiveConstructor{tt} is invisible in the graphical notation, the
+  combinators \AgdaInductiveConstructor{unite⋆} and
+  \AgdaInductiveConstructor{uniti⋆} are still represented as boxes as shown
+  below: 
+\[
+\vcenter{
+\wirechart{}{\wire{r}{\AgdaBound{v}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaInductiveConstructor{unite⋆}}
+  \wire{r}{\AgdaBound{v}}&}
 }
-\end{center}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/thesis/swap_plus.pdf}
+\qquad
+\vcenter{
+\wirechart{}{\wire{r}{\AgdaBound{v}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaInductiveConstructor{uniti⋆}}
+  \wire{r}{\AgdaBound{v}}&}
 }
-\end{center}
-\end{multicols}
-\item The additive and multiplicative units are represented as follows:
-\begin{multicols}{2}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/thesis/uniti.pdf}
-}
-\end{center}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/thesis/unite.pdf}
-}
-\end{center}  
-\end{multicols}
-\begin{multicols}{2}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/thesis/zeroi.pdf}
-}
-\end{center}
-\columnbreak
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/thesis/zeroe.pdf}
-}
-\end{center}
-\end{multicols}
-For pointed spaces, the wire labeled 0 can never be the active one.
-\item Finally, distributivity and factoring are represented using the dual
-  boxes shown below:
-\begin{multicols}{2}
-\begin{center}
-  \includegraphics{diagrams/thesis/dist.pdf}
-\end{center}
-\begin{center}
-  \includegraphics{diagrams/thesis/factor.pdf}
-\end{center}
-\end{multicols}
+\]
+
+  The combinator \AgdaInductiveConstructor{swap⋆} is represented by
+  crisscrossing wires:
+  \[
+  \vcenter{\wirechart{@C=1.2cm@R=0.5cm}{
+  *{}\wire{r}{\AgdaBound{v₁}}&\blank\wirecross{d}\wire{r}{\AgdaBound{v₂}}&\\
+  *{}\wire{r}{\AgdaBound{v₂}}&\blank\wirecross{u}\wire{r}{\AgdaBound{v₁}}&
+  }}
+  \]
+  As discussed below, it is possible to consider a 3d variation which makes
+  explicit which of the wires is on top and which is on bottom. The
+  combinators \AgdaInductiveConstructor{assocl⋆} and
+  \AgdaInductiveConstructor{assocr⋆} are invisible in the graphical notation
+  as associativity of parallel wires is implicit. In other words, three
+  parallel wires could be seen as representing \AgdaBound{((v₁ , v₂) , v₃)}
+  or \AgdaBound{(v₁ , (v₂ , v₃))}.
+
+\item The composite combinator \AgdaBound{c₁} \AgdaSymbol{⊗} \AgdaBound{c₂}
+  is the parallel composition shown below:
+  \[ 
+ \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
+ \vsblank\wire{r}{\AgdaBound{v₁}}&\blank\nnbox{[]}
+    {\AgdaBound{c₁}}\wire{r}{\AgdaBound{v₃}}&\\
+ \vsblank\wire{r}{\AgdaBound{v₂}}&\blank\nnbox{[]}
+    {\AgdaBound{c₂}}\wire{r}{\AgdaBound{v₄}}&
+ }}
+  \]
+\item The combinators \AgdaBound{c₁} \AgdaSymbol{⊕1} \AgdaBound{c₂} and 
+\AgdaBound{c₁} \AgdaSymbol{⊕2} \AgdaBound{c₂} are represented as follows:
+  \[ 
+ \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
+ \blank\wire{r}{\AgdaInductiveConstructor{inj₁}~\AgdaBound{v₁}}
+ \vsblank&\wwblank{15mm}\nnbox{[]}
+   {\AgdaBound{v₁}\quad\AgdaBound{c₁}\quad\AgdaBound{v₃}}
+   \wire{r}{\AgdaInductiveConstructor{inj₁}~\AgdaBound{v₃}}&\\
+ \vsblank&\wwblank{15mm}\nnbox{[]}{\AgdaBound{c₂}}&
+ }}
+\]
+\[
+ \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
+ \vsblank&\wwblank{15mm}\nnbox{[]}{\AgdaBound{c₁}}&\\
+ \blank\wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v₂}}
+ \vsblank&\wwblank{15mm}\nnbox{[]}
+   {\AgdaBound{v₂}\quad\AgdaBound{c₁}\quad\AgdaBound{v₄}}
+   \wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v₄}}&
+ }}
+  \]
+\item Finally, when a box \AgdaBound{c} is sequentially composed with its
+  mirror image \AgdaSymbol{!} \AgdaBound{c} (in either order), both boxes
+  disappear.
 \end{itemize}
+
+Let us draw the five paths \AgdaFunction{p₁} to \AgdaFunction{p₅} introduced
+in the previous section. The three paths \AgdaFunction{p₁},
+\AgdaFunction{p₂}, and \AgdaFunction{p₄}, are all represented as follows:
+\[
+\vcenter{
+\wirechart{}{\wire{r}{\AgdaFunction{TRUE}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•T}}
+  \wire{r}{\AgdaFunction{FALSE}}&}
+}
+\]
+Path \AgdaFunction{p₃} would be represented as:
+\[
+\vcenter{
+\wirechart{}{\wire{r}{\AgdaFunction{TRUE}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•T}}
+  \wire{r}{\AgdaFunction{FALSE}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•F}}
+  \wire{r}{\AgdaFunction{TRUE}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•T}}
+  \wire{r}{\AgdaFunction{FALSE}}&
+}}
+\]
+but then we notice that any two of the adjacent boxes are mirror images and
+erase them to produce the same wiring diagram as the previous three paths.
+For \AgdaFunction{p₅}, we have the following representation:
+\[
+\vcenter{\wirechart{@C=1cm@R=1cm}{
+  \wire{r}{\AgdaFunction{TRUE}}&
+  \wwblank{8mm}\nnbox{[]}{~\AgdaInductiveConstructor{uniti⋆}}
+  \wire{r}{\AgdaFunction{TRUE}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•T}}
+  \wire{r}{\AgdaFunction{FALSE}}&
+  \wwblank{8mm}\nnbox{[]}{~\AgdaInductiveConstructor{unite⋆}}
+  \wire{r}{\AgdaFunction{FALSE}}&\\
+  &&\wwblank{12mm}\nnbox{[]}{\AgdaInductiveConstructor{id⟷}}&
+}}
+\]
+where the occurrences of \AgdaInductiveConstructor{swap⋆} have disappeared
+since one of the wires is invisible. The occurrences of
+\AgdaInductiveConstructor{id⟷} that acts on the invisible wire does
+\emph{not}, however, disappear.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\[
+  \vcenter{\wirechart{@R+0.1cm}{
+      \blank\wire{rr}{B}&&\blank\\
+      \nnbox{[u].[d]}{f} & \blank\nnbox{[]}{h} & \nnbox{[u].[d]}{g} \\
+      \blank\wire{rr}{A}&&\blank\\
+      }}
+  \sep\neq\sep
+  \vcenter{\wirechart{@R+0.1cm}{
+      \blank\wire{rr}{B}&&\blank\\
+      \blank\nnbox{[u].[]}{f}\wire{rr}{A}&&\blank\nnbox{[u].[]}{g},\\
+      & \blank\nnbox{[]}{h} & \\
+      }}
+\]
+
+\begin{verbatim}
+f : A TIMES B -> A TIMES B
+f = id
+
+h : ONE -> ONE
+h = id
+
+g : A TIMES B -> A TIMES B 
+g = id
+
+left diagram = f ; ((uniti* ; (h x id_A) ; unite*) x id_B) ; g 
+right diagram = f ; ((uniti* ; swap* ; (id_A x h) ; swap* ; unite*) x id_B) ; g
+
+\end{verbatim}
 
 The graphical notation is justified by \emph{coherence theorems}. To get an
 intuition, we quote the theorem for the special case of a plain monoidal
@@ -1158,6 +1288,41 @@ only if they are isomorphic, i.e., if and only the wires and boxes are in
 bijective correspondence that preserves the connections between boxes and
 wires. Formally this means that we have the most conservative equivalence of
 paths that uses the groupoid axioms and nothing but the groupoid axioms.
+
+\begin{verbatim}
+check axioms:
+
+category:
+id o f = f and f o id = f => same diagram
+assoc seq comp => same diagram
+
+monoidal:
+tensors assoc = same diagram
+0 + A = A  and A + 0 = A => same diagram
+1 * A = A and A * 1 = A => different diagrams ??? ==> units must be invisible!
+triangle and pentagon => same diagram
+
+symmetric: swap o swap isomorphic to id
+
+bimonoidal: distrib/factor: produces same diagrams when in pointed spaces
+coherence conditions: A(B+C) -> AB+AC -> AC+AB
+                               A(C+B) 
+
+dagger: !(!c) is identical to c
+all c o ! c and ! c o c are isom to id
+
+so any two paths that produce the same diagram should have a 2path between
+them
+
+need one example of two paths connecting the same values that do not produce
+the same diagram; does the example on p.11 of selinger's paper work?
+
+it's not too bad to add 2path between any two paths that produce the same
+diagram but what about the coherence conditions; do we have to add
+paths for them or are these at the next level?
+
+
+\end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{$\Pi$ Lifted and with Groupoid Axioms}
