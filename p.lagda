@@ -988,6 +988,7 @@ CNOT•TT =
   ((id⟷ ⊗ NOT•T) ⊕1 (id⟷ {v = (tt , TRUE)})) ◎ 
   factor1
 \end{code}
+\smallskip
 
 \noindent The path \AgdaFunction{NOT•T2} just negates the second component of
 the pair. The path \AgdaFunction{CNOT•TT} is the conditional-not reversible
@@ -1010,6 +1011,7 @@ CNOT•TT' =
   ((id⟷ ⊗ NOT•T) ⊕1 (id⟷ {v = (tt , TRUE)})) ◎ 
   factor1
 \end{code}
+\smallskip
 
 \noindent We should therefore be careful not to introduce 2paths between
 arbitrary paths just because they agree on some endpoints.
@@ -1043,16 +1045,19 @@ assumed that \AgdaInductiveConstructor{swap⋆} is its self-inverse. But
 thinking of the categorical wiring diagrams more geometrically suggests that
 two wires crossing each other requires a third dimension. In other words, 
 a possible diagram for \AgdaInductiveConstructor{swap⋆} would be:
+\smallskip
 \[
  \vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
         *{}\wire{r}{}&\blank\wirecross{d}\wire{r}{}&\\
         *{}\wire{r}{}&\blank\wirebraid{u}{.3}\wire{r}{}&
         }}
 \]
-where it is explicit which path is crossing over which during the swap
+\smallskip
+\noindent where it is explicit which path is crossing over which during the swap
 operation. Technically we have moved from a symmetric monoidal category to a
 \emph{braided} one. From this idea, it follows that a sequence of two swaps 
 might represent one of the following two diagrams:
+\smallskip
 \[
 \vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
     *{}\wire{r}{}&
@@ -1077,7 +1082,9 @@ might represent one of the following two diagrams:
      \\
      }}
 \]
-In 3 dimensions, the first diagram creates a ``knot'' but the second reduces
+\smallskip
+\noindent In 3 dimensions, 
+the first diagram creates a ``knot'' but the second reduces
 to trivial identity paths. In the context of symmetric monoidal categories,
 i.e., in the context of our original presentation of $\Pi$, the diagrams
 are forced to be 2 dimensional: the distinction between them vanishes 
