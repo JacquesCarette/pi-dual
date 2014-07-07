@@ -954,7 +954,7 @@ notpath•F = path NOT•F
 paths connecting the various points. Note however that we never need to
 ``collect'' these paths using a universal quantification.
 
-\jc{Shouldn't we also show that \AgdaPrimitiveSymbol{Bool} contains
+\jc{Shouldn't we also show that \AgdaPrimitiveType{Bool} contains
 exactly $2$ things, and that TRUE and FALSE are ``different'' ?}
 \jc{The other thing is, whereas not used to be a path between Bool and
 Bool, we no longer have that.  Shouldn't we show that, somehow,
