@@ -143,6 +143,22 @@ $\displaystyle
 \DeclareUnicodeCharacter{10214}{$\llbracket$} 
 \DeclareUnicodeCharacter{10215}{$\rrbracket$} 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Comments
+\newif\ifcomments\commentstrue
+
+\ifcomments
+\newcommand{\authornote}[3]{\textcolor{#1}{[#3 ---#2]}}
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+\else
+\newcommand{\authornote}[3]{}
+\newcommand{\todo}[1]{}
+\fi
+
+\newcommand{\jc}[1]{\authornote{purple}{JC}{#1}}
+\newcommand{\as}[1]{\authornote{magenta}{SCW}{#1}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 \special{papersize=8.5in,11in}
@@ -156,7 +172,8 @@ $\displaystyle
 
 \begin{abstract}
 Homotopy type theory (HoTT) relates some aspects of topology, algebra,
-geometry, physics, logic, and type theory, in a unique novel way that
+%% geometry, physics, 
+logic, and type theory, in a unique novel way that
 promises a new and foundational perspective on mathematics and
 computation. The heart of HoTT is the \emph{univalence axiom}, which
 informally states that isomorphic structures can be identified. One of the
@@ -192,8 +209,6 @@ infixr 2  _⟷⟨_⟩_   -- equational reasoning for paths
 --infix  2  _▤       -- equational reasoning for paths
 --infixr 2  _⇔⟨_⟩_   -- equational reasoning for paths
 
-data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
-  refl : (a : A) → (a ≡ a)
 \end{code}
 }
 
@@ -203,8 +218,8 @@ data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
 Homotopy type theory (HoTT)~\cite{hottbook} has a convoluted treatment of
 functions. It starts with a class of arbitrary functions, singles out a
 smaller class of ``equivalences'' via extensional methods, and then asserts
-via the \emph{univalence} \textbf{axiom} that the class of singled out
-functions is equivalent to paths. Why not start with functions that are, by
+via the \emph{univalence} \textbf{axiom} that the class of functions just
+singled out is equivalent to paths. Why not start with functions that are, by
 construction, equivalences?
 
 The idea that computation should be based on ``equivalences'' is an old one
@@ -227,9 +242,9 @@ and more recently in the context of type
 isomorphisms~\cite{James:2012:IE:2103656.2103667}. 
 
 This paper explores the basic ingredients of HoTT from the perspective that
-computation is all about type isomorphisms. Because of the issues are subtle,
-the paper is an executable Agda 2.4.0 file with the global
-\AgdaComment{without-K} option enabled. The main body of the paper
+computation is all about type isomorphisms. Because the issues involved are
+quite subtle, the paper is an executable \texttt{Agda 2.4.0} file with the
+global \AgdaComment{without-K} option enabled. The main body of the paper
 reconstructs the main features of HoTT for the limited universe of finite
 types consisting of the empty type, the unit type, and sums and products of
 types. Sec.~\ref{intc} outlines directions for extending the result to richer
@@ -248,7 +263,9 @@ variation on Martin-L\"of type theory in which all equalities are given
 
 Formally, Martin-L\"of type theory, is based on the principle that every
 proposition, i.e., every statement that is susceptible to proof, can be
-viewed as a type. Indeed, if a proposition $P$ is true, the corresponding
+viewed as a type\footnote{but the converse is not part of the principle.
+This is frequently misunderstood.}.
+Indeed, if a proposition $P$ is true, the corresponding
 type is inhabited and it is possible to provide evidence or proof for $P$
 using one of the elements of the type~$P$. If, however, a proposition $P$ is
 false, the corresponding type is empty and it is impossible to provide a
@@ -256,8 +273,14 @@ proof for $P$. The type theory is rich enough to express the standard logical
 propositions denoting conjunction, disjunction, implication, and existential
 and universal quantifications. In addition, it is clear that the question of
 whether two elements of a type are equal is a proposition, and hence that
-this proposition must correspond to a type. In Agda, one may write proofs of
-these propositions as shown in the two examples below:
+this proposition must correspond to a type.  We encode this type in Agda
+as follows,
+\begin{code}
+data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
+  refl : (a : A) → (a ≡ a)
+\end{code}
+\noindent where we make the evidence explicit.  In Agda, one may write proofs 
+of such propositions as shown in the two examples below:
 
 \begin{multicols}{2}
 \begin{code}
@@ -276,7 +299,8 @@ type \AgdaPrimitiveType{ℕ}, it is possible to construct an element
 and \AgdaBound{k} are all ``equal.'' As shown in example \AgdaFunction{i1},
 this notion of \emph{propositional equality} is not just syntactic equality
 but generalizes to \emph{definitional equality}, i.e., to equality that can
-be established by normalizing the values to their normal forms.
+be established by normalizing the values to their normal forms.  This is 
+also know as ``up to $\beta\eta$''.
 
 An important question from the HoTT perspective is the following: given two
 elements \AgdaBound{p} and \AgdaBound{q} of some type \AgdaBound{x}
@@ -290,23 +314,27 @@ sequence of logical steps in the proof is irrelevant, and ultimately that all
 proofs of the same proposition are equivalent. This is however neither
 necessary nor desirable. A twist that dates back to a paper by
 \citet{Hofmann96thegroupoid} is that proofs actually possess a structure of
-great combinatorial complexity. HoTT builds on this idea by interpreting
+great combinatorial complexity. 
+\jc{Surely proof theory predates this by decades?  Lukasiewicz and Gentzen?}
+HoTT builds on this idea by interpreting
 types as topological spaces or weak $\infty$-groupoids, and interpreting
 identities between elements of a type
 \AgdaBound{x}~\AgdaDatatype{≡}~\AgdaBound{y} as \emph{paths} from the point
 \AgdaBound{x} to the point \AgdaBound{y}. If \AgdaBound{x} and \AgdaBound{y}
 are themselves paths, the elements of
 \AgdaBound{x}~\AgdaDatatype{≡}~\AgdaBound{y} become paths between paths
-(2paths), or homotopies in the topological language. To be explicit, we will
+(2-paths), or homotopies in topological language. To be explicit, we will
 often refer to types as \emph{spaces} which consist of \emph{points}, paths,
 2paths, etc. and write $\AgdaDatatype{≡}_\AgdaBound{A}$ for the type of paths
 in space \AgdaBound{A}.
 
-As a simple example, we are used to thinking of types as sets of values. So
-we typically view the type \AgdaPrimitiveType{Bool} as the figure on the left
-but in HoTT we should instead think about it as the figure on the right where
-there is a (trivial) path \AgdaInductiveConstructor{refl} \AgdaBound{b} from
-each point \AgdaBound{b} to itself:
+\jc{We know that once we have polymorphism, we have no interpretations in 
+Set anymore -- should perhaps put more warnings in the next paragraph?}
+As a simple example, we are used to thinking of (simple) types as sets of
+values. So we typically view the type \AgdaPrimitiveType{Bool} as the figure on
+the left. In HoTT we should instead think about it as the figure on the
+right where there is a (trivial) path \AgdaInductiveConstructor{refl}
+\AgdaBound{b} from each point \AgdaBound{b} to itself:
 \[
 \begin{tikzpicture}[scale=0.7]
   \draw (0,0) ellipse (2cm and 1cm);
@@ -396,6 +424,8 @@ called an $n$-groupoid.
 %%%%%%%%%%%%%%%%%%
 \subsection{Univalence} 
 
+\jc{Do you mean Set or U for the universe?  In HoTT the latter is standard,
+while Set is really a weird Agda-ism}
 In addition to paths between the points within a space like
 \AgdaPrimitiveType{Bool}, it is also possible to consider paths between the
 space \AgdaPrimitiveType{Bool} and itself by considering
@@ -412,7 +442,7 @@ p = refl Bool
 
 \noindent There are, however, other (non trivial) paths between
 \AgdaPrimitiveType{Bool} and itself and they are justified by the
-\emph{univalence} \textbf{axiom}. As an example, the remainder of this
+\emph{univalence} \textbf{axiom}.  As an example, the remainder of this
 section justifies that there is a path between \AgdaPrimitiveType{Bool} and
 itself corresponding to the boolean negation function.
 
