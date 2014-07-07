@@ -282,7 +282,7 @@ data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
 \noindent where we make the evidence explicit.  In Agda, one may write proofs 
 of such propositions as shown in the two examples below:
 
-\begin{multicols*}{2}
+\begin{multicols}{2}
 \begin{code}
 i0 : 3 ≡ 3
 i0 = refl 3
@@ -290,7 +290,7 @@ i0 = refl 3
 i1 : (1 + 2) ≡ (3 * 1)
 i1 = refl 3
 \end{code}
-\end{multicols*}
+\end{multicols}
 
 \noindent More generally, given two values \AgdaBound{m} and \AgdaBound{n} of
 type \AgdaPrimitiveType{ℕ}, it is possible to construct an element
