@@ -809,7 +809,7 @@ equality that generalizes the usual inductive family for propositional
 equality. Put differently, what used to be the only constructor for paths
 \AgdaInductiveConstructor{refl} is now just one of the many constructors
 (named \AgdaInductiveConstructor{id⟷} in the figure). Among the new
-constructors and we have \AgdaInductiveConstructor{◎} that constructs path
+constructors we have \AgdaInductiveConstructor{◎} that constructs path
 compositions. By construction, every combinator has an inverse calculated as
 shown in Fig.~\ref{sym}. These constructions are sufficient to guarantee that
 the universe~\AgdaFunction{U} is a groupoid. Additionally, we have paths that
@@ -966,28 +966,12 @@ connecting the categorical wiring diagrams to special cases of homotopies
 called isotopies. (See Selinger's paper~\citeyearpar{selinger-graphical} for
 an excellent survey and the papers by Joyal and
 Street~\citeyearpar{planardiagrams,geometrytensor} for the original
-development.) We will not pursue this in detail but we will just quote one of
-the coherence theorems (originally due to Joyal and Street) as an example.
+development.) We will not pursue this in detail except for a short discussion
+in the next section. 
 
-\begin{theorem}
-A well-formed equation between morphisms in the language of monoidal
-categories follows from the axioms of monoidal categories if and only if it
-holds, up to planar isotopy, in the graphical language.
-\end{theorem}
-
-\noindent Translating to our setting, the theorem says the following. In the
-special case of diagrams involving just one monoid (say
-\AgdaInductiveConstructor{ZERO} and \AgdaInductiveConstructor{PLUS} types
-only) and no uses of swapping combinators, the two combinators represented by
-the diagrams are equivalent if the diagrams can be transformed to each other
-by moving wires and boxes around without crossing, cutting, or gluing any
-wires and without detaching them from the plane. Using similar theorems, it
-is possible, under certain assumptions, to prove that path \AgdaFunction{p₅}
-is equivalent to the other paths.
-
-The more interesting question, however, is whether all paths from a given
-pointed space to another should be considered equivalent. We answer this
-question negatively using the following two examples:
+But first, we address the important question of whether all paths from a
+given pointed space to another should be considered equivalent. We answer
+this question negatively using the following two examples:
 
 \smallskip
 \begin{code}
@@ -1010,7 +994,8 @@ the pair. The path \AgdaFunction{CNOT•TT} is the conditional-not reversible
 gate which only negates the second component of the pair if the first
 component is \AgdaFunction{TRUE}. Although the two paths have the same
 endpoints, they should not be considered equivalent. The simple reason is
-that the paths can be given different more general types:
+that the paths can be given different more general types, i.e., they connect
+different families of endpoints:
 
 \smallskip
 \begin{code}
@@ -1028,6 +1013,75 @@ CNOT•TT' =
 
 \noindent We should therefore be careful not to introduce 2paths between
 arbitrary paths just because they agree on some endpoints.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Isotopies} 
+
+Returning to idea of ``smooth deformations'' of paths, we first quote one of
+the coherence theorems (originally due to Joyal and Street).
+
+\begin{theorem}
+A well-formed equation between morphisms in the language of monoidal
+categories follows from the axioms of monoidal categories if and only if it
+holds, up to planar isotopy, in the graphical language.
+\end{theorem}
+
+\noindent Translating to our setting, the theorem says the following. In the
+special case of diagrams involving just one monoid (say
+\AgdaInductiveConstructor{ZERO} and \AgdaInductiveConstructor{PLUS} types
+only) and no uses of swapping combinators, the two combinators represented by
+the diagrams are equivalent if the diagrams can be transformed to each other
+by moving wires and boxes around without crossing, cutting, or gluing any
+wires and without detaching them from the plane. Using similar theorems, it
+is possible, under certain assumptions, to prove that path \AgdaFunction{p₅}
+is equivalent to the other paths.
+
+Looking at the various coherence theorems for special cases of monoidal
+categories, we note an interesting subtlety that should be further
+investigated in detail in future work. In our presentation of $\Pi$, we have
+assumed that \AgdaInductiveConstructor{swap⋆} is its self-inverse. But
+thinking of the categorical wiring diagrams more geometrically suggests that
+two wires crossing each other requires a third dimension. In other words, 
+a possible diagram for \AgdaInductiveConstructor{swap⋆} would be:
+\[
+ \vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
+        *{}\wire{r}{}&\blank\wirecross{d}\wire{r}{}&\\
+        *{}\wire{r}{}&\blank\wirebraid{u}{.3}\wire{r}{}&
+        }}
+\]
+where it is explicit which path is crossing over which during the swap
+operation. Technically we have moved from a symmetric monoidal category to a
+\emph{braided} one. From this idea, it follows that a sequence of two swaps 
+might represent one of the following two diagrams:
+\[
+\vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
+    *{}\wire{r}{}&
+    \blank\wirecross{d}\wire{r}{}&
+    \blank\wirecross{d}\wire{r}{}&
+    \\
+    *{}\wire{r}{}&
+    \blank\wirebraid{u}{.3}\wire{r}{}&
+    \blank\wirebraid{u}{.3}\wire{r}{}&
+    \\
+    }}
+\]
+\[
+\vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
+     *{}\wire{r}{}&
+     \blank\wirecross{d}\wire{r}{}&
+     \blank\wirebraid{d}{.3}\wire{r}{}&
+     \\
+     *{}\wire{r}{}&
+     \blank\wirebraid{u}{.3}\wire{r}{}&
+     \blank\wirecross{u}\wire{r}{}&
+     \\
+     }}
+\]
+In 3 dimensions, the first diagram creates a ``knot'' but the second reduces
+to trivial identity paths. In the context of symmetric monoidal categories,
+i.e., in the context of our original presentation of $\Pi$, the diagrams
+are forced to be 2 dimensional: the distinction between them vanishes 
+and they become equivalent.
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{$\Pi$ Lifted and with Groupoid Axioms}
@@ -1076,7 +1130,7 @@ addition, all paths from Fig.~\ref{pointedcomb} are reifed as values in
 \AgdaFunction{1U}.
 
 As before, we define pointed spaces (now of paths instead of points) and
-define introduce $\Pi$ combinators on these pointed path spaces. In addition
+introduce $\Pi$ combinators on these pointed path spaces. In addition
 to the commutative semiring combinators, there are also combinators that
 witness the groupoid equivalences. (See Fig.~\ref{pointedcomb2}.) 
 
@@ -1400,8 +1454,8 @@ G = record
         }
 \end{code}
 
-The proof refers to two simple (and omitted) functions \AgdaFunction{linv}
-and \AgdaFunction{rinv} with the following types:
+The proof refers to two simple functions \AgdaFunction{linv} and
+\AgdaFunction{rinv} with the following types:
 
 {\small{
 \AgdaFunction{linv} \AgdaSymbol{:} \AgdaSymbol{\{}\AgdaBound{t₁}
@@ -1430,9 +1484,17 @@ and \AgdaFunction{rinv} with the following types:
 \quad\AgdaInductiveConstructor{1•[} \AgdaInductiveConstructor{PATH} \AgdaBound{t₂} \AgdaBound{t₂} \AgdaInductiveConstructor{,} \AgdaInductiveConstructor{path} \AgdaSymbol{(}\AgdaFunction{!} \AgdaBound{c} \AgdaInductiveConstructor{◎} \AgdaBound{c}\AgdaSymbol{)} \AgdaInductiveConstructor{]} \AgdaDatatype{⇔} \AgdaInductiveConstructor{1•[} \AgdaInductiveConstructor{PATH} \AgdaBound{t₂} \AgdaBound{t₂} \AgdaInductiveConstructor{,} \AgdaInductiveConstructor{path} \AgdaInductiveConstructor{id⟷} \AgdaInductiveConstructor{]}
 }}
 
+\begin{verbatim}
+show a few cases?
+\end{verbatim}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Int Construction}
 \label{intc}
+
+\begin{verbatim}
+transition
+\end{verbatim}
 
 In the context of monoidal categories, it is known that a notion of
 higher-order functions emerges from having an additional degree of
@@ -1451,7 +1513,8 @@ flowing backwards. Under this interpretation, and as we explain below, a
 function is nothing but an object that converts a demand for an argument into
 the production of a result.
 
-We begin our formal development by extending $\Pi$ with a new universe of
+We begin our formal development by extending $\Pi$ --- at any level --- 
+with a new universe of
 types $\cubt$ that consists of composite types $\nodet{\tau_1}{\tau_2}$:
 \[\begin{array}{lrcl}
 (\textit{{1d} types}) & 
@@ -1459,8 +1522,8 @@ types $\cubt$ that consists of composite types $\nodet{\tau_1}{\tau_2}$:
 \end{array}\]
 In anticipation of future developments, we will refer to the original types
 $\tau$ as 0-dimensional (0d) types and to the new types $\cubt$ as
-1-dimensional (1d) types. It turns out that, except for one case discussed
-below, the 1d level is a ``lifted'' instance of $\Pi$ with its own notions of
+1-dimensional (1d) types. It turns out that the 1d level is a 
+``lifted'' instance of $\Pi$ with its own notions of
 empty, unit, sum, and product types, and its corresponding notion of
 isomorphisms on these 1d types.
 
@@ -1883,50 +1946,6 @@ right diagram = f ; ((uniti* ; swap* ; (id_A x h) ; swap* ; unite*) x id_B) ; g
    -- (5.25,0) -- (5.75,0) -- (6.25,-0.75) -- (F2);
 \end{tikzpicture}
 
-\noindent Path \AgdaFunction{p₅} is more subtle as it includes two
-occurrences of \AgdaInductiveConstructor{swap⋆}. Consider the following
-diagram for \AgdaInductiveConstructor{swap⋆} where we added a third dimension
-making explicit which path is crossing over which during the swap operation:
-\[
- \vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
-        *{}\wire{r}{}&\blank\wirecross{d}\wire{r}{}&\\
-        *{}\wire{r}{}&\blank\wirebraid{u}{.3}\wire{r}{}&
-        }}
-\]
-It follows that a sequence of two swaps might represent one of the following
-two diagrams:
-\[
-\vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
-    *{}\wire{r}{}&
-    \blank\wirecross{d}\wire{r}{}&
-    \blank\wirecross{d}\wire{r}{}&
-    \\
-    *{}\wire{r}{}&
-    \blank\wirebraid{u}{.3}\wire{r}{}&
-    \blank\wirebraid{u}{.3}\wire{r}{}&
-    \\
-    }}
-\]
-\[
-\vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
-     *{}\wire{r}{}&
-     \blank\wirecross{d}\wire{r}{}&
-     \blank\wirebraid{d}{.3}\wire{r}{}&
-     \\
-     *{}\wire{r}{}&
-     \blank\wirebraid{u}{.3}\wire{r}{}&
-     \blank\wirecross{u}\wire{r}{}&
-     \\
-     }}
-\]
-In 3 dimensions, the first diagram creates a ``knot'' but the second reduces
-to trivial identity paths. In 2 dimensions, the distinction between the two
-diagrams vanishes and they become equivalent. 
-
-The original presentation of $\Pi$ assumes the simple planar situation and we
-will continue our development with that assumption, leaving the possible
-investigation of other notions of homotopies to future work. The relevant
-coherence theorem in our situation is that two diagrams are equivalent if and
 
 \begin{verbatim}
 check axioms:
