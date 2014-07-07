@@ -187,8 +187,10 @@ infixr 10 _◎_
 infix  4  _≡_   -- propositional equality
 infix  4  _∼_   -- homotopy between two functions (the same as ≡ by univalence)
 infix  4  _≃_   -- type of equivalences
--- infix  2  _∎       -- equational reasoning for paths
--- infixr 2  _≡⟨_⟩_   -- equational reasoning for paths
+infix  2  _□       -- equational reasoning for paths
+infixr 2  _⟷⟨_⟩_   -- equational reasoning for paths
+--infix  2  _▤       -- equational reasoning for paths
+--infixr 2  _⇔⟨_⟩_   -- equational reasoning for paths
 
 data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
   refl : (a : A) → (a ≡ a)
@@ -870,6 +872,17 @@ see this, note that \AgdaPrimitiveType{Bool} can be viewed as a shorthand for
 mind, the path corresponding to boolean negation consists of two ``fibers'',
 one for each boolean value as shown below:
 
+\AgdaHide{
+\begin{code}
+_⟷⟨_⟩_ : (t₁ : U•) {t₂ : U•} {t₃ : U•} → 
+          (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃) 
+_ ⟷⟨ α ⟩ β = α ◎ β
+
+_□ : (t : U•) → {t : U•} → (t ⟷ t)
+_□ t = id⟷
+\end{code}
+}
+
 \smallskip
 \begin{code}
 data Path (t₁ t₂ : U•) : Set where
@@ -925,8 +938,8 @@ composition. We now investigate the higher groupoid structure.
 
 Given that all paths are between pointed spaces, i.e., are between particular
 values, it might appear that all paths between the same pointed spaces are
-extensionally equivalent. Consider first the following simple examples,
-whicha are all paths from the pointed space
+extensionally equivalent. Consider first the following simple examples, which
+are all paths from the pointed space
 \pointed{\AgdaFunction{BOOL}}{\AgdaFunction{TRUE}} to the pointed space
 \pointed{\AgdaFunction{BOOL}}{\AgdaFunction{FALSE}}:
 
@@ -1013,7 +1026,9 @@ CNOT•TT' =
 \end{code}
 \smallskip
 
-\noindent We should therefore be careful not to introduce 2paths between
+\noindent Indeed it is possible to use \AgdaFunction{NOT•T2'} with the value
+\AgdaBound{v} bound to \AgdaFunction{FALSE} but this is not possible for
+other path. We should therefore be careful not to introduce 2paths between
 arbitrary paths just because they agree on some endpoints.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%

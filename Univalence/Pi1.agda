@@ -21,8 +21,10 @@ open ≡-Reasoning
 
 open import Groupoid
 
--- infix  2  _∎       -- equational reasoning for paths
--- infixr 2  _≡⟨_⟩_   -- equational reasoning for paths
+infix  2  _□       -- equational reasoning for paths
+infixr 2  _⟷⟨_⟩_   -- equational reasoning for paths
+infix  2  _▤       -- equational reasoning for paths
+infixr 2  _⇔⟨_⟩_   -- equational reasoning for paths
 infixr 10 _◎_
 infixr 30 _⟷_
 
@@ -179,6 +181,13 @@ data _⟷_ : U• → U• → Set where
 
 -- example programs
 
+_⟷⟨_⟩_ : (t₁ : U•) {t₂ : U•} {t₃ : U•} → 
+          (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃) 
+_ ⟷⟨ α ⟩ β = α ◎ β
+
+_□ : (t : U•) → {t : U•} → (t ⟷ t)
+_□ t = id⟷
+
 NOT•T : •[ BOOL , TRUE ] ⟷ •[ BOOL , FALSE ]
 NOT•T = swap1₊
 
@@ -194,10 +203,31 @@ CNOT•TF = dist1 ◎
           ((id⟷ ⊗ NOT•F) ⊕1 (id⟷ {TIMES ONE BOOL} {(tt , TRUE)})) ◎
           factor1
 
+--CNOT•TT : •[ BOOL² , (TRUE , TRUE) ] ⟷ •[ BOOL² , (TRUE , FALSE) ]
+--CNOT•TT = dist1 ◎ 
+--          ((id⟷ ⊗ NOT•T) ⊕1 (id⟷ {TIMES ONE BOOL} {(tt , TRUE)})) ◎ 
+--          factor1
+
 CNOT•TT : •[ BOOL² , (TRUE , TRUE) ] ⟷ •[ BOOL² , (TRUE , FALSE) ]
-CNOT•TT = dist1 ◎ 
-          ((id⟷ ⊗ NOT•T) ⊕1 (id⟷ {TIMES ONE BOOL} {(tt , TRUE)})) ◎ 
-          factor1
+CNOT•TT = •[ BOOL² , (TRUE , TRUE) ]
+             ⟷⟨ dist1 ⟩ 
+           •[ PLUS (TIMES ONE BOOL) (TIMES ONE BOOL) , inj₁ (tt , TRUE) ]
+             ⟷⟨ (id⟷ ⊗ NOT•T) ⊕1 (id⟷ {v = (tt , TRUE)})⟩ 
+           •[ PLUS (TIMES ONE BOOL) (TIMES ONE BOOL) , inj₁ (tt , FALSE) ]
+             ⟷⟨ factor1 ⟩
+           •[ BOOL² , (TRUE , FALSE) ] □
+
+CNOT•TT' : ∀ {t v} → 
+  •[ TIMES (PLUS t ONE) BOOL , (inj₁ v , TRUE) ] ⟷ 
+  •[ TIMES (PLUS t ONE) BOOL , (inj₁ v , FALSE) ]
+CNOT•TT' {t} {v} = 
+  •[ TIMES (PLUS t ONE) BOOL , (inj₁ v , TRUE) ]
+    ⟷⟨ dist1 ⟩ 
+  •[ PLUS (TIMES t BOOL) (TIMES ONE BOOL) , inj₁ (v , TRUE) ]
+    ⟷⟨ (id⟷ ⊗ NOT•T) ⊕1 (id⟷ {v = (tt , TRUE)})⟩ 
+  •[ PLUS (TIMES t BOOL) (TIMES ONE BOOL) , inj₁ (v , FALSE) ]
+    ⟷⟨ factor1 ⟩
+  •[ TIMES (PLUS t ONE) BOOL , (inj₁ v , FALSE) ] □
 
 -- The evaluation of a program is not done in order to figure out the output
 -- value. Both the input and output values are encoded in the type of the
@@ -569,17 +599,15 @@ data _⇔_ : 1U• → 1U• → Set where
 α₂ = lidr
 
 
-{--
-_≡⟨_⟩_ : {t₁ t₂ : U•} (c₁ : t₁ ⟷ t₂) {c₂ : t₁ ⟷ t₂} {c₃ : t₁ ⟷ t₂} → 
-         (2•[ PATH c₁ , path c₁ ] ⇔ 2•[ PATH c₂ , path c₂ ]) → 
-         (2•[ PATH c₂ , path c₂ ] ⇔ 2•[ PATH c₃ , path c₃ ]) → 
-         (2•[ PATH c₁ , path c₁ ] ⇔ 2•[ PATH c₃ , path c₃ ])
-_ ≡⟨ α ⟩ β = α ◎ β
+_⇔⟨_⟩_ : {t₁ t₂ : U•} (c₁ : t₁ ⟷ t₂) {c₂ : t₁ ⟷ t₂} {c₃ : t₁ ⟷ t₂} → 
+         (1•[ PATH t₁ t₂ , path c₁ ] ⇔ 1•[ PATH t₁ t₂ , path c₂ ]) → 
+         (1•[ PATH t₁ t₂ , path c₂ ] ⇔ 1•[ PATH t₁ t₂ , path c₃ ]) → 
+         (1•[ PATH t₁ t₂ , path c₁ ] ⇔ 1•[ PATH t₁ t₂ , path c₃ ])
+_ ⇔⟨ α ⟩ β = α ◎ β
 
-_∎ : {t₁ t₂ : U•} → (c : t₁ ⟷ t₂) → 
-     2•[ PATH c , path c ] ⇔ 2•[ PATH c , path c ]
-_∎ c = id⟷ 
---}
+_▤ : {t₁ t₂ : U•} → (c : t₁ ⟷ t₂) → 
+     1•[ PATH t₁ t₂ , path c ] ⇔ 1•[ PATH t₁ t₂ , path c ]
+_▤ c = id⇔
 
 -- example programs
 
