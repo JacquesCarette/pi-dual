@@ -325,7 +325,7 @@ are themselves paths, the elements of
 \AgdaBound{x}~\AgdaDatatype{≡}~\AgdaBound{y} become paths between paths
 (2-paths), or homotopies in topological language. To be explicit, we will
 often refer to types as \emph{spaces} which consist of \emph{points}, paths,
-2paths, etc. and write $\AgdaDatatype{≡}_\AgdaBound{A}$ for the type of paths
+2-paths, etc. and write $\AgdaDatatype{≡}_\AgdaBound{A}$ for the type of paths
 in space \AgdaBound{A}.
 
 \jc{We know that once we have polymorphism, we have no interpretations in 
@@ -1071,7 +1071,7 @@ CNOT•TT' =
 
 \noindent Indeed it is possible to use \AgdaFunction{NOT•T2'} with the value
 \AgdaBound{v} bound to \AgdaFunction{FALSE} but this is not possible for
-other path. We should therefore be careful not to introduce 2paths between
+the other path. We should therefore be careful not to introduce 2-paths between
 arbitrary paths just because they agree on some endpoints.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1098,7 +1098,7 @@ is equivalent to the other paths.
 
 Looking at the various coherence theorems for special cases of monoidal
 categories, we note an interesting subtlety that should be further
-investigated in detail in future work. In our presentation of $\Pi$, we have
+investigated in detail: in our presentation of $\Pi$, we have
 assumed that \AgdaInductiveConstructor{swap⋆} is its self-inverse. But
 thinking of the categorical wiring diagrams more geometrically suggests that
 two wires crossing each other requires a third dimension. In other words, 
@@ -1154,7 +1154,7 @@ and they become equivalent.
 To summarize, there is a spectrum of possibilities to be explored for when
 paths should be considered equivalent. The minimum requirement is that paths
 that can be related using the groupoid laws should be considered equivalent
-and hence should be related by a 2path. In the sequel, we will adopt this
+and hence should be related by a 2-path. In the sequel, we will adopt this
 conservative approach and leave further investigations to future work. 
 
 Formally, we lift the entire $\Pi$ language to compute with paths instead of
@@ -1164,7 +1164,7 @@ groupoid laws. The groupoid combinators will allow us to relate paths like
 \AgdaFunction{p₁} and \AgdaFunction{p₂} and the combinators from
 Fig.~\ref{pointedcomb} will allow us to compute with sums and products of
 paths up to the commutative semiring isomorphisms. What is pleasant about
-this design is that 2paths inherit a similar structure to 1paths, and hence
+this design is that 2-paths inherit a similar structure to 1-paths, and hence
 the entire scheme can be repeated over and over lifting $\Pi$ to higher and
 higher levels to capture the concept of weak $\infty$-groupoids.
 
@@ -1389,7 +1389,7 @@ data _⇔_ : 1U• → 1U• → Set where
            1•[ PATH t₁ t₃ , path (c₁ ◎ c₂) ] ⇔ 1•[ PATH t₁ t₃ , path (c₃ ◎ c₄) ]
 \end{code}
 \end{multicols}
-\caption{Inductive definition of 2paths\label{pointedcomb2}}
+\caption{Inductive definition of 2-paths\label{pointedcomb2}}
 \end{figure*}
 
 \AgdaHide{
@@ -1490,8 +1490,8 @@ rinv (c ⊗ c₁) = {!!}
 \end{code}
 }
 
-To verify that the universe \AgdaFunction{U•} with \AgdaSymbol{⟷} as 1paths
-and \AgdaSymbol{⇔} as 2paths is indeed a groupoid, we have developed a small
+To verify that the universe \AgdaFunction{U•} with \AgdaSymbol{⟷} as 1-paths
+and \AgdaSymbol{⇔} as 2-paths is indeed a groupoid, we have developed a small
 library inspired by Thorsten Altenkirch's definition of groupoids (see
 \url{http://github.com/txa/OmegaCats}) and copumpkin's definition of
 category (see \url{http://github.com/copumpkin/categories}). The proof is
@@ -1549,17 +1549,13 @@ The proof refers to two simple functions \AgdaFunction{linv} and
 \quad\AgdaInductiveConstructor{1•[} \AgdaInductiveConstructor{PATH} \AgdaBound{t₂} \AgdaBound{t₂} \AgdaInductiveConstructor{,} \AgdaInductiveConstructor{path} \AgdaSymbol{(}\AgdaFunction{!} \AgdaBound{c} \AgdaInductiveConstructor{◎} \AgdaBound{c}\AgdaSymbol{)} \AgdaInductiveConstructor{]} \AgdaDatatype{⇔} \AgdaInductiveConstructor{1•[} \AgdaInductiveConstructor{PATH} \AgdaBound{t₂} \AgdaBound{t₂} \AgdaInductiveConstructor{,} \AgdaInductiveConstructor{path} \AgdaInductiveConstructor{id⟷} \AgdaInductiveConstructor{]}
 }}
 
-\begin{verbatim}
-show a few cases?
-\end{verbatim}
+\todo{show a few cases?}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Int Construction}
 \label{intc}
 
-\begin{verbatim}
-transition
-\end{verbatim}
+\todo{transition}
 
 In the context of monoidal categories, it is known that a notion of
 higher-order functions emerges from having an additional degree of
@@ -1729,8 +1725,8 @@ higher-order functions while retaining the multiplicative structure.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 
-2paths are functions on paths; the int construction reifies these
-functions/2paths as 1paths
+2-paths are functions on paths; the int construction reifies these
+functions/2-paths as 1-paths
 
 Add eta/epsilon and trace to Int 
 category
@@ -1949,10 +1945,10 @@ wires.
 
 path from \AgdaFunction{TRUE} to itself and then uses the boolean
 negation. The first step is clearly superfluous and hence we expect, via the
-groupoid laws, to have a 2path connecting \AgdaFunction{p₂} to
+groupoid laws, to have a 2-path connecting \AgdaFunction{p₂} to
 \AgdaFunction{p₁}. Path \AgdaFunction{p₃} does not syntactically refer to a
 trivial path but instead uses what is effectively a trivial path that follows
-a negation path and then its inverse. We also expect to have a 2path between
+a negation path and then its inverse. We also expect to have a 2-path between
 this path and the other ones. 
 
 The situation with path \AgdaFunction{p₅} is more subtle. Viewed
@@ -1960,8 +1956,8 @@ extensionally, path \AgdaFunction{p₅} is obviously equivalent to the other
 paths as it has the same input-output behavior connecting \AgdaFunction{TRUE}
 to \AgdaFunction{FALSE}. In the conventional approach to programming language
 semantics, this extensional equivalence would then be used to justify the
-existence of a 2path. In our setting, we do \emph{not} want to reason using
-extensional methods. Instead, we would like to think of 2paths are resulting
+existence of a 2-path. In our setting, we do \emph{not} want to reason using
+extensional methods. Instead, we would like to think of 2-paths are resulting
 from homotopies (i.e., ``smooth deformations'') of paths into each other.
 
 
@@ -2034,13 +2030,13 @@ coherence conditions: A(B+C) -> AB+AC -> AC+AB
 dagger: !(!c) is identical to c
 all c o ! c and ! c o c are isom to id
 
-so any two paths that produce the same diagram should have a 2path between
+so any two paths that produce the same diagram should have a 2-path between
 them
 
 need one example of two paths connecting the same values that do not produce
 the same diagram; does the example on p.11 of selinger's paper work?
 
-it's not too bad to add 2path between any two paths that produce the same
+it's not too bad to add 2-path between any two paths that produce the same
 diagram but what about the coherence conditions; do we have to add
 paths for them or are these at the next level?
 
