@@ -619,7 +619,8 @@ circuits~\cite{James:2012:IE:2103656.2103667}.\footnote{If recursive types
 and a trace operator are added, the language becomes Turing
 complete~\cite{James:2012:IE:2103656.2103667,rc2011}. We will not be
 concerned with this extension in the main body of this paper but it will be
-briefly discussed in the conclusion.}
+briefly discussed in the conclusion.\jc{but don't we need trace for the Int
+construction?}}
 
 From the perspective of category theory, the language $\Pi$ models what is
 called a \emph{symmetric bimonoidal category} or a \emph{commutative rig
@@ -834,6 +835,9 @@ operational semantics of Fig.~\ref{opsem}. For example
 in addition it specifies that, within that spaces, it maps the point
 \AgdaInductiveConstructor{inj₁} \AgdaBound{v₁} to the point
 \AgdaInductiveConstructor{inj₂} \AgdaBound{v₁}.
+\jc{The operational semantics have $24$ rules, while the groupoid model
+has $26$.  This is because of the 2 rules with \emph{absurd} in them.
+How shall they be explained?}
 
 We note that the refinement of the $\Pi$-combinators to combinators on
 pointed spaces is given by an inductive family for \emph{heterogeneous}
@@ -844,7 +848,8 @@ equality. Put differently, what used to be the only constructor for paths
 constructors we have \AgdaInductiveConstructor{◎} that constructs path
 compositions. By construction, every combinator has an inverse calculated as
 shown in Fig.~\ref{sym}. These constructions are sufficient to guarantee that
-the universe~\AgdaFunction{U} is a groupoid. Additionally, we have paths that
+the universe~\AgdaFunction{U} is a groupoid \jc{point to the proof in
+some accompanying full Agda code?}. Additionally, we have paths that
 connect values in different but isomorphic spaces like
 \pointed{{\AgdaInductiveConstructor{TIMES} \AgdaBound{t₁}
 \AgdaBound{t₂}}}{{\AgdaSymbol{(} \AgdaBound{v₁} \AgdaSymbol{,} \AgdaBound{v₂}
@@ -948,6 +953,14 @@ notpath•F = path NOT•F
 \noindent In other words, a path between spaces is really a collection of
 paths connecting the various points. Note however that we never need to
 ``collect'' these paths using a universal quantification.
+
+\jc{Shouldn't we also show that \AgdaPrimitiveSymbol{Bool} contains
+exactly $2$ things, and that TRUE and FALSE are ``different'' ?}
+\jc{The other thing is, whereas not used to be a path between Bool and
+Bool, we no longer have that.  Shouldn't we show that, somehow,
+BOOL and BOOL.F 'union' BOOL.T are somehow ``equivalent''?  And there
+there is a coherent notpath built the same way?  Especially since I
+am sure it is quite easy to build incoherent sets of paths!}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Computing with Paths} 
