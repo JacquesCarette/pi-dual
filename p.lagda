@@ -923,8 +923,10 @@ composition. We now investigate the higher groupoid structure.
 %%%%%%%%%%%%%%%%%
 \subsection{Examples}
 
-We start with a few examples where we define a collection of paths
-\AgdaFunction{p₁} to \AgdaFunction{p₅} all from the pointed space
+Given that all paths are between pointed spaces, i.e., are between particular
+values, it might appear that all paths between the same pointed spaces are
+extensionally equivalent. Consider first the following simple examples,
+whicha are all paths from the pointed space
 \pointed{\AgdaFunction{BOOL}}{\AgdaFunction{TRUE}} to the pointed space
 \pointed{\AgdaFunction{BOOL}}{\AgdaFunction{FALSE}}:
 
@@ -945,408 +947,107 @@ p₅ = path  (uniti⋆ ◎ swap⋆ ◎ (NOT•T ⊗ id⟷) ◎
 
 \noindent All the paths start at \AgdaFunction{TRUE} and end at
 \AgdaFunction{FALSE} but follow different intermediate steps along the
-way. Informally \AgdaFunction{p₁} is the most ``efficient'' canonical way of
-connecting \AgdaFunction{TRUE} to \AgdaFunction{FALSE} via the appropriate
-fiber of the boolean negation. Path \AgdaFunction{p₂} starts with the trivial
-path from \AgdaFunction{TRUE} to itself and then uses the boolean
-negation. The first step is clearly superfluous and hence we expect, via the
-groupoid laws, to have a 2path connecting \AgdaFunction{p₂} to
-\AgdaFunction{p₁}. Path \AgdaFunction{p₃} does not syntactically refer to a
-trivial path but instead uses what is effectively a trivial path that follows
-a negation path and then its inverse. We also expect to have a 2path between
-this path and the other ones. Path \AgdaFunction{p₄} is also evidently
-equivalent to the others as it composes the negation path with the trivial
-path. 
+way. Thinking extensionally, the paths are equivalent. But they are also
+equivalent if we look at their internal structure using a few simple groupoid
+identities. In particular, paths \AgdaFunction{p₂} and \AgdaFunction{p₄}
+sequentially compose the boolean negation with the trivial path, and hence by
+the groupoid laws are equivalent to \AgdaFunction{p₁}. Similarly, the first
+two steps in path \AgdaFunction{p₃} sequentially compose a combinator with
+its inverse which is equivalent to the trivial path by the groupoid laws. For
+path \AgdaFunction{p₅}, the groupoid laws are not sufficient to prove its
+equivalence with any of the other paths but one can argue, as shown below,
+that it is also equivalent to the others. 
 
-The situation with path \AgdaFunction{p₅} is more subtle. Viewed
-extensionally, path \AgdaFunction{p₅} is obviously equivalent to the other
-paths as it has the same input-output behavior connecting \AgdaFunction{TRUE}
-to \AgdaFunction{FALSE}. In the conventional approach to programming language
-semantics, this extensional equivalence would then be used to justify the
-existence of a 2path. In our setting, we do \emph{not} want to reason using
-extensional methods. Instead, we would like to think of 2paths are resulting
-from homotopies (i.e., ``smooth deformations'') of paths into each other.
-
-%%%%%%%%%%%%%%%%%
-\subsection{Graphical Language}
-
-The question of ``smooth deformations'' of paths can be addressed in many
-ways. A particularly appealing way is our setting is to use the graphical
-languages (or wiring diagrams) associated with monoidal categories and the
-associated \emph{coherence theorems} that relate them to various special
-cases of homotopies called isotopies. (See Selinger's
-paper~\citeyearpar{selinger-graphical} for an excellent survey and the papers
-by Joyal and Street~\citeyearpar{planardiagrams,geometrytensor} for the
-original development.)
-
-The conventional presentation of wiring diagrams is for unpointed spaces. We
-adapt it for pointed spaces. First we show how to represent each possible
-pointed space as a collection of ``wires'' and then we show how each
-combinator ``shuffles'' or ``transforms'' the wires:
-\begin{itemize}
-\item It is not possible to produce a pointed space
-  \pointed{\AgdaInductiveConstructor{ZERO}}{\AgdaBound{v}} for any
-  \AgdaBound{v}.
-\item The pointed space
-  \pointed{\AgdaInductiveConstructor{ONE}}{\AgdaInductiveConstructor{tt}} is
-  invisible in the graphical notation.
-\item The pointed space \pointed{\AgdaInductiveConstructor{TIMES}
-  \AgdaBound{t₁} \AgdaBound{t₂}}{\AgdaBound{(v₁ , v₂)}} is
-  represented using two parallel wires labeled \AgdaBound{v₁} and
-  \AgdaBound{v₂}:
-\[
- \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
-        *{}\wire{r}{\AgdaBound{v₁}}&\\
-        *{}\wire{r}{\AgdaBound{v₂}}&
-        }}
-\]
- Note that if one of the types is \AgdaInductiveConstructor{ONE}, the
- corresponding wire disappears. If both the wires are
- \AgdaInductiveConstructor{ONE}, they both disappear.
-\item The pointed space \pointed{\AgdaInductiveConstructor{PLUS}
-  \AgdaBound{t₁} \AgdaBound{t₂}}{\AgdaInductiveConstructor{inj₁}
-  \AgdaBound{v₁}} is represented by a wire labeled with
-  \AgdaInductiveConstructor{inj₁} \AgdaBound{v₁}. The pointed space
-  \pointed{\AgdaInductiveConstructor{PLUS} \AgdaBound{t₁}
-    \AgdaBound{t₂}}{\AgdaInductiveConstructor{inj₂} \AgdaBound{v₂}} is
-  similarly represented by a wire labeled with
-  \AgdaInductiveConstructor{inj₂} \AgdaBound{v₂}. 
-\[
- \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
-        *{}\wire{r}{\AgdaInductiveConstructor{inj₁}~\AgdaBound{v₁}}&
-        }}
-\qquad
- \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
-        *{}\wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v₂}}&
-        }}
-\]
-\item Knowing how points are represented, we now show how various combinators
-  act on the wires. The combinator \AgdaInductiveConstructor{id⟷} is
-  invisible. The combinator \AgdaInductiveConstructor{◎} connects the
-  outgoing wires of one diagram to the input wires of the other. The
-  associativity of \AgdaInductiveConstructor{◎} is implicit in the graphical
-  notation. 
-\item The combinators \AgdaInductiveConstructor{unite₊} and
-  \AgdaInductiveConstructor{uniti₊} are represented as follows:
-\[
-\vcenter{
-\wirechart{}{\wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v}}&
-  \wwblank{12mm}\nnbox{[]}{~\AgdaInductiveConstructor{unite₊}}
-  \wire{r}{\AgdaBound{v}}&}
-}
-\qquad
-\vcenter{
-\wirechart{}{\wire{r}{\AgdaBound{v}}&
-  \wwblank{12mm}\nnbox{[]}{~\AgdaInductiveConstructor{uniti₊}}
-  \wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v}}&}
-}
-\]
-\item All other combinators that just re-label a value are similarly
-  represented as one box with one incoming wire labeled by the input value
-  and one outgoing wires labeled by the resulting value.
-\item The combinators that operate on \AgdaInductiveConstructor{TIMES} types
-  are a bit more involved as shown below. First, although the unit value
-  \AgdaInductiveConstructor{tt} is invisible in the graphical notation, the
-  combinators \AgdaInductiveConstructor{unite⋆} and
-  \AgdaInductiveConstructor{uniti⋆} are still represented as boxes as shown
-  below: 
-\[
-\vcenter{
-\wirechart{}{\wire{r}{\AgdaBound{v}}&
-  \wwblank{12mm}\nnbox{[]}{~\AgdaInductiveConstructor{unite⋆}}
-  \wire{r}{\AgdaBound{v}}&}
-}
-\qquad
-\vcenter{
-\wirechart{}{\wire{r}{\AgdaBound{v}}&
-  \wwblank{12mm}\nnbox{[]}{~\AgdaInductiveConstructor{uniti⋆}}
-  \wire{r}{\AgdaBound{v}}&}
-}
-\]
-
-  The combinator \AgdaInductiveConstructor{swap⋆} is represented by
-  crisscrossing wires:
-  \[
-  \vcenter{\wirechart{@C=1.2cm@R=0.5cm}{
-  *{}\wire{r}{\AgdaBound{v₁}}&\blank\wirecross{d}\wire{r}{\AgdaBound{v₂}}&\\
-  *{}\wire{r}{\AgdaBound{v₂}}&\blank\wirecross{u}\wire{r}{\AgdaBound{v₁}}&
-  }}
-  \]
-  As discussed below, it is possible to consider a 3d variation which makes
-  explicit which of the wires is on top and which is on bottom. The
-  combinators \AgdaInductiveConstructor{assocl⋆} and
-  \AgdaInductiveConstructor{assocr⋆} are invisible in the graphical notation
-  as associativity of parallel wires is implicit. In other words, three
-  parallel wires could be seen as representing \AgdaBound{((v₁ , v₂) , v₃)}
-  or \AgdaBound{(v₁ , (v₂ , v₃))}.
-
-\item The composite combinator \AgdaBound{c₁} \AgdaSymbol{⊗} \AgdaBound{c₂}
-  is the parallel composition shown below:
-  \[ 
- \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
- \vsblank\wire{r}{\AgdaBound{v₁}}&\blank\nnbox{[]}
-    {\AgdaBound{c₁}}\wire{r}{\AgdaBound{v₃}}&\\
- \vsblank\wire{r}{\AgdaBound{v₂}}&\blank\nnbox{[]}
-    {\AgdaBound{c₂}}\wire{r}{\AgdaBound{v₄}}&
- }}
-  \]
-\item The combinators \AgdaBound{c₁} \AgdaSymbol{⊕1} \AgdaBound{c₂} and 
-\AgdaBound{c₁} \AgdaSymbol{⊕2} \AgdaBound{c₂} are represented as follows:
-  \[ 
- \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
- \blank\wire{r}{\AgdaInductiveConstructor{inj₁}~\AgdaBound{v₁}}
- \vsblank&\wwblank{15mm}\nnbox{[]}
-   {\AgdaBound{v₁}\quad\AgdaBound{c₁}\quad\AgdaBound{v₃}}
-   \wire{r}{\AgdaInductiveConstructor{inj₁}~\AgdaBound{v₃}}&\\
- \vsblank&\wwblank{15mm}\nnbox{[]}{\AgdaBound{c₂}}&
- }}
-\]
-\[
- \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
- \vsblank&\wwblank{15mm}\nnbox{[]}{\AgdaBound{c₁}}&\\
- \blank\wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v₂}}
- \vsblank&\wwblank{15mm}\nnbox{[]}
-   {\AgdaBound{v₂}\quad\AgdaBound{c₁}\quad\AgdaBound{v₄}}
-   \wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v₄}}&
- }}
-  \]
-\item Finally, when a box \AgdaBound{c} is sequentially composed with its
-  mirror image \AgdaSymbol{!} \AgdaBound{c} (in either order), both boxes
-  disappear.
-\end{itemize}
-
-Let us draw the five paths \AgdaFunction{p₁} to \AgdaFunction{p₅} introduced
-in the previous section. Since \AgdaInductiveConstructor{id⟷} is invisible, 
-the three paths \AgdaFunction{p₁}, \AgdaFunction{p₂}, and 
-\AgdaFunction{p₄}, are all represented as follows:
-\[
-\vcenter{
-\wirechart{}{\wire{r}{\AgdaFunction{TRUE}}&
-  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•T}}
-  \wire{r}{\AgdaFunction{FALSE}}&}
-}
-\]
-Path \AgdaFunction{p₃} would be represented as:
-\[
-\vcenter{
-\wirechart{}{\wire{r}{\AgdaFunction{TRUE}}&
-  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•T}}
-  \wire{r}{\AgdaFunction{FALSE}}&
-  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•F}}
-  \wire{r}{\AgdaFunction{TRUE}}&
-  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•T}}
-  \wire{r}{\AgdaFunction{FALSE}}&
-}}
-\]
-but then we notice that any two of the adjacent boxes are mirror images and
-erase them to produce the same wiring diagram as the previous three paths.
-For \AgdaFunction{p₅}, we have the following representation:
-\[
-\vcenter{\wirechart{@C=1cm@R=1cm}{
-  \wire{r}{\AgdaFunction{TRUE}}&
-  \wwblank{8mm}\nnbox{[]}{~\AgdaInductiveConstructor{uniti⋆}}
-  \wire{r}{\AgdaFunction{TRUE}}&
-  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•T}}
-  \wire{r}{\AgdaFunction{FALSE}}&
-  \wwblank{8mm}\nnbox{[]}{~\AgdaInductiveConstructor{unite⋆}}
-  \wire{r}{\AgdaFunction{FALSE}}&\\
-  &&\wwblank{12mm}\nnbox{[]}{\AgdaInductiveConstructor{id⟷}}&
-}}
-\]
-where the occurrences of \AgdaInductiveConstructor{swap⋆} have disappeared
-since one of the wires is invisible. The occurrences of
-\AgdaInductiveConstructor{id⟷} that acts on the invisible wire does
-\emph{not}, however, disappear.
-
-The diagrammatic notation is justified by the following \emph{coherence
-theorems}.
-
-\begin{theorem}[Joyal and Street~\citeyearpar{geometrytensor}]
-A well-formed equation between morphisms in the language of symmetric
-monoidal categories follows from the axioms of symmetric monoidal categories
-if and only if it holds, up to isomorphisms of diagrams, in the graphical
-language. 
-\end{theorem}
-
-Two diagrams are considered isomorphic, if their wires and boxes are in
-bijective correspondence that preserves the connections between boxes and
-wires. 
-
-%%%%%%%%%%%%%%%%%
-\subsection{Isotopies}
-
+Ultimately, the question of whether path \AgdaFunction{p₅} should be
+considered equivalent to the others should be based on whether there is a
+``smooth deformation'' between the paths. This question can be addressed from
+a purely categorical approach thanks to the various \emph{coherence theorems}
+connecting the categorical wiring diagrams to special cases of homotopies
+called isotopies. (See Selinger's paper~\citeyearpar{selinger-graphical} for
+an excellent survey and the papers by Joyal and
+Street~\citeyearpar{planardiagrams,geometrytensor} for the original
+development.) We will not pursue this in detail but we will just quote one of
+the coherence theorems (originally due to Joyal and Street) as an example.
 
 \begin{theorem}
-A well-formed equation between morphism terms in the language of monoidal
+A well-formed equation between morphisms in the language of monoidal
 categories follows from the axioms of monoidal categories if and only if it
 holds, up to planar isotopy, in the graphical language.
 \end{theorem}
 
-Translating to our language and notation, the theorem says the following. We
-are given two wiring diagrams representing two paths and we are asking
-whether the paths should be treated as equivalent. The answer is yes if it
-possible to transform one diagram to the other by moving wires and boxes
-around without crossing, cutting, or gluing any wires and without detaching
-them from the plane.  As an example, consider the paths \AgdaFunction{p₁} to
-\AgdaBound{p₅} introduced in the previous section. The three paths
-\AgdaFunction{p₁}, \AgdaFunction{p₂}, and \AgdaFunction{p₄} have identical
-diagrams (shown on the left below) and hence should be treated as
-equivalent. Path \AgdaFunction{p₃} (shown on the right) is also equivalent to
-them as one of the level shifts can be flattened:
+\noindent Translating to our setting, the theorem says the following. In the
+special case of diagrams involving just one monoid (say
+\AgdaInductiveConstructor{ZERO} and \AgdaInductiveConstructor{PLUS} types
+only) and no uses of swapping combinators, the two combinators represented by
+the diagrams are equivalent if the diagrams can be transformed to each other
+by moving wires and boxes around without crossing, cutting, or gluing any
+wires and without detaching them from the plane. Using similar theorems, it
+is possible, under certain assumptions, to prove that path \AgdaFunction{p₅}
+is equivalent to the other paths.
 
+The more interesting question, however, is whether all paths from a given
+pointed space to another should be considered equivalent. We answer this
+question negatively using the following two examples:
 
+\smallskip
+\begin{code}
+BOOL² : U
+BOOL² = TIMES BOOL BOOL
 
+NOT•T2 CNOT•TT :
+  •[ BOOL² , (TRUE , TRUE) ] ⟷ •[ BOOL² , (TRUE , FALSE) ]
+           
+NOT•T2 = id⟷ ⊗ NOT•T
 
+CNOT•TT = 
+  dist1 ◎ 
+  ((id⟷ ⊗ NOT•T) ⊕1 (id⟷ {v = (tt , TRUE)})) ◎ 
+  factor1
+\end{code}
 
+\noindent The path \AgdaFunction{NOT•T2} just negates the second component of
+the pair. The path \AgdaFunction{CNOT•TT} is the conditional-not reversible
+gate which only negates the second component of the pair if the first
+component is \AgdaFunction{TRUE}. Although the two paths have the same
+endpoints, they should not be considered equivalent. The simple reason is
+that the paths can be given different more general types:
 
+\smallskip
+\begin{code}
+NOT•T2' : ∀ {v} → 
+  •[ BOOL² , (v , TRUE) ] ⟷ •[ BOOL² , (v , FALSE) ]
+NOT•T2' = id⟷ ⊗ NOT•T
 
+CNOT•TT' : ∀ {v} → 
+  •[ BOOL² , (inj₁ v , TRUE) ] ⟷ •[ BOOL² , (inj₁ v , FALSE) ]
+CNOT•TT' = 
+  dist1 ◎ 
+  ((id⟷ ⊗ NOT•T) ⊕1 (id⟷ {v = (tt , TRUE)})) ◎ 
+  factor1
+\end{code}
 
-
-
-
-
-\[
-  \vcenter{\wirechart{@R+0.1cm}{
-      \blank\wire{rr}{B}&&\blank\\
-      \nnbox{[u].[d]}{f} & \blank\nnbox{[]}{h} & \nnbox{[u].[d]}{g} \\
-      \blank\wire{rr}{A}&&\blank\\
-      }}
-  \sep\neq\sep
-  \vcenter{\wirechart{@R+0.1cm}{
-      \blank\wire{rr}{B}&&\blank\\
-      \blank\nnbox{[u].[]}{f}\wire{rr}{A}&&\blank\nnbox{[u].[]}{g},\\
-      & \blank\nnbox{[]}{h} & \\
-      }}
-\]
-
-\begin{verbatim}
-f : A TIMES B -> A TIMES B
-f = id
-
-h : ONE -> ONE
-h = id
-
-g : A TIMES B -> A TIMES B 
-g = id
-
-left diagram = f ; ((uniti* ; (h x id_A) ; unite*) x id_B) ; g 
-right diagram = f ; ((uniti* ; swap* ; (id_A x h) ; swap* ; unite*) x id_B) ; g
-
-\end{verbatim}
-
-
-\begin{tikzpicture}
-\node[left] (T) at (-0.2,0) {\AgdaFunction{TRUE}};
-\node (F) at (1.2,-0.75) {};
-\node at (1,-1.1) {\AgdaFunction{FALSE}};
-\draw (T) -- (0.25,0) -- (0.75,-0.75) -- (F);
-%%
-\node[left] (T1) at (3.3,0) {\AgdaFunction{TRUE}};
-\node at (4.5,-0.75) {};
-\node at (4.3,-1.1) {\AgdaFunction{FALSE}};
-\node at (5.5,0.2) {\AgdaFunction{TRUE}};
-\node (F2) at (6.7,-0.75) {};
-\node at (6.5,-1.1) {\AgdaFunction{FALSE}};
-\draw (T1) -- (3.75,0) -- (4.25,-0.75) -- (4.75,-0.75) 
-   -- (5.25,0) -- (5.75,0) -- (6.25,-0.75) -- (F2);
-\end{tikzpicture}
-
-\noindent Path \AgdaFunction{p₅} is more subtle as it includes two
-occurrences of \AgdaInductiveConstructor{swap⋆}. Consider the following
-diagram for \AgdaInductiveConstructor{swap⋆} where we added a third dimension
-making explicit which path is crossing over which during the swap operation:
-\[
- \vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
-        *{}\wire{r}{}&\blank\wirecross{d}\wire{r}{}&\\
-        *{}\wire{r}{}&\blank\wirebraid{u}{.3}\wire{r}{}&
-        }}
-\]
-It follows that a sequence of two swaps might represent one of the following
-two diagrams:
-\[
-\vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
-    *{}\wire{r}{}&
-    \blank\wirecross{d}\wire{r}{}&
-    \blank\wirecross{d}\wire{r}{}&
-    \\
-    *{}\wire{r}{}&
-    \blank\wirebraid{u}{.3}\wire{r}{}&
-    \blank\wirebraid{u}{.3}\wire{r}{}&
-    \\
-    }}
-\]
-\[
-\vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
-     *{}\wire{r}{}&
-     \blank\wirecross{d}\wire{r}{}&
-     \blank\wirebraid{d}{.3}\wire{r}{}&
-     \\
-     *{}\wire{r}{}&
-     \blank\wirebraid{u}{.3}\wire{r}{}&
-     \blank\wirecross{u}\wire{r}{}&
-     \\
-     }}
-\]
-In 3 dimensions, the first diagram creates a ``knot'' but the second reduces
-to trivial identity paths. In 2 dimensions, the distinction between the two
-diagrams vanishes and they become equivalent. 
-
-The original presentation of $\Pi$ assumes the simple planar situation and we
-will continue our development with that assumption, leaving the possible
-investigation of other notions of homotopies to future work. The relevant
-coherence theorem in our situation is that two diagrams are equivalent if and
-
-\begin{verbatim}
-check axioms:
-
-category:
-id o f = f and f o id = f => same diagram
-assoc seq comp => same diagram
-
-monoidal:
-tensors assoc = same diagram
-0 + A = A  and A + 0 = A => same diagram
-1 * A = A and A * 1 = A => different diagrams ??? ==> units must be invisible!
-triangle and pentagon => same diagram
-
-symmetric: swap o swap isomorphic to id
-
-bimonoidal: distrib/factor: produces same diagrams when in pointed spaces
-coherence conditions: A(B+C) -> AB+AC -> AC+AB
-                               A(C+B) 
-
-dagger: !(!c) is identical to c
-all c o ! c and ! c o c are isom to id
-
-so any two paths that produce the same diagram should have a 2path between
-them
-
-need one example of two paths connecting the same values that do not produce
-the same diagram; does the example on p.11 of selinger's paper work?
-
-it's not too bad to add 2path between any two paths that produce the same
-diagram but what about the coherence conditions; do we have to add
-paths for them or are these at the next level?
-
-
-\end{verbatim}
+\noindent We should therefore be careful not to introduce 2paths between
+arbitrary paths just because they agree on some endpoints.
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{$\Pi$ Lifted and with Groupoid Axioms}
 
-To summarize, we will consider two paths to be equivalent, i.e., to be
-related by a 2path, if and only if the paths are related by the groupoid
-axioms. So there will be 2paths between \AgdaFunction{p₁}, \AgdaFunction{p₂},
-\AgdaFunction{p₃}, and \AgdaFunction{p₄}, but not \AgdaFunction{p₅}. More
-generally, we lift the entire $\Pi$ language from representing 1paths between
-points to representing 2paths between 1paths. The only difference between the
-two levels is that points had no structure and hence there were no
-non-trivial paths between the points themselves. However for 1paths are built
-using \AgdaInductiveConstructor{id⟷}, inverses \AgdaSymbol{!}, and
-compositions \AgdaSymbol{◎} that are subject to the groupoid laws. What is
-pleasant is that 2paths have a similar structure, and hence the entire scheme
-can be repeated over and over lifting $\Pi$ to higher and higher levels to
-capture the concept of weak $\infty$-groupoids.
+To summarize, there is a spectrum of possibilities to be explored for when
+paths should be considered equivalent. The minimum requirement is that paths
+that can be related using the groupoid laws should be considered equivalent
+and hence should be related by a 2path. In the sequel, we will adopt this
+conservative approach and leave further investigations to future work. 
+
+Formally, we lift the entire $\Pi$ language to compute with paths instead of
+with points. The lifted version of $\Pi$ will have all the combinators of
+Fig.~\ref{pointedcomb} as well as additional combinators witnessing the
+groupoid laws. The groupoid combinators will allow us to relate paths like
+\AgdaFunction{p₁} and \AgdaFunction{p₂} and the combinators from
+Fig.~\ref{pointedcomb} will allow us to compute with sums and products of
+paths up to the commutative semiring isomorphisms. What is pleasant about
+this design is that 2paths inherit a similar structure to 1paths, and hence
+the entire scheme can be repeated over and over lifting $\Pi$ to higher and
+higher levels to capture the concept of weak $\infty$-groupoids.
 
 We now present the detailed construction of the next level of $\Pi$. 
 
@@ -1467,8 +1168,106 @@ data _⇔_ : 1U• → 1U• → Set where
 
   -- Groupoid combinators
 
-  xxx : ∀ {t₁ t₂} → {c₁ c₂ : t₁ ⟷ t₂} → 
-    1•[ PATH t₁ t₂ , path c₁ ] ⇔ 1•[ PATH t₁ t₂ , path c₂ ]
+
+  lidl : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
+    1•[ PATH t₁ t₂ , path (id⟷ ◎ c) ] ⇔ 1•[ PATH t₁ t₂ , path c ]
+  lidr : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
+    1•[ PATH t₁ t₂ , path c ] ⇔ 1•[ PATH t₁ t₂ , path (id⟷ ◎ c) ] 
+  ridl : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
+    1•[ PATH t₁ t₂ , path (c ◎ id⟷) ] ⇔ 1•[ PATH t₁ t₂ , path c ]
+  ridr : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
+    1•[ PATH t₁ t₂ , path c ] ⇔ 1•[ PATH t₁ t₂ , path (c ◎ id⟷) ] 
+  assocl : ∀ {t₁ t₂ t₃ t₄}  → 
+    {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+    1•[ PATH t₁ t₄ , path (c₁ ◎ (c₂ ◎ c₃)) ] ⇔ 
+    1•[ PATH t₁ t₄ , path ((c₁ ◎ c₂) ◎ c₃) ]
+  assocr : ∀ {t₁ t₂ t₃ t₄}  → 
+    {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+    1•[ PATH t₁ t₄ , path ((c₁ ◎ c₂) ◎ c₃) ] ⇔ 
+    1•[ PATH t₁ t₄ , path (c₁ ◎ (c₂ ◎ c₃)) ] 
+  unite₊l : ∀ {t v} → 
+          1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
+          path (unite₊ ◎ uniti₊) ] ⇔ 
+          1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
+          path id⟷ ] 
+  unite₊r : ∀ {t v} → 
+          1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
+          path id⟷ ] ⇔ 
+          1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
+          path (unite₊ ◎ uniti₊) ] 
+  uniti₊l : ∀ {t v} → 
+          1•[ PATH (•[ t , v ]) (•[ t , v ]) , path (uniti₊ ◎ unite₊) ] ⇔ 
+          1•[ PATH (•[ t , v ]) (•[ t , v ]) , path id⟷ ] 
+  uniti₊r : ∀ {t v} → 
+          1•[ PATH (•[ t , v ]) (•[ t , v ]) , path id⟷ ] ⇔ 
+          1•[ PATH (•[ t , v ]) (•[ t , v ]) , path (uniti₊ ◎ unite₊) ] 
+  swap1₊l : ∀ {t₁ t₂ v₁} → 
+          1•[ PATH •[ PLUS t₁ t₂ , inj₁ v₁ ] •[ PLUS t₁ t₂ , inj₁ v₁ ] ,
+          path (swap1₊ ◎ ! swap1₊) ] ⇔
+          1•[ PATH •[ PLUS t₁ t₂ , inj₁ v₁ ] •[ PLUS t₁ t₂ , inj₁ v₁ ] , 
+          path id⟷ ]
+  swap1₊r : ∀ {t₁ t₂ v₁} → 
+          1•[ PATH •[ PLUS t₁ t₂ , inj₁ v₁ ] •[ PLUS t₁ t₂ , inj₁ v₁ ] , 
+          path id⟷ ] ⇔
+          1•[ PATH •[ PLUS t₁ t₂ , inj₁ v₁ ] •[ PLUS t₁ t₂ , inj₁ v₁ ] ,
+          path (swap1₊ ◎ ! swap1₊) ] 
+  swap2₊l : ∀ {t₁ t₂ v₂} → 
+          1•[ PATH •[ PLUS t₁ t₂ , inj₂ v₂ ] •[ PLUS t₁ t₂ , inj₂ v₂ ] , 
+          path (swap2₊ ◎ ! swap2₊) ] ⇔
+          1•[ PATH •[ PLUS t₁ t₂ , inj₂ v₂ ] •[ PLUS t₁ t₂ , inj₂ v₂ ] , 
+          path id⟷ ]
+  swap2₊r : ∀ {t₁ t₂ v₂} → 
+          1•[ PATH •[ PLUS t₁ t₂ , inj₂ v₂ ] •[ PLUS t₁ t₂ , inj₂ v₂ ] , 
+          path id⟷ ] ⇔
+          1•[ PATH •[ PLUS t₁ t₂ , inj₂ v₂ ] •[ PLUS t₁ t₂ , inj₂ v₂ ] , 
+          path (swap2₊ ◎ ! swap2₊) ] 
+  assocl1₊l : ∀ {t₁ t₂ t₃ v₁} → 
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] , 
+          path (assocl1₊ ◎ ! assocl1₊) ] ⇔
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] , 
+          path id⟷ ]
+  assocl1₊r : ∀ {t₁ t₂ t₃ v₁} → 
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] , 
+          path id⟷ ] ⇔
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] , 
+          path (assocl1₊ ◎ ! assocl1₊) ] 
+  assocl2₊l : ∀ {t₁ t₂ t₃ v₂} → 
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] , 
+          path (assocl2₊ ◎ ! assocl2₊) ] ⇔
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] , 
+          path id⟷ ]
+  assocl2₊r : ∀ {t₁ t₂ t₃ v₂} → 
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] , 
+          path id⟷ ] ⇔
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] , 
+          path (assocl2₊ ◎ ! assocl2₊) ] 
+  assocl3₊l : ∀ {t₁ t₂ t₃ v₃} → 
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] , 
+          path (assocl3₊ ◎ ! assocl3₊) ] ⇔
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] , 
+          path id⟷ ]
+  assocl3₊r : ∀ {t₁ t₂ t₃ v₃} → 
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] , 
+          path id⟷ ] ⇔
+          1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
+                   •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] , 
+          path (assocl3₊ ◎ ! assocl3₊) ] 
+  resp◎   : ∀ {t₁ t₂ t₃} →
+           {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
+           (1•[ PATH t₁ t₂ , path c₁ ] ⇔ 1•[ PATH t₁ t₂ , path c₃ ]) → 
+           (1•[ PATH t₂ t₃ , path c₂ ] ⇔ 1•[ PATH t₂ t₃ , path c₄ ]) → 
+           1•[ PATH t₁ t₃ , path (c₁ ◎ c₂) ] ⇔ 1•[ PATH t₁ t₃ , path (c₃ ◎ c₄) ]
 \end{code}
 \end{multicols}
 \caption{Inductive definition of 2paths\label{pointedcomb2}}
@@ -1477,7 +1276,6 @@ data _⇔_ : 1U• → 1U• → Set where
 \AgdaHide{
 \begin{code}
 1! : {t₁ t₂ : 1U•} → (t₁ ⇔ t₂) → (t₂ ⇔ t₁)
-1! xxx = xxx
 1! unite₊ = uniti₊
 1! uniti₊ = unite₊
 1! swap1₊ = swap2₊
@@ -1504,7 +1302,6 @@ data _⇔_ : 1U• → 1U• → Set where
 1! (c₁ ⊕1 c₂) = 1! c₁ ⊕1 1! c₂ 
 1! (c₁ ⊕2 c₂) = 1! c₁ ⊕2 1! c₂ 
 1! (c₁ ⊗ c₂) = 1! c₁ ⊗ 1! c₂ 
-{--
 1! (resp◎ c₁ c₂) = resp◎ (1! c₁) (1! c₂)
 1! ridl = ridr
 1! ridr = ridl
@@ -1512,20 +1309,17 @@ data _⇔_ : 1U• → 1U• → Set where
 1! lidr = lidl
 1! assocl = assocr
 1! assocr = assocl
-1! unite₊l = unite₊r
-1! unite₊r = unite₊l
---}
+1! _ = {!!} 
 
-{--
 linv : {t₁ t₂ : U•} → (c : t₁ ⟷ t₂) → 
        1•[ PATH t₁ t₁ , path (c ◎ ! c) ] ⇔ 1•[ PATH t₁ t₁ , path id⟷ ]
-linv unite₊ = {!!} -- unite₊l
-linv uniti₊ = {!!}
-linv swap1₊ = {!!}
-linv swap2₊ = {!!}
-linv assocl1₊ = {!!}
-linv assocl2₊ = {!!}
-linv assocl3₊ = {!!}
+linv unite₊ = unite₊l
+linv uniti₊ = uniti₊l
+linv swap1₊ = swap1₊l
+linv swap2₊ = swap2₊l
+linv assocl1₊ = assocl1₊l
+linv assocl2₊ = assocl2₊l
+linv assocl3₊ = assocl3₊l
 linv assocr1₊ = {!!}
 linv assocr2₊ = {!!}
 linv assocr3₊ = {!!}
@@ -1548,16 +1342,16 @@ linv (c ⊗ c₁) = {!!}
 
 rinv : {t₁ t₂ : U•} → (c : t₁ ⟷ t₂) → 
        1•[ PATH t₂ t₂ , path (! c ◎ c) ] ⇔ 1•[ PATH t₂ t₂ , path id⟷ ]
-rinv unite₊ = {!!}
-rinv uniti₊ = {!!} -- unite₊l
-rinv swap1₊ = {!!}
-rinv swap2₊ = {!!}
+rinv unite₊ = uniti₊l 
+rinv uniti₊ = unite₊l
+rinv swap1₊ = swap2₊l
+rinv swap2₊ = swap1₊l
 rinv assocl1₊ = {!!}
 rinv assocl2₊ = {!!}
 rinv assocl3₊ = {!!}
-rinv assocr1₊ = {!!}
-rinv assocr2₊ = {!!}
-rinv assocr3₊ = {!!}
+rinv assocr1₊ = assocl1₊l
+rinv assocr2₊ = assocl2₊l
+rinv assocr3₊ = assocl3₊l
 rinv unite⋆ = {!!}
 rinv uniti⋆ = {!!}
 rinv swap⋆ = {!!}
@@ -1574,7 +1368,6 @@ rinv (c ◎ c₁) = {!!}
 rinv (c ⊕1 c₁) = {!!}
 rinv (c ⊕2 c₁) = {!!}
 rinv (c ⊗ c₁) = {!!} 
---}
 \end{code}
 }
 
@@ -1595,15 +1388,15 @@ G = record
         ; id = id⟷
         ; _∘_ = λ c₀ c₁ → c₁ ◎ c₀
         ; _⁻¹ = ! 
-        ; lneutr = λ _ → xxx -- ridl 
-        ; rneutr = λ _ → xxx -- lidl 
-        ; assoc = λ _ _ _ → xxx -- assocl
+        ; lneutr = λ _ → ridl 
+        ; rneutr = λ _ → lidl 
+        ; assoc = λ _ _ _ → assocl
         ; equiv = record { refl = id⇔
                                 ; sym = λ c → 1! c 
                                 ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
-        ; linv = λ {t₁} {t₂} c → xxx -- linv c
-        ; rinv = λ {t₁} {t₂} c → xxx -- rinv c
-        ; ∘-resp-≈ = λ f⟷h g⟷i → xxx -- resp◎ g⟷i f⟷h 
+        ; linv = λ {t₁} {t₂} c → linv c
+        ; rinv = λ {t₁} {t₂} c → rinv c
+        ; ∘-resp-≈ = λ f⟷h g⟷i → resp◎ g⟷i f⟷h 
         }
 \end{code}
 
@@ -1831,37 +1624,342 @@ triangle; pentagon rules; eckmann-hilton
 
 \end{document}
 
-{--
-part of fig.5
-  lidl : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
-    1•[ PATH t₁ t₂ , path (id⟷ ◎ c) ] ⇔ 1•[ PATH t₁ t₂ , path c ]
-  lidr : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
-    1•[ PATH t₁ t₂ , path c ] ⇔ 1•[ PATH t₁ t₂ , path (id⟷ ◎ c) ] 
-  ridl : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
-    1•[ PATH t₁ t₂ , path (c ◎ id⟷) ] ⇔ 1•[ PATH t₁ t₂ , path c ]
-  ridr : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
-    1•[ PATH t₁ t₂ , path c ] ⇔ 1•[ PATH t₁ t₂ , path (c ◎ id⟷) ] 
-  assocl : ∀ {t₁ t₂ t₃ t₄}  → 
-    {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
-    1•[ PATH t₁ t₄ , path (c₁ ◎ (c₂ ◎ c₃)) ] ⇔ 
-    1•[ PATH t₁ t₄ , path ((c₁ ◎ c₂) ◎ c₃) ]
-  assocr : ∀ {t₁ t₂ t₃ t₄}  → 
-    {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
-    1•[ PATH t₁ t₄ , path ((c₁ ◎ c₂) ◎ c₃) ] ⇔ 
-    1•[ PATH t₁ t₄ , path (c₁ ◎ (c₂ ◎ c₃)) ] 
-  unite₊l : ∀ {t v} → 
-    1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
-        path (unite₊ ◎ uniti₊) ] ⇔ 
-    1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
-        path id⟷ ] 
-  unite₊r : ∀ {t v} → 
-    1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
-        path id⟷ ] ⇔ 
-    1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
-        path (unite₊ ◎ uniti₊) ] 
-  resp◎ : ∀ {t₁ t₂ t₃} →
-    {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
-    (1•[ PATH t₁ t₂ , path c₁ ] ⇔ 1•[ PATH t₁ t₂ , path c₃ ]) → 
-    (1•[ PATH t₂ t₃ , path c₂ ] ⇔ 1•[ PATH t₂ t₃ , path c₄ ]) → 
-    1•[ PATH t₁ t₃ , path (c₁ ◎ c₂) ] ⇔ 1•[ PATH t₁ t₃ , path (c₃ ◎ c₄) ]
---}
+dist takes two inputs and produces one output
+
+The conventional presentation of wiring diagrams is for unpointed spaces. We
+adapt it for pointed spaces. First we show how to represent each possible
+pointed space as a collection of ``wires'' and then we show how each
+combinator ``shuffles'' or ``transforms'' the wires:
+\begin{itemize}
+\item It is not possible to produce a pointed space
+  \pointed{\AgdaInductiveConstructor{ZERO}}{\AgdaBound{v}} for any
+  \AgdaBound{v}.
+\item The pointed space
+  \pointed{\AgdaInductiveConstructor{ONE}}{\AgdaInductiveConstructor{tt}} is
+  invisible in the graphical notation.
+\item The pointed space \pointed{\AgdaInductiveConstructor{TIMES}
+  \AgdaBound{t₁} \AgdaBound{t₂}}{\AgdaBound{(v₁ , v₂)}} is
+  represented using two parallel wires labeled \AgdaBound{v₁} and
+  \AgdaBound{v₂}:
+\[
+ \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
+        *{}\wire{r}{\AgdaBound{v₁}}&\\
+        *{}\wire{r}{\AgdaBound{v₂}}&
+        }}
+\]
+ Note that if one of the types is \AgdaInductiveConstructor{ONE}, the
+ corresponding wire disappears. If both the wires are
+ \AgdaInductiveConstructor{ONE}, they both disappear.
+\item The pointed space \pointed{\AgdaInductiveConstructor{PLUS}
+  \AgdaBound{t₁} \AgdaBound{t₂}}{\AgdaInductiveConstructor{inj₁}
+  \AgdaBound{v₁}} is represented by a wire labeled with
+  \AgdaInductiveConstructor{inj₁} \AgdaBound{v₁}. The pointed space
+  \pointed{\AgdaInductiveConstructor{PLUS} \AgdaBound{t₁}
+    \AgdaBound{t₂}}{\AgdaInductiveConstructor{inj₂} \AgdaBound{v₂}} is
+  similarly represented by a wire labeled with
+  \AgdaInductiveConstructor{inj₂} \AgdaBound{v₂}. 
+\[
+ \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
+        *{}\wire{r}{\AgdaInductiveConstructor{inj₁}~\AgdaBound{v₁}}&
+        }}
+\qquad
+ \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
+        *{}\wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v₂}}&
+        }}
+\]
+\item Knowing how points are represented, we now show how various combinators
+  act on the wires. The combinator \AgdaInductiveConstructor{id⟷} is
+  invisible. The combinator \AgdaInductiveConstructor{◎} connects the
+  outgoing wires of one diagram to the input wires of the other. The
+  associativity of \AgdaInductiveConstructor{◎} is implicit in the graphical
+  notation. 
+\item The combinators \AgdaInductiveConstructor{unite₊} and
+  \AgdaInductiveConstructor{uniti₊} are represented as follows:
+\[
+\vcenter{
+\wirechart{}{\wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaInductiveConstructor{unite₊}}
+  \wire{r}{\AgdaBound{v}}&}
+}
+\qquad
+\vcenter{
+\wirechart{}{\wire{r}{\AgdaBound{v}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaInductiveConstructor{uniti₊}}
+  \wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v}}&}
+}
+\]
+\item All other combinators that just re-label a value are similarly
+  represented as one box with one incoming wire labeled by the input value
+  and one outgoing wires labeled by the resulting value.
+\item The combinators that operate on \AgdaInductiveConstructor{TIMES} types
+  are a bit more involved as shown below. First, although the unit value
+  \AgdaInductiveConstructor{tt} is invisible in the graphical notation, the
+  combinators \AgdaInductiveConstructor{unite⋆} and
+  \AgdaInductiveConstructor{uniti⋆} are still represented as boxes as shown
+  below: 
+\[
+\vcenter{
+\wirechart{}{\wire{r}{\AgdaBound{v}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaInductiveConstructor{unite⋆}}
+  \wire{r}{\AgdaBound{v}}&}
+}
+\qquad
+\vcenter{
+\wirechart{}{\wire{r}{\AgdaBound{v}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaInductiveConstructor{uniti⋆}}
+  \wire{r}{\AgdaBound{v}}&}
+}
+\]
+
+  The combinator \AgdaInductiveConstructor{swap⋆} is represented by
+  crisscrossing wires:
+  \[
+  \vcenter{\wirechart{@C=1.2cm@R=0.5cm}{
+  *{}\wire{r}{\AgdaBound{v₁}}&\blank\wirecross{d}\wire{r}{\AgdaBound{v₂}}&\\
+  *{}\wire{r}{\AgdaBound{v₂}}&\blank\wirecross{u}\wire{r}{\AgdaBound{v₁}}&
+  }}
+  \]
+  As discussed below, it is possible to consider a 3d variation which makes
+  explicit which of the wires is on top and which is on bottom. The
+  combinators \AgdaInductiveConstructor{assocl⋆} and
+  \AgdaInductiveConstructor{assocr⋆} are invisible in the graphical notation
+  as associativity of parallel wires is implicit. In other words, three
+  parallel wires could be seen as representing \AgdaBound{((v₁ , v₂) , v₃)}
+  or \AgdaBound{(v₁ , (v₂ , v₃))}.
+
+\item The composite combinator \AgdaBound{c₁} \AgdaSymbol{⊗} \AgdaBound{c₂}
+  is the parallel composition shown below:
+  \[ 
+ \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
+ \vsblank\wire{r}{\AgdaBound{v₁}}&\blank\nnbox{[]}
+    {\AgdaBound{c₁}}\wire{r}{\AgdaBound{v₃}}&\\
+ \vsblank\wire{r}{\AgdaBound{v₂}}&\blank\nnbox{[]}
+    {\AgdaBound{c₂}}\wire{r}{\AgdaBound{v₄}}&
+ }}
+  \]
+\item The combinators \AgdaBound{c₁} \AgdaSymbol{⊕1} \AgdaBound{c₂} and 
+\AgdaBound{c₁} \AgdaSymbol{⊕2} \AgdaBound{c₂} are represented as follows:
+  \[ 
+ \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
+ \blank\wire{r}{\AgdaInductiveConstructor{inj₁}~\AgdaBound{v₁}}
+ \vsblank&\wwblank{15mm}\nnbox{[]}
+   {\AgdaBound{v₁}\quad\AgdaBound{c₁}\quad\AgdaBound{v₃}}
+   \wire{r}{\AgdaInductiveConstructor{inj₁}~\AgdaBound{v₃}}&\\
+ \vsblank&\wwblank{15mm}\nnbox{[]}{\AgdaBound{c₂}}&
+ }}
+\]
+\[
+ \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
+ \vsblank&\wwblank{15mm}\nnbox{[]}{\AgdaBound{c₁}}&\\
+ \blank\wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v₂}}
+ \vsblank&\wwblank{15mm}\nnbox{[]}
+   {\AgdaBound{v₂}\quad\AgdaBound{c₁}\quad\AgdaBound{v₄}}
+   \wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v₄}}&
+ }}
+  \]
+\item Finally, when a box \AgdaBound{c} is sequentially composed with its
+  mirror image \AgdaSymbol{!} \AgdaBound{c} (in either order), both boxes
+  disappear.
+\end{itemize}
+
+Let us draw the five paths \AgdaFunction{p₁} to \AgdaFunction{p₅} introduced
+in the previous section. Since \AgdaInductiveConstructor{id⟷} is invisible, 
+the three paths \AgdaFunction{p₁}, \AgdaFunction{p₂}, and 
+\AgdaFunction{p₄}, are all represented as follows:
+\[
+\vcenter{
+\wirechart{}{\wire{r}{\AgdaFunction{TRUE}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•T}}
+  \wire{r}{\AgdaFunction{FALSE}}&}
+}
+\]
+Path \AgdaFunction{p₃} would be represented as:
+\[
+\vcenter{
+\wirechart{}{\wire{r}{\AgdaFunction{TRUE}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•T}}
+  \wire{r}{\AgdaFunction{FALSE}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•F}}
+  \wire{r}{\AgdaFunction{TRUE}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•T}}
+  \wire{r}{\AgdaFunction{FALSE}}&
+}}
+\]
+but then we notice that any two of the adjacent boxes are mirror images and
+erase them to produce the same wiring diagram as the previous three paths.
+For \AgdaFunction{p₅}, we have the following representation:
+\[
+\vcenter{\wirechart{@C=1cm@R=1cm}{
+  \wire{r}{\AgdaFunction{TRUE}}&
+  \wwblank{8mm}\nnbox{[]}{~\AgdaInductiveConstructor{uniti⋆}}
+  \wire{r}{\AgdaFunction{TRUE}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•T}}
+  \wire{r}{\AgdaFunction{FALSE}}&
+  \wwblank{8mm}\nnbox{[]}{~\AgdaInductiveConstructor{unite⋆}}
+  \wire{r}{\AgdaFunction{FALSE}}&\\
+  &&\wwblank{12mm}\nnbox{[]}{\AgdaInductiveConstructor{id⟷}}&
+}}
+\]
+where the occurrences of \AgdaInductiveConstructor{swap⋆} have disappeared
+since one of the wires is invisible. The occurrences of
+\AgdaInductiveConstructor{id⟷} that acts on the invisible wire does
+\emph{not}, however, disappear.
+
+The diagrammatic notation is justified by the following \emph{coherence
+theorems}.
+
+\begin{theorem}[Joyal and Street~\citeyearpar{geometrytensor}]
+A well-formed equation between morphisms in the language of symmetric
+monoidal categories follows from the axioms of symmetric monoidal categories
+if and only if it holds, up to isomorphisms of diagrams, in the graphical
+language. 
+\end{theorem}
+
+Two diagrams are considered isomorphic, if their wires and boxes are in
+bijective correspondence that preserves the connections between boxes and
+wires. 
+
+path from \AgdaFunction{TRUE} to itself and then uses the boolean
+negation. The first step is clearly superfluous and hence we expect, via the
+groupoid laws, to have a 2path connecting \AgdaFunction{p₂} to
+\AgdaFunction{p₁}. Path \AgdaFunction{p₃} does not syntactically refer to a
+trivial path but instead uses what is effectively a trivial path that follows
+a negation path and then its inverse. We also expect to have a 2path between
+this path and the other ones. 
+
+The situation with path \AgdaFunction{p₅} is more subtle. Viewed
+extensionally, path \AgdaFunction{p₅} is obviously equivalent to the other
+paths as it has the same input-output behavior connecting \AgdaFunction{TRUE}
+to \AgdaFunction{FALSE}. In the conventional approach to programming language
+semantics, this extensional equivalence would then be used to justify the
+existence of a 2path. In our setting, we do \emph{not} want to reason using
+extensional methods. Instead, we would like to think of 2paths are resulting
+from homotopies (i.e., ``smooth deformations'') of paths into each other.
+
+
+\[
+  \vcenter{\wirechart{@R+0.1cm}{
+      \blank\wire{rr}{B}&&\blank\\
+      \nnbox{[u].[d]}{f} & \blank\nnbox{[]}{h} & \nnbox{[u].[d]}{g} \\
+      \blank\wire{rr}{A}&&\blank\\
+      }}
+  \sep\neq\sep
+  \vcenter{\wirechart{@R+0.1cm}{
+      \blank\wire{rr}{B}&&\blank\\
+      \blank\nnbox{[u].[]}{f}\wire{rr}{A}&&\blank\nnbox{[u].[]}{g},\\
+      & \blank\nnbox{[]}{h} & \\
+      }}
+\]
+
+\begin{verbatim}
+f : A TIMES B -> A TIMES B
+f = id
+
+h : ONE -> ONE
+h = id
+
+g : A TIMES B -> A TIMES B 
+g = id
+
+left diagram = f ; ((uniti* ; (h x id_A) ; unite*) x id_B) ; g 
+right diagram = f ; ((uniti* ; swap* ; (id_A x h) ; swap* ; unite*) x id_B) ; g
+
+\end{verbatim}
+
+
+\begin{tikzpicture}
+\node[left] (T) at (-0.2,0) {\AgdaFunction{TRUE}};
+\node (F) at (1.2,-0.75) {};
+\node at (1,-1.1) {\AgdaFunction{FALSE}};
+\draw (T) -- (0.25,0) -- (0.75,-0.75) -- (F);
+%%
+\node[left] (T1) at (3.3,0) {\AgdaFunction{TRUE}};
+\node at (4.5,-0.75) {};
+\node at (4.3,-1.1) {\AgdaFunction{FALSE}};
+\node at (5.5,0.2) {\AgdaFunction{TRUE}};
+\node (F2) at (6.7,-0.75) {};
+\node at (6.5,-1.1) {\AgdaFunction{FALSE}};
+\draw (T1) -- (3.75,0) -- (4.25,-0.75) -- (4.75,-0.75) 
+   -- (5.25,0) -- (5.75,0) -- (6.25,-0.75) -- (F2);
+\end{tikzpicture}
+
+\noindent Path \AgdaFunction{p₅} is more subtle as it includes two
+occurrences of \AgdaInductiveConstructor{swap⋆}. Consider the following
+diagram for \AgdaInductiveConstructor{swap⋆} where we added a third dimension
+making explicit which path is crossing over which during the swap operation:
+\[
+ \vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
+        *{}\wire{r}{}&\blank\wirecross{d}\wire{r}{}&\\
+        *{}\wire{r}{}&\blank\wirebraid{u}{.3}\wire{r}{}&
+        }}
+\]
+It follows that a sequence of two swaps might represent one of the following
+two diagrams:
+\[
+\vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
+    *{}\wire{r}{}&
+    \blank\wirecross{d}\wire{r}{}&
+    \blank\wirecross{d}\wire{r}{}&
+    \\
+    *{}\wire{r}{}&
+    \blank\wirebraid{u}{.3}\wire{r}{}&
+    \blank\wirebraid{u}{.3}\wire{r}{}&
+    \\
+    }}
+\]
+\[
+\vcenter{\wirechart{@C=1.5cm@R=0.8cm}{
+     *{}\wire{r}{}&
+     \blank\wirecross{d}\wire{r}{}&
+     \blank\wirebraid{d}{.3}\wire{r}{}&
+     \\
+     *{}\wire{r}{}&
+     \blank\wirebraid{u}{.3}\wire{r}{}&
+     \blank\wirecross{u}\wire{r}{}&
+     \\
+     }}
+\]
+In 3 dimensions, the first diagram creates a ``knot'' but the second reduces
+to trivial identity paths. In 2 dimensions, the distinction between the two
+diagrams vanishes and they become equivalent. 
+
+The original presentation of $\Pi$ assumes the simple planar situation and we
+will continue our development with that assumption, leaving the possible
+investigation of other notions of homotopies to future work. The relevant
+coherence theorem in our situation is that two diagrams are equivalent if and
+
+\begin{verbatim}
+check axioms:
+
+category:
+id o f = f and f o id = f => same diagram
+assoc seq comp => same diagram
+
+monoidal:
+tensors assoc = same diagram
+0 + A = A  and A + 0 = A => same diagram
+1 * A = A and A * 1 = A => different diagrams ??? ==> units must be invisible!
+triangle and pentagon => same diagram
+
+symmetric: swap o swap isomorphic to id
+
+bimonoidal: distrib/factor: produces same diagrams when in pointed spaces
+coherence conditions: A(B+C) -> AB+AC -> AC+AB
+                               A(C+B) 
+
+dagger: !(!c) is identical to c
+all c o ! c and ! c o c are isom to id
+
+so any two paths that produce the same diagram should have a 2path between
+them
+
+need one example of two paths connecting the same values that do not produce
+the same diagram; does the example on p.11 of selinger's paper work?
+
+it's not too bad to add 2path between any two paths that produce the same
+diagram but what about the coherence conditions; do we have to add
+paths for them or are these at the next level?
+
+
+\end{verbatim}
+
