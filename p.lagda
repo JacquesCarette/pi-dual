@@ -1928,6 +1928,9 @@ Since our development is done using pointed spaces, we adapt the conventional
 construction as follows. 
 
 \begin{code}
+
+-- Types are of the form t - t'
+
 record U- : Set where
   constructor _-_
   field
@@ -1955,6 +1958,8 @@ FLIP- (pos - neg) = neg - pos
 LOLLI- : U- → U- → U-
 LOLLI- (pos₁ - neg₁) (pos₂ - neg₂) = 
   PLUS neg₁ pos₂ - PLUS pos₁ neg₂
+
+-- Pointed types are of the form (t , pt) - (t' , pt')
 
 data U-• : Set where
   both• : (t : U-) → ⟦ pos t ⟧ → ⟦ neg t ⟧ → U-•
@@ -1999,6 +2004,15 @@ LOLLI-21• (both• t₁ p₁ n₁) (both• t₂ p₂ n₂) =
 LOLLI-22• : U-• → U-• → U-•
 LOLLI-22• (both• t₁ p₁ n₁) (both• t₂ p₂ n₂) = 
   both• (LOLLI- t₁ t₂) (inj₂ p₂) (inj₂ n₂) 
+
+-- Combinators are between
+-- (t , pt) - (t' , pt') and
+-- (u , pu) - (u' , pu')
+-- this re-arranges to a level 0 combinator
+-- (t , pt) + (u' , pu') <-> (t' , pt') + (u , pu)
+-- when combining the pointed sets in the last line
+-- we have two options on the source: left pt, right pu'
+-- and two options on the target: left pt', and right pu
 
 data _⇄_ : U-• → U-• → Set where
   NN : ∀ {P₁ N₁ P₂ N₂ p₁ n₁ p₂ n₂} → 
