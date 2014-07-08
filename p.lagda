@@ -139,6 +139,7 @@ $\displaystyle
     {\par\addvspace{.5pc}}
 
 \DeclareUnicodeCharacter{9678}{$\circledcirc$}
+\DeclareUnicodeCharacter{8644}{$\rightleftarrows$}
 \DeclareUnicodeCharacter{10231}{$\leftrightarrow$}
 \DeclareUnicodeCharacter{10214}{$\llbracket$} 
 \DeclareUnicodeCharacter{10215}{$\rrbracket$} 
@@ -157,7 +158,7 @@ $\displaystyle
 \fi
 
 \newcommand{\jc}[1]{\authornote{purple}{JC}{#1}}
-\newcommand{\as}[1]{\authornote{magenta}{SCW}{#1}}
+\newcommand{\as}[1]{\authornote{magenta}{AS}{#1}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
@@ -275,10 +276,14 @@ and universal quantifications. In addition, it is clear that the question of
 whether two elements of a type are equal is a proposition, and hence that
 this proposition must correspond to a type.  We encode this type in Agda
 as follows,
+
+\smallskip
 \begin{code}
 data _≡_ {ℓ} {A : Set ℓ} : (a b : A) → Set ℓ where
   refl : (a : A) → (a ≡ a)
 \end{code}
+\smallskip
+
 \noindent where we make the evidence explicit.  In Agda, one may write proofs 
 of such propositions as shown in the two examples below:
 
@@ -300,7 +305,7 @@ and \AgdaBound{k} are all ``equal.'' As shown in example \AgdaFunction{i1},
 this notion of \emph{propositional equality} is not just syntactic equality
 but generalizes to \emph{definitional equality}, i.e., to equality that can
 be established by normalizing the values to their normal forms.  This is 
-also know as ``up to $\beta\eta$''.
+also known as ``up to $\beta\eta$.''
 
 An important question from the HoTT perspective is the following: given two
 elements \AgdaBound{p} and \AgdaBound{q} of some type \AgdaBound{x}
@@ -730,7 +735,7 @@ data U : Set where
 \end{code} 
 \smallskip
 
-We want to identify paths with $\Pi$-combinators. There is a small
+We now want to identify paths with $\Pi$-combinators. There is a small
 complication however: paths are ultimately defined between points but the
 $\Pi$-combinators of Fig.~\ref{pi-combinators} are defined between spaces. We
 can bridge this gap using a popular HoTT concept, that of \emph{pointed
@@ -826,18 +831,30 @@ data _⟷_ : U• → U• → Set where
 \label{pointedcomb}}
 \end{figure*}
 
-\noindent Given pointed spaces, it is possible to re-express the
-$\Pi$-combinators as shown in Fig.~\ref{pointedcomb}. The new presentation of
-combinators directly relates points to points and in fact subsumes the
-operational semantics of Fig.~\ref{opsem}. For example
-\AgdaInductiveConstructor{swap1₊} is still an operation from the space
-\AgdaInductiveConstructor{PLUS} \AgdaBound{t₁} \AgdaBound{t₂} to itself but
-in addition it specifies that, within that spaces, it maps the point
-\AgdaInductiveConstructor{inj₁} \AgdaBound{v₁} to the point
-\AgdaInductiveConstructor{inj₂} \AgdaBound{v₁}.
-\jc{The operational semantics have $24$ rules, while the groupoid model
-has $26$.  This is because of the 2 rules with \emph{absurd} in them.
-How shall they be explained?}
+\noindent Pointed spaces are often necessary in homotopy theory as various
+important properties of spaces depend on the chosen basepoint. In our
+setting, pointed spaces allow us to re-express the $\Pi$-combinators in a way
+that unifies their status as isomorphisms between \emph{types} and as paths
+between \emph{points} as shown in Fig.~\ref{pointedcomb}. The new
+presentation of combinators directly relates points to points and in fact
+subsumes the operational semantics of Fig.~\ref{opsem}. For example, note
+that the $\Pi$-combinator $\swapp : \tau_1 + \tau_2 \iso \tau_2 + \tau_1$
+requires two clauses in the interpreter:
+\[\begin{array}{r@{\!}lcl}
+\evalone{\swapp}{&(\inl{v})} &=& \inr{v} \\
+\evalone{\swapp}{&(\inr{v})} &=& \inl{v} 
+\end{array}\]
+These two clauses give rise to two path constructors
+\AgdaInductiveConstructor{swap1₊} and \AgdaInductiveConstructor{swap2₊}. When
+viewed as maps between unpointed spaces, both constructors map from
+\AgdaInductiveConstructor{PLUS} \AgdaBound{t₁} \AgdaBound{t₂} to
+\AgdaInductiveConstructor{PLUS} \AgdaBound{t₂} \AgdaBound{t₁}. When, however,
+viewed as maps between points spaces, each constructor specifies in addition
+its action on the point in a way that mirrors the semantic evaluation
+rule. The situation is the same for all other $\Pi$-constructors. \jc{The
+  operational semantics have $24$ rules, while the groupoid model has $26$.
+  This is because of the 2 rules with \emph{absurd} in them.  How shall they
+  be explained?}
 
 We note that the refinement of the $\Pi$-combinators to combinators on
 pointed spaces is given by an inductive family for \emph{heterogeneous}
@@ -922,6 +939,12 @@ _□ t = id⟷
 \begin{code}
 data Path (t₁ t₂ : U•) : Set where
   path : (c : t₁ ⟷ t₂) → Path t₁ t₂
+
+ZERO• : {absurd : ⟦ ZERO ⟧} → U•
+ZERO• {absurd} = •[ ZERO , absurd ]
+
+ONE• : U•
+ONE• = •[ ONE , tt ]
 
 BOOL : U
 BOOL = PLUS ONE ONE
@@ -1077,8 +1100,208 @@ arbitrary paths just because they agree on some endpoints.
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Isotopies} 
 
-Returning to idea of ``smooth deformations'' of paths, we first quote one of
-the coherence theorems (originally due to Joyal and Street).
+Returning to idea of ``smooth deformations'' of paths, we first introduce a
+graphical notation for paths which is the ``space'' in which the deformations
+happen. The conventional presentation of wiring diagrams is for unpointed
+spaces. We adapt it for pointed spaces. First we show how to represent each
+possible pointed space as a collection of ``wires'' and then we show how each
+combinator ``shuffles'' or ``transforms'' the wires:
+\begin{itemize}
+\item It is not possible to produce a pointed space
+  \pointed{\AgdaInductiveConstructor{ZERO}}{\AgdaBound{v}} for any
+  \AgdaBound{v}.
+\item The pointed space
+  \pointed{\AgdaInductiveConstructor{ONE}}{\AgdaInductiveConstructor{tt}} is
+  invisible in the graphical notation.
+\item The pointed space \pointed{\AgdaInductiveConstructor{TIMES}
+  \AgdaBound{t₁} \AgdaBound{t₂}}{\AgdaBound{(v₁ , v₂)}} is
+  represented using two parallel wires labeled \AgdaBound{v₁} and
+  \AgdaBound{v₂}:
+\[
+ \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
+        *{}\wire{r}{\AgdaBound{v₁}}&\\
+        *{}\wire{r}{\AgdaBound{v₂}}&
+        }}
+\]
+ Note that if one of the types is \AgdaInductiveConstructor{ONE}, the
+ corresponding wire disappears. If both the wires are
+ \AgdaInductiveConstructor{ONE}, they both disappear.
+\item The pointed space \pointed{\AgdaInductiveConstructor{PLUS}
+  \AgdaBound{t₁} \AgdaBound{t₂}}{\AgdaInductiveConstructor{inj₁}
+  \AgdaBound{v₁}} is represented by a wire labeled with
+  \AgdaInductiveConstructor{inj₁} \AgdaBound{v₁}. The pointed space
+  \pointed{\AgdaInductiveConstructor{PLUS} \AgdaBound{t₁}
+    \AgdaBound{t₂}}{\AgdaInductiveConstructor{inj₂} \AgdaBound{v₂}} is
+  similarly represented by a wire labeled with
+  \AgdaInductiveConstructor{inj₂} \AgdaBound{v₂}. 
+\[
+ \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
+        *{}\wire{r}{\AgdaInductiveConstructor{inj₁}~\AgdaBound{v₁}}&
+        }}
+\qquad
+ \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
+        *{}\wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v₂}}&
+        }}
+\]
+\item Knowing how points are represented, we now show how various combinators
+  act on the wires. The combinator \AgdaInductiveConstructor{id⟷} is
+  invisible. The combinator \AgdaInductiveConstructor{◎} connects the
+  outgoing wires of one diagram to the input wires of the other. The
+  associativity of \AgdaInductiveConstructor{◎} is implicit in the graphical
+  notation. 
+\item The combinators \AgdaInductiveConstructor{unite₊} and
+  \AgdaInductiveConstructor{uniti₊} are represented as follows:
+\[
+\vcenter{
+\wirechart{}{\wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaInductiveConstructor{unite₊}}
+  \wire{r}{\AgdaBound{v}}&}
+}
+\qquad
+\vcenter{
+\wirechart{}{\wire{r}{\AgdaBound{v}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaInductiveConstructor{uniti₊}}
+  \wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v}}&}
+}
+\]
+\item All other combinators that just re-label a value are similarly
+  represented as one box with one incoming wire labeled by the input value
+  and one outgoing wires labeled by the resulting value.
+\item The combinators that operate on \AgdaInductiveConstructor{TIMES} types
+  are a bit more involved as shown below. First, although the unit value
+  \AgdaInductiveConstructor{tt} is invisible in the graphical notation, the
+  combinators \AgdaInductiveConstructor{unite⋆} and
+  \AgdaInductiveConstructor{uniti⋆} are still represented as boxes as shown
+  below: 
+\[
+\vcenter{
+\wirechart{}{\wire{r}{\AgdaBound{v}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaInductiveConstructor{unite⋆}}
+  \wire{r}{\AgdaBound{v}}&}
+}
+\qquad
+\vcenter{
+\wirechart{}{\wire{r}{\AgdaBound{v}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaInductiveConstructor{uniti⋆}}
+  \wire{r}{\AgdaBound{v}}&}
+}
+\]
+
+  The combinator \AgdaInductiveConstructor{swap⋆} is represented by
+  crisscrossing wires:
+  \[
+  \vcenter{\wirechart{@C=1.2cm@R=0.5cm}{
+  *{}\wire{r}{\AgdaBound{v₁}}&\blank\wirecross{d}\wire{r}{\AgdaBound{v₂}}&\\
+  *{}\wire{r}{\AgdaBound{v₂}}&\blank\wirecross{u}\wire{r}{\AgdaBound{v₁}}&
+  }}
+  \]
+  As discussed below, it is possible to consider a 3d variation which makes
+  explicit which of the wires is on top and which is on bottom. The
+  combinators \AgdaInductiveConstructor{assocl⋆} and
+  \AgdaInductiveConstructor{assocr⋆} are invisible in the graphical notation
+  as associativity of parallel wires is implicit. In other words, three
+  parallel wires could be seen as representing \AgdaBound{((v₁ , v₂) , v₃)}
+  or \AgdaBound{(v₁ , (v₂ , v₃))}.
+
+\item The combinators \AgdaInductiveConstructor{dist1},
+  \AgdaInductiveConstructor{dist2}, \AgdaInductiveConstructor{factor1}, and
+  \AgdaInductiveConstructor{factor2} have the following representation:
+  \[
+  \vcenter{\wirechart{@C=1.2cm@R=0.5cm}{
+  *{}\wire{r}{\AgdaInductiveConstructor{inj₁}~\AgdaBound{v₁}}&& \\
+  *{} & \wwblank{12mm}\nnbox{[u].[d]}{\AgdaInductiveConstructor{dist1}} & 
+    \wire{r}{\AgdaInductiveConstructor{inj₁}~(\AgdaBound{v₁},\AgdaBound{v₃})}& \\
+  *{}\wire{r}{\AgdaBound{v₃}}&&&
+  }}
+  \]
+
+\as{fix this diagram and add the other 3 diagrams} 
+
+%% -- inj1 v1 [      ]
+%% --         [dist1 ] inj1 (v1 , v3) 
+%% -- v3      [      ]
+
+
+\item The composite combinator \AgdaBound{c₁} \AgdaSymbol{⊗} \AgdaBound{c₂}
+  is the parallel composition shown below:
+  \[ 
+ \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
+ \vsblank\wire{r}{\AgdaBound{v₁}}&\blank\nnbox{[]}
+    {\AgdaBound{c₁}}\wire{r}{\AgdaBound{v₃}}&\\
+ \vsblank\wire{r}{\AgdaBound{v₂}}&\blank\nnbox{[]}
+    {\AgdaBound{c₂}}\wire{r}{\AgdaBound{v₄}}&
+ }}
+  \]
+\item The combinators \AgdaBound{c₁} \AgdaSymbol{⊕1} \AgdaBound{c₂} and 
+\AgdaBound{c₁} \AgdaSymbol{⊕2} \AgdaBound{c₂} are represented as follows:
+  \[ 
+ \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
+ \blank\wire{r}{\AgdaInductiveConstructor{inj₁}~\AgdaBound{v₁}}
+ \vsblank&\wwblank{15mm}\nnbox{[]}
+   {\AgdaBound{v₁}\quad\AgdaBound{c₁}\quad\AgdaBound{v₃}}
+   \wire{r}{\AgdaInductiveConstructor{inj₁}~\AgdaBound{v₃}}&\\
+ \vsblank&\wwblank{15mm}\nnbox{[]}{\AgdaBound{c₂}}&
+ }}
+\]
+\[
+ \vcenter{\wirechart{@C=1.5cm@R=0.4cm}{
+ \vsblank&\wwblank{15mm}\nnbox{[]}{\AgdaBound{c₁}}&\\
+ \blank\wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v₂}}
+ \vsblank&\wwblank{15mm}\nnbox{[]}
+   {\AgdaBound{v₂}\quad\AgdaBound{c₁}\quad\AgdaBound{v₄}}
+   \wire{r}{\AgdaInductiveConstructor{inj₂}~\AgdaBound{v₄}}&
+ }}
+  \]
+\item Finally, when a box \AgdaBound{c} is sequentially composed with its
+  mirror image \AgdaSymbol{!} \AgdaBound{c} (in either order), both boxes
+  disappear.
+\end{itemize}
+
+Let us draw the five paths \AgdaFunction{p₁} to \AgdaFunction{p₅} introduced
+in the previous section. Since \AgdaInductiveConstructor{id⟷} is invisible, 
+the three paths \AgdaFunction{p₁}, \AgdaFunction{p₂}, and 
+\AgdaFunction{p₄}, are all represented as follows:
+\[
+\vcenter{
+\wirechart{}{\wire{r}{\AgdaFunction{TRUE}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•T}}
+  \wire{r}{\AgdaFunction{FALSE}}&}
+}
+\]
+Path \AgdaFunction{p₃} would be represented as:
+\[
+\vcenter{
+\wirechart{}{\wire{r}{\AgdaFunction{TRUE}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•T}}
+  \wire{r}{\AgdaFunction{FALSE}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•F}}
+  \wire{r}{\AgdaFunction{TRUE}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•T}}
+  \wire{r}{\AgdaFunction{FALSE}}&
+}}
+\]
+but then we notice that any two of the adjacent boxes are mirror images and
+erase them to produce the same wiring diagram as the previous three paths.
+For \AgdaFunction{p₅}, we have the following representation:
+\[
+\vcenter{\wirechart{@C=1cm@R=1cm}{
+  \wire{r}{\AgdaFunction{TRUE}}&
+  \wwblank{8mm}\nnbox{[]}{~\AgdaInductiveConstructor{uniti⋆}}
+  \wire{r}{\AgdaFunction{TRUE}}&
+  \wwblank{12mm}\nnbox{[]}{~\AgdaFunction{NOT•T}}
+  \wire{r}{\AgdaFunction{FALSE}}&
+  \wwblank{8mm}\nnbox{[]}{~\AgdaInductiveConstructor{unite⋆}}
+  \wire{r}{\AgdaFunction{FALSE}}&\\
+  &&\wwblank{12mm}\nnbox{[]}{\AgdaInductiveConstructor{id⟷}}&
+}}
+\]
+where the occurrences of \AgdaInductiveConstructor{swap⋆} have disappeared
+since one of the wires is invisible. The occurrences of
+\AgdaInductiveConstructor{id⟷} that acts on the invisible wire does
+\emph{not}, however, disappear.
+
+The graphical notation is justified by various \emph{coherence theorems}. We
+quote one of these basic theorems (originally due to Joyal and Street).
 
 \begin{theorem}
 A well-formed equation between morphisms in the language of monoidal
@@ -1191,7 +1414,7 @@ spaces. The space \AgdaInductiveConstructor{1ZERO} is the empty set of
 paths. The space \AgdaInductiveConstructor{1ONE} is the space of paths
 containing one path that is the identity for path products. Sums and products
 of paths are representing using disjoint union and cartesian products. In
-addition, all paths from Fig.~\ref{pointedcomb} are reifed as values in
+addition, all paths from Fig.~\ref{pointedcomb} are reified as values in
 \AgdaFunction{1U}.
 
 As before, we define pointed spaces (now of paths instead of points) and
@@ -1549,6 +1772,9 @@ flowing backwards. Under this interpretation, and as we explain below, a
 function is nothing but an object that converts a demand for an argument into
 the production of a result.
 
+%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Conventionl Construction on Unpointed Types} 
+
 We begin our formal development by extending $\Pi$ --- at any level --- 
 with a new universe of
 types $\cubt$ that consists of composite types $\nodet{\tau_1}{\tau_2}$:
@@ -1556,12 +1782,11 @@ types $\cubt$ that consists of composite types $\nodet{\tau_1}{\tau_2}$:
 (\textit{{1d} types}) & 
   \cubt &::=& \nodet{\tau_1}{\tau_2}
 \end{array}\]
-In anticipation of future developments, we will refer to the original types
-$\tau$ as 0-dimensional (0d) types and to the new types $\cubt$ as
-1-dimensional (1d) types. It turns out that the 1d level is a 
-``lifted'' instance of $\Pi$ with its own notions of
-empty, unit, sum, and product types, and its corresponding notion of
-isomorphisms on these 1d types.
+We will refer to the original types $\tau$ as 0-dimensional (0d) types and to
+the new types $\cubt$ as 1-dimensional (1d) types. The 1d level is a
+``lifted'' instance of $\Pi$ with its own notions of empty, unit, sum, and
+product types, and its corresponding notion of isomorphisms on these 1d
+types.
 
 Our next step is to define lifted versions of the 0d types:
 \[\begin{array}{rcl}
@@ -1695,6 +1920,159 @@ solved~\cite{ringcompletion} using a technique whose fundamental ingredients
 are to add more dimensions and then take homotopy colimits. It remains to
 investigate whether this idea can be integrated with our development to get
 higher-order functions while retaining the multiplicative structure.
+
+%%%%%%%%%%%%%%%%
+\subsection{Pointed Int Construction} 
+
+Since our development is done using pointed spaces, we adapt the conventional
+construction as follows. 
+
+\begin{code}
+
+-- Types are of the form t - t'
+
+record U- : Set where
+  constructor _-_
+  field
+    pos  : U
+    neg  : U
+
+open U-
+
+ZERO- ONE- : U-
+ZERO- = ZERO - ZERO
+ONE-  = ONE  - ZERO
+
+PLUS- : U- → U- → U-
+PLUS- (pos₁ - neg₁) (pos₂ - neg₂) = 
+  PLUS pos₁ pos₂ - PLUS neg₁ neg₂
+
+TIMES- : U- → U- → U-
+TIMES- (pos₁ - neg₁) (pos₂ - neg₂) = 
+  PLUS (TIMES pos₁ pos₂) (TIMES neg₁ neg₂) -
+  PLUS (TIMES pos₁ neg₂) (TIMES neg₁ pos₂)
+
+FLIP- : U- → U-
+FLIP- (pos - neg) = neg - pos
+
+LOLLI- : U- → U- → U-
+LOLLI- (pos₁ - neg₁) (pos₂ - neg₂) = 
+  PLUS neg₁ pos₂ - PLUS pos₁ neg₂
+
+-- Pointed types are of the form (t , pt) - (t' , pt')
+
+data U-• : Set where
+  both• : (t : U-) → ⟦ pos t ⟧ → ⟦ neg t ⟧ → U-•
+
+ZERO-• : {absurd : ⟦ ZERO ⟧} → U-•
+ZERO-• {absurd} = both• ZERO- absurd absurd
+
+ONE-• : {absurd : ⟦ ZERO ⟧} → U-•
+ONE-• {absurd} = both• ONE- tt absurd
+
+FLIP-• : U-• → U-• 
+FLIP-• (both• t p n) = both• (FLIP- t) n p
+
+PLUS-11• : U-• → U-• → U-•
+PLUS-11• (both• t₁ p₁ n₁) (both• t₂ p₂ n₂) = 
+  both• (PLUS- t₁ t₂) (inj₁ p₁) (inj₁ n₁) 
+
+PLUS-12• : U-• → U-• → U-•
+PLUS-12• (both• t₁ p₁ n₁) (both• t₂ p₂ n₂) = 
+  both• (PLUS- t₁ t₂) (inj₁ p₁) (inj₂ n₂) 
+
+PLUS-21• : U-• → U-• → U-•
+PLUS-21• (both• t₁ p₁ n₁) (both• t₂ p₂ n₂) = 
+  both• (PLUS- t₁ t₂) (inj₂ p₂) (inj₁ n₁) 
+
+PLUS-22• : U-• → U-• → U-•
+PLUS-22• (both• t₁ p₁ n₁) (both• t₂ p₂ n₂) = 
+  both• (PLUS- t₁ t₂) (inj₂ p₂) (inj₂ n₂) 
+
+LOLLI-11• : U-• → U-• → U-•
+LOLLI-11• (both• t₁ p₁ n₁) (both• t₂ p₂ n₂) = 
+  both• (LOLLI- t₁ t₂) (inj₁ n₁) (inj₁ p₁) 
+
+LOLLI-12• : U-• → U-• → U-•
+LOLLI-12• (both• t₁ p₁ n₁) (both• t₂ p₂ n₂) = 
+  both• (LOLLI- t₁ t₂) (inj₁ n₁) (inj₂ n₂) 
+
+LOLLI-21• : U-• → U-• → U-•
+LOLLI-21• (both• t₁ p₁ n₁) (both• t₂ p₂ n₂) = 
+  both• (LOLLI- t₁ t₂) (inj₂ p₂) (inj₁ p₁) 
+
+LOLLI-22• : U-• → U-• → U-•
+LOLLI-22• (both• t₁ p₁ n₁) (both• t₂ p₂ n₂) = 
+  both• (LOLLI- t₁ t₂) (inj₂ p₂) (inj₂ n₂) 
+
+-- Combinators are between
+-- (t , pt) - (t' , pt') and
+-- (u , pu) - (u' , pu')
+-- this re-arranges to a level 0 combinator
+-- (t , pt) + (u' , pu') <-> (t' , pt') + (u , pu)
+-- when combining the pointed sets in the last line
+-- we have two options on the source: left pt, right pu'
+-- and two options on the target: left pt', and right pu
+
+data _⇄_ : U-• → U-• → Set where
+  NN : ∀ {P₁ N₁ P₂ N₂ p₁ n₁ p₂ n₂} → 
+       •[ PLUS P₁ N₂ , inj₂ n₂ ] ⟷ •[ PLUS N₁ P₂ , inj₁ n₁ ] → 
+       (both• (P₁ - N₁) p₁ n₁) ⇄ (both• (P₂ - N₂) p₂ n₂)
+  NP : ∀ {P₁ N₁ P₂ N₂ p₁ n₁ p₂ n₂} → 
+       •[ PLUS P₁ N₂ , inj₂ n₂ ] ⟷ •[ PLUS N₁ P₂ , inj₂ p₂ ] → 
+       (both• (P₁ - N₁) p₁ n₁) ⇄ (both• (P₂ - N₂) p₂ n₂)
+  PN : ∀ {P₁ N₁ P₂ N₂ p₁ n₁ p₂ n₂} → 
+       •[ PLUS P₁ N₂ , inj₁ p₁ ] ⟷ •[ PLUS N₁ P₂ , inj₁ n₁ ] → 
+       (both• (P₁ - N₁) p₁ n₁) ⇄ (both• (P₂ - N₂) p₂ n₂)
+  PP : ∀ {P₁ N₁ P₂ N₂ p₁ n₁ p₂ n₂} → 
+       •[ PLUS P₁ N₂ , inj₁ p₁ ] ⟷ •[ PLUS N₁ P₂ , inj₂  p₂ ] → 
+       (both• (P₁ - N₁) p₁ n₁) ⇄ (both• (P₂ - N₂) p₂ n₂)
+
+-- there are two fibers for id in the int category
+
+id⇄NN : {t : U-•} → t ⇄ t
+id⇄NN {both• t p n} = NN swap2₊
+
+id⇄PP : {t : U-•} → t ⇄ t
+id⇄PP {both• t p n} = PP swap1₊
+
+identl₊ : {t : U-•} → PLUS-22• ZERO-• t ⇄ t
+identl₊ = {!!} -- PP (assocr2₊ ◎ (id⟷ ⊕2 swap1₊) ◎ assocl3₊)
+
+-- define trace and composition
+
+flip⇄ : {t₁ t₂ : U-•} → (t₁ ⇄ t₂) → (FLIP-• t₂ ⇄ FLIP-• t₁) 
+flip⇄ (NN c) = PP (swap1₊ ◎ c ◎ swap1₊) 
+flip⇄ (NP c) = PN (swap1₊ ◎ c ◎ swap2₊) 
+flip⇄ (PN c) = NP (swap2₊ ◎ c ◎ swap1₊) 
+flip⇄ (PP c) = NN (swap2₊ ◎ c ◎ swap2₊) 
+
+curry1111⇄ : {t₁ t₂ t₃ : U-•} → (PLUS-11• t₁ t₂ ⇄ t₃) → (t₁ ⇄ LOLLI-11• t₂ t₃)
+curry1111⇄ {t₁} {t₂} {t₃} f = {!!} 
+
+-- define small example:
+
+-- given in plain Pi level 0
+-- c1 c2 : t1 + t4 <-> t2 + t3
+-- given in plain Pi level 1
+-- alpha : c1 <-> c2
+
+-- in the int category
+-- c1 and c2 are maps between (t1 - t2) and (t3 - t4)
+-- 'name c1' and 'name c2' are maps between (0 - 0) and ((t1 - t2) --o (t3 - t4))
+-- c1 and c2 themselves become elements of ((t1 - t2) --o (t3 - t4))
+-- i.e., they become values
+-- alpha that used to be a 2path, i.e., a path between paths, is now 
+-- a path between the values c1 and c2 in the --o type
+
+\end{code}
+
+%%   
+
+%%%%%%%%%%%%%%%%
+\subsection{Example}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
