@@ -1626,7 +1626,20 @@ data _⇔_ : 1U• → 1U• → Set where
 1! lidr = lidl
 1! assocl = assocr
 1! assocr = assocl
-1! _ = {!!} 
+1! unite₊l = unite₊r
+1! unite₊r = unite₊l 
+1! uniti₊l = uniti₊r
+1! uniti₊r = uniti₊l
+1! swap1₊l = swap1₊r
+1! swap1₊r = swap1₊l
+1! swap2₊l = swap2₊r
+1! swap2₊r = swap2₊l
+1! assocl1₊l = assocl1₊r
+1! assocl1₊r = assocl1₊l
+1! assocl2₊l = assocl2₊r
+1! assocl2₊r = assocl2₊l
+1! assocl3₊l = assocl3₊r
+1! assocl3₊r = assocl3₊l
 
 linv : {t₁ t₂ : U•} → (c : t₁ ⟷ t₂) → 
        1•[ PATH t₁ t₁ , path (c ◎ ! c) ] ⇔ 1•[ PATH t₁ t₁ , path id⟷ ]
@@ -2037,7 +2050,7 @@ id⇄PP : {t : U-•} → t ⇄ t
 id⇄PP {both• t p n} = PP swap1₊
 
 identl₊ : {t : U-•} → PLUS-22• ZERO-• t ⇄ t
-identl₊ = {!!} -- PP (assocr2₊ ◎ (id⟷ ⊕2 swap1₊) ◎ assocl3₊)
+identl₊ {both• t p n} =  PP ( (assocr2₊ ◎ (id⟷ ⊕2 swap1₊) ◎ assocl3₊)) 
 
 -- define trace and composition
 
@@ -2047,21 +2060,59 @@ flip⇄ (NP c) = PN (swap1₊ ◎ c ◎ swap2₊)
 flip⇄ (PN c) = NP (swap2₊ ◎ c ◎ swap1₊) 
 flip⇄ (PP c) = NN (swap2₊ ◎ c ◎ swap2₊) 
 
-curry1111⇄ : {t₁ t₂ t₃ : U-•} → (PLUS-11• t₁ t₂ ⇄ t₃) → (t₁ ⇄ LOLLI-11• t₂ t₃)
-curry1111⇄ {t₁} {t₂} {t₃} f = {!!} 
+curry1122⇄ : {t₁ t₂ t₃ : U-•} → (PLUS-11• t₁ t₂ ⇄ t₃) → (t₁ ⇄ LOLLI-22• t₂ t₃)
+curry1122⇄ {both• t₁ p₁ n₁} {both• t₂ p₂ n₂} {both• ._ p₃ n₃} (NN f) = NN (assocl3₊ ◎ f ◎ assocr1₊)
+curry1122⇄ {both• t₁ p₁ n₁} {both• t₂ p₂ n₂} {both• ._ p₃ n₃} (NP f) = NP (assocl3₊ ◎ f ◎ assocr3₊)
+curry1122⇄ {both• t₁ p₁ n₁} {both• t₂ p₂ n₂} {both• ._ p₃ n₃} (PN f) = PN (assocl1₊ ◎ f ◎ assocr1₊)
+curry1122⇄ {both• t₁ p₁ n₁} {both• (pos - neg) p₂ n₂} {both• ._ p₃ n₃} (PP f) = PP (assocl1₊ ◎ f ◎ assocr3₊) 
 
 -- define small example:
 
+module _ where
 -- given in plain Pi level 0
 -- c1 c2 : t1 + t4 <-> t2 + t3
+  postulate
+    t₁ t₂ t₃ t₄ : U
+    v₁ : ⟦ t₁ ⟧
+    v₂ : ⟦ t₂ ⟧
+    v₃ w₃ : ⟦ t₃ ⟧
+    v₄ w₄ : ⟦ t₄ ⟧
+ 
+  U₁• = •[ PLUS t₁ t₄ , inj₁ v₁ ] 
+  U₂• = •[ PLUS t₂ t₃ , inj₁ v₂ ]
+
+  postulate c₁ c₂ : U₁• ⟷ U₂•
+
 -- given in plain Pi level 1
 -- alpha : c1 <-> c2
+  V₁• : 1U
+  V₁• = PATH U₁• U₂•
+
+  postulate α : 1•[ V₁• , path c₁ ] ⇔ 1•[ V₁• , path c₂ ]
 
 -- in the int category
 -- c1 and c2 are maps between (t1 - t2) and (t3 - t4)
+  q₁ q₂ : U-
+  q₁ = t₁ - t₂
+  q₂ = t₃ - t₄
+  q₁• = both• q₁ v₁ v₂
+  q₂• = both• q₂ v₃ v₄
+  q₃• = both• q₂ w₃ w₄
+
+  d₁ : q₁• ⇄ q₂•
+  d₁ = PN c₁
+  d₂ : q₁• ⇄ q₃•
+  d₂ = PN c₂
+
 -- 'name c1' and 'name c2' are maps between (0 - 0) and ((t1 - t2) --o (t3 - t4))
+  nc₁ : ZERO-• ⇄ LOLLI-11• q₁• q₂•
+  nc₁ = NP (unite₊ ◎ c₁ ◎ uniti₊)
+  nc₂ : ZERO-• ⇄ LOLLI-11• q₁• q₃•
+  nc₂ = NP (unite₊ ◎ c₂ ◎ uniti₊ )
+ 
 -- c1 and c2 themselves become elements of ((t1 - t2) --o (t3 - t4))
 -- i.e., they become values
+
 -- alpha that used to be a 2path, i.e., a path between paths, is now 
 -- a path between the values c1 and c2 in the --o type
 
