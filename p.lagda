@@ -2066,6 +2066,12 @@ curry1122⇄ {both• t₁ p₁ n₁} {both• t₂ p₂ n₂} {both• ._ p₃ 
 curry1122⇄ {both• t₁ p₁ n₁} {both• t₂ p₂ n₂} {both• ._ p₃ n₃} (PN f) = PN (assocl1₊ ◎ f ◎ assocr1₊)
 curry1122⇄ {both• t₁ p₁ n₁} {both• (pos - neg) p₂ n₂} {both• ._ p₃ n₃} (PP f) = PP (assocl1₊ ◎ f ◎ assocr3₊) 
 
+curry2211⇄ : {t₁ t₂ t₃ : U-•} → (PLUS-22• t₁ t₂ ⇄ t₃) → (t₁ ⇄ LOLLI-11• t₂ t₃)
+curry2211⇄ {both• t₁ p₁ n₁} {both• t₂ p₂ n₂} {both• t₃ p₃ n₃} (NN f) = NP ({!!} ◎ f ◎ {!!})
+curry2211⇄ {both• t₁ p₁ n₁} {both• t₂ p₂ n₂} {both• ._ p₃ n₃} (NP f) = NP ({!!} ◎ f ◎ {!!} )
+curry2211⇄ {both• t₁ p₁ n₁} {both• t₂ p₂ n₂} {both• ._ p₃ n₃} (PN f) = PN ({!!} ◎ f ◎ {!!} )
+curry2211⇄ {both• t₁ p₁ n₁} {both• (pos - neg) p₂ n₂} {both• ._ p₃ n₃} (PP f) = PP ({!!} ◎ f ◎ {!!} )
+
 -- define small example:
 
 module _ where
