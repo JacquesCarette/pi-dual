@@ -1215,7 +1215,6 @@ open 1U•
 }
 
 \begin{figure*}
-%\setlength{\columnsep}{12pt}
 \begin{multicols}{2}
 \renewcommand{\AgdaCodeStyle}{\scriptsize}
 \begin{code} 
@@ -1223,161 +1222,144 @@ data _⇔_ : 1U• → 1U• → Set where
  -- Commutative semiring combinators
  unite₊ : ∀ {t v} → 1•[ 1PLUS 1ZERO t , inj₂ v ] ⇔ 1•[ t , v ]
  uniti₊ : ∀ {t v} → 1•[ t , v ] ⇔ 1•[ 1PLUS 1ZERO t , inj₂ v ]
- swap1₊ : ∀ {t₁ t₂ v₁} → 
-   1•[ 1PLUS t₁ t₂ , inj₁ v₁ ] ⇔ 1•[ 1PLUS t₂ t₁ , inj₂ v₁ ]
- swap2₊  : ∀ {t₁ t₂ v₂} → 
-   1•[ 1PLUS t₁ t₂ , inj₂ v₂ ] ⇔ 1•[ 1PLUS t₂ t₁ , inj₁ v₂ ]
+ swap1₊ : ∀ {t₁ t₂ v₁} → 1•[ 1PLUS t₁ t₂ , inj₁ v₁ ] ⇔ 1•[ 1PLUS t₂ t₁ , inj₂ v₁ ]
+ swap2₊ : ∀ {t₁ t₂ v₂} → 1•[ 1PLUS t₁ t₂ , inj₂ v₂ ] ⇔ 1•[ 1PLUS t₂ t₁ , inj₁ v₂ ]
  assocl1₊ : ∀ {t₁ t₂ t₃ v₁} → 
-   1•[ 1PLUS t₁ (1PLUS t₂ t₃) , inj₁ v₁ ] ⇔ 
-   1•[ 1PLUS (1PLUS t₁ t₂) t₃ , inj₁ (inj₁ v₁) ]
+  1•[ 1PLUS t₁ (1PLUS t₂ t₃) , inj₁ v₁ ] ⇔ 
+  1•[ 1PLUS (1PLUS t₁ t₂) t₃ , inj₁ (inj₁ v₁) ]
  assocl2₊ : ∀ {t₁ t₂ t₃ v₂} → 
-   1•[ 1PLUS t₁ (1PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] ⇔ 
-   1•[ 1PLUS (1PLUS t₁ t₂) t₃ , inj₁ (inj₂ v₂) ]
+  1•[ 1PLUS t₁ (1PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] ⇔ 
+  1•[ 1PLUS (1PLUS t₁ t₂) t₃ , inj₁ (inj₂ v₂) ]
  assocl3₊ : ∀ {t₁ t₂ t₃ v₃} → 
-   1•[ 1PLUS t₁ (1PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] ⇔ 
-   1•[ 1PLUS (1PLUS t₁ t₂) t₃ , inj₂ v₃ ]
+  1•[ 1PLUS t₁ (1PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] ⇔ 
+  1•[ 1PLUS (1PLUS t₁ t₂) t₃ , inj₂ v₃ ]
  assocr1₊ : ∀ {t₁ t₂ t₃ v₁} → 
-   1•[ 1PLUS (1PLUS t₁ t₂) t₃ , inj₁ (inj₁ v₁) ] ⇔ 
-   1•[ 1PLUS t₁ (1PLUS t₂ t₃) , inj₁ v₁ ] 
+  1•[ 1PLUS (1PLUS t₁ t₂) t₃ , inj₁ (inj₁ v₁) ] ⇔ 
+  1•[ 1PLUS t₁ (1PLUS t₂ t₃) , inj₁ v₁ ] 
  assocr2₊ : ∀ {t₁ t₂ t₃ v₂} → 
-   1•[ 1PLUS (1PLUS t₁ t₂) t₃ , inj₁ (inj₂ v₂) ] ⇔ 
-   1•[ 1PLUS t₁ (1PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] 
+  1•[ 1PLUS (1PLUS t₁ t₂) t₃ , inj₁ (inj₂ v₂) ] ⇔ 
+  1•[ 1PLUS t₁ (1PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] 
  assocr3₊ : ∀ {t₁ t₂ t₃ v₃} → 
-   1•[ 1PLUS (1PLUS t₁ t₂) t₃ , inj₂ v₃ ] ⇔ 
-   1•[ 1PLUS t₁ (1PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
+  1•[ 1PLUS (1PLUS t₁ t₂) t₃ , inj₂ v₃ ] ⇔ 
+  1•[ 1PLUS t₁ (1PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
  unite⋆ : ∀ {t v} → 1•[ 1TIMES 1ONE t , (tt , v) ] ⇔ 1•[ t , v ]
  uniti⋆ : ∀ {t v} → 1•[ t , v ] ⇔ 1•[ 1TIMES 1ONE t , (tt , v) ] 
  swap⋆ : ∀ {t₁ t₂ v₁ v₂} → 
-   1•[ 1TIMES t₁ t₂ , (v₁ , v₂) ] ⇔ 1•[ 1TIMES t₂ t₁ , (v₂ , v₁) ]
+  1•[ 1TIMES t₁ t₂ , (v₁ , v₂) ] ⇔ 1•[ 1TIMES t₂ t₁ , (v₂ , v₁) ]
  assocl⋆ : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → 
-   1•[ 1TIMES t₁ (1TIMES t₂ t₃) , (v₁ , (v₂ , v₃)) ] ⇔ 
-   1•[ 1TIMES (1TIMES t₁ t₂) t₃ , ((v₁ , v₂) , v₃) ]
+  1•[ 1TIMES t₁ (1TIMES t₂ t₃) , (v₁ , (v₂ , v₃)) ] ⇔ 
+  1•[ 1TIMES (1TIMES t₁ t₂) t₃ , ((v₁ , v₂) , v₃) ]
  assocr⋆ : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → 
-   1•[ 1TIMES (1TIMES t₁ t₂) t₃ , ((v₁ , v₂) , v₃) ] ⇔ 
-   1•[ 1TIMES t₁ (1TIMES t₂ t₃) , (v₁ , (v₂ , v₃)) ]
+  1•[ 1TIMES (1TIMES t₁ t₂) t₃ , ((v₁ , v₂) , v₃) ] ⇔ 
+  1•[ 1TIMES t₁ (1TIMES t₂ t₃) , (v₁ , (v₂ , v₃)) ]
  distz : ∀ {t v absurd} → 
-   1•[ 1TIMES 1ZERO t , (absurd , v) ] ⇔ 1•[ 1ZERO , absurd ]
+  1•[ 1TIMES 1ZERO t , (absurd , v) ] ⇔ 1•[ 1ZERO , absurd ]
  factorz : ∀ {t v absurd} → 
-   1•[ 1ZERO , absurd ] ⇔ 1•[ 1TIMES 1ZERO t , (absurd , v) ]
+  1•[ 1ZERO , absurd ] ⇔ 1•[ 1TIMES 1ZERO t , (absurd , v) ]
  dist1 : ∀ {t₁ t₂ t₃ v₁ v₃} → 
-   1•[ 1TIMES (1PLUS t₁ t₂) t₃ , (inj₁ v₁ , v₃) ] ⇔ 
-   1•[ 1PLUS (1TIMES t₁ t₃) (1TIMES t₂ t₃) , inj₁ (v₁ , v₃) ]
+  1•[ 1TIMES (1PLUS t₁ t₂) t₃ , (inj₁ v₁ , v₃) ] ⇔ 
+  1•[ 1PLUS (1TIMES t₁ t₃) (1TIMES t₂ t₃) , inj₁ (v₁ , v₃) ]
  dist2 : ∀ {t₁ t₂ t₃ v₂ v₃} → 
-   1•[ 1TIMES (1PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ] ⇔ 
-   1•[ 1PLUS (1TIMES t₁ t₃) (1TIMES t₂ t₃) , inj₂ (v₂ , v₃) ]
+  1•[ 1TIMES (1PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ] ⇔ 
+  1•[ 1PLUS (1TIMES t₁ t₃) (1TIMES t₂ t₃) , inj₂ (v₂ , v₃) ]
  factor1 : ∀ {t₁ t₂ t₃ v₁ v₃} → 
-   1•[ 1PLUS (1TIMES t₁ t₃) (1TIMES t₂ t₃) , inj₁ (v₁ , v₃) ] ⇔ 
-   1•[ 1TIMES (1PLUS t₁ t₂) t₃ , (inj₁ v₁ , v₃) ]
+  1•[ 1PLUS (1TIMES t₁ t₃) (1TIMES t₂ t₃) , inj₁ (v₁ , v₃) ] ⇔ 
+  1•[ 1TIMES (1PLUS t₁ t₂) t₃ , (inj₁ v₁ , v₃) ]
  factor2 : ∀ {t₁ t₂ t₃ v₂ v₃} → 
-   1•[ 1PLUS (1TIMES t₁ t₃) (1TIMES t₂ t₃) , inj₂ (v₂ , v₃) ] ⇔ 
-   1•[ 1TIMES (1PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ]
+  1•[ 1PLUS (1TIMES t₁ t₃) (1TIMES t₂ t₃) , inj₂ (v₂ , v₃) ] ⇔ 
+  1•[ 1TIMES (1PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ]
  id⇔ : ∀ {t v} → 1•[ t , v ] ⇔ 1•[ t , v ]
  _◎_ : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → (1•[ t₁ , v₁ ] ⇔ 1•[ t₂ , v₂ ]) → 
-   (1•[ t₂ , v₂ ] ⇔ 1•[ t₃ , v₃ ]) → (1•[ t₁ , v₁ ] ⇔ 1•[ t₃ , v₃ ])
- _⊕1_   : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
-   (1•[ t₁ , v₁ ] ⇔ 1•[ t₃ , v₃ ]) → (1•[ t₂ , v₂ ] ⇔ 1•[ t₄ , v₄ ]) → 
-   (1•[ 1PLUS t₁ t₂ , inj₁ v₁ ] ⇔ 1•[ 1PLUS t₃ t₄ , inj₁ v₃ ])
- _⊕2_   : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
-   (1•[ t₁ , v₁ ] ⇔ 1•[ t₃ , v₃ ]) → (1•[ t₂ , v₂ ] ⇔ 1•[ t₄ , v₄ ]) → 
-   (1•[ 1PLUS t₁ t₂ , inj₂ v₂ ] ⇔ 1•[ 1PLUS t₃ t₄ , inj₂ v₄ ])
- _⊗_     : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
-   (1•[ t₁ , v₁ ] ⇔ 1•[ t₃ , v₃ ]) → (1•[ t₂ , v₂ ] ⇔ 1•[ t₄ , v₄ ]) → 
-   (1•[ 1TIMES t₁ t₂ , (v₁ , v₂) ] ⇔ 1•[ 1TIMES t₃ t₄ , (v₃ , v₄) ])
+  (1•[ t₂ , v₂ ] ⇔ 1•[ t₃ , v₃ ]) → (1•[ t₁ , v₁ ] ⇔ 1•[ t₃ , v₃ ])
+ _⊕1_ : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
+  (1•[ t₁ , v₁ ] ⇔ 1•[ t₃ , v₃ ]) → (1•[ t₂ , v₂ ] ⇔ 1•[ t₄ , v₄ ]) → 
+  (1•[ 1PLUS t₁ t₂ , inj₁ v₁ ] ⇔ 1•[ 1PLUS t₃ t₄ , inj₁ v₃ ])
+ _⊕2_ : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
+  (1•[ t₁ , v₁ ] ⇔ 1•[ t₃ , v₃ ]) → (1•[ t₂ , v₂ ] ⇔ 1•[ t₄ , v₄ ]) → 
+  (1•[ 1PLUS t₁ t₂ , inj₂ v₂ ] ⇔ 1•[ 1PLUS t₃ t₄ , inj₂ v₄ ])
+ _⊗_ : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
+  (1•[ t₁ , v₁ ] ⇔ 1•[ t₃ , v₃ ]) → (1•[ t₂ , v₂ ] ⇔ 1•[ t₄ , v₄ ]) → 
+  (1•[ 1TIMES t₁ t₂ , (v₁ , v₂) ] ⇔ 1•[ 1TIMES t₃ t₄ , (v₃ , v₄) ])
 
  -- Groupoid combinators
  lidl : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
-   1•[ PATH t₁ t₂ , path (id⟷ ◎ c) ] ⇔ 1•[ PATH t₁ t₂ , path c ]
+  1•[ PATH t₁ t₂ , path (id⟷ ◎ c) ] ⇔ 1•[ PATH t₁ t₂ , path c ]
  lidr : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
-   1•[ PATH t₁ t₂ , path c ] ⇔ 1•[ PATH t₁ t₂ , path (id⟷ ◎ c) ] 
+  1•[ PATH t₁ t₂ , path c ] ⇔ 1•[ PATH t₁ t₂ , path (id⟷ ◎ c) ] 
  ridl : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
-   1•[ PATH t₁ t₂ , path (c ◎ id⟷) ] ⇔ 1•[ PATH t₁ t₂ , path c ]
+  1•[ PATH t₁ t₂ , path (c ◎ id⟷) ] ⇔ 1•[ PATH t₁ t₂ , path c ]
  ridr : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂} → 
-   1•[ PATH t₁ t₂ , path c ] ⇔ 1•[ PATH t₁ t₂ , path (c ◎ id⟷) ] 
- assocl : ∀ {t₁ t₂ t₃ t₄}  → 
-   {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
-   1•[ PATH t₁ t₄ , path (c₁ ◎ (c₂ ◎ c₃)) ] ⇔ 
-   1•[ PATH t₁ t₄ , path ((c₁ ◎ c₂) ◎ c₃) ]
- assocr : ∀ {t₁ t₂ t₃ t₄}  → 
-   {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
-   1•[ PATH t₁ t₄ , path ((c₁ ◎ c₂) ◎ c₃) ] ⇔ 
-   1•[ PATH t₁ t₄ , path (c₁ ◎ (c₂ ◎ c₃)) ] 
+  1•[ PATH t₁ t₂ , path c ] ⇔ 1•[ PATH t₁ t₂ , path (c ◎ id⟷) ] 
+ assocl : ∀ {t₁ t₂ t₃ t₄} → {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+  1•[ PATH t₁ t₄ , path (c₁ ◎ (c₂ ◎ c₃)) ] ⇔ 1•[ PATH t₁ t₄ , path ((c₁ ◎ c₂) ◎ c₃) ]
+ assocr : ∀ {t₁ t₂ t₃ t₄} → {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+  1•[ PATH t₁ t₄ , path ((c₁ ◎ c₂) ◎ c₃) ] ⇔ 1•[ PATH t₁ t₄ , path (c₁ ◎ (c₂ ◎ c₃)) ] 
  unite₊l : ∀ {t v} → 
-   1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
-   path (unite₊ ◎ uniti₊) ] ⇔ 
-   1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
-   path id⟷ ] 
+  1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
+    path (unite₊ ◎ uniti₊) ] ⇔ 
+  1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , path id⟷ ] 
  unite₊r : ∀ {t v} → 
-   1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
-   path id⟷ ] ⇔ 
-   1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
-   path (unite₊ ◎ uniti₊) ] 
+  1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , path id⟷ ] ⇔ 
+  1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
+    path (unite₊ ◎ uniti₊) ] 
  uniti₊l : ∀ {t v} → 
-   1•[ PATH (•[ t , v ]) (•[ t , v ]) , path (uniti₊ ◎ unite₊) ] ⇔ 
-   1•[ PATH (•[ t , v ]) (•[ t , v ]) , path id⟷ ] 
+  1•[ PATH (•[ t , v ]) (•[ t , v ]) , path (uniti₊ ◎ unite₊) ] ⇔ 
+  1•[ PATH (•[ t , v ]) (•[ t , v ]) , path id⟷ ] 
  uniti₊r : ∀ {t v} → 
-   1•[ PATH (•[ t , v ]) (•[ t , v ]) , path id⟷ ] ⇔ 
-   1•[ PATH (•[ t , v ]) (•[ t , v ]) , path (uniti₊ ◎ unite₊) ] 
+  1•[ PATH (•[ t , v ]) (•[ t , v ]) , path id⟷ ] ⇔ 
+  1•[ PATH (•[ t , v ]) (•[ t , v ]) , path (uniti₊ ◎ unite₊) ] 
  swap1₊l : ∀ {t₁ t₂ v₁} → 
-   1•[ PATH •[ PLUS t₁ t₂ , inj₁ v₁ ] •[ PLUS t₁ t₂ , inj₁ v₁ ] ,
-   path (swap1₊ ◎ ! swap1₊) ] ⇔
-   1•[ PATH •[ PLUS t₁ t₂ , inj₁ v₁ ] •[ PLUS t₁ t₂ , inj₁ v₁ ] , 
-   path id⟷ ]
+  1•[ PATH •[ PLUS t₁ t₂ , inj₁ v₁ ] •[ PLUS t₁ t₂ , inj₁ v₁ ] ,
+    path (swap1₊ ◎ ! swap1₊) ] ⇔
+  1•[ PATH •[ PLUS t₁ t₂ , inj₁ v₁ ] •[ PLUS t₁ t₂ , inj₁ v₁ ] , path id⟷ ]
  swap1₊r : ∀ {t₁ t₂ v₁} → 
-   1•[ PATH •[ PLUS t₁ t₂ , inj₁ v₁ ] •[ PLUS t₁ t₂ , inj₁ v₁ ] , 
-   path id⟷ ] ⇔
-   1•[ PATH •[ PLUS t₁ t₂ , inj₁ v₁ ] •[ PLUS t₁ t₂ , inj₁ v₁ ] ,
-   path (swap1₊ ◎ ! swap1₊) ] 
+  1•[ PATH •[ PLUS t₁ t₂ , inj₁ v₁ ] •[ PLUS t₁ t₂ , inj₁ v₁ ] , path id⟷ ] ⇔
+  1•[ PATH •[ PLUS t₁ t₂ , inj₁ v₁ ] •[ PLUS t₁ t₂ , inj₁ v₁ ] ,
+    path (swap1₊ ◎ ! swap1₊) ] 
  swap2₊l : ∀ {t₁ t₂ v₂} → 
-   1•[ PATH •[ PLUS t₁ t₂ , inj₂ v₂ ] •[ PLUS t₁ t₂ , inj₂ v₂ ] , 
-   path (swap2₊ ◎ ! swap2₊) ] ⇔
-   1•[ PATH •[ PLUS t₁ t₂ , inj₂ v₂ ] •[ PLUS t₁ t₂ , inj₂ v₂ ] , 
-   path id⟷ ]
+  1•[ PATH •[ PLUS t₁ t₂ , inj₂ v₂ ] •[ PLUS t₁ t₂ , inj₂ v₂ ] , 
+    path (swap2₊ ◎ ! swap2₊) ] ⇔
+  1•[ PATH •[ PLUS t₁ t₂ , inj₂ v₂ ] •[ PLUS t₁ t₂ , inj₂ v₂ ] , path id⟷ ]
  swap2₊r : ∀ {t₁ t₂ v₂} → 
-   1•[ PATH •[ PLUS t₁ t₂ , inj₂ v₂ ] •[ PLUS t₁ t₂ , inj₂ v₂ ] , 
-   path id⟷ ] ⇔
-   1•[ PATH •[ PLUS t₁ t₂ , inj₂ v₂ ] •[ PLUS t₁ t₂ , inj₂ v₂ ] , 
-   path (swap2₊ ◎ ! swap2₊) ] 
+  1•[ PATH •[ PLUS t₁ t₂ , inj₂ v₂ ] •[ PLUS t₁ t₂ , inj₂ v₂ ] , path id⟷ ] ⇔
+  1•[ PATH •[ PLUS t₁ t₂ , inj₂ v₂ ] •[ PLUS t₁ t₂ , inj₂ v₂ ] , 
+    path (swap2₊ ◎ ! swap2₊) ] 
  assocl1₊l : ∀ {t₁ t₂ t₃ v₁} → 
-   1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ]
-            •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] , 
-   path (assocl1₊ ◎ ! assocl1₊) ] ⇔
-   1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ]
-            •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] , path id⟷ ]
+  1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] , 
+    path (assocl1₊ ◎ ! assocl1₊) ] ⇔
+  1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] , 
+    path id⟷ ]
  assocl1₊r : ∀ {t₁ t₂ t₃ v₁} → 
-   1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ]
-            •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] , path id⟷ ] ⇔
-   1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ]
-            •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] , 
-   path (assocl1₊ ◎ ! assocl1₊) ] 
+  1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] , 
+    path id⟷ ] ⇔
+  1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] , 
+  path (assocl1₊ ◎ ! assocl1₊) ] 
  assocl2₊l : ∀ {t₁ t₂ t₃ v₂} → 
-   1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ]
-            •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] , 
-   path (assocl2₊ ◎ ! assocl2₊) ] ⇔
-   1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ]
-            •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] , path id⟷ ]
+  1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] 
+     •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] , path (assocl2₊ ◎ ! assocl2₊) ] ⇔
+  1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ]
+    •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] , path id⟷ ]
  assocl2₊r : ∀ {t₁ t₂ t₃ v₂} → 
-   1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ]
-            •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] , path id⟷ ] ⇔
-   1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ]
-            •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] , 
-   path (assocl2₊ ◎ ! assocl2₊) ] 
+  1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ]
+           •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] , path id⟷ ] ⇔
+  1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ]
+           •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] , 
+  path (assocl2₊ ◎ ! assocl2₊) ] 
  assocl3₊l : ∀ {t₁ t₂ t₃ v₃} → 
-   1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
-            •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] , 
-   path (assocl3₊ ◎ ! assocl3₊) ] ⇔
-   1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
-            •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] , path id⟷ ]
+  1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
+           •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] , 
+  path (assocl3₊ ◎ ! assocl3₊) ] ⇔
+  1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
+           •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] , path id⟷ ]
  assocl3₊r : ∀ {t₁ t₂ t₃ v₃} → 
-   1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
-            •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] , 
-   path id⟷ ] ⇔
-   1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
-            •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] , 
-    path (assocl3₊ ◎ ! assocl3₊) ] 
- resp◎   : ∀ {t₁ t₂ t₃} →
-    {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
-    (1•[ PATH t₁ t₂ , path c₁ ] ⇔ 1•[ PATH t₁ t₂ , path c₃ ]) → 
-    (1•[ PATH t₂ t₃ , path c₂ ] ⇔ 1•[ PATH t₂ t₃ , path c₄ ]) → 
+  1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
+           •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] , path id⟷ ] ⇔
+  1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
+           •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] , 
+   path (assocl3₊ ◎ ! assocl3₊) ] 
+ resp◎ : ∀ {t₁ t₂ t₃} → {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
+   (1•[ PATH t₁ t₂ , path c₁ ] ⇔ 1•[ PATH t₁ t₂ , path c₃ ]) → 
+   (1•[ PATH t₂ t₃ , path c₂ ] ⇔ 1•[ PATH t₂ t₃ , path c₄ ]) → 
     1•[ PATH t₁ t₃ , path (c₁ ◎ c₂) ] ⇔ 1•[ PATH t₁ t₃ , path (c₃ ◎ c₄) ]
 \end{code}
 \renewcommand{\AgdaCodeStyle}{\small}
