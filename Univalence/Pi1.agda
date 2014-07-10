@@ -725,6 +725,16 @@ data Uℤ• : Set where
   pos• : (t : Uℤ) → ⟦ pos t ⟧ → Uℤ•
   neg• : (t : Uℤ) → ⟦ neg t ⟧ → Uℤ•
 
+PLUS1ℤ• : Uℤ• → Uℤ → Uℤ•
+PLUS1ℤ• (pos• t₁ v₁) t₂ = pos• (PLUSℤ t₁ t₂) (inj₁ v₁)
+PLUS1ℤ• (neg• t₁ v₁) t₂ = neg• (PLUSℤ t₁ t₂) (inj₁ v₁)
+
+PLUS2ℤ• : Uℤ → Uℤ• → Uℤ•
+PLUS2ℤ• t₁ (pos• t₂ v₂) = pos• (PLUSℤ t₁ t₂) (inj₂ v₂)
+PLUS2ℤ• t₁ (neg• t₂ v₂) = neg• (PLUSℤ t₁ t₂) (inj₂ v₂)
+
+-- Combinators on pointed types
+
 data _⇄_ : Uℤ• → Uℤ• → Set where
   Fwd : ∀ {P₁ N₁ P₂ N₂ p₁ p₂} → 
         •[ PLUS P₁ N₂ , inj₁ p₁ ] ⟷ •[ PLUS N₁ P₂ , inj₂ p₂ ] → 
@@ -737,11 +747,7 @@ id⇄ : ∀ {t} → t ⇄ t
 id⇄ {pos• t p} = Fwd swap1₊
 id⇄ {neg• t n} = Bck swap2₊
 
-PLUSℤ• : (t : Uℤ•) → Uℤ•
-PLUSℤ• (pos• t v) = pos• (PLUSℤ ZEROℤ t) (inj₂ v)
-PLUSℤ• (neg• t v) = neg• (PLUSℤ ZEROℤ t) (inj₂ v)
-
-unite₊⇄ : {t : Uℤ•} → PLUSℤ• t ⇄ t
+unite₊⇄ : {t : Uℤ•} → PLUS2ℤ• ZEROℤ t ⇄ t
 unite₊⇄ {pos• t v} = 
   Fwd (•[ PLUS (PLUS ZERO (pos t)) (neg t) , inj₁ (inj₂ v) ]
          ⟷⟨ assocr2₊ ⟩
@@ -761,7 +767,7 @@ unite₊⇄ {neg• t v} =
          ⟷⟨ assocl2₊ ⟩
        •[ PLUS (PLUS ZERO (neg t)) (pos t) , inj₁ (inj₂ v) ] □)
 
-uniti₊⇄ : {t : Uℤ•} → t ⇄ PLUSℤ• t
+uniti₊⇄ : {t : Uℤ•} → t ⇄ PLUS2ℤ• ZEROℤ t
 uniti₊⇄ {pos• t v} =  
   Fwd (•[ PLUS (pos t) (PLUS ZERO (neg t)) , inj₁ v ] 
         ⟷⟨ assocl1₊ ⟩
@@ -779,6 +785,23 @@ uniti₊⇄ {neg• t v} =
         ⟷⟨ assocr1₊ ⟩
        •[ PLUS (neg t) (PLUS ZERO (pos t)) , inj₁ v ] □)
 
+swap1₊⇄ : {t₁ : Uℤ•} {t₂ : Uℤ} → PLUS1ℤ• t₁ t₂ ⇄ PLUS2ℤ• t₂ t₁
+swap1₊⇄ {pos• t₁ v₁} {t₂} = 
+  Fwd (•[ PLUS (PLUS (pos t₁) (pos t₂)) (PLUS (neg t₂) (neg t₁)) ,
+          inj₁ (inj₁ v₁) ]
+        ⟷⟨ {!!} ⟩
+       •[ PLUS (PLUS (neg t₁) (neg t₂)) (PLUS (pos t₂) (pos t₁)) ,
+          inj₂ (inj₂ v₁) ] □)
+swap1₊⇄ {neg• t₁ v₁} {t₂} = 
+  Bck (•[ PLUS (PLUS (pos t₁) (pos t₂)) (PLUS (neg t₂) (neg t₁)) ,
+          inj₂ (inj₂ v₁) ]
+        ⟷⟨ {!!} ⟩
+       •[ PLUS (PLUS (neg t₁) (neg t₂)) (PLUS (pos t₂) (pos t₁)) ,
+          inj₁ (inj₁ v₁) ] □)
+
+
+
+
 -- _⟷⟨_⟩_ 
 -- _□ 
 
@@ -786,9 +809,6 @@ uniti₊⇄ {neg• t v} =
 
 {--
 
-
-  swap1₊  : ∀ {t₁ t₂ v₁} → 
-            •[ PLUS t₁ t₂ , inj₁ v₁ ] ⟷ •[ PLUS t₂ t₁ , inj₂ v₁ ]
   swap2₊  : ∀ {t₁ t₂ v₂} → 
             •[ PLUS t₁ t₂ , inj₂ v₂ ] ⟷ •[ PLUS t₂ t₁ , inj₁ v₂ ]
   assocl1₊ : ∀ {t₁ t₂ t₃ v₁} → 
@@ -848,4 +868,8 @@ uniti₊⇄ {neg• t v} =
   _⊗_     : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
            (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
           (•[ TIMES t₁ t₂ , (v₁ , v₂) ] ⟷ •[ TIMES t₃ t₄ , (v₃ , v₄) ])
+trace
+eta
+epsilon
+
 --}
