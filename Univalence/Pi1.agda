@@ -741,7 +741,7 @@ PLUSℤ• : (t : Uℤ•) → Uℤ•
 PLUSℤ• (pos• t v) = pos• (PLUSℤ ZEROℤ t) (inj₂ v)
 PLUSℤ• (neg• t v) = neg• (PLUSℤ ZEROℤ t) (inj₂ v)
 
-unite₊⇄ : ∀ {t : Uℤ•} → PLUSℤ• t ⇄ t
+unite₊⇄ : {t : Uℤ•} → PLUSℤ• t ⇄ t
 unite₊⇄ {pos• t v} = 
   Fwd (•[ PLUS (PLUS ZERO (pos t)) (neg t) , inj₁ (inj₂ v) ]
          ⟷⟨ assocr2₊ ⟩
@@ -754,8 +754,25 @@ unite₊⇄ {pos• t v} =
        •[ PLUS (PLUS ZERO (neg t)) (pos t) , inj₂ v ] □)
 unite₊⇄ {neg• t v} = 
   Bck (•[ PLUS (PLUS ZERO (pos t)) (neg t) , inj₂ v ] 
-         ⟷⟨ {!!} ⟩
+         ⟷⟨ assocr3₊ ⟩
+       •[ PLUS ZERO (PLUS (pos t) (neg t)) , inj₂ (inj₂ v) ]  
+         ⟷⟨ unite₊ ◎ swap2₊ ◎ uniti₊ ⟩
+       •[ PLUS ZERO (PLUS (neg t) (pos t)) , inj₂ (inj₁ v) ]  
+         ⟷⟨ assocl2₊ ⟩
        •[ PLUS (PLUS ZERO (neg t)) (pos t) , inj₁ (inj₂ v) ] □)
+
+uniti₊⇄ : {t : Uℤ•} → t ⇄ PLUSℤ• t
+uniti₊⇄ {pos• t v} =  
+  Fwd (•[ PLUS (pos t) (PLUS ZERO (neg t)) , inj₁ v ] 
+        ⟷⟨ {!!} ⟩
+       •[ PLUS (neg t) (PLUS ZERO (pos t)) , inj₂ (inj₂ v) ] □)
+uniti₊⇄ {neg• t v} =  
+  Bck (•[ PLUS (pos t) (PLUS ZERO (neg t)) , inj₂ (inj₂ v) ]
+        ⟷⟨ {!!} ⟩
+       •[ PLUS (neg t) (PLUS ZERO (pos t)) , inj₁ v ] □)
+
+
+
 
 -- _⟷⟨_⟩_ 
 -- _□ 
@@ -764,7 +781,7 @@ unite₊⇄ {neg• t v} =
 
 {--
 
-  uniti₊  : ∀ {t v} → •[ t , v ] ⟷ •[ PLUS ZERO t , inj₂ v ]
+
   swap1₊  : ∀ {t₁ t₂ v₁} → 
             •[ PLUS t₁ t₂ , inj₁ v₁ ] ⟷ •[ PLUS t₂ t₁ , inj₂ v₁ ]
   swap2₊  : ∀ {t₁ t₂ v₂} → 
