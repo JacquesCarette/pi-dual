@@ -132,11 +132,11 @@ data _⟷_ : U• → U• → Set where
   _◎_    : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) → 
            (•[ t₂ , v₂ ] ⟷ •[ t₃ , v₃ ]) → 
            (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ])
-  _⊕1_   : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
-           (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
+  ⊕1   : ∀ {t₁ t₂ t₃ t₄ v₁ v₃} → 
+           (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → 
            (•[ PLUS t₁ t₂ , inj₁ v₁ ] ⟷ •[ PLUS t₃ t₄ , inj₁ v₃ ])
-  _⊕2_   : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
-           (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
+  ⊕2   : ∀ {t₁ t₂ t₃ t₄ v₂ v₄} → 
+           (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
            (•[ PLUS t₁ t₂ , inj₂ v₂ ] ⟷ •[ PLUS t₃ t₄ , inj₂ v₄ ])
   _⊗_     : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
            (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
@@ -166,8 +166,8 @@ data _⟷_ : U• → U• → Set where
 ! factor2 = dist2 
 ! id⟷ = id⟷
 ! (c₁ ◎ c₂) = ! c₂ ◎ ! c₁ 
-! (c₁ ⊕1 c₂) = ! c₁ ⊕1 ! c₂ 
-! (c₁ ⊕2 c₂) = ! c₁ ⊕2 ! c₂ 
+! (⊕1 c₁) = ⊕1 (! c₁)
+! (⊕2 c₂) = ⊕2 (! c₂)
 ! (c₁ ⊗ c₂) = ! c₁ ⊗ ! c₂ 
 
 -- example programs using nicer syntax that shows intermediate values
@@ -190,11 +190,11 @@ NOT•F = swap2₊
 
 CNOT•Fx : {b : ⟦ BOOL ⟧} → 
           •[ BOOL² , (FALSE , b) ] ⟷ •[ BOOL² , (FALSE , b) ]
-CNOT•Fx = dist2 ◎ ((id⟷ ⊗ NOT•F) ⊕2 id⟷) ◎ factor2
+CNOT•Fx = dist2 ◎ (⊕2 id⟷) ◎ factor2
 
 CNOT•TF : •[ BOOL² , (TRUE , FALSE) ] ⟷ •[ BOOL² , (TRUE , TRUE) ]
 CNOT•TF = dist1 ◎ 
-          ((id⟷ ⊗ NOT•F) ⊕1 (id⟷ {TIMES ONE BOOL} {(tt , TRUE)})) ◎
+          (⊕1 (id⟷ ⊗ NOT•F)) ◎
           factor1
 
 {--
@@ -210,7 +210,7 @@ CNOT•TT : •[ BOOL² , (TRUE , TRUE) ] ⟷ •[ BOOL² , (TRUE , FALSE) ]
 CNOT•TT = •[ BOOL² , (TRUE , TRUE) ]
              ⟷⟨ dist1 ⟩ 
            •[ PLUS (TIMES ONE BOOL) (TIMES ONE BOOL) , inj₁ (tt , TRUE) ]
-             ⟷⟨ (id⟷ ⊗ NOT•T) ⊕1 (id⟷ {v = (tt , TRUE)})⟩ 
+             ⟷⟨ ⊕1 (id⟷ ⊗ NOT•T)⟩ 
            •[ PLUS (TIMES ONE BOOL) (TIMES ONE BOOL) , inj₁ (tt , FALSE) ]
              ⟷⟨ factor1 ⟩
            •[ BOOL² , (TRUE , FALSE) ] □
@@ -222,7 +222,7 @@ CNOT•TT' {t} {v} =
   •[ TIMES (PLUS t ONE) BOOL , (inj₁ v , TRUE) ]
     ⟷⟨ dist1 ⟩ 
   •[ PLUS (TIMES t BOOL) (TIMES ONE BOOL) , inj₁ (v , TRUE) ]
-    ⟷⟨ (id⟷ ⊗ NOT•T) ⊕1 (id⟷ {v = (tt , TRUE)})⟩ 
+    ⟷⟨ ⊕1 (id⟷ ⊗ NOT•T)⟩ 
   •[ PLUS (TIMES t BOOL) (TIMES ONE BOOL) , inj₁ (v , FALSE) ]
     ⟷⟨ factor1 ⟩
   •[ TIMES (PLUS t ONE) BOOL , (inj₁ v , FALSE) ] □
@@ -367,11 +367,11 @@ data _⇔_ : 1U• → 1U• → Set where
   _◎_    : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → (1•[ t₁ , v₁ ] ⇔ 1•[ t₂ , v₂ ]) → 
            (1•[ t₂ , v₂ ] ⇔ 1•[ t₃ , v₃ ]) → 
            (1•[ t₁ , v₁ ] ⇔ 1•[ t₃ , v₃ ])
-  _⊕1_   : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
-           (1•[ t₁ , v₁ ] ⇔ 1•[ t₃ , v₃ ]) → (1•[ t₂ , v₂ ] ⇔ 1•[ t₄ , v₄ ]) → 
+  ⊕1   : ∀ {t₁ t₂ t₃ t₄ v₁ v₃} → 
+           (1•[ t₁ , v₁ ] ⇔ 1•[ t₃ , v₃ ]) → 
            (1•[ 1PLUS t₁ t₂ , inj₁ v₁ ] ⇔ 1•[ 1PLUS t₃ t₄ , inj₁ v₃ ])
-  _⊕2_   : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
-           (1•[ t₁ , v₁ ] ⇔ 1•[ t₃ , v₃ ]) → (1•[ t₂ , v₂ ] ⇔ 1•[ t₄ , v₄ ]) → 
+  ⊕2   : ∀ {t₁ t₂ t₃ t₄ v₂ v₄} → 
+           (1•[ t₂ , v₂ ] ⇔ 1•[ t₄ , v₄ ]) → 
            (1•[ 1PLUS t₁ t₂ , inj₂ v₂ ] ⇔ 1•[ 1PLUS t₃ t₄ , inj₂ v₄ ])
   _⊗_     : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
            (1•[ t₁ , v₁ ] ⇔ 1•[ t₃ , v₃ ]) → (1•[ t₂ , v₂ ] ⇔ 1•[ t₄ , v₄ ]) → 
@@ -500,8 +500,8 @@ data _⇔_ : 1U• → 1U• → Set where
 1! factor2 = dist2 
 1! id⇔ = id⇔
 1! (c₁ ◎ c₂) = 1! c₂ ◎ 1! c₁ 
-1! (c₁ ⊕1 c₂) = 1! c₁ ⊕1 1! c₂ 
-1! (c₁ ⊕2 c₂) = 1! c₁ ⊕2 1! c₂ 
+1! (⊕1 c₁) = ⊕1 (1! c₁)
+1! (⊕2 c₂) = ⊕2 (1! c₂)
 1! (c₁ ⊗ c₂) = 1! c₁ ⊗ 1! c₂ 
 1! (resp◎ c₁ c₂) = resp◎ (1! c₁) (1! c₂)
 1! ridl = ridr
@@ -549,8 +549,8 @@ data _⇔_ : 1U• → 1U• → Set where
 1!≡ factor2 = refl
 1!≡ id⇔ = refl
 1!≡ (c₁ ◎ c₂) = cong₂ (λ c₁ c₂ → c₁ ◎ c₂) (1!≡ c₁) (1!≡ c₂)
-1!≡ (c₁ ⊕1 c₂) = cong₂ (λ c₁ c₂ → c₁ ⊕1 c₂) (1!≡ c₁) (1!≡ c₂)
-1!≡ (c₁ ⊕2 c₂) = cong₂ (λ c₁ c₂ → c₁ ⊕2 c₂) (1!≡ c₁) (1!≡ c₂)
+1!≡ (⊕1 c₁) = cong (λ c₁ → ⊕1 c₁) (1!≡ c₁)
+1!≡ (⊕2 c₂) = cong (λ c₂ → ⊕2 c₂) (1!≡ c₂)
 1!≡ (c₁ ⊗ c₂) = cong₂ (λ c₁ c₂ → c₁ ⊗ c₂) (1!≡ c₁) (1!≡ c₂)
 1!≡ lidl = refl
 1!≡ lidr = refl
@@ -764,15 +764,20 @@ unite₊⇄ {neg• t v} =
 uniti₊⇄ : {t : Uℤ•} → t ⇄ PLUSℤ• t
 uniti₊⇄ {pos• t v} =  
   Fwd (•[ PLUS (pos t) (PLUS ZERO (neg t)) , inj₁ v ] 
-        ⟷⟨ {!!} ⟩
+        ⟷⟨ assocl1₊ ⟩
+       •[ PLUS (PLUS (pos t) ZERO) (neg t) , inj₁ (inj₁ v) ] 
+        ⟷⟨ swap1₊ ⟩
+       •[ PLUS (neg t) (PLUS (pos t) ZERO) , inj₂ (inj₁ v) ] 
+        ⟷⟨ ⊕2 swap1₊ ⟩
        •[ PLUS (neg t) (PLUS ZERO (pos t)) , inj₂ (inj₂ v) ] □)
 uniti₊⇄ {neg• t v} =  
-  Bck (•[ PLUS (pos t) (PLUS ZERO (neg t)) , inj₂ (inj₂ v) ]
-        ⟷⟨ {!!} ⟩
+  Bck (•[ PLUS (pos t) (PLUS ZERO (neg t)) , inj₂ (inj₂ v) ] 
+        ⟷⟨ ⊕2 swap2₊ ⟩
+       •[ PLUS (pos t) (PLUS (neg t) ZERO) , inj₂ (inj₁ v) ] 
+        ⟷⟨ swap2₊ ⟩
+       •[ PLUS (PLUS (neg t) ZERO) (pos t) , inj₁ (inj₁ v) ] 
+        ⟷⟨ assocr1₊ ⟩
        •[ PLUS (neg t) (PLUS ZERO (pos t)) , inj₁ v ] □)
-
-
-
 
 -- _⟷⟨_⟩_ 
 -- _□ 
