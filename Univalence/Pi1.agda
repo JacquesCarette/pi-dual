@@ -799,21 +799,44 @@ swap1₊⇄ {neg• t₁ v₁} {t₂} =
        •[ PLUS (PLUS (neg t₁) (neg t₂)) (PLUS (pos t₂) (pos t₁)) ,
           inj₁ (inj₁ v₁) ] □)
 
+swap2₊⇄ : {t₁ : Uℤ} {t₂ : Uℤ•} → PLUS2ℤ• t₁ t₂ ⇄ PLUS1ℤ• t₂ t₁
+swap2₊⇄ {t₁} {pos• t₂ v₂} = 
+  Fwd (•[ PLUS (PLUS (pos t₁) (pos t₂)) (PLUS (neg t₂) (neg t₁)) ,
+          inj₁ (inj₂ v₂) ]
+        ⟷⟨ {!!} ⟩
+       •[ PLUS (PLUS (neg t₁) (neg t₂)) (PLUS (pos t₂) (pos t₁)) ,
+          inj₂ (inj₁ v₂) ] □)
+swap2₊⇄ {t₁} {neg• t₂ v₂} = 
+  Bck (•[ PLUS (PLUS (pos t₁) (pos t₂)) (PLUS (neg t₂) (neg t₁)) ,
+          inj₂ (inj₁ v₂) ] 
+        ⟷⟨ {!!} ⟩
+       •[ PLUS (PLUS (neg t₁) (neg t₂)) (PLUS (pos t₂) (pos t₁)) ,
+          inj₁ (inj₂ v₂) ] □)
 
+assocl1₊⇄ : {t₁ : Uℤ•} {t₂ t₃ : Uℤ} → 
+            PLUS1ℤ• t₁ (PLUSℤ t₂ t₃) ⇄ PLUS1ℤ• (PLUS1ℤ• t₁ t₂) t₃
+assocl1₊⇄ {pos• t₁ v₁} {t₂} {t₃} = 
+  Fwd (•[ PLUS (PLUS (pos t₁) (pos (PLUSℤ t₂ t₃)))
+               (PLUS (neg (PLUSℤ t₁ t₂)) (neg t₃)) , 
+          inj₁ (inj₁ v₁) ]
+        ⟷⟨ {!!} ⟩
+       •[ PLUS (PLUS (neg t₁) (neg (PLUSℤ t₂ t₃)))
+               (PLUS (pos (PLUSℤ t₁ t₂)) (pos t₃)) , 
+          inj₂ (inj₁ (inj₁ v₁)) ] □)
+assocl1₊⇄ {neg• t₁ v₁} {t₂} {t₃} = 
+  Bck (•[ PLUS (PLUS (pos t₁) (pos (PLUSℤ t₂ t₃)))
+               (PLUS (neg (PLUSℤ t₁ t₂)) (neg t₃)) , 
+          inj₂ (inj₁ (inj₁ v₁)) ] 
+        ⟷⟨ {!!} ⟩
+       •[ PLUS (PLUS (neg t₁) (neg (PLUSℤ t₂ t₃)))
+               (PLUS (pos (PLUSℤ t₁ t₂)) (pos t₃)) , 
+          inj₁ (inj₁ v₁) ] □)
 
-
--- _⟷⟨_⟩_ 
--- _□ 
 
 ------------------------------------------------------------------------------
 
 {--
 
-  swap2₊  : ∀ {t₁ t₂ v₂} → 
-            •[ PLUS t₁ t₂ , inj₂ v₂ ] ⟷ •[ PLUS t₂ t₁ , inj₁ v₂ ]
-  assocl1₊ : ∀ {t₁ t₂ t₃ v₁} → 
-             •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] ⟷ 
-             •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₁ v₁) ]
   assocl2₊ : ∀ {t₁ t₂ t₃ v₂} → 
              •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] ⟷ 
              •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₂ v₂) ]
