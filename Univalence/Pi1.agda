@@ -725,6 +725,18 @@ data Uℤ• : Set where
   pos• : (t : Uℤ) → ⟦ pos t ⟧ → Uℤ•
   neg• : (t : Uℤ) → ⟦ neg t ⟧ → Uℤ•
 
+ZEROℤ+• : {absurd : ⟦ ZERO ⟧} → Uℤ•
+ZEROℤ+• {absurd} = pos• ZEROℤ absurd
+
+ZEROℤ-• : {absurd : ⟦ ZERO ⟧} → Uℤ•
+ZEROℤ-• {absurd} = neg• ZEROℤ absurd
+
+ZEROℤt+• : {t : U} {v : ⟦ t ⟧} → Uℤ• 
+ZEROℤt+• {t} {v} = pos• (t - t) v 
+
+ZEROℤt-• : {t : U} {v : ⟦ t ⟧} → Uℤ• 
+ZEROℤt-• {t} {v} = neg• (t - t) v 
+
 PLUS1ℤ• : Uℤ• → Uℤ → Uℤ•
 PLUS1ℤ• (pos• t₁ v₁) t₂ = pos• (PLUSℤ t₁ t₂) (inj₁ v₁)
 PLUS1ℤ• (neg• t₁ v₁) t₂ = neg• (PLUSℤ t₁ t₂) (inj₁ v₁)
@@ -832,6 +844,7 @@ assocl1₊⇄ {neg• t₁ v₁} {t₂} {t₃} =
                (PLUS (pos (PLUSℤ t₁ t₂)) (pos t₃)) , 
           inj₁ (inj₁ v₁) ] □)
 
+η : {t : Uℤ} → ZEROℤ• ⇄ 
 
 ------------------------------------------------------------------------------
 
