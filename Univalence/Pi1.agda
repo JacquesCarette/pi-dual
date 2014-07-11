@@ -589,18 +589,14 @@ PLUS2ℤ• t₁ (neg• t₂ v₂) = neg• (PLUSℤ t₁ t₂) (inj₂ v₂)
 -- Combinators on pointed types
 
 data _⇄_ : Uℤ• → Uℤ• → Set where
-  Fwd : ∀ {P₁ N₁ P₂ N₂ p₁ p₂} → 
-        •[ PLUS P₁ N₂ , inj₁ p₁ ] ⟷ •[ PLUS N₁ P₂ , inj₂ p₂ ] → 
-        pos• (P₁ - N₁) p₁ ⇄ pos• (P₂ - N₂) p₂
-  Bck : ∀ {P₁ N₁ P₂ N₂ n₁ n₂} → 
-        •[ PLUS P₁ N₂ , inj₂ n₂ ] ⟷ •[ PLUS N₁ P₂ , inj₁ n₁ ] → 
-        neg• (P₁ - N₁) n₁ ⇄ neg• (P₂ - N₂) n₂
-  η : ∀ {t v} → neg• (t - t) v ⇄ pos• (t - t) v
-  ε : ∀ {t v} → pos• (t - t) v ⇄ neg• (t - t) v
-
-id⇄ : ∀ {t} → t ⇄ t
-id⇄ {pos• t p} = Fwd swap1₊
-id⇄ {neg• t n} = Bck swap2₊
+  Fwd : ∀ {t₁ t₂ t₃ t₄ v₁ v₃} → 
+        •[ PLUS t₁ t₄ , inj₁ v₁ ] ⟷ •[ PLUS t₂ t₃ , inj₂ v₃ ] → 
+        pos• (t₁ - t₂) v₁ ⇄ pos• (t₃ - t₄) v₃
+  Bck : ∀ {t₁ t₂ t₃ t₄ v₂ v₄} → 
+        •[ PLUS t₁ t₄ , inj₂ v₄ ] ⟷ •[ PLUS t₂ t₃ , inj₁ v₂ ] → 
+        neg• (t₁ - t₂) v₂ ⇄ neg• (t₃ - t₄) v₄
+  B2F : ∀ {t v} → neg• (t - t) v ⇄ pos• (t - t) v
+  F2B : ∀ {t v} → pos• (t - t) v ⇄ neg• (t - t) v
 
 unite₊⇄ : {t : Uℤ•} → PLUS2ℤ• ZEROℤ t ⇄ t
 unite₊⇄ {pos• t v} = 
@@ -687,16 +683,7 @@ assocl1₊⇄ {neg• t₁ v₁} {t₂} {t₃} =
                (PLUS (pos (PLUSℤ t₁ t₂)) (pos t₃)) , 
           inj₁ (inj₁ v₁) ] □)
 
-------------------------------------------------------------------------------
-
 {--
-ZEROℤ+• : {t : U} {v : ⟦ t ⟧} → Uℤ• 
-ZEROℤ+• {t} {v} = pos• (t - t) v 
-
-ZEROℤ-• : {t : U} {v : ⟦ t ⟧} → Uℤ• 
-ZEROℤ-• {t} {v} = neg• (t - t) v 
-
-
   assocl2₊ : ∀ {t₁ t₂ t₃ v₂} → 
              •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] ⟷ 
              •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₂ v₂) ]
@@ -738,10 +725,32 @@ ZEROℤ-• {t} {v} = neg• (t - t) v
   factor2   : ∀ {t₁ t₂ t₃ v₂ v₃} → 
             •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₂ (v₂ , v₃) ] ⟷ 
             •[ TIMES (PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ]
-  id⟷    : ∀ {t v} → •[ t , v ] ⟷ •[ t , v ]
-  _◎_    : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) → 
-           (•[ t₂ , v₂ ] ⟷ •[ t₃ , v₃ ]) → 
-           (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ])
+--}
+
+id⇄ : {t : Uℤ•} → t ⇄ t
+id⇄ {pos• t p} = Fwd swap1₊
+id⇄ {neg• t n} = Bck swap2₊
+
+_◎⇄_ : {t₁ t₂ t₃ : Uℤ•} → (t₁ ⇄ t₂) → (t₂ ⇄ t₃) → (t₁ ⇄ t₃) 
+_◎⇄_ {pos• t₁ v₁} {pos• t₂ v₂} {pos• t₃ v₃} (Fwd c₁) (Fwd c₂) = 
+  Fwd (•[ PLUS (pos t₁) (neg t₃) , inj₁ v₁ ] 
+        ⟷⟨ {!!} ⟩
+       •[ PLUS (neg t₁) (pos t₃) , inj₂ v₃ ] □)
+-- c₁ : •[ PLUS (pos t₁) (neg t₂) , inj₁ v₁ ] ⟷
+--      •[ PLUS (neg t₁) (pos t₂) , inj₂ v₂ ]
+-- c₂ : •[ PLUS (pos t₂) (neg t₃) , inj₁ v₂ ] ⟷
+--      •[ PLUS (neg t₂) (pos t₃) , inj₂ v₃ ]
+_◎⇄_ {pos• (t₁ - t₂) v₁} {pos• (t₃ - .t₃) v₃} {neg• (.t₃ - .t₃) .v₃} 
+     (Fwd c) F2B = {!!}
+-- ?7 : pos• (t₁ - t₂) v₁ ⇄ neg• (t₃ - t₃) v₃
+Bck c₁ ◎⇄ Bck c₂ = Bck {!!}
+Bck c ◎⇄ B2F     = {!!}
+B2F ◎⇄ Fwd c     = {!!}
+B2F ◎⇄ F2B       = id⇄ 
+F2B ◎⇄ Bck c     = {!!}
+F2B ◎⇄ B2F       = id⇄ 
+
+{--
   _⊕1_   : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
            (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
            (•[ PLUS t₁ t₂ , inj₁ v₁ ] ⟷ •[ PLUS t₃ t₄ , inj₁ v₃ ])
@@ -751,8 +760,14 @@ ZEROℤ-• {t} {v} = neg• (t - t) v
   _⊗_     : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
            (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
           (•[ TIMES t₁ t₂ , (v₁ , v₂) ] ⟷ •[ TIMES t₃ t₄ , (v₃ , v₄) ])
-trace
-eta
-epsilon
-
 --}
+
+-- trace
+
+η : ∀ {t v} → ZEROℤ+• {t} {v} ⇄ ZEROℤ-• {t} {v}
+η = F2B 
+
+ε : ∀ {t v} → ZEROℤ-• {t} {v} ⇄ ZEROℤ+• {t} {v}
+ε = B2F
+
+------------------------------------------------------------------------------
