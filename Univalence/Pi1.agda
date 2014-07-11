@@ -392,6 +392,7 @@ data _⇔_ : 1U• → 1U• → Set where
           {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
           1•[ PATH t₁ t₄ , path ((c₁ ◎ c₂) ◎ c₃) ] ⇔ 
           1•[ PATH t₁ t₄ , path (c₁ ◎ (c₂ ◎ c₃)) ] 
+{-
   unite₊l : ∀ {t v} → 
           1•[ PATH (•[ PLUS ZERO t , inj₂ v ]) (•[ PLUS ZERO t , inj₂ v ]) , 
           path (unite₊ ◎ uniti₊) ] ⇔ 
@@ -469,7 +470,14 @@ data _⇔_ : 1U• → 1U• → Set where
           path id⟷ ] ⇔
           1•[ PATH •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
                    •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] , 
-          path (assocl3₊ ◎ ! assocl3₊) ] 
+          path (assocl3₊ ◎ ! assocl3₊) ]
+-}
+  inv◎l : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂ } → 
+          1•[ PATH t₁ t₁ , path (c ◎ ! c)] ⇔
+          1•[ PATH t₁ t₁ , path id⟷ ]
+  inv◎r : ∀ {t₁ t₂} → {c : t₁ ⟷ t₂ } → 
+          1•[ PATH t₁ t₁ , path id⟷ ] ⇔
+          1•[ PATH t₁ t₁ , path (c ◎ ! c) ]
   resp◎   : ∀ {t₁ t₂ t₃} →
            {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
            (1•[ PATH t₁ t₂ , path c₁ ] ⇔ 1•[ PATH t₁ t₂ , path c₃ ]) → 
@@ -510,6 +518,7 @@ data _⇔_ : 1U• → 1U• → Set where
 1! lidr = lidl
 1! assocl = assocr
 1! assocr = assocl
+{-
 1! unite₊l = unite₊r
 1! unite₊r = unite₊l
 1! uniti₊l = uniti₊r
@@ -524,6 +533,9 @@ data _⇔_ : 1U• → 1U• → Set where
 1! assocl2₊r = assocl2₊l
 1! assocl3₊l = assocl3₊r
 1! assocl3₊r = assocl3₊l
+-}
+1! inv◎l = inv◎r
+1! inv◎r = inv◎l
 
 1!≡ : {t₁ t₂ : 1U•} → (c : t₁ ⇔ t₂) → 1! (1! c) ≡ c
 1!≡ unite₊ = refl
@@ -559,6 +571,7 @@ data _⇔_ : 1U• → 1U• → Set where
 1!≡ (resp◎ c₁ c₂) = cong₂ (λ c₁ c₂ → resp◎ c₁ c₂) (1!≡ c₁) (1!≡ c₂)
 1!≡ assocl = refl
 1!≡ assocr = refl
+{-
 1!≡ unite₊l = refl
 1!≡ unite₊r = refl
 1!≡ uniti₊l = refl
@@ -573,6 +586,9 @@ data _⇔_ : 1U• → 1U• → Set where
 1!≡ assocl2₊r = refl
 1!≡ assocl3₊l = refl
 1!≡ assocl3₊r = refl
+-}
+1!≡ inv◎l = refl
+1!≡ inv◎r = refl
 
 -- better syntax for writing 2paths
 
@@ -602,6 +618,7 @@ _▤ c = id⇔
 -- other groupoid rules. (cf. The canonicity for 2D type theory by Licata and
 -- Harper)
 
+{-
 linv : {t₁ t₂ : U•} → (c : t₁ ⟷ t₂) → 
        1•[ PATH t₁ t₁ , path (c ◎ ! c) ] ⇔ 1•[ PATH t₁ t₁ , path id⟷ ]
 linv unite₊ = unite₊l
@@ -611,13 +628,11 @@ linv swap2₊ = swap2₊l
 linv assocl1₊ = assocl1₊l
 linv assocl2₊ = assocl2₊l
 linv assocl3₊ = assocl3₊l
-linv _ = {!!} 
-{--
-linv assocr1₊ = {!!}
+linv assocr1₊ = inv◎l {c = assocr1₊}
 linv assocr2₊ = {!!}
 linv assocr3₊ = {!!}
-linv unite⋆ = {!!}
-linv uniti⋆ = {!!}
+linv unite⋆ = inv◎l {c = unite⋆}
+linv uniti⋆ = inv◎l {c = uniti⋆}
 linv swap⋆ = {!!}
 linv assocl⋆ = {!!}
 linv assocr⋆ = {!!}
@@ -628,11 +643,10 @@ linv dist2 = {!!}
 linv factor1 = {!!}
 linv factor2 = {!!}
 linv id⟷ = {!!}
+linv (⊕1 c) = {!!}
+linv (⊕2 c) = {!!}
 linv (c ◎ c₁) = {!!}
-linv (c ⊕1 c₁) = {!!}
-linv (c ⊕2 c₁) = {!!}
 linv (c ⊗ c₁) = {!!} 
---}
 
 rinv : {t₁ t₂ : U•} → (c : t₁ ⟷ t₂) → 
        1•[ PATH t₂ t₂ , path (! c ◎ c) ] ⇔ 1•[ PATH t₂ t₂ , path id⟷ ]
@@ -667,6 +681,7 @@ rinv (c ⊕1 c₁) = {!!}
 rinv (c ⊕2 c₁) = {!!}
 rinv (c ⊗ c₁) = {!!} 
 --}
+-}
 
 G : 1Groupoid
 G = record
@@ -683,8 +698,8 @@ G = record
         ; equiv = record { refl = id⇔
                                 ; sym = λ c → 1! c 
                                 ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
-        ; linv = λ {t₁} {t₂} c → linv c
-        ; rinv = λ {t₁} {t₂} c → rinv c
+        ; linv = λ {t₁} {t₂} c → inv◎l {c = c}
+        ; rinv = λ {t₁} {t₂} c → {!!}
         ; ∘-resp-≈ = λ f⟷h g⟷i → resp◎ g⟷i f⟷h 
         }
 
