@@ -1,5 +1,6 @@
 module Pi1 where
 
+open import Data.Nat
 open import Data.Empty
 open import Data.Unit
 open import Data.Sum
@@ -11,8 +12,8 @@ open import Groupoid
 
 infix  2  _□       
 infixr 2  _⟷⟨_⟩_   
-infix  2  _▤       
-infixr 2  _⇔⟨_⟩_   
+-- infix  2  _▤       
+-- infixr 2  _⇔⟨_⟩_   
 infixr 10 _◎_
 infixr 30 _⟷_
 
@@ -77,71 +78,152 @@ BOOL•T = •[ BOOL , TRUE ]
 -- The actual programs are the commutative semiring isomorphisms between
 -- pointed types.
 
-data _⟷_ : U• → U• → Set where
-  unite₊  : ∀ {t v} → •[ PLUS ZERO t , inj₂ v ] ⟷ •[ t , v ]
-  uniti₊  : ∀ {t v} → •[ t , v ] ⟷ •[ PLUS ZERO t , inj₂ v ]
-  swap1₊  : ∀ {t₁ t₂ v₁} → 
-            •[ PLUS t₁ t₂ , inj₁ v₁ ] ⟷ •[ PLUS t₂ t₁ , inj₂ v₁ ]
-  swap2₊  : ∀ {t₁ t₂ v₂} → 
-            •[ PLUS t₁ t₂ , inj₂ v₂ ] ⟷ •[ PLUS t₂ t₁ , inj₁ v₂ ]
-  assocl1₊ : ∀ {t₁ t₂ t₃ v₁} → 
-             •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] ⟷ 
-             •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₁ v₁) ]
-  assocl2₊ : ∀ {t₁ t₂ t₃ v₂} → 
-             •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] ⟷ 
-             •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₂ v₂) ]
-  assocl3₊ : ∀ {t₁ t₂ t₃ v₃} → 
-             •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] ⟷ 
-             •[ PLUS (PLUS t₁ t₂) t₃ , inj₂ v₃ ]
-  assocr1₊ : ∀ {t₁ t₂ t₃ v₁} → 
-             •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₁ v₁) ] ⟷ 
-             •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] 
-  assocr2₊ : ∀ {t₁ t₂ t₃ v₂} → 
-             •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₂ v₂) ] ⟷ 
-             •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] 
-  assocr3₊ : ∀ {t₁ t₂ t₃ v₃} → 
-             •[ PLUS (PLUS t₁ t₂) t₃ , inj₂ v₃ ] ⟷ 
-             •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
-  unite⋆  : ∀ {t v} → •[ TIMES ONE t , (tt , v) ] ⟷ •[ t , v ]
-  uniti⋆  : ∀ {t v} → •[ t , v ] ⟷ •[ TIMES ONE t , (tt , v) ] 
-  swap⋆   : ∀ {t₁ t₂ v₁ v₂} → 
-              •[ TIMES t₁ t₂ , (v₁ , v₂) ] ⟷ •[ TIMES t₂ t₁ , (v₂ , v₁) ]
-  assocl⋆ : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → 
-            •[ TIMES t₁ (TIMES t₂ t₃) , (v₁ , (v₂ , v₃)) ] ⟷ 
-            •[ TIMES (TIMES t₁ t₂) t₃ , ((v₁ , v₂) , v₃) ]
-  assocr⋆ : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → 
-            •[ TIMES (TIMES t₁ t₂) t₃ , ((v₁ , v₂) , v₃) ] ⟷ 
-            •[ TIMES t₁ (TIMES t₂ t₃) , (v₁ , (v₂ , v₃)) ]
-  distz : ∀ {t v absurd} → 
-            •[ TIMES ZERO t , (absurd , v) ] ⟷ •[ ZERO , absurd ]
-  factorz : ∀ {t v absurd} → 
-            •[ ZERO , absurd ] ⟷ •[ TIMES ZERO t , (absurd , v) ]
-  dist1   : ∀ {t₁ t₂ t₃ v₁ v₃} → 
-            •[ TIMES (PLUS t₁ t₂) t₃ , (inj₁ v₁ , v₃) ] ⟷ 
-            •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₁ (v₁ , v₃) ]
-  dist2   : ∀ {t₁ t₂ t₃ v₂ v₃} → 
-            •[ TIMES (PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ] ⟷ 
-            •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₂ (v₂ , v₃) ]
-  factor1   : ∀ {t₁ t₂ t₃ v₁ v₃} → 
-            •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₁ (v₁ , v₃) ] ⟷ 
-            •[ TIMES (PLUS t₁ t₂) t₃ , (inj₁ v₁ , v₃) ]
-  factor2   : ∀ {t₁ t₂ t₃ v₂ v₃} → 
-            •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₂ (v₂ , v₃) ] ⟷ 
-            •[ TIMES (PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ]
-  id⟷    : ∀ {t v} → •[ t , v ] ⟷ •[ t , v ]
-  _◎_    : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) → 
-           (•[ t₂ , v₂ ] ⟷ •[ t₃ , v₃ ]) → 
-           (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ])
-  ⊕1   : ∀ {t₁ t₂ t₃ t₄ v₁ v₃} → 
-           (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → 
-           (•[ PLUS t₁ t₂ , inj₁ v₁ ] ⟷ •[ PLUS t₃ t₄ , inj₁ v₃ ])
-  ⊕2   : ∀ {t₁ t₂ t₃ t₄ v₂ v₄} → 
-           (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
-           (•[ PLUS t₁ t₂ , inj₂ v₂ ] ⟷ •[ PLUS t₃ t₄ , inj₂ v₄ ])
-  _⊗_     : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
-           (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
-          (•[ TIMES t₁ t₂ , (v₁ , v₂) ] ⟷ •[ TIMES t₃ t₄ , (v₃ , v₄) ])
+mutual 
 
+  data _⟷_ : U• → U• → Set where
+    unite₊  : ∀ {t v} → •[ PLUS ZERO t , inj₂ v ] ⟷ •[ t , v ]
+    uniti₊  : ∀ {t v} → •[ t , v ] ⟷ •[ PLUS ZERO t , inj₂ v ]
+    swap1₊  : ∀ {t₁ t₂ v₁} → 
+              •[ PLUS t₁ t₂ , inj₁ v₁ ] ⟷ •[ PLUS t₂ t₁ , inj₂ v₁ ]
+    swap2₊  : ∀ {t₁ t₂ v₂} → 
+              •[ PLUS t₁ t₂ , inj₂ v₂ ] ⟷ •[ PLUS t₂ t₁ , inj₁ v₂ ]
+    assocl1₊ : ∀ {t₁ t₂ t₃ v₁} → 
+               •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] ⟷ 
+               •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₁ v₁) ]
+    assocl2₊ : ∀ {t₁ t₂ t₃ v₂} → 
+               •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] ⟷ 
+               •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₂ v₂) ]
+    assocl3₊ : ∀ {t₁ t₂ t₃ v₃} → 
+               •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] ⟷ 
+               •[ PLUS (PLUS t₁ t₂) t₃ , inj₂ v₃ ]
+    assocr1₊ : ∀ {t₁ t₂ t₃ v₁} → 
+               •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₁ v₁) ] ⟷ 
+               •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] 
+    assocr2₊ : ∀ {t₁ t₂ t₃ v₂} → 
+               •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₂ v₂) ] ⟷ 
+               •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] 
+    assocr3₊ : ∀ {t₁ t₂ t₃ v₃} → 
+               •[ PLUS (PLUS t₁ t₂) t₃ , inj₂ v₃ ] ⟷ 
+               •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ]
+    unite⋆  : ∀ {t v} → •[ TIMES ONE t , (tt , v) ] ⟷ •[ t , v ]
+    uniti⋆  : ∀ {t v} → •[ t , v ] ⟷ •[ TIMES ONE t , (tt , v) ] 
+    swap⋆   : ∀ {t₁ t₂ v₁ v₂} → 
+                •[ TIMES t₁ t₂ , (v₁ , v₂) ] ⟷ •[ TIMES t₂ t₁ , (v₂ , v₁) ]
+    assocl⋆ : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → 
+              •[ TIMES t₁ (TIMES t₂ t₃) , (v₁ , (v₂ , v₃)) ] ⟷ 
+              •[ TIMES (TIMES t₁ t₂) t₃ , ((v₁ , v₂) , v₃) ]
+    assocr⋆ : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → 
+              •[ TIMES (TIMES t₁ t₂) t₃ , ((v₁ , v₂) , v₃) ] ⟷ 
+              •[ TIMES t₁ (TIMES t₂ t₃) , (v₁ , (v₂ , v₃)) ]
+    distz : ∀ {t v absurd} → 
+              •[ TIMES ZERO t , (absurd , v) ] ⟷ •[ ZERO , absurd ]
+    factorz : ∀ {t v absurd} → 
+              •[ ZERO , absurd ] ⟷ •[ TIMES ZERO t , (absurd , v) ]
+    dist1   : ∀ {t₁ t₂ t₃ v₁ v₃} → 
+              •[ TIMES (PLUS t₁ t₂) t₃ , (inj₁ v₁ , v₃) ] ⟷ 
+              •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₁ (v₁ , v₃) ]
+    dist2   : ∀ {t₁ t₂ t₃ v₂ v₃} → 
+              •[ TIMES (PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ] ⟷ 
+              •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₂ (v₂ , v₃) ]
+    factor1   : ∀ {t₁ t₂ t₃ v₁ v₃} → 
+              •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₁ (v₁ , v₃) ] ⟷ 
+              •[ TIMES (PLUS t₁ t₂) t₃ , (inj₁ v₁ , v₃) ]
+    factor2   : ∀ {t₁ t₂ t₃ v₂ v₃} → 
+              •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₂ (v₂ , v₃) ] ⟷ 
+              •[ TIMES (PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ]
+    id⟷    : ∀ {t v} → •[ t , v ] ⟷ •[ t , v ]
+    _◎_    : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) → 
+             (•[ t₂ , v₂ ] ⟷ •[ t₃ , v₃ ]) → 
+             (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ])
+    ⊕1   : ∀ {t₁ t₂ t₃ t₄ v₁ v₃} → 
+             (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → 
+             (•[ PLUS t₁ t₂ , inj₁ v₁ ] ⟷ •[ PLUS t₃ t₄ , inj₁ v₃ ])
+    ⊕2   : ∀ {t₁ t₂ t₃ t₄ v₂ v₄} → 
+             (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
+             (•[ PLUS t₁ t₂ , inj₂ v₂ ] ⟷ •[ PLUS t₃ t₄ , inj₂ v₄ ])
+    _⊗_     : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
+             (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
+             (•[ TIMES t₁ t₂ , (v₁ , v₂) ] ⟷ •[ TIMES t₃ t₄ , (v₃ , v₄) ])
+{--
+    trace : ∀ {t t₁ t₂ v₁ v₂} → 
+           (Σ[ n ∈ ℕ ] 
+             (⟷n (suc n) •[ PLUS t t₁ , inj₂ v₁ ] •[ PLUS t t₂ , inj₂ v₂ ])) → 
+           (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ])
+  
+  data ⟷n : ℕ → U• → U• → Set where
+    Step  : ∀ {t₁ t₂ v₁ v₂} → (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) → 
+            ⟷n (suc 0) •[ t₁ , v₁ ] •[ t₂ , v₂ ] 
+    Step+ : ∀ {n t₁ t₂ t₃ v₁ v₂ v₃} → 
+             (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) → 
+             (⟷n n •[ t₂ , v₂ ] •[ t₃ , v₃ ]) → 
+             (⟷n (suc n) •[ t₁ , v₁ ] •[ t₃ , v₃ ]) 
+--}
+
+-- nicer syntax that shows intermediate values instead of point-free
+-- combinators
+
+_⟷⟨_⟩_ : (t₁ : U•) {t₂ : U•} {t₃ : U•} → 
+          (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃) 
+_ ⟷⟨ α ⟩ β = α ◎ β
+
+_□ : (t : U•) → {t : U•} → (t ⟷ t)
+_□ t = id⟷
+
+traceThm : ∀ {t t₁ t₂ v₁ v₂} → 
+             (•[ PLUS t t₁ , inj₂ v₁ ] ⟷ •[ PLUS t t₂ , inj₂ v₂ ]) → 
+             (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ])
+traceThm {t} id⟷ = id⟷
+traceThm {t} (⊕2 c) = c
+traceThm {ZERO} unite₊ = unite₊
+traceThm {ZERO} uniti₊ = uniti₊
+traceThm {ZERO} {t₁} {t₂} {v₁} {v₂} (c₁ ◎ c₂) = 
+  •[ t₁ , v₁ ]
+    ⟷⟨ uniti₊ ⟩
+  •[ PLUS ZERO t₁ , inj₂ v₁ ]
+    ⟷⟨ c₁ ◎ c₂ ⟩ 
+  •[ PLUS ZERO t₂ , inj₂ v₂ ] 
+    ⟷⟨ unite₊  ⟩
+  •[ t₂ , v₂ ] □
+-- in the next few case with t = ONE, we have:
+--c₁  : •[ PLUS ONE .t₁ , inj₂ .v₁ ] ⟷ •[ .t₃ , .v₃ ]
+--c₂  : •[ .t₃ , .v₃ ] ⟷ •[ PLUS ONE .t₂ , inj₂ .v₂ ]
+--hole: •[ .t₁ , .v₁ ] ⟷ •[ .t₂ , .v₂ ]
+traceThm {ONE} {ZERO} (uniti₊ ◎ c₂) = {!!}
+traceThm {ONE} {ZERO} (swap2₊ ◎ c₂) = {!!}
+traceThm {ONE} {ZERO} (uniti⋆ ◎ c₂) = {!!}
+traceThm {ONE} {ZERO} (id⟷ ◎ c₂) = {!!}
+traceThm {ONE} {ZERO} ((c₁ ◎ c₂) ◎ c₃) = {!!}
+traceThm {ONE} {ZERO} (⊕2 c₁ ◎ c₂) = {!!}
+traceThm {ONE} {ONE} (uniti₊ ◎ c₂) = {!!}
+traceThm {ONE} {ONE} (swap2₊ ◎ c₂) = {!!}
+traceThm {ONE} {ONE} (uniti⋆ ◎ c₂) = {!!}
+traceThm {ONE} {ONE} (id⟷ ◎ c₂) = {!!}
+traceThm {ONE} {ONE} ((c₁ ◎ c₂) ◎ c₃) = {!!}
+traceThm {ONE} {ONE} (⊕2 c₁ ◎ c₂) = {!!}
+traceThm {ONE} {PLUS t₁ t₂} (uniti₊ ◎ c₂) = {!!}
+traceThm {ONE} {PLUS t₁ t₂} (swap2₊ ◎ c₂) = {!!}
+traceThm {ONE} {PLUS t₁ t₂} (assocl2₊ ◎ c₂) = {!!}
+traceThm {ONE} {PLUS t₁ t₂} (assocl3₊ ◎ c₂) = {!!}
+traceThm {ONE} {PLUS t₁ t₂} (uniti⋆ ◎ c₂) = {!!}
+traceThm {ONE} {PLUS t₁ t₂} (id⟷ ◎ c₂) = {!!}
+traceThm {ONE} {PLUS t₁ t₂} ((c₁ ◎ c₂) ◎ c₃) = {!!}
+traceThm {ONE} {PLUS t₁ t₂} (⊕2 c₁ ◎ c₂) = {!!}
+traceThm {ONE} {TIMES t₁ t₂} (uniti₊ ◎ c₂) = {!!}
+traceThm {ONE} {TIMES t₁ t₂} (swap2₊ ◎ c₂) = {!!}
+traceThm {ONE} {TIMES t₁ t₂} (uniti⋆ ◎ c₂) = {!!}
+traceThm {ONE} {TIMES t₁ t₂} (id⟷ ◎ c₂) = {!!}
+traceThm {ONE} {TIMES t₁ t₂} ((c₁ ◎ c₂) ◎ c₃) = {!!}
+traceThm {ONE} {TIMES t₁ t₂} (⊕2 c₁ ◎ c₂) = {!!} 
+traceThm {PLUS t₁ t₂} (c₁ ◎ c₂) = {!!}
+  --c₁  : •[ PLUS (PLUS t₁ t₂) .t₁ , inj₂ .v₁ ] ⟷ •[ .t₃ , .v₃ ]
+  --c₂  : •[ .t₃ , .v₃ ] ⟷ •[ PLUS (PLUS t₁ t₂) .t₂ , inj₂ .v₂ ]
+  -- ?1 : •[ .t₁ , .v₁ ] ⟷ •[ .t₂ , .v₂ ]
+traceThm {TIMES t₁ t₂} (c₁ ◎ c₂) = {!!}
+  --c₁  : •[ PLUS (TIMES t₁ t₂) .t₁ , inj₂ .v₁ ] ⟷ •[ .t₃ , .v₃ ]
+  --c₂  : •[ .t₃ , .v₃ ] ⟷ •[ PLUS (TIMES t₁ t₂) .t₂ , inj₂ .v₂ ]
+  -- ?2 : •[ .t₁ , .v₁ ] ⟷ •[ .t₂ , .v₂ ]
+
+{--
 ! : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
 ! unite₊ = uniti₊
 ! uniti₊ = unite₊
@@ -589,18 +671,14 @@ PLUS2ℤ• t₁ (neg• t₂ v₂) = neg• (PLUSℤ t₁ t₂) (inj₂ v₂)
 -- Combinators on pointed types
 
 data _⇄_ : Uℤ• → Uℤ• → Set where
-  Fwd : ∀ {P₁ N₁ P₂ N₂ p₁ p₂} → 
-        •[ PLUS P₁ N₂ , inj₁ p₁ ] ⟷ •[ PLUS N₁ P₂ , inj₂ p₂ ] → 
-        pos• (P₁ - N₁) p₁ ⇄ pos• (P₂ - N₂) p₂
-  Bck : ∀ {P₁ N₁ P₂ N₂ n₁ n₂} → 
-        •[ PLUS P₁ N₂ , inj₂ n₂ ] ⟷ •[ PLUS N₁ P₂ , inj₁ n₁ ] → 
-        neg• (P₁ - N₁) n₁ ⇄ neg• (P₂ - N₂) n₂
-  η : ∀ {t v} → neg• (t - t) v ⇄ pos• (t - t) v
-  ε : ∀ {t v} → pos• (t - t) v ⇄ neg• (t - t) v
-
-id⇄ : ∀ {t} → t ⇄ t
-id⇄ {pos• t p} = Fwd swap1₊
-id⇄ {neg• t n} = Bck swap2₊
+  Fwd : ∀ {t₁ t₂ t₃ t₄ v₁ v₃} → 
+        •[ PLUS t₁ t₄ , inj₁ v₁ ] ⟷ •[ PLUS t₂ t₃ , inj₂ v₃ ] → 
+        pos• (t₁ - t₂) v₁ ⇄ pos• (t₃ - t₄) v₃
+  Bck : ∀ {t₁ t₂ t₃ t₄ v₂ v₄} → 
+        •[ PLUS t₁ t₄ , inj₂ v₄ ] ⟷ •[ PLUS t₂ t₃ , inj₁ v₂ ] → 
+        neg• (t₁ - t₂) v₂ ⇄ neg• (t₃ - t₄) v₄
+  B2F : ∀ {t v} → neg• (t - t) v ⇄ pos• (t - t) v
+  F2B : ∀ {t v} → pos• (t - t) v ⇄ neg• (t - t) v
 
 unite₊⇄ : {t : Uℤ•} → PLUS2ℤ• ZEROℤ t ⇄ t
 unite₊⇄ {pos• t v} = 
@@ -687,16 +765,7 @@ assocl1₊⇄ {neg• t₁ v₁} {t₂} {t₃} =
                (PLUS (pos (PLUSℤ t₁ t₂)) (pos t₃)) , 
           inj₁ (inj₁ v₁) ] □)
 
-------------------------------------------------------------------------------
-
 {--
-ZEROℤ+• : {t : U} {v : ⟦ t ⟧} → Uℤ• 
-ZEROℤ+• {t} {v} = pos• (t - t) v 
-
-ZEROℤ-• : {t : U} {v : ⟦ t ⟧} → Uℤ• 
-ZEROℤ-• {t} {v} = neg• (t - t) v 
-
-
   assocl2₊ : ∀ {t₁ t₂ t₃ v₂} → 
              •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] ⟷ 
              •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₂ v₂) ]
@@ -738,10 +807,32 @@ ZEROℤ-• {t} {v} = neg• (t - t) v
   factor2   : ∀ {t₁ t₂ t₃ v₂ v₃} → 
             •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₂ (v₂ , v₃) ] ⟷ 
             •[ TIMES (PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ]
-  id⟷    : ∀ {t v} → •[ t , v ] ⟷ •[ t , v ]
-  _◎_    : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) → 
-           (•[ t₂ , v₂ ] ⟷ •[ t₃ , v₃ ]) → 
-           (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ])
+--}
+
+id⇄ : {t : Uℤ•} → t ⇄ t
+id⇄ {pos• t p} = Fwd swap1₊
+id⇄ {neg• t n} = Bck swap2₊
+
+_◎⇄_ : {t₁ t₂ t₃ : Uℤ•} → (t₁ ⇄ t₂) → (t₂ ⇄ t₃) → (t₁ ⇄ t₃) 
+_◎⇄_ {pos• t₁ v₁} {pos• t₂ v₂} {pos• t₃ v₃} (Fwd c₁) (Fwd c₂) = 
+  Fwd (•[ PLUS (pos t₁) (neg t₃) , inj₁ v₁ ] 
+        ⟷⟨ {!!} ⟩
+       •[ PLUS (neg t₁) (pos t₃) , inj₂ v₃ ] □)
+-- c₁ : •[ PLUS (pos t₁) (neg t₂) , inj₁ v₁ ] ⟷
+--      •[ PLUS (neg t₁) (pos t₂) , inj₂ v₂ ]
+-- c₂ : •[ PLUS (pos t₂) (neg t₃) , inj₁ v₂ ] ⟷
+--      •[ PLUS (neg t₂) (pos t₃) , inj₂ v₃ ]
+_◎⇄_ {pos• (t₁ - t₂) v₁} {pos• (t₃ - .t₃) v₃} {neg• (.t₃ - .t₃) .v₃} 
+     (Fwd c) F2B = {!!}
+-- ?7 : pos• (t₁ - t₂) v₁ ⇄ neg• (t₃ - t₃) v₃
+Bck c₁ ◎⇄ Bck c₂ = Bck {!!}
+Bck c ◎⇄ B2F     = {!!}
+B2F ◎⇄ Fwd c     = {!!}
+B2F ◎⇄ F2B       = id⇄ 
+F2B ◎⇄ Bck c     = {!!}
+F2B ◎⇄ B2F       = id⇄ 
+
+{--
   _⊕1_   : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
            (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
            (•[ PLUS t₁ t₂ , inj₁ v₁ ] ⟷ •[ PLUS t₃ t₄ , inj₁ v₃ ])
@@ -751,8 +842,15 @@ ZEROℤ-• {t} {v} = neg• (t - t) v
   _⊗_     : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
            (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
           (•[ TIMES t₁ t₂ , (v₁ , v₂) ] ⟷ •[ TIMES t₃ t₄ , (v₃ , v₄) ])
-trace
-eta
-epsilon
+--}
 
+-- trace
+
+η : ∀ {t v} → ZEROℤ+• {t} {v} ⇄ ZEROℤ-• {t} {v}
+η = F2B 
+
+ε : ∀ {t v} → ZEROℤ-• {t} {v} ⇄ ZEROℤ+• {t} {v}
+ε = B2F
+
+------------------------------------------------------------------------------
 --}
