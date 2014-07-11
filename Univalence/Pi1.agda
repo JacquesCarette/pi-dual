@@ -10,8 +10,8 @@ open ≡-Reasoning
 
 open import Groupoid
 
--- infix  2  _□       
--- infixr 2  _⟷⟨_⟩_   
+infix  2  _□       
+infixr 2  _⟷⟨_⟩_   
 -- infix  2  _▤       
 -- infixr 2  _⇔⟨_⟩_   
 infixr 10 _◎_
@@ -144,6 +144,7 @@ mutual
     _⊗_     : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
              (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
              (•[ TIMES t₁ t₂ , (v₁ , v₂) ] ⟷ •[ TIMES t₃ t₄ , (v₃ , v₄) ])
+{--
     trace : ∀ {t t₁ t₂ v₁ v₂} → 
            (Σ[ n ∈ ℕ ] 
              (⟷n (suc n) •[ PLUS t t₁ , inj₂ v₁ ] •[ PLUS t t₂ , inj₂ v₂ ])) → 
@@ -156,6 +157,71 @@ mutual
              (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) → 
              (⟷n n •[ t₂ , v₂ ] •[ t₃ , v₃ ]) → 
              (⟷n (suc n) •[ t₁ , v₁ ] •[ t₃ , v₃ ]) 
+--}
+
+-- nicer syntax that shows intermediate values instead of point-free
+-- combinators
+
+_⟷⟨_⟩_ : (t₁ : U•) {t₂ : U•} {t₃ : U•} → 
+          (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃) 
+_ ⟷⟨ α ⟩ β = α ◎ β
+
+_□ : (t : U•) → {t : U•} → (t ⟷ t)
+_□ t = id⟷
+
+traceThm : ∀ {t t₁ t₂ v₁ v₂} → 
+             (•[ PLUS t t₁ , inj₂ v₁ ] ⟷ •[ PLUS t t₂ , inj₂ v₂ ]) → 
+             (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ])
+traceThm {t} id⟷ = id⟷
+traceThm {t} (⊕2 c) = c
+traceThm {ZERO} unite₊ = unite₊
+traceThm {ZERO} uniti₊ = uniti₊
+traceThm {ZERO} {t₁} {t₂} {v₁} {v₂} (c₁ ◎ c₂) = 
+  •[ t₁ , v₁ ]
+    ⟷⟨ uniti₊ ⟩
+  •[ PLUS ZERO t₁ , inj₂ v₁ ]
+    ⟷⟨ c₁ ◎ c₂ ⟩ 
+  •[ PLUS ZERO t₂ , inj₂ v₂ ] 
+    ⟷⟨ unite₊  ⟩
+  •[ t₂ , v₂ ] □
+-- in the next few case with t = ONE, we have:
+--c₁  : •[ PLUS ONE .t₁ , inj₂ .v₁ ] ⟷ •[ .t₃ , .v₃ ]
+--c₂  : •[ .t₃ , .v₃ ] ⟷ •[ PLUS ONE .t₂ , inj₂ .v₂ ]
+--hole: •[ .t₁ , .v₁ ] ⟷ •[ .t₂ , .v₂ ]
+traceThm {ONE} {ZERO} (uniti₊ ◎ c₂) = {!!}
+traceThm {ONE} {ZERO} (swap2₊ ◎ c₂) = {!!}
+traceThm {ONE} {ZERO} (uniti⋆ ◎ c₂) = {!!}
+traceThm {ONE} {ZERO} (id⟷ ◎ c₂) = {!!}
+traceThm {ONE} {ZERO} ((c₁ ◎ c₂) ◎ c₃) = {!!}
+traceThm {ONE} {ZERO} (⊕2 c₁ ◎ c₂) = {!!}
+traceThm {ONE} {ONE} (uniti₊ ◎ c₂) = {!!}
+traceThm {ONE} {ONE} (swap2₊ ◎ c₂) = {!!}
+traceThm {ONE} {ONE} (uniti⋆ ◎ c₂) = {!!}
+traceThm {ONE} {ONE} (id⟷ ◎ c₂) = {!!}
+traceThm {ONE} {ONE} ((c₁ ◎ c₂) ◎ c₃) = {!!}
+traceThm {ONE} {ONE} (⊕2 c₁ ◎ c₂) = {!!}
+traceThm {ONE} {PLUS t₁ t₂} (uniti₊ ◎ c₂) = {!!}
+traceThm {ONE} {PLUS t₁ t₂} (swap2₊ ◎ c₂) = {!!}
+traceThm {ONE} {PLUS t₁ t₂} (assocl2₊ ◎ c₂) = {!!}
+traceThm {ONE} {PLUS t₁ t₂} (assocl3₊ ◎ c₂) = {!!}
+traceThm {ONE} {PLUS t₁ t₂} (uniti⋆ ◎ c₂) = {!!}
+traceThm {ONE} {PLUS t₁ t₂} (id⟷ ◎ c₂) = {!!}
+traceThm {ONE} {PLUS t₁ t₂} ((c₁ ◎ c₂) ◎ c₃) = {!!}
+traceThm {ONE} {PLUS t₁ t₂} (⊕2 c₁ ◎ c₂) = {!!}
+traceThm {ONE} {TIMES t₁ t₂} (uniti₊ ◎ c₂) = {!!}
+traceThm {ONE} {TIMES t₁ t₂} (swap2₊ ◎ c₂) = {!!}
+traceThm {ONE} {TIMES t₁ t₂} (uniti⋆ ◎ c₂) = {!!}
+traceThm {ONE} {TIMES t₁ t₂} (id⟷ ◎ c₂) = {!!}
+traceThm {ONE} {TIMES t₁ t₂} ((c₁ ◎ c₂) ◎ c₃) = {!!}
+traceThm {ONE} {TIMES t₁ t₂} (⊕2 c₁ ◎ c₂) = {!!} 
+traceThm {PLUS t₁ t₂} (c₁ ◎ c₂) = {!!}
+  --c₁  : •[ PLUS (PLUS t₁ t₂) .t₁ , inj₂ .v₁ ] ⟷ •[ .t₃ , .v₃ ]
+  --c₂  : •[ .t₃ , .v₃ ] ⟷ •[ PLUS (PLUS t₁ t₂) .t₂ , inj₂ .v₂ ]
+  -- ?1 : •[ .t₁ , .v₁ ] ⟷ •[ .t₂ , .v₂ ]
+traceThm {TIMES t₁ t₂} (c₁ ◎ c₂) = {!!}
+  --c₁  : •[ PLUS (TIMES t₁ t₂) .t₁ , inj₂ .v₁ ] ⟷ •[ .t₃ , .v₃ ]
+  --c₂  : •[ .t₃ , .v₃ ] ⟷ •[ PLUS (TIMES t₁ t₂) .t₂ , inj₂ .v₂ ]
+  -- ?2 : •[ .t₁ , .v₁ ] ⟷ •[ .t₂ , .v₂ ]
 
 {--
 ! : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
