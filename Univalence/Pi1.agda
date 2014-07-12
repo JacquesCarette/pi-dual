@@ -172,11 +172,19 @@ _□ t = id⟷
 -- Trying to prove cancellation law; essentially that all our combinators our
 -- injective
 
+-- induction on t
 traceThm : ∀ {t t₁ t₂ v₁ v₂} → 
-             (•[ PLUS t t₁ , inj₂ v₁ ] ⟷ •[ PLUS t t₂ , inj₂ v₂ ]) → 
-             (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ])
+           (•[ PLUS t t₁ , inj₂ v₁ ] ⟷ •[ PLUS t t₂ , inj₂ v₂ ]) → 
+           (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) 
+traceThm {ZERO} c = uniti₊ ◎ c ◎ unite₊
+traceThm {PLUS t t'} c = traceThm (traceThm (assocl3₊ ◎ c ◎ assocr3₊))
+traceThm {ONE} c = {!!} 
+traceThm {TIMES t t'} c = {!!} 
+
+{--
 traceThm id⟷ = id⟷
 traceThm (⊕2 c) = c
+traceThm (id⟷ ◎ c₂) = traceThm c₂
 traceThm {t} {ZERO} {t₂} {()} {v₂} c 
 traceThm {ZERO} {t₁} {t₂} {v₁} {v₂} c = 
   •[ t₁ , v₁ ]
@@ -186,15 +194,7 @@ traceThm {ZERO} {t₁} {t₂} {v₁} {v₂} c =
   •[ PLUS ZERO t₂ , inj₂ v₂ ] 
     ⟷⟨ unite₊  ⟩
   •[ t₂ , v₂ ] □
-traceThm (id⟷ ◎ c₂) = traceThm c₂
-traceThm {ONE} {t₁} {t₂} {v₁} {v₂} (uniti₊ ◎ c₂) = uniti₊ ◎ traceThm c ◎ unite₊ 
-  where c = •[ PLUS ONE (PLUS ZERO t₁) , inj₂ (inj₂ v₁) ]
-              ⟷⟨ ⊕2 unite₊ ◎ uniti₊  ⟩
-            •[ PLUS ZERO (PLUS ONE t₁) , inj₂ (inj₂ v₁) ]
-              ⟷⟨ c₂ ⟩
-            •[ PLUS ONE t₂ , inj₂ v₂ ]
-              ⟷⟨ ⊕2 uniti₊ ⟩
-            •[ PLUS ONE (PLUS ZERO t₂) , inj₂ (inj₂ v₂) ] □
+traceThm {ONE} (uniti₊ ◎ c₂) = {!!} 
 traceThm {ONE} (swap2₊ ◎ c₂) = {!!}
 traceThm {ONE} (uniti⋆ ◎ c₂) = {!!}
 traceThm {ONE} ((c₁ ◎ c₂) ◎ c₃) = {!!}
@@ -217,7 +217,7 @@ traceThm {TIMES t t'} (⊕2 c₁ ◎ c₂) = {!!}
 traceThm {TIMES t t'} (assocl2₊ ◎ c₂) = {!!}
 traceThm {TIMES t t'} (assocl3₊ ◎ c₂) = {!!}
 traceThm {TIMES t t'} (factor2 ◎ c₂) = {!!}
-
+--}
 
 {--
 ! : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
