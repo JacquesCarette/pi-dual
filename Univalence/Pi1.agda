@@ -169,59 +169,55 @@ _ ⟷⟨ α ⟩ β = α ◎ β
 _□ : (t : U•) → {t : U•} → (t ⟷ t)
 _□ t = id⟷
 
+-- Trying to prove cancellation law; essentially that all our combinators our
+-- injective
+
 traceThm : ∀ {t t₁ t₂ v₁ v₂} → 
              (•[ PLUS t t₁ , inj₂ v₁ ] ⟷ •[ PLUS t t₂ , inj₂ v₂ ]) → 
              (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ])
-traceThm {t} id⟷ = id⟷
-traceThm {t} (⊕2 c) = c
-traceThm {ZERO} unite₊ = unite₊
-traceThm {ZERO} uniti₊ = uniti₊
-traceThm {ZERO} {t₁} {t₂} {v₁} {v₂} (c₁ ◎ c₂) = 
+traceThm id⟷ = id⟷
+traceThm (⊕2 c) = c
+traceThm {t} {ZERO} {t₂} {()} {v₂} c 
+traceThm {ZERO} {t₁} {t₂} {v₁} {v₂} c = 
   •[ t₁ , v₁ ]
     ⟷⟨ uniti₊ ⟩
   •[ PLUS ZERO t₁ , inj₂ v₁ ]
-    ⟷⟨ c₁ ◎ c₂ ⟩ 
+    ⟷⟨ c ⟩ 
   •[ PLUS ZERO t₂ , inj₂ v₂ ] 
     ⟷⟨ unite₊  ⟩
   •[ t₂ , v₂ ] □
--- in the next few case with t = ONE, we have:
---c₁  : •[ PLUS ONE .t₁ , inj₂ .v₁ ] ⟷ •[ .t₃ , .v₃ ]
---c₂  : •[ .t₃ , .v₃ ] ⟷ •[ PLUS ONE .t₂ , inj₂ .v₂ ]
---hole: •[ .t₁ , .v₁ ] ⟷ •[ .t₂ , .v₂ ]
-traceThm {ONE} {ZERO} (uniti₊ ◎ c₂) = {!!}
-traceThm {ONE} {ZERO} (swap2₊ ◎ c₂) = {!!}
-traceThm {ONE} {ZERO} (uniti⋆ ◎ c₂) = {!!}
-traceThm {ONE} {ZERO} (id⟷ ◎ c₂) = {!!}
-traceThm {ONE} {ZERO} ((c₁ ◎ c₂) ◎ c₃) = {!!}
-traceThm {ONE} {ZERO} (⊕2 c₁ ◎ c₂) = {!!}
-traceThm {ONE} {ONE} (uniti₊ ◎ c₂) = {!!}
-traceThm {ONE} {ONE} (swap2₊ ◎ c₂) = {!!}
-traceThm {ONE} {ONE} (uniti⋆ ◎ c₂) = {!!}
-traceThm {ONE} {ONE} (id⟷ ◎ c₂) = {!!}
-traceThm {ONE} {ONE} ((c₁ ◎ c₂) ◎ c₃) = {!!}
-traceThm {ONE} {ONE} (⊕2 c₁ ◎ c₂) = {!!}
-traceThm {ONE} {PLUS t₁ t₂} (uniti₊ ◎ c₂) = {!!}
-traceThm {ONE} {PLUS t₁ t₂} (swap2₊ ◎ c₂) = {!!}
-traceThm {ONE} {PLUS t₁ t₂} (assocl2₊ ◎ c₂) = {!!}
-traceThm {ONE} {PLUS t₁ t₂} (assocl3₊ ◎ c₂) = {!!}
-traceThm {ONE} {PLUS t₁ t₂} (uniti⋆ ◎ c₂) = {!!}
-traceThm {ONE} {PLUS t₁ t₂} (id⟷ ◎ c₂) = {!!}
-traceThm {ONE} {PLUS t₁ t₂} ((c₁ ◎ c₂) ◎ c₃) = {!!}
-traceThm {ONE} {PLUS t₁ t₂} (⊕2 c₁ ◎ c₂) = {!!}
-traceThm {ONE} {TIMES t₁ t₂} (uniti₊ ◎ c₂) = {!!}
-traceThm {ONE} {TIMES t₁ t₂} (swap2₊ ◎ c₂) = {!!}
-traceThm {ONE} {TIMES t₁ t₂} (uniti⋆ ◎ c₂) = {!!}
-traceThm {ONE} {TIMES t₁ t₂} (id⟷ ◎ c₂) = {!!}
-traceThm {ONE} {TIMES t₁ t₂} ((c₁ ◎ c₂) ◎ c₃) = {!!}
-traceThm {ONE} {TIMES t₁ t₂} (⊕2 c₁ ◎ c₂) = {!!} 
-traceThm {PLUS t₁ t₂} (c₁ ◎ c₂) = {!!}
-  --c₁  : •[ PLUS (PLUS t₁ t₂) .t₁ , inj₂ .v₁ ] ⟷ •[ .t₃ , .v₃ ]
-  --c₂  : •[ .t₃ , .v₃ ] ⟷ •[ PLUS (PLUS t₁ t₂) .t₂ , inj₂ .v₂ ]
-  -- ?1 : •[ .t₁ , .v₁ ] ⟷ •[ .t₂ , .v₂ ]
-traceThm {TIMES t₁ t₂} (c₁ ◎ c₂) = {!!}
-  --c₁  : •[ PLUS (TIMES t₁ t₂) .t₁ , inj₂ .v₁ ] ⟷ •[ .t₃ , .v₃ ]
-  --c₂  : •[ .t₃ , .v₃ ] ⟷ •[ PLUS (TIMES t₁ t₂) .t₂ , inj₂ .v₂ ]
-  -- ?2 : •[ .t₁ , .v₁ ] ⟷ •[ .t₂ , .v₂ ]
+traceThm (id⟷ ◎ c₂) = traceThm c₂
+traceThm {ONE} {t₁} {t₂} {v₁} {v₂} (uniti₊ ◎ c₂) = uniti₊ ◎ traceThm c ◎ unite₊ 
+  where c = •[ PLUS ONE (PLUS ZERO t₁) , inj₂ (inj₂ v₁) ]
+              ⟷⟨ ⊕2 unite₊ ◎ uniti₊  ⟩
+            •[ PLUS ZERO (PLUS ONE t₁) , inj₂ (inj₂ v₁) ]
+              ⟷⟨ c₂ ⟩
+            •[ PLUS ONE t₂ , inj₂ v₂ ]
+              ⟷⟨ ⊕2 uniti₊ ⟩
+            •[ PLUS ONE (PLUS ZERO t₂) , inj₂ (inj₂ v₂) ] □
+traceThm {ONE} (swap2₊ ◎ c₂) = {!!}
+traceThm {ONE} (uniti⋆ ◎ c₂) = {!!}
+traceThm {ONE} ((c₁ ◎ c₂) ◎ c₃) = {!!}
+traceThm {ONE} (⊕2 c₁ ◎ c₂) = {!!}
+traceThm {ONE} (assocl2₊ ◎ c₂) = {!!}
+traceThm {ONE} (assocl3₊ ◎ c₂) = {!!}
+traceThm {PLUS t t'} (uniti₊ ◎ c₂) = {!!}
+traceThm {PLUS t t'} (swap2₊ ◎ c₂) = {!!}
+traceThm {PLUS t t'} (assocr3₊ ◎ c₂) = {!!}
+traceThm {PLUS t t'} (uniti⋆ ◎ c₂) = {!!}
+traceThm {PLUS t t'} ((c₁ ◎ c₂) ◎ c₃) = {!!}
+traceThm {PLUS t t'} (⊕2 c₁ ◎ c₂) = {!!}
+traceThm {PLUS t t'} (assocl2₊ ◎ c₂) = {!!}
+traceThm {PLUS t t'} (assocl3₊ ◎ c₂) = {!!}
+traceThm {TIMES t t'} (uniti₊ ◎ c₂) = {!!}
+traceThm {TIMES t t'} (swap2₊ ◎ c₂) = {!!}
+traceThm {TIMES t t'} (uniti⋆ ◎ c₂) = {!!}
+traceThm {TIMES t t'} ((c₁ ◎ c₂) ◎ c₃) = {!!}
+traceThm {TIMES t t'} (⊕2 c₁ ◎ c₂) = {!!}
+traceThm {TIMES t t'} (assocl2₊ ◎ c₂) = {!!}
+traceThm {TIMES t t'} (assocl3₊ ◎ c₂) = {!!}
+traceThm {TIMES t t'} (factor2 ◎ c₂) = {!!}
+
 
 {--
 ! : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
