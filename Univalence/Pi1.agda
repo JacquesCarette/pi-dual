@@ -213,10 +213,10 @@ CNOT (inj₁ tt , inj₁ tt) = ((inj₁ tt , inj₂ tt),
 traceThm1 : ∀ {t t₁ t₂ v₁ v₂} → 
            (•[ PLUS t t₁ , inj₂ v₁ ] ⟷ •[ PLUS t t₂ , inj₂ v₂ ]) → 
            (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) 
-traceThm1 unite₊ = unite₊ 
-traceThm1 uniti₊ = uniti₊ 
-traceThm1 id⟷    = id⟷ 
-traceThm1 (⊕2 c) = c 
+traceThm1 unite₊ = unite₊
+traceThm1 uniti₊ = uniti₊
+traceThm1 id⟷ = id⟷
+traceThm1 (⊕2 c) = c
 
 -- if trace invokes the loop one or more times...
 -- if the loop goes around exactly once, the cancellation is also trivial
@@ -225,12 +225,12 @@ traceThmn : ∀ {n t t₁ t₂ t₃ v v₁ v₂} →
            (•[ PLUS t t₁ , inj₂ v₁ ] ⟷ •[ PLUS t t₂ , inj₁ v ]) → 
            (⟷n n •[ PLUS t t₂ , inj₁ v ] •[ PLUS t t₃ , inj₂ v₂ ]) → 
            (Σ[ k ∈ ℕ ] (⟷n k •[ t₁ , v₁ ] •[ t₃ , v₂ ]))
-traceThmn unite₊ (c ◎ end)      = (2 , c ◎ unite₊ ◎ end)
-traceThmn swap2₊ (uniti₊ ◎ end) = (2 , uniti₊ ◎ swap2₊ ◎ end) 
-traceThmn swap2₊ (swap1₊ ◎ end) = (0 , end)
+traceThmn {v = ()} unite₊ (c ◎ end)   -- (2 , c ◎ unite₊ ◎ end)
+traceThmn {v = ()} swap2₊ (uniti₊ ◎ end) -- (2 , uniti₊ ◎ swap2₊ ◎ end) 
+traceThmn swap2₊ (swap1₊ ◎ end) = 0 , end
 traceThmn {v = ()} unite₊ _ 
-traceThmn swap2₊ (uniti₊ ◎ cs) = {!!} 
-traceThmn swap2₊ (swap1₊ ◎ cs) = {!!}
+traceThmn {suc n} swap2₊ (uniti₊ ◎ cs) = {!!} 
+traceThmn {suc n} swap2₊ (swap1₊ ◎ cs) = {!!}
 traceThmn swap2₊ (assocl1₊ ◎ cs) = {!!}
 traceThmn swap2₊ (assocr1₊ ◎ cs) = {!!}
 traceThmn swap2₊ (assocr2₊ ◎ cs) = {!!}
