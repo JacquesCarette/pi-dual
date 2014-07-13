@@ -186,23 +186,25 @@ Fun : (t₁ t₂ : U) → Set
 Fun t₁ t₂ = (v₁ : ⟦ t₁ ⟧) → Σ[ v₂ ∈ ⟦ t₂ ⟧ ] (vChain •[ t₁ , v₁ ] •[ t₂ , v₂ ])
 
 NOT : Fun BOOL BOOL
-NOT (inj₁ tt) = (inj₂ tt , (1 , swap1₊ ◎ end)) 
-NOT (inj₂ tt) = (inj₁ tt , (1 , swap2₊ ◎ end)) 
+NOT (inj₁ tt) = (FALSE , (1 , swap1₊ ◎ end)) 
+NOT (inj₂ tt) = (TRUE  , (1 , swap2₊ ◎ end)) 
 
-CNOT : Fun (TIMES BOOL BOOL) (TIMES BOOL BOOL)
-CNOT (inj₂ tt , b) = ((inj₂ tt , b) , 
-                      (3 , dist2 ◎ (⊕2 id⟷) ◎ factor2 ◎ end))
-CNOT (inj₁ tt , inj₂ tt) = ((inj₁ tt , inj₁ tt), 
-                            (3 , dist1 ◎ (⊕1 (id⟷ ⊗ swap2₊)) ◎ factor1 ◎ end))
-CNOT (inj₁ tt , inj₁ tt) = ((inj₁ tt , inj₂ tt),
-         (3 , 
-         ( •[ BOOL² , (TRUE , TRUE) ]
+CNOT : Fun BOOL² BOOL²
+CNOT (inj₂ tt , b) = 
+  ((FALSE , b) , 
+   (3 , dist2 ◎ (⊕2 id⟷) ◎ factor2 ◎ end))
+CNOT (inj₁ tt , inj₂ tt) = 
+  ((TRUE , TRUE) ,
+   (3 , dist1 ◎ (⊕1 (id⟷ ⊗ swap2₊)) ◎ factor1 ◎ end))
+CNOT (inj₁ tt , inj₁ tt) = 
+  ((TRUE , FALSE) , 
+   (3 , (•[ BOOL² , (TRUE , TRUE) ]
              ⟷⟨ dist1 ⟩ 
-           •[ PLUS (TIMES ONE BOOL) (TIMES ONE BOOL) , inj₁ (tt , TRUE) ]
+         •[ PLUS (TIMES ONE BOOL) (TIMES ONE BOOL) , inj₁ (tt , TRUE) ]
              ⟷⟨ ⊕1 (id⟷ ⊗ swap1₊)⟩ 
-           •[ PLUS (TIMES ONE BOOL) (TIMES ONE BOOL) , inj₁ (tt , FALSE) ]
+         •[ PLUS (TIMES ONE BOOL) (TIMES ONE BOOL) , inj₁ (tt , FALSE) ]
              ⟷⟨ factor1 ⟩
-           •[ BOOL² , (TRUE , FALSE) ] □)))
+         •[ BOOL² , (TRUE , FALSE) ] □)))
 
 -- Trying to prove cancellation law; essentially that all our combinators our
 -- injective
@@ -215,7 +217,7 @@ traceThm1 : ∀ {t t₁ t₂ v₁ v₂} →
            (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) 
 traceThm1 unite₊ = unite₊
 traceThm1 uniti₊ = uniti₊
-traceThm1 id⟷ = id⟷
+traceThm1 id⟷    = id⟷
 traceThm1 (⊕2 c) = c
 
 -- if trace invokes the loop one or more times...
@@ -225,10 +227,9 @@ traceThmn : ∀ {n t t₁ t₂ t₃ v v₁ v₂} →
            (•[ PLUS t t₁ , inj₂ v₁ ] ⟷ •[ PLUS t t₂ , inj₁ v ]) → 
            (⟷n n •[ PLUS t t₂ , inj₁ v ] •[ PLUS t t₃ , inj₂ v₂ ]) → 
            (Σ[ k ∈ ℕ ] (⟷n k •[ t₁ , v₁ ] •[ t₃ , v₂ ]))
-traceThmn {v = ()} unite₊ (c ◎ end)   -- (2 , c ◎ unite₊ ◎ end)
-traceThmn {v = ()} swap2₊ (uniti₊ ◎ end) -- (2 , uniti₊ ◎ swap2₊ ◎ end) 
-traceThmn swap2₊ (swap1₊ ◎ end) = 0 , end
 traceThmn {v = ()} unite₊ _ 
+traceThmn {v = ()} swap2₊ (uniti₊ ◎ end) 
+traceThmn swap2₊ (swap1₊ ◎ end) = (0 , end)
 traceThmn {suc n} swap2₊ (uniti₊ ◎ cs) = {!!} 
 traceThmn {suc n} swap2₊ (swap1₊ ◎ cs) = {!!}
 traceThmn swap2₊ (assocl1₊ ◎ cs) = {!!}
