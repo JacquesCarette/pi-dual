@@ -155,8 +155,8 @@ _⟷⟨_⟩_ : (t₁ : U•) {t₂ : U•} {t₃ : U•} {n : ℕ} →
          (t₁ ⟷ t₂) → (⟷n n t₂ t₃) → (⟷n (suc n) t₁ t₃) 
 _ ⟷⟨ α ⟩ β = α ◎ β
 
-_□ : (t : U•) → {t : U•} → (t ⟷ t)
-_□ t = id⟷
+_□ : (t : U•) → {t : U•} → (⟷n 0 t t)
+_□ t = end
 
 -- Recover some functions
 
@@ -188,8 +188,22 @@ Fun t₁ t₂ = (v₁ : ⟦ t₁ ⟧) → Σ[ v₂ ∈ ⟦ t₂ ⟧ ] (vChain �
 NOT : Fun BOOL BOOL
 NOT (inj₁ tt) = (inj₂ tt , (1 , swap1₊ ◎ end)) 
 NOT (inj₂ tt) = (inj₁ tt , (1 , swap2₊ ◎ end)) 
-  
-{--
+
+CNOT : Fun (TIMES BOOL BOOL) (TIMES BOOL BOOL)
+CNOT (inj₂ tt , b) = ((inj₂ tt , b) , 
+                      (3 , dist2 ◎ (⊕2 id⟷) ◎ factor2 ◎ end))
+CNOT (inj₁ tt , inj₂ tt) = ((inj₁ tt , inj₁ tt), 
+                            (3 , dist1 ◎ (⊕1 (id⟷ ⊗ swap2₊)) ◎ factor1 ◎ end))
+CNOT (inj₁ tt , inj₁ tt) = ((inj₁ tt , inj₂ tt),
+         (3 , 
+         ( •[ BOOL² , (TRUE , TRUE) ]
+             ⟷⟨ dist1 ⟩ 
+           •[ PLUS (TIMES ONE BOOL) (TIMES ONE BOOL) , inj₁ (tt , TRUE) ]
+             ⟷⟨ ⊕1 (id⟷ ⊗ swap1₊)⟩ 
+           •[ PLUS (TIMES ONE BOOL) (TIMES ONE BOOL) , inj₁ (tt , FALSE) ]
+             ⟷⟨ factor1 ⟩
+           •[ BOOL² , (TRUE , FALSE) ] □)))
+
 -- Trying to prove cancellation law; essentially that all our combinators our
 -- injective
 
@@ -211,9 +225,9 @@ traceThmn : ∀ {n t t₁ t₂ t₃ v v₁ v₂} →
            (•[ PLUS t t₁ , inj₂ v₁ ] ⟷ •[ PLUS t t₂ , inj₁ v ]) → 
            (⟷n n •[ PLUS t t₂ , inj₁ v ] •[ PLUS t t₃ , inj₂ v₂ ]) → 
            (Σ[ k ∈ ℕ ] (⟷n k •[ t₁ , v₁ ] •[ t₃ , v₂ ]))
-traceThmn unite₊ (step c)      = (2 , c ◎ step unite₊)
-traceThmn swap2₊ (step uniti₊) = (2 , uniti₊ ◎ step swap2₊)
-traceThmn swap2₊ (step swap1₊) = (1 , step id⟷)
+traceThmn unite₊ (c ◎ end)      = (2 , c ◎ unite₊ ◎ end)
+traceThmn swap2₊ (uniti₊ ◎ end) = (2 , uniti₊ ◎ swap2₊ ◎ end) 
+traceThmn swap2₊ (swap1₊ ◎ end) = (0 , end)
 traceThmn {v = ()} unite₊ _ 
 traceThmn swap2₊ (uniti₊ ◎ cs) = {!!} 
 traceThmn swap2₊ (swap1₊ ◎ cs) = {!!}
@@ -224,7 +238,6 @@ traceThmn swap2₊ (uniti⋆ ◎ cs) = {!!}
 traceThmn swap2₊ (factor1 ◎ cs) = {!!}
 traceThmn swap2₊ (id⟷ ◎ cs) = traceThmn swap2₊ cs
 traceThmn swap2₊ ((⊕1 c) ◎ cs) = {!!} 
---}
 
 {--
 ! : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
