@@ -12,8 +12,8 @@ open import Groupoid
 
 infix  2  _□       
 infixr 2  _⟷⟨_⟩_   
--- infix  2  _▤       
--- infixr 2  _⇔⟨_⟩_   
+infix  2  _▤       
+infixr 2  _⇔⟨_⟩_   
 infixr 10 _◎_
 infix 30 _⟷_
 
@@ -132,6 +132,10 @@ data _⟷_ : U• → U• → Set where
             •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₂ (v₂ , v₃) ] ⟷
             •[ TIMES (PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ]
   id⟷    : ∀ {t v} → •[ t , v ] ⟷ •[ t , v ]
+  _◎_ : ∀ {t₁ t₂ t₃ v₁ v₂ v₃} → 
+           (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) → 
+           (•[ t₂ , v₂ ] ⟷ •[ t₃ , v₃ ]) → 
+           (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) 
   ⊕1   : ∀ {t₁ t₂ t₃ t₄ v₁ v₃} → 
            (•[ t₁ , v₁ ] ⟷ •[ t₃ , v₃ ]) → 
            (•[ PLUS t₁ t₂ , inj₁ v₁ ] ⟷ •[ PLUS t₃ t₄ , inj₁ v₃ ])
@@ -143,104 +147,46 @@ data _⟷_ : U• → U• → Set where
            (•[ t₂ , v₂ ] ⟷ •[ t₄ , v₄ ]) → 
            (•[ TIMES t₁ t₂ , (v₁ , v₂) ] ⟷ •[ TIMES t₃ t₄ , (v₃ , v₄) ])
 
-data ⟷n : ℕ → U• → U• → Set where
-  end   : {t : U•} → ⟷n 0 t t
-  _◎_   : {t₁ t₂ t₃ : U•} {n : ℕ} → 
-          (c : t₁ ⟷ t₂) → (⟷n n t₂ t₃) → (⟷n (suc n) t₁ t₃)
-
--- nicer syntax that shows intermediate values instead of point-free
+-- Nicer syntax that shows intermediate values instead of point-free
 -- combinators
 
-_⟷⟨_⟩_ : (t₁ : U•) {t₂ : U•} {t₃ : U•} {n : ℕ} → 
-         (t₁ ⟷ t₂) → (⟷n n t₂ t₃) → (⟷n (suc n) t₁ t₃) 
+_⟷⟨_⟩_ : (t₁ : U•) {t₂ : U•} {t₃ : U•} → 
+          (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃) 
 _ ⟷⟨ α ⟩ β = α ◎ β
 
-_□ : (t : U•) → {t : U•} → (⟷n 0 t t)
-_□ t = end
+_□ : (t : U•) → {t : U•} → (t ⟷ t)
+_□ t = id⟷
 
--- Recover some functions
-
--- chain that starts at v₁ and ends at v₂
-
-vChain : (t₁ t₂ : U•) → Set
-vChain t₁ t₂ = Σ[ n ∈ ℕ ] (⟷n n t₁ t₂)
-
-vLoop : (t : U•) → Set
-vLoop t = vChain t t 
-
-FChainId : vLoop •[ BOOL , FALSE ]
-FChainId = (1 , id⟷ ◎ end) 
-
-TChainId : vLoop •[ BOOL , TRUE ]
-TChainId = (1 , id⟷ ◎ end) 
-
-FChainNot : vLoop •[ BOOL , FALSE ]
-FChainNot = (2 , swap2₊ ◎ swap1₊ ◎ end)
-
-TChainNot : vLoop •[ BOOL , TRUE ]
-TChainNot = (2 , swap1₊ ◎ swap2₊ ◎ end) 
-
--- functions are chains for each value
+-- The above are "fibers". We collect the fibers into functions. A function
+-- is a collection of chains, one that starts at each value in the domain
 
 Fun : (t₁ t₂ : U) → Set
-Fun t₁ t₂ = (v₁ : ⟦ t₁ ⟧) → Σ[ v₂ ∈ ⟦ t₂ ⟧ ] (vChain •[ t₁ , v₁ ] •[ t₂ , v₂ ])
+Fun t₁ t₂ = (v₁ : ⟦ t₁ ⟧) → Σ[ v₂ ∈ ⟦ t₂ ⟧ ] (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ])
 
 NOT : Fun BOOL BOOL
-NOT (inj₁ tt) = (FALSE , (1 , swap1₊ ◎ end)) 
-NOT (inj₂ tt) = (TRUE  , (1 , swap2₊ ◎ end)) 
+NOT (inj₁ tt) = (FALSE , swap1₊)
+NOT (inj₂ tt) = (TRUE  , swap2₊)
 
 CNOT : Fun BOOL² BOOL²
 CNOT (inj₂ tt , b) = 
-  ((FALSE , b) , 
-   (3 , dist2 ◎ (⊕2 id⟷) ◎ factor2 ◎ end))
+  ((FALSE , b) , dist2 ◎ (⊕2 id⟷) ◎ factor2)
 CNOT (inj₁ tt , inj₂ tt) = 
-  ((TRUE , TRUE) ,
-   (3 , dist1 ◎ (⊕1 (id⟷ ⊗ swap2₊)) ◎ factor1 ◎ end))
+  ((TRUE , TRUE) , dist1 ◎ (⊕1 (id⟷ ⊗ swap2₊)) ◎ factor1)
 CNOT (inj₁ tt , inj₁ tt) = 
   ((TRUE , FALSE) , 
-   (3 , (•[ BOOL² , (TRUE , TRUE) ]
-             ⟷⟨ dist1 ⟩ 
-         •[ PLUS (TIMES ONE BOOL) (TIMES ONE BOOL) , inj₁ (tt , TRUE) ]
-             ⟷⟨ ⊕1 (id⟷ ⊗ swap1₊)⟩ 
-         •[ PLUS (TIMES ONE BOOL) (TIMES ONE BOOL) , inj₁ (tt , FALSE) ]
-             ⟷⟨ factor1 ⟩
-         •[ BOOL² , (TRUE , FALSE) ] □)))
+   (•[ BOOL² , (TRUE , TRUE) ]
+      ⟷⟨ dist1 ⟩ 
+    •[ PLUS (TIMES ONE BOOL) (TIMES ONE BOOL) , inj₁ (tt , TRUE) ]
+      ⟷⟨ ⊕1 (id⟷ ⊗ swap1₊)⟩ 
+    •[ PLUS (TIMES ONE BOOL) (TIMES ONE BOOL) , inj₁ (tt , FALSE) ]
+      ⟷⟨ factor1 ⟩
+    •[ BOOL² , (TRUE , FALSE) ] □))
 
--- Trying to prove cancellation law; essentially that all our combinators our
--- injective
+-- The universe of types is a groupoid. The objects of this groupoid are the
+-- pointed types; the morphisms are the programs; and the equivalence of
+-- programs is the degenerate observational equivalence that equates every
+-- two programs that are extensionally equivalent.
 
--- if trace terminates in one step, i.e., if it loops zero times, then it is 
--- trivial to do the cancellation
-
-traceThm1 : ∀ {t t₁ t₂ v₁ v₂} → 
-           (•[ PLUS t t₁ , inj₂ v₁ ] ⟷ •[ PLUS t t₂ , inj₂ v₂ ]) → 
-           (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) 
-traceThm1 unite₊ = unite₊
-traceThm1 uniti₊ = uniti₊
-traceThm1 id⟷    = id⟷
-traceThm1 (⊕2 c) = c
-
--- if trace invokes the loop one or more times...
--- if the loop goes around exactly once, the cancellation is also trivial
-
-traceThmn : ∀ {n t t₁ t₂ t₃ v v₁ v₂} → 
-           (•[ PLUS t t₁ , inj₂ v₁ ] ⟷ •[ PLUS t t₂ , inj₁ v ]) → 
-           (⟷n n •[ PLUS t t₂ , inj₁ v ] •[ PLUS t t₃ , inj₂ v₂ ]) → 
-           (Σ[ k ∈ ℕ ] (⟷n k •[ t₁ , v₁ ] •[ t₃ , v₂ ]))
-traceThmn {v = ()} unite₊ _ 
-traceThmn {v = ()} swap2₊ (uniti₊ ◎ end) 
-traceThmn swap2₊ (swap1₊ ◎ end) = (0 , end)
-traceThmn {suc n} swap2₊ (uniti₊ ◎ cs) = {!!} 
-traceThmn {suc n} swap2₊ (swap1₊ ◎ cs) = {!!}
-traceThmn swap2₊ (assocl1₊ ◎ cs) = {!!}
-traceThmn swap2₊ (assocr1₊ ◎ cs) = {!!}
-traceThmn swap2₊ (assocr2₊ ◎ cs) = {!!}
-traceThmn swap2₊ (uniti⋆ ◎ cs) = {!!}
-traceThmn swap2₊ (factor1 ◎ cs) = {!!}
-traceThmn swap2₊ (id⟷ ◎ cs) = traceThmn swap2₊ cs
-traceThmn swap2₊ ((⊕1 c) ◎ cs) = {!!} 
-
-{--
 ! : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
 ! unite₊ = uniti₊
 ! uniti₊ = unite₊
@@ -268,68 +214,6 @@ traceThmn swap2₊ ((⊕1 c) ◎ cs) = {!!}
 ! (⊕1 c₁) = ⊕1 (! c₁)
 ! (⊕2 c₂) = ⊕2 (! c₂)
 ! (c₁ ⊗ c₂) = ! c₁ ⊗ ! c₂ 
-
--- example programs using nicer syntax that shows intermediate values
--- instead of point-free combinators
-
-_⟷⟨_⟩_ : (t₁ : U•) {t₂ : U•} {t₃ : U•} → 
-          (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃) 
-_ ⟷⟨ α ⟩ β = α ◎ β
-
-_□ : (t : U•) → {t : U•} → (t ⟷ t)
-_□ t = id⟷
-
--- 
-
-NOT•T : •[ BOOL , TRUE ] ⟷ •[ BOOL , FALSE ]
-NOT•T = swap1₊
-
-NOT•F : •[ BOOL , FALSE ] ⟷ •[ BOOL , TRUE ]
-NOT•F = swap2₊
-
-CNOT•Fx : {b : ⟦ BOOL ⟧} → 
-          •[ BOOL² , (FALSE , b) ] ⟷ •[ BOOL² , (FALSE , b) ]
-CNOT•Fx = dist2 ◎ (⊕2 id⟷) ◎ factor2
-
-CNOT•TF : •[ BOOL² , (TRUE , FALSE) ] ⟷ •[ BOOL² , (TRUE , TRUE) ]
-CNOT•TF = dist1 ◎ 
-          (⊕1 (id⟷ ⊗ NOT•F)) ◎
-          factor1
-
-{--
-point free style 
-
-CNOT•TT : •[ BOOL² , (TRUE , TRUE) ] ⟷ •[ BOOL² , (TRUE , FALSE) ]
-CNOT•TT = dist1 ◎ 
-          ((id⟷ ⊗ NOT•T) ⊕1 (id⟷ {TIMES ONE BOOL} {(tt , TRUE)})) ◎ 
-          factor1
---}
-
-CNOT•TT : •[ BOOL² , (TRUE , TRUE) ] ⟷ •[ BOOL² , (TRUE , FALSE) ]
-CNOT•TT = •[ BOOL² , (TRUE , TRUE) ]
-             ⟷⟨ dist1 ⟩ 
-           •[ PLUS (TIMES ONE BOOL) (TIMES ONE BOOL) , inj₁ (tt , TRUE) ]
-             ⟷⟨ ⊕1 (id⟷ ⊗ NOT•T)⟩ 
-           •[ PLUS (TIMES ONE BOOL) (TIMES ONE BOOL) , inj₁ (tt , FALSE) ]
-             ⟷⟨ factor1 ⟩
-           •[ BOOL² , (TRUE , FALSE) ] □
-
-CNOT•TT' : ∀ {t v} → 
-  •[ TIMES (PLUS t ONE) BOOL , (inj₁ v , TRUE) ] ⟷ 
-  •[ TIMES (PLUS t ONE) BOOL , (inj₁ v , FALSE) ]
-CNOT•TT' {t} {v} = 
-  •[ TIMES (PLUS t ONE) BOOL , (inj₁ v , TRUE) ]
-    ⟷⟨ dist1 ⟩ 
-  •[ PLUS (TIMES t BOOL) (TIMES ONE BOOL) , inj₁ (v , TRUE) ]
-    ⟷⟨ ⊕1 (id⟷ ⊗ NOT•T)⟩ 
-  •[ PLUS (TIMES t BOOL) (TIMES ONE BOOL) , inj₁ (v , FALSE) ]
-    ⟷⟨ factor1 ⟩
-  •[ TIMES (PLUS t ONE) BOOL , (inj₁ v , FALSE) ] □
-
--- The universe of types is a groupoid. The objects of this groupoid are the
--- pointed types; the morphisms are the programs; and the equivalence of
--- programs is the degenerate observational equivalence that equates every
--- two programs that are extensionally equivalent.
 
 _obs≅_ : {t₁ t₂ : U•} → (c₁ c₂ : t₁ ⟷ t₂) → Set
 c₁ obs≅ c₂ = ⊤ 
@@ -392,11 +276,11 @@ F⟷T : Set
 F⟷T = Path BOOL•F BOOL•T
 
 p₁ p₂ p₃ p₄ p₅ : T⟷F
-p₁ = path NOT•T
-p₂ = path (id⟷ ◎ NOT•T)
-p₃ = path (NOT•T ◎ NOT•F ◎ NOT•T)
-p₄ = path (NOT•T ◎ id⟷)
-p₅ = path (uniti⋆ ◎ swap⋆ ◎ (NOT•T ⊗ id⟷) ◎ swap⋆ ◎ unite⋆)
+p₁ = path swap1₊
+p₂ = path (id⟷ ◎ swap1₊)
+p₃ = path (swap1₊ ◎ swap2₊ ◎ swap1₊)
+p₄ = path (swap1₊ ◎ id⟷)
+p₅ = path (uniti⋆ ◎ swap⋆ ◎ (swap1₊ ⊗ id⟷) ◎ swap⋆ ◎ unite⋆)
    
 p₆ : (T⟷F × T⟷F) ⊎ F⟷T
 p₆ = inj₁ (p₁ , p₂)
@@ -870,4 +754,4 @@ F2B ◎⇄ B2F       = id⇄
 ε = B2F
 
 ------------------------------------------------------------------------------
---}
+
