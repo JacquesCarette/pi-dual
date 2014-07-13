@@ -35,11 +35,13 @@ data U : Set where
 ⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
 
 -- Programs
--- We use pointed types; programs map a pointed type to another
--- In other words, each program takes one particular value to another; if we
--- want to work on another value, we generally use another program. 
+-- We use pointed types; programs are "fibers" from functions that map a
+-- pointed type to another. In other words, each program takes one particular
+-- value to another; if we want to work on another value, we generally use
+-- another program.
 -- 
--- Should be a way to collect these fibers into a collection somehow...
+-- We can recover a regular function by collecting all the fibers that
+-- compose to the identity permutation.
 
 record U• : Set where
   constructor •[_,_]
@@ -142,7 +144,7 @@ data _⟷_ : U• → U• → Set where
            (•[ TIMES t₁ t₂ , (v₁ , v₂) ] ⟷ •[ TIMES t₃ t₄ , (v₃ , v₄) ])
 
 data ⟷n : ℕ → U• → U• → Set where
-  step  : {t₁ t₂ : U•} → (c : t₁ ⟷ t₂) → ⟷n 1 t₁ t₂
+  end   : {t : U•} → ⟷n 0 t t
   _◎_   : {t₁ t₂ t₃ : U•} {n : ℕ} → 
           (c : t₁ ⟷ t₂) → (⟷n n t₂ t₃) → (⟷n (suc n) t₁ t₃)
 
@@ -156,6 +158,38 @@ _ ⟷⟨ α ⟩ β = α ◎ β
 _□ : (t : U•) → {t : U•} → (t ⟷ t)
 _□ t = id⟷
 
+-- Recover some functions
+
+-- chain that starts at v₁ and ends at v₂
+
+vChain : (t₁ t₂ : U•) → Set
+vChain t₁ t₂ = Σ[ n ∈ ℕ ] (⟷n n t₁ t₂)
+
+vLoop : (t : U•) → Set
+vLoop t = vChain t t 
+
+FChainId : vLoop •[ BOOL , FALSE ]
+FChainId = (1 , id⟷ ◎ end) 
+
+TChainId : vLoop •[ BOOL , TRUE ]
+TChainId = (1 , id⟷ ◎ end) 
+
+FChainNot : vLoop •[ BOOL , FALSE ]
+FChainNot = (2 , swap2₊ ◎ swap1₊ ◎ end)
+
+TChainNot : vLoop •[ BOOL , TRUE ]
+TChainNot = (2 , swap1₊ ◎ swap2₊ ◎ end) 
+
+-- functions are chains for each value
+
+Fun : (t₁ t₂ : U) → Set
+Fun t₁ t₂ = (v₁ : ⟦ t₁ ⟧) → Σ[ v₂ ∈ ⟦ t₂ ⟧ ] (vChain •[ t₁ , v₁ ] •[ t₂ , v₂ ])
+
+NOT : Fun BOOL BOOL
+NOT (inj₁ tt) = (inj₂ tt , (1 , swap1₊ ◎ end)) 
+NOT (inj₂ tt) = (inj₁ tt , (1 , swap2₊ ◎ end)) 
+  
+{--
 -- Trying to prove cancellation law; essentially that all our combinators our
 -- injective
 
@@ -190,7 +224,7 @@ traceThmn swap2₊ (uniti⋆ ◎ cs) = {!!}
 traceThmn swap2₊ (factor1 ◎ cs) = {!!}
 traceThmn swap2₊ (id⟷ ◎ cs) = traceThmn swap2₊ cs
 traceThmn swap2₊ ((⊕1 c) ◎ cs) = {!!} 
-
+--}
 
 {--
 ! : {t₁ t₂ : U•} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
