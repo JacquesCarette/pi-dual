@@ -1,5 +1,6 @@
 module Pi1 where
 
+open import Data.List
 open import Data.Nat
 open import Data.Empty
 open import Data.Unit
@@ -157,16 +158,99 @@ _ ⟷⟨ α ⟩ β = α ◎ β
 _□ : (t : U•) → {t : U•} → (t ⟷ t)
 _□ t = id⟷
 
--- Canonical trace
+-- trace
+-- first every combinator (t + t1) <-> (t + t2) can be decomposed into 
+-- four relations (or injective partial functions):
+-- r11 : t1 -> t2
+-- r12 : t1 -> t
+-- r21 : t -> t2
+-- r22 : t -> t
+-- c = r11 ∪ (r12 ◎ r22⋆ ◎ r21)
 
-trace : ∀ {t t₁ t₂ v₁ v₂} → 
-        (•[ PLUS t t₁ , inj₂ v₁ ] ⟷ •[ PLUS t t₂ , inj₂ v₂ ]) → 
-        (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) 
-trace unite₊ = unite₊
-trace uniti₊ = uniti₊
-trace id⟷ = id⟷
-trace (⊕2 c) = c  
-trace (c₁ ◎ c₂) = {!!} 
+eval : ∀ {t₁ t₂ v₁ v₂} → (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) → List U•
+eval {t₁ = ZERO} {v₁ = ()} _ 
+eval {t₂ = ZERO} {v₂ = ()} _ 
+eval {t} {PLUS .ZERO .t} {v} {inj₂ .v} uniti₊ = 
+  •[ t , v ] ∷ •[ PLUS ZERO t , inj₂ v ] ∷ []
+eval {PLUS .ZERO .t} {t} {inj₂ .v} {v} unite₊ = 
+  •[ PLUS ZERO t , inj₂ v ] ∷ •[ t , v ] ∷ []
+eval {PLUS t₁ t₂} {PLUS .t₂ .t₁} {inj₁ v₁} {inj₂ .v₁} swap1₊ = 
+  •[ PLUS t₁ t₂ , inj₁ v₁ ] ∷ •[ PLUS t₂ t₁ , inj₂ v₁ ] ∷ []
+eval {PLUS t₁ t₂} {PLUS .t₂ .t₁} {inj₂ v₂} {inj₁ .v₂} swap2₊ = 
+  •[ PLUS t₁ t₂ , inj₂ v₂ ] ∷ •[ PLUS t₂ t₁ , inj₁ v₂ ] ∷ []
+eval {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} 
+     {inj₁ v₁} {inj₁ (inj₁ .v₁)} assocl1₊ =
+  •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] ∷ 
+  •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₁ v₁) ] ∷ [] 
+eval {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} 
+     {inj₂ (inj₁ v₂)} {inj₁ (inj₂ .v₂)} assocl2₊ =
+  •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] ∷ 
+  •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₂ v₂) ] ∷ [] 
+eval {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} 
+     {inj₂ (inj₂ v₃)} {inj₂ .v₃} assocl3₊ =
+  •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] ∷ 
+  •[ PLUS (PLUS t₁ t₂) t₃ , inj₂ v₃ ] ∷ [] 
+eval {PLUS (PLUS .t₁ .t₂) .t₃} {PLUS t₁ (PLUS t₂ t₃)}
+     {inj₁ (inj₁ .v₁)} {inj₁ v₁} assocr1₊ =
+  •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₁ v₁) ] ∷ 
+  •[ PLUS t₁ (PLUS t₂ t₃) , inj₁ v₁ ] ∷ [] 
+eval {PLUS (PLUS .t₁ .t₂) .t₃} {PLUS t₁ (PLUS t₂ t₃)}
+     {inj₁ (inj₂ .v₂)} {inj₂ (inj₁ v₂)} assocr2₊ =
+  •[ PLUS (PLUS t₁ t₂) t₃ , inj₁ (inj₂ v₂) ] ∷ 
+  •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₁ v₂) ] ∷ [] 
+eval {PLUS (PLUS .t₁ .t₂) .t₃} {PLUS t₁ (PLUS t₂ t₃)}
+     {inj₂ .v₃} {inj₂ (inj₂ v₃)} assocr3₊ =
+  •[ PLUS (PLUS t₁ t₂) t₃ , inj₂ v₃ ] ∷ 
+  •[ PLUS t₁ (PLUS t₂ t₃) , inj₂ (inj₂ v₃) ] ∷ [] 
+eval {t} {TIMES .ONE .t} {v} {(tt , .v)} uniti⋆ =
+  •[ t , v ] ∷ •[ TIMES ONE t , (tt , v) ] ∷ [] 
+eval {TIMES .ONE .t} {t} {(tt , .v)} {v} unite⋆ =
+  •[ TIMES ONE t , (tt , v) ] ∷ •[ t , v ] ∷ [] 
+eval {TIMES t₁ t₂} {TIMES .t₂ .t₁} {(v₁ , v₂)} {(.v₂ , .v₁)} swap⋆ = 
+  •[ TIMES t₁ t₂ , (v₁ , v₂) ] ∷ •[ TIMES t₂ t₁ , (v₂ , v₁) ] ∷ []
+eval {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} 
+     {(v₁ , (v₂ , v₃))} {((.v₁ , .v₂) , .v₃)} assocl⋆ = 
+  •[ TIMES t₁ (TIMES t₂ t₃) , (v₁ , (v₂ , v₃)) ] ∷ 
+  •[ TIMES (TIMES t₁ t₂) t₃ , ((v₁ , v₂) , v₃) ] ∷ []
+eval {TIMES (TIMES .t₁ .t₂) .t₃} {TIMES t₁ (TIMES t₂ t₃)}
+     {((.v₁ , .v₂) , .v₃)} {(v₁ , (v₂ , v₃))} assocr⋆ = 
+  •[ TIMES (TIMES t₁ t₂) t₃ , ((v₁ , v₂) , v₃) ] ∷
+  •[ TIMES t₁ (TIMES t₂ t₃) , (v₁ , (v₂ , v₃)) ] ∷ []
+eval {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)}
+     {(inj₁ v₁ , v₃)} {inj₁ (.v₁ , .v₃)} dist1 = 
+  •[ TIMES (PLUS t₁ t₂) t₃ , (inj₁ v₁ , v₃) ] ∷
+  •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₁ (v₁ , v₃) ] ∷ []
+eval {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)}
+     {(inj₂ v₂ , v₃)} {inj₂ (.v₂ , .v₃)} dist2 = 
+  •[ TIMES (PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ] ∷
+  •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₂ (v₂ , v₃) ] ∷ []
+eval {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)} {TIMES (PLUS t₁ t₂) t₃}
+     {inj₁ (.v₁ , .v₃)} {(inj₁ v₁ , v₃)} factor1 = 
+  •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₁ (v₁ , v₃) ] ∷ 
+  •[ TIMES (PLUS t₁ t₂) t₃ , (inj₁ v₁ , v₃) ] ∷ []
+eval {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)} {TIMES (PLUS t₁ t₂) t₃}
+     {inj₂ (.v₂ , .v₃)} {(inj₂ v₂ , v₃)} factor2 = 
+  •[ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) , inj₂ (v₂ , v₃) ] ∷ 
+  •[ TIMES (PLUS t₁ t₂) t₃ , (inj₂ v₂ , v₃) ] ∷ []
+eval {t} {.t} {v} {.v} id⟷ = •[ t , v ] ∷ •[ t , v ] ∷ []
+eval {t₁} {t₃} {v₁} {v₃} (_◎_ {t₂ = t₂} {v₂ = v₂} c₁ c₂) = 
+  eval {t₁} {t₂} {v₁} {v₂} c₁ ++ eval {t₂} {t₃} {v₂} {v₃} c₂
+eval {PLUS t₁ t₂} {PLUS t₃ t₄} {inj₁ v₁} {inj₁ v₃} (⊕1 c) = 
+  eval {t₁} {t₃} {v₁} {v₃} c -- tag
+eval {PLUS t₁ t₂} {PLUS t₃ t₄} {inj₂ v₂} {inj₂ v₄} (⊕2 c) =
+  eval {t₂} {t₄} {v₂} {v₄} c -- tag
+eval {TIMES t₁ t₂} {TIMES t₃ t₄} {(v₁ , v₂)} {(v₃ , v₄)} (c₁ ⊗ c₂) = 
+  (eval {t₁} {t₃} {v₁} {v₃} c₁) ++ (eval {t₂} {t₄} {v₂} {v₄} c₂)
+  -- zip
+       
+test = eval (•[ BOOL² , (TRUE , TRUE) ]
+               ⟷⟨ dist1 ⟩ 
+             •[ PLUS (TIMES ONE BOOL) (TIMES ONE BOOL) , inj₁ (tt , TRUE) ]
+               ⟷⟨ ⊕1 (id⟷ ⊗ swap1₊)⟩ 
+             •[ PLUS (TIMES ONE BOOL) (TIMES ONE BOOL) , inj₁ (tt , FALSE) ]
+               ⟷⟨ factor1 ⟩
+             •[ BOOL² , (TRUE , FALSE) ] □)
+
 
 -- The above are "fibers". We collect the fibers into functions. A function
 -- is a collection of chains, one that starts at each value in the domain
