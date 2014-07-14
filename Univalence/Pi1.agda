@@ -262,7 +262,7 @@ NOT : Fun BOOL BOOL
 NOT (inj₁ tt) = (FALSE , swap1₊)
 NOT (inj₂ tt) = (TRUE  , swap2₊)
 
--- Note that functions are not reversible
+-- Note that functions are not reversible!!
 Squash : Fun BOOL BOOL
 Squash (inj₁ x) = inj₂ x , swap1₊
 Squash (inj₂ y) = inj₂ y , id⟷
