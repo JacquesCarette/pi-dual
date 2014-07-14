@@ -157,6 +157,17 @@ _ ⟷⟨ α ⟩ β = α ◎ β
 _□ : (t : U•) → {t : U•} → (t ⟷ t)
 _□ t = id⟷
 
+-- Canonical trace
+
+trace : ∀ {t t₁ t₂ v₁ v₂} → 
+        (•[ PLUS t t₁ , inj₂ v₁ ] ⟷ •[ PLUS t t₂ , inj₂ v₂ ]) → 
+        (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ]) 
+trace unite₊ = unite₊
+trace uniti₊ = uniti₊
+trace id⟷ = id⟷
+trace (⊕2 c) = c  
+trace (c₁ ◎ c₂) = {!!} 
+
 -- The above are "fibers". We collect the fibers into functions. A function
 -- is a collection of chains, one that starts at each value in the domain
 
