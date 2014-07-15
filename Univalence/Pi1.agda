@@ -252,9 +252,14 @@ test = eval (•[ BOOL² , (TRUE , TRUE) ]
              •[ BOOL² , (TRUE , FALSE) ] □)
 
 
--- The above are "fibers". We collect the fibers into functions. A function
--- is a collection of chains, one that starts at each value in the domain
+-- The above are "fibers". We collect the fibers into functions. 
 
+data SWAP₊ {t₁ t₂ v₁ v₂} : 
+  (•[ PLUS t₁ t₂ , inj₁ v₁ ] ⟷ •[ PLUS t₂ t₁ , inj₂ v₁ ]) → 
+  (•[ PLUS t₁ t₂ , inj₂ v₂ ] ⟷ •[ PLUS t₂ t₁ , inj₁ v₂ ]) → 
+  Set where
+  swap₊ : SWAP₊ swap1₊ swap2₊ 
+         
 Fun : (t₁ t₂ : U) → Set
 Fun t₁ t₂ = (v₁ : ⟦ t₁ ⟧) → Σ[ v₂ ∈ ⟦ t₂ ⟧ ] (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ])
 
