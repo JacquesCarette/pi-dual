@@ -168,7 +168,7 @@ module Phase₀ where
       (fromWitness {Q = invariant? (TIMES t₁' (PLUS t₂' t₃'))} 
         (conj t₁'ok (conj t₂'ok t₃'ok)) , 
       c₁ ⊗ (c₂ ⊕ c₃)))
-  phase₁ (TIMES t₁ (TIMES t₂ t₃)) = ? 
+  phase₁ (TIMES t₁ (TIMES t₂ t₃)) = {!!} 
 
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
