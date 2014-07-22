@@ -3,11 +3,9 @@
 module Pif where
 
 open import Data.Bool
-open import Data.Nat 
-open import Relation.Nullary.Core as NRC using (Dec; yes; no)
-open import Relation.Nullary.Decidable as NR using (True; toWitness; fromWitness)
-open import Relation.Unary as UR using (Decidable)
-open import Relation.Binary.Core as BR using ()
+open import Relation.Nullary.Core using (yes; no)
+open import Relation.Nullary.Decidable using (True; toWitness; fromWitness)
+open import Relation.Unary using (Decidable)
 open import Relation.Binary.PropositionalEquality
 
 open import Data.Empty
@@ -50,9 +48,6 @@ BOOL² = TIMES BOOL BOOL
 false⟷ true⟷ : ⟦ BOOL ⟧
 false⟷ = inj₁ tt
 true⟷ = inj₂ tt
-
---bbs : List ⟦ BOOL² ⟧
---bbs = (false , false) ∷ (false , true) ∷ (true , false) ∷ (true , true) ∷ []
 
 -- For any finite type (t : U) there is no non-trivial path structure between
 -- the elements of t. All such finite types are discrete groupoids
@@ -117,7 +112,7 @@ data _⟷_ : U → U → Set where
 -- of type t₁ ⟷ t₂ are related by ∼; the answer is yes if they denote the
 -- same canonical permutation.
 
-module Phase₁ where
+module Phase₀ where
 
   -- no occurrences of (TIMES t₁ (TIMES t₂ t₃))
 
@@ -172,8 +167,10 @@ module Phase₁ where
 
 record Permutation (t t' : U) : Set where
   field
+    t₀ : U -- no occurrences of TIMES .. (TIMES .. ..)
+    phase₀ : t ⟷ t₀    
     t₁ : U   -- no occurrences of TIMES (PLUS .. ..)
-    phase₁ : t ⟷ t₁
+    phase₁ : t₀ ⟷ t₁
     t₂ : U   -- no occurrences of TIMES
     phase₂ : t₁ ⟷ t₂
     t₃ : U   -- no nested left PLUS, all PLUS of form PLUS simple (PLUS ...)
