@@ -122,7 +122,7 @@ module Phase₀ where
   invariant (PLUS t₁ t₂) = invariant t₁ ∧ invariant t₂ 
   invariant (TIMES t ZERO) = invariant t
   invariant (TIMES t ONE) = invariant t
-  invariant (TIMES t₁ (PLUS t₂ t₃)) = invariant t₁ ∧ invariant t₂ ∧ invariant t₃
+  invariant (TIMES t₁ (PLUS t₂ t₃)) = invariant t₁ ∧ (invariant t₂ ∧ invariant t₃)
   invariant (TIMES t₁ (TIMES t₂ t₃)) = false
 
   Invariant : (t : U) → Set
@@ -149,15 +149,26 @@ module Phase₀ where
       (fromWitness {Q = invariant? (PLUS t₁' t₂')} (conj t₁'ok t₂'ok) , 
       c₁ ⊕ c₂))
   phase₁ (TIMES t ZERO) with phase₁ t
-  ... | (t' , (p , c)) = (TIMES t' ZERO , ({!!} , c ⊗ id⟷))
+  ... | (t' , (p , c)) with toWitness p 
+  ... | t'ok = 
+    (TIMES t' ZERO , 
+      (fromWitness {Q = invariant? (TIMES t' ZERO)} t'ok , 
+      c ⊗ id⟷))
   phase₁ (TIMES t ONE) with phase₁ t 
-  ... | (t' , (p , c)) = (TIMES t' ONE , ({!!} , c ⊗ id⟷))
+  ... | (t' , (p , c)) with toWitness p
+  ... | t'ok = 
+    (TIMES t' ONE , 
+      (fromWitness {Q = invariant? (TIMES t' ONE)} t'ok , 
+      c ⊗ id⟷))
   phase₁ (TIMES t₁ (PLUS t₂ t₃)) with phase₁ t₁ | phase₁ t₂ | phase₁ t₃
-  ... | (t₁' , (p₁ , c₁)) | (t₂' , (p₂ , c₂)) | (t₃' , (p₃ , c₃)) = 
-    (TIMES t₁' (PLUS t₂' t₃') , ({!!} , c₁ ⊗ (c₂ ⊕ c₃)))
-  phase₁ (TIMES t₁ (TIMES t₂ t₃)) with phase₁ t₁ | phase₁ t₂ | phase₁ t₃
-  ... | (t₁' , (p₁ , c₁)) | (t₂' , (p₂ , c₂)) | (t₃' , (p₃ , c₃)) = 
-    (TIMES (TIMES t₁' t₂') t₃' , ({!!} , assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃)))
+  ... | (t₁' , (p₁ , c₁)) | (t₂' , (p₂ , c₂)) | (t₃' , (p₃ , c₃)) 
+    with toWitness p₁ | toWitness p₂ | toWitness p₃ 
+  ... | t₁'ok | t₂'ok | t₃'ok = 
+    (TIMES t₁' (PLUS t₂' t₃') , 
+      (fromWitness {Q = invariant? (TIMES t₁' (PLUS t₂' t₃'))} 
+        (conj t₁'ok (conj t₂'ok t₃'ok)) , 
+      c₁ ⊗ (c₂ ⊕ c₃)))
+  phase₁ (TIMES t₁ (TIMES t₂ t₃)) = ? 
 
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
