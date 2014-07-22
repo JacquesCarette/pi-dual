@@ -27,7 +27,8 @@ open CommutativeSemiring commutativeSemiring using (+-identity; +-comm; distrib)
 -- Full trees, representing associations
 data Association : ℕ → Set where
   leaf : Association 1
-  node : ∀ {m n} → (l : Association m) → (r : Association n) → Association (m + n)
+  node : ∀ {m n} → 
+        (l : Association m) → (r : Association n) → Association (m + n)
 
 leftA : ∀ {n} → Association (1 + n)
 leftA {zero} = leaf
@@ -42,30 +43,40 @@ fold leaf _∙_ (x ∷ xs) = x
 fold (node {m} l r) _∙_ xs with splitAt m xs
 ...                        | ls , rs , pf = fold l _∙_ ls ∙ fold r _∙_ rs
 
-foldl₁-fold : ∀ {n} {a} {A : Set a} (f : A → A → A) → (xs : Vec A (1 + n)) → foldl₁ f xs ≡ fold leftA f xs
+foldl₁-fold : ∀ {n} {a} {A : Set a} (f : A → A → A) → 
+             (xs : Vec A (1 + n)) → foldl₁ f xs ≡ fold leftA f xs
 foldl₁-fold {zero} f (x ∷ []) = refl
 foldl₁-fold {suc n} f xs rewrite +-comm 1 n with splitAt (suc n) xs
-foldl₁-fold {suc n} f .(ls ++ r ∷ [])           | ls , r ∷ [] , refl rewrite sym (foldl₁-fold f ls) = foldl₁-snoc f r ls
+foldl₁-fold {suc n} f .(ls ++ r ∷ []) | ls , r ∷ [] , refl 
+  rewrite sym (foldl₁-fold f ls) = foldl₁-snoc f r ls
   where
-  foldl₁-snoc : ∀ {a} {A : Set a} {n} f x (xs : Vec A (1 + n)) → foldl₁ f (xs ++ x ∷ []) ≡ f (foldl₁ f xs) x
+  foldl₁-snoc : ∀ {a} {A : Set a} {n} f x (xs : Vec A (1 + n)) → 
+                foldl₁ f (xs ++ x ∷ []) ≡ f (foldl₁ f xs) x
   foldl₁-snoc f x₀ (x₁ ∷ []) = refl
   foldl₁-snoc f x₀ (x₁ ∷ x ∷ xs) = foldl₁-snoc f x₀ (f x₁ x ∷ xs)
 
-foldr-fold : ∀ {n} {a} {A : Set a} (f : A → A → A) z (xs : Vec A n) → foldr _ f z xs ≡ fold rightA f (xs ∷ʳ z)
+foldr-fold : ∀ {n} {a} {A : Set a} (f : A → A → A) z (xs : Vec A n) → 
+             foldr _ f z xs ≡ fold rightA f (xs ∷ʳ z)
 foldr-fold f z [] = refl
 foldr-fold f z (x ∷ xs) = cong (f x) (foldr-fold f z xs)
 
-foldl-fold : ∀ {n} {a} {A : Set a} (f : A → A → A) z (xs : Vec A n) → foldl _ f z xs ≡ fold leftA f (z ∷ xs)
+foldl-fold : ∀ {n} {a} {A : Set a} (f : A → A → A) z (xs : Vec A n) → 
+             foldl _ f z xs ≡ fold leftA f (z ∷ xs)
 foldl-fold f z xs rewrite sym (foldl₁-fold f (z ∷ xs)) = refl
 
-foldl-elim : ∀ {a b c} {A : Set a} {B : ℕ → Set b} (P : ∀ {n} → Vec A n → B n → Set c) {f : ∀ {n} → B n → A → B (1 + n)} {z : B 0} 
+foldl-elim : ∀ {a b c} {A : Set a} {B : ℕ → Set b} 
+             (P : ∀ {n} → Vec A n → B n → Set c) 
+             {f : ∀ {n} → B n → A → B (1 + n)} {z : B 0} 
            → P [] z
            → (∀ {n x′ z′} {xs′ : Vec A n} → P xs′ z′ → P (xs′ ∷ʳ x′) (f z′ x′)) 
            → ∀ {n} (xs : Vec A n) → P xs (foldl B f z xs)
 foldl-elim P Pz Ps [] = Pz
-foldl-elim {A} {B} P {f} {z} Pz Ps (x ∷ xs) = foldl-elim (λ xs′ → P (x ∷ xs′)) (Ps Pz) Ps xs
+foldl-elim {A} {B} P {f} {z} Pz Ps (x ∷ xs) = 
+  foldl-elim (λ xs′ → P (x ∷ xs′)) (Ps Pz) Ps xs
 
-foldl-lemma : ∀ {a b} {A : Set a} {B : ℕ → Set b} {f : ∀ {n} → B n → A → B (suc n)} {z : B 0} {n} {x} (xs : Vec A n) → f (foldl B f z xs) x ≡ foldl B f z (xs ∷ʳ x)
+foldl-lemma : ∀ {a b} {A : Set a} {B : ℕ → Set b} 
+  {f : ∀ {n} → B n → A → B (suc n)} {z : B 0} {n} {x} (xs : Vec A n) → 
+  f (foldl B f z xs) x ≡ foldl B f z (xs ∷ʳ x)
 foldl-lemma [] = refl
 foldl-lemma {B = B} (y ∷ ys) = foldl-lemma {B = λ n → B (suc n)} ys
 
@@ -104,15 +115,18 @@ insert-max : ∀ {n} {a} {A : Set a} (ys : Vec A n) x → insert ys max x ≡ ys
 insert-max [] x = refl
 insert-max (y ∷ ys) x = cong (_∷_ y) (insert-max ys x)
 
-reverse-∷ʳ : ∀ {n} {a} {A : Set a} (ys : Vec A n) x → reverse ys ∷ʳ x ≡ reverse (x ∷ ys)
+reverse-∷ʳ : ∀ {n} {a} {A : Set a} (ys : Vec A n) x → 
+  reverse ys ∷ʳ x ≡ reverse (x ∷ ys)
 reverse-∷ʳ {A = A} xs x = 
   foldl-elim
     (λ xs b → b ∷ʳ x ≡ reverse (x ∷ xs)) 
     refl 
-    (λ {_} {_} {_} {xs} eq → trans (cong (_∷_ _) eq) (foldl-lemma {B = λ n -> Vec A (suc n)} xs))
+    (λ {_} {_} {_} {xs} eq → 
+      trans (cong (_∷_ _) eq) (foldl-lemma {B = λ n -> Vec A (suc n)} xs))
     xs
 
-reverseP-reverse : ∀ {n} {a} {A : Set a} (xs : Vec A n) → permute reverseP xs ≡ reverse xs
+reverseP-reverse : ∀ {n} {a} {A : Set a} (xs : Vec A n) → 
+  permute reverseP xs ≡ reverse xs
 reverseP-reverse [] = refl
 reverseP-reverse {suc n} {_} {A} (x ∷ xs) = 
     begin
@@ -131,7 +145,8 @@ remove {n} zero (x ∷ v) = v
 remove {zero} (suc ()) _
 remove {suc n} (suc i) (x ∷ v) = x ∷ remove i v
 
-remove0 : {n : ℕ} {A : Set} → (v : Vec A (suc n)) → v ≡ (lookup zero v) ∷ remove zero v
+remove0 : {n : ℕ} {A : Set} → (v : Vec A (suc n)) → 
+  v ≡ (lookup zero v) ∷ remove zero v
 remove0 (x ∷ v) = refl
 
 {-

@@ -518,6 +518,52 @@ executable as it relies on an Agda postulate. In the next section, we analyze
 this situation from the perspective of reversible programming languages based
 on type isomorphisms~\cite{James:2012:IE:2103656.2103667,rc2011,rc2012}.
 
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{HoTT with Isomorphisms} 
+
+To summarize, for every function \AgdaBound{f} \AgdaSymbol{:}
+\AgdaPrimitiveType{Bool} \AgdaSymbol{→} \AgdaPrimitiveType{Bool} with inverse
+\AgdaBound{g} \AgdaSymbol{:} \AgdaPrimitiveType{Bool} \AgdaSymbol{→}
+\AgdaPrimitiveType{Bool}, we have an equivalence \AgdaPrimitiveType{Bool}
+\AgdaSymbol{≃} \AgdaPrimitiveType{Bool}. By univalence, this equivalence
+gives us a path between \AgdaPrimitiveType{Bool} and
+\AgdaPrimitiveType{Bool}.
+
+The reversible functions on \AgdaPrimitiveType{Bool} are \AgdaBound{id} and
+\AgdaBound{not}. These functions induce two paths \AgdaFunction{idpath} and
+\AgdaFunction{notpath} in the space \AgdaPrimitiveType{Bool} \AgdaSymbol{≡}
+\AgdaPrimitiveType{Bool}. Viewing \AgdaPrimitiveType{Bool} as the coproduct
+\AgdaPrimitiveType{⊤} \AgdaSymbol{⊎} \AgdaPrimitiveType{⊤}, i.e., as the
+disjoint union of two copies of the unit type, it is possible to say more
+about the structure of the paths \AgdaFunction{idpath} and
+\AgdaFunction{notpath}. 
+
+(true ≡ true) ≃ (tt ≡ tt)
+(false ≡ false) ≃ (tt ≡ tt)
+(true ≡ false) ≃ ⊥
+
+So the way to think about notpath is not that it identifies true and
+false. This would be bad. What notpath is doing is flipping the space Bool so
+that INTERNALLY the representation of true and false are flipped but from the
+outside their abstract names are the same. This would be like the hardware
+switching the representation of true as 1 and false as 0. Nobody could tell
+the difference because of ADT, polymorphism, and univalence...
+
+So we have two views of types: one in which we look inside the type and talk
+about paths inside the type; the other in which we look from the outside and
+talk about paths between the types. The latter paths just massage the type
+from the outside, flipping it around, stretching it, etc. but do not reach
+out inside the elements of the type.
+
+So we have paths between points (when looking inside a type)
+
+Then we have paths between types (when looking at the universe and each type
+is a black box). These paths do not translate to paths between points!!!
+
+We also have paths between functions but since we identify functions with
+paths between types, these paths become homotopies, i.e, paths between paths.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Computing with Type Isomorphisms}
 \label{pi}
