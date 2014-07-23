@@ -112,9 +112,11 @@ data _⟷_ : U → U → Set where
 -- of type t₁ ⟷ t₂ are related by ∼; the answer is yes if they denote the
 -- same canonical permutation.
 
-module Phase₀ where
+module Phase₁ where
 
   -- no occurrences of (TIMES (TIMES t₁ t₂) t₃)
+
+{-- approach that maintains the invariants in proofs
 
   invariant : (t : U) → Bool
   invariant ZERO = true
@@ -168,7 +170,50 @@ module Phase₀ where
       (fromWitness {Q = invariant? (TIMES (PLUS t₁' t₂') t₃')}
         (conj (conj t₁'ok t₂'ok) t₃'ok) , 
       (c₁ ⊕ c₂) ⊗ c₃))
-  phase₁ (TIMES (TIMES t₁ t₂) t₃) = ? 
+  phase₁ (TIMES (TIMES t₁ t₂) t₃) = {!!} 
+--}
+
+  -- invariants are informal
+  -- rewrite (TIMES (TIMES t₁ t₂) t₃) to TIMES t₁ (TIMES t₂ t₃)
+  invariant : (t : U) → Bool
+  invariant ZERO = true
+  invariant ONE = true
+  invariant (PLUS t₁ t₂) = invariant t₁ ∧ invariant t₂ 
+  invariant (TIMES ZERO t₂) = invariant t₂
+  invariant (TIMES ONE t₂) = invariant t₂
+  invariant (TIMES (PLUS t₁ t₂) t₃) = invariant t₁ ∧ invariant t₂ ∧ invariant t₃
+  invariant (TIMES (TIMES t₁ t₂) t₃) = false
+
+  step₁ : (t₁ : U) → Σ[ t₂ ∈ U ] (t₁ ⟷ t₂)
+  step₁ ZERO = (ZERO , id⟷)
+  step₁ ONE = (ONE , id⟷)
+  step₁ (PLUS t₁ t₂) with step₁ t₁ | step₁ t₂
+  ... | (t₁' , c₁) | (t₂' , c₂) = (PLUS t₁' t₂' , c₁ ⊕ c₂)
+  step₁ (TIMES (TIMES t₁ t₂) t₃) with step₁ t₁ | step₁ t₂ | step₁ t₃
+  ... | (t₁' , c₁) | (t₂' , c₂) | (t₃' , c₃) = 
+    (TIMES t₁' (TIMES t₂' t₃') , ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆)
+  step₁ (TIMES ZERO t₂) with step₁ t₂ 
+  ... | (t₂' , c₂) = (TIMES ZERO t₂' , id⟷ ⊗ c₂)
+  step₁ (TIMES ONE t₂) with step₁ t₂ 
+  ... | (t₂' , c₂) = (TIMES ONE t₂' , id⟷ ⊗ c₂)
+  step₁ (TIMES (PLUS t₁ t₂) t₃) with step₁ t₁ | step₁ t₂ | step₁ t₃
+  ... | (t₁' , c₁) | (t₂' , c₂) | (t₃' , c₃) = 
+    (TIMES (PLUS t₁' t₂') t₃' , (c₁ ⊕ c₂) ⊗ c₃)
+
+  {-# NO_TERMINATION_CHECK #-}
+  phase₁ : (t₁ : U) → Σ[ t₂ ∈ U ] (t₁ ⟷ t₂)
+  phase₁ t with invariant t
+  ... | true = (t , id⟷)
+  ... | false with step₁ t
+  ... | (t' , c) with phase₁ t'
+  ... | (t'' , c') = (t'' , c ◎ c')
+
+  test₁ = phase₁ (TIMES (TIMES (TIMES ONE ONE) (TIMES ONE ONE)) ONE)
+  {--
+  TIMES ONE (TIMES ONE (TIMES ONE (TIMES ONE ONE))) ,
+  (((id⟷ ⊗ id⟷) ⊗ (id⟷ ⊗ id⟷)) ⊗ id⟷ ◎ assocr⋆) ◎
+  ((id⟷ ⊗ id⟷) ⊗ ((id⟷ ⊗ id⟷) ⊗ id⟷ ◎ assocr⋆) ◎ assocr⋆) ◎ id⟷
+  --}
 
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
