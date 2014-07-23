@@ -215,6 +215,27 @@ module Phase₁ where
   ((id⟷ ⊗ id⟷) ⊗ ((id⟷ ⊗ id⟷) ⊗ id⟷ ◎ assocr⋆) ◎ assocr⋆) ◎ id⟷
   --}
 
+  -- Now any combinator (t₁ ⟷ t₂) can be transformed to a canonical
+  -- representation in which we first associate all the TIMES to the right
+  -- and then do the rest of the combinator
+
+  normalize₁ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → 
+               (Σ[ t₁' ∈ U ] (t₁ ⟷ t₁' × t₁' ⟷ t₂))
+  normalize₁ {ZERO} {t} c = ZERO , id⟷ , c
+  normalize₁ {ONE} c = ONE , id⟷ , c
+  normalize₁ {PLUS .ZERO t₂} unite₊ with phase₁ t₂
+  ... | (t₂n , cn) = PLUS ZERO t₂n , id⟷ ⊕ cn , unite₊ ◎ ! cn
+  normalize₁ {PLUS t₁ t₂} uniti₊ = {!!}
+  normalize₁ {PLUS t₁ t₂} swap₊ = {!!}
+  normalize₁ {PLUS t₁ ._} assocl₊ = {!!}
+  normalize₁ {PLUS ._ t₂} assocr₊ = {!!}
+  normalize₁ {PLUS t₁ t₂} uniti⋆ = {!!}
+  normalize₁ {PLUS ._ ._} factor = {!!}
+  normalize₁ {PLUS t₁ t₂} id⟷ = {!!}
+  normalize₁ {PLUS t₁ t₂} (c ◎ c₁) = {!!}
+  normalize₁ {PLUS t₁ t₂} (c ⊕ c₁) = {!!} 
+  normalize₁ {TIMES t₁ t₂} c = {!!}
+
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
