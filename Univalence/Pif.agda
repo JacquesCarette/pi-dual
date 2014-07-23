@@ -2,19 +2,24 @@
 
 module Pif where
 
-open import Data.Bool
-open import Relation.Nullary.Core using (yes; no)
-open import Relation.Nullary.Decidable using (True; toWitness; fromWitness)
-open import Relation.Unary using (Decidable)
+-- open import Data.Bool
+-- open import Relation.Nullary.Core using (yes; no)
+-- open import Relation.Nullary.Decidable using (True; toWitness; fromWitness)
+-- open import Relation.Unary using (Decidable)
+
+open import Data.List as L
 open import Relation.Binary.PropositionalEquality
+open ≡-Reasoning
 
 open import Data.Empty
 open import Data.Unit
 open import Data.Sum
 open import Data.Product
 
--- infix  4  _∼_  
+infix  2  _□       
+infixr 2  _⟷⟨_⟩_   
 -- infix  4  _≃_  
+infix  4  _∼_  
 infixr 10 _◎_
 infix 30 _⟷_
 
@@ -40,6 +45,15 @@ data U : Set where
 ⟦ ONE ⟧ = ⊤
 ⟦ PLUS t₁ t₂ ⟧ = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
 ⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+
+elems : (t : U) → List ⟦ t ⟧
+elems ZERO = []
+elems ONE = L.[ tt ] 
+elems (PLUS t₁ t₂) = L.map inj₁ (elems t₁) ++ L.map inj₂ (elems t₂)
+elems (TIMES t₁ t₂) = concat 
+                        (L.map 
+                          (λ v₂ → L.map (λ v₁ → (v₁ , v₂)) (elems t₁))
+                         (elems t₂))
 
 BOOL BOOL² : U
 BOOL = PLUS ONE ONE 
@@ -86,6 +100,16 @@ data _⟷_ : U → U → Set where
   _⊗_     : {t₁ t₂ t₃ t₄ : U} → 
             (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
 
+-- Nicer syntax that shows intermediate values instead of point-free
+-- combinators
+
+_⟷⟨_⟩_ : (t₁ : U) {t₂ : U} {t₃ : U} → 
+          (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃) 
+_ ⟷⟨ α ⟩ β = α ◎ β
+
+_□ : (t : U) → {t : U} → (t ⟷ t)
+_□ t = id⟷
+
 -- Every permutation has an inverse
 
 ! : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
@@ -108,10 +132,292 @@ data _⟷_ : U → U → Set where
 ! (c₁ ⊕ c₂) = (! c₁) ⊕ (! c₂)
 ! (c₁ ⊗ c₂) = (! c₁) ⊗ (! c₂)
 
+!! : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → ! (! c) ≡ c
+!! {c = unite₊} = refl
+!! {c = uniti₊} = refl
+!! {c = swap₊} = refl
+!! {c = assocl₊} = refl
+!! {c = assocr₊} = refl
+!! {c = unite⋆} = refl
+!! {c = uniti⋆} = refl
+!! {c = swap⋆} = refl
+!! {c = assocl⋆} = refl
+!! {c = assocr⋆} = refl
+!! {c = distz} = refl
+!! {c = factorz} = refl
+!! {c = dist} = refl
+!! {c = factor} = refl
+!! {c = id⟷} = refl
+!! {c = c₁ ◎ c₂} = 
+  begin (! (! (c₁ ◎ c₂))
+           ≡⟨ refl ⟩
+         ! (! c₂ ◎ ! c₁)
+           ≡⟨ refl ⟩ 
+         ! (! c₁) ◎ ! (! c₂)
+           ≡⟨ cong₂ _◎_ (!! {c = c₁}) (!! {c = c₂}) ⟩ 
+         c₁ ◎ c₂ ∎)
+!! {c = c₁ ⊕ c₂} = 
+  begin (! (! (c₁ ⊕ c₂))
+           ≡⟨ refl ⟩
+         ! (! c₁) ⊕ ! (! c₂)
+           ≡⟨ cong₂ _⊕_ (!! {c = c₁}) (!! {c = c₂}) ⟩ 
+         c₁ ⊕ c₂ ∎)
+!! {c = c₁ ⊗ c₂} = 
+  begin (! (! (c₁ ⊗ c₂))
+           ≡⟨ refl ⟩
+         ! (! c₁) ⊗ ! (! c₂)
+           ≡⟨ cong₂ _⊗_ (!! {c = c₁}) (!! {c = c₂}) ⟩ 
+         c₁ ⊗ c₂ ∎)
+
 -- Canonical form of permutations. This is used to decide whether two paths
 -- of type t₁ ⟷ t₂ are related by ∼; the answer is yes if they denote the
 -- same canonical permutation.
 
+path2fun : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
+path2fun unite₊ (inj₁ ())
+path2fun unite₊ (inj₂ v) = v
+path2fun uniti₊ v = inj₂ v
+path2fun swap₊ (inj₁ v) = inj₂ v
+path2fun swap₊ (inj₂ v) = inj₁ v
+path2fun assocl₊ (inj₁ v) = inj₁ (inj₁ v)
+path2fun assocl₊ (inj₂ (inj₁ v)) = inj₁ (inj₂ v)
+path2fun assocl₊ (inj₂ (inj₂ v)) = inj₂ v
+path2fun assocr₊ (inj₁ (inj₁ v)) = inj₁ v
+path2fun assocr₊ (inj₁ (inj₂ v)) = inj₂ (inj₁ v)
+path2fun assocr₊ (inj₂ v) = inj₂ (inj₂ v)
+path2fun unite⋆ (tt , v) = v
+path2fun uniti⋆ v = (tt , v)
+path2fun swap⋆ (v₁ , v₂) = (v₂ , v₁)
+path2fun assocl⋆ (v₁ , (v₂ , v₃)) = ((v₁ , v₂) , v₃)
+path2fun assocr⋆ ((v₁ , v₂) , v₃) = (v₁ , (v₂ , v₃))
+path2fun distz (() , v)
+path2fun factorz ()
+path2fun dist (inj₁ v₁ , v) = inj₁ (v₁ , v)
+path2fun dist (inj₂ v₂ , v) = inj₂ (v₂ , v)
+path2fun factor (inj₁ (v₁ , v)) = (inj₁ v₁ , v)
+path2fun factor (inj₂ (v₂ , v)) = (inj₂ v₂ , v)
+path2fun id⟷ v = v
+path2fun (c₁ ◎ c₂) v = path2fun c₂ (path2fun c₁ v)
+path2fun (c₁ ⊕ c₂) (inj₁ v) = inj₁ (path2fun c₁ v)
+path2fun (c₁ ⊕ c₂) (inj₂ v) = inj₂ (path2fun c₂ v)
+path2fun (c₁ ⊗ c₂) (v₁ , v₂) = (path2fun c₁ v₁ , path2fun c₂ v₂)
+
+-- two combinators are the same if they denote the same permutation
+
+_∼_ : {t₁ t₂ : U} → (c₁ c₂ : t₁ ⟷ t₂) → Set
+_∼_ {t₁} {t₂} c₁ c₂ = (v : ⟦ t₁ ⟧) → path2fun c₁ v ≡ path2fun c₂ v
+
+-- the inverse of (c : t₁ ⟷ t₂) is (! c)
+
+invl : {t₁ t₂ : U} {c : t₁ ⟷ t₂} {v : ⟦ t₁ ⟧} → 
+       path2fun (! c) (path2fun c v) ≡ v
+invl {c = unite₊} {inj₁ ()} 
+invl {c = unite₊} {inj₂ v} = refl
+invl {c = uniti₊} {v} = refl
+invl {c = swap₊} {inj₁ v} = refl
+invl {c = swap₊} {inj₂ v} = refl
+invl {c = assocl₊} {inj₁ v} = refl
+invl {c = assocl₊} {inj₂ (inj₁ v)} = refl
+invl {c = assocl₊} {inj₂ (inj₂ v)} = refl
+invl {c = assocr₊} {inj₁ (inj₁ v)} = refl
+invl {c = assocr₊} {inj₁ (inj₂ v)} = refl
+invl {c = assocr₊} {inj₂ v} = refl
+invl {c = unite⋆} {(tt , v)} = refl
+invl {c = uniti⋆} {v} = refl
+invl {c = swap⋆} {(v₁ , v₂)} = refl
+invl {c = assocl⋆} {(v₁ , (v₂ , v₃))} = refl
+invl {c = assocr⋆} {((v₁ , v₂) , v₃)} = refl
+invl {c = distz} {(() , v)}
+invl {c = factorz} {()}
+invl {c = dist} {(inj₁ v₁ , v)} = refl
+invl {c = dist} {(inj₂ v₂ , v)} = refl
+invl {c = factor} {inj₁ (v₁ , v)} = refl
+invl {c = factor} {inj₂ (v₂ , v)} = refl
+invl {c = id⟷} {v} = refl
+invl {t₁} {t₃} {c = _◎_ {t₂ = t₂} c₁ c₂} {v} = 
+  begin (path2fun (! (c₁ ◎ c₂)) (path2fun (c₁ ◎ c₂) v) 
+           ≡⟨ refl ⟩
+         path2fun (! c₁) (path2fun (! c₂) (path2fun c₂ (path2fun c₁ v)))
+           ≡⟨  cong (λ x → path2fun (! c₁) x) 
+                   (invl {t₂} {t₃} {c₂} {path2fun c₁ v}) ⟩ 
+         path2fun (! c₁) (path2fun c₁ v)
+           ≡⟨ invl {t₁} {t₂} {c₁} {v} ⟩
+         v ∎)
+invl {PLUS t₁ t₂} {PLUS t₃ t₄} {c = c₁ ⊕ c₂} {inj₁ v} = 
+  begin (path2fun (! (c₁ ⊕ c₂)) (path2fun (c₁ ⊕ c₂) (inj₁ v))
+           ≡⟨ refl ⟩ 
+         path2fun (! c₁ ⊕ ! c₂) (inj₁ (path2fun c₁ v))
+           ≡⟨ refl ⟩
+         inj₁ (path2fun (! c₁) (path2fun c₁ v))
+           ≡⟨ cong inj₁ (invl {t₁} {t₃} {c₁} {v}) ⟩ 
+         inj₁ v ∎)
+invl {PLUS t₁ t₂} {PLUS t₃ t₄} {c = c₁ ⊕ c₂} {inj₂ v} = 
+  begin (path2fun (! (c₁ ⊕ c₂)) (path2fun (c₁ ⊕ c₂) (inj₂ v))
+           ≡⟨ refl ⟩ 
+         path2fun (! c₁ ⊕ ! c₂) (inj₂ (path2fun c₂ v))
+           ≡⟨ refl ⟩
+         inj₂ (path2fun (! c₂) (path2fun c₂ v))
+           ≡⟨ cong inj₂ (invl {t₂} {t₄} {c₂} {v}) ⟩ 
+         inj₂ v ∎)
+invl {TIMES t₁ t₂} {TIMES t₃ t₄} {c = c₁ ⊗ c₂} {(v₁ , v₂)} = 
+  begin (path2fun (! (c₁ ⊗ c₂)) (path2fun (c₁ ⊗ c₂) (v₁ , v₂))
+           ≡⟨ refl ⟩ 
+         path2fun (! c₁ ⊗ ! c₂) (path2fun c₁ v₁ , path2fun c₂ v₂)
+           ≡⟨ refl ⟩ 
+         (path2fun (! c₁) (path2fun c₁ v₁) , path2fun (! c₂) (path2fun c₂ v₂))
+           ≡⟨ cong₂ _,_ 
+               (invl {t₁} {t₃} {c₁} {v₁})
+               (invl {t₂} {t₄} {c₂} {v₂}) ⟩ 
+         (v₁ , v₂) ∎)
+
+invr : {t₁ t₂ : U} {c : t₁ ⟷ t₂} {v : ⟦ t₂ ⟧} → 
+       path2fun c (path2fun (! c) v) ≡ v
+invr {c = unite₊} {v} = refl
+invr {c = uniti₊} {inj₁ ()} 
+invr {c = uniti₊} {inj₂ v} = refl
+invr {c = swap₊} {inj₁ v} = refl
+invr {c = swap₊} {inj₂ v} = refl
+invr {c = assocl₊} {inj₁ (inj₁ v)} = refl
+invr {c = assocl₊} {inj₁ (inj₂ v)} = refl
+invr {c = assocl₊} {inj₂ v} = refl
+invr {c = assocr₊} {inj₁ v} = refl
+invr {c = assocr₊} {inj₂ (inj₁ v)} = refl
+invr {c = assocr₊} {inj₂ (inj₂ v)} = refl
+invr {c = unite⋆} {v} = refl
+invr {c = uniti⋆} {(tt , v)} = refl
+invr {c = swap⋆} {(v₁ , v₂)} = refl
+invr {c = assocl⋆} {((v₁ , v₂) , v₃)} = refl
+invr {c = assocr⋆} {(v₁ , (v₂ , v₃))} = refl
+invr {c = distz} {()}
+invr {c = factorz} {(() , v)}
+invr {c = dist} {inj₁ (v₁ , v)} = refl
+invr {c = dist} {inj₂ (v₂ , v)} = refl
+invr {c = factor} {(inj₁ v₁ , v)} = refl
+invr {c = factor} {(inj₂ v₂ , v)} = refl
+invr {c = id⟷} {v} = refl
+invr {t₁} {t₃} {c = _◎_ {t₂ = t₂} c₁ c₂} {v} = 
+  begin (path2fun (c₁ ◎ c₂) (path2fun (! (c₁ ◎ c₂)) v) 
+           ≡⟨ refl ⟩
+         path2fun c₂ (path2fun c₁ (path2fun (! c₁) (path2fun (! c₂) v)))
+           ≡⟨  cong (λ x → path2fun c₂ x)
+                   (invr {t₁} {t₂} {c₁} {path2fun (! c₂) v}) ⟩ 
+         path2fun c₂ (path2fun (! c₂) v)
+           ≡⟨ invr {t₂} {t₃} {c₂} {v} ⟩
+         v ∎)
+invr {PLUS t₁ t₂} {PLUS t₃ t₄} {c = c₁ ⊕ c₂} {inj₁ v} = 
+  begin (path2fun (c₁ ⊕ c₂) (path2fun (! (c₁ ⊕ c₂)) (inj₁ v))
+           ≡⟨ refl ⟩ 
+         path2fun (c₁ ⊕ c₂) (inj₁ (path2fun (! c₁) v))
+           ≡⟨ refl ⟩
+         inj₁ (path2fun c₁ (path2fun (! c₁) v))
+           ≡⟨ cong inj₁ (invr {t₁} {t₃} {c₁} {v}) ⟩ 
+         inj₁ v ∎)
+invr {PLUS t₁ t₂} {PLUS t₃ t₄} {c = c₁ ⊕ c₂} {inj₂ v} = 
+  begin (path2fun (c₁ ⊕ c₂) (path2fun (! (c₁ ⊕ c₂)) (inj₂ v))
+           ≡⟨ refl ⟩ 
+         path2fun (c₁ ⊕ c₂) (inj₂ (path2fun (! c₂) v))
+           ≡⟨ refl ⟩
+         inj₂ (path2fun c₂ (path2fun (! c₂) v))
+           ≡⟨ cong inj₂ (invr {t₂} {t₄} {c₂} {v}) ⟩ 
+         inj₂ v ∎)
+invr {TIMES t₁ t₂} {TIMES t₃ t₄} {c = c₁ ⊗ c₂} {(v₁ , v₂)} = 
+  begin (path2fun (c₁ ⊗ c₂) (path2fun (! (c₁ ⊗ c₂)) (v₁ , v₂))
+           ≡⟨ refl ⟩ 
+         path2fun (c₁ ⊗ c₂) (path2fun (! c₁) v₁ , path2fun (! c₂) v₂)
+           ≡⟨ refl ⟩ 
+         (path2fun c₁ (path2fun (! c₁) v₁) , path2fun c₂ (path2fun (! c₂) v₂))
+           ≡⟨ cong₂ _,_ 
+               (invr {t₁} {t₃} {c₁} {v₁})
+               (invr {t₂} {t₄} {c₂} {v₂}) ⟩ 
+         (v₁ , v₂) ∎)
+
+-- Lemma 2.1.4
+
+c∼c◎id : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ∼ (c ◎ id⟷)
+c∼c◎id {t₁} {t₂} {c} v = 
+  (begin (path2fun c v)
+           ≡⟨ refl ⟩
+         (path2fun c (path2fun id⟷ v))
+           ≡⟨ refl ⟩
+         (path2fun (c ◎ id⟷) v) ∎)
+
+c∼id◎c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ∼ (id⟷ ◎ c)
+c∼id◎c {t₁} {t₂} {c} v = 
+  (begin (path2fun c v)
+           ≡⟨ refl ⟩
+         (path2fun id⟷ (path2fun c v))
+           ≡⟨ refl ⟩
+         (path2fun (id⟷ ◎ c) v) ∎)
+
+!c◎c∼id : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (! c) ◎ c ∼ id⟷
+!c◎c∼id {t₁} {t₂} {c} v = 
+  (begin (path2fun ((! c) ◎ c) v)
+           ≡⟨ refl ⟩
+         (path2fun c (path2fun (! c) v))
+           ≡⟨ invr {t₁} {t₂} {c} {v} ⟩
+         (path2fun id⟷ v) ∎)
+
+c◎!c∼id : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ (! c) ∼ id⟷
+c◎!c∼id {t₁} {t₂} {c} v = 
+  (begin (path2fun (c ◎ (! c)) v)
+           ≡⟨ refl ⟩
+         (path2fun (! c) (path2fun c v))
+           ≡⟨ invl {t₁} {t₂} {c} {v} ⟩
+         (path2fun id⟷ v) ∎)
+
+
+!!c∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → ! (! c) ∼ c
+!!c∼c {t₁} {t₂} {c} v = 
+  begin (path2fun (! (! c)) v
+           ≡⟨ cong (λ x → path2fun x v) (!! {c = c}) ⟩ 
+         path2fun c v ∎)
+
+assoc◎ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+         c₁ ◎ (c₂ ◎ c₃) ∼ (c₁ ◎ c₂) ◎ c₃
+assoc◎ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} v = 
+  begin (path2fun (c₁ ◎ (c₂ ◎ c₃)) v 
+           ≡⟨ refl ⟩
+         path2fun (c₂ ◎ c₃) (path2fun c₁ v)
+           ≡⟨ refl ⟩
+         path2fun c₃ (path2fun c₂ (path2fun c₁ v))
+           ≡⟨ refl ⟩
+         path2fun c₃ (path2fun (c₁ ◎ c₂) v)
+           ≡⟨ refl ⟩
+         path2fun ((c₁ ◎ c₂) ◎ c₃) v ∎)
+
+-- two spaces are equivalent if there is a path between them; this path
+-- automatically has an inverse which is an equivalence. It is a
+-- quasi-equivalence but for finite types that's the same as an equivalence.
+
+_≃_ : (t₁ t₂ : U) → Set
+t₁ ≃ t₂ = (t₁ ⟷ t₂)
+
+-- Univalence says (t₁ ≃ t₂) ≃ (t₁ ⟷ t₂) but as shown above, we actually have
+-- this by definition instead of up to ≃
+
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+
+{--
+another idea is to look at c and massage it as follows: rewrite every 
+swap+ ; c
+to 
+c' ; swaps ; c''
+
+general start with 
+ id || id || c
+examine c and move anything that's not swap to left. If we get to
+ c' || id || id
+we are done
+if we get to:
+ c' || id || swap+;c
+then we rewrite
+ c';c1 || swaps || c2;c
+and we keep going
+--}
+
+{--
 module Phase₁ where
 
   -- no occurrences of (TIMES (TIMES t₁ t₂) t₃)
@@ -235,10 +541,7 @@ module Phase₁ where
   normalize₁ {PLUS t₁ t₂} (c ◎ c₁) = {!!}
   normalize₁ {PLUS t₁ t₂} (c ⊕ c₁) = {!!} 
   normalize₁ {TIMES t₁ t₂} c = {!!}
-
-------------------------------------------------------------------------------
-------------------------------------------------------------------------------
-------------------------------------------------------------------------------
+--}
 
 {--
 
