@@ -362,6 +362,13 @@ _∼_ {t₁} {t₂} c₁ c₂ = (v : ⟦ t₁ ⟧) → path2fun c₁ v ≡ path2
 c∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ∼ c 
 c∼c _ = refl 
 
+c₁∼c₂→c₂∼c₁ : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → (c₂ ∼ c₁)
+c₁∼c₂→c₂∼c₁ α v = sym (α v) 
+
+c₁∼c₂∼c₃→c₁∼c₃ : {t₁ t₂ : U} {c₁ c₂ c₃ : t₁ ⟷ t₂} → 
+                 (c₁ ∼ c₂) → (c₂ ∼ c₃) → (c₁ ∼ c₃) 
+c₁∼c₂∼c₃→c₁∼c₃ α β v = trans (α v) (β v) 
+
 -- Lemma 2.1.4
 
 c∼c◎id : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ∼ (c ◎ id⟷)
@@ -431,18 +438,24 @@ r = path (swap₊ ◎ id⟷)
 α : q ⇔ r
 α = 2path (c∼c◎id {c = swap₊})
 
--- Each path space is a groupoid; we show that it is a 1groupoid using ≡ at
+-- Each path space is a groupoid; we show that it is a 1groupoid using ∼ at
 -- higher levels
 
 G : (t₁ t₂ : U) → 1Groupoid
 G t₁ t₂ = record
         { set = Path t₁ t₂
         ; _↝_ = _⇔_
-        ; _≈_ = _≡_ 
+        ; _≈_ = λ { {path c₁} {path c₂} (2path α) (2path β) → c₁ ∼ c₂ } 
         ; id = λ { {path c} → 2path (c∼c {c = c}) } 
-        ; _∘_ = {!!} 
-        ; _⁻¹ = {!!} 
-        ; lneutr = {!!} 
+        ; _∘_ = λ { {path c₁} {path c₂} {path c₃} (2path α) (2path β) → 
+                    2path (c₁∼c₂∼c₃→c₁∼c₃ {c₁ = c₁} {c₂ = c₂} {c₃ = c₃} β α ) 
+                  }
+        ; _⁻¹ = λ { {path c₁} {path c₂} (2path α) → 
+                    2path (c₁∼c₂→c₂∼c₁ {c₁ = c₁} {c₂ = c₂} α)
+                  } 
+        ; lneutr = λ { {path c₁} {path c₂} (2path α) → 
+                       {!!} 
+                     } 
         ; rneutr = {!!} 
         ; assoc = {!!} 
         ; equiv = record { refl = {!!} 
