@@ -6,8 +6,8 @@ module Pif where
 -- open import Relation.Nullary.Core using (yes; no)
 -- open import Relation.Nullary.Decidable using (True; toWitness; fromWitness)
 -- open import Relation.Unary using (Decidable)
+-- open import Data.List as L
 
-open import Data.List as L
 open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
 
@@ -15,6 +15,8 @@ open import Data.Empty
 open import Data.Unit
 open import Data.Sum
 open import Data.Product
+
+open import Groupoid
 
 infix  2  _□       
 infixr 2  _⟷⟨_⟩_   
@@ -46,6 +48,7 @@ data U : Set where
 ⟦ PLUS t₁ t₂ ⟧ = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
 ⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
 
+{--
 elems : (t : U) → List ⟦ t ⟧
 elems ZERO = []
 elems ONE = L.[ tt ] 
@@ -54,6 +57,7 @@ elems (TIMES t₁ t₂) = concat
                         (L.map 
                           (λ v₂ → L.map (λ v₁ → (v₁ , v₂)) (elems t₁))
                          (elems t₂))
+--}
 
 BOOL BOOL² : U
 BOOL = PLUS ONE ONE 
@@ -169,9 +173,8 @@ _□ t = id⟷
            ≡⟨ cong₂ _⊗_ (!! {c = c₁}) (!! {c = c₂}) ⟩ 
          c₁ ⊗ c₂ ∎)
 
--- Canonical form of permutations. This is used to decide whether two paths
--- of type t₁ ⟷ t₂ are related by ∼; the answer is yes if they denote the
--- same canonical permutation.
+-- Functional representation of permutations is used to decide whether two
+-- permutations are "the same".
 
 path2fun : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
 path2fun unite₊ (inj₁ ())
@@ -202,12 +205,7 @@ path2fun (c₁ ⊕ c₂) (inj₁ v) = inj₁ (path2fun c₁ v)
 path2fun (c₁ ⊕ c₂) (inj₂ v) = inj₂ (path2fun c₂ v)
 path2fun (c₁ ⊗ c₂) (v₁ , v₂) = (path2fun c₁ v₁ , path2fun c₂ v₂)
 
--- two combinators are the same if they denote the same permutation
-
-_∼_ : {t₁ t₂ : U} → (c₁ c₂ : t₁ ⟷ t₂) → Set
-_∼_ {t₁} {t₂} c₁ c₂ = (v : ⟦ t₁ ⟧) → path2fun c₁ v ≡ path2fun c₂ v
-
--- the inverse of (c : t₁ ⟷ t₂) is (! c)
+-- A few lemmas about functional representations of permutations
 
 invl : {t₁ t₂ : U} {c : t₁ ⟷ t₂} {v : ⟦ t₁ ⟧} → 
        path2fun (! c) (path2fun c v) ≡ v
@@ -331,6 +329,39 @@ invr {TIMES t₁ t₂} {TIMES t₃ t₄} {c = c₁ ⊗ c₂} {(v₁ , v₂)} =
                (invr {t₂} {t₄} {c₂} {v₂}) ⟩ 
          (v₁ , v₂) ∎)
 
+------------------------------------------------------------------------------
+-- Paths as values
+
+-- We started with two kind of types: 
+--   * types t : U which were discrete groupoids
+--   * the type U itself which has a non-trivial path structure
+--
+-- The non-trivial path structure of U induces more types:
+--   * for each pair of types t₁ and t₂ there is a new type (or space) 
+--       (t₁ ⟷ t₂) whose elements are the paths between t₁ and t₂. This 
+--       space has a non-trivial 2path structure. For example, the space 
+--       (BOOL ⟷ BOOL) has as its elements id⟷, not, not ◎ id⟷, etc.
+--       Of course we expect that there is a 2path between not 
+--       and not ◎ id⟷
+--   * the collection of all spaces (t₁ ⟷ t₂) closed under sums and products
+--       itself constitutes a type ΩU. For example, the space (t₁ ⟷ t₂) × (t₃
+--       ⟷ t₄) is related to the space (t₁ × t₃ ⟷ t₂ × t₄).
+
+-- We start with the individual path spaces and show that they are groupoids
+
+data Path (t₁ t₂ : U) : Set where
+  path : (c : t₁ ⟷ t₂) → Path t₁ t₂
+
+-- two combinators are the same if they denote the same permutation
+
+_∼_ : {t₁ t₂ : U} → (c₁ c₂ : t₁ ⟷ t₂) → Set
+_∼_ {t₁} {t₂} c₁ c₂ = (v : ⟦ t₁ ⟧) → path2fun c₁ v ≡ path2fun c₂ v
+
+-- Lemma 2.4.2
+
+c∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ∼ c 
+c∼c _ = refl 
+
 -- Lemma 2.1.4
 
 c∼c◎id : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ∼ (c ◎ id⟷)
@@ -385,6 +416,94 @@ assoc◎ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} v =
            ≡⟨ refl ⟩
          path2fun ((c₁ ◎ c₂) ◎ c₃) v ∎)
 
+-- and in that case there is a 2path between them in the relevant path space
+
+data _⇔_ {t₁ t₂ : U} : Path t₁ t₂ → Path t₁ t₂ → Set where
+  2path : {c₁ c₂ : t₁ ⟷ t₂} → (α : c₁ ∼ c₂) → path c₁ ⇔ path c₂
+
+-- Examples
+
+p q r : Path BOOL BOOL
+p = path id⟷
+q = path swap₊
+r = path (swap₊ ◎ id⟷)
+
+α : q ⇔ r
+α = 2path (c∼c◎id {c = swap₊})
+
+-- Each path space is a groupoid; we show that it is a 1groupoid using ≡ at
+-- higher levels
+
+G : (t₁ t₂ : U) → 1Groupoid
+G t₁ t₂ = record
+        { set = Path t₁ t₂
+        ; _↝_ = _⇔_
+        ; _≈_ = _≡_ 
+        ; id = λ { {path c} → 2path (c∼c {c = c}) } 
+        ; _∘_ = {!!} 
+        ; _⁻¹ = {!!} 
+        ; lneutr = {!!} 
+        ; rneutr = {!!} 
+        ; assoc = {!!} 
+        ; equiv = record { refl = {!!} 
+                         ; sym = {!!} 
+                         ; trans = {!!} 
+                         }
+        ; linv = {!!} 
+        ; rinv = {!!} 
+        ; ∘-resp-≈ = {!!} 
+        }
+
+
+{--
+
+data ΩU : Set where
+  ΩZERO  : ΩU              -- empty set of paths
+  ΩONE   : ΩU              -- a trivial path
+  ΩPLUS  : ΩU → ΩU → ΩU      -- disjoint union of paths
+  ΩTIMES : ΩU → ΩU → ΩU      -- pairs of paths
+  PATH  : (t₁ t₂ : U) → ΩU -- level 0 paths between values
+
+-- values
+
+Ω⟦_⟧ : ΩU → Set
+Ω⟦ ΩZERO ⟧             = ⊥
+Ω⟦ ΩONE ⟧              = ⊤
+Ω⟦ ΩPLUS t₁ t₂ ⟧       = Ω⟦ t₁ ⟧ ⊎ Ω⟦ t₂ ⟧
+Ω⟦ ΩTIMES t₁ t₂ ⟧      = Ω⟦ t₁ ⟧ × Ω⟦ t₂ ⟧
+Ω⟦ PATH t₁ t₂ ⟧ = Path t₁ t₂
+
+-- two combinators are the same if they denote the same permutation
+
+
+-- 2paths
+
+data _⇔_ : ΩU → ΩU → Set where
+  unite₊  : {t : ΩU} → ΩPLUS ΩZERO t ⇔ t
+  uniti₊  : {t : ΩU} → t ⇔ ΩPLUS ΩZERO t
+  swap₊   : {t₁ t₂ : ΩU} → ΩPLUS t₁ t₂ ⇔ ΩPLUS t₂ t₁
+  assocl₊ : {t₁ t₂ t₃ : ΩU} → ΩPLUS t₁ (ΩPLUS t₂ t₃) ⇔ ΩPLUS (ΩPLUS t₁ t₂) t₃
+  assocr₊ : {t₁ t₂ t₃ : ΩU} → ΩPLUS (ΩPLUS t₁ t₂) t₃ ⇔ ΩPLUS t₁ (ΩPLUS t₂ t₃)
+  unite⋆  : {t : ΩU} → ΩTIMES ΩONE t ⇔ t
+  uniti⋆  : {t : ΩU} → t ⇔ ΩTIMES ΩONE t
+  swap⋆   : {t₁ t₂ : ΩU} → ΩTIMES t₁ t₂ ⇔ ΩTIMES t₂ t₁
+  assocl⋆ : {t₁ t₂ t₃ : ΩU} → ΩTIMES t₁ (ΩTIMES t₂ t₃) ⇔ ΩTIMES (ΩTIMES t₁ t₂) t₃
+  assocr⋆ : {t₁ t₂ t₃ : ΩU} → ΩTIMES (ΩTIMES t₁ t₂) t₃ ⇔ ΩTIMES t₁ (ΩTIMES t₂ t₃)
+  distz   : {t : ΩU} → ΩTIMES ΩZERO t ⇔ ΩZERO
+  factorz : {t : ΩU} → ΩZERO ⇔ ΩTIMES ΩZERO t
+  dist    : {t₁ t₂ t₃ : ΩU} → 
+            ΩTIMES (ΩPLUS t₁ t₂) t₃ ⇔ ΩPLUS (ΩTIMES t₁ t₃) (ΩTIMES t₂ t₃) 
+  factor  : {t₁ t₂ t₃ : ΩU} → 
+            ΩPLUS (ΩTIMES t₁ t₃) (ΩTIMES t₂ t₃) ⇔ ΩTIMES (ΩPLUS t₁ t₂) t₃
+  id⇔  : {t : ΩU} → t ⇔ t
+  _◎_  : {t₁ t₂ t₃ : ΩU} → (t₁ ⇔ t₂) → (t₂ ⇔ t₃) → (t₁ ⇔ t₃)
+  _⊕_  : {t₁ t₂ t₃ t₄ : ΩU} → 
+         (t₁ ⇔ t₃) → (t₂ ⇔ t₄) → (ΩPLUS t₁ t₂ ⇔ ΩPLUS t₃ t₄)
+  _⊗_  : {t₁ t₂ t₃ t₄ : ΩU} → 
+         (t₁ ⇔ t₃) → (t₂ ⇔ t₄) → (ΩTIMES t₁ t₂ ⇔ ΩTIMES t₃ t₄)
+  _∼⇔_ : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → 
+         PATH t₁ t₂ ⇔ PATH t₁ t₂
+
 -- two spaces are equivalent if there is a path between them; this path
 -- automatically has an inverse which is an equivalence. It is a
 -- quasi-equivalence but for finite types that's the same as an equivalence.
@@ -394,6 +513,8 @@ t₁ ≃ t₂ = (t₁ ⟷ t₂)
 
 -- Univalence says (t₁ ≃ t₂) ≃ (t₁ ⟷ t₂) but as shown above, we actually have
 -- this by definition instead of up to ≃
+
+--}
 
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
