@@ -23,6 +23,7 @@ infixr 2  _⟷⟨_⟩_
 -- infix  4  _≃_  
 infix  4  _∼_  
 infixr 10 _◎_
+infixr 10 _●_
 infix 30 _⟷_
 
 ------------------------------------------------------------------------------
@@ -354,49 +355,58 @@ data Path (t₁ t₂ : U) : Set where
 
 -- two combinators are the same if they denote the same permutation
 
-_∼_ : {t₁ t₂ : U} → (c₁ c₂ : t₁ ⟷ t₂) → Set
-_∼_ {t₁} {t₂} c₁ c₂ = (v : ⟦ t₁ ⟧) → path2fun c₁ v ≡ path2fun c₂ v
+_∼_ : {t₁ t₂ : U} → (p q : Path t₁ t₂) → Set
+_∼_ {t₁} {t₂} (path c₁) (path c₂) = 
+  (v : ⟦ t₁ ⟧) → path2fun c₁ v ≡ path2fun c₂ v
 
 -- Lemma 2.4.2
 
-c∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ∼ c 
-c∼c _ = refl 
+p∼p : {t₁ t₂ : U} {p : Path t₁ t₂} → p ∼ p
+p∼p {p = path c} _ = refl
 
-c₁∼c₂→c₂∼c₁ : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → (c₂ ∼ c₁)
-c₁∼c₂→c₂∼c₁ α v = sym (α v) 
+p∼q→q∼p : {t₁ t₂ : U} {p q : Path t₁ t₂} → (p ∼ q) → (q ∼ p)
+p∼q→q∼p {p = path c₁} {q = path c₂} α v = sym (α v) 
 
-c₁∼c₂∼c₃→c₁∼c₃ : {t₁ t₂ : U} {c₁ c₂ c₃ : t₁ ⟷ t₂} → 
-                 (c₁ ∼ c₂) → (c₂ ∼ c₃) → (c₁ ∼ c₃) 
-c₁∼c₂∼c₃→c₁∼c₃ α β v = trans (α v) (β v) 
+p∼q∼r→p∼r : {t₁ t₂ : U} {p q r : Path t₁ t₂} → 
+                 (p ∼ q) → (q ∼ r) → (p ∼ r) 
+p∼q∼r→p∼r {p = path c₁} {q = path c₂} {r = path c₃} α β v = trans (α v) (β v) 
+
+-- lift inverses and compositions to paths
+
+inv : {t₁ t₂ : U} → Path t₁ t₂ → Path t₂ t₁
+inv (path c) = path (! c)
+
+_●_ : {t₁ t₂ t₃ : U} → Path t₁ t₂ → Path t₂ t₃ → Path t₁ t₃
+path c₁ ● path c₂ = path (c₁ ◎ c₂)
 
 -- Lemma 2.1.4
 
-c∼c◎id : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ∼ (c ◎ id⟷)
-c∼c◎id {t₁} {t₂} {c} v = 
+p∼p◎id : {t₁ t₂ : U} {p : Path t₁ t₂} → p ∼ p ● path id⟷
+p∼p◎id {t₁} {t₂} {path c} v = 
   (begin (path2fun c v)
            ≡⟨ refl ⟩
          (path2fun c (path2fun id⟷ v))
            ≡⟨ refl ⟩
          (path2fun (c ◎ id⟷) v) ∎)
 
-c∼id◎c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ∼ (id⟷ ◎ c)
-c∼id◎c {t₁} {t₂} {c} v = 
+p∼id◎p : {t₁ t₂ : U} {p : Path t₁ t₂} → p ∼ path id⟷ ● p
+p∼id◎p {t₁} {t₂} {path c} v = 
   (begin (path2fun c v)
            ≡⟨ refl ⟩
          (path2fun id⟷ (path2fun c v))
            ≡⟨ refl ⟩
          (path2fun (id⟷ ◎ c) v) ∎)
 
-!c◎c∼id : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (! c) ◎ c ∼ id⟷
-!c◎c∼id {t₁} {t₂} {c} v = 
+!p◎p∼id : {t₁ t₂ : U} {p : Path t₁ t₂} → (inv p) ● p ∼ path id⟷
+!p◎p∼id {t₁} {t₂} {path c} v = 
   (begin (path2fun ((! c) ◎ c) v)
            ≡⟨ refl ⟩
          (path2fun c (path2fun (! c) v))
            ≡⟨ invr {t₁} {t₂} {c} {v} ⟩
          (path2fun id⟷ v) ∎)
 
-c◎!c∼id : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ (! c) ∼ id⟷
-c◎!c∼id {t₁} {t₂} {c} v = 
+p◎!p∼id : {t₁ t₂ : U} {p : Path t₁ t₂} → p ● (inv p) ∼ path id⟷
+p◎!p∼id {t₁} {t₂} {path c} v = 
   (begin (path2fun (c ◎ (! c)) v)
            ≡⟨ refl ⟩
          (path2fun (! c) (path2fun c v))
@@ -404,15 +414,15 @@ c◎!c∼id {t₁} {t₂} {c} v =
          (path2fun id⟷ v) ∎)
 
 
-!!c∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → ! (! c) ∼ c
-!!c∼c {t₁} {t₂} {c} v = 
+!!p∼p : {t₁ t₂ : U} {p : Path t₁ t₂} → inv (inv p) ∼ p
+!!p∼p {t₁} {t₂} {path c} v = 
   begin (path2fun (! (! c)) v
            ≡⟨ cong (λ x → path2fun x v) (!! {c = c}) ⟩ 
          path2fun c v ∎)
 
-assoc◎ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
-         c₁ ◎ (c₂ ◎ c₃) ∼ (c₁ ◎ c₂) ◎ c₃
-assoc◎ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} v = 
+assoc◎ : {t₁ t₂ t₃ t₄ : U} {p : Path t₁ t₂} {q : Path t₂ t₃} {r : Path t₃ t₄} → 
+         p ● (q ● r) ∼ (p ● q) ● r
+assoc◎ {t₁} {t₂} {t₃} {t₄} {path c₁} {path c₂} {path c₃} v = 
   begin (path2fun (c₁ ◎ (c₂ ◎ c₃)) v 
            ≡⟨ refl ⟩
          path2fun (c₂ ◎ c₃) (path2fun c₁ v)
@@ -423,10 +433,23 @@ assoc◎ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} v =
            ≡⟨ refl ⟩
          path2fun ((c₁ ◎ c₂) ◎ c₃) v ∎)
 
+resp◎ : {t₁ t₂ t₃ : U} {p q : Path t₁ t₂} {r s : Path t₂ t₃} → 
+        p ∼ q → r ∼ s → (p ● r) ∼ (q ● s)
+resp◎ {t₁} {t₂} {t₃} {path c₁} {path c₂} {path c₃} {path c₄} α β v = 
+  begin (path2fun (c₁ ◎ c₃) v 
+           ≡⟨ refl ⟩
+         path2fun c₃ (path2fun c₁ v)
+           ≡⟨ cong (λ x → path2fun c₃ x) (α  v) ⟩
+         path2fun c₃ (path2fun c₂ v)
+           ≡⟨ β (path2fun c₂ v) ⟩ 
+         path2fun c₄ (path2fun c₂ v)
+           ≡⟨ refl ⟩ 
+         path2fun (c₂ ◎ c₄) v ∎)
+
 -- and in that case there is a 2path between them in the relevant path space
 
 data _⇔_ {t₁ t₂ : U} : Path t₁ t₂ → Path t₁ t₂ → Set where
-  2path : {c₁ c₂ : t₁ ⟷ t₂} → (α : c₁ ∼ c₂) → path c₁ ⇔ path c₂
+  2path : {p q : Path t₁ t₂} → (α : p ∼ q) → p ⇔ q
 
 -- Examples
 
@@ -436,41 +459,37 @@ q = path swap₊
 r = path (swap₊ ◎ id⟷)
 
 α : q ⇔ r
-α = 2path (c∼c◎id {c = swap₊})
+α = 2path (p∼p◎id {p = path swap₊})
 
--- Each path space is a groupoid; we show that it is a 1groupoid collapsing
--- all 2 paths to be equal
+-- The equivalence of paths makes U a 1groupoid: the points are type t : U;
+-- the 1paths are ⟷; and the 2paths between them are ⇔
 
-_obs_ : {t₁ t₂ : U} {c₁ c₂ : Path t₁ t₂} → (c₁ ⇔ c₂) → (c₁ ⇔ c₂) → Set
-α obs β = ⊤ 
-
-G : (t₁ t₂ : U) → 1Groupoid
-G t₁ t₂ = record
-        { set = Path t₁ t₂
-        ; _↝_ = _⇔_
-        ; _≈_ = _obs_ 
-        ; id = λ { {path c} → 2path (c∼c {c = c}) } 
-        ; _∘_ = λ { {path c₁} {path c₂} {path c₃} (2path α) (2path β) → 
-                    2path (c₁∼c₂∼c₃→c₁∼c₃ {c₁ = c₁} {c₂ = c₂} {c₃ = c₃} β α ) 
-                  }
-        ; _⁻¹ = λ { {path c₁} {path c₂} (2path α) → 
-                    2path (c₁∼c₂→c₂∼c₁ {c₁ = c₁} {c₂ = c₂} α)
-                  } 
-        ; lneutr = λ _ → tt
-        ; rneutr = λ _ → tt
-        ; assoc = λ _ _ _ → tt
-        ; equiv = record { refl = tt
-                         ; sym = λ _ → tt
-                         ; trans = λ _ _ → tt
-                         }
-        ; linv = λ _ → tt 
-        ; rinv = λ _ → tt 
-        ; ∘-resp-≈ = λ _ _ → tt 
+G : 1Groupoid
+G = record
+        { set = U
+        ; _↝_ = Path
+        ; _≈_ = _⇔_ 
+        ; id  = path id⟷
+        ; _∘_ = λ q p → p ● q
+        ; _⁻¹ = inv
+        ; lneutr = λ p → 2path (p∼q→q∼p p∼p◎id) 
+        ; rneutr = λ p → 2path (p∼q→q∼p p∼id◎p)
+        ; assoc  = λ r q p → 2path assoc◎
+        ; equiv = record { 
+            refl  = 2path p∼p
+          ; sym   = λ { (2path α) → 2path (p∼q→q∼p α) }
+          ; trans = λ { (2path α) (2path β) → 2path (p∼q∼r→p∼r α β) }
+          }
+        ; linv = λ p → 2path p◎!p∼id
+        ; rinv = λ p → 2path !p◎p∼id
+        ; ∘-resp-≈ = λ { (2path β) (2path α) → 2path (resp◎ α β) }
         }
+
+------------------------------------------------------------------------------
+
 
 
 {--
-
 data ΩU : Set where
   ΩZERO  : ΩU              -- empty set of paths
   ΩONE   : ΩU              -- a trivial path
