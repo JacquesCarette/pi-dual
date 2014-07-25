@@ -438,14 +438,17 @@ r = path (swap₊ ◎ id⟷)
 α : q ⇔ r
 α = 2path (c∼c◎id {c = swap₊})
 
--- Each path space is a groupoid; we show that it is a 1groupoid using ∼ at
--- higher levels
+-- Each path space is a groupoid; we show that it is a 1groupoid collapsing
+-- all 2 paths to be equal
+
+_obs_ : {t₁ t₂ : U} {c₁ c₂ : Path t₁ t₂} → (c₁ ⇔ c₂) → (c₁ ⇔ c₂) → Set
+α obs β = ⊤ 
 
 G : (t₁ t₂ : U) → 1Groupoid
 G t₁ t₂ = record
         { set = Path t₁ t₂
         ; _↝_ = _⇔_
-        ; _≈_ = λ { {path c₁} {path c₂} (2path α) (2path β) → c₁ ∼ c₂ } 
+        ; _≈_ = _obs_ 
         ; id = λ { {path c} → 2path (c∼c {c = c}) } 
         ; _∘_ = λ { {path c₁} {path c₂} {path c₃} (2path α) (2path β) → 
                     2path (c₁∼c₂∼c₃→c₁∼c₃ {c₁ = c₁} {c₂ = c₂} {c₃ = c₃} β α ) 
@@ -453,18 +456,16 @@ G t₁ t₂ = record
         ; _⁻¹ = λ { {path c₁} {path c₂} (2path α) → 
                     2path (c₁∼c₂→c₂∼c₁ {c₁ = c₁} {c₂ = c₂} α)
                   } 
-        ; lneutr = λ { {path c₁} {path c₂} (2path α) → 
-                       {!!} 
-                     } 
-        ; rneutr = {!!} 
-        ; assoc = {!!} 
-        ; equiv = record { refl = {!!} 
-                         ; sym = {!!} 
-                         ; trans = {!!} 
+        ; lneutr = λ _ → tt
+        ; rneutr = λ _ → tt
+        ; assoc = λ _ _ _ → tt
+        ; equiv = record { refl = tt
+                         ; sym = λ _ → tt
+                         ; trans = λ _ _ → tt
                          }
-        ; linv = {!!} 
-        ; rinv = {!!} 
-        ; ∘-resp-≈ = {!!} 
+        ; linv = λ _ → tt 
+        ; rinv = λ _ → tt 
+        ; ∘-resp-≈ = λ _ _ → tt 
         }
 
 
