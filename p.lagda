@@ -168,20 +168,19 @@ $\displaystyle
 
 \title{A Computational Reconstruction of \\ 
   Homotopy Type Theory for Finite Types}
-\authorinfo{}{}{}
+\authorinfo{Jacques Carette}{McMaster University}{carette@mcmaster.ca}
+\authorinfo{Amr Sabry}{Indiana University}{sabry@indiana.edu}
 \maketitle
 
 \begin{abstract}
-Homotopy type theory (HoTT) relates some aspects of topology, algebra,
-%% geometry, physics, 
-logic, and type theory, in a unique novel way that
-promises a new and foundational perspective on mathematics and
-computation. The heart of HoTT is the \emph{univalence axiom}, which
-informally states that isomorphic structures can be identified. One of the
-major open problems in HoTT is a computational interpretation of this axiom.
-We propose that, at least for the special case of finite types, reversible
-computation via type isomorphisms \emph{is} the computational interpretation
-of univalence.
+Homotopy type theory (HoTT) relates some aspects of topology, algebra, logic,
+and type theory, in a unique novel way that promises a new and foundational
+perspective on mathematics and computation. The heart of HoTT is the
+\emph{univalence axiom}, which informally states that isomorphic structures
+can be identified. One of the major open problems in HoTT is a computational
+interpretation of this axiom.  We propose that, at least for the special case
+of finite types, reversible computation via type isomorphisms \emph{is} the
+computational interpretation of univalence.
 \end{abstract}
 
 \AgdaHide{
@@ -314,24 +313,23 @@ elements \AgdaBound{p} and \AgdaBound{q} of some type \AgdaBound{x}
 about the elements of type \AgdaBound{p} \AgdaDatatype{≡} \AgdaBound{q}. Or,
 in more familiar terms, given two proofs of some proposition $P$, are these
 two proofs themselves ``equal.'' In some situations, the only interesting
-property of proofs is their existence. This therefore suggests that the exact
-sequence of logical steps in the proof is irrelevant, and ultimately that all
+property of proofs is their existence. In these situations, the exact
+sequence of logical steps in the proof is irrelevant, and ultimately all
 proofs of the same proposition are equivalent. This is however neither
 necessary nor desirable. A twist that dates back to a paper by
 \citet{Hofmann96thegroupoid} is that proofs actually possess a structure of
-great combinatorial complexity. 
-\jc{Surely proof theory predates this by decades?  Lukasiewicz and Gentzen?}
-HoTT builds on this idea by interpreting
-types as topological spaces or weak $\infty$-groupoids, and interpreting
-identities between elements of a type
+great combinatorial complexity.  \jc{Surely proof theory predates this by
+  decades?  Lukasiewicz and Gentzen?}  HoTT builds on this idea by
+interpreting types as topological spaces or weak $\infty$-groupoids, and
+interpreting identities between elements of a type
 \AgdaBound{x}~\AgdaDatatype{≡}~\AgdaBound{y} as \emph{paths} from the point
 \AgdaBound{x} to the point \AgdaBound{y}. If \AgdaBound{x} and \AgdaBound{y}
 are themselves paths, the elements of
 \AgdaBound{x}~\AgdaDatatype{≡}~\AgdaBound{y} become paths between paths
 (2-paths), or homotopies in topological language. To be explicit, we will
 often refer to types as \emph{spaces} which consist of \emph{points}, paths,
-2-paths, etc. and write $\AgdaDatatype{≡}_\AgdaBound{A}$ for the type of paths
-in space \AgdaBound{A}.
+2-paths, etc. and write $\AgdaDatatype{≡}_\AgdaBound{A}$ for the type of
+paths in space \AgdaBound{A}.
 
 \jc{We know that once we have polymorphism, we have no interpretations in 
 Set anymore -- should perhaps put more warnings in the next paragraph?}
@@ -521,26 +519,29 @@ on type isomorphisms~\cite{James:2012:IE:2103656.2103667,rc2011,rc2012}.
 %%%%%%%%%%%%%%%%%%%%%%
 \subsection{HoTT with Isomorphisms} 
 
-To summarize, for every function \AgdaBound{f} \AgdaSymbol{:}
-\AgdaPrimitiveType{Bool} \AgdaSymbol{→} \AgdaPrimitiveType{Bool} with inverse
-\AgdaBound{g} \AgdaSymbol{:} \AgdaPrimitiveType{Bool} \AgdaSymbol{→}
-\AgdaPrimitiveType{Bool}, we have an equivalence \AgdaPrimitiveType{Bool}
+As illustrated above in the case of type \AgdaPrimitiveType{Bool}, we have
+that for every function \AgdaBound{f} \AgdaSymbol{:} \AgdaPrimitiveType{Bool}
+\AgdaSymbol{→} \AgdaPrimitiveType{Bool} with inverse \AgdaBound{g}
+\AgdaSymbol{:} \AgdaPrimitiveType{Bool} \AgdaSymbol{→}
+\AgdaPrimitiveType{Bool}, there is an equivalence \AgdaPrimitiveType{Bool}
 \AgdaSymbol{≃} \AgdaPrimitiveType{Bool}. By univalence, this equivalence
 gives us a path between \AgdaPrimitiveType{Bool} and
-\AgdaPrimitiveType{Bool}.
-
-The reversible functions on \AgdaPrimitiveType{Bool} are \AgdaBound{id} and
-\AgdaBound{not}. These functions induce two paths \AgdaFunction{idpath} and
-\AgdaFunction{notpath} in the space \AgdaPrimitiveType{Bool} \AgdaSymbol{≡}
+\AgdaPrimitiveType{Bool}. The reversible functions on
+\AgdaPrimitiveType{Bool} are \AgdaBound{id} and \AgdaBound{not}. These
+functions induce two paths \AgdaFunction{idpath} and \AgdaFunction{notpath}
+in the space \AgdaPrimitiveType{Bool} \AgdaSymbol{≡}
 \AgdaPrimitiveType{Bool}. Viewing \AgdaPrimitiveType{Bool} as the coproduct
 \AgdaPrimitiveType{⊤} \AgdaSymbol{⊎} \AgdaPrimitiveType{⊤}, i.e., as the
 disjoint union of two copies of the unit type, it is possible to say more
 about the structure of the paths \AgdaFunction{idpath} and
-\AgdaFunction{notpath}. 
+\AgdaFunction{notpath}.
 
-(true ≡ true) ≃ (tt ≡ tt)
-(false ≡ false) ≃ (tt ≡ tt)
-(true ≡ false) ≃ ⊥
+\begin{code}
+ttp =  (true   ≡  true)   ≃  (tt ≡ tt)
+ffp =  (false  ≡  false)  ≃  (tt ≡ tt)
+tfp =  (true   ≡  false)  ≃  ⊥
+ftp =  (false  ≡  true)   ≃  ⊥
+\end{code}
 
 So the way to think about notpath is not that it identifies true and
 false. This would be bad. What notpath is doing is flipping the space Bool so
