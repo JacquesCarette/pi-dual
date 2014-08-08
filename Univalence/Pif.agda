@@ -465,9 +465,6 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
             {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
             (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊗ c₂) ⇔ (c₃ ⊗ c₄)
 
--- also need (unite ; c1 x c2) -> c2 etc.
--- need proof of completeness!!!
-
 2! : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₂ ⇔ c₁)
 2! assoc◎l = assoc◎r
 2! assoc◎r = assoc◎l
@@ -495,6 +492,16 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
 
 n : ((neg₁ ◎ neg₁) ◎ neg₁) ⇔ (neg₁ ◎ (neg₁ ◎ neg₁))
 n = assoc◎r
+
+-- do example
+-- neg₅ = uniti⋆ ◎ swap⋆ ◎ (swap₊ ⊗ id⟷) ◎ swap⋆ ◎ unite⋆
+-- uniti* ◎ (id ⊗ swap+) ◎ swap* ◎ swap* ◎ unite*
+-- uniti* ◎ (id ⊗ swap+) ◎ unite*
+-- swap+ ◎ uniti* ◎ unite*
+-- swap+
+-- neg₁ = swap₊
+
+-- are we missing anything? proof of completeness???
 
 G' : 1Groupoid
 G' = record
