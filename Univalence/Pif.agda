@@ -448,6 +448,7 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
   resp⊗⇔  : {t₁ t₂ t₃ t₄ : U} 
             {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
             (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊗ c₂) ⇔ (c₃ ⊗ c₄)
+--  s
 
 -- also need (unite ; c1 x c2) -> c2 etc.
 -- need proof of completeness!!!
