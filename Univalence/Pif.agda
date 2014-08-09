@@ -423,16 +423,6 @@ G = record
 
 infix  30 _⇔_
 
-{-- 
-Normal form:
-- use assoc◎l to associate all compositions to the left
-- replace all (c ◎ ! c) or (! c ◎ c) by id⟷ 
-- get rid of all occurrences of id⟷ to the left and right of ◎ 
-- move all occurrences of unite₊ to the right
-- move all occurrneces of uniti₊ to the left
-
---}
-
 data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set where
   assoc◎l : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
             (c₁ ◎ (c₂ ◎ c₃)) ⇔ ((c₁ ◎ c₂) ◎ c₃)
@@ -446,6 +436,10 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
             (c₁ ⊗ (c₂ ⊗ c₃)) ⇔ (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆)
   assoc⊗r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
             (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆) ⇔ (c₁ ⊗ (c₂ ⊗ c₃))
+  dist⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+           ((c₁ ⊕ c₂) ⊗ c₃) ⇔ (dist ◎ ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃)) ◎ factor)
+  factor⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+           (dist ◎ ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃)) ◎ factor) ⇔ ((c₁ ⊕ c₂) ⊗ c₃)
   idl◎l   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (id⟷ ◎ c) ⇔ c
   idl◎r   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ (id⟷ ◎ c) 
   idr◎l   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (c ◎ id⟷) ⇔ c
@@ -511,6 +505,39 @@ _ ⇔⟨ α ⟩ β = trans⇔ α β
 _▤ : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (c ⇔ c)
 _▤ c = id⇔
 
+-- Use ⇔ to normalize a path
+
+{-# NO_TERMINATION_CHECK #-}
+normalize : {t₁ t₂ : U} → (c₁ : t₁ ⟷ t₂) → Σ[ c₂ ∈ t₁ ⟷ t₂ ] (c₁ ⇔ c₂)
+normalize unite₊     = (unite₊  , id⇔)
+normalize uniti₊     = (uniti₊  , id⇔)
+normalize swap₊      = (swap₊   , id⇔)
+normalize assocl₊    = (assocl₊ , id⇔)
+normalize assocr₊    = (assocr₊ , id⇔)
+normalize unite⋆     = (unite⋆  , id⇔)
+normalize uniti⋆     = (uniti⋆  , id⇔)
+normalize swap⋆      = (swap⋆   , id⇔)
+normalize assocl⋆    = (assocl⋆ , id⇔)
+normalize assocr⋆    = (assocr⋆ , id⇔)
+normalize distz      = (distz   , id⇔)
+normalize factorz    = (factorz , id⇔)
+normalize dist       = (dist    , id⇔)
+normalize factor     = (factor  , id⇔)
+normalize id⟷        = (id⟷   , id⇔)
+normalize (c₁ ◎ c₂)  with normalize c₁ | normalize c₂
+... | (c₁' , α) | (c₂' , β) = {!!} 
+normalize (c₁ ⊕ c₂)  with normalize c₁ | normalize c₂
+... | (c₁' , α) | (c₂₁ ⊕ c₂₂ , β) = 
+  (assocl₊ ◎ ((c₁' ⊕ c₂₁) ⊕ c₂₂) ◎ assocr₊ , trans⇔ (resp⊕⇔ α β) assoc⊕l)
+... | (c₁' , α) | (c₂' , β)       = (c₁' ⊕ c₂' , resp⊕⇔ α β)
+normalize (c₁ ⊗ c₂)  with normalize c₁ | normalize c₂
+... | (c₁₁ ⊕ c₁₂ , α) | (c₂' , β) = 
+  (dist ◎ ((c₁₁ ⊗ c₂') ⊕ (c₁₂ ⊗ c₂')) ◎ factor , 
+   trans⇔ (resp⊗⇔ α β) dist⇔)
+... | (c₁' , α) | (c₂₁ ⊗ c₂₂ , β) = 
+  (assocl⋆ ◎ ((c₁' ⊗ c₂₁) ⊗ c₂₂) ◎ assocr⋆ , trans⇔ (resp⊗⇔ α β) assoc⊗l)
+... | (c₁' , α) | (c₂' , β) = (c₁' ⊗ c₂' , resp⊗⇔ α β)
+
 -- Inverses for 2paths
 
 2! : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₂ ⇔ c₁)
@@ -520,6 +547,8 @@ _▤ c = id⇔
 2! assoc⊕r = assoc⊕l
 2! assoc⊗l = assoc⊗r
 2! assoc⊗r = assoc⊗l
+2! dist⇔ = factor⇔ 
+2! factor⇔ = dist⇔
 2! idl◎l = idl◎r
 2! idl◎r = idl◎l
 2! idr◎l = idr◎r
