@@ -423,11 +423,29 @@ G = record
 
 infix  30 _⇔_
 
+{-- 
+Normal form:
+- use assoc◎l to associate all compositions to the left
+- replace all (c ◎ ! c) or (! c ◎ c) by id⟷ 
+- get rid of all occurrences of id⟷ to the left and right of ◎ 
+- move all occurrences of unite₊ to the right
+- move all occurrneces of uniti₊ to the left
+
+--}
+
 data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set where
   assoc◎l : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
             (c₁ ◎ (c₂ ◎ c₃)) ⇔ ((c₁ ◎ c₂) ◎ c₃)
   assoc◎r : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
             ((c₁ ◎ c₂) ◎ c₃) ⇔ (c₁ ◎ (c₂ ◎ c₃))
+  assoc⊕l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+            (c₁ ⊕ (c₂ ⊕ c₃)) ⇔ (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊)
+  assoc⊕r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+            (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊) ⇔ (c₁ ⊕ (c₂ ⊕ c₃))
+  assoc⊗l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+            (c₁ ⊗ (c₂ ⊗ c₃)) ⇔ (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆)
+  assoc⊗r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+            (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆) ⇔ (c₁ ⊗ (c₂ ⊗ c₃))
   idl◎l   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (id⟷ ◎ c) ⇔ c
   idl◎r   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ (id⟷ ◎ c) 
   idr◎l   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (c ◎ id⟷) ⇔ c
@@ -436,22 +454,38 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
   linv◎r  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ⇔ (c ◎ ! c) 
   rinv◎l  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (! c ◎ c) ⇔ id⟷
   rinv◎r  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ⇔ (! c ◎ c) 
+  unitel₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
+             (unite₊ ◎ c₂) ⇔ ((c₁ ⊕ c₂) ◎ unite₊)
+  uniter₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
+             ((c₁ ⊕ c₂) ◎ unite₊) ⇔ (unite₊ ◎ c₂)
   unitil₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
             (uniti₊ ◎ (c₁ ⊕ c₂)) ⇔ (c₂ ◎ uniti₊)
   unitir₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
             (c₂ ◎ uniti₊) ⇔ (uniti₊ ◎ (c₁ ⊕ c₂))
+  unitial₊⇔ : {t₁ t₂ : U} → (uniti₊ {PLUS t₁ t₂} ◎ assocl₊) ⇔ (uniti₊ ⊕ id⟷)
+  unitiar₊⇔ : {t₁ t₂ : U} → (uniti₊ {t₁} ⊕ id⟷ {t₂}) ⇔ (uniti₊ ◎ assocl₊)
   swapl₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
             (swap₊ ◎ (c₁ ⊕ c₂)) ⇔ ((c₂ ⊕ c₁) ◎ swap₊)
   swapr₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
            ((c₂ ⊕ c₁) ◎ swap₊) ⇔ (swap₊ ◎ (c₁ ⊕ c₂))
+  unitel⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
+             (unite⋆ ◎ c₂) ⇔ ((c₁ ⊗ c₂) ◎ unite⋆)
+  uniter⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
+             ((c₁ ⊗ c₂) ◎ unite⋆) ⇔ (unite⋆ ◎ c₂)
   unitil⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
             (uniti⋆ ◎ (c₁ ⊗ c₂)) ⇔ (c₂ ◎ uniti⋆)
   unitir⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
             (c₂ ◎ uniti⋆) ⇔ (uniti⋆ ◎ (c₁ ⊗ c₂))
+  unitial⋆⇔ : {t₁ t₂ : U} → (uniti⋆ {TIMES t₁ t₂} ◎ assocl⋆) ⇔ (uniti⋆ ⊗ id⟷)
+  unitiar⋆⇔ : {t₁ t₂ : U} → (uniti⋆ {t₁} ⊗ id⟷ {t₂}) ⇔ (uniti⋆ ◎ assocl⋆)
   swapl⋆⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
             (swap⋆ ◎ (c₁ ⊗ c₂)) ⇔ ((c₂ ⊗ c₁) ◎ swap⋆)
   swapr⋆⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
            ((c₂ ⊗ c₁) ◎ swap⋆) ⇔ (swap⋆ ◎ (c₁ ⊗ c₂))
+  swapfl⋆⇔ : {t₁ t₂ t₃ : U} → 
+            (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor) ⇔ (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷))
+  swapfr⋆⇔ : {t₁ t₂ t₃ : U} → 
+            (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷)) ⇔ (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor)
   id⇔     : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ c
   trans⇔  : {t₁ t₂ : U} {c₁ c₂ c₃ : t₁ ⟷ t₂} → 
             (c₁ ⇔ c₂) → (c₂ ⇔ c₃) → (c₁ ⇔ c₃)
@@ -482,6 +516,10 @@ _▤ c = id⇔
 2! : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₂ ⇔ c₁)
 2! assoc◎l = assoc◎r
 2! assoc◎r = assoc◎l
+2! assoc⊕l = assoc⊕r
+2! assoc⊕r = assoc⊕l
+2! assoc⊗l = assoc⊗r
+2! assoc⊗r = assoc⊗l
 2! idl◎l = idl◎r
 2! idl◎r = idl◎l
 2! idr◎l = idr◎r
@@ -490,14 +528,24 @@ _▤ c = id⇔
 2! linv◎r = linv◎l
 2! rinv◎l = rinv◎r
 2! rinv◎r = rinv◎l
+2! unitel₊⇔ = uniter₊⇔
+2! uniter₊⇔ = unitel₊⇔
 2! unitil₊⇔ = unitir₊⇔
 2! unitir₊⇔ = unitil₊⇔
 2! swapl₊⇔ = swapr₊⇔
 2! swapr₊⇔ = swapl₊⇔
+2! unitial₊⇔ = unitiar₊⇔ 
+2! unitiar₊⇔ = unitial₊⇔ 
+2! unitel⋆⇔ = uniter⋆⇔
+2! uniter⋆⇔ = unitel⋆⇔
 2! unitil⋆⇔ = unitir⋆⇔
 2! unitir⋆⇔ = unitil⋆⇔
+2! unitial⋆⇔ = unitiar⋆⇔ 
+2! unitiar⋆⇔ = unitial⋆⇔ 
 2! swapl⋆⇔ = swapr⋆⇔
 2! swapr⋆⇔ = swapl⋆⇔
+2! swapfl⋆⇔ = swapfr⋆⇔
+2! swapfr⋆⇔ = swapfl⋆⇔
 2! id⇔ = id⇔
 2! (trans⇔ α β) = trans⇔ (2! β) (2! α)
 2! (resp◎⇔ α β) = resp◎⇔ (2! α) (2! β)
