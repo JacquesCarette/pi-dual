@@ -505,39 +505,6 @@ _ ⇔⟨ α ⟩ β = trans⇔ α β
 _▤ : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (c ⇔ c)
 _▤ c = id⇔
 
--- Use ⇔ to normalize a path
-
-{-# NO_TERMINATION_CHECK #-}
-normalize : {t₁ t₂ : U} → (c₁ : t₁ ⟷ t₂) → Σ[ c₂ ∈ t₁ ⟷ t₂ ] (c₁ ⇔ c₂)
-normalize unite₊     = (unite₊  , id⇔)
-normalize uniti₊     = (uniti₊  , id⇔)
-normalize swap₊      = (swap₊   , id⇔)
-normalize assocl₊    = (assocl₊ , id⇔)
-normalize assocr₊    = (assocr₊ , id⇔)
-normalize unite⋆     = (unite⋆  , id⇔)
-normalize uniti⋆     = (uniti⋆  , id⇔)
-normalize swap⋆      = (swap⋆   , id⇔)
-normalize assocl⋆    = (assocl⋆ , id⇔)
-normalize assocr⋆    = (assocr⋆ , id⇔)
-normalize distz      = (distz   , id⇔)
-normalize factorz    = (factorz , id⇔)
-normalize dist       = (dist    , id⇔)
-normalize factor     = (factor  , id⇔)
-normalize id⟷        = (id⟷   , id⇔)
-normalize (c₁ ◎ c₂)  with normalize c₁ | normalize c₂
-... | (c₁' , α) | (c₂' , β) = {!!} 
-normalize (c₁ ⊕ c₂)  with normalize c₁ | normalize c₂
-... | (c₁' , α) | (c₂₁ ⊕ c₂₂ , β) = 
-  (assocl₊ ◎ ((c₁' ⊕ c₂₁) ⊕ c₂₂) ◎ assocr₊ , trans⇔ (resp⊕⇔ α β) assoc⊕l)
-... | (c₁' , α) | (c₂' , β)       = (c₁' ⊕ c₂' , resp⊕⇔ α β)
-normalize (c₁ ⊗ c₂)  with normalize c₁ | normalize c₂
-... | (c₁₁ ⊕ c₁₂ , α) | (c₂' , β) = 
-  (dist ◎ ((c₁₁ ⊗ c₂') ⊕ (c₁₂ ⊗ c₂')) ◎ factor , 
-   trans⇔ (resp⊗⇔ α β) dist⇔)
-... | (c₁' , α) | (c₂₁ ⊗ c₂₂ , β) = 
-  (assocl⋆ ◎ ((c₁' ⊗ c₂₁) ⊗ c₂₂) ◎ assocr⋆ , trans⇔ (resp⊗⇔ α β) assoc⊗l)
-... | (c₁' , α) | (c₂' , β) = (c₁' ⊗ c₂' , resp⊗⇔ α β)
-
 -- Inverses for 2paths
 
 2! : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₂ ⇔ c₁)
@@ -606,8 +573,6 @@ negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆
           ⇔⟨ idr◎l ⟩
         swap₊ ▤
 
--- are we missing anything? proof of completeness???
-
 G' : 1Groupoid
 G' = record
         { set = U
@@ -629,9 +594,115 @@ G' = record
         ; ∘-resp-≈ = λ p∼q r∼s → resp◎⇔ r∼s p∼q 
         }
 
+-- Proof of completeness
+
+-- normalize a finite type to (1 + (1 + (1 + ... + (1 + 0) ... )))
+-- a bunch of ones ending with zero with left biased + in between
+
+toℕ : U → ℕ
+toℕ ZERO          = 0
+toℕ ONE           = 1
+toℕ (PLUS t₁ t₂)  = toℕ t₁ + toℕ t₂
+toℕ (TIMES t₁ t₂) = toℕ t₁ * toℕ t₂
+
+fromℕ : ℕ → U
+fromℕ 0       = ZERO
+fromℕ (suc n) = PLUS ONE (fromℕ n)
+
+normalℕ : U → U
+normalℕ = fromℕ ∘ toℕ
+
+-- build a combinator that does the normalization
+
+assocrU : {m : ℕ} (n : ℕ) → (PLUS (fromℕ n) (fromℕ m)) ⟷ fromℕ (n + m)
+assocrU 0       = unite₊
+assocrU (suc n) = assocr₊ ◎ (id⟷ ⊕ assocrU n)
+
+distrU : (m : ℕ) {n : ℕ} → TIMES (fromℕ m) (fromℕ n) ⟷ fromℕ (m * n)
+distrU 0           = distz
+distrU (suc n) {m} = dist ◎ (unite⋆ ⊕ distrU n) ◎ assocrU m
+
+normalU : (t : U) → t ⟷ normalℕ t
+normalU ZERO          = id⟷
+normalU ONE           = uniti₊ ◎ swap₊
+normalU (PLUS t₁ t₂)  = (normalU t₁ ⊕ normalU t₂) ◎ assocrU (toℕ t₁)
+normalU (TIMES t₁ t₂) = (normalU t₁ ⊗ normalU t₂) ◎ distrU (toℕ t₁)
+
+-- convert each combinator to a normal form
+
+normal⟷ : {t₁ t₂ : U} → (c₁ : t₁ ⟷ t₂) → 
+           Σ[ c₂ ∈ normalℕ t₁ ⟷ normalℕ t₂ ] (c₁ ⇔ (normalU t₁ ◎ c₂ ◎ (! (normalU t₂))))
+normal⟷ {PLUS ZERO t} {.t} unite₊ = 
+  (id⟷ , 
+   (unite₊
+      ⇔⟨ idr◎r ⟩
+    unite₊ ◎ id⟷
+      ⇔⟨ resp◎⇔ id⇔ linv◎r ⟩
+    unite₊ ◎ (normalU t ◎ (! (normalU t)))
+      ⇔⟨ assoc◎l ⟩
+    (unite₊ ◎ normalU t) ◎ (! (normalU t))
+      ⇔⟨ resp◎⇔ unitel₊⇔ id⇔ ⟩
+    ((id⟷ ⊕ normalU t) ◎ unite₊) ◎ (! (normalU t))
+      ⇔⟨ resp◎⇔ id⇔ idl◎r ⟩
+    ((id⟷ ⊕ normalU t) ◎ unite₊) ◎ (id⟷ ◎ (! (normalU t)))
+      ⇔⟨ id⇔ ⟩
+    normalU (PLUS ZERO t) ◎ (id⟷ ◎ (! (normalU t))) ▤))
+normal⟷ uniti₊ = {!!}
+normal⟷ swap₊ = {!!}
+normal⟷ assocl₊ = {!!}
+normal⟷ assocr₊ = {!!}
+normal⟷ unite⋆ = {!!}
+normal⟷ uniti⋆ = {!!}
+normal⟷ swap⋆ = {!!}
+normal⟷ assocl⋆ = {!!}
+normal⟷ assocr⋆ = {!!}
+normal⟷ distz = {!!}
+normal⟷ factorz = {!!}
+normal⟷ dist = {!!}
+normal⟷ factor = {!!}
+normal⟷ id⟷ = {!!}
+normal⟷ (c₁ ◎ c₂) = {!!}
+normal⟷ (c₁ ⊕ c₂) = {!!}
+normal⟷ (c₁ ⊗ c₂) = {!!}
+
 ------------------------------------------------------------------------------
 
 {--
+-- Use ⇔ to normalize a path
+
+{-# NO_TERMINATION_CHECK #-}
+normalize : {t₁ t₂ : U} → (c₁ : t₁ ⟷ t₂) → Σ[ c₂ ∈ t₁ ⟷ t₂ ] (c₁ ⇔ c₂)
+normalize unite₊     = (unite₊  , id⇔)
+normalize uniti₊     = (uniti₊  , id⇔)
+normalize swap₊      = (swap₊   , id⇔)
+normalize assocl₊    = (assocl₊ , id⇔)
+normalize assocr₊    = (assocr₊ , id⇔)
+normalize unite⋆     = (unite⋆  , id⇔)
+normalize uniti⋆     = (uniti⋆  , id⇔)
+normalize swap⋆      = (swap⋆   , id⇔)
+normalize assocl⋆    = (assocl⋆ , id⇔)
+normalize assocr⋆    = (assocr⋆ , id⇔)
+normalize distz      = (distz   , id⇔)
+normalize factorz    = (factorz , id⇔)
+normalize dist       = (dist    , id⇔)
+normalize factor     = (factor  , id⇔)
+normalize id⟷        = (id⟷   , id⇔)
+normalize (c₁ ◎ c₂)  with normalize c₁ | normalize c₂
+... | (c₁' , α) | (c₂' , β) = {!!} 
+normalize (c₁ ⊕ c₂)  with normalize c₁ | normalize c₂
+... | (c₁' , α) | (c₂₁ ⊕ c₂₂ , β) = 
+  (assocl₊ ◎ ((c₁' ⊕ c₂₁) ⊕ c₂₂) ◎ assocr₊ , trans⇔ (resp⊕⇔ α β) assoc⊕l)
+... | (c₁' , α) | (c₂' , β)       = (c₁' ⊕ c₂' , resp⊕⇔ α β)
+normalize (c₁ ⊗ c₂)  with normalize c₁ | normalize c₂
+... | (c₁₁ ⊕ c₁₂ , α) | (c₂' , β) = 
+  (dist ◎ ((c₁₁ ⊗ c₂') ⊕ (c₁₂ ⊗ c₂')) ◎ factor , 
+   trans⇔ (resp⊗⇔ α β) dist⇔)
+... | (c₁' , α) | (c₂₁ ⊗ c₂₂ , β) = 
+  (assocl⋆ ◎ ((c₁' ⊗ c₂₁) ⊗ c₂₂) ◎ assocr⋆ , trans⇔ (resp⊗⇔ α β) assoc⊗l)
+... | (c₁' , α) | (c₂' , β) = (c₁' ⊗ c₂' , resp⊗⇔ α β)
+
+
+
 record Permutation (t t' : U) : Set where
   field
     t₀ : U -- no occurrences of TIMES .. (TIMES .. ..)
