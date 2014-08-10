@@ -5,9 +5,7 @@ module Pif where
 open import Relation.Binary.PropositionalEquality 
   using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
 open ≡-Reasoning
-open import Data.Bool using (Bool; false; true; _∧_)
-open import Data.Nat using (ℕ; suc; _+_; _*_)
-open import Data.List 
+open import Data.Nat using (ℕ; suc; _+_; _*_; _≟_)
 open import Function using (_∘_)
 
 open import Data.Empty
@@ -69,7 +67,7 @@ true⟷  = inj₂ tt
 -- are just between the types themselves.
 
 infix  30 _⟷_
-infixr 10 _◎_
+infixr 50 _◎_
 
 data _⟷_ : U → U → Set where
   unite₊  : {t : U} → PLUS ZERO t ⟷ t
@@ -204,6 +202,8 @@ TOFFOLI = TIMES (PLUS x y) BOOL²
            ≡⟨ cong₂ _⊗_ (!! {c = c₁}) (!! {c = c₂}) ⟩ 
          c₁ ⊗ c₂ ∎)
 
+-- Extensional view of 2paths.
+-- 
 -- There is a 2path between two permutations p and q if for each x, the
 -- result of p(x) and q(x) are identical. Generally we are satisfied with a
 -- path between p(x) and q(x) but since the finite types are discrete, this
@@ -350,7 +350,7 @@ ap (c₁ ⊗ c₂) (v₁ , v₂)      = (ap c₁ v₁ , ap c₂ v₂)
 
 -- 2path
 
-infix  4  _∼_  
+infix  10  _∼_  
 
 _∼_ : ∀ {t₁ t₂} → (p q : t₁ ⟷ t₂) → Set
 _∼_ {t₁} {t₂} p q = (x : ⟦ t₁ ⟧) → ap p x ≡ ap q x
@@ -374,7 +374,7 @@ resp◎ {t₁} {t₂} {t₃} {p} {q} {r} {s} α β v =
     ap (q ◎ s) v ∎
 
 -- The equivalence of paths makes U a 1groupoid: the points are types (t :
--- U); the 1paths are ⟷; and the 2paths between them are Path∼
+-- U); the 1paths are ⟷; and the 2paths between them are ∼
 
 G : 1Groupoid
 G = record
@@ -441,7 +441,7 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
   factor⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
            (dist ◎ ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃)) ◎ factor) ⇔ ((c₁ ⊕ c₂) ⊗ c₃)
   idl◎l   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (id⟷ ◎ c) ⇔ c
-  idl◎r   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ (id⟷ ◎ c) 
+  idl◎r   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ id⟷ ◎ c
   idr◎l   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (c ◎ id⟷) ⇔ c
   idr◎r   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ (c ◎ id⟷) 
   linv◎l  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (c ◎ ! c) ⇔ id⟷
@@ -612,6 +612,34 @@ fromℕ (suc n) = PLUS ONE (fromℕ n)
 normalℕ : U → U
 normalℕ = fromℕ ∘ toℕ
 
+-- invert toℕ: give t and n such that toℕ t = n, return constraints on components of t
+
+reflectPlusZero : {m n : ℕ} → (m + n ≡ 0) → m ≡ 0 × n ≡ 0
+reflectPlusZero {0} {0} refl = (refl , refl)
+reflectPlusZero {0} {suc n} ()
+reflectPlusZero {suc m} {0} ()
+reflectPlusZero {suc m} {suc n} ()
+
+-- nbe
+
+nbe : {t₁ t₂ : U} → (p : toℕ t₁ ≡ toℕ t₂) → (⟦ t₁ ⟧ → ⟦ t₂ ⟧) → (t₁ ⟷ t₂)
+nbe {ZERO} {ZERO} refl f = id⟷
+nbe {ZERO} {ONE} ()
+nbe {ZERO} {PLUS t₁ t₂} p f = ? 
+nbe {ZERO} {TIMES t₂ t₃} p f = {!!}
+nbe {ONE} {ZERO} ()
+nbe {ONE} {ONE} p f = id⟷
+nbe {ONE} {PLUS t₂ t₃} p f = {!!}
+nbe {ONE} {TIMES t₂ t₃} p f = {!!}
+nbe {PLUS t₁ t₂} {ZERO} p f = {!!}
+nbe {PLUS t₁ t₂} {ONE} p f = {!!}
+nbe {PLUS t₁ t₂} {PLUS t₃ t₄} p f = {!!}
+nbe {PLUS t₁ t₂} {TIMES t₃ t₄} p f = {!!}
+nbe {TIMES t₁ t₂} {ZERO} p f = {!!}
+nbe {TIMES t₁ t₂} {ONE} p f = {!!}
+nbe {TIMES t₁ t₂} {PLUS t₃ t₄} p f = {!!}
+nbe {TIMES t₁ t₂} {TIMES t₃ t₄} p f = {!!} 
+
 -- build a combinator that does the normalization
 
 assocrU : {m : ℕ} (n : ℕ) → (PLUS (fromℕ n) (fromℕ m)) ⟷ fromℕ (n + m)
@@ -656,6 +684,16 @@ normalℕswap {t₁} {t₂} =
     ⟷⟨ ! (fromℕplus {toℕ t₂} {toℕ t₁}) ⟩
   fromℕ (toℕ t₂ + toℕ t₁) □
 
+assocrUS : {m : ℕ} {t : U} → PLUS t (fromℕ m) ⟷ fromℕ (toℕ t + m)
+assocrUS {m} {ZERO} = unite₊
+assocrUS {m} {ONE}  = id⟷
+assocrUS {m} {t}    = 
+  PLUS t (fromℕ m)
+    ⟷⟨ normalU t ⊕ id⟷ ⟩
+  PLUS (normalℕ t) (fromℕ m)
+    ⟷⟨ ! fromℕplus ⟩
+  fromℕ (toℕ t + m) □
+
 -- convert each combinator to a normal form
 
 normal⟷ : {t₁ t₂ : U} → (c₁ : t₁ ⟷ t₂) → 
@@ -692,10 +730,32 @@ normal⟷ {t} {PLUS ZERO .t} uniti₊ =
     normalU t ◎ (id⟷ ◎ (! ((id⟷ ⊕ (normalU t)) ◎ unite₊)))
       ⇔⟨ id⇔ ⟩ 
     normalU t ◎ (id⟷ ◎ (! (normalU (PLUS ZERO t)))) ▤))
+normal⟷ {PLUS ZERO t₂} {PLUS .t₂ ZERO} swap₊ = 
+  (normalℕswap {ZERO} {t₂} , 
+  (swap₊ 
+     ⇔⟨ {!!} ⟩
+   (unite₊ ◎ normalU t₂) ◎ 
+     (normalℕswap {ZERO} {t₂} ◎ ((! (assocrU (toℕ t₂))) ◎ (! (normalU t₂) ⊕ id⟷)))
+     ⇔⟨ resp◎⇔ unitel₊⇔ id⇔ ⟩
+   ((id⟷ ⊕ normalU t₂) ◎ unite₊) ◎ 
+     (normalℕswap {ZERO} {t₂} ◎ ((! (assocrU (toℕ t₂))) ◎ (! (normalU t₂) ⊕ id⟷)))
+     ⇔⟨ id⇔ ⟩
+   normalU (PLUS ZERO t₂) ◎ (normalℕswap {ZERO} {t₂} ◎ (! (normalU (PLUS t₂ ZERO)))) ▤))
+normal⟷ {PLUS ONE t₂} {PLUS .t₂ ONE} swap₊ = 
+  (normalℕswap {ONE} {t₂} , 
+  (swap₊ 
+     ⇔⟨ {!!} ⟩
+   ((normalU ONE ⊕ normalU t₂) ◎ assocrU (toℕ ONE)) ◎ 
+     (normalℕswap {ONE} {t₂} ◎ ((! (assocrU (toℕ t₂))) ◎ (! (normalU t₂) ⊕ ! (normalU ONE))))
+     ⇔⟨ id⇔ ⟩
+   normalU (PLUS ONE t₂) ◎ (normalℕswap {ONE} {t₂} ◎ (! (normalU (PLUS t₂ ONE)))) ▤))
 normal⟷ {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = 
   (normalℕswap {t₁} {t₂} , 
   (swap₊ 
      ⇔⟨ {!!} ⟩
+   ((normalU t₁ ⊕ normalU t₂) ◎ assocrU (toℕ t₁)) ◎ 
+     (normalℕswap {t₁} {t₂} ◎ ((! (assocrU (toℕ t₂))) ◎ (! (normalU t₂) ⊕ ! (normalU t₁))))
+     ⇔⟨ id⇔ ⟩
    normalU (PLUS t₁ t₂) ◎ (normalℕswap {t₁} {t₂} ◎ (! (normalU (PLUS t₂ t₁)))) ▤))
 normal⟷ {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ = {!!}
 normal⟷ {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} assocr₊ = {!!}
@@ -719,7 +779,10 @@ normal⟷ {t₁} {t₃} (_◎_ {t₂ = t₂} c₁ c₂) = {!!}
 normal⟷ {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = {!!}
 normal⟷ {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = {!!}
 
--- and now if c₁ ∼ c₂ then normalize c₁ is the same as normalize c₂, hopefully...
+-- if c₁ c₂ : t₁ ⟷ t₂ and c₁ ∼ c₂ then we want a canonical combinator
+-- normalℕ t₁ ⟷ normalℕ t₂. If we have that then we should be able to
+-- decide whether c₁ ∼ c₂ by normalizing and looking at the canonical
+-- combinator.
 
 ------------------------------------------------------------------------------
 
