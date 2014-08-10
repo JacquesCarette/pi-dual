@@ -628,6 +628,34 @@ normalU ONE           = uniti₊ ◎ swap₊
 normalU (PLUS t₁ t₂)  = (normalU t₁ ⊕ normalU t₂) ◎ assocrU (toℕ t₁)
 normalU (TIMES t₁ t₂) = (normalU t₁ ⊗ normalU t₂) ◎ distrU (toℕ t₁)
 
+-- a few lemmas
+
+fromℕplus : {m n : ℕ} → fromℕ (m + n) ⟷ PLUS (fromℕ m) (fromℕ n)
+fromℕplus {0} {n} = 
+  fromℕ n
+    ⟷⟨ uniti₊ ⟩
+  PLUS ZERO (fromℕ n) □
+fromℕplus {suc m} {n} = 
+  fromℕ (suc (m + n))
+    ⟷⟨ id⟷ ⟩ 
+  PLUS ONE (fromℕ (m + n))
+    ⟷⟨ id⟷ ⊕ fromℕplus {m} {n} ⟩ 
+  PLUS ONE (PLUS (fromℕ m) (fromℕ n))
+    ⟷⟨ assocl₊ ⟩ 
+  PLUS (PLUS ONE (fromℕ m)) (fromℕ n)
+    ⟷⟨ id⟷ ⟩ 
+  PLUS (fromℕ (suc m)) (fromℕ n) □
+
+normalℕswap : {t₁ t₂ : U} → normalℕ (PLUS t₁ t₂) ⟷ normalℕ (PLUS t₂ t₁)
+normalℕswap {t₁} {t₂} = 
+  fromℕ (toℕ t₁ + toℕ t₂) 
+    ⟷⟨ fromℕplus {toℕ t₁} {toℕ t₂} ⟩
+  PLUS (normalℕ t₁) (normalℕ t₂)
+    ⟷⟨ swap₊ ⟩
+  PLUS (normalℕ t₂) (normalℕ t₁)
+    ⟷⟨ ! (fromℕplus {toℕ t₂} {toℕ t₁}) ⟩
+  fromℕ (toℕ t₂ + toℕ t₁) □
+
 -- convert each combinator to a normal form
 
 normal⟷ : {t₁ t₂ : U} → (c₁ : t₁ ⟷ t₂) → 
@@ -647,23 +675,51 @@ normal⟷ {PLUS ZERO t} {.t} unite₊ =
     ((id⟷ ⊕ normalU t) ◎ unite₊) ◎ (id⟷ ◎ (! (normalU t)))
       ⇔⟨ id⇔ ⟩
     normalU (PLUS ZERO t) ◎ (id⟷ ◎ (! (normalU t))) ▤))
-normal⟷ uniti₊ = {!!}
-normal⟷ swap₊ = {!!}
-normal⟷ assocl₊ = {!!}
-normal⟷ assocr₊ = {!!}
-normal⟷ unite⋆ = {!!}
-normal⟷ uniti⋆ = {!!}
-normal⟷ swap⋆ = {!!}
-normal⟷ assocl⋆ = {!!}
-normal⟷ assocr⋆ = {!!}
-normal⟷ distz = {!!}
-normal⟷ factorz = {!!}
-normal⟷ dist = {!!}
-normal⟷ factor = {!!}
-normal⟷ id⟷ = {!!}
-normal⟷ (c₁ ◎ c₂) = {!!}
-normal⟷ (c₁ ⊕ c₂) = {!!}
-normal⟷ (c₁ ⊗ c₂) = {!!}
+normal⟷ {t} {PLUS ZERO .t} uniti₊ = 
+  (id⟷ , 
+   (uniti₊ 
+      ⇔⟨ idl◎r ⟩ 
+    id⟷ ◎ uniti₊
+      ⇔⟨ resp◎⇔ linv◎r id⇔ ⟩ 
+    (normalU t ◎ (! (normalU t))) ◎ uniti₊
+      ⇔⟨ assoc◎r ⟩ 
+    normalU t ◎ ((! (normalU t)) ◎ uniti₊)
+      ⇔⟨ resp◎⇔ id⇔ unitir₊⇔ ⟩ 
+    normalU t ◎ (uniti₊ ◎ (id⟷ ⊕ (! (normalU t))))
+      ⇔⟨ resp◎⇔ id⇔ idl◎r ⟩ 
+    normalU t ◎ (id⟷ ◎ (uniti₊ ◎ (id⟷ ⊕ (! (normalU t)))))
+      ⇔⟨ id⇔ ⟩ 
+    normalU t ◎ (id⟷ ◎ (! ((id⟷ ⊕ (normalU t)) ◎ unite₊)))
+      ⇔⟨ id⇔ ⟩ 
+    normalU t ◎ (id⟷ ◎ (! (normalU (PLUS ZERO t)))) ▤))
+normal⟷ {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = 
+  (normalℕswap {t₁} {t₂} , 
+  (swap₊ 
+     ⇔⟨ {!!} ⟩
+   normalU (PLUS t₁ t₂) ◎ (normalℕswap {t₁} {t₂} ◎ (! (normalU (PLUS t₂ t₁)))) ▤))
+normal⟷ {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ = {!!}
+normal⟷ {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} assocr₊ = {!!}
+normal⟷ {TIMES ONE t} {.t} unite⋆ = {!!} 
+normal⟷ {t} {TIMES ONE .t} uniti⋆ = {!!}
+normal⟷ {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = {!!}
+normal⟷ {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} assocl⋆ = {!!}
+normal⟷ {TIMES (TIMES t₁ t₂) t₃} {TIMES .t₁ (TIMES .t₂ .t₃)} assocr⋆ = {!!}
+normal⟷ {TIMES ZERO t} {ZERO} distz = {!!}
+normal⟷ {ZERO} {TIMES ZERO t} factorz = {!!}
+normal⟷ {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)} dist = {!!}
+normal⟷ {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)} {TIMES (PLUS t₁ t₂) t₃} factor = {!!}
+normal⟷ {t} {.t} id⟷ = 
+  (id⟷ , 
+   (id⟷ 
+     ⇔⟨ linv◎r ⟩
+   normalU t ◎ (! (normalU t))
+     ⇔⟨ resp◎⇔ id⇔ idl◎r ⟩
+   normalU t ◎ (id⟷ ◎ (! (normalU t))) ▤))
+normal⟷ {t₁} {t₃} (_◎_ {t₂ = t₂} c₁ c₂) = {!!}
+normal⟷ {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = {!!}
+normal⟷ {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = {!!}
+
+-- and now if c₁ ∼ c₂ then normalize c₁ is the same as normalize c₂, hopefully...
 
 ------------------------------------------------------------------------------
 
