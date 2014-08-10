@@ -5,7 +5,10 @@ module Pif where
 open import Relation.Binary.PropositionalEquality 
   using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
 open ≡-Reasoning
-open import Data.Nat using (ℕ; suc; _+_; _*_; _≟_)
+open import Data.Fin renaming (_+_ to _F+_; suc to Fsuc)
+  using (Fin; zero; raise; inject+; inject≤; toℕ; fromℕ≤)
+open import Data.Nat using (ℕ; suc; _+_; _*_; _≟_; _<_; _≤_; z≤n; s≤s)
+open import Data.Nat.Properties.Simple
 open import Function using (_∘_)
 
 open import Data.Empty
@@ -48,22 +51,25 @@ false⟷ true⟷ : ⟦ BOOL ⟧
 false⟷ = inj₁ tt
 true⟷  = inj₂ tt
 
--- For any finite type (t : U) there is no non-trivial path structure between
--- the elements of t. All such finite types are discrete groupoids
+-- For any finite type (t : U) there is no non-trivial path structure
+-- between the elements of t. All such finite types are discrete
+-- groupoids
 --
--- For U, there are non-trivial paths between its points. In the conventional
--- HoTT presentation, a path between t₁ and t₂ is postulated by univalence
--- for each equivalence between t₁ and t₂. In the context of finite types, an
--- equivalence corresponds to a permutation as each permutation has a unique
--- inverse permutation. Thus instead of the detour using univalence, we can
--- give an inductive definition of all possible permutations between finite
--- types which naturally induces paths between the points. More precisely,
--- two types t₁ and t₂ have a path between them if there is a permutation (c
--- : t₁ ⟷ t₂). The fact that c is a permutation guarantees, by construction,
--- that (c ◎ ! c ∼ id⟷) and (! c ◎ c ∼ id⟷). A complete set of generators for
--- all possible permutations between finite types is given by the following
--- definition. Note that these permutations do not reach inside the types and
--- hence do not generate paths between the points within the types. The paths
+-- For U, there are non-trivial paths between its points. In the
+-- conventional HoTT presentation, a path between t₁ and t₂ is
+-- postulated by univalence for each equivalence between t₁ and t₂. In
+-- the context of finite types, an equivalence corresponds to a
+-- permutation as each permutation has a unique inverse
+-- permutation. Thus instead of the detour using univalence, we can
+-- give an inductive definition of all possible permutations between
+-- finite types which naturally induces paths between the points. More
+-- precisely, two types t₁ and t₂ have a path between them if there is
+-- a permutation (c : t₁ ⟷ t₂). The fact that c is a permutation
+-- guarantees, by construction, that (c ◎ ! c ∼ id⟷) and (! c ◎ c ∼
+-- id⟷). A complete set of generators for all possible permutations
+-- between finite types is given by the following definition. Note
+-- that these permutations do not reach inside the types and hence do
+-- not generate paths between the points within the types. The paths
 -- are just between the types themselves.
 
 infix  30 _⟷_
@@ -202,12 +208,48 @@ TOFFOLI = TIMES (PLUS x y) BOOL²
            ≡⟨ cong₂ _⊗_ (!! {c = c₁}) (!! {c = c₂}) ⟩ 
          c₁ ⊗ c₂ ∎)
 
+-- Extensional view
+
+-- First we enumerate all the values of a given finite type
+
+size : U → ℕ
+size ZERO          = 0
+size ONE           = 1
+size (PLUS t₁ t₂)  = size  t₁ + size t₂
+size (TIMES t₁ t₂) = size t₁ * size  t₂
+
+enum : (t : U) → ⟦ t ⟧ → Fin (size t)
+enum ZERO ()                  -- absurd
+enum ONE tt                   = zero
+enum (PLUS t₁ t₂) (inj₁ v₁)   = inject+ (size t₂) (enum t₁ v₁)
+enum (PLUS t₁ t₂) (inj₂ v₂)   = raise (size t₁) (enum t₂ v₂)
+enum (TIMES t₁ t₂) (v₁ , v₂)  = fromℕ≤ (pr {s₁} {s₂} {n₁} {n₂})
+  where n₁ = enum t₁ v₁
+        n₂ = enum t₂ v₂
+        s₁ = size t₁ 
+        s₂ = size t₂
+        pr : {s₁ s₂ : ℕ} → {n₁ : Fin s₁} {n₂ : Fin s₂} → 
+             ((toℕ n₁ * s₂) + toℕ n₂) < (s₁ * s₂)
+        pr {0} {_} {()} 
+        pr {_} {0} {_} {()}
+        pr {suc s₁} {suc s₂} {zero} {zero} = {!z≤n!}
+        pr {suc s₁} {suc s₂} {zero} {Fsuc n₂} = {!!}
+        pr {suc s₁} {suc s₂} {Fsuc n₁} {zero} = {!!}
+        pr {suc s₁} {suc s₂} {Fsuc n₁} {Fsuc n₂} = {!!}
+
+vals3 : Fin 3 × Fin 3 × Fin 3
+vals3 = (enum THREE LL , enum THREE LR , enum THREE R)
+  where THREE = PLUS (PLUS ONE ONE) ONE
+        LL = inj₁ (inj₁ tt)
+        LR = inj₁ (inj₂ tt)
+        R  = inj₂ tt
+
 -- Extensional view of 2paths.
 -- 
 -- There is a 2path between two permutations p and q if for each x, the
--- result of p(x) and q(x) are identical. Generally we are satisfied with a
--- path between p(x) and q(x) but since the finite types are discrete, this
--- reduces to the identity.
+-- result of p(x) and q(x) are identical. 
+
+-- First we define the extensional view of a permutation as a function
 
 ap : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
 ap unite₊ (inj₁ ())         -- absurd
@@ -348,7 +390,11 @@ ap (c₁ ⊗ c₂) (v₁ , v₂)      = (ap c₁ v₁ , ap c₂ v₂)
       ≡⟨ cong₂ (_,_) (!α◎α {α = α₁} {v = v₁}) (!α◎α {α = α₂} {v = v₂}) ⟩
     (v₁ , v₂) ∎
 
--- 2path
+-- Two permutations, viewed extensionally, are equivalent if they map
+-- each value x to the same value. Generally we would only require
+-- that the resulting values y and z have a path between them, but
+-- because the internals of each type are discrete groupoids, this
+-- reduces to saying that y and z are identical.
 
 infix  10  _∼_  
 
@@ -373,8 +419,9 @@ resp◎ {t₁} {t₂} {t₃} {p} {q} {r} {s} α β v =
       ≡⟨ β (ap q v) ⟩ 
     ap (q ◎ s) v ∎
 
--- The equivalence of paths makes U a 1groupoid: the points are types (t :
--- U); the 1paths are ⟷; and the 2paths between them are ∼
+-- The equivalence ∼ of paths makes U a 1groupoid: the points are
+-- types (t : U); the 1paths are ⟷; and the 2paths between them are
+-- based on extensional equivalence ∼
 
 G : 1Groupoid
 G = record
@@ -410,14 +457,15 @@ G = record
 --  ||   ...            ||
 --   =====================
 --
--- The types t₁, t₂, etc are discrete groupoids. The paths between them
--- correspond to permutations. Each syntactically different permutation
--- corresponds to a path but equivalent permutations are connected by 2paths.
--- But now we want an alternative definition of 2paths that is structural,
--- i.e., that looks at the actual construction of the path t₁ ⟷ t₂ in terms
--- of combinators... The theorem we want is that α ∼ β iff we can rewrite α
--- to β using various syntactic structural rules. We start with a collection
--- of simplication rules and then try to show they are complete.
+-- The types t₁, t₂, etc are discrete groupoids. The paths between
+-- them correspond to permutations. Each syntactically different
+-- permutation corresponds to a path but equivalent permutations are
+-- connected by 2paths.  But now we want an alternative definition of
+-- 2paths that is structural, i.e., that looks at the actual
+-- construction of the path t₁ ⟷ t₂ in terms of combinators... The
+-- theorem we want is that α ∼ β iff we can rewrite α to β using
+-- various syntactic structural rules. We start with a collection of
+-- simplication rules and then try to show they are complete.
 
 -- Simplification rules
 
@@ -425,21 +473,27 @@ infix  30 _⇔_
 
 data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set where
   assoc◎l : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
-            (c₁ ◎ (c₂ ◎ c₃)) ⇔ ((c₁ ◎ c₂) ◎ c₃)
+          (c₁ ◎ (c₂ ◎ c₃)) ⇔ ((c₁ ◎ c₂) ◎ c₃)
   assoc◎r : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
-            ((c₁ ◎ c₂) ◎ c₃) ⇔ (c₁ ◎ (c₂ ◎ c₃))
-  assoc⊕l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-            (c₁ ⊕ (c₂ ⊕ c₃)) ⇔ (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊)
-  assoc⊕r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-            (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊) ⇔ (c₁ ⊕ (c₂ ⊕ c₃))
-  assoc⊗l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-            (c₁ ⊗ (c₂ ⊗ c₃)) ⇔ (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆)
-  assoc⊗r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-            (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆) ⇔ (c₁ ⊗ (c₂ ⊗ c₃))
-  dist⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-           ((c₁ ⊕ c₂) ⊗ c₃) ⇔ (dist ◎ ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃)) ◎ factor)
-  factor⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-           (dist ◎ ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃)) ◎ factor) ⇔ ((c₁ ⊕ c₂) ⊗ c₃)
+          ((c₁ ◎ c₂) ◎ c₃) ⇔ (c₁ ◎ (c₂ ◎ c₃))
+  assoc⊕l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (c₁ ⊕ (c₂ ⊕ c₃)) ⇔ (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊)
+  assoc⊕r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊) ⇔ (c₁ ⊕ (c₂ ⊕ c₃))
+  assoc⊗l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (c₁ ⊗ (c₂ ⊗ c₃)) ⇔ (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆)
+  assoc⊗r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆) ⇔ (c₁ ⊗ (c₂ ⊗ c₃))
+  dist⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          ((c₁ ⊕ c₂) ⊗ c₃) ⇔ (dist ◎ ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃)) ◎ factor)
+  factor⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (dist ◎ ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃)) ◎ factor) ⇔ ((c₁ ⊕ c₂) ⊗ c₃)
   idl◎l   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (id⟷ ◎ c) ⇔ c
   idl◎r   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ id⟷ ◎ c
   idr◎l   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (c ◎ id⟷) ⇔ c
@@ -449,49 +503,51 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
   rinv◎l  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (! c ◎ c) ⇔ id⟷
   rinv◎r  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ⇔ (! c ◎ c) 
   unitel₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
-             (unite₊ ◎ c₂) ⇔ ((c₁ ⊕ c₂) ◎ unite₊)
+          (unite₊ ◎ c₂) ⇔ ((c₁ ⊕ c₂) ◎ unite₊)
   uniter₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
-             ((c₁ ⊕ c₂) ◎ unite₊) ⇔ (unite₊ ◎ c₂)
+          ((c₁ ⊕ c₂) ◎ unite₊) ⇔ (unite₊ ◎ c₂)
   unitil₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
-            (uniti₊ ◎ (c₁ ⊕ c₂)) ⇔ (c₂ ◎ uniti₊)
+          (uniti₊ ◎ (c₁ ⊕ c₂)) ⇔ (c₂ ◎ uniti₊)
   unitir₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
-            (c₂ ◎ uniti₊) ⇔ (uniti₊ ◎ (c₁ ⊕ c₂))
+          (c₂ ◎ uniti₊) ⇔ (uniti₊ ◎ (c₁ ⊕ c₂))
   unitial₊⇔ : {t₁ t₂ : U} → (uniti₊ {PLUS t₁ t₂} ◎ assocl₊) ⇔ (uniti₊ ⊕ id⟷)
   unitiar₊⇔ : {t₁ t₂ : U} → (uniti₊ {t₁} ⊕ id⟷ {t₂}) ⇔ (uniti₊ ◎ assocl₊)
   swapl₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
-            (swap₊ ◎ (c₁ ⊕ c₂)) ⇔ ((c₂ ⊕ c₁) ◎ swap₊)
+          (swap₊ ◎ (c₁ ⊕ c₂)) ⇔ ((c₂ ⊕ c₁) ◎ swap₊)
   swapr₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
-           ((c₂ ⊕ c₁) ◎ swap₊) ⇔ (swap₊ ◎ (c₁ ⊕ c₂))
+          ((c₂ ⊕ c₁) ◎ swap₊) ⇔ (swap₊ ◎ (c₁ ⊕ c₂))
   unitel⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
-             (unite⋆ ◎ c₂) ⇔ ((c₁ ⊗ c₂) ◎ unite⋆)
+          (unite⋆ ◎ c₂) ⇔ ((c₁ ⊗ c₂) ◎ unite⋆)
   uniter⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
-             ((c₁ ⊗ c₂) ◎ unite⋆) ⇔ (unite⋆ ◎ c₂)
+          ((c₁ ⊗ c₂) ◎ unite⋆) ⇔ (unite⋆ ◎ c₂)
   unitil⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
-            (uniti⋆ ◎ (c₁ ⊗ c₂)) ⇔ (c₂ ◎ uniti⋆)
+          (uniti⋆ ◎ (c₁ ⊗ c₂)) ⇔ (c₂ ◎ uniti⋆)
   unitir⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
-            (c₂ ◎ uniti⋆) ⇔ (uniti⋆ ◎ (c₁ ⊗ c₂))
+          (c₂ ◎ uniti⋆) ⇔ (uniti⋆ ◎ (c₁ ⊗ c₂))
   unitial⋆⇔ : {t₁ t₂ : U} → (uniti⋆ {TIMES t₁ t₂} ◎ assocl⋆) ⇔ (uniti⋆ ⊗ id⟷)
   unitiar⋆⇔ : {t₁ t₂ : U} → (uniti⋆ {t₁} ⊗ id⟷ {t₂}) ⇔ (uniti⋆ ◎ assocl⋆)
   swapl⋆⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
-            (swap⋆ ◎ (c₁ ⊗ c₂)) ⇔ ((c₂ ⊗ c₁) ◎ swap⋆)
+          (swap⋆ ◎ (c₁ ⊗ c₂)) ⇔ ((c₂ ⊗ c₁) ◎ swap⋆)
   swapr⋆⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
-           ((c₂ ⊗ c₁) ◎ swap⋆) ⇔ (swap⋆ ◎ (c₁ ⊗ c₂))
+          ((c₂ ⊗ c₁) ◎ swap⋆) ⇔ (swap⋆ ◎ (c₁ ⊗ c₂))
   swapfl⋆⇔ : {t₁ t₂ t₃ : U} → 
-            (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor) ⇔ (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷))
+          (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor) ⇔ 
+          (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷))
   swapfr⋆⇔ : {t₁ t₂ t₃ : U} → 
-            (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷)) ⇔ (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor)
+          (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷)) ⇔ 
+         (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor)
   id⇔     : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ c
   trans⇔  : {t₁ t₂ : U} {c₁ c₂ c₃ : t₁ ⟷ t₂} → 
-            (c₁ ⇔ c₂) → (c₂ ⇔ c₃) → (c₁ ⇔ c₃)
+         (c₁ ⇔ c₂) → (c₂ ⇔ c₃) → (c₁ ⇔ c₃)
   resp◎⇔  : {t₁ t₂ t₃ : U} 
-            {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
-            (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ◎ c₂) ⇔ (c₃ ◎ c₄)
+         {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
+         (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ◎ c₂) ⇔ (c₃ ◎ c₄)
   resp⊕⇔  : {t₁ t₂ t₃ t₄ : U} 
-            {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
-            (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊕ c₂) ⇔ (c₃ ⊕ c₄)
+         {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
+         (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊕ c₂) ⇔ (c₃ ⊕ c₄)
   resp⊗⇔  : {t₁ t₂ t₃ t₄ : U} 
-            {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
-            (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊗ c₂) ⇔ (c₃ ⊗ c₄)
+         {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
+         (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊗ c₂) ⇔ (c₃ ⊗ c₄)
 
 -- better syntax for writing 2paths
 
@@ -548,6 +604,8 @@ _▤ c = id⇔
 2! (resp⊕⇔ α β) = resp⊕⇔ (2! α) (2! β)
 2! (resp⊗⇔ α β) = resp⊗⇔ (2! α) (2! β) 
 
+-- a nice example of 2 paths
+
 negEx : neg₅ ⇔ neg₁
 negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆)))
           ⇔⟨ resp◎⇔ id⇔ assoc◎l ⟩
@@ -573,6 +631,10 @@ negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆
           ⇔⟨ idr◎l ⟩
         swap₊ ▤
 
+-- The equivalence ⇔ of paths is rich enough to make U a 1groupoid:
+-- the points are types (t : U); the 1paths are ⟷; and the 2paths
+-- between them are based on the simplification rules ⇔ 
+
 G' : 1Groupoid
 G' = record
         { set = U
@@ -594,8 +656,65 @@ G' = record
         ; ∘-resp-≈ = λ p∼q r∼s → resp◎⇔ r∼s p∼q 
         }
 
--- Proof of completeness
+------------------------------------------------------------------------------
+-- Proof of soundness and completeness: now we want to verify that ⇔
+-- is sound and complete with respect to ∼. The statement to prove is
+-- that for all c₁ and c₂, we have c₁ ∼ c₂ iff c₁ ⇔ c₂
 
+postulate 
+  soundnessP : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₁ ∼ c₂)
+
+postulate 
+  completenessP : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → (c₁ ⇔ c₂)
+
+-- The idea is to invert evaluation and use that to extract from each
+-- extensional representation of a combinator, a canonical syntactic
+-- representative
+
+invert : {t₁ t₂ : U} → (⟦ t₁ ⟧ → ⟦ t₂ ⟧) → (t₁ ⟷ t₂)
+invert = {!!} 
+
+--_∼_ : ∀ {t₁ t₂} → (p q : t₁ ⟷ t₂) → Set
+-- _∼_ {t₁} {t₂} p q = (x : ⟦ t₁ ⟧) → ap p x ≡ ap q x
+
+canonical : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂)
+canonical c = invert (ap c)
+
+-- If we call invert with two extensionally equivalent permutations,
+-- we get back the same combinator.
+
+ext2syn : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → 
+          (c₁ ∼ c₂) → canonical c₁ ≡ canonical c₂
+ext2syn {t₁} {t₂} {c₁} {c₂} c₁∼c₂ = {!!} 
+
+-- ∀ {x} → c₁∼c₂ x : ap c₁ x ≡ ap c₂ x
+
+-- Note that if c₁ ⇔ c₂, then by soundness c₁ ∼ c₂ and hence their
+-- canonical representatives are identical. If we can prove that every
+-- combinator is equal to its normal form then we can prove
+-- completeness.
+
+postulate 
+  inversionP : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ canonical c
+
+completeness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → (c₁ ⇔ c₂)
+completeness {t₁} {t₂} {c₁} {c₂} sem∼ = 
+  c₁
+    ⇔⟨ inversionP ⟩
+  canonical c₁
+    ⇔⟨ id⇔  ⟩
+  invert (ap c₁)
+    ⇔⟨ {!!} ⟩
+  invert (ap c₂)
+    ⇔⟨ id⇔ ⟩
+  canonical c₂
+    ⇔⟨ 2! inversionP ⟩
+  c₂ ▤
+
+------------------------------------------------------------------------------
+
+
+{--
 -- normalize a finite type to (1 + (1 + (1 + ... + (1 + 0) ... )))
 -- a bunch of ones ending with zero with left biased + in between
 
@@ -784,9 +903,6 @@ normal⟷ {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = {!!}
 -- decide whether c₁ ∼ c₂ by normalizing and looking at the canonical
 -- combinator.
 
-------------------------------------------------------------------------------
-
-{--
 -- Use ⇔ to normalize a path
 
 {-# NO_TERMINATION_CHECK #-}
