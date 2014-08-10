@@ -625,7 +625,7 @@ reflectPlusZero {suc m} {suc n} ()
 nbe : {t₁ t₂ : U} → (p : toℕ t₁ ≡ toℕ t₂) → (⟦ t₁ ⟧ → ⟦ t₂ ⟧) → (t₁ ⟷ t₂)
 nbe {ZERO} {ZERO} refl f = id⟷
 nbe {ZERO} {ONE} ()
-nbe {ZERO} {PLUS t₁ t₂} p f = ? 
+nbe {ZERO} {PLUS t₁ t₂} p f = {!!} 
 nbe {ZERO} {TIMES t₂ t₃} p f = {!!}
 nbe {ONE} {ZERO} ()
 nbe {ONE} {ONE} p f = id⟷
