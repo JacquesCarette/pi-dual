@@ -208,42 +208,6 @@ TOFFOLI = TIMES (PLUS x y) BOOL²
            ≡⟨ cong₂ _⊗_ (!! {c = c₁}) (!! {c = c₂}) ⟩ 
          c₁ ⊗ c₂ ∎)
 
--- Extensional view
-
--- First we enumerate all the values of a given finite type
-
-size : U → ℕ
-size ZERO          = 0
-size ONE           = 1
-size (PLUS t₁ t₂)  = size  t₁ + size t₂
-size (TIMES t₁ t₂) = size t₁ * size  t₂
-
-enum : (t : U) → ⟦ t ⟧ → Fin (size t)
-enum ZERO ()                  -- absurd
-enum ONE tt                   = zero
-enum (PLUS t₁ t₂) (inj₁ v₁)   = inject+ (size t₂) (enum t₁ v₁)
-enum (PLUS t₁ t₂) (inj₂ v₂)   = raise (size t₁) (enum t₂ v₂)
-enum (TIMES t₁ t₂) (v₁ , v₂)  = fromℕ≤ (pr {s₁} {s₂} {n₁} {n₂})
-  where n₁ = enum t₁ v₁
-        n₂ = enum t₂ v₂
-        s₁ = size t₁ 
-        s₂ = size t₂
-        pr : {s₁ s₂ : ℕ} → {n₁ : Fin s₁} {n₂ : Fin s₂} → 
-             ((toℕ n₁ * s₂) + toℕ n₂) < (s₁ * s₂)
-        pr {0} {_} {()} 
-        pr {_} {0} {_} {()}
-        pr {suc s₁} {suc s₂} {zero} {zero} = {!z≤n!}
-        pr {suc s₁} {suc s₂} {zero} {Fsuc n₂} = {!!}
-        pr {suc s₁} {suc s₂} {Fsuc n₁} {zero} = {!!}
-        pr {suc s₁} {suc s₂} {Fsuc n₁} {Fsuc n₂} = {!!}
-
-vals3 : Fin 3 × Fin 3 × Fin 3
-vals3 = (enum THREE LL , enum THREE LR , enum THREE R)
-  where THREE = PLUS (PLUS ONE ONE) ONE
-        LL = inj₁ (inj₁ tt)
-        LR = inj₁ (inj₂ tt)
-        R  = inj₂ tt
-
 -- Extensional view of 2paths.
 -- 
 -- There is a 2path between two permutations p and q if for each x, the
@@ -664,48 +628,56 @@ G' = record
 postulate 
   soundnessP : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₁ ∼ c₂)
 
-postulate 
-  completenessP : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → (c₁ ⇔ c₂)
+-- postulate 
+--  completenessP : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → (c₁ ⇔ c₂)
 
 -- The idea is to invert evaluation and use that to extract from each
 -- extensional representation of a combinator, a canonical syntactic
 -- representative
 
-invert : {t₁ t₂ : U} → (⟦ t₁ ⟧ → ⟦ t₂ ⟧) → (t₁ ⟷ t₂)
-invert = {!!} 
-
---_∼_ : ∀ {t₁ t₂} → (p q : t₁ ⟷ t₂) → Set
--- _∼_ {t₁} {t₂} p q = (x : ⟦ t₁ ⟧) → ap p x ≡ ap q x
+postulate
+  invertP : {t₁ t₂ : U} → (⟦ t₁ ⟧ → ⟦ t₂ ⟧) → (t₁ ⟷ t₂)
 
 canonical : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂)
-canonical c = invert (ap c)
+canonical c = invertP (ap c)
 
 -- If we call invert with two extensionally equivalent permutations,
 -- we get back the same combinator.
 
+postulate
+  funExtP : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → (ap c₁ ≡ ap c₂)
+
 ext2syn : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → 
           (c₁ ∼ c₂) → canonical c₁ ≡ canonical c₂
-ext2syn {t₁} {t₂} {c₁} {c₂} c₁∼c₂ = {!!} 
-
--- ∀ {x} → c₁∼c₂ x : ap c₁ x ≡ ap c₂ x
+ext2syn {t₁} {t₂} {c₁} {c₂} c₁∼c₂ = 
+  cong invertP (funExtP {t₁} {t₂} {c₁} {c₂} c₁∼c₂)
 
 -- Note that if c₁ ⇔ c₂, then by soundness c₁ ∼ c₂ and hence their
--- canonical representatives are identical. If we can prove that every
--- combinator is equal to its normal form then we can prove
--- completeness.
+-- canonical representatives are identical. 
+
+canonicalWellDefined : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → 
+  (c₁ ⇔ c₂) → (canonical c₁ ≡ canonical c₂)
+canonicalWellDefined {t₁} {t₂} {c₁} {c₂} α = 
+  ext2syn {t₁} {t₂} {c₁} {c₂} (soundnessP α)
+
+-- If we can prove that every combinator is equal to its normal form
+-- then we can prove completeness.
 
 postulate 
   inversionP : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ canonical c
 
+resp≡⇔ : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ≡ c₂) → (c₁ ⇔ c₂)
+resp≡⇔ {t₁} {t₂} {c₁} {c₂} p rewrite p = id⇔ 
+
 completeness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → (c₁ ⇔ c₂)
-completeness {t₁} {t₂} {c₁} {c₂} sem∼ = 
+completeness {t₁} {t₂} {c₁} {c₂} c₁∼c₂ = 
   c₁
     ⇔⟨ inversionP ⟩
   canonical c₁
     ⇔⟨ id⇔  ⟩
-  invert (ap c₁)
-    ⇔⟨ {!!} ⟩
-  invert (ap c₂)
+  invertP (ap c₁)
+    ⇔⟨  resp≡⇔ (ext2syn {t₁} {t₂} {c₁} {c₂} c₁∼c₂) ⟩
+  invertP (ap c₂)
     ⇔⟨ id⇔ ⟩
   canonical c₂
     ⇔⟨ 2! inversionP ⟩
@@ -1602,5 +1574,41 @@ refl∼ (p ● q)   = inj₁ (refl∼ p , refl∼ q)
 refl∼ (⊕1• p)   = refl∼ p
 refl∼ (⊕2• q)   = refl∼ q
 refl∼ (p ⊗• q)  = refl∼ p , refl∼ q 
+
+-- Extensional view
+
+-- First we enumerate all the values of a given finite type
+
+size : U → ℕ
+size ZERO          = 0
+size ONE           = 1
+size (PLUS t₁ t₂)  = size  t₁ + size t₂
+size (TIMES t₁ t₂) = size t₁ * size  t₂
+
+enum : (t : U) → ⟦ t ⟧ → Fin (size t)
+enum ZERO ()                  -- absurd
+enum ONE tt                   = zero
+enum (PLUS t₁ t₂) (inj₁ v₁)   = inject+ (size t₂) (enum t₁ v₁)
+enum (PLUS t₁ t₂) (inj₂ v₂)   = raise (size t₁) (enum t₂ v₂)
+enum (TIMES t₁ t₂) (v₁ , v₂)  = fromℕ≤ (pr {s₁} {s₂} {n₁} {n₂})
+  where n₁ = enum t₁ v₁
+        n₂ = enum t₂ v₂
+        s₁ = size t₁ 
+        s₂ = size t₂
+        pr : {s₁ s₂ : ℕ} → {n₁ : Fin s₁} {n₂ : Fin s₂} → 
+             ((toℕ n₁ * s₂) + toℕ n₂) < (s₁ * s₂)
+        pr {0} {_} {()} 
+        pr {_} {0} {_} {()}
+        pr {suc s₁} {suc s₂} {zero} {zero} = {!z≤n!}
+        pr {suc s₁} {suc s₂} {zero} {Fsuc n₂} = {!!}
+        pr {suc s₁} {suc s₂} {Fsuc n₁} {zero} = {!!}
+        pr {suc s₁} {suc s₂} {Fsuc n₁} {Fsuc n₂} = {!!}
+
+vals3 : Fin 3 × Fin 3 × Fin 3
+vals3 = (enum THREE LL , enum THREE LR , enum THREE R)
+  where THREE = PLUS (PLUS ONE ONE) ONE
+        LL = inj₁ (inj₁ tt)
+        LR = inj₁ (inj₂ tt)
+        R  = inj₂ tt
 
 --}
