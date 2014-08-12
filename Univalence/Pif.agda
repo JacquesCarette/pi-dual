@@ -213,7 +213,7 @@ TOFFOLI = TIMES (PLUS x y) BOOL²
 -- There is a 2path between two permutations p and q if for each x, the
 -- result of p(x) and q(x) are identical. 
 
--- First we define the extensional view of a permutation as a function
+-- First we define the extensional view of a permutation as a function.
 
 ap : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
 ap unite₊ (inj₁ ())         -- absurd
@@ -382,6 +382,13 @@ resp◎ {t₁} {t₂} {t₃} {p} {q} {r} {s} α β v =
     ap r (ap q v)
       ≡⟨ β (ap q v) ⟩ 
     ap (q ◎ s) v ∎
+
+-- Because we representing combinators semantically as functions (not
+-- as permutations), we have to use function extensionality to compare
+-- the semantic representation. This need to be changed...
+
+postulate
+  funExtP : {A B : Set} {f g : A → B} → ((x : A) → f x ≡ g x) → (f ≡ g)
 
 -- The equivalence ∼ of paths makes U a 1groupoid: the points are
 -- types (t : U); the 1paths are ⟷; and the 2paths between them are
@@ -628,7 +635,7 @@ G' = record
 postulate 
   soundnessP : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₁ ∼ c₂)
 
--- postulate 
+-- postulate -- proved below
 --  completenessP : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → (c₁ ⇔ c₂)
 
 -- The idea is to invert evaluation and use that to extract from each
@@ -642,15 +649,12 @@ canonical : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂)
 canonical c = invertP (ap c)
 
 -- If we call invert with two extensionally equivalent permutations,
--- we get back the same combinator.
-
-postulate
-  funExtP : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → (ap c₁ ≡ ap c₂)
+-- we get back the same combinator. 
 
 ext2syn : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → 
           (c₁ ∼ c₂) → canonical c₁ ≡ canonical c₂
 ext2syn {t₁} {t₂} {c₁} {c₂} c₁∼c₂ = 
-  cong invertP (funExtP {t₁} {t₂} {c₁} {c₂} c₁∼c₂)
+  cong invertP (funExtP {⟦ t₁ ⟧} {⟦ t₂ ⟧} {ap c₁} {ap c₂} c₁∼c₂)
 
 -- Note that if c₁ ⇔ c₂, then by soundness c₁ ∼ c₂ and hence their
 -- canonical representatives are identical. 
@@ -674,11 +678,7 @@ completeness {t₁} {t₂} {c₁} {c₂} c₁∼c₂ =
   c₁
     ⇔⟨ inversionP ⟩
   canonical c₁
-    ⇔⟨ id⇔  ⟩
-  invertP (ap c₁)
     ⇔⟨  resp≡⇔ (ext2syn {t₁} {t₂} {c₁} {c₂} c₁∼c₂) ⟩
-  invertP (ap c₂)
-    ⇔⟨ id⇔ ⟩
   canonical c₂
     ⇔⟨ 2! inversionP ⟩
   c₂ ▤
