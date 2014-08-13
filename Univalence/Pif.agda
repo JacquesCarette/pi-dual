@@ -3,10 +3,13 @@
 module Pif where
 
 open import Relation.Binary.PropositionalEquality 
-  using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
+  using (_≡_; refl; sym; trans; subst; cong; cong₂; module ≡-Reasoning)
 open ≡-Reasoning
-open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_)
-open import Data.Fin using (Fin; zero; suc; toℕ; fromℕ; _ℕ-_; inject+) 
+open import Data.Nat.Properties.Simple using (+-right-identity; +-suc)
+
+open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _≤_; z≤n; s≤s)
+open import Data.Fin 
+  using (Fin; zero; suc; toℕ; fromℕ; _ℕ-_; inject+; inject≤) 
 open import Data.Vec using (Vec; tabulate; []; _∷_; [_]; map; _++_; concat)
 open import Function using (id; _∘_)
 
@@ -224,7 +227,8 @@ data Perm : ℕ → Set where
 permute : ∀ {ℓ n} {A : Set ℓ} → Perm n → Vec A n → Vec A n 
 permute [] [] = []
 permute (p ∷ ps) (x ∷ xs) = insert (permute ps xs) p x
-  where insert : ∀ {ℓ n} {A : Set ℓ} → Vec A n → Fin (suc n) → A → Vec A (suc n)
+  where insert : ∀ {ℓ n} {A : Set ℓ} → 
+          Vec A n → Fin (suc n) → A → Vec A (suc n)
         insert xs zero a = a ∷ xs
         insert [] (suc ()) 
         insert (x ∷ xs) (suc i) a = x ∷ insert xs i a
@@ -291,44 +295,38 @@ z₃ = permute t₃ ordered
 α₃ = permute u₃ ordered
 
 ------------------------------------------------------------------------------
--- Semantics of combinators as permutations
+-- Library for permutations
 
--- Useful permutations
+-- id
 
 idperm : ∀ {n} → Perm n
 idperm {0}     = []
 idperm {suc n} = zero ∷ idperm
 
--- swapperm uses i as an anchor point; swaps everything before i to
--- after and vice-versa, 
--- e.g., swapperm { 0 -> 1, 1 -> 2, 2 -> 3, 3 -> 0 } 1
--- produces { 0 -> 2, 1 -> 3, 2 -> 0, 3 -> 1}
+-- swap
+-- 
+-- swapperm produces the permutations that maps:
+-- [ a , b || x , y , z ] 
+-- to 
+-- [ x , y , z || a , b ]
 
-  -- v = [ a , b || x , y , z ] 
--- let s1 = size of t1, s2 = size of t2
--- p = [ s2, s2 , ... s2(s1times), 0, 0, ... 0(s2times) ]
---    split permutation at index
---    have [ x , y , z ]
--- v = [ x , y , z || a , b ]
-
--- pr : ∀ {n} {i : Fin n} → Fin ((fromℕ (n ∸ toℕ i)) + toℕ i) ≡ Fin (suc n)
--- pr = {!!} 
-
--- simp : ∀ {n i} → Fin ((fromℕ (n ∸ toℕ i)) + toℕ i) ≡ Fin (suc n) → 
---          Fin ((fromℕ (n ∸ toℕ i)) + toℕ i) →  Fin (suc n)
--- simp {m} {n} pr x rewrite pr = x
--- n != n ∸ toℕ i + toℕ i of type ℕ
--- when checking that the expression swapperm {n} i has type
--- Perm (n ∸ toℕ i + toℕ i)
-
-pr : ∀ {n} {i : Fin n} → Fin (suc (n ∸ toℕ i) + toℕ i) ≡ Fin (suc n)
-pr = {!!} 
+-+-id : (n : ℕ) → (i : Fin n) → suc (n ∸ toℕ i) + toℕ i ≡ suc n
+-+-id 0 ()
+-+-id (suc n) zero = +-right-identity (suc (suc n))
+-+-id (suc n) (suc i) = begin
+  suc (suc n ∸ toℕ (suc i)) + toℕ (suc i) 
+    ≡⟨ refl ⟩
+  suc (n ∸ toℕ i) + suc (toℕ i) 
+    ≡⟨ +-suc (suc (n ∸ toℕ i)) (toℕ i) ⟩
+  suc (suc (n ∸ toℕ i) + toℕ i)
+    ≡⟨ cong suc (-+-id n i) ⟩
+  suc (suc n) ∎
 
 simp : ∀ {n} {i : Fin n} → Fin (suc (n ∸ toℕ i) + toℕ i) → Fin (suc n)
-simp {n} {i} x = help {n} {i} (pr {n} {i}) x 
-  where help : ∀ {n} {i : Fin n} → Fin (suc (n ∸ toℕ i) + toℕ i) ≡ Fin (suc n) → 
+simp {n} {i} x = help {n} {i} (-+-id n i) x 
+  where help : ∀ {n} {i : Fin n} → suc (n ∸ toℕ i) + toℕ i ≡ suc n → 
                Fin (suc (n ∸ toℕ i) + toℕ i) → Fin (suc n)
-        help pr x rewrite pr = x
+        help pr x rewrite cong Fin pr = x
 
 swapperm : ∀ {n} → Fin n → Perm n
 swapperm {0} ()          -- can't give you an index 
@@ -336,43 +334,20 @@ swapperm {suc n} zero    = idperm
 swapperm {suc n} (suc i) = 
   simp {n} {i} (inject+ (toℕ i) (fromℕ (n ∸ toℕ i))) ∷ swapperm {n} i
 
-ttt : Perm 5
-ttt = swapperm {5} (inject+ 2 (fromℕ 2))
+-- Ex. 
+-- permute (swapperm {5} (inject+ 2 (fromℕ 2))) ordered=[0,1,2,3,4]
+-- produces [2,3,4,0,1]
+-- swapex : Perm 5
+-- swapex =   inject+ 1 (fromℕ 3) -- :: Fin 5
+--          ∷ inject+ 0 (fromℕ 3) -- :: Fin 4
+--          ∷ zero
+--         ∷ zero
+--          ∷ zero
+--          ∷ []
 
--- n != n ∸ toℕ i + toℕ i of type ℕ
--- when checking that the expression swapperm {n} i has type
--- Perm (n ∸ toℕ i + toℕ i)
-
-{--
-n - (x : Fin y) : Fin y
-
-swapperm : {n = 5} → (2 : Fin 5) → Perm 5
-  (3 : Fin 5) ∷ ...
-swapperm : {n = 4} → (1 : Fin 4) → Perm 4
-  (3 : Fin 4) ∷ ...
-swapperm : {n = 3} → (0 : Fin 3) → Perm 3
-
---}
---swapperm {0} () -- can't give you an index 
---swapperm {suc n} zero = idperm
---swapperm {suc n} (suc i) = {!!} ∷ swapperm {n} i
--- Fin (suc n) 
-
-
--- n=5, i=2;  [0,1 || 2,3,4]; result [2,3,4 || 0,1]
--- n=4, i=1;  [1 || 2,3,4] result [2,3,4 || 1]
--- n=3, i=0;  [2,3,4] result [2,3,4]
-swapex : Perm 5
-swapex =   inject+ 1 (fromℕ 3) -- :: Fin 5
-         ∷ inject+ 0 (fromℕ 3) -- :: Fin 4
-         ∷ zero
-         ∷ zero
-         ∷ zero
-         ∷ []
-
--- orderd [0,1,2,3,4]
-
--- A type is mapped to its size s; the values of the type are the values of Fin s
+------------------------------------------------------------------------------
+-- A type is mapped to its size s; the values of the type are the
+-- values of Fin s
 
 utoℕ : U → ℕ
 utoℕ ZERO          = 0
@@ -394,6 +369,10 @@ normalℕ = ufromℕ ∘ utoℕ
 -- = utoℕ t₂. This permutation maps a vector Fin s values to another
 -- vector of Fin s values. 
 
+suc≤ : (m n : ℕ) → suc m ≤ m + suc n
+suc≤ 0 n = s≤s z≤n
+suc≤ (suc m) n = s≤s (suc≤ m n)
+
 comb2perm : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Perm (utoℕ t₁)
 comb2perm {PLUS ZERO t} {.t} unite₊ = idperm
   -- input vector is of the shape [] ++ vs = vs 
@@ -403,7 +382,10 @@ comb2perm {t} {PLUS ZERO .t} uniti₊ = idperm
   -- input vector is of the shape vs
   -- output vector is of the shape [] ++ vs = vs 
   -- permutation does need to do anything
-comb2perm {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = {!!}
+comb2perm {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ with utoℕ t₂
+... | 0 = idperm 
+... | suc j = swapperm {utoℕ t₁ + suc j} 
+               (inject≤ (fromℕ (utoℕ t₁)) (suc≤ (utoℕ t₁) j))
   -- input vector is of the shape vs₁ ++ vs₂
   -- output vector is of the shape vs₂ ++ vs₁
   -- e.g. [a , b] ++ [x , y , z] = [a , b , x, y , z] 
@@ -424,5 +406,9 @@ comb2perm id⟷      = idperm
 comb2perm (c₁ ◎ c₂) = idperm --
 comb2perm (c₁ ⊕ c₂) = idperm --
 comb2perm (c₁ ⊗ c₂) = idperm  --
+
+yyy = comb2perm {PLUS ONE ONE} {PLUS ONE ONE} swap₊
+
+zzz = permute yyy ordered
 
 ------------------------------------------------------------------------------
