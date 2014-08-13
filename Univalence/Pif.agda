@@ -9,7 +9,7 @@ open import Data.Nat.Properties.Simple using (+-right-identity; +-suc)
 
 open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _≤_; z≤n; s≤s)
 open import Data.Fin 
-  using (Fin; zero; suc; toℕ; fromℕ; _ℕ-_; raise; inject+; inject≤) 
+  using (Fin; zero; suc; toℕ; fromℕ; _ℕ-_; raise; inject+; inject≤; _≻toℕ_) 
 open import Data.Vec using (Vec; tabulate; []; _∷_; [_]; map; _++_; concat)
 open import Function using (id; _∘_)
 
@@ -376,18 +376,30 @@ utoVec (PLUS t₁ t₂)  = map inj₁ (utoVec t₁) ++ map inj₂ (utoVec t₂)
 utoVec (TIMES t₁ t₂) = 
   concat (map (λ v₁ → map (λ v₂ → (v₁ , v₂)) (utoVec t₂)) (utoVec t₁))
 
+xxx : {s₁ s₂ : ℕ} → (i : Fin s₁) → (j : Fin s₂) → 
+      suc (toℕ i * s₂ + toℕ j) ≤ s₁ * s₂
+xxx {0} {_} ()
+xxx {suc s₁} {s₂} i j = {!!} 
+
+-- i  : Fin (suc s₁)
+-- j  : Fin s₂
+-- ?0 : suc (toℕ i * s₂ + toℕ j)  ≤ suc s₁ * s₂
+--      (suc (toℕ i) * s₂ + toℕ j ≤ s₂ + s₁ * s₂
+--      (suc (toℕ i) * s₂ + toℕ j ≤ s₁ * s₂ + s₂
+
+
+
 utoVecℕ : (t : U) → Vec (Fin (utoℕ t)) (utoℕ t)
 utoVecℕ ZERO          = []
 utoVecℕ ONE           = [ zero ]
 utoVecℕ (PLUS t₁ t₂)  = 
   map (inject+ (utoℕ t₂)) (utoVecℕ t₁) ++ 
   map (raise (utoℕ t₁)) (utoVecℕ t₂)
-utoVecℕ (TIMES t₁ t₂) = {!!}
-
--- The following equality justifies using idperm as the semantics for unite₊
-
-unite₊V : {t : U} → utoVecℕ (PLUS ZERO t) ≡ utoVecℕ t
-unite₊V = {!!} 
+utoVecℕ (TIMES t₁ t₂) = 
+  concat (map (λ i → map (λ j → inject≤ (fromℕ (toℕ i * utoℕ t₂ + toℕ j)) 
+                                (xxx i j))
+                     (utoVecℕ t₂))
+         (utoVecℕ t₁))
 
 -- normalize a finite type to (1 + (1 + (1 + ... + (1 + 0) ... )))
 -- a bunch of ones ending with zero with left biased + in between
