@@ -225,12 +225,6 @@ TOFFOLI = TIMES (PLUS x y) BOOL²
     ≡⟨ cong suc (-+-id n i) ⟩
   suc (suc n) ∎
 
-simp-+-id : ∀ {n} {i : Fin n} → Fin (suc (n ∸ toℕ i) + toℕ i) → Fin (suc n)
-simp-+-id {n} {i} x = help {n} {i} (-+-id n i) x 
-  where help : ∀ {n} {i : Fin n} → suc (n ∸ toℕ i) + toℕ i ≡ suc n → 
-               Fin (suc (n ∸ toℕ i) + toℕ i) → Fin (suc n)
-        help pr x rewrite cong Fin pr = x
-
 suc≤ : (m n : ℕ) → suc m ≤ m + suc n
 suc≤ 0 n = s≤s z≤n
 suc≤ (suc m) n = s≤s (suc≤ m n)
@@ -339,7 +333,8 @@ swapperm : ∀ {n} → Fin n → Perm n
 swapperm {0} ()          -- can't give you an index 
 swapperm {suc n} zero    = idperm
 swapperm {suc n} (suc i) = 
-  simp-+-id {n} {i} (inject+ (toℕ i) (fromℕ (n ∸ toℕ i))) ∷ swapperm {n} i
+  subst Fin (-+-id n i) 
+    (inject+ (toℕ i) (fromℕ (n ∸ toℕ i))) ∷ swapperm {n} i
 
 -- Ex. 
 -- permute (swapperm {5} (inject+ 2 (fromℕ 2))) ordered=[0,1,2,3,4]
