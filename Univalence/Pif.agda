@@ -9,7 +9,7 @@ open import Data.Nat.Properties.Simple using (+-right-identity; +-suc)
 
 open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _≤_; z≤n; s≤s)
 open import Data.Fin 
-  using (Fin; zero; suc; toℕ; fromℕ; _ℕ-_; inject+; inject≤) 
+  using (Fin; zero; suc; toℕ; fromℕ; _ℕ-_; raise; inject+; inject≤) 
 open import Data.Vec using (Vec; tabulate; []; _∷_; [_]; map; _++_; concat)
 open import Function using (id; _∘_)
 
@@ -211,6 +211,31 @@ TOFFOLI = TIMES (PLUS x y) BOOL²
          c₁ ⊗ c₂ ∎)
 
 ------------------------------------------------------------------------------
+-- Fin lemmas
+
+-+-id : (n : ℕ) → (i : Fin n) → suc (n ∸ toℕ i) + toℕ i ≡ suc n
+-+-id 0 ()
+-+-id (suc n) zero = +-right-identity (suc (suc n))
+-+-id (suc n) (suc i) = begin
+  suc (suc n ∸ toℕ (suc i)) + toℕ (suc i) 
+    ≡⟨ refl ⟩
+  suc (n ∸ toℕ i) + suc (toℕ i) 
+    ≡⟨ +-suc (suc (n ∸ toℕ i)) (toℕ i) ⟩
+  suc (suc (n ∸ toℕ i) + toℕ i)
+    ≡⟨ cong suc (-+-id n i) ⟩
+  suc (suc n) ∎
+
+simp-+-id : ∀ {n} {i : Fin n} → Fin (suc (n ∸ toℕ i) + toℕ i) → Fin (suc n)
+simp-+-id {n} {i} x = help {n} {i} (-+-id n i) x 
+  where help : ∀ {n} {i : Fin n} → suc (n ∸ toℕ i) + toℕ i ≡ suc n → 
+               Fin (suc (n ∸ toℕ i) + toℕ i) → Fin (suc n)
+        help pr x rewrite cong Fin pr = x
+
+suc≤ : (m n : ℕ) → suc m ≤ m + suc n
+suc≤ 0 n = s≤s z≤n
+suc≤ (suc m) n = s≤s (suc≤ m n)
+
+------------------------------------------------------------------------------
 -- Extensional view of permutations. One possibility of course is to
 -- represent them as functions but this is a poor representation and
 -- eventually requires function extensionality. Instead we represent them as
@@ -310,38 +335,21 @@ idperm {suc n} = zero ∷ idperm
 -- to 
 -- [ x , y , z || a , b ]
 
--+-id : (n : ℕ) → (i : Fin n) → suc (n ∸ toℕ i) + toℕ i ≡ suc n
--+-id 0 ()
--+-id (suc n) zero = +-right-identity (suc (suc n))
--+-id (suc n) (suc i) = begin
-  suc (suc n ∸ toℕ (suc i)) + toℕ (suc i) 
-    ≡⟨ refl ⟩
-  suc (n ∸ toℕ i) + suc (toℕ i) 
-    ≡⟨ +-suc (suc (n ∸ toℕ i)) (toℕ i) ⟩
-  suc (suc (n ∸ toℕ i) + toℕ i)
-    ≡⟨ cong suc (-+-id n i) ⟩
-  suc (suc n) ∎
-
-simp : ∀ {n} {i : Fin n} → Fin (suc (n ∸ toℕ i) + toℕ i) → Fin (suc n)
-simp {n} {i} x = help {n} {i} (-+-id n i) x 
-  where help : ∀ {n} {i : Fin n} → suc (n ∸ toℕ i) + toℕ i ≡ suc n → 
-               Fin (suc (n ∸ toℕ i) + toℕ i) → Fin (suc n)
-        help pr x rewrite cong Fin pr = x
-
 swapperm : ∀ {n} → Fin n → Perm n
 swapperm {0} ()          -- can't give you an index 
 swapperm {suc n} zero    = idperm
 swapperm {suc n} (suc i) = 
-  simp {n} {i} (inject+ (toℕ i) (fromℕ (n ∸ toℕ i))) ∷ swapperm {n} i
+  simp-+-id {n} {i} (inject+ (toℕ i) (fromℕ (n ∸ toℕ i))) ∷ swapperm {n} i
 
 -- Ex. 
 -- permute (swapperm {5} (inject+ 2 (fromℕ 2))) ordered=[0,1,2,3,4]
 -- produces [2,3,4,0,1]
+-- Explicitly:
 -- swapex : Perm 5
 -- swapex =   inject+ 1 (fromℕ 3) -- :: Fin 5
 --          ∷ inject+ 0 (fromℕ 3) -- :: Fin 4
 --          ∷ zero
---         ∷ zero
+--          ∷ zero
 --          ∷ zero
 --          ∷ []
 
@@ -359,6 +367,28 @@ ufromℕ : ℕ → U
 ufromℕ 0       = ZERO
 ufromℕ (suc n) = PLUS ONE (ufromℕ n)
 
+-- Vector representation so that we can test permutations
+
+utoVec : (t : U) → Vec ⟦ t ⟧ (utoℕ t)
+utoVec ZERO          = []
+utoVec ONE           = [ tt ]
+utoVec (PLUS t₁ t₂)  = map inj₁ (utoVec t₁) ++ map inj₂ (utoVec t₂)
+utoVec (TIMES t₁ t₂) = 
+  concat (map (λ v₁ → map (λ v₂ → (v₁ , v₂)) (utoVec t₂)) (utoVec t₁))
+
+utoVecℕ : (t : U) → Vec (Fin (utoℕ t)) (utoℕ t)
+utoVecℕ ZERO          = []
+utoVecℕ ONE           = [ zero ]
+utoVecℕ (PLUS t₁ t₂)  = 
+  map (inject+ (utoℕ t₂)) (utoVecℕ t₁) ++ 
+  map (raise (utoℕ t₁)) (utoVecℕ t₂)
+utoVecℕ (TIMES t₁ t₂) = {!!}
+
+-- The following equality justifies using idperm as the semantics for unite₊
+
+unite₊V : {t : U} → utoVecℕ (PLUS ZERO t) ≡ utoVecℕ t
+unite₊V = {!!} 
+
 -- normalize a finite type to (1 + (1 + (1 + ... + (1 + 0) ... )))
 -- a bunch of ones ending with zero with left biased + in between
 
@@ -368,10 +398,6 @@ normalℕ = ufromℕ ∘ utoℕ
 -- A combinator t₁ ⟷ t₂ is mapped to a permutation of size s = utoℕ t₁
 -- = utoℕ t₂. This permutation maps a vector Fin s values to another
 -- vector of Fin s values. 
-
-suc≤ : (m n : ℕ) → suc m ≤ m + suc n
-suc≤ 0 n = s≤s z≤n
-suc≤ (suc m) n = s≤s (suc≤ m n)
 
 comb2perm : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Perm (utoℕ t₁)
 comb2perm {PLUS ZERO t} {.t} unite₊ = idperm
@@ -406,9 +432,5 @@ comb2perm id⟷      = idperm
 comb2perm (c₁ ◎ c₂) = idperm --
 comb2perm (c₁ ⊕ c₂) = idperm --
 comb2perm (c₁ ⊗ c₂) = idperm  --
-
-yyy = comb2perm {PLUS ONE ONE} {PLUS ONE ONE} swap₊
-
-zzz = permute yyy ordered
 
 ------------------------------------------------------------------------------
