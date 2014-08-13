@@ -5,10 +5,10 @@ module Pif where
 open import Relation.Binary.PropositionalEquality 
   using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
 open ≡-Reasoning
-open import Data.Nat using (ℕ; suc)
-open import Data.Fin using (Fin; zero; suc; fromℕ; inject+) 
-open import Data.Vec using (Vec; tabulate; []; _∷_)
-open import Function using (id)
+open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_)
+open import Data.Fin using (Fin; zero; suc; toℕ; fromℕ; _ℕ-_; inject+) 
+open import Data.Vec using (Vec; tabulate; []; _∷_; [_]; map; _++_; concat)
+open import Function using (id; _∘_)
 
 open import Data.Empty   using (⊥)
 open import Data.Unit    using (⊤; tt)
@@ -219,41 +219,28 @@ data Perm : ℕ → Set where
   []  : Perm 0
   _∷_ : {n : ℕ} → (p : Fin (suc n)) → (ps : Perm n) → Perm (suc n)
 
--- fix ℕ vs. A vs. Fin 
--- write semantics that converts combinator to permutation
+-- A permutation acts on a vector...
 
-toℕ : U → ℕ
-toℕ ZERO          = 0
-toℕ ONE           = 1
-toℕ (PLUS t₁ t₂)  = toℕ t₁ Data.Nat.+ toℕ t₂
-toℕ (TIMES t₁ t₂) = toℕ t₁ Data.Nat.* toℕ t₂
+permute : ∀ {ℓ n} {A : Set ℓ} → Perm n → Vec A n → Vec A n 
+permute [] [] = []
+permute (p ∷ ps) (x ∷ xs) = insert (permute ps xs) p x
+  where insert : ∀ {ℓ n} {A : Set ℓ} → Vec A n → Fin (suc n) → A → Vec A (suc n)
+        insert xs zero a = a ∷ xs
+        insert [] (suc ()) 
+        insert (x ∷ xs) (suc i) a = x ∷ insert xs i a
 
-eval : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Perm (toℕ t₁)
-eval c = {!!} 
+-- Examples permutations and their actions on a simple ordered vector
 
--- Show permutation as vector
-
--- insert : ∀ {n} → Vec ℕ n → Fin (suc n) → ℕ → Vec ℕ (suc n)
-insert : ∀ {n} → Vec ℕ n → Fin (suc n) → ℕ → Vec ℕ (suc n)
-insert xs zero a = a ∷ xs
-insert [] (suc ()) 
-insert (x ∷ xs) (suc i) a = x ∷ insert xs i a
-
-perm2vec : ∀ {n} → Perm n → Vec ℕ n → Vec ℕ n 
-perm2vec [] [] = []
-perm2vec (p ∷ ps) (x ∷ xs) = insert (perm2vec ps xs) p x
-
---idvec : ∀ {n} → Vec ℕ n
---idvec {n} = tabulate id
-
--- Examples
+-- ordered vector: position i has value i
+ordered : ∀ {n} → Vec (Fin n) n
+ordered = tabulate id
 
 -- empty permutation p₀ { }
 
 p₀ : Perm 0
 p₀ = []
 
-v₀ = perm2vec p₀ []
+v₀ = permute p₀ ordered
 
 -- permutation p₁ { 0 -> 0 }
 
@@ -261,7 +248,7 @@ p₁ : Perm 1
 p₁ = 0F ∷ p₀
   where 0F = fromℕ 0
 
-v₁ = perm2vec p₁ (0 ∷ [])
+v₁ = permute p₁ ordered
 
 -- permutations p₂ { 0 -> 0, 1 -> 1 }
 --              q₂ { 0 -> 1, 1 -> 0 }
@@ -272,8 +259,8 @@ p₂ = 0F ∷ p₁
 q₂ = 1F ∷ p₁
   where 1F = fromℕ 1
 
-v₂ = perm2vec p₂ (0 ∷ 1 ∷ [])
-w₂ = perm2vec q₂ (0 ∷ 1 ∷ [])
+v₂ = permute p₂ ordered
+w₂ = permute q₂ ordered
 
 -- permutations p₃ { 0 -> 0, 1 -> 1, 2 -> 2 }
 --              s₃ { 0 -> 0, 1 -> 2, 2 -> 1 }
@@ -296,12 +283,146 @@ t₃ = 1F ∷ q₂
 u₃ = 2F ∷ q₂
   where 2F = fromℕ 2
 
-v₃ = perm2vec p₃ (0 ∷ 1 ∷ 2 ∷ [])
-y₃ = perm2vec s₃ (0 ∷ 1 ∷ 2 ∷ [])
-w₃ = perm2vec q₃ (0 ∷ 1 ∷ 2 ∷ [])
-x₃ = perm2vec r₃ (0 ∷ 1 ∷ 2 ∷ [])
-z₃ = perm2vec t₃ (0 ∷ 1 ∷ 2 ∷ [])
-α₃ = perm2vec u₃ (0 ∷ 1 ∷ 2 ∷ [])
+v₃ = permute p₃ ordered
+y₃ = permute s₃ ordered
+w₃ = permute q₃ ordered
+x₃ = permute r₃ ordered
+z₃ = permute t₃ ordered
+α₃ = permute u₃ ordered
 
+------------------------------------------------------------------------------
+-- Semantics of combinators as permutations
+
+-- Useful permutations
+
+idperm : ∀ {n} → Perm n
+idperm {0}     = []
+idperm {suc n} = zero ∷ idperm
+
+-- swapperm uses i as an anchor point; swaps everything before i to
+-- after and vice-versa, 
+-- e.g., swapperm { 0 -> 1, 1 -> 2, 2 -> 3, 3 -> 0 } 1
+-- produces { 0 -> 2, 1 -> 3, 2 -> 0, 3 -> 1}
+
+  -- v = [ a , b || x , y , z ] 
+-- let s1 = size of t1, s2 = size of t2
+-- p = [ s2, s2 , ... s2(s1times), 0, 0, ... 0(s2times) ]
+--    split permutation at index
+--    have [ x , y , z ]
+-- v = [ x , y , z || a , b ]
+
+-- pr : ∀ {n} {i : Fin n} → Fin ((fromℕ (n ∸ toℕ i)) + toℕ i) ≡ Fin (suc n)
+-- pr = {!!} 
+
+-- simp : ∀ {n i} → Fin ((fromℕ (n ∸ toℕ i)) + toℕ i) ≡ Fin (suc n) → 
+--          Fin ((fromℕ (n ∸ toℕ i)) + toℕ i) →  Fin (suc n)
+-- simp {m} {n} pr x rewrite pr = x
+-- n != n ∸ toℕ i + toℕ i of type ℕ
+-- when checking that the expression swapperm {n} i has type
+-- Perm (n ∸ toℕ i + toℕ i)
+
+pr : ∀ {n} {i : Fin n} → Fin (suc (n ∸ toℕ i) + toℕ i) ≡ Fin (suc n)
+pr = {!!} 
+
+simp : ∀ {n} {i : Fin n} → Fin (suc (n ∸ toℕ i) + toℕ i) → Fin (suc n)
+simp {n} {i} x = help {n} {i} (pr {n} {i}) x 
+  where help : ∀ {n} {i : Fin n} → Fin (suc (n ∸ toℕ i) + toℕ i) ≡ Fin (suc n) → 
+               Fin (suc (n ∸ toℕ i) + toℕ i) → Fin (suc n)
+        help pr x rewrite pr = x
+
+swapperm : ∀ {n} → Fin n → Perm n
+swapperm {0} ()          -- can't give you an index 
+swapperm {suc n} zero    = idperm
+swapperm {suc n} (suc i) = 
+  simp {n} {i} (inject+ (toℕ i) (fromℕ (n ∸ toℕ i))) ∷ swapperm {n} i
+
+ttt : Perm 5
+ttt = swapperm {5} (inject+ 2 (fromℕ 2))
+
+-- n != n ∸ toℕ i + toℕ i of type ℕ
+-- when checking that the expression swapperm {n} i has type
+-- Perm (n ∸ toℕ i + toℕ i)
+
+{--
+n - (x : Fin y) : Fin y
+
+swapperm : {n = 5} → (2 : Fin 5) → Perm 5
+  (3 : Fin 5) ∷ ...
+swapperm : {n = 4} → (1 : Fin 4) → Perm 4
+  (3 : Fin 4) ∷ ...
+swapperm : {n = 3} → (0 : Fin 3) → Perm 3
+
+--}
+--swapperm {0} () -- can't give you an index 
+--swapperm {suc n} zero = idperm
+--swapperm {suc n} (suc i) = {!!} ∷ swapperm {n} i
+-- Fin (suc n) 
+
+
+-- n=5, i=2;  [0,1 || 2,3,4]; result [2,3,4 || 0,1]
+-- n=4, i=1;  [1 || 2,3,4] result [2,3,4 || 1]
+-- n=3, i=0;  [2,3,4] result [2,3,4]
+swapex : Perm 5
+swapex =   inject+ 1 (fromℕ 3) -- :: Fin 5
+         ∷ inject+ 0 (fromℕ 3) -- :: Fin 4
+         ∷ zero
+         ∷ zero
+         ∷ zero
+         ∷ []
+
+-- orderd [0,1,2,3,4]
+
+-- A type is mapped to its size s; the values of the type are the values of Fin s
+
+utoℕ : U → ℕ
+utoℕ ZERO          = 0
+utoℕ ONE           = 1
+utoℕ (PLUS t₁ t₂)  = utoℕ t₁ + utoℕ t₂
+utoℕ (TIMES t₁ t₂) = utoℕ t₁ * utoℕ t₂
+
+ufromℕ : ℕ → U
+ufromℕ 0       = ZERO
+ufromℕ (suc n) = PLUS ONE (ufromℕ n)
+
+-- normalize a finite type to (1 + (1 + (1 + ... + (1 + 0) ... )))
+-- a bunch of ones ending with zero with left biased + in between
+
+normalℕ : U → U
+normalℕ = ufromℕ ∘ utoℕ
+
+-- A combinator t₁ ⟷ t₂ is mapped to a permutation of size s = utoℕ t₁
+-- = utoℕ t₂. This permutation maps a vector Fin s values to another
+-- vector of Fin s values. 
+
+comb2perm : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Perm (utoℕ t₁)
+comb2perm {PLUS ZERO t} {.t} unite₊ = idperm
+  -- input vector is of the shape [] ++ vs = vs 
+  -- output vector is of the shape vs
+  -- permutation does need to do anything
+comb2perm {t} {PLUS ZERO .t} uniti₊ = idperm
+  -- input vector is of the shape vs
+  -- output vector is of the shape [] ++ vs = vs 
+  -- permutation does need to do anything
+comb2perm {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = {!!}
+  -- input vector is of the shape vs₁ ++ vs₂
+  -- output vector is of the shape vs₂ ++ vs₁
+  -- e.g. [a , b] ++ [x , y , z] = [a , b , x, y , z] 
+  -- permutation needs to produce
+  -- e.g. [x , y , z] ++ [a , b] = [x , y , z , a , b] 
+comb2perm assocl₊   = idperm
+comb2perm assocr₊   = idperm
+comb2perm unite⋆    = idperm
+comb2perm uniti⋆    = idperm
+comb2perm swap⋆     = idperm --
+comb2perm assocl⋆   = idperm
+comb2perm assocr⋆   = idperm
+comb2perm distz     = idperm
+comb2perm factorz   = idperm
+comb2perm dist      = idperm --
+comb2perm factor    = idperm --
+comb2perm id⟷      = idperm
+comb2perm (c₁ ◎ c₂) = idperm --
+comb2perm (c₁ ⊕ c₂) = idperm --
+comb2perm (c₁ ⊗ c₂) = idperm  --
 
 ------------------------------------------------------------------------------
