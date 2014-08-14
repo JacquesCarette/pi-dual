@@ -5,7 +5,9 @@ module Pif where
 open import Relation.Binary.PropositionalEquality 
   using (_≡_; refl; sym; trans; subst; cong; cong₂; module ≡-Reasoning)
 open ≡-Reasoning
-open import Data.Nat.Properties.Simple using (+-right-identity; +-suc)
+open import Data.Nat.Properties.Simple 
+  using (+-right-identity; +-suc; +-assoc; +-comm; 
+        *-assoc; *-comm; distribʳ-*-+)
 
 open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _≤_; z≤n; s≤s)
 open import Data.Fin 
@@ -255,6 +257,32 @@ utoVec (PLUS t₁ t₂)  = map inj₁ (utoVec t₁) ++ map inj₂ (utoVec t₂)
 utoVec (TIMES t₁ t₂) = 
   concat (map (λ v₁ → map (λ v₂ → (v₁ , v₂)) (utoVec t₂)) (utoVec t₁))
 
+size≡ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (size t₁ ≡ size t₂)
+size≡ {PLUS ZERO t} {.t} unite₊ = refl
+size≡ {t} {PLUS ZERO .t} uniti₊ = refl
+size≡ {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = +-comm (size t₁) (size t₂)
+size≡ {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ = 
+  sym (+-assoc (size t₁) (size t₂) (size t₃))
+size≡ {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} assocr₊ = 
+  +-assoc (size t₁) (size t₂) (size t₃)
+size≡ {TIMES ONE t} {.t} unite⋆ = +-right-identity (size t)
+size≡ {t} {TIMES ONE .t} uniti⋆ = sym (+-right-identity (size t))
+size≡ {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = *-comm (size t₁) (size t₂)
+size≡ {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} assocl⋆ = 
+  sym (*-assoc (size t₁) (size t₂) (size t₃))
+size≡ {TIMES (TIMES t₁ t₂) t₃} {TIMES .t₁ (TIMES .t₂ .t₃)} assocr⋆ = 
+  *-assoc (size t₁) (size t₂) (size t₃)
+size≡ {TIMES .ZERO t} {ZERO} distz = refl
+size≡ {ZERO} {TIMES ZERO t} factorz = refl
+size≡ {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)} dist = 
+  distribʳ-*-+ (size t₃) (size t₁) (size t₂)
+size≡ {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t₃} factor = 
+  sym (distribʳ-*-+ (size t₃) (size t₁) (size t₂))
+size≡ {t} {.t} id⟷ = refl
+size≡ (c₁ ◎ c₂) = trans (size≡ c₁) (size≡ c₂)
+size≡ {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = cong₂ _+_ (size≡ c₁) (size≡ c₂)
+size≡ {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = cong₂ _*_ (size≡ c₁) (size≡ c₂)
+
 -- A permutation is a sequence of "insertions".
 
 infixr 5 _∷_
@@ -301,14 +329,6 @@ idperm {suc n} = zero ∷ idperm
 -- [ a , b || x , y , z ] 
 -- to 
 -- [ x , y , z || a , b ]
-
-swapperm : ∀ {n} → Fin n → Perm n
-swapperm {0} ()          -- can't give you an index 
-swapperm {suc n} zero    = idperm
-swapperm {suc n} (suc i) = 
-  subst Fin (-+-id n i) 
-    (inject+ (toℕ i) (fromℕ (n ∸ toℕ i))) ∷ swapperm {n} i
-
 -- Ex. 
 -- permute (swapperm {5} (inject+ 2 (fromℕ 2))) ordered=[0,1,2,3,4]
 -- produces [2,3,4,0,1]
@@ -320,6 +340,18 @@ swapperm {suc n} (suc i) =
 --          ∷ zero
 --          ∷ zero
 --          ∷ []
+
+swapperm : ∀ {n} → Fin n → Perm n
+swapperm {0} ()          -- can't give you an index 
+swapperm {suc n} zero    = idperm
+swapperm {suc n} (suc i) = 
+  subst Fin (-+-id n i) 
+    (inject+ (toℕ i) (fromℕ (n ∸ toℕ i))) ∷ swapperm {n} i
+
+-- composition
+
+compperm : ∀ {m n} → (m ≡ n) → Perm m → Perm n → Perm m
+compperm sp α β = {!!} 
 
 ------------------------------------------------------------------------------
 -- A combinator t₁ ⟷ t₂ is mapped to a permutation of size s = size t₁
@@ -353,27 +385,26 @@ comb2perm {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} assocr₊
   -- output vector is of the shape vs₁ ++ (vs₂ ++ vs₃)
   -- permutation does nothing
 comb2perm {TIMES ONE t} {.t} unite⋆ = idperm
-  -- input vector is of the shape  vs
-  -- output vector is of the shape vs
   -- permutation does nothing
 comb2perm {t} {TIMES ONE .t} uniti⋆ = idperm
-  -- input vector is of the shape  vs
-  -- output vector is of the shape vs
   -- permutation does nothing
 comb2perm {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = idperm 
-  -- input vector is  t₁ sequences of length t₂ each
-  -- output vector is t₂ sequences of length t₁ each
-  -- e.g. from input [ a , b || c , d || e , f ]
-  -- permutation needs to produce
-  --                 [ a , b || c , d || e , f ]
+  -- permutation does nothing
 comb2perm assocl⋆   = idperm  
+  -- permutation does nothing
 comb2perm assocr⋆   = idperm  
+  -- permutation does nothing
 comb2perm distz     = idperm  
+  -- permutation does nothing
 comb2perm factorz   = idperm  
+  -- permutation does nothing
 comb2perm dist      = idperm  
+  -- permutation does nothing
 comb2perm factor    = idperm  
+  -- permutation does nothing
 comb2perm id⟷      = idperm  
-comb2perm (c₁ ◎ c₂) = {!!} 
+  -- permutation does nothing
+comb2perm (c₁ ◎ c₂) = compperm (size≡ c₁) (comb2perm c₁) (comb2perm c₂) 
 comb2perm (c₁ ⊕ c₂) = {!!} 
 comb2perm (c₁ ⊗ c₂) = {!!} 
 
