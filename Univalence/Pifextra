@@ -961,3 +961,68 @@ utoVec (PLUS t₁ t₂)  = map inj₁ (utoVec t₁) ++ map inj₂ (utoVec t₂)
 utoVec (TIMES t₁ t₂) = 
   concat (map (λ v₁ → map (λ v₂ → (v₁ , v₂)) (utoVec t₂)) (utoVec t₁))
 
+-- Examples permutations and their actions on a simple ordered vector
+
+module PermExamples where
+
+  -- ordered vector: position i has value i
+  ordered : ∀ {n} → Vec (Fin n) n
+  ordered = tabulate id
+
+  -- empty permutation p₀ { }
+
+  p₀ : Perm 0
+  p₀ = []
+
+  v₀ = permute p₀ ordered
+
+  -- permutation p₁ { 0 -> 0 }
+
+  p₁ : Perm 1
+  p₁ = 0F ∷ p₀
+    where 0F = fromℕ 0
+
+  v₁ = permute p₁ ordered
+
+  -- permutations p₂ { 0 -> 0, 1 -> 1 }
+  --              q₂ { 0 -> 1, 1 -> 0 }
+
+  p₂ q₂ : Perm 2
+  p₂ = 0F ∷ p₁ 
+    where 0F = inject+ 1 (fromℕ 0)
+  q₂ = 1F ∷ p₁
+    where 1F = fromℕ 1
+
+  v₂ = permute p₂ ordered
+  w₂ = permute q₂ ordered
+
+  -- permutations p₃ { 0 -> 0, 1 -> 1, 2 -> 2 }
+  --              s₃ { 0 -> 0, 1 -> 2, 2 -> 1 }
+  --              q₃ { 0 -> 1, 1 -> 0, 2 -> 2 }
+  --              r₃ { 0 -> 1, 1 -> 2, 2 -> 0 }
+  --              t₃ { 0 -> 2, 1 -> 0, 2 -> 1 }
+  --              u₃ { 0 -> 2, 1 -> 1, 2 -> 0 }
+
+  p₃ q₃ r₃ s₃ t₃ u₃ : Perm 3
+  p₃ = 0F ∷ p₂
+    where 0F = inject+ 2 (fromℕ 0)
+  s₃ = 0F ∷ q₂
+    where 0F = inject+ 2 (fromℕ 0)
+  q₃ = 1F ∷ p₂
+    where 1F = inject+ 1 (fromℕ 1)
+  r₃ = 2F ∷ p₂
+    where 2F = fromℕ 2
+  t₃ = 1F ∷ q₂
+    where 1F = inject+ 1 (fromℕ 1)
+  u₃ = 2F ∷ q₂
+    where 2F = fromℕ 2
+
+  v₃ = permute p₃ ordered
+  y₃ = permute s₃ ordered
+  w₃ = permute q₃ ordered
+  x₃ = permute r₃ ordered
+  z₃ = permute t₃ ordered
+  α₃ = permute u₃ ordered
+
+  -- end module PermExamples
+
