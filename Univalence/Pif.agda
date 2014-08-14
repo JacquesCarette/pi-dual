@@ -211,11 +211,15 @@ TOFFOLI = TIMES (PLUS x y) BOOL²
          c₁ ⊗ c₂ ∎)
 
 ------------------------------------------------------------------------------
--- Fin lemmas
+-- Nat and Fin lemmas
+
+suc≤ : (m n : ℕ) → suc m ≤ m + suc n
+suc≤ 0 n       = s≤s z≤n
+suc≤ (suc m) n = s≤s (suc≤ m n)
 
 -+-id : (n : ℕ) → (i : Fin n) → suc (n ∸ toℕ i) + toℕ i ≡ suc n
--+-id 0 ()
--+-id (suc n) zero = +-right-identity (suc (suc n))
+-+-id 0 ()            -- absurd
+-+-id (suc n) zero    = +-right-identity (suc (suc n))
 -+-id (suc n) (suc i) = begin
   suc (suc n ∸ toℕ (suc i)) + toℕ (suc i) 
     ≡⟨ refl ⟩
@@ -225,93 +229,107 @@ TOFFOLI = TIMES (PLUS x y) BOOL²
     ≡⟨ cong suc (-+-id n i) ⟩
   suc (suc n) ∎
 
-suc≤ : (m n : ℕ) → suc m ≤ m + suc n
-suc≤ 0 n = s≤s z≤n
-suc≤ (suc m) n = s≤s (suc≤ m n)
-
 ------------------------------------------------------------------------------
--- Extensional view of permutations. One possibility of course is to
--- represent them as functions but this is a poor representation and
--- eventually requires function extensionality. Instead we represent them as
--- vectors.
+-- Permutations
 
-infixr 5 _∷_
+-- One possibility of course is to represent them as functions but
+-- this is a poor representation and eventually requires function
+-- extensionality. Instead we represent them as vectors of insert
+-- positions.
 
-data Perm : ℕ → Set where
-  []  : Perm 0
-  _∷_ : {n : ℕ} → (p : Fin (suc n)) → (ps : Perm n) → Perm (suc n)
+data Perm (A B : Set) : ℕ → Set where
+  []        : Perm A B 0
+  trans+ins : {n : ℕ} → (p : Fin (suc n)) → (A → B) → (ps : Perm A B n) → 
+              Perm A B (suc n)
 
--- A permutation acts on a vector...
+-- A permutation acts on a vector, possibly relabeling the elements
 
-permute : ∀ {ℓ n} {A : Set ℓ} → Perm n → Vec A n → Vec A n 
-permute [] [] = []
-permute (p ∷ ps) (x ∷ xs) = insert (permute ps xs) p x
-  where insert : ∀ {ℓ n} {A : Set ℓ} → 
-          Vec A n → Fin (suc n) → A → Vec A (suc n)
+utoℕ : U → ℕ
+utoℕ ZERO          = 0
+utoℕ ONE           = 1
+utoℕ (PLUS t₁ t₂)  = utoℕ t₁ + utoℕ t₂
+utoℕ (TIMES t₁ t₂) = utoℕ t₁ * utoℕ t₂
+
+utoVec : (t : U) → Vec ⟦ t ⟧ (utoℕ t)
+utoVec ZERO          = []
+utoVec ONE           = [ tt ]
+utoVec (PLUS t₁ t₂)  = map inj₁ (utoVec t₁) ++ map inj₂ (utoVec t₂)
+utoVec (TIMES t₁ t₂) = 
+  concat (map (λ v₁ → map (λ v₂ → (v₁ , v₂)) (utoVec t₂)) (utoVec t₁))
+
+permute : ∀ {ℓ n} {A B : Set ℓ} → Perm A B n → Vec A n → Vec B n 
+permute [] _ [] = []
+permute (trans+ins p f ps) (x ∷ xs) = insert (permute ps xs) p (f x)
+  where insert : ∀ {ℓ n} {B : Set ℓ} → 
+          Vec B n → Fin (suc n) → B → Vec B (suc n)
         insert xs zero a = a ∷ xs
         insert [] (suc ()) 
         insert (x ∷ xs) (suc i) a = x ∷ insert xs i a
 
 -- Examples permutations and their actions on a simple ordered vector
 
--- ordered vector: position i has value i
-ordered : ∀ {n} → Vec (Fin n) n
-ordered = tabulate id
+module PermExamples where
 
--- empty permutation p₀ { }
+  -- ordered vector: position i has value i
+  ordered : ∀ {n} → Vec (Fin n) n
+  ordered = tabulate id
 
-p₀ : Perm 0
-p₀ = []
+  -- empty permutation p₀ { }
 
-v₀ = permute p₀ ordered
+  p₀ : Perm 0
+  p₀ = []
 
--- permutation p₁ { 0 -> 0 }
+  v₀ = permute p₀ id ordered
 
-p₁ : Perm 1
-p₁ = 0F ∷ p₀
-  where 0F = fromℕ 0
+  -- permutation p₁ { 0 -> 0 }
 
-v₁ = permute p₁ ordered
+  p₁ : Perm 1
+  p₁ = 0F ∷ p₀
+    where 0F = fromℕ 0
 
--- permutations p₂ { 0 -> 0, 1 -> 1 }
---              q₂ { 0 -> 1, 1 -> 0 }
+  v₁ = permute p₁ id ordered
 
-p₂ q₂ : Perm 2
-p₂ = 0F ∷ p₁ 
-  where 0F = inject+ 1 (fromℕ 0)
-q₂ = 1F ∷ p₁
-  where 1F = fromℕ 1
+  -- permutations p₂ { 0 -> 0, 1 -> 1 }
+  --              q₂ { 0 -> 1, 1 -> 0 }
 
-v₂ = permute p₂ ordered
-w₂ = permute q₂ ordered
+  p₂ q₂ : Perm 2
+  p₂ = 0F ∷ p₁ 
+    where 0F = inject+ 1 (fromℕ 0)
+  q₂ = 1F ∷ p₁
+    where 1F = fromℕ 1
 
--- permutations p₃ { 0 -> 0, 1 -> 1, 2 -> 2 }
---              s₃ { 0 -> 0, 1 -> 2, 2 -> 1 }
---              q₃ { 0 -> 1, 1 -> 0, 2 -> 2 }
---              r₃ { 0 -> 1, 1 -> 2, 2 -> 0 }
---              t₃ { 0 -> 2, 1 -> 0, 2 -> 1 }
---              u₃ { 0 -> 2, 1 -> 1, 2 -> 0 }
+  v₂ = permute p₂ id ordered
+  w₂ = permute q₂ id ordered
 
-p₃ q₃ r₃ s₃ t₃ u₃ : Perm 3
-p₃ = 0F ∷ p₂
-  where 0F = inject+ 2 (fromℕ 0)
-s₃ = 0F ∷ q₂
-  where 0F = inject+ 2 (fromℕ 0)
-q₃ = 1F ∷ p₂
-  where 1F = inject+ 1 (fromℕ 1)
-r₃ = 2F ∷ p₂
-  where 2F = fromℕ 2
-t₃ = 1F ∷ q₂
-  where 1F = inject+ 1 (fromℕ 1)
-u₃ = 2F ∷ q₂
-  where 2F = fromℕ 2
+  -- permutations p₃ { 0 -> 0, 1 -> 1, 2 -> 2 }
+  --              s₃ { 0 -> 0, 1 -> 2, 2 -> 1 }
+  --              q₃ { 0 -> 1, 1 -> 0, 2 -> 2 }
+  --              r₃ { 0 -> 1, 1 -> 2, 2 -> 0 }
+  --              t₃ { 0 -> 2, 1 -> 0, 2 -> 1 }
+  --              u₃ { 0 -> 2, 1 -> 1, 2 -> 0 }
 
-v₃ = permute p₃ ordered
-y₃ = permute s₃ ordered
-w₃ = permute q₃ ordered
-x₃ = permute r₃ ordered
-z₃ = permute t₃ ordered
-α₃ = permute u₃ ordered
+  p₃ q₃ r₃ s₃ t₃ u₃ : Perm 3
+  p₃ = 0F ∷ p₂
+    where 0F = inject+ 2 (fromℕ 0)
+  s₃ = 0F ∷ q₂
+    where 0F = inject+ 2 (fromℕ 0)
+  q₃ = 1F ∷ p₂
+    where 1F = inject+ 1 (fromℕ 1)
+  r₃ = 2F ∷ p₂
+    where 2F = fromℕ 2
+  t₃ = 1F ∷ q₂
+    where 1F = inject+ 1 (fromℕ 1)
+  u₃ = 2F ∷ q₂
+    where 2F = fromℕ 2
+
+  v₃ = permute p₃ id ordered
+  y₃ = permute s₃ id ordered
+  w₃ = permute q₃ id ordered
+  x₃ = permute r₃ id ordered
+  z₃ = permute t₃ id ordered
+  α₃ = permute u₃ id ordered
+
+  -- end module PermExamples
 
 ------------------------------------------------------------------------------
 -- Library for permutations
@@ -352,49 +370,9 @@ swapperm {suc n} (suc i) =
 -- A type is mapped to its size s; the values of the type are the
 -- values of Fin s
 
-utoℕ : U → ℕ
-utoℕ ZERO          = 0
-utoℕ ONE           = 1
-utoℕ (PLUS t₁ t₂)  = utoℕ t₁ + utoℕ t₂
-utoℕ (TIMES t₁ t₂) = utoℕ t₁ * utoℕ t₂
-
 ufromℕ : ℕ → U
 ufromℕ 0       = ZERO
 ufromℕ (suc n) = PLUS ONE (ufromℕ n)
-
--- Vector representation so that we can test permutations
-
-utoVec : (t : U) → Vec ⟦ t ⟧ (utoℕ t)
-utoVec ZERO          = []
-utoVec ONE           = [ tt ]
-utoVec (PLUS t₁ t₂)  = map inj₁ (utoVec t₁) ++ map inj₂ (utoVec t₂)
-utoVec (TIMES t₁ t₂) = 
-  concat (map (λ v₁ → map (λ v₂ → (v₁ , v₂)) (utoVec t₂)) (utoVec t₁))
-
-xxx : {s₁ s₂ : ℕ} → (i : Fin s₁) → (j : Fin s₂) → 
-      suc (toℕ i * s₂ + toℕ j) ≤ s₁ * s₂
-xxx {0} {_} ()
-xxx {suc s₁} {s₂} i j = {!!} 
-
--- i  : Fin (suc s₁)
--- j  : Fin s₂
--- ?0 : suc (toℕ i * s₂ + toℕ j)  ≤ suc s₁ * s₂
---      (suc (toℕ i) * s₂ + toℕ j ≤ s₂ + s₁ * s₂
---      (suc (toℕ i) * s₂ + toℕ j ≤ s₁ * s₂ + s₂
-
-
-
-utoVecℕ : (t : U) → Vec (Fin (utoℕ t)) (utoℕ t)
-utoVecℕ ZERO          = []
-utoVecℕ ONE           = [ zero ]
-utoVecℕ (PLUS t₁ t₂)  = 
-  map (inject+ (utoℕ t₂)) (utoVecℕ t₁) ++ 
-  map (raise (utoℕ t₁)) (utoVecℕ t₂)
-utoVecℕ (TIMES t₁ t₂) = 
-  concat (map (λ i → map (λ j → inject≤ (fromℕ (toℕ i * utoℕ t₂ + toℕ j)) 
-                                (xxx i j))
-                     (utoVecℕ t₂))
-         (utoVecℕ t₁))
 
 -- normalize a finite type to (1 + (1 + (1 + ... + (1 + 0) ... )))
 -- a bunch of ones ending with zero with left biased + in between
@@ -410,34 +388,87 @@ comb2perm : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Perm (utoℕ t₁)
 comb2perm {PLUS ZERO t} {.t} unite₊ = idperm
   -- input vector is of the shape [] ++ vs = vs 
   -- output vector is of the shape vs
-  -- permutation does need to do anything
+  -- permutation does nothing
 comb2perm {t} {PLUS ZERO .t} uniti₊ = idperm
   -- input vector is of the shape vs
   -- output vector is of the shape [] ++ vs = vs 
-  -- permutation does need to do anything
+  -- permutation does nothing
 comb2perm {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ with utoℕ t₂
-... | 0 = idperm 
+... | 0     = idperm 
 ... | suc j = swapperm {utoℕ t₁ + suc j} 
                (inject≤ (fromℕ (utoℕ t₁)) (suc≤ (utoℕ t₁) j))
-  -- input vector is of the shape vs₁ ++ vs₂
+  -- input vector is of the shape  vs₁ ++ vs₂
   -- output vector is of the shape vs₂ ++ vs₁
-  -- e.g. [a , b] ++ [x , y , z] = [a , b , x, y , z] 
+  -- e.g. from input [a , b || x, y , z] 
   -- permutation needs to produce
-  -- e.g. [x , y , z] ++ [a , b] = [x , y , z , a , b] 
-comb2perm assocl₊   = idperm
-comb2perm assocr₊   = idperm
-comb2perm unite⋆    = idperm
-comb2perm uniti⋆    = idperm
-comb2perm swap⋆     = idperm --
-comb2perm assocl⋆   = idperm
-comb2perm assocr⋆   = idperm
-comb2perm distz     = idperm
-comb2perm factorz   = idperm
-comb2perm dist      = idperm --
-comb2perm factor    = idperm --
-comb2perm id⟷      = idperm
-comb2perm (c₁ ◎ c₂) = idperm --
-comb2perm (c₁ ⊕ c₂) = idperm --
-comb2perm (c₁ ⊗ c₂) = idperm  --
+  -- output          [x , y , z || a , b] 
+comb2perm {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ = idperm
+  -- input vector is of the shape  vs₁ ++ (vs₂ ++ vs₃)
+  -- output vector is of the shape (vs₁ ++ vs₂) ++ vs₃
+  -- permutation does nothing
+comb2perm {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} assocr₊ = idperm
+  -- input vector is of the shape  (vs₁ ++ vs₂) ++ vs₃
+  -- output vector is of the shape vs₁ ++ (vs₂ ++ vs₃)
+  -- permutation does nothing
+comb2perm {TIMES ONE t} {.t} unite⋆ = idperm
+  -- input vector is of the shape  vs
+  -- output vector is of the shape vs
+  -- permutation does nothing
+comb2perm {t} {TIMES ONE .t} uniti⋆ = idperm
+  -- input vector is of the shape  vs
+  -- output vector is of the shape vs
+  -- permutation does nothing
+comb2perm {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = idperm 
+  -- input vector is  t₁ sequences of length t₂ each
+  -- output vector is t₂ sequences of length t₁ each
+  -- e.g. from input [ a , b || c , d || e , f ]
+  -- permutation needs to produce
+  --                 [ a , b || c , d || e , f ]
+comb2perm assocl⋆   = idperm  
+comb2perm assocr⋆   = idperm  
+comb2perm distz     = idperm  
+comb2perm factorz   = idperm  
+comb2perm dist      = idperm  
+comb2perm factor    = idperm  
+comb2perm id⟷      = idperm  
+comb2perm (c₁ ◎ c₂) = {!!} 
+comb2perm (c₁ ⊕ c₂) = {!!} 
+comb2perm (c₁ ⊗ c₂) = {!!} 
 
 ------------------------------------------------------------------------------
+-- Testing
+
+t₁  = utoVec (PLUS ZERO BOOL)
+-- inj₂ (inj₁ tt) ∷ inj₂ (inj₂ tt) ∷ []
+t₂  = utoVec BOOL
+-- inj₁ tt ∷ inj₂ tt ∷ []
+t₃  = utoVec (PLUS ONE BOOL)
+-- inj₁ tt ∷ inj₂ (inj₁ tt) ∷ inj₂ (inj₂ tt) ∷ []
+t₄  = utoVec (PLUS BOOL ONE)
+-- inj₁ (inj₁ tt) ∷ inj₁ (inj₂ tt) ∷ inj₂ tt ∷ []
+t₅  = utoVec (PLUS ONE (PLUS BOOL ONE))
+-- inj₁ tt ∷ inj₂ (inj₁ (inj₁ tt)) ∷ inj₂ (inj₁ (inj₂ tt)) ∷ inj₂ (inj₂ tt) ∷ []
+t₆  = utoVec (PLUS (PLUS ONE BOOL) ONE)
+-- inj₁ (inj₁ tt) ∷ inj₁ (inj₂ (inj₁ tt)) ∷ inj₁ (inj₂ (inj₂ tt)) ∷ inj₂ tt ∷ []
+t₇  = utoVec (TIMES ONE BOOL)
+-- (tt , inj₁ tt) ∷ (tt , inj₂ tt) ∷ []
+t₈  = utoVec (TIMES BOOL ONE)
+-- (inj₁ tt , tt) ∷ (inj₂ tt , tt) ∷ []
+t₉  = utoVec (TIMES ONE (TIMES BOOL ONE))
+-- (tt , inj₁ tt , tt) ∷ (tt , inj₂ tt , tt) ∷ []
+t₁₀ = utoVec (TIMES (TIMES ONE BOOL) ONE)
+-- ((tt , inj₁ tt) , tt) ∷ ((tt , inj₂ tt) , tt) ∷ []
+t₁₁ = utoVec (TIMES ZERO BOOL)
+-- []
+t₁₂ = utoVec (TIMES (PLUS BOOL ONE) BOOL)
+-- (inj₁ (inj₁ tt) , inj₁ tt) ∷
+-- (inj₁ (inj₁ tt) , inj₂ tt) ∷
+-- (inj₁ (inj₂ tt) , inj₁ tt) ∷
+-- (inj₁ (inj₂ tt) , inj₂ tt) ∷
+-- (inj₂ tt , inj₁ tt) ∷ (inj₂ tt , inj₂ tt) ∷ []
+t₁₃ = utoVec (PLUS (TIMES BOOL BOOL) (TIMES ONE BOOL))
+-- inj₁ (inj₁ tt , inj₁ tt) ∷
+-- inj₁ (inj₁ tt , inj₂ tt) ∷
+-- inj₁ (inj₂ tt , inj₁ tt) ∷
+-- inj₁ (inj₂ tt , inj₂ tt) ∷
+-- inj₂ (tt , inj₁ tt) ∷ inj₂ (tt , inj₂ tt) ∷ []
