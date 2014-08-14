@@ -1026,3 +1026,100 @@ module PermExamples where
 
   -- end module PermExamples
 
+------------------------------------------------------------------------------
+-- Testing
+
+t₁  = PLUS ZERO BOOL
+t₂  = BOOL
+m₁ = matchP {t₁} {t₂} unite₊
+-- (inj₂ (inj₁ tt) , inj₁ tt) ∷ (inj₂ (inj₂ tt) , inj₂ tt) ∷ []
+m₂ = matchP {t₂} {t₁} uniti₊
+-- (inj₁ tt , inj₂ (inj₁ tt)) ∷ (inj₂ tt , inj₂ (inj₂ tt)) ∷ []
+
+t₃ = PLUS BOOL ONE
+t₄ = PLUS ONE BOOL
+m₃ = matchP {t₃} {t₄} swap₊
+-- (inj₂ tt , inj₁ tt) ∷
+-- (inj₁ (inj₁ tt) , inj₂ (inj₁ tt)) ∷
+-- (inj₁ (inj₂ tt) , inj₂ (inj₂ tt)) ∷ []
+m₄ = matchP {t₄} {t₃} swap₊
+-- (inj₂ (inj₁ tt) , inj₁ (inj₁ tt)) ∷
+-- (inj₂ (inj₂ tt) , inj₁ (inj₂ tt)) ∷ 
+-- (inj₁ tt , inj₂ tt) ∷ []
+
+t₅  = PLUS ONE (PLUS BOOL ONE)
+t₆  = PLUS (PLUS ONE BOOL) ONE
+m₅ = matchP {t₅} {t₆} assocl₊
+-- (inj₁ tt , inj₁ (inj₁ tt)) ∷
+-- (inj₂ (inj₁ (inj₁ tt)) , inj₁ (inj₂ (inj₁ tt))) ∷
+-- (inj₂ (inj₁ (inj₂ tt)) , inj₁ (inj₂ (inj₂ tt))) ∷
+-- (inj₂ (inj₂ tt) , inj₂ tt) ∷ []
+m₆ = matchP {t₆} {t₅} assocr₊
+-- (inj₁ (inj₁ tt) , inj₁ tt) ∷
+-- (inj₁ (inj₂ (inj₁ tt)) , inj₂ (inj₁ (inj₁ tt))) ∷
+-- (inj₁ (inj₂ (inj₂ tt)) , inj₂ (inj₁ (inj₂ tt))) ∷
+-- (inj₂ tt , inj₂ (inj₂ tt)) ∷ []
+
+t₇ = TIMES ONE BOOL
+t₈ = BOOL
+m₇ = matchP {t₇} {t₈} unite⋆
+-- ((tt , inj₁ tt) , inj₁ tt) ∷ ((tt , inj₂ tt) , inj₂ tt) ∷ []
+m₈ = matchP {t₈} {t₇} uniti⋆
+-- (inj₁ tt , (tt , inj₁ tt)) ∷ (inj₂ tt , (tt , inj₂ tt)) ∷ []
+
+t₉  = TIMES BOOL ONE
+t₁₀ = TIMES ONE BOOL
+m₉  = matchP {t₉} {t₁₀} swap⋆
+-- ((inj₁ tt , tt) , (tt , inj₁ tt)) ∷
+-- ((inj₂ tt , tt) , (tt , inj₂ tt)) ∷ []
+m₁₀ = matchP {t₁₀} {t₉} swap⋆
+-- ((tt , inj₁ tt) , (inj₁ tt , tt)) ∷
+-- ((tt , inj₂ tt) , (inj₂ tt , tt)) ∷ []
+
+t₁₁ = TIMES BOOL (TIMES ONE BOOL)
+t₁₂ = TIMES (TIMES BOOL ONE) BOOL
+m₁₁ = matchP {t₁₁} {t₁₂} assocl⋆
+-- ((inj₁ tt , (tt , inj₁ tt)) , ((inj₁ tt , tt) , inj₁ tt)) ∷
+-- ((inj₁ tt , (tt , inj₂ tt)) , ((inj₁ tt , tt) , inj₂ tt)) ∷
+-- ((inj₂ tt , (tt , inj₁ tt)) , ((inj₂ tt , tt) , inj₁ tt)) ∷
+-- ((inj₂ tt , (tt , inj₂ tt)) , ((inj₂ tt , tt) , inj₂ tt)) ∷ []
+m₁₂ = matchP {t₁₂} {t₁₁} assocr⋆
+-- (((inj₁ tt , tt) , inj₁ tt) , (inj₁ tt , (tt , inj₁ tt)) ∷
+-- (((inj₁ tt , tt) , inj₂ tt) , (inj₁ tt , (tt , inj₂ tt)) ∷
+-- (((inj₂ tt , tt) , inj₁ tt) , (inj₂ tt , (tt , inj₁ tt)) ∷
+-- (((inj₂ tt , tt) , inj₂ tt) , (inj₂ tt , (tt , inj₂ tt)) ∷ []
+
+t₁₃ = TIMES ZERO BOOL
+t₁₄ = ZERO
+m₁₃ = matchP {t₁₃} {t₁₄} distz
+-- []
+m₁₄ = matchP {t₁₄} {t₁₃} factorz
+-- []
+
+t₁₅ = TIMES (PLUS BOOL ONE) BOOL
+t₁₆ = PLUS (TIMES BOOL BOOL) (TIMES ONE BOOL)
+m₁₅ = matchP {t₁₅} {t₁₆} dist
+-- ((inj₁ (inj₁ tt) , inj₁ tt) , inj₁ (inj₁ tt , inj₁ tt)) ∷
+-- ((inj₁ (inj₁ tt) , inj₂ tt) , inj₁ (inj₁ tt , inj₂ tt)) ∷
+-- ((inj₁ (inj₂ tt) , inj₁ tt) , inj₁ (inj₂ tt , inj₁ tt)) ∷
+-- ((inj₁ (inj₂ tt) , inj₂ tt) , inj₁ (inj₂ tt , inj₂ tt)) ∷
+-- ((inj₂ tt , inj₁ tt) , inj₂ (tt , inj₁ tt)) ∷
+-- ((inj₂ tt , inj₂ tt) , inj₂ (tt , inj₂ tt)) ∷ []
+m₁₆ = matchP {t₁₆} {t₁₅} factor
+-- (inj₁ (inj₁ tt , inj₁ tt) , (inj₁ (inj₁ tt) , inj₁ tt)) ∷
+-- (inj₁ (inj₁ tt , inj₂ tt) , (inj₁ (inj₁ tt) , inj₂ tt)) ∷
+-- (inj₁ (inj₂ tt , inj₁ tt) , (inj₁ (inj₂ tt) , inj₁ tt)) ∷
+-- (inj₁ (inj₂ tt , inj₂ tt) , (inj₁ (inj₂ tt) , inj₂ tt)) ∷
+-- (inj₂ (tt , inj₁ tt) , (inj₂ tt , inj₁ tt)) ∷
+-- (inj₂ (tt , inj₂ tt) , (inj₂ tt , inj₂ tt)) ∷ []
+
+t₁₇ = BOOL 
+t₁₈ = BOOL
+m₁₇ = matchP {t₁₇} {t₁₈} id⟷
+-- (inj₁ tt , inj₁ tt) ∷ (inj₂ tt , inj₂ tt) ∷ []
+
+--◎
+--⊕
+--⊗
+
+------------------------------------------------------------------------------

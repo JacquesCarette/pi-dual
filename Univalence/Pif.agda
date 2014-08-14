@@ -305,7 +305,8 @@ permute : ∀ {ℓ n} {A : Set ℓ} → Perm n → Vec A n → Vec A n
 permute [] [] = []
 permute (p ∷ ps) (v ∷ vs) = insert (permute ps vs) p v
 
--- Use a permutation to match up the elements in two vectors
+-- Use a permutation to match up the elements in two vectors. See more
+-- convenient function matchP below.
 
 match : ∀ {t t'} → (size t ≡ size t') → Perm (size t) → 
         Vec ⟦ t ⟧ (size t) → Vec ⟦ t' ⟧ (size t) → 
@@ -350,8 +351,8 @@ swapperm {suc n} (suc i) =
 
 -- composition
 
-compperm : ∀ {m n} → (m ≡ n) → Perm m → Perm n → Perm m
-compperm sp α β = {!!} 
+compperm : ∀ {n} → Perm n → Perm n → Perm n
+compperm α β = {!!} 
 
 ------------------------------------------------------------------------------
 -- A combinator t₁ ⟷ t₂ is mapped to a permutation of size s = size t₁
@@ -404,104 +405,179 @@ comb2perm factor    = idperm
   -- permutation does nothing
 comb2perm id⟷      = idperm  
   -- permutation does nothing
-comb2perm (c₁ ◎ c₂) = compperm (size≡ c₁) (comb2perm c₁) (comb2perm c₂) 
+comb2perm (c₁ ◎ c₂) = compperm 
+                        (comb2perm c₁) 
+                        (subst Perm (sym (size≡ c₁)) (comb2perm c₂))
 comb2perm (c₁ ⊕ c₂) = {!!} 
 comb2perm (c₁ ⊗ c₂) = {!!} 
 
+-- Convenient
+
+matchP : ∀ {t t'} → (t ⟷ t') → Vec (⟦ t ⟧ × ⟦ t' ⟧) (size t)
+matchP {t} {t'} c = 
+  match sp (comb2perm c) (utoVec t) 
+    (subst (λ n → Vec ⟦ t' ⟧ n) (sym sp) (utoVec t'))
+  where sp = size≡ c
+
 ------------------------------------------------------------------------------
--- Testing
+-- Extensional equivalence of combinators: two combinators are
+-- equivalent if they denote the same permutation. Generally we would
+-- require that the two permutations map the same value x to values y
+-- and z have a path between them, but because the internals of each
+-- type are discrete groupoids, this reduces to saying that y and z
+-- are identical, and hence that the permutations are identical.
 
-t₁  = PLUS ZERO BOOL
-t₂  = BOOL
-m₁ = match refl (comb2perm {t₁} {t₂} unite₊) (utoVec t₁) (utoVec t₂)
--- (inj₂ (inj₁ tt) , inj₁ tt) ∷ (inj₂ (inj₂ tt) , inj₂ tt) ∷ []
-m₂ = match refl (comb2perm {t₂} {t₁} uniti₊) (utoVec t₂) (utoVec t₁)
--- (inj₁ tt , inj₂ (inj₁ tt)) ∷ (inj₂ tt , inj₂ (inj₂ tt)) ∷ []
+infix  10  _∼_  
 
-t₃ = PLUS BOOL ONE
-t₄ = PLUS ONE BOOL
-m₃ = match refl (comb2perm {t₃} {t₄} swap₊) (utoVec t₃) (utoVec t₄)
--- (inj₂ tt , inj₁ tt) ∷
--- (inj₁ (inj₁ tt) , inj₂ (inj₁ tt)) ∷
--- (inj₁ (inj₂ tt) , inj₂ (inj₂ tt)) ∷ []
-m₄ = match refl (comb2perm {t₄} {t₃} swap₊) (utoVec t₄) (utoVec t₃)
--- (inj₂ (inj₁ tt) , inj₁ (inj₁ tt)) ∷
--- (inj₂ (inj₂ tt) , inj₁ (inj₂ tt)) ∷ 
--- (inj₁ tt , inj₂ tt) ∷ []
+_∼_ : ∀ {t₁ t₂} → (c₁ c₂ : t₁ ⟷ t₂) → Set
+c₁ ∼ c₂ = (comb2perm c₁ ≡ comb2perm c₂)
 
-t₅  = PLUS ONE (PLUS BOOL ONE)
-t₆  = PLUS (PLUS ONE BOOL) ONE
-m₅ = match refl (comb2perm {t₅} {t₆} assocl₊) (utoVec t₅) (utoVec t₆)
--- (inj₁ tt , inj₁ (inj₁ tt)) ∷
--- (inj₂ (inj₁ (inj₁ tt)) , inj₁ (inj₂ (inj₁ tt))) ∷
--- (inj₂ (inj₁ (inj₂ tt)) , inj₁ (inj₂ (inj₂ tt))) ∷
--- (inj₂ (inj₂ tt) , inj₂ tt) ∷ []
-m₆ = match refl (comb2perm {t₆} {t₅} assocr₊) (utoVec t₆) (utoVec t₅)
--- (inj₁ (inj₁ tt) , inj₁ tt) ∷
--- (inj₁ (inj₂ (inj₁ tt)) , inj₂ (inj₁ (inj₁ tt))) ∷
--- (inj₁ (inj₂ (inj₂ tt)) , inj₂ (inj₁ (inj₂ tt))) ∷
--- (inj₂ tt , inj₂ (inj₂ tt)) ∷ []
+-- The equivalence ∼ of paths makes U a 1groupoid: the points are
+-- types (t : U); the 1paths are ⟷; and the 2paths between them are
+-- based on extensional equivalence ∼
 
-t₇ = TIMES ONE BOOL
-t₈ = BOOL
-m₇ = match refl (comb2perm {t₇} {t₈} unite⋆) (utoVec t₇) (utoVec t₈)
--- ((tt , inj₁ tt) , inj₁ tt) ∷ ((tt , inj₂ tt) , inj₂ tt) ∷ []
-m₈ = match refl (comb2perm {t₈} {t₇} uniti⋆) (utoVec t₈) (utoVec t₇)
--- (inj₁ tt , (tt , inj₁ tt)) ∷ (inj₂ tt , (tt , inj₂ tt)) ∷ []
+G : 1Groupoid
+G = record
+        { set = U
+        ; _↝_ = _⟷_
+        ; _≈_ = _∼_
+        ; id  = id⟷
+        ; _∘_ = λ p q → q ◎ p
+        ; _⁻¹ = !
+        ; lneutr = {!!} 
+        ; rneutr = {!!} 
+        ; assoc  = {!!} 
+        ; equiv = record { 
+            refl  = {!!} 
+          ; sym   = {!!} 
+          ; trans = {!!} 
+          }
+        ; linv = {!!} 
+        ; rinv = {!!} 
+        ; ∘-resp-≈ = {!!} 
+        }
 
-t₉  = TIMES BOOL ONE
-t₁₀ = TIMES ONE BOOL
-m₉  = match refl (comb2perm {t₉} {t₁₀} swap⋆) (utoVec t₉) (utoVec t₁₀)
--- ((inj₁ tt , tt) , (tt , inj₁ tt)) ∷
--- ((inj₂ tt , tt) , (tt , inj₂ tt)) ∷ []
-m₁₀ = match refl (comb2perm {t₁₀} {t₉} swap⋆) (utoVec t₁₀) (utoVec t₉)
--- ((tt , inj₁ tt) , (inj₁ tt , tt)) ∷
--- ((tt , inj₂ tt) , (inj₂ tt , tt)) ∷ []
+------------------------------------------------------------------------------
+-- Picture so far:
+--
+--           path p
+--   =====================
+--  ||   ||             ||
+--  ||   ||2path        ||
+--  ||   ||             ||
+--  ||   ||  path q     ||
+--  t₁ =================t₂
+--  ||   ...            ||
+--   =====================
+--
+-- The types t₁, t₂, etc are discrete groupoids. The paths between
+-- them correspond to permutations. Each syntactically different
+-- permutation corresponds to a path but equivalent permutations are
+-- connected by 2paths.  But now we want an alternative definition of
+-- 2paths that is structural, i.e., that looks at the actual
+-- construction of the path t₁ ⟷ t₂ in terms of combinators... The
+-- theorem we want is that α ∼ β iff we can rewrite α to β using
+-- various syntactic structural rules. We start with a collection of
+-- simplication rules and then try to show they are complete.
 
-t₁₁ = TIMES BOOL (TIMES ONE BOOL)
-t₁₂ = TIMES (TIMES BOOL ONE) BOOL
-m₁₁ = match refl (comb2perm {t₁₁} {t₁₂} assocl⋆) (utoVec t₁₁) (utoVec t₁₂)
--- ((inj₁ tt , (tt , inj₁ tt)) , ((inj₁ tt , tt) , inj₁ tt)) ∷
--- ((inj₁ tt , (tt , inj₂ tt)) , ((inj₁ tt , tt) , inj₂ tt)) ∷
--- ((inj₂ tt , (tt , inj₁ tt)) , ((inj₂ tt , tt) , inj₁ tt)) ∷
--- ((inj₂ tt , (tt , inj₂ tt)) , ((inj₂ tt , tt) , inj₂ tt)) ∷ []
-m₁₂ = match refl (comb2perm {t₁₂} {t₁₁} assocr⋆) (utoVec t₁₂) (utoVec t₁₁)
--- (((inj₁ tt , tt) , inj₁ tt) , (inj₁ tt , (tt , inj₁ tt)) ∷
--- (((inj₁ tt , tt) , inj₂ tt) , (inj₁ tt , (tt , inj₂ tt)) ∷
--- (((inj₂ tt , tt) , inj₁ tt) , (inj₂ tt , (tt , inj₁ tt)) ∷
--- (((inj₂ tt , tt) , inj₂ tt) , (inj₂ tt , (tt , inj₂ tt)) ∷ []
+-- Simplification rules
 
-t₁₃ = TIMES ZERO BOOL
-t₁₄ = ZERO
-m₁₃ = match refl (comb2perm {t₁₃} {t₁₄} distz) (utoVec t₁₃) (utoVec t₁₄)
--- []
-m₁₄ = match refl (comb2perm {t₁₄} {t₁₃} factorz) (utoVec t₁₄) (utoVec t₁₃)
--- []
+infix  30 _⇔_
 
-t₁₅ = TIMES (PLUS BOOL ONE) BOOL
-t₁₆ = PLUS (TIMES BOOL BOOL) (TIMES ONE BOOL)
-m₁₅ = match refl (comb2perm {t₁₅} {t₁₆} dist) (utoVec t₁₅) (utoVec t₁₆)
--- ((inj₁ (inj₁ tt) , inj₁ tt) , inj₁ (inj₁ tt , inj₁ tt)) ∷
--- ((inj₁ (inj₁ tt) , inj₂ tt) , inj₁ (inj₁ tt , inj₂ tt)) ∷
--- ((inj₁ (inj₂ tt) , inj₁ tt) , inj₁ (inj₂ tt , inj₁ tt)) ∷
--- ((inj₁ (inj₂ tt) , inj₂ tt) , inj₁ (inj₂ tt , inj₂ tt)) ∷
--- ((inj₂ tt , inj₁ tt) , inj₂ (tt , inj₁ tt)) ∷
--- ((inj₂ tt , inj₂ tt) , inj₂ (tt , inj₂ tt)) ∷ []
-m₁₆ = match refl (comb2perm {t₁₆} {t₁₅} factor) (utoVec t₁₆) (utoVec t₁₅)
--- (inj₁ (inj₁ tt , inj₁ tt) , (inj₁ (inj₁ tt) , inj₁ tt)) ∷
--- (inj₁ (inj₁ tt , inj₂ tt) , (inj₁ (inj₁ tt) , inj₂ tt)) ∷
--- (inj₁ (inj₂ tt , inj₁ tt) , (inj₁ (inj₂ tt) , inj₁ tt)) ∷
--- (inj₁ (inj₂ tt , inj₂ tt) , (inj₁ (inj₂ tt) , inj₂ tt)) ∷
--- (inj₂ (tt , inj₁ tt) , (inj₂ tt , inj₁ tt)) ∷
--- (inj₂ (tt , inj₂ tt) , (inj₂ tt , inj₂ tt)) ∷ []
+data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set where
+  id⇔ : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ c
+  trans⇔ : {t₁ t₂ : U} {c₁ c₂ c₃ : t₁ ⟷ t₂} → 
+           (c₁ ⇔ c₂) → (c₂ ⇔ c₃) → (c₁ ⇔ c₃)
 
-t₁₇ = BOOL 
-t₁₈ = BOOL
-m₁₇ = match refl (comb2perm {t₁₇} {t₁₈} id⟷) (utoVec t₁₇) (utoVec t₁₈)
--- (inj₁ tt , inj₁ tt) ∷ (inj₂ tt , inj₂ tt) ∷ []
+-- better syntax for writing 2paths
 
---◎
---⊕
---⊗
+infix  2  _▤       
+infixr 2  _⇔⟨_⟩_   
+
+_⇔⟨_⟩_ : {t₁ t₂ : U} (c₁ : t₁ ⟷ t₂) {c₂ : t₁ ⟷ t₂} {c₃ : t₁ ⟷ t₂} → 
+         (c₁ ⇔ c₂) → (c₂ ⇔ c₃) → (c₁ ⇔ c₃)
+_ ⇔⟨ α ⟩ β = trans⇔ α β 
+
+_▤ : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (c ⇔ c)
+_▤ c = id⇔ 
+
+-- Inverses for 2paths
+
+2! : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₂ ⇔ c₁)
+2! = {!!} 
+
+-- The equivalence ⇔ of paths is rich enough to make U a 1groupoid:
+-- the points are types (t : U); the 1paths are ⟷; and the 2paths
+-- between them are based on the simplification rules ⇔ 
+
+G' : 1Groupoid
+G' = record
+        { set = U
+        ; _↝_ = _⟷_
+        ; _≈_ = _⇔_
+        ; id  = id⟷
+        ; _∘_ = λ p q → q ◎ p
+        ; _⁻¹ = !
+        ; lneutr = {!!} 
+        ; rneutr = {!!} 
+        ; assoc  = {!!} 
+        ; equiv = record { 
+            refl  = id⇔ 
+          ; sym   = 2! 
+          ; trans = trans⇔ 
+          }
+        ; linv = {!!} 
+        ; rinv = {!!} 
+        ; ∘-resp-≈ = {!!} 
+        }
+
+------------------------------------------------------------------------------
+-- Inverting permutations to syntactic combinators
+
+perm2comb : {t₁ t₂ : U} → Perm (size t₁) → (t₁ ⟷ t₂)
+perm2comb = {!!} 
+
+------------------------------------------------------------------------------
+-- Soundness and completeness
+-- 
+-- Proof of soundness and completeness: now we want to verify that ⇔
+-- is sound and complete with respect to ∼. The statement to prove is
+-- that for all c₁ and c₂, we have c₁ ∼ c₂ iff c₁ ⇔ c₂
+
+soundness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₁ ∼ c₂)
+soundness = {!!} 
+
+-- The idea is to invert evaluation and use that to extract from each
+-- extensional representation of a combinator, a canonical syntactic
+-- representative
+
+canonical : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂)
+canonical = perm2comb ∘ comb2perm
+
+-- Note that if c₁ ⇔ c₂, then by soundness c₁ ∼ c₂ and hence their
+-- canonical representatives are identical. 
+
+canonicalWellDefined : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → 
+  (c₁ ⇔ c₂) → (canonical c₁ ≡ canonical c₂)
+canonicalWellDefined α = cong perm2comb (soundness α)
+
+-- If we can prove that every combinator is equal to its normal form
+-- then we can prove completeness.
+
+inversion : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ canonical c
+inversion = {!!} 
+
+resp≡⇔ : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ≡ c₂) → (c₁ ⇔ c₂)
+resp≡⇔ {t₁} {t₂} {c₁} {c₂} p rewrite p = id⇔ 
+
+completeness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → (c₁ ⇔ c₂)
+completeness {t₁} {t₂} {c₁} {c₂} c₁∼c₂ = 
+  c₁
+    ⇔⟨ inversion ⟩
+  canonical c₁
+    ⇔⟨  resp≡⇔ (cong perm2comb c₁∼c₂) ⟩ 
+  canonical c₂
+    ⇔⟨ 2! inversion ⟩ 
+  c₂ ▤
 
 ------------------------------------------------------------------------------
