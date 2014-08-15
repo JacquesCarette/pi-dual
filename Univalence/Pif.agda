@@ -257,6 +257,8 @@ utoVec (PLUS t₁ t₂)  = map inj₁ (utoVec t₁) ++ map inj₂ (utoVec t₂)
 utoVec (TIMES t₁ t₂) = 
   concat (map (λ v₁ → map (λ v₂ → (v₁ , v₂)) (utoVec t₂)) (utoVec t₁))
 
+-- Combinators are always between types of the same size
+
 size≡ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (size t₁ ≡ size t₂)
 size≡ {PLUS ZERO t} {.t} unite₊ = refl
 size≡ {t} {PLUS ZERO .t} uniti₊ = refl
@@ -291,18 +293,16 @@ data Perm : ℕ → Set where
   []  : Perm 0
   _∷_ : {n : ℕ} → Fin (suc n) → Perm n → Perm (suc n)
 
--- Insertions are as expected. 
-
 insert : ∀ {ℓ n} {A : Set ℓ} → Vec A n → Fin (suc n) → A → Vec A (suc n)
-insert vs zero w = w ∷ vs
-insert [] (suc ())
+insert vs zero w          = w ∷ vs
+insert [] (suc ())        -- absurd
 insert (v ∷ vs) (suc i) w = v ∷ insert vs i w
 
--- A permutation takes a vector and inserts each element into a new
+-- A permutation acts on a vector by inserting each element in its new
 -- position.
 
 permute : ∀ {ℓ n} {A : Set ℓ} → Perm n → Vec A n → Vec A n
-permute [] [] = []
+permute []       []       = []
 permute (p ∷ ps) (v ∷ vs) = insert (permute ps vs) p v
 
 -- Use a permutation to match up the elements in two vectors. See more
@@ -343,75 +343,52 @@ idperm {suc n} = zero ∷ idperm
 --          ∷ []
 
 swapperm : ∀ {n} → Fin n → Perm n
-swapperm {0} ()          -- can't give you an index 
+swapperm {0} ()          -- absurd
 swapperm {suc n} zero    = idperm
 swapperm {suc n} (suc i) = 
   subst Fin (-+-id n i) 
     (inject+ (toℕ i) (fromℕ (n ∸ toℕ i))) ∷ swapperm {n} i
 
--- composition
+-- compositions
 
-compperm : ∀ {n} → Perm n → Perm n → Perm n
-compperm α β = {!!} 
+scompperm : ∀ {n} → Perm n → Perm n → Perm n
+scompperm α β = {!!} 
+
+pcompperm : ∀ {m n} → Perm m → Perm n → Perm (m + n)
+pcompperm α β = {!!} 
+
+tcompperm : ∀ {m n} → Perm m → Perm n → Perm (m * n)
+tcompperm α β = {!!} 
 
 ------------------------------------------------------------------------------
--- A combinator t₁ ⟷ t₂ is mapped to a permutation of size s = size t₁
--- = size t₂. This permutation maps a vector Fin s values to another
--- vector of Fin s values. 
+-- A combinator t₁ ⟷ t₂ denotes a permutation.
 
 comb2perm : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Perm (size t₁)
 comb2perm {PLUS ZERO t} {.t} unite₊ = idperm
-  -- input vector is of the shape [] ++ vs = vs 
-  -- output vector is of the shape vs
-  -- permutation does nothing
 comb2perm {t} {PLUS ZERO .t} uniti₊ = idperm
-  -- input vector is of the shape vs
-  -- output vector is of the shape [] ++ vs = vs 
-  -- permutation does nothing
 comb2perm {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ with size t₂
 ... | 0     = idperm 
 ... | suc j = swapperm {size t₁ + suc j} 
                (inject≤ (fromℕ (size t₁)) (suc≤ (size t₁) j))
-  -- input vector is of the shape  vs₁ ++ vs₂
-  -- output vector is of the shape vs₂ ++ vs₁
-  -- e.g. from input [a , b || x, y , z] 
-  -- permutation needs to produce
-  -- output          [x , y , z || a , b] 
 comb2perm {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ = idperm
-  -- input vector is of the shape  vs₁ ++ (vs₂ ++ vs₃)
-  -- output vector is of the shape (vs₁ ++ vs₂) ++ vs₃
-  -- permutation does nothing
 comb2perm {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} assocr₊ = idperm
-  -- input vector is of the shape  (vs₁ ++ vs₂) ++ vs₃
-  -- output vector is of the shape vs₁ ++ (vs₂ ++ vs₃)
-  -- permutation does nothing
 comb2perm {TIMES ONE t} {.t} unite⋆ = idperm
-  -- permutation does nothing
 comb2perm {t} {TIMES ONE .t} uniti⋆ = idperm
-  -- permutation does nothing
 comb2perm {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = idperm 
-  -- permutation does nothing
 comb2perm assocl⋆   = idperm  
-  -- permutation does nothing
 comb2perm assocr⋆   = idperm  
-  -- permutation does nothing
 comb2perm distz     = idperm  
-  -- permutation does nothing
 comb2perm factorz   = idperm  
-  -- permutation does nothing
 comb2perm dist      = idperm  
-  -- permutation does nothing
 comb2perm factor    = idperm  
-  -- permutation does nothing
 comb2perm id⟷      = idperm  
-  -- permutation does nothing
-comb2perm (c₁ ◎ c₂) = compperm 
+comb2perm (c₁ ◎ c₂) = scompperm 
                         (comb2perm c₁) 
                         (subst Perm (sym (size≡ c₁)) (comb2perm c₂))
-comb2perm (c₁ ⊕ c₂) = {!!} 
-comb2perm (c₁ ⊗ c₂) = {!!} 
+comb2perm (c₁ ⊕ c₂) = pcompperm (comb2perm c₁) (comb2perm c₂) 
+comb2perm (c₁ ⊗ c₂) = tcompperm (comb2perm c₁) (comb2perm c₂) 
 
--- Convenient
+-- Convenient way of "seeing" what the permutation does for each combinator
 
 matchP : ∀ {t t'} → (t ⟷ t') → Vec (⟦ t ⟧ × ⟦ t' ⟧) (size t)
 matchP {t} {t'} c = 
@@ -423,7 +400,7 @@ matchP {t} {t'} c =
 -- Extensional equivalence of combinators: two combinators are
 -- equivalent if they denote the same permutation. Generally we would
 -- require that the two permutations map the same value x to values y
--- and z have a path between them, but because the internals of each
+-- and z that have a path between them, but because the internals of each
 -- type are discrete groupoids, this reduces to saying that y and z
 -- are identical, and hence that the permutations are identical.
 
@@ -431,6 +408,29 @@ infix  10  _∼_
 
 _∼_ : ∀ {t₁ t₂} → (c₁ c₂ : t₁ ⟷ t₂) → Set
 c₁ ∼ c₂ = (comb2perm c₁ ≡ comb2perm c₂)
+
+-- The relation ~ is an equivalence relation
+
+refl∼ : ∀ {t₁ t₂} {c : t₁ ⟷ t₂} → (c ∼ c)
+refl∼ = refl 
+
+sym∼ : ∀ {t₁ t₂} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → (c₂ ∼ c₁)
+sym∼ = sym
+
+trans∼ : ∀ {t₁ t₂} {c₁ c₂ c₃ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → (c₂ ∼ c₃) → (c₁ ∼ c₃)
+trans∼ = trans
+
+-- The relation ~ validates the groupoid laws
+
+c◎id∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ id⟷ ∼ c
+c◎id∼c = {!!} 
+
+id◎c∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ◎ c ∼ c
+id◎c∼c = {!!} 
+
+assoc∼ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+         c₁ ◎ (c₂ ◎ c₃) ∼ (c₁ ◎ c₂) ◎ c₃
+assoc∼ = {!!} 
 
 -- The equivalence ∼ of paths makes U a 1groupoid: the points are
 -- types (t : U); the 1paths are ⟷; and the 2paths between them are
@@ -444,13 +444,13 @@ G = record
         ; id  = id⟷
         ; _∘_ = λ p q → q ◎ p
         ; _⁻¹ = !
-        ; lneutr = {!!} 
-        ; rneutr = {!!} 
-        ; assoc  = {!!} 
+        ; lneutr = λ _ → c◎id∼c 
+        ; rneutr = λ _ → id◎c∼c 
+        ; assoc  = λ c₃ c₂ c₁ → assoc∼ {c₁ = c₁} {c₂ = c₂} {c₃ = c₃}  
         ; equiv = record { 
-            refl  = {!!} 
-          ; sym   = {!!} 
-          ; trans = {!!} 
+            refl  = refl∼ 
+          ; sym   = sym∼ 
+          ; trans = trans∼ 
           }
         ; linv = {!!} 
         ; rinv = {!!} 
@@ -504,7 +504,8 @@ _▤ c = id⇔
 -- Inverses for 2paths
 
 2! : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₂ ⇔ c₁)
-2! = {!!} 
+2! id⇔          = id⇔ 
+2! (trans⇔ α β) = trans⇔ (2! β) (2! α)
 
 -- The equivalence ⇔ of paths is rich enough to make U a 1groupoid:
 -- the points are types (t : U); the 1paths are ⟷; and the 2paths
@@ -558,7 +559,7 @@ canonical = perm2comb ∘ comb2perm
 -- canonical representatives are identical. 
 
 canonicalWellDefined : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → 
-  (c₁ ⇔ c₂) → (canonical c₁ ≡ canonical c₂)
+                       (c₁ ⇔ c₂) → (canonical c₁ ≡ canonical c₂)
 canonicalWellDefined α = cong perm2comb (soundness α)
 
 -- If we can prove that every combinator is equal to its normal form
