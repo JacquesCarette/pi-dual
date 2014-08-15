@@ -351,6 +351,36 @@ swapperm {suc n} (suc i) =
 
 -- compositions
 
+pex qex : Perm 3
+pex = inject+ 1 (fromℕ 1) ∷ fromℕ 1 ∷ zero ∷ []
+qex = fromℕ 2 ∷ zero ∷ zero ∷ []
+cex = permute pex (permute qex (tabulate id))
+
+-- pex takes [0,1,2] to [2,0,1]
+-- qex takes [0,1,2] to [1,2,0]
+-- pex ◌ qex takes [0,1,2] to [0,1,2]
+-- qex ◌ pex takes [0,1,2] to
+
+-- _◌_ : ∀ {n} → Perm n → Perm n → Perm n
+-- [] ◌ [] = []
+-- (i ∷ p) ◌ (j ∷ q) = {!!} ∷ (p ◌ q) 
+
+-- .n : ℕ
+-- i  : Fin (suc .n)
+-- p  : Perm .n
+-- j  : Fin (suc .n)
+-- q  : Perm .n
+-- 
+-- (zero ∷ p₁) ◌ (q ∷ q₁) = q ∷ (p₁ ◌ q₁)
+-- (suc p ∷ p₁) ◌ (zero ∷ q₁) = {!!}
+-- (suc p ∷ p₁) ◌ (suc q ∷ q₁) = {!!}
+-- 
+-- data Perm : ℕ → Set where
+--   []  : Perm 0
+--   _∷_ : {n : ℕ} → Fin (suc n) → Perm n → Perm (suc n)
+
+-------------
+
 scompperm : ∀ {n} → Perm n → Perm n → Perm n
 scompperm α β = {!!} 
 
@@ -444,13 +474,13 @@ G = record
         ; id  = id⟷
         ; _∘_ = λ p q → q ◎ p
         ; _⁻¹ = !
-        ; lneutr = λ _ → c◎id∼c 
-        ; rneutr = λ _ → id◎c∼c 
+        ; lneutr = λ c → c◎id∼c {c = c}
+        ; rneutr = λ c → id◎c∼c {c = c}
         ; assoc  = λ c₃ c₂ c₁ → assoc∼ {c₁ = c₁} {c₂ = c₂} {c₃ = c₃}  
         ; equiv = record { 
-            refl  = refl∼ 
-          ; sym   = sym∼ 
-          ; trans = trans∼ 
+            refl  = λ {c} → refl∼ {c = c}
+          ; sym   = λ {c₁} {c₂} → sym∼ {c₁ = c₁} {c₂ = c₂}
+          ; trans = λ {c₁} {c₂} {c₃} → trans∼ {c₁ = c₁} {c₂ = c₂} {c₃ = c₃} 
           }
         ; linv = {!!} 
         ; rinv = {!!} 
