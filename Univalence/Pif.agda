@@ -11,7 +11,10 @@ open import Data.Nat.Properties.Simple
 
 open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _≤_; z≤n; s≤s)
 open import Data.Fin 
-  using (Fin; zero; suc; toℕ; fromℕ; _ℕ-_; raise; inject+; inject≤; _≻toℕ_) 
+  using (Fin; zero; suc; toℕ; fromℕ; _ℕ-_; 
+         raise; inject+; inject₁; inject≤; _≻toℕ_) 
+  renaming (_+_ to _F+_)
+              
 open import Data.Vec 
   using (Vec; tabulate; []; _∷_; [_]; lookup; map; _++_; concat; zip)
 open import Function using (id; _∘_)
@@ -293,6 +296,11 @@ data Perm : ℕ → Set where
   []  : Perm 0
   _∷_ : {n : ℕ} → Fin (suc n) → Perm n → Perm (suc n)
 
+lookupP : ∀ {n} → Fin n → Perm n → Fin n
+lookupP () [] 
+lookupP zero (j ∷ _) = j
+lookupP {suc n} (suc i) (j ∷ q) = inject₁ (lookupP i q)
+
 insert : ∀ {ℓ n} {A : Set ℓ} → Vec A n → Fin (suc n) → A → Vec A (suc n)
 insert vs zero w          = w ∷ vs
 insert [] (suc ())        -- absurd
@@ -351,25 +359,63 @@ swapperm {suc n} (suc i) =
 
 -- compositions
 
-pex qex : Perm 3
+pex qex pqex qpex : Perm 3
 pex = inject+ 1 (fromℕ 1) ∷ fromℕ 1 ∷ zero ∷ []
-qex = fromℕ 2 ∷ zero ∷ zero ∷ []
-cex = permute pex (permute qex (tabulate id))
+qex = zero ∷ fromℕ 1 ∷ zero ∷ []
+pqex = fromℕ 2 ∷ fromℕ 1 ∷ zero ∷ []
+qpex = inject+ 1 (fromℕ 1) ∷ zero ∷ zero ∷ []
+
+pqexv  = (permute qex ∘ permute pex) (tabulate id)
+pqexv' = permute pqex (tabulate id) 
+
+qpexv  = (permute pex ∘ permute qex) (tabulate id)
+qpexv' = permute qpex (tabulate id)
+
+-- [1,1,0]
+-- [z] => [z]
+-- [y,z] => [z,y]
+-- [x,y,z] => [z,x,y] 
+
+-- [0,1,0]
+-- [w] => [w]
+-- [v,w] => [w,v]
+-- [u,v,w] => [u,w,v]
+
+-- R,R,_ ◌ _,R,_
+-- R in p1 takes you to middle which also goes R, so first goes RR
+-- [a,b,c] ◌ [d,e,f]
+-- [a+p2[a], ...]
+
+-- [1,1,0] ◌ [0,1,0] one step [2,1,0]
+-- [z] => [z]
+-- [y,z] => [z,y]
+-- [x,y,z] => [z,y,x]
+
+-- [1,1,0] ◌ [0,1,0]
+-- [z] => [z] => [z]
+-- [y,z] => 
+-- [x,y,z] => 
+
+-- so [1,1,0] ◌ [0,1,0] ==> [2,1,0]
+-- so [0,1,0] ◌ [1,1,0] ==> [1,0,0]
 
 -- pex takes [0,1,2] to [2,0,1]
--- qex takes [0,1,2] to [1,2,0]
--- pex ◌ qex takes [0,1,2] to [0,1,2]
--- qex ◌ pex takes [0,1,2] to
+-- qex takes [0,1,2] to [0,2,1]
+-- pex ◌ qex takes [0,1,2] to [2,1,0]
+-- qex ◌ pex takes [0,1,2] to [1,0,2]
 
--- _◌_ : ∀ {n} → Perm n → Perm n → Perm n
--- [] ◌ [] = []
--- (i ∷ p) ◌ (j ∷ q) = {!!} ∷ (p ◌ q) 
+-- seq : ∀ {m n} → (m ≤ n) → Perm m → Perm n → Perm m
+-- seq lp [] _ = []
+-- seq lp (i ∷ p) q = (lookupP i q) ∷ (seq lp p q)
 
--- .n : ℕ
--- i  : Fin (suc .n)
--- p  : Perm .n
--- j  : Fin (suc .n)
--- q  : Perm .n
+-- i F+ ...
+
+-- lookupP : ∀ {n} → Fin n → Perm n → Fin n
+-- i   : Fin (suc m)
+-- p   : Perm m
+-- q   : Perm n
+
+
 -- 
 -- (zero ∷ p₁) ◌ (q ∷ q₁) = q ∷ (p₁ ◌ q₁)
 -- (suc p ∷ p₁) ◌ (zero ∷ q₁) = {!!}
@@ -515,9 +561,82 @@ G = record
 infix  30 _⇔_
 
 data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set where
-  id⇔ : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ c
-  trans⇔ : {t₁ t₂ : U} {c₁ c₂ c₃ : t₁ ⟷ t₂} → 
-           (c₁ ⇔ c₂) → (c₂ ⇔ c₃) → (c₁ ⇔ c₃)
+  assoc◎l : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+          (c₁ ◎ (c₂ ◎ c₃)) ⇔ ((c₁ ◎ c₂) ◎ c₃)
+  assoc◎r : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+          ((c₁ ◎ c₂) ◎ c₃) ⇔ (c₁ ◎ (c₂ ◎ c₃))
+  assoc⊕l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (c₁ ⊕ (c₂ ⊕ c₃)) ⇔ (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊)
+  assoc⊕r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊) ⇔ (c₁ ⊕ (c₂ ⊕ c₃))
+  assoc⊗l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (c₁ ⊗ (c₂ ⊗ c₃)) ⇔ (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆)
+  assoc⊗r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆) ⇔ (c₁ ⊗ (c₂ ⊗ c₃))
+  dist⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          ((c₁ ⊕ c₂) ⊗ c₃) ⇔ (dist ◎ ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃)) ◎ factor)
+  factor⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (dist ◎ ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃)) ◎ factor) ⇔ ((c₁ ⊕ c₂) ⊗ c₃)
+  idl◎l   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (id⟷ ◎ c) ⇔ c
+  idl◎r   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ id⟷ ◎ c
+  idr◎l   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (c ◎ id⟷) ⇔ c
+  idr◎r   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ (c ◎ id⟷) 
+  linv◎l  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (c ◎ ! c) ⇔ id⟷
+  linv◎r  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ⇔ (c ◎ ! c) 
+  rinv◎l  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (! c ◎ c) ⇔ id⟷
+  rinv◎r  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ⇔ (! c ◎ c) 
+  unitel₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
+          (unite₊ ◎ c₂) ⇔ ((c₁ ⊕ c₂) ◎ unite₊)
+  uniter₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
+          ((c₁ ⊕ c₂) ◎ unite₊) ⇔ (unite₊ ◎ c₂)
+  unitil₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
+          (uniti₊ ◎ (c₁ ⊕ c₂)) ⇔ (c₂ ◎ uniti₊)
+  unitir₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
+          (c₂ ◎ uniti₊) ⇔ (uniti₊ ◎ (c₁ ⊕ c₂))
+  unitial₊⇔ : {t₁ t₂ : U} → (uniti₊ {PLUS t₁ t₂} ◎ assocl₊) ⇔ (uniti₊ ⊕ id⟷)
+  unitiar₊⇔ : {t₁ t₂ : U} → (uniti₊ {t₁} ⊕ id⟷ {t₂}) ⇔ (uniti₊ ◎ assocl₊)
+  swapl₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
+          (swap₊ ◎ (c₁ ⊕ c₂)) ⇔ ((c₂ ⊕ c₁) ◎ swap₊)
+  swapr₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
+          ((c₂ ⊕ c₁) ◎ swap₊) ⇔ (swap₊ ◎ (c₁ ⊕ c₂))
+  unitel⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
+          (unite⋆ ◎ c₂) ⇔ ((c₁ ⊗ c₂) ◎ unite⋆)
+  uniter⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
+          ((c₁ ⊗ c₂) ◎ unite⋆) ⇔ (unite⋆ ◎ c₂)
+  unitil⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
+          (uniti⋆ ◎ (c₁ ⊗ c₂)) ⇔ (c₂ ◎ uniti⋆)
+  unitir⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
+          (c₂ ◎ uniti⋆) ⇔ (uniti⋆ ◎ (c₁ ⊗ c₂))
+  unitial⋆⇔ : {t₁ t₂ : U} → (uniti⋆ {TIMES t₁ t₂} ◎ assocl⋆) ⇔ (uniti⋆ ⊗ id⟷)
+  unitiar⋆⇔ : {t₁ t₂ : U} → (uniti⋆ {t₁} ⊗ id⟷ {t₂}) ⇔ (uniti⋆ ◎ assocl⋆)
+  swapl⋆⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
+          (swap⋆ ◎ (c₁ ⊗ c₂)) ⇔ ((c₂ ⊗ c₁) ◎ swap⋆)
+  swapr⋆⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
+          ((c₂ ⊗ c₁) ◎ swap⋆) ⇔ (swap⋆ ◎ (c₁ ⊗ c₂))
+  swapfl⋆⇔ : {t₁ t₂ t₃ : U} → 
+          (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor) ⇔ 
+          (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷))
+  swapfr⋆⇔ : {t₁ t₂ t₃ : U} → 
+          (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷)) ⇔ 
+         (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor)
+  id⇔     : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ c
+  trans⇔  : {t₁ t₂ : U} {c₁ c₂ c₃ : t₁ ⟷ t₂} → 
+         (c₁ ⇔ c₂) → (c₂ ⇔ c₃) → (c₁ ⇔ c₃)
+  resp◎⇔  : {t₁ t₂ t₃ : U} 
+         {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
+         (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ◎ c₂) ⇔ (c₃ ◎ c₄)
+  resp⊕⇔  : {t₁ t₂ t₃ t₄ : U} 
+         {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
+         (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊕ c₂) ⇔ (c₃ ⊕ c₄)
+  resp⊗⇔  : {t₁ t₂ t₃ t₄ : U} 
+         {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
+         (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊗ c₂) ⇔ (c₃ ⊗ c₄)
 
 -- better syntax for writing 2paths
 
@@ -534,8 +653,72 @@ _▤ c = id⇔
 -- Inverses for 2paths
 
 2! : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₂ ⇔ c₁)
-2! id⇔          = id⇔ 
+2! assoc◎l = assoc◎r
+2! assoc◎r = assoc◎l
+2! assoc⊕l = assoc⊕r
+2! assoc⊕r = assoc⊕l
+2! assoc⊗l = assoc⊗r
+2! assoc⊗r = assoc⊗l
+2! dist⇔ = factor⇔ 
+2! factor⇔ = dist⇔
+2! idl◎l = idl◎r
+2! idl◎r = idl◎l
+2! idr◎l = idr◎r
+2! idr◎r = idr◎l
+2! linv◎l = linv◎r
+2! linv◎r = linv◎l
+2! rinv◎l = rinv◎r
+2! rinv◎r = rinv◎l
+2! unitel₊⇔ = uniter₊⇔
+2! uniter₊⇔ = unitel₊⇔
+2! unitil₊⇔ = unitir₊⇔
+2! unitir₊⇔ = unitil₊⇔
+2! swapl₊⇔ = swapr₊⇔
+2! swapr₊⇔ = swapl₊⇔
+2! unitial₊⇔ = unitiar₊⇔ 
+2! unitiar₊⇔ = unitial₊⇔ 
+2! unitel⋆⇔ = uniter⋆⇔
+2! uniter⋆⇔ = unitel⋆⇔
+2! unitil⋆⇔ = unitir⋆⇔
+2! unitir⋆⇔ = unitil⋆⇔
+2! unitial⋆⇔ = unitiar⋆⇔ 
+2! unitiar⋆⇔ = unitial⋆⇔ 
+2! swapl⋆⇔ = swapr⋆⇔
+2! swapr⋆⇔ = swapl⋆⇔
+2! swapfl⋆⇔ = swapfr⋆⇔
+2! swapfr⋆⇔ = swapfl⋆⇔
+2! id⇔ = id⇔
 2! (trans⇔ α β) = trans⇔ (2! β) (2! α)
+2! (resp◎⇔ α β) = resp◎⇔ (2! α) (2! β)
+2! (resp⊕⇔ α β) = resp⊕⇔ (2! α) (2! β)
+2! (resp⊗⇔ α β) = resp⊗⇔ (2! α) (2! β) 
+
+-- a nice example of 2 paths
+
+negEx : neg₅ ⇔ neg₁
+negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆)))
+          ⇔⟨ resp◎⇔ id⇔ assoc◎l ⟩
+        uniti⋆ ◎ ((swap⋆ ◎ (swap₊ ⊗ id⟷)) ◎ (swap⋆ ◎ unite⋆))
+          ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ swapl⋆⇔ id⇔) ⟩
+        uniti⋆ ◎ (((id⟷ ⊗ swap₊) ◎ swap⋆) ◎ (swap⋆ ◎ unite⋆))
+          ⇔⟨ resp◎⇔ id⇔ assoc◎r ⟩
+        uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ (swap⋆ ◎ (swap⋆ ◎ unite⋆)))
+          ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ id⇔ assoc◎l) ⟩
+        uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ ((swap⋆ ◎ swap⋆) ◎ unite⋆))
+          ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ id⇔ (resp◎⇔ linv◎l id⇔)) ⟩
+        uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ (id⟷ ◎ unite⋆))
+          ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ id⇔ idl◎l) ⟩
+        uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ unite⋆)
+          ⇔⟨ assoc◎l ⟩
+        (uniti⋆ ◎ (id⟷ ⊗ swap₊)) ◎ unite⋆
+          ⇔⟨ resp◎⇔ unitil⋆⇔ id⇔ ⟩
+        (swap₊ ◎ uniti⋆) ◎ unite⋆
+          ⇔⟨ assoc◎r ⟩
+        swap₊ ◎ (uniti⋆ ◎ unite⋆)
+          ⇔⟨ resp◎⇔ id⇔ linv◎l ⟩
+        swap₊ ◎ id⟷
+          ⇔⟨ idr◎l ⟩
+        swap₊ ▤
 
 -- The equivalence ⇔ of paths is rich enough to make U a 1groupoid:
 -- the points are types (t : U); the 1paths are ⟷; and the 2paths
@@ -549,24 +732,29 @@ G' = record
         ; id  = id⟷
         ; _∘_ = λ p q → q ◎ p
         ; _⁻¹ = !
-        ; lneutr = {!!} 
-        ; rneutr = {!!} 
-        ; assoc  = {!!} 
+        ; lneutr = λ _ → idr◎l
+        ; rneutr = λ _ → idl◎l
+        ; assoc  = λ _ _ _ → assoc◎l
         ; equiv = record { 
-            refl  = id⇔ 
-          ; sym   = 2! 
-          ; trans = trans⇔ 
+            refl  = id⇔
+          ; sym   = 2!
+          ; trans = trans⇔
           }
-        ; linv = {!!} 
-        ; rinv = {!!} 
-        ; ∘-resp-≈ = {!!} 
+        ; linv = λ {t₁} {t₂} α → linv◎l
+        ; rinv = λ {t₁} {t₂} α → rinv◎l
+        ; ∘-resp-≈ = λ p∼q r∼s → resp◎⇔ r∼s p∼q 
         }
 
 ------------------------------------------------------------------------------
 -- Inverting permutations to syntactic combinators
 
+-- need additional assumption that size t₁ ≡ size t₂
+
 perm2comb : {t₁ t₂ : U} → Perm (size t₁) → (t₁ ⟷ t₂)
-perm2comb = {!!} 
+perm2comb {ZERO} {t₂} p = {!id⟷!} 
+perm2comb {ONE} {t₂} p = {!!} 
+perm2comb {PLUS t₁ t₂} {t₃} p = {!!} 
+perm2comb {TIMES t₁ t₂} {t₃} p = {!!} 
 
 ------------------------------------------------------------------------------
 -- Soundness and completeness
@@ -576,7 +764,7 @@ perm2comb = {!!}
 -- that for all c₁ and c₂, we have c₁ ∼ c₂ iff c₁ ⇔ c₂
 
 soundness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₁ ∼ c₂)
-soundness = {!!} 
+soundness α = {!!} 
 
 -- The idea is to invert evaluation and use that to extract from each
 -- extensional representation of a combinator, a canonical syntactic
