@@ -3,7 +3,8 @@
 module Pif where
 
 open import Relation.Binary.PropositionalEquality 
-  using (_≡_; refl; sym; trans; subst; cong; cong₂; module ≡-Reasoning)
+  using (_≡_; refl; sym; trans; subst; cong; cong₂; 
+        proof-irrelevance; module ≡-Reasoning)
 open ≡-Reasoning
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
@@ -288,6 +289,11 @@ size≡ (c₁ ◎ c₂) = trans (size≡ c₁) (size≡ c₂)
 size≡ {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = cong₂ _+_ (size≡ c₁) (size≡ c₂)
 size≡ {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = cong₂ _*_ (size≡ c₁) (size≡ c₂)
 
+-- All proofs about sizes are "the same"
+
+size∼ : {t₁ t₂ : U} → (c₁ c₂ : t₁ ⟷ t₂) → (size≡ c₁ ≡ size≡ c₂)
+size∼ c₁ c₂ = proof-irrelevance (size≡ c₁) (size≡ c₂)
+
 -- A permutation is a sequence of "insertions".
 
 infixr 5 _∷_
@@ -508,6 +514,16 @@ assoc∼ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t�
          c₁ ◎ (c₂ ◎ c₃) ∼ (c₁ ◎ c₂) ◎ c₃
 assoc∼ = {!!} 
 
+linv∼ : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ ! c ∼ id⟷
+linv∼ = {!!} 
+
+rinv∼ : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → ! c ◎ c ∼ id⟷
+rinv∼ = {!!} 
+
+resp∼ : {t₁ t₂ t₃ : U} {c₁ c₂ : t₁ ⟷ t₂} {c₃ c₄ : t₂ ⟷ t₃} → 
+        (c₁ ∼ c₂) → (c₃ ∼ c₄) → (c₁ ◎ c₃ ∼ c₂ ◎ c₄)
+resp∼ = {!!} 
+
 -- The equivalence ∼ of paths makes U a 1groupoid: the points are
 -- types (t : U); the 1paths are ⟷; and the 2paths between them are
 -- based on extensional equivalence ∼
@@ -528,9 +544,9 @@ G = record
           ; sym   = λ {c₁} {c₂} → sym∼ {c₁ = c₁} {c₂ = c₂}
           ; trans = λ {c₁} {c₂} {c₃} → trans∼ {c₁ = c₁} {c₂ = c₂} {c₃ = c₃} 
           }
-        ; linv = {!!} 
-        ; rinv = {!!} 
-        ; ∘-resp-≈ = {!!} 
+        ; linv = λ c → linv∼ {c = c} 
+        ; rinv = λ c → rinv∼ {c = c} 
+        ; ∘-resp-≈ = λ α β → resp∼ β α 
         }
 
 ------------------------------------------------------------------------------
@@ -748,13 +764,11 @@ G' = record
 ------------------------------------------------------------------------------
 -- Inverting permutations to syntactic combinators
 
--- need additional assumption that size t₁ ≡ size t₂
-
-perm2comb : {t₁ t₂ : U} → Perm (size t₁) → (t₁ ⟷ t₂)
-perm2comb {ZERO} {t₂} p = {!id⟷!} 
-perm2comb {ONE} {t₂} p = {!!} 
-perm2comb {PLUS t₁ t₂} {t₃} p = {!!} 
-perm2comb {TIMES t₁ t₂} {t₃} p = {!!} 
+perm2comb : {t₁ t₂ : U} → (size t₁ ≡ size t₂) → Perm (size t₁) → (t₁ ⟷ t₂)
+perm2comb {ZERO} {t₂} sp [] = {!!} 
+perm2comb {ONE} {t₂} sp p = {!!} 
+perm2comb {PLUS t₁ t₂} {t₃} sp p = {!!} 
+perm2comb {TIMES t₁ t₂} {t₃} sp p = {!!} 
 
 ------------------------------------------------------------------------------
 -- Soundness and completeness
@@ -764,21 +778,60 @@ perm2comb {TIMES t₁ t₂} {t₃} p = {!!}
 -- that for all c₁ and c₂, we have c₁ ∼ c₂ iff c₁ ⇔ c₂
 
 soundness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₁ ∼ c₂)
-soundness α = {!!} 
+soundness assoc◎l = assoc∼
+soundness assoc◎r = sym∼ assoc∼
+soundness assoc⊕l = {!!}
+soundness assoc⊕r = {!!}
+soundness assoc⊗l = {!!}
+soundness assoc⊗r = {!!}
+soundness dist⇔ = {!!}
+soundness factor⇔ = {!!}
+soundness idl◎l = id◎c∼c
+soundness idl◎r = sym∼ id◎c∼c
+soundness idr◎l = c◎id∼c
+soundness idr◎r = sym∼ c◎id∼c
+soundness linv◎l = linv∼
+soundness linv◎r = sym∼ linv∼
+soundness rinv◎l = rinv∼
+soundness rinv◎r = sym∼ rinv∼
+soundness unitel₊⇔ = {!!}
+soundness uniter₊⇔ = {!!}
+soundness unitil₊⇔ = {!!}
+soundness unitir₊⇔ = {!!}
+soundness unitial₊⇔ = {!!}
+soundness unitiar₊⇔ = {!!}
+soundness swapl₊⇔ = {!!}
+soundness swapr₊⇔ = {!!}
+soundness unitel⋆⇔ = {!!}
+soundness uniter⋆⇔ = {!!}
+soundness unitil⋆⇔ = {!!}
+soundness unitir⋆⇔ = {!!}
+soundness unitial⋆⇔ = {!!}
+soundness unitiar⋆⇔ = {!!}
+soundness swapl⋆⇔ = {!!}
+soundness swapr⋆⇔ = {!!}
+soundness swapfl⋆⇔ = {!!}
+soundness swapfr⋆⇔ = {!!}
+soundness id⇔ = refl∼
+soundness (trans⇔ α β) = trans∼ (soundness α) (soundness β)
+soundness (resp◎⇔ α β) = resp∼ (soundness α) (soundness β)
+soundness (resp⊕⇔ α β) = {!!}
+soundness (resp⊗⇔ α β) = {!!} 
 
 -- The idea is to invert evaluation and use that to extract from each
 -- extensional representation of a combinator, a canonical syntactic
 -- representative
 
 canonical : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂)
-canonical = perm2comb ∘ comb2perm
+canonical c = perm2comb (size≡ c) (comb2perm c)
 
 -- Note that if c₁ ⇔ c₂, then by soundness c₁ ∼ c₂ and hence their
 -- canonical representatives are identical. 
 
 canonicalWellDefined : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → 
-                       (c₁ ⇔ c₂) → (canonical c₁ ≡ canonical c₂)
-canonicalWellDefined α = cong perm2comb (soundness α)
+  (c₁ ⇔ c₂) → (canonical c₁ ≡ canonical c₂)
+canonicalWellDefined {t₁} {t₂} {c₁} {c₂} α = 
+  cong₂ perm2comb (size∼ c₁ c₂) (soundness α) 
 
 -- If we can prove that every combinator is equal to its normal form
 -- then we can prove completeness.
@@ -794,7 +847,7 @@ completeness {t₁} {t₂} {c₁} {c₂} c₁∼c₂ =
   c₁
     ⇔⟨ inversion ⟩
   canonical c₁
-    ⇔⟨  resp≡⇔ (cong perm2comb c₁∼c₂) ⟩ 
+    ⇔⟨  resp≡⇔ (cong₂ perm2comb (size∼ c₁ c₂) c₁∼c₂) ⟩ 
   canonical c₂
     ⇔⟨ 2! inversion ⟩ 
   c₂ ▤
