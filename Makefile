@@ -7,3 +7,4 @@ p.pdf : latex/p.tex
 latex/p.tex : p.lagda
 	agda --allow-unsolved-metas --latex -i . -i $(AGDALIB) p.lagda
 
+

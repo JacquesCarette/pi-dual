@@ -1,3 +1,5 @@
+{-# OPTIONS --without-K #-}
+
 module Pi1 where
 
 open import Data.List
@@ -17,6 +19,14 @@ infix  2  _▤
 infixr 2  _⇔⟨_⟩_   
 infixr 10 _◎_
 infix 30 _⟷_
+infix  4  _∼_   -- homotopy between two paths
+infix  4  _≃_   -- type of equivalences
+
+-- Work on ch. on sets and n-levels and n=-2 and n=-1
+-- then work on ch. on equivalences
+-- then go back to functions are functors; type families are fibrations
+-- then work on int construction
+-- then work on example from popl 
 
 ------------------------------------------------------------------------------
 -- Level 0: 
@@ -252,9 +262,14 @@ test = eval (•[ BOOL² , (TRUE , TRUE) ]
              •[ BOOL² , (TRUE , FALSE) ] □)
 
 
--- The above are "fibers". We collect the fibers into functions. A function
--- is a collection of chains, one that starts at each value in the domain
+-- The above are "fibers". We collect the fibers into functions. 
 
+data SWAP₊ {t₁ t₂ v₁ v₂} : 
+  (•[ PLUS t₁ t₂ , inj₁ v₁ ] ⟷ •[ PLUS t₂ t₁ , inj₂ v₁ ]) → 
+  (•[ PLUS t₁ t₂ , inj₂ v₂ ] ⟷ •[ PLUS t₂ t₁ , inj₁ v₂ ]) → 
+  Set where
+  swap₊ : SWAP₊ swap1₊ swap2₊ 
+         
 Fun : (t₁ t₂ : U) → Set
 Fun t₁ t₂ = (v₁ : ⟦ t₁ ⟧) → Σ[ v₂ ∈ ⟦ t₂ ⟧ ] (•[ t₁ , v₁ ] ⟷ •[ t₂ , v₂ ])
 
@@ -337,6 +352,71 @@ UG = record
        ; rinv = λ _ → tt 
        ; ∘-resp-≈ = λ _ _ → tt
        }
+
+-- Now let us talk about homotopies and equivalences
+
+-- Two paths starting at the same point are homotopic if they map that point
+-- to related points (of course, related by another path)
+
+_∼_ : {t₁ t₂ t₂' : U•} → (p : t₁ ⟷ t₂) → (q : t₁ ⟷ t₂') → Set
+_∼_ {t₁} {t₂} {t₂'} p q = (t₂ ⟷ t₂')
+
+refl∼ : {t₁ t₂ : U•} → (p : t₁ ⟷ t₂) → (p ∼ p)
+refl∼ {t₁} {t₂} p = id⟷ 
+
+sym∼ : {t₁ t₂ t₂' : U•} {p : t₁ ⟷ t₂} {q : t₁ ⟷ t₂'} → (p ∼ q) → (q ∼ p) 
+sym∼ p∼q = ! p∼q
+
+trans∼ : {t₁ t₂ t₂' t₂'' : U•} {p : t₁ ⟷ t₂} {q : t₁ ⟷ t₂'} {r : t₁ ⟷ t₂''} → 
+         (p ∼ q) → (q ∼ r) → (p ∼ r) 
+trans∼ p∼q q∼r = p∼q ◎ q∼r 
+
+module T where
+  -- Note that paths mapping a point FALSE and TRUE can be homotopic
+
+  p : •[ BOOL , FALSE ] ⟷ •[ BOOL , FALSE ]
+  p = id⟷ 
+
+  q : •[ BOOL , FALSE ] ⟷ •[ BOOL , TRUE ]
+  q = swap2₊
+
+  p∼q : p ∼ q
+  p∼q = swap2₊
+
+-- equivalences
+
+-- the following makes no sense because I can use id⟷ for α and β
+
+record qinv {t₁ t₂ : U•} (p : t₁ ⟷ t₂) : Set where
+  constructor mkqinv
+  field
+    q : t₂ ⟷ t₁
+    α : (p ◎ q) ∼ id⟷
+    β : (q ◎ p) ∼ id⟷
+
+idqinv : {t : U•} → qinv {t} {t} id⟷ 
+idqinv = record {
+           q = id⟷ ;
+           α = id⟷ ;
+           β = id⟷ 
+         } 
+
+record isequiv {t₁ t₂ : U•} (p : t₁ ⟷ t₂) : Set where
+  constructor mkisequiv
+  field
+    q : t₂ ⟷ t₁
+    α : (p ◎ q) ∼ id⟷
+    r : t₂ ⟷ t₁
+    β : (r ◎ p) ∼ id⟷
+
+equiv₁ : {t₁ t₂ : U•} {p : t₁ ⟷ t₂} → qinv p → isequiv p
+equiv₁ (mkqinv iq iα iβ) = mkisequiv iq iα iq iβ
+
+_≃_ : (t₁ t₂ : U•) → Set
+t₁ ≃ t₂ = Σ[ p ∈ t₁ ⟷ t₂ ] (isequiv p)
+
+id≃ : {t : U•} → t ≃ t
+id≃ = (id⟷ , equiv₁ idqinv)
 
 ------------------------------------------------------------------------------
 -- Level 1: 
@@ -618,6 +698,83 @@ G = record
         ; ∘-resp-≈ = λ f⟷h g⟷i → resp◎ g⟷i f⟷h 
         }
 
+-- We can now ask whether a given space is a set (Def. 3.1.1)
+
+isSet : U → Set
+isSet t = (v v' : ⟦ t ⟧) → (p q : •[ t , v ] ⟷ •[ t , v' ]) → 
+          (1•[ PATH •[ t , v ] •[ t , v' ] , path p ] ⇔ 
+           1•[ PATH •[ t , v ] •[ t , v' ] , path q ])
+
+0isSet : isSet ZERO
+0isSet ()
+
+1isSet : isSet ONE
+1isSet tt tt id⟷ id⟷ = id⇔
+1isSet tt tt id⟷ (uniti₊ ◎ unite₊) = 
+  id⟷
+    ⇔⟨ rinv◎r ⟩
+  uniti₊ ◎ unite₊ ▤
+1isSet tt tt id⟷ (uniti₊ ◎ (q₂ ◎ q₃)) = 
+  id⟷ 
+    ⇔⟨ {!!} ⟩
+  (uniti₊ ◎ (q₂ ◎ q₃)) ▤
+1isSet tt tt id⟷ (uniti⋆ ◎ unite⋆) = {!!}
+1isSet tt tt id⟷ (uniti⋆ ◎ (q₂ ◎ q₃)) = {!!}
+1isSet tt tt id⟷ (id⟷ ◎ id⟷) = {!!}
+1isSet tt tt id⟷ (id⟷ ◎ (q₂ ◎ q₃)) = {!!}
+1isSet tt tt id⟷ ((q₁ ◎ q₂) ◎ unite₊) = {!!}
+1isSet tt tt id⟷ ((q₁ ◎ q₂) ◎ unite⋆) = {!!}
+1isSet tt tt id⟷ ((q₁ ◎ q₂) ◎ id⟷) = {!!}
+1isSet tt tt id⟷ ((q₁ ◎ q₂) ◎ (q₃ ◎ q₄)) = {!!}
+1isSet tt tt (p₁ ◎ p₂) id⟷ = {!!}
+1isSet tt tt (p₁ ◎ p₂) (q₁ ◎ q₂) = {!!} 
+
+------------------------------------------------------------------------------
+-- Level 2 etc.
+
+data 2U : Set where
+  2ZERO  : 2U              
+  2ONE   : 2U              
+  2PLUS  : 2U → 2U → 2U      
+  2TIMES : 2U → 2U → 2U      
+  1PATH  : (t₁ t₂ : 1U•) → 2U 
+
+data 1Path (t₁ t₂ : 1U•) : Set where
+  1path : (c : t₁ ⇔ t₂) → 1Path t₁ t₂
+
+2⟦_⟧ : 2U → Set
+2⟦ 2ZERO ⟧             = ⊥
+2⟦ 2ONE ⟧              = ⊤
+2⟦ 2PLUS t₁ t₂ ⟧       = 2⟦ t₁ ⟧ ⊎ 2⟦ t₂ ⟧
+2⟦ 2TIMES t₁ t₂ ⟧      = 2⟦ t₁ ⟧ × 2⟦ t₂ ⟧
+2⟦ 1PATH t₁ t₂ ⟧ = 1Path t₁ t₂
+
+record 2U• : Set where
+  constructor 2•[_,_]
+  field
+    2∣_∣ : 2U
+    2•   : 2⟦ 2∣_∣ ⟧
+
+data _2⇔_ : 2U• → 2U• → Set where
+  id2⇔    : ∀ {t v} → 2•[ t , v ] 2⇔ 2•[ t , v ]
+ -- and all the remaining combinators...
+
+
+-- Eckmann-Hilton
+
+Ω : (t : U) → {v : ⟦ t ⟧} → 1U•
+Ω t {v} = 1•[ PATH t• t• , path id⟷ ]
+  where t• = •[ t , v ]
+
+Ω² : (t : U) → {v : ⟦ t ⟧} → 2U•
+Ω² t {v} = 2•[ 1PATH t• t• , 1path id⇔ ]
+  where t• = Ω t {v}
+
+eckmann-hilton : {t : U} {v : ⟦ t ⟧} (α β : (Ω t {v}) ⇔ (Ω t {v})) → 
+  (2•[ 1PATH (Ω t {v}) (Ω t {v}) , 1path (α ◎ β) ] 2⇔ 
+   2•[ 1PATH (Ω t {v}) (Ω t {v}) , 1path (β ◎ α) ])
+eckmann-hilton {t} {v} α β = {!!} 
+
 ------------------------------------------------------------------------------
 -- Int construction
 
@@ -814,6 +971,7 @@ id⇄ : {t : Uℤ•} → t ⇄ t
 id⇄ {pos• t p} = Fwd swap1₊
 id⇄ {neg• t n} = Bck swap2₊
 
+{--
 _◎⇄_ : {t₁ t₂ t₃ : Uℤ•} → (t₁ ⇄ t₂) → (t₂ ⇄ t₃) → (t₁ ⇄ t₃) 
 _◎⇄_ {pos• t₁ v₁} {pos• t₂ v₂} {pos• t₃ v₃} (Fwd c₁) (Fwd c₂) = 
   Fwd (•[ PLUS (pos t₁) (neg t₃) , inj₁ v₁ ] 
@@ -832,6 +990,7 @@ B2F ◎⇄ Fwd c     = {!!}
 B2F ◎⇄ F2B       = id⇄ 
 F2B ◎⇄ Bck c     = {!!}
 F2B ◎⇄ B2F       = id⇄ 
+--}
 
 {--
   _⊕1_   : ∀ {t₁ t₂ t₃ t₄ v₁ v₂ v₃ v₄} → 
