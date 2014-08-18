@@ -1123,3 +1123,148 @@ m₁₇ = matchP {t₁₇} {t₁₈} id⟷
 --⊗
 
 ------------------------------------------------------------------------------
+
+mergeS :: SubPerm → SubPerm (suc m * n) (m * n) → SubPerm (suc m * suc n) (m * suc n) 
+mergeS = ? 
+
+subP : ∀ {m n} → Fin (suc m) → Perm n → SubPerm (suc m * n) (m * n)
+subP {m} {0} i β = {!!}
+subP {m} {suc n} i (j ∷ β) = mergeS ? (subP {m} {n} i β)
+
+
+-- injectP (Perm n) (m * n) 
+-- ...
+-- SP (suc m * n) (m * n)
+-- SP (n + m * n) (m * n)
+
+--SP (suc m * n) (m * n) 
+--
+--
+--==> 
+--
+--(suc m * suc n) (m * suc n)
+
+--m : ℕ
+--n : ℕ
+--i : Fin (suc m)
+--j : Fin (suc n)
+--β : Perm n
+--?1 : SubPerm (suc m * suc n) (m * suc n)
+
+
+tcompperm : ∀ {m n} → Perm m → Perm n → Perm (m * n)
+tcompperm []      β = []
+tcompperm (i ∷ α) β = merge (subP i β) (tcompperm α β)
+
+-- shift m=3 n=4 i=ax:F3 β=[ay:F4,by:F3,cy:F2,dy:F1] γ=[r4,...,r11]:P8
+-- ==> [F12,F11,F10,F9...γ]
+
+-- m = 3
+-- n = 4
+-- 3 * 4
+-- x = [ ax, bx, cx ] : P 3, y : [ay, by, cy, dy] : P 4
+-- (shift ax 4 y) || 
+--     ( (shift bx 4 y) ||
+--          ( (shift cx 4 y) ||
+--               [])))
+-- 
+-- ax : F3, bx : F2, cx : F1
+-- ay : F4, by : F3, cy : F2, dy : F1
+--
+-- suc m = 3, m = 2
+--  F12 F11  F10 F9  F8  F7  F6  F5  F4  F3  F2   F1
+-- [ r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11 ]
+--   ---------------
+--  ax : F3 with y=[F4,F3,F2,F1]
+--                   --------------
+--                       bx : F2
+--                                  ------------------
+--                                          cx : F1
+
+  -- β should be something like i * n + entry in β
+
+{--
+0 * n = 0
+(suc m) * n = n + (m * n)
+
+comb2perm (c₁ ⊗ c₂) = tcompperm (comb2perm c₁) (comb2perm c₂) 
+
+c1 = swap+ (f->t,t->f)  [1,0]
+c2 = id    (f->f,t->t)  [0,0]
+
+c1xc2 (f,f)->(t,f), (f,t)->(t,t), (t,f)->(f,f), (t,t)->(f,t)
+[
+
+ff ft tf tt
+ 2   2  0  0
+
+index in α * n + index in β
+
+--}
+
+pex qex pqex qpex : Perm 3
+pex = inject+ 1 (fromℕ 1) ∷ fromℕ 1 ∷ zero ∷ []
+qex = zero ∷ fromℕ 1 ∷ zero ∷ []
+pqex = fromℕ 2 ∷ fromℕ 1 ∷ zero ∷ []
+qpex = inject+ 1 (fromℕ 1) ∷ zero ∷ zero ∷ []
+
+pqexv  = (permute qex ∘ permute pex) (tabulate id)
+pqexv' = permute pqex (tabulate id) 
+
+qpexv  = (permute pex ∘ permute qex) (tabulate id)
+qpexv' = permute qpex (tabulate id)
+
+-- [1,1,0]
+-- [z] => [z]
+-- [y,z] => [z,y]
+-- [x,y,z] => [z,x,y] 
+
+-- [0,1,0]
+-- [w] => [w]
+-- [v,w] => [w,v]
+-- [u,v,w] => [u,w,v]
+
+-- R,R,_ ◌ _,R,_
+-- R in p1 takes you to middle which also goes R, so first goes RR
+-- [a,b,c] ◌ [d,e,f]
+-- [a+p2[a], ...]
+
+-- [1,1,0] ◌ [0,1,0] one step [2,1,0]
+-- [z] => [z]
+-- [y,z] => [z,y]
+-- [x,y,z] => [z,y,x]
+
+-- [1,1,0] ◌ [0,1,0]
+-- [z] => [z] => [z]
+-- [y,z] => 
+-- [x,y,z] => 
+
+-- so [1,1,0] ◌ [0,1,0] ==> [2,1,0]
+-- so [0,1,0] ◌ [1,1,0] ==> [1,0,0]
+
+-- pex takes [0,1,2] to [2,0,1]
+-- qex takes [0,1,2] to [0,2,1]
+-- pex ◌ qex takes [0,1,2] to [2,1,0]
+-- qex ◌ pex takes [0,1,2] to [1,0,2]
+
+-- seq : ∀ {m n} → (m ≤ n) → Perm m → Perm n → Perm m
+-- seq lp [] _ = []
+-- seq lp (i ∷ p) q = (lookupP i q) ∷ (seq lp p q)
+
+-- i F+ ...
+
+-- lookupP : ∀ {n} → Fin n → Perm n → Fin n
+-- i   : Fin (suc m)
+-- p   : Perm m
+-- q   : Perm n
+
+
+-- 
+-- (zero ∷ p₁) ◌ (q ∷ q₁) = q ∷ (p₁ ◌ q₁)
+-- (suc p ∷ p₁) ◌ (zero ∷ q₁) = {!!}
+-- (suc p ∷ p₁) ◌ (suc q ∷ q₁) = {!!}
+-- 
+-- data Perm : ℕ → Set where
+--   []  : Perm 0
+--   _∷_ : {n : ℕ} → Fin (suc n) → Perm n → Perm (suc n)
+

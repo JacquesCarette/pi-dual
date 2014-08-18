@@ -8,7 +8,7 @@ open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
-        *-assoc; *-comm; distribʳ-*-+)
+        *-assoc; *-comm; *-right-zero; distribʳ-*-+)
 
 open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _≤_; z≤n; s≤s)
 open import Data.Fin 
@@ -365,82 +365,40 @@ swapperm {suc n} (suc i) =
 
 -- compositions
 
-pex qex pqex qpex : Perm 3
-pex = inject+ 1 (fromℕ 1) ∷ fromℕ 1 ∷ zero ∷ []
-qex = zero ∷ fromℕ 1 ∷ zero ∷ []
-pqex = fromℕ 2 ∷ fromℕ 1 ∷ zero ∷ []
-qpex = inject+ 1 (fromℕ 1) ∷ zero ∷ zero ∷ []
-
-pqexv  = (permute qex ∘ permute pex) (tabulate id)
-pqexv' = permute pqex (tabulate id) 
-
-qpexv  = (permute pex ∘ permute qex) (tabulate id)
-qpexv' = permute qpex (tabulate id)
-
--- [1,1,0]
--- [z] => [z]
--- [y,z] => [z,y]
--- [x,y,z] => [z,x,y] 
-
--- [0,1,0]
--- [w] => [w]
--- [v,w] => [w,v]
--- [u,v,w] => [u,w,v]
-
--- R,R,_ ◌ _,R,_
--- R in p1 takes you to middle which also goes R, so first goes RR
--- [a,b,c] ◌ [d,e,f]
--- [a+p2[a], ...]
-
--- [1,1,0] ◌ [0,1,0] one step [2,1,0]
--- [z] => [z]
--- [y,z] => [z,y]
--- [x,y,z] => [z,y,x]
-
--- [1,1,0] ◌ [0,1,0]
--- [z] => [z] => [z]
--- [y,z] => 
--- [x,y,z] => 
-
--- so [1,1,0] ◌ [0,1,0] ==> [2,1,0]
--- so [0,1,0] ◌ [1,1,0] ==> [1,0,0]
-
--- pex takes [0,1,2] to [2,0,1]
--- qex takes [0,1,2] to [0,2,1]
--- pex ◌ qex takes [0,1,2] to [2,1,0]
--- qex ◌ pex takes [0,1,2] to [1,0,2]
-
--- seq : ∀ {m n} → (m ≤ n) → Perm m → Perm n → Perm m
--- seq lp [] _ = []
--- seq lp (i ∷ p) q = (lookupP i q) ∷ (seq lp p q)
-
--- i F+ ...
-
--- lookupP : ∀ {n} → Fin n → Perm n → Fin n
--- i   : Fin (suc m)
--- p   : Perm m
--- q   : Perm n
-
-
--- 
--- (zero ∷ p₁) ◌ (q ∷ q₁) = q ∷ (p₁ ◌ q₁)
--- (suc p ∷ p₁) ◌ (zero ∷ q₁) = {!!}
--- (suc p ∷ p₁) ◌ (suc q ∷ q₁) = {!!}
--- 
--- data Perm : ℕ → Set where
---   []  : Perm 0
---   _∷_ : {n : ℕ} → Fin (suc n) → Perm n → Perm (suc n)
-
--------------
+-- Sequential composition
 
 scompperm : ∀ {n} → Perm n → Perm n → Perm n
 scompperm α β = {!!} 
 
+-- Sub-permutations
+-- useful for parallel and multiplicative compositions
+
+-- Perm 4 has elements [Fin 4, Fin 3, Fin 2, Fin 1]
+-- SubPerm 11 7 has elements [Fin 11, Fin 10, Fin 9, Fin 8]
+-- So Perm 4 is a special case SubPerm 4 0
+
+data SubPerm : ℕ → ℕ → Set where
+  []s  : {n : ℕ} → SubPerm n n
+  _∷s_ : {n m : ℕ} → Fin (suc n) → SubPerm n m → SubPerm (suc n) m
+
+merge : ∀ {m n} → SubPerm m n → Perm n → Perm m
+merge []s      β = β
+merge (i ∷s α) β = i ∷ merge α β
+
+injectP : ∀ {m} → Perm m → (n : ℕ) → SubPerm (m + n) n
+injectP []      n = []s 
+injectP (i ∷ α) n = inject+ n i ∷s injectP α n
+  
+-- Parallel + composition
+
 pcompperm : ∀ {m n} → Perm m → Perm n → Perm (m + n)
-pcompperm α β = {!!} 
+pcompperm {m} {n} α β = merge (injectP α n) β
+
+-- Multiplicative * composition
 
 tcompperm : ∀ {m n} → Perm m → Perm n → Perm (m * n)
-tcompperm α β = {!!} 
+tcompperm []      β = []
+tcompperm (i ∷ α) β = ? 
 
 ------------------------------------------------------------------------------
 -- A combinator t₁ ⟷ t₂ denotes a permutation.
@@ -548,6 +506,18 @@ G = record
         ; rinv = λ c → rinv∼ {c = c} 
         ; ∘-resp-≈ = λ α β → resp∼ β α 
         }
+
+-- And there are additional laws
+
+assoc⊕∼ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          c₁ ⊕ (c₂ ⊕ c₃) ∼ assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊
+assoc⊕∼ = {!!} 
+
+assoc⊗∼ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          c₁ ⊗ (c₂ ⊗ c₃) ∼ assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆
+assoc⊗∼ = {!!} 
 
 ------------------------------------------------------------------------------
 -- Picture so far:
@@ -778,41 +748,41 @@ perm2comb {TIMES t₁ t₂} {t₃} sp p = {!!}
 -- that for all c₁ and c₂, we have c₁ ∼ c₂ iff c₁ ⇔ c₂
 
 soundness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₁ ∼ c₂)
-soundness assoc◎l = assoc∼
-soundness assoc◎r = sym∼ assoc∼
-soundness assoc⊕l = {!!}
-soundness assoc⊕r = {!!}
-soundness assoc⊗l = {!!}
-soundness assoc⊗r = {!!}
-soundness dist⇔ = {!!}
-soundness factor⇔ = {!!}
-soundness idl◎l = id◎c∼c
-soundness idl◎r = sym∼ id◎c∼c
-soundness idr◎l = c◎id∼c
-soundness idr◎r = sym∼ c◎id∼c
-soundness linv◎l = linv∼
-soundness linv◎r = sym∼ linv∼
-soundness rinv◎l = rinv∼
-soundness rinv◎r = sym∼ rinv∼
-soundness unitel₊⇔ = {!!}
-soundness uniter₊⇔ = {!!}
-soundness unitil₊⇔ = {!!}
-soundness unitir₊⇔ = {!!}
-soundness unitial₊⇔ = {!!}
-soundness unitiar₊⇔ = {!!}
-soundness swapl₊⇔ = {!!}
-soundness swapr₊⇔ = {!!}
-soundness unitel⋆⇔ = {!!}
-soundness uniter⋆⇔ = {!!}
-soundness unitil⋆⇔ = {!!}
-soundness unitir⋆⇔ = {!!}
-soundness unitial⋆⇔ = {!!}
-soundness unitiar⋆⇔ = {!!}
-soundness swapl⋆⇔ = {!!}
-soundness swapr⋆⇔ = {!!}
-soundness swapfl⋆⇔ = {!!}
-soundness swapfr⋆⇔ = {!!}
-soundness id⇔ = refl∼
+soundness assoc◎l      = assoc∼
+soundness assoc◎r      = sym∼ assoc∼
+soundness assoc⊕l      = assoc⊕∼
+soundness assoc⊕r      = sym∼ assoc⊕∼
+soundness assoc⊗l      = assoc⊗∼
+soundness assoc⊗r      = sym∼ assoc⊗∼
+soundness dist⇔        = {!!}
+soundness factor⇔      = {!!}
+soundness idl◎l        = id◎c∼c
+soundness idl◎r        = sym∼ id◎c∼c
+soundness idr◎l        = c◎id∼c
+soundness idr◎r        = sym∼ c◎id∼c
+soundness linv◎l       = linv∼
+soundness linv◎r       = sym∼ linv∼
+soundness rinv◎l       = rinv∼
+soundness rinv◎r       = sym∼ rinv∼
+soundness unitel₊⇔     = {!!}
+soundness uniter₊⇔     = {!!}
+soundness unitil₊⇔     = {!!}
+soundness unitir₊⇔     = {!!}
+soundness unitial₊⇔    = {!!}
+soundness unitiar₊⇔    = {!!}
+soundness swapl₊⇔      = {!!}
+soundness swapr₊⇔      = {!!}
+soundness unitel⋆⇔     = {!!}
+soundness uniter⋆⇔     = {!!}
+soundness unitil⋆⇔     = {!!}
+soundness unitir⋆⇔     = {!!}
+soundness unitial⋆⇔    = {!!}
+soundness unitiar⋆⇔    = {!!}
+soundness swapl⋆⇔      = {!!}
+soundness swapr⋆⇔      = {!!}
+soundness swapfl⋆⇔     = {!!}
+soundness swapfr⋆⇔     = {!!}
+soundness id⇔          = refl∼
 soundness (trans⇔ α β) = trans∼ (soundness α) (soundness β)
 soundness (resp◎⇔ α β) = resp∼ (soundness α) (soundness β)
 soundness (resp⊕⇔ α β) = {!!}
