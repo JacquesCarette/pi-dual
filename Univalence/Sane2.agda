@@ -46,15 +46,11 @@ combToPerm {suc n} c = valToFin (evalComb c (inj₁ tt)) ∷ {!!}
 key-lemma : {n : ℕ} (i : F.Fin (suc n)) (j : F.Fin (suc (suc n))) → 
       (lookup
        (lookup
-        (lookup j
-         (F.inject₁ i ∷ remove (F.inject₁ i) (tabulate id)))
-        (insert
-         (remove (F.inject₁ i) (tabulate id))
-         (F.suc i) (F.inject₁ i)))
-       (insert (tabulate F.suc)
-        (F.inject₁ i) F.zero))
+        ((F.inject₁ i ∷ remove (F.inject₁ i) vId) !! j)
+        (insert (remove (F.inject₁ i) vId) (F.suc i) (F.inject₁ i)))
+       (insert vS (F.inject₁ i) F.zero))
       ≡
-       (F.suc i ∷ insert (remove i (tabulate F.suc)) i F.zero) !! j
+       (F.suc i ∷ insert (remove i vS) i F.zero) !! j
 key-lemma {zero} F.zero F.zero = refl
 key-lemma {zero} F.zero (F.suc F.zero) = refl
 key-lemma {zero} F.zero (F.suc (F.suc ()))
@@ -62,13 +58,13 @@ key-lemma {zero} (F.suc ()) j
 key-lemma {suc n} F.zero F.zero = refl
 key-lemma {suc n} F.zero (F.suc j) = 
   begin
-    lookup (lookup (lookup j (tabulate F.suc)) swap01vec) (tabulate id)
-      ≡⟨ lookupTab {f = id} (lookup (lookup j (tabulate F.suc)) swap01vec) ⟩
-    lookup (lookup j (tabulate F.suc)) swap01vec
+    lookup (lookup (vS !! j) swap01vec) vId
+      ≡⟨ lookupTab {f = id} (lookup (vS !! j) swap01vec) ⟩
+    lookup (vS !! j) swap01vec
       ≡⟨ cong (λ z → lookup z swap01vec) (lookupTab {f = F.suc} j) ⟩
     lookup (F.suc j) swap01vec
       ≡⟨ refl ⟩
-     lookup j (F.zero ∷ tabulate (F.suc ○ F.suc))
+     lookup j (F.zero ∷ vSS)
   ∎
 key-lemma {suc n} (F.suc i) F.zero = 
   begin
@@ -88,22 +84,34 @@ key-lemma {suc n} (F.suc i) F.zero =
       ≡⟨ lookupTab {f = F.suc ○ F.suc} i ⟩
     F.suc (F.suc i)
   ∎
-key-lemma {suc n} (F.suc i) (F.suc F.zero) = refl
-key-lemma {suc n} (F.suc i) (F.suc (F.suc j)) = 
+key-lemma {suc n} (F.suc i) (F.suc j) = 
   begin
      (lookup
        (lookup
-        (lookup (F.suc j)
-         (remove (F.inject₁ (F.suc i)) (tabulate id)))
+        (lookup j
+         (remove (F.inject₁ (F.suc i)) vId))
         (insert
-         (remove (F.inject₁ (F.suc i)) (tabulate id))
+         (remove (F.inject₁ (F.suc i)) vId)
          (F.suc (F.suc i)) (F.inject₁ (F.suc i))))
-       (insert (tabulate F.suc)
-        (F.inject₁ (F.suc i)) F.zero))
+       (insert vS (F.inject₁ (F.suc i)) F.zero))
+        ≡⟨ refl ⟩ -- lots of β
+     (lookup
+       (lookup
+        ((F.zero ∷ remove (F.inject₁ i) vS) !! j)
+          (F.zero ∷ insert (remove (F.inject₁ i) vS) (F.suc i) (F.inject₁ (F.suc i))))
+       (F.suc F.zero ∷ insert vSS (F.inject₁ i) F.zero))
         ≡⟨ {!!} ⟩
-    (insert (remove (F.suc i) (tabulate F.suc)) (F.suc i) F.zero) !! (F.suc j)
+    (F.suc F.zero ∷ insert (remove i vSS) i F.zero) !! j
+        ≡⟨ refl ⟩
+    (insert (remove (F.suc i) vS) (F.suc i) F.zero) !! j
   ∎
-
+{-    (lookup
+       (lookup
+        ((F.inject₁ i ∷ remove (F.inject₁ i) vId) !! j)
+        (insert (remove (F.inject₁ i) vId) (F.suc i) (F.inject₁ i)))
+       (insert vS (F.inject₁ i) F.zero))
+      ≡
+       (F.suc i ∷ insert (remove i vS) i F.zero) !! j -}
 --------------------------------------------------------------------------------------------------------------
 
 -- shuffle is like permute, but takes a combinator rather than a permutation as input

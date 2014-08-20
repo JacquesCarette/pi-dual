@@ -168,26 +168,27 @@ $\displaystyle
 
 \title{A Computational Reconstruction of \\ 
   Homotopy Type Theory for Finite Types}
-\authorinfo{Jacques Carette}{McMaster University}{carette@mcmaster.ca}
-\authorinfo{Amr Sabry}{Indiana University}{sabry@indiana.edu}
+\authorinfo{}{}{}
 \maketitle
 
 \begin{abstract}
-Homotopy type theory (HoTT) relates some aspects of topology, algebra, logic,
-and type theory, in a unique novel way that promises a new and foundational
-perspective on mathematics and computation. The heart of HoTT is the
-\emph{univalence axiom}, which informally states that isomorphic structures
-can be identified. One of the major open problems in HoTT is a computational
-interpretation of this axiom.  We propose that, at least for the special case
-of finite types, reversible computation via type isomorphisms \emph{is} the
-computational interpretation of univalence.
+Homotopy type theory (HoTT) relates some aspects of topology, algebra,
+%% geometry, physics, 
+logic, and type theory, in a unique novel way that
+promises a new and foundational perspective on mathematics and
+computation. The heart of HoTT is the \emph{univalence axiom}, which
+informally states that isomorphic structures can be identified. One of the
+major open problems in HoTT is a computational interpretation of this axiom.
+We propose that, at least for the special case of finite types, reversible
+computation via type isomorphisms \emph{is} the computational interpretation
+of univalence.
 \end{abstract}
 
 \AgdaHide{
 \begin{code}
 {-# OPTIONS --without-K #-}
 
-module p where
+module p2 where
 open import Level 
 open import Data.Empty
 open import Data.Unit
@@ -313,23 +314,24 @@ elements \AgdaBound{p} and \AgdaBound{q} of some type \AgdaBound{x}
 about the elements of type \AgdaBound{p} \AgdaDatatype{≡} \AgdaBound{q}. Or,
 in more familiar terms, given two proofs of some proposition $P$, are these
 two proofs themselves ``equal.'' In some situations, the only interesting
-property of proofs is their existence. In these situations, the exact
-sequence of logical steps in the proof is irrelevant, and ultimately all
+property of proofs is their existence. This therefore suggests that the exact
+sequence of logical steps in the proof is irrelevant, and ultimately that all
 proofs of the same proposition are equivalent. This is however neither
 necessary nor desirable. A twist that dates back to a paper by
 \citet{Hofmann96thegroupoid} is that proofs actually possess a structure of
-great combinatorial complexity.  \jc{Surely proof theory predates this by
-  decades?  Lukasiewicz and Gentzen?}  HoTT builds on this idea by
-interpreting types as topological spaces or weak $\infty$-groupoids, and
-interpreting identities between elements of a type
+great combinatorial complexity. 
+\jc{Surely proof theory predates this by decades?  Lukasiewicz and Gentzen?}
+HoTT builds on this idea by interpreting
+types as topological spaces or weak $\infty$-groupoids, and interpreting
+identities between elements of a type
 \AgdaBound{x}~\AgdaDatatype{≡}~\AgdaBound{y} as \emph{paths} from the point
 \AgdaBound{x} to the point \AgdaBound{y}. If \AgdaBound{x} and \AgdaBound{y}
 are themselves paths, the elements of
 \AgdaBound{x}~\AgdaDatatype{≡}~\AgdaBound{y} become paths between paths
 (2-paths), or homotopies in topological language. To be explicit, we will
 often refer to types as \emph{spaces} which consist of \emph{points}, paths,
-2-paths, etc. and write $\AgdaDatatype{≡}_\AgdaBound{A}$ for the type of
-paths in space \AgdaBound{A}.
+2-paths, etc. and write $\AgdaDatatype{≡}_\AgdaBound{A}$ for the type of paths
+in space \AgdaBound{A}.
 
 \jc{We know that once we have polymorphism, we have no interpretations in 
 Set anymore -- should perhaps put more warnings in the next paragraph?}
@@ -515,55 +517,6 @@ between \AgdaPrimitiveType{Bool} and itself ``compiles,'' it is no longer
 executable as it relies on an Agda postulate. In the next section, we analyze
 this situation from the perspective of reversible programming languages based
 on type isomorphisms~\cite{James:2012:IE:2103656.2103667,rc2011,rc2012}.
-
-%%%%%%%%%%%%%%%%%%%%%%
-\subsection{HoTT with Isomorphisms} 
-
-As illustrated above in the case of type \AgdaPrimitiveType{Bool}, we have
-that for every function \AgdaBound{f} \AgdaSymbol{:} \AgdaPrimitiveType{Bool}
-\AgdaSymbol{→} \AgdaPrimitiveType{Bool} with inverse \AgdaBound{g}
-\AgdaSymbol{:} \AgdaPrimitiveType{Bool} \AgdaSymbol{→}
-\AgdaPrimitiveType{Bool}, there is an equivalence \AgdaPrimitiveType{Bool}
-\AgdaSymbol{≃} \AgdaPrimitiveType{Bool}. By univalence, this equivalence
-gives us a path between \AgdaPrimitiveType{Bool} and
-\AgdaPrimitiveType{Bool}. The reversible functions on
-\AgdaPrimitiveType{Bool} are \AgdaBound{id} and \AgdaBound{not}. These
-functions induce two paths \AgdaFunction{idpath} and \AgdaFunction{notpath}
-in the space \AgdaPrimitiveType{Bool} \AgdaSymbol{≡}
-\AgdaPrimitiveType{Bool}. Viewing \AgdaPrimitiveType{Bool} as the coproduct
-\AgdaPrimitiveType{⊤} \AgdaSymbol{⊎} \AgdaPrimitiveType{⊤}, i.e., as the
-disjoint union of two copies of the unit type, it is possible to say more
-about the structure of the paths \AgdaFunction{idpath} and
-\AgdaFunction{notpath}.
-
-\begin{code}
-ttp =  (true   ≡  true)   ≃  (tt ≡ tt)
-ffp =  (false  ≡  false)  ≃  (tt ≡ tt)
-tfp =  (true   ≡  false)  ≃  ⊥
-ftp =  (false  ≡  true)   ≃  ⊥
-\end{code}
-
-So the way to think about notpath is not that it identifies true and
-false. This would be bad. What notpath is doing is flipping the space Bool so
-that INTERNALLY the representation of true and false are flipped but from the
-outside their abstract names are the same. This would be like the hardware
-switching the representation of true as 1 and false as 0. Nobody could tell
-the difference because of ADT, polymorphism, and univalence...
-
-So we have two views of types: one in which we look inside the type and talk
-about paths inside the type; the other in which we look from the outside and
-talk about paths between the types. The latter paths just massage the type
-from the outside, flipping it around, stretching it, etc. but do not reach
-out inside the elements of the type.
-
-So we have paths between points (when looking inside a type)
-
-Then we have paths between types (when looking at the universe and each type
-is a black box). These paths do not translate to paths between points!!!
-
-We also have paths between functions but since we identify functions with
-paths between types, these paths become homotopies, i.e, paths between paths.
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Computing with Type Isomorphisms}
@@ -2022,33 +1975,41 @@ LOLLI- (pos₁ - neg₁) (pos₂ - neg₂) =
 -- Pointed types are of the form (t , pt) - (t' , pt')
 
 data U-• : Set where
-  both• : (t : U-) → ⟦ pos t ⟧ → ⟦ neg t ⟧ → U-•
-
-ZERO-• : {absurd : ⟦ ZERO ⟧} → U-•
-ZERO-• {absurd} = both• ZERO- absurd absurd
+  pos• : (t : U-) → ⟦ pos t ⟧ → U-•
+  neg• : (t : U-) → ⟦ neg t ⟧ → U-•
 
 ONE-• : {absurd : ⟦ ZERO ⟧} → U-•
-ONE-• {absurd} = both• ONE- tt absurd
+ONE-• {absurd} = pos• ONE- tt 
 
 FLIP-• : U-• → U-• 
-FLIP-• (both• t p n) = both• (FLIP- t) n p
+FLIP-• (pos• t p) = neg• (FLIP- t) p
+FLIP-• (neg• t n) = pos• (FLIP- t) n
 
 PLUS-11• : U-• → U-• → U-•
-PLUS-11• (both• t₁ p₁ n₁) (both• t₂ p₂ n₂) = 
-  both• (PLUS- t₁ t₂) (inj₁ p₁) (inj₁ n₁) 
+PLUS-11• (pos• t₁ p₁) (pos• t₂ _) = pos• (PLUS- t₁ t₂) (inj₁ p₁)
+PLUS-11• (pos• t₁ p₁) (neg• t₂ _) = pos• (PLUS- t₁ t₂) (inj₁ p₁)
+PLUS-11• (neg• t₁ n₁) (pos• t₂ _) = neg• (PLUS- t₁ t₂) (inj₁ n₁)
+PLUS-11• (neg• t₁ n₁) (neg• t₂ _) = neg• (PLUS- t₁ t₂) (inj₁ n₁)
 
 PLUS-12• : U-• → U-• → U-•
-PLUS-12• (both• t₁ p₁ n₁) (both• t₂ p₂ n₂) = 
-  both• (PLUS- t₁ t₂) (inj₁ p₁) (inj₂ n₂) 
+PLUS-12• (pos• t₁ p₁) (pos• t₂ _) = pos• (PLUS- t₁ t₂) (inj₁ p₁)
+PLUS-12• (pos• t₁ _) (neg• t₂ n₂) = neg• (PLUS- t₁ t₂) (inj₂ n₂)
+PLUS-12• (neg• t₁ n₁) (pos• t₂ _) = neg• (PLUS- t₁ t₂) (inj₁ n₁)
+PLUS-12• (neg• t₁ _) (neg• t₂ n₂) = neg• (PLUS- t₁ t₂) (inj₂ n₂)
 
 PLUS-21• : U-• → U-• → U-•
-PLUS-21• (both• t₁ p₁ n₁) (both• t₂ p₂ n₂) = 
-  both• (PLUS- t₁ t₂) (inj₂ p₂) (inj₁ n₁) 
+PLUS-21• (pos• t₁ _) (pos• t₂ p₂) = pos• (PLUS- t₁ t₂) (inj₂ p₂)
+PLUS-21• (pos• t₁ p₁) (neg• t₂ _) = pos• (PLUS- t₁ t₂) (inj₁ p₁)
+PLUS-21• (neg• t₁ _) (pos• t₂ p₂) = pos• (PLUS- t₁ t₂) (inj₂ p₂)
+PLUS-21• (neg• t₁ p₁) (neg• t₂ _) = neg• (PLUS- t₁ t₂) (inj₁ p₁)
 
 PLUS-22• : U-• → U-• → U-•
-PLUS-22• (both• t₁ p₁ n₁) (both• t₂ p₂ n₂) = 
-  both• (PLUS- t₁ t₂) (inj₂ p₂) (inj₂ n₂) 
+PLUS-22• (pos• t₁ _) (pos• t₂ p₂) = pos• (PLUS- t₁ t₂) (inj₂ p₂)
+PLUS-22• (pos• t₁ _) (neg• t₂ n₂) = neg• (PLUS- t₁ t₂) (inj₂ n₂)
+PLUS-22• (neg• t₁ _) (pos• t₂ p₂) = pos• (PLUS- t₁ t₂) (inj₂ p₂)
+PLUS-22• (neg• t₁ _) (neg• t₂ n₂) = neg• (PLUS- t₁ t₂) (inj₂ n₂)
 
+{--
 LOLLI-11• : U-• → U-• → U-•
 LOLLI-11• (both• t₁ p₁ n₁) (both• t₂ p₂ n₂) = 
   both• (LOLLI- t₁ t₂) (inj₁ n₁) (inj₁ p₁) 
@@ -2064,6 +2025,7 @@ LOLLI-21• (both• t₁ p₁ n₁) (both• t₂ p₂ n₂) =
 LOLLI-22• : U-• → U-• → U-•
 LOLLI-22• (both• t₁ p₁ n₁) (both• t₂ p₂ n₂) = 
   both• (LOLLI- t₁ t₂) (inj₂ p₂) (inj₂ n₂) 
+--}
 
 -- Combinators are between
 -- (t , pt) - (t' , pt') and
@@ -2075,26 +2037,21 @@ LOLLI-22• (both• t₁ p₁ n₁) (both• t₂ p₂ n₂) =
 -- and two options on the target: left pt', and right pu
 
 data _⇄_ : U-• → U-• → Set where
-  NN : ∀ {P₁ N₁ P₂ N₂ p₁ n₁ p₂ n₂} → 
+  NN : ∀ {P₁ N₁ P₂ N₂ n₁ n₂} → 
        •[ PLUS P₁ N₂ , inj₂ n₂ ] ⟷ •[ PLUS N₁ P₂ , inj₁ n₁ ] → 
-       (both• (P₁ - N₁) p₁ n₁) ⇄ (both• (P₂ - N₂) p₂ n₂)
-  NP : ∀ {P₁ N₁ P₂ N₂ p₁ n₁ p₂ n₂} → 
-       •[ PLUS P₁ N₂ , inj₂ n₂ ] ⟷ •[ PLUS N₁ P₂ , inj₂ p₂ ] → 
-       (both• (P₁ - N₁) p₁ n₁) ⇄ (both• (P₂ - N₂) p₂ n₂)
-  PN : ∀ {P₁ N₁ P₂ N₂ p₁ n₁ p₂ n₂} → 
-       •[ PLUS P₁ N₂ , inj₁ p₁ ] ⟷ •[ PLUS N₁ P₂ , inj₁ n₁ ] → 
-       (both• (P₁ - N₁) p₁ n₁) ⇄ (both• (P₂ - N₂) p₂ n₂)
-  PP : ∀ {P₁ N₁ P₂ N₂ p₁ n₁ p₂ n₂} → 
+       (neg• (P₁ - N₁) n₁) ⇄ (neg• (P₂ - N₂) n₂)
+  PP : ∀ {P₁ N₁ P₂ N₂ p₁ p₂} → 
        •[ PLUS P₁ N₂ , inj₁ p₁ ] ⟷ •[ PLUS N₁ P₂ , inj₂  p₂ ] → 
-       (both• (P₁ - N₁) p₁ n₁) ⇄ (both• (P₂ - N₂) p₂ n₂)
+       (pos• (P₁ - N₁) p₁) ⇄ (pos• (P₂ - N₂) p₂)
 
 -- there are two fibers for id in the int category
 
+{--
 id⇄NN : {t : U-•} → t ⇄ t
-id⇄NN {both• t p n} = NN swap2₊
+id⇄NN {pos• t p} = PP swap2₊
 
 id⇄PP : {t : U-•} → t ⇄ t
-id⇄PP {both• t p n} = PP swap1₊
+id⇄PP {neg• t n} = PP swap1₊
 
 identl₊ : {t : U-•} → PLUS-22• ZERO-• t ⇄ t
 identl₊ {both• t p n} =  PP ( (assocr2₊ ◎ (id⟷ ⊕2 swap1₊) ◎ assocl3₊)) 
@@ -2112,13 +2069,7 @@ curry1122⇄ {both• t₁ p₁ n₁} {both• t₂ p₂ n₂} {both• ._ p₃ 
 curry1122⇄ {both• t₁ p₁ n₁} {both• t₂ p₂ n₂} {both• ._ p₃ n₃} (NP f) = NP (assocl3₊ ◎ f ◎ assocr3₊)
 curry1122⇄ {both• t₁ p₁ n₁} {both• t₂ p₂ n₂} {both• ._ p₃ n₃} (PN f) = PN (assocl1₊ ◎ f ◎ assocr1₊)
 curry1122⇄ {both• t₁ p₁ n₁} {both• (pos - neg) p₂ n₂} {both• ._ p₃ n₃} (PP f) = PP (assocl1₊ ◎ f ◎ assocr3₊) 
-
-curry2211⇄ : {t₁ t₂ t₃ : U-•} → (PLUS-22• t₁ t₂ ⇄ t₃) → (t₁ ⇄ LOLLI-11• t₂ t₃)
-curry2211⇄ {both• t₁ p₁ n₁} {both• t₂ p₂ n₂} {both• t₃ p₃ n₃} (NN f) = NP ({!!} ◎ f ◎ {!!})
-curry2211⇄ {both• t₁ p₁ n₁} {both• t₂ p₂ n₂} {both• ._ p₃ n₃} (NP f) = NP ({!!} ◎ f ◎ {!!} )
-curry2211⇄ {both• t₁ p₁ n₁} {both• t₂ p₂ n₂} {both• ._ p₃ n₃} (PN f) = PN ({!!} ◎ f ◎ {!!} )
-curry2211⇄ {both• t₁ p₁ n₁} {both• (pos - neg) p₂ n₂} {both• ._ p₃ n₃} (PP f) = PP ({!!} ◎ f ◎ {!!} )
-
+--}
 -- define small example:
 
 module _ where
@@ -2148,15 +2099,16 @@ module _ where
   q₁ q₂ : U-
   q₁ = t₁ - t₂
   q₂ = t₃ - t₄
-  q₁• = both• q₁ v₁ v₂
-  q₂• = both• q₂ v₃ v₄
-  q₃• = both• q₂ w₃ w₄
+  q₁• = pos• q₁ v₁
+  q₂• = pos• q₂ v₃
+  q₃• = pos• q₂ w₃
 
   d₁ : q₁• ⇄ q₂•
-  d₁ = PN c₁
+  d₁ = NN c₁
   d₂ : q₁• ⇄ q₃•
-  d₂ = PN c₂
+  d₂ = PP c₂
 
+{--
 -- 'name c1' and 'name c2' are maps between (0 - 0) and ((t1 - t2) --o (t3 - t4))
   nc₁ : ZERO-• ⇄ LOLLI-11• q₁• q₂•
   nc₁ = NP (unite₊ ◎ c₁ ◎ uniti₊)
@@ -2168,7 +2120,7 @@ module _ where
 
 -- alpha that used to be a 2path, i.e., a path between paths, is now 
 -- a path between the values c1 and c2 in the --o type
-
+--}
 \end{code}
 
 %%   

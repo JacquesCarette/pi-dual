@@ -1,32 +1,61 @@
-module Ap where
+module Pi-1 where
 
 open import Data.Empty
 open import Data.Unit
-open import Data.Sum
 open import Data.Product
-
--- only used for the 'fake' Groupoid structure
 open import Relation.Binary.PropositionalEquality
 
 open import Groupoid
 
+import Pi-2 as P
+
+--infixr 10 _◎_
+--infixr 30 _⟷_
+
 ------------------------------------------------------------------------------
--- Level -2: 
--- types contains one point only
+-- Level -1: 
+-- Types are -1 groupoids or equivalently all types are mere propositions
 -- 
--- We can prove that all types are equivalent to the unit type (i.e., they
--- are contractible)
+-- Types and values are defined without references to programs
+-- Types include PATHs from the previous level in addition to the usual types
 
-module Pi-2 where
+data U : Set where
+  ZERO  : U
+  ONE   : U
+  TIMES : U → U → U
+  PATH  : {t₁ t₂ : P.U•} → (t₁ P.⟷ t₂) → U
 
-  data U : Set where
-    ONE : U
-    TIMES : U → U → U
+data Path {t₁ t₂ : P.U•} : P.Space t₁ → P.Space t₂ → Set where
+  path : (c : t₁ P.⟷ t₂) → Path (P.point t₁) (P.point t₂)
 
-  ⟦_⟧ : U → Set
-  ⟦ ONE ⟧ = ⊤
-  ⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+⟦_⟧ : U → Set
+⟦ ZERO ⟧             = ⊥
+⟦ ONE ⟧              = ⊤
+⟦ TIMES t₁ t₂ ⟧      = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+⟦ PATH {t₁} {t₂} c ⟧ = Path {t₁} {t₂} (P.point t₁) (P.point t₂)
 
+-- Proof that all types are mere propositions. Def. 3.3.1 in the HoTT book
+
+isMereProposition : (t : U) → (v v' : ⟦ t ⟧) → (v ≡ v')
+isMereProposition ZERO () 
+isMereProposition ONE tt tt = refl 
+isMereProposition (TIMES t₁ t₂) (v₁ , v₂) (v₁' , v₂') = 
+ cong₂ _,′_ (isMereProposition t₁ v₁ v₁') (isMereProposition t₂ v₂ v₂')
+isMereProposition (PATH {t₁} {t₂} c) (path c₁) (path c₂) = {!!} 
+
+-- c₁ : t₁ ⟷ t₂ in Pi-2
+-- c₂ : t₁ ⟷ t₂ in Pi-2
+
+-- Proof that every type is a groupoid; this does not depend on the
+-- definition of programs
+
+isGroupoid : U → 1Groupoid
+isGroupoid ZERO               = discrete ⊥
+isGroupoid ONE                = discrete ⊤
+isGroupoid (TIMES t₁ t₂)      = isGroupoid t₁ ×G isGroupoid t₂
+isGroupoid (PATH {t₁} {t₂} c) = {!!} 
+
+{--
 ------------------------------------------------------------------------------
 -- Level -1: 
 -- if types are non-empty they must contain one point only like above
@@ -669,3 +698,4 @@ module Pi2 where
 
 ------------------------------------------------------------------------------
 
+--}
