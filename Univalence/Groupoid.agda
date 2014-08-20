@@ -52,7 +52,7 @@ A ⊎G B = record
   ; _⁻¹ = λ {x} → inv {x = x}
   ; lneutr = λ {x} → lid⇛ {x}
   ; rneutr = λ {x} → rid⇛ {x}
-  ; assoc = λ {x} → assoc∙ {x}
+  ; assoc = λ {x} a b g → assoc∙ {x} a b g
   ; equiv = λ {x} → equiv≈ {x}
   ; linv = λ {x} → linv⇛ {x}
   ; rinv = λ {x} → rinv⇛ {x}
@@ -100,34 +100,34 @@ A ⊎G B = record
     lid⇛ {inj₂ _} {inj₂ _} a = B.lneutr a
 
     rid⇛ : {x y : A.set ⊎ B.set} (α : x ⇛ y) → mk≈ {x} (_∙G_ {x} α (id⇛ {x})) α
-    rid⇛ {inj₁ _} {inj₁ _} = A.rneutr
+    rid⇛ {inj₁ _} {inj₁ _} α = A.rneutr α
     rid⇛ {inj₁ _} {inj₂ _} ()
     rid⇛ {inj₂ _} {inj₁ _} ()
-    rid⇛ {inj₂ _} {inj₂ _} = B.rneutr
+    rid⇛ {inj₂ _} {inj₂ _} α = B.rneutr α
 
     assoc∙ : {w x y z : C} (α : y ⇛ z) (β : x ⇛ y) (δ : w ⇛ x) → 
              mk≈ {w} {z} (_∙G_ {w} (_∙G_ {x} α β) δ) (_∙G_ {w} α (_∙G_ {w} β δ))
-    assoc∙ {inj₁ x} {inj₁ x₁} {inj₁ x₂} {inj₁ x₃} = A.assoc
+    assoc∙ {inj₁ x} {inj₁ x₁} {inj₁ x₂} {inj₁ x₃} α β γ = A.assoc α β γ
     assoc∙ {inj₁ x} {inj₁ x₁} {inj₁ x₂} {inj₂ y} () _ _
     assoc∙ {inj₁ x} {inj₁ x₁} {inj₂ y} _ () _
     assoc∙ {inj₁ x} {inj₂ y} _ _ ()
     assoc∙ {inj₂ y} {inj₁ x} _ _ ()
     assoc∙ {inj₂ y} {inj₂ y₁} {inj₁ x} _ () _
     assoc∙ {inj₂ y} {inj₂ y₁} {inj₂ y₂} {inj₁ x} () _ _
-    assoc∙ {inj₂ y} {inj₂ y₁} {inj₂ y₂} {inj₂ y₃} = B.assoc
+    assoc∙ {inj₂ y} {inj₂ y₁} {inj₂ y₂} {inj₂ y₃}  α β γ = B.assoc α β γ
 
     linv⇛ : {x y : C} (α : x ⇛ y) → mk≈ {x} (_∙G_ {x} (inv {x} α) α) (id⇛ {x})
-    linv⇛ {inj₁ _} {inj₁ _} = A.linv
+    linv⇛ {inj₁ _} {inj₁ _} α = A.linv α
     linv⇛ {inj₁ x} {inj₂ y} ()
     linv⇛ {inj₂ y} {inj₁ x} ()
-    linv⇛ {inj₂ _} {inj₂ _} = B.linv
+    linv⇛ {inj₂ _} {inj₂ _} α = B.linv α
     
 
     rinv⇛ : {x y : C} (α : x ⇛ y) → mk≈ {y} (_∙G_ {y} α (inv {x} α)) (id⇛ {y})
-    rinv⇛ {inj₁ _} {inj₁ _} = A.rinv
+    rinv⇛ {inj₁ _} {inj₁ _} α = A.rinv α
     rinv⇛ {inj₁ x} {inj₂ y} ()
     rinv⇛ {inj₂ y} {inj₁ x} ()
-    rinv⇛ {inj₂ _} {inj₂ _} = B.rinv
+    rinv⇛ {inj₂ _} {inj₂ _} α = B.rinv α
 
     refl≈ : {x y : C} → Reflexive (mk≈ {x} {y})
     refl≈ {inj₁ _} {inj₁ _} = IsEquivalence.refl A.equiv
