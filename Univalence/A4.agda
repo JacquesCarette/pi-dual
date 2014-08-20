@@ -318,8 +318,8 @@ module Pi1 where
               PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
 -} 
     id⟷    : {t₁ t₂ : Pi0.U} {c : t₁ Pi0.⟷ t₂} {v₀ : Pi0.⟦ t₁ ⟧} {v₁ : Pi0.⟦ t₂ ⟧} → EQUIV c v₀ v₁ ⟷ EQUIV c v₀ v₁
-    sym⟷  : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
-    _◎_     : {t₁ t₂ t₃ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+    sym⟷  : {t₁ t₂ : Pi0.U} {c d : t₁ Pi0.⟷ t₂} {v₀ : Pi0.⟦ t₁ ⟧} {v₁ : Pi0.⟦ t₂ ⟧} → EQUIV c v₀ v₁ ⟷ EQUIV d v₀ v₁ → EQUIV d v₀ v₁ ⟷ EQUIV c v₀ v₁
+    _◎_     :  {t₁ t₂ : Pi0.U} {c d e : t₁ Pi0.⟷ t₂} {v₀ : Pi0.⟦ t₁ ⟧} {v₁ : Pi0.⟦ t₂ ⟧} → EQUIV c v₀ v₁ ⟷ EQUIV d v₀ v₁ → EQUIV d v₀ v₁ ⟷ EQUIV e v₀ v₁ → EQUIV c v₀ v₁ ⟷ EQUIV e v₀ v₁
 {-
     _⊕_     : {t₁ t₂ t₃ t₄ : U} → 
               (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
@@ -374,25 +374,25 @@ module Pi1 where
   -- extractor for ⟷
   src : {t₁ t₂ : U} → t₁ ⟷ t₂ → Pi0.U
   src (id⟷ {t₁}) = t₁
-  src (sym⟷ c) = {!!}
-  src (c ◎ c₁) = {!!}
-  src lidl = {!!}
-  src lidr = {!!}
-  src ridl = {!!}
-  src ridr = {!!}
-  src invll = {!!}
-  src invlr = {!!}
-  src invrl = {!!}
-  src invrr = {!!}
-  src invinvl = {!!}
-  src invinvr = {!!}
-  src tassocl = {!!}
-  src tassocr = {!!}
-  src (resp◎ c c₅) = {!!}
+  src (sym⟷ {t₁} c) = t₁
+  src (_◎_ {t₁} _ _) = t₁
+  src (lidl {t₁}) = t₁
+  src (lidr {t₁}) = t₁
+  src (ridl {t₁}) = t₁
+  src (ridr {t₁}) = t₁
+  src (invll {t₁}) = t₁
+  src (invlr {t₁}) = t₁
+  src (invrl {t₁}) = t₁
+  src (invrr {t₁}) = t₁
+  src (invinvl {t₁}) = t₁
+  src (invinvr {t₁}) = t₁
+  src (tassocl {t₁}) = t₁
+  src (tassocr {t₁}) = t₁
+  src (resp◎ {t₁} _ _) = t₁
 
   val : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Pi0.⟦ src c ⟧
-  val (id⟷ {t₁} {_} {_} {v₀}) = v₀
-  val (sym⟷ c) = {!!}
+  val (id⟷ {v₀ = v₀}) = v₀
+  val (sym⟷ {v₀ = v₀} c) = v₀
   val (c ◎ c₁) = {!!}
   val lidl = {!!}
   val lidr = {!!}
@@ -435,14 +435,13 @@ module Pi1 where
         ; lneutr = λ α → ridl {c = α}
         ; rneutr = λ α → lidl { c = α}
         ; assoc = λ α β δ {v₁} {v₄} → tassocl 
-        ; equiv = record { refl = λ {c} {v₀} {v₁} → id⟷
-                                   ; sym = λ c → sym⟷ c 
-                                   ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
+        ; equiv = record { refl = id⟷
+                         ; sym = λ c → sym⟷ c
+                         ; trans = λ c₀ c₁ → c₀ ◎ c₁ }
         ; linv = λ α → invrl {c = α}
         ; rinv = λ α → invll {c = α}
-        ; ∘-resp-≈ = λ {x} {y} {z} {f} {h} {g} {i} f⟷h g⟷i {v₀} {v₁} → 
-                     resp◎ {x} {y} {z} {g} {f} {i} {h} {v₀} {{!val f⟷h!}} {v₁} 
-                       g⟷i f⟷h 
+        ; ∘-resp-≈ = λ {_} {_} {_} {f} {h} {g} {i} f⟷h g⟷i {v₀} {v₁} → 
+                     resp◎  {v₂ = {!val f⟷h!}} g⟷i f⟷h 
         }
 
 ------------------------------------------------------------------------------
