@@ -2,22 +2,29 @@
 
 module Pif where
 
+open import Level using (_⊔_)
+
 open import Relation.Binary.PropositionalEquality 
   using (_≡_; refl; sym; trans; subst; cong; cong₂; 
         proof-irrelevance; module ≡-Reasoning)
-open ≡-Reasoning
+open import Relation.Nullary.Core using (Dec; yes; no)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+)
 
-open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _≤_; z≤n; s≤s)
+open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≤_; z≤n; s≤s; _≟_;
+  module ≤-Reasoning)
 open import Data.Fin 
   using (Fin; zero; suc; toℕ; fromℕ; _ℕ-_; 
          raise; inject+; inject₁; inject≤; _≻toℕ_) 
   renaming (_+_ to _F+_)
-              
+open import Data.Fin.Properties using (bounded)              
+
+open import Data.List using (List; []; _∷_) 
+  renaming (_++_ to _++L_; map to mapL; concat to concatL)
 open import Data.Vec 
-  using (Vec; tabulate; []; _∷_; [_]; lookup; map; _++_; concat; zip)
+  using (Vec; tabulate; []; _∷_; [_]; lookup; zip; _[_]≔_)
+  renaming (_++_ to _++V_; map to mapV; concat to concatV)
 open import Function using (id; _∘_)
 
 open import Data.Empty   using (⊥)
@@ -204,49 +211,28 @@ TOFFOLI = TIMES (PLUS x y) BOOL²
          ! (! c₁) ◎ ! (! c₂)
            ≡⟨ cong₂ _◎_ (!! {c = c₁}) (!! {c = c₂}) ⟩ 
          c₁ ◎ c₂ ∎)
+  where open ≡-Reasoning
 !! {c = c₁ ⊕ c₂} = 
   begin (! (! (c₁ ⊕ c₂))
            ≡⟨ refl ⟩
          ! (! c₁) ⊕ ! (! c₂)
            ≡⟨ cong₂ _⊕_ (!! {c = c₁}) (!! {c = c₂}) ⟩ 
          c₁ ⊕ c₂ ∎)
+  where open ≡-Reasoning
 !! {c = c₁ ⊗ c₂} = 
   begin (! (! (c₁ ⊗ c₂))
            ≡⟨ refl ⟩
          ! (! c₁) ⊗ ! (! c₂)
            ≡⟨ cong₂ _⊗_ (!! {c = c₁}) (!! {c = c₂}) ⟩ 
          c₁ ⊗ c₂ ∎)
+  where open ≡-Reasoning
 
 ------------------------------------------------------------------------------
--- Nat and Fin lemmas
+-- Types as vectors of elements
 
-suc≤ : (m n : ℕ) → suc m ≤ m + suc n
-suc≤ 0 n       = s≤s z≤n
-suc≤ (suc m) n = s≤s (suc≤ m n)
-
--+-id : (n : ℕ) → (i : Fin n) → suc (n ∸ toℕ i) + toℕ i ≡ suc n
--+-id 0 ()            -- absurd
--+-id (suc n) zero    = +-right-identity (suc (suc n))
--+-id (suc n) (suc i) = begin
-  suc (suc n ∸ toℕ (suc i)) + toℕ (suc i) 
-    ≡⟨ refl ⟩
-  suc (n ∸ toℕ i) + suc (toℕ i) 
-    ≡⟨ +-suc (suc (n ∸ toℕ i)) (toℕ i) ⟩
-  suc (suc (n ∸ toℕ i) + toℕ i)
-    ≡⟨ cong suc (-+-id n i) ⟩
-  suc (suc n) ∎
-
-------------------------------------------------------------------------------
--- Semantic representation of permutations
-
--- One possibility of course is to represent them as functions but
--- this is a poor representation and eventually requires function
--- extensionality. Instead we represent them as vectors of "insert
--- positions".
-
--- First here is a canonical representation of each type as a vector
--- of values. This fixes a canonical order for the elements of the
--- types: each value has a canonical index. 
+-- A canonical representation of each type as a vector of values. This
+-- fixes a canonical order for the elements of the types: each value
+-- has a canonical index.
 
 size : U → ℕ
 size ZERO          = 0
@@ -257,9 +243,9 @@ size (TIMES t₁ t₂) = size t₁ * size t₂
 utoVec : (t : U) → Vec ⟦ t ⟧ (size t)
 utoVec ZERO          = []
 utoVec ONE           = [ tt ]
-utoVec (PLUS t₁ t₂)  = map inj₁ (utoVec t₁) ++ map inj₂ (utoVec t₂)
+utoVec (PLUS t₁ t₂)  = mapV inj₁ (utoVec t₁) ++V (mapV inj₂ (utoVec t₂))
 utoVec (TIMES t₁ t₂) = 
-  concat (map (λ v₁ → map (λ v₂ → (v₁ , v₂)) (utoVec t₂)) (utoVec t₁))
+  concatV (mapV (λ v₁ → mapV (λ v₂ → (v₁ , v₂)) (utoVec t₂)) (utoVec t₁))
 
 -- Combinators are always between types of the same size
 
@@ -294,111 +280,157 @@ size≡ {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = cong₂ _*_ (size�
 size∼ : {t₁ t₂ : U} → (c₁ c₂ : t₁ ⟷ t₂) → (size≡ c₁ ≡ size≡ c₂)
 size∼ c₁ c₂ = proof-irrelevance (size≡ c₁) (size≡ c₂)
 
--- A permutation is a sequence of "insertions".
-
-infixr 5 _∷_
-
-data Perm : ℕ → Set where
-  []  : Perm 0
-  _∷_ : {n : ℕ} → Fin (suc n) → Perm n → Perm (suc n)
-
-lookupP : ∀ {n} → Fin n → Perm n → Fin n
-lookupP () [] 
-lookupP zero (j ∷ _) = j
-lookupP {suc n} (suc i) (j ∷ q) = inject₁ (lookupP i q)
-
-insert : ∀ {ℓ n} {A : Set ℓ} → Vec A n → Fin (suc n) → A → Vec A (suc n)
-insert vs zero w          = w ∷ vs
-insert [] (suc ())        -- absurd
-insert (v ∷ vs) (suc i) w = v ∷ insert vs i w
-
--- A permutation acts on a vector by inserting each element in its new
--- position.
-
-permute : ∀ {ℓ n} {A : Set ℓ} → Perm n → Vec A n → Vec A n
-permute []       []       = []
-permute (p ∷ ps) (v ∷ vs) = insert (permute ps vs) p v
-
--- Use a permutation to match up the elements in two vectors. See more
--- convenient function matchP below.
-
-match : ∀ {t t'} → (size t ≡ size t') → Perm (size t) → 
-        Vec ⟦ t ⟧ (size t) → Vec ⟦ t' ⟧ (size t) → 
-        Vec (⟦ t ⟧ × ⟦ t' ⟧) (size t)
-match {t} {t'} sp α vs vs' = 
-  let js = permute α (tabulate id)
-  in zip (tabulate (λ j → lookup (lookup j js) vs)) vs'
-
 ------------------------------------------------------------------------------
--- Library for permutations
+-- Semantic representation of permutations
 
--- id
+-- One possibility of course is to represent them as functions but
+-- this is a poor representation and eventually requires function
+-- extensionality. 
 
-idperm : ∀ {n} → Perm n
-idperm {0}     = []
-idperm {suc n} = zero ∷ idperm
+-- A permutation is a sequence of "swaps"
+-- we allow any sequence of swaps, even "stupid ones"
+-- Ex: Perm 4 could have this permutation as an element (1 2) (2 3) (3 1)
+-- It could also have (1 2) (1 3) (1 1) (2 1) (2 1) (1 2)
+-- to compare two permutations we need to normalize them
 
--- swap
--- 
--- swapperm produces the permutations that maps:
--- [ a , b || x , y , z ] 
--- to 
--- [ x , y , z || a , b ]
--- Ex. 
--- permute (swapperm {5} (inject+ 2 (fromℕ 2))) ordered=[0,1,2,3,4]
--- produces [2,3,4,0,1]
--- Explicitly:
--- swapex : Perm 5
--- swapex =   inject+ 1 (fromℕ 3) -- :: Fin 5
---          ∷ inject+ 0 (fromℕ 3) -- :: Fin 4
---          ∷ zero
---          ∷ zero
---          ∷ zero
---          ∷ []
+infix 10 _X_
 
-swapperm : ∀ {n} → Fin n → Perm n
-swapperm {0} ()          -- absurd
-swapperm {suc n} zero    = idperm
-swapperm {suc n} (suc i) = 
-  subst Fin (-+-id n i) 
-    (inject+ (toℕ i) (fromℕ (n ∸ toℕ i))) ∷ swapperm {n} i
+data Swap (n : ℕ) : Set where
+  _X_ : Fin n → Fin n → Swap n
 
--- compositions
+Perm : ℕ → Set
+Perm n = List (Swap n)
 
--- Sequential composition
+-- A permutation with indices less than n can act on a vector of size
+-- n by applying the swaps, one by one.
 
-scompperm : ∀ {n} → Perm n → Perm n → Perm n
-scompperm α β = {!!} 
+actionπ : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Perm n → Vec A n → Vec A n
+actionπ []          vs = vs
+actionπ (i X j ∷ π) vs = 
+  actionπ π ((vs [ i ]≔ lookup j vs) [ j ]≔ lookup i vs)
 
--- Sub-permutations
--- useful for parallel and multiplicative compositions
+-- Sequential composition is just append
 
--- Perm 4 has elements [Fin 4, Fin 3, Fin 2, Fin 1]
--- SubPerm 11 7 has elements [Fin 11, Fin 10, Fin 9, Fin 8]
--- So Perm 4 is a special case SubPerm 4 0
+scompπ : ∀ {n} → Perm n → Perm n → Perm n
+scompπ = _++L_
 
-data SubPerm : ℕ → ℕ → Set where
-  []s  : {n : ℕ} → SubPerm n n
-  _∷s_ : {n m : ℕ} → Fin (suc n) → SubPerm n m → SubPerm (suc n) m
+-- Helpers
 
-merge : ∀ {m n} → SubPerm m n → Perm n → Perm m
-merge []s      β = β
-merge (i ∷s α) β = i ∷ merge α β
+injectπ : ∀ {m} → Perm m → (n : ℕ) → Perm (m + n)
+injectπ π n = mapL (λ { (_X_ i j) → _X_ (inject+ n i) (inject+ n j) }) π 
 
-injectP : ∀ {m} → Perm m → (n : ℕ) → SubPerm (m + n) n
-injectP []      n = []s 
-injectP (i ∷ α) n = inject+ n i ∷s injectP α n
-  
--- Parallel + composition
+raiseπ : ∀ {n} → Perm n → (m : ℕ) → Perm (m + n)
+raiseπ π m = mapL (λ { (_X_ i j) → _X_ (raise m i) (raise m j) }) π 
 
-pcompperm : ∀ {m n} → Perm m → Perm n → Perm (m + n)
-pcompperm {m} {n} α β = merge (injectP α n) β
+-- Parallel additive composition 
 
--- Multiplicative * composition
+pcompπ : ∀ {m n} → Perm m → Perm n → Perm (m + n)
+pcompπ {m} {n} α β = (injectπ α n) ++L (raiseπ β m)
+
+-- Tensor multiplicative composition
+
+n≤n : (n : ℕ) → n ≤ n
+n≤n 0 = z≤n
+n≤n (suc n) = s≤s (n≤n n)
+
+n≤sn : ∀ {x} → x ≤ suc x
+n≤sn {0}     = z≤n
+n≤sn {suc n} = s≤s (n≤sn {n})
+
+x≤y+x : ∀ {x y} → x ≤ y + x
+x≤y+x {x} {0} = n≤n x
+x≤y+x {x} {suc y} = 
+  begin (x 
+           ≤⟨ x≤y+x {x} {y} ⟩
+         y + x 
+           ≤⟨ n≤sn {y + x} ⟩
+         suc y + x ∎)
+  where open ≤-Reasoning
+
+cong+r≤ : ∀ {x y} → x ≤ y → (z : ℕ) → x + z ≤ y + z
+cong+r≤ {0}     {y}     z≤n       z = x≤y+x {z} {y}
+cong+r≤ {suc x} {0}     ()        z -- absurd
+cong+r≤ {suc x} {suc y} (s≤s x≤y) z = s≤s (cong+r≤ {x} {y} x≤y z)
+
+cong+l≤ : ∀ {x y} → x ≤ y → (z : ℕ) → z + x ≤ z + y
+cong+l≤ {x} {y} x≤y z =
+  begin (z + x
+           ≡⟨ +-comm z x ⟩ 
+         x + z
+           ≤⟨ cong+r≤ x≤y z ⟩ 
+         y + z
+           ≡⟨ +-comm y z ⟩ 
+         z + y ∎)
+  where open ≤-Reasoning
+
+cong*r≤ : ∀ {x y} → x ≤ y → (z : ℕ) → x * z ≤ y * z
+cong*r≤ {0}     {y}     z≤n       z = z≤n
+cong*r≤ {suc x} {0}     ()        z -- absurd
+cong*r≤ {suc x} {suc y} (s≤s x≤y) z = cong+l≤ (cong*r≤ x≤y z) z 
+
+sinj≤ : ∀ {x y} → suc x ≤ suc y → x ≤ y
+sinj≤ {0}     {y}     _        = z≤n
+sinj≤ {suc x} {0}     (s≤s ()) -- absurd
+sinj≤ {suc x} {suc y} (s≤s p)  = p
+
+i*n+k≤m*n : ∀ {m n} → (i : Fin m) → (k : Fin n) → 
+            (suc (toℕ i * n + toℕ k) ≤ m * n)
+i*n+k≤m*n {0} {_} () _
+i*n+k≤m*n {_} {0} _ ()
+i*n+k≤m*n {suc m} {suc n} i k = 
+  begin (suc (toℕ i * suc n + toℕ k) 
+           ≡⟨  cong suc (+-comm (toℕ i * suc n) (toℕ k))  ⟩
+         suc (toℕ k + toℕ i * suc n)
+           ≡⟨ refl ⟩
+         suc (toℕ k) + (toℕ i * suc n)
+           ≤⟨ cong+r≤ (bounded k) (toℕ i * suc n) ⟩ 
+         suc n + (toℕ i * suc n)
+           ≤⟨ cong+l≤ (cong*r≤ (sinj≤ (bounded i)) (suc n)) (suc n) ⟩
+         suc n + (m * suc n) 
+           ≡⟨ refl ⟩
+         suc m * suc n ∎)
+  where open ≤-Reasoning
 
 tcompperm : ∀ {m n} → Perm m → Perm n → Perm (m * n)
-tcompperm []      β = []
-tcompperm (i ∷ α) β = ? 
+tcompperm {m} {n} α β = 
+  concatL (mapL 
+            (λ { (_X_ i j) → 
+                 mapL (λ { (_X_ k l) → 
+                           _X_ 
+                             (inject≤ (fromℕ (toℕ i * n + toℕ k)) 
+                                      (i*n+k≤m*n i k)) 
+                             (inject≤ (fromℕ (toℕ j * n + toℕ l)) 
+                                      (i*n+k≤m*n j l))})
+                      β })
+            α)
+
+-- Normalize
+
+normalize : ∀ {n} → Perm n → Perm n
+normalize []                          = []
+normalize ((_X_ i j) ∷ [])            = (_X_ i j) ∷ []
+normalize ((_X_ i j) ∷ (_X_ k l) ∷ π) = {!!} 
+
+
+
+{--
+
+p0 p1 : Perm 3
+p0 = swap 0x 1x (swap 1x 2x (swap 0x 2x idπ))
+  where 0x = zero
+        1x = inject+ 1 (fromℕ 1)
+        2x = fromℕ 2
+p1 = swap 1x 2x idπ
+  where 1x = inject+ 1 (fromℕ 1)
+        2x = fromℕ 2
+
+x0 = actionπ p0 (10 ∷ 20 ∷ 30 ∷ [])
+x1 = actionπ p1 (10 ∷ 20 ∷ 30 ∷ [])
+
+so swap x y (swap z w π)
+=> swap z[x<->y] w[x<->y] (swap x[z<->w] y[z<->w] π)
+
+swap x y (swap y x π) => π
 
 ------------------------------------------------------------------------------
 -- A combinator t₁ ⟷ t₂ denotes a permutation.
@@ -823,3 +855,4 @@ completeness {t₁} {t₂} {c₁} {c₂} c₁∼c₂ =
   c₂ ▤
 
 ------------------------------------------------------------------------------
+--}
