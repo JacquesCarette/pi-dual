@@ -424,7 +424,7 @@ tcompπ {m} {n} α β =
 
 normalize : ∀ {n} → Perm n → Perm n
 normalize []                  = []
-normalize (i X j ∷ [])        = i X j ∷ []
+normalize (i X j ∷ [])        = i X j ∷ []  -- BUG: i X i :: [] should normalize to [].
 normalize (i X j ∷ k X l ∷ π) = {!!} 
 
 ------------------------------------------------------------------------------
