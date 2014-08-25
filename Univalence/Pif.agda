@@ -20,10 +20,11 @@ open import Data.Fin
   renaming (_+_ to _F+_)
 open import Data.Fin.Properties using (bounded)              
 
-open import Data.List using (List; []; _∷_) 
+open import Data.List using (List; []; _∷_; foldl; replicate) 
   renaming (_++_ to _++L_; map to mapL; concat to concatL)
 open import Data.Vec 
-  using (Vec; tabulate; []; _∷_; [_]; lookup; zip; _[_]≔_)
+  using (Vec; tabulate; []; _∷_; [_]; tail; lookup; zip; zipWith; 
+         _[_]≔_; allFin; toList)
   renaming (_++_ to _++V_; map to mapV; concat to concatV)
 open import Function using (id; _∘_)
 
@@ -293,7 +294,7 @@ size∼ c₁ c₂ = proof-irrelevance (size≡ c₁) (size≡ c₂)
 -- It could also have (1 2) (1 3) (1 1) (2 1) (2 1) (1 2)
 -- to compare two permutations we need to normalize them
 
-infix 10 _X_
+infix 90 _X_
 
 data Swap (n : ℕ) : Set where
   _X_ : Fin n → Fin n → Swap n
@@ -304,25 +305,40 @@ Perm n = List (Swap n)
 -- A permutation with indices less than n can act on a vector of size
 -- n by applying the swaps, one by one.
 
+swapV : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Vec A n → Fin n → Fin n → Vec A n
+swapV vs i j = (vs [ i ]≔ lookup j vs) [ j ]≔ lookup i vs
+
 actionπ : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Perm n → Vec A n → Vec A n
-actionπ []          vs = vs
-actionπ (i X j ∷ π) vs = 
-  actionπ π ((vs [ i ]≔ lookup j vs) [ j ]≔ lookup i vs)
+actionπ π vs = foldl (λ { vs (i X j) → swapV vs i j }) vs π
+
+-- swap the first i elements with the last j elements
+-- [ v₁   , v₂   , ... , vᵢ   || vᵢ₊₁ , vᵢ₊₂ , ... , vᵢ₊ⱼ ]
+-- ==> 
+-- [ vᵢ₊₁ , vᵢ₊₂ , ... , vᵢ₊ⱼ || v₁   , v₂   , ... , vᵢ   ]
+-- [ w₁   , w₂   , ... , wⱼ   || wⱼ₊₁  , wⱼ₊₂  , ... , wⱼ₊ᵢ  ] 
+
+swapπ : ∀ {m n} → Perm (m + n)
+swapπ {0}     {n}     = []
+swapπ {suc m} {n}     = 
+  concatL 
+    (replicate (suc m)
+      (toList 
+        (zipWith _X_ 
+          (mapV inject₁ (allFin (m + n))) 
+          (tail (allFin (suc m + n))))))
 
 -- Sequential composition is just append
 
 scompπ : ∀ {n} → Perm n → Perm n → Perm n
 scompπ = _++L_
 
--- Helpers
+-- Parallel additive composition 
 
 injectπ : ∀ {m} → Perm m → (n : ℕ) → Perm (m + n)
-injectπ π n = mapL (λ { (_X_ i j) → _X_ (inject+ n i) (inject+ n j) }) π 
+injectπ π n = mapL (λ { (i X j) → (inject+ n i) X (inject+ n j) }) π 
 
 raiseπ : ∀ {n} → Perm n → (m : ℕ) → Perm (m + n)
-raiseπ π m = mapL (λ { (_X_ i j) → _X_ (raise m i) (raise m j) }) π 
-
--- Parallel additive composition 
+raiseπ π m = mapL (λ { (i X j) → (raise m i) X (raise m j) }) π 
 
 pcompπ : ∀ {m n} → Perm m → Perm n → Perm (m + n)
 pcompπ {m} {n} α β = (injectπ α n) ++L (raiseπ β m)
@@ -391,82 +407,73 @@ i*n+k≤m*n {suc m} {suc n} i k =
          suc m * suc n ∎)
   where open ≤-Reasoning
 
-tcompperm : ∀ {m n} → Perm m → Perm n → Perm (m * n)
-tcompperm {m} {n} α β = 
+tcompπ : ∀ {m n} → Perm m → Perm n → Perm (m * n)
+tcompπ {m} {n} α β = 
   concatL (mapL 
-            (λ { (_X_ i j) → 
-                 mapL (λ { (_X_ k l) → 
-                           _X_ 
-                             (inject≤ (fromℕ (toℕ i * n + toℕ k)) 
-                                      (i*n+k≤m*n i k)) 
-                             (inject≤ (fromℕ (toℕ j * n + toℕ l)) 
-                                      (i*n+k≤m*n j l))})
+            (λ { (i X j) → 
+                 mapL (λ { (k X l) → 
+                        (inject≤ (fromℕ (toℕ i * n + toℕ k)) 
+                                 (i*n+k≤m*n i k))
+                        X 
+                        (inject≤ (fromℕ (toℕ j * n + toℕ l)) 
+                                 (i*n+k≤m*n j l))})
                       β })
             α)
 
 -- Normalize
 
 normalize : ∀ {n} → Perm n → Perm n
-normalize []                          = []
-normalize ((_X_ i j) ∷ [])            = (_X_ i j) ∷ []
-normalize ((_X_ i j) ∷ (_X_ k l) ∷ π) = {!!} 
-
-
-
-{--
-
-p0 p1 : Perm 3
-p0 = swap 0x 1x (swap 1x 2x (swap 0x 2x idπ))
-  where 0x = zero
-        1x = inject+ 1 (fromℕ 1)
-        2x = fromℕ 2
-p1 = swap 1x 2x idπ
-  where 1x = inject+ 1 (fromℕ 1)
-        2x = fromℕ 2
-
-x0 = actionπ p0 (10 ∷ 20 ∷ 30 ∷ [])
-x1 = actionπ p1 (10 ∷ 20 ∷ 30 ∷ [])
-
-so swap x y (swap z w π)
-=> swap z[x<->y] w[x<->y] (swap x[z<->w] y[z<->w] π)
-
-swap x y (swap y x π) => π
+normalize []                  = []
+normalize (i X j ∷ [])        = i X j ∷ []
+normalize (i X j ∷ k X l ∷ π) = {!!} 
 
 ------------------------------------------------------------------------------
 -- A combinator t₁ ⟷ t₂ denotes a permutation.
 
-comb2perm : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Perm (size t₁)
-comb2perm {PLUS ZERO t} {.t} unite₊ = idperm
-comb2perm {t} {PLUS ZERO .t} uniti₊ = idperm
-comb2perm {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ with size t₂
-... | 0     = idperm 
-... | suc j = swapperm {size t₁ + suc j} 
-               (inject≤ (fromℕ (size t₁)) (suc≤ (size t₁) j))
-comb2perm {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ = idperm
-comb2perm {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} assocr₊ = idperm
-comb2perm {TIMES ONE t} {.t} unite⋆ = idperm
-comb2perm {t} {TIMES ONE .t} uniti⋆ = idperm
-comb2perm {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = idperm 
-comb2perm assocl⋆   = idperm  
-comb2perm assocr⋆   = idperm  
-comb2perm distz     = idperm  
-comb2perm factorz   = idperm  
-comb2perm dist      = idperm  
-comb2perm factor    = idperm  
-comb2perm id⟷      = idperm  
-comb2perm (c₁ ◎ c₂) = scompperm 
-                        (comb2perm c₁) 
-                        (subst Perm (sym (size≡ c₁)) (comb2perm c₂))
-comb2perm (c₁ ⊕ c₂) = pcompperm (comb2perm c₁) (comb2perm c₂) 
-comb2perm (c₁ ⊗ c₂) = tcompperm (comb2perm c₁) (comb2perm c₂) 
+c2π : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Perm (size t₁)
+c2π unite₊    = []
+c2π uniti₊    = []
+c2π {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = swapπ {size t₁} {size t₂}
+c2π assocl₊   = []
+c2π assocr₊   = []
+c2π unite⋆    = []
+c2π uniti⋆    = []
+c2π swap⋆     = [] 
+c2π assocl⋆   = []  
+c2π assocr⋆   = []  
+c2π distz     = []  
+c2π factorz   = []  
+c2π dist      = []  
+c2π factor    = []  
+c2π id⟷       = []  
+c2π (c₁ ◎ c₂) = scompπ (c2π c₁) (subst Perm (sym (size≡ c₁)) (c2π c₂))
+c2π (c₁ ⊕ c₂) = pcompπ (c2π c₁) (c2π c₂) 
+c2π (c₁ ⊗ c₂) = tcompπ (c2π c₁) (c2π c₂) 
 
--- Convenient way of "seeing" what the permutation does for each combinator
+-- Convenient way of seeing the result of applying a c : t₁ ⟷ t₂ 
 
-matchP : ∀ {t t'} → (t ⟷ t') → Vec (⟦ t ⟧ × ⟦ t' ⟧) (size t)
-matchP {t} {t'} c = 
-  match sp (comb2perm c) (utoVec t) 
-    (subst (λ n → Vec ⟦ t' ⟧ n) (sym sp) (utoVec t'))
-  where sp = size≡ c
+showπ : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Vec (⟦ t₁ ⟧ × ⟦ t₂ ⟧) (size t₁) 
+showπ {t₁} {t₂} c = 
+  let vs₁ = utoVec t₁
+      vs₂ = utoVec t₂
+  in zip (actionπ (c2π c) vs₁) (subst (Vec ⟦ t₂ ⟧) (sym (size≡ c)) vs₂)
+
+-- Examples
+
+neg₁π neg₂π neg₃π neg₄π neg₅π : Vec (⟦ BOOL ⟧ × ⟦ BOOL ⟧) 2
+neg₁π = showπ {BOOL} {BOOL} neg₁  -- ok
+neg₂π = showπ {BOOL} {BOOL} neg₂  -- ok
+neg₃π = showπ {BOOL} {BOOL} neg₃  -- ok
+neg₄π = showπ {BOOL} {BOOL} neg₄
+neg₅π = showπ {BOOL} {BOOL} neg₅ -- BUG
+
+cnotπ : Vec (⟦ BOOL² ⟧ × ⟦ BOOL² ⟧) 4  -- BUG
+cnotπ = showπ {BOOL²} {BOOL²} CNOT
+
+toffoliπ : Vec (⟦ TIMES BOOL BOOL² ⟧ × ⟦ TIMES BOOL BOOL² ⟧) 8  -- BUG
+toffoliπ = showπ {TIMES BOOL BOOL²} {TIMES BOOL BOOL²} TOFFOLI
+
+{--
 
 ------------------------------------------------------------------------------
 -- Extensional equivalence of combinators: two combinators are

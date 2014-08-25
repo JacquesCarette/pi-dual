@@ -1867,3 +1867,11 @@ n≤n : (n : ℕ) → n ≤ n
 n≤n 0 = z≤n
 n≤n (suc n) = s≤s (n≤n n)
 
+-- Convenient way of "seeing" what the permutation does for each combinator
+
+matchP : ∀ {t t'} → (t ⟷ t') → Vec (⟦ t ⟧ × ⟦ t' ⟧) (size t)
+matchP {t} {t'} c = 
+  match sp (comb2perm c) (utoVec t) 
+    (subst (λ n → Vec ⟦ t' ⟧ n) (sym sp) (utoVec t'))
+  where sp = size≡ c
+
