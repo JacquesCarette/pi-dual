@@ -13,8 +13,8 @@ open import Data.Nat.Properties.Simple
         *-assoc; *-comm; *-right-zero; distribʳ-*-+)
 
 open import Data.Bool using (Bool; false; true)
-open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≤_; z≤n; s≤s; _≟_;
-  module ≤-Reasoning)
+open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≤_; z≤n; s≤s; 
+  _≟_; _≤?_; module ≤-Reasoning)
 open import Data.Fin 
   using (Fin; zero; suc; toℕ; fromℕ; _ℕ-_; 
          raise; inject+; inject₁; inject≤; _≻toℕ_) 
@@ -449,9 +449,10 @@ i*n+k≤m*n {suc m} {suc n} i k =
 idπ : ∀ {n} → Perm n
 idπ {n} = toList (zipWith _X_ (allFin n) (allFin n))
 
--- Let α = [ m₁ X n₁ , m₂ X n₂ , ... ]
---     β = [ k₁ X l₁ , k₂ X l₂ , ... ]
--- tcompπ α β is:
+-- Swaps in α correspond to swapping entire rows
+-- Swaps in β correspond to swapping entire columns
+-- Need to make sure neither α nor β is empty; otherwise composition annhilates
+-- So explicitly represent identity permutations using a sequence of self-swaps
 
 tcompπ : ∀ {m n} → Perm m → Perm n → Perm (m * n)
 tcompπ {m} {n} α β = 
@@ -472,7 +473,9 @@ normalize : ∀ {n} → Perm n → Perm n
 normalize [] = []
 normalize (i X j ∷ []) with toℕ i ≟ toℕ j 
 ... | yes _ = []
-... | no _  = i X j ∷ []  
+... | no _  with toℕ i ≤? toℕ j
+... | yes _ = i X j ∷ []  
+... | no _  = j X i ∷ []
 normalize (i X j ∷ k X l ∷ π) = {!!} 
 
 ------------------------------------------------------------------------------
@@ -520,81 +523,27 @@ neg₃π = showπ {BOOL} {BOOL} neg₃
 neg₄π = showπ {BOOL} {BOOL} neg₄
 --      (true , false) ∷ (false , true) ∷ []
 neg₅π = showπ {BOOL} {BOOL} neg₅ 
---      (false , false) ∷ (true , true) ∷ []
-
-xxx : Perm 2
-xxx = c2π {BOOL} {BOOL} not⟷  -- 0 X 1 ∷ []
-
-yyy : Perm 2
-yyy = c2π {BOOL} {BOOL} id⟷   -- [] 
-
-zzz : Perm 4
-zzz = c2π {TIMES BOOL BOOL} {TIMES BOOL BOOL} (not⟷ ⊗ id⟷)
-
-www : Perm 4
-www = tcompπ xxx yyy
-
-
-
+--      (true , false) ∷ (false , true) ∷ []
 
 cnotπ : Vec (⟦ BOOL² ⟧ × ⟦ BOOL² ⟧) 4 
 cnotπ = showπ {BOOL²} {BOOL²} CNOT
+-- ((false , false) , (false , false)) ∷
+-- ((false , true)  , (false , true))  ∷
+-- ((true  , true)  , (true  , false)) ∷
+-- ((true  , false) , (true  , true))  ∷ []
 
 toffoliπ : Vec (⟦ TIMES BOOL BOOL² ⟧ × ⟦ TIMES BOOL BOOL² ⟧) 8  
 toffoliπ = showπ {TIMES BOOL BOOL²} {TIMES BOOL BOOL²} TOFFOLI
+-- ((false , false , false) , (false , false , false)) ∷
+-- ((false , false , true)  , (false , false , true))  ∷
+-- ((false , true  , false) , (false , true  , false)) ∷
+-- ((false , true  , true)  , (false , true  , true))  ∷
+-- ((true  , false , false) , (true  , false , false)  ∷
+-- ((true  , false , true)  , (true  , false , true))  ∷
+-- ((true  , true  , true)  , (true  , true  , false)) ∷
+-- ((true  , true  , false) , (true  , true  , true))  ∷ []
 
 {--
-m = 2
-n = 2
-α = 0 X 1 ∷ []
-β = []
-
-
-
-
-
-
-neg₅ = uniti⋆ ◎ swap⋆ ◎ (swap₊ ⊗ id⟷) ◎ swap⋆ ◎ unite⋆
-
-tcompπ : ∀ {m n} → Perm m → Perm n → Perm (m * n)
-tcompπ {m} {n} α β = 
-  concatL (mapL 
-            (λ { (i X j) → 
-                 mapL (λ { (k X l) → 
-                        (inject≤ (fromℕ (toℕ i * n + toℕ k)) 
-                                 (i*n+k≤m*n i k))
-                        X 
-                        (inject≤ (fromℕ (toℕ j * n + toℕ l)) 
-                                 (i*n+k≤m*n j l))})
-                      β })
-            α)
-
-
-
-
--- CNOT
-
-CNOT : BOOL² ⟷ BOOL²
-CNOT = TIMES (PLUS x y) BOOL
-         ⟷⟨ dist ⟩
-       PLUS (TIMES x BOOL) (TIMES y BOOL)
-         ⟷⟨ id⟷ ⊕ (id⟷ ⊗ swap₊) ⟩
-       PLUS (TIMES x BOOL) (TIMES y BOOL)
-         ⟷⟨ factor ⟩
-       TIMES (PLUS x y) BOOL □
-  where x = ONE; y = ONE
-
--- TOFFOLI
-
-TOFFOLI : TIMES BOOL BOOL² ⟷ TIMES BOOL BOOL²
-TOFFOLI = TIMES (PLUS x y) BOOL² 
-            ⟷⟨ dist ⟩
-          PLUS (TIMES x BOOL²) (TIMES y BOOL²)
-            ⟷⟨ id⟷ ⊕ (id⟷ ⊗ CNOT) ⟩ 
-          PLUS (TIMES x BOOL²) (TIMES y BOOL²)
-            ⟷⟨ factor ⟩
-          TIMES (PLUS x y) BOOL² □
-  where x = ONE; y = ONE
 
 ------------------------------------------------------------------------------
 -- Extensional equivalence of combinators: two combinators are
