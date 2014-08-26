@@ -12,6 +12,7 @@ open import Data.Nat.Properties.Simple
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+)
 
+open import Data.Bool using (Bool; false; true)
 open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≤_; z≤n; s≤s; _≟_;
   module ≤-Reasoning)
 open import Data.Fin 
@@ -20,7 +21,7 @@ open import Data.Fin
   renaming (_+_ to _F+_)
 open import Data.Fin.Properties using (bounded)              
 
-open import Data.List using (List; []; _∷_; foldl; replicate) 
+open import Data.List using (List; []; _∷_; foldl; replicate; reverse; downFrom) 
   renaming (_++_ to _++L_; map to mapL; concat to concatL)
 open import Data.Vec 
   using (Vec; tabulate; []; _∷_; [_]; tail; lookup; zip; zipWith; 
@@ -51,22 +52,28 @@ data U : Set where
   ONE   : U
   PLUS  : U → U → U
   TIMES : U → U → U
+  BOOL  : U          -- for testing
+  ENUM  : ℕ → U      -- for testing
 
 ⟦_⟧ : U → Set 
 ⟦ ZERO ⟧        = ⊥ 
 ⟦ ONE ⟧         = ⊤
 ⟦ PLUS t₁ t₂ ⟧  = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
 ⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+⟦ BOOL ⟧        = Bool
+⟦ ENUM n ⟧      = ℕ
 
 -- Abbreviations for examples
 
-BOOL BOOL² : U
-BOOL  = PLUS ONE ONE 
+-- BOOL : U
+-- BOOL  = PLUS ONE ONE 
+
+BOOL² : U
 BOOL² = TIMES BOOL BOOL
 
-false⟷ true⟷ : ⟦ BOOL ⟧
-false⟷ = inj₁ tt
-true⟷  = inj₂ tt
+-- false⟷ true⟷ : ⟦ BOOL ⟧
+-- false⟷ = inj₁ tt
+-- true⟷  = inj₂ tt
 
 -- For any finite type (t : U) there is no non-trivial path structure
 -- between the elements of t. All such finite types are discrete
@@ -115,6 +122,9 @@ data _⟷_ : U → U → Set where
             (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
   _⊗_     : {t₁ t₂ t₃ t₄ : U} → 
             (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
+  -- for testing
+  foldBool   : PLUS ONE ONE ⟷ BOOL
+  unfoldBool : BOOL ⟷ PLUS ONE ONE
 
 -- Nicer syntax that shows intermediate values instead of the above
 -- point-free notation of permutations
@@ -134,35 +144,46 @@ _□ t = id⟷
 -- on paths between x and neg (neg x) which are the trivial paths on each of
 -- the two points in BOOL.
 
+not⟷ : BOOL ⟷ BOOL
+not⟷ = unfoldBool ◎ swap₊ ◎ foldBool
+
 neg₁ neg₂ neg₃ neg₄ neg₅ : BOOL ⟷ BOOL
-neg₁ = swap₊
-neg₂ = id⟷ ◎ swap₊
-neg₃ = swap₊ ◎ swap₊ ◎ swap₊
-neg₄ = swap₊ ◎ id⟷
-neg₅ = uniti⋆ ◎ swap⋆ ◎ (swap₊ ⊗ id⟷) ◎ swap⋆ ◎ unite⋆
+neg₁ = unfoldBool ◎ swap₊ ◎ foldBool
+neg₂ = id⟷ ◎ not⟷ 
+neg₃ = not⟷ ◎ not⟷ ◎ not⟷ 
+neg₄ = not⟷ ◎ id⟷
+neg₅ = uniti⋆ ◎ swap⋆ ◎ (not⟷ ⊗ id⟷) ◎ swap⋆ ◎ unite⋆
 
 -- CNOT
 
 CNOT : BOOL² ⟷ BOOL²
-CNOT = TIMES (PLUS x y) BOOL
+CNOT = TIMES BOOL BOOL
+         ⟷⟨ unfoldBool ⊗ id⟷ ⟩
+       TIMES (PLUS x y) BOOL
          ⟷⟨ dist ⟩
        PLUS (TIMES x BOOL) (TIMES y BOOL)
-         ⟷⟨ id⟷ ⊕ (id⟷ ⊗ swap₊) ⟩
+         ⟷⟨ id⟷ ⊕ (id⟷ ⊗ not⟷) ⟩
        PLUS (TIMES x BOOL) (TIMES y BOOL)
          ⟷⟨ factor ⟩
-       TIMES (PLUS x y) BOOL □
+       TIMES (PLUS x y) BOOL
+         ⟷⟨ foldBool ⊗ id⟷ ⟩
+       TIMES BOOL BOOL □
   where x = ONE; y = ONE
 
 -- TOFFOLI
 
 TOFFOLI : TIMES BOOL BOOL² ⟷ TIMES BOOL BOOL²
-TOFFOLI = TIMES (PLUS x y) BOOL² 
+TOFFOLI = TIMES BOOL BOOL² 
+            ⟷⟨ unfoldBool ⊗ id⟷ ⟩
+          TIMES (PLUS x y) BOOL² 
             ⟷⟨ dist ⟩
           PLUS (TIMES x BOOL²) (TIMES y BOOL²)
             ⟷⟨ id⟷ ⊕ (id⟷ ⊗ CNOT) ⟩ 
           PLUS (TIMES x BOOL²) (TIMES y BOOL²)
             ⟷⟨ factor ⟩
-          TIMES (PLUS x y) BOOL² □
+          TIMES (PLUS x y) BOOL²
+            ⟷⟨ foldBool ⊗ id⟷ ⟩
+         TIMES BOOL BOOL² □
   where x = ONE; y = ONE
 
 -- Every permutation has an inverse. There are actually many syntactically
@@ -187,6 +208,8 @@ TOFFOLI = TIMES (PLUS x y) BOOL²
 ! (c₁ ◎ c₂) = ! c₂ ◎ ! c₁ 
 ! (c₁ ⊕ c₂) = (! c₁) ⊕ (! c₂)
 ! (c₁ ⊗ c₂) = (! c₁) ⊗ (! c₂)
+! unfoldBool = foldBool
+! foldBool   = unfoldBool
 
 !! : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → ! (! c) ≡ c
 !! {c = unite₊}  = refl
@@ -227,6 +250,8 @@ TOFFOLI = TIMES (PLUS x y) BOOL²
            ≡⟨ cong₂ _⊗_ (!! {c = c₁}) (!! {c = c₂}) ⟩ 
          c₁ ⊗ c₂ ∎)
   where open ≡-Reasoning
+!! {c = unfoldBool} = refl
+!! {c = foldBool}   = refl
 
 ------------------------------------------------------------------------------
 -- Types as vectors of elements
@@ -240,6 +265,8 @@ size ZERO          = 0
 size ONE           = 1
 size (PLUS t₁ t₂)  = size t₁ + size t₂
 size (TIMES t₁ t₂) = size t₁ * size t₂
+size BOOL          = 2
+size (ENUM n)      = n
 
 utoVec : (t : U) → Vec ⟦ t ⟧ (size t)
 utoVec ZERO          = []
@@ -247,6 +274,8 @@ utoVec ONE           = [ tt ]
 utoVec (PLUS t₁ t₂)  = mapV inj₁ (utoVec t₁) ++V (mapV inj₂ (utoVec t₂))
 utoVec (TIMES t₁ t₂) = 
   concatV (mapV (λ v₁ → mapV (λ v₂ → (v₁ , v₂)) (utoVec t₂)) (utoVec t₁))
+utoVec BOOL          = false ∷ true ∷ []
+utoVec (ENUM n)      = tabulate toℕ
 
 -- Combinators are always between types of the same size
 
@@ -275,6 +304,8 @@ size≡ {t} {.t} id⟷ = refl
 size≡ (c₁ ◎ c₂) = trans (size≡ c₁) (size≡ c₂)
 size≡ {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = cong₂ _+_ (size≡ c₁) (size≡ c₂)
 size≡ {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = cong₂ _*_ (size≡ c₁) (size≡ c₂)
+size≡ {PLUS ONE ONE} {BOOL} foldBool = refl
+size≡ {BOOL} {PLUS ONE ONE} unfoldBool = refl
 
 -- All proofs about sizes are "the same"
 
@@ -315,7 +346,7 @@ actionπ π vs = foldl (λ { vs (i X j) → swapV vs i j }) vs π
 -- [ v₁   , v₂   , ... , vᵢ   || vᵢ₊₁ , vᵢ₊₂ , ... , vᵢ₊ⱼ ]
 -- ==> 
 -- [ vᵢ₊₁ , vᵢ₊₂ , ... , vᵢ₊ⱼ || v₁   , v₂   , ... , vᵢ   ]
--- [ w₁   , w₂   , ... , wⱼ   || wⱼ₊₁  , wⱼ₊₂  , ... , wⱼ₊ᵢ  ] 
+-- idea: move each of the first i elements to the end by successive swaps
 
 swapπ : ∀ {m n} → Perm (m + n)
 swapπ {0}     {n}     = []
@@ -333,6 +364,12 @@ scompπ : ∀ {n} → Perm n → Perm n → Perm n
 scompπ = _++L_
 
 -- Parallel additive composition 
+-- append both permutations but shift the second permutation by the size
+-- of the first type so that it acts on the second part of the vector
+-- Let α = [ m₀ X n₀ , m₁ X n₁ , ... m₇ X n₇ₛ]
+--     β = [ k₀ X l₀ , k₁ X l₁ , ... ]
+-- pcompπ α β is:
+--  [ m₀ X n₀ , m₁ X n₁ , ... , m₇ X n₇ , k₀+8 X l₀+8 , k₁+8 X l₁+8 , ... ]
 
 injectπ : ∀ {m} → Perm m → (n : ℕ) → Perm (m + n)
 injectπ π n = mapL (λ { (i X j) → (inject+ n i) X (inject+ n j) }) π 
@@ -407,6 +444,15 @@ i*n+k≤m*n {suc m} {suc n} i k =
          suc m * suc n ∎)
   where open ≤-Reasoning
 
+-- expand id permutation to [ i X i ... ] for all i 
+
+idπ : ∀ {n} → Perm n
+idπ {n} = toList (zipWith _X_ (allFin n) (allFin n))
+
+-- Let α = [ m₁ X n₁ , m₂ X n₂ , ... ]
+--     β = [ k₁ X l₁ , k₂ X l₂ , ... ]
+-- tcompπ α β is:
+
 tcompπ : ∀ {m n} → Perm m → Perm n → Perm (m * n)
 tcompπ {m} {n} α β = 
   concatL (mapL 
@@ -417,14 +463,16 @@ tcompπ {m} {n} α β =
                         X 
                         (inject≤ (fromℕ (toℕ j * n + toℕ l)) 
                                  (i*n+k≤m*n j l))})
-                      β })
-            α)
+                      (β ++L idπ {n})})
+            (α ++L idπ {m}))
 
 -- Normalize
 
 normalize : ∀ {n} → Perm n → Perm n
-normalize []                  = []
-normalize (i X j ∷ [])        = i X j ∷ []  -- BUG: i X i :: [] should normalize to [].
+normalize [] = []
+normalize (i X j ∷ []) with toℕ i ≟ toℕ j 
+... | yes _ = []
+... | no _  = i X j ∷ []  
 normalize (i X j ∷ k X l ∷ π) = {!!} 
 
 ------------------------------------------------------------------------------
@@ -449,6 +497,8 @@ c2π id⟷       = []
 c2π (c₁ ◎ c₂) = scompπ (c2π c₁) (subst Perm (sym (size≡ c₁)) (c2π c₂))
 c2π (c₁ ⊕ c₂) = pcompπ (c2π c₁) (c2π c₂) 
 c2π (c₁ ⊗ c₂) = tcompπ (c2π c₁) (c2π c₂) 
+c2π unfoldBool = []
+c2π foldBool   = []
 
 -- Convenient way of seeing the result of applying a c : t₁ ⟷ t₂ 
 
@@ -461,19 +511,90 @@ showπ {t₁} {t₂} c =
 -- Examples
 
 neg₁π neg₂π neg₃π neg₄π neg₅π : Vec (⟦ BOOL ⟧ × ⟦ BOOL ⟧) 2
-neg₁π = showπ {BOOL} {BOOL} neg₁  -- ok
+neg₁π = showπ {BOOL} {BOOL} neg₁  
+--      (true , false) ∷ (false , true) ∷ []
 neg₂π = showπ {BOOL} {BOOL} neg₂  -- ok
-neg₃π = showπ {BOOL} {BOOL} neg₃  -- ok
+--      (true , false) ∷ (false , true) ∷ []
+neg₃π = showπ {BOOL} {BOOL} neg₃  
+--      (true , false) ∷ (false , true) ∷ []
 neg₄π = showπ {BOOL} {BOOL} neg₄
-neg₅π = showπ {BOOL} {BOOL} neg₅ -- BUG
+--      (true , false) ∷ (false , true) ∷ []
+neg₅π = showπ {BOOL} {BOOL} neg₅ 
+--      (false , false) ∷ (true , true) ∷ []
 
-cnotπ : Vec (⟦ BOOL² ⟧ × ⟦ BOOL² ⟧) 4  -- BUG
+xxx : Perm 2
+xxx = c2π {BOOL} {BOOL} not⟷  -- 0 X 1 ∷ []
+
+yyy : Perm 2
+yyy = c2π {BOOL} {BOOL} id⟷   -- [] 
+
+zzz : Perm 4
+zzz = c2π {TIMES BOOL BOOL} {TIMES BOOL BOOL} (not⟷ ⊗ id⟷)
+
+www : Perm 4
+www = tcompπ xxx yyy
+
+
+
+
+cnotπ : Vec (⟦ BOOL² ⟧ × ⟦ BOOL² ⟧) 4 
 cnotπ = showπ {BOOL²} {BOOL²} CNOT
 
-toffoliπ : Vec (⟦ TIMES BOOL BOOL² ⟧ × ⟦ TIMES BOOL BOOL² ⟧) 8  -- BUG
+toffoliπ : Vec (⟦ TIMES BOOL BOOL² ⟧ × ⟦ TIMES BOOL BOOL² ⟧) 8  
 toffoliπ = showπ {TIMES BOOL BOOL²} {TIMES BOOL BOOL²} TOFFOLI
 
 {--
+m = 2
+n = 2
+α = 0 X 1 ∷ []
+β = []
+
+
+
+
+
+
+neg₅ = uniti⋆ ◎ swap⋆ ◎ (swap₊ ⊗ id⟷) ◎ swap⋆ ◎ unite⋆
+
+tcompπ : ∀ {m n} → Perm m → Perm n → Perm (m * n)
+tcompπ {m} {n} α β = 
+  concatL (mapL 
+            (λ { (i X j) → 
+                 mapL (λ { (k X l) → 
+                        (inject≤ (fromℕ (toℕ i * n + toℕ k)) 
+                                 (i*n+k≤m*n i k))
+                        X 
+                        (inject≤ (fromℕ (toℕ j * n + toℕ l)) 
+                                 (i*n+k≤m*n j l))})
+                      β })
+            α)
+
+
+
+
+-- CNOT
+
+CNOT : BOOL² ⟷ BOOL²
+CNOT = TIMES (PLUS x y) BOOL
+         ⟷⟨ dist ⟩
+       PLUS (TIMES x BOOL) (TIMES y BOOL)
+         ⟷⟨ id⟷ ⊕ (id⟷ ⊗ swap₊) ⟩
+       PLUS (TIMES x BOOL) (TIMES y BOOL)
+         ⟷⟨ factor ⟩
+       TIMES (PLUS x y) BOOL □
+  where x = ONE; y = ONE
+
+-- TOFFOLI
+
+TOFFOLI : TIMES BOOL BOOL² ⟷ TIMES BOOL BOOL²
+TOFFOLI = TIMES (PLUS x y) BOOL² 
+            ⟷⟨ dist ⟩
+          PLUS (TIMES x BOOL²) (TIMES y BOOL²)
+            ⟷⟨ id⟷ ⊕ (id⟷ ⊗ CNOT) ⟩ 
+          PLUS (TIMES x BOOL²) (TIMES y BOOL²)
+            ⟷⟨ factor ⟩
+          TIMES (PLUS x y) BOOL² □
+  where x = ONE; y = ONE
 
 ------------------------------------------------------------------------------
 -- Extensional equivalence of combinators: two combinators are
