@@ -319,7 +319,7 @@ size∼ c₁ c₂ = proof-irrelevance (size≡ c₁) (size≡ c₂)
 -- this is a poor representation and eventually requires function
 -- extensionality. 
 
--- A permutation is a sequence of "swaps"
+-- A permutation is a sequence of "swaps" or "transpositions"; 
 -- we allow any sequence of swaps, even "stupid ones"
 -- Ex: Perm 4 could have this permutation as an element (1 2) (2 3) (3 1)
 -- It could also have (1 2) (1 3) (1 1) (2 1) (2 1) (1 2)
@@ -336,11 +336,11 @@ Perm n = List (Swap n)
 -- A permutation with indices less than n can act on a vector of size
 -- n by applying the swaps, one by one.
 
-swapV : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Vec A n → Fin n → Fin n → Vec A n
-swapV vs i j = (vs [ i ]≔ lookup j vs) [ j ]≔ lookup i vs
-
 actionπ : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Perm n → Vec A n → Vec A n
-actionπ π vs = foldl (λ { vs (i X j) → swapV vs i j }) vs π
+actionπ π vs = foldl swapX vs π
+  where 
+    swapX : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Vec A n → Swap n → Vec A n  
+    swapX vs (i X j) = (vs [ i ]≔ lookup j vs) [ j ]≔ lookup i vs
 
 -- swap the first i elements with the last j elements
 -- [ v₁   , v₂   , ... , vᵢ   || vᵢ₊₁ , vᵢ₊₂ , ... , vᵢ₊ⱼ ]
@@ -467,17 +467,6 @@ tcompπ {m} {n} α β =
                       (β ++L idπ {n})})
             (α ++L idπ {m}))
 
--- Normalize
-
-normalize : ∀ {n} → Perm n → Perm n
-normalize [] = []
-normalize (i X j ∷ []) with toℕ i ≟ toℕ j 
-... | yes _ = []
-... | no _  with toℕ i ≤? toℕ j
-... | yes _ = i X j ∷ []  
-... | no _  = j X i ∷ []
-normalize (i X j ∷ k X l ∷ π) = {!!} 
-
 ------------------------------------------------------------------------------
 -- A combinator t₁ ⟷ t₂ denotes a permutation.
 
@@ -542,6 +531,31 @@ toffoliπ = showπ {TIMES BOOL BOOL²} {TIMES BOOL BOOL²} TOFFOLI
 -- ((true  , false , true)  , (true  , false , true))  ∷
 -- ((true  , true  , true)  , (true  , true  , false)) ∷
 -- ((true  , true  , false) , (true  , true  , true))  ∷ []
+
+-- Normalization
+
+-- All the following should normalize to the same thing:
+
+n1 n2 n3 n4 n5 : List (Swap 2) 
+n1 = c2π neg₁
+   -- 0 X 1 ∷ []
+n2 = c2π neg₂
+   -- 0 X 1 ∷ []
+n3 = c2π neg₃
+   -- 0 X 1 ∷ 0 X 1 ∷ 0 X 1 ∷ []
+n4 = c2π neg₄
+   -- 0 X 1 ∷ []
+n5 = c2π neg₅
+   -- 0 X 1 ∷ 0 X 0 ∷ 1 X 1 ∷ []
+
+normalize : ∀ {n} → Perm n → Perm n
+normalize [] = []
+normalize (i X j ∷ []) with toℕ i ≟ toℕ j 
+... | yes _ = []
+... | no _  with toℕ i ≤? toℕ j
+... | yes _ = i X j ∷ []  
+... | no _  = j X i ∷ []
+normalize (i X j ∷ k X l ∷ π) = {!!} 
 
 {--
 
