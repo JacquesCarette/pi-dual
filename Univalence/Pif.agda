@@ -12,6 +12,9 @@ open import Data.Nat.Properties.Simple
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+)
 
+open import Data.String using (String)
+  renaming (_++_ to _++S_)
+open import Data.Nat.Show using (show)
 open import Data.Bool using (Bool; false; true)
 open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≤_; z≤n; s≤s; 
   _≟_; _≤?_; module ≤-Reasoning)
@@ -333,6 +336,9 @@ data Swap (n : ℕ) : Set where
 Perm : ℕ → Set
 Perm n = List (Swap n)
 
+showSwap : ∀ {n} → Swap n → String
+showSwap (i X j) = show (toℕ i) ++S " X " ++S show (toℕ j)
+
 -- A permutation with indices less than n can act on a vector of size
 -- n by applying the swaps, one by one.
 
@@ -536,17 +542,22 @@ toffoliπ = showπ {TIMES BOOL BOOL²} {TIMES BOOL BOOL²} TOFFOLI
 
 -- All the following should normalize to the same thing:
 
-n1 n2 n3 n4 n5 : List (Swap 2) 
-n1 = c2π neg₁
+n₁ n₂ n₃ n₄ n₅ : List String
+n₁ = mapL showSwap (c2π neg₁)
    -- 0 X 1 ∷ []
-n2 = c2π neg₂
+n₂ = mapL showSwap (c2π neg₂)
    -- 0 X 1 ∷ []
-n3 = c2π neg₃
+n₃ = mapL showSwap (c2π neg₃)
    -- 0 X 1 ∷ 0 X 1 ∷ 0 X 1 ∷ []
-n4 = c2π neg₄
+n₄ = mapL showSwap (c2π neg₄)
    -- 0 X 1 ∷ []
-n5 = c2π neg₅
+n₅ = mapL showSwap (c2π neg₅)
    -- 0 X 1 ∷ 0 X 0 ∷ 1 X 1 ∷ []
+
+-- Step 0: remove all (i X i)
+-- Step 1: reorder all (i X j) such that i < j
+-- Step 2: sort with relation (i X j) < (k X l) if i < k or i = k and j < l
+-- Step 3: simplify (i X j) ∷ (i X j) ∷ π to π 
 
 normalize : ∀ {n} → Perm n → Perm n
 normalize [] = []
