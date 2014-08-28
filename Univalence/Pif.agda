@@ -2,7 +2,7 @@
 
 module Pif where
 
-open import Level using (_⊔_)
+open import Level using (Level; _⊔_) renaming (zero to lzero; suc to lsuc)
 
 open import Relation.Binary.PropositionalEquality 
   using (_≡_; refl; sym; trans; subst; cong; cong₂; 
@@ -11,6 +11,7 @@ open import Relation.Nullary.Core using (Dec; yes; no)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+)
+open import Relation.Binary using (Rel; Decidable)
 
 open import Data.String using (String)
   renaming (_++_ to _++S_)
@@ -24,8 +25,9 @@ open import Data.Fin
   renaming (_+_ to _F+_)
 open import Data.Fin.Properties using (bounded)              
 
-open import Data.List using (List; []; _∷_; foldl; replicate; reverse; downFrom) 
+open import Data.List using (List; []; _∷_; foldl; replicate; reverse; downFrom; gfilter ) 
   renaming (_++_ to _++L_; map to mapL; concat to concatL)
+open import Data.Maybe using (Maybe; nothing; just)
 open import Data.Vec 
   using (Vec; tabulate; []; _∷_; [_]; tail; lookup; zip; zipWith; 
          _[_]≔_; allFin; toList)
@@ -554,10 +556,46 @@ n₄ = mapL showSwap (c2π neg₄)
 n₅ = mapL showSwap (c2π neg₅)
    -- 0 X 1 ∷ 0 X 0 ∷ 1 X 1 ∷ []
 
--- Step 0: remove all (i X i)
--- Step 1: reorder all (i X j) such that i < j
--- Step 2: sort with relation (i X j) < (k X l) if i < k or i = k and j < l
--- Step 3: simplify (i X j) ∷ (i X j) ∷ π to π 
+-----------------------
+-- This Sort module might exist elsewhere, but I can't find it
+module Sort (A : Set) {_<_ : Rel A lzero} ( _<?_ : Decidable _<_) where
+  insert : A → List A → List A
+  insert x [] = []
+  insert x (y ∷ ys) with x <? y
+  ... | yes _ = x ∷ y ∷ ys
+  ... | no _ = y ∷ insert x ys
+
+  sort : List A → List A
+  sort [] = []
+  sort (x ∷ xs) = insert x (sort xs)
+
+data _<S_ {n : ℕ} : Rel (Swap n) lzero where
+   <1 : ∀ {i j k l : Fin n} → (toℕ i < toℕ k) → (i X j) <S (k X l)
+   <2 : ∀ {i j k l : Fin n} → (toℕ i ≡ toℕ k) → (toℕ j < toℕ l) → (i X j) <S (k X l)
+
+{-
+_<S?_ : Decidable (_<S_)
+i X j <S? k X l with toℕ i <? toℕ k
+... | yes x = ?
+... | no x   = ?
+-}
+
+module ℕSort = Sort ℕ _≤?_
+
+-- Step 0a: remove all (i X i)
+-- Step 0b: reorder all (i X j) such that i < j
+-- Step 1: sort with relation (i X j) < (k X l) if i < k or i = k and j < l
+-- Step 2: simplify (i X j) ∷ (i X j) ∷ π to π 
+
+0filter : ∀ {n} → Swap n → Maybe (Swap n)
+0filter (i X j) with toℕ i ≟ toℕ j
+... | yes _ = nothing
+... | no _  with toℕ i ≤? toℕ j
+... | yes _ = just ( i X j )
+... | no _  = just ( j X i )
+
+step0 : ∀ {n} → Perm n → Perm n
+step0 = gfilter 0filter
 
 normalize : ∀ {n} → Perm n → Perm n
 normalize [] = []
