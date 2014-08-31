@@ -17,7 +17,7 @@ open import Data.String using (String)
   renaming (_++_ to _++S_)
 open import Data.Nat.Show using (show)
 open import Data.Bool using (Bool; false; true)
-open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≤_; z≤n; s≤s; 
+open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≤_; _≰_; z≤n; s≤s; 
   _≟_; _≤?_; module ≤-Reasoning)
 open import Data.Fin 
   using (Fin; zero; suc; toℕ; fromℕ; _ℕ-_; 
@@ -329,17 +329,34 @@ size∼ c₁ c₂ = proof-irrelevance (size≡ c₁) (size≡ c₂)
 -- Ex: Perm 4 could have this permutation as an element (1 2) (2 3) (3 1)
 -- It could also have (1 2) (1 3) (1 1) (2 1) (2 1) (1 2)
 -- to compare two permutations we need to normalize them
+-- 
+-- For normalization purposes, we insist that the first component of a
+-- transposition is always ≤ than the second
+
+i≰j→j≤i : (i j : ℕ) → (i ≰ j) → (j ≤ i) 
+i≰j→j≤i i 0 p = z≤n 
+i≰j→j≤i 0 (suc j) p with p z≤n
+i≰j→j≤i 0 (suc j) p | ()
+i≰j→j≤i (suc i) (suc j) p with i ≤? j
+i≰j→j≤i (suc i) (suc j) p | yes p' with p (s≤s p')
+i≰j→j≤i (suc i) (suc j) p | yes p' | ()
+i≰j→j≤i (suc i) (suc j) p | no p' = s≤s (i≰j→j≤i i j p')
 
 infix 90 _X_
 
-data Swap (n : ℕ) : Set where
-  _X_ : Fin n → Fin n → Swap n
+data Transposition (n : ℕ) : Set where
+  _X_ : (i j : Fin n) → {p : toℕ i ≤ toℕ j} → Transposition n
+
+mkTransposition : {n : ℕ} → (i j : Fin n) → Transposition n
+mkTransposition {n} i j with toℕ i ≤? toℕ j 
+... | yes p = _X_ i j {p}
+... | no p  = _X_ j i {i≰j→j≤i (toℕ i) (toℕ j) p}
 
 Perm : ℕ → Set
-Perm n = List (Swap n)
+Perm n = List (Transposition n) 
 
-showSwap : ∀ {n} → Swap n → String
-showSwap (i X j) = show (toℕ i) ++S " X " ++S show (toℕ j)
+showTransposition : ∀ {n} → Transposition n → String
+showTransposition (i X j) = show (toℕ i) ++S " X " ++S show (toℕ j)
 
 -- A permutation with indices less than n can act on a vector of size
 -- n by applying the swaps, one by one.
@@ -347,7 +364,7 @@ showSwap (i X j) = show (toℕ i) ++S " X " ++S show (toℕ j)
 actionπ : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Perm n → Vec A n → Vec A n
 actionπ π vs = foldl swapX vs π
   where 
-    swapX : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Vec A n → Swap n → Vec A n  
+    swapX : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Vec A n → Transposition n → Vec A n  
     swapX vs (i X j) = (vs [ i ]≔ lookup j vs) [ j ]≔ lookup i vs
 
 -- swap the first i elements with the last j elements
@@ -362,7 +379,7 @@ swapπ {suc m} {n}     =
   concatL 
     (replicate (suc m)
       (toList 
-        (zipWith _X_ 
+        (zipWith mkTransposition
           (mapV inject₁ (allFin (m + n))) 
           (tail (allFin (suc m + n))))))
 
@@ -380,10 +397,14 @@ scompπ = _++L_
 --  [ m₀ X n₀ , m₁ X n₁ , ... , m₇ X n₇ , k₀+8 X l₀+8 , k₁+8 X l₁+8 , ... ]
 
 injectπ : ∀ {m} → Perm m → (n : ℕ) → Perm (m + n)
-injectπ π n = mapL (λ { (i X j) → (inject+ n i) X (inject+ n j) }) π 
+injectπ π n = mapL (λ { (i X j) → 
+                      mkTransposition (inject+ n i) (inject+ n j)})
+                   π 
 
 raiseπ : ∀ {n} → Perm n → (m : ℕ) → Perm (m + n)
-raiseπ π m = mapL (λ { (i X j) → (raise m i) X (raise m j) }) π 
+raiseπ π m = mapL (λ { (i X j) → 
+                    mkTransposition (raise m i) (raise m j)})
+                  π 
 
 pcompπ : ∀ {m n} → Perm m → Perm n → Perm (m + n)
 pcompπ {m} {n} α β = (injectπ α n) ++L (raiseπ β m)
@@ -455,7 +476,7 @@ i*n+k≤m*n {suc m} {suc n} i k =
 -- expand id permutation to [ i X i ... ] for all i 
 
 idπ : ∀ {n} → Perm n
-idπ {n} = toList (zipWith _X_ (allFin n) (allFin n))
+idπ {n} = toList (zipWith mkTransposition (allFin n) (allFin n))
 
 -- Swaps in α correspond to swapping entire rows
 -- Swaps in β correspond to swapping entire columns
@@ -467,11 +488,11 @@ tcompπ {m} {n} α β =
   concatL (mapL 
             (λ { (i X j) → 
                  mapL (λ { (k X l) → 
-                        (inject≤ (fromℕ (toℕ i * n + toℕ k)) 
-                                 (i*n+k≤m*n i k))
-                        X 
-                        (inject≤ (fromℕ (toℕ j * n + toℕ l)) 
-                                 (i*n+k≤m*n j l))})
+                        mkTransposition
+                          (inject≤ (fromℕ (toℕ i * n + toℕ k)) 
+                                   (i*n+k≤m*n i k))
+                          (inject≤ (fromℕ (toℕ j * n + toℕ l)) 
+                                   (i*n+k≤m*n j l))})
                       (β ++L idπ {n})})
             (α ++L idπ {m}))
 
@@ -545,15 +566,15 @@ toffoliπ = showπ {TIMES BOOL BOOL²} {TIMES BOOL BOOL²} TOFFOLI
 -- All the following should normalize to the same thing:
 
 n₁ n₂ n₃ n₄ n₅ : List String
-n₁ = mapL showSwap (c2π neg₁)
+n₁ = mapL showTransposition (c2π neg₁)
    -- 0 X 1 ∷ []
-n₂ = mapL showSwap (c2π neg₂)
+n₂ = mapL showTransposition (c2π neg₂)
    -- 0 X 1 ∷ []
-n₃ = mapL showSwap (c2π neg₃)
+n₃ = mapL showTransposition (c2π neg₃)
    -- 0 X 1 ∷ 0 X 1 ∷ 0 X 1 ∷ []
-n₄ = mapL showSwap (c2π neg₄)
+n₄ = mapL showTransposition (c2π neg₄)
    -- 0 X 1 ∷ []
-n₅ = mapL showSwap (c2π neg₅)
+n₅ = mapL showTransposition (c2π neg₅)
    -- 0 X 1 ∷ 0 X 0 ∷ 1 X 1 ∷ []
 
 -----------------------
@@ -569,9 +590,11 @@ module Sort (A : Set) {_<_ : Rel A lzero} ( _<?_ : Decidable _<_) where
   sort [] = []
   sort (x ∷ xs) = insert x (sort xs)
 
-data _<S_ {n : ℕ} : Rel (Swap n) lzero where
+{--
+data _<S_ {n : ℕ} : Rel (Transposition n) lzero where
    <1 : ∀ {i j k l : Fin n} → (toℕ i < toℕ k) → (i X j) <S (k X l)
    <2 : ∀ {i j k l : Fin n} → (toℕ i ≡ toℕ k) → (toℕ j < toℕ l) → (i X j) <S (k X l)
+--}
 
 {-
 _<S?_ : Decidable (_<S_)
@@ -587,7 +610,8 @@ module ℕSort = Sort ℕ _≤?_
 -- Step 1: sort with relation (i X j) < (k X l) if i < k or i = k and j < l
 -- Step 2: simplify (i X j) ∷ (i X j) ∷ π to π 
 
-0filter : ∀ {n} → Swap n → Maybe (Swap n)
+{--
+0filter : ∀ {n} → Transposition n → Maybe (Transposition n)
 0filter (i X j) with toℕ i ≟ toℕ j
 ... | yes _ = nothing
 ... | no _  with toℕ i ≤? toℕ j
@@ -596,14 +620,11 @@ module ℕSort = Sort ℕ _≤?_
 
 step0 : ∀ {n} → Perm n → Perm n
 step0 = gfilter 0filter
+--}
 
 normalize : ∀ {n} → Perm n → Perm n
 normalize [] = []
-normalize (i X j ∷ []) with toℕ i ≟ toℕ j 
-... | yes _ = []
-... | no _  with toℕ i ≤? toℕ j
-... | yes _ = i X j ∷ []  
-... | no _  = j X i ∷ []
+normalize (_X_ i j {p} ∷ []) = _X_ i j {p} ∷ []
 normalize (i X j ∷ k X l ∷ π) = {!!} 
 
 {--

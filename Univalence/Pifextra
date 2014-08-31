@@ -1875,3 +1875,57 @@ matchP {t} {t'} c =
     (subst (λ n → Vec ⟦ t' ⟧ n) (sym sp) (utoVec t'))
   where sp = size≡ c
 
+infix 90 _X_
+
+data Swap (n : ℕ) : Set where
+  _X_ : Fin n → Fin n → Swap n
+
+Perm : ℕ → Set
+Perm n = List (Swap n)
+
+showSwap : ∀ {n} → Swap n → String
+showSwap (i X j) = show (toℕ i) ++S " X " ++S show (toℕ j)
+
+actionπ : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Perm n → Vec A n → Vec A n
+actionπ π vs = foldl swapX vs π
+  where 
+    swapX : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Vec A n → Swap n → Vec A n  
+    swapX vs (i X j) = (vs [ i ]≔ lookup j vs) [ j ]≔ lookup i vs
+
+swapπ : ∀ {m n} → Perm (m + n)
+swapπ {0}     {n}     = []
+swapπ {suc m} {n}     = 
+  concatL 
+    (replicate (suc m)
+      (toList 
+        (zipWith _X_ 
+          (mapV inject₁ (allFin (m + n))) 
+          (tail (allFin (suc m + n))))))
+
+scompπ : ∀ {n} → Perm n → Perm n → Perm n
+scompπ = _++L_
+
+injectπ : ∀ {m} → Perm m → (n : ℕ) → Perm (m + n)
+injectπ π n = mapL (λ { (i X j) → (inject+ n i) X (inject+ n j) }) π 
+
+raiseπ : ∀ {n} → Perm n → (m : ℕ) → Perm (m + n)
+raiseπ π m = mapL (λ { (i X j) → (raise m i) X (raise m j) }) π 
+
+pcompπ : ∀ {m n} → Perm m → Perm n → Perm (m + n)
+pcompπ {m} {n} α β = (injectπ α n) ++L (raiseπ β m)
+
+idπ : ∀ {n} → Perm n
+idπ {n} = toList (zipWith _X_ (allFin n) (allFin n))
+
+tcompπ : ∀ {m n} → Perm m → Perm n → Perm (m * n)
+tcompπ {m} {n} α β = 
+  concatL (mapL 
+            (λ { (i X j) → 
+                 mapL (λ { (k X l) → 
+                        (inject≤ (fromℕ (toℕ i * n + toℕ k)) 
+                                 (i*n+k≤m*n i k))
+                        X 
+                        (inject≤ (fromℕ (toℕ j * n + toℕ l)) 
+                                 (i*n+k≤m*n j l))})
+                      (β ++L idπ {n})})
+            (α ++L idπ {m}))
