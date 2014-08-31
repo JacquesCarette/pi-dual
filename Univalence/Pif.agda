@@ -577,7 +577,11 @@ n₄ = mapL showTransposition (c2π neg₄)
 n₅ = mapL showTransposition (c2π neg₅)
    -- 0 X 1 ∷ 0 X 0 ∷ 1 X 1 ∷ []
 
--- First, remove all (i X i)
+cnot toffoli : List String
+cnot = mapL showTransposition (c2π CNOT)
+toffoli = mapL showTransposition (c2π TOFFOLI)
+
+-- First, remove all trivial transpositions (i X i)
 
 data Transposition< (n : ℕ) : Set where
   _X_ : (i j : Fin n) → {p : toℕ i < toℕ j} → Transposition< n
@@ -604,6 +608,8 @@ normalize< (_X_ i j {p≤} ∷ π) with toℕ i ≟ toℕ j
 ... | yes p= = normalize< π 
 ... | no p≠ = _X_ i j {≠≤→< (toℕ i) (toℕ j) p≠ p≤}  ∷ normalize< π 
 
+-- Examples
+
 nn₁ nn₂ nn₃ nn₄ nn₅ : List String
 nn₁ = mapL showTransposition< (normalize< (c2π neg₁))
    -- 0 X 1 ∷ []
@@ -616,11 +622,17 @@ nn₄ = mapL showTransposition< (normalize< (c2π neg₄))
 nn₅ = mapL showTransposition< (normalize< (c2π neg₅))
    -- 0 X 1 ∷ []
 
------------------------
--- This Sort module might exist elsewhere, but I can't find it
+ncnot ntoffoli : List String
+ncnot = mapL showTransposition< (normalize< (c2π CNOT))
+   -- 2 X 3 ∷ []
+ntoffoli = mapL showTransposition< (normalize< (c2π TOFFOLI))
+   -- 6 X 7 ∷ []
+
+-- Next we sort the list of transpositions
+
 module Sort (A : Set) {_<_ : Rel A lzero} ( _<?_ : Decidable _<_) where
   insert : A → List A → List A
-  insert x [] = []
+  insert x [] = x ∷ []
   insert x (y ∷ ys) with x <? y
   ... | yes _ = x ∷ y ∷ ys
   ... | no _ = y ∷ insert x ys
@@ -629,42 +641,62 @@ module Sort (A : Set) {_<_ : Rel A lzero} ( _<?_ : Decidable _<_) where
   sort [] = []
   sort (x ∷ xs) = insert x (sort xs)
 
-{--
-data _<S_ {n : ℕ} : Rel (Transposition n) lzero where
-   <1 : ∀ {i j k l : Fin n} → (toℕ i < toℕ k) → (i X j) <S (k X l)
-   <2 : ∀ {i j k l : Fin n} → (toℕ i ≡ toℕ k) → (toℕ j < toℕ l) → (i X j) <S (k X l)
---}
+data _<S_ {n : ℕ} : Rel (Transposition< n) lzero where
+   <1 : ∀ {i j k l : Fin n} {p₁ : toℕ i < toℕ j} {p₂ : toℕ k < toℕ l} → 
+       (toℕ i < toℕ k) → (_X_ i j {p₁}) <S (_X_ k l {p₂})
+   <2 : ∀ {i j k l : Fin n} {p₁ : toℕ i < toℕ j} {p₂ : toℕ k < toℕ l} →  
+       (toℕ i ≡ toℕ k) → (toℕ j < toℕ l) → 
+       (_X_ i j {p₁}) <S (_X_ k l {p₂})
 
-{-
-_<S?_ : Decidable (_<S_)
-i X j <S? k X l with toℕ i <? toℕ k
-... | yes x = ?
-... | no x   = ?
--}
+d<S : {n : ℕ} → Decidable (_<S_ {n})
+d<S (_X_ i j {p₁}) (_X_ k l {p₂}) with suc (toℕ i) ≤? toℕ k 
+d<S (_X_ i j {p₁}) (_X_ k l {p₂}) | yes p = yes (<1 p)
+d<S (_X_ i j {p₁}) (_X_ k l {p₂}) | no p with toℕ i ≟ toℕ k
+d<S (_X_ i j {p₁}) (_X_ k l {p₂}) | no p | yes p= with suc (toℕ j) ≤? toℕ l
+d<S (_X_ i j {p₁}) (_X_ k l {p₂}) | no p | yes p= | yes p' = yes (<2 p= p')
+d<S (_X_ i j {p₁}) (_X_ k l {p₂}) | no p | yes p= | no p' = 
+  no (λ { (<1 i<k) → p i<k ;
+          (<2 i≡k j<l) → p' j<l})
+d<S (_X_ i j {p₁}) (_X_ k l {p₂}) | no p | no p≠ = 
+  no (λ { (<1 i<k) → p i<k ;
+          (<2 i≡k j<l) → p≠ i≡k })
 
-module ℕSort = Sort ℕ _≤?_
+module TSort (n : ℕ) = Sort (Transposition< n) {_<S_} d<S 
 
--- Step 0a: remove all (i X i)
--- Step 0b: reorder all (i X j) such that i < j
--- Step 1: sort with relation (i X j) < (k X l) if i < k or i = k and j < l
--- Step 2: simplify (i X j) ∷ (i X j) ∷ π to π 
+-- Examples
 
-{--
-0filter : ∀ {n} → Transposition n → Maybe (Transposition n)
-0filter (i X j) with toℕ i ≟ toℕ j
-... | yes _ = nothing
-... | no _  with toℕ i ≤? toℕ j
-... | yes _ = just ( i X j )
-... | no _  = just ( j X i )
+snn₁ snn₂ snn₃ snn₄ snn₅ : List String
+snn₁ = mapL showTransposition< (sort (normalize< (c2π neg₁)))
+  where open TSort 2
+   -- 0 X 1 ∷ []
+snn₂ = mapL showTransposition< (sort (normalize< (c2π neg₂)))
+  where open TSort 2
+   -- 0 X 1 ∷ []
+snn₃ = mapL showTransposition< (sort (normalize< (c2π neg₃)))
+  where open TSort 2
+   -- 0 X 1 ∷ 0 X 1 ∷ 0 X 1 ∷ []
+snn₄ = mapL showTransposition< (sort (normalize< (c2π neg₄)))
+  where open TSort 2
+   -- 0 X 1 ∷ []
+snn₅ = mapL showTransposition< (sort (normalize< (c2π neg₅)))
+  where open TSort 2
+   -- 0 X 1 ∷ []
 
-step0 : ∀ {n} → Perm n → Perm n
-step0 = gfilter 0filter
---}
+sncnot sntoffoli : List String
+sncnot = mapL showTransposition< (sort (normalize< (c2π CNOT)))
+  where open TSort 4
+   -- 2 X 3 ∷ []
+sntoffoli = mapL showTransposition< (sort (normalize< (c2π TOFFOLI)))
+  where open TSort 8
+   -- 6 X 7 ∷ []
 
-normalize : ∀ {n} → Perm n → Perm n
+-- Now we need to look at the cases (i X j) followed by (i X k) 
+
+normalize : ∀ {n} → Perm< n → Perm< n
 normalize [] = []
 normalize (_X_ i j {p} ∷ []) = _X_ i j {p} ∷ []
 normalize (i X j ∷ k X l ∷ π) = {!!} 
+
 
 {--
 
