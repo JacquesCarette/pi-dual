@@ -7,7 +7,7 @@ open import Level using (Level; _⊔_) renaming (zero to lzero; suc to lsuc)
 open import Relation.Binary.PropositionalEquality 
   using (_≡_; refl; sym; trans; subst; cong; cong₂; 
         proof-irrelevance; module ≡-Reasoning)
-open import Relation.Nullary.Core using (Dec; yes; no)
+open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+)
@@ -576,6 +576,45 @@ n₄ = mapL showTransposition (c2π neg₄)
    -- 0 X 1 ∷ []
 n₅ = mapL showTransposition (c2π neg₅)
    -- 0 X 1 ∷ 0 X 0 ∷ 1 X 1 ∷ []
+
+-- First, remove all (i X i)
+
+data Transposition< (n : ℕ) : Set where
+  _X_ : (i j : Fin n) → {p : toℕ i < toℕ j} → Transposition< n
+
+showTransposition< : ∀ {n} → Transposition< n → String
+showTransposition< (i X j) = show (toℕ i) ++S " X " ++S show (toℕ j)
+
+Perm< : ℕ → Set
+Perm< n = List (Transposition< n) 
+
+≠≤→< : (i j : ℕ) → (¬ i ≡ j) → (i ≤ j) → (i < j)
+≠≤→< 0 0 p≠ p≤ with p≠ refl
+≠≤→< 0 0 p≠ p≤ | ()
+≠≤→< 0 (suc j) p≠ p≤ = s≤s z≤n
+≠≤→< (suc i) 0 p≠ ()
+≠≤→< (suc i) (suc j) p≠ (s≤s p≤) with i ≟ j
+≠≤→< (suc i) (suc j) p≠ (s≤s p≤) | yes p' with p≠ (cong suc p')
+≠≤→< (suc i) (suc j) p≠ (s≤s p≤) | yes p' | ()
+≠≤→< (suc i) (suc j) p≠ (s≤s p≤) | no p' = s≤s (≠≤→< i j p' p≤)
+     
+normalize< : {n : ℕ} → Perm n → Perm< n
+normalize< [] = []
+normalize< (_X_ i j {p≤} ∷ π) with toℕ i ≟ toℕ j
+... | yes p= = normalize< π 
+... | no p≠ = _X_ i j {≠≤→< (toℕ i) (toℕ j) p≠ p≤}  ∷ normalize< π 
+
+nn₁ nn₂ nn₃ nn₄ nn₅ : List String
+nn₁ = mapL showTransposition< (normalize< (c2π neg₁))
+   -- 0 X 1 ∷ []
+nn₂ = mapL showTransposition< (normalize< (c2π neg₂))
+   -- 0 X 1 ∷ []
+nn₃ = mapL showTransposition< (normalize< (c2π neg₃))
+   -- 0 X 1 ∷ 0 X 1 ∷ 0 X 1 ∷ []
+nn₄ = mapL showTransposition< (normalize< (c2π neg₄))
+   -- 0 X 1 ∷ []
+nn₅ = mapL showTransposition< (normalize< (c2π neg₅))
+   -- 0 X 1 ∷ []
 
 -----------------------
 -- This Sort module might exist elsewhere, but I can't find it
