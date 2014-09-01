@@ -191,6 +191,12 @@ TOFFOLI = TIMES BOOL BOOL²
          TIMES BOOL BOOL² □
   where x = ONE; y = ONE
 
+-- Swaps
+
+SWAP1 SWAP2 : PLUS ONE (PLUS ONE ONE) ⟷ PLUS ONE (PLUS ONE ONE)
+SWAP1 = id⟷ ⊕ swap₊ 
+SWAP2 = assocl₊ ◎ (swap₊ ⊕ id⟷) ◎ swap₊ ◎ assocl₊ ◎ swap₊ 
+
 -- Every permutation has an inverse. There are actually many syntactically
 -- different inverses but they are all equivalent.
 
@@ -707,6 +713,8 @@ normalize : ∀ {n} → Perm n → Perm< n
 normalize {n} = slide ∘ sort ∘ normalize< 
   where open TSort n
 
+-- Examples
+
 nsnn₁ nsnn₂ nsnn₃ nsnn₄ nsnn₅ : List String
 nsnn₁ = mapL showTransposition< (normalize (c2π neg₁))
   where open TSort 2
@@ -723,6 +731,12 @@ nsnn₄ = mapL showTransposition< (normalize (c2π neg₄))
 nsnn₅ = mapL showTransposition< (normalize (c2π neg₅))
   where open TSort 2
    -- 0 X 1 ∷ []
+
+nswap₁ nswap₂ : List String
+nswap₁ = mapL showTransposition< (normalize (c2π SWAP1))
+-- 1 X 2 ∷ []
+nswap₂ = mapL showTransposition< (normalize (c2π SWAP2))
+-- 0 X 1 ∷ 1 X 2 ∷ []
 
 {--
 
