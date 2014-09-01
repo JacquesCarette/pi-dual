@@ -25,7 +25,8 @@ open import Data.Fin
   renaming (_+_ to _F+_)
 open import Data.Fin.Properties using (bounded)              
 
-open import Data.List using (List; []; _∷_; foldl; replicate; reverse; downFrom; gfilter ) 
+open import Data.List 
+  using (List; []; _∷_; foldl; replicate; reverse; downFrom; gfilter) 
   renaming (_++_ to _++L_; map to mapL; concat to concatL)
 open import Data.Maybe using (Maybe; nothing; just)
 open import Data.Vec 
@@ -191,11 +192,12 @@ TOFFOLI = TIMES BOOL BOOL²
          TIMES BOOL BOOL² □
   where x = ONE; y = ONE
 
--- Swaps
+-- Swaps: for the type 1+(1+1)
 
-SWAP1 SWAP2 : PLUS ONE (PLUS ONE ONE) ⟷ PLUS ONE (PLUS ONE ONE)
-SWAP1 = id⟷ ⊕ swap₊ 
-SWAP2 = assocl₊ ◎ (swap₊ ⊕ id⟷) ◎ swap₊ ◎ assocl₊ ◎ swap₊ 
+SWAP12 SWAP23 SWAP13 : PLUS ONE (PLUS ONE ONE) ⟷ PLUS ONE (PLUS ONE ONE)
+SWAP12 = assocl₊ ◎ (swap₊ ⊕ id⟷) ◎ assocr₊
+SWAP23 = id⟷ ⊕ swap₊
+SWAP13 = SWAP12 ◎ SWAP23
 
 -- Every permutation has an inverse. There are actually many syntactically
 -- different inverses but they are all equivalent.
@@ -766,16 +768,10 @@ nsnn₅ = mapL showTransposition< (nperm2list (normalize (c2π neg₅)))
   where open TSort 2
    -- 0 X 1 ∷ []
 
-nswap₁ nswap₂ : List String
-nswap₁ = mapL showTransposition< (nperm2list (normalize (c2π SWAP1)))
--- 1 X 2 ∷ []
-nswap₂ = mapL showTransposition< (nperm2list (normalize (c2π SWAP2)))
--- 0 X 1 ∷ 1 X 2 ∷ []
-
--- (x y z) => (x z y)
-
--- (x y z) => (y x z) => (y z x)
--- supposed to be (x z y) ???
+nswap₁₂ nswap₂₃ nswap₁₃ : List String
+nswap₁₂ = mapL showTransposition< (nperm2list (normalize (c2π SWAP12)))
+nswap₂₃ = mapL showTransposition< (nperm2list (normalize (c2π SWAP23)))
+nswap₁₃ = mapL showTransposition< (nperm2list (normalize (c2π SWAP13)))
 
 ------------------------------------------------------------------------------
 -- Extensional equivalence of combinators: two combinators are
