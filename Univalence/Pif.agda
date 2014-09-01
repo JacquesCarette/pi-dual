@@ -692,11 +692,37 @@ sntoffoli = mapL showTransposition< (sort (normalize< (c2π TOFFOLI)))
 
 -- Now we need to look at the cases (i X j) followed by (i X k) 
 
-normalize : ∀ {n} → Perm< n → Perm< n
-normalize [] = []
-normalize (_X_ i j {p} ∷ []) = _X_ i j {p} ∷ []
-normalize (i X j ∷ k X l ∷ π) = {!!} 
+slide : ∀ {n} → Perm< n → Perm< n
+slide [] = []
+slide (_X_ i j {p₁} ∷ []) = _X_ i j {p₁} ∷ []
+slide (_X_ i j {p₁} ∷ _X_ k l {p₂} ∷ π) with toℕ i ≟ toℕ k | toℕ j ≟ toℕ l 
+slide (_X_ i j {p₁} ∷ _X_ k l {p₂} ∷ π) | yes _ | yes _ = 
+  slide (_X_ k l {p₂} ∷ π)
+slide (_X_ i j {p₁} ∷ _X_ k l {p₂} ∷ π) | _ | _ = 
+  (_X_ i j {p₁}) ∷ slide (_X_ k l {p₂} ∷ π)
 
+-- normalization...
+
+normalize : ∀ {n} → Perm n → Perm< n
+normalize {n} = slide ∘ sort ∘ normalize< 
+  where open TSort n
+
+nsnn₁ nsnn₂ nsnn₃ nsnn₄ nsnn₅ : List String
+nsnn₁ = mapL showTransposition< (normalize (c2π neg₁))
+  where open TSort 2
+   -- 0 X 1 ∷ []
+nsnn₂ = mapL showTransposition< (normalize (c2π neg₂))
+  where open TSort 2
+   -- 0 X 1 ∷ []
+nsnn₃ = mapL showTransposition< (normalize (c2π neg₃))
+  where open TSort 2
+   -- 0 X 1 ∷ []
+nsnn₄ = mapL showTransposition< (normalize (c2π neg₄))
+  where open TSort 2
+   -- 0 X 1 ∷ []
+nsnn₅ = mapL showTransposition< (normalize (c2π neg₅))
+  where open TSort 2
+   -- 0 X 1 ∷ []
 
 {--
 
