@@ -773,7 +773,9 @@ nswap₂ = mapL showTransposition< (nperm2list (normalize (c2π SWAP2)))
 -- 0 X 1 ∷ 1 X 2 ∷ []
 
 -- (x y z) => (x z y)
+
 -- (x y z) => (y x z) => (y z x)
+-- supposed to be (x z y) ???
 
 ------------------------------------------------------------------------------
 -- Extensional equivalence of combinators: two combinators are
