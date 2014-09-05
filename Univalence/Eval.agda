@@ -201,9 +201,22 @@ mutual
   evalBComb′ {pt = a} (c₀ ⊕ c₁) (inj₂ y) = inj₂ (evalBComb′ {pt = a} c₁ y)
   evalBComb′ {pt = a} (c₀ ⊗ c₁) (x , y) = evalBComb′ {pt = a} c₀ x , evalBComb′ {pt = a} c₁ y
 
+---
+
 SWAP12 SWAP23 SWAP13 : PLUS ONE (PLUS ONE ONE) ⇛ PLUS ONE (PLUS ONE ONE)
 SWAP12 = assocl₊⇛ ◎ (swap₊⇛ ⊕ id⇛) ◎ assocr₊⇛
 SWAP23 = id⇛ ⊕ swap₊⇛
-SWAP13 = SWAP12 ◎ SWAP23
+SWAP13 = SWAP23 ◎ SWAP12 ◎ SWAP23 
 
-xx = evalComb SWAP12 (inj₁ tt)
+x121 = evalComb SWAP12 (inj₁ tt)         -- 0 -> 1
+x122 = evalComb SWAP12 (inj₂ (inj₁ tt))  -- 1 -> 0
+x123 = evalComb SWAP12 (inj₂ (inj₂ tt))  -- 2 -> 2
+
+x231 = evalComb SWAP23 (inj₁ tt)         -- 0 -> 0
+x232 = evalComb SWAP23 (inj₂ (inj₁ tt))  -- 1 -> 2
+x233 = evalComb SWAP23 (inj₂ (inj₂ tt))  -- 2 -> 1
+
+x131 = evalComb SWAP13 (inj₁ tt)         -- 0 -> 2
+x132 = evalComb SWAP13 (inj₂ (inj₁ tt))  -- 1 -> 1
+x133 = evalComb SWAP13 (inj₂ (inj₂ tt))  -- 2 -> 0
+

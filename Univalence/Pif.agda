@@ -197,7 +197,7 @@ TOFFOLI = TIMES BOOL BOOL²
 SWAP12 SWAP23 SWAP13 : PLUS ONE (PLUS ONE ONE) ⟷ PLUS ONE (PLUS ONE ONE)
 SWAP12 = assocl₊ ◎ (swap₊ ⊕ id⟷) ◎ assocr₊
 SWAP23 = id⟷ ⊕ swap₊
-SWAP13 = SWAP12 ◎ SWAP23
+SWAP13 = SWAP23 ◎ SWAP12 ◎ SWAP23 
 
 -- Every permutation has an inverse. There are actually many syntactically
 -- different inverses but they are all equivalent.
