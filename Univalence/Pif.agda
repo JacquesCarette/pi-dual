@@ -192,12 +192,24 @@ TOFFOLI = TIMES BOOL BOOL²
          TIMES BOOL BOOL² □
   where x = ONE; y = ONE
 
--- Swaps: for the type 1+(1+1)
+-- Swaps for the type 1+(1+1)
+-- We have three values in the type 1+(1+1) 
+-- Let's call them a, b, and c
+-- There 6 permutations. Using the swaps below we can express every permutation:
+-- a b c id⟷
+-- a c b SWAP23
+-- b a c SWAP12
+-- b c a ROTL
+-- c a b ROTR
+-- c b a SWAP13
 
-SWAP12 SWAP23 SWAP13 : PLUS ONE (PLUS ONE ONE) ⟷ PLUS ONE (PLUS ONE ONE)
+SWAP12 SWAP23 SWAP13 ROTL ROTR : 
+  PLUS ONE (PLUS ONE ONE) ⟷ PLUS ONE (PLUS ONE ONE)
 SWAP12 = assocl₊ ◎ (swap₊ ⊕ id⟷) ◎ assocr₊
 SWAP23 = id⟷ ⊕ swap₊
 SWAP13 = SWAP23 ◎ SWAP12 ◎ SWAP23 
+ROTL   = SWAP12 ◎ SWAP23
+ROTR   = SWAP13 ◎ SWAP23
 
 -- Every permutation has an inverse. There are actually many syntactically
 -- different inverses but they are all equivalent.
@@ -569,9 +581,24 @@ toffoliπ = showπ {TIMES BOOL BOOL²} {TIMES BOOL BOOL²} TOFFOLI
 -- ((true  , true  , true)  , (true  , true  , false)) ∷
 -- ((true  , true  , false) , (true  , true  , true))  ∷ []
 
+-- The elements of PLUS ONE (PLUS ONE ONE) in canonical order are:
+-- inj₁ tt
+-- inj₂ (inj₁ tt)
+-- inj₂ (inj₂ tt)
+
+id3π swap12π swap23π swap13π rotlπ rotrπ : 
+  Vec (⟦ PLUS ONE (PLUS ONE ONE) ⟧ × ⟦ PLUS ONE (PLUS ONE ONE) ⟧) 3
+id3π    = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} id⟷
+swap12π = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} SWAP12
+swap23π = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} SWAP23
+swap13π = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} SWAP13
+rotlπ   = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} ROTL
+rotrπ   = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} ROTR
+
 -- Normalization
 
--- All the following should normalize to the same thing:
+-- The various realizations of negation are equivalent but they give
+-- different sequences of transpositions:
 
 n₁ n₂ n₃ n₄ n₅ : List String
 n₁ = mapL showTransposition (c2π neg₁)
@@ -588,6 +615,20 @@ n₅ = mapL showTransposition (c2π neg₅)
 cnot toffoli : List String
 cnot = mapL showTransposition (c2π CNOT)
 toffoli = mapL showTransposition (c2π TOFFOLI)
+
+swap12 swap23 swap13 rotl rotr : List String
+swap12 = mapL showTransposition (c2π SWAP12)
+   -- 0 X 1 ∷ []
+swap23 = mapL showTransposition (c2π SWAP23)
+   -- 1 X 2 ∷ []
+swap13 = mapL showTransposition (c2π SWAP13)
+   -- 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
+   -- normalized should be: 0 X 2 ∷ []
+rotl   = mapL showTransposition (c2π ROTL)
+   -- 0 X 1 ∷ 1 X 2 ∷ []
+rotr   = mapL showTransposition (c2π ROTR)
+   -- 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
+   -- normalized should be: 1 X 2 ∷ 0 X 1 ∷ []
 
 -- First, remove all trivial transpositions (i X i)
 
@@ -635,6 +676,20 @@ ncnot = mapL showTransposition< (normalize< (c2π CNOT))
    -- 2 X 3 ∷ []
 ntoffoli = mapL showTransposition< (normalize< (c2π TOFFOLI))
    -- 6 X 7 ∷ []
+
+nswap12 nswap23 nswap13 nrotl nrotr : List String
+nswap12 = mapL showTransposition< (normalize< (c2π SWAP12))
+   -- 0 X 1 ∷ []
+nswap23 = mapL showTransposition< (normalize< (c2π SWAP23))
+   -- 1 X 2 ∷ []
+nswap13 = mapL showTransposition< (normalize< (c2π SWAP13))
+   -- 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
+   -- normalized should be: 0 X 2 ∷ []
+nrotl   = mapL showTransposition< (normalize< (c2π ROTL))
+   -- 0 X 1 ∷ 1 X 2 ∷ []
+nrotr   = mapL showTransposition< (normalize< (c2π ROTR))
+   -- 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
+   -- normalized should be: 1 X 2 ∷ 0 X 1 ∷ []
 
 -- Next we sort the list of transpositions
 
@@ -698,6 +753,30 @@ sntoffoli = mapL showTransposition< (sort (normalize< (c2π TOFFOLI)))
   where open TSort 8
    -- 6 X 7 ∷ []
 
+snswap12 snswap23 snswap13 snrotl snrotr : List String
+snswap12 = mapL showTransposition< (sort (normalize< (c2π SWAP12)))
+  where open TSort 3
+   -- 0 X 1 ∷ []
+snswap23 = mapL showTransposition< (sort (normalize< (c2π SWAP23)))
+  where open TSort 3
+   -- 1 X 2 ∷ []
+snswap13 = mapL showTransposition< (sort (normalize< (c2π SWAP13)))
+  where open TSort 3
+   -- before sorting: 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
+   -- after sorting: 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
+   -- normalized should be: 0 X 2 ∷ []
+   -- soring is WRONG: moving 0 X 1 past 1 X 2 should affect the indices!!!
+snrotl   = mapL showTransposition< (sort (normalize< (c2π ROTL)))
+  where open TSort 3
+   -- 0 X 1 ∷ 1 X 2 ∷ []
+snrotr   = mapL showTransposition< (sort (normalize< (c2π ROTR)))
+  where open TSort 3
+   -- before sorting: 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
+   -- after sorting:  0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ 1 X 2 ∷ []
+   -- WRONG again
+   -- normalized should be: 1 X 2 ∷ 0 X 1 ∷ []
+
+{--
 -- Normalized permutations have exactly one entry for each position
 
 infixr 5 _∷_
@@ -3085,3 +3164,5 @@ tcompπ {m} {n} α β =
                       (β ++L idπ {n})})
             (α ++L idπ {m}))
 --}
+--}
+
