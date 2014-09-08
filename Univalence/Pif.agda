@@ -821,8 +821,6 @@ shift {n} (_X_ i j {i<j} , _X_ k l {k<l})
   | yes i≡k | no ¬i≡l | no ¬j≡k | yes j≡l = 
   -- Ex: 2 X 5 , 2 X 5
   (_X_ k l {k<l} , _X_ i j {i<j})   
-
-
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
   | no ¬i≡k | no ¬i≡l | no ¬j≡k | yes j≡l 
   with toℕ i <? toℕ k 
@@ -844,7 +842,7 @@ shift {n} (_X_ i j {i<j} , _X_ k l {k<l})
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
   | no ¬i≡k | no ¬i≡l | yes j≡k | no ¬j≡l = 
     -- Ex: 2 X 5 , 5 X 6 
-    {!!} 
+  {!!} 
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l})  
   | no ¬i≡k | yes i≡l | no ¬j≡k | no ¬j≡l = 
   -- Ex: 2 X 5 , 1 X 2 
