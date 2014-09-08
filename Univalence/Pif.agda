@@ -798,8 +798,11 @@ shift {n} (_X_ i j {i<j} , _X_ k l {k<l})
   (_X_ k l {k<l} , _X_ i j {i<j})   
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
   | no ¬i≡k | no ¬i≡l | no ¬j≡k | yes j≡l = 
-    -- Ex: 2 X 5 , 3 X 5 
-    {!!} 
+  -- Ex: 2 X 5 , 3 X 5 
+  -- becomes 3 X 2 , 2 X 5
+  -- which must be expressed as 2 X 3 , 2 X 5
+  (_X_ k i {{!!}} , _X_ i j {i<j}) 
+-- define makeTransposition< and use it
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
   | no ¬i≡k | no ¬i≡l | yes j≡k | no ¬j≡l = 
     -- Ex: 2 X 5 , 5 X 6 
