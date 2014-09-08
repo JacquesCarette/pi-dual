@@ -17,8 +17,8 @@ open import Data.String using (String)
   renaming (_++_ to _++S_)
 open import Data.Nat.Show using (show)
 open import Data.Bool using (Bool; false; true)
-open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≤_; _≰_; z≤n; s≤s; 
-  _≟_; _≤?_; module ≤-Reasoning)
+open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≮_; _≤_; _≰_; 
+  z≤n; s≤s; _≟_; _≤?_; module ≤-Reasoning)
 open import Data.Fin 
   using (Fin; zero; suc; toℕ; fromℕ; _ℕ-_; 
          raise; inject+; inject₁; inject≤; _≻toℕ_) 
@@ -41,6 +41,120 @@ open import Data.Sum     using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_)
 
 open import Groupoid
+
+------------------------------------------------------------------------------
+-- Proofs and definitions about natural numbers
+
+_<?_ : Decidable _<_
+i <? j = suc i ≤? j
+
+i≤i : (i : ℕ) → i ≤ i
+i≤i 0 = z≤n
+i≤i (suc i) = s≤s (i≤i i)
+
+i≤si : (i : ℕ) → i ≤ suc i
+i≤si 0       = z≤n
+i≤si (suc i) = s≤s (i≤si i)
+
+i≤j+i : ∀ {i j} → i ≤ j + i
+i≤j+i {i} {0} = i≤i i
+i≤j+i {i} {suc j} = 
+  begin (i 
+           ≤⟨ i≤j+i {i} {j} ⟩
+         j + i 
+           ≤⟨ i≤si (j + i) ⟩
+         suc j + i ∎)
+  where open ≤-Reasoning
+
+cong+r≤ : ∀ {i j} → i ≤ j → (k : ℕ) → i + k ≤ j + k
+cong+r≤ {0}     {j}     z≤n       k = i≤j+i {k} {j}
+cong+r≤ {suc i} {0}     ()        k -- absurd
+cong+r≤ {suc i} {suc j} (s≤s i≤j) k = s≤s (cong+r≤ {i} {j} i≤j k)
+
+cong+l≤ : ∀ {i j} → i ≤ j → (k : ℕ) → k + i ≤ k + j
+cong+l≤ {i} {j} i≤j k =
+  begin (k + i
+           ≡⟨ +-comm k i ⟩ 
+         i + k
+           ≤⟨ cong+r≤ i≤j k ⟩ 
+         j + k
+           ≡⟨ +-comm j k ⟩ 
+         k + j ∎)
+  where open ≤-Reasoning
+
+cong*r≤ : ∀ {i j} → i ≤ j → (k : ℕ) → i * k ≤ j * k
+cong*r≤ {0}     {j}     z≤n       k = z≤n
+cong*r≤ {suc i} {0}     ()        k -- absurd
+cong*r≤ {suc i} {suc j} (s≤s i≤j) k = cong+l≤ (cong*r≤ i≤j k) k 
+
+sinj≤ : ∀ {i j} → suc i ≤ suc j → i ≤ j
+sinj≤ {0}     {j}     _        = z≤n
+sinj≤ {suc i} {0}     (s≤s ()) -- absurd
+sinj≤ {suc i} {suc j} (s≤s p)  = p
+
+i*n+k≤m*n : ∀ {m n} → (i : Fin m) → (k : Fin n) → 
+            (suc (toℕ i * n + toℕ k) ≤ m * n)
+i*n+k≤m*n {0} {_} () _
+i*n+k≤m*n {_} {0} _ ()
+i*n+k≤m*n {suc m} {suc n} i k = 
+  begin (suc (toℕ i * suc n + toℕ k) 
+           ≡⟨  cong suc (+-comm (toℕ i * suc n) (toℕ k))  ⟩
+         suc (toℕ k + toℕ i * suc n)
+           ≡⟨ refl ⟩
+         suc (toℕ k) + (toℕ i * suc n)
+           ≤⟨ cong+r≤ (bounded k) (toℕ i * suc n) ⟩ 
+         suc n + (toℕ i * suc n)
+           ≤⟨ cong+l≤ (cong*r≤ (sinj≤ (bounded i)) (suc n)) (suc n) ⟩
+         suc n + (m * suc n) 
+           ≡⟨ refl ⟩
+         suc m * suc n ∎)
+  where open ≤-Reasoning
+
+i≰j→j≤i : (i j : ℕ) → (i ≰ j) → (j ≤ i) 
+i≰j→j≤i i 0 p = z≤n 
+i≰j→j≤i 0 (suc j) p with p z≤n
+i≰j→j≤i 0 (suc j) p | ()
+i≰j→j≤i (suc i) (suc j) p with i ≤? j
+i≰j→j≤i (suc i) (suc j) p | yes p' with p (s≤s p')
+i≰j→j≤i (suc i) (suc j) p | yes p' | ()
+i≰j→j≤i (suc i) (suc j) p | no p' = s≤s (i≰j→j≤i i j p')
+
+i≠j∧i≤j→i<j : (i j : ℕ) → (¬ i ≡ j) → (i ≤ j) → (i < j)
+i≠j∧i≤j→i<j 0 0 p≠ p≤ with p≠ refl
+i≠j∧i≤j→i<j 0 0 p≠ p≤ | ()
+i≠j∧i≤j→i<j 0 (suc j) p≠ p≤ = s≤s z≤n
+i≠j∧i≤j→i<j (suc i) 0 p≠ ()
+i≠j∧i≤j→i<j (suc i) (suc j) p≠ (s≤s p≤) with i ≟ j
+i≠j∧i≤j→i<j (suc i) (suc j) p≠ (s≤s p≤) | yes p' with p≠ (cong suc p')
+i≠j∧i≤j→i<j (suc i) (suc j) p≠ (s≤s p≤) | yes p' | ()
+i≠j∧i≤j→i<j (suc i) (suc j) p≠ (s≤s p≤) | no p' = s≤s (i≠j∧i≤j→i<j i j p' p≤)
+     
+i<j→i≠j : {i j : ℕ} → (i < j) → (¬ i ≡ j)
+i<j→i≠j {0} (s≤s p) ()
+i<j→i≠j {suc i} (s≤s p) refl = i<j→i≠j {i} p refl
+
+i<j→j≮i : {i j : ℕ} → (i < j) → (j ≮ i) 
+i<j→j≮i {0} (s≤s p) ()
+i<j→j≮i {suc i} (s≤s p) (s≤s q) = i<j→j≮i {i} p q
+
+i≰j∧j≠i→j<i : (i j : ℕ) → (i ≰ j) → (¬ j ≡ i) → j < i
+i≰j∧j≠i→j<i i j i≰j ¬j≡i = i≠j∧i≤j→i<j j i ¬j≡i (i≰j→j≤i i j i≰j)
+
+i≠j→j≠i : (i j : ℕ) → (¬ i ≡ j) → (¬ j ≡ i)
+i≠j→j≠i i j i≠j j≡i = i≠j (sym j≡i)
+
+si≠sj→i≠j : (i j : ℕ) → (¬ Data.Nat.suc i ≡ Data.Nat.suc j) → (¬ i ≡ j)
+si≠sj→i≠j i j ¬si≡sj i≡j = ¬si≡sj (cong suc i≡j)
+
+si≮sj→i≮j : (i j : ℕ) → (¬ Data.Nat.suc i < Data.Nat.suc j) → (¬ i < j)
+si≮sj→i≮j i j si≮sj i<j = si≮sj (s≤s i<j)
+
+i≮j∧i≠j→i≰j : (i j : ℕ) → (i ≮ j) → (¬ i ≡ j) → (i ≰ j)
+i≮j∧i≠j→i≰j 0 0 i≮j ¬i≡j i≤j = ¬i≡j refl
+i≮j∧i≠j→i≰j 0 (suc j) i≮j ¬i≡j i≤j = i≮j (s≤s z≤n)
+i≮j∧i≠j→i≰j (suc i) 0 i≮j ¬i≡j () 
+i≮j∧i≠j→i≰j (suc i) (suc j) si≮sj ¬si≡sj (s≤s i≤j) = 
+  i≮j∧i≠j→i≰j i j (si≮sj→i≮j i j si≮sj) (si≠sj→i≠j i j ¬si≡sj) i≤j
 
 ------------------------------------------------------------------------------
 -- Level 0 of Pi
@@ -353,15 +467,6 @@ size∼ c₁ c₂ = proof-irrelevance (size≡ c₁) (size≡ c₂)
 -- For normalization purposes, we insist that the first component of a
 -- transposition is always ≤ than the second
 
-i≰j→j≤i : (i j : ℕ) → (i ≰ j) → (j ≤ i) 
-i≰j→j≤i i 0 p = z≤n 
-i≰j→j≤i 0 (suc j) p with p z≤n
-i≰j→j≤i 0 (suc j) p | ()
-i≰j→j≤i (suc i) (suc j) p with i ≤? j
-i≰j→j≤i (suc i) (suc j) p | yes p' with p (s≤s p')
-i≰j→j≤i (suc i) (suc j) p | yes p' | ()
-i≰j→j≤i (suc i) (suc j) p | no p' = s≤s (i≰j→j≤i i j p')
-
 infix 90 _X_
 
 data Transposition (n : ℕ) : Set where
@@ -430,68 +535,6 @@ pcompπ : ∀ {m n} → Perm m → Perm n → Perm (m + n)
 pcompπ {m} {n} α β = (injectπ α n) ++L (raiseπ β m)
 
 -- Tensor multiplicative composition
-
-n≤n : (n : ℕ) → n ≤ n
-n≤n 0 = z≤n
-n≤n (suc n) = s≤s (n≤n n)
-
-n≤sn : ∀ {x} → x ≤ suc x
-n≤sn {0}     = z≤n
-n≤sn {suc n} = s≤s (n≤sn {n})
-
-x≤y+x : ∀ {x y} → x ≤ y + x
-x≤y+x {x} {0} = n≤n x
-x≤y+x {x} {suc y} = 
-  begin (x 
-           ≤⟨ x≤y+x {x} {y} ⟩
-         y + x 
-           ≤⟨ n≤sn {y + x} ⟩
-         suc y + x ∎)
-  where open ≤-Reasoning
-
-cong+r≤ : ∀ {x y} → x ≤ y → (z : ℕ) → x + z ≤ y + z
-cong+r≤ {0}     {y}     z≤n       z = x≤y+x {z} {y}
-cong+r≤ {suc x} {0}     ()        z -- absurd
-cong+r≤ {suc x} {suc y} (s≤s x≤y) z = s≤s (cong+r≤ {x} {y} x≤y z)
-
-cong+l≤ : ∀ {x y} → x ≤ y → (z : ℕ) → z + x ≤ z + y
-cong+l≤ {x} {y} x≤y z =
-  begin (z + x
-           ≡⟨ +-comm z x ⟩ 
-         x + z
-           ≤⟨ cong+r≤ x≤y z ⟩ 
-         y + z
-           ≡⟨ +-comm y z ⟩ 
-         z + y ∎)
-  where open ≤-Reasoning
-
-cong*r≤ : ∀ {x y} → x ≤ y → (z : ℕ) → x * z ≤ y * z
-cong*r≤ {0}     {y}     z≤n       z = z≤n
-cong*r≤ {suc x} {0}     ()        z -- absurd
-cong*r≤ {suc x} {suc y} (s≤s x≤y) z = cong+l≤ (cong*r≤ x≤y z) z 
-
-sinj≤ : ∀ {x y} → suc x ≤ suc y → x ≤ y
-sinj≤ {0}     {y}     _        = z≤n
-sinj≤ {suc x} {0}     (s≤s ()) -- absurd
-sinj≤ {suc x} {suc y} (s≤s p)  = p
-
-i*n+k≤m*n : ∀ {m n} → (i : Fin m) → (k : Fin n) → 
-            (suc (toℕ i * n + toℕ k) ≤ m * n)
-i*n+k≤m*n {0} {_} () _
-i*n+k≤m*n {_} {0} _ ()
-i*n+k≤m*n {suc m} {suc n} i k = 
-  begin (suc (toℕ i * suc n + toℕ k) 
-           ≡⟨  cong suc (+-comm (toℕ i * suc n) (toℕ k))  ⟩
-         suc (toℕ k + toℕ i * suc n)
-           ≡⟨ refl ⟩
-         suc (toℕ k) + (toℕ i * suc n)
-           ≤⟨ cong+r≤ (bounded k) (toℕ i * suc n) ⟩ 
-         suc n + (toℕ i * suc n)
-           ≤⟨ cong+l≤ (cong*r≤ (sinj≤ (bounded i)) (suc n)) (suc n) ⟩
-         suc n + (m * suc n) 
-           ≡⟨ refl ⟩
-         suc m * suc n ∎)
-  where open ≤-Reasoning
 
 -- expand id permutation to [ i X i ... ] for all i 
 
@@ -641,21 +684,11 @@ showTransposition< (i X j) = show (toℕ i) ++S " X " ++S show (toℕ j)
 Perm< : ℕ → Set
 Perm< n = List (Transposition< n) 
 
-≠≤→< : (i j : ℕ) → (¬ i ≡ j) → (i ≤ j) → (i < j)
-≠≤→< 0 0 p≠ p≤ with p≠ refl
-≠≤→< 0 0 p≠ p≤ | ()
-≠≤→< 0 (suc j) p≠ p≤ = s≤s z≤n
-≠≤→< (suc i) 0 p≠ ()
-≠≤→< (suc i) (suc j) p≠ (s≤s p≤) with i ≟ j
-≠≤→< (suc i) (suc j) p≠ (s≤s p≤) | yes p' with p≠ (cong suc p')
-≠≤→< (suc i) (suc j) p≠ (s≤s p≤) | yes p' | ()
-≠≤→< (suc i) (suc j) p≠ (s≤s p≤) | no p' = s≤s (≠≤→< i j p' p≤)
-     
 normalize< : {n : ℕ} → Perm n → Perm< n
 normalize< [] = []
 normalize< (_X_ i j {p≤} ∷ π) with toℕ i ≟ toℕ j
 ... | yes p= = normalize< π 
-... | no p≠ = _X_ i j {≠≤→< (toℕ i) (toℕ j) p≠ p≤}  ∷ normalize< π 
+... | no p≠ = _X_ i j {i≠j∧i≤j→i<j (toℕ i) (toℕ j) p≠ p≤}  ∷ normalize< π 
 
 -- Examples
 
@@ -731,14 +764,6 @@ module TSort (n : ℕ) = Sort (Transposition< n) {_<S_} d<S
 -- the four indices are different. If however there is a common index,
 -- we have to adjust the transpositions.
 
-i<j→i≠j : {i j : ℕ} → (i < j) → (¬ i ≡ j)
-i<j→i≠j {0} (s≤s p) ()
-i<j→i≠j {suc i} (s≤s p) refl = i<j→i≠j {i} p refl
-
-i<j→¬j<i : {i j : ℕ} → (i < j) → (¬ j < i) 
-i<j→¬j<i {0} (s≤s p) ()
-i<j→¬j<i {suc i} (s≤s p) (s≤s q) = i<j→¬j<i {i} p q
-
 shift : {n : ℕ} → Transposition< n × Transposition< n → 
                   Transposition< n × Transposition< n
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
@@ -781,13 +806,13 @@ shift {n} (_X_ i j {i<j} , _X_ k l {k<l})
   | k≡l | ¬k≡l | ()
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
   | _ | yes i≡l | yes j≡k | _
-  with subst₂ _<_ (sym j≡k) (sym i≡l) k<l | i<j→¬j<i {toℕ i} {toℕ j} i<j
+  with subst₂ _<_ (sym j≡k) (sym i≡l) k<l | i<j→j≮i {toℕ i} {toℕ j} i<j
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
   | _ | yes i≡l | yes j≡k | _
-  | j<i | ¬j<i with ¬j<i j<i
+  | j<i | j≮i with j≮i j<i
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
   | _ | yes i≡l | yes j≡k | _
-  | j<i | ¬j<i | ()
+  | j<i | j≮i | ()
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
   | no ¬i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l = 
     -- no interference
@@ -796,13 +821,26 @@ shift {n} (_X_ i j {i<j} , _X_ k l {k<l})
   | yes i≡k | no ¬i≡l | no ¬j≡k | yes j≡l = 
   -- Ex: 2 X 5 , 2 X 5
   (_X_ k l {k<l} , _X_ i j {i<j})   
+
+
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
-  | no ¬i≡k | no ¬i≡l | no ¬j≡k | yes j≡l = 
+  | no ¬i≡k | no ¬i≡l | no ¬j≡k | yes j≡l 
+  with toℕ i <? toℕ k 
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | no ¬i≡k | no ¬i≡l | no ¬j≡k | yes j≡l 
+  | yes i<k = 
+  (_X_ i k {i<k} , _X_ i j {i<j})
   -- Ex: 2 X 5 , 3 X 5 
-  -- becomes 3 X 2 , 2 X 5
-  -- which must be expressed as 2 X 3 , 2 X 5
-  (_X_ k i {{!!}} , _X_ i j {i<j}) 
--- define makeTransposition< and use it
+  -- becomes 2 X 3 , 2 X 5
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | no ¬i≡k | no ¬i≡l | no ¬j≡k | yes j≡l 
+  | no i≮k = 
+  (_X_ k i 
+    {i≰j∧j≠i→j<i (toℕ i) (toℕ k) (i≮j∧i≠j→i≰j (toℕ i) (toℕ k) i≮k ¬i≡k) 
+       (i≠j→j≠i (toℕ i) (toℕ k) ¬i≡k)} , 
+  _X_ i j {i<j}) 
+  -- Ex: 2 X 5 , 1 X 5 
+  -- becomes 1 X 2 , 2 X 5
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
   | no ¬i≡k | no ¬i≡l | yes j≡k | no ¬j≡l = 
     -- Ex: 2 X 5 , 5 X 6 
