@@ -5,7 +5,7 @@ module Pif where
 open import Level using (Level; _⊔_) renaming (zero to lzero; suc to lsuc)
 
 open import Relation.Binary.PropositionalEquality 
-  using (_≡_; refl; sym; trans; subst; cong; cong₂; 
+  using (_≡_; refl; sym; trans; subst; subst₂; cong; cong₂; 
         proof-irrelevance; module ≡-Reasoning)
 open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
 open import Data.Nat.Properties.Simple 
@@ -694,15 +694,16 @@ nrotr   = mapL showTransposition< (normalize< (c2π ROTR))
 -- Next we sort the list of transpositions
 
 module Sort (A : Set) {_<_ : Rel A lzero} ( _<?_ : Decidable _<_) where
-  insert : A → List A → List A
-  insert x [] = x ∷ []
-  insert x (y ∷ ys) with x <? y
+  insert : (A × A → A × A) → A → List A → List A
+  insert shift x [] = x ∷ []
+  insert shift x (y ∷ ys) with x <? y
   ... | yes _ = x ∷ y ∷ ys
-  ... | no _ = y ∷ insert x ys
+  ... | no _ = let (y' , x') = shift (x , y) 
+               in y' ∷ insert shift x' ys
 
-  sort : List A → List A
-  sort [] = []
-  sort (x ∷ xs) = insert x (sort xs)
+  sort : (A × A → A × A) → List A → List A
+  sort shift [] = []
+  sort shift (x ∷ xs) = insert shift x (sort shift xs)
 
 data _<S_ {n : ℕ} : Rel (Transposition< n) lzero where
    <1 : ∀ {i j k l : Fin n} {p₁ : toℕ i < toℕ j} {p₂ : toℕ k < toℕ l} → 
@@ -726,50 +727,136 @@ d<S (_X_ i j {p₁}) (_X_ k l {p₂}) | no p | no p≠ =
 
 module TSort (n : ℕ) = Sort (Transposition< n) {_<S_} d<S 
 
+-- If we shift a transposition past another, there is nothing to do if
+-- the four indices are different. If however there is a common index,
+-- we have to adjust the transpositions.
+
+i<j→i≠j : {i j : ℕ} → (i < j) → (¬ i ≡ j)
+i<j→i≠j {0} (s≤s p) ()
+i<j→i≠j {suc i} (s≤s p) refl = i<j→i≠j {i} p refl
+
+i<j→¬j<i : {i j : ℕ} → (i < j) → (¬ j < i) 
+i<j→¬j<i {0} (s≤s p) ()
+i<j→¬j<i {suc i} (s≤s p) (s≤s q) = i<j→¬j<i {i} p q
+
+shift : {n : ℕ} → Transposition< n × Transposition< n → 
+                  Transposition< n × Transposition< n
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  with toℕ i ≟ toℕ k | toℕ i ≟ toℕ l | toℕ j ≟ toℕ k | toℕ j ≟ toℕ l
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l})  
+  | _ | _ | yes j≡k | yes j≡l 
+  with trans (sym j≡k) (j≡l) | i<j→i≠j {toℕ k} {toℕ l} k<l
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | _ | _ | yes j≡k | yes j≡l
+  | k≡l | ¬k≡l with ¬k≡l k≡l
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | _ | _ | yes j≡k | yes j≡l
+  | k≡l | ¬k≡l | ()
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | _ | yes i≡l | _ | yes j≡l 
+  with trans i≡l (sym j≡l) | i<j→i≠j {toℕ i} {toℕ j} i<j
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | _ | yes i≡l | _ | yes j≡l 
+  | i≡j | ¬i≡j with ¬i≡j i≡j
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | _ | yes i≡l | _ | yes j≡l 
+  | i≡j | ¬i≡j | ()
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | yes i≡k | _ | yes j≡k | _
+  with trans i≡k (sym j≡k) | i<j→i≠j {toℕ i} {toℕ j} i<j 
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | yes i≡k | _ | yes j≡k | _
+  | i≡j | ¬i≡j with ¬i≡j i≡j
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | yes i≡k | _ | yes j≡k | _
+  | i≡j | ¬i≡j | ()
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | yes i≡k | yes i≡l | _ | _
+  with trans (sym i≡k) i≡l | i<j→i≠j {toℕ k} {toℕ l} k<l 
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | yes i≡k | yes i≡l | _ | _
+  | k≡l | ¬k≡l with ¬k≡l k≡l
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | yes i≡k | yes i≡l | _ | _
+  | k≡l | ¬k≡l | ()
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | _ | yes i≡l | yes j≡k | _
+  with subst₂ _<_ (sym j≡k) (sym i≡l) k<l | i<j→¬j<i {toℕ i} {toℕ j} i<j
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | _ | yes i≡l | yes j≡k | _
+  | j<i | ¬j<i with ¬j<i j<i
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | _ | yes i≡l | yes j≡k | _
+  | j<i | ¬j<i | ()
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | no ¬i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l = 
+    -- no interference
+    (_X_ k l {k<l} , _X_ i j {i<j})  
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | no ¬i≡k | no ¬i≡l | no ¬j≡k | yes j≡l = 
+    -- Ex: 2 X 5 , 3 X 5 
+    {!!} 
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | no ¬i≡k | no ¬i≡l | yes j≡k | no ¬j≡l = 
+    -- Ex: 2 X 5 , 5 X 6 
+    {!!} 
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l})  
+  | no ¬i≡k | yes i≡l | no ¬j≡k | no ¬j≡l = 
+  -- Ex: 2 X 5 , 1 X 2 
+  {!!} 
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l =
+  -- Ex: 2 X 5 , 2 X 4
+  {!!}
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | yes i≡k | no ¬i≡l | no ¬j≡k | yes j≡l = 
+  -- Ex: 2 X 5 , 2 X 5
+  {!!} 
+
 -- Examples
 
 snn₁ snn₂ snn₃ snn₄ snn₅ : List String
-snn₁ = mapL showTransposition< (sort (normalize< (c2π neg₁)))
+snn₁ = mapL showTransposition< (sort shift (normalize< (c2π neg₁)))
   where open TSort 2
    -- 0 X 1 ∷ []
-snn₂ = mapL showTransposition< (sort (normalize< (c2π neg₂)))
+snn₂ = mapL showTransposition< (sort shift (normalize< (c2π neg₂)))
   where open TSort 2
    -- 0 X 1 ∷ []
-snn₃ = mapL showTransposition< (sort (normalize< (c2π neg₃)))
+snn₃ = mapL showTransposition< (sort shift (normalize< (c2π neg₃)))
   where open TSort 2
    -- 0 X 1 ∷ 0 X 1 ∷ 0 X 1 ∷ []
-snn₄ = mapL showTransposition< (sort (normalize< (c2π neg₄)))
+snn₄ = mapL showTransposition< (sort shift (normalize< (c2π neg₄)))
   where open TSort 2
    -- 0 X 1 ∷ []
-snn₅ = mapL showTransposition< (sort (normalize< (c2π neg₅)))
+snn₅ = mapL showTransposition< (sort shift (normalize< (c2π neg₅)))
   where open TSort 2
    -- 0 X 1 ∷ []
 
 sncnot sntoffoli : List String
-sncnot = mapL showTransposition< (sort (normalize< (c2π CNOT)))
+sncnot = mapL showTransposition< (sort shift (normalize< (c2π CNOT)))
   where open TSort 4
    -- 2 X 3 ∷ []
-sntoffoli = mapL showTransposition< (sort (normalize< (c2π TOFFOLI)))
+sntoffoli = mapL showTransposition< (sort shift (normalize< (c2π TOFFOLI)))
   where open TSort 8
    -- 6 X 7 ∷ []
 
 snswap12 snswap23 snswap13 snrotl snrotr : List String
-snswap12 = mapL showTransposition< (sort (normalize< (c2π SWAP12)))
+snswap12 = mapL showTransposition< (sort shift (normalize< (c2π SWAP12)))
   where open TSort 3
    -- 0 X 1 ∷ []
-snswap23 = mapL showTransposition< (sort (normalize< (c2π SWAP23)))
+snswap23 = mapL showTransposition< (sort shift (normalize< (c2π SWAP23)))
   where open TSort 3
    -- 1 X 2 ∷ []
-snswap13 = mapL showTransposition< (sort (normalize< (c2π SWAP13)))
+snswap13 = mapL showTransposition< (sort shift (normalize< (c2π SWAP13)))
   where open TSort 3
    -- before sorting: 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
    -- after sorting: 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
    -- normalized should be: 0 X 2 ∷ []
    -- soring is WRONG: moving 0 X 1 past 1 X 2 should affect the indices!!!
-snrotl   = mapL showTransposition< (sort (normalize< (c2π ROTL)))
+snrotl   = mapL showTransposition< (sort shift (normalize< (c2π ROTL)))
   where open TSort 3
    -- 0 X 1 ∷ 1 X 2 ∷ []
-snrotr   = mapL showTransposition< (sort (normalize< (c2π ROTR)))
+snrotr   = mapL showTransposition< (sort shift (normalize< (c2π ROTR)))
   where open TSort 3
    -- before sorting: 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
    -- after sorting:  0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ 1 X 2 ∷ []
