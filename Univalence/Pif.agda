@@ -793,6 +793,10 @@ shift {n} (_X_ i j {i<j} , _X_ k l {k<l})
     -- no interference
     (_X_ k l {k<l} , _X_ i j {i<j})  
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | yes i≡k | no ¬i≡l | no ¬j≡k | yes j≡l = 
+  -- Ex: 2 X 5 , 2 X 5
+  (_X_ k l {k<l} , _X_ i j {i<j})   
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
   | no ¬i≡k | no ¬i≡l | no ¬j≡k | yes j≡l = 
     -- Ex: 2 X 5 , 3 X 5 
     {!!} 
@@ -808,10 +812,6 @@ shift {n} (_X_ i j {i<j} , _X_ k l {k<l})
   | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l =
   -- Ex: 2 X 5 , 2 X 4
   {!!}
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
-  | yes i≡k | no ¬i≡l | no ¬j≡k | yes j≡l = 
-  -- Ex: 2 X 5 , 2 X 5
-  {!!} 
 
 -- Examples
 
