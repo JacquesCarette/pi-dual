@@ -773,6 +773,9 @@ shift : {n : ℕ} → Transposition< n × Transposition< n →
                   Transposition< n × Transposition< n
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
   with toℕ i ≟ toℕ k | toℕ i ≟ toℕ l | toℕ j ≟ toℕ k | toℕ j ≟ toℕ l
+--
+-- a bunch of impossible cases given that i < j and k < l
+--
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l})  
   | _ | _ | yes j≡k | yes j≡l 
   with trans (sym j≡k) (j≡l) | i<j→i≠j {toℕ k} {toℕ l} k<l
@@ -818,6 +821,9 @@ shift {n} (_X_ i j {i<j} , _X_ k l {k<l})
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
   | _ | yes i≡l | yes j≡k | _
   | j<i | j≮i | ()
+--
+-- end of impossible cases
+--
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
   | no ¬i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l = 
     -- no interference
@@ -918,6 +924,104 @@ snrotr   = mapL showTransposition< (sort shift (normalize< (c2π ROTR)))
   where open TSort 3
    -- before sorting: 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
    -- after sorting:  0 X 2 ∷ 1 X 2 ∷ 1 X 2 ∷ 1 X 2 ∷ []
+
+-- Coalesce permutations i X j followed by i X k
+
+-- Do termination proof...
+{-# NO_TERMINATION_CHECK #-}
+coalesce : {n : ℕ} → Perm< n → Perm< n
+coalesce [] = []
+coalesce (x ∷ []) = x ∷ []
+coalesce (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π) with toℕ i ≟ toℕ k
+coalesce (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π) 
+  | no ¬i≡k = _X_ i j {i<j} ∷ coalesce (_X_ k l {k<l} ∷ π)
+coalesce (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π) 
+  | yes i≡k with toℕ j <? toℕ l 
+coalesce {n} (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π) 
+  | yes i≡k | yes j<l = 
+  -- Ex: 2 X 5 , 2 X 6
+  -- becomes 2 X 6 , 5 X 6
+  coalesce {n} (sort (shift {n}) (_X_ k l {k<l} ∷ _X_ j l {j<l} ∷ π))
+  where open TSort n
+coalesce {n} (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π) 
+  | yes i≡k | no j≮l with toℕ j ≟ toℕ l
+coalesce {n} (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π) 
+  | yes i≡k | no j≮l | yes j≡l = 
+  -- Ex: 2 X 5 , 2 X 5
+  -- disappears
+  coalesce {n} π
+coalesce {n} (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π) 
+  | yes i≡k | no j≮l | no ¬j≡l = 
+  -- Ex: 2 X 5 , 2 X 3
+  -- becomes 2 X 3 , 3 X 5 
+  -- should never happen if input is sorted but the type Perm< 
+  -- does not capture this
+  coalesce {n} 
+    (sort 
+      (shift {n}) 
+        (_X_ k l {k<l} ∷ 
+         _X_ l j {i≰j∧j≠i→j<i (toℕ j) (toℕ l) 
+                    (i≮j∧i≠j→i≰j (toℕ j) (toℕ l) j≮l ¬j≡l)
+                    (i≠j→j≠i (toℕ j) (toℕ l) ¬j≡l)} ∷ 
+         π))
+  where open TSort n
+  
+-- Examples
+
+csnn₁ csnn₂ csnn₃ csnn₄ csnn₅ : List String
+csnn₁ = mapL showTransposition< 
+          (coalesce (sort shift (normalize< (c2π neg₁))))
+  where open TSort 2
+   -- 0 X 1 ∷ []
+csnn₂ = mapL showTransposition< 
+          (coalesce (sort shift (normalize< (c2π neg₂))))
+  where open TSort 2
+   -- 0 X 1 ∷ []
+csnn₃ = mapL showTransposition< 
+          (coalesce (sort shift (normalize< (c2π neg₃))))
+  where open TSort 2
+   -- 0 X 1 ∷ []
+csnn₄ = mapL showTransposition< 
+          (coalesce (sort shift (normalize< (c2π neg₄))))
+  where open TSort 2
+   -- 0 X 1 ∷ []
+csnn₅ = mapL showTransposition< 
+          (coalesce (sort shift (normalize< (c2π neg₅))))
+  where open TSort 2
+   -- 0 X 1 ∷ []
+
+csncnot csntoffoli : List String
+csncnot = mapL showTransposition< 
+            (coalesce (sort shift (normalize< (c2π CNOT))))
+  where open TSort 4
+   -- 2 X 3 ∷ []
+csntoffoli = mapL showTransposition< 
+               (coalesce (sort shift (normalize< (c2π TOFFOLI))))
+  where open TSort 8
+   -- 6 X 7 ∷ []
+
+csnswap12 csnswap23 csnswap13 csnrotl csnrotr : List String
+csnswap12 = mapL showTransposition< 
+              (coalesce (sort shift (normalize< (c2π SWAP12))))
+  where open TSort 3
+   -- 0 X 1 ∷ []
+csnswap23 = mapL showTransposition< 
+              (coalesce (sort shift (normalize< (c2π SWAP23))))
+  where open TSort 3
+   -- 1 X 2 ∷ []
+csnswap13 = mapL showTransposition< 
+              (coalesce (sort shift (normalize< (c2π SWAP13))))
+  where open TSort 3
+   -- 0 X 2 ∷ []
+csnrotl   = mapL showTransposition< 
+              (coalesce (sort shift (normalize< (c2π ROTL))))
+  where open TSort 3
+   -- 0 X 1 ∷ 1 X 2 ∷ []
+csnrotr   = mapL showTransposition< 
+              (coalesce (sort shift (normalize< (c2π ROTR))))
+  where open TSort 3
+   -- 0 X 2 ∷ 1 X 2 ∷ []
+
 
 {--
 -- Normalized permutations have exactly one entry for each position
