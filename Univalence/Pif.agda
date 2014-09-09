@@ -852,12 +852,26 @@ shift {n} (_X_ i j {i<j} , _X_ k l {k<l})
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l})  
   | no ¬i≡k | yes i≡l | no ¬j≡k | no ¬j≡l = 
   -- Ex: 2 X 5 , 1 X 2 
-  {!!} 
+  -- becomes 1 X 5 , 2 X 5
+  (_X_ k j {trans< (subst ((λ l → toℕ k < l)) (sym i≡l) k<l) i<j} , 
+   _X_ i j {i<j})
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
-  | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l =
+  | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l 
+  with toℕ j <? toℕ l
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l 
+  | yes j<l = 
+  -- Ex: 2 X 3 , 2 X 4
+  -- becomes 3 X 4 , 2 X 3
+  (_X_ j l {j<l} , _X_ i j {i<j}) 
+shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+  | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l 
+  | no j≮l = 
   -- Ex: 2 X 5 , 2 X 4
-  {!!}
-
+  -- becomes 4 X 5 , 2 X 5
+  (_X_ l j {i≰j∧j≠i→j<i (toℕ j) (toℕ l) (i≮j∧i≠j→i≰j (toℕ j) (toℕ l) j≮l ¬j≡l) 
+       (i≠j→j≠i (toℕ j) (toℕ l) ¬j≡l)} , 
+   _X_ i j {i<j}) 
 
 -- Examples
 
@@ -896,18 +910,14 @@ snswap23 = mapL showTransposition< (sort shift (normalize< (c2π SWAP23)))
 snswap13 = mapL showTransposition< (sort shift (normalize< (c2π SWAP13)))
   where open TSort 3
    -- before sorting: 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
-   -- after sorting: 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
-   -- normalized should be: 0 X 2 ∷ []
-   -- soring is WRONG: moving 0 X 1 past 1 X 2 should affect the indices!!!
+   -- after sorting : 0 X 2 ∷ 1 X 2 ∷ 1 X 2 ∷ []
 snrotl   = mapL showTransposition< (sort shift (normalize< (c2π ROTL)))
   where open TSort 3
    -- 0 X 1 ∷ 1 X 2 ∷ []
 snrotr   = mapL showTransposition< (sort shift (normalize< (c2π ROTR)))
   where open TSort 3
    -- before sorting: 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
-   -- after sorting:  0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ 1 X 2 ∷ []
-   -- WRONG again
-   -- normalized should be: 1 X 2 ∷ 0 X 1 ∷ []
+   -- after sorting:  0 X 2 ∷ 1 X 2 ∷ 1 X 2 ∷ 1 X 2 ∷ []
 
 {--
 -- Normalized permutations have exactly one entry for each position
