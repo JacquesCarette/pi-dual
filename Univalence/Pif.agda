@@ -1022,6 +1022,29 @@ csnrotr   = mapL showTransposition<
   where open TSort 3
    -- 0 X 2 ∷ 1 X 2 ∷ []
 
+-- More advanced examples
+
+-- The Peres gate is a universal gate: it takes three inputs a, b, and c, and
+-- produces a, a xor b, (a and b) xor c
+
+PERES : TIMES (TIMES BOOL BOOL) BOOL ⟷ TIMES (TIMES BOOL BOOL) BOOL
+PERES = swap⋆ ◎ TOFFOLI ◎ swap⋆ ◎ (CNOT ⊗ id⟷)
+
+-- A reversible full adder
+
+FULLADDER : TIMES BOOL (TIMES (TIMES BOOL BOOL) BOOL) ⟷
+            TIMES BOOL (TIMES BOOL (TIMES BOOL BOOL))
+FULLADDER = 
+  swap⋆ ◎ (swap⋆ ⊗ id⟷) ◎ 
+  assocr⋆ ◎ swap⋆ ◎ (PERES ⊗ id⟷) ◎            
+  assocr⋆ ◎ (id⟷ ⊗ swap⋆) ◎ 
+  assocr⋆ ◎ (id⟷ ⊗ assocl⋆) ◎ 
+  (id⟷ ⊗ PERES) ◎ (id⟷ ⊗ assocr⋆)
+
+fulladder : List String
+fulladder = mapL showTransposition<
+              (coalesce (sort shift (normalize< (c2π FULLADDER))))
+  where open TSort 16        
 
 {--
 -- Normalized permutations have exactly one entry for each position
