@@ -12,6 +12,7 @@ open import Data.Nat.Properties.Simple
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+)
 open import Relation.Binary using (Rel; Decidable)
+open import Relation.Binary.Core using (Transitive)
 
 open import Data.String using (String)
   renaming (_++_ to _++S_)
@@ -155,6 +156,10 @@ i≮j∧i≠j→i≰j 0 (suc j) i≮j ¬i≡j i≤j = i≮j (s≤s z≤n)
 i≮j∧i≠j→i≰j (suc i) 0 i≮j ¬i≡j () 
 i≮j∧i≠j→i≰j (suc i) (suc j) si≮sj ¬si≡sj (s≤s i≤j) = 
   i≮j∧i≠j→i≰j i j (si≮sj→i≮j i j si≮sj) (si≠sj→i≠j i j ¬si≡sj) i≤j
+
+trans< : Transitive _<_
+trans< (s≤s z≤n) (s≤s _) = s≤s z≤n
+trans< (s≤s (s≤s i≤j)) (s≤s sj<k) = s≤s (trans< (s≤s i≤j) sj<k) 
 
 ------------------------------------------------------------------------------
 -- Level 0 of Pi
@@ -841,8 +846,9 @@ shift {n} (_X_ i j {i<j} , _X_ k l {k<l})
   -- becomes 1 X 2 , 2 X 5
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
   | no ¬i≡k | no ¬i≡l | yes j≡k | no ¬j≡l = 
-    -- Ex: 2 X 5 , 5 X 6 
-  {!!} 
+  -- Ex: 2 X 5 , 5 X 6 
+  -- becomes 2 x 6 , 2 X 5 
+  (_X_ i l {trans< (subst ((λ j → toℕ i < j)) j≡k i<j) k<l} , _X_ i j {i<j})
 shift {n} (_X_ i j {i<j} , _X_ k l {k<l})  
   | no ¬i≡k | yes i≡l | no ¬j≡k | no ¬j≡l = 
   -- Ex: 2 X 5 , 1 X 2 
@@ -851,6 +857,7 @@ shift {n} (_X_ i j {i<j} , _X_ k l {k<l})
   | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l =
   -- Ex: 2 X 5 , 2 X 4
   {!!}
+
 
 -- Examples
 
