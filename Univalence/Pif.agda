@@ -1032,6 +1032,9 @@ PERES = swap⋆ ◎ TOFFOLI ◎ swap⋆ ◎ (CNOT ⊗ id⟷)
 
 -- A reversible full adder
 
+-- Input: (Constant, ((Number1, Number2), CarryIn)))
+-- Output (Garbage1, (Garbage2, (Sum, Carry_Out)))
+
 FULLADDER : TIMES BOOL (TIMES (TIMES BOOL BOOL) BOOL) ⟷
             TIMES BOOL (TIMES BOOL (TIMES BOOL BOOL))
 FULLADDER = 
@@ -1045,6 +1048,56 @@ fulladder : List String
 fulladder = mapL showTransposition<
               (coalesce (sort shift (normalize< (c2π FULLADDER))))
   where open TSort 16        
+-- 
+-- after several hours :-) 
+-- 
+--  4 X  7 ∷
+--  5 X  6 ∷
+--  6 X  7 ∷
+--  8 X 14 ∷
+--  9 X 15 ∷
+-- 10 X 12 ∷
+-- 11 X 13 ∷
+-- 13 X 14 ∷ 
+-- 12 X 14 ∷ 
+-- 14 X 15 ∷ 
+-- 13 X 15 ∷ 
+-- 14 X 15 ∷ 
+-- []
+
+{--
+ 0 0000 0000
+ 1 0001 0001
+ 2 0010 0010
+ 3 0011 0011
+ 4 0100 0111
+ 5 0101 0110
+ 6 0110 0100
+ 7 0111 0101
+ 8 1000 1110
+ 9 1001 1111
+10 1010 1100
+11 1011 1101
+12 1100 1001
+13 1101 1011
+14 1110 1000
+15 1111 1010
+
+
+
+--}
+
+{--
+"4 X 7" ∷
+"5 X 6" ∷
+"6 X 7" ∷
+"8 X 14" ∷
+"9 X 15" ∷
+"10 X 12" ∷
+"11 X 13" ∷
+"13 X 14" ∷ "12 X 14" ∷ "14 X 15" ∷ "13 X 15" ∷ "14 X 15" ∷ []
+--}
+
 
 {--
 -- Normalized permutations have exactly one entry for each position
