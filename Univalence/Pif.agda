@@ -463,13 +463,9 @@ size∼ c₁ c₂ = proof-irrelevance (size≡ c₁) (size≡ c₂)
 -- this is a poor representation and eventually requires function
 -- extensionality. 
 
--- A permutation is a sequence of "swaps" or "transpositions"; 
--- we allow any sequence of swaps, even "stupid ones"
--- Ex: Perm 4 could have this permutation as an element (1 2) (2 3) (3 1)
--- It could also have (1 2) (1 3) (1 1) (2 1) (2 1) (1 2)
--- to compare two permutations we need to normalize them
--- 
--- For normalization purposes, we insist that the first component of a
+-- A permutation is a represented as sequence of "transpositions".
+-- Because we eventually want to normalize permutations to some
+-- canonical representation, we insist that the first component of a
 -- transposition is always ≤ than the second
 
 infix 90 _X_
@@ -643,8 +639,6 @@ swap13π = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} SWAP13
 rotlπ   = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} ROTL
 rotrπ   = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} ROTR
 
--- Normalization
-
 -- The various realizations of negation are equivalent but they give
 -- different sequences of transpositions:
 
@@ -677,6 +671,9 @@ rotl   = mapL showTransposition (c2π ROTL)
 rotr   = mapL showTransposition (c2π ROTR)
    -- 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
    -- normalized should be: 1 X 2 ∷ 0 X 1 ∷ []
+
+------------------------------------------------------------------------------
+-- Normalization
 
 -- First, remove all trivial transpositions (i X i)
 
@@ -729,298 +726,186 @@ nrotr   = mapL showTransposition< (normalize< (c2π ROTR))
    -- 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
    -- normalized should be: 1 X 2 ∷ 0 X 1 ∷ []
 
--- Next we sort the list of transpositions
+-- Next we sort the list of transpositions using a variation of bubble
+-- sort. Like in the conventional bubble sort we look at pairs of
+-- transpositions and swap them if they are out of order but if we
+-- encounter (i X j) followed by (i X j) we remove both. 
 
-module Sort (A : Set) {_<_ : Rel A lzero} ( _<?_ : Decidable _<_) where
-  insert : (A × A → A × A) → A → List A → List A
-  insert shift x [] = x ∷ []
-  insert shift x (y ∷ ys) with x <? y
-  ... | yes _ = x ∷ y ∷ ys
-  ... | no _ = let (y' , x') = shift (x , y) 
-               in y' ∷ insert shift x' ys
+-- one pass of bubble sort
+-- goal is to reach a sorted sequene with no repeats in the first position
+-- Ex: (0 X 2) ∷ (3 X 4) ∷ (4 X 6) ∷ (5 X 6)
 
-  sort : (A × A → A × A) → List A → List A
-  sort shift [] = []
-  sort shift (x ∷ xs) = insert shift x (sort shift xs)
-
-data _<S_ {n : ℕ} : Rel (Transposition< n) lzero where
-   <1 : ∀ {i j k l : Fin n} {p₁ : toℕ i < toℕ j} {p₂ : toℕ k < toℕ l} → 
-       (toℕ i < toℕ k) → (_X_ i j {p₁}) <S (_X_ k l {p₂})
-   <2 : ∀ {i j k l : Fin n} {p₁ : toℕ i < toℕ j} {p₂ : toℕ k < toℕ l} →  
-       (toℕ i ≡ toℕ k) → (toℕ j < toℕ l) → 
-       (_X_ i j {p₁}) <S (_X_ k l {p₂})
-
-d<S : {n : ℕ} → Decidable (_<S_ {n})
-d<S (_X_ i j {p₁}) (_X_ k l {p₂}) with suc (toℕ i) ≤? toℕ k 
-d<S (_X_ i j {p₁}) (_X_ k l {p₂}) | yes p = yes (<1 p)
-d<S (_X_ i j {p₁}) (_X_ k l {p₂}) | no p with toℕ i ≟ toℕ k
-d<S (_X_ i j {p₁}) (_X_ k l {p₂}) | no p | yes p= with suc (toℕ j) ≤? toℕ l
-d<S (_X_ i j {p₁}) (_X_ k l {p₂}) | no p | yes p= | yes p' = yes (<2 p= p')
-d<S (_X_ i j {p₁}) (_X_ k l {p₂}) | no p | yes p= | no p' = 
-  no (λ { (<1 i<k) → p i<k ;
-          (<2 i≡k j<l) → p' j<l})
-d<S (_X_ i j {p₁}) (_X_ k l {p₂}) | no p | no p≠ = 
-  no (λ { (<1 i<k) → p i<k ;
-          (<2 i≡k j<l) → p≠ i≡k })
-
-module TSort (n : ℕ) = Sort (Transposition< n) {_<S_} d<S 
-
--- If we shift a transposition past another, there is nothing to do if
--- the four indices are different. If however there is a common index,
--- we have to adjust the transpositions.
-
-shift : {n : ℕ} → Transposition< n × Transposition< n → 
-                  Transposition< n × Transposition< n
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+{-# NO_TERMINATION_CHECK #-}
+bubble : ∀ {n} → Perm< n → Perm< n
+bubble [] = []
+bubble (x ∷ []) = x ∷ []
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π) 
+--
+-- check every possible equality between the indices
+--
   with toℕ i ≟ toℕ k | toℕ i ≟ toℕ l | toℕ j ≟ toℕ k | toℕ j ≟ toℕ l
 --
--- a bunch of impossible cases given that i < j and k < l
+-- get rid of a bunch of impossible cases given that i < j and k < l
 --
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l})  
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | _ | _ | yes j≡k | yes j≡l 
   with trans (sym j≡k) (j≡l) | i<j→i≠j {toℕ k} {toℕ l} k<l
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | _ | _ | yes j≡k | yes j≡l
   | k≡l | ¬k≡l with ¬k≡l k≡l
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | _ | _ | yes j≡k | yes j≡l
   | k≡l | ¬k≡l | ()
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | _ | yes i≡l | _ | yes j≡l 
   with trans i≡l (sym j≡l) | i<j→i≠j {toℕ i} {toℕ j} i<j
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | _ | yes i≡l | _ | yes j≡l 
   | i≡j | ¬i≡j with ¬i≡j i≡j
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | _ | yes i≡l | _ | yes j≡l 
   | i≡j | ¬i≡j | ()
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | yes i≡k | _ | yes j≡k | _
   with trans i≡k (sym j≡k) | i<j→i≠j {toℕ i} {toℕ j} i<j 
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | yes i≡k | _ | yes j≡k | _
   | i≡j | ¬i≡j with ¬i≡j i≡j
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | yes i≡k | _ | yes j≡k | _
   | i≡j | ¬i≡j | ()
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | yes i≡k | yes i≡l | _ | _
   with trans (sym i≡k) i≡l | i<j→i≠j {toℕ k} {toℕ l} k<l 
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | yes i≡k | yes i≡l | _ | _
   | k≡l | ¬k≡l with ¬k≡l k≡l
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | yes i≡k | yes i≡l | _ | _
   | k≡l | ¬k≡l | ()
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | _ | yes i≡l | yes j≡k | _
   with subst₂ _<_ (sym j≡k) (sym i≡l) k<l | i<j→j≮i {toℕ i} {toℕ j} i<j
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | _ | yes i≡l | yes j≡k | _
   | j<i | j≮i with j≮i j<i
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | _ | yes i≡l | yes j≡k | _
   | j<i | j≮i | ()
 --
 -- end of impossible cases
 --
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
-  | no ¬i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l = 
-    -- no interference
-    (_X_ k l {k<l} , _X_ i j {i<j})  
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
+  | no ¬i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l with toℕ i <? toℕ k
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
+  | no ¬i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l | yes i<k = 
+    -- already sorted; no repeat in first position; skip and recur
+    -- Ex: 2 X 5 , 3 X 4
+    _X_ i j {i<j} ∷ bubble (_X_ k l {k<l} ∷ π)
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
+  | no ¬i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l | no i≮k = 
+    -- not sorted; no repeat in first position; no interference
+    -- just slide one transposition past the other
+    -- Ex: 2 X 5 , 1 X 4
+    _X_ k l {k<l} ∷  bubble (_X_ i j {i<j} ∷ π)
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | yes i≡k | no ¬i≡l | no ¬j≡k | yes j≡l = 
+  -- transposition followed by its inverse; simplify by removing both
   -- Ex: 2 X 5 , 2 X 5
-  (_X_ k l {k<l} , _X_ i j {i<j})   
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
-  | no ¬i≡k | no ¬i≡l | no ¬j≡k | yes j≡l 
-  with toℕ i <? toℕ k 
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
-  | no ¬i≡k | no ¬i≡l | no ¬j≡k | yes j≡l 
-  | yes i<k = 
-  (_X_ i k {i<k} , _X_ i j {i<j})
+  bubble π 
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
+  | no ¬i≡k | no ¬i≡l | no ¬j≡k | yes j≡l with toℕ i <? toℕ k 
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
+  | no ¬i≡k | no ¬i≡l | no ¬j≡k | yes j≡l | yes i<k = 
+  -- already sorted; no repeat in first position; skip and recur
   -- Ex: 2 X 5 , 3 X 5 
-  -- becomes 2 X 3 , 2 X 5
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
-  | no ¬i≡k | no ¬i≡l | no ¬j≡k | yes j≡l 
-  | no i≮k = 
-  (_X_ k i 
+    _X_ i j {i<j} ∷ bubble (_X_ k l {k<l} ∷ π)
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
+  | no ¬i≡k | no ¬i≡l | no ¬j≡k | yes j≡l | no i≮k = 
+  _X_ k i 
     {i≰j∧j≠i→j<i (toℕ i) (toℕ k) (i≮j∧i≠j→i≰j (toℕ i) (toℕ k) i≮k ¬i≡k) 
-       (i≠j→j≠i (toℕ i) (toℕ k) ¬i≡k)} , 
-  _X_ i j {i<j}) 
+       (i≠j→j≠i (toℕ i) (toℕ k) ¬i≡k)} ∷
+  bubble (_X_ i j {i<j} ∷ π)
   -- Ex: 2 X 5 , 1 X 5 
   -- becomes 1 X 2 , 2 X 5
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | no ¬i≡k | no ¬i≡l | yes j≡k | no ¬j≡l = 
+  -- already sorted; no repeat in first position; skip and recur
   -- Ex: 2 X 5 , 5 X 6 
-  -- becomes 2 x 6 , 2 X 5 
-  (_X_ i l {trans< (subst ((λ j → toℕ i < j)) j≡k i<j) k<l} , _X_ i j {i<j})
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l})  
+   _X_ i j {i<j} ∷ bubble (_X_ k l {k<l} ∷ π)
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | no ¬i≡k | yes i≡l | no ¬j≡k | no ¬j≡l = 
   -- Ex: 2 X 5 , 1 X 2 
   -- becomes 1 X 5 , 2 X 5
-  (_X_ k j {trans< (subst ((λ l → toℕ k < l)) (sym i≡l) k<l) i<j} , 
-   _X_ i j {i<j})
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
-  | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l 
-  with toℕ j <? toℕ l
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
-  | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l 
-  | yes j<l = 
-  -- Ex: 2 X 3 , 2 X 4
-  -- becomes 3 X 4 , 2 X 3
-  (_X_ j l {j<l} , _X_ i j {i<j}) 
-shift {n} (_X_ i j {i<j} , _X_ k l {k<l}) 
-  | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l 
-  | no j≮l = 
-  -- Ex: 2 X 5 , 2 X 4
-  -- becomes 4 X 5 , 2 X 5
-  (_X_ l j {i≰j∧j≠i→j<i (toℕ j) (toℕ l) (i≮j∧i≠j→i≰j (toℕ j) (toℕ l) j≮l ¬j≡l) 
-       (i≠j→j≠i (toℕ j) (toℕ l) ¬j≡l)} , 
-   _X_ i j {i<j}) 
+  _X_ k j {trans< (subst ((λ l → toℕ k < l)) (sym i≡l) k<l) i<j} ∷
+  bubble (_X_ i j {i<j} ∷ π)
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
+  | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l with toℕ j <? toℕ l
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
+  | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l | yes j<l =
+  -- Ex: 2 X 5 , 2 X 6
+  -- becomes 2 X 6 , 5 X 6
+  _X_ k l {k<l} ∷ bubble (_X_ j l {j<l} ∷ π)
+bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
+  | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l | no j≮l = 
+  -- Ex: 2 X 5 , 2 X 3
+  -- becomes 2 X 3 , 3 X 5 
+  _X_ k l {k<l} ∷ 
+  bubble (_X_ l j {i≰j∧j≠i→j<i (toℕ j) (toℕ l) 
+                    (i≮j∧i≠j→i≰j (toℕ j) (toℕ l) j≮l ¬j≡l)
+                    (i≠j→j≠i (toℕ j) (toℕ l) ¬j≡l)} ∷ π)
+
+
+-- sorted and no repeats in first position
+
+{-# NO_TERMINATION_CHECK #-}
+canonical? : ∀ {n} → Perm< n → Bool
+canonical? [] = true
+canonical? (x ∷ []) = true
+canonical? (i X j ∷ k X l ∷ π) with toℕ i <? toℕ k
+canonical? (i X j ∷ _X_ k l {k<l}  ∷ π) | yes i<k = 
+  canonical? (_X_ k l {k<l} ∷ π)
+canonical? (i X j ∷ _X_ k l {k<l} ∷ π) | no i≮k = false
+
+{-# NO_TERMINATION_CHECK #-}
+sort : ∀ {n} → Perm< n → Perm< n
+sort π with canonical? π 
+sort π | true = π 
+sort π | false = sort (bubble π)
 
 -- Examples
 
 snn₁ snn₂ snn₃ snn₄ snn₅ : List String
-snn₁ = mapL showTransposition< (sort shift (normalize< (c2π neg₁)))
-  where open TSort 2
+snn₁ = mapL showTransposition< (sort (normalize< (c2π neg₁)))
    -- 0 X 1 ∷ []
-snn₂ = mapL showTransposition< (sort shift (normalize< (c2π neg₂)))
-  where open TSort 2
+snn₂ = mapL showTransposition< (sort (normalize< (c2π neg₂)))
    -- 0 X 1 ∷ []
-snn₃ = mapL showTransposition< (sort shift (normalize< (c2π neg₃)))
-  where open TSort 2
-   -- 0 X 1 ∷ 0 X 1 ∷ 0 X 1 ∷ []
-snn₄ = mapL showTransposition< (sort shift (normalize< (c2π neg₄)))
-  where open TSort 2
+snn₃ = mapL showTransposition< (sort (normalize< (c2π neg₃)))
    -- 0 X 1 ∷ []
-snn₅ = mapL showTransposition< (sort shift (normalize< (c2π neg₅)))
-  where open TSort 2
+snn₄ = mapL showTransposition< (sort (normalize< (c2π neg₄)))
+   -- 0 X 1 ∷ []
+snn₅ = mapL showTransposition< (sort (normalize< (c2π neg₅)))
    -- 0 X 1 ∷ []
 
 sncnot sntoffoli : List String
-sncnot = mapL showTransposition< (sort shift (normalize< (c2π CNOT)))
-  where open TSort 4
+sncnot = mapL showTransposition< (sort (normalize< (c2π CNOT)))
    -- 2 X 3 ∷ []
-sntoffoli = mapL showTransposition< (sort shift (normalize< (c2π TOFFOLI)))
-  where open TSort 8
+sntoffoli = mapL showTransposition< (sort (normalize< (c2π TOFFOLI)))
    -- 6 X 7 ∷ []
 
 snswap12 snswap23 snswap13 snrotl snrotr : List String
-snswap12 = mapL showTransposition< (sort shift (normalize< (c2π SWAP12)))
-  where open TSort 3
+snswap12 = mapL showTransposition< (sort (normalize< (c2π SWAP12)))
    -- 0 X 1 ∷ []
-snswap23 = mapL showTransposition< (sort shift (normalize< (c2π SWAP23)))
-  where open TSort 3
+snswap23 = mapL showTransposition< (sort (normalize< (c2π SWAP23)))
    -- 1 X 2 ∷ []
-snswap13 = mapL showTransposition< (sort shift (normalize< (c2π SWAP13)))
-  where open TSort 3
+snswap13 = mapL showTransposition< (sort (normalize< (c2π SWAP13)))
    -- before sorting: 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
-   -- after sorting : 0 X 2 ∷ 1 X 2 ∷ 1 X 2 ∷ []
-snrotl   = mapL showTransposition< (sort shift (normalize< (c2π ROTL)))
-  where open TSort 3
+   -- after sorting : 0 X 2 ∷ []
+snrotl   = mapL showTransposition< (sort (normalize< (c2π ROTL)))
    -- 0 X 1 ∷ 1 X 2 ∷ []
-snrotr   = mapL showTransposition< (sort shift (normalize< (c2π ROTR)))
-  where open TSort 3
+snrotr   = mapL showTransposition< (sort (normalize< (c2π ROTR)))
    -- before sorting: 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
-   -- after sorting:  0 X 2 ∷ 1 X 2 ∷ 1 X 2 ∷ 1 X 2 ∷ []
-
--- Coalesce permutations i X j followed by i X k
-
--- Do termination proof...
-{-# NO_TERMINATION_CHECK #-}
-coalesce : {n : ℕ} → Perm< n → Perm< n
-coalesce [] = []
-coalesce (x ∷ []) = x ∷ []
-coalesce (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π) with toℕ i ≟ toℕ k
-coalesce (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π) 
-  | no ¬i≡k = _X_ i j {i<j} ∷ coalesce (_X_ k l {k<l} ∷ π)
-coalesce (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π) 
-  | yes i≡k with toℕ j <? toℕ l 
-coalesce {n} (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π) 
-  | yes i≡k | yes j<l = 
-  -- Ex: 2 X 5 , 2 X 6
-  -- becomes 2 X 6 , 5 X 6
-  coalesce {n} (sort (shift {n}) (_X_ k l {k<l} ∷ _X_ j l {j<l} ∷ π))
-  where open TSort n
-coalesce {n} (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π) 
-  | yes i≡k | no j≮l with toℕ j ≟ toℕ l
-coalesce {n} (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π) 
-  | yes i≡k | no j≮l | yes j≡l = 
-  -- Ex: 2 X 5 , 2 X 5
-  -- disappears
-  coalesce {n} π
-coalesce {n} (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π) 
-  | yes i≡k | no j≮l | no ¬j≡l = 
-  -- Ex: 2 X 5 , 2 X 3
-  -- becomes 2 X 3 , 3 X 5 
-  -- should never happen if input is sorted but the type Perm< 
-  -- does not capture this
-  coalesce {n} 
-    (sort 
-      (shift {n}) 
-        (_X_ k l {k<l} ∷ 
-         _X_ l j {i≰j∧j≠i→j<i (toℕ j) (toℕ l) 
-                    (i≮j∧i≠j→i≰j (toℕ j) (toℕ l) j≮l ¬j≡l)
-                    (i≠j→j≠i (toℕ j) (toℕ l) ¬j≡l)} ∷ 
-         π))
-  where open TSort n
-  
--- Examples
-
-csnn₁ csnn₂ csnn₃ csnn₄ csnn₅ : List String
-csnn₁ = mapL showTransposition< 
-          (coalesce (sort shift (normalize< (c2π neg₁))))
-  where open TSort 2
-   -- 0 X 1 ∷ []
-csnn₂ = mapL showTransposition< 
-          (coalesce (sort shift (normalize< (c2π neg₂))))
-  where open TSort 2
-   -- 0 X 1 ∷ []
-csnn₃ = mapL showTransposition< 
-          (coalesce (sort shift (normalize< (c2π neg₃))))
-  where open TSort 2
-   -- 0 X 1 ∷ []
-csnn₄ = mapL showTransposition< 
-          (coalesce (sort shift (normalize< (c2π neg₄))))
-  where open TSort 2
-   -- 0 X 1 ∷ []
-csnn₅ = mapL showTransposition< 
-          (coalesce (sort shift (normalize< (c2π neg₅))))
-  where open TSort 2
-   -- 0 X 1 ∷ []
-
-csncnot csntoffoli : List String
-csncnot = mapL showTransposition< 
-            (coalesce (sort shift (normalize< (c2π CNOT))))
-  where open TSort 4
-   -- 2 X 3 ∷ []
-csntoffoli = mapL showTransposition< 
-               (coalesce (sort shift (normalize< (c2π TOFFOLI))))
-  where open TSort 8
-   -- 6 X 7 ∷ []
-
-csnswap12 csnswap23 csnswap13 csnrotl csnrotr : List String
-csnswap12 = mapL showTransposition< 
-              (coalesce (sort shift (normalize< (c2π SWAP12))))
-  where open TSort 3
-   -- 0 X 1 ∷ []
-csnswap23 = mapL showTransposition< 
-              (coalesce (sort shift (normalize< (c2π SWAP23))))
-  where open TSort 3
-   -- 1 X 2 ∷ []
-csnswap13 = mapL showTransposition< 
-              (coalesce (sort shift (normalize< (c2π SWAP13))))
-  where open TSort 3
-   -- 0 X 2 ∷ []
-csnrotl   = mapL showTransposition< 
-              (coalesce (sort shift (normalize< (c2π ROTL))))
-  where open TSort 3
-   -- 0 X 1 ∷ 1 X 2 ∷ []
-csnrotr   = mapL showTransposition< 
-              (coalesce (sort shift (normalize< (c2π ROTR))))
-  where open TSort 3
-   -- 0 X 2 ∷ 1 X 2 ∷ []
+   -- after sorting:  0 X 2 ∷ 1 X 2 ∷ []
 
 -- More advanced examples
 
@@ -1044,28 +929,38 @@ FULLADDER =
   assocr⋆ ◎ (id⟷ ⊗ assocl⋆) ◎ 
   (id⟷ ⊗ PERES) ◎ (id⟷ ⊗ assocr⋆)
 
-fulladder : List String
-fulladder = mapL showTransposition<
-              (coalesce (sort shift (normalize< (c2π FULLADDER))))
-  where open TSort 16        
+peres fulladder : List String
+peres = mapL showTransposition< (sort (normalize< (c2π PERES)))
+-- 4 X 7 ∷ 5 X 6 ∷ 6 X 7 ∷ []
+-- 000 000 
+-- 001 001
+-- 010 010
+-- 011 011
+-- 100 111 --??
+-- 101 110 --??
+-- 110 100 --??
+-- 111 101 --??
+fulladder = mapL showTransposition< (sort (normalize< (c2π FULLADDER)))
+-- 4 X 7 ∷
+-- 5 X 6 ∷
+-- 6 X 7 ∷
+-- 8 X 14 ∷ 
+-- 9 X 15 ∷ 
+-- 10 X 12 ∷ 
+-- 11 X 13 ∷ 
+-- 12 X 13 ∷ []
+                 
 -- 
 -- after several hours :-) 
 -- 
---  4 X  7 ∷
---  5 X  6 ∷
---  6 X  7 ∷
---  8 X 14 ∷
---  9 X 15 ∷
--- 10 X 12 ∷
--- 11 X 13 ∷
--- 13 X 14 ∷ 
--- 12 X 14 ∷ 
--- 14 X 15 ∷ 
--- 13 X 15 ∷ 
--- 14 X 15 ∷ 
--- []
+
 
 {--
+"4 X 7" ∷
+"5 X 6" ∷
+"6 X 7" ∷
+"8 X 14" ∷ "9 X 15" ∷ "10 X 12" ∷ "11 X 13" ∷ "12 X 13" ∷ []
+
  0 0000 0000
  1 0001 0001
  2 0010 0010
