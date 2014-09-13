@@ -950,6 +950,19 @@ fulladder = mapL showTransposition< (sort (normalize< (c2π FULLADDER)))
 -- 11 X 13 ∷ 
 -- 12 X 13 ∷ []
                  
+aperes : Vec (((Bool × Bool) × Bool) × ((Bool × Bool) × Bool)) 8
+aperes = showπ PERES
+{--
+(((false , false) , false) , (false , false) , false) ∷
+(((false , false) , true) , (false , false) , true) ∷
+(((false , true) , false) , (false , true) , false) ∷
+(((false , true) , true) , (false , true) , true) ∷
+(((true , true) , true) , (true , false) , false) ∷
+(((true , true) , false) , (true , false) , true) ∷
+(((true , false) , false) , (true , true) , false) ∷
+(((true , false) , true) , (true , true) , true) ∷ []
+--}
+
 -- 
 -- after several hours :-) 
 -- 
