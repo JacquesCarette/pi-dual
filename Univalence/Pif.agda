@@ -330,6 +330,28 @@ SWAP13 = SWAP23 ◎ SWAP12 ◎ SWAP23
 ROTL   = SWAP12 ◎ SWAP23
 ROTR   = SWAP13 ◎ SWAP23
 
+-- More advanced examples
+
+-- The Peres gate is a universal gate: it takes three inputs a, b, and c, and
+-- produces a, a xor b, (a and b) xor c
+
+PERES : TIMES (TIMES BOOL BOOL) BOOL ⟷ TIMES (TIMES BOOL BOOL) BOOL
+PERES = swap⋆ ◎ TOFFOLI ◎ swap⋆ ◎ (CNOT ⊗ id⟷)
+
+-- A reversible full adder
+
+-- Input: (Constant, ((Number1, Number2), CarryIn)))
+-- Output (Garbage1, (Garbage2, (Sum, Carry_Out)))
+
+FULLADDER : TIMES BOOL (TIMES (TIMES BOOL BOOL) BOOL) ⟷
+            TIMES BOOL (TIMES BOOL (TIMES BOOL BOOL))
+FULLADDER = 
+  swap⋆ ◎ (swap⋆ ⊗ id⟷) ◎ 
+  assocr⋆ ◎ swap⋆ ◎ (PERES ⊗ id⟷) ◎            
+  assocr⋆ ◎ (id⟷ ⊗ swap⋆) ◎ 
+  assocr⋆ ◎ (id⟷ ⊗ assocl⋆) ◎ 
+  (id⟷ ⊗ PERES) ◎ (id⟷ ⊗ assocr⋆)
+
 -- Every permutation has an inverse. There are actually many syntactically
 -- different inverses but they are all equivalent.
 
@@ -639,6 +661,21 @@ swap13π = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} SWAP13
 rotlπ   = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} ROTL
 rotrπ   = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} ROTR
 
+peresπ : Vec (((Bool × Bool) × Bool) × ((Bool × Bool) × Bool)) 8
+peresπ = showπ PERES
+-- (((false , false) , false) , (false , false) , false) ∷
+-- (((false , false) , true)  , (false , false) , true)  ∷
+-- (((false , true)  , false) , (false , true)  , false) ∷
+-- (((false , true)  , true)  , (false , true)  , true)  ∷
+-- (((true  , true)  , true)  , (true  , false) , false) ∷
+-- (((true  , true)  , false) , (true  , false) , true)  ∷
+-- (((true  , false) , false) , (true  , true)  , false) ∷
+-- (((true  , false) , true)  , (true  , true)  , true)  ∷ []
+
+fulladderπ : 
+  Vec ((Bool × ((Bool × Bool) × Bool)) × (Bool × (Bool × (Bool × Bool)))) 16
+fulladderπ = showπ FULLADDER
+
 -- The various realizations of negation are equivalent but they give
 -- different sequences of transpositions:
 
@@ -671,6 +708,17 @@ rotl   = mapL showTransposition (c2π ROTL)
 rotr   = mapL showTransposition (c2π ROTR)
    -- 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
    -- normalized should be: 1 X 2 ∷ 0 X 1 ∷ []
+
+peres : List String
+peres = mapL showTransposition (c2π PERES)
+-- 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷
+-- 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 6 X 7 ∷ 6 X 6 ∷ 7 X 7 ∷ 4 X 4 ∷
+-- 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 0 X 0 ∷
+-- 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 0 X 0 ∷
+-- 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 4 X 6 ∷
+-- 5 X 7 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷
+-- 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷ 
+-- 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ []
 
 ------------------------------------------------------------------------------
 -- Normalization
@@ -725,6 +773,10 @@ nrotl   = mapL showTransposition< (normalize< (c2π ROTL))
 nrotr   = mapL showTransposition< (normalize< (c2π ROTR))
    -- 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
    -- normalized should be: 1 X 2 ∷ 0 X 1 ∷ []
+
+nperes : List String
+nperes = mapL showTransposition< (normalize< (c2π PERES))
+   -- 6 X 7 ∷ 4 X 6 ∷ 5 X 7 ∷ []
 
 -- Next we sort the list of transpositions using a variation of bubble
 -- sort. Like in the conventional bubble sort we look at pairs of
@@ -907,40 +959,31 @@ snrotr   = mapL showTransposition< (sort (normalize< (c2π ROTR)))
    -- before sorting: 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
    -- after sorting:  0 X 2 ∷ 1 X 2 ∷ []
 
--- More advanced examples
+snperes snfulladder : List String
+snperes = mapL showTransposition< (sort (normalize< (c2π PERES)))
+   -- before sorting: 6 X 7 ∷ 4 X 6 ∷ 5 X 7 ∷ []
+   -- after sorting:  4 X 7 ∷ 5 X 6 ∷ 6 X 7 ∷ []
+   -- Apply the transpositions:
+   -- 000 000
+   -- 001 001
+   -- 010 010
+   -- 011 011
+   -- 111 100
+   -- 110 101
+   -- 100 110
+   -- 101 111
+   -- for comparison, here is the result of showπ
+   -- (((false , false) , false) , (false , false) , false) ∷
+   -- (((false , false) , true)  , (false , false) , true)  ∷
+   -- (((false , true)  , false) , (false , true)  , false) ∷
+   -- (((false , true)  , true)  , (false , true)  , true)  ∷
+   -- (((true  , true)  , true)  , (true  , false) , false) ∷
+   -- (((true  , true)  , false) , (true  , false) , true)  ∷
+   -- (((true  , false) , false) , (true  , true)  , false) ∷
+   -- (((true  , false) , true)  , (true  , true)  , true)  ∷ []
+   -- Perfect!
 
--- The Peres gate is a universal gate: it takes three inputs a, b, and c, and
--- produces a, a xor b, (a and b) xor c
-
-PERES : TIMES (TIMES BOOL BOOL) BOOL ⟷ TIMES (TIMES BOOL BOOL) BOOL
-PERES = swap⋆ ◎ TOFFOLI ◎ swap⋆ ◎ (CNOT ⊗ id⟷)
-
--- A reversible full adder
-
--- Input: (Constant, ((Number1, Number2), CarryIn)))
--- Output (Garbage1, (Garbage2, (Sum, Carry_Out)))
-
-FULLADDER : TIMES BOOL (TIMES (TIMES BOOL BOOL) BOOL) ⟷
-            TIMES BOOL (TIMES BOOL (TIMES BOOL BOOL))
-FULLADDER = 
-  swap⋆ ◎ (swap⋆ ⊗ id⟷) ◎ 
-  assocr⋆ ◎ swap⋆ ◎ (PERES ⊗ id⟷) ◎            
-  assocr⋆ ◎ (id⟷ ⊗ swap⋆) ◎ 
-  assocr⋆ ◎ (id⟷ ⊗ assocl⋆) ◎ 
-  (id⟷ ⊗ PERES) ◎ (id⟷ ⊗ assocr⋆)
-
-peres fulladder : List String
-peres = mapL showTransposition< (sort (normalize< (c2π PERES)))
--- 4 X 7 ∷ 5 X 6 ∷ 6 X 7 ∷ []
--- 000 000 
--- 001 001
--- 010 010
--- 011 011
--- 100 111 --??
--- 101 110 --??
--- 110 100 --??
--- 111 101 --??
-fulladder = mapL showTransposition< (sort (normalize< (c2π FULLADDER)))
+snfulladder = mapL showTransposition< (sort (normalize< (c2π FULLADDER)))
 -- 4 X 7 ∷
 -- 5 X 6 ∷
 -- 6 X 7 ∷
@@ -950,19 +993,6 @@ fulladder = mapL showTransposition< (sort (normalize< (c2π FULLADDER)))
 -- 11 X 13 ∷ 
 -- 12 X 13 ∷ []
                  
-aperes : Vec (((Bool × Bool) × Bool) × ((Bool × Bool) × Bool)) 8
-aperes = showπ PERES
-{--
-(((false , false) , false) , (false , false) , false) ∷
-(((false , false) , true) , (false , false) , true) ∷
-(((false , true) , false) , (false , true) , false) ∷
-(((false , true) , true) , (false , true) , true) ∷
-(((true , true) , true) , (true , false) , false) ∷
-(((true , true) , false) , (true , false) , true) ∷
-(((true , false) , false) , (true , true) , false) ∷
-(((true , false) , true) , (true , true) , true) ∷ []
---}
-
 -- 
 -- after several hours :-) 
 -- 
