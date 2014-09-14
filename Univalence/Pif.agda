@@ -612,6 +612,25 @@ idπ {n} = toList (zipWith mkTransposition (allFin n) (allFin n))
 -- This produces huge outputs. Try to refine by only adding the necessary
 -- transpositions instead of blindly adding idπ
 
+-- add the missing i X i to a permutation to make sure that no index i is
+-- missing
+
+delete : ∀ {n} → List (Fin n) → Fin n → List (Fin n)
+delete [] _ = []
+delete (j ∷ js) i with toℕ i ≟ toℕ j 
+delete (j ∷ js) i | yes _ = js
+delete (j ∷ js) i | no _ = j ∷ delete js i
+
+diff : ∀ {n} → List (Fin n) → List (Fin n) → List (Fin n)
+diff = foldl delete
+
+extendπ : ∀ {n} → Perm n → Perm n
+extendπ {n} π = 
+  let existing = mapL (λ { (i X j) → i }) π
+      all = toList (allFin n)
+      diff = foldl delete all existing
+  in mapL (λ i → _X_ i i {i≤i (toℕ i)}) diff
+
 tcompπ : ∀ {m n} → Perm m → Perm n → Perm (m * n)
 tcompπ {m} {n} α β = 
   concatL (mapL 
@@ -622,8 +641,8 @@ tcompπ {m} {n} α β =
                                    (i*n+k≤m*n i k))
                           (inject≤ (fromℕ (toℕ j * n + toℕ l)) 
                                    (i*n+k≤m*n j l))})
-                      (β ++L idπ {n})})
-            (α ++L idπ {m}))
+                      (extendπ β)})
+            (extendπ α))
 
 ------------------------------------------------------------------------------
 -- A combinator t₁ ⟷ t₂ denotes a permutation.

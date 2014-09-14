@@ -2194,3 +2194,9 @@ nswap₁₂ = mapL showTransposition< (nperm2list (normalize (c2π SWAP12)))
 nswap₂₃ = mapL showTransposition< (nperm2list (normalize (c2π SWAP23)))
 nswap₁₃ = mapL showTransposition< (nperm2list (normalize (c2π SWAP13)))
 
+xxx : Perm 5
+xxx = (_X_ (inject+ 1 (fromℕ 3)) (fromℕ 4) {s≤s (s≤s (s≤s z≤n))}) ∷
+      (_X_ (inject+ 3 (fromℕ 1)) (inject+ 1 (fromℕ 3)) {s≤s z≤n}) ∷
+      (_X_ zero (inject+ 1 (fromℕ 3)) {z≤n}) ∷
+      (_X_ (inject+ 3 (fromℕ 1)) (inject+ 2 (fromℕ 2)) {s≤s z≤n}) ∷ []
+ 
