@@ -2119,3 +2119,78 @@ coalesce {n} (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
          π))
   where open TSort n
   
+-- Normalized permutations have exactly one entry for each position
+
+infixr 5 _∷_
+
+data NPerm : ℕ → Set where
+  []  : NPerm 0
+  _∷_ : {n : ℕ} → Fin (suc n) → NPerm n → NPerm (suc n)
+
+lookupP : ∀ {n} → Fin n → NPerm n → Fin n
+lookupP () [] 
+lookupP zero (j ∷ _) = j
+lookupP {suc n} (suc i) (j ∷ q) = inject₁ (lookupP i q)
+
+insert : ∀ {ℓ n} {A : Set ℓ} → Vec A n → Fin (suc n) → A → Vec A (suc n)
+insert vs zero w          = w ∷ vs
+insert [] (suc ())        -- absurd
+insert (v ∷ vs) (suc i) w = v ∷ insert vs i w
+
+-- A normalized permutation acts on a vector by inserting each element in its
+-- new position.
+
+permute : ∀ {ℓ n} {A : Set ℓ} → NPerm n → Vec A n → Vec A n
+permute []       []       = []
+permute (p ∷ ps) (v ∷ vs) = insert (permute ps vs) p v
+
+-- Convert normalized permutation to a sequence of transpositions
+
+nperm2list : ∀ {n} → NPerm n → Perm< n
+nperm2list {0} [] = []
+nperm2list {suc n} (p ∷ ps) = {!!} 
+
+-- Aggregate a sequence of transpositions to one insertion in the right
+-- position
+
+aggregate : ∀ {n} → Perm< n → NPerm n
+aggregate = {!!} 
+
+{--
+aggregate [] = []
+aggregate (_X_ i j {p₁} ∷ []) = _X_ i j {p₁} ∷ []
+aggregate (_X_ i j {p₁} ∷ _X_ k l {p₂} ∷ π) with toℕ i ≟ toℕ k | toℕ j ≟ toℕ l 
+aggregate (_X_ i j {p₁} ∷ _X_ k l {p₂} ∷ π) | yes _ | yes _ = 
+  aggregate (_X_ k l {p₂} ∷ π)
+aggregate (_X_ i j {p₁} ∷ _X_ k l {p₂} ∷ π) | _ | _ = 
+  (_X_ i j {p₁}) ∷ aggregate (_X_ k l {p₂} ∷ π)
+--}
+
+normalize : ∀ {n} → Perm n → NPerm n
+normalize {n} = aggregate ∘ sort ∘ normalize< 
+  where open TSort n
+
+-- Examples
+
+nsnn₁ nsnn₂ nsnn₃ nsnn₄ nsnn₅ : List String
+nsnn₁ = mapL showTransposition< (nperm2list (normalize (c2π neg₁)))
+  where open TSort 2
+   -- 0 X 1 ∷ []
+nsnn₂ = mapL showTransposition< (nperm2list (normalize (c2π neg₂)))
+  where open TSort 2
+   -- 0 X 1 ∷ []
+nsnn₃ = mapL showTransposition< (nperm2list (normalize (c2π neg₃)))
+  where open TSort 2
+   -- 0 X 1 ∷ []
+nsnn₄ = mapL showTransposition< (nperm2list (normalize (c2π neg₄)))
+  where open TSort 2
+   -- 0 X 1 ∷ []
+nsnn₅ = mapL showTransposition< (nperm2list (normalize (c2π neg₅)))
+  where open TSort 2
+   -- 0 X 1 ∷ []
+
+nswap₁₂ nswap₂₃ nswap₁₃ : List String
+nswap₁₂ = mapL showTransposition< (nperm2list (normalize (c2π SWAP12)))
+nswap₂₃ = mapL showTransposition< (nperm2list (normalize (c2π SWAP23)))
+nswap₁₃ = mapL showTransposition< (nperm2list (normalize (c2π SWAP13)))
+

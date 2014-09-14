@@ -338,19 +338,59 @@ ROTR   = SWAP13 ◎ SWAP23
 PERES : TIMES (TIMES BOOL BOOL) BOOL ⟷ TIMES (TIMES BOOL BOOL) BOOL
 PERES = swap⋆ ◎ TOFFOLI ◎ swap⋆ ◎ (CNOT ⊗ id⟷)
 
--- A reversible full adder
-
--- Input: (Constant, ((Number1, Number2), CarryIn)))
--- Output (Garbage1, (Garbage2, (Sum, Carry_Out)))
-
+-- A reversible full adder: See http://arxiv.org/pdf/1008.3533.pdf
+--
+-- Input: (z, ((n1, n2), cin)))
+-- Output (g1, (g2, (sum, cout)))
+-- where sum = n1 xor n2 xor cin
+-- and cout = ((n1 xor n2) and cin) xor (n1 and n2) xor z
+-- As a truth table (sorted by output column)
+-- 
+-- 0000 0000
+-- 1000 0001
+-- 0001 0010
+-- 1001 0011
+-- 1011 0100
+-- 0011 0101
+-- 0010 0110
+-- 1010 0111
+-- 1110 1000
+-- 0110 1001
+-- 1111 1010
+-- 0111 1011
+-- 1101 1100
+-- 0101 1101
+-- 0100 1110
+-- 1100 1111
+-- 
 FULLADDER : TIMES BOOL (TIMES (TIMES BOOL BOOL) BOOL) ⟷
             TIMES BOOL (TIMES BOOL (TIMES BOOL BOOL))
 FULLADDER = 
-  swap⋆ ◎ (swap⋆ ⊗ id⟷) ◎ 
-  assocr⋆ ◎ swap⋆ ◎ (PERES ⊗ id⟷) ◎            
-  assocr⋆ ◎ (id⟷ ⊗ swap⋆) ◎ 
-  assocr⋆ ◎ (id⟷ ⊗ assocl⋆) ◎ 
-  (id⟷ ⊗ PERES) ◎ (id⟷ ⊗ assocr⋆)
+  -- (z,((n1,n2),cin))
+  swap⋆ ◎ 
+  -- (((n1,n2),cin),z)
+  (swap⋆ ⊗ id⟷) ◎ 
+  -- ((cin,(n1,n2)),z)
+  assocr⋆ ◎ 
+  -- (cin,((n1,n2),z))
+  swap⋆ ◎ 
+  -- (((n1,n2),z),cin)
+  (PERES ⊗ id⟷) ◎     
+  -- (((n1,n1 xor n2),(n1 and n2) xor z),cin) 
+  assocr⋆ ◎ 
+  -- ((n1,n1 xor n2),((n1 and n2) xor z,cin))
+  (id⟷ ⊗ swap⋆) ◎ 
+  -- ((n1,n1 xor n2),(cin,(n1 and n2) xor z))
+  assocr⋆ ◎ 
+  -- (n1,(n1 xor n2,(cin,(n1 and n2) xor z)))
+  (id⟷ ⊗ assocl⋆) ◎ 
+  -- (n1,((n1 xor n2,cin),(n1 and n2) xor z))
+  (id⟷ ⊗ PERES) ◎ 
+  -- (n1,((n1 xor n2,n1 xor n2 xor cin),
+  --      ((n1 xor n2) and cin) xor (n1 and n2) xor z))
+  (id⟷ ⊗ assocr⋆)
+  -- (n1,(n1 xor n2,
+  --      (n1 xor n2 xor cin,((n1 xor n2) and cin) xor (n1 and n2) xor z)))
 
 -- Every permutation has an inverse. There are actually many syntactically
 -- different inverses but they are all equivalent.
@@ -655,11 +695,29 @@ toffoliπ = showπ {TIMES BOOL BOOL²} {TIMES BOOL BOOL²} TOFFOLI
 id3π swap12π swap23π swap13π rotlπ rotrπ : 
   Vec (⟦ PLUS ONE (PLUS ONE ONE) ⟧ × ⟦ PLUS ONE (PLUS ONE ONE) ⟧) 3
 id3π    = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} id⟷
+-- (inj₁ tt , inj₁ tt) ∷
+-- (inj₂ (inj₁ tt) , inj₂ (inj₁ tt)) ∷
+-- (inj₂ (inj₂ tt) , inj₂ (inj₂ tt)) ∷ []
 swap12π = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} SWAP12
+-- (inj₂ (inj₁ tt) , inj₁ tt) ∷
+-- (inj₁ tt , inj₂ (inj₁ tt)) ∷ 
+-- (inj₂ (inj₂ tt) , inj₂ (inj₂ tt)) ∷ []
 swap23π = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} SWAP23
+-- (inj₁ tt , inj₁ tt) ∷
+-- (inj₂ (inj₂ tt) , inj₂ (inj₁ tt)) ∷
+-- (inj₂ (inj₁ tt) , inj₂ (inj₂ tt)) ∷ []
 swap13π = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} SWAP13
+-- (inj₂ (inj₂ tt) , inj₁ tt) ∷
+-- (inj₂ (inj₁ tt) , inj₂ (inj₁ tt)) ∷ 
+-- (inj₁ tt , inj₂ (inj₂ tt)) ∷ []
 rotlπ   = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} ROTL
+-- (inj₂ (inj₁ tt) , inj₁ tt) ∷
+-- (inj₂ (inj₂ tt) , inj₂ (inj₁ tt)) ∷ 
+-- (inj₁ tt , inj₂ (inj₂ tt)) ∷ []
 rotrπ   = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} ROTR
+-- (inj₂ (inj₂ tt) , inj₁ tt) ∷
+-- (inj₁ tt , inj₂ (inj₁ tt)) ∷ 
+-- (inj₂ (inj₁ tt) , inj₂ (inj₂ tt)) ∷ []
 
 peresπ : Vec (((Bool × Bool) × Bool) × ((Bool × Bool) × Bool)) 8
 peresπ = showπ PERES
@@ -675,6 +733,7 @@ peresπ = showπ PERES
 fulladderπ : 
   Vec ((Bool × ((Bool × Bool) × Bool)) × (Bool × (Bool × (Bool × Bool)))) 16
 fulladderπ = showπ FULLADDER
+-- takes too much time to calculate
 
 -- The various realizations of negation are equivalent but they give
 -- different sequences of transpositions:
@@ -693,7 +752,44 @@ n₅ = mapL showTransposition (c2π neg₅)
 
 cnot toffoli : List String
 cnot = mapL showTransposition (c2π CNOT)
+   -- 0 X 0 ∷
+   -- 1 X 1 ∷
+   -- 2 X 2 ∷
+   -- 3 X 3 ∷
+   -- 2 X 3 ∷
+   -- 2 X 2 ∷ 
+   -- 3 X 3 ∷ 
+   -- 0 X 0 ∷ 
+   -- 1 X 1 ∷ 
+   -- 2 X 2 ∷ 
+   -- 3 X 3 ∷ []
 toffoli = mapL showTransposition (c2π TOFFOLI)
+   -- 0 X 0 ∷
+   -- 1 X 1 ∷
+   -- 2 X 2 ∷
+   -- 3 X 3 ∷
+   -- 4 X 4 ∷
+   -- 5 X 5 ∷
+   -- 6 X 6 ∷
+   -- 7 X 7 ∷
+   -- 4 X 4 ∷
+   -- 5 X 5 ∷
+   -- 6 X 6 ∷
+   -- 7 X 7 ∷
+   -- 6 X 7 ∷
+   -- 6 X 6 ∷
+   -- 7 X 7 ∷
+   -- 4 X 4 ∷
+   -- 5 X 5 ∷
+   -- 6 X 6 ∷
+   -- 7 X 7 ∷
+   -- 4 X 4 ∷
+   -- 5 X 5 ∷
+   -- 6 X 6 ∷
+   -- 7 X 7 ∷
+   -- 0 X 0 ∷
+   -- 1 X 1 ∷
+   -- 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7"∷ []
 
 swap12 swap23 swap13 rotl rotr : List String
 swap12 = mapL showTransposition (c2π SWAP12)
@@ -702,14 +798,12 @@ swap23 = mapL showTransposition (c2π SWAP23)
    -- 1 X 2 ∷ []
 swap13 = mapL showTransposition (c2π SWAP13)
    -- 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
-   -- normalized should be: 0 X 2 ∷ []
 rotl   = mapL showTransposition (c2π ROTL)
    -- 0 X 1 ∷ 1 X 2 ∷ []
 rotr   = mapL showTransposition (c2π ROTR)
    -- 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
-   -- normalized should be: 1 X 2 ∷ 0 X 1 ∷ []
 
-peres : List String
+peres fulladder : List String
 peres = mapL showTransposition (c2π PERES)
 -- 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷
 -- 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 6 X 7 ∷ 6 X 6 ∷ 7 X 7 ∷ 4 X 4 ∷
@@ -719,6 +813,8 @@ peres = mapL showTransposition (c2π PERES)
 -- 5 X 7 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷
 -- 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷ 
 -- 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ []
+fulladder = mapL showTransposition (c2π FULLADDER)
+-- takes too much time to calculate
 
 ------------------------------------------------------------------------------
 -- Normalization
@@ -734,48 +830,46 @@ showTransposition< (i X j) = show (toℕ i) ++S " X " ++S show (toℕ j)
 Perm< : ℕ → Set
 Perm< n = List (Transposition< n) 
 
-normalize< : {n : ℕ} → Perm n → Perm< n
-normalize< [] = []
-normalize< (_X_ i j {p≤} ∷ π) with toℕ i ≟ toℕ j
-... | yes p= = normalize< π 
-... | no p≠ = _X_ i j {i≠j∧i≤j→i<j (toℕ i) (toℕ j) p≠ p≤}  ∷ normalize< π 
+filter= : {n : ℕ} → Perm n → Perm< n
+filter= [] = []
+filter= (_X_ i j {p≤} ∷ π) with toℕ i ≟ toℕ j
+... | yes p= = filter= π 
+... | no p≠ = _X_ i j {i≠j∧i≤j→i<j (toℕ i) (toℕ j) p≠ p≤}  ∷ filter= π 
 
 -- Examples
 
 nn₁ nn₂ nn₃ nn₄ nn₅ : List String
-nn₁ = mapL showTransposition< (normalize< (c2π neg₁))
+nn₁ = mapL showTransposition< (filter= (c2π neg₁))
    -- 0 X 1 ∷ []
-nn₂ = mapL showTransposition< (normalize< (c2π neg₂))
+nn₂ = mapL showTransposition< (filter= (c2π neg₂))
    -- 0 X 1 ∷ []
-nn₃ = mapL showTransposition< (normalize< (c2π neg₃))
+nn₃ = mapL showTransposition< (filter= (c2π neg₃))
    -- 0 X 1 ∷ 0 X 1 ∷ 0 X 1 ∷ []
-nn₄ = mapL showTransposition< (normalize< (c2π neg₄))
+nn₄ = mapL showTransposition< (filter= (c2π neg₄))
    -- 0 X 1 ∷ []
-nn₅ = mapL showTransposition< (normalize< (c2π neg₅))
+nn₅ = mapL showTransposition< (filter= (c2π neg₅))
    -- 0 X 1 ∷ []
 
 ncnot ntoffoli : List String
-ncnot = mapL showTransposition< (normalize< (c2π CNOT))
+ncnot = mapL showTransposition< (filter= (c2π CNOT))
    -- 2 X 3 ∷ []
-ntoffoli = mapL showTransposition< (normalize< (c2π TOFFOLI))
+ntoffoli = mapL showTransposition< (filter= (c2π TOFFOLI))
    -- 6 X 7 ∷ []
 
 nswap12 nswap23 nswap13 nrotl nrotr : List String
-nswap12 = mapL showTransposition< (normalize< (c2π SWAP12))
+nswap12 = mapL showTransposition< (filter= (c2π SWAP12))
    -- 0 X 1 ∷ []
-nswap23 = mapL showTransposition< (normalize< (c2π SWAP23))
+nswap23 = mapL showTransposition< (filter= (c2π SWAP23))
    -- 1 X 2 ∷ []
-nswap13 = mapL showTransposition< (normalize< (c2π SWAP13))
+nswap13 = mapL showTransposition< (filter= (c2π SWAP13))
    -- 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
-   -- normalized should be: 0 X 2 ∷ []
-nrotl   = mapL showTransposition< (normalize< (c2π ROTL))
+nrotl   = mapL showTransposition< (filter= (c2π ROTL))
    -- 0 X 1 ∷ 1 X 2 ∷ []
-nrotr   = mapL showTransposition< (normalize< (c2π ROTR))
+nrotr   = mapL showTransposition< (filter= (c2π ROTR))
    -- 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
-   -- normalized should be: 1 X 2 ∷ 0 X 1 ∷ []
 
 nperes : List String
-nperes = mapL showTransposition< (normalize< (c2π PERES))
+nperes = mapL showTransposition< (filter= (c2π PERES))
    -- 6 X 7 ∷ 4 X 6 ∷ 5 X 7 ∷ []
 
 -- Next we sort the list of transpositions using a variation of bubble
@@ -859,11 +953,13 @@ bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
     -- not sorted; no repeat in first position; no interference
     -- just slide one transposition past the other
     -- Ex: 2 X 5 , 1 X 4
+    -- becomes 1 X 4 , 2 X 5
     _X_ k l {k<l} ∷  bubble (_X_ i j {i<j} ∷ π)
 bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | yes i≡k | no ¬i≡l | no ¬j≡k | yes j≡l = 
   -- transposition followed by its inverse; simplify by removing both
   -- Ex: 2 X 5 , 2 X 5
+  -- becomes id and is deleted
   bubble π 
 bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | no ¬i≡k | no ¬i≡l | no ¬j≡k | yes j≡l with toℕ i <? toℕ k 
@@ -928,39 +1024,39 @@ sort π | false = sort (bubble π)
 -- Examples
 
 snn₁ snn₂ snn₃ snn₄ snn₅ : List String
-snn₁ = mapL showTransposition< (sort (normalize< (c2π neg₁)))
+snn₁ = mapL showTransposition< (sort (filter= (c2π neg₁)))
    -- 0 X 1 ∷ []
-snn₂ = mapL showTransposition< (sort (normalize< (c2π neg₂)))
+snn₂ = mapL showTransposition< (sort (filter= (c2π neg₂)))
    -- 0 X 1 ∷ []
-snn₃ = mapL showTransposition< (sort (normalize< (c2π neg₃)))
+snn₃ = mapL showTransposition< (sort (filter= (c2π neg₃)))
    -- 0 X 1 ∷ []
-snn₄ = mapL showTransposition< (sort (normalize< (c2π neg₄)))
+snn₄ = mapL showTransposition< (sort (filter= (c2π neg₄)))
    -- 0 X 1 ∷ []
-snn₅ = mapL showTransposition< (sort (normalize< (c2π neg₅)))
+snn₅ = mapL showTransposition< (sort (filter= (c2π neg₅)))
    -- 0 X 1 ∷ []
 
 sncnot sntoffoli : List String
-sncnot = mapL showTransposition< (sort (normalize< (c2π CNOT)))
+sncnot = mapL showTransposition< (sort (filter= (c2π CNOT)))
    -- 2 X 3 ∷ []
-sntoffoli = mapL showTransposition< (sort (normalize< (c2π TOFFOLI)))
+sntoffoli = mapL showTransposition< (sort (filter= (c2π TOFFOLI)))
    -- 6 X 7 ∷ []
 
 snswap12 snswap23 snswap13 snrotl snrotr : List String
-snswap12 = mapL showTransposition< (sort (normalize< (c2π SWAP12)))
+snswap12 = mapL showTransposition< (sort (filter= (c2π SWAP12)))
    -- 0 X 1 ∷ []
-snswap23 = mapL showTransposition< (sort (normalize< (c2π SWAP23)))
+snswap23 = mapL showTransposition< (sort (filter= (c2π SWAP23)))
    -- 1 X 2 ∷ []
-snswap13 = mapL showTransposition< (sort (normalize< (c2π SWAP13)))
+snswap13 = mapL showTransposition< (sort (filter= (c2π SWAP13)))
    -- before sorting: 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
    -- after sorting : 0 X 2 ∷ []
-snrotl   = mapL showTransposition< (sort (normalize< (c2π ROTL)))
+snrotl   = mapL showTransposition< (sort (filter= (c2π ROTL)))
    -- 0 X 1 ∷ 1 X 2 ∷ []
-snrotr   = mapL showTransposition< (sort (normalize< (c2π ROTR)))
+snrotr   = mapL showTransposition< (sort (filter= (c2π ROTR)))
    -- before sorting: 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
    -- after sorting:  0 X 2 ∷ 1 X 2 ∷ []
 
 snperes snfulladder : List String
-snperes = mapL showTransposition< (sort (normalize< (c2π PERES)))
+snperes = mapL showTransposition< (sort (filter= (c2π PERES)))
    -- before sorting: 6 X 7 ∷ 4 X 6 ∷ 5 X 7 ∷ []
    -- after sorting:  4 X 7 ∷ 5 X 6 ∷ 6 X 7 ∷ []
    -- Apply the transpositions:
@@ -983,7 +1079,7 @@ snperes = mapL showTransposition< (sort (normalize< (c2π PERES)))
    -- (((true  , false) , true)  , (true  , true)  , true)  ∷ []
    -- Perfect!
 
-snfulladder = mapL showTransposition< (sort (normalize< (c2π FULLADDER)))
+snfulladder = mapL showTransposition< (sort (filter= (c2π FULLADDER)))
 -- 4 X 7 ∷
 -- 5 X 6 ∷
 -- 6 X 7 ∷
@@ -992,126 +1088,77 @@ snfulladder = mapL showTransposition< (sort (normalize< (c2π FULLADDER)))
 -- 10 X 12 ∷ 
 -- 11 X 13 ∷ 
 -- 12 X 13 ∷ []
-                 
--- 
--- after several hours :-) 
--- 
+-- Apply permutations manually:
+-- 0000 0000
+-- 0001 0001
+-- 0010 0010
+-- 0011 0011
+-- 0111 0100
+-- 0110 0101
+-- 0100 0110
+-- 0101 0111
+-- 1110 1000
+-- 1111 1001
+-- 1100 1010
+-- 1101 1011
+-- 1011 1100
+-- 1010 1101
+-- 1000 1110
+-- 1001 1111
+-- This has nothing to do with the specification. What went wrong???
+-- Just to be sure, we apply the permutations automatically below and 
+-- get the same incorrect answer...
+-- Not sure if the transpositions if the problem is in sorting or 
+-- if c2π itself is wrong!!!
 
-
-{--
-"4 X 7" ∷
-"5 X 6" ∷
-"6 X 7" ∷
-"8 X 14" ∷ "9 X 15" ∷ "10 X 12" ∷ "11 X 13" ∷ "12 X 13" ∷ []
-
- 0 0000 0000
- 1 0001 0001
- 2 0010 0010
- 3 0011 0011
- 4 0100 0111
- 5 0101 0110
- 6 0110 0100
- 7 0111 0101
- 8 1000 1110
- 9 1001 1111
-10 1010 1100
-11 1011 1101
-12 1100 1001
-13 1101 1011
-14 1110 1000
-15 1111 1010
-
-
-
---}
-
-{--
-"4 X 7" ∷
-"5 X 6" ∷
-"6 X 7" ∷
-"8 X 14" ∷
-"9 X 15" ∷
-"10 X 12" ∷
-"11 X 13" ∷
-"13 X 14" ∷ "12 X 14" ∷ "14 X 15" ∷ "13 X 15" ∷ "14 X 15" ∷ []
---}
-
-
-{--
--- Normalized permutations have exactly one entry for each position
-
-infixr 5 _∷_
-
-data NPerm : ℕ → Set where
-  []  : NPerm 0
-  _∷_ : {n : ℕ} → Fin (suc n) → NPerm n → NPerm (suc n)
-
-lookupP : ∀ {n} → Fin n → NPerm n → Fin n
-lookupP () [] 
-lookupP zero (j ∷ _) = j
-lookupP {suc n} (suc i) (j ∷ q) = inject₁ (lookupP i q)
-
-insert : ∀ {ℓ n} {A : Set ℓ} → Vec A n → Fin (suc n) → A → Vec A (suc n)
-insert vs zero w          = w ∷ vs
-insert [] (suc ())        -- absurd
-insert (v ∷ vs) (suc i) w = v ∷ insert vs i w
-
--- A normalized permutation acts on a vector by inserting each element in its
--- new position.
-
-permute : ∀ {ℓ n} {A : Set ℓ} → NPerm n → Vec A n → Vec A n
-permute []       []       = []
-permute (p ∷ ps) (v ∷ vs) = insert (permute ps vs) p v
-
--- Convert normalized permutation to a sequence of transpositions
-
-nperm2list : ∀ {n} → NPerm n → Perm< n
-nperm2list {0} [] = []
-nperm2list {suc n} (p ∷ ps) = {!!} 
-
--- Aggregate a sequence of transpositions to one insertion in the right
--- position
-
-aggregate : ∀ {n} → Perm< n → NPerm n
-aggregate = {!!} 
-
-{--
-aggregate [] = []
-aggregate (_X_ i j {p₁} ∷ []) = _X_ i j {p₁} ∷ []
-aggregate (_X_ i j {p₁} ∷ _X_ k l {p₂} ∷ π) with toℕ i ≟ toℕ k | toℕ j ≟ toℕ l 
-aggregate (_X_ i j {p₁} ∷ _X_ k l {p₂} ∷ π) | yes _ | yes _ = 
-  aggregate (_X_ k l {p₂} ∷ π)
-aggregate (_X_ i j {p₁} ∷ _X_ k l {p₂} ∷ π) | _ | _ = 
-  (_X_ i j {p₁}) ∷ aggregate (_X_ k l {p₂} ∷ π)
---}
-
-normalize : ∀ {n} → Perm n → NPerm n
-normalize {n} = aggregate ∘ sort ∘ normalize< 
-  where open TSort n
-
--- Examples
-
-nsnn₁ nsnn₂ nsnn₃ nsnn₄ nsnn₅ : List String
-nsnn₁ = mapL showTransposition< (nperm2list (normalize (c2π neg₁)))
-  where open TSort 2
-   -- 0 X 1 ∷ []
-nsnn₂ = mapL showTransposition< (nperm2list (normalize (c2π neg₂)))
-  where open TSort 2
-   -- 0 X 1 ∷ []
-nsnn₃ = mapL showTransposition< (nperm2list (normalize (c2π neg₃)))
-  where open TSort 2
-   -- 0 X 1 ∷ []
-nsnn₄ = mapL showTransposition< (nperm2list (normalize (c2π neg₄)))
-  where open TSort 2
-   -- 0 X 1 ∷ []
-nsnn₅ = mapL showTransposition< (nperm2list (normalize (c2π neg₅)))
-  where open TSort 2
-   -- 0 X 1 ∷ []
-
-nswap₁₂ nswap₂₃ nswap₁₃ : List String
-nswap₁₂ = mapL showTransposition< (nperm2list (normalize (c2π SWAP12)))
-nswap₂₃ = mapL showTransposition< (nperm2list (normalize (c2π SWAP23)))
-nswap₁₃ = mapL showTransposition< (nperm2list (normalize (c2π SWAP13)))
+snfulladderπ : 
+  Vec ((Bool × ((Bool × Bool) × Bool)) × (Bool × (Bool × (Bool × Bool)))) 16
+snfulladderπ = 
+  let t₁ = TIMES BOOL (TIMES (TIMES BOOL BOOL) BOOL)
+      t₂ = TIMES BOOL (TIMES BOOL (TIMES BOOL BOOL))
+      vs₁ = utoVec t₁
+      vs₂ = utoVec t₂
+      π = sort (filter= (c2π FULLADDER))
+      vs₁' = foldl swapX vs₁ π
+  in zip vs₁' (subst (Vec ⟦ t₂ ⟧) (sym (size≡ FULLADDER)) vs₂)
+  where
+    swapX : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Vec A n → Transposition< n → Vec A n  
+    swapX vs (i X j) = (vs [ i ]≔ lookup j vs) [ j ]≔ lookup i vs
+-- Specification as a truth table:
+-- 0000 0000
+-- 1000 0001
+-- 0001 0010
+-- 1001 0011
+-- 1011 0100
+-- 0011 0101
+-- 0010 0110
+-- 1010 0111
+-- 1110 1000
+-- 0110 1001
+-- 1111 1010
+-- 0111 1011
+-- 1101 1100
+-- 0101 1101
+-- 0100 1110
+-- 1100 1111
+-- Actual output:
+-- ((false , (false , false) , false) , false , false , false , false) ∷
+-- ((false , (false , false) , true)  , false , false , false , true)  ∷
+-- ((false , (false , true)  , false) , false , false , true  , false) ∷
+-- ((false , (false , true)  , true)  , false , false , true  , true)  ∷
+-- ((false , (true  , true)  , true)  , false , true  , false , false) ∷
+-- ((false , (true  , true)  , false) , false , true  , false , true)  ∷
+-- ((false , (true  , false) , false) , false , true  , true  , false) ∷
+-- ((false , (true  , false) , true)  , false , true  , true  , true)  ∷
+-- ((true  , (true  , true)  , false) , true  , false , false , false) ∷
+-- ((true  , (true  , true)  , true)  , true  , false , false , true)  ∷
+-- ((true  , (true  , false) , false) , true  , false , true  , false) ∷
+-- ((true  , (true  , false) , true)  , true  , false , true  , true)  ∷
+-- ((true  , (false , true)  , true)  , true  , true  , false , false) ∷
+-- ((true  , (false , true)  , false) , true  , true  , false , true)  ∷
+-- ((true  , (false , false) , false) , true  , true  , true  , false) ∷
+-- ((true  , (false , false) , true)  , true  , true  , true  , true)  ∷ []
+-- Completely wrong!!!
 
 ------------------------------------------------------------------------------
 -- Extensional equivalence of combinators: two combinators are
@@ -1121,7 +1168,10 @@ nswap₁₃ = mapL showTransposition< (nperm2list (normalize (c2π SWAP13)))
 -- type are discrete groupoids, this reduces to saying that y and z
 -- are identical, and hence that the permutations are identical.
 
-infix  10  _∼_  
+normalize : ∀ {n} → Perm n → Perm< n
+normalize = sort ∘ filter=
+
+infix  10  _∼_ 
 
 _∼_ : ∀ {t₁ t₂} → (c₁ c₂ : t₁ ⟷ t₂) → Set
 c₁ ∼ c₂ = (normalize (c2π c₁) ≡ normalize (c2π c₂))
@@ -1410,6 +1460,7 @@ G' = record
         ; ∘-resp-≈ = λ p∼q r∼s → resp◎⇔ r∼s p∼q 
         }
 
+{--
 ------------------------------------------------------------------------------
 -- Inverting permutations to syntactic combinators
 
@@ -1500,7 +1551,6 @@ completeness {t₁} {t₂} {c₁} {c₂} c₁∼c₂ =
 
 ------------------------------------------------------------------------------
 
-{--
 -- normalize a finite type to (1 + (1 + (1 + ... + (1 + 0) ... )))
 -- a bunch of ones ending with zero with left biased + in between
 
@@ -3425,5 +3475,3 @@ tcompπ {m} {n} α β =
                       (β ++L idπ {n})})
             (α ++L idπ {m}))
 --}
---}
-
