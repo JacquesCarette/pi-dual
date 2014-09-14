@@ -421,6 +421,7 @@ FULLADDER⟷ =
   (id⟷ ⊗ assocr⋆)
   -- (n1,(n1 xor n2,
   --      (n1 xor n2 xor cin,((n1 xor n2) and cin) xor (n1 and n2) xor z)))
+
 -- Every permutation has an inverse. There are actually many syntactically
 -- different inverses but they are all equivalent.
 
@@ -734,7 +735,7 @@ c2π assocl₊   = []
 c2π assocr₊   = []
 c2π unite⋆    = []
 c2π uniti⋆    = []
-c2π swap⋆     = [] 
+c2π swap⋆     = [] --- STUPID BUG !!!!!!!!!!!!!!!!!
 c2π assocl⋆   = []  
 c2π assocr⋆   = []  
 c2π distz     = []  
@@ -754,6 +755,39 @@ c2π peres⟷ = _X_ (inject+ 3 (fromℕ 4)) (inject+ 0 (fromℕ 7))
               _X_ (inject+ 1 (fromℕ 6)) (inject+ 0 (fromℕ 7)) 
                 {s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n)))))} ∷ 
               []
+
+-- Debugging fulladder
+
+  -- (z,((n1,n2),cin))
+--  swap⋆ ◎ 
+  -- (((n1,n2),cin),z)
+
+
+
+  -- (((n1,n2),cin),z)
+--  (swap⋆ ⊗ id⟷) ◎ 
+  -- ((cin,(n1,n2)),z)
+--  assocr⋆ ◎ 
+  -- (cin,((n1,n2),z))
+--  swap⋆ ◎ 
+  -- (((n1,n2),z),cin)
+--  (peres⟷ ⊗ id⟷) ◎     
+  -- (((n1,n1 xor n2),(n1 and n2) xor z),cin) 
+--  assocr⋆ ◎ 
+  -- ((n1,n1 xor n2),((n1 and n2) xor z,cin))
+--  (id⟷ ⊗ swap⋆) ◎ 
+  -- ((n1,n1 xor n2),(cin,(n1 and n2) xor z))
+--  assocr⋆ ◎ 
+  -- (n1,(n1 xor n2,(cin,(n1 and n2) xor z)))
+--  (id⟷ ⊗ assocl⋆) ◎ 
+  -- (n1,((n1 xor n2,cin),(n1 and n2) xor z))
+--  (id⟷ ⊗ peres⟷) ◎ 
+  -- (n1,((n1 xor n2,n1 xor n2 xor cin),
+  --      ((n1 xor n2) and cin) xor (n1 and n2) xor z))
+--  (id⟷ ⊗ assocr⋆)
+  -- (n1,(n1 xor n2,
+  --      (n1 xor n2 xor cin,((n1 xor n2) and cin) xor (n1 and n2) xor z)))
+
 
 -- Convenient way of seeing the result of applying a c : t₁ ⟷ t₂ 
 
