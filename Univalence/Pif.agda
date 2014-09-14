@@ -250,6 +250,7 @@ data _⟷_ : U → U → Set where
   -- for testing
   foldBool   : PLUS ONE ONE ⟷ BOOL
   unfoldBool : BOOL ⟷ PLUS ONE ONE
+  peres⟷ : TIMES (TIMES BOOL BOOL) BOOL ⟷ TIMES (TIMES BOOL BOOL) BOOL
 
 -- Nicer syntax that shows intermediate values instead of the above
 -- point-free notation of permutations
@@ -392,6 +393,34 @@ FULLADDER =
   -- (n1,(n1 xor n2,
   --      (n1 xor n2 xor cin,((n1 xor n2) and cin) xor (n1 and n2) xor z)))
 
+FULLADDER⟷ : TIMES BOOL (TIMES (TIMES BOOL BOOL) BOOL) ⟷
+            TIMES BOOL (TIMES BOOL (TIMES BOOL BOOL))
+FULLADDER⟷ = 
+  -- (z,((n1,n2),cin))
+  swap⋆ ◎ 
+  -- (((n1,n2),cin),z)
+  (swap⋆ ⊗ id⟷) ◎ 
+  -- ((cin,(n1,n2)),z)
+  assocr⋆ ◎ 
+  -- (cin,((n1,n2),z))
+  swap⋆ ◎ 
+  -- (((n1,n2),z),cin)
+  (peres⟷ ⊗ id⟷) ◎     
+  -- (((n1,n1 xor n2),(n1 and n2) xor z),cin) 
+  assocr⋆ ◎ 
+  -- ((n1,n1 xor n2),((n1 and n2) xor z,cin))
+  (id⟷ ⊗ swap⋆) ◎ 
+  -- ((n1,n1 xor n2),(cin,(n1 and n2) xor z))
+  assocr⋆ ◎ 
+  -- (n1,(n1 xor n2,(cin,(n1 and n2) xor z)))
+  (id⟷ ⊗ assocl⋆) ◎ 
+  -- (n1,((n1 xor n2,cin),(n1 and n2) xor z))
+  (id⟷ ⊗ peres⟷) ◎ 
+  -- (n1,((n1 xor n2,n1 xor n2 xor cin),
+  --      ((n1 xor n2) and cin) xor (n1 and n2) xor z))
+  (id⟷ ⊗ assocr⋆)
+  -- (n1,(n1 xor n2,
+  --      (n1 xor n2 xor cin,((n1 xor n2) and cin) xor (n1 and n2) xor z)))
 -- Every permutation has an inverse. There are actually many syntactically
 -- different inverses but they are all equivalent.
 
@@ -416,6 +445,7 @@ FULLADDER =
 ! (c₁ ⊗ c₂) = (! c₁) ⊗ (! c₂)
 ! unfoldBool = foldBool
 ! foldBool   = unfoldBool
+! peres⟷ = {!!} 
 
 !! : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → ! (! c) ≡ c
 !! {c = unite₊}  = refl
@@ -458,6 +488,7 @@ FULLADDER =
   where open ≡-Reasoning
 !! {c = unfoldBool} = refl
 !! {c = foldBool}   = refl
+!! {c = peres⟷} = {!!} 
 
 ------------------------------------------------------------------------------
 -- Types as vectors of elements
@@ -512,6 +543,7 @@ size≡ {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = cong₂ _+_ (size≡
 size≡ {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = cong₂ _*_ (size≡ c₁) (size≡ c₂)
 size≡ {PLUS ONE ONE} {BOOL} foldBool = refl
 size≡ {BOOL} {PLUS ONE ONE} unfoldBool = refl
+size≡ peres⟷ = refl
 
 -- All proofs about sizes are "the same"
 
@@ -571,6 +603,32 @@ swapπ {suc m} {n}     =
           (mapV inject₁ (allFin (m + n))) 
           (tail (allFin (suc m + n))))))
 
+-- Ex:
+
+swap11 swap21 swap32 : List String
+swap11 = mapL showTransposition (swapπ {1} {1})
+-- 0 X 1 ∷ []
+-- Action on [a, b]
+--           [b, a]
+swap21 = mapL showTransposition (swapπ {2} {1})
+-- 0 X 1 ∷ 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
+-- Action on [a, b, c]
+--           [c, a, b]
+-- Once normalized we get:
+-- 0 X 2 ∷ 1 X 2 ∷ []
+swap32 = mapL showTransposition (swapπ {3} {2})
+-- 0 X 1 ∷ 1 X 2 ∷ 2 X 3 ∷ 3 X 4 ∷
+-- 0 X 1 ∷ 1 X 2 ∷ 2 X 3 ∷ 3 X 4 ∷ 
+-- 0 X 1 ∷ 1 X 2 ∷ 2 X 3 ∷ 3 X 4 ∷ []
+-- Action on [ a, b, c, d, e ]
+--           [ b, c, d, e, a ]
+--           [ c, d, e, a, b ]
+--           [ d, e, a, b, c ]
+-- Once normalized we get:
+-- 0 X 3 ∷ 1 X 4 ∷ 2 X 3 ∷ 3 X 4 ∷ []
+-- Action on [ a, b, c, d, e ]
+--           [ d, e, a, b, c ]
+
 -- Sequential composition is just append
 
 scompπ : ∀ {n} → Perm n → Perm n → Perm n
@@ -597,23 +655,32 @@ raiseπ π m = mapL (λ { (i X j) →
 pcompπ : ∀ {m n} → Perm m → Perm n → Perm (m + n)
 pcompπ {m} {n} α β = (injectπ α n) ++L (raiseπ β m)
 
--- Tensor multiplicative composition
+-- Ex: 
 
--- expand id permutation to [ i X i ... ] for all i 
+swap11+21 swap21+11 : List String
+swap11+21 = mapL showTransposition (pcompπ (swapπ {1} {1}) (swapπ {2} {1}))
+-- 0 X 1 ∷ 2 X 3 ∷ 3 X 4 ∷ 2 X 3 ∷ 3 X 4 ∷ []
+-- Once normalized we get:
+-- 0 X 1 ∷ 2 X 4 ∷ 3 X 4 ∷ []
+swap21+11 = mapL showTransposition (pcompπ (swapπ {2} {1}) (swapπ {1} {1}))
+-- 0 X 1 ∷ 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 3 X 4 ∷ []
+-- Once normalized we get:
+-- 0 X 2 ∷ 1 X 2 ∷ 3 X 4 ∷ []
+
+-- Tensor multiplicative composition
 
 idπ : ∀ {n} → Perm n
 idπ {n} = toList (zipWith mkTransposition (allFin n) (allFin n))
+
+-- Ex:
+
+idπ5 = mapL showTransposition (idπ {5})
+-- 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ []
 
 -- Swaps in α correspond to swapping entire rows
 -- Swaps in β correspond to swapping entire columns
 -- Need to make sure neither α nor β is empty; otherwise composition annhilates
 -- So explicitly represent identity permutations using a sequence of self-swaps
-
--- This produces huge outputs. Try to refine by only adding the necessary
--- transpositions instead of blindly adding idπ
-
--- add the missing i X i to a permutation to make sure that no index i is
--- missing
 
 delete : ∀ {n} → List (Fin n) → Fin n → List (Fin n)
 delete [] _ = []
@@ -621,18 +688,12 @@ delete (j ∷ js) i with toℕ i ≟ toℕ j
 delete (j ∷ js) i | yes _ = js
 delete (j ∷ js) i | no _ = j ∷ delete js i
 
-diff : ∀ {n} → List (Fin n) → List (Fin n) → List (Fin n)
-diff = foldl delete
-
 extendπ : ∀ {n} → Perm n → Perm n
 extendπ {n} π = 
   let existing = mapL (λ { (i X j) → i }) π
       all = toList (allFin n)
       diff = foldl delete all existing
-  in mapL (λ i → _X_ i i {i≤i (toℕ i)}) diff
-
--- The lines for extendπ used to ++L idπ which was slow
--- This is now with extendπ VERY WRONG 
+  in π ++L mapL (λ i → _X_ i i {i≤i (toℕ i)}) diff
 
 tcompπ : ∀ {m n} → Perm m → Perm n → Perm (m * n)
 tcompπ {m} {n} α β = 
@@ -646,6 +707,21 @@ tcompπ {m} {n} α β =
                                    (i*n+k≤m*n j l))})
                       (extendπ β)})
             (extendπ α))
+
+-- Ex:
+
+swap21*id : List String
+swap21*id = mapL showTransposition (tcompπ (swapπ {2} {1}) (idπ {2}))
+-- 0 X 2 ∷ 1 X 3 ∷ 2 X 4 ∷ 3 X 5 ∷ 
+-- 0 X 2 ∷ 1 X 3 ∷ 2 X 4 ∷ 3 X 5 ∷ 
+-- 4 X 4 ∷ 5 X 5 ∷ []
+-- swap21 takes [a, b, c] to [c, a, b]
+-- id2    takes [d, e] to [d, e]
+-- tensor is [ (a,d), (a,e), (b,d), (b,e), (c,d), (c,e) ]
+-- action on tensor is:
+-- [ (a,d), (a,e), (b,d), (b,e), (c,d), (c,e) ]
+-- [ (c,d), (c,e), (a,d), (a,e), (b,d), (b,e) ]
+-- which is correct
 
 ------------------------------------------------------------------------------
 -- A combinator t₁ ⟷ t₂ denotes a permutation.
@@ -671,6 +747,13 @@ c2π (c₁ ⊕ c₂) = pcompπ (c2π c₁) (c2π c₂)
 c2π (c₁ ⊗ c₂) = tcompπ (c2π c₁) (c2π c₂) 
 c2π unfoldBool = []
 c2π foldBool   = []
+c2π peres⟷ = _X_ (inject+ 3 (fromℕ 4)) (inject+ 0 (fromℕ 7)) 
+                {s≤s (s≤s (s≤s (s≤s z≤n)))} ∷ 
+              _X_ (inject+ 2 (fromℕ 5)) (inject+ 1 (fromℕ 6)) 
+                {s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))} ∷ 
+              _X_ (inject+ 1 (fromℕ 6)) (inject+ 0 (fromℕ 7)) 
+                {s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n)))))} ∷ 
+              []
 
 -- Convenient way of seeing the result of applying a c : t₁ ⟷ t₂ 
 
@@ -685,7 +768,7 @@ showπ {t₁} {t₂} c =
 neg₁π neg₂π neg₃π neg₄π neg₅π : Vec (⟦ BOOL ⟧ × ⟦ BOOL ⟧) 2
 neg₁π = showπ {BOOL} {BOOL} neg₁  
 --      (true , false) ∷ (false , true) ∷ []
-neg₂π = showπ {BOOL} {BOOL} neg₂  -- ok
+neg₂π = showπ {BOOL} {BOOL} neg₂  
 --      (true , false) ∷ (false , true) ∷ []
 neg₃π = showπ {BOOL} {BOOL} neg₃  
 --      (true , false) ∷ (false , true) ∷ []
@@ -757,8 +840,42 @@ peresπ = showπ PERES
 
 fulladderπ : 
   Vec ((Bool × ((Bool × Bool) × Bool)) × (Bool × (Bool × (Bool × Bool)))) 16
-fulladderπ = showπ FULLADDER
--- ??
+-- fulladderπ = showπ FULLADDER
+fulladderπ = showπ FULLADDER⟷
+-- ((false , (false , false) , false) , false , false , false , false) ∷
+-- ((false , (false , false) , true) , false , false , false , true) ∷
+-- ((false , (false , true) , false) , false , false , true , false) ∷
+-- ((false , (false , true) , true) , false , false , true , true) ∷
+-- ((false , (true , true) , true) , false , true , false , false) ∷
+-- ((false , (true , true) , false) , false , true , false , true) ∷
+-- ((false , (true , false) , false) , false , true , true , false) ∷
+-- ((false , (true , false) , true) , false , true , true , true) ∷
+-- ((true , (true , true) , false) , true , false , false , false) ∷
+-- ((true , (true , true) , true) , true , false , false , true) ∷
+-- ((true , (true , false) , false) , true , false , true , false) ∷
+-- ((true , (true , false) , true) , true , false , true , true) ∷
+-- ((true , (false , true) , true) , true , true , false , false) ∷
+-- ((true , (false , true) , false) , true , true , false , true) ∷
+-- ((true , (false , false) , false) , true , true , true , false) ∷
+-- ((true , (false , false) , true) , true , true , true , true) ∷ []
+-- ... which has nothing to do with the specification:
+-- 0000 0000
+-- 1000 0001
+-- 0001 0010
+-- 1001 0011
+-- 1011 0100
+-- 0011 0101
+-- 0010 0110
+-- 1010 0111
+-- 1110 1000
+-- 0110 1001
+-- 1111 1010
+-- 0111 1011
+-- 1101 1100
+-- 0101 1101
+-- 0100 1110
+-- 1100 1111
+
 
 -- The various realizations of negation are equivalent but they give
 -- different sequences of transpositions:
@@ -897,7 +1014,8 @@ nperes nfulladder : List String
 nperes = mapL showTransposition< (filter= (c2π PERES))
    -- 6 X 7 ∷ 4 X 6 ∷ 5 X 7 ∷ []
 nfulladder = mapL showTransposition< (filter= (c2π FULLADDER))
-   -- ??
+   -- 12 X 14 ∷ 13 X 15 ∷ 8 X 12 ∷ 9 X 13 ∷ 10 X 14 ∷ 11 X 15 ∷
+   -- 6 X 7 ∷ 4 X 6 ∷ 5 X 7 ∷ 14 X 15 ∷ 12 X 14 ∷ 13 X 15 ∷ []
 
 -- Next we sort the list of transpositions using a variation of bubble
 -- sort. Like in the conventional bubble sort we look at pairs of
@@ -1192,6 +1310,7 @@ snfulladderπ =
 -- ((true  , (false , false) , true)  , true  , true  , true  , true)  ∷ []
 -- Completely wrong!!!
 
+{--
 ------------------------------------------------------------------------------
 -- Extensional equivalence of combinators: two combinators are
 -- equivalent if they denote the same permutation. Generally we would
@@ -1440,7 +1559,6 @@ _▤ c = id⇔
 
 -- a nice example of 2 paths
 
-{--
 negEx : neg₅ ⇔ neg₁
 negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆)))
           ⇔⟨ resp◎⇔ id⇔ assoc◎l ⟩
@@ -1465,7 +1583,6 @@ negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆
         swap₊ ◎ id⟷
           ⇔⟨ idr◎l ⟩
         swap₊ ▤
---}
 
 -- The equivalence ⇔ of paths is rich enough to make U a 1groupoid:
 -- the points are types (t : U); the 1paths are ⟷; and the 2paths
@@ -1492,7 +1609,6 @@ G' = record
         ; ∘-resp-≈ = λ p∼q r∼s → resp◎⇔ r∼s p∼q 
         }
 
-{--
 ------------------------------------------------------------------------------
 -- Inverting permutations to syntactic combinators
 
