@@ -631,6 +631,9 @@ extendπ {n} π =
       diff = foldl delete all existing
   in mapL (λ i → _X_ i i {i≤i (toℕ i)}) diff
 
+-- The lines for extendπ used to ++L idπ which was slow
+-- This is now with extendπ VERY WRONG 
+
 tcompπ : ∀ {m n} → Perm m → Perm n → Perm (m * n)
 tcompπ {m} {n} α β = 
   concatL (mapL 
@@ -755,7 +758,7 @@ peresπ = showπ PERES
 fulladderπ : 
   Vec ((Bool × ((Bool × Bool) × Bool)) × (Bool × (Bool × (Bool × Bool)))) 16
 fulladderπ = showπ FULLADDER
--- takes too much time to calculate
+-- ??
 
 -- The various realizations of negation are equivalent but they give
 -- different sequences of transpositions:
@@ -836,7 +839,7 @@ peres = mapL showTransposition (c2π PERES)
 -- 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷ 
 -- 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ []
 fulladder = mapL showTransposition (c2π FULLADDER)
--- takes too much time to calculate
+-- ??
 
 ------------------------------------------------------------------------------
 -- Normalization
@@ -890,9 +893,11 @@ nrotl   = mapL showTransposition< (filter= (c2π ROTL))
 nrotr   = mapL showTransposition< (filter= (c2π ROTR))
    -- 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
 
-nperes : List String
+nperes nfulladder : List String
 nperes = mapL showTransposition< (filter= (c2π PERES))
    -- 6 X 7 ∷ 4 X 6 ∷ 5 X 7 ∷ []
+nfulladder = mapL showTransposition< (filter= (c2π FULLADDER))
+   -- ??
 
 -- Next we sort the list of transpositions using a variation of bubble
 -- sort. Like in the conventional bubble sort we look at pairs of
