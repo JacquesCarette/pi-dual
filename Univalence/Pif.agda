@@ -609,6 +609,9 @@ idπ {n} = toList (zipWith mkTransposition (allFin n) (allFin n))
 -- Need to make sure neither α nor β is empty; otherwise composition annhilates
 -- So explicitly represent identity permutations using a sequence of self-swaps
 
+-- This produces huge outputs. Try to refine by only adding the necessary
+-- transpositions instead of blindly adding idπ
+
 tcompπ : ∀ {m n} → Perm m → Perm n → Perm (m * n)
 tcompπ {m} {n} α β = 
   concatL (mapL 
@@ -945,18 +948,20 @@ bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | no ¬i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l with toℕ i <? toℕ k
 bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | no ¬i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l | yes i<k = 
-    -- already sorted; no repeat in first position; skip and recur
-    -- Ex: 2 X 5 , 3 X 4
+  -- already sorted; no repeat in first position; skip and recur
+  -- Ex: 2 X 5 , 3 X 4
     _X_ i j {i<j} ∷ bubble (_X_ k l {k<l} ∷ π)
 bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | no ¬i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l | no i≮k = 
-    -- not sorted; no repeat in first position; no interference
-    -- just slide one transposition past the other
-    -- Ex: 2 X 5 , 1 X 4
-    -- becomes 1 X 4 , 2 X 5
+  -- Case B. in email
+  -- not sorted; no repeat in first position; no interference
+  -- just slide one transposition past the other
+  -- Ex: 2 X 5 , 1 X 4
+  -- becomes 1 X 4 , 2 X 5
     _X_ k l {k<l} ∷  bubble (_X_ i j {i<j} ∷ π)
 bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | yes i≡k | no ¬i≡l | no ¬j≡k | yes j≡l = 
+  -- Case A. in email
   -- transposition followed by its inverse; simplify by removing both
   -- Ex: 2 X 5 , 2 X 5
   -- becomes id and is deleted
@@ -974,6 +979,7 @@ bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
     {i≰j∧j≠i→j<i (toℕ i) (toℕ k) (i≮j∧i≠j→i≰j (toℕ i) (toℕ k) i≮k ¬i≡k) 
        (i≠j→j≠i (toℕ i) (toℕ k) ¬i≡k)} ∷
   bubble (_X_ i j {i<j} ∷ π)
+  -- Case C. in email
   -- Ex: 2 X 5 , 1 X 5 
   -- becomes 1 X 2 , 2 X 5
 bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
@@ -983,6 +989,7 @@ bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
    _X_ i j {i<j} ∷ bubble (_X_ k l {k<l} ∷ π)
 bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | no ¬i≡k | yes i≡l | no ¬j≡k | no ¬j≡l = 
+  -- Case D. in email
   -- Ex: 2 X 5 , 1 X 2 
   -- becomes 1 X 5 , 2 X 5
   _X_ k j {trans< (subst ((λ l → toℕ k < l)) (sym i≡l) k<l) i<j} ∷
@@ -991,18 +998,19 @@ bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l with toℕ j <? toℕ l
 bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l | yes j<l =
+  -- Case E. in email
   -- Ex: 2 X 5 , 2 X 6
   -- becomes 2 X 6 , 5 X 6
   _X_ k l {k<l} ∷ bubble (_X_ j l {j<l} ∷ π)
 bubble (_X_ i j {i<j} ∷ _X_ k l {k<l} ∷ π)
   | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l | no j≮l = 
+  -- Case F. in email
   -- Ex: 2 X 5 , 2 X 3
   -- becomes 2 X 3 , 3 X 5 
   _X_ k l {k<l} ∷ 
   bubble (_X_ l j {i≰j∧j≠i→j<i (toℕ j) (toℕ l) 
                     (i≮j∧i≠j→i≰j (toℕ j) (toℕ l) j≮l ¬j≡l)
                     (i≠j→j≠i (toℕ j) (toℕ l) ¬j≡l)} ∷ π)
-
 
 -- sorted and no repeats in first position
 
