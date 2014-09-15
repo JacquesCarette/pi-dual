@@ -1099,6 +1099,12 @@ invariant. For any two adjacent transpositions (a X b) (c X d) we have
 that a < c. Transformations B, C, and D rewrite anything in which a > c.
 Transformations A, E, and F rewrite anything in which a = c. Termination 
 is subtle clearly.
+
+New strategy to implement: So could we index things so that a first set of
+(up to) n passes 'bubble down' (0 X a) until there is only one left at the
+root, then recurse on the tail to 'bubble down' (1 X b)'s [if any]? That
+would certainly ensure termination.
+
 --}
 
 {-# NO_TERMINATION_CHECK #-}
