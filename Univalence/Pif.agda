@@ -1082,6 +1082,25 @@ nfulladder = mapL showTransposition< (filter= (c2π FULLADDER))
 -- goal is to reach a sorted sequene with no repeats in the first position
 -- Ex: (0 X 2) ∷ (3 X 4) ∷ (4 X 6) ∷ (5 X 6)
 
+{--
+There is probably lots of room for improvement. Here is the idea.
+We take a list of transpositions (a_i X b_i) where a_i < b_i and keep
+looking at adjacent pairs doing the following transformations:
+
+A.  (a X b) (a X b) => id
+B.  (a X b) (c X d) => (c X d) (a X b) if c < a
+C.  (a X b) (c X b) => (c X a) (a X b) if c < a
+D.  (a X b) (c X a) => (c X b) (a X b) 
+E.  (a X b) (a X d) => (a X d) (b X d) if b < d
+F.  (a X b) (a X d) => (a X d) (d X b) if d < b
+
+The point is that we get closer and closer to the following
+invariant. For any two adjacent transpositions (a X b) (c X d) we have
+that a < c. Transformations B, C, and D rewrite anything in which a > c.
+Transformations A, E, and F rewrite anything in which a = c. Termination 
+is subtle clearly.
+--}
+
 {-# NO_TERMINATION_CHECK #-}
 bubble : ∀ {n} → Perm< n → Perm< n
 bubble [] = []
@@ -3679,3 +3698,4 @@ tcompπ {m} {n} α β =
                       (β ++L idπ {n})})
             (α ++L idπ {m}))
 --}
+
