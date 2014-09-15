@@ -724,6 +724,28 @@ swap21*id = mapL showTransposition (tcompπ (swapπ {2} {1}) (idπ {2}))
 -- [ (c,d), (c,e), (a,d), (a,e), (b,d), (b,e) ]
 -- which is correct
 
+-- swap⋆ 
+
+-- Let 3 = [a, b, c]
+-- and 2 = [d, e]
+-- Then 3 x 2 = [ (a,d), (a,e), 
+--                (b,d), (b,e), 
+--                (c,d), (c,e) ]
+-- and  2 x 3 = [ (d,a), (d,b), (d,c), 
+--                (e,a), (e,b), (e,c) ]
+-- More generally if we have m x n
+-- value at index i*n+j must go to j*m+i
+-- 
+-- 00   01   02   ... 0n-1
+-- 10   11   12   ... 1n-1
+-- ...  i*n+j
+-- m-10 m-11 m-12 ... m-1n-1
+-- we want to switch this around to:
+-- 00   10   20   ... m-10
+-- ...  ...  j*m+i
+-- 0n-1 1n-1 2n-1 ... m-1n-1
+
+
 ------------------------------------------------------------------------------
 -- A combinator t₁ ⟷ t₂ denotes a permutation.
 
