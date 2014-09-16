@@ -594,9 +594,9 @@ actionπ π vs = foldl swapX vs π
 -- [ vᵢ₊₁ , vᵢ₊₂ , ... , vᵢ₊ⱼ || v₁   , v₂   , ... , vᵢ   ]
 -- idea: move each of the first i elements to the end by successive swaps
 
-swapπ : ∀ {m n} → Perm (m + n)
-swapπ {0}     {n}     = []
-swapπ {suc m} {n}     = 
+swap+π : ∀ {m n} → Perm (m + n)
+swap+π {0}     {n}     = []
+swap+π {suc m} {n}     = 
   concatL 
     (replicate (suc m)
       (toList 
@@ -607,17 +607,17 @@ swapπ {suc m} {n}     =
 -- Ex:
 
 swap11 swap21 swap32 : List String
-swap11 = mapL showTransposition (swapπ {1} {1})
+swap11 = mapL showTransposition (swap+π {1} {1})
 -- 0 X 1 ∷ []
 -- Action on [a, b]
 --           [b, a]
-swap21 = mapL showTransposition (swapπ {2} {1})
+swap21 = mapL showTransposition (swap+π {2} {1})
 -- 0 X 1 ∷ 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
 -- Action on [a, b, c]
 --           [c, a, b]
 -- Once normalized we get:
 -- 0 X 2 ∷ 1 X 2 ∷ []
-swap32 = mapL showTransposition (swapπ {3} {2})
+swap32 = mapL showTransposition (swap+π {3} {2})
 -- 0 X 1 ∷ 1 X 2 ∷ 2 X 3 ∷ 3 X 4 ∷
 -- 0 X 1 ∷ 1 X 2 ∷ 2 X 3 ∷ 3 X 4 ∷ 
 -- 0 X 1 ∷ 1 X 2 ∷ 2 X 3 ∷ 3 X 4 ∷ []
@@ -659,11 +659,11 @@ pcompπ {m} {n} α β = (injectπ α n) ++L (raiseπ β m)
 -- Ex: 
 
 swap11+21 swap21+11 : List String
-swap11+21 = mapL showTransposition (pcompπ (swapπ {1} {1}) (swapπ {2} {1}))
+swap11+21 = mapL showTransposition (pcompπ (swap+π {1} {1}) (swap+π {2} {1}))
 -- 0 X 1 ∷ 2 X 3 ∷ 3 X 4 ∷ 2 X 3 ∷ 3 X 4 ∷ []
 -- Once normalized we get:
 -- 0 X 1 ∷ 2 X 4 ∷ 3 X 4 ∷ []
-swap21+11 = mapL showTransposition (pcompπ (swapπ {2} {1}) (swapπ {1} {1}))
+swap21+11 = mapL showTransposition (pcompπ (swap+π {2} {1}) (swap+π {1} {1}))
 -- 0 X 1 ∷ 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 3 X 4 ∷ []
 -- Once normalized we get:
 -- 0 X 2 ∷ 1 X 2 ∷ 3 X 4 ∷ []
@@ -712,7 +712,7 @@ tcompπ {m} {n} α β =
 -- Ex:
 
 swap21*id : List String
-swap21*id = mapL showTransposition (tcompπ (swapπ {2} {1}) (idπ {2}))
+swap21*id = mapL showTransposition (tcompπ (swap+π {2} {1}) (idπ {2}))
 -- 0 X 2 ∷ 1 X 3 ∷ 2 X 4 ∷ 3 X 5 ∷ 
 -- 0 X 2 ∷ 1 X 3 ∷ 2 X 4 ∷ 3 X 5 ∷ 
 -- 4 X 4 ∷ 5 X 5 ∷ []
@@ -726,6 +726,9 @@ swap21*id = mapL showTransposition (tcompπ (swapπ {2} {1}) (idπ {2}))
 
 -- swap⋆ 
 
+swap⋆π : ∀ {m n} → Perm (m * n) 
+swap⋆π {m} {n} = {!!}
+          
 -- Let 3 = [a, b, c]
 -- and 2 = [d, e]
 -- Then 3 x 2 = [ (a,d), (a,e), 
@@ -745,6 +748,19 @@ swap21*id = mapL showTransposition (tcompπ (swapπ {2} {1}) (idπ {2}))
 -- ...  ...  j*m+i
 -- 0n-1 1n-1 2n-1 ... m-1n-1
 
+-- m = 3
+-- n = 2
+
+--    0       1      2      3      4      5
+--  0*n+0   0*n+1  1*n+0  1*n+1  2*n+0   2*n+1
+-- [ (a,d), (a,e), (b,d), (b,e), (c,d), (c,e) ]
+-- 3 X 4
+-- [ (a,d), (a,e), (b,d), (c,d), (b,e), (c,e) ]
+-- 1 X 2 , 2 X 3 
+-- [ (a,d), (b,d), (c,d), (a,e), (b,e), (c,e) ]
+-- 
+--  0*m+0   0*m+1  0*m+2  1*m+0  1*m+1  1*m+2
+-- [ (d,a), (d,b), (d,c), (e,a), (e,b), (e,c) ]
 
 ------------------------------------------------------------------------------
 -- A combinator t₁ ⟷ t₂ denotes a permutation.
@@ -752,12 +768,12 @@ swap21*id = mapL showTransposition (tcompπ (swapπ {2} {1}) (idπ {2}))
 c2π : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Perm (size t₁)
 c2π unite₊    = []
 c2π uniti₊    = []
-c2π {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = swapπ {size t₁} {size t₂}
+c2π {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = swap+π {size t₁} {size t₂}
 c2π assocl₊   = []
 c2π assocr₊   = []
 c2π unite⋆    = []
 c2π uniti⋆    = []
-c2π swap⋆     = [] --- STUPID BUG !!!!!!!!!!!!!!!!!
+c2π {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = swap⋆π {size t₁} {size t₂}
 c2π assocl⋆   = []  
 c2π assocr⋆   = []  
 c2π distz     = []  
