@@ -5,14 +5,14 @@ module Pif where
 open import Level using (Level; _⊔_) renaming (zero to lzero; suc to lsuc)
 
 open import Relation.Binary.PropositionalEquality 
-  using (_≡_; refl; sym; trans; subst; subst₂; cong; cong₂; 
+  using (_≡_; refl; sym; trans; subst; subst₂; cong; cong₂; setoid; 
         proof-irrelevance; module ≡-Reasoning)
 open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+)
 open import Data.Nat.DivMod using (_mod_)
-open import Relation.Binary using (Rel; Decidable)
+open import Relation.Binary using (Rel; Decidable; Setoid)
 open import Relation.Binary.Core using (Transitive)
 
 open import Data.String using (String)
@@ -28,11 +28,16 @@ open import Data.Fin
 open import Data.Fin.Properties using (bounded; inject+-lemma)
 
 open import Data.List 
-  using (List; []; _∷_; _∷ʳ_; foldl; replicate; reverse; downFrom; gfilter) 
+  using (List; []; _∷_; _∷ʳ_; foldl; replicate; reverse; downFrom; 
+         concatMap; gfilter; initLast; InitLast; _∷ʳ'_) 
   renaming (_++_ to _++L_; map to mapL; concat to concatL)
+open import Data.List.NonEmpty 
+  using (List⁺; [_]; _∷⁺_; head; last; _⁺++_)
+  renaming (toList to nonEmptyListtoList; _∷ʳ_ to _n∷ʳ_; tail to ntail)
+open import Data.List.Any using (Any; here; there; any; module Membership)
 open import Data.Maybe using (Maybe; nothing; just)
 open import Data.Vec 
-  using (Vec; tabulate; []; _∷_; [_]; tail; lookup; zip; zipWith; 
+  using (Vec; tabulate; []; _∷_; tail; lookup; zip; zipWith; 
          _[_]≔_; allFin; toList)
   renaming (_++_ to _++V_; map to mapV; concat to concatV)
 open import Function using (id; _∘_)
@@ -40,7 +45,7 @@ open import Function using (id; _∘_)
 open import Data.Empty   using (⊥)
 open import Data.Unit    using (⊤; tt)
 open import Data.Sum     using (_⊎_; inj₁; inj₂)
-open import Data.Product using (_×_; _,_)
+open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
 open import Groupoid
 
@@ -509,7 +514,7 @@ size (ENUM n)      = n
 
 utoVec : (t : U) → Vec ⟦ t ⟧ (size t)
 utoVec ZERO          = []
-utoVec ONE           = [ tt ]
+utoVec ONE           = tt ∷ []
 utoVec (PLUS t₁ t₂)  = mapV inj₁ (utoVec t₁) ++V mapV inj₂ (utoVec t₂)
 utoVec (TIMES t₁ t₂) = 
   concatV (mapV (λ v₁ → mapV (λ v₂ → (v₁ , v₂)) (utoVec t₂)) (utoVec t₁))
@@ -609,16 +614,19 @@ swap+π (suc m) n =
 
 swap11 swap21 swap32 : List String
 swap11 = mapL showTransposition (swap+π 1 1)
+--
 -- 0 X 1 ∷ []
 -- Action on [a, b]
 --           [b, a]
 swap21 = mapL showTransposition (swap+π 2 1)
+--
 -- 0 X 1 ∷ 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
 -- Action on [a, b, c]
 --           [c, a, b]
 -- Once normalized we get:
 -- 0 X 2 ∷ 1 X 2 ∷ []
 swap32 = mapL showTransposition (swap+π 3 2)
+--
 -- 0 X 1 ∷ 1 X 2 ∷ 2 X 3 ∷ 3 X 4 ∷
 -- 0 X 1 ∷ 1 X 2 ∷ 2 X 3 ∷ 3 X 4 ∷ 
 -- 0 X 1 ∷ 1 X 2 ∷ 2 X 3 ∷ 3 X 4 ∷ []
@@ -661,10 +669,12 @@ pcompπ {m} {n} α β = (injectπ α n) ++L (raiseπ β m)
 
 swap11+21 swap21+11 : List String
 swap11+21 = mapL showTransposition (pcompπ (swap+π 1 1) (swap+π 2 1))
+--
 -- 0 X 1 ∷ 2 X 3 ∷ 3 X 4 ∷ 2 X 3 ∷ 3 X 4 ∷ []
 -- Once normalized we get:
 -- 0 X 1 ∷ 2 X 4 ∷ 3 X 4 ∷ []
 swap21+11 = mapL showTransposition (pcompπ (swap+π 2 1) (swap+π 1 1))
+--
 -- 0 X 1 ∷ 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 3 X 4 ∷ []
 -- Once normalized we get:
 -- 0 X 2 ∷ 1 X 2 ∷ 3 X 4 ∷ []
@@ -700,16 +710,14 @@ extendπ {n} π =
 
 tcompπ : ∀ {m n} → Perm m → Perm n → Perm (m * n)
 tcompπ {m} {n} α β = 
-  concatL (mapL 
-            (λ { (i X j) → 
-                 mapL (λ { (k X l) → 
-                        mkTransposition
-                          (inject≤ (fromℕ (toℕ i * n + toℕ k)) 
-                                   (i*n+k≤m*n i k))
-                          (inject≤ (fromℕ (toℕ j * n + toℕ l)) 
-                                   (i*n+k≤m*n j l))})
-                      (extendπ β)})
-            (extendπ α))
+  concatMap
+    (λ { (i X j) → 
+      mapL (λ { (k X l) → 
+             mkTransposition
+               (inject≤ (fromℕ (toℕ i * n + toℕ k)) (i*n+k≤m*n i k))
+               (inject≤ (fromℕ (toℕ j * n + toℕ l)) (i*n+k≤m*n j l))})
+           (extendπ β)})
+    (extendπ α)
 
 -- Ex:
 
@@ -757,11 +765,23 @@ cycle→perm (i ∷ j ∷ ns) = cycle→perm (i ∷ ns) ∷ʳ mkTransposition i 
 
 -- find cycles
 
-connectCycles : ∀ {n} → List (List (Fin n)) → List (List (Fin n))
-connectCycles = {!!} 
+link : ∀ {n} → Fin n → List (List⁺ (Fin n)) → Maybe (List⁺ (Fin n))
+link i [] = nothing
+link i (c ∷ cs) with toℕ i ≟ toℕ (head c)
+link i (c ∷ cs) | yes _ = just c
+link i (c ∷ cs) | no _ = link i cs
+
+{-# NO_TERMINATION_CHECK #-}
+connectCycles : ∀ {n} → List (List⁺ (Fin n)) → List (List⁺ (Fin n))
+connectCycles [] = []
+connectCycles (c ∷ cs) with link (last c) cs
+connectCycles (c ∷ cs) | nothing = c ∷ connectCycles cs
+connectCycles (c ∷ cs) | just c' = connectCycles ((c ⁺++ ntail c') ∷ cs)
 
 findCycles : ∀ {n} → List (Fin n × Fin n) → List (List (Fin n))
-findCycles perm = connectCycles (mapL (λ { (i , j) → i ∷ j ∷ []}) perm)
+findCycles perm = 
+  mapL nonEmptyListtoList 
+    (connectCycles (mapL (λ { (i , j) → i ∷⁺ [ j ]}) perm))
 
 swap⋆π : (m n : ℕ) → Perm (m * n) 
 swap⋆π 0 n = []
@@ -769,22 +789,18 @@ swap⋆π 1 n = []
 swap⋆π (suc (suc m)) 0 = []
 swap⋆π (suc (suc m)) 1 = []
 swap⋆π (suc (suc m)) (suc (suc n)) = 
-  concatL 
-    (mapL cycle→perm 
-      (findCycles (transpose (suc (suc m)) (n + suc m * suc (suc n)))))
+  concatMap cycle→perm 
+    (findCycles (transpose (suc (suc m)) (n + suc m * suc (suc n))))
 
 -- example
-
-ccc : List (List (Fin 6))
-ccc = mapL (λ { (i , j) → i ∷ j ∷ []}) (transpose 3 4)
-
-perm3*2→2*3 : Perm 6
-perm3*2→2*3 = swap⋆π 3 2
 
 aaa : Vec (ℕ × ℕ) 6 -- 3 * 2
 aaa = (0 , 0) ∷ (0 , 1) ∷ 
       (1 , 0) ∷ (1 , 1) ∷ 
       (2 , 0) ∷ (2 , 1) ∷ []
+
+perm3*2→2*3 : Vec (ℕ × ℕ) 6
+perm3*2→2*3 = actionπ (swap⋆π 3 2) aaa
 
 -- Ex: (1 2 3 4 5)
 --     (2 5 4 3 1)
