@@ -595,9 +595,9 @@ actionπ π vs = foldl swapX vs π
 -- [ vᵢ₊₁ , vᵢ₊₂ , ... , vᵢ₊ⱼ || v₁   , v₂   , ... , vᵢ   ]
 -- idea: move each of the first i elements to the end by successive swaps
 
-swap+π : ∀ {m n} → Perm (m + n)
-swap+π {0}     {n}     = []
-swap+π {suc m} {n}     = 
+swap+π : (m n : ℕ) → Perm (m + n)
+swap+π 0 n = []
+swap+π (suc m) n = 
   concatL 
     (replicate (suc m)
       (toList 
@@ -608,17 +608,17 @@ swap+π {suc m} {n}     =
 -- Ex:
 
 swap11 swap21 swap32 : List String
-swap11 = mapL showTransposition (swap+π {1} {1})
+swap11 = mapL showTransposition (swap+π 1 1)
 -- 0 X 1 ∷ []
 -- Action on [a, b]
 --           [b, a]
-swap21 = mapL showTransposition (swap+π {2} {1})
+swap21 = mapL showTransposition (swap+π 2 1)
 -- 0 X 1 ∷ 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
 -- Action on [a, b, c]
 --           [c, a, b]
 -- Once normalized we get:
 -- 0 X 2 ∷ 1 X 2 ∷ []
-swap32 = mapL showTransposition (swap+π {3} {2})
+swap32 = mapL showTransposition (swap+π 3 2)
 -- 0 X 1 ∷ 1 X 2 ∷ 2 X 3 ∷ 3 X 4 ∷
 -- 0 X 1 ∷ 1 X 2 ∷ 2 X 3 ∷ 3 X 4 ∷ 
 -- 0 X 1 ∷ 1 X 2 ∷ 2 X 3 ∷ 3 X 4 ∷ []
@@ -660,23 +660,23 @@ pcompπ {m} {n} α β = (injectπ α n) ++L (raiseπ β m)
 -- Ex: 
 
 swap11+21 swap21+11 : List String
-swap11+21 = mapL showTransposition (pcompπ (swap+π {1} {1}) (swap+π {2} {1}))
+swap11+21 = mapL showTransposition (pcompπ (swap+π 1 1) (swap+π 2 1))
 -- 0 X 1 ∷ 2 X 3 ∷ 3 X 4 ∷ 2 X 3 ∷ 3 X 4 ∷ []
 -- Once normalized we get:
 -- 0 X 1 ∷ 2 X 4 ∷ 3 X 4 ∷ []
-swap21+11 = mapL showTransposition (pcompπ (swap+π {2} {1}) (swap+π {1} {1}))
+swap21+11 = mapL showTransposition (pcompπ (swap+π 2 1) (swap+π 1 1))
 -- 0 X 1 ∷ 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 3 X 4 ∷ []
 -- Once normalized we get:
 -- 0 X 2 ∷ 1 X 2 ∷ 3 X 4 ∷ []
 
 -- Tensor multiplicative composition
 
-idπ : ∀ {n} → Perm n
-idπ {n} = toList (zipWith mkTransposition (allFin n) (allFin n))
+idπ : (n : ℕ) → Perm n
+idπ n = toList (zipWith mkTransposition (allFin n) (allFin n))
 
 -- Ex:
 
-idπ5 = mapL showTransposition (idπ {5})
+idπ5 = mapL showTransposition (idπ 5)
 -- 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ []
 
 -- Transpositions in α correspond to swapping entire rows
@@ -714,7 +714,8 @@ tcompπ {m} {n} α β =
 -- Ex:
 
 swap21*id : List String
-swap21*id = mapL showTransposition (tcompπ (swap+π {2} {1}) (idπ {2}))
+swap21*id = mapL showTransposition (tcompπ (swap+π 2 1) (idπ 2))
+--
 -- 0 X 2 ∷ 1 X 3 ∷ 2 X 4 ∷ 3 X 5 ∷ 
 -- 0 X 2 ∷ 1 X 3 ∷ 2 X 4 ∷ 3 X 5 ∷ 
 -- 4 X 4 ∷ 5 X 5 ∷ []
@@ -727,7 +728,8 @@ swap21*id = mapL showTransposition (tcompπ (swap+π {2} {1}) (idπ {2}))
 -- which is correct
 
 -- swap⋆ 
--- The classical problem of in-place matrix transpose:
+-- 
+-- This is essentially the classical problem of in-place matrix transpose:
 -- "http://en.wikipedia.org/wiki/In-place_matrix_transposition"
 -- 
 -- Given m and n, first calculate the desired permutation:
@@ -738,9 +740,13 @@ swap21*id = mapL showTransposition (tcompπ (swap+π {2} {1}) (idπ {2}))
 
 -- desired permutation expressed in Cauchy's two-line notation:
 
-transpose : ∀ {m mn-2} → List (Fin (suc mn-2) × Fin (suc mn-2))
-transpose {m} {mn-2} = 
-  toList (tabulate (λ x → (x , (toℕ x * m) mod (suc mn-2))))
+transpose : (m mn-2 : ℕ) → List (Fin (suc (suc mn-2)) × Fin (suc (suc mn-2)))
+transpose m mn-2 = 
+  toList 
+    (tabulate {suc mn-2}
+      (λ x → (subst Fin (+-comm (suc mn-2) 1) (inject+ 1 x) , 
+              subst Fin (+-comm (suc mn-2) 1)
+                (inject+ 1 ((toℕ x * m) mod (suc mn-2))))))
 
 -- convert each cycle to a product of transpositions
 
@@ -751,18 +757,29 @@ cycle→perm (i ∷ j ∷ ns) = cycle→perm (i ∷ ns) ∷ʳ mkTransposition i 
 
 -- find cycles
 
--- TODO
+connectCycles : ∀ {n} → List (List (Fin n)) → List (List (Fin n))
+connectCycles = ? 
 
+findCycles : ∀ {n} → List (Fin n × Fin n) → List (List (Fin n))
+findCycles perm = connectCycles (mapL (λ { (i , j) → i ∷ j ∷ []}) perm)
 
+swap⋆π : (m n : ℕ) → Perm (m * n) 
+swap⋆π 0 n = []
+swap⋆π 1 n = []
+swap⋆π (suc (suc m)) 0 = []
+swap⋆π (suc (suc m)) 1 = []
+swap⋆π (suc (suc m)) (suc (suc n)) = 
+  concatL 
+    (mapL cycle→perm 
+      (findCycles (transpose (suc (suc m)) (n + suc m * suc (suc n)))))
 
--- Ex: 
+-- example
 
-yyy : Perm 6
-yyy = (mkTransposition zero zero) ∷
-      (mkTransposition (inject+ 4 (fromℕ 1)) (inject+ 2 (fromℕ 3))) ∷
-      (mkTransposition (inject+ 3 (fromℕ 2)) (inject+ 4 (fromℕ 1))) ∷
-      (mkTransposition (inject+ 2 (fromℕ 3)) (inject+ 1 (fromℕ 4))) ∷
-      (mkTransposition (inject+ 1 (fromℕ 4)) (inject+ 3 (fromℕ 2))) ∷ []
+ccc : List (List (Fin 6))
+ccc = mapL (λ { (i , j) → i ∷ j ∷ []}) (transpose 3 4)
+
+perm3*2→2*3 : Perm 6
+perm3*2→2*3 = swap⋆π 3 2
 
 aaa : Vec (ℕ × ℕ) 6 -- 3 * 2
 aaa = (0 , 0) ∷ (0 , 1) ∷ 
@@ -856,9 +873,6 @@ ws = actionπ xxx' vs
 -- (5 , 4) ∷ (4 , 4) ∷ (5 , 0) ∷ (6 , 2) ∷ (1 , 2) ∷ (0 , 4) ∷ (1 , 4) ∷
 -- (3 , 1) ∷ (6 , 3) ∷ (1 , 3) ∷ (4 , 3) ∷ (5 , 3) ∷ (6 , 1) ∷ (6 , 4) ∷ []
 
-swap⋆π : ∀ {m n} → Perm (m * n) 
-swap⋆π {m} {n} = {!!}
-          
 -- Let 3 = [a, b, c]
 -- and 2 = [d, e]
 -- Then 3 x 2 = [ (a,d), (a,e), 
@@ -1247,12 +1261,12 @@ swap⋆π {m} {n} = {!!}
 c2π : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Perm (size t₁)
 c2π unite₊    = []
 c2π uniti₊    = []
-c2π {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = swap+π {size t₁} {size t₂}
+c2π {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = swap+π (size t₁) (size t₂)
 c2π assocl₊   = []
 c2π assocr₊   = []
 c2π unite⋆    = []
 c2π uniti⋆    = []
-c2π {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = swap⋆π {size t₁} {size t₂}
+c2π {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = swap⋆π (size t₁) (size t₂)
 c2π assocl⋆   = []  
 c2π assocr⋆   = []  
 c2π distz     = []  
