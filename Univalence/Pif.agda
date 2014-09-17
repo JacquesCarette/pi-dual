@@ -11,6 +11,7 @@ open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+)
+open import Data.Nat.DivMod using (_mod_)
 open import Relation.Binary using (Rel; Decidable)
 open import Relation.Binary.Core using (Transitive)
 
@@ -27,7 +28,7 @@ open import Data.Fin
 open import Data.Fin.Properties using (bounded; inject+-lemma)
 
 open import Data.List 
-  using (List; []; _∷_; foldl; replicate; reverse; downFrom; gfilter) 
+  using (List; []; _∷_; _∷ʳ_; foldl; replicate; reverse; downFrom; gfilter) 
   renaming (_++_ to _++L_; map to mapL; concat to concatL)
 open import Data.Maybe using (Maybe; nothing; just)
 open import Data.Vec 
@@ -558,7 +559,7 @@ size∼ c₁ c₂ = proof-irrelevance (size≡ c₁) (size≡ c₂)
 -- this is a poor representation and eventually requires function
 -- extensionality. 
 
--- A permutation is a represented as sequence of "transpositions".
+-- A permutation is a represented as a product of "transpositions".
 -- Because we eventually want to normalize permutations to some
 -- canonical representation, we insist that the first component of a
 -- transposition is always ≤ than the second
@@ -678,10 +679,11 @@ idπ {n} = toList (zipWith mkTransposition (allFin n) (allFin n))
 idπ5 = mapL showTransposition (idπ {5})
 -- 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ []
 
--- Swaps in α correspond to swapping entire rows
--- Swaps in β correspond to swapping entire columns
+-- Transpositions in α correspond to swapping entire rows
+-- Transpositions in β correspond to swapping entire columns
 -- Need to make sure neither α nor β is empty; otherwise composition annhilates
--- So explicitly represent identity permutations using a sequence of self-swaps
+-- So explicitly represent identity permutations using a product of 
+-- self-transpositions
 
 delete : ∀ {n} → List (Fin n) → Fin n → List (Fin n)
 delete [] _ = []
@@ -727,9 +729,81 @@ swap21*id = mapL showTransposition (tcompπ (swap+π {2} {1}) (idπ {2}))
 -- swap⋆ 
 -- The classical problem of in-place matrix transpose:
 -- "http://en.wikipedia.org/wiki/In-place_matrix_transposition"
+-- 
+-- Given m and n, first calculate the desired permutation:
+-- P(i) = m*n-1 if i=m*n-1
+--      = m*i mod m*n-1 otherwise
+-- Then find all the cycles
+-- Then express each cycle as a product of transpositions
 
-xxx : Perm 35
-xxx = (mkTransposition zero zero) ∷
+-- desired permutation expressed in Cauchy's two-line notation:
+
+transpose : ∀ {m mn-2} → List (Fin (suc mn-2) × Fin (suc mn-2))
+transpose {m} {mn-2} = 
+  toList (tabulate (λ x → (x , (toℕ x * m) mod (suc mn-2))))
+
+-- convert each cycle to a product of transpositions
+
+cycle→perm : ∀ {n} → List (Fin n) → Perm n
+cycle→perm [] = []
+cycle→perm (i ∷ []) = []
+cycle→perm (i ∷ j ∷ ns) = cycle→perm (i ∷ ns) ∷ʳ mkTransposition i j 
+
+-- find cycles
+
+-- TODO
+
+
+
+-- Ex: 
+
+yyy : Perm 6
+yyy = (mkTransposition zero zero) ∷
+      (mkTransposition (inject+ 4 (fromℕ 1)) (inject+ 2 (fromℕ 3))) ∷
+      (mkTransposition (inject+ 3 (fromℕ 2)) (inject+ 4 (fromℕ 1))) ∷
+      (mkTransposition (inject+ 2 (fromℕ 3)) (inject+ 1 (fromℕ 4))) ∷
+      (mkTransposition (inject+ 1 (fromℕ 4)) (inject+ 3 (fromℕ 2))) ∷ []
+
+aaa : Vec (ℕ × ℕ) 6 -- 3 * 2
+aaa = (0 , 0) ∷ (0 , 1) ∷ 
+      (1 , 0) ∷ (1 , 1) ∷ 
+      (2 , 0) ∷ (2 , 1) ∷ []
+
+-- Ex: (1 2 3 4 5)
+--     (2 5 4 3 1)
+-- Start with (1 2 3 4 5)
+-- 1 X 2
+-- (2 1 3 4 5)
+-- 2 X 5 
+
+{--
+1 X 3
+
+ (0 , 0) ∷ (1 , 1) ∷ (1 , 0) ∷ 
+ (0 , 1) ∷ (2 , 0) ∷ (2 , 1) ∷ []
+
+2 X 1
+
+ (0 , 0) ∷ (1 , 0) ∷ (1 , 1) ∷ 
+ (0 , 1) ∷ (2 , 0) ∷ (2 , 1) ∷ []
+
+3 X 4 --- SKIP
+
+ (0 , 0) ∷ (1 , 0) ∷ (1 , 1) ∷ 
+ (2 , 0) ∷ (0 , 1) ∷ (2 , 1) ∷ []
+
+4 X 2
+
+ (0 , 0) ∷ (1 , 0) ∷ (0 , 1) ∷ 
+ (2 , 0) ∷ (1 , 1) ∷ (2 , 1) ∷ []
+--}
+
+-- actionπ yyy aaa 
+-- (0 , 0) ∷ (1 , 0) ∷ (0 , 1) ∷ 
+-- (2 , 0) ∷ (1 , 1) ∷ (2 , 1) ∷ []
+
+xxx' : Perm 35
+xxx' = (mkTransposition zero zero) ∷
       (mkTransposition (inject+ 33 (fromℕ 1)) (inject+ 27 (fromℕ 7))) ∷
       (mkTransposition (inject+ 32 (fromℕ 2)) (inject+ 20 (fromℕ 14))) ∷
       (mkTransposition (inject+ 31 (fromℕ 3)) (inject+ 13 (fromℕ 21))) ∷ 
@@ -774,7 +848,7 @@ vs = (0 , 0) ∷ (0 , 1) ∷ (0 , 2) ∷ (0 , 3) ∷ (0 , 4) ∷
      (5 , 0) ∷ (5 , 1) ∷ (5 , 2) ∷ (5 , 3) ∷ (5 , 4) ∷ 
      (6 , 0) ∷ (6 , 1) ∷ (6 , 2) ∷ (6 , 3) ∷ (6 , 4) ∷ []
 
-ws = actionπ xxx vs
+ws = actionπ xxx' vs
 
 -- (0 , 0) ∷ (1 , 0) ∷ (2 , 0) ∷ (0 , 1) ∷ (4 , 0) ∷ (2 , 3) ∷ (0 , 2) ∷
 -- (3 , 0) ∷ (4 , 2) ∷ (2 , 1) ∷ (2 , 2) ∷ (0 , 3) ∷ (5 , 1) ∷ (3 , 4) ∷
@@ -1355,7 +1429,7 @@ fulladderπ = showπ FULLADDER⟷
 
 
 -- The various realizations of negation are equivalent but they give
--- different sequences of transpositions:
+-- different products of transpositions:
 
 n₁ n₂ n₃ n₄ n₅ : List String
 n₁ = mapL showTransposition (c2π neg₁)
