@@ -758,7 +758,7 @@ cycle→perm (i ∷ j ∷ ns) = cycle→perm (i ∷ ns) ∷ʳ mkTransposition i 
 -- find cycles
 
 connectCycles : ∀ {n} → List (List (Fin n)) → List (List (Fin n))
-connectCycles = ? 
+connectCycles = {!!} 
 
 findCycles : ∀ {n} → List (Fin n × Fin n) → List (List (Fin n))
 findCycles perm = connectCycles (mapL (λ { (i , j) → i ∷ j ∷ []}) perm)
