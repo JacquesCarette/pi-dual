@@ -770,6 +770,12 @@ connectCycles (c ∷ cs) | nothing = c ∷ connectCycles cs
 connectCycles (c ∷ cs) | just (c' , cs') = 
   connectCycles ((c ⁺++ ntail c') ∷ cs')
 
+-- Simpler still might be to:
+-- 1. make the transposition act on an AllFin vector
+-- 2. trace out the orbit of each number
+-- to make that more efficient, you can of course skip numbers (in step 2)
+-- which are already in an orbit.
+
 findCycles : ∀ {n} → List (Fin n × Fin n) → List (List (Fin n))
 findCycles perm = 
   mapL nonEmptyListtoList 
@@ -1135,7 +1141,16 @@ nperes nfulladder : List String
 nperes = mapL showTransposition< (filter= (c2π PERES))
    -- 6 X 7 ∷ 4 X 6 ∷ 5 X 7 ∷ []
 nfulladder = mapL showTransposition< (filter= (c2π FULLADDER))
-   -- ?
+   -- 1 X 2 ∷ 1 X 4 ∷ 1 X 8 ∷  X 6 ∷ 3 X 12 ∷ 3 X 9 ∷ 5 X 10 ∷ 7 X 14 ∷
+   -- 7 X 13 ∷ 7 X 11 ∷ 2 X 8 ∷ 3 X 9 ∷ 2 X 4 ∷ 3 X 5 ∷ 6 X 10 ∷ 7 X 11 ∷
+   -- 6 X 12 ∷ 7 X 13 ∷ 1 X 2 ∷ 1 X 4 ∷ 1 X 8 ∷ 3 X 6 ∷ 3 X 12 ∷ 3 X 9 ∷
+   -- 5 X 10 ∷ 7 X 14 ∷ 7 X 13 ∷ 7 X 11 ∷ 2 X 8 ∷ 3 X 9 ∷ 2 X 4 ∷ 3 X 5 ∷
+   -- 6 X 10 ∷ 7 X 11 ∷ 6 X 12 ∷ 7 X 13 ∷ 12 X 14 ∷ 13 X 15 ∷ 2 X 4 ∷
+   -- 3 X 5 ∷ 2 X 8 ∷ 3 X 9 ∷ 6 X 12 ∷ 7 X 13 ∷ 6 X 10 ∷ 7 X 11 ∷ 8 X 12 ∷
+   -- 9 X 13 ∷ 10 X 14 ∷ 11 X 15 ∷ 1 X 2 ∷ 5 X 6 ∷ 9 X 10 ∷ 13 X 14 ∷
+   -- 1 X 4 ∷ 1 X 2 ∷ 3 X 5 ∷ 3 X 6 ∷ 6 X 7 ∷1 X 2 ∷ 1 X 4 ∷ 3 X 6 ∷
+   -- 3 X 5 ∷ 4 X 6 ∷ 5 X 7 ∷ 9 X 12 ∷ 9 X 10 ∷ 11 X 13 ∷ 11 X 14 ∷
+   -- 14 X 15 ∷ 9 X 10 ∷ 9 X 12 ∷ 11 X 14 ∷ 11 X 13 ∷ 12 X 14 ∷ 13 X 15 ∷ []
 
 -- Next we sort the list of transpositions using a variation of bubble
 -- sort. Like in the conventional bubble sort we look at pairs of
@@ -1372,6 +1387,7 @@ snperes = mapL showTransposition< (sort (filter= (c2π PERES)))
    -- Perfect!
 
 snfulladder = mapL showTransposition< (sort (filter= (c2π FULLADDER)))
-   -- ?
+   -- 1 X 8 ∷ 2 X 8 ∷ 3 X 9 ∷ 4 X 9 ∷ 5 X 10 ∷ 6 X 8 ∷ 7 X 11 ∷
+   -- 9 X 12 ∷ 10 X 11 ∷ 11 X 13 ∷ 12 X 13 ∷ 13 X 14 ∷ []
 
 ------------------------------------------------------------------------------
