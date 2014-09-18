@@ -257,6 +257,41 @@ data _⟷_ : U → U → Set where
   foldBool   : PLUS ONE ONE ⟷ BOOL
   unfoldBool : BOOL ⟷ PLUS ONE ONE
 
+-- extensional evaluator for testing
+
+eval  :{ t₁ t₂ : U } → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
+eval unite₊ (inj₁ ())
+eval unite₊ (inj₂ v) = v
+eval uniti₊ v = inj₂ v
+eval swap₊ (inj₁ v) = inj₂ v
+eval swap₊ (inj₂ v) = inj₁ v
+eval assocl₊ (inj₁ v) = inj₁ (inj₁ v)
+eval assocl₊ (inj₂ (inj₁ v)) = inj₁ (inj₂ v)
+eval assocl₊ (inj₂ (inj₂ v)) = inj₂ v
+eval assocr₊ (inj₁ (inj₁ v)) = inj₁ v
+eval assocr₊ (inj₁ (inj₂ v)) = inj₂ (inj₁ v)
+eval assocr₊ (inj₂ v) = inj₂ (inj₂ v)
+eval unite⋆ (tt , v) = v
+eval uniti⋆ v = (tt , v)
+eval swap⋆ (v₁ , v₂) = (v₂ , v₁)
+eval assocl⋆ (v₁ , (v₂ , v₃)) = ((v₁ , v₂) , v₃)
+eval assocr⋆ ((v₁ , v₂) , v₃) = (v₁ , (v₂ , v₃))
+eval distz (() , _)
+eval factorz ()
+eval dist (inj₁ v₁ , v₃) = inj₁ (v₁ , v₃)
+eval dist (inj₂ v₂ , v₃) = inj₂ (v₂ , v₃)
+eval factor (inj₁ (v₁ , v₃)) = (inj₁ v₁ , v₃)
+eval factor (inj₂ (v₂ , v₃)) = (inj₂ v₂ , v₃)
+eval id⟷ v = v
+eval (c₁ ◎ c₂) v = eval c₂ (eval c₁ v)
+eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
+eval (c₁ ⊕ c₂) (inj₂ v) = inj₂ (eval c₂ v)
+eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
+eval foldBool (inj₁ tt) = false
+eval foldBool (inj₂ tt) = true
+eval unfoldBool false = inj₁ tt
+eval unfoldBool true = inj₂ tt
+
 -- Nicer syntax that shows intermediate values instead of the above
 -- point-free notation of permutations
 
@@ -316,6 +351,12 @@ TOFFOLI = TIMES BOOL BOOL²
             ⟷⟨ foldBool ⊗ id⟷ ⟩
          TIMES BOOL BOOL² □
   where x = ONE; y = ONE
+
+DIST : {t₁ t₂ t₃ : U} → TIMES t₁ (PLUS t₂ t₃) ⟷ PLUS (TIMES t₁ t₂) (TIMES t₁ t₃)
+DIST = swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆) 
+
+MID2FRONT : {t₁ t₂ t₃ : U} → TIMES t₁ (TIMES t₂ t₃) ⟷ TIMES t₂ (TIMES t₁ t₃)
+MID2FRONT = assocl⋆ ◎ (swap⋆ ⊗ id⟷) ◎ assocr⋆
 
 -- Swaps for the type 1+(1+1)
 -- We have three values in the type 1+(1+1) 
