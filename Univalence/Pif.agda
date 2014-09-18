@@ -257,7 +257,7 @@ data _⟷_ : U → U → Set where
   foldBool   : PLUS ONE ONE ⟷ BOOL
   unfoldBool : BOOL ⟷ PLUS ONE ONE
 
--- extensional evaluator for testing
+-- Extensional evaluator for testing: serves as a specification
 
 eval  :{ t₁ t₂ : U } → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
 eval unite₊ (inj₁ ())
@@ -292,6 +292,65 @@ eval foldBool (inj₂ tt) = true
 eval unfoldBool false = inj₁ tt
 eval unfoldBool true = inj₂ tt
 
+-- A canonical representation of each type as a vector of values. This
+-- fixes a canonical order for the elements of the types: each value
+-- has a canonical index.
+
+size : U → ℕ
+size ZERO          = 0
+size ONE           = 1
+size (PLUS t₁ t₂)  = size t₁ + size t₂
+size (TIMES t₁ t₂) = size t₁ * size t₂
+size BOOL          = 2
+size (ENUM n)      = n
+
+utoVec : (t : U) → Vec ⟦ t ⟧ (size t)
+utoVec ZERO          = []
+utoVec ONE           = tt ∷ []
+utoVec (PLUS t₁ t₂)  = mapV inj₁ (utoVec t₁) ++V mapV inj₂ (utoVec t₂)
+utoVec (TIMES t₁ t₂) = 
+  concatV (mapV (λ v₁ → mapV (λ v₂ → (v₁ , v₂)) (utoVec t₂)) (utoVec t₁))
+utoVec BOOL          = false ∷ true ∷ []
+utoVec (ENUM n)      = tabulate toℕ
+
+-- Combinators are always between types of the same size
+
+size≡ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (size t₁ ≡ size t₂)
+size≡ {PLUS ZERO t} {.t} unite₊ = refl
+size≡ {t} {PLUS ZERO .t} uniti₊ = refl
+size≡ {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = +-comm (size t₁) (size t₂)
+size≡ {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ = 
+  sym (+-assoc (size t₁) (size t₂) (size t₃))
+size≡ {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} assocr₊ = 
+  +-assoc (size t₁) (size t₂) (size t₃)
+size≡ {TIMES ONE t} {.t} unite⋆ = +-right-identity (size t)
+size≡ {t} {TIMES ONE .t} uniti⋆ = sym (+-right-identity (size t))
+size≡ {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = *-comm (size t₁) (size t₂)
+size≡ {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} assocl⋆ = 
+  sym (*-assoc (size t₁) (size t₂) (size t₃))
+size≡ {TIMES (TIMES t₁ t₂) t₃} {TIMES .t₁ (TIMES .t₂ .t₃)} assocr⋆ = 
+  *-assoc (size t₁) (size t₂) (size t₃)
+size≡ {TIMES .ZERO t} {ZERO} distz = refl
+size≡ {ZERO} {TIMES ZERO t} factorz = refl
+size≡ {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)} dist = 
+  distribʳ-*-+ (size t₃) (size t₁) (size t₂)
+size≡ {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t₃} factor = 
+  sym (distribʳ-*-+ (size t₃) (size t₁) (size t₂))
+size≡ {t} {.t} id⟷ = refl
+size≡ (c₁ ◎ c₂) = trans (size≡ c₁) (size≡ c₂)
+size≡ {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = cong₂ _+_ (size≡ c₁) (size≡ c₂)
+size≡ {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = cong₂ _*_ (size≡ c₁) (size≡ c₂)
+size≡ {PLUS ONE ONE} {BOOL} foldBool = refl
+size≡ {BOOL} {PLUS ONE ONE} unfoldBool = refl
+
+-- All proofs about sizes are "the same"
+
+size∼ : {t₁ t₂ : U} → (c₁ c₂ : t₁ ⟷ t₂) → (size≡ c₁ ≡ size≡ c₂)
+size∼ c₁ c₂ = proof-irrelevance (size≡ c₁) (size≡ c₂)
+
+------------------------------------------------------------------------------
+-- Examples of Pi programs
+
 -- Nicer syntax that shows intermediate values instead of the above
 -- point-free notation of permutations
 
@@ -305,6 +364,11 @@ _ ⟷⟨ α ⟩ β = α ◎ β
 _□ : (t : U) → {t : U} → (t ⟷ t)
 _□ t = id⟷
 
+-- print specification
+
+spec : {t₁ t₂ : U} → (t₁ ⟷ t₂) → Vec (⟦ t₁ ⟧ × ⟦ t₂ ⟧) (size t₁)
+spec {t₁} {t₂} c = mapV (λ v₁ → (v₁ , eval c v₁)) (utoVec t₁)
+
 -- Many ways of negating a BOOL. Again, it is absolutely critical that there
 -- is NO path between false⟷ and true⟷. These permutations instead are based
 -- on paths between x and neg (neg x) which are the trivial paths on each of
@@ -312,13 +376,19 @@ _□ t = id⟷
 
 not⟷ : BOOL ⟷ BOOL
 not⟷ = unfoldBool ◎ swap₊ ◎ foldBool
+-- spec: (false , true) ∷ (true , false) ∷ []
 
 neg₁ neg₂ neg₃ neg₄ neg₅ : BOOL ⟷ BOOL
 neg₁ = unfoldBool ◎ swap₊ ◎ foldBool
+-- spec: (false , true) ∷ (true , false) ∷ []
 neg₂ = id⟷ ◎ not⟷ 
+-- spec: (false , true) ∷ (true , false) ∷ []
 neg₃ = not⟷ ◎ not⟷ ◎ not⟷ 
+-- spec: (false , true) ∷ (true , false) ∷ []
 neg₄ = not⟷ ◎ id⟷
+-- spec: (false , true) ∷ (true , false) ∷ []
 neg₅ = uniti⋆ ◎ swap⋆ ◎ (not⟷ ⊗ id⟷) ◎ swap⋆ ◎ unite⋆
+-- spec: (false , true) ∷ (true , false) ∷ []
 
 -- CNOT
 
@@ -335,6 +405,11 @@ CNOT = TIMES BOOL BOOL
          ⟷⟨ foldBool ⊗ id⟷ ⟩
        TIMES BOOL BOOL □
   where x = ONE; y = ONE
+-- spec: 
+-- ((false , false) , false , false) ∷
+-- ((false , true) , false , true) ∷
+-- ((true , false) , true , true) ∷
+-- ((true , true) , true , false) ∷ []
 
 -- TOFFOLI
 
@@ -351,12 +426,15 @@ TOFFOLI = TIMES BOOL BOOL²
             ⟷⟨ foldBool ⊗ id⟷ ⟩
          TIMES BOOL BOOL² □
   where x = ONE; y = ONE
-
-DIST : {t₁ t₂ t₃ : U} → TIMES t₁ (PLUS t₂ t₃) ⟷ PLUS (TIMES t₁ t₂) (TIMES t₁ t₃)
-DIST = swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆) 
-
-MID2FRONT : {t₁ t₂ t₃ : U} → TIMES t₁ (TIMES t₂ t₃) ⟷ TIMES t₂ (TIMES t₁ t₃)
-MID2FRONT = assocl⋆ ◎ (swap⋆ ⊗ id⟷) ◎ assocr⋆
+-- spec:
+-- ((false , false , false) , false , false , false) ∷
+-- ((false , false , true) , false , false , true) ∷
+-- ((false , true , false) , false , true , false) ∷
+-- ((false , true , true) , false , true , true) ∷
+-- ((true , false , false) , true , false , false) ∷
+-- ((true , false , true) , true , false , true) ∷
+-- ((true , true , false) , true , true , true) ∷
+-- ((true , true , true) , true , true , false) ∷ []
 
 -- Swaps for the type 1+(1+1)
 -- We have three values in the type 1+(1+1) 
@@ -372,10 +450,30 @@ MID2FRONT = assocl⋆ ◎ (swap⋆ ⊗ id⟷) ◎ assocr⋆
 SWAP12 SWAP23 SWAP13 ROTL ROTR : 
   PLUS ONE (PLUS ONE ONE) ⟷ PLUS ONE (PLUS ONE ONE)
 SWAP12 = assocl₊ ◎ (swap₊ ⊕ id⟷) ◎ assocr₊
+-- spec: 
+-- (inj₁ tt , inj₂ (inj₁ tt)) ∷
+-- (inj₂ (inj₁ tt) , inj₁ tt) ∷ 
+-- (inj₂ (inj₂ tt) , inj₂ (inj₂ tt)) ∷ []
 SWAP23 = id⟷ ⊕ swap₊
+-- spec: 
+-- (inj₁ tt , inj₁ tt) ∷
+-- (inj₂ (inj₁ tt) , inj₂ (inj₂ tt)) ∷
+-- (inj₂ (inj₂ tt) , inj₂ (inj₁ tt)) ∷ []
 SWAP13 = SWAP23 ◎ SWAP12 ◎ SWAP23 
+-- spec: 
+-- (inj₁ tt , inj₂ (inj₂ tt)) ∷
+-- (inj₂ (inj₁ tt) , inj₂ (inj₁ tt)) ∷ 
+-- (inj₂ (inj₂ tt) , inj₁ tt) ∷ []
 ROTL   = SWAP12 ◎ SWAP23
+-- spec: 
+-- (inj₁ tt , inj₂ (inj₂ tt)) ∷
+-- (inj₂ (inj₁ tt) , inj₁ tt) ∷ 
+-- (inj₂ (inj₂ tt) , inj₂ (inj₁ tt)) ∷ []
 ROTR   = SWAP13 ◎ SWAP23
+-- spec: 
+-- (inj₁ tt , inj₂ (inj₁ tt)) ∷
+-- (inj₂ (inj₁ tt) , inj₂ (inj₂ tt)) ∷ 
+-- (inj₂ (inj₂ tt) , inj₁ tt) ∷ []
 
 -- More advanced examples
 
@@ -384,6 +482,15 @@ ROTR   = SWAP13 ◎ SWAP23
 
 PERES : TIMES (TIMES BOOL BOOL) BOOL ⟷ TIMES (TIMES BOOL BOOL) BOOL
 PERES = swap⋆ ◎ TOFFOLI ◎ swap⋆ ◎ (CNOT ⊗ id⟷)
+-- spec: 
+-- (((false , false) , false) , (false , false) , false) ∷
+-- (((false , false) , true) , (false , false) , true) ∷
+-- (((false , true) , false) , (false , true) , false) ∷
+-- (((false , true) , true) , (false , true) , true) ∷
+-- (((true , false) , false) , (true , true) , false) ∷
+-- (((true , false) , true) , (true , false) , true) ∷
+-- (((true , true) , false) , (true , false) , false) ∷
+-- (((true , true) , true) , (true , true) , true) ∷ []
 
 -- A reversible full adder: See http://arxiv.org/pdf/1008.3533.pdf
 --
@@ -438,6 +545,23 @@ FULLADDER =
   (id⟷ ⊗ assocr⋆)
   -- (n1,(n1 xor n2,
   --      (n1 xor n2 xor cin,((n1 xor n2) and cin) xor (n1 and n2) xor z)))
+-- spec: 
+-- ((false , (false , false) , false) , false , false , false , false) ∷
+-- ((false , (false , false) , true) , false , false , true , false) ∷
+-- ((false , (false , true) , false) , false , true , true , false) ∷
+-- ((false , (false , true) , true) , false , true , false , false) ∷
+-- ((false , (true , false) , false) , true , true , true , false) ∷
+-- ((false , (true , false) , true) , true , true , false , false) ∷
+-- ((false , (true , true) , false) , true , false , false , false) ∷
+-- ((false , (true , true) , true) , true , false , true , false) ∷
+-- ((true , (false , false) , false) , false , false , false , true) ∷
+-- ((true , (false , false) , true) , false , false , true , true) ∷
+-- ((true , (false , true) , false) , false , true , false , true) ∷
+-- ((true , (false , true) , true) , false , true , true , true) ∷
+-- ((true , (true , false) , false) , true , false , false , true) ∷
+-- ((true , (true , false) , true) , true , false , true , true) ∷
+-- ((true , (true , true) , false) , true , true , false , true) ∷
+-- ((true , (true , true) , true) , true , true , true , true) ∷ []
 
 -- Every permutation has an inverse. There are actually many syntactically
 -- different inverses but they are all equivalent.
@@ -505,65 +629,6 @@ FULLADDER =
   where open ≡-Reasoning
 !! {c = unfoldBool} = refl
 !! {c = foldBool}   = refl
-
-------------------------------------------------------------------------------
--- Types as vectors of elements
-
--- A canonical representation of each type as a vector of values. This
--- fixes a canonical order for the elements of the types: each value
--- has a canonical index.
-
-size : U → ℕ
-size ZERO          = 0
-size ONE           = 1
-size (PLUS t₁ t₂)  = size t₁ + size t₂
-size (TIMES t₁ t₂) = size t₁ * size t₂
-size BOOL          = 2
-size (ENUM n)      = n
-
-utoVec : (t : U) → Vec ⟦ t ⟧ (size t)
-utoVec ZERO          = []
-utoVec ONE           = tt ∷ []
-utoVec (PLUS t₁ t₂)  = mapV inj₁ (utoVec t₁) ++V mapV inj₂ (utoVec t₂)
-utoVec (TIMES t₁ t₂) = 
-  concatV (mapV (λ v₁ → mapV (λ v₂ → (v₁ , v₂)) (utoVec t₂)) (utoVec t₁))
-utoVec BOOL          = false ∷ true ∷ []
-utoVec (ENUM n)      = tabulate toℕ
-
--- Combinators are always between types of the same size
-
-size≡ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (size t₁ ≡ size t₂)
-size≡ {PLUS ZERO t} {.t} unite₊ = refl
-size≡ {t} {PLUS ZERO .t} uniti₊ = refl
-size≡ {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = +-comm (size t₁) (size t₂)
-size≡ {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ = 
-  sym (+-assoc (size t₁) (size t₂) (size t₃))
-size≡ {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} assocr₊ = 
-  +-assoc (size t₁) (size t₂) (size t₃)
-size≡ {TIMES ONE t} {.t} unite⋆ = +-right-identity (size t)
-size≡ {t} {TIMES ONE .t} uniti⋆ = sym (+-right-identity (size t))
-size≡ {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = *-comm (size t₁) (size t₂)
-size≡ {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} assocl⋆ = 
-  sym (*-assoc (size t₁) (size t₂) (size t₃))
-size≡ {TIMES (TIMES t₁ t₂) t₃} {TIMES .t₁ (TIMES .t₂ .t₃)} assocr⋆ = 
-  *-assoc (size t₁) (size t₂) (size t₃)
-size≡ {TIMES .ZERO t} {ZERO} distz = refl
-size≡ {ZERO} {TIMES ZERO t} factorz = refl
-size≡ {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)} dist = 
-  distribʳ-*-+ (size t₃) (size t₁) (size t₂)
-size≡ {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t₃} factor = 
-  sym (distribʳ-*-+ (size t₃) (size t₁) (size t₂))
-size≡ {t} {.t} id⟷ = refl
-size≡ (c₁ ◎ c₂) = trans (size≡ c₁) (size≡ c₂)
-size≡ {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = cong₂ _+_ (size≡ c₁) (size≡ c₂)
-size≡ {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = cong₂ _*_ (size≡ c₁) (size≡ c₂)
-size≡ {PLUS ONE ONE} {BOOL} foldBool = refl
-size≡ {BOOL} {PLUS ONE ONE} unfoldBool = refl
-
--- All proofs about sizes are "the same"
-
-size∼ : {t₁ t₂ : U} → (c₁ c₂ : t₁ ⟷ t₂) → (size≡ c₁ ≡ size≡ c₂)
-size∼ c₁ c₂ = proof-irrelevance (size≡ c₁) (size≡ c₂)
 
 ------------------------------------------------------------------------------
 -- Semantic representation of permutations
