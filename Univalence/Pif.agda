@@ -619,7 +619,7 @@ FULLADDER =
 -- extensionality. 
 
 -- A permutation is a represented as a product of
--- "transpositions". This product is not commutative; we apply it from
+-- "transpositions." This product is not commutative; we apply it from
 -- left to right. Because we eventually want to normalize permutations
 -- to some canonical representation, we insist that the first
 -- component of a transposition is always ≤ than the second
@@ -649,11 +649,13 @@ actionπ π vs = foldl swapX vs π
     swapX : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Vec A n → Transposition n → Vec A n  
     swapX vs (i X j) = (vs [ i ]≔ lookup j vs) [ j ]≔ lookup i vs
 
--- swap the first i elements with the last j elements
--- [ v₁   , v₂   , ... , vᵢ   || vᵢ₊₁ , vᵢ₊₂ , ... , vᵢ₊ⱼ ]
+-- Elementary permutations
+
+-- swap the first m elements with the last n elements
+-- [ v₀ , v₁   , v₂   , ... , vm-1 ,     vm , vm₊₁ , ... , vm+n-1 ]
 -- ==> 
--- [ vᵢ₊₁ , vᵢ₊₂ , ... , vᵢ₊ⱼ || v₁   , v₂   , ... , vᵢ   ]
--- idea: move each of the first i elements to the end by successive swaps
+-- [ vm , vm₊₁ , ... , vm+n-1 ,     v₀ , v₁   , v₂   , ... , vm-1 ]
+-- idea: move each of the first m elements to the end by successive swaps
 
 swap+π : (m n : ℕ) → Perm (m + n)
 swap+π 0 n = []
@@ -669,30 +671,19 @@ swap+π (suc m) n =
 
 swap11 swap21 swap32 : List String
 swap11 = mapL showTransposition (swap+π 1 1)
---
 -- 0 X 1 ∷ []
--- Action on [a, b]
---           [b, a]
+-- actionπ (swap+π 1 1) ("a" ∷ "b" ∷ [])
+-- "b" ∷ "a" ∷ []
 swap21 = mapL showTransposition (swap+π 2 1)
---
 -- 0 X 1 ∷ 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
--- Action on [a, b, c]
---           [c, a, b]
--- Once normalized we get:
--- 0 X 2 ∷ 1 X 2 ∷ []
+-- actionπ (swap+π 2 1) ("a" ∷ "b" ∷ "c" ∷ [])
+-- "c" ∷ "a" ∷ "b" ∷ []
 swap32 = mapL showTransposition (swap+π 3 2)
---
 -- 0 X 1 ∷ 1 X 2 ∷ 2 X 3 ∷ 3 X 4 ∷
 -- 0 X 1 ∷ 1 X 2 ∷ 2 X 3 ∷ 3 X 4 ∷ 
 -- 0 X 1 ∷ 1 X 2 ∷ 2 X 3 ∷ 3 X 4 ∷ []
--- Action on [ a, b, c, d, e ]
---           [ b, c, d, e, a ]
---           [ c, d, e, a, b ]
---           [ d, e, a, b, c ]
--- Once normalized we get:
--- 0 X 3 ∷ 1 X 4 ∷ 2 X 3 ∷ 3 X 4 ∷ []
--- Action on [ a, b, c, d, e ]
---           [ d, e, a, b, c ]
+-- actionπ (swap+π 3 2) ("a" ∷ "b" ∷ "c" ∷ "d" ∷ "e" ∷ [])
+-- "d" ∷ "e" ∷ "a" ∷ "b" ∷ "c" ∷ []
 
 -- Sequential composition is just append
 
@@ -707,32 +698,28 @@ scompπ = _++L_
 -- pcompπ α β is:
 --  [ m₀ X n₀ , m₁ X n₁ , ... , m₇ X n₇ , k₀+8 X l₀+8 , k₁+8 X l₁+8 , ... ]
 
-injectπ : ∀ {m} → Perm m → (n : ℕ) → Perm (m + n)
-injectπ π n = mapL (λ { (i X j) → 
-                      mkTransposition (inject+ n i) (inject+ n j)})
-                   π 
-
-raiseπ : ∀ {n} → Perm n → (m : ℕ) → Perm (m + n)
-raiseπ π m = mapL (λ { (i X j) → 
-                    mkTransposition (raise m i) (raise m j)})
-                  π 
-
 pcompπ : ∀ {m n} → Perm m → Perm n → Perm (m + n)
-pcompπ {m} {n} α β = (injectπ α n) ++L (raiseπ β m)
+pcompπ {m} {n} α β = injectπ α n ++L raiseπ β m
+  where injectπ : ∀ {m} → Perm m → (n : ℕ) → Perm (m + n)
+        injectπ π n = mapL (λ { (i X j) → 
+                             mkTransposition (inject+ n i) (inject+ n j)})
+                           π 
+        raiseπ : ∀ {n} → Perm n → (m : ℕ) → Perm (m + n)
+        raiseπ π m = mapL (λ { (i X j) → 
+                            mkTransposition (raise m i) (raise m j)})
+                          π 
 
 -- Ex: 
 
 swap11+21 swap21+11 : List String
 swap11+21 = mapL showTransposition (pcompπ (swap+π 1 1) (swap+π 2 1))
---
 -- 0 X 1 ∷ 2 X 3 ∷ 3 X 4 ∷ 2 X 3 ∷ 3 X 4 ∷ []
--- Once normalized we get:
--- 0 X 1 ∷ 2 X 4 ∷ 3 X 4 ∷ []
+-- actionπ (pcompπ (swap+π 1 1) (swap+π 2 1)) ("a" ∷ "b" ∷ "1" ∷ "2" ∷ "3" ∷ [])
+-- "b" ∷ "a" ∷ "3" ∷ "1" ∷ "2" ∷ []
 swap21+11 = mapL showTransposition (pcompπ (swap+π 2 1) (swap+π 1 1))
---
 -- 0 X 1 ∷ 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 3 X 4 ∷ []
--- Once normalized we get:
--- 0 X 2 ∷ 1 X 2 ∷ 3 X 4 ∷ []
+-- actionπ (pcompπ (swap+π 2 1) (swap+π 1 1)) ("1" ∷ "2" ∷ "3" ∷ "a" ∷ "b" ∷ [])
+-- "3" ∷ "1" ∷ "2" ∷ "b" ∷ "a" ∷ []
 
 -- Tensor multiplicative composition
 
@@ -743,6 +730,8 @@ idπ n = toList (zipWith mkTransposition (allFin n) (allFin n))
 
 idπ5 = mapL showTransposition (idπ 5)
 -- 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ []
+-- actionπ (idπ 5) ("1" ∷ "2" ∷ "3" ∷ "4" ∷ "5" ∷ [])
+-- "1" ∷ "2" ∷ "3" ∷ "4" ∷ "5" ∷ []
 
 -- Transpositions in α correspond to swapping entire rows
 -- Transpositions in β correspond to swapping entire columns
@@ -776,12 +765,40 @@ tcompπ {m} {n} α β =
 
 -- Ex:
 
-swap21*id : List String
-swap21*id = mapL showTransposition (tcompπ (swap+π 2 1) (idπ 2))
---
--- 0 X 2 ∷ 1 X 3 ∷ 2 X 4 ∷ 3 X 5 ∷ 
--- 0 X 2 ∷ 1 X 3 ∷ 2 X 4 ∷ 3 X 5 ∷ 
--- 4 X 4 ∷ 5 X 5 ∷ []
+swap21*swap11 : List String
+swap21*swap11 = mapL showTransposition (tcompπ (swap+π 2 1) (swap+π 1 1))
+-- 0 X 3 ∷ 1 X 3 ∷ 2 X 5 ∷ 3 X 5 ∷
+-- 0 X 3 ∷ 1 X 3 ∷ 2 X 5 ∷ 3 X 5 ∷ 
+-- 4 X 5 ∷ 5 X 5 ∷ []
+-- Recall (swap+π 2 1)
+-- 0 X 1 ∷ 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
+-- actionπ (swap+π 2 1) ("a" ∷ "b" ∷ "c" ∷ [])
+-- "c" ∷ "a" ∷ "b" ∷ []
+-- Recall (swap+π 1 1)
+-- 0 X 1 ∷ []
+-- actionπ (swap+π 1 1) ("1" ∷ "2" ∷ [])
+-- "2" ∷ "1" ∷ []
+-- Tensor tensorvs 
+-- ("a" , "1") ∷ ("a" , "2") ∷
+-- ("b" , "1") ∷ ("b" , "2") ∷ 
+-- ("c" , "1") ∷ ("c" , "2") ∷ []
+-- actionπ (tcompπ (swap+π 2 1) (swap+π 1 1)) tensorvs
+-- ("b" , "1") ∷ ("b" , "2") ∷
+-- ("a" , "2") ∷ ("c" , "2") ∷ 
+-- ("a" , "1") ∷ ("c" , "1") ∷ []
+
+-- expected (c,2) (c,1) (a,2) (a,1) (b,2) (b,1) !!!!!
+
+tensorvs = 
+  concatV 
+    (mapV 
+      (λ v₁ → mapV (λ v₂ → (v₁ , v₂)) ("1" ∷ "2" ∷ [])) 
+      ("a" ∷ "b" ∷ "c" ∷ []))
+
+
+
+
+-- Tensor is:<
 -- swap21 takes [a, b, c] to [c, a, b]
 -- id2    takes [d, e] to [d, e]
 -- tensor is [ (a,d), (a,e), (b,d), (b,e), (c,d), (c,e) ]
