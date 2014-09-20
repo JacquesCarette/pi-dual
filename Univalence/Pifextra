@@ -4573,3 +4573,78 @@ tcompπ {m} {n} α β =
             (α ++L idπ {m}))
 --}
 
+swap+π : (m n : ℕ) → Transposition* (m + n)
+swap+π 0 n = []
+swap+π (suc m) n = 
+  concatL 
+    (replicate (suc m)
+      (toList 
+        (zipWith mkTransposition
+          (mapV inject₁ (allFin (m + n))) 
+          (tail (allFin (suc m + n))))))
+
+-- Ex:
+
+swap11 swap21 swap32 : List String
+swap11 = showTransposition* (swap+π 1 1)
+-- 0 X 1 ∷ []
+-- actionπ (swap+π 1 1) ("a" ∷ "b" ∷ [])
+-- "b" ∷ "a" ∷ []
+swap21 = showTransposition* (swap+π 2 1)
+-- 0 X 1 ∷ 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
+-- actionπ (swap+π 2 1) ("a" ∷ "b" ∷ "c" ∷ [])
+-- "c" ∷ "a" ∷ "b" ∷ []
+swap32 = showTransposition* (swap+π 3 2)
+-- 0 X 1 ∷ 1 X 2 ∷ 2 X 3 ∷ 3 X 4 ∷
+-- 0 X 1 ∷ 1 X 2 ∷ 2 X 3 ∷ 3 X 4 ∷ 
+-- 0 X 1 ∷ 1 X 2 ∷ 2 X 3 ∷ 3 X 4 ∷ []
+-- actionπ (swap+π 3 2) ("a" ∷ "b" ∷ "c" ∷ "d" ∷ "e" ∷ [])
+-- "d" ∷ "e" ∷ "a" ∷ "b" ∷ "c" ∷ []
+
+delete : ∀ {n} → List (Fin n) → Fin n → List (Fin n)
+delete [] _ = []
+delete (j ∷ js) i with toℕ i ≟ toℕ j 
+delete (j ∷ js) i | yes _ = js
+delete (j ∷ js) i | no _ = j ∷ delete js i
+
+extendπ : ∀ {n} → Transposition* n → Transposition* n
+extendπ {n} π = 
+  let existing = mapL (λ { (i X j) → i }) π
+      all = toList (allFin n)
+      diff = foldl delete all existing
+  in π ++L mapL (λ i → _X_ i i {i≤i (toℕ i)}) diff
+
+tcompπ : ∀ {m n} → Transposition* m → Transposition* n → Transposition* (m * n)
+tcompπ {m} {n} α β = 
+  concatMap
+    (λ { (i X j) → 
+      mapL (λ { (k X l) → 
+             mkTransposition
+               (inject≤ (fromℕ (toℕ i * n + toℕ k)) (i*n+k≤m*n i k))
+               (inject≤ (fromℕ (toℕ j * n + toℕ l)) (i*n+k≤m*n j l))})
+           (extendπ β)})
+    (extendπ α)
+
+{--
+pcompπ : ∀ {m n} → Transposition* m → Transposition* n → Transposition* (m + n)
+pcompπ {m} {n} α β = injectπ n α ++L raiseπ m β
+  where injectπ : ∀ {m} → (n : ℕ) → Transposition* m → Transposition* (m + n)
+        injectπ n = mapL (λ { (i X j) → 
+                           mkTransposition (inject+ n i) (inject+ n j) })
+        raiseπ : ∀ {n} → (m : ℕ) → Transposition* n → Transposition* (m + n)
+        raiseπ m = mapL (λ { (i X j) → 
+                          mkTransposition (raise m i) (raise m j)})
+--}
+
+-- Identity permutation as explicit product of transpositions
+
+idπ : (n : ℕ) → Transposition* n
+idπ n = toList (zipWith mkTransposition (allFin n) (allFin n))
+
+-- Ex:
+
+idπ5 = showTransposition* (idπ 5)
+-- 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ []
+-- actionπ (idπ 5) ("1" ∷ "2" ∷ "3" ∷ "4" ∷ "5" ∷ [])
+-- "1" ∷ "2" ∷ "3" ∷ "4" ∷ "5" ∷ []
+
