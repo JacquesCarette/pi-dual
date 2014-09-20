@@ -4648,3 +4648,12 @@ idπ5 = showTransposition* (idπ 5)
 -- actionπ (idπ 5) ("1" ∷ "2" ∷ "3" ∷ "4" ∷ "5" ∷ [])
 -- "1" ∷ "2" ∷ "3" ∷ "4" ∷ "5" ∷ []
 
+  concatMap
+    (λ { (i X j) → 
+      mapL (λ { (k X l) → 
+             mkTransposition
+               (inject≤ (fromℕ (toℕ i * n + toℕ k)) (i*n+k≤m*n i k))
+               (inject≤ (fromℕ (toℕ j * n + toℕ l)) (i*n+k≤m*n j l))})
+           (extendπ β)})
+    (extendπ α)
+

@@ -59,6 +59,16 @@ trans< : Transitive _<_
 trans< (s≤s z≤n) (s≤s _) = s≤s z≤n
 trans< (s≤s (s≤s i≤j)) (s≤s sj<k) = s≤s (trans< (s≤s i≤j) sj<k) 
 
+i*1≡i : (i : ℕ) → (i * 1 ≡ i)
+i*1≡i i = begin (i * 1
+                   ≡⟨ *-comm i 1 ⟩ 
+                 1 * i
+                   ≡⟨ refl ⟩ 
+                 i + 0
+                   ≡⟨ +-right-identity i ⟩
+                 i ∎)
+  where open ≡-Reasoning
+
 i≤i : (i : ℕ) → i ≤ i
 i≤i 0 = z≤n
 i≤i (suc i) = s≤s (i≤i i)
@@ -673,7 +683,7 @@ filter= (_X_ i j {p≤} ∷ π) with toℕ i ≟ toℕ j
 -- This is the 2 line Cauchy representation. 
 
 Cauchy : ℕ → Set
-Cauchy n = List (Fin n × Fin n)
+Cauchy n = Vec (Fin n) n
 
 -- Representation IV
 -- A product of cycles where each cycle is a non-empty sequence of indices
@@ -745,7 +755,8 @@ mergeCycles (c ∷ cs) | just (c' , cs') = mergeCycles ((c ⁺++ ntail c') ∷ c
 -- a cycle of size 2 for each entry and then merge the cycles
 
 cauchy→cycle* : ∀ {n} → Cauchy n → Cycle* n
-cauchy→cycle* perm = mergeCycles (mapL (λ { (i , j) → i ∷⁺ [ j ]}) perm)
+cauchy→cycle* {n} perm = 
+  mergeCycles (toList (zipWith (λ i j → i ∷⁺ [ j ]) (allFin n) perm))
 
 -- Ex:
 
@@ -753,21 +764,21 @@ cauchyEx1 cauchyEx2 : Cauchy 6
 -- cauchyEx1 (0 1 2 3 4 5)
 --           (2 0 4 3 1 5)
 cauchyEx1 = 
-  (inject+ 5 (fromℕ 0) , inject+ 3 (fromℕ 2)) ∷
-  (inject+ 4 (fromℕ 1) , inject+ 5 (fromℕ 0)) ∷
-  (inject+ 3 (fromℕ 2) , inject+ 1 (fromℕ 4)) ∷
-  (inject+ 2 (fromℕ 3) , inject+ 2 (fromℕ 3)) ∷
-  (inject+ 1 (fromℕ 4) , inject+ 4 (fromℕ 1)) ∷
-  (inject+ 0 (fromℕ 5) , inject+ 0 (fromℕ 5)) ∷ []
+  (inject+ 3 (fromℕ 2)) ∷
+  (inject+ 5 (fromℕ 0)) ∷
+  (inject+ 1 (fromℕ 4)) ∷
+  (inject+ 2 (fromℕ 3)) ∷
+  (inject+ 4 (fromℕ 1)) ∷
+  (inject+ 0 (fromℕ 5)) ∷ []
 -- cauchyEx2 (0 1 2 3 4 5)
 --           (3 2 1 0 5 4)
 cauchyEx2 = 
-  (inject+ 5 (fromℕ 0) , inject+ 2 (fromℕ 3)) ∷
-  (inject+ 4 (fromℕ 1) , inject+ 3 (fromℕ 2)) ∷
-  (inject+ 3 (fromℕ 2) , inject+ 4 (fromℕ 1)) ∷
-  (inject+ 2 (fromℕ 3) , inject+ 5 (fromℕ 0)) ∷
-  (inject+ 1 (fromℕ 4) , inject+ 0 (fromℕ 5)) ∷
-  (inject+ 0 (fromℕ 5) , inject+ 1 (fromℕ 4)) ∷ []
+  (inject+ 2 (fromℕ 3)) ∷
+  (inject+ 3 (fromℕ 2)) ∷
+  (inject+ 4 (fromℕ 1)) ∷
+  (inject+ 5 (fromℕ 0)) ∷
+  (inject+ 0 (fromℕ 5)) ∷
+  (inject+ 1 (fromℕ 4)) ∷ []
 cauchyEx1→transposition* cauchyEx2→transposition* : List String
 cauchyEx1→transposition* = 
   showTransposition* (cycle*→transposition* (cauchy→cycle* cauchyEx1))
@@ -790,6 +801,9 @@ cauchy→transposition* = cycle*→transposition* ∘ cauchy→cycle*
 ------------------------------------------------------------------------------
 -- Elementary permutations in the Cauchy representation
 
+idcauchy : (n : ℕ) → Cauchy n
+idcauchy = allFin 
+
 -- swap the first m elements with the last n elements
 -- [ v₀ , v₁   , v₂   , ... , vm-1 ,     vm , vm₊₁ , ... , vm+n-1 ]
 -- ==> 
@@ -798,9 +812,8 @@ cauchy→transposition* = cycle*→transposition* ∘ cauchy→cycle*
 swap+cauchy : (m n : ℕ) → Cauchy (m + n)
 swap+cauchy m n with splitAt n (allFin (n + m)) | splitAt m (allFin (m + n))
 ... | (zeron , (nsum , _)) | (zerom , (msum , _)) = 
-  toList 
-    (zipWith (_,_) zerom (subst (λ s → Vec (Fin s) m) (+-comm n m) nsum) ++V 
-     zipWith (_,_) msum (subst (λ s → Vec (Fin s) n) (+-comm n m) zeron))
+    (subst (λ s → Vec (Fin s) m) (+-comm n m) nsum) ++V 
+    (subst (λ s → Vec (Fin s) n) (+-comm n m) zeron)
 
 -- Ex: 
 
@@ -820,17 +833,19 @@ swap32 = showTransposition* (swap+π 3 2)
 -- actionπ (swap+π 3 2) ("a" ∷ "b" ∷ "c" ∷ "d" ∷ "e" ∷ [])
 -- "d" ∷ "e" ∷ "a" ∷ "b" ∷ "c" ∷ []
 
+-- Sequential composition
+
+scompcauchy : ∀ {n} → Cauchy n → Cauchy n → Cauchy n
+scompcauchy {n} perm₁ perm₂ = 
+  tabulate (λ i → lookup (lookup i perm₁) perm₂)
+
 -- Parallel additive composition 
 -- append both permutations but adjust the indices in the second
 -- permutation by the size of the first type so that it acts on the
 -- second part of the vector
 
 pcompcauchy : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m + n)
-pcompcauchy {m} {n} α β = injectπ n α ++L raiseπ m β
-  where injectπ : ∀ {m} → (n : ℕ) → Cauchy m → Cauchy (m + n)
-        injectπ n = mapL (λ { (i , j) → (inject+ n i , inject+ n j) })
-        raiseπ : ∀ {n} → (m : ℕ) → Cauchy n → Cauchy (m + n)
-        raiseπ m = mapL (λ { (i , j) → (raise m i , raise m j)})
+pcompcauchy {m} {n} α β = mapV (inject+ n) α ++V mapV (raise m) β
 
 -- Ex: 
 
@@ -852,168 +867,125 @@ swap21+11 = showTransposition* (pcompπ (swap+cauchy 2 1) (swap+cauchy 1 1))
 -- Transpositions in α correspond to swapping entire rows
 -- Transpositions in β correspond to swapping entire columns
 
-tcompπcauchy : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m * n)
-tcompπcauchy {m} {n} α β = {!!}
-
-{--
-  concatMap
-    (λ { (i X j) → 
-      mapL (λ { (k X l) → 
-             mkTransposition
-               (inject≤ (fromℕ (toℕ i * n + toℕ k)) (i*n+k≤m*n i k))
-               (inject≤ (fromℕ (toℕ j * n + toℕ l)) (i*n+k≤m*n j l))})
-           (extendπ β)})
-    (extendπ α)
---}
+tcompcauchy : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m * n)
+tcompcauchy {m} {n} α β = 
+  concatV 
+    (mapV 
+      (λ b → 
+         mapV (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)) β)
+      α)
 
 -- Ex:
 
 tcompπ : ∀ {m n} → Cauchy m → Cauchy n → Transposition* (m * n)
-tcompπ α β = cauchy→transposition* (tcompπcauchy α β)
+tcompπ α β = cauchy→transposition* (tcompcauchy α β)
 swap21*swap11 : List String
 swap21*swap11 = showTransposition* (tcompπ (swap+cauchy 2 1) (swap+cauchy 1 1))
--- 0 X 3 ∷ 1 X 3 ∷ 2 X 5 ∷ 3 X 5 ∷
--- 0 X 3 ∷ 1 X 3 ∷ 2 X 5 ∷ 3 X 5 ∷ 
--- 4 X 5 ∷ 5 X 5 ∷ []
+-- 0 X 3 ∷ 0 X 4 ∷ 0 X 1 ∷ 0 X 2 ∷ 0 X 5 ∷ 0 X 0 ∷ []
 -- Recall (swap+π 2 1)
--- 0 X 1 ∷ 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
+-- 0 X 1 ∷ 0 X 2 ∷ 0 X 0 ∷ []                                                   
 -- actionπ (swap+π 2 1) ("a" ∷ "b" ∷ "c" ∷ [])
 -- "c" ∷ "a" ∷ "b" ∷ []
 -- Recall (swap+π 1 1)
--- 0 X 1 ∷ []
+-- 0 X 1 ∷ 0 X 0 ∷ []
 -- actionπ (swap+π 1 1) ("1" ∷ "2" ∷ [])
 -- "2" ∷ "1" ∷ []
 -- Tensor tensorvs 
 -- ("a" , "1") ∷ ("a" , "2") ∷
 -- ("b" , "1") ∷ ("b" , "2") ∷ 
 -- ("c" , "1") ∷ ("c" , "2") ∷ []
--- actionπ (tcompπ (swap+π 2 1) (swap+π 1 1)) tensorvs
--- ("b" , "1") ∷ ("b" , "2") ∷
--- ("a" , "2") ∷ ("c" , "2") ∷ 
--- ("a" , "1") ∷ ("c" , "1") ∷ []
-
--- expected (c,2) (c,1) (a,2) (a,1) (b,2) (b,1) !!!!!
-
-tensorvs = 
-  concatV 
-    (mapV 
-      (λ v₁ → mapV (λ v₂ → (v₁ , v₂)) ("1" ∷ "2" ∷ [])) 
-      ("a" ∷ "b" ∷ "c" ∷ []))
-
-
-
-
--- Tensor is:<
--- swap21 takes [a, b, c] to [c, a, b]
--- id2    takes [d, e] to [d, e]
--- tensor is [ (a,d), (a,e), (b,d), (b,e), (c,d), (c,e) ]
--- action on tensor is:
--- [ (a,d), (a,e), (b,d), (b,e), (c,d), (c,e) ]
--- [ (c,d), (c,e), (a,d), (a,e), (b,d), (b,e) ]
--- which is correct
+-- actionπ (tcompπ (swap+cauchy 2 1) (swap+cauchy 1 1)) tensorvs
+-- ("c" , "2") ∷ ("c" , "1") ∷
+-- ("a" , "2") ∷ ("a" , "1") ∷ 
+-- ("b" , "2") ∷ ("b" , "1") ∷ []
 
 -- swap⋆ 
 -- 
 -- This is essentially the classical problem of in-place matrix transpose:
 -- "http://en.wikipedia.org/wiki/In-place_matrix_transposition"
--- 
--- Given m and n, first calculate the desired permutation:
+-- Given m and n, the desired permutation in Cauchy representation is:
 -- P(i) = m*n-1 if i=m*n-1
 --      = m*i mod m*n-1 otherwise
--- Then find all the cycles
--- Then express each cycle as a product of transpositions
 
--- desired permutation expressed in Cauchy's two-line notation:
+transposeIndex : (m n : ℕ) → 
+                 (b : Fin (suc (suc m))) → (d : Fin (suc (suc n))) → 
+                 Fin (suc (suc m) * suc (suc n))
+transposeIndex m n b d with toℕ b * suc (suc n) + toℕ d
+transposeIndex m n b d | i with suc i ≟ suc (suc m) * suc (suc n)
+transposeIndex m n b d | i | yes _ = 
+  fromℕ (suc (n + suc (suc (n + m * suc (suc n))))) 
+transposeIndex m n b d | i | no _ = 
+  inject≤ 
+    ((i * (suc (suc m))) mod (suc (n + suc (suc (n + m * suc (suc n))))))
+    (i≤si (suc (n + suc (suc (n + m * suc (suc n))))))
 
-transpose : (m mn-2 : ℕ) → List (Fin (suc (suc mn-2)) × Fin (suc (suc mn-2)))
-transpose m mn-2 = 
-  toList 
-    (tabulate {suc mn-2}
-      (λ x → (subst Fin (+-comm (suc mn-2) 1) (inject+ 1 x) , 
-              subst Fin (+-comm (suc mn-2) 1)
-                (inject+ 1 ((toℕ x * m) mod (suc mn-2))))))
+swap⋆cauchy : (m n : ℕ) → Cauchy (m * n)
+swap⋆cauchy 0 n = []
+swap⋆cauchy 1 n = subst Cauchy (sym (+-right-identity n)) (idcauchy n)
+swap⋆cauchy (suc (suc m)) 0 = 
+  subst Cauchy (sym (*-right-zero (suc (suc m)))) []
+swap⋆cauchy (suc (suc m)) 1 = 
+  subst Cauchy (sym (i*1≡i (suc (suc m)))) (idcauchy (suc (suc m)))
+swap⋆cauchy (suc (suc m)) (suc (suc n)) = 
+  concatV 
+    (mapV 
+      (λ b → mapV (λ d → transposeIndex m n b d) (allFin (suc (suc n))))
+      (allFin (suc (suc m))))
 
 -- Ex:
-
-v3x2 = concatV 
-         (mapV (λ v₁ → mapV (λ v₂ → (v₁ , v₂)) (1 ∷ 2 ∷ []))
-         ("a" ∷ "b" ∷ "c" ∷ []))
---
--- [ a1 a2 ]
--- [ b1 b2 ]
--- [ c1 c2 ]
-
-moves3x2→2x3 = transpose 3 4
---
--- (0 , 0) ∷
--- (1 , 3) ∷ 
--- (2 , 1) ∷ 
--- (3 , 4) ∷ 
--- (4 , 2) ∷ []
--- 
--- which transforms our 3x2 set of values above:
--- 
---   0  1  2  3  4  5
--- [ a1 a2 b1 b2 c1 c2 ]
--- [ a1 b1 c1 a2 b2 c2 ]
--- 
--- i.e.
--- [ a1 b1 c1 ]
--- [ a2 b2 c2 ]
--- 
-
-cycles3x2→2x3 = cauchy→cycle* moves3x2→2x3
---
--- [ 0 , 0 ] ∷
--- [ 1 , 3 , 4 , 2 , 1 ] ∷
-
--- concatenate all cycles to build final product of transpositions
 
 swap⋆π : (m n : ℕ) → Transposition* (m * n) 
-swap⋆π 0 n = []
-swap⋆π 1 n = []
-swap⋆π (suc (suc m)) 0 = []
-swap⋆π (suc (suc m)) 1 = []
-swap⋆π (suc (suc m)) (suc (suc n)) = 
-  concatMap cycle→transposition* 
-    (cauchy→cycle* (transpose (suc (suc m)) (n + suc m * suc (suc n))))
-
--- Ex:
-
-perm3x2→2x3 : List String
-perm3x2→2x3 = showTransposition* (swap⋆π 3 2)
+swap⋆π m n = cauchy→transposition* (swap⋆cauchy m n)
+swap3x2→2x3 : List String
+swap3x2→2x3 = showTransposition* (swap⋆π 3 2)
 -- 0 X 0 ∷ 1 X 3 ∷ 1 X 4 ∷ 1 X 2 ∷ 1 X 1 ∷ []
-
-v2x3 = actionπ (swap⋆π 3 2) v3x2
+-- Let vs3x2 = 
+-- ("a" , 1) ∷ ("a" , 2) ∷ 
+-- ("b" , 1) ∷ ("b" , 2) ∷ 
+-- ("c" , 1) ∷ ("c" , 2) ∷ []
+-- actionπ (swap⋆π 3 2) vs3x2
 -- ("a" , 1) ∷ ("b" , 1) ∷ ("c" , 1) ∷ 
 -- ("a" , 2) ∷ ("b" , 2) ∷ ("c" , 2) ∷ []
 
 ------------------------------------------------------------------------------
 -- A combinator t₁ ⟷ t₂ denotes a permutation.
 
-c2π : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Transposition* (size t₁)
-c2π unite₊    = []
-c2π uniti₊    = []
-c2π {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = swap+π (size t₁) (size t₂)
-c2π assocl₊   = []
-c2π assocr₊   = []
-c2π unite⋆    = []
-c2π uniti⋆    = []
-c2π {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = swap⋆π (size t₁) (size t₂)
-c2π assocl⋆   = []  
-c2π assocr⋆   = []  
-c2π distz     = []  
-c2π factorz   = []  
-c2π dist      = []  
-c2π factor    = []  
-c2π id⟷       = []  
-c2π (c₁ ◎ c₂) = c2π c₁ ++L subst Transposition* (sym (size≡ c₁)) (c2π c₂)
-c2π (c₁ ⊕ c₂) = {!!} -- pcompπ (c2π c₁) (c2π c₂) 
-c2π (c₁ ⊗ c₂) = {!!} -- tcompπ (c2π c₁) (c2π c₂) 
-c2π unfoldBool = []
-c2π foldBool   = []
+c2cauchy : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Cauchy (size t₁)
+c2cauchy {PLUS ZERO t} unite₊ = idcauchy (size t)
+c2cauchy {t} uniti₊ = idcauchy (size t)
+c2cauchy {PLUS t₁ t₂} swap₊ = swap+cauchy (size t₁) (size t₂)
+c2cauchy {PLUS t₁ (PLUS t₂ t₃)} assocl₊ = 
+  idcauchy (size t₁ + (size t₂ + size t₃))
+c2cauchy {PLUS (PLUS t₁ t₂) t₃} assocr₊ = 
+  idcauchy ((size t₁ + size t₂) + size t₃)
+c2cauchy {TIMES ONE t} unite⋆ = 
+  subst Cauchy (sym (+-right-identity (size t))) (idcauchy (size t))
+c2cauchy {t} uniti⋆ = idcauchy (size t)
+c2cauchy {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = swap⋆cauchy (size t₁) (size t₂)
+c2cauchy {TIMES t₁ (TIMES t₂ t₃)} assocl⋆ = 
+  idcauchy (size t₁ * (size t₂ * size t₃))
+c2cauchy {TIMES (TIMES t₁ t₂) t₃} assocr⋆ = 
+  idcauchy ((size t₁ * size t₂) * size t₃)
+c2cauchy {TIMES ZERO t} distz = []
+c2cauchy factorz = []
+c2cauchy {TIMES (PLUS t₁ t₂) t₃} dist = 
+  idcauchy ((size t₁ + size t₂) * size t₃)
+c2cauchy {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} factor = 
+  idcauchy ((size t₁ * size t₃) + (size t₂ * size t₃))
+c2cauchy {t} id⟷  = idcauchy (size t)
+c2cauchy (c₁ ◎ c₂) = 
+  scompcauchy 
+    (c2cauchy c₁) 
+    (subst Cauchy (sym (size≡ c₁)) (c2cauchy c₂)) 
+c2cauchy (c₁ ⊕ c₂) = pcompcauchy (c2cauchy c₁) (c2cauchy c₂) 
+c2cauchy (c₁ ⊗ c₂) = tcompcauchy (c2cauchy c₁) (c2cauchy c₂)  
+c2cauchy unfoldBool = idcauchy 2
+c2cauchy foldBool   = idcauchy 2
 
--- Convenient way of seeing the result of applying a c : t₁ ⟷ t₂ 
+c2π : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Transposition* (size t₁)
+c2π = cauchy→transposition* ∘ c2cauchy
+
+-- Convenient way of seeing c : t₁ ⟷ t₂ as a permutation
 
 showπ : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Vec (⟦ t₁ ⟧ × ⟦ t₂ ⟧) (size t₁) 
 showπ {t₁} {t₂} c = 
@@ -1024,16 +996,16 @@ showπ {t₁} {t₂} c =
 -- Examples
 
 NEG1π NEG2π NEG3π NEG4π NEG5π : Vec (⟦ BOOL ⟧ × ⟦ BOOL ⟧) 2
-NEG1π = showπ {BOOL} {BOOL} NEG1  
---      (true , false) ∷ (false , true) ∷ []
-NEG2π = showπ {BOOL} {BOOL} NEG2  
---      (true , false) ∷ (false , true) ∷ []
-NEG3π = showπ {BOOL} {BOOL} NEG3  
---      (true , false) ∷ (false , true) ∷ []
-NEG4π = showπ {BOOL} {BOOL} NEG4
---      (true , false) ∷ (false , true) ∷ []
-NEG5π = showπ {BOOL} {BOOL} NEG5 
---      (true , false) ∷ (false , true) ∷ []
+NEG1π = showπ NEG1
+-- (true , false) ∷ (false , true) ∷ []
+NEG2π = showπ NEG2  
+-- (true , false) ∷ (false , true) ∷ []
+NEG3π = showπ NEG3  
+-- (true , false) ∷ (false , true) ∷ []
+NEG4π = showπ NEG4
+-- (true , false) ∷ (false , true) ∷ []
+NEG5π = showπ NEG5 
+-- (true , false) ∷ (false , true) ∷ []
 
 cnotπ : Vec (⟦ BOOL² ⟧ × ⟦ BOOL² ⟧) 4 
 cnotπ = showπ {BOOL²} {BOOL²} CNOT
@@ -1546,3 +1518,4 @@ snfulladder = showTransposition<* (sort (filter= (c2π FULLADDER)))
    -- 9 X! 12 ∷ 10 X! 11 ∷ 11 X! 13 ∷ 12 X! 13 ∷ 13 X! 14 ∷ []
 
 ------------------------------------------------------------------------------
+
