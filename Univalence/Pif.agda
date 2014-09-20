@@ -55,6 +55,10 @@ open import Groupoid
 _<?_ : Decidable _<_
 i <? j = suc i ≤? j
 
+trans< : Transitive _<_
+trans< (s≤s z≤n) (s≤s _) = s≤s z≤n
+trans< (s≤s (s≤s i≤j)) (s≤s sj<k) = s≤s (trans< (s≤s i≤j) sj<k) 
+
 i≤i : (i : ℕ) → i ≤ i
 i≤i 0 = z≤n
 i≤i (suc i) = s≤s (i≤i i)
@@ -163,10 +167,6 @@ i≮j∧i≠j→i≰j (suc i) 0 i≮j ¬i≡j ()
 i≮j∧i≠j→i≰j (suc i) (suc j) si≮sj ¬si≡sj (s≤s i≤j) = 
   i≮j∧i≠j→i≰j i j (si≮sj→i≮j i j si≮sj) (si≠sj→i≠j i j ¬si≡sj) i≤j
 
-trans< : Transitive _<_
-trans< (s≤s z≤n) (s≤s _) = s≤s z≤n
-trans< (s≤s (s≤s i≤j)) (s≤s sj<k) = s≤s (trans< (s≤s i≤j) sj<k) 
-
 ------------------------------------------------------------------------------
 -- Level 0 of Pi
 --
@@ -184,7 +184,6 @@ data U : Set where
   PLUS  : U → U → U
   TIMES : U → U → U
   BOOL  : U          -- for testing
-  ENUM  : ℕ → U      -- for testing
 
 ⟦_⟧ : U → Set 
 ⟦ ZERO ⟧        = ⊥ 
@@ -192,7 +191,6 @@ data U : Set where
 ⟦ PLUS t₁ t₂ ⟧  = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
 ⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
 ⟦ BOOL ⟧        = Bool
-⟦ ENUM n ⟧      = ℕ
 
 -- Abbreviations for examples
 
@@ -217,15 +215,15 @@ BOOL² = TIMES BOOL BOOL
 -- permutation as each permutation has a unique inverse
 -- permutation. Thus instead of the detour using univalence, we can
 -- give an inductive definition of all possible permutations between
--- finite types which naturally induces paths between the points. More
--- precisely, two types t₁ and t₂ have a path between them if there is
--- a permutation (c : t₁ ⟷ t₂). The fact that c is a permutation
--- guarantees, by construction, that (c ◎ ! c ∼ id⟷) and (! c ◎ c ∼
--- id⟷). A complete set of generators for all possible permutations
--- between finite types is given by the following definition. Note
--- that these permutations do not reach inside the types and hence do
--- not generate paths between the points within the types. The paths
--- are just between the types themselves.
+-- finite types which naturally induces paths between the points of U,
+-- i.e., the finite types. More precisely, two types t₁ and t₂ have a
+-- path between them if there is a permutation (c : t₁ ⟷ t₂). The fact
+-- that c is a permutation guarantees, by construction, that (c ◎ ! c
+-- ∼ id⟷) and (! c ◎ c ∼ id⟷). A complete set of generators for all
+-- possible permutations between finite types is given by the
+-- following definition. Note that these permutations do not reach
+-- inside the types and hence do not generate paths between the points
+-- within the types. The paths are just between the types themselves.
 
 infix  30 _⟷_
 infixr 50 _◎_
@@ -302,7 +300,6 @@ size ONE           = 1
 size (PLUS t₁ t₂)  = size t₁ + size t₂
 size (TIMES t₁ t₂) = size t₁ * size t₂
 size BOOL          = 2
-size (ENUM n)      = n
 
 utoVec : (t : U) → Vec ⟦ t ⟧ (size t)
 utoVec ZERO          = []
@@ -311,7 +308,6 @@ utoVec (PLUS t₁ t₂)  = mapV inj₁ (utoVec t₁) ++V mapV inj₂ (utoVec t�
 utoVec (TIMES t₁ t₂) = 
   concatV (mapV (λ v₁ → mapV (λ v₂ → (v₁ , v₂)) (utoVec t₂)) (utoVec t₁))
 utoVec BOOL          = false ∷ true ∷ []
-utoVec (ENUM n)      = tabulate toℕ
 
 -- Combinators are always between types of the same size
 
@@ -364,7 +360,7 @@ _ ⟷⟨ α ⟩ β = α ◎ β
 _□ : (t : U) → {t : U} → (t ⟷ t)
 _□ t = id⟷
 
--- print specification
+-- calculate and print specification of a combinator
 
 spec : {t₁ t₂ : U} → (t₁ ⟷ t₂) → Vec (⟦ t₁ ⟧ × ⟦ t₂ ⟧) (size t₁)
 spec {t₁} {t₂} c = mapV (λ v₁ → (v₁ , eval c v₁)) (utoVec t₁)
@@ -407,9 +403,9 @@ CNOT = TIMES BOOL BOOL
   where x = ONE; y = ONE
 -- spec: 
 -- ((false , false) , false , false) ∷
--- ((false , true) , false , true) ∷
--- ((true , false) , true , true) ∷
--- ((true , true) , true , false) ∷ []
+-- ((false , true)  , false , true)  ∷
+-- ((true  , false) , true  , true)  ∷
+-- ((true  , true)  , true  , false) ∷ []
 
 -- TOFFOLI
 
@@ -428,13 +424,13 @@ TOFFOLI = TIMES BOOL BOOL²
   where x = ONE; y = ONE
 -- spec:
 -- ((false , false , false) , false , false , false) ∷
--- ((false , false , true) , false , false , true) ∷
--- ((false , true , false) , false , true , false) ∷
--- ((false , true , true) , false , true , true) ∷
--- ((true , false , false) , true , false , false) ∷
--- ((true , false , true) , true , false , true) ∷
--- ((true , true , false) , true , true , true) ∷
--- ((true , true , true) , true , true , false) ∷ []
+-- ((false , false , true)  , false , false , true)  ∷
+-- ((false , true  , false) , false , true  , false) ∷
+-- ((false , true  , true)  , false , true  , true)  ∷
+-- ((true  , false , false) , true  , false , false) ∷
+-- ((true  , false , true)  , true  , false , true)  ∷
+-- ((true  , true  , false) , true  , true  , true)  ∷
+-- ((true  , true  , true)  , true  , true  , false) ∷ []
 
 -- Swaps for the type 1+(1+1)
 -- We have three values in the type 1+(1+1) 
@@ -451,72 +447,56 @@ SWAP12 SWAP23 SWAP13 ROTL ROTR :
   PLUS ONE (PLUS ONE ONE) ⟷ PLUS ONE (PLUS ONE ONE)
 SWAP12 = assocl₊ ◎ (swap₊ ⊕ id⟷) ◎ assocr₊
 -- spec: 
--- (inj₁ tt , inj₂ (inj₁ tt)) ∷
--- (inj₂ (inj₁ tt) , inj₁ tt) ∷ 
+-- (inj₁ tt        , inj₂ (inj₁ tt)) ∷
+-- (inj₂ (inj₁ tt) , inj₁ tt)        ∷ 
 -- (inj₂ (inj₂ tt) , inj₂ (inj₂ tt)) ∷ []
 SWAP23 = id⟷ ⊕ swap₊
 -- spec: 
--- (inj₁ tt , inj₁ tt) ∷
+-- (inj₁ tt        , inj₁ tt)        ∷
 -- (inj₂ (inj₁ tt) , inj₂ (inj₂ tt)) ∷
 -- (inj₂ (inj₂ tt) , inj₂ (inj₁ tt)) ∷ []
 SWAP13 = SWAP23 ◎ SWAP12 ◎ SWAP23 
 -- spec: 
--- (inj₁ tt , inj₂ (inj₂ tt)) ∷
+-- (inj₁ tt        , inj₂ (inj₂ tt)) ∷
 -- (inj₂ (inj₁ tt) , inj₂ (inj₁ tt)) ∷ 
--- (inj₂ (inj₂ tt) , inj₁ tt) ∷ []
-ROTL   = SWAP12 ◎ SWAP23
+-- (inj₂ (inj₂ tt) , inj₁ tt)        ∷ []
+ROTR   = SWAP12 ◎ SWAP23
 -- spec: 
--- (inj₁ tt , inj₂ (inj₂ tt)) ∷
--- (inj₂ (inj₁ tt) , inj₁ tt) ∷ 
+-- (inj₁ tt        , inj₂ (inj₂ tt)) ∷
+-- (inj₂ (inj₁ tt) , inj₁ tt)        ∷ 
 -- (inj₂ (inj₂ tt) , inj₂ (inj₁ tt)) ∷ []
-ROTR   = SWAP13 ◎ SWAP23
+ROTL   = SWAP13 ◎ SWAP23
 -- spec: 
--- (inj₁ tt , inj₂ (inj₁ tt)) ∷
+-- (inj₁ tt        , inj₂ (inj₁ tt)) ∷
 -- (inj₂ (inj₁ tt) , inj₂ (inj₂ tt)) ∷ 
--- (inj₂ (inj₂ tt) , inj₁ tt) ∷ []
-
--- More advanced examples
+-- (inj₂ (inj₂ tt) , inj₁ tt)        ∷ []
 
 -- The Peres gate is a universal gate: it takes three inputs a, b, and c, and
 -- produces a, a xor b, (a and b) xor c
 
 PERES : TIMES (TIMES BOOL BOOL) BOOL ⟷ TIMES (TIMES BOOL BOOL) BOOL
-PERES = swap⋆ ◎ TOFFOLI ◎ swap⋆ ◎ (CNOT ⊗ id⟷)
--- spec: 
+PERES = (id⟷ ⊗ not⟷) ◎ assocr⋆ ◎ (id⟷ ⊗ swap⋆) ◎ 
+        TOFFOLI ◎ 
+        (id⟷ ⊗ (not⟷ ⊗ id⟷)) ◎ 
+        TOFFOLI ◎ 
+        (id⟷ ⊗ swap⋆) ◎ (id⟷ ⊗ (not⟷ ⊗ id⟷)) ◎ 
+        TOFFOLI ◎ 
+        (id⟷ ⊗ (not⟷ ⊗ id⟷)) ◎ assocl⋆
+-- spec:
 -- (((false , false) , false) , (false , false) , false) ∷
--- (((false , false) , true) , (false , false) , true) ∷
--- (((false , true) , false) , (false , true) , false) ∷
--- (((false , true) , true) , (false , true) , true) ∷
--- (((true , false) , false) , (true , true) , false) ∷
--- (((true , false) , true) , (true , false) , true) ∷
--- (((true , true) , false) , (true , false) , false) ∷
--- (((true , true) , true) , (true , true) , true) ∷ []
+-- (((false , false) , true)  , (false , false) , true)  ∷
+-- (((false , true)  , false) , (false , true)  , false) ∷
+-- (((false , true)  , true)  , (false , true)  , true)  ∷
+-- (((true  , false) , false) , (true  , true)  , false) ∷
+-- (((true  , false) , true)  , (true  , true)  , true)  ∷
+-- (((true  , true)  , false) , (true  , false) , true)  ∷
+-- (((true  , true)  , true)  , (true  , false) , false) ∷ []
 
 -- A reversible full adder: See http://arxiv.org/pdf/1008.3533.pdf
---
 -- Input: (z, ((n1, n2), cin)))
 -- Output (g1, (g2, (sum, cout)))
 -- where sum = n1 xor n2 xor cin
 -- and cout = ((n1 xor n2) and cin) xor (n1 and n2) xor z
--- As a truth table (sorted by output column)
--- 
--- 0000 0000
--- 1000 0001
--- 0001 0010
--- 1001 0011
--- 1011 0100
--- 0011 0101
--- 0010 0110
--- 1010 0111
--- 1110 1000
--- 0110 1001
--- 1111 1010
--- 0111 1011
--- 1101 1100
--- 0101 1101
--- 0100 1110
--- 1100 1111
--- 
 FULLADDER : TIMES BOOL (TIMES (TIMES BOOL BOOL) BOOL) ⟷
             TIMES BOOL (TIMES BOOL (TIMES BOOL BOOL))
 FULLADDER = 
@@ -547,22 +527,23 @@ FULLADDER =
   --      (n1 xor n2 xor cin,((n1 xor n2) and cin) xor (n1 and n2) xor z)))
 -- spec: 
 -- ((false , (false , false) , false) , false , false , false , false) ∷
--- ((false , (false , false) , true) , false , false , true , false) ∷
--- ((false , (false , true) , false) , false , true , true , false) ∷
--- ((false , (false , true) , true) , false , true , false , false) ∷
--- ((false , (true , false) , false) , true , true , true , false) ∷
--- ((false , (true , false) , true) , true , true , false , false) ∷
--- ((false , (true , true) , false) , true , false , false , false) ∷
--- ((false , (true , true) , true) , true , false , true , false) ∷
--- ((true , (false , false) , false) , false , false , false , true) ∷
--- ((true , (false , false) , true) , false , false , true , true) ∷
--- ((true , (false , true) , false) , false , true , false , true) ∷
--- ((true , (false , true) , true) , false , true , true , true) ∷
--- ((true , (true , false) , false) , true , false , false , true) ∷
--- ((true , (true , false) , true) , true , false , true , true) ∷
--- ((true , (true , true) , false) , true , true , false , true) ∷
--- ((true , (true , true) , true) , true , true , true , true) ∷ []
+-- ((false , (false , false) , true)  , false , false , true  , false) ∷
+-- ((false , (false , true)  , false) , false , true  , true  , false) ∷
+-- ((false , (false , true)  , true)  , false , true  , false , true)  ∷
+-- ((false , (true  , false) , false) , true  , true  , true  , false) ∷
+-- ((false , (true  , false) , true)  , true  , true  , false , true)  ∷
+-- ((false , (true  , true)  , false) , true  , false , false , true)  ∷
+-- ((false , (true  , true)  , true)  , true  , false , true  , true)  ∷
+-- ((true  , (false , false) , false) , false , false , false , true)  ∷
+-- ((true  , (false , false) , true)  , false , false , true  , true)  ∷
+-- ((true  , (false , true)  , false) , false , true  , true  , true)  ∷
+-- ((true  , (false , true)  , true)  , false , true  , false , false) ∷
+-- ((true  , (true  , false) , false) , true  , true  , true  , true)  ∷
+-- ((true  , (true  , false) , true)  , true  , true  , false , false) ∷
+-- ((true  , (true  , true)  , false) , true  , false , false , false) ∷
+-- ((true  , (true  , true)  , true)  , true  , false , true  , false) ∷ []
 
+------------------------------------------------------------------------------
 -- Every permutation has an inverse. There are actually many syntactically
 -- different inverses but they are all equivalent.
 
@@ -637,10 +618,11 @@ FULLADDER =
 -- this is a poor representation and eventually requires function
 -- extensionality. 
 
--- A permutation is a represented as a product of "transpositions".
--- Because we eventually want to normalize permutations to some
--- canonical representation, we insist that the first component of a
--- transposition is always ≤ than the second
+-- A permutation is a represented as a product of
+-- "transpositions". This product is not commutative; we apply it from
+-- left to right. Because we eventually want to normalize permutations
+-- to some canonical representation, we insist that the first
+-- component of a transposition is always ≤ than the second
 
 infix 90 _X_
 
@@ -659,7 +641,7 @@ showTransposition : ∀ {n} → Transposition n → String
 showTransposition (i X j) = show (toℕ i) ++S " X " ++S show (toℕ j)
 
 -- A permutation with indices less than n can act on a vector of size
--- n by applying the swaps, one by one.
+-- n by applying the swaps, one by one, from left to right.
 
 actionπ : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Perm n → Vec A n → Vec A n
 actionπ π vs = foldl swapX vs π
