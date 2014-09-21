@@ -1073,42 +1073,22 @@ fulladderπ :
   Vec ((Bool × ((Bool × Bool) × Bool)) × (Bool × (Bool × (Bool × Bool)))) 16
 fulladderπ = showπ FULLADDER
 -- ((false , (false , false) , false) , false , false , false , false) ∷
--- ((true , (false , false) , false) , false , false , false , true) ∷
--- ((false , (false , false) , true) , false , false , true , false) ∷
--- ((true , (false , false) , true) , false , false , true , true) ∷
--- ((true , (false , true) , true) , false , true , false , false) ∷
--- ((false , (false , true) , true) , false , true , false , true) ∷
--- ((false , (false , true) , false) , false , true , true , false) ∷
--- ((true , (false , true) , false) , false , true , true , true) ∷
--- ((true , (true , true) , false) , true , false , false , false) ∷
--- ((false , (true , true) , false) , true , false , false , true) ∷
--- ((true , (true , true) , true) , true , false , true , false) ∷
--- ((false , (true , true) , true) , true , false , true , true) ∷
--- ((true , (true , false) , true) , true , true , false , false) ∷
--- ((false , (true , false) , true) , true , true , false , true) ∷
--- ((false , (true , false) , false) , true , true , true , false) ∷
--- ((true , (true , false) , false) , true , true , true , true) ∷ []
--- 
--- spec: 
--- ((false , (false , false) , false) , false , false , false , false) ∷
+-- ((true  , (false , false) , false) , false , false , false , true)  ∷
 -- ((false , (false , false) , true)  , false , false , true  , false) ∷
+-- ((true  , (false , false) , true)  , false , false , true  , true)  ∷
 -- ((false , (false , true)  , false) , false , true  , true  , false) ∷
 -- ((false , (false , true)  , true)  , false , true  , false , true)  ∷
--- ((false , (true  , false) , false) , true  , true  , true  , false) ∷
--- ((false , (true  , false) , true)  , true  , true  , false , true)  ∷
--- ((false , (true  , true)  , false) , true  , false , false , true)  ∷
--- ((false , (true  , true)  , true)  , true  , false , true  , true)  ∷
--- ((true  , (false , false) , false) , false , false , false , true)  ∷
--- ((true  , (false , false) , true)  , false , false , true  , true)  ∷
--- ((true  , (false , true)  , false) , false , true  , true  , true)  ∷
 -- ((true  , (false , true)  , true)  , false , true  , false , false) ∷
--- ((true  , (true  , false) , false) , true  , true  , true  , true)  ∷
--- ((true  , (true  , false) , true)  , true  , true  , false , false) ∷
+-- ((true  , (false , true)  , false) , false , true  , true  , true)  ∷
 -- ((true  , (true  , true)  , false) , true  , false , false , false) ∷
--- ((true  , (true  , true)  , true)  , true  , false , true  , false) ∷ []
-
-
-
+-- ((false , (true  , true)  , false) , true  , false , false , true)  ∷
+-- ((true  , (true  , true)  , true)  , true  , false , true  , false) ∷ 
+-- ((false , (true  , true)  , true)  , true  , false , true  , true)  ∷
+-- ((true  , (true  , false) , true)  , true  , true  , false , false) ∷
+-- ((false , (true  , false) , true)  , true  , true  , false , true)  ∷
+-- ((false , (true  , false) , false) , true  , true  , true  , false) ∷
+-- ((true  , (true  , false) , false) , true  , true  , true  , true)  ∷ []
+-- which agrees with spec.
 
 ------------------------------------------------------------------------------
 -- Normalization
