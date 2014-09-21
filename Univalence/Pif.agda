@@ -1113,54 +1113,7 @@ fulladderπ = showπ FULLADDER
 ------------------------------------------------------------------------------
 -- Normalization
 
--- Examples
-
-nn₁ nn₂ nn₃ nn₄ nn₅ : List String
-nn₁ = showTransposition<* (filter= (c2π NEG1))
-   -- 0 X 1 ∷ []
-nn₂ = showTransposition<* (filter= (c2π NEG2))
-   -- 0 X 1 ∷ []
-nn₃ = showTransposition<* (filter= (c2π NEG3))
-   -- 0 X 1 ∷ 0 X 1 ∷ 0 X 1 ∷ []
-nn₄ = showTransposition<* (filter= (c2π NEG4))
-   -- 0 X 1 ∷ []
-nn₅ = showTransposition<* (filter= (c2π NEG5))
-   -- 0 X 1 ∷ []
-
-ncnot ntoffoli : List String
-ncnot = showTransposition<* (filter= (c2π CNOT))
-   -- 2 X 3 ∷ []
-ntoffoli = showTransposition<* (filter= (c2π TOFFOLI))
-   -- 6 X 7 ∷ []
-
-nswap12 nswap23 nswap13 nrotl nrotr : List String
-nswap12 = showTransposition<* (filter= (c2π SWAP12))
-   -- 0 X 1 ∷ []
-nswap23 = showTransposition<* (filter= (c2π SWAP23))
-   -- 1 X 2 ∷ []
-nswap13 = showTransposition<* (filter= (c2π SWAP13))
-   -- 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
-nrotl   = showTransposition<* (filter= (c2π ROTL))
-   -- 0 X 1 ∷ 1 X 2 ∷ []
-nrotr   = showTransposition<* (filter= (c2π ROTR))
-   -- 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
-
-nperes nfulladder : List String
-nperes = showTransposition<* (filter= (c2π PERES))
-   -- 6 X 7 ∷ 4 X 6 ∷ 5 X 7 ∷ []
-nfulladder = showTransposition<* (filter= (c2π FULLADDER))
-   -- 1 X 2 ∷ 1 X 4 ∷ 1 X 8 ∷  X 6 ∷ 3 X 12 ∷ 3 X 9 ∷ 5 X 10 ∷ 7 X 14 ∷
-   -- 7 X 13 ∷ 7 X 11 ∷ 2 X 8 ∷ 3 X 9 ∷ 2 X 4 ∷ 3 X 5 ∷ 6 X 10 ∷ 7 X 11 ∷
-   -- 6 X 12 ∷ 7 X 13 ∷ 1 X 2 ∷ 1 X 4 ∷ 1 X 8 ∷ 3 X 6 ∷ 3 X 12 ∷ 3 X 9 ∷
-   -- 5 X 10 ∷ 7 X 14 ∷ 7 X 13 ∷ 7 X 11 ∷ 2 X 8 ∷ 3 X 9 ∷ 2 X 4 ∷ 3 X 5 ∷
-   -- 6 X 10 ∷ 7 X 11 ∷ 6 X 12 ∷ 7 X 13 ∷ 12 X 14 ∷ 13 X 15 ∷ 2 X 4 ∷
-   -- 3 X 5 ∷ 2 X 8 ∷ 3 X 9 ∷ 6 X 12 ∷ 7 X 13 ∷ 6 X 10 ∷ 7 X 11 ∷ 8 X 12 ∷
-   -- 9 X 13 ∷ 10 X 14 ∷ 11 X 15 ∷ 1 X 2 ∷ 5 X 6 ∷ 9 X 10 ∷ 13 X 14 ∷
-   -- 1 X 4 ∷ 1 X 2 ∷ 3 X 5 ∷ 3 X 6 ∷ 6 X 7 ∷1 X 2 ∷ 1 X 4 ∷ 3 X 6 ∷
-   -- 3 X 5 ∷ 4 X 6 ∷ 5 X 7 ∷ 9 X 12 ∷ 9 X 10 ∷ 11 X 13 ∷ 11 X 14 ∷
-   -- 14 X 15 ∷ 9 X 10 ∷ 9 X 12 ∷ 11 X 14 ∷ 11 X 13 ∷ 12 X 14 ∷ 13 X 15 ∷ []
-
--- Next we sort the list of transpositions using a variation of bubble
+-- We sort the list of transpositions using a variation of bubble
 -- sort. Like in the conventional bubble sort we look at pairs of
 -- transpositions and swap them if they are out of order but if we
 -- encounter (i X j) followed by (i X j) we remove both. 
@@ -1362,37 +1315,15 @@ snswap12 = showTransposition<* (sort (filter= (c2π SWAP12)))
 snswap23 = showTransposition<* (sort (filter= (c2π SWAP23)))
    -- 1 X! 2 ∷ []
 snswap13 = showTransposition<* (sort (filter= (c2π SWAP13)))
-   -- before sorting: 1 X! 2 ∷ 0 X! 1 ∷ 1 X! 2 ∷ []
-   -- after sorting : 0 X! 2 ∷ []
+   -- 0 X! 2 ∷ []
 snrotl   = showTransposition<* (sort (filter= (c2π ROTL)))
-   -- 0 X! 1 ∷ 1 X! 2 ∷ []
+   -- 0 X! 2 ∷ 1 X! 2 ∷ []
 snrotr   = showTransposition<* (sort (filter= (c2π ROTR)))
-   -- before sorting: 1 X! 2 ∷ 0 X! 1 ∷ 1 X! 2 ∷ 1 X! 2 ∷ []
-   -- after sorting:  0 X! 2 ∷ 1 X! 2 ∷ []
+   -- 0 X! 1 ∷ 1 X! 2 ∷ []
 
 snperes snfulladder : List String
 snperes = showTransposition<* (sort (filter= (c2π PERES)))
-   -- before sorting: 6 X! 7 ∷ 4 X! 6 ∷ 5 X! 7 ∷ []
-   -- after sorting:  4 X! 7 ∷ 5 X! 6 ∷ 6 X! 7 ∷ []
-   -- Apply the transpositions:
-   -- 000 000
-   -- 001 001
-   -- 010 010
-   -- 011 011
-   -- 111 100
-   -- 110 101
-   -- 100 110
-   -- 101 111
-   -- for comparison, here is the result of showπ
-   -- (((false , false) , false) , (false , false) , false) ∷
-   -- (((false , false) , true)  , (false , false) , true)  ∷
-   -- (((false , true)  , false) , (false , true)  , false) ∷
-   -- (((false , true)  , true)  , (false , true)  , true)  ∷
-   -- (((true  , true)  , true)  , (true  , false) , false) ∷
-   -- (((true  , true)  , false) , (true  , false) , true)  ∷
-   -- (((true  , false) , false) , (true  , true)  , false) ∷
-   -- (((true  , false) , true)  , (true  , true)  , true)  ∷ []
-   -- Perfect!
+   -- 4 X! 7 ∷ 5 X! 6 ∷ 6 X! 7 ∷ []
 
 snfulladder = showTransposition<* (sort (filter= (c2π FULLADDER)))
    -- 1 X! 8 ∷ 2 X! 8 ∷ 3 X! 9 ∷ 4 X! 9 ∷ 5 X! 10 ∷ 6 X! 8 ∷ 7 X! 11 ∷
