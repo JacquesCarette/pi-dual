@@ -680,7 +680,8 @@ filter= (_X_ i j {p≤} ∷ π) with toℕ i ≟ toℕ j
 ... | no p≠ = _X!_ i j {i≠j∧i≤j→i<j (toℕ i) (toℕ j) p≠ p≤}  ∷ filter= π 
 
 -- Representation III
--- This is the 2 line Cauchy representation. 
+-- This is the 2 line Cauchy representation. The first line is in
+-- canonical order and implicit in the indices of the vector
 
 Cauchy : ℕ → Set
 Cauchy n = Vec (Fin n) n
@@ -938,7 +939,7 @@ swap⋆π : (m n : ℕ) → Transposition* (m * n)
 swap⋆π m n = cauchy→transposition* (swap⋆cauchy m n)
 swap3x2→2x3 : List String
 swap3x2→2x3 = showTransposition* (swap⋆π 3 2)
--- 0 X 0 ∷ 1 X 3 ∷ 1 X 4 ∷ 1 X 2 ∷ 1 X 1 ∷ []
+-- 0 X 0 ∷ 1 X 3 ∷ 1 X 4 ∷ 1 X 2 ∷ 1 X 1 ∷ 5 X 5 ∷ []
 -- Let vs3x2 = 
 -- ("a" , 1) ∷ ("a" , 2) ∷ 
 -- ("b" , 1) ∷ ("b" , 2) ∷ 
@@ -1048,11 +1049,11 @@ swap13π = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} SWAP13
 -- (inj₂ (inj₂ tt) , inj₁ tt) ∷
 -- (inj₂ (inj₁ tt) , inj₂ (inj₁ tt)) ∷ 
 -- (inj₁ tt , inj₂ (inj₂ tt)) ∷ []
-rotlπ   = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} ROTL
+rotrπ   = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} ROTR
 -- (inj₂ (inj₁ tt) , inj₁ tt) ∷
 -- (inj₂ (inj₂ tt) , inj₂ (inj₁ tt)) ∷ 
 -- (inj₁ tt , inj₂ (inj₂ tt)) ∷ []
-rotrπ   = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} ROTR
+rotlπ   = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} ROTL
 -- (inj₂ (inj₂ tt) , inj₁ tt) ∷
 -- (inj₁ tt , inj₂ (inj₁ tt)) ∷ 
 -- (inj₂ (inj₁ tt) , inj₂ (inj₂ tt)) ∷ []
@@ -1070,7 +1071,6 @@ peresπ = showπ PERES
 
 fulladderπ : 
   Vec ((Bool × ((Bool × Bool) × Bool)) × (Bool × (Bool × (Bool × Bool)))) 16
--- fulladderπ = showπ FULLADDER
 fulladderπ = showπ FULLADDER
 -- ((false , (false , false) , false) , false , false , false , false) ∷
 -- ((true , (false , false) , false) , false , false , false , true) ∷
@@ -1088,146 +1088,27 @@ fulladderπ = showπ FULLADDER
 -- ((false , (true , false) , true) , true , true , false , true) ∷
 -- ((false , (true , false) , false) , true , true , true , false) ∷
 -- ((true , (true , false) , false) , true , true , true , true) ∷ []
--- ... which matches the specification:
--- 0000 0000
--- 1000 0001
--- 0001 0010
--- 1001 0011
--- 1011 0100
--- 0011 0101
--- 0010 0110
--- 1010 0111
--- 1110 1000
--- 0110 1001
--- 1111 1010
--- 0111 1011
--- 1101 1100
--- 0101 1101
--- 0100 1110
--- 1100 1111
+-- 
+-- spec: 
+-- ((false , (false , false) , false) , false , false , false , false) ∷
+-- ((false , (false , false) , true)  , false , false , true  , false) ∷
+-- ((false , (false , true)  , false) , false , true  , true  , false) ∷
+-- ((false , (false , true)  , true)  , false , true  , false , true)  ∷
+-- ((false , (true  , false) , false) , true  , true  , true  , false) ∷
+-- ((false , (true  , false) , true)  , true  , true  , false , true)  ∷
+-- ((false , (true  , true)  , false) , true  , false , false , true)  ∷
+-- ((false , (true  , true)  , true)  , true  , false , true  , true)  ∷
+-- ((true  , (false , false) , false) , false , false , false , true)  ∷
+-- ((true  , (false , false) , true)  , false , false , true  , true)  ∷
+-- ((true  , (false , true)  , false) , false , true  , true  , true)  ∷
+-- ((true  , (false , true)  , true)  , false , true  , false , false) ∷
+-- ((true  , (true  , false) , false) , true  , true  , true  , true)  ∷
+-- ((true  , (true  , false) , true)  , true  , true  , false , false) ∷
+-- ((true  , (true  , true)  , false) , true  , false , false , false) ∷
+-- ((true  , (true  , true)  , true)  , true  , false , true  , false) ∷ []
 
--- The various realizations of negation are equivalent but they give
--- different products of transpositions:
 
-n₁ n₂ n₃ n₄ n₅ : List String
-n₁ = showTransposition* (c2π NEG1)
-   -- 0 X 1 ∷ []
-n₂ = showTransposition* (c2π NEG2)
-   -- 0 X 1 ∷ []
-n₃ = showTransposition* (c2π NEG3)
-   -- 0 X 1 ∷ 0 X 1 ∷ 0 X 1 ∷ []
-n₄ = showTransposition* (c2π NEG4)
-   -- 0 X 1 ∷ []
-n₅ = showTransposition* (c2π NEG5)
-   -- 0 X 1 ∷ 0 X 0 ∷ 1 X 1 ∷ []
 
-cnot toffoli : List String
-cnot = showTransposition* (c2π CNOT)
-   -- 0 X 0 ∷
-   -- 1 X 1 ∷
-   -- 2 X 2 ∷
-   -- 3 X 3 ∷
-   -- 2 X 3 ∷
-   -- 2 X 2 ∷ 
-   -- 3 X 3 ∷ 
-   -- 0 X 0 ∷ 
-   -- 1 X 1 ∷ 
-   -- 2 X 2 ∷ 
-   -- 3 X 3 ∷ []
-toffoli = showTransposition* (c2π TOFFOLI)
-   -- 0 X 0 ∷
-   -- 1 X 1 ∷
-   -- 2 X 2 ∷
-   -- 3 X 3 ∷
-   -- 4 X 4 ∷
-   -- 5 X 5 ∷
-   -- 6 X 6 ∷
-   -- 7 X 7 ∷
-   -- 4 X 4 ∷
-   -- 5 X 5 ∷
-   -- 6 X 6 ∷
-   -- 7 X 7 ∷
-   -- 6 X 7 ∷
-   -- 6 X 6 ∷
-   -- 7 X 7 ∷
-   -- 4 X 4 ∷
-   -- 5 X 5 ∷
-   -- 6 X 6 ∷
-   -- 7 X 7 ∷
-   -- 4 X 4 ∷
-   -- 5 X 5 ∷
-   -- 6 X 6 ∷
-   -- 7 X 7 ∷
-   -- 0 X 0 ∷
-   -- 1 X 1 ∷
-   -- 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7"∷ []
-
-swap12 swap23 swap13 rotl rotr : List String
-swap12 = showTransposition* (c2π SWAP12)
-   -- 0 X 1 ∷ []
-swap23 = showTransposition* (c2π SWAP23)
-   -- 1 X 2 ∷ []
-swap13 = showTransposition* (c2π SWAP13)
-   -- 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ []
-rotl   = showTransposition* (c2π ROTL)
-   -- 0 X 1 ∷ 1 X 2 ∷ []
-rotr   = showTransposition* (c2π ROTR)
-   -- 1 X 2 ∷ 0 X 1 ∷ 1 X 2 ∷ 1 X 2 ∷ []
-
-peres fulladder : List String
-peres = showTransposition* (c2π PERES)
--- 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷
--- 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 6 X 7 ∷ 6 X 6 ∷ 7 X 7 ∷ 4 X 4 ∷
--- 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 0 X 0 ∷
--- 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 0 X 0 ∷
--- 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 4 X 6 ∷
--- 5 X 7 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷
--- 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷ 
--- 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ []
-fulladder = showTransposition* (c2π FULLADDER)
--- 0 X 0 ∷ 1 X 2 ∷ 1 X 4 ∷ 1 X 8 ∷ 1 X 1 ∷ 3 X 6 ∷ 3 X 12 ∷ 3 X 9 ∷
--- 3 X 3 ∷ 5 X 10 ∷ 5 X 5 ∷ 7 X 14 ∷ 7 X 13 ∷ 7 X 11 ∷ 7 X 7 ∷ 0 X 0 ∷
--- 1 X 1 ∷ 2 X 8 ∷ 3 X 9 ∷ 2 X 4 ∷ 3 X 5 ∷ 2 X 2 ∷ 3 X 3 ∷ 6 X 10 ∷ 7 X 11 ∷
--- 6 X 12 ∷ 7 X 13 ∷ 6 X 6 ∷ 7 X 7 ∷ 4 X 4 ∷ 5 X 5 ∷ 8 X 8 ∷ 9 X 9 ∷ 10 X 10 ∷
--- 11 X 11 ∷ 12 X 12 ∷ 13 X 13 ∷ 14 X 14 ∷ 15 X 15 ∷ 0 X 0 ∷ 1 X 2 ∷ 1 X 4 ∷
--- 1 X 8 ∷ 1 X 1 ∷ 3 X 6 ∷ 3 X 12 ∷ 3 X 9 ∷ 3 X 3 ∷ 5 X 10 ∷ 5 X 5 ∷ 7 X 14 ∷
--- 7 X 13 ∷ 7 X 11 ∷ 7 X 7 ∷ 0 X 0 ∷ 1 X 1 ∷ 2 X 8 ∷ 3 X 9 ∷ 2 X 4 ∷ 3 X 5 ∷
--- 2 X 2 ∷ 3 X 3 ∷ 6 X 10 ∷ 7 X 11 ∷ 6 X 12 ∷ 7 X 13 ∷ 6 X 6 ∷ 7 X 7 ∷ 0 X 0 ∷
--- 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 8 X 8 ∷ 9 X 9 ∷
--- 10 X 10 ∷ 11 X 11 ∷ 12 X 12 ∷ 13 X 13 ∷ 14 X 14 ∷ 15 X 15 ∷ 8 X 8 ∷ 9 X 9 ∷
--- 10 X 10 ∷ 11 X 11 ∷ 12 X 12 ∷ 13 X 13 ∷ 14 X 14 ∷ 15 X 15 ∷ 12 X 14 ∷ 
--- 13 X 15 ∷ 14 X 14 ∷ 15 X 15 ∷ 8 X 8 ∷ 9 X 9 ∷ 10 X 10 ∷ 11 X 11 ∷ 12 X 12 ∷
--- 13 X 13 ∷ 14 X 14 ∷ 15 X 15 ∷ 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷
--- 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 8 X 8 ∷ 9 X 9 ∷ 10 X 10 ∷ 11 X 11 ∷ 12 X 12 ∷
--- 13 X 13 ∷ 14 X 14 ∷ 15 X 15 ∷ 0 X 0 ∷ 1 X 1 ∷ 2 X 4 ∷ 3 X 5 ∷ 2 X 8 ∷
--- 3 X 9 ∷ 2 X 2 ∷ 3 X 3 ∷ 6 X 12 ∷ 7 X 13 ∷ 6 X 10 ∷ 7 X 11 ∷ 6 X 6 ∷
--- 7 X 7 ∷ 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷
--- 7 X 7 ∷ 8 X 8 ∷ 9 X 9 ∷ 10 X 10 ∷ 11 X 11 ∷ 12 X 12 ∷ 13 X 13 ∷ 14 X 14 ∷
--- 15 X 15 ∷ 8 X 12 ∷ 9 X 13 ∷ 10 X 14 ∷ 11 X 15 ∷ 12 X 12 ∷ 13 X 13 ∷ 14 X 14 ∷
--- 15 X 15 ∷ 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷
--- 7 X 7 ∷ 8 X 8 ∷ 9 X 9 ∷ 10 X 10 ∷ 11 X 11 ∷ 12 X 12 ∷ 13 X 13 ∷ 14 X 14 ∷
--- 15 X 15 ∷ 0 X 0 ∷ 1 X 2 ∷ 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ 5 X 6 ∷
--- 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 8 X 8 ∷ 9 X 10 ∷ 9 X 9 ∷ 10 X 10 ∷ 11 X 11 ∷
--- 12 X 12 ∷ 13 X 14 ∷ 13 X 13 ∷ 14 X 14 ∷ 15 X 15 ∷ 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷
--- 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 8 X 8 ∷ 9 X 9 ∷ 10 X 10 ∷
--- 11 X 11 ∷ 12 X 12 ∷ 13 X 13 ∷ 14 X 14 ∷ 15 X 15 ∷ 0 X 0 ∷ 1 X 4 ∷ 1 X 2 ∷
--- 1 X 1 ∷ 3 X 5 ∷ 3 X 6 ∷ 3 X 3 ∷ 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷
--- 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷
--- 6 X 7 ∷ 7 X 7 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 0 X 0 ∷ 1 X 1 ∷
--- 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 0 X 0 ∷ 1 X 2 ∷
--- 1 X 4 ∷ 1 X 1 ∷ 3 X 6 ∷ 3 X 5 ∷ 3 X 3 ∷ 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷
--- 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 4 X 6 ∷ 5 X 7 ∷ 6 X 6 ∷
--- 7 X 7 ∷ 0 X 0 ∷ 1 X 1 ∷ 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷
--- 7 X 7 ∷ 8 X 8 ∷ 9 X 12 ∷ 9 X 10 ∷ 9 X 9 ∷ 11 X 13 ∷ 11 X 14 ∷ 11 X 11 ∷
--- 8 X 8 ∷ 9 X 9 ∷ 10 X 10 ∷ 11 X 11 ∷ 12 X 12 ∷ 13 X 13 ∷ 14 X 14 ∷ 15 X 15 ∷
--- 12 X 12 ∷ 13 X 13 ∷ 14 X 14 ∷ 15 X 15 ∷ 14 X 15 ∷ 15 X 15 ∷ 12 X 12 ∷ 
--- 13 X 13 ∷ 14 X 14 ∷ 15 X 15 ∷ 8 X 8 ∷ 9 X 9 ∷ 10 X 10 ∷ 11 X 11 ∷ 12 X 12 ∷
--- 13 X 13 ∷ 14 X 14 ∷ 15 X 15 ∷ 8 X 8 ∷ 9 X 10 ∷ 9 X 12 ∷ 9 X 9 ∷ 11 X 14 ∷
--- 11 X 13 ∷ 11 X 11 ∷ 8 X 8 ∷ 9 X 9 ∷ 10 X 10 ∷ 11 X 11 ∷ 12 X 12 ∷ 13 X 13 ∷
--- 14 X 14 ∷ 15 X 15 ∷ 12 X 14 ∷ 13 X 15 ∷ 14 X 14 ∷ 15 X 15 ∷ 8 X 8 ∷ 9 X 9 ∷
--- 10 X 10 ∷ 11 X 11 ∷ 12 X 12 ∷ 13 X 13 ∷ 14 X 14 ∷ 15 X 15 ∷ 0 X 0 ∷ 1 X 1 ∷
--- 2 X 2 ∷ 3 X 3 ∷ 4 X 4 ∷ 5 X 5 ∷ 6 X 6 ∷ 7 X 7 ∷ 8 X 8 ∷ 9 X 9 ∷
--- 10 X 10 ∷ 11 X 11 ∷ 12 X 12 ∷ 13 X 13 ∷ 14 X 14 ∷ 15 X 15 ∷ []
 
 ------------------------------------------------------------------------------
 -- Normalization
