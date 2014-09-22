@@ -1340,7 +1340,46 @@ trans∼ = trans
 -- The relation ~ validates the groupoid laws
 
 c◎id∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ id⟷ ∼ c
-c◎id∼c = {!!} 
+c◎id∼c {t₁} {t₂} {c} = 
+  begin (sort 
+          (filter= 
+            (cauchy→transposition* 
+              (c2cauchy (c ◎ id⟷))))
+           ≡⟨ {!!} ⟩ 
+         sort 
+          (filter= 
+            (cauchy→transposition* 
+              (scompcauchy 
+                (c2cauchy c) 
+                (subst Cauchy (sym (size≡ c)) (c2cauchy {t₂} id⟷)))))
+           ≡⟨ {!!} ⟩
+         sort 
+          (filter= 
+            (cauchy→transposition* 
+              (scompcauchy 
+                (c2cauchy c) 
+                (subst Cauchy (sym (size≡ c)) (idcauchy (size t₂))))))
+           ≡⟨ {!!} ⟩
+         sort 
+          (filter= 
+            (cauchy→transposition* 
+              (scompcauchy 
+                (c2cauchy c) 
+                (allFin (size t₁)))))
+           ≡⟨ {!!} ⟩
+         sort 
+          (filter= 
+            (cauchy→transposition* 
+              (tabulate (λ i → 
+                lookup (lookup i (c2cauchy c)) (allFin (size t₁))))))
+           ≡⟨ {!!} ⟩
+         sort 
+          (filter= 
+            (cauchy→transposition* 
+              (tabulate (λ i → lookup i (c2cauchy c)))))
+           ≡⟨ {!!} ⟩
+         sort (filter= (cauchy→transposition* (c2cauchy c))) ∎)
+  where open ≡-Reasoning
 
 {--
 id◎c∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ◎ c ∼ c
