@@ -26,6 +26,8 @@ open import Data.Fin
          raise; inject+; inject₁; inject≤; _≻toℕ_) 
   renaming (_+_ to _F+_)
 open import Data.Fin.Properties using (bounded; inject+-lemma)
+open import Data.Vec.Properties 
+  using (lookup∘tabulate; tabulate∘lookup; lookup-allFin)
 
 open import Data.List 
   using (List; []; _∷_; _∷ʳ_; foldl; replicate; reverse; downFrom; 
@@ -840,6 +842,17 @@ scompcauchy : ∀ {n} → Cauchy n → Cauchy n → Cauchy n
 scompcauchy {n} perm₁ perm₂ = 
   tabulate (λ i → lookup (lookup i perm₁) perm₂)
 
+scompid : ∀ {n} → (f : Cauchy n) → scompcauchy f (idcauchy n) ≡ f
+scompid {n} perm = 
+  begin (scompcauchy perm (idcauchy n)
+           ≡⟨ refl ⟩ 
+         tabulate (λ i → lookup (lookup i perm) (allFin n))
+           ≡⟨ {!cong tabulate (EXT (lookup-allFin i)!} ⟩ 
+         tabulate (λ i → lookup i perm)
+           ≡⟨ tabulate∘lookup perm ⟩ 
+         perm ∎)
+  where open ≡-Reasoning
+
 -- Parallel additive composition 
 -- append both permutations but adjust the indices in the second
 -- permutation by the size of the first type so that it acts on the
@@ -1351,13 +1364,6 @@ c◎id∼c {t₁} {t₂} {c} =
             (cauchy→transposition* 
               (scompcauchy 
                 (c2cauchy c) 
-                (subst Cauchy (sym (size≡ c)) (c2cauchy {t₂} id⟷)))))
-           ≡⟨ {!!} ⟩
-         sort 
-          (filter= 
-            (cauchy→transposition* 
-              (scompcauchy 
-                (c2cauchy c) 
                 (subst Cauchy (sym (size≡ c)) (idcauchy (size t₂))))))
            ≡⟨ {!!} ⟩
          sort 
@@ -1366,18 +1372,8 @@ c◎id∼c {t₁} {t₂} {c} =
               (scompcauchy 
                 (c2cauchy c) 
                 (allFin (size t₁)))))
-           ≡⟨ {!!} ⟩
-         sort 
-          (filter= 
-            (cauchy→transposition* 
-              (tabulate (λ i → 
-                lookup (lookup i (c2cauchy c)) (allFin (size t₁))))))
-           ≡⟨ {!!} ⟩
-         sort 
-          (filter= 
-            (cauchy→transposition* 
-              (tabulate (λ i → lookup i (c2cauchy c)))))
-           ≡⟨ {!!} ⟩
+           ≡⟨ cong (λ x → sort (filter= (cauchy→transposition* x)))
+                   (scompid (c2cauchy c)) ⟩
          sort (filter= (cauchy→transposition* (c2cauchy c))) ∎)
   where open ≡-Reasoning
 
