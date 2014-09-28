@@ -842,12 +842,32 @@ scompcauchy : ∀ {n} → Cauchy n → Cauchy n → Cauchy n
 scompcauchy {n} perm₁ perm₂ = 
   tabulate (λ i → lookup (lookup i perm₁) perm₂)
 
+finext : {n : ℕ} {A : Set} → (f g : Fin n → A) → ((i : Fin n) → f i ≡ g i) → 
+         (tabulate f ≡ tabulate g)
+finext {0} f g fi≡gi = refl
+finext {suc n} f g fi≡gi = 
+  begin (tabulate {suc n} f 
+           ≡⟨ refl ⟩
+         f zero ∷ tabulate {n} (f ∘ suc)
+           ≡⟨ cong (λ x → x ∷ tabulate {n} (f ∘ suc)) (fi≡gi zero) ⟩ 
+         g zero ∷ tabulate {n} (f ∘ suc)
+           ≡⟨ cong 
+                (λ x → g zero ∷ x) 
+                (finext (f ∘ suc) (g ∘ suc) (fi≡gi ∘ suc)) ⟩ 
+         g zero ∷ tabulate {n} (g ∘ suc)
+           ≡⟨ refl ⟩
+         tabulate g ∎)
+  where open ≡-Reasoning
+
 scompid : ∀ {n} → (f : Cauchy n) → scompcauchy f (idcauchy n) ≡ f
 scompid {n} perm = 
   begin (scompcauchy perm (idcauchy n)
            ≡⟨ refl ⟩ 
          tabulate (λ i → lookup (lookup i perm) (allFin n))
-           ≡⟨ {!cong tabulate (EXT (lookup-allFin i)!} ⟩ 
+           ≡⟨ finext 
+                 (λ i → lookup (lookup i perm) (allFin n))
+                 (λ i → lookup i perm)
+                 (λ i → lookup-allFin (lookup i perm)) ⟩ 
          tabulate (λ i → lookup i perm)
            ≡⟨ tabulate∘lookup perm ⟩ 
          perm ∎)
