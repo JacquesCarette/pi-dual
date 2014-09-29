@@ -1383,7 +1383,7 @@ c◎id∼c {t₁} {t₂} {c} =
           (filter= 
             (cauchy→transposition* 
               (c2cauchy {t₁} (c ◎ id⟷))))
-           ≡⟨ cong (λ x → sort (filter= (cauchy→transposition* x))) {!!} ⟩ 
+           ≡⟨ cong (λ x → sort (filter= (cauchy→transposition* x))) {!refl!} ⟩ 
          sort 
           (filter= 
             (cauchy→transposition* 
