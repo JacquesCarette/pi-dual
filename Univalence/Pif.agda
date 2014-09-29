@@ -1382,15 +1382,15 @@ c◎id∼c {t₁} {t₂} {c} =
   begin (sort 
           (filter= 
             (cauchy→transposition* 
-              (c2cauchy (c ◎ id⟷))))
-           ≡⟨ {!!} ⟩ 
+              (c2cauchy {t₁} (c ◎ id⟷))))
+           ≡⟨ cong (λ x → sort (filter= (cauchy→transposition* x))) {!!} ⟩ 
          sort 
           (filter= 
             (cauchy→transposition* 
               (scompcauchy 
-                (c2cauchy c) 
-                (subst Cauchy (sym (size≡ c)) (allFin (size t₂))))))
-           ≡⟨ {!!} ⟩
+                (c2cauchy {t₁} c) 
+                (subst Cauchy (sym (size≡ c)) (c2cauchy {t₂} id⟷)))))
+           ≡⟨ cong (λ x → sort (filter= (cauchy→transposition* x))) {!!} ⟩
          sort 
           (filter= 
             (cauchy→transposition* 
