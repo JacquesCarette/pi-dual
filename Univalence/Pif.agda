@@ -1,4 +1,4 @@
--- {-# OPTIONS --without-K #-}
+{-# OPTIONS --without-K #-}
 
 module Pif where
 
