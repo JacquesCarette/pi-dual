@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+-- {-# OPTIONS --without-K #-}
 
 module Pif where
 
@@ -802,6 +802,28 @@ cauchy→transposition* : ∀ {n} → Cauchy n → Transposition* n
 cauchy→transposition* = cycle*→transposition* ∘ cauchy→cycle*
 
 ------------------------------------------------------------------------------
+-- Lemmas
+
+-- Extensionality for finite functions
+
+finext : {n : ℕ} {A : Set} → (f g : Fin n → A) → ((i : Fin n) → f i ≡ g i) → 
+         (tabulate f ≡ tabulate g)
+finext {0} f g fi≡gi = refl
+finext {suc n} f g fi≡gi = 
+  begin (tabulate {suc n} f 
+           ≡⟨ refl ⟩
+         f zero ∷ tabulate {n} (f ∘ suc)
+           ≡⟨ cong (λ x → x ∷ tabulate {n} (f ∘ suc)) (fi≡gi zero) ⟩ 
+         g zero ∷ tabulate {n} (f ∘ suc)
+           ≡⟨ cong 
+                (λ x → g zero ∷ x) 
+                (finext (f ∘ suc) (g ∘ suc) (fi≡gi ∘ suc)) ⟩ 
+         g zero ∷ tabulate {n} (g ∘ suc)
+           ≡⟨ refl ⟩
+         tabulate g ∎)
+  where open ≡-Reasoning
+
+------------------------------------------------------------------------------
 -- Elementary permutations in the Cauchy representation
 
 idcauchy : (n : ℕ) → Cauchy n
@@ -842,25 +864,8 @@ scompcauchy : ∀ {n} → Cauchy n → Cauchy n → Cauchy n
 scompcauchy {n} perm₁ perm₂ = 
   tabulate (λ i → lookup (lookup i perm₁) perm₂)
 
-finext : {n : ℕ} {A : Set} → (f g : Fin n → A) → ((i : Fin n) → f i ≡ g i) → 
-         (tabulate f ≡ tabulate g)
-finext {0} f g fi≡gi = refl
-finext {suc n} f g fi≡gi = 
-  begin (tabulate {suc n} f 
-           ≡⟨ refl ⟩
-         f zero ∷ tabulate {n} (f ∘ suc)
-           ≡⟨ cong (λ x → x ∷ tabulate {n} (f ∘ suc)) (fi≡gi zero) ⟩ 
-         g zero ∷ tabulate {n} (f ∘ suc)
-           ≡⟨ cong 
-                (λ x → g zero ∷ x) 
-                (finext (f ∘ suc) (g ∘ suc) (fi≡gi ∘ suc)) ⟩ 
-         g zero ∷ tabulate {n} (g ∘ suc)
-           ≡⟨ refl ⟩
-         tabulate g ∎)
-  where open ≡-Reasoning
-
-scompid : ∀ {n} → (f : Cauchy n) → scompcauchy f (idcauchy n) ≡ f
-scompid {n} perm = 
+scomprid : ∀ {n} → (f : Cauchy n) → scompcauchy f (idcauchy n) ≡ f
+scomprid {n} perm = 
   begin (scompcauchy perm (idcauchy n)
            ≡⟨ refl ⟩ 
          tabulate (λ i → lookup (lookup i perm) (allFin n))
@@ -1384,7 +1389,7 @@ c◎id∼c {t₁} {t₂} {c} =
             (cauchy→transposition* 
               (scompcauchy 
                 (c2cauchy c) 
-                (subst Cauchy (sym (size≡ c)) (idcauchy (size t₂))))))
+                (subst Cauchy (sym (size≡ c)) (allFin (size t₂))))))
            ≡⟨ {!!} ⟩
          sort 
           (filter= 
@@ -1393,7 +1398,7 @@ c◎id∼c {t₁} {t₂} {c} =
                 (c2cauchy c) 
                 (allFin (size t₁)))))
            ≡⟨ cong (λ x → sort (filter= (cauchy→transposition* x)))
-                   (scompid (c2cauchy c)) ⟩
+                   (scomprid (c2cauchy c)) ⟩
          sort (filter= (cauchy→transposition* (c2cauchy c))) ∎)
   where open ≡-Reasoning
 
