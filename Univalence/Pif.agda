@@ -269,7 +269,7 @@ data _⟷_ : U → U → Set where
 
 -- Extensional evaluator for testing: serves as a specification
 
-eval  :{ t₁ t₂ : U } → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
+eval : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
 eval unite₊ (inj₁ ())
 eval unite₊ (inj₂ v) = v
 eval uniti₊ v = inj₂ v
@@ -324,6 +324,9 @@ utoVec BOOL          = false ∷ true ∷ []
 -- Combinators are always between types of the same size
 
 size≡ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (size t₁ ≡ size t₂)
+-- the composition case must be the first one
+-- otherwise Agda will not unfold (c ◎ id⟷)
+size≡ (c₁ ◎ c₂) = trans (size≡ c₁) (size≡ c₂)
 size≡ {PLUS ZERO t} {.t} unite₊ = refl
 size≡ {t} {PLUS ZERO .t} uniti₊ = refl
 size≡ {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = +-comm (size t₁) (size t₂)
@@ -345,7 +348,6 @@ size≡ {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t�
 size≡ {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t₃} factor = 
   sym (distribʳ-*-+ (size t₃) (size t₁) (size t₂))
 size≡ {t} {.t} id⟷ = refl
-size≡ (c₁ ◎ c₂) = trans (size≡ c₁) (size≡ c₂)
 size≡ {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = cong₂ _+_ (size≡ c₁) (size≡ c₂)
 size≡ {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = cong₂ _*_ (size≡ c₁) (size≡ c₂)
 size≡ {PLUS ONE ONE} {BOOL} foldBool = refl
@@ -779,6 +781,16 @@ swap⋆cauchy (suc (suc m)) (suc (suc n)) =
 -- A combinator t₁ ⟷ t₂ denotes a permutation.
 
 c2cauchy : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Cauchy (size t₁)
+-- the cases that do not inspect t₁ and t₂ should be at the beginning
+-- so that Agda would unfold them
+c2cauchy (c₁ ◎ c₂) = 
+  scompcauchy 
+    (c2cauchy c₁) 
+    (subst Cauchy (sym (size≡ c₁)) (c2cauchy c₂)) 
+c2cauchy (c₁ ⊕ c₂) = pcompcauchy (c2cauchy c₁) (c2cauchy c₂) 
+c2cauchy (c₁ ⊗ c₂) = tcompcauchy (c2cauchy c₁) (c2cauchy c₂)  
+c2cauchy unfoldBool = idcauchy 2
+c2cauchy foldBool   = idcauchy 2
 c2cauchy {PLUS ZERO t} unite₊ = idcauchy (size t)
 c2cauchy {t} uniti₊ = idcauchy (size t)
 c2cauchy {PLUS t₁ t₂} swap₊ = swap+cauchy (size t₁) (size t₂)
@@ -801,14 +813,6 @@ c2cauchy {TIMES (PLUS t₁ t₂) t₃} dist =
 c2cauchy {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} factor = 
   idcauchy ((size t₁ * size t₃) + (size t₂ * size t₃))
 c2cauchy {t} id⟷  = idcauchy (size t)
-c2cauchy (c₁ ◎ c₂) = 
-  scompcauchy 
-    (c2cauchy c₁) 
-    (subst Cauchy (sym (size≡ c₁)) (c2cauchy c₂)) 
-c2cauchy (c₁ ⊕ c₂) = pcompcauchy (c2cauchy c₁) (c2cauchy c₂) 
-c2cauchy (c₁ ⊗ c₂) = tcompcauchy (c2cauchy c₁) (c2cauchy c₂)  
-c2cauchy unfoldBool = idcauchy 2
-c2cauchy foldBool   = idcauchy 2
 
 ------------------------------------------------------------------------------
 -- Extensional equivalence of combinators: two combinators are
@@ -838,19 +842,24 @@ trans∼ = trans
 
 c◎id∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ id⟷ ∼ c
 c◎id∼c {t₁} {t₂} {c} = 
-  begin (c2cauchy {t₁} {t₂} (c ◎ id⟷)
-           ≡⟨ {!!} ⟩ 
+  begin (c2cauchy (c ◎ id⟷)
+           ≡⟨ refl ⟩ 
         scompcauchy 
-          (c2cauchy {t₁} {t₂} c) 
-            (subst Cauchy (sym (size≡ c)) (c2cauchy {t₂} {t₂} id⟷))
+          (c2cauchy c)
+            (subst Cauchy (sym (size≡ c)) (c2cauchy {t₂} id⟷))
            ≡⟨ {!!} ⟩ 
-        scompcauchy (c2cauchy {t₁} {t₂} c) (allFin (size t₁))
+        scompcauchy (c2cauchy c) (allFin (size t₁))
            ≡⟨ scomprid (c2cauchy c) ⟩ 
-         c2cauchy {t₁} {t₂} c ∎)
+         c2cauchy c ∎)
   where open ≡-Reasoning
 
+postulate t₁ : U
+          t₂ : U
+          c : t₁ ⟷ t₂
 
--- scomprid : ∀ {n} → (perm : Cauchy n) → scompcauchy perm (idcauchy n) ≡ perm
+xxx = subst Cauchy (sym (size≡ c)) (c2cauchy {t₂} id⟷)
+-- subst (λ n → Vec (Fin n) n) (sym (size≡ c)) (tabulate (λ x → x))
+-- sym (size≡ c) must reduce to refl for the subst to unfold
 
 
 {--
