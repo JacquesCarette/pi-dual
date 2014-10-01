@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+-- {-# OPTIONS --without-K #-}
 
 module Pif where
 
@@ -630,57 +630,6 @@ FULLADDER =
 -- this is a poor representation and eventually requires function
 -- extensionality. 
 
--- Representation I:
--- Our first representation of a permutation is as a product of
--- "transpositions." This product is not commutative; we apply it from
--- left to right. Because we eventually want to normalize permutations
--- to some canonical representation, we insist that the first
--- component of a transposition is always ≤ than the second
-
-infix 90 _X_
-
-data Transposition (n : ℕ) : Set where
-  _X_ : (i j : Fin n) → {p : toℕ i ≤ toℕ j} → Transposition n
-
-mkTransposition : {n : ℕ} → (i j : Fin n) → Transposition n
-mkTransposition {n} i j with toℕ i ≤? toℕ j 
-... | yes p = _X_ i j {p}
-... | no p  = _X_ j i {i≰j→j≤i (toℕ i) (toℕ j) p}
-
-Transposition* : ℕ → Set
-Transposition* n = List (Transposition n) 
-
-showTransposition* : ∀ {n} → Transposition* n → List String
-showTransposition* = 
-  mapL (λ { (i X j) → show (toℕ i) ++S " X " ++S show (toℕ j) })
-
-actionπ : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Transposition* n → Vec A n → Vec A n
-actionπ π vs = foldl swapX vs π
-  where 
-    swapX : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Vec A n → Transposition n → Vec A n  
-    swapX vs (i X j) = (vs [ i ]≔ lookup j vs) [ j ]≔ lookup i vs
-
--- Representation II:
--- This is also a product of transpositions but the transpositions are such
--- that the first component is always < the second, i.e., we got rid of trivial
--- transpositions that swap an element with itself
-
-data Transposition< (n : ℕ) : Set where
-  _X!_ : (i j : Fin n) → {p : toℕ i < toℕ j} → Transposition< n
-
-Transposition<* : ℕ → Set
-Transposition<* n = List (Transposition< n) 
-
-showTransposition<* : ∀ {n} → Transposition<* n → List String
-showTransposition<* = 
-  mapL (λ { (i X! j) → show (toℕ i) ++S " X! " ++S show (toℕ j) })
-
-filter= : {n : ℕ} → Transposition* n → Transposition<* n
-filter= [] = []
-filter= (_X_ i j {p≤} ∷ π) with toℕ i ≟ toℕ j
-... | yes p= = filter= π 
-... | no p≠ = _X!_ i j {i≠j∧i≤j→i<j (toℕ i) (toℕ j) p≠ p≤}  ∷ filter= π 
-
 -- Representation III
 -- This is the 2 line Cauchy representation. The first line is in
 -- canonical order and implicit in the indices of the vector
@@ -688,78 +637,9 @@ filter= (_X_ i j {p≤} ∷ π) with toℕ i ≟ toℕ j
 Cauchy : ℕ → Set
 Cauchy n = Vec (Fin n) n
 
--- Representation IV
--- A product of cycles where each cycle is a non-empty sequence of indices
-
-Cycle : ℕ → Set
-Cycle n = List⁺ (Fin n)
-
-Cycle* : ℕ → Set
-Cycle* n = List (Cycle n)
-
--- convert a cycle to a product of transpositions
-
-cycle→transposition* : ∀ {n} → Cycle n → Transposition* n
-cycle→transposition* (i , []) = []
-cycle→transposition* (i , (j ∷ ns)) = 
-  mkTransposition i j ∷ cycle→transposition* (i , ns)
-
-cycle*→transposition* : ∀ {n} → Cycle* n → Transposition* n
-cycle*→transposition* cs = concatMap cycle→transposition* cs
-
--- Ex:
-
-cycleEx1 cycleEx2 : Cycle 5
--- cycleEx1 (0 1 2 3 4) which rotates right
-cycleEx1 = inject+ 4 (fromℕ 0) , 
-           inject+ 3 (fromℕ 1) ∷
-           inject+ 2 (fromℕ 2) ∷
-           inject+ 1 (fromℕ 3) ∷
-           inject+ 0 (fromℕ 4) ∷ []
--- cycleEx1 (0 4 3 2 1) which rotates left
-cycleEx2 = inject+ 4 (fromℕ 0) , 
-           inject+ 0 (fromℕ 4) ∷
-           inject+ 1 (fromℕ 3) ∷
-           inject+ 2 (fromℕ 2) ∷
-           inject+ 3 (fromℕ 1) ∷ []
-cycleEx1→transposition* cycleEx2→transposition* : List String
-cycleEx1→transposition* = showTransposition* (cycle→transposition* cycleEx1)
--- 0 X 1 ∷ 0 X 2 ∷ 0 X 3 ∷ 0 X 4 ∷ []
--- actionπ (cycle→transposition* cycleEx1) (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [])
--- 4 ∷ 0 ∷ 1 ∷ 2 ∷ 3 ∷ []
-cycleEx2→transposition* = showTransposition* (cycle→transposition* cycleEx2)
--- 0 X 4 ∷ 0 X 3 ∷ 0 X 2 ∷ 0 X 1 ∷ []
--- actionπ (cycle→transposition* cycleEx2) (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [])
--- 1 ∷ 2 ∷ 3 ∷ 4 ∷ 0 ∷ []
-
--- Convert from Cauchy 2 line representation to product of cycles
-
--- Helper that checks if there is a cycle that starts at i
--- Returns the cycle containing i and the rest of the permutation
--- without that cycle
-
-findCycle : ∀ {n} → Fin n → Cycle* n →  Maybe (Cycle n × Cycle* n)
-findCycle i [] = nothing
-findCycle i (c ∷ cs) with toℕ i ≟ toℕ (head c)
-findCycle i (c ∷ cs) | yes _ = just (c , cs)
-findCycle i (c ∷ cs) | no _ = 
-  maybe′ (λ { (c' , cs') → just (c' , c ∷ cs') }) nothing (findCycle i cs)
-
--- Another helper that repeatedly tries to merge smaller cycles
-
-{-# NO_TERMINATION_CHECK #-}
-mergeCycles : ∀ {n} → Cycle* n → Cycle* n
-mergeCycles [] = []
-mergeCycles (c ∷ cs) with findCycle (last c) cs
-mergeCycles (c ∷ cs) | nothing = c ∷ mergeCycles cs
-mergeCycles (c ∷ cs) | just (c' , cs') = mergeCycles ((c ⁺++ ntail c') ∷ cs')
-
--- To convert a Cauchy representation to a product of cycles, just create 
--- a cycle of size 2 for each entry and then merge the cycles
-
-cauchy→cycle* : ∀ {n} → Cauchy n → Cycle* n
-cauchy→cycle* {n} perm = 
-  mergeCycles (toList (zipWith (λ i j → i ∷⁺ [ j ]) (allFin n) perm))
+showCauchy : ∀ {n} → Cauchy n → Vec String n
+showCauchy {n} = 
+  zipWith (λ i j → show (toℕ i) ++S " → " ++S show (toℕ j)) (allFin n)
 
 -- Ex:
 
@@ -782,24 +662,6 @@ cauchyEx2 =
   (inject+ 5 (fromℕ 0)) ∷
   (inject+ 0 (fromℕ 5)) ∷
   (inject+ 1 (fromℕ 4)) ∷ []
-cauchyEx1→transposition* cauchyEx2→transposition* : List String
-cauchyEx1→transposition* = 
-  showTransposition* (cycle*→transposition* (cauchy→cycle* cauchyEx1))
--- 0 X 2 ∷ 0 X 4 ∷ 0 X 1 ∷ 0 X 0 ∷ 3 X 3 ∷ 5 X 5 ∷ []
--- actionπ (cycle*→transposition* (cauchy→cycle* cauchyEx1)) 
---   (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [])
--- 1 ∷ 4 ∷ 0 ∷ 3 ∷ 2 ∷ 5 ∷ []
-cauchyEx2→transposition* = 
-  showTransposition* (cycle*→transposition* (cauchy→cycle* cauchyEx2))
--- 0 X 3 ∷ 0 X 0 ∷ 1 X 2 ∷ 1 X 1 ∷ 4 X 5 ∷ 4 X 4 ∷ []
--- actionπ (cycle*→transposition* (cauchy→cycle* cauchyEx2)) 
---   (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [])
--- 3 ∷ 2 ∷ 1 ∷ 0 ∷ 5 ∷ 4 ∷ []
-
--- Cauchy to product of transpostions
-
-cauchy→transposition* : ∀ {n} → Cauchy n → Transposition* n
-cauchy→transposition* = cycle*→transposition* ∘ cauchy→cycle*
 
 ------------------------------------------------------------------------------
 -- Lemmas
@@ -840,31 +702,13 @@ swap+cauchy m n with splitAt n (allFin (n + m)) | splitAt m (allFin (m + n))
     (subst (λ s → Vec (Fin s) m) (+-comm n m) nsum) ++V 
     (subst (λ s → Vec (Fin s) n) (+-comm n m) zeron)
 
--- Ex: 
-
-swap+π : (m n : ℕ) → Transposition* (m + n)
-swap+π m n = cauchy→transposition* (swap+cauchy m n)
-swap11 swap21 swap32 : List String
-swap11 = showTransposition* (swap+π 1 1)
--- 0 X 1 ∷ 0 X 0 ∷ []
--- actionπ (swap+π 1 1) ("a" ∷ "b" ∷ [])
--- "b" ∷ "a" ∷ []
-swap21 = showTransposition* (swap+π 2 1)
--- 0 X 1 ∷ 0 X 2 ∷ 0 X 0 ∷ []
--- actionπ (swap+π 2 1) ("a" ∷ "b" ∷ "c" ∷ [])
--- "c" ∷ "a" ∷ "b" ∷ []
-swap32 = showTransposition* (swap+π 3 2)
--- 0 X 2 ∷ 0 X 4 ∷ 0 X 1 ∷ 0 X 3 ∷ 0 X 0 ∷ []
--- actionπ (swap+π 3 2) ("a" ∷ "b" ∷ "c" ∷ "d" ∷ "e" ∷ [])
--- "d" ∷ "e" ∷ "a" ∷ "b" ∷ "c" ∷ []
-
 -- Sequential composition
 
 scompcauchy : ∀ {n} → Cauchy n → Cauchy n → Cauchy n
 scompcauchy {n} perm₁ perm₂ = 
   tabulate (λ i → lookup (lookup i perm₁) perm₂)
 
-scomprid : ∀ {n} → (f : Cauchy n) → scompcauchy f (idcauchy n) ≡ f
+scomprid : ∀ {n} → (perm : Cauchy n) → scompcauchy perm (idcauchy n) ≡ perm
 scomprid {n} perm = 
   begin (scompcauchy perm (idcauchy n)
            ≡⟨ refl ⟩ 
@@ -886,22 +730,6 @@ scomprid {n} perm =
 pcompcauchy : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m + n)
 pcompcauchy {m} {n} α β = mapV (inject+ n) α ++V mapV (raise m) β
 
--- Ex: 
-
-pcompπ : ∀ {m n} → Cauchy m → Cauchy n → Transposition* (m + n)
-pcompπ α β = cauchy→transposition* (pcompcauchy α β)
-swap11+21 swap21+11 : List String
-swap11+21 = showTransposition* (pcompπ (swap+cauchy 1 1) (swap+cauchy 2 1))
--- 0 X 1 ∷ 0 X 0 ∷ 2 X 3 ∷ 2 X 4 ∷ 2 X 2 ∷ []
--- actionπ (pcompπ (swap+cauchy 1 1) (swap+cauchy 2 1)) 
---   ("a" ∷ "b" ∷ "1" ∷ "2" ∷ "3" ∷ [])
--- "b" ∷ "a" ∷ "3" ∷ "1" ∷ "2" ∷ []
-swap21+11 = showTransposition* (pcompπ (swap+cauchy 2 1) (swap+cauchy 1 1))
--- 0 X 1 ∷ 0 X 2 ∷ 0 X 0 ∷ 3 X 4 ∷ 3 X 3 ∷ []
--- actionπ (pcompπ (swap+cauchy 2 1) (swap+cauchy 1 1)) 
---   ("1" ∷ "2" ∷ "3" ∷ "a" ∷ "b" ∷ [])
--- "3" ∷ "1" ∷ "2" ∷ "b" ∷ "a" ∷ []
-
 -- Tensor multiplicative composition
 -- Transpositions in α correspond to swapping entire rows
 -- Transpositions in β correspond to swapping entire columns
@@ -913,30 +741,6 @@ tcompcauchy {m} {n} α β =
       (λ b → 
          mapV (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)) β)
       α)
-
--- Ex:
-
-tcompπ : ∀ {m n} → Cauchy m → Cauchy n → Transposition* (m * n)
-tcompπ α β = cauchy→transposition* (tcompcauchy α β)
-swap21*swap11 : List String
-swap21*swap11 = showTransposition* (tcompπ (swap+cauchy 2 1) (swap+cauchy 1 1))
--- 0 X 3 ∷ 0 X 4 ∷ 0 X 1 ∷ 0 X 2 ∷ 0 X 5 ∷ 0 X 0 ∷ []
--- Recall (swap+π 2 1)
--- 0 X 1 ∷ 0 X 2 ∷ 0 X 0 ∷ []                                                   
--- actionπ (swap+π 2 1) ("a" ∷ "b" ∷ "c" ∷ [])
--- "c" ∷ "a" ∷ "b" ∷ []
--- Recall (swap+π 1 1)
--- 0 X 1 ∷ 0 X 0 ∷ []
--- actionπ (swap+π 1 1) ("1" ∷ "2" ∷ [])
--- "2" ∷ "1" ∷ []
--- Tensor tensorvs 
--- ("a" , "1") ∷ ("a" , "2") ∷
--- ("b" , "1") ∷ ("b" , "2") ∷ 
--- ("c" , "1") ∷ ("c" , "2") ∷ []
--- actionπ (tcompπ (swap+cauchy 2 1) (swap+cauchy 1 1)) tensorvs
--- ("c" , "2") ∷ ("c" , "1") ∷
--- ("a" , "2") ∷ ("a" , "1") ∷ 
--- ("b" , "2") ∷ ("b" , "1") ∷ []
 
 -- swap⋆ 
 -- 
@@ -970,21 +774,6 @@ swap⋆cauchy (suc (suc m)) (suc (suc n)) =
     (mapV 
       (λ b → mapV (λ d → transposeIndex m n b d) (allFin (suc (suc n))))
       (allFin (suc (suc m))))
-
--- Ex:
-
-swap⋆π : (m n : ℕ) → Transposition* (m * n) 
-swap⋆π m n = cauchy→transposition* (swap⋆cauchy m n)
-swap3x2→2x3 : List String
-swap3x2→2x3 = showTransposition* (swap⋆π 3 2)
--- 0 X 0 ∷ 1 X 3 ∷ 1 X 4 ∷ 1 X 2 ∷ 1 X 1 ∷ 5 X 5 ∷ []
--- Let vs3x2 = 
--- ("a" , 1) ∷ ("a" , 2) ∷ 
--- ("b" , 1) ∷ ("b" , 2) ∷ 
--- ("c" , 1) ∷ ("c" , 2) ∷ []
--- actionπ (swap⋆π 3 2) vs3x2
--- ("a" , 1) ∷ ("b" , 1) ∷ ("c" , 1) ∷ 
--- ("a" , 2) ∷ ("b" , 2) ∷ ("c" , 2) ∷ []
 
 ------------------------------------------------------------------------------
 -- A combinator t₁ ⟷ t₂ denotes a permutation.
@@ -1021,336 +810,6 @@ c2cauchy (c₁ ⊗ c₂) = tcompcauchy (c2cauchy c₁) (c2cauchy c₂)
 c2cauchy unfoldBool = idcauchy 2
 c2cauchy foldBool   = idcauchy 2
 
-c2π : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Transposition* (size t₁)
-c2π = cauchy→transposition* ∘ c2cauchy
-
--- Convenient way of seeing c : t₁ ⟷ t₂ as a permutation
-
-showπ : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Vec (⟦ t₁ ⟧ × ⟦ t₂ ⟧) (size t₁) 
-showπ {t₁} {t₂} c = 
-  let vs₁ = utoVec t₁
-      vs₂ = utoVec t₂
-  in zip (actionπ (c2π c) vs₁) (subst (Vec ⟦ t₂ ⟧) (sym (size≡ c)) vs₂)
-
--- Examples
-
-NEG1π NEG2π NEG3π NEG4π NEG5π : Vec (⟦ BOOL ⟧ × ⟦ BOOL ⟧) 2
-NEG1π = showπ NEG1
--- (true , false) ∷ (false , true) ∷ []
-NEG2π = showπ NEG2  
--- (true , false) ∷ (false , true) ∷ []
-NEG3π = showπ NEG3  
--- (true , false) ∷ (false , true) ∷ []
-NEG4π = showπ NEG4
--- (true , false) ∷ (false , true) ∷ []
-NEG5π = showπ NEG5 
--- (true , false) ∷ (false , true) ∷ []
-
-cnotπ : Vec (⟦ BOOL² ⟧ × ⟦ BOOL² ⟧) 4 
-cnotπ = showπ {BOOL²} {BOOL²} CNOT
--- ((false , false) , (false , false)) ∷
--- ((false , true)  , (false , true))  ∷
--- ((true  , true)  , (true  , false)) ∷
--- ((true  , false) , (true  , true))  ∷ []
-
-toffoliπ : Vec (⟦ TIMES BOOL BOOL² ⟧ × ⟦ TIMES BOOL BOOL² ⟧) 8  
-toffoliπ = showπ {TIMES BOOL BOOL²} {TIMES BOOL BOOL²} TOFFOLI
--- ((false , false , false) , (false , false , false)) ∷
--- ((false , false , true)  , (false , false , true))  ∷
--- ((false , true  , false) , (false , true  , false)) ∷
--- ((false , true  , true)  , (false , true  , true))  ∷
--- ((true  , false , false) , (true  , false , false)  ∷
--- ((true  , false , true)  , (true  , false , true))  ∷
--- ((true  , true  , true)  , (true  , true  , false)) ∷
--- ((true  , true  , false) , (true  , true  , true))  ∷ []
-
--- The elements of PLUS ONE (PLUS ONE ONE) in canonical order are:
--- inj₁ tt
--- inj₂ (inj₁ tt)
--- inj₂ (inj₂ tt)
-
-id3π swap12π swap23π swap13π rotlπ rotrπ : 
-  Vec (⟦ PLUS ONE (PLUS ONE ONE) ⟧ × ⟦ PLUS ONE (PLUS ONE ONE) ⟧) 3
-id3π    = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} id⟷
--- (inj₁ tt , inj₁ tt) ∷
--- (inj₂ (inj₁ tt) , inj₂ (inj₁ tt)) ∷
--- (inj₂ (inj₂ tt) , inj₂ (inj₂ tt)) ∷ []
-swap12π = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} SWAP12
--- (inj₂ (inj₁ tt) , inj₁ tt) ∷
--- (inj₁ tt , inj₂ (inj₁ tt)) ∷ 
--- (inj₂ (inj₂ tt) , inj₂ (inj₂ tt)) ∷ []
-swap23π = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} SWAP23
--- (inj₁ tt , inj₁ tt) ∷
--- (inj₂ (inj₂ tt) , inj₂ (inj₁ tt)) ∷
--- (inj₂ (inj₁ tt) , inj₂ (inj₂ tt)) ∷ []
-swap13π = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} SWAP13
--- (inj₂ (inj₂ tt) , inj₁ tt) ∷
--- (inj₂ (inj₁ tt) , inj₂ (inj₁ tt)) ∷ 
--- (inj₁ tt , inj₂ (inj₂ tt)) ∷ []
-rotrπ   = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} ROTR
--- (inj₂ (inj₁ tt) , inj₁ tt) ∷
--- (inj₂ (inj₂ tt) , inj₂ (inj₁ tt)) ∷ 
--- (inj₁ tt , inj₂ (inj₂ tt)) ∷ []
-rotlπ   = showπ {PLUS ONE (PLUS ONE ONE)} {PLUS ONE (PLUS ONE ONE)} ROTL
--- (inj₂ (inj₂ tt) , inj₁ tt) ∷
--- (inj₁ tt , inj₂ (inj₁ tt)) ∷ 
--- (inj₂ (inj₁ tt) , inj₂ (inj₂ tt)) ∷ []
-
-peresπ : Vec (((Bool × Bool) × Bool) × ((Bool × Bool) × Bool)) 8
-peresπ = showπ PERES
--- (((false , false) , false) , (false , false) , false) ∷
--- (((false , false) , true)  , (false , false) , true)  ∷
--- (((false , true)  , false) , (false , true)  , false) ∷
--- (((false , true)  , true)  , (false , true)  , true)  ∷
--- (((true  , true)  , true)  , (true  , false) , false) ∷
--- (((true  , true)  , false) , (true  , false) , true)  ∷
--- (((true  , false) , false) , (true  , true)  , false) ∷
--- (((true  , false) , true)  , (true  , true)  , true)  ∷ []
-
-fulladderπ : 
-  Vec ((Bool × ((Bool × Bool) × Bool)) × (Bool × (Bool × (Bool × Bool)))) 16
-fulladderπ = showπ FULLADDER
--- ((false , (false , false) , false) , false , false , false , false) ∷
--- ((true  , (false , false) , false) , false , false , false , true)  ∷
--- ((false , (false , false) , true)  , false , false , true  , false) ∷
--- ((true  , (false , false) , true)  , false , false , true  , true)  ∷
--- ((false , (false , true)  , false) , false , true  , true  , false) ∷
--- ((false , (false , true)  , true)  , false , true  , false , true)  ∷
--- ((true  , (false , true)  , true)  , false , true  , false , false) ∷
--- ((true  , (false , true)  , false) , false , true  , true  , true)  ∷
--- ((true  , (true  , true)  , false) , true  , false , false , false) ∷
--- ((false , (true  , true)  , false) , true  , false , false , true)  ∷
--- ((true  , (true  , true)  , true)  , true  , false , true  , false) ∷ 
--- ((false , (true  , true)  , true)  , true  , false , true  , true)  ∷
--- ((true  , (true  , false) , true)  , true  , true  , false , false) ∷
--- ((false , (true  , false) , true)  , true  , true  , false , true)  ∷
--- ((false , (true  , false) , false) , true  , true  , true  , false) ∷
--- ((true  , (true  , false) , false) , true  , true  , true  , true)  ∷ []
--- which agrees with spec.
-
-------------------------------------------------------------------------------
--- Normalization
-
--- We sort the list of transpositions using a variation of bubble
--- sort. Like in the conventional bubble sort we look at pairs of
--- transpositions and swap them if they are out of order but if we
--- encounter (i X j) followed by (i X j) we remove both. 
-
--- one pass of bubble sort
--- goal is to reach a sorted sequene with no repeats in the first position
--- Ex: (0 X 2) ∷ (3 X 4) ∷ (4 X 6) ∷ (5 X 6)
-
--- There is probably lots of room for improvement. Here is the idea.
--- We take a list of transpositions (a_i X b_i) where a_i < b_i and keep
--- looking at adjacent pairs doing the following transformations:
--- 
--- A.  (a X b) (a X b) => id
--- B.  (a X b) (c X d) => (c X d) (a X b) if c < a
--- C.  (a X b) (c X b) => (c X a) (a X b) if c < a
--- D.  (a X b) (c X a) => (c X b) (a X b) 
--- E.  (a X b) (a X d) => (a X d) (b X d) if b < d
--- F.  (a X b) (a X d) => (a X d) (d X b) if d < b
--- 
--- The point is that we get closer and closer to the following
--- invariant. For any two adjacent transpositions (a X b) (c X d) we have
--- that a < c. Transformations B, C, and D rewrite anything in which a > c.
--- Transformations A, E, and F rewrite anything in which a = c. Termination 
--- is subtle clearly.
--- 
--- New strategy to implement: So could we index things so that a first set of
--- (up to) n passes 'bubble down' (0 X a) until there is only one left at the
--- root, then recurse on the tail to 'bubble down' (1 X b)'s [if any]? That
--- would certainly ensure termination.
-
-{-# NO_TERMINATION_CHECK #-}
-bubble : ∀ {n} → Transposition<* n → Transposition<* n
-bubble [] = []
-bubble (x ∷ []) = x ∷ []
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π) 
---
--- check every possible equality between the indices
---
-  with toℕ i ≟ toℕ k | toℕ i ≟ toℕ l | toℕ j ≟ toℕ k | toℕ j ≟ toℕ l
---
--- get rid of a bunch of impossible cases given that i < j and k < l
---
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | _ | _ | yes j≡k | yes j≡l 
-  with trans (sym j≡k) (j≡l) | i<j→i≠j {toℕ k} {toℕ l} k<l
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | _ | _ | yes j≡k | yes j≡l
-  | k≡l | ¬k≡l with ¬k≡l k≡l
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | _ | _ | yes j≡k | yes j≡l
-  | k≡l | ¬k≡l | ()
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | _ | yes i≡l | _ | yes j≡l 
-  with trans i≡l (sym j≡l) | i<j→i≠j {toℕ i} {toℕ j} i<j
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | _ | yes i≡l | _ | yes j≡l 
-  | i≡j | ¬i≡j with ¬i≡j i≡j
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | _ | yes i≡l | _ | yes j≡l 
-  | i≡j | ¬i≡j | ()
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | yes i≡k | _ | yes j≡k | _
-  with trans i≡k (sym j≡k) | i<j→i≠j {toℕ i} {toℕ j} i<j 
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | yes i≡k | _ | yes j≡k | _
-  | i≡j | ¬i≡j with ¬i≡j i≡j
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | yes i≡k | _ | yes j≡k | _
-  | i≡j | ¬i≡j | ()
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | yes i≡k | yes i≡l | _ | _
-  with trans (sym i≡k) i≡l | i<j→i≠j {toℕ k} {toℕ l} k<l 
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | yes i≡k | yes i≡l | _ | _
-  | k≡l | ¬k≡l with ¬k≡l k≡l
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | yes i≡k | yes i≡l | _ | _
-  | k≡l | ¬k≡l | ()
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | _ | yes i≡l | yes j≡k | _
-  with subst₂ _<_ (sym j≡k) (sym i≡l) k<l | i<j→j≮i {toℕ i} {toℕ j} i<j
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | _ | yes i≡l | yes j≡k | _
-  | j<i | j≮i with j≮i j<i
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | _ | yes i≡l | yes j≡k | _
-  | j<i | j≮i | ()
---
--- end of impossible cases
---
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | no ¬i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l with toℕ i <? toℕ k
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | no ¬i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l | yes i<k = 
-  -- already sorted; no repeat in first position; skip and recur
-  -- Ex: 2 X! 5 , 3 X! 4
-    _X!_ i j {i<j} ∷ bubble (_X!_ k l {k<l} ∷ π)
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | no ¬i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l | no i≮k = 
-  -- Case B. 
-  -- not sorted; no repeat in first position; no interference
-  -- just slide one transposition past the other
-  -- Ex: 2 X! 5 , 1 X! 4
-  -- becomes 1 X! 4 , 2 X! 5
-    _X!_ k l {k<l} ∷  bubble (_X!_ i j {i<j} ∷ π)
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | yes i≡k | no ¬i≡l | no ¬j≡k | yes j≡l = 
-  -- Case A. 
-  -- transposition followed by its inverse; simplify by removing both
-  -- Ex: 2 X! 5 , 2 X! 5
-  -- becomes id and is deleted
-  bubble π 
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | no ¬i≡k | no ¬i≡l | no ¬j≡k | yes j≡l with toℕ i <? toℕ k 
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | no ¬i≡k | no ¬i≡l | no ¬j≡k | yes j≡l | yes i<k = 
-  -- already sorted; no repeat in first position; skip and recur
-  -- Ex: 2 X! 5 , 3 X! 5 
-    _X!_ i j {i<j} ∷ bubble (_X!_ k l {k<l} ∷ π)
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | no ¬i≡k | no ¬i≡l | no ¬j≡k | yes j≡l | no i≮k = 
-  _X!_ k i 
-    {i≰j∧j≠i→j<i (toℕ i) (toℕ k) (i≮j∧i≠j→i≰j (toℕ i) (toℕ k) i≮k ¬i≡k) 
-       (i≠j→j≠i (toℕ i) (toℕ k) ¬i≡k)} ∷
-  bubble (_X!_ i j {i<j} ∷ π)
-  -- Case C. 
-  -- Ex: 2 X! 5 , 1 X! 5 
-  -- becomes 1 X! 2 , 2 X! 5
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | no ¬i≡k | no ¬i≡l | yes j≡k | no ¬j≡l = 
-  -- already sorted; no repeat in first position; skip and recur
-  -- Ex: 2 X! 5 , 5 X! 6 
-   _X!_ i j {i<j} ∷ bubble (_X!_ k l {k<l} ∷ π)
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | no ¬i≡k | yes i≡l | no ¬j≡k | no ¬j≡l = 
-  -- Case D. 
-  -- Ex: 2 X! 5 , 1 X! 2 
-  -- becomes 1 X! 5 , 2 X! 5
-  _X!_ k j {trans< (subst ((λ l → toℕ k < l)) (sym i≡l) k<l) i<j} ∷
-  bubble (_X!_ i j {i<j} ∷ π)
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l with toℕ j <? toℕ l
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l | yes j<l =
-  -- Case E. 
-  -- Ex: 2 X! 5 , 2 X! 6
-  -- becomes 2 X! 6 , 5 X! 6
-  _X!_ k l {k<l} ∷ bubble (_X!_ j l {j<l} ∷ π)
-bubble (_X!_ i j {i<j} ∷ _X!_ k l {k<l} ∷ π)
-  | yes i≡k | no ¬i≡l | no ¬j≡k | no ¬j≡l | no j≮l = 
-  -- Case F. 
-  -- Ex: 2 X! 5 , 2 X! 3
-  -- becomes 2 X! 3 , 3 X! 5 
-  _X!_ k l {k<l} ∷ 
-  bubble (_X!_ l j {i≰j∧j≠i→j<i (toℕ j) (toℕ l) 
-                    (i≮j∧i≠j→i≰j (toℕ j) (toℕ l) j≮l ¬j≡l)
-                    (i≠j→j≠i (toℕ j) (toℕ l) ¬j≡l)} ∷ π)
-
--- sorted and no repeats in first position
-
-{-# NO_TERMINATION_CHECK #-}
-canonical? : ∀ {n} → Transposition<* n → Bool
-canonical? [] = true
-canonical? (x ∷ []) = true
-canonical? (i X! j ∷ k X! l ∷ π) with toℕ i <? toℕ k
-canonical? (i X! j ∷ _X!_ k l {k<l}  ∷ π) | yes i<k = 
-  canonical? (_X!_ k l {k<l} ∷ π)
-canonical? (i X! j ∷ _X!_ k l {k<l} ∷ π) | no i≮k = false
-
-{-# NO_TERMINATION_CHECK #-}
-sort : ∀ {n} → Transposition<* n → Transposition<* n
-sort π with canonical? π 
-sort π | true = π 
-sort π | false = sort (bubble π)
-
--- Examples
-
-snn₁ snn₂ snn₃ snn₄ snn₅ : List String
-snn₁ = showTransposition<* (sort (filter= (c2π NEG1)))
-   -- 0 X! 1 ∷ []
-snn₂ = showTransposition<* (sort (filter= (c2π NEG2)))
-   -- 0 X! 1 ∷ []
-snn₃ = showTransposition<* (sort (filter= (c2π NEG3)))
-   -- 0 X! 1 ∷ []
-snn₄ = showTransposition<* (sort (filter= (c2π NEG4)))
-   -- 0 X! 1 ∷ []
-snn₅ = showTransposition<* (sort (filter= (c2π NEG5)))
-   -- 0 X! 1 ∷ []
-
-sncnot sntoffoli : List String
-sncnot = showTransposition<* (sort (filter= (c2π CNOT)))
-   -- 2 X! 3 ∷ []
-sntoffoli = showTransposition<* (sort (filter= (c2π TOFFOLI)))
-   -- 6 X! 7 ∷ []
-
-snswap12 snswap23 snswap13 snrotl snrotr : List String
-snswap12 = showTransposition<* (sort (filter= (c2π SWAP12)))
-   -- 0 X! 1 ∷ []
-snswap23 = showTransposition<* (sort (filter= (c2π SWAP23)))
-   -- 1 X! 2 ∷ []
-snswap13 = showTransposition<* (sort (filter= (c2π SWAP13)))
-   -- 0 X! 2 ∷ []
-snrotl   = showTransposition<* (sort (filter= (c2π ROTL)))
-   -- 0 X! 2 ∷ 1 X! 2 ∷ []
-snrotr   = showTransposition<* (sort (filter= (c2π ROTR)))
-   -- 0 X! 1 ∷ 1 X! 2 ∷ []
-
-snperes snfulladder : List String
-snperes = showTransposition<* (sort (filter= (c2π PERES)))
-   -- 4 X! 7 ∷ 5 X! 6 ∷ 6 X! 7 ∷ []
-
-snfulladder = showTransposition<* (sort (filter= (c2π FULLADDER)))
-   -- ? 
-
--- Normalization
-
-normalizeπ : {t₁ t₂ : U} → (c : t₁ ⟷  t₂) → Transposition<* (size t₁)
-normalizeπ = sort ∘ filter= ∘ c2π
-
 ------------------------------------------------------------------------------
 -- Extensional equivalence of combinators: two combinators are
 -- equivalent if they denote the same permutation. Generally we would
@@ -1362,7 +821,7 @@ normalizeπ = sort ∘ filter= ∘ c2π
 infix  10  _∼_  
 
 _∼_ : ∀ {t₁ t₂} → (c₁ c₂ : t₁ ⟷ t₂) → Set
-c₁ ∼ c₂ = (normalizeπ c₁ ≡ normalizeπ c₂)
+c₁ ∼ c₂ = (c2cauchy c₁ ≡ c2cauchy c₂)
 
 -- The relation ~ is an equivalence relation
 
@@ -1379,28 +838,20 @@ trans∼ = trans
 
 c◎id∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ id⟷ ∼ c
 c◎id∼c {t₁} {t₂} {c} = 
-  begin (sort 
-          (filter= 
-            (cauchy→transposition* 
-              (c2cauchy {t₁} (c ◎ id⟷))))
-           ≡⟨ cong (λ x → sort (filter= (cauchy→transposition* x))) {!refl!} ⟩ 
-         sort 
-          (filter= 
-            (cauchy→transposition* 
-              (scompcauchy 
-                (c2cauchy {t₁} c) 
-                (subst Cauchy (sym (size≡ c)) (c2cauchy {t₂} id⟷)))))
-           ≡⟨ cong (λ x → sort (filter= (cauchy→transposition* x))) {!!} ⟩
-         sort 
-          (filter= 
-            (cauchy→transposition* 
-              (scompcauchy 
-                (c2cauchy c) 
-                (allFin (size t₁)))))
-           ≡⟨ cong (λ x → sort (filter= (cauchy→transposition* x)))
-                   (scomprid (c2cauchy c)) ⟩
-         sort (filter= (cauchy→transposition* (c2cauchy c))) ∎)
+  begin (c2cauchy {t₁} {t₂} (c ◎ id⟷)
+           ≡⟨ {!!} ⟩ 
+        scompcauchy 
+          (c2cauchy {t₁} {t₂} c) 
+            (subst Cauchy (sym (size≡ c)) (c2cauchy {t₂} {t₂} id⟷))
+           ≡⟨ {!!} ⟩ 
+        scompcauchy (c2cauchy {t₁} {t₂} c) (allFin (size t₁))
+           ≡⟨ scomprid (c2cauchy c) ⟩ 
+         c2cauchy {t₁} {t₂} c ∎)
   where open ≡-Reasoning
+
+
+-- scomprid : ∀ {n} → (perm : Cauchy n) → scompcauchy perm (idcauchy n) ≡ perm
+
 
 {--
 id◎c∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ◎ c ∼ c
@@ -1762,3 +1213,6 @@ completeness {t₁} {t₂} {c₁} {c₂} c₁∼c₂ =
 
 ------------------------------------------------------------------------------
 --}
+
+
+
