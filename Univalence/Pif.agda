@@ -7,6 +7,8 @@ open import Level using (Level; _⊔_) renaming (zero to lzero; suc to lsuc)
 open import Relation.Binary.PropositionalEquality 
   using (_≡_; refl; sym; trans; subst; subst₂; cong; cong₂; setoid; 
         proof-irrelevance; module ≡-Reasoning)
+open import Relation.Binary.PropositionalEquality.TrustMe
+  using (trustMe)
 open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
@@ -326,6 +328,9 @@ utoVec BOOL          = false ∷ true ∷ []
 size≡ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (size t₁ ≡ size t₂)
 -- the composition case must be the first one
 -- otherwise Agda will not unfold (c ◎ id⟷)
+-- See "inconclusive matching" at 
+-- http://wiki.portal.chalmers.se/agda/
+-- pmwiki.php?n=ReferenceManual.PatternMatching
 size≡ (c₁ ◎ c₂) = trans (size≡ c₁) (size≡ c₂)
 size≡ {PLUS ZERO t} {.t} unite₊ = refl
 size≡ {t} {PLUS ZERO .t} uniti₊ = refl
@@ -847,7 +852,7 @@ c◎id∼c {t₁} {t₂} {c} =
         scompcauchy 
           (c2cauchy c)
             (subst Cauchy (sym (size≡ c)) (c2cauchy {t₂} id⟷))
-           ≡⟨ {!!} ⟩ 
+           ≡⟨ {!refl!} ⟩ 
         scompcauchy (c2cauchy c) (allFin (size t₁))
            ≡⟨ scomprid (c2cauchy c) ⟩ 
          c2cauchy c ∎)
@@ -860,6 +865,10 @@ postulate t₁ : U
 xxx = subst Cauchy (sym (size≡ c)) (c2cauchy {t₂} id⟷)
 -- subst (λ n → Vec (Fin n) n) (sym (size≡ c)) (tabulate (λ x → x))
 -- sym (size≡ c) must reduce to refl for the subst to unfold
+zzz = subst Cauchy (sym refl) (c2cauchy {t₂} id⟷)
+-- tabulate (λ x → x)
+-- yyy = subst Cauchy (sym trustMe) (c2cauchy {t₂} id⟷)
+
 
 
 {--
