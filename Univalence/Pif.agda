@@ -845,6 +845,10 @@ trans∼ = trans
 
 -- The relation ~ validates the groupoid laws
 
+subst-U : (P : ℕ → Set) (p : (n : ℕ) → P n) → {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → 
+          subst P (sym (size≡ c)) (p (size t₂)) ≡ p (size t₁)
+subst-U = {!!} 
+
 c◎id∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ id⟷ ∼ c
 c◎id∼c {t₁} {t₂} {c} = 
   begin (c2cauchy (c ◎ id⟷)
@@ -852,7 +856,8 @@ c◎id∼c {t₁} {t₂} {c} =
         scompcauchy 
           (c2cauchy c)
           (subst Cauchy (sym (size≡ c)) (allFin (size t₂)))
-           ≡⟨ {!!} ⟩ 
+           ≡⟨ cong (λ x → scompcauchy (c2cauchy c) x) 
+                   (subst-U Cauchy allFin c) ⟩ 
         scompcauchy (c2cauchy c) (allFin (size t₁))
            ≡⟨ scomprid (c2cauchy c) ⟩ 
          c2cauchy c ∎)
