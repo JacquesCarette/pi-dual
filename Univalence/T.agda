@@ -16,10 +16,12 @@ val (PLUS e₁ e₂)  = val e₁ + val e₂
 
 data eqExp : Exp → Exp → Set where
   idExp    : {e : Exp} → eqExp e e
+  symExp : {e₁ e₂ : Exp} → (eqExp e₁ e₂) → (eqExp e₂ e₁)
   transExp : {e₁ e₂ e₃ : Exp} → (eqExp e₁ e₂) → (eqExp e₂ e₃) → (eqExp e₁ e₃)
 
 val≡ : {e₁ e₂ : Exp} → (eqExp e₁ e₂) → (val e₁ ≡ val e₂)
 val≡ idExp = refl
+val≡ (symExp α₁) = sym (val≡ α₁)
 val≡ (transExp α₁ α₂) = trans (val≡ α₁) (val≡ α₂)
 
 -- Courtesy of Wolfram Kahl, a dependent cong₂                                  
@@ -31,21 +33,22 @@ cong₂D f refl refl = refl
 
 congD : {a b : Level} {A : Set a} {B : A → Set b}
          (f : (x : A) → B x) → {x₁ x₂ : A} → (x₁≡x₂ : x₁ ≡ x₂) → 
-         f x₁ ≡ subst B (sym x₁≡x₂) (f x₂)
+         subst B (sym x₁≡x₂) (f x₂) ≡ f x₁
 congD f refl = refl
 
 xx : {P : ℕ → Set} {p : (n : ℕ) → P n} {e₁ e₂ : Exp} {α : eqExp e₁ e₂} → 
-    p (val e₁) ≡ subst P (sym (val≡ α)) (p (val e₂))
+    subst P (sym (val≡ α)) (p (val e₂)) ≡ p (val e₁)
 xx {P} {p} {e₁} {e₂} {α} = congD p (val≡ α)
 
 
 pr : {P : ℕ → Set} {p : (n : ℕ) → P n} {e₁ e₂ : Exp} {α : eqExp e₁ e₂} → 
     subst P (val≡ α) (p (val e₁)) ≡ p (val e₂)
 pr {P} {p} {e} {.e} {idExp} = refl
+pr {P} {p} {e₁} {e₂} {symExp α} = congD p (val≡ α)
 pr {P} {p} {e₁} {e₂} {transExp α₁ α₂} = 
   begin (subst P (val≡ (transExp α₁ α₂)) (p (val e₁))
            ≡⟨ refl ⟩
          subst P (trans (val≡ α₁) (val≡ α₂)) (p (val e₁))
-           ≡⟨ {!!} ⟩
+           ≡⟨ congD p (val≡ {!!}) ⟩
          p (val e₂) ∎)
   where open ≡-Reasoning
