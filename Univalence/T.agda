@@ -1,3 +1,5 @@
+{-# OPTIONS --without-K #-}
+
 module T where
 
 open import Level
@@ -31,7 +33,7 @@ subst-trans : (P : ℕ → Set) (p : (n : ℕ) → P n) {e₁ e₂ e₃ : Exp} �
               subst P (trans (val≡ α) (val≡ β)) v ≡
               subst P (val≡ β) (subst P (val≡ α) v)
 subst-trans P p idExp β v = refl
-subst-trans P p {e₁} (transExp α₁ α₂) β v = 
+subst-trans P p (transExp α₁ α₂) β v = 
   begin (subst P (trans (trans (val≡ α₁) (val≡ α₂)) (val≡ β)) v
          ≡⟨ cong (λ x → subst P x v) 
                  (trans-assoc (val≡ α₁) (val≡ α₂) (val≡ β))  ⟩
