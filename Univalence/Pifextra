@@ -5206,3 +5206,16 @@ snfulladder = showTransposition<* (sort (filter= (c2π FULLADDER)))
 normalizeπ : {t₁ t₂ : U} → (c : t₁ ⟷  t₂) → Transposition<* (size t₁)
 normalizeπ = sort ∘ filter= ∘ c2π
 --}
+
+-- Courtesy of Wolfram Kahl, a dependent cong₂                                  
+cong₂D : {a b c : Level} {A : Set a} {B : A → Set b} {C : Set c} 
+         (f : (x : A) → B x → C)
+       → {x₁ x₂ : A} {y₁ : B x₁} {y₂ : B x₂}
+       → (x₁≡x₂ : x₁ ≡ x₂) → y₁ ≡ subst B (sym x₁≡x₂) y₂ → f x₁ y₁ ≡ f x₂ y₂
+cong₂D f refl refl = refl
+
+congD : {a b : Level} {A : Set a} {B : A → Set b}
+         (f : (x : A) → B x) → {x₁ x₂ : A} → (x₁≡x₂ : x₁ ≡ x₂) → 
+         subst B (sym x₁≡x₂) (f x₂) ≡ f x₁
+congD f refl = refl
+

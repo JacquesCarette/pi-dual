@@ -1,4 +1,4 @@
--- {-# OPTIONS --without-K #-}
+{-# OPTIONS --without-K #-}
 
 module Pif where
 
@@ -846,17 +846,78 @@ trans∼ = trans
 -- The relation ~ validates the groupoid laws
 
 c◎id∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ id⟷ ∼ c
+c◎id∼c {PLUS ZERO t} {.t} {unite₊} = 
+  scomprid (c2cauchy {PLUS ZERO t} {t} unite₊)
+c◎id∼c {t} {PLUS ZERO .t} {uniti₊} = 
+  scomprid (c2cauchy {t} {PLUS ZERO t} uniti₊)
+c◎id∼c {PLUS t₁ t₂} {PLUS .t₂ .t₁} {swap₊} = 
+  begin (c2cauchy {PLUS t₁ t₂} {PLUS t₂ t₁} (swap₊ ◎ id⟷)
+           ≡⟨ refl ⟩ 
+         scompcauchy 
+           (c2cauchy {PLUS t₁ t₂} {PLUS t₂ t₁} swap₊)
+           (subst Cauchy (sym (+-comm (size t₁) (size t₂)))
+             (allFin (size (PLUS t₂ t₁))))
+--           ≡⟨ cong (scompcauchy (c2cauchy {PLUS t₁ t₂} {PLUS t₂ t₁} swap₊)) ? ⟩
+--        scompcauchy 
+--          (c2cauchy {PLUS t₁ t₂} {PLUS t₂ t₁} swap₊)
+--          (allFin (size (PLUS t₁ t₂)))
+--           ≡⟨ scomprid (c2cauchy {PLUS t₁ t₂} {PLUS t₂ t₁} swap₊) ⟩
+           ≡⟨ {!!} ⟩ 
+         c2cauchy {PLUS t₁ t₂} {PLUS t₂ t₁} swap₊ ∎)
+  where open ≡-Reasoning
+
+{--
+        scompcauchy 
+          (c2cauchy swap₊)
+          (subst Cauchy (sym (size≡ swap₊)) 
+            (c2cauchy {PLUS t₂ t₁} id⟷))
+           ≡⟨ {!!} ⟩ 
+        scompcauchy (c2cauchy swap₊) (allFin (size (PLUS t₁ t₂)))
+           ≡⟨ scomprid (c2cauchy swap₊) ⟩ 
+         c2cauchy swap₊ ∎)
+  where open ≡-Reasoning
+--}
+
+
+-- scomprid (c2cauchy {PLUS t₁ t₂} {PLUS t₂ t₁} swap₊)
+-- scomprid : ∀ {n} → (perm : Cauchy n) → scompcauchy perm (idcauchy n) ≡ perm
+
+
+
+c◎id∼c {c = assocl₊} = scomprid (c2cauchy assocl₊)
+c◎id∼c {c = assocr₊} = {!!}
+c◎id∼c {c = unite⋆} = {!!}
+c◎id∼c {c = uniti⋆} = {!!}
+c◎id∼c {c = swap⋆} = {!!}
+c◎id∼c {c = assocl⋆} = {!!}
+c◎id∼c {c = assocr⋆} = {!!}
+c◎id∼c {c = distz} = {!!}
+c◎id∼c {c = factorz} = {!!}
+c◎id∼c {c = dist} = {!!}
+c◎id∼c {c = factor} = {!!}
+c◎id∼c {c = id⟷} = {!!}
+c◎id∼c {c = c ◎ c₁} = {!!}
+c◎id∼c {c = c ⊕ c₁} = {!!}
+c◎id∼c {c = c ⊗ c₁} = {!!}
+c◎id∼c {c = foldBool} = {!!}
+c◎id∼c {c = unfoldBool} = {!!}
+
+{--
 c◎id∼c {t₁} {t₂} {c} = 
   begin (c2cauchy (c ◎ id⟷)
            ≡⟨ refl ⟩ 
         scompcauchy 
           (c2cauchy c)
-            (subst Cauchy (sym (size≡ c)) (c2cauchy {t₂} id⟷))
+          (subst Cauchy (sym (size≡ c)) (c2cauchy {t₂} id⟷))
            ≡⟨ {!refl!} ⟩ 
         scompcauchy (c2cauchy c) (allFin (size t₁))
            ≡⟨ scomprid (c2cauchy c) ⟩ 
          c2cauchy c ∎)
   where open ≡-Reasoning
+--}
+-- have x : Cauchy (size t₂)
+-- have c : t₁ ⟷ t₂
+-- want x : Cauchy (size t₁)
 
 postulate t₁ : U
           t₂ : U
@@ -867,7 +928,10 @@ xxx = subst Cauchy (sym (size≡ c)) (c2cauchy {t₂} id⟷)
 -- sym (size≡ c) must reduce to refl for the subst to unfold
 zzz = subst Cauchy (sym refl) (c2cauchy {t₂} id⟷)
 -- tabulate (λ x → x)
--- yyy = subst Cauchy (sym trustMe) (c2cauchy {t₂} id⟷)
+
+yyy = subst Cauchy (sym (size≡ {PLUS t₁ t₂} {PLUS t₂ t₁} swap₊)) (c2cauchy {PLUS t₂ t₁} id⟷)
+
+
 
 
 
