@@ -66,26 +66,3 @@ pr {P} {p} {e₁} {e₃} {transExp {e₂ = e₂} α β} =
            ≡⟨ pr {P} {p} {e₂} {e₃} {β} ⟩ 
          p (val e₃) ∎)
   where open ≡-Reasoning
-
-
-
-
-
-
-{--
-  where open ≡-Reasoning
-subst-trans {P} {p} {e₁} {e₂} {e₃} {transExp α₁ α₂} {transExp β₁ β₂} = 
-  begin (subst P (trans (val≡ (transExp α₁ α₂)) (val≡ (transExp β₁ β₂) )) (p (val e₁))
-           ≡⟨ refl ⟩ 
-         subst P (trans (trans (val≡ α₁) (val≡ α₂)) (trans (val≡ β₁) (val≡ β₂))) (p (val e₁))
-           ≡⟨  {!!} ⟩
-         subst P (trans (val≡ β₁)  (val≡ β₂)) (subst P (trans (val≡ α₁) (val≡ α₂)) (p (val e₁)))
-           ≡⟨ refl ⟩  
-         subst P (val≡ (transExp β₁ β₂)) (subst P (val≡ (transExp α₁ α₂)) (p (val e₁))) ∎)
-
--- there should be a proof of this somewhere, but I can't find it 
-rId : {A : Set} {x y : A} → (a : x ≡ y) → (b : y ≡ y) → trans a b ≡ a
-rId refl refl = refl
--- subst-trans {P} {p} {e₁} {e₂} {e₃} {α} {β} = {!!}
---}
-

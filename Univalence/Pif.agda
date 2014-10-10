@@ -242,6 +242,8 @@ BOOL² = TIMES BOOL BOOL
 infix  30 _⟷_
 infixr 50 _◎_
 
+-- Combinators, permutations, or paths depending on the perspective
+
 data _⟷_ : U → U → Set where
   unite₊  : {t : U} → PLUS ZERO t ⟷ t
   uniti₊  : {t : U} → t ⟷ PLUS ZERO t
@@ -324,6 +326,7 @@ utoVec (TIMES t₁ t₂) =
 utoVec BOOL          = false ∷ true ∷ []
 
 -- Combinators are always between types of the same size
+-- Paths preserve sizes
 
 size≡ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (size t₁ ≡ size t₂)
 -- the composition case must be the first one
@@ -566,6 +569,10 @@ FULLADDER =
 -- Every permutation has an inverse. There are actually many syntactically
 -- different inverses but they are all equivalent.
 
+-- Alternative view: this corresponds to Lemma 2.1.1 In our notation,
+-- for every path t₁ ⟷ t₂, we have a path t₂ ⟷ t₁ such that (! id⟷)
+-- reduces to id⟷. 
+
 ! : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
 ! unite₊    = uniti₊
 ! uniti₊    = unite₊
@@ -629,6 +636,36 @@ FULLADDER =
   where open ≡-Reasoning
 !! {c = unfoldBool} = refl
 !! {c = foldBool}   = refl
+
+-- size≡ and !
+
+size≡! : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (size t₂ ≡ size t₁)
+size≡! (c₁ ◎ c₂) = trans (size≡! c₂) (size≡! c₁)
+size≡! {PLUS ZERO t} {.t} unite₊ = refl
+size≡! {t} {PLUS ZERO .t} uniti₊ = refl
+size≡! {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = +-comm (size t₂) (size t₁)
+size≡! {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ = 
+  +-assoc (size t₁) (size t₂) (size t₃)
+size≡! {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} assocr₊ = 
+  sym (+-assoc (size t₁) (size t₂) (size t₃))
+size≡! {TIMES ONE t} {.t} unite⋆ = sym (+-right-identity (size t))
+size≡! {t} {TIMES ONE .t} uniti⋆ = +-right-identity (size t)
+size≡! {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = *-comm (size t₂) (size t₁) 
+size≡! {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} assocl⋆ = 
+  *-assoc (size t₁) (size t₂) (size t₃)
+size≡! {TIMES (TIMES t₁ t₂) t₃} {TIMES .t₁ (TIMES .t₂ .t₃)} assocr⋆ = 
+  sym (*-assoc (size t₁) (size t₂) (size t₃))
+size≡! {TIMES .ZERO t} {ZERO} distz = refl
+size≡! {ZERO} {TIMES ZERO t} factorz = refl
+size≡! {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)} dist = 
+  sym (distribʳ-*-+ (size t₃) (size t₁) (size t₂))
+size≡! {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t₃} factor = 
+  distribʳ-*-+ (size t₃) (size t₁) (size t₂)
+size≡! {t} {.t} id⟷ = refl
+size≡! {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = cong₂ _+_ (size≡! c₁) (size≡! c₂)
+size≡! {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = cong₂ _*_ (size≡! c₁) (size≡! c₂)
+size≡! {PLUS ONE ONE} {BOOL} foldBool = refl
+size≡! {BOOL} {PLUS ONE ONE} unfoldBool = refl
 
 ------------------------------------------------------------------------------
 -- Semantic representations of permutations
@@ -721,9 +758,23 @@ scomprid {n} perm =
            ≡⟨ refl ⟩ 
          tabulate (λ i → lookup (lookup i perm) (allFin n))
            ≡⟨ finext 
-                 (λ i → lookup (lookup i perm) (allFin n))
-                 (λ i → lookup i perm)
-                 (λ i → lookup-allFin (lookup i perm)) ⟩ 
+                (λ i → lookup (lookup i perm) (allFin n))
+                (λ i → lookup i perm)
+                (λ i → lookup-allFin (lookup i perm)) ⟩ 
+         tabulate (λ i → lookup i perm)
+           ≡⟨ tabulate∘lookup perm ⟩ 
+         perm ∎)
+  where open ≡-Reasoning
+
+scomplid : ∀ {n} → (perm : Cauchy n) → scompcauchy (idcauchy n) perm ≡ perm
+scomplid {n} perm = 
+  begin (scompcauchy (idcauchy n) perm 
+           ≡⟨ refl ⟩ 
+         tabulate (λ i → lookup (lookup i (allFin n)) perm)
+           ≡⟨ finext 
+                (λ i → lookup (lookup i (allFin n)) perm) 
+                (λ i → lookup i perm) 
+                (λ i → cong (λ x → lookup x perm) (lookup-allFin i)) ⟩ 
          tabulate (λ i → lookup i perm)
            ≡⟨ tabulate∘lookup perm ⟩ 
          perm ∎)
@@ -791,7 +842,7 @@ c2cauchy : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Cauchy (size t₁)
 c2cauchy (c₁ ◎ c₂) = 
   scompcauchy 
     (c2cauchy c₁) 
-    (subst Cauchy (sym (size≡ c₁)) (c2cauchy c₂)) 
+    (subst Cauchy (size≡! c₁) (c2cauchy c₂)) 
 c2cauchy (c₁ ⊕ c₂) = pcompcauchy (c2cauchy c₁) (c2cauchy c₂) 
 c2cauchy (c₁ ⊗ c₂) = tcompcauchy (c2cauchy c₁) (c2cauchy c₂)  
 c2cauchy unfoldBool = idcauchy 2
@@ -819,18 +870,31 @@ c2cauchy {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} factor =
   idcauchy ((size t₁ * size t₃) + (size t₂ * size t₃))
 c2cauchy {t} id⟷  = idcauchy (size t)
 
+-- Looking forward to Sec. 2.2 (Functions are functors). The
+-- corresponding statement to Lemma 2.2.1 in our setting would be the
+-- following. Given any *size preserving* function f : U → U, it is
+-- the case that a combinator (path) c : t₁ ⟷ t₂ maps to a combinator
+-- (path) ap_f(c) : f(t₁) ⟷ f(t₂).
+
 ------------------------------------------------------------------------------
--- Extensional equivalence of combinators: two combinators are
--- equivalent if they denote the same permutation. Generally we would
--- require that the two permutations map the same value x to values y
--- and z that have a path between them, but because the internals of each
--- type are discrete groupoids, this reduces to saying that y and z
--- are identical, and hence that the permutations are identical.
+-- Extensional equivalence of combinators
+
+-- Two combinators are equivalent if they denote the same
+-- permutation. Generally we would require that the two permutations
+-- map the same value x to values y and z that have a path between
+-- them, but because the internals of each type are discrete
+-- groupoids, this reduces to saying that y and z are identical, and
+-- hence that the permutations are identical.
 
 infix  10  _∼_  
 
 _∼_ : ∀ {t₁ t₂} → (c₁ c₂ : t₁ ⟷ t₂) → Set
 c₁ ∼ c₂ = (c2cauchy c₁ ≡ c2cauchy c₂)
+
+congD! : {a b : Level} {A : Set a} {B : A → Set b}
+         (f : (x : A) → B x) → {x₁ x₂ : A} → (x₂≡x₁ : x₂ ≡ x₁) → 
+         subst B x₂≡x₁ (f x₂) ≡ f x₁
+congD! f refl = refl
 
 -- The relation ~ is an equivalence relation
 
@@ -843,12 +907,11 @@ sym∼ = sym
 trans∼ : ∀ {t₁ t₂} {c₁ c₂ c₃ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → (c₂ ∼ c₃) → (c₁ ∼ c₃)
 trans∼ = trans
 
--- The relation ~ validates the groupoid laws
+-- The combinators c : t₁ ⟷ t₂ are paths; we can transport
+-- size-preserving properties across c. In particular, for some
+-- appropriate P we want P(t₁) to map to P(t₂) via c.
 
-subst-U : {A : Set} (P : A → Set) (f : U → A) (p : (t : U) → P (f t)) → 
-          {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (α : f t₁ ≡ f t₂) → 
-          subst P α (p t₁) ≡ p t₂
-subst-U P f p c α = {!!}
+-- The relation ~ validates the groupoid laws
 
 c◎id∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ id⟷ ∼ c
 c◎id∼c {t₁} {t₂} {c} = 
@@ -856,32 +919,28 @@ c◎id∼c {t₁} {t₂} {c} =
            ≡⟨ refl ⟩ 
         scompcauchy 
           (c2cauchy c)
-          (subst Cauchy (sym (size≡ c)) (allFin (size t₂)))
+          (subst Cauchy (size≡! c) (allFin (size t₂)))
            ≡⟨ cong (λ x → scompcauchy (c2cauchy c) x) 
-              (subst-U Cauchy size (allFin ∘ size) (! c) (sym (size≡ c))) ⟩ 
+              (congD! {B = Cauchy} allFin (size≡! c)) ⟩ 
         scompcauchy (c2cauchy c) (allFin (size t₁))
            ≡⟨ scomprid (c2cauchy c) ⟩ 
          c2cauchy c ∎)
   where open ≡-Reasoning
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+id◎c∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ◎ c ∼ c
+id◎c∼c {t₁} {t₂} {c} = 
+  begin (c2cauchy (id⟷ ◎ c)
+           ≡⟨ refl ⟩ 
+        scompcauchy 
+          (allFin (size t₁))
+          (subst Cauchy refl (c2cauchy c))
+           ≡⟨ refl ⟩ 
+        scompcauchy (allFin (size t₁)) (c2cauchy c)
+           ≡⟨ scomplid (c2cauchy c) ⟩ 
+         c2cauchy c ∎)
+  where open ≡-Reasoning
 
 {--
-id◎c∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ◎ c ∼ c
-id◎c∼c = {!!} 
-
 assoc∼ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
          c₁ ◎ (c₂ ◎ c₃) ∼ (c₁ ◎ c₂) ◎ c₃
 assoc∼ = {!!} 
@@ -1238,6 +1297,3 @@ completeness {t₁} {t₂} {c₁} {c₂} c₁∼c₂ =
 
 ------------------------------------------------------------------------------
 --}
-
-
-
