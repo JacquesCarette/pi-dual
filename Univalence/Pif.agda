@@ -879,6 +879,20 @@ c2cauchy {t} id⟷  = idcauchy (size t)
 ------------------------------------------------------------------------------
 -- Extensional equivalence of combinators
 
+-- First, a few proof techniques for dealing with subst
+
+congD! : {a b : Level} {A : Set a} {B : A → Set b}
+         (f : (x : A) → B x) → {x₁ x₂ : A} → (x₂≡x₁ : x₂ ≡ x₁) → 
+         subst B x₂≡x₁ (f x₂) ≡ f x₁
+congD! f refl = refl
+
+subst-dist : 
+  {a b : Level} {A : Set a} {B : A → Set b} 
+  (f : {x : A} → B x → B x → B x) → 
+  {x₁ x₂ : A} → (x₂≡x₁ : x₂ ≡ x₁) → (v₁ v₂ : B x₂) → 
+  subst B x₂≡x₁ (f v₁ v₂) ≡ f (subst B x₂≡x₁ v₁) (subst B x₂≡x₁ v₂)
+subst-dist = {!!} 
+
 -- Two combinators are equivalent if they denote the same
 -- permutation. Generally we would require that the two permutations
 -- map the same value x to values y and z that have a path between
@@ -890,11 +904,6 @@ infix  10  _∼_
 
 _∼_ : ∀ {t₁ t₂} → (c₁ c₂ : t₁ ⟷ t₂) → Set
 c₁ ∼ c₂ = (c2cauchy c₁ ≡ c2cauchy c₂)
-
-congD! : {a b : Level} {A : Set a} {B : A → Set b}
-         (f : (x : A) → B x) → {x₁ x₂ : A} → (x₂≡x₁ : x₂ ≡ x₁) → 
-         subst B x₂≡x₁ (f x₂) ≡ f x₁
-congD! f refl = refl
 
 -- The relation ~ is an equivalence relation
 
@@ -940,11 +949,47 @@ id◎c∼c {t₁} {t₂} {c} =
          c2cauchy c ∎)
   where open ≡-Reasoning
 
-{--
 assoc∼ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
          c₁ ◎ (c₂ ◎ c₃) ∼ (c₁ ◎ c₂) ◎ c₃
-assoc∼ = {!!} 
+assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} = 
+  begin (c2cauchy (c₁ ◎ (c₂ ◎ c₃))
+           ≡⟨ refl ⟩ 
+         scompcauchy
+           (c2cauchy c₁)
+           (subst Cauchy (size≡! c₁)
+             (scompcauchy
+               (c2cauchy c₂)
+               (subst Cauchy (size≡! c₂) (c2cauchy c₃))))
+           ≡⟨ cong 
+                (scompcauchy (c2cauchy c₁))
+                (subst-dist 
+                  scompcauchy 
+                  (size≡! c₁) 
+                  (c2cauchy c₂)
+                  (subst Cauchy (size≡! c₂) (c2cauchy c₃))) ⟩ 
+         scompcauchy
+           (c2cauchy c₁)
+           (scompcauchy
+             (subst Cauchy (size≡! c₁) (c2cauchy c₂))
+             (subst Cauchy (size≡! c₁)
+               (subst Cauchy (size≡! c₂) (c2cauchy c₃))))
+           ≡⟨ {!!} ⟩ -- subst (trans ...) = subst (subst ...)
+         scompcauchy
+           (c2cauchy c₁)
+           (scompcauchy
+             (subst Cauchy (size≡! c₁) (c2cauchy c₂))
+             (subst Cauchy (trans (size≡! c₂) (size≡! c₁)) (c2cauchy c₃)))
+           ≡⟨ {!!} ⟩ -- scomp assoc. 
+         scompcauchy 
+           (scompcauchy 
+             (c2cauchy c₁)
+             (subst Cauchy (size≡! c₁) (c2cauchy c₂)))
+           (subst Cauchy (trans (size≡! c₂) (size≡! c₁)) (c2cauchy c₃))
+           ≡⟨ refl ⟩ 
+         c2cauchy ((c₁ ◎ c₂) ◎ c₃) ∎)
+  where open ≡-Reasoning
 
+{--
 linv∼ : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ ! c ∼ id⟷
 linv∼ = {!!} 
 
