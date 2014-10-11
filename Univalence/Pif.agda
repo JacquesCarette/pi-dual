@@ -780,6 +780,10 @@ scomplid {n} perm =
          perm ∎)
   where open ≡-Reasoning
 
+scompassoc : ∀ {n} → (π₁ π₂ π₃ : Cauchy n) → 
+  scompcauchy π₁ (scompcauchy π₂ π₃) ≡ scompcauchy (scompcauchy π₁ π₂) π₃
+scompassoc = {!!} 
+
 -- Parallel additive composition 
 -- append both permutations but adjust the indices in the second
 -- permutation by the size of the first type so that it acts on the
@@ -891,7 +895,13 @@ subst-dist :
   (f : {x : A} → B x → B x → B x) → 
   {x₁ x₂ : A} → (x₂≡x₁ : x₂ ≡ x₁) → (v₁ v₂ : B x₂) → 
   subst B x₂≡x₁ (f v₁ v₂) ≡ f (subst B x₂≡x₁ v₁) (subst B x₂≡x₁ v₂)
-subst-dist = {!!} 
+subst-dist f refl v₁ v₂ = refl 
+
+subst-trans : 
+  {a b : Level} {A : Set a} {B : A → Set b} {x₁ x₂ x₃ : A} → 
+  (x₂≡x₁ : x₂ ≡ x₁) → (x₃≡x₂ : x₃ ≡ x₂) → (v : B x₃) →  
+  subst B x₂≡x₁ (subst B x₃≡x₂ v) ≡ subst B (trans x₃≡x₂ x₂≡x₁) v
+subst-trans refl refl v = refl
 
 -- Two combinators are equivalent if they denote the same
 -- permutation. Generally we would require that the two permutations
@@ -973,13 +983,22 @@ assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} =
              (subst Cauchy (size≡! c₁) (c2cauchy c₂))
              (subst Cauchy (size≡! c₁)
                (subst Cauchy (size≡! c₂) (c2cauchy c₃))))
-           ≡⟨ {!!} ⟩ -- subst (trans ...) = subst (subst ...)
+           ≡⟨ cong (λ x → 
+                scompcauchy 
+                  (c2cauchy c₁)
+                  (scompcauchy 
+                    (subst Cauchy (size≡! c₁) (c2cauchy c₂))
+                    x))
+                (subst-trans (size≡! c₁) (size≡! c₂) (c2cauchy c₃)) ⟩ 
          scompcauchy
            (c2cauchy c₁)
            (scompcauchy
              (subst Cauchy (size≡! c₁) (c2cauchy c₂))
              (subst Cauchy (trans (size≡! c₂) (size≡! c₁)) (c2cauchy c₃)))
-           ≡⟨ {!!} ⟩ -- scomp assoc. 
+           ≡⟨ scompassoc 
+                (c2cauchy c₁) 
+                (subst Cauchy (size≡! c₁) (c2cauchy c₂)) 
+                (subst Cauchy (trans (size≡! c₂) (size≡! c₁)) (c2cauchy c₃)) ⟩
          scompcauchy 
            (scompcauchy 
              (c2cauchy c₁)
