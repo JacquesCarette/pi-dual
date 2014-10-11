@@ -911,29 +911,6 @@ c2cauchy {t} id⟷  = idcauchy (size t)
 ------------------------------------------------------------------------------
 -- Extensional equivalence of combinators
 
--- First, a few proof techniques for dealing with subst
-
-congD! : {a b : Level} {A : Set a} {B : A → Set b}
-         (f : (x : A) → B x) → {x₁ x₂ : A} → (x₂≡x₁ : x₂ ≡ x₁) → 
-         subst B x₂≡x₁ (f x₂) ≡ f x₁
-congD! f refl = refl
-
-subst-dist : 
-  {a b : Level} {A : Set a} {B : A → Set b} 
-  (f : {x : A} → B x → B x → B x) → 
-  {x₁ x₂ : A} → (x₂≡x₁ : x₂ ≡ x₁) → (v₁ v₂ : B x₂) → 
-  subst B x₂≡x₁ (f v₁ v₂) ≡ f (subst B x₂≡x₁ v₁) (subst B x₂≡x₁ v₂)
-subst-dist f refl v₁ v₂ = refl 
-
-subst-trans : 
-  {a b : Level} {A : Set a} {B : A → Set b} {x₁ x₂ x₃ : A} → 
-  (x₂≡x₁ : x₂ ≡ x₁) → (x₃≡x₂ : x₃ ≡ x₂) → (v : B x₃) →  
-  subst B x₂≡x₁ (subst B x₃≡x₂ v) ≡ subst B (trans x₃≡x₂ x₂≡x₁) v
-subst-trans refl refl v = refl
-
-trans-sym : {A : Set} {x y : A} → (p : x ≡ y) → trans (sym p) p ≡ refl
-trans-sym refl = refl
-
 -- Two combinators are equivalent if they denote the same
 -- permutation. Generally we would require that the two permutations
 -- map the same value x to values y and z that have a path between
@@ -957,38 +934,28 @@ sym∼ = sym
 trans∼ : ∀ {t₁ t₂} {c₁ c₂ c₃ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → (c₂ ∼ c₃) → (c₁ ∼ c₃)
 trans∼ = trans
 
--- The combinators c : t₁ ⟷ t₂ are paths; we can transport
--- size-preserving properties across c. In particular, for some
--- appropriate P we want P(t₁) to map to P(t₂) via c.
+-- A few proof techniques for dealing with subst
 
--- The relation ~ validates the groupoid laws
+congD! : {a b : Level} {A : Set a} {B : A → Set b}
+         (f : (x : A) → B x) → {x₁ x₂ : A} → (x₂≡x₁ : x₂ ≡ x₁) → 
+         subst B x₂≡x₁ (f x₂) ≡ f x₁
+congD! f refl = refl
 
-c◎id∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ id⟷ ∼ c
-c◎id∼c {t₁} {t₂} {c} = 
-  begin (c2cauchy (c ◎ id⟷)
-           ≡⟨ refl ⟩ 
-        scompcauchy 
-          (c2cauchy c)
-          (subst Cauchy (size≡! c) (allFin (size t₂)))
-           ≡⟨ cong (λ x → scompcauchy (c2cauchy c) x) 
-              (congD! {B = Cauchy} allFin (size≡! c)) ⟩ 
-        scompcauchy (c2cauchy c) (allFin (size t₁))
-           ≡⟨ scomprid (c2cauchy c) ⟩ 
-         c2cauchy c ∎)
-  where open ≡-Reasoning
+subst-dist : 
+  {a b : Level} {A : Set a} {B : A → Set b} 
+  (f : {x : A} → B x → B x → B x) → 
+  {x₁ x₂ : A} → (x₂≡x₁ : x₂ ≡ x₁) → (v₁ v₂ : B x₂) → 
+  subst B x₂≡x₁ (f v₁ v₂) ≡ f (subst B x₂≡x₁ v₁) (subst B x₂≡x₁ v₂)
+subst-dist f refl v₁ v₂ = refl 
 
-id◎c∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ◎ c ∼ c
-id◎c∼c {t₁} {t₂} {c} = 
-  begin (c2cauchy (id⟷ ◎ c)
-           ≡⟨ refl ⟩ 
-        scompcauchy 
-          (allFin (size t₁))
-          (subst Cauchy refl (c2cauchy c))
-           ≡⟨ refl ⟩ 
-        scompcauchy (allFin (size t₁)) (c2cauchy c)
-           ≡⟨ scomplid (c2cauchy c) ⟩ 
-         c2cauchy c ∎)
-  where open ≡-Reasoning
+subst-trans : 
+  {a b : Level} {A : Set a} {B : A → Set b} {x₁ x₂ x₃ : A} → 
+  (x₂≡x₁ : x₂ ≡ x₁) → (x₃≡x₂ : x₃ ≡ x₂) → (v : B x₃) →  
+  subst B x₂≡x₁ (subst B x₃≡x₂ v) ≡ subst B (trans x₃≡x₂ x₂≡x₁) v
+subst-trans refl refl v = refl
+
+trans-sym : {A : Set} {x y : A} → (p : x ≡ y) → trans (sym p) p ≡ refl
+trans-sym refl = refl
 
 assoc∼ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
          c₁ ◎ (c₂ ◎ c₃) ∼ (c₁ ◎ c₂) ◎ c₃
@@ -1037,6 +1004,39 @@ assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} =
            (subst Cauchy (trans (size≡! c₂) (size≡! c₁)) (c2cauchy c₃))
            ≡⟨ refl ⟩ 
          c2cauchy ((c₁ ◎ c₂) ◎ c₃) ∎)
+  where open ≡-Reasoning
+
+-- The combinators c : t₁ ⟷ t₂ are paths; we can transport
+-- size-preserving properties across c. In particular, for some
+-- appropriate P we want P(t₁) to map to P(t₂) via c.
+
+-- The relation ~ validates the groupoid laws
+
+c◎id∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ id⟷ ∼ c
+c◎id∼c {t₁} {t₂} {c} = 
+  begin (c2cauchy (c ◎ id⟷)
+           ≡⟨ refl ⟩ 
+        scompcauchy 
+          (c2cauchy c)
+          (subst Cauchy (size≡! c) (allFin (size t₂)))
+           ≡⟨ cong (λ x → scompcauchy (c2cauchy c) x) 
+              (congD! {B = Cauchy} allFin (size≡! c)) ⟩ 
+        scompcauchy (c2cauchy c) (allFin (size t₁))
+           ≡⟨ scomprid (c2cauchy c) ⟩ 
+         c2cauchy c ∎)
+  where open ≡-Reasoning
+
+id◎c∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ◎ c ∼ c
+id◎c∼c {t₁} {t₂} {c} = 
+  begin (c2cauchy (id⟷ ◎ c)
+           ≡⟨ refl ⟩ 
+        scompcauchy 
+          (allFin (size t₁))
+          (subst Cauchy refl (c2cauchy c))
+           ≡⟨ refl ⟩ 
+        scompcauchy (allFin (size t₁)) (c2cauchy c)
+           ≡⟨ scomplid (c2cauchy c) ⟩ 
+         c2cauchy c ∎)
   where open ≡-Reasoning
 
 linv∼ : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ ! c ∼ id⟷
@@ -1097,9 +1097,12 @@ linv∼ {TIMES ONE t} {.t} {unite⋆} =
            ≡⟨ refl ⟩ 
          scompcauchy 
            (subst Cauchy (sym (+-right-identity (size t))) (idcauchy (size t)))
-           (subst Cauchy (sym (+-right-identity (size t))) 
-             (idcauchy (size t)))
-           ≡⟨ {!!} ⟩ 
+           (subst Cauchy (sym (+-right-identity (size t))) (idcauchy (size t)))
+           ≡⟨ cong  
+                (λ x → scompcauchy x x) 
+                (congD! idcauchy (sym (+-right-identity (size t)))) ⟩ 
+         scompcauchy (idcauchy (size t + 0)) (idcauchy (size t + 0))
+           ≡⟨ scomplid (idcauchy (size t + 0)) ⟩ 
          c2cauchy {TIMES ONE t} id⟷ ∎)
   where open ≡-Reasoning
 linv∼ {t} {TIMES ONE .t} {uniti⋆} = 
@@ -1132,7 +1135,16 @@ linv∼ {t} {TIMES ONE .t} {uniti⋆} =
            ≡⟨ scomplid (idcauchy (size t)) ⟩ 
          c2cauchy {t} id⟷ ∎)
   where open ≡-Reasoning
-linv∼ {TIMES t₁ t₂} {TIMES .t₂ .t₁} {swap⋆} = {!!}
+linv∼ {TIMES t₁ t₂} {TIMES .t₂ .t₁} {swap⋆} = 
+  begin (c2cauchy {TIMES t₁ t₂} (swap⋆ ◎ swap⋆)
+           ≡⟨ refl ⟩ 
+         scompcauchy 
+           (swap⋆cauchy (size t₁) (size t₂))
+           (subst Cauchy (*-comm (size t₂) (size t₁)) 
+             (swap⋆cauchy (size t₂) (size t₁)))
+           ≡⟨ {!!} ⟩ 
+         c2cauchy {TIMES t₁ t₂} id⟷ ∎)
+  where open ≡-Reasoning
 linv∼ {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} {assocl⋆} = 
   begin (c2cauchy {TIMES t₁ (TIMES t₂ t₃)} (assocl⋆ ◎ assocr⋆)
            ≡⟨ refl ⟩ 
@@ -1201,9 +1213,49 @@ linv∼ {t} {.t} {id⟷} =
            ≡⟨ scomplid (idcauchy (size t)) ⟩ 
          c2cauchy {t} id⟷ ∎)
   where open ≡-Reasoning
-linv∼ {t₁} {t₃} {c₁ ◎ c₂} = {!!}
-linv∼ {PLUS t₁ t₂} {PLUS t₃ t₄} {c₁ ⊕ c₂} = {!!}
-linv∼ {TIMES t₁ t₂} {TIMES t₃ t₄} {c₁ ⊗ c₂} = {!!}
+linv∼ {t₁} {t₃} {_◎_ {t₂ = t₂} c₁ c₂} = 
+  begin (c2cauchy {t₁} ((c₁ ◎ c₂) ◎ ((! c₂) ◎ (! c₁)))
+           ≡⟨ refl ⟩ 
+         scompcauchy 
+           (scompcauchy 
+              (c2cauchy c₁)
+              (subst Cauchy (size≡! c₁) (c2cauchy c₂)))
+           (subst Cauchy (trans (size≡! c₂) (size≡! c₁))
+              (scompcauchy
+                (c2cauchy (! c₂))
+                (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁)))))
+           ≡⟨ sym (scompassoc 
+                    (c2cauchy c₁)
+                    (subst Cauchy (size≡! c₁) (c2cauchy c₂))
+                    (subst Cauchy (trans (size≡! c₂) (size≡! c₁))
+                      (scompcauchy
+                        (c2cauchy (! c₂))
+                        (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁))))))  ⟩ 
+         scompcauchy 
+           (c2cauchy c₁)
+           (scompcauchy 
+              (subst Cauchy (size≡! c₁) (c2cauchy c₂))
+              (subst Cauchy (trans (size≡! c₂) (size≡! c₁))
+                (scompcauchy
+                  (c2cauchy (! c₂))
+                  (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁))))))
+           ≡⟨ {!!} ⟩ 
+         c2cauchy {t₁} id⟷ ∎)
+  where open ≡-Reasoning
+
+--assoc∼ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+--         c₁ ◎ (c₂ ◎ c₃) ∼ (c₁ ◎ c₂) ◎ c₃
+
+linv∼ {PLUS t₁ t₂} {PLUS t₃ t₄} {c₁ ⊕ c₂} = 
+  begin (c2cauchy {PLUS t₁ t₂} ((c₁ ⊕ c₂) ◎ ((! c₁) ⊕ (! c₂)))
+           ≡⟨ {!!} ⟩ 
+         c2cauchy {PLUS t₁ t₂} id⟷ ∎)
+  where open ≡-Reasoning
+linv∼ {TIMES t₁ t₂} {TIMES t₃ t₄} {c₁ ⊗ c₂} = 
+  begin (c2cauchy {TIMES t₁ t₂} ((c₁ ⊗ c₂) ◎ ((! c₁) ⊗ (! c₂)))
+           ≡⟨ {!!} ⟩ 
+         c2cauchy {TIMES t₁ t₂} id⟷ ∎)
+  where open ≡-Reasoning
 linv∼ {PLUS ONE ONE} {BOOL} {foldBool} = 
   begin (c2cauchy {PLUS ONE ONE} (foldBool ◎ unfoldBool)
            ≡⟨ refl ⟩ 
