@@ -780,9 +780,37 @@ scomplid {n} perm =
          perm ∎)
   where open ≡-Reasoning
 
+lookupassoc : ∀ {n} → (π₁ π₂ π₃ : Cauchy n) (i : Fin n) → 
+  lookup (lookup i π₁) (tabulate (λ j → lookup (lookup j π₂) π₃)) ≡
+  lookup (lookup i (tabulate (λ j → lookup (lookup j π₁) π₂))) π₃
+lookupassoc π₁ π₂ π₃ i = 
+  begin (lookup (lookup i π₁) (tabulate (λ j → lookup (lookup j π₂) π₃))
+           ≡⟨ lookup∘tabulate (λ j → lookup (lookup j π₂) π₃) (lookup i π₁) ⟩ 
+         lookup (lookup (lookup i π₁) π₂) π₃
+           ≡⟨ cong 
+                (λ x → lookup x π₃) 
+                (sym (lookup∘tabulate (λ j → lookup (lookup j π₁) π₂) i)) ⟩ 
+         lookup (lookup i (tabulate (λ j → lookup (lookup j π₁) π₂))) π₃ ∎)
+  where open ≡-Reasoning
+
 scompassoc : ∀ {n} → (π₁ π₂ π₃ : Cauchy n) → 
   scompcauchy π₁ (scompcauchy π₂ π₃) ≡ scompcauchy (scompcauchy π₁ π₂) π₃
-scompassoc = {!!} 
+scompassoc π₁ π₂ π₃ = 
+  begin (scompcauchy π₁ (scompcauchy π₂ π₃)
+           ≡⟨ refl ⟩
+         tabulate (λ i → 
+           lookup (lookup i π₁) (tabulate (λ j → lookup (lookup j π₂) π₃)))
+           ≡⟨ finext
+              (λ i → 
+                lookup (lookup i π₁) (tabulate (λ j → lookup (lookup j π₂) π₃)))
+              (λ i → 
+                lookup (lookup i (tabulate (λ j → lookup (lookup j π₁) π₂))) π₃)
+              (λ i → lookupassoc π₁ π₂ π₃ i) ⟩
+         tabulate (λ i → 
+           lookup (lookup i (tabulate (λ j → lookup (lookup j π₁) π₂))) π₃)
+           ≡⟨ refl ⟩
+         scompcauchy (scompcauchy π₁ π₂) π₃ ∎)
+  where open ≡-Reasoning
 
 -- Parallel additive composition 
 -- append both permutations but adjust the indices in the second
@@ -1008,10 +1036,16 @@ assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} =
          c2cauchy ((c₁ ◎ c₂) ◎ c₃) ∎)
   where open ≡-Reasoning
 
-{--
 linv∼ : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ ! c ∼ id⟷
-linv∼ = {!!} 
+linv∼ {t₁} {t₂} {c} = 
+  begin (c2cauchy (c ◎ ! c)
+           ≡⟨ {!!} ⟩ 
+         scompcauchy (c2cauchy c) (subst Cauchy (size≡! c) (c2cauchy (! c)))
+           ≡⟨ {!!} ⟩ 
+         allFin (size t₁) ∎)
+  where open ≡-Reasoning
 
+{--
 rinv∼ : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → ! c ◎ c ∼ id⟷
 rinv∼ = {!!} 
 
