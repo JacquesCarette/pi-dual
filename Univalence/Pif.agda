@@ -1044,37 +1044,163 @@ linv∼ {PLUS ZERO t} {.t} {unite₊} =
            ≡⟨ scomplid (idcauchy (size t)) ⟩ 
          c2cauchy {PLUS ZERO t} id⟷ ∎)
   where open ≡-Reasoning
-linv∼ {t} {PLUS ZERO .t} {uniti₊} = {!!}
-linv∼ {PLUS t₁ t₂} {PLUS .t₂ .t₁} {swap₊} = {!!}
-linv∼ {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} {assocl₊} = {!!}
-linv∼ {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} {assocr₊} = {!!}
-linv∼ {TIMES ONE t} {.t} {unite⋆} = {!!}
-linv∼ {t} {TIMES ONE .t} {uniti⋆} = {!!}
+linv∼ {t} {PLUS ZERO .t} {uniti₊} = 
+  begin (c2cauchy {t} (uniti₊ ◎ unite₊)
+           ≡⟨ refl ⟩ 
+         scompcauchy (idcauchy (size t)) (idcauchy (size t))
+           ≡⟨ scomplid (idcauchy (size t)) ⟩ 
+         c2cauchy {t} id⟷ ∎)
+  where open ≡-Reasoning
+linv∼ {PLUS t₁ t₂} {PLUS .t₂ .t₁} {swap₊} = 
+  begin (c2cauchy {PLUS t₁ t₂} (swap₊ ◎ swap₊)
+           ≡⟨ refl ⟩ 
+         scompcauchy 
+           (swap+cauchy (size t₁) (size t₂))
+           (subst Cauchy (+-comm (size t₂) (size t₁)) 
+             (swap+cauchy (size t₂) (size t₁)))
+           ≡⟨ {!!} ⟩ 
+         c2cauchy {PLUS t₁ t₂} id⟷ ∎)
+  where open ≡-Reasoning
+linv∼ {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} {assocl₊} = 
+  begin (c2cauchy {PLUS t₁ (PLUS t₂ t₃)} (assocl₊ ◎ assocr₊)
+           ≡⟨ refl ⟩ 
+         scompcauchy (idcauchy (size t₁ + (size t₂ + size t₃)))
+           (subst Cauchy (+-assoc (size t₁) (size t₂) (size t₃))
+             (idcauchy ((size t₁ + size t₂) + size t₃)))
+           ≡⟨ cong 
+                (scompcauchy (idcauchy (size t₁ + (size t₂ + size t₃))))
+                (congD! idcauchy (+-assoc (size t₁) (size t₂) (size t₃))) ⟩ 
+         scompcauchy (idcauchy (size t₁ + (size t₂ + size t₃)))
+           (idcauchy (size t₁ + (size t₂ + size t₃)))
+           ≡⟨ scomplid (idcauchy (size t₁ + (size t₂ + size t₃))) ⟩ 
+         c2cauchy {PLUS t₁ (PLUS t₂ t₃)} id⟷ ∎)
+  where open ≡-Reasoning
+linv∼ {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} {assocr₊} = 
+  begin (c2cauchy {PLUS (PLUS t₁ t₂) t₃} (assocr₊ ◎ assocl₊)
+           ≡⟨ refl ⟩ 
+         scompcauchy (idcauchy ((size t₁ + size t₂) + size t₃))
+           (subst Cauchy (sym (+-assoc (size t₁) (size t₂) (size t₃)))
+             (idcauchy (size t₁ + (size t₂ + size t₃))))
+           ≡⟨ cong 
+                (scompcauchy (idcauchy ((size t₁ + size t₂) + size t₃)))
+                (congD! idcauchy (sym (+-assoc (size t₁) (size t₂) (size t₃)))) ⟩
+         scompcauchy (idcauchy ((size t₁ + size t₂) + size t₃))
+           (idcauchy ((size t₁ + size t₂) + size t₃))
+           ≡⟨ scomplid (idcauchy ((size t₁ + size t₂) + size t₃)) ⟩ 
+         c2cauchy {PLUS (PLUS t₁ t₂) t₃} id⟷ ∎)
+  where open ≡-Reasoning
+linv∼ {TIMES ONE t} {.t} {unite⋆} = 
+  begin (c2cauchy {TIMES ONE t} (unite⋆ ◎ uniti⋆)
+           ≡⟨ refl ⟩ 
+         scompcauchy 
+           (c2cauchy {TIMES ONE t} unite⋆)
+           (subst Cauchy (size≡! {TIMES ONE t} unite⋆) (c2cauchy {t} uniti⋆))
+           ≡⟨ {!!} ⟩ 
+         c2cauchy {TIMES ONE t} id⟷ ∎)
+  where open ≡-Reasoning
+linv∼ {t} {TIMES ONE .t} {uniti⋆} = 
+  begin (c2cauchy {t} (uniti⋆ ◎ unite⋆)
+           ≡⟨ refl ⟩ 
+         scompcauchy 
+           (c2cauchy {t} uniti⋆)
+           (subst Cauchy (size≡! {t} uniti⋆) (c2cauchy {TIMES ONE t} unite⋆))
+           ≡⟨ {!!} ⟩ 
+         c2cauchy {t} id⟷ ∎)
+  where open ≡-Reasoning
 linv∼ {TIMES t₁ t₂} {TIMES .t₂ .t₁} {swap⋆} = {!!}
-linv∼ {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} {assocl⋆} = {!!}
-linv∼ {TIMES (TIMES t₁ t₂) t₃} {TIMES .t₁ (TIMES .t₂ .t₃)} {assocr⋆} = {!!}
-linv∼ {TIMES ZERO t} {ZERO} {distz} = {!!}
-linv∼ {ZERO} {TIMES ZERO t} {factorz} = {!!}
+linv∼ {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} {assocl⋆} = 
+  begin (c2cauchy {TIMES t₁ (TIMES t₂ t₃)} (assocl⋆ ◎ assocr⋆)
+           ≡⟨ refl ⟩ 
+         scompcauchy (idcauchy (size t₁ * (size t₂ * size t₃)))
+           (subst Cauchy (*-assoc (size t₁) (size t₂) (size t₃))
+             (idcauchy ((size t₁ * size t₂) * size t₃)))
+           ≡⟨ cong 
+                (scompcauchy (idcauchy (size t₁ * (size t₂ * size t₃))))
+                (congD! idcauchy (*-assoc (size t₁) (size t₂) (size t₃))) ⟩ 
+         scompcauchy (idcauchy (size t₁ * (size t₂ * size t₃)))
+           (idcauchy (size t₁ * (size t₂ * size t₃)))
+           ≡⟨ scomplid (idcauchy (size t₁ * (size t₂ * size t₃))) ⟩ 
+         c2cauchy {TIMES t₁ (TIMES t₂ t₃)} id⟷ ∎)
+  where open ≡-Reasoning
+linv∼ {TIMES (TIMES t₁ t₂) t₃} {TIMES .t₁ (TIMES .t₂ .t₃)} {assocr⋆} = 
+  begin (c2cauchy {TIMES (TIMES t₁ t₂) t₃} (assocr⋆ ◎ assocl⋆)
+           ≡⟨ refl ⟩ 
+         scompcauchy (idcauchy ((size t₁ * size t₂) * size t₃))
+           (subst Cauchy (sym (*-assoc (size t₁) (size t₂) (size t₃)))
+             (idcauchy (size t₁ * (size t₂ * size t₃))))
+           ≡⟨ cong 
+                (scompcauchy (idcauchy ((size t₁ * size t₂) * size t₃)))
+                (congD! idcauchy (sym (*-assoc (size t₁) (size t₂) (size t₃)))) ⟩
+         scompcauchy (idcauchy ((size t₁ * size t₂) * size t₃))
+           (idcauchy ((size t₁ * size t₂) * size t₃))
+           ≡⟨ scomplid (idcauchy ((size t₁ * size t₂) * size t₃)) ⟩ 
+         c2cauchy {TIMES (TIMES t₁ t₂) t₃} id⟷ ∎)
+  where open ≡-Reasoning
+linv∼ {TIMES ZERO t} {ZERO} {distz} = refl
+linv∼ {ZERO} {TIMES ZERO t} {factorz} = refl
 linv∼ {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)} {dist} = 
-  {!!}
+  begin (c2cauchy {TIMES (PLUS t₁ t₂) t₃} (dist ◎ factor)
+           ≡⟨ refl ⟩ 
+         scompcauchy (idcauchy ((size t₁ + size t₂) * size t₃))
+           (subst Cauchy (sym (distribʳ-*-+ (size t₃) (size t₁) (size t₂)))
+             (idcauchy ((size t₁ * size t₃) + (size t₂ * size t₃))))
+           ≡⟨ cong 
+                (scompcauchy (idcauchy ((size t₁ + size t₂) * size t₃)))
+                (congD! idcauchy 
+                  (sym (distribʳ-*-+ (size t₃) (size t₁) (size t₂)))) ⟩ 
+         scompcauchy (idcauchy ((size t₁ + size t₂) * size t₃))
+           (idcauchy ((size t₁ + size t₂) * size t₃))
+           ≡⟨ scomplid (idcauchy ((size t₁ + size t₂) * size t₃)) ⟩ 
+         c2cauchy {TIMES (PLUS t₁ t₂) t₃} id⟷ ∎)
+  where open ≡-Reasoning
 linv∼ {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t₃} {factor} = 
-  {!!}
-linv∼ {t} {.t} {id⟷} = {!!}
+  begin (c2cauchy {PLUS (TIMES t₁ t₃) (TIMES t₂ t₃)} (factor ◎ dist)
+           ≡⟨ refl ⟩ 
+         scompcauchy (idcauchy ((size t₁ * size t₃) + (size t₂ * size t₃)))
+           (subst Cauchy (distribʳ-*-+ (size t₃) (size t₁) (size t₂))
+             (idcauchy ((size t₁ + size t₂) * size t₃)))
+           ≡⟨ cong 
+                (scompcauchy 
+                  (idcauchy ((size t₁ * size t₃) + (size t₂ * size t₃))))
+                (congD! idcauchy 
+                  (distribʳ-*-+ (size t₃) (size t₁) (size t₂))) ⟩ 
+         scompcauchy (idcauchy ((size t₁ * size t₃) + (size t₂ * size t₃)))
+           (idcauchy ((size t₁ * size t₃) + (size t₂ * size t₃)))
+           ≡⟨ scomplid (idcauchy ((size t₁ * size t₃) + (size t₂ * size t₃))) ⟩ 
+         c2cauchy {PLUS (TIMES t₁ t₃) (TIMES t₂ t₃)} id⟷ ∎)
+  where open ≡-Reasoning
+linv∼ {t} {.t} {id⟷} = 
+  begin (c2cauchy {t} (id⟷ ◎ id⟷)
+           ≡⟨ refl ⟩ 
+         scompcauchy (idcauchy (size t)) (idcauchy (size t))
+           ≡⟨ scomplid (idcauchy (size t)) ⟩ 
+         c2cauchy {t} id⟷ ∎)
+  where open ≡-Reasoning
 linv∼ {t₁} {t₃} {c₁ ◎ c₂} = {!!}
 linv∼ {PLUS t₁ t₂} {PLUS t₃ t₄} {c₁ ⊕ c₂} = {!!}
 linv∼ {TIMES t₁ t₂} {TIMES t₃ t₄} {c₁ ⊗ c₂} = {!!}
-linv∼ {PLUS ONE ONE} {BOOL} {foldBool} = {!!}
-linv∼ {BOOL} {PLUS ONE ONE} {unfoldBool} = {!!}
-
-{--
-linv∼ {t₁} {t₂} {c} = 
-  begin (c2cauchy (c ◎ ! c)
-           ≡⟨ {!!} ⟩ 
-         scompcauchy (c2cauchy c) (subst Cauchy (size≡! c) (c2cauchy (! c)))
-           ≡⟨ {!!} ⟩ 
-         allFin (size t₁) ∎)
+linv∼ {PLUS ONE ONE} {BOOL} {foldBool} = 
+  begin (c2cauchy {PLUS ONE ONE} (foldBool ◎ unfoldBool)
+           ≡⟨ refl ⟩ 
+         scompcauchy (idcauchy 2) (idcauchy 2)
+           ≡⟨ scomplid (idcauchy 2) ⟩ 
+         c2cauchy {PLUS ONE ONE} id⟷ ∎)
   where open ≡-Reasoning
---}
+linv∼ {BOOL} {PLUS ONE ONE} {unfoldBool} = 
+  begin (c2cauchy {BOOL} (unfoldBool ◎ foldBool)
+           ≡⟨ refl ⟩ 
+         scompcauchy (idcauchy 2) (idcauchy 2)
+           ≡⟨ scomplid (idcauchy 2) ⟩ 
+         c2cauchy {BOOL} id⟷ ∎)
+  where open ≡-Reasoning
+
+
+
+
+
+
+
+
 
 
 
