@@ -1037,6 +1037,36 @@ assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} =
   where open ≡-Reasoning
 
 linv∼ : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ ! c ∼ id⟷
+linv∼ {PLUS ZERO t} {.t} {unite₊} = 
+  begin (c2cauchy {PLUS ZERO t} (unite₊ ◎ uniti₊)
+           ≡⟨ refl ⟩ 
+         scompcauchy (idcauchy (size t)) (idcauchy (size t))
+           ≡⟨ scomplid (idcauchy (size t)) ⟩ 
+         c2cauchy {PLUS ZERO t} id⟷ ∎)
+  where open ≡-Reasoning
+linv∼ {t} {PLUS ZERO .t} {uniti₊} = {!!}
+linv∼ {PLUS t₁ t₂} {PLUS .t₂ .t₁} {swap₊} = {!!}
+linv∼ {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} {assocl₊} = {!!}
+linv∼ {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} {assocr₊} = {!!}
+linv∼ {TIMES ONE t} {.t} {unite⋆} = {!!}
+linv∼ {t} {TIMES ONE .t} {uniti⋆} = {!!}
+linv∼ {TIMES t₁ t₂} {TIMES .t₂ .t₁} {swap⋆} = {!!}
+linv∼ {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} {assocl⋆} = {!!}
+linv∼ {TIMES (TIMES t₁ t₂) t₃} {TIMES .t₁ (TIMES .t₂ .t₃)} {assocr⋆} = {!!}
+linv∼ {TIMES ZERO t} {ZERO} {distz} = {!!}
+linv∼ {ZERO} {TIMES ZERO t} {factorz} = {!!}
+linv∼ {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)} {dist} = 
+  {!!}
+linv∼ {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t₃} {factor} = 
+  {!!}
+linv∼ {t} {.t} {id⟷} = {!!}
+linv∼ {t₁} {t₃} {c₁ ◎ c₂} = {!!}
+linv∼ {PLUS t₁ t₂} {PLUS t₃ t₄} {c₁ ⊕ c₂} = {!!}
+linv∼ {TIMES t₁ t₂} {TIMES t₃ t₄} {c₁ ⊗ c₂} = {!!}
+linv∼ {PLUS ONE ONE} {BOOL} {foldBool} = {!!}
+linv∼ {BOOL} {PLUS ONE ONE} {unfoldBool} = {!!}
+
+{--
 linv∼ {t₁} {t₂} {c} = 
   begin (c2cauchy (c ◎ ! c)
            ≡⟨ {!!} ⟩ 
@@ -1044,6 +1074,11 @@ linv∼ {t₁} {t₂} {c} =
            ≡⟨ {!!} ⟩ 
          allFin (size t₁) ∎)
   where open ≡-Reasoning
+--}
+
+
+
+
 
 {--
 rinv∼ : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → ! c ◎ c ∼ id⟷
