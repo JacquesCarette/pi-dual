@@ -931,6 +931,9 @@ subst-trans :
   subst B x₂≡x₁ (subst B x₃≡x₂ v) ≡ subst B (trans x₃≡x₂ x₂≡x₁) v
 subst-trans refl refl v = refl
 
+trans-sym : {A : Set} {x y : A} → (p : x ≡ y) → trans (sym p) p ≡ refl
+trans-sym refl = refl
+
 -- Two combinators are equivalent if they denote the same
 -- permutation. Generally we would require that the two permutations
 -- map the same value x to values y and z that have a path between
@@ -1093,8 +1096,9 @@ linv∼ {TIMES ONE t} {.t} {unite⋆} =
   begin (c2cauchy {TIMES ONE t} (unite⋆ ◎ uniti⋆)
            ≡⟨ refl ⟩ 
          scompcauchy 
-           (c2cauchy {TIMES ONE t} unite⋆)
-           (subst Cauchy (size≡! {TIMES ONE t} unite⋆) (c2cauchy {t} uniti⋆))
+           (subst Cauchy (sym (+-right-identity (size t))) (idcauchy (size t)))
+           (subst Cauchy (sym (+-right-identity (size t))) 
+             (idcauchy (size t)))
            ≡⟨ {!!} ⟩ 
          c2cauchy {TIMES ONE t} id⟷ ∎)
   where open ≡-Reasoning
@@ -1102,9 +1106,30 @@ linv∼ {t} {TIMES ONE .t} {uniti⋆} =
   begin (c2cauchy {t} (uniti⋆ ◎ unite⋆)
            ≡⟨ refl ⟩ 
          scompcauchy 
-           (c2cauchy {t} uniti⋆)
-           (subst Cauchy (size≡! {t} uniti⋆) (c2cauchy {TIMES ONE t} unite⋆))
-           ≡⟨ {!!} ⟩ 
+           (idcauchy (size t))
+           (subst Cauchy (+-right-identity (size t))
+             (subst Cauchy (sym (+-right-identity (size t))) 
+               (idcauchy (size t))))
+           ≡⟨ cong 
+                (scompcauchy (idcauchy (size t)))
+                (subst-trans 
+                  (+-right-identity (size t))
+                  (sym (+-right-identity (size t))) 
+                  (idcauchy (size t))) ⟩ 
+         scompcauchy 
+           (idcauchy (size t))
+           (subst Cauchy (trans (sym (+-right-identity (size t)))
+                                (+-right-identity (size t)))
+               (idcauchy (size t)))
+           ≡⟨ cong 
+                 (λ x → scompcauchy 
+                          (idcauchy (size t))
+                          (subst Cauchy x (idcauchy (size t))))
+                 (trans-sym (+-right-identity (size t))) ⟩ 
+         scompcauchy 
+           (idcauchy (size t))
+           (subst Cauchy refl (idcauchy (size t)))
+           ≡⟨ scomplid (idcauchy (size t)) ⟩ 
          c2cauchy {t} id⟷ ∎)
   where open ≡-Reasoning
 linv∼ {TIMES t₁ t₂} {TIMES .t₂ .t₁} {swap⋆} = {!!}
