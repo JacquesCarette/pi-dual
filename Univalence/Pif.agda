@@ -1054,7 +1054,7 @@ linv∼ {t} {PLUS ZERO .t} {uniti₊} =
            ≡⟨ scomplid (idcauchy (size t)) ⟩ 
          c2cauchy {t} id⟷ ∎)
   where open ≡-Reasoning
-linv∼ {PLUS t₁ t₂} {PLUS .t₂ .t₁} {swap₊} = 
+linv∼ {PLUS t₁ t₂} {PLUS .t₂ .t₁} {swap₊} =
   begin (c2cauchy {PLUS t₁ t₂} (swap₊ ◎ swap₊)
            ≡⟨ refl ⟩ 
          scompcauchy 
@@ -1257,7 +1257,14 @@ linv∼ {t₁} {t₃} {_◎_ {t₂ = t₂} c₁ c₂} =
                 (subst Cauchy (trans (size≡! c₂) (size≡! c₁)) (c2cauchy (! c₂)))
                 (subst Cauchy (trans (size≡! c₂) (size≡! c₁))
                   (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁))))))
-           ≡⟨ {!!} ⟩ 
+           ≡⟨ cong 
+                (scompcauchy (c2cauchy c₁))
+                (scompassoc
+                  (subst Cauchy (size≡! c₁) (c2cauchy c₂))
+                  (subst Cauchy (trans (size≡! c₂) (size≡! c₁)) 
+                    (c2cauchy (! c₂)))
+                  (subst Cauchy (trans (size≡! c₂) (size≡! c₁))
+                    (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁))))) ⟩ 
          scompcauchy 
            (c2cauchy c₁)
            (scompcauchy 
@@ -1271,11 +1278,21 @@ linv∼ {t₁} {t₃} {_◎_ {t₂ = t₂} c₁ c₂} =
   where open ≡-Reasoning
 linv∼ {PLUS t₁ t₂} {PLUS t₃ t₄} {c₁ ⊕ c₂} = 
   begin (c2cauchy {PLUS t₁ t₂} ((c₁ ⊕ c₂) ◎ ((! c₁) ⊕ (! c₂)))
+           ≡⟨ refl ⟩ 
+         scompcauchy
+           (pcompcauchy (c2cauchy c₁) (c2cauchy c₂))
+           (subst Cauchy (cong₂ _+_ (size≡! c₁) (size≡! c₂))
+             (pcompcauchy (c2cauchy (! c₁)) (c2cauchy (! c₂))))
            ≡⟨ {!!} ⟩ 
          c2cauchy {PLUS t₁ t₂} id⟷ ∎)
   where open ≡-Reasoning
 linv∼ {TIMES t₁ t₂} {TIMES t₃ t₄} {c₁ ⊗ c₂} = 
   begin (c2cauchy {TIMES t₁ t₂} ((c₁ ⊗ c₂) ◎ ((! c₁) ⊗ (! c₂)))
+           ≡⟨ refl ⟩ 
+         scompcauchy
+           (tcompcauchy (c2cauchy c₁) (c2cauchy c₂))
+           (subst Cauchy (cong₂ _*_ (size≡! c₁) (size≡! c₂))
+             (tcompcauchy (c2cauchy (! c₁)) (c2cauchy (! c₂))))
            ≡⟨ {!!} ⟩ 
          c2cauchy {TIMES t₁ t₂} id⟷ ∎)
   where open ≡-Reasoning
