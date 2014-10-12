@@ -1239,13 +1239,36 @@ linv∼ {t₁} {t₃} {_◎_ {t₂ = t₂} c₁ c₂} =
                 (scompcauchy
                   (c2cauchy (! c₂))
                   (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁))))))
+           ≡⟨ cong 
+                (λ x → 
+                  scompcauchy
+                    (c2cauchy c₁)
+                    (scompcauchy
+                      (subst Cauchy (size≡! c₁) (c2cauchy c₂))
+                      x))
+                (subst-dist scompcauchy (trans (size≡! c₂) (size≡! c₁))
+                   (c2cauchy (! c₂))
+                   (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁)))) ⟩ 
+         scompcauchy 
+           (c2cauchy c₁)
+           (scompcauchy 
+              (subst Cauchy (size≡! c₁) (c2cauchy c₂))
+              (scompcauchy
+                (subst Cauchy (trans (size≡! c₂) (size≡! c₁)) (c2cauchy (! c₂)))
+                (subst Cauchy (trans (size≡! c₂) (size≡! c₁))
+                  (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁))))))
+           ≡⟨ {!!} ⟩ 
+         scompcauchy 
+           (c2cauchy c₁)
+           (scompcauchy 
+              (scompcauchy
+                (subst Cauchy (size≡! c₁) (c2cauchy c₂))
+                (subst Cauchy (trans (size≡! c₂) (size≡! c₁)) (c2cauchy (! c₂))))
+              (subst Cauchy (trans (size≡! c₂) (size≡! c₁))
+                  (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁)))))
            ≡⟨ {!!} ⟩ 
          c2cauchy {t₁} id⟷ ∎)
   where open ≡-Reasoning
-
---assoc∼ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
---         c₁ ◎ (c₂ ◎ c₃) ∼ (c₁ ◎ c₂) ◎ c₃
-
 linv∼ {PLUS t₁ t₂} {PLUS t₃ t₄} {c₁ ⊕ c₂} = 
   begin (c2cauchy {PLUS t₁ t₂} ((c₁ ⊕ c₂) ◎ ((! c₁) ⊕ (! c₂)))
            ≡⟨ {!!} ⟩ 
