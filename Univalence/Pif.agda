@@ -1403,7 +1403,6 @@ linv∼ {BOOL} {PLUS ONE ONE} {unfoldBool} =
          c2cauchy {BOOL} id⟷ ∎)
   where open ≡-Reasoning
 
-{--
 rinv∼ : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → ! c ◎ c ∼ id⟷
 rinv∼ = {!!} 
 
@@ -1435,6 +1434,8 @@ G = record
         ; rinv = λ c → rinv∼ {c = c} 
         ; ∘-resp-≈ = λ α β → resp∼ β α 
         }
+
+{--
 
 -- And there are additional laws
 
