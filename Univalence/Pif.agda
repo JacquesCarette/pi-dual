@@ -182,17 +182,6 @@ i≮j∧i≠j→i≰j (suc i) (suc j) si≮sj ¬si≡sj (s≤s i≤j) =
   i≮j∧i≠j→i≰j i j (si≮sj→i≮j i j si≮sj) (si≠sj→i≠j i j ¬si≡sj) i≤j
 
 ------------------------------------------------------------------------------
--- Proofs about *proofs* of natural number identities
-
-+-comm-sym : (m n : ℕ ) → +-comm m n ≡ sym (+-comm n m)
-+-comm-sym 0 0 = refl
-+-comm-sym 0 (suc n) = {!!}
-+-comm-sym (suc m) n = {!!} 
-
-sym-sym : {A : Set} {x y : A} → (p : x ≡ y) → sym (sym p) ≡ p
-sym-sym refl = refl
-
-------------------------------------------------------------------------------
 -- Level 0 of Pi
 --
 -- ZERO is a type with no elements
@@ -679,31 +668,7 @@ size≡! {PLUS ONE ONE} {BOOL} foldBool = refl
 size≡! {BOOL} {PLUS ONE ONE} unfoldBool = refl
 
 size≡!! : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (size≡! (! c) ≡ sym (size≡! c))
-size≡!! (c₁ ◎ c₂) = {!!} -- trans (size≡! c₂) (size≡! c₁)
-size≡!! {PLUS ZERO t} {.t} unite₊ = refl
-size≡!! {t} {PLUS ZERO .t} uniti₊ = refl
-size≡!! {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = +-comm-sym (size t₁) (size t₂)
-size≡!! {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ = refl 
-size≡!! {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} assocr₊ = 
-  sym (sym-sym (size≡! {PLUS t₁ (PLUS t₂ t₃)} assocl₊)) 
-size≡!! {TIMES ONE t} {.t} unite⋆ = sym (sym-sym (size≡! {t} uniti⋆)) 
-size≡!! {t} {TIMES ONE .t} uniti⋆ = refl
-size≡!! {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = {!!} -- *-comm (size t₂) (size t₁) 
-size≡!! {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} assocl⋆ = 
-  refl 
-size≡!! {TIMES (TIMES t₁ t₂) t₃} {TIMES .t₁ (TIMES .t₂ .t₃)} assocr⋆ = 
-  sym (sym-sym (size≡! {TIMES t₁ (TIMES t₂ t₃)} assocl⋆))  
-size≡!! {TIMES .ZERO t} {ZERO} distz = refl
-size≡!! {ZERO} {TIMES ZERO t} factorz = refl
-size≡!! {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)} dist = 
-  sym (sym-sym (size≡! {PLUS (TIMES t₁ t₃) (TIMES t₂ t₃)} factor))
-size≡!! {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t₃} factor = 
-  refl
-size≡!! {t} {.t} id⟷ = refl
-size≡!! {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = {!!} -- cong₂ _+_ (size≡! c₁) (size≡! c₂)
-size≡!! {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = {!!} -- cong₂ _*_ (size≡! c₁) (size≡! c₂)
-size≡!! {PLUS ONE ONE} {BOOL} foldBool = refl
-size≡!! {BOOL} {PLUS ONE ONE} unfoldBool = refl
+size≡!! c = proof-irrelevance (size≡! (! c)) (sym (size≡! c))
 
 ------------------------------------------------------------------------------
 -- Semantic representations of permutations
