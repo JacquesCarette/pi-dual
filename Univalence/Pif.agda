@@ -1434,7 +1434,7 @@ rinv∼ {t} {PLUS ZERO .t} {uniti₊} =
            ≡⟨ scomplid (idcauchy (size t)) ⟩ 
          c2cauchy {PLUS ZERO t} id⟷ ∎)
   where open ≡-Reasoning
-rinv∼ {PLUS t₁ t₂} {PLUS .t₂ .t₁} {swap₊} = ?
+rinv∼ {PLUS t₁ t₂} {PLUS .t₂ .t₁} {swap₊} = {!!}
 rinv∼ {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} {assocl₊} = 
   begin (c2cauchy {PLUS (PLUS t₁ t₂) t₃} (assocr₊ ◎ assocl₊)
            ≡⟨ refl ⟩ 
@@ -1506,7 +1506,7 @@ rinv∼ {t} {TIMES ONE .t} {uniti⋆} =
            ≡⟨ scomplid (idcauchy (size t + 0)) ⟩ 
          c2cauchy {TIMES ONE t} id⟷ ∎)
   where open ≡-Reasoning
-rinv∼ {TIMES t₁ t₂} {TIMES .t₂ .t₁} {swap⋆} = ?
+rinv∼ {TIMES t₁ t₂} {TIMES .t₂ .t₁} {swap⋆} = {!!}
 rinv∼ {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} {assocl⋆} = 
   begin (c2cauchy {TIMES (TIMES t₁ t₂) t₃} (assocr⋆ ◎ assocl⋆)
            ≡⟨ refl ⟩ 
@@ -1575,9 +1575,9 @@ rinv∼ {t} {.t} {id⟷} =
            ≡⟨ scomplid (idcauchy (size t)) ⟩ 
          c2cauchy {t} id⟷ ∎)
   where open ≡-Reasoning
-rinv∼ {t₁} {t₃} {_◎_ {t₂ = t₂} c₁ c₂} = ?
-rinv∼ {PLUS t₁ t₂} {PLUS t₃ t₄} {c₁ ⊕ c₂} = ?
-rinv∼ {TIMES t₁ t₂} {TIMES t₃ t₄} {c₁ ⊗ c₂} = ?
+rinv∼ {t₁} {t₃} {_◎_ {t₂ = t₂} c₁ c₂} = {!!}
+rinv∼ {PLUS t₁ t₂} {PLUS t₃ t₄} {c₁ ⊕ c₂} = {!!}
+rinv∼ {TIMES t₁ t₂} {TIMES t₃ t₄} {c₁ ⊗ c₂} = {!!}
 rinv∼ {PLUS ONE ONE} {BOOL} {foldBool} = 
   begin (c2cauchy {BOOL} (unfoldBool ◎ foldBool)
            ≡⟨ refl ⟩ 
