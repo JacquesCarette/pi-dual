@@ -1218,11 +1218,11 @@ linv∼ {t₁} {t₃} {_◎_ {t₂ = t₂} c₁ c₂} =
            ≡⟨ refl ⟩ 
          scompcauchy 
            (scompcauchy 
-              (c2cauchy c₁)
+              (c2cauchy c₁) 
               (subst Cauchy (size≡! c₁) (c2cauchy c₂)))
            (subst Cauchy (trans (size≡! c₂) (size≡! c₁))
-              (scompcauchy
-                (c2cauchy (! c₂))
+              (scompcauchy 
+                (c2cauchy (! c₂)) 
                 (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁)))))
            ≡⟨ sym (scompassoc 
                     (c2cauchy c₁)
@@ -1232,48 +1232,130 @@ linv∼ {t₁} {t₃} {_◎_ {t₂ = t₂} c₁ c₂} =
                         (c2cauchy (! c₂))
                         (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁))))))  ⟩ 
          scompcauchy 
-           (c2cauchy c₁)
+           (c2cauchy c₁) 
            (scompcauchy 
               (subst Cauchy (size≡! c₁) (c2cauchy c₂))
               (subst Cauchy (trans (size≡! c₂) (size≡! c₁))
                 (scompcauchy
                   (c2cauchy (! c₂))
                   (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁))))))
-           ≡⟨ cong 
-                (λ x → 
-                  scompcauchy
-                    (c2cauchy c₁)
-                    (scompcauchy
-                      (subst Cauchy (size≡! c₁) (c2cauchy c₂))
-                      x))
-                (subst-dist scompcauchy (trans (size≡! c₂) (size≡! c₁))
-                   (c2cauchy (! c₂))
-                   (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁)))) ⟩ 
+           ≡⟨ cong
+                (λ x → scompcauchy
+                         (c2cauchy c₁)
+                         (scompcauchy 
+                           (subst Cauchy (size≡! c₁) (c2cauchy c₂))
+                           x))
+                (sym (subst-trans (size≡! c₁) (size≡! c₂)
+                       (scompcauchy
+                         (c2cauchy (! c₂))
+                         (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁)))))) ⟩ 
          scompcauchy 
-           (c2cauchy c₁)
+           (c2cauchy c₁) 
            (scompcauchy 
               (subst Cauchy (size≡! c₁) (c2cauchy c₂))
-              (scompcauchy
-                (subst Cauchy (trans (size≡! c₂) (size≡! c₁)) (c2cauchy (! c₂)))
-                (subst Cauchy (trans (size≡! c₂) (size≡! c₁))
-                  (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁))))))
+              (subst Cauchy (size≡! c₁) 
+                (subst Cauchy (size≡! c₂)
+                  (scompcauchy
+                    (c2cauchy (! c₂))
+                    (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁)))))))
            ≡⟨ cong 
                 (scompcauchy (c2cauchy c₁))
-                (scompassoc
-                  (subst Cauchy (size≡! c₁) (c2cauchy c₂))
-                  (subst Cauchy (trans (size≡! c₂) (size≡! c₁)) 
-                    (c2cauchy (! c₂)))
-                  (subst Cauchy (trans (size≡! c₂) (size≡! c₁))
+                (sym (subst-dist scompcauchy (size≡! c₁)
+                       (c2cauchy c₂)
+                       (subst Cauchy (size≡! c₂)
+                         (scompcauchy
+                           (c2cauchy (! c₂))
+                           (subst Cauchy (size≡! (! c₂)) 
+                             (c2cauchy (! c₁))))))) ⟩ 
+         scompcauchy 
+           (c2cauchy c₁) 
+           (subst Cauchy (size≡! c₁) 
+             (scompcauchy 
+               (c2cauchy c₂)
+               (subst Cauchy (size≡! c₂)
+                 (scompcauchy
+                   (c2cauchy (! c₂))
+                   (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁)))))))
+           ≡⟨ cong
+                (λ x → scompcauchy
+                         (c2cauchy c₁)
+                         (subst Cauchy (size≡! c₁)
+                           (scompcauchy (c2cauchy c₂) x)))
+                (subst-dist scompcauchy (size≡! c₂)
+                  (c2cauchy (! c₂))
+                  (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁)))) ⟩ 
+         scompcauchy 
+           (c2cauchy c₁) 
+           (subst Cauchy (size≡! c₁) 
+             (scompcauchy 
+               (c2cauchy c₂)
+                 (scompcauchy
+                   (subst Cauchy (size≡! c₂) (c2cauchy (! c₂)))
+                   (subst Cauchy (size≡! c₂) 
+                     (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁)))))))
+           ≡⟨ cong
+                (λ x → scompcauchy
+                         (c2cauchy c₁)
+                         (subst Cauchy (size≡! c₁) x))
+                (scompassoc 
+                  (c2cauchy c₂)
+                  (subst Cauchy (size≡! c₂) (c2cauchy (! c₂)))
+                  (subst Cauchy (size≡! c₂) 
                     (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁))))) ⟩ 
          scompcauchy 
-           (c2cauchy c₁)
-           (scompcauchy 
-              (scompcauchy
-                (subst Cauchy (size≡! c₁) (c2cauchy c₂))
-                (subst Cauchy (trans (size≡! c₂) (size≡! c₁)) (c2cauchy (! c₂))))
-              (subst Cauchy (trans (size≡! c₂) (size≡! c₁))
-                  (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁)))))
+           (c2cauchy c₁) 
+           (subst Cauchy (size≡! c₁) 
+             (scompcauchy 
+               (scompcauchy
+                 (c2cauchy c₂)
+                 (subst Cauchy (size≡! c₂) (c2cauchy (! c₂))))
+               (subst Cauchy (size≡! c₂) 
+                 (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁))))))
+           ≡⟨ cong
+                (λ x → scompcauchy
+                         (c2cauchy c₁)
+                         (subst Cauchy (size≡! c₁)
+                           (scompcauchy 
+                             x
+                             (subst Cauchy (size≡! c₂)
+                               (subst Cauchy (size≡! (! c₂)) 
+                                 (c2cauchy (! c₁)))))))
+                (linv∼ {t₂} {t₃} {c₂}) ⟩ 
+         scompcauchy 
+           (c2cauchy c₁) 
+           (subst Cauchy (size≡! c₁) 
+             (scompcauchy 
+               (allFin (size t₂))
+               (subst Cauchy (size≡! c₂) 
+                 (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁))))))
+           ≡⟨ cong 
+                (λ x → scompcauchy
+                         (c2cauchy c₁)
+                         (subst Cauchy (size≡! c₁) x))
+                (scomplid
+                  (subst Cauchy (size≡! c₂) 
+                    (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁))))) ⟩ 
+         scompcauchy 
+           (c2cauchy c₁) 
+           (subst Cauchy (size≡! c₁) 
+             (subst Cauchy (size≡! c₂) 
+               (subst Cauchy (size≡! (! c₂)) (c2cauchy (! c₁)))))
+           ≡⟨ cong 
+                (λ x → scompcauchy 
+                         (c2cauchy c₁)
+                         (subst Cauchy (size≡! c₁) x))
+                (subst-trans (size≡! c₂) (size≡! (! c₂))
+                  (c2cauchy (! c₁))) ⟩ 
+         scompcauchy 
+           (c2cauchy c₁) 
+           (subst Cauchy (size≡! c₁) 
+             (subst Cauchy (trans (size≡! (! c₂)) (size≡! c₂))
+               (c2cauchy (! c₁))))
            ≡⟨ {!!} ⟩ 
+         scompcauchy 
+           (c2cauchy c₁) 
+           (subst Cauchy (size≡! c₁) (c2cauchy (! c₁)))
+           ≡⟨ linv∼ {t₁} {t₂} {c₁} ⟩ 
          c2cauchy {t₁} id⟷ ∎)
   where open ≡-Reasoning
 linv∼ {PLUS t₁ t₂} {PLUS t₃ t₄} {c₁ ⊕ c₂} = 
@@ -1310,18 +1392,6 @@ linv∼ {BOOL} {PLUS ONE ONE} {unfoldBool} =
            ≡⟨ scomplid (idcauchy 2) ⟩ 
          c2cauchy {BOOL} id⟷ ∎)
   where open ≡-Reasoning
-
-
-
-
-
-
-
-
-
-
-
-
 
 {--
 rinv∼ : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → ! c ◎ c ∼ id⟷
