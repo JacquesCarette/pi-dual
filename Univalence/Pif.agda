@@ -44,7 +44,7 @@ open import Data.Vec
   using (Vec; tabulate; []; _∷_; tail; lookup; zip; zipWith; splitAt;
          _[_]≔_; allFin; toList)
   renaming (_++_ to _++V_; map to mapV; concat to concatV)
-open import Function using (id; _∘_)
+open import Function using (id; _∘_; _$_)
 
 open import Data.Empty   using (⊥)
 open import Data.Unit    using (⊤; tt)
@@ -180,6 +180,15 @@ i≮j∧i≠j→i≰j 0 (suc j) i≮j ¬i≡j i≤j = i≮j (s≤s z≤n)
 i≮j∧i≠j→i≰j (suc i) 0 i≮j ¬i≡j () 
 i≮j∧i≠j→i≰j (suc i) (suc j) si≮sj ¬si≡sj (s≤s i≤j) = 
   i≮j∧i≠j→i≰j i j (si≮sj→i≮j i j si≮sj) (si≠sj→i≠j i j ¬si≡sj) i≤j
+
+------------------------------------------------------------------------------
+-- Proofs about *proofs* of natural number identities
+
++-comm-sym : (a b : ℕ ) → +-comm a b ≡ sym (+-comm b a)
++-comm-sym Data.Nat.zero Data.Nat.zero = refl
++-comm-sym Data.Nat.zero (suc b) = {!!}
++-comm-sym (suc a) Data.Nat.zero = {!!}
++-comm-sym (suc a) (suc b) = {!!}
 
 ------------------------------------------------------------------------------
 -- Level 0 of Pi
@@ -666,6 +675,28 @@ size≡! {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = cong₂ _+_ (size�
 size≡! {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = cong₂ _*_ (size≡! c₁) (size≡! c₂)
 size≡! {PLUS ONE ONE} {BOOL} foldBool = refl
 size≡! {BOOL} {PLUS ONE ONE} unfoldBool = refl
+
+size≡!! : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (size≡! (! c) ≡ sym (size≡! c))
+size≡!! unite₊ = refl
+size≡!! uniti₊ = refl
+size≡!! {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = +-comm-sym (size t₁) (size t₂)
+size≡!! assocl₊ = {!!}
+size≡!! assocr₊ = {!!}
+size≡!! unite⋆ = {!!}
+size≡!! uniti⋆ = {!!}
+size≡!! swap⋆ = {!!}
+size≡!! assocl⋆ = {!!}
+size≡!! assocr⋆ = {!!}
+size≡!! distz = refl
+size≡!! factorz = refl
+size≡!! dist = {!!}
+size≡!! factor = refl
+size≡!! id⟷ = refl
+size≡!! (c ◎ c₁) = {!!}
+size≡!! (c ⊕ c₁) = {!!}
+size≡!! (c ⊗ c₁) = {!!}
+size≡!! foldBool = refl
+size≡!! unfoldBool = refl
 
 ------------------------------------------------------------------------------
 -- Semantic representations of permutations
@@ -1351,7 +1382,10 @@ linv∼ {t₁} {t₃} {_◎_ {t₂ = t₂} c₁ c₂} =
            (subst Cauchy (size≡! c₁) 
              (subst Cauchy (trans (size≡! (! c₂)) (size≡! c₂))
                (c2cauchy (! c₁))))
-           ≡⟨ {!!} ⟩ 
+           ≡⟨ cong (λ x → scompcauchy (c2cauchy c₁)
+                             (subst Cauchy (size≡! c₁) (subst Cauchy x 
+                               (c2cauchy (! c₁))))) 
+                     (trans (cong (λ y → trans y (size≡! c₂)) (size≡!! c₂)) (trans-sym (size≡! c₂))) ⟩ 
          scompcauchy 
            (c2cauchy c₁) 
            (subst Cauchy (size≡! c₁) (c2cauchy (! c₁)))
