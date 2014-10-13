@@ -823,6 +823,22 @@ scompassoc π₁ π₂ π₃ =
 pcompcauchy : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m + n)
 pcompcauchy {m} {n} α β = mapV (inject+ n) α ++V mapV (raise m) β
 
+-- Behaviour of parallel additive composition wrt sequential
+pcomp-dist : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) → 
+    scompcauchy (pcompcauchy pm pn) (pcompcauchy qm qn) ≡
+        pcompcauchy (scompcauchy pm qm) (scompcauchy pn qn)
+pcomp-dist {m} {n} pm qm pn qn = 
+  begin (scompcauchy (pcompcauchy pm pn) (pcompcauchy qm qn)
+            ≡⟨ refl ⟩
+            tabulate (λ i → lookup (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn)) 
+                                                              (mapV (inject+ n) qm ++V mapV (raise m) qn))
+            ≡⟨ {!!} ⟩ 
+           mapV (inject+ n) (tabulate (λ i → lookup (lookup i pm) qm)) ++V 
+           mapV (raise m) (tabulate (λ i → lookup (lookup i pn) qn))
+            ≡⟨ refl ⟩
+          pcompcauchy (scompcauchy pm qm) (scompcauchy pn qn) ∎)
+  where open ≡-Reasoning
+
 -- Tensor multiplicative composition
 -- Transpositions in α correspond to swapping entire rows
 -- Transpositions in β correspond to swapping entire columns
