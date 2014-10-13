@@ -184,11 +184,13 @@ i≮j∧i≠j→i≰j (suc i) (suc j) si≮sj ¬si≡sj (s≤s i≤j) =
 ------------------------------------------------------------------------------
 -- Proofs about *proofs* of natural number identities
 
-+-comm-sym : (a b : ℕ ) → +-comm a b ≡ sym (+-comm b a)
-+-comm-sym Data.Nat.zero Data.Nat.zero = refl
-+-comm-sym Data.Nat.zero (suc b) = {!!}
-+-comm-sym (suc a) Data.Nat.zero = {!!}
-+-comm-sym (suc a) (suc b) = {!!}
++-comm-sym : (m n : ℕ ) → +-comm m n ≡ sym (+-comm n m)
++-comm-sym 0 0 = refl
++-comm-sym 0 (suc n) = {!!}
++-comm-sym (suc m) n = {!!} 
+
+sym-sym : {A : Set} {x y : A} → (p : x ≡ y) → sym (sym p) ≡ p
+sym-sym refl = refl
 
 ------------------------------------------------------------------------------
 -- Level 0 of Pi
@@ -677,26 +679,31 @@ size≡! {PLUS ONE ONE} {BOOL} foldBool = refl
 size≡! {BOOL} {PLUS ONE ONE} unfoldBool = refl
 
 size≡!! : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (size≡! (! c) ≡ sym (size≡! c))
-size≡!! unite₊ = refl
-size≡!! uniti₊ = refl
+size≡!! (c₁ ◎ c₂) = {!!} -- trans (size≡! c₂) (size≡! c₁)
+size≡!! {PLUS ZERO t} {.t} unite₊ = refl
+size≡!! {t} {PLUS ZERO .t} uniti₊ = refl
 size≡!! {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = +-comm-sym (size t₁) (size t₂)
-size≡!! assocl₊ = {!!}
-size≡!! assocr₊ = {!!}
-size≡!! unite⋆ = {!!}
-size≡!! uniti⋆ = {!!}
-size≡!! swap⋆ = {!!}
-size≡!! assocl⋆ = {!!}
-size≡!! assocr⋆ = {!!}
-size≡!! distz = refl
-size≡!! factorz = refl
-size≡!! dist = {!!}
-size≡!! factor = refl
-size≡!! id⟷ = refl
-size≡!! (c ◎ c₁) = {!!}
-size≡!! (c ⊕ c₁) = {!!}
-size≡!! (c ⊗ c₁) = {!!}
-size≡!! foldBool = refl
-size≡!! unfoldBool = refl
+size≡!! {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ = refl 
+size≡!! {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} assocr₊ = 
+  sym (sym-sym (size≡! {PLUS t₁ (PLUS t₂ t₃)} assocl₊)) 
+size≡!! {TIMES ONE t} {.t} unite⋆ = sym (sym-sym (size≡! {t} uniti⋆)) 
+size≡!! {t} {TIMES ONE .t} uniti⋆ = refl
+size≡!! {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = {!!} -- *-comm (size t₂) (size t₁) 
+size≡!! {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} assocl⋆ = 
+  refl 
+size≡!! {TIMES (TIMES t₁ t₂) t₃} {TIMES .t₁ (TIMES .t₂ .t₃)} assocr⋆ = 
+  sym (sym-sym (size≡! {TIMES t₁ (TIMES t₂ t₃)} assocl⋆))  
+size≡!! {TIMES .ZERO t} {ZERO} distz = refl
+size≡!! {ZERO} {TIMES ZERO t} factorz = refl
+size≡!! {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)} dist = 
+  sym (sym-sym (size≡! {PLUS (TIMES t₁ t₃) (TIMES t₂ t₃)} factor))
+size≡!! {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t₃} factor = 
+  refl
+size≡!! {t} {.t} id⟷ = refl
+size≡!! {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = {!!} -- cong₂ _+_ (size≡! c₁) (size≡! c₂)
+size≡!! {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = {!!} -- cong₂ _*_ (size≡! c₁) (size≡! c₂)
+size≡!! {PLUS ONE ONE} {BOOL} foldBool = refl
+size≡!! {BOOL} {PLUS ONE ONE} unfoldBool = refl
 
 ------------------------------------------------------------------------------
 -- Semantic representations of permutations
@@ -1382,10 +1389,14 @@ linv∼ {t₁} {t₃} {_◎_ {t₂ = t₂} c₁ c₂} =
            (subst Cauchy (size≡! c₁) 
              (subst Cauchy (trans (size≡! (! c₂)) (size≡! c₂))
                (c2cauchy (! c₁))))
-           ≡⟨ cong (λ x → scompcauchy (c2cauchy c₁)
-                             (subst Cauchy (size≡! c₁) (subst Cauchy x 
-                               (c2cauchy (! c₁))))) 
-                     (trans (cong (λ y → trans y (size≡! c₂)) (size≡!! c₂)) (trans-sym (size≡! c₂))) ⟩ 
+           ≡⟨ cong 
+                (λ x → scompcauchy 
+                         (c2cauchy c₁)
+                         (subst Cauchy (size≡! c₁) 
+                           (subst Cauchy x (c2cauchy (! c₁)))))
+                (trans 
+                  (cong (λ y → trans y (size≡! c₂)) (size≡!! c₂)) 
+                  (trans-sym (size≡! c₂))) ⟩ 
          scompcauchy 
            (c2cauchy c₁) 
            (subst Cauchy (size≡! c₁) (c2cauchy (! c₁)))
