@@ -1806,19 +1806,18 @@ G = record
                     resp∼ {t₁} {t₂} {t₃} {r} {s} {p} {q} r∼s p∼q 
         }
 
-{--
-
--- And there are additional laws
-
-assoc⊕∼ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          c₁ ⊕ (c₂ ⊕ c₃) ∼ assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊
-assoc⊕∼ = {!!} 
-
-assoc⊗∼ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          c₁ ⊗ (c₂ ⊗ c₃) ∼ assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆
-assoc⊗∼ = {!!} 
+-- There are additional laws that should hold:
+-- 
+-- assoc⊕∼ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+--           {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+--           c₁ ⊕ (c₂ ⊕ c₃) ∼ assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊
+-- 
+-- assoc⊗∼ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+--           {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+--           c₁ ⊗ (c₂ ⊗ c₃) ∼ assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆
+-- 
+-- but we will turn our attention to completeness below in a more
+-- systematic way.
 
 ------------------------------------------------------------------------------
 -- Picture so far:
@@ -1982,7 +1981,8 @@ _▤ c = id⇔
 
 -- a nice example of 2 paths
 
-negEx : neg₅ ⇔ neg₁
+negEx : uniti⋆ ◎ (swap⋆ ◎ ((swap₊ {ONE} {ONE} ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆))) 
+        ⇔ swap₊
 negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆)))
           ⇔⟨ resp◎⇔ id⇔ assoc◎l ⟩
         uniti⋆ ◎ ((swap⋆ ◎ (swap₊ ⊗ id⟷)) ◎ (swap⋆ ◎ unite⋆))
@@ -2032,6 +2032,7 @@ G' = record
         ; ∘-resp-≈ = λ p∼q r∼s → resp◎⇔ r∼s p∼q 
         }
 
+{--
 ------------------------------------------------------------------------------
 -- Inverting permutations to syntactic combinators
 
