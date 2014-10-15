@@ -1105,8 +1105,8 @@ linv∼ {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} {assocl₊}
            (subst Cauchy (+-assoc (size t₁) (size t₂) (size t₃))
              (idcauchy ((size t₁ + size t₂) + size t₃)))
            ≡⟨ cong 
-                (scompcauchy (idcauchy (size t₁ + (size t₂ + size t₃))))
-                (congD! idcauchy (+-assoc (size t₁) (size t₂) (size t₃))) ⟩ 
+               (scompcauchy (idcauchy (size t₁ + (size t₂ + size t₃))))
+               (congD! idcauchy (+-assoc (size t₁) (size t₂) (size t₃))) ⟩ 
          scompcauchy (idcauchy (size t₁ + (size t₂ + size t₃)))
            (idcauchy (size t₁ + (size t₂ + size t₃)))
            ≡⟨ scomplid (idcauchy (size t₁ + (size t₂ + size t₃))) ⟩ 
