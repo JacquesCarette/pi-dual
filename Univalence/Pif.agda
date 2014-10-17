@@ -29,7 +29,7 @@ open import Data.Fin
   renaming (_+_ to _F+_)
 open import Data.Fin.Properties using (bounded; inject+-lemma)
 open import Data.Vec.Properties 
-  using (lookup∘tabulate; tabulate∘lookup; lookup-allFin)
+  using (lookup∘tabulate; tabulate∘lookup; lookup-allFin; tabulate-∘)
 
 open import Data.List 
   using (List; []; _∷_; _∷ʳ_; foldl; replicate; reverse; downFrom; 
@@ -773,8 +773,8 @@ idcauchy = allFin
 -- [ vm , vm₊₁ , ... , vm+n-1 ,     v₀ , v₁   , v₂   , ... , vm-1 ]
 
 swap+cauchy : (m n : ℕ) → Cauchy (m + n)
-swap+cauchy m n with splitAt n (allFin (n + m)) | splitAt m (allFin (m + n))
-... | (zeron , (nsum , _)) | (zerom , (msum , _)) = 
+swap+cauchy m n with splitAt n (allFin (n + m))
+... | (zeron , (nsum , _)) = 
     (subst (λ s → Vec (Fin s) m) (+-comm n m) nsum) ++V 
     (subst (λ s → Vec (Fin s) n) (+-comm n m) zeron)
 
@@ -870,12 +870,19 @@ pcomp-dist {m} {n} pm qm pn qn =
                     lookup 
                       (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn)) 
                       (mapV (inject+ n) qm ++V mapV (raise m) qn))
-            ≡⟨ {!!} ⟩ 
+            ≡⟨ {!!} ⟩
+         tabulate (λ i → (inject+ n) (lookup (lookup i pm) qm)) ++V
+         tabulate (λ i → (raise m) (lookup (lookup i pn) qn))
+            ≡⟨ cong₂ _++V_ (tabulate-∘ (inject+ n) (λ i → lookup (lookup i pm) qm)) 
+                                      (tabulate-∘ (raise m) (λ i → lookup (lookup i pn) qn)) ⟩ 
          mapV (inject+ n) (tabulate (λ i → lookup (lookup i pm) qm)) ++V 
          mapV (raise m) (tabulate (λ i → lookup (lookup i pn) qn))
             ≡⟨ refl ⟩
          pcompcauchy (scompcauchy pm qm) (scompcauchy pn qn) ∎)
   where open ≡-Reasoning
+
+pcomp-id : ∀ {m n} → pcompcauchy (idcauchy m) (idcauchy n) ≡ idcauchy (m + n)
+pcomp-id = {!!}
 
 -- Tensor multiplicative composition
 -- Transpositions in α correspond to swapping entire rows
@@ -1406,7 +1413,12 @@ linv∼ {PLUS t₁ t₂} {PLUS t₃ t₄} {c₁ ⊕ c₂} =
            (pcompcauchy (c2cauchy c₁) (c2cauchy c₂))
            (subst Cauchy (cong₂ _+_ (size≡! c₁) (size≡! c₂))
              (pcompcauchy (c2cauchy (! c₁)) (c2cauchy (! c₂))))
-           ≡⟨ {!!} ⟩ 
+           ≡⟨ {!!} ⟩
+         pcompcauchy (scompcauchy (c2cauchy c₁) (subst Cauchy (size≡! c₁) (c2cauchy (! c₁))))
+                                (scompcauchy (c2cauchy c₂) (subst Cauchy (size≡! c₂) (c2cauchy (! c₂))))
+           ≡⟨ cong₂ pcompcauchy (linv∼ {t₁} {t₃} {c₁}) (linv∼ {t₂} {t₄} {c₂}) ⟩
+         pcompcauchy (c2cauchy {t₁} id⟷) (c2cauchy {t₂} id⟷)
+           ≡⟨ pcomp-id {size t₁} {size t₂} ⟩ 
          c2cauchy {PLUS t₁ t₂} id⟷ ∎)
   where open ≡-Reasoning
 linv∼ {TIMES t₁ t₂} {TIMES t₃ t₄} {c₁ ⊗ c₂} = 
