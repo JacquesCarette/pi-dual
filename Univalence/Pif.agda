@@ -29,7 +29,7 @@ open import Data.Fin
   renaming (_+_ to _F+_)
 open import Data.Fin.Properties using (bounded; inject+-lemma)
 open import Data.Vec.Properties 
-  using (lookup∘tabulate; tabulate∘lookup; lookup-allFin; tabulate-∘)
+  using (lookup∘tabulate; tabulate∘lookup; lookup-allFin; tabulate-∘; tabulate-allFin)
 
 open import Data.List 
   using (List; []; _∷_; _∷ʳ_; foldl; replicate; reverse; downFrom; 
@@ -767,6 +767,12 @@ trans-symr refl = refl
 idcauchy : (n : ℕ) → Cauchy n
 idcauchy = allFin 
 
+-- a kind of inverse for splitAt
+unSplit : {m n : ℕ} {A : Set} → (f : Fin (m + n) → A) → 
+  tabulate {m} (f ∘ (inject+ n)) ++V tabulate {n} (f ∘ (raise m)) ≡ tabulate f
+unSplit {Data.Nat.zero} {n} f = refl
+unSplit {suc m} f = cong (λ x → (f zero) ∷ x) (unSplit {m} (f ∘ suc))
+
 -- swap the first m elements with the last n elements
 -- [ v₀ , v₁   , v₂   , ... , vm-1 ,     vm , vm₊₁ , ... , vm+n-1 ]
 -- ==> 
@@ -882,7 +888,15 @@ pcomp-dist {m} {n} pm qm pn qn =
   where open ≡-Reasoning
 
 pcomp-id : ∀ {m n} → pcompcauchy (idcauchy m) (idcauchy n) ≡ idcauchy (m + n)
-pcomp-id = {!!}
+pcomp-id {m} {n} = 
+  begin (mapV (inject+ n) (idcauchy m) ++V (mapV (raise m) (idcauchy n))
+    ≡⟨ refl ⟩
+  mapV (inject+ n) (allFin m) ++V mapV (raise m) (allFin n)
+    ≡⟨ cong₂ _++V_ (sym (tabulate-allFin {m} (inject+ n))) (sym (tabulate-allFin (raise m))) ⟩
+  tabulate {m} (inject+ n) ++V tabulate {n} (raise m)
+    ≡⟨ unSplit {m} {n} id ⟩
+  idcauchy (m + n) ∎)
+  where open ≡-Reasoning
 
 -- Tensor multiplicative composition
 -- Transpositions in α correspond to swapping entire rows
