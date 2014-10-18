@@ -1427,24 +1427,15 @@ linv∼ {PLUS t₁ t₂} {PLUS t₃ t₄} {c₁ ⊕ c₂} =
            (pcompcauchy (c2cauchy c₁) (c2cauchy c₂))
            (subst Cauchy (cong₂ _+_ (size≡! c₁) (size≡! c₂))
              (pcompcauchy (c2cauchy (! c₁)) (c2cauchy (! c₂))))
-           ≡⟨ refl ⟩
-         scompcauchy
-           (pcompcauchy (c2cauchy c₁) (c2cauchy c₂))
-           (subst Cauchy (cong₂ _+_ (size≡! c₁) (size≡! c₂))
-             ((mapV (inject+ (size t₄)) (c2cauchy (! c₁))) ++V
-              (mapV (raise (size t₃)) (c2cauchy (! c₂)))))
-           ≡⟨ {!!} ⟩
-         scompcauchy
-           (pcompcauchy (c2cauchy c₁) (c2cauchy c₂))
-           ((mapV (inject+ (size t₂)) (subst Cauchy (size≡! c₁) (c2cauchy (! c₁)))) ++V
-            (mapV (raise (size t₁)) (subst Cauchy (size≡! c₂) (c2cauchy (! c₂)))))
-           ≡⟨ {!!} ⟩
+           ≡⟨ cong (scompcauchy (pcompcauchy (c2cauchy c₁) (c2cauchy c₂)))
+                        {!!} ⟩
          scompcauchy
            (pcompcauchy (c2cauchy c₁) (c2cauchy c₂))
            (pcompcauchy 
              (subst Cauchy (size≡! c₁) (c2cauchy (! c₁)))
              (subst Cauchy (size≡! c₂) (c2cauchy (! c₂))))
-           ≡⟨ {!!} ⟩
+           ≡⟨ pcomp-dist (c2cauchy c₁) (subst Cauchy (size≡! c₁) (c2cauchy (! c₁))) 
+                                  (c2cauchy c₂) (subst Cauchy (size≡! c₂) (c2cauchy (! c₂))) ⟩
          pcompcauchy (scompcauchy (c2cauchy c₁) (subst Cauchy (size≡! c₁) (c2cauchy (! c₁))))
                                 (scompcauchy (c2cauchy c₂) (subst Cauchy (size≡! c₂) (c2cauchy (! c₂))))
            ≡⟨ cong₂ pcompcauchy (linv∼ {t₁} {t₃} {c₁}) (linv∼ {t₂} {t₄} {c₂}) ⟩
