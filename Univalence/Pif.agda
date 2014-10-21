@@ -29,7 +29,8 @@ open import Data.Fin
   renaming (_+_ to _F+_)
 open import Data.Fin.Properties using (bounded; inject+-lemma)
 open import Data.Vec.Properties 
-  using (lookup∘tabulate; tabulate∘lookup; lookup-allFin; tabulate-∘; tabulate-allFin)
+  using (lookup∘tabulate; tabulate∘lookup; lookup-allFin; tabulate-∘; 
+         tabulate-allFin)
 
 open import Data.List 
   using (List; []; _∷_; _∷ʳ_; foldl; replicate; reverse; downFrom; 
@@ -873,14 +874,15 @@ pcomp-dist {m} {n} pm qm pn qn =
   begin (scompcauchy (pcompcauchy pm pn) (pcompcauchy qm qn)
            ≡⟨ refl ⟩
          tabulate (λ i → 
-                    lookup 
-                      (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn)) 
-                      (mapV (inject+ n) qm ++V mapV (raise m) qn))
+           lookup 
+             (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
+             (mapV (inject+ n) qm ++V mapV (raise m) qn))
             ≡⟨ {!!} ⟩
          tabulate (λ i → (inject+ n) (lookup (lookup i pm) qm)) ++V
          tabulate (λ i → (raise m) (lookup (lookup i pn) qn))
-            ≡⟨ cong₂ _++V_ (tabulate-∘ (inject+ n) (λ i → lookup (lookup i pm) qm)) 
-                                      (tabulate-∘ (raise m) (λ i → lookup (lookup i pn) qn)) ⟩ 
+            ≡⟨ cong₂ _++V_ 
+               (tabulate-∘ (inject+ n) (λ i → lookup (lookup i pm) qm)) 
+               (tabulate-∘ (raise m) (λ i → lookup (lookup i pn) qn)) ⟩ 
          mapV (inject+ n) (tabulate (λ i → lookup (lookup i pm) qm)) ++V 
          mapV (raise m) (tabulate (λ i → lookup (lookup i pn) qn))
             ≡⟨ refl ⟩
@@ -892,7 +894,9 @@ pcomp-id {m} {n} =
   begin (mapV (inject+ n) (idcauchy m) ++V (mapV (raise m) (idcauchy n))
     ≡⟨ refl ⟩
   mapV (inject+ n) (allFin m) ++V mapV (raise m) (allFin n)
-    ≡⟨ cong₂ _++V_ (sym (tabulate-allFin {m} (inject+ n))) (sym (tabulate-allFin (raise m))) ⟩
+    ≡⟨ cong₂ _++V_ 
+       (sym (tabulate-allFin {m} (inject+ n))) 
+       (sym (tabulate-allFin (raise m))) ⟩
   tabulate {m} (inject+ n) ++V tabulate {n} (raise m)
     ≡⟨ unSplit {m} {n} id ⟩
   idcauchy (m + n) ∎)
@@ -1434,10 +1438,17 @@ linv∼ {PLUS t₁ t₂} {PLUS t₃ t₄} {c₁ ⊕ c₂} =
            (pcompcauchy 
              (subst Cauchy (size≡! c₁) (c2cauchy (! c₁)))
              (subst Cauchy (size≡! c₂) (c2cauchy (! c₂))))
-           ≡⟨ pcomp-dist (c2cauchy c₁) (subst Cauchy (size≡! c₁) (c2cauchy (! c₁))) 
-                                  (c2cauchy c₂) (subst Cauchy (size≡! c₂) (c2cauchy (! c₂))) ⟩
-         pcompcauchy (scompcauchy (c2cauchy c₁) (subst Cauchy (size≡! c₁) (c2cauchy (! c₁))))
-                                (scompcauchy (c2cauchy c₂) (subst Cauchy (size≡! c₂) (c2cauchy (! c₂))))
+           ≡⟨ pcomp-dist 
+               (c2cauchy c₁) 
+               (subst Cauchy (size≡! c₁) (c2cauchy (! c₁)))
+               (c2cauchy c₂) (subst Cauchy (size≡! c₂) (c2cauchy (! c₂))) ⟩
+         pcompcauchy 
+           (scompcauchy 
+             (c2cauchy c₁) 
+             (subst Cauchy (size≡! c₁) (c2cauchy (! c₁))))
+           (scompcauchy 
+             (c2cauchy c₂) 
+             (subst Cauchy (size≡! c₂) (c2cauchy (! c₂))))
            ≡⟨ cong₂ pcompcauchy (linv∼ {t₁} {t₃} {c₁}) (linv∼ {t₂} {t₄} {c₂}) ⟩
          pcompcauchy (c2cauchy {t₁} id⟷) (c2cauchy {t₂} id⟷)
            ≡⟨ pcomp-id {size t₁} {size t₂} ⟩ 
