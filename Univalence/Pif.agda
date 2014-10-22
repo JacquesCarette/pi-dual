@@ -366,6 +366,34 @@ size≡ {BOOL} {PLUS ONE ONE} unfoldBool = refl
 size∼ : {t₁ t₂ : U} → (c₁ c₂ : t₁ ⟷ t₂) → (size≡ c₁ ≡ size≡ c₂)
 size∼ c₁ c₂ = proof-irrelevance (size≡ c₁) (size≡ c₂)
 
+-- even more useful is something which captures the equalities
+-- inherent in a combinator
+-- note that the code below "hand inlines" most of size≡,
+-- mainly for greater convenience
+adjustBy : {t₁ t₂ : U} {P : ℕ → Set} → (c : t₁ ⟷ t₂) → (P (size t₁) → P (size t₂))
+adjustBy {P = P} (c₀ ◎ c₁) p = subst P (size≡ c₁) (subst P (size≡ c₀) p)
+adjustBy {PLUS t₁ t₂} {PLUS t₃ t₄} {P} (c₀ ⊕ c₁) p =
+     subst P (cong₂ _+_ (size≡ c₀) (refl)) (subst P (cong₂ _+_ {size t₁} (refl) (size≡ c₁)) p)
+adjustBy (c₀ ⊗ c₁) p = {!!}
+adjustBy unite₊ p = p
+adjustBy uniti₊ p = p
+adjustBy {PLUS t₁ t₂} {PLUS .t₂ .t₁} {P} swap₊ p = 
+    subst P (+-comm (size t₁) (size t₂) ) p
+adjustBy assocl₊ p = {!!}
+adjustBy assocr₊ p = {!!}
+adjustBy unite⋆ p = {!!}
+adjustBy uniti⋆ p = {!!}
+adjustBy swap⋆ p = {!!}
+adjustBy assocl⋆ p = {!!}
+adjustBy assocr⋆ p = {!!}
+adjustBy distz p = {!!}
+adjustBy factorz p = {!!}
+adjustBy dist p = {!!}
+adjustBy factor p = {!!}
+adjustBy id⟷ p = p
+adjustBy foldBool p = p
+adjustBy unfoldBool p = p
+
 ------------------------------------------------------------------------------
 -- Examples of Pi programs
 
