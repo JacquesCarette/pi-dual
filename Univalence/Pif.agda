@@ -367,36 +367,6 @@ size≡ {BOOL} {PLUS ONE ONE} unfoldBool = refl
 size∼ : {t₁ t₂ : U} → (c₁ c₂ : t₁ ⟷ t₂) → (size≡ c₁ ≡ size≡ c₂)
 size∼ c₁ c₂ = proof-irrelevance (size≡ c₁) (size≡ c₂)
 
-{--
--- even more useful is something which captures the equalities
--- inherent in a combinator
--- note that the code below "hand inlines" most of size≡,
--- mainly for greater convenience
-adjustBy : {t₁ t₂ : U} {P : ℕ → Set} → (c : t₁ ⟷ t₂) → (P (size t₁) → P (size t₂))
-adjustBy {P = P} (c₀ ◎ c₁) p = subst P (size≡ c₁) (subst P (size≡ c₀) p)
-adjustBy {PLUS t₁ t₂} {PLUS t₃ t₄} {P} (c₀ ⊕ c₁) p =
-     subst P (cong₂ _+_ (size≡ c₀) (refl)) (subst P (cong₂ _+_ {size t₁} (refl) (size≡ c₁)) p)
-adjustBy (c₀ ⊗ c₁) p = {!!}
-adjustBy unite₊ p = p
-adjustBy uniti₊ p = p
-adjustBy {PLUS t₁ t₂} {PLUS .t₂ .t₁} {P} swap₊ p = 
-    subst P (+-comm (size t₁) (size t₂) ) p
-adjustBy assocl₊ p = {!!}
-adjustBy assocr₊ p = {!!}
-adjustBy unite⋆ p = {!!}
-adjustBy uniti⋆ p = {!!}
-adjustBy swap⋆ p = {!!}
-adjustBy assocl⋆ p = {!!}
-adjustBy assocr⋆ p = {!!}
-adjustBy distz p = {!!}
-adjustBy factorz p = {!!}
-adjustBy dist p = {!!}
-adjustBy factor p = {!!}
-adjustBy id⟷ p = p
-adjustBy foldBool p = p
-adjustBy unfoldBool p = p
---}
-         
 ------------------------------------------------------------------------------
 -- Examples of Pi programs
 
@@ -793,6 +763,13 @@ subst₂+ : {b : Level} {B : ℕ → Set b} {x₁ x₂ x₃ x₄ : ℕ} →
   f (subst B x₂≡x₁ v₁) (subst B x₄≡x₃ v₂)
 subst₂+ refl refl v₁ v₂ f = refl
 
+subst₂* : {b : Level} {B : ℕ → Set b} {x₁ x₂ x₃ x₄ : ℕ} → 
+  (x₂≡x₁ : x₂ ≡ x₁) → (x₄≡x₃ : x₄ ≡ x₃) → (v₁ : B x₂) → (v₂ : B x₄) → 
+  (f : {x₁ x₂ : ℕ} → B x₁ → B x₂ → B (x₁ * x₂)) → 
+  subst B (cong₂ _*_ x₂≡x₁ x₄≡x₃) (f v₁ v₂) ≡ 
+  f (subst B x₂≡x₁ v₁) (subst B x₄≡x₃ v₂)
+subst₂* refl refl v₁ v₂ f = refl
+
 trans-syml : {A : Set} {x y : A} → (p : x ≡ y) → trans (sym p) p ≡ refl
 trans-syml refl = refl
 
@@ -806,6 +783,7 @@ idcauchy : (n : ℕ) → Cauchy n
 idcauchy = allFin 
 
 -- a kind of inverse for splitAt
+
 unSplit : {m n : ℕ} {A : Set} → (f : Fin (m + n) → A) → 
   tabulate {m} (f ∘ (inject+ n)) ++V tabulate {n} (f ∘ (raise m)) ≡ tabulate f
 unSplit {Data.Nat.zero} {n} f = refl
@@ -1468,11 +1446,12 @@ linv∼ {PLUS t₁ t₂} {PLUS t₃ t₄} {c₁ ⊕ c₂} =
            (pcompcauchy (c2cauchy c₁) (c2cauchy c₂))
            (subst Cauchy (cong₂ _+_ (size≡! c₁) (size≡! c₂))
              (pcompcauchy (c2cauchy (! c₁)) (c2cauchy (! c₂))))
-           ≡⟨ cong (scompcauchy (pcompcauchy (c2cauchy c₁) (c2cauchy c₂)))
-                   (subst₂+ 
-                      (size≡! c₁) (size≡! c₂) 
-                      (c2cauchy (! c₁)) (c2cauchy (! c₂))
-                      pcompcauchy) ⟩
+           ≡⟨ cong 
+                (scompcauchy (pcompcauchy (c2cauchy c₁) (c2cauchy c₂)))
+                (subst₂+ 
+                  (size≡! c₁) (size≡! c₂) 
+                  (c2cauchy (! c₁)) (c2cauchy (! c₂))
+                  pcompcauchy) ⟩
          scompcauchy
            (pcompcauchy (c2cauchy c₁) (c2cauchy c₂))
            (pcompcauchy 
@@ -1501,6 +1480,27 @@ linv∼ {TIMES t₁ t₂} {TIMES t₃ t₄} {c₁ ⊗ c₂} =
            (tcompcauchy (c2cauchy c₁) (c2cauchy c₂))
            (subst Cauchy (cong₂ _*_ (size≡! c₁) (size≡! c₂))
              (tcompcauchy (c2cauchy (! c₁)) (c2cauchy (! c₂))))
+           ≡⟨ cong 
+                (scompcauchy (tcompcauchy (c2cauchy c₁) (c2cauchy c₂)))
+                (subst₂*
+                  (size≡! c₁) (size≡! c₂)
+                  (c2cauchy (! c₁)) (c2cauchy (! c₂))
+                  tcompcauchy) ⟩ 
+         scompcauchy 
+           (tcompcauchy (c2cauchy c₁) (c2cauchy c₂))
+           (tcompcauchy
+             (subst Cauchy (size≡! c₁) (c2cauchy (! c₁)))
+             (subst Cauchy (size≡! c₂) (c2cauchy (! c₂))))
+           ≡⟨ {!!} ⟩ 
+         tcompcauchy
+           (scompcauchy 
+             (c2cauchy c₁)
+             (subst Cauchy (size≡! c₁) (c2cauchy (! c₁))))
+           (scompcauchy 
+             (c2cauchy c₂)
+             (subst Cauchy (size≡! c₂) (c2cauchy (! c₂))))
+           ≡⟨ cong₂ tcompcauchy (linv∼ {t₁} {t₃} {c₁}) (linv∼ {t₂} {t₄} {c₂}) ⟩ 
+         tcompcauchy (c2cauchy {t₁} id⟷) (c2cauchy {t₂} id⟷)
            ≡⟨ {!!} ⟩ 
          c2cauchy {TIMES t₁ t₂} id⟷ ∎)
   where open ≡-Reasoning
