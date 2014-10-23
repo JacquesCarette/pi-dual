@@ -367,6 +367,7 @@ size≡ {BOOL} {PLUS ONE ONE} unfoldBool = refl
 size∼ : {t₁ t₂ : U} → (c₁ c₂ : t₁ ⟷ t₂) → (size≡ c₁ ≡ size≡ c₂)
 size∼ c₁ c₂ = proof-irrelevance (size≡ c₁) (size≡ c₂)
 
+{--
 -- even more useful is something which captures the equalities
 -- inherent in a combinator
 -- note that the code below "hand inlines" most of size≡,
@@ -394,7 +395,8 @@ adjustBy factor p = {!!}
 adjustBy id⟷ p = p
 adjustBy foldBool p = p
 adjustBy unfoldBool p = p
-
+--}
+         
 ------------------------------------------------------------------------------
 -- Examples of Pi programs
 
@@ -784,31 +786,12 @@ subst-trans :
   subst B x₂≡x₁ (subst B x₃≡x₂ v) ≡ subst B (trans x₃≡x₂ x₂≡x₁) v
 subst-trans refl refl v = refl
 
-subst2 : {b : Level} {B : ℕ → Set b} {x₁ x₂ x₃ x₄ : ℕ} → 
+subst₂+ : {b : Level} {B : ℕ → Set b} {x₁ x₂ x₃ x₄ : ℕ} → 
   (x₂≡x₁ : x₂ ≡ x₁) → (x₄≡x₃ : x₄ ≡ x₃) → (v₁ : B x₂) → (v₂ : B x₄) → 
   (f : {x₁ x₂ : ℕ} → B x₁ → B x₂ → B (x₁ + x₂)) → 
   subst B (cong₂ _+_ x₂≡x₁ x₄≡x₃) (f v₁ v₂) ≡ 
   f (subst B x₂≡x₁ v₁) (subst B x₄≡x₃ v₂)
-subst2 refl refl v₁ v₂ f = refl
-
-{--
-size≡! c₁ : size t₂ ≡ size t₁
-size≡! c₂ : size t₄ ≡ size t₃
-cong₂ _+_ .. : size t₂ + size t₄ ≡ size t₁ + size t₃
-c2cauchy (! c₁) : Perm (size t₂)
-c2cauchy (! c₂) : Perm (size t₄)
-
-           (subst Cauchy (cong₂ _+_ (size≡! c₁) (size≡! c₂))
-             (pcompcauchy (c2cauchy (! c₁)) (c2cauchy (! c₂))))
-
-           (pcompcauchy 
-             (subst Cauchy (size≡! c₁) (c2cauchy (! c₁)))
-             (subst Cauchy (size≡! c₂) (c2cauchy (! c₂))))
---}
-
-
-
-
+subst₂+ refl refl v₁ v₂ f = refl
 
 trans-syml : {A : Set} {x y : A} → (p : x ≡ y) → trans (sym p) p ≡ refl
 trans-syml refl = refl
@@ -1486,7 +1469,7 @@ linv∼ {PLUS t₁ t₂} {PLUS t₃ t₄} {c₁ ⊕ c₂} =
            (subst Cauchy (cong₂ _+_ (size≡! c₁) (size≡! c₂))
              (pcompcauchy (c2cauchy (! c₁)) (c2cauchy (! c₂))))
            ≡⟨ cong (scompcauchy (pcompcauchy (c2cauchy c₁) (c2cauchy c₂)))
-                   (subst2 
+                   (subst₂+ 
                       (size≡! c₁) (size≡! c₂) 
                       (c2cauchy (! c₁)) (c2cauchy (! c₂))
                       pcompcauchy) ⟩
