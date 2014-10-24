@@ -893,6 +893,33 @@ pcomp-dist {m} {n} pm qm pn qn | yes m<n =
            lookup 
              (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
              (mapV (inject+ n) qm ++V mapV (raise m) qn))
+            ≡⟨ tabulate-allFin (λ i → 
+                lookup 
+                  (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
+                  (mapV (inject+ n) qm ++V mapV (raise m) qn)) ⟩
+         mapV (λ i → 
+                lookup 
+                  (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
+                  (mapV (inject+ n) qm ++V mapV (raise m) qn))
+              (allFin (m + n))
+            ≡⟨ {!!} ⟩
+         mapV (λ i → 
+                lookup 
+                  (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
+                  (mapV (inject+ n) qm ++V mapV (raise m) qn))
+              (mapV (inject+ n) (allFin  m) ++V mapV (raise m) (allFin n))
+            ≡⟨ {!!} ⟩
+         mapV (λ i → 
+                lookup 
+                  (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
+                  (mapV (inject+ n) qm ++V mapV (raise m) qn))
+              (mapV (inject+ n) (allFin  m)) 
+         ++V 
+         mapV (λ i → 
+                lookup 
+                  (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
+                  (mapV (inject+ n) qm ++V mapV (raise m) qn))
+              (mapV (raise m) (allFin n))
             ≡⟨ {!!} ⟩
          tabulate (λ i → (inject+ n) (lookup (lookup i pm) qm)) ++V
          tabulate (λ i → (raise m) (lookup (lookup i pn) qn))
@@ -904,6 +931,18 @@ pcomp-dist {m} {n} pm qm pn qn | yes m<n =
             ≡⟨ refl ⟩
          pcompcauchy (scompcauchy pm qm) (scompcauchy pn qn) ∎)
   where open ≡-Reasoning
+{--
+pm qm : [ Fin m, Fin m, Fin m, ... ]
+pn qn : [ Fin n, Fin n, Fin n, Fin n, Fin n, ... ]
+
+mapV (inject+ n) pm : [ Fin m, Fin m, Fin m, ... ]
+mapV (raise m) pn : [ m + Fin n, m + Fin n, m + Fin n, m + Fin n, m + Fin n, ...]
+
+lookup i 
+
+
+--}
+
 pcomp-dist {m} {n} pm qm pn qn | no ¬m<n = 
   begin (scompcauchy (pcompcauchy pm pn) (pcompcauchy qm qn)
            ≡⟨ refl ⟩
