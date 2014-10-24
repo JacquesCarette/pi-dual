@@ -885,8 +885,7 @@ pcompcauchy {m} {n} α β = mapV (inject+ n) α ++V mapV (raise m) β
 pcomp-dist : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) → 
     scompcauchy (pcompcauchy pm pn) (pcompcauchy qm qn) ≡
     pcompcauchy (scompcauchy pm qm) (scompcauchy pn qn)
-pcomp-dist {m} {n} pm qm pn qn with m <? n 
-pcomp-dist {m} {n} pm qm pn qn | yes m<n = 
+pcomp-dist {m} {n} pm qm pn qn =
   begin (scompcauchy (pcompcauchy pm pn) (pcompcauchy qm qn)
            ≡⟨ refl ⟩
          tabulate (λ i → 
@@ -921,35 +920,31 @@ pcomp-dist {m} {n} pm qm pn qn | yes m<n =
                   (mapV (inject+ n) qm ++V mapV (raise m) qn))
               (mapV (raise m) (allFin n))
             ≡⟨ {!!} ⟩
-         tabulate (λ i → (inject+ n) (lookup (lookup i pm) qm)) ++V
-         tabulate (λ i → (raise m) (lookup (lookup i pn) qn))
-            ≡⟨ cong₂ _++V_ 
-               (tabulate-∘ (inject+ n) (λ i → lookup (lookup i pm) qm)) 
-               (tabulate-∘ (raise m) (λ i → lookup (lookup i pn) qn)) ⟩ 
-         mapV (inject+ n) (tabulate (λ i → lookup (lookup i pm) qm)) ++V 
-         mapV (raise m) (tabulate (λ i → lookup (lookup i pn) qn))
-            ≡⟨ refl ⟩
-         pcompcauchy (scompcauchy pm qm) (scompcauchy pn qn) ∎)
-  where open ≡-Reasoning
-{--
-pm qm : [ Fin m, Fin m, Fin m, ... ]
-pn qn : [ Fin n, Fin n, Fin n, Fin n, Fin n, ... ]
-
-mapV (inject+ n) pm : [ Fin m, Fin m, Fin m, ... ]
-mapV (raise m) pn : [ m + Fin n, m + Fin n, m + Fin n, m + Fin n, m + Fin n, ...]
-
-lookup i 
-
-
---}
-
-pcomp-dist {m} {n} pm qm pn qn | no ¬m<n = 
-  begin (scompcauchy (pcompcauchy pm pn) (pcompcauchy qm qn)
-           ≡⟨ refl ⟩
-         tabulate (λ i → 
-           lookup 
-             (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
-             (mapV (inject+ n) qm ++V mapV (raise m) qn))
+         mapV (λ i → 
+                lookup 
+                  (lookup (inject+ n i) 
+                    (mapV (inject+ n) pm ++V mapV (raise m) pn))
+                  (mapV (inject+ n) qm ++V mapV (raise m) qn))
+              (allFin  m)
+         ++V 
+         mapV (λ i → 
+                lookup 
+                  (lookup (raise m i) 
+                    (mapV (inject+ n) pm ++V mapV (raise m) pn))
+                  (mapV (inject+ n) qm ++V mapV (raise m) qn))
+              (allFin n)
+            ≡⟨ {!!} ⟩
+         tabulate {m} (λ i → 
+                lookup 
+                  (lookup (inject+ n i) 
+                    (mapV (inject+ n) pm ++V mapV (raise m) pn))
+                  (mapV (inject+ n) qm ++V mapV (raise m) qn))
+         ++V 
+         tabulate {n} (λ i → 
+                lookup 
+                  (lookup (raise m i) 
+                    (mapV (inject+ n) pm ++V mapV (raise m) pn))
+                  (mapV (inject+ n) qm ++V mapV (raise m) qn))
             ≡⟨ {!!} ⟩
          tabulate (λ i → (inject+ n) (lookup (lookup i pm) qm)) ++V
          tabulate (λ i → (raise m) (lookup (lookup i pn) qn))
@@ -963,6 +958,14 @@ pcomp-dist {m} {n} pm qm pn qn | no ¬m<n =
   where open ≡-Reasoning
 
 {--
+pm qm : [ Fin m, Fin m, Fin m, ... ]
+pn qn : [ Fin n, Fin n, Fin n, Fin n, Fin n, ... ]
+
+mapV (inject+ n) pm : [ Fin m, Fin m, Fin m, ... ]
+mapV (raise m) pn : [ m + Fin n, m + Fin n, m + Fin n, m + Fin n, m + Fin n, ...]
+
+lookup i 
+
   begin (scompcauchy (pcompcauchy pm pn) (pcompcauchy qm qn)
            ≡⟨ refl ⟩
          tabulate (λ i → 
