@@ -30,7 +30,7 @@ open import Data.Fin
 open import Data.Fin.Properties using (bounded; inject+-lemma)
 open import Data.Vec.Properties 
   using (lookup∘tabulate; tabulate∘lookup; lookup-allFin; tabulate-∘; 
-         tabulate-allFin)
+         tabulate-allFin; map-id; allFin-map)
 
 open import Data.List 
   using (List; []; _∷_; _∷ʳ_; foldl; replicate; reverse; downFrom; 
@@ -736,6 +736,44 @@ finext {suc n} f g fi≡gi =
          tabulate g ∎)
   where open ≡-Reasoning
 
+-- Lemmas about allFin
+
+allFin+ : (m n : ℕ) → allFin (m + n) ≡ 
+          mapV (inject+ n) (allFin m) ++V mapV (raise m) (allFin n)
+allFin+ 0 n = 
+  begin (allFin n
+           ≡⟨ refl ⟩ 
+         tabulate {n} (id ∘ id)
+           ≡⟨ tabulate-∘ id id ⟩ 
+         mapV id (allFin n) ∎)
+  where open ≡-Reasoning
+allFin+ (suc m) n = 
+  begin (allFin (suc (m + n))
+           ≡⟨ allFin-map (m + n) ⟩ 
+         zero ∷ mapV suc (allFin (m + n))
+           ≡⟨ cong (λ x → zero ∷ mapV suc x) (allFin+ m n) ⟩ 
+         zero ∷ 
+           mapV suc (mapV (inject+ n) (allFin m) ++V mapV (raise m) (allFin n))
+           ≡⟨ {!!} ⟩ 
+         zero ∷ (mapV (λ i → suc (inject+ {m} n i)) (allFin m) ++V 
+                 mapV (λ i → suc (raise {n} m i)) (allFin n))
+           ≡⟨ refl ⟩ 
+         (zero ∷ mapV (λ i → suc (inject+ {m} n i)) (allFin m)) ++V 
+         mapV (raise (suc m)) (allFin n)
+           ≡⟨ {!!} ⟩ 
+         mapV (inject+ n) (zero ∷ mapV suc (allFin m)) ++V
+         mapV (raise (suc m)) (allFin n) 
+           ≡⟨ cong 
+                 (λ x → mapV (inject+ n) (zero ∷ x) ++V 
+                        mapV (raise (suc m)) (allFin n))
+                 (sym (tabulate-allFin {m} suc)) ⟩ 
+         mapV (inject+ n) (zero ∷ tabulate {m} suc) ++V
+         mapV (raise (suc m)) (allFin n) 
+           ≡⟨ refl ⟩ 
+         mapV (inject+ n) (allFin (suc m)) ++V 
+         mapV (raise (suc m)) (allFin n) ∎)
+  where open ≡-Reasoning
+
 -- A few proof techniques for dealing with subst
 
 congD! : {a b : Level} {A : Set a} {B : A → Set b}
@@ -901,18 +939,26 @@ pcomp-dist {m} {n} pm qm pn qn =
                   (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
                   (mapV (inject+ n) qm ++V mapV (raise m) qn))
               (allFin (m + n))
+            ≡⟨ cong 
+                 (λ x → 
+                   mapV (λ i → 
+                     lookup 
+                       (lookup i 
+                         (mapV (inject+ n) pm ++V mapV (raise m) pn))
+                       (mapV (inject+ n) qm ++V mapV (raise m) qn)) 
+                     x) 
+                 (allFin+ m n) ⟩
+         mapV (λ i → 
+                lookup 
+                  (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
+                  (mapV (inject+ n) qm ++V mapV (raise m) qn))
+              (mapV (inject+ n) (allFin m) ++V mapV (raise m) (allFin n))
             ≡⟨ {!!} ⟩
          mapV (λ i → 
                 lookup 
                   (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
                   (mapV (inject+ n) qm ++V mapV (raise m) qn))
-              (mapV (inject+ n) (allFin  m) ++V mapV (raise m) (allFin n))
-            ≡⟨ {!!} ⟩
-         mapV (λ i → 
-                lookup 
-                  (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
-                  (mapV (inject+ n) qm ++V mapV (raise m) qn))
-              (mapV (inject+ n) (allFin  m)) 
+              (mapV (inject+ n) (allFin m)) 
          ++V 
          mapV (λ i → 
                 lookup 
