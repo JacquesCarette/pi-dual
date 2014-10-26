@@ -738,7 +738,9 @@ finext {suc n} f g fi≡gi =
 
 -- Lemmas about map
 
--- this is actually in Data.Vec.Properties, but over an arbitrary Setoid.  Specialize
+-- this is actually in Data.Vec.Properties, but over an arbitrary
+-- Setoid.  Specialize
+
 map-++-commute : ∀ {a b m n} {A : Set a} {B : Set b}
                  (f : B → A) (xs : Vec B m) {ys : Vec B n} →
                  mapV f (xs ++V ys) ≡ mapV f xs ++V mapV f ys
@@ -746,6 +748,7 @@ map-++-commute f []       = refl
 map-++-commute f (x ∷ xs) = cong (λ z → f x ∷ z) (map-++-commute f  xs)
 
 -- this is too, but is done "point free", this version is more convenient
+
 map-∘ : ∀ {a b c n} {A : Set a} {B : Set b} {C : Set c}
         (f : B → C) (g : A → B) → (xs : Vec A n) →
         mapV (f ∘ g) xs ≡ (mapV f ∘ mapV g) xs
@@ -770,16 +773,25 @@ allFin+ (suc m) n =
            ≡⟨ cong (λ x → zero ∷ mapV suc x) (allFin+ m n) ⟩ 
          zero ∷ 
            mapV suc (mapV (inject+ n) (allFin m) ++V mapV (raise m) (allFin n))
-           ≡⟨ cong (_∷_ zero) (map-++-commute suc (mapV (inject+ n) (allFin m))) ⟩
+           ≡⟨ cong 
+                (_∷_ zero) 
+                (map-++-commute suc (mapV (inject+ n) (allFin m))) ⟩
          zero ∷ (mapV suc (mapV (λ i → (inject+ {m} n i)) (allFin m))) ++V
                   mapV suc (mapV (λ i → (raise {n} m i)) (allFin n))
-           ≡⟨ cong (_∷_ zero) (cong₂ _++V_ (sym (map-∘ suc (inject+ n) (allFin m))) (sym (map-∘ suc (raise m) (allFin n)))) ⟩ 
+           ≡⟨ cong 
+                (_∷_ zero) 
+                (cong₂ _++V_ 
+                  (sym (map-∘ suc (inject+ n) (allFin m))) 
+                  (sym (map-∘ suc (raise m) (allFin n)))) ⟩ 
          zero ∷ (mapV (λ i → suc (inject+ {m} n i)) (allFin m) ++V 
                  mapV (λ i → suc (raise {n} m i)) (allFin n))
            ≡⟨ refl ⟩ 
          (zero ∷ mapV (λ i → suc (inject+ {m} n i)) (allFin m)) ++V 
          mapV (raise (suc m)) (allFin n)
            ≡⟨ {!!} ⟩ 
+         (zero ∷ mapV (inject+ n) (mapV suc (allFin m))) ++V 
+         mapV (raise (suc m)) (allFin n)
+           ≡⟨ refl ⟩ 
          mapV (inject+ n) (zero ∷ mapV suc (allFin m)) ++V
          mapV (raise (suc m)) (allFin n) 
            ≡⟨ cong 
@@ -972,10 +984,12 @@ pcomp-dist {m} {n} pm qm pn qn =
                   (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
                   (mapV (inject+ n) qm ++V mapV (raise m) qn))
               (mapV (inject+ n) (allFin m) ++V mapV (raise m) (allFin n))
-            ≡⟨ map-++-commute ( (λ i → 
-                lookup 
-                  (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
-                  (mapV (inject+ n) qm ++V mapV (raise m) qn))) (mapV (inject+ n) (allFin m)) ⟩
+            ≡⟨ map-++-commute 
+                 (λ i → 
+                   lookup 
+                     (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
+                     (mapV (inject+ n) qm ++V mapV (raise m) qn)) 
+                 (mapV (inject+ n) (allFin m)) ⟩
          mapV (λ i → 
                 lookup 
                   (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
@@ -987,7 +1001,8 @@ pcomp-dist {m} {n} pm qm pn qn =
                   (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
                   (mapV (inject+ n) qm ++V mapV (raise m) qn))
               (mapV (raise m) (allFin n))
-            ≡⟨ cong₂ _++V_ {!!} {!!} ⟩
+            ≡⟨ {!!} ⟩ 
+-- cong₂ _++V_ {!!} {!!} ⟩
          mapV (λ i → 
                 lookup 
                   (lookup (inject+ n i) 
@@ -1001,7 +1016,8 @@ pcomp-dist {m} {n} pm qm pn qn =
                     (mapV (inject+ n) pm ++V mapV (raise m) pn))
                   (mapV (inject+ n) qm ++V mapV (raise m) qn))
               (allFin n)
-            ≡⟨ cong₂ _++V_ (sym (tabulate-allFin {!!})) (sym (tabulate-allFin {!!})) ⟩
+            ≡⟨ {!!} ⟩ 
+-- cong₂ _++V_ (sym (tabulate-allFin {!!})) (sym (tabulate-allFin {!!})) ⟩
          tabulate {m} (λ i → 
                 lookup 
                   (lookup (inject+ n i) 
