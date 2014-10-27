@@ -786,9 +786,11 @@ allFin+ (suc m) n =
          zero ∷ (mapV (λ i → suc (inject+ {m} n i)) (allFin m) ++V 
                  mapV (λ i → suc (raise {n} m i)) (allFin n))
            ≡⟨ refl ⟩ 
-         (zero ∷ mapV (λ i → suc (inject+ {m} n i)) (allFin m)) ++V 
+         (zero ∷ mapV (λ i → inject+ n (suc i)) (allFin m)) ++V 
          mapV (raise (suc m)) (allFin n)
-           ≡⟨ {!!} ⟩ 
+           ≡⟨ cong 
+                (λ x → (zero ∷ x) ++V mapV (raise (suc m)) (allFin n))
+                (map-∘ (inject+ n) suc (allFin m)) ⟩ 
          (zero ∷ mapV (inject+ n) (mapV suc (allFin m))) ++V 
          mapV (raise (suc m)) (allFin n)
            ≡⟨ refl ⟩ 
