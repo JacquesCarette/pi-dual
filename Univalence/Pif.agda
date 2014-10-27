@@ -1003,8 +1003,19 @@ pcomp-dist {m} {n} pm qm pn qn =
                   (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
                   (mapV (inject+ n) qm ++V mapV (raise m) qn))
               (mapV (raise m) (allFin n))
-            ≡⟨ {!!} ⟩ 
--- cong₂ _++V_ {!!} {!!} ⟩
+            ≡⟨ cong₂ _++V_ 
+                 (sym (map-∘ 
+                   (λ i → lookup 
+                     (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
+                     (mapV (inject+ n) qm ++V mapV (raise m) qn))
+                   (inject+ n) 
+                   (allFin m)))
+                 (sym (map-∘ 
+                   (λ i → lookup 
+                     (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
+                     (mapV (inject+ n) qm ++V mapV (raise m) qn)) 
+                   (raise m) 
+                   (allFin n))) ⟩ 
          mapV (λ i → 
                 lookup 
                   (lookup (inject+ n i) 
@@ -1018,8 +1029,17 @@ pcomp-dist {m} {n} pm qm pn qn =
                     (mapV (inject+ n) pm ++V mapV (raise m) pn))
                   (mapV (inject+ n) qm ++V mapV (raise m) qn))
               (allFin n)
-            ≡⟨ {!!} ⟩ 
--- cong₂ _++V_ (sym (tabulate-allFin {!!})) (sym (tabulate-allFin {!!})) ⟩
+            ≡⟨ cong₂ _++V_ 
+                 (sym (tabulate-allFin {m} (λ i → 
+                   lookup 
+                     (lookup (inject+ n i) 
+                       (mapV (inject+ n) pm ++V mapV (raise m) pn))
+                     (mapV (inject+ n) qm ++V mapV (raise m) qn))))
+                 (sym (tabulate-allFin {n} (λ i → 
+                   lookup 
+                     (lookup (raise m i) 
+                       (mapV (inject+ n) pm ++V mapV (raise m) pn))
+                     (mapV (inject+ n) qm ++V mapV (raise m) qn))))  ⟩ 
          tabulate {m} (λ i → 
                 lookup 
                   (lookup (inject+ n i) 
