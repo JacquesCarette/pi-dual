@@ -807,17 +807,40 @@ allFin+ (suc m) n =
          mapV (raise (suc m)) (allFin n) ∎)
   where open ≡-Reasoning
 
+-- this looks trivial, why can't I find it?
+lookup-map : ∀ {a b} {n : ℕ} {A : Set a} {B : Set b} → (i : Fin n) → (f : A → B) → 
+  (v : Vec A n) → lookup i (mapV f v) ≡ f (lookup i v)
+lookup-map {n = 0} () _ _
+lookup-map {n = suc n} zero f (x ∷ v) = refl
+lookup-map {n = suc n} (suc i) f (x ∷ v) = lookup-map i f v
+
+-- These are 'generalized' lookup into left/right parts of a Vector which 
+-- does not depend on the values in the Vector at all.
+look-left : ∀ {m n} {a b c : Level} {A : Set a} {B : Set b} {C : Set c} →
+  (i : Fin m) → (f : A → C) → (g : B → C) → (vm : Vec A m) → (vn : Vec B n) → 
+  lookup (inject+ n i) (mapV f vm ++V mapV g vn) ≡ f (lookup i vm)
+look-left {0} () _ _ _ _
+look-left {suc _} zero f g (x ∷ vm) vn = refl
+look-left {suc _} (suc i) f g (x ∷ vm) vn = look-left i f g vm vn
+
+look-right : ∀ {m n} {a b c : Level} {A : Set a} {B : Set b} {C : Set c} →
+  (i : Fin n) → (f : A → C) → (g : B → C) → (vm : Vec A m) → (vn : Vec B n) → 
+  lookup (raise m i) (mapV f vm ++V mapV g vn) ≡ g (lookup i vn)
+look-right {Data.Nat.zero} i f g vn vm = lookup-map i g vm
+look-right {suc m} {Data.Nat.zero} () _ _ _ _
+look-right {suc m} {suc n} i f g (x ∷ vn) vm = look-right i f g vn vm
+
+-- a direct proof is hard, but this is really a statement about vectors
 lookup-left : ∀ {m n} → (i : Fin m) → (pm : Cauchy m) → (pn : Cauchy n) → 
   lookup (inject+ n i) (mapV (inject+ n) pm ++V mapV (raise m) pn) 
   ≡ inject+ n (lookup i pm)
-lookup-left {0} {n} () _ _ 
-lookup-left {suc m} {n} zero (x ∷ pm) pn = refl
-lookup-left {suc m} {n} (suc i) (x ∷ pm) pn = {!!}
+lookup-left {m} {n} i pm pn = look-left i (inject+ n) (raise m) pm pn
 
+-- as is this
 lookup-right : ∀ {m n} → (i : Fin n) → (pm : Cauchy m) → (pn : Cauchy n) → 
   lookup (raise m i) (mapV (inject+ n) pm ++V mapV (raise m) pn) 
   ≡ raise m (lookup i pn)
-lookup-right {m} {n} i pm pn = {!!} 
+lookup-right {m} {n} i pm pn = look-right i (inject+ n) (raise m) pm pn
 
 -- A few proof techniques for dealing with subst
 
