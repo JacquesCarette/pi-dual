@@ -722,7 +722,7 @@ linv∼ {PLUS t₁ t₂} {PLUS .t₂ .t₁} {swap₊} =
              (swap+cauchy (size t₂) (size t₁)))
            ≡⟨ cong 
                 (scompcauchy (swap+cauchy (size t₁) (size t₂)))
-                ? ⟩ 
+                {!!} ⟩ 
          scompcauchy 
            (swap+cauchy (size t₁) (size t₂))
            (swap+cauchy (size t₁) (size t₂))
