@@ -944,6 +944,13 @@ scomplid {n} perm =
          perm ∎)
   where open ≡-Reasoning
 
+-- swap+ is idempotent
+-- not quite sure how to prove this one!
+swap+idemp : (m n : ℕ) → 
+  scompcauchy (swap+cauchy m n) 
+                        (subst Cauchy (+-comm n m) (swap+cauchy n m)) ≡ idcauchy (m + n)
+swap+idemp m n = {!!}
+
 -- sequential composition is associative
 
 lookupassoc : ∀ {n} → (π₁ π₂ π₃ : Cauchy n) (i : Fin n) → 
