@@ -31,6 +31,7 @@ open import Data.Fin.Properties using (bounded; inject+-lemma)
 open import Data.Vec.Properties 
   using (lookup∘tabulate; tabulate∘lookup; lookup-allFin; tabulate-∘; 
          tabulate-allFin; map-id; allFin-map)
+open import Data.Product using (Σ)
 
 open import Data.List 
   using (List; []; _∷_; _∷ʳ_; foldl; replicate; reverse; downFrom; 
@@ -136,6 +137,9 @@ i*n+k≤m*n {suc m} {suc n} i k =
          suc m * suc n ∎)
   where open ≤-Reasoning
 
+{- -- these are all true, but not actually used!  And they cause termination issues in
+    -- my older Agda, so I'll just comment them out for now.  JC
+
 i≰j→j≤i : (i j : ℕ) → (i ≰ j) → (j ≤ i) 
 i≰j→j≤i i 0 p = z≤n 
 i≰j→j≤i 0 (suc j) p with p z≤n
@@ -181,6 +185,7 @@ i≮j∧i≠j→i≰j 0 (suc j) i≮j ¬i≡j i≤j = i≮j (s≤s z≤n)
 i≮j∧i≠j→i≰j (suc i) 0 i≮j ¬i≡j () 
 i≮j∧i≠j→i≰j (suc i) (suc j) si≮sj ¬si≡sj (s≤s i≤j) = 
   i≮j∧i≠j→i≰j i j (si≮sj→i≮j i j si≮sj) (si≠sj→i≠j i j ¬si≡sj) i≤j
+-}
 
 ------------------------------------------------------------------------------
 -- Semantic representations of permutations
@@ -195,6 +200,11 @@ i≮j∧i≠j→i≰j (suc i) (suc j) si≮sj ¬si≡sj (s≤s i≤j) =
 
 Cauchy : ℕ → Set
 Cauchy n = Vec (Fin n) n
+
+-- What JC thinks will actually work
+-- we need injectivity.  surjectivity ought to be provable.
+Permutation : ℕ → Set
+Permutation n = Σ (Cauchy n) (λ v → ∀ {i j} → lookup i v ≡ lookup j v → i ≡ j)
 
 showCauchy : ∀ {n} → Cauchy n → Vec String n
 showCauchy {n} = 
