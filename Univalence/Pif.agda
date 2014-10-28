@@ -810,12 +810,14 @@ allFin+ (suc m) n =
 lookup-left : ∀ {m n} → (i : Fin m) → (pm : Cauchy m) → (pn : Cauchy n) → 
   lookup (inject+ n i) (mapV (inject+ n) pm ++V mapV (raise m) pn) 
   ≡ inject+ n (lookup i pm)
-lookup-left = {!!} 
+lookup-left {0} {n} () _ _ 
+lookup-left {suc m} {n} zero (x ∷ pm) pn = refl
+lookup-left {suc m} {n} (suc i) (x ∷ pm) pn = {!!}
 
 lookup-right : ∀ {m n} → (i : Fin n) → (pm : Cauchy m) → (pn : Cauchy n) → 
   lookup (raise m i) (mapV (inject+ n) pm ++V mapV (raise m) pn) 
   ≡ raise m (lookup i pn)
-lookup-right = {!!} 
+lookup-right {m} {n} i pm pn = {!!} 
 
 -- A few proof techniques for dealing with subst
 
