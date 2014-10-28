@@ -720,6 +720,12 @@ linv∼ {PLUS t₁ t₂} {PLUS .t₂ .t₁} {swap₊} =
            (swap+cauchy (size t₁) (size t₂))
            (subst Cauchy (+-comm (size t₂) (size t₁)) 
              (swap+cauchy (size t₂) (size t₁)))
+           ≡⟨ cong 
+                (scompcauchy (swap+cauchy (size t₁) (size t₂)))
+                ? ⟩ 
+         scompcauchy 
+           (swap+cauchy (size t₁) (size t₂))
+           (swap+cauchy (size t₁) (size t₂))
            ≡⟨ {!!} ⟩ 
          c2cauchy {PLUS t₁ t₂} id⟷ ∎)
   where open ≡-Reasoning
