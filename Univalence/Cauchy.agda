@@ -446,6 +446,14 @@ scompcauchy : ∀ {n} → Cauchy n → Cauchy n → Cauchy n
 scompcauchy {n} perm₁ perm₂ = 
   tabulate (λ i → lookup (lookup i perm₁) perm₂)
 
+-- this was not entirely straightforward!
+scompperm : ∀ {n} → Permutation n → Permutation n → Permutation n
+scompperm {n} (p₁ , i₁) (p₂ , i₂) =
+  (scompcauchy p₁ p₂ , λ {i} {j} p → 
+       let g = λ i → lookup (lookup i p₁) p₂ in
+       let q = trans (sym (lookup∘tabulate g i)) (trans p (lookup∘tabulate g j)) in
+       i₁ (i₂ q))
+
 -- sequential composition with id on the right is identity
 
 scomprid : ∀ {n} → (perm : Cauchy n) → scompcauchy perm (idcauchy n) ≡ perm
