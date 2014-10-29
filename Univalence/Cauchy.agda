@@ -411,6 +411,17 @@ trans-symr refl = refl
 idcauchy : (n : ℕ) → Cauchy n
 idcauchy = allFin 
 
+idperm : (n : ℕ) → Permutation n
+idperm n = (idcauchy n , λ {i} {j} p → 
+  (begin i 
+           ≡⟨ sym (lookup∘tabulate id i) ⟩ 
+         lookup i (idcauchy n)
+           ≡⟨ p ⟩ 
+         lookup j (idcauchy n)
+           ≡⟨ lookup∘tabulate id j ⟩ 
+         j ∎))
+  where open ≡-Reasoning
+
 -- a kind of inverse for splitAt
 
 unSplit : {m n : ℕ} {A : Set} → (f : Fin (m + n) → A) → 
