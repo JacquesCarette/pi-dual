@@ -450,9 +450,9 @@ scompcauchy {n} perm₁ perm₂ =
 scompperm : ∀ {n} → Permutation n → Permutation n → Permutation n
 scompperm {n} (p₁ , i₁) (p₂ , i₂) =
   (scompcauchy p₁ p₂ , λ {i} {j} p → 
-       let g = λ i → lookup (lookup i p₁) p₂ in
-       let q = trans (sym (lookup∘tabulate g i)) (trans p (lookup∘tabulate g j)) in
-       i₁ (i₂ q))
+    let g = λ i → lookup (lookup i p₁) p₂ in
+    let q = trans (sym (lookup∘tabulate g i)) (trans p (lookup∘tabulate g j)) in
+    i₁ (i₂ q))
 
 -- sequential composition with id on the right is identity
 
@@ -496,6 +496,15 @@ swap+idemp : (m n : ℕ) →
     (subst Cauchy (+-comm n m) (swap+cauchy n m)) ≡ 
   idcauchy (m + n)
 swap+idemp m n = {!!}
+
+swap+cauchy : (m n : ℕ) → Cauchy (m + n)
+swap+cauchy m n with splitAt n (allFin (n + m))
+... | (zeron , (nsum , _)) = 
+    (subst (λ s → Vec (Fin s) m) (+-comm n m) nsum) ++V 
+    (subst (λ s → Vec (Fin s) n) (+-comm n m) zeron)
+
++-comm : ∀ m n → m + n ≡ n + m
+
 --}
 
 -- sequential composition is associative
