@@ -580,15 +580,43 @@ swap+idemp m n with splitAt n (allFin (n + m)) | splitAt m (allFin (m + n))
              (subst Cauchy (+-comm n m) 
                (subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum ++V
                 subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)))
--- subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum    : Vec (Fin (n + m)) n
--- subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)) : Vec (Fin (n + m)) m
--- _++V_ : Vec (Fin (n + m)) (n + m) which is Cauchy (n + m)
--- then outer subst maps to : Cauchy (m + n)
+           ≡⟨ {!!} ⟩ 
+         tabulate {m} (λ i → 
+           lookup 
+             (subst Fin (+-comm n m) (lookup i n-sum))
+             (subst Cauchy (+-comm n m) 
+               (subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum ++V
+                subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)))
+         ++V
+         tabulate {n} (λ i → 
+           lookup 
+             (subst Fin (+-comm n m) (lookup i zero-n))
+             (subst Cauchy (+-comm n m) 
+               (subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum ++V
+                subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)))
+           ≡⟨ {!!} ⟩ 
+         tabulate {m} (λ i → 
+           lookup 
+             (subst Fin (+-comm n m) (raise n i))
+             (subst Cauchy (+-comm n m) 
+               (subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum ++V
+                subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)))
+         ++V
+         tabulate {n} (λ i → 
+           lookup 
+             (subst Fin (+-comm n m) (inject+ m i))
+             (subst Cauchy (+-comm n m) 
+               (subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum ++V
+                subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)))
            ≡⟨ {!!} ⟩ 
          scompcauchy 
            (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) (n-sum ++V zero-n))
            (subst Cauchy (+-comm n m) 
              (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) (m-sum ++V zero-m)))
+-- subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum    : Vec (Fin (n + m)) n
+-- subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)) : Vec (Fin (n + m)) m
+-- _++V_ : Vec (Fin (n + m)) (n + m) which is Cauchy (n + m)
+-- then outer subst maps to : Cauchy (m + n)
 -- n-sum ++V zero-n : Vec (Fin (n + m)) (m + n)
 -- subst : Vec (Fin (m + n)) (m + n)
 -- m-sum ++V zero-m : Vec (Fin (m + n)) (n + m)
