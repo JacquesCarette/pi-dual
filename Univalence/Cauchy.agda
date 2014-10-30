@@ -30,7 +30,7 @@ open import Data.Fin
 open import Data.Fin.Properties using (bounded; inject+-lemma)
 open import Data.Vec.Properties 
   using (lookup∘tabulate; tabulate∘lookup; lookup-allFin; tabulate-∘; 
-         tabulate-allFin; map-id; allFin-map)
+         tabulate-allFin; allFin-map)
 open import Data.Product using (Σ)
 
 open import Data.List 
@@ -259,6 +259,10 @@ finext {suc n} f g fi≡gi =
 -- this is actually in Data.Vec.Properties, but over an arbitrary
 -- Setoid.  Specialize
 
+map-id : ∀ {a n} {A : Set a} (xs : Vec A n) → mapV id xs ≡ xs
+map-id [] = refl
+map-id (x ∷ xs) = cong (_∷_ x) (map-id xs)
+
 map-++-commute : ∀ {a b m n} {A : Set a} {B : Set b}
                  (f : B → A) (xs : Vec B m) {ys : Vec B n} →
                  mapV f (xs ++V ys) ≡ mapV f xs ++V mapV f ys
@@ -434,11 +438,19 @@ unSplit {suc m} f = cong (λ x → (f zero) ∷ x) (unSplit {m} (f ∘ suc))
 -- ==> 
 -- [ vm , vm₊₁ , ... , vm+n-1 ,     v₀ , v₁   , v₂   , ... , vm-1 ]
 
+{--
+OLD 
 swap+cauchy : (m n : ℕ) → Cauchy (m + n)
 swap+cauchy m n with splitAt n (allFin (n + m))
 ... | (zeron , (nsum , _)) = 
     (subst (λ s → Vec (Fin s) m) (+-comm n m) nsum) ++V 
     (subst (λ s → Vec (Fin s) n) (+-comm n m) zeron)
+--}
+
+swap+cauchy : (m n : ℕ) → Cauchy (m + n)
+swap+cauchy m n = 
+  subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
+    (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))
 
 -- Sequential composition
 
@@ -544,119 +556,142 @@ swap+idemp : (m n : ℕ) →
     (subst Cauchy (+-comm n m) (swap+cauchy n m))
   ≡ 
   allFin (m + n)
-swap+idemp m n with splitAt n (allFin (n + m)) | splitAt m (allFin (m + n)) 
-... | (zero-n , (n-sum , pr₁)) | (zero-m , (m-sum , pr₂)) = 
+swap+idemp m n =
   begin (tabulate (λ i → 
            lookup 
              (lookup i 
-               (subst (λ s → Vec (Fin s) m) (+-comm n m) n-sum ++V
-                subst (λ s → Vec (Fin s) n) (+-comm n m) zero-n))
+               (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
+                 (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))))
              (subst Cauchy (+-comm n m) 
-               (subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum ++V
-                subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)))
+               (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                 (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
          ≡⟨ tabulate-++ {m} {n} 
-            (λ i → 
-             lookup 
-             (lookup i 
-               (subst (λ s → Vec (Fin s) m) (+-comm n m) n-sum ++V
-                subst (λ s → Vec (Fin s) n) (+-comm n m) zero-n))
-             (subst Cauchy (+-comm n m) 
-               (subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum ++V
-                subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m))) ⟩ 
+              (λ i → 
+                lookup 
+                  (lookup i 
+                    (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
+                      (mapV (raise n) (allFin m) ++V 
+                       mapV (inject+ m) (allFin n))))
+                  (subst Cauchy (+-comm n m) 
+                    (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                      (mapV (raise m) (allFin n) ++V 
+                       mapV (inject+ n) (allFin m))))) ⟩ 
          tabulate {m} (λ i → 
-           lookup 
+           lookup
              (lookup (inject+ n i)
-               (subst (λ s → Vec (Fin s) m) (+-comm n m) n-sum ++V
-                subst (λ s → Vec (Fin s) n) (+-comm n m) zero-n))
+               (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
+                 (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))))
              (subst Cauchy (+-comm n m) 
-               (subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum ++V
-                subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)))
+               (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                 (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
          ++V
          tabulate {n} (λ i → 
            lookup 
              (lookup (raise m i)
-               (subst (λ s → Vec (Fin s) m) (+-comm n m) n-sum ++V
-                subst (λ s → Vec (Fin s) n) (+-comm n m) zero-n))
+               (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
+                 (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))))
              (subst Cauchy (+-comm n m) 
-               (subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum ++V
-                subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)))
-           ≡⟨ {!!} ⟩ 
+               (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                 (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
+         ≡⟨ {!!} ⟩ 
          tabulate {m} (λ i → 
-           lookup 
-             (subst Fin (+-comm n m) (lookup i n-sum))
+           lookup
+             (subst Fin (+-comm n m) 
+               (lookup (inject+ n i)
+                 (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))))
              (subst Cauchy (+-comm n m) 
-               (subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum ++V
-                subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)))
+               (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                 (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
          ++V
          tabulate {n} (λ i → 
            lookup 
-             (subst Fin (+-comm n m) (lookup i zero-n))
+             (lookup (raise m i)
+               (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
+                 (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))))
              (subst Cauchy (+-comm n m) 
-               (subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum ++V
-                subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)))
-           ≡⟨ {!!} ⟩ 
+               (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                 (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
+
+         ≡⟨ {!!} ⟩ 
          tabulate {m} (λ i → 
+           lookup
+             (subst Fin (+-comm n m) 
+               (lookup i (mapV (raise n) (allFin m))))
+             (subst Cauchy (+-comm n m) 
+               (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                 (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
+         ++V
+         tabulate {n} (λ i → 
            lookup 
+             (lookup (raise m i)
+               (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
+                 (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))))
+             (subst Cauchy (+-comm n m) 
+               (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                 (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
+         ≡⟨ {!!} ⟩ 
+         tabulate {m} (λ i → 
+           lookup
              (subst Fin (+-comm n m) (raise n i))
              (subst Cauchy (+-comm n m) 
-               (subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum ++V
-                subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)))
+               (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                 (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
          ++V
          tabulate {n} (λ i → 
            lookup 
-             (subst Fin (+-comm n m) (inject+ m i))
+             (lookup (raise m i)
+               (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
+                 (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))))
              (subst Cauchy (+-comm n m) 
-               (subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum ++V
-                subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)))
-           ≡⟨ {!!} ⟩ 
-         scompcauchy 
-           (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) (n-sum ++V zero-n))
-           (subst Cauchy (+-comm n m) 
-             (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) (m-sum ++V zero-m)))
--- subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum    : Vec (Fin (n + m)) n
--- subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)) : Vec (Fin (n + m)) m
--- _++V_ : Vec (Fin (n + m)) (n + m) which is Cauchy (n + m)
--- then outer subst maps to : Cauchy (m + n)
--- n-sum ++V zero-n : Vec (Fin (n + m)) (m + n)
--- subst : Vec (Fin (m + n)) (m + n)
--- m-sum ++V zero-m : Vec (Fin (m + n)) (n + m)
--- inner subst : Vec (Fin (n + m)) (n + m)
--- outer subst : Vec (Fin (m + n)) (m + n)
-           ≡⟨ {!!} ⟩ 
+               (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                 (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
+         ≡⟨ {!!} ⟩ 
+         tabulate {m} (λ i → 
+           lookup
+             (raise n i)
+             (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))
+         ++V
+         tabulate {n} (λ i → 
+           lookup 
+             (lookup (raise m i)
+               (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
+                 (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))))
+             (subst Cauchy (+-comm n m) 
+               (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                 (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
+         ≡⟨ {!!} ⟩ 
+         tabulate {m} (λ i → lookup i (mapV (inject+ n) (allFin m)))
+         ++V
+         tabulate {n} (λ i → 
+           lookup 
+             (lookup (raise m i)
+               (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
+                 (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))))
+             (subst Cauchy (+-comm n m) 
+               (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                 (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
+         ≡⟨ {!!} ⟩ 
+         tabulate {m} (λ i → inject+ n i)
+         ++V
+         tabulate {n} (λ i → 
+           lookup 
+             (lookup (raise m i)
+               (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
+                 (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))))
+             (subst Cauchy (+-comm n m) 
+               (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                 (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
+         ≡⟨ {!!} ⟩ 
+         tabulate {m} (λ i → inject+ n i)
+         ++V
+         tabulate {n} (λ i → raise m i)
+         ≡⟨ sym (tabulate-++ {m} {n} id) ⟩ 
+         tabulate {m + n} id
+         ≡⟨ tabulate-allFin id ⟩ 
+         mapV id (allFin (m + n))
+         ≡⟨ map-id (allFin (m + n)) ⟩ 
          allFin (m + n) ∎)
   where open ≡-Reasoning
-
-{--
-
-Ex: size t₁ = 3, size t₂ = 2
-
-allFin (3 + 2) = allFin (2 + 3) = [ 0, 1, 2, 3, 4 ]
-
-scompcauchy 
-  (swap+cauchy 3 2)
-  (subst Cauchy (+-comm 2 3) (swap+cauchy 2 3))
-
-≡
-
-scompcauchy
-  ([ 2, 3, 4 ] ++V [ 0, 1 ])
-  ([ 3, 4 ] ++V [ 0, 1, 2 ])
-
-≡
-
-tabulate (λ i → 
-  lookup 
-    (lookup i ([ 2, 3, 4 ] ++V [ 0, 1 ])) 
-    ([ 3, 4 ] ++V [ 0, 1, 2 ]))
-
-0 ==> 2 ==> 0
-1 ==> 3 ==> 1 
-2 ==> 4 ==> 2
---
-3 ==> 0 ==> 3
-4 ==> 1 ==> 4
-
---}
 
 -- sequential composition is associative
 
