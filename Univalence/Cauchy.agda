@@ -487,23 +487,146 @@ scomplid {n} perm =
   where open ≡-Reasoning
 
 -- swap+ is idempotent
--- not quite sure how to prove this one!
 
-{--
+-- outline of swap+idemp proof
+
+-- allFin (m + n) ≡ mapV (inject+ n) (allFin m) ++V mapV (raise m) (allFin n)
+-- zero-m : Vec (Fin (m + n)) m ≡ mapV (inject+ n) (allFin m) 
+-- m-sum  : Vec (Fin (m + n)) n ≡ mapV (raise m) (allFin n)
+-- allFin (n + m) ≡ mapV (inject+ m) (allFin n) ++V mapV (raise n) (allFin m)
+-- zero-n : Vec (Fin (n + m)) n ≡ mapV (inject+ m) (allFin n) 
+-- n-sum  : Vec (Fin (n + m)) m ≡ mapV (raise n) (allFin m)
+-- 
+-- first swap re-arranges allFin (n + m) to n-sum ++V zero-n
+-- second swap re-arranges allfin (m + n) to m-sum ++V zero-m
+-- 
+-- for i = 0, ..., m-1, we have inject+ n i : Fin (m + n)
+-- lookup (lookup (inject+ n i) (n-sum ++V zero-n)) (m-sum ++V zero-m) ==> 
+-- lookup (lookup i n-sum) (m-sum ++V zero-m) ==>
+-- lookup (raise n i) (m-sum ++V zero-m) ==> 
+-- lookup i zero-m ==>
+-- inject+ n i
+-- 
+-- for i = m, ..., m+n-1, we have raise m i : Fin (m + n)
+-- lookup (lookup (raise m i) (n-sum ++V zero-n)) (m-sum ++V zero-m) ==> 
+-- lookup (lookup i zero-n) (m-sum ++V zero-m) ==> 
+-- lookup (inject+ m i) (m-sum ++V zero-m) ==> 
+-- lookup i m-sum ==> 
+-- raise m i
+
+tabulate-++ : ∀ {m n a} {A : Set a} → (f : Fin (m + n) → A) → 
+  tabulate {m + n} f ≡ 
+  tabulate {m} (f ∘ inject+ n) ++V tabulate {n} (f ∘ raise m)
+tabulate-++ {m} {n} {a} f = 
+  begin (tabulate {m + n} f 
+           ≡⟨ tabulate-allFin f ⟩ 
+         mapV f (allFin (m + n))
+           ≡⟨ cong (mapV f) (allFin+ m n) ⟩ 
+         mapV f (mapV (inject+ n) (allFin m) ++V mapV (raise m) (allFin n))
+           ≡⟨ map-++-commute f (mapV (inject+ n) (allFin m)) ⟩ 
+         mapV f (mapV (inject+ n) (allFin m)) ++V 
+         mapV f (mapV (raise m) (allFin n))
+           ≡⟨ cong₂ _++V_ 
+                (sym (map-∘ f (inject+ n) (allFin m)))
+                (sym (map-∘ f (raise m) (allFin n))) ⟩ 
+         mapV (f ∘ inject+ n) (allFin m) ++V 
+         mapV (f ∘ raise m) (allFin n)
+           ≡⟨ cong₂ _++V_
+                (sym (tabulate-allFin {m} (f ∘ inject+ n)))
+                (sym (tabulate-allFin {n} (f ∘ raise m))) ⟩ 
+         tabulate {m} (f ∘ inject+ n) ++V 
+         tabulate {n} (f ∘ raise m) ∎)
+  where open ≡-Reasoning
+
 swap+idemp : (m n : ℕ) → 
   scompcauchy 
     (swap+cauchy m n) 
-    (subst Cauchy (+-comm n m) (swap+cauchy n m)) ≡ 
-  idcauchy (m + n)
-swap+idemp m n = {!!}
+    (subst Cauchy (+-comm n m) (swap+cauchy n m))
+  ≡ 
+  allFin (m + n)
+swap+idemp m n with splitAt n (allFin (n + m)) | splitAt m (allFin (m + n)) 
+... | (zero-n , (n-sum , pr₁)) | (zero-m , (m-sum , pr₂)) = 
+  begin (tabulate (λ i → 
+           lookup 
+             (lookup i 
+               (subst (λ s → Vec (Fin s) m) (+-comm n m) n-sum ++V
+                subst (λ s → Vec (Fin s) n) (+-comm n m) zero-n))
+             (subst Cauchy (+-comm n m) 
+               (subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum ++V
+                subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)))
+         ≡⟨ tabulate-++ {m} {n} 
+            (λ i → 
+             lookup 
+             (lookup i 
+               (subst (λ s → Vec (Fin s) m) (+-comm n m) n-sum ++V
+                subst (λ s → Vec (Fin s) n) (+-comm n m) zero-n))
+             (subst Cauchy (+-comm n m) 
+               (subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum ++V
+                subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m))) ⟩ 
+         tabulate {m} (λ i → 
+           lookup 
+             (lookup (inject+ n i)
+               (subst (λ s → Vec (Fin s) m) (+-comm n m) n-sum ++V
+                subst (λ s → Vec (Fin s) n) (+-comm n m) zero-n))
+             (subst Cauchy (+-comm n m) 
+               (subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum ++V
+                subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)))
+         ++V
+         tabulate {n} (λ i → 
+           lookup 
+             (lookup (raise m i)
+               (subst (λ s → Vec (Fin s) m) (+-comm n m) n-sum ++V
+                subst (λ s → Vec (Fin s) n) (+-comm n m) zero-n))
+             (subst Cauchy (+-comm n m) 
+               (subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum ++V
+                subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)))
+-- subst (λ s → Vec (Fin s) n) (+-comm m n) m-sum    : Vec (Fin (n + m)) n
+-- subst (λ s → Vec (Fin s) m) (+-comm m n) zero-m)) : Vec (Fin (n + m)) m
+-- _++V_ : Vec (Fin (n + m)) (n + m) which is Cauchy (n + m)
+-- then outer subst maps to : Cauchy (m + n)
+           ≡⟨ {!!} ⟩ 
+         scompcauchy 
+           (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) (n-sum ++V zero-n))
+           (subst Cauchy (+-comm n m) 
+             (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) (m-sum ++V zero-m)))
+-- n-sum ++V zero-n : Vec (Fin (n + m)) (m + n)
+-- subst : Vec (Fin (m + n)) (m + n)
+-- m-sum ++V zero-m : Vec (Fin (m + n)) (n + m)
+-- inner subst : Vec (Fin (n + m)) (n + m)
+-- outer subst : Vec (Fin (m + n)) (m + n)
+           ≡⟨ {!!} ⟩ 
+         allFin (m + n) ∎)
+  where open ≡-Reasoning
 
-swap+cauchy : (m n : ℕ) → Cauchy (m + n)
-swap+cauchy m n with splitAt n (allFin (n + m))
-... | (zeron , (nsum , _)) = 
-    (subst (λ s → Vec (Fin s) m) (+-comm n m) nsum) ++V 
-    (subst (λ s → Vec (Fin s) n) (+-comm n m) zeron)
+{--
 
-+-comm : ∀ m n → m + n ≡ n + m
+Ex: size t₁ = 3, size t₂ = 2
+
+allFin (3 + 2) = allFin (2 + 3) = [ 0, 1, 2, 3, 4 ]
+
+scompcauchy 
+  (swap+cauchy 3 2)
+  (subst Cauchy (+-comm 2 3) (swap+cauchy 2 3))
+
+≡
+
+scompcauchy
+  ([ 2, 3, 4 ] ++V [ 0, 1 ])
+  ([ 3, 4 ] ++V [ 0, 1, 2 ])
+
+≡
+
+tabulate (λ i → 
+  lookup 
+    (lookup i ([ 2, 3, 4 ] ++V [ 0, 1 ])) 
+    ([ 3, 4 ] ++V [ 0, 1, 2 ]))
+
+0 ==> 2 ==> 0
+1 ==> 3 ==> 1 
+2 ==> 4 ==> 2
+--
+3 ==> 0 ==> 3
+4 ==> 1 ==> 4
 
 --}
 
