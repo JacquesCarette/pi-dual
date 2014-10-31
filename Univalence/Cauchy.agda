@@ -24,13 +24,13 @@ open import Data.Bool using (Bool; false; true)
 open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≮_; _≤_; _≰_; 
   z≤n; s≤s; _≟_; _≤?_; module ≤-Reasoning)
 open import Data.Fin 
-  using (Fin; zero; suc; toℕ; fromℕ; _ℕ-_; _≺_;
+  using (Fin; zero; suc; toℕ; fromℕ; fromℕ≤; _ℕ-_; _≺_; reduce≥; 
          raise; inject+; inject₁; inject≤; _≻toℕ_) 
   renaming (_+_ to _F+_)
 open import Data.Fin.Properties using (bounded; inject+-lemma)
 open import Data.Vec.Properties 
   using (lookup∘tabulate; tabulate∘lookup; lookup-allFin; tabulate-∘; 
-         tabulate-allFin; allFin-map)
+         tabulate-allFin; allFin-map; lookup-++-inject+; lookup-++-≥)
 open import Data.Product using (Σ)
 
 open import Data.List 
@@ -351,9 +351,24 @@ look-left {suc _} (suc i) f g (x ∷ vm) vn = look-left i f g vm vn
 look-right : ∀ {m n} {a b c : Level} {A : Set a} {B : Set b} {C : Set c} →
   (i : Fin n) → (f : A → C) → (g : B → C) → (vm : Vec A m) → (vn : Vec B n) → 
   lookup (raise m i) (mapV f vm ++V mapV g vn) ≡ g (lookup i vn)
-look-right {Data.Nat.zero} i f g vn vm = lookup-map i g vm
-look-right {suc m} {Data.Nat.zero} () _ _ _ _
+look-right {0} i f g vn vm = lookup-map i g vm
+look-right {suc m} {0} () _ _ _ _
 look-right {suc m} {suc n} i f g (x ∷ vn) vm = look-right i f g vn vm
+
+-- similar to lookup-++-inject+ from library
+
+lookup-++-raise : ∀ {m n} {a : Level} {A : Set a} →
+  (vm : Vec A m) (vn : Vec A n) (i : Fin n) → 
+  lookup (raise m i) (vm ++V vn) ≡ lookup i vn
+lookup-++-raise {0} vn vm i = 
+  begin (lookup i (vn ++V vm)
+           ≡⟨ lookup-++-≥ vn vm i z≤n ⟩ 
+         lookup (reduce≥ i z≤n) vm
+            ≡⟨ refl ⟩ 
+         lookup i vm ∎)
+  where open ≡-Reasoning -- 
+lookup-++-raise {suc m} {0} _ _ () 
+lookup-++-raise {suc m} {suc n} (x ∷ vn) vm i = lookup-++-raise vn vm i
 
 -- a direct proof is hard, but this is really a statement about vectors
 
@@ -430,22 +445,13 @@ idperm n = (idcauchy n , λ {i} {j} p →
 
 unSplit : {m n : ℕ} {A : Set} → (f : Fin (m + n) → A) → 
   tabulate {m} (f ∘ (inject+ n)) ++V tabulate {n} (f ∘ (raise m)) ≡ tabulate f
-unSplit {Data.Nat.zero} {n} f = refl
+unSplit {0} {n} f = refl
 unSplit {suc m} f = cong (λ x → (f zero) ∷ x) (unSplit {m} (f ∘ suc))
 
 -- swap the first m elements with the last n elements
 -- [ v₀ , v₁   , v₂   , ... , vm-1 ,     vm , vm₊₁ , ... , vm+n-1 ]
 -- ==> 
 -- [ vm , vm₊₁ , ... , vm+n-1 ,     v₀ , v₁   , v₂   , ... , vm-1 ]
-
-{--
-OLD 
-swap+cauchy : (m n : ℕ) → Cauchy (m + n)
-swap+cauchy m n with splitAt n (allFin (n + m))
-... | (zeron , (nsum , _)) = 
-    (subst (λ s → Vec (Fin s) m) (+-comm n m) nsum) ++V 
-    (subst (λ s → Vec (Fin s) n) (+-comm n m) zeron)
---}
 
 swap+cauchy : (m n : ℕ) → Cauchy (m + n)
 swap+cauchy m n = 
@@ -459,6 +465,7 @@ scompcauchy {n} perm₁ perm₂ =
   tabulate (λ i → lookup (lookup i perm₁) perm₂)
 
 -- this was not entirely straightforward!
+
 scompperm : ∀ {n} → Permutation n → Permutation n → Permutation n
 scompperm {n} (p₁ , i₁) (p₂ , i₂) =
   (scompcauchy p₁ p₂ , λ {i} {j} p → 
@@ -605,8 +612,8 @@ swap+idemp m n =
          ++V
          tabulate {n} (λ i → 
            lookup 
-             (lookup (raise m i)
-               (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
+             (subst Fin (+-comm n m)
+               (lookup (raise m i)
                  (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))))
              (subst Cauchy (+-comm n m) 
                (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
@@ -623,9 +630,8 @@ swap+idemp m n =
          ++V
          tabulate {n} (λ i → 
            lookup 
-             (lookup (raise m i)
-               (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
-                 (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))))
+             (subst Fin (+-comm n m)
+               (lookup i (mapV (inject+ m) (allFin n))))
              (subst Cauchy (+-comm n m) 
                (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
                  (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
@@ -639,9 +645,7 @@ swap+idemp m n =
          ++V
          tabulate {n} (λ i → 
            lookup 
-             (lookup (raise m i)
-               (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
-                 (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))))
+             (subst Fin (+-comm n m) (inject+ m i))
              (subst Cauchy (+-comm n m) 
                (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
                  (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
@@ -653,43 +657,35 @@ swap+idemp m n =
          ++V
          tabulate {n} (λ i → 
            lookup 
-             (lookup (raise m i)
-               (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
-                 (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))))
-             (subst Cauchy (+-comm n m) 
-               (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
-                 (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
-         ≡⟨ {!!} ⟩ 
+             (inject+ m i)
+             (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))
+         ≡⟨ cong₂ _++V_
+              (finext 
+                (λ i → 
+                  lookup
+                    (raise n i)
+                    (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))
+                (λ i → lookup i (mapV (inject+ n) (allFin m)))
+                (lookup-++-raise
+                   (mapV (raise m) (allFin n))
+                   (mapV (inject+ n) (allFin m))))
+              (finext 
+                (λ i → 
+                  lookup 
+                    (inject+ m i)
+                    (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))
+                 (λ i → lookup i (mapV (raise m) (allFin n)))
+                 (lookup-++-inject+ 
+                    (mapV (raise m) (allFin n)) 
+                    (mapV (inject+ n) (allFin m)))) ⟩ 
          tabulate {m} (λ i → lookup i (mapV (inject+ n) (allFin m)))
          ++V
-         tabulate {n} (λ i → 
-           lookup 
-             (lookup (raise m i)
-               (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
-                 (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))))
-             (subst Cauchy (+-comm n m) 
-               (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
-                 (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
-         ≡⟨ {!!} ⟩ 
-         tabulate {m} (λ i → inject+ n i)
-         ++V
-         tabulate {n} (λ i → 
-           lookup 
-             (lookup (raise m i)
-               (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
-                 (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))))
-             (subst Cauchy (+-comm n m) 
-               (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
-                 (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
-         ≡⟨ {!!} ⟩ 
-         tabulate {m} (λ i → inject+ n i)
-         ++V
-         tabulate {n} (λ i → raise m i)
-         ≡⟨ sym (tabulate-++ {m} {n} id) ⟩ 
-         tabulate {m + n} id
-         ≡⟨ tabulate-allFin id ⟩ 
-         mapV id (allFin (m + n))
-         ≡⟨ map-id (allFin (m + n)) ⟩ 
+         tabulate {n} (λ i → lookup i (mapV (raise m) (allFin n)))
+         ≡⟨ cong₂ _++V_ 
+              (tabulate∘lookup (mapV (inject+ n) (allFin m)))
+              (tabulate∘lookup (mapV (raise m) (allFin n))) ⟩ 
+         mapV (inject+ n) (allFin m) ++V mapV (raise m) (allFin n)
+         ≡⟨ sym (allFin+ m n) ⟩
          allFin (m + n) ∎)
   where open ≡-Reasoning
 

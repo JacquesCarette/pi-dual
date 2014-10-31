@@ -5248,3 +5248,13 @@ adjustBy id⟷ p = p
 adjustBy foldBool p = p
 adjustBy unfoldBool p = p
 --}
+
+{--
+OLD definition
+swap+cauchy' : (m n : ℕ) → Cauchy (m + n)
+swap+cauchy' m n with splitAt n (allFin (n + m))
+... | (zeron , (nsum , _)) = 
+    (subst (λ s → Vec (Fin s) m) (+-comm n m) nsum) ++V 
+    (subst (λ s → Vec (Fin s) n) (+-comm n m) zeron)
+--}
+
