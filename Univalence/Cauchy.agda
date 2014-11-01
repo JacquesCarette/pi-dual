@@ -137,8 +137,10 @@ i*n+k≤m*n {suc m} {suc n} i k =
          suc m * suc n ∎)
   where open ≤-Reasoning
 
-{- -- these are all true, but not actually used!  And they cause termination issues in
-    -- my older Agda, so I'll just comment them out for now.  JC
+{-- 
+
+these are all true, but not actually used!  And they cause termination
+issues in my older Agda, so I'll just comment them out for now.  JC
 
 i≰j→j≤i : (i j : ℕ) → (i ≰ j) → (j ≤ i) 
 i≰j→j≤i i 0 p = z≤n 
@@ -203,6 +205,7 @@ Cauchy n = Vec (Fin n) n
 
 -- What JC thinks will actually work
 -- we need injectivity.  surjectivity ought to be provable.
+
 Permutation : ℕ → Set
 Permutation n = Σ (Cauchy n) (λ v → ∀ {i j} → lookup i v ≡ lookup j v → i ≡ j)
 
@@ -619,7 +622,69 @@ swap+idemp m n =
                (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
                  (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
 
-         ≡⟨ {!!} ⟩ 
+         ≡⟨ cong₂ _++V_
+              (finext
+                (λ i → 
+                  lookup
+                    (subst Fin (+-comm n m) 
+                      (lookup (inject+ n i)
+                        (mapV (raise n) (allFin m) ++V 
+                         mapV (inject+ m) (allFin n))))
+                    (subst Cauchy (+-comm n m) 
+                      (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                        (mapV (raise m) (allFin n) ++V 
+                         mapV (inject+ n) (allFin m)))))
+                (λ i → 
+                  lookup
+                    (subst Fin (+-comm n m) 
+                      (lookup i (mapV (raise n) (allFin m))))
+                    (subst Cauchy (+-comm n m) 
+                      (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                      (mapV (raise m) (allFin n) ++V 
+                       mapV (inject+ n) (allFin m)))))
+                (λ i → cong 
+                          (λ x → 
+                            lookup
+                              (subst Fin (+-comm n m) x)
+                              (subst Cauchy (+-comm n m) 
+                                (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                                  (mapV (raise m) (allFin n) ++V 
+                                   mapV (inject+ n) (allFin m)))))
+                          (lookup-++-inject+ 
+                            (mapV (raise n) (allFin m))
+                            (mapV (inject+ m) (allFin n))
+                            i)))
+              (finext
+                (λ i → 
+                  lookup 
+                    (subst Fin (+-comm n m)
+                      (lookup (raise m i)
+                      (mapV (raise n) (allFin m) ++V 
+                       mapV (inject+ m) (allFin n))))
+                    (subst Cauchy (+-comm n m) 
+                      (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                      (mapV (raise m) (allFin n) ++V 
+                       mapV (inject+ n) (allFin m)))))
+                (λ i → 
+                  lookup 
+                    (subst Fin (+-comm n m)
+                      (lookup i (mapV (inject+ m) (allFin n))))
+                    (subst Cauchy (+-comm n m) 
+                      (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                      (mapV (raise m) (allFin n) ++V 
+                       mapV (inject+ n) (allFin m)))))
+                (λ i → cong
+                          (λ x → 
+                            lookup
+                              (subst Fin (+-comm n m) x)
+                              (subst Cauchy (+-comm n m) 
+                                (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                                  (mapV (raise m) (allFin n) ++V 
+                                   mapV (inject+ n) (allFin m)))))
+                          (lookup-++-raise
+                            (mapV (raise n) (allFin m))
+                            (mapV (inject+ m) (allFin n))
+                            i))) ⟩ 
          tabulate {m} (λ i → 
            lookup
              (subst Fin (+-comm n m) 
