@@ -421,6 +421,12 @@ subst₂* : {b : Level} {B : ℕ → Set b} {x₁ x₂ x₃ x₄ : ℕ} →
   f (subst B x₂≡x₁ v₁) (subst B x₄≡x₃ v₂)
 subst₂* refl refl v₁ v₂ f = refl
 
+lookup-subst : ∀ {m m' n} 
+  (i : Fin n) (xs : Vec (Fin m) n) (eq : m ≡ m') → 
+  lookup i (subst (λ s → Vec (Fin s) n) eq xs) ≡ 
+  subst Fin eq (lookup i xs)
+lookup-subst i xs refl = refl 
+
 trans-syml : {A : Set} {x y : A} → (p : x ≡ y) → trans (sym p) p ≡ refl
 trans-syml refl = refl
 
@@ -603,7 +609,75 @@ swap+idemp m n =
              (subst Cauchy (+-comm n m) 
                (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
                  (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
-         ≡⟨ {!!} ⟩ 
+         ≡⟨ cong₂ _++V_
+              (finext {m}
+                (λ i → 
+                  lookup
+                    (lookup (inject+ n i)
+                      (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
+                        (mapV (raise n) (allFin m) ++V 
+                         mapV (inject+ m) (allFin n))))
+                    (subst Cauchy (+-comm n m) 
+                      (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                        (mapV (raise m) (allFin n) ++V 
+                         mapV (inject+ n) (allFin m)))))
+                (λ i → 
+                  lookup
+                    (subst Fin (+-comm n m) 
+                      (lookup (inject+ n i)
+                        (mapV (raise n) (allFin m) ++V 
+                         mapV (inject+ m) (allFin n))))
+                    (subst Cauchy (+-comm n m) 
+                      (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                        (mapV (raise m) (allFin n) ++V 
+                         mapV (inject+ n) (allFin m))))) 
+                (λ i → 
+                  cong 
+                    (λ x →
+                      lookup x
+                        (subst Cauchy (+-comm n m) 
+                          (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                            (mapV (raise m) (allFin n) ++V 
+                             mapV (inject+ n) (allFin m)))))
+                    (lookup-subst 
+                       (inject+ n i)
+                       (mapV (raise n) (allFin m) ++V 
+                        mapV (inject+ m) (allFin n))
+                       (+-comm n m))))
+              (finext {n}
+                (λ i → 
+                  lookup 
+                    (lookup (raise m i)
+                      (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
+                        (mapV (raise n) (allFin m) ++V 
+                         mapV (inject+ m) (allFin n))))
+                    (subst Cauchy (+-comm n m) 
+                      (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                        (mapV (raise m) (allFin n) ++V 
+                         mapV (inject+ n) (allFin m)))))
+                (λ i → 
+                   lookup 
+                     (subst Fin (+-comm n m)
+                       (lookup (raise m i)
+                         (mapV (raise n) (allFin m) ++V 
+                          mapV (inject+ m) (allFin n))))
+                     (subst Cauchy (+-comm n m) 
+                       (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                         (mapV (raise m) (allFin n) ++V 
+                          mapV (inject+ n) (allFin m))))) 
+                (λ i → 
+                 cong
+                    (λ x → 
+                      lookup x
+                      (subst Cauchy (+-comm n m) 
+                        (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                          (mapV (raise m) (allFin n) ++V 
+                           mapV (inject+ n) (allFin m)))))
+                    (lookup-subst 
+                       (raise m i)
+                       (mapV (raise n) (allFin m) ++V 
+                        mapV (inject+ m) (allFin n))
+                       (+-comm n m)))) ⟩ 
          tabulate {m} (λ i → 
            lookup
              (subst Fin (+-comm n m) 
@@ -623,7 +697,7 @@ swap+idemp m n =
                  (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
 
          ≡⟨ cong₂ _++V_
-              (finext
+              (finext {m}
                 (λ i → 
                   lookup
                     (subst Fin (+-comm n m) 
@@ -654,7 +728,7 @@ swap+idemp m n =
                             (mapV (raise n) (allFin m))
                             (mapV (inject+ m) (allFin n))
                             i)))
-              (finext
+              (finext {n}
                 (λ i → 
                   lookup 
                     (subst Fin (+-comm n m)
