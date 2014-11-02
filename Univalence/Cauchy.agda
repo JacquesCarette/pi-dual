@@ -137,6 +137,28 @@ i*n+k≤m*n {suc m} {suc n} i k =
          suc m * suc n ∎)
   where open ≤-Reasoning
 
+-- Proofs about proofs.  Should be elsewhere
+sym-sym : {A : Set} {x y : A} → (p : x ≡ y) → sym (sym p) ≡ p
+sym-sym refl = refl
+
+trans-refl : {A : Set} {x y : A} → (p : x ≡ y) → trans p refl ≡ p
+trans-refl refl = refl
+
+-- Proof about natural numbers proof
+sym-comm : ∀ (m n : ℕ) → sym (+-comm m n) ≡ +-comm n m
+sym-comm Data.Nat.zero Data.Nat.zero = refl
+sym-comm Data.Nat.zero (suc n) = 
+  begin (sym (sym (cong suc $ +-right-identity n))
+    ≡⟨ sym-sym (cong suc (+-right-identity n)) ⟩
+        cong suc (+-right-identity n)
+    ≡⟨ cong (cong suc) (trans (sym (sym-sym (+-right-identity n))) (sym-comm 0 n)) ⟩
+           cong suc (+-comm n 0)
+    ≡⟨ sym (trans-refl (cong suc (+-comm n 0))) ⟩
+           trans (cong suc (+-comm n 0)) (sym (+-suc 0 n)) ∎)
+  where open ≡-Reasoning
+sym-comm (suc m) Data.Nat.zero = {!!}
+sym-comm (suc m) (suc n) = {!!}
+
 {-- 
 
 these are all true, but not actually used!  And they cause termination
