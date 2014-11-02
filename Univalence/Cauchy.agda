@@ -1,4 +1,4 @@
--- {-# OPTIONS --without-K #-}
+{-# OPTIONS --without-K #-}
 
 module Cauchy where
 
@@ -137,7 +137,10 @@ i*n+k≤m*n {suc m} {suc n} i k =
          suc m * suc n ∎)
   where open ≤-Reasoning
 
+{--
+
 -- Proofs about proofs.  Should be elsewhere
+
 sym-sym : {A : Set} {x y : A} → (p : x ≡ y) → sym (sym p) ≡ p
 sym-sym refl = refl
 
@@ -145,19 +148,24 @@ trans-refl : {A : Set} {x y : A} → (p : x ≡ y) → trans p refl ≡ p
 trans-refl refl = refl
 
 -- Proof about natural numbers proof
+
 sym-comm : ∀ (m n : ℕ) → sym (+-comm m n) ≡ +-comm n m
-sym-comm Data.Nat.zero Data.Nat.zero = refl
-sym-comm Data.Nat.zero (suc n) = 
+sym-comm 0 0 = refl
+sym-comm 0 (suc n) = 
   begin (sym (sym (cong suc $ +-right-identity n))
-    ≡⟨ sym-sym (cong suc (+-right-identity n)) ⟩
-        cong suc (+-right-identity n)
-    ≡⟨ cong (cong suc) (trans (sym (sym-sym (+-right-identity n))) (sym-comm 0 n)) ⟩
-           cong suc (+-comm n 0)
-    ≡⟨ sym (trans-refl (cong suc (+-comm n 0))) ⟩
-           trans (cong suc (+-comm n 0)) (sym (+-suc 0 n)) ∎)
+           ≡⟨ sym-sym (cong suc (+-right-identity n)) ⟩
+         cong suc (+-right-identity n)
+           ≡⟨ cong
+                (cong suc)
+                (trans (sym (sym-sym (+-right-identity n))) (sym-comm 0 n)) ⟩
+         cong suc (+-comm n 0)
+           ≡⟨ sym (trans-refl (cong suc (+-comm n 0))) ⟩
+         trans (cong suc (+-comm n 0)) (sym (+-suc 0 n)) ∎)
   where open ≡-Reasoning
-sym-comm (suc m) Data.Nat.zero = {!!}
+sym-comm (suc m) 0 = {!!}
 sym-comm (suc m) (suc n) = {!!}
+
+--}
 
 {-- 
 
@@ -450,13 +458,13 @@ lookup-subst : ∀ {m m' n}
 lookup-subst i xs refl = refl 
 
 lookup-subst' : ∀ {m m'} 
-  (i : Fin m) (xs : Vec (Fin m') m) (eq : m ≡ m') → 
-  (eq' : m' ≡ m) → 
+  (i : Fin m) (xs : Vec (Fin m') m) (eq : m ≡ m') (eq' : m' ≡ m)
+  (irr : sym eq ≡ eq') → 
   lookup 
     (subst Fin eq i) 
     (subst Cauchy eq (subst (λ s → Vec (Fin s) m) eq' xs)) ≡
   lookup i xs
-lookup-subst' i xs refl refl = refl 
+lookup-subst' i xs refl .refl refl = refl
 
 trans-syml : {A : Set} {x y : A} → (p : x ≡ y) → trans (sym p) p ≡ refl
 trans-syml refl = refl
@@ -891,8 +899,9 @@ swap+idemp m n =
                     (raise n i)
                     (mapV (raise m) (allFin n) ++V 
                      mapV (inject+ n) (allFin m))
-                     (+-comm n m) 
-                     (+-comm m n)))
+                     (+-comm n m)
+                     (+-comm m n)
+                     (proof-irrelevance (sym (+-comm n m)) (+-comm m n))))
              (finext {n}
                (λ i → 
                  lookup 
@@ -910,7 +919,8 @@ swap+idemp m n =
                     (inject+ m i)
                     (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m))
                     (+-comm n m)
-                    (+-comm m n))) ⟩ 
+                    (+-comm m n)
+                    (proof-irrelevance (sym (+-comm n m)) (+-comm m n)))) ⟩ 
          tabulate {m} (λ i → 
            lookup
              (raise n i)
