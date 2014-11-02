@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+-- {-# OPTIONS --without-K #-}
 
 module Cauchy where
 
@@ -427,21 +427,14 @@ lookup-subst : ∀ {m m' n}
   subst Fin eq (lookup i xs)
 lookup-subst i xs refl = refl 
 
-{--
-lookup
-  (subst Fin (+-comm n m) (raise n i))
-  (subst Cauchy (+-comm n m) 
-    (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) xs))
-≡      
-lookup (raise n i) xs
-
-lookup 
-  (subst Fin (+-comm n m) (inject+ m i))
-  (subst Cauchy (+-comm n m) 
-    (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) xs))
-≡
-lookup (inject+ m i) xs
---}
+lookup-subst' : ∀ {m m'} 
+  (i : Fin m) (xs : Vec (Fin m') m) (eq : m ≡ m') → 
+  (eq' : m' ≡ m) → 
+  lookup 
+    (subst Fin eq i) 
+    (subst Cauchy eq (subst (λ s → Vec (Fin s) m) eq' xs)) ≡
+  lookup i xs
+lookup-subst' i xs refl refl = refl 
 
 trans-syml : {A : Set} {x y : A} → (p : x ≡ y) → trans (sym p) p ≡ refl
 trans-syml refl = refl
@@ -858,7 +851,44 @@ swap+idemp m n =
              (subst Cauchy (+-comm n m) 
                (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
                  (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))))
-         ≡⟨ {!!} ⟩ 
+         ≡⟨ cong₂ _++V_
+             (finext {m}
+               (λ i → 
+                 lookup
+                   (subst Fin (+-comm n m) (raise n i))
+                   (subst Cauchy (+-comm n m) 
+                     (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                       (mapV (raise m) (allFin n) ++V 
+                        mapV (inject+ n) (allFin m)))))
+               (λ i → 
+                 lookup
+                   (raise n i)
+                   (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))
+               (λ i → 
+                 lookup-subst' 
+                    (raise n i)
+                    (mapV (raise m) (allFin n) ++V 
+                     mapV (inject+ n) (allFin m))
+                     (+-comm n m) 
+                     (+-comm m n)))
+             (finext {n}
+               (λ i → 
+                 lookup 
+                   (subst Fin (+-comm n m) (inject+ m i))
+                   (subst Cauchy (+-comm n m) 
+                     (subst (λ s → Vec (Fin s) (n + m)) (+-comm m n) 
+                       (mapV (raise m) (allFin n) ++V 
+                        mapV (inject+ n) (allFin m)))))
+               (λ i → 
+                 lookup 
+                   (inject+ m i)
+                   (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m)))
+               (λ i → 
+                 lookup-subst'
+                    (inject+ m i)
+                    (mapV (raise m) (allFin n) ++V mapV (inject+ n) (allFin m))
+                    (+-comm n m)
+                    (+-comm m n))) ⟩ 
          tabulate {m} (λ i → 
            lookup
              (raise n i)
