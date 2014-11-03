@@ -1119,7 +1119,16 @@ rinv∼ {t} {PLUS ZERO .t} {uniti₊} =
            ≡⟨ scomplid (idcauchy (size t)) ⟩ 
          c2cauchy {PLUS ZERO t} id⟷ ∎)
   where open ≡-Reasoning
-rinv∼ {PLUS t₁ t₂} {PLUS .t₂ .t₁} {swap₊} = {!!}
+rinv∼ {PLUS t₁ t₂} {PLUS .t₂ .t₁} {swap₊} =
+  begin (c2cauchy {PLUS t₂ t₁} (swap₊ ◎ swap₊)
+           ≡⟨ refl ⟩ 
+         scompcauchy 
+           (swap+cauchy (size t₂) (size t₁))
+           (subst Cauchy (+-comm (size t₁) (size t₂)) 
+             (swap+cauchy (size t₁) (size t₂)))
+           ≡⟨ swap+idemp (size t₂) (size t₁) ⟩ 
+         c2cauchy {PLUS t₂ t₁} id⟷ ∎)
+  where open ≡-Reasoning
 rinv∼ {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} {assocl₊} = 
   begin (c2cauchy {PLUS (PLUS t₁ t₂) t₃} (assocr₊ ◎ assocl₊)
            ≡⟨ refl ⟩ 
@@ -1409,7 +1418,40 @@ rinv∼ {t₁} {t₃} {_◎_ {t₂ = t₂} c₁ c₂} =
            ≡⟨ rinv∼ {t₂} {t₃} {c₂} ⟩ 
          c2cauchy {t₃} id⟷ ∎)
   where open ≡-Reasoning
-rinv∼ {PLUS t₁ t₂} {PLUS t₃ t₄} {c₁ ⊕ c₂} = {!!}
+rinv∼ {PLUS t₁ t₂} {PLUS t₃ t₄} {c₁ ⊕ c₂} =
+  begin (c2cauchy {PLUS t₃ t₄} (((! c₁) ⊕ (! c₂)) ◎ (c₁ ⊕ c₂))
+           ≡⟨ refl ⟩ 
+         scompcauchy
+           (pcompcauchy (c2cauchy (! c₁)) (c2cauchy (! c₂)))
+           (subst Cauchy (cong₂ _+_ (size≡! (! c₁)) (size≡! (! c₂)))
+             (pcompcauchy (c2cauchy c₁) (c2cauchy c₂)))
+           ≡⟨ cong 
+                (scompcauchy (pcompcauchy (c2cauchy (! c₁)) (c2cauchy (! c₂))))
+                (subst₂+ 
+                  (size≡! (! c₁)) (size≡! (! c₂))
+                  (c2cauchy c₁) (c2cauchy c₂)
+                  pcompcauchy) ⟩
+         scompcauchy
+           (pcompcauchy (c2cauchy (! c₁)) (c2cauchy (! c₂)))
+           (pcompcauchy 
+             (subst Cauchy (size≡! (! c₁)) (c2cauchy c₁))
+             (subst Cauchy (size≡! (! c₂)) (c2cauchy c₂)))
+           ≡⟨ pcomp-dist 
+               (c2cauchy (! c₁))
+               (subst Cauchy (size≡! (! c₁)) (c2cauchy c₁))
+               (c2cauchy (! c₂)) (subst Cauchy (size≡! (! c₂)) (c2cauchy c₂)) ⟩
+         pcompcauchy 
+           (scompcauchy 
+             (c2cauchy (! c₁))
+             (subst Cauchy (size≡! (! c₁)) (c2cauchy c₁)))
+           (scompcauchy 
+             (c2cauchy (! c₂))
+             (subst Cauchy (size≡! (! c₂)) (c2cauchy c₂)))
+           ≡⟨ cong₂ pcompcauchy (rinv∼ {t₁} {t₃} {c₁}) (rinv∼ {t₂} {t₄} {c₂}) ⟩
+         pcompcauchy (c2cauchy {t₃} id⟷) (c2cauchy {t₄} id⟷)
+           ≡⟨ pcomp-id {size t₃} {size t₄} ⟩ 
+         c2cauchy {PLUS t₃ t₄} id⟷ ∎)
+  where open ≡-Reasoning
 rinv∼ {TIMES t₁ t₂} {TIMES t₃ t₄} {c₁ ⊗ c₂} = {!!}
 rinv∼ {PLUS ONE ONE} {BOOL} {foldBool} = 
   begin (c2cauchy {BOOL} (unfoldBool ◎ foldBool)

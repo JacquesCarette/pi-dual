@@ -5258,3 +5258,85 @@ swap+cauchy' m n with splitAt n (allFin (n + m))
     (subst (λ s → Vec (Fin s) n) (+-comm n m) zeron)
 --}
 
+{--
+
+-- Proofs about proofs.  Should be elsewhere
+
+sym-sym : {A : Set} {x y : A} → (p : x ≡ y) → sym (sym p) ≡ p
+sym-sym refl = refl
+
+trans-refl : {A : Set} {x y : A} → (p : x ≡ y) → trans p refl ≡ p
+trans-refl refl = refl
+
+-- Proof about natural numbers proof
+
+sym-comm : ∀ (m n : ℕ) → sym (+-comm m n) ≡ +-comm n m
+sym-comm 0 0 = refl
+sym-comm 0 (suc n) = 
+  begin (sym (sym (cong suc $ +-right-identity n))
+           ≡⟨ sym-sym (cong suc (+-right-identity n)) ⟩
+         cong suc (+-right-identity n)
+           ≡⟨ cong
+                (cong suc)
+                (trans (sym (sym-sym (+-right-identity n))) (sym-comm 0 n)) ⟩
+         cong suc (+-comm n 0)
+           ≡⟨ sym (trans-refl (cong suc (+-comm n 0))) ⟩
+         trans (cong suc (+-comm n 0)) (sym (+-suc 0 n)) ∎)
+  where open ≡-Reasoning
+sym-comm (suc m) 0 = {!!}
+sym-comm (suc m) (suc n) = {!!}
+
+--}
+
+{-- 
+
+these are all true, but not actually used!  And they cause termination
+issues in my older Agda, so I'll just comment them out for now.  JC
+
+i≰j→j≤i : (i j : ℕ) → (i ≰ j) → (j ≤ i) 
+i≰j→j≤i i 0 p = z≤n 
+i≰j→j≤i 0 (suc j) p with p z≤n
+i≰j→j≤i 0 (suc j) p | ()
+i≰j→j≤i (suc i) (suc j) p with i ≤? j
+i≰j→j≤i (suc i) (suc j) p | yes p' with p (s≤s p')
+i≰j→j≤i (suc i) (suc j) p | yes p' | ()
+i≰j→j≤i (suc i) (suc j) p | no p' = s≤s (i≰j→j≤i i j p')
+
+i≠j∧i≤j→i<j : (i j : ℕ) → (¬ i ≡ j) → (i ≤ j) → (i < j)
+i≠j∧i≤j→i<j 0 0 p≠ p≤ with p≠ refl
+i≠j∧i≤j→i<j 0 0 p≠ p≤ | ()
+i≠j∧i≤j→i<j 0 (suc j) p≠ p≤ = s≤s z≤n
+i≠j∧i≤j→i<j (suc i) 0 p≠ ()
+i≠j∧i≤j→i<j (suc i) (suc j) p≠ (s≤s p≤) with i ≟ j
+i≠j∧i≤j→i<j (suc i) (suc j) p≠ (s≤s p≤) | yes p' with p≠ (cong suc p')
+i≠j∧i≤j→i<j (suc i) (suc j) p≠ (s≤s p≤) | yes p' | ()
+i≠j∧i≤j→i<j (suc i) (suc j) p≠ (s≤s p≤) | no p' = s≤s (i≠j∧i≤j→i<j i j p' p≤)
+     
+i<j→i≠j : {i j : ℕ} → (i < j) → (¬ i ≡ j)
+i<j→i≠j {0} (s≤s p) ()
+i<j→i≠j {suc i} (s≤s p) refl = i<j→i≠j {i} p refl
+
+i<j→j≮i : {i j : ℕ} → (i < j) → (j ≮ i) 
+i<j→j≮i {0} (s≤s p) ()
+i<j→j≮i {suc i} (s≤s p) (s≤s q) = i<j→j≮i {i} p q
+
+i≰j∧j≠i→j<i : (i j : ℕ) → (i ≰ j) → (¬ j ≡ i) → j < i
+i≰j∧j≠i→j<i i j i≰j ¬j≡i = i≠j∧i≤j→i<j j i ¬j≡i (i≰j→j≤i i j i≰j)
+
+i≠j→j≠i : (i j : ℕ) → (¬ i ≡ j) → (¬ j ≡ i)
+i≠j→j≠i i j i≠j j≡i = i≠j (sym j≡i)
+
+si≠sj→i≠j : (i j : ℕ) → (¬ Data.Nat.suc i ≡ Data.Nat.suc j) → (¬ i ≡ j)
+si≠sj→i≠j i j ¬si≡sj i≡j = ¬si≡sj (cong suc i≡j)
+
+si≮sj→i≮j : (i j : ℕ) → (¬ Data.Nat.suc i < Data.Nat.suc j) → (¬ i < j)
+si≮sj→i≮j i j si≮sj i<j = si≮sj (s≤s i<j)
+
+i≮j∧i≠j→i≰j : (i j : ℕ) → (i ≮ j) → (¬ i ≡ j) → (i ≰ j)
+i≮j∧i≠j→i≰j 0 0 i≮j ¬i≡j i≤j = ¬i≡j refl
+i≮j∧i≠j→i≰j 0 (suc j) i≮j ¬i≡j i≤j = i≮j (s≤s z≤n)
+i≮j∧i≠j→i≰j (suc i) 0 i≮j ¬i≡j () 
+i≮j∧i≠j→i≰j (suc i) (suc j) si≮sj ¬si≡sj (s≤s i≤j) = 
+  i≮j∧i≠j→i≰j i j (si≮sj→i≮j i j si≮sj) (si≠sj→i≠j i j ¬si≡sj) i≤j
+-}
+
