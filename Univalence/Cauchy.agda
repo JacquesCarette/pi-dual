@@ -1103,6 +1103,18 @@ tcompcauchy {m} {n} α β =
          mapV (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)) β)
       α)
 
+tcomp-id : ∀ {m n} → tcompcauchy (idcauchy m) (idcauchy n) ≡ idcauchy (m * n)
+tcomp-id {m} {n} = 
+  begin (concatV 
+          (mapV 
+            (λ b → 
+              mapV (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                   (allFin n))
+            (allFin m))
+    ≡⟨ {!!} ⟩ 
+  idcauchy (m * n) ∎)
+  where open ≡-Reasoning
+
 -- swap⋆ 
 -- 
 -- This is essentially the classical problem of in-place matrix transpose:
