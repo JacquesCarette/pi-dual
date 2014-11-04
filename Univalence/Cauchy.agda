@@ -1115,6 +1115,14 @@ tcomp-id {m} {n} =
   idcauchy (m * n) ∎)
   where open ≡-Reasoning
 
+{--
+tcompcauchy (idcauchy 3) (idcauchy 2) 
+= 
+[0, 1, 2] ++ [0, 1, 2] ++ [0, 1, 2]
+
+
+--}
+
 tcomp-dist : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
   scompcauchy (tcompcauchy pm pn) (tcompcauchy qm qn) ≡
   tcompcauchy (scompcauchy pm qm) (scompcauchy pn qn)
