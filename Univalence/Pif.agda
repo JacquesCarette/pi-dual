@@ -1076,7 +1076,11 @@ linv∼ {TIMES t₁ t₂} {TIMES t₃ t₄} {c₁ ⊗ c₂} =
            (tcompcauchy
              (subst Cauchy (size≡! c₁) (c2cauchy (! c₁)))
              (subst Cauchy (size≡! c₂) (c2cauchy (! c₂))))
-           ≡⟨ {!!} ⟩ 
+           ≡⟨ tcomp-dist
+                (c2cauchy c₁)
+                (subst Cauchy (size≡! c₁) (c2cauchy (! c₁))) 
+                (c2cauchy c₂)
+                (subst Cauchy (size≡! c₂) (c2cauchy (! c₂))) ⟩
          tcompcauchy
            (scompcauchy 
              (c2cauchy c₁)
@@ -1086,7 +1090,7 @@ linv∼ {TIMES t₁ t₂} {TIMES t₃ t₄} {c₁ ⊗ c₂} =
              (subst Cauchy (size≡! c₂) (c2cauchy (! c₂))))
            ≡⟨ cong₂ tcompcauchy (linv∼ {t₁} {t₃} {c₁}) (linv∼ {t₂} {t₄} {c₂}) ⟩ 
          tcompcauchy (c2cauchy {t₁} id⟷) (c2cauchy {t₂} id⟷)
-           ≡⟨ {!!} ⟩ 
+           ≡⟨ tcomp-id {size t₁} {size t₂} ⟩ 
          c2cauchy {TIMES t₁ t₂} id⟷ ∎)
   where open ≡-Reasoning
 linv∼ {PLUS ONE ONE} {BOOL} {foldBool} = 

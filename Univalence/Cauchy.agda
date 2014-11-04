@@ -1115,6 +1115,34 @@ tcomp-id {m} {n} =
   idcauchy (m * n) ∎)
   where open ≡-Reasoning
 
+tcomp-dist : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
+  scompcauchy (tcompcauchy pm pn) (tcompcauchy qm qn) ≡
+  tcompcauchy (scompcauchy pm qm) (scompcauchy pn qn)
+tcomp-dist {m} {n} pm qm pn qn =
+  begin (scompcauchy (tcompcauchy pm pn) (tcompcauchy qm qn)
+           ≡⟨ refl ⟩
+         tabulate (λ i →
+           lookup
+             (lookup i (concatV 
+                         (mapV 
+                           (λ b → 
+                             mapV (λ d →
+                               inject≤
+                                 (fromℕ (toℕ b * n + toℕ d))
+                                 (i*n+k≤m*n b d)) pn)
+                           pm)))
+             (concatV 
+               (mapV 
+                 (λ b → 
+                   mapV (λ d →
+                     inject≤
+                       (fromℕ (toℕ b * n + toℕ d))
+                       (i*n+k≤m*n b d)) qn)
+                 qm)))
+           ≡⟨  {!!} ⟩
+         tcompcauchy (scompcauchy pm qm) (scompcauchy pn qn) ∎)
+  where open ≡-Reasoning
+              
 -- swap⋆ 
 -- 
 -- This is essentially the classical problem of in-place matrix transpose:
