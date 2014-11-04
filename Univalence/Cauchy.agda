@@ -1104,17 +1104,27 @@ tcompcauchy {m} {n} α β =
       α)
 
 -- this is a non-dependently typed version of tensor product of vectors.
-tensorvec : ∀ {m n} {A B C : Set} → (A → B → C) → Vec A m → Vec B n → Vec C (m * n)
-tensorvec {Data.Nat.zero} _ [] _ = []
-tensorvec {suc m} {n} {C = C} f (x ∷ α) β = subst (λ i → Vec C (n + m * n)) (+-*-suc m n) (mapV (f x) β ++V tensorvec f α β)
+
+tensorvec : ∀ {m n} {A B C : Set} →
+            (A → B → C) → Vec A m → Vec B n → Vec C (m * n)
+tensorvec {0} _ [] _ = []
+tensorvec {suc m} {n} {C = C} f (x ∷ α) β =
+  subst
+    (λ i → Vec C (n + m * n))
+    (+-*-suc m n)
+    (mapV (f x) β ++V tensorvec f α β)
 
 -- this is a better template
+
 tensorvec' : ∀ {A B C : ℕ → Set} → (∀ {m n} → A m → B n → C (m * n)) →
     (∀ {m} → (n : ℕ) → C m → C (n + m)) → 
     ∀ {m n j} →  Vec (A m) j → Vec (B n) n → Vec (C (m * n)) (j * n)
-tensorvec' _ _ {j = Data.Nat.zero} [] _ = []
-tensorvec' {A} {B} {C} f shift {m} {n} {suc j} (x ∷ α) β = subst (λ i → Vec (C (m * n)) (n + j * n)) (+-*-suc j n) 
-  (mapV (f x) β ++V (tensorvec' {A} {B} {C} f shift α β))
+tensorvec' _ _ {j = 0} [] _ = []
+tensorvec' {A} {B} {C} f shift {m} {n} {suc j} (x ∷ α) β =
+  subst
+    (λ i → Vec (C (m * n)) (n + j * n))
+    (+-*-suc j n) 
+    (mapV (f x) β ++V (tensorvec' {A} {B} {C} f shift α β))
 
 tcomp-id : ∀ {m n} → tcompcauchy (idcauchy m) (idcauchy n) ≡ idcauchy (m * n)
 tcomp-id {m} {n} = 
@@ -1129,11 +1139,114 @@ tcomp-id {m} {n} =
   where open ≡-Reasoning
 
 {--
-tcompcauchy (idcauchy 3) (idcauchy 2) 
-= 
-[0, 1, 2] ++ [0, 1, 2] ++ [0, 1, 2]
+postulate
+  a b c : Fin 3
+  x y : Fin 2
 
+tcompcauchy (a ∷ b ∷ c ∷ []) (x ∷ y ∷ [])
 
+inject≤ (fromℕ (toℕ a * 2 + toℕ x))
+(.Data.Nat._.trans
+ (.Data.Nat._.refl′ (cong suc (+-comm (toℕ a * 2) (toℕ x))))
+ (.Data.Nat._.trans (s≤s (.Data.Nat._.refl′ refl))
+  (.Data.Nat._.trans (cong+r≤ (bounded x) (toℕ a * 2))
+   (.Data.Nat._.trans
+    (.Data.Nat._.trans
+     (.Data.Nat._.refl′
+      (trans
+       (cong suc
+        (trans (cong suc (sym (+-right-identity (toℕ a * 2))))
+         (trans (sym (+-suc (toℕ a * 2) 0)) refl)))
+       (trans (sym (+-suc (toℕ a * 2) 1)) refl)))
+     (.Data.Nat._.trans (cong+r≤ (cong*r≤ (sinj≤ (bounded a)) 2) 2)
+      (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))))))
+    (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))))))))
+∷
+inject≤ (fromℕ (toℕ a * 2 + toℕ y))
+(.Data.Nat._.trans
+ (.Data.Nat._.refl′ (cong suc (+-comm (toℕ a * 2) (toℕ y))))
+ (.Data.Nat._.trans (s≤s (.Data.Nat._.refl′ refl))
+  (.Data.Nat._.trans (cong+r≤ (bounded y) (toℕ a * 2))
+   (.Data.Nat._.trans
+    (.Data.Nat._.trans
+     (.Data.Nat._.refl′
+      (trans
+       (cong suc
+        (trans (cong suc (sym (+-right-identity (toℕ a * 2))))
+         (trans (sym (+-suc (toℕ a * 2) 0)) refl)))
+       (trans (sym (+-suc (toℕ a * 2) 1)) refl)))
+     (.Data.Nat._.trans (cong+r≤ (cong*r≤ (sinj≤ (bounded a)) 2) 2)
+      (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))))))
+    (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))))))))
+∷
+inject≤ (fromℕ (toℕ b * 2 + toℕ x))
+(.Data.Nat._.trans
+ (.Data.Nat._.refl′ (cong suc (+-comm (toℕ b * 2) (toℕ x))))
+ (.Data.Nat._.trans (s≤s (.Data.Nat._.refl′ refl))
+  (.Data.Nat._.trans (cong+r≤ (bounded x) (toℕ b * 2))
+   (.Data.Nat._.trans
+    (.Data.Nat._.trans
+     (.Data.Nat._.refl′
+      (trans
+       (cong suc
+        (trans (cong suc (sym (+-right-identity (toℕ b * 2))))
+         (trans (sym (+-suc (toℕ b * 2) 0)) refl)))
+       (trans (sym (+-suc (toℕ b * 2) 1)) refl)))
+     (.Data.Nat._.trans (cong+r≤ (cong*r≤ (sinj≤ (bounded b)) 2) 2)
+      (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))))))
+    (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))))))))
+∷
+inject≤ (fromℕ (toℕ b * 2 + toℕ y))
+(.Data.Nat._.trans
+ (.Data.Nat._.refl′ (cong suc (+-comm (toℕ b * 2) (toℕ y))))
+ (.Data.Nat._.trans (s≤s (.Data.Nat._.refl′ refl))
+  (.Data.Nat._.trans (cong+r≤ (bounded y) (toℕ b * 2))
+   (.Data.Nat._.trans
+    (.Data.Nat._.trans
+     (.Data.Nat._.refl′
+      (trans
+       (cong suc
+        (trans (cong suc (sym (+-right-identity (toℕ b * 2))))
+         (trans (sym (+-suc (toℕ b * 2) 0)) refl)))
+       (trans (sym (+-suc (toℕ b * 2) 1)) refl)))
+     (.Data.Nat._.trans (cong+r≤ (cong*r≤ (sinj≤ (bounded b)) 2) 2)
+      (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))))))
+    (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))))))))
+∷
+inject≤ (fromℕ (toℕ c * 2 + toℕ x))
+(.Data.Nat._.trans
+ (.Data.Nat._.refl′ (cong suc (+-comm (toℕ c * 2) (toℕ x))))
+ (.Data.Nat._.trans (s≤s (.Data.Nat._.refl′ refl))
+  (.Data.Nat._.trans (cong+r≤ (bounded x) (toℕ c * 2))
+   (.Data.Nat._.trans
+    (.Data.Nat._.trans
+     (.Data.Nat._.refl′
+      (trans
+       (cong suc
+        (trans (cong suc (sym (+-right-identity (toℕ c * 2))))
+         (trans (sym (+-suc (toℕ c * 2) 0)) refl)))
+       (trans (sym (+-suc (toℕ c * 2) 1)) refl)))
+     (.Data.Nat._.trans (cong+r≤ (cong*r≤ (sinj≤ (bounded c)) 2) 2)
+      (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))))))
+    (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))))))))
+∷
+inject≤ (fromℕ (toℕ c * 2 + toℕ y))
+(.Data.Nat._.trans
+ (.Data.Nat._.refl′ (cong suc (+-comm (toℕ c * 2) (toℕ y))))
+ (.Data.Nat._.trans (s≤s (.Data.Nat._.refl′ refl))
+  (.Data.Nat._.trans (cong+r≤ (bounded y) (toℕ c * 2))
+   (.Data.Nat._.trans
+    (.Data.Nat._.trans
+     (.Data.Nat._.refl′
+      (trans
+       (cong suc
+        (trans (cong suc (sym (+-right-identity (toℕ c * 2))))
+         (trans (sym (+-suc (toℕ c * 2) 0)) refl)))
+       (trans (sym (+-suc (toℕ c * 2) 1)) refl)))
+     (.Data.Nat._.trans (cong+r≤ (cong*r≤ (sinj≤ (bounded c)) 2) 2)
+      (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))))))
+    (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))))))))
+∷ []
 --}
 
 tcomp-dist : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
