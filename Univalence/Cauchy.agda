@@ -12,7 +12,7 @@ open import Relation.Binary.PropositionalEquality.TrustMe
 open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
-        *-assoc; *-comm; *-right-zero; distribʳ-*-+)
+        *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
 open import Data.Nat.DivMod using (_mod_)
 open import Relation.Binary using (Rel; Decidable; Setoid)
 open import Relation.Binary.Core using (Transitive)
@@ -1102,6 +1102,19 @@ tcompcauchy {m} {n} α β =
       (λ b → 
          mapV (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)) β)
       α)
+
+-- this is a non-dependently typed version of tensor product of vectors.
+tensorvec : ∀ {m n} {A B C : Set} → (A → B → C) → Vec A m → Vec B n → Vec C (m * n)
+tensorvec {Data.Nat.zero} _ [] _ = []
+tensorvec {suc m} {n} {C = C} f (x ∷ α) β = subst (λ i → Vec C (n + m * n)) (+-*-suc m n) (mapV (f x) β ++V tensorvec f α β)
+
+-- this is a better template
+tensorvec' : ∀ {A B C : ℕ → Set} → (∀ {m n} → A m → B n → C (m * n)) →
+    (∀ {m} → (n : ℕ) → C m → C (n + m)) → 
+    ∀ {m n j} →  Vec (A m) j → Vec (B n) n → Vec (C (m * n)) (j * n)
+tensorvec' _ _ {j = Data.Nat.zero} [] _ = []
+tensorvec' {A} {B} {C} f shift {m} {n} {suc j} (x ∷ α) β = subst (λ i → Vec (C (m * n)) (n + j * n)) (+-*-suc j n) 
+  (mapV (f x) β ++V (tensorvec' {A} {B} {C} f shift α β))
 
 tcomp-id : ∀ {m n} → tcompcauchy (idcauchy m) (idcauchy n) ≡ idcauchy (m * n)
 tcomp-id {m} {n} = 
