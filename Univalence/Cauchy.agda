@@ -1126,6 +1126,72 @@ tensorvec' {A} {B} {C} f shift {m} {n} {suc j} (x ∷ α) β =
     (+-*-suc j n) 
     (mapV (f x) β ++V (tensorvec' {A} {B} {C} f shift α β))
 
+{--
+allFin (suc m * n)
+= 
+allFin (n + (m * n))
+= 
+mapV (inject+ (m * n)) (allFin n) ++V 
+mapV (raise n) (allFin (m * n))
+
+
+allFin (4 * 2)
+= 
+mapV (inject+ (3 * 2)) (allFin 2) ++V 
+mapV (raise 2) (mapV (inject+ (2 * 2)) (allFin 2) ++V 
+                mapV (raise 2) (mapV (inject+ (1 * 2)) (allFin 2) ++V 
+                                mapV (raise 2) (mapV (inject+ 0) (allFin 2) ++V 
+                                                mapV (raise 2) [])))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+allFin (4 * 2)
+= 
+allFin (2 + (3 * 2))
+= 
+mapV (inject+ (3 * 2)) (allFin 2) ++V 
+mapV (raise 2) (allFin (3 * 2))
+
+allFin (3 * 2)
+= 
+allFin (2 + (2 * 2))
+= 
+mapV (inject+ (2 * 2)) (allFin 2) ++V 
+mapV (raise 2) (allFin (2 * 2))
+
+allFin (2 * 2)
+= 
+allFin (2 + (1 * 2))
+= 
+mapV (inject+ (1 * 2)) (allFin 2) ++V 
+mapV (raise 2) (allFin (1 * 2))
+
+allFin (1 * 2)
+= 
+allFin (2 + (0 * 2))
+= 
+mapV (inject+ (0 * 2)) (allFin 2) ++V 
+mapV (raise 2) (allFin (0 * 2))
+
+allFin (0 * 2)
+= 
+[] 
+
+
+--}
+
+
 allFin* : (m n : ℕ) → allFin (m * n) ≡ 
           concatV 
             (mapV 
@@ -1170,7 +1236,22 @@ allFin* (suc m) n =
                 mapV
                   (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
                   (allFin n))
-              (tabulate {m} suc)))
+              (mapV suc (allFin m))))
+
+
+
+-- suc (toℕ zero * n + toℕ d) ≤ suc m * n
+-- suc (0 * n + toℕ d) ≤ suc m * n
+-- suc (toℕ d) ≤ suc m * n
+
+-- inject< : Fin (suc (toℕ d)) → ... → Fin (suc m * n)
+
+
+-- i*n+k≤m*n : ∀ {m n} → (i : Fin m) → (k : Fin n) → 
+--             (suc (toℕ i * n + toℕ k) ≤ m * n)
+
+
+
            ≡⟨ {!!} ⟩ 
          concatV 
            (mapV 
@@ -1178,7 +1259,7 @@ allFin* (suc m) n =
                mapV
                  (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
                  (allFin n))
-             (zero ∷ tabulate {m} suc))
+             (zero ∷ mapV suc (allFin m)))
            ≡⟨ {!!} ⟩ 
          concatV 
            (mapV 
