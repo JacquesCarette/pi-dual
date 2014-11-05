@@ -1126,6 +1126,69 @@ tensorvec' {A} {B} {C} f shift {m} {n} {suc j} (x ∷ α) β =
     (+-*-suc j n) 
     (mapV (f x) β ++V (tensorvec' {A} {B} {C} f shift α β))
 
+allFin* : (m n : ℕ) → allFin (m * n) ≡ 
+          concatV 
+            (mapV 
+              (λ b → 
+                mapV
+                  (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                  (allFin n))
+              (allFin m))
+allFin* 0 _ = refl
+allFin* (suc m) n =
+  begin (allFin (suc m * n)
+           ≡⟨ refl ⟩
+         allFin (n + m * n)
+           ≡⟨ allFin+ n (m * n) ⟩
+         mapV (inject+ (m * n)) (allFin n) ++V mapV (raise n) (allFin (m * n))
+           ≡⟨ cong
+                (λ x →
+                  mapV (inject+ (m * n)) (allFin n) ++V mapV (raise n) x)
+                (allFin* m n) ⟩ 
+         mapV (inject+ (m * n)) (allFin n) ++V
+         mapV
+           (raise n)
+           (concatV 
+             (mapV 
+               (λ b → 
+                 mapV
+                   (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                   (allFin n))
+               (allFin m)))
+           ≡⟨ {!!} ⟩ 
+         concatV 
+           ((mapV
+              (λ d → inject≤
+                       {suc (toℕ d)}
+                       {suc m * n}
+                       (fromℕ (toℕ d))
+                       (i*n+k≤m*n {suc m} {n} zero d))
+              (allFin n))
+            ∷ 
+            (mapV 
+              (λ b → 
+                mapV
+                  (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                  (allFin n))
+              (tabulate {m} suc)))
+           ≡⟨ {!!} ⟩ 
+         concatV 
+           (mapV 
+             (λ b → 
+               mapV
+                 (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                 (allFin n))
+             (zero ∷ tabulate {m} suc))
+           ≡⟨ {!!} ⟩ 
+         concatV 
+           (mapV 
+             (λ b → 
+               mapV
+                 (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                 (allFin n))
+             (allFin (suc m))) ∎)
+  where open ≡-Reasoning
+
 tcomp-id : ∀ {m n} → tcompcauchy (idcauchy m) (idcauchy n) ≡ idcauchy (m * n)
 tcomp-id {m} {n} = 
   begin (concatV 
