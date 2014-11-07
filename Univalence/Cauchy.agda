@@ -119,6 +119,25 @@ sinj≤ {0}     {j}     _        = z≤n
 sinj≤ {suc i} {0}     (s≤s ()) -- absurd
 sinj≤ {suc i} {suc j} (s≤s p)  = p
 
+i*n+n≤sucm*n : ∀ {m n} → (i : Fin (suc m)) → (toℕ i * n + n ≤ suc m * n)
+i*n+n≤sucm*n {0} {n} zero =
+  begin (n
+           ≡⟨ sym (+-right-identity n) ⟩
+         n + 0
+           ≤⟨ i≤i (n + 0) ⟩ 
+         n + 0 ∎)
+  where open ≤-Reasoning
+i*n+n≤sucm*n {0} {n} (suc ())
+i*n+n≤sucm*n {suc m} {n} i = 
+  begin (toℕ i * n + n
+           ≡⟨ +-comm (toℕ i * n) n ⟩
+         n + toℕ i * n
+           ≡⟨ refl ⟩
+         suc (toℕ i) * n
+           ≤⟨ cong*r≤ (bounded i) n ⟩ 
+         suc (suc m) * n ∎)
+  where open ≤-Reasoning
+
 i*n+k≤m*n : ∀ {m n} → (i : Fin m) → (k : Fin n) → 
             (suc (toℕ i * n + toℕ k) ≤ m * n)
 i*n+k≤m*n {0} {_} () _
@@ -1126,25 +1145,6 @@ tensorvec' {A} {B} {C} f shift {m} {n} {suc j} (x ∷ α) β =
     (+-*-suc j n) 
     (mapV (f x) β ++V (tensorvec' {A} {B} {C} f shift α β))
 
-i*n+n≤sucm*n : ∀ {m n} → (i : Fin (suc m)) → (toℕ i * n + n ≤ suc m * n)
-i*n+n≤sucm*n {0} {n} zero =
-  begin (n
-           ≡⟨ sym (+-right-identity n) ⟩
-         n + 0
-           ≤⟨ i≤i (n + 0) ⟩ 
-         n + 0 ∎)
-  where open ≤-Reasoning
-i*n+n≤sucm*n {0} {n} (suc ())
-i*n+n≤sucm*n {suc m} {n} i = 
-  begin (toℕ i * n + n
-           ≡⟨ +-comm (toℕ i * n) n ⟩
-         n + toℕ i * n
-           ≡⟨ refl ⟩
-         suc (toℕ i) * n
-           ≤⟨ cong*r≤ (bounded i) n ⟩ 
-         suc (suc m) * n ∎)
-  where open ≤-Reasoning
-
 -- raise d by b*n and inject in m*n
 
 raise∘inject : ∀ {m n} → (b : Fin m) (d : Fin n) → Fin (m * n)
@@ -1154,163 +1154,10 @@ raise∘inject {suc m} {n} b d = inject≤ (raise (toℕ b * n) d) (i*n+n≤sucm
 tcompcauchy' : ∀ {i m n} → Vec (Fin m) i → Cauchy n → Vec (Fin (m * n)) (i * n)
 tcompcauchy' {0} {m} {n} [] β = []
 tcompcauchy' {suc i} {m} {n} (b ∷ α) β = 
-  mapV (λ d → raise∘inject {m} {n} b d) β ++V
-  tcompcauchy' {i} {m} {n} α β
-
-
-{-- TO DELETE 
-
-xx : Cauchy 3
-xx = fromℕ 2 ∷ zero ∷ inject+ 1 (fromℕ 1) ∷ []
--- xx = 2 ∷ 0 ∷ 1 ∷ []
-
-yy : Cauchy 2
-yy = fromℕ 1 ∷ zero ∷ []
--- yy = 1 ∷ 0 ∷ []
-
--- tcompcauchy xx yy = 5 ∷ 4  ∷  1 ∷ 0  ∷  3 ∷ 2  ∷  []
--- tcompcauchy' xx yy = 5 ∷ 4  ∷  1 ∷ 0  ∷  3 ∷ 2  ∷  []
--- yy (+2*2) ++ yy (+0*2) ++ yy (+1*2)
-
-
--- i = 3, m = 3, n = 2, b = 2, α = [0,1], β = [1,0] ==> yy (+ 2*2)
--- i = 2, m = 3, n = 2, b = 0, α = [1],   β = [1,0] ==> yy (+ 0*2)
--- i = 1, m = 3, n = 2, b = 1, α = [],    β = [1,0] ==> yy (+ 1*2)
--- i = 0, m = 3, n = 2                              ==> []
-
--- b : Fin m, d : Fin n
--- α : Vec (Fin m) i
--- tcom... : Vec (Fin (m * n)) (i * n)
--- xxx : Vec (Fin (m * n)) n
-
--- i*n+k≤m*n : ∀ {m n} → (i : Fin m) → (k : Fin n) → 
---             (suc (toℕ i * n + toℕ k) ≤ m * n)
-
--- suc (b * n + d)
-
--- tcompcauchy : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m * n)
--- tcompcauchy {m} {n} α β = 
---   concatV 
---     (mapV 
---       (λ b → 
---         mapV
---           (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
---           β)
---      α)
-
--- tcompcauchy {m} {n} α β
--- = 
--- concatV [ 
---   mapV ((raise n)^{0}   ∘ inject+ (m-1 * n)) β , 
---   mapV ((raise n)^{1}   ∘ inject+ (m-2 * n)) β , 
---   mapV ((raise n)^{2}   ∘ inject+ (m-3 * n)) β , 
---   ...
---   mapV ((raise n)^{m-1} ∘ inject+ (0   * n)) β , 
---   [] 
--- ]
-
-
-
-
--- allFin (m * n) 
--- = 
--- concatV [ 
---   mapV ((raise n)^{0}   ∘ inject+ (m-1 * n)) (allFin n) , 
---   mapV ((raise n)^{1}   ∘ inject+ (m-2 * n)) (allFin n) , 
---   mapV ((raise n)^{2}   ∘ inject+ (m-3 * n)) (allFin n) , 
---   ...
---   mapV ((raise n)^{m-1} ∘ inject+ (0   * n)) (allFin n) , 
---   [] 
--- ]
-
-
--- Cauchy n = Vec (Fin n) n
--- (x ∷ α) : Cauchy (suc m) = Vec (Fin (suc m)) (suc m)
--- x : Fin (suc m)
--- α : Vec (Fin (suc m)) m
-
-tcompcauchy (a ∷ b ∷ c ∷ []) (x ∷ y ∷ [])
-=
-[ a*2 + x, a*2 + y, b*2 + x , b*2 + y, c*2 + x, c*2 + y ]
-
-tcompcauchy (b ∷ c ∷ []) (x ∷ y ∷ [])
-=
-[ b*2 + x , b*2 + y, c*2 + x, c*2 + y ]
-
-allFin (suc m * n)
-= 
-allFin (n + (m * n))
-= 
-mapV (inject+ (m * n)) (allFin n) ++V 
-mapV (raise n) (allFin (m * n))
-
-
-allFin (4 * 2)
-= 
-mapV (inject+ (3 * 2)) (allFin 2) ++V 
-mapV (raise 2) (mapV (inject+ (2 * 2)) (allFin 2) ++V 
-                mapV (raise 2) (mapV (inject+ (1 * 2)) (allFin 2) ++V 
-                                mapV (raise 2) (mapV (inject+ 0) (allFin 2) ++V 
-                                                mapV (raise 2) [])))
-= 
-mapV (inject+ (3 * 2)) (allFin 2) ++V 
-mapV (raise 2 ∘ inject+ (2 * 2)) (allFin 2) ++V 
-mapV (raise 2 ∘ raise 2 ∘ inject+ (1 * 2)) (allFin 2) ++V 
-mapV (raise 2 ∘ raise 2 ∘ raise 2 ∘ inject+ 0) (allFin 2) ++V 
-mapV (raise 2 ∘ raise 2 ∘ raise 2 ∘ raise 2) []
-
-= 
-concatV [ 
-  mapV (inject+ (3 * 2)) (allFin 2) , 
-  mapV (raise 2 ∘ inject+ (2 * 2)) (allFin 2) , 
-  mapV (raise 2 ∘ raise 2 ∘ inject+ (1 * 2)) (allFin 2) , 
-  mapV (raise 2 ∘ raise 2 ∘ raise 2 ∘ inject+ 0) (allFin 2) , 
-  mapV (raise 2 ∘ raise 2 ∘ raise 2 ∘ raise 2) [] ]
-
-allFin (m * n) 
-= 
-concatV [ 
-  mapV ((raise n)^{0}   ∘ inject+ (m-1 * n)) (allFin n) , 
-  mapV ((raise n)^{1}   ∘ inject+ (m-2 * n)) (allFin n) , 
-  mapV ((raise n)^{2}   ∘ inject+ (m-3 * n)) (allFin n) , 
-  ...
-  mapV ((raise n)^{m-1} ∘ inject+ (0   * n)) (allFin n) , 
-  [] 
-]
-
-allFin (4 * 2)
-= 
-allFin (2 + (3 * 2))
-= 
-mapV (inject+ (3 * 2)) (allFin 2) ++V 
-mapV (raise 2) (allFin (3 * 2))
-
-allFin (3 * 2)
-= 
-allFin (2 + (2 * 2))
-= 
-mapV (inject+ (2 * 2)) (allFin 2) ++V 
-mapV (raise 2) (allFin (2 * 2))
-
-allFin (2 * 2)
-= 
-allFin (2 + (1 * 2))
-= 
-mapV (inject+ (1 * 2)) (allFin 2) ++V 
-mapV (raise 2) (allFin (1 * 2))
-
-allFin (1 * 2)
-= 
-allFin (2 + (0 * 2))
-= 
-mapV (inject+ (0 * 2)) (allFin 2) ++V 
-mapV (raise 2) (allFin (0 * 2))
-
-allFin (0 * 2)
-= 
-[] 
-
---}
+  mapV (raise∘inject {m} {n} b) β ++V tcompcauchy' {i} {m} {n} α β
+    
+tcompcauchy2 : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m * n)
+tcompcauchy2 = tcompcauchy'
 
 allFin* : (m n : ℕ) → allFin (m * n) ≡ 
           concatV 
@@ -1403,6 +1250,151 @@ tcomp-id {m} {n} =
   where open ≡-Reasoning
 
 {--
+
+xx : Cauchy 3
+xx = fromℕ 2 ∷ zero ∷ inject+ 1 (fromℕ 1) ∷ []
+-- xx = 2 ∷ 0 ∷ 1 ∷ []
+
+yy : Cauchy 2
+yy = fromℕ 1 ∷ zero ∷ []
+-- yy = 1 ∷ 0 ∷ []
+
+-- tcompcauchy xx yy = 5 ∷ 4  ∷  1 ∷ 0  ∷  3 ∷ 2  ∷  []
+-- tcompcauchy' xx yy = 5 ∷ 4  ∷  1 ∷ 0  ∷  3 ∷ 2  ∷  []
+-- yy (+2*2) ++ yy (+0*2) ++ yy (+1*2)
+
+-- i = 3, m = 3, n = 2, b = 2, α = [0,1], β = [1,0] ==> yy (+ 2*2)
+-- i = 2, m = 3, n = 2, b = 0, α = [1],   β = [1,0] ==> yy (+ 0*2)
+-- i = 1, m = 3, n = 2, b = 1, α = [],    β = [1,0] ==> yy (+ 1*2)
+-- i = 0, m = 3, n = 2                              ==> []
+
+-- b : Fin m, d : Fin n
+-- α : Vec (Fin m) i
+-- tcom... : Vec (Fin (m * n)) (i * n)
+-- xxx : Vec (Fin (m * n)) n
+
+-- i*n+k≤m*n : ∀ {m n} → (i : Fin m) → (k : Fin n) → 
+--             (suc (toℕ i * n + toℕ k) ≤ m * n)
+
+-- suc (b * n + d)
+
+-- tcompcauchy : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m * n)
+-- tcompcauchy {m} {n} α β = 
+--   concatV 
+--     (mapV 
+--       (λ b → 
+--         mapV
+--           (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+--           β)
+--      α)
+
+-- tcompcauchy {m} {n} α β
+-- = 
+-- concatV [ 
+--   mapV ((raise n)^{0}   ∘ inject+ (m-1 * n)) β , 
+--   mapV ((raise n)^{1}   ∘ inject+ (m-2 * n)) β , 
+--   mapV ((raise n)^{2}   ∘ inject+ (m-3 * n)) β , 
+--   ...
+--   mapV ((raise n)^{m-1} ∘ inject+ (0   * n)) β , 
+--   [] 
+-- ]
+
+-- allFin (m * n) 
+-- = 
+-- concatV [ 
+--   mapV ((raise n)^{0}   ∘ inject+ (m-1 * n)) (allFin n) , 
+--   mapV ((raise n)^{1}   ∘ inject+ (m-2 * n)) (allFin n) , 
+--   mapV ((raise n)^{2}   ∘ inject+ (m-3 * n)) (allFin n) , 
+--   ...
+--   mapV ((raise n)^{m-1} ∘ inject+ (0   * n)) (allFin n) , 
+--   [] 
+-- ]
+
+-- Cauchy n = Vec (Fin n) n
+-- (x ∷ α) : Cauchy (suc m) = Vec (Fin (suc m)) (suc m)
+-- x : Fin (suc m)
+-- α : Vec (Fin (suc m)) m
+
+tcompcauchy (a ∷ b ∷ c ∷ []) (x ∷ y ∷ [])
+=
+[ a*2 + x, a*2 + y, b*2 + x , b*2 + y, c*2 + x, c*2 + y ]
+
+tcompcauchy (b ∷ c ∷ []) (x ∷ y ∷ [])
+=
+[ b*2 + x , b*2 + y, c*2 + x, c*2 + y ]
+
+allFin (suc m * n)
+= 
+allFin (n + (m * n))
+= 
+mapV (inject+ (m * n)) (allFin n) ++V 
+mapV (raise n) (allFin (m * n))
+
+allFin (4 * 2)
+= 
+mapV (inject+ (3 * 2)) (allFin 2) ++V 
+mapV (raise 2) (mapV (inject+ (2 * 2)) (allFin 2) ++V 
+                mapV (raise 2) (mapV (inject+ (1 * 2)) (allFin 2) ++V 
+                                mapV (raise 2) (mapV (inject+ 0) (allFin 2) ++V 
+                                                mapV (raise 2) [])))
+= 
+mapV (inject+ (3 * 2)) (allFin 2) ++V 
+mapV (raise 2 ∘ inject+ (2 * 2)) (allFin 2) ++V 
+mapV (raise 2 ∘ raise 2 ∘ inject+ (1 * 2)) (allFin 2) ++V 
+mapV (raise 2 ∘ raise 2 ∘ raise 2 ∘ inject+ 0) (allFin 2) ++V 
+mapV (raise 2 ∘ raise 2 ∘ raise 2 ∘ raise 2) []
+
+= 
+concatV [ 
+  mapV (inject+ (3 * 2)) (allFin 2) , 
+  mapV (raise 2 ∘ inject+ (2 * 2)) (allFin 2) , 
+  mapV (raise 2 ∘ raise 2 ∘ inject+ (1 * 2)) (allFin 2) , 
+  mapV (raise 2 ∘ raise 2 ∘ raise 2 ∘ inject+ 0) (allFin 2) , 
+  mapV (raise 2 ∘ raise 2 ∘ raise 2 ∘ raise 2) [] ]
+
+allFin (m * n) 
+= 
+concatV [ 
+  mapV ((raise n)^{0}   ∘ inject+ (m-1 * n)) (allFin n) , 
+  mapV ((raise n)^{1}   ∘ inject+ (m-2 * n)) (allFin n) , 
+  mapV ((raise n)^{2}   ∘ inject+ (m-3 * n)) (allFin n) , 
+  ...
+  mapV ((raise n)^{m-1} ∘ inject+ (0   * n)) (allFin n) , 
+  [] 
+]
+
+allFin (4 * 2)
+= 
+allFin (2 + (3 * 2))
+= 
+mapV (inject+ (3 * 2)) (allFin 2) ++V 
+mapV (raise 2) (allFin (3 * 2))
+
+allFin (3 * 2)
+= 
+allFin (2 + (2 * 2))
+= 
+mapV (inject+ (2 * 2)) (allFin 2) ++V 
+mapV (raise 2) (allFin (2 * 2))
+
+allFin (2 * 2)
+= 
+allFin (2 + (1 * 2))
+= 
+mapV (inject+ (1 * 2)) (allFin 2) ++V 
+mapV (raise 2) (allFin (1 * 2))
+
+allFin (1 * 2)
+= 
+allFin (2 + (0 * 2))
+= 
+mapV (inject+ (0 * 2)) (allFin 2) ++V 
+mapV (raise 2) (allFin (0 * 2))
+
+allFin (0 * 2)
+= 
+[] 
+
 postulate
   a b c : Fin 3
   x y : Fin 2
