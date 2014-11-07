@@ -1126,14 +1126,36 @@ tensorvec' {A} {B} {C} f shift {m} {n} {suc j} (x ∷ α) β =
     (+-*-suc j n) 
     (mapV (f x) β ++V (tensorvec' {A} {B} {C} f shift α β))
 
+-- raise d by b*n and inject in m*n
 raise∘inject : ∀ {m n} → (b : Fin m) (d : Fin n) → Fin (m * n)
 raise∘inject {0} {n} () d
-raise∘inject {suc m} {n} zero d = {!!} 
-raise∘inject {suc m} {n} (suc b) d = {!!} 
+raise∘inject {suc m} {n} b d = inject≤ (raise (toℕ b * n) d) {!!} 
+-- ?0 : toℕ b * n + n ≤ suc m * n
+
+
+
+-- ?0 : Fin (suc m * n)
+-- ?1 : Fin (suc m * n)
 
 -- raise∘inject {m} {n} b d 
 
 -- Fin (n + m * n)
+
+xx : Cauchy 3
+xx = fromℕ 2 ∷ zero ∷ inject+ 1 (fromℕ 1) ∷ []
+-- xx = 2 ∷ 0 ∷ 1 ∷ []
+
+yy : Cauchy 2
+yy = fromℕ 1 ∷ zero ∷ []
+-- yy = 1 ∷ 0 ∷ []
+
+-- tcompcauchy xx yy = 5 ∷ 4  ∷  1 ∷ 0  ∷  3 ∷ 2  ∷  []
+-- yy (+2*2) ++ yy (+0*2) ++ yy (+1*2)
+
+-- i = 3, m = 3, n = 2, b = 2, α = [0,1], β = [1,0] ==> yy (+ 2*2)
+-- i = 2, m = 3, n = 2, b = 0, α = [1],   β = [1,0] ==> yy (+ 0*2)
+-- i = 1, m = 3, n = 2, b = 1, α = [],    β = [1,0] ==> yy (+ 1*2)
+-- i = 0, m = 3, n = 2                              ==> []
 
 tcompcauchy' : ∀ {i m n} → Vec (Fin m) i → Cauchy n → Vec (Fin (m * n)) (i * n)
 tcompcauchy' {0} {m} {n} [] β = []
