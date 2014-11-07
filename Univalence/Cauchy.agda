@@ -1126,20 +1126,39 @@ tensorvec' {A} {B} {C} f shift {m} {n} {suc j} (x ∷ α) β =
     (+-*-suc j n) 
     (mapV (f x) β ++V (tensorvec' {A} {B} {C} f shift α β))
 
+i*n+n≤sucm*n : ∀ {m n} → (i : Fin (suc m)) → (toℕ i * n + n ≤ suc m * n)
+i*n+n≤sucm*n {0} {n} zero =
+  begin (n
+           ≡⟨ sym (+-right-identity n) ⟩
+         n + 0
+           ≤⟨ i≤i (n + 0) ⟩ 
+         n + 0 ∎)
+  where open ≤-Reasoning
+i*n+n≤sucm*n {0} {n} (suc ())
+i*n+n≤sucm*n {suc m} {n} i = 
+  begin (toℕ i * n + n
+           ≡⟨ +-comm (toℕ i * n) n ⟩
+         n + toℕ i * n
+           ≡⟨ refl ⟩
+         suc (toℕ i) * n
+           ≤⟨ cong*r≤ (bounded i) n ⟩ 
+         suc (suc m) * n ∎)
+  where open ≤-Reasoning
+
 -- raise d by b*n and inject in m*n
+
 raise∘inject : ∀ {m n} → (b : Fin m) (d : Fin n) → Fin (m * n)
 raise∘inject {0} {n} () d
-raise∘inject {suc m} {n} b d = inject≤ (raise (toℕ b * n) d) {!!} 
--- ?0 : toℕ b * n + n ≤ suc m * n
+raise∘inject {suc m} {n} b d = inject≤ (raise (toℕ b * n) d) (i*n+n≤sucm*n {m} {n} b)
+
+tcompcauchy' : ∀ {i m n} → Vec (Fin m) i → Cauchy n → Vec (Fin (m * n)) (i * n)
+tcompcauchy' {0} {m} {n} [] β = []
+tcompcauchy' {suc i} {m} {n} (b ∷ α) β = 
+  mapV (λ d → raise∘inject {m} {n} b d) β ++V
+  tcompcauchy' {i} {m} {n} α β
 
 
-
--- ?0 : Fin (suc m * n)
--- ?1 : Fin (suc m * n)
-
--- raise∘inject {m} {n} b d 
-
--- Fin (n + m * n)
+{-- TO DELETE 
 
 xx : Cauchy 3
 xx = fromℕ 2 ∷ zero ∷ inject+ 1 (fromℕ 1) ∷ []
@@ -1150,18 +1169,14 @@ yy = fromℕ 1 ∷ zero ∷ []
 -- yy = 1 ∷ 0 ∷ []
 
 -- tcompcauchy xx yy = 5 ∷ 4  ∷  1 ∷ 0  ∷  3 ∷ 2  ∷  []
+-- tcompcauchy' xx yy = 5 ∷ 4  ∷  1 ∷ 0  ∷  3 ∷ 2  ∷  []
 -- yy (+2*2) ++ yy (+0*2) ++ yy (+1*2)
+
 
 -- i = 3, m = 3, n = 2, b = 2, α = [0,1], β = [1,0] ==> yy (+ 2*2)
 -- i = 2, m = 3, n = 2, b = 0, α = [1],   β = [1,0] ==> yy (+ 0*2)
 -- i = 1, m = 3, n = 2, b = 1, α = [],    β = [1,0] ==> yy (+ 1*2)
 -- i = 0, m = 3, n = 2                              ==> []
-
-tcompcauchy' : ∀ {i m n} → Vec (Fin m) i → Cauchy n → Vec (Fin (m * n)) (i * n)
-tcompcauchy' {0} {m} {n} [] β = []
-tcompcauchy' {suc i} {m} {n} (b ∷ α) β = 
-  mapV (λ d → raise∘inject {m} {n} b d) β ++V
-  tcompcauchy' {i} {m} {n} α β
 
 -- b : Fin m, d : Fin n
 -- α : Vec (Fin m) i
@@ -1214,7 +1229,6 @@ tcompcauchy' {suc i} {m} {n} (b ∷ α) β =
 -- x : Fin (suc m)
 -- α : Vec (Fin (suc m)) m
 
-{--
 tcompcauchy (a ∷ b ∷ c ∷ []) (x ∷ y ∷ [])
 =
 [ a*2 + x, a*2 + y, b*2 + x , b*2 + y, c*2 + x, c*2 + y ]
@@ -1222,9 +1236,6 @@ tcompcauchy (a ∷ b ∷ c ∷ []) (x ∷ y ∷ [])
 tcompcauchy (b ∷ c ∷ []) (x ∷ y ∷ [])
 =
 [ b*2 + x , b*2 + y, c*2 + x, c*2 + y ]
-
-
-
 
 allFin (suc m * n)
 = 
@@ -1267,19 +1278,6 @@ concatV [
   [] 
 ]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 allFin (4 * 2)
 = 
 allFin (2 + (3 * 2))
@@ -1312,9 +1310,7 @@ allFin (0 * 2)
 = 
 [] 
 
-
 --}
-
 
 allFin* : (m n : ℕ) → allFin (m * n) ≡ 
           concatV 
