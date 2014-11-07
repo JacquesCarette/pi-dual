@@ -1237,16 +1237,12 @@ allFin* (suc m) n =
              (allFin (suc m))) ∎)
   where open ≡-Reasoning
 
-tcomp-id : ∀ {m n} → tcompcauchy (idcauchy m) (idcauchy n) ≡ idcauchy (m * n)
-tcomp-id {m} {n} = 
-  begin (concatV 
-          (mapV 
-            (λ b → 
-              mapV (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
-                   (allFin n))
-            (allFin m))
+tcomp-id : ∀ {m n} → tcompcauchy2 (idcauchy m) (idcauchy n) ≡ idcauchy (m * n)
+tcomp-id {0} {n} = refl
+tcomp-id {suc m} {n} = 
+  begin ( mapV (raise∘inject {suc m} {n} zero) (idcauchy n) ++V tcompcauchy' {m} {suc m} {n} (tabulate suc) (idcauchy n)
     ≡⟨ {!!} ⟩ 
-  idcauchy (m * n) ∎)
+  idcauchy (n + m * n) ∎)
   where open ≡-Reasoning
 
 {--
