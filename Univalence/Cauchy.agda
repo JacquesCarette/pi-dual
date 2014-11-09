@@ -491,9 +491,9 @@ scomplid {n} perm =
   where open ≡-Reasoning
 
 -- swap+ is idempotent
-
+--
 -- outline of swap+idemp proof
-
+--
 -- allFin (m + n) ≡ mapV (inject+ n) (allFin m) ++V mapV (raise m) (allFin n)
 -- zero-m : Vec (Fin (m + n)) m ≡ mapV (inject+ n) (allFin m) 
 -- m-sum  : Vec (Fin (m + n)) n ≡ mapV (raise m) (allFin n)
@@ -1149,7 +1149,8 @@ tensorvec' {A} {B} {C} f shift {m} {n} {suc j} (x ∷ α) β =
 
 raise∘inject : ∀ {m n} → (b : Fin m) (d : Fin n) → Fin (m * n)
 raise∘inject {0} {n} () d
-raise∘inject {suc m} {n} b d = inject≤ (raise (toℕ b * n) d) (i*n+n≤sucm*n {m} {n} b)
+raise∘inject {suc m} {n} b d =
+  inject≤ (raise (toℕ b * n) d) (i*n+n≤sucm*n {m} {n} b)
 
 tcompcauchy' : ∀ {i m n} → Vec (Fin m) i → Cauchy n → Vec (Fin (m * n)) (i * n)
 tcompcauchy' {0} {m} {n} [] β = []
@@ -1240,12 +1241,48 @@ allFin* (suc m) n =
 tcomp-id : ∀ {m n} → tcompcauchy2 (idcauchy m) (idcauchy n) ≡ idcauchy (m * n)
 tcomp-id {0} {n} = refl
 tcomp-id {suc m} {n} = 
-  begin ( mapV (raise∘inject {suc m} {n} zero) (idcauchy n) ++V tcompcauchy' {m} {suc m} {n} (tabulate suc) (idcauchy n)
-    ≡⟨ {!!} ⟩ 
-  idcauchy (n + m * n) ∎)
+  begin (mapV (raise∘inject {suc m} {n} zero) (idcauchy n) ++V
+         tcompcauchy' {m} {suc m} {n} (tabulate suc) (idcauchy n)
+          ≡⟨ refl ⟩ 
+         mapV (λ d → inject≤ d (i*n+n≤sucm*n {m} {n} zero)) (idcauchy n) ++V
+         tcompcauchy' {m} {suc m} {n} (tabulate suc) (idcauchy n)
+          ≡⟨ {!!} ⟩ 
+         idcauchy (n + m * n) ∎)
   where open ≡-Reasoning
 
 {--
+tcompcauchy' : ∀ {i m n} → Vec (Fin m) i → Cauchy n → Vec (Fin (m * n)) (i * n)
+tcompcauchy' {0} {m} {n} [] β = []
+tcompcauchy' {suc i} {m} {n} (b ∷ α) β = 
+  mapV (raise∘inject {m} {n} b) β ++V tcompcauchy' {i} {m} {n} α β
+
+i*n+n≤sucm*n : ∀ {m n} → (i : Fin (suc m)) → (toℕ i * n + n ≤ suc m * n)
+i*n+n≤sucm*n {0} {n} zero =
+  begin (n
+           ≡⟨ sym (+-right-identity n) ⟩
+         n + 0
+           ≤⟨ i≤i (n + 0) ⟩ 
+         n + 0 ∎)
+  where open ≤-Reasoning
+i*n+n≤sucm*n {0} {n} (suc ())
+i*n+n≤sucm*n {suc m} {n} i = 
+  begin (toℕ i * n + n
+           ≡⟨ +-comm (toℕ i * n) n ⟩
+         n + toℕ i * n
+           ≡⟨ refl ⟩
+         suc (toℕ i) * n
+           ≤⟨ cong*r≤ (bounded i) n ⟩ 
+         suc (suc m) * n ∎)
+  where open ≤-Reasoning
+
+raise∘inject : ∀ {m n} → (b : Fin m) (d : Fin n) → Fin (m * n)
+raise∘inject {0} {n} () d
+raise∘inject {suc m} {n} b d =
+  inject≤ (raise (toℕ b * n) d) (i*n+n≤sucm*n {m} {n} b)
+
+λ d → inject≤ d (pr : n ≤ suc m * n)
+
+ 
 
 xx : Cauchy 3
 xx = fromℕ 2 ∷ zero ∷ inject+ 1 (fromℕ 1) ∷ []
