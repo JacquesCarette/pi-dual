@@ -1160,6 +1160,18 @@ tcompcauchy' {suc i} {m} {n} (b ∷ α) β =
 tcompcauchy2 : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m * n)
 tcompcauchy2 = tcompcauchy'
 
+-- need to prove tcomp-id and tcomp-dist
+-- tcomp-id requires allFin*
+
+allFin* : (m n : ℕ) → allFin (m * n) ≡ 
+         concatV
+           (tabulate {m}
+             (λ b → 
+               tabulate {n}
+                 (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))))
+allFin* = {!!} 
+
+{--
 allFin* : (m n : ℕ) → allFin (m * n) ≡ 
           concatV 
             (mapV 
@@ -1237,6 +1249,55 @@ allFin* (suc m) n =
                  (allFin n))
              (allFin (suc m))) ∎)
   where open ≡-Reasoning
+--}
+
+tcomp-id : ∀ {m n} → tcompcauchy (idcauchy m) (idcauchy n) ≡ idcauchy (m * n)
+tcomp-id {m} {n} =
+  begin (concatV 
+          (mapV 
+            (λ b → 
+              mapV
+                (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                (idcauchy n))
+          (idcauchy m))
+           ≡⟨ cong concatV (sym (tabulate-allFin {m} (λ b → 
+              mapV
+                (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                (idcauchy n)))) ⟩
+         concatV
+           (tabulate {m}
+             (λ b →
+               mapV
+                 (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                 (idcauchy n)))
+           ≡⟨ cong concatV (finext {m}
+                (λ b →
+                  mapV
+                    (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                    (idcauchy n))
+                (λ b → 
+                  tabulate {n}
+                   (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)))
+                (λ b → sym (tabulate-allFin {n} (λ d →
+                  inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))))) ⟩
+         concatV
+           (tabulate {m}
+             (λ b → 
+               tabulate {n}
+                 (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))))
+           ≡⟨ sym (allFin* m n) ⟩
+         idcauchy (m * n) ∎)
+  where open ≡-Reasoning
+
+{--
+tcompcauchy : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m * n)
+tcompcauchy {m} {n} α β = 
+  concatV 
+    (mapV 
+      (λ b → 
+         mapV (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)) β)
+      α)
+
 
 tcomp-id : ∀ {m n} → tcompcauchy2 (idcauchy m) (idcauchy n) ≡ idcauchy (m * n)
 tcomp-id {0} {n} = refl
@@ -1250,7 +1311,6 @@ tcomp-id {suc m} {n} =
          idcauchy (n + m * n) ∎)
   where open ≡-Reasoning
 
-{--
 tcompcauchy' : ∀ {i m n} → Vec (Fin m) i → Cauchy n → Vec (Fin (m * n)) (i * n)
 tcompcauchy' {0} {m} {n} [] β = []
 tcompcauchy' {suc i} {m} {n} (b ∷ α) β = 
