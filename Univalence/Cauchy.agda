@@ -426,23 +426,7 @@ idperm n = (idcauchy n , λ {i} {j} p →
          j ∎))
   where open ≡-Reasoning
 
--- a kind of inverse for splitAt
-
-unSplit : {m n : ℕ} {A : Set} → (f : Fin (m + n) → A) → 
-  tabulate {m} (f ∘ (inject+ n)) ++V tabulate {n} (f ∘ (raise m)) ≡ tabulate f
-unSplit {0} {n} f = refl
-unSplit {suc m} f = cong (λ x → (f zero) ∷ x) (unSplit {m} (f ∘ suc))
-
--- swap the first m elements with the last n elements
--- [ v₀ , v₁   , v₂   , ... , vm-1 ,     vm , vm₊₁ , ... , vm+n-1 ]
--- ==> 
--- [ vm , vm₊₁ , ... , vm+n-1 ,     v₀ , v₁   , v₂   , ... , vm-1 ]
-
-swap+cauchy : (m n : ℕ) → Cauchy (m + n)
-swap+cauchy m n = 
-  subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
-    (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))
-
+-- proofs about sequenced permutations
 -- Sequential composition
 
 scompcauchy : ∀ {n} → Cauchy n → Cauchy n → Cauchy n
@@ -489,6 +473,60 @@ scomplid {n} perm =
            ≡⟨ tabulate∘lookup perm ⟩ 
          perm ∎)
   where open ≡-Reasoning
+
+-- sequential composition is associative
+
+lookupassoc : ∀ {n} → (π₁ π₂ π₃ : Cauchy n) (i : Fin n) → 
+  lookup (lookup i π₁) (tabulate (λ j → lookup (lookup j π₂) π₃)) ≡
+  lookup (lookup i (tabulate (λ j → lookup (lookup j π₁) π₂))) π₃
+lookupassoc π₁ π₂ π₃ i = 
+  begin (lookup (lookup i π₁) (tabulate (λ j → lookup (lookup j π₂) π₃))
+           ≡⟨ lookup∘tabulate (λ j → lookup (lookup j π₂) π₃) (lookup i π₁) ⟩ 
+         lookup (lookup (lookup i π₁) π₂) π₃
+           ≡⟨ cong 
+                (λ x → lookup x π₃) 
+                (sym (lookup∘tabulate (λ j → lookup (lookup j π₁) π₂) i)) ⟩ 
+         lookup (lookup i (tabulate (λ j → lookup (lookup j π₁) π₂))) π₃ ∎)
+  where open ≡-Reasoning
+
+scompassoc : ∀ {n} → (π₁ π₂ π₃ : Cauchy n) → 
+  scompcauchy π₁ (scompcauchy π₂ π₃) ≡ scompcauchy (scompcauchy π₁ π₂) π₃
+scompassoc π₁ π₂ π₃ = 
+  begin (scompcauchy π₁ (scompcauchy π₂ π₃)
+           ≡⟨ refl ⟩
+         tabulate (λ i → 
+           lookup (lookup i π₁) (tabulate (λ j → lookup (lookup j π₂) π₃)))
+           ≡⟨ finext
+              (λ i → 
+                lookup (lookup i π₁) (tabulate (λ j → lookup (lookup j π₂) π₃)))
+              (λ i → 
+                lookup (lookup i (tabulate (λ j → lookup (lookup j π₁) π₂))) π₃)
+              (λ i → lookupassoc π₁ π₂ π₃ i) ⟩
+         tabulate (λ i → 
+           lookup (lookup i (tabulate (λ j → lookup (lookup j π₁) π₂))) π₃)
+           ≡⟨ refl ⟩
+         scompcauchy (scompcauchy π₁ π₂) π₃ ∎)
+  where open ≡-Reasoning
+
+--
+-- proofs about additive permutations
+
+-- a kind of inverse for splitAt
+
+unSplit : {m n : ℕ} {A : Set} → (f : Fin (m + n) → A) → 
+  tabulate {m} (f ∘ (inject+ n)) ++V tabulate {n} (f ∘ (raise m)) ≡ tabulate f
+unSplit {0} {n} f = refl
+unSplit {suc m} f = cong (λ x → (f zero) ∷ x) (unSplit {m} (f ∘ suc))
+
+-- swap the first m elements with the last n elements
+-- [ v₀ , v₁   , v₂   , ... , vm-1 ,     vm , vm₊₁ , ... , vm+n-1 ]
+-- ==> 
+-- [ vm , vm₊₁ , ... , vm+n-1 ,     v₀ , v₁   , v₂   , ... , vm-1 ]
+
+swap+cauchy : (m n : ℕ) → Cauchy (m + n)
+swap+cauchy m n = 
+  subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
+    (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))
 
 -- swap+ is idempotent
 --
@@ -897,40 +935,6 @@ swap+idemp m n =
          allFin (m + n) ∎)
   where open ≡-Reasoning
 
--- sequential composition is associative
-
-lookupassoc : ∀ {n} → (π₁ π₂ π₃ : Cauchy n) (i : Fin n) → 
-  lookup (lookup i π₁) (tabulate (λ j → lookup (lookup j π₂) π₃)) ≡
-  lookup (lookup i (tabulate (λ j → lookup (lookup j π₁) π₂))) π₃
-lookupassoc π₁ π₂ π₃ i = 
-  begin (lookup (lookup i π₁) (tabulate (λ j → lookup (lookup j π₂) π₃))
-           ≡⟨ lookup∘tabulate (λ j → lookup (lookup j π₂) π₃) (lookup i π₁) ⟩ 
-         lookup (lookup (lookup i π₁) π₂) π₃
-           ≡⟨ cong 
-                (λ x → lookup x π₃) 
-                (sym (lookup∘tabulate (λ j → lookup (lookup j π₁) π₂) i)) ⟩ 
-         lookup (lookup i (tabulate (λ j → lookup (lookup j π₁) π₂))) π₃ ∎)
-  where open ≡-Reasoning
-
-scompassoc : ∀ {n} → (π₁ π₂ π₃ : Cauchy n) → 
-  scompcauchy π₁ (scompcauchy π₂ π₃) ≡ scompcauchy (scompcauchy π₁ π₂) π₃
-scompassoc π₁ π₂ π₃ = 
-  begin (scompcauchy π₁ (scompcauchy π₂ π₃)
-           ≡⟨ refl ⟩
-         tabulate (λ i → 
-           lookup (lookup i π₁) (tabulate (λ j → lookup (lookup j π₂) π₃)))
-           ≡⟨ finext
-              (λ i → 
-                lookup (lookup i π₁) (tabulate (λ j → lookup (lookup j π₂) π₃)))
-              (λ i → 
-                lookup (lookup i (tabulate (λ j → lookup (lookup j π₁) π₂))) π₃)
-              (λ i → lookupassoc π₁ π₂ π₃ i) ⟩
-         tabulate (λ i → 
-           lookup (lookup i (tabulate (λ j → lookup (lookup j π₁) π₂))) π₃)
-           ≡⟨ refl ⟩
-         scompcauchy (scompcauchy π₁ π₂) π₃ ∎)
-  where open ≡-Reasoning
-
 -- Parallel additive composition 
 -- append both permutations but adjust the indices in the second
 -- permutation by the size of the first type so that it acts on the
@@ -1110,6 +1114,9 @@ pcomp-id {m} {n} =
   idcauchy (m + n) ∎)
   where open ≡-Reasoning
 
+--
+-- proofs about multiplicative permutations
+
 -- Tensor multiplicative composition
 -- Transpositions in α correspond to swapping entire rows
 -- Transpositions in β correspond to swapping entire columns
@@ -1163,13 +1170,48 @@ tcompcauchy2 = tcompcauchy'
 -- need to prove tcomp-id and tcomp-dist
 -- tcomp-id requires allFin*
 
+concat-nil : ∀ {m} → 
+  concatV (tabulate {m} (λ b → [])) ≡ subst Cauchy (sym (*-right-zero m)) []
+concat-nil {0} = refl
+concat-nil {suc m} = concat-nil {m}
+
 allFin* : (m n : ℕ) → allFin (m * n) ≡ 
-         concatV
-           (tabulate {m}
+          concatV 
+            (mapV 
+              (λ b → 
+                mapV
+                  (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                  (idcauchy n))
+            (idcauchy m))
+allFin* 0 _ = refl 
+allFin* (suc m) 0 =
+  begin (allFin (suc m * 0)
+           ≡⟨ {!!} ⟩
+         subst Cauchy (sym (*-right-zero (suc m))) []
+           ≡⟨ sym (concat-nil {suc m}) ⟩ 
+         concatV (tabulate {suc m} (λ b → []))
+           ≡⟨ cong concatV (tabulate-allFin {suc m} (λ b → [])) ⟩
+         concatV (mapV (λ b → []) (idcauchy (suc m))) ∎)
+  where open ≡-Reasoning
+allFin* (suc m) (suc n) =
+  begin (allFin (suc n + m * suc n)
+           ≡⟨ allFin+ (suc n) (m * suc n) ⟩
+         mapV (inject+ (m * suc n)) (allFin (suc n)) ++V
+         mapV (raise (suc n)) (allFin (m * suc n))
+           ≡⟨ {!!} ⟩
+         (zero ∷ mapV (inject+ (m * suc n)) (mapV suc (allFin n))) ++V
+         mapV (λ i → suc (raise n i)) (allFin (m * suc n))
+           ≡⟨ {!!} ⟩
+         concatV 
+           (mapV 
              (λ b → 
-               tabulate {n}
-                 (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))))
-allFin* = {!!} 
+               mapV
+                 (λ d → inject≤
+                          (fromℕ (toℕ b * suc n + toℕ d))
+                          (i*n+k≤m*n b d))
+                 (idcauchy (suc n)))
+           (idcauchy (suc m))) ∎)
+  where open ≡-Reasoning
 
 {--
 allFin* : (m n : ℕ) → allFin (m * n) ≡ 
@@ -1252,43 +1294,7 @@ allFin* (suc m) n =
 --}
 
 tcomp-id : ∀ {m n} → tcompcauchy (idcauchy m) (idcauchy n) ≡ idcauchy (m * n)
-tcomp-id {m} {n} =
-  begin (concatV 
-          (mapV 
-            (λ b → 
-              mapV
-                (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
-                (idcauchy n))
-          (idcauchy m))
-           ≡⟨ cong concatV (sym (tabulate-allFin {m} (λ b → 
-              mapV
-                (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
-                (idcauchy n)))) ⟩
-         concatV
-           (tabulate {m}
-             (λ b →
-               mapV
-                 (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
-                 (idcauchy n)))
-           ≡⟨ cong concatV (finext {m}
-                (λ b →
-                  mapV
-                    (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
-                    (idcauchy n))
-                (λ b → 
-                  tabulate {n}
-                   (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)))
-                (λ b → sym (tabulate-allFin {n} (λ d →
-                  inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))))) ⟩
-         concatV
-           (tabulate {m}
-             (λ b → 
-               tabulate {n}
-                 (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))))
-           ≡⟨ sym (allFin* m n) ⟩
-         idcauchy (m * n) ∎)
-  where open ≡-Reasoning
-
+tcomp-id {m} {n} = sym (allFin* m n)
 {--
 tcompcauchy : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m * n)
 tcompcauchy {m} {n} α β = 
