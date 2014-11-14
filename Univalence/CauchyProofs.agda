@@ -955,25 +955,54 @@ allFin* (suc m) 0 =
 allFin* (suc m) (suc n) =
   begin (allFin (suc n + m * suc n)
            ≡⟨ allFin+ (suc n) (m * suc n) ⟩
-         zero ∷ (mapV (inject+ (m * suc n)) (tabulate {n} suc) ++V
-                 mapV (raise (suc n)) (allFin (m * suc n)))
+         mapV (inject+ (m * suc n)) (allFin (suc n)) ++V
+         mapV (raise (suc n)) (allFin (m * suc n))
            ≡⟨ cong
                 (λ x →
-                  zero ∷ (mapV (inject+ (m * suc n)) (tabulate {n} suc) ++V
-                          mapV (raise (suc n)) x))
+                  mapV (inject+ (m * suc n)) (allFin (suc n)) ++V
+                  mapV (raise (suc n)) x)
                 (allFin* m (suc n)) ⟩
-         zero ∷ (mapV (inject+ (m * suc n)) (tabulate {n} suc) ++V
-                 mapV (raise (suc n))
-                      (concatV 
-                        (mapV 
-                          (λ b → 
-                            mapV
-                              (λ d → inject≤
-                                       (fromℕ (toℕ b * (suc n) + toℕ d))
-                                        (i*n+k≤m*n b d))
-                              (idcauchy (suc n)))
-                          (idcauchy m))))
-           ≡⟨ {!!} ⟩
+         mapV (inject+ (m * suc n)) (allFin (suc n)) ++V
+         mapV
+           (raise (suc n))
+           (concatV 
+             (mapV 
+               (λ b → 
+                 mapV
+                   (λ d → inject≤
+                            (fromℕ (toℕ b * suc n + toℕ d))
+                            (i*n+k≤m*n b d))
+                   (idcauchy (suc n)))
+               (idcauchy m)))
+           ≡⟨ {!!} ⟩ -- concat (map (map f) xs) = map f (concat xs)
+         mapV (inject+ (m * suc n)) (allFin (suc n)) ++V
+         concatV
+           (mapV
+             (mapV (raise (suc n)))
+             (mapV 
+               (λ b → 
+                 mapV
+                   (λ d → inject≤
+                            (fromℕ (toℕ b * suc n + toℕ d))
+                            (i*n+k≤m*n b d))
+                   (idcauchy (suc n)))
+               (idcauchy m)))
+{--
+           ≡⟨ refl ⟩  -- concat def
+         concatV
+           (mapV (inject+ (m * suc n)) (allFin (suc n))) ∷ 
+           (mapV
+             (mapV (raise (suc n)))
+             (mapV 
+               (λ b → 
+                 mapV
+                   (λ d → inject≤
+                            (fromℕ (toℕ b * suc n + toℕ d))
+                            (i*n+k≤m*n b d))
+                   (idcauchy (suc n)))
+               (idcauchy m)))
+--}
+           ≡⟨ {!!} ⟩  
          concatV 
            (mapV 
              (λ b → 
