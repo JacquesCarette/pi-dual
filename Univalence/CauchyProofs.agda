@@ -157,59 +157,6 @@ lookup-right : ∀ {m n} → (i : Fin n) → (pm : Cauchy m) → (pn : Cauchy n)
 lookup-right {m} {n} i pm pn = look-right i (inject+ n) (raise m) pm pn
 
 ------------------------------------------------------------------------------
--- Lemmas about allFin
-
-allFin+ : (m n : ℕ) → allFin (m + n) ≡ 
-          mapV (inject+ n) (allFin m) ++V mapV (raise m) (allFin n)
-allFin+ 0 n = 
-  begin (allFin n
-           ≡⟨ refl ⟩ 
-         tabulate {n} (id ∘ id)
-           ≡⟨ tabulate-∘ id id ⟩ 
-         mapV id (allFin n) ∎)
-  where open ≡-Reasoning
-allFin+ (suc m) n = 
-  begin (allFin (suc (m + n))
-           ≡⟨ allFin-map (m + n) ⟩ 
-         zero ∷ mapV suc (allFin (m + n))
-           ≡⟨ cong (λ x → zero ∷ mapV suc x) (allFin+ m n) ⟩ 
-         zero ∷ 
-           mapV suc (mapV (inject+ n) (allFin m) ++V mapV (raise m) (allFin n))
-           ≡⟨ cong 
-                (_∷_ zero) 
-                (map-++-commute suc (mapV (inject+ n) (allFin m))) ⟩
-         zero ∷ (mapV suc (mapV (λ i → (inject+ {m} n i)) (allFin m))) ++V
-                  mapV suc (mapV (λ i → (raise {n} m i)) (allFin n))
-           ≡⟨ cong 
-                (_∷_ zero) 
-                (cong₂ _++V_ 
-                  (sym (map-∘ suc (inject+ n) (allFin m))) 
-                  (sym (map-∘ suc (raise m) (allFin n)))) ⟩ 
-         zero ∷ (mapV (λ i → suc (inject+ {m} n i)) (allFin m) ++V 
-                 mapV (λ i → suc (raise {n} m i)) (allFin n))
-           ≡⟨ refl ⟩ 
-         (zero ∷ mapV (λ i → inject+ n (suc i)) (allFin m)) ++V 
-         mapV (raise (suc m)) (allFin n)
-           ≡⟨ cong 
-                (λ x → (zero ∷ x) ++V mapV (raise (suc m)) (allFin n))
-                (map-∘ (inject+ n) suc (allFin m)) ⟩ 
-         (zero ∷ mapV (inject+ n) (mapV suc (allFin m))) ++V 
-         mapV (raise (suc m)) (allFin n)
-           ≡⟨ refl ⟩ 
-         mapV (inject+ n) (zero ∷ mapV suc (allFin m)) ++V
-         mapV (raise (suc m)) (allFin n) 
-           ≡⟨ cong 
-                 (λ x → mapV (inject+ n) (zero ∷ x) ++V 
-                        mapV (raise (suc m)) (allFin n))
-                 (sym (tabulate-allFin {m} suc)) ⟩ 
-         mapV (inject+ n) (zero ∷ tabulate {m} suc) ++V
-         mapV (raise (suc m)) (allFin n) 
-           ≡⟨ refl ⟩ 
-         mapV (inject+ n) (allFin (suc m)) ++V 
-         mapV (raise (suc m)) (allFin n) ∎)
-  where open ≡-Reasoning
-
-------------------------------------------------------------------------------
 -- Lemmas about subst
 
 congD! : {a b : Level} {A : Set a} {B : A → Set b}
@@ -336,6 +283,56 @@ scompassoc π₁ π₂ π₃ =
 
 ------------------------------------------------------------------------------
 -- proofs about additive permutations
+
+allFin+ : (m n : ℕ) → allFin (m + n) ≡ 
+          mapV (inject+ n) (allFin m) ++V mapV (raise m) (allFin n)
+allFin+ 0 n = 
+  begin (allFin n
+           ≡⟨ refl ⟩ 
+         tabulate {n} (id ∘ id)
+           ≡⟨ tabulate-∘ id id ⟩ 
+         mapV id (allFin n) ∎)
+  where open ≡-Reasoning
+allFin+ (suc m) n = 
+  begin (allFin (suc (m + n))
+           ≡⟨ allFin-map (m + n) ⟩ 
+         zero ∷ mapV suc (allFin (m + n))
+           ≡⟨ cong (λ x → zero ∷ mapV suc x) (allFin+ m n) ⟩ 
+         zero ∷ 
+           mapV suc (mapV (inject+ n) (allFin m) ++V mapV (raise m) (allFin n))
+           ≡⟨ cong 
+                (_∷_ zero) 
+                (map-++-commute suc (mapV (inject+ n) (allFin m))) ⟩
+         zero ∷ (mapV suc (mapV (λ i → (inject+ {m} n i)) (allFin m))) ++V
+                  mapV suc (mapV (λ i → (raise {n} m i)) (allFin n))
+           ≡⟨ cong 
+                (_∷_ zero) 
+                (cong₂ _++V_ 
+                  (sym (map-∘ suc (inject+ n) (allFin m))) 
+                  (sym (map-∘ suc (raise m) (allFin n)))) ⟩ 
+         zero ∷ (mapV (λ i → suc (inject+ {m} n i)) (allFin m) ++V 
+                 mapV (λ i → suc (raise {n} m i)) (allFin n))
+           ≡⟨ refl ⟩ 
+         (zero ∷ mapV (λ i → inject+ n (suc i)) (allFin m)) ++V 
+         mapV (raise (suc m)) (allFin n)
+           ≡⟨ cong 
+                (λ x → (zero ∷ x) ++V mapV (raise (suc m)) (allFin n))
+                (map-∘ (inject+ n) suc (allFin m)) ⟩ 
+         (zero ∷ mapV (inject+ n) (mapV suc (allFin m))) ++V 
+         mapV (raise (suc m)) (allFin n)
+           ≡⟨ refl ⟩ 
+         mapV (inject+ n) (zero ∷ mapV suc (allFin m)) ++V
+         mapV (raise (suc m)) (allFin n) 
+           ≡⟨ cong 
+                 (λ x → mapV (inject+ n) (zero ∷ x) ++V 
+                        mapV (raise (suc m)) (allFin n))
+                 (sym (tabulate-allFin {m} suc)) ⟩ 
+         mapV (inject+ n) (zero ∷ tabulate {m} suc) ++V
+         mapV (raise (suc m)) (allFin n) 
+           ≡⟨ refl ⟩ 
+         mapV (inject+ n) (allFin (suc m)) ++V 
+         mapV (raise (suc m)) (allFin n) ∎)
+  where open ≡-Reasoning
 
 -- swap+ is idempotent
 --
@@ -909,7 +906,6 @@ unSplit : {m n : ℕ} {A : Set} → (f : Fin (m + n) → A) →
 unSplit {0} {n} f = refl
 unSplit {suc m} f = cong (λ x → (f zero) ∷ x) (unSplit {m} (f ∘ suc))
 
-
 pcomp-id : ∀ {m n} → pcompcauchy (idcauchy m) (idcauchy n) ≡ idcauchy (m + n)
 pcomp-id {m} {n} = 
   begin (mapV (inject+ n) (idcauchy m) ++V (mapV (raise m) (idcauchy n))
@@ -934,6 +930,10 @@ concat-nil : ∀ {m} →
 concat-nil {0} = refl
 concat-nil {suc m} = concat-nil {m}
 
+empty-vec : ∀ {m} → (eq : m ≡ 0) → allFin m ≡ subst Cauchy (sym eq) []
+empty-vec {0} refl = refl 
+empty-vec {suc m} ()
+
 allFin* : (m n : ℕ) → allFin (m * n) ≡ 
           concatV 
             (mapV 
@@ -945,7 +945,7 @@ allFin* : (m n : ℕ) → allFin (m * n) ≡
 allFin* 0 _ = refl 
 allFin* (suc m) 0 =
   begin (allFin (suc m * 0)
-           ≡⟨ {!!} ⟩
+           ≡⟨ empty-vec {suc m * 0} (*-right-zero (suc m)) ⟩ 
          subst Cauchy (sym (*-right-zero (suc m))) []
            ≡⟨ sym (concat-nil {suc m}) ⟩ 
          concatV (tabulate {suc m} (λ b → []))
@@ -955,11 +955,24 @@ allFin* (suc m) 0 =
 allFin* (suc m) (suc n) =
   begin (allFin (suc n + m * suc n)
            ≡⟨ allFin+ (suc n) (m * suc n) ⟩
-         mapV (inject+ (m * suc n)) (allFin (suc n)) ++V
-         mapV (raise (suc n)) (allFin (m * suc n))
-           ≡⟨ {!!} ⟩
-         (zero ∷ mapV (inject+ (m * suc n)) (mapV suc (allFin n))) ++V
-         mapV (λ i → suc (raise n i)) (allFin (m * suc n))
+         zero ∷ (mapV (inject+ (m * suc n)) (tabulate {n} suc) ++V
+                 mapV (raise (suc n)) (allFin (m * suc n)))
+           ≡⟨ cong
+                (λ x →
+                  zero ∷ (mapV (inject+ (m * suc n)) (tabulate {n} suc) ++V
+                          mapV (raise (suc n)) x))
+                (allFin* m (suc n)) ⟩
+         zero ∷ (mapV (inject+ (m * suc n)) (tabulate {n} suc) ++V
+                 mapV (raise (suc n))
+                      (concatV 
+                        (mapV 
+                          (λ b → 
+                            mapV
+                              (λ d → inject≤
+                                       (fromℕ (toℕ b * (suc n) + toℕ d))
+                                        (i*n+k≤m*n b d))
+                              (idcauchy (suc n)))
+                          (idcauchy m))))
            ≡⟨ {!!} ⟩
          concatV 
            (mapV 
