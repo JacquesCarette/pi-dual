@@ -156,6 +156,27 @@ lookup-right : ∀ {m n} → (i : Fin n) → (pm : Cauchy m) → (pn : Cauchy n)
   ≡ raise m (lookup i pn)
 lookup-right {m} {n} i pm pn = look-right i (inject+ n) (raise m) pm pn
 
+-- concat (map (map f) xs) = map f (concat xs)
+
+concat-map : ∀ {a b m n} {A : Set a} {B : Set b} → 
+  (xs : Vec (Vec A n) m) → (f : A → B) → 
+  concatV (mapV (mapV f) xs) ≡ mapV f (concatV xs)
+concat-map [] f = refl
+concat-map (xs ∷ xss) f = 
+  begin (concatV (mapV (mapV f) (xs ∷ xss))
+           ≡⟨ refl ⟩
+         concatV (mapV f xs ∷ mapV (mapV f) xss)
+           ≡⟨  refl ⟩
+         mapV f xs ++V concatV (mapV (mapV f) xss)
+           ≡⟨ cong (_++V_ (mapV f xs)) (concat-map xss f) ⟩
+         mapV f xs ++V mapV f (concatV xss)
+           ≡⟨ sym (map-++-commute f xs) ⟩
+         mapV f (xs ++V concatV xss)
+           ≡⟨ refl ⟩
+         mapV f (concatV (xs ∷ xss)) ∎)
+  where open ≡-Reasoning
+
+
 ------------------------------------------------------------------------------
 -- Lemmas about subst
 
@@ -987,21 +1008,19 @@ allFin* (suc m) (suc n) =
                             (i*n+k≤m*n b d))
                    (idcauchy (suc n)))
                (idcauchy m)))
-{--
-           ≡⟨ refl ⟩  -- concat def
+           ≡⟨ refl ⟩  
          concatV
-           (mapV (inject+ (m * suc n)) (allFin (suc n))) ∷ 
-           (mapV
-             (mapV (raise (suc n)))
-             (mapV 
-               (λ b → 
-                 mapV
-                   (λ d → inject≤
-                            (fromℕ (toℕ b * suc n + toℕ d))
-                            (i*n+k≤m*n b d))
-                   (idcauchy (suc n)))
-               (idcauchy m)))
---}
+           ((mapV (inject+ (m * suc n)) (allFin (suc n))) ∷ 
+            (mapV
+              (mapV (raise (suc n)))
+              (mapV 
+                (λ b → 
+                  mapV
+                    (λ d → inject≤
+                             (fromℕ (toℕ b * suc n + toℕ d))
+                             (i*n+k≤m*n b d))
+                    (idcauchy (suc n)))
+                (idcauchy m))))
            ≡⟨ {!!} ⟩  
          concatV 
            (mapV 
