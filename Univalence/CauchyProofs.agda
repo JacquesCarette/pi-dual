@@ -963,10 +963,10 @@ inject+0 {0} ()
 inject+0 {suc m} zero =
   begin (inject+ 0 (Fin (suc m) ∋ zero)
            ≡⟨ refl ⟩
-         (Fin (suc m + 0) ∋ zero)
-           ≡⟨ sym (congD!
-                    (λ m → {!!} )
-                    {suc m + 0} {suc m}
+         (Fin ((suc m) + 0) ∋ zero)
+          ≡⟨ sym (congD!
+                    (λ p → {!!} )
+                    {(suc m) + 0} {suc m}
                     (sym (+-right-identity (suc m)))) ⟩
          subst Fin (sym (+-right-identity (suc m))) (Fin (suc m) ∋ zero) ∎)
   where open ≡-Reasoning
@@ -982,8 +982,17 @@ inj-lemma : ∀ {m n} → (d : Fin (suc n)) (p : suc (toℕ d) ≤ suc m * suc n
   inject+ (m * suc n) d ≡ inject≤ (fromℕ (toℕ d)) p 
 inj-lemma {m} {n} zero (s≤s m≤n) = refl
 inj-lemma {m} {0} (suc ()) (s≤s m≤n) 
-inj-lemma {0} {suc n} (suc d) (s≤s (s≤s d≤n)) = {!!}
-inj-lemma {suc m} {suc n} (suc d) (s≤s m≤n) = {!!}
+inj-lemma {0} {suc n} (suc d) (s≤s (s≤s d≤n)) = cong suc (inj-lemma {0} d (s≤s d≤n))
+inj-lemma {suc m} {suc n} (suc d) (s≤s (s≤s m≤n)) = cong suc (inj-lemma d (s≤s m≤n))
+
+map-lemma : (m n : ℕ) → (mapV (inject+ (m * suc n)) (allFin (suc n))) ≡ 
+  (mapV
+              (λ d → inject≤
+                       (fromℕ (toℕ d))
+                       (i*n+k≤m*n {suc m} {suc n} zero d))
+              (idcauchy (suc n)))
+map-lemma Data.Nat.zero n = cong (λ x → mapV x (allFin (suc n))) {!!}
+map-lemma (suc m) n = cong (λ x → mapV x (allFin (suc n))) {!!}
 
 -- ?0 : inject+ 0 (suc d) ≡ suc d ≡ 
 -- suc (inject≤ (fromℕ (toℕ d)) (s≤s d≤n))
@@ -1146,7 +1155,35 @@ allFin* (suc m) (suc n) =
                                   (i*n+k≤m*n b d))
                          (idcauchy (suc n))))
               (idcauchy m)))
-           ≡⟨ {!!} ⟩ 
+           ≡⟨ cong (λ x → concatV (x ∷ ((mapV
+              (λ b → mapV
+                       (raise (suc n))
+                       (mapV
+                         (λ d → inject≤
+                                  (fromℕ (toℕ b * suc n + toℕ d))
+                                  (i*n+k≤m*n b d))
+                         (idcauchy (suc n))))
+              (idcauchy m))))) (map-lemma m n) ⟩
+         concatV
+           (mapV
+              (λ d → inject≤
+                       (fromℕ (toℕ d))
+                       (i*n+k≤m*n {suc m} {suc n} zero d))
+              (idcauchy (suc n)) ∷ 
+            (mapV
+              (λ b → mapV
+                       (raise (suc n))
+                       (mapV
+                         (λ d → inject≤
+                                  (fromℕ (toℕ b * suc n + toℕ d))
+                                  (i*n+k≤m*n b d))
+                         (idcauchy (suc n))))
+              (idcauchy m)))
+           ≡⟨ cong (λ x → concatV (mapV
+              (λ d → inject≤
+                       (fromℕ (toℕ d))
+                       (i*n+k≤m*n {suc m} {suc n} zero d))
+              (idcauchy (suc n)) ∷ x )) {!!} ⟩   
          concatV 
            ((mapV
               (λ d → inject≤
