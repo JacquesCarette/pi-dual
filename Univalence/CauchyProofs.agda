@@ -176,7 +176,6 @@ concat-map (xs ∷ xss) f =
          mapV f (concatV (xs ∷ xss)) ∎)
   where open ≡-Reasoning
 
-
 ------------------------------------------------------------------------------
 -- Lemmas about subst
 
@@ -995,7 +994,18 @@ allFin* (suc m) (suc n) =
                             (i*n+k≤m*n b d))
                    (idcauchy (suc n)))
                (idcauchy m)))
-           ≡⟨ {!!} ⟩ -- concat (map (map f) xs) = map f (concat xs)
+           ≡⟨ cong
+                (_++V_ (mapV (inject+ (m * suc n)) (allFin (suc n))))
+                (sym (concat-map
+                       (mapV 
+                         (λ b → 
+                           mapV
+                             (λ d → inject≤
+                                      (fromℕ (toℕ b * suc n + toℕ d))
+                                      (i*n+k≤m*n b d))
+                             (idcauchy (suc n)))
+                         (idcauchy m))
+                       (raise (suc n)))) ⟩ 
          mapV (inject+ (m * suc n)) (allFin (suc n)) ++V
          concatV
            (mapV
@@ -1021,7 +1031,44 @@ allFin* (suc m) (suc n) =
                              (i*n+k≤m*n b d))
                     (idcauchy (suc n)))
                 (idcauchy m))))
-           ≡⟨ {!!} ⟩  
+           ≡⟨ cong
+                 (λ x →
+                   concatV
+                     ((mapV (inject+ (m * suc n)) (allFin (suc n))) ∷ x))
+                 (sym (map-∘
+                        (mapV (raise (suc n)))
+                        (λ b → 
+                          mapV
+                            (λ d → inject≤
+                                     (fromℕ (toℕ b * suc n + toℕ d))
+                                     (i*n+k≤m*n b d))
+                            (idcauchy (suc n)))
+                        (idcauchy m))) ⟩  
+         concatV
+           ((mapV (inject+ (m * suc n)) (allFin (suc n))) ∷ 
+            (mapV
+              (λ b → mapV
+                       (raise (suc n))
+                       (mapV
+                         (λ d → inject≤
+                                  (fromℕ (toℕ b * suc n + toℕ d))
+                                  (i*n+k≤m*n b d))
+                         (idcauchy (suc n))))
+              (idcauchy m)))
+           ≡⟨ {!!} ⟩ 
+         concatV 
+           ((mapV
+              (λ d → inject≤ (fromℕ (toℕ d)) (i*n+k≤m*n {suc m} zero d))
+              (idcauchy (suc n))) ∷ 
+            (mapV 
+               (λ b → 
+                 mapV
+                   (λ d → inject≤
+                            (fromℕ (toℕ b * suc n + toℕ d))
+                            (i*n+k≤m*n b d))
+                   (idcauchy (suc n)))
+               (tabulate {m} suc)))
+           ≡⟨ refl ⟩ 
          concatV 
            (mapV 
              (λ b → 
@@ -1030,8 +1077,59 @@ allFin* (suc m) (suc n) =
                           (fromℕ (toℕ b * suc n + toℕ d))
                           (i*n+k≤m*n b d))
                  (idcauchy (suc n)))
-           (idcauchy (suc m))) ∎)
+             (idcauchy (suc m))) ∎)
   where open ≡-Reasoning
+
+{-- 
+map-∘ : ∀ {a b c n} {A : Set a} {B : Set b} {C : Set c}
+        (f : B → C) (g : A → B) → (xs : Vec A n) →
+        mapV (f ∘ g) xs ≡ (mapV f ∘ mapV g) xs
+
+--
+
+  mapV (mapV f) (mapV g xs)
+= mapV (mapV f ∘ g) xs
+
+
+map g (f x1) , map g (f x2) , map g (f x3)
+--
+
+f = (λ b → 
+      mapV
+        (λ d → inject≤
+                 (fromℕ (toℕ b * suc n + toℕ d))
+                 (i*n+k≤m*n b d))
+        (idcauchy (suc n)))
+
+f zero = idcauchy (suc n)
+
+Need to show that:
+
+(mapV (inject+ (m * suc n)) (allFin (suc n))) ∷ 
+(mapV (mapV (raise (suc n))) (mapV f (tabulate {m} id)))
+
+≡
+
+f zero ∷ mapV f (tabulate {m} suc)
+
+  mapV (mapV (raise (suc n))) (mapV f (tabulate {m} id))
+≡ mapV f (tabulate {m} suc)
+
+f i = [a, b, c]
+
+[map (raise (suc n)) (f 0), 
+ map (raise (suc n)) (f 1), 
+ map (raise (suc n)) (f 2), 
+ map (raise (suc n)) (f 3), 
+ map (raise (suc n)) (f 4)]
+
+
+--}
+
+
+
+
+
 
 {--
 allFin* : (m n : ℕ) → allFin (m * n) ≡ 
@@ -1454,5 +1552,4 @@ tcomp-dist {m} {n} pm qm pn qn =
          tcompcauchy (scompcauchy pm qm) (scompcauchy pn qn) ∎)
   where open ≡-Reasoning
               
-
 ------------------------------------------------------------------------------
