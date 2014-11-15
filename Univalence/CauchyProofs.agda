@@ -48,7 +48,7 @@ open import Data.Vec
   using (Vec; tabulate; []; _∷_; tail; lookup; zip; zipWith; splitAt;
          _[_]≔_; allFin; toList)
   renaming (_++_ to _++V_; map to mapV; concat to concatV)
-open import Function using (id; _∘_; _$_)
+open import Function using (id; _∘_; _$_; _∋_)
 
 open import Data.Empty   using (⊥)
 open import Data.Unit    using (⊤; tt)
@@ -954,6 +954,97 @@ empty-vec : ∀ {m} → (eq : m ≡ 0) → allFin m ≡ subst Cauchy (sym eq) []
 empty-vec {0} refl = refl 
 empty-vec {suc m} ()
 
+-- two different ways of injecting d : Fin (suc n) into 
+-- Fin (suc m * suc n)
+
+inject+0 : ∀ {m} → (i : Fin m) → 
+  inject+ 0 i ≡ subst Fin (sym (+-right-identity m)) i
+inject+0 {0} () 
+inject+0 {suc m} zero =
+  begin (inject+ 0 (Fin (suc m) ∋ zero)
+           ≡⟨ refl ⟩
+         (Fin (suc m + 0) ∋ zero)
+           ≡⟨ sym (congD!
+                    (λ m → {!!} )
+                    {suc m + 0} {suc m}
+                    (sym (+-right-identity (suc m)))) ⟩
+         subst Fin (sym (+-right-identity (suc m))) (Fin (suc m) ∋ zero) ∎)
+  where open ≡-Reasoning
+inject+0 {suc m} (suc i) = {!!} 
+
+--congD! : {a b : Level} {A : Set a} {B : A → Set b}
+--         (f : (x : A) → B x) → {x₁ x₂ : A} → (x₂≡x₁ : x₂ ≡ x₁) → 
+--         subst B x₂≡x₁ (f x₂) ≡ f x₁
+--congD! f refl = refl
+
+
+inj-lemma : ∀ {m n} → (d : Fin (suc n)) (p : suc (toℕ d) ≤ suc m * suc n) →
+  inject+ (m * suc n) d ≡ inject≤ (fromℕ (toℕ d)) p 
+inj-lemma {m} {n} zero (s≤s m≤n) = refl
+inj-lemma {m} {0} (suc ()) (s≤s m≤n) 
+inj-lemma {0} {suc n} (suc d) (s≤s (s≤s d≤n)) = {!!}
+inj-lemma {suc m} {suc n} (suc d) (s≤s m≤n) = {!!}
+
+-- ?0 : inject+ 0 (suc d) ≡ suc d ≡ 
+-- suc (inject≤ (fromℕ (toℕ d)) (s≤s d≤n))
+
+-- ?1 : inject+ (suc m * suc (suc n)) (suc d) ≡
+--      inject≤ (fromℕ (toℕ (suc d))) (s≤s m≤n)
+
+
+
+
+{--
+inj-lemma {m} {0} zero = {!refl!}
+-- ?0 : zero ≡ inject≤ 0 (i*n+k≤m*n 0 0)
+-- i*n+k≤m*n 0 0 does not normalize to (s≤s _) which is necessary to pattern
+-- match the definition of inject≤
+inj-lemma {m} {0} (suc ())
+inj-lemma {0} {suc n} zero = {!!}
+inj-lemma {0} {suc n} (suc d) = {!!}
+inj-lemma {suc m} {suc n} zero = {!!}
+inj-lemma {suc m} {suc n} (suc d) = {!!}
+--}
+
+{--
+
+
+i*n+k≤m*n : ∀ {m n} → (i : Fin m) → (k : Fin n) → 
+            (suc (toℕ i * n + toℕ k) ≤ m * n)
+i*n+k≤m*n {0} {_} () _
+i*n+k≤m*n {_} {0} _ ()
+i*n+k≤m*n {suc m} {suc n} i k = 
+  begin (suc (toℕ i * suc n + toℕ k) 
+           ≡⟨  cong suc (+-comm (toℕ i * suc n) (toℕ k))  ⟩
+         suc (toℕ k + toℕ i * suc n)
+           ≡⟨ refl ⟩
+         suc (toℕ k) + (toℕ i * suc n)
+           ≤⟨ cong+r≤ (bounded k) (toℕ i * suc n) ⟩ 
+         suc n + (toℕ i * suc n)
+           ≤⟨ cong+l≤ (cong*r≤ (sinj≤ (bounded i)) (suc n)) (suc n) ⟩
+         suc n + (m * suc n) 
+           ≡⟨ refl ⟩
+         suc m * suc n ∎)
+  where open ≤-Reasoning
+
+
+
+map-tabulate-suc : ∀ {m n} →
+ (f : Fin (suc m → Fin (suc n) → Fin (suc m * suc n)) → 
+  mapV 
+    (λ b → mapV (f b) (idcauchy (suc n)))
+    (tabulate {m} suc) ≡
+  mapV
+    (λ b → mapV
+             (raise (suc n))
+             (mapV (f b) (idcauchy (suc n))))
+    (tabulate {m} id)
+map-tabulate-suc = {!!} 
+                   (λ d → inject≤
+                            (fromℕ (toℕ b * suc n + toℕ d))
+                            (i*n+k≤m*n b d))
+--}
+
 allFin* : (m n : ℕ) → allFin (m * n) ≡ 
           concatV 
             (mapV 
@@ -1058,7 +1149,9 @@ allFin* (suc m) (suc n) =
            ≡⟨ {!!} ⟩ 
          concatV 
            ((mapV
-              (λ d → inject≤ (fromℕ (toℕ d)) (i*n+k≤m*n {suc m} zero d))
+              (λ d → inject≤
+                       (fromℕ (toℕ d))
+                       (i*n+k≤m*n {suc m} {suc n} zero d))
               (idcauchy (suc n))) ∷ 
             (mapV 
                (λ b → 
