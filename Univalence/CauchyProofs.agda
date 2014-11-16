@@ -957,11 +957,35 @@ map-inj-lemma : (m n : ℕ) →
     (λ d → inject≤
              (fromℕ (toℕ d))
              (i*n+k≤m*n {suc m} {suc n} zero d))
-    (idcauchy (suc n)))
-map-inj-lemma 0 n =
-  cong (λ x → mapV x (allFin (suc n))) {!!}
-map-inj-lemma (suc m) n =
-  cong (λ x → mapV x (allFin (suc n))) {!!}
+    (allFin (suc n)))
+map-inj-lemma 0 n = {!!}
+map-inj-lemma (suc m) n = {!!}
+
+-- Hole 0:
+-- mapV (λ d → inject+ 0 d) (allFin (suc n))
+-- mapV (λ d → inject≤ (fromℕ (toℕ d)) (i*n+k≤m*n zero d)) (allFin (suc n))
+--
+-- mapV (λ d → inject+ 0 d) (allFin (suc n))
+-- mapV (λ d → inject+ 0 d) (zero ∷ mapV suc (allFin n))
+-- inject+ 0 zero ∷ mapV (λ d → inject+ 0 d) (mapV suc (allFin n))
+-- zero ∷ mapV (λ d → inject+ 0 (suc d)) (allFin n)
+
+-- mapV (λ d → inject≤ (fromℕ (toℕ d)) (i*n+k≤m*n zero d)) (allFin (suc n))
+-- mapV
+--   (λ d → inject≤ (fromℕ (toℕ d)) (i*n+k≤m*n zero d))
+--   (zero ∷ mapV suc (allFin n))
+-- inject≤ 0 (i*n+k≤m*n zero zero) ∷ 
+-- mapV
+--   (λ d → inject≤ (fromℕ (toℕ (suc d))) (i*n+k≤m*n zero (suc d)))
+--   (allFin n)
+-- zero ∷ 
+-- mapV
+--   (λ d → inject≤ (fromℕ (toℕ (suc d))) (i*n+k≤m*n zero (suc d)))
+--   (allFin n)
+
+-- Hole 1:
+-- mapV (λ d → inject+ (suc m * suc n) d) (allFin (suc n))
+-- mapV (λ d → inject≤ (fromℕ (toℕ d)) (i*n+k≤m*n zero d)) (allFin (suc n))
 
 map-raise-lemma : (m n : ℕ) → 
   mapV
@@ -982,6 +1006,22 @@ map-raise-lemma : (m n : ℕ) →
     (tabulate {m} suc)
 map-raise-lemma 0 n = refl
 map-raise-lemma (suc m) n = {!!}
+
+-- Hole 2:
+-- mapV
+--   (λ b →
+--     mapV (raise (suc n))
+--    (mapV
+--      (λ d → inject≤ (fromℕ (toℕ b * suc n + toℕ d)) (i*n+k≤m*n b d))
+--      (idcauchy (suc n))))
+--   (idcauchy (suc m))
+-- 
+-- mapV
+--   (λ b →
+--     mapV
+--       (λ d → inject≤ (fromℕ (toℕ b * suc n + toℕ d)) (i*n+k≤m*n b d))
+--     (idcauchy (suc n)))
+--   (tabulate suc)
 
 allFin* : (m n : ℕ) → allFin (m * n) ≡ 
           concatV 
