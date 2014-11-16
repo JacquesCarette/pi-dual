@@ -953,7 +953,21 @@ empty-vec {suc m} ()
 
 inj-lemma : (m n : ℕ) (d : Fin (suc n)) (leq : suc (toℕ d) ≤ suc m * suc n) → 
   inject+ (m * suc n) d ≡ inject≤ (fromℕ (toℕ d)) leq
-inj-lemma m n d leq = {!!} 
+inj-lemma 0 n zero (s≤s _) = refl
+inj-lemma 0 0 (suc ()) _
+inj-lemma 0 (suc n) (suc d) (s≤s sd≤n) = cong suc (inj-lemma 0 n d sd≤n)
+inj-lemma (suc m) 0 zero (s≤s _) = refl 
+inj-lemma (suc m) 0 (suc ()) _
+inj-lemma (suc m) (suc n) zero (s≤s _) = refl
+inj-lemma (suc m) (suc n) (suc d) (s≤s (s≤s leq)) =
+  cong suc {!!} 
+
+-- d   : Fin (suc n)
+-- leq : toℕ d ≤ n + suc (suc (n + m * suc (suc n)))
+
+-- inject+ (suc m * suc (suc n)) d
+-- inject≤ (fromℕ (toℕ d)) (s≤s leq)
+
 
 map-inj-lemma : (m n : ℕ) →
   (mapV (inject+ (m * suc n)) (allFin (suc n))) ≡ 
