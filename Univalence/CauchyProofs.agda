@@ -957,14 +957,13 @@ empty-vec {suc m} ()
 -- two different ways of injecting d : Fin (suc n) into 
 -- Fin (suc m * suc n)
 
-inj-lemma : ∀ {m n} → (d : Fin (suc n)) (p : suc (toℕ d) ≤ suc m * suc n) →
+inj-lemma : ∀ {m n} → (d : Fin (suc n)) (p : suc (toℕ d) ≤ (suc m) * suc n) →
   inject+ (m * suc n) d ≡ inject≤ (fromℕ (toℕ d)) p 
 inj-lemma {m} {n} zero (s≤s m≤n) = refl
 inj-lemma {m} {0} (suc ()) (s≤s m≤n) 
 inj-lemma {0} {suc n} (suc d) (s≤s (s≤s d≤n)) =
   cong suc (inj-lemma {0} d (s≤s d≤n))
-inj-lemma {suc m} {suc n} (suc d) (s≤s (s≤s m≤n)) =
-  cong suc (inj-lemma {{!!}} {n} d (s≤s m≤n))
+inj-lemma {suc m} {suc n} (suc d) (s≤s m≤n) = cong suc (inj-lemma {{!!}} {n} d m≤n)
 
 -- Hole needs x such:
 -- (x * suc n) =
@@ -977,8 +976,28 @@ map-lemma : (m n : ℕ) →
              (fromℕ (toℕ d))
              (i*n+k≤m*n {suc m} {suc n} zero d))
     (idcauchy (suc n)))
-map-lemma 0 n = cong (λ x → mapV x (allFin (suc n))) {!!}
+map-lemma 0 n = {!!}
 map-lemma (suc m) n = cong (λ x → mapV x (allFin (suc n))) {!!}
+
+-- this is likely to need generalized to be provable
+map2-lemma : (m n : ℕ) → 
+          (mapV (λ b → mapV
+                       (raise (suc n))
+                       (mapV
+                         (λ d → inject≤
+                                  (fromℕ (toℕ b * suc n + toℕ d))
+                                  (i*n+k≤m*n b d))
+                         (idcauchy (suc n)))) (idcauchy m)) ≡
+            (mapV 
+               (λ b → 
+                 mapV
+                   (λ d → inject≤
+                            (fromℕ (toℕ b * suc n + toℕ d))
+                            (i*n+k≤m*n b d))
+                   (idcauchy (suc n)))
+               (tabulate {m} suc))
+map2-lemma Data.Nat.zero n = refl
+map2-lemma (suc m) n = {!!}
 
 allFin* : (m n : ℕ) → allFin (m * n) ≡ 
           concatV 
@@ -1113,7 +1132,7 @@ allFin* (suc m) (suc n) =
                                (fromℕ (toℕ d))
                                (i*n+k≤m*n {suc m} {suc n} zero d))
                       (idcauchy (suc n)) ∷ x ))
-                {!!} ⟩   
+                (map2-lemma m n) ⟩   
          concatV 
            ((mapV
               (λ d → inject≤
