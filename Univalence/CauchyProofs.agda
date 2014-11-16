@@ -951,6 +951,10 @@ empty-vec : ∀ {m} → (eq : m ≡ 0) → allFin m ≡ subst Cauchy (sym eq) []
 empty-vec {0} refl = refl 
 empty-vec {suc m} ()
 
+inj-lemma : (m n : ℕ) (d : Fin (suc n)) (leq : suc (toℕ d) ≤ suc m * suc n) → 
+  inject+ (m * suc n) d ≡ inject≤ (fromℕ (toℕ d)) leq
+inj-lemma m n d leq = {!!} 
+
 map-inj-lemma : (m n : ℕ) →
   (mapV (inject+ (m * suc n)) (allFin (suc n))) ≡ 
   (mapV
@@ -958,34 +962,31 @@ map-inj-lemma : (m n : ℕ) →
              (fromℕ (toℕ d))
              (i*n+k≤m*n {suc m} {suc n} zero d))
     (allFin (suc n)))
-map-inj-lemma 0 n = {!!}
-map-inj-lemma (suc m) n = {!!}
-
--- Hole 0:
--- mapV (λ d → inject+ 0 d) (allFin (suc n))
--- mapV (λ d → inject≤ (fromℕ (toℕ d)) (i*n+k≤m*n zero d)) (allFin (suc n))
---
--- mapV (λ d → inject+ 0 d) (allFin (suc n))
--- mapV (λ d → inject+ 0 d) (zero ∷ mapV suc (allFin n))
--- inject+ 0 zero ∷ mapV (λ d → inject+ 0 d) (mapV suc (allFin n))
--- zero ∷ mapV (λ d → inject+ 0 (suc d)) (allFin n)
-
--- mapV (λ d → inject≤ (fromℕ (toℕ d)) (i*n+k≤m*n zero d)) (allFin (suc n))
--- mapV
---   (λ d → inject≤ (fromℕ (toℕ d)) (i*n+k≤m*n zero d))
---   (zero ∷ mapV suc (allFin n))
--- inject≤ 0 (i*n+k≤m*n zero zero) ∷ 
--- mapV
---   (λ d → inject≤ (fromℕ (toℕ (suc d))) (i*n+k≤m*n zero (suc d)))
---   (allFin n)
--- zero ∷ 
--- mapV
---   (λ d → inject≤ (fromℕ (toℕ (suc d))) (i*n+k≤m*n zero (suc d)))
---   (allFin n)
-
--- Hole 1:
--- mapV (λ d → inject+ (suc m * suc n) d) (allFin (suc n))
--- mapV (λ d → inject≤ (fromℕ (toℕ d)) (i*n+k≤m*n zero d)) (allFin (suc n))
+map-inj-lemma m n = 
+  begin (mapV (inject+ (m * suc n)) (tabulate {suc n} id)
+           ≡⟨ sym (tabulate-∘ (inject+ (m * suc n)) id) ⟩
+         tabulate {suc n} (λ d → inject+ (m * suc n) d)
+           ≡⟨ finext
+                 (λ d → inject+ (m * suc n) d)
+                 (λ d → inject≤
+                          (fromℕ (toℕ d))
+                          (i*n+k≤m*n {suc m} {suc n} zero d))
+                 (λ d → inj-lemma m n d (i*n+k≤m*n {suc m} {suc n} zero d)) ⟩ 
+         tabulate {suc n}
+           (λ d → inject≤
+                    (fromℕ (toℕ d))
+                    (i*n+k≤m*n {suc m} {suc n} zero d))
+           ≡⟨ tabulate-∘
+                (λ d → inject≤
+                         (fromℕ (toℕ d))
+                         (i*n+k≤m*n {suc m} {suc n} zero d))
+                id ⟩ 
+         mapV
+           (λ d → inject≤
+                    (fromℕ (toℕ d))
+                    (i*n+k≤m*n {suc m} {suc n} zero d))
+           (allFin (suc n)) ∎)
+  where open ≡-Reasoning
 
 map-raise-lemma : (m n : ℕ) → 
   mapV
