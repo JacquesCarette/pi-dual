@@ -942,9 +942,6 @@ pcomp-id {m} {n} =
 ------------------------------------------------------------------------------
 -- Proofs about multiplicative permutations
 
--- need to prove tcomp-id and tcomp-dist
--- tcomp-id requires allFin*
-
 concat-nil : ∀ {m} → 
   concatV (tabulate {m} (λ b → [])) ≡ subst Cauchy (sym (*-right-zero m)) []
 concat-nil {0} = refl
@@ -954,31 +951,36 @@ empty-vec : ∀ {m} → (eq : m ≡ 0) → allFin m ≡ subst Cauchy (sym eq) []
 empty-vec {0} refl = refl 
 empty-vec {suc m} ()
 
--- two different ways of injecting d : Fin (suc n) into 
--- Fin (suc m * suc n)
-
-inj-lemma : ∀ {m n} → (d : Fin (suc n)) (p : suc (toℕ d) ≤ suc m * suc n) →
-  inject+ (m * suc n) d ≡ inject≤ (fromℕ (toℕ d)) p 
-inj-lemma {m} {n} zero (s≤s m≤n) = refl
-inj-lemma {m} {0} (suc ()) (s≤s m≤n) 
-inj-lemma {0} {suc n} (suc d) (s≤s (s≤s d≤n)) =
-  cong suc (inj-lemma {0} d (s≤s d≤n))
-inj-lemma {suc m} {suc n} (suc d) (s≤s (s≤s m≤n)) =
-  cong suc (inj-lemma {{!!}} {n} d (s≤s m≤n))
-
--- Hole needs x such:
--- (x * suc n) =
--- (suc (suc (n + m * suc (suc n)))) 
-
-map-lemma : (m n : ℕ) →
+map-inj-lemma : (m n : ℕ) →
   (mapV (inject+ (m * suc n)) (allFin (suc n))) ≡ 
   (mapV
     (λ d → inject≤
              (fromℕ (toℕ d))
              (i*n+k≤m*n {suc m} {suc n} zero d))
     (idcauchy (suc n)))
-map-lemma 0 n = cong (λ x → mapV x (allFin (suc n))) {!!}
-map-lemma (suc m) n = cong (λ x → mapV x (allFin (suc n))) {!!}
+map-inj-lemma 0 n =
+  cong (λ x → mapV x (allFin (suc n))) {!!}
+map-inj-lemma (suc m) n =
+  cong (λ x → mapV x (allFin (suc n))) {!!}
+
+map-raise-lemma : (m n : ℕ) → 
+  mapV
+    (λ b → mapV
+             (raise (suc n))
+             (mapV
+               (λ d → inject≤
+                        (fromℕ (toℕ b * suc n + toℕ d))
+                        (i*n+k≤m*n b d))
+               (idcauchy (suc n))))
+    (idcauchy m) ≡
+  mapV 
+    (λ b → mapV
+             (λ d → inject≤
+                      (fromℕ (toℕ b * suc n + toℕ d))
+                      (i*n+k≤m*n b d))
+             (idcauchy (suc n)))
+    (tabulate {m} suc)
+map-raise-lemma m n = {!!}
 
 allFin* : (m n : ℕ) → allFin (m * n) ≡ 
           concatV 
@@ -1046,8 +1048,8 @@ allFin* (suc m) (suc n) =
                (idcauchy m)))
            ≡⟨ refl ⟩  
          concatV
-           ((mapV (inject+ (m * suc n)) (allFin (suc n))) ∷ 
-            (mapV
+           (mapV (inject+ (m * suc n)) (allFin (suc n)) ∷ 
+            mapV
               (mapV (raise (suc n)))
               (mapV 
                 (λ b → 
@@ -1056,7 +1058,7 @@ allFin* (suc m) (suc n) =
                              (fromℕ (toℕ b * suc n + toℕ d))
                              (i*n+k≤m*n b d))
                     (idcauchy (suc n)))
-                (idcauchy m))))
+                (idcauchy m)))
            ≡⟨ cong
                  (λ x →
                    concatV
@@ -1071,8 +1073,8 @@ allFin* (suc m) (suc n) =
                             (idcauchy (suc n)))
                         (idcauchy m))) ⟩  
          concatV
-           ((mapV (inject+ (m * suc n)) (allFin (suc n))) ∷ 
-            (mapV
+           (mapV (inject+ (m * suc n)) (allFin (suc n)) ∷ 
+            mapV
               (λ b → mapV
                        (raise (suc n))
                        (mapV
@@ -1080,16 +1082,22 @@ allFin* (suc m) (suc n) =
                                   (fromℕ (toℕ b * suc n + toℕ d))
                                   (i*n+k≤m*n b d))
                          (idcauchy (suc n))))
-              (idcauchy m)))
-           ≡⟨ cong (λ x → concatV (x ∷ ((mapV
-              (λ b → mapV
-                       (raise (suc n))
-                       (mapV
-                         (λ d → inject≤
-                                  (fromℕ (toℕ b * suc n + toℕ d))
-                                  (i*n+k≤m*n b d))
-                         (idcauchy (suc n))))
-              (idcauchy m))))) (map-lemma m n) ⟩
+              (idcauchy m))
+           ≡⟨ cong
+                (λ x →
+                  concatV
+                    (x ∷
+                    mapV
+                      (λ b →
+                        mapV
+                          (raise (suc n))
+                          (mapV
+                            (λ d → inject≤
+                                     (fromℕ (toℕ b * suc n + toℕ d))
+                                     (i*n+k≤m*n b d))
+                            (idcauchy (suc n))))
+                      (idcauchy m)))
+                (map-inj-lemma m n) ⟩
          concatV
            (mapV
               (λ d → inject≤
@@ -1106,27 +1114,27 @@ allFin* (suc m) (suc n) =
                          (idcauchy (suc n))))
               (idcauchy m)))
            ≡⟨ cong
-                (λ x →
-                  concatV
-                    (mapV
-                      (λ d → inject≤
-                               (fromℕ (toℕ d))
-                               (i*n+k≤m*n {suc m} {suc n} zero d))
-                      (idcauchy (suc n)) ∷ x ))
-                {!!} ⟩   
+                 (λ x →
+                   concatV
+                     (mapV
+                       (λ d → inject≤
+                                (fromℕ (toℕ d))
+                                (i*n+k≤m*n {suc m} {suc n} zero d))
+                       (idcauchy (suc n)) ∷
+                     x))
+                 (map-raise-lemma m n) ⟩ 
          concatV 
-           ((mapV
+           (mapV
               (λ d → inject≤
                        (fromℕ (toℕ d))
                        (i*n+k≤m*n {suc m} {suc n} zero d))
-              (idcauchy (suc n))) ∷ 
+              (idcauchy (suc n)) ∷ 
             (mapV 
-               (λ b → 
-                 mapV
-                   (λ d → inject≤
-                            (fromℕ (toℕ b * suc n + toℕ d))
-                            (i*n+k≤m*n b d))
-                   (idcauchy (suc n)))
+               (λ b → mapV
+                        (λ d → inject≤
+                                 (fromℕ (toℕ b * suc n + toℕ d))
+                                 (i*n+k≤m*n b d))
+                        (idcauchy (suc n)))
                (tabulate {m} suc)))
            ≡⟨ refl ⟩ 
          concatV 

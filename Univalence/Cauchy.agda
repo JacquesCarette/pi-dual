@@ -219,7 +219,6 @@ idperm n = (idcauchy n , λ {i} {j} p →
          j ∎))
   where open ≡-Reasoning
 
--- proofs about sequenced permutations
 -- Sequential composition
 
 scompcauchy : ∀ {n} → Cauchy n → Cauchy n → Cauchy n
@@ -264,44 +263,6 @@ tcompcauchy {m} {n} α β =
       (λ b → 
          mapV (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)) β)
       α)
-
--- this is a non-dependently typed version of tensor product of vectors.
-
-tensorvec : ∀ {m n} {A B C : Set} →
-            (A → B → C) → Vec A m → Vec B n → Vec C (m * n)
-tensorvec {0} _ [] _ = []
-tensorvec {suc m} {n} {C = C} f (x ∷ α) β =
-  subst
-    (λ i → Vec C (n + m * n))
-    (+-*-suc m n)
-    (mapV (f x) β ++V tensorvec f α β)
-
--- this is a better template
-
-tensorvec' : ∀ {A B C : ℕ → Set} → (∀ {m n} → A m → B n → C (m * n)) →
-    (∀ {m} → (n : ℕ) → C m → C (n + m)) → 
-    ∀ {m n j} →  Vec (A m) j → Vec (B n) n → Vec (C (m * n)) (j * n)
-tensorvec' _ _ {j = 0} [] _ = []
-tensorvec' {A} {B} {C} f shift {m} {n} {suc j} (x ∷ α) β =
-  subst
-    (λ i → Vec (C (m * n)) (n + j * n))
-    (+-*-suc j n) 
-    (mapV (f x) β ++V (tensorvec' {A} {B} {C} f shift α β))
-
--- raise d by b*n and inject in m*n
-
-raise∘inject : ∀ {m n} → (b : Fin m) (d : Fin n) → Fin (m * n)
-raise∘inject {0} {n} () d
-raise∘inject {suc m} {n} b d =
-  inject≤ (raise (toℕ b * n) d) (i*n+n≤sucm*n {m} {n} b)
-
-tcompcauchy' : ∀ {i m n} → Vec (Fin m) i → Cauchy n → Vec (Fin (m * n)) (i * n)
-tcompcauchy' {0} {m} {n} [] β = []
-tcompcauchy' {suc i} {m} {n} (b ∷ α) β = 
-  mapV (raise∘inject {m} {n} b) β ++V tcompcauchy' {i} {m} {n} α β
-    
-tcompcauchy2 : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m * n)
-tcompcauchy2 = tcompcauchy'
 
 -- swap⋆ 
 -- 
