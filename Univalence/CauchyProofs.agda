@@ -980,7 +980,8 @@ map-raise-lemma : (m n : ℕ) →
                       (i*n+k≤m*n b d))
              (idcauchy (suc n)))
     (tabulate {m} suc)
-map-raise-lemma m n = {!!}
+map-raise-lemma 0 n = refl
+map-raise-lemma (suc m) n = {!!}
 
 allFin* : (m n : ℕ) → allFin (m * n) ≡ 
           concatV 
