@@ -951,23 +951,25 @@ empty-vec : ∀ {m} → (eq : m ≡ 0) → allFin m ≡ subst Cauchy (sym eq) []
 empty-vec {0} refl = refl 
 empty-vec {suc m} ()
 
-inj-lemma : (m n : ℕ) (d : Fin (suc n)) (leq : suc (toℕ d) ≤ suc m * suc n) → 
-  inject+ (m * suc n) d ≡ inject≤ (fromℕ (toℕ d)) leq
-inj-lemma 0 n zero (s≤s _) = refl
-inj-lemma 0 0 (suc ()) _
-inj-lemma 0 (suc n) (suc d) (s≤s sd≤n) = cong suc (inj-lemma 0 n d sd≤n)
-inj-lemma (suc m) 0 zero (s≤s _) = refl 
-inj-lemma (suc m) 0 (suc ()) _
-inj-lemma (suc m) (suc n) zero (s≤s _) = refl
-inj-lemma (suc m) (suc n) (suc d) (s≤s (s≤s leq)) =
-  cong suc {!!} 
+inj-lemma' : (m n : ℕ) (d : Fin n) (leq : suc (toℕ d) ≤ n + m) →
+  inject+ m d ≡ inject≤ (fromℕ (toℕ d)) leq
+inj-lemma' 0 0 () leq
+inj-lemma' 0 (suc n) zero (s≤s leq) = refl
+inj-lemma' 0 (suc n) (suc d) (s≤s leq) = cong suc (inj-lemma' 0 n d leq)
+inj-lemma' (suc m) 0 () leq
+inj-lemma' (suc m) (suc n) zero (s≤s leq) = refl
+inj-lemma' (suc m) (suc n) (suc d) (s≤s leq) =
+  cong suc (inj-lemma' (suc m) n d leq) 
 
--- d   : Fin (suc n)
--- leq : toℕ d ≤ n + suc (suc (n + m * suc (suc n)))
-
--- inject+ (suc m * suc (suc n)) d
--- inject≤ (fromℕ (toℕ d)) (s≤s leq)
-
+inj-lemma : (m n : ℕ) (d : Fin n) (leq : suc (toℕ d) ≤ suc m * n) →
+  inject+ (m * n) d ≡ inject≤ (fromℕ (toℕ d)) leq
+inj-lemma 0 0 () leq
+inj-lemma 0 (suc n) zero (s≤s leq) = refl
+inj-lemma 0 (suc n) (suc d) (s≤s leq) = cong suc (inj-lemma 0 n d leq)
+inj-lemma (suc m) 0 () leq
+inj-lemma (suc m) (suc n) zero (s≤s leq) = refl
+inj-lemma (suc m) (suc n) (suc d) (s≤s leq) =
+  cong suc (inj-lemma' (suc m * suc n) n d leq) 
 
 map-inj-lemma : (m n : ℕ) →
   (mapV (inject+ (m * suc n)) (allFin (suc n))) ≡ 
@@ -985,7 +987,8 @@ map-inj-lemma m n =
                  (λ d → inject≤
                           (fromℕ (toℕ d))
                           (i*n+k≤m*n {suc m} {suc n} zero d))
-                 (λ d → inj-lemma m n d (i*n+k≤m*n {suc m} {suc n} zero d)) ⟩ 
+                 (λ d → inj-lemma m (suc n) d
+                          (i*n+k≤m*n {suc m} {suc n} zero d)) ⟩ 
          tabulate {suc n}
            (λ d → inject≤
                     (fromℕ (toℕ d))
