@@ -1005,6 +1005,32 @@ map-inj-lemma m n =
            (allFin (suc n)) ∎)
   where open ≡-Reasoning
 
+-- what should this be named?
+lemma3 : (n m : ℕ) → (j : Fin m) →
+  mapV (raise (suc n))
+    (mapV (λ d → inject≤
+                 (fromℕ (toℕ j * suc n + toℕ d))
+                 (i*n+k≤m*n j d))
+          (idcauchy (suc n)))
+  ≡
+  mapV (λ d → inject≤
+              (fromℕ (toℕ (suc j) * suc n + toℕ d))
+              (i*n+k≤m*n (suc j) d))
+       (idcauchy (suc n))
+lemma3 n Data.Nat.zero ()
+lemma3 n (suc m) j = 
+  begin (
+  _
+    ≡⟨ sym (map-∘ (raise (suc n)) (λ d → inject≤
+                 (fromℕ (toℕ j * suc n + toℕ d))
+                 (i*n+k≤m*n j d)) (idcauchy (suc n))) ⟩
+  mapV (λ d → raise (suc n) (inject≤
+                 (fromℕ (toℕ j * suc n + toℕ d))
+                 (i*n+k≤m*n j d))) (idcauchy (suc n))
+    ≡⟨ {!!} ⟩ -- this should be a simple lemma
+  _ ∎)
+  where open ≡-Reasoning
+  
 map-raise-lemma : (m n : ℕ) → 
   mapV
     (λ b → mapV
@@ -1023,8 +1049,37 @@ map-raise-lemma : (m n : ℕ) →
              (idcauchy (suc n)))
     (tabulate {m} suc)
 map-raise-lemma 0 n = refl
-map-raise-lemma (suc m) n = {!!}
-
+map-raise-lemma (suc m) n = 
+  begin (
+  mapV (λ b → mapV (raise (suc n))
+             (mapV
+               (λ d → inject≤
+                        (fromℕ (toℕ b * suc n + toℕ d))
+                        (i*n+k≤m*n b d))
+               (idcauchy (suc n))))
+    (idcauchy (suc m))
+    ≡⟨ sym (tabulate-∘ _ id) ⟩
+  tabulate  {suc m} (λ b → mapV (raise (suc n))
+             (mapV
+               (λ d → inject≤
+                        (fromℕ (toℕ b * suc n + toℕ d))
+                        (i*n+k≤m*n b d))
+               (idcauchy (suc n))))
+    ≡⟨ finext _ _ (lemma3 n (suc m)) ⟩
+  tabulate {suc m} ((λ b → mapV
+               (λ d → inject≤
+                      (fromℕ (toℕ b * suc n + toℕ d))
+                      (i*n+k≤m*n b d))
+             (idcauchy (suc n))) ∘ suc)
+    ≡⟨ tabulate-∘ _ suc ⟩
+  mapV (λ b → mapV
+             (λ d → inject≤
+                      (fromℕ (toℕ b * suc n + toℕ d))
+                      (i*n+k≤m*n b d))
+             (idcauchy (suc n)))
+    (tabulate {suc m} suc) ∎)
+  where open ≡-Reasoning
+  
 -- Hole 2:
 -- mapV
 --   (λ b →
