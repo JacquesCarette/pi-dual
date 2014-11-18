@@ -1005,7 +1005,70 @@ map-inj-lemma m n =
            (allFin (suc n)) ∎)
   where open ≡-Reasoning
 
+raise-suc : (m n : ℕ) (j : Fin (suc m)) (d : Fin (suc n))
+  (leq : suc (toℕ j * suc n + toℕ d) ≤ suc m * suc n) → 
+  (leq' : suc (toℕ (suc j) * suc n + toℕ d) ≤ suc (suc m) * suc n) →
+  raise (suc n) (inject≤ (fromℕ (toℕ j * suc n + toℕ d)) leq) ≡
+  inject≤ (fromℕ (toℕ (suc j) * suc n + toℕ d)) leq'
+raise-suc 0 0 zero zero (s≤s leq) (s≤s leq') = {!!}
+raise-suc 0 0 zero (suc d) (s≤s leq) (s≤s leq') = {!!}
+raise-suc 0 0 (suc j) zero (s≤s leq) (s≤s leq') = {!!}
+raise-suc 0 0 (suc j) (suc d) (s≤s leq) (s≤s leq') = {!!}
+raise-suc 0 (suc n) zero zero (s≤s leq) (s≤s leq') = {!!}
+raise-suc 0 (suc n) zero (suc d) (s≤s leq) (s≤s leq') = {!!}
+raise-suc 0 (suc n) (suc j) zero (s≤s leq) (s≤s leq') = {!!}
+raise-suc 0 (suc n) (suc j) (suc d) (s≤s leq) (s≤s leq') = {!!}
+raise-suc (suc m) 0 zero zero (s≤s leq) (s≤s leq') = {!!}
+raise-suc (suc m) 0 zero (suc d) (s≤s leq) (s≤s leq') = {!!}
+raise-suc (suc m) 0 (suc j) zero (s≤s leq) (s≤s leq') = {!!}
+raise-suc (suc m) 0 (suc j) (suc d) (s≤s leq) (s≤s leq') = {!!}
+raise-suc (suc m) (suc n) zero zero (s≤s leq) (s≤s leq') = {!!}
+raise-suc (suc m) (suc n) zero (suc d) (s≤s leq) (s≤s leq') = {!!}
+raise-suc (suc m) (suc n) (suc j) zero (s≤s leq) (s≤s leq') = {!!}
+raise-suc (suc m) (suc n) (suc j) (suc d) (s≤s leq) (s≤s leq') = {!!} 
+
+map-raise-suc : (m n : ℕ) (j : Fin (suc m)) → 
+  mapV (λ d → raise 
+                (suc n) 
+                (inject≤
+                  (fromℕ (toℕ j * suc n + toℕ d))
+                   (i*n+k≤m*n j d)))
+       (idcauchy (suc n)) ≡
+  mapV (λ d → inject≤
+                (fromℕ (toℕ (suc j) * suc n + toℕ d))
+                (i*n+k≤m*n (suc j) d))
+       (idcauchy (suc n))
+map-raise-suc m n j =
+  begin (mapV
+          (λ d → raise 
+                   (suc n) 
+                   (inject≤
+                     (fromℕ (toℕ j * suc n + toℕ d))
+                     (i*n+k≤m*n j d)))
+          (idcauchy (suc n)) 
+          ≡⟨ (sym (tabulate-∘ _ id)) ⟩ 
+         tabulate {suc n}
+          (λ d → raise 
+                   (suc n) 
+                   (inject≤
+                     (fromℕ (toℕ j * suc n + toℕ d))
+                     (i*n+k≤m*n j d)))
+          ≡⟨ finext _ _
+             (λ d → raise-suc m n j d (i*n+k≤m*n j d) (i*n+k≤m*n (suc j) d)) ⟩
+         tabulate {suc n} 
+           (λ d → inject≤
+                    (fromℕ (toℕ (suc j) * suc n + toℕ d))
+                    (i*n+k≤m*n (suc j) d))
+          ≡⟨ tabulate-∘ _ id ⟩ 
+         mapV
+           (λ d → inject≤
+                    (fromℕ (toℕ (suc j) * suc n + toℕ d))
+                    (i*n+k≤m*n (suc j) d))
+           (idcauchy (suc n)) ∎)
+  where open ≡-Reasoning
+
 -- what should this be named?
+
 lemma3 : (n m : ℕ) → (j : Fin m) →
   mapV (raise (suc n))
     (mapV (λ d → inject≤
@@ -1017,7 +1080,7 @@ lemma3 : (n m : ℕ) → (j : Fin m) →
               (fromℕ (toℕ (suc j) * suc n + toℕ d))
               (i*n+k≤m*n (suc j) d))
        (idcauchy (suc n))
-lemma3 n Data.Nat.zero ()
+lemma3 n 0 ()
 lemma3 n (suc m) j = 
   begin (
   _
@@ -1027,7 +1090,7 @@ lemma3 n (suc m) j =
   mapV (λ d → raise (suc n) (inject≤
                  (fromℕ (toℕ j * suc n + toℕ d))
                  (i*n+k≤m*n j d))) (idcauchy (suc n))
-    ≡⟨ {!!} ⟩ -- this should be a simple lemma
+    ≡⟨ map-raise-suc m n j ⟩ 
   _ ∎)
   where open ≡-Reasoning
   
@@ -1080,22 +1143,6 @@ map-raise-lemma (suc m) n =
     (tabulate {suc m} suc) ∎)
   where open ≡-Reasoning
   
--- Hole 2:
--- mapV
---   (λ b →
---     mapV (raise (suc n))
---    (mapV
---      (λ d → inject≤ (fromℕ (toℕ b * suc n + toℕ d)) (i*n+k≤m*n b d))
---      (idcauchy (suc n))))
---   (idcauchy (suc m))
--- 
--- mapV
---   (λ b →
---     mapV
---       (λ d → inject≤ (fromℕ (toℕ b * suc n + toℕ d)) (i*n+k≤m*n b d))
---     (idcauchy (suc n)))
---   (tabulate suc)
-
 allFin* : (m n : ℕ) → allFin (m * n) ≡ 
           concatV 
             (mapV 
