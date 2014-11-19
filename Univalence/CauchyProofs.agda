@@ -1005,6 +1005,14 @@ map-inj-lemma m n =
            (allFin (suc n)) ∎)
   where open ≡-Reasoning
 
+raise-lem-1 : (n : ℕ) (leq : suc ((n + 0) + 0) ≤ n + suc (suc (n + 0))) → 
+  raise n zero ≡ inject≤ (fromℕ ((n + 0) + 0)) leq
+raise-lem-1 0 (s≤s leq) = refl
+raise-lem-1 (suc n) (s≤s leq) =
+  begin (suc (raise n zero)
+           ≡⟨ ? ⟩ 
+         suc (inject≤ (fromℕ ((n + 0) + 0)) leq) ∎)
+  where open ≡-Reasoning
 
 raise-suc : (m n : ℕ) (j : Fin (suc m)) (d : Fin (suc n))
   (leq : suc (toℕ j * suc n + toℕ d) ≤ suc m * suc n) → 
@@ -1015,7 +1023,8 @@ raise-suc 0 0 zero zero (s≤s leq) (s≤s (s≤s leq')) = refl
 raise-suc 0 0 zero (suc ()) _ _
 raise-suc 0 0 (suc ()) zero _ _
 raise-suc 0 0 (suc ()) (suc ()) _ _
-raise-suc 0 (suc n) zero zero (s≤s z≤n) (s≤s (s≤s leq')) = {!!}
+raise-suc 0 (suc n) zero zero (s≤s z≤n) (s≤s (s≤s leq')) =
+  cong (λ x → suc (suc x)) (raise-lem-1 n leq') 
 raise-suc 0 (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = {!!}
 raise-suc 0 (suc n) (suc ()) zero _ _
 raise-suc 0 (suc n) (suc ()) (suc d) _ _
@@ -1026,7 +1035,8 @@ raise-suc (suc m) 0 (suc j) (suc ()) _ _
 raise-suc (suc m) (suc n) zero zero (s≤s leq) (s≤s (s≤s leq')) = {!!}
 raise-suc (suc m) (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = {!!}
 raise-suc (suc m) (suc n) (suc j) zero (s≤s leq) (s≤s (s≤s leq')) = {!!}
-raise-suc (suc m) (suc n) (suc j) (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = {!!}
+raise-suc (suc m) (suc n) (suc j) (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) =
+  {!!}
 
 map-raise-suc : (m n : ℕ) (j : Fin (suc m)) → 
   mapV (λ d → raise 
