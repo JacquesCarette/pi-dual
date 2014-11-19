@@ -189,7 +189,7 @@ congD! f refl = refl
 cong₂D! : {a b c : Level} {A : Set a} {B : A → Set b} {C : Set c} 
          (f : (x : A) → B x → C)
        → {x₁ x₂ : A} {y₁ : B x₁} {y₂ : B x₂}
-       → (x₂≡x₁ : x₂ ≡ x₁) → y₁ ≡ subst B x₂≡x₁ y₂ → f x₁ y₁ ≡ f x₂ y₂
+       → (x₂≡x₁ : x₂ ≡ x₁) → subst B x₂≡x₁ y₂ ≡ y₁ → f x₁ y₁ ≡ f x₂ y₂
 cong₂D! f refl refl = refl
 
 subst-dist : 
@@ -1052,21 +1052,6 @@ raise-suc 0 0 zero (suc ()) _ _
 raise-suc 0 0 (suc ()) zero _ _
 raise-suc 0 0 (suc ()) (suc ()) _ _
 raise-suc 0 (suc n) zero zero (s≤s z≤n) (s≤s (s≤s leq')) = 
-
-{--
-cong₂D! : {a b c : Level} {A : Set a} {B : A → Set b} {C : Set c} 
-         (f : (x : A) → B x → C)
-       → {x₁ x₂ : A} {y₁ : B x₁} {y₂ : B x₂}
-       → (x₂≡x₁ : x₂ ≡ x₁) → y₁ ≡ subst B x₂≡x₁ y₂ → f x₁ y₁ ≡ f x₂ y₂
-cong₂D! f refl refl = refl
-
-cong₂D! :  
-         (f : (x : A) → B x → C)
-       → (x₂≡x₁ : x₂ ≡ x₁) 
-       → y₁ ≡ subst B x₂≡x₁ y₂ 
-       → f x₁ y₁ ≡ f x₂ y₂
---}
-
   begin (suc (suc (raise n zero))
            ≡⟨ cong 
                (λ x → suc (suc x))
@@ -1080,35 +1065,15 @@ cong₂D! :
                      (+-right-identity (n + 0)) 
                      (+-right-identity n))
                    (≤-proof-irrelevance 
-                     (leq-lem-0 (suc (n + 0)) n)
-                     (subst (λ x → {!x ≤ suc (suc (n + 0))!})
-                        (trans 
+                     (subst
+                       (λ x → suc x ≤ n + suc (suc (n + 0)))
+                       (trans 
                           (+-right-identity (n + 0)) 
                           (+-right-identity n))
-                        leq'))) ⟩ 
+                       leq')
+                     (leq-lem-0 (suc (n + 0)) n))) ⟩ 
          suc (suc (inject≤ (fromℕ ((n + 0) + 0)) leq')) ∎)
   where open ≡-Reasoning
-
-{--
-raise-lem-0 (suc (n + 0)) n : suc n ≤ n + suc (suc (n + 0))
-leq'                        : suc ((n + 0) + 0) ≤ n + suc (suc (n + 0))
-
-           ≡⟨ cong₂ 
-                (λ x y → suc (suc (inject≤ (fromℕ x) y)))
-                (sym (trans 
-                  (+-right-identity (n + 0)) 
-                  (+-right-identity n)))
-                (≤-proof-irrelevance (leq-lem-0 (suc (n + 0)) n) leq') ⟩ 
-
-                    (simplify-≤ 
-                      leq' 
-                      (cong suc 
-                        (trans 
-                          (+-right-identity (n + 0)) 
-                          (+-right-identity n)))
-                      refl)
---}
-
 raise-suc 0 (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = {!!}
 raise-suc 0 (suc n) (suc ()) zero _ _
 raise-suc 0 (suc n) (suc ()) (suc d) _ _
