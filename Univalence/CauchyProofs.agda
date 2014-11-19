@@ -1005,6 +1005,7 @@ map-inj-lemma m n =
            (allFin (suc n)) ∎)
   where open ≡-Reasoning
 
+
 raise-suc : (m n : ℕ) (j : Fin (suc m)) (d : Fin (suc n))
   (leq : suc (toℕ j * suc n + toℕ d) ≤ suc m * suc n) → 
   (leq' : suc (toℕ (suc j) * suc n + toℕ d) ≤ suc (suc m) * suc n) →
@@ -1014,24 +1015,18 @@ raise-suc 0 0 zero zero (s≤s leq) (s≤s (s≤s leq')) = refl
 raise-suc 0 0 zero (suc ()) _ _
 raise-suc 0 0 (suc ()) zero _ _
 raise-suc 0 0 (suc ()) (suc ()) _ _
-raise-suc 0 (suc n) zero zero (s≤s z≤n) (s≤s (s≤s leq')) = 
-  cong (suc ∘ suc) (raise-suc 0 n zero zero (s≤s z≤n) (s≤s {!!}))
-raise-suc 0 (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = 
-  cong (suc ∘ suc) (raise-suc 0 n zero d (s≤s leq) (s≤s {!!}))
+raise-suc 0 (suc n) zero zero (s≤s z≤n) (s≤s (s≤s leq')) = {!!}
+raise-suc 0 (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = {!!}
 raise-suc 0 (suc n) (suc ()) zero _ _
 raise-suc 0 (suc n) (suc ()) (suc d) _ _
 raise-suc (suc m) 0 zero zero (s≤s leq) (s≤s (s≤s leq')) = refl
 raise-suc (suc m) 0 zero (suc ()) _ _
-raise-suc (suc m) 0 (suc j) zero (s≤s leq) (s≤s (s≤s leq')) = {!!} -- need "proof irrelevance" for ≤ 
+raise-suc (suc m) 0 (suc j) zero (s≤s leq) (s≤s (s≤s leq')) = {!!} 
 raise-suc (suc m) 0 (suc j) (suc ()) _ _
-raise-suc (suc m) (suc n) zero zero (s≤s leq) (s≤s (s≤s leq')) = 
-  cong (suc ∘ suc) (raise-suc m n zero zero (s≤s z≤n) (s≤s {!!}))
-raise-suc (suc m) (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = 
-  cong (suc ∘ suc) (raise-suc m n zero d (s≤s {!!}) (s≤s {!!}))
-raise-suc (suc m) (suc n) (suc j) zero (s≤s leq) (s≤s (s≤s leq')) = 
-  cong (suc ∘ suc) (raise-suc m n j zero {!!} (s≤s {!!}))
-raise-suc (suc m) (suc n) (suc j) (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = 
-  cong (suc ∘ suc) (raise-suc m n j d (s≤s {!!}) (s≤s {!!})) 
+raise-suc (suc m) (suc n) zero zero (s≤s leq) (s≤s (s≤s leq')) = {!!}
+raise-suc (suc m) (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = {!!}
+raise-suc (suc m) (suc n) (suc j) zero (s≤s leq) (s≤s (s≤s leq')) = {!!}
+raise-suc (suc m) (suc n) (suc j) (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = {!!}
 
 map-raise-suc : (m n : ℕ) (j : Fin (suc m)) → 
   mapV (λ d → raise 
