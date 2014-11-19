@@ -1033,6 +1033,10 @@ leq-lem-1 n =
          n + suc (suc (n + 0)) ∎)
   where open ≤-Reasoning
 
+simplify-≤ : {m n m' n' : ℕ} → 
+             (m ≤ n) → (m ≡ m') → (n ≡ n') → (m' ≤ n') 
+simplify-≤ leq refl refl = leq
+
 raise-lem-0 : (m n : ℕ) → (leq : suc n ≤ n + suc m) →
               raise n zero ≡ inject≤ (fromℕ n) leq
 raise-lem-0 m 0 (s≤s leq) = refl
@@ -1058,7 +1062,9 @@ raise-suc 0 0 zero (suc ()) _ _
 raise-suc 0 0 (suc ()) zero _ _
 raise-suc 0 0 (suc ()) (suc ()) _ _
 raise-suc 0 (suc n) zero zero (s≤s z≤n) (s≤s (s≤s leq')) =
-  cong (λ x → suc (suc x)) (raise-lem-1 n leq')
+  cong 
+    (λ x → suc (suc x)) 
+    (raise-lem-1 n (simplify-≤ leq' ? ?)
 raise-suc 0 (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = {!!}
 raise-suc 0 (suc n) (suc ()) zero _ _
 raise-suc 0 (suc n) (suc ()) (suc d) _ _
