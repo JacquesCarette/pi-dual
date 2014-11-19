@@ -1038,6 +1038,10 @@ raise-lem-0 : (m n : ℕ) → (leq : suc n ≤ n + suc m) →
 raise-lem-0 m 0 (s≤s leq) = refl
 raise-lem-0 m (suc n) (s≤s leq) = cong suc (raise-lem-0 m n leq)
 
+≤-proof-irrelevance : {m n : ℕ} → (p q : m ≤ n) → p ≡ q
+≤-proof-irrelevance z≤n z≤n = refl
+≤-proof-irrelevance (s≤s p) (s≤s q) = cong s≤s (≤-proof-irrelevance p q)
+
 raise-lem-1 : (n : ℕ) → (leq : suc ((n + 0) + 0) ≤ n + suc (suc (n + 0))) → 
   raise n zero ≡ inject≤ (fromℕ ((n + 0) + 0)) leq
 raise-lem-1 n leq =
@@ -1064,7 +1068,8 @@ raise-suc 0 (suc n) (suc ()) zero _ _
 raise-suc 0 (suc n) (suc ()) (suc d) _ _
 raise-suc (suc m) 0 zero zero (s≤s leq) (s≤s (s≤s leq')) = refl
 raise-suc (suc m) 0 zero (suc ()) _ _
-raise-suc (suc m) 0 (suc j) zero (s≤s leq) (s≤s (s≤s leq')) = {!!} 
+raise-suc (suc m) 0 (suc j) zero (s≤s leq) (s≤s (s≤s leq')) = 
+  cong (λ x → suc (suc (inject≤ (fromℕ (toℕ j * suc 0 + 0)) x))) (≤-proof-irrelevance leq leq') 
 raise-suc (suc m) 0 (suc j) (suc ()) _ _
 raise-suc (suc m) (suc n) zero zero (s≤s leq) (s≤s (s≤s leq')) = {!!}
 raise-suc (suc m) (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = {!!}
