@@ -1051,28 +1051,20 @@ raise-suc 0 0 zero zero (s≤s leq) (s≤s (s≤s leq')) = refl
 raise-suc 0 0 zero (suc ()) _ _
 raise-suc 0 0 (suc ()) zero _ _
 raise-suc 0 0 (suc ()) (suc ()) _ _
-raise-suc 0 (suc n) zero zero (s≤s z≤n) (s≤s (s≤s leq')) = 
-  begin (suc (suc (raise n zero))
-           ≡⟨ cong 
-               (λ x → suc (suc x))
-               (raise-lem-0 (suc n + 0) n (leq-lem-0 (suc (n + 0)) n)) ⟩ 
-         suc (suc (inject≤ (fromℕ n) (leq-lem-0 (suc (n + 0)) n)))
-           ≡⟨ cong 
-                 (λ x → suc (suc x))
-                 (cong₂D! 
+raise-suc 0 (suc n) zero zero (s≤s z≤n) (s≤s (s≤s leq')) = cong (λ x → suc (suc x))
+  let n≡n+0+0 = trans (+-right-identity (n + 0)) (+-right-identity n) in
+  (begin ((raise n zero)
+           ≡⟨ (raise-lem-0 (suc n + 0) n (leq-lem-0 (suc (n + 0)) n)) ⟩ 
+         (inject≤ (fromℕ n) (leq-lem-0 (suc (n + 0)) n))
+           ≡⟨ (cong₂D! 
                    (λ x y → inject≤ (fromℕ x) y)
-                   (trans 
-                     (+-right-identity (n + 0)) 
-                     (+-right-identity n))
+                   n≡n+0+0
                    (≤-proof-irrelevance 
                      (subst
                        (λ x → suc x ≤ n + suc (suc (n + 0)))
-                       (trans 
-                          (+-right-identity (n + 0)) 
-                          (+-right-identity n))
-                       leq')
+                       n≡n+0+0 leq')
                      (leq-lem-0 (suc (n + 0)) n))) ⟩ 
-         suc (suc (inject≤ (fromℕ ((n + 0) + 0)) leq')) ∎)
+         (inject≤ (fromℕ ((n + 0) + 0)) leq') ∎) )
   where open ≡-Reasoning
 raise-suc 0 (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = {!!}
 raise-suc 0 (suc n) (suc ()) zero _ _
