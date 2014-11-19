@@ -1044,7 +1044,7 @@ raise-lem-1 n leq =
   begin (raise n zero
            ≡⟨ raise-lem-0 (suc (n + 0)) n (leq-lem-0 (suc (n + 0)) n) ⟩
          inject≤ (fromℕ n) (leq-lem-0 (suc (n + 0)) n)
-           ≡⟨ ? ⟩ 
+           ≡⟨ {!!} ⟩ 
          inject≤ (fromℕ ((n + 0) + 0)) leq ∎)
   where open ≡-Reasoning
          
