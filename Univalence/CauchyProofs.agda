@@ -944,6 +944,10 @@ pcomp-id {m} {n} =
 ------------------------------------------------------------------------------
 -- Proofs about multiplicative permutations
 
+≤-proof-irrelevance : {m n : ℕ} → (p q : m ≤ n) → p ≡ q
+≤-proof-irrelevance z≤n z≤n = refl
+≤-proof-irrelevance (s≤s p) (s≤s q) = cong s≤s (≤-proof-irrelevance p q)
+
 concat-nil : ∀ {m} → 
   concatV (tabulate {m} (λ b → [])) ≡ subst Cauchy (sym (*-right-zero m)) []
 concat-nil {0} = refl
@@ -1018,21 +1022,6 @@ leq-lem-0 m n =
          n + suc m ∎)
   where open ≤-Reasoning
 
-leq-lem-1 : (n : ℕ) → suc ((n + 0) + 0) ≤ n + suc (suc (n + 0))
-leq-lem-1 n =
-  begin (suc ((n + 0) + 0)
-           ≡⟨ cong suc (+-right-identity (n + 0)) ⟩
-         suc (n + 0)
-           ≡⟨ cong suc (+-right-identity n) ⟩
-         suc n
-           ≤⟨ n≤1+n (suc n) ⟩ 
-         suc (suc n)
-           ≤⟨ n≤m+n n (suc (suc n)) ⟩ 
-         n + suc (suc n)
-           ≡⟨ cong (λ x → n + suc (suc x)) (sym (+-right-identity n)) ⟩ 
-         n + suc (suc (n + 0)) ∎)
-  where open ≤-Reasoning
-
 simplify-≤ : {m n m' n' : ℕ} → 
              (m ≤ n) → (m ≡ m') → (n ≡ n') → (m' ≤ n') 
 simplify-≤ leq refl refl = leq
@@ -1042,20 +1031,6 @@ raise-lem-0 : (m n : ℕ) → (leq : suc n ≤ n + suc m) →
 raise-lem-0 m 0 (s≤s leq) = refl
 raise-lem-0 m (suc n) (s≤s leq) = cong suc (raise-lem-0 m n leq)
 
-≤-proof-irrelevance : {m n : ℕ} → (p q : m ≤ n) → p ≡ q
-≤-proof-irrelevance z≤n z≤n = refl
-≤-proof-irrelevance (s≤s p) (s≤s q) = cong s≤s (≤-proof-irrelevance p q)
-
-raise-lem-1 : (n : ℕ) → (leq : suc ((n + 0) + 0) ≤ n + suc (suc (n + 0))) → 
-  raise n zero ≡ inject≤ (fromℕ ((n + 0) + 0)) leq
-raise-lem-1 n leq =
-  begin (raise n zero
-           ≡⟨ raise-lem-0 (suc (n + 0)) n (leq-lem-0 (suc (n + 0)) n) ⟩
-         inject≤ (fromℕ n) (leq-lem-0 (suc (n + 0)) n)
-           ≡⟨ {!!} ⟩ 
-         inject≤ (fromℕ ((n + 0) + 0)) leq ∎)
-  where open ≡-Reasoning
-         
 raise-suc : (m n : ℕ) (j : Fin (suc m)) (d : Fin (suc n))
   (leq : suc (toℕ j * suc n + toℕ d) ≤ suc m * suc n) → 
   (leq' : suc (toℕ (suc j) * suc n + toℕ d) ≤ suc (suc m) * suc n) →
@@ -1065,17 +1040,33 @@ raise-suc 0 0 zero zero (s≤s leq) (s≤s (s≤s leq')) = refl
 raise-suc 0 0 zero (suc ()) _ _
 raise-suc 0 0 (suc ()) zero _ _
 raise-suc 0 0 (suc ()) (suc ()) _ _
-raise-suc 0 (suc n) zero zero (s≤s z≤n) (s≤s (s≤s leq')) =
-  cong 
-    (λ x → suc (suc x)) 
-    (raise-lem-1 n (simplify-≤ leq' ? ?)
+raise-suc 0 (suc n) zero zero (s≤s z≤n) (s≤s (s≤s leq')) = 
+  begin (suc (suc (raise n zero))
+           ≡⟨ cong 
+               (λ x → suc (suc x))
+               (raise-lem-0 (suc n + 0) n (leq-lem-0 (suc (n + 0)) n)) ⟩ 
+         suc (suc (inject≤ (fromℕ n) (leq-lem-0 (suc (n + 0)) n)))
+           ≡⟨ {!!} ⟩ 
+         suc (suc (inject≤ (fromℕ ((n + 0) + 0)) leq')) ∎)
+{--
+                    (simplify-≤ 
+                      leq' 
+                      (cong suc 
+                        (trans 
+                          (+-right-identity (n + 0)) 
+                          (+-right-identity n)))
+                      refl)
+--}
+  where open ≡-Reasoning
 raise-suc 0 (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = {!!}
 raise-suc 0 (suc n) (suc ()) zero _ _
 raise-suc 0 (suc n) (suc ()) (suc d) _ _
 raise-suc (suc m) 0 zero zero (s≤s leq) (s≤s (s≤s leq')) = refl
 raise-suc (suc m) 0 zero (suc ()) _ _
 raise-suc (suc m) 0 (suc j) zero (s≤s leq) (s≤s (s≤s leq')) = 
-  cong (λ x → suc (suc (inject≤ (fromℕ (toℕ j * suc 0 + 0)) x))) (≤-proof-irrelevance leq leq') 
+  cong 
+    (λ x → suc (suc (inject≤ (fromℕ (toℕ j * suc 0 + 0)) x))) 
+    (≤-proof-irrelevance leq leq') 
 raise-suc (suc m) 0 (suc j) (suc ()) _ _
 raise-suc (suc m) (suc n) zero zero (s≤s leq) (s≤s (s≤s leq')) = {!!}
 raise-suc (suc m) (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = {!!}

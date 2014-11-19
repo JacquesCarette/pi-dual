@@ -5378,3 +5378,38 @@ tcompcauchy' {suc i} {m} {n} (b ∷ α) β =
 tcompcauchy2 : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m * n)
 tcompcauchy2 = tcompcauchy'
 
+leq-lem-0 : (m n : ℕ) → suc n ≤ n + suc m
+leq-lem-0 m n =
+  begin (suc n
+           ≤⟨ m≤m+n (suc n) m ⟩ 
+         suc (n + m)
+           ≡⟨ cong suc (+-comm n m) ⟩ 
+         suc m + n
+           ≡⟨ +-comm (suc m) n ⟩ 
+         n + suc m ∎)
+  where open ≤-Reasoning
+
+leq-lem-1 : (n : ℕ) → suc ((n + 0) + 0) ≤ n + suc (suc (n + 0))
+leq-lem-1 n =
+  begin (suc ((n + 0) + 0)
+           ≡⟨ cong suc (+-right-identity (n + 0)) ⟩
+         suc (n + 0)
+           ≡⟨ cong suc (+-right-identity n) ⟩
+         suc n
+           ≤⟨ n≤1+n (suc n) ⟩ 
+         suc (suc n)
+           ≤⟨ n≤m+n n (suc (suc n)) ⟩ 
+         n + suc (suc n)
+           ≡⟨ cong (λ x → n + suc (suc x)) (sym (+-right-identity n)) ⟩ 
+         n + suc (suc (n + 0)) ∎)
+  where open ≤-Reasoning
+
+simplify-≤ : {m n m' n' : ℕ} → 
+             (m ≤ n) → (m ≡ m') → (n ≡ n') → (m' ≤ n') 
+simplify-≤ leq refl refl = leq
+
+raise-lem-0 : (m n : ℕ) → (leq : suc n ≤ n + suc m) →
+              raise n zero ≡ inject≤ (fromℕ n) leq
+raise-lem-0 m 0 (s≤s leq) = refl
+raise-lem-0 m (suc n) (s≤s leq) = cong suc (raise-lem-0 m n leq)
+
