@@ -12,6 +12,8 @@ open import Relation.Binary.PropositionalEquality
 open import Relation.Binary.PropositionalEquality.TrustMe
   using (trustMe)
 open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
+open import Data.Nat.Properties
+  using (n≤m+n; n≤1+n)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
@@ -1005,12 +1007,27 @@ map-inj-lemma m n =
            (allFin (suc n)) ∎)
   where open ≡-Reasoning
 
+leq-lem-1 : (n : ℕ) → suc ((n + 0) + 0) ≤ n + suc (suc (n + 0))
+leq-lem-1 n =
+  begin (suc ((n + 0) + 0)
+           ≡⟨ cong suc (+-right-identity (n + 0)) ⟩
+         suc (n + 0)
+           ≡⟨ cong suc (+-right-identity n) ⟩
+         suc n
+           ≤⟨ n≤1+n (suc n) ⟩ 
+         suc (suc n)
+           ≤⟨ n≤m+n n (suc (suc n)) ⟩ 
+         n + suc (suc n)
+           ≡⟨ cong (λ x → n + suc (suc x)) (sym (+-right-identity n)) ⟩ 
+         n + suc (suc (n + 0)) ∎)
+  where open ≤-Reasoning
+
 raise-lem-1 : (n : ℕ) (leq : suc ((n + 0) + 0) ≤ n + suc (suc (n + 0))) → 
   raise n zero ≡ inject≤ (fromℕ ((n + 0) + 0)) leq
-raise-lem-1 0 (s≤s leq) = refl
-raise-lem-1 (suc n) (s≤s leq) =
+raise-lem-1 0 (s≤s _) = refl
+raise-lem-1 (suc n) (s≤s leq) = 
   begin (suc (raise n zero)
-           ≡⟨ ? ⟩ 
+           ≡⟨ {!!} ⟩ 
          suc (inject≤ (fromℕ ((n + 0) + 0)) leq) ∎)
   where open ≡-Reasoning
 
@@ -1024,7 +1041,7 @@ raise-suc 0 0 zero (suc ()) _ _
 raise-suc 0 0 (suc ()) zero _ _
 raise-suc 0 0 (suc ()) (suc ()) _ _
 raise-suc 0 (suc n) zero zero (s≤s z≤n) (s≤s (s≤s leq')) =
-  cong (λ x → suc (suc x)) (raise-lem-1 n leq') 
+  cong (λ x → suc (suc x)) (raise-lem-1 n leq')
 raise-suc 0 (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = {!!}
 raise-suc 0 (suc n) (suc ()) zero _ _
 raise-suc 0 (suc n) (suc ()) (suc d) _ _
