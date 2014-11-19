@@ -13,7 +13,7 @@ open import Relation.Binary.PropositionalEquality.TrustMe
   using (trustMe)
 open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
 open import Data.Nat.Properties
-  using (n≤m+n; n≤1+n)
+  using (m≤m+n; n≤m+n; n≤1+n)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
@@ -1007,6 +1007,17 @@ map-inj-lemma m n =
            (allFin (suc n)) ∎)
   where open ≡-Reasoning
 
+leq-lem-0 : (m n : ℕ) → suc n ≤ n + suc m
+leq-lem-0 m n =
+  begin (suc n
+           ≤⟨ m≤m+n (suc n) m ⟩ 
+         suc (n + m)
+           ≡⟨ cong suc (+-comm n m) ⟩ 
+         suc m + n
+           ≡⟨ +-comm (suc m) n ⟩ 
+         n + suc m ∎)
+  where open ≤-Reasoning
+
 leq-lem-1 : (n : ℕ) → suc ((n + 0) + 0) ≤ n + suc (suc (n + 0))
 leq-lem-1 n =
   begin (suc ((n + 0) + 0)
@@ -1022,15 +1033,21 @@ leq-lem-1 n =
          n + suc (suc (n + 0)) ∎)
   where open ≤-Reasoning
 
-raise-lem-1 : (n : ℕ) (leq : suc ((n + 0) + 0) ≤ n + suc (suc (n + 0))) → 
-  raise n zero ≡ inject≤ (fromℕ ((n + 0) + 0)) leq
-raise-lem-1 0 (s≤s _) = refl
-raise-lem-1 (suc n) (s≤s leq) = 
-  begin (suc (raise n zero)
-           ≡⟨ {!!} ⟩ 
-         suc (inject≤ (fromℕ ((n + 0) + 0)) leq) ∎)
-  where open ≡-Reasoning
+raise-lem-0 : (m n : ℕ) → (leq : suc n ≤ n + suc m) →
+              raise n zero ≡ inject≤ (fromℕ n) leq
+raise-lem-0 m 0 (s≤s leq) = refl
+raise-lem-0 m (suc n) (s≤s leq) = cong suc (raise-lem-0 m n leq)
 
+raise-lem-1 : (n : ℕ) → (leq : suc ((n + 0) + 0) ≤ n + suc (suc (n + 0))) → 
+  raise n zero ≡ inject≤ (fromℕ ((n + 0) + 0)) leq
+raise-lem-1 n leq =
+  begin (raise n zero
+           ≡⟨ raise-lem-0 (suc (n + 0)) n (leq-lem-0 (suc (n + 0)) n) ⟩
+         inject≤ (fromℕ n) (leq-lem-0 (suc (n + 0)) n)
+           ≡⟨ ? ⟩ 
+         inject≤ (fromℕ ((n + 0) + 0)) leq ∎)
+  where open ≡-Reasoning
+         
 raise-suc : (m n : ℕ) (j : Fin (suc m)) (d : Fin (suc n))
   (leq : suc (toℕ j * suc n + toℕ d) ≤ suc m * suc n) → 
   (leq' : suc (toℕ (suc j) * suc n + toℕ d) ≤ suc (suc m) * suc n) →
