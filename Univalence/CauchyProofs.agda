@@ -1051,30 +1051,24 @@ raise-lem-0' m 0 j (s≤s leq) = inject-id m j leq
 raise-lem-0' m (suc n) j (s≤s leq) = cong suc (raise-lem-0' m n j leq)
 
 raise-lem-1 : (n : ℕ) → (d : Fin (suc n)) → 
-  (leq : toℕ d ≤ n + 0) → 
-  (leq' : suc (n + suc (toℕ d)) ≤ n + suc (suc (n + 0))) → 
+  (leq : toℕ d ≤ n) → 
+  (leq' : suc (n + suc (toℕ d)) ≤ n + suc (suc n)) → 
   raise n (inject≤ (fromℕ (toℕ (suc d))) (s≤s (s≤s leq)))
   ≡ inject≤ (fromℕ (n + toℕ (suc d))) leq'
 raise-lem-1 0 zero z≤n (s≤s (s≤s z≤n)) = refl
 raise-lem-1 0 (suc d) () leq'
 raise-lem-1 (suc n) zero z≤n (s≤s leq') =
   begin (suc (raise n (suc zero))
-           ≡⟨ cong suc (raise-lem-0' (suc (suc (n + 0))) n (suc zero) leq') ⟩
+           ≡⟨ cong suc (raise-lem-0' (suc (suc n)) n (suc zero) leq') ⟩
          suc (inject≤ (fromℕ (n + 1)) leq') ∎)
   where open ≡-Reasoning
-raise-lem-1 (suc n) (suc d) (s≤s leq) (s≤s leq') = {!!}
-{--
-  cong suc
-    (begin (raise n (inject≤ (fromℕ (toℕ (suc (suc d)))) (s≤s (s≤s (s≤s leq))))
-              ≡⟨ refl ⟩ 
-            raise n (suc (suc (inject≤ (fromℕ (toℕ d)) (s≤s leq))))
-              ≡⟨ ? ⟩
+raise-lem-1 (suc n) (suc d) (s≤s leq) (s≤s leq') = cong suc (
+  begin (raise n (suc (suc _)))
+               ≡⟨ cong (λ x → raise n (suc (suc x))) (sym (inject-id n d leq)) ⟩
             raise n (suc (suc d))
-              ≡⟨ raise-lem-0' (suc (suc n)) n (suc (suc d)) leq' ⟩
-            inject≤ (fromℕ (n + toℕ (suc (suc d)))) leq' ∎))
+               ≡⟨ raise-lem-0' (suc (suc n)) n (suc (suc d)) leq' ⟩
+            inject≤ (fromℕ (n + suc (suc (toℕ d)))) leq' ∎)
   where open ≡-Reasoning
-leq' : suc (n + suc (suc (toℕ d))) ≤ n + suc (suc (suc (n + 0)))
---}
 
 raise-suc : (m n : ℕ) (j : Fin (suc m)) (d : Fin (suc n))
   (leq : suc (toℕ j * suc n + toℕ d) ≤ suc m * suc n) → 
@@ -1103,9 +1097,10 @@ raise-suc 0 (suc n) zero zero (s≤s z≤n) (s≤s (s≤s leq')) =
          inject≤ (fromℕ ((n + 0) + 0)) leq' ∎))
   where open ≡-Reasoning
 raise-suc 0 (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) =
-  cong
+  congD! {B = λ x → {!!}}
     (λ x → suc (suc x))
-    {!!}
+    (raise-lem-1 n d (subst (λ x → toℕ d ≤ x) (+-right-identity n) leq)
+                              (subst (λ x → suc (x + suc (toℕ d)) ≤ n + suc (suc x) ) (+-right-identity n)  leq'))
 raise-suc 0 (suc n) (suc ()) zero _ _
 raise-suc 0 (suc n) (suc ()) (suc d) _ _
 raise-suc (suc m) 0 zero zero (s≤s leq) (s≤s (s≤s leq')) = refl
