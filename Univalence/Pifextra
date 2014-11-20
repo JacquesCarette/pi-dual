@@ -5413,3 +5413,12 @@ raise-lem-0 : (m n : ℕ) → (leq : suc n ≤ n + suc m) →
 raise-lem-0 m 0 (s≤s leq) = refl
 raise-lem-0 m (suc n) (s≤s leq) = cong suc (raise-lem-0 m n leq)
 
+simplify-≤ : {m n m' n' : ℕ} → 
+             (m ≤ n) → (m ≡ m') → (n ≡ n') → (m' ≤ n') 
+simplify-≤ leq refl refl = leq
+
+inject≤-≡ : ∀ {m m' n : ℕ} → (i : Fin m) → (leq : m ≤ n) → (eqm : m ≡ m') → 
+  inject≤ {m} {n} i leq ≡ 
+  inject≤ {m'} {n} (subst Fin eqm i) (subst (λ x → x ≤ n) eqm leq)
+inject≤-≡ i leq refl = refl
+

@@ -186,6 +186,8 @@ congD! : {a b : Level} {A : Set a} {B : A → Set b}
          subst B x₂≡x₁ (f x₂) ≡ f x₁
 congD! f refl = refl
 
+-- Courtesy of Wolfram Kahl, a dependent cong₂                                  
+
 cong₂D! : {a b c : Level} {A : Set a} {B : A → Set b} {C : Set c} 
          (f : (x : A) → B x → C)
        → {x₁ x₂ : A} {y₁ : B x₁} {y₂ : B x₂}
@@ -1017,6 +1019,8 @@ map-inj-lemma m n =
            (allFin (suc n)) ∎)
   where open ≡-Reasoning
 
+-- 
+
 leq-lem-0 : (m n : ℕ) → suc n ≤ n + suc m
 leq-lem-0 m n =
   begin (suc n
@@ -1028,19 +1032,49 @@ leq-lem-0 m n =
          n + suc m ∎)
   where open ≤-Reasoning
 
-simplify-≤ : {m n m' n' : ℕ} → 
-             (m ≤ n) → (m ≡ m') → (n ≡ n') → (m' ≤ n') 
-simplify-≤ leq refl refl = leq
-
-inject≤-≡ : ∀ {m m' n : ℕ} → (i : Fin m) → (leq : m ≤ n) → (eqm : m ≡ m') → 
-  inject≤ {m} {n} i leq ≡ 
-  inject≤ {m'} {n} (subst Fin eqm i) (subst (λ x → x ≤ n) eqm leq)
-inject≤-≡ i leq refl = refl
+inject-id : (m : ℕ) (j : Fin (suc m)) (leq : toℕ j ≤ m) → 
+  j ≡ inject≤ (fromℕ (toℕ j)) (s≤s leq)
+inject-id 0 zero z≤n = refl
+inject-id 0 (suc j) ()
+inject-id (suc m) zero z≤n = refl
+inject-id (suc m) (suc j) (s≤s leq) = cong suc (inject-id m j leq) 
 
 raise-lem-0 : (m n : ℕ) → (leq : suc n ≤ n + suc m) →
               raise n zero ≡ inject≤ (fromℕ n) leq
 raise-lem-0 m 0 (s≤s leq) = refl
 raise-lem-0 m (suc n) (s≤s leq) = cong suc (raise-lem-0 m n leq)
+
+raise-lem-0' : (m n : ℕ) (j : Fin (suc m)) →
+  (leq : suc (n + toℕ j) ≤ n + (suc m)) →
+  raise n j ≡ inject≤ (fromℕ (n + toℕ j)) leq
+raise-lem-0' m 0 j (s≤s leq) = inject-id m j leq
+raise-lem-0' m (suc n) j (s≤s leq) = cong suc (raise-lem-0' m n j leq)
+
+raise-lem-1 : (n : ℕ) → (d : Fin (suc n)) → 
+  (leq : toℕ d ≤ n + 0) → 
+  (leq' : suc (n + suc (toℕ d)) ≤ n + suc (suc (n + 0))) → 
+  raise n (inject≤ (fromℕ (toℕ (suc d))) (s≤s (s≤s leq)))
+  ≡ inject≤ (fromℕ (n + toℕ (suc d))) leq'
+raise-lem-1 0 zero z≤n (s≤s (s≤s z≤n)) = refl
+raise-lem-1 0 (suc d) () leq'
+raise-lem-1 (suc n) zero z≤n (s≤s leq') =
+  begin (suc (raise n (suc zero))
+           ≡⟨ cong suc (raise-lem-0' (suc (suc (n + 0))) n (suc zero) leq') ⟩
+         suc (inject≤ (fromℕ (n + 1)) leq') ∎)
+  where open ≡-Reasoning
+raise-lem-1 (suc n) (suc d) (s≤s leq) (s≤s leq') = {!!}
+{--
+  cong suc
+    (begin (raise n (inject≤ (fromℕ (toℕ (suc (suc d)))) (s≤s (s≤s (s≤s leq))))
+              ≡⟨ refl ⟩ 
+            raise n (suc (suc (inject≤ (fromℕ (toℕ d)) (s≤s leq))))
+              ≡⟨ ? ⟩
+            raise n (suc (suc d))
+              ≡⟨ raise-lem-0' (suc (suc n)) n (suc (suc d)) leq' ⟩
+            inject≤ (fromℕ (n + toℕ (suc (suc d)))) leq' ∎))
+  where open ≡-Reasoning
+leq' : suc (n + suc (suc (toℕ d))) ≤ n + suc (suc (suc (n + 0)))
+--}
 
 raise-suc : (m n : ℕ) (j : Fin (suc m)) (d : Fin (suc n))
   (leq : suc (toℕ j * suc n + toℕ d) ≤ suc m * suc n) → 
@@ -1051,22 +1085,27 @@ raise-suc 0 0 zero zero (s≤s leq) (s≤s (s≤s leq')) = refl
 raise-suc 0 0 zero (suc ()) _ _
 raise-suc 0 0 (suc ()) zero _ _
 raise-suc 0 0 (suc ()) (suc ()) _ _
-raise-suc 0 (suc n) zero zero (s≤s z≤n) (s≤s (s≤s leq')) = cong (λ x → suc (suc x))
+raise-suc 0 (suc n) zero zero (s≤s z≤n) (s≤s (s≤s leq')) =
+  cong (λ x → suc (suc x))
   let n≡n+0+0 = trans (+-right-identity (n + 0)) (+-right-identity n) in
-  (begin ((raise n zero)
-           ≡⟨ (raise-lem-0 (suc n + 0) n (leq-lem-0 (suc (n + 0)) n)) ⟩ 
-         (inject≤ (fromℕ n) (leq-lem-0 (suc (n + 0)) n))
-           ≡⟨ (cong₂D! 
-                   (λ x y → inject≤ (fromℕ x) y)
-                   n≡n+0+0
-                   (≤-proof-irrelevance 
-                     (subst
-                       (λ x → suc x ≤ n + suc (suc (n + 0)))
-                       n≡n+0+0 leq')
-                     (leq-lem-0 (suc (n + 0)) n))) ⟩ 
-         (inject≤ (fromℕ ((n + 0) + 0)) leq') ∎) )
+  (begin (raise n zero
+           ≡⟨ raise-lem-0 (suc n + 0) n (leq-lem-0 (suc (n + 0)) n) ⟩ 
+         inject≤ (fromℕ n) (leq-lem-0 (suc (n + 0)) n)
+           ≡⟨ cong₂D! 
+                (λ x y → inject≤ (fromℕ x) y)
+                n≡n+0+0
+                (≤-proof-irrelevance 
+                  (subst
+                    (λ x → suc x ≤ n + suc (suc (n + 0)))
+                    n≡n+0+0
+                    leq')
+                  (leq-lem-0 (suc (n + 0)) n)) ⟩ 
+         inject≤ (fromℕ ((n + 0) + 0)) leq' ∎))
   where open ≡-Reasoning
-raise-suc 0 (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = {!!}
+raise-suc 0 (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) =
+  cong
+    (λ x → suc (suc x))
+    {!!}
 raise-suc 0 (suc n) (suc ()) zero _ _
 raise-suc 0 (suc n) (suc ()) (suc d) _ _
 raise-suc (suc m) 0 zero zero (s≤s leq) (s≤s (s≤s leq')) = refl
