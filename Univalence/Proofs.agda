@@ -273,7 +273,6 @@ raise-lem-1 (suc n) (suc d) (s≤s leq) (s≤s leq') = cong suc (
             inject≤ (fromℕ (n + suc (suc (toℕ d)))) leq' ∎)
   where open ≡-Reasoning
 
-{--
 raise-suc : (m n : ℕ) (j : Fin (suc m)) (d : Fin (suc n))
   (leq : suc (toℕ j * suc n + toℕ d) ≤ suc m * suc n) → 
   (leq' : suc (toℕ (suc j) * suc n + toℕ d) ≤ suc (suc m) * suc n) →
@@ -305,37 +304,26 @@ raise-suc 0 (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) =
     (λ x → suc (suc x))
     (begin (raise n (inject≤ (fromℕ (toℕ (suc d))) (s≤s (s≤s leq))))
               ≡⟨ {!!} ⟩ 
-            subst Fin 
-              {!!}
+            subst
+              (λ x → Fin (n + x))
+              (sym (+-right-identity (suc (suc n))))
               (raise n
                 (inject≤
                   (fromℕ (toℕ (suc d)))
                   (s≤s (s≤s (simplify-≤ leq refl (+-right-identity n))))))
               ≡⟨ {!!} ⟩ 
+            subst
+              (λ x → Fin (n + x))
+              (sym (+-right-identity (suc (suc n))))
+              (inject≤
+                (fromℕ (n + toℕ (suc d)))
+                (simplify-≤
+                   leq'
+                   (cong (λ x → suc (x + toℕ (suc d))) (+-right-identity n))
+                   (cong (λ x → n + x) (+-right-identity (suc (suc n))))))
+              ≡⟨ {!!} ⟩ 
             inject≤ (fromℕ ((n + 0) + toℕ (suc d))) leq' ∎)
   where open ≡-Reasoning
-{--
-simplify-≤ : {m n m' n' : ℕ} → (m ≤ n) → (m ≡ m') → (n ≡ n') → (m' ≤ n') 
-
-    (raise-lem-1 n d
-      (subst (λ x → toℕ d ≤ x) (+-right-identity n) leq)
-      (subst
-        (λ x → suc (x + suc (toℕ d)) ≤ n + suc (suc x))
-        (+-right-identity n)
-        leq'))
-
-d    : Fin (suc n)
-leq  : toℕ d ≤ n + 0
-leq' : suc ((n + 0) + suc (toℕ d)) ≤ n + suc (suc (n + 0))
-
-raise-lem-1 : 
-  (n : ℕ) → (d : Fin (suc n)) → 
-  (leq : toℕ d ≤ n) → 
-  (leq' : suc (n + suc (toℕ d)) ≤ n + suc (suc n)) → 
-
-  raise n (inject≤ (fromℕ (toℕ (suc d))) (s≤s (s≤s leq)))
-  ≡ inject≤ (fromℕ (n + toℕ (suc d))) leq'
---}
 raise-suc 0 (suc n) (suc ()) zero _ _
 raise-suc 0 (suc n) (suc ()) (suc d) _ _
 raise-suc (suc m) 0 zero zero (s≤s leq) (s≤s (s≤s leq')) = refl
@@ -350,6 +338,6 @@ raise-suc (suc m) (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) 
 raise-suc (suc m) (suc n) (suc j) zero (s≤s leq) (s≤s (s≤s leq')) = {!!}
 raise-suc (suc m) (suc n) (suc j) (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) =
   {!!}
---}
+
 ------------------------------------------------------------------------------
 
