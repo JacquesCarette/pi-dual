@@ -304,6 +304,9 @@ subst
       (s≤s (s≤s (simplify-≤ leq refl (+-right-identity n))))))
 --}
 
+n+0+0≡n : (n : ℕ) → n + 0 + 0 ≡ n
+n+0+0≡n n =  trans (+-right-identity (n + 0)) (+-right-identity n)
+
 raise-suc : (m n : ℕ) (j : Fin (suc m)) (d : Fin (suc n))
   (leq : suc (toℕ j * suc n + toℕ d) ≤ suc m * suc n) → 
   (leq' : suc (toℕ (suc j) * suc n + toℕ d) ≤ suc (suc m) * suc n) →
@@ -364,11 +367,15 @@ raise-suc (suc m) 0 (suc j) zero (s≤s leq) (s≤s (s≤s leq')) =
     (λ x → suc (suc (inject≤ (fromℕ (toℕ j * suc 0 + 0)) x))) 
     (≤-proof-irrelevance leq leq') 
 raise-suc (suc m) 0 (suc j) (suc ()) _ _
-raise-suc (suc m) (suc n) zero zero (s≤s leq) (s≤s (s≤s leq')) = {!!}
-raise-suc (suc m) (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = {!!}
-raise-suc (suc m) (suc n) (suc j) zero (s≤s leq) (s≤s (s≤s leq')) = {!!}
+raise-suc (suc m) (suc n) zero zero (s≤s leq) (s≤s (s≤s leq')) = 
+  cong (λ x → suc (suc x)) (trans (raise-lem-0 (suc (n + suc m * suc (suc n))) n (simplify-≤ leq' (cong suc (n+0+0≡n n)) refl)) 
+                                                   {! !} )
+raise-suc (suc m) (suc n) zero (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) = 
+  cong (λ x → suc (suc x)) {!!}
+raise-suc (suc m) (suc n) (suc j) zero (s≤s leq) (s≤s (s≤s leq')) = 
+  cong (λ x → suc (suc x)) {!!}
 raise-suc (suc m) (suc n) (suc j) (suc d) (s≤s (s≤s leq)) (s≤s (s≤s leq')) =
-  {!!}
+  cong (λ x → suc (suc x)) {!!}
 
 ------------------------------------------------------------------------------
 
