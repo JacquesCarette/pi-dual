@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+-- {-# OPTIONS --without-K #-}
 
 module Proofs where
 
@@ -272,6 +272,38 @@ raise-lem-1 (suc n) (suc d) (s≤s leq) (s≤s leq') = cong suc (
                ≡⟨ raise-lem-0' (suc (suc n)) n (suc (suc d)) leq' ⟩
             inject≤ (fromℕ (n + suc (suc (toℕ d)))) leq' ∎)
   where open ≡-Reasoning
+
+subst-≤ : {B : ℕ → Set} → 
+  (x₁ x₂ x₂' : ℕ) (leq : x₁ ≤ x₂) (x₂≡x₂' : x₂ ≡ x₂') →
+  (g : ℕ → ℕ) (gx₂'≡gx₂ : g x₂' ≡ g x₂)
+  (f : {y₁ y₂ : ℕ} → (leq : y₁ ≤ y₂) → B (g y₂)) → 
+  subst B gx₂'≡gx₂ (f (simplify-≤ leq refl x₂≡x₂')) ≡ f leq
+subst-≤ {B} x₁ x₂ .x₂ leq refl g refl f = refl
+
+{--
+leq  : toℕ d ≤ n + 0
+simplify-≤ leq refl (+-right-identity n) : toℕ d ≤ n
+
+f leq : Fin (n + (suc (suc n) + 0))
+subst
+  (λ x → Fin (n + x))
+  (sym (+-right-identity (suc (suc n))))
+  f (simplify-≤ leq refl (+-right-identity n)) 
+: Fin (n + (suc (suc n)))
+
+  raise n 
+    (inject≤  
+      (fromℕ (toℕ (suc d))) 
+      (s≤s (s≤s leq))))
+
+subst
+  (λ x → Fin (n + x))
+  (sym (+-right-identity (suc (suc n))))
+  (raise n
+    (inject≤
+      (fromℕ (toℕ (suc d)))
+      (s≤s (s≤s (simplify-≤ leq refl (+-right-identity n))))))
+--}
 
 raise-suc : (m n : ℕ) (j : Fin (suc m)) (d : Fin (suc n))
   (leq : suc (toℕ j * suc n + toℕ d) ≤ suc m * suc n) → 
