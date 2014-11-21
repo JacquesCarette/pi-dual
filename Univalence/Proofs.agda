@@ -1,4 +1,4 @@
--- {-# OPTIONS --without-K #-}
+{-# OPTIONS --without-K #-}
 
 module Proofs where
 
@@ -275,10 +275,9 @@ raise-lem-1 (suc n) (suc d) (s≤s leq) (s≤s leq') = cong suc (
 
 subst-≤ : {B : ℕ → Set} → 
   (x₁ x₂ x₂' : ℕ) (leq : x₁ ≤ x₂) (x₂≡x₂' : x₂ ≡ x₂') →
-  (g : ℕ → ℕ) (gx₂'≡gx₂ : g x₂' ≡ g x₂)
-  (f : {y₁ y₂ : ℕ} → (leq : y₁ ≤ y₂) → B (g y₂)) → 
-  subst B gx₂'≡gx₂ (f (simplify-≤ leq refl x₂≡x₂')) ≡ f leq
-subst-≤ {B} x₁ x₂ .x₂ leq refl g refl f = refl
+  (g : ℕ → ℕ) (f : {y₁ y₂ : ℕ} → (leq : y₁ ≤ y₂) → B (g y₂)) → 
+  subst B (sym (cong g x₂≡x₂')) (f (simplify-≤ leq refl x₂≡x₂')) ≡ f leq
+subst-≤ {B} x₁ x₂ .x₂ leq refl g f = refl
 
 {--
 leq  : toℕ d ≤ n + 0
