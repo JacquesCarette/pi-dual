@@ -218,9 +218,6 @@ trans-symr : {A : Set} {x y : A} → (p : x ≡ y) → trans p (sym p) ≡ refl
 trans-symr refl = refl
 
 ------------------------------------------------------------------------------
--- Lemmas about ≤ and Fin and ℕ 
-
-------------------------------------------------------------------------------
 -- Proofs and definitions about natural numbers
 
 _<?_ : Decidable _<_
