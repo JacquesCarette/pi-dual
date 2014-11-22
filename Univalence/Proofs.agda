@@ -235,43 +235,44 @@ leq-lem-0 m n =
          n + suc m ∎)
   where open ≤-Reasoning
 
+-- the extra 'm' is really handy
+leq-Fin : (n m : ℕ) → (j : Fin (suc n)) → toℕ j ≤ n + m
+leq-Fin 0 m zero = z≤n
+leq-Fin 0 m (suc ())
+leq-Fin (suc n) m zero = z≤n
+leq-Fin (suc n) m (suc j) = s≤s (leq-Fin n m j)
+
 leq-lem-1 : (m n : ℕ) → (j : Fin (suc m)) → (d : Fin (suc n)) → 
   suc (toℕ j * suc n + toℕ d) ≤ suc m * suc n
-leq-lem-1 0 0 zero zero = {!!}
-leq-lem-1 0 0 zero (suc d) = {!!}
-leq-lem-1 0 0 (suc j) zero = {!!}
-leq-lem-1 0 0 (suc j) (suc d) = {!!}
-leq-lem-1 0 (suc n) zero zero = {!!}
-leq-lem-1 0 (suc n) zero (suc d) = {!!}
-leq-lem-1 0 (suc n) (suc j) zero = {!!}
-leq-lem-1 0 (suc n) (suc j) (suc d) = {!!}
-leq-lem-1 (suc m) 0 zero zero = {!!}
-leq-lem-1 (suc m) 0 zero (suc d) = {!!}
-leq-lem-1 (suc m) 0 (suc j) zero = {!!}
-leq-lem-1 (suc m) 0 (suc j) (suc d) = {!!}
-leq-lem-1 (suc m) (suc n) zero zero = {!!}
-leq-lem-1 (suc m) (suc n) zero (suc d) = {!!}
-leq-lem-1 (suc m) (suc n) (suc j) zero = {!!}
-leq-lem-1 (suc m) (suc n) (suc j) (suc d) = {!!} 
+leq-lem-1 0 0 zero zero = s≤s z≤n
+leq-lem-1 0 0 zero (suc ())
+leq-lem-1 0 0 (suc ()) zero
+leq-lem-1 0 0 (suc () ) _
+leq-lem-1 0 (suc n) zero zero = s≤s z≤n
+leq-lem-1 0 (suc n) zero (suc d) = s≤s (s≤s (leq-Fin n 0 d))
+leq-lem-1 0 (suc n) (suc ()) _
+leq-lem-1 (suc m) 0 zero zero = s≤s z≤n
+leq-lem-1 (suc m) 0 zero (suc ())
+leq-lem-1 (suc m) 0 (suc j) zero = s≤s (leq-lem-1 m 0 j zero)
+leq-lem-1 (suc m) 0 (suc j) (suc ())
+leq-lem-1 (suc m) (suc n) zero zero = s≤s z≤n
+leq-lem-1 (suc m) (suc n) zero (suc d) = s≤s ({!!})
+leq-lem-1 (suc m) (suc n) (suc j) zero = s≤s (s≤s {!!})
+leq-lem-1 (suc m) (suc n) (suc j) (suc d) = s≤s (s≤s {!!}) 
 
 leq-lem-2 : (m n : ℕ) → (j : Fin (suc m)) → (d : Fin (suc n)) → 
   suc (suc (toℕ j) * suc n + toℕ d) ≤ suc (suc m) * suc n
-leq-lem-2 0 0 zero zero = {!!}
-leq-lem-2 0 0 zero (suc d) = {!!}
-leq-lem-2 0 0 (suc j) zero = {!!}
-leq-lem-2 0 0 (suc j) (suc d) = {!!}
-leq-lem-2 0 (suc n) zero zero = {!!}
-leq-lem-2 0 (suc n) zero (suc d) = {!!}
-leq-lem-2 0 (suc n) (suc j) zero = {!!}
-leq-lem-2 0 (suc n) (suc j) (suc d) = {!!}
-leq-lem-2 (suc m) 0 zero zero = {!!}
-leq-lem-2 (suc m) 0 zero (suc d) = {!!}
-leq-lem-2 (suc m) 0 (suc j) zero = {!!}
-leq-lem-2 (suc m) 0 (suc j) (suc d) = {!!}
-leq-lem-2 (suc m) (suc n) zero zero = {!!}
-leq-lem-2 (suc m) (suc n) zero (suc d) = {!!}
-leq-lem-2 (suc m) (suc n) (suc j) zero = {!!}
-leq-lem-2 (suc m) (suc n) (suc j) (suc d) = {!!} 
+leq-lem-2 0 0 zero zero = s≤s (s≤s z≤n)
+leq-lem-2 _ 0 _ (suc ())
+leq-lem-2 0 _ (suc ()) _
+leq-lem-2 0 (suc n) zero zero = s≤s (s≤s {!!})
+leq-lem-2 0 (suc n) zero (suc d) = s≤s (s≤s {!!})
+leq-lem-2 (suc m) 0 zero zero = s≤s (s≤s z≤n)
+leq-lem-2 (suc m) 0 (suc j) zero = s≤s (s≤s (s≤s {!!}))
+leq-lem-2 (suc m) (suc n) zero zero = s≤s (s≤s {!!})
+leq-lem-2 (suc m) (suc n) zero (suc d) = s≤s (s≤s {!!})
+leq-lem-2 (suc m) (suc n) (suc j) zero = s≤s (s≤s {!!})
+leq-lem-2 (suc m) (suc n) (suc j) (suc d) = s≤s (s≤s {!!}) 
 
 inject-id : (m : ℕ) (j : Fin (suc m)) (leq : toℕ j ≤ m) → 
   j ≡ inject≤ (fromℕ (toℕ j)) (s≤s leq)
