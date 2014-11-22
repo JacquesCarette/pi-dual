@@ -256,7 +256,7 @@ leq-lem-1 (suc m) 0 zero (suc ())
 leq-lem-1 (suc m) 0 (suc j) zero = s≤s (leq-lem-1 m 0 j zero)
 leq-lem-1 (suc m) 0 (suc j) (suc ())
 leq-lem-1 (suc m) (suc n) zero zero = s≤s z≤n
-leq-lem-1 (suc m) (suc n) zero (suc d) = s≤s ({!!})
+leq-lem-1 (suc m) (suc n) zero (suc d) = s≤s (s≤s (leq-Fin n (suc (suc (n + m * suc (suc n)))) d))
 leq-lem-1 (suc m) (suc n) (suc j) zero = s≤s (s≤s {!!})
 leq-lem-1 (suc m) (suc n) (suc j) (suc d) = s≤s (s≤s {!!}) 
 
