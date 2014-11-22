@@ -391,17 +391,21 @@ leq-lem-1 (suc m) (suc n) (suc j) d = s≤s (s≤s pr)
 
 leq-lem-2 : (m n : ℕ) → (j : Fin (suc m)) → (d : Fin (suc n)) → 
   suc (suc (toℕ j) * suc n + toℕ d) ≤ suc (suc m) * suc n
-leq-lem-2 0 0 zero zero = s≤s (s≤s z≤n)
-leq-lem-2 _ 0 _ (suc ())
-leq-lem-2 0 _ (suc ()) _
-leq-lem-2 0 (suc n) zero zero = s≤s (s≤s {!!})
-leq-lem-2 0 (suc n) zero (suc d) = s≤s (s≤s {!!})
-leq-lem-2 (suc m) 0 zero zero = s≤s (s≤s z≤n)
-leq-lem-2 (suc m) 0 (suc j) zero = s≤s (s≤s (s≤s {!!}))
-leq-lem-2 (suc m) (suc n) zero zero = s≤s (s≤s {!!})
-leq-lem-2 (suc m) (suc n) zero (suc d) = s≤s (s≤s {!!})
-leq-lem-2 (suc m) (suc n) (suc j) zero = s≤s (s≤s {!!})
-leq-lem-2 (suc m) (suc n) (suc j) (suc d) = s≤s (s≤s {!!}) 
+leq-lem-2 m n j d =
+  begin (suc (suc (toℕ j) * suc n + toℕ d)
+           ≤⟨ s≤s (cong+l≤ (bounded' n d) (suc (toℕ j) * suc n)) ⟩
+         suc (suc (toℕ j) * suc n + n)
+           ≡⟨ sym (+-suc (suc (toℕ j) * suc n) n)  ⟩
+         suc (toℕ j) * suc n + suc n
+           ≡⟨ +-comm (suc (toℕ j) * suc n) (suc n) ⟩
+         suc n + suc (toℕ j) * suc n 
+           ≡⟨ refl ⟩
+         suc (suc (toℕ j)) * suc n
+           ≤⟨ cong*r≤
+                (s≤s (s≤s (bounded' m j)))
+                (suc n) ⟩
+         suc (suc m) * suc n ∎)
+  where open ≤-Reasoning
 
 inject-id : (m : ℕ) (j : Fin (suc m)) (leq : toℕ j ≤ m) → 
   j ≡ inject≤ (fromℕ (toℕ j)) (s≤s leq)
