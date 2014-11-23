@@ -1171,6 +1171,34 @@ tcomp-dist {m} {n} pm qm pn qn =
          concatV
            (tabulate {m}
              (λ i →
+               tabulate {n}
+                 (λ j → 
+                   let b = lookup (lookup i pm) qm
+                       d = lookup (lookup j pn) qn in 
+                   inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))))
+           ≡⟨  cong concatV
+                 (finext
+                   (λ i →
+                     tabulate {n}
+                       (λ j → 
+                         let b = lookup (lookup i pm) qm
+                             d = lookup (lookup j pn) qn in 
+                         inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)))
+                   (λ i →
+                     let b = lookup (lookup i pm) qm in 
+                     mapV
+                       (λ d →
+                         inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                       (tabulate (λ i → lookup (lookup i pn) qn)))
+                   (λ i →
+                     tabulate-∘
+                       (let b = lookup (lookup i pm) qm in 
+                        λ d →
+                          inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                       (λ i → lookup (lookup i pn) qn))) ⟩
+         concatV
+           (tabulate {m}
+             (λ i →
                let b = lookup (lookup i pm) qm in 
                mapV
                  (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
