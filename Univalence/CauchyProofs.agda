@@ -1234,5 +1234,5 @@ tcomp-dist {m} {n} pm qm pn qn =
            ≡⟨  refl ⟩
          tcompcauchy (scompcauchy pm qm) (scompcauchy pn qn) ∎)
   where open ≡-Reasoning
-              
+
 ------------------------------------------------------------------------------
