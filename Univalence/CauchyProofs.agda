@@ -1168,6 +1168,14 @@ tcomp-dist {m} {n} pm qm pn qn =
                        (i*n+k≤m*n b d)) qn)
                  qm)))
            ≡⟨  {!!} ⟩
+         concatV
+           (mapV
+             (λ b →
+               mapV
+                 (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                 (tabulate (λ i → lookup (lookup i pn) qn)))
+             (tabulate (λ i → lookup (lookup i pm) qm)))
+           ≡⟨  refl ⟩
          tcompcauchy (scompcauchy pm qm) (scompcauchy pn qn) ∎)
   where open ≡-Reasoning
               
