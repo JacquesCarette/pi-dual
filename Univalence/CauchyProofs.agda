@@ -17,7 +17,7 @@ open import Data.Nat.Properties
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
-open import Data.Nat.DivMod using (_mod_)
+open import Data.Nat.DivMod using (DivMod; _divMod_; _div_; _mod_)
 open import Relation.Binary using (Rel; Decidable; Setoid)
 open import Relation.Binary.Core using (Transitive)
 
@@ -1143,13 +1143,28 @@ allFin* (suc m) (suc n) =
 tcomp-id : ∀ {m n} → tcompcauchy (idcauchy m) (idcauchy n) ≡ idcauchy (m * n)
 tcomp-id {m} {n} = sym (allFin* m n)
 
+-- find i and j such that: i * n + j = k 
+
+fin-project : ∀ {m n} → Fin (m * n) → Fin m × Fin n
+fin-project {0} {n} ()
+fin-project {suc m} {0} k with subst Fin (*-right-zero (suc m)) k
+... | ()
+fin-project {suc m} {suc n} k with (toℕ k) divMod (suc n)
+... | r = {!!} 
+
+tabulate-concat : ∀ {m n} →
+  (f : Fin m × Fin n → Fin (m * n)) → 
+  concatV (tabulate {m} (λ i → tabulate {n} (λ j → f (i , j)))) ≡
+  tabulate {m * n} (λ k → f (fin-project k))
+tabulate-concat = {!!} 
+
 tcomp-dist : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
   scompcauchy (tcompcauchy pm pn) (tcompcauchy qm qn) ≡
   tcompcauchy (scompcauchy pm qm) (scompcauchy pn qn)
 tcomp-dist {m} {n} pm qm pn qn =
   begin (scompcauchy (tcompcauchy pm pn) (tcompcauchy qm qn)
            ≡⟨ refl ⟩
-         tabulate (λ i →
+         tabulate {m * n} (λ i →
            lookup
              (lookup i (concatV 
                          (mapV 
