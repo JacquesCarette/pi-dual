@@ -1143,41 +1143,23 @@ allFin* (suc m) (suc n) =
 tcomp-id : ∀ {m n} → tcompcauchy (idcauchy m) (idcauchy n) ≡ idcauchy (m * n)
 tcomp-id {m} {n} = sym (allFin* m n)
 
--- given k : Fin (m * n)
--- find quotient and remainder such that: quotient * n + remainder = k 
--- dividend  = k 
--- divisor   = n
--- quotient  : ℕ
--- remainder : Fin n
--- property  : k ≡ remainder + quotient * n
+--
 
-quotient<m : (m n k : ℕ) → (k<m*n : suc k ≤ m * n) → DivMod k n → Fin m
-quotient<m 0 n k () (result q r k≡r+q*n) 
-quotient<m (suc m) 0 k k<sm*n (result q () k≡r+q*n)
-quotient<m (suc m) (suc n) k k<sm*sn (result q r k≡r+q*sn) =
-  fromℕ≤ {q} {suc m} (s≤s (cancel-*-right-≤ q m n leq))
-  where leq = begin (q * suc n
-                       ≤⟨ n≤m+n (toℕ r) (q * suc n) ⟩
-                     toℕ r + q * suc n
-                       ≡⟨ sym k≡r+q*sn ⟩
-                     k
-                       ≤⟨ sinj≤ k<sm*sn ⟩
-                     n + m * suc n
-                       ≤⟨ {!!} ⟩
-                     m * suc n ∎) 
-              where open ≤-Reasoning
-
-fin-project : ∀ {m n} → Fin (m * n) → Fin m × Fin n
-fin-project {0} {n} ()
-fin-project {suc m} {0} k with subst Fin (*-right-zero (suc m)) k
+fin-project : (m n : ℕ) → Fin (m * n) → Fin m × Fin n
+fin-project 0 n ()
+fin-project (suc m) 0 k with subst Fin (*-right-zero (suc m)) k
 ... | ()
-fin-project {suc m} {suc n} k with (toℕ k) divMod (suc n)
-... | r = (quotient<m (suc m) (suc n) k r , DivMod.remainder r) 
+fin-project (suc m) (suc n) k with (toℕ k) divMod (suc n)
+... | result q r k≡r+q*sn = (fromℕ≤ {q} {suc m} (s≤s q≤m) , r)
+  where q≤m : q ≤ m
+        q≤m = {!!} 
+-- k         : Fin (suc (n + m * suc n))
+-- k≡r+q*sn : toℕ k ≡ toℕ r + q * suc n
 
 tabulate-concat : ∀ {m n} →
   (f : Fin m × Fin n → Fin (m * n)) → 
   concatV (tabulate {m} (λ i → tabulate {n} (λ j → f (i , j)))) ≡
-  tabulate {m * n} (λ k → f (fin-project k))
+  tabulate {m * n} (λ k → f (fin-project m n k))
 tabulate-concat = {!!} 
 
 tcomp-dist : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
