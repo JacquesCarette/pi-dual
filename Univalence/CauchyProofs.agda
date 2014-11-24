@@ -1152,9 +1152,15 @@ fin-project (suc m) 0 k with subst Fin (*-right-zero (suc m)) k
 fin-project (suc m) (suc n) k with (toℕ k) divMod (suc n)
 ... | result q r k≡r+q*sn = (fromℕ≤ {q} {suc m} (s≤s q≤m) , r)
   where q≤m : q ≤ m
-        q≤m = {!!} 
+        q≤m = cancel-*-right-≤ q m n {!!} 
+-- HOLE: q * suc n ≤ m * suc n
+--
+-- have:
 -- k         : Fin (suc (n + m * suc n))
--- k≡r+q*sn : toℕ k ≡ toℕ r + q * suc n
+-- bounded k : suc k ≤ suc (n + m * suc n)
+--
+-- k≡r+q*sn :    toℕ k ≡ toℕ r + q * suc n
+-- so also have: k ≤ n + m * suc n
 
 tabulate-concat : ∀ {m n} →
   (f : Fin m × Fin n → Fin (m * n)) → 
