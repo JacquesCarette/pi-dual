@@ -31,7 +31,7 @@ open import Data.Fin
   using (Fin; zero; suc; toℕ; fromℕ; fromℕ≤; _ℕ-_; _≺_; reduce≥; 
          raise; inject+; inject₁; inject≤; _≻toℕ_) 
   renaming (_+_ to _F+_)
-open import Data.Fin.Properties using (bounded; inject+-lemma)
+open import Data.Fin.Properties using (bounded; inject+-lemma; to-from)
 open import Data.Vec.Properties 
   using (lookup∘tabulate; tabulate∘lookup; lookup-allFin; tabulate-∘; 
          tabulate-allFin; allFin-map; lookup-++-inject+; lookup-++-≥)
@@ -322,15 +322,6 @@ i*n+k≤m*n {suc m} {suc n} i k =
          suc m * suc n ∎)
   where open ≤-Reasoning
 
-cancel+l : (r k n : ℕ) → r + k ≤ n → k ≤ n
-cancel+l 0 k n x = x
-cancel+l (suc r) k 0 ()
-cancel+l (suc r) k (suc n) (s≤s x) = trans≤ (cancel+l r k n x) (i≤si _)
-
-back-and-forth : (n : ℕ) → toℕ (fromℕ n) ≡ n
-back-and-forth 0 = refl
-back-and-forth (suc n) = cong suc (back-and-forth n)
-
 bounded' : (m : ℕ) → (j : Fin (suc m)) → (toℕ j ≤ m)
 bounded' m j with bounded j
 ... | s≤s pr = pr
@@ -340,8 +331,13 @@ simplify-≤ leq refl refl = leq
 
 cancel-Fin : ∀ (n y z : ℕ) → ((x : Fin (suc n)) → toℕ x + y ≤ n + z) → y ≤ z
 cancel-Fin 0 y z pf = pf zero
-cancel-Fin (suc n) y z pf = cancel-+-left-≤ n
-  (trans≤ {!!} (sinj≤ (pf (fromℕ (suc n)))))
+cancel-Fin (suc n) y z pf =
+  cancel-+-left-≤ n (trans≤ leq (sinj≤ (pf (fromℕ (suc n)))))
+  where leq : n + y ≤ toℕ (fromℕ n) + y
+        leq = begin (n + y
+                       ≡⟨ cong (λ x → x + y) (sym (to-from n)) ⟩
+                     toℕ (fromℕ n) + y ∎)
+              where open ≤-Reasoning
 
 ≤-proof-irrelevance : {m n : ℕ} → (p q : m ≤ n) → p ≡ q
 ≤-proof-irrelevance z≤n z≤n = refl
@@ -377,4 +373,3 @@ raise-suc m n j d leq leq' =
   where open ≡-Reasoning
 
 ------------------------------------------------------------------------------
-

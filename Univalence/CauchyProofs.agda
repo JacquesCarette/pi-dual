@@ -13,7 +13,7 @@ open import Relation.Binary.PropositionalEquality.TrustMe
   using (trustMe)
 open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
 open import Data.Nat.Properties
-  using (m≤m+n; n≤m+n; n≤1+n; cancel-*-right-≤)
+  using (m≤m+n; n≤m+n; n≤1+n; cancel-*-right-≤; ≰⇒>)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
@@ -26,7 +26,7 @@ open import Data.String using (String)
 open import Data.Nat.Show using (show)
 open import Data.Bool using (Bool; false; true)
 open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≮_; _≤_; _≰_; 
-  z≤n; s≤s; _≟_; _≤?_; module ≤-Reasoning)
+  z≤n; s≤s; _≟_; _≤?_; ≤-pred; module ≤-Reasoning)
 open import Data.Fin 
   using (Fin; zero; suc; toℕ; fromℕ; fromℕ≤; _ℕ-_; _≺_; reduce≥; 
          raise; inject+; inject₁; inject≤; _≻toℕ_) 
@@ -1150,23 +1150,21 @@ fin-project 0 n ()
 fin-project (suc m) 0 k with subst Fin (*-right-zero (suc m)) k
 ... | ()
 fin-project (suc m) (suc n) k with (toℕ k) divMod (suc n)
-... | result q r k≡r+q*sn = (fromℕ≤ {q} {suc m} (s≤s q≤m) , r)
+... | result q r k≡r+q*sn =
+  (fromℕ≤ {q} {suc m} (s≤s q≤m) , r)
   where q≤m : q ≤ m
-        q≤m = cancel-*-right-≤ q m n {!!} 
+        q≤m with suc m ≤? q
+        ... | yes p = {!!}
+        ... | no ¬p = ≤-pred (≰⇒> ¬p)  
+
+{--
+                (cancel-Fin n (q * suc n) (m * suc n) ?)
         r+q*sn≤sm*sn : toℕ r + q * suc n ≤ n + m * suc n
         r+q*sn≤sm*sn = (simplify-≤ (bounded' (n + m * suc n) k) k≡r+q*sn refl)
         qq : toℕ r + q * suc n ≤ suc (n + m * suc n) -- which is suc n * suc m
         qq = trans≤ r+q*sn≤sm*sn (i≤si (n + m * suc n))
         -- now need that (∀x ≤ n → x + y ≤ n + z) → y ≤ z 
--- x = 0; n = 10; y = 1; z = 0
--- HOLE: q * suc n ≤ m * suc n
---
--- have:
--- k         : Fin (suc (n + m * suc n))
--- bounded k : suc k ≤ suc (n + m * suc n)
---
--- k≡r+q*sn :    toℕ k ≡ toℕ r + q * suc n
--- so also have: k ≤ n + m * suc n
+--}
 
 tabulate-concat : ∀ {m n} →
   (f : Fin m × Fin n → Fin (m * n)) → 

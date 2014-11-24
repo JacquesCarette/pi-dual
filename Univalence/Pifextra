@@ -5537,3 +5537,9 @@ raise-lem-1 (suc n) (suc d) (s≤s leq) (s≤s leq') = cong suc (
                ≡⟨ raise-lem-0' (suc (suc n)) n (suc (suc d)) leq' ⟩
             inject≤ (fromℕ (n + suc (suc (toℕ d)))) leq' ∎)
   where open ≡-Reasoning
+
+cancel+l : (r k n : ℕ) → r + k ≤ n → k ≤ n
+cancel+l 0 k n x = x
+cancel+l (suc r) k 0 ()
+cancel+l (suc r) k (suc n) (s≤s x) = trans≤ (cancel+l r k n x) (i≤si _)
+
