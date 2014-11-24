@@ -13,7 +13,7 @@ open import Relation.Binary.PropositionalEquality.TrustMe
   using (trustMe)
 open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
 open import Data.Nat.Properties
-  using (m≤m+n; n≤m+n; n≤1+n)
+  using (m≤m+n; n≤m+n; n≤1+n; cancel-+-left-≤)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
@@ -327,12 +327,21 @@ cancel+l 0 k n x = x
 cancel+l (suc r) k 0 ()
 cancel+l (suc r) k (suc n) (s≤s x) = trans≤ (cancel+l r k n x) (i≤si _)
 
+back-and-forth : (n : ℕ) → toℕ (fromℕ n) ≡ n
+back-and-forth 0 = refl
+back-and-forth (suc n) = cong suc (back-and-forth n)
+
 bounded' : (m : ℕ) → (j : Fin (suc m)) → (toℕ j ≤ m)
 bounded' m j with bounded j
 ... | s≤s pr = pr
 
 simplify-≤ : {m n m' n' : ℕ} → (m ≤ n) → (m ≡ m') → (n ≡ n') → (m' ≤ n') 
 simplify-≤ leq refl refl = leq
+
+cancel-Fin : ∀ (n y z : ℕ) → ((x : Fin (suc n)) → toℕ x + y ≤ n + z) → y ≤ z
+cancel-Fin 0 y z pf = pf zero
+cancel-Fin (suc n) y z pf = cancel-+-left-≤ n
+  (trans≤ {!!} (sinj≤ (pf (fromℕ (suc n)))))
 
 ≤-proof-irrelevance : {m n : ℕ} → (p q : m ≤ n) → p ≡ q
 ≤-proof-irrelevance z≤n z≤n = refl
