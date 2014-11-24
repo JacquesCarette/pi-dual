@@ -1158,6 +1158,7 @@ fin-project (suc m) (suc n) k with (toℕ k) divMod (suc n)
         qq : toℕ r + q * suc n ≤ suc (n + m * suc n) -- which is suc n * suc m
         qq = trans≤ r+q*sn≤sm*sn (i≤si (n + m * suc n))
         -- now need that ∀x ≤ n → x + y ≤ n + z → y ≤ z 
+-- x = 0; n = 10; y = 1; z = 0
 -- HOLE: q * suc n ≤ m * suc n
 --
 -- have:
