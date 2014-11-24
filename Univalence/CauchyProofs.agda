@@ -1153,6 +1153,11 @@ fin-project (suc m) (suc n) k with (toℕ k) divMod (suc n)
 ... | result q r k≡r+q*sn = (fromℕ≤ {q} {suc m} (s≤s q≤m) , r)
   where q≤m : q ≤ m
         q≤m = cancel-*-right-≤ q m n {!!} 
+        r+q*sn≤sm*sn : toℕ r + q * suc n ≤ n + m * suc n
+        r+q*sn≤sm*sn = (simplify-≤ (bounded' (n + m * suc n) k) k≡r+q*sn refl)
+        qq : toℕ r + q * suc n ≤ suc (n + m * suc n) -- which is suc n * suc m
+        qq = trans≤ r+q*sn≤sm*sn (i≤si (n + m * suc n))
+        -- now need that ∀x ≤ n → x + y ≤ n + z → y ≤ z 
 -- HOLE: q * suc n ≤ m * suc n
 --
 -- have:

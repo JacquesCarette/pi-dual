@@ -227,6 +227,10 @@ trans< : Transitive _<_
 trans< (s≤s z≤n) (s≤s _) = s≤s z≤n
 trans< (s≤s (s≤s i≤j)) (s≤s sj<k) = s≤s (trans< (s≤s i≤j) sj<k) 
 
+trans≤ : Transitive _≤_
+trans≤ z≤n x = z≤n
+trans≤ (s≤s m≤n) (s≤s n≤o) = s≤s (trans≤ m≤n n≤o)
+
 i*1≡i : (i : ℕ) → i * 1 ≡ i
 i*1≡i i = begin (i * 1
                    ≡⟨ *-comm i 1 ⟩ 
@@ -317,6 +321,11 @@ i*n+k≤m*n {suc m} {suc n} i k =
            ≡⟨ refl ⟩
          suc m * suc n ∎)
   where open ≤-Reasoning
+
+cancel+l : (r k n : ℕ) → r + k ≤ n → k ≤ n
+cancel+l 0 k n x = x
+cancel+l (suc r) k Data.Nat.zero ()
+cancel+l (suc r) k (suc n) (s≤s x) = trans≤ (cancel+l r k n x) (i≤si _)
 
 bounded' : (m : ℕ) → (j : Fin (suc m)) → (toℕ j ≤ m)
 bounded' m j with bounded j
