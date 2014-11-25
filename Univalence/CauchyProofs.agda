@@ -1182,10 +1182,10 @@ concat-tabulate-[] : ∀ {m n} {f : Fin m →  Fin n} →
 concat-tabulate-[] {0} = refl
 concat-tabulate-[] {suc m} {_} {f} = concat-tabulate-[] {m} {_} {f ∘ suc}
 
-tabulate-⊥ : ∀ {m} {ℓ} {A : Set ℓ} {g : Fin (m * 0) → A} → 
-  tabulate g ≡ subst (Vec A) (sym (*-right-zero m)) []
+tabulate-⊥ : ∀ {m n} {g : Fin (m * 0) → Fin n} → 
+  tabulate g ≡ subst (Vec (Fin n)) (sym (*-right-zero m)) []
 tabulate-⊥ {0} = refl
-tabulate-⊥ {suc m} {_} {A} {g} = {!!}
+tabulate-⊥ {suc m}{_} {g} = tabulate-⊥ {m}
 
 tabulate-concat : ∀ {m n} →
   (f : Fin m × Fin n → Fin (m * n)) → 
@@ -1199,7 +1199,11 @@ tabulate-concat {suc m} {0} f =
       ≡⟨ sym (tabulate-⊥ {m}) ⟩
     tabulate (λ k → f (⊥-elim (Fin0-⊥ (subst Fin (*-right-zero m) k)))) ∎)
   where open ≡-Reasoning
-tabulate-concat {suc m} {suc n} f = {!!} 
+tabulate-concat {suc m} {suc n} f =
+  begin (tabulate {suc n} (λ x → f (zero , x)) ++V 
+            concatV (tabulate {m} (λ i → tabulate {suc n} (λ j → f (suc i , j))))
+      ≡⟨ {!!} ⟩
+  tabulate {suc n + m * suc n} (λ k → f (fin-project (suc m) (suc n) k)) ∎) 
   where open ≡-Reasoning
 
 lookup-concat :
@@ -1228,7 +1232,10 @@ lookup-concat :
     (i*n+k≤m*n
       (lookup (lookup (proj₁ (fin-project m n k)) pm) qm)
       (lookup (lookup (proj₂ (fin-project m n k)) pn) qn))
-lookup-concat = {!!} 
+lookup-concat {0} () pm qm pn qn
+lookup-concat {suc m} {Data.Nat.zero} k pm qm [] [] = ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero m) k))
+lookup-concat {suc m} {suc n} zero (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x₃ ∷ qn) = {!!}
+lookup-concat {suc m} {suc n} (suc k) pm qm pn qn = {!!} 
 
 tcomp-dist : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
   scompcauchy (tcompcauchy pm pn) (tcompcauchy qm qn) ≡
