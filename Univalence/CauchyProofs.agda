@@ -1176,11 +1176,11 @@ fin-project (suc m) (suc n) k with (toℕ k) divMod (suc n)
         ... | yes p = ⊥-elim (absurd m n q r k k≡r+q*sn p)
         ... | no ¬p = ≤-pred (≰⇒> ¬p)  
 
-concat-tabulate-[] : ∀ {m} {ℓ} {A : Set ℓ} {f : Fin m → Fin (suc m)} → 
+concat-tabulate-[] : ∀ {m n} {f : Fin m →  Fin n} → 
     concatV (tabulate {m} ((λ x → []) ∘ f)) ≡
-    subst (λ n → Vec A n) (sym (*-right-zero m)) []
+    subst (λ n → Vec (Fin (m * 0)) n) (sym (*-right-zero m)) []
 concat-tabulate-[] {0} = refl
-concat-tabulate-[] {suc m} {_} {_} {f} = {!!}
+concat-tabulate-[] {suc m} {_} {f} = concat-tabulate-[] {m} {_} {f ∘ suc}
 
 tabulate-⊥ : ∀ {m} {ℓ} {A : Set ℓ} {g : Fin (m * 0) → A} → 
   tabulate g ≡ subst (Vec A) (sym (*-right-zero m)) []
@@ -1194,7 +1194,7 @@ tabulate-concat : ∀ {m n} →
 tabulate-concat {0} f = refl
 tabulate-concat {suc m} {0} f = 
     begin (concatV (tabulate {suc m} (λ x → []))
-      ≡⟨ concat-tabulate-[] {suc m} {f = inject₁} ⟩
+      ≡⟨ concat-tabulate-[] {suc m} {suc (suc m)} {inject₁} ⟩
     subst (Vec (Fin (m * 0))) (sym (*-right-zero m)) []
       ≡⟨ sym (tabulate-⊥ {m}) ⟩
     tabulate (λ k → f (⊥-elim (Fin0-⊥ (subst Fin (*-right-zero m) k)))) ∎)
