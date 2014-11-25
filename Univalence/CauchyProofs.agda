@@ -1163,10 +1163,14 @@ absurd m n q r k k≡r+q*sn p = ¬i+1+j≤i (toℕ k) {toℕ r} k≥k+sr
                  toℕ k ∎)
           where open ≤-Reasoning
 
+Fin0-⊥ : Fin 0 → ⊥
+Fin0-⊥ ()
+
 fin-project : (m n : ℕ) → Fin (m * n) → Fin m × Fin n
 fin-project 0 n ()
-fin-project (suc m) 0 k with subst Fin (*-right-zero (suc m)) k
-... | ()
+fin-project (suc m) 0 k =  ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero (suc m)) k)) 
+-- fin-project (suc m) 0 k with subst Fin (*-right-zero (suc m)) k
+-- ... | ()
 fin-project (suc m) (suc n) k with (toℕ k) divMod (suc n)
 ... | result q r k≡r+q*sn =
   (fromℕ≤ {q} {suc m} (s≤s q≤m) , r)
@@ -1175,11 +1179,30 @@ fin-project (suc m) (suc n) k with (toℕ k) divMod (suc n)
         ... | yes p = ⊥-elim (absurd m n q r k k≡r+q*sn p)
         ... | no ¬p = ≤-pred (≰⇒> ¬p)  
 
+concat-tabulate-[] : ∀ {m} {ℓ} {A : Set ℓ} {f : Fin m → Fin (suc m)} → 
+    concatV (tabulate {m} ((λ x → []) ∘ f)) ≡ subst (λ n → Vec A n) (sym (*-right-zero m)) []
+concat-tabulate-[] {0} = refl
+concat-tabulate-[] {suc m} {_} {_} {f} = {!!}
+
+tabulate-⊥ : ∀ {m} {ℓ} {A : Set ℓ} {g : Fin (m * 0) → A} → 
+  tabulate g ≡ subst (Vec A) (sym (*-right-zero m)) []
+tabulate-⊥ {0} = refl
+tabulate-⊥ {suc m} {_} {A} {g} = {!!}
+
 tabulate-concat : ∀ {m n} →
   (f : Fin m × Fin n → Fin (m * n)) → 
   concatV (tabulate {m} (λ i → tabulate {n} (λ j → f (i , j)))) ≡
-  tabulate {m * n} (λ k → f (fin-project m n k))
-tabulate-concat = {!!} 
+  tabulate {m * n} (λ (k : Fin (m * n)) → f (fin-project m n k))
+tabulate-concat {0} f = refl
+tabulate-concat {suc m} {0} f = 
+    begin (concatV (tabulate {suc m} (λ x → []))
+      ≡⟨ concat-tabulate-[] {suc m} {f = inject₁} ⟩
+    subst (Vec (Fin (m * 0))) (sym (*-right-zero m)) []
+      ≡⟨ sym (tabulate-⊥ {m}) ⟩
+    tabulate (λ k → f (⊥-elim (Fin0-⊥ (subst Fin (*-right-zero m) k)))) ∎)
+  where open ≡-Reasoning
+tabulate-concat {suc m} {suc n} f = {!!} 
+  where open ≡-Reasoning
 
 tcomp-dist : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
   scompcauchy (tcompcauchy pm pn) (tcompcauchy qm qn) ≡
