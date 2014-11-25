@@ -1141,7 +1141,7 @@ allFin* (suc m) (suc n) =
 tcomp-id : ∀ {m n} → tcompcauchy (idcauchy m) (idcauchy n) ≡ idcauchy (m * n)
 tcomp-id {m} {n} = sym (allFin* m n)
 
--- multiplicative permutations and distribution
+-- Behaviour of parallel additive composition wrt sequential
 
 absurd : (m n q : ℕ) (r : Fin (suc n)) (k : Fin (suc (n + m * suc n))) 
   (k≡r+q*sn : toℕ k ≡ toℕ r + q * suc n) (p : suc m ≤ q) → ⊥
@@ -1202,15 +1202,43 @@ tabulate-concat {suc m} {0} f =
 tabulate-concat {suc m} {suc n} f = {!!} 
   where open ≡-Reasoning
 
+lookup-concat :
+  ∀ {m n} → (k : Fin (m * n)) → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
+  lookup
+    (lookup k
+      (concatV
+        (mapV
+          (λ b →
+            mapV
+              (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+              pn)
+        pm)))
+    (concatV
+      (mapV
+        (λ b →
+          mapV
+            (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+            qn)
+        qm))
+  ≡
+  inject≤
+    (fromℕ
+      (toℕ (lookup (lookup (proj₁ (fin-project m n k)) pm) qm) * n +
+       toℕ (lookup (lookup (proj₂ (fin-project m n k)) pn) qn)))
+    (i*n+k≤m*n
+      (lookup (lookup (proj₁ (fin-project m n k)) pm) qm)
+      (lookup (lookup (proj₂ (fin-project m n k)) pn) qn))
+lookup-concat = {!!} 
+
 tcomp-dist : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
   scompcauchy (tcompcauchy pm pn) (tcompcauchy qm qn) ≡
   tcompcauchy (scompcauchy pm qm) (scompcauchy pn qn)
 tcomp-dist {m} {n} pm qm pn qn =
   begin (scompcauchy (tcompcauchy pm pn) (tcompcauchy qm qn)
            ≡⟨ refl ⟩
-         tabulate {m * n} (λ i →
+         tabulate {m * n} (λ k →
            lookup
-             (lookup i (concatV 
+             (lookup k (concatV 
                          (mapV 
                            (λ b → 
                              mapV (λ d →
@@ -1226,7 +1254,42 @@ tcomp-dist {m} {n} pm qm pn qn =
                        (fromℕ (toℕ b * n + toℕ d))
                        (i*n+k≤m*n b d)) qn)
                  qm)))
-           ≡⟨  {!!} ⟩
+           ≡⟨  finext
+                 (λ k →
+                   lookup
+                     (lookup k (concatV 
+                       (mapV 
+                         (λ b → 
+                           mapV (λ d →
+                             inject≤
+                               (fromℕ (toℕ b * n + toℕ d))
+                                (i*n+k≤m*n b d)) pn)
+                         pm)))
+                     (concatV 
+                       (mapV 
+                         (λ b → 
+                           mapV (λ d →
+                             inject≤
+                               (fromℕ (toℕ b * n + toℕ d))
+                               (i*n+k≤m*n b d)) qn)
+                       qm)))
+                 (λ k →
+                   let (i , j) = fin-project m n k
+                       b = lookup (lookup i pm) qm
+                       d = lookup (lookup j pn) qn in 
+                   inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                 (λ k → lookup-concat {m} {n} k pm qm pn qn) ⟩
+         tabulate {m * n}
+           (λ k →
+             let (i , j) = fin-project m n k
+                 b = lookup (lookup i pm) qm
+                 d = lookup (lookup j pn) qn in 
+             inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+           ≡⟨  sym (tabulate-concat
+                 (λ {(i , j) →
+                   let b = lookup (lookup i pm) qm
+                       d = lookup (lookup j pn) qn in 
+                   inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)})) ⟩
          concatV
            (tabulate {m}
              (λ i →
