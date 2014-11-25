@@ -856,8 +856,6 @@ map-inj-lemma m n =
            (allFin (suc n)) ∎)
   where open ≡-Reasoning
 
--- 
-
 map-raise-suc : (m n : ℕ) (j : Fin (suc m)) → 
   mapV (λ d → raise 
                 (suc n) 
@@ -1143,6 +1141,8 @@ allFin* (suc m) (suc n) =
 tcomp-id : ∀ {m n} → tcompcauchy (idcauchy m) (idcauchy n) ≡ idcauchy (m * n)
 tcomp-id {m} {n} = sym (allFin* m n)
 
+-- multiplicative permutations and distribution
+
 absurd : (m n q : ℕ) (r : Fin (suc n)) (k : Fin (suc (n + m * suc n))) 
   (k≡r+q*sn : toℕ k ≡ toℕ r + q * suc n) (p : suc m ≤ q) → ⊥
 absurd m n q r k k≡r+q*sn p = ¬i+1+j≤i (toℕ k) {toℕ r} k≥k+sr
@@ -1169,18 +1169,16 @@ Fin0-⊥ ()
 fin-project : (m n : ℕ) → Fin (m * n) → Fin m × Fin n
 fin-project 0 n ()
 fin-project (suc m) 0 k =  ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero (suc m)) k)) 
--- fin-project (suc m) 0 k with subst Fin (*-right-zero (suc m)) k
--- ... | ()
 fin-project (suc m) (suc n) k with (toℕ k) divMod (suc n)
-... | result q r k≡r+q*sn =
-  (fromℕ≤ {q} {suc m} (s≤s q≤m) , r)
+... | result q r k≡r+q*sn = (fromℕ≤ {q} {suc m} (s≤s q≤m) , r)
   where q≤m : q ≤ m
         q≤m with suc m ≤? q
         ... | yes p = ⊥-elim (absurd m n q r k k≡r+q*sn p)
         ... | no ¬p = ≤-pred (≰⇒> ¬p)  
 
 concat-tabulate-[] : ∀ {m} {ℓ} {A : Set ℓ} {f : Fin m → Fin (suc m)} → 
-    concatV (tabulate {m} ((λ x → []) ∘ f)) ≡ subst (λ n → Vec A n) (sym (*-right-zero m)) []
+    concatV (tabulate {m} ((λ x → []) ∘ f)) ≡
+    subst (λ n → Vec A n) (sym (*-right-zero m)) []
 concat-tabulate-[] {0} = refl
 concat-tabulate-[] {suc m} {_} {_} {f} = {!!}
 
