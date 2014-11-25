@@ -1158,6 +1158,21 @@ fin-project (suc m) (suc n) k with (toℕ k) divMod (suc n)
         ... | no ¬p = ≤-pred (≰⇒> ¬p)  
 
 {--
+can we derive a contradiction from the following? 
+
+  k ≤ n + m * suc n
+  r ≤ n
+  k ≡ r + q * suc n
+  suc m ≤ q
+
+Try to prove that k ≥ suc k
+
+            k ≡ r + q * suc n 
+              ≥ r + suc m * suc n 
+              ≡ r + suc n + m * suc n
+              ≡ suc r + (n + m * suc n)
+              ≥ suc r + k
+
                 (cancel-Fin n (q * suc n) (m * suc n) ?)
         r+q*sn≤sm*sn : toℕ r + q * suc n ≤ n + m * suc n
         r+q*sn≤sm*sn = (simplify-≤ (bounded' (n + m * suc n) k) k≡r+q*sn refl)
