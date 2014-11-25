@@ -13,7 +13,7 @@ open import Relation.Binary.PropositionalEquality.TrustMe
   using (trustMe)
 open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
 open import Data.Nat.Properties
-  using (m≤m+n; n≤m+n; n≤1+n; cancel-*-right-≤; ≰⇒>)
+  using (m≤m+n; n≤m+n; n≤1+n; cancel-*-right-≤; ≰⇒>; ¬i+1+j≤i)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
@@ -26,7 +26,7 @@ open import Data.String using (String)
 open import Data.Nat.Show using (show)
 open import Data.Bool using (Bool; false; true)
 open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≮_; _≤_; _≰_; 
-  z≤n; s≤s; _≟_; _≤?_; ≤-pred; module ≤-Reasoning)
+  _≥_; z≤n; s≤s; _≟_; _≤?_; ≤-pred; module ≤-Reasoning)
 open import Data.Fin 
   using (Fin; zero; suc; toℕ; fromℕ; fromℕ≤; _ℕ-_; _≺_; reduce≥; 
          raise; inject+; inject₁; inject≤; _≻toℕ_) 
@@ -52,7 +52,7 @@ open import Data.Vec
   renaming (_++_ to _++V_; map to mapV; concat to concatV)
 open import Function using (id; _∘_; _$_; _∋_)
 
-open import Data.Empty   using (⊥)
+open import Data.Empty   using (⊥; ⊥-elim)
 open import Data.Unit    using (⊤; tt)
 open import Data.Sum     using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
@@ -1143,7 +1143,25 @@ allFin* (suc m) (suc n) =
 tcomp-id : ∀ {m n} → tcompcauchy (idcauchy m) (idcauchy n) ≡ idcauchy (m * n)
 tcomp-id {m} {n} = sym (allFin* m n)
 
---
+absurd : (m n q : ℕ) (r : Fin (suc n)) (k : Fin (suc (n + m * suc n))) 
+  (k≡r+q*sn : toℕ k ≡ toℕ r + q * suc n) (p : suc m ≤ q) → ⊥
+absurd m n q r k k≡r+q*sn p = ¬i+1+j≤i (toℕ k) {toℕ r} k≥k+sr
+  where k≥k+sr : toℕ k ≥ toℕ k + suc (toℕ r)
+        k≥k+sr =
+          begin (toℕ k + suc (toℕ r)
+                   ≡⟨ +-suc (toℕ k) (toℕ r) ⟩
+                 suc (toℕ k) + toℕ r
+                   ≤⟨ cong+r≤ (bounded k) (toℕ r) ⟩ 
+                 (suc n + m * suc n) + toℕ r
+                   ≡⟨ +-comm (suc n + m * suc n) (toℕ r) ⟩ 
+                 toℕ r + (suc n + m * suc n)
+                   ≡⟨ refl ⟩ 
+                 toℕ r + suc m * suc n
+                   ≤⟨ cong+l≤ (cong*r≤ p (suc n)) (toℕ r) ⟩ 
+                 toℕ r + q * suc n
+                   ≡⟨ sym k≡r+q*sn ⟩
+                 toℕ k ∎)
+          where open ≤-Reasoning
 
 fin-project : (m n : ℕ) → Fin (m * n) → Fin m × Fin n
 fin-project 0 n ()
@@ -1154,32 +1172,8 @@ fin-project (suc m) (suc n) k with (toℕ k) divMod (suc n)
   (fromℕ≤ {q} {suc m} (s≤s q≤m) , r)
   where q≤m : q ≤ m
         q≤m with suc m ≤? q
-        ... | yes p = {!!}
+        ... | yes p = ⊥-elim (absurd m n q r k k≡r+q*sn p)
         ... | no ¬p = ≤-pred (≰⇒> ¬p)  
-
-{--
-can we derive a contradiction from the following? 
-
-  k ≤ n + m * suc n
-  r ≤ n
-  k ≡ r + q * suc n
-  suc m ≤ q
-
-Try to prove that k ≥ suc k
-
-            k ≡ r + q * suc n 
-              ≥ r + suc m * suc n 
-              ≡ r + suc n + m * suc n
-              ≡ suc r + (n + m * suc n)
-              ≥ suc r + k
-
-                (cancel-Fin n (q * suc n) (m * suc n) ?)
-        r+q*sn≤sm*sn : toℕ r + q * suc n ≤ n + m * suc n
-        r+q*sn≤sm*sn = (simplify-≤ (bounded' (n + m * suc n) k) k≡r+q*sn refl)
-        qq : toℕ r + q * suc n ≤ suc (n + m * suc n) -- which is suc n * suc m
-        qq = trans≤ r+q*sn≤sm*sn (i≤si (n + m * suc n))
-        -- now need that (∀x ≤ n → x + y ≤ n + z) → y ≤ z 
---}
 
 tabulate-concat : ∀ {m n} →
   (f : Fin m × Fin n → Fin (m * n)) → 
