@@ -1245,7 +1245,29 @@ lookup-concat {0} () pm qm pn qn
 lookup-concat {suc m} {Data.Nat.zero} k pm qm [] [] =
   ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero m) k))
 lookup-concat {suc m} {suc n} zero (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x₃ ∷ qn) =
-  {!!}
+  begin (lookup
+           (inject≤
+              (fromℕ (toℕ x * suc n + toℕ x₂))
+              (i*n+k≤m*n x x₂))
+          (concatV
+            (mapV
+              (λ b →
+                mapV
+                  (λ d →
+                    inject≤
+                      (fromℕ (toℕ b * suc n + toℕ d))
+                      (i*n+k≤m*n b d))
+                  (x₃ ∷ qn))
+              (x₁ ∷ qm)))
+           ≡⟨ {!!} ⟩ 
+         inject≤
+           (fromℕ
+             (toℕ (lookup x (x₁ ∷ qm)) * suc n +
+              toℕ (lookup x₂ (x₃ ∷ qn))))
+           (i*n+k≤m*n
+             (lookup x (x₁ ∷ qm))
+             (lookup x₂ (x₃ ∷ qn))) ∎)
+  where open ≡-Reasoning               
 lookup-concat {suc m} {suc n} (suc k) pm qm pn qn =
   {!!} 
 
