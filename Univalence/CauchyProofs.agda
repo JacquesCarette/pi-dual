@@ -130,7 +130,7 @@ scompassoc π₁ π₂ π₃ =
   where open ≡-Reasoning
 
 ------------------------------------------------------------------------------
--- proofs about additive permutations
+-- Proofs about additive permutations
 
 lookup-subst' : ∀ {m m'} 
   (i : Fin m) (xs : Vec (Fin m') m) (eq : m ≡ m') (eq' : m' ≡ m)
@@ -1141,10 +1141,10 @@ allFin* (suc m) (suc n) =
 tcomp-id : ∀ {m n} → tcompcauchy (idcauchy m) (idcauchy n) ≡ idcauchy (m * n)
 tcomp-id {m} {n} = sym (allFin* m n)
 
--- Behaviour of parallel additive composition wrt sequential
+-- Behaviour of parallel multiplicative composition wrt sequential
 
 absurd : (m n q : ℕ) (r : Fin (suc n)) (k : Fin (suc (n + m * suc n))) 
-  (k≡r+q*sn : toℕ k ≡ toℕ r + q * suc n) (p : suc m ≤ q) → ⊥
+         (k≡r+q*sn : toℕ k ≡ toℕ r + q * suc n) (p : suc m ≤ q) → ⊥
 absurd m n q r k k≡r+q*sn p = ¬i+1+j≤i (toℕ k) {toℕ r} k≥k+sr
   where k≥k+sr : toℕ k ≥ toℕ k + suc (toℕ r)
         k≥k+sr =
@@ -1201,12 +1201,17 @@ tabulate-concat {suc m} {0} f =
   where open ≡-Reasoning
 tabulate-concat {suc m} {suc n} f =
   begin (tabulate {suc n} (λ x → f (zero , x)) ++V 
-            concatV (tabulate {m} (λ i → tabulate {suc n} (λ j → f (suc i , j))))
+         concatV (tabulate {m} (λ i → tabulate {suc n} (λ j → f (suc i , j))))
       ≡⟨ {!!} ⟩
-  tabulate {suc n} ((λ k →  f (fin-project (suc m) (suc n) k)) ∘ inject+ (m * suc n)) ++V
-    tabulate {m * suc n} ((λ k → f (fin-project (suc m) (suc n) k)) ∘ raise (suc n))
-      ≡⟨ sym (tabulate-split {suc n} {m * suc n} (λ k → f (fin-project (suc m) (suc n) k))) ⟩
-  tabulate {suc n + m * suc n} (λ k → f (fin-project (suc m) (suc n) k)) ∎) 
+         tabulate {suc n}
+           ((λ k →  f (fin-project (suc m) (suc n) k)) ∘ inject+ (m * suc n))
+         ++V
+         tabulate {m * suc n}
+           ((λ k → f (fin-project (suc m) (suc n) k)) ∘ raise (suc n))
+      ≡⟨ sym (tabulate-split {suc n} {m * suc n}
+               (λ k → f (fin-project (suc m) (suc n) k))) ⟩
+         tabulate {suc n + m * suc n}
+           (λ k → f (fin-project (suc m) (suc n) k)) ∎) 
   where open ≡-Reasoning
 
 lookup-concat :
@@ -1236,9 +1241,12 @@ lookup-concat :
       (lookup (lookup (proj₁ (fin-project m n k)) pm) qm)
       (lookup (lookup (proj₂ (fin-project m n k)) pn) qn))
 lookup-concat {0} () pm qm pn qn
-lookup-concat {suc m} {Data.Nat.zero} k pm qm [] [] = ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero m) k))
-lookup-concat {suc m} {suc n} zero (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x₃ ∷ qn) = {!!}
-lookup-concat {suc m} {suc n} (suc k) pm qm pn qn = {!!} 
+lookup-concat {suc m} {Data.Nat.zero} k pm qm [] [] =
+  ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero m) k))
+lookup-concat {suc m} {suc n} zero (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x₃ ∷ qn) =
+  {!!}
+lookup-concat {suc m} {suc n} (suc k) pm qm pn qn =
+  {!!} 
 
 tcomp-dist : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
   scompcauchy (tcompcauchy pm pn) (tcompcauchy qm qn) ≡

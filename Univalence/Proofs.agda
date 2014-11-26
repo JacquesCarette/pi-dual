@@ -163,7 +163,8 @@ concat-map (xs ∷ xss) f =
   where open ≡-Reasoning
 
 tabulate-split : ∀ {m n} {a : Level} {A : Set a} → (f : Fin (m + n) → A) → 
-  tabulate {m + n} f ≡ tabulate {m} (f ∘ inject+ n) ++V tabulate {n} (f ∘ raise m)
+  tabulate {m + n} f ≡
+  tabulate {m} (f ∘ inject+ n) ++V tabulate {n} (f ∘ raise m)
 tabulate-split {0} f = refl
 tabulate-split {suc m} f = cong (_∷_ (f zero)) (tabulate-split {m} (f ∘ suc))
 
