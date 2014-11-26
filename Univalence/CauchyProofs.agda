@@ -1249,16 +1249,23 @@ lookup-concat {suc m} {suc n} zero (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x₃ 
            (inject≤
               (fromℕ (toℕ x * suc n + toℕ x₂))
               (i*n+k≤m*n x x₂))
-          (concatV
-            (mapV
-              (λ b →
-                mapV
-                  (λ d →
-                    inject≤
-                      (fromℕ (toℕ b * suc n + toℕ d))
-                      (i*n+k≤m*n b d))
-                  (x₃ ∷ qn))
-              (x₁ ∷ qm)))
+           (mapV
+             (λ d →
+               inject≤
+                 (fromℕ (toℕ x₁ * suc n + toℕ d))
+                 (i*n+k≤m*n x₁ d))
+             (x₃ ∷ qn)
+            ++V
+            (concatV
+              (mapV
+                (λ b →
+                  mapV
+                    (λ d →
+                      inject≤
+                        (fromℕ (toℕ b * suc n + toℕ d))
+                        (i*n+k≤m*n b d))
+                    (x₃ ∷ qn))
+                qm)))
            ≡⟨ {!!} ⟩ 
          inject≤
            (fromℕ
