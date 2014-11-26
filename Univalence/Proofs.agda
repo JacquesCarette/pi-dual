@@ -78,7 +78,7 @@ finext {suc n} f g fi≡gi =
   where open ≡-Reasoning
 
 ------------------------------------------------------------------------------
--- Lemmas about map
+-- Lemmas about map and tabulate
 
 -- this is actually in Data.Vec.Properties, but over an arbitrary
 -- Setoid.  Specialize
@@ -161,6 +161,11 @@ concat-map (xs ∷ xss) f =
            ≡⟨ refl ⟩
          mapV f (concatV (xs ∷ xss)) ∎)
   where open ≡-Reasoning
+
+tabulate-split : ∀ {m n} {a : Level} {A : Set a} → (f : Fin (m + n) → A) → 
+  tabulate {m + n} f ≡ tabulate {m} (f ∘ inject+ n) ++V tabulate {n} (f ∘ raise m)
+tabulate-split {0} f = refl
+tabulate-split {suc m} f = cong (_∷_ (f zero)) (tabulate-split {m} (f ∘ suc))
 
 ------------------------------------------------------------------------------
 -- Lemmas about subst

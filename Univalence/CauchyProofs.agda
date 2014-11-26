@@ -1203,6 +1203,9 @@ tabulate-concat {suc m} {suc n} f =
   begin (tabulate {suc n} (λ x → f (zero , x)) ++V 
             concatV (tabulate {m} (λ i → tabulate {suc n} (λ j → f (suc i , j))))
       ≡⟨ {!!} ⟩
+  tabulate {suc n} ((λ k →  f (fin-project (suc m) (suc n) k)) ∘ inject+ (m * suc n)) ++V
+    tabulate {m * suc n} ((λ k → f (fin-project (suc m) (suc n) k)) ∘ raise (suc n))
+      ≡⟨ sym (tabulate-split {suc n} {m * suc n} (λ k → f (fin-project (suc m) (suc n) k))) ⟩
   tabulate {suc n + m * suc n} (λ k → f (fin-project (suc m) (suc n) k)) ∎) 
   where open ≡-Reasoning
 
