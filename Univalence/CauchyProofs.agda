@@ -1200,7 +1200,8 @@ tabulate-concat {suc m} {0} f =
     tabulate (λ k → f (⊥-elim (Fin0-⊥ (subst Fin (*-right-zero m) k)))) ∎)
   where open ≡-Reasoning
 tabulate-concat {suc m} {suc n} f =
-  begin (tabulate {suc n} (λ x → f (zero , x)) ++V 
+  begin (tabulate {suc n} (λ x → f (zero , x))
+         ++V 
          concatV (tabulate {m} (λ i → tabulate {suc n} (λ j → f (suc i , j))))
       ≡⟨ {!!} ⟩
          tabulate {suc n}
