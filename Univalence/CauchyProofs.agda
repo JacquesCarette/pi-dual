@@ -1224,7 +1224,44 @@ lookup-concat' : (m n : ℕ) (b : Fin m) (d : Fin n) →
       (i*n+k≤m*n b d))
     (concatV (mapV (λ b → mapV (λ d → f (b , d)) pn) pm)) ≡
   f (lookup b pm , lookup d pn)
-lookup-concat' = {!!} 
+lookup-concat' 0 0 () d f pm pn
+lookup-concat' 0 (suc n) () d f pm pn
+lookup-concat' (suc m) 0 zero () f pm pn
+lookup-concat' (suc m) 0 (suc b) () f pm pn
+lookup-concat' (suc m) (suc n) zero zero f (x ∷ pm) (x₁ ∷ pn) = {!!}
+lookup-concat' (suc m) (suc n) zero (suc d) f (x ∷ pm) (x₁ ∷ pn) = {!!}
+lookup-concat' (suc m) (suc n) (suc b) zero f (x ∷ pm) (x₁ ∷ pn) = {!!}
+lookup-concat' (suc m) (suc n) (suc b) (suc d) f (x ∷ pm) (x₁ ∷ pn) = {!!} 
+
+{--
+lookup
+  (inject≤ 
+    zero
+    (i*n+k≤m*n zero zero))
+  (concatV (mapV (λ b → mapV (λ d → f (b , d)) (x₁ ∷ pn)) (x ∷ pm)))
+≡ f (x , x₁)
+
+lookup
+  (inject≤ 
+    (fromℕ (toℕ (suc d)))
+    (i*n+k≤m*n zero (suc d)))
+  (concatV (mapV (λ b → mapV (λ d₁ → f (b , d₁)) (x₁ ∷ pn)) (x ∷ pm)))
+≡ f (x , lookup d pn)
+
+lookup
+  (inject≤ 
+    (fromℕ (toℕ (suc b) * suc n + toℕ zero))
+    (i*n+k≤m*n (suc b) zero))
+  (concatV (mapV (λ b₁ → mapV (λ d → f (b₁ , d)) (x₁ ∷ pn)) (x ∷ pm)))
+≡ f (lookup b pm , x₁)
+
+lookup
+  (inject≤ 
+   (fromℕ (toℕ (suc b) * suc n + toℕ (suc d)))
+   (i*n+k≤m*n (suc b) (suc d)))
+ (concatV (mapV (λ b₁ → mapV (λ d₁ → f (b₁ , d₁)) (x₁ ∷ pn)) (x ∷ pm)))
+≡ f (lookup b pm , lookup d pn)
+--}
 
 lookup-concat :
   ∀ {m n} → (k : Fin (m * n)) → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
@@ -1253,37 +1290,15 @@ lookup-concat :
       (lookup (lookup (proj₁ (fin-project m n k)) pm) qm)
       (lookup (lookup (proj₂ (fin-project m n k)) pn) qn))
 lookup-concat {0} () pm qm pn qn
-lookup-concat {suc m} {Data.Nat.zero} k pm qm [] [] =
+lookup-concat {suc m} {0} k pm qm [] [] =
   ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero m) k))
 lookup-concat {suc m} {suc n} zero (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x₃ ∷ qn) =   
-  begin (lookup
-           (inject≤
-              (fromℕ (toℕ x * suc n + toℕ x₂))
-              (i*n+k≤m*n x x₂))
-           (concatV
-             (mapV
-               (λ b →
-                 mapV
-                   (λ d →
-                      inject≤
-                        (fromℕ (toℕ b * suc n + toℕ d))
-                        (i*n+k≤m*n b d))
-                    (x₃ ∷ qn))
-               (x₁ ∷ qm)))
-           ≡⟨ lookup-concat'
-                (suc m) (suc n) x x₂
-                (λ {(b , d) → inject≤
-                                (fromℕ (toℕ b * suc n + toℕ d))
-                                (i*n+k≤m*n b d)})
-                (x₁ ∷ qm) (x₃ ∷ qn) ⟩ 
-         inject≤
-           (fromℕ
-             (toℕ (lookup x (x₁ ∷ qm)) * suc n +
-              toℕ (lookup x₂ (x₃ ∷ qn))))
-           (i*n+k≤m*n
-             (lookup x (x₁ ∷ qm))
-             (lookup x₂ (x₃ ∷ qn))) ∎)
-  where open ≡-Reasoning               
+  lookup-concat'
+    (suc m) (suc n) x x₂
+    (λ {(b , d) → inject≤
+                    (fromℕ (toℕ b * suc n + toℕ d))
+                    (i*n+k≤m*n b d)})
+    (x₁ ∷ qm) (x₃ ∷ qn) 
 lookup-concat {suc m} {suc n} (suc k) pm qm pn qn =
   {!!} 
 
