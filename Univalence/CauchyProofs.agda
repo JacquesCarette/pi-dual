@@ -1215,6 +1215,17 @@ tabulate-concat {suc m} {suc n} f =
            (λ k → f (fin-project (suc m) (suc n) k)) ∎) 
   where open ≡-Reasoning
 
+lookup-concat' : (m n : ℕ) (b : Fin m) (d : Fin n) →
+  (f : Fin m × Fin n → Fin (m * n)) →
+  (pm : Vec (Fin m) m) (pn : Vec (Fin n) n) → 
+  lookup 
+    (inject≤ 
+      (fromℕ (toℕ b * n + toℕ d))
+      (i*n+k≤m*n b d))
+    (concatV (mapV (λ b → mapV (λ d → f (b , d)) pn) pm)) ≡
+  f (lookup b pm , lookup d pn)
+lookup-concat' = {!!} 
+
 lookup-concat :
   ∀ {m n} → (k : Fin (m * n)) → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
   lookup
@@ -1244,29 +1255,27 @@ lookup-concat :
 lookup-concat {0} () pm qm pn qn
 lookup-concat {suc m} {Data.Nat.zero} k pm qm [] [] =
   ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero m) k))
-lookup-concat {suc m} {suc n} zero (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x₃ ∷ qn) =
+lookup-concat {suc m} {suc n} zero (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x₃ ∷ qn) =   
   begin (lookup
            (inject≤
               (fromℕ (toℕ x * suc n + toℕ x₂))
               (i*n+k≤m*n x x₂))
-           (mapV
-             (λ d →
-               inject≤
-                 (fromℕ (toℕ x₁ * suc n + toℕ d))
-                 (i*n+k≤m*n x₁ d))
-             (x₃ ∷ qn)
-            ++V
-            (concatV
-              (mapV
-                (λ b →
-                  mapV
-                    (λ d →
+           (concatV
+             (mapV
+               (λ b →
+                 mapV
+                   (λ d →
                       inject≤
                         (fromℕ (toℕ b * suc n + toℕ d))
                         (i*n+k≤m*n b d))
                     (x₃ ∷ qn))
-                qm)))
-           ≡⟨ {!!} ⟩ 
+               (x₁ ∷ qm)))
+           ≡⟨ lookup-concat'
+                (suc m) (suc n) x x₂
+                (λ {(b , d) → inject≤
+                                (fromℕ (toℕ b * suc n + toℕ d))
+                                (i*n+k≤m*n b d)})
+                (x₁ ∷ qm) (x₃ ∷ qn) ⟩ 
          inject≤
            (fromℕ
              (toℕ (lookup x (x₁ ∷ qm)) * suc n +
