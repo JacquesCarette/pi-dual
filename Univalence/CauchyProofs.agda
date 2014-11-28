@@ -1230,43 +1230,41 @@ lookup-concat' : ∀ {ℓ₁ ℓ₂ ℓ₃} {A : Set ℓ₁} {B : Set ℓ₂} {C
     (concatV (mapV (λ b → mapV (λ d → f (b , d)) pn) pm)) ≡
   f (lookup b pm , lookup d pn)
 lookup-concat' 0 n () d leq f pm pn
-lookup-concat' (suc m) 0 zero () leq f pm pn
-lookup-concat' (suc m) (suc n) zero zero (s≤s leq) f (a ∷ pm) (b ∷ pn) = refl
-lookup-concat' (suc m) (suc n) zero (suc d) (s≤s leq) f (i ∷ pm) (j ∷ pn) =
+lookup-concat' (suc m) n zero d leq f (i ∷ pm) pn =
   begin (lookup
-           (suc (inject≤ (fromℕ (toℕ d)) leq))
-           (concatV (mapV (λ i → mapV (λ j → f (i , j)) (j ∷ pn)) (i ∷ pm)))
-       ≡⟨ refl ⟩
+           (inject≤ (fromℕ (toℕ d)) leq)
+           (concatV (mapV (λ b → mapV (λ d → f (b , d)) pn) (i ∷ pm)))
+       ≡⟨ refl ⟩ 
          lookup
-           (suc (inject≤ (fromℕ (toℕ d)) leq))
-           (concatV (mapV (λ j → f (i , j)) (j ∷ pn) ∷
-                     mapV (λ i → mapV (λ j → f (i , j)) (j ∷ pn)) pm))
-       ≡⟨ refl ⟩
-         lookup
-           (suc (inject≤ (fromℕ (toℕ d)) leq))
-           (f (i , j) ∷ mapV (λ j → f (i , j)) pn ++V
-            concatV (mapV (λ i → mapV (λ j → f (i , j)) (j ∷ pn)) pm))
+           (inject≤ (fromℕ (toℕ d)) leq)
+           (concatV (mapV (λ d → f (i , d)) pn ∷
+                     mapV (λ b → mapV (λ d → f (b , d)) pn) pm))
        ≡⟨ refl ⟩
          lookup
            (inject≤ (fromℕ (toℕ d)) leq)
-           (mapV (λ j → f (i , j)) pn ++V
-            concatV (mapV (λ i → mapV (λ j → f (i , j)) (j ∷ pn)) pm))
+           (mapV (λ d → f (i , d)) pn ++V
+            concatV (mapV (λ b → mapV (λ d → f (b , d)) pn) pm))
        ≡⟨ lookup-concat'' d leq
-             (mapV (λ j → f (i , j)) pn)
-             (concatV (mapV (λ i → mapV (λ j → f (i , j)) (j ∷ pn)) pm)) ⟩ 
-         lookup d (mapV (λ j → f (i , j)) pn)
-       ≡⟨ lookup-map d (λ j → f (i , j)) pn ⟩
+            (mapV (λ d → f (i , d)) pn)
+            (concatV (mapV (λ b → mapV (λ d → f (b , d)) pn) pm)) ⟩
+         lookup d (mapV (λ d → f (i , d)) pn)
+       ≡⟨ lookup-map d (λ d → f (i , d)) pn ⟩
          f (i , lookup d pn) ∎)
   where open ≡-Reasoning
-lookup-concat' (suc m) 0 (suc b) () leq f pm pn
-lookup-concat' (suc m) (suc n) (suc b) zero (s≤s leq) f (i ∷ pm) (j ∷ pn) = 
-  begin (lookup
-           (inject≤ (fromℕ (toℕ (suc b) * suc n + 0)) (s≤s leq))
-           (concatV (mapV (λ b → mapV (λ d → f (b , d)) (j ∷ pn)) (i ∷ pm)))
+lookup-concat' (suc m) n (suc b) d leq f (i ∷ pm) pn =
+  begin (lookup 
+           (inject≤ (fromℕ ((n + toℕ b * n) + toℕ d)) leq)
+           (concatV (mapV (λ b → mapV (λ d → f (b , d)) pn) (i ∷ pm)))
        ≡⟨ {!!} ⟩ 
-         f (lookup b pm , j) ∎)
+         f (lookup b pm , lookup d pn) ∎)
   where open ≡-Reasoning
-lookup-concat' (suc m) (suc n) (suc b) (suc d) (s≤s leq) f (i ∷ pm) (j ∷ pn) = {!!} 
+{--
+b   : Fin m
+d   : Fin n
+leq : suc (n + toℕ b * n + toℕ d) ≤ n + m * n
+pm  : Vec .A m
+pn  : Vec .B n
+--}
 
 lookup-concat :
   ∀ {m n} → (k : Fin (m * n)) → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
