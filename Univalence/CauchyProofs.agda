@@ -1421,33 +1421,8 @@ lookup-concat {suc m} {suc n} zero (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x₃ 
          in inject≤ (fromℕ (toℕ x * suc n + toℕ y)) (i*n+k≤m*n x y) ∎)
   where open ≡-Reasoning
 lookup-concat {suc m} {suc n} (suc k) (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x₃ ∷ qn) =
-  begin (let vs = concatV
-                    (mapV
-                      (λ b →
-                        mapV
-                          (λ d →
-                            inject≤
-                              (fromℕ (toℕ b * suc n + toℕ d))
-                              (i*n+k≤m*n b d))
-                          (x₂ ∷ pn))
-                      (x ∷ pm))
-             ws = concatV
-                    (mapV
-                      (λ b →
-                        mapV
-                          (λ d →
-                            inject≤
-                              (fromℕ (toℕ b * suc n + toℕ d))
-                              (i*n+k≤m*n b d))
-                          (x₃ ∷ qn))
-                      (x₁ ∷ qm)) in
-         lookup (lookup (suc k) vs) ws
-       ≡⟨ {!!} ⟩
-         let (b , d) = fin-project (suc m) (suc n) (suc k)
-             r = lookup (lookup b (x ∷ pm)) (x₁ ∷ qm)
-             s = lookup (lookup d (x₂ ∷ pn)) (x₃ ∷ qn) in 
-         inject≤ (fromℕ (toℕ r * suc n + toℕ s)) (i*n+k≤m*n r s) ∎)
-  where open ≡-Reasoning
+  {!!}
+  -- use fin-project new lemma and lookup-concat' do not expand to use lookup-concat-left etc.
 
 tcomp-dist : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
   scompcauchy (tcompcauchy pm pn) (tcompcauchy qm qn) ≡
