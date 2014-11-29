@@ -1421,42 +1421,32 @@ lookup-concat {suc m} {suc n} zero (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x₃ 
          in inject≤ (fromℕ (toℕ x * suc n + toℕ y)) (i*n+k≤m*n x y) ∎)
   where open ≡-Reasoning
 lookup-concat {suc m} {suc n} (suc k) (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x₃ ∷ qn) =
-  begin (lookup
-           (lookup
-             (suc k)
-             (concatV
-               (mapV
-                 (λ b →
-                   mapV
-                     (λ d → inject≤ (fromℕ (toℕ b * suc n + toℕ d)) (i*n+k≤m*n b d))
-                     (x₂ ∷ pn))
-                 (x ∷ pm))))
-           (concatV
-             (mapV
-               (λ b →
-                 mapV
-                   (λ d → inject≤ (fromℕ (toℕ b * suc n + toℕ d)) (i*n+k≤m*n b d))
-                   (x₃ ∷ qn))
-               (x₁ ∷ qm)))
-       ≡⟨ {!!} ⟩ 
-         inject≤
-           (fromℕ
-             (toℕ
-               (lookup
-                 (lookup (proj₁ (fin-project (suc m) (suc n) (suc k))) (x ∷ pm))
-                 (x₁ ∷ qm))
-               * suc n
-               + toℕ
-                   (lookup
-                     (lookup (proj₂ (fin-project (suc m) (suc n) (suc k))) (x₂ ∷ pn))
-                     (x₃ ∷ qn))))
-           (i*n+k≤m*n
-             (lookup
-               (lookup (proj₁ (fin-project (suc m) (suc n) (suc k))) (x ∷ pm))
-               (x₁ ∷ qm))
-             (lookup
-               (lookup (proj₂ (fin-project (suc m) (suc n) (suc k))) (x₂ ∷ pn))
-               (x₃ ∷ qn))) ∎)
+  begin (let vs = concatV
+                    (mapV
+                      (λ b →
+                        mapV
+                          (λ d →
+                            inject≤
+                              (fromℕ (toℕ b * suc n + toℕ d))
+                              (i*n+k≤m*n b d))
+                          (x₂ ∷ pn))
+                      (x ∷ pm))
+             ws = concatV
+                    (mapV
+                      (λ b →
+                        mapV
+                          (λ d →
+                            inject≤
+                              (fromℕ (toℕ b * suc n + toℕ d))
+                              (i*n+k≤m*n b d))
+                          (x₃ ∷ qn))
+                      (x₁ ∷ qm)) in
+         lookup (lookup (suc k) vs) ws
+       ≡⟨ {!!} ⟩
+         let (b , d) = fin-project (suc m) (suc n) (suc k)
+             r = lookup (lookup b (x ∷ pm)) (x₁ ∷ qm)
+             s = lookup (lookup d (x₂ ∷ pn)) (x₃ ∷ qn) in 
+         inject≤ (fromℕ (toℕ r * suc n + toℕ s)) (i*n+k≤m*n r s) ∎)
   where open ≡-Reasoning
 
 tcomp-dist : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
