@@ -55,6 +55,7 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Cauchy
 open import Proofs
 open import CauchyProofs
+open import CauchyProofsT
 open import Groupoid
 
 ------------------------------------------------------------------------------
