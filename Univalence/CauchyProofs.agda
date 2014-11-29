@@ -1397,7 +1397,29 @@ lookup-concat :
 lookup-concat {0} () pm qm pn qn
 lookup-concat {suc m} {0} k pm qm [] [] =
   ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero m) k))
-lookup-concat {suc m} {suc n} zero (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x₃ ∷ qn) =  {!!}
+lookup-concat {suc m} {suc n} zero (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x₃ ∷ qn) =
+  begin (lookup 
+           (inject≤ (fromℕ (toℕ x * suc n + toℕ x₂)) (i*n+k≤m*n x x₂))
+           (concatV
+             (mapV
+               (λ b →
+                 mapV
+                   (λ d → inject≤ (fromℕ (toℕ b * suc n + toℕ d)) (i*n+k≤m*n b d))
+                   (x₃ ∷ qn))
+               (x₁ ∷ qm)))
+       ≡⟨ lookup-concat'
+            (suc m) (suc n) x x₂ (i*n+k≤m*n x x₂)
+            (λ {(b , d) → inject≤ (fromℕ (toℕ b * suc n + toℕ d)) (i*n+k≤m*n b d)})
+            (x₁ ∷ qm) (x₃ ∷ qn) ⟩ 
+         inject≤
+           (fromℕ (toℕ (lookup x (x₁ ∷ qm)) * suc n + toℕ (lookup x₂ (x₃ ∷ qn))))
+           (i*n+k≤m*n (lookup x (x₁ ∷ qm)) (lookup x₂ (x₃ ∷ qn)))
+       ≡⟨ {!!} ⟩ 
+         let (b , d) = fin-project (suc m) (suc n) zero
+             x = lookup (lookup b (x ∷ pm)) (x₁ ∷ qm)
+             y = lookup (lookup d (x₂ ∷ pn)) (x₃ ∷ qn)
+         in inject≤ (fromℕ (toℕ x * suc n + toℕ y)) (i*n+k≤m*n x y) ∎)
+  where open ≡-Reasoning
 lookup-concat {suc m} {suc n} (suc k) (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x₃ ∷ qn) = {!!}
 
 tcomp-dist : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
