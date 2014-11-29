@@ -1414,13 +1414,50 @@ lookup-concat {suc m} {suc n} zero (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x₃ 
          inject≤
            (fromℕ (toℕ (lookup x (x₁ ∷ qm)) * suc n + toℕ (lookup x₂ (x₃ ∷ qn))))
            (i*n+k≤m*n (lookup x (x₁ ∷ qm)) (lookup x₂ (x₃ ∷ qn)))
-       ≡⟨ {!!} ⟩ 
+       ≡⟨ refl ⟩ 
          let (b , d) = fin-project (suc m) (suc n) zero
              x = lookup (lookup b (x ∷ pm)) (x₁ ∷ qm)
              y = lookup (lookup d (x₂ ∷ pn)) (x₃ ∷ qn)
          in inject≤ (fromℕ (toℕ x * suc n + toℕ y)) (i*n+k≤m*n x y) ∎)
   where open ≡-Reasoning
-lookup-concat {suc m} {suc n} (suc k) (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x₃ ∷ qn) = {!!}
+lookup-concat {suc m} {suc n} (suc k) (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x₃ ∷ qn) =
+  begin (lookup
+           (lookup
+             (suc k)
+             (concatV
+               (mapV
+                 (λ b →
+                   mapV
+                     (λ d → inject≤ (fromℕ (toℕ b * suc n + toℕ d)) (i*n+k≤m*n b d))
+                     (x₂ ∷ pn))
+                 (x ∷ pm))))
+           (concatV
+             (mapV
+               (λ b →
+                 mapV
+                   (λ d → inject≤ (fromℕ (toℕ b * suc n + toℕ d)) (i*n+k≤m*n b d))
+                   (x₃ ∷ qn))
+               (x₁ ∷ qm)))
+       ≡⟨ {!!} ⟩ 
+         inject≤
+           (fromℕ
+             (toℕ
+               (lookup
+                 (lookup (proj₁ (fin-project (suc m) (suc n) (suc k))) (x ∷ pm))
+                 (x₁ ∷ qm))
+               * suc n
+               + toℕ
+                   (lookup
+                     (lookup (proj₂ (fin-project (suc m) (suc n) (suc k))) (x₂ ∷ pn))
+                     (x₃ ∷ qn))))
+           (i*n+k≤m*n
+             (lookup
+               (lookup (proj₁ (fin-project (suc m) (suc n) (suc k))) (x ∷ pm))
+               (x₁ ∷ qm))
+             (lookup
+               (lookup (proj₂ (fin-project (suc m) (suc n) (suc k))) (x₂ ∷ pn))
+               (x₃ ∷ qn))) ∎)
+  where open ≡-Reasoning
 
 tcomp-dist : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
   scompcauchy (tcompcauchy pm pn) (tcompcauchy qm qn) ≡
