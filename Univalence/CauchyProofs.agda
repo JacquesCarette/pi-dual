@@ -1253,6 +1253,31 @@ helper-leq' 0 n ()
 helper-leq' (suc m) n zero = s≤s z≤n
 helper-leq' (suc m) n (suc b) = s≤s (helper-leq m n b) 
 
+lookup-concat-inner : {ℓ₁ ℓ₂ ℓ₃ : Level} {A : Set ℓ₁} {B : Set ℓ₂} {C : Set ℓ₃} →
+  (m n : ℕ) (b : Fin m) (j : B) 
+  (leq : suc (toℕ b * suc n) ≤ m * suc n)
+  (f : A × B → C) (pm : Vec A m) (pn : Vec B n) → 
+  lookup
+     (inject≤ (fromℕ (toℕ b * suc n)) leq)
+     (concatV (mapV (λ b → mapV (λ d → f (b , d)) (j ∷ pn)) pm))
+   ≡ f (lookup b pm , j) 
+lookup-concat-inner 0 n () j leq f pm pn
+lookup-concat-inner (suc m) n zero j (s≤s z≤n) f (i ∷ pm) pn = refl
+lookup-concat-inner (suc m) n (suc b) j (s≤s leq) f (i ∷ pm) pn = 
+  begin (lookup 
+           (inject≤ (fromℕ (n + toℕ b * suc n)) leq)
+           (mapV (λ d → f (i , d)) pn ++V
+            concatV (mapV (λ b → mapV (λ d → f (b , d)) (j ∷ pn)) pm))
+       ≡⟨ lookup-concat-right (toℕ b * suc n) leq (helper-leq' m n b)
+           (mapV (λ d → f (i , d)) pn)
+           (concatV (mapV (λ b → mapV (λ d → f (b , d)) (j ∷ pn)) pm)) ⟩ 
+         lookup 
+           (inject≤ (fromℕ (toℕ b * suc n)) (helper-leq' m n b))
+           (concatV (mapV (λ b → mapV (λ d → f (b , d)) (j ∷ pn)) pm))
+       ≡⟨ lookup-concat-inner m n b j (helper-leq' m n b) f pm pn ⟩
+         f (lookup b pm , j) ∎)
+  where open ≡-Reasoning
+
 lookup-concat' : ∀ {ℓ₁ ℓ₂ ℓ₃} {A : Set ℓ₁} {B : Set ℓ₂} {C : Set ℓ₃} →
   (m n : ℕ) (b : Fin m) (d : Fin n) →
   (leq : suc (toℕ b * n + toℕ d) ≤ m * n) → 
@@ -1317,7 +1342,7 @@ lookup-concat' (suc m) (suc n) (suc b) zero (s≤s leq) f (i ∷ pm) (j ∷ pn) 
          lookup
            (inject≤ (fromℕ (toℕ b * suc n)) (helper-leq' m n b))
            (concatV (mapV (λ b → mapV (λ d → f (b , d)) (j ∷ pn)) pm))
-       ≡⟨ {!!} ⟩  
+       ≡⟨ lookup-concat-inner m n b j (helper-leq' m n b) f pm pn ⟩  
          f (lookup b pm , j) ∎)
   where open ≡-Reasoning
 lookup-concat' (suc m) (suc n) (suc b) (suc d) (s≤s leq) f (i ∷ pm) (j ∷ pn) = 
