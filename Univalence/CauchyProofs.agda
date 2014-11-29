@@ -1233,6 +1233,18 @@ lookup-concat-right {n = 0} j leq leq' [] ws =
 lookup-concat-right {n = suc n} j (s≤s leq) leq' (v ∷ vs) ws =
   lookup-concat-right j leq leq' vs ws 
 
+lookup-concat-right' : ∀ {ℓ} {A : Set ℓ} {m n : ℕ} → 
+  (j k : ℕ) (leq : suc ((n + j) + k) ≤ n + m) (leq' : suc (j + k) ≤ m)
+  (vs : Vec A n) (ws : Vec A m) → 
+  lookup (inject≤ (fromℕ ((n + j) + k)) leq) (vs ++V ws) ≡
+  lookup (inject≤ (fromℕ (j + k)) leq') ws
+lookup-concat-right' {n = 0} j k leq leq' [] ws =
+  cong
+    (λ x → lookup (inject≤ (fromℕ (j + k)) x) ws)
+    (≤-proof-irrelevance leq leq')
+lookup-concat-right' {n = suc n} j k (s≤s leq) leq' (v ∷ vs) ws =
+  lookup-concat-right' j k leq leq' vs ws 
+
 helper-leq : (m n : ℕ) → (b : Fin m) → 
   suc (n + toℕ b * suc n) ≤ n + m * suc n
 helper-leq m n b =
@@ -1350,7 +1362,13 @@ lookup-concat' (suc m) (suc n) (suc b) (suc d) (s≤s leq) f (i ∷ pm) (j ∷ p
            (inject≤ (fromℕ ((n + toℕ b * suc n) + toℕ (suc d))) leq)
            (mapV (λ d → f (i , d)) pn ++V
             concatV (mapV (λ b → mapV (λ d → f (b , d)) (j ∷ pn)) pm))
-       ≡⟨ {!!} ⟩ 
+       ≡⟨ lookup-concat-right' (toℕ b * suc n) (toℕ (suc d)) leq (i*n+k≤m*n b (suc d))
+            (mapV (λ d → f (i , d)) pn)
+            (concatV (mapV (λ b → mapV (λ d → f (b , d)) (j ∷ pn)) pm)) ⟩ 
+         lookup
+           (inject≤ (fromℕ (toℕ b * suc n + toℕ (suc d))) (i*n+k≤m*n b (suc d)))
+           (concatV (mapV (λ b → mapV (λ d → f (b , d)) (j ∷ pn)) pm))
+       ≡⟨ lookup-concat' m (suc n) b (suc d) (i*n+k≤m*n b (suc d)) f pm (j ∷ pn) ⟩ 
          f (lookup b pm , lookup d pn) ∎)
   where open ≡-Reasoning
 
