@@ -464,6 +464,16 @@ toℕ-inject+ {Data.Nat.zero} ()
 toℕ-inject+ {suc n} zero = refl
 toℕ-inject+ {suc n} (suc i) = cong suc (toℕ-inject+ i)
 
+q≡ : (m : ℕ) (q : ℕ) (¬p : ¬ suc m ≤ q) → 
+  q ≡ toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p))))
+q≡ m q ¬p = sym (toℕ-fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p))))
+
+small-quotient : (n q : ℕ) → (i : Fin n) → (r : Fin (suc n)) → 
+  (eq₁ : suc (toℕ i) ≡ toℕ r + q * suc n) → (q ≡ 0) × (toℕ r ≡ suc (toℕ i))
+small-quotient 0 _ () _ _
+small-quotient (suc n) 0 i r eq = refl , sym  (trans eq (+-right-identity (toℕ r)))
+small-quotient (suc n) (suc q) i r eq = ⊥-elim {!!} -- rather like absurd above
+
 first-row :
   (m n : ℕ) → (f : Fin (suc m) × Fin (suc n) → Fin ((suc m) * (suc n))) → 
   tabulate {suc n} (λ x → f (zero , x)) ≡ 
@@ -480,7 +490,14 @@ first-row m n f =
       pf (suc i) | result q r property with suc m ≤? q
       pf (suc i) | result q r property | yes p = 
                 ⊥-elim (absurd m n q r (suc (inject+ (m * suc n) i)) property p)
-      pf (suc i) | result q r property | no ¬p = {!!}
+      pf (suc i) | result q r property | no ¬p = {! !} -- see small-quotient
+        where
+           si≤n : suc (toℕ i) ≤ n
+           si≤n = bounded' n (suc i)
+           q≡f₁ : q ≡ toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p))))
+           q≡f₁ = q≡ m q ¬p
+           si≡f₂ : _≡_ {A = ℕ} (suc (toℕ (inject+ (m * suc n) i)))  (suc (toℕ i))
+           si≡f₂ = cong suc (toℕ-inject+ {k = m * suc n} i)
 
 tabulate-concat : ∀ {m n} →
   (f : Fin m × Fin n → Fin (m * n)) → 
@@ -667,9 +684,6 @@ lookup-concat' (suc m) (suc n) (suc b) (suc d) (s≤s leq) f (i ∷ pm) (j ∷ p
          f (lookup b pm , lookup d pn) ∎)
   where open ≡-Reasoning
 
-q≡ : (m : ℕ) (q : ℕ) (¬p : ¬ suc m ≤ q) → 
-  q ≡ toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p))))
-q≡ m q ¬p = sym (toℕ-fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p))))
 
 fin-proj-lem :
   (m n : ℕ) (k : Fin (m * n)) →
