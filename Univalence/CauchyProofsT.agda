@@ -468,18 +468,31 @@ q≡ : (m : ℕ) (q : ℕ) (¬p : ¬ suc m ≤ q) →
   q ≡ toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p))))
 q≡ m q ¬p = sym (toℕ-fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p))))
 
+absurd2 : (n q : ℕ) (i : Fin (suc n)) (r  : Fin (suc (suc n))) 
+  (eq : suc (toℕ i) ≡ toℕ r + suc (suc (n + q * suc (suc n)))) → ⊥
+absurd2 n q i r eq = ¬i+1+j≤i (suc (toℕ i)) {toℕ r} leq
+  where leq' = begin (suc (toℕ i)
+                   ≤⟨ bounded i ⟩
+                      suc n
+                   ≤⟨ m≤m+n (suc n) (q * suc (suc n)) ⟩
+                      suc (n + q * suc (suc n)) ∎)
+               where open ≤-Reasoning
+        leq = begin (suc (toℕ i) + suc (toℕ r)
+                   ≡⟨ +-suc (suc (toℕ i)) (toℕ r) ⟩
+                     suc (suc (toℕ i)) + toℕ r
+                   ≡⟨ +-comm (suc (suc (toℕ i))) (toℕ r) ⟩
+                     toℕ r + suc (suc (toℕ i))
+                   ≤⟨ cong+l≤ (s≤s leq') (toℕ r) ⟩
+                     toℕ r + suc (suc (n + q * suc (suc n)))
+                   ≡⟨ sym eq ⟩ 
+                     suc (toℕ i) ∎)
+              where open ≤-Reasoning
+
 small-quotient : (n q : ℕ) → (i : Fin n) → (r : Fin (suc n)) → 
   (eq₁ : suc (toℕ i) ≡ toℕ r + q * suc n) → (q ≡ 0) × (toℕ r ≡ suc (toℕ i))
 small-quotient 0 _ () _ _
-small-quotient (suc n) 0 i r eq = refl , sym  (trans eq (+-right-identity (toℕ r)))
-small-quotient (suc n) (suc q) i r eq = ⊥-elim {!!} -- rather like absurd above
-{--
-n  : ℕ
-q  : ℕ
-i  : Fin (suc n)
-r  : Fin (suc (suc n))
-eq : suc (toℕ i) ≡ toℕ r + suc (suc (n + q * suc (suc n)))
---}
+small-quotient (suc n) 0 i r eq = (refl , sym  (trans eq (+-right-identity (toℕ r))))
+small-quotient (suc n) (suc q) i r eq = ⊥-elim (absurd2 n q i r eq) 
 
 first-row :
   (m n : ℕ) → (f : Fin (suc m) × Fin (suc n) → Fin ((suc m) * (suc n))) → 
