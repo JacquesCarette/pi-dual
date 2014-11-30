@@ -473,6 +473,13 @@ small-quotient : (n q : ℕ) → (i : Fin n) → (r : Fin (suc n)) →
 small-quotient 0 _ () _ _
 small-quotient (suc n) 0 i r eq = refl , sym  (trans eq (+-right-identity (toℕ r)))
 small-quotient (suc n) (suc q) i r eq = ⊥-elim {!!} -- rather like absurd above
+{--
+n  : ℕ
+q  : ℕ
+i  : Fin (suc n)
+r  : Fin (suc (suc n))
+eq : suc (toℕ i) ≡ toℕ r + suc (suc (n + q * suc (suc n)))
+--}
 
 first-row :
   (m n : ℕ) → (f : Fin (suc m) × Fin (suc n) → Fin ((suc m) * (suc n))) → 
