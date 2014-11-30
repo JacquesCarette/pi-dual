@@ -655,7 +655,7 @@ fin-proj-lem :
 fin-proj-lem 0 n ()
 fin-proj-lem (suc m) 0 k = ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero (suc m)) k))
 fin-proj-lem (suc m) (suc n) k with (toℕ k) divMod (suc n)
-... | result q r k≡r+q*sn = ?
+... | result q r k≡r+q*sn = {!!}
 
 lookup-concat :
   ∀ {m n} → (k : Fin (m * n)) → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
