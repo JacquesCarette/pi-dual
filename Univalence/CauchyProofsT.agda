@@ -458,6 +458,27 @@ tabulate-⊥ : ∀ {m n} {g : Fin (m * 0) → Fin n} →
 tabulate-⊥ {0} = refl
 tabulate-⊥ {suc m}{_} {g} = tabulate-⊥ {m}
 
+toℕ-inject+ : ∀ {n k} → (i : Fin n) → toℕ (inject+ k i) ≡ toℕ i
+toℕ-inject+ {Data.Nat.zero} ()
+toℕ-inject+ {suc n} zero = refl
+toℕ-inject+ {suc n} (suc i) = cong suc (toℕ-inject+ i)
+
+first-row : (m n : ℕ) → (f : Fin (suc m) × Fin (suc n) → Fin ((suc m) * (suc n))) → 
+                 tabulate {suc n} (λ x → f (zero , x)) ≡ 
+                 tabulate {suc n} ((λ k →  f (fin-project (suc m) (suc n) k)) ∘ inject+ (m * suc n))
+first-row m n f = 
+  finext ( (λ x → f (zero , x)))
+            ( (λ k →  f (fin-project (suc m) (suc n) k)) ∘ inject+ (m * suc n))
+            pf
+    where
+      pf : (i : Fin (suc n)) →  f (zero , i) ≡  f (fin-project (suc m) (suc n) (inject+ (m * suc n) i))
+      pf zero = refl
+      pf (suc i) with suc (toℕ (inject+ (m * suc n) i)) divMod suc n 
+      pf (suc i) | result quotient remainder property with suc m ≤? quotient
+      pf (suc i) | result quotient remainder property | yes p = 
+                ⊥-elim (absurd m n quotient remainder (suc (inject+ (m * suc n) i)) property p)
+      pf (suc i) | result quotient remainder property | no ¬p = {!!}
+
 tabulate-concat : ∀ {m n} →
   (f : Fin m × Fin n → Fin (m * n)) → 
   concatV (tabulate {m} (λ i → tabulate {n} (λ j → f (i , j)))) ≡
@@ -474,7 +495,7 @@ tabulate-concat {suc m} {suc n} f =
   begin (tabulate {suc n} (λ x → f (zero , x))
          ++V 
          concatV (tabulate {m} (λ i → tabulate {suc n} (λ j → f (suc i , j))))
-      ≡⟨ {!!} ⟩
+      ≡⟨ cong₂ _++V_ (first-row m n f) {!!} ⟩
          tabulate {suc n}
            ((λ k →  f (fin-project (suc m) (suc n) k)) ∘ inject+ (m * suc n))
          ++V
