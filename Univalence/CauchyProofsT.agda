@@ -643,6 +643,17 @@ lookup-concat' (suc m) (suc n) (suc b) (suc d) (s≤s leq) f (i ∷ pm) (j ∷ p
          f (lookup b pm , lookup d pn) ∎)
   where open ≡-Reasoning
 
+fin-proj-lem :
+  (m n : ℕ) (k : Fin (m * n)) →
+  k ≡
+  inject≤
+    (fromℕ (toℕ (proj₁ (fin-project m n k)) * n +
+            toℕ (proj₂ (fin-project m n k))))
+    (i*n+k≤m*n
+      (proj₁ (fin-project m n k))
+      (proj₂ (fin-project m n k)))
+fin-proj-lem = {!!} 
+
 lookup-concat :
   ∀ {m n} → (k : Fin (m * n)) → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
   let vs = concatV
@@ -709,7 +720,71 @@ lookup-concat {suc m} {suc n} (suc k) (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x�
                           (x₃ ∷ qn))
                     (x₁ ∷ qm))
          in lookup (lookup (suc k) vs) ws
-       ≡⟨ {!!} ⟩
+       ≡⟨ cong (λ z →
+                lookup
+                  (lookup z
+                    (concatV
+                      (mapV
+                        (λ b →
+                          mapV
+                            (λ d →
+                              inject≤ (fromℕ (toℕ b * suc n + toℕ d)) (i*n+k≤m*n b d))
+                            (x₂ ∷ pn))
+                        (x ∷ pm))))
+                  (concatV
+                    (mapV
+                      (λ b →
+                        mapV
+                          (λ d →
+                            inject≤ (fromℕ (toℕ b * suc n + toℕ d)) (i*n+k≤m*n b d))
+                          (x₃ ∷ qn))
+                    (x₁ ∷ qm))))
+                  (fin-proj-lem (suc m) (suc n) (suc k)) ⟩
+         let (b' , d') = fin-project (suc m) (suc n) (suc k)
+             vs = concatV
+                    (mapV
+                      (λ b →
+                        mapV
+                          (λ d →
+                            inject≤ (fromℕ (toℕ b * suc n + toℕ d)) (i*n+k≤m*n b d))
+                          (x₂ ∷ pn))
+                      (x ∷ pm))
+             ws = concatV
+                    (mapV
+                      (λ b →
+                        mapV
+                          (λ d →
+                            inject≤ (fromℕ (toℕ b * suc n + toℕ d)) (i*n+k≤m*n b d))
+                          (x₃ ∷ qn))
+                    (x₁ ∷ qm))
+         in lookup
+              (lookup
+                (inject≤ (fromℕ (toℕ b' * (suc n) + toℕ d')) (i*n+k≤m*n b' d'))
+                vs)
+              ws
+       ≡⟨ cong
+            (λ x → lookup x ws)
+            (lookup-concat' (suc m) (suc n) b' d' (i*n+k≤m*n b' d')
+              (λ {(b , d) → inject≤ (fromℕ (toℕ b * suc n + toℕ d)) (i*n+k≤m*n b d)})
+              (x ∷ pm) (x₂ ∷ pn)) ⟩
+         let (b' , d') = fin-project (suc m) (suc n) (suc k)
+             ws = concatV
+                    (mapV
+                      (λ b →
+                        mapV
+                          (λ d →
+                            inject≤ (fromℕ (toℕ b * suc n + toℕ d)) (i*n+k≤m*n b d))
+                          (x₃ ∷ qn))
+                    (x₁ ∷ qm))
+         in lookup
+              (inject≤
+                (fromℕ (toℕ (lookup b' (x ∷ pm)) * suc n + toℕ (lookup d' (x₂ ∷ pn))))
+                (i*n+k≤m*n (lookup b' (x ∷ pm)) (lookup d' (x₂ ∷ pn))))
+              ws
+       ≡⟨ lookup-concat' (suc m) (suc n) (lookup b' (x ∷ pm)) (lookup d' (x₂ ∷ pn))
+             (i*n+k≤m*n (lookup b' (x ∷ pm)) (lookup d' (x₂ ∷ pn)))
+             (λ {(b , d) → inject≤ (fromℕ (toℕ b * suc n + toℕ d)) (i*n+k≤m*n b d)})
+             (x₁ ∷ qm) (x₃ ∷ qn) ⟩
          let (b , d) = fin-project (suc m) (suc n) (suc k)
              r = lookup (lookup b (x ∷ pm)) (x₁ ∷ qm)
              s = lookup (lookup d (x₂ ∷ pn)) (x₃ ∷ qn)
