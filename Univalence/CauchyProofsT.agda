@@ -2,7 +2,7 @@
 
 module CauchyProofsT where
 
--- Proofs about permutations defined in module Cauchy
+-- Proofs about permutations defined in module Cauchy (multiplicative)
 
 open import Level using (Level; _⊔_) renaming (zero to lzero; suc to lsuc)
 
@@ -31,7 +31,8 @@ open import Data.Fin
   using (Fin; zero; suc; toℕ; fromℕ; fromℕ≤; _ℕ-_; _≺_; reduce≥; 
          raise; inject+; inject₁; inject≤; _≻toℕ_) 
   renaming (_+_ to _F+_)
-open import Data.Fin.Properties using (bounded; inject+-lemma; to-from)
+open import Data.Fin.Properties
+  using (bounded; inject+-lemma; to-from; toℕ-injective; inject≤-lemma)
 open import Data.Vec.Properties 
   using (lookup∘tabulate; tabulate∘lookup; lookup-allFin; tabulate-∘; 
          tabulate-allFin; allFin-map; lookup-++-inject+; lookup-++-≥)
@@ -463,15 +464,17 @@ toℕ-inject+ {Data.Nat.zero} ()
 toℕ-inject+ {suc n} zero = refl
 toℕ-inject+ {suc n} (suc i) = cong suc (toℕ-inject+ i)
 
-first-row : (m n : ℕ) → (f : Fin (suc m) × Fin (suc n) → Fin ((suc m) * (suc n))) → 
-                 tabulate {suc n} (λ x → f (zero , x)) ≡ 
-                 tabulate {suc n} ((λ k →  f (fin-project (suc m) (suc n) k)) ∘ inject+ (m * suc n))
+first-row :
+  (m n : ℕ) → (f : Fin (suc m) × Fin (suc n) → Fin ((suc m) * (suc n))) → 
+  tabulate {suc n} (λ x → f (zero , x)) ≡ 
+  tabulate {suc n} ((λ k →  f (fin-project (suc m) (suc n) k)) ∘ inject+ (m * suc n))
 first-row m n f = 
   finext ( (λ x → f (zero , x)))
             ( (λ k →  f (fin-project (suc m) (suc n) k)) ∘ inject+ (m * suc n))
             pf
     where
-      pf : (i : Fin (suc n)) →  f (zero , i) ≡  f (fin-project (suc m) (suc n) (inject+ (m * suc n) i))
+      pf : (i : Fin (suc n)) →  f (zero , i) ≡
+           f (fin-project (suc m) (suc n) (inject+ (m * suc n) i))
       pf zero = refl
       pf (suc i) with suc (toℕ (inject+ (m * suc n) i)) divMod suc n 
       pf (suc i) | result q r property with suc m ≤? q
@@ -675,10 +678,35 @@ fin-proj-lem :
       (proj₂ (fin-project m n k)))
 fin-proj-lem 0 n ()
 fin-proj-lem (suc m) 0 k = ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero (suc m)) k))
-fin-proj-lem (suc m) (suc n) k with (toℕ k) divMod (suc n)
+fin-proj-lem (suc m) (suc n) k with _divMod_ (toℕ k) (suc n) {_}
 ... | result q r k≡r+q*sn with suc m ≤? q
-... | yes p = {!!}
-... | no ¬p = {!!}
+... | yes p = ⊥-elim (absurd m n q r k k≡r+q*sn p)
+... | no ¬p = toℕ-injective toℕk≡
+  where toℕk≡ = begin (toℕ k
+                  ≡⟨ k≡r+q*sn ⟩
+                       toℕ r + q * suc n
+                  ≡⟨ +-comm (toℕ r) (q * suc n) ⟩ 
+                       q * suc n + toℕ r
+                  ≡⟨ {!!} ⟩ 
+                       toℕ (fromℕ≤ (≰⇒> ¬p)) * suc n + toℕ r
+                  ≡⟨ sym (to-from (toℕ (fromℕ≤ (≰⇒> ¬p)) * suc n + toℕ r)) ⟩
+                       toℕ (fromℕ (toℕ (fromℕ≤ (≰⇒> ¬p)) * suc n + toℕ r))
+                  ≡⟨ sym
+                       (inject≤-lemma
+                         (fromℕ (toℕ (fromℕ≤ (≰⇒> ¬p)) * suc n + toℕ r))
+                         (i*n+k≤m*n (fromℕ≤ {q} {suc m} (≰⇒> ¬p)) r)) ⟩ 
+                       toℕ
+                         (inject≤
+                           (fromℕ (toℕ (fromℕ≤ (≰⇒> ¬p)) * suc n + toℕ r))
+                           (i*n+k≤m*n (fromℕ≤ {q} {suc m} (≰⇒> ¬p)) r)) 
+                  ≡⟨ {!!} ⟩ 
+                       toℕ
+                         (inject≤
+                           (fromℕ
+                             (toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc n + toℕ r))
+                           (i*n+k≤m*n
+                             (fromℕ≤ {q} {suc m} (s≤s (≤-pred (≰⇒> ¬p)))) r)) ∎)
+                where open ≡-Reasoning
 
 lookup-concat :
   ∀ {m n} → (k : Fin (m * n)) → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
