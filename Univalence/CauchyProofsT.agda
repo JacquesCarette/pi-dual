@@ -474,10 +474,10 @@ first-row m n f =
       pf : (i : Fin (suc n)) →  f (zero , i) ≡  f (fin-project (suc m) (suc n) (inject+ (m * suc n) i))
       pf zero = refl
       pf (suc i) with suc (toℕ (inject+ (m * suc n) i)) divMod suc n 
-      pf (suc i) | result quotient remainder property with suc m ≤? quotient
-      pf (suc i) | result quotient remainder property | yes p = 
-                ⊥-elim (absurd m n quotient remainder (suc (inject+ (m * suc n) i)) property p)
-      pf (suc i) | result quotient remainder property | no ¬p = {!!}
+      pf (suc i) | result q r property with suc m ≤? q
+      pf (suc i) | result q r property | yes p = 
+                ⊥-elim (absurd m n q r (suc (inject+ (m * suc n) i)) property p)
+      pf (suc i) | result q r property | no ¬p = {!!}
 
 tabulate-concat : ∀ {m n} →
   (f : Fin m × Fin n → Fin (m * n)) → 
@@ -676,7 +676,9 @@ fin-proj-lem :
 fin-proj-lem 0 n ()
 fin-proj-lem (suc m) 0 k = ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero (suc m)) k))
 fin-proj-lem (suc m) (suc n) k with (toℕ k) divMod (suc n)
-... | result q r k≡r+q*sn = {!!}
+... | result q r k≡r+q*sn with suc m ≤? q
+... | yes p = {!!}
+... | no ¬p = {!!}
 
 lookup-concat :
   ∀ {m n} → (k : Fin (m * n)) → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
