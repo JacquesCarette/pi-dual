@@ -32,7 +32,7 @@ open import Data.Fin
          raise; inject+; inject₁; inject≤; _≻toℕ_) 
   renaming (_+_ to _F+_)
 open import Data.Fin.Properties
-  using (bounded; inject+-lemma; to-from; toℕ-injective; inject≤-lemma)
+  using (bounded; inject+-lemma; to-from; toℕ-injective; inject≤-lemma; toℕ-fromℕ≤)
 open import Data.Vec.Properties 
   using (lookup∘tabulate; tabulate∘lookup; lookup-allFin; tabulate-∘; 
          tabulate-allFin; allFin-map; lookup-++-inject+; lookup-++-≥)
@@ -667,6 +667,10 @@ lookup-concat' (suc m) (suc n) (suc b) (suc d) (s≤s leq) f (i ∷ pm) (j ∷ p
          f (lookup b pm , lookup d pn) ∎)
   where open ≡-Reasoning
 
+q≡ : (m : ℕ) (q : ℕ) (¬p : ¬ suc m ≤ q) → 
+  q ≡ toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p))))
+q≡ m q ¬p = sym (toℕ-fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p))))
+
 fin-proj-lem :
   (m n : ℕ) (k : Fin (m * n)) →
   k ≡
@@ -687,19 +691,19 @@ fin-proj-lem (suc m) (suc n) k with _divMod_ (toℕ k) (suc n) {_}
                        toℕ r + q * suc n
                   ≡⟨ +-comm (toℕ r) (q * suc n) ⟩ 
                        q * suc n + toℕ r
-                  ≡⟨ {!!} ⟩ 
-                       toℕ (fromℕ≤ (≰⇒> ¬p)) * suc n + toℕ r
-                  ≡⟨ sym (to-from (toℕ (fromℕ≤ (≰⇒> ¬p)) * suc n + toℕ r)) ⟩
-                       toℕ (fromℕ (toℕ (fromℕ≤ (≰⇒> ¬p)) * suc n + toℕ r))
+                  ≡⟨ cong
+                        (λ x → x * suc n + toℕ r)
+                        (q≡ m q ¬p) ⟩ 
+                       toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc n + toℕ r
+                  ≡⟨ sym (to-from
+                           (toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc n + toℕ r)) ⟩
+                       toℕ (fromℕ
+                             (toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc n + toℕ r))
                   ≡⟨ sym
                        (inject≤-lemma
-                         (fromℕ (toℕ (fromℕ≤ (≰⇒> ¬p)) * suc n + toℕ r))
-                         (i*n+k≤m*n (fromℕ≤ {q} {suc m} (≰⇒> ¬p)) r)) ⟩ 
-                       toℕ
-                         (inject≤
-                           (fromℕ (toℕ (fromℕ≤ (≰⇒> ¬p)) * suc n + toℕ r))
-                           (i*n+k≤m*n (fromℕ≤ {q} {suc m} (≰⇒> ¬p)) r)) 
-                  ≡⟨ {!!} ⟩ 
+                         (fromℕ
+                           (toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc n + toℕ r))
+                         (i*n+k≤m*n (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) r)) ⟩ 
                        toℕ
                          (inject≤
                            (fromℕ
