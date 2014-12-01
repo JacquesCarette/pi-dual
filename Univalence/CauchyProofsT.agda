@@ -510,7 +510,8 @@ first-row m n f =
       pf (suc i) | result q r property with suc m ≤? q
       pf (suc i) | result q r property | yes p = 
                 ⊥-elim (absurd m n q r (suc (inject+ (m * suc n) i)) property p)
-      pf (suc i) | result q r property | no ¬p = cong f (cong₂ _,_ (toℕ-injective (sym a₁)) a₂)
+      pf (suc i) | result q r property | no ¬p =
+                cong f (cong₂ _,_ (toℕ-injective (sym a₁)) a₂)
         where
            q≡f₁ : q ≡ toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p))))
            q≡f₁ = q≡ m q ¬p
