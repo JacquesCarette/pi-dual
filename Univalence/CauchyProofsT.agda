@@ -510,20 +510,18 @@ first-row m n f =
       pf (suc i) | result q r property with suc m ≤? q
       pf (suc i) | result q r property | yes p = 
                 ⊥-elim (absurd m n q r (suc (inject+ (m * suc n) i)) property p)
-      pf (suc i) | result q r property | no ¬p = cong f {!!}
+      pf (suc i) | result q r property | no ¬p = cong f (cong₂ _,_ (toℕ-injective (sym a₁)) a₂)
         where
-           si≤n : suc (toℕ i) ≤ n
-           si≤n = bounded' n (suc i)
            q≡f₁ : q ≡ toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p))))
            q≡f₁ = q≡ m q ¬p
            si≡f₂ : _≡_ {A = ℕ} (suc (toℕ (inject+ (m * suc n) i)))  (suc (toℕ i))
            si≡f₂ = cong suc (toℕ-inject+ {k = m * suc n} i)
            sq : (q ≡ Data.Nat.zero) × (toℕ r ≡ suc (toℕ i))
            sq = small-quotient n q i r (trans (sym si≡f₂) property)
-           a₁ : toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) ≡ Data.Nat.zero
+           a₁ : toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) ≡ toℕ {suc q} zero
            a₁ = trans (sym q≡f₁) (proj₁ sq)
-           a₂ : suc (toℕ i) ≡ toℕ r
-           a₂ = sym (proj₂ sq)
+           a₂ :  (suc i) ≡ r
+           a₂ = toℕ-injective (sym (proj₂ sq))
 
 tabulate-concat : ∀ {m n} →
   (f : Fin m × Fin n → Fin (m * n)) → 
