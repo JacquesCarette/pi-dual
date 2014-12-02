@@ -118,7 +118,8 @@ swap⋆idemp (suc (suc m)) 1 =
          (subst Cauchy (*-comm 1 (suc (suc m)))
            (subst Cauchy (sym (+-right-identity (suc (suc m))))
              (idcauchy (suc (suc m)))))
-           ≡⟨ cong₂ (λ x y → scompcauchy x (subst Cauchy (*-comm 1 (suc (suc m))) y))
+           ≡⟨ cong₂ 
+                (λ x y → scompcauchy x (subst Cauchy (*-comm 1 (suc (suc m))) y))
                 (subst-allFin (sym (i*1≡i (suc (suc m)))))
                 (subst-allFin (sym (+-right-identity (suc (suc m))))) ⟩ 
          scompcauchy
@@ -148,6 +149,7 @@ swap⋆idemp (suc (suc m)) (suc (suc n)) =
                (mapV 
                  (λ d → mapV (λ b → transposeIndex n m d b) (allFin (suc (suc m))))
                  (allFin (suc (suc n))))))
+
          ≡⟨ {!!} ⟩ 
           concatV 
             (mapV 
