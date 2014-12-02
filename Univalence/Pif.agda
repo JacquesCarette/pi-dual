@@ -56,6 +56,7 @@ open import Cauchy
 open import Proofs
 open import CauchyProofs
 open import CauchyProofsT
+open import CauchyProofsS
 open import Groupoid
 
 ------------------------------------------------------------------------------
@@ -804,7 +805,7 @@ linv∼ {TIMES t₁ t₂} {TIMES .t₂ .t₁} {swap⋆} =
            (swap⋆cauchy (size t₁) (size t₂))
            (subst Cauchy (*-comm (size t₂) (size t₁)) 
              (swap⋆cauchy (size t₂) (size t₁)))
-           ≡⟨ {!!} ⟩ 
+           ≡⟨ swap⋆idemp (size t₁) (size t₂) ⟩ 
          c2cauchy {TIMES t₁ t₂} id⟷ ∎)
   where open ≡-Reasoning
 linv∼ {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} {assocl⋆} = 
@@ -1207,7 +1208,16 @@ rinv∼ {t} {TIMES ONE .t} {uniti⋆} =
            ≡⟨ scomplid (idcauchy (size t + 0)) ⟩ 
          c2cauchy {TIMES ONE t} id⟷ ∎)
   where open ≡-Reasoning
-rinv∼ {TIMES t₁ t₂} {TIMES .t₂ .t₁} {swap⋆} = {!!}
+rinv∼ {TIMES t₁ t₂} {TIMES .t₂ .t₁} {swap⋆} =
+  begin (c2cauchy {TIMES t₂ t₁} (swap⋆ ◎ swap⋆)
+           ≡⟨ refl ⟩ 
+         scompcauchy 
+           (swap⋆cauchy (size t₂) (size t₁))
+           (subst Cauchy (*-comm (size t₁) (size t₂)) 
+             (swap⋆cauchy (size t₁) (size t₂)))
+           ≡⟨ swap⋆idemp (size t₂) (size t₁) ⟩ 
+         c2cauchy {TIMES t₂ t₁} id⟷ ∎)
+  where open ≡-Reasoning
 rinv∼ {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} {assocl⋆} = 
   begin (c2cauchy {TIMES (TIMES t₁ t₂) t₃} (assocr⋆ ◎ assocl⋆)
            ≡⟨ refl ⟩ 
@@ -1459,7 +1469,41 @@ rinv∼ {PLUS t₁ t₂} {PLUS t₃ t₄} {c₁ ⊕ c₂} =
            ≡⟨ pcomp-id {size t₃} {size t₄} ⟩ 
          c2cauchy {PLUS t₃ t₄} id⟷ ∎)
   where open ≡-Reasoning
-rinv∼ {TIMES t₁ t₂} {TIMES t₃ t₄} {c₁ ⊗ c₂} = {!!}
+rinv∼ {TIMES t₁ t₂} {TIMES t₃ t₄} {c₁ ⊗ c₂} =
+  begin (c2cauchy {TIMES t₃ t₄} (((! c₁) ⊗ (! c₂)) ◎ (c₁ ⊗ c₂))
+           ≡⟨ refl ⟩ 
+         scompcauchy
+           (tcompcauchy (c2cauchy (! c₁)) (c2cauchy (! c₂)))
+           (subst Cauchy (cong₂ _*_ (size≡! (! c₁)) (size≡! (! c₂)))
+             (tcompcauchy (c2cauchy c₁) (c2cauchy c₂)))
+           ≡⟨ cong 
+                (scompcauchy (tcompcauchy (c2cauchy (! c₁)) (c2cauchy (! c₂))))
+                (subst₂*
+                  (size≡! (! c₁)) (size≡! (! c₂))
+                  (c2cauchy c₁) (c2cauchy c₂)
+                  tcompcauchy) ⟩ 
+         scompcauchy 
+           (tcompcauchy (c2cauchy (! c₁)) (c2cauchy (! c₂)))
+           (tcompcauchy
+             (subst Cauchy (size≡! (! c₁)) (c2cauchy c₁))
+             (subst Cauchy (size≡! (! c₂)) (c2cauchy c₂)))
+           ≡⟨ tcomp-dist
+                (c2cauchy (! c₁))
+                (subst Cauchy (size≡! (! c₁)) (c2cauchy c₁))
+                (c2cauchy (! c₂))
+                (subst Cauchy (size≡! (! c₂)) (c2cauchy c₂)) ⟩
+         tcompcauchy
+           (scompcauchy 
+             (c2cauchy (! c₁))
+             (subst Cauchy (size≡! (! c₁)) (c2cauchy c₁)))
+           (scompcauchy 
+             (c2cauchy (! c₂))
+             (subst Cauchy (size≡! (! c₂)) (c2cauchy c₂)))
+           ≡⟨ cong₂ tcompcauchy (rinv∼ {t₁} {t₃} {c₁}) (rinv∼ {t₂} {t₄} {c₂}) ⟩ 
+         tcompcauchy (c2cauchy {t₃} id⟷) (c2cauchy {t₄} id⟷)
+            ≡⟨ tcomp-id {size t₁} {size t₂} ⟩
+         c2cauchy {TIMES t₃ t₄} id⟷ ∎)
+  where open ≡-Reasoning
 rinv∼ {PLUS ONE ONE} {BOOL} {foldBool} = 
   begin (c2cauchy {BOOL} (unfoldBool ◎ foldBool)
            ≡⟨ refl ⟩ 
