@@ -62,6 +62,16 @@ open import Proofs
 open import Cauchy
 open import CauchyProofs
 -- open import CauchyProofsT
+-- uncomment import and delete postulate
+postulate
+  allFin* : (m n : ℕ) → allFin (m * n) ≡ 
+          concatV 
+            (mapV 
+              (λ b → 
+                mapV
+                  (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                  (idcauchy n))
+            (idcauchy m))
 
 ------------------------------------------------------------------------------
 -- Main lemma swap⋆idemp
@@ -149,7 +159,81 @@ swap⋆idemp (suc (suc m)) (suc (suc n)) =
                (mapV 
                  (λ d → mapV (λ b → transposeIndex n m d b) (allFin (suc (suc m))))
                  (allFin (suc (suc n))))))
-
+         ≡⟨ refl ⟩ 
+           tabulate {suc (suc m) * suc (suc n)} (λ i →
+             lookup
+               (lookup i
+                 (concatV 
+                   (mapV 
+                     (λ b →
+                       mapV
+                         (λ d → transposeIndex m n b d)
+                         (allFin (suc (suc n))))
+                     (allFin (suc (suc m))))))
+               (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
+                 (concatV 
+                   (mapV 
+                     (λ d →
+                       mapV
+                         (λ b → transposeIndex n m d b)
+                         (allFin (suc (suc m))))
+                     (allFin (suc (suc n)))))))
+         ≡⟨ tabulate-++ {suc (suc n)} {suc m * suc (suc n)}
+            (λ i →
+             lookup
+               (lookup i
+                 (concatV 
+                   (mapV 
+                     (λ b →
+                       mapV
+                         (λ d → transposeIndex m n b d)
+                         (allFin (suc (suc n))))
+                     (allFin (suc (suc m))))))
+               (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
+                 (concatV 
+                   (mapV 
+                     (λ d →
+                       mapV
+                         (λ b → transposeIndex n m d b)
+                         (allFin (suc (suc m))))
+                     (allFin (suc (suc n))))))) ⟩ 
+           tabulate {suc (suc n)} (λ i →
+             lookup
+               (lookup (inject+ (suc m * suc (suc n)) i)
+                 (concatV 
+                   (mapV 
+                     (λ b →
+                       mapV
+                         (λ d → transposeIndex m n b d)
+                         (allFin (suc (suc n))))
+                     (allFin (suc (suc m))))))
+               (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
+                 (concatV 
+                   (mapV 
+                     (λ d →
+                       mapV
+                         (λ b → transposeIndex n m d b)
+                         (allFin (suc (suc m))))
+                     (allFin (suc (suc n)))))))
+           ++V
+           tabulate {suc m * suc (suc n)} (λ i →
+             lookup
+               (lookup (raise (suc (suc n)) i)
+                 (concatV 
+                   (mapV 
+                     (λ b →
+                       mapV
+                         (λ d → transposeIndex m n b d)
+                         (allFin (suc (suc n))))
+                     (allFin (suc (suc m))))))
+               (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
+                 (concatV 
+                   (mapV 
+                     (λ d →
+                       mapV
+                         (λ b → transposeIndex n m d b)
+                         (allFin (suc (suc m))))
+                     (allFin (suc (suc n)))))))
          ≡⟨ {!!} ⟩ 
           concatV 
             (mapV 
@@ -158,15 +242,16 @@ swap⋆idemp (suc (suc m)) (suc (suc n)) =
                   (λ d → inject≤
                            (fromℕ (toℕ b * (suc (suc n)) + toℕ d))
                            (i*n+k≤m*n b d))
-                  (idcauchy (suc (suc n))))
-              (idcauchy (suc (suc m))))
---         ≡⟨ sym (allFin* (suc (suc m)) (suc (suc n))) ⟩
-         ≡⟨ {!!} ⟩ 
+                  (allFin (suc (suc n))))
+              (allFin (suc (suc m))))
+         ≡⟨ sym (allFin* (suc (suc m)) (suc (suc n))) ⟩
          allFin (suc (suc m) * suc (suc n)) ∎)
   where open ≡-Reasoning
 
 ------------------------------------------------------------------------------
 {--
+transposeIndex m n zero zero ≡
+  inject≤ zero (i≤si (suc (n + suc (suc (n + m * suc (suc n)))))) ∷ 
 
 scompcauchy : ∀ {n} → Cauchy n → Cauchy n → Cauchy n
 scompcauchy {n} perm₁ perm₂ = 
@@ -205,4 +290,55 @@ allFin* : (m n : ℕ) → allFin (m * n) ≡
                   (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
                   (idcauchy n))
             (idcauchy m))
+
+
+
+         ≡⟨ {!!} ⟩ 
+         scompcauchy
+           (concatV
+             (
+              (
+               transposeIndex m n zero zero ∷
+               transposeIndex m n zero (suc zero) ∷
+               mapV
+                 (λ d → transposeIndex m n zero d)
+                 (mapV (λ a → (suc (suc a))) (allFin n)))
+             ∷ 
+             (mapV 
+               (λ b → mapV (λ d → transposeIndex m n b d) (allFin (suc (suc n))))
+               (suc zero ∷ mapV (λ a → suc (suc a)) (allFin m)))))
+           (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
+             (concatV 
+               (mapV 
+                 (λ d → mapV (λ b → transposeIndex n m d b) (allFin (suc (suc m))))
+                 (zero ∷ suc zero ∷ mapV (λ a → suc (suc a)) (allFin n)))))
+         ≡⟨ {!!} ⟩ 
+          concatV 
+            (
+             (zero ∷ 
+              suc zero ∷ 
+              mapV
+                (λ d → inject≤ (fromℕ (toℕ d)) {!!})
+                (mapV (λ a → suc (suc a)) (idcauchy n)))
+             ∷
+             (mapV 
+                (λ b → 
+                   mapV
+                      (λ d → inject≤
+                               (fromℕ (toℕ b * (suc (suc n)) + toℕ d))
+                               (i*n+k≤m*n b d))
+                      (zero ∷ suc zero ∷ mapV (λ a → suc (suc a)) (idcauchy n)))
+                (suc zero ∷ mapV (λ a → suc (suc a)) (idcauchy m))))
+         ≡⟨ {!!} ⟩ 
+          concatV 
+            (mapV 
+              (λ b → 
+                mapV
+                  (λ d → inject≤
+                           (fromℕ (toℕ b * (suc (suc n)) + toℕ d))
+                           (i*n+k≤m*n b d))
+                  (zero ∷ suc zero ∷ mapV (λ a → suc (suc a)) (idcauchy n)))
+              (zero ∷ suc zero ∷ mapV (λ a → suc (suc a)) (idcauchy m)))
+
+
 --}
