@@ -80,6 +80,22 @@ subst-allFin : ∀ {m n} → (eq : m ≡ n) →
   subst Cauchy eq (allFin m) ≡ allFin n
 subst-allFin refl = refl
 
+concat-simplify : {A : Set} → (m n : ℕ) →
+  (f : Fin (suc m) → Vec A (suc n)) → 
+  concatV (mapV f (allFin (suc m))) ≡
+  f zero ++V concatV (mapV f (mapV suc (allFin m)))
+concat-simplify m n f = 
+  begin (concatV (mapV f (allFin (suc m)))
+        ≡⟨ cong
+             (λ x → concatV (mapV f x))
+             (allFin-map m) ⟩ 
+         concatV (mapV f (zero ∷ mapV suc (allFin m)))
+        ≡⟨ refl ⟩
+         concatV (f zero ∷ mapV f (mapV suc (allFin m)))
+        ≡⟨ refl ⟩
+          f zero ++V concatV (mapV f (mapV suc (allFin m))) ∎)
+  where open ≡-Reasoning
+
 swap⋆idemp : (m n : ℕ) → 
   scompcauchy 
     (swap⋆cauchy m n) 
@@ -235,6 +251,55 @@ swap⋆idemp (suc (suc m)) (suc (suc n)) =
                          (allFin (suc (suc m))))
                      (allFin (suc (suc n)))))))
          ≡⟨ {!!} ⟩ 
+           tabulate {suc (suc n)} (λ i →
+             lookup
+               (lookup (inject+ (suc m * suc (suc n)) i)
+
+
+
+
+                 (concatV 
+                   (mapV 
+                     (λ b →
+                       mapV
+                         (λ d → transposeIndex m n b d)
+                         (allFin (suc (suc n))))
+                     (allFin (suc (suc m)))))
+
+
+
+
+
+
+                     )
+               (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
+                 (concatV 
+                   (mapV 
+                     (λ d →
+                       mapV
+                         (λ b → transposeIndex n m d b)
+                         (allFin (suc (suc m))))
+                     (allFin (suc (suc n)))))))
+           ++V
+           tabulate {suc m * suc (suc n)} (λ i →
+             lookup
+               (lookup (raise (suc (suc n)) i)
+                 (concatV 
+                   (mapV 
+                     (λ b →
+                       mapV
+                         (λ d → transposeIndex m n b d)
+                         (allFin (suc (suc n))))
+                     (allFin (suc (suc m))))))
+               (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
+                 (concatV 
+                   (mapV 
+                     (λ d →
+                       mapV
+                         (λ b → transposeIndex n m d b)
+                         (allFin (suc (suc m))))
+                     (allFin (suc (suc n)))))))
+         ≡⟨ {!!} ⟩ 
           concatV 
             (mapV 
               (λ b → 
@@ -250,6 +315,12 @@ swap⋆idemp (suc (suc m)) (suc (suc n)) =
 
 ------------------------------------------------------------------------------
 {--
+lookup-subst : ∀ {m m' n} 
+  (i : Fin n) (xs : Vec (Fin m) n) (eq : m ≡ m') → 
+  lookup i (subst (λ s → Vec (Fin s) n) eq xs) ≡ 
+  subst Fin eq (lookup i xs)
+
+
 transposeIndex m n zero zero ≡
   inject≤ zero (i≤si (suc (n + suc (suc (n + m * suc (suc n)))))) ∷ 
 
