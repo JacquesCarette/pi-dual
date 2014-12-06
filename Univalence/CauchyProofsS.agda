@@ -127,6 +127,28 @@ concat-simplify-raise m n i f =
          lookup i (concatV (mapV (λ a → f (suc a)) (allFin (suc m)))) ∎) 
   where open ≡-Reasoning
 
+lookup-subst-1 : ∀ {m m'} 
+  (i : Fin m') (xs : Vec (Fin m) m) (eq : m ≡ m') (eq' : m' ≡ m)
+  (irr : sym eq ≡ eq') → 
+  lookup i (subst (λ s → Vec (Fin s) s) eq xs) ≡ 
+  subst Fin eq (lookup (subst Fin eq' i) xs)
+lookup-subst-1 i xs refl .refl refl = refl 
+
+subst-fin : (m n : ℕ) (b : Fin m) (d : Fin n) →
+  (eq  : suc (toℕ b * n + toℕ d) ≤ m * n)
+  (eq' : suc (toℕ d * m + toℕ b) ≤ n * m) → 
+  subst Fin (*-comm n m)
+    (inject≤ (fromℕ (toℕ d * m + toℕ b)) eq')
+  ≡ inject≤ (fromℕ (toℕ b * n + toℕ d)) eq
+subst-fin 0 0 () d eq eq'
+subst-fin 0 (suc n) () d eq eq'
+subst-fin (suc m) 0 zero () eq eq'
+subst-fin (suc m) 0 (suc b) () eq eq'
+subst-fin (suc m) (suc n) zero zero (s≤s z≤n) (s≤s z≤n) = {!!}
+subst-fin (suc m) (suc n) zero (suc d) (s≤s eq) (s≤s eq') = {!!}
+subst-fin (suc m) (suc n) (suc b) zero (s≤s eq) (s≤s eq') = {!!}
+subst-fin (suc m) (suc n) (suc b) (suc d) (s≤s eq) (s≤s eq') = {!!} 
+
 lookup-swap-2 :
   (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
   lookup
@@ -134,7 +156,59 @@ lookup-swap-2 :
     (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
       (concatV
         (mapV
-          (λ b₁ → mapV (transposeIndex n m b₁) (allFin (suc (suc m))))
+          (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
+          (allFin (suc (suc n)))))) ≡
+  inject≤
+    (fromℕ (toℕ b * suc (suc n) + toℕ d))
+    (i*n+k≤m*n b d)
+lookup-swap-2 m n b d = 
+  begin (lookup
+           (transposeIndex m n b d)
+           (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
+             (concatV
+               (mapV
+                 (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
+                 (allFin (suc (suc n))))))
+         ≡⟨ lookup-subst-1
+              (transposeIndex m n b d)
+              (concatV
+                (mapV
+                  (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
+                  (allFin (suc (suc n)))))
+              (*-comm (suc (suc n)) (suc (suc m)))
+              (*-comm (suc (suc m)) (suc (suc n)))
+              (proof-irrelevance
+                (sym (*-comm (suc (suc n)) (suc (suc m))))
+                (*-comm (suc (suc m)) (suc (suc n)))) ⟩ 
+         subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
+           (lookup
+             (subst Fin (*-comm (suc (suc m)) (suc (suc n)))
+               (transposeIndex m n b d))
+             (concatV
+               (mapV
+                 (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
+                 (allFin (suc (suc n))))))
+         ≡⟨ {!!} ⟩ 
+         subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
+           (inject≤
+             (fromℕ (toℕ d * suc (suc m) + toℕ b))
+             (i*n+k≤m*n d b))
+         ≡⟨ subst-fin (suc (suc m)) (suc (suc n)) b d
+              (i*n+k≤m*n b d) (i*n+k≤m*n d b) ⟩ 
+         inject≤
+           (fromℕ (toℕ b * suc (suc n) + toℕ d))
+           (i*n+k≤m*n b d) ∎)
+  where open ≡-Reasoning
+
+{--
+lookup-swap-2 :
+  (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
+  lookup
+    (transposeIndex m n b d)
+    (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
+      (concatV
+        (mapV
+          (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
           (allFin (suc (suc n)))))) ≡
   inject≤
     (fromℕ (toℕ b * suc (suc n) + toℕ d))
@@ -171,13 +245,6 @@ lookup-swap-2 m n b d | yes p= =
            (fromℕ (toℕ b * suc (suc n) + toℕ d))
            (i*n+k≤m*n b d) ∎)
   where open ≡-Reasoning
-{--
-lookup-subst-1 : ∀ {m m'} 
-  (i : Fin m') (xs : Vec (Fin m) m) (eq : m ≡ m') → 
-  lookup i (subst (λ s → Vec (Fin s) s) eq xs) ≡ 
-  subst Fin eq (lookup (subst Fin (sym eq) i) xs)
-lookup-subst-1 i xs refl = refl 
---}
 lookup-swap-2 m n b d | no p≠ = 
   begin (lookup
            (inject≤
@@ -194,6 +261,7 @@ lookup-swap-2 m n b d | no p≠ =
            (fromℕ (toℕ b * suc (suc n) + toℕ d))
            (i*n+k≤m*n b d) ∎)
   where open ≡-Reasoning
+--}
 
 lookup-swap-1 :
   (m n : ℕ) → (b  : Fin (suc (suc m))) → (d  : Fin (suc (suc n))) → 
