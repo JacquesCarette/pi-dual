@@ -13,13 +13,15 @@ open import Relation.Binary.PropositionalEquality.TrustMe
   using (trustMe)
 open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
 open import Data.Nat.Properties
-  using (m≤m+n; n≤m+n; n≤1+n; cancel-+-left; cancel-*-right;
-         cancel-*-right-≤; ≰⇒>; ¬i+1+j≤i)
+  using (m≤m+n; n≤m+n; n≤1+n; cancel-+-left; cancel-*-right; strictTotalOrder; 
+         cancel-*-right-≤; ≰⇒>; ¬i+1+j≤i; 1+n≰n)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
 open import Data.Nat.DivMod using (DivMod; result; _divMod_; _div_; _mod_)
-open import Relation.Binary using (Rel; Decidable; Setoid)
+open import Relation.Binary
+  using (Rel; Decidable; Setoid; StrictTotalOrder; IsStrictTotalOrder;
+         tri<; tri≈; tri>)
 open import Relation.Binary.Core using (Transitive)
 
 open import Data.String using (String)
@@ -153,13 +155,16 @@ transposeIndex' m n b d b≡ d≡ | no i≠ = ⊥-elim (i≠ contra)
                         suc (suc m) * suc (suc n) ∎)
                  where open ≡-Reasoning
 
+cmp = IsStrictTotalOrder.compare (StrictTotalOrder.isStrictTotalOrder strictTotalOrder)
+
 max-b-d : (m n : ℕ) → (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) →
   (p= : suc (toℕ b * suc (suc n) + toℕ d) ≡ suc (suc m) * suc (suc n)) → 
   (toℕ b ≡ suc m × toℕ d ≡ suc n)
-max-b-d m n b d p= with toℕ b ≟ suc m | toℕ d ≟ suc n
-max-b-d m n b d p= | yes b= | yes d= = (b= , d=)
-max-b-d m n b d p= | no ¬b= | yes d= = ⊥-elim
-  (¬b= (cancel-+-left 1 (cancel-*-right (suc (toℕ b)) (suc (suc m)) {suc n} contra)))
+max-b-d m n b d p= with cmp (toℕ b) (suc m) | cmp (toℕ d) (suc n)
+max-b-d m n b d p= | tri< a ¬b ¬c | tri< a₁ ¬b₁ ¬c₁ = {!!}
+max-b-d m n b d p= | tri< a ¬b= ¬c | tri≈ ¬a d= ¬c₁ =
+  ⊥-elim (¬b= (cancel-+-left 1
+    (cancel-*-right (suc (toℕ b)) (suc (suc m)) {suc n} contra)))
   where
     contra : suc (toℕ b) * suc (suc n) ≡ suc (suc m) * suc (suc n)
     contra = begin (suc (toℕ b) * suc (suc n)
@@ -174,8 +179,11 @@ max-b-d m n b d p= | no ¬b= | yes d= = ⊥-elim
                    ≡⟨  p= ⟩
                    suc (suc m) * suc (suc n) ∎)
              where open ≡-Reasoning
-max-b-d m n b d p= | yes b= | no ¬d= = ⊥-elim
-  (¬d= (cancel-+-left 1 (cancel-+-left (suc m * suc (suc n)) contra))) 
+max-b-d m n b d p= | tri< a ¬b ¬c | tri> ¬a ¬b₁ c =
+  ⊥-elim (1+n≰n (trans≤ (bounded d) c))
+max-b-d m n b d p= | tri≈ ¬a b= ¬c | tri< a ¬d= ¬c₁ =
+  ⊥-elim (¬d= (cancel-+-left 1
+    (cancel-+-left (suc m * suc (suc n)) contra))) 
   where
      contra : suc m * suc (suc n) + suc (toℕ d) ≡ suc m * suc (suc n) + suc (suc n)
      contra = begin (suc m * suc (suc n) + suc (toℕ d)
@@ -188,17 +196,15 @@ max-b-d m n b d p= | yes b= | no ¬d= = ⊥-elim
                     ≡⟨ +-comm (suc (suc n)) (suc m * suc (suc n)) ⟩
                     suc m * suc (suc n) + suc (suc n) ∎)
               where open ≡-Reasoning
-max-b-d m n b d p= | no ¬b= | no ¬d= = {!!} 
-{--
-m   : ℕ
-n   : ℕ
-b   : Fin (suc (suc m))
-d   : Fin (suc (suc n))
-¬b= : ¬ toℕ b ≡ suc m
-¬d= : ¬ toℕ d ≡ suc n
-p=  : suc (toℕ b * suc (suc n) + toℕ d) ≡
-      suc (suc (n + suc (suc (n + m * suc (suc n)))))
---}
+max-b-d m n b d p= | tri≈ ¬a b₁ ¬c | tri≈ ¬a₁ b₂ ¬c₁ = (b₁ , b₂)
+max-b-d m n b d p= | tri≈ ¬a b₁ ¬c | tri> ¬a₁ ¬b c =
+  ⊥-elim (1+n≰n (trans≤ (bounded d) c))
+max-b-d m n b d p= | tri> ¬a ¬b c | tri< a ¬b₁ ¬c =
+  ⊥-elim (1+n≰n (trans≤ (bounded b) c))
+max-b-d m n b d p= | tri> ¬a ¬b c | tri≈ ¬a₁ b₁ ¬c =
+  ⊥-elim (1+n≰n (trans≤ (bounded b) c))
+max-b-d m n b d p= | tri> ¬a ¬b c | tri> ¬a₁ ¬b₁ c₁ =
+  ⊥-elim (1+n≰n (trans≤ (bounded d) c₁)) 
 
 subst-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
     subst Fin (*-comm (suc (suc m)) (suc (suc n))) (transposeIndex m n b d)
