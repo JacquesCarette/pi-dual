@@ -158,8 +158,7 @@ max-b-d : (m n : ℕ) → (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) →
   (toℕ b ≡ suc m × toℕ d ≡ suc n)
 max-b-d m n b d p= with toℕ b ≟ suc m | toℕ d ≟ suc n
 max-b-d m n b d p= | yes b= | yes d= = (b= , d=)
-max-b-d m n b d p= | no ¬b= | yes d= with toℕ b <? suc m 
-max-b-d m n b d p= | no ¬b= | yes d= | yes b< = ⊥-elim
+max-b-d m n b d p= | no ¬b= | yes d= = ⊥-elim
   (¬b= (cancel-+-left 1 (cancel-*-right (suc (toℕ b)) (suc (suc m)) {suc n} contra)))
   where
     contra : suc (toℕ b) * suc (suc n) ≡ suc (suc m) * suc (suc n)
@@ -175,15 +174,31 @@ max-b-d m n b d p= | no ¬b= | yes d= | yes b< = ⊥-elim
                    ≡⟨  p= ⟩
                    suc (suc m) * suc (suc n) ∎)
              where open ≡-Reasoning
-max-b-d m n b d p= | no ¬b= | yes d= | no ¬b< = {!!} 
-max-b-d m n b d p= | yes b= | no ¬d= with toℕ d <? suc n
-max-b-d m n b d p= | yes b= | no ¬d= | yes d< = {!!} 
-max-b-d m n b d p= | yes b= | no ¬d= | no ¬d< = {!!} 
-max-b-d m n b d p= | no ¬b= | no ¬d= with toℕ b <? suc m | toℕ d <? suc n 
-max-b-d m n b d p= | no ¬b= | no ¬d= | yes b< | yes d< = {!!} 
-max-b-d m n b d p= | no ¬b= | no ¬d= | yes b< | no ¬d< = {!!} 
-max-b-d m n b d p= | no ¬b= | no ¬d= | no ¬b< | yes d< = {!!} 
-max-b-d m n b d p= | no ¬b= | no ¬d= | no ¬b< | no ¬d< = {!!} 
+max-b-d m n b d p= | yes b= | no ¬d= = ⊥-elim
+  (¬d= (cancel-+-left 1 (cancel-+-left (suc m * suc (suc n)) contra))) 
+  where
+     contra : suc m * suc (suc n) + suc (toℕ d) ≡ suc m * suc (suc n) + suc (suc n)
+     contra = begin (suc m * suc (suc n) + suc (toℕ d)
+                    ≡⟨ cong (λ x → x * suc (suc n) + suc (toℕ d)) (sym b=) ⟩ 
+                    toℕ b * suc (suc n) + suc (toℕ d)
+                    ≡⟨ +-suc (toℕ b * suc (suc n)) (toℕ d) ⟩ 
+                    suc (toℕ b * suc (suc n) + toℕ d)
+                    ≡⟨ p= ⟩ 
+                    suc (suc m) * suc (suc n)
+                    ≡⟨ +-comm (suc (suc n)) (suc m * suc (suc n)) ⟩
+                    suc m * suc (suc n) + suc (suc n) ∎)
+              where open ≡-Reasoning
+max-b-d m n b d p= | no ¬b= | no ¬d= = {!!} 
+{--
+m   : ℕ
+n   : ℕ
+b   : Fin (suc (suc m))
+d   : Fin (suc (suc n))
+¬b= : ¬ toℕ b ≡ suc m
+¬d= : ¬ toℕ d ≡ suc n
+p=  : suc (toℕ b * suc (suc n) + toℕ d) ≡
+      suc (suc (n + suc (suc (n + m * suc (suc n)))))
+--}
 
 subst-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
     subst Fin (*-comm (suc (suc m)) (suc (suc n))) (transposeIndex m n b d)
