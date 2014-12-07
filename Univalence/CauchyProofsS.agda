@@ -24,7 +24,7 @@ open import Relation.Binary.Core using (Transitive)
 open import Data.String using (String)
   renaming (_++_ to _++S_)
 open import Data.Nat.Show using (show)
-open import Data.Bool using (Bool; false; true)
+open import Data.Bool using (Bool; false; true; _∨_)
 open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≮_; _≤_; _≰_; 
   _≥_; z≤n; s≤s; _≟_; _≤?_; ≤-pred; module ≤-Reasoning)
 open import Data.Fin 
@@ -134,20 +134,62 @@ lookup-subst-1 : ∀ {m m'}
   subst Fin eq (lookup (subst Fin eq' i) xs)
 lookup-subst-1 i xs refl .refl refl = refl 
 
-subst-fin : (m n : ℕ) (b : Fin m) (d : Fin n) →
-  (eq  : suc (toℕ b * n + toℕ d) ≤ m * n)
-  (eq' : suc (toℕ d * m + toℕ b) ≤ n * m) → 
-  subst Fin (*-comm n m)
-    (inject≤ (fromℕ (toℕ d * m + toℕ b)) eq')
-  ≡ inject≤ (fromℕ (toℕ b * n + toℕ d)) eq
-subst-fin 0 0 () d eq eq'
-subst-fin 0 (suc n) () d eq eq'
-subst-fin (suc m) 0 zero () eq eq'
-subst-fin (suc m) 0 (suc b) () eq eq'
-subst-fin (suc m) (suc n) zero zero (s≤s z≤n) (s≤s z≤n) = {!!}
-subst-fin (suc m) (suc n) zero (suc d) (s≤s eq) (s≤s eq') = {!!}
-subst-fin (suc m) (suc n) (suc b) zero (s≤s eq) (s≤s eq') = {!!}
-subst-fin (suc m) (suc n) (suc b) (suc d) (s≤s eq) (s≤s eq') = {!!} 
+transposeIndex' : (m n : ℕ) → (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) →
+  (b≡ : toℕ b ≡ suc m) (d≡ : toℕ d ≡ suc n) →
+  transposeIndex m n b d ≡ fromℕ (suc n + suc m * suc (suc n))
+transposeIndex' m n b d b≡ d≡
+  with suc (toℕ b * suc (suc n) + toℕ d) ≟ suc (suc m) * suc (suc n)
+transposeIndex' m n b d b≡ d≡ | yes i= = refl
+transposeIndex' m n b d b≡ d≡ | no i≠ = ⊥-elim (i≠ contra)
+  where contra = begin (suc (toℕ b * suc (suc n) + toℕ d)
+                       ≡⟨ cong₂ (λ x y → suc (x * suc (suc n) + y)) b≡ d≡ ⟩ 
+                        suc (suc m * suc (suc n) + suc n)
+                       ≡⟨ sym (+-suc (suc m * suc (suc n)) (suc n)) ⟩ 
+                        suc m * suc (suc n) + suc (suc n)
+                       ≡⟨ +-comm (suc m * suc (suc n)) (suc (suc n)) ⟩ 
+                        suc (suc n) + suc m * suc (suc n) 
+                       ≡⟨ refl ⟩ 
+                        suc (suc m) * suc (suc n) ∎)
+                 where open ≡-Reasoning
+
+max-b-d : (m n : ℕ) → (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) →
+  (p= : suc (toℕ b * suc (suc n) + toℕ d) ≡ suc (suc m) * suc (suc n)) → 
+  (toℕ b ≡ suc m × toℕ d ≡ suc n)
+max-b-d m n b d p= with toℕ b ≟ suc m | toℕ d ≟ suc n
+max-b-d m n b d p= | yes b= | yes d= = (b= , d=)
+max-b-d m n b d p= | no ¬b= | yes d= with toℕ b <? suc m 
+max-b-d m n b d p= | no ¬b= | yes d= | yes b< = {!!} 
+max-b-d m n b d p= | no ¬b= | yes d= | no ¬b< = {!!} 
+max-b-d m n b d p= | yes b= | no ¬d= with toℕ d <? suc n
+max-b-d m n b d p= | yes b= | no ¬d= | yes d< = {!!} 
+max-b-d m n b d p= | yes b= | no ¬d= | no ¬d< = {!!} 
+max-b-d m n b d p= | no ¬b= | no ¬d= with toℕ b <? suc m | toℕ d <? suc n 
+max-b-d m n b d p= | no ¬b= | no ¬d= | yes b< | yes d< = {!!} 
+max-b-d m n b d p= | no ¬b= | no ¬d= | yes b< | no ¬d< = {!!} 
+max-b-d m n b d p= | no ¬b= | no ¬d= | no ¬b< | yes d< = {!!} 
+max-b-d m n b d p= | no ¬b= | no ¬d= | no ¬b< | no ¬d< = {!!} 
+
+subst-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
+    subst Fin (*-comm (suc (suc m)) (suc (suc n))) (transposeIndex m n b d)
+  ≡ transposeIndex n m d b
+subst-transpose m n b d
+  with suc (toℕ b * suc (suc n) + toℕ d) ≟ suc (suc m) * suc (suc n)
+subst-transpose m n b d | yes p= =
+  begin (subst Fin (*-comm (suc (suc m)) (suc (suc n)))
+          (fromℕ (suc n + suc m * suc (suc n)))
+         ≡⟨ {!!} ⟩
+         fromℕ (suc m + suc n * suc (suc m))
+         ≡⟨ {!!} ⟩
+         transposeIndex n m d b ∎)
+  where open ≡-Reasoning
+subst-transpose m n b d | no p≠  = {!!}
+
+-- If 1+(bn+d) = mn, does 1+(dm+b) = nm ??
+-- 1+(bn+d) = mn
+-- bn+(1+d) = (m-1)n+n ==> b = m - 1 and d = n - 1
+
+-- bn+d = mn-1
+
 
 lookup-swap-2 :
   (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
@@ -189,12 +231,6 @@ lookup-swap-2 m n b d =
                  (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
                  (allFin (suc (suc n))))))
          ≡⟨ {!!} ⟩ 
-         subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
-           (inject≤
-             (fromℕ (toℕ d * suc (suc m) + toℕ b))
-             (i*n+k≤m*n d b))
-         ≡⟨ subst-fin (suc (suc m)) (suc (suc n)) b d
-              (i*n+k≤m*n b d) (i*n+k≤m*n d b) ⟩ 
          inject≤
            (fromℕ (toℕ b * suc (suc n) + toℕ d))
            (i*n+k≤m*n b d) ∎)
