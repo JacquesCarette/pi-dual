@@ -13,7 +13,8 @@ open import Relation.Binary.PropositionalEquality.TrustMe
   using (trustMe)
 open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
 open import Data.Nat.Properties
-  using (m≤m+n; n≤m+n; n≤1+n; cancel-*-right-≤; ≰⇒>; ¬i+1+j≤i)
+  using (m≤m+n; n≤m+n; n≤1+n; cancel-+-left; cancel-*-right;
+         cancel-*-right-≤; ≰⇒>; ¬i+1+j≤i)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
@@ -158,7 +159,22 @@ max-b-d : (m n : ℕ) → (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) →
 max-b-d m n b d p= with toℕ b ≟ suc m | toℕ d ≟ suc n
 max-b-d m n b d p= | yes b= | yes d= = (b= , d=)
 max-b-d m n b d p= | no ¬b= | yes d= with toℕ b <? suc m 
-max-b-d m n b d p= | no ¬b= | yes d= | yes b< = {!!} 
+max-b-d m n b d p= | no ¬b= | yes d= | yes b< = ⊥-elim
+  (¬b= (cancel-+-left 1 (cancel-*-right (suc (toℕ b)) (suc (suc m)) {suc n} contra)))
+  where
+    contra : suc (toℕ b) * suc (suc n) ≡ suc (suc m) * suc (suc n)
+    contra = begin (suc (toℕ b) * suc (suc n)
+                   ≡⟨  refl ⟩
+                   suc (suc n) + toℕ b * suc (suc n)
+                   ≡⟨  +-comm (suc (suc n)) (toℕ b * suc (suc n)) ⟩
+                   toℕ b * suc (suc n) + suc (suc n)
+                   ≡⟨  +-suc (toℕ b * suc (suc n)) (suc n) ⟩
+                   suc (toℕ b * suc (suc n) + suc n)
+                   ≡⟨  cong (λ x → suc (toℕ b * suc (suc n) + x)) (sym d=) ⟩
+                   suc (toℕ b * suc (suc n) + toℕ d)
+                   ≡⟨  p= ⟩
+                   suc (suc m) * suc (suc n) ∎)
+             where open ≡-Reasoning
 max-b-d m n b d p= | no ¬b= | yes d= | no ¬b< = {!!} 
 max-b-d m n b d p= | yes b= | no ¬d= with toℕ d <? suc n
 max-b-d m n b d p= | yes b= | no ¬d= | yes d< = {!!} 
