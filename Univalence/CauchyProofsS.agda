@@ -32,7 +32,7 @@ open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≮_; _≤_; _≰_;
   _≥_; z≤n; s≤s; _≟_; _≤?_; ≤-pred; module ≤-Reasoning)
 open import Data.Fin 
   using (Fin; zero; suc; toℕ; fromℕ; fromℕ≤; _ℕ-_; _≺_; reduce≥; 
-         raise; inject+; inject₁; inject≤; _≻toℕ_) 
+         raise; inject+; inject₁; inject≤; _≻toℕ_; #_) 
   renaming (_+_ to _F+_)
 open import Data.Fin.Properties
   using (bounded; inject+-lemma; to-from; toℕ-injective; inject≤-lemma; toℕ-fromℕ≤)
@@ -221,6 +221,9 @@ max-b-d m n b d p= | tri> ¬a ¬b c | tri≈ ¬a₁ b₁ ¬c =
 max-b-d m n b d p= | tri> ¬a ¬b c | tri> ¬a₁ ¬b₁ c₁ =
   ⊥-elim (1+n≰n (trans≤ (bounded d) c₁)) 
 
+subst-fin : (a b : ℕ) → (eq : suc a ≡ suc b) → subst Fin eq (fromℕ a) ≡ fromℕ b
+subst-fin a .a refl = refl
+
 subst-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
     subst Fin (*-comm (suc (suc m)) (suc (suc n))) (transposeIndex m n b d)
   ≡ transposeIndex n m d b
@@ -229,7 +232,10 @@ subst-transpose m n b d
 subst-transpose m n b d | yes p= =
   begin (subst Fin (*-comm (suc (suc m)) (suc (suc n)))
           (fromℕ (suc n + suc m * suc (suc n)))
-         ≡⟨ {!!} ⟩
+         ≡⟨ subst-fin 
+              (suc n + suc m * suc (suc n))
+              (suc m + suc n * suc (suc m))
+              (*-comm (suc (suc m)) (suc (suc n))) ⟩ 
          fromℕ (suc m + suc n * suc (suc m))
          ≡⟨ sym (transposeIndex' n m d b (swap (max-b-d m n b d p=))) ⟩
          transposeIndex n m d b ∎)
