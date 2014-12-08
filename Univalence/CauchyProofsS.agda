@@ -162,7 +162,21 @@ max-b-d : (m n : ℕ) → (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) →
   (p= : suc (toℕ b * suc (suc n) + toℕ d) ≡ suc (suc m) * suc (suc n)) → 
   (toℕ b ≡ suc m × toℕ d ≡ suc n)
 max-b-d m n b d p= with cmp (toℕ b) (suc m) | cmp (toℕ d) (suc n)
-max-b-d m n b d p= | tri< a ¬b ¬c | tri< a₁ ¬b₁ ¬c₁ = {!!}
+max-b-d m n b d p= | tri< a ¬b ¬c | tri< a₁ ¬b₁ ¬c₁ = ⊥-elim (1+n≰n contra)
+  where contra = begin (1 + suc (toℕ b * suc (suc n) + toℕ d)
+                        ≡⟨ cong suc (sym (+-suc (toℕ b * suc (suc n)) (toℕ d))) ⟩
+                        1 + (toℕ b * suc (suc n) + suc (toℕ d))
+                        ≡⟨ sym (+-suc (toℕ b * suc (suc n)) (suc (toℕ d))) ⟩
+                        toℕ b * suc (suc n) + suc (suc (toℕ d))
+                        ≤⟨ cong+l≤ (s≤s a₁) (toℕ b * suc (suc n)) ⟩ 
+                        toℕ b * suc (suc n) + suc (suc n)
+                        ≡⟨ +-comm (toℕ b * suc (suc n)) (suc (suc n)) ⟩ 
+                        suc (toℕ b) * suc (suc n)
+                        ≤⟨ cong*r≤ (≰⇒> ¬c) (suc (suc n)) ⟩ 
+                        suc (suc m) * suc (suc n)
+                        ≡⟨ sym p= ⟩ 
+                        suc (toℕ b * suc (suc n) + toℕ d) ∎)
+                 where open ≤-Reasoning
 max-b-d m n b d p= | tri< a ¬b= ¬c | tri≈ ¬a d= ¬c₁ =
   ⊥-elim (¬b= (cancel-+-left 1
     (cancel-*-right (suc (toℕ b)) (suc (suc m)) {suc n} contra)))
