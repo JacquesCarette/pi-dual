@@ -281,6 +281,25 @@ lookup-swap-2 m n b d =
                (mapV
                  (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
                  (allFin (suc (suc n))))))
+         ≡⟨ cong 
+              (λ x →
+                subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
+                  (lookup x
+                    (concatV
+                      (mapV
+                        (λ b → 
+                          mapV 
+                            (λ d → transposeIndex n m b d) 
+                            (allFin (suc (suc m))))
+                        (allFin (suc (suc n)))))))
+              (subst-transpose m n b d) ⟩ 
+         subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
+           (lookup
+             (transposeIndex n m d b)
+             (concatV
+               (mapV
+                 (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
+                 (allFin (suc (suc n))))))
          ≡⟨ {!!} ⟩ 
          inject≤
            (fromℕ (toℕ b * suc (suc n) + toℕ d))
