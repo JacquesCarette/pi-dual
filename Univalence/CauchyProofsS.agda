@@ -229,12 +229,13 @@ max-b-d m n b d p= | tri> ¬a ¬b c | tri> ¬a₁ ¬b₁ c₁ =
 subst-fin : (a b : ℕ) → (eq : suc a ≡ suc b) → subst Fin eq (fromℕ a) ≡ fromℕ b
 subst-fin a .a refl = refl
 
-{--
 -- buried in Data.Nat
 
 refl′ : _≡_ ⇒ _≤_
 refl′ {0} refl = z≤n
 refl′ {suc m} refl = s≤s (refl′ refl)
+
+{--
 
 subst-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
     subst Fin (*-comm (suc (suc m)) (suc (suc n))) (transposeIndex m n b d)
@@ -329,6 +330,15 @@ subst-lookup-transpose m n b d | yes p= =
               (mapV
                 (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
                 (allFin (suc (suc n))))))
+        ≡⟨ {!!} ⟩ 
+        subst Fin (*-comm (suc (suc n)) (suc (suc m)))
+          (transposeIndex n m d b)
+        ≡⟨ {!!} ⟩ 
+        fromℕ (suc n + suc m * suc (suc n))
+        ≡⟨ {!!} ⟩ 
+        inject≤
+          (fromℕ (suc m * suc (suc n) + suc n))
+          {!!} 
         ≡⟨ {!!} ⟩ 
         inject≤
           (fromℕ (toℕ b * suc (suc n) + toℕ d))
