@@ -22,7 +22,7 @@ open import Data.Nat.DivMod using (DivMod; result; _divMod_; _div_; _mod_)
 open import Relation.Binary
   using (Rel; Decidable; Setoid; StrictTotalOrder; IsStrictTotalOrder;
          tri<; tri≈; tri>)
-open import Relation.Binary.Core using (Transitive)
+open import Relation.Binary.Core using (Transitive; _⇒_)
 
 open import Data.String using (String)
   renaming (_++_ to _++S_)
@@ -137,6 +137,11 @@ lookup-subst-1 : ∀ {m m'}
   subst Fin eq (lookup (subst Fin eq' i) xs)
 lookup-subst-1 i xs refl .refl refl = refl 
 
+subst-inject-mod : ∀ {n m m'} → (eq : suc (suc m) ≡ suc (suc m')) → 
+  subst Fin eq (inject≤ (n mod (suc m)) (i≤si (suc m))) ≡
+  inject≤ (n mod (suc m')) (i≤si (suc m'))
+subst-inject-mod refl = refl
+  
 transposeIndex' : (m n : ℕ) → (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) →
   (toℕ b ≡ suc m × toℕ d ≡ suc n) →
   transposeIndex m n b d ≡ fromℕ (suc n + suc m * suc (suc n))
@@ -224,6 +229,13 @@ max-b-d m n b d p= | tri> ¬a ¬b c | tri> ¬a₁ ¬b₁ c₁ =
 subst-fin : (a b : ℕ) → (eq : suc a ≡ suc b) → subst Fin eq (fromℕ a) ≡ fromℕ b
 subst-fin a .a refl = refl
 
+{--
+-- buried in Data.Nat
+
+refl′ : _≡_ ⇒ _≤_
+refl′ {0} refl = z≤n
+refl′ {suc m} refl = s≤s (refl′ refl)
+
 subst-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
     subst Fin (*-comm (suc (suc m)) (suc (suc n))) (transposeIndex m n b d)
   ≡ transposeIndex n m d b
@@ -240,7 +252,89 @@ subst-transpose m n b d | yes p= =
          ≡⟨ sym (transposeIndex' n m d b (swap (max-b-d m n b d p=))) ⟩
          transposeIndex n m d b ∎)
   where open ≡-Reasoning
-subst-transpose m n b d | no p≠  = {!!}
+subst-transpose m n b d | no p≠  =
+  begin (subst Fin (*-comm (suc (suc m)) (suc (suc n)))
+           (inject≤ 
+             (((toℕ b * suc (suc n) + toℕ d) * (suc (suc m)))
+                mod (suc n + suc m * suc (suc n)))
+             (i≤si (suc n + suc m * suc (suc n)))) 
+         ≡⟨ subst-inject-mod {((toℕ b * suc (suc n) + toℕ d) * (suc (suc m)))} 
+              (*-comm (suc (suc m)) (suc (suc n))) ⟩ 
+         inject≤ 
+           (((toℕ b * suc (suc n) + toℕ d) * (suc (suc m)))
+              mod (suc m + suc n * suc (suc m))) 
+           (i≤si (suc m + suc n * suc (suc m)))
+         ≡⟨ {!!} ⟩ 
+         transposeIndex n m d b ∎)
+
+If ¬ (suc (toℕ b * suc (suc n) + toℕ d) ≡ suc (suc m) * suc (suc n))
+then 
+transposeIndex m n b d = 
+  inject≤ 
+    ((i * (suc (suc m))) mod (suc n + suc m * suc (suc n)))
+    (i≤si (suc n + suc m * suc (suc n)))
+
+---
+
+If ¬ (suc (toℕ d * suc (suc m) + toℕ b) ≡ suc (suc n) * suc (suc m))
+then
+transposeIndex n m d b = 
+  inject≤ 
+    ((i * (suc (suc n))) mod (suc m + suc n * suc (suc m)))
+    (i≤si (suc m + suc n * suc (suc m)))
+--}
+
+  where open ≡-Reasoning
+
+subst-lookup-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
+  subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
+    (lookup
+      (subst Fin (*-comm (suc (suc m)) (suc (suc n)))
+        (transposeIndex m n b d))
+      (concatV
+        (mapV
+          (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
+          (allFin (suc (suc n))))))
+  ≡ inject≤
+      (fromℕ (toℕ b * suc (suc n) + toℕ d))
+      (i*n+k≤m*n b d)
+subst-lookup-transpose m n b d
+  with suc (toℕ b * suc (suc n) + toℕ d) ≟ suc (suc m) * suc (suc n)
+subst-lookup-transpose m n b d | yes p= =
+  begin (subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
+          (lookup
+            (subst Fin (*-comm (suc (suc m)) (suc (suc n)))
+              (fromℕ (suc n + suc m * suc (suc n))))
+            (concatV
+              (mapV
+                (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
+                (allFin (suc (suc n))))))
+        ≡⟨ cong (λ x → subst Fin (*-comm (suc (suc n)) (suc (suc m)))
+                          (lookup x
+                             (concatV
+                               (mapV
+                                 (λ b →
+                                   mapV
+                                     (λ d → transposeIndex n m b d)
+                                     (allFin (suc (suc m))))
+                                 (allFin (suc (suc n)))))))
+                 (subst-fin
+                   (suc n + suc m * suc (suc n))
+                   (suc m + suc n * suc (suc m))
+                   (*-comm (suc (suc m)) (suc (suc n)))) ⟩ 
+        subst Fin (*-comm (suc (suc n)) (suc (suc m)))
+          (lookup
+            (fromℕ (suc m + suc n * suc (suc m)))
+            (concatV
+              (mapV
+                (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
+                (allFin (suc (suc n))))))
+        ≡⟨ {!!} ⟩ 
+        inject≤
+          (fromℕ (toℕ b * suc (suc n) + toℕ d))
+          (i*n+k≤m*n b d) ∎)
+  where open ≡-Reasoning
+subst-lookup-transpose m n b d | no p≠ = {!!} 
 
 lookup-swap-2 :
   (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
@@ -281,26 +375,7 @@ lookup-swap-2 m n b d =
                (mapV
                  (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
                  (allFin (suc (suc n))))))
-         ≡⟨ cong 
-              (λ x →
-                subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
-                  (lookup x
-                    (concatV
-                      (mapV
-                        (λ b → 
-                          mapV 
-                            (λ d → transposeIndex n m b d) 
-                            (allFin (suc (suc m))))
-                        (allFin (suc (suc n)))))))
-              (subst-transpose m n b d) ⟩ 
-         subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
-           (lookup
-             (transposeIndex n m d b)
-             (concatV
-               (mapV
-                 (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
-                 (allFin (suc (suc n))))))
-         ≡⟨ {!!} ⟩ 
+         ≡⟨ subst-lookup-transpose m n b d ⟩ 
          inject≤
            (fromℕ (toℕ b * suc (suc n) + toℕ d))
            (i*n+k≤m*n b d) ∎)
