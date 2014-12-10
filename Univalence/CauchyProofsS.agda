@@ -283,9 +283,30 @@ transposeIndex n m d b =
   inject≤ 
     ((i * (suc (suc n))) mod (suc m + suc n * suc (suc m)))
     (i≤si (suc m + suc n * suc (suc m)))
+  where open ≡-Reasoning
 --}
 
-  where open ≡-Reasoning
+lastV : {ℓ : Level} {A : Set ℓ} {n : ℕ} → Vec A (suc n) → A
+lastV (x ∷ []) = x
+lastV (_ ∷ x ∷ xs) = lastV (x ∷ xs)
+
+lookup-fromℕ : {ℓ : Level} {A : Set ℓ} → (n : ℕ) (xs : Vec A (suc n)) → 
+  lookup (fromℕ n) xs ≡ lastV xs
+lookup-fromℕ 0 (x ∷ []) = refl
+lookup-fromℕ (suc n) (_ ∷ x ∷ xs) = lookup-fromℕ n (x ∷ xs)
+
+fin=1 : (m n : ℕ) → 
+  fromℕ (suc m + suc n * suc (suc m)) ≡
+  fromℕ (suc (m + suc (suc (m + n * suc (suc m)))))
+fin=1 m n = toℕ-injective p
+  where p = begin (toℕ (fromℕ (suc m + suc n * suc (suc m)))
+                 ≡⟨ to-from (suc m + suc n * suc (suc m)) ⟩
+                   suc m + suc n * suc (suc m)
+                 ≡⟨ refl ⟩
+                   suc (m + suc (suc (m + n * suc (suc m))))
+                ≡⟨ sym (to-from (suc (m + suc (suc (m + n * suc (suc m)))))) ⟩
+                   toℕ (fromℕ (suc (m + suc (suc (m + n * suc (suc m)))))) ∎)
+            where open ≡-Reasoning
 
 subst-lookup-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
   subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
@@ -330,16 +351,38 @@ subst-lookup-transpose m n b d | yes p= =
               (mapV
                 (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
                 (allFin (suc (suc n))))))
-        ≡⟨ {!!} ⟩ 
+        ≡⟨ cong
+             (λ x →
+               subst Fin (*-comm (suc (suc n)) (suc (suc m)))
+                 (lookup x
+                   (concatV
+                     (mapV
+                       (λ b →
+                         mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
+                     (allFin (suc (suc n)))))))
+             (fin=1 m n) ⟩ 
         subst Fin (*-comm (suc (suc n)) (suc (suc m)))
-          (transposeIndex n m d b)
-        ≡⟨ {!!} ⟩ 
-        fromℕ (suc n + suc m * suc (suc n))
-        ≡⟨ {!!} ⟩ 
-        inject≤
-          (fromℕ (suc m * suc (suc n) + suc n))
-          {!!} 
-        ≡⟨ {!!} ⟩ 
+          (lookup
+            (fromℕ (suc (m + suc (suc (m + n * suc (suc m))))))
+            (concatV
+              (mapV
+                (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
+                (allFin (suc (suc n))))))
+        ≡⟨ cong
+             (subst Fin (*-comm (suc (suc n)) (suc (suc m))))
+             (lookup-fromℕ
+               (suc (m + suc (suc (m + n * suc (suc m)))))
+               (concatV
+                 (mapV
+                   (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
+                   (allFin (suc (suc n)))))) ⟩
+        subst Fin (*-comm (suc (suc n)) (suc (suc m)))
+          (lastV 
+            (concatV
+              (mapV
+                (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
+                (allFin (suc (suc n))))))
+        ≡⟨ {!!} ⟩
         inject≤
           (fromℕ (toℕ b * suc (suc n) + toℕ d))
           (i*n+k≤m*n b d) ∎)

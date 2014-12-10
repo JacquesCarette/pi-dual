@@ -286,6 +286,9 @@ cong*r≤ {0}     {j}     z≤n       k = z≤n
 cong*r≤ {suc i} {0}     ()        k -- absurd
 cong*r≤ {suc i} {suc j} (s≤s i≤j) k = cong+l≤ (cong*r≤ i≤j k) k 
 
+sinj : ∀ {i j} → suc i ≡ suc j → i ≡ j
+sinj = cong (λ { 0 → 0 ; (suc x) → x })
+
 sinj≤ : ∀ {i j} → suc i ≤ suc j → i ≤ j
 sinj≤ {0}     {j}     _        = z≤n
 sinj≤ {suc i} {0}     (s≤s ()) -- absurd
