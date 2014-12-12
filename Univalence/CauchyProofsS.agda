@@ -348,10 +348,11 @@ fin-project-2 n m | result q r k≡r+q*sn | no ¬p =
   in cong₂ _,_
        (toℕ-injective (trans b= (sym (to-from (suc n)))))
        (toℕ-injective (trans d= (sym (to-from (suc m)))))
-  where pr : suc (toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc (suc m) + toℕ r) ≡
+  where 
+        pr : suc (toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc (suc m) + toℕ r) ≡
              suc (suc n) * suc (suc m)
         pr = 
-          begin (suc (toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc (suc m) + toℕ r)
+          begin ( _ {- suc (toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc (suc m) + toℕ r) -}
                  ≡⟨ cong
                       (λ x → suc (x * suc (suc m) + toℕ r))
                       (toℕ-fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) ⟩ 
