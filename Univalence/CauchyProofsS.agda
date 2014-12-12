@@ -340,7 +340,31 @@ fin-project-2 : (n m : ℕ) →
  fin-project (suc (suc n)) (suc (suc m)) (fromℕ (suc m + suc n * suc (suc m)))
  ≡ (fromℕ (suc n) , fromℕ (suc m))
 fin-project-2 n m with toℕ (fromℕ (suc m + suc n * suc (suc m))) divMod (suc (suc m))
-fin-project-2 n m | result q r k≡r+q*sn = {!!}
+fin-project-2 n m | result q r k≡r+q*sn with suc (suc n) ≤? q
+fin-project-2 n m | result q r k≡r+q*sn | yes p =
+  ⊥-elim (absurd (suc n) (suc m) q r (fromℕ (suc m + suc n * suc (suc m))) k≡r+q*sn p)
+fin-project-2 n m | result q r k≡r+q*sn | no ¬p = 
+  let (b= , d=) = max-b-d n m (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) r pr
+  in cong₂ _,_
+       (toℕ-injective (trans b= (sym (to-from (suc n)))))
+       (toℕ-injective (trans d= (sym (to-from (suc m)))))
+  where pr : suc (toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc (suc m) + toℕ r) ≡
+             suc (suc n) * suc (suc m)
+        pr = 
+          begin (suc (toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc (suc m) + toℕ r)
+                 ≡⟨ cong
+                      (λ x → suc (x * suc (suc m) + toℕ r))
+                      (toℕ-fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) ⟩ 
+                 suc (q * suc (suc m) + toℕ r)
+                 ≡⟨ cong suc (+-comm (q * suc (suc m)) (toℕ r)) ⟩
+                 suc (toℕ r + q * suc (suc m))
+                 ≡⟨ cong suc (sym k≡r+q*sn) ⟩ 
+                 suc (suc (toℕ (fromℕ (m + suc (suc (m + n * suc (suc m)))))))
+                 ≡⟨ cong
+                     (λ x → suc (suc x))
+                     (to-from (m + suc (suc (m + n * suc (suc m))))) ⟩ 
+                 suc (suc n) * suc (suc m) ∎)
+          where open ≡-Reasoning
 
 subst-lookup-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
   subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
