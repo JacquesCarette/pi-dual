@@ -433,7 +433,23 @@ subst-lookup-transpose m n b d | yes p= =
           (fromℕ (toℕ b * suc (suc n) + toℕ d))
           (i*n+k≤m*n b d) ∎)
   where open ≡-Reasoning
-subst-lookup-transpose m n b d | no p≠ = {!!} 
+subst-lookup-transpose m n b d | no p≠ =
+  begin (subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
+          (lookup
+            (subst Fin (*-comm (suc (suc m)) (suc (suc n)))
+              (inject≤
+                ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
+                 (suc (n + suc (suc (n + m * suc (suc n))))))
+                (i≤si (suc (n + suc (suc (n + m * suc (suc n))))))))
+            (concatV
+              (mapV
+                (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
+                (allFin (suc (suc n))))))
+        ≡⟨ {!!} ⟩
+         inject≤
+           (fromℕ (toℕ b * suc (suc n) + toℕ d))
+           (i*n+k≤m*n b d) ∎)
+  where open ≡-Reasoning
 
 lookup-swap-2 :
   (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
