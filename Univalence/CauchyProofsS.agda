@@ -351,6 +351,7 @@ subst-lookup-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc 
 subst-lookup-transpose m n b d
   with suc (toℕ b * suc (suc n) + toℕ d) ≟ suc (suc m) * suc (suc n)
 subst-lookup-transpose m n b d | yes p= =
+  let (b= , d=) = max-b-d m n b d p= in 
   begin (subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
           (lookup
             (subst Fin (*-comm (suc (suc m)) (suc (suc n)))
@@ -380,45 +381,128 @@ subst-lookup-transpose m n b d | yes p= =
                 (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
                 (allFin (suc (suc n))))))
         ≡⟨ cong
-             (λ x →
-               subst Fin (*-comm (suc (suc n)) (suc (suc m)))
-                 (lookup x
-                   (concatV
-                     (mapV
-                       (λ b →
-                         mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
-                     (allFin (suc (suc n)))))))
-             (fin=1 m n) ⟩ 
-        subst Fin (*-comm (suc (suc n)) (suc (suc m)))
-          (lookup
-            (fromℕ (suc (m + suc (suc (m + n * suc (suc m))))))
-            (concatV
-              (mapV
-                (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
-                (allFin (suc (suc n))))))
-        ≡⟨ cong
              (λ x → subst Fin (*-comm (suc (suc n)) (suc (suc m)))
-               (lookup (fromℕ (suc (m + suc (suc (m + n * suc (suc m)))))) x))
+               (lookup (fromℕ (suc m + suc n * suc (suc m))) x))
              (concat-map-map-tabulate (suc (suc n)) (suc (suc m))
                (λ {(b , d) → transposeIndex n m b d})) ⟩
         subst Fin (*-comm (suc (suc n)) (suc (suc m)))
           (lookup
-            (fromℕ (suc (m + suc (suc (m + n * suc (suc m))))))
+            (fromℕ (suc m + suc n * suc (suc m)))
             (tabulate (λ k →
               let (b , d) = fin-project (suc (suc n)) (suc (suc m)) k in
               transposeIndex n m b d)))
         ≡⟨ cong (subst Fin (*-comm (suc (suc n)) (suc (suc m))))
              (lookup-fromℕ-allFin
-               (suc (m + suc (suc (m + n * suc (suc m)))))
+               (suc m + suc n * suc (suc m))
                (λ k →
                   let (b , d) = fin-project (suc (suc n)) (suc (suc m)) k in
                   transposeIndex n m b d)) ⟩
         subst Fin (*-comm (suc (suc n)) (suc (suc m)))
           (let (b , d) = fin-project (suc (suc n)) (suc (suc m))
-                           (fromℕ (suc (m + suc (suc (m + n * suc (suc m))))))
+                           (fromℕ (suc m + suc n * suc (suc m)))
            in transposeIndex n m b d)
-        ≡⟨ {!!} ⟩
+        ≡⟨ refl ⟩ 
+        subst Fin (*-comm (suc (suc n)) (suc (suc m)))
+          (transposeIndex n m
+           (proj₁ (fin-project (suc (suc n)) (suc (suc m))
+                    (fromℕ (suc m + suc n * suc (suc m)))))
+           (proj₂ (fin-project (suc (suc n)) (suc (suc m))
+                    (fromℕ (suc m + suc n * suc (suc m))))))
+        ≡⟨ {!!} ⟩ 
+        subst Fin (*-comm (suc (suc n)) (suc (suc m)))
+          (transposeIndex n m (fromℕ (suc n)) (fromℕ (suc m)))
+        ≡⟨ cong (subst Fin (*-comm (suc (suc n)) (suc (suc m))))
+             (transposeIndex' n m (fromℕ (suc n)) (fromℕ (suc m))
+               (to-from (suc n) , to-from (suc m))) ⟩
+        subst Fin (*-comm (suc (suc n)) (suc (suc m)))
+          (fromℕ (suc m + suc n * suc (suc m)))
+        ≡⟨ subst-fin
+             (suc (m + suc (suc (m + n * suc (suc m)))))
+             (suc (n + suc (suc (n + m * suc (suc n)))))
+             (*-comm (suc (suc n)) (suc (suc m))) ⟩
+        fromℕ (suc (n + suc (suc (n + m * suc (suc n)))))
+        ≡⟨ sym (fin=1 n m) ⟩ 
+        fromℕ (suc n + suc m * suc (suc n))
+        ≡⟨ toℕ-injective
+            (trans (to-from (suc n + suc m * suc (suc n)))
+            (trans (+-comm (suc n) (suc m * suc (suc n)))
+            (trans (sym (to-from (suc m * suc (suc n) + suc n)))
+            (sym (inject≤-lemma
+              (fromℕ (suc m * suc (suc n) + suc n))
+              (refl′
+                (trans (sym (+-suc (suc m * suc (suc n)) (suc n)))
+                (+-comm (suc m * suc (suc n)) (suc (suc n)))))))))) ⟩
+        inject≤
+          (fromℕ (suc m * suc (suc n) + suc n))
+          (refl′ (trans
+                   (sym (+-suc (suc m * suc (suc n)) (suc n)))
+                   (+-comm (suc m * suc (suc n)) (suc (suc n)))))
+       ≡⟨ cong₂D!
+            (λ x y → inject≤ (fromℕ x) y)
+            (cong₂ (λ x y → x * suc (suc n) + y) b= d=)
+            (≤-proof-irrelevance
+              (subst (λ z → suc z ≤ suc (suc n) + suc m * suc (suc n))
+                (cong₂ (λ x y → x * suc (suc n) + y) b= d=)
+                (i*n+k≤m*n b d))
+              (refl′
+                (trans
+                  (sym (cong suc (cong suc (+-suc (n + m * suc (suc n)) (suc n)))))
+                  (+-comm (suc m * suc (suc n)) (suc (suc n)))))) ⟩ 
+        inject≤
+          (fromℕ (toℕ b * suc (suc n) + toℕ d))
+          (i*n+k≤m*n b d) ∎)
+  where open ≡-Reasoning
+
 {--
+        ≡⟨ {!!} ⟩
+        inject≤
+          (fromℕ (toℕ b * suc (suc n) + suc n))
+          (refl′ (trans
+                   (sym (+-suc (toℕ b * suc (suc n)) (suc n)))
+                   (+-comm (toℕ b * suc (suc n)) (suc (suc n)))))
+        ≡⟨ {!cong₂D!
+             (λ x y → inject≤ (fromℕ x) y)
+             (cong₂ (λ x y → x * suc (suc n) + y) b= d=)
+             (≤-proof-irrelevance
+               (subst Fin
+                 (cong₂ (λ x y → x * suc (suc n) + y) b= d=)
+                 (simplify-≤
+                   (refl′ (trans
+                     (sym (+-suc (suc m * suc (suc n)) (suc n)))
+                     (+-comm (suc m * suc (suc n)) (suc (suc n)))))
+                   (cong₂ (λ x y → suc (x * suc (suc n) + y)) (sym b=) (sym d=))
+                   refl))
+               (refl′ (trans
+                   (sym (+-suc (suc m * suc (suc n)) (suc n)))
+                   (+-comm (suc m * suc (suc n)) (suc (suc n))))))!} ⟩ 
+        inject≤
+          (fromℕ (toℕ b * suc (suc n) + toℕ d))
+          (simplify-≤
+            (refl′ (trans
+                   (sym (+-suc (suc m * suc (suc n)) (suc n)))
+                   (+-comm (suc m * suc (suc n)) (suc (suc n)))))
+            (cong₂ (λ x y → suc (x * suc (suc n) + y)) (sym b=) (sym d=))
+            refl)
+       ≡⟨ cong
+             (inject≤ (fromℕ (toℕ b * suc (suc n) + toℕ d)))
+             (≤-proof-irrelevance
+               (simplify-≤
+                 (refl′ (trans
+                        (sym (+-suc (suc m * suc (suc n)) (suc n)))
+                        (+-comm (suc m * suc (suc n)) (suc (suc n)))))
+                 (cong₂ (λ x y → suc (x * suc (suc n) + y)) (sym b=) (sym d=))
+                 refl)
+             (i*n+k≤m*n b d)) ⟩ 
+        inject≤
+          (fromℕ (toℕ b * suc (suc n) + toℕ d))
+          (i*n+k≤m*n b d) ∎)
+  where open ≡-Reasoning
+m  : ℕ
+n  : ℕ
+b  : Fin (suc (suc m))
+d  : Fin (suc (suc n))
+p= : suc (toℕ b * suc (suc n) + toℕ d) ≡ suc (suc m) * suc (suc n)
+
 fin-proj-lem :
   (m n : ℕ) (k : Fin (m * n)) →
   k ≡
@@ -433,10 +517,6 @@ k ≡
 let (b , d) = fin-project m n k in 
 inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)
 --}        
-        inject≤
-          (fromℕ (toℕ b * suc (suc n) + toℕ d))
-          (i*n+k≤m*n b d) ∎)
-  where open ≡-Reasoning
 subst-lookup-transpose m n b d | no p≠ = {!!} 
 
 lookup-swap-2 :
