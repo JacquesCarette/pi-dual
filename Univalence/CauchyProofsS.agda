@@ -336,6 +336,12 @@ concat-map-map-tabulate m n f =
          tabulate (λ k → f (fin-project m n k)) ∎)
   where open ≡-Reasoning
 
+fin-project-2 : (n m : ℕ) →
+ fin-project (suc (suc n)) (suc (suc m)) (fromℕ (suc m + suc n * suc (suc m)))
+ ≡ (fromℕ (suc n) , fromℕ (suc m))
+fin-project-2 n m with toℕ (fromℕ (suc m + suc n * suc (suc m))) divMod (suc (suc m))
+fin-project-2 n m | result q r k≡r+q*sn = {!!}
+
 subst-lookup-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
   subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
     (lookup
@@ -401,14 +407,11 @@ subst-lookup-transpose m n b d | yes p= =
           (let (b , d) = fin-project (suc (suc n)) (suc (suc m))
                            (fromℕ (suc m + suc n * suc (suc m)))
            in transposeIndex n m b d)
-        ≡⟨ refl ⟩ 
-        subst Fin (*-comm (suc (suc n)) (suc (suc m)))
-          (transposeIndex n m
-           (proj₁ (fin-project (suc (suc n)) (suc (suc m))
-                    (fromℕ (suc m + suc n * suc (suc m)))))
-           (proj₂ (fin-project (suc (suc n)) (suc (suc m))
-                    (fromℕ (suc m + suc n * suc (suc m))))))
-        ≡⟨ {!!} ⟩ 
+        ≡⟨ cong
+             (λ x →
+               subst Fin (*-comm (suc (suc n)) (suc (suc m)))
+                 (let (b , d) = x in transposeIndex n m b d))
+             (fin-project-2 n m) ⟩ 
         subst Fin (*-comm (suc (suc n)) (suc (suc m)))
           (transposeIndex n m (fromℕ (suc n)) (fromℕ (suc m)))
         ≡⟨ cong (subst Fin (*-comm (suc (suc n)) (suc (suc m))))
