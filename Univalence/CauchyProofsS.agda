@@ -311,21 +311,6 @@ fin-project-2 n m | result q r k≡r+q*sn | no ¬p =
                  suc (suc n) * suc (suc m) ∎)
           where open ≡-Reasoning
 
-fin-project-3 : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
-  (p≠ : ¬ suc (toℕ b * suc (suc n) + toℕ d) ≡ suc (suc m) * suc (suc n)) → 
-  fin-project (suc (suc n)) (suc (suc m))
-    (inject≤
-      ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
-        (suc m + suc n * suc (suc m)))
-      (i≤si (suc m + suc n * suc (suc m))))
-  ≡ {!!}
-fin-project-3 m n b d p≠ with
-  (toℕ
-    ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
-     (suc m + suc n * suc (suc m)))
-  divMod (suc (suc m)))
-... | result q r k≡r+q*sn = {!!} 
-
 subst-lookup-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
   subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
     (lookup
@@ -477,14 +462,30 @@ subst-lookup-transpose m n b d | no p≠ =
                  (suc m + suc n * suc (suc m)))
                 (i≤si (suc m + suc n * suc (suc m))))) ⟩
         subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
-          (let (b' , d') = fin-project
+          (let (d' , b') = fin-project
                              (suc (suc n)) (suc (suc m))
                              (inject≤
                                ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
                                  (suc m + suc n * suc (suc m)))
                                (i≤si (suc m + suc n * suc (suc m))))
-           in transposeIndex n m b' d')
-        ≡⟨ {!!} ⟩
+           in transposeIndex n m d' b')
+        ≡⟨ {!!} ⟩ -- index (b,d) in matrix becomes (d,b) in transpose
+        subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
+          (transposeIndex n m d b)
+        ≡⟨ {!!} ⟩ -- b and d are not max; second case in transposeIndex
+        subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
+          (inject≤
+            (((toℕ d * suc (suc m) + toℕ b) * suc (suc n)) mod
+             (suc m + suc n * suc (suc m)))
+            (i≤si (suc m + suc n * suc (suc m))))
+        ≡⟨ subst-inject-mod
+             {(toℕ d * suc (suc m) + toℕ b) * suc (suc n)}
+             (*-comm (suc (suc n)) (suc (suc m))) ⟩
+          inject≤
+            (((toℕ d * suc (suc m) + toℕ b) * suc (suc n)) mod
+             (suc n + suc m * suc (suc n)))
+            (i≤si (suc n + suc m * suc (suc n)))
+        ≡⟨ {!!} ⟩ -- multiples of (ssm*ssn-1) disappear when you take mod
          inject≤
            (fromℕ (toℕ b * suc (suc n) + toℕ d))
            (i*n+k≤m*n b d) ∎)
