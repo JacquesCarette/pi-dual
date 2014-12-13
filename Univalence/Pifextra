@@ -5543,3 +5543,12 @@ cancel+l 0 k n x = x
 cancel+l (suc r) k 0 ()
 cancel+l (suc r) k (suc n) (s≤s x) = trans≤ (cancel+l r k n x) (i≤si _)
 
+lastV : {ℓ : Level} {A : Set ℓ} {n : ℕ} → Vec A (suc n) → A
+lastV (x ∷ []) = x
+lastV (_ ∷ x ∷ xs) = lastV (x ∷ xs)
+
+last-map : {A B : Set} → (n : ℕ) → (xs : Vec A (suc n)) → (f : A → B) → 
+         lastV (mapV f xs) ≡ f (lastV xs)
+last-map 0 (x ∷ []) f = refl
+last-map (suc n) (_ ∷ x ∷ xs) f = last-map n (x ∷ xs) f 
+

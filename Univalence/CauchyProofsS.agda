@@ -241,15 +241,6 @@ refl′ : _≡_ ⇒ _≤_
 refl′ {0} refl = z≤n
 refl′ {suc m} refl = s≤s (refl′ refl)
 
-lastV : {ℓ : Level} {A : Set ℓ} {n : ℕ} → Vec A (suc n) → A
-lastV (x ∷ []) = x
-lastV (_ ∷ x ∷ xs) = lastV (x ∷ xs)
-
-last-map : {A B : Set} → (n : ℕ) → (xs : Vec A (suc n)) → (f : A → B) → 
-         lastV (mapV f xs) ≡ f (lastV xs)
-last-map 0 (x ∷ []) f = refl
-last-map (suc n) (_ ∷ x ∷ xs) f = last-map n (x ∷ xs) f 
-
 lookup-fromℕ-allFin : {A : Set} → (n : ℕ) → (f : Fin (suc n) → A) → 
   lookup (fromℕ n) (tabulate {suc n} f) ≡ f (fromℕ n)
 lookup-fromℕ-allFin 0 f = refl
@@ -319,6 +310,21 @@ fin-project-2 n m | result q r k≡r+q*sn | no ¬p =
                      (to-from (m + suc (suc (m + n * suc (suc m))))) ⟩ 
                  suc (suc n) * suc (suc m) ∎)
           where open ≡-Reasoning
+
+fin-project-3 : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
+  (p≠ : ¬ suc (toℕ b * suc (suc n) + toℕ d) ≡ suc (suc m) * suc (suc n)) → 
+  fin-project (suc (suc n)) (suc (suc m))
+    (inject≤
+      ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
+        (suc m + suc n * suc (suc m)))
+      (i≤si (suc m + suc n * suc (suc m))))
+  ≡ {!!}
+fin-project-3 m n b d p≠ with
+  (toℕ
+    ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
+     (suc m + suc n * suc (suc m)))
+  divMod (suc (suc m)))
+... | result q r k≡r+q*sn = {!!} 
 
 subst-lookup-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
   subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
@@ -471,13 +477,13 @@ subst-lookup-transpose m n b d | no p≠ =
                  (suc m + suc n * suc (suc m)))
                 (i≤si (suc m + suc n * suc (suc m))))) ⟩
         subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
-          (let (b , d) = fin-project
-                           (suc (suc n)) (suc (suc m))
-                           (inject≤
-                             ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
-                               (suc m + suc n * suc (suc m)))
-                             (i≤si (suc m + suc n * suc (suc m))))
-           in transposeIndex n m b d)
+          (let (b' , d') = fin-project
+                             (suc (suc n)) (suc (suc m))
+                             (inject≤
+                               ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
+                                 (suc m + suc n * suc (suc m)))
+                               (i≤si (suc m + suc n * suc (suc m))))
+           in transposeIndex n m b' d')
         ≡⟨ {!!} ⟩
          inject≤
            (fromℕ (toℕ b * suc (suc n) + toℕ d))
