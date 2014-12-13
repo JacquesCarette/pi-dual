@@ -439,12 +439,45 @@ subst-lookup-transpose m n b d | no p≠ =
             (subst Fin (*-comm (suc (suc m)) (suc (suc n)))
               (inject≤
                 ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
-                 (suc (n + suc (suc (n + m * suc (suc n))))))
-                (i≤si (suc (n + suc (suc (n + m * suc (suc n))))))))
+                 (suc n + suc m * suc (suc n)))
+                (i≤si (suc n + suc m * suc (suc n)))))
             (concatV
               (mapV
                 (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
                 (allFin (suc (suc n))))))
+        ≡⟨ cong₂
+             (λ x y → subst Fin (*-comm (suc (suc n)) (suc (suc m))) (lookup x y))
+             (subst-inject-mod
+               {((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))}
+               (*-comm (suc (suc m)) (suc (suc n))))
+             (concat-map-map-tabulate (suc (suc n)) (suc (suc m))
+               (λ {(b , d) → transposeIndex n m b d})) ⟩
+        subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
+          (lookup
+            (inject≤
+                ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
+                 (suc m + suc n * suc (suc m)))
+                (i≤si (suc m + suc n * suc (suc m))))
+            (tabulate (λ k →
+              let (b , d) = fin-project (suc (suc n)) (suc (suc m)) k in 
+              transposeIndex n m b d)))
+        ≡⟨ cong (subst Fin (*-comm (suc (suc n)) (suc (suc m))))
+             (lookup∘tabulate
+               (λ k →
+                let (b , d) = fin-project (suc (suc n)) (suc (suc m)) k in 
+                transposeIndex n m b d)
+              (inject≤
+                ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
+                 (suc m + suc n * suc (suc m)))
+                (i≤si (suc m + suc n * suc (suc m))))) ⟩
+        subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
+          (let (b , d) = fin-project
+                           (suc (suc n)) (suc (suc m))
+                           (inject≤
+                             ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
+                               (suc m + suc n * suc (suc m)))
+                             (i≤si (suc m + suc n * suc (suc m))))
+           in transposeIndex n m b d)
         ≡⟨ {!!} ⟩
          inject≤
            (fromℕ (toℕ b * suc (suc n) + toℕ d))
