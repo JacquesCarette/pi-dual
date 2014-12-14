@@ -14,7 +14,7 @@ open import Relation.Binary.PropositionalEquality.TrustMe
 open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
 open import Data.Nat.Properties
   using (m≤m+n; n≤m+n; n≤1+n; cancel-+-left; cancel-*-right; strictTotalOrder; 
-         cancel-*-right-≤; ≰⇒>; ¬i+1+j≤i; 1+n≰n)
+         cancel-*-right-≤; ≰⇒>; ¬i+1+j≤i; 1+n≰n; ≤⇒pred≤)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
@@ -381,6 +381,29 @@ mod-lem m n b d leq =
          inject≤ (fromℕ (toℕ d * suc (suc m) + toℕ b)) leq ∎)
   where open ≡-Reasoning
 
+not-max-b-d : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n)))
+  (p≠ : ¬ suc (toℕ b * suc (suc n) + toℕ d) ≡ suc (suc m) * suc (suc n)) →
+   suc (toℕ b * suc (suc n) + toℕ d) ≤ suc n + suc m * suc (suc n)
+not-max-b-d m n b d p≠ with
+      cmp (suc (toℕ b * suc (suc n) + toℕ d)) (suc (suc m) * suc (suc n))
+... | tri< a ¬b ¬c = ≤-pred a
+... | tri≈ ¬a b≡ ¬c = ⊥-elim (p≠ b≡) 
+... | tri> ¬a ¬b c = ⊥-elim (1+n≰n contra)
+  where contra = begin (suc (suc (suc m) * suc (suc n))
+                       ≤⟨ c ⟩
+                        suc (toℕ b * suc (suc n) + toℕ d)
+                       ≡⟨ sym (+-suc (toℕ b * suc (suc n)) (toℕ d)) ⟩
+                        toℕ b * suc (suc n) + suc (toℕ d)
+                       ≤⟨ cong+l≤ (bounded d) (toℕ b * suc (suc n)) ⟩
+                        toℕ b * suc (suc n) + suc (suc n)
+                       ≤⟨ cong+r≤
+                           (cong*r≤ (bounded' (suc m) b) (suc (suc n)))
+                           (suc (suc n)) ⟩
+                        suc m * suc (suc n) + suc (suc n)
+                       ≡⟨ +-comm (suc m * suc (suc n)) (suc (suc n)) ⟩
+                        suc (suc m) * suc (suc n) ∎)
+                 where open ≤-Reasoning
+
 fin-project-3 : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) →
   (p≠ : ¬ suc (toℕ b * suc (suc n) + toℕ d) ≡ suc (suc m) * suc (suc n)) → 
   fin-project (suc (suc n)) (suc (suc m))
@@ -506,7 +529,7 @@ subst-lookup-transpose m n b d | yes p= =
   where open ≡-Reasoning
 subst-lookup-transpose m n b d | no p≠ =
   let leq : suc (toℕ b * suc (suc n) + toℕ d) ≤ suc n + suc m * suc (suc n)
-      leq = {!!} in 
+      leq = not-max-b-d m n b d p≠ in 
   begin (subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
           (lookup
             (subst Fin (*-comm (suc (suc m)) (suc (suc n)))
