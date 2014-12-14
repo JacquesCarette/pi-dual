@@ -311,6 +311,84 @@ fin-project-2 n m | result q r k≡r+q*sn | no ¬p =
                  suc (suc n) * suc (suc m) ∎)
           where open ≡-Reasoning
 
+-- index (b,d) in matrix becomes (d,b) in transpose
+-- And yes, it is obvious:
+-- (b*n+d)*m = b*n*m + d*m            -- expand
+--           = b*(n*m -1) + b*1 + d*m -- add 0 = b*1 - b*1
+--           = b + d*m                -- modulus
+
+num-lem : (m n : ℕ) → (b : Fin (suc (suc m))) → (d : Fin (suc (suc n))) →
+  (((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) ≡
+  ((toℕ b * (suc m + suc n * suc (suc m))) + (toℕ d * suc (suc m) + toℕ b))
+num-lem m n b d = 
+  begin (((toℕ b * suc (suc n)) + toℕ d) * suc (suc m)
+        ≡⟨ distribʳ-*-+ (suc (suc m)) (toℕ b * suc (suc n)) (toℕ d) ⟩ 
+         (toℕ b * suc (suc n)) * suc (suc m) + toℕ d * suc (suc m)
+        ≡⟨ cong
+            (λ x → x + toℕ d * suc (suc m))
+            (trans
+              (*-assoc (toℕ b) (suc (suc n)) (suc (suc m)))
+              (*-comm (toℕ b) (suc (suc n) * suc (suc m)))) ⟩ 
+         (suc (suc n) * suc (suc m)) * toℕ b + toℕ d * suc (suc m)
+        ≡⟨ refl ⟩ 
+         suc (suc m + suc n * suc (suc m)) * toℕ b + toℕ d * suc (suc m)
+        ≡⟨ refl ⟩ 
+         (toℕ b + (suc m + suc n * suc (suc m)) * toℕ b) + toℕ d * suc (suc m)
+         ≡⟨ cong
+              (λ x → x + toℕ d * suc (suc m))
+              (+-comm (toℕ b) ((suc m + suc n * suc (suc m)) * toℕ b)) ⟩ 
+         ((suc m + suc n * suc (suc m)) * toℕ b + toℕ b) + toℕ d * suc (suc m)
+        ≡⟨ +-assoc
+            ((suc m + suc n * suc (suc m)) * toℕ b)
+            (toℕ b)
+            (toℕ d * suc (suc m)) ⟩ 
+         (suc m + suc n * suc (suc m)) * toℕ b + (toℕ b + toℕ d * suc (suc m))
+        ≡⟨ cong₂ _+_
+            (*-comm (suc m + suc n * suc (suc m)) (toℕ b))
+            (+-comm (toℕ b) (toℕ d * suc (suc m))) ⟩ 
+        toℕ b * (suc m + suc n * suc (suc m)) + (toℕ d * suc (suc m) + toℕ b) ∎)
+  where open ≡-Reasoning
+
+mod-multiple : (a m n : ℕ) → ((a * suc m + n) mod suc m) ≡ (n mod suc m)
+mod-multiple a m n = {!!}
+
+mod-≤ : (a m : ℕ) (leq : a ≤ suc m) → toℕ (a mod (suc m)) ≡ a
+mod-≤ a m leq = {!!} 
+
+mod-lem : (m n : ℕ) → (b : Fin (suc (suc m))) → (d : Fin (suc (suc n))) →
+      toℕ ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m)))
+           mod (suc m + suc n * suc (suc m)))
+    ≡ (toℕ d * suc (suc m)) + toℕ b
+mod-lem m n b d = 
+  begin (toℕ ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m)))
+               mod (suc m + suc n * suc (suc m)))
+         ≡⟨ cong
+             (λ x → toℕ (x mod (suc m + suc n * suc (suc m))))
+             (num-lem m n b d) ⟩ 
+         toℕ (((toℕ b * (suc m + suc n * suc (suc m))) + (toℕ d * suc (suc m) + toℕ b))
+               mod (suc m + suc n * suc (suc m)))
+         ≡⟨ cong toℕ
+               (mod-multiple
+                 (toℕ b)
+                 (m + suc n * suc (suc m))
+                 (toℕ d * suc (suc m) + toℕ b)) ⟩ 
+        toℕ (((toℕ d * suc (suc m)) + toℕ b) mod (suc m + suc n * suc (suc m)))
+         ≡⟨ mod-≤
+              ((toℕ d * suc (suc m)) + toℕ b)
+              (m + suc n * suc (suc m))
+              (≤-pred (i*n+k≤m*n d b)) ⟩ 
+        (toℕ d * suc (suc m)) + toℕ b ∎)
+  where open ≡-Reasoning
+
+fin-project-3 : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
+  fin-project (suc (suc n)) (suc (suc m))
+    (inject≤
+      ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
+       (suc m + suc n * suc (suc m)))
+      (i≤si (suc m + suc n * suc (suc m))))
+  ≡ (d , b)
+fin-project-3 m n b d = {!!}
+
 subst-lookup-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
   subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
     (lookup
@@ -469,7 +547,11 @@ subst-lookup-transpose m n b d | no p≠ =
                                  (suc m + suc n * suc (suc m)))
                                (i≤si (suc m + suc n * suc (suc m))))
            in transposeIndex n m d' b')
-        ≡⟨ {!!} ⟩ -- index (b,d) in matrix becomes (d,b) in transpose
+        ≡⟨ cong
+             (λ x →
+               subst Fin (*-comm (suc (suc n)) (suc (suc m)))
+                 let (d' , b') = x in transposeIndex n m d' b')
+             (fin-project-3 m n b d) ⟩ 
         subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
           (transposeIndex n m d b)
         ≡⟨ {!!} ⟩ -- b and d are not max; second case in transposeIndex
