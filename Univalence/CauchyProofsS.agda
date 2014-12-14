@@ -447,29 +447,63 @@ inject-mod m n b d leq =
    where open ≡-Reasoning
 
 fin-project-3 : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) →
-  (p≠ : ¬ suc (toℕ b * suc (suc n) + toℕ d) ≡ suc (suc m) * suc (suc n)) → 
+  (p≠ : ¬ suc (toℕ d * suc (suc m) + toℕ b) ≡ suc (suc n) * suc (suc m)) → 
   fin-project (suc (suc n)) (suc (suc m))
     (inject≤
       ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
        (suc m + suc n * suc (suc m)))
       (i≤si (suc m + suc n * suc (suc m))))
   ≡ (d , b)
-fin-project-3 m n b d p≠ =
-  begin (fin-project (suc (suc n)) (suc (suc m))
+fin-project-3 m n b d p≠ with
+  (toℕ (inject≤
+         ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
+          (suc m + suc n * suc (suc m)))
+         (i≤si (suc m + suc n * suc (suc m))))) divMod (suc (suc m))
+fin-project-3 m n b d p≠ | result q r k≡r+q*sn with suc (suc n) ≤? q
+fin-project-3 m n b d p≠ | result q r k≡r+q*sn | yes p =
+  ⊥-elim (absurd (suc n) (suc m) q r
            (inject≤
              ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
                (suc m + suc n * suc (suc m)))
              (i≤si (suc m + suc n * suc (suc m))))
-         ≡⟨ cong
-             (fin-project (suc (suc n)) (suc (suc m)))
-             (inject-mod n m d b (not-max-b-d n m d b {!!})) ⟩
-         fin-project (suc (suc n)) (suc (suc m))
-           (inject≤
-             (fromℕ (toℕ d * suc (suc m) + toℕ b))
-             (i*n+k≤m*n d b))
-         ≡⟨ {!!} ⟩
-         (d , b) ∎)
-  where open ≡-Reasoning
+             k≡r+q*sn
+             p)
+fin-project-3 m n b d p≠ | result q r k≡r+q*sn | no ¬p =
+  cong₂ _,_
+    {!!}
+    {!!}
+  where simplified : toℕ d * suc (suc m) + toℕ b ≡ toℕ r + q * suc (suc m)
+        simplified = begin (toℕ d * suc (suc m) + toℕ b
+                            ≡⟨ sym (to-from (toℕ d * suc (suc m) + toℕ b)) ⟩ 
+                           toℕ (fromℕ (toℕ d * suc (suc m) + toℕ b))
+                           ≡⟨ sym (inject≤-lemma
+                                    (fromℕ (toℕ d * suc (suc m) + toℕ b))
+                                    (i*n+k≤m*n d b)) ⟩
+                           toℕ (inject≤
+                             (fromℕ (toℕ d * suc (suc m) + toℕ b))
+                             (i*n+k≤m*n d b))
+                           ≡⟨ cong toℕ
+                                (sym (inject-mod n m d b (not-max-b-d n m d b p≠))) ⟩
+                           toℕ (inject≤
+                             ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
+                               (suc m + suc n * suc (suc m)))
+                             (i≤si (suc m + suc n * suc (suc m))))
+                           ≡⟨ k≡r+q*sn ⟩
+                           toℕ r + q * suc (suc m) ∎)
+                     where open ≡-Reasoning
+
+{--
+m        : ℕ
+n        : ℕ
+q        : ℕ
+b        : Fin (suc (suc m))
+d        : Fin (suc (suc n))
+r        : Fin (suc (suc m))
+¬p       : ¬ suc (suc n) ≤ q
+p≠       : ¬ suc (toℕ d * suc (suc m) + toℕ b) ≡ suc (suc n) * suc (suc m)
+           toℕ d * suc (suc m) + toℕ b ≡ toℕ r + q * suc (suc m)
+--}
+
 
 subst-lookup-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
   subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
@@ -586,7 +620,9 @@ subst-lookup-transpose m n b d | yes p= =
   where open ≡-Reasoning
 subst-lookup-transpose m n b d | no p≠ =
   let leq : suc (toℕ b * suc (suc n) + toℕ d) ≤ suc n + suc m * suc (suc n)
-      leq = not-max-b-d m n b d p≠ in 
+      leq = not-max-b-d m n b d p≠
+      p'≠ : ¬ suc (toℕ d * suc (suc m) + toℕ b) ≡ suc (suc n) * suc (suc m)
+      p'≠ = {!!} in
   begin (subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
           (lookup
             (subst Fin (*-comm (suc (suc m)) (suc (suc n)))
@@ -635,7 +671,7 @@ subst-lookup-transpose m n b d | no p≠ =
              (λ x →
                subst Fin (*-comm (suc (suc n)) (suc (suc m)))
                  let (d' , b') = x in transposeIndex n m d' b')
-             (fin-project-3 m n b d p≠) ⟩ 
+             (fin-project-3 m n b d p'≠) ⟩ 
         subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
           (transposeIndex n m d b)
         ≡⟨ {!!} ⟩ -- b and d are not max; second case in transposeIndex
