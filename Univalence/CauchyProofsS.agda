@@ -404,6 +404,48 @@ not-max-b-d m n b d p≠ with
                         suc (suc m) * suc (suc n) ∎)
                  where open ≤-Reasoning
 
+inject-mod : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) 
+     (leq : suc (toℕ b * suc (suc n) + toℕ d) ≤ suc n + suc m * suc (suc n)) → 
+        inject≤
+          (((toℕ d * suc (suc m) + toℕ b) * suc (suc n)) mod
+             (suc n + suc m * suc (suc n)))
+          (i≤si (suc n + suc m * suc (suc n)))
+      ≡ inject≤
+           (fromℕ (toℕ b * suc (suc n) + toℕ d))
+           (i*n+k≤m*n b d) 
+inject-mod m n b d leq = 
+   begin (inject≤
+            (((toℕ d * suc (suc m) + toℕ b) * suc (suc n)) mod
+             (suc n + suc m * suc (suc n)))
+            (i≤si (suc n + suc m * suc (suc n)))
+        ≡⟨ cong₂D!
+             inject≤ 
+             (sym (mod-lem n m d b leq))
+             (≤-proof-irrelevance
+               (subst
+                 (λ _ →
+                   suc n + suc m * suc (suc n) ≤ suc (suc n + suc m * suc (suc n)))
+                 (sym (mod-lem n m d b leq))
+                 (i≤si (suc n + suc m * suc (suc n))))
+               (i≤si (suc n + suc m * suc (suc n)))) ⟩
+          inject≤
+            (inject≤ (fromℕ (toℕ  b * suc (suc n) + toℕ d)) leq)
+            (i≤si (suc n + suc m * suc (suc n)))
+        ≡⟨ toℕ-injective
+            (trans
+              (inject≤-lemma
+                (inject≤ (fromℕ (toℕ b * suc (suc n) + toℕ d)) leq)
+                (i≤si (suc n + suc m * suc (suc n))))
+              (trans
+                (inject≤-lemma (fromℕ (toℕ b * suc (suc n) + toℕ d)) leq)
+                (sym (inject≤-lemma
+                       (fromℕ (toℕ b * suc (suc n) + toℕ d))
+                       (i*n+k≤m*n b d))))) ⟩ 
+         inject≤
+           (fromℕ (toℕ b * suc (suc n) + toℕ d))
+           (i*n+k≤m*n b d) ∎)
+   where open ≡-Reasoning
+
 fin-project-3 : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) →
   (p≠ : ¬ suc (toℕ b * suc (suc n) + toℕ d) ≡ suc (suc m) * suc (suc n)) → 
   fin-project (suc (suc n)) (suc (suc m))
@@ -412,7 +454,22 @@ fin-project-3 : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) →
        (suc m + suc n * suc (suc m)))
       (i≤si (suc m + suc n * suc (suc m))))
   ≡ (d , b)
-fin-project-3 m n b d p≠ = {!!}
+fin-project-3 m n b d p≠ =
+  begin (fin-project (suc (suc n)) (suc (suc m))
+           (inject≤
+             ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
+               (suc m + suc n * suc (suc m)))
+             (i≤si (suc m + suc n * suc (suc m))))
+         ≡⟨ cong
+             (fin-project (suc (suc n)) (suc (suc m)))
+             (inject-mod n m d b (not-max-b-d n m d b {!!})) ⟩
+         fin-project (suc (suc n)) (suc (suc m))
+           (inject≤
+             (fromℕ (toℕ d * suc (suc m) + toℕ b))
+             (i*n+k≤m*n d b))
+         ≡⟨ {!!} ⟩
+         (d , b) ∎)
+  where open ≡-Reasoning
 
 subst-lookup-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
   subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
@@ -590,36 +647,14 @@ subst-lookup-transpose m n b d | no p≠ =
         ≡⟨ subst-inject-mod
              {(toℕ d * suc (suc m) + toℕ b) * suc (suc n)}
              (*-comm (suc (suc n)) (suc (suc m))) ⟩
-          inject≤
+        inject≤
             (((toℕ d * suc (suc m) + toℕ b) * suc (suc n)) mod
              (suc n + suc m * suc (suc n)))
             (i≤si (suc n + suc m * suc (suc n)))
-        ≡⟨ cong₂D!
-             inject≤ 
-             (sym (mod-lem n m d b leq))
-             (≤-proof-irrelevance
-               (subst
-                 (λ _ →
-                   suc n + suc m * suc (suc n) ≤ suc (suc n + suc m * suc (suc n)))
-                 (sym (mod-lem n m d b leq))
-                 (i≤si (suc n + suc m * suc (suc n))))
-               (i≤si (suc n + suc m * suc (suc n)))) ⟩
-          inject≤
-            (inject≤ (fromℕ (toℕ  b * suc (suc n) + toℕ d)) leq)
-            (i≤si (suc n + suc m * suc (suc n)))
-        ≡⟨ toℕ-injective
-            (trans
-              (inject≤-lemma
-                (inject≤ (fromℕ (toℕ b * suc (suc n) + toℕ d)) leq)
-                (i≤si (suc n + suc m * suc (suc n))))
-              (trans
-                (inject≤-lemma (fromℕ (toℕ b * suc (suc n) + toℕ d)) leq)
-                (sym (inject≤-lemma
-                       (fromℕ (toℕ b * suc (suc n) + toℕ d))
-                       (i*n+k≤m*n b d))))) ⟩ 
-         inject≤
-           (fromℕ (toℕ b * suc (suc n) + toℕ d))
-           (i*n+k≤m*n b d) ∎)
+        ≡⟨ inject-mod m n b d leq ⟩ 
+        inject≤
+          (fromℕ (toℕ b * suc (suc n) + toℕ d))
+          (i*n+k≤m*n b d) ∎)
   where open ≡-Reasoning
 
 lookup-swap-2 :
