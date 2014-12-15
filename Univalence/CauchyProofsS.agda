@@ -404,6 +404,37 @@ not-max-b-d m n b d p≠ with
                         suc (suc m) * suc (suc n) ∎)
                  where open ≤-Reasoning
 
+not-max-b-d' : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n)))
+  (p≠ : ¬ suc (toℕ b * suc (suc n) + toℕ d) ≡ suc (suc m) * suc (suc n)) →
+  (¬ suc (toℕ d * suc (suc m) + toℕ b) ≡ suc (suc n) * suc (suc m))
+not-max-b-d' m n b d p≠ with
+  (suc (toℕ d * suc (suc m) + toℕ b)) ≟ (suc (suc n) * suc (suc m))
+... | no ¬w = ¬w
+... | yes w =
+  let (d≡sn , b≡sm) = max-b-d n m d b w in ⊥-elim (p≠ (contra b≡sm d≡sn))
+  where contra : (b≡sm : toℕ b ≡ suc m) (d≡sn : toℕ d ≡ suc n) →
+                 suc (toℕ b * suc (suc n) + toℕ d) ≡ suc (suc m) * suc (suc n)
+        contra b≡sm d≡sn =
+          begin (suc (toℕ b * suc (suc n) + toℕ d)
+                ≡⟨ cong₂ (λ x y → suc (x * suc (suc n) + y)) b≡sm d≡sn ⟩ 
+                 suc (suc m * suc (suc n) + suc n)
+                ≡⟨ sym (+-suc (suc m * suc (suc n)) (suc n)) ⟩ 
+                 suc m * suc (suc n) + suc (suc n)
+                ≡⟨  +-comm (suc m * suc (suc n)) (suc (suc n)) ⟩ 
+                 suc (suc m) * suc (suc n) ∎)
+          where open ≡-Reasoning
+
+transposeIndex'' : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) 
+  (p≠  : ¬ suc (toℕ b * suc (suc n) + toℕ d) ≡ suc (suc m) * suc (suc n)) → 
+  transposeIndex m n b d ≡
+  inject≤
+    (((toℕ b * suc (suc n) + toℕ d) * (suc (suc m))) mod (suc n + suc m * suc (suc n)))
+    (i≤si (suc n + suc m * suc (suc n)))
+transposeIndex'' m n b d p≠ with
+  suc (toℕ b * suc (suc n) + toℕ d) ≟ suc (suc m) * suc (suc n)
+... | yes w = ⊥-elim (p≠ w)
+... | no ¬w = refl
+
 inject-mod : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) 
      (leq : suc (toℕ b * suc (suc n) + toℕ d) ≤ suc n + suc m * suc (suc n)) → 
         inject≤
@@ -622,7 +653,7 @@ subst-lookup-transpose m n b d | no p≠ =
   let leq : suc (toℕ b * suc (suc n) + toℕ d) ≤ suc n + suc m * suc (suc n)
       leq = not-max-b-d m n b d p≠
       p'≠ : ¬ suc (toℕ d * suc (suc m) + toℕ b) ≡ suc (suc n) * suc (suc m)
-      p'≠ = {!!} in
+      p'≠ = not-max-b-d' m n b d p≠ in
   begin (subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
           (lookup
             (subst Fin (*-comm (suc (suc m)) (suc (suc n)))
@@ -674,7 +705,8 @@ subst-lookup-transpose m n b d | no p≠ =
              (fin-project-3 m n b d p'≠) ⟩ 
         subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
           (transposeIndex n m d b)
-        ≡⟨ {!!} ⟩ -- b and d are not max; second case in transposeIndex
+        ≡⟨ cong (subst Fin (*-comm (suc (suc n)) (suc (suc m))))
+             (transposeIndex'' n m d b p'≠) ⟩ 
         subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
           (inject≤
             (((toℕ d * suc (suc m) + toℕ b) * suc (suc n)) mod
