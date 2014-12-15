@@ -499,11 +499,26 @@ fin-project-3 m n b d p≠ | result q r k≡r+q*sn | yes p =
              (i≤si (suc m + suc n * suc (suc m))))
              k≡r+q*sn
              p)
-fin-project-3 m n b d p≠ | result q r k≡r+q*sn | no ¬p =
-  cong₂ _,_
-    {!!}
-    {!!}
-  where simplified : toℕ d * suc (suc m) + toℕ b ≡ toℕ r + q * suc (suc m)
+{--
+n        : ℕ
+q        : ℕ
+¬p       : ¬ suc (suc n) ≤ q
+m        : ℕ
+b        : Fin (suc (suc m))
+d        : Fin (suc (suc n))
+r        : Fin (suc (suc m))
+p≠       : 
+
+¬ (suc (toℕ d * suc (suc m) + toℕ b) ≡ suc (suc n) * suc (suc m))
+toℕ d * suc (suc m) + toℕ b ≡ q * suc (suc m) + toℕ r
+
+--}
+fin-project-3 m n b d p≠ | result q r k≡r+q*sn | no ¬p = cong₂ _,_ q≡d r≡b
+  where q≡d : fromℕ≤ {q} {suc (suc n)} (s≤s (≤-pred (≰⇒> ¬p))) ≡ d
+        q≡d = {!!} 
+        r≡b : r ≡ b
+        r≡b = {!!} 
+        simplified : toℕ d * suc (suc m) + toℕ b ≡ toℕ r + q * suc (suc m)
         simplified = begin (toℕ d * suc (suc m) + toℕ b
                             ≡⟨ sym (to-from (toℕ d * suc (suc m) + toℕ b)) ⟩ 
                            toℕ (fromℕ (toℕ d * suc (suc m) + toℕ b))
@@ -522,19 +537,6 @@ fin-project-3 m n b d p≠ | result q r k≡r+q*sn | no ¬p =
                            ≡⟨ k≡r+q*sn ⟩
                            toℕ r + q * suc (suc m) ∎)
                      where open ≡-Reasoning
-
-{--
-m        : ℕ
-n        : ℕ
-q        : ℕ
-b        : Fin (suc (suc m))
-d        : Fin (suc (suc n))
-r        : Fin (suc (suc m))
-¬p       : ¬ suc (suc n) ≤ q
-p≠       : ¬ suc (toℕ d * suc (suc m) + toℕ b) ≡ suc (suc n) * suc (suc m)
-           toℕ d * suc (suc m) + toℕ b ≡ toℕ r + q * suc (suc m)
---}
-
 
 subst-lookup-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
   subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
