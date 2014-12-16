@@ -55,7 +55,8 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Cauchy
 open import Proofs
 open import CauchyProofs
-open import CauchyProofsT
+-- open import CauchyProofsT
+open import CauchyProofsT_TEMP
 open import CauchyProofsS
 open import Groupoid
 
@@ -1501,7 +1502,7 @@ rinv∼ {TIMES t₁ t₂} {TIMES t₃ t₄} {c₁ ⊗ c₂} =
              (subst Cauchy (size≡! (! c₂)) (c2cauchy c₂)))
            ≡⟨ cong₂ tcompcauchy (rinv∼ {t₁} {t₃} {c₁}) (rinv∼ {t₂} {t₄} {c₂}) ⟩ 
          tcompcauchy (c2cauchy {t₃} id⟷) (c2cauchy {t₄} id⟷)
-            ≡⟨ tcomp-id {size t₁} {size t₂} ⟩
+            ≡⟨ tcomp-id {size t₃} {size t₄} ⟩
          c2cauchy {TIMES t₃ t₄} id⟷ ∎)
   where open ≡-Reasoning
 rinv∼ {PLUS ONE ONE} {BOOL} {foldBool} = 
@@ -1795,15 +1796,42 @@ G' = record
         ; ∘-resp-≈ = λ p∼q r∼s → resp◎⇔ r∼s p∼q 
         }
 
-{--
 ------------------------------------------------------------------------------
 -- Inverting permutations to syntactic combinators
 
-perm2comb : {t₁ t₂ : U} → (size t₁ ≡ size t₂) → Perm (size t₁) → (t₁ ⟷ t₂)
-perm2comb {ZERO} {t₂} sp [] = {!!} 
-perm2comb {ONE} {t₂} sp p = {!!} 
-perm2comb {PLUS t₁ t₂} {t₃} sp p = {!!} 
-perm2comb {TIMES t₁ t₂} {t₃} sp p = {!!} 
+cauchy2c : {t₁ t₂ : U} → (size t₁ ≡ size t₂) → Cauchy (size t₁) → (t₁ ⟷ t₂)
+cauchy2c {ZERO} {ZERO} refl [] = id⟷
+cauchy2c {ZERO} {ONE} ()
+cauchy2c {ZERO} {PLUS t₂ t₃} sp π = {!!}
+cauchy2c {ZERO} {TIMES t₂ t₃} sp π = {!!}
+cauchy2c {ZERO} {BOOL} sp π = {!!}
+cauchy2c {ONE} {ZERO} sp π = {!!}
+cauchy2c {ONE} {ONE} sp π = {!!}
+cauchy2c {ONE} {PLUS t₂ t₃} sp π = {!!}
+cauchy2c {ONE} {TIMES t₂ t₃} sp π = {!!}
+cauchy2c {ONE} {BOOL} sp π = {!!}
+cauchy2c {PLUS t₁ t₂} {ZERO} sp π = {!!}
+cauchy2c {PLUS t₁ t₂} {ONE} sp π = {!!}
+cauchy2c {PLUS t₁ t₂} {PLUS t₃ t₄} sp π = {!!}
+cauchy2c {PLUS t₁ t₂} {TIMES t₃ t₄} sp π = {!!}
+cauchy2c {PLUS t₁ t₂} {BOOL} sp π = {!!}
+cauchy2c {TIMES t₁ t₂} {ZERO} sp π = {!!}
+cauchy2c {TIMES t₁ t₂} {ONE} sp π = {!!}
+cauchy2c {TIMES t₁ t₂} {PLUS t₃ t₄} sp π = {!!}
+cauchy2c {TIMES t₁ t₂} {TIMES t₃ t₄} sp π = {!!}
+cauchy2c {TIMES t₁ t₂} {BOOL} sp π = {!!}
+cauchy2c {BOOL} {ZERO} sp π = {!!}
+cauchy2c {BOOL} {ONE} sp π = {!!}
+cauchy2c {BOOL} {PLUS t₂ t₃} sp π = {!!}
+cauchy2c {BOOL} {TIMES t₂ t₃} sp π = {!!}
+cauchy2c {BOOL} {BOOL} sp π = {!!} 
+
+{--
+cauchy2c {ZERO} {t₂} sp [] = {!!} 
+cauchy2c {ONE} {t₂} sp p = {!!} 
+cauchy2c {PLUS t₁ t₂} {t₃} sp p = {!!} 
+cauchy2c {TIMES t₁ t₂} {t₃} sp p = {!!} 
+--}
 
 ------------------------------------------------------------------------------
 -- Soundness and completeness
@@ -1813,6 +1841,9 @@ perm2comb {TIMES t₁ t₂} {t₃} sp p = {!!}
 -- that for all c₁ and c₂, we have c₁ ∼ c₂ iff c₁ ⇔ c₂
 
 soundness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₁ ∼ c₂)
+soundness c = {!!}
+
+{--
 soundness assoc◎l      = assoc∼
 soundness assoc◎r      = sym∼ assoc∼
 soundness assoc⊕l      = assoc⊕∼
@@ -1852,13 +1883,14 @@ soundness (trans⇔ α β) = trans∼ (soundness α) (soundness β)
 soundness (resp◎⇔ α β) = resp∼ (soundness α) (soundness β)
 soundness (resp⊕⇔ α β) = {!!}
 soundness (resp⊗⇔ α β) = {!!} 
+--}
 
 -- The idea is to invert evaluation and use that to extract from each
 -- extensional representation of a combinator, a canonical syntactic
 -- representative
 
 canonical : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂)
-canonical c = perm2comb (size≡ c) (comb2perm c)
+canonical c = cauchy2c (size≡ c) (c2cauchy c)
 
 -- Note that if c₁ ⇔ c₂, then by soundness c₁ ∼ c₂ and hence their
 -- canonical representatives are identical. 
@@ -1866,7 +1898,7 @@ canonical c = perm2comb (size≡ c) (comb2perm c)
 canonicalWellDefined : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → 
   (c₁ ⇔ c₂) → (canonical c₁ ≡ canonical c₂)
 canonicalWellDefined {t₁} {t₂} {c₁} {c₂} α = 
-  cong₂ perm2comb (size∼ c₁ c₂) (soundness α) 
+  cong₂ cauchy2c (size∼ c₁ c₂) (soundness α) 
 
 -- If we can prove that every combinator is equal to its normal form
 -- then we can prove completeness.
@@ -1882,10 +1914,10 @@ completeness {t₁} {t₂} {c₁} {c₂} c₁∼c₂ =
   c₁
     ⇔⟨ inversion ⟩
   canonical c₁
-    ⇔⟨  resp≡⇔ (cong₂ perm2comb (size∼ c₁ c₂) c₁∼c₂) ⟩ 
+    ⇔⟨  resp≡⇔ (cong₂ cauchy2c (size∼ c₁ c₂) c₁∼c₂) ⟩ 
   canonical c₂
     ⇔⟨ 2! inversion ⟩ 
   c₂ ▤
 
 ------------------------------------------------------------------------------
---}
+

@@ -69,11 +69,6 @@ open import Cauchy
 open import CauchyProofs
 -- open import CauchyProofsT
 open import CauchyProofsT_TEMP
-postulate
-  tabulate-concat : ∀ {m n} →
-    (f : Fin m × Fin n → Fin (m * n)) → 
-    concatV (tabulate {m} (λ i → tabulate {n} (λ j → f (i , j)))) ≡
-    tabulate {m * n} (λ (k : Fin (m * n)) → f (fin-project m n k))
 
 ------------------------------------------------------------------------------
 -- Main lemma swap⋆idemp

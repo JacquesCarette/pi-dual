@@ -448,6 +448,12 @@ fin-project (suc m) (suc n) k with (toℕ k) divMod (suc n)
         ... | yes p = ⊥-elim (absurd m n q r k k≡r+q*sn p)
         ... | no ¬p = ≤-pred (≰⇒> ¬p)  
 
+postulate
+  tabulate-concat : ∀ {m n} →
+    (f : Fin m × Fin n → Fin (m * n)) → 
+    concatV (tabulate {m} (λ i → tabulate {n} (λ j → f (i , j)))) ≡
+    tabulate {m * n} (λ (k : Fin (m * n)) → f (fin-project m n k))
+
 concat-tabulate-[] : ∀ {m n} {f : Fin m →  Fin n} → 
     concatV (tabulate {m} ((λ x → []) ∘ f)) ≡
     subst (λ n → Vec (Fin (m * 0)) n) (sym (*-right-zero m)) []
@@ -460,7 +466,7 @@ tabulate-⊥ {0} = refl
 tabulate-⊥ {suc m}{_} {g} = tabulate-⊥ {m}
 
 toℕ-inject+ : ∀ {n k} → (i : Fin n) → toℕ (inject+ k i) ≡ toℕ i
-toℕ-inject+ {Data.Nat.zero} ()
+toℕ-inject+ {0} ()
 toℕ-inject+ {suc n} zero = refl
 toℕ-inject+ {suc n} (suc i) = cong suc (toℕ-inject+ i)
 
@@ -517,12 +523,13 @@ first-row m n f =
            q≡f₁ = q≡ m q ¬p
            si≡f₂ : _≡_ {A = ℕ} (suc (toℕ (inject+ (m * suc n) i)))  (suc (toℕ i))
            si≡f₂ = cong suc (toℕ-inject+ {k = m * suc n} i)
-           sq : (q ≡ Data.Nat.zero) × (toℕ r ≡ suc (toℕ i))
+           sq : (q ≡ 0) × (toℕ r ≡ suc (toℕ i))
            sq = small-quotient n q i r (trans (sym si≡f₂) property)
            a₁ : toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) ≡ toℕ {suc q} zero
            a₁ = trans (sym q≡f₁) (proj₁ sq)
            a₂ :  (suc i) ≡ r
            a₂ = toℕ-injective (sym (proj₂ sq))
+
 
 lookup-concat-left : ∀ {ℓ} {A : Set ℓ} {m n : ℕ} → 
   (d : Fin n) (leq : suc (toℕ d) ≤ n + m) (vs : Vec A n) (ws : Vec A m) → 
@@ -860,6 +867,118 @@ lookup-concat {suc m} {suc n} (suc k) (x ∷ pm) (x₁ ∷ qm) (x₂ ∷ pn) (x�
          in inject≤
               (fromℕ (toℕ r * suc n + toℕ s))
               (i*n+k≤m*n r s) ∎)
+  where open ≡-Reasoning
+
+tcomp-dist : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
+  scompcauchy (tcompcauchy pm pn) (tcompcauchy qm qn) ≡
+  tcompcauchy (scompcauchy pm qm) (scompcauchy pn qn)
+tcomp-dist {m} {n} pm qm pn qn =
+  begin (scompcauchy (tcompcauchy pm pn) (tcompcauchy qm qn)
+           ≡⟨ refl ⟩
+         tabulate {m * n} (λ k →
+           lookup
+             (lookup k (concatV 
+                         (mapV 
+                           (λ b → 
+                             mapV (λ d →
+                               inject≤
+                                 (fromℕ (toℕ b * n + toℕ d))
+                                 (i*n+k≤m*n b d)) pn)
+                           pm)))
+             (concatV 
+               (mapV 
+                 (λ b → 
+                   mapV (λ d →
+                     inject≤
+                       (fromℕ (toℕ b * n + toℕ d))
+                       (i*n+k≤m*n b d)) qn)
+                 qm)))
+           ≡⟨  finext
+                 (λ k →
+                   lookup
+                     (lookup k (concatV 
+                       (mapV 
+                         (λ b → 
+                           mapV (λ d →
+                             inject≤
+                               (fromℕ (toℕ b * n + toℕ d))
+                                (i*n+k≤m*n b d)) pn)
+                         pm)))
+                     (concatV 
+                       (mapV 
+                         (λ b → 
+                           mapV (λ d →
+                             inject≤
+                               (fromℕ (toℕ b * n + toℕ d))
+                               (i*n+k≤m*n b d)) qn)
+                       qm)))
+                 (λ k →
+                   let (i , j) = fin-project m n k
+                       b = lookup (lookup i pm) qm
+                       d = lookup (lookup j pn) qn in 
+                   inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                 (λ k → lookup-concat {m} {n} k pm qm pn qn) ⟩
+         tabulate {m * n}
+           (λ k →
+             let (i , j) = fin-project m n k
+                 b = lookup (lookup i pm) qm
+                 d = lookup (lookup j pn) qn in 
+             inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+           ≡⟨  sym (tabulate-concat
+                 (λ {(i , j) →
+                   let b = lookup (lookup i pm) qm
+                       d = lookup (lookup j pn) qn in 
+                   inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)})) ⟩
+         concatV
+           (tabulate {m}
+             (λ i →
+               tabulate {n}
+                 (λ j → 
+                   let b = lookup (lookup i pm) qm
+                       d = lookup (lookup j pn) qn in 
+                   inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))))
+           ≡⟨  cong concatV
+                 (finext
+                   (λ i →
+                     tabulate {n}
+                       (λ j → 
+                         let b = lookup (lookup i pm) qm
+                             d = lookup (lookup j pn) qn in 
+                         inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)))
+                   (λ i →
+                     let b = lookup (lookup i pm) qm in 
+                     mapV
+                       (λ d →
+                         inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                       (tabulate (λ i → lookup (lookup i pn) qn)))
+                   (λ i →
+                     tabulate-∘
+                       (let b = lookup (lookup i pm) qm in 
+                        λ d →
+                          inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                       (λ i → lookup (lookup i pn) qn))) ⟩
+         concatV
+           (tabulate {m}
+             (λ i →
+               let b = lookup (lookup i pm) qm in 
+               mapV
+                 (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                 (tabulate (λ i → lookup (lookup i pn) qn))))
+           ≡⟨ cong concatV (tabulate-∘
+                (λ b →
+                  mapV
+                    (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                    (tabulate (λ i → lookup (lookup i pn) qn)))
+                 (λ i → lookup (lookup i pm) qm)) ⟩
+         concatV
+           (mapV
+             (λ b →
+               mapV
+                 (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                 (tabulate (λ i → lookup (lookup i pn) qn)))
+             (tabulate (λ i → lookup (lookup i pm) qm)))
+           ≡⟨  refl ⟩
+         tcompcauchy (scompcauchy pm qm) (scompcauchy pn qn) ∎)
   where open ≡-Reasoning
 
 ------------------------------------------------------------------------------
