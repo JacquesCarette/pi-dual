@@ -1800,16 +1800,18 @@ G' = record
 -- Inverting permutations to syntactic combinators
 
 cauchy2c : {t₁ t₂ : U} → (size t₁ ≡ size t₂) → Cauchy (size t₁) → (t₁ ⟷ t₂)
+cauchy2c {ZERO} {ONE} () π
+cauchy2c {ZERO} {BOOL} () π
+cauchy2c {ONE} {ZERO} () π
+cauchy2c {ONE} {BOOL} () π
+cauchy2c {BOOL} {ZERO} () π
+cauchy2c {BOOL} {ONE} () π
 cauchy2c {ZERO} {ZERO} refl [] = id⟷
-cauchy2c {ZERO} {ONE} ()
+cauchy2c {ONE} {ONE} sp π = id⟷
 cauchy2c {ZERO} {PLUS t₂ t₃} sp π = {!!}
 cauchy2c {ZERO} {TIMES t₂ t₃} sp π = {!!}
-cauchy2c {ZERO} {BOOL} sp π = {!!}
-cauchy2c {ONE} {ZERO} sp π = {!!}
-cauchy2c {ONE} {ONE} sp π = {!!}
 cauchy2c {ONE} {PLUS t₂ t₃} sp π = {!!}
 cauchy2c {ONE} {TIMES t₂ t₃} sp π = {!!}
-cauchy2c {ONE} {BOOL} sp π = {!!}
 cauchy2c {PLUS t₁ t₂} {ZERO} sp π = {!!}
 cauchy2c {PLUS t₁ t₂} {ONE} sp π = {!!}
 cauchy2c {PLUS t₁ t₂} {PLUS t₃ t₄} sp π = {!!}
@@ -1820,18 +1822,16 @@ cauchy2c {TIMES t₁ t₂} {ONE} sp π = {!!}
 cauchy2c {TIMES t₁ t₂} {PLUS t₃ t₄} sp π = {!!}
 cauchy2c {TIMES t₁ t₂} {TIMES t₃ t₄} sp π = {!!}
 cauchy2c {TIMES t₁ t₂} {BOOL} sp π = {!!}
-cauchy2c {BOOL} {ZERO} sp π = {!!}
-cauchy2c {BOOL} {ONE} sp π = {!!}
 cauchy2c {BOOL} {PLUS t₂ t₃} sp π = {!!}
 cauchy2c {BOOL} {TIMES t₂ t₃} sp π = {!!}
-cauchy2c {BOOL} {BOOL} sp π = {!!} 
-
-{--
-cauchy2c {ZERO} {t₂} sp [] = {!!} 
-cauchy2c {ONE} {t₂} sp p = {!!} 
-cauchy2c {PLUS t₁ t₂} {t₃} sp p = {!!} 
-cauchy2c {TIMES t₁ t₂} {t₃} sp p = {!!} 
---}
+-- LOOK HERE 
+cauchy2c {BOOL} {BOOL} refl (zero ∷ zero ∷ []) = {!!} -- ILLEGAL
+cauchy2c {BOOL} {BOOL} refl (zero ∷ suc zero ∷ []) = id⟷
+cauchy2c {BOOL} {BOOL} refl (zero ∷ suc (suc ()) ∷ [])
+cauchy2c {BOOL} {BOOL} refl (suc zero ∷ zero ∷ []) = NOT
+cauchy2c {BOOL} {BOOL} refl (suc zero ∷ suc zero ∷ []) = {!!} --ILLEGAL
+cauchy2c {BOOL} {BOOL} refl (suc zero ∷ suc (suc ()) ∷ [])
+cauchy2c {BOOL} {BOOL} refl (suc (suc ()) ∷ b ∷ []) 
 
 ------------------------------------------------------------------------------
 -- Soundness and completeness
@@ -1841,25 +1841,22 @@ cauchy2c {TIMES t₁ t₂} {t₃} sp p = {!!}
 -- that for all c₁ and c₂, we have c₁ ∼ c₂ iff c₁ ⇔ c₂
 
 soundness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₁ ∼ c₂)
-soundness c = {!!}
-
-{--
-soundness assoc◎l      = assoc∼
-soundness assoc◎r      = sym∼ assoc∼
-soundness assoc⊕l      = assoc⊕∼
-soundness assoc⊕r      = sym∼ assoc⊕∼
-soundness assoc⊗l      = assoc⊗∼
-soundness assoc⊗r      = sym∼ assoc⊗∼
+soundness assoc◎l      = {!!} -- assoc∼
+soundness assoc◎r      = {!!} -- sym∼ assoc∼
+soundness assoc⊕l      = {!!} -- assoc⊕∼
+soundness assoc⊕r      = {!!} -- sym∼ assoc⊕∼
+soundness assoc⊗l      = {!!} -- assoc⊗∼
+soundness assoc⊗r      = {!!} -- sym∼ assoc⊗∼
 soundness dist⇔        = {!!}
 soundness factor⇔      = {!!}
-soundness idl◎l        = id◎c∼c
-soundness idl◎r        = sym∼ id◎c∼c
-soundness idr◎l        = c◎id∼c
-soundness idr◎r        = sym∼ c◎id∼c
-soundness linv◎l       = linv∼
-soundness linv◎r       = sym∼ linv∼
-soundness rinv◎l       = rinv∼
-soundness rinv◎r       = sym∼ rinv∼
+soundness idl◎l        = {!!} -- id◎c∼c
+soundness idl◎r        = {!!} -- sym∼ id◎c∼c
+soundness idr◎l        = {!!} -- c◎id∼c
+soundness idr◎r        = {!!} -- sym∼ c◎id∼c
+soundness linv◎l       = {!!} -- linv∼
+soundness linv◎r       = {!!} -- sym∼ linv∼
+soundness rinv◎l       = {!!} -- rinv∼
+soundness rinv◎r       = {!!} -- sym∼ rinv∼
 soundness unitel₊⇔     = {!!}
 soundness uniter₊⇔     = {!!}
 soundness unitil₊⇔     = {!!}
@@ -1878,12 +1875,11 @@ soundness swapl⋆⇔      = {!!}
 soundness swapr⋆⇔      = {!!}
 soundness swapfl⋆⇔     = {!!}
 soundness swapfr⋆⇔     = {!!}
-soundness id⇔          = refl∼
-soundness (trans⇔ α β) = trans∼ (soundness α) (soundness β)
-soundness (resp◎⇔ α β) = resp∼ (soundness α) (soundness β)
+soundness id⇔          = {!!} -- refl∼
+soundness (trans⇔ α β) = {!!} -- trans∼ (soundness α) (soundness β)
+soundness (resp◎⇔ α β) = {!!} -- resp∼ (soundness α) (soundness β)
 soundness (resp⊕⇔ α β) = {!!}
 soundness (resp⊗⇔ α β) = {!!} 
---}
 
 -- The idea is to invert evaluation and use that to extract from each
 -- extensional representation of a combinator, a canonical syntactic
@@ -1903,8 +1899,27 @@ canonicalWellDefined {t₁} {t₂} {c₁} {c₂} α =
 -- If we can prove that every combinator is equal to its normal form
 -- then we can prove completeness.
 
-inversion : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ canonical c
-inversion = {!!} 
+inversion : {t₁ t₂ : U} (c : t₁ ⟷ t₂) → c ⇔ canonical c
+inversion (c₁ ◎ c₂) = {!!} 
+inversion {PLUS ZERO t} {.t} unite₊ = {!!} 
+inversion {t} {PLUS ZERO .t} uniti₊ = {!!} 
+inversion {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = {!!} 
+inversion {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ = {!!} 
+inversion {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} assocr₊ = {!!}
+inversion {TIMES ONE t} {.t} unite⋆ = {!!}
+inversion {t} {TIMES ONE .t} uniti⋆ = {!!} 
+inversion {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = {!!} 
+inversion {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} assocl⋆ = {!!}
+inversion {TIMES (TIMES t₁ t₂) t₃} {TIMES .t₁ (TIMES .t₂ .t₃)} assocr⋆ = {!!}
+inversion {TIMES .ZERO t} {ZERO} distz = {!!} 
+inversion {ZERO} {TIMES ZERO t} factorz = {!!} 
+inversion {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)} dist = {!!}
+inversion {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t₃} factor = {!!}
+inversion {t} {.t} id⟷ = {!!} 
+inversion {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = {!!} 
+inversion {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = {!!} 
+inversion {PLUS ONE ONE} {BOOL} foldBool = {!!} 
+inversion {BOOL} {PLUS ONE ONE} unfoldBool = {!!} 
 
 resp≡⇔ : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ≡ c₂) → (c₁ ⇔ c₂)
 resp≡⇔ {t₁} {t₂} {c₁} {c₂} p rewrite p = id⇔ 
@@ -1912,11 +1927,11 @@ resp≡⇔ {t₁} {t₂} {c₁} {c₂} p rewrite p = id⇔
 completeness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → (c₁ ⇔ c₂)
 completeness {t₁} {t₂} {c₁} {c₂} c₁∼c₂ = 
   c₁
-    ⇔⟨ inversion ⟩
+    ⇔⟨ inversion c₁ ⟩
   canonical c₁
     ⇔⟨  resp≡⇔ (cong₂ cauchy2c (size∼ c₁ c₂) c₁∼c₂) ⟩ 
   canonical c₂
-    ⇔⟨ 2! inversion ⟩ 
+    ⇔⟨ 2! (inversion c₂) ⟩ 
   c₂ ▤
 
 ------------------------------------------------------------------------------
