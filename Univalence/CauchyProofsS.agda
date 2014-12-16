@@ -35,7 +35,8 @@ open import Data.Fin
          raise; inject+; inject₁; inject≤; _≻toℕ_; #_) 
   renaming (_+_ to _F+_)
 open import Data.Fin.Properties
-  using (bounded; inject+-lemma; to-from; toℕ-injective; inject≤-lemma; toℕ-fromℕ≤)
+  using (bounded; inject+-lemma; to-from; toℕ-injective; inject≤-lemma;
+         toℕ-fromℕ≤; fromℕ≤-toℕ)
 open import Data.Vec.Properties 
   using (lookup∘tabulate; tabulate∘lookup; lookup-allFin; tabulate-∘; 
          tabulate-allFin; allFin-map; lookup-++-inject+; lookup-++-≥;
@@ -499,26 +500,10 @@ fin-project-3 m n b d p≠ | result q r k≡r+q*sn | yes p =
              (i≤si (suc m + suc n * suc (suc m))))
              k≡r+q*sn
              p)
-{--
-n        : ℕ
-q        : ℕ
-¬p       : ¬ suc (suc n) ≤ q
-m        : ℕ
-b        : Fin (suc (suc m))
-d        : Fin (suc (suc n))
-r        : Fin (suc (suc m))
-p≠       : 
-
-¬ (suc (toℕ d * suc (suc m) + toℕ b) ≡ suc (suc n) * suc (suc m))
-toℕ d * suc (suc m) + toℕ b ≡ q * suc (suc m) + toℕ r
-
---}
-fin-project-3 m n b d p≠ | result q r k≡r+q*sn | no ¬p = cong₂ _,_ q≡d r≡b
-  where q≡d : fromℕ≤ {q} {suc (suc n)} (s≤s (≤-pred (≰⇒> ¬p))) ≡ d
-        q≡d = {!!} 
-        r≡b : r ≡ b
-        r≡b = {!!} 
-        simplified : toℕ d * suc (suc m) + toℕ b ≡ toℕ r + q * suc (suc m)
+fin-project-3 m n b d p≠ | result q r k≡r+q*sn | no ¬p =
+  let (r≡b , q≡d) = addMul-lemma′ q (toℕ d) (suc m) r b (sym simplified)
+  in cong₂ _,_ (toℕ-injective (trans (toℕ-fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) q≡d)) r≡b 
+  where simplified : toℕ d * suc (suc m) + toℕ b ≡ q * suc (suc m) + toℕ r
         simplified = begin (toℕ d * suc (suc m) + toℕ b
                             ≡⟨ sym (to-from (toℕ d * suc (suc m) + toℕ b)) ⟩ 
                            toℕ (fromℕ (toℕ d * suc (suc m) + toℕ b))
@@ -535,7 +520,9 @@ fin-project-3 m n b d p≠ | result q r k≡r+q*sn | no ¬p = cong₂ _,_ q≡d 
                                (suc m + suc n * suc (suc m)))
                              (i≤si (suc m + suc n * suc (suc m))))
                            ≡⟨ k≡r+q*sn ⟩
-                           toℕ r + q * suc (suc m) ∎)
+                           toℕ r + q * suc (suc m)
+                           ≡⟨ +-comm (toℕ r) (q * suc (suc m)) ⟩ 
+                           q * suc (suc m) + toℕ r ∎)
                      where open ≡-Reasoning
 
 subst-lookup-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
