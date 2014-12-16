@@ -460,7 +460,7 @@ tabulate-⊥ {0} = refl
 tabulate-⊥ {suc m}{_} {g} = tabulate-⊥ {m}
 
 toℕ-inject+ : ∀ {n k} → (i : Fin n) → toℕ (inject+ k i) ≡ toℕ i
-toℕ-inject+ {Data.Nat.zero} ()
+toℕ-inject+ {0} ()
 toℕ-inject+ {suc n} zero = refl
 toℕ-inject+ {suc n} (suc i) = cong suc (toℕ-inject+ i)
 
@@ -517,7 +517,7 @@ first-row m n f =
            q≡f₁ = q≡ m q ¬p
            si≡f₂ : _≡_ {A = ℕ} (suc (toℕ (inject+ (m * suc n) i)))  (suc (toℕ i))
            si≡f₂ = cong suc (toℕ-inject+ {k = m * suc n} i)
-           sq : (q ≡ Data.Nat.zero) × (toℕ r ≡ suc (toℕ i))
+           sq : (q ≡ 0) × (toℕ r ≡ suc (toℕ i))
            sq = small-quotient n q i r (trans (sym si≡f₂) property)
            a₁ : toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) ≡ toℕ {suc q} zero
            a₁ = trans (sym q≡f₁) (proj₁ sq)
