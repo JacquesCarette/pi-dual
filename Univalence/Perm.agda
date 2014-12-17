@@ -1,6 +1,6 @@
 {-# OPTIONS --without-K #-}
 
-module Cauchy where
+module Perm where
 
 -- Definitions for permutations in the Cauchy representation
 
@@ -56,91 +56,58 @@ open import Data.Sum     using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
 open import Proofs
+open import Cauchy
 
 ------------------------------------------------------------------------------
--- Semantic representations of permutations
-
--- One possibility of course is to represent them as functions but
--- this is a poor representation and eventually requires function
--- extensionality. 
-
--- Representation III
--- This is the 2 line Cauchy representation. The first line is in
--- canonical order and implicit in the indices of the vector
-
-Cauchy : ℕ → Set
-Cauchy n = Vec (Fin n) n
-
 -- What JC thinks will actually work
 -- we need injectivity.  surjectivity ought to be provable.
 
-showCauchy : ∀ {n} → Cauchy n → Vec String n
-showCauchy {n} = 
-  zipWith (λ i j → show (toℕ i) ++S " → " ++S show (toℕ j)) (allFin n)
-
--- Ex:
-
-cauchyEx1 cauchyEx2 : Cauchy 6
--- cauchyEx1 (0 1 2 3 4 5)
---           (2 0 4 3 1 5)
-cauchyEx1 = 
-  (inject+ 3 (fromℕ 2)) ∷
-  (inject+ 5 (fromℕ 0)) ∷
-  (inject+ 1 (fromℕ 4)) ∷
-  (inject+ 2 (fromℕ 3)) ∷
-  (inject+ 4 (fromℕ 1)) ∷
-  (inject+ 0 (fromℕ 5)) ∷ []
--- cauchyEx2 (0 1 2 3 4 5)
---           (3 2 1 0 5 4)
-cauchyEx2 = 
-  (inject+ 2 (fromℕ 3)) ∷
-  (inject+ 3 (fromℕ 2)) ∷
-  (inject+ 4 (fromℕ 1)) ∷
-  (inject+ 5 (fromℕ 0)) ∷
-  (inject+ 0 (fromℕ 5)) ∷
-  (inject+ 1 (fromℕ 4)) ∷ []
+Permutation : ℕ → Set
+Permutation n = Σ (Cauchy n) (λ v → ∀ {i j} → lookup i v ≡ lookup j v → i ≡ j)
 
 ------------------------------------------------------------------------------
+-- Shorthand
+
+fi≡fj : {m : ℕ} → (i j : Fin m) (f : Fin m → Fin m) →
+  (p : lookup i (tabulate f) ≡ lookup j (tabulate f)) → (f i ≡ f j)
+fi≡fj i j f p = trans
+                (sym (lookup∘tabulate f i))
+                (trans p (lookup∘tabulate f j))
+
 -- Elementary permutations in the Cauchy representation 
 
-idcauchy : (n : ℕ) → Cauchy n
-idcauchy = allFin 
+idperm : (n : ℕ) → Permutation n
+idperm n = (idcauchy n , λ {i} {j} p → fi≡fj i j id p)
 
 -- Sequential composition
 
-scompcauchy : ∀ {n} → Cauchy n → Cauchy n → Cauchy n
-scompcauchy {n} perm₁ perm₂ = 
-  tabulate (λ i → lookup (lookup i perm₁) perm₂)
-
+scompperm : ∀ {n} → Permutation n → Permutation n → Permutation n
+scompperm {n} (α , f) (β , g) =
+  (scompcauchy α β ,
+   λ {i} {j} p → f (g (fi≡fj i j (λ i → lookup (lookup i α) β) p)))
+         
 -- swap the first m elements with the last n elements
 -- [ v₀ , v₁   , v₂   , ... , vm-1 ,     vm , vm₊₁ , ... , vm+n-1 ]
 -- ==> 
 -- [ vm , vm₊₁ , ... , vm+n-1 ,     v₀ , v₁   , v₂   , ... , vm-1 ]
 
-swap+cauchy : (m n : ℕ) → Cauchy (m + n)
-swap+cauchy m n = 
-  subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
-    (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))
+swap+perm : (m n : ℕ) → Permutation (m + n)
+swap+perm m n = (swap+cauchy m n , λ {i} {j} p → {!!})
 
 -- Parallel additive composition 
 -- append both permutations but adjust the indices in the second
 -- permutation by the size of the first type so that it acts on the
 -- second part of the vector
 
-pcompcauchy : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m + n)
-pcompcauchy {m} {n} α β = mapV (inject+ n) α ++V mapV (raise m) β
+pcompperm : ∀ {m n} → Permutation m → Permutation n → Permutation (m + n)
+pcompperm {m} {n} (α , f) (β , g) = (pcompcauchy α β , λ {i} {j} p → {!!}) 
 
 -- Tensor multiplicative composition
 -- Transpositions in α correspond to swapping entire rows
 -- Transpositions in β correspond to swapping entire columns
 
-tcompcauchy : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m * n)
-tcompcauchy {m} {n} α β = 
-  concatV 
-    (mapV 
-      (λ b → 
-         mapV (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)) β)
-      α)
+tcompperm : ∀ {m n} → Permutation m → Permutation n → Permutation (m * n)
+tcompperm {m} {n} (α , f) (β , j) = (tcompcauchy α β , λ {i} {j} p → {!!})
 
 -- swap⋆ 
 -- 
@@ -150,29 +117,7 @@ tcompcauchy {m} {n} α β =
 -- P(i) = m*n-1 if i=m*n-1
 --      = m*i mod m*n-1 otherwise
 
-transposeIndex : (m n : ℕ) → 
-                 (b : Fin (suc (suc m))) → (d : Fin (suc (suc n))) → 
-                 Fin (suc (suc m) * suc (suc n))
-transposeIndex m n b d with toℕ b * suc (suc n) + toℕ d
-transposeIndex m n b d | i with suc i ≟ suc (suc m) * suc (suc n)
-transposeIndex m n b d | i | yes _ = 
-  fromℕ (suc (n + suc (suc (n + m * suc (suc n))))) 
-transposeIndex m n b d | i | no _ = 
-  inject≤ 
-    ((i * (suc (suc m))) mod (suc (n + suc (suc (n + m * suc (suc n))))))
-    (i≤si (suc (n + suc (suc (n + m * suc (suc n))))))
-
-swap⋆cauchy : (m n : ℕ) → Cauchy (m * n)
-swap⋆cauchy 0 n = []
-swap⋆cauchy 1 n = subst Cauchy (sym (+-right-identity n)) (idcauchy n)
-swap⋆cauchy (suc (suc m)) 0 = 
-  subst Cauchy (sym (*-right-zero (suc (suc m)))) []
-swap⋆cauchy (suc (suc m)) 1 = 
-  subst Cauchy (sym (i*1≡i (suc (suc m)))) (idcauchy (suc (suc m)))
-swap⋆cauchy (suc (suc m)) (suc (suc n)) = 
-  concatV 
-    (mapV 
-      (λ b → mapV (λ d → transposeIndex m n b d) (allFin (suc (suc n))))
-      (allFin (suc (suc m))))
+swap⋆perm : (m n : ℕ) → Permutation (m * n)
+swap⋆perm m n = (swap⋆cauchy m n , λ {i} {j} p → {!!}) 
 
 ------------------------------------------------------------------------------
