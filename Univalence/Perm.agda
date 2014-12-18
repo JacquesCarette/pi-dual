@@ -75,8 +75,8 @@ Permutation n = Σ (Cauchy n) (λ v → ∀ {i j} → lookup i v ≡ lookup j v 
 fi≡fj : {m : ℕ} → (i j : Fin m) (f : Fin m → Fin m) →
         (p : lookup i (tabulate f) ≡ lookup j (tabulate f)) → (f i ≡ f j)
 fi≡fj i j f p = trans
-                (sym (lookup∘tabulate f i))
-                (trans p (lookup∘tabulate f j))
+                  (sym (lookup∘tabulate f i))
+                  (trans p (lookup∘tabulate f j))
 
 -- Elementary permutations in the Cauchy representation 
 
@@ -95,15 +95,14 @@ scompperm {n} (α , f) (β , g) =
 -- ==> 
 -- [ vm , vm₊₁ , ... , vm+n-1 ,     v₀ , v₁   , v₂   , ... , vm-1 ]
 
-subst-toℕ : (m n : ℕ) → (eq : m ≡ n) (fin : Fin m) → 
-  toℕ (subst Fin eq fin) ≡ toℕ fin
-subst-toℕ m .m refl fin = refl
+toℕ-fin : (m n : ℕ) → (eq : m ≡ n) (fin : Fin m) → toℕ (subst Fin eq fin) ≡ toℕ fin
+toℕ-fin m .m refl fin = refl
 
 raise< : (m n : ℕ) (i : Fin (m + n)) (i< : toℕ i < m) → 
          toℕ (subst Fin (+-comm n m) (raise n (fromℕ≤ i<))) ≡ n + toℕ i
 raise< m n i i< =
   begin (toℕ (subst Fin (+-comm n m) (raise n (fromℕ≤ i<)))
-         ≡⟨ subst-toℕ (n + m) (m + n) (+-comm n m) (raise n (fromℕ≤ i<)) ⟩
+         ≡⟨ toℕ-fin (n + m) (m + n) (+-comm n m) (raise n (fromℕ≤ i<)) ⟩
          toℕ (raise n (fromℕ≤ i<))
          ≡⟨ toℕ-raise n (fromℕ≤ i<) ⟩
          n + toℕ (fromℕ≤ i<)
@@ -121,7 +120,7 @@ inject≥ : (m n : ℕ) (i : Fin (m + n)) (i≥ : m ≤ toℕ i) →
         toℕ (subst Fin (+-comm n m) (inject+ m (reduce≥ i i≥))) ≡ toℕ i ∸ m
 inject≥ m n i i≥ =
   begin (toℕ (subst Fin (+-comm n m) (inject+ m (reduce≥ i i≥)))
-         ≡⟨ subst-toℕ (n + m) (m + n) (+-comm n m) (inject+ m (reduce≥ i i≥)) ⟩
+         ≡⟨ toℕ-fin (n + m) (m + n) (+-comm n m) (inject+ m (reduce≥ i i≥)) ⟩
          toℕ (inject+ m (reduce≥ i i≥))
          ≡⟨ sym (inject+-lemma m (reduce≥ i i≥)) ⟩
          toℕ (reduce≥ i i≥) 
@@ -203,8 +202,7 @@ swap+cauchy≥ m n i i≥ =
   where open ≡-Reasoning
 
 swap+perm' : (m n : ℕ) (i j : Fin (m + n))
-  (p : lookup i (swap+cauchy m n) ≡ lookup j (swap+cauchy m n)) →
-  (i ≡ j)
+  (p : lookup i (swap+cauchy m n) ≡ lookup j (swap+cauchy m n)) → (i ≡ j)
 swap+perm' m n i j p with toℕ i <? m | toℕ j <? m 
 ... | yes i< | yes j< = toℕ-injective (cancel-+-left n {toℕ i} {toℕ j} ni≡nj)
   where ni≡nj = begin (n + toℕ i
@@ -285,12 +283,7 @@ swap+perm' m n i j p with toℕ i <? m | toℕ j <? m
                   where open ≤-Reasoning
 ... | no i≥ | no j≥ = ∸≡ m n i j (≤-pred (≰⇒> i≥)) (≤-pred (≰⇒> j≥)) ri≡rj
   where ri≡rj = begin (toℕ i ∸ m
-                       ≡⟨ sym (toℕ-reduce≥ m n i (≤-pred (≰⇒> i≥))) ⟩ 
-                       toℕ (reduce≥ i (≤-pred (≰⇒> i≥)))
-                       ≡⟨ inject+-lemma m (reduce≥ i (≤-pred (≰⇒> i≥))) ⟩ 
-                       toℕ (inject+ m (reduce≥ i (≤-pred (≰⇒> i≥))))
-                       ≡⟨ sym (subst-toℕ (n + m) (m + n) (+-comm n m)
-                                (inject+ m (reduce≥ i (≤-pred (≰⇒> i≥))))) ⟩ 
+                       ≡⟨ sym (inject≥ m n i (≤-pred (≰⇒> i≥))) ⟩ 
                        toℕ (subst Fin (+-comm n m)
                              (inject+ m (reduce≥ i (≤-pred (≰⇒> i≥)))))
                        ≡⟨ cong toℕ (sym (swap+cauchy≥ m n i (≤-pred (≰⇒> i≥)))) ⟩
@@ -300,14 +293,10 @@ swap+perm' m n i j p with toℕ i <? m | toℕ j <? m
                        ≡⟨ cong toℕ (swap+cauchy≥ m n j (≤-pred (≰⇒> j≥)))  ⟩
                        toℕ (subst Fin (+-comm n m)
                              (inject+ m (reduce≥ j (≤-pred (≰⇒> j≥)))))
-                       ≡⟨ subst-toℕ (n + m) (m + n) (+-comm n m)
-                           (inject+ m (reduce≥ j (≤-pred (≰⇒> j≥)))) ⟩ 
-                       toℕ (inject+ m (reduce≥ j (≤-pred (≰⇒> j≥))))
-                       ≡⟨ sym (inject+-lemma m (reduce≥ j (≤-pred (≰⇒> j≥))))  ⟩
-                       toℕ (reduce≥ j (≤-pred (≰⇒> j≥)))
-                       ≡⟨ toℕ-reduce≥ m n j (≤-pred (≰⇒> j≥)) ⟩ 
+                       ≡⟨ inject≥ m n j (≤-pred (≰⇒> j≥)) ⟩ 
                        toℕ j ∸ m ∎)
                 where open ≡-Reasoning
+
 swap+perm : (m n : ℕ) → Permutation (m + n)
 swap+perm m n = (swap+cauchy m n , λ {i} {j} p → swap+perm' m n i j p)
 
@@ -316,10 +305,20 @@ swap+perm m n = (swap+cauchy m n , λ {i} {j} p → swap+perm' m n i j p)
 -- permutation by the size of the first type so that it acts on the
 -- second part of the vector
 
+pcompperm' : (m n : ℕ) (i j : Fin (m + n))
+  (α : Cauchy m) (β : Cauchy n)
+  (p : lookup i (pcompcauchy α β) ≡ lookup j (pcompcauchy α β))
+  (f : {i j : Fin m} → lookup i α ≡ lookup j α → i ≡ j)
+  (g : {i j : Fin n} → lookup i β ≡ lookup j β → i ≡ j) → i ≡ j
+pcompperm' m n i j p α β f g with toℕ i <? m | toℕ j <? m
+... | yes i< | yes j< = {!!}
+... | yes i< | no j≥ = {!!} 
+... | no i≥ | yes j< = {!!} 
+... | no i≥ | no j≥ = {!!} 
+
 pcompperm : ∀ {m n} → Permutation m → Permutation n → Permutation (m + n)
-pcompperm {m} {n} (α , f) (β , g) =
-  (pcompcauchy α β ,
-   λ {i} {j} p → {!!})
+pcompperm {m} {n} (α , f) (β , g) = 
+  (pcompcauchy α β , λ {i} {j} p → pcompperm' m n i j α β p f g)
 
 {--
 pcompcauchy : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m + n)
@@ -334,6 +333,10 @@ j : Fin (m + n)
 f : lookup i α ≡ lookup j α → i ≡ j
 g : lookup i β ≡ lookup j β → i ≡ j
 p : lookup i (pcompcauchy α β) ≡ lookup j (pcompcauchy α β)
+
+lookup i (pcompcauchy α β) 
+lookup i (mapV (inject+ n) α ++V mapV (raise m) β)
+
 --}
 
 
