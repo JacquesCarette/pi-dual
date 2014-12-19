@@ -472,8 +472,15 @@ pcompperm {m} {n} (α , f) (β , g) =
 -- Transpositions in α correspond to swapping entire rows
 -- Transpositions in β correspond to swapping entire columns
 
+tcompperm' : (m n : ℕ) (i j : Fin (m * n)) (α : Cauchy m) (β : Cauchy n) 
+  (f : {i j : Fin m} → lookup i α ≡ lookup j α → i ≡ j)
+  (g : {i j : Fin n} → lookup i β ≡ lookup j β → i ≡ j) 
+  (p : lookup i (tcompcauchy α β) ≡ lookup j (tcompcauchy α β)) → (i ≡ j)
+tcompperm' m n i j α β f g p = {!!} 
+
 tcompperm : ∀ {m n} → Permutation m → Permutation n → Permutation (m * n)
-tcompperm {m} {n} (α , f) (β , j) = (tcompcauchy α β , λ {i} {j} p → {!!})
+tcompperm {m} {n} (α , f) (β , g) =
+  (tcompcauchy α β , λ {i} {j} p → tcompperm' m n i j α β f g p)
 
 {--
 tcompcauchy : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m * n)
@@ -503,8 +510,12 @@ p : lookup i (tcompcauchy α β) ≡ lookup j (tcompcauchy α β)
 -- P(i) = m*n-1 if i=m*n-1
 --      = m*i mod m*n-1 otherwise
 
+swap⋆perm' : (m n : ℕ) (i j : Fin (m * n))
+             (p : lookup i (swap⋆cauchy m n) ≡ lookup j (swap⋆cauchy m n)) → (i ≡ j)
+swap⋆perm' m n i j p = {!!} 
+
 swap⋆perm : (m n : ℕ) → Permutation (m * n)
-swap⋆perm m n = (swap⋆cauchy m n , λ {i} {j} p → {!!}) 
+swap⋆perm m n = (swap⋆cauchy m n , λ {i} {j} p → swap⋆perm' m n i j p)
 
 {--
 m : ℕ
