@@ -324,6 +324,11 @@ cancel-right∸ m n k k≤m k≤n mk≡nk =
          n ∎)
   where open ≡-Reasoning
 
+lookup-bounded : (m n : ℕ) (i : Fin n) (v : Vec (Fin m) n) → toℕ (lookup i v) < m
+lookup-bounded m 0 () v
+lookup-bounded m (suc n) zero (x ∷ v) = bounded x
+lookup-bounded m (suc n) (suc i) (x ∷ v) = lookup-bounded m n i v 
+
 fromℕ≤-inj : (m n : ℕ) (i j : Fin n) (i< : toℕ i < m) (j< : toℕ j < m) → 
   fromℕ≤ i< ≡ fromℕ≤ j< → i ≡ j
 fromℕ≤-inj m n i j i< j< fi≡fj =
@@ -367,16 +372,70 @@ pcompperm' m n i j α β p f g with toℕ i <? m | toℕ j <? m
                        ≡⟨ sym (inject+-lemma n (lookup (fromℕ≤ j<) α)) ⟩
                        toℕ (lookup (fromℕ≤ j<) α) ∎)
                 where open ≡-Reasoning
-... | yes i< | no j≥ = {!!} 
+... | yes i< | no j≥ = ⊥-elim (1+n≰n contra')
   where contra = begin (toℕ (lookup (fromℕ≤ i<) α)
-                        ≡⟨ {!!} ⟩ 
+                       ≡⟨ inject+-lemma n (lookup (fromℕ≤ i<) α) ⟩
+                       toℕ (inject+ n (lookup (fromℕ≤ i<) α))
+                       ≡⟨ cong toℕ (sym (lookup-map (fromℕ≤ i<) (inject+ n) α)) ⟩
+                       toℕ (lookup (fromℕ≤ i<) (mapV (inject+ n) α))
+                       ≡⟨ cong toℕ (sym (lookup-++-<
+                                      (mapV (inject+ n) α)
+                                      (mapV (raise m) β)
+                                      i i<)) ⟩
+                       toℕ (lookup i (mapV (inject+ n) α ++V mapV (raise m) β))
+                       ≡⟨ cong toℕ p ⟩
+                       toℕ (lookup j (mapV (inject+ n) α ++V mapV (raise m) β))
+                       ≡⟨ cong toℕ (lookup-++-≥
+                                     (mapV (inject+ n) α)
+                                     (mapV (raise m) β)
+                                     j (≤-pred (≰⇒> j≥))) ⟩
+                       toℕ (lookup (reduce≥ j (≤-pred (≰⇒> j≥))) (mapV (raise m) β))
+                       ≡⟨ cong toℕ
+                           (lookup-map (reduce≥ j (≤-pred (≰⇒> j≥))) (raise m) β) ⟩
+                       toℕ (raise m (lookup (reduce≥ j (≤-pred (≰⇒> j≥))) β))
+                       ≡⟨ toℕ-raise m (lookup (reduce≥ j (≤-pred (≰⇒> j≥))) β) ⟩ 
                        m + toℕ (lookup (reduce≥ j (≤-pred (≰⇒> j≥))) β) ∎)
                  where open ≡-Reasoning
-... | no i≥ | yes j< = {!!}
+        contra' = begin (suc (toℕ (lookup (fromℕ≤ i<) α))
+                        ≤⟨ lookup-bounded m m (fromℕ≤ i<) α ⟩ 
+                        m 
+                        ≤⟨ m≤m+n m (toℕ (lookup (reduce≥ j (≤-pred (≰⇒> j≥))) β)) ⟩ 
+                        m + toℕ (lookup (reduce≥ j (≤-pred (≰⇒> j≥))) β)
+                        ≡⟨ sym contra ⟩ 
+                        toℕ (lookup (fromℕ≤ i<) α) ∎)
+                  where open ≤-Reasoning
+... | no i≥ | yes j< = ⊥-elim (1+n≰n contra')
   where contra = begin (m + toℕ (lookup (reduce≥ i (≤-pred (≰⇒> i≥))) β)
-                        ≡⟨ {!!} ⟩ 
+                       ≡⟨ sym (toℕ-raise m (lookup (reduce≥ i (≤-pred (≰⇒> i≥))) β)) ⟩ 
+                       toℕ (raise m (lookup (reduce≥ i (≤-pred (≰⇒> i≥))) β))
+                       ≡⟨ cong toℕ
+                           (sym (lookup-map (reduce≥ i (≤-pred (≰⇒> i≥))) (raise m) β)) ⟩
+                       toℕ (lookup (reduce≥ i (≤-pred (≰⇒> i≥))) (mapV (raise m) β))
+                       ≡⟨ cong toℕ (sym (lookup-++-≥
+                                      (mapV (inject+ n) α)
+                                      (mapV (raise m) β)
+                                      i (≤-pred (≰⇒> i≥)))) ⟩
+                       toℕ (lookup i (mapV (inject+ n) α ++V mapV (raise m) β))
+                       ≡⟨ cong toℕ p ⟩
+                       toℕ (lookup j (mapV (inject+ n) α ++V mapV (raise m) β))
+                       ≡⟨ cong toℕ (lookup-++-<
+                                     (mapV (inject+ n) α)
+                                     (mapV (raise m) β)
+                                     j j<) ⟩
+                       toℕ (lookup (fromℕ≤ j<) (mapV (inject+ n) α))
+                       ≡⟨ cong toℕ (lookup-map (fromℕ≤ j<) (inject+ n) α) ⟩
+                       toℕ (inject+ n (lookup (fromℕ≤ j<) α))
+                       ≡⟨ sym (inject+-lemma n (lookup (fromℕ≤ j<) α)) ⟩
                         toℕ (lookup (fromℕ≤ j<) α) ∎)
                  where open ≡-Reasoning
+        contra' = begin (suc (toℕ (lookup (fromℕ≤ j<) α))
+                        ≤⟨ lookup-bounded m m (fromℕ≤ j<) α ⟩ 
+                        m 
+                        ≤⟨ m≤m+n m (toℕ (lookup (reduce≥ i (≤-pred (≰⇒> i≥))) β)) ⟩ 
+                        m + toℕ (lookup (reduce≥ i (≤-pred (≰⇒> i≥))) β)
+                        ≡⟨ contra ⟩ 
+                        toℕ (lookup (fromℕ≤ j<) α) ∎)
+                  where open ≤-Reasoning
 ... | no i≥ | no j≥ =
   reduce≥-inj m n i j (≤-pred (≰⇒> i≥)) (≤-pred (≰⇒> j≥))
     (g (toℕ-injective (cancel-+-left m li≡lj)))
@@ -404,40 +463,6 @@ pcompperm' m n i j α β p f g with toℕ i <? m | toℕ j <? m
                        ≡⟨ toℕ-raise m (lookup (reduce≥ j (≤-pred (≰⇒> j≥))) β) ⟩ 
                        m + toℕ (lookup (reduce≥ j (≤-pred (≰⇒> j≥))) β) ∎)
                 where open ≡-Reasoning
-{--
-toℕ (lookup i (mapV (inject+ n) α ++V mapV (raise m) β))
-toℕ (lookup (fromℕ≤ i) (mapV (inject+ n) α))
-toℕ (inject+ n (lookup (fromℕ≤ i) α))
-toℕ (lookup (fromℕ≤ i) α)
-
-toℕ (lookup j (mapV (inject+ n) α ++V mapV (raise m) β))
-toℕ (lookup (fromℕ≤ j) (mapV (inject+ n) α))
-toℕ (inject+ n (lookup (fromℕ≤ j) α))
-toℕ (lookup (fromℕ≤ j) α)
-
---}
-{--
-pcompcauchy : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m + n)
-pcompcauchy {m} {n} α β = mapV (inject+ n) α ++V mapV (raise m) β
-
-m : ℕ
-n : ℕ
-i : Fin (m + n)
-j : Fin (m + n)
-α : Cauchy m
-β : Cauchy n
-f : lookup i α ≡ lookup j α → i ≡ j
-g : lookup i β ≡ lookup j β → i ≡ j
-p : lookup i (pcompcauchy α β) ≡ lookup j (pcompcauchy α β)
-
-lookup i (pcompcauchy α β) 
-lookup i (mapV (inject+ n) α ++V mapV (raise m) β)
-
---}
-
-
-
-
 
 pcompperm : ∀ {m n} → Permutation m → Permutation n → Permutation (m + n)
 pcompperm {m} {n} (α , f) (β , g) = 
