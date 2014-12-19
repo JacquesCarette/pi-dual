@@ -305,21 +305,117 @@ swap+perm m n = (swap+cauchy m n , λ {i} {j} p → swap+perm' m n i j p)
 -- permutation by the size of the first type so that it acts on the
 -- second part of the vector
 
+cancel-right∸ : (m n k : ℕ) (k≤m : k ≤ m) (k≤n : k ≤ n) → (m ∸ k ≡ n ∸ k) → m ≡ n
+cancel-right∸ m n k k≤m k≤n mk≡nk =
+  begin (m
+         ≡⟨ sym (m+n∸n≡m m k) ⟩
+         (m + k) ∸ k
+         ≡⟨ cong (λ x → x ∸ k) (+-comm m k) ⟩
+         (k + m) ∸ k
+         ≡⟨ +-∸-assoc k k≤m ⟩
+         k + (m ∸ k)
+         ≡⟨ cong (λ x → k + x) mk≡nk ⟩
+         k + (n ∸ k)
+         ≡⟨ sym (+-∸-assoc k k≤n) ⟩
+         (k + n) ∸ k
+         ≡⟨ cong (λ x → x ∸ k) (+-comm k n) ⟩
+         (n + k) ∸ k
+         ≡⟨ m+n∸n≡m n k ⟩
+         n ∎)
+  where open ≡-Reasoning
+
+fromℕ≤-inj : (m n : ℕ) (i j : Fin n) (i< : toℕ i < m) (j< : toℕ j < m) → 
+  fromℕ≤ i< ≡ fromℕ≤ j< → i ≡ j
+fromℕ≤-inj m n i j i< j< fi≡fj =
+  toℕ-injective
+    (trans (sym (toℕ-fromℕ≤ i<)) (trans (cong toℕ fi≡fj) (toℕ-fromℕ≤ j<)))
+
+reduce≥-inj : (m n : ℕ) (i j : Fin (m + n)) (i≥ : m ≤ toℕ i) (j≥ : m ≤ toℕ j) →
+  reduce≥ i i≥ ≡ reduce≥ j j≥ → i ≡ j
+reduce≥-inj m n i j i≥ j≥ ri≡rj =
+  toℕ-injective
+    (cancel-right∸ (toℕ i) (toℕ j) m i≥ j≥
+      (trans (sym (toℕ-reduce≥ m n i i≥))
+      (trans (cong toℕ ri≡rj) (toℕ-reduce≥ m n j j≥))))
+
 pcompperm' : (m n : ℕ) (i j : Fin (m + n))
   (α : Cauchy m) (β : Cauchy n)
   (p : lookup i (pcompcauchy α β) ≡ lookup j (pcompcauchy α β))
   (f : {i j : Fin m} → lookup i α ≡ lookup j α → i ≡ j)
   (g : {i j : Fin n} → lookup i β ≡ lookup j β → i ≡ j) → i ≡ j
-pcompperm' m n i j p α β f g with toℕ i <? m | toℕ j <? m
-... | yes i< | yes j< = {!!}
+pcompperm' m n i j α β p f g with toℕ i <? m | toℕ j <? m
+... | yes i< | yes j< = fromℕ≤-inj m (m + n) i j i< j< (f (toℕ-injective li≡lj))
+  where li≡lj = begin (toℕ (lookup (fromℕ≤ i<) α)
+                       ≡⟨ inject+-lemma n (lookup (fromℕ≤ i<) α) ⟩
+                       toℕ (inject+ n (lookup (fromℕ≤ i<) α))
+                       ≡⟨ cong toℕ (sym (lookup-map (fromℕ≤ i<) (inject+ n) α)) ⟩
+                       toℕ (lookup (fromℕ≤ i<) (mapV (inject+ n) α))
+                       ≡⟨ cong toℕ (sym (lookup-++-<
+                                      (mapV (inject+ n) α)
+                                      (mapV (raise m) β)
+                                      i i<)) ⟩
+                       toℕ (lookup i (mapV (inject+ n) α ++V mapV (raise m) β))
+                       ≡⟨ cong toℕ p ⟩
+                       toℕ (lookup j (mapV (inject+ n) α ++V mapV (raise m) β))
+                       ≡⟨ cong toℕ (lookup-++-<
+                                     (mapV (inject+ n) α)
+                                     (mapV (raise m) β)
+                                     j j<) ⟩
+                       toℕ (lookup (fromℕ≤ j<) (mapV (inject+ n) α))
+                       ≡⟨ cong toℕ (lookup-map (fromℕ≤ j<) (inject+ n) α) ⟩
+                       toℕ (inject+ n (lookup (fromℕ≤ j<) α))
+                       ≡⟨ sym (inject+-lemma n (lookup (fromℕ≤ j<) α)) ⟩
+                       toℕ (lookup (fromℕ≤ j<) α) ∎)
+                where open ≡-Reasoning
 ... | yes i< | no j≥ = {!!} 
-... | no i≥ | yes j< = {!!} 
-... | no i≥ | no j≥ = {!!} 
+  where contra = begin (toℕ (lookup (fromℕ≤ i<) α)
+                        ≡⟨ {!!} ⟩ 
+                       m + toℕ (lookup (reduce≥ j (≤-pred (≰⇒> j≥))) β) ∎)
+                 where open ≡-Reasoning
+... | no i≥ | yes j< = {!!}
+  where contra = begin (m + toℕ (lookup (reduce≥ i (≤-pred (≰⇒> i≥))) β)
+                        ≡⟨ {!!} ⟩ 
+                        toℕ (lookup (fromℕ≤ j<) α) ∎)
+                 where open ≡-Reasoning
+... | no i≥ | no j≥ =
+  reduce≥-inj m n i j (≤-pred (≰⇒> i≥)) (≤-pred (≰⇒> j≥))
+    (g (toℕ-injective (cancel-+-left m li≡lj)))
+  where li≡lj = begin (m + toℕ (lookup (reduce≥ i (≤-pred (≰⇒> i≥))) β)
+                       ≡⟨ sym (toℕ-raise m (lookup (reduce≥ i (≤-pred (≰⇒> i≥))) β)) ⟩ 
+                       toℕ (raise m (lookup (reduce≥ i (≤-pred (≰⇒> i≥))) β))
+                       ≡⟨ cong toℕ
+                           (sym (lookup-map (reduce≥ i (≤-pred (≰⇒> i≥))) (raise m) β)) ⟩
+                       toℕ (lookup (reduce≥ i (≤-pred (≰⇒> i≥))) (mapV (raise m) β))
+                       ≡⟨ cong toℕ (sym (lookup-++-≥
+                                      (mapV (inject+ n) α)
+                                      (mapV (raise m) β)
+                                      i (≤-pred (≰⇒> i≥)))) ⟩
+                       toℕ (lookup i (mapV (inject+ n) α ++V mapV (raise m) β))
+                       ≡⟨ cong toℕ p ⟩
+                       toℕ (lookup j (mapV (inject+ n) α ++V mapV (raise m) β))
+                       ≡⟨ cong toℕ (lookup-++-≥
+                                     (mapV (inject+ n) α)
+                                     (mapV (raise m) β)
+                                     j (≤-pred (≰⇒> j≥))) ⟩
+                       toℕ (lookup (reduce≥ j (≤-pred (≰⇒> j≥))) (mapV (raise m) β))
+                       ≡⟨ cong toℕ
+                           (lookup-map (reduce≥ j (≤-pred (≰⇒> j≥))) (raise m) β) ⟩
+                       toℕ (raise m (lookup (reduce≥ j (≤-pred (≰⇒> j≥))) β))
+                       ≡⟨ toℕ-raise m (lookup (reduce≥ j (≤-pred (≰⇒> j≥))) β) ⟩ 
+                       m + toℕ (lookup (reduce≥ j (≤-pred (≰⇒> j≥))) β) ∎)
+                where open ≡-Reasoning
+{--
+toℕ (lookup i (mapV (inject+ n) α ++V mapV (raise m) β))
+toℕ (lookup (fromℕ≤ i) (mapV (inject+ n) α))
+toℕ (inject+ n (lookup (fromℕ≤ i) α))
+toℕ (lookup (fromℕ≤ i) α)
 
-pcompperm : ∀ {m n} → Permutation m → Permutation n → Permutation (m + n)
-pcompperm {m} {n} (α , f) (β , g) = 
-  (pcompcauchy α β , λ {i} {j} p → pcompperm' m n i j α β p f g)
+toℕ (lookup j (mapV (inject+ n) α ++V mapV (raise m) β))
+toℕ (lookup (fromℕ≤ j) (mapV (inject+ n) α))
+toℕ (inject+ n (lookup (fromℕ≤ j) α))
+toℕ (lookup (fromℕ≤ j) α)
 
+--}
 {--
 pcompcauchy : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m + n)
 pcompcauchy {m} {n} α β = mapV (inject+ n) α ++V mapV (raise m) β
@@ -339,6 +435,13 @@ lookup i (mapV (inject+ n) α ++V mapV (raise m) β)
 
 --}
 
+
+
+
+
+pcompperm : ∀ {m n} → Permutation m → Permutation n → Permutation (m + n)
+pcompperm {m} {n} (α , f) (β , g) = 
+  (pcompcauchy α β , λ {i} {j} p → pcompperm' m n i j α β p f g)
 
 -- Tensor multiplicative composition
 -- Transpositions in α correspond to swapping entire rows
