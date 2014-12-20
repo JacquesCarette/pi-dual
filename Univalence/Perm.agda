@@ -75,7 +75,8 @@ Permutation n = Σ (Cauchy n) (λ v → ∀ {i j} → lookup i v ≡ lookup j v 
 ------------------------------------------------------------------------------
 -- Fin and Nat lemmas
 
-toℕ-fin : (m n : ℕ) → (eq : m ≡ n) (fin : Fin m) → toℕ (subst Fin eq fin) ≡ toℕ fin
+toℕ-fin : (m n : ℕ) → (eq : m ≡ n) (fin : Fin m) →
+  toℕ (subst Fin eq fin) ≡ toℕ fin
 toℕ-fin m .m refl fin = refl
 
 -- buried in Data.Nat
@@ -103,6 +104,26 @@ refl′ {suc m} refl = s≤s (refl′ refl)
                     ≡⟨ m+n∸n≡m (toℕ j) m ⟩
                     toℕ j ∎)
              where open ≡-Reasoning
+
+cancel-right∸ : (m n k : ℕ) (k≤m : k ≤ m) (k≤n : k ≤ n) →
+  (m ∸ k ≡ n ∸ k) → m ≡ n
+cancel-right∸ m n k k≤m k≤n mk≡nk =
+  begin (m
+         ≡⟨ sym (m+n∸n≡m m k) ⟩
+         (m + k) ∸ k
+         ≡⟨ cong (λ x → x ∸ k) (+-comm m k) ⟩
+         (k + m) ∸ k
+         ≡⟨ +-∸-assoc k k≤m ⟩
+         k + (m ∸ k)
+         ≡⟨ cong (λ x → k + x) mk≡nk ⟩
+         k + (n ∸ k)
+         ≡⟨ sym (+-∸-assoc k k≤n) ⟩
+         (k + n) ∸ k
+         ≡⟨ cong (λ x → x ∸ k) (+-comm k n) ⟩
+         (n + k) ∸ k
+         ≡⟨ m+n∸n≡m n k ⟩
+         n ∎)
+  where open ≡-Reasoning
 
 raise< : (m n : ℕ) (i : Fin (m + n)) (i< : toℕ i < m) → 
          toℕ (subst Fin (+-comm n m) (raise n (fromℕ≤ i<))) ≡ n + toℕ i
@@ -132,25 +153,6 @@ inject≥ m n i i≥ =
          toℕ (reduce≥ i i≥) 
          ≡⟨ toℕ-reduce≥ m n i i≥ ⟩ 
          toℕ i ∸ m ∎)
-  where open ≡-Reasoning
-
-cancel-right∸ : (m n k : ℕ) (k≤m : k ≤ m) (k≤n : k ≤ n) → (m ∸ k ≡ n ∸ k) → m ≡ n
-cancel-right∸ m n k k≤m k≤n mk≡nk =
-  begin (m
-         ≡⟨ sym (m+n∸n≡m m k) ⟩
-         (m + k) ∸ k
-         ≡⟨ cong (λ x → x ∸ k) (+-comm m k) ⟩
-         (k + m) ∸ k
-         ≡⟨ +-∸-assoc k k≤m ⟩
-         k + (m ∸ k)
-         ≡⟨ cong (λ x → k + x) mk≡nk ⟩
-         k + (n ∸ k)
-         ≡⟨ sym (+-∸-assoc k k≤n) ⟩
-         (k + n) ∸ k
-         ≡⟨ cong (λ x → x ∸ k) (+-comm k n) ⟩
-         (n + k) ∸ k
-         ≡⟨ m+n∸n≡m n k ⟩
-         n ∎)
   where open ≡-Reasoning
 
 fromℕ≤-inj : (m n : ℕ) (i j : Fin n) (i< : toℕ i < m) (j< : toℕ j < m) → 
@@ -309,6 +311,13 @@ fin-divMod m n i = fin-result b d dec dec'
                 toℕ d + toℕ b * n ∎)
           where open ≡-Reasoning
                 open Fin-Product-Iso
+
+fin-addMul-lemma : (m n : ℕ) (b b' : Fin m) (d d' : Fin n) → 
+  toℕ b * n + toℕ d ≡ toℕ b' * n + toℕ d' → b ≡ b' × d ≡ d'
+fin-addMul-lemma m 0 _ _ ()
+fin-addMul-lemma m (suc n) b b' d d' p =
+  let (d≡ , b≡) = addMul-lemma′ (toℕ b) (toℕ b') n d d' p
+  in (toℕ-injective b≡ , d≡)
 
 ------------------------------------------------------------------------------
 -- Vec lemmas
@@ -806,31 +815,65 @@ tcompperm' : (m n : ℕ) (i j : Fin (m * n)) (α : Cauchy m) (β : Cauchy n)
   (f : {i j : Fin m} → lookup i α ≡ lookup j α → i ≡ j)
   (g : {i j : Fin n} → lookup i β ≡ lookup j β → i ≡ j) 
   (p : lookup i (tcompcauchy α β) ≡ lookup j (tcompcauchy α β)) → (i ≡ j)
-tcompperm' m n i j α β f g p = {!!} 
+tcompperm' m n i j α β f g p =
+  let fin-result bi di deci deci' = fin-divMod m n i
+      fin-result bj dj decj decj' = fin-divMod m n j
+      (lookb≡ , lookd≡) = fin-addMul-lemma
+                            m n (lookup bi α) (lookup bj α)
+                            (lookup di β) (lookup dj β) sp
+      (b≡ , d≡) = (f {bi} {bj} lookb≡ , g {di} {dj} lookd≡)
+      bn+d≡ = cong₂ (λ b d → toℕ d + toℕ b * n) b≡ d≡
+  in toℕ-injective (trans deci (trans bn+d≡ (sym decj)))
+  where sp = let fin-result bi di deci deci' = fin-divMod m n i
+                 fin-result bj dj decj decj' = fin-divMod m n j in 
+             begin (let b' = lookup bi α
+                        d' = lookup di β
+                     in toℕ b' * n + toℕ d'
+                   ≡⟨ sym (to-from _) ⟩
+                   toℕ
+                     (let b' = lookup bi α
+                          d' = lookup di β
+                      in fromℕ (toℕ b' * n + toℕ d'))
+                   ≡⟨ sym (inject≤-lemma _ _) ⟩ 
+                   toℕ
+                     (let b' = lookup bi α
+                          d' = lookup di β
+                      in inject≤
+                           (fromℕ (toℕ b' * n + toℕ d'))
+                           (i*n+k≤m*n b' d'))
+                   ≡⟨ cong toℕ
+                        (sym (lookup-2d m n i α β
+                             (λ {(b , d) → inject≤
+                                             (fromℕ (toℕ b * n + toℕ d))
+                                             (i*n+k≤m*n b d)}))) ⟩ 
+                   toℕ (lookup i (tcompcauchy α β))
+                   ≡⟨ cong toℕ p ⟩
+                   toℕ (lookup j (tcompcauchy α β))
+                   ≡⟨ cong toℕ
+                        (lookup-2d m n j α β
+                          (λ {(b , d) → inject≤
+                                          (fromℕ (toℕ b * n + toℕ d))
+                                          (i*n+k≤m*n b d)})) ⟩ 
+                   toℕ
+                     (let b' = lookup bj α
+                          d' = lookup dj β
+                      in inject≤
+                           (fromℕ (toℕ b' * n + toℕ d'))
+                           (i*n+k≤m*n b' d'))
+                   ≡⟨ inject≤-lemma _ _ ⟩ 
+                   toℕ
+                     (let b' = lookup bj α
+                          d' = lookup dj β
+                      in fromℕ (toℕ b' * n + toℕ d'))
+                   ≡⟨ to-from _ ⟩ 
+                   let b' = lookup bj α
+                       d' = lookup dj β
+                   in toℕ b' * n + toℕ d' ∎)
+             where open ≡-Reasoning
 
 tcompperm : ∀ {m n} → Permutation m → Permutation n → Permutation (m * n)
 tcompperm {m} {n} (α , f) (β , g) =
   (tcompcauchy α β , λ {i} {j} p → tcompperm' m n i j α β f g p)
-
-{--
-tcompcauchy : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m * n)
-tcompcauchy {m} {n} α β = 
-  concatV 
-    (mapV 
-      (λ b → 
-         mapV (λ d → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)) β)
-      α)
-
-m : ℕ
-n : ℕ
-i : Fin (m * n)
-j : Fin (m * n)
-α : Cauchy m
-β : Cauchy n
-f : lookup i α ≡ lookup j α → i ≡ j
-j : lookup i β ≡ lookup j β → i ≡ j
-p : lookup i (tcompcauchy α β) ≡ lookup j (tcompcauchy α β)
---}
 
 -- swap⋆ 
 -- 
