@@ -20,7 +20,7 @@ open import Data.Nat.Properties.Simple
         *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
 open import Data.Nat.DivMod using (DivMod; result; _divMod_; _div_; _mod_)
 open import Relation.Binary using (Rel; Decidable; Setoid)
-open import Relation.Binary.Core using (Transitive)
+open import Relation.Binary.Core using (Transitive; _⇒_)
 
 open import Data.String using (String)
   renaming (_++_ to _++S_)
@@ -39,7 +39,7 @@ open import Data.Vec.Properties
   using (lookup∘tabulate; tabulate∘lookup; lookup-allFin; tabulate-∘; 
          tabulate-allFin; allFin-map; lookup-++-inject+; lookup-++-≥;
          lookup-++-<)
-open import Data.Product using (Σ)
+open import Data.Product using (Σ; swap)
 
 open import Data.List 
   using (List; []; _∷_; _∷ʳ_; foldl; replicate; reverse; downFrom; 
@@ -61,6 +61,7 @@ open import Data.Unit    using (⊤; tt)
 open import Data.Sum     using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
+open import DivModUtils
 open import Proofs
 open import Cauchy
 
@@ -72,33 +73,36 @@ Permutation : ℕ → Set
 Permutation n = Σ (Cauchy n) (λ v → ∀ {i j} → lookup i v ≡ lookup j v → i ≡ j)
 
 ------------------------------------------------------------------------------
--- Shorthand
-
-fi≡fj : {m : ℕ} → (i j : Fin m) (f : Fin m → Fin m) →
-        (p : lookup i (tabulate f) ≡ lookup j (tabulate f)) → (f i ≡ f j)
-fi≡fj i j f p = trans
-                  (sym (lookup∘tabulate f i))
-                  (trans p (lookup∘tabulate f j))
-
--- Elementary permutations in the Cauchy representation 
-
-idperm : (n : ℕ) → Permutation n
-idperm n = (idcauchy n , λ {i} {j} p → fi≡fj i j id p)
-
--- Sequential composition
-
-scompperm : ∀ {n} → Permutation n → Permutation n → Permutation n
-scompperm {n} (α , f) (β , g) =
-  (scompcauchy α β ,
-   λ {i} {j} p → f (g (fi≡fj i j (λ i → lookup (lookup i α) β) p)))
-         
--- swap the first m elements with the last n elements
--- [ v₀ , v₁   , v₂   , ... , vm-1 ,     vm , vm₊₁ , ... , vm+n-1 ]
--- ==> 
--- [ vm , vm₊₁ , ... , vm+n-1 ,     v₀ , v₁   , v₂   , ... , vm-1 ]
+-- Fin and Nat lemmas
 
 toℕ-fin : (m n : ℕ) → (eq : m ≡ n) (fin : Fin m) → toℕ (subst Fin eq fin) ≡ toℕ fin
 toℕ-fin m .m refl fin = refl
+
+-- buried in Data.Nat
+
+refl′ : _≡_ ⇒ _≤_
+refl′ {0} refl = z≤n
+refl′ {suc m} refl = s≤s (refl′ refl)
+
+∸≡ : (m n : ℕ) (i j : Fin (m + n)) (i≥ : m ≤ toℕ i) (j≥ : m ≤ toℕ j) →
+  toℕ i ∸ m ≡ toℕ j ∸ m → i ≡ j
+∸≡ m n i j i≥ j≥ p = toℕ-injective pr
+  where pr = begin (toℕ i
+                    ≡⟨ sym (m+n∸n≡m (toℕ i) m) ⟩
+                    (toℕ i + m) ∸ m
+                    ≡⟨ cong (λ x → x ∸ m) (+-comm (toℕ i) m) ⟩ 
+                    (m + toℕ i) ∸ m
+                    ≡⟨ +-∸-assoc m i≥ ⟩
+                    m + (toℕ i ∸ m)
+                    ≡⟨ cong (λ x → m + x) p ⟩
+                    m + (toℕ j ∸ m)
+                    ≡⟨ sym (+-∸-assoc m j≥) ⟩
+                    (m + toℕ j) ∸ m
+                    ≡⟨ cong (λ x → x ∸ m) (+-comm m (toℕ j)) ⟩
+                    (toℕ j + m) ∸ m
+                    ≡⟨ m+n∸n≡m (toℕ j) m ⟩
+                    toℕ j ∎)
+             where open ≡-Reasoning
 
 raise< : (m n : ℕ) (i : Fin (m + n)) (i< : toℕ i < m) → 
          toℕ (subst Fin (+-comm n m) (raise n (fromℕ≤ i<))) ≡ n + toℕ i
@@ -130,25 +134,217 @@ inject≥ m n i i≥ =
          toℕ i ∸ m ∎)
   where open ≡-Reasoning
 
-∸≡ : (m n : ℕ) (i j : Fin (m + n)) (i≥ : m ≤ toℕ i) (j≥ : m ≤ toℕ j) →
-  toℕ i ∸ m ≡ toℕ j ∸ m → i ≡ j
-∸≡ m n i j i≥ j≥ p = toℕ-injective pr
-  where pr = begin (toℕ i
-                    ≡⟨ sym (m+n∸n≡m (toℕ i) m) ⟩
-                    (toℕ i + m) ∸ m
-                    ≡⟨ cong (λ x → x ∸ m) (+-comm (toℕ i) m) ⟩ 
-                    (m + toℕ i) ∸ m
-                    ≡⟨ +-∸-assoc m i≥ ⟩
-                    m + (toℕ i ∸ m)
-                    ≡⟨ cong (λ x → m + x) p ⟩
-                    m + (toℕ j ∸ m)
-                    ≡⟨ sym (+-∸-assoc m j≥) ⟩
-                    (m + toℕ j) ∸ m
-                    ≡⟨ cong (λ x → x ∸ m) (+-comm m (toℕ j)) ⟩
-                    (toℕ j + m) ∸ m
-                    ≡⟨ m+n∸n≡m (toℕ j) m ⟩
-                    toℕ j ∎)
-             where open ≡-Reasoning
+cancel-right∸ : (m n k : ℕ) (k≤m : k ≤ m) (k≤n : k ≤ n) → (m ∸ k ≡ n ∸ k) → m ≡ n
+cancel-right∸ m n k k≤m k≤n mk≡nk =
+  begin (m
+         ≡⟨ sym (m+n∸n≡m m k) ⟩
+         (m + k) ∸ k
+         ≡⟨ cong (λ x → x ∸ k) (+-comm m k) ⟩
+         (k + m) ∸ k
+         ≡⟨ +-∸-assoc k k≤m ⟩
+         k + (m ∸ k)
+         ≡⟨ cong (λ x → k + x) mk≡nk ⟩
+         k + (n ∸ k)
+         ≡⟨ sym (+-∸-assoc k k≤n) ⟩
+         (k + n) ∸ k
+         ≡⟨ cong (λ x → x ∸ k) (+-comm k n) ⟩
+         (n + k) ∸ k
+         ≡⟨ m+n∸n≡m n k ⟩
+         n ∎)
+  where open ≡-Reasoning
+
+fromℕ≤-inj : (m n : ℕ) (i j : Fin n) (i< : toℕ i < m) (j< : toℕ j < m) → 
+  fromℕ≤ i< ≡ fromℕ≤ j< → i ≡ j
+fromℕ≤-inj m n i j i< j< fi≡fj =
+  toℕ-injective
+    (trans (sym (toℕ-fromℕ≤ i<)) (trans (cong toℕ fi≡fj) (toℕ-fromℕ≤ j<)))
+
+reduce≥-inj : (m n : ℕ) (i j : Fin (m + n)) (i≥ : m ≤ toℕ i) (j≥ : m ≤ toℕ j) →
+  reduce≥ i i≥ ≡ reduce≥ j j≥ → i ≡ j
+reduce≥-inj m n i j i≥ j≥ ri≡rj =
+  toℕ-injective
+    (cancel-right∸ (toℕ i) (toℕ j) m i≥ j≥
+      (trans (sym (toℕ-reduce≥ m n i i≥))
+      (trans (cong toℕ ri≡rj) (toℕ-reduce≥ m n j j≥))))
+
+------------------------------------------------------------------------------
+-- Iso between Fin (m * n) and Fin m × Fin n
+
+absurd-quotient : (m n q : ℕ) (r : Fin (suc n)) (k : Fin (suc (n + m * suc n))) 
+         (k≡r+q*sn : toℕ k ≡ toℕ r + q * suc n) (p : suc m ≤ q) → ⊥
+absurd-quotient m n q r k k≡r+q*sn p = ¬i+1+j≤i (toℕ k) {toℕ r} k≥k+sr
+  where k≥k+sr : toℕ k ≥ toℕ k + suc (toℕ r)
+        k≥k+sr = begin (toℕ k + suc (toℕ r)
+                   ≡⟨ +-suc (toℕ k) (toℕ r) ⟩
+                 suc (toℕ k) + toℕ r
+                   ≤⟨ cong+r≤ (bounded k) (toℕ r) ⟩ 
+                 (suc n + m * suc n) + toℕ r
+                   ≡⟨ +-comm (suc n + m * suc n) (toℕ r) ⟩ 
+                 toℕ r + (suc n + m * suc n)
+                   ≡⟨ refl ⟩ 
+                 toℕ r + suc m * suc n
+                   ≤⟨ cong+l≤ (cong*r≤ p (suc n)) (toℕ r) ⟩ 
+                 toℕ r + q * suc n
+                   ≡⟨ sym k≡r+q*sn ⟩
+                 toℕ k ∎)
+                  where open ≤-Reasoning
+
+Fin0-⊥ : Fin 0 → ⊥
+Fin0-⊥ ()
+
+fin-project : (m n : ℕ) → Fin (m * n) → Fin m × Fin n
+fin-project 0 n ()
+fin-project (suc m) 0 k =  ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero (suc m)) k)) 
+fin-project (suc m) (suc n) k with (toℕ k) divMod (suc n)
+... | result q r k≡r+q*sn = (fromℕ≤ {q} {suc m} (s≤s q≤m) , r)
+  where q≤m : q ≤ m
+        q≤m with suc m ≤? q
+        ... | yes p = ⊥-elim (absurd-quotient m n q r k k≡r+q*sn p)
+        ... | no ¬p = ≤-pred (≰⇒> ¬p)  
+
+fin-proj-lem : (m n : ℕ) (k : Fin (m * n)) →
+  k ≡ let (b , d) = fin-project m n k in
+      inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)
+fin-proj-lem 0 n ()
+fin-proj-lem (suc m) 0 k = ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero (suc m)) k))
+fin-proj-lem (suc m) (suc n) k with _divMod_ (toℕ k) (suc n) {_}
+... | result q r k≡r+q*sn with suc m ≤? q
+... | yes p = ⊥-elim (absurd-quotient m n q r k k≡r+q*sn p)
+... | no ¬p = toℕ-injective toℕk≡
+  where q≡ : (m : ℕ) (q : ℕ) (¬p : ¬ suc m ≤ q) → 
+             q ≡ toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p))))
+        q≡ m q ¬p = sym (toℕ-fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p))))
+        toℕk≡ = begin (toℕ k
+                  ≡⟨ k≡r+q*sn ⟩
+                       toℕ r + q * suc n
+                  ≡⟨ +-comm (toℕ r) (q * suc n) ⟩ 
+                       q * suc n + toℕ r
+                  ≡⟨ cong
+                        (λ x → x * suc n + toℕ r)
+                        (q≡ m q ¬p) ⟩ 
+                       toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc n + toℕ r
+                  ≡⟨ sym (to-from
+                           (toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc n + toℕ r)) ⟩
+                       toℕ (fromℕ
+                             (toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc n + toℕ r))
+                  ≡⟨ sym
+                       (inject≤-lemma
+                         (fromℕ
+                           (toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc n + toℕ r))
+                         (i*n+k≤m*n (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) r)) ⟩ 
+                       toℕ
+                         (inject≤
+                           (fromℕ
+                             (toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc n + toℕ r))
+                           (i*n+k≤m*n
+                             (fromℕ≤ {q} {suc m} (s≤s (≤-pred (≰⇒> ¬p)))) r)) ∎)
+                where open ≡-Reasoning
+
+fin-proj-lem2 : (m n : ℕ) (b : Fin m) (d : Fin n) → 
+  (b , d) ≡ fin-project m n 
+              (inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+fin-proj-lem2 m 0 b ()
+fin-proj-lem2 0 (suc n) () d 
+fin-proj-lem2 (suc m) (suc n) b d with
+ (toℕ (inject≤ (fromℕ (toℕ b * suc n + toℕ d)) (i*n+k≤m*n b d))) divMod (suc n)
+... | result q r eq =
+  begin ((b , d)
+        ≡⟨ cong₂ _,_
+            (toℕ-injective
+              (sym
+                (trans
+                  (toℕ-fromℕ≤ (s≤s (trans≤ (refl′ (proj₁ eq')) (bounded' m b))))
+                  (proj₁ eq'))) )
+            (sym (proj₂ eq')) ⟩
+        (fromℕ≤ (s≤s (trans≤ (refl′ (proj₁ eq')) (bounded' m b))) , r)
+        ≡⟨ cong₂ _,_ (cong fromℕ≤ (≤-proof-irrelevance _ _)) refl ⟩ 
+        (fromℕ≤ _ , r) ∎)
+  where open ≡-Reasoning
+        eq' : q ≡ toℕ b × r ≡ d
+        eq' = swap
+                (addMul-lemma′ q (toℕ b) n r d
+                  (trans
+                    (trans (+-comm (q * suc n) (toℕ r)) (sym eq))
+                    (trans (inject≤-lemma _ _) (to-from _))))
+ 
+record Fin-Product-Iso (m n : ℕ) : Set where
+  constructor iso
+  field
+    split   : Fin (m * n) → Fin m × Fin n
+    combine : Fin m × Fin n → Fin (m * n)
+    inv     : (i : Fin (m * n)) → combine (split i) ≡ i
+    inv'    : (bd : Fin m × Fin n) → split (combine bd) ≡ bd
+    
+fin-product-iso : (m n : ℕ) → Fin-Product-Iso m n
+fin-product-iso m n =
+  iso
+    (fin-project m n)
+    (λ {(b , d) → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)})
+    (λ k → sym (fin-proj-lem m n k))
+    ((λ {(b , d) → sym (fin-proj-lem2 m n b d)}))
+
+record Fin-DivMod (m n : ℕ) (i : Fin (m * n)) : Set where
+  constructor fin-result
+  field
+    b   : Fin m
+    d   : Fin n
+    dec : toℕ i ≡ toℕ d + toℕ b * n
+
+fin-divMod : (m n : ℕ) (i : Fin (m * n)) → Fin-DivMod m n i
+fin-divMod m n i = fin-result b d dec
+  where
+    bd = Fin-Product-Iso.split (fin-product-iso m n) i
+    b = proj₁ bd
+    d = proj₂ bd
+    dec = begin (toℕ i
+                ≡⟨ cong toℕ (sym (inv (fin-product-iso m n) i)) ⟩
+                toℕ (inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
+                ≡⟨ inject≤-lemma (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d) ⟩ 
+                toℕ (fromℕ (toℕ b * n + toℕ d))
+                ≡⟨ to-from (toℕ b * n + toℕ d) ⟩ 
+                toℕ b * n + toℕ d
+                ≡⟨ +-comm (toℕ b * n) (toℕ d) ⟩ 
+                toℕ d + toℕ b * n ∎)
+          where open ≡-Reasoning
+                open Fin-Product-Iso
+
+------------------------------------------------------------------------------
+-- Vec lemmas
+
+fi≡fj : {m : ℕ} → (i j : Fin m) (f : Fin m → Fin m) →
+        (p : lookup i (tabulate f) ≡ lookup j (tabulate f)) → (f i ≡ f j)
+fi≡fj i j f p = trans
+                  (sym (lookup∘tabulate f i))
+                  (trans p (lookup∘tabulate f j))
+
+lookup-bounded : (m n : ℕ) (i : Fin n) (v : Vec (Fin m) n) → toℕ (lookup i v) < m
+lookup-bounded m 0 () v
+lookup-bounded m (suc n) zero (x ∷ v) = bounded x
+lookup-bounded m (suc n) (suc i) (x ∷ v) = lookup-bounded m n i v 
+
+lookup-2d : (m n : ℕ) (i : Fin (m * n)) (α : Cauchy m) (β : Cauchy n) →
+  (h : (b : Fin m) (d : Fin n) → Fin (m * n)) → 
+  lookup i (concatV (mapV (λ b → mapV (λ d → h b d) β) α)) ≡
+  h (Fin-DivMod.b (fin-divMod m n i)) (Fin-DivMod.d (fin-divMod m n i)) 
+lookup-2d = {!!} 
+
+------------------------------------------------------------------------------
+-- Elementary permutations in the Cauchy representation 
+
+idperm : (n : ℕ) → Permutation n
+idperm n = (idcauchy n , λ {i} {j} p → fi≡fj i j id p)
+
+-- Sequential composition
+
+scompperm : ∀ {n} → Permutation n → Permutation n → Permutation n
+scompperm {n} (α , f) (β , g) =
+  (scompcauchy α β ,
+   λ {i} {j} p → f (g (fi≡fj i j (λ i → lookup (lookup i α) β) p)))
+         
+-- swap the first m elements with the last n elements
+-- [ v₀ , v₁   , v₂   , ... , vm-1 ,     vm , vm₊₁ , ... , vm+n-1 ]
+-- ==> 
+-- [ vm , vm₊₁ , ... , vm+n-1 ,     v₀ , v₁   , v₂   , ... , vm-1 ]
 
 swap+cauchy< : (m n : ℕ) (i : Fin (m + n)) (i< : toℕ i < m) →
   lookup i (swap+cauchy m n) ≡ subst Fin (+-comm n m) (raise n (fromℕ≤ i<))
@@ -307,44 +503,6 @@ swap+perm m n = (swap+cauchy m n , λ {i} {j} p → swap+perm' m n i j p)
 -- permutation by the size of the first type so that it acts on the
 -- second part of the vector
 
-cancel-right∸ : (m n k : ℕ) (k≤m : k ≤ m) (k≤n : k ≤ n) → (m ∸ k ≡ n ∸ k) → m ≡ n
-cancel-right∸ m n k k≤m k≤n mk≡nk =
-  begin (m
-         ≡⟨ sym (m+n∸n≡m m k) ⟩
-         (m + k) ∸ k
-         ≡⟨ cong (λ x → x ∸ k) (+-comm m k) ⟩
-         (k + m) ∸ k
-         ≡⟨ +-∸-assoc k k≤m ⟩
-         k + (m ∸ k)
-         ≡⟨ cong (λ x → k + x) mk≡nk ⟩
-         k + (n ∸ k)
-         ≡⟨ sym (+-∸-assoc k k≤n) ⟩
-         (k + n) ∸ k
-         ≡⟨ cong (λ x → x ∸ k) (+-comm k n) ⟩
-         (n + k) ∸ k
-         ≡⟨ m+n∸n≡m n k ⟩
-         n ∎)
-  where open ≡-Reasoning
-
-lookup-bounded : (m n : ℕ) (i : Fin n) (v : Vec (Fin m) n) → toℕ (lookup i v) < m
-lookup-bounded m 0 () v
-lookup-bounded m (suc n) zero (x ∷ v) = bounded x
-lookup-bounded m (suc n) (suc i) (x ∷ v) = lookup-bounded m n i v 
-
-fromℕ≤-inj : (m n : ℕ) (i j : Fin n) (i< : toℕ i < m) (j< : toℕ j < m) → 
-  fromℕ≤ i< ≡ fromℕ≤ j< → i ≡ j
-fromℕ≤-inj m n i j i< j< fi≡fj =
-  toℕ-injective
-    (trans (sym (toℕ-fromℕ≤ i<)) (trans (cong toℕ fi≡fj) (toℕ-fromℕ≤ j<)))
-
-reduce≥-inj : (m n : ℕ) (i j : Fin (m + n)) (i≥ : m ≤ toℕ i) (j≥ : m ≤ toℕ j) →
-  reduce≥ i i≥ ≡ reduce≥ j j≥ → i ≡ j
-reduce≥-inj m n i j i≥ j≥ ri≡rj =
-  toℕ-injective
-    (cancel-right∸ (toℕ i) (toℕ j) m i≥ j≥
-      (trans (sym (toℕ-reduce≥ m n i i≥))
-      (trans (cong toℕ ri≡rj) (toℕ-reduce≥ m n j j≥))))
-
 pcompperm' : (m n : ℕ) (i j : Fin (m + n))
   (α : Cauchy m) (β : Cauchy n)
   (p : lookup i (pcompcauchy α β) ≡ lookup j (pcompcauchy α β))
@@ -473,126 +631,6 @@ pcompperm {m} {n} (α , f) (β , g) =
 -- Tensor multiplicative composition
 -- Transpositions in α correspond to swapping entire rows
 -- Transpositions in β correspond to swapping entire columns
-
--- Iso between Fin (m * n) and Fin m × Fin n
-
-absurd : (m n q : ℕ) (r : Fin (suc n)) (k : Fin (suc (n + m * suc n))) 
-         (k≡r+q*sn : toℕ k ≡ toℕ r + q * suc n) (p : suc m ≤ q) → ⊥
-absurd m n q r k k≡r+q*sn p = ¬i+1+j≤i (toℕ k) {toℕ r} k≥k+sr
-  where k≥k+sr : toℕ k ≥ toℕ k + suc (toℕ r)
-        k≥k+sr =
-          begin (toℕ k + suc (toℕ r)
-                   ≡⟨ +-suc (toℕ k) (toℕ r) ⟩
-                 suc (toℕ k) + toℕ r
-                   ≤⟨ cong+r≤ (bounded k) (toℕ r) ⟩ 
-                 (suc n + m * suc n) + toℕ r
-                   ≡⟨ +-comm (suc n + m * suc n) (toℕ r) ⟩ 
-                 toℕ r + (suc n + m * suc n)
-                   ≡⟨ refl ⟩ 
-                 toℕ r + suc m * suc n
-                   ≤⟨ cong+l≤ (cong*r≤ p (suc n)) (toℕ r) ⟩ 
-                 toℕ r + q * suc n
-                   ≡⟨ sym k≡r+q*sn ⟩
-                 toℕ k ∎)
-          where open ≤-Reasoning
-
-Fin0-⊥ : Fin 0 → ⊥
-Fin0-⊥ ()
-
-fin-project : (m n : ℕ) → Fin (m * n) → Fin m × Fin n
-fin-project 0 n ()
-fin-project (suc m) 0 k =  ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero (suc m)) k)) 
-fin-project (suc m) (suc n) k with (toℕ k) divMod (suc n)
-... | result q r k≡r+q*sn = (fromℕ≤ {q} {suc m} (s≤s q≤m) , r)
-  where q≤m : q ≤ m
-        q≤m with suc m ≤? q
-        ... | yes p = ⊥-elim (absurd m n q r k k≡r+q*sn p)
-        ... | no ¬p = ≤-pred (≰⇒> ¬p)  
-
-q≡ : (m : ℕ) (q : ℕ) (¬p : ¬ suc m ≤ q) → 
-  q ≡ toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p))))
-q≡ m q ¬p = sym (toℕ-fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p))))
-
-fin-proj-lem :
-  (m n : ℕ) (k : Fin (m * n)) →
-  k ≡
-  inject≤
-    (fromℕ (toℕ (proj₁ (fin-project m n k)) * n +
-            toℕ (proj₂ (fin-project m n k))))
-    (i*n+k≤m*n
-      (proj₁ (fin-project m n k))
-      (proj₂ (fin-project m n k)))
-fin-proj-lem 0 n ()
-fin-proj-lem (suc m) 0 k = ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero (suc m)) k))
-fin-proj-lem (suc m) (suc n) k with _divMod_ (toℕ k) (suc n) {_}
-... | result q r k≡r+q*sn with suc m ≤? q
-... | yes p = ⊥-elim (absurd m n q r k k≡r+q*sn p)
-... | no ¬p = toℕ-injective toℕk≡
-  where toℕk≡ = begin (toℕ k
-                  ≡⟨ k≡r+q*sn ⟩
-                       toℕ r + q * suc n
-                  ≡⟨ +-comm (toℕ r) (q * suc n) ⟩ 
-                       q * suc n + toℕ r
-                  ≡⟨ cong
-                        (λ x → x * suc n + toℕ r)
-                        (q≡ m q ¬p) ⟩ 
-                       toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc n + toℕ r
-                  ≡⟨ sym (to-from
-                           (toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc n + toℕ r)) ⟩
-                       toℕ (fromℕ
-                             (toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc n + toℕ r))
-                  ≡⟨ sym
-                       (inject≤-lemma
-                         (fromℕ
-                           (toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc n + toℕ r))
-                         (i*n+k≤m*n (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) r)) ⟩ 
-                       toℕ
-                         (inject≤
-                           (fromℕ
-                             (toℕ (fromℕ≤ (s≤s (≤-pred (≰⇒> ¬p)))) * suc n + toℕ r))
-                           (i*n+k≤m*n
-                             (fromℕ≤ {q} {suc m} (s≤s (≤-pred (≰⇒> ¬p)))) r)) ∎)
-                where open ≡-Reasoning
-
-record Fin-Product-Iso (m n : ℕ) : Set where
-  constructor iso
-  field
-    split   : Fin (m * n) → Fin m × Fin n
-    combine : Fin m × Fin n → Fin (m * n)
-    inv     : (i : Fin (m * n)) → combine (split i) ≡ i
-    inv'    : (bd : Fin m × Fin n) → split (combine bd) ≡ bd
-    
-fin-product-iso : (m n : ℕ) → Fin-Product-Iso m n
-fin-product-iso m n =
-  iso
-    (fin-project m n)
-    (λ {(b , d) → inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)})
-    (λ k → sym (fin-proj-lem m n k))
-    ((λ {(b , d) → {!!}}))
-
-{--
-(fin-project m n (inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)) ≡ (b , d)
-
-
-
---}
-                          
-record Fin-DivMod (m n : ℕ) (i : Fin (m * n)) : Set where
-  constructor fin-result
-  field
-    b   : Fin m
-    d   : Fin n
-    dec : toℕ i ≡ toℕ d + toℕ b * n
-
-fin-divMod : (m n : ℕ) (i : Fin (m * n)) → Fin-DivMod m n i
-fin-divMod m n i = {!!} 
-
-lookup-2d : (m n : ℕ) (i : Fin (m * n)) (α : Cauchy m) (β : Cauchy n) →
-  (h : (b : Fin m) (d : Fin n) → Fin (m * n)) → 
-  lookup i (concatV (mapV (λ b → mapV (λ d → h b d) β) α)) ≡
-  h (Fin-DivMod.b (fin-divMod m n i)) (Fin-DivMod.d (fin-divMod m n i)) 
-lookup-2d = {!!} 
-
 
 tcompperm' : (m n : ℕ) (i j : Fin (m * n)) (α : Cauchy m) (β : Cauchy n) 
   (f : {i j : Fin m} → lookup i α ≡ lookup j α → i ≡ j)
