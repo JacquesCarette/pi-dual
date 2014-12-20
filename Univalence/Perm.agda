@@ -169,6 +169,9 @@ reduce≥-inj m n i j i≥ j≥ ri≡rj =
       (trans (sym (toℕ-reduce≥ m n i i≥))
       (trans (cong toℕ ri≡rj) (toℕ-reduce≥ m n j j≥))))
 
+subst-allFin : ∀ {m n} → (eq : m ≡ n) → subst Cauchy eq (allFin m) ≡ allFin n
+subst-allFin refl = refl
+
 ------------------------------------------------------------------------------
 -- Iso between Fin (m * n) and Fin m × Fin n
 
@@ -885,7 +888,27 @@ tcompperm {m} {n} (α , f) (β , g) =
 
 swap⋆perm' : (m n : ℕ) (i j : Fin (m * n))
              (p : lookup i (swap⋆cauchy m n) ≡ lookup j (swap⋆cauchy m n)) → (i ≡ j)
-swap⋆perm' m n i j p = {!!} 
+swap⋆perm' 0 n () j p
+swap⋆perm' 1 n i j p = toℕ-injective pr
+  where pr = begin (toℕ i
+                   ≡⟨ cong toℕ (sym (lookup-allFin i)) ⟩
+                   toℕ (lookup i (idcauchy (n + 0)))
+                   ≡⟨ cong
+                        (λ x → toℕ (lookup i x))
+                        (sym (subst-allFin (sym (+-right-identity n)))) ⟩
+                   toℕ (lookup i (subst Cauchy (sym (+-right-identity n)) (idcauchy n)))
+                   ≡⟨ cong toℕ p ⟩
+                   toℕ (lookup j (subst Cauchy (sym (+-right-identity n)) (idcauchy n)))
+                   ≡⟨ cong
+                        (λ x → toℕ (lookup j x))
+                        (subst-allFin (sym (+-right-identity n))) ⟩
+                   toℕ (lookup j (idcauchy (n + 0)))
+                   ≡⟨ cong toℕ (lookup-allFin j) ⟩
+                   toℕ j ∎)
+             where open ≡-Reasoning
+swap⋆perm' (suc (suc m)) 0 i j p = {!!}
+swap⋆perm' (suc (suc m)) 1 i j p = {!!}
+swap⋆perm' (suc (suc m)) (suc (suc n)) i j p = {!!}
 
 swap⋆perm : (m n : ℕ) → Permutation (m * n)
 swap⋆perm m n = (swap⋆cauchy m n , λ {i} {j} p → swap⋆perm' m n i j p)
