@@ -17,7 +17,7 @@ open import Data.Nat.Properties.Simple
         *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
 open import Data.Nat.DivMod using (_mod_)
 open import Relation.Binary using (Rel; Decidable; Setoid)
-open import Relation.Binary.Core using (Transitive)
+open import Relation.Binary.Core using (Transitive; _⇒_)
 
 open import Data.String using (String)
   renaming (_++_ to _++S_)
@@ -150,6 +150,7 @@ tcompcauchy {m} {n} α β =
 -- P(i) = m*n-1 if i=m*n-1
 --      = m*i mod m*n-1 otherwise
 
+{--
 transposeIndex : (m n : ℕ) → 
                  (b : Fin (suc (suc m))) → (d : Fin (suc (suc n))) → 
                  Fin (suc (suc m) * suc (suc n))
@@ -161,6 +162,23 @@ transposeIndex m n b d | i | no _ =
   inject≤ 
     ((i * (suc (suc m))) mod (suc (n + suc (suc (n + m * suc (suc n))))))
     (i≤si (suc (n + suc (suc (n + m * suc (suc n))))))
+--}
+
+-- buried in Data.Nat
+
+refl′ : _≡_ ⇒ _≤_
+refl′ {0} refl = z≤n
+refl′ {suc m} refl = s≤s (refl′ refl)
+
+-- Is that an equivalent definition ???
+
+transposeIndex : (m n : ℕ) →
+                 (b : Fin (suc (suc m))) → (d : Fin (suc (suc n))) → 
+                 Fin (suc (suc m) * suc (suc n))
+transposeIndex m n b d =
+  inject≤
+    (fromℕ (toℕ d * suc (suc m) + toℕ b))
+    (trans≤ (i*n+k≤m*n d b) (refl′ (*-comm (suc (suc n)) (suc (suc m)))))
 
 swap⋆cauchy : (m n : ℕ) → Cauchy (m * n)
 swap⋆cauchy 0 n = []
