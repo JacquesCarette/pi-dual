@@ -1920,22 +1920,22 @@ cauchy2c {BOOL} {BOOL} refl (suc (suc ()) ∷ b ∷ [])
 -- that for all c₁ and c₂, we have c₁ ∼ c₂ iff c₁ ⇔ c₂
 
 soundness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₁ ∼ c₂)
-soundness assoc◎l      = {!!} -- assoc∼
-soundness assoc◎r      = {!!} -- sym∼ assoc∼
+soundness assoc◎l      = assoc∼
+soundness assoc◎r      = sym∼ assoc∼
 soundness assoc⊕l      = {!!} -- assoc⊕∼
 soundness assoc⊕r      = {!!} -- sym∼ assoc⊕∼
 soundness assoc⊗l      = {!!} -- assoc⊗∼
 soundness assoc⊗r      = {!!} -- sym∼ assoc⊗∼
 soundness dist⇔        = {!!}
 soundness factor⇔      = {!!}
-soundness idl◎l        = {!!} -- id◎c∼c
-soundness idl◎r        = {!!} -- sym∼ id◎c∼c
-soundness idr◎l        = {!!} -- c◎id∼c
-soundness idr◎r        = {!!} -- sym∼ c◎id∼c
-soundness linv◎l       = {!!} -- linv∼
-soundness linv◎r       = {!!} -- sym∼ linv∼
-soundness rinv◎l       = {!!} -- rinv∼
-soundness rinv◎r       = {!!} -- sym∼ rinv∼
+soundness idl◎l        = id◎c∼c
+soundness idl◎r        = sym∼ id◎c∼c 
+soundness idr◎l        = c◎id∼c
+soundness idr◎r        = sym∼ c◎id∼c
+soundness linv◎l       = linv∼
+soundness linv◎r       = sym∼ linv∼
+soundness rinv◎l       = rinv∼
+soundness rinv◎r       = sym∼ rinv∼ 
 soundness unitel₊⇔     = {!!}
 soundness uniter₊⇔     = {!!}
 soundness unitil₊⇔     = {!!}
@@ -1954,9 +1954,9 @@ soundness swapl⋆⇔      = {!!}
 soundness swapr⋆⇔      = {!!}
 soundness swapfl⋆⇔     = {!!}
 soundness swapfr⋆⇔     = {!!}
-soundness id⇔          = {!!} -- refl∼
-soundness (trans⇔ α β) = {!!} -- trans∼ (soundness α) (soundness β)
-soundness (resp◎⇔ α β) = {!!} -- resp∼ (soundness α) (soundness β)
+soundness id⇔          = refl∼ 
+soundness (trans⇔ α β) = trans∼ (soundness α) (soundness β)
+soundness (resp◎⇔ α β) = resp∼ (soundness α) (soundness β)
 soundness (resp⊕⇔ α β) = {!!}
 soundness (resp⊗⇔ α β) = {!!} 
 
