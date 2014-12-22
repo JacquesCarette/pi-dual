@@ -507,6 +507,11 @@ lookup-2d m n i α β h =
 ------------------------------------------------------------------------------
 -- Elementary permutations in the Cauchy representation 
 
+emptyperm : Permutation 0
+emptyperm = ([] , f)
+  where f : {i j : Fin 0} → (lookup i [] ≡ lookup j []) → (i ≡ j)
+        f {()}
+
 idperm : (n : ℕ) → Permutation n
 idperm n = (idcauchy n , λ {i} {j} p → fi≡fj i j id p)
 

@@ -60,6 +60,7 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
 open import Proofs
 open import Cauchy
+open import Perm
 
 ------------------------------------------------------------------------------
 -- Proofs about sequential composition
@@ -129,6 +130,10 @@ scompassoc π₁ π₂ π₃ =
            ≡⟨ refl ⟩
          scompcauchy (scompcauchy π₁ π₂) π₃ ∎)
   where open ≡-Reasoning
+
+scompassocPerm : ∀ {n} → (π₁ π₂ π₃ : Permutation n) → 
+  scompperm π₁ (scompperm π₂ π₃) ≡ scompperm (scompperm π₁ π₂) π₃
+scompassocPerm {n} (π₁ , f₁) (π₂ , f₂) (π₃ , f₃) = {!!}
 
 ------------------------------------------------------------------------------
 -- Proofs about additive permutations

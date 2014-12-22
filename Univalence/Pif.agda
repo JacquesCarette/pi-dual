@@ -54,6 +54,7 @@ open import Data.Sum     using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
 open import Cauchy
+open import Perm
 open import Proofs
 open import CauchyProofs
 -- open import CauchyProofsT
@@ -590,6 +591,40 @@ c2cauchy {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} factor =
   idcauchy ((size t₁ * size t₃) + (size t₂ * size t₃))
 c2cauchy {t} id⟷  = idcauchy (size t)
 
+c2perm : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Permutation (size t₁)
+-- the cases that do not inspect t₁ and t₂ should be at the beginning
+-- so that Agda would unfold them
+c2perm (c₁ ◎ c₂) = 
+  scompperm 
+    (c2perm c₁) 
+    (subst Permutation (size≡! c₁) (c2perm c₂)) 
+c2perm (c₁ ⊕ c₂) = pcompperm (c2perm c₁) (c2perm c₂) 
+c2perm (c₁ ⊗ c₂) = tcompperm (c2perm c₁) (c2perm c₂)  
+c2perm unfoldBool = idperm 2
+c2perm foldBool   = idperm 2
+c2perm {PLUS ZERO t} unite₊ = idperm (size t)
+c2perm {t} uniti₊ = idperm (size t)
+c2perm {PLUS t₁ t₂} swap₊ = swap+perm (size t₁) (size t₂)
+c2perm {PLUS t₁ (PLUS t₂ t₃)} assocl₊ = 
+  idperm (size t₁ + (size t₂ + size t₃))
+c2perm {PLUS (PLUS t₁ t₂) t₃} assocr₊ = 
+  idperm ((size t₁ + size t₂) + size t₃)
+c2perm {TIMES ONE t} unite⋆ = 
+  subst Permutation (sym (+-right-identity (size t))) (idperm (size t))
+c2perm {t} uniti⋆ = idperm (size t)
+c2perm {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = swap⋆perm (size t₁) (size t₂)
+c2perm {TIMES t₁ (TIMES t₂ t₃)} assocl⋆ = 
+  idperm (size t₁ * (size t₂ * size t₃))
+c2perm {TIMES (TIMES t₁ t₂) t₃} assocr⋆ = 
+  idperm ((size t₁ * size t₂) * size t₃)
+c2perm {TIMES ZERO t} distz = emptyperm
+c2perm factorz = emptyperm
+c2perm {TIMES (PLUS t₁ t₂) t₃} dist = 
+  idperm ((size t₁ + size t₂) * size t₃)
+c2perm {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} factor = 
+  idperm ((size t₁ * size t₃) + (size t₂ * size t₃))
+c2perm {t} id⟷  = idperm (size t)
+
 -- Looking forward to Sec. 2.2 (Functions are functors). The
 -- corresponding statement to Lemma 2.2.1 in our setting would be the
 -- following. Given any *size preserving* function f : U → U, it is
@@ -608,8 +643,13 @@ c2cauchy {t} id⟷  = idcauchy (size t)
 
 infix  10  _∼_  
 
+{--
 _∼_ : ∀ {t₁ t₂} → (c₁ c₂ : t₁ ⟷ t₂) → Set
 c₁ ∼ c₂ = (c2cauchy c₁ ≡ c2cauchy c₂)
+--}
+
+_∼_ : ∀ {t₁ t₂} → (c₁ c₂ : t₁ ⟷ t₂) → Set
+c₁ ∼ c₂ = (c2perm c₁ ≡ c2perm c₂)
 
 -- The relation ~ is an equivalence relation
 
@@ -625,6 +665,53 @@ trans∼ = trans
 assoc∼ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
          c₁ ◎ (c₂ ◎ c₃) ∼ (c₁ ◎ c₂) ◎ c₃
 assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} = 
+  begin (c2perm (c₁ ◎ (c₂ ◎ c₃))
+         ≡⟨ refl ⟩
+         scompperm
+           (c2perm c₁)
+           (subst Permutation (size≡! c₁) (c2perm (c₂ ◎ c₃)))
+           ≡⟨ cong 
+                (scompperm (c2perm c₁))
+                (subst-dist 
+                  scompperm
+                  (size≡! c₁) 
+                  (c2perm c₂)
+                  (subst Permutation (size≡! c₂) (c2perm c₃))) ⟩ 
+         scompperm
+           (c2perm c₁)
+           (scompperm
+             (subst Permutation (size≡! c₁) (c2perm c₂))
+             (subst Permutation (size≡! c₁)
+               (subst Permutation (size≡! c₂) (c2perm c₃))))
+           ≡⟨ cong (λ x → 
+                scompperm
+                  (c2perm c₁)
+                  (scompperm
+                    (subst Permutation (size≡! c₁) (c2perm c₂))
+                    x))
+                (subst-trans (size≡! c₁) (size≡! c₂) (c2perm c₃)) ⟩ 
+         scompperm
+           (c2perm c₁)
+           (scompperm
+             (subst Permutation (size≡! c₁) (c2perm c₂))
+             (subst Permutation (trans (size≡! c₂) (size≡! c₁)) (c2perm c₃)))
+           ≡⟨ {!!} ⟩
+{--           
+           ≡⟨ scompassoc 
+                (c2perm c₁) 
+                (subst Permutation (size≡! c₁) (c2perm c₂)) 
+                (subst Permutation (trans (size≡! c₂) (size≡! c₁)) (c2perm c₃)) ⟩
+--}
+         scompperm
+           (scompperm
+             (c2perm c₁)
+             (subst Permutation (size≡! c₁) (c2perm c₂)))
+           (subst Permutation (trans (size≡! c₂) (size≡! c₁)) (c2perm c₃))
+           ≡⟨ refl ⟩ 
+         c2perm ((c₁ ◎ c₂) ◎ c₃) ∎)
+  where open ≡-Reasoning
+
+{--
   begin (c2cauchy (c₁ ◎ (c₂ ◎ c₃))
            ≡⟨ refl ⟩ 
          scompcauchy
@@ -670,7 +757,8 @@ assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} =
            ≡⟨ refl ⟩ 
          c2cauchy ((c₁ ◎ c₂) ◎ c₃) ∎)
   where open ≡-Reasoning
-
+--}
+{--
 -- The combinators c : t₁ ⟷ t₂ are paths; we can transport
 -- size-preserving properties across c. In particular, for some
 -- appropriate P we want P(t₁) to map to P(t₂) via c.
@@ -807,7 +895,8 @@ linv∼ {TIMES t₁ t₂} {TIMES .t₂ .t₁} {swap⋆} =
            (swap⋆cauchy (size t₁) (size t₂))
            (subst Cauchy (*-comm (size t₂) (size t₁)) 
              (swap⋆cauchy (size t₂) (size t₁)))
-           ≡⟨ swap⋆idemp (size t₁) (size t₂) ⟩ 
+--           ≡⟨ swap⋆idemp (size t₁) (size t₂) ⟩
+             ≡⟨ {!!} ⟩ 
          c2cauchy {TIMES t₁ t₂} id⟷ ∎)
   where open ≡-Reasoning
 linv∼ {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} {assocl⋆} = 
@@ -1217,7 +1306,8 @@ rinv∼ {TIMES t₁ t₂} {TIMES .t₂ .t₁} {swap⋆} =
            (swap⋆cauchy (size t₂) (size t₁))
            (subst Cauchy (*-comm (size t₁) (size t₂)) 
              (swap⋆cauchy (size t₁) (size t₂)))
-           ≡⟨ swap⋆idemp (size t₂) (size t₁) ⟩ 
+--           ≡⟨ swap⋆idemp (size t₂) (size t₁) ⟩
+             ≡⟨ {!!} ⟩ 
          c2cauchy {TIMES t₂ t₁} id⟷ ∎)
   where open ≡-Reasoning
 rinv∼ {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} {assocl⋆} = 
@@ -1976,3 +2066,4 @@ completeness {t₁} {t₂} {c₁} {c₂} c₁∼c₂ =
 
 ------------------------------------------------------------------------------
 
+--}
