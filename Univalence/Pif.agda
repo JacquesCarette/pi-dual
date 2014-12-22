@@ -643,13 +643,8 @@ c2perm {t} id⟷  = idperm (size t)
 
 infix  10  _∼_  
 
-{--
 _∼_ : ∀ {t₁ t₂} → (c₁ c₂ : t₁ ⟷ t₂) → Set
 c₁ ∼ c₂ = (c2cauchy c₁ ≡ c2cauchy c₂)
---}
-
-_∼_ : ∀ {t₁ t₂} → (c₁ c₂ : t₁ ⟷ t₂) → Set
-c₁ ∼ c₂ = (c2perm c₁ ≡ c2perm c₂)
 
 -- The relation ~ is an equivalence relation
 
@@ -665,53 +660,6 @@ trans∼ = trans
 assoc∼ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
          c₁ ◎ (c₂ ◎ c₃) ∼ (c₁ ◎ c₂) ◎ c₃
 assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} = 
-  begin (c2perm (c₁ ◎ (c₂ ◎ c₃))
-         ≡⟨ refl ⟩
-         scompperm
-           (c2perm c₁)
-           (subst Permutation (size≡! c₁) (c2perm (c₂ ◎ c₃)))
-           ≡⟨ cong 
-                (scompperm (c2perm c₁))
-                (subst-dist 
-                  scompperm
-                  (size≡! c₁) 
-                  (c2perm c₂)
-                  (subst Permutation (size≡! c₂) (c2perm c₃))) ⟩ 
-         scompperm
-           (c2perm c₁)
-           (scompperm
-             (subst Permutation (size≡! c₁) (c2perm c₂))
-             (subst Permutation (size≡! c₁)
-               (subst Permutation (size≡! c₂) (c2perm c₃))))
-           ≡⟨ cong (λ x → 
-                scompperm
-                  (c2perm c₁)
-                  (scompperm
-                    (subst Permutation (size≡! c₁) (c2perm c₂))
-                    x))
-                (subst-trans (size≡! c₁) (size≡! c₂) (c2perm c₃)) ⟩ 
-         scompperm
-           (c2perm c₁)
-           (scompperm
-             (subst Permutation (size≡! c₁) (c2perm c₂))
-             (subst Permutation (trans (size≡! c₂) (size≡! c₁)) (c2perm c₃)))
-           ≡⟨ {!!} ⟩
-{--           
-           ≡⟨ scompassoc 
-                (c2perm c₁) 
-                (subst Permutation (size≡! c₁) (c2perm c₂)) 
-                (subst Permutation (trans (size≡! c₂) (size≡! c₁)) (c2perm c₃)) ⟩
---}
-         scompperm
-           (scompperm
-             (c2perm c₁)
-             (subst Permutation (size≡! c₁) (c2perm c₂)))
-           (subst Permutation (trans (size≡! c₂) (size≡! c₁)) (c2perm c₃))
-           ≡⟨ refl ⟩ 
-         c2perm ((c₁ ◎ c₂) ◎ c₃) ∎)
-  where open ≡-Reasoning
-
-{--
   begin (c2cauchy (c₁ ◎ (c₂ ◎ c₃))
            ≡⟨ refl ⟩ 
          scompcauchy
@@ -757,8 +705,7 @@ assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} =
            ≡⟨ refl ⟩ 
          c2cauchy ((c₁ ◎ c₂) ◎ c₃) ∎)
   where open ≡-Reasoning
---}
-{--
+
 -- The combinators c : t₁ ⟷ t₂ are paths; we can transport
 -- size-preserving properties across c. In particular, for some
 -- appropriate P we want P(t₁) to map to P(t₂) via c.
@@ -1927,6 +1874,7 @@ perm2c {BOOL} {BOOL} refl (suc zero ∷ suc (suc ()) ∷ [] , f)
 perm2c {BOOL} {BOOL} refl (suc (suc ()) ∷ suc zero ∷ [] , f)
 perm2c {BOOL} {BOOL} refl (suc (suc ()) ∷ suc (suc b) ∷ [] , f) 
 
+{--
 -- The type Cauchy is too loose
 
 cauchy2c : {t₁ t₂ : U} → (size t₁ ≡ size t₂) → Cauchy (size t₁) → (t₁ ⟷ t₂)
@@ -1962,6 +1910,7 @@ cauchy2c {BOOL} {BOOL} refl (suc zero ∷ zero ∷ []) = NOT
 cauchy2c {BOOL} {BOOL} refl (suc zero ∷ suc zero ∷ []) = {!!} --ILLEGAL
 cauchy2c {BOOL} {BOOL} refl (suc zero ∷ suc (suc ()) ∷ [])
 cauchy2c {BOOL} {BOOL} refl (suc (suc ()) ∷ b ∷ []) 
+--}
 
 ------------------------------------------------------------------------------
 -- Soundness and completeness
@@ -2015,16 +1964,21 @@ soundness (resp⊗⇔ α β) = {!!}
 -- extensional representation of a combinator, a canonical syntactic
 -- representative
 
+{--
 canonical : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂)
 canonical c = cauchy2c (size≡ c) (c2cauchy c)
+--}
+
+canonical : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂)
+canonical c = perm2c (size≡ c) (c2perm c)
 
 -- Note that if c₁ ⇔ c₂, then by soundness c₁ ∼ c₂ and hence their
 -- canonical representatives are identical. 
 
 canonicalWellDefined : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → 
   (c₁ ⇔ c₂) → (canonical c₁ ≡ canonical c₂)
-canonicalWellDefined {t₁} {t₂} {c₁} {c₂} α = 
-  cong₂ cauchy2c (size∼ c₁ c₂) (soundness α) 
+canonicalWellDefined {t₁} {t₂} {c₁} {c₂} α = {!!}
+--  cong₂ {!!} (size∼ c₁ c₂) (soundness α) 
 
 -- If we can prove that every combinator is equal to its normal form
 -- then we can prove completeness.
@@ -2059,11 +2013,12 @@ completeness {t₁} {t₂} {c₁} {c₂} c₁∼c₂ =
   c₁
     ⇔⟨ inversion c₁ ⟩
   canonical c₁
-    ⇔⟨  resp≡⇔ (cong₂ cauchy2c (size∼ c₁ c₂) c₁∼c₂) ⟩ 
+    ⇔⟨  {!!} ⟩ 
+--    ⇔⟨  resp≡⇔ (cong₂ {!!} (size∼ c₁ c₂) c₁∼c₂) ⟩ 
   canonical c₂
     ⇔⟨ 2! (inversion c₂) ⟩ 
   c₂ ▤
 
 ------------------------------------------------------------------------------
 
---}
+
