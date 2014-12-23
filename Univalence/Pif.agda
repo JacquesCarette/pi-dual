@@ -57,8 +57,7 @@ open import Cauchy
 open import Perm
 open import Proofs
 open import CauchyProofs
--- open import CauchyProofsT
-open import CauchyProofsT_TEMP
+open import CauchyProofsT
 open import CauchyProofsS
 open import Groupoid
 

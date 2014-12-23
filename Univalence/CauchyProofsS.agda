@@ -68,8 +68,7 @@ open import Proofs
 open import Cauchy
 open import Perm
 open import CauchyProofs
--- open import CauchyProofsT
-open import CauchyProofsT_TEMP
+open import CauchyProofsT
 
 ------------------------------------------------------------------------------
 -- Main lemma swap⋆idemp
