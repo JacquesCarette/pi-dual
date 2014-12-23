@@ -204,6 +204,13 @@ transposeIndex m n b d =
     (fromℕ (toℕ d * suc (suc m) + toℕ b))
     (trans≤ (i*n+k≤m*n d b) (refl′ (*-comm (suc (suc n)) (suc (suc m)))))
 
+transposeIndex0 : (m n : ℕ) →
+       (b : Fin m) → (d : Fin n) → Fin (m * n)
+transposeIndex0 m n b d =
+  inject≤
+    (fromℕ (toℕ d * m + toℕ b))
+    (trans≤ (i*n+k≤m*n d b) (refl′ (*-comm n m)))
+
 swap⋆cauchy : (m n : ℕ) → Cauchy (m * n)
 swap⋆cauchy 0 n = []
 swap⋆cauchy 1 n = subst Cauchy (sym (+-right-identity n)) (idcauchy n)
@@ -217,4 +224,7 @@ swap⋆cauchy (suc (suc m)) (suc (suc n)) =
       (λ b → mapV (λ d → transposeIndex m n b d) (allFin (suc (suc n))))
       (allFin (suc (suc m))))
 
+swap*cauchy0 : (m n : ℕ) → Cauchy (m * n)
+swap*cauchy0 m n = 
+  concatV (mapV (λ b → mapV (λ d → transposeIndex0 m n b d) (allFin n)) (allFin m))
 ------------------------------------------------------------------------------
