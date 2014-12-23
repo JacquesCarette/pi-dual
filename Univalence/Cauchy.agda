@@ -71,9 +71,6 @@ open import Proofs
 Cauchy : ℕ → Set
 Cauchy n = Vec (Fin n) n
 
--- What JC thinks will actually work
--- we need injectivity.  surjectivity ought to be provable.
-
 showCauchy : ∀ {n} → Cauchy n → Vec String n
 showCauchy {n} = 
   zipWith (λ i j → show (toℕ i) ++S " → " ++S show (toℕ j)) (allFin n)
@@ -102,6 +99,9 @@ cauchyEx2 =
 
 ------------------------------------------------------------------------------
 -- Elementary permutations in the Cauchy representation 
+
+emptycauchy : Cauchy 0
+emptycauchy = []
 
 idcauchy : (n : ℕ) → Cauchy n
 idcauchy = allFin 
@@ -150,71 +150,17 @@ tcompcauchy {m} {n} α β =
 -- P(i) = m*n-1 if i=m*n-1
 --      = m*i mod m*n-1 otherwise
 
-{--
-transposeIndex : (m n : ℕ) → 
-                 (b : Fin (suc (suc m))) → (d : Fin (suc (suc n))) → 
-                 Fin (suc (suc m) * suc (suc n))
-transposeIndex m n b d with toℕ b * suc (suc n) + toℕ d
-transposeIndex m n b d | i with suc i ≟ suc (suc m) * suc (suc n)
-transposeIndex m n b d | i | yes _ = 
-  fromℕ (suc (n + suc (suc (n + m * suc (suc n))))) 
-transposeIndex m n b d | i | no _ = 
-  inject≤ 
-    ((i * (suc (suc m))) mod (suc (n + suc (suc (n + m * suc (suc n))))))
-    (i≤si (suc (n + suc (suc (n + m * suc (suc n))))))
---}
-
--- buried in Data.Nat
-
-refl′ : _≡_ ⇒ _≤_
-refl′ {0} refl = z≤n
-refl′ {suc m} refl = s≤s (refl′ refl)
-
--- Is that an equivalent definition ???
-{--
-         d
-  .........
-  ......... m dimension
-b .......x.
-  .........
-  ......... 
-     n dimension
-
-After transpose
-    b
-  .....
-  .....
-  .....
-  .....
-  ..... n dimension
-  .....
-  .....
-d ..x..
-  .....
-   m dimension
-
---}
-
-
 transposeIndex : (m n : ℕ) →
-                 (b : Fin (suc (suc m))) → (d : Fin (suc (suc n))) → 
-                 Fin (suc (suc m) * suc (suc n))
+       (b : Fin m) → (d : Fin n) → Fin (m * n)
 transposeIndex m n b d =
   inject≤
-    (fromℕ (toℕ d * suc (suc m) + toℕ b))
-    (trans≤ (i*n+k≤m*n d b) (refl′ (*-comm (suc (suc n)) (suc (suc m)))))
+    (fromℕ (toℕ d * m + toℕ b))
+    (trans≤ (i*n+k≤m*n d b) (refl′ (*-comm n m)))
 
 swap⋆cauchy : (m n : ℕ) → Cauchy (m * n)
-swap⋆cauchy 0 n = []
-swap⋆cauchy 1 n = subst Cauchy (sym (+-right-identity n)) (idcauchy n)
-swap⋆cauchy (suc (suc m)) 0 = 
-  subst Cauchy (sym (*-right-zero (suc (suc m)))) []
-swap⋆cauchy (suc (suc m)) 1 = 
-  subst Cauchy (sym (i*1≡i (suc (suc m)))) (idcauchy (suc (suc m)))
-swap⋆cauchy (suc (suc m)) (suc (suc n)) = 
-  concatV 
-    (mapV 
-      (λ b → mapV (λ d → transposeIndex m n b d) (allFin (suc (suc n))))
-      (allFin (suc (suc m))))
+swap⋆cauchy m n =
+  concatV (mapV
+            (λ b → mapV (λ d → transposeIndex m n b d) (allFin n))
+            (allFin m))
 
 ------------------------------------------------------------------------------

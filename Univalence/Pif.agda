@@ -557,6 +557,7 @@ size≡!! c = proof-irrelevance (size≡! (! c)) (sym (size≡! c))
 ------------------------------------------------------------------------------
 -- A combinator t₁ ⟷ t₂ denotes a permutation.
 
+{-
 c2cauchy : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Cauchy (size t₁)
 -- the cases that do not inspect t₁ and t₂ should be at the beginning
 -- so that Agda would unfold them
@@ -590,6 +591,7 @@ c2cauchy {TIMES (PLUS t₁ t₂) t₃} dist =
 c2cauchy {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} factor = 
   idcauchy ((size t₁ * size t₃) + (size t₂ * size t₃))
 c2cauchy {t} id⟷  = idcauchy (size t)
+-}
 
 c2perm : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → Permutation (size t₁)
 -- the cases that do not inspect t₁ and t₂ should be at the beginning
@@ -612,7 +614,7 @@ c2perm {PLUS (PLUS t₁ t₂) t₃} assocr₊ =
 c2perm {TIMES ONE t} unite⋆ = 
   subst Permutation (sym (+-right-identity (size t))) (idperm (size t))
 c2perm {t} uniti⋆ = idperm (size t)
-c2perm {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = swap⋆perm (size t₁) (size t₂)
+c2perm {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = {!!} -- swap⋆perm (size t₁) (size t₂)
 c2perm {TIMES t₁ (TIMES t₂ t₃)} assocl⋆ = 
   idperm (size t₁ * (size t₂ * size t₃))
 c2perm {TIMES (TIMES t₁ t₂) t₃} assocr⋆ = 
@@ -641,6 +643,7 @@ c2perm {t} id⟷  = idperm (size t)
 -- groupoids, this reduces to saying that y and z are identical, and
 -- hence that the permutations are identical.
 
+{-
 infix  10  _∼_  
 
 _∼_ : ∀ {t₁ t₂} → (c₁ c₂ : t₁ ⟷ t₂) → Set
@@ -1620,6 +1623,7 @@ G = record
 -- 
 -- but we will turn our attention to completeness below in a more
 -- systematic way.
+-}
 
 ------------------------------------------------------------------------------
 -- Picture so far:
@@ -1914,29 +1918,51 @@ cauchy2c {BOOL} {BOOL} refl (suc (suc ()) ∷ b ∷ [])
 --}
 
 ------------------------------------------------------------------------------
+
+infix  10  _≈_  
+
+_≈_ : ∀ {t₁ t₂} → (c₁ c₂ : t₁ ⟷ t₂) → Set
+c₁ ≈ c₂ = (proj₁ (c2perm c₁) ≡ proj₁ (c2perm c₂))
+
+-- The relation ~ is an equivalence relation
+
+refl≈ : ∀ {t₁ t₂} {c : t₁ ⟷ t₂} → (c ≈ c)
+refl≈ = refl 
+
+sym≈ : ∀ {t₁ t₂} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ≈ c₂) → (c₂ ≈ c₁)
+sym≈ = sym
+
+trans≈ : ∀ {t₁ t₂} {c₁ c₂ c₃ : t₁ ⟷ t₂} → (c₁ ≈ c₂) → (c₂ ≈ c₃) → (c₁ ≈ c₃)
+trans≈ = trans
+
+assoc≈ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+         c₁ ◎ (c₂ ◎ c₃) ≈ (c₁ ◎ c₂) ◎ c₃
+assoc≈ = {!!}
+
+------------------------------------------------------------------------------
 -- Soundness and completeness
 -- 
 -- Proof of soundness and completeness: now we want to verify that ⇔
 -- is sound and complete with respect to ∼. The statement to prove is
 -- that for all c₁ and c₂, we have c₁ ∼ c₂ iff c₁ ⇔ c₂
 
-soundness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₁ ∼ c₂)
-soundness assoc◎l      = assoc∼
-soundness assoc◎r      = sym∼ assoc∼
+soundness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₁ ≈ c₂)
+soundness assoc◎l      = assoc≈
+soundness assoc◎r      = sym≈ assoc≈
 soundness assoc⊕l      = {!!} -- assoc⊕∼
 soundness assoc⊕r      = {!!} -- sym∼ assoc⊕∼
 soundness assoc⊗l      = {!!} -- assoc⊗∼
 soundness assoc⊗r      = {!!} -- sym∼ assoc⊗∼
 soundness dist⇔        = {!!}
 soundness factor⇔      = {!!}
-soundness idl◎l        = id◎c∼c
-soundness idl◎r        = sym∼ id◎c∼c 
-soundness idr◎l        = c◎id∼c
-soundness idr◎r        = sym∼ c◎id∼c
-soundness linv◎l       = linv∼
-soundness linv◎r       = sym∼ linv∼
-soundness rinv◎l       = rinv∼
-soundness rinv◎r       = sym∼ rinv∼ 
+soundness idl◎l        = {!!} -- id◎c∼c
+soundness idl◎r        = sym≈ {!!} --  id◎c∼c 
+soundness idr◎l        = {!!} -- c◎id∼c
+soundness idr◎r        = sym≈ {!!} --  c◎id∼c
+soundness linv◎l       = {!!} -- linv∼
+soundness linv◎r       = {!!} -- sym∼ linv∼
+soundness rinv◎l       = {!!} -- rinv∼
+soundness rinv◎r       = {!!} -- sym∼ rinv∼ 
 soundness unitel₊⇔     = {!!}
 soundness uniter₊⇔     = {!!}
 soundness unitil₊⇔     = {!!}
@@ -1955,9 +1981,9 @@ soundness swapl⋆⇔      = {!!}
 soundness swapr⋆⇔      = {!!}
 soundness swapfl⋆⇔     = {!!}
 soundness swapfr⋆⇔     = {!!}
-soundness id⇔          = refl∼ 
-soundness (trans⇔ α β) = trans∼ (soundness α) (soundness β)
-soundness (resp◎⇔ α β) = resp∼ (soundness α) (soundness β)
+soundness id⇔          = refl≈ 
+soundness (trans⇔ α β) = trans≈ (soundness α) (soundness β)
+soundness (resp◎⇔ α β) = {!!} -- resp≈ (soundness α) (soundness β)
 soundness (resp⊕⇔ α β) = {!!}
 soundness (resp⊗⇔ α β) = {!!} 
 
@@ -1976,9 +2002,15 @@ canonical c = perm2c (size≡ c) (c2perm c)
 -- Note that if c₁ ⇔ c₂, then by soundness c₁ ∼ c₂ and hence their
 -- canonical representatives are identical. 
 
+-- If we try to show we defined cauchy and perm in a compatible way, this fails (under --without-K)
+-- basically what we get is (which would complete the proof), but in some case the middle proof
+-- is assuredly 'refl', which cannot be eliminated.
+-- cauchy⇒perm : {t₁ t₂ : U} → (c₁ c₂ : t₁ ⟷ t₂) → c2cauchy c₁ ≡ c2cauchy c₂ → c2perm c₁ ≡ c2perm c₂
+
 canonicalWellDefined : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → 
   (c₁ ⇔ c₂) → (canonical c₁ ≡ canonical c₂)
-canonicalWellDefined {t₁} {t₂} {c₁} {c₂} α = {!!}
+canonicalWellDefined {t₁} {t₂} {c₁} {c₂} α = cong₂ perm2c (size∼ c₁ c₂) {!soundness α!} 
+-- cong₂ perm2c (size∼ c₁ c₂) (cauchy⇒perm c₁ c₂ (soundness α))
 --  cong₂ {!!} (size∼ c₁ c₂) (soundness α) 
 
 -- If we can prove that every combinator is equal to its normal form
@@ -2009,7 +2041,7 @@ inversion {BOOL} {PLUS ONE ONE} unfoldBool = {!!}
 resp≡⇔ : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ≡ c₂) → (c₁ ⇔ c₂)
 resp≡⇔ {t₁} {t₂} {c₁} {c₂} p rewrite p = id⇔ 
 
-completeness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → (c₁ ⇔ c₂)
+completeness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ≈ c₂) → (c₁ ⇔ c₂)
 completeness {t₁} {t₂} {c₁} {c₂} c₁∼c₂ = 
   c₁
     ⇔⟨ inversion c₁ ⟩

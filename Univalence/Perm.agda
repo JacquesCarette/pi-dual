@@ -75,123 +75,6 @@ open import Cauchy
 Permutation : ℕ → Set
 Permutation n = Σ (Cauchy n) (λ v → ∀ {i j} → lookup i v ≡ lookup j v → i ≡ j)
 
--- another way to check injectivity
-
-isElement : ∀ {m n} → Fin m → Vec (Fin m) n → Maybe (Fin n)
-isElement _ [] = nothing
-isElement x (y ∷ ys) with toℕ x ≟ toℕ y | isElement x ys
-... | yes _ | _ = just zero
-... | no _ | nothing = nothing
-... | no _ | just i = just (suc i)
-
-injective : ∀ {m n} → Pred (Vec (Fin m) n) lzero
-injective {m} {n} π = ∀ {i j} → lookup i π ≡ lookup j π → i ≡ j
-
-{--
-isInjective : ∀ {m n} → UnaryDecidable (injective {m} {n})
-isInjective {m} {0} [] = yes f
-  where f : {i j : Fin 0} → (lookup i [] ≡ lookup j []) → (i ≡ j)
-        f {()}
-isInjective {m} {suc n} (b ∷ π) with isElement b π | isInjective {m} {n} π
-... | just i | _ = no {!!} 
-... | nothing | no ¬inj = no {!!}
-... | nothing | yes inj = yes {!!} 
---}
-
-------------------------------------------------------------------------------
--- Fin and Nat lemmas
-
-toℕ-fin : (m n : ℕ) → (eq : m ≡ n) (fin : Fin m) →
-  toℕ (subst Fin eq fin) ≡ toℕ fin
-toℕ-fin m .m refl fin = refl
-
-∸≡ : (m n : ℕ) (i j : Fin (m + n)) (i≥ : m ≤ toℕ i) (j≥ : m ≤ toℕ j) →
-  toℕ i ∸ m ≡ toℕ j ∸ m → i ≡ j
-∸≡ m n i j i≥ j≥ p = toℕ-injective pr
-  where pr = begin (toℕ i
-                    ≡⟨ sym (m+n∸n≡m (toℕ i) m) ⟩
-                    (toℕ i + m) ∸ m
-                    ≡⟨ cong (λ x → x ∸ m) (+-comm (toℕ i) m) ⟩ 
-                    (m + toℕ i) ∸ m
-                    ≡⟨ +-∸-assoc m i≥ ⟩
-                    m + (toℕ i ∸ m)
-                    ≡⟨ cong (λ x → m + x) p ⟩
-                    m + (toℕ j ∸ m)
-                    ≡⟨ sym (+-∸-assoc m j≥) ⟩
-                    (m + toℕ j) ∸ m
-                    ≡⟨ cong (λ x → x ∸ m) (+-comm m (toℕ j)) ⟩
-                    (toℕ j + m) ∸ m
-                    ≡⟨ m+n∸n≡m (toℕ j) m ⟩
-                    toℕ j ∎)
-             where open ≡-Reasoning
-
-cancel-right∸ : (m n k : ℕ) (k≤m : k ≤ m) (k≤n : k ≤ n) →
-  (m ∸ k ≡ n ∸ k) → m ≡ n
-cancel-right∸ m n k k≤m k≤n mk≡nk =
-  begin (m
-         ≡⟨ sym (m+n∸n≡m m k) ⟩
-         (m + k) ∸ k
-         ≡⟨ cong (λ x → x ∸ k) (+-comm m k) ⟩
-         (k + m) ∸ k
-         ≡⟨ +-∸-assoc k k≤m ⟩
-         k + (m ∸ k)
-         ≡⟨ cong (λ x → k + x) mk≡nk ⟩
-         k + (n ∸ k)
-         ≡⟨ sym (+-∸-assoc k k≤n) ⟩
-         (k + n) ∸ k
-         ≡⟨ cong (λ x → x ∸ k) (+-comm k n) ⟩
-         (n + k) ∸ k
-         ≡⟨ m+n∸n≡m n k ⟩
-         n ∎)
-  where open ≡-Reasoning
-
-raise< : (m n : ℕ) (i : Fin (m + n)) (i< : toℕ i < m) → 
-         toℕ (subst Fin (+-comm n m) (raise n (fromℕ≤ i<))) ≡ n + toℕ i
-raise< m n i i< =
-  begin (toℕ (subst Fin (+-comm n m) (raise n (fromℕ≤ i<)))
-         ≡⟨ toℕ-fin (n + m) (m + n) (+-comm n m) (raise n (fromℕ≤ i<)) ⟩
-         toℕ (raise n (fromℕ≤ i<))
-         ≡⟨ toℕ-raise n (fromℕ≤ i<) ⟩
-         n + toℕ (fromℕ≤ i<)
-         ≡⟨ cong (λ x → n + x) (toℕ-fromℕ≤ i<) ⟩ 
-         n + toℕ i ∎)
-  where open ≡-Reasoning
-
-toℕ-reduce≥ : (m n : ℕ) (i : Fin (m + n)) (i≥ : m ≤ toℕ i) →
-               toℕ (reduce≥ i i≥) ≡ toℕ i ∸ m
-toℕ-reduce≥ 0 n i _ = refl 
-toℕ-reduce≥ (suc m) n zero ()
-toℕ-reduce≥ (suc m) n (suc i) (s≤s i≥) = toℕ-reduce≥ m n i i≥
-
-inject≥ : (m n : ℕ) (i : Fin (m + n)) (i≥ : m ≤ toℕ i) →
-        toℕ (subst Fin (+-comm n m) (inject+ m (reduce≥ i i≥))) ≡ toℕ i ∸ m
-inject≥ m n i i≥ =
-  begin (toℕ (subst Fin (+-comm n m) (inject+ m (reduce≥ i i≥)))
-         ≡⟨ toℕ-fin (n + m) (m + n) (+-comm n m) (inject+ m (reduce≥ i i≥)) ⟩
-         toℕ (inject+ m (reduce≥ i i≥))
-         ≡⟨ sym (inject+-lemma m (reduce≥ i i≥)) ⟩
-         toℕ (reduce≥ i i≥) 
-         ≡⟨ toℕ-reduce≥ m n i i≥ ⟩ 
-         toℕ i ∸ m ∎)
-  where open ≡-Reasoning
-
-fromℕ≤-inj : (m n : ℕ) (i j : Fin n) (i< : toℕ i < m) (j< : toℕ j < m) → 
-  fromℕ≤ i< ≡ fromℕ≤ j< → i ≡ j
-fromℕ≤-inj m n i j i< j< fi≡fj =
-  toℕ-injective
-    (trans (sym (toℕ-fromℕ≤ i<)) (trans (cong toℕ fi≡fj) (toℕ-fromℕ≤ j<)))
-
-reduce≥-inj : (m n : ℕ) (i j : Fin (m + n)) (i≥ : m ≤ toℕ i) (j≥ : m ≤ toℕ j) →
-  reduce≥ i i≥ ≡ reduce≥ j j≥ → i ≡ j
-reduce≥-inj m n i j i≥ j≥ ri≡rj =
-  toℕ-injective
-    (cancel-right∸ (toℕ i) (toℕ j) m i≥ j≥
-      (trans (sym (toℕ-reduce≥ m n i i≥))
-      (trans (cong toℕ ri≡rj) (toℕ-reduce≥ m n j j≥))))
-
-subst-allFin : ∀ {m n} → (eq : m ≡ n) → subst Cauchy eq (allFin m) ≡ allFin n
-subst-allFin refl = refl
-
 ------------------------------------------------------------------------------
 -- Iso between Fin (m * n) and Fin m × Fin n
 
@@ -292,6 +175,8 @@ fin-proj-lem2 (suc m) (suc n) b d with
                     (trans (+-comm (q * suc n) (toℕ r)) (sym eq))
                     (trans (inject≤-lemma _ _) (to-from _))))
  
+-- The actual isomorphism
+
 record Fin-Product-Iso (m n : ℕ) : Set where
   constructor iso
   field
@@ -534,8 +419,8 @@ lookup-2d m n i α β h =
 -- Elementary permutations in the Cauchy representation 
 
 emptyperm : Permutation 0
-emptyperm = ([] , f)
-  where f : {i j : Fin 0} → (lookup i [] ≡ lookup j []) → (i ≡ j)
+emptyperm = (emptycauchy , f)
+  where f : {i j : Fin 0} → (lookup i emptycauchy ≡ lookup j emptycauchy) → (i ≡ j)
         f {()}
 
 idperm : (n : ℕ) → Permutation n
@@ -911,119 +796,63 @@ tcompperm {m} {n} (α , f) (β , g) =
 -- P(i) = m*n-1 if i=m*n-1
 --      = m*i mod m*n-1 otherwise
 
-transpose≡ : (m n : ℕ) (i j : Fin (suc (suc m) * suc (suc n)))
-             (bi bj : Fin (suc (suc m))) (di dj : Fin (suc (suc n)))
-             (deci : toℕ i ≡ toℕ di + toℕ bi * suc (suc n))
-             (decj : toℕ j ≡ toℕ dj + toℕ bj * suc (suc n))
+transpose≡ : (m n : ℕ) (i j : Fin (m * n)) (bi bj : Fin m) (di dj : Fin n)
+             (deci : toℕ i ≡ toℕ di + toℕ bi * n)
+             (decj : toℕ j ≡ toℕ dj + toℕ bj * n)
              (tpr : transposeIndex m n bi di ≡ transposeIndex m n bj dj) → (i ≡ j)
 transpose≡ m n i j bi bj di dj deci decj tpr =
-  let (d≡ , b≡) = fin-addMul-lemma (suc (suc n)) (suc (suc m)) di dj bi bj stpr
-      d+bn≡ = cong₂ (λ x y → toℕ x + toℕ y * suc (suc n)) d≡ b≡
-  in toℕ-injective (trans deci (trans d+bn≡ (sym decj))) 
-  where stpr = begin (toℕ di * suc (suc m) + toℕ bi
-                      ≡⟨ sym (to-from _) ⟩ 
-                      toℕ (fromℕ (toℕ di * suc (suc m) + toℕ bi))
-                      ≡⟨ sym (inject≤-lemma _ _) ⟩ 
+  let (d≡ , b≡) = fin-addMul-lemma n m di dj bi bj stpr
+      d+bn≡ = cong₂ (λ x y → toℕ x + toℕ y * n) d≡ b≡
+  in toℕ-injective (trans deci (trans d+bn≡ (sym decj)))
+  where stpr = begin (toℕ di * m + toℕ bi
+                      ≡⟨ sym (to-from _) ⟩
+                      toℕ (fromℕ (toℕ di * m + toℕ bi))
+                      ≡⟨ sym (inject≤-lemma _ _) ⟩
                       toℕ (inject≤
-                        (fromℕ (toℕ di * suc (suc m) + toℕ bi))
+                        (fromℕ (toℕ di * m + toℕ bi))
                         (trans≤
                           (i*n+k≤m*n di bi)
-                          (refl′ (*-comm (suc (suc n)) (suc (suc m))))))
-                      ≡⟨ cong toℕ tpr ⟩ 
+                          (refl′ (*-comm n m))))
+                      ≡⟨ cong toℕ tpr ⟩
                       toℕ (inject≤
-                        (fromℕ (toℕ dj * suc (suc m) + toℕ bj))
+                        (fromℕ (toℕ dj * m + toℕ bj))
                         (trans≤
                           (i*n+k≤m*n dj bj)
-                          (refl′ (*-comm (suc (suc n)) (suc (suc m))))))
-                      ≡⟨ inject≤-lemma _ _ ⟩ 
-                      toℕ (fromℕ (toℕ dj * suc (suc m) + toℕ bj))
-                      ≡⟨ to-from _ ⟩ 
-                      toℕ dj * suc (suc m) + toℕ bj ∎)
+                          (refl′ (*-comm n m))))
+                      ≡⟨ inject≤-lemma _ _ ⟩
+                      toℕ (fromℕ (toℕ dj * m + toℕ bj))
+                      ≡⟨ to-from _ ⟩
+                      toℕ dj * m + toℕ bj ∎)
                where open ≡-Reasoning
 
 swap⋆perm' : (m n : ℕ) (i j : Fin (m * n))
              (p : lookup i (swap⋆cauchy m n) ≡ lookup j (swap⋆cauchy m n)) → (i ≡ j)
-swap⋆perm' 0 n () j p
-swap⋆perm' 1 n i j p = toℕ-injective pr
-  where pr = begin (toℕ i
-                   ≡⟨ cong toℕ (sym (lookup-allFin i)) ⟩
-                   toℕ (lookup i (idcauchy (n + 0)))
-                   ≡⟨ cong
-                        (λ x → toℕ (lookup i x))
-                        (sym (subst-allFin (sym (+-right-identity n)))) ⟩
-                   toℕ (lookup i (subst Cauchy (sym (+-right-identity n)) (idcauchy n)))
-                   ≡⟨ cong toℕ p ⟩
-                   toℕ (lookup j (subst Cauchy (sym (+-right-identity n)) (idcauchy n)))
-                   ≡⟨ cong
-                        (λ x → toℕ (lookup j x))
-                        (subst-allFin (sym (+-right-identity n))) ⟩
-                   toℕ (lookup j (idcauchy (n + 0)))
-                   ≡⟨ cong toℕ (lookup-allFin j) ⟩
-                   toℕ j ∎)
-             where open ≡-Reasoning
-swap⋆perm' (suc (suc m)) 0 i j p rewrite (*-right-zero m) = ⊥-elim (Fin0-⊥ i)
-swap⋆perm' (suc (suc m)) 1 i j p = toℕ-injective pr
-  where pr = begin (toℕ i
-                    ≡⟨ cong toℕ (sym (lookup-allFin i)) ⟩
-                   toℕ (lookup i (idcauchy (suc (suc m) * 1)))
-                    ≡⟨ cong
-                         (λ x → toℕ (lookup i x))
-                         (sym (subst-allFin (sym (i*1≡i (suc (suc m)))))) ⟩
-                   toℕ (lookup i
-                      (subst Cauchy (sym (i*1≡i (suc (suc m))))
-                      (idcauchy (suc (suc m)))))
-                    ≡⟨ cong toℕ p ⟩
-                   toℕ (lookup j
-                      (subst Cauchy (sym (i*1≡i (suc (suc m))))
-                      (idcauchy (suc (suc m)))))
-                    ≡⟨ cong
-                         (λ x → toℕ (lookup j x))
-                         (subst-allFin (sym (i*1≡i (suc (suc m))))) ⟩
-                    toℕ (lookup j (idcauchy (suc (suc m) * 1)))
-                    ≡⟨ cong toℕ (lookup-allFin j) ⟩
-                    toℕ j ∎)
-             where open ≡-Reasoning
-swap⋆perm' (suc (suc m)) (suc (suc n)) i j p =
-  let fin-result bi di deci deci' = fin-divMod (suc (suc m)) (suc (suc n)) i
-      fin-result bj dj decj decj' = fin-divMod (suc (suc m)) (suc (suc n)) j
+swap⋆perm' m n i j p =
+  let fin-result bi di deci _ = fin-divMod m n i 
+      fin-result bj dj decj _ = fin-divMod m n j
   in transpose≡ m n i j bi bj di dj deci decj pr
-  where pr = let fin-result bi di deci deci' = fin-divMod (suc (suc m)) (suc (suc n)) i
-                 fin-result bj dj decj decj' = fin-divMod (suc (suc m)) (suc (suc n)) j
-             in
-             begin (transposeIndex m n bi di 
-                   ≡⟨ cong₂ (λ x y → transposeIndex m n x y)
-                        (sym (lookup-allFin bi)) (sym (lookup-allFin di)) ⟩ 
-                    transposeIndex m n
-                      (lookup bi (allFin (suc (suc m))))
-                      (lookup di (allFin (suc (suc n))))
-                    ≡⟨ sym (lookup-2d (suc (suc m)) (suc (suc n)) i
-                         (allFin (suc (suc m))) (allFin (suc (suc n)))
-                         (λ {(b , d) → transposeIndex m n b d})) ⟩ 
-                   lookup i
-                      (concatV 
-                        (mapV 
-                          (λ b →
-                            mapV
-                              (λ d → transposeIndex m n b d)
-                              (allFin (suc (suc n))))
-                          (allFin (suc (suc m)))))
-                    ≡⟨ p ⟩
-                   lookup j 
-                      (concatV 
-                        (mapV 
-                          (λ b →
-                            mapV
-                              (λ d → transposeIndex m n b d)
-                              (allFin (suc (suc n))))
-                          (allFin (suc (suc m)))))
-                    ≡⟨ lookup-2d (suc (suc m)) (suc (suc n)) j
-                         (allFin (suc (suc m))) (allFin (suc (suc n)))
+  where pr = let fin-result bi di _ _ = fin-divMod m n i 
+                 fin-result bj dj _ _ = fin-divMod m n j in
+             begin (transposeIndex m n bi di
+                    ≡⟨ cong₂ (transposeIndex m n)
+                         (sym (lookup-allFin bi)) (sym (lookup-allFin di)) ⟩
+                    transposeIndex m n (lookup bi (allFin m)) (lookup di (allFin n))
+                    ≡⟨ sym (lookup-2d m n i (allFin m) (allFin n)
+                             (λ {(b , d) → transposeIndex m n b d})) ⟩
+                    lookup i
+                      (concatV (mapV
+                        (λ b → mapV (λ d → transposeIndex m n b d) (allFin n))
+                        (allFin m)))
+                    ≡⟨ p ⟩ 
+                    lookup j
+                      (concatV (mapV
+                        (λ b → mapV (λ d → transposeIndex m n b d) (allFin n))
+                        (allFin m)))
+                    ≡⟨ lookup-2d m n j (allFin m) (allFin n)
                          (λ {(b , d) → transposeIndex m n b d}) ⟩
-                    transposeIndex m n
-                      (lookup bj (allFin (suc (suc m))))
-                      (lookup dj (allFin (suc (suc n))))
-                    ≡⟨ cong₂ (λ x y → transposeIndex m n x y)
-                         (lookup-allFin bj) (lookup-allFin dj) ⟩ 
+                    transposeIndex m n (lookup bj (allFin m)) (lookup dj (allFin n))
+                    ≡⟨ cong₂ (transposeIndex m n)
+                         (lookup-allFin bj) (lookup-allFin dj) ⟩
                     transposeIndex m n bj dj ∎)
              where open ≡-Reasoning
 
