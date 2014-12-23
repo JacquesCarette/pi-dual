@@ -66,6 +66,7 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import DivModUtils
 open import Proofs
 open import Cauchy
+open import Perm
 open import CauchyProofs
 -- open import CauchyProofsT
 open import CauchyProofsT_TEMP
@@ -145,26 +146,6 @@ subst-inject-mod : ∀ {n m m'} → (eq : suc (suc m) ≡ suc (suc m')) →
   inject≤ (n mod (suc m')) (i≤si (suc m'))
 subst-inject-mod refl = refl
   
-{--
-transposeIndex' : (m n : ℕ) → (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) →
-  (toℕ b ≡ suc m × toℕ d ≡ suc n) →
-  transposeIndex m n b d ≡ fromℕ (suc n + suc m * suc (suc n))
-transposeIndex' m n b d (b≡ , d≡)
-  with suc (toℕ b * suc (suc n) + toℕ d) ≟ suc (suc m) * suc (suc n)
-transposeIndex' m n b d (b≡ , d≡) | yes i= = refl
-transposeIndex' m n b d (b≡ , d≡) | no i≠ = ⊥-elim (i≠ contra)
-  where contra = begin (suc (toℕ b * suc (suc n) + toℕ d)
-                       ≡⟨ cong₂ (λ x y → suc (x * suc (suc n) + y)) b≡ d≡ ⟩ 
-                        suc (suc m * suc (suc n) + suc n)
-                       ≡⟨ sym (+-suc (suc m * suc (suc n)) (suc n)) ⟩ 
-                        suc m * suc (suc n) + suc (suc n)
-                       ≡⟨ +-comm (suc m * suc (suc n)) (suc (suc n)) ⟩ 
-                        suc (suc n) + suc m * suc (suc n) 
-                       ≡⟨ refl ⟩ 
-                        suc (suc m) * suc (suc n) ∎)
-                 where open ≡-Reasoning
---}
-
 cmp = IsStrictTotalOrder.compare
         (StrictTotalOrder.isStrictTotalOrder strictTotalOrder)
 
@@ -416,19 +397,6 @@ not-max-b-d' m n b d p≠ with
                  suc (suc m) * suc (suc n) ∎)
           where open ≡-Reasoning
 
-{--
-transposeIndex'' : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) 
-  (p≠  : ¬ suc (toℕ b * suc (suc n) + toℕ d) ≡ suc (suc m) * suc (suc n)) → 
-  transposeIndex m n b d ≡
-  inject≤
-    (((toℕ b * suc (suc n) + toℕ d) * (suc (suc m))) mod (suc n + suc m * suc (suc n)))
-    (i≤si (suc n + suc m * suc (suc n)))
-transposeIndex'' m n b d p≠ with
-  suc (toℕ b * suc (suc n) + toℕ d) ≟ suc (suc m) * suc (suc n)
-... | yes w = ⊥-elim (p≠ w)
-... | no ¬w = refl
---}
-
 inject-mod : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) 
      (leq : suc (toℕ b * suc (suc n) + toℕ d) ≤ suc n + suc m * suc (suc n)) → 
         inject≤
@@ -518,588 +486,168 @@ fin-project-3 m n b d p≠ | result q r k≡r+q*sn | no ¬p =
                            q * suc (suc m) + toℕ r ∎)
                      where open ≡-Reasoning
 
-{--
-subst-lookup-transpose : (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
-  subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
-    (lookup
-      (subst Fin (*-comm (suc (suc m)) (suc (suc n)))
-        (transposeIndex m n b d))
-      (concatV
-        (mapV
-          (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
-          (allFin (suc (suc n))))))
-  ≡ inject≤
-      (fromℕ (toℕ b * suc (suc n) + toℕ d))
-      (i*n+k≤m*n b d)
-subst-lookup-transpose m n b d
-  with suc (toℕ b * suc (suc n) + toℕ d) ≟ suc (suc m) * suc (suc n)
-subst-lookup-transpose m n b d | yes p= =
-  let (b= , d=) = max-b-d m n b d p= in 
-  begin (subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
-          (lookup
-            (subst Fin (*-comm (suc (suc m)) (suc (suc n)))
-              (fromℕ (suc n + suc m * suc (suc n))))
-            (concatV
-              (mapV
-                (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
-                (allFin (suc (suc n))))))
-        ≡⟨ cong (λ x → subst Fin (*-comm (suc (suc n)) (suc (suc m)))
-                          (lookup x
-                             (concatV
-                               (mapV
-                                 (λ b →
-                                   mapV
-                                     (λ d → transposeIndex n m b d)
-                                     (allFin (suc (suc m))))
-                                 (allFin (suc (suc n)))))))
-                 (subst-fin
-                   (suc n + suc m * suc (suc n))
-                   (suc m + suc n * suc (suc m))
-                   (*-comm (suc (suc m)) (suc (suc n)))) ⟩ 
-        subst Fin (*-comm (suc (suc n)) (suc (suc m)))
-          (lookup
-            (fromℕ (suc m + suc n * suc (suc m)))
-            (concatV
-              (mapV
-                (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
-                (allFin (suc (suc n))))))
-        ≡⟨ cong
-             (λ x → subst Fin (*-comm (suc (suc n)) (suc (suc m)))
-               (lookup (fromℕ (suc m + suc n * suc (suc m))) x))
-             (concat-map-map-tabulate (suc (suc n)) (suc (suc m))
-               (λ {(b , d) → transposeIndex n m b d})) ⟩
-        subst Fin (*-comm (suc (suc n)) (suc (suc m)))
-          (lookup
-            (fromℕ (suc m + suc n * suc (suc m)))
-            (tabulate (λ k →
-              let (b , d) = fin-project (suc (suc n)) (suc (suc m)) k in
-              transposeIndex n m b d)))
-        ≡⟨ cong (subst Fin (*-comm (suc (suc n)) (suc (suc m))))
-             (lookup-fromℕ-allFin
-               (suc m + suc n * suc (suc m))
-               (λ k →
-                  let (b , d) = fin-project (suc (suc n)) (suc (suc m)) k in
-                  transposeIndex n m b d)) ⟩
-        subst Fin (*-comm (suc (suc n)) (suc (suc m)))
-          (let (b , d) = fin-project (suc (suc n)) (suc (suc m))
-                           (fromℕ (suc m + suc n * suc (suc m)))
-           in transposeIndex n m b d)
-        ≡⟨ cong
-             (λ x →
-               subst Fin (*-comm (suc (suc n)) (suc (suc m)))
-                 (let (b , d) = x in transposeIndex n m b d))
-             (fin-project-2 n m) ⟩ 
-        subst Fin (*-comm (suc (suc n)) (suc (suc m)))
-          (transposeIndex n m (fromℕ (suc n)) (fromℕ (suc m)))
-        ≡⟨ cong (subst Fin (*-comm (suc (suc n)) (suc (suc m))))
-             (transposeIndex' n m (fromℕ (suc n)) (fromℕ (suc m))
-               (to-from (suc n) , to-from (suc m))) ⟩
-        subst Fin (*-comm (suc (suc n)) (suc (suc m)))
-          (fromℕ (suc m + suc n * suc (suc m)))
-        ≡⟨ subst-fin
-             (suc (m + suc (suc (m + n * suc (suc m)))))
-             (suc (n + suc (suc (n + m * suc (suc n)))))
-             (*-comm (suc (suc n)) (suc (suc m))) ⟩
-        fromℕ (suc (n + suc (suc (n + m * suc (suc n)))))
-        ≡⟨ sym (fin=1 n m) ⟩ 
-        fromℕ (suc n + suc m * suc (suc n))
-        ≡⟨ toℕ-injective
-            (trans (to-from (suc n + suc m * suc (suc n)))
-            (trans (+-comm (suc n) (suc m * suc (suc n)))
-            (trans (sym (to-from (suc m * suc (suc n) + suc n)))
-            (sym (inject≤-lemma
-              (fromℕ (suc m * suc (suc n) + suc n))
-              (refl′
-                (trans (sym (+-suc (suc m * suc (suc n)) (suc n)))
-                (+-comm (suc m * suc (suc n)) (suc (suc n)))))))))) ⟩
-        inject≤
-          (fromℕ (suc m * suc (suc n) + suc n))
-          (refl′ (trans
-                   (sym (+-suc (suc m * suc (suc n)) (suc n)))
-                   (+-comm (suc m * suc (suc n)) (suc (suc n)))))
-       ≡⟨ cong₂D!
-            (λ x y → inject≤ (fromℕ x) y)
-            (cong₂ (λ x y → x * suc (suc n) + y) b= d=)
-            (≤-proof-irrelevance
-              (subst (λ z → suc z ≤ suc (suc n) + suc m * suc (suc n))
-                (cong₂ (λ x y → x * suc (suc n) + y) b= d=)
-                (i*n+k≤m*n b d))
-              (refl′
-                (trans
-                  (sym (cong suc (cong suc (+-suc (n + m * suc (suc n)) (suc n)))))
-                  (+-comm (suc m * suc (suc n)) (suc (suc n)))))) ⟩ 
-        inject≤
-          (fromℕ (toℕ b * suc (suc n) + toℕ d))
-          (i*n+k≤m*n b d) ∎)
-  where open ≡-Reasoning
-subst-lookup-transpose m n b d | no p≠ =
-  let leq : suc (toℕ b * suc (suc n) + toℕ d) ≤ suc n + suc m * suc (suc n)
-      leq = not-max-b-d m n b d p≠
-      p'≠ : ¬ suc (toℕ d * suc (suc m) + toℕ b) ≡ suc (suc n) * suc (suc m)
-      p'≠ = not-max-b-d' m n b d p≠ in
-  begin (subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
-          (lookup
-            (subst Fin (*-comm (suc (suc m)) (suc (suc n)))
-              (inject≤
-                ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
-                 (suc n + suc m * suc (suc n)))
-                (i≤si (suc n + suc m * suc (suc n)))))
-            (concatV
-              (mapV
-                (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
-                (allFin (suc (suc n))))))
-        ≡⟨ cong₂
-             (λ x y → subst Fin (*-comm (suc (suc n)) (suc (suc m))) (lookup x y))
-             (subst-inject-mod
-               {((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))}
-               (*-comm (suc (suc m)) (suc (suc n))))
-             (concat-map-map-tabulate (suc (suc n)) (suc (suc m))
-               (λ {(b , d) → transposeIndex n m b d})) ⟩
-        subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
-          (lookup
-            (inject≤
-                ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
-                 (suc m + suc n * suc (suc m)))
-                (i≤si (suc m + suc n * suc (suc m))))
-            (tabulate (λ k →
-              let (b , d) = fin-project (suc (suc n)) (suc (suc m)) k in 
-              transposeIndex n m b d)))
-        ≡⟨ cong (subst Fin (*-comm (suc (suc n)) (suc (suc m))))
-             (lookup∘tabulate
-               (λ k →
-                let (b , d) = fin-project (suc (suc n)) (suc (suc m)) k in 
-                transposeIndex n m b d)
-              (inject≤
-                ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
-                 (suc m + suc n * suc (suc m)))
-                (i≤si (suc m + suc n * suc (suc m))))) ⟩
-        subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
-          (let (d' , b') = fin-project
-                             (suc (suc n)) (suc (suc m))
-                             (inject≤
-                               ((((toℕ b * suc (suc n)) + toℕ d) * (suc (suc m))) mod
-                                 (suc m + suc n * suc (suc m)))
-                               (i≤si (suc m + suc n * suc (suc m))))
-           in transposeIndex n m d' b')
-        ≡⟨ cong
-             (λ x →
-               subst Fin (*-comm (suc (suc n)) (suc (suc m)))
-                 let (d' , b') = x in transposeIndex n m d' b')
-             (fin-project-3 m n b d p'≠) ⟩ 
-        subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
-          (transposeIndex n m d b)
-        ≡⟨ cong (subst Fin (*-comm (suc (suc n)) (suc (suc m))))
-             (transposeIndex'' n m d b p'≠) ⟩ 
-        subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
-          (inject≤
-            (((toℕ d * suc (suc m) + toℕ b) * suc (suc n)) mod
-             (suc m + suc n * suc (suc m)))
-            (i≤si (suc m + suc n * suc (suc m))))
-        ≡⟨ subst-inject-mod
-             {(toℕ d * suc (suc m) + toℕ b) * suc (suc n)}
-             (*-comm (suc (suc n)) (suc (suc m))) ⟩
-        inject≤
-            (((toℕ d * suc (suc m) + toℕ b) * suc (suc n)) mod
-             (suc n + suc m * suc (suc n)))
-            (i≤si (suc n + suc m * suc (suc n)))
-        ≡⟨ inject-mod m n b d leq ⟩ 
-        inject≤
-          (fromℕ (toℕ b * suc (suc n) + toℕ d))
-          (i*n+k≤m*n b d) ∎)
-  where open ≡-Reasoning
---}
+transpose2 : (m n : ℕ) (i : Fin (m * n)) → 
+  let fin-result b d dec dec' = fin-divMod m n i
+      fin-result bt dt dect dec't =
+        fin-divMod n m (subst Fin (*-comm m n) (transposeIndex m n b d)) in
+  toℕ (transposeIndex n m bt dt) ≡ toℕ i
+transpose2 m n i =
+  let fin-result b d dec dec' = fin-divMod m n i
+      fin-result bt dt dect dec't =
+        fin-divMod n m (subst Fin (*-comm m n) (transposeIndex m n b d))
+      (dbt≡ , bdt≡) = fin-addMul-lemma n m d bt b dt pr
+  in fpr
+  where pr = let fin-result b d dec dec' = fin-divMod m n i
+                 fin-result bt dt dect dec't =
+                   fin-divMod n m (subst Fin (*-comm m n) (transposeIndex m n b d)) in
+             begin (toℕ d * m + toℕ b
+                   ≡⟨ sym (to-from _) ⟩ 
+                   toℕ (fromℕ (toℕ d * m + toℕ b))
+                   ≡⟨ sym (inject≤-lemma _ _) ⟩ 
+                   toℕ (transposeIndex m n b d)
+                   ≡⟨ sym (toℕ-fin (m * n) (n * m) (*-comm m n)
+                           (transposeIndex m n b d)) ⟩
+                   toℕ (subst Fin (*-comm m n) (transposeIndex m n b d))
+                   ≡⟨ dect ⟩
+                   toℕ dt + toℕ bt * m
+                   ≡⟨ +-comm (toℕ dt) (toℕ bt * m) ⟩
+                   toℕ bt * m + toℕ dt ∎)
+             where open ≡-Reasoning
+        fpr = let fin-result b d dec dec' = fin-divMod m n i
+                  fin-result bt dt dect dec't =
+                    fin-divMod n m (subst Fin (*-comm m n) (transposeIndex m n b d))
+                  (dbt≡ , bdt≡) = fin-addMul-lemma n m d bt b dt pr in
+              begin (toℕ (transposeIndex n m bt dt)
+                   ≡⟨ inject≤-lemma _ _ ⟩
+                     toℕ (fromℕ (toℕ dt * n + toℕ bt))
+                   ≡⟨ to-from _ ⟩ 
+                     toℕ dt * n + toℕ bt
+                   ≡⟨ cong₂ (λ x y → toℕ x * n + toℕ y)
+                        (sym bdt≡) (sym dbt≡) ⟩ 
+                     toℕ b * n + toℕ d
+                   ≡⟨ +-comm (toℕ b * n) (toℕ d) ⟩ 
+                     toℕ d + toℕ b * n
+                   ≡⟨ sym dec ⟩ 
+                     toℕ i ∎)
+              where open ≡-Reasoning
 
-{--
-lookup-swap-2 :
-  (m n : ℕ) (b : Fin (suc (suc m))) (d : Fin (suc (suc n))) → 
+lookup-transpose : (m n : ℕ) (i : Fin (m * n)) → 
   lookup
-    (transposeIndex m n b d)
-    (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
+    (lookup i
       (concatV
-        (mapV
-          (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
-          (allFin (suc (suc n)))))) ≡
-  inject≤
-    (fromℕ (toℕ b * suc (suc n) + toℕ d))
-    (i*n+k≤m*n b d)
-lookup-swap-2 m n b d = 
+        (mapV (λ b → mapV (λ d → transposeIndex m n b d) (allFin n))
+        (allFin m))))
+    (subst Cauchy (*-comm n m)
+      (concatV
+        (mapV (λ d → mapV (λ b → transposeIndex n m d b) (allFin m))
+        (allFin n))))
+  ≡ i
+lookup-transpose m n i =
+  let fin-result b d dec dec' = fin-divMod m n i 
+      fin-result bt dt dect dect' =
+        fin-divMod n m (subst Fin (*-comm m n) (transposeIndex m n b d)) in
   begin (lookup
-           (transposeIndex m n b d)
-           (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
-             (concatV
-               (mapV
-                 (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
-                 (allFin (suc (suc n))))))
-         ≡⟨ lookup-subst-1
-              (transposeIndex m n b d)
+          (lookup i
+            (concatV
+              (mapV (λ b → mapV (λ d → transposeIndex m n b d) (allFin n))
+              (allFin m))))
+            (subst Cauchy (*-comm n m)
               (concatV
-                (mapV
-                  (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
-                  (allFin (suc (suc n)))))
-              (*-comm (suc (suc n)) (suc (suc m)))
-              (*-comm (suc (suc m)) (suc (suc n)))
-              (proof-irrelevance
-                (sym (*-comm (suc (suc n)) (suc (suc m))))
-                (*-comm (suc (suc m)) (suc (suc n)))) ⟩ 
-         subst Fin (*-comm (suc (suc n)) (suc (suc m))) 
+                (mapV (λ d → mapV (λ b → transposeIndex n m d b) (allFin m))
+                (allFin n))))
+       ≡⟨ cong (λ x → lookup x
+                 (subst Cauchy (*-comm n m)
+                   (concatV
+                     (mapV
+                        (λ d → mapV (λ b → transposeIndex n m d b) (allFin m))
+                        (allFin n)))))
+           (trans (lookup-2d m n i (allFin m) (allFin n)
+                    (λ {(b , d) → transposeIndex m n b d}))
+                  (cong₂ (transposeIndex m n)
+                    (lookup-allFin b) (lookup-allFin d))) ⟩
+         lookup
+            (transposeIndex m n b d)
+            (subst Cauchy (*-comm n m)
+              (concatV
+                (mapV (λ d → mapV (λ b → transposeIndex n m d b) (allFin m))
+                (allFin n))))
+       ≡⟨ lookup-subst-1
+           (transposeIndex m n b d)
+           (concatV
+             (mapV
+               (λ d → mapV (λ b → transposeIndex n m d b) (allFin m))
+               (allFin n)))
+           (*-comm n m)
+           (*-comm m n)
+           (proof-irrelevance (sym (*-comm n m)) (*-comm m n)) ⟩
+         subst Fin (*-comm n m)
            (lookup
-             (subst Fin (*-comm (suc (suc m)) (suc (suc n)))
-               (transposeIndex m n b d))
+             (subst Fin (*-comm m n) (transposeIndex m n b d))
              (concatV
                (mapV
-                 (λ b → mapV (λ d → transposeIndex n m b d) (allFin (suc (suc m))))
-                 (allFin (suc (suc n))))))
-         ≡⟨ subst-lookup-transpose m n b d ⟩ 
-         inject≤
-           (fromℕ (toℕ b * suc (suc n) + toℕ d))
-           (i*n+k≤m*n b d) ∎)
+                 (λ d → mapV (λ b → transposeIndex n m d b) (allFin m))
+                 (allFin n))))
+       ≡⟨ cong (λ x → subst Fin (*-comm n m) x)
+            (trans
+              (lookup-2d n m (subst Fin (*-comm m n) (transposeIndex m n b d))
+                (allFin n) (allFin m)
+                (λ {(d , b) → transposeIndex n m d b}))
+              (cong₂ (transposeIndex n m)
+                (lookup-allFin bt) (lookup-allFin dt))) ⟩
+         subst Fin (*-comm n m) (transposeIndex n m bt dt)
+       ≡⟨ toℕ-injective
+           (trans
+             (toℕ-fin (n * m) (m * n) (*-comm n m) (transposeIndex n m bt dt))
+             (transpose2 m n i)) ⟩
+         i ∎)
   where open ≡-Reasoning
---}
 
-{--
-lookup-swap-1 :
-  (m n : ℕ) → (b  : Fin (suc (suc m))) → (d  : Fin (suc (suc n))) → 
-  lookup
-    (lookup
-      (inject≤
-        (fromℕ (toℕ b * suc (suc n) + toℕ d))
-        (i*n+k≤m*n b d))
-      (concatV
-        (mapV (λ b₁ → mapV (transposeIndex m n b₁) (allFin (suc (suc n))))
-        (allFin (suc (suc m))))))
-    (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
-      (concatV
-        (mapV (λ b₁ → mapV (transposeIndex n m b₁) (allFin (suc (suc m))))
-        (allFin (suc (suc n)))))) ≡
-  lookup
-    (inject≤
-      (fromℕ (toℕ b * suc (suc n) + toℕ d))
-      (i*n+k≤m*n b d))
-    (concatV
-      (mapV
-        (λ b₁ →
-          mapV
-            (λ d₁ → inject≤ (fromℕ (toℕ b₁ * suc (suc n) + toℕ d₁)) (i*n+k≤m*n b₁ d₁))
-            (allFin (suc (suc n))))
-        (allFin (suc (suc m)))))
-lookup-swap-1 m n b d =
-  begin (lookup
-           (lookup
-             (inject≤
-               (fromℕ (toℕ b * suc (suc n) + toℕ d))
-               (i*n+k≤m*n b d))
-             (concatV
-               (mapV (λ b₁ → mapV (transposeIndex m n b₁) (allFin (suc (suc n))))
-               (allFin (suc (suc m))))))
-           (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
-             (concatV
-               (mapV (λ b₁ → mapV (transposeIndex n m b₁) (allFin (suc (suc m))))
-               (allFin (suc (suc n))))))
-         ≡⟨ cong
-               (λ x → lookup x
-                 (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
-                   (concatV
-                   (mapV (λ b₁ → mapV (transposeIndex n m b₁) (allFin (suc (suc m))))
-                         (allFin (suc (suc n)))))))
-               (lookup-concat' (suc (suc m)) (suc (suc n)) b d (i*n+k≤m*n b d)
-                  (λ {(b , d) → transposeIndex m n b d})
-                  (allFin (suc (suc m))) (allFin (suc (suc n)))) ⟩ 
-         lookup
-           (transposeIndex m n
-             (lookup b (allFin (suc (suc m))))
-             (lookup d (allFin (suc (suc n)))))
-           (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
-             (concatV
-               (mapV (λ b₁ → mapV (transposeIndex n m b₁) (allFin (suc (suc m))))
-               (allFin (suc (suc n))))))
-         ≡⟨ cong₂
-              (λ x y → lookup (transposeIndex m n x y)
-                         (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
-                           (concatV
-                             (mapV
-                               (λ b₁ →
-                                 mapV (transposeIndex n m b₁) (allFin (suc (suc m))))
-                               (allFin (suc (suc n)))))))
-              (lookup-allFin b)
-              (lookup-allFin d) ⟩ 
-         lookup
-           (transposeIndex m n b d)
-           (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
-             (concatV
-               (mapV (λ b₁ → mapV (transposeIndex n m b₁) (allFin (suc (suc m))))
-               (allFin (suc (suc n))))))
-         ≡⟨ lookup-swap-2 m n b d ⟩ 
-           inject≤
-             (fromℕ (toℕ b * suc (suc n) + toℕ d))
-             (i*n+k≤m*n b d)
-         ≡⟨ sym (cong₂
-                   (λ x y → let b' = x
-                                d' = y in 
-                            inject≤
-                              (fromℕ (toℕ b' * suc (suc n) + toℕ d'))
-                              (i*n+k≤m*n b' d'))
-                   (lookup-allFin b)
-                   (lookup-allFin d)) ⟩
-           let b' = lookup b (allFin (suc (suc m)))
-               d' = lookup d (allFin (suc (suc n))) in 
-           inject≤
-             (fromℕ (toℕ b' * suc (suc n) + toℕ d'))
-             (i*n+k≤m*n b' d')
-         ≡⟨ sym (lookup-concat' (suc (suc m)) (suc (suc n)) b d (i*n+k≤m*n b d)
-                   (λ {(b , d) →
-                     inject≤
-                        (fromℕ (toℕ b * suc (suc n) + toℕ d))
-                        (i*n+k≤m*n b d)})
-                   (allFin (suc (suc m))) (allFin (suc (suc n)))) ⟩ 
-         lookup
-           (inject≤
-             (fromℕ (toℕ b * suc (suc n) + toℕ d))
-             (i*n+k≤m*n b d))
-           (concatV
-             (mapV
-               (λ b₁ →
-                 mapV
-                   (λ d₁ →
-                     inject≤ (fromℕ (toℕ b₁ * suc (suc n) + toℕ d₁)) (i*n+k≤m*n b₁ d₁))
-                   (allFin (suc (suc n))))
-               (allFin (suc (suc m))))) ∎)
-  where open ≡-Reasoning
---}
-
-{--
-lookup-swap : (m n : ℕ) (i : Fin (suc (suc m) * suc (suc n))) →
-  let vs = allFin (suc (suc m))
-      ws = allFin (suc (suc n)) in 
-  lookup
-    (lookup i (concatV (mapV (λ b → mapV (transposeIndex m n b) ws) vs)))
-    (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
-      (concatV (mapV (λ b → mapV (transposeIndex n m b) vs) ws)))
-  ≡ lookup i
-      (concatV
-         (mapV
-           (λ b → mapV
-                    (λ d → inject≤
-                             (fromℕ (toℕ b * (suc (suc n)) + toℕ d))
-                             (i*n+k≤m*n b d))
-                    ws)
-           vs))
-lookup-swap m n i =
-  let vs = allFin (suc (suc m))
-      ws = allFin (suc (suc n)) in 
-  begin (lookup
-           (lookup i (concatV (mapV (λ b → mapV (transposeIndex m n b) ws) vs)))
-           (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
-             (concatV (mapV (λ b → mapV (transposeIndex n m b) vs) ws)))
-         ≡⟨ cong
-              (λ x →
-                lookup
-                  (lookup x (concatV (mapV (λ b → mapV (transposeIndex m n b) ws) vs)))
-                  (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
-                    (concatV (mapV (λ b → mapV (transposeIndex n m b) vs) ws))))
-              (fin-proj-lem (suc (suc m)) (suc (suc n)) i) ⟩
-         let (b , d) = fin-project (suc (suc m)) (suc (suc n)) i in
-         lookup
-           (lookup
-             (inject≤
-                (fromℕ (toℕ b * suc (suc n) + toℕ d))
-                (i*n+k≤m*n b d))
-             (concatV (mapV (λ b → mapV (transposeIndex m n b) ws) vs)))
-           (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
-             (concatV (mapV (λ b → mapV (transposeIndex n m b) vs) ws)))
-         ≡⟨ cong
-               (λ x → let (b , d) = fin-project (suc (suc m)) (suc (suc n)) i in x)
-               (lookup-swap-1 m n b d) ⟩ 
-         let (b , d) = fin-project (suc (suc m)) (suc (suc n)) i in
-         lookup
-          (inject≤
-            (fromℕ (toℕ b * suc (suc n) + toℕ d))
-            (i*n+k≤m*n b d))
-           (concatV
-             (mapV
-               (λ b → mapV
-                        (λ d → inject≤
-                                 (fromℕ (toℕ b * (suc (suc n)) + toℕ d))
-                                 (i*n+k≤m*n b d))
-                        ws)
-               vs))
-         ≡⟨ cong
-              (λ x →
-                lookup x
-                  (concatV
-                    (mapV
-                      (λ b → mapV
-                               (λ d → inject≤
-                                        (fromℕ (toℕ b * (suc (suc n)) + toℕ d))
-                                        (i*n+k≤m*n b d))
-                               ws)
-                      vs)))
-              (sym (fin-proj-lem (suc (suc m)) (suc (suc n)) i)) ⟩
-         lookup i
-           (concatV
-             (mapV
-               (λ b → mapV
-                        (λ d → inject≤
-                                 (fromℕ (toℕ b * (suc (suc n)) + toℕ d))
-                                 (i*n+k≤m*n b d))
-                        ws)
-               vs)) ∎)
-  where open ≡-Reasoning
---}
-
-{--
-tabulate-lookup-concat : (m n : ℕ) →
-  let vec = (λ m n f → 
-                concatV
-                  (mapV
-                    (λ b → mapV (f m n b) (allFin (suc (suc n))))
-                    (allFin (suc (suc m))))) in 
-  tabulate {suc (suc m) * suc (suc n)} (λ i →
-    lookup
-      (lookup i (vec m n transposeIndex))
-      (subst Cauchy (*-comm (suc (suc n)) (suc (suc m))) (vec n m transposeIndex)))
-  ≡
-  vec m n (λ m n b d → inject≤
-                         (fromℕ (toℕ b * (suc (suc n)) + toℕ d))
-                         (i*n+k≤m*n b d))
-tabulate-lookup-concat m n = 
-  let vec = (λ m n f → 
-                concatV
-                  (mapV
-                    (λ b → mapV (f m n b) (allFin (suc (suc n))))
-                    (allFin (suc (suc m))))) in 
-  begin (tabulate {suc (suc m) * suc (suc n)} (λ i →
-           lookup
-             (lookup i (vec m n transposeIndex))
-             (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
-               (vec n m transposeIndex)))
-         ≡⟨ finext _ _ (λ i → lookup-swap m n i) ⟩ 
-         tabulate {suc (suc m) * suc (suc n)} (λ i →
-           lookup i (vec m n (λ m n b d →
-                               inject≤
-                                 (fromℕ (toℕ b * (suc (suc n)) + toℕ d))
-                                 (i*n+k≤m*n b d))))
-         ≡⟨ tabulate∘lookup (vec m n (λ m n b d →
-                                       inject≤
-                                         (fromℕ (toℕ b * (suc (suc n)) + toℕ d))
-                                         (i*n+k≤m*n b d)))  ⟩
-         vec m n (λ m n b d → inject≤
-                                (fromℕ (toℕ b * (suc (suc n)) + toℕ d))
-                                (i*n+k≤m*n b d)) ∎)
-  where open ≡-Reasoning
---}
-
-{--
 swap⋆idemp : (m n : ℕ) → 
   scompcauchy 
     (swap⋆cauchy m n) 
     (subst Cauchy (*-comm n m) (swap⋆cauchy n m))
   ≡ 
   allFin (m * n)
-swap⋆idemp 0 n = refl
-swap⋆idemp 1 0 = refl
-swap⋆idemp 1 1 = refl
-swap⋆idemp 1 (suc (suc n)) =
+swap⋆idemp m n =
   begin (scompcauchy
-           (subst Cauchy (sym (+-right-identity (suc (suc n))))
-             (allFin (suc (suc n))))
-           (subst Cauchy (*-comm (suc (suc n)) 1)
-             (subst Cauchy (sym (i*1≡i (suc (suc n)))) (allFin (suc (suc n)))))
-         ≡⟨ cong₂ (λ x y → scompcauchy x (subst Cauchy (*-comm (suc (suc n)) 1) y))
-              (subst-allFin (sym (+-right-identity (suc (suc n)))))
-              (subst-allFin (sym (i*1≡i (suc (suc n))))) ⟩ 
-         scompcauchy
-           (allFin (suc (suc n) + 0))
-           (subst Cauchy (*-comm (suc (suc n)) 1) (allFin (suc (suc n) * 1)))
-         ≡⟨ cong (scompcauchy (allFin (suc (suc n) + 0)))
-              (subst-allFin (*-comm (suc (suc n)) 1)) ⟩ 
-         scompcauchy
-           (allFin (suc (suc n) + 0))
-           (allFin (1 * suc (suc n)))
-         ≡⟨ scomplid (allFin (suc (suc n) + 0)) ⟩
-         allFin (1 * suc (suc n)) ∎)
-  where open ≡-Reasoning
-swap⋆idemp (suc (suc m)) 0 =
-  begin (scompcauchy
-           (subst Cauchy (sym (*-right-zero (suc (suc m)))) (allFin 0))
-           (subst Cauchy (*-comm 0 (suc (suc m))) (allFin 0))
-         ≡⟨ cong₂ scompcauchy
-              (subst-allFin (sym (*-right-zero (suc (suc m)))))
-              (subst-allFin (*-comm 0 (suc (suc m)))) ⟩ 
-         scompcauchy
-           (allFin (suc (suc m) * 0))
-           (allFin (suc (suc m) * 0))
-         ≡⟨ scomplid (allFin (suc (suc m) * 0)) ⟩ 
-         allFin (suc (suc m) * 0) ∎)
-  where open ≡-Reasoning
-swap⋆idemp (suc (suc m)) 1 =
-  begin (scompcauchy
-         (subst Cauchy (sym (i*1≡i (suc (suc m)))) (idcauchy (suc (suc m))))
-         (subst Cauchy (*-comm 1 (suc (suc m)))
-           (subst Cauchy (sym (+-right-identity (suc (suc m))))
-             (idcauchy (suc (suc m)))))
-           ≡⟨ cong₂ 
-                (λ x y → scompcauchy x (subst Cauchy (*-comm 1 (suc (suc m))) y))
-                (subst-allFin (sym (i*1≡i (suc (suc m)))))
-                (subst-allFin (sym (+-right-identity (suc (suc m))))) ⟩ 
-         scompcauchy
-           (allFin (suc (suc m) * 1))
-           (subst Cauchy (*-comm 1 (suc (suc m))) (allFin (suc (suc m) + 0)))
-           ≡⟨ cong (scompcauchy (allFin (suc (suc m) * 1)))
-                 (subst-allFin (*-comm 1 (suc (suc m)))) ⟩ 
-         scompcauchy
-           (allFin (suc (suc m) * 1))
-           (allFin (suc (suc m) * 1))
-           ≡⟨ scomplid (allFin (suc (suc m) * 1)) ⟩ 
-         allFin (suc (suc m) * 1) ∎)
-  where open ≡-Reasoning
-swap⋆idemp (suc (suc m)) (suc (suc n)) =
-  begin (scompcauchy
-           (swap⋆cauchy (suc (suc m)) (suc (suc n)))
-           (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
-             (swap⋆cauchy (suc (suc n)) (suc (suc m))))
-         ≡⟨ refl ⟩
-         scompcauchy
            (concatV 
              (mapV 
-               (λ b → mapV (λ d → transposeIndex m n b d) (allFin (suc (suc n))))
-               (allFin (suc (suc m)))))
-           (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
+               (λ b → mapV (λ d → transposeIndex m n b d) (allFin n))
+               (allFin m)))
+           (subst Cauchy (*-comm n m)
              (concatV 
                (mapV 
-                 (λ d → mapV (λ b → transposeIndex n m d b) (allFin (suc (suc m))))
-                 (allFin (suc (suc n))))))
-         ≡⟨ refl ⟩ 
-           tabulate {suc (suc m) * suc (suc n)} (λ i →
-             lookup
-               (lookup i
-                 (concatV 
-                   (mapV 
-                     (λ b →
-                       mapV
-                         (λ d → transposeIndex m n b d)
-                         (allFin (suc (suc n))))
-                     (allFin (suc (suc m))))))
-               (subst Cauchy (*-comm (suc (suc n)) (suc (suc m)))
-                 (concatV 
-                   (mapV 
-                     (λ d →
-                       mapV
-                         (λ b → transposeIndex n m d b)
-                         (allFin (suc (suc m))))
-                     (allFin (suc (suc n)))))))
-         ≡⟨ tabulate-lookup-concat m n ⟩ 
-          concatV 
-            (mapV 
-              (λ b → 
-                mapV
-                  (λ d → inject≤
-                           (fromℕ (toℕ b * (suc (suc n)) + toℕ d))
-                           (i*n+k≤m*n b d))
-                  (allFin (suc (suc n))))
-              (allFin (suc (suc m))))
-         ≡⟨ sym (allFin* (suc (suc m)) (suc (suc n))) ⟩
-         allFin (suc (suc m) * suc (suc n)) ∎)
+                 (λ d → mapV (λ b → transposeIndex n m d b) (allFin m))
+                 (allFin n))))
+         ≡⟨ refl ⟩
+         tabulate (λ i →
+           lookup
+             (lookup i 
+               (concatV 
+                 (mapV 
+                   (λ b → mapV (λ d → transposeIndex m n b d) (allFin n))
+                   (allFin m))))
+             (subst Cauchy (*-comm n m)
+               (concatV 
+                 (mapV 
+                   (λ d → mapV (λ b → transposeIndex n m d b) (allFin m))
+                   (allFin n)))))
+         ≡⟨ finext
+              (λ i →
+                lookup
+                  (lookup i 
+                    (concatV 
+                      (mapV 
+                        (λ b → mapV (λ d → transposeIndex m n b d) (allFin n))
+                        (allFin m))))
+                  (subst Cauchy (*-comm n m)
+                    (concatV 
+                      (mapV 
+                        (λ d → mapV (λ b → transposeIndex n m d b) (allFin m))
+                        (allFin n)))))
+              id
+              (lookup-transpose m n) ⟩
+         allFin (m * n) ∎)
   where open ≡-Reasoning
---}
 
 ------------------------------------------------------------------------------

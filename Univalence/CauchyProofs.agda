@@ -3,7 +3,8 @@
 module CauchyProofs where
 
 -- Proofs about permutations defined in module Cauchy (everything
--- except the multiplicative ones which are defined in CauchyProofsT
+-- except the multiplicative ones which are defined in CauchyProofsT and
+-- CauchyProofsS
 
 open import Level using (Level; _⊔_) renaming (zero to lzero; suc to lsuc)
 
