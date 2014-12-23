@@ -10,7 +10,7 @@ open import Relation.Binary.PropositionalEquality
 open import Relation.Binary.PropositionalEquality.TrustMe
   using (trustMe)
 open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
-open import Data.Nat.Properties using (m≢1+m+n)
+open import Data.Nat.Properties using (m≢1+m+n; i+j≡0⇒i≡0; i+j≡0⇒j≡0)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+)
@@ -1835,19 +1835,20 @@ G' = record
         }
 
 ------------------------------------------------------------------------------
--- Inverting permutations to syntactic combinators
+-- Inverting permutations to a canonical syntactic combinator
 
 perm2c : {t₁ t₂ : U} → (size t₁ ≡ size t₂) → Permutation (size t₁) → (t₁ ⟷ t₂)
-perm2c {ZERO} {ZERO} sp (cauchy , f) = {!!}
-perm2c {ZERO} {ONE} sp (cauchy , f) = {!!}
-perm2c {ZERO} {PLUS t₂ t₃} sp (cauchy , f) = {!!}
-perm2c {ZERO} {TIMES t₂ t₃} sp (cauchy , f) = {!!}
-perm2c {ZERO} {BOOL} sp (cauchy , f) = {!!}
-perm2c {ONE} {ZERO} sp (cauchy , f) = {!!}
-perm2c {ONE} {ONE} sp (cauchy , f) = {!!}
+perm2c {ZERO} {ZERO} refl ([] , f) = id⟷
+perm2c {ZERO} {ONE} () (cauchy , f)
+perm2c {ZERO} {PLUS t₂ t₃} sp ([] , f) = {!!} 
+perm2c {ZERO} {TIMES t₂ t₃} sp ([] , f) = {!!}
+perm2c {ZERO} {BOOL} () (cauchy , f)
+perm2c {ONE} {ZERO} () (cauchy , f)
+perm2c {ONE} {ONE} refl (zero ∷ [] , f) = id⟷
+perm2c {ONE} {ONE} refl (suc () ∷ [] , f)
 perm2c {ONE} {PLUS t₂ t₃} sp (cauchy , f) = {!!}
 perm2c {ONE} {TIMES t₂ t₃} sp (cauchy , f) = {!!}
-perm2c {ONE} {BOOL} sp (cauchy , f) = {!!}
+perm2c {ONE} {BOOL} () (cauchy , f)
 perm2c {PLUS t₁ t₂} {ZERO} sp (cauchy , f) = {!!}
 perm2c {PLUS t₁ t₂} {ONE} sp (cauchy , f) = {!!}
 perm2c {PLUS t₁ t₂} {PLUS t₃ t₄} sp (cauchy , f) = {!!}
@@ -1858,8 +1859,8 @@ perm2c {TIMES t₁ t₂} {ONE} sp (cauchy , f) = {!!}
 perm2c {TIMES t₁ t₂} {PLUS t₃ t₄} sp (cauchy , f) = {!!}
 perm2c {TIMES t₁ t₂} {TIMES t₃ t₄} sp (cauchy , f) = {!!}
 perm2c {TIMES t₁ t₂} {BOOL} sp (cauchy , f) = {!!}
-perm2c {BOOL} {ZERO} sp (cauchy , f) = {!!}
-perm2c {BOOL} {ONE} sp (cauchy , f) = {!!}
+perm2c {BOOL} {ZERO} () (cauchy , f)
+perm2c {BOOL} {ONE} () (cauchy , f)
 perm2c {BOOL} {PLUS t₂ t₃} sp (cauchy , f) = {!!}
 perm2c {BOOL} {TIMES t₂ t₃} sp (cauchy , f) = {!!}
 perm2c {BOOL} {BOOL} refl (zero ∷ zero ∷ [] , f) with f {zero} {suc zero}
@@ -1875,7 +1876,7 @@ perm2c {BOOL} {BOOL} refl (suc (suc ()) ∷ suc zero ∷ [] , f)
 perm2c {BOOL} {BOOL} refl (suc (suc ()) ∷ suc (suc b) ∷ [] , f) 
 
 {--
--- The type Cauchy is too loose
+-- The type Cauchy is too weak to allow us to invert it to combinators
 
 cauchy2c : {t₁ t₂ : U} → (size t₁ ≡ size t₂) → Cauchy (size t₁) → (t₁ ⟷ t₂)
 cauchy2c {ZERO} {ONE} () π

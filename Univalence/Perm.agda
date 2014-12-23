@@ -6,6 +6,8 @@ module Perm where
 
 open import Level using (Level; _⊔_) renaming (zero to lzero; suc to lsuc)
 
+open import Relation.Unary using (Pred)
+  renaming (Decidable to UnaryDecidable)
 open import Relation.Binary.PropositionalEquality 
   using (_≡_; refl; sym; trans; subst; subst₂; cong; cong₂; setoid; 
         proof-irrelevance; module ≡-Reasoning)
@@ -20,7 +22,7 @@ open import Data.Nat.Properties.Simple
         *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
 open import Data.Nat.DivMod using (DivMod; result; _divMod_; _div_; _mod_)
 open import Relation.Binary using (Rel; Decidable; Setoid)
-open import Relation.Binary.Core using (Transitive; _⇒_)
+open import Relation.Binary.Core using (REL; Transitive; _⇒_)
 
 open import Data.String using (String)
   renaming (_++_ to _++S_)
@@ -55,6 +57,7 @@ open import Data.Vec
          _[_]≔_; allFin; toList)
   renaming (_++_ to _++V_; map to mapV; concat to concatV)
 open import Function using (id; _∘_; _$_)
+open import Data.Maybe using (Maybe; just; nothing)
 
 open import Data.Empty   using (⊥; ⊥-elim)
 open import Data.Unit    using (⊤; tt)
@@ -71,6 +74,29 @@ open import Cauchy
 
 Permutation : ℕ → Set
 Permutation n = Σ (Cauchy n) (λ v → ∀ {i j} → lookup i v ≡ lookup j v → i ≡ j)
+
+-- another way to check injectivity
+
+isElement : ∀ {m n} → Fin m → Vec (Fin m) n → Maybe (Fin n)
+isElement _ [] = nothing
+isElement x (y ∷ ys) with toℕ x ≟ toℕ y | isElement x ys
+... | yes _ | _ = just zero
+... | no _ | nothing = nothing
+... | no _ | just i = just (suc i)
+
+injective : ∀ {m n} → Pred (Vec (Fin m) n) lzero
+injective {m} {n} π = ∀ {i j} → lookup i π ≡ lookup j π → i ≡ j
+
+{--
+isInjective : ∀ {m n} → UnaryDecidable (injective {m} {n})
+isInjective {m} {0} [] = yes f
+  where f : {i j : Fin 0} → (lookup i [] ≡ lookup j []) → (i ≡ j)
+        f {()}
+isInjective {m} {suc n} (b ∷ π) with isElement b π | isInjective {m} {n} π
+... | just i | _ = no {!!} 
+... | nothing | no ¬inj = no {!!}
+... | nothing | yes inj = yes {!!} 
+--}
 
 ------------------------------------------------------------------------------
 -- Fin and Nat lemmas
