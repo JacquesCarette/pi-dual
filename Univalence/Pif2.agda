@@ -351,9 +351,7 @@ canonical c = perm2c (size≡ c) (c2perm c)
 canonicalWellDefined : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → 
   (c₁ ⇔ c₂) → (canonical c₁ ≡ canonical c₂)
 canonicalWellDefined {t₁} {t₂} {c₁} {c₂} α =
-  cong₂ perm2c (size∼ c₁ c₂) {!soundness α!} 
--- cong₂ perm2c (size∼ c₁ c₂) (cauchy⇒perm c₁ c₂ (soundness α))
---  cong₂ {!!} (size∼ c₁ c₂) (soundness α) 
+  cong₂ perm2c (size∼ c₁ c₂) (cong₂D! _,_ {!sym (soundness α)!} {!!})
 
 -- If we can prove that every combinator is equal to its normal form
 -- then we can prove completeness.
