@@ -155,19 +155,19 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
           (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷))
   swapfr⋆⇔ : {t₁ t₂ t₃ : U} → 
           (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷)) ⇔ 
-         (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor)
+          (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor)
   id⇔     : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ c
   trans⇔  : {t₁ t₂ : U} {c₁ c₂ c₃ : t₁ ⟷ t₂} → 
-         (c₁ ⇔ c₂) → (c₂ ⇔ c₃) → (c₁ ⇔ c₃)
+          (c₁ ⇔ c₂) → (c₂ ⇔ c₃) → (c₁ ⇔ c₃)
   resp◎⇔  : {t₁ t₂ t₃ : U} 
-         {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
-         (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ◎ c₂) ⇔ (c₃ ◎ c₄)
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
+          (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ◎ c₂) ⇔ (c₃ ◎ c₄)
   resp⊕⇔  : {t₁ t₂ t₃ t₄ : U} 
-         {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
-         (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊕ c₂) ⇔ (c₃ ⊕ c₄)
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
+          (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊕ c₂) ⇔ (c₃ ⊕ c₄)
   resp⊗⇔  : {t₁ t₂ t₃ t₄ : U} 
-         {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
-         (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊗ c₂) ⇔ (c₃ ⊗ c₄)
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
+          (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊗ c₂) ⇔ (c₃ ⊗ c₄)
 
 -- better syntax for writing 2paths
 
@@ -278,6 +278,9 @@ G' = record
         }
 
 ------------------------------------------------------------------------------
+-- The syntactic combinators are rich enough to define the groupoid structure. Now
+-- we investigate whether they are complete.
+
 -- Inverting permutations to a canonical syntactic combinator
 
 perm2c : {t₁ t₂ : U} → (size t₁ ≡ size t₂) → Permutation (size t₁) → (t₁ ⟷ t₂)
@@ -326,48 +329,7 @@ perm2c {BOOL} {BOOL} refl (suc (suc ()) ∷ suc (suc b) ∷ [] , f)
 -- that for all c₁ and c₂, we have c₁ ∼ c₂ iff c₁ ⇔ c₂
 
 soundness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₁ ∼ c₂)
-soundness (assoc◎l {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃}) =
-  assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} 
-soundness (assoc◎r {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃}) =
-  sym∼ (assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃})
-soundness assoc⊕l      = {!!} 
-soundness assoc⊕r      = {!!} 
-soundness assoc⊗l      = {!!} 
-soundness assoc⊗r      = {!!} 
-soundness dist⇔        = {!!}
-soundness factor⇔      = {!!}
-soundness idl◎l        = id◎c∼c
-soundness idl◎r        = sym∼ id◎c∼c  
-soundness idr◎l        = c◎id∼c 
-soundness idr◎r        = sym∼ c◎id∼c 
-soundness linv◎l       = linv∼ 
-soundness linv◎r       = sym∼ linv∼ 
-soundness rinv◎l       = rinv∼ 
-soundness rinv◎r       = sym∼ rinv∼  
-soundness unitel₊⇔     = {!!}
-soundness uniter₊⇔     = {!!}
-soundness unitil₊⇔     = {!!}
-soundness unitir₊⇔     = {!!}
-soundness unitial₊⇔    = {!!}
-soundness unitiar₊⇔    = {!!}
-soundness swapl₊⇔      = {!!}
-soundness swapr₊⇔      = {!!}
-soundness unitel⋆⇔     = {!!}
-soundness uniter⋆⇔     = {!!}
-soundness unitil⋆⇔     = {!!}
-soundness unitir⋆⇔     = {!!}
-soundness unitial⋆⇔    = {!!}
-soundness unitiar⋆⇔    = {!!}
-soundness swapl⋆⇔      = {!!}
-soundness swapr⋆⇔      = {!!}
-soundness swapfl⋆⇔     = {!!}
-soundness swapfr⋆⇔     = {!!}
-soundness id⇔          = refl∼
-soundness (trans⇔ α β) = trans∼ (soundness α) (soundness β)
-soundness (resp◎⇔ α β) = resp∼ (soundness α) (soundness β) 
-soundness (resp⊕⇔ α β) = {!!}
-soundness (resp⊗⇔ α β) = {!!} 
-
+soundness α = {!!} 
 
 -- The idea is to invert evaluation and use that to extract from each
 -- extensional representation of a combinator, a canonical syntactic

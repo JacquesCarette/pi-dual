@@ -563,36 +563,6 @@ tabulate-concat {m} {n} f =
          tabulate {m * n} (λ (k : Fin (m * n)) → f (fin-project m n k)) ∎)
   where open ≡-Reasoning
 
-{--
-tabulate-concat : ∀ {m n} →
-  (f : Fin m × Fin n → Fin (m * n)) → 
-  concatV (tabulate {m} (λ i → tabulate {n} (λ j → f (i , j)))) ≡
-  tabulate {m * n} (λ (k : Fin (m * n)) → f (fin-project m n k))
-tabulate-concat {0} f = refl
-tabulate-concat {suc m} {0} f = 
-    begin (concatV (tabulate {suc m} (λ x → []))
-      ≡⟨ concat-tabulate-[] {suc m} {suc (suc m)} {inject₁} ⟩
-    subst (Vec (Fin (m * 0))) (sym (*-right-zero m)) []
-      ≡⟨ sym (tabulate-⊥ {m}) ⟩
-    tabulate (λ k → f (⊥-elim (Fin0-⊥ (subst Fin (*-right-zero m) k)))) ∎)
-  where open ≡-Reasoning
-tabulate-concat {suc m} {suc n} f =
-  begin (tabulate {suc n} (λ x → f (zero , x))
-         ++V 
-         concatV (tabulate {m} (λ i → tabulate {suc n} (λ j → f (suc i , j))))
-      ≡⟨ cong₂ _++V_ (first-row m n f) {!!} ⟩
-         tabulate {suc n}
-           ((λ k →  f (fin-project (suc m) (suc n) k)) ∘ inject+ (m * suc n))
-         ++V
-         tabulate {m * suc n}
-           ((λ k → f (fin-project (suc m) (suc n) k)) ∘ raise (suc n))
-      ≡⟨ sym (tabulate-split {suc n} {m * suc n}
-               (λ k → f (fin-project (suc m) (suc n) k))) ⟩
-         tabulate {suc n + m * suc n}
-           (λ k → f (fin-project (suc m) (suc n) k)) ∎) 
-  where open ≡-Reasoning
---}
-
 lookup-concat :
   ∀ {m n} → (k : Fin (m * n)) → (pm qm : Cauchy m) → (pn qn : Cauchy n) →
   let vs = concatV
