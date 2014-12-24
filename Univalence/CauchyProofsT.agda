@@ -121,44 +121,15 @@ map-raise-suc : (m n : ℕ) (j : Fin (suc m)) →
                 (fromℕ (toℕ (suc j) * suc n + toℕ d))
                 (i*n+k≤m*n (suc j) d))
        (idcauchy (suc n))
-map-raise-suc m n j =
-  map-f≡g (suc n)
-            (λ d → raise (suc n) 
-                (inject≤
-                  (fromℕ (toℕ j * suc n + toℕ d))
-                   (i*n+k≤m*n j d)))
-            (λ d → inject≤
-                (fromℕ (toℕ (suc j) * suc n + toℕ d))
-                (i*n+k≤m*n (suc j) d))
-            ( (λ d → raise-suc m n j d (i*n+k≤m*n j d) (i*n+k≤m*n (suc j) d)))
-{- map-raise-suc m n j =
-  begin (mapV
-          (λ d → raise 
-                   (suc n) 
-                   (inject≤
-                     (fromℕ (toℕ j * suc n + toℕ d))
-                     (i*n+k≤m*n j d)))
-          (idcauchy (suc n)) 
-          ≡⟨ (sym (tabulate-∘ _ id)) ⟩ 
-         tabulate {suc n}
-          (λ d → raise 
-                   (suc n) 
-                   (inject≤
-                     (fromℕ (toℕ j * suc n + toℕ d))
-                     (i*n+k≤m*n j d)))
-          ≡⟨ finext _ _
-             (λ d → raise-suc m n j d (i*n+k≤m*n j d) (i*n+k≤m*n (suc j) d)) ⟩
-         tabulate {suc n} 
-           (λ d → inject≤
-                    (fromℕ (toℕ (suc j) * suc n + toℕ d))
-                    (i*n+k≤m*n (suc j) d))
-          ≡⟨ tabulate-∘ _ id ⟩ 
-         mapV
-           (λ d → inject≤
-                    (fromℕ (toℕ (suc j) * suc n + toℕ d))
-                    (i*n+k≤m*n (suc j) d))
-           (idcauchy (suc n)) ∎)
-  where open ≡-Reasoning -}
+map-raise-suc m n j = map-f≡g (suc n)
+        (λ d → raise (suc n) 
+            (inject≤
+              (fromℕ (toℕ j * suc n + toℕ d))
+              (i*n+k≤m*n j d)))
+        (λ d → inject≤
+            (fromℕ (toℕ (suc j) * suc n + toℕ d))
+            (i*n+k≤m*n (suc j) d))
+        ( (λ d → raise-suc m n j d (i*n+k≤m*n j d) (i*n+k≤m*n (suc j) d)))
 
 -- what should this be named?
 
