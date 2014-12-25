@@ -281,9 +281,53 @@ G' = record
 -- The syntactic combinators are rich enough to define the groupoid structure. Now
 -- we investigate whether they are complete.
 
+TPermutation : U → U → Set
+TPermutation t₁ t₂ = size t₁ ≡ size t₂ × Permutation (size t₁)
+
+-- Finite Types and the natural numbers are intimately related.
+
+Utoℕ : U → ℕ
+Utoℕ ZERO = 0
+Utoℕ ONE  = 1
+Utoℕ BOOL = 2
+Utoℕ (PLUS t₀ t₁)  = Utoℕ t₀ + Utoℕ t₁
+Utoℕ (TIMES t₀ t₁) = Utoℕ t₀ * Utoℕ t₁
+
+Ufromℕ : ℕ → U
+Ufromℕ 0       = ZERO
+Ufromℕ (suc n) = PLUS ONE (Ufromℕ n)
+
+normal : U → U
+normal = Ufromℕ ∘ Utoℕ
+
+assocr : {m : ℕ} (n : ℕ) → (PLUS (Ufromℕ n) (Ufromℕ m)) ⟷ Ufromℕ (n + m)
+assocr 0 = unite₊
+assocr (suc n) = assocr₊ ◎ (id⟷ ⊕ assocr n)
+
+distr : (m : ℕ) {n : ℕ} → TIMES (Ufromℕ m) (Ufromℕ n) ⟷ Ufromℕ (m * n)
+distr 0 = distz
+distr (suc n) {m} = dist ◎ (unite⋆ ⊕ distr n) ◎ assocr m
+
+normalize : (t : U) → t ⟷ normal t
+normalize ZERO = id⟷
+normalize ONE = uniti₊ ◎ swap₊
+normalize BOOL = unfoldBool ◎
+                 ((uniti₊ ◎ swap₊) ⊕ (uniti₊ ◎ swap₊)) ◎
+                 (assocr₊ ◎ (id⟷ ⊕ unite₊))
+normalize (PLUS t₀ t₁) = (normalize t₀ ⊕ normalize t₁) ◎ assocr (Utoℕ t₀)
+normalize (TIMES t₀ t₁) = (normalize t₀ ⊗ normalize t₁) ◎ distr (Utoℕ t₀)
+
+
 -- Inverting permutations to a canonical syntactic combinator
 
-perm2c : {t₁ t₂ : U} → (size t₁ ≡ size t₂) → Permutation (size t₁) → (t₁ ⟷ t₂)
+perm2swaps : {t₁ t₂ : U} → TPermutation t₁ t₂ → (normal t₁ ⟷ normal t₂)
+perm2swaps = {!!} 
+
+perm2c : {t₁ t₂ : U} → TPermutation t₁ t₂ → (t₁ ⟷ t₂)
+perm2c {t₁} {t₂} π = normalize t₁ ◎ perm2swaps {t₁} {t₂} π ◎ (! (normalize t₂))
+
+
+{--
 perm2c {ZERO} {ZERO} refl ([] , f) = id⟷
 perm2c {ZERO} {ONE} () (cauchy , f)
 perm2c {ZERO} {PLUS t₂ t₃} sp ([] , f) = {!!} 
@@ -320,6 +364,7 @@ perm2c {BOOL} {BOOL} refl (suc zero ∷ suc zero ∷ [] , f) with f {zero} {suc 
 perm2c {BOOL} {BOOL} refl (suc zero ∷ suc (suc ()) ∷ [] , f)
 perm2c {BOOL} {BOOL} refl (suc (suc ()) ∷ suc zero ∷ [] , f)
 perm2c {BOOL} {BOOL} refl (suc (suc ()) ∷ suc (suc b) ∷ [] , f) 
+--}
 
 ------------------------------------------------------------------------------
 -- Soundness and completeness
@@ -336,7 +381,7 @@ soundness α = {!!}
 -- representative
 
 canonical : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂)
-canonical c = perm2c (size≡ c) (c2perm c)
+canonical c = perm2c (size≡ c , c2perm c)
 
 -- Note that if c₁ ⇔ c₂, then by soundness c₁ ∼ c₂ and hence their
 -- canonical representatives are identical. 
@@ -350,8 +395,8 @@ canonical c = perm2c (size≡ c) (c2perm c)
 
 canonicalWellDefined : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → 
   (c₁ ⇔ c₂) → (canonical c₁ ≡ canonical c₂)
-canonicalWellDefined {t₁} {t₂} {c₁} {c₂} α =
-  cong₂ perm2c (size∼ c₁ c₂) (cong₂D! _,_ {!sym (soundness α)!} {!!})
+canonicalWellDefined {t₁} {t₂} {c₁} {c₂} α = {!!} 
+--  cong₂ perm2c (size∼ c₁ c₂ , cong₂D! _,_ {!sym (soundness α)!} {!!})
 
 -- If we can prove that every combinator is equal to its normal form
 -- then we can prove completeness.
