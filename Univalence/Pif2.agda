@@ -321,7 +321,10 @@ normalize (TIMES t₀ t₁) = (normalize t₀ ⊗ normalize t₁) ◎ distr (Uto
 -- Inverting permutations to a canonical syntactic combinator
 
 perm2swaps : {t₁ t₂ : U} → TPermutation t₁ t₂ → (normal t₁ ⟷ normal t₂)
-perm2swaps = {!!} 
+perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj)) with normal t₁ | normal t₂
+... | ZERO | ZERO = id⟷
+... | PLUS ONE t | PLUS ONE t' = {!!} 
+... | _ | _ = {!!} -- impossible cases
 
 perm2c : {t₁ t₂ : U} → TPermutation t₁ t₂ → (t₁ ⟷ t₂)
 perm2c {t₁} {t₂} π = normalize t₁ ◎ perm2swaps {t₁} {t₂} π ◎ (! (normalize t₂))
