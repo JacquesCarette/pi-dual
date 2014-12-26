@@ -313,6 +313,8 @@ normalizeC (TIMES t₀ t₁) = (normalizeC t₀ ⊗ normalizeC t₁) ◎ distr (
 -- A view of (t : U) as normalized types
 -- Normalized types are (1 + (1 + (1 + (1 + ... 0))))
 
+-- How to get rid of impossible cases in perm2swaps below
+
 data Normal : (t : U) → Set where
   NZERO   : Normal ZERO
   NSUC    : {t : U} → Normal t → Normal (PLUS ONE t)
