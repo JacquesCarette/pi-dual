@@ -286,21 +286,14 @@ TPermutation t₁ t₂ = size t₁ ≡ size t₂ × Permutation (size t₁)
 
 -- Finite Types and the natural numbers are intimately related.
 
-Utoℕ : U → ℕ
-Utoℕ ZERO = 0
-Utoℕ ONE  = 1
-Utoℕ BOOL = 2
-Utoℕ (PLUS t₀ t₁)  = Utoℕ t₀ + Utoℕ t₁
-Utoℕ (TIMES t₀ t₁) = Utoℕ t₀ * Utoℕ t₁
-
 Ufromℕ : ℕ → U
 Ufromℕ 0       = ZERO
 Ufromℕ (suc n) = PLUS ONE (Ufromℕ n)
 
-normal : U → U
-normal = Ufromℕ ∘ Utoℕ
+normalU : U → U
+normalU = Ufromℕ ∘ size
 
-assocr : {m : ℕ} (n : ℕ) → (PLUS (Ufromℕ n) (Ufromℕ m)) ⟷ Ufromℕ (n + m)
+assocr : {m : ℕ} (n : ℕ) → PLUS (Ufromℕ n) (Ufromℕ m) ⟷ Ufromℕ (n + m)
 assocr 0 = unite₊
 assocr (suc n) = assocr₊ ◎ (id⟷ ⊕ assocr n)
 
@@ -308,26 +301,32 @@ distr : (m : ℕ) {n : ℕ} → TIMES (Ufromℕ m) (Ufromℕ n) ⟷ Ufromℕ (m 
 distr 0 = distz
 distr (suc n) {m} = dist ◎ (unite⋆ ⊕ distr n) ◎ assocr m
 
-normalize : (t : U) → t ⟷ normal t
-normalize ZERO = id⟷
-normalize ONE = uniti₊ ◎ swap₊
-normalize BOOL = unfoldBool ◎
+normalizeC : (t : U) → t ⟷ normalU t
+normalizeC ZERO = id⟷
+normalizeC ONE = uniti₊ ◎ swap₊
+normalizeC BOOL = unfoldBool ◎
                  ((uniti₊ ◎ swap₊) ⊕ (uniti₊ ◎ swap₊)) ◎
                  (assocr₊ ◎ (id⟷ ⊕ unite₊))
-normalize (PLUS t₀ t₁) = (normalize t₀ ⊕ normalize t₁) ◎ assocr (Utoℕ t₀)
-normalize (TIMES t₀ t₁) = (normalize t₀ ⊗ normalize t₁) ◎ distr (Utoℕ t₀)
+normalizeC (PLUS t₀ t₁) = (normalizeC t₀ ⊕ normalizeC t₁) ◎ assocr (size t₀)
+normalizeC (TIMES t₀ t₁) = (normalizeC t₀ ⊗ normalizeC t₁) ◎ distr (size t₀)
 
+-- A view of (t : U) as normalized types
+-- Normalized types are (1 + (1 + (1 + (1 + ... 0))))
+
+data Normal : (t : U) → Set where
+  NZERO   : Normal ZERO
+  NSUC    : {t : U} → Normal t → Normal (PLUS ONE t)
 
 -- Inverting permutations to a canonical syntactic combinator
 
-perm2swaps : {t₁ t₂ : U} → TPermutation t₁ t₂ → (normal t₁ ⟷ normal t₂)
-perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj)) with normal t₁ | normal t₂
-... | ZERO | ZERO = id⟷
-... | PLUS ONE t | PLUS ONE t' = {!!} 
-... | _ | _ = {!!} -- impossible cases
+perm2swaps : {t₁ t₂ : U} → TPermutation t₁ t₂ → (normalU t₁ ⟷ normalU t₂)
+perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj)) with normalU t₁ | normalU t₂
+perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj)) | ZERO | ZERO = id⟷
+perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj)) | PLUS ONE t | PLUS ONE t' = {!!} 
+perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj)) | _ | _ = {!!} -- impossible cases
 
 perm2c : {t₁ t₂ : U} → TPermutation t₁ t₂ → (t₁ ⟷ t₂)
-perm2c {t₁} {t₂} π = normalize t₁ ◎ perm2swaps {t₁} {t₂} π ◎ (! (normalize t₂))
+perm2c {t₁} {t₂} π = normalizeC t₁ ◎ perm2swaps {t₁} {t₂} π ◎ (! (normalizeC t₂))
 
 
 {--
