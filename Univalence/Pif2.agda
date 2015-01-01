@@ -12,7 +12,7 @@ open import Relation.Binary.PropositionalEquality
 open import Relation.Binary.PropositionalEquality.TrustMe
   using (trustMe)
 open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
-open import Data.Nat.Properties using (m≢1+m+n; i+j≡0⇒i≡0; i+j≡0⇒j≡0)
+open import Data.Nat.Properties using (m≢1+m+n; i+j≡0⇒i≡0; i+j≡0⇒j≡0; n≤m+n)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+)
@@ -53,7 +53,7 @@ open import Function using (id; _∘_; _$_)
 open import Data.Empty   using (⊥; ⊥-elim)
 open import Data.Unit    using (⊤; tt)
 open import Data.Sum     using (_⊎_; inj₁; inj₂)
-open import Data.Product using (_×_; _,_; proj₁; proj₂)
+open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
 
 open import Cauchy
 open import Perm
@@ -281,71 +281,32 @@ G' = record
 -- The syntactic combinators are rich enough to define the groupoid structure. Now
 -- we investigate whether they are complete.
 
+-- A permutation between t₁ and t₂ has three components in the Cauchy
+-- representation: the map π of each element to a new position and a
+-- proof that the sizes of the domain and range are the same and that
+-- the map is injective.
+
 TPermutation : U → U → Set
 TPermutation t₁ t₂ = size t₁ ≡ size t₂ × Permutation (size t₁)
 
--- A view of (t : U) as normalized types
--- Normalized types are (1 + (1 + (1 + (1 + ... 0))))
+-- A view of (t : U) as normalized types.
+-- Let size t be n then the normalized version of t is the type
+-- (1 + (1 + (1 + (1 + ... 0)))) i.e. Fin n.
 
-data NormalU : Set where
-  NZERO : NormalU
-  NSUC  : NormalU → NormalU
-
-fromNormalU : NormalU → U
-fromNormalU NZERO = ZERO
-fromNormalU (NSUC n) = PLUS ONE (fromNormalU n)
-
-normalU+ : NormalU → NormalU → NormalU
-normalU+ NZERO n₂ = n₂
-normalU+ (NSUC n₁) n₂ = NSUC (normalU+ n₁ n₂)
-
-normalU⋆ : NormalU → NormalU → NormalU
-normalU⋆ NZERO n₂ = NZERO
-normalU⋆ (NSUC n₁) n₂ = normalU+ n₂ (normalU⋆ n₁ n₂)
-
-normalU : U → NormalU
-normalU ZERO = NZERO
-normalU ONE = NSUC NZERO
-normalU BOOL = NSUC (NSUC NZERO)
-normalU (PLUS t₁ t₂) = normalU+ (normalU t₁) (normalU t₂)
-normalU (TIMES t₁ t₂) = normalU⋆ (normalU t₁) (normalU t₂)
-
-data Normalized : (t : NormalU) → Set where
-  nzero : Normalized NZERO
-  nsuc  : {t : NormalU} → Normalized t → Normalized (NSUC t)
-
-normalized+ : (n₁ n₂ : NormalU) →
-  Normalized n₁ → Normalized n₂ → Normalized (normalU+ n₁ n₂)
-normalized+ NZERO n₂ nd₁ nd₂ = nd₂
-normalized+ (NSUC n₁) n₂ (nsuc nd₁) nd₂ = nsuc (normalized+ n₁ n₂ nd₁ nd₂)
-
-normalized⋆ : (n₁ n₂ : NormalU) →
-  Normalized n₁ → Normalized n₂ → Normalized (normalU⋆ n₁ n₂)
-normalized⋆ NZERO n₂ nzero nd₂ = nzero
-normalized⋆ (NSUC n₁) n₂ (nsuc nd₁) nd₂ =
-  normalized+ n₂ (normalU⋆ n₁ n₂) nd₂ (normalized⋆ n₁ n₂ nd₁ nd₂)
-
-normalized : (t : U) → Normalized (normalU t)
-normalized ZERO = nzero
-normalized ONE = nsuc nzero
-normalized BOOL = nsuc (nsuc nzero) 
-normalized (PLUS t₁ t₂) =
-  normalized+ (normalU t₁) (normalU t₂) (normalized t₁) (normalized t₂)
-normalized (TIMES t₁ t₂) =
-  normalized⋆ (normalU t₁) (normalU t₂) (normalized t₁) (normalized t₂)
-
-assocr : (n₁ n₂ : NormalU) → 
-  PLUS (fromNormalU n₁) (fromNormalU n₂) ⟷ fromNormalU (normalU+ n₁ n₂)
-assocr NZERO n₂ = unite₊
-assocr (NSUC n₁) n₂ = assocr₊ ◎ (id⟷ ⊕ assocr n₁ n₂)
-
-distr : (n₁ n₂ : NormalU) →
-  TIMES (fromNormalU n₁) (fromNormalU n₂) ⟷ fromNormalU (normalU⋆ n₁ n₂)
-distr NZERO n₂ = distz
-distr (NSUC n₁) n₂ = dist ◎ (unite⋆ ⊕ distr n₁ n₂) ◎ assocr n₂ (normalU⋆ n₁ n₂)
+fromSize : ℕ → U
+fromSize 0 = ZERO
+fromSize (suc n) = PLUS ONE (fromSize n)
 
 canonicalU : U → U
-canonicalU = fromNormalU ∘ normalU
+canonicalU = fromSize ∘ size
+
+size+ : (n₁ n₂ : ℕ) → PLUS (fromSize n₁) (fromSize n₂) ⟷ fromSize (n₁ + n₂)
+size+ 0 n₂ = unite₊
+size+ (suc n₁) n₂ = assocr₊ ◎ (id⟷ ⊕ size+ n₁ n₂)
+
+size* : (n₁ n₂ : ℕ) → TIMES (fromSize n₁) (fromSize n₂) ⟷ fromSize (n₁ * n₂)
+size* 0 n₂ = distz
+size* (suc n₁) n₂ = dist ◎ (unite⋆ ⊕ size* n₁ n₂) ◎ size+ n₂ (n₁ * n₂)
 
 normalizeC : (t : U) → t ⟷ canonicalU t
 normalizeC ZERO = id⟷
@@ -354,14 +315,51 @@ normalizeC BOOL = unfoldBool ◎
                  ((uniti₊ ◎ swap₊) ⊕ (uniti₊ ◎ swap₊)) ◎
                  (assocr₊ ◎ (id⟷ ⊕ unite₊))
 normalizeC (PLUS t₀ t₁) =
-  (normalizeC t₀ ⊕ normalizeC t₁) ◎ assocr (normalU t₀) (normalU t₁) 
+  (normalizeC t₀ ⊕ normalizeC t₁) ◎ size+ (size t₀) (size t₁) 
 normalizeC (TIMES t₀ t₁) =
-  (normalizeC t₀ ⊗ normalizeC t₁) ◎ distr (normalU t₀) (normalU t₁) 
+  (normalizeC t₀ ⊗ normalizeC t₁) ◎ size* (size t₀) (size t₁) 
 
--- Inverting permutations to a canonical syntactic combinator
+-- Given a normalized type Fin n and two indices 'a' and 'b' generate the code
+-- to swap the two indices. Ex:
+-- swapFin {3} "0" "1" should produce the permutation:
+-- assocl₊ ◎ (swap₊ ⊕ id⟷) ◎ assocr₊ : 
+-- PLUS ONE (PLUS ONE (PLUS ONE ZERO)) ⟷ PLUS ONE (PLUS ONE (PLUS ONE ZERO))
+
+swapFin : {n : ℕ} → (a b : Fin n) → fromSize n ⟷ fromSize n
+swapFin zero zero = id⟷
+swapFin zero (suc zero) = {!!}
+swapFin zero (suc (suc b)) = {!!}
+swapFin (suc a) b = {!!} 
+
+
+{--
+
+{-# TERMINATING #-}
+swapFin : {n : ℕ} → (a b : Fin n) → fromSize n ⟷ fromSize n
+swapFin {0} () b
+swapFin {suc n} zero zero = id⟷
+swapFin {suc (suc n)} zero (suc zero) = assocl₊ ◎ (swap₊ ⊕ id⟷) ◎ assocr₊ 
+swapFin {suc (suc n)} zero (suc (suc b)) =
+  (swapFin (suc zero) (suc (suc b))) ◎
+  (assocl₊ ◎ (swap₊ ⊕ id⟷) ◎ assocr₊) ◎
+  (swapFin (suc zero) (suc (suc b)))
+swapFin {suc n} (suc a) zero = {!!}
+swapFin {suc n} (suc a) (suc b) = {!!} 
+
+
+canonical≡ : {t₁ t₂ : U} → TPermutation t₁ t₂ → (canonicalU t₁ ≡ canonicalU t₂)
+canonical≡ {t₁} {t₂} (s₁≡s₂ , _) = {!⊥-elim contra!}
+  where contra : canonicalU t₁ ≡ canonicalU t₂ → ¬ size t₁ ≡ size t₂
 
 perm2swaps : {t₁ t₂ : U} → TPermutation t₁ t₂ → (canonicalU t₁ ⟷ canonicalU t₂)
-perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj)) = {!!}            
+{--
+convert π from Cauchy representation to sequences of swaps; each swap
+can be expressed on the normalized types
+it should be the case that canonicalU t₁ is THE SAME as canonicalU t₂
+
+--}
+perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj)) = {!!} 
+
 
 perm2c : {t₁ t₂ : U} → TPermutation t₁ t₂ → (t₁ ⟷ t₂)
 perm2c {t₁} {t₂} π = normalizeC t₁ ◎ perm2swaps {t₁} {t₂} π ◎ (! (normalizeC t₂))
@@ -435,8 +433,6 @@ perm2c {BOOL} {BOOL} refl (suc zero ∷ suc (suc ()) ∷ [] , f)
 perm2c {BOOL} {BOOL} refl (suc (suc ()) ∷ suc zero ∷ [] , f)
 perm2c {BOOL} {BOOL} refl (suc (suc ()) ∷ suc (suc b) ∷ [] , f) 
 --}
-
-{--
 
 ------------------------------------------------------------------------------
 -- Soundness and completeness
