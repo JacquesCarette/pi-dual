@@ -7,8 +7,8 @@ module Pif2 where
 open import Level using (Level; _⊔_) renaming (zero to lzero; suc to lsuc)
 
 open import Relation.Binary.PropositionalEquality 
-  using (_≡_; refl; sym; trans; subst; subst₂; cong; cong₂; setoid; 
-        proof-irrelevance; module ≡-Reasoning)
+  using (_≡_; refl; sym; trans; subst; subst₂; cong; cong₂; setoid;
+        inspect; Reveal_is_; [_]; proof-irrelevance; module ≡-Reasoning)
 open import Relation.Binary.PropositionalEquality.TrustMe
   using (trustMe)
 open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
@@ -23,7 +23,7 @@ open import Relation.Binary.Core using (Transitive)
 open import Data.String using (String)
   renaming (_++_ to _++S_)
 open import Data.Nat.Show using (show)
-open import Data.Bool using (Bool; false; true)
+open import Data.Bool using (Bool; false; true; T)
 open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≮_; _≤_; _≰_; 
   z≤n; s≤s; _≟_; _≤?_; module ≤-Reasoning)
 open import Data.Fin 
@@ -284,52 +284,118 @@ G' = record
 TPermutation : U → U → Set
 TPermutation t₁ t₂ = size t₁ ≡ size t₂ × Permutation (size t₁)
 
--- Finite Types and the natural numbers are intimately related.
+-- A view of (t : U) as normalized types
+-- Normalized types are (1 + (1 + (1 + (1 + ... 0))))
 
-Ufromℕ : ℕ → U
-Ufromℕ 0       = ZERO
-Ufromℕ (suc n) = PLUS ONE (Ufromℕ n)
+data NormalU : Set where
+  NZERO : NormalU
+  NSUC  : NormalU → NormalU
 
-normalU : U → U
-normalU = Ufromℕ ∘ size
+fromNormalU : NormalU → U
+fromNormalU NZERO = ZERO
+fromNormalU (NSUC n) = PLUS ONE (fromNormalU n)
 
-assocr : {m : ℕ} (n : ℕ) → PLUS (Ufromℕ n) (Ufromℕ m) ⟷ Ufromℕ (n + m)
-assocr 0 = unite₊
-assocr (suc n) = assocr₊ ◎ (id⟷ ⊕ assocr n)
+normalU+ : NormalU → NormalU → NormalU
+normalU+ NZERO n₂ = n₂
+normalU+ (NSUC n₁) n₂ = NSUC (normalU+ n₁ n₂)
 
-distr : (m : ℕ) {n : ℕ} → TIMES (Ufromℕ m) (Ufromℕ n) ⟷ Ufromℕ (m * n)
-distr 0 = distz
-distr (suc n) {m} = dist ◎ (unite⋆ ⊕ distr n) ◎ assocr m
+normalU⋆ : NormalU → NormalU → NormalU
+normalU⋆ NZERO n₂ = NZERO
+normalU⋆ (NSUC n₁) n₂ = normalU+ n₂ (normalU⋆ n₁ n₂)
 
-normalizeC : (t : U) → t ⟷ normalU t
+normalU : U → NormalU
+normalU ZERO = NZERO
+normalU ONE = NSUC NZERO
+normalU BOOL = NSUC (NSUC NZERO)
+normalU (PLUS t₁ t₂) = normalU+ (normalU t₁) (normalU t₂)
+normalU (TIMES t₁ t₂) = normalU⋆ (normalU t₁) (normalU t₂)
+
+data Normalized : (t : NormalU) → Set where
+  nzero : Normalized NZERO
+  nsuc  : {t : NormalU} → Normalized t → Normalized (NSUC t)
+
+normalized+ : (n₁ n₂ : NormalU) →
+  Normalized n₁ → Normalized n₂ → Normalized (normalU+ n₁ n₂)
+normalized+ NZERO n₂ nd₁ nd₂ = nd₂
+normalized+ (NSUC n₁) n₂ (nsuc nd₁) nd₂ = nsuc (normalized+ n₁ n₂ nd₁ nd₂)
+
+normalized⋆ : (n₁ n₂ : NormalU) →
+  Normalized n₁ → Normalized n₂ → Normalized (normalU⋆ n₁ n₂)
+normalized⋆ NZERO n₂ nzero nd₂ = nzero
+normalized⋆ (NSUC n₁) n₂ (nsuc nd₁) nd₂ =
+  normalized+ n₂ (normalU⋆ n₁ n₂) nd₂ (normalized⋆ n₁ n₂ nd₁ nd₂)
+
+normalized : (t : U) → Normalized (normalU t)
+normalized ZERO = nzero
+normalized ONE = nsuc nzero
+normalized BOOL = nsuc (nsuc nzero) 
+normalized (PLUS t₁ t₂) =
+  normalized+ (normalU t₁) (normalU t₂) (normalized t₁) (normalized t₂)
+normalized (TIMES t₁ t₂) =
+  normalized⋆ (normalU t₁) (normalU t₂) (normalized t₁) (normalized t₂)
+
+assocr : (n₁ n₂ : NormalU) → 
+  PLUS (fromNormalU n₁) (fromNormalU n₂) ⟷ fromNormalU (normalU+ n₁ n₂)
+assocr NZERO n₂ = unite₊
+assocr (NSUC n₁) n₂ = assocr₊ ◎ (id⟷ ⊕ assocr n₁ n₂)
+
+distr : (n₁ n₂ : NormalU) →
+  TIMES (fromNormalU n₁) (fromNormalU n₂) ⟷ fromNormalU (normalU⋆ n₁ n₂)
+distr NZERO n₂ = distz
+distr (NSUC n₁) n₂ = dist ◎ (unite⋆ ⊕ distr n₁ n₂) ◎ assocr n₂ (normalU⋆ n₁ n₂)
+
+canonicalU : U → U
+canonicalU = fromNormalU ∘ normalU
+
+normalizeC : (t : U) → t ⟷ canonicalU t
 normalizeC ZERO = id⟷
 normalizeC ONE = uniti₊ ◎ swap₊
 normalizeC BOOL = unfoldBool ◎
                  ((uniti₊ ◎ swap₊) ⊕ (uniti₊ ◎ swap₊)) ◎
                  (assocr₊ ◎ (id⟷ ⊕ unite₊))
-normalizeC (PLUS t₀ t₁) = (normalizeC t₀ ⊕ normalizeC t₁) ◎ assocr (size t₀)
-normalizeC (TIMES t₀ t₁) = (normalizeC t₀ ⊗ normalizeC t₁) ◎ distr (size t₀)
-
--- A view of (t : U) as normalized types
--- Normalized types are (1 + (1 + (1 + (1 + ... 0))))
-
--- How to get rid of impossible cases in perm2swaps below
-
-data Normal : (t : U) → Set where
-  NZERO   : Normal ZERO
-  NSUC    : {t : U} → Normal t → Normal (PLUS ONE t)
+normalizeC (PLUS t₀ t₁) =
+  (normalizeC t₀ ⊕ normalizeC t₁) ◎ assocr (normalU t₀) (normalU t₁) 
+normalizeC (TIMES t₀ t₁) =
+  (normalizeC t₀ ⊗ normalizeC t₁) ◎ distr (normalU t₀) (normalU t₁) 
 
 -- Inverting permutations to a canonical syntactic combinator
 
-perm2swaps : {t₁ t₂ : U} → TPermutation t₁ t₂ → (normalU t₁ ⟷ normalU t₂)
-perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj)) with normalU t₁ | normalU t₂
-perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj)) | ZERO | ZERO = id⟷
-perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj)) | PLUS ONE t | PLUS ONE t' = {!!} 
-perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj)) | _ | _ = {!!} -- impossible cases
+perm2swaps : {t₁ t₂ : U} → TPermutation t₁ t₂ → (canonicalU t₁ ⟷ canonicalU t₂)
+perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj)) = {!!}            
 
 perm2c : {t₁ t₂ : U} → TPermutation t₁ t₂ → (t₁ ⟷ t₂)
 perm2c {t₁} {t₂} π = normalizeC t₁ ◎ perm2swaps {t₁} {t₂} π ◎ (! (normalizeC t₂))
 
+{--
+perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj))
+  with normalU t₁ | normalU t₂ | normalU≡ t₁ t₂ s₁≡s₂
+perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj)) | ZERO | ZERO | refl = id⟷
+perm2swaps (s₁≡s₂ , π , inj) | ONE | ONE | refl = {!!}
+perm2swaps (s₁≡s₂ , π , inj) | BOOL | BOOL | refl = {!!} 
+perm2swaps (s₁≡s₂ , π , inj) | PLUS n₁ n₂ | PLUS .n₁ .n₂ | refl = {!!}
+perm2swaps (s₁≡s₂ , π , inj) | TIMES n₁ n₂ | TIMES .n₁ .n₂ | refl = {!!}
+perm2swaps (s₁≡s₂ , π , inj) | ZERO | ONE | ()
+perm2swaps (s₁≡s₂ , π , inj) | ZERO | PLUS n₂ n₃ | ()
+perm2swaps (s₁≡s₂ , π , inj) | ZERO | TIMES n₂ n₃ | ()
+perm2swaps (s₁≡s₂ , π , inj) | ZERO | BOOL | ()
+perm2swaps (s₁≡s₂ , π , inj) | ONE | ZERO | ()
+perm2swaps (s₁≡s₂ , π , inj) | ONE | PLUS n₂ n₃ | ()
+perm2swaps (s₁≡s₂ , π , inj) | ONE | TIMES n₂ n₃ | ()
+perm2swaps (s₁≡s₂ , π , inj) | ONE | BOOL | ()
+perm2swaps (s₁≡s₂ , π , inj) | PLUS n₁ n₂ | ZERO | ()
+perm2swaps (s₁≡s₂ , π , inj) | PLUS n₁ n₂ | ONE | ()
+perm2swaps (s₁≡s₂ , π , inj) | PLUS n₁ n₂ | TIMES n₃ n₄ | ()
+perm2swaps (s₁≡s₂ , π , inj) | PLUS n₁ n₂ | BOOL | ()
+perm2swaps (s₁≡s₂ , π , inj) | TIMES n₁ n₂ | ZERO | ()
+perm2swaps (s₁≡s₂ , π , inj) | TIMES n₁ n₂ | ONE | ()
+perm2swaps (s₁≡s₂ , π , inj) | TIMES n₁ n₂ | PLUS n₃ n₄ | ()
+perm2swaps (s₁≡s₂ , π , inj) | TIMES n₁ n₂ | BOOL | ()
+perm2swaps (s₁≡s₂ , π , inj) | BOOL | ZERO | ()
+perm2swaps (s₁≡s₂ , π , inj) | BOOL | ONE | ()
+perm2swaps (s₁≡s₂ , π , inj) | BOOL | PLUS n₂ n₃ | ()
+perm2swaps (s₁≡s₂ , π , inj) | BOOL | TIMES n₂ n₃ | ()
+
+--}
 
 {--
 perm2c {ZERO} {ZERO} refl ([] , f) = id⟷
@@ -369,6 +435,8 @@ perm2c {BOOL} {BOOL} refl (suc zero ∷ suc (suc ()) ∷ [] , f)
 perm2c {BOOL} {BOOL} refl (suc (suc ()) ∷ suc zero ∷ [] , f)
 perm2c {BOOL} {BOOL} refl (suc (suc ()) ∷ suc (suc b) ∷ [] , f) 
 --}
+
+{--
 
 ------------------------------------------------------------------------------
 -- Soundness and completeness
@@ -444,3 +512,4 @@ completeness {t₁} {t₂} {c₁} {c₂} c₁∼c₂ =
 ------------------------------------------------------------------------------
 
 
+--}
