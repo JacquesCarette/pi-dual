@@ -325,115 +325,32 @@ normalizeC (TIMES t₀ t₁) =
 -- assocl₊ ◎ (swap₊ ⊕ id⟷) ◎ assocr₊ : 
 -- PLUS ONE (PLUS ONE (PLUS ONE ZERO)) ⟷ PLUS ONE (PLUS ONE (PLUS ONE ZERO))
 
-swapFin : {n : ℕ} → (a b : Fin n) → fromSize n ⟷ fromSize n
-swapFin zero zero = id⟷
-swapFin zero (suc zero) = {!!}
-swapFin zero (suc (suc b)) = {!!}
-swapFin (suc a) b = {!!} 
-
-
-{--
-
-{-# TERMINATING #-}
-swapFin : {n : ℕ} → (a b : Fin n) → fromSize n ⟷ fromSize n
-swapFin {0} () b
-swapFin {suc n} zero zero = id⟷
-swapFin {suc (suc n)} zero (suc zero) = assocl₊ ◎ (swap₊ ⊕ id⟷) ◎ assocr₊ 
-swapFin {suc (suc n)} zero (suc (suc b)) =
-  (swapFin (suc zero) (suc (suc b))) ◎
+swapFin : {n : ℕ} → (a b : Fin n) → (leq : toℕ a ≤ toℕ b) → fromSize n ⟷ fromSize n
+swapFin zero zero z≤n = id⟷
+swapFin zero (suc zero) z≤n = assocl₊ ◎ (swap₊ ⊕ id⟷) ◎ assocr₊
+swapFin zero (suc (suc b)) z≤n =
   (assocl₊ ◎ (swap₊ ⊕ id⟷) ◎ assocr₊) ◎
-  (swapFin (suc zero) (suc (suc b)))
-swapFin {suc n} (suc a) zero = {!!}
-swapFin {suc n} (suc a) (suc b) = {!!} 
-
-
-canonical≡ : {t₁ t₂ : U} → TPermutation t₁ t₂ → (canonicalU t₁ ≡ canonicalU t₂)
-canonical≡ {t₁} {t₂} (s₁≡s₂ , _) = {!⊥-elim contra!}
-  where contra : canonicalU t₁ ≡ canonicalU t₂ → ¬ size t₁ ≡ size t₂
+  (id⟷ ⊕ swapFin zero (suc b) z≤n) ◎
+  (assocl₊ ◎ (swap₊ ⊕ id⟷) ◎ assocr₊)
+swapFin (suc a) zero ()
+swapFin (suc a) (suc b) (s≤s leq) = id⟷ ⊕ swapFin a b leq 
 
 perm2swaps : {t₁ t₂ : U} → TPermutation t₁ t₂ → (canonicalU t₁ ⟷ canonicalU t₂)
 {--
 convert π from Cauchy representation to sequences of swaps; each swap
 can be expressed on the normalized types
 it should be the case that canonicalU t₁ is THE SAME as canonicalU t₂
-
 --}
-perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj)) = {!!} 
-
+perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj)) with size t₁ | size t₂
+perm2swaps (refl , [] , inj) | 0 | 0 = id⟷
+perm2swaps (() , π , inj) | 0 | suc s₂
+perm2swaps (() , π , inj) | suc s₁ | 0
+perm2swaps (refl , x ∷ π , inj) | suc n | suc .n = {!!} 
 
 perm2c : {t₁ t₂ : U} → TPermutation t₁ t₂ → (t₁ ⟷ t₂)
 perm2c {t₁} {t₂} π = normalizeC t₁ ◎ perm2swaps {t₁} {t₂} π ◎ (! (normalizeC t₂))
 
 {--
-perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj))
-  with normalU t₁ | normalU t₂ | normalU≡ t₁ t₂ s₁≡s₂
-perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj)) | ZERO | ZERO | refl = id⟷
-perm2swaps (s₁≡s₂ , π , inj) | ONE | ONE | refl = {!!}
-perm2swaps (s₁≡s₂ , π , inj) | BOOL | BOOL | refl = {!!} 
-perm2swaps (s₁≡s₂ , π , inj) | PLUS n₁ n₂ | PLUS .n₁ .n₂ | refl = {!!}
-perm2swaps (s₁≡s₂ , π , inj) | TIMES n₁ n₂ | TIMES .n₁ .n₂ | refl = {!!}
-perm2swaps (s₁≡s₂ , π , inj) | ZERO | ONE | ()
-perm2swaps (s₁≡s₂ , π , inj) | ZERO | PLUS n₂ n₃ | ()
-perm2swaps (s₁≡s₂ , π , inj) | ZERO | TIMES n₂ n₃ | ()
-perm2swaps (s₁≡s₂ , π , inj) | ZERO | BOOL | ()
-perm2swaps (s₁≡s₂ , π , inj) | ONE | ZERO | ()
-perm2swaps (s₁≡s₂ , π , inj) | ONE | PLUS n₂ n₃ | ()
-perm2swaps (s₁≡s₂ , π , inj) | ONE | TIMES n₂ n₃ | ()
-perm2swaps (s₁≡s₂ , π , inj) | ONE | BOOL | ()
-perm2swaps (s₁≡s₂ , π , inj) | PLUS n₁ n₂ | ZERO | ()
-perm2swaps (s₁≡s₂ , π , inj) | PLUS n₁ n₂ | ONE | ()
-perm2swaps (s₁≡s₂ , π , inj) | PLUS n₁ n₂ | TIMES n₃ n₄ | ()
-perm2swaps (s₁≡s₂ , π , inj) | PLUS n₁ n₂ | BOOL | ()
-perm2swaps (s₁≡s₂ , π , inj) | TIMES n₁ n₂ | ZERO | ()
-perm2swaps (s₁≡s₂ , π , inj) | TIMES n₁ n₂ | ONE | ()
-perm2swaps (s₁≡s₂ , π , inj) | TIMES n₁ n₂ | PLUS n₃ n₄ | ()
-perm2swaps (s₁≡s₂ , π , inj) | TIMES n₁ n₂ | BOOL | ()
-perm2swaps (s₁≡s₂ , π , inj) | BOOL | ZERO | ()
-perm2swaps (s₁≡s₂ , π , inj) | BOOL | ONE | ()
-perm2swaps (s₁≡s₂ , π , inj) | BOOL | PLUS n₂ n₃ | ()
-perm2swaps (s₁≡s₂ , π , inj) | BOOL | TIMES n₂ n₃ | ()
-
---}
-
-{--
-perm2c {ZERO} {ZERO} refl ([] , f) = id⟷
-perm2c {ZERO} {ONE} () (cauchy , f)
-perm2c {ZERO} {PLUS t₂ t₃} sp ([] , f) = {!!} 
-perm2c {ZERO} {TIMES t₂ t₃} sp ([] , f) = {!!}
-perm2c {ZERO} {BOOL} () (cauchy , f)
-perm2c {ONE} {ZERO} () (cauchy , f)
-perm2c {ONE} {ONE} refl (zero ∷ [] , f) = id⟷
-perm2c {ONE} {ONE} refl (suc () ∷ [] , f)
-perm2c {ONE} {PLUS t₂ t₃} sp (cauchy , f) = {!!}
-perm2c {ONE} {TIMES t₂ t₃} sp (cauchy , f) = {!!}
-perm2c {ONE} {BOOL} () (cauchy , f)
-perm2c {PLUS t₁ t₂} {ZERO} sp (cauchy , f) = {!!}
-perm2c {PLUS t₁ t₂} {ONE} sp (cauchy , f) = {!!}
-perm2c {PLUS t₁ t₂} {PLUS t₃ t₄} sp (cauchy , f) = {!!}
-perm2c {PLUS t₁ t₂} {TIMES t₃ t₄} sp (cauchy , f) = {!!}
-perm2c {PLUS t₁ t₂} {BOOL} sp (cauchy , f) = {!!}
-perm2c {TIMES t₁ t₂} {ZERO} sp (cauchy , f) = {!!}
-perm2c {TIMES t₁ t₂} {ONE} sp (cauchy , f) = {!!}
-perm2c {TIMES t₁ t₂} {PLUS t₃ t₄} sp (cauchy , f) = {!!}
-perm2c {TIMES t₁ t₂} {TIMES t₃ t₄} sp (cauchy , f) = {!!}
-perm2c {TIMES t₁ t₂} {BOOL} sp (cauchy , f) = {!!}
-perm2c {BOOL} {ZERO} () (cauchy , f)
-perm2c {BOOL} {ONE} () (cauchy , f)
-perm2c {BOOL} {PLUS t₂ t₃} sp (cauchy , f) = {!!}
-perm2c {BOOL} {TIMES t₂ t₃} sp (cauchy , f) = {!!}
-perm2c {BOOL} {BOOL} refl (zero ∷ zero ∷ [] , f) with f {zero} {suc zero}
-... | x = ⊥-elim ((m≢1+m+n) 0 (cong toℕ (x refl))) 
-perm2c {BOOL} {BOOL} refl (zero ∷ suc zero ∷ [] , f) = id⟷
-perm2c {BOOL} {BOOL} refl (zero ∷ suc (suc ()) ∷ [] , f)
-perm2c {BOOL} {BOOL} refl (suc zero ∷ zero ∷ [] , f) = NOT
-perm2c {BOOL} {BOOL} refl (suc (suc ()) ∷ zero ∷ [] , f)
-perm2c {BOOL} {BOOL} refl (suc zero ∷ suc zero ∷ [] , f) with f {zero} {suc zero}
-... | x = ⊥-elim ((m≢1+m+n) 0 (cong toℕ (x refl))) 
-perm2c {BOOL} {BOOL} refl (suc zero ∷ suc (suc ()) ∷ [] , f)
-perm2c {BOOL} {BOOL} refl (suc (suc ()) ∷ suc zero ∷ [] , f)
-perm2c {BOOL} {BOOL} refl (suc (suc ()) ∷ suc (suc b) ∷ [] , f) 
---}
-
 ------------------------------------------------------------------------------
 -- Soundness and completeness
 -- 
@@ -507,5 +424,5 @@ completeness {t₁} {t₂} {c₁} {c₂} c₁∼c₂ =
 
 ------------------------------------------------------------------------------
 
-
 --}
+
