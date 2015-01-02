@@ -335,20 +335,16 @@ swapFin zero (suc (suc b)) z≤n =
 swapFin (suc a) zero ()
 swapFin (suc a) (suc b) (s≤s leq) = id⟷ ⊕ swapFin a b leq 
 
-perm2swaps : {t₁ t₂ : U} → TPermutation t₁ t₂ → (canonicalU t₁ ⟷ canonicalU t₂)
-{--
-convert π from Cauchy representation to sequences of swaps; each swap
-can be expressed on the normalized types
-it should be the case that canonicalU t₁ is THE SAME as canonicalU t₂
---}
-perm2swaps {t₁} {t₂} (s₁≡s₂ , (π , inj)) with size t₁ | size t₂
-perm2swaps (refl , [] , inj) | 0 | 0 = id⟷
-perm2swaps (() , π , inj) | 0 | suc s₂
-perm2swaps (() , π , inj) | suc s₁ | 0
-perm2swaps (refl , x ∷ π , inj) | suc n | suc .n = {!!} 
+perm2swaps : {m : ℕ} → (s₁ s₂ : ℕ) → (s₁≡s₂ : s₁ ≡ s₂) → Vec (Fin m) s₁ →
+             (fromSize s₁ ⟷ fromSize s₂)
+perm2swaps 0 0 refl [] = id⟷ 
+perm2swaps 0 (suc _) ()
+perm2swaps (suc _) 0 ()
+perm2swaps (suc n) (suc .n) refl (a ∷ π) = {!!} 
 
 perm2c : {t₁ t₂ : U} → TPermutation t₁ t₂ → (t₁ ⟷ t₂)
-perm2c {t₁} {t₂} π = normalizeC t₁ ◎ perm2swaps {t₁} {t₂} π ◎ (! (normalizeC t₂))
+perm2c {t₁} {t₂} (s₁≡s₂ , (π , inj)) =
+  normalizeC t₁ ◎ perm2swaps (size t₁) (size t₂) s₁≡s₂ π ◎ (! (normalizeC t₂))
 
 {--
 ------------------------------------------------------------------------------
