@@ -68,39 +68,28 @@ open import Groupoid
 open import Pif
 
 ------------------------------------------------------------------------------
--- The syntactic combinators are rich enough to define the groupoid structure. Now
--- we investigate whether they are complete.
-
--- A permutation between t₁ and t₂ has three components in the Cauchy
--- representation: the map π of each element to a new position and a
--- proof that the sizes of the domain and range are the same and that
--- the map is injective.
-
-TPermutation : U → U → Set
-TPermutation t₁ t₂ = size t₁ ≡ size t₂ × Permutation (size t₁)
-
 -- A view of (t : U) as normalized types.
 -- Let size t be n then the normalized version of t is the type
 -- (1 + (1 + (1 + (1 + ... 0)))) i.e. Fin n.
 
 fromSize : ℕ → U
-fromSize 0 = ZERO
+fromSize 0       = ZERO
 fromSize (suc n) = PLUS ONE (fromSize n)
 
 canonicalU : U → U
 canonicalU = fromSize ∘ size
 
 size+ : (n₁ n₂ : ℕ) → PLUS (fromSize n₁) (fromSize n₂) ⟷ fromSize (n₁ + n₂)
-size+ 0 n₂ = unite₊
+size+ 0        n₂ = unite₊
 size+ (suc n₁) n₂ = assocr₊ ◎ (id⟷ ⊕ size+ n₁ n₂)
 
 size* : (n₁ n₂ : ℕ) → TIMES (fromSize n₁) (fromSize n₂) ⟷ fromSize (n₁ * n₂)
-size* 0 n₂ = distz
+size* 0        n₂ = distz
 size* (suc n₁) n₂ = dist ◎ (unite⋆ ⊕ size* n₁ n₂) ◎ size+ n₂ (n₁ * n₂)
 
 normalizeC : (t : U) → t ⟷ canonicalU t
 normalizeC ZERO = id⟷
-normalizeC ONE = uniti₊ ◎ swap₊
+normalizeC ONE  = uniti₊ ◎ swap₊
 normalizeC BOOL = unfoldBool ◎
                  ((uniti₊ ◎ swap₊) ⊕ (uniti₊ ◎ swap₊)) ◎
                  (assocr₊ ◎ (id⟷ ⊕ unite₊))
@@ -125,13 +114,12 @@ swapFin zero (suc (suc b)) z≤n =
 swapFin (suc a) zero ()
 swapFin (suc a) (suc b) (s≤s leq) = id⟷ ⊕ swapFin a b leq 
 
---------------
--- Representation I:
--- Our first representation of a permutation is as a product of
--- "transpositions." This product is not commutative; we apply it from
--- left to right. Because we eventually want to normalize permutations
--- to some canonical representation, we insist that the first
--- component of a transposition is always ≤ than the second
+------------------------------------------------------------------------------
+-- Representation of a permutation as a product of "transpositions."
+-- This product is not commutative; we apply it from left to
+-- right. Because we eventually want to normalize permutations to some
+-- canonical representation, we insist that the first component of a
+-- transposition is always ≤ than the second
 
 infix 90 _X_
 
@@ -165,39 +153,8 @@ actionπ π vs = foldl swapX vs π
     swapX : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Vec A n → Transposition n → Vec A n  
     swapX vs (i X j) = (vs [ i ]≔ lookup j vs) [ j ]≔ lookup i vs
 
--- Representation II:
--- This is also a product of transpositions but the transpositions are such
--- that the first component is always < the second, i.e., we got rid of trivial
--- transpositions that swap an element with itself
-
-data Transposition< (n : ℕ) : Set where
-  _X!_ : (i j : Fin n) → {p : toℕ i < toℕ j} → Transposition< n
-
-Transposition<* : ℕ → Set
-Transposition<* n = List (Transposition< n) 
-
-showTransposition<* : ∀ {n} → Transposition<* n → List String
-showTransposition<* = 
-  mapL (λ { (i X! j) → show (toℕ i) ++S " X! " ++S show (toℕ j) })
-
-i≠j∧i≤j→i<j : (i j : ℕ) → (¬ i ≡ j) → (i ≤ j) → (i < j)
-i≠j∧i≤j→i<j 0 0 p≠ p≤ with p≠ refl
-i≠j∧i≤j→i<j 0 0 p≠ p≤ | ()
-i≠j∧i≤j→i<j 0 (suc j) p≠ p≤ = s≤s z≤n
-i≠j∧i≤j→i<j (suc i) 0 p≠ ()
-i≠j∧i≤j→i<j (suc i) (suc j) p≠ (s≤s p≤) with i ≟ j
-i≠j∧i≤j→i<j (suc i) (suc j) p≠ (s≤s p≤) | yes p' with p≠ (cong suc p')
-i≠j∧i≤j→i<j (suc i) (suc j) p≠ (s≤s p≤) | yes p' | ()
-i≠j∧i≤j→i<j (suc i) (suc j) p≠ (s≤s p≤) | no p' = s≤s (i≠j∧i≤j→i<j i j p' p≤)
-     
-filter= : {n : ℕ} → Transposition* n → Transposition<* n
-filter= [] = []
-filter= (_X_ i j {p≤} ∷ π) with toℕ i ≟ toℕ j
-... | yes p= = filter= π 
-... | no p≠ = _X!_ i j {i≠j∧i≤j→i<j (toℕ i) (toℕ j) p≠ p≤}  ∷ filter= π 
-
--- Representation IV
--- A product of cycles where each cycle is a non-empty sequence of indices
+-- Representation of a permutation as a product of cycles where each
+-- cycle is a non-empty sequence of indices
 
 Cycle : ℕ → Set
 Cycle n = List⁺ (Fin n)
@@ -207,21 +164,18 @@ Cycle* n = List (Cycle n)
 
 -- convert a cycle to a product of transpositions
 
-postulate
-  cycle→transposition* : ∀ {n} → Cycle n → Transposition* n
-
--- cycle→transposition* : ∀ {n} → Cycle n → Transposition* n
--- cycle→transposition* = {!!} 
-
+cycle→transposition* : ∀ {n} → Cycle n → Transposition* n
+cycle→transposition* = {!!} 
 {--
 cycle→transposition* (i , []) = []
 cycle→transposition* (i , (j ∷ ns)) = 
   mkTransposition i j ∷ cycle→transposition* (i , ns)
 --}
+
 cycle*→transposition* : ∀ {n} → Cycle* n → Transposition* n
 cycle*→transposition* cs = concatMap cycle→transposition* cs
 
--- Convert from Cauchy 2 line representation to product of cycles
+-- Convert from Cauchy representation to product of cycles
 
 -- Helper that checks if there is a cycle that starts at i
 -- Returns the cycle containing i and the rest of the permutation
@@ -248,28 +202,32 @@ mergeCycles (c ∷ cs) | just (c' , cs') = mergeCycles ((c ⁺++ ntail c') ∷ c
 
 cauchy→cycle* : ∀ {n} → Cauchy n → Cycle* n
 cauchy→cycle* {n} perm = 
-  mergeCycles (toList (zipWith (λ i j → i ∷⁺ Data.List.NonEmpty.[ j ]) (allFin n) perm))
+  mergeCycles
+    (toList (zipWith (λ i j → i ∷⁺ Data.List.NonEmpty.[ j ]) (allFin n) perm))
 
 cauchyEx1→transposition* cauchyEx2→transposition* : List String
 cauchyEx1→transposition* = 
   showTransposition* (cycle*→transposition* (cauchy→cycle* cauchyEx1))
 -- 0 X 2 ∷ 0 X 4 ∷ 0 X 1 ∷ 0 X 0 ∷ 3 X 3 ∷ 5 X 5 ∷ []
--- actionπ (cycle*→transposition* (cauchy→cycle* cauchyEx1)) 
---   (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [])
--- 1 ∷ 4 ∷ 0 ∷ 3 ∷ 2 ∷ 5 ∷ []
 cauchyEx2→transposition* = 
   showTransposition* (cycle*→transposition* (cauchy→cycle* cauchyEx2))
 -- 0 X 3 ∷ 0 X 0 ∷ 1 X 2 ∷ 1 X 1 ∷ 4 X 5 ∷ 4 X 4 ∷ []
--- actionπ (cycle*→transposition* (cauchy→cycle* cauchyEx2)) 
---   (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [])
--- 3 ∷ 2 ∷ 1 ∷ 0 ∷ 5 ∷ 4 ∷ []
 
 -- Cauchy to product of transpostions
 
 cauchy→transposition* : ∀ {n} → Cauchy n → Transposition* n
 cauchy→transposition* = cycle*→transposition* ∘ cauchy→cycle*
 
---------------
+------------------------------------------------------------------------------
+-- Main functions
+
+-- A permutation between t₁ and t₂ has three components in the Cauchy
+-- representation: the map π of each element to a new position and a
+-- proof that the sizes of the domain and range are the same and that
+-- the map is injective.
+
+TPermutation : U → U → Set
+TPermutation t₁ t₂ = size t₁ ≡ size t₂ × Permutation (size t₁)
 
 transposition*2c : (m n : ℕ) (m≡n : m ≡ n) → Transposition* m →
                    (fromSize m ⟷ fromSize n)
