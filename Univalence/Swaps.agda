@@ -68,6 +68,97 @@ open import Groupoid
 open import Pif
 
 ------------------------------------------------------------------------------
+-- Representation of a permutation as a product of "transpositions."
+-- This product is not commutative; we apply it from left to
+-- right. Because we eventually want to normalize permutations to some
+-- canonical representation, we insist that the first component of a
+-- transposition is always ≤ than the second
+
+infix 90 _X_
+
+data Transposition (n : ℕ) : Set where
+  _X_ : (i j : Fin n) → {p : toℕ i ≤ toℕ j} → Transposition n
+
+i≰j→j≤i : (i j : ℕ) → (i ≰ j) → (j ≤ i) 
+i≰j→j≤i i 0 p = z≤n 
+i≰j→j≤i 0 (suc j) p with p z≤n
+i≰j→j≤i 0 (suc j) p | ()
+i≰j→j≤i (suc i) (suc j) p with i ≤? j
+i≰j→j≤i (suc i) (suc j) p | yes p' with p (s≤s p')
+i≰j→j≤i (suc i) (suc j) p | yes p' | ()
+i≰j→j≤i (suc i) (suc j) p | no p' = s≤s (i≰j→j≤i i j p')
+
+mkTransposition : {n : ℕ} → (i j : Fin n) → Transposition n
+mkTransposition {n} i j with toℕ i ≤? toℕ j 
+... | yes p = _X_ i j {p}
+... | no p  = _X_ j i {i≰j→j≤i (toℕ i) (toℕ j) p}
+
+Transposition* : ℕ → Set
+Transposition* n = List (Transposition n) 
+
+-- Representation of a permutation as a product of cycles where each
+-- cycle is a non-empty sequence of indices
+
+Cycle : ℕ → Set
+Cycle n = List⁺ (Fin n)
+
+Cycle* : ℕ → Set
+Cycle* n = List (Cycle n)
+
+-- Convert cycles to products of transpositions
+
+cycle→transposition* : ∀ {n} → Cycle n → Transposition* n
+cycle→transposition* c = mapL (mkTransposition (head c)) (reverse (ntail c))
+
+cycle*→transposition* : ∀ {n} → Cycle* n → Transposition* n
+cycle*→transposition* cs = concatMap cycle→transposition* cs
+
+-- Convert from Cauchy representation to product of cycles
+
+-- Helper that checks if there is a cycle that starts at i
+-- Returns the cycle containing i and the rest of the permutation
+-- without that cycle
+
+findCycle : ∀ {n} → Fin n → Cycle* n →  Maybe (Cycle n × Cycle* n)
+findCycle i [] = nothing
+findCycle i (c ∷ cs) with toℕ i ≟ toℕ (head c)
+findCycle i (c ∷ cs) | yes _ = just (c , cs)
+findCycle i (c ∷ cs) | no _ = 
+  maybe′ (λ { (c' , cs') → just (c' , c ∷ cs') }) nothing (findCycle i cs)
+
+-- Another helper that repeatedly tries to merge smaller cycles
+
+{-# NO_TERMINATION_CHECK #-}
+mergeCycles : ∀ {n} → Cycle* n → Cycle* n
+mergeCycles [] = []
+mergeCycles (c ∷ cs) with findCycle (last c) cs
+mergeCycles (c ∷ cs) | nothing = c ∷ mergeCycles cs
+mergeCycles (c ∷ cs) | just (c' , cs') = mergeCycles ((c ⁺++ ntail c') ∷ cs')
+
+-- To convert a Cauchy representation to a product of cycles, just create 
+-- a cycle of size 2 for each entry and then merge the cycles
+
+cauchy→cycle* : ∀ {n} → Cauchy n → Cycle* n
+cauchy→cycle* {n} perm = 
+  mergeCycles
+    (toList (zipWith (λ i j → i ∷⁺ Data.List.NonEmpty.[ j ]) (allFin n) perm))
+
+-- Cauchy to product of transpostions
+
+cauchy→transposition* : ∀ {n} → Cauchy n → Transposition* n
+cauchy→transposition* = cycle*→transposition* ∘ cauchy→cycle*
+
+------------------------------------------------------------------------------
+-- Main functions
+
+-- A permutation between t₁ and t₂ has three components in the Cauchy
+-- representation: the map π of each element to a new position and a
+-- proof that the sizes of the domain and range are the same and that
+-- the map is injective.
+
+TPermutation : U → U → Set
+TPermutation t₁ t₂ = size t₁ ≡ size t₂ × Permutation (size t₁)
+
 -- A view of (t : U) as normalized types.
 -- Let size t be n then the normalized version of t is the type
 -- (1 + (1 + (1 + (1 + ... 0)))) i.e. Fin n.
@@ -114,120 +205,7 @@ swapFin zero (suc (suc b)) z≤n =
 swapFin (suc a) zero ()
 swapFin (suc a) (suc b) (s≤s leq) = id⟷ ⊕ swapFin a b leq 
 
-------------------------------------------------------------------------------
--- Representation of a permutation as a product of "transpositions."
--- This product is not commutative; we apply it from left to
--- right. Because we eventually want to normalize permutations to some
--- canonical representation, we insist that the first component of a
--- transposition is always ≤ than the second
-
-infix 90 _X_
-
-data Transposition (n : ℕ) : Set where
-  _X_ : (i j : Fin n) → {p : toℕ i ≤ toℕ j} → Transposition n
-
-i≰j→j≤i : (i j : ℕ) → (i ≰ j) → (j ≤ i) 
-i≰j→j≤i i 0 p = z≤n 
-i≰j→j≤i 0 (suc j) p with p z≤n
-i≰j→j≤i 0 (suc j) p | ()
-i≰j→j≤i (suc i) (suc j) p with i ≤? j
-i≰j→j≤i (suc i) (suc j) p | yes p' with p (s≤s p')
-i≰j→j≤i (suc i) (suc j) p | yes p' | ()
-i≰j→j≤i (suc i) (suc j) p | no p' = s≤s (i≰j→j≤i i j p')
-
-mkTransposition : {n : ℕ} → (i j : Fin n) → Transposition n
-mkTransposition {n} i j with toℕ i ≤? toℕ j 
-... | yes p = _X_ i j {p}
-... | no p  = _X_ j i {i≰j→j≤i (toℕ i) (toℕ j) p}
-
-Transposition* : ℕ → Set
-Transposition* n = List (Transposition n) 
-
-showTransposition* : ∀ {n} → Transposition* n → List String
-showTransposition* = 
-  mapL (λ { (i X j) → show (toℕ i) ++S " X " ++S show (toℕ j) })
-
-actionπ : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Transposition* n → Vec A n → Vec A n
-actionπ π vs = foldl swapX vs π
-  where 
-    swapX : ∀ {ℓ} {A : Set ℓ} {n : ℕ} → Vec A n → Transposition n → Vec A n  
-    swapX vs (i X j) = (vs [ i ]≔ lookup j vs) [ j ]≔ lookup i vs
-
--- Representation of a permutation as a product of cycles where each
--- cycle is a non-empty sequence of indices
-
-Cycle : ℕ → Set
-Cycle n = List⁺ (Fin n)
-
-Cycle* : ℕ → Set
-Cycle* n = List (Cycle n)
-
--- convert a cycle to a product of transpositions
-
-cycle→transposition* : ∀ {n} → Cycle n → Transposition* n
-cycle→transposition* = {!!} 
-{--
-cycle→transposition* (i , []) = []
-cycle→transposition* (i , (j ∷ ns)) = 
-  mkTransposition i j ∷ cycle→transposition* (i , ns)
---}
-
-cycle*→transposition* : ∀ {n} → Cycle* n → Transposition* n
-cycle*→transposition* cs = concatMap cycle→transposition* cs
-
--- Convert from Cauchy representation to product of cycles
-
--- Helper that checks if there is a cycle that starts at i
--- Returns the cycle containing i and the rest of the permutation
--- without that cycle
-
-findCycle : ∀ {n} → Fin n → Cycle* n →  Maybe (Cycle n × Cycle* n)
-findCycle i [] = nothing
-findCycle i (c ∷ cs) with toℕ i ≟ toℕ (head c)
-findCycle i (c ∷ cs) | yes _ = just (c , cs)
-findCycle i (c ∷ cs) | no _ = 
-  maybe′ (λ { (c' , cs') → just (c' , c ∷ cs') }) nothing (findCycle i cs)
-
--- Another helper that repeatedly tries to merge smaller cycles
-
-{-# NO_TERMINATION_CHECK #-}
-mergeCycles : ∀ {n} → Cycle* n → Cycle* n
-mergeCycles [] = []
-mergeCycles (c ∷ cs) with findCycle (last c) cs
-mergeCycles (c ∷ cs) | nothing = c ∷ mergeCycles cs
-mergeCycles (c ∷ cs) | just (c' , cs') = mergeCycles ((c ⁺++ ntail c') ∷ cs')
-
--- To convert a Cauchy representation to a product of cycles, just create 
--- a cycle of size 2 for each entry and then merge the cycles
-
-cauchy→cycle* : ∀ {n} → Cauchy n → Cycle* n
-cauchy→cycle* {n} perm = 
-  mergeCycles
-    (toList (zipWith (λ i j → i ∷⁺ Data.List.NonEmpty.[ j ]) (allFin n) perm))
-
-cauchyEx1→transposition* cauchyEx2→transposition* : List String
-cauchyEx1→transposition* = 
-  showTransposition* (cycle*→transposition* (cauchy→cycle* cauchyEx1))
--- 0 X 2 ∷ 0 X 4 ∷ 0 X 1 ∷ 0 X 0 ∷ 3 X 3 ∷ 5 X 5 ∷ []
-cauchyEx2→transposition* = 
-  showTransposition* (cycle*→transposition* (cauchy→cycle* cauchyEx2))
--- 0 X 3 ∷ 0 X 0 ∷ 1 X 2 ∷ 1 X 1 ∷ 4 X 5 ∷ 4 X 4 ∷ []
-
--- Cauchy to product of transpostions
-
-cauchy→transposition* : ∀ {n} → Cauchy n → Transposition* n
-cauchy→transposition* = cycle*→transposition* ∘ cauchy→cycle*
-
-------------------------------------------------------------------------------
--- Main functions
-
--- A permutation between t₁ and t₂ has three components in the Cauchy
--- representation: the map π of each element to a new position and a
--- proof that the sizes of the domain and range are the same and that
--- the map is injective.
-
-TPermutation : U → U → Set
-TPermutation t₁ t₂ = size t₁ ≡ size t₂ × Permutation (size t₁)
+-- permutation to combinator
 
 transposition*2c : (m n : ℕ) (m≡n : m ≡ n) → Transposition* m →
                    (fromSize m ⟷ fromSize n)

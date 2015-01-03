@@ -283,13 +283,6 @@ G' = record
 
 ------------------------------------------------------------------------------
 -- Soundness and completeness
--- 
--- Proof of soundness and completeness: now we want to verify that ⇔
--- is sound and complete with respect to ∼. The statement to prove is
--- that for all c₁ and c₂, we have c₁ ∼ c₂ iff c₁ ⇔ c₂
-
-soundness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₁ ∼ c₂)
-soundness α = {!!} 
 
 -- The idea is to invert evaluation and use that to extract from each
 -- extensional representation of a combinator, a canonical syntactic
@@ -297,6 +290,25 @@ soundness α = {!!}
 
 canonical : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂)
 canonical c = perm2c (size≡ c , c2perm c)
+
+-- Check canonical NOT = canonical NEG1 = canonical NEG2 = canonical NEG3
+-- = canonical NEG4 = canonical NEG5
+
+canonicalEx : List (BOOL ⟷ BOOL) 
+canonicalEx =
+  canonical NOT  ∷
+  canonical NEG1 ∷
+  canonical NEG2 ∷
+  canonical NEG3 ∷ 
+  canonical NEG4 ∷
+  canonical NEG5 ∷ []
+
+-- Proof of soundness and completeness: now we want to verify that ⇔
+-- is sound and complete with respect to ∼. The statement to prove is
+-- that for all c₁ and c₂, we have c₁ ∼ c₂ iff c₁ ⇔ c₂
+
+soundness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₁ ∼ c₂)
+soundness α = {!!} 
 
 -- Note that if c₁ ⇔ c₂, then by soundness c₁ ∼ c₂ and hence their
 -- canonical representatives are identical. 
