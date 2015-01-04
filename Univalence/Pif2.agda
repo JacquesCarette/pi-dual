@@ -465,21 +465,6 @@ soundness (resp◎⇔ {t₁} {t₂} {t₃} {c₁} {c₃} {c₂} {c₄} α β) =
 soundness (resp⊕⇔ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} {c₄} α β) = {!!}
 soundness (resp⊗⇔ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} {c₄} α β) = {!!}
 
--- Note that if c₁ ⇔ c₂, then by soundness c₁ ∼ c₂ and hence their
--- canonical representatives are identical. 
-
--- If we try to show we defined cauchy and perm in a compatible way,
--- this fails (under --without-K) basically what we get is (which
--- would complete the proof), but in some case the middle proof is
--- assuredly 'refl', which cannot be eliminated.
--- cauchy⇒perm : {t₁ t₂ : U} → (c₁ c₂ : t₁ ⟷ t₂) →
---   c2cauchy c₁ ≡ c2cauchy c₂ → c2perm c₁ ≡ c2perm c₂
-
-canonicalWellDefined : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → 
-  (c₁ ⇔ c₂) → (canonical c₁ ≡ canonical c₂)
-canonicalWellDefined {t₁} {t₂} {c₁} {c₂} α = {!!} 
---  cong₂ perm2c (size∼ c₁ c₂ , cong₂D! _,_ {!sym (soundness α)!} {!!})
-
 -- If we can prove that every combinator is equal to its normal form
 -- then we can prove completeness.
 
@@ -513,8 +498,7 @@ completeness {t₁} {t₂} {c₁} {c₂} c₁∼c₂ =
   c₁
     ⇔⟨ inversion c₁ ⟩
   canonical c₁
-    ⇔⟨  {!!} ⟩ 
---    ⇔⟨  resp≡⇔ (cong₂ {!!} (size∼ c₁ c₂) c₁∼c₂) ⟩ 
+    ⇔⟨ resp≡⇔ {!!} ⟩ 
   canonical c₂
     ⇔⟨ 2! (inversion c₂) ⟩ 
   c₂ ▤
