@@ -307,6 +307,41 @@ canonicalEx =
 -- is sound and complete with respect to ∼. The statement to prove is
 -- that for all c₁ and c₂, we have c₁ ∼ c₂ iff c₁ ⇔ c₂
 
+assoc⊕∼ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} →
+  subst Cauchy (+-assoc (size t₁) (size t₃) (size t₅)) (c2cauchy ((c₁ ⊕ c₂) ⊕ c₃))
+  ≡ c2cauchy (c₁ ⊕ (c₂ ⊕ c₃)) 
+assoc⊕∼ {t₁} {t₂} {t₃} {t₄} {t₅} {t₆} {c₁} {c₂} {c₃} =
+  begin (subst Cauchy (+-assoc (size t₁) (size t₃) (size t₅))
+           (mapV
+             (inject+ (size t₅))
+             (mapV (inject+ (size t₃)) (c2cauchy c₁) ++V
+              mapV (raise (size t₁)) (c2cauchy c₂))
+            ++V
+            mapV
+              (raise (size t₁ + size t₃))
+              (c2cauchy c₃))
+        ≡⟨ {!!} ⟩
+         subst Cauchy (+-assoc (size t₁) (size t₃) (size t₅))
+           ((mapV (inject+ (size t₅) ∘ inject+ (size t₃)) (c2cauchy c₁) ++V
+             mapV (inject+ (size t₅) ∘ raise (size t₁)) (c2cauchy c₂))
+            ++V
+            mapV (raise (size t₁ + size t₃)) (c2cauchy c₃))
+        ≡⟨ {!!} ⟩
+         mapV (inject+ (size t₃ + size t₅)) (c2cauchy c₁) ++V
+         (mapV (raise (size t₁) ∘ inject+ (size t₅)) (c2cauchy c₂) ++V
+          mapV (raise (size t₁) ∘ raise (size t₃)) (c2cauchy c₃))
+        ≡⟨ {!!} ⟩
+         mapV (inject+ (size t₃ + size t₅)) (c2cauchy c₁) ++V
+         (mapV (raise (size t₁))
+           (mapV (inject+ (size t₅)) (c2cauchy c₂) ++V
+            mapV (raise (size t₃)) (c2cauchy c₃)))
+        ≡⟨ refl ⟩
+         pcompcauchy (c2cauchy c₁) (pcompcauchy (c2cauchy c₂) (c2cauchy c₃)) ∎)
+  where open ≡-Reasoning
+
+-- (size t₁ + size t₃) + size t₅ ≡ size t₁ + (size t₃ + size t₅)
+
+
 soundness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₁ ∼ c₂)
 soundness (assoc◎l {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃}) =
   assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃}
@@ -314,8 +349,8 @@ soundness (assoc◎r {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃}) =
   sym (assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃})
 soundness (assoc⊕l {t₁} {t₂} {t₃} {t₄} {t₅} {t₆} {c₁} {c₂} {c₃}) =
   begin (c2cauchy (c₁ ⊕ (c₂ ⊕ c₃))
-       ≡⟨ {!!} ⟩ 
-         subst Cauchy (size≡! (assocl₊ {t₁} {t₃} {t₅}))
+       ≡⟨ sym (assoc⊕∼ {t₁} {t₂} {t₃} {t₄} {t₅} {t₆} {c₁} {c₂} {c₃}) ⟩ 
+         subst Cauchy (+-assoc (size t₁) (size t₃) (size t₅)) 
            (c2cauchy {PLUS (PLUS t₁ t₃) t₅} {PLUS (PLUS t₂ t₄) t₆} ((c₁ ⊕ c₂) ⊕ c₃))
        ≡⟨ sym (scomprid _) ⟩
        scompcauchy
