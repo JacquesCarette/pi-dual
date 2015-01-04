@@ -352,7 +352,7 @@ assoc⊕∼ {t₁} {t₂} {t₃} {t₄} {t₅} {t₆} {c₁} {c₂} {c₃} =
             (λ x → Vec (Fin x) (size t₅))
             (+-assoc (size t₁) (size t₃) (size t₅))
             (mapV (raise (size t₁ + size t₃)) (c2cauchy c₃))))
-        ≡⟨ {!!} ⟩
+        ≡⟨ {!!} ⟩ 
          mapV (inject+ (size t₃ + size t₅)) (c2cauchy c₁) ++V
          (mapV (raise (size t₁) ∘ inject+ (size t₅)) (c2cauchy c₂) ++V
           mapV (raise (size t₁) ∘ raise (size t₃)) (c2cauchy c₃))
