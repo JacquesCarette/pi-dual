@@ -21,7 +21,7 @@ open import Relation.Binary.Core using (Transitive)
 open import Data.String using (String)
   renaming (_++_ to _++S_)
 open import Data.Nat.Show using (show)
-open import Data.Bool using (Bool; false; true)
+open import Data.Bool using (Bool; false; true; _∧_; _∨_)
 open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≮_; _≤_; _≰_; 
   z≤n; s≤s; _≟_; _≤?_; module ≤-Reasoning)
 open import Data.Fin 
@@ -150,6 +150,31 @@ data _⟷_ : U → U → Set where
   -- for testing
   foldBool   : PLUS ONE ONE ⟷ BOOL
   unfoldBool : BOOL ⟷ PLUS ONE ONE
+
+-- Syntactic equality of combinators
+
+comb= : {t₁ t₂ t₃ t₄ : U} → (t₁ ⟷ t₂) → (t₃ ⟷ t₄) → Bool
+comb= unite₊ unite₊ = true
+comb= uniti₊ uniti₊ = true
+comb= swap₊ swap₊ = true
+comb= assocl₊ assocl₊ = true
+comb= assocr₊ assocr₊ = true
+comb= unite⋆ unite⋆ = true
+comb= uniti⋆ uniti⋆ = true
+comb= swap⋆ swap⋆ = true
+comb= assocl⋆ assocl⋆ = true
+comb= assocr⋆ assocr⋆ = true
+comb= distz distz = true
+comb= factorz factorz = true
+comb= dist dist = true
+comb= factor factor = true
+comb= id⟷ id⟷ = true
+comb= (c₁ ◎ c₂) (c₃ ◎ c₄) = comb= c₁ c₃ ∧ comb= c₂ c₄
+comb= (c₁ ⊕ c₂) (c₃ ⊕ c₄) = comb= c₁ c₃ ∧ comb= c₂ c₄
+comb= (c₁ ⊗ c₂) (c₃ ⊗ c₄) = comb= c₁ c₃ ∧ comb= c₂ c₄
+comb= foldBool foldBool = true
+comb= unfoldBool unfoldBool = true
+comb= _ _ = false
 
 -- Extensional evaluator for testing: serves as a specification
 

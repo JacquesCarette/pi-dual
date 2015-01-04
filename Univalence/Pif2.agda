@@ -24,7 +24,7 @@ open import Relation.Binary.Core using (Transitive)
 open import Data.String using (String)
   renaming (_++_ to _++S_)
 open import Data.Nat.Show using (show)
-open import Data.Bool using (Bool; false; true; T)
+open import Data.Bool using (Bool; false; true; T; _∧_; _∨_)
 open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≮_; _≤_; _≰_; 
   z≤n; s≤s; _≟_; _≤?_; module ≤-Reasoning)
 open import Data.Fin 
@@ -294,21 +294,119 @@ canonical c = perm2c (size≡ c , c2perm c)
 -- Check canonical NOT = canonical NEG1 = canonical NEG2 = canonical NEG3
 -- = canonical NEG4 = canonical NEG5
 
-canonicalEx : List (BOOL ⟷ BOOL) 
+canonicalEx : Bool
 canonicalEx =
-  canonical NOT  ∷
-  canonical NEG1 ∷
-  canonical NEG2 ∷
-  canonical NEG3 ∷ 
-  canonical NEG4 ∷
-  canonical NEG5 ∷ []
+  let x = canonical NOT in 
+  comb= x (canonical NEG1) ∧
+  comb= x (canonical NEG2) ∧
+  comb= x (canonical NEG3) ∧
+  comb= x (canonical NEG4) ∧
+  comb= x (canonical NEG5)
 
 -- Proof of soundness and completeness: now we want to verify that ⇔
 -- is sound and complete with respect to ∼. The statement to prove is
 -- that for all c₁ and c₂, we have c₁ ∼ c₂ iff c₁ ⇔ c₂
 
 soundness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₁ ∼ c₂)
-soundness α = {!!} 
+soundness (assoc◎l {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃}) =
+  assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃}
+soundness (assoc◎r {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃}) =
+  sym (assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃})
+soundness (assoc⊕l {t₁} {t₂} {t₃} {t₄} {t₅} {t₆} {c₁} {c₂} {c₃}) =
+  begin (c2cauchy (c₁ ⊕ (c₂ ⊕ c₃))
+       ≡⟨ {!!} ⟩ 
+         subst Cauchy (size≡! (assocl₊ {t₁} {t₃} {t₅}))
+           (c2cauchy {PLUS (PLUS t₁ t₃) t₅} {PLUS (PLUS t₂ t₄) t₆} ((c₁ ⊕ c₂) ⊕ c₃))
+       ≡⟨ sym (scomprid _) ⟩
+       scompcauchy
+         (subst Cauchy (size≡! (assocl₊ {t₁} {t₃} {t₅}))
+           (c2cauchy {PLUS (PLUS t₁ t₃) t₅} {PLUS (PLUS t₂ t₄) t₆} ((c₁ ⊕ c₂) ⊕ c₃)))
+         (idcauchy (size t₁ + (size t₃ + size t₅)))
+       ≡⟨ cong
+            (scompcauchy
+              (subst Cauchy (size≡! (assocl₊ {t₁} {t₃} {t₅}))
+                (c2cauchy
+                  {PLUS (PLUS t₁ t₃) t₅}
+                  {PLUS (PLUS t₂ t₄) t₆}
+                  ((c₁ ⊕ c₂) ⊕ c₃))))
+            (sym (congD! idcauchy (size≡! (assocl₊ {t₁} {t₃} {t₅})))) ⟩
+       scompcauchy
+         (subst Cauchy (size≡! (assocl₊ {t₁} {t₃} {t₅}))
+           (c2cauchy {PLUS (PLUS t₁ t₃) t₅} {PLUS (PLUS t₂ t₄) t₆} ((c₁ ⊕ c₂) ⊕ c₃)))
+         (subst Cauchy (size≡! (assocl₊ {t₁} {t₃} {t₅}))
+           (idcauchy ((size t₁ + size t₃) + size t₅)))
+       ≡⟨ cong
+            (λ x →
+             scompcauchy
+              (subst Cauchy (size≡! (assocl₊ {t₁} {t₃} {t₅}))
+                (c2cauchy
+                  {PLUS (PLUS t₁ t₃) t₅}
+                  {PLUS (PLUS t₂ t₄) t₆}
+                  ((c₁ ⊕ c₂) ⊕ c₃)))
+              (subst Cauchy (size≡! (assocl₊ {t₁} {t₃} {t₅})) x))
+            (sym (congD! idcauchy (size≡! ((c₁ ⊕ c₂) ⊕ c₃)))) ⟩
+       scompcauchy
+         (subst Cauchy (size≡! (assocl₊ {t₁} {t₃} {t₅}))
+           (c2cauchy {PLUS (PLUS t₁ t₃) t₅} {PLUS (PLUS t₂ t₄) t₆} ((c₁ ⊕ c₂) ⊕ c₃)))
+         (subst Cauchy (size≡! (assocl₊ {t₁} {t₃} {t₅}))
+           (subst Cauchy (size≡! ((c₁ ⊕ c₂) ⊕ c₃))
+             (idcauchy ((size t₂ + size t₄) + size t₆))))
+       ≡⟨ sym (subst-dist scompcauchy (size≡! (assocl₊ {t₁} {t₃} {t₅})) _ _) ⟩
+       subst Cauchy (size≡! (assocl₊ {t₁} {t₃} {t₅}))
+         (scompcauchy
+           (c2cauchy {PLUS (PLUS t₁ t₃) t₅} {PLUS (PLUS t₂ t₄) t₆} ((c₁ ⊕ c₂) ⊕ c₃))
+           (subst Cauchy (size≡! ((c₁ ⊕ c₂) ⊕ c₃))
+             (idcauchy ((size t₂ + size t₄) + size t₆))))
+       ≡⟨ sym (scomplid _) ⟩
+         scompcauchy
+           (idcauchy (size t₁ + (size t₃ + size t₅)))
+           (subst Cauchy (size≡! (assocl₊ {t₁} {t₃} {t₅}))
+             (scompcauchy
+               (c2cauchy
+                  {PLUS (PLUS t₁ t₃) t₅} {PLUS (PLUS t₂ t₄) t₆} ((c₁ ⊕ c₂) ⊕ c₃))
+               (subst Cauchy (size≡! ((c₁ ⊕ c₂) ⊕ c₃))
+                (idcauchy ((size t₂ + size t₄) + size t₆)))))
+       ≡⟨ refl ⟩
+         c2cauchy (assocl₊ ◎ (((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊)) ∎)
+  where open ≡-Reasoning
+soundness (assoc⊕r {t₁} {t₂} {t₃} {t₄} {t₅} {t₆} {c₁} {c₂} {c₃}) = {!!}
+soundness (assoc⊗l {t₁} {t₂} {t₃} {t₄} {t₅} {t₆} {c₁} {c₂} {c₃}) = {!!}
+soundness (assoc⊗r {t₁} {t₂} {t₃} {t₄} {t₅} {t₆} {c₁} {c₂} {c₃}) = {!!}
+soundness (dist⇔ {t₁} {t₂} {t₃} {t₄} {t₅} {t₆} {c₁} {c₂} {c₃}) = {!!}
+soundness (factor⇔ {t₁} {t₂} {t₃} {t₄} {t₅} {t₆} {c₁} {c₂} {c₃}) = {!!}
+soundness (idl◎l {t₁} {t₂} {c}) = id◎c∼c {t₁} {t₂} {c}
+soundness (idl◎r {t₁} {t₂} {c}) = sym (id◎c∼c {t₁} {t₂} {c})
+soundness (idr◎l {t₁} {t₂} {c}) = c◎id∼c {t₁} {t₂} {c}
+soundness (idr◎r {t₁} {t₂} {c}) = sym (c◎id∼c {t₁} {t₂} {c})
+soundness (linv◎l {t₁} {t₂} {c}) = linv∼ {t₁} {t₂} {c}
+soundness (linv◎r {t₁} {t₂} {c}) = sym (linv∼ {t₁} {t₂} {c})
+soundness (rinv◎l {t₁} {t₂} {c})  = rinv∼ {t₁} {t₂} {c}
+soundness (rinv◎r {t₁} {t₂} {c})  = sym (rinv∼ {t₁} {t₂} {c})
+soundness (unitel₊⇔ {t₁} {t₂} {c₁} {c₂}) = {!!}
+soundness (uniter₊⇔ {t₁} {t₂} {c₁} {c₂}) = {!!}
+soundness (unitil₊⇔ {t₁} {t₂} {c₁} {c₂}) = {!!}
+soundness (unitir₊⇔ {t₁} {t₂} {c₁} {c₂}) = {!!}
+soundness (unitial₊⇔ {t₁} {t₂}) = {!!}
+soundness (unitiar₊⇔ {t₁} {t₂}) = {!!}
+soundness (swapl₊⇔ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂}) = {!!}
+soundness (swapr₊⇔ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂}) = {!!}
+soundness (unitel⋆⇔ {t₁} {t₂} {c₁} {c₂}) = {!!}
+soundness (uniter⋆⇔ {t₁} {t₂} {c₁} {c₂}) = {!!}
+soundness (unitil⋆⇔ {t₁} {t₂} {c₁} {c₂}) = {!!}
+soundness (unitir⋆⇔ {t₁} {t₂} {c₁} {c₂}) = {!!}
+soundness (unitial⋆⇔ {t₁} {t₂}) = {!!}
+soundness (unitiar⋆⇔ {t₁} {t₂}) = {!!}
+soundness (swapl⋆⇔ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂}) = {!!}
+soundness (swapr⋆⇔ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂}) = {!!}
+soundness (swapfl⋆⇔ {t₁} {t₂} {t₃}) = {!!}
+soundness (swapfr⋆⇔ {t₁} {t₂} {t₃}) = {!!}
+soundness (id⇔ {t₁} {t₂} {c}) = refl∼ {t₁} {t₂} {c}
+soundness (trans⇔ {t₁} {t₂} {c₁} {c₂} {c₃} α β) =
+  trans∼ {t₁} {t₂} {c₁} {c₂} {c₃} (soundness α) (soundness β)
+soundness (resp◎⇔ {t₁} {t₂} {t₃} {c₁} {c₃} {c₂} {c₄} α β) =
+  resp∼ {t₁} {t₂} {t₃} {c₁} {c₂} {c₃} {c₄} (soundness α) (soundness β)
+soundness (resp⊕⇔ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} {c₄} α β) = {!!}
+soundness (resp⊗⇔ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} {c₄} α β) = {!!}
 
 -- Note that if c₁ ⇔ c₂, then by soundness c₁ ∼ c₂ and hence their
 -- canonical representatives are identical. 
