@@ -316,21 +316,46 @@ assoc⊕∼ {t₁} {t₂} {t₃} {t₄} {t₅} {t₆} {c₁} {c₂} {c₃} =
              (inject+ (size t₅))
              (mapV (inject+ (size t₃)) (c2cauchy c₁) ++V
               mapV (raise (size t₁)) (c2cauchy c₂))
-            ++V
-            mapV
-              (raise (size t₁ + size t₃))
-              (c2cauchy c₃))
-        ≡⟨ {!!} ⟩
+            ++V mapV (raise (size t₁ + size t₃)) (c2cauchy c₃))
+        ≡⟨ cong
+             (λ x →
+               subst Cauchy (+-assoc (size t₁) (size t₃) (size t₅))
+                 (x ++V mapV (raise (size t₁ + size t₃)) (c2cauchy c₃)))
+             (map-++-commute
+               (inject+ (size t₅))
+               (mapV (inject+ (size t₃)) (c2cauchy c₁))) ⟩
+         subst Cauchy (+-assoc (size t₁) (size t₃) (size t₅))
+           ((mapV (inject+ (size t₅)) (mapV (inject+ (size t₃)) (c2cauchy c₁)) ++V
+             mapV (inject+ (size t₅)) (mapV (raise (size t₁)) (c2cauchy c₂)))
+            ++V mapV (raise (size t₁ + size t₃)) (c2cauchy c₃))
+        ≡⟨ cong
+             (λ x →
+               subst Cauchy (+-assoc (size t₁) (size t₃) (size t₅))
+                 (x ++V mapV (raise (size t₁ + size t₃)) (c2cauchy c₃)))
+             (cong₂ _++V_
+               (sym (map-∘ (inject+ (size t₅)) (inject+ (size t₃)) (c2cauchy c₁)))
+               (sym (map-∘ (inject+ (size t₅)) (raise (size t₁)) (c2cauchy c₂)))) ⟩ 
          subst Cauchy (+-assoc (size t₁) (size t₃) (size t₅))
            ((mapV (inject+ (size t₅) ∘ inject+ (size t₃)) (c2cauchy c₁) ++V
              mapV (inject+ (size t₅) ∘ raise (size t₁)) (c2cauchy c₂))
-            ++V
-            mapV (raise (size t₁ + size t₃)) (c2cauchy c₃))
+            ++V mapV (raise (size t₁ + size t₃)) (c2cauchy c₃))
         ≡⟨ {!!} ⟩
          mapV (inject+ (size t₃ + size t₅)) (c2cauchy c₁) ++V
          (mapV (raise (size t₁) ∘ inject+ (size t₅)) (c2cauchy c₂) ++V
           mapV (raise (size t₁) ∘ raise (size t₃)) (c2cauchy c₃))
-        ≡⟨ {!!} ⟩
+        ≡⟨ cong
+             (λ x → mapV (inject+ (size t₃ + size t₅)) (c2cauchy c₁) ++V x)
+             (cong₂ _++V_ 
+               (map-∘ (raise (size t₁)) (inject+ (size t₅)) (c2cauchy c₂))
+               (map-∘ (raise (size t₁)) (raise (size t₃)) (c2cauchy c₃))) ⟩
+         mapV (inject+ (size t₃ + size t₅)) (c2cauchy c₁) ++V
+         (mapV (raise (size t₁)) (mapV (inject+ (size t₅)) (c2cauchy c₂)) ++V
+          mapV (raise (size t₁)) (mapV (raise (size t₃)) (c2cauchy c₃)))
+        ≡⟨ cong
+             (λ x → mapV (inject+ (size t₃ + size t₅)) (c2cauchy c₁) ++V x)
+             (sym (map-++-commute
+                    (raise (size t₁))
+                    (mapV (inject+ (size t₅)) (c2cauchy c₂)))) ⟩ 
          mapV (inject+ (size t₃ + size t₅)) (c2cauchy c₁) ++V
          (mapV (raise (size t₁))
            (mapV (inject+ (size t₅)) (c2cauchy c₂) ++V
@@ -338,9 +363,6 @@ assoc⊕∼ {t₁} {t₂} {t₃} {t₄} {t₅} {t₆} {c₁} {c₂} {c₃} =
         ≡⟨ refl ⟩
          pcompcauchy (c2cauchy c₁) (pcompcauchy (c2cauchy c₂) (c2cauchy c₃)) ∎)
   where open ≡-Reasoning
-
--- (size t₁ + size t₃) + size t₅ ≡ size t₁ + (size t₃ + size t₅)
-
 
 soundness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₁ ∼ c₂)
 soundness (assoc◎l {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃}) =
