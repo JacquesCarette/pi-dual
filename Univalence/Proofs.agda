@@ -173,6 +173,17 @@ tabulate-split {suc m} f = cong (_∷_ (f zero)) (tabulate-split {m} (f ∘ suc)
 ------------------------------------------------------------------------------
 -- Lemmas about subst
 
+-- From Alan Jeffrey's post to Agda list
+
+_⊨_⇒_≡_ : ∀ {I : Set} (F : I → Set) {i j} →
+  (i ≡ j) → (F i) → (F j) → Set
+(F ⊨ refl ⇒ x ≡ y) = (x ≡ y)
+
+xcong : ∀ {I J F G} (f : I → J) (g : ∀ {i} → F i → G (f i)) →
+  ∀ {i j} (i≡j : i ≡ j) {x y} →
+    (F ⊨ i≡j ⇒ x ≡ y) → (G ⊨ cong f i≡j ⇒ g x ≡ g y)
+xcong f g refl refl = refl
+
 congD! : {a b : Level} {A : Set a} {B : A → Set b}
          (f : (x : A) → B x) → {x₁ x₂ : A} → (x₂≡x₁ : x₂ ≡ x₁) → 
          subst B x₂≡x₁ (f x₂) ≡ f x₁
