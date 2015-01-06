@@ -1,0 +1,9 @@
+Old attempt at showing univalence.  Lots of dead ends here.
+
+- FT [FiniteTypes]. (standalone) Real 0,1,+,* and pi combinators.
+
+- Simplify (FT, HoTT).  Functions to transform some (combinations of) 
+   combinators to 'simpler' ones.  Woefully incomplete. 
+- NatSimple (FT). Relations between FT and Nat.
+- Eval (FT).  Evaluation relation on pi combinators.  Proof of reversibility.
+- CombPerm (FT, VecHelpers, NatSimple, Eval, Permutations)
