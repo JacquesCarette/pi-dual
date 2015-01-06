@@ -8,5 +8,9 @@ These are old experiments.  In alphabetical order:
   separate data type.  Have a certain notion of 'level'.
 - A4.agda: (depends on Groupoid).  Verson of A3 with even simpler bottom level.
   attempt at Groupoid structure.
-- Ap.agda: 
+- Ap.agda: (depends on Groupoid). Version of A4 with most of the Groupoid
+  structure present.
 
+- Cat.agda (depends on HoTT, FT, FT-Nat, Equivalences and Path2Equiv, which 
+    are in different places).  Definition of Setoid, Category, Functors,
+    and some examples.  Quite broken.
