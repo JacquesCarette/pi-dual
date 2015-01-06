@@ -30,6 +30,8 @@ open import Data.Fin.Properties
 open import Data.Vec  using (Vec; lookup)
 open import Function using (id; _∘_; _$_; _∋_)
 
+----------------------------------------------
+-- re-open some sub-files 'public'
 open import FiniteFunctions public
 open import VectorLemmas public
 

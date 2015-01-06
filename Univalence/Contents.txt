@@ -1,4 +1,8 @@
-- Proofs.  Useful lemmas about lots of different things.
+- FiniteFunctions: basically extensionality for functions on Fin.
+- VectorLemmas: lemmas about vectors which are not in the standard library,
+   or are there in an inconvenient manner.
+- Proofs (FiniteFunctions, VectorLemmas).  
+  Useful lemmas about lots of different things.  A kind of Prelude...
 - Cauchy (Proofs).  Computational representation of permutations, i.e.
   "semantic" representation.
 - Perm
