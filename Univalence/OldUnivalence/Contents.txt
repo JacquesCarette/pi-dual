@@ -1,4 +1,5 @@
 Old attempt at showing univalence.  Lots of dead ends here.
+The nice stuff: TypeEquivalences, LeftCancellation.
 
 - FT [FiniteTypes]. (standalone) Real 0,1,+,* and pi combinators.
 
@@ -6,4 +7,33 @@ Old attempt at showing univalence.  Lots of dead ends here.
    combinators to 'simpler' ones.  Woefully incomplete. 
 - NatSimple (FT). Relations between FT and Nat.
 - Eval (FT).  Evaluation relation on pi combinators.  Proof of reversibility.
+- Permutations (standalone).  Representation of permutations using 
+   dependent types (of 'shifts'), combinators and proofs of basic properties.
+   Essentially a copy of work by copumpkin.
 - CombPerm (FT, VecHelpers, NatSimple, Eval, Permutations)
+   hodge podge of combinators on Fin, and relations between Pi and Permutations.
+   TODO: Does have some useful lemmas which should be extracted!
+- SimpleHoTT (standalone). refl, pathInd, ap, transport, tools for
+   basic HoTT.
+- Equivalences (SimpleHoTT).  The HoTT version of equivalences.
+- Equiv2Path (FT, Equivalences, FT-Nat).  Show equivalences can be 
+    translated to pi combinators.
+- TypeEquivalences (SimpleHoTT, Equivalences). "semantics space"
+   equivalences for all the (syntactic) pi combinators, at the type level.
+- Inspect (SimpleHott).  A version of inspect which works with our refl.
+- Path2Equiv (FT, Equivalences, TypeEquivalences).  As it says: translate
+   paths to equivalences.  Very easy.
+- LeftCancellation (SimpleHoTT, Equivalences, TypeEquivalences, Inspect)
+   proof that 1+a ~ 1+b => a ~ b.  Quite involved.
+- FT-Nat (FT, SimpleHoTT, Equivalences, TypeEquivalences, Path2Equiv,
+    LeftCancellation). Relations between FT and Nat.  (some duplication
+    from CombPerm here). Normalization of FT.
+- FT-Fin (FT, FT-Nat). FT to Fin.
+- Obsolete.  Truly obsolete stuff taken from dead-end proof attempts.
+- Sane. Splitting of CombPerm, using 'old' representation of permutations
+- Sane2.  Sane but with dependently-typed version of permutations.
+- UnivalenceFiniteTypes (FT, SimpleHoTT, Equivalences, TypeEquivalences,
+   Path2Equiv, FT-Nat, Inspect, LeftCancellation, Equiv2Path).  Dead-end
+     attempt at univalence.
+
+
