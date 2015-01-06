@@ -11,7 +11,7 @@ open import  Data.Vec.Properties
   using (lookup-++-≥)
 open import Function using (id;_∘_)
 open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; sym; cong; module ≡-Reasoning)
+  using (_≡_; refl; sym; cong; subst; module ≡-Reasoning)
 open import Data.Nat using (ℕ; zero; suc; _+_; z≤n)
 open import Data.Fin using (Fin; zero; suc; inject+; raise; reduce≥)
 
@@ -105,3 +105,9 @@ tabulate-split : ∀ {m n} {a : Level} {A : Set a} → (f : Fin (m + n) → A) �
   tabulate {m} (f ∘ inject+ n) ++V tabulate {n} (f ∘ raise m)
 tabulate-split {0} f = refl
 tabulate-split {suc m} f = cong (_∷_ (f zero)) (tabulate-split {m} (f ∘ suc))
+
+lookup-subst : ∀ {m m' n} 
+  (i : Fin n) (xs : Vec (Fin m) n) (eq : m ≡ m') → 
+  lookup i (subst (λ s → Vec (Fin s) n) eq xs) ≡ 
+  subst Fin eq (lookup i xs)
+lookup-subst i xs refl = refl 
