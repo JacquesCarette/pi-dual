@@ -10,8 +10,6 @@ open import Data.Nat.Properties
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
--- open import Relation.Binary using (Rel; Decidable; Setoid)
--- open import Relation.Binary.Core using (Transitive; _⇒_)
 
 open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≮_; _≤_; _≰_; 
   z≤n; s≤s; _≟_; _≤?_; module ≤-Reasoning)
@@ -21,8 +19,6 @@ open import Data.Fin
   renaming (_+_ to _F+_)
 open import Data.Fin.Properties
   using (bounded; inject+-lemma; to-from; toℕ-injective; toℕ-raise; toℕ-fromℕ≤)
-
--- open import Function using (id; _∘_; _$_; _∋_)
 
 ------------------------------------------------------------------------------
 -- Fin and Nat lemmas
