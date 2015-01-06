@@ -48,8 +48,7 @@ finext {suc n} f g fi≡gi =
          f zero ∷ tabulate {n} (f ∘ suc)
            ≡⟨ cong (λ x → x ∷ tabulate {n} (f ∘ suc)) (fi≡gi zero) ⟩ 
          g zero ∷ tabulate {n} (f ∘ suc)
-           ≡⟨ cong 
-                (λ x → g zero ∷ x) 
+           ≡⟨ cong (_∷_ (g zero))
                 (finext (f ∘ suc) (g ∘ suc) (fi≡gi ∘ suc)) ⟩ 
          g zero ∷ tabulate {n} (g ∘ suc)
            ≡⟨ refl ⟩
