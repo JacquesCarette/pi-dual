@@ -4,56 +4,19 @@ module Cauchy where
 
 -- Definitions for permutations in the Cauchy representation
 
-open import Level using (Level; _⊔_) renaming (zero to lzero; suc to lsuc)
-
-open import Relation.Binary.PropositionalEquality 
-  using (_≡_; refl; sym; trans; subst; subst₂; cong; cong₂; setoid; 
-        proof-irrelevance; module ≡-Reasoning)
-open import Relation.Binary.PropositionalEquality.TrustMe
-  using (trustMe)
-open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
+open import Relation.Binary.PropositionalEquality using (subst)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
-open import Data.Nat.DivMod using (_mod_)
-open import Relation.Binary using (Rel; Decidable; Setoid)
-open import Relation.Binary.Core using (Transitive; _⇒_)
 
-open import Data.String using (String)
-  renaming (_++_ to _++S_)
-open import Data.Nat.Show using (show)
 open import Data.Bool using (Bool; false; true)
-open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≮_; _≤_; _≰_; 
-  z≤n; s≤s; _≟_; _≤?_; module ≤-Reasoning)
+open import Data.Nat using (ℕ; suc; _+_; _*_) 
 open import Data.Fin 
-  using (Fin; zero; suc; toℕ; fromℕ; fromℕ≤; _ℕ-_; _≺_; reduce≥; 
-         raise; inject+; inject₁; inject≤; _≻toℕ_) 
-  renaming (_+_ to _F+_)
-open import Data.Fin.Properties using (bounded; inject+-lemma)
-open import Data.Vec.Properties 
-  using (lookup∘tabulate; tabulate∘lookup; lookup-allFin; tabulate-∘; 
-         tabulate-allFin; allFin-map; lookup-++-inject+; lookup-++-≥)
-open import Data.Product using (Σ)
-
-open import Data.List 
-  using (List; []; _∷_; _∷ʳ_; foldl; replicate; reverse; downFrom; 
-         concatMap; gfilter; initLast; InitLast; _∷ʳ'_) 
-  renaming (_++_ to _++L_; map to mapL; concat to concatL; zip to zipL)
-open import Data.List.NonEmpty 
-  using (List⁺; [_]; _∷⁺_; head; last; _⁺++_)
-  renaming (toList to nonEmptyListtoList; _∷ʳ_ to _n∷ʳ_; tail to ntail)
-open import Data.List.Any using (Any; here; there; any; module Membership)
-open import Data.Maybe using (Maybe; nothing; just; maybe′)
+  using (Fin; zero; suc; toℕ; fromℕ; 
+         raise; inject+; inject₁; inject≤; _≻toℕ_)
 open import Data.Vec 
-  using (Vec; tabulate; []; _∷_; tail; lookup; zip; zipWith; splitAt;
-         _[_]≔_; allFin; toList)
+  using (Vec; tabulate; []; _∷_; lookup; allFin)
   renaming (_++_ to _++V_; map to mapV; concat to concatV)
-open import Function using (id; _∘_; _$_)
-
-open import Data.Empty   using (⊥)
-open import Data.Unit    using (⊤; tt)
-open import Data.Sum     using (_⊎_; inj₁; inj₂)
-open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
 open import Proofs
 
@@ -71,31 +34,6 @@ open import Proofs
 Cauchy : ℕ → Set
 Cauchy n = Vec (Fin n) n
 
-showCauchy : ∀ {n} → Cauchy n → Vec String n
-showCauchy {n} = 
-  zipWith (λ i j → show (toℕ i) ++S " → " ++S show (toℕ j)) (allFin n)
-
--- Ex:
-
-cauchyEx1 cauchyEx2 : Cauchy 6
--- cauchyEx1 (0 1 2 3 4 5)
---           (2 0 4 3 1 5)
-cauchyEx1 = 
-  (inject+ 3 (fromℕ 2)) ∷
-  (inject+ 5 (fromℕ 0)) ∷
-  (inject+ 1 (fromℕ 4)) ∷
-  (inject+ 2 (fromℕ 3)) ∷
-  (inject+ 4 (fromℕ 1)) ∷
-  (inject+ 0 (fromℕ 5)) ∷ []
--- cauchyEx2 (0 1 2 3 4 5)
---           (3 2 1 0 5 4)
-cauchyEx2 = 
-  (inject+ 2 (fromℕ 3)) ∷
-  (inject+ 3 (fromℕ 2)) ∷
-  (inject+ 4 (fromℕ 1)) ∷
-  (inject+ 5 (fromℕ 0)) ∷
-  (inject+ 0 (fromℕ 5)) ∷
-  (inject+ 1 (fromℕ 4)) ∷ []
 
 ------------------------------------------------------------------------------
 -- Elementary permutations in the Cauchy representation 
