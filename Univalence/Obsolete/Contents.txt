@@ -1,0 +1,12 @@
+These are old experiments.  In alphabetical order:
+- A.agda: (standalone). U as 0,1,+,*. <-> as syntactic paths between points.
+  Paths as dependent type connecting a combinator and 2 points
+  Some higher groupoid structure of paths between paths (inverse, trans).
+  Int construction.
+- A2.agda: (standalone).  Truncated version of A.
+- A3.agda: (standalone). Version of A where each path constructor is a 
+  separate data type.  Have a certain notion of 'level'.
+- A4.agda: (depends on Groupoid).  Verson of A3 with even simpler bottom level.
+  attempt at Groupoid structure.
+- Ap.agda: 
+
