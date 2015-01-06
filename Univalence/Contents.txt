@@ -1,0 +1,22 @@
+- Proofs.  Useful lemmas about lots of different things.
+- Cauchy (Proofs).  Computational representation of permutations, i.e.
+  "semantic" representation.
+- Perm
+- CauchyProofs
+- CauchyProofsT
+- CauchyProofsS
+- DivModUtils
+- Groupoid
+- Pifextensional
+- Swaps
+- Pif (Cauchy, Perm, Proofs, CauchyProofs, CauchyProofsT, CauchyProofsS,
+       Groupoid).
+    Level 0 (1?) of Pi.  Correspondance with permutations.
+    Extensional equivalence.  Groupoid structure.
+- Pif2 (same as Pif plus Pif, Swaps)
+    Level 2 of Pi.
+
+
+==========
+- VecHelpers (is actually 'old' code, but contains useful stuff which 
+    should be reused)
