@@ -2,20 +2,17 @@
 
 module Pif where
 
-open import Level using (Level; _⊔_) renaming (zero to lzero; suc to lsuc)
+-- open import Level using (Level; _⊔_) renaming (zero to lzero; suc to lsuc)
 
 open import Relation.Binary.PropositionalEquality 
   using (_≡_; refl; sym; trans; subst; subst₂; cong; cong₂; setoid; 
         proof-irrelevance; module ≡-Reasoning)
-open import Relation.Binary.PropositionalEquality.TrustMe
-  using (trustMe)
-open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
 open import Data.Nat.Properties using (m≢1+m+n; i+j≡0⇒i≡0; i+j≡0⇒j≡0)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+)
-open import Data.Nat.DivMod using (_mod_)
-open import Relation.Binary using (Rel; Decidable; Setoid)
+-- open import Data.Nat.DivMod using (_mod_)
+-- open import Relation.Binary using (Rel; Decidable; Setoid)
 open import Relation.Binary.Core using (Transitive)
 
 open import Data.String using (String)
@@ -28,25 +25,11 @@ open import Data.Fin
   using (Fin; zero; suc; toℕ; fromℕ; _ℕ-_; _≺_;
          raise; inject+; inject₁; inject≤; _≻toℕ_) 
   renaming (_+_ to _F+_)
-open import Data.Fin.Properties using (bounded; inject+-lemma)
-open import Data.Vec.Properties 
-  using (lookup∘tabulate; tabulate∘lookup; lookup-allFin; tabulate-∘; 
-         tabulate-allFin; map-id; allFin-map)
 
-open import Data.List 
-  using (List; []; _∷_; _∷ʳ_; foldl; replicate; reverse; downFrom; 
-         concatMap; gfilter; initLast; InitLast; _∷ʳ'_) 
-  renaming (_++_ to _++L_; map to mapL; concat to concatL; zip to zipL)
-open import Data.List.NonEmpty 
-  using (List⁺; [_]; _∷⁺_; head; last; _⁺++_)
-  renaming (toList to nonEmptyListtoList; _∷ʳ_ to _n∷ʳ_; tail to ntail)
-open import Data.List.Any using (Any; here; there; any; module Membership)
-open import Data.Maybe using (Maybe; nothing; just; maybe′)
 open import Data.Vec 
-  using (Vec; tabulate; []; _∷_; tail; lookup; zip; zipWith; splitAt;
+  using (Vec; tabulate; []; _∷_ ; tail; lookup; zip; zipWith; splitAt;
          _[_]≔_; allFin; toList)
   renaming (_++_ to _++V_; map to mapV; concat to concatV)
-open import Function using (id; _∘_; _$_)
 
 open import Data.Empty   using (⊥; ⊥-elim)
 open import Data.Unit    using (⊤; tt)
