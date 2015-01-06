@@ -18,7 +18,7 @@ open import Data.Vec
   using (Vec; tabulate; []; _∷_; lookup; allFin)
   renaming (_++_ to _++V_; map to mapV; concat to concatV)
 
-open import Proofs
+open import Proofs using (i*n+k≤m*n; trans≤; refl′)
 
 ------------------------------------------------------------------------------
 -- Semantic representations of permutations
@@ -33,7 +33,6 @@ open import Proofs
 
 Cauchy : ℕ → Set
 Cauchy n = Vec (Fin n) n
-
 
 ------------------------------------------------------------------------------
 -- Elementary permutations in the Cauchy representation 
