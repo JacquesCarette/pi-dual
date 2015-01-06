@@ -36,24 +36,7 @@ open import Data.Vec
   renaming (_++_ to _++V_; map to mapV; concat to concatV)
 open import Function using (id; _∘_; _$_; _∋_)
 
-------------------------------------------------------------------------------
--- Important: Extensionality for finite functions
-
-finext : {n : ℕ} {A : Set} → (f g : Fin n → A) → ((i : Fin n) → f i ≡ g i) → 
-         (tabulate f ≡ tabulate g)
-finext {0} f g fi≡gi = refl
-finext {suc n} f g fi≡gi = 
-  begin (tabulate {suc n} f 
-           ≡⟨ refl ⟩
-         f zero ∷ tabulate {n} (f ∘ suc)
-           ≡⟨ cong (λ x → x ∷ tabulate {n} (f ∘ suc)) (fi≡gi zero) ⟩ 
-         g zero ∷ tabulate {n} (f ∘ suc)
-           ≡⟨ cong (_∷_ (g zero))
-                (finext (f ∘ suc) (g ∘ suc) (fi≡gi ∘ suc)) ⟩ 
-         g zero ∷ tabulate {n} (g ∘ suc)
-           ≡⟨ refl ⟩
-         tabulate g ∎)
-  where open ≡-Reasoning
+open import FiniteFunctions
 
 ------------------------------------------------------------------------------
 -- Lemmas about map and tabulate
