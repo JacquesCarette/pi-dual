@@ -240,10 +240,7 @@ concat-map-map-tabulate m n f =
        ≡⟨ cong concatV (sym (tabulate-∘ (λ b → mapV (λ d → f (b , d)) (allFin n)) id)) ⟩
          concatV (tabulate (λ b → mapV (λ d → f (b , d)) (allFin n)))
        ≡⟨ cong concatV
-            (finext
-               (λ b → mapV (λ d → f (b , d)) (allFin n))
-               (λ b → tabulate (λ d → f (b , d)))
-               (λ b → sym (tabulate-∘ (λ d → f (b , d)) id))) ⟩
+            (finext (λ b → sym (tabulate-∘ (λ d → f (b , d)) id))) ⟩
          concatV (tabulate (λ b → tabulate (λ d → f (b , d))))
        ≡⟨ tabulate-concat f ⟩
          tabulate (λ k → f (fin-project m n k)) ∎)
@@ -631,21 +628,7 @@ swap⋆idemp m n =
                  (mapV 
                    (λ d → mapV (λ b → transposeIndex n m d b) (allFin m))
                    (allFin n)))))
-         ≡⟨ finext
-              (λ i →
-                lookup
-                  (lookup i 
-                    (concatV 
-                      (mapV 
-                        (λ b → mapV (λ d → transposeIndex m n b d) (allFin n))
-                        (allFin m))))
-                  (subst Cauchy (*-comm n m)
-                    (concatV 
-                      (mapV 
-                        (λ d → mapV (λ b → transposeIndex n m d b) (allFin m))
-                        (allFin n)))))
-              id
-              (lookup-transpose m n) ⟩
+         ≡⟨ finext (lookup-transpose m n) ⟩
          allFin (m * n) ∎)
   where open ≡-Reasoning
 

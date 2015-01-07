@@ -93,7 +93,7 @@ map-f≡g n f g eq =
   begin (mapV f (tabulate id)
            ≡⟨ sym (tabulate-∘ f id) ⟩
          tabulate f
-           ≡⟨ finext f g eq ⟩
+           ≡⟨ finext eq ⟩
          tabulate g
            ≡⟨ tabulate-∘ g id ⟩
          mapV g (tabulate id) ∎) 
@@ -192,7 +192,7 @@ map-raise-lemma (suc m) n =
                         (fromℕ (toℕ b * suc n + toℕ d))
                         (i*n+k≤m*n b d))
                (idcauchy (suc n))))
-    ≡⟨ finext _ _ (lemma3 n (suc m)) ⟩
+    ≡⟨ finext (lemma3 n (suc m)) ⟩
   tabulate {suc m} ((λ b → mapV
                (λ d → inject≤
                       (fromℕ (toℕ b * suc n + toℕ d))
@@ -449,9 +449,7 @@ first-row :
   tabulate {suc n} (λ x → f (zero , x)) ≡ 
   tabulate {suc n} ((λ k →  f (fin-project (suc m) (suc n) k)) ∘ inject+ (m * suc n))
 first-row m n f = 
-  finext ( (λ x → f (zero , x)))
-            ( (λ k →  f (fin-project (suc m) (suc n) k)) ∘ inject+ (m * suc n))
-            pf
+  finext pf
     where
       pf : (i : Fin (suc n)) →  f (zero , i) ≡
            f (fin-project (suc m) (suc n) (inject+ (m * suc n) i))
@@ -482,10 +480,7 @@ lookup-2d' m n k f =
   let fin-result b d dec dec' = fin-divMod m n k in
   begin (lookup k (concatV (tabulate (λ i → tabulate (λ j → f (i , j)))))
         ≡⟨ cong (λ x → lookup k (concatV x))
-            (finext
-              (λ i → tabulate (λ j → f (i , j)))
-              (λ i → mapV (λ j → f (i , j)) (allFin n))
-              (λ i → tabulate-allFin (λ j → f (i , j)))) ⟩ 
+            (finext (λ i → tabulate-allFin (λ j → f (i , j)))) ⟩ 
          lookup k (concatV (tabulate (λ i → mapV (λ j → f (i , j)) (allFin n))))
         ≡⟨ cong
              (λ x → lookup k (concatV x))
@@ -516,12 +511,7 @@ tabulate-concat {m} {n} f =
          tabulate (λ i →
            lookup i
              (concatV (tabulate {m} (λ i → tabulate {n} (λ j → f (i , j))))))
-       ≡⟨ finext
-           (λ i →
-             lookup i
-               (concatV (tabulate {m} (λ i → tabulate {n} (λ j → f (i , j))))))
-           (λ (k : Fin (m * n)) → f (fin-project m n k))
-           (λ i → lookup-2d' m n i f) ⟩
+       ≡⟨ finext (λ i → lookup-2d' m n i f) ⟩
          tabulate {m * n} (λ (k : Fin (m * n)) → f (fin-project m n k)) ∎)
   where open ≡-Reasoning
 
@@ -688,31 +678,7 @@ tcomp-dist {m} {n} pm qm pn qn =
                        (fromℕ (toℕ b * n + toℕ d))
                        (i*n+k≤m*n b d)) qn)
                  qm)))
-           ≡⟨  finext
-                 (λ k →
-                   lookup
-                     (lookup k (concatV 
-                       (mapV 
-                         (λ b → 
-                           mapV (λ d →
-                             inject≤
-                               (fromℕ (toℕ b * n + toℕ d))
-                                (i*n+k≤m*n b d)) pn)
-                         pm)))
-                     (concatV 
-                       (mapV 
-                         (λ b → 
-                           mapV (λ d →
-                             inject≤
-                               (fromℕ (toℕ b * n + toℕ d))
-                               (i*n+k≤m*n b d)) qn)
-                       qm)))
-                 (λ k →
-                   let (i , j) = fin-project m n k
-                       b = lookup (lookup i pm) qm
-                       d = lookup (lookup j pn) qn in 
-                   inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
-                 (λ k → lookup-concat {m} {n} k pm qm pn qn) ⟩
+           ≡⟨  finext (λ k → lookup-concat {m} {n} k pm qm pn qn) ⟩
          tabulate {m * n}
            (λ k →
              let (i , j) = fin-project m n k
@@ -734,18 +700,6 @@ tcomp-dist {m} {n} pm qm pn qn =
                    inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))))
            ≡⟨  cong concatV
                  (finext
-                   (λ i →
-                     tabulate {n}
-                       (λ j → 
-                         let b = lookup (lookup i pm) qm
-                             d = lookup (lookup j pn) qn in 
-                         inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d)))
-                   (λ i →
-                     let b = lookup (lookup i pm) qm in 
-                     mapV
-                       (λ d →
-                         inject≤ (fromℕ (toℕ b * n + toℕ d)) (i*n+k≤m*n b d))
-                       (tabulate (λ i → lookup (lookup i pn) qn)))
                    (λ i →
                      tabulate-∘
                        (let b = lookup (lookup i pm) qm in 

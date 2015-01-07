@@ -64,9 +64,9 @@ open import CauchyProofs
 open import CauchyProofsT
 open import CauchyProofsS
 open import Groupoid
-open import Pif
+open import PiLevel0
 open import Swaps
-
+open import Pif
 ------------------------------------------------------------------------------
 -- Picture so far:
 --

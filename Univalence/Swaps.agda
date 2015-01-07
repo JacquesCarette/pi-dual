@@ -65,7 +65,7 @@ open import CauchyProofs
 open import CauchyProofsT
 open import CauchyProofsS
 open import Groupoid
-open import Pif
+open import PiLevel0
 
 ------------------------------------------------------------------------------
 -- Representation of a permutation as a product of "transpositions."
