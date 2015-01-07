@@ -86,7 +86,9 @@ scomprid {n} perm =
 
 scomplid : ∀ {n} → (perm : Cauchy n) → scompcauchy (idcauchy n) perm ≡ perm
 scomplid {n} perm = 
-  begin (scompcauchy (idcauchy n) perm 
+  trans (finext _ _ (λ i → cong (λ x → lookup x perm) (lookup-allFin i)))
+        (tabulate∘lookup perm)
+{-  begin (scompcauchy (idcauchy n) perm 
            ≡⟨ refl ⟩ 
          tabulate (λ i → lookup (lookup i (allFin n)) perm)
            ≡⟨ finext 
@@ -96,7 +98,7 @@ scomplid {n} perm =
          tabulate (λ i → lookup i perm)
            ≡⟨ tabulate∘lookup perm ⟩ 
          perm ∎)
-  where open ≡-Reasoning
+  where open ≡-Reasoning -}
 
 -- sequential composition is associative
 
@@ -115,8 +117,8 @@ lookupassoc π₁ π₂ π₃ i =
 
 scompassoc : ∀ {n} → (π₁ π₂ π₃ : Cauchy n) → 
   scompcauchy π₁ (scompcauchy π₂ π₃) ≡ scompcauchy (scompcauchy π₁ π₂) π₃
-scompassoc π₁ π₂ π₃ = 
-  begin (scompcauchy π₁ (scompcauchy π₂ π₃)
+scompassoc π₁ π₂ π₃ = finext _ _ (lookupassoc π₁ π₂ π₃)
+{-  begin (scompcauchy π₁ (scompcauchy π₂ π₃)
            ≡⟨ refl ⟩
          tabulate (λ i → 
            lookup (lookup i π₁) (tabulate (λ j → lookup (lookup j π₂) π₃)))
@@ -131,7 +133,7 @@ scompassoc π₁ π₂ π₃ =
            ≡⟨ refl ⟩
          scompcauchy (scompcauchy π₁ π₂) π₃ ∎)
   where open ≡-Reasoning
-
+-}
 ------------------------------------------------------------------------------
 -- Proofs about additive permutations
 
@@ -751,16 +753,8 @@ pcomp-dist {m} {n} pm qm pn qn =
          tabulate (λ i → lookup (raise m (lookup i pn))
                            (mapV (inject+ n) qm ++V mapV (raise m) qn))
            ≡⟨ cong₂ _++V_
-                 (finext 
-                   (λ i → lookup (inject+ n (lookup i pm))
-                            (mapV (inject+ n) qm ++V mapV (raise m) qn))
-                   (λ i → (inject+ n) (lookup (lookup i pm) qm))
-                   (λ i → lookup-left (lookup i pm) qm qn))
-                 (finext 
-                   (λ i → lookup (raise m (lookup i pn))
-                            (mapV (inject+ n) qm ++V mapV (raise m) qn))
-                   (λ i → (raise m) (lookup (lookup i pn) qn))
-                   (λ i → lookup-right (lookup i pn) qm qn))
+                 (finext _ _ (λ i → lookup-left (lookup i pm) qm qn))
+                 (finext _ _ (λ i → lookup-right (lookup i pn) qm qn))
                    ⟩ 
          tabulate (λ i → (inject+ n) (lookup (lookup i pm) qm)) ++V
          tabulate (λ i → (raise m) (lookup (lookup i pn) qn))

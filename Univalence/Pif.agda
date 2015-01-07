@@ -41,7 +41,6 @@ open import CauchyProofsT
 open import CauchyProofsS
 open import Groupoid
 
-
 ------------------------------------------------------------------------------
 -- A combinator t₁ ⟷ t₂ denotes a permutation.
 
