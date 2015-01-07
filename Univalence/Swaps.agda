@@ -65,6 +65,7 @@ open import CauchyProofs
 open import CauchyProofsT
 open import CauchyProofsS
 open import Groupoid
+open import PiLevel0
 open import Pif
 
 ------------------------------------------------------------------------------
