@@ -42,3 +42,9 @@ trans-syml refl = refl
 
 trans-symr : {A : Set} {x y : A} → (p : x ≡ y) → trans p (sym p) ≡ refl
 trans-symr refl = refl
+
+subst-subst :
+  {a b : Level} {A : Set a} {B : A → Set b}
+  {x y : A} → (eq : x ≡ y) → (eq' : y ≡ x) → (irr : sym eq ≡ eq') → (v : B y) →
+  subst B eq (subst B eq' v) ≡ v
+subst-subst refl .refl refl v = refl

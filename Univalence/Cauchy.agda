@@ -17,8 +17,9 @@ open import Data.Fin
 open import Data.Vec 
   using (Vec; tabulate; []; _∷_; lookup; allFin)
   renaming (_++_ to _++V_; map to mapV; concat to concatV)
+open import Function using (id)
 
-open import Proofs using (i*n+k≤m*n; trans≤; refl′)
+open import Proofs using (i*n+k≤m*n; trans≤; refl′; splitVOp+)
 
 ------------------------------------------------------------------------------
 -- Semantic representations of permutations
@@ -54,10 +55,11 @@ scompcauchy {n} perm₁ perm₂ =
 -- ==> 
 -- [ vm , vm₊₁ , ... , vm+n-1 ,     v₀ , v₁   , v₂   , ... , vm-1 ]
 
+id+ : ∀ {m n} → Fin (n + m) → Fin (m + n)
+id+ {m} {n} x = subst Fin (+-comm n m) x
+
 swap+cauchy : (m n : ℕ) → Cauchy (m + n)
-swap+cauchy m n = 
-  subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
-    (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))
+swap+cauchy m n = splitVOp+ {m} {n} {f = id+ {m} {n}}
 
 -- Parallel additive composition 
 -- append both permutations but adjust the indices in the second
