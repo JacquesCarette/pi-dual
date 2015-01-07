@@ -78,7 +78,7 @@ subst-allFin refl = refl
 
 concat-simplify : {A : Set} → (m n : ℕ) → (f : Fin (suc m) → Vec A (suc n)) → 
   concatV (mapV f (allFin (suc m))) ≡
-  f zero ++V concatV (mapV (λ a → f (suc a)) (allFin m))
+  f zero ++V concatV (mapV (f ∘ suc) (allFin m))
 concat-simplify m n f = 
   begin (concatV (mapV f (allFin (suc m)))
         ≡⟨ cong

@@ -6,22 +6,15 @@ module CauchyProofs where
 -- except the multiplicative ones which are defined in CauchyProofsT and
 -- CauchyProofsS
 
-open import Level using (Level; _⊔_) renaming (zero to lzero; suc to lsuc)
-
 open import Relation.Binary.PropositionalEquality 
   using (_≡_; refl; sym; trans; subst; subst₂; cong; cong₂; setoid; 
         proof-irrelevance; module ≡-Reasoning)
-open import Relation.Binary.PropositionalEquality.TrustMe
-  using (trustMe)
-open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
 open import Data.Nat.Properties
   using (m≤m+n; n≤m+n; n≤1+n; cancel-*-right-≤; ≰⇒>; ¬i+1+j≤i)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
 open import Data.Nat.DivMod using (DivMod; result; _divMod_; _div_; _mod_)
-open import Relation.Binary using (Rel; Decidable; Setoid)
-open import Relation.Binary.Core using (Transitive)
 
 open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≮_; _≤_; _≰_; 
   _≥_; z≤n; s≤s; _≟_; _≤?_; ≤-pred; module ≤-Reasoning)
@@ -35,10 +28,6 @@ open import Data.Vec.Properties
          tabulate-allFin; allFin-map; lookup-++-inject+; lookup-++-≥)
 open import Data.Product using (Σ)
 
-open import Data.List 
-  using (List; []; _∷_; _∷ʳ_; foldl; replicate; reverse; downFrom; 
-         concatMap; gfilter; initLast; InitLast; _∷ʳ'_) 
-  renaming (_++_ to _++L_; map to mapL; concat to concatL; zip to zipL)
 open import Data.Vec 
   using (Vec; tabulate; []; _∷_; tail; lookup; zip; zipWith; splitAt;
          _[_]≔_; allFin; toList)
@@ -47,7 +36,6 @@ open import Function using (id; _∘_; _$_; _∋_)
 
 open import Proofs
 open import Cauchy
-open import Perm
 
 ------------------------------------------------------------------------------
 -- Proofs about sequential composition
@@ -59,8 +47,7 @@ scomprid {n} perm =
   begin (scompcauchy perm (idcauchy n)
            ≡⟨ refl ⟩ 
          tabulate (λ i → lookup (lookup i perm) (allFin n))
-           ≡⟨ finext 
-                (λ i → lookup-allFin (lookup i perm)) ⟩ 
+           ≡⟨ finext (λ i → lookup-allFin (lookup i perm)) ⟩ 
          tabulate (λ i → lookup i perm)
            ≡⟨ tabulate∘lookup perm ⟩ 
          perm ∎)
@@ -102,22 +89,7 @@ lookupassoc π₁ π₂ π₃ i =
 scompassoc : ∀ {n} → (π₁ π₂ π₃ : Cauchy n) → 
   scompcauchy π₁ (scompcauchy π₂ π₃) ≡ scompcauchy (scompcauchy π₁ π₂) π₃
 scompassoc π₁ π₂ π₃ = finext (lookupassoc π₁ π₂ π₃)
-{-  begin (scompcauchy π₁ (scompcauchy π₂ π₃)
-           ≡⟨ refl ⟩
-         tabulate (λ i → 
-           lookup (lookup i π₁) (tabulate (λ j → lookup (lookup j π₂) π₃)))
-           ≡⟨ finext
-              (λ i → 
-                lookup (lookup i π₁) (tabulate (λ j → lookup (lookup j π₂) π₃)))
-              (λ i → 
-                lookup (lookup i (tabulate (λ j → lookup (lookup j π₁) π₂))) π₃)
-              (λ i → lookupassoc π₁ π₂ π₃ i) ⟩
-         tabulate (λ i → 
-           lookup (lookup i (tabulate (λ j → lookup (lookup j π₁) π₂))) π₃)
-           ≡⟨ refl ⟩
-         scompcauchy (scompcauchy π₁ π₂) π₃ ∎)
-  where open ≡-Reasoning
--}
+
 ------------------------------------------------------------------------------
 -- Proofs about additive permutations
 
