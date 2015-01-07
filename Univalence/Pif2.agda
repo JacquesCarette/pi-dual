@@ -67,6 +67,7 @@ open import Groupoid
 open import PiLevel0
 open import Swaps
 open import Pif
+
 ------------------------------------------------------------------------------
 -- Picture so far:
 --
@@ -174,7 +175,7 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
 
 -- better syntax for writing 2paths
 
-infix  2  _▤       
+infix  2  _▤
 infixr 2  _⇔⟨_⟩_   
 
 _⇔⟨_⟩_ : {t₁ t₂ : U} (c₁ : t₁ ⟷ t₂) {c₂ : t₁ ⟷ t₂} {c₃ : t₁ ⟷ t₂} → 
@@ -481,7 +482,7 @@ soundness (resp⊗⇔ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} {c₄} α
 -- If we can prove that every combinator is equal to its normal form
 -- then we can prove completeness.
 
-inversion : {t₁ t₂ : U} (c : t₁ ⟷ t₂) → c ⇔ canonical c
+inversion : {t₁ t₂ : U} (c : t₁ ⟷ t₂) → canonical c ⇔ c
 inversion (c₁ ◎ c₂) = {!!} 
 inversion {PLUS ZERO t} {.t} unite₊ = {!!} 
 inversion {t} {PLUS ZERO .t} uniti₊ = {!!} 
@@ -497,10 +498,28 @@ inversion {TIMES .ZERO t} {ZERO} distz = {!!}
 inversion {ZERO} {TIMES ZERO t} factorz = {!!} 
 inversion {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)} dist = {!!}
 inversion {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t₃} factor = {!!}
-inversion {t} {.t} id⟷ = {!!} 
+inversion {t} {.t} id⟷ =
+  canonical id⟷
+    ⇔⟨ id⇔ ⟩
+  normalizeC t ◎
+  transposition*2c (size t) (size t) refl (cauchy→transposition* (idcauchy (size t))) ◎
+  ! (normalizeC t)
+    ⇔⟨ {!!} ⟩
+  normalizeC t ◎ id⟷ ◎ ! (normalizeC t)
+    ⇔⟨ resp◎⇔ id⇔ idl◎l ⟩
+  normalizeC t ◎ ! (normalizeC t)
+    ⇔⟨ linv◎l ⟩
+  id⟷ ▤
 inversion {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = {!!} 
 inversion {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = {!!} 
-inversion {PLUS ONE ONE} {BOOL} foldBool = {!!} 
+inversion {PLUS ONE ONE} {BOOL} foldBool = {!!}
+{--
+canonical foldBool =
+  ((uniti₊ ◎ swap₊ ⊕ uniti₊ ◎ swap₊) ◎ assocr₊ ◎ (id⟷ ⊕ unite₊)) ◎
+  (id⟷ ◎ (id⟷ ⊕ id⟷) ◎ id⟷) ◎
+  (((id⟷ ⊕ uniti₊) ◎ assocl₊) ◎ (swap₊ ◎ unite₊ ⊕ swap₊ ◎ unite₊)) ◎
+  foldBool
+--}
 inversion {BOOL} {PLUS ONE ONE} unfoldBool = {!!} 
 
 resp≡⇔ : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ≡ c₂) → (c₁ ⇔ c₂)
@@ -509,14 +528,11 @@ resp≡⇔ {t₁} {t₂} {c₁} {c₂} p rewrite p = id⇔
 completeness : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ∼ c₂) → (c₁ ⇔ c₂)
 completeness {t₁} {t₂} {c₁} {c₂} c₁∼c₂ = 
   c₁
-    ⇔⟨ inversion c₁ ⟩
+    ⇔⟨ 2! (inversion c₁) ⟩
   canonical c₁
     ⇔⟨ resp≡⇔ {!!} ⟩ 
   canonical c₂
-    ⇔⟨ 2! (inversion c₂) ⟩ 
+    ⇔⟨ inversion c₂ ⟩ 
   c₂ ▤
 
 ------------------------------------------------------------------------------
-
-
-
