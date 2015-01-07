@@ -135,7 +135,7 @@ swap+-right m n i =
   begin (
   lookup (lookup (raise m i) (swap+cauchy m n)) q
     ≡⟨ cong (flip lookup q) ( (lookup-++-raise (tabulate {m} (id+ {m} {n} ∘ raise n)) 
-                                                                          (tabulate {n} (id+ {m} {n} ∘ inject+ m)) i)) ⟩
+                                                                       (tabulate {n} (id+ {m} {n} ∘ inject+ m)) i)) ⟩
   lookup (lookup i (tabulate (λ x → subst Fin (+-comm n m) (inject+ m x)))) q
     ≡⟨ cong (flip lookup q) (lookup∘tabulate (λ x → subst Fin (+-comm n m) (inject+ m x)) i) ⟩ 
   lookup (subst Fin (+-comm n m) (inject+ m i)) q
