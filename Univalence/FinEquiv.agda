@@ -3,15 +3,18 @@
 module FinEquiv where
 
 -- should restrict the imports (later)
+open import Relation.Nullary.Core
 open import Relation.Binary.PropositionalEquality
 open import Data.Fin renaming (_+_ to _+F_)
 open import Data.Fin.Properties
+open import Data.Nat.Properties
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product
 open import Data.Nat 
 open import Function
 
 open import Equiv
+open import LeqLemmas
 
 private
   fwd : {m n : ℕ} → (Fin m ⊎ Fin n) → Fin (m + n)
@@ -26,6 +29,11 @@ private
       f : {p q : ℕ} → (Fin p ⊎ Fin q) → Fin (suc p) ⊎ Fin q
       f {p} {q} (inj₁ x) = inj₁ (suc x)
       f {p} {q} (inj₂ y) = inj₂ y
+
+  bwd' : {m n : ℕ} → Fin (m + n) → (Fin m ⊎ Fin n)
+  bwd' {m} {n} i with toℕ i <? m
+  ... | yes p = inj₁ (fromℕ≤ p)
+  ... | no ¬p = inj₂ (reduce≥ i (≤-pred (≰⇒> ¬p)))
 
   fwd∘bwd~id : {m n : ℕ} → fwd {m} {n} ∘ bwd ∼ id
   fwd∘bwd~id {zero} x = refl
