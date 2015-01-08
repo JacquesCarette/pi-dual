@@ -186,125 +186,55 @@ lookup-right : ∀ {m n} → (i : Fin n) → (pm : Cauchy m) → (pn : Cauchy n)
   ≡ raise m (lookup i pn)
 lookup-right {m} {n} i pm pn = look-right i (inject+ n) (raise m) pm pn
 
+--- find a better name
+look-left' : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) → 
+      (i : Fin m) →
+      (lookup (lookup (inject+ n i) (pcompcauchy pm pn)) (pcompcauchy qm qn))
+      ≡ inject+ n (lookup (lookup i pm) qm)
+look-left' {m} {n} pm qm pn qn i = 
+  let pp = pcompcauchy pm pn in
+  let qq = pcompcauchy qm qn in
+  begin (
+    lookup (lookup (inject+ n i) pp) qq
+          ≡⟨ cong (flip lookup qq) (lookup-++-inject+ (mapV (inject+ n) pm) (mapV (raise m) pn) i) ⟩
+    lookup (lookup i (mapV (inject+ n) pm)) qq
+          ≡⟨ cong (flip lookup qq) (lookup-map i (inject+ n) pm) ⟩
+    lookup (inject+ n (lookup i pm)) qq
+         ≡⟨ lookup-left (lookup i pm) qm qn ⟩
+    inject+ n (lookup (lookup i pm) qm) ∎)
+  where open ≡-Reasoning
+
+look-right' : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) → 
+      (i : Fin n) →
+      (lookup (lookup (raise m i) (pcompcauchy pm pn)) (pcompcauchy qm qn))
+      ≡ raise m (lookup (lookup i pn) qn)
+look-right' {m} {n} pm qm pn qn i = 
+  let pp = pcompcauchy pm pn in
+  let qq = pcompcauchy qm qn in
+  begin (
+    lookup (lookup (raise m i) pp) qq
+          ≡⟨ cong (flip lookup qq) (lookup-++-raise (mapV (inject+ n) pm) (mapV (raise m) pn) i) ⟩
+    lookup (lookup i (mapV (raise m) pn)) qq
+          ≡⟨ cong (flip lookup qq) (lookup-map i (raise m) pn) ⟩
+    lookup (raise m (lookup i pn)) qq
+         ≡⟨ lookup-right (lookup i pn) qm qn ⟩
+    raise m (lookup (lookup i pn) qn) ∎)
+  where open ≡-Reasoning
+
 pcomp-dist : ∀ {m n} → (pm qm : Cauchy m) → (pn qn : Cauchy n) → 
     scompcauchy (pcompcauchy pm pn) (pcompcauchy qm qn) ≡
     pcompcauchy (scompcauchy pm qm) (scompcauchy pn qn)
 pcomp-dist {m} {n} pm qm pn qn =
-  begin (scompcauchy (pcompcauchy pm pn) (pcompcauchy qm qn)
+  let pp = pcompcauchy pm pn in
+  let qq = pcompcauchy qm qn in
+  let look = λ i → lookup (lookup i pp) qq in
+  begin (scompcauchy pp qq
            ≡⟨ refl ⟩
-         tabulate (λ i → 
-           lookup 
-             (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
-             (mapV (inject+ n) qm ++V mapV (raise m) qn))
-            ≡⟨ tabulate-allFin (λ i → 
-                lookup 
-                  (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
-                  (mapV (inject+ n) qm ++V mapV (raise m) qn)) ⟩
-         mapV (λ i → 
-                lookup 
-                  (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
-                  (mapV (inject+ n) qm ++V mapV (raise m) qn))
-              (allFin (m + n))
-            ≡⟨ cong 
-                 (λ x → 
-                   mapV (λ i → 
-                     lookup 
-                       (lookup i 
-                         (mapV (inject+ n) pm ++V mapV (raise m) pn))
-                       (mapV (inject+ n) qm ++V mapV (raise m) qn)) 
-                     x) 
-                 (allFin+ m n) ⟩
-         mapV (λ i → 
-                lookup 
-                  (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
-                  (mapV (inject+ n) qm ++V mapV (raise m) qn))
-              (mapV (inject+ n) (allFin m) ++V mapV (raise m) (allFin n))
-            ≡⟨ map-++-commute 
-                 (λ i → 
-                   lookup 
-                     (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
-                     (mapV (inject+ n) qm ++V mapV (raise m) qn)) 
-                 (mapV (inject+ n) (allFin m)) ⟩
-         mapV (λ i → 
-                lookup 
-                  (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
-                  (mapV (inject+ n) qm ++V mapV (raise m) qn))
-              (mapV (inject+ n) (allFin m)) 
-         ++V 
-         mapV (λ i → 
-                lookup 
-                  (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
-                  (mapV (inject+ n) qm ++V mapV (raise m) qn))
-              (mapV (raise m) (allFin n))
-            ≡⟨ cong₂ _++V_ 
-                 (sym (map-∘ 
-                   (λ i → lookup 
-                     (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
-                     (mapV (inject+ n) qm ++V mapV (raise m) qn))
-                   (inject+ n) 
-                   (allFin m)))
-                 (sym (map-∘ 
-                   (λ i → lookup 
-                     (lookup i (mapV (inject+ n) pm ++V mapV (raise m) pn))
-                     (mapV (inject+ n) qm ++V mapV (raise m) qn)) 
-                   (raise m) 
-                   (allFin n))) ⟩ 
-         mapV (λ i → 
-                lookup 
-                  (lookup (inject+ n i) 
-                    (mapV (inject+ n) pm ++V mapV (raise m) pn))
-                  (mapV (inject+ n) qm ++V mapV (raise m) qn))
-              (allFin  m)
-         ++V 
-         mapV (λ i → 
-                lookup 
-                  (lookup (raise m i) 
-                    (mapV (inject+ n) pm ++V mapV (raise m) pn))
-                  (mapV (inject+ n) qm ++V mapV (raise m) qn))
-              (allFin n)
-            ≡⟨ cong₂ _++V_ 
-                 (sym (tabulate-allFin {m} (λ i → 
-                   lookup 
-                     (lookup (inject+ n i) 
-                       (mapV (inject+ n) pm ++V mapV (raise m) pn))
-                     (mapV (inject+ n) qm ++V mapV (raise m) qn))))
-                 (sym (tabulate-allFin {n} (λ i → 
-                   lookup 
-                     (lookup (raise m i) 
-                       (mapV (inject+ n) pm ++V mapV (raise m) pn))
-                     (mapV (inject+ n) qm ++V mapV (raise m) qn))))  ⟩ 
-         tabulate {m} (λ i → 
-                lookup 
-                  (lookup (inject+ n i) 
-                    (mapV (inject+ n) pm ++V mapV (raise m) pn))
-                  (mapV (inject+ n) qm ++V mapV (raise m) qn))
-         ++V 
-         tabulate {n} (λ i → 
-                lookup 
-                  (lookup (raise m i) 
-                    (mapV (inject+ n) pm ++V mapV (raise m) pn))
-                  (mapV (inject+ n) qm ++V mapV (raise m) qn))
-            ≡⟨ cong₂ _++V_
-                 (finext 
-                   (λ i → cong 
-                            (λ x → 
-                              lookup x 
-                                (mapV (inject+ n) qm ++V mapV (raise m) qn))
-                            (lookup-left i pm pn)))
-                 (finext 
-                   (λ i → cong
-                            (λ x → 
-                              lookup x 
-                                (mapV (inject+ n) qm ++V mapV (raise m) qn))
-                            (lookup-right i pm pn))) ⟩
-         tabulate (λ i → lookup (inject+ n (lookup i pm))
-                           (mapV (inject+ n) qm ++V mapV (raise m) qn)) ++V
-         tabulate (λ i → lookup (raise m (lookup i pn))
-                           (mapV (inject+ n) qm ++V mapV (raise m) qn))
-           ≡⟨ cong₂ _++V_
-                 (finext (λ i → lookup-left (lookup i pm) qm qn))
-                 (finext (λ i → lookup-right (lookup i pn) qm qn))
-                   ⟩ 
+         tabulate look
+           ≡⟨ tabulate-split {m} {n} ⟩
+         splitV+ {m} {n} {f = look}
+           ≡⟨ cong₂ _++V_ (finext {m} (look-left' pm qm pn qn)) 
+                                      (finext {n} (look-right' pm qm pn qn)) ⟩
          tabulate (λ i → (inject+ n) (lookup (lookup i pm) qm)) ++V
          tabulate (λ i → (raise m) (lookup (lookup i pn) qn))
             ≡⟨ cong₂ _++V_ 
