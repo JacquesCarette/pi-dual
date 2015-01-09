@@ -5,16 +5,18 @@ module FinEquiv where
 -- should restrict the imports (later)
 open import Relation.Nullary.Core
 open import Relation.Binary.PropositionalEquality
-open import Data.Fin renaming (_+_ to _+F_)
+open import Data.Fin renaming (_+_ to _+F_) hiding (_≤_)
 open import Data.Fin.Properties
 open import Data.Nat.Properties
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product
+open import Data.Empty
 open import Data.Nat 
 open import Function
 
 open import Equiv
 open import LeqLemmas
+open import FinNatLemmas
 
 private
   fwd : {m n : ℕ} → (Fin m ⊎ Fin n) → Fin (m + n)
@@ -22,35 +24,49 @@ private
   fwd {m} {n} (inj₂ y) = raise m y
  
   bwd : {m n : ℕ} → Fin (m + n) → (Fin m ⊎ Fin n)
-  bwd {zero} i = inj₂ i
-  bwd {suc m} zero = inj₁ zero
-  bwd {suc m} (suc i) = f (bwd {m} i)
-    where
-      f : {p q : ℕ} → (Fin p ⊎ Fin q) → Fin (suc p) ⊎ Fin q
-      f {p} {q} (inj₁ x) = inj₁ (suc x)
-      f {p} {q} (inj₂ y) = inj₂ y
-
-  bwd' : {m n : ℕ} → Fin (m + n) → (Fin m ⊎ Fin n)
-  bwd' {m} {n} i with toℕ i <? m
+  bwd {m} {n} i with toℕ i <? m
   ... | yes p = inj₁ (fromℕ≤ p)
   ... | no ¬p = inj₂ (reduce≥ i (≤-pred (≰⇒> ¬p)))
 
   fwd∘bwd~id : {m n : ℕ} → fwd {m} {n} ∘ bwd ∼ id
-  fwd∘bwd~id {zero} x = refl
-  fwd∘bwd~id {suc m} zero = refl
-  fwd∘bwd~id {suc m} (suc i) with bwd {m} i | inspect (bwd {m}) i
-  fwd∘bwd~id {suc m} (suc i) | inj₁ x | [ eq ] = cong suc (trans (cong fwd (sym eq)) (fwd∘bwd~id {m} i))
-  fwd∘bwd~id {suc m} (suc i) | inj₂ y | [ eq ] = cong suc (trans (cong fwd (sym eq)) (fwd∘bwd~id {m} i))
+  fwd∘bwd~id {m} i with toℕ i <? m
+  fwd∘bwd~id i | yes p = sym (inj₁-≡ i p)
+  fwd∘bwd~id i | no ¬p = sym (inj₂-≡ i (≤-pred (≰⇒> ¬p)))
 
   bwd∘fwd~id : {m n : ℕ} → bwd {m} {n} ∘ fwd ∼ id
-  bwd∘fwd~id {zero} (inj₁ ())
-  bwd∘fwd~id {suc m} (inj₁ zero) = refl
-  bwd∘fwd~id {suc m} {n} (inj₁ (suc x)) with (bwd {m} (inject+ n x)) | inspect (bwd {m}) (inject+ n x) 
-  bwd∘fwd~id {suc m} {n} (inj₁ (suc x)) | inj₁ x₁ | [ eq ] = 
-      cong (inj₁ ∘ suc) (toℕ-injective {!cong fwd (sym eq)!} )
-  bwd∘fwd~id {suc m} (inj₁ (suc x)) | inj₂ y | [ eq ] = {!!}
-  bwd∘fwd~id {zero} (inj₂ y) = refl
-  bwd∘fwd~id {suc m} (inj₂ y) = {!!}
+  bwd∘fwd~id {m} {n} (inj₁ x) with toℕ (inject+ n x) <? m 
+  bwd∘fwd~id {n = n} (inj₁ x) | yes p = 
+      cong inj₁ (inject+-injective (fromℕ≤ p) x (sym (inj₁-≡ (inject+ n x) p)))
+  bwd∘fwd~id {m} {n} (inj₁ x) | no ¬p = ⊥-elim (1+n≰n pf)
+    where
+      open ≤-Reasoning
+      pf : suc (toℕ x) ≤ toℕ x
+      pf = let q =  (≤-pred (≰⇒> ¬p)) in 
+             begin (
+               suc (toℕ x)
+                 ≤⟨ bounded x ⟩
+               m
+                 ≤⟨ q ⟩
+               toℕ (inject+ n x)
+                 ≡⟨ sym (inject+-lemma n x) ⟩
+               toℕ x ∎ )
+
+  bwd∘fwd~id {m} {n} (inj₂ y) with toℕ (raise m y) <? m 
+  bwd∘fwd~id {m} {n} (inj₂ y) | yes p = ⊥-elim (1+n≰n pf)
+    where
+      open ≤-Reasoning
+      pf : suc m ≤ m
+      pf = begin (
+              suc m
+                  ≤⟨ m≤m+n (suc m) (toℕ y) ⟩
+              suc (m + toℕ y)
+                  ≡⟨ cong suc (sym (toℕ-raise m y)) ⟩
+              suc (toℕ (raise m y))
+                  ≤⟨ p ⟩
+              m ∎)
+  bwd∘fwd~id {m} {n} (inj₂ y) | no ¬p = 
+      cong inj₂ (raise-injective {m} (reduce≥ (raise m y) (≤-pred (≰⇒> ¬p))) 
+                   y (sym (inj₂-≡ (raise m y) (≤-pred (≰⇒> ¬p)))))
 
 fwd-iso : {m n : ℕ} → (Fin m ⊎ Fin n) ≃ Fin (m + n)
 fwd-iso {m} {n} = fwd , mkqinv bwd (fwd∘bwd~id {m}) (bwd∘fwd~id {m})

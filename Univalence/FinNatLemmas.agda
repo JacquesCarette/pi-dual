@@ -112,3 +112,48 @@ reduce≥-inj m n i j i≥ j≥ ri≡rj =
       (trans (cong toℕ ri≡rj) (toℕ-reduce≥ m n j j≥))))
 
 ------------------------------------------------------------------------------
+
+inj₁-toℕ≡ : {m n : ℕ} (i : Fin (m + n)) (i< : toℕ i < m) → toℕ i ≡ toℕ (inject+ n (fromℕ≤ i<))
+inj₁-toℕ≡ {0} _ ()
+inj₁-toℕ≡ {suc m} zero (s≤s z≤n) = refl
+inj₁-toℕ≡ {suc (suc m)} (suc i) (s≤s (s≤s i<)) = cong suc (inj₁-toℕ≡ i (s≤s i<))
+
+inj₁-≡ : {m n : ℕ} (i : Fin (m + n)) (i< : toℕ i < m) → i ≡ inject+ n (fromℕ≤ i<)
+inj₁-≡ i i< = toℕ-injective (inj₁-toℕ≡ i i<)
+
+inj₂-toℕ≡ :  {m n : ℕ} (i : Fin (m + n)) (i≥ : m ≤ toℕ i ) → 
+     toℕ i ≡ toℕ (raise m (reduce≥ i i≥))
+inj₂-toℕ≡ {Data.Nat.zero} i i≥ = refl
+inj₂-toℕ≡ {suc m} zero ()
+inj₂-toℕ≡ {suc m} (suc i) (s≤s i≥) = cong suc (inj₂-toℕ≡ i i≥)
+
+inj₂-≡ :  {m n : ℕ} (i : Fin (m + n)) (i≥ : m ≤ toℕ i ) → i ≡ raise m (reduce≥ i i≥)
+inj₂-≡ i i≥ = toℕ-injective (inj₂-toℕ≡ i i≥)
+
+inject+-injective : {m n : ℕ} (i j : Fin m) → (inject+ n i ≡ inject+ n j) → i ≡ j
+inject+-injective {m} {n} i j p = toℕ-injective pf
+  where 
+    open ≡-Reasoning
+    pf : toℕ i ≡ toℕ j
+    pf = begin (
+      toℕ i
+          ≡⟨ inject+-lemma n i ⟩
+      toℕ (inject+ n i)
+          ≡⟨ cong toℕ p ⟩
+      toℕ (inject+ n j)
+          ≡⟨ sym (inject+-lemma n j) ⟩
+      toℕ j ∎)
+
+raise-injective : {m n : ℕ} (i j : Fin n) → (raise m i ≡ raise m j) → i ≡ j
+raise-injective {m} {n} i j p = toℕ-injective (cancel-+-left m pf)
+  where 
+    open ≡-Reasoning
+    pf : m + toℕ i ≡ m + toℕ j
+    pf = begin (
+      m + toℕ i
+        ≡⟨ sym (toℕ-raise m i)  ⟩
+      toℕ (raise m i)
+        ≡⟨ cong toℕ p ⟩
+      toℕ (raise m j)
+        ≡⟨ toℕ-raise m j ⟩
+      m + toℕ j ∎)
