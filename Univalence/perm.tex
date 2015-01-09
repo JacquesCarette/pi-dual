@@ -1,0 +1,26 @@
+
+
+That permutations form a groupoid AND a semiring (with all sorts of nice coherence laws) is nice.  And the non-trivial computational interpretations of both the co-product and tensor products could be explained more fully.  So yes, without going into all the Pi stuff, we probably could package up the permutation work into a small paper.  But where?
+
+I don’t have a feeling for the significance bits in the paper yet and how precisely it improves on Gonthier’s encoding of permutations for example.
+
+I see the current work on normal form to be more or less integral to a story on permutations. One could argue otherwise but it makes a very nice story to be able to switch between syntactic and semantic representations of permutations. A paper on a sound and complete calculus of permutations supported by an Agda library would be nice, don’t you think? 
+
+About the different representations, I found the Cauchy two line representation to be the easiest to manipulate when talking semantics. When switching to syntactic representations, a sequence of permutations appears to be the right syntactic primitive. 
+
+You make a convincing case.  And not just permutations, but permutations with 2 monoidal structures on top of composition.  Most people stop after composition.  90\% of the difficulty came from + and * !
+
+See Bob Atkey's buried in
+https://github.com/bobatkey/sorting-types/blob/master/agda/Linear.agda
+
+and a number of our additional lemmas can be found already in
+http://www.cse.chalmers.se/~nad/repos/equality/Equality.agda
+
+If M is finite, an injective function f : M -> M must also be surjective. I think this is our situation. So surjective should be free. 
+
+I agree.  It's just that every single proof I tried (in my head) ended up using contradiction.  And that might still be fine, since I don't think we would ever use the 'content' of that proof anyways.
+
+But
+http://mathoverflow.net/questions/178778/in-the-category-of-sets-epimorphisms-are-surjective-constructive-proof
+is heartening.
+
