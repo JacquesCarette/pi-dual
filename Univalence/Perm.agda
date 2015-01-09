@@ -56,7 +56,7 @@ open import Data.Vec
   using (Vec; tabulate; []; _∷_; tail; lookup; zip; zipWith; splitAt;
          _[_]≔_; allFin; toList)
   renaming (_++_ to _++V_; map to mapV; concat to concatV)
-open import Function using (id; _∘_; _$_)
+open import Function using (id; _∘_; _$_; flip)
 open import Data.Maybe using (Maybe; just; nothing)
 
 open import Data.Empty   using (⊥; ⊥-elim)
@@ -438,57 +438,53 @@ scompperm {n} (α , f) (β , g) =
 -- ==> 
 -- [ vm , vm₊₁ , ... , vm+n-1 ,     v₀ , v₁   , v₂   , ... , vm-1 ]
 
+-- move this to NatFin
+private
+  inj₁-toℕ≡ : {m n : ℕ} (i : Fin (m + n)) (i< : toℕ i < m) → toℕ i ≡ toℕ (inject+ n (fromℕ≤ i<))
+  inj₁-toℕ≡ {0} _ ()
+  inj₁-toℕ≡ {suc m} zero (s≤s z≤n) = refl
+  inj₁-toℕ≡ {suc (suc m)} (suc i) (s≤s (s≤s i<)) = cong suc (inj₁-toℕ≡ i (s≤s i<))
+
+  inj₁-≡ : {m n : ℕ} (i : Fin (m + n)) (i< : toℕ i < m) → i ≡ inject+ n (fromℕ≤ i<)
+  inj₁-≡ i i< = toℕ-injective (inj₁-toℕ≡ i i<)
+
+  inj₂-toℕ≡ :  {m n : ℕ} (i : Fin (m + n)) (i≥ : m ≤ toℕ i ) → toℕ i ≡ toℕ (raise m (reduce≥ i i≥))
+  inj₂-toℕ≡ {Data.Nat.zero} i i≥ = refl
+  inj₂-toℕ≡ {suc m} zero ()
+  inj₂-toℕ≡ {suc m} (suc i) (s≤s i≥) = cong suc (inj₂-toℕ≡ i i≥)
+
+  inj₂-≡ :  {m n : ℕ} (i : Fin (m + n)) (i≥ : m ≤ toℕ i ) → i ≡ raise m (reduce≥ i i≥)
+  inj₂-≡ i i≥ = toℕ-injective (inj₂-toℕ≡ i i≥)
+
 swap+cauchy< : (m n : ℕ) (i : Fin (m + n)) (i< : toℕ i < m) →
-  lookup i (swap+cauchy m n) ≡ subst Fin (+-comm n m) (raise n (fromℕ≤ i<))
+  lookup i (swap+cauchy m n) ≡ id+ {m} (raise n (fromℕ≤ i<))
 swap+cauchy< m n i i< =
-  begin (lookup i
-          (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
-            (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n)))
-         ≡⟨ lookup-subst i
-              (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))
-              (+-comm n m) ⟩
-         subst Fin (+-comm n m)
-           (lookup i (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n)))
-         ≡⟨ cong (subst Fin (+-comm n m))
-              (lookup-++-<
-                (mapV (raise n) (allFin m))
-                (mapV (inject+ m) (allFin n))
-                i i<) ⟩
-         subst Fin (+-comm n m)
-           (lookup (fromℕ≤ i<) (mapV (raise n) (allFin m)))
-         ≡⟨ cong (subst Fin (+-comm n m))
-              (lookup-map (fromℕ≤ i<) (raise n) (allFin m)) ⟩
-         subst Fin (+-comm n m) (raise n (lookup (fromℕ≤ i<) (allFin m)))
-         ≡⟨ cong
-              (λ x → subst Fin (+-comm n m) (raise n x))
-              (lookup-allFin (fromℕ≤ i<)) ⟩ 
-         subst Fin (+-comm n m) (raise n (fromℕ≤ i<)) ∎)
+  let j = fromℕ≤ i< in
+  let eq = inj₁-≡ i i< in
+  begin 
+    (lookup i (splitVOp+ {m} {n} {f = id+ {m}}) 
+         ≡⟨ cong (flip lookup (splitVOp+ {m} {n} {f = id+ {m}})) eq ⟩
+    lookup (inject+ n j)  (splitVOp+ {m} {n} {f = id+ {m}})
+         ≡⟨ lookup-++-inject+  (tabulate (id+ {m} ∘ raise n)) (tabulate (id+ {m} ∘ inject+ m)) j ⟩
+     lookup j (tabulate {m} (id+ {m} ∘ raise n))
+          ≡⟨ lookup∘tabulate (id+ {m} ∘ raise n) j ⟩
+     id+ {m} (raise n j) ∎)
   where open ≡-Reasoning
 
 swap+cauchy≥ : (m n : ℕ) (i : Fin (m + n)) (i≥ : m ≤ toℕ i) → 
   lookup i (swap+cauchy m n) ≡ subst Fin (+-comm n m) (inject+ m (reduce≥ i i≥))
 swap+cauchy≥ m n i i≥ =
-  begin (lookup i 
-          (subst (λ s → Vec (Fin s) (m + n)) (+-comm n m) 
-            (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n)))
-         ≡⟨ lookup-subst i
-              (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n))
-              (+-comm n m) ⟩
-         subst Fin (+-comm n m)
-           (lookup i (mapV (raise n) (allFin m) ++V mapV (inject+ m) (allFin n)))
-         ≡⟨ cong (subst Fin (+-comm n m))
-              (lookup-++-≥
-                (mapV (raise n) (allFin m))
-                (mapV (inject+ m) (allFin n))
-                i i≥) ⟩
-         subst Fin (+-comm n m)
-           (lookup (reduce≥ i i≥) (mapV (inject+ m) (allFin n)))
-         ≡⟨ cong (subst Fin (+-comm n m))
-             (lookup-map (reduce≥ i i≥) (inject+ m) (allFin n)) ⟩
-         subst Fin (+-comm n m) (inject+ m (lookup (reduce≥ i i≥) (allFin n)))
-         ≡⟨ cong (λ x → subst Fin (+-comm n m) (inject+ m x))
-             (lookup-allFin (reduce≥ i i≥)) ⟩
-         subst Fin (+-comm n m) (inject+ m (reduce≥ i i≥)) ∎)
+  let j = reduce≥ i i≥ in
+  let eq = inj₂-≡ i i≥ in
+  let v = splitVOp+ {m} {f = id+ {m}} in
+  begin (
+    lookup i v
+        ≡⟨ cong (flip lookup v) eq ⟩
+    lookup (raise m j) v
+        ≡⟨ lookup-++-raise (tabulate (id+ {m} ∘ raise n)) (tabulate (id+ {m} ∘ inject+ m)) j ⟩
+    lookup j (tabulate (id+ {m} ∘ inject+ m))
+        ≡⟨ lookup∘tabulate (id+ {m} ∘ inject+ m) j ⟩
+    id+ {m} (inject+ m j) ∎)
   where open ≡-Reasoning
 
 swap+perm' : (m n : ℕ) (i j : Fin (m + n))
