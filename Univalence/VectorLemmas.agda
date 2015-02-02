@@ -120,6 +120,10 @@ lookup-subst : ∀ {m m' n}
   subst Fin eq (lookup i xs)
 lookup-subst i xs refl = refl 
 
+lookup-subst-index : ∀ {m n n'} (j : Fin n) (xs : Vec (Fin m) n') (eq : n ≡ n') →
+  lookup (subst Fin eq j) xs ≡ lookup j (subst (Vec (Fin m)) (sym eq) xs)
+lookup-subst-index j xs refl = refl
+
 -- lookup is associative on Fin vectors
 lookupassoc : ∀ {n} → (π₁ π₂ π₃ : Vec (Fin n) n) (i : Fin n) → 
   lookup (lookup i π₁) (tabulate (λ j → lookup (lookup j π₂) π₃)) ≡
