@@ -20,8 +20,7 @@ open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (proj₁)
 open import Function using (flip)
 
-open import SubstLemmas
-open import VectorLemmas
+open import Proofs
 open import Equiv
 open import FinEquiv
 open import Cauchy 
@@ -51,12 +50,15 @@ swap⊎-idemp (inj₂ y) = refl
 swap+ : {m n : ℕ} {A B : Set} → Vec (A ⊎ B) (m + n) → Vec (B ⊎ A) (m + n)
 swap+ v = tabulate (swap⊎ ∘ _!!_ v)
 
+-- the Fin-Vec version.
+swap+v : (m n : ℕ) → Vec (Fin (n + m)) (m + n)
+swap+v m n =  mapV fwd (swap+ {m} (tabulate {m + n} (bwd {m} {n})))
+
 -- the Cauchy version.  Both implementations work, not sure which is best.
 swap+c : (m n : ℕ) → Cauchy (m + n)
 -- swap+c m n = mapV (λ x → subst Fin (+-comm n m) (fwd x)) 
 --   (swap+ {m = m} (tabulate {m + n} (bwd {m})))
-swap+c m n = subst (λ x → Vec (Fin x) (m + n)) (+-comm n m)
-  (mapV fwd (swap+ {m} (tabulate {m + n} (bwd {m} {n}))))
+swap+c m n = subst (λ x → Vec (Fin x) (m + n)) (+-comm n m) (swap+v m n)
 
 -- nested tabulate-lookup
 denest-tab-!! : {A B C : Set} {k : ℕ} → (f : B → C) → (g : A → B) → (v : Vec A k) →
@@ -89,3 +91,41 @@ swap+-idemp v =
         ≡⟨ map-id v ⟩
     v ∎) 
   where open ≡-Reasoning
+
+-- question is: is there a sensible proof of this which goes through swap+-idemp? 
+pointwise-swap+v-idemp : {m n : ℕ} → ∀ i → 
+  lookup (lookup i (swap+v m n)) (swap+v n m) ≡ i
+pointwise-swap+v-idemp {m} {n} i = 
+  let p =  swap+ {m} (tabulate {m + n} (bwd {m} {n})) in
+  let q = swap+ {n} (tabulate {n + m} (bwd {n} {m})) in
+  begin (
+    lookup (lookup i (swap+v m n)) (swap+v n m)
+      ≡⟨ {!!} ⟩
+    i ∎ )
+  where open ≡-Reasoning
+
+swap+v-idemp : {m n : ℕ} →
+  tabulate (λ i → lookup (lookup i (swap+v m n)) (swap+v n m)) ≡ tabulate id
+swap+v-idemp = finext pointwise-swap+v-idemp
+
+-- the crucial part for the next theorem:
+swap+-idemp' : {m n : ℕ} → ∀ i → lookup
+      (subst (λ x → Vec (Fin x) (m + n)) (+-comm n m) (swap+v m n) !! i)
+      (subst (λ x → Vec (Fin x) (m + n)) (+-comm n m) (swap+v m n))
+      ≡ i
+swap+-idemp' {m} {n} i = 
+  let j = subst (λ x → Vec (Fin x) (m + n)) (+-comm n m) (swap+v m n) !! i in
+  begin (
+    lookup j (subst (λ x → Vec (Fin x) (m + n)) (+-comm n m) (swap+v m n))
+      ≡⟨ lookup-subst j (swap+v m n) (+-comm n m) ⟩
+    subst Fin (+-comm n m) ((swap+v m n) !! j)
+      ≡⟨ cong (λ x → subst Fin (+-comm n m) ((swap+v m n) !! x)) 
+                   (lookup-subst i (swap+v m n) (+-comm n m)) ⟩
+    subst Fin (+-comm n m) ((swap+v m n) !! subst Fin (+-comm n m) (swap+v m n !! i))
+      ≡⟨ {!!} ⟩
+    i ∎)
+  where open ≡-Reasoning
+
+-- and let's see what that does to the Cauchy version:
+swap+c-idemp : {m n : ℕ} → scompcauchy (swap+c m n) (swap+c m n) ≡ allFin (m + n)
+swap+c-idemp  {m} {n} = finext (swap+-idemp' {m} {n})
