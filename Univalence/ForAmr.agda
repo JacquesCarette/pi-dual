@@ -4,6 +4,7 @@ module ForAmr where
 
 open import Level using (Level)
 
+open import Relation.Nullary.Core
 open import Data.Vec
   using (Vec; tabulate; []; _∷_; lookup; allFin)
   renaming (_++_ to _++V_; map to mapV; concat to concatV)
@@ -13,9 +14,11 @@ open import Function using (id;_∘_)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; cong; cong₂; subst; proof-irrelevance;
              _≗_; module ≡-Reasoning)
-open import Data.Nat using (ℕ; zero; suc; _+_; z≤n)
+open import Data.Nat using (ℕ; zero; suc; _+_; z≤n; _≟_)
 open import Data.Nat.Properties.Simple using (+-comm)
-open import Data.Fin using (Fin; zero; suc; inject+; raise; reduce≥)
+open import Data.Nat.Properties using (m≤m+n)
+open import Data.Fin using (Fin; zero; suc; inject+; raise; reduce≥; toℕ; fromℕ≤)
+open import Data.Fin.Properties using (toℕ-injective; toℕ-raise; toℕ-fromℕ≤)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (proj₁)
 open import Function using (flip)
@@ -50,14 +53,15 @@ swap⊎-idemp (inj₂ y) = refl
 swap+ : {m n : ℕ} {A B : Set} → Vec (A ⊎ B) (m + n) → Vec (B ⊎ A) (m + n)
 swap+ v = tabulate (swap⊎ ∘ _!!_ v)
 
+swapper : (m n : ℕ) → Fin (m + n) → Fin (n + m)
+swapper m n = fwd ∘ swap⊎ ∘ bwd {m} {n} 
+
 -- the Fin-Vec version.
 swap+v : (m n : ℕ) → Vec (Fin (n + m)) (m + n)
-swap+v m n =  mapV fwd (swap+ {m} (tabulate {m + n} (bwd {m} {n})))
+swap+v m n = tabulate (swapper m n)
 
--- the Cauchy version.  Both implementations work, not sure which is best.
+-- the Cauchy version.
 swap+c : (m n : ℕ) → Cauchy (m + n)
--- swap+c m n = mapV (λ x → subst Fin (+-comm n m) (fwd x)) 
---   (swap+ {m = m} (tabulate {m + n} (bwd {m})))
 swap+c m n = subst (λ x → Vec (Fin x) (m + n)) (+-comm n m) (swap+v m n)
 
 -- nested tabulate-lookup
@@ -78,7 +82,7 @@ denest-tab-!! f g v =
     mapV (f ∘ g) v ∎)
   where open ≡-Reasoning
 
--- and now this is completely obvious:
+-- and now this is completely obvious.  But not actually needed!
 swap+-idemp : {A B : Set} → {m n : ℕ} → (v : Vec (A ⊎ B) (m + n)) →
   swap+ {m} (swap+ {m} v) ≡ v
 swap+-idemp v = 
@@ -92,24 +96,83 @@ swap+-idemp v =
     v ∎) 
   where open ≡-Reasoning
 
--- question is: is there a sensible proof of this which goes through swap+-idemp? 
+-- because this is 'pointwise', no need for swap+-idemp.
 pointwise-swap+v-idemp : {m n : ℕ} → ∀ i → 
   lookup (lookup i (swap+v m n)) (swap+v n m) ≡ i
 pointwise-swap+v-idemp {m} {n} i = 
-  let p =  swap+ {m} (tabulate {m + n} (bwd {m} {n})) in
-  let q = swap+ {n} (tabulate {n + m} (bwd {n} {m})) in
+  let fnm = swapper n m in
+  let fmn = swapper m n in
   begin (
     lookup (lookup i (swap+v m n)) (swap+v n m)
-      ≡⟨ {!!} ⟩
+      ≡⟨ cong (λ x → lookup x (swap+v n m)) (lookup∘tabulate fmn i) ⟩
+    lookup (fmn i) (swap+v n m)
+      ≡⟨ lookup∘tabulate fnm (fmn i) ⟩
+    fnm (fmn i) -- bingo!
+      ≡⟨ cong (fwd ∘ swap⊎) (bwd∘fwd~id (swap⊎ (bwd {m} i))) ⟩
+    fwd (swap⊎ (swap⊎ (bwd {m} i)))
+      ≡⟨ cong fwd (swap⊎-idemp (bwd {m} i)) ⟩
+    fwd (bwd {m} i)
+      ≡⟨ fwd∘bwd~id {m} i ⟩
     i ∎ )
   where open ≡-Reasoning
 
+-- this is true, but the above is what is used in practice.
 swap+v-idemp : {m n : ℕ} →
   tabulate (λ i → lookup (lookup i (swap+v m n)) (swap+v n m)) ≡ tabulate id
-swap+v-idemp = finext pointwise-swap+v-idemp
+swap+v-idemp {m} = finext (pointwise-swap+v-idemp {m})
+
+toℕ-invariance : ∀ {n n'} → (i : Fin n) → (eq : n ≡ n') → toℕ (subst Fin eq i) ≡ toℕ i
+toℕ-invariance i refl = refl
+
+-- the action of subst on swap+, pointwise
+switch-swap+ : {m n : ℕ} → (i : Fin (m + n)) →
+  subst Fin (+-comm n m) (swapper m n i) ≡ 
+  swapper n m (subst Fin (+-comm m n) i)
+switch-swap+ {m} {n} i with m ≟ n
+switch-swap+ i | yes p = {!!}
+switch-swap+ i | no ¬p = {!!}
+{-
+switch-swap+ {m} {n} i with (toℕ i <? m) | (toℕ (subst Fin (+-comm m n) i) <? n) 
+switch-swap+ {m} {n} i | yes p | yes q = {!!} {- toℕ-injective (
+  begin (
+    toℕ (subst Fin (+-comm n m) (raise n (fromℕ≤ p)))
+      ≡⟨ toℕ-invariance (raise n (fromℕ≤ p)) (+-comm n m) ⟩
+    toℕ (raise n (fromℕ≤ p))
+      ≡⟨ toℕ-raise n (fromℕ≤ p) ⟩
+    n + toℕ (fromℕ≤ p)
+      ≡⟨ cong (_+_ n) (toℕ-fromℕ≤ p) ⟩
+    n + toℕ i
+      ≡⟨ {!!} ⟩
+    m + toℕ (subst Fin (+-comm m n) i)
+      ≡⟨ sym (cong (_+_ m) (toℕ-fromℕ≤ q)) ⟩
+    m + toℕ (fromℕ≤ q)
+      ≡⟨ sym (toℕ-raise m (fromℕ≤ q)) ⟩
+    toℕ (raise m (fromℕ≤ q)) ∎))
+  where open ≡-Reasoning -}
+switch-swap+ i | yes p | no ¬q = {!!}
+switch-swap+ i | no ¬p | yes q = {!!}
+switch-swap+ i | no ¬p | no ¬q = {!!}
+-}
+
+-- the action of subst on swap+v
+switch-swap : {m n : ℕ} → (i : Fin (m + n)) →
+  subst Fin (+-comm n m) ((swap+v m n) !! i) ≡
+  (swap+v n m) !! subst Fin (+-comm m n) i
+switch-swap {m} {n} i = 
+  let fnm = swapper n m in
+  let fmn = swapper m n in
+  begin (
+    subst Fin (+-comm n m) ((tabulate fmn) !! i)
+      ≡⟨ cong (subst Fin (+-comm n m)) (lookup∘tabulate fmn i) ⟩
+    subst Fin (+-comm n m) (fmn i)
+      ≡⟨ switch-swap+ {m} i ⟩
+    fnm (subst Fin (+-comm m n) i)
+      ≡⟨ sym (lookup∘tabulate fnm (subst Fin (+-comm m n) i)) ⟩
+    tabulate (fnm) !! subst Fin (+-comm m n) i ∎)
+  where open ≡-Reasoning
 
 -- the crucial part for the next theorem:
-swap+-idemp' : {m n : ℕ} → ∀ i → lookup
+swap+-idemp' : {m n : ℕ} → ∀ (i : Fin (m + n)) → lookup
       (subst (λ x → Vec (Fin x) (m + n)) (+-comm n m) (swap+v m n) !! i)
       (subst (λ x → Vec (Fin x) (m + n)) (+-comm n m) (swap+v m n))
       ≡ i
@@ -122,7 +185,13 @@ swap+-idemp' {m} {n} i =
       ≡⟨ cong (λ x → subst Fin (+-comm n m) ((swap+v m n) !! x)) 
                    (lookup-subst i (swap+v m n) (+-comm n m)) ⟩
     subst Fin (+-comm n m) ((swap+v m n) !! subst Fin (+-comm n m) (swap+v m n !! i))
-      ≡⟨ {!!} ⟩
+      ≡⟨ cong (λ x → subst Fin (+-comm n m) ((swap+v m n) !! x))
+                   (switch-swap {m} i) ⟩
+    subst Fin (+-comm n m) ((swap+v m n) !! (swap+v n m !! subst Fin (+-comm m n) i))
+      ≡⟨ cong (subst Fin (+-comm n m)) (pointwise-swap+v-idemp {n} (subst Fin (+-comm m n) i)) ⟩
+    subst Fin (+-comm n m) (subst Fin (+-comm m n) i)
+      ≡⟨ subst-subst (+-comm n m) (+-comm m n) 
+                              (proof-irrelevance (sym (+-comm n m)) (+-comm m n)) i ⟩
     i ∎)
   where open ≡-Reasoning
 
