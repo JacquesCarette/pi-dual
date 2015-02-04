@@ -31,20 +31,6 @@ open import TypeEquivalences using (swap₊; swapswap₊)
 
 ----------------------------------------------------
 
-pcomp : ∀ {m n} {A B : Set} → Vec A m → Vec B n → Vec (A ⊎ B) (m + n)
-pcomp {m} {n} α β = tabulate (inj₁ ∘ _!!_ α) ++V 
-                                     tabulate (inj₂ ∘ _!!_ β)
-
-swap+ : {m n : ℕ} {A B : Set} → Vec (A ⊎ B) (m + n) → Vec (B ⊎ A) (m + n)
-swap+ v = tabulate (swap₊ ∘ _!!_ v)
-
-swapper : (m n : ℕ) → Fin (m + n) → Fin (n + m)
-swapper m n = fwd ∘ swap₊ ∘ bwd {m} {n} 
-
--- the Fin-Vec version.
-swap+v : (m n : ℕ) → Vec (Fin (n + m)) (m + n)
-swap+v m n = tabulate (swapper m n)
-
 -- and now this is completely obvious.  But not actually needed!
 swap+-idemp : {A B : Set} → {m n : ℕ} → (v : Vec (A ⊎ B) (m + n)) →
   swap+ {m} (swap+ {m} v) ≡ v
