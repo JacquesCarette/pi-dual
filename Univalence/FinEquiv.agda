@@ -19,7 +19,7 @@ open import Function
 open import Equiv
 open import LeqLemmas
 open import FinNatLemmas
-open import TypeEquivalences using (swap₊)
+open import TypeEquivalences using (swap₊; swap⋆)
 
 -- Divide into 2 modules
 module Plus where
@@ -167,3 +167,9 @@ module Times where
       same-quot : (r ≡ d) × (q ≡ toℕ b)
       same-quot = addMul-lemma q (toℕ b) n r d ( sym eq' )
       pf₁ = (toℕ-injective (trans (toℕ-fromℕ≤ (≰⇒> ¬p)) (proj₂ same-quot)))
+
+  fwd-iso : {m n : ℕ} → (Fin m × Fin n) ≃ Fin (m * n)
+  fwd-iso {m} {n} = fwd , mkqinv bwd (fwd∘bwd~id {m}) (bwd∘fwd~id {m})
+
+  swapper : (m n : ℕ) → Fin (m * n) → Fin (n * m)
+  swapper m n = fwd ∘ swap⋆ ∘ bwd {m} {n} 
