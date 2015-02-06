@@ -8,8 +8,8 @@ open import Data.Vec
   using (Vec; tabulate; []; _∷_; lookup)
   renaming (_++_ to _++V_; map to mapV; concat to concatV)
 open import  Data.Vec.Properties
-  using (lookup-++-≥; lookup∘tabulate)
-open import Function using (id;_∘_)
+  using (lookup-++-≥; lookup∘tabulate; tabulate-∘; tabulate∘lookup)
+open import Function using (id;_∘_;flip)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; cong; subst; proof-irrelevance; module ≡-Reasoning)
 open import Data.Nat using (ℕ; zero; suc; _+_; z≤n)
@@ -168,3 +168,26 @@ unSplit : {m n : ℕ} {A : Set} → (f : Fin (m + n) → A) →
   tabulate {m} (f ∘ (inject+ n)) ++V tabulate {n} (f ∘ (raise m)) ≡ tabulate f
 unSplit {0} {n} f = refl
 unSplit {suc m} f = cong (λ x → (f zero) ∷ x) (unSplit {m} (f ∘ suc))
+
+-- to make things look nicer
+_!!_ : ∀ {m} {A : Set} → Vec A m → Fin m → A
+v !! i = lookup i v
+
+-- nested tabulate-lookup
+denest-tab-!! : {A B C : Set} {k : ℕ} → (f : B → C) → (g : A → B) → (v : Vec A k) →
+    tabulate (λ i → f (tabulate (λ j → g (v !! j)) !! i)) ≡ mapV (f ∘ g) v
+denest-tab-!! f g v = 
+  begin ( 
+    tabulate (λ i → f (tabulate (λ j → g (v !! j)) !! i))
+        ≡⟨ tabulate-∘ f (λ i → tabulate (λ j → g (v !! j)) !! i) ⟩
+    mapV f (tabulate  (λ i → tabulate (λ j → g (v !! j)) !! i) )
+        ≡⟨ cong (mapV f) (tabulate∘lookup (tabulate (λ j → g (v !! j)))) ⟩
+    mapV f (tabulate (λ j → g (v !! j)))
+        ≡⟨ cong (mapV f) (tabulate-∘ g (flip lookup v)) ⟩
+    mapV f (mapV g (tabulate (flip lookup v)))
+        ≡⟨ sym (map-∘ f g _) ⟩
+    mapV (f ∘ g) (tabulate (flip lookup v))
+        ≡⟨ cong (mapV (f ∘ g)) (tabulate∘lookup v) ⟩
+    mapV (f ∘ g) v ∎)
+  where open ≡-Reasoning
+

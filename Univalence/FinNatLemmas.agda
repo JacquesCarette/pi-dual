@@ -157,3 +157,7 @@ raise-injective {m} {n} i j p = toℕ-injective (cancel-+-left m pf)
       toℕ (raise m j)
         ≡⟨ toℕ-raise m j ⟩
       m + toℕ j ∎)
+
+toℕ-invariance : ∀ {n n'} → (i : Fin n) → (eq : n ≡ n') → toℕ (subst Fin eq i) ≡ toℕ i
+toℕ-invariance i refl = refl
+

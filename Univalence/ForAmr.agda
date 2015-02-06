@@ -26,71 +26,20 @@ open import Function using (flip)
 open import Proofs
 open import Equiv
 open import FinEquiv
-open import Cauchy 
+open import Cauchy
+open import TypeEquivalences using (swap₊; swapswap₊)
 
 ----------------------------------------------------
-
--- to make things look nicer
-_!!_ : ∀ {m} {A : Set} → Vec A m → Fin m → A
-v !! i = lookup i v
-
-pcomp : ∀ {m n} {A B : Set} → Vec A m → Vec B n → Vec (A ⊎ B) (m + n)
-pcomp {m} {n} α β = tabulate (inj₁ ∘ _!!_ α) ++V 
-                                     tabulate (inj₂ ∘ _!!_ β)
-
--- the Cauchy version:
-pcomp' : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m + n)
-pcomp' α β = mapV fwd (pcomp α β)
-
-swap⊎ : {A B : Set} → A ⊎ B → B ⊎ A
-swap⊎ (inj₁ x) = inj₂ x
-swap⊎ (inj₂ y) = inj₁ y
-
-swap⊎-idemp : {A B : Set} → ∀ x → swap⊎ {B} {A} (swap⊎ x) ≡ id x
-swap⊎-idemp (inj₁ x) = refl
-swap⊎-idemp (inj₂ y) = refl
-
-swap+ : {m n : ℕ} {A B : Set} → Vec (A ⊎ B) (m + n) → Vec (B ⊎ A) (m + n)
-swap+ v = tabulate (swap⊎ ∘ _!!_ v)
-
-swapper : (m n : ℕ) → Fin (m + n) → Fin (n + m)
-swapper m n = fwd ∘ swap⊎ ∘ bwd {m} {n} 
-
--- the Fin-Vec version.
-swap+v : (m n : ℕ) → Vec (Fin (n + m)) (m + n)
-swap+v m n = tabulate (swapper m n)
-
--- the Cauchy version.
-swap+c : (m n : ℕ) → Cauchy (m + n)
-swap+c m n = subst (λ x → Vec (Fin x) (m + n)) (+-comm n m) (swap+v m n)
-
--- nested tabulate-lookup
-denest-tab-!! : {A B C : Set} {k : ℕ} → (f : B → C) → (g : A → B) → (v : Vec A k) →
-    tabulate (λ i → f (tabulate (λ j → g (v !! j)) !! i)) ≡ mapV (f ∘ g) v
-denest-tab-!! f g v = 
-  begin ( 
-    tabulate (λ i → f (tabulate (λ j → g (v !! j)) !! i))
-        ≡⟨ tabulate-∘ f (λ i → tabulate (λ j → g (v !! j)) !! i) ⟩
-    mapV f (tabulate  (λ i → tabulate (λ j → g (v !! j)) !! i) )
-        ≡⟨ cong (mapV f) (tabulate∘lookup (tabulate (λ j → g (v !! j)))) ⟩
-    mapV f (tabulate (λ j → g (v !! j)))
-        ≡⟨ cong (mapV f) (tabulate-∘ g (flip lookup v)) ⟩
-    mapV f (mapV g (tabulate (flip lookup v)))
-        ≡⟨ sym (map-∘ f g _) ⟩
-    mapV (f ∘ g) (tabulate (flip lookup v))
-        ≡⟨ cong (mapV (f ∘ g)) (tabulate∘lookup v) ⟩
-    mapV (f ∘ g) v ∎)
-  where open ≡-Reasoning
 
 -- and now this is completely obvious.  But not actually needed!
 swap+-idemp : {A B : Set} → {m n : ℕ} → (v : Vec (A ⊎ B) (m + n)) →
   swap+ {m} (swap+ {m} v) ≡ v
 swap+-idemp v = 
   begin ( 
-    tabulate (λ i → swap⊎ (tabulate (λ j → swap⊎ (v !! j)) !! i))
-        ≡⟨ denest-tab-!! swap⊎ swap⊎ v ⟩
-    mapV (swap⊎ ∘ swap⊎) v
-        ≡⟨ map-cong swap⊎-idemp v ⟩
+    tabulate (λ i → swap₊ (tabulate (λ j → swap₊ (v !! j)) !! i))
+        ≡⟨ denest-tab-!! swap₊ swap₊ v ⟩
+    mapV (swap₊ ∘ swap₊) v
+        ≡⟨ map-cong swapswap₊ v ⟩
     mapV id v
         ≡⟨ map-id v ⟩
     v ∎) 
@@ -108,9 +57,9 @@ pointwise-swap+v-idemp {m} {n} i =
     lookup (fmn i) (swap+v n m)
       ≡⟨ lookup∘tabulate fnm (fmn i) ⟩
     fnm (fmn i) -- bingo!
-      ≡⟨ cong (fwd ∘ swap⊎) (bwd∘fwd~id (swap⊎ (bwd {m} i))) ⟩
-    fwd (swap⊎ (swap⊎ (bwd {m} i)))
-      ≡⟨ cong fwd (swap⊎-idemp (bwd {m} i)) ⟩
+      ≡⟨ cong (fwd ∘ swap₊) (bwd∘fwd~id (swap₊ (bwd {m} i))) ⟩
+    fwd (swap₊ (swap₊ (bwd {m} i)))
+      ≡⟨ cong fwd (swapswap₊ (bwd {m} i)) ⟩
     fwd (bwd {m} i)
       ≡⟨ fwd∘bwd~id {m} i ⟩
     i ∎ )
@@ -121,8 +70,14 @@ swap+v-idemp : {m n : ℕ} →
   tabulate (λ i → lookup (lookup i (swap+v m n)) (swap+v n m)) ≡ tabulate id
 swap+v-idemp {m} = finext (pointwise-swap+v-idemp {m})
 
-toℕ-invariance : ∀ {n n'} → (i : Fin n) → (eq : n ≡ n') → toℕ (subst Fin eq i) ≡ toℕ i
-toℕ-invariance i refl = refl
+---------------------------------------------------------------
+-- Everything below here is based on Cauchy as Vec (Fin n) n
+-- and might get tossed.  Comment it out for now.
+
+{-
+-- the Cauchy version.
+swap+c : (m n : ℕ) → Cauchy (m + n)
+swap+c m n = subst (λ x → Vec (Fin x) (m + n)) (+-comm n m) (swap+v m n)
 
 -- the action of subst on swap+, pointwise
 switch-swap+ : {m n : ℕ} → (i : Fin (m + n)) →
@@ -153,6 +108,10 @@ switch-swap+ i | yes p | no ¬q = {!!}
 switch-swap+ i | no ¬p | yes q = {!!}
 switch-swap+ i | no ¬p | no ¬q = {!!}
 -}
+
+-- the Cauchy version:
+pcomp' : ∀ {m n} → Cauchy m → Cauchy n → Cauchy (m + n)
+pcomp' α β = mapV fwd (pcomp α β)
 
 -- the action of subst on swap+v
 switch-swap : {m n : ℕ} → (i : Fin (m + n)) →
@@ -198,3 +157,4 @@ swap+-idemp' {m} {n} i =
 -- and let's see what that does to the Cauchy version:
 swap+c-idemp : {m n : ℕ} → scompcauchy (swap+c m n) (swap+c m n) ≡ allFin (m + n)
 swap+c-idemp  {m} {n} = finext (swap+-idemp' {m} {n})
+-}

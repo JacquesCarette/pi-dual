@@ -5,7 +5,7 @@ module Equiv where
 
 open import Level
 open import Function
-open import Data.Product using (Σ)
+open import Data.Product using (Σ; _,_)
 open import Relation.Binary.PropositionalEquality
 
 infix 4 _∼_
@@ -31,5 +31,15 @@ record qinv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : Set (ℓ ⊔
     α : (f ∘ g) ∼ id
     β : (g ∘ f) ∼ id
 
+idqinv : ∀ {ℓ} → {A : Set ℓ} → qinv {A = A} id
+idqinv = record {
+           g = id ;
+           α = λ b → refl ; 
+           β = λ a → refl
+         }
+         
 _≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ ⊔ ℓ')
 A ≃ B = Σ (A → B) qinv
+
+id≃ : ∀ {ℓ} {A : Set ℓ} → A ≃ A
+id≃ = (id , idqinv)
