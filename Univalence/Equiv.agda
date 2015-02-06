@@ -5,6 +5,7 @@ module Equiv where
 
 open import Level
 open import Function
+open import Data.Sum using (_⊎_)
 open import Data.Product using (Σ; _,_)
 open import Relation.Binary.PropositionalEquality
 
@@ -43,3 +44,16 @@ A ≃ B = Σ (A → B) qinv
 
 id≃ : ∀ {ℓ} {A : Set ℓ} → A ≃ A
 id≃ = (id , idqinv)
+
+sym≃ : ∀ {ℓ ℓ′} {A : Set ℓ} {B : Set ℓ′} → (A ≃ B) → B ≃ A
+sym≃ (A→B , equiv) = e.g , mkqinv A→B e.β e.α
+  where module e = qinv equiv
+
+trans≃ : {A B C : Set} → A ≃ B → B ≃ C → A ≃ C
+trans≃ (f , feq) (g , geq) = (g ∘ f) , (mkqinv inv α' β')
+  where
+    module fm = qinv feq
+    module gm = qinv geq
+    inv = fm.g ∘ gm.g
+    α' = λ x → trans (cong g (fm.α (gm.g x))) (gm.α x)
+    β' = λ x → trans (cong fm.g (gm.β (f x))) (fm.β x)
