@@ -182,6 +182,10 @@ distequiv = dist , mkqinv factor dist∘factor factor∘dist
 factorequiv : {A B C : Set} →  ((A × C) ⊎ (B × C)) ≃ ((A ⊎ B) × C)
 factorequiv = factor , (mkqinv dist factor∘dist dist∘factor)
 
+-- identity equivalence 
+idequiv : {A : Set} → A ≃ A
+idequiv = id≃
+
 -- ⊕
 
 _⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
@@ -196,7 +200,7 @@ path⊎ (fp , eqp) (fq , eqq) =
   mkqinv (P.g ⊎→ Q.g) (P.α ⊎∼ Q.α) (P.β ⊎∼ Q.β)
   where module P = qinv eqp
         module Q = qinv eqq
-        
+
 -- ⊗
 
 _×∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
@@ -214,5 +218,3 @@ path× {A} {B} {C} {D} (fp , eqp) (fq , eqq) =
   where module P = qinv eqp
         module Q = qinv eqq
 
-idequiv : {A : Set} → A ≃ A
-idequiv = id≃

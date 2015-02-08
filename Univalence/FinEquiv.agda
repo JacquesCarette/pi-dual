@@ -15,6 +15,7 @@ open import Data.Empty
 open import Data.Nat
 open import Data.Nat.DivMod
 open import Function
+open import Data.Unit using (⊤; tt)
 
 open import Equiv
 open import LeqLemmas
@@ -77,6 +78,20 @@ module Plus where
 
   swapper : (m n : ℕ) → Fin (m + n) → Fin (n + m)
   swapper m n = fwd ∘ swap₊ ∘ bwd {m} {n} 
+
+  Fin1≃⊤ : Fin 1 ≃ ⊤
+  Fin1≃⊤ = f , mkqinv g α β
+    where
+      f : Fin 1 → ⊤
+      f zero = tt
+      f (suc ())
+      g : ⊤ → Fin 1
+      g tt = zero
+      α : f ∘ g ∼ id
+      α tt = refl
+      β : g ∘ f ∼ id
+      β zero = refl
+      β (suc ())
 
 module Times where
   open import Perm hiding (absurd-quotient; Fin0-⊥) -- will fix later

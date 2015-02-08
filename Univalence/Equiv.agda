@@ -5,7 +5,8 @@ module Equiv where
 
 open import Level
 open import Function
-open import Data.Sum using (_⊎_)
+open import Data.Empty using (⊥)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _,_)
 open import Relation.Binary.PropositionalEquality
 
@@ -57,3 +58,21 @@ trans≃ (f , feq) (g , geq) = (g ∘ f) , (mkqinv inv α' β')
     inv = fm.g ∘ gm.g
     α' = λ x → trans (cong g (fm.α (gm.g x))) (gm.α x)
     β' = λ x → trans (cong fm.g (gm.β (f x))) (fm.β x)
+
+-- equivalences are injective
+
+_⋆_ : {A B : Set} → (A ≃ B) → (x : A) → B
+(f , _) ⋆ x = f x 
+
+inj≃ : {A B : Set} → (eq : A ≃ B) → (x y : A) → (eq ⋆ x ≡ eq ⋆ y → x ≡ y)
+inj≃ (f , mkqinv g α β) x y p = trans (sym (β x)) (trans (cong g p) (β y))
+
+bad-path : {A B : Set} → (a : A) → (b : B) → inj₁ a ≡ inj₂ b → ⊥
+bad-path x y ()
+
+-- ⊎ injective too
+inj₁≡ : {A B : Set} → {a b : A} → inj₁ {A = A} {B} a ≡ inj₁ b → a ≡ b
+inj₁≡ refl = refl
+
+inj₂≡ : {A B : Set} → {a b : B} → inj₂ {A = A} {B} a ≡ inj₂ b → a ≡ b
+inj₂≡ refl = refl
