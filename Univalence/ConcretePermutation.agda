@@ -91,7 +91,7 @@ thm2 {n} {A} {B} (enum A≃Fn) (enum B≃Fn) = fwd , (mkqinv bwd α β)
               ≡⟨ cong (λ x → x !! i) (finext β) ⟩
            tabulate id !! i ∎)
 
-        -- see the αp proof for why this is ok
+        -- see the αp proof for why this proof is ok
         βp : (tabulate g ∘̂ tabulate f) ∼p (F.idcauchy n)
         βp i = trans (∘̂⇒∘ g f i) (cong (λ x → x !! i) (finext α))
 
