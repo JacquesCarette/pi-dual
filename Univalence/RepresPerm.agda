@@ -30,7 +30,7 @@ open RPerm
 open Enum
 
 -- first theorem about these: same size!
-{-# TERMINATING #-}
+{-# TERMINATING #-} -- Agda can't see this, and I don't want to worry about it now
 thm1 : ∀ {A B} → (X : RPerm A B) → (n (#A X) ≡ n (#B X))
 thm1 (rp (enum 0 _) (enum 0 _) _) = refl
 thm1 (rp (enum Data.Nat.zero (fA , isoA)) (enum (suc m) (fB , mkqinv g α β)) (f , iso)) with fA (I.g (g zero))
