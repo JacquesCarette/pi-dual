@@ -19,28 +19,27 @@ open import LeftCancellation
 -- 2. an Enumeration of B
 -- 3. an isomorphism between A and B
 
-record RPerm (A : Set) (B : Set) : Set where
+record RPerm (A : Set) (n : ℕ) (B : Set) (m : ℕ) : Set where
   constructor rp
   field
-    #A : Enum A
-    #B : Enum B
+    #A : Enum A n
+    #B : Enum B m
     iso : A ≃ B
 
 open RPerm
 open Enum
 
 -- first theorem about these: same size!
-{-# TERMINATING #-} -- Agda can't see this, and I don't want to worry about it now
-thm1 : ∀ {A B} → (X : RPerm A B) → (n (#A X) ≡ n (#B X))
-thm1 (rp (enum 0 _) (enum 0 _) _) = refl
-thm1 (rp (enum Data.Nat.zero (fA , isoA)) (enum (suc m) (fB , mkqinv g α β)) (f , iso)) with fA (I.g (g zero))
+thm1 : ∀ {n m} {A B} → (X : RPerm A n B m) → n ≡ m
+thm1 {0} {0 } (rp (enum _) (enum _) _) = refl
+thm1 {0} {suc m} (rp (enum (fA , isoA)) (enum (fB , mkqinv g α β)) (f , iso)) with fA (I.g (g zero))
   where module I = qinv iso
 ... | ()
-thm1 (rp (enum (suc n) (fA , isoA)) (enum Data.Nat.zero B≃Fm) (f , iso)) with B≃Fm ⋆ f (IA.g zero)
+thm1 {suc n} {0} (rp (enum (fA , isoA)) (enum B≃Fm) (f , iso)) with B≃Fm ⋆ f (IA.g zero)
   where module IA = qinv isoA
 ... | ()
-thm1 {A} {B} (rp (enum (suc n) A≃Fsn) (enum (suc m) B≃Fsm) A≃B) = 
-  cong suc (thm1 {Fin n} {Fin m} (rp (enum n idequiv) (enum m idequiv) Fn≃Fm))
+thm1 {suc n} {suc m} {A} {B} (rp (enum A≃Fsn) (enum B≃Fsm) A≃B) = 
+  cong suc (thm1 {n} {m} {Fin n} {Fin m} (rp (enum idequiv) (enum idequiv) Fn≃Fm))
   where
     Fsn≃Fsm : Fin (suc n) ≃ Fin (suc m)
     Fsn≃Fsm = trans≃ (trans≃ (sym≃ A≃Fsn) A≃B) B≃Fsm

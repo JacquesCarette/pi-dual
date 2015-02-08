@@ -5,10 +5,11 @@ module VectorLemmas where
 open import Level using (Level)
 
 open import Data.Vec
-  using (Vec; tabulate; []; _∷_; lookup)
+  using (Vec; tabulate; []; _∷_; lookup; allFin)
   renaming (_++_ to _++V_; map to mapV; concat to concatV)
 open import  Data.Vec.Properties
-  using (lookup-++-≥; lookup∘tabulate; tabulate-∘; tabulate∘lookup)
+  using (lookup-++-≥; lookup∘tabulate; tabulate-∘; tabulate∘lookup;
+     tabulate-allFin)
 open import Function using (id;_∘_;flip)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; cong; subst; proof-irrelevance; module ≡-Reasoning)
@@ -190,4 +191,3 @@ denest-tab-!! f g v =
         ≡⟨ cong (mapV (f ∘ g)) (tabulate∘lookup v) ⟩
     mapV (f ∘ g) v ∎)
   where open ≡-Reasoning
-
