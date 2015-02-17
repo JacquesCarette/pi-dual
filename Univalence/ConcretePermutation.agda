@@ -5,15 +5,16 @@ module ConcretePermutation where
 open import Data.Nat using (ℕ)
 open import Data.Fin using (Fin)
 open import Data.Vec using (Vec; tabulate)
-open import Data.Vec.Properties using (lookup∘tabulate)
+open import Data.Vec.Properties using (lookup∘tabulate; tabulate∘lookup; lookup-allFin)
 open import VecHelpers using (_!!_)
-open import Relation.Binary.PropositionalEquality using (_≡_; sym; cong; trans; module ≡-Reasoning)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans; proof-irrelevance; 
+    module ≡-Reasoning)
 open import VecOps
 open import Function using (_∘_; id)
 open import RepresPerm
 open import Equiv
 open import Enumeration
-open import Data.Product using (_,_)
+open import Data.Product using (_,_; proj₁; proj₂)
 
 open import FiniteFunctions
 
@@ -22,10 +23,19 @@ infix 4 _∼p_
 _∼p_ : {n : ℕ} (p₁ p₂ : Vec (Fin n) n) → Set
 _∼p_ {n} p₁ p₂ = (i : Fin n) → p₁ !! i ≡ p₂ !! i
 
+∼p⇒≡ : {n : ℕ} {p₁ p₂ : Vec (Fin n) n} → (p₁ ∼p p₂) → p₁ ≡ p₂
+∼p⇒≡ {n} {p₁} {p₂} equiv = 
+  begin (
+    p₁                                    ≡⟨ sym (tabulate∘lookup p₁) ⟩
+    tabulate (_!!_ p₁)            ≡⟨ finext equiv ⟩
+    tabulate (_!!_ p₂)            ≡⟨ tabulate∘lookup p₂ ⟩
+    p₂ ∎)
+  where open ≡-Reasoning
+
 _∘̂_ : {n : ℕ} → Vec (Fin n) n → Vec (Fin n) n → Vec (Fin n) n
 _∘̂_ {n} = F.scompcauchy
 
--- not the flip!
+-- note the flip!
 ∘̂⇒∘ : {n : ℕ} → (f g : Fin n → Fin n) → tabulate f ∘̂ tabulate g ∼p tabulate (g ∘ f)
 ∘̂⇒∘ f g i = 
   begin (
@@ -40,6 +50,14 @@ _∘̂_ {n} = F.scompcauchy
     tabulate (g ∘ f) !! i ∎)
   where open ≡-Reasoning
 
+!!⇒∘̂ : {n : ℕ} → (π₁ π₂ : Vec (Fin n) n) → (i : Fin n) → π₁ !! (π₂ !! i) ≡ (π₁ ∘̂ π₂) !! i
+!!⇒∘̂ π₁ π₂ i = 
+  begin (
+    π₁ !! (π₂ !! i)
+          ≡⟨ {!!} ⟩
+    (π₁ ∘̂ π₂) !! i ∎)
+  where open ≡-Reasoning
+
 -- a concrete permutation has 4 components:
 -- - the permutation
 -- - its inverse
@@ -49,14 +67,18 @@ record CPerm (size : ℕ) : Set where
   field
     π : Vec (Fin size) size
     πᵒ : Vec (Fin size) size
-    αp : (π ∘̂ πᵒ) ∼p (F.idcauchy size)
-    βp : (πᵒ ∘̂ π) ∼p (F.idcauchy size)
+    αp : π ∘̂ πᵒ ≡ F.idcauchy size
+    βp : πᵒ ∘̂ π ≡ F.idcauchy size
+
+p≡ : ∀ {n} → (π₁ π₂ : CPerm n) → (CPerm.π π₁ ≡ CPerm.π π₂) → (CPerm.πᵒ π₁ ≡ CPerm.πᵒ π₂) → π₁ ≡ π₂
+p≡ (cp π πᵒ αp βp) (cp .π .πᵒ αp₁ βp₁) refl refl with proof-irrelevance αp αp₁ | proof-irrelevance βp βp₁
+p≡ (cp π πᵒ αp βp) (cp .π .πᵒ .αp .βp) refl refl | refl | refl = refl
 
 idp : ∀ {n} → CPerm n
 idp {n} = cp (F.idcauchy n) (F.idcauchy n) pf₁ pf₁
   where
-    pf₁ : F.idcauchy n ∘̂ F.idcauchy n ∼p F.idcauchy n
-    pf₁ = ∘̂⇒∘ id id 
+    pf₁ : F.idcauchy n ∘̂ F.idcauchy n ≡ F.idcauchy n
+    pf₁ = finext (λ i → trans (lookup-allFin (F.idcauchy n !! i)) (lookup-allFin i)) 
 
 symp : ∀ {n} → CPerm n → CPerm n
 symp (cp p₁ p₂ α β) = cp p₂ p₁ β α
@@ -68,7 +90,7 @@ thm2 {n} {A} {B} (enum A≃Fn) (enum B≃Fn) = fwd , (mkqinv bwd α β)
   where
     open ≡-Reasoning
     fwd : (A ≃ B) → CPerm n
-    fwd A≃B = cp (tabulate f) (tabulate g) αp βp
+    fwd A≃B = cp (tabulate f) (tabulate g) (∼p⇒≡ αp) (∼p⇒≡ βp)
       where
         f : Fin n → Fin n
         f j = B≃Fn ⋆ (A≃B ⋆ ((sym≃ A≃Fn) ⋆ j)) 
@@ -80,17 +102,13 @@ thm2 {n} {A} {B} (enum A≃Fn) (enum B≃Fn) = fwd , (mkqinv bwd α β)
         α i =
           begin
             (B≃Fn ⋆ (A≃B ⋆ ((sym≃ A≃Fn) ⋆ (A≃Fn ⋆ (sym≃ A≃B ⋆ (sym≃ B≃Fn ⋆ i)))))
-            ≡⟨ {!!} ⟩
+                ≡⟨ cong (λ x → B≃Fn ⋆ (A≃B ⋆ x)) (qinv.β (proj₂ A≃Fn) ((sym≃ A≃B  ⋆ (sym≃ B≃Fn ⋆ i)))) ⟩
+            B≃Fn ⋆ (A≃B ⋆ (sym≃ A≃B ⋆ (sym≃ B≃Fn ⋆ i)))
+                ≡⟨ cong (λ x → B≃Fn ⋆ x) (qinv.α (proj₂ A≃B) (sym≃ B≃Fn ⋆ i)) ⟩
+            B≃Fn ⋆ (sym≃ B≃Fn ⋆ i)
+                ≡⟨ qinv.α (proj₂ B≃Fn) i ⟩
             i ∎)
-{--
-n    : ℕ
-A    : Set
-B    : Set
-A≃Fn : A ≃ Fin n
-B≃Fn : B ≃ Fin n
-A≃B  : A ≃ B
-i    : Fin n
---}            
+
         β : g ∘ f ∼ id
         β i = {!!}
 
@@ -98,7 +116,7 @@ i    : Fin n
         αp i = 
           begin (
             (tabulate f ∘̂ tabulate g) !! i
-              ≡⟨ ∘̂⇒∘ f g i ⟩
+              ≡⟨  ∘̂⇒∘ f g i ⟩
            tabulate (g ∘ f) !! i
               ≡⟨ cong (λ x → x !! i) (finext β) ⟩
            tabulate id !! i ∎)
@@ -117,13 +135,35 @@ i    : Fin n
         g b = (sym≃ A≃Fn) ⋆ (p₂ !! (B≃Fn ⋆ b))
 
         α : f ∘ g ∼ id
-        α i = {!!}
+        α i = 
+          let fB = proj₁ B≃Fn in
+          let gB = qinv.g (proj₂ B≃Fn) in
+          let fA  = proj₁ A≃Fn in
+          let gA = qinv.g (proj₂ A≃Fn) in
+          begin (
+            f (g i)
+                     ≡⟨ refl ⟩
+            gB (p₁ !! fA (gA (p₂ !! fB i)))
+                     ≡⟨ cong (λ x → gB (p₁ !! x)) (qinv.α (proj₂ A≃Fn) (p₂ !! fB i)) ⟩
+            gB (p₁ !! (p₂ !! fB i))
+                     ≡⟨ cong gB (!!⇒∘̂ p₁ p₂ (fB i)) ⟩
+            gB ((p₁ ∘̂ p₂) !! fB i)
+                     ≡⟨ cong (λ x → gB (x !! fB i)) αp ⟩
+            gB (tabulate id !! fB i)
+                     ≡⟨ cong gB (lookup∘tabulate id (fB i)) ⟩
+            gB (fB i)
+                     ≡⟨ qinv.β (proj₂ B≃Fn) i ⟩
+            i ∎ )
 
         β : g ∘ f ∼ id
         β i = {!!}
 
     α : fwd ∘ bwd ∼ id
-    α (cp π πᵒ αp βp) = {!!}
+    α (cp π πᵒ αp βp) = p≡ (fwd (bwd i)) i pf₁ {!!}
+      where
+        i = cp π πᵒ αp βp
+        pf₁ : CPerm.π (fwd (bwd i)) ≡ π
+        pf₁ = {!!}
 
     β : bwd ∘ fwd ∼ id
     β (f , mkqinv g α β) = {!!}
