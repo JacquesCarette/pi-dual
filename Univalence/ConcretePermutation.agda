@@ -77,8 +77,20 @@ thm2 {n} {A} {B} (enum A≃Fn) (enum B≃Fn) = fwd , (mkqinv bwd α β)
         g j =  A≃Fn ⋆ (sym≃ A≃B ⋆ (sym≃ B≃Fn ⋆ j)) 
 
         α : f ∘ g ∼ id
-        α i = {!!}
-
+        α i =
+          begin
+            (B≃Fn ⋆ (A≃B ⋆ ((sym≃ A≃Fn) ⋆ (A≃Fn ⋆ (sym≃ A≃B ⋆ (sym≃ B≃Fn ⋆ i)))))
+            ≡⟨ {!!} ⟩
+            i ∎)
+{--
+n    : ℕ
+A    : Set
+B    : Set
+A≃Fn : A ≃ Fin n
+B≃Fn : B ≃ Fin n
+A≃B  : A ≃ B
+i    : Fin n
+--}            
         β : g ∘ f ∼ id
         β i = {!!}
 
