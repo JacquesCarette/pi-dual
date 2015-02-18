@@ -166,4 +166,22 @@ thm2 {n} {A} {B} (enum A≃Fn) (enum B≃Fn) = fwd , (mkqinv bwd α β)
         pf₁ = {!!}
 
     β : bwd ∘ fwd ∼ id
-    β (f , mkqinv g α β) = {!!}
+    β (f , mkqinv g α β) = ≃≡ {!!} {!!} bwd∘fwd A≃B bwd∘fwd∼A≃B {!!}
+      where
+        open ≡-Reasoning
+        A≃B = (f , mkqinv g α β)
+        module qB≃Fn = qinv (proj₂ B≃Fn)
+        module qA≃Fn = qinv (proj₂ A≃Fn)
+        f₁ : A → B
+        f₁ a = qB≃Fn.g (CPerm.π (fwd A≃B) !! (A≃Fn ⋆ a))
+        g₁ : B → A
+        g₁ b = qA≃Fn.g (CPerm.πᵒ (fwd A≃B) !! (B≃Fn ⋆ b))
+        α₁ : f₁ ∘ g₁ ∼ id
+        α₁ i = {!!}
+        β₁ : g₁ ∘ f₁ ∼ id
+        β₁ i = {!!}
+        bwd∘fwd : A ≃ B
+        bwd∘fwd = (f₁ , mkqinv g₁ α₁ β₁)
+        bwd∘fwd∼A≃B : proj₁ bwd∘fwd ∼ proj₁ A≃B
+        bwd∘fwd∼A≃B i = {!!}
+
