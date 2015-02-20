@@ -11,42 +11,32 @@ open import Data.Product using (Σ; _,_)
 -- open import Relation.Binary.PropositionalEquality
 open import Relation.Binary
 
--- open import Function.Equality
+open import Function.Equality renaming (_∘_ to _⊚_; id to id⊚)
 -- infix 4 _≃_
 
 open Setoid
 
-record qinv {ℓ₁ ℓ₂ ℓ₃ ℓ₄ : Level} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} (f : Carrier A → Carrier B) : Set (ℓ₁ ⊔ ℓ₂ ⊔ ℓ₃ ⊔ ℓ₄) where
-  constructor mkqinv
+record _≃_ {ℓ₁ ℓ₂ ℓ₃ ℓ₄ : Level} (A : Setoid ℓ₁ ℓ₂) (B : Setoid ℓ₃ ℓ₄)  : Set (ℓ₁ ⊔ ℓ₂ ⊔ ℓ₃ ⊔ ℓ₄) where
+  constructor equiv
 
-  mk∼ : ∀ {ℓ ℓ′} (C : Setoid ℓ ℓ′) → (Carrier C → Carrier C) → (Carrier C → Carrier C) → Set (ℓ ⊔ ℓ′)
-  mk∼ C = λ g h → ∀ x → _≈_ C (g x) (h x) 
+  A⇨A : Setoid (ℓ₂ ⊔ ℓ₁) (ℓ₂ ⊔ ℓ₁)
+  A⇨A = A ⇨ A
 
-  _∼₁_ = mk∼ B    
-  _∼₂_ = mk∼ A
+  _∼₁_ = _≈_ (B ⇨ B)    
+  _∼₂_ = _≈_ A⇨A
 
   field
-    g : Carrier B → Carrier A
-    α : (f ∘ g) ∼₁ id
-    β : (g ∘ f) ∼₂ id
-
-idqinv : {ℓ₁ ℓ₂ : Level} {A : Setoid ℓ₁ ℓ₂} → qinv {A = A} {A} id
-idqinv {A = A} = record {
-         g = id ;
-         α = λ b → refl A; 
-         β = λ a → refl A
-       }
-
-_≃_ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} (A : Setoid ℓ₁ ℓ₂) (B : Setoid ℓ₃ ℓ₄) → Set  (ℓ₁ ⊔ ℓ₂ ⊔ ℓ₃ ⊔ ℓ₄)
-A ≃ B = Σ (Carrier A → Carrier B) (qinv {A = A} {B})
-
+    f : A ⟶ B
+    g : B ⟶ A
+    α : (f ⊚ g) ∼₁ id⊚
+    β : (g ⊚ f) ∼₂ id⊚
 
 id≃ : ∀ {ℓ₁ ℓ₂} {A : Setoid ℓ₁ ℓ₂} → A ≃ A
-id≃ = (id , idqinv)
+id≃ {A = A} = equiv id⊚ id⊚ id id 
 
 sym≃ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} → (A ≃ B) → B ≃ A
-sym≃ (A→B , equiv) = e.g , mkqinv A→B e.β e.α
-  where module e = qinv equiv
+sym≃ eq = equiv e.g e.f e.β e.α
+  where module e = _≃_ eq
 
 {-
 trans≃ : {A : Setoid _ _} {B : Setoid _ _} {C : Setoid _ _} → A ≃ B → B ≃ C → A ≃ C
