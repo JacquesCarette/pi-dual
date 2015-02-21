@@ -1,25 +1,22 @@
 {-# OPTIONS --without-K #-}
 
 -- Borrowed from OldUnivalence/Equivalences.agda, without HoTT
+-- and then upgraded to work on Setoid rather than just on ≡
 module EquivSetoid where
 
 open import Level
-open import Function
-open import Data.Empty using (⊥)
-open import Data.Sum using (_⊎_; inj₁; inj₂)
-open import Data.Product using (Σ; _,_)
--- open import Relation.Binary.PropositionalEquality
-open import Relation.Binary
+open import Relation.Binary using (Setoid; module Setoid)
 
-open import Function.Equality renaming (_∘_ to _⊚_; id to id⊚)
--- infix 4 _≃_
+open import Function.Equality
+import Function as Fun
+
+infix 4 _≃S_
 
 open Setoid
 
-record _≃_ {ℓ₁ ℓ₂ ℓ₃ ℓ₄ : Level} (A : Setoid ℓ₁ ℓ₂) (B : Setoid ℓ₃ ℓ₄)  : Set (ℓ₁ ⊔ ℓ₂ ⊔ ℓ₃ ⊔ ℓ₄) where
+record _≃S_ {ℓ₁ ℓ₂ ℓ₃ ℓ₄ : Level} (A : Setoid ℓ₁ ℓ₂) (B : Setoid ℓ₃ ℓ₄)  : Set (ℓ₁ ⊔ ℓ₂ ⊔ ℓ₃ ⊔ ℓ₄) where
   constructor equiv
 
-  A⇨A : Setoid (ℓ₂ ⊔ ℓ₁) (ℓ₂ ⊔ ℓ₁)
   A⇨A = A ⇨ A
 
   _∼₁_ = _≈_ (B ⇨ B)    
@@ -28,52 +25,49 @@ record _≃_ {ℓ₁ ℓ₂ ℓ₃ ℓ₄ : Level} (A : Setoid ℓ₁ ℓ₂) (B
   field
     f : A ⟶ B
     g : B ⟶ A
-    α : (f ⊚ g) ∼₁ id⊚
-    β : (g ⊚ f) ∼₂ id⊚
+    α : (f ∘ g) ∼₁ id
+    β : (g ∘ f) ∼₂ id
 
-id≃ : ∀ {ℓ₁ ℓ₂} {A : Setoid ℓ₁ ℓ₂} → A ≃ A
-id≃ {A = A} = equiv id⊚ id⊚ id id 
+private
+  id≃ : ∀ {ℓ₁ ℓ₂} {A : Setoid ℓ₁ ℓ₂} → A ≃S A
+  id≃ {A = A} = equiv id id Fun.id Fun.id 
 
-sym≃ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} → (A ≃ B) → B ≃ A
-sym≃ eq = equiv e.g e.f e.β e.α
-  where module e = _≃_ eq
+  sym≃ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} → (A ≃S B) → B ≃S A
+  sym≃ eq = equiv e.g e.f e.β e.α
+    where module e = _≃S_ eq
 
-{-
-trans≃ : {A : Setoid _ _} {B : Setoid _ _} {C : Setoid _ _} → A ≃ B → B ≃ C → A ≃ C
-trans≃ (f , feq) (g , geq) = (g ∘ f) , (mkqinv inv α' β')
-  where
-    module fm = qinv feq
-    module gm = qinv geq
-    inv = fm.g ∘ gm.g
-    α' = λ x → trans (cong g (fm.α (gm.g x))) (gm.α x)
-    β' = λ x → trans (cong fm.g (gm.β (f x))) (fm.β x)
+  trans≃ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄ ℓ₅ ℓ₆} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} {C : Setoid ℓ₅ ℓ₆} → A ≃S B → B ≃S C → A ≃S C
+  trans≃ {A = A} {B} {C} A≃B B≃C = equiv f g α' β'
+    where
+      module fm = _≃S_ A≃B
+      module gm = _≃S_ B≃C
+      f : A ⟶ C
+      f = gm.f ∘ fm.f
+      g : C ⟶ A
+      g = fm.g ∘ gm.g
+      α' : _≈_ (C ⇨ C) (f ∘ g)  id
+      α' = λ z → trans C (cong gm.f (fm.α (cong gm.g (refl C)))) (gm.α z) 
+      β' : _≈_ (A ⇨ A) (g ∘ f) id
+      β' = λ z → trans A (cong fm.g (gm.β (cong fm.f (refl A)))) (fm.β z)
+
+≃-Setoid : ∀ {ℓ₁ ℓ₂} → Setoid (suc ℓ₁ ⊔ suc ℓ₂) (ℓ₁ ⊔ ℓ₂)
+≃-Setoid {ℓ₁} {ℓ₂} = record 
+  { Carrier = Setoid ℓ₁ ℓ₂ 
+  ; _≈_ = _≃S_ 
+  ; isEquivalence = record 
+    { refl = id≃ 
+    ; sym = sym≃ 
+    ; trans = trans≃ 
+    } 
+  }
 
 -- equivalences are injective
 
-_⋆_ : {A B : Set} → (A ≃ B) → (x : A) → B
-(f , _) ⋆ x = f x 
+_✴_ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} → (A ≃S B) → (x : Carrier A) → Carrier B
+(equiv f _ _ _) ✴ x = f ⟨$⟩ x  
 
-inj≃ : {A B : Set} → (eq : A ≃ B) → (x y : A) → (eq ⋆ x ≡ eq ⋆ y → x ≡ y)
-inj≃ (f , mkqinv g α β) x y p = trans (sym (β x)) (trans (cong g p) (β y))
-
-bad-path : {A B : Set} → (a : A) → (b : B) → inj₁ a ≡ inj₂ b → ⊥
-bad-path x y ()
-
--- ⊎ injective too
-inj₁≡ : {A B : Set} → {a b : A} → inj₁ {A = A} {B} a ≡ inj₁ b → a ≡ b
-inj₁≡ refl = refl
-
-inj₂≡ : {A B : Set} → {a b : B} → inj₂ {A = A} {B} a ≡ inj₂ b → a ≡ b
-inj₂≡ refl = refl
-
--- when are two equivalences actually equal? We need funext for that, but we do
--- have it when it matters!
-≃≡ : {A B : Set} → (funextA : {D : A → Set} {f g : (y : A) → D y} → (∀ x → f x ≡ g x) → f ≡ g) →
-                               (funextB : {D : B → Set} {f g : (y : B) → D y} → (∀ x → f x ≡ g x) → f ≡ g) → 
-  (eq₁ eq₂ : A ≃ B) → 
-  (∀ x → eq₁ ⋆ x ≡ eq₂ ⋆ x) → (∀ x → (sym≃ eq₁) ⋆ x ≡ (sym≃ eq₂) ⋆ x) → eq₁ ≡ eq₂
-≃≡ feA feB (f₀ , mkqinv g₀ α₀ β₀) (f₁ , mkqinv g₁ α₁ β₁) f-ext g-ext with feA f-ext | feB g-ext 
-≃≡ {A} {B} feA feB (f₀ , mkqinv g₀ α₀ β₀) (.f₀ , mkqinv .g₀ α₁ β₁) f-ext g-ext | refl | refl with feB (λ x → proof-irrelevance (α₀ x) (α₁ x)) | feA (λ x → proof-irrelevance (β₀ x) (β₁ x))
-≃≡ feA feB (f₀ , mkqinv g₀ α₀ β₀) (.f₀ , mkqinv .g₀ .α₀ .β₀) f-ext g-ext | refl | refl | refl | refl = refl
-
--}
+inj≃ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} → (eq : A ≃S B) → {x y : Carrier A} → 
+  _≈_ B (eq ✴ x)  (eq ✴ y) → _≈_ A x y
+inj≃ {A = A'} (equiv f g _ β) p = A.trans (A.sym (β A.refl)) (A.trans (cong g p) (β A.refl))
+  where
+    module A = Setoid A'
