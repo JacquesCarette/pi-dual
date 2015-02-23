@@ -20,16 +20,11 @@ open Setoid
 record _≃S_ {ℓ₁ ℓ₂ ℓ₃ ℓ₄ : Level} (A : Setoid ℓ₁ ℓ₂) (B : Setoid ℓ₃ ℓ₄)  : Set (ℓ₁ ⊔ ℓ₂ ⊔ ℓ₃ ⊔ ℓ₄) where
   constructor equiv
 
-  A⇨A = A ⇨ A
-
-  _∼₁_ = _≈_ (B ⇨ B)    
-  _∼₂_ = _≈_ A⇨A
-
   field
     f : A ⟶ B
     g : B ⟶ A
-    α : (f ∘ g) ∼₁ id
-    β : (g ∘ f) ∼₂ id
+    α : ∀ {x y} → _≈_ B x y → _≈_ B ((f ∘ g) ⟨$⟩ x) y
+    β : ∀ {x y} → _≈_ A x y → _≈_ A ((g ∘ f) ⟨$⟩ x) y
 
 id≃S : ∀ {ℓ₁ ℓ₂} {A : Setoid ℓ₁ ℓ₂} → A ≃S A
 id≃S {A = A} = equiv id id Fun.id Fun.id 
