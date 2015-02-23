@@ -27,19 +27,18 @@ record RPerm (A : Set) (n : ℕ) (B : Set) (m : ℕ) : Set where
     iso : A ≃ B
 
 open RPerm
-open Enum
 
 -- first theorem about these: same size!
 thm1 : ∀ {n m} {A B} → (X : RPerm A n B m) → n ≡ m
-thm1 {0} {0 } (rp (enum _) (enum _) _) = refl
-thm1 {0} {suc m} (rp (enum (fA , isoA)) (enum (fB , mkqinv g α β)) (f , iso)) with fA (I.g (g zero))
+thm1 {0} {0 } (rp _ _ _ ) = refl
+thm1 {0} {suc m} (rp (fA , isoA) (fB , mkqinv g α β) (f , iso)) with fA (I.g (g zero))
   where module I = qinv iso
 ... | ()
-thm1 {suc n} {0} (rp (enum (fA , isoA)) (enum B≃Fm) (f , iso)) with B≃Fm ⋆ f (IA.g zero)
+thm1 {suc n} {0} (rp (fA , isoA) B≃Fm (f , iso)) with B≃Fm ⋆ f (IA.g zero)
   where module IA = qinv isoA
 ... | ()
-thm1 {suc n} {suc m} {A} {B} (rp (enum A≃Fsn) (enum B≃Fsm) A≃B) = 
-  cong suc (thm1 {n} {m} {Fin n} {Fin m} (rp (enum idequiv) (enum idequiv) Fn≃Fm))
+thm1 {suc n} {suc m} {A} {B} (rp A≃Fsn B≃Fsm A≃B) = 
+  cong suc (thm1 {n} {m} {Fin n} {Fin m} (rp idequiv idequiv Fn≃Fm))
   where
     Fsn≃Fsm : Fin (suc n) ≃ Fin (suc m)
     Fsn≃Fsm = trans≃ (trans≃ (sym≃ A≃Fsn) A≃B) B≃Fsm
