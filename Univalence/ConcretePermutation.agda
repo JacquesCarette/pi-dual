@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS --allow-unsolved-metas #-}
 
 module ConcretePermutation where
 
@@ -120,7 +120,7 @@ SCPerm n = ≡-Setoid (CPerm n)
 -- the big (semantic) theorem.
 -- for convenience, use only a single size, even though we could use 2.
 thm2 : ∀ {n} {A B : Set} → Enum A n → Enum B n → 
-  (≃-Setoid (≡-Setoid A) (≡-Setoid B)) ≃S ≡-Setoid (CPerm n)
+  (≃S-Setoid A B) ≃S ≡-Setoid (CPerm n)
 thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB) = 
   equiv fwd' bwd' α β
   where
@@ -178,13 +178,14 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
         βp : (tabulate g ∘̂ tabulate f) ∼p (F.idcauchy n)
         βp i = trans (∘̂⇒∘ g f i) (cong (λ x → x !! i) (finext α))
 
-    fwd' : ≃-Setoid AS BS ⟶ ≡-Setoid (CPerm n)
+    fwd' : ≃S-Setoid A B ⟶ ≡-Setoid (CPerm n)
     fwd' = record 
      { _⟨$⟩_ = fwd 
-      ; cong = λ {i} {j} cong_f → 
+      ; cong = λ {i} {j} i≋j → 
                        p≡ (fwd i) (fwd j) 
-                             (finext (λ k → cong enumB ( (proj₁ cong_f) {labelA k} refl)))
-     } 
+                             (finext (λ k → cong enumB (f≡ i≋j (labelA k)) ))
+     }
+       where open _≋_
 
     bwd : CPerm n → (AS ≃S BS)
     bwd (cp p₁ p₂ αp βp) = equiv f g α β
@@ -225,13 +226,11 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
               ≡⟨ βA a ⟩
             a ∎)
 
-    bwd' : ≡-Setoid (CPerm n) ⟶ ≃-Setoid AS BS
+    bwd' : ≡-Setoid (CPerm n) ⟶ ≃S-Setoid A B
     bwd' = record 
       { _⟨$⟩_ = bwd 
-       ; cong = λ { {π} {.π} refl → 
-                       ( (λ { {a₁} {.a₁} refl → refl }) ,′
-                         ((λ { {b₁} {.b₁} refl → refl})) ) }
-       }
+      ; cong = λ { {π} {.π} refl → equivS (λ a → refl) (λ b → refl) }
+      }
 
     α : Setoid._≈_ CP⇨ (fwd' ⊚ bwd') id⊚
     α {cp π πᵒ αp βp} refl = p≡ (fwd (bwd p)) p (trans (finext pf₁) (tabulate∘lookup π))
@@ -246,24 +245,27 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
               ≡⟨ cong (_!!_ π) (αA _) ⟩
             π !! j ∎)
 
-    β : {eq₁ eq₂ : AS ≃S BS} → 
-             (({a₁ a₂ : A} → a₁ ≡ a₂ → _≃S_.f eq₁ ⟨$⟩ a₁ ≡ _≃S_.f eq₂ ⟨$⟩ a₂) ×
-              ({b₁ b₂ : B} → b₁ ≡ b₂ → _≃S_.g eq₁ ⟨$⟩ b₁ ≡ _≃S_.g eq₂ ⟨$⟩ b₂) ) → 
-             (({a₁ a₂ : A} → a₁ ≡ a₂ → bwd (fwd eq₁) ✴ a₁ ≡ eq₂ ✴ a₂) × 
-              ({b₁ b₂ : B} → b₁ ≡ b₂ → sym≃S (bwd (fwd eq₁)) ✴ b₁ ≡ sym≃S eq₂ ✴ b₂ ))
-    β {equiv f g α β} {equiv f₁ g₁ α₁ β₁} (cong_f , cong_g) =
-      ( (λ { {a} {.a} refl → trans (pf₁ a) (cong_f refl) }) ,′ 
-        ((λ { {b} {.b} refl → trans (pf₂ b) (cong_g refl) })) )
+    β : {x y : AS ≃S BS} → x ≋ y → ((bwd' ⊚ fwd') ⟨$⟩ x) ≋ y
+    β {equiv f g α β} {equiv f₁ g₁ α₁ β₁} (equivS f≡ g≡) =
+      equivS (λ a → trans (pf₁ a) (f≡ a)) (λ b → trans (pf₂ b) (g≡ b))
       where
-        pf₁ : (a : A) → labelB (tabulate (λ j → enumB (f ⟨$⟩ labelA j)) !! enumA a) ≡ f ⟨$⟩ a
-        pf₁ a = 
+        pf₁ : ∀ a → labelB (tabulate (λ j → enumB (f ⟨$⟩ labelA j)) !! (enumA a)) ≡ f ⟨$⟩ a
+        pf₁ a =
           begin (
-             labelB (tabulate (λ j → enumB (f ⟨$⟩ labelA j)) !! enumA a)
-               ≡⟨ cong labelB (lookup∘tabulate _ (enumA a)) ⟩
-             labelB (enumB (f ⟨$⟩ labelA (enumA a)))
-               ≡⟨ βB _ ⟩
-             f ⟨$⟩ labelA (enumA a)
-               ≡⟨ cong (λ x → f ⟨$⟩ x) (βA _) ⟩
-             f ⟨$⟩ a ∎)
-        pf₂ : (b : B) →  labelA (tabulate (λ j → enumA (g ⟨$⟩ labelB j)) !! enumB b) ≡ g ⟨$⟩ b
-        pf₂ b = {!!}
+            labelB (tabulate (λ j → enumB (f ⟨$⟩ labelA j)) !! enumA a)
+              ≡⟨ cong labelB (lookup∘tabulate _ (enumA a)) ⟩
+            labelB (enumB (f ⟨$⟩ labelA (enumA a)))
+              ≡⟨ βB _ ⟩
+            f ⟨$⟩ labelA (enumA a)
+              ≡⟨ cong (_⟨$⟩_ f) (βA _) ⟩
+            f ⟨$⟩ a ∎)
+        pf₂ : ∀ b → labelA (tabulate (λ j → enumA (g ⟨$⟩ labelB j)) !! (enumB b)) ≡ g ⟨$⟩ b
+        pf₂ b = 
+          begin (
+            labelA (tabulate (λ j → enumA (g ⟨$⟩ labelB j)) !! enumB b)
+              ≡⟨ cong labelA (lookup∘tabulate _ (enumB b)) ⟩
+            labelA (enumA (g ⟨$⟩ labelB (enumB b)))
+              ≡⟨ βA _ ⟩
+            g ⟨$⟩ labelB (enumB b)
+              ≡⟨ cong (_⟨$⟩_ g) (βB _) ⟩
+            g ⟨$⟩ b ∎ )

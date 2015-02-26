@@ -10,18 +10,6 @@ open import Function.Equality using (_⟶_)
 open import Equiv
 open import EquivSetoid
 
--- any type can be made into a setoid over ≡
-≡-Setoid : ∀ {ℓ} → (A : Set ℓ) → Setoid ℓ ℓ
-≡-Setoid A = record 
-  { Carrier = A 
-  ; _≈_ = P._≡_ 
-  ; isEquivalence = record 
-    { refl = P.refl 
-    ; sym = P.sym 
-    ; trans = P.trans 
-    } 
-  }
-
 →to⟶ : ∀ {ℓ} {A B : Set ℓ} → (A → B) → (≡-Setoid A ⟶ ≡-Setoid B)
 →to⟶ f = record { _⟨$⟩_ = f ; cong = λ { {i} {.i} P.refl → P.refl } }
 
