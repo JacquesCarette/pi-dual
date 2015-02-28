@@ -79,12 +79,10 @@ id≋ = record { f≡ = λ x → P.refl ; g≡ = λ x → P.refl }
 
 sym≋ : ∀ {ℓ} {A B : Set ℓ} {x y : A ≃S≡ B} → x ≋ y → y ≋ x
 sym≋ (equivS f≡ g≡) = equivS (λ a → P.sym (f≡ a)) (λ b → P.sym (g≡ b))
-  where open _≋_
 
 trans≋ : ∀ {ℓ} {A B : Set ℓ} {x y z : A ≃S≡ B} → x ≋ y → y ≋ z → x ≋ z
 trans≋ (equivS f≡ g≡) (equivS h≡ i≡) =
    equivS (λ a → P.trans (f≡ a) (h≡ a)) (λ b → P.trans (g≡ b) (i≡ b))
-  where open _≋_
   
 -- WARNING: this is not generic, but specific to ≡-Setoids of functions.
 ≃S-Setoid : ∀ {ℓ₁} → (A B : Set ℓ₁) → Setoid ℓ₁ ℓ₁
