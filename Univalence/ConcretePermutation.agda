@@ -3,18 +3,22 @@
 module ConcretePermutation where
 
 open import Level
-open import Data.Nat using (ℕ)
+open import Data.Nat using (ℕ;_+_)
+open import Data.Nat.Properties.Simple using (+-comm)
 open import Data.Fin using (Fin)
 open import Data.Vec using (Vec; tabulate)
 open import Data.Vec.Properties using (lookup∘tabulate; tabulate∘lookup; lookup-allFin)
 open import VecHelpers using (_!!_)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans; proof-irrelevance; 
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans;
+    proof-irrelevance; subst;
     module ≡-Reasoning)
 open import Relation.Binary using (Setoid; module Setoid)
 open import Data.Product using (_,′_; _×_)
 
-open import VecOps
-open import VectorLemmas using (lookupassoc)
+open import VecOps -- and below, import from that
+open F
+open FPf
+
 open import Function using (_∘_; id)
 open import RepresPerm
 open import Equiv
@@ -40,9 +44,6 @@ _∼p_ {n} p₁ p₂ = (i : Fin n) → p₁ !! i ≡ p₂ !! i
     p₂ ∎)
   where open ≡-Reasoning
 
-_∘̂_ : {n : ℕ} → Vec (Fin n) n → Vec (Fin n) n → Vec (Fin n) n
-_∘̂_ {n} = F.scompcauchy
-
 -- note the flip!
 ∘̂⇒∘ : {n : ℕ} → (f g : Fin n → Fin n) → tabulate f ∘̂ tabulate g ∼p tabulate (g ∘ f)
 ∘̂⇒∘ f g i = 
@@ -56,25 +57,6 @@ _∘̂_ {n} = F.scompcauchy
     g (f i)
       ≡⟨ sym (lookup∘tabulate (g ∘ f) i) ⟩
     tabulate (g ∘ f) !! i ∎)
-  where open ≡-Reasoning
-
-∘̂-assoc : {n : ℕ} → (a b c : Vec (Fin n) n) → a ∘̂ (b ∘̂ c) ≡ (a ∘̂ b) ∘̂ c
-∘̂-assoc a b c = finext (lookupassoc a b c)
-
-∘̂-rid : {n : ℕ} → (π : Vec (Fin n) n) → π ∘̂ F.idcauchy n ≡ π
-∘̂-rid π = trans (finext (λ i → lookup-allFin (π !! i))) (tabulate∘lookup π)
-
-∘̂-lid : {n : ℕ} → (π : Vec (Fin n) n) → F.idcauchy n ∘̂ π ≡ π
-∘̂-lid π = trans (finext (λ i → cong (_!!_ π) (lookup-allFin i))) (tabulate∘lookup π)
-
-!!⇒∘̂ : {n : ℕ} → (π₁ π₂ : Vec (Fin n) n) → (i : Fin n) → π₁ !! (π₂ !! i) ≡ (π₂ ∘̂ π₁) !! i
-!!⇒∘̂ π₁ π₂ i = 
-  begin (
-    π₁ !! (π₂ !! i)
-          ≡⟨ sym (lookup∘tabulate (λ j → (π₁ !! (π₂ !! j))) i) ⟩
-    tabulate (λ i → π₁ !! (π₂ !! i)) !! i
-          ≡⟨ refl ⟩
-    (π₂ ∘̂ π₁) !! i ∎)
   where open ≡-Reasoning
 
 -- a concrete permutation has 4 components:
@@ -92,10 +74,10 @@ record CPerm (size : ℕ) : Set where
 πᵒ≡ : ∀ {n} → (π₁ π₂ : CPerm n) → (CPerm.π π₁ ≡ CPerm.π π₂) → (CPerm.πᵒ π₁ ≡ CPerm.πᵒ π₂)
 πᵒ≡ {n} (cp π πᵒ αp βp) (cp .π πᵒ₁ αp₁ βp₁) refl =
   begin (
-    πᵒ                            ≡⟨ sym (∘̂-rid πᵒ) ⟩
-    πᵒ ∘̂ F.idcauchy n    ≡⟨  cong (_∘̂_ πᵒ) (sym αp₁)  ⟩
-    πᵒ ∘̂ (π ∘̂ πᵒ₁)           ≡⟨ ∘̂-assoc πᵒ π πᵒ₁ ⟩
-    (πᵒ ∘̂ π) ∘̂ πᵒ₁           ≡⟨ cong (λ x → x ∘̂ πᵒ₁) βp ⟩
+    πᵒ                  ≡⟨ sym (∘̂-rid πᵒ) ⟩
+    πᵒ ∘̂ F.idcauchy n   ≡⟨  cong (_∘̂_ πᵒ) (sym αp₁)  ⟩
+    πᵒ ∘̂ (π ∘̂ πᵒ₁)      ≡⟨ ∘̂-assoc πᵒ π πᵒ₁ ⟩
+    (πᵒ ∘̂ π) ∘̂ πᵒ₁      ≡⟨ cong (λ x → x ∘̂ πᵒ₁) βp ⟩
     F.idcauchy n ∘̂ πᵒ₁  ≡⟨ ∘̂-lid πᵒ₁ ⟩
     πᵒ₁ ∎)
   where open ≡-Reasoning
@@ -106,13 +88,38 @@ p≡ (cp π πᵒ αp βp) (cp .π .πᵒ αp₁ βp₁) refl | refl with proof-
 p≡ (cp π πᵒ αp βp) (cp .π .πᵒ .αp .βp) refl | refl | refl | refl = refl
 
 idp : ∀ {n} → CPerm n
-idp {n} = cp (F.idcauchy n) (F.idcauchy n) pf₁ pf₁
-  where
-    pf₁ : F.idcauchy n ∘̂ F.idcauchy n ≡ F.idcauchy n
-    pf₁ = finext (λ i → trans (lookup-allFin (F.idcauchy n !! i)) (lookup-allFin i)) 
+idp {n} = cp (F.idcauchy n) (F.idcauchy n) (∘̂-rid _) (∘̂-lid _)
 
 symp : ∀ {n} → CPerm n → CPerm n
 symp (cp p₁ p₂ α β) = cp p₂ p₁ β α
+
+transp : ∀ {n} → CPerm n → CPerm n → CPerm n
+transp {n} (cp π πᵒ αp βp) (cp π₁ πᵒ₁ αp₁ βp₁) = cp (π ∘̂ π₁) (πᵒ₁ ∘̂ πᵒ) pf₁ pf₂
+  where
+    open ≡-Reasoning
+    pf₁ : (π ∘̂ π₁) ∘̂ (πᵒ₁ ∘̂ πᵒ) ≡ F.idcauchy n
+    pf₁ = 
+      begin (
+        (π ∘̂ π₁) ∘̂ (πᵒ₁ ∘̂ πᵒ)      ≡⟨ ∘̂-assoc _ _ _ ⟩
+        ((π ∘̂ π₁) ∘̂ πᵒ₁) ∘̂ πᵒ      ≡⟨ cong (λ x → x ∘̂ πᵒ) (sym (∘̂-assoc _ _ _)) ⟩
+        (π ∘̂ (π₁ ∘̂ πᵒ₁)) ∘̂ πᵒ      ≡⟨ cong (λ x → (π ∘̂ x) ∘̂ πᵒ) (αp₁) ⟩
+        (π ∘̂ F.idcauchy n) ∘̂ πᵒ    ≡⟨ cong (λ x → x ∘̂ πᵒ) (∘̂-rid _) ⟩
+        π ∘̂ πᵒ                     ≡⟨ αp ⟩
+        F.idcauchy n ∎)
+    pf₂ : (πᵒ₁ ∘̂ πᵒ) ∘̂ (π ∘̂ π₁) ≡ F.idcauchy n
+    pf₂ = 
+      begin (
+        (πᵒ₁ ∘̂ πᵒ) ∘̂ (π ∘̂ π₁)     ≡⟨ ∘̂-assoc _ _ _ ⟩
+        ((πᵒ₁ ∘̂ πᵒ) ∘̂ π) ∘̂ π₁     ≡⟨ cong (λ x → x ∘̂ π₁) (sym (∘̂-assoc _ _ _)) ⟩
+        (πᵒ₁ ∘̂ (πᵒ ∘̂ π)) ∘̂ π₁     ≡⟨ cong (λ x → (πᵒ₁ ∘̂ x) ∘̂ π₁) βp ⟩
+        (πᵒ₁ ∘̂ F.idcauchy n) ∘̂ π₁ ≡⟨ cong (λ x → x ∘̂ π₁) (∘̂-rid _) ⟩
+         πᵒ₁ ∘̂ π₁                 ≡⟨ βp₁ ⟩
+        F.idcauchy n ∎)
+
+_⊎p_ : ∀ {m n} → CPerm m → CPerm n → CPerm (m + n)
+_⊎p_ {m} {n} π₀ π₁ = cp ((π π₀) ⊎c (π π₁)) ((πᵒ π₀) ⊎c (πᵒ π₁)) {!!} {!!}
+  where open CPerm
+        open F
 
 SCPerm : ℕ → Setoid zero zero
 SCPerm n = ≡-Setoid (CPerm n)

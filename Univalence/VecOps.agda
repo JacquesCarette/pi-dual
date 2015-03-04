@@ -44,9 +44,8 @@ module F where
   idcauchy = allFin
 
   -- Sequential composition
-  scompcauchy : ∀ {n₀ n₁ n₂} → Cauchy n₁ n₀ → Cauchy n₂ n₁ → Cauchy n₂ n₀
-  scompcauchy π₁ π₂ = tabulate (_!!_ π₂ ∘ _!!_ π₁)
-    -- tabulate (λ i → π₂ !! (π₁ !! i)) -- if one prefers "pointful"
+  _∘̂_ : {n₀ n₁ n₂ : ℕ} → Vec (Fin n₁) n₀ → Vec (Fin n₂) n₁ → Vec (Fin n₂) n₀
+  π₁ ∘̂ π₂ = tabulate (_!!_ π₂ ∘ _!!_ π₁)
 
   -- swap the first m elements with the last n elements
   -- [ v₀ , v₁   , v₂   , ... , vm-1 ,     vm , vm₊₁ , ... , vm+n-1 ]
@@ -61,8 +60,8 @@ module F where
   -- permutation by the size of the first type so that it acts on the
   -- second part of the vector
 
-  pcompcauchy : ∀ {m₁ n₁ m₂ n₂} → Cauchy m₁ m₂ → Cauchy n₁ n₂ → Cauchy (m₁ + n₁) (m₂ + n₂)
-  pcompcauchy α β = mapV Plus.fwd (V.pcomp α β)
+  _⊎c_ : ∀ {m₁ n₁ m₂ n₂} → Cauchy m₁ m₂ → Cauchy n₁ n₂ → Cauchy (m₁ + n₁) (m₂ + n₂)
+  _⊎c_ α β = mapV Plus.fwd (V.pcomp α β)
 
   -- Tensor multiplicative composition
   -- Transpositions in α correspond to swapping entire rows
@@ -85,3 +84,48 @@ module F where
   swap⋆cauchy : (m n : ℕ) → Cauchy (n * m) (m * n)
   swap⋆cauchy m n = tabulate (Times.swapper m n)
     -- mapV transposeIndex (V.tcomp (idcauchy m) (idcauchy n))
+
+module FPf where
+  open import FiniteFunctions
+  open import VecHelpers using (map!!)
+  open import VectorLemmas using (lookupassoc; map-++-commute)
+  open import Proofs using (congD!)
+  open import Data.Vec.Properties using (lookup-allFin; tabulate∘lookup; lookup∘tabulate; tabulate-∘)
+  open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
+  open F
+  open ≡-Reasoning
+
+  -- properties of sequential composition
+  ∘̂-assoc : {n : ℕ} → (a b c : Vec (Fin n) n) → a ∘̂ (b ∘̂ c) ≡ (a ∘̂ b) ∘̂ c
+  ∘̂-assoc a b c = finext (lookupassoc a b c)
+
+  ∘̂-rid : {n : ℕ} → (π : Vec (Fin n) n) → π ∘̂ F.idcauchy n ≡ π
+  ∘̂-rid π = trans (finext (λ i → lookup-allFin (π !! i))) (tabulate∘lookup π)
+
+  ∘̂-lid : {n : ℕ} → (π : Vec (Fin n) n) → F.idcauchy n ∘̂ π ≡ π
+  ∘̂-lid π = trans (finext (λ i → cong (_!!_ π) (lookup-allFin i))) (tabulate∘lookup π)
+
+  !!⇒∘̂ : {n₁ n₂ n₃ : ℕ} → (π₁ : Vec (Fin n₁) n₂) → (π₂ : Vec (Fin n₂) n₃) → (i : Fin n₃) → π₁ !! (π₂ !! i) ≡ (π₂ ∘̂ π₁) !! i
+  !!⇒∘̂ π₁ π₂ i = 
+    begin (
+      π₁ !! (π₂ !! i)
+            ≡⟨ sym (lookup∘tabulate (λ j → (π₁ !! (π₂ !! j))) i) ⟩
+      tabulate (λ i → π₁ !! (π₂ !! i)) !! i
+            ≡⟨ refl ⟩
+      (π₂ ∘̂ π₁) !! i ∎)
+    where open ≡-Reasoning
+
+{-
+  ⊎c-distrib : ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : Cauchy m₁ n₁} → {p₂ : Cauchy m₂ n₂}
+    → {p₃ : Cauchy m₃ m₁} → {p₄ : Cauchy m₄ m₂} →
+      (p₁ ⊎c p₂) ∘̂ (p₃ ⊎c p₄) ≡ (p₁ ∘̂ p₃) ⊎c (p₂ ∘̂ p₄)
+  ⊎c-distrib {m₁} {m₂} {m₃} {m₄} {n₁} {n₂} {p₁} {p₂} {p₃} {p₄} = 
+    begin (
+      tabulate (λ i → (p₃ ⊎c p₄) !! ((p₁ ⊎c p₂) !! i))
+        ≡⟨ {!!} ⟩
+      mapV Plus.fwd (tabulate (λ i → inj₁ ((p₁ ∘̂ p₃) !! i))) ++V mapV (Plus.fwd {m₃}) (tabulate (λ i → inj₂ ((p₂ ∘̂ p₄) !! i)))
+        ≡⟨ sym (map-++-commute Plus.fwd (tabulate (λ i → inj₁ ((p₁ ∘̂ p₃) !! i)))) ⟩
+      mapV Plus.fwd (tabulate (λ i → inj₁ ((p₁ ∘̂ p₃) !! i)) ++V tabulate (λ i → inj₂ ((p₂ ∘̂ p₄) !! i)))
+        ≡⟨ refl ⟩
+      (p₁ ∘̂ p₃) ⊎c (p₂ ∘̂ p₄) ∎)
+-}

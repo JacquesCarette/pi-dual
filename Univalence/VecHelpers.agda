@@ -57,11 +57,11 @@ ntails₀ {k = suc k} (x ∷ v) = ntails₀ {k = k} v
 
 -- Important lemma about lookup; for some reason it doesn't seem to be in the
 -- library even though it's in the main agda tutorial, iirc
-map!! : {A B : Set} → {n : ℕ} → (f : A → B) → (v : Vec A n) → (i : F.Fin n) → 
+map!! : {n : ℕ} → {A B : Set} → (f : A → B) → (v : Vec A n) → (i : F.Fin n) → 
         (vmap f v) !! i ≡ f (v !! i)
-map!! {n = zero}  f  [] ()
-map!! {n = suc n} f (x ∷ xs) F.zero    = refl
-map!! {n = suc n} f (x ∷ xs) (F.suc i) = map!! f xs i
+map!! {zero}  f  [] ()
+map!! {suc n} f (x ∷ xs) F.zero    = refl
+map!! {suc n} f (x ∷ xs) (F.suc i) = map!! f xs i
 
 lookupTab : {A : Set} {n : ℕ} {f : F.Fin n → A} →  (i : F.Fin n) → 
             (tabulate f) !! i ≡ (f i)
