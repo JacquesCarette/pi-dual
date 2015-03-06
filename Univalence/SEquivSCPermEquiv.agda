@@ -184,27 +184,46 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
 
 -- Start proving some of the transport lemmas.  To make things simpler,
 -- use a global Enum A and Enum B
+-- (which turns out not so helpful after all, refactor! -- JC)
+
+-- Need to do:
+-- 1. prove that we have a bijective morphism of carriers: done, this is thm2 (fwd is the morphism)
+-- 2.  prove that it preserves:
+--   a. id (done)
+--   b. 0 (done)
+--   c. +
+--   d. *
+
 module Transport  {n : ℕ} {A B : Set} (EA : Enum A n) (EB : Enum B n) where
+  open import TypeEquivalences using (path⊎)
+
   enumA = proj₁ EA
   module qA = qinv (proj₂ EA)
   enumB = proj₁ EB
   module qB = qinv (proj₂ EB)
   open _≃S_
 
-{-
   transportAB :   (≃S-Setoid A B) ≃S ≡-Setoid (CPerm n)
   transportAB = thm2 EA EB
-  fwd = f transportAB
-  bwd = g transportAB
--}
+  fwdAB = f transportAB
+  bwdAB = g transportAB
 
   transportAA = thm2 EA EA
-  fwd = f transportAA
-  bwd = g transportAA
+  fwdAA = f transportAA
+  bwdAA = g transportAA
 
-  lemma_1a : fwd ⟨$⟩ id≃S ≡ idp
+  lemma_1a : fwdAA ⟨$⟩ id≃S ≡ idp
   lemma_1a = p≡ (finext qA.α)
 
-  lemma_1b : (bwd ⟨$⟩ idp) ≋ id≃S
+  -- this is redundant, as it follows from lemma_1a.
+  lemma_1b : (bwdAA ⟨$⟩ idp) ≋ id≃S
   lemma_1b = equivS (λ x → trans (cong qA.g (lookup∘tabulate id (enumA x))) (qA.β x)) 
                                    (λ x → trans (cong qA.g (lookup∘tabulate id (enumA x))) (qA.β x))
+
+  lemma2 : f (thm2 0E 0E) ⟨$⟩ 0≃S ≡ 0p
+  lemma2 = p≡ refl
+
+{-
+  lemma3 : ∀ {x y} → fwdAB (path⊎ x y) ≡ fwdAB x ⊎p fwdAB y
+  lemma3 = ? -- needs a complete definition of ⊎p
+-}
