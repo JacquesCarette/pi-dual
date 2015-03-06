@@ -42,15 +42,21 @@ private
 ------------------------------------------------------------------------------
 -- Elementary permutations, Fin version
 
+-- We need to define (at least) 0, 1, +, *, ∘, swap+, swap*
 module F where
   open V
 
   -- convenient abbreviation
   Cauchy : ℕ → ℕ → Set
   Cauchy m n = Vec (Fin m) n
-  
+
+  -- principal component of the identity permutation  
   1C : {n : ℕ} → Cauchy n n
   1C {n} = allFin n
+
+  -- corresponds to ⊥ ≃ (⊥ × A) and other impossibilities
+  0C : Cauchy 0 0
+  0C = 0v
 
   -- Sequential composition
   _∘̂_ : {n₀ n₁ n₂ : ℕ} → Vec (Fin n₁) n₀ → Vec (Fin n₂) n₁ → Vec (Fin n₂) n₀
@@ -65,9 +71,6 @@ module F where
   swap+cauchy m n = tabulate (Plus.swapper m n)
 
   -- Parallel additive composition
-  -- append both permutations but adjust the indices in the second
-  -- permutation by the size of the first type so that it acts on the
-  -- second part of the vector
 
   _⊎c_ : ∀ {m₁ n₁ m₂ n₂} → Cauchy m₁ m₂ → Cauchy n₁ n₂ → Cauchy (m₁ + n₁) (m₂ + n₂)
   _⊎c_ α β = mapV Plus.fwd (α ⊎v β)
@@ -75,8 +78,8 @@ module F where
   -- Tensor multiplicative composition
   -- Transpositions in α correspond to swapping entire rows
   -- Transpositions in β correspond to swapping entire columns
-  tcompcauchy : ∀ {m₁ n₁ m₂ n₂} → Cauchy m₁ m₂ → Cauchy n₁ n₂ → Cauchy (m₁ * n₁) (m₂ * n₂)
-  tcompcauchy {m} {n} α β = mapV Times.fwd (α ×v β)
+  _×c_ : ∀ {m₁ n₁ m₂ n₂} → Cauchy m₁ m₂ → Cauchy n₁ n₂ → Cauchy (m₁ * n₁) (m₂ * n₂)
+  α ×c β = mapV Times.fwd (α ×v β)
 
   -- swap⋆
   -- 
@@ -92,15 +95,17 @@ module F where
 
   swap⋆cauchy : (m n : ℕ) → Cauchy (n * m) (m * n)
   swap⋆cauchy m n = tabulate (Times.swapper m n)
-    -- mapV transposeIndex (V.tcomp (idcauchy m) (idcauchy n))
+    -- mapV transposeIndex (V.tcomp 1C 1C)
 
 module FPf where
   open import FiniteFunctions
   open import VecHelpers using (map!!)
   open import VectorLemmas using (lookupassoc; map-++-commute)
   open import Proofs using (congD!)
-  open import Data.Vec.Properties using (lookup-allFin; tabulate∘lookup; lookup∘tabulate; tabulate-∘)
-  open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
+  open import Data.Vec.Properties using (lookup-allFin; tabulate∘lookup; 
+    lookup∘tabulate; tabulate-∘)
+  open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; 
+    cong; cong₂; module ≡-Reasoning)
   open F
   open ≡-Reasoning
 
