@@ -28,4 +28,4 @@ _⊛e_ : {A B : Set} {n m : ℕ} → Enum A n → Enum B m → Enum (A × B) (n 
 eA ⊛e eB = trans≃ (path× eA eB) Times.fwd-iso
 
 0E : Enum ⊥ 0
-0E = ⊥-elim , mkqinv Fin0-⊥ (λ { () }) {- (λ x → ⊥-elim (Fin0-⊥ x)) -} (λ { () })
+0E = ⊥-elim , mkqinv Fin0-⊥ (λ { () }) (λ { () })
