@@ -8,6 +8,7 @@ open import Level
 open import Relation.Binary using (Setoid; module Setoid)
 open import Data.Product using (_×_; _,′_; _,_)
 open import Relation.Binary.PropositionalEquality as P using ()
+open import Data.Empty 
 
 open import Equiv using (_≃_)
 
@@ -63,6 +64,12 @@ _✴_ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid
     ; trans = P.trans 
     } 
   }
+
+0S : Setoid zero zero
+0S = ≡-Setoid ⊥
+
+0≃S : 0S ≃S 0S
+0≃S = equiv id id (λ x → x) (λ x → x) 
 
 -- just to make things prettier
 _≃S≡_ : ∀ {ℓ₁} → (A B : Set ℓ₁) → Set ℓ₁
