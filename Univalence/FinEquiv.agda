@@ -22,6 +22,25 @@ open import LeqLemmas
 open import FinNatLemmas
 open import TypeEquivalences using (swap₊; swap⋆)
 
+-- generally useful, leave this at top:
+Fin0-⊥ : Fin 0 → ⊥
+Fin0-⊥ ()
+
+Fin1≃⊤ : Fin 1 ≃ ⊤
+Fin1≃⊤ = f , mkqinv g α β
+  where
+    f : Fin 1 → ⊤
+    f zero = tt
+    f (suc ())
+    g : ⊤ → Fin 1
+    g tt = zero
+    α : f ∘ g ∼ id
+    α tt = refl
+    β : g ∘ f ∼ id
+    β zero = refl
+    β (suc ())
+
+
 -- Divide into 2 modules
 module Plus where
   fwd : {m n : ℕ} → (Fin m ⊎ Fin n) → Fin (m + n)
@@ -79,20 +98,6 @@ module Plus where
   swapper : (m n : ℕ) → Fin (m + n) → Fin (n + m)
   swapper m n = fwd ∘ swap₊ ∘ bwd {m} {n} 
 
-  Fin1≃⊤ : Fin 1 ≃ ⊤
-  Fin1≃⊤ = f , mkqinv g α β
-    where
-      f : Fin 1 → ⊤
-      f zero = tt
-      f (suc ())
-      g : ⊤ → Fin 1
-      g tt = zero
-      α : f ∘ g ∼ id
-      α tt = refl
-      β : g ∘ f ∼ id
-      β zero = refl
-      β (suc ())
-
 module Times where
   open import Perm hiding (absurd-quotient; Fin0-⊥) -- will fix later
   open import DivModUtils using (addMul-lemma)
@@ -119,9 +124,6 @@ module Times where
                        ≡⟨ sym k≡r+q*sn ⟩
                      toℕ k ∎)
                       where open ≤-Reasoning
-
-    Fin0-⊥ : Fin 0 → ⊥
-    Fin0-⊥ ()
 
     elim-right-zero : ∀ {ℓ} {Whatever : Set ℓ} (m : ℕ) → Fin (m * 0) → Whatever
     elim-right-zero m i = ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero m) i))
