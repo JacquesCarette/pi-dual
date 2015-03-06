@@ -1,4 +1,4 @@
-{-# OPTIONS --allow-unsolved-metas #-}
+{-# OPTIONS --without-K #-}
 
 module ConcretePermutation where
 
@@ -29,35 +29,6 @@ open import SetoidUtils
 open import Function.Equality using (_⟶_; Π; _⟨$⟩_; _⇨_) renaming (_∘_ to _⊚_; id to id⊚)
 
 open import FiniteFunctions
-
-infix 4 _∼p_
-
-_∼p_ : {n : ℕ} (p₁ p₂ : Vec (Fin n) n) → Set
-_∼p_ {n} p₁ p₂ = (i : Fin n) → p₁ !! i ≡ p₂ !! i
-
-∼p⇒≡ : {n : ℕ} {p₁ p₂ : Vec (Fin n) n} → (p₁ ∼p p₂) → p₁ ≡ p₂
-∼p⇒≡ {n} {p₁} {p₂} eqv = 
-  begin (
-    p₁                                    ≡⟨ sym (tabulate∘lookup p₁) ⟩
-    tabulate (_!!_ p₁)            ≡⟨ finext eqv ⟩
-    tabulate (_!!_ p₂)            ≡⟨ tabulate∘lookup p₂ ⟩
-    p₂ ∎)
-  where open ≡-Reasoning
-
--- note the flip!
-∘̂⇒∘ : {n : ℕ} → (f g : Fin n → Fin n) → tabulate f ∘̂ tabulate g ∼p tabulate (g ∘ f)
-∘̂⇒∘ f g i = 
-  begin (
-    (tabulate f ∘̂ tabulate g) !! i
-      ≡⟨ lookup∘tabulate _ i ⟩
-    (tabulate g) !! (tabulate f !! i)
-      ≡⟨ lookup∘tabulate _ (tabulate f !! i) ⟩
-    g (tabulate f !! i)
-      ≡⟨ cong g (lookup∘tabulate f i) ⟩
-    g (f i)
-      ≡⟨ sym (lookup∘tabulate (g ∘ f) i) ⟩
-    tabulate (g ∘ f) !! i ∎)
-  where open ≡-Reasoning
 
 -- a concrete permutation has 4 components:
 -- - the permutation

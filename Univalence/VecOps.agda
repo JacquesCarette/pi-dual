@@ -97,6 +97,7 @@ module F where
   swap⋆cauchy m n = tabulate (Times.swapper m n)
     -- mapV transposeIndex (V.tcomp 1C 1C)
 
+
 module FPf where
   open import FiniteFunctions
   open import VecHelpers using (map!!)
@@ -108,6 +109,36 @@ module FPf where
     cong; cong₂; module ≡-Reasoning)
   open F
   open ≡-Reasoning
+
+  -- Useful stuff
+  infix 4 _∼p_
+
+  _∼p_ : {n : ℕ} (p₁ p₂ : Vec (Fin n) n) → Set
+  _∼p_ {n} p₁ p₂ = (i : Fin n) → p₁ !! i ≡ p₂ !! i
+
+  ∼p⇒≡ : {n : ℕ} {p₁ p₂ : Vec (Fin n) n} → (p₁ ∼p p₂) → p₁ ≡ p₂
+  ∼p⇒≡ {n} {p₁} {p₂} eqv = 
+    begin (
+      p₁                                    ≡⟨ sym (tabulate∘lookup p₁) ⟩
+      tabulate (_!!_ p₁)            ≡⟨ finext eqv ⟩
+      tabulate (_!!_ p₂)            ≡⟨ tabulate∘lookup p₂ ⟩
+      p₂ ∎)
+    where open ≡-Reasoning
+
+  -- note the flip!
+  ∘̂⇒∘ : {n : ℕ} → (f g : Fin n → Fin n) → tabulate f ∘̂ tabulate g ∼p tabulate (g ∘ f)
+  ∘̂⇒∘ f g i = 
+    begin (
+      (tabulate f ∘̂ tabulate g) !! i
+        ≡⟨ lookup∘tabulate _ i ⟩
+      (tabulate g) !! (tabulate f !! i)
+        ≡⟨ lookup∘tabulate _ (tabulate f !! i) ⟩
+      g (tabulate f !! i)
+        ≡⟨ cong g (lookup∘tabulate f i) ⟩
+      g (f i)
+        ≡⟨ sym (lookup∘tabulate (g ∘ f) i) ⟩
+      tabulate (g ∘ f) !! i ∎)
+    where open ≡-Reasoning
 
   -- properties of sequential composition
   ∘̂-assoc : {n : ℕ} → (a b c : Vec (Fin n) n) → a ∘̂ (b ∘̂ c) ≡ (a ∘̂ b) ∘̂ c
