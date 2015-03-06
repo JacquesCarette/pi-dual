@@ -95,9 +95,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
     fwd' : ≃S-Setoid A B ⟶ ≡-Setoid (CPerm n)
     fwd' = record 
      { _⟨$⟩_ = fwd 
-      ; cong = λ {i} {j} i≋j → 
-                       p≡ (fwd i) (fwd j) 
-                             (finext (λ k → cong enumB (f≡ i≋j (labelA k)) ))
+      ; cong = λ {i} {j} i≋j → p≡ (finext (λ k → cong enumB (f≡ i≋j (labelA k)) ))
      }
        where open _≋_
 
@@ -147,7 +145,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
       }
 
     α : Setoid._≈_ CP⇨ (fwd' ⊚ bwd') id⊚
-    α {cp π πᵒ αp βp} refl = p≡ (fwd (bwd p)) p (trans (finext pf₁) (tabulate∘lookup π))
+    α {cp π πᵒ αp βp} refl = p≡ (trans (finext pf₁) (tabulate∘lookup π))
       where
         p = cp π πᵒ αp βp
         pf₁ : (j : Fin n) → enumB (labelB (π !! enumA (labelA j))) ≡ π !! j
@@ -205,7 +203,7 @@ module Transport  {n : ℕ} {A B : Set} (EA : Enum A n) (EB : Enum B n) where
   bwd = g transportAA
 
   lemma_1a : fwd ⟨$⟩ id≃S ≡ idp
-  lemma_1a = p≡ (fwd ⟨$⟩ id≃S) idp (finext qA.α)
+  lemma_1a = p≡ (finext qA.α)
 
   lemma_1b : (bwd ⟨$⟩ idp) ≋ id≃S
   lemma_1b = equivS (λ x → trans (cong qA.g (lookup∘tabulate id (enumA x))) (qA.β x)) 

@@ -53,10 +53,10 @@ record CPerm (size : ℕ) : Set where
     πᵒ₁ ∎)
   where open ≡-Reasoning
 
-p≡ : ∀ {n} → (π₁ π₂ : CPerm n) → (CPerm.π π₁ ≡ CPerm.π π₂) → π₁ ≡ π₂
-p≡ (cp π πᵒ αp βp) (cp .π πᵒ₁ αp₁ βp₁) refl with πᵒ≡ (cp π πᵒ αp βp) (cp π πᵒ₁ αp₁ βp₁) refl
-p≡ (cp π πᵒ αp βp) (cp .π .πᵒ αp₁ βp₁) refl | refl with proof-irrelevance αp αp₁ | proof-irrelevance βp βp₁
-p≡ (cp π πᵒ αp βp) (cp .π .πᵒ .αp .βp) refl | refl | refl | refl = refl
+p≡ : ∀ {n} → {π₁ π₂ : CPerm n} → (CPerm.π π₁ ≡ CPerm.π π₂) → π₁ ≡ π₂
+p≡ {n} {cp π πᵒ αp βp} {cp .π πᵒ₁ αp₁ βp₁} refl with πᵒ≡ (cp π πᵒ αp βp) (cp π πᵒ₁ αp₁ βp₁) refl
+p≡ {n} {cp π πᵒ αp βp} {cp .π .πᵒ αp₁ βp₁} refl | refl with proof-irrelevance αp αp₁ | proof-irrelevance βp βp₁
+p≡ {n} {cp π πᵒ αp βp} {cp .π .πᵒ .αp .βp} refl | refl | refl | refl = refl
 
 idp : ∀ {n} → CPerm n
 idp {n} = cp F.1C F.1C (∘̂-rid _) (∘̂-lid _)
