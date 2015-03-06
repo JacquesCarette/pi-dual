@@ -3,10 +3,11 @@
 module Enumeration where
 
 open import Equiv
+open import Data.Empty
 open import Data.Fin using (Fin)
 open import Data.Nat using (ℕ;_+_;_*_)
 open import Data.Sum using (_⊎_)
-open import Data.Product using (_×_)
+open import Data.Product using (_×_;_,_)
 open import Function using (_∘_)
 open import TypeEquivalences using (path⊎; path×)
 open import FinEquiv
@@ -25,3 +26,6 @@ eA ⊕e eB = trans≃ (path⊎ eA eB) Plus.fwd-iso
 
 _⊛e_ : {A B : Set} {n m : ℕ} → Enum A n → Enum B m → Enum (A × B) (n * m)
 eA ⊛e eB = trans≃ (path× eA eB) Times.fwd-iso
+
+0E : Enum ⊥ 0
+0E = ⊥-elim , mkqinv Fin0-⊥ (λ { () }) {- (λ x → ⊥-elim (Fin0-⊥ x)) -} (λ { () })
