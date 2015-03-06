@@ -68,6 +68,7 @@ _✴_ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid
 0S : Setoid zero zero
 0S = ≡-Setoid ⊥
 
+-- can't use id because it is not sufficiently dependently typed!
 0≃S : 0S ≃S 0S
 0≃S = equiv id id (λ x → x) (λ x → x) 
 
