@@ -76,13 +76,3 @@ inj₁≡ refl = refl
 
 inj₂≡ : {A B : Set} → {a b : B} → inj₂ {A = A} {B} a ≡ inj₂ b → a ≡ b
 inj₂≡ refl = refl
-
--- when are two equivalences actually equal? We need funext for that, but we do
--- have it when it matters!
-≃≡ : {A B : Set} → (funextA : {D : A → Set} {f g : (y : A) → D y} → (∀ x → f x ≡ g x) → f ≡ g) →
-                               (funextB : {D : B → Set} {f g : (y : B) → D y} → (∀ x → f x ≡ g x) → f ≡ g) → 
-  (eq₁ eq₂ : A ≃ B) → 
-  (∀ x → eq₁ ⋆ x ≡ eq₂ ⋆ x) → (∀ x → (sym≃ eq₁) ⋆ x ≡ (sym≃ eq₂) ⋆ x) → eq₁ ≡ eq₂
-≃≡ feA feB (f₀ , mkqinv g₀ α₀ β₀) (f₁ , mkqinv g₁ α₁ β₁) f-ext g-ext with feA f-ext | feB g-ext 
-≃≡ {A} {B} feA feB (f₀ , mkqinv g₀ α₀ β₀) (.f₀ , mkqinv .g₀ α₁ β₁) f-ext g-ext | refl | refl with feB (λ x → proof-irrelevance (α₀ x) (α₁ x)) | feA (λ x → proof-irrelevance (β₀ x) (β₁ x))
-≃≡ feA feB (f₀ , mkqinv g₀ α₀ β₀) (.f₀ , mkqinv .g₀ .α₀ .β₀) f-ext g-ext | refl | refl | refl | refl = refl
