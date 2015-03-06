@@ -3,7 +3,7 @@
 module SEquivSCPermEquiv where
 
 -- open import Level
--- open import Data.Nat using (ℕ;_+_)
+open import Data.Nat using (ℕ;_+_)
 -- open import Data.Nat.Properties.Simple using (+-comm)
 open import Data.Fin using (Fin)
 open import Data.Vec using (Vec; tabulate)
@@ -183,3 +183,30 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
             g ⟨$⟩ labelB (enumB b)
               ≡⟨ cong (_⟨$⟩_ g) (βB _) ⟩
             g ⟨$⟩ b ∎ )
+
+-- Start proving some of the transport lemmas.  To make things simpler,
+-- use a global Enum A and Enum B
+module Transport  {n : ℕ} {A B : Set} (EA : Enum A n) (EB : Enum B n) where
+  enumA = proj₁ EA
+  module qA = qinv (proj₂ EA)
+  enumB = proj₁ EB
+  module qB = qinv (proj₂ EB)
+  open _≃S_
+
+{-
+  transportAB :   (≃S-Setoid A B) ≃S ≡-Setoid (CPerm n)
+  transportAB = thm2 EA EB
+  fwd = f transportAB
+  bwd = g transportAB
+-}
+
+  transportAA = thm2 EA EA
+  fwd = f transportAA
+  bwd = g transportAA
+
+  lemma_1a : fwd ⟨$⟩ id≃S ≡ idp
+  lemma_1a = p≡ (fwd ⟨$⟩ id≃S) idp (finext qA.α)
+
+  lemma_1b : (bwd ⟨$⟩ idp) ≋ id≃S
+  lemma_1b = equivS (λ x → trans (cong qA.g (lookup∘tabulate id (enumA x))) (qA.β x)) 
+                                   (λ x → trans (cong qA.g (lookup∘tabulate id (enumA x))) (qA.β x))
