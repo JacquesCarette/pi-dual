@@ -22,26 +22,35 @@ open import VectorLemmas using (_!!_)
 open import FinEquiv using (module Plus; module Times)
 
 ------------------------------------------------------------------------------
-module V where
-  pcomp : ∀ {m n} {A B : Set} → Vec A m → Vec B n → Vec (A ⊎ B) (m + n)
-  pcomp α β = tabulate (inj₁ ∘ _!!_ α) ++V tabulate (inj₂ ∘ _!!_ β)
+-- Pure vector operations
+-- Does not involve Fin at all.
+-- Note: not exported!
+private
+  module V where
+    _⊎v_ : ∀ {m n} {A B : Set} → Vec A m → Vec B n → Vec (A ⊎ B) (m + n)
+    α ⊎v β = tabulate (inj₁ ∘ _!!_ α) ++V tabulate (inj₂ ∘ _!!_ β)
 
-  swap+ : {m n : ℕ} {A B : Set} → Vec (A ⊎ B) (m + n) → Vec (B ⊎ A) (m + n)
-  swap+ v = tabulate (swap₊ ∘ _!!_ v)
+    swap+ : {m n : ℕ} {A B : Set} → Vec (A ⊎ B) (m + n) → Vec (B ⊎ A) (m + n)
+    swap+ v = tabulate (swap₊ ∘ _!!_ v)
 
-  tcomp : ∀ {m n} {A B : Set} → Vec A m → Vec B n → Vec (A × B) (m * n)
-  tcomp α β = α >>= (λ b → mapV (_,_ b) β)
+    _×v_ : ∀ {m n} {A B : Set} → Vec A m → Vec B n → Vec (A × B) (m * n)
+    α ×v β = α >>= (λ b → mapV (_,_ b) β)
+
+    0v : {A : Set} → Vec A 0
+    0v = []
 
 ------------------------------------------------------------------------------
 -- Elementary permutations, Fin version
 
 module F where
+  open V
+
   -- convenient abbreviation
   Cauchy : ℕ → ℕ → Set
   Cauchy m n = Vec (Fin m) n
   
-  idcauchy : (n : ℕ) → Cauchy n n
-  idcauchy = allFin
+  1C : {n : ℕ} → Cauchy n n
+  1C {n} = allFin n
 
   -- Sequential composition
   _∘̂_ : {n₀ n₁ n₂ : ℕ} → Vec (Fin n₁) n₀ → Vec (Fin n₂) n₁ → Vec (Fin n₂) n₀
@@ -61,13 +70,13 @@ module F where
   -- second part of the vector
 
   _⊎c_ : ∀ {m₁ n₁ m₂ n₂} → Cauchy m₁ m₂ → Cauchy n₁ n₂ → Cauchy (m₁ + n₁) (m₂ + n₂)
-  _⊎c_ α β = mapV Plus.fwd (V.pcomp α β)
+  _⊎c_ α β = mapV Plus.fwd (α ⊎v β)
 
   -- Tensor multiplicative composition
   -- Transpositions in α correspond to swapping entire rows
   -- Transpositions in β correspond to swapping entire columns
   tcompcauchy : ∀ {m₁ n₁ m₂ n₂} → Cauchy m₁ m₂ → Cauchy n₁ n₂ → Cauchy (m₁ * n₁) (m₂ * n₂)
-  tcompcauchy {m} {n} α β = mapV Times.fwd (V.tcomp α β)
+  tcompcauchy {m} {n} α β = mapV Times.fwd (α ×v β)
 
   -- swap⋆
   -- 
@@ -99,10 +108,10 @@ module FPf where
   ∘̂-assoc : {n : ℕ} → (a b c : Vec (Fin n) n) → a ∘̂ (b ∘̂ c) ≡ (a ∘̂ b) ∘̂ c
   ∘̂-assoc a b c = finext (lookupassoc a b c)
 
-  ∘̂-rid : {n : ℕ} → (π : Vec (Fin n) n) → π ∘̂ F.idcauchy n ≡ π
+  ∘̂-rid : {n : ℕ} → (π : Vec (Fin n) n) → π ∘̂ F.1C ≡ π
   ∘̂-rid π = trans (finext (λ i → lookup-allFin (π !! i))) (tabulate∘lookup π)
 
-  ∘̂-lid : {n : ℕ} → (π : Vec (Fin n) n) → F.idcauchy n ∘̂ π ≡ π
+  ∘̂-lid : {n : ℕ} → (π : Vec (Fin n) n) → F.1C ∘̂ π ≡ π
   ∘̂-lid π = trans (finext (λ i → cong (_!!_ π) (lookup-allFin i))) (tabulate∘lookup π)
 
   !!⇒∘̂ : {n₁ n₂ n₃ : ℕ} → (π₁ : Vec (Fin n₁) n₂) → (π₂ : Vec (Fin n₂) n₃) → (i : Fin n₃) → π₁ !! (π₂ !! i) ≡ (π₂ ∘̂ π₁) !! i

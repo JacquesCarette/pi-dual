@@ -68,17 +68,17 @@ record CPerm (size : ℕ) : Set where
   field
     π : Vec (Fin size) size
     πᵒ : Vec (Fin size) size
-    αp : π ∘̂ πᵒ ≡ F.idcauchy size
-    βp : πᵒ ∘̂ π ≡ F.idcauchy size
+    αp : π ∘̂ πᵒ ≡ F.1C
+    βp : πᵒ ∘̂ π ≡ F.1C
 
 πᵒ≡ : ∀ {n} → (π₁ π₂ : CPerm n) → (CPerm.π π₁ ≡ CPerm.π π₂) → (CPerm.πᵒ π₁ ≡ CPerm.πᵒ π₂)
 πᵒ≡ {n} (cp π πᵒ αp βp) (cp .π πᵒ₁ αp₁ βp₁) refl =
   begin (
     πᵒ                  ≡⟨ sym (∘̂-rid πᵒ) ⟩
-    πᵒ ∘̂ F.idcauchy n   ≡⟨  cong (_∘̂_ πᵒ) (sym αp₁)  ⟩
+    πᵒ ∘̂ F.1C       ≡⟨  cong (_∘̂_ πᵒ) (sym αp₁)  ⟩
     πᵒ ∘̂ (π ∘̂ πᵒ₁)      ≡⟨ ∘̂-assoc πᵒ π πᵒ₁ ⟩
     (πᵒ ∘̂ π) ∘̂ πᵒ₁      ≡⟨ cong (λ x → x ∘̂ πᵒ₁) βp ⟩
-    F.idcauchy n ∘̂ πᵒ₁  ≡⟨ ∘̂-lid πᵒ₁ ⟩
+    F.1C ∘̂ πᵒ₁          ≡⟨ ∘̂-lid πᵒ₁ ⟩
     πᵒ₁ ∎)
   where open ≡-Reasoning
 
@@ -88,7 +88,7 @@ p≡ (cp π πᵒ αp βp) (cp .π .πᵒ αp₁ βp₁) refl | refl with proof-
 p≡ (cp π πᵒ αp βp) (cp .π .πᵒ .αp .βp) refl | refl | refl | refl = refl
 
 idp : ∀ {n} → CPerm n
-idp {n} = cp (F.idcauchy n) (F.idcauchy n) (∘̂-rid _) (∘̂-lid _)
+idp {n} = cp F.1C F.1C (∘̂-rid _) (∘̂-lid _)
 
 symp : ∀ {n} → CPerm n → CPerm n
 symp (cp p₁ p₂ α β) = cp p₂ p₁ β α
@@ -97,24 +97,24 @@ transp : ∀ {n} → CPerm n → CPerm n → CPerm n
 transp {n} (cp π πᵒ αp βp) (cp π₁ πᵒ₁ αp₁ βp₁) = cp (π ∘̂ π₁) (πᵒ₁ ∘̂ πᵒ) pf₁ pf₂
   where
     open ≡-Reasoning
-    pf₁ : (π ∘̂ π₁) ∘̂ (πᵒ₁ ∘̂ πᵒ) ≡ F.idcauchy n
+    pf₁ : (π ∘̂ π₁) ∘̂ (πᵒ₁ ∘̂ πᵒ) ≡ F.1C
     pf₁ = 
       begin (
         (π ∘̂ π₁) ∘̂ (πᵒ₁ ∘̂ πᵒ)      ≡⟨ ∘̂-assoc _ _ _ ⟩
         ((π ∘̂ π₁) ∘̂ πᵒ₁) ∘̂ πᵒ      ≡⟨ cong (λ x → x ∘̂ πᵒ) (sym (∘̂-assoc _ _ _)) ⟩
         (π ∘̂ (π₁ ∘̂ πᵒ₁)) ∘̂ πᵒ      ≡⟨ cong (λ x → (π ∘̂ x) ∘̂ πᵒ) (αp₁) ⟩
-        (π ∘̂ F.idcauchy n) ∘̂ πᵒ    ≡⟨ cong (λ x → x ∘̂ πᵒ) (∘̂-rid _) ⟩
+        (π ∘̂ F.1C) ∘̂ πᵒ       ≡⟨ cong (λ x → x ∘̂ πᵒ) (∘̂-rid _) ⟩
         π ∘̂ πᵒ                     ≡⟨ αp ⟩
-        F.idcauchy n ∎)
-    pf₂ : (πᵒ₁ ∘̂ πᵒ) ∘̂ (π ∘̂ π₁) ≡ F.idcauchy n
+        F.1C ∎)
+    pf₂ : (πᵒ₁ ∘̂ πᵒ) ∘̂ (π ∘̂ π₁) ≡ F.1C
     pf₂ = 
       begin (
         (πᵒ₁ ∘̂ πᵒ) ∘̂ (π ∘̂ π₁)     ≡⟨ ∘̂-assoc _ _ _ ⟩
         ((πᵒ₁ ∘̂ πᵒ) ∘̂ π) ∘̂ π₁     ≡⟨ cong (λ x → x ∘̂ π₁) (sym (∘̂-assoc _ _ _)) ⟩
         (πᵒ₁ ∘̂ (πᵒ ∘̂ π)) ∘̂ π₁     ≡⟨ cong (λ x → (πᵒ₁ ∘̂ x) ∘̂ π₁) βp ⟩
-        (πᵒ₁ ∘̂ F.idcauchy n) ∘̂ π₁ ≡⟨ cong (λ x → x ∘̂ π₁) (∘̂-rid _) ⟩
+        (πᵒ₁ ∘̂ F.1C) ∘̂ π₁     ≡⟨ cong (λ x → x ∘̂ π₁) (∘̂-rid _) ⟩
          πᵒ₁ ∘̂ π₁                 ≡⟨ βp₁ ⟩
-        F.idcauchy n ∎)
+        F.1C ∎)
 
 _⊎p_ : ∀ {m n} → CPerm m → CPerm n → CPerm (m + n)
 _⊎p_ {m} {n} π₀ π₁ = cp ((π π₀) ⊎c (π π₁)) ((πᵒ π₀) ⊎c (πᵒ π₁)) {!!} {!!}
@@ -172,7 +172,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
                ≡⟨ αA i ⟩
             i ∎)
 
-        αp : (tabulate f ∘̂ tabulate g) ∼p (F.idcauchy n)
+        αp : (tabulate f ∘̂ tabulate g) ∼p F.1C
         αp i = 
           begin (
             (tabulate f ∘̂ tabulate g) !! i
@@ -182,7 +182,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
            tabulate id !! i ∎)
 
         -- see the αp proof for why this proof is ok
-        βp : (tabulate g ∘̂ tabulate f) ∼p (F.idcauchy n)
+        βp : (tabulate g ∘̂ tabulate f) ∼p F.1C
         βp i = trans (∘̂⇒∘ g f i) (cong (λ x → x !! i) (finext α))
 
     fwd' : ≃S-Setoid A B ⟶ ≡-Setoid (CPerm n)
@@ -212,7 +212,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
               ≡⟨ cong labelB (!!⇒∘̂ _ _ (enumB b)) ⟩
             labelB ((p₂ ∘̂ p₁) !! enumB b)
               ≡⟨ cong (λ x → (labelB (x !! enumB b))) βp ⟩
-           labelB (F.idcauchy n !! enumB b)
+           labelB (F.1C !! enumB b)
               ≡⟨ cong labelB (lookup∘tabulate id _) ⟩
            labelB (enumB b)
               ≡⟨ βB b ⟩
@@ -227,7 +227,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
               ≡⟨ cong labelA (!!⇒∘̂ _ _ (enumA a)) ⟩
             labelA ((p₁ ∘̂ p₂) !! enumA a)
               ≡⟨ cong (λ x → labelA (x !! enumA a)) αp ⟩
-            labelA (F.idcauchy n !! enumA a)
+            labelA (F.1C !! enumA a)
               ≡⟨ cong labelA (lookup∘tabulate id _) ⟩
             labelA (enumA a)
               ≡⟨ βA a ⟩
