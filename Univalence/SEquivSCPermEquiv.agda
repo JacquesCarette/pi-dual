@@ -8,7 +8,7 @@ open import Data.Nat using (ℕ;_+_)
 open import Data.Fin using (Fin)
 open import Data.Vec using (Vec; tabulate)
 open import Data.Vec.Properties using (lookup∘tabulate; tabulate∘lookup; lookup-allFin)
-open import VecHelpers using (_!!_)
+
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans;
 --    proof-irrelevance; subst;
     module ≡-Reasoning)
@@ -30,6 +30,7 @@ open import Function.Equality using (_⟶_; Π; _⟨$⟩_; _⇨_) renaming (_∘
 
 open import ConcretePermutation
 open import FiniteFunctions using (finext)
+open import VectorLemmas using (_!!_)
 
 -- the big (semantic) theorem.
 -- for convenience, use only a single size, even though we could use 2.
