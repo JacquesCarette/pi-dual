@@ -95,9 +95,8 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
     fwd' : ≃S-Setoid A B ⟶ ≡-Setoid (CPerm n)
     fwd' = record 
      { _⟨$⟩_ = fwd 
-      ; cong = λ {i} {j} i≋j → p≡ (finext (λ k → cong enumB (f≡ i≋j (labelA k)) ))
+      ; cong = λ {i} {j} i≋j → p≡ (finext (λ k → cong enumB (i≋j (labelA k)) ))
      }
-       where open _≋_
 
     bwd : CPerm n → (AS ≃S BS)
     bwd (cp p₁ p₂ αp βp) = equiv f g α β
@@ -141,7 +140,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
     bwd' : ≡-Setoid (CPerm n) ⟶ ≃S-Setoid A B
     bwd' = record 
       { _⟨$⟩_ = bwd 
-      ; cong = λ { {π} {.π} refl → equivS (λ a → refl) (λ b → refl) }
+      ; cong = λ { {π} {.π} refl → (λ a → refl) }
       }
 
     α : Setoid._≈_ CP⇨ (fwd' ⊚ bwd') id⊚
@@ -158,8 +157,8 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
             π !! j ∎)
 
     β : {x y : AS ≃S BS} → x ≋ y → ((bwd' ⊚ fwd') ⟨$⟩ x) ≋ y
-    β {equiv f g α β} {equiv f₁ g₁ α₁ β₁} (equivS f≡ g≡) =
-      equivS (λ a → trans (pf₁ a) (f≡ a)) (λ b → trans (pf₂ b) (g≡ b))
+    β {equiv f g α β} {equiv f₁ g₁ α₁ β₁} f≡ =
+      (λ a → trans (pf₁ a) (f≡ a))
       where
         pf₁ : ∀ a → labelB (tabulate (λ j → enumB (f ⟨$⟩ labelA j)) !! (enumA a)) ≡ f ⟨$⟩ a
         pf₁ a =
@@ -171,16 +170,6 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
             f ⟨$⟩ labelA (enumA a)
               ≡⟨ cong (_⟨$⟩_ f) (βA _) ⟩
             f ⟨$⟩ a ∎)
-        pf₂ : ∀ b → labelA (tabulate (λ j → enumA (g ⟨$⟩ labelB j)) !! (enumB b)) ≡ g ⟨$⟩ b
-        pf₂ b = 
-          begin (
-            labelA (tabulate (λ j → enumA (g ⟨$⟩ labelB j)) !! enumB b)
-              ≡⟨ cong labelA (lookup∘tabulate _ (enumB b)) ⟩
-            labelA (enumA (g ⟨$⟩ labelB (enumB b)))
-              ≡⟨ βA _ ⟩
-            g ⟨$⟩ labelB (enumB b)
-              ≡⟨ cong (_⟨$⟩_ g) (βB _) ⟩
-            g ⟨$⟩ b ∎ )
 
 -- Start proving some of the transport lemmas.  To make things simpler,
 -- use a global Enum A and Enum B
@@ -203,13 +192,12 @@ lemma_1a (_ , mkqinv _ α _) = p≡ (finext α)
 -- this is redundant, as it follows from lemma_1a.
 lemma_1b : ∀ {n} {A : Set} → (EA : Enum A n) → (g (thm2 EA EA) ⟨$⟩ idp) ≋ id≃S
 lemma_1b (enumA , mkqinv g _ β) = 
-  equivS (λ x → trans (cong g (lookup∘tabulate id (enumA x))) (β x)) 
-              (λ x → trans (cong g (lookup∘tabulate id (enumA x))) (β x))
+  (λ x → trans (cong g (lookup∘tabulate id (enumA x))) (β x)) 
 
 lemma2 : f (thm2 0E 0E) ⟨$⟩ 0≃S ≡ 0p
 lemma2 = p≡ refl
 
-
+-- need the ⊎ of two setoids to be defined to fill in the hole in the type
 lemma3 : ∀ {n₁ n₂} {A B C D : Set} {EA : Enum A n₁} {EB : Enum B n₁}
   {EC : Enum C n₂} {ED : Enum D n₂} → (x : A ≃S≡ B) → (y : C ≃S≡ D) →
    f (thm2 (EA ⊕e EC) (EB ⊕e ED)) ⟨$⟩ {!!} ≡ 
