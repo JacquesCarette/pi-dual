@@ -81,6 +81,13 @@ left!! {zero} () _
 left!! {suc _} zero f = refl
 left!! {suc _} (suc i) f = left!! i (f ∘ suc)
 
+right!! : ∀ {m n} {C : Set} →
+  (i : Fin n) → {f : Fin m → C} → (g : Fin n → C) →
+  (tabulate f ++V tabulate g) !! (raise m i) ≡ g i
+right!! {zero} i g = lookup∘tabulate g i
+right!! {suc _} {0} () _
+right!! {suc m} {suc _} i g = right!! {m} i g
+
 -- similar to lookup-++-inject+ from library
 
 lookup-++-raise : ∀ {m n} {a : Level} {A : Set a} →

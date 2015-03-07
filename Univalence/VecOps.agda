@@ -107,7 +107,7 @@ module F where
 
   open import FiniteFunctions
   open import VectorLemmas using (lookupassoc; map-++-commute; 
-    tabulate-split; left!!)
+    tabulate-split; left!!; right!!; lookup-++-raise)
   open import Proofs using (congD!)
   open import Data.Vec.Properties using (lookup-allFin; tabulate∘lookup; 
     lookup∘tabulate; tabulate-∘; lookup-++-inject+)
@@ -183,6 +183,24 @@ module F where
           ≡⟨ cong (inject+ m₄) (sym (lookup∘tabulate _ i)) ⟩
         inject+ m₄ ((p₁ ∘̂ p₃) !! i) ∎ )
 
+  right⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : Cauchy m₁ n₁) → (p₂ : Cauchy m₂ n₂)
+    → (p₃ : Cauchy m₃ m₁) → (p₄ : Cauchy m₄ m₂) → (i : Fin n₂) → 
+    (p₃ ⊎c p₄) !! ( (p₁ ⊎c p₂) !! raise n₁ i ) ≡ raise m₃ ( (p₂ ∘̂ p₄) !! i) 
+  right⊎⊎!! {m₁} {m₂} {m₃} {_} {n₁} {_} p₁ p₂ p₃ p₄ i =
+    let pp = p₃ ⊎c p₄ in
+    let qq = p₁ ⊎c p₂ in
+    begin (
+      pp !! (qq !! raise n₁ i)
+        ≡⟨ cong (_!!_ pp) (lookup-++-raise (tabulate (inject+ m₂ ∘ _!!_ p₁)) 
+                                                                (tabulate (raise m₁ ∘ _!!_ p₂)) i) ⟩
+      pp !! (tabulate (raise m₁ ∘ _!!_ p₂) !! i)
+        ≡⟨ cong (_!!_ pp) (lookup∘tabulate _ i) ⟩
+      pp !! raise m₁ (p₂ !! i)
+        ≡⟨ right!! {m₁} (p₂ !! i) (raise m₃ ∘ (_!!_ p₄)) ⟩
+      raise m₃ (p₄ !! (p₂ !! i))
+        ≡⟨ cong (raise m₃) (sym (lookup∘tabulate _ i)) ⟩
+      raise m₃ ((p₂ ∘̂ p₄) !! i) ∎ )
+
   ⊎c-distrib : ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : Cauchy m₁ n₁} → {p₂ : Cauchy m₂ n₂}
     → {p₃ : Cauchy m₃ m₁} → {p₄ : Cauchy m₄ m₂} →
       (p₁ ⊎c p₂) ∘̂ (p₃ ⊎c p₄) ≡ (p₁ ∘̂ p₃) ⊎c (p₂ ∘̂ p₄)
@@ -193,7 +211,7 @@ module F where
       tabulate lhs
         ≡⟨ tabulate-split {n₁} {n₂} ⟩
       tabulate {n₁} (lhs ∘ inject+ n₂) ++V tabulate {n₂} (lhs ∘ raise n₁)
-        ≡⟨ cong₂ _++V_ (finext (left⊎⊎!! p₁ _ _ _)) (finext {!!}) ⟩
+        ≡⟨ cong₂ _++V_ (finext (left⊎⊎!! p₁ _ _ _)) (finext (right⊎⊎!! p₁ _ _ _)) ⟩
       tabulate {n₁} (λ i → inject+ m₄ ((p₁ ∘̂ p₃) !! i)) ++V 
       tabulate {n₂} (λ i → raise m₃ ((p₂ ∘̂ p₄) !! i))
         ≡⟨ refl ⟩
