@@ -13,7 +13,7 @@ module VecOps where
 open import Data.Nat
 open import Data.Vec renaming (map to mapV; _++_ to _++V_; concat to concatV)
 open import Data.Fin using (Fin; inject+; raise)
-open import Function using (_∘_)
+open import Function using (_∘_; id)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_)
 
@@ -107,7 +107,7 @@ module F where
 
   open import FiniteFunctions
   open import VectorLemmas using (lookupassoc; map-++-commute; 
-    tabulate-split; left!!; right!!; lookup-++-raise)
+    tabulate-split; left!!; right!!; lookup-++-raise; unSplit)
   open import Proofs using (congD!)
   open import Data.Vec.Properties using (lookup-allFin; tabulate∘lookup; 
     lookup∘tabulate; tabulate-∘; lookup-++-inject+)
@@ -165,41 +165,54 @@ module F where
       (π₂ ∘̂ π₁) !! i ∎)
     where open ≡-Reasoning
 
-  left⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : Cauchy m₁ n₁) → (p₂ : Cauchy m₂ n₂)
-    → (p₃ : Cauchy m₃ m₁) → (p₄ : Cauchy m₄ m₂) → (i : Fin n₁) → 
-    (p₃ ⊎c p₄) !! ( (p₁ ⊎c p₂) !! inject+ n₂ i ) ≡ inject+ m₄ ( (p₁ ∘̂ p₃) !! i) 
-  left⊎⊎!! {m₁} {m₂} {_} {m₄} {_} {n₂} p₁ p₂ p₃ p₄ i =
-    let pp = p₃ ⊎c p₄ in
-    let qq = p₁ ⊎c p₂ in
+  -- properties of parallel composition
+  1C⊎1C≡1C : ∀ {m n} → 1C {m} ⊎c 1C {n} ≡ 1C
+  1C⊎1C≡1C {m} {n} = 
     begin (
-        pp !! (qq !! inject+ n₂ i)
-          ≡⟨ cong (_!!_ pp) (lookup-++-inject+ (tabulate (inject+ m₂ ∘ _!!_ p₁) ) 
-                                                                     (tabulate (raise m₁ ∘ _!!_ p₂)) i) ⟩ 
-       pp !! (tabulate (inject+ m₂ ∘ _!!_ p₁ ) !! i)
-          ≡⟨ cong (_!!_ pp) (lookup∘tabulate _ i) ⟩
-       pp !! (inject+ m₂ (p₁ !! i))
-          ≡⟨ left!! (p₁ !! i) (inject+ m₄ ∘ (_!!_ p₃)) ⟩
-        inject+ m₄ (p₃ !! (p₁ !! i))
-          ≡⟨ cong (inject+ m₄) (sym (lookup∘tabulate _ i)) ⟩
-        inject+ m₄ ((p₁ ∘̂ p₃) !! i) ∎ )
+       tabulate {m} (inject+ n ∘ _!!_ 1C) ++V tabulate {n} (raise m ∘ _!!_ 1C)
+         ≡⟨ cong₂ (_++V_ {m = m}) (finext (λ i → cong (inject+ n) (lookup-allFin i))) 
+                                    (finext (λ i → cong (raise m) (lookup-allFin i))) ⟩
+       tabulate {m} (inject+ n) ++V tabulate {n} (raise m)
+         ≡⟨ unSplit {m} id ⟩
+       tabulate {m + n} id ∎)
+    where open ≡-Reasoning
 
-  right⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : Cauchy m₁ n₁) → (p₂ : Cauchy m₂ n₂)
-    → (p₃ : Cauchy m₃ m₁) → (p₄ : Cauchy m₄ m₂) → (i : Fin n₂) → 
-    (p₃ ⊎c p₄) !! ( (p₁ ⊎c p₂) !! raise n₁ i ) ≡ raise m₃ ( (p₂ ∘̂ p₄) !! i) 
-  right⊎⊎!! {m₁} {m₂} {m₃} {_} {n₁} {_} p₁ p₂ p₃ p₄ i =
-    let pp = p₃ ⊎c p₄ in
-    let qq = p₁ ⊎c p₂ in
-    begin (
-      pp !! (qq !! raise n₁ i)
-        ≡⟨ cong (_!!_ pp) (lookup-++-raise (tabulate (inject+ m₂ ∘ _!!_ p₁)) 
-                                                                (tabulate (raise m₁ ∘ _!!_ p₂)) i) ⟩
-      pp !! (tabulate (raise m₁ ∘ _!!_ p₂) !! i)
-        ≡⟨ cong (_!!_ pp) (lookup∘tabulate _ i) ⟩
-      pp !! raise m₁ (p₂ !! i)
-        ≡⟨ right!! {m₁} (p₂ !! i) (raise m₃ ∘ (_!!_ p₄)) ⟩
-      raise m₃ (p₄ !! (p₂ !! i))
-        ≡⟨ cong (raise m₃) (sym (lookup∘tabulate _ i)) ⟩
-      raise m₃ ((p₂ ∘̂ p₄) !! i) ∎ )
+  private
+    left⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : Cauchy m₁ n₁) → (p₂ : Cauchy m₂ n₂)
+      → (p₃ : Cauchy m₃ m₁) → (p₄ : Cauchy m₄ m₂) → (i : Fin n₁) → 
+      (p₃ ⊎c p₄) !! ( (p₁ ⊎c p₂) !! inject+ n₂ i ) ≡ inject+ m₄ ( (p₁ ∘̂ p₃) !! i) 
+    left⊎⊎!! {m₁} {m₂} {_} {m₄} {_} {n₂} p₁ p₂ p₃ p₄ i =
+      let pp = p₃ ⊎c p₄ in
+      let qq = p₁ ⊎c p₂ in
+      begin (
+          pp !! (qq !! inject+ n₂ i)
+            ≡⟨ cong (_!!_ pp) (lookup-++-inject+ (tabulate (inject+ m₂ ∘ _!!_ p₁) ) 
+                                                                       (tabulate (raise m₁ ∘ _!!_ p₂)) i) ⟩ 
+         pp !! (tabulate (inject+ m₂ ∘ _!!_ p₁ ) !! i)
+            ≡⟨ cong (_!!_ pp) (lookup∘tabulate _ i) ⟩
+         pp !! (inject+ m₂ (p₁ !! i))
+            ≡⟨ left!! (p₁ !! i) (inject+ m₄ ∘ (_!!_ p₃)) ⟩
+          inject+ m₄ (p₃ !! (p₁ !! i))
+            ≡⟨ cong (inject+ m₄) (sym (lookup∘tabulate _ i)) ⟩
+          inject+ m₄ ((p₁ ∘̂ p₃) !! i) ∎ )
+
+    right⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : Cauchy m₁ n₁) → (p₂ : Cauchy m₂ n₂)
+      → (p₃ : Cauchy m₃ m₁) → (p₄ : Cauchy m₄ m₂) → (i : Fin n₂) → 
+      (p₃ ⊎c p₄) !! ( (p₁ ⊎c p₂) !! raise n₁ i ) ≡ raise m₃ ( (p₂ ∘̂ p₄) !! i) 
+    right⊎⊎!! {m₁} {m₂} {m₃} {_} {n₁} {_} p₁ p₂ p₃ p₄ i =
+      let pp = p₃ ⊎c p₄ in
+      let qq = p₁ ⊎c p₂ in
+      begin (
+        pp !! (qq !! raise n₁ i)
+          ≡⟨ cong (_!!_ pp) (lookup-++-raise (tabulate (inject+ m₂ ∘ _!!_ p₁)) 
+                                                                  (tabulate (raise m₁ ∘ _!!_ p₂)) i) ⟩
+        pp !! (tabulate (raise m₁ ∘ _!!_ p₂) !! i)
+          ≡⟨ cong (_!!_ pp) (lookup∘tabulate _ i) ⟩
+        pp !! raise m₁ (p₂ !! i)
+          ≡⟨ right!! {m₁} (p₂ !! i) (raise m₃ ∘ (_!!_ p₄)) ⟩
+        raise m₃ (p₄ !! (p₂ !! i))
+          ≡⟨ cong (raise m₃) (sym (lookup∘tabulate _ i)) ⟩
+        raise m₃ ((p₂ ∘̂ p₄) !! i) ∎ )
 
   ⊎c-distrib : ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : Cauchy m₁ n₁} → {p₂ : Cauchy m₂ n₂}
     → {p₃ : Cauchy m₃ m₁} → {p₄ : Cauchy m₄ m₂} →

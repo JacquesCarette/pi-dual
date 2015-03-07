@@ -9,14 +9,13 @@ open import Data.Fin using (Fin)
 open import Data.Vec using (Vec; tabulate)
 -- open import Data.Vec.Properties using (lookup∘tabulate; tabulate∘lookup; lookup-allFin)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans;
-    proof-irrelevance; subst;
+    proof-irrelevance; subst; cong₂;
     module ≡-Reasoning)
 open import Relation.Binary using (Setoid; module Setoid)
 -- open import Data.Product using (_,′_; _×_)
 
 open import VecOps -- and below, import from that
 open F
-open FPf
 
 -- open import Function using (_∘_; id)
 -- open import RepresPerm
@@ -90,12 +89,33 @@ transp {n} (cp π πᵒ αp βp) (cp π₁ πᵒ₁ αp₁ βp₁) = cp (π ∘�
 0p : CPerm 0
 0p = cp F.0C F.0C refl refl
 
-{-
+
 _⊎p_ : ∀ {m n} → CPerm m → CPerm n → CPerm (m + n)
-_⊎p_ {m} {n} π₀ π₁ = cp ((π π₀) ⊎c (π π₁)) ((πᵒ π₀) ⊎c (πᵒ π₁)) {!!} {!!}
-  where open CPerm
-        open F
--}
+_⊎p_ {m} {n} π₀ π₁ = cp ((π π₀) ⊎c (π π₁)) ((πᵒ π₀) ⊎c (πᵒ π₁)) pf₁ pf₂
+  where 
+    open CPerm
+    open F
+    open ≡-Reasoning
+    pf₁ : (π π₀ ⊎c π π₁) ∘̂ (πᵒ π₀ ⊎c πᵒ π₁) ≡ 1C
+    pf₁ = 
+      begin (
+        (π π₀ ⊎c π π₁) ∘̂ (πᵒ π₀ ⊎c πᵒ π₁)
+          ≡⟨ ⊎c-distrib {p₁ = π π₀} ⟩
+       (π π₀ ∘̂ πᵒ π₀) ⊎c (π π₁ ∘̂ πᵒ π₁)
+          ≡⟨ cong₂ _⊎c_ (αp π₀) (αp π₁) ⟩
+        1C {m} ⊎c 1C {n}
+          ≡⟨ 1C⊎1C≡1C {m} ⟩
+        1C ∎)
+    pf₂ : (πᵒ π₀ ⊎c πᵒ π₁) ∘̂ (π π₀ ⊎c π π₁) ≡ 1C
+    pf₂ = 
+      begin (
+        (πᵒ π₀ ⊎c πᵒ π₁) ∘̂ (π π₀ ⊎c π π₁)
+          ≡⟨ ⊎c-distrib {p₁ = πᵒ π₀} ⟩
+        (πᵒ π₀ ∘̂ π π₀) ⊎c (πᵒ π₁ ∘̂ π π₁)
+          ≡⟨ cong₂ _⊎c_ (βp π₀) (βp π₁) ⟩
+        1C {m} ⊎c 1C {n}
+          ≡⟨ 1C⊎1C≡1C {m}⟩
+         1C ∎ )
 
 SCPerm : ℕ → Setoid zero zero
 SCPerm n = ≡-Setoid (CPerm n)
