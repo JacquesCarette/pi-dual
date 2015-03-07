@@ -75,33 +75,38 @@ _✴_ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid
 _≃S≡_ : ∀ {ℓ₁} → (A B : Set ℓ₁) → Set ℓ₁
 A ≃S≡ B = (≡-Setoid A) ≃S (≡-Setoid B)
 
--- two equivalences are the same if their fwd components are
--- extensionally equal
-_≋_ : ∀ {ℓ₁} {A B : Set ℓ₁} (eq₁ eq₂ : A ≃S≡ B) → Set ℓ₁
-eq₁ ≋ eq₂ = ∀ x → P._≡_ (f eq₁ ⟨$⟩ x) (f eq₂ ⟨$⟩ x)
-  where open _≃S_
+record _≋_ {ℓ₁} {A B : Set ℓ₁} (eq₁ eq₂ : A ≃S≡ B) : Set ℓ₁ where
+  constructor equivS
+  field
+    f≡ : ∀ (x : A) → P._≡_ (_≃S_.f eq₁ ⟨$⟩ x) (_≃S_.f eq₂ ⟨$⟩ x)
+    g≡ : ∀ (x : B) → P._≡_ (_≃S_.g eq₁ ⟨$⟩ x) (_≃S_.g eq₂ ⟨$⟩ x)
 
 id≋ : ∀ {ℓ} {A B : Set ℓ} {x : A ≃S≡ B} → x ≋ x
-id≋ = λ x → P.refl 
+id≋ = record { f≡ = λ x → P.refl ; g≡ = λ x → P.refl }
 
 sym≋ : ∀ {ℓ} {A B : Set ℓ} {x y : A ≃S≡ B} → x ≋ y → y ≋ x
-sym≋ f≡ = λ a → P.sym (f≡ a)
+sym≋ (equivS f≡ g≡) = equivS (λ a → P.sym (f≡ a)) (λ b → P.sym (g≡ b))
 
 trans≋ : ∀ {ℓ} {A B : Set ℓ} {x y z : A ≃S≡ B} → x ≋ y → y ≋ z → x ≋ z
-trans≋ f≡ g≡ = λ a → P.trans (f≡ a) (g≡ a)
+trans≋ (equivS f≡ g≡) (equivS h≡ i≡) =
+   equivS (λ a → P.trans (f≡ a) (h≡ a)) (λ b → P.trans (g≡ b) (i≡ b))
   
 -- WARNING: this is not generic, but specific to ≡-Setoids of functions.
 ≃S-Setoid : ∀ {ℓ₁} → (A B : Set ℓ₁) → Setoid ℓ₁ ℓ₁
 ≃S-Setoid {ℓ₁} A B = record 
-  { Carrier = A ≃S≡ B
+  { Carrier = AS ≃S BS
   ; _≈_ = _≋_ 
   ; isEquivalence = record
-    { refl = λ {eq₁} → id≋ {x = eq₁}
-    ; sym = λ {eq₁} {eq₂} → sym≋ {x = eq₁} {eq₂}
-    ; trans = λ {eq₁} {eq₂} {eq₃} → trans≋ {x = eq₁} {eq₂} {eq₃}
+    { refl = id≋
+    ; sym = sym≋
+    ; trans = trans≋
     }
   }
- 
+  where
+    open _≃S_
+    AS = ≡-Setoid A
+    BS = ≡-Setoid B
+    
 -- equivalences are injective
 inj≃ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} → (eq : A ≃S B) → {x y : Carrier A} → 
   _≈_ B (eq ✴ x)  (eq ✴ y) → _≈_ A x y
