@@ -12,7 +12,7 @@ module VecOps where
 
 open import Data.Nat
 open import Data.Vec renaming (map to mapV; _++_ to _++V_; concat to concatV)
-open import Data.Fin using (Fin)
+open import Data.Fin using (Fin; inject+; raise)
 open import Function using (_∘_)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_)
@@ -71,9 +71,14 @@ module F where
   swap+cauchy m n = tabulate (Plus.swapper m n)
 
   -- Parallel additive composition
-
+  -- conceptually, what we want is
+  _⊎c'_ : ∀ {m₁ n₁ m₂ n₂} → Cauchy m₁ m₂ → Cauchy n₁ n₂ → Cauchy (m₁ + n₁) (m₂ + n₂)
+  _⊎c'_ α β = mapV Plus.fwd (α ⊎v β)
+  -- but the above is tedious to work with.  Instead, inline a bit to get
   _⊎c_ : ∀ {m₁ n₁ m₂ n₂} → Cauchy m₁ m₂ → Cauchy n₁ n₂ → Cauchy (m₁ + n₁) (m₂ + n₂)
-  _⊎c_ α β = mapV Plus.fwd (α ⊎v β)
+  _⊎c_ {m₁} {m₂} {_} {n₂} α β = tabulate (inject+ m₂ ∘ _!!_ α) ++V
+                                                       tabulate (raise m₁ ∘ _!!_ β)
+  -- see ⊎c≡⊎c' lemma below
 
   -- Tensor multiplicative composition
   -- Transpositions in α correspond to swapping entire rows
@@ -97,17 +102,17 @@ module F where
   swap⋆cauchy m n = tabulate (Times.swapper m n)
     -- mapV transposeIndex (V.tcomp 1C 1C)
 
+  -------------------------------------------------------------------------------------------
+  -- Below here, we start with properties
 
-module FPf where
   open import FiniteFunctions
-  open import VecHelpers using (map!!)
-  open import VectorLemmas using (lookupassoc; map-++-commute)
+  open import VectorLemmas using (lookupassoc; map-++-commute; 
+    tabulate-split; left!!)
   open import Proofs using (congD!)
   open import Data.Vec.Properties using (lookup-allFin; tabulate∘lookup; 
-    lookup∘tabulate; tabulate-∘)
+    lookup∘tabulate; tabulate-∘; lookup-++-inject+)
   open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; 
     cong; cong₂; module ≡-Reasoning)
-  open F
   open ≡-Reasoning
 
   -- Useful stuff
@@ -144,10 +149,10 @@ module FPf where
   ∘̂-assoc : {n : ℕ} → (a b c : Vec (Fin n) n) → a ∘̂ (b ∘̂ c) ≡ (a ∘̂ b) ∘̂ c
   ∘̂-assoc a b c = finext (lookupassoc a b c)
 
-  ∘̂-rid : {n : ℕ} → (π : Vec (Fin n) n) → π ∘̂ F.1C ≡ π
+  ∘̂-rid : {n : ℕ} → (π : Vec (Fin n) n) → π ∘̂ 1C ≡ π
   ∘̂-rid π = trans (finext (λ i → lookup-allFin (π !! i))) (tabulate∘lookup π)
 
-  ∘̂-lid : {n : ℕ} → (π : Vec (Fin n) n) → F.1C ∘̂ π ≡ π
+  ∘̂-lid : {n : ℕ} → (π : Vec (Fin n) n) → 1C ∘̂ π ≡ π
   ∘̂-lid π = trans (finext (λ i → cong (_!!_ π) (lookup-allFin i))) (tabulate∘lookup π)
 
   !!⇒∘̂ : {n₁ n₂ n₃ : ℕ} → (π₁ : Vec (Fin n₁) n₂) → (π₂ : Vec (Fin n₂) n₃) → (i : Fin n₃) → π₁ !! (π₂ !! i) ≡ (π₂ ∘̂ π₁) !! i
@@ -160,17 +165,36 @@ module FPf where
       (π₂ ∘̂ π₁) !! i ∎)
     where open ≡-Reasoning
 
-{-
+  left⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : Cauchy m₁ n₁) → (p₂ : Cauchy m₂ n₂)
+    → (p₃ : Cauchy m₃ m₁) → (p₄ : Cauchy m₄ m₂) → (i : Fin n₁) → 
+    (p₃ ⊎c p₄) !! ( (p₁ ⊎c p₂) !! inject+ n₂ i ) ≡ inject+ m₄ ( (p₁ ∘̂ p₃) !! i) 
+  left⊎⊎!! {m₁} {m₂} {_} {m₄} {_} {n₂} p₁ p₂ p₃ p₄ i =
+    let pp = p₃ ⊎c p₄ in
+    let qq = p₁ ⊎c p₂ in
+    begin (
+        pp !! (qq !! inject+ n₂ i)
+          ≡⟨ cong (_!!_ pp) (lookup-++-inject+ (tabulate (inject+ m₂ ∘ _!!_ p₁) ) 
+                                                                     (tabulate (raise m₁ ∘ _!!_ p₂)) i) ⟩ 
+       pp !! (tabulate (inject+ m₂ ∘ _!!_ p₁ ) !! i)
+          ≡⟨ cong (_!!_ pp) (lookup∘tabulate _ i) ⟩
+       pp !! (inject+ m₂ (p₁ !! i))
+          ≡⟨ left!! (p₁ !! i) (inject+ m₄ ∘ (_!!_ p₃)) ⟩
+        inject+ m₄ (p₃ !! (p₁ !! i))
+          ≡⟨ cong (inject+ m₄) (sym (lookup∘tabulate _ i)) ⟩
+        inject+ m₄ ((p₁ ∘̂ p₃) !! i) ∎ )
+
   ⊎c-distrib : ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : Cauchy m₁ n₁} → {p₂ : Cauchy m₂ n₂}
     → {p₃ : Cauchy m₃ m₁} → {p₄ : Cauchy m₄ m₂} →
       (p₁ ⊎c p₂) ∘̂ (p₃ ⊎c p₄) ≡ (p₁ ∘̂ p₃) ⊎c (p₂ ∘̂ p₄)
-  ⊎c-distrib {m₁} {m₂} {m₃} {m₄} {n₁} {n₂} {p₁} {p₂} {p₃} {p₄} = 
+  ⊎c-distrib {m₁} {m₂} {m₃} {m₄} {n₁} {n₂} {p₁} {p₂} {p₃} {p₄} =
+    let p₃₄ = p₃ ⊎c p₄ in let p₁₂ = p₁ ⊎c p₂ in
+    let lhs = λ i → p₃₄ !! (p₁₂ !! i) in
     begin (
-      tabulate (λ i → (p₃ ⊎c p₄) !! ((p₁ ⊎c p₂) !! i))
-        ≡⟨ {!!} ⟩
-      mapV Plus.fwd (tabulate (λ i → inj₁ ((p₁ ∘̂ p₃) !! i))) ++V mapV (Plus.fwd {m₃}) (tabulate (λ i → inj₂ ((p₂ ∘̂ p₄) !! i)))
-        ≡⟨ sym (map-++-commute Plus.fwd (tabulate (λ i → inj₁ ((p₁ ∘̂ p₃) !! i)))) ⟩
-      mapV Plus.fwd (tabulate (λ i → inj₁ ((p₁ ∘̂ p₃) !! i)) ++V tabulate (λ i → inj₂ ((p₂ ∘̂ p₄) !! i)))
+      tabulate lhs
+        ≡⟨ tabulate-split {n₁} {n₂} ⟩
+      tabulate {n₁} (lhs ∘ inject+ n₂) ++V tabulate {n₂} (lhs ∘ raise n₁)
+        ≡⟨ cong₂ _++V_ (finext (left⊎⊎!! p₁ _ _ _)) (finext {!!}) ⟩
+      tabulate {n₁} (λ i → inject+ m₄ ((p₁ ∘̂ p₃) !! i)) ++V 
+      tabulate {n₂} (λ i → raise m₃ ((p₂ ∘̂ p₄) !! i))
         ≡⟨ refl ⟩
       (p₁ ∘̂ p₃) ⊎c (p₂ ∘̂ p₄) ∎)
--}
