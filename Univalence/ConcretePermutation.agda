@@ -8,7 +8,6 @@ open import Data.Nat using (ℕ;_+_)
 open import Data.Fin using (Fin)
 open import Data.Vec using (Vec; tabulate)
 -- open import Data.Vec.Properties using (lookup∘tabulate; tabulate∘lookup; lookup-allFin)
--- open import VecHelpers using (_!!_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans;
     proof-irrelevance; subst;
     module ≡-Reasoning)
