@@ -17,7 +17,6 @@ open import Relation.Binary using (Setoid; module Setoid)
 
 open import VecOps -- and below, import from that
 open F
-open FPf
 
 open import Function using (_∘_; id)
 -- open import RepresPerm
@@ -195,36 +194,26 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
 --   c. +
 --   d. *
 
-module Transport  {n : ℕ} {A B : Set} (EA : Enum A n) (EB : Enum B n) where
-  open import TypeEquivalences using (path⊎)
+open import TypeEquivalences using (path⊎)
+open _≃S_
 
-  enumA = proj₁ EA
-  module qA = qinv (proj₂ EA)
-  enumB = proj₁ EB
-  module qB = qinv (proj₂ EB)
-  open _≃S_
+lemma_1a : ∀ {n} {A : Set} → (EA : Enum A n) → f (thm2 EA EA) ⟨$⟩ id≃S ≡ idp
+lemma_1a (_ , mkqinv _ α _) = p≡ (finext α)
 
-  transportAB :   (≃S-Setoid A B) ≃S ≡-Setoid (CPerm n)
-  transportAB = thm2 EA EB
-  fwdAB = f transportAB
-  bwdAB = g transportAB
+-- this is redundant, as it follows from lemma_1a.
+lemma_1b : ∀ {n} {A : Set} → (EA : Enum A n) → (g (thm2 EA EA) ⟨$⟩ idp) ≋ id≃S
+lemma_1b (enumA , mkqinv g _ β) = 
+  equivS (λ x → trans (cong g (lookup∘tabulate id (enumA x))) (β x)) 
+              (λ x → trans (cong g (lookup∘tabulate id (enumA x))) (β x))
 
-  transportAA = thm2 EA EA
-  fwdAA = f transportAA
-  bwdAA = g transportAA
+lemma2 : f (thm2 0E 0E) ⟨$⟩ 0≃S ≡ 0p
+lemma2 = p≡ refl
 
-  lemma_1a : fwdAA ⟨$⟩ id≃S ≡ idp
-  lemma_1a = p≡ (finext qA.α)
 
-  -- this is redundant, as it follows from lemma_1a.
-  lemma_1b : (bwdAA ⟨$⟩ idp) ≋ id≃S
-  lemma_1b = equivS (λ x → trans (cong qA.g (lookup∘tabulate id (enumA x))) (qA.β x)) 
-                                   (λ x → trans (cong qA.g (lookup∘tabulate id (enumA x))) (qA.β x))
+lemma3 : ∀ {n₁ n₂} {A B C D : Set} {EA : Enum A n₁} {EB : Enum B n₁}
+  {EC : Enum C n₂} {ED : Enum D n₂} → (x : A ≃S≡ B) → (y : C ≃S≡ D) →
+   f (thm2 (EA ⊕e EC) (EB ⊕e ED)) ⟨$⟩ {!!} ≡ 
+   (f (thm2 EA EB) ⟨$⟩ x) ⊎p (f (thm2 EC ED) ⟨$⟩ y)
+lemma3 {EA = f , mkqinv g α β} {f₁ , mkqinv g₁ α₁ β₁} {f₂ , mkqinv g₂ α₂ β₂} {f₃ , mkqinv g₃ α₃ β₃} (equiv f₄ g₄ α₄ β₄) (equiv f₅ g₅ α₅ β₅) = 
+  p≡ {!!}
 
-  lemma2 : f (thm2 0E 0E) ⟨$⟩ 0≃S ≡ 0p
-  lemma2 = p≡ refl
-
-{-
-  lemma3 : ∀ {x y} → fwdAB (path⊎ x y) ≡ fwdAB x ⊎p fwdAB y
-  lemma3 = ? -- needs a complete definition of ⊎p
--}
