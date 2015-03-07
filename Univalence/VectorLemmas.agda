@@ -22,6 +22,10 @@ open import SubstLemmas
 ------------------------------------------------------------------------------
 -- Lemmas about map and tabulate
 
+-- to make things look nicer
+_!!_ : ∀ {m} {A : Set} → Vec A m → Fin m → A
+v !! i = lookup i v
+
 -- this is actually in Data.Vec.Properties, but over an arbitrary
 -- Setoid.  Specialize
 
@@ -68,6 +72,14 @@ look-right : ∀ {m n} {a b c : Level} {A : Set a} {B : Set b} {C : Set c} →
 look-right {0} i f g vn vm = lookup-map i g vm
 look-right {suc m} {0} () _ _ _ _
 look-right {suc m} {suc n} i f g (x ∷ vn) vm = look-right i f g vn vm
+
+-- variant
+left!! : ∀ {m n} {C : Set} →
+  (i : Fin m) → (f : Fin m → C) → {g : Fin n → C} →
+  (tabulate f ++V tabulate g) !! (inject+ n i) ≡ f i
+left!! {zero} () _
+left!! {suc _} zero f = refl
+left!! {suc _} (suc i) f = left!! i (f ∘ suc)
 
 -- similar to lookup-++-inject+ from library
 
@@ -169,10 +181,6 @@ unSplit : {m n : ℕ} {A : Set} → (f : Fin (m + n) → A) →
   tabulate {m} (f ∘ (inject+ n)) ++V tabulate {n} (f ∘ (raise m)) ≡ tabulate f
 unSplit {0} {n} f = refl
 unSplit {suc m} f = cong (λ x → (f zero) ∷ x) (unSplit {m} (f ∘ suc))
-
--- to make things look nicer
-_!!_ : ∀ {m} {A : Set} → Vec A m → Fin m → A
-v !! i = lookup i v
 
 -- nested tabulate-lookup
 denest-tab-!! : {A B C : Set} {k : ℕ} → (f : B → C) → (g : A → B) → (v : Vec A k) →
