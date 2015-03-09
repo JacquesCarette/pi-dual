@@ -5,12 +5,12 @@ module SEquivSCPermEquiv where
 -- open import Level
 open import Data.Nat using (ℕ;_+_)
 -- open import Data.Nat.Properties.Simple using (+-comm)
-open import Data.Fin using (Fin)
-open import Data.Vec using (Vec; tabulate)
+open import Data.Fin using (Fin; inject+; raise)
+open import Data.Vec using (Vec; tabulate) renaming (_++_ to _++V_)
 open import Data.Vec.Properties using (lookup∘tabulate; tabulate∘lookup; lookup-allFin)
 
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans;
---    proof-irrelevance; subst;
+    cong₂;
     module ≡-Reasoning)
 open import Relation.Binary using (Setoid; module Setoid)
 -- open import Data.Product using (_,′_; _×_)
@@ -26,10 +26,11 @@ open import Data.Product using (_,_; proj₁; proj₂)
 open import EquivSetoid
 open import SetoidUtils 
 open import Function.Equality using (_⟶_; Π; _⟨$⟩_; _⇨_) renaming (_∘_ to _⊚_; id to id⊚)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
 
 open import ConcretePermutation
 open import FiniteFunctions using (finext)
-open import VectorLemmas using (_!!_)
+open import VectorLemmas using (_!!_; tabulate-split)
 
 -- the big (semantic) theorem.
 -- for convenience, use only a single size, even though we could use 2.
@@ -209,11 +210,59 @@ lemma_1b (enumA , mkqinv g _ β) =
 lemma2 : f (thm2 0E 0E) ⟨$⟩ 0≃S ≡ 0p
 lemma2 = p≡ refl
 
-
 lemma3 : ∀ {n₁ n₂} {A B C D : Set} {EA : Enum A n₁} {EB : Enum B n₁}
   {EC : Enum C n₂} {ED : Enum D n₂} → (x : A ≃S≡ B) → (y : C ≃S≡ D) →
-   f (thm2 (EA ⊕e EC) (EB ⊕e ED)) ⟨$⟩ {!!} ≡ 
+   f (thm2 (EA ⊕e EC) (EB ⊕e ED)) ⟨$⟩ (x ⊎≃S y) ≡ 
    (f (thm2 EA EB) ⟨$⟩ x) ⊎p (f (thm2 EC ED) ⟨$⟩ y)
-lemma3 {EA = f , mkqinv g α β} {f₁ , mkqinv g₁ α₁ β₁} {f₂ , mkqinv g₂ α₂ β₂} {f₃ , mkqinv g₃ α₃ β₃} (equiv f₄ g₄ α₄ β₄) (equiv f₅ g₅ α₅ β₅) = 
-  p≡ {!!}
+lemma3 {n₁} {n₂} {EA = EA} {EB} {EC} {ED} (equiv f₄ g₄ α₄ β₄) (equiv f₅ g₅ α₅ β₅) = 
+  p≡ (
+    begin (
+       CPerm.π (f (thm2 (EA ⊕e EC) (EB ⊕e ED)) ⟨$⟩ (x ⊎≃S y))
+         ≡⟨ refl ⟩ -- inline f, fwd and π
+       tabulate {n₁ + n₂} (λ j → enumBD (x⊎y.f ⟨$⟩ qAC.g j))
+         ≡⟨ tabulate-split {n₁} {n₂} {f =  λ j → enumBD (x⊎y.f ⟨$⟩ qAC.g j)} ⟩
+       tabulate {n₁} (λ j → enumBD (x⊎y.f ⟨$⟩ qAC.g (inject+ n₂ j))) ++V
+       tabulate {n₂} (λ j → enumBD (x⊎y.f ⟨$⟩ qAC.g (raise n₁ j)))
+         ≡⟨ cong₂ _++V_ (finext {n₁} pf₁) (finext pf₂) ⟩
+       tabulate {n₁} (λ j → inject+ n₂ (tabulate (λ i → enumB (f₄ ⟨$⟩ qA.g i)) !! j)) ++V 
+       tabulate {n₂} (λ j → raise n₁ (tabulate (λ i → enumD (f₅ ⟨$⟩ qC.g i)) !! j))
+         ≡⟨ refl ⟩ -- going up, inline f, fwd, ⊎p and π 
+       CPerm.π ((f (thm2 EA EB) ⟨$⟩ x) ⊎p (f (thm2 EC ED) ⟨$⟩ y)) ∎))
+  where 
+    open ≡-Reasoning
+    x = equiv f₄ g₄ α₄ β₄
+    y = equiv f₅ g₅ α₅ β₅
+    enumB = proj₁ EB
+    enumD = proj₁ ED
+    enumAC = proj₁ (EA ⊕e EC)
+    module qAC = qinv (proj₂ (EA ⊕e EC))
+    module qA = qinv (proj₂ EA)
+    module qC = qinv (proj₂ EC)
+    enumBD = proj₁ (EB ⊕e ED)
+    module x⊎y = _≃S_ (x ⊎≃S y)
 
+    pf₁ :  (i : Fin n₁) →
+      enumBD (x⊎y.f ⟨$⟩ qAC.g (inject+ n₂ i)) ≡
+      inject+ n₂ (tabulate (λ i₁ → enumB (f₄ ⟨$⟩ qA.g i₁)) !! i)
+    pf₁ i =
+      begin (
+        enumBD (x⊎y.f ⟨$⟩ qAC.g (inject+ n₂ i))
+          ≡⟨ cong (λ j → enumBD (x⊎y.f ⟨$⟩ j)) (eval-left {eA = EA} {EC} i) ⟩
+        enumBD (x⊎y.f ⟨$⟩ inj₁ (qA.g i))
+          ≡⟨ refl ⟩ -- once the inj₁ is exposed, the rest happens by β-reduction
+        inject+ n₂ (enumB (f₄ ⟨$⟩ qA.g i))
+           ≡⟨ cong (inject+ n₂) (sym (lookup∘tabulate _ i)) ⟩
+        inject+ n₂ (tabulate (λ j → enumB (f₄ ⟨$⟩ qA.g j)) !! i) ∎)
+
+    pf₂ :  (i : Fin n₂) →
+      enumBD (x⊎y.f ⟨$⟩ qAC.g (raise n₁ i)) ≡
+      raise n₁ (tabulate (λ i₁ → enumD (f₅ ⟨$⟩ qC.g i₁)) !! i)
+    pf₂ i = 
+      begin (
+           enumBD (x⊎y.f ⟨$⟩ qAC.g (raise n₁ i))
+             ≡⟨ cong (λ j → enumBD (x⊎y.f ⟨$⟩ j)) {!eval-right {eA = AE} {EC} i!} ⟩
+           enumBD (x⊎y.f ⟨$⟩ inj₂ (qC.g i))
+             ≡⟨ refl ⟩
+           raise n₁ (enumD (f₅ ⟨$⟩ qC.g i))
+             ≡⟨ cong (raise n₁) (sym (lookup∘tabulate _ i)) ⟩
+           raise n₁ (tabulate (λ i₁ → enumD (f₅ ⟨$⟩ qC.g i₁)) !! i) ∎)

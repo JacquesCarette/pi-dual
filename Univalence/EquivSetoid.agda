@@ -8,9 +8,11 @@ open import Level
 open import Relation.Binary using (Setoid; module Setoid)
 open import Data.Product using (_×_; _,′_; _,_)
 open import Relation.Binary.PropositionalEquality as P using ()
-open import Data.Empty 
+open import Data.Empty
+open import Data.Sum using (_⊎_; inj₁; inj₂)
 
 open import Equiv using (_≃_)
+open import SetoidUtils
 
 open import Function.Equality
 import Function as Fun
@@ -18,6 +20,44 @@ import Function as Fun
 infix 4 _≃S_
 
 open Setoid
+
+_⊎S_ : (AS : Setoid zero zero) (BS : Setoid zero zero) → Setoid zero zero
+_⊎S_ AS BS = record 
+  { Carrier = A ⊎ B 
+  ; _≈_ = _∼₁_ 
+  ; isEquivalence = record 
+    { refl = λ { {inj₁ _} → refl AS ; {inj₂ _} → refl BS} 
+    ; sym = λ {x} {y} → sym∼₁ {x} {y}
+    ; trans = λ {x} {y} {z} → trans∼₁ {x} {y} {z} } 
+  }
+  where
+    open Setoid
+    open import Data.Sum using (_⊎_; inj₁; inj₂)
+    open import Data.Empty using (⊥)
+
+    A = Carrier AS
+    B = Carrier BS
+
+    _∼₁_ : A ⊎ B → A ⊎ B → Set 
+    inj₁ x ∼₁ inj₁ x₁ = _≈_ AS x x₁
+    inj₁ x ∼₁ inj₂ y = ⊥
+    inj₂ y ∼₁ inj₁ x = ⊥
+    inj₂ y ∼₁ inj₂ y₁ = _≈_ BS y y₁
+
+    sym∼₁ : {x y : A ⊎ B} → x ∼₁ y → y ∼₁ x
+    sym∼₁ {inj₁ _} {inj₁ _} x~y = sym AS x~y
+    sym∼₁ {inj₁ _} {inj₂ _} ()
+    sym∼₁ {inj₂ _} {inj₁ _} ()
+    sym∼₁ {inj₂ _} {inj₂ _} x~y = sym BS x~y
+
+    trans∼₁ : Relation.Binary.Transitive _∼₁_
+    trans∼₁ {inj₁ x} {inj₁ x₁} {inj₁ x₂} i~j j~k = trans AS i~j j~k
+    trans∼₁ {inj₁ x} {inj₁ x₁} {inj₂ y} i~j ()
+    trans∼₁ {inj₁ x} {inj₂ y} {inj₁ x₁} i~j ()
+    trans∼₁ {inj₁ x} {inj₂ y}  () j~k
+    trans∼₁ {inj₂ y} {inj₁ x} () j~k
+    trans∼₁ {inj₂ y} {inj₂ y₁} {inj₁ x} i~j ()
+    trans∼₁ {inj₂ y} {inj₂ y₁} {inj₂ y₂} i~j j~k = trans BS i~j j~k
 
 record _≃S_ {ℓ₁ ℓ₂ ℓ₃ ℓ₄ : Level} (A : Setoid ℓ₁ ℓ₂) (B : Setoid ℓ₃ ℓ₄)  : Set (ℓ₁ ⊔ ℓ₂ ⊔ ℓ₃ ⊔ ℓ₄) where
   constructor equiv
@@ -52,18 +92,6 @@ trans≃S {A = A} {B} {C} A≃B B≃C = equiv f g α' β'
 _✴_ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} → (A ≃S B) → (x : Carrier A) → Carrier B
 (equiv f _ _ _) ✴ x = f ⟨$⟩ x  
 
--- any type can be made into a setoid over ≡
-≡-Setoid : ∀ {ℓ} → (A : Set ℓ) → Setoid ℓ ℓ
-≡-Setoid A = record 
-  { Carrier = A 
-  ; _≈_ = P._≡_ 
-  ; isEquivalence = record 
-    { refl = P.refl 
-    ; sym = P.sym 
-    ; trans = P.trans 
-    } 
-  }
-
 0S : Setoid zero zero
 0S = ≡-Setoid ⊥
 
@@ -75,6 +103,27 @@ _✴_ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid
 _≃S≡_ : ∀ {ℓ₁} → (A B : Set ℓ₁) → Set ℓ₁
 A ≃S≡ B = (≡-Setoid A) ≃S (≡-Setoid B)
 
+-- Need to be able to take ⊎ of ≃S-Setoids
+_⊎≃S_ : {A B C D : Set} → A ≃S≡ B → C ≃S≡ D → (A ⊎ C) ≃S≡ (B ⊎ D)
+_⊎≃S_ {A} {B} {C} {D} (equiv f g α β) (equiv f₁ g₁ α₁ β₁) = 
+  equiv (→to⟶ ff) (→to⟶ gg) αα ββ
+  where
+    ff : A ⊎ C → B ⊎ D
+    ff (inj₁ x) = inj₁ (f ⟨$⟩ x)
+    ff (inj₂ y) = inj₂ (f₁ ⟨$⟩ y)
+    gg : B ⊎ D → A ⊎ C
+    gg (inj₁ x) = inj₁ (g ⟨$⟩ x)
+    gg (inj₂ y) = inj₂ (g₁ ⟨$⟩ y)
+    αα : {x y : B ⊎ D} → x P.≡ y → ff (gg x) P.≡ y
+    αα {inj₁ x} P.refl = P.cong inj₁ (α P.refl)
+    αα {inj₂ y} P.refl = P.cong inj₂ (α₁ P.refl)
+    ββ : {x y : A ⊎ C} → x P.≡ y → gg (ff x) P.≡ y
+    ββ {inj₁ x} P.refl = P.cong inj₁ (β P.refl)
+    ββ {inj₂ y} P.refl = P.cong inj₂ (β₁ P.refl)
+
+-- note that this appears to be redundant (especially when looking at
+-- the proofs), but having both f and g is needed for inference of other
+-- aspects to succeed.  
 record _≋_ {ℓ₁} {A B : Set ℓ₁} (eq₁ eq₂ : A ≃S≡ B) : Set ℓ₁ where
   constructor equivS
   field

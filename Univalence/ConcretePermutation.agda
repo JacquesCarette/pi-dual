@@ -23,7 +23,7 @@ open F
 -- open import Enumeration
 -- open import Data.Product using (_,_; proj₁; proj₂)
 open import EquivSetoid
--- open import SetoidUtils 
+open import SetoidUtils 
 -- open import Function.Equality using (_⟶_; Π; _⟨$⟩_; _⇨_) renaming (_∘_ to _⊚_; id to id⊚)
 
 -- open import FiniteFunctions
