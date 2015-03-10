@@ -8,7 +8,7 @@ open import Data.Empty
 open import Data.Fin using (Fin; inject+; raise; toℕ; fromℕ≤; zero; suc;
   reduce≥)
 open import Data.Fin.Properties using (inject+-lemma; bounded; fromℕ≤-toℕ;
-  toℕ-raise)
+  toℕ-raise; toℕ-injective)
 open import Data.Nat using (ℕ;_+_;_*_; _≤?_; _≤_; _≥_;
   zero; suc; s≤s; z≤n; ≤-pred; module ≤-Reasoning)
 open import Data.Nat.Properties using (¬i+1+j≤i; ≰⇒>)
@@ -22,6 +22,7 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong;
   subst; module ≡-Reasoning)
 open import FinEquiv
 open import LeqLemmas
+open import FinNatLemmas
 
 -- An Enumerated 'type' is an isomorphism between a
 -- "set" A and Fin n.  Do note that it comes with a particular
@@ -64,15 +65,11 @@ reduce-fromℕ≤ (suc m) zero (s≤s z≤n) = refl
 reduce-fromℕ≤ (suc (suc m)) {n} (suc i) (s≤s (s≤s p)) = 
   cong suc (reduce-fromℕ≤ (suc m) i (s≤s p))
 
-suc-reduce≥ : (m : ℕ) {n : ℕ} (i : Fin (m + suc n)) (i≥m : toℕ i ≥ m) → 
-  reduce≥ (suc i) (s≤s i≥m) ≡ reduce≥ i i≥m
-suc-reduce≥ m i p = {!!}
-
-reduce-reduce≥ : (m : ℕ) {n : ℕ} (i : Fin n) → (¬p : suc (toℕ (raise m i)) ≤ m → ⊥)
-  → reduce≥ (raise m i) (≤-pred (≰⇒> ¬p)) ≡ i
-reduce-reduce≥ zero i ¬p = refl
-reduce-reduce≥ (suc m) zero ¬p = {!!}
-reduce-reduce≥ (suc m) (suc i) ¬p = {!!}
+reduce-reduce≥ : (m : ℕ) {n : ℕ} (i : Fin n) → (p : toℕ (raise m i) ≥ m)
+  → reduce≥ (raise m i) p ≡ i
+reduce-reduce≥ zero {n} i p = refl
+reduce-reduce≥ (suc n) {zero} () _
+reduce-reduce≥ (suc m) {suc n} i (s≤s p) = reduce-reduce≥ m i p
 
 -- evaluating an ⊕e on the left component
 eval-left : {A B : Set} {m n : ℕ} {eA : Enum A m} {eB : Enum B n} →
@@ -88,7 +85,7 @@ eval-right : {A B : Set} {m n : ℕ} {eA : Enum A m} {eB : Enum B n} →
   (i : Fin n) → qinv.g (proj₂ (eA ⊕e eB)) (raise m i) ≡ inj₂ (qinv.g (proj₂ eB) i)
 eval-right {m = m} {n} {eA} {eB} i with  suc (toℕ (raise m i)) ≤? m
 eval-right {m = m} {n} {_} {_} i | yes p = ⊥-elim (raise≤m⇒⊥ i p)
-eval-right {m = m} {n} {_ } {_ , mkqinv g _ _} i | no ¬p = cong (inj₂ ∘ g) {!!}
+eval-right {m = m} {n} {_ } {_ , mkqinv g _ _} i | no ¬p = cong (inj₂ ∘ g) extract
   where
     extract : reduce≥ (raise m i) (≤-pred (≰⇒> ¬p)) ≡ i
-    extract = {!!}
+    extract = reduce-reduce≥ m i (≤-pred (≰⇒> ¬p))

@@ -260,7 +260,7 @@ lemma3 {n₁} {n₂} {EA = EA} {EB} {EC} {ED} (equiv f₄ g₄ α₄ β₄) (equ
     pf₂ i = 
       begin (
            enumBD (x⊎y.f ⟨$⟩ qAC.g (raise n₁ i))
-             ≡⟨ cong (λ j → enumBD (x⊎y.f ⟨$⟩ j)) {!eval-right {eA = AE} {EC} i!} ⟩
+             ≡⟨ cong (λ j → enumBD (x⊎y.f ⟨$⟩ j)) (eval-right {eA = EA} {EC} i) ⟩
            enumBD (x⊎y.f ⟨$⟩ inj₂ (qC.g i))
              ≡⟨ refl ⟩
            raise n₁ (enumD (f₅ ⟨$⟩ qC.g i))
