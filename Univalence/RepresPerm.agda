@@ -46,6 +46,6 @@ thm1 {suc n} {suc m} {A} {B} (rp A≃Fsn B≃Fsm A≃B) =
     1+n≃1+m = trans≃ (trans≃ (Plus.fwd-iso {suc 0} {n}) Fsn≃Fsm)
                                                     (sym≃ (Plus.fwd-iso {suc 0} {m}))
     ⊤⊎n≃⊤⊎m : (⊤ ⊎ Fin n) ≃ (⊤ ⊎ Fin m)
-    ⊤⊎n≃⊤⊎m = trans≃ (trans≃ (path⊎ (sym≃ Plus.Fin1≃⊤)  idequiv) 1+n≃1+m) 
-                                                    (path⊎ Plus.Fin1≃⊤ idequiv)
+    ⊤⊎n≃⊤⊎m = trans≃ (trans≃ (path⊎ (sym≃ Fin1≃⊤)  idequiv) 1+n≃1+m) 
+                                                    (path⊎ Fin1≃⊤ idequiv)
     Fn≃Fm = left-cancel-⊤ ⊤⊎n≃⊤⊎m
