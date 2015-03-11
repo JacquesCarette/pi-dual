@@ -6,8 +6,8 @@ module SEquivSCPermEquiv where
 open import Data.Nat using (ℕ;_+_)
 -- open import Data.Nat.Properties.Simple using (+-comm)
 open import Data.Fin using (Fin; inject+; raise)
-open import Data.Vec using (Vec; tabulate) renaming (_++_ to _++V_)
-open import Data.Vec.Properties using (lookup∘tabulate; tabulate∘lookup; lookup-allFin)
+open import Data.Vec using (tabulate) renaming (_++_ to _++V_)
+open import Data.Vec.Properties using (lookup∘tabulate; tabulate∘lookup)
 
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans;
     cong₂;
@@ -119,7 +119,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
             labelB ((p₂ ∘̂ p₁) !! enumB b)
               ≡⟨ cong (λ x → (labelB (x !! enumB b))) βp ⟩
            labelB (F.1C !! enumB b)
-              ≡⟨ cong labelB (lookup∘tabulate id _) ⟩
+              ≡⟨ cong labelB 1C!!i≡i ⟩
            labelB (enumB b)
               ≡⟨ βB b ⟩
             b ∎)
@@ -134,7 +134,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
             labelA ((p₁ ∘̂ p₂) !! enumA a)
               ≡⟨ cong (λ x → labelA (x !! enumA a)) αp ⟩
             labelA (F.1C !! enumA a)
-              ≡⟨ cong labelA (lookup∘tabulate id _) ⟩
+              ≡⟨ cong labelA 1C!!i≡i ⟩
             labelA (enumA a)
               ≡⟨ βA a ⟩
             a ∎)
@@ -204,8 +204,7 @@ lemma_1a (_ , mkqinv _ α _) = p≡ (finext α)
 -- this is redundant, as it follows from lemma_1a.
 lemma_1b : ∀ {n} {A : Set} → (EA : Enum A n) → (g (thm2 EA EA) ⟨$⟩ idp) ≋ id≃S
 lemma_1b (enumA , mkqinv g _ β) = 
-  equivS (λ x → trans (cong g (lookup∘tabulate id (enumA x))) (β x)) 
-              (λ x → trans (cong g (lookup∘tabulate id (enumA x))) (β x))
+  equivS (λ x → trans (cong g 1C!!i≡i) (β x)) (λ x → trans (cong g 1C!!i≡i) (β x))
 
 lemma2 : f (thm2 0E 0E) ⟨$⟩ 0≃S ≡ 0p
 lemma2 = p≡ refl

@@ -177,6 +177,9 @@ module F where
        tabulate {m + n} id ∎)
     where open ≡-Reasoning
 
+  1C!!i≡i : ∀ {m} {i : Fin m} → 1C {m} !! i ≡ i
+  1C!!i≡i = lookup∘tabulate id _
+
   private
     left⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : Cauchy m₁ n₁) → (p₂ : Cauchy m₂ n₂)
       → (p₃ : Cauchy m₃ m₁) → (p₄ : Cauchy m₄ m₂) → (i : Fin n₁) → 
