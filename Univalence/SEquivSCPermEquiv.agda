@@ -49,7 +49,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
     CP⇨ = SCPerm n ⇨ SCPerm n
 
     fwd : (AS ≃S BS) → CPerm n
-    fwd A≃B = cp (tabulate f) (tabulate g) (∼p⇒≡ αp) (∼p⇒≡ βp)
+    fwd A≃B = cp (tabulate f) (tabulate g) (~⇒≡ β) (~⇒≡ α)
       where
         module A≃SB = _≃S_ A≃B
         f : Fin n → Fin n
@@ -79,19 +79,6 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
             enumA (labelA i)
                ≡⟨ αA i ⟩
             i ∎)
-
-        αp : (tabulate f ∘̂ tabulate g) ∼p F.1C
-        αp i = 
-          begin (
-            (tabulate f ∘̂ tabulate g) !! i
-              ≡⟨  ∘̂⇒∘ f g i ⟩
-           tabulate (g ∘ f) !! i
-              ≡⟨ cong (λ x → x !! i) (finext β) ⟩
-           tabulate id !! i ∎)
-
-        -- see the αp proof for why this proof is ok
-        βp : (tabulate g ∘̂ tabulate f) ∼p F.1C
-        βp i = trans (∘̂⇒∘ g f i) (cong (λ x → x !! i) (finext α))
 
     fwd' : ≃S-Setoid A B ⟶ ≡-Setoid (CPerm n)
     fwd' = record 
@@ -142,13 +129,12 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
     bwd' : ≡-Setoid (CPerm n) ⟶ ≃S-Setoid A B
     bwd' = record 
       { _⟨$⟩_ = bwd 
-      ; cong = λ { {π} {.π} refl → equivS (λ a → refl) (λ b → refl) }
+      ; cong = λ { {π} {.π} refl → equivS (λ _ → refl) (λ _ → refl) }
       }
 
     α : Setoid._≈_ CP⇨ (fwd' ⊚ bwd') id⊚
     α {cp π πᵒ αp βp} refl = p≡ (trans (finext pf₁) (tabulate∘lookup π))
       where
-        p = cp π πᵒ αp βp
         pf₁ : (j : Fin n) → enumB (labelB (π !! enumA (labelA j))) ≡ π !! j
         pf₁ j = 
           begin (

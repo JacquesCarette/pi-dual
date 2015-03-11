@@ -106,6 +106,7 @@ module F where
   -- Below here, we start with properties
 
   open import FiniteFunctions
+  open import Equiv using (_∼_)
   open import VectorLemmas using (lookupassoc; map-++-commute; 
     tabulate-split; left!!; right!!; lookup-++-raise; unSplit)
   open import Proofs using (congD!)
@@ -144,6 +145,10 @@ module F where
         ≡⟨ sym (lookup∘tabulate (g ∘ f) i) ⟩
       tabulate (g ∘ f) !! i ∎)
     where open ≡-Reasoning
+
+  -- we could go through ~p, but this works better in practice
+  ~⇒≡ : {n : ℕ} {f g : Fin n → Fin n} → (f ∘ g ∼ id) → (tabulate g ∘̂ tabulate f ≡ 1C)
+  ~⇒≡ {_} {f} {g} β = ∼p⇒≡ (λ i → trans (∘̂⇒∘ g f i) (cong (λ x → x !! i) (finext β)))
 
   -- properties of sequential composition
   ∘̂-assoc : {n : ℕ} → (a b c : Vec (Fin n) n) → a ∘̂ (b ∘̂ c) ≡ (a ∘̂ b) ∘̂ c
