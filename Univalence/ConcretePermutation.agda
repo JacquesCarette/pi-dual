@@ -103,5 +103,10 @@ _⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ⊎c (π π₁))
           ≡⟨ 1C⊎1C≡1C {m₁} ⟩
         1C ∎ )
 
+-- note how the arguments are 'flipped'
+-- need to implement it in VecOps first.
+-- assocl+p : {m n o : ℕ} → CPerm ((m + n) + o) (m + (n + o))
+-- assocl+p = cp {!assocl+!} {!!} {!!} {!!}
+
 SCPerm : ℕ → ℕ → Setoid zero zero
 SCPerm m n = ≡-Setoid (CPerm m n)
