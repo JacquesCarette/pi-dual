@@ -18,15 +18,15 @@ open import SetoidUtils using (≡-Setoid)
 -- - the permutation
 -- - its inverse
 -- - and 2 proofs that it is indeed inverse
-record CPerm (size : ℕ) : Set where
+record CPerm (values : ℕ) (size : ℕ) : Set where
   constructor cp
   field
-    π : Cauchy size size
-    πᵒ : Cauchy size size
+    π : Cauchy values size
+    πᵒ : Cauchy size values
     αp : π ∘̂ πᵒ ≡ F.1C
     βp : πᵒ ∘̂ π ≡ F.1C
 
-πᵒ≡ : ∀ {n} → (π₁ π₂ : CPerm n) → (CPerm.π π₁ ≡ CPerm.π π₂) → (CPerm.πᵒ π₁ ≡ CPerm.πᵒ π₂)
+πᵒ≡ : ∀ {m n} → (π₁ π₂ : CPerm m n) → (CPerm.π π₁ ≡ CPerm.π π₂) → (CPerm.πᵒ π₁ ≡ CPerm.πᵒ π₂)
 πᵒ≡ {n} (cp π πᵒ αp βp) (cp .π πᵒ₁ αp₁ βp₁) refl =
   begin (
     πᵒ                  ≡⟨ sym (∘̂-rid πᵒ) ⟩
@@ -37,18 +37,18 @@ record CPerm (size : ℕ) : Set where
     πᵒ₁ ∎)
   where open ≡-Reasoning
 
-p≡ : ∀ {n} → {π₁ π₂ : CPerm n} → (CPerm.π π₁ ≡ CPerm.π π₂) → π₁ ≡ π₂
-p≡ {n} {cp π πᵒ αp βp} {cp .π πᵒ₁ αp₁ βp₁} refl with πᵒ≡ (cp π πᵒ αp βp) (cp π πᵒ₁ αp₁ βp₁) refl
-p≡ {n} {cp π πᵒ αp βp} {cp .π .πᵒ αp₁ βp₁} refl | refl with proof-irrelevance αp αp₁ | proof-irrelevance βp βp₁
-p≡ {n} {cp π πᵒ αp βp} {cp .π .πᵒ .αp .βp} refl | refl | refl | refl = refl
+p≡ : ∀ {m n} → {π₁ π₂ : CPerm m n} → (CPerm.π π₁ ≡ CPerm.π π₂) → π₁ ≡ π₂
+p≡ {m} {n} {cp π πᵒ αp βp} {cp .π πᵒ₁ αp₁ βp₁} refl with πᵒ≡ (cp π πᵒ αp βp) (cp π πᵒ₁ αp₁ βp₁) refl
+p≡ {m} {n} {cp π πᵒ αp βp} {cp .π .πᵒ αp₁ βp₁} refl | refl with proof-irrelevance αp αp₁ | proof-irrelevance βp βp₁
+p≡ {m} {n} {cp π πᵒ αp βp} {cp .π .πᵒ .αp .βp} refl | refl | refl | refl = refl
 
-idp : ∀ {n} → CPerm n
+idp : ∀ {n} → CPerm n n
 idp {n} = cp 1C 1C (∘̂-rid _) (∘̂-lid _)
 
-symp : ∀ {n} → CPerm n → CPerm n
+symp : ∀ {m n} → CPerm m n → CPerm n m
 symp (cp p₁ p₂ α β) = cp p₂ p₁ β α
 
-transp : ∀ {n} → CPerm n → CPerm n → CPerm n
+transp : ∀ {m₁ m₂ m₃} → CPerm m₂ m₁ → CPerm m₃ m₂ → CPerm m₃ m₁
 transp {n} (cp π πᵒ αp βp) (cp π₁ πᵒ₁ αp₁ βp₁) = cp (π ∘̂ π₁) (πᵒ₁ ∘̂ πᵒ) pf₁ pf₂
   where
     open ≡-Reasoning
@@ -72,12 +72,12 @@ transp {n} (cp π πᵒ αp βp) (cp π₁ πᵒ₁ αp₁ βp₁) = cp (π ∘�
         F.1C ∎)
 
 -- zero permutation
-0p : CPerm 0
+0p : CPerm 0 0
 0p = cp F.0C F.0C refl refl
 
 
-_⊎p_ : ∀ {m n} → CPerm m → CPerm n → CPerm (m + n)
-_⊎p_ {m} {n} π₀ π₁ = cp ((π π₀) ⊎c (π π₁)) ((πᵒ π₀) ⊎c (πᵒ π₁)) pf₁ pf₂
+_⊎p_ : ∀ {m₁ m₂ n₁ n₂} → CPerm m₁ m₂ → CPerm n₁ n₂ → CPerm (m₁ + n₁) (m₂ + n₂)
+_⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ⊎c (π π₁)) ((πᵒ π₀) ⊎c (πᵒ π₁)) pf₁ pf₂
   where 
     open CPerm
     open F
@@ -89,8 +89,8 @@ _⊎p_ {m} {n} π₀ π₁ = cp ((π π₀) ⊎c (π π₁)) ((πᵒ π₀) ⊎c
           ≡⟨ ⊎c-distrib {p₁ = π π₀} ⟩
        (π π₀ ∘̂ πᵒ π₀) ⊎c (π π₁ ∘̂ πᵒ π₁)
           ≡⟨ cong₂ _⊎c_ (αp π₀) (αp π₁) ⟩
-        1C {m} ⊎c 1C {n}
-          ≡⟨ 1C⊎1C≡1C {m} ⟩
+        1C {m₂} ⊎c 1C {n₂}
+          ≡⟨ 1C⊎1C≡1C {m₂} ⟩
         1C ∎)
     pf₂ : (πᵒ π₀ ⊎c πᵒ π₁) ∘̂ (π π₀ ⊎c π π₁) ≡ 1C
     pf₂ = 
@@ -99,9 +99,9 @@ _⊎p_ {m} {n} π₀ π₁ = cp ((π π₀) ⊎c (π π₁)) ((πᵒ π₀) ⊎c
           ≡⟨ ⊎c-distrib {p₁ = πᵒ π₀} ⟩
         (πᵒ π₀ ∘̂ π π₀) ⊎c (πᵒ π₁ ∘̂ π π₁)
           ≡⟨ cong₂ _⊎c_ (βp π₀) (βp π₁) ⟩
-        1C {m} ⊎c 1C {n}
-          ≡⟨ 1C⊎1C≡1C {m}⟩
+        1C {m₁} ⊎c 1C {n₁}
+          ≡⟨ 1C⊎1C≡1C {m₁} ⟩
         1C ∎ )
 
-SCPerm : ℕ → Setoid zero zero
-SCPerm n = ≡-Setoid (CPerm n)
+SCPerm : ℕ → ℕ → Setoid zero zero
+SCPerm m n = ≡-Setoid (CPerm m n)

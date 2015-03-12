@@ -35,7 +35,7 @@ open import VectorLemmas using (_!!_; tabulate-split)
 -- the big (semantic) theorem.
 -- for convenience, use only a single size, even though we could use 2.
 thm2 : ∀ {n} {A B : Set} → Enum A n → Enum B n → 
-  (≃S-Setoid A B) ≃S ≡-Setoid (CPerm n)
+  (≃S-Setoid A B) ≃S ≡-Setoid (CPerm n n)
 thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB) = 
   equiv fwd' bwd' α β
   where
@@ -46,9 +46,9 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
     A≃Fn = (enumA , mkqinv labelA αA βA)
     B≃Fn : B ≃ Fin n
     B≃Fn = (enumB , mkqinv labelB αB βB)
-    CP⇨ = SCPerm n ⇨ SCPerm n
+    CP⇨ = SCPerm n n ⇨ SCPerm n n
 
-    fwd : (AS ≃S BS) → CPerm n
+    fwd : (AS ≃S BS) → CPerm n n
     fwd A≃B = cp (tabulate f) (tabulate g) (~⇒≡ β) (~⇒≡ α)
       where
         module A≃SB = _≃S_ A≃B
@@ -80,14 +80,14 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
                ≡⟨ αA i ⟩
             i ∎)
 
-    fwd' : ≃S-Setoid A B ⟶ ≡-Setoid (CPerm n)
+    fwd' : ≃S-Setoid A B ⟶ ≡-Setoid (CPerm n n)
     fwd' = record 
      { _⟨$⟩_ = fwd 
       ; cong = λ {i} {j} i≋j → p≡ (finext (λ k → cong enumB (f≡ i≋j (labelA k)) ))
      }
        where open _≋_
 
-    bwd : CPerm n → (AS ≃S BS)
+    bwd : CPerm n n → (AS ≃S BS)
     bwd (cp p₁ p₂ αp βp) = equiv f g α β
       where
         f : AS ⟶ BS
@@ -126,7 +126,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
               ≡⟨ βA a ⟩
             a ∎)
 
-    bwd' : ≡-Setoid (CPerm n) ⟶ ≃S-Setoid A B
+    bwd' : ≡-Setoid (CPerm n n) ⟶ ≃S-Setoid A B
     bwd' = record 
       { _⟨$⟩_ = bwd 
       ; cong = λ { {π} {.π} refl → equivS (λ _ → refl) (λ _ → refl) }
