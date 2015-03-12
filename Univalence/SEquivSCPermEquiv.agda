@@ -169,16 +169,13 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
               ≡⟨ cong (_⟨$⟩_ g) (βB _) ⟩
             g ⟨$⟩ b ∎ )
 
--- Start proving some of the transport lemmas.  To make things simpler,
--- use a global Enum A and Enum B
--- (which turns out not so helpful after all, refactor! -- JC)
-
+-- Start proving some of the transport lemmas. 
 -- Need to do:
 -- 1. prove that we have a bijective morphism of carriers: done, this is thm2 (fwd is the morphism)
 -- 2.  prove that it preserves:
 --   a. id (done)
 --   b. 0 (done)
---   c. +
+--   c. + (done)
 --   d. *
 
 open import TypeEquivalences using (path⊎)
