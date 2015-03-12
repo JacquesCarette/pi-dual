@@ -15,7 +15,7 @@ open import Data.Vec renaming (map to mapV; _++_ to _++V_; concat to concatV)
 open import Data.Fin using (Fin; inject+; raise)
 open import Function using (_∘_; id)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
-open import Data.Product using (_×_; _,_)
+open import Data.Product using (_×_; _,_;proj₁)
 
 open import TypeEquivalences using (swap₊; swap⋆)
 open import VectorLemmas using (_!!_)
@@ -46,9 +46,13 @@ private
 module F where
   open V
 
-  -- convenient abbreviation
+  -- convenient abbreviations
   Cauchy : ℕ → ℕ → Set
   Cauchy m n = Vec (Fin m) n
+
+  private
+    fwd : {m n : ℕ} → (Fin m ⊎ Fin n) → Fin (m + n)
+    fwd = proj₁ Plus.fwd-iso
 
   -- principal component of the identity permutation  
   1C : {n : ℕ} → Cauchy n n
@@ -73,11 +77,11 @@ module F where
   -- Parallel additive composition
   -- conceptually, what we want is
   _⊎c'_ : ∀ {m₁ n₁ m₂ n₂} → Cauchy m₁ m₂ → Cauchy n₁ n₂ → Cauchy (m₁ + n₁) (m₂ + n₂)
-  _⊎c'_ α β = mapV Plus.fwd (α ⊎v β)
+  _⊎c'_ α β = mapV fwd (α ⊎v β)
   -- but the above is tedious to work with.  Instead, inline a bit to get
   _⊎c_ : ∀ {m₁ n₁ m₂ n₂} → Cauchy m₁ m₂ → Cauchy n₁ n₂ → Cauchy (m₁ + n₁) (m₂ + n₂)
-  _⊎c_ {m₁} α β = tabulate (Plus.fwd ∘ inj₁ ∘ _!!_ α) ++V
-                                                       tabulate (Plus.fwd {m₁} ∘ inj₂ ∘ _!!_ β)
+  _⊎c_ {m₁} α β = tabulate (fwd ∘ inj₁ ∘ _!!_ α) ++V
+                                                       tabulate (fwd {m₁} ∘ inj₂ ∘ _!!_ β)
   -- see ⊎c≡⊎c' lemma below
 
   -- Tensor multiplicative composition
@@ -151,13 +155,14 @@ module F where
   ~⇒≡ {_} {f} {g} β = ∼p⇒≡ (λ i → trans (∘̂⇒∘ g f i) (cong (λ x → x !! i) (finext β)))
 
   -- properties of sequential composition
-  ∘̂-assoc : {n : ℕ} → (a b c : Vec (Fin n) n) → a ∘̂ (b ∘̂ c) ≡ (a ∘̂ b) ∘̂ c
+  ∘̂-assoc : {m₁ m₂ m₃ m₄ : ℕ} → (a : Vec (Fin m₂) m₁) (b : Vec (Fin m₃) m₂) (c : Vec (Fin m₄) m₃) 
+    → a ∘̂ (b ∘̂ c) ≡ (a ∘̂ b) ∘̂ c
   ∘̂-assoc a b c = finext (lookupassoc a b c)
 
-  ∘̂-rid : {n : ℕ} → (π : Vec (Fin n) n) → π ∘̂ 1C ≡ π
+  ∘̂-rid : {m n : ℕ} → (π : Vec (Fin m) n) → π ∘̂ 1C ≡ π
   ∘̂-rid π = trans (finext (λ i → lookup-allFin (π !! i))) (tabulate∘lookup π)
 
-  ∘̂-lid : {n : ℕ} → (π : Vec (Fin n) n) → 1C ∘̂ π ≡ π
+  ∘̂-lid : {m n : ℕ} → (π : Vec (Fin m) n) → 1C ∘̂ π ≡ π
   ∘̂-lid π = trans (finext (λ i → cong (_!!_ π) (lookup-allFin i))) (tabulate∘lookup π)
 
   !!⇒∘̂ : {n₁ n₂ n₃ : ℕ} → (π₁ : Vec (Fin n₁) n₂) → (π₂ : Vec (Fin n₂) n₃) → (i : Fin n₃) → π₁ !! (π₂ !! i) ≡ (π₂ ∘̂ π₁) !! i
