@@ -76,8 +76,8 @@ module F where
   _⊎c'_ α β = mapV Plus.fwd (α ⊎v β)
   -- but the above is tedious to work with.  Instead, inline a bit to get
   _⊎c_ : ∀ {m₁ n₁ m₂ n₂} → Cauchy m₁ m₂ → Cauchy n₁ n₂ → Cauchy (m₁ + n₁) (m₂ + n₂)
-  _⊎c_ {m₁} {m₂} {_} {n₂} α β = tabulate (inject+ m₂ ∘ _!!_ α) ++V
-                                                       tabulate (raise m₁ ∘ _!!_ β)
+  _⊎c_ {m₁} α β = tabulate (Plus.fwd ∘ inj₁ ∘ _!!_ α) ++V
+                                                       tabulate (Plus.fwd {m₁} ∘ inj₂ ∘ _!!_ β)
   -- see ⊎c≡⊎c' lemma below
 
   -- Tensor multiplicative composition
