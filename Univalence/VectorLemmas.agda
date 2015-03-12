@@ -141,7 +141,8 @@ lookup-subst : ∀ {m m' n}
 lookup-subst i xs refl = refl 
 
 -- lookup is associative on Fin vectors
-lookupassoc : ∀ {n} → (π₁ π₂ π₃ : Vec (Fin n) n) (i : Fin n) → 
+lookupassoc : ∀ {m₁ m₂ m₃ m₄} → (π₁ : Vec (Fin m₂) m₁) 
+  (π₂ : Vec (Fin m₃) m₂) (π₃ : Vec (Fin m₄) m₃) → (i : Fin m₁) → 
   lookup (lookup i π₁) (tabulate (λ j → lookup (lookup j π₂) π₃)) ≡
   lookup (lookup i (tabulate (λ j → lookup (lookup j π₁) π₂))) π₃
 lookupassoc π₁ π₂ π₃ i = 
