@@ -2,31 +2,17 @@
 
 module ConcretePermutation where
 
-open import Level
+open import Level using (zero)
 open import Data.Nat using (ℕ;_+_)
--- open import Data.Nat.Properties.Simple using (+-comm)
-open import Data.Fin using (Fin)
-open import Data.Vec using (Vec; tabulate)
--- open import Data.Vec.Properties using (lookup∘tabulate; tabulate∘lookup; lookup-allFin)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans;
-    proof-irrelevance; subst; cong₂;
+    proof-irrelevance; cong₂;
     module ≡-Reasoning)
 open import Relation.Binary using (Setoid; module Setoid)
--- open import Data.Product using (_,′_; _×_)
 
 open import VecOps -- and below, import from that
 open F
 
--- open import Function using (_∘_; id)
--- open import RepresPerm
--- open import Equiv
--- open import Enumeration
--- open import Data.Product using (_,_; proj₁; proj₂)
-open import EquivSetoid
-open import SetoidUtils 
--- open import Function.Equality using (_⟶_; Π; _⟨$⟩_; _⇨_) renaming (_∘_ to _⊚_; id to id⊚)
-
--- open import FiniteFunctions
+open import SetoidUtils using (≡-Setoid)
 
 -- a concrete permutation has 4 components:
 -- - the permutation
@@ -35,8 +21,8 @@ open import SetoidUtils
 record CPerm (size : ℕ) : Set where
   constructor cp
   field
-    π : Vec (Fin size) size
-    πᵒ : Vec (Fin size) size
+    π : Cauchy size size
+    πᵒ : Cauchy size size
     αp : π ∘̂ πᵒ ≡ F.1C
     βp : πᵒ ∘̂ π ≡ F.1C
 
@@ -44,10 +30,10 @@ record CPerm (size : ℕ) : Set where
 πᵒ≡ {n} (cp π πᵒ αp βp) (cp .π πᵒ₁ αp₁ βp₁) refl =
   begin (
     πᵒ                  ≡⟨ sym (∘̂-rid πᵒ) ⟩
-    πᵒ ∘̂ F.1C       ≡⟨  cong (_∘̂_ πᵒ) (sym αp₁)  ⟩
+    πᵒ ∘̂ 1C          ≡⟨  cong (_∘̂_ πᵒ) (sym αp₁)  ⟩
     πᵒ ∘̂ (π ∘̂ πᵒ₁)      ≡⟨ ∘̂-assoc πᵒ π πᵒ₁ ⟩
     (πᵒ ∘̂ π) ∘̂ πᵒ₁      ≡⟨ cong (λ x → x ∘̂ πᵒ₁) βp ⟩
-    F.1C ∘̂ πᵒ₁          ≡⟨ ∘̂-lid πᵒ₁ ⟩
+    1C ∘̂ πᵒ₁            ≡⟨ ∘̂-lid πᵒ₁ ⟩
     πᵒ₁ ∎)
   where open ≡-Reasoning
 
@@ -57,7 +43,7 @@ p≡ {n} {cp π πᵒ αp βp} {cp .π .πᵒ αp₁ βp₁} refl | refl with pr
 p≡ {n} {cp π πᵒ αp βp} {cp .π .πᵒ .αp .βp} refl | refl | refl | refl = refl
 
 idp : ∀ {n} → CPerm n
-idp {n} = cp F.1C F.1C (∘̂-rid _) (∘̂-lid _)
+idp {n} = cp 1C 1C (∘̂-rid _) (∘̂-lid _)
 
 symp : ∀ {n} → CPerm n → CPerm n
 symp (cp p₁ p₂ α β) = cp p₂ p₁ β α
@@ -66,7 +52,7 @@ transp : ∀ {n} → CPerm n → CPerm n → CPerm n
 transp {n} (cp π πᵒ αp βp) (cp π₁ πᵒ₁ αp₁ βp₁) = cp (π ∘̂ π₁) (πᵒ₁ ∘̂ πᵒ) pf₁ pf₂
   where
     open ≡-Reasoning
-    pf₁ : (π ∘̂ π₁) ∘̂ (πᵒ₁ ∘̂ πᵒ) ≡ F.1C
+    pf₁ : (π ∘̂ π₁) ∘̂ (πᵒ₁ ∘̂ πᵒ) ≡ 1C
     pf₁ = 
       begin (
         (π ∘̂ π₁) ∘̂ (πᵒ₁ ∘̂ πᵒ)      ≡⟨ ∘̂-assoc _ _ _ ⟩
@@ -75,7 +61,7 @@ transp {n} (cp π πᵒ αp βp) (cp π₁ πᵒ₁ αp₁ βp₁) = cp (π ∘�
         (π ∘̂ F.1C) ∘̂ πᵒ       ≡⟨ cong (λ x → x ∘̂ πᵒ) (∘̂-rid _) ⟩
         π ∘̂ πᵒ                     ≡⟨ αp ⟩
         F.1C ∎)
-    pf₂ : (πᵒ₁ ∘̂ πᵒ) ∘̂ (π ∘̂ π₁) ≡ F.1C
+    pf₂ : (πᵒ₁ ∘̂ πᵒ) ∘̂ (π ∘̂ π₁) ≡ 1C
     pf₂ = 
       begin (
         (πᵒ₁ ∘̂ πᵒ) ∘̂ (π ∘̂ π₁)     ≡⟨ ∘̂-assoc _ _ _ ⟩
@@ -115,7 +101,7 @@ _⊎p_ {m} {n} π₀ π₁ = cp ((π π₀) ⊎c (π π₁)) ((πᵒ π₀) ⊎c
           ≡⟨ cong₂ _⊎c_ (βp π₀) (βp π₁) ⟩
         1C {m} ⊎c 1C {n}
           ≡⟨ 1C⊎1C≡1C {m}⟩
-         1C ∎ )
+        1C ∎ )
 
 SCPerm : ℕ → Setoid zero zero
 SCPerm n = ≡-Setoid (CPerm n)
