@@ -75,7 +75,6 @@ transp {n} (cp π πᵒ αp βp) (cp π₁ πᵒ₁ αp₁ βp₁) = cp (π ∘�
 0p : CPerm 0 0
 0p = cp F.0C F.0C refl refl
 
-
 _⊎p_ : ∀ {m₁ m₂ n₁ n₂} → CPerm m₁ m₂ → CPerm n₁ n₂ → CPerm (m₁ + n₁) (m₂ + n₂)
 _⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ⊎c (π π₁)) ((πᵒ π₀) ⊎c (πᵒ π₁)) pf₁ pf₂
   where 
@@ -105,8 +104,8 @@ _⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ⊎c (π π₁))
 
 -- note how the arguments are 'flipped'
 -- need to implement it in VecOps first.
--- assocl+p : {m n o : ℕ} → CPerm ((m + n) + o) (m + (n + o))
--- assocl+p = cp {!assocl+!} {!!} {!!} {!!}
+assocl+p : {m n o : ℕ} → CPerm ((m + n) + o) (m + (n + o))
+assocl+p {m} = cp (assocl+ {m}) (assocr+ {m})  (assocl+∘̂assocr+~id {m}) (assocr+∘̂assocl+~id {m})
 
 SCPerm : ℕ → ℕ → Setoid zero zero
 SCPerm m n = ≡-Setoid (CPerm m n)
