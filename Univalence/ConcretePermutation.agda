@@ -3,7 +3,7 @@
 module ConcretePermutation where
 
 open import Level using (zero)
-open import Data.Nat using (ℕ;_+_)
+open import Data.Nat using (ℕ;_+_;_*_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans;
     proof-irrelevance; cong₂;
     module ≡-Reasoning)
@@ -102,10 +102,14 @@ _⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ⊎c (π π₁))
           ≡⟨ 1C⊎1C≡1C {m₁} ⟩
         1C ∎ )
 
--- note how the arguments are 'flipped'
--- need to implement it in VecOps first.
 assocl+p : {m n o : ℕ} → CPerm ((m + n) + o) (m + (n + o))
 assocl+p {m} = cp (assocl+ {m}) (assocr+ {m})  (assocl+∘̂assocr+~id {m}) (assocr+∘̂assocl+~id {m})
+
+swap+p : {m n : ℕ} → CPerm (n + m) (m + n)
+swap+p {m} {n} = cp (swap+cauchy m n) (swap+cauchy n m) (swap+-inv {m}) (swap+-inv {n})
+
+swap*p : {m n : ℕ} → CPerm (n * m) (m * n)
+swap*p {m} {n} = cp (swap⋆cauchy m n) (swap⋆cauchy n m) (swap*-inv {m}) (swap*-inv {n})
 
 SCPerm : ℕ → ℕ → Setoid zero zero
 SCPerm m n = ≡-Setoid (CPerm m n)
