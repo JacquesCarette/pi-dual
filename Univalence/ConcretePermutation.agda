@@ -102,10 +102,16 @@ _⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ⊎c (π π₁))
           ≡⟨ 1C⊎1C≡1C {m₁} ⟩
         1C ∎ )
 
+swap+p : ∀ {m₁ m₂} → CPerm (m₂ + m₁) (m₁ + m₂)
+swap+p {m₁} {m₂} = cp (swap+cauchy m₁ m₂) (swap+cauchy m₂ m₁)
+   (~⇒≡ {!!}) {!!}
+
 -- note how the arguments are 'flipped'
--- need to implement it in VecOps first.
 assocl+p : {m n o : ℕ} → CPerm ((m + n) + o) (m + (n + o))
 assocl+p {m} = cp (assocl+ {m}) (assocr+ {m})  (assocl+∘̂assocr+~id {m}) (assocr+∘̂assocl+~id {m})
+
+assocr+p : {m n o : ℕ} → CPerm (m + (n + o)) ((m + n) + o)
+assocr+p {m} = symp (assocl+p {m})
 
 SCPerm : ℕ → ℕ → Setoid zero zero
 SCPerm m n = ≡-Setoid (CPerm m n)
