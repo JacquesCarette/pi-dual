@@ -206,9 +206,13 @@ module F where
 
   assocl+∘̂assocr+~id : ∀ {m n o} → assocl+ {m} {n} {o} ∘̂ assocr+ {m} ≡ 1C
   assocl+∘̂assocr+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = Plus.assocl+ {m}})
+  
   assocr+∘̂assocl+~id : ∀ {m n o} → assocr+ {m} {n} {o} ∘̂ assocl+ {m} ≡ 1C
   assocr+∘̂assocl+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = Plus.assocr+ {m}})
 
+  swap+-inv : ∀ {m n} → swap+cauchy m n ∘̂ swap+cauchy n m ≡ 1C
+  swap+-inv {m} {n} = ~⇒≡ {o = m + n} (Plus.swap-inv m n)
+  
   private
     left⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : Cauchy m₁ n₁) → (p₂ : Cauchy m₂ n₂)
       → (p₃ : Cauchy m₃ m₁) → (p₄ : Cauchy m₄ m₂) → (i : Fin n₁) → 
@@ -261,3 +265,7 @@ module F where
       tabulate {n₂} (λ i → raise m₃ ((p₂ ∘̂ p₄) !! i))
         ≡⟨ refl ⟩
       (p₁ ∘̂ p₃) ⊎c (p₂ ∘̂ p₄) ∎)
+
+  swap*-inv : ∀ {m n} → swap⋆cauchy m n ∘̂ swap⋆cauchy n m ≡ 1C
+  swap*-inv {m} {n} = ~⇒≡ {o = m * n} (Times.swap-inv m n)
+  

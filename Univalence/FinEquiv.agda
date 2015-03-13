@@ -8,7 +8,8 @@ open import Relation.Binary.PropositionalEquality
 open import Data.Fin renaming (_+_ to _+F_) hiding (_≤_;_<_)
 open import Data.Fin.Properties
 open import Data.Nat.Properties
-open import Data.Nat.Properties.Simple using (+-suc; +-comm; +-assoc; *-right-zero)
+open import Data.Nat.Properties.Simple using
+  (+-suc; +-comm; +-assoc; +-right-identity; *-right-zero; *-assoc)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product
 open import Data.Empty
@@ -22,7 +23,7 @@ open import LeqLemmas
 open import FinNatLemmas
 open import SubstLemmas
 open import Proofs using (sym-sym)
-open import TypeEquivalences using (swap₊; swap⋆)
+open import TypeEquivalences using (swap₊; swapswap₊; swap⋆; swapswap⋆)
 
 -- generally useful, leave this at top:
 Fin0-⊥ : Fin 0 → ⊥
@@ -105,6 +106,18 @@ module Plus where
   swapper : (m n : ℕ) → Fin (m + n) → Fin (n + m)
   swapper m n = fwd ∘ swap₊ ∘ bwd {m} {n} 
 
+  swap-inv : (m n : ℕ) → ∀ i → swapper n m (swapper m n i) ≡ i
+  swap-inv m n i = 
+    begin (
+      fwd (swap₊ (bwd {n} {m} (fwd (swap₊ (bwd {m} {n} i)))))
+        ≡⟨ cong (λ x → fwd (swap₊ x)) (bwd∘fwd~id {n} {m} (swap₊ (bwd i))) ⟩
+      fwd (swap₊ (swap₊ (bwd {m} i)))
+        ≡⟨ cong fwd (swapswap₊ (bwd {m} i)) ⟩
+      fwd (bwd {m} {n} i)
+        ≡⟨ fwd∘bwd~id {m} i ⟩
+      i ∎ )
+    where open ≡-Reasoning
+    
   -- unite+
   unite+ : {m : ℕ} → Fin (0 + m) ≃ Fin m
   unite+ = id-iso
@@ -114,16 +127,17 @@ module Plus where
   uniti+ = id-iso
 
   assocl+ : {m n o : ℕ} → Fin (m + (n + o)) ≃ Fin ((m + n) + o)
-  assocl+ {m} {n} {o} = subst Fin (sym (+-assoc m n o)) ,
-    mkqinv ((subst Fin (+-assoc m n o)) ) 
-                (λ x → subst-subst (sym (+-assoc m n o)) (+-assoc m n o) sym-sym x)
-               (λ x → subst-subst (+-assoc m n o) (sym (+-assoc m n o)) (cong sym refl) x)
+  assocl+ {m} {n} {o} =
+    let eq = +-assoc m n o in
+    subst Fin (sym eq) ,
+    mkqinv (subst Fin eq)
+               (subst-subst (sym eq) eq sym-sym)
+               (subst-subst eq (sym eq) (cong sym refl))
 
   assocr+ : {m n o : ℕ} → Fin ((m + n) + o) ≃ Fin (m + (n + o))
   assocr+ {m} {n} {o} = sym≃ (assocl+ {m})
 
 module Times where
-  open import Perm hiding (absurd-quotient; Fin0-⊥) -- will fix later
   open import DivModUtils using (addMul-lemma)
   
   fwd : {m n : ℕ} → (Fin m × Fin n) → Fin (m * n)
@@ -214,3 +228,38 @@ module Times where
 
   swapper : (m n : ℕ) → Fin (m * n) → Fin (n * m)
   swapper m n = fwd ∘ swap⋆ ∘ bwd {m} {n} 
+
+  -- unite*
+  unite* : {m : ℕ} → Fin (1 * m) ≃ Fin m
+  unite* {m} =
+    let eq = +-right-identity m in
+    subst Fin eq ,
+    mkqinv (subst Fin (sym eq))
+               (subst-subst eq (sym eq) (cong sym refl))
+               (subst-subst (sym eq) eq sym-sym)
+
+  -- uniti*
+  uniti* : {m : ℕ} → Fin m ≃ Fin (1 * m)
+  uniti* = sym≃ unite*
+
+  assocl* : {m n o : ℕ} → Fin (m * (n * o)) ≃ Fin ((m * n) * o)
+  assocl* {m} {n} {o} = subst Fin (sym (*-assoc m n o)) ,
+    mkqinv ((subst Fin (*-assoc m n o)) ) 
+                (λ x → subst-subst (sym (*-assoc m n o)) (*-assoc m n o) sym-sym x)
+               (λ x → subst-subst (*-assoc m n o) (sym (*-assoc m n o)) (cong sym refl) x)
+
+  assocr* : {m n o : ℕ} → Fin ((m * n) * o) ≃ Fin (m * (n * o))
+  assocr* {m} {n} {o} = sym≃ (assocl* {m})
+
+  swap-inv : (m n : ℕ) → ∀ i → swapper n m (swapper m n i) ≡ i
+  swap-inv m n i = 
+    begin (
+      fwd (swap⋆ (bwd {n} {m} (fwd (swap⋆ (bwd {m} {n} i)))))
+        ≡⟨ cong (λ x → fwd (swap⋆ x)) (bwd∘fwd~id {n} {m} (swap⋆ (bwd i))) ⟩
+      fwd (swap⋆ (swap⋆ (bwd {m} i)))
+        ≡⟨ cong fwd (swapswap⋆ (bwd {m} i)) ⟩
+      fwd (bwd {m} {n} i)
+        ≡⟨ fwd∘bwd~id {m} i ⟩
+      i ∎ )
+    where open ≡-Reasoning
+    

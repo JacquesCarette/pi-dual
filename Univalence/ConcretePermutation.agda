@@ -3,7 +3,7 @@
 module ConcretePermutation where
 
 open import Level using (zero)
-open import Data.Nat using (ℕ;_+_)
+open import Data.Nat using (ℕ;_+_;_*_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans;
     proof-irrelevance; cong₂;
     module ≡-Reasoning)
@@ -53,7 +53,7 @@ transp {n} (cp π πᵒ αp βp) (cp π₁ πᵒ₁ αp₁ βp₁) = cp (π ∘�
   where
     open ≡-Reasoning
     pf₁ : (π ∘̂ π₁) ∘̂ (πᵒ₁ ∘̂ πᵒ) ≡ 1C
-    pf₁ = 
+    pf₁ =
       begin (
         (π ∘̂ π₁) ∘̂ (πᵒ₁ ∘̂ πᵒ)      ≡⟨ ∘̂-assoc _ _ _ ⟩
         ((π ∘̂ π₁) ∘̂ πᵒ₁) ∘̂ πᵒ      ≡⟨ cong (λ x → x ∘̂ πᵒ) (sym (∘̂-assoc _ _ _)) ⟩
@@ -62,7 +62,7 @@ transp {n} (cp π πᵒ αp βp) (cp π₁ πᵒ₁ αp₁ βp₁) = cp (π ∘�
         π ∘̂ πᵒ                     ≡⟨ αp ⟩
         F.1C ∎)
     pf₂ : (πᵒ₁ ∘̂ πᵒ) ∘̂ (π ∘̂ π₁) ≡ 1C
-    pf₂ = 
+    pf₂ =
       begin (
         (πᵒ₁ ∘̂ πᵒ) ∘̂ (π ∘̂ π₁)     ≡⟨ ∘̂-assoc _ _ _ ⟩
         ((πᵒ₁ ∘̂ πᵒ) ∘̂ π) ∘̂ π₁     ≡⟨ cong (λ x → x ∘̂ π₁) (sym (∘̂-assoc _ _ _)) ⟩
@@ -77,12 +77,12 @@ transp {n} (cp π πᵒ αp βp) (cp π₁ πᵒ₁ αp₁ βp₁) = cp (π ∘�
 
 _⊎p_ : ∀ {m₁ m₂ n₁ n₂} → CPerm m₁ m₂ → CPerm n₁ n₂ → CPerm (m₁ + n₁) (m₂ + n₂)
 _⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ⊎c (π π₁)) ((πᵒ π₀) ⊎c (πᵒ π₁)) pf₁ pf₂
-  where 
+  where
     open CPerm
     open F
     open ≡-Reasoning
     pf₁ : (π π₀ ⊎c π π₁) ∘̂ (πᵒ π₀ ⊎c πᵒ π₁) ≡ 1C
-    pf₁ = 
+    pf₁ =
       begin (
         (π π₀ ⊎c π π₁) ∘̂ (πᵒ π₀ ⊎c πᵒ π₁)
           ≡⟨ ⊎c-distrib {p₁ = π π₀} ⟩
@@ -92,7 +92,7 @@ _⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ⊎c (π π₁))
           ≡⟨ 1C⊎1C≡1C {m₂} ⟩
         1C ∎)
     pf₂ : (πᵒ π₀ ⊎c πᵒ π₁) ∘̂ (π π₀ ⊎c π π₁) ≡ 1C
-    pf₂ = 
+    pf₂ =
       begin (
         (πᵒ π₀ ⊎c πᵒ π₁) ∘̂ (π π₀ ⊎c π π₁)
           ≡⟨ ⊎c-distrib {p₁ = πᵒ π₀} ⟩
@@ -102,16 +102,17 @@ _⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ⊎c (π π₁))
           ≡⟨ 1C⊎1C≡1C {m₁} ⟩
         1C ∎ )
 
-swap+p : ∀ {m₁ m₂} → CPerm (m₂ + m₁) (m₁ + m₂)
-swap+p {m₁} {m₂} = cp (swap+cauchy m₁ m₂) (swap+cauchy m₂ m₁)
-   (~⇒≡ {!!}) {!!}
-
--- note how the arguments are 'flipped'
 assocl+p : {m n o : ℕ} → CPerm ((m + n) + o) (m + (n + o))
 assocl+p {m} = cp (assocl+ {m}) (assocr+ {m})  (assocl+∘̂assocr+~id {m}) (assocr+∘̂assocl+~id {m})
 
 assocr+p : {m n o : ℕ} → CPerm (m + (n + o)) ((m + n) + o)
 assocr+p {m} = symp (assocl+p {m})
+
+swap+p : {m n : ℕ} → CPerm (n + m) (m + n)
+swap+p {m} {n} = cp (swap+cauchy m n) (swap+cauchy n m) (swap+-inv {m}) (swap+-inv {n})
+
+swap*p : {m n : ℕ} → CPerm (n * m) (m * n)
+swap*p {m} {n} = cp (swap⋆cauchy m n) (swap⋆cauchy n m) (swap*-inv {m}) (swap*-inv {n})
 
 SCPerm : ℕ → ℕ → Setoid zero zero
 SCPerm m n = ≡-Setoid (CPerm m n)
