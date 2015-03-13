@@ -119,6 +119,9 @@ module Plus where
                 (λ x → subst-subst (sym (+-assoc m n o)) (+-assoc m n o) sym-sym x)
                (λ x → subst-subst (+-assoc m n o) (sym (+-assoc m n o)) (cong sym refl) x)
 
+  assocr+ : {m n o : ℕ} → Fin ((m + n) + o) ≃ Fin (m + (n + o))
+  assocr+ {m} {n} {o} = sym≃ (assocl+ {m})
+
 module Times where
   open import Perm hiding (absurd-quotient; Fin0-⊥) -- will fix later
   open import DivModUtils using (addMul-lemma)
