@@ -59,10 +59,14 @@ trans≃ (f , feq) (g , geq) = (g ∘ f) , (mkqinv inv α' β')
     α' = λ x → trans (cong g (fm.α (gm.g x))) (gm.α x)
     β' = λ x → trans (cong fm.g (gm.β (f x))) (fm.β x)
 
--- equivalences are injective
-
 _⋆_ : {A B : Set} → (A ≃ B) → (x : A) → B
 (f , _) ⋆ x = f x 
+
+-- there-and-back is identity
+p∘!p≡id : {A B : Set} {p : A ≃ B} → (_⋆_ (trans≃ p (sym≃ p))) ∼ (_⋆_ id≃)
+p∘!p≡id {p = f , mkqinv q _ β} = β
+
+-- equivalences are injective
 
 inj≃ : {A B : Set} → (eq : A ≃ B) → (x y : A) → (eq ⋆ x ≡ eq ⋆ y → x ≡ y)
 inj≃ (f , mkqinv g α β) x y p = trans (sym (β x)) (trans (cong g p) (β y))
