@@ -17,6 +17,7 @@ open import Function using (_∘_; id)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_;proj₁)
 
+open import Equiv using (p∘!p≡id)
 open import TypeEquivalences using (swap₊; swap⋆)
 open import VectorLemmas using (_!!_)
 open import FinEquiv using (module Plus; module Times)
@@ -44,6 +45,17 @@ private
 
 -- We need to define (at least) 0, 1, +, *, ∘, swap+, swap*
 module F where
+  open import FiniteFunctions
+  open import Equiv using (_∼_)
+  open import VectorLemmas using (lookupassoc; map-++-commute; 
+    tabulate-split; left!!; right!!; lookup-++-raise; unSplit)
+  open import Proofs using (congD!)
+  open import Data.Vec.Properties using (lookup-allFin; tabulate∘lookup; 
+    lookup∘tabulate; tabulate-∘; lookup-++-inject+)
+  open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; 
+    cong; cong₂; module ≡-Reasoning)
+  open ≡-Reasoning
+
   open V
 
   -- convenient abbreviations
@@ -107,23 +119,23 @@ module F where
     -- mapV transposeIndex (V.tcomp 1C 1C)
 
   -------------------------------------------------------------------------------------------
+  -- Things which are the foundations of other permutations, but coming
+  -- from properties, rather than being operators
+
+  assocl+ : {m n o : ℕ} → Cauchy  ((m + n) + o) (m + (n + o))
+  assocl+ {m} {n} {o} = tabulate (proj₁ (Plus.assocl+ {m} {n} {o}))
+
+  assocr+ : {m n o : ℕ} → Cauchy  (m + (n + o)) (m + n + o)
+  assocr+ {m} {n} {o} = tabulate (proj₁ (Plus.assocr+ {m} {n} {o}))
+
+  -------------------------------------------------------------------------------------------
   -- Below here, we start with properties
 
-  open import FiniteFunctions
-  open import Equiv using (_∼_)
-  open import VectorLemmas using (lookupassoc; map-++-commute; 
-    tabulate-split; left!!; right!!; lookup-++-raise; unSplit)
-  open import Proofs using (congD!)
-  open import Data.Vec.Properties using (lookup-allFin; tabulate∘lookup; 
-    lookup∘tabulate; tabulate-∘; lookup-++-inject+)
-  open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; 
-    cong; cong₂; module ≡-Reasoning)
-  open ≡-Reasoning
 
   -- Useful stuff
   infix 4 _∼p_
 
-  _∼p_ : {n : ℕ} (p₁ p₂ : Vec (Fin n) n) → Set
+  _∼p_ : {n m : ℕ} (p₁ p₂ : Vec (Fin m) n) → Set
   _∼p_ {n} p₁ p₂ = (i : Fin n) → p₁ !! i ≡ p₂ !! i
 
   ∼p⇒≡ : {n : ℕ} {p₁ p₂ : Vec (Fin n) n} → (p₁ ∼p p₂) → p₁ ≡ p₂
@@ -136,7 +148,8 @@ module F where
     where open ≡-Reasoning
 
   -- note the flip!
-  ∘̂⇒∘ : {n : ℕ} → (f g : Fin n → Fin n) → tabulate f ∘̂ tabulate g ∼p tabulate (g ∘ f)
+  ∘̂⇒∘ : {m n o : ℕ} → (f : Fin m → Fin n) → (g : Fin n → Fin o) → 
+            tabulate f ∘̂ tabulate g ∼p tabulate (g ∘ f)
   ∘̂⇒∘ f g i = 
     begin (
       (tabulate f ∘̂ tabulate g) !! i
@@ -151,8 +164,9 @@ module F where
     where open ≡-Reasoning
 
   -- we could go through ~p, but this works better in practice
-  ~⇒≡ : {n : ℕ} {f g : Fin n → Fin n} → (f ∘ g ∼ id) → (tabulate g ∘̂ tabulate f ≡ 1C)
-  ~⇒≡ {_} {f} {g} β = ∼p⇒≡ (λ i → trans (∘̂⇒∘ g f i) (cong (λ x → x !! i) (finext β)))
+  ~⇒≡ : {m n o : ℕ} {f : Fin m → Fin n} {g : Fin n → Fin m} → 
+             (f ∘ g ∼ id) → (tabulate g ∘̂ tabulate f ≡ 1C)
+  ~⇒≡ {f = f} {g} β = ∼p⇒≡ (λ i → trans (∘̂⇒∘ g f i) (cong (λ x → x !! i) (finext β)))
 
   -- properties of sequential composition
   ∘̂-assoc : {m₁ m₂ m₃ m₄ : ℕ} → (a : Vec (Fin m₂) m₁) (b : Vec (Fin m₃) m₂) (c : Vec (Fin m₄) m₃) 
@@ -189,6 +203,11 @@ module F where
 
   1C!!i≡i : ∀ {m} {i : Fin m} → 1C {m} !! i ≡ i
   1C!!i≡i = lookup∘tabulate id _
+
+  assocl+∘̂assocr+~id : ∀ {m n o} → assocl+ {m} {n} {o} ∘̂ assocr+ {m} ≡ 1C
+  assocl+∘̂assocr+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = Plus.assocl+ {m}})
+  assocr+∘̂assocl+~id : ∀ {m n o} → assocr+ {m} {n} {o} ∘̂ assocl+ {m} ≡ 1C
+  assocr+∘̂assocl+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = Plus.assocr+ {m}})
 
   private
     left⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : Cauchy m₁ n₁) → (p₂ : Cauchy m₂ n₂)
