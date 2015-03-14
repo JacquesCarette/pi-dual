@@ -45,16 +45,17 @@ eA ⊛e eB = trans≃ (path× eA eB) Times.fwd-iso
 -- evaluating an ⊕e on the left component
 eval-left : {A B : Set} {m n : ℕ} {eA : Enum A m} {eB : Enum B n} →
   (i : Fin m) → qinv.g (proj₂ (eA ⊕e eB)) (inject+ n i) ≡ inj₁ (qinv.g (proj₂ eA) i)
-eval-left {m = m} {n} {eA} {eB} i = 
+eval-left {m = m} {n} {eA} {eB} i =
+  let (fwd , mkqinv bwd _ bwd∘fwd~id) = Plus.fwd-iso {m} {n} in 
   begin (
     qinv.g (proj₂ (eA ⊕e eB)) (inject+ n i)
       ≡⟨ refl ⟩ -- β reduce ⊕e, reverse-β Plus.fwd
-    qinv.g (proj₂ (trans≃ (path⊎ eA eB) Plus.fwd-iso)) (Plus.fwd (inj₁ i))
+    qinv.g (proj₂ (trans≃ (path⊎ eA eB) Plus.fwd-iso)) (fwd (inj₁ i))
       ≡⟨ refl ⟩ -- expand qinv.g and trans≃
-    qinv.g (proj₂ (path⊎ eA eB)) (qinv.g (proj₂ Plus.fwd-iso) (Plus.fwd (inj₁ i)))
+    qinv.g (proj₂ (path⊎ eA eB)) (qinv.g (proj₂ Plus.fwd-iso) (fwd (inj₁ i)))
       ≡⟨ refl ⟩ -- expand rhs
-    qinv.g (proj₂ (path⊎ eA eB)) ((Plus.bwd {m} ∘ Plus.fwd) (inj₁ i))
-      ≡⟨ cong (qinv.g (proj₂ (path⊎ eA eB))) (Plus.bwd∘fwd~id (inj₁ i)) ⟩
+    qinv.g (proj₂ (path⊎ eA eB)) ((bwd ∘ fwd) (inj₁ i))
+      ≡⟨ cong (qinv.g (proj₂ (path⊎ eA eB))) (bwd∘fwd~id (inj₁ i)) ⟩
     qinv.g (proj₂ (path⊎ eA eB)) (inj₁ i)
       ≡⟨ refl ⟩ -- by definition of path⊎
     inj₁ (qinv.g (proj₂ eA) i) ∎)
@@ -62,4 +63,5 @@ eval-left {m = m} {n} {eA} {eB} i =
 
 eval-right : {A B : Set} {m n : ℕ} {eA : Enum A m} {eB : Enum B n} →
   (i : Fin n) → qinv.g (proj₂ (eA ⊕e eB)) (raise m i) ≡ inj₂ (qinv.g (proj₂ eB) i)
-eval-right {eA = eA} {eB} i = cong (qinv.g (proj₂ (path⊎ eA eB))) (Plus.bwd∘fwd~id (inj₂ i))
+eval-right {eA = eA} {eB} i = 
+  cong (qinv.g (proj₂ (path⊎ eA eB))) (qinv.β (proj₂ Plus.fwd-iso) (inj₂ i))
