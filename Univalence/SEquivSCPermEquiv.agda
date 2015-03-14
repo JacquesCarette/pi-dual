@@ -49,7 +49,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
     CP⇨ = SCPerm n n ⇨ SCPerm n n
 
     fwd : (AS ≃S BS) → CPerm n n
-    fwd A≃B = cp (tabulate f) (tabulate g) (~⇒≡ β) (~⇒≡ α)
+    fwd A≃B = cp (tabulate f) (tabulate g) (~⇒≡ {o = n} β) (~⇒≡ {o = n} α)
       where
         module A≃SB = _≃S_ A≃B
         f : Fin n → Fin n
