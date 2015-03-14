@@ -30,6 +30,8 @@ open import Data.Sum     using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 -}
 
+open ≡-Reasoning
+
 open import VecOps using (module F)
 open F using (_∘̂_)
 open import ConcretePermutation
@@ -47,12 +49,12 @@ c2perm (c₁ ⊕ c₂) = (c2perm c₁) ⊎p (c2perm c₂)
 c2perm (c₁ ⊗ c₂) = {!!}
 c2perm unite₊ = idp -- could use something more 'precise' ?
 c2perm uniti₊ = idp -- ditto
-c2perm swap₊ = {!!}
+c2perm {PLUS t₁ t₂} swap₊ = swap+p {size t₁} {size t₂}
 c2perm {PLUS t₁ (PLUS t₂ t₃)} assocl₊ = assocl+p {size t₁} {size t₂} {size t₃}
 c2perm {PLUS (PLUS t₁ t₂) t₃} assocr₊ = assocr+p {size t₁} {size t₂} {size t₃}
-c2perm unite⋆ = {!!}
-c2perm uniti⋆ = {!!}
-c2perm swap⋆ = {!!}
+c2perm {TIMES ONE t₁} unite⋆ = unite*p {size t₁}
+c2perm {t₁} uniti⋆ = uniti*p {size t₁}
+c2perm {TIMES t₁ t₂} swap⋆ = swap*p {size t₁} {size t₂}
 c2perm assocl⋆ = {!!}
 c2perm assocr⋆ = {!!}
 c2perm distz = 0p
@@ -107,7 +109,13 @@ assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} = {!!}
 -- The relation ~ validates the groupoid laws
 
 c◎id∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ id⟷ ∼ c
-c◎id∼c {t₁} {t₂} {c} = {!!}
+c◎id∼c {t₁} {t₂} {c} = 
+  begin (
+    c2perm (c ◎ id⟷)
+      ≡⟨ refl ⟩
+    transp (c2perm c) idp
+      ≡⟨ {!!} ⟩
+    c2perm c ∎)
 
 id◎c∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ◎ c ∼ c
 id◎c∼c {t₁} {t₂} {c} = {!!}

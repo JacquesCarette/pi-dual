@@ -128,6 +128,12 @@ module F where
   assocr+ : {m n o : ℕ} → Cauchy  (m + (n + o)) (m + n + o)
   assocr+ {m} {n} {o} = tabulate (proj₁ (Plus.assocr+ {m} {n} {o}))
 
+  unite* : {m : ℕ} → Cauchy m (1 * m)
+  unite* {m} = tabulate (proj₁ (Times.unite* {m}))
+
+  uniti* : {m : ℕ} → Cauchy (1 * m) m
+  uniti* {m} = tabulate (proj₁ (Times.uniti* {m}))
+
   -------------------------------------------------------------------------------------------
   -- Below here, we start with properties
 
@@ -212,7 +218,13 @@ module F where
 
   swap+-inv : ∀ {m n} → swap+cauchy m n ∘̂ swap+cauchy n m ≡ 1C
   swap+-inv {m} {n} = ~⇒≡ {o = m + n} (Plus.swap-inv m n)
-  
+
+  unite*∘̂uniti*~id : ∀ {m} → (unite* {m}) ∘̂ uniti* ≡ 1C {1 * m}
+  unite*∘̂uniti*~id {m} = ~⇒≡ {m} {n = 1 * m} {o = 1 * m} (p∘!p≡id {p = Times.unite* {m}})
+   
+  uniti*∘̂unite*~id : ∀ {m} → (uniti* {m}) ∘̂ unite* ≡ 1C {m}
+  uniti*∘̂unite*~id {m} = ~⇒≡ {1 * m} {n = m} {o = 1 * m} (p∘!p≡id {p = Times.uniti* {m}})
+   
   private
     left⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : Cauchy m₁ n₁) → (p₂ : Cauchy m₂ n₂)
       → (p₃ : Cauchy m₃ m₁) → (p₄ : Cauchy m₄ m₂) → (i : Fin n₁) → 

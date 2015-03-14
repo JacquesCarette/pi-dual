@@ -111,8 +111,18 @@ assocr+p {m} = symp (assocl+p {m})
 swap+p : {m n : ℕ} → CPerm (n + m) (m + n)
 swap+p {m} {n} = cp (swap+cauchy m n) (swap+cauchy n m) (swap+-inv {m}) (swap+-inv {n})
 
+unite*p : {m : ℕ} → CPerm m (1 * m)
+unite*p {m} = cp (unite* {m}) (uniti* {m}) (unite*∘̂uniti*~id {m}) (uniti*∘̂unite*~id {m})
+
+uniti*p : {m : ℕ} → CPerm (1 * m) m
+uniti*p {m} = symp (unite*p {m})
+
 swap*p : {m n : ℕ} → CPerm (n * m) (m * n)
 swap*p {m} {n} = cp (swap⋆cauchy m n) (swap⋆cauchy n m) (swap*-inv {m}) (swap*-inv {n})
+
+------------------------------------------------------------------------------------------------------
+ridp : ∀ {m₁ m₂} {p : CPerm m₂ m₁} → transp p idp ≡ p
+ridp {p = p} = p≡ (∘̂-rid (CPerm.π p))
 
 SCPerm : ℕ → ℕ → Setoid zero zero
 SCPerm m n = ≡-Setoid (CPerm m n)
