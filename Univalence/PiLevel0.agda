@@ -43,19 +43,17 @@ data U : Set where
   ONE   : U
   PLUS  : U → U → U
   TIMES : U → U → U
-  BOOL  : U          -- for testing
 
 ⟦_⟧ : U → Set 
 ⟦ ZERO ⟧        = ⊥ 
 ⟦ ONE ⟧         = ⊤
 ⟦ PLUS t₁ t₂ ⟧  = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
 ⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
-⟦ BOOL ⟧        = Bool
 
 -- Abbreviations for examples
 
--- BOOL : U
--- BOOL  = PLUS ONE ONE 
+BOOL : U
+BOOL  = PLUS ONE ONE 
 
 BOOL² : U
 BOOL² = TIMES BOOL BOOL
@@ -113,9 +111,6 @@ data _⟷_ : U → U → Set where
             (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
   _⊗_     : {t₁ t₂ t₃ t₄ : U} → 
             (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
-  -- for testing
-  foldBool   : PLUS ONE ONE ⟷ BOOL
-  unfoldBool : BOOL ⟷ PLUS ONE ONE
 
 -- Syntactic equality of combinators
 
@@ -138,8 +133,6 @@ comb= id⟷ id⟷ = true
 comb= (c₁ ◎ c₂) (c₃ ◎ c₄) = comb= c₁ c₃ ∧ comb= c₂ c₄
 comb= (c₁ ⊕ c₂) (c₃ ⊕ c₄) = comb= c₁ c₃ ∧ comb= c₂ c₄
 comb= (c₁ ⊗ c₂) (c₃ ⊗ c₄) = comb= c₁ c₃ ∧ comb= c₂ c₄
-comb= foldBool foldBool = true
-comb= unfoldBool unfoldBool = true
 comb= _ _ = false
 
 -- Extensional evaluator for testing: serves as a specification
@@ -172,10 +165,6 @@ eval (c₁ ◎ c₂) v = eval c₂ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₂ v) = inj₂ (eval c₂ v)
 eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
-eval foldBool (inj₁ tt) = false
-eval foldBool (inj₂ tt) = true
-eval unfoldBool false = inj₁ tt
-eval unfoldBool true = inj₂ tt
 
 -- A canonical representation of each type as a vector of values. This
 -- fixes a canonical order for the elements of the types: each value
@@ -186,7 +175,6 @@ size ZERO          = 0
 size ONE           = 1
 size (PLUS t₁ t₂)  = size t₁ + size t₂
 size (TIMES t₁ t₂) = size t₁ * size t₂
-size BOOL          = 2
 
 utoVec : (t : U) → Vec ⟦ t ⟧ (size t)
 utoVec ZERO          = []
@@ -194,7 +182,6 @@ utoVec ONE           = tt ∷ []
 utoVec (PLUS t₁ t₂)  = mapV inj₁ (utoVec t₁) ++V mapV inj₂ (utoVec t₂)
 utoVec (TIMES t₁ t₂) = 
   concatV (mapV (λ v₁ → mapV (λ v₂ → (v₁ , v₂)) (utoVec t₂)) (utoVec t₁))
-utoVec BOOL          = false ∷ true ∷ []
 
 -- Combinators are always between types of the same size
 -- Paths preserve sizes
@@ -229,8 +216,6 @@ size≡ {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t
 size≡ {t} {.t} id⟷ = refl
 size≡ {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = cong₂ _+_ (size≡ c₁) (size≡ c₂)
 size≡ {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = cong₂ _*_ (size≡ c₁) (size≡ c₂)
-size≡ {PLUS ONE ONE} {BOOL} foldBool = refl
-size≡ {BOOL} {PLUS ONE ONE} unfoldBool = refl
 
 -- All proofs about sizes are "the same"
 
@@ -257,6 +242,11 @@ _□ t = id⟷
 
 spec : {t₁ t₂ : U} → (t₁ ⟷ t₂) → Vec (⟦ t₁ ⟧ × ⟦ t₂ ⟧) (size t₁)
 spec {t₁} {t₂} c = mapV (λ v₁ → (v₁ , eval c v₁)) (utoVec t₁)
+
+-- For easier manipulation of Bool
+foldBool unfoldBool : BOOL ⟷ BOOL
+foldBool = id⟷
+unfoldBool = id⟷
 
 -- Many ways of negating a BOOL. Again, it is absolutely critical that there
 -- is NO path between false⟷ and true⟷. These permutations instead are based
@@ -463,8 +453,6 @@ FULLADDER =
 ! (c₁ ◎ c₂) = ! c₂ ◎ ! c₁ 
 ! (c₁ ⊕ c₂) = (! c₁) ⊕ (! c₂)
 ! (c₁ ⊗ c₂) = (! c₁) ⊗ (! c₂)
-! unfoldBool = foldBool
-! foldBool   = unfoldBool
 
 !! : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → ! (! c) ≡ c
 !! {c = unite₊}  = refl
@@ -505,8 +493,6 @@ FULLADDER =
            ≡⟨ cong₂ _⊗_ (!! {c = c₁}) (!! {c = c₂}) ⟩ 
          c₁ ⊗ c₂ ∎)
   where open ≡-Reasoning
-!! {c = unfoldBool} = refl
-!! {c = foldBool}   = refl
 
 -- size≡ and !
 
@@ -535,8 +521,6 @@ size≡! {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .
 size≡! {t} {.t} id⟷ = refl
 size≡! {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = cong₂ _+_ (size≡! c₁) (size≡! c₂)
 size≡! {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = cong₂ _*_ (size≡! c₁) (size≡! c₂)
-size≡! {PLUS ONE ONE} {BOOL} foldBool = refl
-size≡! {BOOL} {PLUS ONE ONE} unfoldBool = refl
 
 size∼! : {t₁ t₂ : U} → (c₁ c₂ : t₁ ⟷ t₂) → (size≡! c₁ ≡ size≡! c₂)
 size∼! c₁ c₂ = proof-irrelevance (size≡! c₁) (size≡! c₂)

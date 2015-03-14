@@ -62,8 +62,6 @@ c2perm factorz = 0p
 c2perm dist = {!!}
 c2perm factor = {!!}
 c2perm id⟷ = idp
-c2perm foldBool = idp
-c2perm unfoldBool = idp
 
 -- Looking forward to Sec. 2.2 (Functions are functors). The
 -- corresponding statement to Lemma 2.2.1 in our setting would be the
