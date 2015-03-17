@@ -12,8 +12,8 @@ open import  Data.Vec.Properties
      tabulate-allFin)
 open import Function using (id;_∘_;flip)
 open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; sym; cong; subst; proof-irrelevance; module ≡-Reasoning)
-open import Data.Nat using (ℕ; zero; suc; _+_; z≤n)
+  using (_≡_; refl; sym; cong; cong₂; subst; proof-irrelevance; module ≡-Reasoning)
+open import Data.Nat using (ℕ; zero; suc; _+_; z≤n; _*_)
 open import Data.Nat.Properties.Simple using (+-comm)
 open import Data.Fin using (Fin; zero; suc; inject+; raise; reduce≥)
 
@@ -121,6 +121,11 @@ concat-map (xs ∷ xss) f =
            ≡⟨ refl ⟩
          mapV f (concatV (xs ∷ xss)) ∎)
   where open ≡-Reasoning
+
+map-map-map : ∀ {a b c m n} {A : Set a} {B : Set b} {C : Set c} →
+  (f  : B → C) → (g : A → Vec B n) → (xs : Vec A m) →
+  mapV (mapV f) (mapV g xs) ≡ mapV (mapV f ∘ g) xs
+map-map-map f g xss = sym (map-∘ (mapV f) g xss)
 
 splitV+ : ∀ {m n} {a : Level} {A : Set a} {f : Fin (m + n) → A} → Vec A (m + n)
 splitV+ {m} {n} {f = f} = tabulate {m} (f ∘ inject+ n) ++V tabulate {n} (f ∘ raise m)
