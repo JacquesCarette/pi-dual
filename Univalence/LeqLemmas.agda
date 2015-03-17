@@ -8,7 +8,7 @@ open import Data.Nat
 open import Data.Nat.Properties.Simple
   using (*-comm; +-right-identity; +-comm; +-assoc)
 open import Data.Nat.Properties
-  using (cancel-+-left-≤)
+  using (cancel-+-left-≤; n≤m+n)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; cong; module ≡-Reasoning)
 open import Relation.Binary using (Decidable)
@@ -66,7 +66,7 @@ i≤j+i {i} {suc j} =
   where open ≤-Reasoning
 
 cong+r≤ : ∀ {i j} → i ≤ j → (k : ℕ) → i + k ≤ j + k
-cong+r≤ {0}     {j}     z≤n       k = i≤j+i {k} {j}
+cong+r≤ {0}     {j}     z≤n       k = n≤m+n j k
 cong+r≤ {suc i} {0}     ()        k -- absurd
 cong+r≤ {suc i} {suc j} (s≤s i≤j) k = s≤s (cong+r≤ {i} {j} i≤j k)
 
