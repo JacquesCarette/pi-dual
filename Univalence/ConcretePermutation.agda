@@ -120,6 +120,18 @@ uniti*p {m} = symp (unite*p {m})
 swap*p : {m n : ℕ} → CPerm (n * m) (m * n)
 swap*p {m} {n} = cp (swap⋆cauchy m n) (swap⋆cauchy n m) (swap*-inv {m}) (swap*-inv {n})
 
+assocl*p : {m n o : ℕ} → CPerm ((m * n) * o) (m * (n * o))
+assocl*p {m} = cp (assocl* {m}) (assocr* {m})  (assocl*∘̂assocr*~id {m}) (assocr*∘̂assocl*~id {m})
+
+assocr*p : {m n o : ℕ} → CPerm (m * (n * o)) ((m * n) * o)
+assocr*p {m} = symp (assocl*p {m})
+
+{-
+_×p_ : ∀ {m₁ m₂ n₁ n₂} → CPerm m₁ m₂ → CPerm n₁ n₂ → CPerm (m₁ * n₁) (m₂ * n₂)
+_×p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ×c (π π₁)) ((πᵒ π₀) ×c (πᵒ π₁)) {!!} {!!}
+  where open CPerm
+-}
+
 ------------------------------------------------------------------------------------------------------
 ridp : ∀ {m₁ m₂} {p : CPerm m₂ m₁} → transp p idp ≡ p
 ridp {p = p} = p≡ (∘̂-rid (CPerm.π p))
