@@ -15,11 +15,11 @@ open import Data.Vec renaming (map to mapV; _++_ to _++V_; concat to concatV)
 open import Data.Fin using (Fin; inject+; raise; zero; suc)
 open import Function using (_∘_; id)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
-open import Data.Product using (_×_; _,_;proj₁)
+open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
 open import Equiv using (p∘!p≡id)
 open import TypeEquivalences using (swap₊; swap⋆)
-open import VectorLemmas using (_!!_; concat-map; map-map-map)
+open import VectorLemmas using (_!!_; concat-map; map-map-map; lookup-map; map-∘)
 open import FinEquiv using (module Plus; module Times)
 
 ------------------------------------------------------------------------------
@@ -301,16 +301,19 @@ module F where
     concat!! (suc a) b (xs ∷ xss) = 
       trans (lookup-++-raise xs (concatV xss) (Times.fwd (a , b))) (concat!! a b xss) 
 
-{- comment out to check in
-    ×c-equiv : {m₁ m₂ n₁ n₂ : ℕ} (p₁ : Cauchy m₁ n₂) (p₂ : Cauchy m₂ n₂) →
+    ×c-equiv : {m₁ m₂ n₁ n₂ : ℕ} (p₁ : Cauchy m₁ n₁) (p₂ : Cauchy m₂ n₂) →
       (p₁ ×c p₂) ≡ concatV (mapV (λ y → mapV Times.fwd (mapV (λ x → y , x) p₂)) p₁)
-    ×c-equiv p₁ p₂ = 
+    ×c-equiv p₁ p₂ =
+      let zss = mapV  (λ b → mapV (λ x → b , x) p₂) p₁ in
       begin (
         (p₁ ×c p₂)
-          ≡⟨ {!!} ⟩
+          ≡⟨ refl ⟩
+        mapV Times.fwd (concatV zss)
+          ≡⟨ sym (concat-map zss Times.fwd) ⟩
+        concatV (mapV (mapV Times.fwd) zss)
+          ≡⟨ cong concatV (map-map-map Times.fwd (λ b → mapV (λ x → b , x) p₂) p₁) ⟩
          concatV (mapV (λ y → mapV Times.fwd (mapV (λ x → y , x) p₂)) p₁) ∎)
--}
-{-  Not the right one?
+
     lookup-2d : {A : Set} (m n : ℕ) → (k : Fin (m * n)) → {f : Fin m × Fin n → A} →
        concatV (tabulate {m} (λ i → tabulate {n} (λ j → f (i , j)))) !! k ≡ f (Times.bwd k)
     lookup-2d m n k {f} =
@@ -328,16 +331,24 @@ module F where
         f (a , b)
           ≡⟨ refl ⟩
         f (Times.bwd k) ∎)
-
-    lookup-2d' : {A : Set} (m n : ℕ) → (k : Fin (m * n)) → {f : Fin (m * n) → A} →
-       concatV (tabulate {m} (λ i → tabulate {n} (λ j → f (Times.fwd (i , j))))) !! k ≡ f k
-    lookup-2d' m n k {f} = {!!}
-
-    tabulate*-split : ∀ {m n} {A : Set} → {f : Fin (m * n) → A} →
-      tabulate {m * n} f ≡ concatV (tabulate {m} (λ i → tabulate {n} (λ j → f (Times.fwd (i , j)))))
-    tabulate*-split {m} {n} {f = f} = {!!}
--}
-
+        
+    ×c!! : {m₁ m₂ n₁ n₂ : ℕ} (p₁ : Cauchy m₁ n₁) (p₂ : Cauchy m₂ n₂) (k : Fin (n₁ * n₂)) →
+      (p₁ ×c p₂) !! k ≡ Times.fwd (p₁ !! proj₁ (Times.bwd k) , p₂ !! proj₂ (Times.bwd k))
+    ×c!! {n₁ = n₁} p₁ p₂ k =
+      let (a , b) = Times.bwd {n₁} k in
+      begin (
+        (p₁ ×c p₂) !! k
+          ≡⟨ cong₂ _!!_ (×c-equiv p₁ p₂) (sym (Times.fwd∘bwd~id {n₁} k)) ⟩
+        concatV (mapV (λ y → mapV Times.fwd (mapV (λ x → y , x) p₂)) p₁) !! Times.fwd (a , b)
+          ≡⟨ concat!! a b _ ⟩
+        ((mapV (λ y → mapV Times.fwd (mapV (λ x → y , x) p₂)) p₁) !! a) !! b
+          ≡⟨ cong (λ x → x !! b) (lookup-map a _ p₁) ⟩
+        mapV Times.fwd (mapV (λ x → p₁ !! a , x) p₂) !! b
+          ≡⟨ cong (λ x → x !! b) (sym (map-∘ Times.fwd _ p₂)) ⟩
+        mapV (Times.fwd ∘ (λ x → p₁ !! a , x)) p₂ !! b
+          ≡⟨ lookup-map b _ p₂ ⟩
+        Times.fwd (p₁ !! a , p₂ !! b) ∎)
+    
 {- comment out to check in
   ×c-distrib : ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : Cauchy m₁ n₁} → {p₂ : Cauchy m₂ n₂}
     → {p₃ : Cauchy m₃ m₁} → {p₄ : Cauchy m₄ m₂} →
@@ -349,6 +360,16 @@ module F where
     let zss = mapV  (λ b → mapV (λ x → b , x) (p₂ ∘̂ p₄)) (p₁ ∘̂ p₃) in
     begin (
        tabulate {n₁ * n₂} (λ i → p₃₄ !! (p₁₂ !! i))
+         ≡⟨ finext (λ j → cong (_!!_ p₃₄) (×c!! p₁ p₂ j)) ⟩
+       tabulate {n₁ * n₂} (λ i → p₃₄ !! Times.fwd (p₁ !! proj₁ (Times.bwd i) , p₂ !! proj₂ (Times.bwd i)))
+         ≡⟨ finext (λ j → ×c!! p₃ p₄ _) ⟩
+       tabulate (λ i → let k = Times.fwd (p₁ !! proj₁ (Times.bwd i) , p₂ !! proj₂ (Times.bwd i)) in
+                       Times.fwd (p₃ !! proj₁ (Times.bwd k) , p₄ !! proj₂ (Times.bwd k)))
+         ≡⟨ finext (λ i → cong₂ (λ x y → Times.fwd (p₃ !! proj₁ x , p₄ !! proj₂ y))
+                   (Times.bwd∘fwd~id {m₁} {m₂} (p₁ !! proj₁ (Times.bwd i) , _))
+                   (Times.bwd∘fwd~id (_ , p₂ !! proj₂ (Times.bwd i)))) ⟩
+       tabulate (λ i → Times.fwd (p₃ !! (p₁ !! proj₁ (Times.bwd i)) ,
+                                  (p₄ !! (p₂ !! proj₂ (Times.bwd i)))))
          ≡⟨ {!!} ⟩
        concatV (tabulate {n₁} (λ z → tabulate {n₂} (λ w → Times.fwd ((p₃ !! (p₁ !! z)) , (p₄ !! (p₂ !! w))))))
          ≡⟨ cong concatV (finext (λ i → tabulate-∘ Times.fwd (λ w → ((p₃ !! (p₁ !! i)) , (p₄ !! (p₂ !! w)))) )) ⟩
@@ -357,16 +378,8 @@ module F where
        concatV (tabulate (λ z → mapV Times.fwd (mapV (λ x → (p₃ !! (p₁ !! z)) , x) p₂₄)))
          ≡⟨ cong concatV (tabulate-∘ _ (_!!_ p₃ ∘ _!!_ p₁)) ⟩
        concatV (mapV (λ y → mapV Times.fwd (mapV (λ x → y , x) p₂₄)) p₁₃)
-         ≡⟨ refl ⟩
-       concatV (mapV (mapV Times.fwd ∘  (λ b → mapV (λ x → b , x) p₂₄)) p₁₃)
-         ≡⟨ cong concatV (sym (map-map-map Times.fwd  (λ b → mapV (λ x → b , x) p₂₄) p₁₃)) ⟩
-       concatV (mapV (mapV Times.fwd) zss)
-          ≡⟨ concat-map  zss Times.fwd ⟩
-        mapV Times.fwd (concatV zss )
-         ≡⟨ refl ⟩
-        mapV Times.fwd ((p₁ ∘̂ p₃) ×v (p₂ ∘̂ p₄))
-         ≡⟨ refl ⟩
-        (p₁ ∘̂ p₃) ×c (p₂ ∘̂ p₄) ∎)
+         ≡⟨ sym (×c-equiv p₁₃ p₂₄) ⟩
+       (p₁ ∘̂ p₃) ×c (p₂ ∘̂ p₄) ∎)
 -}
   swap*-inv : ∀ {m n} → swap⋆cauchy m n ∘̂ swap⋆cauchy n m ≡ 1C
   swap*-inv {m} {n} = ~⇒≡ {o = m * n} (Times.swap-inv m n)
