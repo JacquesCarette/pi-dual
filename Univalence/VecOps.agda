@@ -349,7 +349,6 @@ module F where
           ≡⟨ lookup-map b _ p₂ ⟩
         Times.fwd (p₁ !! a , p₂ !! b) ∎)
     
-{- comment out to check in
   ×c-distrib : ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : Cauchy m₁ n₁} → {p₂ : Cauchy m₂ n₂}
     → {p₃ : Cauchy m₃ m₁} → {p₄ : Cauchy m₄ m₂} →
       (p₁ ×c p₂) ∘̂ (p₃ ×c p₄) ≡ (p₁ ∘̂ p₃) ×c (p₂ ∘̂ p₄)
@@ -370,7 +369,9 @@ module F where
                    (Times.bwd∘fwd~id (_ , p₂ !! proj₂ (Times.bwd i)))) ⟩
        tabulate (λ i → Times.fwd (p₃ !! (p₁ !! proj₁ (Times.bwd i)) ,
                                   (p₄ !! (p₂ !! proj₂ (Times.bwd i)))))
-         ≡⟨ {!!} ⟩
+         ≡⟨ finext (λ k → sym (lookup-2d n₁ n₂ k)) ⟩
+       tabulate (λ k → concatV (tabulate {n₁} (λ z → tabulate {n₂} (λ w → Times.fwd ((p₃ !! (p₁ !! z)) , (p₄ !! (p₂ !! w)))))) !! k)
+         ≡⟨ tabulate∘lookup _ ⟩
        concatV (tabulate {n₁} (λ z → tabulate {n₂} (λ w → Times.fwd ((p₃ !! (p₁ !! z)) , (p₄ !! (p₂ !! w))))))
          ≡⟨ cong concatV (finext (λ i → tabulate-∘ Times.fwd (λ w → ((p₃ !! (p₁ !! i)) , (p₄ !! (p₂ !! w)))) )) ⟩
        concatV (tabulate (λ z → mapV Times.fwd (tabulate (λ w → (p₃ !! (p₁ !! z)) , (p₄ !! (p₂ !! w))))))
@@ -380,7 +381,7 @@ module F where
        concatV (mapV (λ y → mapV Times.fwd (mapV (λ x → y , x) p₂₄)) p₁₃)
          ≡⟨ sym (×c-equiv p₁₃ p₂₄) ⟩
        (p₁ ∘̂ p₃) ×c (p₂ ∘̂ p₄) ∎)
--}
+
   swap*-inv : ∀ {m n} → swap⋆cauchy m n ∘̂ swap⋆cauchy n m ≡ 1C
   swap*-inv {m} {n} = ~⇒≡ {o = m * n} (Times.swap-inv m n)
   
