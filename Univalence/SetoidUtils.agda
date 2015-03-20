@@ -8,7 +8,7 @@ import Relation.Binary.PropositionalEquality as P
 open import Data.Product using (_,_)
 open import Function.Equality using (_⟶_)
 
-open import Equiv
+-- open import Equiv
 
 -- any type can be made into a setoid over ≡
 ≡-Setoid : ∀ {ℓ} → (A : Set ℓ) → Setoid ℓ ℓ

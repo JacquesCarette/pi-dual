@@ -1,8 +1,58 @@
 \documentclass{article}
 \usepackage{fullpage}
 \begin{document}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Permutations}
+\section{Basic Utilities}
+
+\paragraph*{LeqLemmas.} A few lemmas about natural numbers. 
+
+\paragraph*{FinNatLemmas.} A few lemmas about $\texttt{Fin}~n$ which are the numbers used to index into vectors.
+
+\paragraph*{SubstLemmas.} A few lemmas about compositions of propositional equalities..
+
+\paragraph*{VectorLemmas.} A few lemmas about vectors, lookups, mapping functions over vectors, etc.
+
+\paragraph*{FiniteFunctions.} Proves extensionality for finite functions. 
+
+\paragraph*{Proofs.} Collects all the above and re-exports them along with a couple of other general utilities for managing Agda proofs. 
+
+\paragraph*{DivModUtils.} External library for reasoning about uniqueness of \texttt{divMod}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Structures}
+
+\paragraph*{SetoidUtils.} Any type $A$ can be viewed as a setoid with propositional equality $\equiv$ as the equivalence relation.
+
+\paragraph*{Groupoid.} A definition of 1-groupoids and operations on them.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Equivalences} 
+
+\paragraph*{Equiv.} Defines extensional equivalence of functions $\sim$ and shows that it is an equivalence relation. Defines equivalence between sets $\simeq$ using two functions that go back and forth and whose compositions are extensionally equivalent to the identity, and shows that this equivalence is indeed an equivalence relation. Finally shows that equivalences are injective.
+
+\paragraph*{TypeEquivalences.} Establishes that the Agda types $\bot$, $\top$, $\uplus$, and $\times$ form a commutative semiring using $\simeq$ as the underlying equivalence relation.
+
+\paragraph*{FinEquiv.} Establishes that $\texttt{Fin}~n$ also forms a commutative semiring with $\simeq$ as the underlying equivalence relation. In particular, we have:
+\[\begin{array}{rcll}
+\texttt{Fin}~0 &\simeq& \bot \\
+\texttt{Fin}~1 &\simeq& \top \\
+\texttt{Fin}~(m+n) &\simeq& \texttt{Fin}~m \uplus \texttt{Fin}~n \\
+\texttt{Fin}~(m*n) &\simeq& \texttt{Fin}~m \times \texttt{Fin}~n
+\end{array}\]
+and then we have all the commutative semiring axioms, e.g., $\texttt{Fin}~(0+m) \simeq \texttt{Fin}~m$. \textbf{SOME AXIOMS MISSING: TO COMPLETE ???}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{To do}
+
+PiLevel0
+ConcretePermutation
+VecOps
+PiPerm
+
+Enumeration ??
+SEequivSCPermEquiv ??
+
 
 \paragraph*{Cauchy representation.} A permutation on $n$ elements is represented by a vector \texttt{v : Vec (Fin n) n}. If the $n$ elements are indexed by positions, the element at position $i$ is mapped to position \texttt{v !! i} by the permutation. There is always a trivial permutation called \texttt{1C} that maps each position to itself. The Cauchy representation does not enforce that the vector entries are disjoint. This is enforced by the definition of ``concrete permutations'' below. 
 
