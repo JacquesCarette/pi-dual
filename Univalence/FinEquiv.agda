@@ -9,11 +9,11 @@ open import Data.Fin
   using (Fin; zero; suc; inject+; raise; toℕ; fromℕ≤; reduce≥)
 open import Data.Fin.Properties
   using (bounded; inject+-lemma; toℕ-raise; toℕ-injective; toℕ-fromℕ≤)
-open import Data.Nat.Properties using (≰⇒>; 1+n≰n; m≤m+n; ¬i+1+j≤i) 
+open import Data.Nat.Properties using (≰⇒>; 1+n≰n; m≤m+n; ¬i+1+j≤i)
 open import Data.Nat.Properties.Simple
-  using (+-suc; +-comm; +-assoc; +-right-identity; *-right-zero; *-assoc)
-open import Data.Sum using (_⊎_; inj₁; inj₂)
-open import Data.Product using (_,_; _×_; proj₁; proj₂)
+  using (+-suc; +-comm; +-assoc; +-right-identity; *-right-zero; *-assoc;  distribʳ-*-+)
+open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to mapSum)
+open import Data.Product using (_,_; _×_; proj₁; proj₂) renaming (map to mapTimes)
 open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Nat
   using (ℕ; zero; suc; _+_; _*_; _<_; _≤_; _≥_; ≤-pred; _≤?_; module ≤-Reasoning)
@@ -21,7 +21,7 @@ open import Data.Nat.DivMod using (_divMod_; result)
 open import Function using (_∘_; id)
 open import Data.Unit using (⊤; tt)
 
-open import Equiv using (_∼_; _≃_; mkqinv; sym≃)
+open import Equiv using (_∼_; _≃_; module qinv; mkqinv; id≃; sym≃; trans≃)
 open import TypeEquivalences using (swap₊; swapswap₊; swap⋆; swapswap⋆)
 open import Proofs
   using (_<?_; inj₁-≡; inj₂-≡; inject+-injective; raise-injective; subst-subst; sym-sym;
@@ -58,7 +58,10 @@ Fin1≃⊤ = f , mkqinv g α β
     β (suc ())
 
 id-iso : {m : ℕ} → Fin m ≃ Fin m
-id-iso = id , mkqinv id (λ _ → refl) (λ _ → refl)
+id-iso = id≃ 
+
+trans-iso : {m n o : ℕ} → (Fin m ≃ Fin n) → (Fin n ≃ Fin o) → (Fin m ≃ Fin o) 
+trans-iso = trans≃ 
 
 -- Divide into 3 modules
 module Plus where
@@ -140,6 +143,10 @@ module Plus where
   uniti+ : {m : ℕ} → Fin m ≃ Fin (0 + m)
   uniti+ = id-iso
 
+  -- swap₊
+  swap+ : {m n : ℕ} → Fin (m + n) ≃ Fin (n + m)
+  swap+ {m} {n} = (swapper m n , mkqinv (swapper n m) (swap-inv n m) (swap-inv m n))
+
   assocl+ : {m n o : ℕ} → Fin (m + (n + o)) ≃ Fin ((m + n) + o)
   assocl+ {m} {n} {o} =
     let eq = +-assoc m n o in
@@ -150,6 +157,37 @@ module Plus where
 
   assocr+ : {m n o : ℕ} → Fin ((m + n) + o) ≃ Fin (m + (n + o))
   assocr+ {m} {n} {o} = sym≃ (assocl+ {m})
+
+  cong+-iso : {m n o p : ℕ} → (Fin m ≃ Fin n) → (Fin o ≃ Fin p) → Fin (m + o) ≃ Fin (n + p)
+  cong+-iso {m} {n} {o} {p} (f , feq) (g , geq) = 
+    fwd {n} {p} ∘ mapSum f g ∘ bwd {m} {o} , 
+    mkqinv
+      (fwd {m} {o} ∘ mapSum fm.g gm.g ∘ bwd {n} {p})
+      (λ i →
+        begin (fwd {n} {p} (mapSum f g (bwd {m} {o} 
+                 (fwd {m} {o} (mapSum fm.g gm.g (bwd {n} {p} i)))))
+               ≡⟨ cong
+                    (λ x → fwd {n} {p} (mapSum f g x))
+                    (bwd∘fwd~id {m} {o} (mapSum fm.g gm.g (bwd {n} {p} i))) ⟩ 
+               fwd {n} {p} (mapSum f g (mapSum fm.g gm.g (bwd {n} {p} i)))
+               ≡⟨ {!!} ⟩
+               fwd {n} {p} (bwd {n} {p} i)
+               ≡⟨ fwd∘bwd~id {n} {p} i ⟩
+               i ∎))
+      (λ i →
+        begin (fwd {m} {o} (mapSum fm.g gm.g (bwd {n} {p}
+                 (fwd {n} {p} (mapSum f g (bwd {m} {o} i)))))
+               ≡⟨ cong
+                    (λ x → fwd {m} {o} (mapSum fm.g gm.g x))
+                    (bwd∘fwd~id {n} {p} (mapSum f g (bwd {m} {o} i))) ⟩
+               fwd {m} {o} (mapSum fm.g gm.g (mapSum f g (bwd {m} {o} i)))
+               ≡⟨ {!!} ⟩
+               fwd {m} {o} (bwd {m} {o} i)
+               ≡⟨ fwd∘bwd~id {m} {o} i ⟩
+               i ∎))
+    where module fm = qinv feq
+          module gm = qinv geq
+          open ≡-Reasoning
 
 module Times where
   open import DivModUtils using (addMul-lemma)
@@ -162,9 +200,8 @@ module Times where
   private
     soundness : ∀ {m n} (i : Fin m) (j : Fin n) → toℕ (fwd (i , j)) ≡ toℕ i * n + toℕ j
     soundness {suc m} {n} zero     j = sym (inject+-lemma (m * n) j)
-    soundness           {n = n} (suc i) j rewrite toℕ-raise n (fwd (i , j))
-                                                                  | soundness i j 
-                                                                  = sym (+-assoc n (toℕ i * n) (toℕ j))
+    soundness {n = n} (suc i) j rewrite toℕ-raise n (fwd (i , j)) | soundness i j 
+      = sym (+-assoc n (toℕ i * n) (toℕ j))
 
     absurd-quotient : (m n q : ℕ) (r : Fin (suc n)) (k : Fin (m * suc n)) 
          (k≡r+q*sn : toℕ k ≡ toℕ r + q * suc n) (p : m ≤ q) → ⊥
@@ -245,6 +282,18 @@ module Times where
   swapper : (m n : ℕ) → Fin (m * n) → Fin (n * m)
   swapper m n = fwd ∘ swap⋆ ∘ bwd {m} {n} 
 
+  swap-inv : (m n : ℕ) → ∀ i → swapper n m (swapper m n i) ≡ i
+  swap-inv m n i = 
+    begin (
+      fwd (swap⋆ (bwd {n} {m} (fwd (swap⋆ (bwd {m} {n} i)))))
+        ≡⟨ cong (λ x → fwd (swap⋆ x)) (bwd∘fwd~id {n} {m} (swap⋆ (bwd i))) ⟩
+      fwd (swap⋆ (swap⋆ (bwd {m} i)))
+        ≡⟨ cong fwd (swapswap⋆ (bwd {m} i)) ⟩
+      fwd (bwd {m} {n} i)
+        ≡⟨ fwd∘bwd~id {m} i ⟩
+      i ∎ )
+    where open ≡-Reasoning
+    
   -- unite*
   unite* : {m : ℕ} → Fin (1 * m) ≃ Fin m
   unite* {m} =
@@ -258,6 +307,10 @@ module Times where
   uniti* : {m : ℕ} → Fin m ≃ Fin (1 * m)
   uniti* = sym≃ unite*
 
+  -- swap*
+  swap* : {m n : ℕ} → Fin (m * n) ≃ Fin (n * m)
+  swap* {m} {n} = (swapper m n , mkqinv (swapper n m) (swap-inv n m) (swap-inv m n))
+
   assocl* : {m n o : ℕ} → Fin (m * (n * o)) ≃ Fin ((m * n) * o)
   assocl* {m} {n} {o} = subst Fin (sym (*-assoc m n o)) ,
     mkqinv ((subst Fin (*-assoc m n o)) ) 
@@ -267,17 +320,60 @@ module Times where
   assocr* : {m n o : ℕ} → Fin ((m * n) * o) ≃ Fin (m * (n * o))
   assocr* {m} {n} {o} = sym≃ (assocl* {m})
 
-  swap-inv : (m n : ℕ) → ∀ i → swapper n m (swapper m n i) ≡ i
-  swap-inv m n i = 
-    begin (
-      fwd (swap⋆ (bwd {n} {m} (fwd (swap⋆ (bwd {m} {n} i)))))
-        ≡⟨ cong (λ x → fwd (swap⋆ x)) (bwd∘fwd~id {n} {m} (swap⋆ (bwd i))) ⟩
-      fwd (swap⋆ (swap⋆ (bwd {m} i)))
-        ≡⟨ cong fwd (swapswap⋆ (bwd {m} i)) ⟩
-      fwd (bwd {m} {n} i)
-        ≡⟨ fwd∘bwd~id {m} i ⟩
-      i ∎ )
-    where open ≡-Reasoning
-    
+  distz : {m : ℕ} → Fin (0 * m) ≃ Fin 0
+  distz {m} = id-iso 
+
+  factorz : {m : ℕ} → Fin 0 ≃ Fin (0 * m)
+  factorz {m} = id-iso 
+
+  cong*-iso : {m n o p : ℕ} → (Fin m ≃ Fin n) → (Fin o ≃ Fin p) → Fin (m * o) ≃ Fin (n * p)
+  cong*-iso {m} {n} {o} {p} (f , feq) (g , geq) = 
+    fwd {n} {p} ∘ mapTimes f g ∘ bwd {m} {o} , 
+    mkqinv
+      (fwd {m} {o} ∘ mapTimes fm.g gm.g ∘ bwd {n} {p})
+      (λ i →
+        begin (fwd {n} {p} (mapTimes f g (bwd {m} {o}
+                (fwd {m} {o} (mapTimes fm.g gm.g (bwd {n} {p} i)))))
+               ≡⟨ cong
+                    (λ x → fwd {n} {p} (mapTimes f g x))
+                    (bwd∘fwd~id {m} {o} (mapTimes fm.g gm.g (bwd {n} {p} i))) ⟩ 
+               fwd {n} {p} (mapTimes f g (mapTimes fm.g gm.g (bwd {n} {p} i)))
+               ≡⟨ {!!} ⟩
+               fwd {n} {p} (bwd {n} {p} i)
+               ≡⟨ fwd∘bwd~id {n} {p} i ⟩
+               i ∎))
+      (λ i →
+        begin (fwd {m} {o} (mapTimes fm.g gm.g (bwd {n} {p}
+                 (fwd {n} {p} (mapTimes f g (bwd {m} {o} i)))))
+               ≡⟨ cong
+                    (λ x → fwd {m} {o} (mapTimes fm.g gm.g x))
+                    (bwd∘fwd~id {n} {p} (mapTimes f g (bwd {m} {o} i))) ⟩ 
+               fwd {m} {o} (mapTimes fm.g gm.g (mapTimes f g (bwd {m} {o} i)))
+               ≡⟨ {!!} ⟩
+               fwd {m} {o} (bwd {m} {o} i)
+               ≡⟨ fwd∘bwd~id {m} {o} i ⟩
+               i ∎))
+    where module fm = qinv feq
+          module gm = qinv geq
+          open ≡-Reasoning
+
 -- for distributivity
+
 module PlusTimes where
+
+  dist : {m n o : ℕ} → Fin ((m + n) * o) ≃ Fin ((m * o) + (n * o))
+  dist {m} {n} {o} = subst Fin (distribʳ-*-+ o m n) ,
+                     mkqinv
+                       (subst Fin (sym (distribʳ-*-+ o m n)) )
+                       (subst-subst
+                         (distribʳ-*-+ o m n)
+                         (sym (distribʳ-*-+ o m n))
+                         refl)
+                       (subst-subst
+                         (sym (distribʳ-*-+ o m n))
+                         (distribʳ-*-+ o m n)
+                         sym-sym) 
+
+  factor : {m n o : ℕ} → Fin ((m * o) + (n * o)) ≃ Fin ((m + n) * o) 
+  factor {m} {n} {o} = sym≃ (dist {m} {n} {o}) 
+
