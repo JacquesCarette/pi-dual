@@ -6,8 +6,8 @@ module Equiv where
 open import Level
 open import Function
 open import Data.Empty using (⊥)
-open import Data.Sum using (_⊎_; inj₁; inj₂)
-open import Data.Product using (Σ; _,_)
+open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to _⊎→_)
+open import Data.Product using (Σ; _×_; _,_) renaming (map to _×→_)
 open import Relation.Binary.PropositionalEquality
 
 infix 4 _∼_
@@ -80,3 +80,36 @@ inj₁≡ refl = refl
 
 inj₂≡ : {A B : Set} → {a b : B} → inj₂ {A = A} {B} a ≡ inj₂ b → a ≡ b
 inj₂≡ refl = refl
+
+-- ⊕
+
+_⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
+  (α : f ∘ finv ∼ id) → (β : g ∘ ginv ∼ id) → 
+  (f ⊎→ g) ∘ (finv ⊎→ ginv) ∼ id {A = C ⊎ D}
+_⊎∼_ α β (inj₁ x) = cong inj₁ (α x) 
+_⊎∼_ α β (inj₂ y) = cong inj₂ (β y)
+
+path⊎ : {A B C D : Set} → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
+path⊎ (fp , eqp) (fq , eqq) = 
+  Data.Sum.map fp fq , 
+  mkqinv (P.g ⊎→ Q.g) (P.α ⊎∼ Q.α) (P.β ⊎∼ Q.β)
+  where module P = qinv eqp
+        module Q = qinv eqq
+
+-- ⊗
+
+_×∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
+  (α : f ∘ finv ∼ id) → (β : g ∘ ginv ∼ id) → 
+  (f ×→ g) ∘ (finv ×→ ginv) ∼ id {A = C × D}
+_×∼_ α β (x , y) = cong₂ _,_ (α x) (β y)
+ 
+path× : {A B C D : Set} → A ≃ C → B ≃ D → (A × B) ≃ (C × D)
+path× {A} {B} {C} {D} (fp , eqp) (fq , eqq) = 
+  Data.Product.map fp fq , 
+  mkqinv 
+    (P.g ×→ Q.g) 
+    (_×∼_ {A} {B} {C} {D} {fp} {P.g} {fq} {Q.g} P.α Q.α) 
+    (_×∼_ {C} {D} {A} {B} {P.g} {fp} {Q.g} {fq} P.β Q.β)
+  where module P = qinv eqp
+        module Q = qinv eqq
+
