@@ -382,6 +382,27 @@ module F where
          ≡⟨ sym (×c-equiv p₁₃ p₂₄) ⟩
        (p₁ ∘̂ p₃) ×c (p₂ ∘̂ p₄) ∎)
 
+  -- there might be a simpler proofs of this using tablate∘lookup right
+  -- at the start.
+  1C×1C≡1C : ∀ {m n} → (1C {m} ×c 1C {n}) ≡ 1C {m * n}
+  1C×1C≡1C {m} {n} = 
+    begin (
+      1C {m} ×c 1C
+        ≡⟨ ×c-equiv 1C 1C ⟩
+      concatV (mapV (λ y → mapV Times.fwd (mapV (_,_ y) (1C {n}))) (1C {m}))
+        ≡⟨ cong (concatV {n = m}) (sym (tabulate-∘ _ id)) ⟩
+      concatV {n = m} (tabulate (λ y → mapV Times.fwd (mapV (_,_ y) (1C {n}))))
+        ≡⟨ cong (concatV {n = m}) (finext (λ y → sym (map-∘ Times.fwd (λ x → y , x) 1C))) ⟩
+      concatV (tabulate {n = m} (λ y → mapV (Times.fwd ∘ (_,_ y)) (1C {n})))
+        ≡⟨ cong (concatV {m = n} {m}) (finext (λ y → sym (tabulate-∘ (Times.fwd ∘ (_,_ y)) id))) ⟩
+      concatV (tabulate {n = m} (λ a → tabulate {n = n} (λ b → Times.fwd (a , b))))
+        ≡⟨ sym (tabulate∘lookup _) ⟩
+      tabulate (λ k → concatV (tabulate {n = m} (λ a → tabulate {n = n} (λ b → Times.fwd (a , b)))) !! k)
+        ≡⟨ finext (λ k → lookup-2d m n k) ⟩
+      tabulate (λ k → Times.fwd {m} {n} (Times.bwd k))
+        ≡⟨ finext (Times.fwd∘bwd~id {m} {n}) ⟩
+      1C {m * n} ∎ )
+  
   swap*-inv : ∀ {m n} → swap⋆cauchy m n ∘̂ swap⋆cauchy n m ≡ 1C
   swap*-inv {m} {n} = ~⇒≡ {o = m * n} (Times.swap-inv m n)
   
