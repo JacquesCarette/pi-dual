@@ -2,28 +2,30 @@
 
 module FinEquiv where
 
--- should restrict the imports (later)
-open import Relation.Nullary.Core
+open import Relation.Nullary.Core using (yes; no)
 open import Relation.Binary.PropositionalEquality
-open import Data.Fin renaming (_+_ to _+F_) hiding (_≤_;_<_)
+  using (_≡_; refl; sym; trans; cong; cong₂; subst; module ≡-Reasoning; inspect; [_])
+open import Data.Fin
+  using (Fin; zero; suc; inject+; raise; toℕ; fromℕ≤; reduce≥)
 open import Data.Fin.Properties
-open import Data.Nat.Properties
-open import Data.Nat.Properties.Simple using
-  (+-suc; +-comm; +-assoc; +-right-identity; *-right-zero; *-assoc)
+  using (bounded; inject+-lemma; toℕ-raise; toℕ-injective; toℕ-fromℕ≤)
+open import Data.Nat.Properties using (≰⇒>; 1+n≰n; m≤m+n; ¬i+1+j≤i) 
+open import Data.Nat.Properties.Simple
+  using (+-suc; +-comm; +-assoc; +-right-identity; *-right-zero; *-assoc)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
-open import Data.Product
-open import Data.Empty
+open import Data.Product using (_,_; _×_; proj₁; proj₂)
+open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Nat
-open import Data.Nat.DivMod
-open import Function
+  using (ℕ; zero; suc; _+_; _*_; _<_; _≤_; _≥_; ≤-pred; _≤?_; module ≤-Reasoning)
+open import Data.Nat.DivMod using (_divMod_; result)
+open import Function using (_∘_; id)
 open import Data.Unit using (⊤; tt)
 
-open import Equiv
-open import LeqLemmas
-open import FinNatLemmas
-open import SubstLemmas
-open import Proofs using (sym-sym)
+open import Equiv using (_∼_; _≃_; mkqinv; sym≃)
 open import TypeEquivalences using (swap₊; swapswap₊; swap⋆; swapswap⋆)
+open import Proofs
+  using (_<?_; inj₁-≡; inj₂-≡; inject+-injective; raise-injective; subst-subst; sym-sym;
+        cong+r≤; cong+l≤; cong*r≤; sinj≤)
 
 -- generally useful, leave this at top:
 Fin0-⊥ : Fin 0 → ⊥
