@@ -8,7 +8,6 @@ open import Data.Nat renaming (_⊔_ to _⊔ℕ_)
 open import Data.Sum renaming (map to _⊎→_)
 open import Data.Product renaming (map to _×→_)
 open import Function renaming (_∘_ to _○_)
-
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; cong₂)
 
 open import Equiv
@@ -185,36 +184,4 @@ factorequiv = factor , (mkqinv dist factor∘dist dist∘factor)
 -- identity equivalence 
 idequiv : {A : Set} → A ≃ A
 idequiv = id≃
-
--- ⊕
-
-_⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
-  (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → 
-  (f ⊎→ g) ○ (finv ⊎→ ginv) ∼ id {A = C ⊎ D}
-_⊎∼_ α β (inj₁ x) = cong inj₁ (α x) 
-_⊎∼_ α β (inj₂ y) = cong inj₂ (β y)
-
-path⊎ : {A B C D : Set} → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
-path⊎ (fp , eqp) (fq , eqq) = 
-  Data.Sum.map fp fq , 
-  mkqinv (P.g ⊎→ Q.g) (P.α ⊎∼ Q.α) (P.β ⊎∼ Q.β)
-  where module P = qinv eqp
-        module Q = qinv eqq
-
--- ⊗
-
-_×∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
-  (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → 
-  (f ×→ g) ○ (finv ×→ ginv) ∼ id {A = C × D}
-_×∼_ α β (x , y) = cong₂ _,_ (α x) (β y)
- 
-path× : {A B C D : Set} → A ≃ C → B ≃ D → (A × B) ≃ (C × D)
-path× {A} {B} {C} {D} (fp , eqp) (fq , eqq) = 
-  Data.Product.map fp fq , 
-  mkqinv 
-    (P.g ×→ Q.g) 
-    (_×∼_ {A} {B} {C} {D} {fp} {P.g} {fq} {Q.g} P.α Q.α) 
-    (_×∼_ {C} {D} {A} {B} {P.g} {fp} {Q.g} {fq} P.β Q.β)
-  where module P = qinv eqp
-        module Q = qinv eqq
 

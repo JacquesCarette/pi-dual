@@ -178,7 +178,6 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
 --   c. + (done)
 --   d. *
 
-open import TypeEquivalences using (path⊎)
 open _≃S_
 
 lemma_1a : ∀ {n} {A : Set} → (EA : Enum A n) → f (thm2 EA EA) ⟨$⟩ id≃S ≡ idp

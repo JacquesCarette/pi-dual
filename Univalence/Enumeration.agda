@@ -17,7 +17,6 @@ open import Relation.Nullary using (yes; no)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_;_,_; proj₁; proj₂)
 open import Function using (_∘_)
-open import TypeEquivalences using (path⊎; path×)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans;
   subst; module ≡-Reasoning)
 open import FinEquiv

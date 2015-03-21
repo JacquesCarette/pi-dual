@@ -21,8 +21,7 @@ open import Data.Nat.DivMod using (_divMod_; result)
 open import Function using (_∘_; id)
 open import Data.Unit using (⊤; tt)
 
-open import Equiv
-  using (_∼_; _≃_; module qinv; mkqinv; id≃; sym≃; trans≃; mapSumInj; mapTimesInj)
+open import Equiv using (_∼_; _≃_; module qinv; mkqinv; id≃; sym≃; trans≃; _⊎∼_; _×∼_)
 open import TypeEquivalences using (swap₊; swapswap₊; swap⋆; swapswap⋆)
 open import Proofs
   using (_<?_; inj₁-≡; inj₂-≡; inject+-injective; raise-injective; subst-subst; sym-sym;
@@ -173,7 +172,7 @@ module Plus where
                fwd {n} {p} (mapSum f g (mapSum fm.g gm.g (bwd {n} {p} i)))
                ≡⟨ cong
                     (λ x → fwd {n} {p} x)
-                    (mapSumInj f g fm.g gm.g fm.α gm.α (bwd {n} {p} i)) ⟩
+                    ((fm.α ⊎∼ gm.α) (bwd {n} {p} i)) ⟩
                fwd {n} {p} (bwd {n} {p} i)
                ≡⟨ fwd∘bwd~id {n} {p} i ⟩
                i ∎))
@@ -186,7 +185,7 @@ module Plus where
                fwd {m} {o} (mapSum fm.g gm.g (mapSum f g (bwd {m} {o} i)))
                ≡⟨ cong
                    (λ x → fwd {m} {o} x)
-                   (mapSumInj fm.g gm.g f g fm.β gm.β (bwd {m} {o} i))  ⟩
+                   ((fm.β ⊎∼ gm.β) (bwd {m} {o} i))  ⟩
                fwd {m} {o} (bwd {m} {o} i)
                ≡⟨ fwd∘bwd~id {m} {o} i ⟩
                i ∎))
@@ -345,7 +344,8 @@ module Times where
                fwd {n} {p} (mapTimes f g (mapTimes fm.g gm.g (bwd {n} {p} i)))
                ≡⟨ cong
                     (λ x → fwd {n} {p} x)
-                    (mapTimesInj f g fm.g gm.g fm.α gm.α (bwd {n} {p} i)) ⟩
+                    (_×∼_ {f = f} {finv = fm.g} {g = g} {ginv = gm.g} fm.α gm.α
+                      (bwd {n} {p} i)) ⟩
                fwd {n} {p} (bwd {n} {p} i)
                ≡⟨ fwd∘bwd~id {n} {p} i ⟩
                i ∎))
@@ -358,7 +358,8 @@ module Times where
                fwd {m} {o} (mapTimes fm.g gm.g (mapTimes f g (bwd {m} {o} i)))
                ≡⟨ cong
                     (λ x → fwd {m} {o} x)
-                    (mapTimesInj fm.g gm.g f g fm.β gm.β (bwd {m} {o} i)) ⟩
+                    (_×∼_ {f = fm.g} {finv = f} {g = gm.g} {ginv = g} fm.β gm.β
+                      (bwd {m} {o} i)) ⟩ 
                fwd {m} {o} (bwd {m} {o} i)
                ≡⟨ fwd∘bwd~id {m} {o} i ⟩
                i ∎))
