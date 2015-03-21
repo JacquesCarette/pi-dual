@@ -21,7 +21,8 @@ open import Data.Nat.DivMod using (_divMod_; result)
 open import Function using (_∘_; id)
 open import Data.Unit using (⊤; tt)
 
-open import Equiv using (_∼_; _≃_; module qinv; mkqinv; id≃; sym≃; trans≃)
+open import Equiv
+  using (_∼_; _≃_; module qinv; mkqinv; id≃; sym≃; trans≃; mapSumInj; mapTimesInj)
 open import TypeEquivalences using (swap₊; swapswap₊; swap⋆; swapswap⋆)
 open import Proofs
   using (_<?_; inj₁-≡; inj₂-≡; inject+-injective; raise-injective; subst-subst; sym-sym;
@@ -170,7 +171,9 @@ module Plus where
                     (λ x → fwd {n} {p} (mapSum f g x))
                     (bwd∘fwd~id {m} {o} (mapSum fm.g gm.g (bwd {n} {p} i))) ⟩ 
                fwd {n} {p} (mapSum f g (mapSum fm.g gm.g (bwd {n} {p} i)))
-               ≡⟨ {!!} ⟩
+               ≡⟨ cong
+                    (λ x → fwd {n} {p} x)
+                    (mapSumInj f g fm.g gm.g fm.α gm.α (bwd {n} {p} i)) ⟩
                fwd {n} {p} (bwd {n} {p} i)
                ≡⟨ fwd∘bwd~id {n} {p} i ⟩
                i ∎))
@@ -181,7 +184,9 @@ module Plus where
                     (λ x → fwd {m} {o} (mapSum fm.g gm.g x))
                     (bwd∘fwd~id {n} {p} (mapSum f g (bwd {m} {o} i))) ⟩
                fwd {m} {o} (mapSum fm.g gm.g (mapSum f g (bwd {m} {o} i)))
-               ≡⟨ {!!} ⟩
+               ≡⟨ cong
+                   (λ x → fwd {m} {o} x)
+                   (mapSumInj fm.g gm.g f g fm.β gm.β (bwd {m} {o} i))  ⟩
                fwd {m} {o} (bwd {m} {o} i)
                ≡⟨ fwd∘bwd~id {m} {o} i ⟩
                i ∎))
@@ -338,7 +343,9 @@ module Times where
                     (λ x → fwd {n} {p} (mapTimes f g x))
                     (bwd∘fwd~id {m} {o} (mapTimes fm.g gm.g (bwd {n} {p} i))) ⟩ 
                fwd {n} {p} (mapTimes f g (mapTimes fm.g gm.g (bwd {n} {p} i)))
-               ≡⟨ {!!} ⟩
+               ≡⟨ cong
+                    (λ x → fwd {n} {p} x)
+                    (mapTimesInj f g fm.g gm.g fm.α gm.α (bwd {n} {p} i)) ⟩
                fwd {n} {p} (bwd {n} {p} i)
                ≡⟨ fwd∘bwd~id {n} {p} i ⟩
                i ∎))
@@ -349,7 +356,9 @@ module Times where
                     (λ x → fwd {m} {o} (mapTimes fm.g gm.g x))
                     (bwd∘fwd~id {n} {p} (mapTimes f g (bwd {m} {o} i))) ⟩ 
                fwd {m} {o} (mapTimes fm.g gm.g (mapTimes f g (bwd {m} {o} i)))
-               ≡⟨ {!!} ⟩
+               ≡⟨ cong
+                    (λ x → fwd {m} {o} x)
+                    (mapTimesInj fm.g gm.g f g fm.β gm.β (bwd {m} {o} i)) ⟩
                fwd {m} {o} (bwd {m} {o} i)
                ≡⟨ fwd∘bwd~id {m} {o} i ⟩
                i ∎))

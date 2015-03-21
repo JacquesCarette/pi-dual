@@ -6,8 +6,8 @@ module Equiv where
 open import Level
 open import Function
 open import Data.Empty using (⊥)
-open import Data.Sum using (_⊎_; inj₁; inj₂)
-open import Data.Product using (Σ; _,_)
+open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to mapSum)
+open import Data.Product using (Σ; _,_) renaming (map to mapTimes)
 open import Relation.Binary.PropositionalEquality
 
 infix 4 _∼_
@@ -80,3 +80,17 @@ inj₁≡ refl = refl
 
 inj₂≡ : {A B : Set} → {a b : B} → inj₂ {A = A} {B} a ≡ inj₂ b → a ≡ b
 inj₂≡ refl = refl
+
+mapSumInj : {A B C D : Set} → (f : A → B) → (g : C → D) → (fi : B → A) → (gi : D → C) →
+             (f∘fi∼id : f ∘ fi ∼ id) (g∘gi∼id : g ∘ gi ∼ id) → 
+             mapSum f g ∘ mapSum fi gi ∼ id
+mapSumInj f g fi gi f∘fi∼id g∘gi∼id (inj₁ i) = cong inj₁ (f∘fi∼id i)
+mapSumInj f g fi gi f∘fi∼id g∘gi∼id (inj₂ i) = cong inj₂ (g∘gi∼id i)
+
+-- × injective
+
+mapTimesInj : {A B C D : Set} → (f : A → B) → (g : C → D) → (fi : B → A) → (gi : D → C) →
+             (f∘fi∼id : f ∘ fi ∼ id) (g∘gi∼id : g ∘ gi ∼ id) → 
+             mapTimes f g ∘ mapTimes fi gi ∼ id
+mapTimesInj f g fi gi f∘fi∼id g∘gi∼id (i , j) = cong₂ _,_ (f∘fi∼id i) (g∘gi∼id j)
+
