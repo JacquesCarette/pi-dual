@@ -126,11 +126,25 @@ assocl*p {m} = cp (assocl* {m}) (assocr* {m})  (assocl*∘̂assocr*~id {m}) (ass
 assocr*p : {m n o : ℕ} → CPerm (m * (n * o)) ((m * n) * o)
 assocr*p {m} = symp (assocl*p {m})
 
-{-
 _×p_ : ∀ {m₁ m₂ n₁ n₂} → CPerm m₁ m₂ → CPerm n₁ n₂ → CPerm (m₁ * n₁) (m₂ * n₂)
-_×p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ×c (π π₁)) ((πᵒ π₀) ×c (πᵒ π₁)) {!!} {!!}
-  where open CPerm
--}
+_×p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ×c (π π₁)) ((πᵒ π₀) ×c (πᵒ π₁)) pf₁ pf₂
+  where
+    open CPerm
+    open ≡-Reasoning
+    pf₁ : (π π₀ ×c π π₁) ∘̂ (πᵒ π₀ ×c πᵒ π₁) ≡ 1C
+    pf₁ = 
+      begin (
+        (π π₀ ×c π π₁) ∘̂ (πᵒ π₀ ×c πᵒ π₁) ≡⟨ ×c-distrib {p₁ = π π₀} ⟩
+        (π π₀ ∘̂ πᵒ π₀) ×c (π π₁ ∘̂ πᵒ π₁)  ≡⟨ cong₂ _×c_ (αp π₀) (αp π₁) ⟩
+        1C ×c 1C                          ≡⟨ 1C×1C≡1C ⟩
+        1C ∎)
+    pf₂ : (πᵒ π₀ ×c πᵒ π₁) ∘̂ (π π₀ ×c π π₁) ≡ 1C
+    pf₂ = 
+      begin (
+        (πᵒ π₀ ×c πᵒ π₁) ∘̂ (π π₀ ×c π π₁) ≡⟨ ×c-distrib {p₁ = πᵒ π₀} ⟩
+        (πᵒ π₀ ∘̂ π π₀) ×c (πᵒ π₁ ∘̂ π π₁) ≡⟨ cong₂ _×c_ (βp π₀) (βp π₁) ⟩
+        1C ×c 1C                          ≡⟨ 1C×1C≡1C ⟩
+        1C ∎)
 
 ------------------------------------------------------------------------------------------------------
 ridp : ∀ {m₁ m₂} {p : CPerm m₂ m₁} → transp p idp ≡ p
