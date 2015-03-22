@@ -8,6 +8,7 @@ open import Function
 open import Data.Empty using (⊥)
 open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to _⊎→_)
 open import Data.Product using (Σ; _×_; _,_) renaming (map to _×→_)
+open import Relation.Binary.Core
 open import Relation.Binary.PropositionalEquality
 
 infix 4 _∼_
@@ -112,4 +113,13 @@ path× {A} {B} {C} {D} (fp , eqp) (fq , eqq) =
     (_×∼_ {C} {D} {A} {B} {P.g} {fp} {Q.g} {fq} P.β Q.β)
   where module P = qinv eqp
         module Q = qinv eqq
+
+--
+
+≃IsEquiv : IsEquivalence {Level.suc Level.zero} {Level.zero} {Set} _≃_
+≃IsEquiv = record {
+  refl = id≃ ;
+  sym = sym≃ ;
+  trans = trans≃ 
+  }
 

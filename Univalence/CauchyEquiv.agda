@@ -8,6 +8,9 @@
 --     awkwardly.
 --   - To avoid a proliferation of bad names, we use sub-modules
 
+-- Cauchy representation Vec (Fin m) n without checks of uniqueness
+-- and completeness has a commutative semiring structure
+
 module CauchyEquiv where
 
 open import Data.Nat
@@ -26,7 +29,9 @@ open import FinEquiv using (module Plus; module Times)
 -- Pure vector operations
 -- Does not involve Fin at all.
 -- Note: not exported!
+
 private
+
   module V where
     _⊎v_ : ∀ {m n} {A B : Set} → Vec A m → Vec B n → Vec (A ⊎ B) (m + n)
     α ⊎v β = tabulate (inj₁ ∘ _!!_ α) ++V tabulate (inj₂ ∘ _!!_ β)
@@ -42,19 +47,25 @@ private
 
 ------------------------------------------------------------------------------
 -- Elementary permutations, Fin version
+-- Cauchy Representation Vec (Fin m) n without checks of uniqueness
+-- and completeness
 
 -- We need to define (at least) 0, 1, +, *, ∘, swap+, swap*
+
 module F where
+
+  open import Data.Vec.Properties
+    using (lookup-allFin; tabulate∘lookup; lookup∘tabulate; tabulate-∘; lookup-++-inject+)
+  open import Relation.Binary.PropositionalEquality
+    using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
+  open ≡-Reasoning
+
   open import FiniteFunctions
   open import Equiv using (_∼_)
-  open import VectorLemmas using (lookupassoc; map-++-commute; 
-    tabulate-split; left!!; right!!; lookup-++-raise; unSplit)
+  open import VectorLemmas
+    using (lookupassoc; map-++-commute; tabulate-split; left!!; right!!;
+           lookup-++-raise; unSplit)
   open import Proofs using (congD!)
-  open import Data.Vec.Properties using (lookup-allFin; tabulate∘lookup; 
-    lookup∘tabulate; tabulate-∘; lookup-++-inject+)
-  open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; 
-    cong; cong₂; module ≡-Reasoning)
-  open ≡-Reasoning
 
   open V
 
