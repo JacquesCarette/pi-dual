@@ -20,7 +20,7 @@ open import Groupoid
 c2perm : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → CPerm (size t₂) (size t₁)
 -- the cases that do not inspect t₁ and t₂ should be at the beginning
 -- so that Agda would unfold them
-c2perm (_◎_ {t₁} {t₂} {t₃} c₁ c₂) = transp (c2perm c₁) (c2perm c₂)
+c2perm (c₁ ◎ c₂) = transp (c2perm c₁) (c2perm c₂)
 c2perm (c₁ ⊕ c₂) = (c2perm c₁) ⊎p (c2perm c₂)
 c2perm (c₁ ⊗ c₂) = (c2perm c₁) ×p (c2perm c₂)
 c2perm unite₊ = idp -- could use something more 'precise' ?
@@ -74,7 +74,7 @@ trans∼ = trans
 
 assoc∼ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
          c₁ ◎ (c₂ ◎ c₃) ∼ (c₁ ◎ c₂) ◎ c₃
-assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} = {!!}
+assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} = assocp {p₁ = c2perm c₁} {c2perm c₂} {c2perm c₃}
 
 -- The combinators c : t₁ ⟷ t₂ are paths; we can transport
 -- size-preserving properties across c. In particular, for some
@@ -88,11 +88,11 @@ c◎id∼c {t₁} {t₂} {c} =
     c2perm (c ◎ id⟷)
       ≡⟨ refl ⟩
     transp (c2perm c) idp
-      ≡⟨ {!!} ⟩
+      ≡⟨ ridp ⟩
     c2perm c ∎)
 
 id◎c∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ◎ c ∼ c
-id◎c∼c {t₁} {t₂} {c} = {!!}
+id◎c∼c = lidp
 
 linv∼ : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ ! c ∼ id⟷
 linv∼ {t₁} {t₂} {c} = {!!}
