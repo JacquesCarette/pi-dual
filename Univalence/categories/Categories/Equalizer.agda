@@ -1,1 +1,0 @@
-module Categories.Equalizer where
