@@ -46,6 +46,7 @@ uniti₊∘unite₊ (inj₁ ())
 uniti₊∘unite₊ (inj₂ y) = refl
 
 -- this is so easy, Agda can figure it out by itself (see below)
+
 unite₊∙uniti₊ : {A : Set} → unite₊ ○ uniti₊ ∼ id {A = A}
 unite₊∙uniti₊ _ = refl
 
@@ -182,6 +183,7 @@ factorequiv : {A B C : Set} →  ((A × C) ⊎ (B × C)) ≃ ((A ⊎ B) × C)
 factorequiv = factor , (mkqinv dist factor∘dist dist∘factor)
 
 -- identity equivalence 
+
 idequiv : {A : Set} → A ≃ A
 idequiv = id≃
 
@@ -239,3 +241,5 @@ typesCSR = record {
   1# = ⊤ ;
   isCommutativeSemiring = typesIsCSR
   }
+
+------------------------------------------------------------------------------

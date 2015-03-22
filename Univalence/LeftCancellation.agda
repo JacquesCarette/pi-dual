@@ -24,6 +24,10 @@ record Ev {A B : Set} (f : A → B) (x : A) : Set where
 mkV : {A B : Set} → (f : A → B) → (x : A) → Ev f x
 mkV f x = ev (f x) refl
 
+private
+  bad-path : {A B : Set} → (a : A) → (b : B) → inj₁ a ≡ inj₂ b → ⊥
+  bad-path x y ()
+
 ----------------------------------------------------------------------------
 -- Very complex proof that we can cancel units on the left of ⊎
 

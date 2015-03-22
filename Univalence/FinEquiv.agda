@@ -28,7 +28,9 @@ open import Proofs
   using (_<?_; inj₁-≡; inj₂-≡; inject+-injective; raise-injective; subst-subst; sym-sym;
         cong+r≤; cong+l≤; cong*r≤; sinj≤)
 
+------------------------------------------------------------------------------
 -- generally useful, leave this at top:
+
 Fin0-⊥ : Fin 0 → ⊥
 Fin0-⊥ ()
 
@@ -68,8 +70,11 @@ trans-iso : {m n o : ℕ} → (Fin m ≃ Fin n) → (Fin n ≃ Fin o) → (Fin m
 trans-iso = trans≃ 
 
 -- Divide into 3 modules
+
 module Plus where
+
   private
+
     fwd : {m n : ℕ} → (Fin m ⊎ Fin n) → Fin (m + n)
     fwd {m} {n} (inj₁ x) = inject+ n x
     fwd {m} {n} (inj₂ y) = raise m y
@@ -101,7 +106,6 @@ module Plus where
                 toℕ (inject+ n x)
                   ≡⟨ sym (inject+-lemma n x) ⟩
                 toℕ x ∎ )
-
     bwd∘fwd~id {m} {n} (inj₂ y) with toℕ (raise m y) <? m 
     bwd∘fwd~id {m} {n} (inj₂ y) | yes p = ⊥-elim (1+n≰n pf)
      where
@@ -119,11 +123,13 @@ module Plus where
        cong inj₂ (raise-injective {m} (reduce≥ (raise m y) (≤-pred (≰⇒> ¬p))) 
                     y (sym (inj₂-≡ (raise m y) (≤-pred (≰⇒> ¬p)))))
 
-  -- this corresponds to _⊕_
+  -- public part of module Plus
+
   fwd-iso : {m n : ℕ} → (Fin m ⊎ Fin n) ≃ Fin (m + n)
   fwd-iso {m} {n} = fwd , mkqinv bwd (fwd∘bwd~id {m}) (bwd∘fwd~id {m})
 
   -- swap+
+  
   swapper : (m n : ℕ) → Fin (m + n) → Fin (n + m)
   swapper m n = fwd ∘ swap₊ ∘ bwd {m} {n} 
 
@@ -140,14 +146,17 @@ module Plus where
     where open ≡-Reasoning
     
   -- unite+
+
   unite+ : {m : ℕ} → Fin (0 + m) ≃ Fin m
   unite+ = id-iso
 
   -- uniti+
+
   uniti+ : {m : ℕ} → Fin m ≃ Fin (0 + m)
   uniti+ = id-iso
 
   -- swap₊
+
   swap+ : {m n : ℕ} → Fin (m + n) ≃ Fin (n + m)
   swap+ {m} {n} = (swapper m n , mkqinv (swapper n m) (swap-inv n m) (swap-inv m n))
 
@@ -198,14 +207,16 @@ module Plus where
           open ≡-Reasoning
 
 module Times where
+
   open import DivModUtils using (addMul-lemma)
   
   fwd : {m n : ℕ} → (Fin m × Fin n) → Fin (m * n)
---   fwd {m} {n} (i , k) = inject≤ (fromℕ (toℕ i * n + toℕ k)) (i*n+k≤m*n i k)
+  -- fwd {m} {n} (i , k) = inject≤ (fromℕ (toℕ i * n + toℕ k)) (i*n+k≤m*n i k)
   fwd {suc m} {n} (zero , k) = inject+ (m * n) k
-  fwd          {n = n} (suc i , k) = raise n (fwd (i , k))
+  fwd {n = n} (suc i , k) = raise n (fwd (i , k))
 
   private
+
     soundness : ∀ {m n} (i : Fin m) (j : Fin n) → toℕ (fwd (i , j)) ≡ toℕ i * n + toℕ j
     soundness {suc m} {n} zero     j = sym (inject+-lemma (m * n) j)
     soundness {n = n} (suc i) j rewrite toℕ-raise n (fwd (i , j)) | soundness i j 
@@ -234,6 +245,7 @@ module Times where
     elim-right-zero m i = ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero m) i))
     
   -- this was fin-project in Perm.agda
+
   bwd : {m n : ℕ} → Fin (m * n) → (Fin m × Fin n)
   bwd {m} {0} k = elim-right-zero m k
   bwd {m} {suc n} k with (toℕ k) divMod (suc n)
@@ -303,6 +315,7 @@ module Times where
     where open ≡-Reasoning
     
   -- unite*
+
   unite* : {m : ℕ} → Fin (1 * m) ≃ Fin m
   unite* {m} =
     let eq = +-right-identity m in
@@ -312,10 +325,12 @@ module Times where
                (subst-subst (sym eq) eq sym-sym)
 
   -- uniti*
+
   uniti* : {m : ℕ} → Fin m ≃ Fin (1 * m)
   uniti* = sym≃ unite*
 
   -- swap*
+
   swap* : {m n : ℕ} → Fin (m * n) ≃ Fin (n * m)
   swap* {m} {n} = (swapper m n , mkqinv (swapper n m) (swap-inv n m) (swap-inv m n))
 
@@ -455,3 +470,5 @@ finCSR = record {
   1# = 1 ;
   isCommutativeSemiring = finIsCSR
   }
+
+------------------------------------------------------------------------------
