@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage{fullpage}
+\usepackage{amssymb}
 \begin{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -43,9 +44,22 @@
 and then we have all the commutative semiring axioms, e.g.,
 $\texttt{Fin}~(0+m) \simeq \texttt{Fin}~m$. The actual proof says that
 0, 1, $+$, and $*$ for a commutative semiring structure under the
-equivalence that equates $m$ and $n$ if $\texttt{Fin} m \simeq \texttt{Fin} n$.
+equivalence that equates $m$ and $n$ if $\texttt{Fin}~m \simeq \texttt{Fin}~n$.
 
-\paragraph*{CauchyEquiv.} 
+\paragraph*{CauchyEquiv.} Defines the Cauchy representation of
+permutations as
+$\texttt{Cauchy}~m~n = \texttt{Vec}~(\texttt{Fin}~m)~n$. The
+representation is not tight at this point as it neither enforces that
+$m=n$ nor that the elements of the vectors are a permutation of the
+set $\{0,\ldots,n-1\}$. This is however a building block for actual
+permutations (defined in \texttt{ConcretePermutation}) which enforce
+both constraints. For that reason, the Cauchy representation has no
+inverse and hence is not a commutative semiring unless one postulates
+the following:
+\[
+\textbf{postulate}~\texttt{sym-iso}~:~\{m~n~:~\mathbb{N}\} \rightarrow
+  \texttt{Cauchy}~m~n \rightarrow \texttt{Cauchy}~n~m
+\]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{To do}
