@@ -6,30 +6,6 @@ module PiPerm where
 open import Relation.Binary.PropositionalEquality 
   using (_≡_; refl; sym; trans; subst; subst₂; cong; cong₂; setoid; 
         proof-irrelevance; module ≡-Reasoning)
-{-
-open import Data.Nat.Properties using (m≢1+m+n; i+j≡0⇒i≡0; i+j≡0⇒j≡0)
-open import Data.Nat.Properties.Simple 
-  using (+-right-identity; +-suc; +-assoc; +-comm; 
-        *-assoc; *-comm; *-right-zero; distribʳ-*-+)
-open import Relation.Binary.Core using (Transitive)
-
-open import Data.String using (String)
-  renaming (_++_ to _++S_)
-open import Data.Nat.Show using (show)
-open import Data.Bool using (Bool; false; true; _∧_; _∨_)
-open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≮_; _≤_; _≰_; 
-  z≤n; s≤s; _≟_; _≤?_; module ≤-Reasoning)
-open import Data.Fin 
-  using (Fin; zero; suc; toℕ; fromℕ; _ℕ-_; _≺_;
-         raise; inject+; inject₁; inject≤; _≻toℕ_) 
-  renaming (_+_ to _F+_)
-
-open import Data.Empty   using (⊥; ⊥-elim)
-open import Data.Unit    using (⊤; tt)
-open import Data.Sum     using (_⊎_; inj₁; inj₂)
-open import Data.Product using (_×_; _,_; proj₁; proj₂)
--}
-
 open ≡-Reasoning
 
 open import CauchyEquiv using (module F)
@@ -46,7 +22,7 @@ c2perm : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → CPerm (size t₂) (size t�
 -- so that Agda would unfold them
 c2perm (_◎_ {t₁} {t₂} {t₃} c₁ c₂) = transp (c2perm c₁) (c2perm c₂)
 c2perm (c₁ ⊕ c₂) = (c2perm c₁) ⊎p (c2perm c₂)
-c2perm (c₁ ⊗ c₂) = {!!}
+c2perm (c₁ ⊗ c₂) = (c2perm c₁) ×p (c2perm c₂)
 c2perm unite₊ = idp -- could use something more 'precise' ?
 c2perm uniti₊ = idp -- ditto
 c2perm {PLUS t₁ t₂} swap₊ = swap+p {size t₁} {size t₂}
@@ -59,8 +35,8 @@ c2perm {TIMES t₁ (TIMES t₂ t₃)} assocl⋆ = assocl*p {size t₁}
 c2perm {TIMES (TIMES t₁ t₂) t₃} assocr⋆ = assocr*p {size t₁}
 c2perm distz = 0p
 c2perm factorz = 0p
-c2perm dist = {!!}
-c2perm factor = {!!}
+c2perm {TIMES (PLUS t₁ t₂) t₃} dist = distp {size t₁} {size t₂} {size t₃}
+c2perm {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} factor = factorp {size t₁} {size t₂} {size t₃}
 c2perm id⟷ = idp
 
 -- Looking forward to Sec. 2.2 (Functions are functors). The

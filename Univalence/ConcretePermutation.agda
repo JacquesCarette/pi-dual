@@ -146,6 +146,12 @@ _×p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ×c (π π₁)) (
         1C ×c 1C                          ≡⟨ 1C×1C≡1C ⟩
         1C ∎)
 
+distp : {m n o : ℕ} → CPerm (m * o + n * o) ((m + n) * o)
+distp {m} {n} {o} = cp (dist*+ {m}) (factor*+ {m}) (dist*+∘̂factor*+~id {m}) (factor*+∘̂dist*+~id {m})
+
+factorp : {m n o : ℕ} → CPerm ((m + n) * o) (m * o + n * o)
+factorp {m} = symp (distp {m})
+
 ------------------------------------------------------------------------------------------------------
 ridp : ∀ {m₁ m₂} {p : CPerm m₂ m₁} → transp p idp ≡ p
 ridp {p = p} = p≡ (∘̂-rid (CPerm.π p))
