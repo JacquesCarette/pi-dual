@@ -463,10 +463,12 @@ module F where
 ------------------------------------------------------------------------------
 -- Commutative semiring structure
 
+{-
 import Level
 open import Algebra
 open import Algebra.Structures
 open import Relation.Binary.Core
+open import Relation.Binary.PropositionalEquality using (subst; sym)
 
 open F
 
@@ -476,8 +478,8 @@ m cauchy≃ n = Cauchy m n
 id-iso : {m : ℕ} → Cauchy m m
 id-iso = 1C
 
-sym-iso : {m n : ℕ} → Cauchy m n → Cauchy n m
-sym-iso = {!!} 
+sym-iso : {m n : ℕ} → {eq : m ≡ n} → Cauchy m n → Cauchy n m
+sym-iso {m} {n} {eq} p = tabulate (λ i → subst Fin eq (p !! subst Fin eq i)) 
 
 trans-iso : {m n o : ℕ} → Cauchy m n → Cauchy n o → Cauchy m o 
 trans-iso c₁ c₂ = c₂ ∘̂ c₁
@@ -535,3 +537,5 @@ cauchyCSR = record {
   1# = 1 ;
   isCommutativeSemiring = cauchyIsCSR
   }
+
+-}
