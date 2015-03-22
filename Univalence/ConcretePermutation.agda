@@ -153,6 +153,7 @@ factorp : {m n o : ℕ} → CPerm ((m + n) * o) (m * o + n * o)
 factorp {m} = symp (distp {m})
 
 ------------------------------------------------------------------------------------------------------
+
 ridp : ∀ {m₁ m₂} {p : CPerm m₂ m₁} → transp p idp ≡ p
 ridp {p = p} = p≡ (∘̂-rid (CPerm.π p))
 
@@ -162,6 +163,12 @@ lidp {p = p} = p≡ (∘̂-lid (CPerm.π p))
 assocp : ∀ {m₁ m₂ m₃ n₁} → {p₁ : CPerm m₁ n₁} → {p₂ : CPerm m₂ m₁} → {p₃ : CPerm m₃ m₂} → 
   transp p₁ (transp p₂ p₃) ≡ transp (transp p₁ p₂) p₃
 assocp {p₁ = p₁} {p₂} {p₃} = p≡ (∘̂-assoc (CPerm.π p₁) (CPerm.π p₂) (CPerm.π p₃))
+
+linv : ∀ {m₁ m₂} (p : CPerm m₂ m₁) → transp p (symp p) ≡ idp
+linv p = p≡ (CPerm.αp p)
+
+rinv : ∀ {m₁ m₂} (p : CPerm m₂ m₁) → transp (symp p) p ≡ idp
+rinv p = p≡ (CPerm.βp p)
 
 SCPerm : ℕ → ℕ → Setoid zero zero
 SCPerm m n = ≡-Setoid (CPerm m n)
