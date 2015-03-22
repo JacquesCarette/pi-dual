@@ -417,3 +417,78 @@ module F where
   swap*-inv : ∀ {m n} → swap⋆cauchy m n ∘̂ swap⋆cauchy n m ≡ 1C
   swap*-inv {m} {n} = ~⇒≡ {o = m * n} (Times.swap-inv m n)
   
+------------------------------------------------------------------------------
+-- Commutative semiring structure
+
+import Level
+open import Algebra
+open import Algebra.Structures
+open import Relation.Binary.Core
+
+open F
+
+_cauchy≃_ : (m n : ℕ) → Set
+m cauchy≃ n = Cauchy m n
+
+id-iso : {m : ℕ} → Cauchy m m
+id-iso = 1C
+
+sym-iso : {m n : ℕ} → Cauchy m n → Cauchy n m
+sym-iso = {!!} 
+
+trans-iso : {m n o : ℕ} → Cauchy m n → Cauchy n o → Cauchy m o 
+trans-iso c₁ c₂ = c₂ ∘̂ c₁
+
+cauchy≃IsEquiv : IsEquivalence {Level.zero} {Level.zero} {ℕ} _cauchy≃_
+cauchy≃IsEquiv = record {
+  refl = id-iso ; 
+  sym = sym-iso ; 
+  trans = trans-iso
+  }
+
+cauchyPlusIsSG : IsSemigroup {Level.zero} {Level.zero} {ℕ} _cauchy≃_ _+_
+cauchyPlusIsSG = record {
+  isEquivalence = cauchy≃IsEquiv ; 
+  assoc = λ m n o → assocl+ {m} {n} {o} ; 
+  ∙-cong = _⊎c_ 
+  }
+
+cauchyTimesIsSG : IsSemigroup {Level.zero} {Level.zero} {ℕ} _cauchy≃_ _*_
+cauchyTimesIsSG = record {
+  isEquivalence = cauchy≃IsEquiv ;
+  assoc = λ m n o → assocl* {m} {n} {o} ;
+  ∙-cong = _×c_
+  }
+
+cauchyPlusIsCM : IsCommutativeMonoid _cauchy≃_ _+_ 0
+cauchyPlusIsCM = record {
+  isSemigroup = cauchyPlusIsSG ;
+  identityˡ = λ m → 1C ;
+  comm = λ m n → swap+cauchy n m 
+  }
+
+cauchyTimesIsCM : IsCommutativeMonoid _cauchy≃_ _*_ 1
+cauchyTimesIsCM = record {
+  isSemigroup = cauchyTimesIsSG ;
+  identityˡ = λ m → uniti* {m} ;
+  comm = λ m n → swap⋆cauchy n m
+  }
+
+cauchyIsCSR : IsCommutativeSemiring _cauchy≃_ _+_ _*_ 0 1
+cauchyIsCSR = record {
+  +-isCommutativeMonoid = cauchyPlusIsCM ;
+  *-isCommutativeMonoid = cauchyTimesIsCM ; 
+  distribʳ = λ o m n → {!!} ; 
+  zeroˡ = λ m → 0C
+  }
+
+cauchyCSR : CommutativeSemiring Level.zero Level.zero
+cauchyCSR = record {
+  Carrier = ℕ ;
+  _≈_ = _cauchy≃_ ;
+  _+_ = _+_ ;
+  _*_ = _*_ ;
+  0# = 0 ;
+  1# = 1 ;
+  isCommutativeSemiring = cauchyIsCSR
+  }
