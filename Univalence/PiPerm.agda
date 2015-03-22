@@ -128,7 +128,7 @@ rinv∼ {t₁} {t₂} {c} =
 
 resp∼ : {t₁ t₂ t₃ : U} {c₁ c₂ : t₁ ⟷ t₂} {c₃ c₄ : t₂ ⟷ t₃} → 
         (c₁ ∼ c₂) → (c₃ ∼ c₄) → (c₁ ◎ c₃ ∼ c₂ ◎ c₄)
-resp∼ {t₁} {t₂} {t₃} {c₁} {c₂} {c₃} {c₄} c₁∼c₂ c₃∼c₄ = {!!}
+resp∼ {t₁} {t₂} {t₃} {c₁} {c₂} {c₃} {c₄} c₁∼c₂ c₃∼c₄ = cong₂ transp c₁∼c₂ c₃∼c₄
 
 -- The equivalence ∼ of paths makes U a 1groupoid: the points are
 -- types (t : U); the 1paths are ⟷; and the 2paths between them are
