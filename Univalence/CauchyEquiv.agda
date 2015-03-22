@@ -8,8 +8,10 @@
 --     awkwardly.
 --   - To avoid a proliferation of bad names, we use sub-modules
 
--- Cauchy representation Vec (Fin m) n without checks of uniqueness
--- and completeness has a commutative semiring structure
+-- Cauchy representation Vec (Fin m) n without checks that m=n or
+-- checks of uniqueness and completeness has a commutative semiring
+-- structure (modulo a postulate about sym). This is the main building
+-- block of ConcretePermutation
 
 module CauchyEquiv where
 
@@ -169,7 +171,7 @@ module F where
   ∼p⇒≡ : {n : ℕ} {p₁ p₂ : Vec (Fin n) n} → (p₁ ∼p p₂) → p₁ ≡ p₂
   ∼p⇒≡ {n} {p₁} {p₂} eqv = 
     begin (
-      p₁                                    ≡⟨ sym (tabulate∘lookup p₁) ⟩
+      p₁                            ≡⟨ sym (tabulate∘lookup p₁) ⟩
       tabulate (_!!_ p₁)            ≡⟨ finext eqv ⟩
       tabulate (_!!_ p₂)            ≡⟨ tabulate∘lookup p₂ ⟩
       p₂ ∎)
@@ -467,7 +469,7 @@ import Level
 open import Algebra
 open import Algebra.Structures
 open import Relation.Binary.Core
-open import Relation.Binary.PropositionalEquality using (subst; sym)
+open import Relation.Binary.PropositionalEquality using (subst; sym; trans; cong₂)
 
 open F
 
@@ -534,4 +536,33 @@ cauchyCSR = record {
   0# = 0 ;
   1# = 1 ;
   isCommutativeSemiring = cauchyIsCSR
+  }
+
+------------------------------------------------------------------------------
+-- Groupoid structure
+
+open import Groupoid
+
+postulate linv : {m n : ℕ} (c : Cauchy m n) → (sym-iso c) ∘̂ c ≡ 1C
+postulate rinv : {m n : ℕ} (c : Cauchy m n) → c ∘̂ (sym-iso c) ≡ 1C
+
+G : 1Groupoid
+G = record {
+  set = ℕ ; 
+  _↝_ = _cauchy≃_ ; 
+  _≈_ = _≡_ ; 
+  id  = id-iso ;
+  _∘_ = λ c₁ c₂ → trans-iso c₂ c₁ ; 
+  _⁻¹ = sym-iso ; 
+  lneutr = ∘̂-lid ; 
+  rneutr = ∘̂-rid ; 
+  assoc  = λ c₁ c₂ c₃ → sym (∘̂-assoc c₁ c₂ c₃) ; 
+  equiv = record { 
+            refl  = refl ; 
+            sym   = sym ; 
+            trans = trans 
+          } ;
+  linv = linv ; 
+  rinv = rinv ; 
+  ∘-resp-≈ = cong₂ _∘̂_ 
   }
