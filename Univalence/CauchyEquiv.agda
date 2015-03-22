@@ -23,7 +23,7 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Equiv using (p∘!p≡id)
 open import TypeEquiv using (swap₊; swap⋆)
 open import VectorLemmas using (_!!_; concat-map; map-map-map; lookup-map; map-∘)
-open import FinEquiv using (module Plus; module Times)
+open import FinEquiv using (module Plus; module Times; module PlusTimes)
 
 ------------------------------------------------------------------------------
 -- Pure vector operations
@@ -151,6 +151,12 @@ module F where
   assocr* : {m n o : ℕ} → Cauchy  (m * (n * o)) (m * n * o)
   assocr* {m} {n} {o} = tabulate (proj₁ (Times.assocr* {m} {n} {o}))
 
+  dist*+ : ∀ {m n o} → Cauchy (m * o + n * o) ((m + n) * o)
+  dist*+ {m} {n} {o} = tabulate (proj₁ (PlusTimes.dist {m} {n} {o}))
+
+  factor*+ : ∀ {m n o} → Cauchy ((m + n) * o) (m * o + n * o)
+  factor*+ {m} {n} {o} = tabulate (proj₁ (PlusTimes.factor {m} {n} {o}))
+
   -------------------------------------------------------------------------------------------
   -- Below here, we start with properties
 
@@ -251,6 +257,12 @@ module F where
   
   assocr*∘̂assocl*~id : ∀ {m n o} → assocr* {m} {n} {o} ∘̂ assocl* {m} ≡ 1C
   assocr*∘̂assocl*~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = Times.assocr* {m}})
+
+  dist*+∘̂factor*+~id : ∀ {m n o} → dist*+ {m} {n} {o} ∘̂ factor*+ {m} ≡ 1C
+  dist*+∘̂factor*+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = PlusTimes.dist {m}})
+
+  factor*+∘̂dist*+~id : ∀ {m n o} → factor*+ {m} {n} {o} ∘̂ dist*+ {m} ≡ 1C
+  factor*+∘̂dist*+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = PlusTimes.factor {m}})
 
   private
     left⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : Cauchy m₁ n₁) → (p₂ : Cauchy m₂ n₂)
@@ -413,7 +425,7 @@ module F where
       tabulate (λ k → Times.fwd {m} {n} (Times.bwd k))
         ≡⟨ finext (Times.fwd∘bwd~id {m} {n}) ⟩
       1C {m * n} ∎ )
-  
+
   swap*-inv : ∀ {m n} → swap⋆cauchy m n ∘̂ swap⋆cauchy n m ≡ 1C
   swap*-inv {m} {n} = ~⇒≡ {o = m * n} (Times.swap-inv m n)
   
