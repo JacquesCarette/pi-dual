@@ -96,7 +96,7 @@ trans∼ = trans
 
 assoc∼ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
          c₁ ◎ (c₂ ◎ c₃) ∼ (c₁ ◎ c₂) ◎ c₃
-assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} = assocp {p₁ = c2perm c₁} {c2perm c₂} {c2perm c₃}
+assoc∼ {c₁ = c₁} {c₂} {c₃} = assocp {p₁ = c2perm c₁} {c2perm c₂} {c2perm c₃}
 
 -- The combinators c : t₁ ⟷ t₂ are paths; we can transport
 -- size-preserving properties across c. In particular, for some
@@ -104,31 +104,25 @@ assoc∼ {t₁} {t₂} {t₃} {t₄} {c₁} {c₂} {c₃} = assocp {p₁ = c2per
 
 -- The relation ~ validates the groupoid laws
 
-c◎id∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ id⟷ ∼ c
-c◎id∼c {t₁} {t₂} {c} = 
-  begin (
-    c2perm (c ◎ id⟷)
-      ≡⟨ refl ⟩
-    transp (c2perm c) idp
-      ≡⟨ ridp ⟩
-    c2perm c ∎)
+c◎id∼c : {t₁ t₂ : U} (c : t₁ ⟷ t₂) → c ◎ id⟷ ∼ c
+c◎id∼c c = ridp
 
-id◎c∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ◎ c ∼ c
-id◎c∼c = lidp
+id◎c∼c : {t₁ t₂ : U} (c : t₁ ⟷ t₂) → id⟷ ◎ c ∼ c
+id◎c∼c c = lidp
 
-linv∼ : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ ! c ∼ id⟷ {t₁}
-linv∼ {t₁} {t₂} {c} =
+linv∼ : {t₁ t₂ : U} (c : t₁ ⟷ t₂) → c ◎ ! c ∼ id⟷ {t₁}
+linv∼ c =
   let p = c2perm c in
   trans (cong (transp p) (!≡symp c)) (linv p)
 
-rinv∼ : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → ! c ◎ c ∼ id⟷
-rinv∼ {t₁} {t₂} {c} = 
+rinv∼ : {t₁ t₂ : U} (c : t₁ ⟷ t₂) → ! c ◎ c ∼ id⟷
+rinv∼ c = 
   let p = c2perm c in
   trans (cong (λ x → transp x p) (!≡symp c)) (rinv p)
 
 resp∼ : {t₁ t₂ t₃ : U} {c₁ c₂ : t₁ ⟷ t₂} {c₃ c₄ : t₂ ⟷ t₃} → 
         (c₁ ∼ c₂) → (c₃ ∼ c₄) → (c₁ ◎ c₃ ∼ c₂ ◎ c₄)
-resp∼ {t₁} {t₂} {t₃} {c₁} {c₂} {c₃} {c₄} c₁∼c₂ c₃∼c₄ = cong₂ transp c₁∼c₂ c₃∼c₄
+resp∼ c₁∼c₂ c₃∼c₄ = cong₂ transp c₁∼c₂ c₃∼c₄
 
 -- The equivalence ∼ of paths makes U a 1groupoid: the points are
 -- types (t : U); the 1paths are ⟷; and the 2paths between them are
@@ -142,18 +136,18 @@ G = record
         ; id  = id⟷
         ; _∘_ = λ p q → q ◎ p
         ; _⁻¹ = !
-        ; lneutr = λ c → c◎id∼c {c = c}
-        ; rneutr = λ c → id◎c∼c {c = c}
+        ; lneutr = c◎id∼c
+        ; rneutr = id◎c∼c
         ; assoc  = λ c₃ c₂ c₁ → assoc∼ {c₁ = c₁} {c₂ = c₂} {c₃ = c₃}  
         ; equiv = record { 
             refl  = λ {c} → refl∼ {c = c}
           ; sym   = λ {c₁} {c₂} → sym∼ {c₁ = c₁} {c₂ = c₂}
           ; trans = λ {c₁} {c₂} {c₃} → trans∼ {c₁ = c₁} {c₂ = c₂} {c₃ = c₃} 
           }
-        ; linv = λ c → linv∼ {c = c} 
-        ; rinv = λ c → rinv∼ {c = c} 
-        ; ∘-resp-≈ = λ {t₁} {t₂} {t₃} {p} {q} {r} {s} p∼q r∼s → 
-                    resp∼ {t₁} {t₂} {t₃} {r} {s} {p} {q} r∼s p∼q 
+        ; linv = linv∼
+        ; rinv = rinv∼
+        ; ∘-resp-≈ = λ {_} {_} {_} {p} {q} {r} {s} p∼q r∼s → 
+                    resp∼ {c₁ = r} {s} {p} {q} r∼s p∼q 
         }
 
 -- There are additional laws that should hold:
