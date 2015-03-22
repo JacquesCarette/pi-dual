@@ -160,7 +160,6 @@ module F where
   -------------------------------------------------------------------------------------------
   -- Below here, we start with properties
 
-
   -- Useful stuff
   infix 4 _∼p_
 
@@ -202,8 +201,9 @@ module F where
   ~⇒≡ {f = f} {g} β = ∼p⇒≡ (λ i → trans (∘̂⇒∘ g f i) (cong (λ x → x !! i) (finext β)))
 
   -- properties of sequential composition
-  ∘̂-assoc : {m₁ m₂ m₃ m₄ : ℕ} → (a : Vec (Fin m₂) m₁) (b : Vec (Fin m₃) m₂) (c : Vec (Fin m₄) m₃) 
-    → a ∘̂ (b ∘̂ c) ≡ (a ∘̂ b) ∘̂ c
+  ∘̂-assoc : {m₁ m₂ m₃ m₄ : ℕ} →
+           (a : Vec (Fin m₂) m₁) (b : Vec (Fin m₃) m₂) (c : Vec (Fin m₄) m₃) → 
+           a ∘̂ (b ∘̂ c) ≡ (a ∘̂ b) ∘̂ c
   ∘̂-assoc a b c = finext (lookupassoc a b c)
 
   ∘̂-rid : {m n : ℕ} → (π : Vec (Fin m) n) → π ∘̂ 1C ≡ π
@@ -212,7 +212,9 @@ module F where
   ∘̂-lid : {m n : ℕ} → (π : Vec (Fin m) n) → 1C ∘̂ π ≡ π
   ∘̂-lid π = trans (finext (λ i → cong (_!!_ π) (lookup-allFin i))) (permext π)
 
-  !!⇒∘̂ : {n₁ n₂ n₃ : ℕ} → (π₁ : Vec (Fin n₁) n₂) → (π₂ : Vec (Fin n₂) n₃) → (i : Fin n₃) → π₁ !! (π₂ !! i) ≡ (π₂ ∘̂ π₁) !! i
+  !!⇒∘̂ : {n₁ n₂ n₃ : ℕ} →
+          (π₁ : Vec (Fin n₁) n₂) → (π₂ : Vec (Fin n₂) n₃) → (i : Fin n₃) →
+          π₁ !! (π₂ !! i) ≡ (π₂ ∘̂ π₁) !! i
   !!⇒∘̂ π₁ π₂ i = 
     begin (
       π₁ !! (π₂ !! i)
@@ -273,8 +275,12 @@ module F where
       let qq = p₁ ⊎c p₂ in
       begin (
           pp !! (qq !! inject+ n₂ i)
-            ≡⟨ cong (_!!_ pp) (lookup-++-inject+ (tabulate (inject+ m₂ ∘ _!!_ p₁) ) 
-                                                                       (tabulate (raise m₁ ∘ _!!_ p₂)) i) ⟩ 
+            ≡⟨ cong
+                 (_!!_ pp)
+                 (lookup-++-inject+
+                   (tabulate (inject+ m₂ ∘ _!!_ p₁)) 
+                   (tabulate (raise m₁ ∘ _!!_ p₂))
+                   i) ⟩ 
          pp !! (tabulate (inject+ m₂ ∘ _!!_ p₁ ) !! i)
             ≡⟨ cong (_!!_ pp) (lookup∘tabulate _ i) ⟩
          pp !! (inject+ m₂ (p₁ !! i))
@@ -291,8 +297,12 @@ module F where
       let qq = p₁ ⊎c p₂ in
       begin (
         pp !! (qq !! raise n₁ i)
-          ≡⟨ cong (_!!_ pp) (lookup-++-raise (tabulate (inject+ m₂ ∘ _!!_ p₁)) 
-                                                                  (tabulate (raise m₁ ∘ _!!_ p₂)) i) ⟩
+          ≡⟨ cong
+               (_!!_ pp)
+               (lookup-++-raise
+                 (tabulate (inject+ m₂ ∘ _!!_ p₁))
+                 (tabulate (raise m₁ ∘ _!!_ p₂))
+                 i) ⟩
         pp !! (tabulate (raise m₁ ∘ _!!_ p₂) !! i)
           ≡⟨ cong (_!!_ pp) (lookup∘tabulate _ i) ⟩
         pp !! raise m₁ (p₂ !! i)
@@ -383,22 +393,40 @@ module F where
     begin (
        tabulate {n₁ * n₂} (λ i → p₃₄ !! (p₁₂ !! i))
          ≡⟨ finext (λ j → cong (_!!_ p₃₄) (×c!! p₁ p₂ j)) ⟩
-       tabulate {n₁ * n₂} (λ i → p₃₄ !! Times.fwd (p₁ !! proj₁ (Times.bwd i) , p₂ !! proj₂ (Times.bwd i)))
+       tabulate {n₁ * n₂}
+         (λ i → p₃₄ !! Times.fwd (p₁ !! proj₁ (Times.bwd i) , p₂ !! proj₂ (Times.bwd i)))
          ≡⟨ finext (λ j → ×c!! p₃ p₄ _) ⟩
-       tabulate (λ i → let k = Times.fwd (p₁ !! proj₁ (Times.bwd i) , p₂ !! proj₂ (Times.bwd i)) in
-                       Times.fwd (p₃ !! proj₁ (Times.bwd k) , p₄ !! proj₂ (Times.bwd k)))
+       tabulate (λ i →
+         let k = Times.fwd (p₁ !! proj₁ (Times.bwd i) , p₂ !! proj₂ (Times.bwd i)) in
+         Times.fwd (p₃ !! proj₁ (Times.bwd k) , p₄ !! proj₂ (Times.bwd k)))
          ≡⟨ finext (λ i → cong₂ (λ x y → Times.fwd (p₃ !! proj₁ x , p₄ !! proj₂ y))
                    (Times.bwd∘fwd~id {m₁} {m₂} (p₁ !! proj₁ (Times.bwd i) , _))
                    (Times.bwd∘fwd~id (_ , p₂ !! proj₂ (Times.bwd i)))) ⟩
        tabulate (λ i → Times.fwd (p₃ !! (p₁ !! proj₁ (Times.bwd i)) ,
                                   (p₄ !! (p₂ !! proj₂ (Times.bwd i)))))
          ≡⟨ finext (λ k → sym (lookup-2d n₁ n₂ k)) ⟩
-       tabulate (λ k → concatV (tabulate {n₁} (λ z → tabulate {n₂} (λ w → Times.fwd ((p₃ !! (p₁ !! z)) , (p₄ !! (p₂ !! w)))))) !! k)
+       tabulate (λ k →
+         concatV (tabulate {n₁} (λ z →
+                  tabulate {n₂} (λ w →
+                  Times.fwd ((p₃ !! (p₁ !! z)) , (p₄ !! (p₂ !! w))))))
+         !! k)
+                           
          ≡⟨ tabulate∘lookup _ ⟩
-       concatV (tabulate {n₁} (λ z → tabulate {n₂} (λ w → Times.fwd ((p₃ !! (p₁ !! z)) , (p₄ !! (p₂ !! w))))))
-         ≡⟨ cong concatV (finext (λ i → tabulate-∘ Times.fwd (λ w → ((p₃ !! (p₁ !! i)) , (p₄ !! (p₂ !! w)))) )) ⟩
-       concatV (tabulate (λ z → mapV Times.fwd (tabulate (λ w → (p₃ !! (p₁ !! z)) , (p₄ !! (p₂ !! w))))))
-         ≡⟨ cong concatV (finext (λ i → cong (mapV Times.fwd) (tabulate-∘ (λ x → (p₃ !! (p₁ !! i)) , x) (_!!_ p₄ ∘ _!!_ p₂)))) ⟩
+       concatV (tabulate {n₁} (λ z →
+                tabulate {n₂} (λ w →
+                Times.fwd ((p₃ !! (p₁ !! z)) , (p₄ !! (p₂ !! w))))))
+         ≡⟨ cong
+             concatV
+             (finext (λ i →
+               tabulate-∘ Times.fwd (λ w → ((p₃ !! (p₁ !! i)) , (p₄ !! (p₂ !! w)))) )) ⟩
+       concatV (tabulate (λ z →
+                mapV Times.fwd (tabulate (λ w → (p₃ !! (p₁ !! z)) , (p₄ !! (p₂ !! w))))))
+         ≡⟨ cong
+             concatV
+             (finext (λ i →
+               cong
+                 (mapV Times.fwd)
+                 (tabulate-∘ (λ x → (p₃ !! (p₁ !! i)) , x) (_!!_ p₄ ∘ _!!_ p₂)))) ⟩
        concatV (tabulate (λ z → mapV Times.fwd (mapV (λ x → (p₃ !! (p₁ !! z)) , x) p₂₄)))
          ≡⟨ cong concatV (tabulate-∘ _ (_!!_ p₃ ∘ _!!_ p₁)) ⟩
        concatV (mapV (λ y → mapV Times.fwd (mapV (λ x → y , x) p₂₄)) p₁₃)
@@ -417,10 +445,13 @@ module F where
       concatV {n = m} (tabulate (λ y → mapV Times.fwd (mapV (_,_ y) (1C {n}))))
         ≡⟨ cong (concatV {n = m}) (finext (λ y → sym (map-∘ Times.fwd (λ x → y , x) 1C))) ⟩
       concatV (tabulate {n = m} (λ y → mapV (Times.fwd ∘ (_,_ y)) (1C {n})))
-        ≡⟨ cong (concatV {m = n} {m}) (finext (λ y → sym (tabulate-∘ (Times.fwd ∘ (_,_ y)) id))) ⟩
+        ≡⟨ cong
+            (concatV {m = n} {m})
+            (finext (λ y → sym (tabulate-∘ (Times.fwd ∘ (_,_ y)) id))) ⟩
       concatV (tabulate {n = m} (λ a → tabulate {n = n} (λ b → Times.fwd (a , b))))
         ≡⟨ sym (tabulate∘lookup _) ⟩
-      tabulate (λ k → concatV (tabulate {n = m} (λ a → tabulate {n = n} (λ b → Times.fwd (a , b)))) !! k)
+      tabulate (λ k →
+      concatV (tabulate {n = m} (λ a → tabulate {n = n} (λ b → Times.fwd (a , b)))) !! k)
         ≡⟨ finext (λ k → lookup-2d m n k) ⟩
       tabulate (λ k → Times.fwd {m} {n} (Times.bwd k))
         ≡⟨ finext (Times.fwd∘bwd~id {m} {n}) ⟩
@@ -490,7 +521,7 @@ cauchyIsCSR : IsCommutativeSemiring _cauchy≃_ _+_ _*_ 0 1
 cauchyIsCSR = record {
   +-isCommutativeMonoid = cauchyPlusIsCM ;
   *-isCommutativeMonoid = cauchyTimesIsCM ; 
-  distribʳ = λ o m n → {!!} ; 
+  distribʳ = λ o m n → factor*+ {m} {n} {o} ; 
   zeroˡ = λ m → 0C
   }
 
