@@ -45,6 +45,28 @@ c2perm id⟷ = idp
 -- the case that a combinator (path) c : t₁ ⟷ t₂ maps to a combinator
 -- (path) ap_f(c) : f(t₁) ⟷ f(t₂).
 
+-- the action of ! wrt c2perm.  This is not trivial!  
+-- it needs p≡ for most of the cases, but then relies on non-trivial lemmas for 
+-- the last 3 cases
+!≡symp : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → c2perm (! c) ≡ symp (c2perm c)
+!≡symp unite₊ = p≡ refl
+!≡symp uniti₊ = p≡ refl
+!≡symp swap₊ = p≡ refl
+!≡symp assocl₊ = p≡ refl
+!≡symp assocr₊ = p≡ refl
+!≡symp unite⋆ = p≡ refl
+!≡symp uniti⋆ = p≡ refl
+!≡symp swap⋆ = p≡ refl
+!≡symp assocl⋆ = p≡ refl
+!≡symp assocr⋆ = p≡ refl
+!≡symp distz = p≡ refl
+!≡symp factorz = p≡ refl
+!≡symp dist = p≡ refl
+!≡symp factor = p≡ refl
+!≡symp id⟷ = p≡ refl
+!≡symp (c ◎ c₁) = p≡ (cong₂ (λ x y → CPerm.π (transp x y)) (!≡symp c₁) (!≡symp c))
+!≡symp (c ⊕ c₁) = p≡ (cong₂ (λ x y → CPerm.π (x ⊎p y)) (!≡symp c) (!≡symp c₁))
+!≡symp (c ⊗ c₁) = p≡ (cong₂ (λ x y → CPerm.π (x ×p y)) (!≡symp c) (!≡symp c₁))
 
 ------------------------------------------------------------------------------
 -- Extensional equivalence of combinators
@@ -94,11 +116,15 @@ c◎id∼c {t₁} {t₂} {c} =
 id◎c∼c : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ◎ c ∼ c
 id◎c∼c = lidp
 
-linv∼ : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ ! c ∼ id⟷
-linv∼ {t₁} {t₂} {c} = {!!}
+linv∼ : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ◎ ! c ∼ id⟷ {t₁}
+linv∼ {t₁} {t₂} {c} =
+  let p = c2perm c in
+  trans (cong (transp p) (!≡symp c)) (linv p)
 
 rinv∼ : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → ! c ◎ c ∼ id⟷
-rinv∼ {t₁} {t₂} {c} = {!!}
+rinv∼ {t₁} {t₂} {c} = 
+  let p = c2perm c in
+  trans (cong (λ x → transp x p) (!≡symp c)) (rinv p)
 
 resp∼ : {t₁ t₂ t₃ : U} {c₁ c₂ : t₁ ⟷ t₂} {c₃ c₄ : t₂ ⟷ t₃} → 
         (c₁ ∼ c₂) → (c₃ ∼ c₄) → (c₁ ◎ c₃ ∼ c₂ ◎ c₄)
