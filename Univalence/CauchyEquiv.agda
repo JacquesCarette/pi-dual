@@ -1,3 +1,5 @@
+{-# OPTIONS --without-K #-}
+
 -- Definition of the Operations on permutations, based on the Vector representation
 -- There are 2 sets of definitions here:
 -- 1. pure Vector, in which the contents are arbitrary sets
@@ -479,7 +481,8 @@ m cauchy≃ n = Cauchy m n
 id-iso : {m : ℕ} → Cauchy m m
 id-iso = 1C
 
-postulate sym-iso : {m n : ℕ} → Cauchy m n → Cauchy n m
+private
+  postulate sym-iso : {m n : ℕ} → Cauchy m n → Cauchy n m
 
 trans-iso : {m n o : ℕ} → Cauchy m n → Cauchy n o → Cauchy m o 
 trans-iso c₁ c₂ = c₂ ∘̂ c₁
@@ -543,8 +546,9 @@ cauchyCSR = record {
 
 open import Groupoid
 
-postulate linv : {m n : ℕ} (c : Cauchy m n) → (sym-iso c) ∘̂ c ≡ 1C
-postulate rinv : {m n : ℕ} (c : Cauchy m n) → c ∘̂ (sym-iso c) ≡ 1C
+private
+  postulate linv : {m n : ℕ} (c : Cauchy m n) → (sym-iso c) ∘̂ c ≡ 1C
+  postulate rinv : {m n : ℕ} (c : Cauchy m n) → c ∘̂ (sym-iso c) ≡ 1C
 
 G : 1Groupoid
 G = record {
