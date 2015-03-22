@@ -15,7 +15,7 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong;
 open import Relation.Binary using (Setoid; module Setoid)
 -- open import Data.Product using (_,′_; _×_)
 
-open import VecOps -- and below, import from that
+open import CauchyEquiv -- and below, import from that
 open F
 
 open import Function using (_∘_; id)

@@ -32,7 +32,7 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
 open ≡-Reasoning
 
-open import VecOps using (module F)
+open import CauchyEquiv using (module F)
 open F using (_∘̂_)
 open import ConcretePermutation
 open import PiLevel0

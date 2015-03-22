@@ -29,8 +29,8 @@ open import FinNatLemmas
 Enum : ∀ {ℓ} → (A : Set ℓ) → (n : ℕ) →  Set ℓ
 Enum A n = A ≃ Fin n
 
--- from TypeEquivalences and VecOps, we can get operations on enumerations
--- (note: should generalize TypeEquivalences to using Level)
+-- from TypeEquiv and CauchyEquiv we can get operations on enumerations
+-- (note: should generalize TypeEquiv to using Level)
 _⊕e_ : {A : Set} {B : Set} {n m : ℕ} →
   Enum A n → Enum B m → Enum (A ⊎ B) (n + m)
 eA ⊕e eB = trans≃ (path⊎ eA eB) Plus.fwd-iso

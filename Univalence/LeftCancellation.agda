@@ -12,7 +12,7 @@ open import Relation.Binary.PropositionalEquality
   renaming (trans to _∘_; sym to !_)
 
 open import Equiv
-open import TypeEquivalences using (swap₊)
+open import TypeEquiv using (swap₊)
 
 -- This is WAY simpler than using 'with' and 'inspect'!
 record Ev {A B : Set} (f : A → B) (x : A) : Set where

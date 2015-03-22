@@ -22,7 +22,7 @@ open import Function using (_∘_; id)
 open import Data.Unit using (⊤; tt)
 
 open import Equiv using (_∼_; _≃_; module qinv; mkqinv; id≃; sym≃; trans≃; _⊎∼_; _×∼_)
-open import TypeEquivalences using (swap₊; swapswap₊; swap⋆; swapswap⋆)
+open import TypeEquiv using (swap₊; swapswap₊; swap⋆; swapswap⋆)
 open import Proofs
   using (_<?_; inj₁-≡; inj₂-≡; inject+-injective; raise-injective; subst-subst; sym-sym;
         cong+r≤; cong+l≤; cong*r≤; sinj≤)

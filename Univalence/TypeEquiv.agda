@@ -1,5 +1,5 @@
 {-# OPTIONS --without-K #-}
-module TypeEquivalences where
+module TypeEquiv where
 
 open import Data.Empty
 open import Data.Unit

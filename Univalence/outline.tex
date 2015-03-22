@@ -31,7 +31,7 @@
 
 \paragraph*{Equiv.} Defines extensional equivalence of functions $\sim$ and shows that it is an equivalence relation. Defines equivalence between sets $\simeq$ using two functions that go back and forth and whose compositions are extensionally equivalent to the identity, and shows that this equivalence is indeed an equivalence relation. Finally shows that equivalences are injective.
 
-\paragraph*{TypeEquivalences.} Establishes that the Agda types $\bot$, $\top$, $\uplus$, and $\times$ form a commutative semiring using $\simeq$ as the underlying equivalence relation.
+\paragraph*{TypeEquiv.} Establishes that the Agda types $\bot$, $\top$, $\uplus$, and $\times$ form a commutative semiring using $\simeq$ as the underlying equivalence relation.
 
 \paragraph*{FinEquiv.} Establishes that $\texttt{Fin}~n$ also forms a commutative semiring with $\simeq$ as the underlying equivalence relation. In particular, we have:
 \[\begin{array}{rcll}
@@ -40,7 +40,10 @@
 \texttt{Fin}~(m+n) &\simeq& \texttt{Fin}~m \uplus \texttt{Fin}~n \\
 \texttt{Fin}~(m*n) &\simeq& \texttt{Fin}~m \times \texttt{Fin}~n
 \end{array}\]
-and then we have all the commutative semiring axioms, e.g., $\texttt{Fin}~(0+m) \simeq \texttt{Fin}~m$. 
+and then we have all the commutative semiring axioms, e.g.,
+$\texttt{Fin}~(0+m) \simeq \texttt{Fin}~m$. 
+
+\paragraph*{CauchyEquiv.} 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{To do}

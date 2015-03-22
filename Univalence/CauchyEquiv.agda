@@ -8,7 +8,7 @@
 --     awkwardly.
 --   - To avoid a proliferation of bad names, we use sub-modules
 
-module VecOps where
+module CauchyEquiv where
 
 open import Data.Nat
 open import Data.Vec renaming (map to mapV; _++_ to _++V_; concat to concatV)
@@ -18,7 +18,7 @@ open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
 open import Equiv using (p∘!p≡id)
-open import TypeEquivalences using (swap₊; swap⋆)
+open import TypeEquiv using (swap₊; swap⋆)
 open import VectorLemmas using (_!!_; concat-map; map-map-map; lookup-map; map-∘)
 open import FinEquiv using (module Plus; module Times)
 

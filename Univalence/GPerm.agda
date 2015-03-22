@@ -17,7 +17,7 @@ open import Data.Sum using (_⊎_)
 open import Data.Product using (_×_)
 
 open import Equiv
-open import TypeEquivalences
+open import TypeEquiv
 
 GPerm : Set → Set
 GPerm A = A ≃ A
