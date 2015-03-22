@@ -21,7 +21,8 @@ open import Data.Nat.DivMod using (_divMod_; result)
 open import Function using (_∘_; id)
 open import Data.Unit using (⊤; tt)
 
-open import Equiv using (_∼_; _≃_; module qinv; mkqinv; id≃; sym≃; trans≃; _⊎∼_; _×∼_)
+open import Equiv
+  using (_∼_; _≃_; module qinv; mkqinv; id≃; sym≃; trans≃; _⊎∼_; _×∼_; ≃IsEquiv)
 open import TypeEquiv using (swap₊; swapswap₊; swap⋆; swapswap⋆)
 open import Proofs
   using (_<?_; inj₁-≡; inj₂-≡; inject+-injective; raise-injective; subst-subst; sym-sym;
@@ -387,3 +388,67 @@ module PlusTimes where
   factor : {m n o : ℕ} → Fin ((m * o) + (n * o)) ≃ Fin ((m + n) * o) 
   factor {m} {n} {o} = sym≃ (dist {m} {n} {o}) 
 
+------------------------------------------------------------------------------
+-- Commutative semiring structure
+
+import Level
+open import Algebra
+open import Algebra.Structures
+open import Relation.Binary.Core
+
+_fin≃_ : (m n : ℕ) → Set
+m fin≃ n = Fin m ≃ Fin n
+
+fin≃IsEquiv : IsEquivalence {Level.zero} {Level.zero} {ℕ} _fin≃_
+fin≃IsEquiv = record {
+  refl = id-iso ;
+  sym = sym≃ ; 
+  trans = trans-iso 
+  }
+
+finPlusIsSG : IsSemigroup {Level.zero} {Level.zero} {ℕ} _fin≃_ _+_
+finPlusIsSG = record {
+  isEquivalence = fin≃IsEquiv ; 
+  assoc = λ m n o → Plus.assocr+ {m} {n} {o} ;
+  ∙-cong = Plus.cong+-iso 
+  }
+
+finTimesIsSG : IsSemigroup {Level.zero} {Level.zero} {ℕ} _fin≃_ _*_
+finTimesIsSG = record {
+  isEquivalence = fin≃IsEquiv ;
+  assoc = λ m n o → Times.assocr* {m} {n} {o} ;
+  ∙-cong = Times.cong*-iso
+  }
+
+finPlusIsCM : IsCommutativeMonoid _fin≃_ _+_ 0
+finPlusIsCM = record {
+  isSemigroup = finPlusIsSG ;
+  identityˡ = λ m → Plus.unite+ {m} ;
+  comm = λ m n → Plus.swap+ {m} {n} 
+  }
+
+finTimesIsCM : IsCommutativeMonoid _fin≃_ _*_ 1
+finTimesIsCM = record {
+  isSemigroup = finTimesIsSG ;
+  identityˡ = λ m → Times.unite* {m} ;
+  comm = λ m n → Times.swap* {m} {n}
+  }
+
+finIsCSR : IsCommutativeSemiring _fin≃_ _+_ _*_ 0 1
+finIsCSR = record {
+  +-isCommutativeMonoid = finPlusIsCM ;
+  *-isCommutativeMonoid = finTimesIsCM ;
+  distribʳ = λ o m n → PlusTimes.dist {m} {n} {o} ;
+  zeroˡ = λ m → Times.distz {m}
+  }
+
+finCSR : CommutativeSemiring Level.zero Level.zero
+finCSR = record {
+  Carrier = ℕ ;
+  _≈_ = _fin≃_ ;
+  _+_ = _+_ ;
+  _*_ = _*_ ;
+  0# = 0 ;
+  1# = 1 ;
+  isCommutativeSemiring = finIsCSR
+  }
