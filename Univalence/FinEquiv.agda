@@ -61,6 +61,9 @@ Fin1≃⊤ = f , mkqinv g α β
 id-iso : {m : ℕ} → Fin m ≃ Fin m
 id-iso = id≃ 
 
+sym-iso : {m n : ℕ} → (Fin m ≃ Fin n) → (Fin n ≃ Fin m)
+sym-iso = sym≃ 
+
 trans-iso : {m n o : ℕ} → (Fin m ≃ Fin n) → (Fin n ≃ Fin o) → (Fin m ≃ Fin o) 
 trans-iso = trans≃ 
 
@@ -402,7 +405,7 @@ m fin≃ n = Fin m ≃ Fin n
 fin≃IsEquiv : IsEquivalence {Level.zero} {Level.zero} {ℕ} _fin≃_
 fin≃IsEquiv = record {
   refl = id-iso ;
-  sym = sym≃ ; 
+  sym = sym-iso ;
   trans = trans-iso 
   }
 
