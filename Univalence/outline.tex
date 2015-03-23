@@ -68,28 +68,19 @@ equivalence that equates $m$ and $n$ if
 $\texttt{Fin}~m \simeq \texttt{Fin}~n$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{To do}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Bimonoidal Categories} 
 
-\paragraph*{CauchyBimonoidal.} Defines the Cauchy representation of
-permutations as
-$\texttt{Cauchy}~m~n = \texttt{Vec}~(\texttt{Fin}~m)~n$. The
-representation is not tight at this point as it neither enforces that
-$m=n$ nor that the elements of the vectors are a permutation of the
-set $\{0,\ldots,n-1\}$. This is however a building block for actual
-permutations (defined in \texttt{ConcretePermutation}) which enforce
-both constraints. For that reason, the Cauchy representation has no
-inverse and hence is not a commutative semiring unless one postulates
-the following:
-\[
-\textbf{postulate}~\texttt{sym-iso}~:~\{m~n~:~\mathbb{N}\} \rightarrow
-  \texttt{Cauchy}~m~n \rightarrow \texttt{Cauchy}~n~m
-\]
-The Cauchy representation has more structure: it is almost a groupoid
-again modulo two postulates asserting that \texttt{sym-iso} is really
-a left and right inverse.
+\paragraph*{FinSetCategory.} Defines the category of finite sets and
+all functions between them. As stated on the nLab page, ``it is easy
+(and thus common) to make \texttt{FinSet} skeletal; there is one
+object for each natural number $n$ (including $n=0$), and a morphism
+from $m$ to $n$ is an $m$-tuple $(f_0,\ldots,f_{m−1})$ of numbers
+satisfying $0 \leq f_i < n$. This amounts to identifying $n$ with the
+set $\{0,\ldots,n−1\}$.'' This structure will be a building block for
+permutations (defined in \texttt{ConcretePermutation}).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{To do}
 
 PiLevel0
 ConcretePermutation
