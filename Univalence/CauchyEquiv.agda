@@ -465,6 +465,26 @@ module F where
   swap*-inv {m} {n} = ~⇒≡ {o = m * n} (Times.swap-inv m n)
   
 ------------------------------------------------------------------------------
+-- Bimonoidal category
+
+import Level
+open import BimonoidalCategory
+open import Relation.Binary.Core
+
+open F 
+cauchyBMC : BimonoidalCategory Level.zero Level.zero Level.zero
+cauchyBMC = record {
+  Obj = ℕ ;
+  _⇒_ = Cauchy ;
+  _∘_ = _∘̂_ ;
+  _≈_ = _≡_ ;
+  _⊕_ = _+_ ;
+  _⊗_ = _*_ ;
+  0# = 0 ;
+  1# = 1 ;
+  isBimonoidalCategory  = {!!} 
+  }
+
 -- Commutative semiring structure
 
 import Level
