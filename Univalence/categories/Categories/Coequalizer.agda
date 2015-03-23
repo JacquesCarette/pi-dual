@@ -1,1 +1,0 @@
-module Categories.Coequalizer where
