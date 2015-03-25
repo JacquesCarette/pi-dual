@@ -5,28 +5,36 @@ module BimonoidalCategory where
 open import Level
 open import Relation.Binary using (Rel)
 open import Algebra.FunctionProperties using (Op₂)
-open import Relation.Binary.PropositionalEquality
 
+open import Categories.Functor hiding (id; _≡_)
 open import Categories.Category
+open import Categories.Monoidal
+open import Categories.Monoidal.Helpers
+open import Categories.Monoidal.Braided
+open import Categories.NaturalIsomorphism
 
 ------------------------------------------------------------------------------
 -- Definition
 
-record BimonoidalCategory o ℓ e (ℂ : Category o ℓ e) : Set (suc (o ⊔ ℓ ⊔ e)) where
-  infixl 7 _+_ _⊕_
-  infixl 6 _*_ _⊗_
-  open Category ℂ
+record SymmetricMonoidalCategory {o ℓ e} {ℂ  : Category o ℓ e} (Mℂ : Monoidal ℂ)
+  : Set (suc (o ⊔ ℓ ⊔ e)) where
+
+  private module ℂ = Category ℂ
+  open ℂ using (Obj; _≡_)
+
+  private module Mℂ  = Monoidal Mℂ
+  open Mℂ using (id; ⊗)
+  open MonoidalHelperFunctors ℂ ⊗ id
+  private module F = Functor x⊗y
+  private module G = Functor y⊗x
+
+  open F using () renaming (F₀ to c)
+  open G using () renaming (F₀ to c⁻)
+
   field
-    -- additive monoid
-    0#  : Obj
-    _+_ : Op₂ Obj
-    _⊕_ : ∀ {A B C D} → (A ⇒ C) → (B ⇒ D) → ((A + B) ⇒ (C + D))
-    -- multiplicative monoid
-    1#  : Obj
-    _*_ : Op₂ Obj
-    _⊗_ : ∀ {A B C D} → (A ⇒ C) → (B ⇒ D) → ((A * B) ⇒ (C * D))
-    -- axioms
-    -- ...
+    -- we have c c⁻ : Obj → Obj
+    -- we want their composition to be id
+    symmetry : {!!}
     
 
 {--
