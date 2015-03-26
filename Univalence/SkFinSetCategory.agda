@@ -10,7 +10,7 @@
 -- identifying n with the set {0,…,n−1}. (Sometimes {1,…,n} is used
 -- instead.) This is exactly what we do below
 
-module FinSetCategory where
+module SkFinSetCategory where
 
 open import Data.Nat
 open import Data.Vec renaming (map to mapV; _++_ to _++V_; concat to concatV)
@@ -461,32 +461,62 @@ module F where
   swap*-inv {m} {n} = ~⇒≡ {o = m * n} (Times.swap-inv m n)
   
 ------------------------------------------------------------------------------
--- Bimonoidal category
+-- Categorical structure
 
 import Level
-open import BimonoidalCategory
-open import Relation.Binary.Core
+open import Relation.Binary.PropositionalEquality using (_≡_; sym; cong₂)
+open import Relation.Binary.PropositionalEquality.Core using (isEquivalence)
 
-open F 
+open import Categories.Category using (Category)
+open import Categories.Monoidal using (Monoidal)
+open import Categories.Monoidal.Braided using (Braided; module Braided) 
+
+open import SymmetricMonoidalCategory
+
+open F
 
 -- Objects are natural numbers which are proxies for finite sets of
 -- the given size; morphisms between m and n are finite functions, Vec
 -- (Fin n) m, mapping each element of Fin m to an element in Fin
 -- n. Two morphisms are considered the same if they are ≡ to each other.
 
-cauchyBMC : BimonoidalCategory Level.zero Level.zero Level.zero
-cauchyBMC = record {
+finVecC : Category Level.zero Level.zero Level.zero
+finVecC = record {
   Obj = ℕ ;
   _⇒_ = FinVec ;
+  _≡_ = _≡_ ;
+  id  = 1C ; 
   _∘_ = _∘̂_ ;
-  _≈_ = _≡_ ;
-  _⊕_ = _+_ ;
-  _⊗_ = _*_ ;
-  0# = 0 ;
-  1# = 1 ;
-  isBimonoidalCategory  = {!!} 
+  assoc = λ { {f = f} {g = g} {h = h} → sym (∘̂-assoc h g f) } ;
+  identityˡ = λ { {f = f} → ∘̂-lid f } ;
+  identityʳ = λ { {f = f} → ∘̂-rid f } ;
+  equiv = isEquivalence ; 
+  ∘-resp-≡ = cong₂ _∘̂_ 
   }
 
+{--
+⊗-bifunctor : BiFunctor finVecC finVecC finVecC
+⊗-bifunctor = record { 
+  F₀ = λ { (m , n) → m * n } ;
+  F₁ = {!!} ;
+  identity = {!!} ;
+  homomorphism = {!!} ;
+  F-resp-≡ = {!!} 
+  }
+--}
+
+finVecAdditiveM : Monoidal finVecC 
+finVecAdditiveM = record {
+  ⊗ = {!!} ; -- ⊗-bifunctor ;  
+  id = 0 ;
+  identityˡ = {!!} ;
+  identityʳ = {!!} ;
+  assoc = {!!} ;
+  triangle = {!!} ;
+  pentagon = {!!} 
+  }
+
+{--
 -- Commutative semiring structure
 
 import Level
@@ -592,5 +622,6 @@ G = record {
   rinv = rinv ; 
   ∘-resp-≈ = cong₂ _∘̂_ 
   }
+--}
 
 ------------------------------------------------------------------------------

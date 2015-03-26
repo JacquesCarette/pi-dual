@@ -34,8 +34,11 @@ $\texttt{Fin}~m \times \texttt{Fin}~n$.
 setoid with propositional equality $\equiv$ as the equivalence
 relation.
 
-\paragraph*{Groupoid.} A definition of 1-groupoids and operations on
-them.
+\paragraph*{Groupoid.} A definition of 1-groupoids and operations on 
+them. 
+
+\paragraph*{SymmetricMonoidalCategory.} A definition of symmetric
+monoidal categories.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Equivalences} 
@@ -70,13 +73,11 @@ $\texttt{Fin}~m \simeq \texttt{Fin}~n$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Bimonoidal Categories} 
 
-\paragraph*{FinSetCategory.} Defines the category of finite sets and
-all functions between them. As stated on the nLab page, ``it is easy
-(and thus common) to make \texttt{FinSet} skeletal; there is one
-object for each natural number $n$ (including $n=0$), and a morphism
-from $m$ to $n$ is an $m$-tuple $(f_0,\ldots,f_{m−1})$ of numbers
-satisfying $0 \leq f_i < n$. This amounts to identifying $n$ with the
-set $\{0,\ldots,n−1\}$.'' This structure will be a building block for
+\paragraph*{SkFinSetCategory.} Defines the skeletal category of finite
+sets and all functions between them. There is one object for each
+natural number $n$ (including $n=0$), and a morphism from $m$ to $n$
+is an $m$-tuple $(f_0,\ldots,f_{m−1})$ of numbers satisfying
+$0 \leq f_i < n$. This structure will be a building block for
 permutations (defined in \texttt{ConcretePermutation}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
