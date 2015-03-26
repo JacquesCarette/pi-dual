@@ -1,0 +1,3 @@
+[submodule "categories"]
+	path = categories
+	url = https://github.com/JacquesCarette/categories.git

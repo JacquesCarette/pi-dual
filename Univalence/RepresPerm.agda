@@ -4,7 +4,7 @@ module RepresPerm where
 
 open import Enumeration
 open import Equiv
-open import TypeEquivalences using (idequiv; path⊎)
+open import TypeEquiv using (idequiv)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
 open import Data.Nat using (ℕ; suc)
 open import Data.Fin using (Fin; zero)

@@ -1,3 +1,5 @@
+{-# OPTIONS --without-K #-}
+
 -- this is mostly reference for an unused intermediate step.
 module Cauchy2 where
 

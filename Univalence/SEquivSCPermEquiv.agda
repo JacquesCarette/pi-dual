@@ -15,7 +15,7 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong;
 open import Relation.Binary using (Setoid; module Setoid)
 -- open import Data.Product using (_,′_; _×_)
 
-open import VecOps -- and below, import from that
+open import CauchyEquiv -- and below, import from that
 open F
 
 open import Function using (_∘_; id)
@@ -178,7 +178,6 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
 --   c. + (done)
 --   d. *
 
-open import TypeEquivalences using (path⊎)
 open _≃S_
 
 lemma_1a : ∀ {n} {A : Set} → (EA : Enum A n) → f (thm2 EA EA) ⟨$⟩ id≃S ≡ idp

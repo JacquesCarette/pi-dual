@@ -1,3 +1,5 @@
+{-# OPTIONS --without-K #-}
+
 module VecHelpers where
 
 open import Data.Nat

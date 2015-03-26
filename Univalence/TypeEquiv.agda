@@ -1,5 +1,5 @@
 {-# OPTIONS --without-K #-}
-module TypeEquivalences where
+module TypeEquiv where
 
 open import Data.Empty
 open import Data.Unit
@@ -8,7 +8,6 @@ open import Data.Nat renaming (_⊔_ to _⊔ℕ_)
 open import Data.Sum renaming (map to _⊎→_)
 open import Data.Product renaming (map to _×→_)
 open import Function renaming (_∘_ to _○_)
-
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; cong₂)
 
 open import Equiv
@@ -47,6 +46,7 @@ uniti₊∘unite₊ (inj₁ ())
 uniti₊∘unite₊ (inj₂ y) = refl
 
 -- this is so easy, Agda can figure it out by itself (see below)
+
 unite₊∙uniti₊ : {A : Set} → unite₊ ○ uniti₊ ∼ id {A = A}
 unite₊∙uniti₊ _ = refl
 
@@ -183,38 +183,63 @@ factorequiv : {A B C : Set} →  ((A × C) ⊎ (B × C)) ≃ ((A ⊎ B) × C)
 factorequiv = factor , (mkqinv dist factor∘dist dist∘factor)
 
 -- identity equivalence 
+
 idequiv : {A : Set} → A ≃ A
 idequiv = id≃
 
--- ⊕
+------------------------------------------------------------------------------
+-- Commutative semiring structure
 
-_⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
-  (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → 
-  (f ⊎→ g) ○ (finv ⊎→ ginv) ∼ id {A = C ⊎ D}
-_⊎∼_ α β (inj₁ x) = cong inj₁ (α x) 
-_⊎∼_ α β (inj₂ y) = cong inj₂ (β y)
+import Level
+open import Algebra
+open import Algebra.Structures
+open import Relation.Binary.Core
 
-path⊎ : {A B C D : Set} → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
-path⊎ (fp , eqp) (fq , eqq) = 
-  Data.Sum.map fp fq , 
-  mkqinv (P.g ⊎→ Q.g) (P.α ⊎∼ Q.α) (P.β ⊎∼ Q.β)
-  where module P = qinv eqp
-        module Q = qinv eqq
+typesPlusIsSG : IsSemigroup {Level.suc Level.zero} {Level.zero} {Set} _≃_ _⊎_
+typesPlusIsSG = record {
+  isEquivalence = ≃IsEquiv ;
+  assoc = λ t₁ t₂ t₃ → assocr₊equiv {t₁} {t₂} {t₃} ;
+  ∙-cong = path⊎
+  }
 
--- ⊗
+typesTimesIsSG : IsSemigroup {Level.suc Level.zero} {Level.zero} {Set} _≃_ _×_
+typesTimesIsSG = record {
+  isEquivalence = ≃IsEquiv ;
+  assoc = λ t₁ t₂ t₃ → assocr⋆equiv {t₁} {t₂} {t₃} ;
+  ∙-cong = path×
+  }
 
-_×∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
-  (α : f ○ finv ∼ id) → (β : g ○ ginv ∼ id) → 
-  (f ×→ g) ○ (finv ×→ ginv) ∼ id {A = C × D}
-_×∼_ α β (x , y) = cong₂ _,_ (α x) (β y)
- 
-path× : {A B C D : Set} → A ≃ C → B ≃ D → (A × B) ≃ (C × D)
-path× {A} {B} {C} {D} (fp , eqp) (fq , eqq) = 
-  Data.Product.map fp fq , 
-  mkqinv 
-    (P.g ×→ Q.g) 
-    (_×∼_ {A} {B} {C} {D} {fp} {P.g} {fq} {Q.g} P.α Q.α) 
-    (_×∼_ {C} {D} {A} {B} {P.g} {fp} {Q.g} {fq} P.β Q.β)
-  where module P = qinv eqp
-        module Q = qinv eqq
+typesPlusIsCM : IsCommutativeMonoid _≃_ _⊎_ ⊥
+typesPlusIsCM = record {
+  isSemigroup = typesPlusIsSG ;
+  identityˡ = λ t → unite₊equiv {t} ;
+  comm = λ t₁ t₂ → swap₊equiv {t₁} {t₂}
+  }
 
+typesTimesIsCM : IsCommutativeMonoid _≃_ _×_ ⊤
+typesTimesIsCM = record {
+  isSemigroup = typesTimesIsSG ;
+  identityˡ = λ t → unite⋆equiv {t} ;
+  comm = λ t₁ t₂ → swap⋆equiv {t₁} {t₂}
+  }
+
+typesIsCSR : IsCommutativeSemiring _≃_ _⊎_ _×_ ⊥ ⊤
+typesIsCSR = record {
+  +-isCommutativeMonoid = typesPlusIsCM ;
+  *-isCommutativeMonoid = typesTimesIsCM ;
+  distribʳ = λ t₁ t₂ t₃ → distequiv {t₂} {t₃} {t₁} ; 
+  zeroˡ = λ t → distzequiv {t}
+  }
+
+typesCSR : CommutativeSemiring (Level.suc Level.zero) Level.zero
+typesCSR = record {
+  Carrier = Set ;
+  _≈_ = _≃_ ;
+  _+_ = _⊎_ ;
+  _*_ = _×_ ;
+  0# = ⊥ ;
+  1# = ⊤ ;
+  isCommutativeSemiring = typesIsCSR
+  }
+
+------------------------------------------------------------------------------

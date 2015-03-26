@@ -12,7 +12,7 @@ open import Relation.Binary.PropositionalEquality
   renaming (trans to _∘_; sym to !_)
 
 open import Equiv
-open import TypeEquivalences using (swap₊)
+open import TypeEquiv using (swap₊)
 
 -- This is WAY simpler than using 'with' and 'inspect'!
 record Ev {A B : Set} (f : A → B) (x : A) : Set where
@@ -23,6 +23,10 @@ record Ev {A B : Set} (f : A → B) (x : A) : Set where
 
 mkV : {A B : Set} → (f : A → B) → (x : A) → Ev f x
 mkV f x = ev (f x) refl
+
+private
+  bad-path : {A B : Set} → (a : A) → (b : B) → inj₁ a ≡ inj₂ b → ⊥
+  bad-path x y ()
 
 ----------------------------------------------------------------------------
 -- Very complex proof that we can cancel units on the left of ⊎

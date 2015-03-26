@@ -27,7 +27,7 @@ open import Proofs
 open import Equiv
 open import FinEquiv
 open import Cauchy
-open import TypeEquivalences using (swap₊; swapswap₊)
+open import TypeEquiv using (swap₊; swapswap₊)
 
 ----------------------------------------------------
 
