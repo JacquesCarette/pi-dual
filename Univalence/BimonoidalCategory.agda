@@ -6,36 +6,24 @@ open import Level
 open import Relation.Binary using (Rel)
 open import Algebra.FunctionProperties using (Op₂)
 
-open import Categories.Functor hiding (id; _≡_)
+open import Categories.Functor using (module Functor)
 open import Categories.Category
 open import Categories.Monoidal
 open import Categories.Monoidal.Helpers
 open import Categories.Monoidal.Braided
 open import Categories.NaturalIsomorphism
+open import Categories.NaturalTransformation
+  using (module NaturalTransformation; _∘₁_; id; _≡_)
 
 ------------------------------------------------------------------------------
 -- Definition
 
-record SymmetricMonoidalCategory {o ℓ e} {ℂ  : Category o ℓ e} (Mℂ : Monoidal ℂ)
-  : Set (suc (o ⊔ ℓ ⊔ e)) where
-
-  private module ℂ = Category ℂ
-  open ℂ using (Obj; _≡_)
-
-  private module Mℂ  = Monoidal Mℂ
-  open Mℂ using (id; ⊗)
-  open MonoidalHelperFunctors ℂ ⊗ id
-  private module F = Functor x⊗y
-  private module G = Functor y⊗x
-
-  open F using () renaming (F₀ to c)
-  open G using () renaming (F₀ to c⁻)
-
+record SymmetricMonoidalCategory {o ℓ e} {ℂ  : Category o ℓ e} {Mℂ : Monoidal ℂ}
+  (BMℂ : Braided Mℂ) : Set (suc (o ⊔ ℓ ⊔ e)) where
+  open Braided BMℂ using (braid)
+  open NaturalIsomorphism braid using () renaming (F⇒G to x⊗y⇒y⊗x; F⇐G to y⊗x⇒x⊗y)
   field
-    -- we have c c⁻ : Obj → Obj
-    -- we want their composition to be id
-    symmetry : {!!}
-    
+    symmetry : x⊗y⇒y⊗x ∘₁ y⊗x⇒x⊗y ≡ id
 
 {--
 
