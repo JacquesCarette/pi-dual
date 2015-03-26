@@ -3,17 +3,12 @@
 module BimonoidalCategory where
 
 open import Level
-open import Relation.Binary using (Rel)
-open import Algebra.FunctionProperties using (Op₂)
 
-open import Categories.Functor using (module Functor)
 open import Categories.Category
 open import Categories.Monoidal
-open import Categories.Monoidal.Helpers
 open import Categories.Monoidal.Braided
 open import Categories.NaturalIsomorphism
-open import Categories.NaturalTransformation
-  using (module NaturalTransformation; _∘₁_; id; _≡_)
+open import Categories.NaturalTransformation using (id; _∘₁_; _≡_)
 
 ------------------------------------------------------------------------------
 -- Definition
