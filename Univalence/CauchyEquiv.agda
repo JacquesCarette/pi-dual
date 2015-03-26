@@ -489,6 +489,7 @@ open F
 -- (Fin n) m, mapping each element of Fin m to an element in Fin
 -- n. Two morphisms are considered the same if they are ≡ to each other.
 
+{--
 cauchyBMC : BimonoidalCategory Level.zero Level.zero Level.zero
 cauchyBMC = record {
   Obj = ℕ ;
@@ -501,6 +502,7 @@ cauchyBMC = record {
   1# = 1 ;
   isBimonoidalCategory  = {!!} 
   }
+--}
 
 -- Commutative semiring structure
 

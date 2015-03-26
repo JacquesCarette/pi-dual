@@ -468,6 +468,7 @@ open import Relation.Binary.PropositionalEquality using (_≡_; sym; cong₂)
 open import Relation.Binary.PropositionalEquality.Core using (isEquivalence)
 
 open import Categories.Category using (Category)
+open import Categories.Bifunctor using (Bifunctor)
 open import Categories.Monoidal using (Monoidal)
 open import Categories.Monoidal.Braided using (Braided; module Braided) 
 
@@ -494,20 +495,31 @@ finVecC = record {
   ∘-resp-≡ = cong₂ _∘̂_ 
   }
 
-{--
-⊗-bifunctor : BiFunctor finVecC finVecC finVecC
+⊕-bifunctor : Bifunctor finVecC finVecC finVecC
+⊕-bifunctor = record { 
+  F₀ = λ { (m , n) → m + n } ;
+  F₁ =  λ { (f , g) →  f ⊎c g } ; 
+  identity = λ { { (m , n) } → 1C⊎1C≡1C {m} {n} } ;
+  homomorphism = λ { {(x₁ , x₂)} {(y₁ , y₂)} {(z₁ , z₂)} {(x₁y₁ , x₂y₂)} {(y₁z₁ , y₂z₂)} →
+                 sym (⊎c-distrib {_} {_} {_} {_} {_} {_} {y₁z₁} {y₂z₂} {x₁y₁} {x₂y₂}) } ;
+  F-resp-≡ = λ { {(x₁ , x₂)} {(y₁ , y₂)} {(p₁ , p₂)} {(p₃ , p₄)} (p₁≡p₃ , p₂≡p₄) →
+                 cong₂ _⊎c_ p₁≡p₃ p₂≡p₄ } 
+  }
+
+⊗-bifunctor : Bifunctor finVecC finVecC finVecC
 ⊗-bifunctor = record { 
   F₀ = λ { (m , n) → m * n } ;
-  F₁ = {!!} ;
-  identity = {!!} ;
-  homomorphism = {!!} ;
-  F-resp-≡ = {!!} 
+  F₁ =  λ { (f , g) →  f ×c g } ; 
+  identity = λ { { (m , n) } → 1C×1C≡1C {m} {n} } ;
+  homomorphism = λ { {(x₁ , x₂)} {(y₁ , y₂)} {(z₁ , z₂)} {(x₁y₁ , x₂y₂)} {(y₁z₁ , y₂z₂)} →
+                 sym (×c-distrib {_} {_} {_} {_} {_} {_} {y₁z₁} {y₂z₂} {x₁y₁} {x₂y₂}) } ;
+  F-resp-≡ = λ { {(x₁ , x₂)} {(y₁ , y₂)} {(p₁ , p₂)} {(p₃ , p₄)} (p₁≡p₃ , p₂≡p₄) →
+                 cong₂ _×c_ p₁≡p₃ p₂≡p₄ } 
   }
---}
 
 finVecAdditiveM : Monoidal finVecC 
 finVecAdditiveM = record {
-  ⊗ = {!!} ; -- ⊗-bifunctor ;  
+  ⊗ = ⊕-bifunctor ; 
   id = 0 ;
   identityˡ = {!!} ;
   identityʳ = {!!} ;
