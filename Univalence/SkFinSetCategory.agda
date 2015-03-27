@@ -100,8 +100,8 @@ module F where
   _⊎c'_ α β = mapV fwd (α ⊎v β)
   -- but the above is tedious to work with.  Instead, inline a bit to get
   _⊎c_ : ∀ {m₁ n₁ m₂ n₂} → FinVec m₁ m₂ → FinVec n₁ n₂ → FinVec (m₁ + n₁) (m₂ + n₂)
-  _⊎c_ {m₁} α β = tabulate (fwd ∘ inj₁ ∘ _!!_ α) ++V
-                                                       tabulate (fwd {m₁} ∘ inj₂ ∘ _!!_ β)
+  _⊎c_ {m₁} α β = tabulate (fwd ∘ inj₁ ∘ _!!_ α) ++V tabulate (fwd {m₁} ∘ inj₂ ∘ _!!_ β)
+
   -- see ⊎c≡⊎c' lemma below
 
   -- Tensor multiplicative composition
@@ -468,6 +468,7 @@ module F where
 -- Categorical structure
 
 import Level
+open import Data.Vec.Properties
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong₂)
 open import Relation.Binary.PropositionalEquality.Core using (isEquivalence)
 
@@ -560,8 +561,9 @@ finVecAdditiveM = record {
   identityˡ = record {
     F⇒G = record { 
       η       = λ _ → uniti+ ; 
-      commute = λ f → 
-                  trans (∘̂-lid (FF.F₁ f)) (trans {!!} (sym (∘̂-rid (GF.F₁ f))))
+      commute = λ {X} {Y} f →
+                  trans (∘̂-lid (FF.F₁ f))
+                  (trans (tabulate∘lookup (GF.F₁ f)) (sym (∘̂-rid (GF.F₁ f))))
     } ;
     F⇐G = record { 
       η       = λ _ → unite+ ;
@@ -585,6 +587,7 @@ finVecAdditiveM = record {
   pentagon = {!!} 
   }
   where
+  private module FVC = Category finVecC
   private module MFunctors = MonoidalHelperFunctors finVecC ⊕-bifunctor 0
   private module FF = Functor MFunctors.id⊗x
   private module GF = Functor MFunctors.x
