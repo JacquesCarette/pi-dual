@@ -1,14 +1,12 @@
 {-# OPTIONS --without-K #-}
 
--- From nlab:
-
--- FinSet is the category of finite sets and all functions between
--- them: the full subcategory of Set on finite sets. It is easy (and
--- thus common) to make FinSet skeletal; there is one object for each
--- natural number n (including n=0), and a morphism from m to n is an
--- m-tuple (f0,…,fm−1) of numbers satisfying 0≤fi<n. This amounts to
--- identifying n with the set {0,…,n−1}. (Sometimes {1,…,n} is used
--- instead.) This is exactly what we do below
+-- From nlab: FinSet is the category of finite sets and all functions
+-- between them: the full subcategory of Set on finite sets. It is
+-- easy (and thus common) to make FinSet skeletal; there is one object
+-- for each natural number n (including n=0), and a morphism from m to
+-- n is an m-tuple (f0,…,fm−1) of numbers satisfying 0≤fi<n. This
+-- amounts to identifying n with the set {0,…,n−1}. (Sometimes {1,…,n}
+-- is used instead.) This is exactly what we do below.
 
 module SkFinSetCategory where
 
@@ -131,6 +129,12 @@ module F where
   -------------------------------------------------------------------------------------------
   -- Things which are the foundations of other permutations, but coming
   -- from properties, rather than being operators
+
+  unite+ : {m : ℕ} → FinVec m (0 + m) 
+  unite+ {m} = 1C
+
+  uniti+ : {m : ℕ} → FinVec (0 + m) m
+  uniti+ {m} = 1C
 
   assocl+ : {m n o : ℕ} → FinVec  ((m + n) + o) (m + (n + o))
   assocl+ {m} {n} {o} = tabulate (proj₁ (Plus.assocl+ {m} {n} {o}))
@@ -464,12 +468,15 @@ module F where
 -- Categorical structure
 
 import Level
-open import Relation.Binary.PropositionalEquality using (_≡_; sym; cong₂)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong₂)
 open import Relation.Binary.PropositionalEquality.Core using (isEquivalence)
 
-open import Categories.Category using (Category)
+open import Categories.Category using (Category; module Category)
+open import Categories.Functor using (Functor; module Functor)
 open import Categories.Bifunctor using (Bifunctor)
+open import Categories.NaturalTransformation using () renaming (id to idn)
 open import Categories.Monoidal using (Monoidal)
+open import Categories.Monoidal.Helpers using (module MonoidalHelperFunctors)
 open import Categories.Monoidal.Braided using (Braided; module Braided) 
 
 open import SymmetricMonoidalCategory
@@ -483,51 +490,106 @@ open F
 
 finVecC : Category Level.zero Level.zero Level.zero
 finVecC = record {
-  Obj = ℕ ;
-  _⇒_ = FinVec ;
-  _≡_ = _≡_ ;
-  id  = 1C ; 
-  _∘_ = _∘̂_ ;
-  assoc = λ { {f = f} {g = g} {h = h} → sym (∘̂-assoc h g f) } ;
+  Obj       = ℕ ;
+  _⇒_       = FinVec ;
+  _≡_       = _≡_ ;
+  id        = 1C ; 
+  _∘_       = _∘̂_ ;
+  assoc     = λ { {f = f} {g = g} {h = h} → sym (∘̂-assoc h g f) } ;
   identityˡ = λ { {f = f} → ∘̂-lid f } ;
   identityʳ = λ { {f = f} → ∘̂-rid f } ;
-  equiv = isEquivalence ; 
-  ∘-resp-≡ = cong₂ _∘̂_ 
+  equiv     = isEquivalence ; 
+  ∘-resp-≡  = cong₂ _∘̂_ 
   }
 
 ⊕-bifunctor : Bifunctor finVecC finVecC finVecC
 ⊕-bifunctor = record { 
-  F₀ = λ { (m , n) → m + n } ;
-  F₁ =  λ { (f , g) →  f ⊎c g } ; 
-  identity = λ { { (m , n) } → 1C⊎1C≡1C {m} {n} } ;
+  F₀           = λ { (m , n) → m + n } ;
+  F₁           = λ { (f , g) →  f ⊎c g } ; 
+  identity     = λ { { (m , n) } → 1C⊎1C≡1C {m} {n} } ;
   homomorphism = λ { {(x₁ , x₂)} {(y₁ , y₂)} {(z₁ , z₂)} {(x₁y₁ , x₂y₂)} {(y₁z₁ , y₂z₂)} →
-                 sym (⊎c-distrib {_} {_} {_} {_} {_} {_} {y₁z₁} {y₂z₂} {x₁y₁} {x₂y₂}) } ;
-  F-resp-≡ = λ { {(x₁ , x₂)} {(y₁ , y₂)} {(p₁ , p₂)} {(p₃ , p₄)} (p₁≡p₃ , p₂≡p₄) →
-                 cong₂ _⊎c_ p₁≡p₃ p₂≡p₄ } 
+                   sym (⊎c-distrib {p₁ = y₁z₁} {p₂ = y₂z₂} {p₃ = x₁y₁} {p₄ = x₂y₂}) } ;
+  F-resp-≡     = λ { {(x₁ , x₂)} {(y₁ , y₂)} {(p₁ , p₂)} {(p₃ , p₄)} (p₁≡p₃ , p₂≡p₄) →
+                   cong₂ _⊎c_ p₁≡p₃ p₂≡p₄ } 
   }
 
 ⊗-bifunctor : Bifunctor finVecC finVecC finVecC
 ⊗-bifunctor = record { 
-  F₀ = λ { (m , n) → m * n } ;
-  F₁ =  λ { (f , g) →  f ×c g } ; 
-  identity = λ { { (m , n) } → 1C×1C≡1C {m} {n} } ;
+  F₀           = λ { (m , n) → m * n } ;
+  F₁           = λ { (f , g) →  f ×c g } ; 
+  identity     = λ { { (m , n) } → 1C×1C≡1C {m} {n} } ;
   homomorphism = λ { {(x₁ , x₂)} {(y₁ , y₂)} {(z₁ , z₂)} {(x₁y₁ , x₂y₂)} {(y₁z₁ , y₂z₂)} →
-                 sym (×c-distrib {_} {_} {_} {_} {_} {_} {y₁z₁} {y₂z₂} {x₁y₁} {x₂y₂}) } ;
-  F-resp-≡ = λ { {(x₁ , x₂)} {(y₁ , y₂)} {(p₁ , p₂)} {(p₃ , p₄)} (p₁≡p₃ , p₂≡p₄) →
-                 cong₂ _×c_ p₁≡p₃ p₂≡p₄ } 
+                   sym (×c-distrib {p₁ = y₁z₁} {p₂ = y₂z₂} {p₃ = x₁y₁} {p₄ = x₂y₂}) } ;
+  F-resp-≡     = λ { {(x₁ , x₂)} {(y₁ , y₂)} {(p₁ , p₂)} {(p₃ , p₄)} (p₁≡p₃ , p₂≡p₄) →
+                   cong₂ _×c_ p₁≡p₃ p₂≡p₄ } 
   }
 
-finVecAdditiveM : Monoidal finVecC 
+{-- 
+CommutativeSquare f g h i = h ∘ f ≡ i ∘ g
+
+Functor (C D): 
+  F₀           : C.Obj → D.Obj
+  F₁           : ∀ {A B} → C [ A , B ] → D [ F₀ A , F₀ B ]
+  identity     : ∀ {A} → D [ F₁ (C.id {A}) ≡ D.id ]
+  homomorphism : ∀ {X Y Z} {f : C [ X , Y ]} {g : C [ Y , Z ]}
+                  → D [ F₁ (C [ g ∘ f ]) ≡ D [ F₁ g ∘ F₁ f ] ]
+  F-resp-≡     : ∀ {A B} {F G : C [ A , B ]} → C [ F ≡ G ] → D [ F₁ F ≡ F₁ G ]
+
+NaturalTransformation (F G : Functor C D):
+  η       : ∀ X → D [ F₀ X , G₀ X ]
+  commute : ∀ {X Y} (f : C [ X , Y ]) → D.CommutativeSquare (F₁ f) (η X) (η Y) (G₁ f)
+
+NaturalIsomorphism (F G : Functor C D):
+  F⇒G  : NaturalTransformation F G
+  F⇐G  : NaturalTransformation G F
+  iso  : ∀ X → Iso (⇒.η X) (⇐.η X)
+
+Monoidal (C : Category):
+  identityˡ : NaturalIsomorphism id⊗x x
+  identityʳ : NaturalIsomorphism x⊗id x
+  assoc     : NaturalIsomorphism [x⊗y]⊗z x⊗[y⊗z]
+  triangle  : TriangleLeftSide ≡ⁿ (TriangleRightSide ∘₁ TriangleTopSide)
+  pentagon  : (PentagonNESide ∘₁ PentagonNWSide) ≡ⁿ 
+              (PentagonSESide ∘₁ (PentagonSSide ∘₁ PentagonSWSide))
+--}
+
+finVecAdditiveM : Monoidal finVecC -- power = Fin 1 (so apply everything to zero)
 finVecAdditiveM = record {
-  ⊗ = ⊕-bifunctor ; 
+  ⊗  = ⊕-bifunctor ; 
   id = 0 ;
-  identityˡ = {!!} ;
-  identityʳ = {!!} ;
+  identityˡ = record {
+    F⇒G = record { 
+      η       = λ _ → uniti+ ; 
+      commute = λ f → 
+                  trans (∘̂-lid (FF.F₁ f)) (trans {!!} (sym (∘̂-rid (GF.F₁ f))))
+    } ;
+    F⇐G = record { 
+      η       = λ _ → unite+ ;
+      commute = {!!} 
+    } ;
+    iso = {!!}
+  } ;
+  identityʳ = record {
+    F⇒G = record { 
+      η       = λ X → swap+cauchy 0 (X zero) ; 
+      commute = {!!} 
+    } ;
+    F⇐G = record { 
+      η       = λ X → swap+cauchy (X zero) 0 ; 
+      commute = {!!} 
+    } ;
+    iso = {!!}
+  } ;
   assoc = {!!} ;
   triangle = {!!} ;
   pentagon = {!!} 
   }
-
+  where
+  private module MFunctors = MonoidalHelperFunctors finVecC ⊕-bifunctor 0
+  private module FF = Functor MFunctors.id⊗x
+  private module GF = Functor MFunctors.x
+  
+                                           
 {--
 -- Commutative semiring structure
 
