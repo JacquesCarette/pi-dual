@@ -206,9 +206,13 @@ module F where
     where open ≡-Reasoning
 
   -- this is just tabulate∘lookup, but it hides the details
-  permext : {m n : ℕ} (π : Cauchy m n) → tabulate (_!!_ π) ≡ π
-  permext π = tabulate∘lookup π
+  cauchyext : {m n : ℕ} (π : Cauchy m n) → tabulate (_!!_ π) ≡ π
+  cauchyext π = tabulate∘lookup π
 
+  -- why is this needed?
+  liftCauchy : {m n : ℕ} → Cauchy m n → Cauchy m n
+  liftCauchy π = tabulate (_!!_ π)
+  
   -- we could go through ~p, but this works better in practice
   ~⇒≡ : {m n o : ℕ} {f : Fin m → Fin n} {g : Fin n → Fin m} → 
              (f ∘ g ∼ id) → (tabulate g ∘̂ tabulate f ≡ 1C)
@@ -221,10 +225,10 @@ module F where
   ∘̂-assoc a b c = finext (lookupassoc a b c)
 
   ∘̂-rid : {m n : ℕ} → (π : Vec (Fin m) n) → π ∘̂ 1C ≡ π
-  ∘̂-rid π = trans (finext (λ i → lookup-allFin (π !! i))) (permext π)
+  ∘̂-rid π = trans (finext (λ i → lookup-allFin (π !! i))) (cauchyext π)
 
   ∘̂-lid : {m n : ℕ} → (π : Vec (Fin m) n) → 1C ∘̂ π ≡ π
-  ∘̂-lid π = trans (finext (λ i → cong (_!!_ π) (lookup-allFin i))) (permext π)
+  ∘̂-lid π = trans (finext (λ i → cong (_!!_ π) (lookup-allFin i))) (cauchyext π)
 
   !!⇒∘̂ : {n₁ n₂ n₃ : ℕ} →
           (π₁ : Vec (Fin n₁) n₂) → (π₂ : Vec (Fin n₂) n₃) → (i : Fin n₃) →
