@@ -7,7 +7,7 @@ open import Data.Nat using (ℕ;_+_)
 -- open import Data.Nat.Properties.Simple using (+-comm)
 open import Data.Fin using (Fin; inject+; raise)
 open import Data.Vec using (tabulate) renaming (_++_ to _++V_)
-open import Data.Vec.Properties using (lookup∘tabulate; tabulate∘lookup)
+open import Data.Vec.Properties using (lookup∘tabulate)
 
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans;
     cong₂;
@@ -15,8 +15,8 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong;
 open import Relation.Binary using (Setoid; module Setoid)
 -- open import Data.Product using (_,′_; _×_)
 
-open import FinVec -- and below, import from that
-open F
+open import FinVec using (module F) -- and below, import from that
+open F using (~⇒≡; !!⇒∘̂; _∘̂_; 1C!!i≡i; cauchyext)
 
 open import Function using (_∘_; id)
 -- open import RepresPerm
@@ -133,7 +133,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
       }
 
     α : Setoid._≈_ CP⇨ (fwd' ⊚ bwd') id⊚
-    α {cp π πᵒ αp βp} refl = p≡ (trans (finext pf₁) (tabulate∘lookup π))
+    α {cp π πᵒ αp βp} refl = p≡ (trans (finext pf₁) (cauchyext π))
       where
         pf₁ : (j : Fin n) → enumB (labelB (π !! enumA (labelA j))) ≡ π !! j
         pf₁ j = 
