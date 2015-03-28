@@ -174,8 +174,30 @@ transp-resp-≡ : ∀ {m₁ m₂ m₃} {f h : CPerm m₂ m₃} {g i : CPerm m₁
   f ≡ h → g ≡ i → transp f g ≡ transp h i
 transp-resp-≡ refl refl = refl
 
-1p⊎1p≡1p : ∀ {m n} → idp {m} ⊎p idp {n} ≡ idp {m + n}
-1p⊎1p≡1p {m} {n} = p≡ (F.1C⊎1C≡1C {m} {n})
+1p⊎1p≡1p : ∀ {m n} → idp {m} ⊎p idp {n} ≡ idp
+1p⊎1p≡1p {m} = p≡ (1C⊎1C≡1C {m})
+
+1p×1p≡1p : ∀ {m n} → idp {m} ×p idp {n} ≡ idp
+1p×1p≡1p {m} = p≡ (1C×1C≡1C {m})
+
+⊎p-distrib :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : CPerm m₁ n₁} → {p₂ : CPerm m₂ n₂}
+    → {p₃ : CPerm m₃ m₁} → {p₄ : CPerm m₄ m₂} →
+      transp (p₁ ⊎p p₂) (p₃ ⊎p p₄) ≡ (transp p₁ p₃) ⊎p (transp p₂ p₄)
+⊎p-distrib {p₁ = p₁} = p≡ (⊎c-distrib {p₁ = CPerm.π p₁})
+
+×p-distrib :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : CPerm m₁ n₁} → {p₂ : CPerm m₂ n₂}
+    → {p₃ : CPerm m₃ m₁} → {p₄ : CPerm m₄ m₂} →
+      (transp p₁ p₃) ×p (transp p₂ p₄) ≡ transp (p₁ ×p p₂) (p₃ ×p p₄)
+×p-distrib {p₁ = p₁} = p≡ (sym (×c-distrib {p₁ = CPerm.π p₁}))
+
+0p⊎x≡x : ∀ {m n} {p : CPerm m n} → 0p ⊎p p ≡ p
+0p⊎x≡x {p = p} = p≡ (cauchyext (CPerm.π p))  -- should be uniti+ which is missing
+
+-- this comes from looking at things categorically:
+0p⊎x∘id≡id∘x : ∀ {m n} (p : CPerm m n) → transp (0p ⊎p p) idp ≡ transp idp p
+0p⊎x∘id≡id∘x p =
+  let π = CPerm.π p in
+  p≡ (trans (∘̂-rid (CPerm.π (0p ⊎p p))) (trans (cauchyext π) (sym (∘̂-lid π))))
 
 SCPerm : ℕ → ℕ → Setoid zero zero
 SCPerm m n = ≡-Setoid (CPerm m n)
