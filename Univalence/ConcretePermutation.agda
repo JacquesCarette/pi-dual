@@ -170,5 +170,12 @@ linv p = p≡ (CPerm.αp p)
 rinv : ∀ {m₁ m₂} (p : CPerm m₂ m₁) → transp (symp p) p ≡ idp
 rinv p = p≡ (CPerm.βp p)
 
+transp-resp-≡ : ∀ {m₁ m₂ m₃} {f h : CPerm m₂ m₃} {g i : CPerm m₁ m₂} → 
+  f ≡ h → g ≡ i → transp f g ≡ transp h i
+transp-resp-≡ refl refl = refl
+
+1p⊎1p≡1p : ∀ {m n} → idp {m} ⊎p idp {n} ≡ idp {m + n}
+1p⊎1p≡1p {m} {n} = p≡ (F.1C⊎1C≡1C {m} {n})
+
 SCPerm : ℕ → ℕ → Setoid zero zero
 SCPerm m n = ≡-Setoid (CPerm m n)
