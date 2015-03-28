@@ -227,6 +227,9 @@ module F where
       (π₂ ∘̂ π₁) !! i ∎)
     where open ≡-Reasoning
 
+  uniti+∘̂unite+≡1C : ∀ {m} → (uniti+ {m}) ∘̂ unite+ ≡ 1C
+  uniti+∘̂unite+≡1C = finext (λ i → trans (lookup∘tabulate id _) (lookup∘tabulate id i))
+  
   -- properties of parallel composition
   1C⊎1C≡1C : ∀ {m n} → 1C {m} ⊎c 1C {n} ≡ 1C
   1C⊎1C≡1C {m} {n} = 
@@ -574,20 +577,25 @@ finVecAdditiveM = record {
       η       = λ _ → unite+ ;
       commute = λ f → {!!} 
     } ;
-    iso = {!!}
+    iso = λ X → record { isoˡ = uniti+∘̂unite+≡1C ; isoʳ = {!!} }
   } ;
   identityʳ = record {
-    F⇒G = record { 
-      η       = λ X → swap+cauchy 0 (X zero) ; 
+    F⇒G = record { -- swap+cauchy has the right type, but seems semantically wrong
+      η       = λ X → {!!} ; -- swap+cauchy 0 (X zero) ; 
       commute = {!!} 
     } ;
     F⇐G = record { 
       η       = λ X → swap+cauchy (X zero) 0 ; 
       commute = {!!} 
     } ;
-    iso = {!!}
+    iso = λ X → record { isoˡ = {!!} ; isoʳ = {!!} }
   } ;
-  assoc = {!!} ;
+  assoc = record { F⇒G = record { η = λ X → assocl+ {m = X zero}
+                                ; commute = λ f → {!!} }
+                 ; F⇐G = record { η = λ X → assocr+ {m = X zero}
+                                ; commute = {!!} }
+                 ; iso = λ X → record { isoˡ = assocr+∘̂assocl+~id {m = X zero}
+                                      ; isoʳ = assocl+∘̂assocr+~id {m = X zero} } } ;
   triangle = {!!} ;
   pentagon = {!!} 
   }
