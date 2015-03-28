@@ -73,7 +73,7 @@ transp {n} (cp π πᵒ αp βp) (cp π₁ πᵒ₁ αp₁ βp₁) = cp (π ∘�
 
 -- zero permutation
 0p : CPerm 0 0
-0p = cp F.0C F.0C refl refl
+0p = cp F.0C F.0C 0C∘̂0C≡1C 0C∘̂0C≡1C
 
 _⊎p_ : ∀ {m₁ m₂ n₁ n₂} → CPerm m₁ m₂ → CPerm n₁ n₂ → CPerm (m₁ + n₁) (m₂ + n₂)
 _⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ⊎c (π π₁)) ((πᵒ π₀) ⊎c (πᵒ π₁)) pf₁ pf₂
@@ -191,13 +191,11 @@ transp-resp-≡ refl refl = refl
 ×p-distrib {p₁ = p₁} = p≡ (sym (×c-distrib {p₁ = CPerm.π p₁}))
 
 0p⊎x≡x : ∀ {m n} {p : CPerm m n} → 0p ⊎p p ≡ p
-0p⊎x≡x {p = p} = p≡ (cauchyext (CPerm.π p))  -- should be uniti+ which is missing
+0p⊎x≡x = p≡ 0C⊎x≡x  -- should be uniti+ which is missing
 
 -- this comes from looking at things categorically:
-0p⊎x∘id≡id∘x : ∀ {m n} (p : CPerm m n) → transp (0p ⊎p p) idp ≡ transp idp p
-0p⊎x∘id≡id∘x p =
-  let π = CPerm.π p in
-  p≡ (trans (∘̂-rid (CPerm.π (0p ⊎p p))) (trans (cauchyext π) (sym (∘̂-lid π))))
+0p⊎x∘id≡id∘x : ∀ {m n} {p : CPerm m n} → transp (0p ⊎p p) idp ≡ transp idp p
+0p⊎x∘id≡id∘x = trans ridp (trans 0p⊎x≡x (sym lidp))
 
 SCPerm : ℕ → ℕ → Setoid zero zero
 SCPerm m n = ≡-Setoid (CPerm m n)
