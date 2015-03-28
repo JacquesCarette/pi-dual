@@ -195,8 +195,8 @@ module F where
     where open ≡-Reasoning
 
   -- this is just tabulate∘lookup, but it hides the details
-  permext : {m n : ℕ} (π : FinVec m n) → tabulate (_!!_ π) ≡ π
-  permext π = tabulate∘lookup π
+  fvext : {m n : ℕ} (π : FinVec m n) → tabulate (_!!_ π) ≡ π
+  fvext π = tabulate∘lookup π
 
   -- we could go through ~p, but this works better in practice
   ~⇒≡ : {m n o : ℕ} {f : Fin m → Fin n} {g : Fin n → Fin m} → 
@@ -210,10 +210,10 @@ module F where
   ∘̂-assoc a b c = finext (lookupassoc a b c)
 
   ∘̂-rid : {m n : ℕ} → (π : Vec (Fin m) n) → π ∘̂ 1C ≡ π
-  ∘̂-rid π = trans (finext (λ i → lookup-allFin (π !! i))) (permext π)
+  ∘̂-rid π = trans (finext (λ i → lookup-allFin (π !! i))) (fvext π)
 
   ∘̂-lid : {m n : ℕ} → (π : Vec (Fin m) n) → 1C ∘̂ π ≡ π
-  ∘̂-lid π = trans (finext (λ i → cong (_!!_ π) (lookup-allFin i))) (permext π)
+  ∘̂-lid π = trans (finext (λ i → cong (_!!_ π) (lookup-allFin i))) (fvext π)
 
   !!⇒∘̂ : {n₁ n₂ n₃ : ℕ} →
           (π₁ : Vec (Fin n₁) n₂) → (π₂ : Vec (Fin n₂) n₃) → (i : Fin n₃) →
@@ -251,6 +251,13 @@ module F where
   swap+-inv : ∀ {m n} → swap+cauchy m n ∘̂ swap+cauchy n m ≡ 1C
   swap+-inv {m} {n} = ~⇒≡ {o = m + n} (Plus.swap-inv m n)
 
+  uniti+∘̂0+c≡c∘̂uniti+ : ∀ {m n} (c : FinVec m n) → uniti+ ∘̂ (0C ⊎c c) ≡ c ∘̂ uniti+
+  uniti+∘̂0+c≡c∘̂uniti+ p = trans (∘̂-lid (0C ⊎c p)) (trans (fvext p) (sym (∘̂-rid p)))
+  
+-- transp (0p ⊎p p) idp ≡ transp idp p
+  ----------------------------------------------------------------------
+  -- multiplicative properties
+  
   unite*∘̂uniti*~id : ∀ {m} → (unite* {m}) ∘̂ uniti* ≡ 1C {1 * m}
   unite*∘̂uniti*~id {m} = ~⇒≡ {m} {n = 1 * m} {o = 1 * m} (p∘!p≡id {p = Times.unite* {m}})
    
@@ -560,12 +567,11 @@ finVecAdditiveM = record {
   identityˡ = record {
     F⇒G = record { 
       η       = λ _ → uniti+ ; 
-      commute = λ f → 
-                  trans (∘̂-lid (FF.F₁ f)) (trans {!!} (sym (∘̂-rid (GF.F₁ f))))
+      commute = λ f → uniti+∘̂0+c≡c∘̂uniti+ (f zero)
     } ;
     F⇐G = record { 
       η       = λ _ → unite+ ;
-      commute = {!!} 
+      commute = λ f → {!!} 
     } ;
     iso = {!!}
   } ;
