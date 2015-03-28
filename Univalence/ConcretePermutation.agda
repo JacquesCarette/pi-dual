@@ -187,7 +187,7 @@ rinv p = p≡ (CPerm.βp p)
 ×p-distrib {p₁ = p₁} = p≡ (sym (×c-distrib {p₁ = CPerm.π p₁}))
 
 0p⊎x≡x : ∀ {m n} {p : CPerm m n} → 0p ⊎p p ≡ p
-0p⊎x≡x {p = p} = p≡ (cauchyext (CPerm.π p))
+0p⊎x≡x {p = p} = p≡ (cauchyext (CPerm.π p))  -- should be uniti+ which is missing
 
 -- this comes from looking at things categorically:
 0p⊎x∘id≡id∘x : ∀ {m n} (p : CPerm m n) → transp (0p ⊎p p) idp ≡ transp idp p

@@ -61,9 +61,10 @@ module ⊎h = MonoidalHelperFunctors CPermCat ⊎p-bifunctor 0
 
 0⊎x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
 0⊎x≡x = record
-  { F⇒G = record { η = λ _ → idp ; commute = λ f → p≡ {!!} }
+  { F⇒G = record { η = λ _ → idp ; commute = λ {X} f → {!Functor.F₀ ⊎h.id⊗x X!} }
   ; F⇐G = record { η = λ _ → idp ; commute = λ f → p≡ (P.trans (F.∘̂-lid (CPerm.π (f 0F))) (P.trans (P.sym (F.cauchyext (CPerm.π (f 0F)))) (P.sym (F.∘̂-rid (F.liftCauchy (CPerm.π (f 0F))))))) }
   ; iso = λ X → record { isoˡ = lidp ; isoʳ = ridp } }
+  where open import Categories.Functor
 
 CPermMonoidal : Monoidal CPermCat
 CPermMonoidal = record
