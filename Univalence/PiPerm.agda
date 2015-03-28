@@ -8,8 +8,6 @@ open import Relation.Binary.PropositionalEquality
         proof-irrelevance; module ≡-Reasoning)
 open ≡-Reasoning
 
-open import CauchyEquiv using (module F)
-open F using (_∘̂_)
 open import ConcretePermutation
 open import PiLevel0
 open import Groupoid

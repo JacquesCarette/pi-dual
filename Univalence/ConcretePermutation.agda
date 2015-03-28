@@ -9,7 +9,7 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong;
     module ≡-Reasoning)
 open import Relation.Binary using (Setoid; module Setoid)
 
-open import CauchyEquiv -- and below, import from that
+open import FinVec -- and below, import from that
 open F
 
 open import SetoidUtils using (≡-Setoid)

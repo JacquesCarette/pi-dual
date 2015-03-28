@@ -16,7 +16,7 @@ open import Categories.Bifunctor
 open import Categories.NaturalIsomorphism
 
 open import ConcretePermutation
-open import CauchyEquiv
+open import FinVec -- shouldn't be needed!
 
 CPermCat : Category zero zero zero
 CPermCat = record

@@ -25,7 +25,7 @@
 -- structure (modulo a postulate about sym). This is the main building
 -- block of ConcretePermutation
 
-module CauchyEquiv where
+module FinVec where
 
 open import Data.Nat
 open import Data.Vec renaming (map to mapV; _++_ to _++V_; concat to concatV)
