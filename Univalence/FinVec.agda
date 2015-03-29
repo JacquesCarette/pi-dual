@@ -78,7 +78,7 @@ module F where
   open import Equiv using (_∼_)
   open import VectorLemmas
     using (lookupassoc; map-++-commute; tabulate-split; left!!; right!!;
-           lookup-++-raise; unSplit; xs++[]≡xs)
+           lookup-++-raise; unSplit) 
   open import Proofs using (congD!)
 
   open V

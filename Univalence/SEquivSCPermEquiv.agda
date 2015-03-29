@@ -181,7 +181,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
 open _≃S_
 
 lemma_1a : ∀ {n} {A : Set} → (EA : Enum A n) → f (thm2 EA EA) ⟨$⟩ id≃S ≡ idp
-lemma_1a (_ , mkqinv _ α _) = p≡ (finext α)
+lemma_1a (_ , mkqinv _ α _) = ? -- p≡ (finext α)
 
 -- this is redundant, as it follows from lemma_1a.
 lemma_1b : ∀ {n} {A : Set} → (EA : Enum A n) → (g (thm2 EA EA) ⟨$⟩ idp) ≋ id≃S
@@ -189,13 +189,14 @@ lemma_1b (enumA , mkqinv g _ β) =
   equivS (λ x → trans (cong g 1C!!i≡i) (β x)) (λ x → trans (cong g 1C!!i≡i) (β x))
 
 lemma2 : f (thm2 0E 0E) ⟨$⟩ 0≃S ≡ 0p
-lemma2 = p≡ refl
+lemma2 = ? -- p≡ refl
 
 lemma3 : ∀ {n₁ n₂} {A B C D : Set} {EA : Enum A n₁} {EB : Enum B n₁}
   {EC : Enum C n₂} {ED : Enum D n₂} → (x : A ≃S≡ B) → (y : C ≃S≡ D) →
    f (thm2 (EA ⊕e EC) (EB ⊕e ED)) ⟨$⟩ (x ⊎≃S y) ≡ 
    (f (thm2 EA EB) ⟨$⟩ x) ⊎p (f (thm2 EC ED) ⟨$⟩ y)
-lemma3 {n₁} {n₂} {EA = EA} {EB} {EC} {ED} (equiv f₄ g₄ α₄ β₄) (equiv f₅ g₅ α₅ β₅) = 
+lemma3 {n₁} {n₂} {EA = EA} {EB} {EC} {ED} (equiv f₄ g₄ α₄ β₄) (equiv f₅ g₅ α₅ β₅) = ?
+{--
   p≡ (
     begin (
        CPerm.π (f (thm2 (EA ⊕e EC) (EB ⊕e ED)) ⟨$⟩ (x ⊎≃S y))
@@ -247,3 +248,4 @@ lemma3 {n₁} {n₂} {EA = EA} {EB} {EC} {ED} (equiv f₄ g₄ α₄ β₄) (equ
            raise n₁ (enumD (f₅ ⟨$⟩ qC.g i))
              ≡⟨ cong (raise n₁) (sym (lookup∘tabulate _ i)) ⟩
            raise n₁ (tabulate (λ i₁ → enumD (f₅ ⟨$⟩ qC.g i₁)) !! i) ∎)
+--}

@@ -131,12 +131,3 @@ path× {A} {B} {C} {D} (fp , eqp) (fq , eqq) =
 
 ------------------------------------------------------------------------------
 
-{--
--- ⊎ injective too
-
-inj₁≡ : {A B : Set} → {a b : A} → inj₁ {A = A} {B} a ≡ inj₁ b → a ≡ b
-inj₁≡ refl = refl
-
-inj₂≡ : {A B : Set} → {a b : B} → inj₂ {A = A} {B} a ≡ inj₂ b → a ≡ b
-inj₂≡ refl = refl
---}

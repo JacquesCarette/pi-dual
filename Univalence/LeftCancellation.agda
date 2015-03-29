@@ -32,6 +32,13 @@ private
 -- Very complex proof that we can cancel units on the left of ⊎
 
 -- Some repeated patterns:
+
+inj₁≡ : {A B : Set} → {a b : A} → inj₁ {A = A} {B} a ≡ inj₁ b → a ≡ b
+inj₁≡ refl = refl
+
+inj₂≡ : {A B : Set} → {a b : B} → inj₂ {A = A} {B} a ≡ inj₂ b → a ≡ b
+inj₂≡ refl = refl
+
 -- use injectivity of equivalences to go from f x ≡ f y to x ≡ y
 injectivity : {A B : Set} (equiv : (⊤ ⊎ A) ≃ (⊤ ⊎ B)) → (a : A) → equiv ⋆ inj₁ tt ≡ equiv ⋆ inj₂ a → (inj₁ tt ≡ inj₂ a) 
 injectivity equiv x path = inj≃ equiv (inj₁ tt) (inj₂ x) path
