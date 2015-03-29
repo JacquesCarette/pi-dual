@@ -12,12 +12,15 @@ open import  Data.Vec.Properties
      tabulate-allFin)
 open import Function using (id;_∘_;flip)
 open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; sym; cong; cong₂; subst; proof-irrelevance; module ≡-Reasoning)
+  using (_≡_; refl; sym; cong; cong₂; subst; trans; proof-irrelevance; module ≡-Reasoning)
 open import Data.Nat using (ℕ; zero; suc; _+_; z≤n; _*_)
-open import Data.Nat.Properties.Simple using (+-comm)
+open import Data.Nat.Properties.Simple using (+-comm; +-right-identity)
 open import Data.Fin using (Fin; zero; suc; inject+; raise; reduce≥)
+open import Data.Fin.Properties using (toℕ-injective)
 
 open import SubstLemmas
+open import FinNatLemmas
+open import FiniteFunctions
 
 ------------------------------------------------------------------------------
 -- Lemmas about map and tabulate
@@ -212,3 +215,17 @@ denest-tab-!! f g v =
         ≡⟨ cong (mapV (f ∘ g)) (tabulate∘lookup v) ⟩
     mapV (f ∘ g) v ∎)
   where open ≡-Reasoning
+
+tab++[]≡tab∘̂unite+ : ∀ {m} {A : Set} (f : Fin m → A) (eq : m + 0 ≡ m) →
+  tabulate f ++V [] ≡ tabulate (λ j → f (subst Fin eq j))
+tab++[]≡tab∘̂unite+ {zero} f eq = refl
+tab++[]≡tab∘̂unite+ {suc m} f eq = cong₂ _∷_ (cong f pf₁) pf₂
+  where
+    pf₁ : zero ≡ subst Fin eq zero
+    pf₁ = toℕ-injective (sym (toℕ-invariance zero eq))
+    pf₃ : ∀ j → suc (subst Fin (+-right-identity m) j) ≡ subst Fin eq (suc j)
+    pf₃ j = toℕ-injective (trans (cong suc (toℕ-invariance j (+-right-identity m)))
+                                 (sym (toℕ-invariance (suc j) eq)))
+    pf₂ : tabulate (f ∘ suc) ++V [] ≡ tabulate (λ j → f (subst Fin eq (suc j)))
+    pf₂ = trans (tab++[]≡tab∘̂unite+ (f ∘ suc) (+-right-identity m))
+                (finext (λ j → cong f (pf₃ j)))

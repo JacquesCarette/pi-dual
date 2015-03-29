@@ -68,6 +68,7 @@ private
 
 module F where
 
+  open import Data.Nat.Properties.Simple using (+-right-identity)
   open import Data.Vec.Properties
     using (lookup-allFin; tabulate∘lookup; lookup∘tabulate; tabulate-∘; lookup-++-inject+)
   open import Relation.Binary.PropositionalEquality
@@ -78,7 +79,8 @@ module F where
   open import Equiv using (_∼_)
   open import VectorLemmas
     using (lookupassoc; map-++-commute; tabulate-split; left!!; right!!;
-           lookup-++-raise; unSplit) 
+           lookup-++-raise; unSplit; tab++[]≡tab∘̂unite+)
+  open import FinNatLemmas using (inject+0≡uniti+)
   open import Proofs using (congD!)
 
   open V
@@ -215,13 +217,10 @@ module F where
         tabulate (g ∘ f) !! i ∎)
       where open ≡-Reasoning
 
-    -- this is just tabulate∘lookup, but it hides the details
+    -- this is just tabulate∘lookup, but it hides the details; should this be
+    -- called 'join' or 'flatten' ?
     cauchyext : {m n : ℕ} (π : FinVec m n) → tabulate (_!!_ π) ≡ π
     cauchyext π = tabulate∘lookup π
-
-    -- why is this needed?
-    liftFinVec : {m n : ℕ} → FinVec m n → FinVec m n
-    liftFinVec π = tabulate (_!!_ π)
 
     -- we could go through ~p, but this works better in practice
     ~⇒≡ : {m n o : ℕ} {f : Fin m → Fin n} {g : Fin n → Fin m} → 
@@ -259,28 +258,32 @@ module F where
     -- properties of parallel composition
     -- trivial ones first
     0C⊎x≡x : ∀ {m n} {x : FinVec m n} → 0C ⊎c x ≡ x
-    0C⊎x≡x {x = x} = tabulate∘lookup x
+    0C⊎x≡x {x = x} = cauchyext x
 
     1C₀⊎x≡x : ∀ {m n} {x : FinVec m n} → 1C {0} ⊎c x ≡ x
-    1C₀⊎x≡x {x = x} = tabulate∘lookup x
+    1C₀⊎x≡x {x = x} = cauchyext x
 
-{-
-    x⊎1C₀≡x : ∀ {m n} {x : FinVec m n} → x ⊎c  (1C {0}) ≡ unite+ ∘̂ (x ∘̂ uniti+)
+    x⊎1C₀≡x : ∀ {m n} {x : FinVec m n} → x ⊎c (1C {0}) ≡ unite+ ∘̂ (x ∘̂ uniti+)
     x⊎1C₀≡x {m} {n} {x = x} = 
       let e = proj₁ (Plus.unite+) in
       let i = proj₁ (Plus.uniti+) in
+      let eq = sym (+-right-identity m) in
       begin (
         tabulate (λ j → inject+ 0 (x !! j)) ++V []
-          ≡⟨ refl ⟩
-        tabulate {n} (λ j → inject+ 0 (x !! j)) ++V tabulate {0} (λ j → raise n (x !! zero)) 
-          ≡⟨ ? ⟩
-        {!!}
-          ≡⟨ {!!} ⟩
-         tabulate (λ j →
+          ≡⟨ cong (λ x → x ++V []) (finext (λ j → inject+0≡uniti+ (x !! j) eq)) ⟩
+        tabulate (λ j → i (x !! j)) ++V []
+          ≡⟨ tab++[]≡tab∘̂unite+ (λ j → i (x !! j)) (+-right-identity n) ⟩
+        tabulate (λ j → i (x !! e j))
+          ≡⟨ finext (λ j → sym (lookup∘tabulate (λ k → i (x !! k)) (e j))) ⟩
+        tabulate (λ j → tabulate (λ k → i (x !! k)) !! (e j))
+          ≡⟨ finext (λ j → cong₂ _!!_
+                           (finext (λ k → sym (lookup∘tabulate i (x !! k))))
+                           (sym (lookup∘tabulate e j))) ⟩
+        tabulate (λ j →
            (tabulate (λ k → tabulate i !! (x !! k))) !! ((tabulate e) !! j))
          ∎)
       where open ≡-Reasoning
--}
+
     1C⊎1C≡1C : ∀ {m n} → 1C {m} ⊎c 1C {n} ≡ 1C
     1C⊎1C≡1C {m} {n} = 
       begin (
@@ -309,7 +312,7 @@ module F where
 
     swap+-inv : ∀ {m n} → swap+cauchy m n ∘̂ swap+cauchy n m ≡ 1C
     swap+-inv {m} {n} = ~⇒≡ {o = m + n} (Plus.swap-inv m n)
-{-
+
     idʳ⊕ : ∀ {m n} {x : FinVec m n} → uniti+ ∘̂ (x ⊎c 1C {0}) ≡ x ∘̂ uniti+
     idʳ⊕ {m} {n} {x} = 
       begin (
@@ -323,7 +326,6 @@ module F where
           ≡⟨ ∘̂-lid (x ∘̂ uniti+) ⟩
         x ∘̂ uniti+ ∎)
       where open ≡-Reasoning
--}
 
     -- properties of multiplicative composition
     unite*∘̂uniti*~id : ∀ {m} → (unite* {m}) ∘̂ uniti* ≡ 1C {1 * m}

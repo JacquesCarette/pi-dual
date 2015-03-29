@@ -3,7 +3,7 @@
 module FinNatLemmas where
 
 open import Relation.Binary.PropositionalEquality 
-  using (_≡_; refl; sym; trans; subst; cong; module ≡-Reasoning)
+  using (_≡_; refl; sym; trans; subst; cong; proof-irrelevance; module ≡-Reasoning)
 open import Data.Nat.Properties
   using (cancel-+-left; n∸n≡0; +-∸-assoc; m+n∸n≡m; 1+n≰n; m≤m+n;
          n≤m+n; n≤1+n; cancel-*-right-≤; ≰⇒>; ¬i+1+j≤i; cancel-+-left-≤)
@@ -161,3 +161,15 @@ raise-injective {m} {n} i j p = toℕ-injective (cancel-+-left m pf)
 toℕ-invariance : ∀ {n n'} → (i : Fin n) → (eq : n ≡ n') → toℕ (subst Fin eq i) ≡ toℕ i
 toℕ-invariance i refl = refl
 
+-- see FinEquiv for the naming
+inject+0≡uniti+ : ∀ {m} → (n : Fin m) → (eq : m ≡ m + 0) → inject+ 0 n ≡ subst Fin eq n
+inject+0≡uniti+ {m} n eq = toℕ-injective pf
+  where
+    open ≡-Reasoning
+    pf : toℕ (inject+ 0 n) ≡ toℕ (subst Fin eq n)
+    pf = begin (
+      toℕ (inject+ 0 n)
+        ≡⟨ sym (inject+-lemma 0 n) ⟩
+      toℕ n
+        ≡⟨ sym (toℕ-invariance n eq) ⟩
+      toℕ (subst Fin eq n) ∎)

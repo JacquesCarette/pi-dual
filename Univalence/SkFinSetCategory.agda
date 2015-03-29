@@ -141,20 +141,23 @@ finVecAdditiveM = record {
   identityʳ = record {
     F⇒G = record {
       η       = λ X → uniti+ ;
-      commute = λ f → {!idʳ⊕ {x = f zero}!} 
+      commute = λ f → idʳ⊕ {x = f zero} 
     } ;
     F⇐G = record { 
       η       = λ X → unite+ ;
       commute = λ f → {!!} 
     } ;
-    iso = λ X → record { isoˡ = {!!} ; isoʳ = {!!} }
+    iso = λ X → record { isoˡ = unite+∘̂uniti+~id ; isoʳ = uniti+∘̂unite+~id }
   } ;
-  assoc = record { F⇒G = record { η = λ X → assocl+ {m = X zero}
-                                ; commute = λ f → {!!} }
-                 ; F⇐G = record { η = λ X → assocr+ {m = X zero}
-                                ; commute = {!!} }
-                 ; iso = λ X → record { isoˡ = assocr+∘̂assocl+~id {m = X zero}
-                                      ; isoʳ = assocl+∘̂assocr+~id {m = X zero} } } ;
+  assoc = record
+    { F⇒G = record { η = λ X → assocl+ {m = X zero}
+                   ; commute = λ f → {!!} }
+    ; F⇐G = record { η = λ X → assocr+ {m = X zero}
+                    ; commute = {!!} }
+    ; iso = λ X → record { isoˡ = assocr+∘̂assocl+~id {m = X zero}
+                         ; isoʳ = assocl+∘̂assocr+~id {m = X zero}
+                         }
+    } ;
   triangle = {!!} ;
   pentagon = {!!} 
   }
