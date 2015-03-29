@@ -61,13 +61,13 @@ module ⊎h = MonoidalHelperFunctors CPermCat ⊎p-bifunctor 0
 
 0⊎x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
 0⊎x≡x = record
-  { F⇒G = record { η = λ _ → idp ; commute = λ {X} f → {!Functor.F₀ ⊎h.id⊗x X!} }
-  ; F⇐G = record { η = λ _ → idp ; commute = λ f → p≡ (P.trans (F.∘̂-lid (CPerm.π (f 0F))) (P.trans (P.sym (F.cauchyext (CPerm.π (f 0F)))) (P.sym (F.∘̂-rid (F.liftCauchy (CPerm.π (f 0F))))))) }
+  { F⇒G = record { η = λ _ → idp ; commute = λ {X} f → {!!} }
+  ; F⇐G = record { η = λ _ → idp ; commute = {!!} }
   ; iso = λ X → record { isoˡ = lidp ; isoʳ = ridp } }
   where open import Categories.Functor
 
-CPermMonoidal : Monoidal CPermCat
-CPermMonoidal = record
+CPM⊎ : Monoidal CPermCat
+CPM⊎ = record
   { ⊗ = ⊎p-bifunctor
    ; id = 0
    ; identityˡ = 0⊎x≡x
@@ -76,3 +76,18 @@ CPermMonoidal = record
    ; triangle = {!!}
    ; pentagon = {!!}
    }
+
+CPM× : Monoidal CPermCat
+CPM× = record
+  { ⊗ = ×p-bifunctor
+  ; id = 1
+  ; identityˡ = record 
+    { F⇒G = record { η = λ X → uniti+p {X 0F} ; commute = λ f → {!!} } 
+    ; F⇐G = record { η = λ X → unite+p ; commute = {!!} } 
+    ; iso = λ X → record { isoˡ = {!!} ; isoʳ = {!!} } 
+    }
+  ; identityʳ = {!!}
+  ; assoc = {!!}
+  ; triangle = {!!}
+  ; pentagon = {!!}
+  }
