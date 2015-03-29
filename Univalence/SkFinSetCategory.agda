@@ -256,8 +256,10 @@ module F where
 
   uniti+∘̂0+c≡c∘̂uniti+ : ∀ {m n} (c : FinVec m n) → uniti+ ∘̂ (0C ⊎c c) ≡ c ∘̂ uniti+
   uniti+∘̂0+c≡c∘̂uniti+ p = trans (∘̂-lid (0C ⊎c p)) (trans (fvext p) (sym (∘̂-rid p)))
-  
--- transp (0p ⊎p p) idp ≡ transp idp p
+
+  unite+∘̂c≡0+c∘̂unite+ : ∀ {m n} (c : FinVec m n) → unite+ ∘̂ c ≡ (0C ⊎c c) ∘̂ unite+
+  unite+∘̂c≡0+c∘̂unite+ p = trans (∘̂-lid p) (trans (sym (fvext p)) (sym (∘̂-rid (0C ⊎c p))))
+
   ----------------------------------------------------------------------
   -- multiplicative properties
   
@@ -485,7 +487,9 @@ open import Relation.Binary.PropositionalEquality.Core using (isEquivalence)
 open import Categories.Category using (Category; module Category)
 open import Categories.Functor using (Functor; module Functor)
 open import Categories.Bifunctor using (Bifunctor)
-open import Categories.NaturalTransformation using () renaming (id to idn)
+open import Categories.NaturalTransformation
+  using (module NaturalTransformation)
+  renaming (id to idn)
 open import Categories.Monoidal using (Monoidal)
 open import Categories.Monoidal.Helpers using (module MonoidalHelperFunctors)
 open import Categories.Monoidal.Braided using (Braided; module Braided) 
@@ -564,19 +568,18 @@ Monoidal (C : Category):
               (PentagonSESide ∘₁ (PentagonSSide ∘₁ PentagonSWSide))
 --}
 
+private module CFV = Category finVecC
+private module MFunctors = MonoidalHelperFunctors finVecC ⊕-bifunctor 0
+private module Fid⊗x = Functor MFunctors.id⊗x
+private module Fx = Functor MFunctors.x
+
 finVecAdditiveM : Monoidal finVecC -- power = Fin 1 (so apply everything to zero)
 finVecAdditiveM = record {
   ⊗  = ⊕-bifunctor ; 
   id = 0 ;
   identityˡ = record {
-    F⇒G = record { 
-      η       = λ _ → uniti+ ; 
-      commute = λ f → uniti+∘̂0+c≡c∘̂uniti+ (f zero)
-    } ;
-    F⇐G = record { 
-      η       = λ _ → unite+ ;
-      commute = λ f → {!!} 
-    } ;
+    F⇒G = record { η = λ _ → uniti+ ; commute = λ f → uniti+∘̂0+c≡c∘̂uniti+ (f zero) } ;
+    F⇐G = record { η = λ _ → unite+ ; commute = λ f → unite+∘̂c≡0+c∘̂unite+ (f zero) } ;
     iso = λ X → record { isoˡ = uniti+∘̂unite+≡1C ; isoʳ = {!!} }
   } ;
   identityʳ = record {
@@ -599,11 +602,11 @@ finVecAdditiveM = record {
   triangle = {!!} ;
   pentagon = {!!} 
   }
-  where
-  private module FVC = Category finVecC
-  private module MFunctors = MonoidalHelperFunctors finVecC ⊕-bifunctor 0
-  private module FF = Functor MFunctors.id⊗x
-  private module GF = Functor MFunctors.x
+--  where
+--  private module FVC = Category finVecC
+--  private module MFunctors = MonoidalHelperFunctors finVecC ⊕-bifunctor 0
+--  private module FF = Functor MFunctors.id⊗x
+--  private module GF = Functor MFunctors.x
   
                                            
 {--
