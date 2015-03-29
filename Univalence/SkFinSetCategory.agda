@@ -19,7 +19,7 @@ open import TypeEquiv using (swap₊; swap⋆)
 open import VectorLemmas using (_!!_; concat-map; map-map-map; lookup-map; map-∘)
 open import FinEquiv using (module Plus; module Times; module PlusTimes)
 -}
-  
+
 ------------------------------------------------------------------------------
 -- Categorical structure
 
@@ -36,7 +36,9 @@ open import Relation.Binary.PropositionalEquality.Core using (isEquivalence)
 open import Categories.Category using (Category; module Category)
 open import Categories.Functor using (Functor; module Functor)
 open import Categories.Bifunctor using (Bifunctor)
-open import Categories.NaturalTransformation using () renaming (id to idn)
+open import Categories.NaturalTransformation
+  using (module NaturalTransformation)
+  renaming (id to idn)
 open import Categories.Monoidal using (Monoidal)
 open import Categories.Monoidal.Helpers using (module MonoidalHelperFunctors)
 open import Categories.Monoidal.Braided using (Braided; module Braided) 
@@ -116,6 +118,11 @@ Monoidal (C : Category):
               (PentagonSESide ∘₁ (PentagonSSide ∘₁ PentagonSWSide))
 --}
 
+private module CFV = Category finVecC
+private module MFunctors = MonoidalHelperFunctors finVecC ⊕-bifunctor 0
+private module Fid⊗x = Functor MFunctors.id⊗x
+private module Fx = Functor MFunctors.x
+
 finVecAdditiveM : Monoidal finVecC -- power = Fin 1 (so apply everything to zero)
 finVecAdditiveM = record {
   ⊗  = ⊕-bifunctor ; 
@@ -151,11 +158,11 @@ finVecAdditiveM = record {
   triangle = {!!} ;
   pentagon = {!!} 
   }
-  where
-  private module FVC = Category finVecC
-  private module MFunctors = MonoidalHelperFunctors finVecC ⊕-bifunctor 0
-  private module FF = Functor MFunctors.id⊗x
-  private module GF = Functor MFunctors.x
+--  where
+--  private module FVC = Category finVecC
+--  private module MFunctors = MonoidalHelperFunctors finVecC ⊕-bifunctor 0
+--  private module FF = Functor MFunctors.id⊗x
+--  private module GF = Functor MFunctors.x
   
                                            
 {--
