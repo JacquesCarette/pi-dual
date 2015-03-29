@@ -24,7 +24,7 @@ open import BimonoidalCategory
 open import Equiv
 open import TypeEquiv
 open import FinEquiv
--- open import SEquivSCPermEquiv
+open import SEquivSCPermEquiv
 
 -- Permutations
 

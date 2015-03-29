@@ -122,7 +122,7 @@ module F where
     -- but the above is tedious to work with.  Instead, inline a bit to get
     _⊎c_ : ∀ {m₁ n₁ m₂ n₂} → FinVec m₁ m₂ → FinVec n₁ n₂ → FinVec (m₁ + n₁) (m₂ + n₂)
     _⊎c_ {m₁} α β = tabulate (fwd ∘ inj₁ ∘ _!!_ α) ++V
-                                                         tabulate (fwd {m₁} ∘ inj₂ ∘ _!!_ β)
+                     tabulate (fwd {m₁} ∘ inj₂ ∘ _!!_ β)
     -- see ⊎c≡⊎c' lemma below
 
     -- Tensor multiplicative composition
@@ -541,7 +541,21 @@ module F where
 
     swap*-inv : ∀ {m n} → swap⋆cauchy m n ∘̂ swap⋆cauchy n m ≡ 1C
     swap*-inv {m} {n} = ~⇒≡ {o = m * n} (Times.swap-inv m n)
-  
+
+    ------------------------
+    -- A few "reveal" functions, to let us peek into the representation
+    reveal1C : ∀ {m} → allFin m ≡ 1C
+    reveal1C = refl
+
+    reveal0C : [] ≡ 0C
+    reveal0C = refl
+
+    reveal⊎c :  ∀ {m₁ n₁ m₂ n₂} → {α : FinVec m₁ m₂} → {β : FinVec n₁ n₂} →
+      α ⊎c β ≡
+        tabulate (fwd ∘ inj₁ ∘ _!!_ α) ++V
+        tabulate (fwd {m₁} ∘ inj₂ ∘ _!!_ β)
+    reveal⊎c = refl
+    
 ------------------------------------------------------------------------------
 -- Commutative semiring structure
 
