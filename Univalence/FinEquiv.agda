@@ -148,13 +148,16 @@ abstract
 
     -- unite+
 
-    unite+ : {m : ℕ} → Fin (0 + m) ≃ Fin m
-    unite+ = id-iso
+    unite+ : {m : ℕ} → Fin (m + 0) ≃ Fin m
+    unite+ {m} = 
+      let eq = +-right-identity m in
+      subst Fin eq , mkqinv (subst Fin (sym eq)) (subst-subst eq (sym eq) refl) (
+                            subst-subst (sym eq) eq sym-sym)
 
     -- uniti+
 
-    uniti+ : {m : ℕ} → Fin m ≃ Fin (0 + m)
-    uniti+ = id-iso
+    uniti+ : {m : ℕ} → Fin m ≃ Fin (m + 0)
+    uniti+ = sym≃ unite+
 
     -- swap₊
 
@@ -442,7 +445,7 @@ finTimesIsSG = record {
 finPlusIsCM : IsCommutativeMonoid _fin≃_ _+_ 0
 finPlusIsCM = record {
   isSemigroup = finPlusIsSG ;
-  identityˡ = λ m → Plus.unite+ {m} ;
+  identityˡ = λ m → id-iso ;
   comm = λ m n → Plus.swap+ {m} {n} 
   }
 

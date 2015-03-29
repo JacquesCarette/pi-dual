@@ -71,21 +71,21 @@ module F where
   open import Data.Vec.Properties
     using (lookup-allFin; tabulate∘lookup; lookup∘tabulate; tabulate-∘; lookup-++-inject+)
   open import Relation.Binary.PropositionalEquality
-    using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
+    using (_≡_; refl; sym; trans; cong; cong₂; subst; module ≡-Reasoning)
   open ≡-Reasoning
 
   open import FiniteFunctions
   open import Equiv using (_∼_)
   open import VectorLemmas
     using (lookupassoc; map-++-commute; tabulate-split; left!!; right!!;
-           lookup-++-raise; unSplit)
+           lookup-++-raise; unSplit; xs++[]≡xs)
   open import Proofs using (congD!)
 
   open V
 
   -- convenient abbreviations
-  Cauchy : ℕ → ℕ → Set
-  Cauchy m n = Vec (Fin m) n
+  FinVec : ℕ → ℕ → Set
+  FinVec m n = Vec (Fin m) n
 
   private
     fwd : {m n : ℕ} → (Fin m ⊎ Fin n) → Fin (m + n)
@@ -96,11 +96,11 @@ module F where
 
   abstract
     -- principal component of the identity permutation  
-    1C : {n : ℕ} → Cauchy n n
+    1C : {n : ℕ} → FinVec n n
     1C {n} = allFin n
 
     -- corresponds to ⊥ ≃ (⊥ × A) and other impossibilities
-    0C : Cauchy 0 0
+    0C : FinVec 0 0
     0C = 0v
 
     -- Sequential composition
@@ -112,15 +112,15 @@ module F where
     -- ==>
     -- [ vm , vm₊₁ , ... , vm+n-1 ,     v₀ , v₁   , v₂   , ... , vm-1 ]
 
-    swap+cauchy : (m n : ℕ) → Cauchy (n + m) (m + n)
+    swap+cauchy : (m n : ℕ) → FinVec (n + m) (m + n)
     swap+cauchy m n = tabulate (Plus.swapper m n)
 
     -- Parallel additive composition
     -- conceptually, what we want is
-    _⊎c'_ : ∀ {m₁ n₁ m₂ n₂} → Cauchy m₁ m₂ → Cauchy n₁ n₂ → Cauchy (m₁ + n₁) (m₂ + n₂)
+    _⊎c'_ : ∀ {m₁ n₁ m₂ n₂} → FinVec m₁ m₂ → FinVec n₁ n₂ → FinVec (m₁ + n₁) (m₂ + n₂)
     _⊎c'_ α β = mapV fwd (α ⊎v β)
     -- but the above is tedious to work with.  Instead, inline a bit to get
-    _⊎c_ : ∀ {m₁ n₁ m₂ n₂} → Cauchy m₁ m₂ → Cauchy n₁ n₂ → Cauchy (m₁ + n₁) (m₂ + n₂)
+    _⊎c_ : ∀ {m₁ n₁ m₂ n₂} → FinVec m₁ m₂ → FinVec n₁ n₂ → FinVec (m₁ + n₁) (m₂ + n₂)
     _⊎c_ {m₁} α β = tabulate (fwd ∘ inj₁ ∘ _!!_ α) ++V
                                                          tabulate (fwd {m₁} ∘ inj₂ ∘ _!!_ β)
     -- see ⊎c≡⊎c' lemma below
@@ -128,7 +128,7 @@ module F where
     -- Tensor multiplicative composition
     -- Transpositions in α correspond to swapping entire rows
     -- Transpositions in β correspond to swapping entire columns
-    _×c_ : ∀ {m₁ n₁ m₂ n₂} → Cauchy m₁ m₂ → Cauchy n₁ n₂ → Cauchy (m₁ * n₁) (m₂ * n₂)
+    _×c_ : ∀ {m₁ n₁ m₂ n₂} → FinVec m₁ m₂ → FinVec n₁ n₂ → FinVec (m₁ * n₁) (m₂ * n₂)
     α ×c β = mapV Times.fwd (α ×v β)
 
     -- swap⋆
@@ -143,7 +143,7 @@ module F where
     -- transposeIndex = Times.fwd ∘ swap
       -- inject≤ (fromℕ (toℕ d * m + toℕ b)) (i*n+k≤m*n d b)
 
-    swap⋆cauchy : (m n : ℕ) → Cauchy (n * m) (m * n)
+    swap⋆cauchy : (m n : ℕ) → FinVec (n * m) (m * n)
     swap⋆cauchy m n = tabulate (Times.swapper m n)
       -- mapV transposeIndex (V.tcomp 1C 1C)
 
@@ -151,28 +151,34 @@ module F where
     -- Things which are the foundations of other permutations, but coming
     -- from properties, rather than being operators
 
-    assocl+ : {m n o : ℕ} → Cauchy  ((m + n) + o) (m + (n + o))
+    unite+ : {m : ℕ} → FinVec m (m + 0)
+    unite+ {m} = tabulate (proj₁ (Plus.unite+ {m}))
+
+    uniti+ : {m : ℕ} → FinVec (m + 0) m
+    uniti+ {m} = tabulate (proj₁ (Plus.uniti+ {m}))
+
+    assocl+ : {m n o : ℕ} → FinVec  ((m + n) + o) (m + (n + o))
     assocl+ {m} {n} {o} = tabulate (proj₁ (Plus.assocl+ {m} {n} {o}))
 
-    assocr+ : {m n o : ℕ} → Cauchy  (m + (n + o)) (m + n + o)
+    assocr+ : {m n o : ℕ} → FinVec  (m + (n + o)) (m + n + o)
     assocr+ {m} {n} {o} = tabulate (proj₁ (Plus.assocr+ {m} {n} {o}))
 
-    unite* : {m : ℕ} → Cauchy m (1 * m)
+    unite* : {m : ℕ} → FinVec m (1 * m)
     unite* {m} = tabulate (proj₁ (Times.unite* {m}))
 
-    uniti* : {m : ℕ} → Cauchy (1 * m) m
+    uniti* : {m : ℕ} → FinVec (1 * m) m
     uniti* {m} = tabulate (proj₁ (Times.uniti* {m}))
 
-    assocl* : {m n o : ℕ} → Cauchy  ((m * n) * o) (m * (n * o))
+    assocl* : {m n o : ℕ} → FinVec  ((m * n) * o) (m * (n * o))
     assocl* {m} {n} {o} = tabulate (proj₁ (Times.assocl* {m} {n} {o}))
 
-    assocr* : {m n o : ℕ} → Cauchy  (m * (n * o)) (m * n * o)
+    assocr* : {m n o : ℕ} → FinVec  (m * (n * o)) (m * n * o)
     assocr* {m} {n} {o} = tabulate (proj₁ (Times.assocr* {m} {n} {o}))
 
-    dist*+ : ∀ {m n o} → Cauchy (m * o + n * o) ((m + n) * o)
+    dist*+ : ∀ {m n o} → FinVec (m * o + n * o) ((m + n) * o)
     dist*+ {m} {n} {o} = tabulate (proj₁ (PlusTimes.dist {m} {n} {o}))
 
-    factor*+ : ∀ {m n o} → Cauchy ((m + n) * o) (m * o + n * o)
+    factor*+ : ∀ {m n o} → FinVec ((m + n) * o) (m * o + n * o)
     factor*+ {m} {n} {o} = tabulate (proj₁ (PlusTimes.factor {m} {n} {o}))
 
     -------------------------------------------------------------------------------------------
@@ -210,12 +216,12 @@ module F where
       where open ≡-Reasoning
 
     -- this is just tabulate∘lookup, but it hides the details
-    cauchyext : {m n : ℕ} (π : Cauchy m n) → tabulate (_!!_ π) ≡ π
+    cauchyext : {m n : ℕ} (π : FinVec m n) → tabulate (_!!_ π) ≡ π
     cauchyext π = tabulate∘lookup π
 
     -- why is this needed?
-    liftCauchy : {m n : ℕ} → Cauchy m n → Cauchy m n
-    liftCauchy π = tabulate (_!!_ π)
+    liftFinVec : {m n : ℕ} → FinVec m n → FinVec m n
+    liftFinVec π = tabulate (_!!_ π)
 
     -- we could go through ~p, but this works better in practice
     ~⇒≡ : {m n o : ℕ} {f : Fin m → Fin n} {g : Fin n → Fin m} → 
@@ -246,15 +252,35 @@ module F where
         (π₂ ∘̂ π₁) !! i ∎)
       where open ≡-Reasoning
 
-    -- properties of composition
+    -- properties of sequential composition
     0C∘̂0C≡1C : 0C ∘̂ 0C ≡ 1C {0}
     0C∘̂0C≡1C = refl
     
     -- properties of parallel composition
     -- trivial ones first
-    0C⊎x≡x : ∀ {m n} {x : Cauchy m n} → 0C ⊎c x ≡ x
+    0C⊎x≡x : ∀ {m n} {x : FinVec m n} → 0C ⊎c x ≡ x
     0C⊎x≡x {x = x} = tabulate∘lookup x
-    
+
+    1C₀⊎x≡x : ∀ {m n} {x : FinVec m n} → 1C {0} ⊎c x ≡ x
+    1C₀⊎x≡x {x = x} = tabulate∘lookup x
+
+{-
+    x⊎1C₀≡x : ∀ {m n} {x : FinVec m n} → x ⊎c  (1C {0}) ≡ unite+ ∘̂ (x ∘̂ uniti+)
+    x⊎1C₀≡x {m} {n} {x = x} = 
+      let e = proj₁ (Plus.unite+) in
+      let i = proj₁ (Plus.uniti+) in
+      begin (
+        tabulate (λ j → inject+ 0 (x !! j)) ++V []
+          ≡⟨ refl ⟩
+        tabulate {n} (λ j → inject+ 0 (x !! j)) ++V tabulate {0} (λ j → raise n (x !! zero)) 
+          ≡⟨ ? ⟩
+        {!!}
+          ≡⟨ {!!} ⟩
+         tabulate (λ j →
+           (tabulate (λ k → tabulate i !! (x !! k))) !! ((tabulate e) !! j))
+         ∎)
+      where open ≡-Reasoning
+-}
     1C⊎1C≡1C : ∀ {m n} → 1C {m} ⊎c 1C {n} ≡ 1C
     1C⊎1C≡1C {m} {n} = 
       begin (
@@ -269,6 +295,12 @@ module F where
     1C!!i≡i : ∀ {m} {i : Fin m} → 1C {m} !! i ≡ i
     1C!!i≡i = lookup∘tabulate id _
 
+    unite+∘̂uniti+~id : ∀ {m} → (unite+ {m}) ∘̂ uniti+ ≡ 1C {m + 0}
+    unite+∘̂uniti+~id {m} = ~⇒≡ {m} {n = m + 0} {o = m + 0} (p∘!p≡id {p = Plus.unite+ {m}})
+
+    uniti+∘̂unite+~id : ∀ {m} → (uniti+ {m}) ∘̂ unite+ ≡ 1C {m}
+    uniti+∘̂unite+~id {m} = ~⇒≡ {m + 0} {n = m} {o = m + 0} (p∘!p≡id {p = Plus.uniti+})
+
     assocl+∘̂assocr+~id : ∀ {m n o} → assocl+ {m} {n} {o} ∘̂ assocr+ {m} ≡ 1C
     assocl+∘̂assocr+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = Plus.assocl+ {m}})
 
@@ -277,7 +309,23 @@ module F where
 
     swap+-inv : ∀ {m n} → swap+cauchy m n ∘̂ swap+cauchy n m ≡ 1C
     swap+-inv {m} {n} = ~⇒≡ {o = m + n} (Plus.swap-inv m n)
+{-
+    idʳ⊕ : ∀ {m n} {x : FinVec m n} → uniti+ ∘̂ (x ⊎c 1C {0}) ≡ x ∘̂ uniti+
+    idʳ⊕ {m} {n} {x} = 
+      begin (
+        uniti+ ∘̂ (x ⊎c 1C {0})
+          ≡⟨ cong (λ z → uniti+ ∘̂ z) (x⊎1C₀≡x {x = x}) ⟩
+        uniti+ ∘̂ (unite+ ∘̂ (x ∘̂ uniti+))
+          ≡⟨ ∘̂-assoc uniti+ _ _ ⟩
+        (uniti+ ∘̂ unite+) ∘̂ (x ∘̂ uniti+)
+          ≡⟨ cong (λ z → z ∘̂ (x ∘̂ uniti+)) uniti+∘̂unite+~id ⟩
+        1C ∘̂ (x ∘̂ uniti+)
+          ≡⟨ ∘̂-lid (x ∘̂ uniti+) ⟩
+        x ∘̂ uniti+ ∎)
+      where open ≡-Reasoning
+-}
 
+    -- properties of multiplicative composition
     unite*∘̂uniti*~id : ∀ {m} → (unite* {m}) ∘̂ uniti* ≡ 1C {1 * m}
     unite*∘̂uniti*~id {m} = ~⇒≡ {m} {n = 1 * m} {o = 1 * m} (p∘!p≡id {p = Times.unite* {m}})
 
@@ -297,8 +345,8 @@ module F where
     factor*+∘̂dist*+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = PlusTimes.factor {m}})
 
     private
-      left⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : Cauchy m₁ n₁) → (p₂ : Cauchy m₂ n₂)
-        → (p₃ : Cauchy m₃ m₁) → (p₄ : Cauchy m₄ m₂) → (i : Fin n₁) → 
+      left⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : FinVec m₁ n₁) → (p₂ : FinVec m₂ n₂)
+        → (p₃ : FinVec m₃ m₁) → (p₄ : FinVec m₄ m₂) → (i : Fin n₁) → 
         (p₃ ⊎c p₄) !! ( (p₁ ⊎c p₂) !! inject+ n₂ i ) ≡ inject+ m₄ ( (p₁ ∘̂ p₃) !! i) 
       left⊎⊎!! {m₁} {m₂} {_} {m₄} {_} {n₂} p₁ p₂ p₃ p₄ i =
         let pp = p₃ ⊎c p₄ in
@@ -319,8 +367,8 @@ module F where
               ≡⟨ cong (inject+ m₄) (sym (lookup∘tabulate _ i)) ⟩
             inject+ m₄ ((p₁ ∘̂ p₃) !! i) ∎ )
 
-      right⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : Cauchy m₁ n₁) → (p₂ : Cauchy m₂ n₂)
-        → (p₃ : Cauchy m₃ m₁) → (p₄ : Cauchy m₄ m₂) → (i : Fin n₂) → 
+      right⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : FinVec m₁ n₁) → (p₂ : FinVec m₂ n₂)
+        → (p₃ : FinVec m₃ m₁) → (p₄ : FinVec m₄ m₂) → (i : Fin n₂) → 
         (p₃ ⊎c p₄) !! ( (p₁ ⊎c p₂) !! raise n₁ i ) ≡ raise m₃ ( (p₂ ∘̂ p₄) !! i) 
       right⊎⊎!! {m₁} {m₂} {m₃} {_} {n₁} {_} p₁ p₂ p₃ p₄ i =
         let pp = p₃ ⊎c p₄ in
@@ -341,8 +389,8 @@ module F where
             ≡⟨ cong (raise m₃) (sym (lookup∘tabulate _ i)) ⟩
           raise m₃ ((p₂ ∘̂ p₄) !! i) ∎ )
 
-    ⊎c-distrib : ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : Cauchy m₁ n₁} → {p₂ : Cauchy m₂ n₂}
-      → {p₃ : Cauchy m₃ m₁} → {p₄ : Cauchy m₄ m₂} →
+    ⊎c-distrib : ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : FinVec m₁ n₁} → {p₂ : FinVec m₂ n₂}
+      → {p₃ : FinVec m₃ m₁} → {p₄ : FinVec m₄ m₂} →
         (p₁ ⊎c p₂) ∘̂ (p₃ ⊎c p₄) ≡ (p₁ ∘̂ p₃) ⊎c (p₂ ∘̂ p₄)
     ⊎c-distrib {m₁} {m₂} {m₃} {m₄} {n₁} {n₂} {p₁} {p₂} {p₃} {p₄} =
       let p₃₄ = p₃ ⊎c p₄ in let p₁₂ = p₁ ⊎c p₂ in
@@ -367,7 +415,7 @@ module F where
       concat!! (suc a) b (xs ∷ xss) = 
         trans (lookup-++-raise xs (concatV xss) (Times.fwd (a , b))) (concat!! a b xss) 
 
-      ×c-equiv : {m₁ m₂ n₁ n₂ : ℕ} (p₁ : Cauchy m₁ n₁) (p₂ : Cauchy m₂ n₂) →
+      ×c-equiv : {m₁ m₂ n₁ n₂ : ℕ} (p₁ : FinVec m₁ n₁) (p₂ : FinVec m₂ n₂) →
         (p₁ ×c p₂) ≡ concatV (mapV (λ y → mapV Times.fwd (mapV (λ x → y , x) p₂)) p₁)
       ×c-equiv p₁ p₂ =
         let zss = mapV  (λ b → mapV (λ x → b , x) p₂) p₁ in
@@ -398,7 +446,7 @@ module F where
             ≡⟨ refl ⟩
           f (Times.bwd k) ∎)
 
-      ×c!! : {m₁ m₂ n₁ n₂ : ℕ} (p₁ : Cauchy m₁ n₁) (p₂ : Cauchy m₂ n₂) (k : Fin (n₁ * n₂)) →
+      ×c!! : {m₁ m₂ n₁ n₂ : ℕ} (p₁ : FinVec m₁ n₁) (p₂ : FinVec m₂ n₂) (k : Fin (n₁ * n₂)) →
         (p₁ ×c p₂) !! k ≡ Times.fwd (p₁ !! proj₁ (Times.bwd k) , p₂ !! proj₂ (Times.bwd {n₁} k))
       ×c!! {n₁ = n₁} p₁ p₂ k =
         let (a , b) = Times.bwd {n₁} k in
@@ -415,8 +463,8 @@ module F where
             ≡⟨ lookup-map b _ p₂ ⟩
           Times.fwd (p₁ !! a , p₂ !! b) ∎)
 
-    ×c-distrib : ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : Cauchy m₁ n₁} → {p₂ : Cauchy m₂ n₂}
-      → {p₃ : Cauchy m₃ m₁} → {p₄ : Cauchy m₄ m₂} →
+    ×c-distrib : ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : FinVec m₁ n₁} → {p₂ : FinVec m₂ n₂}
+      → {p₃ : FinVec m₃ m₁} → {p₄ : FinVec m₄ m₂} →
         (p₁ ×c p₂) ∘̂ (p₃ ×c p₄) ≡ (p₁ ∘̂ p₃) ×c (p₂ ∘̂ p₄)
     ×c-distrib {m₁} {m₂} {m₃} {m₄} {n₁} {n₂} {p₁} {p₂} {p₃} {p₄} =
       let p₃₄ = p₃ ×c p₄ in let p₁₂ = p₁ ×c p₂ in
@@ -506,15 +554,15 @@ open import Relation.Binary.PropositionalEquality using (subst; sym; trans; cong
 open F
 
 _cauchy≃_ : (m n : ℕ) → Set
-m cauchy≃ n = Cauchy m n
+m cauchy≃ n = FinVec m n
 
-id-iso : {m : ℕ} → Cauchy m m
+id-iso : {m : ℕ} → FinVec m m
 id-iso = 1C
 
 private
-  postulate sym-iso : {m n : ℕ} → Cauchy m n → Cauchy n m
+  postulate sym-iso : {m n : ℕ} → FinVec m n → FinVec n m
 
-trans-iso : {m n o : ℕ} → Cauchy m n → Cauchy n o → Cauchy m o 
+trans-iso : {m n o : ℕ} → FinVec m n → FinVec n o → FinVec m o 
 trans-iso c₁ c₂ = c₂ ∘̂ c₁
 
 cauchy≃IsEquiv : IsEquivalence {Level.zero} {Level.zero} {ℕ} _cauchy≃_
@@ -577,8 +625,8 @@ cauchyCSR = record {
 open import Groupoid
 
 private
-  postulate linv : {m n : ℕ} (c : Cauchy m n) → (sym-iso c) ∘̂ c ≡ 1C
-  postulate rinv : {m n : ℕ} (c : Cauchy m n) → c ∘̂ (sym-iso c) ≡ 1C
+  postulate linv : {m n : ℕ} (c : FinVec m n) → (sym-iso c) ∘̂ c ≡ 1C
+  postulate rinv : {m n : ℕ} (c : FinVec m n) → c ∘̂ (sym-iso c) ≡ 1C
 
 G : 1Groupoid
 G = record {
