@@ -72,6 +72,10 @@ trans≃ (f , feq) (g , geq) = (g ∘ f) , (mkqinv inv α' β')
     α' = λ x → trans (cong g (fm.α (gm.g x))) (gm.α x)
     β' = λ x → trans (cong fm.g (gm.β (f x))) (fm.β x)
 
+-- more convenient infix version, flipped
+_●_ : {A B C : Set} → B ≃ C → A ≃ B → A ≃ C
+a ● b = trans≃ b a
+
 ≃IsEquiv : IsEquivalence {Level.suc Level.zero} {Level.zero} {Set} _≃_
 ≃IsEquiv = record {
   refl = id≃ ;
