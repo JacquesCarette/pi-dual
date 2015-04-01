@@ -47,6 +47,11 @@ trans≋ (eq f≡ g≡) (eq h≡ i≡) =
   eq (λ x → P.trans (P.cong f (h≡ x)) (f≡ (i x)))
      (λ x → P.trans (P.cong g⁻¹ (g≡ x)) (i≡ (h⁻¹ x)))
 
+-- underlying it all, it uses ∘ and ≡ 
+●-assoc : {A B C D : Set} {f : A ≃ B} {g : B ≃ C} {h : C ≃ D} →
+      ((h ● g) ● f) ≋ (h ● (g ● f))
+●-assoc = eq (λ x → P.refl) (λ x → P.refl)
+
 TypeEquivCat : Category (suc zero) zero zero
 TypeEquivCat = record
   { Obj = Set
@@ -54,7 +59,7 @@ TypeEquivCat = record
   ; _≡_ = _≋_
   ; id = id≃
   ; _∘_ = _●_
-  ; assoc = {!!}
+  ; assoc = λ {A} {B} {C} {D} {f} {g} {h} → ●-assoc {A} {B} {C} {D} {f} {g} {h}
   ; identityˡ = eq (λ _ → P.refl) (λ _ → P.refl)
   ; identityʳ = eq (λ _ → P.refl) (λ _ → P.refl)
   ; equiv = record { refl = id≋ ; sym = sym≋ ; trans = trans≋ }
@@ -74,17 +79,28 @@ map⊎idid≡id : {A B : Set} → (x : A ⊎ B) → map⊎ F.id F.id x P.≡ x
 map⊎idid≡id (inj₁ x) = P.refl
 map⊎idid≡id (inj₂ y) = P.refl
 
+map⊎-∘ : {A B C D E F : Set} → {f : A → C} {g : B → D} {h : C → E} {i : D → F} →
+  ∀ x → map⊎ (h F.∘ f) (i F.∘ g) x P.≡ map⊎ h i (map⊎ f g x)
+map⊎-∘ (inj₁ x) = P.refl
+map⊎-∘ (inj₂ y) = P.refl
+
 ⊎-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
 ⊎-bifunctor = record
   { F₀ = λ {( x , y) → x ⊎ y}
   ; F₁ = λ {(x , y) → path⊎ x y}
   ; identity = eq map⊎idid≡id map⊎idid≡id
-  ; homomorphism = λ { {f = (f₀ , _) , (g₀ , _)} {g = (h₀ , _) , (i₀ , _)} → eq {!!} {!!} }
-  ; F-resp-≡ = λ x → {!!}
+  ; homomorphism = eq map⊎-∘ map⊎-∘
+  ; F-resp-≡ = λ {_} {_} {F} {G} x → eq {!!} {!!}
   }
 
 ×-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
-×-bifunctor = {!!}
+×-bifunctor = record
+  { F₀ = λ {( x , y) → x × y}
+  ; F₁ = λ {(x , y) → path× x y }
+  ; identity = eq (λ x → P.refl) (λ x → P.refl) -- η for products gives this
+  ; homomorphism = eq (λ x → P.refl) (λ x → P.refl) -- again η for products!
+  ; F-resp-≡ = ? -- needs a real proof
+  }
 
 module ⊎h = MonoidalHelperFunctors TypeEquivCat ⊎-bifunctor ⊥
 
