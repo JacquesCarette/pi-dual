@@ -22,11 +22,18 @@ open import Function using (_∘_; id)
 open import Data.Unit using (⊤; tt)
 
 open import Equiv
-  using (_∼_; _≃_; module qinv; mkqinv; id≃; sym≃; trans≃; _⊎∼_; _×∼_; ≃IsEquiv)
+  using (_∼_; _≃_; module qinv; mkqinv; id≃; sym≃; trans≃; _⊎∼_; _×∼_; ≃IsEquiv;
+      path⊎)
 open import TypeEquiv using (swap₊; swapswap₊; swap⋆; swapswap⋆)
-open import Proofs
-  using (_<?_; inj₁-≡; inj₂-≡; inject+-injective; raise-injective; subst-subst; sym-sym;
-        cong+r≤; cong+l≤; cong*r≤; sinj≤)
+import TypeEquiv as TE
+open import LeqLemmas using (_<?_; cong+r≤; cong+l≤; cong*r≤; sinj≤)
+open import FinNatLemmas using (inj₁-≡; inj₂-≡; inject+-injective; raise-injective)
+open import SubstLemmas using (subst-subst)
+open import PathLemmas using (sym-sym)
+
+-- Abbreviation
+_●_ : {A B C : Set} → A ≃ B → B ≃ C → A ≃ C
+_●_ = trans≃
 
 ------------------------------------------------------------------------------
 -- generally useful, leave this at top:
@@ -75,11 +82,11 @@ abstract
   module Plus where
 
     private
-
       fwd : {m n : ℕ} → (Fin m ⊎ Fin n) → Fin (m + n)
       fwd {m} {n} (inj₁ x) = inject+ n x
       fwd {m} {n} (inj₂ y) = raise m y
 
+    abstract
       bwd : {m n : ℕ} → Fin (m + n) → (Fin m ⊎ Fin n)
       bwd {m} {n} i with toℕ i <? m
       ... | yes p = inj₁ (fromℕ≤ p)
@@ -125,7 +132,6 @@ abstract
                       y (sym (inj₂-≡ (raise m y) (≤-pred (≰⇒> ¬p)))))
 
     -- public part of module Plus
-
     fwd-iso : {m n : ℕ} → (Fin m ⊎ Fin n) ≃ Fin (m + n)
     fwd-iso {m} {n} = fwd , mkqinv bwd (fwd∘bwd~id {m}) (bwd∘fwd~id {m})
 
@@ -165,7 +171,11 @@ abstract
     swap+ {m} {n} = (swapper m n , mkqinv (swapper n m) (swap-inv n m) (swap-inv m n))
 
     assocl+ : {m n o : ℕ} → Fin (m + (n + o)) ≃ Fin ((m + n) + o)
-    assocl+ {m} {n} {o} =
+    assocl+ {m} = (sym≃ (fwd-iso {m})) ● (path⊎ id≃ (sym≃ fwd-iso) ●
+      ((TE.assocl₊equiv ● path⊎ fwd-iso id≃) ● fwd-iso))
+
+    assocl+2 : {m n o : ℕ} → Fin (m + (n + o)) ≃ Fin ((m + n) + o)
+    assocl+2 {m} {n} {o} =
       let eq = +-assoc m n o in
       subst Fin (sym eq) ,
       mkqinv (subst Fin eq)
