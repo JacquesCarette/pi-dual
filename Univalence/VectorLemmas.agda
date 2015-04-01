@@ -18,6 +18,8 @@ open import Data.Nat.Properties.Simple using (+-comm; +-right-identity)
 open import Data.Fin using (Fin; zero; suc; inject+; raise; reduce≥)
 open import Data.Fin.Properties using (toℕ-injective)
 
+open import Data.Sum using (_⊎_; [_,_]′; inj₁; inj₂) renaming (map to map⊎)
+
 open import SubstLemmas
 open import FinNatLemmas
 open import FiniteFunctions
@@ -229,3 +231,10 @@ tab++[]≡tab∘̂unite+ {suc m} f eq = cong₂ _∷_ (cong f pf₁) pf₂
     pf₂ : tabulate (f ∘ suc) ++V [] ≡ tabulate (λ j → f (subst Fin eq (suc j)))
     pf₂ = trans (tab++[]≡tab∘̂unite+ (f ∘ suc) (+-right-identity m))
                 (finext (λ j → cong f (pf₃ j)))
+                
+-- Move to its own spot later
+merge-[,] : {A B C D E : Set} → {h : A → C} → {i : B → D} → {f : C → E}
+  → {g : D → E} → (x : A ⊎ B) →
+    [ f , g ]′ ( map⊎ h i x ) ≡ [ (f ∘ h) , (g ∘ i) ]′ x
+merge-[,] (inj₁ x) = refl
+merge-[,] (inj₂ y) = refl
