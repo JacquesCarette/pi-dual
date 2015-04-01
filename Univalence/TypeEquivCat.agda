@@ -16,28 +16,28 @@ open import Equiv
 open import TypeEquiv
 
 TypeEquivCat : Category zero zero zero
-TypeEquivCat = ?
+TypeEquivCat = {!!}
 
 TypeEquivGroupoid : Groupoid TypeEquivCat
-TypeEquivGroupoid = ?
+TypeEquivGroupoid = {!!}
 
 ⊎-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
-⊎-bifunctor = ?
+⊎-bifunctor = {!!}
 
 ×-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
-×-bifunctor = ?
+×-bifunctor = {!!}
 
 -- the 0 below is the id from CPermMonoidal
 module ⊎h = MonoidalHelperFunctors TypeEquivCat ⊎-bifunctor 0
 
 0⊎x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
-0⊎x≡x = ?
+0⊎x≡x = {!!}
 
 CPM⊎ : Monoidal TypeEquivCat
 CPM⊎ = record
   { ⊗ = ⊎-bifunctor
-   ; id = ?
-   ; identityˡ = ?
+   ; id = {!!}
+   ; identityˡ = {!!}
    ; identityʳ = {!!}
    ; assoc = {!!}
    ; triangle = {!!}
@@ -47,8 +47,8 @@ CPM⊎ = record
 CPM× : Monoidal TypeEquivCat
 CPM× = record
   { ⊗ = ×-bifunctor
-  ; id = ?
-  ; identityˡ = ?
+  ; id = {!!}
+  ; identityˡ = {!!}
   ; identityʳ = {!!}
   ; assoc = {!!}
   ; triangle = {!!}
