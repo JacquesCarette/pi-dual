@@ -296,5 +296,5 @@ CPM× = record
   ; identityʳ = y×1≡y
   ; assoc = [x×y]×z≡x×[y×z]
   ; triangle = eq (λ x → {!!}) (λ x → {!!})
-  ; pentagon = eq (λ x → P.refl) (λ x → {!P.refl!})
+  ; pentagon = eq (λ x → P.refl) (λ x → P.refl)
   }
