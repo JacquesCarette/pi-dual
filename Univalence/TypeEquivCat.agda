@@ -17,6 +17,7 @@ open import Categories.Monoidal
 open import Categories.Monoidal.Helpers
 open import Categories.Bifunctor
 open import Categories.NaturalIsomorphism
+open import Categories.Monoidal.Braided
 
 open import Equiv
 open import TypeEquiv
@@ -306,4 +307,39 @@ CPM× = record
   ; assoc = [x×y]×z≡x×[y×z]
   ; triangle = eq (λ x → P.refl) (λ x → P.refl)
   ; pentagon = eq (λ x → P.refl) (λ x → P.refl)
+  }
+
+swap₊∘[f,g]≡[g,f]∘swap₊ : {A B C D : Set} {f : A → C} {g : B → D} →
+  (x : A ⊎ B) → swap₊ (map⊎ f g x) P.≡ map⊎ g f (swap₊ x)
+swap₊∘[f,g]≡[g,f]∘swap₊ (inj₁ x) = P.refl
+swap₊∘[f,g]≡[g,f]∘swap₊ (inj₂ y) = P.refl
+
+x⊎y≈y⊎x : NaturalIsomorphism ⊎h.x⊗y ⊎h.y⊗x
+x⊎y≈y⊎x = record 
+  { F⇒G = record 
+    { η = λ X → swap₊equiv 
+    ; commute = λ f → eq swap₊∘[f,g]≡[g,f]∘swap₊ (sym∼ swap₊∘[f,g]≡[g,f]∘swap₊) 
+    } 
+  ; F⇐G = record 
+    { η = λ X → swap₊equiv 
+    ; commute = λ f → eq swap₊∘[f,g]≡[g,f]∘swap₊ (sym∼ swap₊∘[f,g]≡[g,f]∘swap₊) 
+    } 
+  ; iso = λ X → record 
+    { isoˡ = eq swapswap₊ swapswap₊ 
+    ; isoʳ = eq swapswap₊ swapswap₊ 
+    }
+  }
+
+BM⊎ : Braided CPM⊎
+BM⊎ = record 
+  { braid = x⊎y≈y⊎x 
+  ; hexagon₁ = eq (λ x → {!!}) (λ x → {!!}) 
+  ; hexagon₂ = eq {!!} {!!} 
+  }
+
+BM× : Braided CPM×
+BM× = record 
+  { braid = {!!} 
+  ; hexagon₁ = {!!} 
+  ; hexagon₂ = {!!} 
   }
