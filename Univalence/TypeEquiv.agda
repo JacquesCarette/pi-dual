@@ -47,14 +47,39 @@ uniti₊∘unite₊ (inj₂ y) = refl
 
 -- this is so easy, Agda can figure it out by itself (see below)
 
-unite₊∙uniti₊ : {A : Set} → unite₊ ○ uniti₊ ∼ id {A = A}
-unite₊∙uniti₊ _ = refl
+unite₊∘uniti₊ : {A : Set} → unite₊ ○ uniti₊ ∼ id {A = A}
+unite₊∘uniti₊ _ = refl
 
 unite₊equiv : {A : Set} → (⊥ ⊎ A) ≃ A
 unite₊equiv = (unite₊ , mkqinv uniti₊ refl∼ uniti₊∘unite₊)
 
 uniti₊equiv : {A : Set} → A ≃ (⊥ ⊎ A)
-uniti₊equiv = uniti₊ , mkqinv unite₊ uniti₊∘unite₊ unite₊∙uniti₊
+uniti₊equiv = uniti₊ , mkqinv unite₊ uniti₊∘unite₊ unite₊∘uniti₊
+
+-- unite₊′ and uniti₊′
+
+unite₊′ : {A : Set} → A ⊎ ⊥ → A
+unite₊′ (inj₁ x) = x
+unite₊′ (inj₂ ())
+
+uniti₊′ : {A : Set} → A → A ⊎ ⊥
+uniti₊′ a = inj₁ a
+
+uniti₊′∘unite₊′ : {A : Set} → uniti₊′ ○ unite₊′ ∼ id {A = A ⊎ ⊥}
+uniti₊′∘unite₊′ (inj₁ _) = refl
+uniti₊′∘unite₊′ (inj₂ ())
+
+-- this is so easy, Agda can figure it out by itself (see below)
+
+unite₊′∘uniti₊′ : {A : Set} → unite₊′ ○ uniti₊′ ∼ id {A = A}
+unite₊′∘uniti₊′ _ = refl
+
+unite₊′equiv : {A : Set} → (A ⊎ ⊥) ≃ A
+unite₊′equiv = (unite₊′ , mkqinv uniti₊′ refl∼ uniti₊′∘unite₊′)
+
+uniti₊′equiv : {A : Set} → A ≃ (A ⊎ ⊥)
+uniti₊′equiv = uniti₊′ , mkqinv unite₊′ uniti₊′∘unite₊′ unite₊′∘uniti₊′
+
 
 -- unite⋆ and uniti⋆
 

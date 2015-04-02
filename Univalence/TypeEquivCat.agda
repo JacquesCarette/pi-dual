@@ -78,6 +78,9 @@ TypeEquivGroupoid = record
     } }
   }
 
+-- A large number of lemmas below should be in Data.Sum.Properties
+-- rather than here.  But they are developped here as needed, and
+-- will be moved later.
 map⊎idid≡id : {A B : Set} → (x : A ⊎ B) → map⊎ F.id F.id x P.≡ x
 map⊎idid≡id (inj₁ x) = P.refl
 map⊎idid≡id (inj₂ y) = P.refl
@@ -93,6 +96,29 @@ map⊎-resp-≡ : {A B C D : Set} → {f₀ g₀ : A → B} {f₁ g₁ : C → D
 map⊎-resp-≡ {e₁ = f₀~g₀} (inj₁ x) = P.cong inj₁ (f₀~g₀ x)
 map⊎-resp-≡ {e₂ = f₁~g₁} (inj₂ y) = P.cong inj₂ (f₁~g₁ y)
 
+unite₊∘[id,f]≡f∘unite₊ : {A B : Set} {f : A → B} →
+  (x : ⊥ ⊎ A) → unite₊ (map⊎ F.id f x) P.≡ f (unite₊ x)
+unite₊∘[id,f]≡f∘unite₊ (inj₁ ())
+unite₊∘[id,f]≡f∘unite₊ (inj₂ y) = P.refl
+
+unite₊′∘[id,f]≡f∘unite₊′ : {A B : Set} {f : A → B} →
+  (x : A ⊎ ⊥) → unite₊′ (map⊎ f F.id x) P.≡ f (unite₊′ x)
+unite₊′∘[id,f]≡f∘unite₊′ (inj₁ x) = P.refl
+unite₊′∘[id,f]≡f∘unite₊′ (inj₂ ())
+
+inj₂∘unite₊~id : {A : Set} → (x : ⊥ ⊎ A) → inj₂ (unite₊ x) P.≡ x
+inj₂∘unite₊~id (inj₁ ())
+inj₂∘unite₊~id (inj₂ y) = P.refl
+
+f∘unite₊′≡unite₊′∘[f,id] : {A B : Set} {f : A → B} →
+  (x : A ⊎ ⊥) → f (unite₊′ x) P.≡ unite₊′ (map⊎ f F.id x)
+f∘unite₊′≡unite₊′∘[f,id] (inj₁ x) = P.refl
+f∘unite₊′≡unite₊′∘[f,id] (inj₂ ())
+
+inj₁∘unite₊′~id : {A : Set} → (x : A ⊎ ⊥) → inj₁ (unite₊′ x) P.≡ x
+inj₁∘unite₊′~id (inj₁ x) = P.refl
+inj₁∘unite₊′~id (inj₂ ())
+
 ⊎-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
 ⊎-bifunctor = record
   { F₀ = λ {( x , y) → x ⊎ y}
@@ -103,32 +129,7 @@ map⊎-resp-≡ {e₂ = f₁~g₁} (inj₂ y) = P.cong inj₂ (f₁~g₁ y)
   }
   where open _≋_
   
-path×-resp-≡ : {A B C D : Set} → {f₀ g₀ : A → B} {f₁ g₁ : C → D} →
-  {e₁ : f₀ ∼ g₀} → {e₂ : f₁ ∼ g₁} →  
-  (x : A × C) → (f₀ (proj₁ x) , f₁ (proj₂ x)) P.≡
-                (g₀ (proj₁ x) , g₁ (proj₂ x))
-path×-resp-≡ {e₁ = f≡} {h≡} (a , c) = P.cong₂ _,_ (f≡ a) (h≡ c)
-
-×-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
-×-bifunctor = record
-  { F₀ = λ {( x , y) → x × y}
-  ; F₁ = λ {(x , y) → path× x y }
-  ; identity = eq (λ x → P.refl) (λ x → P.refl) -- η for products gives this
-  ; homomorphism = eq (λ x → P.refl) (λ x → P.refl) -- again η for products!
-  ; F-resp-≡ = λ { (e₁ , e₂) → eq (path×-resp-≡ {e₁ = f≡ e₁} {f≡ e₂}) ((path×-resp-≡ {e₁ = g≡ e₁} {g≡ e₂}))}
-  }
-  where open _≋_
-
 module ⊎h = MonoidalHelperFunctors TypeEquivCat ⊎-bifunctor ⊥
-
-unite₊∘[id,f]≡f∘unite₊ : {A B : Set} {f : A → B} →
-  (x : ⊥ ⊎ A) → unite₊ (map⊎ F.id f x) P.≡ f (unite₊ x)
-unite₊∘[id,f]≡f∘unite₊ (inj₁ ())
-unite₊∘[id,f]≡f∘unite₊ (inj₂ y) = P.refl
-
-inj₂∘unite₊~id : {A : Set} → (x : ⊥ ⊎ A) → inj₂ (unite₊ x) P.≡ x
-inj₂∘unite₊~id (inj₁ ())
-inj₂∘unite₊~id (inj₂ y) = P.refl
 
 0⊎x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
 0⊎x≡x = record 
@@ -144,21 +145,18 @@ inj₂∘unite₊~id (inj₂ y) = P.refl
     }
   }
 
--- this needs a "flipped" unite₊equiv and uniti₊equiv, which are not written
--- we could compose with swap₊ ? (cheating, a bit, but we could write them by
--- hand too)
 x⊎0≡x : NaturalIsomorphism ⊎h.x⊗id ⊎h.x
 x⊎0≡x = record
   { F⇒G = record
-    { η = λ X → unite₊equiv ● swap₊equiv
-    ; commute = λ f → eq {!!} (λ x → P.refl)
+    { η = λ X → unite₊′equiv
+    ; commute = λ f → eq unite₊′∘[id,f]≡f∘unite₊′ (λ x → P.refl)
     }
   ; F⇐G = record
-    { η = λ X → swap₊equiv ● uniti₊equiv
-    ; commute = λ f → eq (λ x → P.refl) {!!}
+    { η = λ X → uniti₊′equiv
+    ; commute = λ f → eq (λ x → P.refl) f∘unite₊′≡unite₊′∘[f,id]
     }
   ; iso = λ X → record
-    { isoˡ = eq {!!} {!!}
+    { isoˡ = eq inj₁∘unite₊′~id inj₁∘unite₊′~id
     ; isoʳ = eq (λ x → P.refl) (λ x → P.refl)
     }
   }
@@ -193,6 +191,30 @@ assocr₊∘[[,],] (inj₂ y) = P.refl
     }
   }
 
+triangle⊎-right : {A B : Set} → (x : (A ⊎ ⊥) ⊎ B) → map⊎ unite₊′ F.id x P.≡ map⊎ F.id unite₊ (assocr₊ x)
+triangle⊎-right (inj₁ (inj₁ x)) = P.refl
+triangle⊎-right (inj₁ (inj₂ ()))
+triangle⊎-right (inj₂ y) = P.refl
+
+-- note how C is completely arbitrary here (and not ⊥ like in the above)
+triangle⊎-left : {A B C : Set} → (x : A ⊎ B) → map⊎ (inj₁ {B = C}) F.id x P.≡ assocl₊ (map⊎ F.id inj₂ x)
+triangle⊎-left (inj₁ x) = P.refl
+triangle⊎-left (inj₂ y) = P.refl
+
+pentagon⊎-right : {A B C D : Set} → (x : ((A ⊎ B) ⊎ C) ⊎ D) →
+  assocr₊ (assocr₊ x) P.≡ map⊎ F.id assocr₊ (assocr₊ (map⊎ assocr₊ F.id x))
+pentagon⊎-right (inj₁ (inj₁ (inj₁ x))) = P.refl
+pentagon⊎-right (inj₁ (inj₁ (inj₂ y))) = P.refl
+pentagon⊎-right (inj₁ (inj₂ y)) = P.refl
+pentagon⊎-right (inj₂ y) = P.refl
+
+pentagon⊎-left : {A B C D : Set} → (x : A ⊎ B ⊎ C ⊎ D) →
+  assocl₊ (assocl₊ x) P.≡ map⊎ assocl₊ F.id (assocl₊ (map⊎ F.id assocl₊ x))
+pentagon⊎-left (inj₁ x) = P.refl
+pentagon⊎-left (inj₂ (inj₁ x)) = P.refl
+pentagon⊎-left (inj₂ (inj₂ (inj₁ x))) = P.refl
+pentagon⊎-left (inj₂ (inj₂ (inj₂ y))) = {!P.refl!}
+
 CPM⊎ : Monoidal TypeEquivCat
 CPM⊎ = record
   { ⊗ = ⊎-bifunctor
@@ -200,9 +222,31 @@ CPM⊎ = record
    ; identityˡ = 0⊎x≡x
    ; identityʳ = x⊎0≡x
    ; assoc = [x⊎y]⊎z≡x⊎[y⊎z]
-   ; triangle = eq (λ x → {!!}) (λ x → {!!})
-   ; pentagon = eq (λ x → {!!}) (λ x → {!!})
+   ; triangle = eq triangle⊎-right triangle⊎-left
+   ; pentagon = eq pentagon⊎-right pentagon⊎-left
    }
+
+-------
+-- and below, we will have a lot of things which belong in
+-- Data.Product.Properties.  In fact, some of them are ``free'',
+-- in that β-reduction is enough.  However, it might be a good
+-- idea to fully mirror all the ones needed for ⊎.
+
+path×-resp-≡ : {A B C D : Set} → {f₀ g₀ : A → B} {f₁ g₁ : C → D} →
+  {e₁ : f₀ ∼ g₀} → {e₂ : f₁ ∼ g₁} →  
+  (x : A × C) → (f₀ (proj₁ x) , f₁ (proj₂ x)) P.≡
+                (g₀ (proj₁ x) , g₁ (proj₂ x))
+path×-resp-≡ {e₁ = f≡} {h≡} (a , c) = P.cong₂ _,_ (f≡ a) (h≡ c)
+
+×-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
+×-bifunctor = record
+  { F₀ = λ {( x , y) → x × y}
+  ; F₁ = λ {(x , y) → path× x y }
+  ; identity = eq (λ x → P.refl) (λ x → P.refl) -- η for products gives this
+  ; homomorphism = eq (λ x → P.refl) (λ x → P.refl) -- again η for products!
+  ; F-resp-≡ = λ { (e₁ , e₂) → eq (path×-resp-≡ {e₁ = f≡ e₁} {f≡ e₂}) ((path×-resp-≡ {e₁ = g≡ e₁} {g≡ e₂}))}
+  }
+  where open _≋_
 
 module ×h = MonoidalHelperFunctors TypeEquivCat ×-bifunctor ⊤
 
