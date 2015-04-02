@@ -6,7 +6,7 @@ open import Level using (zero; suc)
 import Relation.Binary.PropositionalEquality as P
 open import Relation.Binary using (Rel)
 open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to map⊎)
-open import Data.Product using (_,_; proj₁; proj₂;_×_; Σ)
+open import Data.Product using (_,_; proj₁; proj₂;_×_; Σ) renaming (map to map×)
 open import Data.Unit
 open import Data.Empty
 import Function as F
@@ -213,7 +213,7 @@ pentagon⊎-left : {A B C D : Set} → (x : A ⊎ B ⊎ C ⊎ D) →
 pentagon⊎-left (inj₁ x) = P.refl
 pentagon⊎-left (inj₂ (inj₁ x)) = P.refl
 pentagon⊎-left (inj₂ (inj₂ (inj₁ x))) = P.refl
-pentagon⊎-left (inj₂ (inj₂ (inj₂ y))) = {!P.refl!}
+pentagon⊎-left (inj₂ (inj₂ (inj₂ y))) = P.refl
 
 CPM⊎ : Monoidal TypeEquivCat
 CPM⊎ = record
@@ -231,6 +231,7 @@ CPM⊎ = record
 -- Data.Product.Properties.  In fact, some of them are ``free'',
 -- in that β-reduction is enough.  However, it might be a good
 -- idea to fully mirror all the ones needed for ⊎.
+
 
 path×-resp-≡ : {A B C D : Set} → {f₀ g₀ : A → B} {f₁ g₁ : C → D} →
   {e₁ : f₀ ∼ g₀} → {e₂ : f₁ ∼ g₁} →  
@@ -250,13 +251,50 @@ path×-resp-≡ {e₁ = f≡} {h≡} (a , c) = P.cong₂ _,_ (f≡ a) (h≡ c)
 
 module ×h = MonoidalHelperFunctors TypeEquivCat ×-bifunctor ⊤
 
+-- again because of η for products, lots of the following have trivial proofs
+1×y≡y : NaturalIsomorphism ×h.id⊗x ×h.x
+1×y≡y = record
+  { F⇒G = record
+    { η = λ X → unite⋆equiv
+    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl)
+    }
+  ; F⇐G = record
+    { η = λ X → uniti⋆equiv
+    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl)
+    }
+  ; iso = λ X → record
+    { isoˡ = eq (λ x → P.refl) (λ x → P.refl)
+    ; isoʳ = eq (λ x → P.refl) (λ x → P.refl)
+    }
+  }
+
+y×1≡y : NaturalIsomorphism ×h.x⊗id ×h.x
+y×1≡y = record
+  { F⇒G = record { η = λ X → {!!} ; commute = {!!} }
+  ; F⇐G = record { η = λ X → {!!} ; commute = {!!} }
+  ; iso = λ X → record { isoˡ = {!!} ; isoʳ = {!!} }
+  }
+
+[x×y]×z≡x×[y×z] : NaturalIsomorphism ×h.[x⊗y]⊗z ×h.x⊗[y⊗z]
+[x×y]×z≡x×[y×z] = record
+  { F⇒G = record
+    { η = λ X → assocr⋆equiv
+    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl) }
+  ; F⇐G = record
+    { η = λ X → assocl⋆equiv
+    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl) }
+  ; iso = λ X → record
+    { isoˡ = eq (λ x → P.refl) (λ x → P.refl)
+    ; isoʳ = eq (λ x → P.refl) (λ x → P.refl) }
+  }
+
 CPM× : Monoidal TypeEquivCat
 CPM× = record
   { ⊗ = ×-bifunctor
   ; id = ⊤
-  ; identityˡ = {!!}
-  ; identityʳ = {!!}
-  ; assoc = {!!}
-  ; triangle = {!!}
-  ; pentagon = {!!}
+  ; identityˡ = 1×y≡y
+  ; identityʳ = y×1≡y
+  ; assoc = [x×y]×z≡x×[y×z]
+  ; triangle = eq (λ x → {!!}) (λ x → {!!})
+  ; pentagon = eq (λ x → P.refl) (λ x → {!P.refl!})
   }
