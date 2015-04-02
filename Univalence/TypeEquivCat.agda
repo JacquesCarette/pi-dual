@@ -270,9 +270,18 @@ module ×h = MonoidalHelperFunctors TypeEquivCat ×-bifunctor ⊤
 
 y×1≡y : NaturalIsomorphism ×h.x⊗id ×h.x
 y×1≡y = record
-  { F⇒G = record { η = λ X → {!!} ; commute = {!!} }
-  ; F⇐G = record { η = λ X → {!!} ; commute = {!!} }
-  ; iso = λ X → record { isoˡ = {!!} ; isoʳ = {!!} }
+  { F⇒G = record 
+    { η = λ X → unite⋆′equiv 
+    ;  commute = λ f → eq (λ x → P.refl) (λ x → P.refl) 
+    }
+  ; F⇐G = record 
+    { η = λ X → uniti⋆′equiv 
+    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl) 
+    }
+  ; iso = λ X → record 
+    { isoˡ = eq (λ x → P.refl) (λ x → P.refl) 
+    ; isoʳ = eq (λ x → P.refl) (λ x → P.refl) 
+    }
   }
 
 [x×y]×z≡x×[y×z] : NaturalIsomorphism ×h.[x⊗y]⊗z ×h.x⊗[y⊗z]
@@ -295,6 +304,6 @@ CPM× = record
   ; identityˡ = 1×y≡y
   ; identityʳ = y×1≡y
   ; assoc = [x×y]×z≡x×[y×z]
-  ; triangle = eq (λ x → {!!}) (λ x → {!!})
+  ; triangle = eq (λ x → P.refl) (λ x → P.refl)
   ; pentagon = eq (λ x → P.refl) (λ x → P.refl)
   }

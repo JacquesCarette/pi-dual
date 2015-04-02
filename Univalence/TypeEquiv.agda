@@ -109,8 +109,8 @@ uniti⋆′ x = x , tt
 uniti⋆′∘unite⋆′ : {A : Set} → uniti⋆′ ○ unite⋆′ ∼ id {A = A × ⊤}
 uniti⋆′∘unite⋆′ (x , tt) = refl
 
-unite′⋆equiv : {A : Set} → (A × ⊤) ≃ A
-unite′⋆equiv = unite⋆′ , mkqinv uniti⋆′ refl∼ uniti⋆′∘unite⋆′
+unite⋆′equiv : {A : Set} → (A × ⊤) ≃ A
+unite⋆′equiv = unite⋆′ , mkqinv uniti⋆′ refl∼ uniti⋆′∘unite⋆′
 
 uniti⋆′equiv : {A : Set} → A ≃ (A × ⊤)
 uniti⋆′equiv = uniti⋆′ , mkqinv unite⋆′ uniti⋆′∘unite⋆′ refl∼
