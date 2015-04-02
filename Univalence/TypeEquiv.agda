@@ -98,6 +98,23 @@ unite⋆equiv = unite⋆ , mkqinv uniti⋆ refl∼ uniti⋆∘unite⋆
 uniti⋆equiv : {A : Set} → A ≃ (⊤ × A)
 uniti⋆equiv = uniti⋆ , mkqinv unite⋆ uniti⋆∘unite⋆ refl∼
 
+-- unite⋆′ and uniti⋆′
+
+unite⋆′ : {A : Set} → A × ⊤ → A
+unite⋆′ (x , tt) = x
+
+uniti⋆′ : {A : Set} → A → A × ⊤
+uniti⋆′ x = x , tt
+
+uniti⋆′∘unite⋆′ : {A : Set} → uniti⋆′ ○ unite⋆′ ∼ id {A = A × ⊤}
+uniti⋆′∘unite⋆′ (x , tt) = refl
+
+unite′⋆equiv : {A : Set} → (A × ⊤) ≃ A
+unite′⋆equiv = unite⋆′ , mkqinv uniti⋆′ refl∼ uniti⋆′∘unite⋆′
+
+uniti⋆′equiv : {A : Set} → A ≃ (A × ⊤)
+uniti⋆′equiv = uniti⋆′ , mkqinv unite⋆′ uniti⋆′∘unite⋆′ refl∼
+
 -- swap⋆
 
 swap⋆ : {A B : Set} → A × B → B × A
