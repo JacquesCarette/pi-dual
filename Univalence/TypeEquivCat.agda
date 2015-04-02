@@ -87,11 +87,11 @@ map⊎-∘ : {A B C D E F : Set} → {f : A → C} {g : B → D} {h : C → E} {
 map⊎-∘ (inj₁ x) = P.refl
 map⊎-∘ (inj₂ y) = P.refl
 
-map⊎-resp-≡ : {A B C D : Set} → {f₀ g₀ : A ≃ B} {f₁ g₁ : C ≃ D} →
-  {e₁ : f₀ ≋ g₀} → {e₂ : f₁ ≋ g₁} →  
-  (x : A ⊎ C) → map⊎ (proj₁ f₀) (proj₁ f₁) x P.≡ map⊎ (proj₁ g₀) (proj₁ g₁) x
-map⊎-resp-≡ {e₁ = eq f≡ _} (inj₁ x) = P.cong inj₁ (f≡ x)
-map⊎-resp-≡ {e₂ = eq f≡ _} (inj₂ y) = P.cong inj₂ (f≡ y)
+map⊎-resp-≡ : {A B C D : Set} → {f₀ g₀ : A → B} {f₁ g₁ : C → D} →
+  {e₁ : f₀ ∼ g₀} → {e₂ : f₁ ∼ g₁} →  
+  (x : A ⊎ C) → map⊎ f₀ f₁ x P.≡ map⊎ g₀ g₁ x
+map⊎-resp-≡ {e₁ = f₀~g₀} (inj₁ x) = P.cong inj₁ (f₀~g₀ x)
+map⊎-resp-≡ {e₂ = f₁~g₁} (inj₂ y) = P.cong inj₂ (f₁~g₁ y)
 
 ⊎-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
 ⊎-bifunctor = record
@@ -99,14 +99,15 @@ map⊎-resp-≡ {e₂ = eq f≡ _} (inj₂ y) = P.cong inj₂ (f≡ y)
   ; F₁ = λ {(x , y) → path⊎ x y}
   ; identity = eq map⊎idid≡id map⊎idid≡id
   ; homomorphism = eq map⊎-∘ map⊎-∘
-  ; F-resp-≡ = λ { (e₁ , e₂) → eq (map⊎-resp-≡ {e₁ = e₁} {e₂}) (map⊎-resp-≡ {e₁ = flip≋ e₁} {flip≋ e₂}) }
+  ; F-resp-≡ = λ { (e₁ , e₂) → eq (map⊎-resp-≡ {e₁ = f≡ e₁} {f≡ e₂}) (map⊎-resp-≡ {e₁ =  g≡ e₁} {g≡ e₂}) }
   }
-
-path×-resp-≡ : {A B C D : Set} → {f₀ g₀ : A ≃ B} {f₁ g₁ : C ≃ D} →
-  {e₁ : f₀ ≋ g₀} → {e₂ : f₁ ≋ g₁} →  
-  (x : A × C) → (proj₁ f₀ (proj₁ x) , proj₁ f₁ (proj₂ x)) P.≡
-                (proj₁ g₀ (proj₁ x) , proj₁ g₁ (proj₂ x))
-path×-resp-≡ {e₁ = eq f≡ g≡} {eq h≡ i≡} (a , c) = P.cong₂ _,_ (f≡ a) (h≡ c)
+  where open _≋_
+  
+path×-resp-≡ : {A B C D : Set} → {f₀ g₀ : A → B} {f₁ g₁ : C → D} →
+  {e₁ : f₀ ∼ g₀} → {e₂ : f₁ ∼ g₁} →  
+  (x : A × C) → (f₀ (proj₁ x) , f₁ (proj₂ x)) P.≡
+                (g₀ (proj₁ x) , g₁ (proj₂ x))
+path×-resp-≡ {e₁ = f≡} {h≡} (a , c) = P.cong₂ _,_ (f≡ a) (h≡ c)
 
 ×-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
 ×-bifunctor = record
@@ -114,44 +115,82 @@ path×-resp-≡ {e₁ = eq f≡ g≡} {eq h≡ i≡} (a , c) = P.cong₂ _,_ (f�
   ; F₁ = λ {(x , y) → path× x y }
   ; identity = eq (λ x → P.refl) (λ x → P.refl) -- η for products gives this
   ; homomorphism = eq (λ x → P.refl) (λ x → P.refl) -- again η for products!
-  ; F-resp-≡ = λ { (e₁ , e₂) → eq (path×-resp-≡ {e₁ = e₁} {e₂}) ((path×-resp-≡ {e₁ = flip≋ e₁} {flip≋ e₂}))}
+  ; F-resp-≡ = λ { (e₁ , e₂) → eq (path×-resp-≡ {e₁ = f≡ e₁} {f≡ e₂}) ((path×-resp-≡ {e₁ = g≡ e₁} {g≡ e₂}))}
   }
+  where open _≋_
 
 module ⊎h = MonoidalHelperFunctors TypeEquivCat ⊎-bifunctor ⊥
+
+unite₊∘[id,f]≡f∘unite₊ : {A B : Set} {f : A → B} →
+  (x : ⊥ ⊎ A) → unite₊ (map⊎ F.id f x) P.≡ f (unite₊ x)
+unite₊∘[id,f]≡f∘unite₊ (inj₁ ())
+unite₊∘[id,f]≡f∘unite₊ (inj₂ y) = P.refl
+
+inj₂∘unite₊~id : {A : Set} → (x : ⊥ ⊎ A) → inj₂ (unite₊ x) P.≡ x
+inj₂∘unite₊~id (inj₁ ())
+inj₂∘unite₊~id (inj₂ y) = P.refl
 
 0⊎x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
 0⊎x≡x = record 
   { F⇒G = record
     { η = λ X → unite₊equiv
-    ; commute = λ f → eq {!!} (λ x → P.refl) } 
+    ; commute = λ f → eq unite₊∘[id,f]≡f∘unite₊ (λ x → P.refl) } 
   ; F⇐G = record
     { η = λ X → uniti₊equiv
-    ; commute = λ f → eq (λ x → P.refl) {!!} } 
+    ; commute = λ f → eq (λ x → P.refl) (sym∼ unite₊∘[id,f]≡f∘unite₊) } 
   ; iso = λ X → record
-    { isoˡ = eq {!!} {!!}
+    { isoˡ = eq inj₂∘unite₊~id inj₂∘unite₊~id
     ; isoʳ = eq (λ _ → P.refl) (λ _ → P.refl)
     }
   }
 
 -- this needs a "flipped" unite₊equiv and uniti₊equiv, which are not written
+-- we could compose with swap₊ ? (cheating, a bit, but we could write them by
+-- hand too)
 x⊎0≡x : NaturalIsomorphism ⊎h.x⊗id ⊎h.x
 x⊎0≡x = record
-  { F⇒G = record { η = λ X → {!!} ; commute = {!!} }
-  ; F⇐G = record { η = λ X → {!!} ; commute = {!!} }
-  ; iso = λ X → {!!}
+  { F⇒G = record
+    { η = λ X → unite₊equiv ● swap₊equiv
+    ; commute = λ f → eq {!!} (λ x → P.refl)
+    }
+  ; F⇐G = record
+    { η = λ X → swap₊equiv ● uniti₊equiv
+    ; commute = λ f → eq (λ x → P.refl) {!!}
+    }
+  ; iso = λ X → record
+    { isoˡ = eq {!!} {!!}
+    ; isoʳ = eq (λ x → P.refl) (λ x → P.refl)
+    }
   }
+
+assocr₊∘[[,],] : {A B C D E F : Set} → {f₀ : A → D} {f₁ : B → E} {f₂ : C → F} →
+  (x : (A ⊎ B) ⊎ C) →
+    assocr₊ (map⊎ (map⊎ f₀ f₁) f₂ x) P.≡ map⊎ f₀ (map⊎ f₁ f₂) (assocr₊ x)
+assocr₊∘[[,],] (inj₁ (inj₁ x)) = P.refl
+assocr₊∘[[,],] (inj₁ (inj₂ y)) = P.refl
+assocr₊∘[[,],] (inj₂ y) = P.refl
+
+[[,],]∘assocl₊ : {A B C D E F : Set} → {f₀ : A → D} {f₁ : B → E} {f₂ : C → F} →
+  (x : A ⊎ (B ⊎ C)) →
+     map⊎ (map⊎ f₀ f₁) f₂ (assocl₊ x) P.≡ assocl₊ (map⊎ f₀ (map⊎ f₁ f₂) x)
+[[,],]∘assocl₊ (inj₁ x) = P.refl
+[[,],]∘assocl₊ (inj₂ (inj₁ x)) = P.refl
+[[,],]∘assocl₊ (inj₂ (inj₂ y)) = P.refl
 
 [x⊎y]⊎z≡x⊎[y⊎z] : NaturalIsomorphism ⊎h.[x⊗y]⊗z ⊎h.x⊗[y⊗z]
 [x⊎y]⊎z≡x⊎[y⊎z] = record
   { F⇒G = record
     { η = λ X → assocr₊equiv
-    ; commute = λ f → eq {!!} {!!}
+    ; commute = λ f → eq assocr₊∘[[,],] [[,],]∘assocl₊
     }
   ; F⇐G = record
     { η = λ X → assocl₊equiv
-    ; commute = λ f → {!!}
+    ; commute = λ f → eq (sym∼ [[,],]∘assocl₊) (sym∼ assocr₊∘[[,],])
     }
-  ; iso = λ X → record { isoˡ = {!!} ; isoʳ = {!!} }
+  ; iso = λ X → record
+    { isoˡ = eq (p∘!p≡id {p = assocr₊equiv}) (p∘!p≡id {p = assocr₊equiv})
+    ; isoʳ = eq ((p∘!p≡id {p = assocl₊equiv})) ((p∘!p≡id {p = assocl₊equiv}))
+    }
   }
 
 CPM⊎ : Monoidal TypeEquivCat
