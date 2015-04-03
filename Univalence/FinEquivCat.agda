@@ -24,6 +24,7 @@ open import FinEquiv using (_fin≃_; _●_)
 open import Equiv using (id≃)
 open import TypeEquivCat using (_≋_)
 
+
 ------------------------------------------------------------------------------
 
 FinEquivCat : Category lzero lzero lzero
