@@ -3,6 +3,86 @@
 \usepackage{amssymb}
 \begin{document}
 
+\newcommand{\PiL}{\textsc{\textbf{Pi}}}
+\newcommand{\PiCalc}{\PiL${}^\equiv$}
+\newcommand{\PiCat}{\ensuremath{\Pi\mathbb{C}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Goal} 
+
+Our first major milestone is (i) to develop \emph{a sound and complete
+  calculus of permutations over finite sets}, (ii) to define, in that
+setting, a variant of \emph{univalence} that has a computational
+content, and to \emph{prove} this univalence property. In the longer
+term, we will want to generalize this framework to sets with negative
+and fractional cardinalities which would effectively give us (at
+least) higher-order functions. One can in fact go further and consider
+sets with more general cardinalities: imaginary numbers, irrational
+numbers, all the way to algebraic numbers.
+
+To reach the first major milestone, our detailed steps are:
+\begin{itemize}
+
+\item to develop a \emph{syntactic notion of permutations over finite
+    sets}. We achieve this by defining a typed programming language
+  \PiL\ whose types denote finite sets and whose expressions denote
+  permutations over finite sets. This language has been completely
+  developed: its syntax, type system, and operational semantics are
+  well-understood;
+
+\item to develop a \emph{calculus \PiCalc\ for reasoning about \PiL\
+    permutations}. We eventually want to prove that this calculus is
+  sound and complete with respect to a semantic notion of permutation
+  equivalence;
+
+\item to develop a \emph{semantic notion of equivalence of
+    permutations over finite sets}.  To make the connections to HoTT
+  more evident, we formalize this equivalence using a category
+  (groupoid actually) of finite sets and permutations \PiCat\ which we
+  establish is \emph{rig category}, i.e., it has two symmetric
+  monoidal structures with the multiplicative one distributing over
+  the additive one. The objects of this category are discrete
+  groupoids representing finite sets; the morphisms of \PiCat\ are
+  permutations over the finite sets; the complete definition of the
+  category also needs an equivalence relation that specifies when two
+  morphisms should be considered equal. This equivalence relation is
+  our notion of semantic equivalence of permutations over finite
+  sets. The advantage of using the categorical setting to define the
+  semantic notion of equivalence is that the coherence laws for rig
+  categories provide us with an axiomatization of semantic equivalence
+  of permutations that is rich enough to reason about sequential
+  compositions of permutations (given by the plain categorical
+  structure), parallel compositions of permutations (given by the
+  additive monoidal structure), and tensor compositions of
+  permutations (given by the multiplicative monoidal structure) while
+  taking care of all the induced equivalences that result from the
+  interactions among these structures. 
+
+\item to derive the complete definition of \PiCalc\ by reifying each
+  of the primitives used in defining semantic equivalence as syntactic
+  objects; a proof of soundness and completeness is then immediate as
+  the syntactic and semantic structures are isomorphic by construction.
+
+\item to define a variant of univalence in the current setting we
+  reason as follows. In the HoTT setting, which is not limited to
+  finite sets and permutations, we have a larger category of arbitrary
+  sets and with equivalences as morphisms. Univalence in that context
+  postulates that each equivalence between sets induces a path between
+  these sets. Translated to our setting, univalence postulates that
+  each semantic equivalence between sets induces a syntactic
+  equivalence between these sets. In the richer setting of HoTT,
+  univalence is postulated because there is no obvious way to reason
+  about extensional equivalence of the functions used to define
+  semantic equivalences. In our setting, these semantic equivalences
+  are defined using permutations which are amenable to equational
+  reasoning via the coherence laws. Therefore to make univalence
+  constructive, all we need is a computational mechanism to calculate
+  a syntactic equivalence from a semantic one. This mechanism is
+  embedded in the proof of completeness above. 
+
+\item Our complete development is formalized in Agda. 
+\end{itemize}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Basic Utilities}
 
