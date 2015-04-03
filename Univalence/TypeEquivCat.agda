@@ -340,7 +340,7 @@ hexagon⊎-left : {A B C : Set} → (x : A ⊎ B ⊎ C) →
   assocl₊ (swap₊ (assocl₊ x)) P.≡ map⊎ swap₊ F.id (assocl₊ (map⊎ F.id swap₊ x))
 hexagon⊎-left (inj₁ x) = P.refl
 hexagon⊎-left (inj₂ (inj₁ x)) = P.refl
-hexagon⊎-left (inj₂ (inj₂ y)) = {!P.refl!}
+hexagon⊎-left (inj₂ (inj₂ y)) = P.refl
 
 BM⊎ : Braided CPM⊎
 BM⊎ = record 
@@ -349,9 +349,25 @@ BM⊎ = record
   ; hexagon₂ = eq hexagon⊎-left hexagon⊎-right 
   }
 
+x×y≈y×x : NaturalIsomorphism ×h.x⊗y ×h.y⊗x
+x×y≈y×x = record
+  { F⇒G = record
+    { η = λ X → swap⋆equiv
+    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl)
+    }
+  ; F⇐G = record
+    { η = λ X → swap⋆equiv
+    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl)
+    }
+  ; iso = λ X → record
+    { isoˡ = eq swapswap⋆ swapswap⋆
+    ; isoʳ = eq swapswap⋆ swapswap⋆
+    }
+  }
+
 BM× : Braided CPM×
 BM× = record 
-  { braid = {!!} 
-  ; hexagon₁ = {!!} 
-  ; hexagon₂ = {!!} 
+  { braid = x×y≈y×x 
+  ; hexagon₁ = eq (λ x → P.refl) (λ x → P.refl) 
+  ; hexagon₂ = eq (λ x → P.refl) (λ x → P.refl) 
   }
