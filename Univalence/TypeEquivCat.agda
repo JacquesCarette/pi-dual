@@ -330,11 +330,23 @@ x⊎y≈y⊎x = record
     }
   }
 
+hexagon⊎-right : {A B C : Set} → (x : (A ⊎ B) ⊎ C) →
+  assocr₊ (swap₊ (assocr₊ x)) P.≡ map⊎ F.id swap₊ (assocr₊ (map⊎ swap₊ F.id x))
+hexagon⊎-right (inj₁ (inj₁ x)) = P.refl
+hexagon⊎-right (inj₁ (inj₂ y)) = P.refl
+hexagon⊎-right (inj₂ y) = P.refl
+
+hexagon⊎-left : {A B C : Set} → (x : A ⊎ B ⊎ C) →
+  assocl₊ (swap₊ (assocl₊ x)) P.≡ map⊎ swap₊ F.id (assocl₊ (map⊎ F.id swap₊ x))
+hexagon⊎-left (inj₁ x) = P.refl
+hexagon⊎-left (inj₂ (inj₁ x)) = P.refl
+hexagon⊎-left (inj₂ (inj₂ y)) = {!P.refl!}
+
 BM⊎ : Braided CPM⊎
 BM⊎ = record 
   { braid = x⊎y≈y⊎x 
-  ; hexagon₁ = eq (λ x → {!!}) (λ x → {!!}) 
-  ; hexagon₂ = eq {!!} {!!} 
+  ; hexagon₁ = eq hexagon⊎-right hexagon⊎-left 
+  ; hexagon₂ = eq hexagon⊎-left hexagon⊎-right 
   }
 
 BM× : Braided CPM×
