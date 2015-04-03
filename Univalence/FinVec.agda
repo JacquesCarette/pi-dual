@@ -91,9 +91,6 @@ module F where
   FinVec : ℕ → ℕ → Set
   FinVec m n = Vec (Fin m) n
 
-  _●_ : {A B C : Set} → A ≃ B → B ≃ C → A ≃ C
-  _●_ = trans≃
-  
   private
     fwd : {m n : ℕ} → (Fin m ⊎ Fin n) → Fin (m + n)
     fwd = proj₁ Plus.fwd-iso
