@@ -99,8 +99,10 @@ data _⟷_ : U → U → Set where
   swap⋆   : {t₁ t₂ : U} → TIMES t₁ t₂ ⟷ TIMES t₂ t₁
   assocl⋆ : {t₁ t₂ t₃ : U} → TIMES t₁ (TIMES t₂ t₃) ⟷ TIMES (TIMES t₁ t₂) t₃
   assocr⋆ : {t₁ t₂ t₃ : U} → TIMES (TIMES t₁ t₂) t₃ ⟷ TIMES t₁ (TIMES t₂ t₃)
-  distz   : {t : U} → TIMES ZERO t ⟷ ZERO
-  factorz : {t : U} → ZERO ⟷ TIMES ZERO t
+  absorbr  : {t : U} → TIMES ZERO t ⟷ ZERO
+  absorbl : {t : U} → TIMES t ZERO ⟷ ZERO
+  factorzr : {t : U} → ZERO ⟷ TIMES t ZERO
+  factorzl : {t : U} → ZERO ⟷ TIMES ZERO t
   dist    : {t₁ t₂ t₃ : U} → 
             TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) 
   factor  : {t₁ t₂ t₃ : U} → 
@@ -125,8 +127,10 @@ comb= uniti⋆ uniti⋆ = true
 comb= swap⋆ swap⋆ = true
 comb= assocl⋆ assocl⋆ = true
 comb= assocr⋆ assocr⋆ = true
-comb= distz distz = true
-comb= factorz factorz = true
+comb= absorbl absorbl = true
+comb= absorbr absorbr = true
+comb= factorzl factorzl = true
+comb= factorzr factorzr = true
 comb= dist dist = true
 comb= factor factor = true
 comb= id⟷ id⟷ = true
@@ -154,8 +158,10 @@ eval uniti⋆ v = (tt , v)
 eval swap⋆ (v₁ , v₂) = (v₂ , v₁)
 eval assocl⋆ (v₁ , (v₂ , v₃)) = ((v₁ , v₂) , v₃)
 eval assocr⋆ ((v₁ , v₂) , v₃) = (v₁ , (v₂ , v₃))
-eval distz (() , _)
-eval factorz ()
+eval absorbr (() , _)
+eval absorbl (_ , ())
+eval factorzl ()
+eval factorzr ()
 eval dist (inj₁ v₁ , v₃) = inj₁ (v₁ , v₃)
 eval dist (inj₂ v₂ , v₃) = inj₂ (v₂ , v₃)
 eval factor (inj₁ (v₁ , v₃)) = (inj₁ v₁ , v₃)
@@ -207,8 +213,10 @@ size≡ {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} assocl�
   sym (*-assoc (size t₁) (size t₂) (size t₃))
 size≡ {TIMES (TIMES t₁ t₂) t₃} {TIMES .t₁ (TIMES .t₂ .t₃)} assocr⋆ = 
   *-assoc (size t₁) (size t₂) (size t₃)
-size≡ {TIMES .ZERO t} {ZERO} distz = refl
-size≡ {ZERO} {TIMES ZERO t} factorz = refl
+size≡ {TIMES .ZERO t} {ZERO} absorbr = refl
+size≡ {TIMES t .ZERO} {ZERO} absorbl = *-right-zero (size t)
+size≡ {ZERO} {TIMES ZERO t} factorzl = refl
+size≡ {ZERO} {TIMES t ZERO} factorzr = sym (*-right-zero (size t))
 size≡ {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)} dist = 
   distribʳ-*-+ (size t₃) (size t₁) (size t₂)
 size≡ {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t₃} factor = 
@@ -445,8 +453,10 @@ FULLADDER =
 ! swap⋆     = swap⋆
 ! assocl⋆   = assocr⋆
 ! assocr⋆   = assocl⋆
-! distz     = factorz
-! factorz   = distz
+! absorbl     = factorzr
+! absorbr     = factorzl
+! factorzl  = absorbr
+! factorzr = absorbl
 ! dist      = factor 
 ! factor    = dist
 ! id⟷      = id⟷
@@ -465,8 +475,10 @@ FULLADDER =
 !! {c = swap⋆}   = refl
 !! {c = assocl⋆} = refl
 !! {c = assocr⋆} = refl
-!! {c = distz}   = refl
-!! {c = factorz} = refl
+!! {c = absorbr}   = refl
+!! {c = absorbl}  = refl
+!! {c = factorzl}  = refl
+!! {c = factorzr} = refl
 !! {c = dist}    = refl
 !! {c = factor}  = refl
 !! {c = id⟷}    = refl
@@ -512,8 +524,10 @@ size≡! {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} assocl
   *-assoc (size t₁) (size t₂) (size t₃)
 size≡! {TIMES (TIMES t₁ t₂) t₃} {TIMES .t₁ (TIMES .t₂ .t₃)} assocr⋆ = 
   sym (*-assoc (size t₁) (size t₂) (size t₃))
-size≡! {TIMES .ZERO t} {ZERO} distz = refl
-size≡! {ZERO} {TIMES ZERO t} factorz = refl
+size≡! {TIMES .ZERO t} {ZERO} absorbr = refl
+size≡! {TIMES t .ZERO} {ZERO} absorbl = sym (*-right-zero (size t))
+size≡! {ZERO} {TIMES ZERO t} factorzl = refl
+size≡! {ZERO} {TIMES t ZERO} factorzr = *-right-zero (size t)
 size≡! {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)} dist = 
   sym (distribʳ-*-+ (size t₃) (size t₁) (size t₂))
 size≡! {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t₃} factor = 
