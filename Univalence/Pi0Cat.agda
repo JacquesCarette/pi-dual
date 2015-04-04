@@ -25,6 +25,7 @@ open import Categories.Bifunctor
 open import Categories.NaturalIsomorphism
 open import Categories.Monoidal.Braided
 open import Categories.Monoidal.Symmetric
+open import Categories.RigCategory
 
 -- explicit using clause, to show what parts are used. 
 -- in the order they were needed below, too.
@@ -225,5 +226,22 @@ SBM⊕ = record { symmetry = tt }
 
 SBM⊗ : Symmetric BM⊗
 SBM⊗ = record { symmetry = tt }
+
+module r = BimonoidalHelperFunctors SBM⊕ BM⊗
+
+x⊗0≡0 : NaturalIsomorphism r.x⊗0 r.0↑
+x⊗0≡0 = record 
+  { F⇒G = record { η = λ X → {!!} ; commute = {!!} } 
+  ; F⇐G = record { η = λ X → {!!} ; commute = {!!} } 
+  ; iso = {!!} 
+  }
+
+Pi0Rig : RigCategory SBM⊕ BM⊗
+Pi0Rig = record 
+  { distribₗ = {!!}
+  ; distribᵣ = {!!} 
+  ; annₗ = {!!} 
+  ; annᵣ = {!!} 
+  }
 ------------------------------------------------------------------------------
 
