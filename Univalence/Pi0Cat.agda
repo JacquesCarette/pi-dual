@@ -21,7 +21,8 @@ open import Categories.Monoidal.Symmetric
 -- explicit using clause, to show what parts are used. 
 -- in the order they were needed below, too.
 open import PiLevel0 using (U; _⟷_; id⟷; _◎_; !;
-  PLUS; _⊕_; ZERO; unite₊; uniti₊; swap₊; assocr₊; assocl₊)
+  PLUS; _⊕_; ZERO; unite₊; uniti₊; swap₊; assocr₊; assocl₊;
+  TIMES; _⊗_; ONE; unite⋆; uniti⋆; swap⋆; assocr⋆; assocl⋆)
 
 ------------------------------------------------------------------------------
 -- Trivial equivalence; equates all morphisms of the same type so for
@@ -127,5 +128,94 @@ M⊕ = record
   ; pentagon = tt
   }
 
+-- multiplicative bifunctor and monoidal structure
+⊗-bifunctor : Bifunctor PiCat PiCat PiCat
+⊗-bifunctor =  record
+  { F₀ = λ {(u , v) → TIMES u v}
+  ; F₁ = λ {(x⟷y , z⟷w) → x⟷y ⊗ z⟷w }
+  ; identity = tt
+  ; homomorphism = tt
+  ; F-resp-≡ = λ _ → tt
+  }
+
+module ⊗h = MonoidalHelperFunctors PiCat ⊗-bifunctor ONE
+
+1⊗x≡x : NaturalIsomorphism ⊗h.id⊗x ⊗h.x
+1⊗x≡x = record 
+  { F⇒G = record
+    { η = λ X → unite⋆
+    ; commute = λ _ → tt } 
+  ; F⇐G = record
+    { η = λ X → uniti⋆
+    ; commute = λ _ → tt } 
+  ; iso = λ X → record { isoˡ = tt; isoʳ = tt }
+  }
+
+x⊗1≡x : NaturalIsomorphism ⊗h.x⊗id ⊗h.x
+x⊗1≡x = record
+  { F⇒G = record
+    { η = λ X → swap⋆ ◎ unite⋆  -- !!!
+    ; commute = λ _ → tt
+    }
+  ; F⇐G = record
+    { η = λ X → uniti⋆ ◎ swap⋆
+    ; commute = λ _ → tt
+    }
+  ; iso = λ X → record 
+    { isoˡ = tt
+    ; isoʳ = tt
+    }
+  }
+
+[x⊗y]⊗z≡x⊗[y⊗z] : NaturalIsomorphism ⊗h.[x⊗y]⊗z ⊗h.x⊗[y⊗z]
+[x⊗y]⊗z≡x⊗[y⊗z] = record
+  { F⇒G = record
+    { η = λ X → assocr⋆
+    ; commute = λ f → tt
+    }
+  ; F⇐G = record
+    { η = λ X → assocl⋆
+    ; commute = λ _ → tt
+    }
+  ; iso = λ X → record
+    { isoˡ = tt
+    ; isoʳ = tt
+    }
+  }
+
+M⊗ : Monoidal PiCat
+M⊗ = record
+  { ⊗ = ⊗-bifunctor
+  ; id = ONE
+  ; identityˡ = 1⊗x≡x
+  ; identityʳ = x⊗1≡x
+  ; assoc = [x⊗y]⊗z≡x⊗[y⊗z]
+  ; triangle = tt
+  ; pentagon = tt
+  }
+
+x⊕y≡y⊕x : NaturalIsomorphism ⊎h.x⊗y ⊎h.y⊗x
+x⊕y≡y⊕x = record 
+  { F⇒G = record { η = λ X → swap₊ ; commute = λ f → tt } 
+  ; F⇐G = record { η = λ X → swap₊ ; commute = λ f → tt } 
+  ; iso = λ X → record { isoˡ = tt ; isoʳ = tt } }
+
+BM⊕ : Braided M⊕
+BM⊕ = record { braid = x⊕y≡y⊕x ; hexagon₁ = tt ; hexagon₂ = tt }
+
+x⊗y≡y⊗x : NaturalIsomorphism ⊗h.x⊗y ⊗h.y⊗x
+x⊗y≡y⊗x = record 
+  { F⇒G = record { η = λ X → swap⋆ ; commute = λ f → tt } 
+  ; F⇐G = record { η = λ X → swap⋆ ; commute = λ f → tt } 
+  ; iso = λ X → record { isoˡ = tt ; isoʳ = tt } }
+
+BM⊗ : Braided M⊗
+BM⊗ = record { braid = x⊗y≡y⊗x ; hexagon₁ = tt ; hexagon₂ = tt }
+
+SBM⊕ : Symmetric BM⊕
+SBM⊕ = record { symmetry = tt }
+
+SBM⊗ : Symmetric BM⊗
+SBM⊗ = record { symmetry = tt }
 ------------------------------------------------------------------------------
 
