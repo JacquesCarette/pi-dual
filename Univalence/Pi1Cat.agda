@@ -4,7 +4,15 @@ module Pi1Cat where
 
 -- Proving that Pi with one level of interesting 2 path structure is a
 -- symmetric rig groupoid
--- We are treating U as a 1-type
+--
+-- U is a collection of types
+--
+-- Between any two types, there could be zero, 1, or many
+-- identifications. If there is more than one idenfication, any two
+-- idenfications can themselves have no identifications between them
+-- (id and not at BOOL ⟷ BOOL) or they can have exactly one
+-- identification between them (id and id∘id). 
+-- 
 -- Definition 3.1.7. A type A is a 1-type if for all x, y : A and p, q
 -- : x = y and r, s : p = q, we have r = s.
 

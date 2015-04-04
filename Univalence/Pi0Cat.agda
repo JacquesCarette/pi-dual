@@ -3,7 +3,12 @@
 module Pi0Cat where
 
 -- Proving that Pi with trivial 2 paths structure is a symmetric rig groupoid
--- We are treating U as a set
+--
+-- U is a collection of types
+--
+-- Between any two types, there could be zero, 1, or many
+-- identifications. If there is more than one idenfication we force
+-- them to be the same; so id and not at BOOL ⟷ BOOL are the same
 -- Definition 3.1.1.
 -- A type A is a set if for all x,y : A and all p,q : x=y, we have p=q.
 

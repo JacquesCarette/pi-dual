@@ -18,9 +18,13 @@ open import Categories.Monoidal.Braided
 open import Categories.Monoidal.Symmetric
 
 ------------------------------------------------------------------------------
--- Level -2 of Pi: we treat U as a singleton; there is at least one
--- type and all the types are equal; there is not even a notion of
--- equality of morphims other than identity
+-- Level -2 of Pi
+
+-- U is a collection of types.
+-- 
+-- Between any two types there is exactly one identification 'tt'.
+-- 
+-- This identifies all types and makes U a singleton.
 
 data U : Set where
   ZERO  : U
