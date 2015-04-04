@@ -7,6 +7,7 @@ module Pi0Cat where
 open import Level using () renaming (zero to lzero)
 open import Data.Unit
 open import Relation.Binary.Core using (IsEquivalence)
+open import Data.Product using (_,_)
 
 open import Categories.Category
 open import Categories.Groupoid
@@ -17,7 +18,10 @@ open import Categories.NaturalIsomorphism
 open import Categories.Monoidal.Braided
 open import Categories.Monoidal.Symmetric
 
-open import PiLevel0 using (U; _⟷_; id⟷; _◎_)
+-- explicit using clause, to show what parts are used. 
+-- in the order they were needed below, too.
+open import PiLevel0 using (U; _⟷_; id⟷; _◎_; !;
+  PLUS; _⊕_; ZERO; unite₊; uniti₊; swap₊; assocr₊; assocl₊)
 
 ------------------------------------------------------------------------------
 -- Trivial equivalence; equates all morphisms of the same type so for
@@ -47,6 +51,80 @@ PiCat = record
   ; identityʳ = tt 
   ; equiv = triv≡Equiv 
   ; ∘-resp-≡ = λ _ _ → tt 
+  }
+
+-- and a groupoid
+
+PiGroupoid : Groupoid PiCat
+PiGroupoid = record 
+  { _⁻¹ = ! 
+  ; iso = record { isoˡ = tt ; isoʳ = tt } 
+  }
+
+-- additive bifunctor and monoidal structure
+⊕-bifunctor : Bifunctor PiCat PiCat PiCat
+⊕-bifunctor = record
+  { F₀ = λ {(u , v) → PLUS u v}
+  ; F₁ = λ {(x⟷y , z⟷w) → x⟷y ⊕ z⟷w }
+  ; identity = tt
+  ; homomorphism = tt
+  ; F-resp-≡ = λ _ → tt
+  }
+
+module ⊎h = MonoidalHelperFunctors PiCat ⊕-bifunctor ZERO
+
+0⊕x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
+0⊕x≡x = record 
+  { F⇒G = record
+    { η = λ X → unite₊
+    ; commute = λ _ → tt } 
+  ; F⇐G = record
+    { η = λ X → uniti₊
+    ; commute = λ _ → tt } 
+  ; iso = λ X → record { isoˡ = tt; isoʳ = tt }
+  }
+
+x⊕0≡x : NaturalIsomorphism ⊎h.x⊗id ⊎h.x
+x⊕0≡x = record
+  { F⇒G = record
+    { η = λ X → swap₊ ◎ unite₊  -- !!!
+    ; commute = λ _ → tt
+    }
+  ; F⇐G = record
+    { η = λ X → uniti₊ ◎ swap₊
+    ; commute = λ _ → tt
+    }
+  ; iso = λ X → record 
+    { isoˡ = tt
+    ; isoʳ = tt
+    }
+  }
+
+[x⊕y]⊕z≡x⊕[y⊕z] : NaturalIsomorphism ⊎h.[x⊗y]⊗z ⊎h.x⊗[y⊗z]
+[x⊕y]⊕z≡x⊕[y⊕z] = record
+  { F⇒G = record
+    { η = λ X → assocr₊
+    ; commute = λ f → tt
+    }
+  ; F⇐G = record
+    { η = λ X → assocl₊
+    ; commute = λ _ → tt
+    }
+  ; iso = λ X → record
+    { isoˡ = tt
+    ; isoʳ = tt
+    }
+  }
+
+M⊕ : Monoidal PiCat
+M⊕ = record
+  { ⊗ = ⊕-bifunctor
+  ; id = ZERO
+  ; identityˡ = 0⊕x≡x
+  ; identityʳ = x⊕0≡x
+  ; assoc = [x⊕y]⊕z≡x⊕[y⊕z]
+  ; triangle = tt
+  ; pentagon = tt
   }
 
 ------------------------------------------------------------------------------
