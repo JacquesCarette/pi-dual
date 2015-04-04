@@ -4,6 +4,9 @@ module Pi1Cat where
 
 -- Proving that Pi with one level of interesting 2 path structure is a
 -- symmetric rig groupoid
+-- We are treating U as a 1-type
+-- Definition 3.1.7. A type A is a 1-type if for all x, y : A and p, q
+-- : x = y and r, s : p = q, we have r = s.
 
 open import Level using () renaming (zero to lzero)
 open import Relation.Binary.Core using (IsEquivalence)

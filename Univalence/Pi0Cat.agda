@@ -3,6 +3,9 @@
 module Pi0Cat where
 
 -- Proving that Pi with trivial 2 paths structure is a symmetric rig groupoid
+-- We are treating U as a set
+-- Definition 3.1.1.
+-- A type A is a set if for all x,y : A and all p,q : x=y, we have p=q.
 
 open import Level using () renaming (zero to lzero)
 open import Data.Unit
