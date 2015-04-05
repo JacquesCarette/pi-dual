@@ -18,6 +18,7 @@ module Pi1Cat where
 
 open import Level using () renaming (zero to lzero)
 open import Relation.Binary.Core using (IsEquivalence)
+open import Data.Product using (_,_)
 
 open import Categories.Category
 open import Categories.Groupoid
@@ -30,7 +31,10 @@ open import Categories.Monoidal.Symmetric
 
 open import PiLevel1
   using (U; _⟷_; id⟷; _◎_;
-        _⇔_; assoc◎l; idr◎l; idl◎l; id⇔; 2!; trans⇔; resp◎⇔)
+        _⇔_; assoc◎l; idr◎l; idl◎l; id⇔; 2!; trans⇔; resp◎⇔;
+        !; !!; linv◎l; rinv◎l;
+        PLUS; _⊕_; ZERO; id⟷⊕id⟷⇔; hom⊕◎⇔; resp⊕⇔;
+        unite₊; uniti₊; uniter₊⇔; unitir₊⇔)
 
 ------------------------------------------------------------------------------
 -- The equality of morphisms is derived from the coherence conditions
@@ -42,7 +46,6 @@ open import PiLevel1
   ; sym = 2!
   ; trans = trans⇔ 
   }
-
 
 PiCat : Category lzero lzero lzero
 PiCat = record
@@ -56,6 +59,35 @@ PiCat = record
   ; identityʳ = idl◎l 
   ; equiv = ⇔Equiv 
   ; ∘-resp-≡ = λ f g → resp◎⇔ g f 
+  }
+
+PiGroupoid : Groupoid PiCat
+PiGroupoid = record 
+  { _⁻¹ = ! 
+  ; iso = record { isoˡ = linv◎l ; isoʳ = rinv◎l } 
+  }
+
+-- additive bifunctor and monoidal structure
+⊕-bifunctor : Bifunctor PiCat PiCat PiCat
+⊕-bifunctor = record
+  { F₀ = λ {(u , v) → PLUS u v}
+  ; F₁ = λ {(x⟷y , z⟷w) → x⟷y ⊕ z⟷w }
+  ; identity = id⟷⊕id⟷⇔
+  ; homomorphism = hom⊕◎⇔
+  ; F-resp-≡ = λ {(x , y) → resp⊕⇔ x y}
+  }
+
+module ⊎h = MonoidalHelperFunctors PiCat ⊕-bifunctor ZERO
+
+0⊕x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
+0⊕x≡x = record 
+  { F⇒G = record
+    { η = λ X → unite₊
+    ; commute = λ f → uniter₊⇔ } 
+  ; F⇐G = record
+    { η = λ X → uniti₊
+    ; commute = λ f → unitir₊⇔ } 
+  ; iso = λ X → record { isoˡ = linv◎l; isoʳ = rinv◎l }
   }
 
 ------------------------------------------------------------------------------

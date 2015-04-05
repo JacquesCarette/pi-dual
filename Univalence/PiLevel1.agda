@@ -494,6 +494,7 @@ FULLADDER =
          c₁ ⊗ c₂ ∎)
   where open ≡-Reasoning
 
+
 -- size≡ and !
 
 size≡! : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (size t₂ ≡ size t₁)
@@ -610,7 +611,16 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
   resp⊗⇔  : {t₁ t₂ t₃ t₄ : U} 
          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
          (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊗ c₂) ⇔ (c₃ ⊗ c₄)
-
+  -- below are the combinators added for the RigCategory structure
+  id⟷⊕id⟷⇔ : {t₁ t₂ : U} → (id⟷ {t₁} ⊕ id⟷ {t₂}) ⇔ id⟷
+  split-id⟷ : {t₁ t₂ : U} → (id⟷ {PLUS t₁ t₂}) ⇔ (id⟷ ⊕ id⟷)
+  hom⊕◎⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₅ ⟷ t₁} {c₂ : t₆ ⟷ t₂}
+        {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
+        ((c₁ ◎ c₃) ⊕ (c₂ ◎ c₄)) ⇔ ((c₁ ⊕ c₂) ◎ (c₃ ⊕ c₄))
+  hom◎⊕⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₅ ⟷ t₁} {c₂ : t₆ ⟷ t₂}
+        {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
+         ((c₁ ⊕ c₂) ◎ (c₃ ⊕ c₄)) ⇔ ((c₁ ◎ c₃) ⊕ (c₂ ◎ c₄))
+         
 -- better syntax for writing 2paths
 
 infix  2  _▤       
@@ -664,7 +674,11 @@ _▤ c = id⇔
 2! (trans⇔ α β) = trans⇔ (2! β) (2! α)
 2! (resp◎⇔ α β) = resp◎⇔ (2! α) (2! β)
 2! (resp⊕⇔ α β) = resp⊕⇔ (2! α) (2! β)
-2! (resp⊗⇔ α β) = resp⊗⇔ (2! α) (2! β) 
+2! (resp⊗⇔ α β) = resp⊗⇔ (2! α) (2! β)
+2! id⟷⊕id⟷⇔ = split-id⟷
+2! split-id⟷ = id⟷⊕id⟷⇔
+2! hom⊕◎⇔ = hom◎⊕⇔
+2! hom◎⊕⇔ = hom⊕◎⇔
 
 -- a nice example of 2 paths
 
