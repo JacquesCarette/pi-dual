@@ -31,7 +31,9 @@ open import Categories.RigCategory
 -- in the order they were needed below, too.
 open import PiLevel0 using (U; _⟷_; id⟷; _◎_; !;
   PLUS; _⊕_; ZERO; unite₊; uniti₊; swap₊; assocr₊; assocl₊;
-  TIMES; _⊗_; ONE; unite⋆; uniti⋆; swap⋆; assocr⋆; assocl⋆)
+  TIMES; _⊗_; ONE; unite⋆; uniti⋆; swap⋆; assocr⋆; assocl⋆;
+  absorbl; absorbr; factorzl; factorzr;
+  dist; factor)
 
 ------------------------------------------------------------------------------
 -- Trivial equivalence; equates all morphisms of the same type so for
@@ -231,17 +233,38 @@ module r = BimonoidalHelperFunctors SBM⊕ BM⊗
 
 x⊗0≡0 : NaturalIsomorphism r.x⊗0 r.0↑
 x⊗0≡0 = record 
-  { F⇒G = record { η = λ X → {!!} ; commute = {!!} } 
-  ; F⇐G = record { η = λ X → {!!} ; commute = {!!} } 
-  ; iso = {!!} 
+  { F⇒G = record { η = λ X → absorbl ; commute = λ f → tt } 
+  ; F⇐G = record { η = λ X → factorzr ; commute = λ f → tt } 
+  ; iso = λ X → record { isoˡ = tt ; isoʳ = tt } 
+  }
+
+0⊗x≡0 : NaturalIsomorphism r.0⊗x r.0↑
+0⊗x≡0 = record
+  { F⇒G = record { η = λ X → absorbr ; commute = λ f → tt }
+  ; F⇐G = record { η = λ X → factorzl ; commute = λ f → tt }
+  ; iso = λ X → record { isoˡ = tt ; isoʳ = tt }
+  }
+
+x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] : NaturalIsomorphism r.x⊗[y⊕z] r.[x⊗y]⊕[x⊗z]
+x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record -- this probably says we need distl/distr
+  { F⇒G = record { η = λ X → swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆) ; commute = λ f → tt }
+  ; F⇐G = record { η = λ X → (swap⋆ ⊕ swap⋆) ◎ factor ◎ swap⋆ ; commute = λ f → tt }
+  ; iso = λ X → record { isoˡ = tt ; isoʳ = tt }
+  }
+
+[x⊕y]⊗z≡[x⊗z]⊕[y⊗z] : NaturalIsomorphism r.[x⊕y]⊗z r.[x⊗z]⊕[y⊗z]
+[x⊕y]⊗z≡[x⊗z]⊕[y⊗z] = record
+  { F⇒G = record { η = λ X → dist ; commute = λ f → tt }
+  ; F⇐G = record { η = λ X → factor ; commute = λ f → tt }
+  ; iso = λ X → record { isoˡ = tt ; isoʳ = tt }
   }
 
 Pi0Rig : RigCategory SBM⊕ BM⊗
 Pi0Rig = record 
-  { distribₗ = {!!}
-  ; distribᵣ = {!!} 
-  ; annₗ = {!!} 
-  ; annᵣ = {!!} 
+  { distribₗ = x⊗[y⊕z]≡[x⊗y]⊕[x⊗z]
+  ; distribᵣ = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] 
+  ; annₗ = x⊗0≡0 
+  ; annᵣ = 0⊗x≡0 
   }
 ------------------------------------------------------------------------------
 
