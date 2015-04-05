@@ -6,9 +6,11 @@ module Pi0Cat where
 --
 -- U is a collection of types
 --
--- Between any two types, there could be zero, 1, or many
+-- Between any two types, there could be zero, one, or many
 -- identifications. If there is more than one idenfication we force
--- them to be the same; so id and not at BOOL ⟷ BOOL are the same
+-- them to be the same; so 'id' and 'not' at BOOL ⟷ BOOL are the same
+-- and U effectively collapses to the set of natural numbers
+-- 
 -- Definition 3.1.1.
 -- A type A is a set if for all x,y : A and all p,q : x=y, we have p=q.
 
