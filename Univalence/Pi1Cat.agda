@@ -7,11 +7,27 @@ module Pi1Cat where
 --
 -- U is a collection of types
 --
--- Between any two types, there could be zero, 1, or many
+-- Between any two types, there could be zero, one, or many
 -- identifications. If there is more than one idenfication, any two
 -- idenfications can themselves have no identifications between them
 -- (id and not at BOOL ⟷ BOOL) or they can have exactly one
--- identification between them (id and id∘id). 
+-- identification between them (id and id∘id). Effectively, two types
+-- may be identified by several permutations. These permutations can
+-- be expressed in different ways but permutations that have the same
+-- extensional behavior are identified and permutations that have
+-- different extensional behavior are not identified. Interesting the
+-- identifications between permutations are essentially the coherent
+-- conditions of monoidal categories. The following quote is
+-- enlightening:
+--
+-- What Mac Lane does can be described in logical terms in the
+-- following manner. On the one hand, he has an axiomatization, and,
+-- on the other hand, he has a model category where arrows are
+-- permutations; then he shows that his axiomatization is complete
+-- with respect to this model. It is no wonder that his coherence
+-- problem reduces to the completeness problem for the usual
+-- axiomatization of symmetric groups. (p.3 of
+-- http://www.mi.sanu.ac.rs/~kosta/coh.pdf)
 -- 
 -- Definition 3.1.7. A type A is a 1-type if for all x, y : A and p, q
 -- : x = y and r, s : p = q, we have r = s.
