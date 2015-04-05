@@ -123,8 +123,7 @@ x⊕0≡x : NaturalIsomorphism ⊎h.x⊗id ⊎h.x
 x⊕0≡x = record
   { F⇒G = record
     { η = λ X → swap₊ ◎ unite₊  -- !!!
-    ; commute = λ f → 
-      let x = f zero in
+    ; commute = λ f →
        (f zero ⊕ id⟷) ◎ swap₊ ◎ unite₊ 
            ⇔⟨ assoc◎l ⟩
        ( (f zero ⊕ id⟷) ◎ swap₊ ) ◎ unite₊ 
@@ -139,11 +138,45 @@ x⊕0≡x = record
     }
   ; F⇐G = record
     { η = λ X → uniti₊ ◎ swap₊
-    ; commute = λ _ → {!!}
+    ; commute = λ f → 
+      let x = f zero in
+      x ◎ uniti₊ ◎ swap₊ 
+          ⇔⟨ assoc◎l ⟩
+      (x ◎ uniti₊) ◎ swap₊
+          ⇔⟨ resp◎⇔ unitir₊⇔ id⇔ ⟩
+      (uniti₊ ◎ (id⟷ ⊕ x)) ◎ swap₊
+          ⇔⟨ assoc◎r ⟩
+      uniti₊ ◎ (id⟷ ⊕ x) ◎ swap₊
+          ⇔⟨ resp◎⇔ id⇔ swapr₊⇔ ⟩
+      uniti₊ ◎ swap₊ ◎ (f zero ⊕ id⟷)
+          ⇔⟨ assoc◎l ⟩
+       (uniti₊ ◎ swap₊) ◎ (x ⊕ id⟷) ▤
     }
   ; iso = λ X → record 
-    { isoˡ = {!!}
-    ; isoʳ = {!!}
+    { isoˡ = 
+       (swap₊ ◎ unite₊) ◎ uniti₊ ◎ swap₊
+           ⇔⟨ assoc◎l ⟩
+      ((swap₊ ◎ unite₊) ◎ uniti₊) ◎ swap₊
+          ⇔⟨ resp◎⇔ assoc◎r id⇔ ⟩
+      (swap₊ ◎ unite₊ ◎ uniti₊) ◎ swap₊
+          ⇔⟨ resp◎⇔ (resp◎⇔ id⇔ linv◎l) id⇔ ⟩
+      (swap₊ ◎ id⟷) ◎ swap₊
+          ⇔⟨ resp◎⇔ idr◎l id⇔ ⟩
+      swap₊ ◎ swap₊
+          ⇔⟨ linv◎l ⟩
+      id⟷ ▤
+    ; isoʳ = 
+      (uniti₊ ◎ swap₊) ◎ swap₊ ◎ unite₊
+          ⇔⟨ assoc◎l ⟩
+      ((uniti₊ ◎ swap₊) ◎ swap₊) ◎ unite₊
+          ⇔⟨ resp◎⇔ assoc◎r id⇔ ⟩
+      (uniti₊ ◎ swap₊ ◎ swap₊) ◎ unite₊
+          ⇔⟨ resp◎⇔ (resp◎⇔ id⇔ linv◎l) id⇔ ⟩
+      (uniti₊ ◎ id⟷) ◎ unite₊
+          ⇔⟨ resp◎⇔ idr◎l id⇔ ⟩
+      uniti₊ ◎ unite₊
+          ⇔⟨ linv◎l ⟩
+       id⟷ ▤
     }
   }
 
