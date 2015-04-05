@@ -79,6 +79,7 @@ PiGroupoid = record
 
 module ⊎h = MonoidalHelperFunctors PiCat ⊕-bifunctor ZERO
 
+-- note how powerful linv◎l/rinv◎l are in iso below
 0⊕x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
 0⊕x≡x = record 
   { F⇒G = record
