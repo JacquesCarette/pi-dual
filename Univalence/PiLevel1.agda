@@ -39,12 +39,18 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
           (c₁ ◎ (c₂ ◎ c₃)) ⇔ ((c₁ ◎ c₂) ◎ c₃)
   assoc◎r : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
           ((c₁ ◎ c₂) ◎ c₃) ⇔ (c₁ ◎ (c₂ ◎ c₃))
-  assoc⊕l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+  assocl⊕l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
           {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          (c₁ ⊕ (c₂ ⊕ c₃)) ⇔ (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊)
-  assoc⊕r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          ((c₁ ⊕ (c₂ ⊕ c₃)) ◎ assocl₊) ⇔ (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃))
+  assocl⊕r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
           {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊) ⇔ (c₁ ⊕ (c₂ ⊕ c₃))
+          (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃)) ⇔ ((c₁ ⊕ (c₂ ⊕ c₃)) ◎ assocl₊)
+  assocr⊕r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊) ⇔ (assocr₊ ◎ (c₁ ⊕ (c₂ ⊕ c₃)))
+  assocr⊕l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+           (assocr₊ ◎ (c₁ ⊕ (c₂ ⊕ c₃))) ⇔ (((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊)
   assoc⊗l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
           {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
           (c₁ ⊗ (c₂ ⊗ c₃)) ⇔ (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆)
@@ -138,8 +144,10 @@ _▤ c = id⇔
 2! : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₂ ⇔ c₁)
 2! assoc◎l = assoc◎r
 2! assoc◎r = assoc◎l
-2! assoc⊕l = assoc⊕r
-2! assoc⊕r = assoc⊕l
+2! assocl⊕l = assocl⊕r
+2! assocl⊕r = assocl⊕l
+2! assocr⊕r = assocr⊕l
+2! assocr⊕l = assocr⊕r
 2! assoc⊗l = assoc⊗r
 2! assoc⊗r = assoc⊗l
 2! dist⇔ = factor⇔ 

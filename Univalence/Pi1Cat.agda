@@ -35,6 +35,7 @@ module Pi1Cat where
 open import Level using () renaming (zero to lzero)
 open import Relation.Binary.Core using (IsEquivalence)
 open import Data.Product using (_,_)
+open import Data.Fin using (Fin; zero; suc)
 
 open import Categories.Category
 open import Categories.Groupoid
@@ -45,12 +46,23 @@ open import Categories.NaturalIsomorphism
 open import Categories.Monoidal.Braided
 open import Categories.Monoidal.Symmetric
 
-open import PiLevel1
+open import PiLevel0
   using (U; _⟷_; id⟷; _◎_;
+        !; !!;
+        PLUS; _⊕_; ZERO;
+        unite₊; uniti₊;
+        swap₊;
+        assocr₊; assocl₊ )
+
+open import PiLevel1
+  using (
         _⇔_; assoc◎l; idr◎l; idl◎l; id⇔; 2!; trans⇔; resp◎⇔;
-        !; !!; linv◎l; rinv◎l;
-        PLUS; _⊕_; ZERO; id⟷⊕id⟷⇔; hom⊕◎⇔; resp⊕⇔;
-        unite₊; uniti₊; uniter₊⇔; unitir₊⇔)
+        linv◎l; rinv◎l;
+        id⟷⊕id⟷⇔; hom⊕◎⇔; resp⊕⇔;
+        uniter₊⇔; unitir₊⇔; unitel₊⇔;
+        _⇔⟨_⟩_; _▤;
+        swapr₊⇔; assoc◎r;
+        assocr⊕r; assocl⊕l)
 
 ------------------------------------------------------------------------------
 -- The equality of morphisms is derived from the coherence conditions
@@ -105,6 +117,58 @@ module ⊎h = MonoidalHelperFunctors PiCat ⊕-bifunctor ZERO
     { η = λ X → uniti₊
     ; commute = λ f → unitir₊⇔ } 
   ; iso = λ X → record { isoˡ = linv◎l; isoʳ = rinv◎l }
+  }
+
+x⊕0≡x : NaturalIsomorphism ⊎h.x⊗id ⊎h.x
+x⊕0≡x = record
+  { F⇒G = record
+    { η = λ X → swap₊ ◎ unite₊  -- !!!
+    ; commute = λ f → 
+      let x = f zero in
+       (f zero ⊕ id⟷) ◎ swap₊ ◎ unite₊ 
+           ⇔⟨ assoc◎l ⟩
+       ( (f zero ⊕ id⟷) ◎ swap₊ ) ◎ unite₊ 
+           ⇔⟨ resp◎⇔ swapr₊⇔ id⇔ ⟩
+      (swap₊ ◎ (id⟷ ⊕ f zero)) ◎ unite₊
+          ⇔⟨  assoc◎r ⟩
+      swap₊ ◎ (id⟷ ⊕ f zero) ◎ unite₊
+          ⇔⟨ resp◎⇔ id⇔ uniter₊⇔ ⟩
+      swap₊ ◎ unite₊ ◎ f zero
+          ⇔⟨ assoc◎l ⟩
+      (swap₊ ◎ unite₊) ◎ f zero ▤ 
+    }
+  ; F⇐G = record
+    { η = λ X → uniti₊ ◎ swap₊
+    ; commute = λ _ → {!!}
+    }
+  ; iso = λ X → record 
+    { isoˡ = {!!}
+    ; isoʳ = {!!}
+    }
+  }
+
+[x⊕y]⊕z≡x⊕[y⊕z] : NaturalIsomorphism ⊎h.[x⊗y]⊗z ⊎h.x⊗[y⊗z]
+[x⊕y]⊕z≡x⊕[y⊕z] = record
+  { F⇒G = record
+    { η = λ X → assocr₊
+    ; commute = λ f → assocr⊕r
+    }
+  ; F⇐G = record
+    { η = λ X → assocl₊
+    ; commute = λ f → assocl⊕l
+    }
+  ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l }
+  }
+
+M⊕ : Monoidal PiCat
+M⊕ = record
+  { ⊗ = ⊕-bifunctor
+  ; id = ZERO
+  ; identityˡ = 0⊕x≡x
+  ; identityʳ = x⊕0≡x
+  ; assoc = [x⊕y]⊕z≡x⊕[y⊕z]
+  ; triangle = {!!}
+  ; pentagon = {!!}
   }
 
 ------------------------------------------------------------------------------
