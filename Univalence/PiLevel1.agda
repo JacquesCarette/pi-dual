@@ -108,7 +108,7 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
   id⇔     : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ c
   trans⇔  : {t₁ t₂ : U} {c₁ c₂ c₃ : t₁ ⟷ t₂} → 
          (c₁ ⇔ c₂) → (c₂ ⇔ c₃) → (c₁ ⇔ c₃)
-  resp◎⇔  : {t₁ t₂ t₃ : U} 
+  _⊡_  : {t₁ t₂ t₃ : U} 
          {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
          (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ◎ c₂) ⇔ (c₃ ◎ c₄)
   resp⊕⇔  : {t₁ t₂ t₃ t₄ : U} 
@@ -119,14 +119,23 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
          (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊗ c₂) ⇔ (c₃ ⊗ c₄)
   -- below are the combinators added for the RigCategory structure
   id⟷⊕id⟷⇔ : {t₁ t₂ : U} → (id⟷ {t₁} ⊕ id⟷ {t₂}) ⇔ id⟷
-  split-id⟷ : {t₁ t₂ : U} → (id⟷ {PLUS t₁ t₂}) ⇔ (id⟷ ⊕ id⟷)
+  split⊕-id⟷ : {t₁ t₂ : U} → (id⟷ {PLUS t₁ t₂}) ⇔ (id⟷ ⊕ id⟷)
   hom⊕◎⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₅ ⟷ t₁} {c₂ : t₆ ⟷ t₂}
         {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
         ((c₁ ◎ c₃) ⊕ (c₂ ◎ c₄)) ⇔ ((c₁ ⊕ c₂) ◎ (c₃ ⊕ c₄))
   hom◎⊕⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₅ ⟷ t₁} {c₂ : t₆ ⟷ t₂}
         {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
          ((c₁ ⊕ c₂) ◎ (c₃ ⊕ c₄)) ⇔ ((c₁ ◎ c₃) ⊕ (c₂ ◎ c₄))
-         
+  id⟷⊗id⟷⇔ : {t₁ t₂ : U} → (id⟷ {t₁} ⊗ id⟷ {t₂}) ⇔ id⟷
+  split⊗-id⟷ : {t₁ t₂ : U} → (id⟷ {TIMES t₁ t₂}) ⇔ (id⟷ ⊗ id⟷)
+  hom⊗◎⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₅ ⟷ t₁} {c₂ : t₆ ⟷ t₂}
+        {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
+        ((c₁ ◎ c₃) ⊗ (c₂ ◎ c₄)) ⇔ ((c₁ ⊗ c₂) ◎ (c₃ ⊗ c₄))
+  hom◎⊗⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₅ ⟷ t₁} {c₂ : t₆ ⟷ t₂}
+        {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
+         ((c₁ ⊗ c₂) ◎ (c₃ ⊗ c₄)) ⇔ ((c₁ ◎ c₃) ⊗ (c₂ ◎ c₄))
+
+
 -- better syntax for writing 2paths
 
 infix  2  _▤       
@@ -179,14 +188,18 @@ _▤ c = id⇔
 2! swapfl⋆⇔ = swapfr⋆⇔
 2! swapfr⋆⇔ = swapfl⋆⇔
 2! id⇔ = id⇔
+2! (α ⊡ β) = (2! α) ⊡ (2! β)
 2! (trans⇔ α β) = trans⇔ (2! β) (2! α)
-2! (resp◎⇔ α β) = resp◎⇔ (2! α) (2! β)
 2! (resp⊕⇔ α β) = resp⊕⇔ (2! α) (2! β)
 2! (resp⊗⇔ α β) = resp⊗⇔ (2! α) (2! β)
-2! id⟷⊕id⟷⇔ = split-id⟷
-2! split-id⟷ = id⟷⊕id⟷⇔
+2! id⟷⊕id⟷⇔ = split⊕-id⟷
+2! split⊕-id⟷ = id⟷⊕id⟷⇔
 2! hom⊕◎⇔ = hom◎⊕⇔
 2! hom◎⊕⇔ = hom⊕◎⇔
+2! id⟷⊗id⟷⇔ = split⊗-id⟷
+2! split⊗-id⟷ = id⟷⊗id⟷⇔
+2! hom⊗◎⇔ = hom◎⊗⇔
+2! hom◎⊗⇔ = hom⊗◎⇔
 
 -- a nice example of 2 paths
 
@@ -199,25 +212,25 @@ neg₅ = uniti⋆ ◎ swap⋆ ◎ (swap₊ ⊗ id⟷) ◎ swap⋆ ◎ unite⋆
 
 negEx : neg₅ ⇔ neg₁
 negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆)))
-          ⇔⟨ resp◎⇔ id⇔ assoc◎l ⟩
+          ⇔⟨ id⇔ ⊡ assoc◎l ⟩
         uniti⋆ ◎ ((swap⋆ ◎ (swap₊ ⊗ id⟷)) ◎ (swap⋆ ◎ unite⋆))
-          ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ swapl⋆⇔ id⇔) ⟩
+          ⇔⟨ id⇔ ⊡ (swapl⋆⇔ ⊡ id⇔) ⟩
         uniti⋆ ◎ (((id⟷ ⊗ swap₊) ◎ swap⋆) ◎ (swap⋆ ◎ unite⋆))
-          ⇔⟨ resp◎⇔ id⇔ assoc◎r ⟩
+          ⇔⟨ id⇔ ⊡ assoc◎r ⟩
         uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ (swap⋆ ◎ (swap⋆ ◎ unite⋆)))
-          ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ id⇔ assoc◎l) ⟩
+          ⇔⟨ id⇔ ⊡ (id⇔ ⊡ assoc◎l) ⟩
         uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ ((swap⋆ ◎ swap⋆) ◎ unite⋆))
-          ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ id⇔ (resp◎⇔ linv◎l id⇔)) ⟩
+          ⇔⟨ id⇔ ⊡ (id⇔ ⊡ (linv◎l ⊡ id⇔)) ⟩
         uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ (id⟷ ◎ unite⋆))
-          ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ id⇔ idl◎l) ⟩
+          ⇔⟨ id⇔ ⊡ (id⇔ ⊡ idl◎l) ⟩
         uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ unite⋆)
           ⇔⟨ assoc◎l ⟩
         (uniti⋆ ◎ (id⟷ ⊗ swap₊)) ◎ unite⋆
-          ⇔⟨ resp◎⇔ unitil⋆⇔ id⇔ ⟩
+          ⇔⟨ unitil⋆⇔ ⊡ id⇔ ⟩
         (swap₊ ◎ uniti⋆) ◎ unite⋆
           ⇔⟨ assoc◎r ⟩
         swap₊ ◎ (uniti⋆ ◎ unite⋆)
-          ⇔⟨ resp◎⇔ id⇔ linv◎l ⟩
+          ⇔⟨ id⇔ ⊡ linv◎l ⟩
         swap₊ ◎ id⟷
           ⇔⟨ idr◎l ⟩
         swap₊ ▤

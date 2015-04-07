@@ -52,17 +52,19 @@ open import PiLevel0
         PLUS; _⊕_; ZERO;
         unite₊; uniti₊;
         swap₊;
-        assocr₊; assocl₊ )
+        assocr₊; assocl₊;
+        TIMES; _⊗_; ONE)
 
 open import PiLevel1
   using (
-        _⇔_; assoc◎l; idr◎l; idl◎l; id⇔; 2!; trans⇔; resp◎⇔;
+        _⇔_; assoc◎l; idr◎l; idl◎l; id⇔; 2!; trans⇔; _⊡_;
         linv◎l; rinv◎l;
         id⟷⊕id⟷⇔; hom⊕◎⇔; resp⊕⇔;
         uniter₊⇔; unitir₊⇔; unitel₊⇔;
         _⇔⟨_⟩_; _▤;
         swapr₊⇔; assoc◎r;
-        assocr⊕r; assocl⊕l)
+        assocr⊕r; assocl⊕l;
+        id⟷⊗id⟷⇔; hom⊗◎⇔; resp⊗⇔)
 
 ------------------------------------------------------------------------------
 -- The equality of morphisms is derived from the coherence conditions
@@ -86,7 +88,7 @@ PiCat = record
   ; identityˡ = idr◎l 
   ; identityʳ = idl◎l 
   ; equiv = ⇔Equiv 
-  ; ∘-resp-≡ = λ f g → resp◎⇔ g f 
+  ; ∘-resp-≡ = λ f g → g ⊡ f 
   }
 
 PiGroupoid : Groupoid PiCat
@@ -127,11 +129,11 @@ x⊕0≡x = record
        (f zero ⊕ id⟷) ◎ swap₊ ◎ unite₊ 
            ⇔⟨ assoc◎l ⟩
        ( (f zero ⊕ id⟷) ◎ swap₊ ) ◎ unite₊ 
-           ⇔⟨ resp◎⇔ swapr₊⇔ id⇔ ⟩
+           ⇔⟨ swapr₊⇔ ⊡ id⇔ ⟩
       (swap₊ ◎ (id⟷ ⊕ f zero)) ◎ unite₊
           ⇔⟨  assoc◎r ⟩
       swap₊ ◎ (id⟷ ⊕ f zero) ◎ unite₊
-          ⇔⟨ resp◎⇔ id⇔ uniter₊⇔ ⟩
+          ⇔⟨ id⇔ ⊡ uniter₊⇔ ⟩
       swap₊ ◎ unite₊ ◎ f zero
           ⇔⟨ assoc◎l ⟩
       (swap₊ ◎ unite₊) ◎ f zero ▤ 
@@ -143,11 +145,11 @@ x⊕0≡x = record
       x ◎ uniti₊ ◎ swap₊ 
           ⇔⟨ assoc◎l ⟩
       (x ◎ uniti₊) ◎ swap₊
-          ⇔⟨ resp◎⇔ unitir₊⇔ id⇔ ⟩
+          ⇔⟨ unitir₊⇔ ⊡ id⇔ ⟩
       (uniti₊ ◎ (id⟷ ⊕ x)) ◎ swap₊
           ⇔⟨ assoc◎r ⟩
       uniti₊ ◎ (id⟷ ⊕ x) ◎ swap₊
-          ⇔⟨ resp◎⇔ id⇔ swapr₊⇔ ⟩
+          ⇔⟨ id⇔ ⊡ swapr₊⇔ ⟩
       uniti₊ ◎ swap₊ ◎ (f zero ⊕ id⟷)
           ⇔⟨ assoc◎l ⟩
        (uniti₊ ◎ swap₊) ◎ (x ⊕ id⟷) ▤
@@ -157,11 +159,11 @@ x⊕0≡x = record
        (swap₊ ◎ unite₊) ◎ uniti₊ ◎ swap₊
            ⇔⟨ assoc◎l ⟩
       ((swap₊ ◎ unite₊) ◎ uniti₊) ◎ swap₊
-          ⇔⟨ resp◎⇔ assoc◎r id⇔ ⟩
+          ⇔⟨ assoc◎r ⊡ id⇔ ⟩
       (swap₊ ◎ unite₊ ◎ uniti₊) ◎ swap₊
-          ⇔⟨ resp◎⇔ (resp◎⇔ id⇔ linv◎l) id⇔ ⟩
+          ⇔⟨ (id⇔ ⊡ linv◎l) ⊡ id⇔ ⟩
       (swap₊ ◎ id⟷) ◎ swap₊
-          ⇔⟨ resp◎⇔ idr◎l id⇔ ⟩
+          ⇔⟨ idr◎l ⊡ id⇔ ⟩
       swap₊ ◎ swap₊
           ⇔⟨ linv◎l ⟩
       id⟷ ▤
@@ -169,11 +171,11 @@ x⊕0≡x = record
       (uniti₊ ◎ swap₊) ◎ swap₊ ◎ unite₊
           ⇔⟨ assoc◎l ⟩
       ((uniti₊ ◎ swap₊) ◎ swap₊) ◎ unite₊
-          ⇔⟨ resp◎⇔ assoc◎r id⇔ ⟩
+          ⇔⟨ assoc◎r ⊡ id⇔ ⟩
       (uniti₊ ◎ swap₊ ◎ swap₊) ◎ unite₊
-          ⇔⟨ resp◎⇔ (resp◎⇔ id⇔ linv◎l) id⇔ ⟩
+          ⇔⟨ (id⇔ ⊡ linv◎l) ⊡ id⇔ ⟩
       (uniti₊ ◎ id⟷) ◎ unite₊
-          ⇔⟨ resp◎⇔ idr◎l id⇔ ⟩
+          ⇔⟨ idr◎l ⊡ id⇔ ⟩
       uniti₊ ◎ unite₊
           ⇔⟨ linv◎l ⟩
        id⟷ ▤
@@ -206,3 +208,14 @@ M⊕ = record
 
 ------------------------------------------------------------------------------
 
+-- multiplicative bifunctor and monoidal structure
+⊗-bifunctor : Bifunctor PiCat PiCat PiCat
+⊗-bifunctor = record
+  { F₀ = λ {(u , v) → TIMES u v}
+  ; F₁ = λ {(x⟷y , z⟷w) → x⟷y ⊗ z⟷w }
+  ; identity = id⟷⊗id⟷⇔
+  ; homomorphism = hom⊗◎⇔
+  ; F-resp-≡ = λ {(x , y) → resp⊗⇔ x y}
+  }
+
+module ×h = MonoidalHelperFunctors PiCat ⊗-bifunctor ONE
