@@ -45,9 +45,21 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
   assocl⊕r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
           {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
           (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃)) ⇔ ((c₁ ⊕ (c₂ ⊕ c₃)) ◎ assocl₊)
+  assocl⊗l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          ((c₁ ⊗ (c₂ ⊗ c₃)) ◎ assocl⋆) ⇔ (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃))
+  assocl⊗r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃)) ⇔ ((c₁ ⊗ (c₂ ⊗ c₃)) ◎ assocl⋆)
   assocr⊕r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
           {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
           (((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊) ⇔ (assocr₊ ◎ (c₁ ⊕ (c₂ ⊕ c₃)))
+  assocr⊗l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+           (assocr⋆ ◎ (c₁ ⊗ (c₂ ⊗ c₃))) ⇔ (((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆)
+  assocr⊗r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆) ⇔ (assocr⋆ ◎ (c₁ ⊗ (c₂ ⊗ c₃)))
   assocr⊕l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
           {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
            (assocr₊ ◎ (c₁ ⊕ (c₂ ⊕ c₃))) ⇔ (((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊)
@@ -138,10 +150,18 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
     ((swap₊ ◎ unite₊ {t₁}) ⊕ id⟷ {t₂}) ⇔ assocr₊ ◎ (id⟷ ⊕ unite₊)
   triangle⊕r : {t₁ t₂ : U} →
     (assocr₊ ◎ (id⟷ {t₁} ⊕ unite₊ {t₂})) ⇔ ((swap₊ ◎ unite₊) ⊕ id⟷)
+  triangle⊗l : {t₁ t₂ : U} →
+    ((swap⋆ ◎ unite⋆ {t₁}) ⊗ id⟷ {t₂}) ⇔ assocr⋆ ◎ (id⟷ ⊗ unite⋆)
+  triangle⊗r : {t₁ t₂ : U} →
+    (assocr⋆ ◎ (id⟷ {t₁} ⊗ unite⋆ {t₂})) ⇔ ((swap⋆ ◎ unite⋆) ⊗ id⟷)
   pentagon⊕l : {t₁ t₂ t₃ t₄ : U} →
     assocr₊ ◎ (assocr₊ {t₁} {t₂} {PLUS t₃ t₄}) ⇔ ((assocr₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ assocr₊)
   pentagon⊕r : {t₁ t₂ t₃ t₄ : U} →
     ((assocr₊ {t₁} {t₂} {t₃} ⊕ id⟷ {t₄}) ◎ assocr₊) ◎ (id⟷ ⊕ assocr₊) ⇔ assocr₊ ◎ assocr₊
+  pentagon⊗l : {t₁ t₂ t₃ t₄ : U} →
+    assocr⋆ ◎ (assocr⋆ {t₁} {t₂} {TIMES t₃ t₄}) ⇔ ((assocr⋆ ⊗ id⟷) ◎ assocr⋆) ◎ (id⟷ ⊗ assocr⋆)
+  pentagon⊗r : {t₁ t₂ t₃ t₄ : U} →
+    ((assocr⋆ {t₁} {t₂} {t₃} ⊗ id⟷ {t₄}) ◎ assocr⋆) ◎ (id⟷ ⊗ assocr⋆) ⇔ assocr⋆ ◎ assocr⋆
 
 -- better syntax for writing 2paths
 
@@ -162,8 +182,12 @@ _▤ c = id⇔
 2! assoc◎r = assoc◎l
 2! assocl⊕l = assocl⊕r
 2! assocl⊕r = assocl⊕l
+2! assocl⊗l = assocl⊗r
+2! assocl⊗r = assocl⊗l
 2! assocr⊕r = assocr⊕l
 2! assocr⊕l = assocr⊕r
+2! assocr⊗r = assocr⊗l
+2! assocr⊗l = assocr⊗r
 2! assoc⊗l = assoc⊗r
 2! assoc⊗r = assoc⊗l
 2! dist⇔ = factor⇔ 
@@ -209,8 +233,12 @@ _▤ c = id⇔
 2! hom◎⊗⇔ = hom⊗◎⇔
 2! triangle⊕l = triangle⊕r
 2! triangle⊕r = triangle⊕l
+2! triangle⊗l = triangle⊗r
+2! triangle⊗r = triangle⊗l
 2! pentagon⊕l = pentagon⊕r
 2! pentagon⊕r = pentagon⊕l
+2! pentagon⊗l = pentagon⊗r
+2! pentagon⊗r = pentagon⊗l
 
 -- a nice example of 2 paths
 

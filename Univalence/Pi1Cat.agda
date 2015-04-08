@@ -53,7 +53,10 @@ open import PiLevel0
         unite₊; uniti₊;
         swap₊;
         assocr₊; assocl₊;
-        TIMES; _⊗_; ONE)
+        TIMES; _⊗_; ONE;
+        unite⋆; uniti⋆;
+        swap⋆;
+        assocr⋆; assocl⋆)
 
 open import PiLevel1
   using (
@@ -65,7 +68,11 @@ open import PiLevel1
         swapr₊⇔; assoc◎r;
         assocr⊕r; assocl⊕l;
         id⟷⊗id⟷⇔; hom⊗◎⇔; resp⊗⇔;
-        triangle⊕l; pentagon⊕l)
+        triangle⊕l; pentagon⊕l;
+        uniter⋆⇔; unitir⋆⇔;
+        swapr⋆⇔;
+        assocr⊗r; assocl⊗l;
+        triangle⊗l; pentagon⊗l)
 
 ------------------------------------------------------------------------------
 -- The equality of morphisms is derived from the coherence conditions
@@ -220,3 +227,99 @@ M⊕ = record
   }
 
 module ×h = MonoidalHelperFunctors PiCat ⊗-bifunctor ONE
+
+1⊗x≡x : NaturalIsomorphism ×h.id⊗x ×h.x
+1⊗x≡x = record 
+  { F⇒G = record
+    { η = λ X → unite⋆
+    ; commute = λ f → uniter⋆⇔ } 
+  ; F⇐G = record
+    { η = λ X → uniti⋆
+    ; commute = λ f → unitir⋆⇔ } 
+  ; iso = λ X → record { isoˡ = linv◎l; isoʳ = rinv◎l }
+  }
+
+x⊗1≡x : NaturalIsomorphism ×h.x⊗id ×h.x
+x⊗1≡x = record
+  { F⇒G = record
+    { η = λ X → swap⋆ ◎ unite⋆  -- !!!
+    ; commute = λ f →
+       (f zero ⊗ id⟷) ◎ swap⋆ ◎ unite⋆ 
+           ⇔⟨ assoc◎l ⟩
+       ( (f zero ⊗ id⟷) ◎ swap⋆ ) ◎ unite⋆ 
+           ⇔⟨ swapr⋆⇔ ⊡ id⇔ ⟩
+      (swap⋆ ◎ (id⟷ ⊗ f zero)) ◎ unite⋆
+          ⇔⟨  assoc◎r ⟩
+      swap⋆ ◎ (id⟷ ⊗ f zero) ◎ unite⋆
+          ⇔⟨ id⇔ ⊡ uniter⋆⇔ ⟩
+      swap⋆ ◎ unite⋆ ◎ f zero
+          ⇔⟨ assoc◎l ⟩
+      (swap⋆ ◎ unite⋆) ◎ f zero ▤ 
+    }
+  ; F⇐G = record
+    { η = λ X → uniti⋆ ◎ swap⋆
+    ; commute = λ f → 
+      let x = f zero in
+      x ◎ uniti⋆ ◎ swap⋆
+          ⇔⟨ assoc◎l ⟩
+      (x ◎ uniti⋆) ◎ swap⋆
+          ⇔⟨ unitir⋆⇔ ⊡ id⇔ ⟩
+      (uniti⋆ ◎ (id⟷ ⊗ x)) ◎ swap⋆
+          ⇔⟨ assoc◎r ⟩
+      uniti⋆ ◎ (id⟷ ⊗ x) ◎ swap⋆
+          ⇔⟨ id⇔ ⊡ swapr⋆⇔ ⟩
+      uniti⋆ ◎ swap⋆ ◎ (f zero ⊗ id⟷)
+          ⇔⟨ assoc◎l ⟩
+       (uniti⋆ ◎ swap⋆) ◎ (x ⊗ id⟷) ▤
+    }
+  ; iso = λ X → record 
+    { isoˡ = 
+       (swap⋆ ◎ unite⋆) ◎ uniti⋆ ◎ swap⋆
+           ⇔⟨ assoc◎l ⟩
+      ((swap⋆ ◎ unite⋆) ◎ uniti⋆) ◎ swap⋆
+          ⇔⟨ assoc◎r ⊡ id⇔ ⟩
+      (swap⋆ ◎ unite⋆ ◎ uniti⋆) ◎ swap⋆
+          ⇔⟨ (id⇔ ⊡ linv◎l) ⊡ id⇔ ⟩
+      (swap⋆ ◎ id⟷) ◎ swap⋆
+          ⇔⟨ idr◎l ⊡ id⇔ ⟩
+      swap⋆ ◎ swap⋆
+          ⇔⟨ linv◎l ⟩
+      id⟷ ▤
+    ; isoʳ = 
+      (uniti⋆ ◎ swap⋆) ◎ swap⋆ ◎ unite⋆
+          ⇔⟨ assoc◎l ⟩
+      ((uniti⋆ ◎ swap⋆) ◎ swap⋆) ◎ unite⋆
+          ⇔⟨ assoc◎r ⊡ id⇔ ⟩
+      (uniti⋆ ◎ swap⋆ ◎ swap⋆) ◎ unite⋆
+          ⇔⟨ (id⇔ ⊡ linv◎l) ⊡ id⇔ ⟩
+      (uniti⋆ ◎ id⟷) ◎ unite⋆
+          ⇔⟨ idr◎l ⊡ id⇔ ⟩
+      uniti⋆ ◎ unite⋆
+          ⇔⟨ linv◎l ⟩
+       id⟷ ▤
+    }
+  }
+
+[x⊗y]⊗z≡x⊗[y⊗z] : NaturalIsomorphism ×h.[x⊗y]⊗z ×h.x⊗[y⊗z]
+[x⊗y]⊗z≡x⊗[y⊗z] = record
+  { F⇒G = record
+    { η = λ X → assocr⋆
+    ; commute = λ f → assocr⊗r
+    }
+  ; F⇐G = record
+    { η = λ X → assocl⋆
+    ; commute = λ f → assocl⊗l
+    }
+  ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l }
+  }
+
+M⊗ : Monoidal PiCat
+M⊗ = record
+  { ⊗ = ⊗-bifunctor
+  ; id = ONE
+  ; identityˡ = 1⊗x≡x
+  ; identityʳ = x⊗1≡x
+  ; assoc = [x⊗y]⊗z≡x⊗[y⊗z]
+  ; triangle = triangle⊗l
+  ; pentagon = pentagon⊗l
+  }
