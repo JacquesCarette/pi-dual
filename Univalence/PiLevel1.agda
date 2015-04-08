@@ -134,7 +134,14 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
   hom◎⊗⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₅ ⟷ t₁} {c₂ : t₆ ⟷ t₂}
         {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
          ((c₁ ⊗ c₂) ◎ (c₃ ⊗ c₄)) ⇔ ((c₁ ◎ c₃) ⊗ (c₂ ◎ c₄))
-
+  triangle⊕l : {t₁ t₂ : U} →
+    ((swap₊ ◎ unite₊ {t₁}) ⊕ id⟷ {t₂}) ⇔ assocr₊ ◎ (id⟷ ⊕ unite₊)
+  triangle⊕r : {t₁ t₂ : U} →
+    (assocr₊ ◎ (id⟷ {t₁} ⊕ unite₊ {t₂})) ⇔ ((swap₊ ◎ unite₊) ⊕ id⟷)
+  pentagon⊕l : {t₁ t₂ t₃ t₄ : U} →
+    assocr₊ ◎ (assocr₊ {t₁} {t₂} {PLUS t₃ t₄}) ⇔ ((assocr₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ assocr₊)
+  pentagon⊕r : {t₁ t₂ t₃ t₄ : U} →
+    ((assocr₊ {t₁} {t₂} {t₃} ⊕ id⟷ {t₄}) ◎ assocr₊) ◎ (id⟷ ⊕ assocr₊) ⇔ assocr₊ ◎ assocr₊
 
 -- better syntax for writing 2paths
 
@@ -200,6 +207,10 @@ _▤ c = id⇔
 2! split⊗-id⟷ = id⟷⊗id⟷⇔
 2! hom⊗◎⇔ = hom◎⊗⇔
 2! hom◎⊗⇔ = hom⊗◎⇔
+2! triangle⊕l = triangle⊕r
+2! triangle⊕r = triangle⊕l
+2! pentagon⊕l = pentagon⊕r
+2! pentagon⊕r = pentagon⊕l
 
 -- a nice example of 2 paths
 

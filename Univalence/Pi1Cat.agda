@@ -64,7 +64,8 @@ open import PiLevel1
         _⇔⟨_⟩_; _▤;
         swapr₊⇔; assoc◎r;
         assocr⊕r; assocl⊕l;
-        id⟷⊗id⟷⇔; hom⊗◎⇔; resp⊗⇔)
+        id⟷⊗id⟷⇔; hom⊗◎⇔; resp⊗⇔;
+        triangle⊕l; pentagon⊕l)
 
 ------------------------------------------------------------------------------
 -- The equality of morphisms is derived from the coherence conditions
@@ -202,8 +203,8 @@ M⊕ = record
   ; identityˡ = 0⊕x≡x
   ; identityʳ = x⊕0≡x
   ; assoc = [x⊕y]⊕z≡x⊕[y⊕z]
-  ; triangle = {!!}
-  ; pentagon = {!!}
+  ; triangle = triangle⊕l
+  ; pentagon = pentagon⊕l
   }
 
 ------------------------------------------------------------------------------
