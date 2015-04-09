@@ -89,7 +89,17 @@ and fractional types.
 
 \item Equivalences between finite types can be expressed in many ways;
 it is conjectured (Baez) that the canonical way is permutations on
-finite sets. More abstractly these equivalences can be expressed using
+finite sets.  However, it is important to note that we are not
+talking about just the set (or setoid) of permutations, but with
+the rig of permutations, with disjoint union as $+$ and tensor
+product as $*$.
+
+\item Even though operations (such as tensor product, and
+even reversal) of permutations are operationally quite complex,
+we can show that they originate (entirely) from simpler
+operations on natural numbers and on types.
+
+\item More abstractly these equivalences can be expressed using
 \emph{symmetric rig categories}. The beauty of going to the categorial
 setting is that the principles for reasoning about permutations are
 essentially the coherence conditions for the categories. We quote:
@@ -113,12 +123,12 @@ programming language with the following characteristics:
   empty, unit, sums, and products
 
   \item The set of terms consists of a rich enough set of combinators
-  that can denote every equivalence (permutation) between the types
+  that can denote every equivalence between the types
 
   \item More interestingly, we have a higher-level of combinators that
   manipulate the first level of combinators to provide a sound and
   complete calculus for computing and reasoning about equivalences of
-  permutations.
+  equivalences.
 
   \item The language has a simple, intuitive, and almost conventional
   operational semantics
