@@ -162,7 +162,22 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
     assocr⋆ ◎ (assocr⋆ {t₁} {t₂} {TIMES t₃ t₄}) ⇔ ((assocr⋆ ⊗ id⟷) ◎ assocr⋆) ◎ (id⟷ ⊗ assocr⋆)
   pentagon⊗r : {t₁ t₂ t₃ t₄ : U} →
     ((assocr⋆ {t₁} {t₂} {t₃} ⊗ id⟷ {t₄}) ◎ assocr⋆) ◎ (id⟷ ⊗ assocr⋆) ⇔ assocr⋆ ◎ assocr⋆
-
+  hexagonr⊕l : {t₁ t₂ t₃ : U} →
+     (assocr₊ ◎ swap₊) ◎ assocr₊ {t₁} {t₂} {t₃} ⇔ ((swap₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ swap₊)
+  hexagonr⊕r : {t₁ t₂ t₃ : U} →
+     ((swap₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ swap₊) ⇔ (assocr₊ ◎ swap₊) ◎ assocr₊ {t₁} {t₂} {t₃}
+  hexagonl⊕l : {t₁ t₂ t₃ : U} →
+     (assocl₊ ◎ swap₊) ◎ assocl₊ {t₁} {t₂} {t₃} ⇔ ((id⟷ ⊕ swap₊) ◎ assocl₊) ◎ (swap₊ ⊕ id⟷)
+  hexagonl⊕r : {t₁ t₂ t₃ : U} →
+     ((id⟷ ⊕ swap₊) ◎ assocl₊) ◎ (swap₊ ⊕ id⟷) ⇔ (assocl₊ ◎ swap₊) ◎ assocl₊ {t₁} {t₂} {t₃}
+  hexagonr⊗l : {t₁ t₂ t₃ : U} →
+     (assocr⋆ ◎ swap⋆) ◎ assocr⋆ {t₁} {t₂} {t₃} ⇔ ((swap⋆ ⊗ id⟷) ◎ assocr⋆) ◎ (id⟷ ⊗ swap⋆)
+  hexagonr⊗r : {t₁ t₂ t₃ : U} →
+     ((swap⋆ ⊗ id⟷) ◎ assocr⋆) ◎ (id⟷ ⊗ swap⋆) ⇔ (assocr⋆ ◎ swap⋆) ◎ assocr⋆ {t₁} {t₂} {t₃}
+  hexagonl⊗l : {t₁ t₂ t₃ : U} →
+     (assocl⋆ ◎ swap⋆) ◎ assocl⋆ {t₁} {t₂} {t₃} ⇔ ((id⟷ ⊗ swap⋆) ◎ assocl⋆) ◎ (swap⋆ ⊗ id⟷)
+  hexagonl⊗r : {t₁ t₂ t₃ : U} →
+     ((id⟷ ⊗ swap⋆) ◎ assocl⋆) ◎ (swap⋆ ⊗ id⟷) ⇔ (assocl⋆ ◎ swap⋆) ◎ assocl⋆ {t₁} {t₂} {t₃}
 -- better syntax for writing 2paths
 
 infix  2  _▤       
@@ -239,6 +254,14 @@ _▤ c = id⇔
 2! pentagon⊕r = pentagon⊕l
 2! pentagon⊗l = pentagon⊗r
 2! pentagon⊗r = pentagon⊗l
+2! hexagonr⊕l = hexagonr⊕r
+2! hexagonr⊕r = hexagonr⊕l
+2! hexagonl⊕l = hexagonl⊕r
+2! hexagonl⊕r = hexagonl⊕l
+2! hexagonr⊗l = hexagonr⊗r
+2! hexagonr⊗r = hexagonr⊗l
+2! hexagonl⊗l = hexagonl⊗r
+2! hexagonl⊗r = hexagonl⊗l
 
 -- a nice example of 2 paths
 

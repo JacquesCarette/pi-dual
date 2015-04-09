@@ -72,7 +72,8 @@ open import PiLevel1
         uniter⋆⇔; unitir⋆⇔;
         swapr⋆⇔;
         assocr⊗r; assocl⊗l;
-        triangle⊗l; pentagon⊗l)
+        triangle⊗l; pentagon⊗l;
+        hexagonr⊕l; hexagonl⊕l; hexagonr⊗l; hexagonl⊗l)
 
 ------------------------------------------------------------------------------
 -- The equality of morphisms is derived from the coherence conditions
@@ -322,4 +323,30 @@ M⊗ = record
   ; assoc = [x⊗y]⊗z≡x⊗[y⊗z]
   ; triangle = triangle⊗l
   ; pentagon = pentagon⊗l
+  }
+
+x⊕y≡y⊕x : NaturalIsomorphism ⊎h.x⊗y ⊎h.y⊗x
+x⊕y≡y⊕x = record 
+  { F⇒G = record { η = λ X → swap₊ ; commute = λ f → swapr₊⇔ } 
+  ; F⇐G = record { η = λ X → swap₊ ; commute = λ f → swapr₊⇔ } 
+  ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l } }
+
+BM⊕ : Braided M⊕
+BM⊕ = record
+  { braid = x⊕y≡y⊕x
+  ; hexagon₁ = hexagonr⊕l
+  ; hexagon₂ = hexagonl⊕l
+  }
+
+x⊗y≡y⊗x : NaturalIsomorphism ×h.x⊗y ×h.y⊗x
+x⊗y≡y⊗x = record 
+  { F⇒G = record { η = λ X → swap⋆ ; commute = λ f → swapr⋆⇔ } 
+  ; F⇐G = record { η = λ X → swap⋆ ; commute = λ f → swapr⋆⇔ } 
+  ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l } }
+
+BM⊗ : Braided M⊗
+BM⊗ = record
+  { braid = x⊗y≡y⊗x
+  ; hexagon₁ = hexagonr⊗l
+  ; hexagon₂ = hexagonl⊗l
   }
