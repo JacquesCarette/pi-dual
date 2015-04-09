@@ -45,6 +45,7 @@ open import Categories.Bifunctor
 open import Categories.NaturalIsomorphism
 open import Categories.Monoidal.Braided
 open import Categories.Monoidal.Symmetric
+open import Categories.RigCategory
 
 open import PiLevel0
   using (U; _⟷_; id⟷; _◎_;
@@ -350,3 +351,11 @@ BM⊗ = record
   ; hexagon₁ = hexagonr⊗l
   ; hexagon₂ = hexagonl⊗l
   }
+
+SBM⊕ : Symmetric BM⊕
+SBM⊕ = record { symmetry = linv◎l }
+
+SBM⊗ : Symmetric BM⊗
+SBM⊗ = record { symmetry = rinv◎l }
+
+module r = BimonoidalHelperFunctors SBM⊕ BM⊗
