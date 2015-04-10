@@ -178,6 +178,23 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
      (assocl⋆ ◎ swap⋆) ◎ assocl⋆ {t₁} {t₂} {t₃} ⇔ ((id⟷ ⊗ swap⋆) ◎ assocl⋆) ◎ (swap⋆ ⊗ id⟷)
   hexagonl⊗r : {t₁ t₂ t₃ : U} →
      ((id⟷ ⊗ swap⋆) ◎ assocl⋆) ◎ (swap⋆ ⊗ id⟷) ⇔ (assocl⋆ ◎ swap⋆) ◎ assocl⋆ {t₁} {t₂} {t₃}
+  absorbl⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
+    (c₁ ⊗ id⟷ {ZERO}) ◎ absorbl ⇔ absorbl ◎ id⟷ {ZERO}
+  absorbl⇔r : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
+     absorbl ◎ id⟷ {ZERO} ⇔ (c₁ ⊗ id⟷ {ZERO}) ◎ absorbl
+  absorbr⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
+    (id⟷ {ZERO} ⊗ c₁) ◎ absorbr ⇔ absorbr ◎ id⟷ {ZERO}
+  absorbr⇔r : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
+     absorbr ◎ id⟷ {ZERO} ⇔ (id⟷ {ZERO} ⊗ c₁) ◎ absorbr
+  factorzl⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
+    id⟷ ◎ factorzl ⇔ factorzl ◎ (id⟷ ⊗ c₁)
+  factorzl⇔r : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
+     factorzl ◎ (id⟷ {ZERO} ⊗ c₁) ⇔ id⟷ {ZERO} ◎ factorzl
+  factorzr⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
+     id⟷ ◎ factorzr ⇔ factorzr ◎ (c₁ ⊗ id⟷)
+  factorzr⇔r : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
+     factorzr ◎ (c₁ ⊗ id⟷) ⇔ id⟷ ◎ factorzr
+
 -- better syntax for writing 2paths
 
 infix  2  _▤       
@@ -262,6 +279,14 @@ _▤ c = id⇔
 2! hexagonr⊗r = hexagonr⊗l
 2! hexagonl⊗l = hexagonl⊗r
 2! hexagonl⊗r = hexagonl⊗l
+2! absorbl⇔l = absorbl⇔r
+2! absorbl⇔r = absorbl⇔l
+2! absorbr⇔l = absorbr⇔r
+2! absorbr⇔r = absorbr⇔l
+2! factorzl⇔l = factorzl⇔r
+2! factorzl⇔r = factorzl⇔l
+2! factorzr⇔l = factorzr⇔r
+2! factorzr⇔r = factorzr⇔l
 
 -- a nice example of 2 paths
 
@@ -298,3 +323,20 @@ negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆
         swap₊ ▤
 
 ------------------------------------------------------------------------------
+
+-- Some variants of the combinators, which can be more useful in practice
+dist′⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {a : t₁ ⟷ t₂} {b : t₃ ⟷ t₄} {c : t₅ ⟷ t₆} →
+      ((a ⊕ b) ⊗ c) ◎ dist ⇔ dist ◎ ((a ⊗ c) ⊕ (b ⊗ c)) 
+dist′⇔ {a = a} {b} {c} =
+      ((a ⊕ b) ⊗ c) ◎ dist
+        ⇔⟨ dist⇔ ⊡ id⇔ ⟩
+      (dist ◎ ((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor) ◎ dist
+        ⇔⟨ assoc◎r ⟩
+      dist ◎ (((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor) ◎ dist
+        ⇔⟨ id⇔ ⊡ assoc◎r ⟩
+      dist ◎ ((a ⊗ c) ⊕ (b ⊗ c)) ◎ (factor ◎ dist)
+        ⇔⟨ id⇔ ⊡ (id⇔ ⊡ linv◎l) ⟩
+      dist ◎ ((a ⊗ c) ⊕ (b ⊗ c)) ◎ id⟷
+        ⇔⟨ id⇔ ⊡ idr◎l ⟩
+      dist ◎ ((a ⊗ c) ⊕ (b ⊗ c)) ▤

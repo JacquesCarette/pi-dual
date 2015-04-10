@@ -57,7 +57,9 @@ open import PiLevel0
         TIMES; _⊗_; ONE;
         unite⋆; uniti⋆;
         swap⋆;
-        assocr⋆; assocl⋆)
+        assocr⋆; assocl⋆;
+        absorbl; absorbr; factorzl; factorzr;
+        dist; factor)
 
 open import PiLevel1
   using (
@@ -74,7 +76,10 @@ open import PiLevel1
         swapr⋆⇔;
         assocr⊗r; assocl⊗l;
         triangle⊗l; pentagon⊗l;
-        hexagonr⊕l; hexagonl⊕l; hexagonr⊗l; hexagonl⊗l)
+        hexagonr⊕l; hexagonl⊕l; hexagonr⊗l; hexagonl⊗l;
+        absorbl⇔l; absorbr⇔l; factorzl⇔l; factorzr⇔l;
+        dist⇔; factor⇔; dist′⇔; idl◎r; linv◎r;
+        hom◎⊕⇔)
 
 ------------------------------------------------------------------------------
 -- The equality of morphisms is derived from the coherence conditions
@@ -359,3 +364,89 @@ SBM⊗ : Symmetric BM⊗
 SBM⊗ = record { symmetry = rinv◎l }
 
 module r = BimonoidalHelperFunctors SBM⊕ BM⊗
+
+x⊗0≡0 : NaturalIsomorphism r.x⊗0 r.0↑
+x⊗0≡0 = record 
+  { F⇒G = record
+    { η = λ X → absorbl
+    ; commute = λ f → absorbl⇔l
+    } 
+  ; F⇐G = record
+    { η = λ X → factorzr
+    ; commute = λ f → factorzr⇔l
+    } 
+  ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l } 
+  }
+
+0⊗x≡0 : NaturalIsomorphism r.0⊗x r.0↑
+0⊗x≡0 = record
+  { F⇒G = record { η = λ X → absorbr ; commute = λ f → absorbr⇔l }
+  ; F⇐G = record { η = λ X → factorzl ; commute = λ f → factorzl⇔l }
+  ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l }
+  }
+
+x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] : NaturalIsomorphism r.x⊗[y⊕z] r.[x⊗y]⊕[x⊗z]
+x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record -- this probably says we need distl/distr
+  { F⇒G = record
+    { η = λ X → swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆)
+    ; commute = λ f → 
+    let a = f zero in let b = f (suc zero) in let c = f (suc (suc zero)) in
+    (a ⊗ (b ⊕ c)) ◎ swap⋆ ◎ (dist ◎ (swap⋆ ⊕ swap⋆))
+      ⇔⟨ assoc◎l ⟩
+    ((a ⊗ (b ⊕ c)) ◎ swap⋆) ◎ (dist ◎ (swap⋆ ⊕ swap⋆))
+      ⇔⟨ swapr⋆⇔ ⊡ id⇔ ⟩
+    (swap⋆ ◎ ((b ⊕ c) ⊗ a)) ◎ (dist ◎ (swap⋆ ⊕ swap⋆))
+      ⇔⟨ assoc◎r ⟩
+    swap⋆ ◎ ((b ⊕ c) ⊗ a) ◎ (dist ◎ (swap⋆ ⊕ swap⋆))
+      ⇔⟨ id⇔ ⊡ assoc◎l ⟩
+    swap⋆ ◎ (((b ⊕ c) ⊗ a) ◎ dist) ◎ (swap⋆ ⊕ swap⋆)
+      ⇔⟨ id⇔ ⊡ (dist′⇔ ⊡ id⇔) ⟩
+    swap⋆ ◎ ((dist ◎ ((b ⊗ a) ⊕ (c ⊗ a))) ◎ (swap⋆ ⊕ swap⋆))
+      ⇔⟨ id⇔ ⊡ assoc◎r ⟩
+    swap⋆ ◎ (dist ◎ (((b ⊗ a) ⊕ (c ⊗ a)) ◎ (swap⋆ ⊕ swap⋆)))
+      ⇔⟨ id⇔ ⊡ (id⇔ ⊡ hom◎⊕⇔) ⟩
+    swap⋆ ◎ (dist ◎ (((b ⊗ a) ◎ swap⋆) ⊕ ((c ⊗ a) ◎ swap⋆)))
+      ⇔⟨ id⇔ ⊡ (id⇔ ⊡ (resp⊕⇔ swapr⋆⇔ swapr⋆⇔)) ⟩
+    swap⋆ ◎ (dist ◎ ((swap⋆ ◎ (a ⊗ b)) ⊕ (swap⋆ ◎ (a ⊗ c))))
+      ⇔⟨ id⇔ ⊡ (id⇔ ⊡ hom⊕◎⇔) ⟩
+    swap⋆ ◎ (dist ◎ ((swap⋆ ⊕ swap⋆) ◎ ((a ⊗ b) ⊕ (a ⊗ c))))
+      ⇔⟨ id⇔ ⊡ assoc◎l ⟩
+    swap⋆ ◎ ((dist ◎ (swap⋆ ⊕ swap⋆)) ◎ _)
+      ⇔⟨ assoc◎l ⟩
+    (swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆)) ◎ ((a ⊗ b) ⊕ (a ⊗ c)) ▤
+    }
+  ; F⇐G = record
+    { η = λ X → (swap⋆ ⊕ swap⋆) ◎ factor ◎ swap⋆ ; commute = λ f → {!!} }
+  ; iso = λ X → record { isoˡ = {!!} ; isoʳ = {!!} }
+  }
+
+[x⊕y]⊗z≡[x⊗z]⊕[y⊗z] : NaturalIsomorphism r.[x⊕y]⊗z r.[x⊗z]⊕[y⊗z]
+[x⊕y]⊗z≡[x⊗z]⊕[y⊗z] = record
+  { F⇒G = record
+    { η = λ X → dist
+    ; commute = λ f → dist′⇔
+    }
+  ; F⇐G = record
+    { η = λ X → factor
+    ; commute = λ f → 
+      let a = f zero in let b = f (suc zero) in let c = f (suc (suc zero)) in
+      ((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor
+        ⇔⟨ idl◎r ⟩
+      id⟷ ◎ (((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor)
+        ⇔⟨ linv◎r ⊡ id⇔ ⟩
+      (factor ◎ dist) ◎ (((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor)
+        ⇔⟨ assoc◎r ⟩
+      factor ◎ (dist ◎ (((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor))
+        ⇔⟨ id⇔ ⊡ factor⇔ ⟩
+      factor ◎ ((a ⊕ b) ⊗ c) ▤
+    }
+  ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l }
+  }
+
+Pi0Rig : RigCategory SBM⊕ BM⊗
+Pi0Rig = record 
+  { distribₗ = x⊗[y⊕z]≡[x⊗y]⊕[x⊗z]
+  ; distribᵣ = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] 
+  ; annₗ = x⊗0≡0 
+  ; annᵣ = 0⊗x≡0 
+  }
