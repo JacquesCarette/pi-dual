@@ -145,6 +145,36 @@ that intuitively corresponds to the statement of \emph{univalence} in
 our setting. The theorem states that the set of equivalences between
 equivalences is equivalent to identities of permutations.
 
+\item Pi0: we have an operational semantics that maps each combinator to a
+function; this is intuitive but bad for reasoning as it would require
+reasoning about extensional equivalence of functions; it is also bad because
+we completely lose the fact that we are starting with a reversible language;
+we have an alternative semantics that maps each combinator to a
+permutation. Semantically permutations (with a rich algebra) can be modeled
+using a \emph{typed} semiring; we have several instances of these categories
+that show that a few simple properties of natural numbers lift to properties
+of Fin then vectors then permutations.
+
+\item Pi1: we have a nice semantics which maps each combinator to a
+permutation but we don’t have a way yet to reason about which permutations
+are equivalent to each other? We would like to answer this question without
+going to extensional equality of functions. It turns out that this question
+has essentially been answered by category theorists and is encoded in the
+coherence conditions for monoidal categories (precisely symmetric rig
+categories). These conditions classify what is going on. We can turn these
+coherence conditions into a typed operational semantics for program
+transformations
+
+\item Pi2: we can start seeing which program transformations are
+equivalent. This requires a generalization of rig categories.
+
+\item Possible application: reversible circuits + optimizations
+
+\item Now how do you fit Thm 2 into that story and is it possible to do it in
+a way that makes the structure of Pi0 and Pi1 part of the same general
+pattern? At level 0, thm 2 says that, given a choice of enumeration,
+permutations are \emph{initial} and \emph{complete}.
+
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
