@@ -1,4 +1,5 @@
 \documentclass{article}
+
 \usepackage{fullpage}
 \usepackage{agda}
 \usepackage{ucs}
@@ -29,6 +30,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Comments
+
 \newif\ifcomments\commentstrue
 
 \ifcomments
@@ -43,7 +45,6 @@
 \newcommand{\as}[1]{\authornote{magenta}{AS}{#1}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \begin{document}
 
 \title{Permutations etc.}
@@ -65,7 +66,7 @@ module p where
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
-
+ 
 Main points:
 
 \begin{itemize}
@@ -176,6 +177,23 @@ pattern? At level 0, thm 2 says that, given a choice of enumeration,
 permutations are \emph{initial} and \emph{complete}.
 
 \end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Equivalences between Finite Types}
+
+We begin our investigation of \emph{equivalences} in the context of
+finite types constructed from the empty type, the unit type, and sums
+and products. In the general context of HoTT, a possible specification
+of equivalences is via ``bi-invertible maps.'' A map
+$f : A \rightarrow B$ is \emph{bi-invertible} if it has both a left
+inverse and a right inverse, i.e., if there exist maps
+$g, h : B \rightarrow A$ such that $g \circ f \sim \textrm{id}_A$ and
+$f \circ h \sim \textrm{id}_B$ where for two maps
+$f, g : A \rightarrow B$, we define $f \sim g$ if for all $x : A$ if
+$f(x) = g(x)$. The equality $=$ in the last equation refers to
+\emph{identity}.  In the context of finite types, all these
+definitions reduce to having a \emph{permutation} between the two
+finite types.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
