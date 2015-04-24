@@ -1,4 +1,5 @@
 \documentclass{article}
+
 \usepackage{fullpage}
 \usepackage{agda}
 \usepackage{ucs}
@@ -29,6 +30,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Comments
+
 \newif\ifcomments\commentstrue
 
 \ifcomments
@@ -43,7 +45,6 @@
 \newcommand{\as}[1]{\authornote{magenta}{AS}{#1}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \begin{document}
 
 \title{Permutations etc.}
@@ -65,7 +66,7 @@ module p where
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
-
+ 
 Main points:
 
 \begin{itemize}
@@ -145,7 +146,54 @@ that intuitively corresponds to the statement of \emph{univalence} in
 our setting. The theorem states that the set of equivalences between
 equivalences is equivalent to identities of permutations.
 
+\item Pi0: we have an operational semantics that maps each combinator to a
+function; this is intuitive but bad for reasoning as it would require
+reasoning about extensional equivalence of functions; it is also bad because
+we completely lose the fact that we are starting with a reversible language;
+we have an alternative semantics that maps each combinator to a
+permutation. Semantically permutations (with a rich algebra) can be modeled
+using a \emph{typed} semiring; we have several instances of these categories
+that show that a few simple properties of natural numbers lift to properties
+of Fin then vectors then permutations.
+
+\item Pi1: we have a nice semantics which maps each combinator to a
+permutation but we don’t have a way yet to reason about which permutations
+are equivalent to each other? We would like to answer this question without
+going to extensional equality of functions. It turns out that this question
+has essentially been answered by category theorists and is encoded in the
+coherence conditions for monoidal categories (precisely symmetric rig
+categories). These conditions classify what is going on. We can turn these
+coherence conditions into a typed operational semantics for program
+transformations
+
+\item Pi2: we can start seeing which program transformations are
+equivalent. This requires a generalization of rig categories.
+
+\item Possible application: reversible circuits + optimizations
+
+\item Now how do you fit Thm 2 into that story and is it possible to do it in
+a way that makes the structure of Pi0 and Pi1 part of the same general
+pattern? At level 0, thm 2 says that, given a choice of enumeration,
+permutations are \emph{initial} and \emph{complete}.
+
 \end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Equivalences between Finite Types}
+
+We begin our investigation of \emph{equivalences} in the context of
+finite types constructed from the empty type, the unit type, and sums
+and products. In the general context of HoTT, a possible specification
+of equivalences is via ``bi-invertible maps.'' A map
+$f : A \rightarrow B$ is \emph{bi-invertible} if it has both a left
+inverse and a right inverse, i.e., if there exist maps
+$g, h : B \rightarrow A$ such that $g \circ f \sim \textrm{id}_A$ and
+$f \circ h \sim \textrm{id}_B$ where for two maps
+$f, g : A \rightarrow B$, we define $f \sim g$ if for all $x : A$ if
+$f(x) = g(x)$. The equality $=$ in the last equation refers to
+\emph{identity}.  In the context of finite types, all these
+definitions reduce to having a \emph{permutation} between the two
+finite types.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
