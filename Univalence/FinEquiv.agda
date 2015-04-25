@@ -27,7 +27,8 @@ open import Equiv
 open import TypeEquiv using (swap₊; swapswap₊; swap⋆; swapswap⋆)
 import TypeEquiv as TE
 open import LeqLemmas using (_<?_; cong+r≤; cong+l≤; cong*r≤; sinj≤)
-open import FinNatLemmas using (inj₁-≡; inj₂-≡; inject+-injective; raise-injective)
+open import FinNatLemmas 
+  using (inj₁-≡; inj₂-≡; inject+-injective; raise-injective; addMul-lemma)
 open import SubstLemmas using (subst-subst)
 open import PathLemmas using (sym-sym)
 
@@ -222,8 +223,6 @@ abstract
 
   module Times where
 
-    open import DivModUtils using (addMul-lemma)
-
     fwd : {m n : ℕ} → (Fin m × Fin n) → Fin (m * n)
     -- fwd {m} {n} (i , k) = inject≤ (fromℕ (toℕ i * n + toℕ k)) (i*n+k≤m*n i k)
     fwd {suc m} {n} (zero , k) = inject+ (m * n) k
@@ -361,7 +360,18 @@ abstract
     distz {m} = id-iso 
 
     factorz : {m : ℕ} → Fin 0 ≃ Fin (0 * m)
-    factorz {m} = id-iso 
+    factorz {m} = sym≃ (distz {m})
+
+    distzr : {m : ℕ} → Fin (m * 0) ≃ Fin 0
+    distzr {m} = 
+      let eq = *-right-zero m in
+      subst Fin eq ,
+      mkqinv (subst Fin (sym eq)) 
+                  (subst-subst eq (sym eq) refl)
+                  (subst-subst (sym eq) eq sym-sym)
+
+    factorzr : {n : ℕ} → Fin 0 ≃ Fin (n * 0)
+    factorzr {n} = sym≃ (distzr {n})
 
     cong*-iso : {m n o p : ℕ} → (Fin m ≃ Fin n) → (Fin o ≃ Fin p) → Fin (m * o) ≃ Fin (n * p)
     cong*-iso {m} {n} {o} {p} (f , feq) (g , geq) = 

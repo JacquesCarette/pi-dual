@@ -43,8 +43,6 @@ open import Categories.Monoidal using (Monoidal)
 open import Categories.Monoidal.Helpers using (module MonoidalHelperFunctors)
 open import Categories.Monoidal.Braided using (Braided; module Braided) 
 
-open import SymmetricMonoidalCategory
-
 open import FinVec
 open F
 

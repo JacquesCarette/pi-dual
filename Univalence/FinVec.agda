@@ -210,6 +210,12 @@ module F where
     factor*+ : ∀ {m n o} → FinVec ((m + n) * o) (m * o + n * o)
     factor*+ {m} {n} {o} = tabulate (proj₁ (PlusTimes.factor {m} {n} {o}))
 
+    right-zero*l : ∀ {m} → FinVec 0 (m * 0)
+    right-zero*l {m} = tabulate (proj₁ (Times.distzr {m}))
+
+    right-zero*r : ∀ {m} → FinVec (m * 0) 0
+    right-zero*r {m} = tabulate (proj₁ (Times.factorzr {m}))
+   
     -------------------------------------------------------------------------------------------
     -- Below here, we start with properties
 
@@ -423,6 +429,12 @@ module F where
 
     factor*+∘̂dist*+~id : ∀ {m n o} → factor*+ {m} {n} {o} ∘̂ dist*+ {m} ≡ 1C
     factor*+∘̂dist*+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = PlusTimes.factor {m}})
+
+    right-zero*l∘̂right-zero*r~id : ∀ {m} → right-zero*l {m} ∘̂ right-zero*r {m} ≡ 1C {m * 0}
+    right-zero*l∘̂right-zero*r~id {m} = ~⇒≡ {o = m} {f = proj₁ (Times.factorzr {m})} (p∘!p≡id {p = Times.distzr {m}})
+
+    right-zero*r∘̂right-zero*l~id : ∀ {m} → right-zero*r {m} ∘̂ right-zero*l {m} ≡ 1C
+    right-zero*r∘̂right-zero*l~id {m} = ~⇒≡ {o = m} { f = proj₁ (Times.factorz {m})} (p∘!p≡id {p = Times.distz {m}})
 
     private
       left⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : FinVec m₁ n₁) → (p₂ : FinVec m₂ n₂)

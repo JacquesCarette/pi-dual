@@ -4,14 +4,18 @@ module FinNatLemmas where
 
 open import Relation.Binary.PropositionalEquality 
   using (_≡_; refl; sym; trans; subst; cong; proof-irrelevance; module ≡-Reasoning)
+open import Relation.Binary.Core using (_≢_)
 open import Data.Nat.Properties
   using (cancel-+-left; n∸n≡0; +-∸-assoc; m+n∸n≡m; 1+n≰n; m≤m+n;
          n≤m+n; n≤1+n; cancel-*-right-≤; ≰⇒>; ¬i+1+j≤i; cancel-+-left-≤)
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
+import Relation.Binary
+open import Data.Product using (_×_;_,_)
+open import Data.Empty using (⊥-elim)
 
-open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≮_; _≤_; _≰_; 
+open import Data.Nat using (ℕ; zero; suc; _+_; _∸_; _*_; _<_; _≮_; _≤_; _≰_; 
   z≤n; s≤s; _≟_; _≤?_; module ≤-Reasoning)
 open import Data.Fin 
   using (Fin; zero; suc; toℕ; fromℕ; fromℕ≤; _ℕ-_; _≺_; reduce≥; 
@@ -173,3 +177,51 @@ inject+0≡uniti+ {m} n eq = toℕ-injective pf
       toℕ n
         ≡⟨ sym (toℕ-invariance n eq) ⟩
       toℕ (subst Fin eq n) ∎)
+
+-- Following code taken from
+-- https://github.com/copumpkin/derpa/blob/master/REPA/Index.agda#L210
+
+-- the next few bits are lemmas to prove uniqueness of euclidean division
+
+-- first : for nonzero divisors, a nonzero quotient would require a larger
+-- dividend than is consistent with a zero quotient, regardless of
+-- remainders.
+
+large : ∀ {d} {r : Fin (suc d)} x (r′ : Fin (suc d)) → toℕ r ≢ suc x * suc d + toℕ r′
+large {d} {r} x r′ pf = irrefl pf (
+    start
+      suc (toℕ r)
+    ≤⟨ bounded r ⟩
+      suc d
+    ≤⟨ m≤m+n (suc d) (x * suc d) ⟩
+      suc d + x * suc d -- same as (suc x * suc d)
+    ≤⟨ m≤m+n (suc x * suc d) (toℕ r′) ⟩
+      suc x * suc d + toℕ r′ -- clearer in two steps, and we'd need assoc anyway
+    □)
+  where
+  open ≤-Reasoning
+    renaming (begin_ to start_; _∎ to _□; _≡⟨_⟩_ to _≡⟨_⟩'_)
+  open Relation.Binary.StrictTotalOrder Data.Nat.Properties.strictTotalOrder
+
+-- a raw statement of the uniqueness, in the arrangement of terms that's
+-- easiest to work with computationally
+
+addMul-lemma′ : ∀ x x′ d (r r′ : Fin (suc d)) →
+  x * suc d + toℕ r ≡ x′ * suc d + toℕ r′ → r ≡ r′ × x ≡ x′
+addMul-lemma′ zero zero d r r′ hyp = (toℕ-injective hyp) , refl
+addMul-lemma′ zero (suc x′) d r r′ hyp = ⊥-elim (large x′ r′ hyp)
+addMul-lemma′ (suc x) zero d r r′ hyp = ⊥-elim (large x r (sym hyp))
+addMul-lemma′ (suc x) (suc x′) d r r′ hyp
+                      rewrite +-assoc (suc d) (x * suc d) (toℕ r)
+                            | +-assoc (suc d) (x′ * suc d) (toℕ r′)
+                      with addMul-lemma′ x x′ d r r′ (cancel-+-left (suc d) hyp)
+... | pf₁ , pf₂ = pf₁ , cong suc pf₂
+
+-- and now rearranged to the order that Data.Nat.DivMod uses
+
+addMul-lemma : ∀ x x′ d (r r′ : Fin (suc d)) →
+  toℕ r + x * suc d ≡ toℕ r′ + x′ * suc d → r ≡ r′ × x ≡ x′
+addMul-lemma x x′ d r r′ hyp rewrite +-comm (toℕ r) (x * suc d)
+                                   | +-comm (toℕ r′) (x′ * suc d)
+  = addMul-lemma′ x x′ d r r′ hyp
+  

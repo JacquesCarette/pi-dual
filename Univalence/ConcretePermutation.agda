@@ -158,6 +158,15 @@ distp {m} {n} {o} = cp (dist*+ {m}) (factor*+ {m}) (dist*+∘̂factor*+~id {m}) 
 factorp : {m n o : ℕ} → CPerm ((m + n) * o) (m * o + n * o)
 factorp {m} = symp (distp {m})
 
+-- right-zero absorbing permutation
+0pr : ∀ {n} → CPerm 0 (n * 0)
+0pr {n} = cp (right-zero*l {n}) (right-zero*r {n}) 
+    right-zero*l∘̂right-zero*r~id right-zero*r∘̂right-zero*l~id
+
+-- and its symmetric version
+0pl : ∀ {n} → CPerm (n * 0) 0
+0pl {n} = symp (0pr {n})
+
 ------------------------------------------------------------------------------------------------------
 
 ridp : ∀ {m₁ m₂} {p : CPerm m₂ m₁} → transp p idp ≡ p
