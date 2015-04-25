@@ -2,38 +2,63 @@
 
 module SEquivSCPermEquiv where
 
--- open import Level
-open import Data.Nat using (ℕ;_+_)
--- open import Data.Nat.Properties.Simple using (+-comm)
-open import Data.Fin using (Fin; inject+; raise)
-open import Data.Vec using (tabulate) renaming (_++_ to _++V_)
-open import Data.Vec.Properties using (lookup∘tabulate)
+-- Data types from standard library
 
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans;
-    cong₂;
-    module ≡-Reasoning)
-open import Relation.Binary using (Setoid; module Setoid)
--- open import Data.Product using (_,′_; _×_)
+open import Data.Nat     using (_+_) 
+open import Data.Fin     using (Fin; inject+; raise) 
+open import Data.Sum     using (inj₁; inj₂)
+open import Data.Product using (_,_; proj₁; proj₂)
+open import Data.Vec     using (tabulate) renaming (_++_ to _++V_)
+open import Function     using (_∘_; id)
 
-open import FinVec using (module F) -- and below, import from that
+-- Properties from standard library
+
+open import Data.Vec.Properties using    (lookup∘tabulate)
+open import Relation.Binary     using    (module Setoid)
+open import Function.Equality   using    (_⇨_; _⟨$⟩_; _⟶_)
+                                renaming (_∘_ to _⊚_; id to id⊚)
+
+open import Relation.Binary.PropositionalEquality
+  using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
+     
+-- Next are imports from our libraries of Proofs (FiniteFunctions and
+-- VectorLemmas)
+
+open import Proofs using (finext; _!!_; tabulate-split) 
+
+-- Next we import our notions of equivalences
+
+open import Equiv using (_∼_; module qinv; mkqinv; _≃_)
+
+-- Next we import sets equipped with equivalence relations and
+-- specialize to our notions of equivalence
+
+open import SetoidUtils using (≡-Setoid; →to⟶)
+open import EquivSetoid
+  using (_≃S_; module _≃S_; equiv; 0≃S; id≃S; _⊎≃S_; 
+         _≋_; module _≋_; equivS;
+         _≃S≡_; ≃S-Setoid)
+
+-- Finally we import our definition of permutations. We start with Vec
+-- (Fin m) n for arbitrary m and n which---if well-formed---would
+-- define a permutation in the Cauchy representation. These vectors
+-- assume a canonical enumeration of the finite sets which we make
+-- explicit in the module Enumeration. To ensure these vectors are
+-- well-formed, we define a concrete permutation as a pair of two such
+-- vectors with two proofs that they compose to the identity
+-- permutation.
+
+open import FinVec using (module F) 
 open F using (~⇒≡; !!⇒∘̂; _∘̂_; 1C!!i≡i; cauchyext)
 
-open import Function using (_∘_; id)
--- open import RepresPerm
-open import Equiv
-open import Enumeration
-open import Data.Product using (_,_; proj₁; proj₂)
-open import EquivSetoid
-open import SetoidUtils 
-open import Function.Equality using (_⟶_; Π; _⟨$⟩_; _⇨_) renaming (_∘_ to _⊚_; id to id⊚)
-open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Enumeration         using (Enum; 0E; _⊕e_; eval-left; eval-right) 
+open import ConcretePermutation using (CPerm; cp; p≡; 0p; idp; _⊎p_; SCPerm) 
 
-open import ConcretePermutation
-open import FiniteFunctions using (finext)
-open import VectorLemmas using (_!!_; tabulate-split)
+------------------------------------------------------------------------------
+-- The big (semantic) theorem!
 
--- the big (semantic) theorem.
--- for convenience, use only a single size, even though we could use 2.
+-- For convenience, use only a single size, even though we could use 2.
+
 thm2 : ∀ {n} {A B : Set} → Enum A n → Enum B n → 
   (≃S-Setoid A B) ≃S ≡-Setoid (CPerm n n)
 thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB) = 

@@ -26,6 +26,57 @@
 \usepackage{multicol}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Macros
+
+\newcommand{\inl}[1]{\textsf{inl}~#1}
+\newcommand{\inr}[1]{\textsf{inr}~#1}
+\newcommand{\idv}[3]{#2 \xrightarrow{#1} #3}
+\newcommand{\cp}[3]{#1\stackrel{#2}{\bullet}#3}
+\newcommand{\idt}[3]{#2 \equiv_{#1} #3}
+\newcommand{\idrt}[3]{#3 \equiv_{#1} #2}
+\newcommand{\refl}[1]{\textsf{refl}~#1}
+\newcommand{\lid}{\textsf{lid}}
+\newcommand{\rid}{\textsf{rid}}
+\newcommand{\linv}{l!}
+\newcommand{\rinv}{r!}
+\newcommand{\invinv}{!!}
+\newcommand{\assoc}{\circ}
+\newcommand{\identlp}{\mathit{identl}_+}
+\newcommand{\identrp}{\mathit{identr}_+}
+\newcommand{\swapp}{\mathit{swap}_+}
+\newcommand{\assoclp}{\mathit{assocl}_+}
+\newcommand{\assocrp}{\mathit{assocr}_+}
+\newcommand{\identlt}{\mathit{identl}_*}
+\newcommand{\identrt}{\mathit{identr}_*}
+\newcommand{\swapt}{\mathit{swap}_*}
+\newcommand{\assoclt}{\mathit{assocl}_*}
+\newcommand{\assocrt}{\mathit{assocr}_*}
+\newcommand{\distz}{\mathit{dist}_0}
+\newcommand{\factorz}{\mathit{factor}_0}
+\newcommand{\dist}{\mathit{dist}}
+\newcommand{\factor}{\mathit{factor}}
+\newcommand{\iso}{\leftrightarrow}
+\newcommand{\proves}{\vdash}
+\newcommand{\idc}{\mathit{id}}
+\newcommand{\ap}[2]{\mathit{ap}~#1~#2}
+\newcommand{\alt}{~|~}
+\newcommand{\evalone}[2]{#1~\triangleright~#2}
+\newcommand{\evaloneb}[2]{#1~\triangleleft~#2}
+\newcommand{\Rule}[4]{
+\makebox{{\rm #1}
+$\displaystyle
+\frac{\begin{array}{l}#2\\\end{array}}
+{\begin{array}{l}#3\\\end{array}}$
+ #4}}
+\newcommand{\jdg}[3]{#2 \proves_{#1} #3}
+\newcommand{\adjoint}[1]{#1^{\dagger}}
+\newcommand{\pc}{\fatsemi}                 % path composition
+\newenvironment{floatrule}
+    {\hrule width \hsize height .33pt \vspace{.5pc}}
+    {\par\addvspace{.5pc}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \renewcommand{\AgdaCodeStyle}{\small}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -60,6 +111,56 @@
 {-# OPTIONS --without-K #-}
 
 module p where
+
+open import Data.Nat     using (_+_) 
+open import Data.Fin     using (Fin; inject+; raise) 
+open import Data.Sum     using (inj₁; inj₂)
+open import Data.Product using (_,_; proj₁; proj₂)
+open import Data.Vec     using (tabulate) renaming (_++_ to _++V_)
+open import Function     using (_∘_; id)
+
+-- Properties from standard library
+
+open import Data.Vec.Properties using    (lookup∘tabulate)
+open import Relation.Binary     using    (module Setoid)
+open import Function.Equality   using    (_⇨_; _⟨$⟩_; _⟶_)
+                                renaming (_∘_ to _⊚_; id to id⊚)
+
+open import Relation.Binary.PropositionalEquality
+  using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
+     
+-- Next are imports from our libraries of Proofs (FiniteFunctions and
+-- VectorLemmas)
+
+open import Proofs using (finext; _!!_; tabulate-split) 
+
+-- Next we import our notions of equivalences
+
+open import Equiv using (_∼_; module qinv; mkqinv; _≃_)
+
+-- Next we import sets equipped with equivalence relations and
+-- specialize to our notions of equivalence
+
+open import SetoidUtils using (≡-Setoid; →to⟶)
+open import EquivSetoid
+  using (_≃S_; module _≃S_; equiv; 0≃S; id≃S; _⊎≃S_; 
+         _≋_; module _≋_; equivS;
+         _≃S≡_; ≃S-Setoid)
+
+-- Finally we import our definition of permutations. We start with Vec
+-- (Fin m) n for arbitrary m and n which---if well-formed---would
+-- define a permutation in the Cauchy representation. These vectors
+-- assume a canonical enumeration of the finite sets which we make
+-- explicit in the module Enumeration. To ensure these vectors are
+-- well-formed, we define a concrete permutation as a pair of two such
+-- vectors with two proofs that they compose to the identity
+-- permutation.
+
+open import FinVec using (module F) 
+open F using (~⇒≡; !!⇒∘̂; _∘̂_; 1C!!i≡i; cauchyext)
+
+open import Enumeration         using (Enum; 0E; _⊕e_; eval-left; eval-right) 
+open import ConcretePermutation using (CPerm; cp; p≡; 0p; idp; _⊎p_; SCPerm) 
 
 \end{code}
 }
@@ -179,21 +280,138 @@ permutations are \emph{initial} and \emph{complete}.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Equivalences between Finite Types}
+\section{Finite Types}
 
-We begin our investigation of \emph{equivalences} in the context of
-finite types constructed from the empty type, the unit type, and sums
-and products. In the general context of HoTT, a possible specification
-of equivalences is via ``bi-invertible maps.'' A map
-$f : A \rightarrow B$ is \emph{bi-invertible} if it has both a left
-inverse and a right inverse, i.e., if there exist maps
-$g, h : B \rightarrow A$ such that $g \circ f \sim \textrm{id}_A$ and
-$f \circ h \sim \textrm{id}_B$ where for two maps
-$f, g : A \rightarrow B$, we define $f \sim g$ if for all $x : A$ if
-$f(x) = g(x)$. The equality $=$ in the last equation refers to
-\emph{identity}.  In the context of finite types, all these
-definitions reduce to having a \emph{permutation} between the two
-finite types.
+Our first step is to recall a few properties of \emph{finite types}.
+Syntactically, these types are constructed by the following grammar:
+\[\begin{array}{lrcl}
+(\textit{Types}) & 
+  \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 
+\end{array}\]
+The set of types $\tau$ includes the empty type 0, the unit type 1,
+and conventional sum and product types. 
+
+Semantically, each such type denotes a \emph{finite set}. The only
+equivalence on the elements of these sets is the \emph{identity}
+relation which we write as $=$. In other words if $x, y : A$ and
+$x = y$ then it must be the case that $x$ and $y$ are identical. For
+two finite sets $A$ and $B$, two maps $f, g : A \rightarrow B$ are
+\emph{extensionally equivalent}, $f \sim g$, if for all $x : A$ we
+have that $f(x) = g(x)$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Equivalences between Finite Types}
+
+In the general context of HoTT, there are several \emph{equivalent}
+definitions of \emph{equivalences} between types. The most natural
+definition for our purposes is the notion of ``bi-invertible maps.'' A
+map $f : A \rightarrow B$ is \emph{bi-invertible} if it has both a
+left inverse and a right inverse, i.e., if there exist maps
+$g, h : B \rightarrow A$ such that $g \circ f \sim \textrm{id}_A$ and
+$f \circ h \sim \textrm{id}_B$. A semantic equivalence between sets
+$A$ and $B$ is completely specified by a bi-invertible map
+$f : A \rightarrow B$. Our aim is to define a syntactic,
+\emph{inductive}, characterization of this equivalence.
+
+Intuitively, we expect two finite sets to be equivalent if there is a
+\emph{permutation} between them and hence our aim is essentially to
+produce a syntactic characterization of permutations on finite types
+that is sound and complete with respect to the semantic equivalence on
+finite sets above. We will immediately present a syntactic definition
+of permutations on finite types and then proceed to prove that it
+exactly corresponds to semantic equivalence.
+
+%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{$\Pi$-Combinators}
+\label{pi}
+
+\begin{figure*}[t]
+\[\begin{array}{cc}
+\begin{array}{rrcll}
+\identlp :&  0 + \tau & \iso & \tau &: \identrp \\
+\swapp :&  \tau_1 + \tau_2 & \iso & \tau_2 + \tau_1 &: \swapp \\
+\assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 
+  &: \assocrp \\
+\identlt :&  1 * \tau & \iso & \tau &: \identrt \\
+\swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
+\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 
+  &: \assocrt \\
+\distz :&~ 0 * \tau & \iso & 0 &: \factorz \\
+\dist :&~ (\tau_1 + \tau_2) * \tau_3 & 
+  \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor 
+\end{array}
+& 
+\begin{minipage}{0.35\textwidth}
+\begin{center} 
+\Rule{}
+{}
+{\jdg{}{}{\idc : \tau \iso \tau}}
+{}
+~
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
+{\jdg{}{}{c_1 \fatsemi c_2 : \tau_1 \iso \tau_3}}
+{}
+\qquad
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
+{\jdg{}{}{c_1 \oplus c_2 : \tau_1 + \tau_3 \iso \tau_2 + \tau_4}}
+{}
+\qquad
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
+{\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
+{}
+\end{center}
+\end{minipage}
+\end{array}\]
+\caption{$\Pi$-combinators~\cite{James:2012:IE:2103656.2103667}
+\label{pi-combinators}}
+\end{figure*}
+
+In previous work, we defined a reversible language $\Pi$ whose only
+computations are witnesses to isomorphisms $\tau_1 \iso \tau_2$
+between finite types~\cite{James:2012:IE:2103656.2103667}.
+Syntactically, these computations consist of base combinators (on the
+left side of Fig.~\ref{pi-combinators}) and compositions (on the right
+side of the same figure). Each line of the figure on the left
+introduces a pair of dual constants\footnote{where $\swapp$ and
+  $\swapt$ are self-dual.}  that witness the type isomorphism in the
+middle. This set of isomorphisms is known to be
+complete~\cite{Fiore:2004,fiore-remarks} and the language is universal
+for hardware combinational
+circuits~\cite{James:2012:IE:2103656.2103667}.\footnote{If recursive
+  types and a trace operator are added, the language becomes Turing
+  complete~\cite{James:2012:IE:2103656.2103667,rc2011}. We will not be
+  concerned with this extension in the main body of this paper but it
+  will be briefly discussed in the conclusion.}
+
+The technical goal now is to prove that every $\Pi$-combinator
+corresponds to a semantic equivalence and vice-versa that every
+semantic equivalence can be expressed as a $\Pi$-combinator. The
+formal statement we prove (to be dissected and explained in detail in
+the remainder of the section) is:
+
+\medskip
+\begin{code}
+thm : ∀ {n} {A B : Set} → Enum A n → Enum B n → (≃S-Setoid A B) ≃S ≡-Setoid (CPerm n n)
+
+\end{code}
+\AgdaHide{
+\begin{code}
+thm = ? 
+\end{code}
+}
+
+For the main theorem we are given two types $A$ and $B$ and an
+\emph{enumeration} \AgdaPrimitiveType{Enum} that establishes an
+equivalence between each type and \AgdaPrimitiveType{Fin}~$n$. These
+equivalences establish three things: (i) that each type is indeed a
+finite type, (ii) that the two types have the same number of elements,
+and (ii) fix an ordering on the elements of each type.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{acm}
+\bibliography{cites}
 \end{document}
