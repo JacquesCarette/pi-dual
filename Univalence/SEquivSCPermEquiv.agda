@@ -60,7 +60,7 @@ open import ConcretePermutation using (CPerm; cp; p≡; 0p; idp; _⊎p_; SCPerm)
 -- For convenience, use only a single size, even though we could use 2.
 
 thm2 : ∀ {n} {A B : Set} → Enum A n → Enum B n → 
-  (≃S-Setoid A B) ≃S ≡-Setoid (CPerm n n)
+  (≃S-Setoid A B) ≃S (SCPerm n n)
 thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB) = 
   equiv fwd' bwd' α β
   where

@@ -394,7 +394,7 @@ the remainder of the section) is:
 
 \medskip
 \begin{code}
-thm : ∀ {n} {A B : Set} → Enum A n → Enum B n → (≃S-Setoid A B) ≃S ≡-Setoid (CPerm n n)
+thm : ∀ {n} {A B : Set} → Enum A n → Enum B n → (≃S-Setoid A B) ≃S (SCPerm n n)
 
 \end{code}
 \AgdaHide{
