@@ -8,6 +8,7 @@ open import Data.Unit using (⊤; tt)
 open import Data.Nat
 open import Relation.Nullary.Core using (yes; no)
 open import Relation.Binary.Core using (Reflexive; IsEquivalence)
+open import Relation.Binary.PropositionalEquality using (refl; sym)
 
 open import Categories.Category
 open import Categories.Groupoid
@@ -49,14 +50,23 @@ bool⟷ t₁ t₂ with toℕ t₁ ≟ toℕ t₂
 refl⟷ : (t : U) → bool⟷ t t
 refl⟷ t with toℕ t ≟ toℕ t
 ... | yes _ = tt
-... | no _ = {!!} 
+... | no p = p refl 
 
+sym⟷ : (s t : U) → bool⟷ s t → bool⟷ t s
+sym⟷ s t eq with toℕ s ≟ toℕ t | toℕ t ≟ toℕ s
+... | yes x | yes y = eq
+... | yes x | no y = y (sym x)
+... | no x | yes y = tt -- weird!
+... | no x | no y = eq
+
+{- we don't actually need this
 bool⟷Equiv : {t₁ t₂ : U} → IsEquivalence bool⟷
 bool⟷Equiv = record 
   { refl = λ {t} → refl⟷ t
-  ; sym = {!!} 
+  ; sym = λ {i} {j} → sym⟷ i j 
   ; trans = {!!} 
   }
+-}
 
 triv≡ : {t₁ t₂ : U} → (f g : bool⟷ t₁ t₂) → Set
 triv≡ _ _ = ⊤
