@@ -162,6 +162,14 @@ open F using (~⇒≡; !!⇒∘̂; _∘̂_; 1C!!i≡i; cauchyext)
 open import Enumeration         using (Enum; 0E; _⊕e_; eval-left; eval-right) 
 open import ConcretePermutation using (CPerm; cp; p≡; 0p; idp; _⊎p_; SCPerm) 
 
+-- Syntax
+
+open import PiLevel0
+
+open import Level using (zero)
+open import Relation.Binary using (Setoid; module Setoid)
+Π-Rewriting : U → U → Setoid zero zero
+Π-Rewriting t₁ t₂ = {!!} 
 \end{code}
 }
 
@@ -388,18 +396,23 @@ circuits~\cite{James:2012:IE:2103656.2103667}.\footnote{If recursive
 
 The technical goal now is to prove that every $\Pi$-combinator
 corresponds to a semantic equivalence and vice-versa that every
-semantic equivalence can be expressed as a $\Pi$-combinator. The
-formal statement we prove (to be dissected and explained in detail in
-the remainder of the section) is:
+semantic equivalence can be expressed as a
+$\Pi$-combinator. Furthermore, going back and forth between these two
+spaces produces ``equal'' objects, e.g., mapping a $\Pi$-combinator to
+an equivalence and back produces an ``equal'' $\Pi$-combinator. To
+express the main theorem, we therefore need to specify what it means
+for two $\Pi$-combinators to be the ``same'' and similary what it
+means for two equivalences to be the ``same''. The formal statement we
+prove (to be dissected and explained in detail in the remainder of the
+section) is:
 
 \medskip
 \begin{code}
-thm : ∀ {n} {A B : Set} → Enum A n → Enum B n → (≃S-Setoid A B) ≃S (SCPerm n n)
-
+thm : ∀ {τ₁ τ₂ : U} → (≃S-Setoid ⟦ τ₁ ⟧ ⟦ τ₂ ⟧) ≃S (Π-Rewriting τ₁ τ₂)
 \end{code}
 \AgdaHide{
 \begin{code}
-thm = ? 
+thm = {!!} 
 \end{code}
 }
 
