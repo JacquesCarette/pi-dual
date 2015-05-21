@@ -250,17 +250,66 @@ data structures.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
+\begin{frame}{Example Circuit: Simple Negation}
+
+Show diagram
+\begin{code}
+  swap₊
+\end{code}
 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
+\begin{frame}{Example Circuit: Not So Simple Negation}
+
+Show diagram
+\begin{code}
+  uniti⋆ ◎ (swap⋆ ◎ ((swap₊ {ONE} {ONE} ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆))) 
+\end{code}
 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
+\begin{frame}{Reasoning about Example Circuits}
+
+Algebraic manipulation of one circuit to the other:
+\begin{code}
+negEx : uniti⋆ ◎ (swap⋆ ◎ ((swap₊ {ONE} {ONE} ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆))) 
+        ⇔ swap₊
+negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆)))
+          ⇔⟨ resp◎⇔ id⇔ assoc◎l ⟩
+        uniti⋆ ◎ ((swap⋆ ◎ (swap₊ ⊗ id⟷)) ◎ (swap⋆ ◎ unite⋆))
+          ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ swapl⋆⇔ id⇔) ⟩
+        uniti⋆ ◎ (((id⟷ ⊗ swap₊) ◎ swap⋆) ◎ (swap⋆ ◎ unite⋆))
+          ⇔⟨ resp◎⇔ id⇔ assoc◎r ⟩
+        uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ (swap⋆ ◎ (swap⋆ ◎ unite⋆)))
+          ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ id⇔ assoc◎l) ⟩
+        uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ ((swap⋆ ◎ swap⋆) ◎ unite⋆))
+          ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ id⇔ (resp◎⇔ linv◎l id⇔)) ⟩
+        uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ (id⟷ ◎ unite⋆))
+          ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ id⇔ idl◎l) ⟩
+        uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ unite⋆)
+          ⇔⟨ assoc◎l ⟩
+        (uniti⋆ ◎ (id⟷ ⊗ swap₊)) ◎ unite⋆
+          ⇔⟨ resp◎⇔ unitil⋆⇔ id⇔ ⟩
+        (swap₊ ◎ uniti⋆) ◎ unite⋆
+          ⇔⟨ assoc◎r ⟩
+        swap₊ ◎ (uniti⋆ ◎ unite⋆)
+          ⇔⟨ resp◎⇔ id⇔ linv◎l ⟩
+        swap₊ ◎ id⟷
+          ⇔⟨ idr◎l ⟩
+        swap₊ ▤
+\end{code}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Questions}
+
+\begin{itemize}
+\item We don't want an ad hoc notation with ad hoc rewriting rules
+\item Notions of soundness; completeness; canonicity in some sense; what can we say?
+\end{itemize}
 
 \end{frame}
 
