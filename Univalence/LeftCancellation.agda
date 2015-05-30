@@ -8,7 +8,7 @@ open import Data.Product using (_,_; _,′_; proj₁; proj₂)
 open import Function renaming (_∘_ to _○_)
 
 open import Relation.Binary.PropositionalEquality 
-  using (refl; cong; _≡_; subst; module ≡-Reasoning; inspect; [_]; Reveal_is_)  
+  using (refl; cong; _≡_; subst; module ≡-Reasoning; inspect; [_])
   renaming (trans to _∘_; sym to !_)
 
 open import Equiv

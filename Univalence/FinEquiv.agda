@@ -2,7 +2,8 @@
 
 module FinEquiv where
 
-open import Relation.Nullary.Core using (yes; no)
+-- open import Relation.Nullary.Core using (yes; no)
+open import Relation.Nullary using (yes; no)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; cong; cong₂; subst; module ≡-Reasoning; inspect; [_])
 open import Data.Fin

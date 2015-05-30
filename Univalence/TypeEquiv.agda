@@ -3,7 +3,7 @@ module TypeEquiv where
 
 open import Data.Empty
 open import Data.Unit
-open import Data.Unit.Core
+-- open import Data.Unit.Core
 open import Data.Nat renaming (_⊔_ to _⊔ℕ_)
 open import Data.Sum renaming (map to _⊎→_)
 open import Data.Product renaming (map to _×→_)
