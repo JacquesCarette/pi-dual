@@ -15,7 +15,7 @@ open import LeftCancellation
 
 open import SetoidUtils
 open import Groupoid
-open import Everything -- from Categories
+-- open import Everything -- from Categories
 
 -- Equivalences
 

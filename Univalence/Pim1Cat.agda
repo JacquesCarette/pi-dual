@@ -6,7 +6,8 @@ open import Level using () renaming (zero to lzero)
 open import Data.Empty
 open import Data.Unit using (⊤; tt)
 open import Data.Nat
-open import Relation.Nullary.Core using (yes; no)
+-- open import Relation.Nullary.Core using (yes; no)
+open import Relation.Nullary using (yes; no)
 open import Relation.Binary.Core using (Reflexive; IsEquivalence)
 open import Relation.Binary.PropositionalEquality using (refl; sym)
 
