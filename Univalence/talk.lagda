@@ -77,7 +77,7 @@ $\displaystyle
 %%   {code}{Verbatim}
 %%  {} % Add fancy options here if you like.
 
-\DeclareUnicodeCharacter{9678}{\ensuremath{\cdot}}
+\DeclareUnicodeCharacter{9678}{\ensuremath{\odot}}
 \DeclareUnicodeCharacter{9636}{\ensuremath{\Box}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -427,7 +427,28 @@ data structures.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Example Circuit: Simple Negation}
 
-Show diagram
+\begin{center}
+\begin{tikzpicture}
+  \draw (0,0) ellipse (1cm and 2cm);
+  \draw[fill] (0,1) circle [radius=0.025];
+  \node[below] at (0,1) {false};
+  \draw[fill] (0,-1) circle [radius=0.025];
+  \node[below] at (0,-1) {true};
+
+  \draw     (0,1)  -- (2,1)  ;
+  \draw     (0,-1) -- (2,-1) ;
+  \draw     (2,1)  -- (4,-1) ;
+  \draw     (2,-1) -- (4,1)  ;
+  \draw[->] (4,1)  -- (6,1)  ;
+  \draw[->] (4,-1) -- (6,-1) ;
+
+  \draw (6,0) ellipse (1cm and 2cm);
+  \draw[fill] (6,1) circle [radius=0.025];
+  \node[below] at (6,1) {false};
+  \draw[fill] (6,-1) circle [radius=0.025];
+  \node[below] at (6,-1) {true};
+\end{tikzpicture}
+\end{center}
 
 \begin{code}
 n₁ : BOOL ⟷ BOOL
@@ -439,11 +460,31 @@ n₁ = swap₊
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Example Circuit: Not So Simple Negation}
 
-Show diagram
+\begin{center}
+\begin{tikzpicture}
+  \draw (0,0) ellipse (0.5cm and 2cm);
+  \draw[fill] (0,1) circle [radius=0.025];
+  \node[below] at (0,1) {false};
+  \draw[fill] (0,-1) circle [radius=0.025];
+  \node[below] at (0,-1) {true};
+
+  \draw     (0,1)  -- (1,1)  ;
+
+  \draw (10,0) ellipse (0.5cm and 2cm);
+  \draw[fill] (10,1) circle [radius=0.025];
+  \node[below] at (10,1) {false};
+  \draw[fill] (10,-1) circle [radius=0.025];
+  \node[below] at (10,-1) {true};
+\end{tikzpicture}
+\end{center}
 
 \begin{code}
 n₂ : BOOL ⟷ BOOL
-n₂ = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ {ONE} {ONE} ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆))) 
+n₂ =  uniti⋆ ◎
+      swap⋆ ◎
+      (swap₊ ⊗ id⟷) ◎
+      swap⋆ ◎
+      unite⋆
 \end{code}
 
 \end{frame}
@@ -454,8 +495,7 @@ n₂ = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ {ONE} {ONE} ⊗ id⟷) ◎ (swap⋆ �
 Algebraic manipulation of one circuit to the other:
 
 \begin{code}
-negEx : uniti⋆ ◎ (swap⋆ ◎ ((swap₊ {ONE} {ONE} ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆))) 
-        ⇔ swap₊
+negEx : n₂ ⇔ n₁
 negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆)))
           ⇔⟨ resp◎⇔ id⇔ assoc◎l ⟩
         uniti⋆ ◎ ((swap⋆ ◎ (swap₊ ⊗ id⟷)) ◎ (swap⋆ ◎ unite⋆))
