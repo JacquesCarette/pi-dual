@@ -73,9 +73,12 @@ $\displaystyle
     {\hrule width \hsize height .33pt \vspace{.5pc}}
     {\par\addvspace{.5pc}}
 
- \DefineVerbatimEnvironment
-   {code}{Verbatim}
-   {} % Add fancy options here if you like.
+%% \DefineVerbatimEnvironment
+%%   {code}{Verbatim}
+%%  {} % Add fancy options here if you like.
+
+\DeclareUnicodeCharacter{9678}{\ensuremath{\cdot}}
+\DeclareUnicodeCharacter{9636}{\ensuremath{\Box}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \renewcommand{\AgdaCodeStyle}{\small}
@@ -422,29 +425,34 @@ data structures.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Example Circuit: Simple Negation}
+\begin{frame}[fragile]{Example Circuit: Simple Negation}
 
 Show diagram
+
 \begin{code}
-  swap₊
+n₁ : BOOL ⟷ BOOL
+n₁ = swap₊
 \end{code}
 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Example Circuit: Not So Simple Negation}
+\begin{frame}[fragile]{Example Circuit: Not So Simple Negation}
 
 Show diagram
+
 \begin{code}
-  uniti⋆ ◎ (swap⋆ ◎ ((swap₊ {ONE} {ONE} ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆))) 
+n₂ : BOOL ⟷ BOOL
+n₂ = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ {ONE} {ONE} ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆))) 
 \end{code}
 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Reasoning about Example Circuits}
+\begin{frame}[fragile]{Reasoning about Example Circuits}
 
 Algebraic manipulation of one circuit to the other:
+
 \begin{code}
 negEx : uniti⋆ ◎ (swap⋆ ◎ ((swap₊ {ONE} {ONE} ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆))) 
         ⇔ swap₊
@@ -458,6 +466,13 @@ negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆
           ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ id⇔ assoc◎l) ⟩
         uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ ((swap⋆ ◎ swap⋆) ◎ unite⋆))
           ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ id⇔ (resp◎⇔ linv◎l id⇔)) ⟩
+\end{code}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Reasoning about Example Circuits}
+
+\begin{code}
         uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ (id⟷ ◎ unite⋆))
           ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ id⇔ idl◎l) ⟩
         uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ unite⋆)
