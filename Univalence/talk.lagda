@@ -566,6 +566,850 @@ negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Visually}
+
+\only<1>{
+\begin{center}
+\begin{tikzpicture}
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {*};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {*};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+}
+
+\only<2>{
+Making grouping explicit:
+\begin{center}
+\begin{tikzpicture}
+  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
+  \draw[red,dashed] (4.8,3.0) -- (9.2,3.0) -- (9.2,-1.5) -- (4.8,-1.5) -- cycle; 
+  \draw[red,dashed] (3.3,3.2) -- (9.4,3.2) -- (9.4,-1.7) -- (3.3,-1.7) -- cycle; 
+  \draw[red,dashed] (1.8,3.4) -- (9.6,3.4) -- (9.6,-1.9) -- (1.8,-1.9) -- cycle; 
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {*};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {*};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+}
+
+\only<3>{
+By associativity:
+\begin{center}
+\begin{tikzpicture}
+  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
+  \draw[red,dashed] (4.9,3.0) -- (9.2,3.0) -- (9.2,-1.5) -- (4.9,-1.5) -- cycle; 
+  \draw[red,dashed] (3.3,2.8) -- (4.5,2.8) -- (4.5,-1.3) -- (3.3,-1.3) -- cycle; 
+  \draw[red,dashed] (1.8,3.0) -- (4.7,3.0) -- (4.7,-1.5) -- (1.8,-1.5) -- cycle; 
+  \draw[red,dashed] (-0.7,3.2) -- (9.4,3.2) -- (9.4,-1.7) -- (-0.7,-1.7) -- cycle; 
+
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {*};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {*};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+}
+
+\only<4>{
+\begin{center}
+\begin{tikzpicture}
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {*};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {*};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+}
+
+\only<5>{
+\begin{center}
+\begin{tikzpicture}
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {*};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {*};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+}
+
+\only<6>{
+\begin{center}
+\begin{tikzpicture}
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {*};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {*};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+}
+
+\only<7>{
+\begin{center}
+\begin{tikzpicture}
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {*};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {*};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+}
+
+\only<8>{
+\begin{center}
+\begin{tikzpicture}
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {*};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {*};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+}
+
+\only<9>{
+\begin{center}
+\begin{tikzpicture}
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {*};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {*};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+}
+
+\only<10>{
+\begin{center}
+\begin{tikzpicture}
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {*};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {*};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+}
+
+\only<11>{
+\begin{center}
+\begin{tikzpicture}
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {*};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {*};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+}
+
+\only<12>{
+\begin{center}
+\begin{tikzpicture}
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {*};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {*};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+}
+
+\only<13>{
+\begin{center}
+\begin{tikzpicture}
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {*};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {*};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+}
+
+\only<14>{
+\begin{center}
+\begin{tikzpicture}
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {*};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {*};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+}
+
+\only<15>{
+\begin{center}
+\begin{tikzpicture}
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {*};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {*};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Questions}
 
 \begin{itemize}
