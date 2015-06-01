@@ -569,8 +569,11 @@ negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆
 \begin{frame}{Visually}
 
 \only<1>{
+Original circuit:
 \begin{center}
 \begin{tikzpicture}
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
   \node[below] at (1,2) {*};
@@ -690,10 +693,11 @@ By associativity:
 \begin{center}
 \begin{tikzpicture}
   \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
-  \draw[red,dashed] (4.9,3.0) -- (9.2,3.0) -- (9.2,-1.5) -- (4.9,-1.5) -- cycle; 
-  \draw[red,dashed] (3.3,2.8) -- (4.5,2.8) -- (4.5,-1.3) -- (3.3,-1.3) -- cycle; 
-  \draw[red,dashed] (1.8,3.0) -- (4.7,3.0) -- (4.7,-1.5) -- (1.8,-1.5) -- cycle; 
-  \draw[red,dashed] (-0.7,3.2) -- (9.4,3.2) -- (9.4,-1.7) -- (-0.7,-1.7) -- cycle; 
+  \draw[red,dashed] (4.8,3.0) -- (9.2,3.0) -- (9.2,-1.5) -- (4.8,-1.5) -- cycle; 
+  \draw[red,dashed] (3.3,2.8) -- (4.4,2.8) -- (4.4,-1.3) -- (3.3,-1.3) -- cycle; 
+  \draw[red,dashed] (1.8,3.0) -- (4.6,3.0) -- (4.6,-1.5) -- (1.8,-1.5) -- cycle; 
+  \draw[red,dashed] (1.6,3.2) -- (9.4,3.2) -- (9.4,-1.7) -- (1.6,-1.7) -- cycle; 
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
 
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
@@ -748,8 +752,11 @@ By associativity:
 }
 
 \only<4>{
+By:
 \begin{center}
 \begin{tikzpicture}
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
   \node[below] at (1,2) {*};
@@ -803,8 +810,11 @@ By associativity:
 }
 
 \only<5>{
+By: 
 \begin{center}
 \begin{tikzpicture}
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
   \node[below] at (1,2) {*};
@@ -858,8 +868,11 @@ By associativity:
 }
 
 \only<6>{
+By:
 \begin{center}
 \begin{tikzpicture}
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
   \node[below] at (1,2) {*};
@@ -913,8 +926,11 @@ By associativity:
 }
 
 \only<7>{
+By:
 \begin{center}
 \begin{tikzpicture}
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
   \node[below] at (1,2) {*};
@@ -968,8 +984,11 @@ By associativity:
 }
 
 \only<8>{
+By:
 \begin{center}
 \begin{tikzpicture}
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
   \node[below] at (1,2) {*};
@@ -1023,8 +1042,11 @@ By associativity:
 }
 
 \only<9>{
+By:
 \begin{center}
 \begin{tikzpicture}
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
   \node[below] at (1,2) {*};
@@ -1078,8 +1100,11 @@ By associativity:
 }
 
 \only<10>{
+By:
 \begin{center}
 \begin{tikzpicture}
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
   \node[below] at (1,2) {*};
@@ -1133,8 +1158,11 @@ By associativity:
 }
 
 \only<11>{
+By:
 \begin{center}
 \begin{tikzpicture}
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
   \node[below] at (1,2) {*};
@@ -1188,8 +1216,11 @@ By associativity:
 }
 
 \only<12>{
+By:
 \begin{center}
 \begin{tikzpicture}
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
   \node[below] at (1,2) {*};
@@ -1243,8 +1274,11 @@ By associativity:
 }
 
 \only<13>{
+By:
 \begin{center}
 \begin{tikzpicture}
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
   \node[below] at (1,2) {*};
@@ -1298,8 +1332,11 @@ By associativity:
 }
 
 \only<14>{
+By:
 \begin{center}
 \begin{tikzpicture}
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
   \node[below] at (1,2) {*};
@@ -1353,8 +1390,11 @@ By associativity:
 }
 
 \only<15>{
+By:
 \begin{center}
 \begin{tikzpicture}
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
   \node[below] at (1,2) {*};
