@@ -11,7 +11,7 @@ open import Relation.Binary.PropositionalEquality
         proof-irrelevance; module ≡-Reasoning)
 open import Relation.Binary.PropositionalEquality.TrustMe
   using (trustMe)
-open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
+open import Relation.Nullary using (Dec; yes; no; ¬_)
 open import Data.Nat.Properties
   using (m≤m+n; n≤m+n; n≤1+n; cancel-*-right-≤; ≰⇒>; ¬i+1+j≤i)
 open import Data.Nat.Properties.Simple 

@@ -13,7 +13,7 @@ open import Relation.Binary.PropositionalEquality
         proof-irrelevance; module ≡-Reasoning)
 open import Relation.Binary.PropositionalEquality.TrustMe
   using (trustMe)
-open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
+open import Relation.Nullary using (Dec; yes; no; ¬_)
 open import Data.Nat.Properties
   using (cancel-+-left; n∸n≡0; +-∸-assoc; m+n∸n≡m; 1+n≰n; m≤m+n;
          n≤m+n; n≤1+n; cancel-*-right-≤; ≰⇒>; ¬i+1+j≤i)
@@ -64,7 +64,7 @@ open import Data.Unit    using (⊤; tt)
 open import Data.Sum     using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
-open import DivModUtils
+open import DivModUtils using () 
 open import Proofs
 open import Cauchy
 
