@@ -1263,12 +1263,106 @@ By id-unit-right:
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
+\begin{frame}{1-paths vs. 2-paths}
+
+1-paths are between isomorphic types, e.g., $A * B$ and $B * A$.
+List them all.
 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
+\begin{frame}{1-paths vs. 2-paths}
+
+2-paths are between 1-paths, e.g.,
+
+\begin{code}
+postulate
+  c₁ : {B C : U} → B ⟷ C
+  c₂ : {A D : U} → A ⟷ D
+
+p₁ p₂ : {A B C D : U} → PLUS A B ⟷ PLUS C D
+p₁ = swap₊ ◎ (c₁ ⊕ c₂)
+p₂ = (c₂ ⊕ c₁) ◎ swap₊
+\end{code}
+
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{1-paths vs. 2-paths}
+
+\begin{center}
+\begin{tikzpicture}
+  \draw (0,-4) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,-3.5) circle [radius=0.025];
+  \node[below] at (0,-3.5) {$A$};
+  \draw[fill] (0,-4.5) circle [radius=0.025];
+  \node[below] at (0,-4.5) {$B$};
+
+  \draw     (0,-3.5)  -- (1,-3.5)    ; %% A
+  \draw     (0,-4.5) -- (1,-4.5)   ; %% B
+
+  \draw     (1,-3.5)  -- (2,-4.5)    ;
+  \draw     (1,-4.5) -- (2,-3.5)   ; 
+
+  \draw     (2,-3.5)  -- (2.5,-3.5)    ; 
+  \draw     (2,-4.5) -- (2.5,-4.5)   ; 
+
+  \draw     (2.5,-3)  -- (3.5,-3) -- (3.5,-4) -- (2.5,-4) -- cycle ;
+  \draw     (2.5,-4)  -- (3.5,-4) -- (3.5,-5) -- (2.5,-5) -- cycle ;
+
+  \draw     (3.5,-3.5)  -- (4.5,-3.5)    ; 
+  \draw     (3.5,-4.5) -- (4.5,-4.5)   ; 
+
+  \node at (3,-3.5) {c₁};
+  \node at (3,-4.5) {c₂};
+  \node at (-1,-4) {p₁};
+
+  \draw (4.5,-4) ellipse (0.5cm and 1cm);
+  \draw[fill] (4.5,-3.5) circle [radius=0.025];
+  \node[below] at (4.5,-3.5) {$C$};
+  \draw[fill] (4.5,-4.5) circle [radius=0.025];
+  \node[below] at (4.5,-4.5) {$D$};
+
+%%
+
+  \draw[->,double,red,thick] (2.7,-1.5) -- (2.7,-2.5) ;
+  \node at (3,-2) {$\alpha$} ;
+
+%%
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {A};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {B};
+
+  \draw     (0,0.5)  -- (1,0.5)    ; %% A
+  \draw     (0,-0.5) -- (1,-0.5)   ; %% B
+
+  \draw     (1,1)  -- (2,1) -- (2,0) -- (1,0) -- cycle ;
+  \draw     (1,0)  -- (2,0) -- (2,-1) -- (1,-1) -- cycle ;
+
+  \node at (1.5,0.5) {c₂};
+  \node at (1.5,-0.5) {c₁};
+  \node at (-1,0) {p₂};
+
+  \draw     (2,0.5)  -- (2.5,0.5)  ;
+  \draw     (2,-0.5) -- (2.5,-0.5) ; 
+
+  \draw     (2.5,0.5)  -- (3.5,-0.5)  ;
+  \draw     (2.5,-0.5) -- (3.5,0.5) ;
+
+  \draw     (3.5,0.5)  -- (4.5,0.5)  ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw (4.5,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (4.5,0.5) circle [radius=0.025];
+  \node[below] at (4.5,0.5) {C};
+  \draw[fill] (4.5,-0.5) circle [radius=0.025];
+  \node[below] at (4.5,-0.5) {D};
+\end{tikzpicture}
+\end{center}
 
 \end{frame}
 
