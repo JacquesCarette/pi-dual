@@ -1293,14 +1293,26 @@ p₂ = (c₂ ⊕ c₁) ◎ swap₊
 
 \begin{center}
 \begin{tikzpicture}
-  \draw (0,-4) ellipse (0.5cm and 1cm);
-  \draw[fill] (0,-3.5) circle [radius=0.025];
-  \node[below] at (0,-3.5) {$A$};
-  \draw[fill] (0,-4.5) circle [radius=0.025];
-  \node[below] at (0,-4.5) {$B$};
+  \draw[->,double,red,thick] (2.25,-1.5) -- (2.25,-2.5) ;
+  \node at (3,-2) {$\alpha$} ;
+
+  \draw (-2,-2) ellipse (0.5cm and 1cm);
+  \draw[fill] (-2,-1.5) circle [radius=0.025];
+  \node[below] at (-2,-1.5) {$A$};
+  \draw[fill] (-2,-2.5) circle [radius=0.025];
+  \node[below] at (-2,-2.5) {$B$};
+
+  \draw (6.5,-2) ellipse (0.5cm and 1cm);
+  \draw[fill] (6.5,-1.5) circle [radius=0.025];
+  \node[below] at (6.5,-1.5) {$C$};
+  \draw[fill] (6.5,-2.5) circle [radius=0.025];
+  \node[below] at (6.5,-2.5) {$D$};
 
   \draw     (0,-3.5)  -- (1,-3.5)    ; %% A
   \draw     (0,-4.5) -- (1,-4.5)   ; %% B
+
+  \draw (-2,-1.5) to[bend left] (0,0.5) ;
+  \draw (-2,-2.5) to[bend left] (0,-0.5) ;
 
   \draw     (1,-3.5)  -- (2,-4.5)    ;
   \draw     (1,-4.5) -- (2,-3.5)   ; 
@@ -1316,26 +1328,6 @@ p₂ = (c₂ ⊕ c₁) ◎ swap₊
 
   \node at (3,-3.5) {c₁};
   \node at (3,-4.5) {c₂};
-  \node at (-1,-4) {p₁};
-
-  \draw (4.5,-4) ellipse (0.5cm and 1cm);
-  \draw[fill] (4.5,-3.5) circle [radius=0.025];
-  \node[below] at (4.5,-3.5) {$C$};
-  \draw[fill] (4.5,-4.5) circle [radius=0.025];
-  \node[below] at (4.5,-4.5) {$D$};
-
-%%
-
-  \draw[->,double,red,thick] (2.7,-1.5) -- (2.7,-2.5) ;
-  \node at (3,-2) {$\alpha$} ;
-
-%%
-
-  \draw (0,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (0,0.5) circle [radius=0.025];
-  \node[below] at (0,0.5) {A};
-  \draw[fill] (0,-0.5) circle [radius=0.025];
-  \node[below] at (0,-0.5) {B};
 
   \draw     (0,0.5)  -- (1,0.5)    ; %% A
   \draw     (0,-0.5) -- (1,-0.5)   ; %% B
@@ -1345,7 +1337,6 @@ p₂ = (c₂ ⊕ c₁) ◎ swap₊
 
   \node at (1.5,0.5) {c₂};
   \node at (1.5,-0.5) {c₁};
-  \node at (-1,0) {p₂};
 
   \draw     (2,0.5)  -- (2.5,0.5)  ;
   \draw     (2,-0.5) -- (2.5,-0.5) ; 
@@ -1356,11 +1347,6 @@ p₂ = (c₂ ⊕ c₁) ◎ swap₊
   \draw     (3.5,0.5)  -- (4.5,0.5)  ;
   \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
 
-  \draw (4.5,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (4.5,0.5) circle [radius=0.025];
-  \node[below] at (4.5,0.5) {C};
-  \draw[fill] (4.5,-0.5) circle [radius=0.025];
-  \node[below] at (4.5,-0.5) {D};
 \end{tikzpicture}
 \end{center}
 
