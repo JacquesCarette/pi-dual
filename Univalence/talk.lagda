@@ -81,6 +81,7 @@ $\displaystyle
 \DeclareUnicodeCharacter{9636}{\ensuremath{\Box}}
 
 \setbeamertemplate{theorems}[ams style]
+\setbeamertemplate{blocks}[rounded][shadow=false]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \renewcommand{\AgdaCodeStyle}{\small}
@@ -174,7 +175,7 @@ Start with a \emph{foundational} syntactic theory on our way there:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Starting Point}
 \emph{Typed} isomorphisms.  First, a universe of (finite) types
-\vspace*{1cm}
+\vspace*{0.4cm}
 \AgdaHide{
 \begin{code}
 open import Data.Empty
@@ -194,6 +195,7 @@ data U : Set where
 \end{code}
 and its interpretation
 \begin{code}
+
 ⟦_⟧ : U → Set 
 ⟦ ZERO ⟧        = ⊥ 
 ⟦ ONE ⟧         = ⊤
@@ -209,16 +211,32 @@ The collection of all types (\AgdaDatatype{Set}) forms a commutative
 semiring (up to $\simeq$).
 \end{theorem}
 \pause
-Much more meaningfully, we also get
+We also get
 \begin{theorem}
 If $A\simeq \mathsf{Fin} m$, $B\simeq \mathsf{Fin} n$ and $A \simeq B$ then $m ≡ n$.
 \end{theorem}
-\pause
+(whose \emph{constructive} proof is quite subtle).
 \begin{theorem}\label{Perm}
 If $A ≃ \mathsf{Fin} m$ and $B ≃ \mathsf{Fin} n$, then the type of all
 equivalences $A ≃ B$ is equivalent to the type of all permutations
 $\mathsf{Perm} n$.
 \end{theorem}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Equivalences and semirings II}
+Semiring structures abound.  We can define them on:
+\begin{enumerate}
+\item equivalences (disjoint union and cartesian product)
+\item permutations (disjoint union and tensor product)
+\end{enumerate}
+\pause
+The point, of course, is that they are related:
+\begin{theorem}
+The equivalence of Theorem~\ref{Perm} is an isomorphism between the
+semirings of equivalences of finite types, and of permutations.
+\end{theorem}
+
 \end{frame}
 % \begin{frame}{A Calculus of Permutations} 
 % 
@@ -244,13 +262,70 @@ $\mathsf{Perm} n$.
 %
 % \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{A Calculus of Permutations}
-In fact, we can say even more.  Defining the usual disjoint union and tensor
-product of permutations, we can prove
-\begin{theorem}
-The equivalence of Theorem~\ref{Perm} is an isomorphism of semirings.
-\end{theorem}
+First conclusion: it might be useful to \emph{reify} a certain set of
+equivalences as combinators.  We choose the fundamental ``proof rules''
+of semirings:
+\AgdaHide{
+\begin{code}
+infix  30 _⟷_
+infixr 50 _◎_
+\end{code}
+}
+\renewcommand{\AgdaCodeStyle}{\tiny}
+\begin{code}
+data _⟷_ : U → U → Set where
+  unite₊  : {t : U} → PLUS ZERO t ⟷ t
+  uniti₊  : {t : U} → t ⟷ PLUS ZERO t
+  swap₊   : {t₁ t₂ : U} → PLUS t₁ t₂ ⟷ PLUS t₂ t₁
+  assocl₊ : {t₁ t₂ t₃ : U} → PLUS t₁ (PLUS t₂ t₃) ⟷ PLUS (PLUS t₁ t₂) t₃
+  assocr₊ : {t₁ t₂ t₃ : U} → PLUS (PLUS t₁ t₂) t₃ ⟷ PLUS t₁ (PLUS t₂ t₃)
+  unite⋆  : {t : U} → TIMES ONE t ⟷ t
+  uniti⋆  : {t : U} → t ⟷ TIMES ONE t
+  swap⋆   : {t₁ t₂ : U} → TIMES t₁ t₂ ⟷ TIMES t₂ t₁
+  assocl⋆ : {t₁ t₂ t₃ : U} → TIMES t₁ (TIMES t₂ t₃) ⟷ TIMES (TIMES t₁ t₂) t₃
+  assocr⋆ : {t₁ t₂ t₃ : U} → TIMES (TIMES t₁ t₂) t₃ ⟷ TIMES t₁ (TIMES t₂ t₃)
+  absorbr  : {t : U} → TIMES ZERO t ⟷ ZERO
+  absorbl : {t : U} → TIMES t ZERO ⟷ ZERO
+  factorzr : {t : U} → ZERO ⟷ TIMES t ZERO
+  factorzl : {t : U} → ZERO ⟷ TIMES ZERO t
+  dist    : {t₁ t₂ t₃ : U} → 
+            TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) 
+  factor  : {t₁ t₂ t₃ : U} → 
+            PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
+  id⟷    : {t : U} → t ⟷ t
+  _◎_     : {t₁ t₂ t₃ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+  _⊕_     : {t₁ t₂ t₃ t₄ : U} → 
+            (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
+  _⊗_     : {t₁ t₂ t₃ t₄ : U} → 
+            (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
+\end{code}
+
+\AgdaHide{
+\begin{code}
+! : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
+! unite₊    = uniti₊
+! uniti₊    = unite₊
+! swap₊     = swap₊
+! assocl₊   = assocr₊
+! assocr₊   = assocl₊
+! unite⋆    = uniti⋆
+! uniti⋆    = unite⋆
+! swap⋆     = swap⋆
+! assocl⋆   = assocr⋆
+! assocr⋆   = assocl⋆
+! absorbl     = factorzr
+! absorbr     = factorzl
+! factorzl  = absorbr
+! factorzr = absorbl
+! dist      = factor 
+! factor    = dist
+! id⟷      = id⟷
+! (c₁ ◎ c₂) = ! c₂ ◎ ! c₁ 
+! (c₁ ⊕ c₂) = (! c₁) ⊕ (! c₂)
+! (c₁ ⊗ c₂) = (! c₁) ⊗ (! c₂)
+\end{code}
+}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -281,7 +356,8 @@ The equivalence of Theorem~\ref{Perm} is an isomorphism of semirings.
 
 \AgdaHide{
 \begin{code}
-open import PiLevel0
+BOOL : U
+BOOL = PLUS ONE ONE
 \end{code}
 }
 
@@ -364,8 +440,187 @@ n₂ =  uniti⋆ ◎
 
 Algebraic manipulation of one circuit to the other:
 
+\AgdaHide{
 \begin{code}
-open import PiLevel1 hiding (negEx)
+
+infix  30 _⇔_
+
+data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set where
+  assoc◎l : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+          (c₁ ◎ (c₂ ◎ c₃)) ⇔ ((c₁ ◎ c₂) ◎ c₃)
+  assoc◎r : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+          ((c₁ ◎ c₂) ◎ c₃) ⇔ (c₁ ◎ (c₂ ◎ c₃))
+  assocl⊕l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          ((c₁ ⊕ (c₂ ⊕ c₃)) ◎ assocl₊) ⇔ (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃))
+  assocl⊕r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃)) ⇔ ((c₁ ⊕ (c₂ ⊕ c₃)) ◎ assocl₊)
+  assocl⊗l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          ((c₁ ⊗ (c₂ ⊗ c₃)) ◎ assocl⋆) ⇔ (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃))
+  assocl⊗r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃)) ⇔ ((c₁ ⊗ (c₂ ⊗ c₃)) ◎ assocl⋆)
+  assocr⊕r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊) ⇔ (assocr₊ ◎ (c₁ ⊕ (c₂ ⊕ c₃)))
+  assocr⊗l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+           (assocr⋆ ◎ (c₁ ⊗ (c₂ ⊗ c₃))) ⇔ (((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆)
+  assocr⊗r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆) ⇔ (assocr⋆ ◎ (c₁ ⊗ (c₂ ⊗ c₃)))
+  assocr⊕l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+           (assocr₊ ◎ (c₁ ⊕ (c₂ ⊕ c₃))) ⇔ (((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊)
+  assoc⊗l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (c₁ ⊗ (c₂ ⊗ c₃)) ⇔ (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆)
+  assoc⊗r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆) ⇔ (c₁ ⊗ (c₂ ⊗ c₃))
+  dist⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          ((c₁ ⊕ c₂) ⊗ c₃) ⇔ (dist ◎ ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃)) ◎ factor)
+  factor⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
+          (dist ◎ ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃)) ◎ factor) ⇔ ((c₁ ⊕ c₂) ⊗ c₃)
+  idl◎l   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (id⟷ ◎ c) ⇔ c
+  idl◎r   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ id⟷ ◎ c
+  idr◎l   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (c ◎ id⟷) ⇔ c
+  idr◎r   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ (c ◎ id⟷) 
+  linv◎l  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (c ◎ ! c) ⇔ id⟷
+  linv◎r  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ⇔ (c ◎ ! c) 
+  rinv◎l  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (! c ◎ c) ⇔ id⟷
+  rinv◎r  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ⇔ (! c ◎ c) 
+  unitel₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
+          (unite₊ ◎ c₂) ⇔ ((c₁ ⊕ c₂) ◎ unite₊)
+  uniter₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
+          ((c₁ ⊕ c₂) ◎ unite₊) ⇔ (unite₊ ◎ c₂)
+  unitil₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
+          (uniti₊ ◎ (c₁ ⊕ c₂)) ⇔ (c₂ ◎ uniti₊)
+  unitir₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
+          (c₂ ◎ uniti₊) ⇔ (uniti₊ ◎ (c₁ ⊕ c₂))
+  unitial₊⇔ : {t₁ t₂ : U} → (uniti₊ {PLUS t₁ t₂} ◎ assocl₊) ⇔ (uniti₊ ⊕ id⟷)
+  unitiar₊⇔ : {t₁ t₂ : U} → (uniti₊ {t₁} ⊕ id⟷ {t₂}) ⇔ (uniti₊ ◎ assocl₊)
+  swapl₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
+          (swap₊ ◎ (c₁ ⊕ c₂)) ⇔ ((c₂ ⊕ c₁) ◎ swap₊)
+  swapr₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
+          ((c₂ ⊕ c₁) ◎ swap₊) ⇔ (swap₊ ◎ (c₁ ⊕ c₂))
+  unitel⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
+          (unite⋆ ◎ c₂) ⇔ ((c₁ ⊗ c₂) ◎ unite⋆)
+  uniter⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
+          ((c₁ ⊗ c₂) ◎ unite⋆) ⇔ (unite⋆ ◎ c₂)
+  unitil⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
+          (uniti⋆ ◎ (c₁ ⊗ c₂)) ⇔ (c₂ ◎ uniti⋆)
+  unitir⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
+          (c₂ ◎ uniti⋆) ⇔ (uniti⋆ ◎ (c₁ ⊗ c₂))
+  unitial⋆⇔ : {t₁ t₂ : U} → (uniti⋆ {TIMES t₁ t₂} ◎ assocl⋆) ⇔ (uniti⋆ ⊗ id⟷)
+  unitiar⋆⇔ : {t₁ t₂ : U} → (uniti⋆ {t₁} ⊗ id⟷ {t₂}) ⇔ (uniti⋆ ◎ assocl⋆)
+  swapl⋆⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
+          (swap⋆ ◎ (c₁ ⊗ c₂)) ⇔ ((c₂ ⊗ c₁) ◎ swap⋆)
+  swapr⋆⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
+          ((c₂ ⊗ c₁) ◎ swap⋆) ⇔ (swap⋆ ◎ (c₁ ⊗ c₂))
+  swapfl⋆⇔ : {t₁ t₂ t₃ : U} → 
+          (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor) ⇔ 
+          (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷))
+  swapfr⋆⇔ : {t₁ t₂ t₃ : U} → 
+          (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷)) ⇔ 
+         (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor)
+  id⇔     : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ c
+  trans⇔  : {t₁ t₂ : U} {c₁ c₂ c₃ : t₁ ⟷ t₂} → 
+         (c₁ ⇔ c₂) → (c₂ ⇔ c₃) → (c₁ ⇔ c₃)
+  _⊡_  : {t₁ t₂ t₃ : U} 
+         {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
+         (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ◎ c₂) ⇔ (c₃ ◎ c₄)
+  resp⊕⇔  : {t₁ t₂ t₃ t₄ : U} 
+         {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
+         (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊕ c₂) ⇔ (c₃ ⊕ c₄)
+  resp⊗⇔  : {t₁ t₂ t₃ t₄ : U} 
+         {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
+         (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊗ c₂) ⇔ (c₃ ⊗ c₄)
+  -- below are the combinators added for the RigCategory structure
+  id⟷⊕id⟷⇔ : {t₁ t₂ : U} → (id⟷ {t₁} ⊕ id⟷ {t₂}) ⇔ id⟷
+  split⊕-id⟷ : {t₁ t₂ : U} → (id⟷ {PLUS t₁ t₂}) ⇔ (id⟷ ⊕ id⟷)
+  hom⊕◎⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₅ ⟷ t₁} {c₂ : t₆ ⟷ t₂}
+        {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
+        ((c₁ ◎ c₃) ⊕ (c₂ ◎ c₄)) ⇔ ((c₁ ⊕ c₂) ◎ (c₃ ⊕ c₄))
+  hom◎⊕⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₅ ⟷ t₁} {c₂ : t₆ ⟷ t₂}
+        {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
+         ((c₁ ⊕ c₂) ◎ (c₃ ⊕ c₄)) ⇔ ((c₁ ◎ c₃) ⊕ (c₂ ◎ c₄))
+  id⟷⊗id⟷⇔ : {t₁ t₂ : U} → (id⟷ {t₁} ⊗ id⟷ {t₂}) ⇔ id⟷
+  split⊗-id⟷ : {t₁ t₂ : U} → (id⟷ {TIMES t₁ t₂}) ⇔ (id⟷ ⊗ id⟷)
+  hom⊗◎⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₅ ⟷ t₁} {c₂ : t₆ ⟷ t₂}
+        {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
+        ((c₁ ◎ c₃) ⊗ (c₂ ◎ c₄)) ⇔ ((c₁ ⊗ c₂) ◎ (c₃ ⊗ c₄))
+  hom◎⊗⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₅ ⟷ t₁} {c₂ : t₆ ⟷ t₂}
+        {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
+         ((c₁ ⊗ c₂) ◎ (c₃ ⊗ c₄)) ⇔ ((c₁ ◎ c₃) ⊗ (c₂ ◎ c₄))
+  triangle⊕l : {t₁ t₂ : U} →
+    ((swap₊ ◎ unite₊ {t₁}) ⊕ id⟷ {t₂}) ⇔ assocr₊ ◎ (id⟷ ⊕ unite₊)
+  triangle⊕r : {t₁ t₂ : U} →
+    (assocr₊ ◎ (id⟷ {t₁} ⊕ unite₊ {t₂})) ⇔ ((swap₊ ◎ unite₊) ⊕ id⟷)
+  triangle⊗l : {t₁ t₂ : U} →
+    ((swap⋆ ◎ unite⋆ {t₁}) ⊗ id⟷ {t₂}) ⇔ assocr⋆ ◎ (id⟷ ⊗ unite⋆)
+  triangle⊗r : {t₁ t₂ : U} →
+    (assocr⋆ ◎ (id⟷ {t₁} ⊗ unite⋆ {t₂})) ⇔ ((swap⋆ ◎ unite⋆) ⊗ id⟷)
+  pentagon⊕l : {t₁ t₂ t₃ t₄ : U} →
+    assocr₊ ◎ (assocr₊ {t₁} {t₂} {PLUS t₃ t₄}) ⇔ ((assocr₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ assocr₊)
+  pentagon⊕r : {t₁ t₂ t₃ t₄ : U} →
+    ((assocr₊ {t₁} {t₂} {t₃} ⊕ id⟷ {t₄}) ◎ assocr₊) ◎ (id⟷ ⊕ assocr₊) ⇔ assocr₊ ◎ assocr₊
+  pentagon⊗l : {t₁ t₂ t₃ t₄ : U} →
+    assocr⋆ ◎ (assocr⋆ {t₁} {t₂} {TIMES t₃ t₄}) ⇔ ((assocr⋆ ⊗ id⟷) ◎ assocr⋆) ◎ (id⟷ ⊗ assocr⋆)
+  pentagon⊗r : {t₁ t₂ t₃ t₄ : U} →
+    ((assocr⋆ {t₁} {t₂} {t₃} ⊗ id⟷ {t₄}) ◎ assocr⋆) ◎ (id⟷ ⊗ assocr⋆) ⇔ assocr⋆ ◎ assocr⋆
+  hexagonr⊕l : {t₁ t₂ t₃ : U} →
+     (assocr₊ ◎ swap₊) ◎ assocr₊ {t₁} {t₂} {t₃} ⇔ ((swap₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ swap₊)
+  hexagonr⊕r : {t₁ t₂ t₃ : U} →
+     ((swap₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ swap₊) ⇔ (assocr₊ ◎ swap₊) ◎ assocr₊ {t₁} {t₂} {t₃}
+  hexagonl⊕l : {t₁ t₂ t₃ : U} →
+     (assocl₊ ◎ swap₊) ◎ assocl₊ {t₁} {t₂} {t₃} ⇔ ((id⟷ ⊕ swap₊) ◎ assocl₊) ◎ (swap₊ ⊕ id⟷)
+  hexagonl⊕r : {t₁ t₂ t₃ : U} →
+     ((id⟷ ⊕ swap₊) ◎ assocl₊) ◎ (swap₊ ⊕ id⟷) ⇔ (assocl₊ ◎ swap₊) ◎ assocl₊ {t₁} {t₂} {t₃}
+  hexagonr⊗l : {t₁ t₂ t₃ : U} →
+     (assocr⋆ ◎ swap⋆) ◎ assocr⋆ {t₁} {t₂} {t₃} ⇔ ((swap⋆ ⊗ id⟷) ◎ assocr⋆) ◎ (id⟷ ⊗ swap⋆)
+  hexagonr⊗r : {t₁ t₂ t₃ : U} →
+     ((swap⋆ ⊗ id⟷) ◎ assocr⋆) ◎ (id⟷ ⊗ swap⋆) ⇔ (assocr⋆ ◎ swap⋆) ◎ assocr⋆ {t₁} {t₂} {t₃}
+  hexagonl⊗l : {t₁ t₂ t₃ : U} →
+     (assocl⋆ ◎ swap⋆) ◎ assocl⋆ {t₁} {t₂} {t₃} ⇔ ((id⟷ ⊗ swap⋆) ◎ assocl⋆) ◎ (swap⋆ ⊗ id⟷)
+  hexagonl⊗r : {t₁ t₂ t₃ : U} →
+     ((id⟷ ⊗ swap⋆) ◎ assocl⋆) ◎ (swap⋆ ⊗ id⟷) ⇔ (assocl⋆ ◎ swap⋆) ◎ assocl⋆ {t₁} {t₂} {t₃}
+  absorbl⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
+    (c₁ ⊗ id⟷ {ZERO}) ◎ absorbl ⇔ absorbl ◎ id⟷ {ZERO}
+  absorbl⇔r : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
+     absorbl ◎ id⟷ {ZERO} ⇔ (c₁ ⊗ id⟷ {ZERO}) ◎ absorbl
+  absorbr⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
+    (id⟷ {ZERO} ⊗ c₁) ◎ absorbr ⇔ absorbr ◎ id⟷ {ZERO}
+  absorbr⇔r : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
+     absorbr ◎ id⟷ {ZERO} ⇔ (id⟷ {ZERO} ⊗ c₁) ◎ absorbr
+  factorzl⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
+    id⟷ ◎ factorzl ⇔ factorzl ◎ (id⟷ ⊗ c₁)
+  factorzl⇔r : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
+     factorzl ◎ (id⟷ {ZERO} ⊗ c₁) ⇔ id⟷ {ZERO} ◎ factorzl
+  factorzr⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
+     id⟷ ◎ factorzr ⇔ factorzr ◎ (c₁ ⊗ id⟷)
+  factorzr⇔r : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
+     factorzr ◎ (c₁ ⊗ id⟷) ⇔ id⟷ ◎ factorzr
+
+-- better syntax for writing 2paths
+
+infix  2  _▤       
+infixr 2  _⇔⟨_⟩_   
+
+_⇔⟨_⟩_ : {t₁ t₂ : U} (c₁ : t₁ ⟷ t₂) {c₂ : t₁ ⟷ t₂} {c₃ : t₁ ⟷ t₂} → 
+         (c₁ ⇔ c₂) → (c₂ ⇔ c₃) → (c₁ ⇔ c₃)
+_ ⇔⟨ α ⟩ β = trans⇔ α β
+
+_▤ : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (c ⇔ c)
+_▤ c = id⇔
+\end{code}
+}
+
+\begin{code}
 
 negEx : n₂ ⇔ n₁
 negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆)))
