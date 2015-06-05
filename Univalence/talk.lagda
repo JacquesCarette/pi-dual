@@ -80,6 +80,8 @@ $\displaystyle
 \DeclareUnicodeCharacter{9678}{\ensuremath{\odot}}
 \DeclareUnicodeCharacter{9636}{\ensuremath{\Box}}
 
+\setbeamertemplate{theorems}[ams style]
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \renewcommand{\AgdaCodeStyle}{\small}
 
@@ -108,242 +110,7 @@ $\displaystyle
 \maketitle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\AgdaHide{
-\begin{code}
-{-# OPTIONS --without-K #-}
 
-module talk where
-
-{-- 2 paths --} 
-
-open import Level using (Level; _⊔_) renaming (zero to lzero; suc to lsuc)
-
-open import Relation.Binary.PropositionalEquality 
-  using (_≡_; refl; sym; trans; subst; subst₂; cong; cong₂; setoid;
-        inspect; [_]; proof-irrelevance; module ≡-Reasoning)
-open import Relation.Binary.PropositionalEquality.TrustMe
-  using (trustMe)
-open import Relation.Nullary using (Dec; yes; no; ¬_)
-open import Data.Nat.Properties
-  using (m≢1+m+n; i+j≡0⇒i≡0; i+j≡0⇒j≡0; n≤m+n)
-open import Data.Nat.Properties.Simple 
-  using (+-right-identity; +-suc; +-assoc; +-comm; 
-        *-assoc; *-comm; *-right-zero; distribʳ-*-+)
-open import Data.Nat.DivMod using (_mod_)
-open import Relation.Binary using (Rel; Decidable; Setoid)
-open import Relation.Binary.Core using (Transitive)
-
-open import Data.String using (String)
-  renaming (_++_ to _++S_)
-open import Data.Nat.Show using (show)
-open import Data.Bool using (Bool; false; true; T; _∧_; _∨_)
-open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≮_; _≤_; _≰_; 
-  z≤n; s≤s; _≟_; _≤?_; module ≤-Reasoning)
-open import Data.Fin 
-  using (Fin; zero; suc; toℕ; fromℕ; _ℕ-_; _≺_;
-         raise; inject+; inject₁; inject≤; _≻toℕ_) 
-  renaming (_+_ to _F+_)
-open import Data.Fin.Properties using (bounded; inject+-lemma)
-open import Data.Vec.Properties 
-  using (lookup∘tabulate; tabulate∘lookup; lookup-allFin; tabulate-∘; 
-         tabulate-allFin; map-id; allFin-map)
-
-open import Data.List 
-  using (List; []; _∷_; _∷ʳ_; foldl; replicate; reverse; downFrom; 
-         concatMap; gfilter; initLast; InitLast; _∷ʳ'_) 
-  renaming (_++_ to _++L_; map to mapL; concat to concatL; zip to zipL)
-open import Data.List.NonEmpty 
-  using (List⁺; module List⁺; [_]; _∷⁺_; head; last; _⁺++_)
-  renaming (toList to nonEmptyListtoList; _∷ʳ_ to _n∷ʳ_; tail to ntail)
-open List⁺ public  
-open import Data.List.Any using (Any; here; there; any; module Membership)
-open import Data.Maybe using (Maybe; nothing; just; maybe′)
-open import Data.Vec 
-  using (Vec; tabulate; []; _∷_; tail; lookup; zip; zipWith; splitAt;
-         _[_]≔_; allFin; toList)
-  renaming (_++_ to _++V_; map to mapV; concat to concatV)
-open import Function using (id; _∘_; _$_)
-
-open import Data.Empty   using (⊥; ⊥-elim)
-open import Data.Unit    using (⊤; tt)
-open import Data.Sum     using (_⊎_; inj₁; inj₂)
-open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
-
--- open import Cauchy
--- open import Perm
--- open import Proofs
--- open import CauchyProofs
--- open import CauchyProofsT
--- open import CauchyProofsS
--- open import Groupoid
-open import PiLevel0
--- open import Swaps
--- open import Pif
-
-------------------------------------------------------------------------------
--- Picture so far:
---
---           path p
---   =====================
---  ||   ||             ||
---  ||   ||2path        ||
---  ||   ||             ||
---  ||   ||  path q     ||
---  t₁ =================t₂
---  ||   ...            ||
---   =====================
---
--- The types t₁, t₂, etc are discrete groupoids. The paths between
--- them correspond to permutations. Each syntactically different
--- permutation corresponds to a path but equivalent permutations are
--- connected by 2paths.  But now we want an alternative definition of
--- 2paths that is structural, i.e., that looks at the actual
--- construction of the path t₁ ⟷ t₂ in terms of combinators... The
--- theorem we want is that α ∼ β iff we can rewrite α to β using
--- various syntactic structural rules. We start with a collection of
--- simplication rules and then try to show they are complete.
-
--- Simplification rules
-
-infix  30 _⇔_
-
-data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set where
-  assoc◎l : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
-          (c₁ ◎ (c₂ ◎ c₃)) ⇔ ((c₁ ◎ c₂) ◎ c₃)
-  assoc◎r : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
-          ((c₁ ◎ c₂) ◎ c₃) ⇔ (c₁ ◎ (c₂ ◎ c₃))
-  assoc⊕l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          (c₁ ⊕ (c₂ ⊕ c₃)) ⇔ (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊)
-  assoc⊕r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊) ⇔ (c₁ ⊕ (c₂ ⊕ c₃))
-  assoc⊗l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          (c₁ ⊗ (c₂ ⊗ c₃)) ⇔ (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆)
-  assoc⊗r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆) ⇔ (c₁ ⊗ (c₂ ⊗ c₃))
-  dist⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          ((c₁ ⊕ c₂) ⊗ c₃) ⇔ (dist ◎ ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃)) ◎ factor)
-  factor⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          (dist ◎ ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃)) ◎ factor) ⇔ ((c₁ ⊕ c₂) ⊗ c₃)
-  idl◎l   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (id⟷ ◎ c) ⇔ c
-  idl◎r   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ id⟷ ◎ c
-  idr◎l   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (c ◎ id⟷) ⇔ c
-  idr◎r   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ (c ◎ id⟷) 
-  linv◎l  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (c ◎ ! c) ⇔ id⟷
-  linv◎r  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ⇔ (c ◎ ! c) 
-  rinv◎l  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (! c ◎ c) ⇔ id⟷
-  rinv◎r  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ⇔ (! c ◎ c) 
-  unitel₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
-          (unite₊ ◎ c₂) ⇔ ((c₁ ⊕ c₂) ◎ unite₊)
-  uniter₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
-          ((c₁ ⊕ c₂) ◎ unite₊) ⇔ (unite₊ ◎ c₂)
-  unitil₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
-          (uniti₊ ◎ (c₁ ⊕ c₂)) ⇔ (c₂ ◎ uniti₊)
-  unitir₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
-          (c₂ ◎ uniti₊) ⇔ (uniti₊ ◎ (c₁ ⊕ c₂))
-  unitial₊⇔ : {t₁ t₂ : U} → (uniti₊ {PLUS t₁ t₂} ◎ assocl₊) ⇔ (uniti₊ ⊕ id⟷)
-  unitiar₊⇔ : {t₁ t₂ : U} → (uniti₊ {t₁} ⊕ id⟷ {t₂}) ⇔ (uniti₊ ◎ assocl₊)
-  swapl₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
-          (swap₊ ◎ (c₁ ⊕ c₂)) ⇔ ((c₂ ⊕ c₁) ◎ swap₊)
-  swapr₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
-          ((c₂ ⊕ c₁) ◎ swap₊) ⇔ (swap₊ ◎ (c₁ ⊕ c₂))
-  unitel⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
-          (unite⋆ ◎ c₂) ⇔ ((c₁ ⊗ c₂) ◎ unite⋆)
-  uniter⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
-          ((c₁ ⊗ c₂) ◎ unite⋆) ⇔ (unite⋆ ◎ c₂)
-  unitil⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
-          (uniti⋆ ◎ (c₁ ⊗ c₂)) ⇔ (c₂ ◎ uniti⋆)
-  unitir⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
-          (c₂ ◎ uniti⋆) ⇔ (uniti⋆ ◎ (c₁ ⊗ c₂))
-  unitial⋆⇔ : {t₁ t₂ : U} → (uniti⋆ {TIMES t₁ t₂} ◎ assocl⋆) ⇔ (uniti⋆ ⊗ id⟷)
-  unitiar⋆⇔ : {t₁ t₂ : U} → (uniti⋆ {t₁} ⊗ id⟷ {t₂}) ⇔ (uniti⋆ ◎ assocl⋆)
-  swapl⋆⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
-          (swap⋆ ◎ (c₁ ⊗ c₂)) ⇔ ((c₂ ⊗ c₁) ◎ swap⋆)
-  swapr⋆⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
-          ((c₂ ⊗ c₁) ◎ swap⋆) ⇔ (swap⋆ ◎ (c₁ ⊗ c₂))
-  swapfl⋆⇔ : {t₁ t₂ t₃ : U} → 
-          (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor) ⇔ 
-          (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷))
-  swapfr⋆⇔ : {t₁ t₂ t₃ : U} → 
-          (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷)) ⇔ 
-          (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor)
-  id⇔     : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ c
-  trans⇔  : {t₁ t₂ : U} {c₁ c₂ c₃ : t₁ ⟷ t₂} → 
-          (c₁ ⇔ c₂) → (c₂ ⇔ c₃) → (c₁ ⇔ c₃)
-  resp◎⇔  : {t₁ t₂ t₃ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
-          (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ◎ c₂) ⇔ (c₃ ◎ c₄)
-  resp⊕⇔  : {t₁ t₂ t₃ t₄ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
-          (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊕ c₂) ⇔ (c₃ ⊕ c₄)
-  resp⊗⇔  : {t₁ t₂ t₃ t₄ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
-          (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊗ c₂) ⇔ (c₃ ⊗ c₄)
-
--- better syntax for writing 2paths
-
-infix  2  _▤
-infixr 2  _⇔⟨_⟩_   
-
-_⇔⟨_⟩_ : {t₁ t₂ : U} (c₁ : t₁ ⟷ t₂) {c₂ : t₁ ⟷ t₂} {c₃ : t₁ ⟷ t₂} → 
-         (c₁ ⇔ c₂) → (c₂ ⇔ c₃) → (c₁ ⇔ c₃)
-_ ⇔⟨ α ⟩ β = trans⇔ α β 
-
-_▤ : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (c ⇔ c)
-_▤ c = id⇔ 
-
--- Inverses for 2paths
-
-2! : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₂ ⇔ c₁)
-2! assoc◎l = assoc◎r
-2! assoc◎r = assoc◎l
-2! assoc⊕l = assoc⊕r
-2! assoc⊕r = assoc⊕l
-2! assoc⊗l = assoc⊗r
-2! assoc⊗r = assoc⊗l
-2! dist⇔ = factor⇔ 
-2! factor⇔ = dist⇔
-2! idl◎l = idl◎r
-2! idl◎r = idl◎l
-2! idr◎l = idr◎r
-2! idr◎r = idr◎l
-2! linv◎l = linv◎r
-2! linv◎r = linv◎l
-2! rinv◎l = rinv◎r
-2! rinv◎r = rinv◎l
-2! unitel₊⇔ = uniter₊⇔
-2! uniter₊⇔ = unitel₊⇔
-2! unitil₊⇔ = unitir₊⇔
-2! unitir₊⇔ = unitil₊⇔
-2! swapl₊⇔ = swapr₊⇔
-2! swapr₊⇔ = swapl₊⇔
-2! unitial₊⇔ = unitiar₊⇔ 
-2! unitiar₊⇔ = unitial₊⇔ 
-2! unitel⋆⇔ = uniter⋆⇔
-2! uniter⋆⇔ = unitel⋆⇔
-2! unitil⋆⇔ = unitir⋆⇔
-2! unitir⋆⇔ = unitil⋆⇔
-2! unitial⋆⇔ = unitiar⋆⇔ 
-2! unitiar⋆⇔ = unitial⋆⇔ 
-2! swapl⋆⇔ = swapr⋆⇔
-2! swapr⋆⇔ = swapl⋆⇔
-2! swapfl⋆⇔ = swapfr⋆⇔
-2! swapfr⋆⇔ = swapfl⋆⇔
-2! id⇔ = id⇔
-2! (trans⇔ α β) = trans⇔ (2! β) (2! α)
-2! (resp◎⇔ α β) = resp◎⇔ (2! α) (2! β)
-2! (resp⊕⇔ α β) = resp⊕⇔ (2! α) (2! β)
-2! (resp⊗⇔ α β) = resp⊗⇔ (2! α) (2! β)
---
-\end{code}
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Reversible Computing}
 
 The “obvious” intersection between quantum computing and programming
@@ -357,71 +124,133 @@ languages is reversible computing.
 truth table, matrix, reed muller expansion, product of cycles,
 decision diagram, etc.
 
+\jc{any easy way to reproduce Figure 4 on p.7 of Saeedi and Markov?}
+\jc{important remark: these are all \emph{Boolean} circuits!}
+
+Most important part: reversible circuits are equivalent to permutations.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{A Syntactic Theory}
-
-Ideally want a notation that is easy to write by programmers and that
-is easy to mechnically manipulate for reasoning and optimizing of circuits.
-
-Syntactic calculi good
-
-Popular semantics: Despite the increasing importance of formal
-methods to the computing industry, there has been little advance to
-the notion of a ``popular semantics'' that can be explained to
-\emph{and used} effectively (for example to optimize or simplify
-programs) by non-specialists including programmers and first-year
-students. Although the issue is by no means settled, syntactic
-theories are one of the candidates for such a popular semantics for
-they require no additional background beyond knowledge of the
-programming language itself, and they provide a direct support for the
-equational reasoning underlying many program transformations.
-
+\begin{frame}{A (Foundational) Syntactic Theory}
+Ideally, want a notation that
+\begin{enumerate}
+\item is easy to write by programmers
+\item is easy to mechanically manipulate
+\item can be reasoned about
+\item can be optimized.
+\end{enumerate}
+\pause
+Start with a \emph{foundational} syntactic theory on our way there:
+\begin{enumerate}
+\item easy to explain
+\item clear operational rules
+\item fully justified by the semantics
+\item sound and complete reasoning
+\item sound and complete methods of optimization
+\end{enumerate}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{A Calculus of Permutations} 
-
-Syntactic theories only rely on transforming source programs to other           
-programs, much like algebraic calculation. Since only the                       
-\emph{syntax} of the programming language is relevant to the syntactic          
-theory, the theory is accessible to non-specialists like programmers            
-or students.                                                                    
-                                                                                
-In more detail, it is a general problem that, despite its fundamental           
-value, formal semantics of programming languages is generally                   
-inaccessible to the computing public. As Schmidt argues in a recent             
-position statement on strategic directions for research on programming          
-languages~\cite{popularsem}:                                                    
-\begin{quote}                                                                   
-\ldots formal semantics has fed upon increasing complexity of concepts          
-and notation at the expense of calculational clarity. A newcomer to             
-the area is expected to specialize in one or more of domain theory,             
-intuitionistic type theory, category theory, linear logic, process              
-algebra, continuation-passing style, or whatever. These                         
-specializations have generated more experts but fewer general users.            
-\end{quote}                                                                     
-
-\end{frame}
+% \begin{frame}{A Syntactic Theory}
+% 
+% Ideally want a notation that is easy to write by programmers and that
+% is easy to mechnically manipulate for reasoning and optimizing of circuits.
+% 
+% Syntactic calculi good
+% 
+% Popular semantics: Despite the increasing importance of formal
+% methods to the computing industry, there has been little advance to
+% the notion of a ``popular semantics'' that can be explained to
+% \emph{and used} effectively (for example to optimize or simplify
+% programs) by non-specialists including programmers and first-year
+% students. Although the issue is by no means settled, syntactic
+% theories are one of the candidates for such a popular semantics for
+% they require no additional background beyond knowledge of the
+% programming language itself, and they provide a direct support for the
+% equational reasoning underlying many program transformations.
+% 
+% \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{A Calculus of Permutations} 
+\begin{frame}{Starting Point}
+\emph{Typed} isomorphisms.  First, a universe of (finite) types
+\vspace*{1cm}
+\AgdaHide{
+\begin{code}
+open import Data.Empty
+open import Data.Unit
+open import Data.Sum
+open import Data.Product
+\end{code}
+}
 
-The remedy proposed by Schmidt and others is the development of a               
-formal semantics with a strong calculational flavor. As expressed by            
-Andrew Kennedy in a recent posting to the newsgroup                             
-\texttt{comp.}\-\texttt{lang.}\-\texttt{ml}, the most important                 
-property of such a semantics is that it ``should be comprehensible to           
-an educated programmer, in the same way that a formal grammar can be            
-understood by a programmer with a degree in computer science.'' In              
-addition, this popular semantics should be amenable to machine                  
-manipulation for proving program properties and for building software           
-engineering tools such as debuggers and static analyzers, and should            
-be reasonably close to implementations in order to explain some of the          
-intensional behavior of languages like space allocation and sharing of          
-data structures.
-                                                              
+\begin{code}
+data U : Set where
+  ZERO  : U
+  ONE   : U
+  PLUS  : U → U → U
+  TIMES : U → U → U
+
+\end{code}
+and its interpretation
+\begin{code}
+⟦_⟧ : U → Set 
+⟦ ZERO ⟧        = ⊥ 
+⟦ ONE ⟧         = ⊤
+⟦ PLUS t₁ t₂ ⟧  = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
+⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+\end{code}
+\end{frame}
+
+\begin{frame}{Equivalences and semirings}
+If we denote type equivalence by $\simeq$, then we can prove that
+\begin{theorem}
+The collection of all types (\AgdaDatatype{Set}) forms a commutative
+semiring (up to $\simeq$).
+\end{theorem}
+\pause
+Much more meaningfully, we also get
+\begin{theorem}
+If $A\simeq \mathsf{Fin} m$, $B\simeq \mathsf{Fin} n$ and $A \simeq B$ then $m ≡ n$.
+\end{theorem}
+\pause
+\begin{theorem}\label{Perm}
+If $A ≃ \mathsf{Fin} m$ and $B ≃ \mathsf{Fin} n$, then the type of all
+equivalences $A ≃ B$ is equivalent to the type of all permutations
+$\mathsf{Perm} n$.
+\end{theorem}
+\end{frame}
+% \begin{frame}{A Calculus of Permutations} 
+% 
+% Syntactic theories only rely on transforming source programs to other           
+% programs, much like algebraic calculation. Since only the                       
+% \emph{syntax} of the programming language is relevant to the syntactic          
+% theory, the theory is accessible to non-specialists like programmers            
+% or students.                                                                    
+%                                                                                 
+% In more detail, it is a general problem that, despite its fundamental           
+% value, formal semantics of programming languages is generally                   
+% inaccessible to the computing public. As Schmidt argues in a recent             
+% position statement on strategic directions for research on programming          
+% languages~\cite{popularsem}:                                                    
+% \begin{quote}                                                                   
+% \ldots formal semantics has fed upon increasing complexity of concepts          
+% and notation at the expense of calculational clarity. A newcomer to             
+% the area is expected to specialize in one or more of domain theory,             
+% inuitionistic type theory, category theory, linear logic, process              
+% algebra, continuation-passing style, or whatever. These                         
+% specializations have generated more experts but fewer general users.            
+% \end{quote}                                                                     
+%
+% \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{A Calculus of Permutations}
+In fact, we can say even more.  Defining the usual disjoint union and tensor
+product of permutations, we can prove
+\begin{theorem}
+The equivalence of Theorem~\ref{Perm} is an isomorphism of semirings.
+\end{theorem}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -449,6 +278,12 @@ data structures.
   \node[below] at (6,-1) {T};
 \end{tikzpicture}
 \end{center}
+
+\AgdaHide{
+\begin{code}
+open import PiLevel0
+\end{code}
+}
 
 \begin{code}
 n₁ : BOOL ⟷ BOOL
@@ -530,39 +365,39 @@ n₂ =  uniti⋆ ◎
 Algebraic manipulation of one circuit to the other:
 
 \begin{code}
+open import PiLevel1 hiding (negEx)
+
 negEx : n₂ ⇔ n₁
 negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆)))
-          ⇔⟨ resp◎⇔ id⇔ assoc◎l ⟩
+          ⇔⟨ id⇔ ⊡ assoc◎l ⟩
         uniti⋆ ◎ ((swap⋆ ◎ (swap₊ ⊗ id⟷)) ◎ (swap⋆ ◎ unite⋆))
-          ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ swapl⋆⇔ id⇔) ⟩
+          ⇔⟨ id⇔ ⊡ (swapl⋆⇔ ⊡ id⇔) ⟩
         uniti⋆ ◎ (((id⟷ ⊗ swap₊) ◎ swap⋆) ◎ (swap⋆ ◎ unite⋆))
-          ⇔⟨ resp◎⇔ id⇔ assoc◎r ⟩
+          ⇔⟨ id⇔ ⊡ assoc◎r ⟩
         uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ (swap⋆ ◎ (swap⋆ ◎ unite⋆)))
-          ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ id⇔ assoc◎l) ⟩
+          ⇔⟨ id⇔ ⊡ (id⇔ ⊡ assoc◎l) ⟩
         uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ ((swap⋆ ◎ swap⋆) ◎ unite⋆))
-          ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ id⇔ (resp◎⇔ linv◎l id⇔)) ⟩
+          ⇔⟨ id⇔ ⊡ (id⇔ ⊡ (linv◎l ⊡ id⇔)) ⟩
+        uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ (id⟷ ◎ unite⋆))
+          ⇔⟨ id⇔ ⊡ (id⇔ ⊡ idl◎l) ⟩
+        uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ unite⋆)
+          ⇔⟨ assoc◎l ⟩
+        (uniti⋆ ◎ (id⟷ ⊗ swap₊)) ◎ unite⋆
+          ⇔⟨ unitil⋆⇔ ⊡ id⇔ ⟩
+        (swap₊ ◎ uniti⋆) ◎ unite⋆
+          ⇔⟨ assoc◎r ⟩
+        swap₊ ◎ (uniti⋆ ◎ unite⋆)
+          ⇔⟨ id⇔ ⊡ linv◎l ⟩
+        swap₊ ◎ id⟷
+          ⇔⟨ idr◎l ⟩
+        swap₊ ▤
 \end{code}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Reasoning about Example Circuits}
 
-\begin{code}
-        uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ (id⟷ ◎ unite⋆))
-          ⇔⟨ resp◎⇔ id⇔ (resp◎⇔ id⇔ idl◎l) ⟩
-        uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ unite⋆)
-          ⇔⟨ assoc◎l ⟩
-        (uniti⋆ ◎ (id⟷ ⊗ swap₊)) ◎ unite⋆
-          ⇔⟨ resp◎⇔ unitil⋆⇔ id⇔ ⟩
-        (swap₊ ◎ uniti⋆) ◎ unite⋆
-          ⇔⟨ assoc◎r ⟩
-        swap₊ ◎ (uniti⋆ ◎ unite⋆)
-          ⇔⟨ resp◎⇔ id⇔ linv◎l ⟩
-        swap₊ ◎ id⟷
-          ⇔⟨ idr◎l ⟩
-        swap₊ ▤
-\end{code}
-
+foo
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1275,16 +1110,15 @@ List them all.
 
 2-paths are between 1-paths, e.g.,
 
-\begin{code}
-postulate
-  c₁ : {B C : U} → B ⟷ C
-  c₂ : {A D : U} → A ⟷ D
-
-p₁ p₂ : {A B C D : U} → PLUS A B ⟷ PLUS C D
-p₁ = swap₊ ◎ (c₁ ⊕ c₂)
-p₂ = (c₂ ⊕ c₁) ◎ swap₊
-\end{code}
-
+%\begin{code}
+%postulate
+%  c₁ : {B C : U} → B ⟷ C
+%  c₂ : {A D : U} → A ⟷ D
+%
+%p₁ p₂ : {A B C D : U} → PLUS A B ⟷ PLUS C D
+%p₁ = swap₊ ◎ (c₁ ⊕ c₂)
+%p₂ = (c₂ ⊕ c₁) ◎ swap₊
+\%end{code}
 
 \end{frame}
 
@@ -1344,111 +1178,6 @@ p₂ = (c₂ ⊕ c₁) ◎ swap₊
 
 \end{tikzpicture}
 \end{center}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
 
 \end{frame}
 
