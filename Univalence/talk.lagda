@@ -111,12 +111,48 @@ $\displaystyle
 \maketitle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Quantum Computing}
 
-\begin{frame}{Reversible Computing}
+Quantum physics differs from classical physics in \textcolor{red}{many} ways:
 
-The “obvious” intersection between quantum computing and programming
-languages is reversible computing.
+\begin{itemize}
+\vfill\item Superpositions
+\vfill\item Entanglement
+\vfill\item Unitary evolution
+\vfill\item Composition uses tensor products
+\vfill\item Non-unitary measurement
+\end{itemize}
 
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Quantum Computing \& Programming Languages} 
+
+\begin{itemize}
+\vfill\item It is possible to adapt \textcolor{red}{all at once} classical programming
+languages to quantum programming languages.
+\vfill\item Some excellent examples discussed in this workshop
+\vfill\item This assumes that classical programming languages (and implicitly classical physics)
+can be smoothly adapted to the quantum world.
+\vfill\item There are however what appear to be fundamental differences between the classical and quantum world that make them incompatible
+\vfill\item Let us \emph{re-think} classical programming foundations before jumping to the quantum world.
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Resource-Aware Classical Computing}
+
+\begin{itemize}
+\vfill\item The biggest questionable assumption of classical programming is that it is possible
+to freely copy and discard information
+\vfill\item A classical programming language which respects no-cloning and no-discarding is
+the right foundation for an eventual quantum extension
+\vfill\item We want these properties to be \textcolor{red}{inherent} in the language; not an afterthought
+filtered by a type system
+\vfill\item We want to program with \textcolor{red}{isomorphisms} or \textcolor{red}{equivalences}
+\vfill\item The simplest instance is \textcolor{red}{permutations between finite types} which happens to
+correspond to \textcolor{red}{reversible circuits}.
+\end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
