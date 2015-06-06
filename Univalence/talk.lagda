@@ -238,6 +238,7 @@ semirings of equivalences of finite types, and of permutations.
 \end{theorem}
 
 \end{frame}
+
 % \begin{frame}{A Calculus of Permutations} 
 % 
 % Syntactic theories only rely on transforming source programs to other           
@@ -262,10 +263,13 @@ semirings of equivalences of finite types, and of permutations.
 %
 % \end{frame}
 
-\begin{frame}{A Calculus of Permutations}
+\begin{frame}[fragile]{A Calculus of Permutations}
+
 First conclusion: it might be useful to \emph{reify} a certain set of
 equivalences as combinators.  We choose the fundamental ``proof rules''
 of semirings:
+\pause
+
 \AgdaHide{
 \begin{code}
 infix  30 _⟷_
@@ -273,6 +277,7 @@ infixr 50 _◎_
 \end{code}
 }
 \renewcommand{\AgdaCodeStyle}{\tiny}
+
 \begin{code}
 data _⟷_ : U → U → Set where
   unite₊  : {t : U} → PLUS ZERO t ⟷ t
@@ -289,18 +294,13 @@ data _⟷_ : U → U → Set where
   absorbl : {t : U} → TIMES t ZERO ⟷ ZERO
   factorzr : {t : U} → ZERO ⟷ TIMES t ZERO
   factorzl : {t : U} → ZERO ⟷ TIMES ZERO t
-  dist    : {t₁ t₂ t₃ : U} → 
-            TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) 
-  factor  : {t₁ t₂ t₃ : U} → 
-            PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
+  dist    : {t₁ t₂ t₃ : U} → TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) 
+  factor  : {t₁ t₂ t₃ : U} → PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
   id⟷    : {t : U} → t ⟷ t
-  _◎_     : {t₁ t₂ t₃ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
-  _⊕_     : {t₁ t₂ t₃ t₄ : U} → 
-            (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
-  _⊗_     : {t₁ t₂ t₃ t₄ : U} → 
-            (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
+  _◎_     : {t₁ t₂ t₃ : U}    → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+  _⊕_     : {t₁ t₂ t₃ t₄ : U} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
+  _⊗_     : {t₁ t₂ t₃ t₄ : U} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
 \end{code}
-
 \AgdaHide{
 \begin{code}
 ! : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
@@ -354,14 +354,10 @@ data _⟷_ : U → U → Set where
 \end{tikzpicture}
 \end{center}
 
-\AgdaHide{
 \begin{code}
 BOOL : U
 BOOL = PLUS ONE ONE
-\end{code}
-}
 
-\begin{code}
 n₁ : BOOL ⟷ BOOL
 n₁ = swap₊
 \end{code}
@@ -620,6 +616,7 @@ _▤ c = id⇔
 \end{code}
 }
 
+\renewcommand{\AgdaCodeStyle}{\tiny}
 \begin{code}
 
 negEx : n₂ ⇔ n₁
