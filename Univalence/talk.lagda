@@ -1609,6 +1609,7 @@ The following are \textcolor{red}{Symmetric Bimonoidal Groupoids}:
 \item The set of all finite types
 \item The set of permutations
 \item The set of equivalences between finite types
+\item Our syntactic combinators
 \end{itemize}
 \end{theorem}
 The \textcolor{red}{coherence rules} for Symmetric Bimonoidal groupoids give us 
@@ -1620,9 +1621,8 @@ The \textcolor{red}{coherence rules} for Symmetric Bimonoidal groupoids give us
 The following are \textcolor{red}{Symmetric Rig Groupoids}:
 \begin{itemize}
 \item The class of all types (\AgdaDatatype{Set})
-\item The set of all finite types
-\item The set of permutations
-\item The set of equivalences between finite types
+\item The set of all finite types, of permutations, of equivalences between finite types
+\item Our syntactic combinators
 \end{itemize}
 \end{conj}
 \pause
