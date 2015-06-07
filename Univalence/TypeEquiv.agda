@@ -178,7 +178,7 @@ assocr⋆equiv : {A B C : Set} → ((A × B) × C) ≃ (A × (B × C))
 assocr⋆equiv = 
   assocr⋆ , mkqinv assocl⋆ assocr⋆∘assocl⋆ assocl⋆∘assocr⋆
 
--- distz and factorz
+-- distz and factorz, on left
 
 distz : { A : Set} → (⊥ × A) → ⊥
 distz (() , _)
@@ -199,6 +199,27 @@ distzequiv {A} =
 factorzequiv : {A : Set} → ⊥ ≃ (⊥ × A)
 factorzequiv {A} = 
   factorz , mkqinv distz factorz∘distz (distz∘factorz {A})
+
+-- distz and factorz, on right
+
+distzr : { A : Set} → (A × ⊥) → ⊥
+distzr (_ , ())
+
+factorzr : {A : Set} → ⊥ → (A × ⊥)
+factorzr ()
+ 
+distzr∘factorzr : {A : Set} → distzr ○ factorzr {A} ∼ id
+distzr∘factorzr ()
+
+factorzr∘distzr : {A : Set} → factorzr {A} ○ distzr ∼ id
+factorzr∘distzr (_ , ())
+
+distzrequiv : {A : Set} → (A × ⊥) ≃ ⊥
+distzrequiv {A} = 
+  distzr , mkqinv factorzr (distzr∘factorzr {A}) factorzr∘distzr
+
+factorzrequiv : {A : Set} → ⊥ ≃ (A × ⊥)
+factorzrequiv {A} = sym≃ distzrequiv
 
 -- dist and factor
 
