@@ -369,7 +369,10 @@ data _⟷_ : U → U → Set where
 \begin{frame}[fragile]{Example Circuit: Simple Negation}
 
 \begin{center}
-\begin{tikzpicture}
+\begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
+ \draw (-10,0) -- (-6,0);
+ \node at (-8,0) {$\oplus$};
+
   \draw (0,0) ellipse (1cm and 2cm);
   \draw[fill] (0,1) circle [radius=0.025];
   \node[below] at (0,1) {F};
@@ -405,7 +408,20 @@ n₁ = swap₊
 \begin{frame}[fragile]{Example Circuit: Not So Simple Negation}
 
 \begin{center}
-\begin{tikzpicture}
+\begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
+ \draw (-11,0.5) -- (-10,0.5);
+ \draw (-12,-0.5) -- (-10,-0.5);
+ \draw (-10,-1) -- (-10,1) -- (-8,1) -- (-8,-1) -- cycle;
+ \node at (-9,0) {swap};
+ \draw (-8,0.5) -- (-6,0.5);
+ \node at (-7,0.5) {$\oplus$};
+ \draw (-8,-0.5) -- (-6,-0.5);
+ \draw (-6,-1) -- (-6,1) -- (-4,1) -- (-4,-1) -- cycle;
+ \node at (-5,0) {swap};
+ \draw (-4,0.5) -- (-3,0.5);
+ \draw (-4,-0.5) -- (-2,-0.5);
+
+
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
   \node[below] at (1,2) {*};
