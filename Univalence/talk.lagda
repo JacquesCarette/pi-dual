@@ -80,6 +80,8 @@ $\displaystyle
 \DeclareUnicodeCharacter{9678}{\ensuremath{\odot}}
 \DeclareUnicodeCharacter{9636}{\ensuremath{\Box}}
 
+\newtheorem{conj}{Conjecture}
+
 \setbeamertemplate{theorems}[ams style]
 \setbeamertemplate{blocks}[rounded][shadow=false]
 
@@ -270,10 +272,14 @@ Semiring structures abound.  We can define them on:
 \pause
 The point, of course, is that they are related:
 \begin{theorem}
-The equivalence of Theorem~\ref{Perm} is an isomorphism between the
+The equivalence of Theorem~\ref{Perm} is an \textcolor{red}{isomorphism} between the
 semirings of equivalences of finite types, and of permutations.
 \end{theorem}
-
+\pause
+A more evocative phrasing might be:
+\begin{theorem}
+$$ (A ≃ B) ≃ \mathsf{Perm} |A| $$
+\end{theorem}
 \end{frame}
 
 % \begin{frame}{A Calculus of Permutations} 
@@ -302,8 +308,8 @@ semirings of equivalences of finite types, and of permutations.
 
 \begin{frame}[fragile]{A Calculus of Permutations}
 
-First conclusion: it might be useful to \emph{reify} a certain set of
-equivalences as combinators.  We choose the fundamental ``proof rules''
+First conclusion: it might be useful to \emph{reify} a (sound and complete) set of
+equivalences as combinators, such as the fundamental ``proof rules''
 of semirings:
 \pause
 
@@ -1388,18 +1394,21 @@ By id-unit-right:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{But is this a programming language?}
+
 \AgdaHide{
 \begin{code}
 open import Equiv using (_≃_; _●_; path⊎; path×)
-open import TypeEquiv as TE
+import TypeEquiv as TE
 \end{code}
 }
+
 We get forward and backward evaluators
 \begin{code}
 eval : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
 evalB : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧
 \end{code}
 \pause
+
 which really do behave as expected
 \begin{code}
 c2equiv : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
@@ -1494,42 +1503,44 @@ c2equiv (c ⊗ c₁) = path× (c2equiv c) (c2equiv c₁)
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Questions}
+\begin{frame}{Manipulating circuits}
 
+Nice framework, but:
 \begin{itemize}
-\item We don't want an ad hoc notation with ad hoc rewriting rules
-\item Notions of soundness; completeness; canonicity in some sense; what can we say?
+\item We don't want ad hoc rewriting rules.
+\begin{itemize}
+\item Our current set has \textcolor{red}{76 rules}!
+\end{itemize}
+\item Notions of soundness; completeness; canonicity in some sense.
+\begin{itemize}
+\item Are all the rules valid? (yes)
+\item Are they enough? (next topic)
+\item Are there canonical representations of circuits? (open)
+\end{itemize}
 \end{itemize}
 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{1-paths vs. 2-paths}
+\begin{frame}{Categorification I}
+Type equivalences (such as between $A × B$ and $B × A$) are \textcolor{red}{Functors}.
 
-1-paths are between isomorphic types, e.g., $A * B$ and $B * A$.
-List them all.
+\noindent Equivalences between Functors are \textcolor{red}{Natural Isomorphisms}.  At the value-level,
+they induce $2$-morphisms:
 
+\begin{code}
+postulate
+  c₁ : {B C : U} → B ⟷ C
+  c₂ : {A D : U} → A ⟷ D
+
+p₁ p₂ : {A B C D : U} → PLUS A B ⟷ PLUS C D
+p₁ = swap₊ ◎ (c₁ ⊕ c₂)
+p₂ = (c₂ ⊕ c₁) ◎ swap₊
+\end{code}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{1-paths vs. 2-paths}
-
-2-paths are between 1-paths, e.g.,
-
-%\begin{code}
-%postulate
-%  c₁ : {B C : U} → B ⟷ C
-%  c₂ : {A D : U} → A ⟷ D
-%
-%p₁ p₂ : {A B C D : U} → PLUS A B ⟷ PLUS C D
-%p₁ = swap₊ ◎ (c₁ ⊕ c₂)
-%p₂ = (c₂ ⊕ c₁) ◎ swap₊
-\%end{code}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{1-paths vs. 2-paths}
+\begin{frame}{2-morphism of circuits}
 
 \begin{center}
 \begin{tikzpicture}
@@ -1585,6 +1596,45 @@ List them all.
 \end{tikzpicture}
 \end{center}
 
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Categorification II}
+The \textcolor{red}{categorification} of a semiring is called a \textcolor{red}{Rig Category}.
+As with a semiring, there are two monoidal structures, which interact through some distributivity laws.
+\begin{theorem}
+The following are \textcolor{red}{Symmetric Bimonoidal Groupoids}:
+\begin{itemize}
+\item The class of all types (\AgdaDatatype{Set})
+\item The set of all finite types
+\item The set of permutations
+\item The set of equivalences between finite types
+\end{itemize}
+\end{theorem}
+The \textcolor{red}{coherence rules} for Symmetric Bimonoidal groupoids give us 
+\textcolor{red}{58 rules}.
+\end{frame}
+
+\begin{frame}{Categorification III}
+\begin{conj}
+The following are \textcolor{red}{Symmetric Rig Groupoids}:
+\begin{itemize}
+\item The class of all types (\AgdaDatatype{Set})
+\item The set of all finite types
+\item The set of permutations
+\item The set of equivalences between finite types
+\end{itemize}
+\end{conj}
+\pause
+and of course the punchline:
+\begin{theorem}[Laplaza 1972]
+There is a sound and complete set of \textcolor{red}{coherence rules} for 
+Symmetric Rig Categories.
+\end{theorem}
+\begin{conj}
+The set of coherence rules for Symmetric Rig Groupoids are a sound
+and complete set for circuits.
+\end{conj}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
