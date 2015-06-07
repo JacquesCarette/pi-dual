@@ -172,6 +172,39 @@ eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₂ v) = inj₂ (eval c₂ v)
 eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
 
+-- useful to have the backwards eval too
+
+evalB : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧
+evalB unite₊ x = inj₂ x
+evalB uniti₊ (inj₁ ())
+evalB uniti₊ (inj₂ y) = y
+evalB swap₊ (inj₁ x) = inj₂ x
+evalB swap₊ (inj₂ y) = inj₁ y
+evalB assocl₊ (inj₁ (inj₁ x)) = inj₁ x
+evalB assocl₊ (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
+evalB assocl₊ (inj₂ y) = inj₂ (inj₂ y)
+evalB assocr₊ (inj₁ x) = inj₁ (inj₁ x)
+evalB assocr₊ (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
+evalB assocr₊ (inj₂ (inj₂ y)) = inj₂ y
+evalB unite⋆ x = tt , x
+evalB uniti⋆ (tt , x) = x
+evalB swap⋆ (x , y) = y , x
+evalB assocl⋆ ((x , y) , z) = x , y , z
+evalB assocr⋆ (x , y , z) = (x , y) , z
+evalB absorbr ()
+evalB absorbl ()
+evalB factorzr (_ , ())
+evalB factorzl (() , _)
+evalB dist (inj₁ (x , y)) = inj₁ x , y
+evalB dist (inj₂ (x , y)) = inj₂ x , y
+evalB factor (inj₁ x , z) = inj₁ (x , z)
+evalB factor (inj₂ y , z) = inj₂ (y , z)
+evalB id⟷ x = x
+evalB (c₀ ◎ c₁) x = evalB c₀ (evalB c₁ x)
+evalB (c₀ ⊕ c₁) (inj₁ x) = inj₁ (evalB c₀ x)
+evalB (c₀ ⊕ c₁) (inj₂ y) = inj₂ (evalB c₁ y)
+evalB (c₀ ⊗ c₁) (x , y) = evalB c₀ x , evalB c₁ y
+
 -- A canonical representation of each type as a vector of values. This
 -- fixes a canonical order for the elements of the types: each value
 -- has a canonical index.
