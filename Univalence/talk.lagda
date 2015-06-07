@@ -1388,10 +1388,21 @@ By id-unit-right:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{But is this a programming language?}
-
+\AgdaHide{
+\begin{code}
+open import Equiv using (_≃_; _●_; path⊎; path×)
+open import TypeEquiv as TE
+\end{code}
+}
+We get forward and backward evaluators
 \begin{code}
 eval : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
 evalB : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧
+\end{code}
+\pause
+which really do behave as expected
+\begin{code}
+c2equiv : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
 \end{code}
 
 \AgdaHide{
@@ -1458,6 +1469,26 @@ evalB (c₀ ⊕ c₁) (inj₁ x) = inj₁ (evalB c₀ x)
 evalB (c₀ ⊕ c₁) (inj₂ y) = inj₂ (evalB c₁ y)
 evalB (c₀ ⊗ c₁) (x , y) = evalB c₀ x , evalB c₁ y
 
+c2equiv unite₊ = TE.unite₊equiv
+c2equiv uniti₊ = TE.uniti₊equiv
+c2equiv swap₊ = TE.swap₊equiv
+c2equiv assocl₊ = TE.assocl₊equiv
+c2equiv assocr₊ = TE.assocr₊equiv
+c2equiv unite⋆ = TE.unite⋆equiv
+c2equiv uniti⋆ = TE.uniti⋆equiv
+c2equiv swap⋆ = TE.swap⋆equiv
+c2equiv assocl⋆ = TE.assocl⋆equiv
+c2equiv assocr⋆ = TE.assocr⋆equiv
+c2equiv absorbr = TE.distzequiv
+c2equiv absorbl = TE.distzrequiv
+c2equiv factorzr = TE.factorzrequiv
+c2equiv factorzl = TE.factorzequiv
+c2equiv dist = TE.distequiv
+c2equiv factor = TE.factorequiv
+c2equiv id⟷ = TE.idequiv
+c2equiv (c ◎ c₁) = c2equiv c₁ ● c2equiv c
+c2equiv (c ⊕ c₁) = path⊎ (c2equiv c) (c2equiv c₁)
+c2equiv (c ⊗ c₁) = path× (c2equiv c) (c2equiv c₁)
 \end{code}
 }
 \end{frame}
