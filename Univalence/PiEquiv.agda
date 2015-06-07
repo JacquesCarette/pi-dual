@@ -13,7 +13,8 @@ open import TypeEquiv as TE
 open import PiLevel0
 
 ------------------------------------------------------------------------------
--- A combinator t₁ ⟷ t₂ denotes a permutation.
+-- A combinator t₁ ⟷ t₂ denotes an equivalence to types
+-- note how we don't have to look at the types at all.
 
 c2equiv : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
 c2equiv unite₊ = TE.unite₊equiv
