@@ -1460,6 +1460,8 @@ evalB (c₀ ⊗ c₁) (x , y) = evalB c₀ x , evalB c₁ y
 
 \end{code}
 }
+\end{frame}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Questions}
 
