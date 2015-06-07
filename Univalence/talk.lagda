@@ -1633,7 +1633,7 @@ Symmetric Rig Categories.
 \end{theorem}
 \begin{conj}
 The set of coherence rules for Symmetric Rig Groupoids are a sound
-and complete set for circuits.
+and complete set for \textcolor{red}{circuit equivalence}.
 \end{conj}
 \end{frame}
 
