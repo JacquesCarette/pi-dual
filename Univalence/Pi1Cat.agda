@@ -79,7 +79,7 @@ open import PiLevel1
         hexagonr⊕l; hexagonl⊕l; hexagonr⊗l; hexagonl⊗l;
         absorbl⇔l; absorbr⇔l; factorzl⇔l; factorzr⇔l;
         dist⇔; factor⇔; dist′⇔; idl◎r; linv◎r;
-        hom◎⊕⇔)
+        hom◎⊕⇔; factor′⇔)
 
 ------------------------------------------------------------------------------
 -- The equality of morphisms is derived from the coherence conditions
@@ -421,7 +421,27 @@ x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
       let a = f zero in let b = f (suc zero) in let c = f (suc (suc zero)) in
       let x = (a ⊗ b) ⊕ (a ⊗ c) in let y = a ⊗ (b ⊕ c) in
       x ◎ (swap⋆ ⊕ swap⋆) ◎ factor ◎ swap⋆
-        ⇔⟨ {!!} ⟩
+        ⇔⟨ assoc◎l ⟩
+      (x ◎ (swap⋆ ⊕ swap⋆)) ◎ factor ◎ swap⋆
+        ⇔⟨ hom◎⊕⇔ ⊡ id⇔ ⟩
+      (((a ⊗ b) ◎ swap⋆) ⊕ ((a ⊗ c) ◎ swap⋆)) ◎ factor ◎ swap⋆
+        ⇔⟨ (resp⊕⇔ swapr⋆⇔ swapr⋆⇔) ⊡ id⇔ ⟩
+      ((swap⋆ ◎ (b ⊗ a)) ⊕ (swap⋆ ◎ (c ⊗ a))) ◎ factor ◎ swap⋆
+        ⇔⟨ hom⊕◎⇔ ⊡ id⇔ ⟩
+      ((swap⋆ ⊕ swap⋆) ◎ ((b ⊗ a) ⊕ (c ⊗ a))) ◎ factor ◎ swap⋆
+        ⇔⟨ assoc◎l ⟩
+      (((swap⋆ ⊕ swap⋆) ◎ ((b ⊗ a) ⊕ (c ⊗ a))) ◎ factor) ◎ swap⋆
+        ⇔⟨ assoc◎r ⊡ id⇔ ⟩
+      ((swap⋆ ⊕ swap⋆) ◎ ((b ⊗ a) ⊕ (c ⊗ a)) ◎ factor) ◎ swap⋆
+        ⇔⟨ (id⇔ ⊡ factor′⇔) ⊡ id⇔ ⟩
+      ((swap⋆ ⊕ swap⋆) ◎ (factor ◎ ((b ⊕ c) ⊗ a))) ◎ swap⋆
+        ⇔⟨ assoc◎r ⟩
+      (swap⋆ ⊕ swap⋆) ◎ (factor ◎ ((b ⊕ c) ⊗ a)) ◎ swap⋆
+        ⇔⟨ id⇔ ⊡ assoc◎r ⟩
+       (swap⋆ ⊕ swap⋆) ◎ (factor ◎ ((b ⊕ c) ⊗ a) ◎ swap⋆)
+        ⇔⟨ id⇔ ⊡ (id⇔ ⊡ swapr⋆⇔) ⟩
+      (swap⋆ ⊕ swap⋆) ◎ (factor ◎ (swap⋆ ◎ (a ⊗ (b ⊕ c))))
+        ⇔⟨ trans⇔ (id⇔ ⊡ assoc◎l) assoc◎l ⟩
       ((swap⋆ ⊕ swap⋆) ◎ factor ◎ swap⋆) ◎ y ▤
     }
   ; iso = λ X → record
