@@ -340,3 +340,17 @@ dist′⇔ {a = a} {b} {c} =
       dist ◎ ((a ⊗ c) ⊕ (b ⊗ c)) ◎ id⟷
         ⇔⟨ id⇔ ⊡ idr◎l ⟩
       dist ◎ ((a ⊗ c) ⊕ (b ⊗ c)) ▤
+
+factor′⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {a : t₁ ⟷ t₂} {b : t₃ ⟷ t₄} {c : t₅ ⟷ t₆} →
+       ((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor ⇔ factor ◎ ((a ⊕ b) ⊗ c)
+factor′⇔ {a = a} {b} {c} =
+       ((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor
+         ⇔⟨ idl◎r ⟩
+       id⟷ ◎ ((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor
+         ⇔⟨ rinv◎r ⊡ id⇔ ⟩
+       (factor ◎ dist) ◎ ((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor
+         ⇔⟨ assoc◎r ⟩
+       factor ◎ (dist ◎ ((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor)
+         ⇔⟨ id⇔ ⊡ factor⇔ ⟩
+       factor ◎ ((a ⊕ b) ⊗ c) ▤
