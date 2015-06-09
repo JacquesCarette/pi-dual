@@ -471,7 +471,30 @@ x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
       swap⋆ ◎ swap⋆
         ⇔⟨ linv◎l ⟩
       id⟷ ▤
-    ; isoʳ = {!!}
+    ; isoʳ = 
+      ((swap⋆ ⊕ swap⋆) ◎ (factor ◎ swap⋆)) ◎ (swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆))
+        ⇔⟨ assoc◎l ⊡ id⇔ ⟩
+      (((swap⋆ ⊕ swap⋆) ◎ factor) ◎ swap⋆) ◎ (swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆))
+        ⇔⟨ assoc◎r ⟩
+      ((swap⋆ ⊕ swap⋆) ◎ factor) ◎ swap⋆ ◎ swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆)
+        ⇔⟨ id⇔ ⊡ assoc◎l ⟩
+      ((swap⋆ ⊕ swap⋆) ◎ factor) ◎ (swap⋆ ◎ swap⋆) ◎ dist ◎ (swap⋆ ⊕ swap⋆)
+        ⇔⟨ id⇔ ⊡ (linv◎l ⊡ id⇔) ⟩
+      ((swap⋆ ⊕ swap⋆) ◎ factor) ◎ id⟷ ◎ dist ◎ (swap⋆ ⊕ swap⋆)
+        ⇔⟨ id⇔ ⊡ idl◎l ⟩
+      ((swap⋆ ⊕ swap⋆) ◎ factor) ◎ (dist ◎ (swap⋆ ⊕ swap⋆))
+        ⇔⟨ trans⇔ assoc◎r (id⇔ ⊡ assoc◎l) ⟩
+      (swap⋆ ⊕ swap⋆) ◎ (factor ◎ dist) ◎ (swap⋆ ⊕ swap⋆)
+        ⇔⟨ id⇔ ⊡ (linv◎l ⊡ id⇔) ⟩
+      (swap⋆ ⊕ swap⋆) ◎ id⟷ ◎ (swap⋆ ⊕ swap⋆)
+        ⇔⟨ id⇔ ⊡ idl◎l ⟩
+      (swap⋆ ⊕ swap⋆) ◎ (swap⋆ ⊕ swap⋆)
+        ⇔⟨ hom◎⊕⇔ ⟩
+      (swap⋆ ◎ swap⋆) ⊕ (swap⋆ ◎ swap⋆)
+        ⇔⟨ resp⊕⇔ linv◎l linv◎l ⟩
+      id⟷ ⊕ id⟷
+        ⇔⟨ id⟷⊕id⟷⇔ ⟩
+      id⟷ ▤
     }
   }
 
