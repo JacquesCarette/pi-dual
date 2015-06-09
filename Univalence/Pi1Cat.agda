@@ -386,7 +386,7 @@ x⊗0≡0 = record
   }
 
 x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] : NaturalIsomorphism r.x⊗[y⊕z] r.[x⊗y]⊕[x⊗z]
-x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record -- this probably says we need distl/distr
+x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
   { F⇒G = record
     { η = λ X → swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆)
     ; commute = λ f → 
@@ -416,8 +416,43 @@ x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record -- this probably says we need distl/dis
     (swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆)) ◎ ((a ⊗ b) ⊕ (a ⊗ c)) ▤
     }
   ; F⇐G = record
-    { η = λ X → (swap⋆ ⊕ swap⋆) ◎ factor ◎ swap⋆ ; commute = λ f → {!!} }
-  ; iso = λ X → record { isoˡ = {!!} ; isoʳ = {!!} }
+    { η = λ X → (swap⋆ ⊕ swap⋆) ◎ factor ◎ swap⋆
+    ; commute = λ f → 
+      let a = f zero in let b = f (suc zero) in let c = f (suc (suc zero)) in
+      let x = (a ⊗ b) ⊕ (a ⊗ c) in let y = a ⊗ (b ⊕ c) in
+      x ◎ (swap⋆ ⊕ swap⋆) ◎ factor ◎ swap⋆
+        ⇔⟨ {!!} ⟩
+      ((swap⋆ ⊕ swap⋆) ◎ factor ◎ swap⋆) ◎ y ▤
+    }
+  ; iso = λ X → record
+    { isoˡ = 
+      (swap⋆ ◎ (dist ◎ (swap⋆ ⊕ swap⋆))) ◎ ((swap⋆ ⊕ swap⋆) ◎ (factor ◎ swap⋆))
+        ⇔⟨ assoc◎l ⊡ id⇔ ⟩
+      ((swap⋆ ◎ dist) ◎ (swap⋆ ⊕ swap⋆)) ◎ ((swap⋆ ⊕ swap⋆) ◎ (factor ◎ swap⋆))
+        ⇔⟨ assoc◎r ⟩
+      (swap⋆ ◎ dist) ◎ (swap⋆ ⊕ swap⋆) ◎ (swap⋆ ⊕ swap⋆) ◎ factor ◎ swap⋆
+        ⇔⟨ id⇔ ⊡ assoc◎l ⟩
+      (swap⋆ ◎ dist) ◎ ((swap⋆ ⊕ swap⋆) ◎ (swap⋆ ⊕ swap⋆)) ◎ factor ◎ swap⋆
+        ⇔⟨ id⇔ ⊡ (hom◎⊕⇔ ⊡ id⇔) ⟩
+      (swap⋆ ◎ dist) ◎ (swap⋆ ◎ swap⋆ ⊕ swap⋆ ◎ swap⋆) ◎ factor ◎ swap⋆
+        ⇔⟨ id⇔ ⊡ ((resp⊕⇔ linv◎l rinv◎l) ⊡ id⇔) ⟩
+      (swap⋆ ◎ dist) ◎ ((id⟷ ⊕ id⟷) ◎ factor ◎ swap⋆)
+        ⇔⟨ id⇔ ⊡ (id⟷⊕id⟷⇔ ⊡ id⇔) ⟩
+      (swap⋆ ◎ dist) ◎ id⟷ ◎ factor ◎ swap⋆
+        ⇔⟨ id⇔ ⊡ idl◎l ⟩
+      (swap⋆ ◎ dist) ◎ factor ◎ swap⋆
+        ⇔⟨ assoc◎l ⟩
+      ((swap⋆ ◎ dist) ◎ factor) ◎ swap⋆
+        ⇔⟨ assoc◎r ⊡ id⇔ ⟩
+      (swap⋆ ◎ (dist ◎ factor)) ◎ swap⋆
+        ⇔⟨ (id⇔ ⊡ linv◎l) ⊡ id⇔ ⟩
+      (swap⋆ ◎ id⟷) ◎ swap⋆
+        ⇔⟨ idr◎l ⊡ id⇔ ⟩
+      swap⋆ ◎ swap⋆
+        ⇔⟨ linv◎l ⟩
+      id⟷ ▤
+    ; isoʳ = {!!}
+    }
   }
 
 [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] : NaturalIsomorphism r.[x⊕y]⊗z r.[x⊗z]⊕[y⊗z]
