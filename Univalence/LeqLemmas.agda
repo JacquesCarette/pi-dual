@@ -23,8 +23,8 @@ open import Data.Fin.Properties using (bounded; to-from)
 _<?_ : Decidable _<_
 i <? j = suc i ≤? j
 
+{-
 -- buried in Data.Nat
-
 refl′ : _≡_ ⇒ _≤_
 refl′ {0} refl = z≤n
 refl′ {suc m} refl = s≤s (refl′ refl)
@@ -64,6 +64,7 @@ i≤j+i {i} {suc j} =
            ≤⟨ i≤si (j + i) ⟩
          suc j + i ∎)
   where open ≤-Reasoning
+-}
 
 cong+r≤ : ∀ {i j} → i ≤ j → (k : ℕ) → i + k ≤ j + k
 cong+r≤ {0}     {j}     z≤n       k = n≤m+n j k
@@ -86,13 +87,14 @@ cong*r≤ {0}     {j}     z≤n       k = z≤n
 cong*r≤ {suc i} {0}     ()        k -- absurd
 cong*r≤ {suc i} {suc j} (s≤s i≤j) k = cong+l≤ (cong*r≤ i≤j k) k 
 
-sinj : ∀ {i j} → suc i ≡ suc j → i ≡ j
-sinj = cong (λ { 0 → 0 ; (suc x) → x })
-
 sinj≤ : ∀ {i j} → suc i ≤ suc j → i ≤ j
 sinj≤ {0}     {j}     _        = z≤n
 sinj≤ {suc i} {0}     (s≤s ()) -- absurd
 sinj≤ {suc i} {suc j} (s≤s p)  = p
+
+{-
+sinj : ∀ {i j} → suc i ≡ suc j → i ≡ j
+sinj = cong (λ { 0 → 0 ; (suc x) → x })
 
 i*n+n≤sucm*n : ∀ {m n} → (i : Fin (suc m)) → toℕ i * n + n ≤ suc m * n
 i*n+n≤sucm*n {0} {n} zero =
@@ -152,6 +154,7 @@ cancel-Fin (suc n) y z pf =
 ≤-proof-irrelevance z≤n z≤n = refl
 ≤-proof-irrelevance (s≤s p) (s≤s q) = cong s≤s (≤-proof-irrelevance p q)
 
+
 raise-suc' : (n a b n+a : ℕ) (n+a≡ : n+a ≡ n + a) → 
   (leq : suc a ≤ b) → 
   (leq' : suc n+a ≤ n + b) → 
@@ -180,3 +183,4 @@ raise-suc m n j d leq leq' =
     leq
     leq'
   where open ≡-Reasoning
+-}
