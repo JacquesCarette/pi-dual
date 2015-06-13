@@ -221,7 +221,7 @@ distzrequiv {A} =
 factorzrequiv : {A : Set} → ⊥ ≃ (A × ⊥)
 factorzrequiv {A} = sym≃ distzrequiv
 
--- dist and factor
+-- dist and factor, on right
 
 dist : {A B C : Set} → ((A ⊎ B) × C) → (A × C) ⊎ (B × C)
 dist (inj₁ x , c) = inj₁ (x , c)
@@ -244,6 +244,30 @@ distequiv = dist , mkqinv factor dist∘factor factor∘dist
 
 factorequiv : {A B C : Set} →  ((A × C) ⊎ (B × C)) ≃ ((A ⊎ B) × C)
 factorequiv = factor , (mkqinv dist factor∘dist dist∘factor)
+
+-- dist and factor, on left
+
+distl : {A B C : Set} → A × (B ⊎ C) → (A × B) ⊎ (A × C)
+distl (x , inj₁ x₁) = inj₁ (x , x₁)
+distl (x , inj₂ y) = inj₂ (x , y)
+
+factorl : {A B C : Set} → (A × B) ⊎ (A × C) → A × (B ⊎ C)
+factorl (inj₁ (x , y)) = x , inj₁ y
+factorl (inj₂ (x , y)) = x , inj₂ y
+
+distl∘factorl : {A B C : Set} → distl {A} {B} {C} ○ factorl ∼ id
+distl∘factorl (inj₁ (x , y)) = refl
+distl∘factorl (inj₂ (x , y)) = refl
+
+factorl∘distl : {A B C : Set} → factorl {A} {B} {C} ○ distl ∼ id
+factorl∘distl (a , inj₁ x) = refl
+factorl∘distl (a , inj₂ y) = refl
+
+distlequiv : {A B C : Set} → (A × (B ⊎ C)) ≃ ((A × B) ⊎ (A × C))
+distlequiv = distl , (mkqinv factorl distl∘factorl factorl∘distl)
+
+factorlequiv : {A B C : Set} → ((A × B) ⊎ (A × C)) ≃ (A × (B ⊎ C))
+factorlequiv = sym≃ distlequiv
 
 -- identity equivalence 
 
