@@ -35,7 +35,7 @@ open import PiLevel0 using (U; _⟷_; id⟷; _◎_; !;
   PLUS; _⊕_; ZERO; unite₊; uniti₊; swap₊; assocr₊; assocl₊;
   TIMES; _⊗_; ONE; unite⋆; uniti⋆; swap⋆; assocr⋆; assocl⋆;
   absorbl; absorbr; factorzl; factorzr;
-  dist; factor)
+  dist; factor; distl; factorl)
 
 ------------------------------------------------------------------------------
 -- Trivial equivalence; equates all morphisms of the same type so for
@@ -231,7 +231,7 @@ SBM⊕ = record { symmetry = tt }
 SBM⊗ : Symmetric BM⊗
 SBM⊗ = record { symmetry = tt }
 
-module r = BimonoidalHelperFunctors SBM⊕ BM⊗
+module r = BimonoidalHelperFunctors BM⊕ BM⊗
 
 x⊗0≡0 : NaturalIsomorphism r.x⊗0 r.0↑
 x⊗0≡0 = record 
@@ -249,8 +249,8 @@ x⊗0≡0 = record
 
 x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] : NaturalIsomorphism r.x⊗[y⊕z] r.[x⊗y]⊕[x⊗z]
 x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record -- this probably says we need distl/distr
-  { F⇒G = record { η = λ X → swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆) ; commute = λ f → tt }
-  ; F⇐G = record { η = λ X → (swap⋆ ⊕ swap⋆) ◎ factor ◎ swap⋆ ; commute = λ f → tt }
+  { F⇒G = record { η = λ X → distl ; commute = λ f → tt }
+  ; F⇐G = record { η = λ X → factorl ; commute = λ f → tt }
   ; iso = λ X → record { isoˡ = tt ; isoʳ = tt }
   }
 
@@ -261,12 +261,14 @@ x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record -- this probably says we need distl/dis
   ; iso = λ X → record { isoˡ = tt ; isoʳ = tt }
   }
 
-Pi0Rig : RigCategory SBM⊕ BM⊗
+Pi0Rig : RigCategory SBM⊕ SBM⊗
 Pi0Rig = record 
   { distribₗ = x⊗[y⊕z]≡[x⊗y]⊕[x⊗z]
   ; distribᵣ = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] 
   ; annₗ = x⊗0≡0 
-  ; annᵣ = 0⊗x≡0 
+  ; annᵣ = 0⊗x≡0
+  ; laplazaI = tt
+  ; laplazaII = tt
   }
 ------------------------------------------------------------------------------
 
