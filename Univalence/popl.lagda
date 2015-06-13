@@ -115,7 +115,11 @@ $\displaystyle
 \maketitle
 
 \begin{abstract}
-...
+We show how a typed set of combinators for reversible computations,
+corresponding exactly to the semiring of permutations, is a convenient
+basis for representing and manipulating reversible circuits.  A
+categorical interpretation also leads to optimization combinators, and
+we demonstrate their utility through an example.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1577,6 +1581,449 @@ Symmetric Rig Categories.
 The set of coherence rules for Symmetric Rig Groupoids are a sound
 and complete set for \textcolor{red}{circuit equivalence}.
 \end{conj}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Emails}
+
+\begin{verbatim}
+Reminder of
+http://mathoverflow.net/questions/106070/int-construction-traced-monoidal-categories-and-grothendieck-group
+
+Also,
+http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.163.334
+seems relevant
+
+Indeed, this does not seem to be in the library.
+
+On 2015-04-10 10:52 AM, Amr Sabry wrote:
+I had checked and found no traced categories or Int constructions in the categories library. I'll think about that and see how best to proceed.
+
+The story without trace and without the Int construction is boring as a PL story but not hopeless from a more general perspective. --Amr
+
+On 04/10/2015 09:06 AM, Jacques Carette wrote:
+I don't know, that a "symmetric rig" (never mind higher up) is a
+programming language, even if only for "straight line programs" is
+interesting! ;)
+
+But it really does depend on the venue you'd like to send this to.  If
+POPL, then I agree, we need the Int construction.  The more generic that
+can be made, the better.
+
+It might be in 'categories' already!  Have you looked?
+
+In the meantime, I will try to finish the Rig part.  Those coherence
+conditions are non-trivial.
+Jacques
+
+On 2015-04-10, 06:06 , Sabry, Amr A. wrote:
+I am thinking that our story can only be compelling if we have a hint
+that h.o. functions might work. We can make that case by “just”
+implementing the Int Construction and showing that a limited notion of
+h.o. functions emerges and leave the big open problem of high to get
+the multiplication etc. for later work. I can start working on that:
+will require adding traced categories and then a generic Int
+Construction in the categories library. What do you think? —Amr
+
+On Apr 9, 2015, at 10:59 PM, Jacques Carette <carette@mcmaster.ca>
+wrote:
+
+I have the braiding, and symmetric structures done.  Most of the
+RigCategory as well, but very close.
+
+Of course, we're still missing the coherence conditions for Rig.
+
+Jacques
+
+On 2015-04-09 11:41 AM, Sabry, Amr A. wrote:
+Can you make sense of how this relates to us?
+
+https://pigworker.wordpress.com/2015/04/01/warming-up-to-homotopy-type-theory/
+
+Unfortunately not.  Yes, there is a general feeling of relatedness, but I can't pin it down.
+
+I do believe that all our terms have computational rules, so we can't get stuck.
+
+Note that at level 1, we have equivalences between Perm(A,B) and Perm(A,B), not Perm(C,D) [look at the signature of <=>]. That said, we can probably use a combination of levels 0 and 1 to get there.
+
+Yes, we should dig into the Licata/Harper work and adapt to our setting.
+
+Though I think we have some short-term work that we simply need to do to ensure our work will rest on a solid basis.  If that crumbles, all the rest of the edifice will too.
+
+Jacques
+
+On 2015-04-09 12:05 PM, Amr Sabry wrote:
+Trying to get a handle on what we can transport or more precisely if we can transport things that HoTT can only do with univalence.
+
+(I use permutation for level 0 to avoid too many uses of 'equivalence' which gets confusing.)
+
+Level 0: Given two types A and B, if we have a permutation between them then we can transport something of type P(A) to something of type P(B).
+
+For example: take P = . + C; we can build a permutation between A+C and B+C from the given permutation between A and B
+
+-- 
+
+Level 1: Given types A, B, C, and D. let Perm(A,B) be the type of permutations between A and B and Perm(C,D) be the type of permutations between C and D. If we have a 2d-path between Perm(A,B) and Perm(C,D) then we can transport something of type P(Perm(A,B)) to something of type P(Perm(C,D)).
+
+This is more interesting. What's a good example though of a property P that we can implement?
+
+In think that in HoTT the only way to do this transport is via univalence. First you find an equivalence between the spaces of permutations, then you use univalence to postulate the existence of a path, and then you transport along that path. Is that right?
+
+In HoTT this is exhibited by the failure of canonicity: closed terms that are stuck. We can't get closed terms that are stuck: we don't have any axioms with no computational rules, right?
+
+Perhaps we can adapt the discussion/example in http://homotopytypetheory.org/2011/07/27/canonicity-for-2-dimensional-type-theory/ to our setting and build something executable?
+
+--Amr
+
+I hope not! [only partly joking]
+
+Actually, there is a fair bit about this that I dislike: it seems to over-simplify by arbitrarily saying some things are equal when they are not.  They might be equivalent, but not equal.
+
+On 2015-04-09 12:36 PM, Amr Sabry wrote:
+This came up in a different context but looks like it might be useful to us too.
+
+http://arxiv.org/pdf/gr-qc/9905020
+
+Separate.  The Grothendieck construction in this case is about fibrations, and is not actually related to the "Grothendieck Group" construction, which is related to the Int construction.
+
+Jacques
+
+On 2015-04-10 11:56 AM, Sabry, Amr A. wrote:
+Yes. The categories library has a Grothendieck construction. Not sure if we can use that or if we need to define a separate Int construction? —Amr
+
+On Apr 10, 2015, at 11:04 AM, Jacques Carette <carette@mcmaster.ca> wrote:
+
+Reminder of
+http://mathoverflow.net/questions/106070/int-construction-traced-monoidal-categories-and-grothendieck-group
+
+Also,
+http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.163.334
+seems relevant
+
+Indeed, this does not seem to be in the library.
+
+On 2015-04-10 10:52 AM, Amr Sabry wrote:
+I had checked and found no traced categories or Int constructions in the categories library. I'll think about that and see how best to proceed.
+
+The story without trace and without the Int construction is boring as a PL story but not hopeless from a more general perspective. --Amr
+
+On 04/10/2015 09:06 AM, Jacques Carette wrote:
+I don't know, that a "symmetric rig" (never mind higher up) is a
+programming language, even if only for "straight line programs" is
+interesting! ;)
+
+But it really does depend on the venue you'd like to send this to.  If
+POPL, then I agree, we need the Int construction.  The more generic that
+can be made, the better.
+
+It might be in 'categories' already!  Have you looked?
+
+In the meantime, I will try to finish the Rig part.  Those coherence
+conditions are non-trivial.
+Jacques
+
+On 2015-04-10, 06:06 , Sabry, Amr A. wrote:
+I am thinking that our story can only be compelling if we have a hint
+that h.o. functions might work. We can make that case by “just”
+implementing the Int Construction and showing that a limited notion of
+h.o. functions emerges and leave the big open problem of high to get
+the multiplication etc. for later work. I can start working on that:
+will require adding traced categories and then a generic Int
+Construction in the categories library. What do you think? —Amr
+
+On Apr 9, 2015, at 10:59 PM, Jacques Carette <carette@mcmaster.ca>
+wrote:
+
+I have the braiding, and symmetric structures done.  Most of the
+RigCategory as well, but very close.
+
+Of course, we're still missing the coherence conditions for Rig.
+
+Jacques
+
+solutions to quintic equations proof by arnold is all about hott… paths and higher degree path etc.
+
+I thought we'd gotten at least one version, but could never prove it sound or complete.
+
+On 2015-04-25 8:37 AM, Sabry, Amr A. wrote:
+Didn’t we get stuck in the reverse direction. We never had it fully, or am I misremembering? —Amr
+
+On Apr 25, 2015, at 8:27 AM, Jacques Carette <carette@mcmaster.ca> wrote:
+
+Right.  We have one direction, from Pi combinators to FinVec permutations -- c2perm in PiPerm.agda.
+
+Note that quite a bit of the code has (already!!) bit-rotted.  I changed the definition of PiLevel0 to make the categorical structure better, and that broke many things.  I am in the process of fixing -- which means introducing combinators all the way back in FinEquiv!!!  I split the 0 absorption laws into a right and left law, and so have to do the right version; turns out they are non-trivial, because Agda only reduces the left law for free. Should be done this morning.
+
+We do not have the other direction currently in the code.  That may not be too bad, as we do have LeftCancellation to allow us to define things by recursion.
+
+Jacques
+
+On 2015-04-25 7:28 AM, Sabry, Amr A. wrote:
+That’s obsolete for now.
+
+By the way, do we have a complement to thm2 that connects to Pi. Ideally what we want to say is what I started writing: thm2 gives us a semantic bridge between equivalences and FinVec permutations; we also need a bridge between FinVec permutations and Pi combinators, right? —Amr
+
+
+On Apr 24, 2015, at 5:25 PM, Jacques Carette <carette@mcmaster.ca> wrote:
+
+Is that going somewhere, or is it an experiment that should be put into Obsolete/ ?
+Jacques
+
+Thanks.  I like that idea ;).
+
+I have a bunch of things I need to do, so I won't really put my head into this until the weekend.
+
+I understand the desire to not want to rely on the full coherence conditions.  I also don't know how to really understand them until we've implemented all of them, and see what they actually say!
+
+As I was trying really hard to come up with a single story, I am a little confused as to what "my" story seems to be...  Can you give me your best recollection of what I seem to be pushing, and how that is different?  Then I would gladly flesh it out for us to do a second paper on that.
+
+On 2015-04-23 9:07 PM, Sabry, Amr A. wrote:
+Instead of discussing this over and over, I think it is clear that thm2 will be an important part of any story we will tell. So I think what I am going to start doing is to write an explanation of thm2 in a way that would be usable in a paper. —Amr
+
+On Apr 23, 2015, at 6:07 PM, Amr Sabry <sabry@indiana.edu> wrote:
+
+I wasn't too worried about the symmetric vs. non-symmetric notion of equivalence. The HoTT book has various equivalent definitions of equivalence and the one below is one of them.
+
+I do recall the other discussion about extensionality. That discussion concluded with the idea that the strongest statement that can be made is that HoTT equivalence between finite *enumerated* types is equivalent to Vec-based permutations. This is thm2 and it is essentially univalence as we noted earlier. My concern however is what happens at the next level: once we start talking about equivalences between equivalences. We should be to use thm2 to say that this the same as talking about equivalences between Vec-based permutations, which as you noted earlier is equivalence of categories.
+
+I just really want to avoid the full reliance on the coherence conditions. I also noted you have a different story and I am willing to go along with your story if you sketch a paper outline for say one of the conferences/workshops at http://cstheory.stackexchange.com/questions/7900/list-of-tcs-conferences-and-workshops
+
+--Amr
+
+On 04/23/2015 12:23 PM, Jacques Carette wrote:
+Did you see my "HoTT-agda" question on the Agda mailing list on March
+11th, and Dan Licata's reply?
+
+What you wrote reduces to our definition of *equivalence*, not
+permutation.  To prove that equivalence, we would need funext -- see my
+question of February 18th on the Agda mailing list.
+
+Another way to think about it is that this is EXACTLY what thm2
+provides: a proof that for finite A and B, equivalence between A and B
+(as below) is equivalent to permutations implemented as (Vect, Vect, pf,
+pf).
+
+Now, we may want another representation of permutations which uses
+functions (qua bijections) internally instead of vectors.  Then the
+answer to your question would be "yes", modulo the question/answer about
+which encoding of equivalence to use.
+
+Jacques
+
+On 2015-04-23 10:32 AM, Sabry, Amr A. wrote:
+Thought a bit more about this. We need a little bridge from HoTT to
+our code and we’re good to go I think.
+
+In HoTT we have several notions of equivalence that are equivalent (in
+the technical sense). The one that seems easiest to work with is the
+following:
+
+A ≃ B if exists f : A → B such that:
+  (exists g : B → A with g o f ~ idA) X
+  (exists h : B → A with f o h ~ idB)
+
+Does this definition reduce to our semantic notion of permutation if A
+and B are finite sets?
+
+—Amr
+
+
+On Apr 21, 2015, at 11:03 AM, Jacques Carette <carette@mcmaster.ca>
+wrote:
+
+I'm ok with a HoTT bias, but concerned that our code does not really
+match that.  But since we have no specific deadline, I guess taking a
+bit more time isn't too bad.
+
+Since propositional equivalence is really HoTT equivalence too, then
+I am not too concerned about that side of things -- our concrete
+permutations should be the same whether in HoTT or in raw Agda.  Same
+with various notions of equivalence, especially since most of the
+code was lifted from a previous HoTT-based attempt at things.
+
+I would certainly agree with the not-not-statement: using a notion of
+equivalence known to be incompatible with HoTT is not a good idea.
+
+Jacques
+
+On 2015-04-21 10:38 AM, Sabry, Amr A. wrote:
+I think that I should start trying to write down a more technical
+story so that we can see how things fit together. I am biased
+towards a HoTT-related story which is what I started. If you think
+we should have a different initial bias let me know.
+
+What is there is just one paragraph for now but it already opens a
+question: if we are pursuing that HoTT story we should be able to
+prove that the HoTT notion of equivalence when specialized to finite
+types reduces to permutations. That should be a strong foundation to
+the rest and the precise notion of permutation we get (parameterized
+by enumerations or not should help quite a bit).
+
+More generally always keeping our notions of equivalences (at higher
+levels too) in sync with the HoTT definitions seems to be a good
+thing to do. —Amr
+
+... and if these coherence conditions are really complete then it should be the case the two pi-combinators are equal iff their canonical forms are identical.
+
+So to sum up we would get a nice language for expressing equivalences between finite types and a normalization process that transforms each equivalence to a canonical form. The latter yield a simple decision procedure for comparing equivalences.
+
+--Amr
+
+On 04/27/2015 06:16 AM, Sabry, Amr A. wrote:
+Here is a nice idea: we need a canonical form for every pi-combinator. Our previous approach gave us something but it was hard to work with. I think we can use the coherence conditions to reach a canonical form by simply picking a convention that chooses one side of every commuting diagram. What do you think? —Amr
+
+Indeed!  Good idea.
+
+However, it may not give us a normal form.  This is because quite a few 'simplifications' require to use 'the other' side of a commuting diagram first, to expose a combination which simplifies.  Think (x . y^-1) . (y . z)  ~~ x . z.
+
+In other words, because we have associativity and commutativity, we need to deal with those specially.  Diagram with sides not all the same length are easy to deal with.
+
+However, I think it is not that bad: we can use the objects to help.  We also had put the objects [aka types] in normal form before (i.e. 1 + (1 + (1 + ... )))) ).  The good thing about that is that there are very few pi-combinators which preserve that shape, so those ought to be the only ones to worry about?  We did get ourselves in the mess there too, so I am not sure that's right either!
+
+Here is another thought:
+1. think of the combinators as polynomials in 3 operators, +, * and . (composition).
+2. expand things out, with + being outer, * middle, . inner.
+3. within each . term, use combinators to re-order things [we would need to pick a canonical order for all single combinators]
+4. show this terminates
+
+the issue is that the re-ordering could produce new * and/or + terms.  But with a well-crafted term order, I think this could be shown terminating.
+
+Jacques
+
+On 2015-04-27 6:16 AM, Sabry, Amr A. wrote:
+Here is a nice idea: we need a canonical form for every pi-combinator. Our previous approach gave us something but it was hard to work with. I think we can use the coherence conditions to reach a canonical form by simply picking a convention that chooses one side of every commuting diagram. What do you think? —Amr
+
+I've been thinking about this some more.  I can't help but think that, somehow, Laplaza has already worked that out, and that is what is actually in the 2nd half of his 1972 paper!  [Well, that Rig-Category 'terms' have a canonical form, but that's what we need]
+
+Pi-combinators might be simpler, I don't know.
+
+Another place to look is in Fiore (et al?)'s proof of completeness of a similar case.  Again, in their details might be our answer.
+
+On 2015-04-26 6:34 AM, Sabry, Amr A. wrote:
+What’s the proof strategy for establishing that a CPerm implies a Pi-combinator. The original idea was to translate each CPerm to a canonical Pi-combinator and then show that every combinator is equal to its canonical representative. Is that still the high-level idea? —Amr
+
+Well enough.  Last talk on the last day, so people are tired.  Doubt we've caused a revolution in reversible computing...  Though when I mentioned that the slides were literate Agda, Peter Selinger made a point of emphasizing what that meant.
+
+I think the idea that (reversible circuits == proof terms) is just a little too wild for it to sink in quickly.  Same with the idea of creating a syntactic language (i.e. Pi) out of the semantic structure of the desired denotational semantics (i.e. permutations).  People understood, I think, but it might be too much to really 'get'.
+
+If we had a similar story for Caley+T (as they like to call it), it might have made a bigger splash.  But we should finish what we have first.
+
+Note that I've pushed quite a few things forward in the code.  Most are quite straightforward, but they help explain what we are doing, and the relation between some of the pieces.  Ideally, there would be more of those easy ones [i.e. that evaluation is the same as the action of an equivalence which in turn is the same as the action of a permutation].  These are all 'extensional' in nature, but still an important sanity check.
+
+Yes, I think this can make a full paper -- especially once we finish those conjectures.  It depends a little bit on which audience we would want to pitch it to.
+
+I think the details are fine.  A little bit of polishing is probably all that's left to do.  Some of the transitions between topics might be a little abrupt.  And we need to reinforce the message of "semantics drive the syntax + syntactic theory is good", which is there, but a bit lost in the sea of details.  And the 'optimizing circuits' aspect could also be punched up a bit.
+
+Writing it up actually forced me to add PiEquiv.agda to the repository -- which is trivial (now), but definitely adds to the story.  I think there might be some easy theorems relating PiLevel0 as a programming language, the action of equivalences, and the action of permutations.  In other words, we could get that all 3 are the same 'extensionally' fairly easily.  What we are still missing is a way to go back from either an equivalence or a permutation to a syntactic combinator.
+
+Firstly, thanks Spencer for setting this up.
+
+This is partly a response to Amr, and partly my own take on (computing with) graphical languages for monoidal categories.
+
+One of the key ingredients to getting diagrammatic languages to do work for you is to actually take the diagrams seriously. String diagrams now have very strong coherence theorems which state that an equation holds by the axioms of (various kinds of) monoidal categories if and only if the diagrams are equal. The most notable of these are the theorems of Joyal & Street in Geometry of Tensor Calculus for monoidal, symmetric monoidal, and braided monoidal categories.
+
+If you ignore these theorems and insist on working with the syntax of monoidal categories (rather than directly with diagrams), things become, as you put it "very painful".
+
+Of course, when it comes to computing with diagrams, the first thing you have to make precise is exactly what you mean by "diagram". In Joyal & Street's picture, this literally a geometric object, i.e. some points and lines in space. This works very well, and pretty much exactly formalises what happens when you do a pen-and-paper proof involving string diagrams. However, when it comes to mechanising proofs, you need some way to represent a string diagram as a data structure of some kind. From here, there seem to be a few approaches:
+
+(1: combinatoric) its a graph with some extra bells and whistles
+(2: syntactic) its a convenient way of writing down some kind of term
+(3: "lego" style) its a collection of tiles, connected together on a 2D plane
+
+Point of view (1) is basically what Quantomatic is built on. "String graphs" aka "open-graphs" give a combinatoric way of working with string diagrams, which is sound and complete with respect to (traced) symmetric monoidal categories. See arXiv:1011.4114 for details of how we did this.
+
+Naiively, point of view (2) is that a diagram represents an equivalence class of expressions in the syntax of a monoidal category, which is basically back to where we started. However, there are more convenient syntaxes, which are much closer in spirit to the diagrams. Lately, we've had a lot of success in connected with abstract tensor notation, which came from Penrose. See g. arXiv:1308.3586 and arXiv:1412.8552.
+
+Point of view (3) is the one espoused by the 2D/higher-dimensional rewriting people (e.g. Yves Lafont and Samuel Mimram). It is also (very entertainingly) used in Pawel Sobocinski's blog: http://graphicallinearalgebra.net .
+
+This eliminates the need for the interchange law, but keeps pretty much everything else "rigid". This benefits from being able to consider more general categories, but is less well-behaved from the point of view of rewriting. For example as Lafont/Mimram point out, even finite rewrite systems can generate infinite sets of critical pairs.
+
+This is a very good example of CCT. As I am sure that you and others on the list (e.g., Duncan Ross) know monoidal cats have been suggested for quantum mechanics, they are closely related to Petri nets, linear logic, and other “net-based” computational systems. There is considerable work on graphic syntax.  It would be interesting to know more details on your cats and how you formalize them.
+ 
+My primary CCT interest, so far, has been with what I call computational toposes. This is a slight strengthening of an elementary topos to make subobject classification work in a computational setting. This is very parallel to what you are doing, but aimed at engineering modeling. The corresponding graphical syntax is an enriched SysML syntax. SysML is a dialect of UML. These toposes can be used to provide a formal semantics for engineering modeling.
+
+There's also the perspective that string diagrams of various flavors are morphisms in some operad (the composition law of which allows you to nest morphisms inside of morphisms). 
+
+From that perspective, the string diagrams for traced monoidal categories are little more than just bijections between sets. This idea, and its connection to rewriting (finding normal forms for morphisms in a traced or compact category), is something Jason Morton and I have been working on recently.
+
+Yes, I am sure this observation has been made before.  We'd have to verify it for all the 2-paths before we really claim this.
+
+[And since monoidal categories are involved in knot theory, this is un-surprising from that angle as well]
+
+On 2015-06-02 7:53 PM, Sabry, Amr A. wrote:
+looking at that 2path picture… if these were physical wires and boxes, we could twist the wires, flipping the c1-c2 box and having them cross on the other side. So really as we have noted before I am sure, these 2paths are homotopies in the sense of smooth transformations between paths. Not sure what to do with this observation at this point but I thought it is worth noting. —Amr
+
+There are some slightly different approaches to implementing a category as a computational system which make more intrinsic use of logic, than the ones mentioned by Aleks.  As well there is a different take on the relationship of graphical languages to the category implementation.
+
+A category can be formalized as a kind of elementary axiom system using a language with two sorts, map and type (object), with equality for each sort.  The signature contain the function symbols,  Domain and Range. The arguments of both are a map and whose value is a type. The abbreviation
+
+                f:X to Y equiv Domain(f) = X and Range(f) = Y
+
+is used for the three place predicate. 
+
+The operations such as the binary composition of maps are represented as first order function symbols. Of course the function constructions are not interpreted as total functions in the standard first order model theory. So, for example, one has axioms such as the typing condition
+
+f:Z to Y, g:Y to X implies g(f):Z to X
+
+A function symbol that always produces a map with a unique domain and range type, as a function of the arguments, is called a constructor. For example, id(X) is a constructor with a type argument.  This same kind of logic can be used to present linear logics.
+
+For most of the systems that I have looked at the axioms are often “ rules”, such as the category axioms. Sometimes one needs axioms which have rules as consequences.  One can use standard first order inference together with rewrite technology to compute.  The axioms for a category imply that the terms generate a directed graph. Additional axioms provide congruence relations on the graph.
+
+A morphism of an axiom set using constructors is a functor.  When the axioms include products and powers,  the functors map to sets, this yields is a form of Henkin semantics. Thus, while it is not standard first order model theory, is well-known.  For other kinds of axiom systems a natural semantics might be Hilbert spaces.
+
+With this representation of a category using axioms in the “constructor” logic, the axioms and their theory serve as a kind of abstract syntax.  The constructor logic approach provides standardization for categories which can be given axioms in this logic.  Different axiom sets can be viewed as belonging to different profiles. The logic representation is independent of any particular graphical syntax. A graphical syntax would, of course have to interpret that axioms correctly.  Possibly the Joyal and Street theorems can be interpreted as proving the graphical representation map is a structure preserving functor. Possibly the requirements for a complete graphical syntax is that it is an invertible functor.
+
+'m writing you offline for the moment, just to see whether I am understanding what you would like. In short, I guess you want a principled understanding of where the coherence conditions come from, from the perspective of general 2-category theory perhaps (a la work of the Australian school headed by Kelly in the 1970's). 
+
+We are in some sense categorifying the notion of "commutative rig". The role of commutative monoid is categorified by symmetric monoidal category, which roughly is the next notion past commutative monoid in the stable range on the periodic table. 
+
+I believe there is a canonical candidate for the categorification of tensor product of commutative monoids. In other words, given symmetric monoidal categories A, B, C, the (symmetric monoidal) category of functors A x B --> C that are strong symmetric monoidal in separate arguments should be equivalent to the (sm) category of strong symmetric monoidal functors A \otimes B --> C, for this canonical tensor product A \otimes B. Actually, I don't think we absolutely need this construction -- we could phrase everything in terms of "multilinear" (i.e. multi-(strong sm)) functors A_1 x ... x A_n --> B, but it seems a convenience worth taking advantage of. In fact, let me give this tensor product a more neutral name -- I'll write @, and I for the tensor unit -- because I'll want to reserve \otimes for something else (consistent with Laplaza's notation). 
+
+If S is the 2-category of symmetric monoidal categories, strong symmetric monoidal functors, and monoidal natural transformations, then this @ should endow S with a structure of (symmetric) monoidal 2-category, with some other pleasant properties (such as S's being symmetric monoidal closed in the appropriate 2-categorical sense). All of these facts should be deducible on abstract grounds, by categorifying the notion of commutative monad (such as the free commutative monoid monad on Set) to an appropriate categorification to commutative 2-monad on Cat, and categorifying the work of Kock on commutative monads. 
+
+In any symmetric monoidal 2-category, we have a notion of "pseudo-commutative pseudomonoid", which generalizes the notion of symmetric monoidal category in the special case of the monoidal 2-category (Cat, x). Anyhow, if (C, \oplus, N) is a symmetric monoidal category, then I my guess (I've checked some but not all details) is that a symmetric rig category is precisely a pseudo-commutative pseudomonoid object 
+
+(\otimes: C @ C --> C, U: I --> C, etc.) 
+
+in (S, @). I would consider this is a reasonable description stemming from general 2-categorical principles and concepts. 
+
+Would this type of thing satisfy your purposes, or are you looking for something else? 
+
+Quite related indeed.  But much more ad hoc, it seems [which they acknowledge].
+Jacques
+
+On 2015-05-17 8:01 AM, Sabry, Amr A. wrote:
+Something closer to our work http://www.informatik.uni-bremen.de/agra/doc/konf/rc15_ricercar.pdf
+
+—Amr
+
+More related work (as I encountered them, but later stuff might be more important):
+
+Diagram Rewriting and Operads, Yves Lafont
+http://iml.univ-mrs.fr/~lafont/pub/diagrams.pdf
+
+A Homotopical Completion Procedure with Applications to Coherence of Monoids
+http://drops.dagstuhl.de/opus/frontdoor.php?source_opus=4064
+
+A really nice set of slides that illustrates both of the above
+http://www.lix.polytechnique.fr/Labo/Samuel.Mimram/docs/mimram_kbs.pdf
+
+I think there is something very important going on in section 7 of 
+http://comp.mq.edu.au/~rgarner/Papers/Glynn.pdf
+which I also attach.  [I googled 'Knuth Bendix coherence' and these all came up]
+
+There are also seems to be relevant stuff buried (very deep!) in chapter 13 of Amadio-Curiens' Domains and Lambda Calculi.
+
+Also, Tarmo Uustalu's "Coherence for skew-monoidal categories", available on http://cs.ioc.ee/~tarmo/papers/
+
+[Apparently I could have saved myself some of that searching time by going to http://ncatlab.org/nlab/show/rewriting !  At the bottom, the preprint by Mimram seems very relevant as well]
+
+Somehow, at the end of the day, it seems we're looking for a confluent, terminating term-rewriting system for commutative semirings terms!
+
+
+\end{verbatim}
+
+\includegraphics{IMAG0342.jpg}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
