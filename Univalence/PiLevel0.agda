@@ -27,6 +27,8 @@ open import Data.Unit    using (⊤; tt)
 open import Data.Sum     using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
+open import FinNatLemmas using (distribˡ-*-+)
+
 ------------------------------------------------------------------------------
 -- Level 0 of Pi
 --
@@ -104,9 +106,13 @@ data _⟷_ : U → U → Set where
   factorzr : {t : U} → ZERO ⟷ TIMES t ZERO
   factorzl : {t : U} → ZERO ⟷ TIMES ZERO t
   dist    : {t₁ t₂ t₃ : U} → 
-            TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) 
+            TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃)
   factor  : {t₁ t₂ t₃ : U} → 
             PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
+  distl   : {t₁ t₂ t₃ : U } →
+            TIMES t₁ (PLUS t₂ t₃) ⟷ PLUS (TIMES t₁ t₂) (TIMES t₁ t₃)
+  factorl : {t₁ t₂ t₃ : U } →
+            PLUS (TIMES t₁ t₂) (TIMES t₁ t₃) ⟷ TIMES t₁ (PLUS t₂ t₃)
   id⟷    : {t : U} → t ⟷ t
   _◎_     : {t₁ t₂ t₃ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
   _⊕_     : {t₁ t₂ t₃ t₄ : U} → 
@@ -166,6 +172,10 @@ eval dist (inj₁ v₁ , v₃) = inj₁ (v₁ , v₃)
 eval dist (inj₂ v₂ , v₃) = inj₂ (v₂ , v₃)
 eval factor (inj₁ (v₁ , v₃)) = (inj₁ v₁ , v₃)
 eval factor (inj₂ (v₂ , v₃)) = (inj₂ v₂ , v₃)
+eval distl (v , inj₁ x) = inj₁ (v , x)
+eval distl (v , inj₂ y) = inj₂ (v , y)
+eval factorl (inj₁ (x , y)) = x , inj₁ y
+eval factorl (inj₂ (x , y)) = x , inj₂ y
 eval id⟷ v = v
 eval (c₁ ◎ c₂) v = eval c₂ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
@@ -199,6 +209,10 @@ evalB dist (inj₁ (x , y)) = inj₁ x , y
 evalB dist (inj₂ (x , y)) = inj₂ x , y
 evalB factor (inj₁ x , z) = inj₁ (x , z)
 evalB factor (inj₂ y , z) = inj₂ (y , z)
+evalB distl (inj₁ (x , y)) = x , inj₁ y
+evalB distl (inj₂ (x , y)) = x , inj₂ y
+evalB factorl (v , inj₁ x) = inj₁ (v , x)
+evalB factorl (v , inj₂ y) = inj₂ (v , y)
 evalB id⟷ x = x
 evalB (c₀ ◎ c₁) x = evalB c₀ (evalB c₁ x)
 evalB (c₀ ⊕ c₁) (inj₁ x) = inj₁ (evalB c₀ x)
@@ -254,6 +268,9 @@ size≡ {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t�
   distribʳ-*-+ (size t₃) (size t₁) (size t₂)
 size≡ {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t₃} factor = 
   sym (distribʳ-*-+ (size t₃) (size t₁) (size t₂))
+size≡ {TIMES t₁ (PLUS t₂ t₃)} distl = distribˡ-*-+ (size t₁) (size t₂) (size t₃)
+size≡ {PLUS (TIMES t₁ t₂) (TIMES .t₁ t₃)} factorl = 
+  sym (distribˡ-*-+ (size t₁) (size t₂) (size t₃))
 size≡ {t} {.t} id⟷ = refl
 size≡ {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = cong₂ _+_ (size≡ c₁) (size≡ c₂)
 size≡ {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = cong₂ _*_ (size≡ c₁) (size≡ c₂)
@@ -492,6 +509,8 @@ FULLADDER =
 ! factorzr = absorbl
 ! dist      = factor 
 ! factor    = dist
+! distl     = factorl
+! factorl   = distl
 ! id⟷      = id⟷
 ! (c₁ ◎ c₂) = ! c₂ ◎ ! c₁ 
 ! (c₁ ⊕ c₂) = (! c₁) ⊕ (! c₂)
@@ -514,6 +533,8 @@ FULLADDER =
 !! {c = factorzr} = refl
 !! {c = dist}    = refl
 !! {c = factor}  = refl
+!! {c = distl}   = refl
+!! {c = factorl} = refl
 !! {c = id⟷}    = refl
 !! {c = c₁ ◎ c₂} = 
   begin (! (! (c₁ ◎ c₂))
@@ -565,6 +586,10 @@ size≡! {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t
   sym (distribʳ-*-+ (size t₃) (size t₁) (size t₂))
 size≡! {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t₃} factor = 
   distribʳ-*-+ (size t₃) (size t₁) (size t₂)
+size≡! {TIMES t₁ (PLUS t₂ t₃)} distl = 
+  sym (distribˡ-*-+ (size t₁) (size t₂) (size t₃))
+size≡! {PLUS (TIMES t₁ t₂) (TIMES .t₁ t₃)} factorl = 
+  distribˡ-*-+ (size t₁) (size t₂) (size t₃)
 size≡! {t} {.t} id⟷ = refl
 size≡! {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = cong₂ _+_ (size≡! c₁) (size≡! c₂)
 size≡! {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = cong₂ _*_ (size≡! c₁) (size≡! c₂)
