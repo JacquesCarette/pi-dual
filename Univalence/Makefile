@@ -1,5 +1,11 @@
 
-all : talk.pdf p.pdf
+all : popl.pdf talk.pdf p.pdf
+
+popl.pdf : latex/popl.tex
+	pdflatex latex/popl.tex
+
+latex/popl.tex : popl.lagda
+	agda --allow-unsolved-metas --latex -i . -i $(AGDALIB) -i $(CATLIB) popl.lagda
 
 talk.pdf : latex/talk.tex
 	pdflatex latex/talk.tex
