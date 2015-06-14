@@ -29,7 +29,8 @@ open import TypeEquiv using (swap₊; swapswap₊; swap⋆; swapswap⋆)
 import TypeEquiv as TE
 open import LeqLemmas using (_<?_; cong+r≤; cong+l≤; cong*r≤; sinj≤)
 open import FinNatLemmas 
-  using (inj₁-≡; inj₂-≡; inject+-injective; raise-injective; addMul-lemma)
+  using (inj₁-≡; inj₂-≡; inject+-injective; raise-injective; addMul-lemma;
+         distribˡ-*-+)
 open import SubstLemmas using (subst-subst)
 open import PathLemmas using (sym-sym)
 
@@ -416,20 +417,22 @@ abstract
   module PlusTimes where
 
     dist : {m n o : ℕ} → Fin ((m + n) * o) ≃ Fin ((m * o) + (n * o))
-    dist {m} {n} {o} = subst Fin (distribʳ-*-+ o m n) ,
-                       mkqinv
-                         (subst Fin (sym (distribʳ-*-+ o m n)) )
-                         (subst-subst
-                           (distribʳ-*-+ o m n)
-                           (sym (distribʳ-*-+ o m n))
-                           refl)
-                         (subst-subst
-                           (sym (distribʳ-*-+ o m n))
-                           (distribʳ-*-+ o m n)
-                           sym-sym) 
+    dist {m} {n} {o} =
+      let d = distribʳ-*-+ o m n in
+      subst Fin d , mkqinv (subst Fin (sym d)) (subst-subst d (sym d) refl)
+                           (subst-subst (sym d) d sym-sym)
 
     factor : {m n o : ℕ} → Fin ((m * o) + (n * o)) ≃ Fin ((m + n) * o) 
     factor {m} {n} {o} = sym≃ (dist {m} {n} {o}) 
+
+    distl : {m n o : ℕ} → Fin (m * (n + o)) ≃ Fin ((m * n) + (m * o))
+    distl {m} {n} {o} =
+      let d = distribˡ-*-+ m n o in
+      subst Fin d , mkqinv (subst Fin (sym d)) (subst-subst d (sym d) refl)
+                           (subst-subst (sym d) d sym-sym)
+
+    factorl : {m n o : ℕ} → Fin ((m * n) + (m * o)) ≃ Fin (m * (n + o)) 
+    factorl {m} {n} {o} = sym≃ (distl {m} {n} {o}) 
 
 ------------------------------------------------------------------------------
 -- Commutative semiring structure
