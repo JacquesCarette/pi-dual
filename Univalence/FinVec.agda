@@ -436,6 +436,12 @@ module F where
     factor*+∘̂dist*+~id : ∀ {m n o} → factor*+ {m} {n} {o} ∘̂ dist*+ {m} ≡ 1C
     factor*+∘̂dist*+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = PlusTimes.factor {m}})
 
+    distl*+∘̂factorl*+~id : ∀ {m n o} → distl*+ {m} {n} {o} ∘̂ factorl*+ {m} ≡ 1C
+    distl*+∘̂factorl*+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = PlusTimes.distl {m}})
+
+    factorl*+∘̂distl*+~id : ∀ {m n o} → factorl*+ {m} {n} {o} ∘̂ distl*+ {m} ≡ 1C
+    factorl*+∘̂distl*+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = PlusTimes.factorl {m}})
+
     right-zero*l∘̂right-zero*r~id : ∀ {m} → right-zero*l {m} ∘̂ right-zero*r {m} ≡ 1C {m * 0}
     right-zero*l∘̂right-zero*r~id {m} = ~⇒≡ {o = m} {f = proj₁ (Times.factorzr {m})} (p∘!p≡id {p = Times.distzr {m}})
 
