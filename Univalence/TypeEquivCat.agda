@@ -19,10 +19,12 @@ open import Categories.Bifunctor
 open import Categories.NaturalIsomorphism
 open import Categories.Monoidal.Braided
 open import Categories.Monoidal.Symmetric
+open import Categories.RigCategory
 
 open import Equiv
 open import TypeEquiv
 open import Data.Sum.Properties
+open import Data.SumProd.Properties
 
 -- see EquivSetoid for some additional justification
 -- basically we need g to "pin down" the inverse, else we
@@ -283,7 +285,79 @@ SBM⊎ : Symmetric BM⊎
 SBM⊎ = record { symmetry = eq swapswap₊ swapswap₊ }
 
 SBM× : Symmetric BM×
-SBM× = record {symmetry = eq swapswap⋆ swapswap⋆ }
+SBM× = record { symmetry = eq swapswap⋆ swapswap⋆ }
+
+module r = BimonoidalHelperFunctors BM⊎ BM×
+
+x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] : NaturalIsomorphism r.x⊗[y⊕z] r.[x⊗y]⊕[x⊗z]
+x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
+  { F⇒G = record
+    { η = λ X → distlequiv
+    ; commute = λ f → eq distl-commute (λ x → P.sym (factorl-commute x))
+    }
+  ; F⇐G = record
+    { η = λ X → factorlequiv
+    ; commute = λ f → eq factorl-commute (λ x → P.sym (distl-commute x))
+    }
+  ; iso = λ X → record { isoˡ = eq factorl∘distl factorl∘distl
+                       ; isoʳ = eq distl∘factorl distl∘factorl }
+  }
+
+[x⊕y]⊗z≡[x⊗z]⊕[y⊗z] : NaturalIsomorphism r.[x⊕y]⊗z r.[x⊗z]⊕[y⊗z]
+[x⊕y]⊗z≡[x⊗z]⊕[y⊗z] = record
+  { F⇒G = record
+    { η = λ X → distequiv
+    ; commute = λ f → eq dist-commute (λ x → P.sym (factor-commute x))
+    }
+  ; F⇐G = record
+    { η = λ X → factorequiv
+    ; commute = λ f → eq factor-commute (λ x → P.sym (dist-commute x))
+    }
+  ; iso = λ X → record { isoˡ = eq factor∘dist factor∘dist
+                       ; isoʳ = eq dist∘factor dist∘factor }
+  }
+  
+x⊗0≡0 : NaturalIsomorphism r.x⊗0 r.0↑
+x⊗0≡0 = record
+  { F⇒G = record
+    { η = λ X → distzrequiv
+    ; commute = λ f → eq (λ { (_ , ()) }) (λ { () })
+    }
+  ; F⇐G = record
+    { η = λ X → factorzrequiv
+    ; commute = λ f → eq (λ { () }) (λ { (_ , ()) })
+    }
+  ; iso = λ X → record
+    { isoˡ = eq factorzr∘distzr factorzr∘distzr
+    ; isoʳ = eq distzr∘factorzr distzr∘factorzr
+    }
+  }
+
+0⊗x≡0 : NaturalIsomorphism r.0⊗x r.0↑
+0⊗x≡0 = record
+  { F⇒G = record
+    { η = λ X → distzequiv
+    ; commute = λ f → eq (λ { (() , _) }) (λ { () })
+    }
+  ; F⇐G = record
+    { η = λ X → factorzequiv
+    ; commute = λ f → eq (λ { () }) (λ { (() , _)})
+    }
+  ; iso = λ X → record
+    { isoˡ = eq factorz∘distz factorz∘distz
+    ; isoʳ = eq distz∘factorz distz∘factorz
+    }
+  }
+
+TERig : RigCategory SBM⊎ SBM×
+TERig = record
+  { distribₗ = x⊗[y⊕z]≡[x⊗y]⊕[x⊗z]
+  ; distribᵣ = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z]
+  ; annₗ = x⊗0≡0
+  ; annᵣ = 0⊗x≡0
+  ; laplazaI = eq distl-swap₊-lemma factorl-swap₊-lemma
+  ; laplazaII = eq dist-swap⋆-lemma factor-swap⋆-lemma
+  }
 
 -- Notes from Laplaza, 72
 -- All of 2, 9, 10, 15
