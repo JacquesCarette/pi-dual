@@ -210,6 +210,12 @@ module F where
     factor*+ : ∀ {m n o} → FinVec ((m + n) * o) (m * o + n * o)
     factor*+ {m} {n} {o} = tabulate (proj₁ (PlusTimes.factor {m} {n} {o}))
 
+    distl*+ : ∀ {m n o} → FinVec (m * n + m * o) (m * (n + o))
+    distl*+ {m} {n} {o} = tabulate (proj₁ (PlusTimes.distl {m} {n} {o}))
+
+    factorl*+ : ∀ {m n o} → FinVec (m * (n + o)) (m * n + m * o)
+    factorl*+ {m} {n} {o} = tabulate (proj₁ (PlusTimes.factorl {m} {n} {o}))
+
     right-zero*l : ∀ {m} → FinVec 0 (m * 0)
     right-zero*l {m} = tabulate (proj₁ (Times.distzr {m}))
 
