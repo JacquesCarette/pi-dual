@@ -37,6 +37,8 @@ c2perm {ZERO} {TIMES t₁ ZERO} factorzr = 0pl {size t₁}
 c2perm factorzl = 0p
 c2perm {TIMES (PLUS t₁ t₂) t₃} dist = distp {size t₁} {size t₂} {size t₃}
 c2perm {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} factor = factorp {size t₁} {size t₂} {size t₃}
+c2perm {TIMES t₁ (PLUS t₂ t₃)} distl = distlp {size t₁} {size t₂} {size t₃}
+c2perm {PLUS (TIMES t₁ t₂) (TIMES .t₁ t₃)} factorl = factorlp {size t₁} {size t₂} {size t₃}
 c2perm id⟷ = idp
 
 -- Looking forward to Sec. 2.2 (Functions are functors). The
@@ -65,6 +67,8 @@ c2perm id⟷ = idp
 !≡symp factorzl = p≡ refl
 !≡symp dist = p≡ refl
 !≡symp factor = p≡ refl
+!≡symp distl = p≡ refl
+!≡symp factorl = p≡ refl
 !≡symp id⟷ = p≡ refl
 !≡symp (c ◎ c₁) = p≡ (cong₂ (λ x y → CPerm.π (transp x y)) (!≡symp c₁) (!≡symp c))
 !≡symp (c ⊕ c₁) = p≡ (cong₂ (λ x y → CPerm.π (x ⊎p y)) (!≡symp c) (!≡symp c₁))
