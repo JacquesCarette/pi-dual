@@ -158,6 +158,9 @@ distp {m} {n} {o} = cp (dist*+ {m}) (factor*+ {m}) (dist*+∘̂factor*+~id {m}) 
 factorp : {m n o : ℕ} → CPerm ((m + n) * o) (m * o + n * o)
 factorp {m} = symp (distp {m})
 
+distlp : {m n o : ℕ} → CPerm (m * n + m * o) (m * (n + o))
+distlp {m} {n} {o} = cp (distl*+ {m}) (factorl*+ {m}) (distl*+∘̂factorl*+~id {m}) (factorl*+∘̂distl*+~id {m})
+
 -- right-zero absorbing permutation
 0pr : ∀ {n} → CPerm 0 (n * 0)
 0pr {n} = cp (right-zero*l {n}) (right-zero*r {n}) 
