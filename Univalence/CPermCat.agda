@@ -61,9 +61,9 @@ module ⊎h = MonoidalHelperFunctors CPermCat ⊎p-bifunctor 0
 
 0⊎x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
 0⊎x≡x = record
-  { F⇒G = record { η = λ _ → idp ; commute = λ {X} f → {!!} }
-  ; F⇐G = record { η = λ _ → idp ; commute = {!!} }
-  ; iso = λ X → record { isoˡ = lidp ; isoʳ = ridp } }
+  { F⇒G = record { η = λ _ → unite+p ; commute = λ f → unite+p∘[0⊎x]≡x∘unite+p (f 0F) }
+  ; F⇐G = record { η = λ _ → uniti+p ; commute = λ f → uniti+p∘x≡[0⊎x]∘uniti+p (f 0F) }
+  ; iso = λ X → record { isoˡ = linv uniti+p ; isoʳ = linv unite+p } }
   where open import Categories.Functor
 
 CPM⊎ : Monoidal CPermCat
@@ -82,8 +82,8 @@ CPM× = record
   { ⊗ = ×p-bifunctor
   ; id = 1
   ; identityˡ = record 
-    { F⇒G = record { η = λ X → uniti+p {X 0F} ; commute = λ f → {!!} } 
-    ; F⇐G = record { η = λ X → unite+p ; commute = {!!} } 
+    { F⇒G = record { η = λ X → uniti*p {X 0F} ; commute = λ f → {!!} } 
+    ; F⇐G = record { η = λ X → unite*p ; commute = {!!} } 
     ; iso = λ X → record { isoˡ = {!!} ; isoʳ = {!!} } 
     }
   ; identityʳ = {!!}

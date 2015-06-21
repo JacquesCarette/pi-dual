@@ -110,8 +110,9 @@ module F where
     1C {n} = allFin n
 
     -- corresponds to ⊥ ≃ (⊥ × A) and other impossibilities
+    -- but don't use it, as it is abstract and will confuse external proofs!
     0C : FinVec 0 0
-    0C = 0v
+    0C = 1C {0}
 
     -- Sequential composition
     _∘̂_ : {n₀ n₁ n₂ : ℕ} → Vec (Fin n₁) n₀ → Vec (Fin n₂) n₁ → Vec (Fin n₂) n₀
@@ -180,10 +181,10 @@ module F where
     -- Things which are the foundations of other permutations, but coming
     -- from properties, rather than being operators
 
-    unite+ : {m : ℕ} → FinVec m (m + 0)
+    unite+ : {m : ℕ} → FinVec m (0 + m)
     unite+ {m} = tabulate (proj₁ (Plus.unite+ {m}))
 
-    uniti+ : {m : ℕ} → FinVec (m + 0) m
+    uniti+ : {m : ℕ} → FinVec (0 + m) m
     uniti+ {m} = tabulate (proj₁ (Plus.uniti+ {m}))
 
     assocl+ : {m n o : ℕ} → FinVec  ((m + n) + o) (m + (n + o))
@@ -291,18 +292,44 @@ module F where
       where open ≡-Reasoning
 
     -- properties of sequential composition
-    0C∘̂0C≡1C : 0C ∘̂ 0C ≡ 1C {0}
-    0C∘̂0C≡1C = refl
+    0C∘̂0C≡0C : 1C {0} ∘̂ 1C {0} ≡ 1C {0}
+    0C∘̂0C≡0C = refl
     
     -- properties of parallel composition
     -- trivial ones first
-    0C⊎x≡x : ∀ {m n} {x : FinVec m n} → 0C ⊎c x ≡ x
-    0C⊎x≡x {x = x} = cauchyext x
-
     1C₀⊎x≡x : ∀ {m n} {x : FinVec m n} → 1C {0} ⊎c x ≡ x
     1C₀⊎x≡x {x = x} = cauchyext x
 
-    x⊎1C₀≡x : ∀ {m n} {x : FinVec m n} → x ⊎c (1C {0}) ≡ unite+ ∘̂ (x ∘̂ uniti+)
+    unite+∘[0⊎x]≡x∘unite+ : ∀ {m n} {x : FinVec m n} → unite+ ∘̂ (1C {0} ⊎c x) ≡ x ∘̂ unite+
+    unite+∘[0⊎x]≡x∘unite+ {m} {n} {x} = finext pf
+      where
+        pf : (i : Fin n) → (0C ⊎c x) !! (unite+ !! i) ≡ unite+ !! (x !! i)
+        pf i = 
+          begin (
+            tabulate (λ y → x !! y) !! (tabulate id !! i)
+              ≡⟨ cong (λ j → tabulate (λ y → x !! y) !! j) (lookup∘tabulate id i) ⟩
+            tabulate (λ y → x !! y) !! i
+              ≡⟨ lookup∘tabulate (_!!_ x) i ⟩
+            x !! i
+              ≡⟨ sym (lookup∘tabulate id (x !! i)) ⟩
+            tabulate id !! (x !! i) ∎)
+            
+    uniti+∘x≡[0⊎x]∘uniti+ : ∀ {m n} {x : FinVec m n} →
+      uniti+ ∘̂ x ≡ (1C {0} ⊎c x) ∘̂ uniti+
+    uniti+∘x≡[0⊎x]∘uniti+ {m} {n} {x} = finext pf
+      where
+        pf : (i : Fin n) → x !! (uniti+ !! i) ≡ uniti+ !! ((0C ⊎c x) !! i)
+        pf i = begin (
+          x !! (tabulate id !! i)
+            ≡⟨ cong (_!!_ x) (lookup∘tabulate id i) ⟩
+          x !! i
+            ≡⟨ sym (lookup∘tabulate (λ y → x !! y) i) ⟩
+          tabulate (λ y → x !! y) !! i
+            ≡⟨ sym (lookup∘tabulate id _) ⟩
+          tabulate id !! (tabulate (λ y → x !! y) !! i) ∎)
+    
+{-    
+    x⊎1C₀≡x : ∀ {m n} {x : FinVec m n} → x ⊎c (1C {0}) ≡ ?
     x⊎1C₀≡x {m} {n} {x = x} = 
       let e = proj₁ (Plus.unite+) in
       let i = proj₁ (Plus.uniti+) in
@@ -321,7 +348,7 @@ module F where
         tabulate (λ j →
            (tabulate (λ k → tabulate i !! (x !! k))) !! ((tabulate e) !! j))
          ∎)
-      where open ≡-Reasoning
+      where open ≡-Reasoning -}
 
     1C⊎1C≡1C : ∀ {m n} → 1C {m} ⊎c 1C {n} ≡ 1C
     1C⊎1C≡1C {m} {n} = 
@@ -337,11 +364,11 @@ module F where
     1C!!i≡i : ∀ {m} {i : Fin m} → 1C {m} !! i ≡ i
     1C!!i≡i = lookup∘tabulate id _
 
-    unite+∘̂uniti+~id : ∀ {m} → (unite+ {m}) ∘̂ uniti+ ≡ 1C {m + 0}
-    unite+∘̂uniti+~id {m} = ~⇒≡ {m} {n = m + 0} {o = m + 0} (p∘!p≡id {p = Plus.unite+ {m}})
+    unite+∘̂uniti+~id : ∀ {m} → (unite+ {m}) ∘̂ uniti+ ≡ 1C {m}
+    unite+∘̂uniti+~id {m} = ~⇒≡ {m} {n = m} {o = m} (p∘!p≡id {p = Plus.unite+ {m}})
 
     uniti+∘̂unite+~id : ∀ {m} → (uniti+ {m}) ∘̂ unite+ ≡ 1C {m}
-    uniti+∘̂unite+~id {m} = ~⇒≡ {m + 0} {n = m} {o = m + 0} (p∘!p≡id {p = Plus.uniti+})
+    uniti+∘̂unite+~id {m} = ~⇒≡ {m} {n = m} {o = m} (p∘!p≡id {p = Plus.uniti+})
 
     assocl+∘̂assocr+~id : ∀ {m n o} → assocl+ {m} {n} {o} ∘̂ assocr+ {m} ≡ 1C
     assocl+∘̂assocr+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = Plus.assocl+ {m}})
@@ -352,19 +379,19 @@ module F where
     swap+-inv : ∀ {m n} → swap+cauchy m n ∘̂ swap+cauchy n m ≡ 1C
     swap+-inv {m} {n} = ~⇒≡ {o = m + n} (Plus.swap-inv m n)
 
-    idʳ⊕ : ∀ {m n} {x : FinVec m n} → uniti+ ∘̂ (x ⊎c 1C {0}) ≡ x ∘̂ uniti+
-    idʳ⊕ {m} {n} {x} = 
-      begin (
-        uniti+ ∘̂ (x ⊎c 1C {0})
-          ≡⟨ cong (λ z → uniti+ ∘̂ z) (x⊎1C₀≡x {x = x}) ⟩
-        uniti+ ∘̂ (unite+ ∘̂ (x ∘̂ uniti+))
-          ≡⟨ ∘̂-assoc uniti+ _ _ ⟩
-        (uniti+ ∘̂ unite+) ∘̂ (x ∘̂ uniti+)
-          ≡⟨ cong (λ z → z ∘̂ (x ∘̂ uniti+)) uniti+∘̂unite+~id ⟩
-        1C ∘̂ (x ∘̂ uniti+)
-          ≡⟨ ∘̂-lid (x ∘̂ uniti+) ⟩
-        x ∘̂ uniti+ ∎)
-      where open ≡-Reasoning
+    idˡ⊕ : ∀ {m n} {x : FinVec m n} → uniti+ ∘̂ (1C {0} ⊎c x) ≡ x ∘̂ uniti+
+    idˡ⊕ {m} {n} {x} = finext pf
+      where
+        open ≡-Reasoning
+        pf : (i : Fin n) → (1C {0} ⊎c x) !! (uniti+ !! i) ≡ (uniti+ !! (x !! i))
+        pf i =  begin (
+          tabulate (λ y → x !! y) !! (tabulate id !! i)
+            ≡⟨ cong (_!!_ (tabulate λ y → x !! y)) (lookup∘tabulate id i) ⟩
+          (tabulate (λ y → x !! y)) !! i
+            ≡⟨ lookup∘tabulate (λ y → x !! y) i ⟩
+          x !! i
+            ≡⟨ sym (lookup∘tabulate id (x !! i)) ⟩
+          tabulate id !! (x !! i) ∎)
 
     [,]-commute : {A B C D E : Set} → {f : A → C} → {g : B → C} → {h : C → D} →
       ∀ x → h ([ f , g ]′ x) ≡ [ (h ∘ f) , (h ∘ g) ]′ x
@@ -653,7 +680,7 @@ module F where
     reveal1C : ∀ {m} → allFin m ≡ 1C
     reveal1C = refl
 
-    reveal0C : [] ≡ 0C
+    reveal0C : [] ≡ 1C {0}
     reveal0C = refl
 
     reveal⊎c :  ∀ {m₁ n₁ m₂ n₂} → {α : FinVec m₁ m₂} → {β : FinVec n₁ n₂} →

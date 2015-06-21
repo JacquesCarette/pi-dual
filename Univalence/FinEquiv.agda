@@ -157,15 +157,16 @@ abstract
 
     -- unite+
 
-    unite+ : {m : ℕ} → Fin (m + 0) ≃ Fin m
-    unite+ {m} = 
-      let eq = +-right-identity m in
+    unite+ : {m : ℕ} → Fin (0 + m) ≃ Fin m
+    unite+ {m} =
+      id , mkqinv id (λ x → refl) (λ _ → refl)
+{-      let eq = +-right-identity m in
       subst Fin eq , mkqinv (subst Fin (sym eq)) (subst-subst eq (sym eq) refl) (
-                            subst-subst (sym eq) eq sym-sym)
+                            subst-subst (sym eq) eq sym-sym) -}
 
     -- uniti+
 
-    uniti+ : {m : ℕ} → Fin m ≃ Fin (m + 0)
+    uniti+ : {m : ℕ} → Fin m ≃ Fin (0 + m)
     uniti+ = sym≃ unite+
 
     -- swap₊

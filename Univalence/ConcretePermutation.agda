@@ -73,7 +73,7 @@ transp {n} (cp π πᵒ αp βp) (cp π₁ πᵒ₁ αp₁ βp₁) = cp (π ∘�
 
 -- zero permutation
 0p : CPerm 0 0
-0p = cp F.0C F.0C F.0C∘̂0C≡1C F.0C∘̂0C≡1C
+0p = idp {0}
 
 _⊎p_ : ∀ {m₁ m₂ n₁ n₂} → CPerm m₁ m₂ → CPerm n₁ n₂ → CPerm (m₁ + n₁) (m₂ + n₂)
 _⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ⊎c (π π₁)) ((πᵒ π₀) ⊎c (πᵒ π₁)) pf₁ pf₂
@@ -102,10 +102,10 @@ _⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ⊎c (π π₁))
           ≡⟨ 1C⊎1C≡1C {m₁} ⟩
         1C ∎ )
 
-unite+p : {m : ℕ} → CPerm m (m + 0)
+unite+p : {m : ℕ} → CPerm m (0 + m)
 unite+p {m} = cp (unite+ {m}) (uniti+ {m}) (unite+∘̂uniti+~id {m}) (uniti+∘̂unite+~id {m})
 
-uniti+p : {m : ℕ} → CPerm (m + 0) m
+uniti+p : {m : ℕ} → CPerm (0 + m) m
 uniti+p {m} = symp (unite+p {m})
 
 assocl+p : {m n o : ℕ} → CPerm ((m + n) + o) (m + (n + o))
@@ -211,12 +211,17 @@ transp-resp-≡ refl refl = refl
       (transp p₁ p₃) ×p (transp p₂ p₄) ≡ transp (p₁ ×p p₂) (p₃ ×p p₄)
 ×p-distrib {p₁ = p₁} = p≡ (sym (×c-distrib {p₁ = CPerm.π p₁}))
 
-0p⊎x≡x : ∀ {m n} {p : CPerm m n} → 0p ⊎p p ≡ p
-0p⊎x≡x {p = p} = p≡ F.0C⊎x≡x
+0p⊎x≡x : ∀ {m n} {p : CPerm m n} → idp {0} ⊎p p ≡ p
+0p⊎x≡x {p = p} = p≡ F.1C₀⊎x≡x
 
 -- this comes from looking at things categorically:
-0p⊎x∘id≡id∘x : ∀ {m n} (p : CPerm m n) → transp (0p ⊎p p) idp ≡ transp idp p
-0p⊎x∘id≡id∘x p = trans ridp (trans 0p⊎x≡x (sym lidp))
+unite+p∘[0⊎x]≡x∘unite+p : ∀ {m n} (p : CPerm m n) →
+  transp unite+p (0p ⊎p p) ≡ transp p unite+p
+unite+p∘[0⊎x]≡x∘unite+p p = p≡ unite+∘[0⊎x]≡x∘unite+
+
+uniti+p∘x≡[0⊎x]∘uniti+p : ∀ {m n} (p : CPerm m n) →
+  transp uniti+p p ≡ transp (0p ⊎p p) uniti+p
+uniti+p∘x≡[0⊎x]∘uniti+p p = p≡ uniti+∘x≡[0⊎x]∘uniti+
 
 SCPerm : ℕ → ℕ → Setoid zero zero
 SCPerm m n = ≡-Setoid (CPerm m n)
