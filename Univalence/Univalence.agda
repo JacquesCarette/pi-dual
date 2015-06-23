@@ -40,5 +40,5 @@ open import PiLevel1
 open import Pim2Cat
 -- open import Pim1Cat -- unfinished
 open import Pi0Cat
--- open import Pi1Cat -- missing one side of distributivity 
+open import Pi1Cat -- missing one side of distributivity 
 

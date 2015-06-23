@@ -79,7 +79,8 @@ open import PiLevel1
         hexagonr⊕l; hexagonl⊕l; hexagonr⊗l; hexagonl⊗l;
         absorbl⇔l; absorbr⇔l; factorzl⇔l; factorzr⇔l;
         dist⇔; factor⇔; dist′⇔; idl◎r; linv◎r;
-        hom◎⊕⇔; factor′⇔)
+        hom◎⊕⇔; factor′⇔;
+        swap⋆dist⇔l; swap⋆dist⇔r)
 
 ------------------------------------------------------------------------------
 -- The equality of morphisms is derived from the coherence conditions
@@ -363,7 +364,7 @@ SBM⊕ = record { symmetry = linv◎l }
 SBM⊗ : Symmetric BM⊗
 SBM⊗ = record { symmetry = rinv◎l }
 
-module r = BimonoidalHelperFunctors SBM⊕ BM⊗
+module r = BimonoidalHelperFunctors BM⊕ BM⊗
 
 x⊗0≡0 : NaturalIsomorphism r.x⊗0 r.0↑
 x⊗0≡0 = record 
@@ -521,10 +522,14 @@ x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
   ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l }
   }
 
-Pi0Rig : RigCategory SBM⊕ BM⊗
+Pi0Rig : RigCategory SBM⊕ SBM⊗
 Pi0Rig = record 
   { distribₗ = x⊗[y⊕z]≡[x⊗y]⊕[x⊗z]
   ; distribᵣ = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] 
   ; annₗ = x⊗0≡0 
-  ; annᵣ = 0⊗x≡0 
+  ; annᵣ = 0⊗x≡0
+  ; laplazaI = swap⋆dist⇔l
+  ; laplazaII = trans⇔
+    (idl◎r {c = dist ◎ (swap⋆ ⊕ swap⋆)})
+    (trans⇔ (linv◎r ⊡ id⇔) assoc◎r)
   }
