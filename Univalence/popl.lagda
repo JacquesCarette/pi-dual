@@ -101,6 +101,8 @@ $\displaystyle
 \newcommand{\jc}[1]{\authornote{purple}{JC}{#1}}
 \newcommand{\as}[1]{\authornote{magenta}{AS}{#1}}
 
+\newcommand{\amr}[1]{\fbox{\begin{minipage}{0.4\textwidth}\color{red}{Amr says: #1}\end{minipage}}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
@@ -202,25 +204,51 @@ The primary abstraction in HoTT is 'type equivalences.'
 If we care about resource preservation, then we are concerned with 'type equivalences'.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Type Equivalences} 
+\section{Equivalences and Commutative Semirings} 
 
-Two types are considered \emph{equivalent} if there exist a pair of
-mediating maps between them that compose to the identity in both
-directions. If we denote type equivalence by $\simeq$, then we can
-prove the following theorem.
+\amr{
+\begin{itemize}
+\item type equivalences are a commutative semiring
+\item permutations on finite sets are another commutative semiring
+\item these two structures are themselves equivalent
+\end{itemize}
+SO if we are interested in studying type equivalences, we can study
+permutations on finite sets; the latter can be axiomatized which is
+nice
+}
+
+Semiring structures abound. We can define them on type equivalences
+(disjoint union and cartesian product), and on permutations of finite
+sets (disjoint union and tensor product).
+
+%%%%%%%%%%%%
+\subsection{Type Equivalences}
+
+Two types are considered \emph{equivalent} if there exists a pair of
+mediating maps between them that compose to the identity function in
+both directions. If we denote type equivalence by $\simeq$, then we
+can prove the following theorem.
 
 \begin{theorem}
 The collection of all types (\AgdaDatatype{Set}) forms a commutative
 semiring (up to $\simeq$).
 \end{theorem}
 
-For example, we have equivalences such as $\bot ⊎ A \simeq A$, $\top
-\times A \simeq A$, $A \times (B \times C) \simeq (A \times B) \times
-C$, $A \times \bot \simeq \bot$, and $A \times (B \uplus C) \simeq (A
-\times B) \uplus (A \times C)$ in which the empty type $\bot$ is the
-additive unit for the sum type $\uplus$ and the unit type $\top$ is
-the multiplicative unit for the product type $\times$. In addition, we
-have equivalences such as $\top \uplus (\top \uplus \top) \simeq
+For example, we have equivalences such as:
+\[\begin{array}{rcl}
+\bot ⊎ A &\simeq& A \\
+\top \times A &\simeq& A \\
+A \times (B \times C) &\simeq& (A \times B) \times C \\
+A \times \bot &\simeq& \bot \\
+A \times (B \uplus C) &\simeq& (A \times B) \uplus (A \times C)
+\end{array}\]
+
+These equivalences are based on the facts that the empty type~$\bot$
+is the additive unit for the commutative and associative sum
+type~$\uplus$, that the unit type~$\top$ is the multiplicative unit
+for the commutative and associative product type~$\times$, and
+that~$\times$ distributes over~$\uplus$. In addition, we have
+equivalences such as $\top \uplus (\top \uplus \top) \simeq
 \mathsf{Fin}~3$ and $(\top \uplus \top) \times (\top \uplus \top)
 \simeq \mathsf{Fin}~4$ which establish that every type constructed
 from sums and products over the empty type and the unit type is, up to
@@ -231,12 +259,22 @@ number $m$. More generally, we can prove the following theorem.
 If $A\simeq \mathsf{Fin}~m$, $B\simeq \mathsf{Fin}~n$ and $A \simeq B$ then $m ≡ n$.
 \end{theorem}
 
-This theorem, whose \emph{constructive} proof of this theorem is quite
-subtle, establishes that, up to equivalence, the only interesting
-property of a type constructed from sums and products over the empty
-type and the unit type is its size. This result allows us to
-characterize equivalences between types in a canonical way as
-permutations between finite sets. Formally, we have the following theorem.
+This theorem, whose \emph{constructive} proof is quite subtle,
+establishes that, up to equivalence, the only interesting property of
+a type constructed from sums and products over the empty type and the
+unit type is its size. This result allows us to characterize
+equivalences between types in a canonical way as permutations between
+finite sets. 
+
+%%%%%%%%%%%%
+\subsection{Permutations on Finite Sets} 
+
+%%%%%%%%%%%%
+\subsection{Equivalences of Equivalences} 
+
+The point, of course, is that the type of all type equivalences is
+itself equivalent to the type of all permutations on finite
+sets. Formally, we have the following theorem.
 
 \begin{theorem}\label{Perm}
 If $A ≃ \mathsf{Fin}~m$ and $B ≃ \mathsf{Fin}~n$, then the type of all
@@ -244,31 +282,21 @@ equivalences $A ≃ B$ is equivalent to the type of all permutations
 $\mathsf{Perm}~n$.
 \end{theorem}
 
-\newpage
+In fact we have the following stronger theorem.
 
-We are concerned, not just with the fact that two types
-are equivalent, but with the precise way in which they are
-equivalent. For example, there are two equivalences between the type
-\AgdaDatatype{Bool} and itself: identity and negation. Each of these
-equivalences can be used to ``transport'' properties of
-\AgdaDatatype{Bool} in a different way. 
-
-
-Equivalences and semirings. 
-Equivalences and semirings II. Semiring structures abound.  We can define them on:
-\begin{enumerate}
-\item equivalences (disjoint union and cartesian product)
-\item permutations (disjoint union and tensor product)
-\end{enumerate}
-The point, of course, is that they are related:
 \begin{theorem}
-The equivalence of Theorem~\ref{Perm} is an \textcolor{red}{isomorphism} between the
+The equivalence of Theorem~\ref{Perm} is an \emph{isomorphism} between the
 semirings of equivalences of finite types, and of permutations.
 \end{theorem}
+
 A more evocative phrasing might be:
+
 \begin{theorem}
 $$ (A ≃ B) ≃ \mathsf{Perm} |A| $$
 \end{theorem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A Calculus of Permutations}
 
 A Calculus of Permutations.
 Syntactic theories only rely on transforming source programs to other           
@@ -291,8 +319,12 @@ algebra, continuation-passing style, or whatever. These
 specializations have generated more experts but fewer general users.            
 \end{quote}                                                                     
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{A Calculus of Permutations}
+We are concerned, not just with the fact that two types
+are equivalent, but with the precise way in which they are
+equivalent. For example, there are two equivalences between the type
+\AgdaDatatype{Bool} and itself: identity and negation. Each of these
+equivalences can be used to ``transport'' properties of
+\AgdaDatatype{Bool} in a different way. 
 
 \emph{Typed} Isomorphisms
 
