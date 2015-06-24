@@ -198,54 +198,63 @@ they require no additional background beyond knowledge of the
 programming language itself, and they provide a direct support for the
 equational reasoning underlying many program transformations.
 
+The primary abstraction in HoTT is 'type equivalences.'
+If we care about resource preservation, then we are concerned with 'type equivalences'.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{\emph{Typed} Isomorphisms}
+\section{Type Equivalences} 
 
-First, a universe of (finite) types
+Two types are considered \emph{equivalent} if there exist a pair of
+mediating maps between them that compose to the identity in both
+directions. If we denote type equivalence by $\simeq$, then we can
+prove the following theorem.
 
-\AgdaHide{
-\begin{code}
-open import Data.Empty
-open import Data.Unit
-open import Data.Sum
-open import Data.Product
-\end{code}
-}
-
-\begin{code}
-data U : Set where
-  ZERO  : U
-  ONE   : U
-  PLUS  : U → U → U
-  TIMES : U → U → U
-
-\end{code}
-and its interpretation
-\begin{code}
-
-⟦_⟧ : U → Set 
-⟦ ZERO ⟧        = ⊥ 
-⟦ ONE ⟧         = ⊤
-⟦ PLUS t₁ t₂ ⟧  = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
-⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
-\end{code}
-
-Equivalences and semirings. If we denote type equivalence by $\simeq$, then we can prove that
 \begin{theorem}
 The collection of all types (\AgdaDatatype{Set}) forms a commutative
 semiring (up to $\simeq$).
 \end{theorem}
-We also get
+
+For example, we have equivalences such as $\bot ⊎ A \simeq A$, $\top
+\times A \simeq A$, $A \times (B \times C) \simeq (A \times B) \times
+C$, $A \times \bot \simeq \bot$, and $A \times (B \uplus C) \simeq (A
+\times B) \uplus (A \times C)$ in which the empty type $\bot$ is the
+additive unit for the sum type $\uplus$ and the unit type $\top$ is
+the multiplicative unit for the product type $\times$. In addition, we
+have equivalences such as $\top \uplus (\top \uplus \top) \simeq
+\mathsf{Fin}~3$ and $(\top \uplus \top) \times (\top \uplus \top)
+\simeq \mathsf{Fin}~4$ which establish that every type constructed
+from sums and products over the empty type and the unit type is, up to
+$\simeq$, equivalent to a finite set $\mathsf{Fin}~m$ for some natural
+number $m$. More generally, we can prove the following theorem.
+
 \begin{theorem}
-If $A\simeq \mathsf{Fin} m$, $B\simeq \mathsf{Fin} n$ and $A \simeq B$ then $m ≡ n$.
-\end{theorem}
-(whose \emph{constructive} proof is quite subtle).
-\begin{theorem}\label{Perm}
-If $A ≃ \mathsf{Fin} m$ and $B ≃ \mathsf{Fin} n$, then the type of all
-equivalences $A ≃ B$ is equivalent to the type of all permutations
-$\mathsf{Perm} n$.
+If $A\simeq \mathsf{Fin}~m$, $B\simeq \mathsf{Fin}~n$ and $A \simeq B$ then $m ≡ n$.
 \end{theorem}
 
+This theorem, whose \emph{constructive} proof of this theorem is quite
+subtle, establishes that, up to equivalence, the only interesting
+property of a type constructed from sums and products over the empty
+type and the unit type is its size. This result allows us to
+characterize equivalences between types in a canonical way as
+permutations between finite sets. Formally, we have the following theorem.
+
+\begin{theorem}\label{Perm}
+If $A ≃ \mathsf{Fin}~m$ and $B ≃ \mathsf{Fin}~n$, then the type of all
+equivalences $A ≃ B$ is equivalent to the type of all permutations
+$\mathsf{Perm}~n$.
+\end{theorem}
+
+\newpage
+
+We are concerned, not just with the fact that two types
+are equivalent, but with the precise way in which they are
+equivalent. For example, there are two equivalences between the type
+\AgdaDatatype{Bool} and itself: identity and negation. Each of these
+equivalences can be used to ``transport'' properties of
+\AgdaDatatype{Bool} in a different way. 
+
+
+Equivalences and semirings. 
 Equivalences and semirings II. Semiring structures abound.  We can define them on:
 \begin{enumerate}
 \item equivalences (disjoint union and cartesian product)
@@ -282,6 +291,40 @@ algebra, continuation-passing style, or whatever. These
 specializations have generated more experts but fewer general users.            
 \end{quote}                                                                     
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A Calculus of Permutations}
+
+\emph{Typed} Isomorphisms
+
+First, a universe of (finite) types
+
+\AgdaHide{
+\begin{code}
+open import Data.Empty
+open import Data.Unit
+open import Data.Sum
+open import Data.Product
+\end{code}
+}
+
+\begin{code}
+data U : Set where
+  ZERO  : U
+  ONE   : U
+  PLUS  : U → U → U
+  TIMES : U → U → U
+
+\end{code}
+and its interpretation
+\begin{code}
+
+⟦_⟧ : U → Set 
+⟦ ZERO ⟧        = ⊥ 
+⟦ ONE ⟧         = ⊤
+⟦ PLUS t₁ t₂ ⟧  = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
+⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+\end{code}
+
 A Calculus of Permutations. First conclusion: it might be useful to
 \emph{reify} a (sound and complete) set of equivalences as
 combinators, such as the fundamental ``proof rules'' of semirings:
@@ -292,7 +335,6 @@ infix  30 _⟷_
 infixr 50 _◎_
 \end{code}
 }
-\renewcommand{\AgdaCodeStyle}{\tiny}
 
 \begin{code}
 data _⟷_ : U → U → Set where
