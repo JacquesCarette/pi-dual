@@ -211,8 +211,10 @@ If we care about resource preservation, then we are concerned with 'type equival
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Equivalences and Commutative Semirings} 
 
-Semiring structures abound. We can define them on types, type
-equivalences, and on permutations of finite sets.
+Our starting point is the notion of HoTT equivalence of types. We then
+connect this notion to several semiring structures on finite types and
+on permutations with the goal of reducing the notion of finite type
+equivalence to a calculus of permutations.
 
 %%%%%%%%%%%%
 \subsection{HoTT Equivalences of Types} 
@@ -221,52 +223,28 @@ There are several equivalent definitions of the notion of equivalence
 of types. For concreteness, we use the following definition as it
 appears to be the most intuitive in our setting.
 
-\begin{definition}
+\begin{definition}[Equivalence of types]
   Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
   \emph{bi-invertible} $f : A \rightarrow B$, i.e., if there exists an
   $f$ that has both a left-inverse and a right-inverse. A function
-  $f : A \rightarrow$ has a left-inverse if there exists a
-  $g : B \rightarrow A$ such that $g \circ f = \mathrm{id}_A$ and
-  similarly for right-inverse.
+  $f : A \rightarrow$ has a left-inverse if there exists a function
+  $g : B \rightarrow A$ such that $g \circ f = \mathrm{id}_A$. A
+  function $f : A \rightarrow$ has a right-inverse if there exists a
+  function $g : B \rightarrow A$ such that
+  $f \circ g = \mathrm{id}_B$.
 \end{definition}
+Note that the function $g$ used for the left-inverse may be different
+from the function $g$ used for the right-inverse.
 
-As the definition of equivalence is parameterized by a function $f$,
-we are concerned with, not just the fact that two types are
-equivalent, but with the precise way in which they are equivalent. For
-example, there are two equivalences between the type
-\AgdaDatatype{Bool} and itself: one that uses the identity for $f$
-(and hence for $g$) and one uses boolean negation for $f$ and hence
-for $g$. These two equivalences are \emph{not} equivalent: each of
-them can be used to ``transport'' properties of \AgdaDatatype{Bool} in
-a different way.
-
-%%%%%%%%%%%%
-\subsection{Commutative Semirings}
- 
-Given that the structure of commutative semirings is central to this
-section, we recall the formal algebraic definition.
-
-\begin{definition}
-  A \emph{commutative semiring} consists of a set $R$, two
-  distinguished elements of $R$ named 0 and 1, and two binary
-  operations $+$ and $\cdot$, satisfying the following relations for
-  any $a,b,c \in R$:
-\[\begin{array}{rcl}
-0 + a &=& a \\
-a + b &=& b + a \\
-a + (b + c) &=& (a + b) + c \\
-\\
-1 \cdot a &=& a \\
-a \cdot b &=& b \cdot a \\
-a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
-\\
-0 \cdot a &=& 0 \\
-(a + b) \cdot c &=& (a \cdot c) + (b \cdot c)
-\end{array}\]
-\end{definition}
-
-We will be interested into various commutative semiring structures up
-to some congruence relation instead of strict equality~$=$.
+As the definition of equivalence is parameterized by a function~$f$,
+we are concerned with, not just the fact that two types are equivalent,
+but with the precise way in which they are equivalent. For example,
+there are two equivalences between the type \AgdaDatatype{Bool} and
+itself: one that uses the identity for $f$ (and hence for $g$) and one
+uses boolean negation for $f$ (and hence for $g$). These two
+equivalences are themselves \emph{not} equivalent: each of them can be
+used to ``transport'' properties of \AgdaDatatype{Bool} in a different
+way.
 
 %%%%%%%%%%%%
 \subsection{Instance I: Universe of Types}
@@ -276,9 +254,7 @@ types (\AgdaDatatype{Set} in Agda terminology). The additive unit is
 the empty type $\bot$; the multiplicative unit is the unit type
 $\top$; the two binary operations are disjoint union $\uplus$ and
 cartesian product $\times$. The axioms are satisfied up to equivalence
-of types~$\simeq$.
-
-For example, we have equivalences such as:
+of types~$\simeq$. For example, we have equivalences such as:
 \[\begin{array}{rcl}
 \bot ⊎ A &\simeq& A \\
 \top \times A &\simeq& A \\
@@ -307,7 +283,7 @@ of types~$\simeq$.
 
 The reason finite sets are interesting is that each finite type~$A$
 constructed from~$\bot$, $\top$, $\uplus$, and $\times$ is equivalent
-to a canonical representative \AgdaDatatype{Fin}~$|A|$ where $|A|$ is
+(in $|A|~!$ ways) to \AgdaDatatype{Fin}~$|A|$ where $|A|$ is
 the size of $A$ defined as follows:
 \[\begin{array}{rcl}
 |\bot| &=& 0 \\
@@ -315,61 +291,87 @@ the size of $A$ defined as follows:
 |A \uplus B| &=& |A| + |B| \\
 |A \times B| &=& |A| * |B| 
 \end{array}\]
-
-For example, we have equivalences such as:
+Each of the $|A|~!$ equivalences of $A$ with \AgdaDatatype{Fin}~$|A|$
+corresponds to a \emph{particular} enumeration of the elements of
+$A$. For example, we have two equivalences:
 \[\begin{array}{rcl}
-\mathsf{Fin}~0 &\simeq& \bot \\
-\mathsf{Fin}~1 &\simeq& \top \\
-(\mathsf{Fin}~m \uplus \mathsf{Fin}~n) &\simeq& \mathsf{Fin}~(m + n) \\
- (\mathsf{Fin}~m \times \mathsf{Fin}~n) &\simeq& \mathsf{Fin}~(m * n) \\
-(\mathsf{Fin}~(0+m) &\simeq& \mathsf{Fin}~m \\
-\top \uplus (\top \uplus \top) &\simeq& \mathsf{Fin}~3 \\
- (\top \uplus \top) \times (\top \uplus \top) &\simeq& \mathsf{Fin}~4
+\top \uplus \top &\simeq& \mathsf{Fin}~2
 \end{array}\]
+corresponding to the identity and boolean negation.
 
-More generally, we can prove the following theorem.
+Thus, as we prove next, up to equivalence, the only interesting
+property of a finite type is its size. In other words, given two
+equivalent types $A$ and $B$ of completely different structure, e.g.,
+$A = (\top \uplus \top) \times (\top \uplus (\top \uplus \top))$ and
+$B = \top \uplus (\top \uplus (\top \uplus (\top \uplus (\top \uplus
+(\top \uplus \bot)))))$, we can find equivalences from either type to
+the finite set $\mathsf{Fin}~6$ and use the latter for further
+reasoning. Indeed, as the next section demonstrate, this result allows
+us to characterize equivalences between finite types in a canonical
+way as permutations between finite sets.
+
+The following theorem precisely characterizes the relationship between
+finite types and finite sets.
 
 \begin{theorem}
   If $A\simeq \mathsf{Fin}~m$, $B\simeq \mathsf{Fin}~n$ and
   $A \simeq B$ then $m = n$.
 \end{theorem}
 \begin{proof}
-
-The equivalence of $A$ to $\mathsf{Fin}~m$ gives a \emph{particular}
-enumeration of the elements of $A$. Similarly the equivalence of $B$
-to $\mathsf{Fin}~n$ gives a \emph{particular} enumeration of the
-elements of $B$. The proof proceeds by cases on the possible values
-for $m$ and $n$. If they are different, we quickly get a
-contradition. If they are both 0 we are done. The interesting
-situation is when $m = \mathit{suc}~m'$ and $n = \mathit{suc}~n'$. The
-result follows in this case by induction assuming we can establish
-that the equivalence between $A$ and $B$, i.e., the equivalence
-between $\mathsf{Fin}~(\mathit{suc}~m')$ and
+We proceed by cases on the possible values for $m$ and $n$. If they
+are different, we quickly get a contradiction. If they are both~0 we
+are done. The interesting situation is when $m = \mathit{suc}~m'$ and
+$n = \mathit{suc}~n'$. The result follows in this case by induction
+assuming we can establish that the equivalence between $A$ and $B$,
+i.e., the equivalence between $\mathsf{Fin}~(\mathit{suc}~m')$ and
 $\mathsf{Fin}~(\mathit{suc}~n')$, implies an equivalence between
 $\mathsf{Fin}~m'$ and $\mathsf{Fin}~n'$. In our setting, we actually
 need to construct a particular equivalence between the smaller sets
 given the equivalence of the larger sets with one additional
 element. This lemma is quite tedious as it requires us to isolate one
-element of $\mathsf{Fin}~(\mathit{suc}~m')$ and analyze every place
-this element could be mapped by the larger equivalence and in each
-case construct an equivalence that excludes this element. \end{proof}
-
-As outlined above, the \emph{constructive} proof of this theorem is
-quite subtle. The theorem establishes that, up to equivalence, the
-only interesting property of a finite type is its size. This result
-allows us to characterize equivalences between finite types in a
-canonical way as permutations between finite sets as we demonstrate
-next.
+element of $\mathsf{Fin}~(\mathit{suc}~m')$ and analyze every position
+this element could be mapped to by the larger equivalence and in each
+case construct an equivalence that excludes this element.
+\end{proof}
 
 %%%%%%%%%%%%
 \subsection{Permutations on Finite Sets} 
 
+Given the correspondence between finite types and finite sets, we will
+prove that equivalences on finite types are equivalent to permutations
+on finite sets. Formalizing the notion of permutations is delicate
+however: straightforward attempts turn out not to capture enough of
+the properties of permutations for our purposes. We therefore
+formalize a permutation using two sizes: $m$ for the size of the input
+finite set and $n$ for the size of the resulting finite set. Naturally
+in any well-formed permutations, these two sizes are equal but the
+presence of both types allows us to conveniently define permutations
+as follows. A permutation $\mathsf{CPerm}~m~n$ consists of four
+components. The first two components are:
+\begin{itemize}
+\item a vector of size $n$ containing elements drawn from the finite 
+  set $\mathsf{Fin}~m$; 
+\item a dual vector of size $m$ containing elements drawn from the finite 
+  set $\mathsf{Fin}~n$; 
+\end{itemize}
+Each of the above vectors is viewed as a map $f$ that acts on the
+incoming finite set sending the element at index $i$ to position
+$f !! i$ in the resulting finite set. To guarantee that these maps
+define an actual permutation, the last two components are proofs that
+the sequential composition of the maps in both direction produce the
+identity.
+
 %%%%%%%%%%%%
 \subsection{Equivalences of Equivalences} 
 
-The point, of course, is that the type of all type equivalences is
-itself equivalent to the type of all permutations on finite
-sets. Formally, we have the following theorem.
+The main result of this section is that the type of type equivalences
+is equivalent to the type of permutations.  
+
+\paragraph*{Type of All Equivalences between Finite Types.}
+
+\paragraph*{Type of All Permutations between Finite Sets.}
+
+
 
 \begin{theorem}\label{Perm}
 If $A ≃ \mathsf{Fin}~m$ and $B ≃ \mathsf{Fin}~n$, then the type of all
@@ -2198,6 +2200,35 @@ Somehow, at the end of the day, it seems we're looking for a confluent, terminat
 
 \includegraphics{IMAG0342.jpg}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+\section{Commutative Semirings}
+ 
+Given that the structure of commutative semirings is central to this
+paper, we recall the formal algebraic definition.
+
+\begin{definition}
+  A \emph{commutative semiring} consists of a set $R$, two
+  distinguished elements of $R$ named 0 and 1, and two binary
+  operations $+$ and $\cdot$, satisfying the following relations for
+  any $a,b,c \in R$:
+\[\begin{array}{rcl}
+0 + a &=& a \\
+a + b &=& b + a \\
+a + (b + c) &=& (a + b) + c \\
+\\
+1 \cdot a &=& a \\
+a \cdot b &=& b \cdot a \\
+a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
+\\
+0 \cdot a &=& 0 \\
+(a + b) \cdot c &=& (a \cdot c) + (b \cdot c)
+\end{array}\]
+\end{definition}
+
+In the paper, we are interested into various commutative semiring
+structures up to some congruence relation instead of strict
+equality~$=$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
