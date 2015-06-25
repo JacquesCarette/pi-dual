@@ -81,6 +81,7 @@ $\displaystyle
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{conj}{Conjecture}
+\newtheorem{definition}{Definition}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \renewcommand{\AgdaCodeStyle}{\small}
@@ -186,7 +187,7 @@ Start with a \emph{foundational} syntactic theory on our way there:
 
 A Syntactic Theory. 
 Ideally want a notation that is easy to write by programmers and that
-is easy to mechnically manipulate for reasoning and optimizing of circuits.
+is easy to mechanically manipulate for reasoning and optimizing of circuits.
 
 Syntactic calculi good. 
 Popular semantics: Despite the increasing importance of formal
@@ -206,33 +207,48 @@ If we care about resource preservation, then we are concerned with 'type equival
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Equivalences and Commutative Semirings} 
 
-\amr{
-\begin{itemize}
-\item type equivalences are a commutative semiring
-\item permutations on finite sets are another commutative semiring
-\item these two structures are themselves equivalent
-\end{itemize}
-SO if we are interested in studying type equivalences, we can study
-permutations on finite sets; the latter can be axiomatized which is
-nice
-}
-
-Semiring structures abound. We can define them on type equivalences
-(disjoint union and cartesian product), and on permutations of finite
-sets (disjoint union and tensor product).
+Semiring structures abound. We can define them on types, type
+equivalences, and on permutations of finite sets.
 
 %%%%%%%%%%%%
-\subsection{Type Equivalences}
+\subsection{Commutative Semirings}
 
-Two types are considered \emph{equivalent} if there exists a pair of
-mediating maps between them that compose to the identity function in
-both directions. If we denote type equivalence by $\simeq$, then we
-can prove the following theorem.
+Given that the structure of commutative semirings is central to this
+section, we recall the formal algebraic definition.
 
-\begin{theorem}
-The collection of all types (\AgdaDatatype{Set}) forms a commutative
-semiring (up to $\simeq$).
-\end{theorem}
+\begin{definition}
+  A \emph{commutative semiring} consists of a set $R$, two
+  distinguished elements of $R$ named 0 and 1, and two binary
+  operations $+$ and $\cdot$, satisfying the following relations for
+  any $a,b,c \in R$:
+\[\begin{array}{rcl}
+0 + a &=& a \\
+a + b &=& b + a \\
+a + (b + c) &=& (a + b) + c \\
+\\
+1 \cdot a &=& a \\
+a \cdot b &=& b \cdot a \\
+a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
+\\
+0 \cdot a &=& 0 \\
+(a + b) \cdot c &=& (a \cdot c) + (b \cdot c)
+\end{array}\]
+\end{definition}
+
+We will be interested into various commutative semiring structures up
+to some congruence relation $\sim$ instead of strict equality~$=$. 
+
+%%%%%%%%%%%%
+\subsection{Instance I: Universe of Types}
+
+The first commutative semiring instance we examine is the universe of
+types (\AgdaDatatype{Set} in Agda terminology). The additive unit is
+the empty type $\bot$; the multiplicative unit is the unit type
+$\top$; the two binary operations are disjoint union $\uplus$ and
+cartesian product $\times$. The axioms are satisfied up to isomorphism
+of types, i.e., up to the relation $\simeq$ that relates two types if
+there exists a pair of mediating maps between them that compose to the
+identity function in both directions. 
 
 For example, we have equivalences such as:
 \[\begin{array}{rcl}
@@ -240,20 +256,30 @@ For example, we have equivalences such as:
 \top \times A &\simeq& A \\
 A \times (B \times C) &\simeq& (A \times B) \times C \\
 A \times \bot &\simeq& \bot \\
-A \times (B \uplus C) &\simeq& (A \times B) \uplus (A \times C)
+A \times (B \uplus C) &\simeq& (A \times B) \uplus (A \times C) 
 \end{array}\]
 
-These equivalences are based on the facts that the empty type~$\bot$
-is the additive unit for the commutative and associative sum
-type~$\uplus$, that the unit type~$\top$ is the multiplicative unit
-for the commutative and associative product type~$\times$, and
-that~$\times$ distributes over~$\uplus$. In addition, we have
-equivalences such as $\top \uplus (\top \uplus \top) \simeq
-\mathsf{Fin}~3$ and $(\top \uplus \top) \times (\top \uplus \top)
-\simeq \mathsf{Fin}~4$ which establish that every type constructed
-from sums and products over the empty type and the unit type is, up to
-$\simeq$, equivalent to a finite set $\mathsf{Fin}~m$ for some natural
-number $m$. More generally, we can prove the following theorem.
+Formally we have the following fact. 
+
+\begin{theorem}
+The collection of all types (\AgdaDatatype{Set}) forms a commutative 
+semiring (up to $\simeq$). 
+\end{theorem}
+
+%%%%%%%%%%%%
+\subsection{Instance II: Finite Sets}
+ 
+\amr{HERE}
+
+
+
+In addition, we have equivalences such as
+$\top \uplus (\top \uplus \top) \simeq \mathsf{Fin}~3$ and
+$(\top \uplus \top) \times (\top \uplus \top) \simeq \mathsf{Fin}~4$
+which establish that every type constructed from sums and products
+over the empty type and the unit type is, up to $\simeq$, equivalent
+to a finite set $\mathsf{Fin}~m$ for some natural number $m$. More
+generally, we can prove the following theorem.
 
 \begin{theorem}
 If $A\simeq \mathsf{Fin}~m$, $B\simeq \mathsf{Fin}~n$ and $A \simeq B$ then $m ≡ n$.
@@ -295,6 +321,18 @@ A more evocative phrasing might be:
 $$ (A ≃ B) ≃ \mathsf{Perm} |A| $$
 \end{theorem}
 
+\amr{
+\begin{itemize}
+\item types are a commutative semiring
+\item type equivalences are a commutative semiring
+\item permutations on finite sets are another commutative semiring
+\item these two structures are themselves equivalent
+\end{itemize}
+SO if we are interested in studying type equivalences, we can study
+permutations on finite sets; the latter can be axiomatized which is
+nice
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A Calculus of Permutations}
 
@@ -314,7 +352,7 @@ languages~\cite{popularsem}:
 \ldots formal semantics has fed upon increasing complexity of concepts          
 and notation at the expense of calculational clarity. A newcomer to             
 the area is expected to specialize in one or more of domain theory,             
-inuitionistic type theory, category theory, linear logic, process              
+intuitionistic type theory, category theory, linear logic, process              
 algebra, continuation-passing style, or whatever. These                         
 specializations have generated more experts but fewer general users.            
 \end{quote}                                                                     
