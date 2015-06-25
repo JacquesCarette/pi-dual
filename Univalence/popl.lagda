@@ -334,8 +334,25 @@ More generally, we can prove the following theorem.
   $A \simeq B$ then $m = n$.
 \end{theorem}
 \begin{proof}
-...
-\end{proof}
+
+The equivalence of $A$ to $\mathsf{Fin}~m$ gives a \emph{particular}
+enumeration of the elements of $A$. Similarly the equivalence of $B$
+to $\mathsf{Fin}~n$ gives a \emph{particular} enumeration of the
+elements of $B$. The proof proceeds by cases on the possible values
+for $m$ and $n$. If they are different, we quickly get a
+contradition. If they are both 0 we are done. The interesting
+situation is when $m = \mathit{suc}~m'$ and $n = \mathit{suc}~n'$. The
+result follows in this case by induction assuming we can establish
+that the equivalence between $A$ and $B$, i.e., the equivalence
+between $\mathsf{Fin}~(\mathit{suc}~m')$ and
+$\mathsf{Fin}~(\mathit{suc}~n')$, implies an equivalence between
+$\mathsf{Fin}~m'$ and $\mathsf{Fin}~n'$. In our setting, we actually
+need to construct a particular equivalence between the smaller sets
+given the equivalence of the larger sets with one additional
+element. This lemma is quite tedious as it requires us to isolate one
+element of $\mathsf{Fin}~(\mathit{suc}~m')$ and analyze every place
+this element could be mapped by the larger equivalence and in each
+case construct an equivalence that excludes this element. \end{proof}
 
 As outlined above, the \emph{constructive} proof of this theorem is
 quite subtle. The theorem establishes that, up to equivalence, the
