@@ -200,7 +200,12 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
   swap⋆dist⇔r : {t₁ t₂ t₃ : U} →
     (swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆)) ◎ swap₊ ⇔
     (id⟷ {t₁} ⊗ swap₊ {t₂} {t₃}) ◎ swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆)
-      
+  assocl₊-dist-dist⇔l : {t₁ t₂ t₃ t₄ : U} →
+    ((assocl₊ {t₁} {t₂} {t₃} ⊗ id⟷ {t₄}) ◎ dist) ◎ (dist ⊕ id⟷) ⇔
+      (dist ◎ (id⟷ ⊕ dist)) ◎ assocl₊
+  assocl₊-dist-dist⇔r : {t₁ t₂ t₃ t₄ : U} →
+    (dist {t₁} ◎ (id⟷ ⊕ dist {t₂} {t₃} {t₄})) ◎ assocl₊ ⇔
+      ((assocl₊ ⊗ id⟷) ◎ dist) ◎ (dist ⊕ id⟷)
 -- better syntax for writing 2paths
 
 infix  2  _▤       
@@ -295,6 +300,8 @@ _▤ c = id⇔
 2! factorzr⇔r = factorzr⇔l
 2! swap⋆dist⇔l = swap⋆dist⇔r
 2! swap⋆dist⇔r = swap⋆dist⇔l
+2! assocl₊-dist-dist⇔l = assocl₊-dist-dist⇔r
+2! assocl₊-dist-dist⇔r = assocl₊-dist-dist⇔l
 
 -- a nice example of 2 paths
 
