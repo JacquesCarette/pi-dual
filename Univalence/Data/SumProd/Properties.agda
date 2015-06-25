@@ -60,3 +60,19 @@ factor-swap⋆-lemma : {A B C : Set} → (x : (C × A) ⊎ (C × B)) →
   factor (map⊎ swap⋆ swap⋆ x) P.≡ swap⋆ (factorl x)
 factor-swap⋆-lemma (inj₁ x) = P.refl
 factor-swap⋆-lemma (inj₂ y) = P.refl
+
+dist-dist-assoc-lemma : {A B C D : Set} → (x : (A ⊎ B ⊎ C) × D) →
+  map⊎ dist F.id (dist (assocl₊ (proj₁ x), proj₂ x)) P.≡
+  assocl₊ (map⊎ F.id dist (dist x))
+dist-dist-assoc-lemma (inj₁ x , d) = P.refl
+dist-dist-assoc-lemma (inj₂ (inj₁ x) , d) = P.refl
+dist-dist-assoc-lemma (inj₂ (inj₂ y) , d) = P.refl
+
+assoc-factor-factor-lemma : {A B C D : Set} → (x : ((A × D) ⊎ (B × D)) ⊎ (C × D)) →
+  (assocr₊ (proj₁ (factor (map⊎ factor F.id x))), proj₂ (factor (map⊎ factor F.id x)))
+  P.≡
+  factor (map⊎ F.id factor (assocr₊ x))
+assoc-factor-factor-lemma (inj₁ (inj₁ x)) = P.refl
+assoc-factor-factor-lemma (inj₁ (inj₂ y)) = P.refl
+assoc-factor-factor-lemma (inj₂ y) = P.refl
+

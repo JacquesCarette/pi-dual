@@ -80,7 +80,7 @@ open import PiLevel1
         absorbl⇔l; absorbr⇔l; factorzl⇔l; factorzr⇔l;
         dist⇔; factor⇔; dist′⇔; idl◎r; linv◎r;
         hom◎⊕⇔; factor′⇔;
-        swap⋆dist⇔l; swap⋆dist⇔r)
+        swap⋆dist⇔l; swap⋆dist⇔r; assocl₊-dist-dist⇔l)
 
 ------------------------------------------------------------------------------
 -- The equality of morphisms is derived from the coherence conditions
@@ -529,7 +529,10 @@ Pi0Rig = record
   ; annₗ = x⊗0≡0 
   ; annᵣ = 0⊗x≡0
   ; laplazaI = swap⋆dist⇔l
+    -- this next one is provable because of the definition of
+    -- the inverse distribution law
   ; laplazaII = trans⇔
     (idl◎r {c = dist ◎ (swap⋆ ⊕ swap⋆)})
     (trans⇔ (linv◎r ⊡ id⇔) assoc◎r)
+  ; laplazaIV = assocl₊-dist-dist⇔l
   }
