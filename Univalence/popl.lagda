@@ -128,6 +128,10 @@ we demonstrate their utility through an example.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
 
+\amr{Define and motivate that we are interested in defining HoTT  
+  equivalences of types, characterizing them, computing with them,
+  etc.}
+  
 Quantum Computing. Quantum physics differs from classical physics in \textcolor{red}{many} ways:
 
 \begin{itemize}
@@ -211,8 +215,34 @@ Semiring structures abound. We can define them on types, type
 equivalences, and on permutations of finite sets.
 
 %%%%%%%%%%%%
-\subsection{Commutative Semirings}
+\subsection{HoTT Equivalences of Types} 
 
+There are several equivalent definitions of the notion of equivalence
+of types. For concreteness, we use the following definition as it
+appears to be the most intuitive in our setting.
+
+\begin{definition}
+  Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
+  \emph{bi-invertible} $f : A \rightarrow B$, i.e., if there exists an
+  $f$ that has both a left-inverse and a right-inverse. A function
+  $f : A \rightarrow$ has a left-inverse if there exists a
+  $g : B \rightarrow A$ such that $g \circ f = \mathrm{id}_A$ and
+  similarly for right-inverse.
+\end{definition}
+
+As the definition of equivalence is parameterized by a function $f$,
+we are concerned with, not just the fact that two types are
+equivalent, but with the precise way in which they are equivalent. For
+example, there are two equivalences between the type
+\AgdaDatatype{Bool} and itself: one that uses the identity for $f$
+(and hence for $g$) and one uses boolean negation for $f$ and hence
+for $g$. These two equivalences are \emph{not} equivalent: each of
+them can be used to ``transport'' properties of \AgdaDatatype{Bool} in
+a different way.
+
+%%%%%%%%%%%%
+\subsection{Commutative Semirings}
+ 
 Given that the structure of commutative semirings is central to this
 section, we recall the formal algebraic definition.
 
@@ -236,7 +266,7 @@ a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
 \end{definition}
 
 We will be interested into various commutative semiring structures up
-to some congruence relation $\sim$ instead of strict equality~$=$. 
+to some congruence relation instead of strict equality~$=$.
 
 %%%%%%%%%%%%
 \subsection{Instance I: Universe of Types}
@@ -245,10 +275,8 @@ The first commutative semiring instance we examine is the universe of
 types (\AgdaDatatype{Set} in Agda terminology). The additive unit is
 the empty type $\bot$; the multiplicative unit is the unit type
 $\top$; the two binary operations are disjoint union $\uplus$ and
-cartesian product $\times$. The axioms are satisfied up to isomorphism
-of types, i.e., up to the relation $\simeq$ that relates two types if
-there exists a pair of mediating maps between them that compose to the
-identity function in both directions. 
+cartesian product $\times$. The axioms are satisfied up to equivalence
+of types~$\simeq$.
 
 For example, we have equivalences such as:
 \[\begin{array}{rcl}
@@ -269,28 +297,52 @@ semiring (up to $\simeq$).
 %%%%%%%%%%%%
 \subsection{Instance II: Finite Sets}
  
-\amr{HERE}
+The collection of all finite sets (\AgdaDatatype{Fin}~$m$ for natural
+number $m$ in Agda terminology) is another commutative semiring
+instance. In this case, the additive unit is \AgdaDatatype{Fin}~$0$,
+the multiplicative unit is \AgdaDatatype{Fin}~$1$, the two binary
+operations are still disjoint union~$\uplus$ and cartesian
+product~$\times$, and the axioms are also satisfied up to equivalence
+of types~$\simeq$.
 
+The reason finite sets are interesting is that each finite type~$A$
+constructed from~$\bot$, $\top$, $\uplus$, and $\times$ is equivalent
+to a canonical representative \AgdaDatatype{Fin}~$|A|$ where $|A|$ is
+the size of $A$ defined as follows:
+\[\begin{array}{rcl}
+|\bot| &=& 0 \\
+|\top| &=& 1 \\
+|A \uplus B| &=& |A| + |B| \\
+|A \times B| &=& |A| * |B| 
+\end{array}\]
 
+For example, we have equivalences such as:
+\[\begin{array}{rcl}
+\mathsf{Fin}~0 &\simeq& \bot \\
+\mathsf{Fin}~1 &\simeq& \top \\
+(\mathsf{Fin}~m \uplus \mathsf{Fin}~n) &\simeq& \mathsf{Fin}~(m + n) \\
+ (\mathsf{Fin}~m \times \mathsf{Fin}~n) &\simeq& \mathsf{Fin}~(m * n) \\
+(\mathsf{Fin}~(0+m) &\simeq& \mathsf{Fin}~m \\
+\top \uplus (\top \uplus \top) &\simeq& \mathsf{Fin}~3 \\
+ (\top \uplus \top) \times (\top \uplus \top) &\simeq& \mathsf{Fin}~4
+\end{array}\]
 
-In addition, we have equivalences such as
-$\top \uplus (\top \uplus \top) \simeq \mathsf{Fin}~3$ and
-$(\top \uplus \top) \times (\top \uplus \top) \simeq \mathsf{Fin}~4$
-which establish that every type constructed from sums and products
-over the empty type and the unit type is, up to $\simeq$, equivalent
-to a finite set $\mathsf{Fin}~m$ for some natural number $m$. More
-generally, we can prove the following theorem.
+More generally, we can prove the following theorem.
 
 \begin{theorem}
-If $A\simeq \mathsf{Fin}~m$, $B\simeq \mathsf{Fin}~n$ and $A \simeq B$ then $m ≡ n$.
+  If $A\simeq \mathsf{Fin}~m$, $B\simeq \mathsf{Fin}~n$ and
+  $A \simeq B$ then $m = n$.
 \end{theorem}
+\begin{proof}
+...
+\end{proof}
 
-This theorem, whose \emph{constructive} proof is quite subtle,
-establishes that, up to equivalence, the only interesting property of
-a type constructed from sums and products over the empty type and the
-unit type is its size. This result allows us to characterize
-equivalences between types in a canonical way as permutations between
-finite sets. 
+As outlined above, the \emph{constructive} proof of this theorem is
+quite subtle. The theorem establishes that, up to equivalence, the
+only interesting property of a finite type is its size. This result
+allows us to characterize equivalences between finite types in a
+canonical way as permutations between finite sets as we demonstrate
+next.
 
 %%%%%%%%%%%%
 \subsection{Permutations on Finite Sets} 
@@ -356,13 +408,6 @@ intuitionistic type theory, category theory, linear logic, process
 algebra, continuation-passing style, or whatever. These                         
 specializations have generated more experts but fewer general users.            
 \end{quote}                                                                     
-
-We are concerned, not just with the fact that two types
-are equivalent, but with the precise way in which they are
-equivalent. For example, there are two equivalences between the type
-\AgdaDatatype{Bool} and itself: identity and negation. Each of these
-equivalences can be used to ``transport'' properties of
-\AgdaDatatype{Bool} in a different way. 
 
 \emph{Typed} Isomorphisms
 
