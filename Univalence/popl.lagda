@@ -81,6 +81,7 @@ $\displaystyle
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{conj}{Conjecture}
+\newtheorem{definition}{Definition}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \renewcommand{\AgdaCodeStyle}{\small}
@@ -100,6 +101,8 @@ $\displaystyle
 
 \newcommand{\jc}[1]{\authornote{purple}{JC}{#1}}
 \newcommand{\as}[1]{\authornote{magenta}{AS}{#1}}
+
+\newcommand{\amr}[1]{\fbox{\begin{minipage}{0.4\textwidth}\color{red}{Amr says: #1}\end{minipage}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
@@ -125,6 +128,10 @@ we demonstrate their utility through an example.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
 
+\amr{Define and motivate that we are interested in defining HoTT  
+  equivalences of types, characterizing them, computing with them,
+  etc.}
+  
 Quantum Computing. Quantum physics differs from classical physics in \textcolor{red}{many} ways:
 
 \begin{itemize}
@@ -184,7 +191,7 @@ Start with a \emph{foundational} syntactic theory on our way there:
 
 A Syntactic Theory. 
 Ideally want a notation that is easy to write by programmers and that
-is easy to mechnically manipulate for reasoning and optimizing of circuits.
+is easy to mechanically manipulate for reasoning and optimizing of circuits.
 
 Syntactic calculi good. 
 Popular semantics: Despite the increasing importance of formal
@@ -198,8 +205,228 @@ they require no additional background beyond knowledge of the
 programming language itself, and they provide a direct support for the
 equational reasoning underlying many program transformations.
 
+The primary abstraction in HoTT is 'type equivalences.'
+If we care about resource preservation, then we are concerned with 'type equivalences'.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{\emph{Typed} Isomorphisms}
+\section{Equivalences and Commutative Semirings} 
+
+Semiring structures abound. We can define them on types, type
+equivalences, and on permutations of finite sets.
+
+%%%%%%%%%%%%
+\subsection{HoTT Equivalences of Types} 
+
+There are several equivalent definitions of the notion of equivalence
+of types. For concreteness, we use the following definition as it
+appears to be the most intuitive in our setting.
+
+\begin{definition}
+  Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
+  \emph{bi-invertible} $f : A \rightarrow B$, i.e., if there exists an
+  $f$ that has both a left-inverse and a right-inverse. A function
+  $f : A \rightarrow$ has a left-inverse if there exists a
+  $g : B \rightarrow A$ such that $g \circ f = \mathrm{id}_A$ and
+  similarly for right-inverse.
+\end{definition}
+
+As the definition of equivalence is parameterized by a function $f$,
+we are concerned with, not just the fact that two types are
+equivalent, but with the precise way in which they are equivalent. For
+example, there are two equivalences between the type
+\AgdaDatatype{Bool} and itself: one that uses the identity for $f$
+(and hence for $g$) and one uses boolean negation for $f$ and hence
+for $g$. These two equivalences are \emph{not} equivalent: each of
+them can be used to ``transport'' properties of \AgdaDatatype{Bool} in
+a different way.
+
+%%%%%%%%%%%%
+\subsection{Commutative Semirings}
+ 
+Given that the structure of commutative semirings is central to this
+section, we recall the formal algebraic definition.
+
+\begin{definition}
+  A \emph{commutative semiring} consists of a set $R$, two
+  distinguished elements of $R$ named 0 and 1, and two binary
+  operations $+$ and $\cdot$, satisfying the following relations for
+  any $a,b,c \in R$:
+\[\begin{array}{rcl}
+0 + a &=& a \\
+a + b &=& b + a \\
+a + (b + c) &=& (a + b) + c \\
+\\
+1 \cdot a &=& a \\
+a \cdot b &=& b \cdot a \\
+a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
+\\
+0 \cdot a &=& 0 \\
+(a + b) \cdot c &=& (a \cdot c) + (b \cdot c)
+\end{array}\]
+\end{definition}
+
+We will be interested into various commutative semiring structures up
+to some congruence relation instead of strict equality~$=$.
+
+%%%%%%%%%%%%
+\subsection{Instance I: Universe of Types}
+
+The first commutative semiring instance we examine is the universe of
+types (\AgdaDatatype{Set} in Agda terminology). The additive unit is
+the empty type $\bot$; the multiplicative unit is the unit type
+$\top$; the two binary operations are disjoint union $\uplus$ and
+cartesian product $\times$. The axioms are satisfied up to equivalence
+of types~$\simeq$.
+
+For example, we have equivalences such as:
+\[\begin{array}{rcl}
+\bot ⊎ A &\simeq& A \\
+\top \times A &\simeq& A \\
+A \times (B \times C) &\simeq& (A \times B) \times C \\
+A \times \bot &\simeq& \bot \\
+A \times (B \uplus C) &\simeq& (A \times B) \uplus (A \times C) 
+\end{array}\]
+
+Formally we have the following fact. 
+
+\begin{theorem}
+The collection of all types (\AgdaDatatype{Set}) forms a commutative 
+semiring (up to $\simeq$). 
+\end{theorem}
+
+%%%%%%%%%%%%
+\subsection{Instance II: Finite Sets}
+ 
+The collection of all finite sets (\AgdaDatatype{Fin}~$m$ for natural
+number $m$ in Agda terminology) is another commutative semiring
+instance. In this case, the additive unit is \AgdaDatatype{Fin}~$0$,
+the multiplicative unit is \AgdaDatatype{Fin}~$1$, the two binary
+operations are still disjoint union~$\uplus$ and cartesian
+product~$\times$, and the axioms are also satisfied up to equivalence
+of types~$\simeq$.
+
+The reason finite sets are interesting is that each finite type~$A$
+constructed from~$\bot$, $\top$, $\uplus$, and $\times$ is equivalent
+to a canonical representative \AgdaDatatype{Fin}~$|A|$ where $|A|$ is
+the size of $A$ defined as follows:
+\[\begin{array}{rcl}
+|\bot| &=& 0 \\
+|\top| &=& 1 \\
+|A \uplus B| &=& |A| + |B| \\
+|A \times B| &=& |A| * |B| 
+\end{array}\]
+
+For example, we have equivalences such as:
+\[\begin{array}{rcl}
+\mathsf{Fin}~0 &\simeq& \bot \\
+\mathsf{Fin}~1 &\simeq& \top \\
+(\mathsf{Fin}~m \uplus \mathsf{Fin}~n) &\simeq& \mathsf{Fin}~(m + n) \\
+ (\mathsf{Fin}~m \times \mathsf{Fin}~n) &\simeq& \mathsf{Fin}~(m * n) \\
+(\mathsf{Fin}~(0+m) &\simeq& \mathsf{Fin}~m \\
+\top \uplus (\top \uplus \top) &\simeq& \mathsf{Fin}~3 \\
+ (\top \uplus \top) \times (\top \uplus \top) &\simeq& \mathsf{Fin}~4
+\end{array}\]
+
+More generally, we can prove the following theorem.
+
+\begin{theorem}
+  If $A\simeq \mathsf{Fin}~m$, $B\simeq \mathsf{Fin}~n$ and
+  $A \simeq B$ then $m = n$.
+\end{theorem}
+\begin{proof}
+
+The equivalence of $A$ to $\mathsf{Fin}~m$ gives a \emph{particular}
+enumeration of the elements of $A$. Similarly the equivalence of $B$
+to $\mathsf{Fin}~n$ gives a \emph{particular} enumeration of the
+elements of $B$. The proof proceeds by cases on the possible values
+for $m$ and $n$. If they are different, we quickly get a
+contradition. If they are both 0 we are done. The interesting
+situation is when $m = \mathit{suc}~m'$ and $n = \mathit{suc}~n'$. The
+result follows in this case by induction assuming we can establish
+that the equivalence between $A$ and $B$, i.e., the equivalence
+between $\mathsf{Fin}~(\mathit{suc}~m')$ and
+$\mathsf{Fin}~(\mathit{suc}~n')$, implies an equivalence between
+$\mathsf{Fin}~m'$ and $\mathsf{Fin}~n'$. In our setting, we actually
+need to construct a particular equivalence between the smaller sets
+given the equivalence of the larger sets with one additional
+element. This lemma is quite tedious as it requires us to isolate one
+element of $\mathsf{Fin}~(\mathit{suc}~m')$ and analyze every place
+this element could be mapped by the larger equivalence and in each
+case construct an equivalence that excludes this element. \end{proof}
+
+As outlined above, the \emph{constructive} proof of this theorem is
+quite subtle. The theorem establishes that, up to equivalence, the
+only interesting property of a finite type is its size. This result
+allows us to characterize equivalences between finite types in a
+canonical way as permutations between finite sets as we demonstrate
+next.
+
+%%%%%%%%%%%%
+\subsection{Permutations on Finite Sets} 
+
+%%%%%%%%%%%%
+\subsection{Equivalences of Equivalences} 
+
+The point, of course, is that the type of all type equivalences is
+itself equivalent to the type of all permutations on finite
+sets. Formally, we have the following theorem.
+
+\begin{theorem}\label{Perm}
+If $A ≃ \mathsf{Fin}~m$ and $B ≃ \mathsf{Fin}~n$, then the type of all
+equivalences $A ≃ B$ is equivalent to the type of all permutations
+$\mathsf{Perm}~n$.
+\end{theorem}
+
+In fact we have the following stronger theorem.
+
+\begin{theorem}
+The equivalence of Theorem~\ref{Perm} is an \emph{isomorphism} between the
+semirings of equivalences of finite types, and of permutations.
+\end{theorem}
+
+A more evocative phrasing might be:
+
+\begin{theorem}
+$$ (A ≃ B) ≃ \mathsf{Perm} |A| $$
+\end{theorem}
+
+\amr{
+\begin{itemize}
+\item types are a commutative semiring
+\item type equivalences are a commutative semiring
+\item permutations on finite sets are another commutative semiring
+\item these two structures are themselves equivalent
+\end{itemize}
+SO if we are interested in studying type equivalences, we can study
+permutations on finite sets; the latter can be axiomatized which is
+nice
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A Calculus of Permutations}
+
+A Calculus of Permutations.
+Syntactic theories only rely on transforming source programs to other           
+programs, much like algebraic calculation. Since only the                       
+\emph{syntax} of the programming language is relevant to the syntactic          
+theory, the theory is accessible to non-specialists like programmers            
+or students.                                                                    
+
+In more detail, it is a general problem that, despite its fundamental           
+value, formal semantics of programming languages is generally                   
+inaccessible to the computing public. As Schmidt argues in a recent             
+position statement on strategic directions for research on programming          
+languages~\cite{popularsem}:                                                    
+\begin{quote}                                                                   
+\ldots formal semantics has fed upon increasing complexity of concepts          
+and notation at the expense of calculational clarity. A newcomer to             
+the area is expected to specialize in one or more of domain theory,             
+intuitionistic type theory, category theory, linear logic, process              
+algebra, continuation-passing style, or whatever. These                         
+specializations have generated more experts but fewer general users.            
+\end{quote}                                                                     
+
+\emph{Typed} Isomorphisms
 
 First, a universe of (finite) types
 
@@ -230,58 +457,6 @@ and its interpretation
 ⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
 \end{code}
 
-Equivalences and semirings. If we denote type equivalence by $\simeq$, then we can prove that
-\begin{theorem}
-The collection of all types (\AgdaDatatype{Set}) forms a commutative
-semiring (up to $\simeq$).
-\end{theorem}
-We also get
-\begin{theorem}
-If $A\simeq \mathsf{Fin} m$, $B\simeq \mathsf{Fin} n$ and $A \simeq B$ then $m ≡ n$.
-\end{theorem}
-(whose \emph{constructive} proof is quite subtle).
-\begin{theorem}\label{Perm}
-If $A ≃ \mathsf{Fin} m$ and $B ≃ \mathsf{Fin} n$, then the type of all
-equivalences $A ≃ B$ is equivalent to the type of all permutations
-$\mathsf{Perm} n$.
-\end{theorem}
-
-Equivalences and semirings II. Semiring structures abound.  We can define them on:
-\begin{enumerate}
-\item equivalences (disjoint union and cartesian product)
-\item permutations (disjoint union and tensor product)
-\end{enumerate}
-The point, of course, is that they are related:
-\begin{theorem}
-The equivalence of Theorem~\ref{Perm} is an \textcolor{red}{isomorphism} between the
-semirings of equivalences of finite types, and of permutations.
-\end{theorem}
-A more evocative phrasing might be:
-\begin{theorem}
-$$ (A ≃ B) ≃ \mathsf{Perm} |A| $$
-\end{theorem}
-
-A Calculus of Permutations.
-Syntactic theories only rely on transforming source programs to other           
-programs, much like algebraic calculation. Since only the                       
-\emph{syntax} of the programming language is relevant to the syntactic          
-theory, the theory is accessible to non-specialists like programmers            
-or students.                                                                    
-
-In more detail, it is a general problem that, despite its fundamental           
-value, formal semantics of programming languages is generally                   
-inaccessible to the computing public. As Schmidt argues in a recent             
-position statement on strategic directions for research on programming          
-languages~\cite{popularsem}:                                                    
-\begin{quote}                                                                   
-\ldots formal semantics has fed upon increasing complexity of concepts          
-and notation at the expense of calculational clarity. A newcomer to             
-the area is expected to specialize in one or more of domain theory,             
-inuitionistic type theory, category theory, linear logic, process              
-algebra, continuation-passing style, or whatever. These                         
-specializations have generated more experts but fewer general users.            
-\end{quote}                                                                     
-
 A Calculus of Permutations. First conclusion: it might be useful to
 \emph{reify} a (sound and complete) set of equivalences as
 combinators, such as the fundamental ``proof rules'' of semirings:
@@ -292,7 +467,6 @@ infix  30 _⟷_
 infixr 50 _◎_
 \end{code}
 }
-\renewcommand{\AgdaCodeStyle}{\tiny}
 
 \begin{code}
 data _⟷_ : U → U → Set where
