@@ -338,7 +338,13 @@ In the remainder of the paper, we will refer to the type of all
 equivalences between types $A$ and $B$ as $\textsc{eq}_{AB}$. As
 explained above, this type is inhabited only if $|A|=|B|$ in which
 case it has $|A|~!$ elements witnessing the various ways in which we
-can have $A \simeq B$.
+can have $A \simeq B$. We note that this type of all equivalences is
+itself a commutative semiring with the additive unit being the vacuous
+equivalence $\bot \simeq \bot$, the multiplicative unit being the
+trivial equivalence $\top \simeq \top$, the two binary operations
+essentially map $\uplus$ and $\times$ over equivalences, and the
+axioms are satisfied up to extensional equality of the functions
+underlying the equivalences.
 
 %%%%%%%%%%%%
 \subsection{Permutations on Finite Sets} 
@@ -371,7 +377,13 @@ In the remainder of the paper, we will refer to the type of all
 permutations between finite sets $\mathsf{Fin}~m$ and $\mathsf{Fin}~n$
 as $\textsc{perm}_{mn}$. This type is only inhabited if $m=n$ in which
 case it has $m!$ elements, each of which witnesses one of the possible
-permutations $\mathsf{CPerm}~m~n$.
+permutations $\mathsf{CPerm}~m~n$. We note that this type of all
+permutations is itself a commutative semiring with the additive unit
+being the vacuous permutations $\mathsf{CPerm}~0~0$, the
+multiplicative unit being the trivial permutations
+$\mathsf{CPerm}~1~1$, the two binary operations essentially map
+$\uplus$ and $\times$ over permutations, and the axioms are satisfied
+up to strict equality of the vectors underlying the permutations.
 
 %%%%%%%%%%%%
 \subsection{Equivalences of Equivalences} 
@@ -379,12 +391,7 @@ permutations $\mathsf{CPerm}~m~n$.
 The main result of this section is that the type of all equivalences
 between finite types $A$ and $B$, $\textsc{eq}_{AB}$, is equivalent to
 the type of all permutations $\textsc{perm}_{mn}$ where $m = |A|$ and
-$n = |B|$.\footnote{In fact we have the following stronger theorem:
-\begin{theorem}
-The equivalence of Theorem~\ref{Perm} is an \emph{isomorphism} between the
-semirings of equivalences of finite types, and of permutations.
-\end{theorem}
-}
+$n = |B|$.
 
 \begin{theorem}\label{Perm}
 If $A ≃ \mathsf{Fin}~m$ and $B ≃ \mathsf{Fin}~n$, then the type of all
@@ -392,7 +399,7 @@ equivalences $\textsc{eq}_{AB}$ is equivalent to the type of all
 permutations $\textsc{perm}~m~n$.
 \end{theorem}
 \begin{proof}
-...
+Although long and tedious, this proof is really straightforward. \amr{say more}
 \end{proof}
 
 With the proper Agda definitions, we can rephrase the theorem in a way
@@ -407,6 +414,25 @@ studying type equivalences, up to equivalence, it suffices to study
 permutations on finite sets. This will prove quite handy as, unlike
 the former, the latter notion can be inductively defined which gives
 it a natural computational interpretation. 
+
+Before concluding this section, we recall that both the type of all
+equivalences and the type of all permutations are commutative
+semirings and in fact the previous theorem can be generalized to a
+stronger theorem asserting that these two commutative semiring
+structures are \emph{isomorphic}.
+
+\begin{theorem}
+The equivalence of Theorem~\ref{Perm} is an \emph{isomorphism} between
+the commutative semiring of equivalences of finite types and the
+commutative semiring of permutations.
+\end{theorem}
+
+\amr{We haven't said anything about the categorical structure: it is
+not just a commutative semiring but a commutative rig; this is crucial
+because the former doesn't take composition into account. Perhaps that
+is the next section in which we talk about computational
+interpretation as one of the fundamental things we want from a notion
+of computation is composition (cf. Moggi's original paper on monads).}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A Calculus of Permutations}
