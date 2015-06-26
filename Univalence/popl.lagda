@@ -334,6 +334,12 @@ this element could be mapped to by the larger equivalence and in each
 case construct an equivalence that excludes this element.
 \end{proof}
 
+In the remainder of the paper, we will refer to the type of all
+equivalences between types $A$ and $B$ as $\textsc{eq}_{AB}$. As
+explained above, this type is inhabited only if $|A|=|B|$ in which
+case it has $|A|~!$ elements witnessing the various ways in which we
+can have $A \simeq B$.
+
 %%%%%%%%%%%%
 \subsection{Permutations on Finite Sets} 
 
@@ -354,55 +360,53 @@ components. The first two components are:
 \item a dual vector of size $m$ containing elements drawn from the finite 
   set $\mathsf{Fin}~n$; 
 \end{itemize}
-Each of the above vectors is viewed as a map $f$ that acts on the
-incoming finite set sending the element at index $i$ to position
+Each of the above vectors can be interpreted as a map $f$ that acts on
+the incoming finite set sending the element at index $i$ to position
 $f !! i$ in the resulting finite set. To guarantee that these maps
 define an actual permutation, the last two components are proofs that
 the sequential composition of the maps in both direction produce the
 identity.
 
+In the remainder of the paper, we will refer to the type of all
+permutations between finite sets $\mathsf{Fin}~m$ and $\mathsf{Fin}~n$
+as $\textsc{perm}_{mn}$. This type is only inhabited if $m=n$ in which
+case it has $m!$ elements, each of which witnesses one of the possible
+permutations $\mathsf{CPerm}~m~n$.
+
 %%%%%%%%%%%%
 \subsection{Equivalences of Equivalences} 
 
-The main result of this section is that the type of type equivalences
-is equivalent to the type of permutations.  
-
-\paragraph*{Type of All Equivalences between Finite Types.}
-
-\paragraph*{Type of All Permutations between Finite Sets.}
-
-
-
-\begin{theorem}\label{Perm}
-If $A ≃ \mathsf{Fin}~m$ and $B ≃ \mathsf{Fin}~n$, then the type of all
-equivalences $A ≃ B$ is equivalent to the type of all permutations
-$\mathsf{Perm}~n$.
-\end{theorem}
-
-In fact we have the following stronger theorem.
-
+The main result of this section is that the type of all equivalences
+between finite types $A$ and $B$, $\textsc{eq}_{AB}$, is equivalent to
+the type of all permutations $\textsc{perm}_{mn}$ where $m = |A|$ and
+$n = |B|$.\footnote{In fact we have the following stronger theorem:
 \begin{theorem}
 The equivalence of Theorem~\ref{Perm} is an \emph{isomorphism} between the
 semirings of equivalences of finite types, and of permutations.
 \end{theorem}
+}
 
-A more evocative phrasing might be:
+\begin{theorem}\label{Perm}
+If $A ≃ \mathsf{Fin}~m$ and $B ≃ \mathsf{Fin}~n$, then the type of all
+equivalences $\textsc{eq}_{AB}$ is equivalent to the type of all
+permutations $\textsc{perm}~m~n$.
+\end{theorem}
+\begin{proof}
+...
+\end{proof}
+
+With the proper Agda definitions, we can rephrase the theorem in a way
+that is more evocative of the phrasing of the \emph{univalence} axiom.
 
 \begin{theorem}
-$$ (A ≃ B) ≃ \mathsf{Perm} |A| $$
+$$ (A ≃ B) ≃ \mathsf{Perm} |A| |B| $$
 \end{theorem}
 
-\amr{
-\begin{itemize}
-\item types are a commutative semiring
-\item type equivalences are a commutative semiring
-\item permutations on finite sets are another commutative semiring
-\item these two structures are themselves equivalent
-\end{itemize}
-SO if we are interested in studying type equivalences, we can study
-permutations on finite sets; the latter can be axiomatized which is
-nice
-}
+To summarize the result of this section: if we are interested in
+studying type equivalences, up to equivalence, it suffices to study
+permutations on finite sets. This will prove quite handy as, unlike
+the former, the latter notion can be inductively defined which gives
+it a natural computational interpretation. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A Calculus of Permutations}
