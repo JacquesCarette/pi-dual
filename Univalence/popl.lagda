@@ -234,14 +234,14 @@ appears to be the most intuitive in our setting.
   $f \circ g = \mathrm{id}_B$.
 \end{definition}
 Note that the function $g$ used for the left-inverse may be different
-from the function $g$ used for the right-inverse.
+than the function $g$ used for the right-inverse.
 
 As the definition of equivalence is parameterized by a function~$f$,
 we are concerned with, not just the fact that two types are equivalent,
 but with the precise way in which they are equivalent. For example,
 there are two equivalences between the type \AgdaDatatype{Bool} and
 itself: one that uses the identity for $f$ (and hence for $g$) and one
-uses boolean negation for $f$ (and hence for $g$). These two
+that uses boolean negation for $f$ (and hence for $g$). These two
 equivalences are themselves \emph{not} equivalent: each of them can be
 used to ``transport'' properties of \AgdaDatatype{Bool} in a different
 way.
@@ -250,11 +250,13 @@ way.
 \subsection{Instance I: Universe of Types}
 
 The first commutative semiring instance we examine is the universe of
-types (\AgdaDatatype{Set} in Agda terminology). The additive unit is
-the empty type $\bot$; the multiplicative unit is the unit type
-$\top$; the two binary operations are disjoint union $\uplus$ and
-cartesian product $\times$. The axioms are satisfied up to equivalence
-of types~$\simeq$. For example, we have equivalences such as:
+types (\AgdaDatatype{Set} in Agda terminology). (See
+Appendix~\ref{sec:commrig} for the definition of commutative rings.)
+The additive unit is the empty type $\bot$; the multiplicative unit is
+the unit type $\top$; the two binary operations are disjoint union
+$\uplus$ and cartesian product $\times$. The axioms are satisfied up
+to equivalence of types~$\simeq$. For example, we have equivalences
+such as:
 \[\begin{array}{rcl}
 \bot ⊎ A &\simeq& A \\
 \top \times A &\simeq& A \\
@@ -346,6 +348,11 @@ essentially map $\uplus$ and $\times$ over equivalences, and the
 axioms are satisfied up to extensional equality of the functions
 underlying the equivalences.
 
+\begin{theorem}
+The collection of all equivalences $\textsc{eq}_{AB}$ for finite types
+$A$ and $B$ forms a commutative semiring.
+\end{theorem}
+
 %%%%%%%%%%%%
 \subsection{Permutations on Finite Sets} 
 
@@ -385,6 +392,11 @@ $\mathsf{CPerm}~1~1$, the two binary operations essentially map
 $\uplus$ and $\times$ over permutations, and the axioms are satisfied
 up to strict equality of the vectors underlying the permutations.
 
+\begin{theorem}
+The collection of all permutations $\textsc{perm}_{mn}$ for natural
+numbers $m$ and $n$ forms a commutative semiring.
+\end{theorem}
+
 %%%%%%%%%%%%
 \subsection{Equivalences of Equivalences} 
 
@@ -399,11 +411,12 @@ equivalences $\textsc{eq}_{AB}$ is equivalent to the type of all
 permutations $\textsc{perm}~m~n$.
 \end{theorem}
 \begin{proof}
-Although long and tedious, this proof is really straightforward. \amr{say more}
+Although long and tedious, this proof is straightforward.
 \end{proof}
 
-With the proper Agda definitions, we can rephrase the theorem in a way
-that is more evocative of the phrasing of the \emph{univalence} axiom.
+With the proper Agda definitions, we can rephrase this theorem in a
+more evocative way. We will discuss the relevance of this theorem to
+the \emph{univalence} postulate in the conclusion.
 
 \begin{theorem}
 $$ (A ≃ B) ≃ \mathsf{Perm} |A| |B| $$
@@ -427,40 +440,24 @@ the commutative semiring of equivalences of finite types and the
 commutative semiring of permutations.
 \end{theorem}
 
-\amr{We haven't said anything about the categorical structure: it is
-not just a commutative semiring but a commutative rig; this is crucial
-because the former doesn't take composition into account. Perhaps that
-is the next section in which we talk about computational
-interpretation as one of the fundamental things we want from a notion
-of computation is composition (cf. Moggi's original paper on monads).}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A Calculus of Permutations}
 
-A Calculus of Permutations.
-Syntactic theories only rely on transforming source programs to other           
-programs, much like algebraic calculation. Since only the                       
-\emph{syntax} of the programming language is relevant to the syntactic          
-theory, the theory is accessible to non-specialists like programmers            
-or students.                                                                    
+In the previous section, we argued that, up to equivalence, the
+equivalence of types reduces to permutations on finite sets. The
+former notion relies on function equivalence and cannot be defined
+inductively. The second notion is easy to define in a computational
+framework but is too level from a programmer perspective. We propose a
+middle ground: a computational framework for expressing, computing,
+and optimizing equivalences between finite types. We will then relate
+this calculus to equivalences on one hand and to permutations on the
+other hand.
 
-In more detail, it is a general problem that, despite its fundamental           
-value, formal semantics of programming languages is generally                   
-inaccessible to the computing public. As Schmidt argues in a recent             
-position statement on strategic directions for research on programming          
-languages~\cite{popularsem}:                                                    
-\begin{quote}                                                                   
-\ldots formal semantics has fed upon increasing complexity of concepts          
-and notation at the expense of calculational clarity. A newcomer to             
-the area is expected to specialize in one or more of domain theory,             
-intuitionistic type theory, category theory, linear logic, process              
-algebra, continuation-passing style, or whatever. These                         
-specializations have generated more experts but fewer general users.            
-\end{quote}                                                                     
+%%%%%%%%%%%%
+\subsection{Typed Isomorphisms between Finite Types}
 
-\emph{Typed} Isomorphisms
-
-First, a universe of (finite) types
+We \emph{reify} a (sound and complete) set of equivalences as
+combinators, such as the fundamental ``proof rules'' of semirings.
 
 \AgdaHide{
 \begin{code}
@@ -488,10 +485,6 @@ and its interpretation
 ⟦ PLUS t₁ t₂ ⟧  = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
 ⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
 \end{code}
-
-A Calculus of Permutations. First conclusion: it might be useful to
-\emph{reify} a (sound and complete) set of equivalences as
-combinators, such as the fundamental ``proof rules'' of semirings:
 
 \AgdaHide{
 \begin{code}
@@ -1681,6 +1674,13 @@ Manipulating circuits. Nice framework, but:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Categorification I}
 
+\amr{We haven't said anything about the categorical structure: it is
+not just a commutative semiring but a commutative rig; this is crucial
+because the former doesn't take composition into account. Perhaps that
+is the next section in which we talk about computational
+interpretation as one of the fundamental things we want from a notion
+of computation is composition (cf. Moggi's original paper on monads).}
+
 Type equivalences (such as between $A × B$ and $B × A$) are \textcolor{red}{Functors}.
 
 \noindent Equivalences between Functors are \textcolor{red}{Natural Isomorphisms}.  At the value-level,
@@ -2231,8 +2231,34 @@ Somehow, at the end of the day, it seems we're looking for a confluent, terminat
 \includegraphics{IMAG0342.jpg}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+
+Our theorem shows that, in the case of finite types, reversible
+computation via type isomorphisms \emph{is} the computational
+interpretation of univalence. The alternative presentation of the
+theorem exposes it as an instance of \emph{univalence}. In the
+conventional HoTT setting, univalence is postulated as an axiom that
+lacking computational content. In more detail, the conventional HoTT
+approach starts with two, a priori, different notions: functions and
+identities (paths), and then postulates an equivalence between a
+particular class of functions (equivalences) and paths. Most functions
+are not equivalences and hence are evidently unrelated to paths. An
+interesting question then poses itself: since reversible computational
+models --- in which all functions have inverses --- are known to be
+universal computational models, what would happen if we considered a
+variant of HoTT based exclusively on reversible functions?  Presumably
+in such a variant, all functions --- being reversible --- would
+potentially correspond to paths and the distinction between the two
+notions would vanish making the univalence postulate unnecessary. This
+is the precise technical idea that is captured in theorem above for
+the limited case of finite types.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \appendix
 \section{Commutative Semirings}
+\label{sec:commrig}
  
 Given that the structure of commutative semirings is central to this
 paper, we recall the formal algebraic definition.
