@@ -455,11 +455,37 @@ this calculus to equivalences on one hand and to permutations on the
 other hand.
 
 %%%%%%%%%%%%
-\subsection{Pi}
+\subsection{$\Pi$}
 
-We introduce a simple language called $\Pi$ whose only computations
-are isomorphisms between finite
-types~\citeyearpar{James:2012:IE:2103656.2103667}. 
+In previous work~\cite{James:2012:IE:2103656.2103667}, we introduce
+the $\Pi$ family of languages whose only computations are isomorphisms
+between finite types. We propose that this family of languages is
+exactly the right programmatic interface for manipulating and
+reasoning about type equivalences and permutations on finite sets. In
+the variant we consider, the set of types $\tau$ includes the empty
+type 0, the unit type 1, and conventional sum and product types. The
+values classified by these types are the conventional ones: $()$ of
+type 1, $\inl{v}$ and $\inr{v}$ for injections into sum types, and
+$(v_1,v_2)$ for product types:
+\[\begin{array}{lrcl}
+(\textit{Types}) & 
+  \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
+(\textit{Values}) & 
+  v &::=& () \alt \inl{v} \alt \inr{v} \alt (v_1,v_2) \\
+(\textit{Combinator types}) &&& \tau_1 \iso \tau_2 \\
+(\textit{Combinators}) & 
+  c &::=& [\textit{see Fig.~\ref{pi-combinators}}]
+\end{array}\]
+The interesting syntactic category of $\Pi$ is that of
+\emph{combinators} which are witnesses for type isomorphisms $\tau_1
+\iso \tau_2$. They consist of base combinators (on the left side of
+Fig.~\ref{pi-combinators}) and compositions (on the right side of the
+same figure). Each line of the figure on the left introduces a pair of
+dual constants\footnote{where $\swapp$ and $\swapt$ are self-dual.}
+that witness the type isomorphism in the middle. If recursive types
+and a trace operator are added, the language becomes Turing
+complete~\cite{James:2012:IE:2103656.2103667,rc2011}. We will not be
+concerned with this extension in the main body of this paper.
 
 \begin{figure*}[ht]
 \[\begin{array}{cc}
@@ -505,69 +531,25 @@ types~\citeyearpar{James:2012:IE:2103656.2103667}.
 \label{pi-combinators}}
 \end{figure*}
 
-The $\Pi$ family of languages is based on type isomorphisms. In the variant
-we consider, the set of types $\tau$ includes the empty type 0, the unit type
-1, and conventional sum and product types. The values classified by these
-types are the conventional ones: $()$ of type 1, $\inl{v}$ and $\inr{v}$ for
-injections into sum types, and $(v_1,v_2)$ for product types:
-\[\begin{array}{lrcl}
-(\textit{Types}) & 
-  \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
-(\textit{Values}) & 
-  v &::=& () \alt \inl{v} \alt \inr{v} \alt (v_1,v_2) \\
-(\textit{Combinator types}) &&& \tau_1 \iso \tau_2 \\
-(\textit{Combinators}) & 
-  c &::=& [\textit{see Fig.~\ref{pi-combinators}}]
-\end{array}\]
-The interesting syntactic category of $\Pi$ is that of \emph{combinators}
-which are witnesses for type isomorphisms $\tau_1 \iso \tau_2$. They consist
-of base combinators (on the left side of Fig.~\ref{pi-combinators}) and
-compositions (on the right side of the same figure). Each line of the figure
-on the left introduces a pair of dual constants\footnote{where $\swapp$ and
-$\swapt$ are self-dual.} that witness the type isomorphism in the
-middle. 
-
 %%%%%%%%%%%%
-\subsection{Soundness}
+\subsection{Soundness and Completeness}
+
+The set of $\Pi$-combinators directly corresponds to the sound and
+complete set of isomorphisms for finite
+types~\cite{Fiore:2004,fiore-remarks}. 
 
 Show that pi combinators are valid equivalences
 
 Show that pi combinators are also valid permutations on finite sets
 
-We don't show completeness but pi combinators are designed by
-\emph{reifying} the fundamental ``proof rules'' of semirings as
-combinators. Also they correspond to the type isos that Fiore et al
-prove are sound and complete for finite types. So they are canonical
-enough.
+%%%%%%%%%%%%
+\subsection{Example Circuits}
 
-This set of isomorphisms is known to be
-complete~\cite{Fiore:2004,fiore-remarks} and the language is universal for
-hardware combinational
-circuits~\cite{James:2012:IE:2103656.2103667}.\footnote{If recursive types
-and a trace operator are added, the language becomes Turing
-complete~\cite{James:2012:IE:2103656.2103667,rc2011}. We will not be
-concerned with this extension in the main body of this paper but it will be
-briefly discussed in the conclusion.\jc{but don't we need trace for the Int
-construction?}}
-
-From the perspective of category theory, the language $\Pi$ models what is
-called a \emph{symmetric bimonoidal category} or a \emph{commutative rig
-category}. These are categories with two binary operations and satisfying the
-axioms of a commutative rig (i.e., a commutative ring without negative
-elements also known as a commutative semiring) up to coherent
-isomorphisms. And indeed the types of the $\Pi$-combinators are precisely the
-commutative semiring axioms. A formal way of saying this is that $\Pi$ is the
-\emph{categorification}~\cite{math/9802029} of the natural numbers. A simple
-(slightly degenerate) example of such categories is the category of finite
-sets and permutations in which we interpret every $\Pi$-type as a finite set,
-interpret the values as elements in these finite sets, and interpret the
-combinators as permutations. 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Example Circuit: Simple Negation}
+This language $\Pi$ is universal for hardware combinational
+circuits~\cite{James:2012:IE:2103656.2103667}.
 
 \begin{center}
-\begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
+\begin{tikzpicture}[scale=0.3,every node/.style={scale=0.3}]
  \draw (-10,0) -- (-6,0);
  \node at (-8,0) {$\oplus$};
 
@@ -666,7 +648,7 @@ n₁ = swap₊
 Example Circuit: Not So Simple Negation. 
 
 \begin{center}
-\begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
+\begin{tikzpicture}[scale=0.3,every node/.style={scale=0.3}]
  \draw (-11,0.5) -- (-10,0.5);
  \draw (-12,-0.5) -- (-10,-0.5);
  \draw (-10,-1) -- (-10,1) -- (-8,1) -- (-8,-1) -- cycle;
@@ -740,7 +722,22 @@ n₂ =  uniti⋆ ◎
       unite⋆
 \end{code}
 
-Reasoning about Example Circuits. Algebraic manipulation of one circuit to the other:
+A few more circuits...
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{But is this a Programming Language?}
+
+pi combinators are a nice syntax for programming with finite types,
+for talking about the commutative semiring of equivalences between
+finite types, and for talking about the commutative semiring of
+permutations between finite sets. But is it really a programming
+language: semantics, optimization rules, etc. and how does the
+connection to type equivalences and permutations help us?
+
+Motivation: the two circuits for negation are equivalent: can we
+design a sound and complete set of optimization rules that can be used
+to prove such an equivalence? Reasoning about Example
+Circuits. Algebraic manipulation of one circuit to the other:
 
 \AgdaHide{
 \begin{code}
@@ -962,690 +959,41 @@ negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆
         swap₊ ▤
 \end{code}
 
-Visually.
-
-{
-Original circuit:
-\begin{center}
-\begin{tikzpicture}
-  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
-
-  \draw (1,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (1,2) circle [radius=0.025];
-  \node[below] at (1,2) {*};
-
-  \draw (0,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (0,0.5) circle [radius=0.025];
-  \node[below] at (0,0.5) {F};
-  \draw[fill] (0,-0.5) circle [radius=0.025];
-  \node[below] at (0,-0.5) {T};
-
-  \draw     (1,2)    -- (2,2)      ; %% ()
-  \draw     (0,0.5)  -- (2,0.5)    ; %% F
-  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
-
-  \draw     (2,2)    -- (3,-0.5)   ;
-  \draw     (2,0.5)  -- (3,2)      ;
-  \draw     (2,-0.5) -- (3,1)      ;
-
-  \draw     (3,2)    -- (3.5,2)    ;
-  \draw     (3,1)    -- (3.5,1)    ;
-  \draw     (3,-0.5) -- (3.5,-0.5) ; 
-
-  \draw     (3.5,2)    -- (4.5,1)    ;
-  \draw     (3.5,1)    -- (4.5,2)    ;
-  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
-
-  \draw     (4.5,2)    -- (5,2)    ;
-  \draw     (4.5,1)    -- (5,1)    ;
-  \draw     (4.5,-0.5) -- (5,-0.5) ;
-
-  \draw     (5,2)    -- (6,0.5)  ;
-  \draw     (5,1)    -- (6,-0.5) ;
-  \draw     (5,-0.5) -- (6,2)    ; 
-
-  \draw     (6,2)    -- (7,2)    ;
-  \draw     (6,0.5)  -- (8,0.5)  ;
-  \draw     (6,-0.5) -- (8,-0.5) ; 
-
-  \draw (7,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (7,2) circle [radius=0.025];
-  \node[below] at (7,2) {*};
-
-  \draw (8,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (8,0.5) circle [radius=0.025];
-  \node[below] at (8,0.5) {F};
-  \draw[fill] (8,-0.5) circle [radius=0.025];
-  \node[below] at (8,-0.5) {T};
-
-\end{tikzpicture}
-\end{center}
-}
-
-{
-Making grouping explicit:
-\begin{center}
-\begin{tikzpicture}
-  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
-  \draw[red,dashed] (4.8,3.0) -- (9.2,3.0) -- (9.2,-1.5) -- (4.8,-1.5) -- cycle; 
-  \draw[red,dashed] (3.3,3.2) -- (9.4,3.2) -- (9.4,-1.7) -- (3.3,-1.7) -- cycle; 
-  \draw[red,dashed] (1.8,3.4) -- (9.6,3.4) -- (9.6,-1.9) -- (1.8,-1.9) -- cycle; 
-  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
-
-  \draw (1,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (1,2) circle [radius=0.025];
-  \node[below] at (1,2) {*};
-
-  \draw (0,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (0,0.5) circle [radius=0.025];
-  \node[below] at (0,0.5) {F};
-  \draw[fill] (0,-0.5) circle [radius=0.025];
-  \node[below] at (0,-0.5) {T};
-
-  \draw     (1,2)    -- (2,2)      ; %% ()
-  \draw     (0,0.5)  -- (2,0.5)    ; %% F
-  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
-
-  \draw     (2,2)    -- (3,-0.5)   ;
-  \draw     (2,0.5)  -- (3,2)      ;
-  \draw     (2,-0.5) -- (3,1)      ;
-
-  \draw     (3,2)    -- (3.5,2)    ;
-  \draw     (3,1)    -- (3.5,1)    ;
-  \draw     (3,-0.5) -- (3.5,-0.5) ; 
-
-  \draw     (3.5,2)    -- (4.5,1)    ;
-  \draw     (3.5,1)    -- (4.5,2)    ;
-  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
-
-  \draw     (4.5,2)    -- (5,2)    ;
-  \draw     (4.5,1)    -- (5,1)    ;
-  \draw     (4.5,-0.5) -- (5,-0.5) ;
-
-  \draw     (5,2)    -- (6,0.5)  ;
-  \draw     (5,1)    -- (6,-0.5) ;
-  \draw     (5,-0.5) -- (6,2)    ; 
-
-  \draw     (6,2)    -- (7,2)    ;
-  \draw     (6,0.5)  -- (8,0.5)  ;
-  \draw     (6,-0.5) -- (8,-0.5) ; 
-
-  \draw (7,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (7,2) circle [radius=0.025];
-  \node[below] at (7,2) {*};
-
-  \draw (8,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (8,0.5) circle [radius=0.025];
-  \node[below] at (8,0.5) {F};
-  \draw[fill] (8,-0.5) circle [radius=0.025];
-  \node[below] at (8,-0.5) {T};
-
-\end{tikzpicture}
-\end{center}
-}
-
-{
-By associativity:
-\begin{center}
-\begin{tikzpicture}
-  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
-  \draw[red,dashed] (4.8,3.0) -- (9.2,3.0) -- (9.2,-1.5) -- (4.8,-1.5) -- cycle; 
-  \draw[red,dashed] (3.3,2.8) -- (4.4,2.8) -- (4.4,-1.3) -- (3.3,-1.3) -- cycle; 
-  \draw[red,dashed,thick] (1.8,3.0) -- (4.6,3.0) -- (4.6,-1.5) -- (1.8,-1.5) -- cycle; 
-  \draw[red,dashed] (1.6,3.2) -- (9.4,3.2) -- (9.4,-1.7) -- (1.6,-1.7) -- cycle; 
-  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
-
-  \draw (1,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (1,2) circle [radius=0.025];
-  \node[below] at (1,2) {*};
-
-  \draw (0,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (0,0.5) circle [radius=0.025];
-  \node[below] at (0,0.5) {F};
-  \draw[fill] (0,-0.5) circle [radius=0.025];
-  \node[below] at (0,-0.5) {T};
-
-  \draw     (1,2)    -- (2,2)      ; %% ()
-  \draw     (0,0.5)  -- (2,0.5)    ; %% F
-  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
-
-  \draw     (2,2)    -- (3,-0.5)   ;
-  \draw     (2,0.5)  -- (3,2)      ;
-  \draw     (2,-0.5) -- (3,1)      ;
-
-  \draw     (3,2)    -- (3.5,2)    ;
-  \draw     (3,1)    -- (3.5,1)    ;
-  \draw     (3,-0.5) -- (3.5,-0.5) ; 
-
-  \draw     (3.5,2)    -- (4.5,1)    ;
-  \draw     (3.5,1)    -- (4.5,2)    ;
-  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
-
-  \draw     (4.5,2)    -- (5,2)    ;
-  \draw     (4.5,1)    -- (5,1)    ;
-  \draw     (4.5,-0.5) -- (5,-0.5) ;
-
-  \draw     (5,2)    -- (6,0.5)  ;
-  \draw     (5,1)    -- (6,-0.5) ;
-  \draw     (5,-0.5) -- (6,2)    ; 
-
-  \draw     (6,2)    -- (7,2)    ;
-  \draw     (6,0.5)  -- (8,0.5)  ;
-  \draw     (6,-0.5) -- (8,-0.5) ; 
-
-  \draw (7,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (7,2) circle [radius=0.025];
-  \node[below] at (7,2) {*};
-
-  \draw (8,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (8,0.5) circle [radius=0.025];
-  \node[below] at (8,0.5) {F};
-  \draw[fill] (8,-0.5) circle [radius=0.025];
-  \node[below] at (8,-0.5) {T};
-
-\end{tikzpicture}
-\end{center}
-}
-
-{
-By pre-post-swap:
-\begin{center}
-\begin{tikzpicture}
-  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
-  \draw[red,dashed] (4.8,3.0) -- (9.2,3.0) -- (9.2,-1.5) -- (4.8,-1.5) -- cycle; 
-  \draw[red,dashed] (3.3,2.8) -- (4.4,2.8) -- (4.4,-1.3) -- (3.3,-1.3) -- cycle; 
-  \draw[red,dashed,thick] (1.8,3.0) -- (4.6,3.0) -- (4.6,-1.5) -- (1.8,-1.5) -- cycle; 
-  \draw[red,dashed] (1.6,3.2) -- (9.4,3.2) -- (9.4,-1.7) -- (1.6,-1.7) -- cycle; 
-  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
-
-  \draw (1,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (1,2) circle [radius=0.025];
-  \node[below] at (1,2) {*};
-
-  \draw (0,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (0,0.5) circle [radius=0.025];
-  \node[below] at (0,0.5) {F};
-  \draw[fill] (0,-0.5) circle [radius=0.025];
-  \node[below] at (0,-0.5) {T};
-
-  \draw     (1,2)    -- (2,2)      ; %% ()
-  \draw     (0,0.5)  -- (2,0.5)    ; %% F
-  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
-
-  \draw     (2,2)    -- (3,2)   ;
-  \draw     (2,0.5)  -- (3,-0.5)  ;
-  \draw     (2,-0.5) -- (3,0.5)   ;
-
-  \draw     (3,2)    -- (3.5,2)    ;
-  \draw     (3,0.5)  -- (3.5,0.5)  ;
-  \draw     (3,-0.5) -- (3.5,-0.5) ; 
-
-  \draw     (3.5,2)    -- (4.5,-0.5) ;
-  \draw     (3.5,0.5)  -- (4.5,2)    ;
-  \draw     (3.5,-0.5) -- (4.5,1)    ; 
-
-  \draw     (4.5,2)    -- (5,2)    ;
-  \draw     (4.5,1)    -- (5,1)    ;
-  \draw     (4.5,-0.5) -- (5,-0.5) ;
-
-  \draw     (5,2)    -- (6,0.5)  ;
-  \draw     (5,1)    -- (6,-0.5) ;
-  \draw     (5,-0.5) -- (6,2)    ; 
-
-  \draw     (6,2)    -- (7,2)    ;
-  \draw     (6,0.5)  -- (8,0.5)  ;
-  \draw     (6,-0.5) -- (8,-0.5) ; 
-
-  \draw (7,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (7,2) circle [radius=0.025];
-  \node[below] at (7,2) {*};
-
-  \draw (8,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (8,0.5) circle [radius=0.025];
-  \node[below] at (8,0.5) {F};
-  \draw[fill] (8,-0.5) circle [radius=0.025];
-  \node[below] at (8,-0.5) {T};
-
-\end{tikzpicture}
-\end{center}
-}
-
-{
-By associativity:
-\begin{center}
-\begin{tikzpicture}
-  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
-  \draw[red,dashed] (4.8,3.0) -- (9.2,3.0) -- (9.2,-1.5) -- (4.8,-1.5) -- cycle; 
-  \draw[red,dashed] (3.3,3.2) -- (9.4,3.2) -- (9.4,-1.7) -- (3.3,-1.7) -- cycle; 
-  \draw[red,dashed] (1.6,3.4) -- (9.6,3.4) -- (9.6,-1.9) -- (1.6,-1.9) -- cycle; 
-  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
-
-  \draw (1,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (1,2) circle [radius=0.025];
-  \node[below] at (1,2) {*};
-
-  \draw (0,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (0,0.5) circle [radius=0.025];
-  \node[below] at (0,0.5) {F};
-  \draw[fill] (0,-0.5) circle [radius=0.025];
-  \node[below] at (0,-0.5) {T};
-
-  \draw     (1,2)    -- (2,2)      ; %% ()
-  \draw     (0,0.5)  -- (2,0.5)    ; %% F
-  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
-
-  \draw     (2,2)    -- (3,2)   ;
-  \draw     (2,0.5)  -- (3,-0.5)  ;
-  \draw     (2,-0.5) -- (3,0.5)   ;
-
-  \draw     (3,2)    -- (3.5,2)    ;
-  \draw     (3,0.5)  -- (3.5,0.5)  ;
-  \draw     (3,-0.5) -- (3.5,-0.5) ; 
-
-  \draw     (3.5,2)    -- (4.5,-0.5) ;
-  \draw     (3.5,0.5)  -- (4.5,2)    ;
-  \draw     (3.5,-0.5) -- (4.5,1)    ; 
-
-  \draw     (4.5,2)    -- (5,2)    ;
-  \draw     (4.5,1)    -- (5,1)    ;
-  \draw     (4.5,-0.5) -- (5,-0.5) ;
-
-  \draw     (5,2)    -- (6,0.5)  ;
-  \draw     (5,1)    -- (6,-0.5) ;
-  \draw     (5,-0.5) -- (6,2)    ; 
-
-  \draw     (6,2)    -- (7,2)    ;
-  \draw     (6,0.5)  -- (8,0.5)  ;
-  \draw     (6,-0.5) -- (8,-0.5) ; 
-
-  \draw (7,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (7,2) circle [radius=0.025];
-  \node[below] at (7,2) {*};
-
-  \draw (8,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (8,0.5) circle [radius=0.025];
-  \node[below] at (8,0.5) {F};
-  \draw[fill] (8,-0.5) circle [radius=0.025];
-  \node[below] at (8,-0.5) {T};
-
-\end{tikzpicture}
-\end{center}
-}
-
-{
-By associativity:
-\begin{center}
-\begin{tikzpicture}
-  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
-  \draw[red,dashed] (4.8,2.6) -- (5.8,2.6) -- (5.8,-1.1) -- (4.8,-1.1) -- cycle; 
-  \draw[red,dashed,thick] (3.5,2.8) -- (6.0,2.8) -- (6.0,-1.3) -- (3.5,-1.3) -- cycle; 
-  \draw[red,dashed] (3.3,3.2) -- (9.4,3.2) -- (9.4,-1.7) -- (3.3,-1.7) -- cycle; 
-  \draw[red,dashed] (1.6,3.4) -- (9.6,3.4) -- (9.6,-1.9) -- (1.6,-1.9) -- cycle; 
-  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
-
-  \draw (1,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (1,2) circle [radius=0.025];
-  \node[below] at (1,2) {*};
-
-  \draw (0,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (0,0.5) circle [radius=0.025];
-  \node[below] at (0,0.5) {F};
-  \draw[fill] (0,-0.5) circle [radius=0.025];
-  \node[below] at (0,-0.5) {T};
-
-  \draw     (1,2)    -- (2,2)      ; %% ()
-  \draw     (0,0.5)  -- (2,0.5)    ; %% F
-  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
-
-  \draw     (2,2)    -- (3,2)   ;
-  \draw     (2,0.5)  -- (3,-0.5)  ;
-  \draw     (2,-0.5) -- (3,0.5)   ;
-
-  \draw     (3,2)    -- (3.5,2)    ;
-  \draw     (3,0.5)  -- (3.5,0.5)  ;
-  \draw     (3,-0.5) -- (3.5,-0.5) ; 
-
-  \draw     (3.5,2)    -- (4.5,-0.5) ;
-  \draw     (3.5,0.5)  -- (4.5,2)    ;
-  \draw     (3.5,-0.5) -- (4.5,1)    ; 
-
-  \draw     (4.5,2)    -- (5,2)    ;
-  \draw     (4.5,1)    -- (5,1)    ;
-  \draw     (4.5,-0.5) -- (5,-0.5) ;
-
-  \draw     (5,2)    -- (6,0.5)  ;
-  \draw     (5,1)    -- (6,-0.5) ;
-  \draw     (5,-0.5) -- (6,2)    ; 
-
-  \draw     (6,2)    -- (7,2)    ;
-  \draw     (6,0.5)  -- (8,0.5)  ;
-  \draw     (6,-0.5) -- (8,-0.5) ; 
-
-  \draw (7,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (7,2) circle [radius=0.025];
-  \node[below] at (7,2) {*};
-
-  \draw (8,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (8,0.5) circle [radius=0.025];
-  \node[below] at (8,0.5) {F};
-  \draw[fill] (8,-0.5) circle [radius=0.025];
-  \node[below] at (8,-0.5) {T};
-
-\end{tikzpicture}
-\end{center}
-}
-
-{
-By swap-swap:
-\begin{center}
-\begin{tikzpicture}
-  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
-  \draw[red,dashed,thick] (3.5,2.8) -- (6.0,2.8) -- (6.0,-1.3) -- (3.5,-1.3) -- cycle; 
-  \draw[red,dashed] (3.3,3.2) -- (9.4,3.2) -- (9.4,-1.7) -- (3.3,-1.7) -- cycle; 
-  \draw[red,dashed] (1.6,3.4) -- (9.6,3.4) -- (9.6,-1.9) -- (1.6,-1.9) -- cycle; 
-  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
-
-  \draw (1,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (1,2) circle [radius=0.025];
-  \node[below] at (1,2) {*};
-
-  \draw (0,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (0,0.5) circle [radius=0.025];
-  \node[below] at (0,0.5) {F};
-  \draw[fill] (0,-0.5) circle [radius=0.025];
-  \node[below] at (0,-0.5) {T};
-
-  \draw     (1,2)    -- (2,2)      ; %% ()
-  \draw     (0,0.5)  -- (2,0.5)    ; %% F
-  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
-
-  \draw     (2,2)    -- (3,2)   ;
-  \draw     (2,0.5)  -- (3,-0.5)  ;
-  \draw     (2,-0.5) -- (3,0.5)   ;
-
-  \draw     (3,2)    -- (3.5,2)    ;
-  \draw     (3,0.5)  -- (3.5,0.5)  ;
-  \draw     (3,-0.5) -- (3.5,-0.5) ; 
-
-  \draw     (3.5,2)    -- (7,2)    ;
-  \draw     (3.5,0.5)  -- (8,0.5)  ;
-  \draw     (3.5,-0.5) -- (8,-0.5) ;
-
-  \draw (7,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (7,2) circle [radius=0.025];
-  \node[below] at (7,2) {*};
-
-  \draw (8,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (8,0.5) circle [radius=0.025];
-  \node[below] at (8,0.5) {F};
-  \draw[fill] (8,-0.5) circle [radius=0.025];
-  \node[below] at (8,-0.5) {T};
-
-\end{tikzpicture}
-\end{center}
-}
-
-{
-By id-compose-left:
-\begin{center}
-\begin{tikzpicture}
-  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
-  \draw[red,dashed] (1.6,3.4) -- (9.6,3.4) -- (9.6,-1.9) -- (1.6,-1.9) -- cycle; 
-  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
-
-  \draw (1,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (1,2) circle [radius=0.025];
-  \node[below] at (1,2) {*};
-
-  \draw (0,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (0,0.5) circle [radius=0.025];
-  \node[below] at (0,0.5) {F};
-  \draw[fill] (0,-0.5) circle [radius=0.025];
-  \node[below] at (0,-0.5) {T};
-
-  \draw     (1,2)    -- (2,2)      ; %% ()
-  \draw     (0,0.5)  -- (2,0.5)    ; %% F
-  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
-
-  \draw     (2,2)    -- (3,2)   ;
-  \draw     (2,0.5)  -- (3,-0.5)  ;
-  \draw     (2,-0.5) -- (3,0.5)   ;
-
-  \draw     (3,2)    -- (3.5,2)    ;
-  \draw     (3,0.5)  -- (3.5,0.5)  ;
-  \draw     (3,-0.5) -- (3.5,-0.5) ; 
-
-  \draw     (3.5,2)    -- (7,2)    ;
-  \draw     (3.5,0.5)  -- (8,0.5)  ;
-  \draw     (3.5,-0.5) -- (8,-0.5) ;
-
-  \draw (7,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (7,2) circle [radius=0.025];
-  \node[below] at (7,2) {*};
-
-  \draw (8,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (8,0.5) circle [radius=0.025];
-  \node[below] at (8,0.5) {F};
-  \draw[fill] (8,-0.5) circle [radius=0.025];
-  \node[below] at (8,-0.5) {T};
-
-\end{tikzpicture}
-\end{center}
-}
-
-{
-By associativity:
-\begin{center}
-\begin{tikzpicture}
-  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
-  \draw[red,dashed] (1.6,2.6) -- (5.8,2.6) -- (5.8,-1.1) -- (1.6,-1.1) -- cycle; 
-  \draw[red,dashed] (-0.5,2.8) -- (6.0,2.8) -- (6.0,-1.3) -- (-0.5,-1.3) -- cycle; 
-  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
-
-  \draw (1,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (1,2) circle [radius=0.025];
-  \node[below] at (1,2) {*};
-
-  \draw (0,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (0,0.5) circle [radius=0.025];
-  \node[below] at (0,0.5) {F};
-  \draw[fill] (0,-0.5) circle [radius=0.025];
-  \node[below] at (0,-0.5) {T};
-
-  \draw     (1,2)    -- (2,2)      ; %% ()
-  \draw     (0,0.5)  -- (2,0.5)    ; %% F
-  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
-
-  \draw     (2,2)    -- (3,2)   ;
-  \draw     (2,0.5)  -- (3,-0.5)  ;
-  \draw     (2,-0.5) -- (3,0.5)   ;
-
-  \draw     (3,2)    -- (3.5,2)    ;
-  \draw     (3,0.5)  -- (3.5,0.5)  ;
-  \draw     (3,-0.5) -- (3.5,-0.5) ; 
-
-  \draw     (3.5,2)    -- (7,2)    ;
-  \draw     (3.5,0.5)  -- (8,0.5)  ;
-  \draw     (3.5,-0.5) -- (8,-0.5) ;
-
-  \draw (7,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (7,2) circle [radius=0.025];
-  \node[below] at (7,2) {*};
-
-  \draw (8,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (8,0.5) circle [radius=0.025];
-  \node[below] at (8,0.5) {F};
-  \draw[fill] (8,-0.5) circle [radius=0.025];
-  \node[below] at (8,-0.5) {T};
-
-\end{tikzpicture}
-\end{center}
-}
-
-{
-By swap-unit:
-\begin{center}
-\begin{tikzpicture}
-  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
-  \draw[red,dashed] (3.6,2.6) -- (5.8,2.6) -- (5.8,-1.1) -- (3.6,-1.1) -- cycle; 
-  \draw[red,dashed] (-0.5,2.8) -- (6.0,2.8) -- (6.0,-1.3) -- (-0.5,-1.3) -- cycle; 
-  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
-
-  \draw (4.2,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (4.2,2) circle [radius=0.025];
-  \node[below] at (4.2,2) {*};
-
-  \draw (0,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (0,0.5) circle [radius=0.025];
-  \node[below] at (0,0.5) {F};
-  \draw[fill] (0,-0.5) circle [radius=0.025];
-  \node[below] at (0,-0.5) {T};
-
-  \draw     (4.2,2)    -- (7,2)      ; %% ()
-
-  \draw     (0,0.5)  -- (2,0.5)    ; %% F
-  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
-
-  \draw     (2,0.5)  -- (3,-0.5)  ;
-  \draw     (2,-0.5) -- (3,0.5)   ;
-
-  \draw     (3,0.5)  -- (3.5,0.5)  ;
-  \draw     (3,-0.5) -- (3.5,-0.5) ; 
-
-  \draw     (3.5,0.5)  -- (8,0.5)  ;
-  \draw     (3.5,-0.5) -- (8,-0.5) ;
-
-  \draw (7,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (7,2) circle [radius=0.025];
-  \node[below] at (7,2) {*};
-
-  \draw (8,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (8,0.5) circle [radius=0.025];
-  \node[below] at (8,0.5) {F};
-  \draw[fill] (8,-0.5) circle [radius=0.025];
-  \node[below] at (8,-0.5) {T};
-
-\end{tikzpicture}
-\end{center}
-}
-
-{
-By associativity:
-\begin{center}
-\begin{tikzpicture}
-  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
-  \draw[red,dashed] (3.6,3.0) -- (9.2,3.0) -- (9.2,-1.5) -- (3.6,-1.5) -- cycle; 
-  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
-
-  \draw (4.2,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (4.2,2) circle [radius=0.025];
-  \node[below] at (4.2,2) {*};
-
-  \draw (0,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (0,0.5) circle [radius=0.025];
-  \node[below] at (0,0.5) {F};
-  \draw[fill] (0,-0.5) circle [radius=0.025];
-  \node[below] at (0,-0.5) {T};
-
-  \draw     (4.2,2)    -- (7,2)      ; %% ()
-
-  \draw     (0,0.5)  -- (2,0.5)    ; %% F
-  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
-
-  \draw     (2,0.5)  -- (3,-0.5)  ;
-  \draw     (2,-0.5) -- (3,0.5)   ;
-
-  \draw     (3,0.5)  -- (3.5,0.5)  ;
-  \draw     (3,-0.5) -- (3.5,-0.5) ; 
-
-  \draw     (3.5,0.5)  -- (8,0.5)  ;
-  \draw     (3.5,-0.5) -- (8,-0.5) ;
-
-  \draw (7,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (7,2) circle [radius=0.025];
-  \node[below] at (7,2) {*};
-
-  \draw (8,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (8,0.5) circle [radius=0.025];
-  \node[below] at (8,0.5) {F};
-  \draw[fill] (8,-0.5) circle [radius=0.025];
-  \node[below] at (8,-0.5) {T};
-
-\end{tikzpicture}
-\end{center}
-}
-
-{
-By unit-unit:
-\begin{center}
-\begin{tikzpicture}
-  \draw[red,dashed] (3.6,3.0) -- (9.2,3.0) -- (9.2,-1.5) -- (3.6,-1.5) -- cycle; 
-  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
-
-  \draw (0,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (0,0.5) circle [radius=0.025];
-  \node[below] at (0,0.5) {F};
-  \draw[fill] (0,-0.5) circle [radius=0.025];
-  \node[below] at (0,-0.5) {T};
-
-  \draw     (0,0.5)  -- (2,0.5)    ; %% F
-  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
-
-  \draw     (2,0.5)  -- (3,-0.5)  ;
-  \draw     (2,-0.5) -- (3,0.5)   ;
-
-  \draw     (3,0.5)  -- (3.5,0.5)  ;
-  \draw     (3,-0.5) -- (3.5,-0.5) ; 
-
-  \draw     (3.5,0.5)  -- (8,0.5)  ;
-  \draw     (3.5,-0.5) -- (8,-0.5) ;
-
-  \draw (8,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (8,0.5) circle [radius=0.025];
-  \node[below] at (8,0.5) {F};
-  \draw[fill] (8,-0.5) circle [radius=0.025];
-  \node[below] at (8,-0.5) {T};
-
-\end{tikzpicture}
-\end{center}
-}
-
-{
-By id-unit-right:
-\begin{center}
-\begin{tikzpicture}
-  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
-
-  \draw (0,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (0,0.5) circle [radius=0.025];
-  \node[below] at (0,0.5) {F};
-  \draw[fill] (0,-0.5) circle [radius=0.025];
-  \node[below] at (0,-0.5) {T};
-
-  \draw     (0,0.5)  -- (2,0.5)    ; %% F
-  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
-
-  \draw     (2,0.5)  -- (3,-0.5)  ;
-  \draw     (2,-0.5) -- (3,0.5)   ;
-
-  \draw     (3,0.5)  -- (3.5,0.5)  ;
-  \draw     (3,-0.5) -- (3.5,-0.5) ; 
-
-  \draw     (3.5,0.5)  -- (8,0.5)  ;
-  \draw     (3.5,-0.5) -- (8,-0.5) ;
-
-  \draw (8,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (8,0.5) circle [radius=0.025];
-  \node[below] at (8,0.5) {F};
-  \draw[fill] (8,-0.5) circle [radius=0.025];
-  \node[below] at (8,-0.5) {T};
-
-\end{tikzpicture}
-\end{center}
-}
+Manipulating circuits. Nice framework, but:
+\begin{itemize}
+\item We don't want ad hoc rewriting rules.
+\begin{itemize}
+\item Our current set has \textcolor{red}{76 rules}!
+\end{itemize}
+\item Notions of soundness; completeness; canonicity in some sense.
+\begin{itemize}
+\item Are all the rules valid? (yes)
+\item Are they enough? (next topic)
+\item Are there canonical representations of circuits? (open)
+\end{itemize}
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{But is this a programming language?}
+\section{Categorification}
+
+This is where the idea of path and path of paths becomes critical. But
+that does not give us a computational framework because univalence is
+a postulate. The connection to permutations is the one that will give
+us an effective procedure by categorification. Quote from
+Proof-Theoretical Coherence, Kosta Dosen and Zoran Petric,
+\url{http://www.mi.sanu.ac.rs/~kosta/coh.pdf}:
+
+\begin{quote}
+In Mac Lane’s second coherence result of [99], which has to do with
+symmetric monoidal categories, it is not intended that all equations
+be- tween arrows of the same type should hold. What Mac Lane does can
+be described in logical terms in the following manner. On the one
+hand, he has an axiomatization, and, on the other hand, he has a model
+category where arrows are permutations; then he shows that his
+axiomatization is complete with respect to this model. It is no wonder
+that his coherence problem reduces to the completeness problem for the
+usual axiomatization of symmetric groups.
+\end{quote}
 
 \AgdaHide{
 \begin{code}
@@ -1754,22 +1102,18 @@ c2equiv (c ⊗ c₁) = path× (c2equiv c) (c2equiv c₁)
 \end{code}
 }
 
-Manipulating circuits. Nice framework, but:
-\begin{itemize}
-\item We don't want ad hoc rewriting rules.
-\begin{itemize}
-\item Our current set has \textcolor{red}{76 rules}!
-\end{itemize}
-\item Notions of soundness; completeness; canonicity in some sense.
-\begin{itemize}
-\item Are all the rules valid? (yes)
-\item Are they enough? (next topic)
-\item Are there canonical representations of circuits? (open)
-\end{itemize}
-\end{itemize}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Categorification I}
+From the perspective of category theory, the language $\Pi$ models what is
+called a \emph{symmetric bimonoidal category} or a \emph{commutative rig
+category}. These are categories with two binary operations and satisfying the
+axioms of a commutative rig (i.e., a commutative ring without negative
+elements also known as a commutative semiring) up to coherent
+isomorphisms. And indeed the types of the $\Pi$-combinators are precisely the
+commutative semiring axioms. A formal way of saying this is that $\Pi$ is the
+\emph{categorification}~\cite{math/9802029} of the natural numbers. A simple
+(slightly degenerate) example of such categories is the category of finite
+sets and permutations in which we interpret every $\Pi$-type as a finite set,
+interpret the values as elements in these finite sets, and interpret the
+combinators as permutations. 
 
 \amr{We haven't said anything about the categorical structure: it is
 not just a commutative semiring but a commutative rig; this is crucial
@@ -2580,5 +1924,8 @@ structures up to some congruence relation instead of strict
 equality~$=$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{abbrvnat}
+\softraggedright
+\bibliography{cites}
 \end{document}
 
