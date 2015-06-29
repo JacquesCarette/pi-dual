@@ -407,32 +407,60 @@ import TypeEquiv as TE
 
 \begin{itemize}
 
-\item finite types
+\item SECTION
 
-\item they form a commutative semiring as Fiore et al. prove
-  (commutative semiring axioms are sound and complete isos on finite types)
+\item Finite types form a commutative semiring as Fiore et al. prove
+  that commutative semiring axioms are sound and complete isos on
+  finite types.
 
-\item let's use more general notion of equivalence of types a la HoTT;
-  finite types a commutative semiring under equivalence; equivalence
-  of equivalences of finite types another commutative semiring
+\item Observation: finite types form a commutative semiring not just
+  up to strict equality but UP TO EQUIVALENCE OF TYPES and the notion
+  of equivalence of types itself forms a commutative semiring
 
-\item great; how do we program with these things; if we had univalence
-  we could get some executable code to realize these type equivalences
-  etc. but we don't; let's explore another idea; these type
-  equivalences are equivalent to permutations on finite sets; the
-  equivalence of equivalences is equivalent to equivalence of
-  permutations. The two commutative semirings are actually isomorphic
+\item Permutations on finite sets also form a commutative semiring up
+  to EQUIVALENCE OF PERMUTATIONS and that equivalence is also itself a
+  commutative semiring.
 
-\item So we could, up to equivalence, focus on computing with
-  permutations on finite sets and equivalence of permutations etc. 
+\item The above two approaches are themselves equivalent so up to
+  equivalence and equivalence of equivalences we can work with
+  permutations and equivalence of permutations instead of type isos or
+  type equivalences.
 
-\item In our previous work we had made the connection between type
-  isos and permutations on finite sets and proposed Pi. What we need
-  now is Pi plus another layer to top to optimize Pi programs; no ad
-  hoc rules; principled rules
+\item This gives us a version of univalence for finite types that has
+  clear computational content.
 
-\item categorification: the coherence rules give us the needed second
-  layer
+\item SECTION
+
+\item In our previous work we had argued that one can program with
+  permutations on finite sets (many others relate this to reversible
+  computation and more specifically to reversible combinational
+  circuits). We proposed a family of languages Pi some with trace;
+  some with effects; etc. The simplest language is permutations on
+  finite sets which correspond to finite types. 
+
+\item Examples of circuits
+
+\item SECTION
+
+\item How do we reason about equivalence of circuits? Previous work:
+  operational semantics; extensional tools; we relate to permutations
+  and try to prove permutations equal also extensional. No sound and
+  complete set of rules for us to reason about equivalence.
+
+\item Because we live in this HoTT-like world where we have
+  equivalences of equivalences, we could move up one level to get the
+  right rules.
+
+\item SECTION
+
+\item This has been done generically: coherence conditions for
+  commutative rig groupoids. These generalize type equivalences and
+  permutations;
+
+\item SECTION
+
+\item What we need now is Pi plus another layer to top to optimize Pi
+  programs; no ad hoc rules; principled rules
 
 \end{itemize}
 
