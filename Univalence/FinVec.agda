@@ -187,6 +187,12 @@ module F where
     uniti+ : {m : ℕ} → FinVec (0 + m) m
     uniti+ {m} = tabulate (proj₁ (Plus.uniti+ {m}))
 
+    unite+r : {m : ℕ} → FinVec m (m + 0)
+    unite+r {m} = tabulate (proj₁ (Plus.unite+r {m}))
+
+    uniti+r : {m : ℕ} → FinVec (m + 0) m
+    uniti+r {m} = tabulate (proj₁ (Plus.uniti+r {m}))
+    
     assocl+ : {m n o : ℕ} → FinVec  ((m + n) + o) (m + (n + o))
     assocl+ {m} {n} {o} = tabulate (proj₁ (Plus.assocl+ {m} {n} {o}))
 
@@ -263,9 +269,12 @@ module F where
     cauchyext π = tabulate∘lookup π
 
     -- we could go through ~p, but this works better in practice
-    ~⇒≡ : {m n o : ℕ} {f : Fin m → Fin n} {g : Fin n → Fin m} → 
+    ~⇒≡ : {m n : ℕ} {f : Fin m → Fin n} {g : Fin n → Fin m} → 
                (f ∘ g ∼ id) → (tabulate g ∘̂ tabulate f ≡ 1C)
     ~⇒≡ {f = f} {g} β = ∼p⇒≡ (λ i → trans (∘̂⇒∘ g f i) (cong (λ x → x !! i) (finext β)))
+
+    -- make a permutation from something lower level, directly
+    --  ~⇒≡ {m} {n = m} {o = m} (p∘!p≡id {p = Plus.unite+ {m}})
 
     -- properties of sequential composition
     ∘̂-assoc : {m₁ m₂ m₃ m₄ : ℕ} →
@@ -365,19 +374,25 @@ module F where
     1C!!i≡i = lookup∘tabulate id _
 
     unite+∘̂uniti+~id : ∀ {m} → (unite+ {m}) ∘̂ uniti+ ≡ 1C {m}
-    unite+∘̂uniti+~id {m} = ~⇒≡ {m} {n = m} {o = m} (p∘!p≡id {p = Plus.unite+ {m}})
+    unite+∘̂uniti+~id {m} = ~⇒≡ {m} {n = m} (p∘!p≡id {p = Plus.unite+ {m}})
 
     uniti+∘̂unite+~id : ∀ {m} → (uniti+ {m}) ∘̂ unite+ ≡ 1C {m}
-    uniti+∘̂unite+~id {m} = ~⇒≡ {m} {n = m} {o = m} (p∘!p≡id {p = Plus.uniti+})
+    uniti+∘̂unite+~id {m} = ~⇒≡ {m} {n = m} (p∘!p≡id {p = Plus.uniti+})
+
+    unite+r∘̂uniti+r~id : ∀ {m} → (unite+r {m}) ∘̂ uniti+r ≡ 1C {m + 0}
+    unite+r∘̂uniti+r~id {m} = ~⇒≡ {m} (p∘!p≡id {p = Plus.unite+r {m}})
+
+    uniti+r∘̂unite+r~id : ∀ {m} → (uniti+r {m}) ∘̂ unite+r ≡ 1C {m}
+    uniti+r∘̂unite+r~id {m} = ~⇒≡ (p∘!p≡id {p = Plus.uniti+r})
 
     assocl+∘̂assocr+~id : ∀ {m n o} → assocl+ {m} {n} {o} ∘̂ assocr+ {m} ≡ 1C
-    assocl+∘̂assocr+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = Plus.assocl+ {m}})
+    assocl+∘̂assocr+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = Plus.assocl+ {m}})
 
     assocr+∘̂assocl+~id : ∀ {m n o} → assocr+ {m} {n} {o} ∘̂ assocl+ {m} ≡ 1C
-    assocr+∘̂assocl+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = Plus.assocr+ {m}})
+    assocr+∘̂assocl+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = Plus.assocr+ {m}})
 
     swap+-inv : ∀ {m n} → swap+cauchy m n ∘̂ swap+cauchy n m ≡ 1C
-    swap+-inv {m} {n} = ~⇒≡ {o = m + n} (Plus.swap-inv m n)
+    swap+-inv {m} {n} = ~⇒≡ (Plus.swap-inv m n)
 
     idˡ⊕ : ∀ {m n} {x : FinVec m n} → uniti+ ∘̂ (1C {0} ⊎c x) ≡ x ∘̂ uniti+
     idˡ⊕ {m} {n} {x} = finext pf
@@ -446,34 +461,34 @@ module F where
 -}
     -- properties of multiplicative composition
     unite*∘̂uniti*~id : ∀ {m} → (unite* {m}) ∘̂ uniti* ≡ 1C {1 * m}
-    unite*∘̂uniti*~id {m} = ~⇒≡ {m} {n = 1 * m} {o = 1 * m} (p∘!p≡id {p = Times.unite* {m}})
+    unite*∘̂uniti*~id {m} = ~⇒≡ {m} {n = 1 * m} (p∘!p≡id {p = Times.unite* {m}})
 
     uniti*∘̂unite*~id : ∀ {m} → (uniti* {m}) ∘̂ unite* ≡ 1C {m}
-    uniti*∘̂unite*~id {m} = ~⇒≡ {1 * m} {n = m} {o = 1 * m} (p∘!p≡id {p = Times.uniti* {m}})
+    uniti*∘̂unite*~id {m} = ~⇒≡ {1 * m} {n = m} (p∘!p≡id {p = Times.uniti* {m}})
 
     assocl*∘̂assocr*~id : ∀ {m n o} → assocl* {m} {n} {o} ∘̂ assocr* {m} ≡ 1C
-    assocl*∘̂assocr*~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = Times.assocl* {m}})
+    assocl*∘̂assocr*~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = Times.assocl* {m}})
 
     assocr*∘̂assocl*~id : ∀ {m n o} → assocr* {m} {n} {o} ∘̂ assocl* {m} ≡ 1C
-    assocr*∘̂assocl*~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = Times.assocr* {m}})
+    assocr*∘̂assocl*~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = Times.assocr* {m}})
 
     dist*+∘̂factor*+~id : ∀ {m n o} → dist*+ {m} {n} {o} ∘̂ factor*+ {m} ≡ 1C
-    dist*+∘̂factor*+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = PlusTimes.dist {m}})
+    dist*+∘̂factor*+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = PlusTimes.dist {m}})
 
     factor*+∘̂dist*+~id : ∀ {m n o} → factor*+ {m} {n} {o} ∘̂ dist*+ {m} ≡ 1C
-    factor*+∘̂dist*+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = PlusTimes.factor {m}})
+    factor*+∘̂dist*+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = PlusTimes.factor {m}})
 
     distl*+∘̂factorl*+~id : ∀ {m n o} → distl*+ {m} {n} {o} ∘̂ factorl*+ {m} ≡ 1C
-    distl*+∘̂factorl*+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = PlusTimes.distl {m}})
+    distl*+∘̂factorl*+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = PlusTimes.distl {m}})
 
     factorl*+∘̂distl*+~id : ∀ {m n o} → factorl*+ {m} {n} {o} ∘̂ distl*+ {m} ≡ 1C
-    factorl*+∘̂distl*+~id {m} {_} {o} = ~⇒≡ {o = o} (p∘!p≡id {p = PlusTimes.factorl {m}})
+    factorl*+∘̂distl*+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = PlusTimes.factorl {m}})
 
     right-zero*l∘̂right-zero*r~id : ∀ {m} → right-zero*l {m} ∘̂ right-zero*r {m} ≡ 1C {m * 0}
-    right-zero*l∘̂right-zero*r~id {m} = ~⇒≡ {o = m} {f = proj₁ (Times.factorzr {m})} (p∘!p≡id {p = Times.distzr {m}})
+    right-zero*l∘̂right-zero*r~id {m} = ~⇒≡ {f = proj₁ (Times.factorzr {m})} (p∘!p≡id {p = Times.distzr {m}})
 
     right-zero*r∘̂right-zero*l~id : ∀ {m} → right-zero*r {m} ∘̂ right-zero*l {m} ≡ 1C
-    right-zero*r∘̂right-zero*l~id {m} = ~⇒≡ {o = m} { f = proj₁ (Times.factorz {m})} (p∘!p≡id {p = Times.distz {m}})
+    right-zero*r∘̂right-zero*l~id {m} = ~⇒≡ { f = proj₁ (Times.factorz {m})} (p∘!p≡id {p = Times.distz {m}})
 
     private
       left⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : FinVec m₁ n₁) → (p₂ : FinVec m₂ n₂)
@@ -673,7 +688,7 @@ module F where
         1C {m * n} ∎ )
 
     swap*-inv : ∀ {m n} → swap⋆cauchy m n ∘̂ swap⋆cauchy n m ≡ 1C
-    swap*-inv {m} {n} = ~⇒≡ {o = m * n} (Times.swap-inv m n)
+    swap*-inv {m} {n} = ~⇒≡ (Times.swap-inv m n)
 
     ------------------------
     -- A few "reveal" functions, to let us peek into the representation

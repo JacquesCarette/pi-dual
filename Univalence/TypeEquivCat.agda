@@ -358,6 +358,7 @@ TERig = record
   ; laplazaI = eq distl-swap₊-lemma factorl-swap₊-lemma
   ; laplazaII = eq dist-swap⋆-lemma factor-swap⋆-lemma
   ; laplazaIV = eq dist-dist-assoc-lemma assoc-factor-factor-lemma
+  ; laplazaVI = eq distl-assoc-lemma assoc-factorl-lemma
   }
 
 -- Notes from Laplaza, 72

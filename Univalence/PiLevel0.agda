@@ -91,8 +91,10 @@ infixr 50 _◎_
 -- Combinators, permutations, or paths depending on the perspective
 
 data _⟷_ : U → U → Set where
-  unite₊  : {t : U} → PLUS ZERO t ⟷ t
-  uniti₊  : {t : U} → t ⟷ PLUS ZERO t
+  unite₊l : {t : U} → PLUS ZERO t ⟷ t
+  uniti₊l : {t : U} → t ⟷ PLUS ZERO t
+  unite₊r : {t : U} → PLUS t ZERO ⟷ t
+  uniti₊r : {t : U} → t ⟷ PLUS t ZERO
   swap₊   : {t₁ t₂ : U} → PLUS t₁ t₂ ⟷ PLUS t₂ t₁
   assocl₊ : {t₁ t₂ t₃ : U} → PLUS t₁ (PLUS t₂ t₃) ⟷ PLUS (PLUS t₁ t₂) t₃
   assocr₊ : {t₁ t₂ t₃ : U} → PLUS (PLUS t₁ t₂) t₃ ⟷ PLUS t₁ (PLUS t₂ t₃)
@@ -101,7 +103,7 @@ data _⟷_ : U → U → Set where
   swap⋆   : {t₁ t₂ : U} → TIMES t₁ t₂ ⟷ TIMES t₂ t₁
   assocl⋆ : {t₁ t₂ t₃ : U} → TIMES t₁ (TIMES t₂ t₃) ⟷ TIMES (TIMES t₁ t₂) t₃
   assocr⋆ : {t₁ t₂ t₃ : U} → TIMES (TIMES t₁ t₂) t₃ ⟷ TIMES t₁ (TIMES t₂ t₃)
-  absorbr  : {t : U} → TIMES ZERO t ⟷ ZERO
+  absorbr : {t : U} → TIMES ZERO t ⟷ ZERO
   absorbl : {t : U} → TIMES t ZERO ⟷ ZERO
   factorzr : {t : U} → ZERO ⟷ TIMES t ZERO
   factorzl : {t : U} → ZERO ⟷ TIMES ZERO t
@@ -123,8 +125,8 @@ data _⟷_ : U → U → Set where
 -- Syntactic equality of combinators
 
 comb= : {t₁ t₂ t₃ t₄ : U} → (t₁ ⟷ t₂) → (t₃ ⟷ t₄) → Bool
-comb= unite₊ unite₊ = true
-comb= uniti₊ uniti₊ = true
+comb= unite₊l unite₊l = true
+comb= uniti₊l uniti₊l = true
 comb= swap₊ swap₊ = true
 comb= assocl₊ assocl₊ = true
 comb= assocr₊ assocr₊ = true
@@ -148,9 +150,12 @@ comb= _ _ = false
 -- Extensional evaluator for testing: serves as a specification
 
 eval : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
-eval unite₊ (inj₁ ())
-eval unite₊ (inj₂ v) = v
-eval uniti₊ v = inj₂ v
+eval unite₊l (inj₁ ())
+eval unite₊l (inj₂ v) = v
+eval uniti₊l v = inj₂ v
+eval unite₊r (inj₁ x) = x
+eval unite₊r (inj₂ ())
+eval uniti₊r v = inj₁ v
 eval swap₊ (inj₁ v) = inj₂ v
 eval swap₊ (inj₂ v) = inj₁ v
 eval assocl₊ (inj₁ v) = inj₁ (inj₁ v)
@@ -185,9 +190,12 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
 -- useful to have the backwards eval too
 
 evalB : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧
-evalB unite₊ x = inj₂ x
-evalB uniti₊ (inj₁ ())
-evalB uniti₊ (inj₂ y) = y
+evalB unite₊l x = inj₂ x
+evalB uniti₊l (inj₁ ())
+evalB uniti₊l (inj₂ y) = y
+evalB unite₊r v = inj₁ v
+evalB uniti₊r (inj₁ x) = x
+evalB uniti₊r (inj₂ ())
 evalB swap₊ (inj₁ x) = inj₂ x
 evalB swap₊ (inj₂ y) = inj₁ y
 evalB assocl₊ (inj₁ (inj₁ x)) = inj₁ x
@@ -246,8 +254,10 @@ size≡ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (size t₁ ≡ size t₂)
 -- http://wiki.portal.chalmers.se/agda/
 -- pmwiki.php?n=ReferenceManual.PatternMatching
 size≡ (c₁ ◎ c₂) = trans (size≡ c₁) (size≡ c₂)
-size≡ {PLUS ZERO t} {.t} unite₊ = refl
-size≡ {t} {PLUS ZERO .t} uniti₊ = refl
+size≡ {PLUS ZERO t} {.t} unite₊l = refl
+size≡ {t} {PLUS ZERO .t} uniti₊l = refl
+size≡ {PLUS t ZERO} unite₊r = +-right-identity (size t)
+size≡ {t} uniti₊r = sym (+-right-identity (size t))
 size≡ {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = +-comm (size t₁) (size t₂)
 size≡ {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ = 
   sym (+-assoc (size t₁) (size t₂) (size t₃))
@@ -493,8 +503,10 @@ FULLADDER =
 -- reduces to id⟷. 
 
 ! : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
-! unite₊    = uniti₊
-! uniti₊    = unite₊
+! unite₊l   = uniti₊l
+! uniti₊l   = unite₊l
+! unite₊r   = uniti₊r
+! uniti₊r   = unite₊r
 ! swap₊     = swap₊
 ! assocl₊   = assocr₊
 ! assocr₊   = assocl₊
@@ -517,8 +529,10 @@ FULLADDER =
 ! (c₁ ⊗ c₂) = (! c₁) ⊗ (! c₂)
 
 !! : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → ! (! c) ≡ c
-!! {c = unite₊}  = refl
-!! {c = uniti₊}  = refl
+!! {c = unite₊l} = refl
+!! {c = uniti₊l} = refl
+!! {c = unite₊r} = refl
+!! {c = uniti₊r} = refl
 !! {c = swap₊}   = refl
 !! {c = assocl₊} = refl
 !! {c = assocr₊} = refl
@@ -564,8 +578,10 @@ FULLADDER =
 
 size≡! : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (size t₂ ≡ size t₁)
 size≡! (c₁ ◎ c₂) = trans (size≡! c₂) (size≡! c₁)
-size≡! {PLUS ZERO t} {.t} unite₊ = refl
-size≡! {t} {PLUS ZERO .t} uniti₊ = refl
+size≡! {PLUS ZERO t} {.t} unite₊l = refl
+size≡! {t} {PLUS ZERO .t} uniti₊l = refl
+size≡! {PLUS t ZERO} {.t} unite₊r = sym (+-right-identity (size t))
+size≡! {t} {PLUS .t ZERO} uniti₊r = +-right-identity (size t)
 size≡! {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = +-comm (size t₂) (size t₁)
 size≡! {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ = 
   +-assoc (size t₁) (size t₂) (size t₃)

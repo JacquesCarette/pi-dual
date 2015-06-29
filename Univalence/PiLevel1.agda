@@ -63,18 +63,30 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
   assocr⊕l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
           {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
            (assocr₊ ◎ (c₁ ⊕ (c₂ ⊕ c₃))) ⇔ (((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊)
-  assoc⊗l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          (c₁ ⊗ (c₂ ⊗ c₃)) ⇔ (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆)
-  assoc⊗r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆) ⇔ (c₁ ⊗ (c₂ ⊗ c₃))
-  dist⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          ((c₁ ⊕ c₂) ⊗ c₃) ⇔ (dist ◎ ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃)) ◎ factor)
-  factor⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          (dist ◎ ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃)) ◎ factor) ⇔ ((c₁ ⊕ c₂) ⊗ c₃)
+  dist⇔l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {a : t₁ ⟷ t₂} {b : t₃ ⟷ t₄} {c : t₅ ⟷ t₆} →
+      ((a ⊕ b) ⊗ c) ◎ dist ⇔ dist ◎ ((a ⊗ c) ⊕ (b ⊗ c))
+  dist⇔r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {a : t₁ ⟷ t₂} {b : t₃ ⟷ t₄} {c : t₅ ⟷ t₆} →
+      dist ◎ ((a ⊗ c) ⊕ (b ⊗ c)) ⇔ ((a ⊕ b) ⊗ c) ◎ dist
+  distl⇔l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {a : t₁ ⟷ t₂} {b : t₃ ⟷ t₄} {c : t₅ ⟷ t₆} →
+      (a ⊗ (b ⊕ c)) ◎ distl ⇔ distl ◎ ((a ⊗ b) ⊕ (a ⊗ c))
+  distl⇔r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {a : t₁ ⟷ t₂} {b : t₃ ⟷ t₄} {c : t₅ ⟷ t₆} →
+      distl ◎ ((a ⊗ b) ⊕ (a ⊗ c)) ⇔ (a ⊗ (b ⊕ c)) ◎ distl
+  factor⇔l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {a : t₁ ⟷ t₂} {b : t₃ ⟷ t₄} {c : t₅ ⟷ t₆} →
+       ((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor ⇔ factor ◎ ((a ⊕ b) ⊗ c)
+  factor⇔r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {a : t₁ ⟷ t₂} {b : t₃ ⟷ t₄} {c : t₅ ⟷ t₆} →
+       factor ◎ ((a ⊕ b) ⊗ c) ⇔ ((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor
+  factorl⇔l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {a : t₁ ⟷ t₂} {b : t₃ ⟷ t₄} {c : t₅ ⟷ t₆} →
+       ((a ⊗ b) ⊕ (a ⊗ c)) ◎ factorl ⇔ factorl ◎ (a ⊗ (b ⊕ c))
+  factorl⇔r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
+          {a : t₁ ⟷ t₂} {b : t₃ ⟷ t₄} {c : t₅ ⟷ t₆} →
+       factorl ◎ (a ⊗ (b ⊕ c)) ⇔ ((a ⊗ b) ⊕ (a ⊗ c)) ◎ factorl
   idl◎l   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (id⟷ ◎ c) ⇔ c
   idl◎r   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ id⟷ ◎ c
   idr◎l   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (c ◎ id⟷) ⇔ c
@@ -83,16 +95,24 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
   linv◎r  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ⇔ (c ◎ ! c) 
   rinv◎l  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (! c ◎ c) ⇔ id⟷
   rinv◎r  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ⇔ (! c ◎ c) 
-  unitel₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
-          (unite₊ ◎ c₂) ⇔ ((c₁ ⊕ c₂) ◎ unite₊)
-  uniter₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
-          ((c₁ ⊕ c₂) ◎ unite₊) ⇔ (unite₊ ◎ c₂)
-  unitil₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
-          (uniti₊ ◎ (c₁ ⊕ c₂)) ⇔ (c₂ ◎ uniti₊)
-  unitir₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
-          (c₂ ◎ uniti₊) ⇔ (uniti₊ ◎ (c₁ ⊕ c₂))
-  unitial₊⇔ : {t₁ t₂ : U} → (uniti₊ {PLUS t₁ t₂} ◎ assocl₊) ⇔ (uniti₊ ⊕ id⟷)
-  unitiar₊⇔ : {t₁ t₂ : U} → (uniti₊ {t₁} ⊕ id⟷ {t₂}) ⇔ (uniti₊ ◎ assocl₊)
+  unite₊l⇔l : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
+          (unite₊l ◎ c₂) ⇔ ((c₁ ⊕ c₂) ◎ unite₊l)
+  unite₊l⇔r : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
+          ((c₁ ⊕ c₂) ◎ unite₊l) ⇔ (unite₊l ◎ c₂)
+  uniti₊l⇔l : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
+          (uniti₊l ◎ (c₁ ⊕ c₂)) ⇔ (c₂ ◎ uniti₊l)
+  uniti₊l⇔r : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
+          (c₂ ◎ uniti₊l) ⇔ (uniti₊l ◎ (c₁ ⊕ c₂))
+  unite₊r⇔l : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
+          (unite₊r ◎ c₂) ⇔ ((c₂ ⊕ c₁) ◎ unite₊r)
+  unite₊r⇔r : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
+          ((c₂ ⊕ c₁) ◎ unite₊r) ⇔ (unite₊r ◎ c₂)
+  uniti₊r⇔l : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
+          (uniti₊r ◎ (c₂ ⊕ c₁)) ⇔ (c₂ ◎ uniti₊r)
+  uniti₊r⇔r : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
+          (c₂ ◎ uniti₊r) ⇔ (uniti₊r ◎ (c₂ ⊕ c₁))
+  unitial₊⇔ : {t₁ t₂ : U} → (uniti₊l {PLUS t₁ t₂} ◎ assocl₊) ⇔ (uniti₊l ⊕ id⟷)
+  unitiar₊⇔ : {t₁ t₂ : U} → (uniti₊l {t₁} ⊕ id⟷ {t₂}) ⇔ (uniti₊l ◎ assocl₊)
   swapl₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
           (swap₊ ◎ (c₁ ⊕ c₂)) ⇔ ((c₂ ⊕ c₁) ◎ swap₊)
   swapr₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
@@ -147,9 +167,9 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
         {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
          ((c₁ ⊗ c₂) ◎ (c₃ ⊗ c₄)) ⇔ ((c₁ ◎ c₃) ⊗ (c₂ ◎ c₄))
   triangle⊕l : {t₁ t₂ : U} →
-    ((swap₊ ◎ unite₊ {t₁}) ⊕ id⟷ {t₂}) ⇔ assocr₊ ◎ (id⟷ ⊕ unite₊)
+    (unite₊r {t₁} ⊕ id⟷ {t₂}) ⇔ assocr₊ ◎ (id⟷ ⊕ unite₊l)
   triangle⊕r : {t₁ t₂ : U} →
-    (assocr₊ ◎ (id⟷ {t₁} ⊕ unite₊ {t₂})) ⇔ ((swap₊ ◎ unite₊) ⊕ id⟷)
+    assocr₊ ◎ (id⟷ {t₁} ⊕ unite₊l {t₂}) ⇔ (unite₊r ⊕ id⟷)
   triangle⊗l : {t₁ t₂ : U} →
     ((swap⋆ ◎ unite⋆ {t₁}) ⊗ id⟷ {t₂}) ⇔ assocr⋆ ◎ (id⟷ ⊗ unite⋆)
   triangle⊗r : {t₁ t₂ : U} →
@@ -194,18 +214,25 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
      id⟷ ◎ factorzr ⇔ factorzr ◎ (c₁ ⊗ id⟷)
   factorzr⇔r : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
      factorzr ◎ (c₁ ⊗ id⟷) ⇔ id⟷ ◎ factorzr
-  swap⋆dist⇔l : {t₁ t₂ t₃ : U} →
-    (id⟷ {t₁} ⊗ swap₊ {t₂} {t₃}) ◎ swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆) ⇔
-      (swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆)) ◎ swap₊
-  swap⋆dist⇔r : {t₁ t₂ t₃ : U} →
-    (swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆)) ◎ swap₊ ⇔
-    (id⟷ {t₁} ⊗ swap₊ {t₂} {t₃}) ◎ swap⋆ ◎ dist ◎ (swap⋆ ⊕ swap⋆)
+  -- from the coherence conditions of RigCategory
+  swap₊distl⇔l : {t₁ t₂ t₃ : U} →
+    (id⟷ {t₁} ⊗ swap₊ {t₂} {t₃}) ◎ distl ⇔ distl ◎ swap₊
+  swap₊distl⇔r : {t₁ t₂ t₃ : U} →
+    distl ◎ swap₊ ⇔ (id⟷ {t₁} ⊗ swap₊ {t₂} {t₃}) ◎ distl
+  dist-swap⋆⇔l : {t₁ t₂ t₃ : U} →
+    dist {t₁} {t₂} {t₃} ◎ (swap⋆ ⊕ swap⋆) ⇔ swap⋆ ◎ distl
+  dist-swap⋆⇔r : {t₁ t₂ t₃ : U} →
+    swap⋆ ◎ distl {t₁} {t₂} {t₃} ⇔ dist ◎ (swap⋆ ⊕ swap⋆)
   assocl₊-dist-dist⇔l : {t₁ t₂ t₃ t₄ : U} →
     ((assocl₊ {t₁} {t₂} {t₃} ⊗ id⟷ {t₄}) ◎ dist) ◎ (dist ⊕ id⟷) ⇔
       (dist ◎ (id⟷ ⊕ dist)) ◎ assocl₊
   assocl₊-dist-dist⇔r : {t₁ t₂ t₃ t₄ : U} →
     (dist {t₁} ◎ (id⟷ ⊕ dist {t₂} {t₃} {t₄})) ◎ assocl₊ ⇔
       ((assocl₊ ⊗ id⟷) ◎ dist) ◎ (dist ⊕ id⟷)
+  assocl⋆-distl⇔l : {t₁ t₂ t₃ t₄ : U} →
+    assocl⋆ {t₁} {t₂} ◎ distl {TIMES t₁ t₂} {t₃} {t₄} ⇔ ((id⟷ ⊗ distl) ◎ distl) ◎ (assocl⋆ ⊕ assocl⋆)
+  assocl⋆-distl⇔r : {t₁ t₂ t₃ t₄ : U} →
+    ((id⟷ ⊗ distl) ◎ distl) ◎ (assocl⋆ ⊕ assocl⋆) ⇔ assocl⋆ {t₁} {t₂} ◎ distl {TIMES t₁ t₂} {t₃} {t₄}  
 -- better syntax for writing 2paths
 
 infix  2  _▤       
@@ -231,10 +258,14 @@ _▤ c = id⇔
 2! assocr⊕l = assocr⊕r
 2! assocr⊗r = assocr⊗l
 2! assocr⊗l = assocr⊗r
-2! assoc⊗l = assoc⊗r
-2! assoc⊗r = assoc⊗l
-2! dist⇔ = factor⇔ 
-2! factor⇔ = dist⇔
+2! dist⇔l = dist⇔r
+2! dist⇔r = dist⇔l
+2! distl⇔l = distl⇔r
+2! distl⇔r = distl⇔l
+2! factor⇔l = factor⇔r
+2! factor⇔r = factor⇔l
+2! factorl⇔l = factorl⇔r
+2! factorl⇔r = factorl⇔l
 2! idl◎l = idl◎r
 2! idl◎r = idl◎l
 2! idr◎l = idr◎r
@@ -243,10 +274,14 @@ _▤ c = id⇔
 2! linv◎r = linv◎l
 2! rinv◎l = rinv◎r
 2! rinv◎r = rinv◎l
-2! unitel₊⇔ = uniter₊⇔
-2! uniter₊⇔ = unitel₊⇔
-2! unitil₊⇔ = unitir₊⇔
-2! unitir₊⇔ = unitil₊⇔
+2! unite₊l⇔l = unite₊l⇔r
+2! unite₊l⇔r = unite₊l⇔l
+2! uniti₊l⇔l = uniti₊l⇔r
+2! uniti₊l⇔r = uniti₊l⇔l
+2! unite₊r⇔l = unite₊r⇔r
+2! unite₊r⇔r = unite₊r⇔l
+2! uniti₊r⇔l = uniti₊r⇔r
+2! uniti₊r⇔r = uniti₊r⇔l
 2! swapl₊⇔ = swapr₊⇔
 2! swapr₊⇔ = swapl₊⇔
 2! unitial₊⇔ = unitiar₊⇔ 
@@ -298,10 +333,14 @@ _▤ c = id⇔
 2! factorzl⇔r = factorzl⇔l
 2! factorzr⇔l = factorzr⇔r
 2! factorzr⇔r = factorzr⇔l
-2! swap⋆dist⇔l = swap⋆dist⇔r
-2! swap⋆dist⇔r = swap⋆dist⇔l
+2! swap₊distl⇔l = swap₊distl⇔r
+2! swap₊distl⇔r = swap₊distl⇔l
+2! dist-swap⋆⇔l = dist-swap⋆⇔r
+2! dist-swap⋆⇔r = dist-swap⋆⇔l
 2! assocl₊-dist-dist⇔l = assocl₊-dist-dist⇔r
 2! assocl₊-dist-dist⇔r = assocl₊-dist-dist⇔l
+2! assocl⋆-distl⇔l = assocl⋆-distl⇔r
+2! assocl⋆-distl⇔r = assocl⋆-distl⇔l
 
 -- a nice example of 2 paths
 
@@ -338,34 +377,3 @@ negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆
         swap₊ ▤
 
 ------------------------------------------------------------------------------
-
--- Some variants of the combinators, which can be more useful in practice
-dist′⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {a : t₁ ⟷ t₂} {b : t₃ ⟷ t₄} {c : t₅ ⟷ t₆} →
-      ((a ⊕ b) ⊗ c) ◎ dist ⇔ dist ◎ ((a ⊗ c) ⊕ (b ⊗ c)) 
-dist′⇔ {a = a} {b} {c} =
-      ((a ⊕ b) ⊗ c) ◎ dist
-        ⇔⟨ dist⇔ ⊡ id⇔ ⟩
-      (dist ◎ ((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor) ◎ dist
-        ⇔⟨ assoc◎r ⟩
-      dist ◎ (((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor) ◎ dist
-        ⇔⟨ id⇔ ⊡ assoc◎r ⟩
-      dist ◎ ((a ⊗ c) ⊕ (b ⊗ c)) ◎ (factor ◎ dist)
-        ⇔⟨ id⇔ ⊡ (id⇔ ⊡ linv◎l) ⟩
-      dist ◎ ((a ⊗ c) ⊕ (b ⊗ c)) ◎ id⟷
-        ⇔⟨ id⇔ ⊡ idr◎l ⟩
-      dist ◎ ((a ⊗ c) ⊕ (b ⊗ c)) ▤
-
-factor′⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {a : t₁ ⟷ t₂} {b : t₃ ⟷ t₄} {c : t₅ ⟷ t₆} →
-       ((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor ⇔ factor ◎ ((a ⊕ b) ⊗ c)
-factor′⇔ {a = a} {b} {c} =
-       ((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor
-         ⇔⟨ idl◎r ⟩
-       id⟷ ◎ ((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor
-         ⇔⟨ rinv◎r ⊡ id⇔ ⟩
-       (factor ◎ dist) ◎ ((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor
-         ⇔⟨ assoc◎r ⟩
-       factor ◎ (dist ◎ ((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor)
-         ⇔⟨ id⇔ ⊡ factor⇔ ⟩
-       factor ◎ ((a ⊕ b) ⊗ c) ▤

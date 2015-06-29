@@ -21,8 +21,10 @@ c2perm : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → CPerm (size t₂) (size t�
 c2perm (c₁ ◎ c₂) = transp (c2perm c₁) (c2perm c₂)
 c2perm (c₁ ⊕ c₂) = (c2perm c₁) ⊎p (c2perm c₂)
 c2perm (c₁ ⊗ c₂) = (c2perm c₁) ×p (c2perm c₂)
-c2perm unite₊ = idp -- could use something more 'precise' ?
-c2perm uniti₊ = idp -- ditto
+c2perm unite₊l = unite+p
+c2perm uniti₊l = uniti+p
+c2perm unite₊r = unite+rp
+c2perm uniti₊r = uniti+rp
 c2perm {PLUS t₁ t₂} swap₊ = swap+p {size t₁} {size t₂}
 c2perm {PLUS t₁ (PLUS t₂ t₃)} assocl₊ = assocl+p {size t₁} {size t₂} {size t₃}
 c2perm {PLUS (PLUS t₁ t₂) t₃} assocr₊ = assocr+p {size t₁} {size t₂} {size t₃}
@@ -51,8 +53,10 @@ c2perm id⟷ = idp
 -- it needs p≡ for most of the cases, but then relies on non-trivial lemmas for 
 -- the last 3 cases
 !≡symp : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → c2perm (! c) ≡ symp (c2perm c)
-!≡symp unite₊ = p≡ refl
-!≡symp uniti₊ = p≡ refl
+!≡symp unite₊l = p≡ refl
+!≡symp uniti₊l = p≡ refl
+!≡symp unite₊r = p≡ refl
+!≡symp uniti₊r = p≡ refl
 !≡symp swap₊ = p≡ refl
 !≡symp assocl₊ = p≡ refl
 !≡symp assocr₊ = p≡ refl

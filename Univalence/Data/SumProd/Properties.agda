@@ -76,3 +76,12 @@ assoc-factor-factor-lemma (inj₁ (inj₁ x)) = P.refl
 assoc-factor-factor-lemma (inj₁ (inj₂ y)) = P.refl
 assoc-factor-factor-lemma (inj₂ y) = P.refl
 
+distl-assoc-lemma : {A B C D : Set} → (x : A × (B × (C ⊎ D))) →
+  distl (assocl⋆ x) P.≡ map⊎ assocl⋆ assocl⋆ (distl (map× F.id distl x))
+distl-assoc-lemma (a , b , inj₁ x) = P.refl
+distl-assoc-lemma (a , b , inj₂ y) = P.refl
+
+assoc-factorl-lemma : {A B C D : Set} → (x : ((A × B) × C) ⊎ ((A × B) × D)) →
+  assocr⋆ (factorl x) P.≡ map× F.id factorl (factorl (map⊎ assocr⋆ assocr⋆ x))
+assoc-factorl-lemma (inj₁ x) = P.refl
+assoc-factorl-lemma (inj₂ y) = P.refl

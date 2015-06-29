@@ -32,7 +32,7 @@ open import Categories.RigCategory
 -- explicit using clause, to show what parts are used. 
 -- in the order they were needed below, too.
 open import PiLevel0 using (U; _⟷_; id⟷; _◎_; !;
-  PLUS; _⊕_; ZERO; unite₊; uniti₊; swap₊; assocr₊; assocl₊;
+  PLUS; _⊕_; ZERO; unite₊l; uniti₊l; unite₊r; uniti₊r; swap₊; assocr₊; assocl₊;
   TIMES; _⊗_; ONE; unite⋆; uniti⋆; swap⋆; assocr⋆; assocl⋆;
   absorbl; absorbr; factorzl; factorzr;
   dist; factor; distl; factorl)
@@ -90,10 +90,10 @@ module ⊎h = MonoidalHelperFunctors PiCat ⊕-bifunctor ZERO
 0⊕x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
 0⊕x≡x = record 
   { F⇒G = record
-    { η = λ X → unite₊
+    { η = λ X → unite₊l
     ; commute = λ _ → tt } 
   ; F⇐G = record
-    { η = λ X → uniti₊
+    { η = λ X → uniti₊l
     ; commute = λ _ → tt } 
   ; iso = λ X → record { isoˡ = tt; isoʳ = tt }
   }
@@ -101,11 +101,11 @@ module ⊎h = MonoidalHelperFunctors PiCat ⊕-bifunctor ZERO
 x⊕0≡x : NaturalIsomorphism ⊎h.x⊗id ⊎h.x
 x⊕0≡x = record
   { F⇒G = record
-    { η = λ X → swap₊ ◎ unite₊  -- !!!
+    { η = λ X → unite₊r
     ; commute = λ _ → tt
     }
   ; F⇐G = record
-    { η = λ X → uniti₊ ◎ swap₊
+    { η = λ X → uniti₊r
     ; commute = λ _ → tt
     }
   ; iso = λ X → record 

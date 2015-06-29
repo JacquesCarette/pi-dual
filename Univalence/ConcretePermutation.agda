@@ -4,6 +4,9 @@ module ConcretePermutation where
 
 open import Level using (zero)
 open import Data.Nat using (ℕ;_+_;_*_)
+open import Data.Fin using (Fin) -- for convenience
+open import Data.Vec using (tabulate)
+open import Data.Product using (proj₁)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans;
     proof-irrelevance; cong₂;
     module ≡-Reasoning)
@@ -13,6 +16,8 @@ open import FinVec -- and below, import from that
 open F
 
 open import SetoidUtils using (≡-Setoid)
+open import Equiv using (_≃_; sym≃; p∘!p≡id)
+open import FinEquiv using (module Plus; module Times; module PlusTimes)
 
 -- a concrete permutation has 4 components:
 -- - the permutation
@@ -102,11 +107,29 @@ _⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ⊎c (π π₁))
           ≡⟨ 1C⊎1C≡1C {m₁} ⟩
         1C ∎ )
 
+-- For the rest of the permutations, it is convenient to lift things from
+-- FinVec in one go; but don't use it yet, it makes other things fall apart
+mkPerm : {m n : ℕ} (eq : Fin m ≃ Fin n) → CPerm m n
+mkPerm {m} {n} eq = cp p q p∘̂q≡1 q∘̂p≡1
+  where
+    f = proj₁ eq
+    g = proj₁ (sym≃ eq)
+    p = tabulate g -- note the flip!
+    q = tabulate f
+    q∘̂p≡1 = ~⇒≡ {f = g} {g = f} (p∘!p≡id {p = eq})
+    p∘̂q≡1 = ~⇒≡ {f = f} {g = g} (p∘!p≡id {p = sym≃ eq})
+
 unite+p : {m : ℕ} → CPerm m (0 + m)
 unite+p {m} = cp (unite+ {m}) (uniti+ {m}) (unite+∘̂uniti+~id {m}) (uniti+∘̂unite+~id {m})
 
 uniti+p : {m : ℕ} → CPerm (0 + m) m
 uniti+p {m} = symp (unite+p {m})
+
+unite+rp : {m : ℕ} → CPerm m (m + 0)
+unite+rp {m} = cp (unite+r {m}) (uniti+r) (unite+r∘̂uniti+r~id) (uniti+r∘̂unite+r~id)
+
+uniti+rp : {m : ℕ} → CPerm (m + 0) m
+uniti+rp {m} = symp (unite+rp {m})
 
 assocl+p : {m n o : ℕ} → CPerm ((m + n) + o) (m + (n + o))
 assocl+p {m} = cp (assocl+ {m}) (assocr+ {m})  (assocl+∘̂assocr+~id {m}) (assocr+∘̂assocl+~id {m})
@@ -221,7 +244,7 @@ unite+p∘[0⊎x]≡x∘unite+p p = p≡ unite+∘[0⊎x]≡x∘unite+
 
 uniti+p∘x≡[0⊎x]∘uniti+p : ∀ {m n} (p : CPerm m n) →
   transp uniti+p p ≡ transp (0p ⊎p p) uniti+p
-uniti+p∘x≡[0⊎x]∘uniti+p p = p≡ uniti+∘x≡[0⊎x]∘uniti+
+uniti+p∘x≡[0⊎x]∘uniti+p p = p≡ (uniti+∘x≡[0⊎x]∘uniti+ {x = CPerm.π p})
 
 SCPerm : ℕ → ℕ → Setoid zero zero
 SCPerm m n = ≡-Setoid (CPerm m n)
