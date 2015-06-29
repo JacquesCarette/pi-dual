@@ -403,84 +403,6 @@ import TypeEquiv as TE
 \end{itemize}
 }
 
-\amr{OUTLINE:
-\begin{itemize}
-\item SECTION
-
-\item Finite types form a commutative semiring as Fiore et al. prove
-  that commutative semiring axioms are sound and complete isos on
-  finite types.
-
-\item Observation: finite types form a commutative semiring not just
-  up to strict equality but UP TO EQUIVALENCE OF TYPES and the notion
-  of equivalence of types itself forms a commutative semiring
-
-\item Permutations on finite sets also form a commutative semiring up
-  to EQUIVALENCE OF PERMUTATIONS and that equivalence is also itself a
-  commutative semiring.
-
-\item The above two approaches are themselves equivalent so up to
-  equivalence and equivalence of equivalences we can work with
-  permutations and equivalence of permutations instead of type isos or
-  type equivalences.
-
-\item This gives us a version of univalence for finite types that has
-  clear computational content.
-\end{itemize}
-}
-
-\amr{
-\begin{itemize}
-\item SECTION
-
-\item In our previous work we had argued that one can program with
-  permutations on finite sets (many others relate this to reversible
-  computation and more specifically to reversible combinational
-  circuits). We proposed a family of languages Pi some with trace;
-  some with effects; etc. The simplest language is permutations on
-  finite sets which correspond to finite types. 
-
-\item Examples of circuits
-
-\item SECTION
-
-\item How do we reason about equivalence of circuits? Previous work:
-  operational semantics; extensional tools; we relate to permutations
-  and try to prove permutations equal also extensional. No sound and
-  complete set of rules for us to reason about equivalence.
-
-\item Because we live in this HoTT-like world where we have
-  equivalences of equivalences, we could move up one level to get the
-  right rules.
-
-\item SECTION
-
-\item This has been done generically: coherence conditions for
-  commutative rig groupoids. These generalize type equivalences and
-  permutations;
-
-\item SECTION
-
-\item What we need now is Pi plus another layer to top to optimize Pi
-  programs; no ad hoc rules; principled rules; in fact we get a
-  'better' pi that has what appears to be more redundant combinators
-  but these are only redundant because of subtle coherence
-  rules. Integrating them directly gives rise to cleaner (and shorter)
-  programs.
-
-\item NEXT STEPS:
-
-\begin{itemize}
-\item add trace to make language Turing complete
-\item generalize from commutative rig to field as a way to get some
-  notion of h.o. functions
-\end{itemize}
-\end{itemize}
-}
-
-
-
-
 \amr{Define and motivate that we are interested in defining HoTT  
   equivalences of types, characterizing them, computing with them,
   etc.}
@@ -570,7 +492,23 @@ with the goal of reducing the notion of finite type equivalence to a
 notion of reversible computation.
 
 %%%%%%%%%%%%
-\subsection{HoTT Equivalences of Types} 
+\subsection{Finite Types}
+
+\amr{
+ Finite types form a commutative semiring as Fiore et al. prove
+  that commutative semiring axioms are sound and complete isos on
+  finite types.
+}
+
+
+%%%%%%%%%%%%
+\subsection{Commutative Semirings of Types}
+
+\amr{
+Observation: finite types form a commutative semiring not just
+  up to strict equality but UP TO EQUIVALENCE OF TYPES and the notion
+  of equivalence of types itself forms a commutative semiring
+}
 
 There are several equivalent definitions of the notion of equivalence
 of types. For concreteness, we use the following definition as it
@@ -598,9 +536,6 @@ boolean negation for $f$ (and hence for $g$). These two equivalences
 are themselves \emph{not} equivalent: each of them can be used to
 ``transport'' properties of \AgdaDatatype{Bool} in a different way.
 
-%%%%%%%%%%%%
-\subsection{Instance I: Universe of Types}
-
 The first commutative semiring instance we examine is the universe of
 types (\AgdaDatatype{Set} in Agda terminology). (See
 Appendix~\ref{sec:commrig} for the definition of commutative rings.)
@@ -625,8 +560,14 @@ semiring (up to $\simeq$).
 \end{theorem}
 
 %%%%%%%%%%%%
-\subsection{Instance II: Finite Sets}
- 
+\subsection{Commutative Semirings of Permutations}
+
+\amr{
+Permutations on finite sets also form a commutative semiring up
+  to EQUIVALENCE OF PERMUTATIONS and that equivalence is also itself a
+  commutative semiring.
+}
+
 The collection of all finite sets (\AgdaDatatype{Fin}~$m$ for natural
 number $m$ in Agda terminology) is another commutative semiring
 instance. In this case, the additive unit is \AgdaDatatype{Fin}~$0$,
@@ -705,9 +646,6 @@ The collection of all equivalences $\textsc{eq}_{AB}$ for finite types
 $A$ and $B$ forms a commutative semiring.
 \end{theorem}
 
-%%%%%%%%%%%%
-\subsection{Permutations on Finite Sets} 
-
 Given the correspondence between finite types and finite sets, we will
 prove that equivalences on finite types are equivalent to permutations
 on finite sets. Formalizing the notion of permutations is delicate
@@ -760,7 +698,14 @@ _⊎p_ = ?
 }
 
 %%%%%%%%%%%%
-\subsection{Equivalences of Equivalences} 
+\subsection{Equivalence of Equivalences}
+
+\amr{
+The above two approaches are themselves equivalent so up to
+  equivalence and equivalence of equivalences we can work with
+  permutations and equivalence of permutations instead of type isos or
+  type equivalences.
+}
 
 The main result of this section is that the type of all equivalences
 between finite types $A$ and $B$, $\textsc{eq}_{AB}$, is equivalent to
@@ -779,6 +724,26 @@ equivalence. The definition of ~S (EquivSetoid) was only obvious
 post-facto! 
 \end{proof}
 
+Before concluding this section, we recall that both the type of all
+equivalences and the type of all permutations are commutative
+semirings and in fact the previous theorem can be generalized to a
+stronger theorem asserting that these two commutative semiring
+structures are \emph{isomorphic}.
+
+\begin{theorem}
+The equivalence of Theorem~\ref{Perm} is an \emph{isomorphism} between
+the commutative semiring of equivalences of finite types and the
+commutative semiring of permutations.
+\end{theorem}
+
+%%%%%%%%%%%%
+\subsection{Univalence}
+
+\amr{
+This gives us a version of univalence for finite types that has
+  clear computational content.
+}
+
 With the proper Agda definitions, we can rephrase this theorem in a
 more evocative way. We will discuss the relevance of this theorem to
 the \emph{univalence} postulate in the conclusion.
@@ -793,20 +758,8 @@ permutations on finite sets. This will prove quite handy as, unlike
 the former, the latter notion can be inductively defined which gives
 it a natural computational interpretation. 
 
-Before concluding this section, we recall that both the type of all
-equivalences and the type of all permutations are commutative
-semirings and in fact the previous theorem can be generalized to a
-stronger theorem asserting that these two commutative semiring
-structures are \emph{isomorphic}.
-
-\begin{theorem}
-The equivalence of Theorem~\ref{Perm} is an \emph{isomorphism} between
-the commutative semiring of equivalences of finite types and the
-commutative semiring of permutations.
-\end{theorem}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Typed Isormorphisms}
+\section{Programming with Permutations}
 
 In the previous section, we argued that, up to equivalence, the
 equivalence of types reduces to permutations on finite sets. The
@@ -820,6 +773,15 @@ other hand.
 
 %%%%%%%%%%%%
 \subsection{$\Pi$}
+
+\amr{
+In our previous work we had argued that one can program with
+permutations on finite sets (many others relate this to reversible
+computation and more specifically to reversible combinational
+circuits). We proposed a family of languages Pi some with trace; some
+with effects; etc. The simplest language is permutations on finite
+sets which correspond to finite types.
+}
 
 In previous work~\cite{James:2012:IE:2103656.2103667}, we introduce
 the $\Pi$ family of languages whose only computations are isomorphisms
@@ -926,6 +888,10 @@ c2perm = ?
 
 %%%%%%%%%%%%
 \subsection{Example Circuits}
+
+\amr{
+Examples of circuits
+}
 
 This language $\Pi$ is universal for hardware combinational
 circuits~\cite{James:2012:IE:2103656.2103667}.
@@ -1044,7 +1010,29 @@ n₂ =  uniti⋆ ◎
 A few more circuits...
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{But is this a Programming Language?}
+\section{Semantics}
+
+\amr{
+How do we reason about equivalence of circuits? Previous work:
+  operational semantics; extensional tools; we relate to permutations
+  and try to prove permutations equal also extensional. No sound and
+  complete set of rules for us to reason about equivalence.
+
+Because we live in this HoTT-like world where we have
+  equivalences of equivalences, we could move up one level to get the
+  right rules.
+}
+
+%%%%%%%%%%%%
+\subsection{Operational Semantics}
+
+Give operational semantics
+
+%%%%%%%%%%%%
+\subsection{Extensional Reasoning about Equivalence}
+
+%%%%%%%%%%%%
+\subsection{Rewriting Approach} 
 
 pi combinators are a nice syntax for programming with finite types,
 for talking about the commutative semiring of equivalences between
@@ -1103,6 +1091,20 @@ Manipulating circuits. Nice framework, but:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Categorification}
+
+\amr{
+This has been done generically: coherence conditions for
+  commutative rig groupoids. These generalize type equivalences and permutations;
+}
+
+%%%%%%%%%%%%
+\subsection{Monoidal Categories} 
+
+%%%%%%%%%%%%
+\subsection{Coherence Conditions} 
+
+%%%%%%%%%%%%
+\subsection{Commutative Rig Groupoids} 
 
 This is where the idea of path and path of paths becomes critical. But
 that does not give us a computational framework because univalence is
@@ -1346,6 +1348,33 @@ Symmetric Rig Categories.
 The set of coherence rules for Symmetric Rig Groupoids are a sound
 and complete set for \textcolor{red}{circuit equivalence}.
 \end{conj}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Revised $\Pi$ and its Optimizer}
+
+%%%%%%%%%%%%
+\subsection{Revised Syntax}
+
+\amr{
+  The refactoring of Pi from the inspiration of symmetric
+  rig groupoids.  The added combinators are redundant (from an
+  operational perspective) exactly because of the coherences.  But
+  some of these higher combinators have rather non-trivial relations
+  to each other [ex: pentagon, hexagon, and some of the weirder
+  Laplaza rules].  Plus the 'minimalistic' Pi leads to much larger
+  programs with LOTS of extra redexes.
+}
+
+%%%%%%%%%%%%
+\subsection{Optimization Rules}
+
+\amr{
+What we need now is Pi plus another layer to top to optimize Pi
+  programs; no ad hoc rules; principled rules; 
+}
+
+%%%%%%%%%%%%
+\subsection{Examples}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Emails}
@@ -1980,6 +2009,14 @@ terms!
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
+
+\amr{
+\begin{itemize}
+\item add trace to make language Turing complete
+\item generalize from commutative rig to field as a way to get some
+  notion of h.o. functions
+\end{itemize}
+}
 
 Our theorem shows that, in the case of finite types, reversible
 computation via type isomorphisms \emph{is} the computational
