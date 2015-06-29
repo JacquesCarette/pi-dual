@@ -392,21 +392,19 @@ import TypeEquiv as TE
 
 \amr{
 \begin{itemize}
-
 \item BACKGROUND: realizing HoTT requires we be able to program with type
   equivalences and equivalences of type equivalences and so on;
   univalence is a postulate; caveat Coquand et al.
-
 \item RESULT: limit ourselves to finite types: what emerges is an interesting
   universal language for combinational reversible circuits that comes
   with a calculus for writing circuits and a calculus for manipulating
   that calculus; in other words; rules for writing circuits and rules
   for rewriting (optimizing) circuits
+\end{itemize}
+}
 
-\item OUTLINE:
-
+\amr{OUTLINE:
 \begin{itemize}
-
 \item SECTION
 
 \item Finite types form a commutative semiring as Fiore et al. prove
@@ -428,7 +426,11 @@ import TypeEquiv as TE
 
 \item This gives us a version of univalence for finite types that has
   clear computational content.
+\end{itemize}
+}
 
+\amr{
+\begin{itemize}
 \item SECTION
 
 \item In our previous work we had argued that one can program with
@@ -460,9 +462,11 @@ import TypeEquiv as TE
 \item SECTION
 
 \item What we need now is Pi plus another layer to top to optimize Pi
-  programs; no ad hoc rules; principled rules
-
-\end{itemize}
+  programs; no ad hoc rules; principled rules; in fact we get a
+  'better' pi that has what appears to be more redundant combinators
+  but these are only redundant because of subtle coherence
+  rules. Integrating them directly gives rise to cleaner (and shorter)
+  programs.
 
 \item NEXT STEPS:
 
@@ -471,7 +475,6 @@ import TypeEquiv as TE
 \item generalize from commutative rig to field as a way to get some
   notion of h.o. functions
 \end{itemize}
-
 \end{itemize}
 }
 
