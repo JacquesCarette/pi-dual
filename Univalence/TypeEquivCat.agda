@@ -353,12 +353,13 @@ TERig : RigCategory SBM⊎ SBM×
 TERig = record
   { distribₗ = x⊗[y⊕z]≡[x⊗y]⊕[x⊗z]
   ; distribᵣ = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z]
-  ; annₗ = x⊗0≡0
-  ; annᵣ = 0⊗x≡0
+  ; annₗ = 0⊗x≡0
+  ; annᵣ = x⊗0≡0
   ; laplazaI = eq distl-swap₊-lemma factorl-swap₊-lemma
   ; laplazaII = eq dist-swap⋆-lemma factor-swap⋆-lemma
   ; laplazaIV = eq dist-dist-assoc-lemma assoc-factor-factor-lemma
   ; laplazaVI = eq distl-assoc-lemma assoc-factorl-lemma
+  ; laplazaX = eq distz0≡distrz0 factorz0≡factorzr0
   }
 
 -- Notes from Laplaza, 72

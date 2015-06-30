@@ -265,10 +265,13 @@ Pi0Rig : RigCategory SBM⊕ SBM⊗
 Pi0Rig = record 
   { distribₗ = x⊗[y⊕z]≡[x⊗y]⊕[x⊗z]
   ; distribᵣ = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] 
-  ; annₗ = x⊗0≡0 
-  ; annᵣ = 0⊗x≡0
+  ; annₗ = 0⊗x≡0 
+  ; annᵣ = x⊗0≡0
   ; laplazaI = tt
   ; laplazaII = tt
+  ; laplazaIV = tt
+  ; laplazaVI = tt
+  ; laplazaX = tt
   }
 ------------------------------------------------------------------------------
 

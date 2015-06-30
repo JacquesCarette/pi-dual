@@ -83,7 +83,7 @@ open import PiLevel1
         dist⇔l; factor⇔l; distl⇔l; factorl⇔l;
         hom◎⊕⇔;
         swap₊distl⇔l; dist-swap⋆⇔l; assocl₊-dist-dist⇔l;
-        assocl⋆-distl⇔l)
+        assocl⋆-distl⇔l; absorbr0-absorbl0⇔)
 
 ------------------------------------------------------------------------------
 -- The equality of morphisms is derived from the coherence conditions
@@ -350,10 +350,11 @@ Pi0Rig : RigCategory SBM⊕ SBM⊗
 Pi0Rig = record 
   { distribₗ = x⊗[y⊕z]≡[x⊗y]⊕[x⊗z]
   ; distribᵣ = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] 
-  ; annₗ = x⊗0≡0 
-  ; annᵣ = 0⊗x≡0
+  ; annₗ = 0⊗x≡0 
+  ; annᵣ = x⊗0≡0
   ; laplazaI = swap₊distl⇔l
   ; laplazaII = dist-swap⋆⇔l
   ; laplazaIV = assocl₊-dist-dist⇔l
   ; laplazaVI = assocl⋆-distl⇔l
+  ; laplazaX = absorbr0-absorbl0⇔
   }
