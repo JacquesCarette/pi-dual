@@ -11,6 +11,7 @@ open import Relation.Binary using (Rel)
 open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to map⊎)
 open import Data.Product using (_×_; _,_; proj₁; proj₂) renaming (map to map×)
 open import Data.Empty
+open import Data.Unit
 import Function as F
 
 open import Equiv
@@ -100,3 +101,8 @@ factorz0≡factorl∘[factorz,factorz]∘uniti₊ : {A B : Set} (x : ⊥) →
   factorz x P.≡ factorl {B = A} {B} (map⊎ factorz factorz (uniti₊ x))
 factorz0≡factorl∘[factorz,factorz]∘uniti₊ ()
 
+unite⋆r0≡absorb1 : (x : ⊥ × ⊤) → unite⋆′ x P.≡ distz x
+unite⋆r0≡absorb1 _ = P.refl
+
+uniti⋆r0≡factorz : (x : ⊥) → uniti⋆′ x P.≡ factorz x
+uniti⋆r0≡factorz ()
