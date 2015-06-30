@@ -62,28 +62,6 @@ open import PiLevel0
         dist; factor; distl; factorl)
 
 open import PiLevel1
-  using (
-        _⇔_; assoc◎l; idr◎l; idl◎l; id⇔; 2!; trans⇔; _⊡_;
-        linv◎l; rinv◎l;
-        id⟷⊕id⟷⇔; hom⊕◎⇔; resp⊕⇔;
-        unite₊l⇔l; uniti₊l⇔l;
-        _⇔⟨_⟩_; _▤;
-        swapr₊⇔; assoc◎r;
-        assocr⊕r; assocl⊕l;
-        id⟷⊗id⟷⇔; hom⊗◎⇔; resp⊗⇔;
-        triangle⊕l; pentagon⊕l;
-        unite₊l⇔r; uniti₊l⇔r; unite₊r⇔r; uniti₊r⇔r;
-        uniter⋆⇔l; unitir⋆⇔l; uniter⋆⇔r; unitir⋆⇔r;
-        swapr⋆⇔;
-        assocr⊗r; assocl⊗l;
-        triangle⊗l; pentagon⊗l;
-        hexagonr⊕l; hexagonl⊕l; hexagonr⊗l; hexagonl⊗l;
-        absorbl⇔l; absorbr⇔l; factorzl⇔l; factorzr⇔l;
-        idl◎r; linv◎r;
-        dist⇔l; factor⇔l; distl⇔l; factorl⇔l;
-        hom◎⊕⇔;
-        swap₊distl⇔l; dist-swap⋆⇔l; assocl₊-dist-dist⇔l;
-        assocl⋆-distl⇔l; absorbr0-absorbl0⇔; absorbr⇔distl-absorb-unite)
 
 ------------------------------------------------------------------------------
 -- The equality of morphisms is derived from the coherence conditions
@@ -310,5 +288,5 @@ Pi0Rig = record
   ; laplazaVI = assocl⋆-distl⇔l
   ; laplazaX = absorbr0-absorbl0⇔
   ; laplazaXI = absorbr⇔distl-absorb-unite
-  ; laplazaXIII = {!!}
+  ; laplazaXIII = unite⋆r0-absorbr1⇔ 
   }

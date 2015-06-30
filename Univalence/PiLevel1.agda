@@ -246,6 +246,9 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
   distl-absorb-unite⇔absorbr : {t₁ t₂ : U} →
     (distl {t₂ = t₁} {t₂} ◎ (absorbr ⊕ absorbr)) ◎ unite₊l ⇔ absorbr
 
+  unite⋆r0-absorbr1⇔ : unite⋆r ⇔ absorbr
+  absorbr1-unite⋆r-⇔ : absorbr ⇔ unite⋆r
+
 -- better syntax for writing 2paths
 
 infix  2  _▤       
@@ -358,6 +361,8 @@ _▤ c = id⇔
 2! absorbl0-absorbr0⇔ = absorbr0-absorbl0⇔
 2! absorbr⇔distl-absorb-unite = distl-absorb-unite⇔absorbr
 2! distl-absorb-unite⇔absorbr = absorbr⇔distl-absorb-unite
+2! unite⋆r0-absorbr1⇔ = absorbr1-unite⋆r-⇔
+2! absorbr1-unite⋆r-⇔ = unite⋆r0-absorbr1⇔
 
 -- a nice example of 2 paths
 
