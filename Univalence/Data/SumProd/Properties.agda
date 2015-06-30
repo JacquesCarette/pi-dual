@@ -91,3 +91,12 @@ distz0≡distrz0 (() , ())
 
 factorz0≡factorzr0 : (x : ⊥) → factorz x P.≡ factorzr x
 factorz0≡factorzr0 ()
+
+distz0≡unite₊∘[distz,distz]∘distl : {A B : Set} (x : ⊥ × (A ⊎ B)) →
+  distz x P.≡ unite₊ (map⊎ distz distz (distl x))
+distz0≡unite₊∘[distz,distz]∘distl (() , _)
+
+factorz0≡factorl∘[factorz,factorz]∘uniti₊ : {A B : Set} (x : ⊥) →
+  factorz x P.≡ factorl {B = A} {B} (map⊎ factorz factorz (uniti₊ x))
+factorz0≡factorl∘[factorz,factorz]∘uniti₊ ()
+

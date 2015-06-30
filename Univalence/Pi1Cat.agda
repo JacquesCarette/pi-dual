@@ -357,4 +357,5 @@ Pi0Rig = record
   ; laplazaIV = assocl₊-dist-dist⇔l
   ; laplazaVI = assocl⋆-distl⇔l
   ; laplazaX = absorbr0-absorbl0⇔
+  ; laplazaXI = ?
   }
