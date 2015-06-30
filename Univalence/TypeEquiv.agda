@@ -181,7 +181,7 @@ assocr⋆equiv =
 -- distz and factorz, on left
 
 distz : { A : Set} → (⊥ × A) → ⊥
-distz (() , _)
+distz = proj₁
 
 factorz : {A : Set} → ⊥ → (⊥ × A)
 factorz ()
@@ -203,7 +203,7 @@ factorzequiv {A} =
 -- distz and factorz, on right
 
 distzr : { A : Set} → (A × ⊥) → ⊥
-distzr (_ , ())
+distzr = proj₂
 
 factorzr : {A : Set} → ⊥ → (A × ⊥)
 factorzr ()
