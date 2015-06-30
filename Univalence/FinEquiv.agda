@@ -30,7 +30,7 @@ import TypeEquiv as TE
 open import LeqLemmas using (_<?_; cong+r≤; cong+l≤; cong*r≤; sinj≤)
 open import FinNatLemmas 
   using (inj₁-≡; inj₂-≡; inject+-injective; raise-injective; addMul-lemma;
-         distribˡ-*-+)
+         distribˡ-*-+; *-right-identity)
 open import SubstLemmas using (subst-subst)
 open import PathLemmas using (sym-sym)
 
@@ -351,6 +351,20 @@ abstract
 
     uniti* : {m : ℕ} → Fin m ≃ Fin (1 * m)
     uniti* = sym≃ unite*
+
+    -- unite*r
+
+    unite*r : {m : ℕ} → Fin (m * 1) ≃ Fin m
+    unite*r {m} = 
+      let eq = *-right-identity m in
+      subst Fin eq , 
+      mkqinv (subst Fin (sym eq))
+                   (subst-subst eq (sym eq) refl)
+                   (subst-subst (sym eq) eq sym-sym)
+
+    -- uniti*r
+    uniti*r : {m : ℕ} → Fin m ≃ Fin (m * 1)
+    uniti*r = sym≃ unite*r
 
     -- swap*
 
