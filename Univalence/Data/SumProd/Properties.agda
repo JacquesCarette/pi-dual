@@ -85,3 +85,18 @@ assoc-factorl-lemma : {A B C D : Set} → (x : ((A × B) × C) ⊎ ((A × B) × 
   assocr⋆ (factorl x) P.≡ map× F.id factorl (factorl (map⊎ assocr⋆ assocr⋆ x))
 assoc-factorl-lemma (inj₁ x) = P.refl
 assoc-factorl-lemma (inj₂ y) = P.refl
+
+distz0≡distrz0 : (x : ⊥ × ⊥) → distz x P.≡ distzr x
+distz0≡distrz0 (() , ())
+
+factorz0≡factorzr0 : (x : ⊥) → factorz x P.≡ factorzr x
+factorz0≡factorzr0 ()
+
+distz0≡unite₊∘[distz,distz]∘distl : {A B : Set} (x : ⊥ × (A ⊎ B)) →
+  distz x P.≡ unite₊ (map⊎ distz distz (distl x))
+distz0≡unite₊∘[distz,distz]∘distl (() , _)
+
+factorz0≡factorl∘[factorz,factorz]∘uniti₊ : {A B : Set} (x : ⊥) →
+  factorz x P.≡ factorl {B = A} {B} (map⊎ factorz factorz (uniti₊ x))
+factorz0≡factorl∘[factorz,factorz]∘uniti₊ ()
+
