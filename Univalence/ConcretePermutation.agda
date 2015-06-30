@@ -146,6 +146,12 @@ unite*p {m} = cp (unite* {m}) (uniti* {m}) (unite*∘̂uniti*~id {m}) (uniti*∘
 uniti*p : {m : ℕ} → CPerm (1 * m) m
 uniti*p {m} = symp (unite*p {m})
 
+unite*rp : {m : ℕ} → CPerm m (m * 1)
+unite*rp {m} = cp (unite*r {m}) (uniti*r {m}) (unite*r∘̂uniti*r~id {m}) (uniti*r∘̂unite*r~id {m})
+
+uniti*rp : {m : ℕ} → CPerm (m * 1) m
+uniti*rp {m} = symp (unite*rp {m})
+
 swap*p : {m n : ℕ} → CPerm (n * m) (m * n)
 swap*p {m} {n} = cp (swap⋆cauchy m n) (swap⋆cauchy n m) (swap*-inv {m}) (swap*-inv {n})
 
