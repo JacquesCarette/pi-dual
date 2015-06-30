@@ -55,7 +55,7 @@ open import PiLevel0
         swap₊;
         assocr₊; assocl₊;
         TIMES; _⊗_; ONE;
-        unite⋆; uniti⋆;
+        unite⋆l; uniti⋆l; unite⋆r; uniti⋆r;
         swap⋆;
         assocr⋆; assocl⋆;
         absorbl; absorbr; factorzl; factorzr;
@@ -73,7 +73,7 @@ open import PiLevel1
         id⟷⊗id⟷⇔; hom⊗◎⇔; resp⊗⇔;
         triangle⊕l; pentagon⊕l;
         unite₊l⇔r; uniti₊l⇔r; unite₊r⇔r; uniti₊r⇔r;
-        uniter⋆⇔; unitir⋆⇔;
+        uniter⋆⇔l; unitir⋆⇔l; uniter⋆⇔r; unitir⋆⇔r;
         swapr⋆⇔;
         assocr⊗r; assocl⊗l;
         triangle⊗l; pentagon⊗l;
@@ -185,73 +185,25 @@ module ×h = MonoidalHelperFunctors PiCat ⊗-bifunctor ONE
 1⊗x≡x : NaturalIsomorphism ×h.id⊗x ×h.x
 1⊗x≡x = record 
   { F⇒G = record
-    { η = λ X → unite⋆
-    ; commute = λ f → uniter⋆⇔ } 
+    { η = λ X → unite⋆l
+    ; commute = λ f → uniter⋆⇔l } 
   ; F⇐G = record
-    { η = λ X → uniti⋆
-    ; commute = λ f → unitir⋆⇔ } 
+    { η = λ X → uniti⋆l
+    ; commute = λ f → unitir⋆⇔l } 
   ; iso = λ X → record { isoˡ = linv◎l; isoʳ = rinv◎l }
   }
 
 x⊗1≡x : NaturalIsomorphism ×h.x⊗id ×h.x
 x⊗1≡x = record
   { F⇒G = record
-    { η = λ X → swap⋆ ◎ unite⋆  -- !!!
-    ; commute = λ f →
-       (f zero ⊗ id⟷) ◎ swap⋆ ◎ unite⋆ 
-           ⇔⟨ assoc◎l ⟩
-       ( (f zero ⊗ id⟷) ◎ swap⋆ ) ◎ unite⋆ 
-           ⇔⟨ swapr⋆⇔ ⊡ id⇔ ⟩
-      (swap⋆ ◎ (id⟷ ⊗ f zero)) ◎ unite⋆
-          ⇔⟨  assoc◎r ⟩
-      swap⋆ ◎ (id⟷ ⊗ f zero) ◎ unite⋆
-          ⇔⟨ id⇔ ⊡ uniter⋆⇔ ⟩
-      swap⋆ ◎ unite⋆ ◎ f zero
-          ⇔⟨ assoc◎l ⟩
-      (swap⋆ ◎ unite⋆) ◎ f zero ▤ 
+    { η = λ X → unite⋆r 
+    ; commute = λ f → uniter⋆⇔r
     }
   ; F⇐G = record
-    { η = λ X → uniti⋆ ◎ swap⋆
-    ; commute = λ f → 
-      let x = f zero in
-      x ◎ uniti⋆ ◎ swap⋆
-          ⇔⟨ assoc◎l ⟩
-      (x ◎ uniti⋆) ◎ swap⋆
-          ⇔⟨ unitir⋆⇔ ⊡ id⇔ ⟩
-      (uniti⋆ ◎ (id⟷ ⊗ x)) ◎ swap⋆
-          ⇔⟨ assoc◎r ⟩
-      uniti⋆ ◎ (id⟷ ⊗ x) ◎ swap⋆
-          ⇔⟨ id⇔ ⊡ swapr⋆⇔ ⟩
-      uniti⋆ ◎ swap⋆ ◎ (f zero ⊗ id⟷)
-          ⇔⟨ assoc◎l ⟩
-       (uniti⋆ ◎ swap⋆) ◎ (x ⊗ id⟷) ▤
+    { η = λ X → uniti⋆r
+    ; commute = λ f → unitir⋆⇔r 
     }
-  ; iso = λ X → record 
-    { isoˡ = 
-       (swap⋆ ◎ unite⋆) ◎ uniti⋆ ◎ swap⋆
-           ⇔⟨ assoc◎l ⟩
-      ((swap⋆ ◎ unite⋆) ◎ uniti⋆) ◎ swap⋆
-          ⇔⟨ assoc◎r ⊡ id⇔ ⟩
-      (swap⋆ ◎ unite⋆ ◎ uniti⋆) ◎ swap⋆
-          ⇔⟨ (id⇔ ⊡ linv◎l) ⊡ id⇔ ⟩
-      (swap⋆ ◎ id⟷) ◎ swap⋆
-          ⇔⟨ idr◎l ⊡ id⇔ ⟩
-      swap⋆ ◎ swap⋆
-          ⇔⟨ linv◎l ⟩
-      id⟷ ▤
-    ; isoʳ = 
-      (uniti⋆ ◎ swap⋆) ◎ swap⋆ ◎ unite⋆
-          ⇔⟨ assoc◎l ⟩
-      ((uniti⋆ ◎ swap⋆) ◎ swap⋆) ◎ unite⋆
-          ⇔⟨ assoc◎r ⊡ id⇔ ⟩
-      (uniti⋆ ◎ swap⋆ ◎ swap⋆) ◎ unite⋆
-          ⇔⟨ (id⇔ ⊡ linv◎l) ⊡ id⇔ ⟩
-      (uniti⋆ ◎ id⟷) ◎ unite⋆
-          ⇔⟨ idr◎l ⊡ id⇔ ⟩
-      uniti⋆ ◎ unite⋆
-          ⇔⟨ linv◎l ⟩
-       id⟷ ▤
-    }
+  ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l }
   }
 
 [x⊗y]⊗z≡x⊗[y⊗z] : NaturalIsomorphism ×h.[x⊗y]⊗z ×h.x⊗[y⊗z]
@@ -358,4 +310,5 @@ Pi0Rig = record
   ; laplazaVI = assocl⋆-distl⇔l
   ; laplazaX = absorbr0-absorbl0⇔
   ; laplazaXI = absorbr⇔distl-absorb-unite
+  ; laplazaXIII = {!!}
   }

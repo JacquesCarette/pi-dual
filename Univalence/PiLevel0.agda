@@ -27,7 +27,7 @@ open import Data.Unit    using (⊤; tt)
 open import Data.Sum     using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
-open import FinNatLemmas using (distribˡ-*-+)
+open import FinNatLemmas using (distribˡ-*-+; *-right-identity)
 
 ------------------------------------------------------------------------------
 -- Level 0 of Pi
@@ -98,8 +98,10 @@ data _⟷_ : U → U → Set where
   swap₊   : {t₁ t₂ : U} → PLUS t₁ t₂ ⟷ PLUS t₂ t₁
   assocl₊ : {t₁ t₂ t₃ : U} → PLUS t₁ (PLUS t₂ t₃) ⟷ PLUS (PLUS t₁ t₂) t₃
   assocr₊ : {t₁ t₂ t₃ : U} → PLUS (PLUS t₁ t₂) t₃ ⟷ PLUS t₁ (PLUS t₂ t₃)
-  unite⋆  : {t : U} → TIMES ONE t ⟷ t
-  uniti⋆  : {t : U} → t ⟷ TIMES ONE t
+  unite⋆l  : {t : U} → TIMES ONE t ⟷ t
+  uniti⋆l  : {t : U} → t ⟷ TIMES ONE t
+  unite⋆r : {t : U} → TIMES t ONE ⟷ t
+  uniti⋆r : {t : U} → t ⟷ TIMES t ONE
   swap⋆   : {t₁ t₂ : U} → TIMES t₁ t₂ ⟷ TIMES t₂ t₁
   assocl⋆ : {t₁ t₂ t₃ : U} → TIMES t₁ (TIMES t₂ t₃) ⟷ TIMES (TIMES t₁ t₂) t₃
   assocr⋆ : {t₁ t₂ t₃ : U} → TIMES (TIMES t₁ t₂) t₃ ⟷ TIMES t₁ (TIMES t₂ t₃)
@@ -130,8 +132,10 @@ comb= uniti₊l uniti₊l = true
 comb= swap₊ swap₊ = true
 comb= assocl₊ assocl₊ = true
 comb= assocr₊ assocr₊ = true
-comb= unite⋆ unite⋆ = true
-comb= uniti⋆ uniti⋆ = true
+comb= unite⋆l unite⋆l = true
+comb= unite⋆r unite⋆r = true
+comb= uniti⋆l uniti⋆l = true
+comb= uniti⋆r uniti⋆r = true
 comb= swap⋆ swap⋆ = true
 comb= assocl⋆ assocl⋆ = true
 comb= assocr⋆ assocr⋆ = true
@@ -164,8 +168,10 @@ eval assocl₊ (inj₂ (inj₂ v)) = inj₂ v
 eval assocr₊ (inj₁ (inj₁ v)) = inj₁ v
 eval assocr₊ (inj₁ (inj₂ v)) = inj₂ (inj₁ v)
 eval assocr₊ (inj₂ v) = inj₂ (inj₂ v)
-eval unite⋆ (tt , v) = v
-eval uniti⋆ v = (tt , v)
+eval unite⋆l (tt , v) = v
+eval uniti⋆l v = (tt , v)
+eval unite⋆r (v , tt) = v
+eval uniti⋆r v = v , tt
 eval swap⋆ (v₁ , v₂) = (v₂ , v₁)
 eval assocl⋆ (v₁ , (v₂ , v₃)) = ((v₁ , v₂) , v₃)
 eval assocr⋆ ((v₁ , v₂) , v₃) = (v₁ , (v₂ , v₃))
@@ -204,8 +210,10 @@ evalB assocl₊ (inj₂ y) = inj₂ (inj₂ y)
 evalB assocr₊ (inj₁ x) = inj₁ (inj₁ x)
 evalB assocr₊ (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
 evalB assocr₊ (inj₂ (inj₂ y)) = inj₂ y
-evalB unite⋆ x = tt , x
-evalB uniti⋆ (tt , x) = x
+evalB unite⋆l x = tt , x
+evalB uniti⋆l (tt , x) = x
+evalB unite⋆r v = v , tt
+evalB uniti⋆r (v , tt) = v
 evalB swap⋆ (x , y) = y , x
 evalB assocl⋆ ((x , y) , z) = x , y , z
 evalB assocr⋆ (x , y , z) = (x , y) , z
@@ -263,8 +271,10 @@ size≡ {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ =
   sym (+-assoc (size t₁) (size t₂) (size t₃))
 size≡ {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} assocr₊ = 
   +-assoc (size t₁) (size t₂) (size t₃)
-size≡ {TIMES ONE t} {.t} unite⋆ = +-right-identity (size t)
-size≡ {t} {TIMES ONE .t} uniti⋆ = sym (+-right-identity (size t))
+size≡ {TIMES ONE t} {.t} unite⋆l = +-right-identity (size t)
+size≡ {t} {TIMES ONE .t} uniti⋆l = sym (+-right-identity (size t))
+size≡ {TIMES t ONE} {.t} unite⋆r = *-right-identity (size t)
+size≡ {t} {TIMES .t ONE} uniti⋆r = sym (*-right-identity (size t))
 size≡ {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = *-comm (size t₁) (size t₂)
 size≡ {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} assocl⋆ = 
   sym (*-assoc (size t₁) (size t₂) (size t₃))
@@ -334,8 +344,9 @@ NEG3 = NOT ◎ NOT ◎ NOT
 -- spec: (false , true) ∷ (true , false) ∷ []
 NEG4 = NOT ◎ id⟷
 -- spec: (false , true) ∷ (true , false) ∷ []
-NEG5 = uniti⋆ ◎ swap⋆ ◎ (NOT ⊗ id⟷) ◎ swap⋆ ◎ unite⋆
+NEG5 = uniti⋆l ◎ swap⋆ ◎ (NOT ⊗ id⟷) ◎ swap⋆ ◎ unite⋆l
 -- spec: (false , true) ∷ (true , false) ∷ []
+NEG6 = uniti⋆r ◎ (NOT ⊗ id⟷) ◎ unite⋆r -- same as above, but shorter
 
 -- CNOT
 
@@ -510,8 +521,10 @@ FULLADDER =
 ! swap₊     = swap₊
 ! assocl₊   = assocr₊
 ! assocr₊   = assocl₊
-! unite⋆    = uniti⋆
-! uniti⋆    = unite⋆
+! unite⋆l    = uniti⋆l
+! uniti⋆l    = unite⋆l
+! unite⋆r = uniti⋆r
+! uniti⋆r = unite⋆r
 ! swap⋆     = swap⋆
 ! assocl⋆   = assocr⋆
 ! assocr⋆   = assocl⋆
@@ -536,8 +549,10 @@ FULLADDER =
 !! {c = swap₊}   = refl
 !! {c = assocl₊} = refl
 !! {c = assocr₊} = refl
-!! {c = unite⋆}  = refl
-!! {c = uniti⋆}  = refl
+!! {c = unite⋆l}  = refl
+!! {c = uniti⋆l}  = refl
+!! {c = unite⋆r} = refl
+!! {c = uniti⋆r} = refl
 !! {c = swap⋆}   = refl
 !! {c = assocl⋆} = refl
 !! {c = assocr⋆} = refl
@@ -587,8 +602,10 @@ size≡! {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ 
   +-assoc (size t₁) (size t₂) (size t₃)
 size≡! {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} assocr₊ = 
   sym (+-assoc (size t₁) (size t₂) (size t₃))
-size≡! {TIMES ONE t} {.t} unite⋆ = sym (+-right-identity (size t))
-size≡! {t} {TIMES ONE .t} uniti⋆ = +-right-identity (size t)
+size≡! {TIMES ONE t} {.t} unite⋆l = sym (+-right-identity (size t))
+size≡! {t} {TIMES ONE .t} uniti⋆l = +-right-identity (size t)
+size≡! {TIMES t ONE} unite⋆r = sym (*-right-identity (size t))
+size≡! {t} {TIMES .t ONE} uniti⋆r = *-right-identity (size t)
 size≡! {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = *-comm (size t₂) (size t₁) 
 size≡! {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} assocl⋆ = 
   *-assoc (size t₁) (size t₂) (size t₃)

@@ -111,22 +111,26 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
           (uniti₊r ◎ (c₂ ⊕ c₁)) ⇔ (c₂ ◎ uniti₊r)
   uniti₊r⇔r : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
           (c₂ ◎ uniti₊r) ⇔ (uniti₊r ◎ (c₂ ⊕ c₁))
-  unitial₊⇔ : {t₁ t₂ : U} → (uniti₊l {PLUS t₁ t₂} ◎ assocl₊) ⇔ (uniti₊l ⊕ id⟷)
-  unitiar₊⇔ : {t₁ t₂ : U} → (uniti₊l {t₁} ⊕ id⟷ {t₂}) ⇔ (uniti₊l ◎ assocl₊)
   swapl₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
           (swap₊ ◎ (c₁ ⊕ c₂)) ⇔ ((c₂ ⊕ c₁) ◎ swap₊)
   swapr₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
           ((c₂ ⊕ c₁) ◎ swap₊) ⇔ (swap₊ ◎ (c₁ ⊕ c₂))
-  unitel⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
-          (unite⋆ ◎ c₂) ⇔ ((c₁ ⊗ c₂) ◎ unite⋆)
-  uniter⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
-          ((c₁ ⊗ c₂) ◎ unite⋆) ⇔ (unite⋆ ◎ c₂)
-  unitil⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
-          (uniti⋆ ◎ (c₁ ⊗ c₂)) ⇔ (c₂ ◎ uniti⋆)
-  unitir⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
-          (c₂ ◎ uniti⋆) ⇔ (uniti⋆ ◎ (c₁ ⊗ c₂))
-  unitial⋆⇔ : {t₁ t₂ : U} → (uniti⋆ {TIMES t₁ t₂} ◎ assocl⋆) ⇔ (uniti⋆ ⊗ id⟷)
-  unitiar⋆⇔ : {t₁ t₂ : U} → (uniti⋆ {t₁} ⊗ id⟷ {t₂}) ⇔ (uniti⋆ ◎ assocl⋆)
+  unitel⋆⇔l : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
+          (unite⋆l ◎ c₂) ⇔ ((c₁ ⊗ c₂) ◎ unite⋆l)
+  uniter⋆⇔l : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
+          ((c₁ ⊗ c₂) ◎ unite⋆l) ⇔ (unite⋆l ◎ c₂)
+  unitil⋆⇔l : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
+          (uniti⋆l ◎ (c₁ ⊗ c₂)) ⇔ (c₂ ◎ uniti⋆l)
+  unitir⋆⇔l : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
+          (c₂ ◎ uniti⋆l) ⇔ (uniti⋆l ◎ (c₁ ⊗ c₂))
+  unitel⋆⇔r : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
+          (unite⋆r ◎ c₂) ⇔ ((c₂ ⊗ c₁) ◎ unite⋆r)
+  uniter⋆⇔r : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
+          ((c₂ ⊗ c₁) ◎ unite⋆r) ⇔ (unite⋆r ◎ c₂)
+  unitil⋆⇔r : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
+          (uniti⋆r ◎ (c₂ ⊗ c₁)) ⇔ (c₂ ◎ uniti⋆r)
+  unitir⋆⇔r : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
+          (c₂ ◎ uniti⋆r) ⇔ (uniti⋆r ◎ (c₂ ⊗ c₁))
   swapl⋆⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
           (swap⋆ ◎ (c₁ ⊗ c₂)) ⇔ ((c₂ ⊗ c₁) ◎ swap⋆)
   swapr⋆⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
@@ -171,9 +175,9 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
   triangle⊕r : {t₁ t₂ : U} →
     assocr₊ ◎ (id⟷ {t₁} ⊕ unite₊l {t₂}) ⇔ (unite₊r ⊕ id⟷)
   triangle⊗l : {t₁ t₂ : U} →
-    ((swap⋆ ◎ unite⋆ {t₁}) ⊗ id⟷ {t₂}) ⇔ assocr⋆ ◎ (id⟷ ⊗ unite⋆)
+    ((unite⋆r {t₁}) ⊗ id⟷ {t₂}) ⇔ assocr⋆ ◎ (id⟷ ⊗ unite⋆l)
   triangle⊗r : {t₁ t₂ : U} →
-    (assocr⋆ ◎ (id⟷ {t₁} ⊗ unite⋆ {t₂})) ⇔ ((swap⋆ ◎ unite⋆) ⊗ id⟷)
+    (assocr⋆ ◎ (id⟷ {t₁} ⊗ unite⋆l {t₂})) ⇔ (unite⋆r ⊗ id⟷)
   pentagon⊕l : {t₁ t₂ t₃ t₄ : U} →
     assocr₊ ◎ (assocr₊ {t₁} {t₂} {PLUS t₃ t₄}) ⇔ ((assocr₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ assocr₊)
   pentagon⊕r : {t₁ t₂ t₃ t₄ : U} →
@@ -293,14 +297,14 @@ _▤ c = id⇔
 2! uniti₊r⇔r = uniti₊r⇔l
 2! swapl₊⇔ = swapr₊⇔
 2! swapr₊⇔ = swapl₊⇔
-2! unitial₊⇔ = unitiar₊⇔ 
-2! unitiar₊⇔ = unitial₊⇔ 
-2! unitel⋆⇔ = uniter⋆⇔
-2! uniter⋆⇔ = unitel⋆⇔
-2! unitil⋆⇔ = unitir⋆⇔
-2! unitir⋆⇔ = unitil⋆⇔
-2! unitial⋆⇔ = unitiar⋆⇔ 
-2! unitiar⋆⇔ = unitial⋆⇔ 
+2! unitel⋆⇔l = uniter⋆⇔l
+2! uniter⋆⇔l = unitel⋆⇔l
+2! unitil⋆⇔l = unitir⋆⇔l
+2! unitir⋆⇔l = unitil⋆⇔l
+2! unitel⋆⇔r = uniter⋆⇔r
+2! uniter⋆⇔r = unitel⋆⇔r
+2! unitil⋆⇔r = unitir⋆⇔r
+2! unitir⋆⇔r = unitil⋆⇔r
 2! swapl⋆⇔ = swapr⋆⇔
 2! swapr⋆⇔ = swapl⋆⇔
 2! swapfl⋆⇔ = swapfr⋆⇔
@@ -362,28 +366,29 @@ neg₁ = swap₊
 neg₂ = id⟷ ◎ swap₊
 neg₃ = swap₊ ◎ swap₊ ◎ swap₊
 neg₄ = swap₊ ◎ id⟷
-neg₅ = uniti⋆ ◎ swap⋆ ◎ (swap₊ ⊗ id⟷) ◎ swap⋆ ◎ unite⋆
+neg₅ = uniti⋆l ◎ swap⋆ ◎ (swap₊ ⊗ id⟷) ◎ swap⋆ ◎ unite⋆l
+neg₆ = uniti⋆r ◎ (swap₊ {ONE} {ONE} ⊗ id⟷) ◎ unite⋆r
 
 negEx : neg₅ ⇔ neg₁
-negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆)))
+negEx = uniti⋆l ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆l)))
           ⇔⟨ id⇔ ⊡ assoc◎l ⟩
-        uniti⋆ ◎ ((swap⋆ ◎ (swap₊ ⊗ id⟷)) ◎ (swap⋆ ◎ unite⋆))
+        uniti⋆l ◎ ((swap⋆ ◎ (swap₊ ⊗ id⟷)) ◎ (swap⋆ ◎ unite⋆l))
           ⇔⟨ id⇔ ⊡ (swapl⋆⇔ ⊡ id⇔) ⟩
-        uniti⋆ ◎ (((id⟷ ⊗ swap₊) ◎ swap⋆) ◎ (swap⋆ ◎ unite⋆))
+        uniti⋆l ◎ (((id⟷ ⊗ swap₊) ◎ swap⋆) ◎ (swap⋆ ◎ unite⋆l))
           ⇔⟨ id⇔ ⊡ assoc◎r ⟩
-        uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ (swap⋆ ◎ (swap⋆ ◎ unite⋆)))
+        uniti⋆l ◎ ((id⟷ ⊗ swap₊) ◎ (swap⋆ ◎ (swap⋆ ◎ unite⋆l)))
           ⇔⟨ id⇔ ⊡ (id⇔ ⊡ assoc◎l) ⟩
-        uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ ((swap⋆ ◎ swap⋆) ◎ unite⋆))
+        uniti⋆l ◎ ((id⟷ ⊗ swap₊) ◎ ((swap⋆ ◎ swap⋆) ◎ unite⋆l))
           ⇔⟨ id⇔ ⊡ (id⇔ ⊡ (linv◎l ⊡ id⇔)) ⟩
-        uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ (id⟷ ◎ unite⋆))
+        uniti⋆l ◎ ((id⟷ ⊗ swap₊) ◎ (id⟷ ◎ unite⋆l))
           ⇔⟨ id⇔ ⊡ (id⇔ ⊡ idl◎l) ⟩
-        uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ unite⋆)
+        uniti⋆l ◎ ((id⟷ ⊗ swap₊) ◎ unite⋆l)
           ⇔⟨ assoc◎l ⟩
-        (uniti⋆ ◎ (id⟷ ⊗ swap₊)) ◎ unite⋆
-          ⇔⟨ unitil⋆⇔ ⊡ id⇔ ⟩
-        (swap₊ ◎ uniti⋆) ◎ unite⋆
+        (uniti⋆l ◎ (id⟷ ⊗ swap₊)) ◎ unite⋆l
+          ⇔⟨ unitil⋆⇔l ⊡ id⇔ ⟩
+        (swap₊ ◎ uniti⋆l) ◎ unite⋆l
           ⇔⟨ assoc◎r ⟩
-        swap₊ ◎ (uniti⋆ ◎ unite⋆)
+        swap₊ ◎ (uniti⋆l ◎ unite⋆l)
           ⇔⟨ id⇔ ⊡ linv◎l ⟩
         swap₊ ◎ id⟷
           ⇔⟨ idr◎l ⟩
