@@ -361,6 +361,7 @@ TERig = record
   ; laplazaVI = eq distl-assoc-lemma assoc-factorl-lemma
   ; laplazaX = eq distz0≡distrz0 factorz0≡factorzr0
   ; laplazaXI = eq distz0≡unite₊∘[distz,distz]∘distl factorz0≡factorl∘[factorz,factorz]∘uniti₊
+  ; laplazaXIII = eq unite⋆r0≡absorb1 uniti⋆r0≡factorz
   }
 
 -- Notes from Laplaza, 72
