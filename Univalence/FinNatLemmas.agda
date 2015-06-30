@@ -233,3 +233,6 @@ distribˡ-*-+ m n o =
   trans (*-comm m (n + o)) (
   trans (distribʳ-*-+ m n o) (
         (cong₂ _+_ (*-comm n m) (*-comm o m))))
+
+*-right-identity : ∀ n → n * 1 ≡ n
+*-right-identity n = trans (*-comm n 1) (+-right-identity n)
