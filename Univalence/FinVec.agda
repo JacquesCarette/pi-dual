@@ -472,6 +472,12 @@ module F where
     uniti*∘̂unite*~id : ∀ {m} → (uniti* {m}) ∘̂ unite* ≡ 1C {m}
     uniti*∘̂unite*~id {m} = ~⇒≡ {1 * m} {n = m} (p∘!p≡id {p = Times.uniti* {m}})
 
+    unite*r∘̂uniti*r~id : ∀ {m} → (unite*r {m}) ∘̂ uniti*r ≡ 1C {m * 1}
+    unite*r∘̂uniti*r~id {m} = ~⇒≡ {m} {n = m * 1} (p∘!p≡id {p = Times.unite*r {m}})
+
+    uniti*r∘̂unite*r~id : ∀ {m} → (uniti*r {m}) ∘̂ unite*r ≡ 1C {m}
+    uniti*r∘̂unite*r~id {m} = ~⇒≡ {m * 1} {n = m} (p∘!p≡id {p = Times.uniti*r {m}})
+
     assocl*∘̂assocr*~id : ∀ {m n o} → assocl* {m} {n} {o} ∘̂ assocr* {m} ≡ 1C
     assocl*∘̂assocr*~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = Times.assocl* {m}})
 
