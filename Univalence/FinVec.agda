@@ -205,6 +205,12 @@ module F where
     uniti* : {m : ℕ} → FinVec (1 * m) m
     uniti* {m} = tabulate (proj₁ (Times.uniti* {m}))
 
+    unite*r : {m : ℕ} → FinVec m (m * 1)
+    unite*r {m} = tabulate (proj₁ (Times.unite*r {m}))
+
+    uniti*r : {m : ℕ} → FinVec (m * 1) m
+    uniti*r {m} = tabulate (proj₁ (Times.uniti*r {m}))
+
     assocl* : {m n o : ℕ} → FinVec  ((m * n) * o) (m * (n * o))
     assocl* {m} {n} {o} = tabulate (proj₁ (Times.assocl* {m} {n} {o}))
 
