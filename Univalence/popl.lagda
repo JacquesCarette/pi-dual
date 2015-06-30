@@ -494,12 +494,36 @@ notion of reversible computation.
 %%%%%%%%%%%%
 \subsection{Finite Types}
 
-\amr{
- Finite types form a commutative semiring as Fiore et al. prove
-  that commutative semiring axioms are sound and complete isos on
-  finite types.
-}
+The elementary building blocks of type theory are the empty type
+($\bot$), the unit type ($\top$), and the sum ($\uplus$) and product
+($\times$) types. These constructors can encode any \emph{finite
+  type}. Traditional type theory also includes several facilities for
+building infinite types, most notably function types. We will however
+not address infinite types in this paper except for a discussion in
+Sec.~\ref{sec:conc}. We will instead focus on identifying the
+computational structures related to finite types.
 
+Our starting point is a result by Fiore
+et. al~\cite{Fiore:2004,fiore-remarks} that completely characterizes
+the isomorphisms between finite types using the axioms of commutative
+semirings. (See Appendix~\ref{sec:commrig} for the complete definition
+of commutative semirings.) Intuitively this result states that one can
+interpret the empty type as the natural number 0, the unit type as the
+natural number 1, the sum type constructor as addition on natural
+numbers, and the product type constructor as multiplication on natural
+numbers, and that this identification validates the familiar
+properties of the natural numbers, and is in fact isomorphic to the
+commutative semiring of the natural numbers. 
+
+In previous work~\cite{James:2012:IE:2103656.2103667}, we introduced
+the $\Pi$ family of languages whose core computations are these
+isomorphisms between finite types. Building on that work and on the
+growing in importance idea that isomorphisms have interesting
+computational content and should not be silently or implicitly
+identified, we first recast Fiore et. al's result in the next section
+making explicit that the commutative semiring structure is defined up
+to the HoTT relation of \emph{type equivalence} instead of strict
+equality~$=$.
 
 %%%%%%%%%%%%
 \subsection{Commutative Semirings of Types}
@@ -537,8 +561,7 @@ are themselves \emph{not} equivalent: each of them can be used to
 ``transport'' properties of \AgdaDatatype{Bool} in a different way.
 
 The first commutative semiring instance we examine is the universe of
-types (\AgdaDatatype{Set} in Agda terminology). (See
-Appendix~\ref{sec:commrig} for the definition of commutative rings.)
+types (\AgdaDatatype{Set} in Agda terminology). 
 The additive unit is the empty type $\bot$; the multiplicative unit is
 the unit type $\top$; the two binary operations are disjoint union
 $\uplus$ and cartesian product $\times$. The axioms are satisfied up
@@ -783,7 +806,7 @@ with effects; etc. The simplest language is permutations on finite
 sets which correspond to finite types.
 }
 
-In previous work~\cite{James:2012:IE:2103656.2103667}, we introduce
+In previous work{James:2012:IE:2103656.2103667}, we introduce
 the $\Pi$ family of languages whose only computations are isomorphisms
 between finite types. We propose that this family of languages is
 exactly the right programmatic interface for manipulating and
@@ -2008,7 +2031,8 @@ terms!
 \includegraphics[scale=0.07]{IMAG0342.jpg}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusion}
+\section{Future Work and Conclusion}
+\label{sec:conc}
 
 \amr{
 \begin{itemize}
@@ -2080,10 +2104,6 @@ a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
 (a + b) \cdot c &=& (a \cdot c) + (b \cdot c)
 \end{array}\]
 \end{definition}
-
-In the paper, we are interested into various commutative semiring
-structures up to some congruence relation instead of strict
-equality~$=$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
