@@ -500,29 +500,34 @@ The elementary building blocks of type theory are the empty type
   type}. Traditional type theory also includes several facilities for
 building infinite types, most notably function types. We will however
 not address infinite types in this paper except for a discussion in
-Sec.~\ref{sec:conc}. We will instead focus on identifying the
-computational structures related to finite types.
+Sec.~\ref{sec:conc}. We will instead focus on thoroughly understanding
+the computational structures related to finite types.
 
+An essential property of a finite type $A$ is its size $|A|$ which is
+defined as follows:
+\[\begin{array}{rcl}
+|\bot| &=& 0 \\
+|\top| &=& 1 \\
+|A \uplus B| &=& |A| + |B| \\
+|A \times B| &=& |A| * |B| 
+\end{array}\] 
 Our starting point is a result by Fiore
 et. al~\cite{Fiore:2004,fiore-remarks} that completely characterizes
 the isomorphisms between finite types using the axioms of commutative
 semirings. (See Appendix~\ref{sec:commrig} for the complete definition
 of commutative semirings.) Intuitively this result states that one can
-interpret the empty type as the natural number 0, the unit type as the
-natural number 1, the sum type constructor as addition on natural
-numbers, and the product type constructor as multiplication on natural
-numbers, and that this identification validates the familiar
+interpret each type by its size, and that this identification validates the familiar
 properties of the natural numbers, and is in fact isomorphic to the
-commutative semiring of the natural numbers. 
+commutative semiring of the natural numbers.
 
 In previous work~\cite{James:2012:IE:2103656.2103667}, we introduced
 the $\Pi$ family of languages whose core computations are these
 isomorphisms between finite types. Building on that work and on the
-growing in importance idea that isomorphisms have interesting
+growing-in-importance idea that isomorphisms have interesting
 computational content and should not be silently or implicitly
 identified, we first recast Fiore et. al's result in the next section
-making explicit that the commutative semiring structure is defined up
-to the HoTT relation of \emph{type equivalence} instead of strict
+making explicit that the commutative semiring structure can be defined
+up to the HoTT relation of \emph{type equivalence} instead of strict
 equality~$=$.
 
 %%%%%%%%%%%%
@@ -538,35 +543,43 @@ There are several equivalent definitions of the notion of equivalence
 of types. For concreteness, we use the following definition as it
 appears to be the most intuitive in our setting.
 
+\begin{definition}[Quasi-inverse]
+  For a function $f : A \rightarrow B$, a \emph{quasi-inverse} of $f$
+  is a triple $(g, \alpha, \beta)$, consisting of a function
+  $g : B \rightarrow A$ and homotopies
+  $\alpha : f \circ g = \mathrm{id}_B$ and
+  $\beta : g \circ f = \mathrm{id}_A$.
+\end{definition}
+ 
 \begin{definition}[Equivalence of types]
   Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
-  \emph{bi-invertible} $f : A \rightarrow B$, i.e., if there exists an
-  $f$ that has both a left-inverse and a right-inverse. A function
-  $f : A \rightarrow$ has a left-inverse if there exists a function
-  $g : B \rightarrow A$ such that $g \circ f = \mathrm{id}_A$. A
-  function $f : A \rightarrow$ has a right-inverse if there exists a
-  function $g : B \rightarrow A$ such that
-  $f \circ g = \mathrm{id}_B$.
+  function $f : A \rightarrow B$ together with a quasi-inverse for $f$.
 \end{definition}
-
-Note that the function $g$ used for the left-inverse may be different
-than the function $g$ used for the right-inverse. As the definition of
-equivalence is parameterized by a function~$f$, we are concerned with,
-not just the fact that two types are equivalent, but with the precise
-way in which they are equivalent. For example, there are two
-equivalences between the type \AgdaDatatype{Bool} and itself: one that
-uses the identity for $f$ (and hence for $g$) and one that uses
-boolean negation for $f$ (and hence for $g$). These two equivalences
-are themselves \emph{not} equivalent: each of them can be used to
+ 
+As the definition of equivalence is parameterized by a function~$f$,
+we are concerned with, not just the fact that two types are
+equivalent, but with the precise way in which they are equivalent. For
+example, there are two equivalences between the type
+\AgdaDatatype{Bool} and itself: one that uses the identity for $f$
+(and hence for the quasi-inverse) and one that uses boolean negation
+for $f$ (and hence for the quasi-inverse). These two equivalences are
+themselves \emph{not} equivalent: each of them can be used to
 ``transport'' properties of \AgdaDatatype{Bool} in a different way.
 
-The first commutative semiring instance we examine is the universe of
-types (\AgdaDatatype{Set} in Agda terminology). 
-The additive unit is the empty type $\bot$; the multiplicative unit is
-the unit type $\top$; the two binary operations are disjoint union
-$\uplus$ and cartesian product $\times$. The axioms are satisfied up
-to equivalence of types~$\simeq$. For example, we have equivalences
-such as:
+It is straightforward to prove that the universe of types
+(\AgdaDatatype{Set} in Agda terminology) is a commutative semiring up
+to equivalence of types~$\simeq$.
+
+\begin{theorem}
+The collection of all types (\AgdaDatatype{Set}) forms a commutative 
+semiring (up to $\simeq$). 
+\end{theorem}
+\begin{proof}
+  As expected, the additive unit is $\bot$, the multiplicative unit
+  is~$\top$, and the two binary operations are $\uplus$ and $\times$.
+\end{proof}
+
+\noindent For example, we have equivalences such as:
 \[\begin{array}{rcl}
 \bot ⊎ A &\simeq& A \\
 \top \times A &\simeq& A \\
@@ -575,12 +588,41 @@ A \times \bot &\simeq& \bot \\
 A \times (B \uplus C) &\simeq& (A \times B) \uplus (A \times C) 
 \end{array}\]
 
-Formally we have the following fact. 
+Moving up one level, we now examine the type of all equivalences
+between types $A$ and $B$ which we denote $\textsc{eq}_{AB}$. The
+elements of this type are all the ways in which we can prove
+$A \simeq B$. Some elementary analysis shows that this is only
+possible if $A$ and~$B$ have the same size in which case the type has
+$|A|~!$ (factorial of the size of $A$) elements witnessing the various
+possible identifications of $A$ and $B$. We note that this type of all
+equivalences is itself a commutative semiring.
 
 \begin{theorem}
-The collection of all types (\AgdaDatatype{Set}) forms a commutative 
-semiring (up to $\simeq$). 
+The collection of all equivalences $\textsc{eq}_{AB}$ for finite types
+$A$ and $B$ forms a commutative semiring.
 \end{theorem}
+\begin{proof}
+  The most important insight is the definition of equivalence of
+  equivalences. Two equivalences $e_1, e_2 : \textsc{eq}_{AB}$ with
+  underlying functions $f_1$ and $f_2$ and underlying quasi-inverses
+  $g_1$ and $g_2$ are themselves equivalent if:
+\begin{itemize}
+\item for all $a \in A$, $f_1(a) = f_2(a)$, and 
+\item for all $b \in B$, $g_1(b) = g_2(b)$.
+\end{itemize}
+Given this notion of equivalence of equivalences, the proof proceeds
+smoothly with the additive unit being the vacuous equivalence
+$\bot \simeq \bot$, the multiplicative unit being the trivial
+equivalence $\top \simeq \top$, the two binary operations being
+essentially a mapping of $\uplus$ and $\times$ over equivalences. 
+\end{proof}
+
+We reiterate that the axioms in this case are satisfied up to
+extensional equality of the functions underlying the equivalences.  We
+could, in principle, consider a weaker notion of equivalence of
+equivalences and attempt to iterate the construction but for the
+purposes of modeling circuits and optimizations, it is sufficient to
+consider just one additional level.
 
 %%%%%%%%%%%%
 \subsection{Commutative Semirings of Permutations}
@@ -601,14 +643,9 @@ of types~$\simeq$.
 
 The reason finite sets are interesting is that each finite type~$A$
 constructed from~$\bot$, $\top$, $\uplus$, and $\times$ is equivalent
-(in $|A|~!$ ways) to \AgdaDatatype{Fin}~$|A|$ where $|A|$ is
-the size of $A$ defined as follows:
-\[\begin{array}{rcl}
-|\bot| &=& 0 \\
-|\top| &=& 1 \\
-|A \uplus B| &=& |A| + |B| \\
-|A \times B| &=& |A| * |B| 
-\end{array}\]
+(in $|A|~!$ ways) to \AgdaDatatype{Fin}~$|A|$ 
+
+
 Each of the $|A|~!$ equivalences of $A$ with \AgdaDatatype{Fin}~$|A|$
 corresponds to a \emph{particular} enumeration of the elements of
 $A$. For example, we have two equivalences:
@@ -651,23 +688,6 @@ element of $\mathsf{Fin}~(\mathit{suc}~m')$ and analyze every position
 this element could be mapped to by the larger equivalence and in each
 case construct an equivalence that excludes this element.
 \end{proof}
-
-In the remainder of the paper, we will refer to the type of all
-equivalences between types $A$ and $B$ as $\textsc{eq}_{AB}$. As
-explained above, this type is inhabited only if $|A|=|B|$ in which
-case it has $|A|~!$ elements witnessing the various ways in which we
-can have $A \simeq B$. We note that this type of all equivalences is
-itself a commutative semiring with the additive unit being the vacuous
-equivalence $\bot \simeq \bot$, the multiplicative unit being the
-trivial equivalence $\top \simeq \top$, the two binary operations
-essentially map $\uplus$ and $\times$ over equivalences, and the
-axioms are satisfied up to extensional equality of the functions
-underlying the equivalences.
-
-\begin{theorem}
-The collection of all equivalences $\textsc{eq}_{AB}$ for finite types
-$A$ and $B$ forms a commutative semiring.
-\end{theorem}
 
 Given the correspondence between finite types and finite sets, we will
 prove that equivalences on finite types are equivalent to permutations
