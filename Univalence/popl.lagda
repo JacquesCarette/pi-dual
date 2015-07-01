@@ -138,6 +138,7 @@ open import Data.Unit
 open import Data.Sum
 open import Data.Product
 open import Data.Nat
+open import Data.Fin hiding (_+_)
 
 data U : Set where
   ZERO  : U
@@ -520,7 +521,7 @@ interpret each type by its size, and that this identification validates the fami
 properties of the natural numbers, and is in fact isomorphic to the
 commutative semiring of the natural numbers.
 
-In previous work~\cite{James:2012:IE:2103656.2103667}, we introduced
+In previous work ~\cite {James:2012:IE:2103656.2103667}, we introduced
 the $\Pi$ family of languages whose core computations are these
 isomorphisms between finite types. Building on that work and on the
 growing-in-importance idea that isomorphisms have interesting
@@ -532,12 +533,6 @@ equality~$=$.
 
 %%%%%%%%%%%%
 \subsection{Commutative Semirings of Types}
-
-\amr{
-Observation: finite types form a commutative semiring not just
-  up to strict equality but UP TO EQUIVALENCE OF TYPES and the notion
-  of equivalence of types itself forms a commutative semiring
-}
 
 There are several equivalent definitions of the notion of equivalence
 of types. For concreteness, we use the following definition as it
@@ -564,7 +559,7 @@ example, there are two equivalences between the type
 (and hence for the quasi-inverse) and one that uses boolean negation
 for $f$ (and hence for the quasi-inverse). These two equivalences are
 themselves \emph{not} equivalent: each of them can be used to
-``transport'' properties of \AgdaDatatype{Bool} in a different way.
+``transport'' properties of \AgdaDatatype  {Bool} in a different way.
 
 It is straightforward to prove that the universe of types
 (\AgdaDatatype{Set} in Agda terminology) is a commutative semiring up
@@ -588,22 +583,28 @@ A \times \bot &\simeq& \bot \\
 A \times (B \uplus C) &\simeq& (A \times B) \uplus (A \times C) 
 \end{array}\]
 
-Moving up one level, we now examine the type of all equivalences
-between types $A$ and $B$ which we denote $\textsc{eq}_{AB}$. The
-elements of this type are all the ways in which we can prove
-$A \simeq B$. Some elementary analysis shows that this is only
-possible if $A$ and~$B$ have the same size in which case the type has
-$|A|~!$ (factorial of the size of $A$) elements witnessing the various
-possible identifications of $A$ and $B$. We note that this type of all
-equivalences is itself a commutative semiring.
+One of the advantages of using equivalence $\simeq$ instead of strict
+equality $=$ is that we can reason one level up about the type of all
+equivalences $\textsc{eq}_{A,B}$. For a given $A$ and $B$, the
+elements of $\textsc{eq}_{A,B}$ are all the ways in which we can prove
+$A \simeq B$. For example,
+$\textsc{eq}_{\AgdaDatatype {Bool},\AgdaDatatype {Bool}}$ has two
+elements corresponding to the $\mathrm{id}$-equivalence and to the
+negation-equivalence. More generally, for finite types $A$ and $B$,
+the type $\textsc{eq}_{A,B}$ is only inhabited if $A$ and~$B$ have the
+same size in which case the type has $|A|~!$ (factorial of the size of
+$A$) elements witnessing the various possible identifications of $A$
+and $B$. The type of all equivalences has some non-trivial structure:
+in particular, it is itself a commutative semiring.
 
 \begin{theorem}
-The collection of all equivalences $\textsc{eq}_{AB}$ for finite types
-$A$ and $B$ forms a commutative semiring.
+  The type of all equivalences $\textsc{eq}_{A,B}$ for finite types
+  $A$ and $B$ forms a commutative semiring up to extensional
+  equivalence of equivalences.
 \end{theorem}
 \begin{proof}
   The most important insight is the definition of equivalence of
-  equivalences. Two equivalences $e_1, e_2 : \textsc{eq}_{AB}$ with
+  equivalences. Two equivalences $e_1, e_2 : \textsc{eq}_{A,B}$ with
   underlying functions $f_1$ and $f_2$ and underlying quasi-inverses
   $g_1$ and $g_2$ are themselves equivalent if:
 \begin{itemize}
@@ -613,60 +614,42 @@ $A$ and $B$ forms a commutative semiring.
 Given this notion of equivalence of equivalences, the proof proceeds
 smoothly with the additive unit being the vacuous equivalence
 $\bot \simeq \bot$, the multiplicative unit being the trivial
-equivalence $\top \simeq \top$, the two binary operations being
-essentially a mapping of $\uplus$ and $\times$ over equivalences. 
+equivalence $\top \simeq \top$, and the two binary operations being
+essentially a mapping of $\uplus$ and $\times$ over equivalences.
 \end{proof}
 
-We reiterate that the axioms in this case are satisfied up to
-extensional equality of the functions underlying the equivalences.  We
-could, in principle, consider a weaker notion of equivalence of
-equivalences and attempt to iterate the construction but for the
-purposes of modeling circuits and optimizations, it is sufficient to
-consider just one additional level.
+We reiterate that the commutative semiring axioms in this case are
+satisfied up to extensional equality of the functions underlying the
+equivalences.  We could, in principle, consider a weaker notion of
+equivalence of equivalences and attempt to iterate the construction
+but for the purposes of modeling circuits and optimizations, it is
+sufficient to consider just one additional level.
 
 %%%%%%%%%%%%
 \subsection{Commutative Semirings of Permutations}
 
-\amr{
-Permutations on finite sets also form a commutative semiring up
-  to EQUIVALENCE OF PERMUTATIONS and that equivalence is also itself a
-  commutative semiring.
-}
+Type equivalences are fundamentally based on function extensionality
+and hence are generally not computationally effective. In the HoTT
+context, this is the open problem of finding a computational
+interpretation for \emph{univalence}. In the case of finite types
+however, there is a computationally-friendly alternative (and as we
+prove equivalent) characterization of type equivalences based on
+permutations of finite sets.
 
-The collection of all finite sets (\AgdaDatatype{Fin}~$m$ for natural
-number $m$ in Agda terminology) is another commutative semiring
-instance. In this case, the additive unit is \AgdaDatatype{Fin}~$0$,
-the multiplicative unit is \AgdaDatatype{Fin}~$1$, the two binary
-operations are still disjoint union~$\uplus$ and cartesian
-product~$\times$, and the axioms are also satisfied up to equivalence
-of types~$\simeq$.
-
-The reason finite sets are interesting is that each finite type~$A$
-constructed from~$\bot$, $\top$, $\uplus$, and $\times$ is equivalent
-(in $|A|~!$ ways) to \AgdaDatatype{Fin}~$|A|$ 
-
-
-Each of the $|A|~!$ equivalences of $A$ with \AgdaDatatype{Fin}~$|A|$
-corresponds to a \emph{particular} enumeration of the elements of
-$A$. For example, we have two equivalences:
-\[\begin{array}{rcl}
-\top \uplus \top &\simeq& \mathsf{Fin}~2
-\end{array}\]
-corresponding to the identity and boolean negation.
-
-Thus, as we prove next, up to equivalence, the only interesting
-property of a finite type is its size. In other words, given two
-equivalent types $A$ and $B$ of completely different structure, e.g.,
+The idea is that, up to equivalence, the only interesting property of
+a finite type is its size and that type equivalences must be
+size-preserving maps and hence correspond to permutations. For
+example, given two equivalent types $A$ and $B$ of completely
+different structure, e.g.,
 $A = (\top \uplus \top) \times (\top \uplus (\top \uplus \top))$ and
 $B = \top \uplus (\top \uplus (\top \uplus (\top \uplus (\top \uplus
-(\top \uplus \bot)))))$, we can find equivalences from either type to
-the finite set $\mathsf{Fin}~6$ and use the latter for further
-reasoning. Indeed, as the next section demonstrate, this result allows
-us to characterize equivalences between finite types in a canonical
-way as permutations between finite sets.
+(\top \uplus \bot)))))$,
+we can find equivalences from either type to the finite set
+$\mathsf{Fin}~6$ and reduce all type equivalences between sets of size
+6 to permutations.
 
-The following theorem precisely characterizes the relationship between
-finite types and finite sets.
+We begin with the following theorem which precisely characterizes the
+relationship between finite types and finite sets.
 
 \begin{theorem}
   If $A\simeq \mathsf{Fin}~m$, $B\simeq \mathsf{Fin}~n$ and
@@ -689,121 +672,121 @@ this element could be mapped to by the larger equivalence and in each
 case construct an equivalence that excludes this element.
 \end{proof}
 
-Given the correspondence between finite types and finite sets, we will
+Given the correspondence between finite types and finite sets, we now
 prove that equivalences on finite types are equivalent to permutations
-on finite sets. Formalizing the notion of permutations is delicate
-however: straightforward attempts turn out not to capture enough of
-the properties of permutations for our purposes. We therefore
-formalize a permutation using two sizes: $m$ for the size of the input
-finite set and $n$ for the size of the resulting finite set. Naturally
-in any well-formed permutations, these two sizes are equal but the
-presence of both types allows us to conveniently define permutations
-as follows. A permutation $\mathsf{CPerm}~m~n$ consists of four
-components. The first two components are:
-\begin{itemize}
-\item a vector of size $n$ containing elements drawn from the finite 
-  set $\mathsf{Fin}~m$; 
-\item a dual vector of size $m$ containing elements drawn from the finite 
-  set $\mathsf{Fin}~n$; 
-\end{itemize}
-Each of the above vectors can be interpreted as a map $f$ that acts on
-the incoming finite set sending the element at index $i$ to position
-$f !! i$ in the resulting finite set. To guarantee that these maps
-define an actual permutation, the last two components are proofs that
-the sequential composition of the maps in both direction produce the
-identity.
+on finite sets. We proceed in steps: first by proving that finite sets
+for a commutative semiring up to $\simeq$ (Thm.~\ref{thm:finrig});
+second by proving that, at the next level, the type of permutations
+between finite sets is also a commutative semiring up to strict
+equality of the representations of permutations
+(Thm.~\ref{thm:permrig}); third by proving that the type of type
+equivalences is equivalent to the type of permutations
+(Thm.~\ref{thm:eqeqperm}); and finally by proving that the commutative
+semiring of type equivalences is isomorphic to the commutative
+semiring of permutations (Thm.~\ref{thm:isoeqperm}). This series of
+theorems will therefore justify our focus in the next section of
+develop a term language for permutations as a way to compute with type
+equivalences.
 
-In the remainder of the paper, we will refer to the type of all
-permutations between finite sets $\mathsf{Fin}~m$ and $\mathsf{Fin}~n$
-as $\textsc{perm}_{mn}$. This type is only inhabited if $m=n$ in which
-case it has $m!$ elements, each of which witnesses one of the possible
-permutations $\mathsf{CPerm}~m~n$. We note that this type of all
-permutations is itself a commutative semiring with the additive unit
-being the vacuous permutations $\mathsf{CPerm}~0~0$, the
-multiplicative unit being the trivial permutations
-$\mathsf{CPerm}~1~1$, the two binary operations essentially map
-$\uplus$ and $\times$ over permutations, and the axioms are satisfied
-up to strict equality of the vectors underlying the permutations.
-
-\begin{theorem}
-The collection of all permutations $\textsc{perm}_{mn}$ for natural
-numbers $m$ and $n$ forms a commutative semiring.
+\begin{theorem}\label{thm:finrig}
+  The collection of all finite types ($\AgdaDatatype{Fin}~m$ for
+  natural number $m$) forms a commutative semiring (up to $\simeq$).
 \end{theorem}
+\begin{proof}
+  The additive unit is \AgdaDatatype{Fin}~$0$ and the multiplicative unit
+  is \AgdaDatatype{Fin}~$1$.  For the two binary operations, the proof
+  crucially relies on the following equivalences:
 
-\begin{code}
-_⊎p_ : ∀ {m₁ m₂ n₁ n₂} →
-       CPerm m₁ m₂ → CPerm n₁ n₂ → CPerm (m₁ + n₁) (m₂ + n₂)
-\end{code}
-\AgdaHide{
-\begin{code}
-_⊎p_ = ?
-\end{code}
-}
+    \begin{code}
+iso-plus   : {m n : ℕ} → (Fin m ⊎ Fin n) ≃ Fin (m + n) 
+iso-times  : {m n : ℕ} → (Fin m × Fin n) ≃ Fin (m * n)
+    \end{code}
+    \AgdaHide{
+    \begin{code}
+iso-plus = {!!}
+iso-times = {!!}
+     \end{code}
+     }
 
-%%%%%%%%%%%%
-\subsection{Equivalence of Equivalences}
+\end{proof}
+ 
+\begin{theorem}\label{thm:permrig}
+  The collection of all permutations $\textsc{perm}_{mn}$ between
+  finite sets $\mathsf{Fin}~m$ and $\mathsf{Fin}~n$ forms a
+  commutative semiring up to strict equality of the representations of
+  the permutations.
+\end{theorem}
+\begin{proof}
+  The proof requires delicate attention to the representation of
+  permutations as straightforward attempts turn out not to capture
+  enough of the properties of permutations. A permutation of one set
+  to another is represented using two sizes: $m$ for the size of the
+  input finite set and $n$ for the size of the resulting finite
+  set. Naturally in any well-formed permutations, these two sizes are
+  equal but the presence of both types allows us to conveniently
+  define a permutation $\mathsf{CPerm}~m~n$ using four components. The
+  first two components are:
+  \begin{itemize}
+  \item a vector of size $n$ containing elements drawn from the finite
+    set $\mathsf{Fin}~m$;
+  \item a dual vector of size $m$ containing elements drawn from the
+    finite set $\mathsf{Fin}~n$;
+  \end{itemize}
+  Each of the above vectors can be interpreted as a map $f$ that acts
+  on the incoming finite set sending the element at index $i$ to
+  position $f !! i$ in the resulting finite set. To guarantee that
+  these maps define an actual permutation, the last two components are
+  proofs that the sequential composition of the maps in both direction
+  produce the identity. Given this representation, we can prove that
+  two permutations are equal if the underlying vectors are strictly
+  equal. The proof proceeds using the vacuous permutation
+  $\mathsf{CPerm}~0~0$ for the additive unit and the trivial
+  permutation $\mathsf{CPerm}~1~1$ for the multiplicative unit.
+\end{proof}
 
-\amr{
-The above two approaches are themselves equivalent so up to
-  equivalence and equivalence of equivalences we can work with
-  permutations and equivalence of permutations instead of type isos or
-  type equivalences.
-}
-
-The main result of this section is that the type of all equivalences
-between finite types $A$ and $B$, $\textsc{eq}_{AB}$, is equivalent to
-the type of all permutations $\textsc{perm}_{mn}$ where $m = |A|$ and
-$n = |B|$.
-
-\begin{theorem}\label{Perm}
+\begin{theorem}\label{thm:eqeqperm}
 If $A ≃ \mathsf{Fin}~m$ and $B ≃ \mathsf{Fin}~n$, then the type of all
-equivalences $\textsc{eq}_{AB}$ is equivalent to the type of all
+equivalences $\textsc{eq}_{A,B}$ is equivalent to the type of all
 permutations $\textsc{perm}~m~n$.
 \end{theorem}
 \begin{proof}
-Although long and tedious, this proof is straightforward. It requires
-a lot of work as it is about setoids rather then just the raw
-equivalence. The definition of ~S (EquivSetoid) was only obvious
-post-facto! 
+  The main difficulty in this proof was to generalize from sets to
+  setoids to make the equivalence relations explicit. The proof is
+  straightforward but long and tedious.
 \end{proof}
 
-Before concluding this section, we recall that both the type of all
-equivalences and the type of all permutations are commutative
-semirings and in fact the previous theorem can be generalized to a
-stronger theorem asserting that these two commutative semiring
-structures are \emph{isomorphic}.
-
-\begin{theorem}
-The equivalence of Theorem~\ref{Perm} is an \emph{isomorphism} between
-the commutative semiring of equivalences of finite types and the
-commutative semiring of permutations.
+\begin{theorem}\label{thm:isoeqperm}
+  The equivalence of Theorem~\ref{thm:eqeqperm} is an
+  \emph{isomorphism} between the commutative semiring of equivalences
+  of finite types and the commutative semiring of permutations.
 \end{theorem}
 
-%%%%%%%%%%%%
-\subsection{Univalence}
-
-\amr{
-This gives us a version of univalence for finite types that has
-  clear computational content.
-}
-
-With the proper Agda definitions, we can rephrase this theorem in a
-more evocative way. We will discuss the relevance of this theorem to
-the \emph{univalence} postulate in the conclusion.
+Before concluding, we briefly mention that, with the proper Agda
+definitions, Thm.~\ref{thm:eqeqperm} can be rephrased in a more
+evocative way as follows. 
 
 \begin{theorem}
-$$ (A ≃ B) ≃ \mathsf{Perm} |A| |B| $$
+\[
+(A ≃ B) ≃ \mathsf{Perm} |A| |B| 
+\]
 \end{theorem}
 
-To summarize the result of this section: if we are interested in
-studying type equivalences, up to equivalence, it suffices to study
-permutations on finite sets. This will prove quite handy as, unlike
-the former, the latter notion can be inductively defined which gives
-it a natural computational interpretation. 
+This formulation shows that the univalence \emph{postulate} can be
+proved and given a computational interpretation for finite types.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Programming with Permutations}
 
+Now we just need a term language for permutations on finite types. pi
+to the rescue
+
+To summarize the result of the previous section: if we are interested
+in studying type equivalences, up to equivalence, it suffices to study
+permutations on finite sets. This will prove quite handy as, unlike
+the former, the latter notion can be inductively defined which gives
+it a natural computational interpretation.
+
+ 
 In the previous section, we argued that, up to equivalence, the
 equivalence of types reduces to permutations on finite sets. The
 former notion relies on function equivalence and cannot be defined
@@ -925,7 +908,7 @@ c2perm   : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → CPerm (size t₂) (size t
 \end{code}
 \AgdaHide{
 \begin{code}
-c2perm = ?
+c2perm = {!!}
 \end{code}
 }
 
@@ -2061,6 +2044,24 @@ terms!
   notion of h.o. functions
 \end{itemize}
 }
+
+We start with the class of all functions $A \rightarrow B$, then
+introduce constraints to filter those functions which correspond to
+type equivalences $A \simeq B$, and then attempt to look for a
+convenient computational framework for effective programming with type
+equivalences. In the case of finite types, this is just convoluted as
+the collection of functions corresponding to type equivalences is the
+collection of isomorphisms between finite types and these isomorphisms
+can be inductively defined giving rise to a programming language that
+is complete for combinational
+circuits~\cite{James:2012:IE:2103656.2103667}.
+
+To make these connections precise, we now explore permutations over
+finite sets as an explicit computational realization of isomorphisms
+between finite types and prove that the type of all permutations
+between finite sets is equivalent to the type of type equivalences but
+with better computational properties, i.e., without the reliance on
+function extensionality. 
 
 Our theorem shows that, in the case of finite types, reversible
 computation via type isomorphisms \emph{is} the computational
