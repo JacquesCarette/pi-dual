@@ -122,3 +122,11 @@ absorbr⇔assocl⋆◎[absorbr⊗id]◎absorbr x = P.refl
 factorz⇔factorz◎[factorz⊗id]◎assocr⋆ : {A B : Set} → (x : ⊥) →
   factorz x P.≡ assocr⋆ {B = A} {B} (map× factorz F.id (factorz x))
 factorz⇔factorz◎[factorz⊗id]◎assocr⋆ ()
+
+elim-middle-⊥ : {A B : Set} (x : A × (⊥ × B)) →
+  distzr (map× F.id distz x) P.≡ distz (map× distzr F.id (assocl⋆ x))
+elim-middle-⊥ x = P.refl
+
+insert-middle-⊥ : {A B : Set} (x : ⊥) →
+  map× F.id (factorz {B}) (factorzr {A} x) P.≡ assocr⋆ (map× factorzr F.id (factorz x))
+insert-middle-⊥ ()

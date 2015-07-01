@@ -276,6 +276,7 @@ Pi0Rig = record
   ; laplazaXIII = tt
   ; laplazaXV = tt
   ; laplazaXVI = tt
+  ; laplazaXVII = tt
   }
 ------------------------------------------------------------------------------
 
