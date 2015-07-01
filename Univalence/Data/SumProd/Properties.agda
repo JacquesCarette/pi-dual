@@ -106,3 +106,11 @@ unite⋆r0≡absorb1 _ = P.refl
 
 uniti⋆r0≡factorz : (x : ⊥) → uniti⋆′ x P.≡ factorz x
 uniti⋆r0≡factorz ()
+
+absorbl≡absorbr∘swap⋆ : {A : Set} (x : A × ⊥) →
+  distzr x P.≡ distz (swap⋆ x)
+absorbl≡absorbr∘swap⋆ x = P.refl
+
+factorzr≡swap⋆∘factorz : {A : Set} (x : ⊥) →
+  factorzr {A} x P.≡ swap⋆ (factorz x)
+factorzr≡swap⋆∘factorz ()
