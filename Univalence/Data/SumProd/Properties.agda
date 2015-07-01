@@ -130,3 +130,12 @@ elim-middle-⊥ x = P.refl
 insert-middle-⊥ : {A B : Set} (x : ⊥) →
   map× F.id (factorz {B}) (factorzr {A} x) P.≡ assocr⋆ (map× factorzr F.id (factorz x))
 insert-middle-⊥ ()
+
+elim⊥-A[0⊕B] : {A B : Set} (x : A × (⊥ ⊎ B)) →
+  map× F.id unite₊ x P.≡ unite₊ (map⊎ distzr F.id (distl x))
+elim⊥-A[0⊕B] (a , inj₁ ())
+elim⊥-A[0⊕B] (a , inj₂ y) = P.refl
+
+insert⊕⊥-AB : {A B : Set} (x : A × B) →
+  map× F.id uniti₊ x P.≡ factorl (map⊎ factorzr F.id (uniti₊ x))
+insert⊕⊥-AB (a , b) = P.refl

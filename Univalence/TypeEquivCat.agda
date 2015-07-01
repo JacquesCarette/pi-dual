@@ -365,6 +365,7 @@ TERig = record
   ; laplazaXV = eq absorbl≡absorbr∘swap⋆ factorzr≡swap⋆∘factorz
   ; laplazaXVI = eq absorbr⇔assocl⋆◎[absorbr⊗id]◎absorbr factorz⇔factorz◎[factorz⊗id]◎assocr⋆
   ; laplazaXVII = eq elim-middle-⊥ insert-middle-⊥
+  ; laplazaXIX = eq elim⊥-A[0⊕B] insert⊕⊥-AB
   }
 
 -- Notes from Laplaza, 72

@@ -262,6 +262,11 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
   assocl⋆◎[absorbl⊗id⟷]◎absorbr⇔[id⟷⊗absorbr]◎absorbl : {t₁ t₂ : U} →
     (assocl⋆ ◎ (absorbl ⊗ id⟷)) ◎ absorbr ⇔  (id⟷ ⊗ absorbr {t₂}) ◎ absorbl {t₁}
 
+  elim⊥-A[0⊕B]⇔l : {t₁ t₂ : U} →
+     (id⟷ {t₁} ⊗ unite₊l {t₂}) ⇔ (distl ◎ (absorbl ⊕ id⟷)) ◎ unite₊l
+  elim⊥-A[0⊕B]⇔r : {t₁ t₂ : U} →
+     (distl ◎ (absorbl ⊕ id⟷)) ◎ unite₊l ⇔ (id⟷ {t₁} ⊗ unite₊l {t₂})
+
 -- better syntax for writing 2paths
 
 infix  2  _▤       
@@ -386,6 +391,8 @@ _▤ c = id⇔
     assocl⋆◎[absorbl⊗id⟷]◎absorbr⇔[id⟷⊗absorbr]◎absorbl
 2! assocl⋆◎[absorbl⊗id⟷]◎absorbr⇔[id⟷⊗absorbr]◎absorbl =
     [id⟷⊗absorbr]◎absorbl⇔assocl⋆◎[absorbl⊗id⟷]◎absorbr
+2! elim⊥-A[0⊕B]⇔l = elim⊥-A[0⊕B]⇔r
+2! elim⊥-A[0⊕B]⇔r = elim⊥-A[0⊕B]⇔l
 
 -- a nice example of 2 paths
 
