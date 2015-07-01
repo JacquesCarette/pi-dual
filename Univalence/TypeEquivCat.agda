@@ -359,6 +359,7 @@ TERig = record
   ; laplazaII = eq dist-swap⋆-lemma factor-swap⋆-lemma
   ; laplazaIV = eq dist-dist-assoc-lemma assoc-factor-factor-lemma
   ; laplazaVI = eq distl-assoc-lemma assoc-factorl-lemma
+  ; laplazaIX = eq fully-distribute fully-factor
   ; laplazaX = eq distz0≡distrz0 factorz0≡factorzr0
   ; laplazaXI = eq distz0≡unite₊∘[distz,distz]∘distl factorz0≡factorl∘[factorz,factorz]∘uniti₊
   ; laplazaXIII = eq unite⋆r0≡absorb1 uniti⋆r0≡factorz

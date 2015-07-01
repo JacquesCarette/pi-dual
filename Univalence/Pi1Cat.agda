@@ -286,6 +286,7 @@ Pi0Rig = record
   ; laplazaII = dist-swap⋆⇔l
   ; laplazaIV = assocl₊-dist-dist⇔l
   ; laplazaVI = assocl⋆-distl⇔l
+  ; laplazaIX = fully-distribute⇔l
   ; laplazaX = absorbr0-absorbl0⇔
   ; laplazaXI = absorbr⇔distl-absorb-unite
   ; laplazaXIII = unite⋆r0-absorbr1⇔

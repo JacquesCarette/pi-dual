@@ -149,3 +149,21 @@ insert⊤l⊗-A⊕B : {A B : Set} (x : A ⊎ B) →
   uniti⋆ x P.≡ factorl (map⊎ uniti⋆ uniti⋆ x)
 insert⊤l⊗-A⊕B (inj₁ x) = P.refl
 insert⊤l⊗-A⊕B (inj₂ y) = P.refl
+
+fully-distribute : {A B C D : Set} (x : (A ⊎ B) × (C ⊎ D)) →
+  assocl₊ (map⊎ dist dist (distl x)) P.≡
+  map⊎ assocl₊ F.id (map⊎ (map⊎ F.id swap₊) F.id (map⊎ assocr₊ F.id (assocl₊
+    (map⊎ distl distl (dist x)))))
+fully-distribute (inj₁ x , inj₁ x₁) = P.refl
+fully-distribute (inj₁ x , inj₂ y) = P.refl
+fully-distribute (inj₂ y , inj₁ x) = P.refl
+fully-distribute (inj₂ y , inj₂ y₁) = P.refl
+
+fully-factor : {A B C D : Set} (x : (((A × C) ⊎ (B × C)) ⊎ (A × D)) ⊎ (B × D)) →
+  factorl (map⊎ factor factor (assocr₊ x)) P.≡
+  factor (map⊎ factorl factorl (assocr₊ (map⊎ assocl₊ F.id (map⊎ (map⊎ F.id swap₊) F.id
+    (map⊎ assocr₊ F.id x)))))
+fully-factor (inj₁ (inj₁ (inj₁ (a , c)))) = P.refl
+fully-factor (inj₁ (inj₁ (inj₂ (b , c)))) = P.refl
+fully-factor (inj₁ (inj₂ (a , d))) = P.refl
+fully-factor (inj₂ (b , d)) = P.refl

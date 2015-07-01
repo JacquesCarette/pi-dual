@@ -270,6 +270,15 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
   elim⊥-1[A⊕B]⇔l : {t₁ t₂ : U} → unite⋆l ⇔ distl ◎ (unite⋆l {t₁} ⊕ unite⋆l {t₂})
   elim⊥-1[A⊕B]⇔r : {t₁ t₂ : U} → distl ◎ (unite⋆l {t₁} ⊕ unite⋆l {t₂}) ⇔ unite⋆l
 
+  fully-distribute⇔l : {t₁ t₂ t₃ t₄ : U} → 
+    (distl ◎ (dist {t₁} {t₂} {t₃} ⊕ dist {t₁} {t₂} {t₄})) ◎ assocl₊ ⇔
+      ((((dist ◎ (distl ⊕ distl)) ◎ assocl₊) ◎ (assocr₊ ⊕ id⟷)) ◎
+         ((id⟷ ⊕ swap₊) ⊕ id⟷)) ◎ (assocl₊ ⊕ id⟷)
+  fully-distribute⇔r : {t₁ t₂ t₃ t₄ : U} →
+    ((((dist ◎ (distl ⊕ distl)) ◎ assocl₊) ◎ (assocr₊ ⊕ id⟷)) ◎
+       ((id⟷ ⊕ swap₊) ⊕ id⟷)) ◎ (assocl₊ ⊕ id⟷) ⇔
+    (distl ◎ (dist {t₁} {t₂} {t₃} ⊕ dist {t₁} {t₂} {t₄})) ◎ assocl₊
+
 -- better syntax for writing 2paths
 
 infix  2  _▤       
@@ -398,6 +407,8 @@ _▤ c = id⇔
 2! elim⊥-A[0⊕B]⇔r = elim⊥-A[0⊕B]⇔l
 2! elim⊥-1[A⊕B]⇔l = elim⊥-1[A⊕B]⇔r
 2! elim⊥-1[A⊕B]⇔r = elim⊥-1[A⊕B]⇔l
+2! fully-distribute⇔l = fully-distribute⇔r
+2! fully-distribute⇔r = fully-distribute⇔l
 
 -- a nice example of 2 paths
 
