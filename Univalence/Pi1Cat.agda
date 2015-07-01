@@ -289,5 +289,6 @@ Pi0Rig = record
   ; laplazaX = absorbr0-absorbl0⇔
   ; laplazaXI = absorbr⇔distl-absorb-unite
   ; laplazaXIII = unite⋆r0-absorbr1⇔
-  ; laplazaXV = absorbl≡swap⋆◎absorbr 
+  ; laplazaXV = absorbl≡swap⋆◎absorbr
+  ; laplazaXVI =  absorbr⇔[assocl⋆◎[absorbr⊗id⟷]]◎absorbr
   }

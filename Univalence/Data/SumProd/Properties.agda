@@ -114,3 +114,11 @@ absorbl≡absorbr∘swap⋆ x = P.refl
 factorzr≡swap⋆∘factorz : {A : Set} (x : ⊥) →
   factorzr {A} x P.≡ swap⋆ (factorz x)
 factorzr≡swap⋆∘factorz ()
+
+absorbr⇔assocl⋆◎[absorbr⊗id]◎absorbr : {A B : Set} → (x : ⊥ × (A × B)) →
+  distz x P.≡ distz (map× distz F.id (assocl⋆ x))
+absorbr⇔assocl⋆◎[absorbr⊗id]◎absorbr x = P.refl
+
+factorz⇔factorz◎[factorz⊗id]◎assocr⋆ : {A B : Set} → (x : ⊥) →
+  factorz x P.≡ assocr⋆ {B = A} {B} (map× factorz F.id (factorz x))
+factorz⇔factorz◎[factorz⊗id]◎assocr⋆ ()
