@@ -139,3 +139,13 @@ elim⊥-A[0⊕B] (a , inj₂ y) = P.refl
 insert⊕⊥-AB : {A B : Set} (x : A × B) →
   map× F.id uniti₊ x P.≡ factorl (map⊎ factorzr F.id (uniti₊ x))
 insert⊕⊥-AB (a , b) = P.refl
+
+elim⊤-1[A⊕B] : {A B : Set} (x : ⊤ × (A ⊎ B)) →
+  unite⋆ x P.≡ map⊎ unite⋆ unite⋆ (distl x)
+elim⊤-1[A⊕B] (tt , inj₁ x) = P.refl
+elim⊤-1[A⊕B] (tt , inj₂ y) = P.refl
+
+insert⊤l⊗-A⊕B : {A B : Set} (x : A ⊎ B) →
+  uniti⋆ x P.≡ factorl (map⊎ uniti⋆ uniti⋆ x)
+insert⊤l⊗-A⊕B (inj₁ x) = P.refl
+insert⊤l⊗-A⊕B (inj₂ y) = P.refl
