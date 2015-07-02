@@ -391,6 +391,9 @@ import TypeEquiv as TE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
 
+\jc{That title was fine for the workshop, but we should think of something 
+better for POPL.}
+
 \amr{
 \begin{itemize}
 \item BACKGROUND: realizing HoTT requires we be able to program with type
@@ -487,9 +490,10 @@ If we care about resource preservation, then we are concerned with 'type equival
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Equivalences and Commutative Semirings} 
 
-Our starting point is the notion of HoTT equivalence of types. We then
-connect this notion to several semiring structures on finite types
-with the goal of reducing the notion of finite type equivalence to a
+Our starting point is the notion of equivalence of types. We then
+connect this notion to several semiring structures, on finite types,
+permutations and equivalences,
+with the goal of reducing the notion of equivalence for finite types to a
 notion of reversible computation.
 
 %%%%%%%%%%%%
@@ -526,7 +530,7 @@ the $\Pi$ family of languages whose core computations are these
 isomorphisms between finite types. Building on that work and on the
 growing-in-importance idea that isomorphisms have interesting
 computational content and should not be silently or implicitly
-identified, we first recast Fiore et. al's result in the next section
+identified, we first recast Fiore et. al's result in the next section,
 making explicit that the commutative semiring structure can be defined
 up to the HoTT relation of \emph{type equivalence} instead of strict
 equality~$=$.
@@ -574,6 +578,9 @@ semiring (up to $\simeq$).
   is~$\top$, and the two binary operations are $\uplus$ and $\times$.
 \end{proof}
 
+\jc{Do we want to have a bunch of appendices, or perhaps a web
+link, to all the Agda code which formalizes all of this?}
+
 \noindent For example, we have equivalences such as:
 \[\begin{array}{rcl}
 \bot ⊎ A &\simeq& A \\
@@ -590,7 +597,8 @@ elements of $\textsc{eq}_{A,B}$ are all the ways in which we can prove
 $A \simeq B$. For example,
 $\textsc{eq}_{\AgdaDatatype {Bool},\AgdaDatatype {Bool}}$ has two
 elements corresponding to the $\mathrm{id}$-equivalence and to the
-negation-equivalence. More generally, for finite types $A$ and $B$,
+negation-equivalence that were mentionned before. More generally, 
+for finite types $A$ and $B$,
 the type $\textsc{eq}_{A,B}$ is only inhabited if $A$ and~$B$ have the
 same size in which case the type has $|A|~!$ (factorial of the size of
 $A$) elements witnessing the various possible identifications of $A$
@@ -628,6 +636,12 @@ sufficient to consider just one additional level.
 %%%%%%%%%%%%
 \subsection{Commutative Semirings of Permutations}
 
+\jc{actually, it is equivalences-of-equivalences which are
+fundamentally based on fun-ext; type equivalences themselves
+are mostly computationally effective.  Otherwise they could not
+be equivalent to permutations...  But they are somehow less
+tangible, while permutations are quite concrete.}
+
 Type equivalences are fundamentally based on function extensionality
 and hence are generally not computationally effective. In the HoTT
 context, this is the open problem of finding a computational
@@ -637,7 +651,7 @@ prove equivalent) characterization of type equivalences based on
 permutations of finite sets.
 
 The idea is that, up to equivalence, the only interesting property of
-a finite type is its size and that type equivalences must be
+a finite type is its size, so that type equivalences must be
 size-preserving maps and hence correspond to permutations. For
 example, given two equivalent types $A$ and $B$ of completely
 different structure, e.g.,
@@ -667,7 +681,8 @@ $\mathsf{Fin}~m'$ and $\mathsf{Fin}~n'$. In our setting, we actually
 need to construct a particular equivalence between the smaller sets
 given the equivalence of the larger sets with one additional
 element. This lemma is quite tedious as it requires us to isolate one
-element of $\mathsf{Fin}~(\mathit{suc}~m')$ and analyze every position
+element of $\mathsf{Fin}~(\mathit{suc}~m')$ and analyze every 
+(class of) position
 this element could be mapped to by the larger equivalence and in each
 case construct an equivalence that excludes this element.
 \end{proof}
@@ -742,6 +757,8 @@ iso-times = {!!}
   equal. The proof proceeds using the vacuous permutation
   $\mathsf{CPerm}~0~0$ for the additive unit and the trivial
   permutation $\mathsf{CPerm}~1~1$ for the multiplicative unit.
+\jc{we should detail sum and product as well, as they are 
+non-trivial.}
 \end{proof}
 
 \begin{theorem}\label{thm:eqeqperm}
@@ -760,6 +777,13 @@ permutations $\textsc{perm}~m~n$.
   \emph{isomorphism} between the commutative semiring of equivalences
   of finite types and the commutative semiring of permutations.
 \end{theorem}
+
+\jc{the other thing worth pointing out is that every axiom of
+semirings (of types) is an equivalence, and thus corresponds 
+to a permutation.  Some are trivial: associativity of + in particular
+gets mapped to the identity permutation.  However, some are
+more interesting.  In particular, commutativity of * is intimately
+related to matrix transpose.}
 
 Before concluding, we briefly mention that, with the proper Agda
 definitions, Thm.~\ref{thm:eqeqperm} can be rephrased in a more
@@ -809,7 +833,7 @@ with effects; etc. The simplest language is permutations on finite
 sets which correspond to finite types.
 }
 
-In previous work{James:2012:IE:2103656.2103667}, we introduce
+In previous work \cite{James:2012:IE:2103656.2103667}, we introduce
 the $\Pi$ family of languages whose only computations are isomorphisms
 between finite types. We propose that this family of languages is
 exactly the right programmatic interface for manipulating and
