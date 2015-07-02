@@ -777,48 +777,28 @@ proved and given a computational interpretation for finite types.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Programming with Permutations}
 
-Now we just need a term language for permutations on finite types. pi
-to the rescue
-
-To summarize the result of the previous section: if we are interested
-in studying type equivalences, up to equivalence, it suffices to study
-permutations on finite sets. This will prove quite handy as, unlike
-the former, the latter notion can be inductively defined which gives
-it a natural computational interpretation.
-
- 
 In the previous section, we argued that, up to equivalence, the
-equivalence of types reduces to permutations on finite sets. The
-former notion relies on function equivalence and cannot be defined
-inductively. The second notion is easy to define in a computational
-framework but is too level from a programmer perspective. We propose a
-middle ground: a computational framework for expressing, computing,
-and optimizing equivalences between finite types. We will then relate
-this calculus to equivalences on one hand and to permutations on the
-other hand.
+equivalence of types reduces to permutations on finite sets. We recall
+our previous work which proposed a term language for permutations and
+adapt it to be used to express, compute with, and reason about type
+equivalences between finite types.
 
 %%%%%%%%%%%%
-\subsection{$\Pi$}
+\subsection{The $\Pi$-Languages}
 
-\amr{
-In our previous work we had argued that one can program with
-permutations on finite sets (many others relate this to reversible
-computation and more specifically to reversible combinational
-circuits). We proposed a family of languages Pi some with trace; some
-with effects; etc. The simplest language is permutations on finite
-sets which correspond to finite types.
-}
-
-In previous work{James:2012:IE:2103656.2103667}, we introduce
-the $\Pi$ family of languages whose only computations are isomorphisms
-between finite types. We propose that this family of languages is
+In previous work~\cite{James:2012:IE:2103656.2103667}, we introduced
+the $\Pi$ family of languages. The simplest of these languages is
+essentially a term language for expressing permutations on finite
+types. We propose that this language is
 exactly the right programmatic interface for manipulating and
-reasoning about type equivalences and permutations on finite sets. In
-the variant we consider, the set of types $\tau$ includes the empty
-type 0, the unit type 1, and conventional sum and product types. The
-values classified by these types are the conventional ones: $()$ of
-type 1, $\inl{v}$ and $\inr{v}$ for injections into sum types, and
-$(v_1,v_2)$ for product types:
+reasoning about type equivalences.
+
+The syntax of the previously-developed $\Pi$ language consists of
+types $\tau$ including the empty type 0, the unit type 1, and
+conventional sum and product types. The values classified by these
+types are the conventional ones: $()$ of type 1, $\inl{v}$ and
+$\inr{v}$ for injections into sum types, and $(v_1,v_2)$ for product
+types:
 \[\begin{array}{lrcl}
 (\textit{Types}) & 
   \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
@@ -834,15 +814,9 @@ The interesting syntactic category of $\Pi$ is that of
 Fig.~\ref{pi-combinators}) and compositions (on the right side of the
 same figure). Each line of the figure on the left introduces a pair of
 dual constants\footnote{where $\swapp$ and $\swapt$ are self-dual.}
-that witness the type isomorphism in the middle. If recursive types
-and a trace operator are added, the language becomes Turing
-complete~\cite{James:2012:IE:2103656.2103667,rc2011}. We will not be
-concerned with this extension in the main body of this paper.
-
-The current figure has the new combinators. The old combinators didn't
-have distl, factorl, absorb. These are, strictly speaking, redundant
-as they can be expressed using swap. However, having them leads to
-much nicer categorical semantics.  And shorter programs. 
+that witness the type isomorphism in the middle.\footnote{If recursive
+types and a trace operator are added, the language becomes Turing
+complete~\cite{James:2012:IE:2103656.2103667,rc2011}.}
 
 \begin{figure*}[ht]
 \[\begin{array}{cc}
@@ -853,14 +827,7 @@ much nicer categorical semantics.  And shorter programs.
 
 \identlt :&  1 * \tau & \iso & \tau &: \identrt \\
 \swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
-\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\
-         
-\absorbr :&~ 0 * \tau & \iso & 0 &: \factorzl \\
-\absorbl :&~ \tau * 0 & \iso & 0 &: \factorzr \\
-
-\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor \\
-\distl :&~ \tau_1 * (\tau_2 + \tau_3) & \iso & (\tau_1 * \tau_2) + (\tau_1 * \tau_3)~ &: \factorl 
-      
+\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt 
 \end{array}
 & 
 \begin{minipage}{0.5\textwidth}
@@ -891,20 +858,16 @@ much nicer categorical semantics.  And shorter programs.
 \label{pi-combinators}}
 \end{figure*}
 
-%%%%%%%%%%%%
-\subsection{Soundness and Completeness}
-
-The set of $\Pi$-combinators directly corresponds to the sound and
-complete set of isomorphisms for finite
-types~\cite{Fiore:2004,fiore-remarks}. 
-
-Show that pi combinators are valid equivalences
-
-Show that pi combinators are also valid permutations on finite sets
+It is fairly straightforward to verify that $\Pi$-combinators can be
+interpreted as either type equivalences or as
+permutations. Specifically, given the function $⟦\cdot⟧$ that maps each
+type constructor to its Agda denotation, e.g., mapping the type 0 to
+$\bot$ etc., we can verify that:
 
 \begin{code}
-c2equiv  : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
-c2perm   : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → CPerm (size t₂) (size t₁)
+c2equiv  :  {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
+c2perm   :  {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → 
+            CPerm (size t₂) (size t₁)
 \end{code}
 \AgdaHide{
 \begin{code}
@@ -916,7 +879,10 @@ c2perm = {!!}
 \subsection{Example Circuits}
 
 \amr{
-Examples of circuits
+In our previous work we had argued that one can program with  
+permutations on finite sets (many others relate this to reversible  
+computation and more specifically to reversible combinational  
+circuits). Examples of circuits
 }
 
 This language $\Pi$ is universal for hardware combinational
@@ -2128,3 +2094,10 @@ a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
+         
+\absorbr :&~ 0 * \tau & \iso & 0 &: \factorzl \\
+\absorbl :&~ \tau * 0 & \iso & 0 &: \factorzr \\
+
+\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor \\
+\distl :&~ \tau_1 * (\tau_2 + \tau_3) & \iso & (\tau_1 * \tau_2) + (\tau_1 * \tau_3)~ &: \factorl 
+      
