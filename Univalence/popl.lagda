@@ -85,12 +85,12 @@ $\displaystyle
 
 \DeclareUnicodeCharacter{9678}{\ensuremath{\odot}}
 \DeclareUnicodeCharacter{9636}{\ensuremath{\Box}}
+%% shorten the longarrow
+\DeclareUnicodeCharacter{10231}{\ensuremath{\leftrightarrow}}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{conj}{Conjecture}
 \newtheorem{definition}{Definition}
-
-\renewcommand{\AgdaCodeStyle}{\tiny}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Comments
@@ -607,7 +607,7 @@ elements of $\textsc{eq}_{A,B}$ are all the ways in which we can prove
 $A \simeq B$. For example,
 $\textsc{eq}_{\AgdaDatatype {Bool},\AgdaDatatype {Bool}}$ has two
 elements corresponding to the $\mathrm{id}$-equivalence and to the
-negation-equivalence that were mentionned before. More generally, 
+negation-equivalence that were mentioned before. More generally, 
 for finite types $A$ and $B$,
 the type $\textsc{eq}_{A,B}$ is only inhabited if $A$ and~$B$ have the
 same size in which case the type has $|A|~!$ (factorial of the size of
@@ -736,7 +736,7 @@ iso-times = {!!}
 \end{proof}
  
 \begin{theorem}\label{thm:permrig}
-  The collection of all permutations $\textsc{perm}_{mn}$ between
+  The collection of all permutations $\textsc{perm}_{m,n}$ between
   finite sets $\mathsf{Fin}~m$ and $\mathsf{Fin}~n$ forms a
   commutative semiring up to strict equality of the representations of
   the permutations.
@@ -745,8 +745,8 @@ iso-times = {!!}
   The proof requires delicate attention to the representation of
   permutations as straightforward attempts turn out not to capture
   enough of the properties of permutations. A permutation of one set
-  to another is represented using two sizes: $m$ for the size of the
-  input finite set and $n$ for the size of the resulting finite
+  to another is represented using two sizes: $n$ for the size of the
+  input finite set and $m$ for the size of the resulting finite
   set. Naturally in any well-formed permutations, these two sizes are
   equal but the presence of both types allows us to conveniently
   define a permutation $\mathsf{CPerm}~m~n$ using four components. The
@@ -889,23 +889,6 @@ that witness the type isomorphism in the middle.
 \label{pi-combinators}}
 \end{figure*}
 
-It is fairly straightforward to verify that $\Pi$-combinators can be
-interpreted as either type equivalences or as
-permutations. Specifically, given the function $⟦\cdot⟧$ that maps each
-type constructor to its Agda denotation, e.g., mapping the type 0 to
-$\bot$ etc., we can verify that:
-
-\begin{code}
-c2equiv  :  {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
-c2perm   :  {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → 
-            CPerm (size t₂) (size t₁)
-\end{code}
-\AgdaHide{
-\begin{code}
-c2perm = {!!}
-\end{code}
-}
-
 %%%%%%%%%%%%
 \subsection{Example Circuits}
 
@@ -914,7 +897,7 @@ circuits~\cite{James:2012:IE:2103656.2103667}.\footnote{With the
 addition of recursive types and trace operators, $\Pi$ become a Turing
 complete reversible
 language~\cite{James:2012:IE:2103656.2103667,rc2011}.} We illustrate
-the expressivenss of the language with a few short examples.
+the expressiveness of the language with a few short examples.
 
 The first example is simply boolean negation which is easily achieved:
 
@@ -926,11 +909,11 @@ NOT₁ : BOOL ⟷ BOOL
 NOT₁ = swap₊
 \end{code}
 
-Viewing the combinator as a permutation on finite sets, we might
-visualize it as follows:
+\noindent Viewing the combinator as a permutation on finite sets, we
+might visualize it as follows:
 
 \begin{center}
-\begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
+\begin{tikzpicture}[scale=0.3,every node/.style={scale=0.3}]
   \draw (0,0) ellipse (1cm and 2cm);
   \draw[fill] (0,1) circle [radius=0.025];
   \node[below] at (0,1) {F};
@@ -965,8 +948,8 @@ NOT₂ =  uniti⋆ ◎
         unite⋆
 \end{code}
 
-Viewing this combinator as a permutation on finite sets, we might
-visualize it as follows:
+\noindent Viewing this combinator as a permutation on finite sets, we
+might visualize it as follows:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
@@ -1064,135 +1047,43 @@ TOFFOLI = TIMES BOOL BOOL²
   where x = ONE; y = ONE
 \end{code}
 This style makes the intermediate steps explicit showing how the types
-are transformed by each step of the combinators. The example
+are transformed in each step by the combinators. The example
 incidentally confirms that $\Pi$ is universal for reversible circuits
-since the Toffoli gate is a universal for such circuits.
+since the Toffoli gate is universal for such
+circuits~\cite{Toffoli:1980}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Semantics}
 
-\amr{
-How do we reason about equivalence of circuits? Previous work:
-  operational semantics; extensional tools; we relate to permutations
-  and try to prove permutations equal also extensional. No sound and
-  complete set of rules for us to reason about equivalence.
-
-Because we live in this HoTT-like world where we have
-  equivalences of equivalences, we could move up one level to get the
-  right rules.
-}
-
-%%%%%%%%%%%%
-\subsection{Operational Semantics}
-
-Give operational semantics
-
-%%%%%%%%%%%%
-\subsection{Extensional Reasoning about Equivalence}
+In the previous sections, we established that type equivalences on
+finite types can be, up to equivalence, expressed as permutations and
+proposed a term language for expressing permutations on finite types
+that is complete for reversible combinational circuits. We are now
+ready for the main technical contribution of the paper: an effective
+computational framework for reasoning \emph{about} type
+equivalences. From a programming perspective, this framework manifests
+itself as a collection of rewrite rules for optimizing circuit
+descriptions in $\Pi$. Naturally we are not concerned with just any
+collection of rewrite rules but with a sound and complete
+collection. The current section will set up the framework and
+illustrate its use on one example and the next sections will introduce
+the categorical framework in which soundness and completeness can be
+proved.
 
 %%%%%%%%%%%%
-\subsection{Rewriting Approach} 
+\subsection{Operational and Denotational Semantics}
 
-pi combinators are a nice syntax for programming with finite types,
-for talking about the commutative semiring of equivalences between
-finite types, and for talking about the commutative semiring of
-permutations between finite sets. But is it really a programming
-language: semantics, optimization rules, etc. and how does the
-connection to type equivalences and permutations help us?
-
-Motivation: the two circuits for negation are equivalent: can we
-design a sound and complete set of optimization rules that can be used
-to prove such an equivalence? Reasoning about Example
-Circuits. Algebraic manipulation of one circuit to the other:
+In conventional programming language research, valid optimizations are
+specified with reference to the \emph{observational equivalence}
+relaion which itself is defined with reference to an \emph{evaluator}.
+As the language is reversible, a reasonable starting point would then
+be to define forward and backward evaluators with the following
+signatures:
 
 \begin{code}
-
-negEx : NOT₂ ⇔ NOT₁
-negEx =
-  uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆)))
-          ⇔⟨ id⇔ ⊡ assoc◎l ⟩
-  uniti⋆ ◎ ((swap⋆ ◎ (swap₊ ⊗ id⟷)) ◎ (swap⋆ ◎ unite⋆))
-          ⇔⟨ id⇔ ⊡ (swapl⋆⇔ ⊡ id⇔) ⟩
-  uniti⋆ ◎ (((id⟷ ⊗ swap₊) ◎ swap⋆) ◎ (swap⋆ ◎ unite⋆))
-          ⇔⟨ id⇔ ⊡ assoc◎r ⟩
-  uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ (swap⋆ ◎ (swap⋆ ◎ unite⋆)))
-          ⇔⟨ id⇔ ⊡ (id⇔ ⊡ assoc◎l) ⟩
-  uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ ((swap⋆ ◎ swap⋆) ◎ unite⋆))
-          ⇔⟨ id⇔ ⊡ (id⇔ ⊡ (linv◎l ⊡ id⇔)) ⟩
-  uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ (id⟷ ◎ unite⋆))
-          ⇔⟨ id⇔ ⊡ (id⇔ ⊡ idl◎l) ⟩
-  uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ unite⋆)
-          ⇔⟨ assoc◎l ⟩
-  (uniti⋆ ◎ (id⟷ ⊗ swap₊)) ◎ unite⋆
-          ⇔⟨ unitil⋆⇔ ⊡ id⇔ ⟩
-  (swap₊ ◎ uniti⋆) ◎ unite⋆
-          ⇔⟨ assoc◎r ⟩
-  swap₊ ◎ (uniti⋆ ◎ unite⋆)
-          ⇔⟨ id⇔ ⊡ linv◎l ⟩
-  swap₊ ◎ id⟷
-          ⇔⟨ idr◎l ⟩
-  swap₊ ▤
+eval   : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
+evalB  : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧
 \end{code}
-
-Manipulating circuits. Nice framework, but:
-\begin{itemize}
-\item We don't want ad hoc rewriting rules.
-\begin{itemize}
-\item Our current set has \textcolor{red}{76 rules}!
-\end{itemize}
-\item Notions of soundness; completeness; canonicity in some sense.
-\begin{itemize}
-\item Are all the rules valid? (yes)
-\item Are they enough? (next topic)
-\item Are there canonical representations of circuits? (open)
-\end{itemize}
-\end{itemize}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Categorification}
-
-\amr{
-This has been done generically: coherence conditions for
-  commutative rig groupoids. These generalize type equivalences and permutations;
-}
-
-%%%%%%%%%%%%
-\subsection{Monoidal Categories} 
-
-%%%%%%%%%%%%
-\subsection{Coherence Conditions} 
-
-%%%%%%%%%%%%
-\subsection{Commutative Rig Groupoids} 
-
-This is where the idea of path and path of paths becomes critical. But
-that does not give us a computational framework because univalence is
-a postulate. The connection to permutations is the one that will give
-us an effective procedure by categorification. Quote from
-Proof-Theoretical Coherence, Kosta Dosen and Zoran Petric,
-\url{http://www.mi.sanu.ac.rs/~kosta/coh.pdf}:
-
-\begin{quote}
-In Mac Lane’s second coherence result of [99], which has to do with
-symmetric monoidal categories, it is not intended that all equations
-be- tween arrows of the same type should hold. What Mac Lane does can
-be described in logical terms in the following manner. On the one
-hand, he has an axiomatization, and, on the other hand, he has a model
-category where arrows are permutations; then he shows that his
-axiomatization is complete with respect to this model. It is no wonder
-that his coherence problem reduces to the completeness problem for the
-usual axiomatization of symmetric groups.
-\end{quote}
-
-We get forward and backward evaluators
-
-\begin{code}
-eval : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
-evalB : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧
-\end{code}
-
-which really do behave as expected
-
 \AgdaHide{
 \begin{code}
 eval unite₊ (inj₁ ())
@@ -1256,7 +1147,28 @@ evalB (c₀ ◎ c₁) x = evalB c₀ (evalB c₁ x)
 evalB (c₀ ⊕ c₁) (inj₁ x) = inj₁ (evalB c₀ x)
 evalB (c₀ ⊕ c₁) (inj₂ y) = inj₂ (evalB c₁ y)
 evalB (c₀ ⊗ c₁) (x , y) = evalB c₀ x , evalB c₁ y
+\end{code}
+}
 
+\noindent In the definition, the function $⟦\cdot⟧$ maps each type
+constructor to its Agda denotation, e.g., it maps the type 0 to
+$\bot$, the type 1 to $\top$, etc. The complete definitions for these
+evaluators can be found in previous
+publications~\cite{rc2011,rc2012,James:2012:IE:2103656.2103667} and
+will not be repeated here. The reason is that, although these
+evaluators adequately serve as semantic specifications, they drive the
+development towards extensional reasoning as evident from the
+signatures which map a permutation to a function. We will instead
+pursue a denotational approach mapping the combinators to type
+equivalences or equivalently to permutations:
+
+\begin{code}
+c2equiv  :  {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
+c2perm   :  {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → 
+            CPerm (size t₂) (size t₁)
+\end{code}
+\AgdaHide{
+\begin{code}
 c2equiv unite₊ = TE.unite₊equiv
 c2equiv uniti₊ = TE.uniti₊equiv
 c2equiv swap₊ = TE.swap₊equiv
@@ -1277,8 +1189,121 @@ c2equiv id⟷ = TE.idequiv
 c2equiv (c ◎ c₁) = c2equiv c₁ ● c2equiv c
 c2equiv (c ⊕ c₁) = path⊎ (c2equiv c) (c2equiv c₁)
 c2equiv (c ⊗ c₁) = path× (c2equiv c) (c2equiv c₁)
+c2perm = {!!}
 \end{code}
 }
+
+\noindent The advantange is that permutations have a concrete
+representation which can be effectively compared for equality as
+explained in the proof of Thm.~\ref{thm:permrig}.
+
+%%%%%%%%%%%%
+\subsection{Rewriting Approach} 
+
+Having mapped each combinator to a permutation, we can reason about
+valid optimizations mapping a combinator to another by studying the
+equivalence of permutations on finite sets. The traditional definition
+of equivalence might equate two permutations if their actions on every
+input produce the same output but we again resist that extensional
+reasoning. Instead we are interested in a calculus, a set of rules,
+that can be used to rewrite combinators preserving their meaning. It
+is trivial to come up with a few rules such as:
+
+\AgdaHide{
+\begin{code}
+module X where
+ data _⇔'_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set where
+\end{code}
+}
+\begin{code}
+  id⇔     :  {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔' c 
+
+  trans⇔  :  {t₁ t₂ : U} {c₁ c₂ c₃ : t₁ ⟷ t₂} → 
+             (c₁ ⇔' c₂) → (c₂ ⇔' c₃) → (c₁ ⇔' c₃) 
+
+  assoc⇔  :  {t₁ t₂ t₃ t₄ : U}
+             {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+             (c₁ ◎ (c₂ ◎ c₃)) ⇔' ((c₁ ◎ c₂) ◎ c₃)
+
+  id◎⇔    :  {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (id⟷ ◎ c) ⇔' c
+
+  swap₊⇔  :  {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
+             (swap₊ ◎ (c₁ ⊕ c₂)) ⇔' ((c₂ ⊕ c₁) ◎ swap₊)
+
+\end{code}
+
+\noindent which are evidently sound. The challenge of course is to
+come up with a sound and complete set of such rules.
+
+Before we embark on the categorification program in the next section,
+we show that, with some ingenuity, one can develop a reasonable set of
+rewrite rules that would allow us to prove that the two negation
+circuits from the previous section are actual equivalent:
+
+\begin{code}
+
+negEx : NOT₂ ⇔ NOT₁
+negEx =
+  uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆)))
+          ⇔⟨ id⇔ ⊡ assoc◎l ⟩
+  uniti⋆ ◎ ((swap⋆ ◎ (swap₊ ⊗ id⟷)) ◎ (swap⋆ ◎ unite⋆))
+          ⇔⟨ id⇔ ⊡ (swapl⋆⇔ ⊡ id⇔) ⟩
+  uniti⋆ ◎ (((id⟷ ⊗ swap₊) ◎ swap⋆) ◎ (swap⋆ ◎ unite⋆))
+          ⇔⟨ id⇔ ⊡ assoc◎r ⟩
+  uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ (swap⋆ ◎ (swap⋆ ◎ unite⋆)))
+          ⇔⟨ id⇔ ⊡ (id⇔ ⊡ assoc◎l) ⟩
+  uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ ((swap⋆ ◎ swap⋆) ◎ unite⋆))
+          ⇔⟨ id⇔ ⊡ (id⇔ ⊡ (linv◎l ⊡ id⇔)) ⟩
+  uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ (id⟷ ◎ unite⋆))
+          ⇔⟨ id⇔ ⊡ (id⇔ ⊡ idl◎l) ⟩
+  uniti⋆ ◎ ((id⟷ ⊗ swap₊) ◎ unite⋆)
+          ⇔⟨ assoc◎l ⟩
+  (uniti⋆ ◎ (id⟷ ⊗ swap₊)) ◎ unite⋆
+          ⇔⟨ unitil⋆⇔ ⊡ id⇔ ⟩
+  (swap₊ ◎ uniti⋆) ◎ unite⋆
+          ⇔⟨ assoc◎r ⟩
+  swap₊ ◎ (uniti⋆ ◎ unite⋆)
+          ⇔⟨ id⇔ ⊡ linv◎l ⟩
+  swap₊ ◎ id⟷
+          ⇔⟨ idr◎l ⟩
+  swap₊ ▤
+\end{code}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Categorification}
+
+\amr{
+This has been done generically: coherence conditions for
+  commutative rig groupoids. These generalize type equivalences and permutations;
+}
+
+%%%%%%%%%%%%
+\subsection{Monoidal Categories} 
+
+%%%%%%%%%%%%
+\subsection{Coherence Conditions} 
+
+%%%%%%%%%%%%
+\subsection{Commutative Rig Groupoids} 
+
+This is where the idea of path and path of paths becomes critical. But
+that does not give us a computational framework because univalence is
+a postulate. The connection to permutations is the one that will give
+us an effective procedure by categorification. Quote from
+Proof-Theoretical Coherence, Kosta Dosen and Zoran Petric,
+\url{http://www.mi.sanu.ac.rs/~kosta/coh.pdf}:
+
+\begin{quote}
+In Mac Lane’s second coherence result of [99], which has to do with
+symmetric monoidal categories, it is not intended that all equations
+be- tween arrows of the same type should hold. What Mac Lane does can
+be described in logical terms in the following manner. On the one
+hand, he has an axiomatization, and, on the other hand, he has a model
+category where arrows are permutations; then he shows that his
+axiomatization is complete with respect to this model. It is no wonder
+that his coherence problem reduces to the completeness problem for the
+usual axiomatization of symmetric groups.
+\end{quote}
 
 From the perspective of category theory, the language $\Pi$ models
 what is called a \emph{symmetric bimonoidal groupoid} or a
@@ -1854,7 +1879,7 @@ you have to make precise is exactly what you mean by "diagram". In
 Joyal \& Street's picture, this literally a geometric object,
 i.e. some points and lines in space. This works very well, and pretty
 much exactly formalises what happens when you do a pen-and-paper proof
-involving string diagrams. However, when it comes to mechanising
+involving string diagrams. However, when it comes to mechanizing
 proofs, you need some way to represent a string diagram as a data
 structure of some kind. From here, there seem to be a few approaches:
 
@@ -1868,7 +1893,7 @@ string diagrams, which is sound and complete with respect to (traced)
 symmetric monoidal categories. See arXiv:1011.4114 for details of how
 we did this.
 
-Naiively, point of view (2) is that a diagram represents an
+Naively, point of view (2) is that a diagram represents an
 equivalence class of expressions in the syntax of a monoidal category,
 which is basically back to where we started. However, there are more
 convenient syntaxes, which are much closer in spirit to the
