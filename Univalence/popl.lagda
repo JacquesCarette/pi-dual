@@ -90,7 +90,7 @@ $\displaystyle
 \newtheorem{conj}{Conjecture}
 \newtheorem{definition}{Definition}
 
-\renewcommand{\AgdaCodeStyle}{\small}
+\renewcommand{\AgdaCodeStyle}{\tiny}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Comments
@@ -384,6 +384,16 @@ _▤ c = id⇔
 
 open import Equiv using (_≃_; _●_; path⊎; path×)
 import TypeEquiv as TE
+
+infixr 2  _⟷⟨_⟩_   
+infix  2  _□       
+
+_⟷⟨_⟩_ : (t₁ : U) {t₂ : U} {t₃ : U} → 
+          (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃) 
+_ ⟷⟨ α ⟩ β = α ◎ β
+
+_□ : (t : U) → {t : U} → (t ⟷ t)
+_□ t = id⟷
 
 \end{code}
 }
@@ -810,16 +820,7 @@ equivalences between finite types.
 %%%%%%%%%%%%
 \subsection{The $\Pi$-Languages}
 
-\amr{
-In our previous work we had argued that one can program with
-permutations on finite sets (many others relate this to reversible
-computation and more specifically to reversible combinational
-circuits). We proposed a family of languages Pi some with trace; some
-with effects; etc. The simplest language is permutations on finite
-sets which correspond to finite types.
-}
-
-In previous work \cite{James:2012:IE:2103656.2103667}, we introduce
+In previous work~\cite{James:2012:IE:2103656.2103667}, we introduced
 the $\Pi$ family of languages whose only computations are isomorphisms
 between finite types. We propose that this family of languages is
 exactly the right programmatic interface for manipulating and
@@ -846,9 +847,7 @@ The interesting syntactic category of $\Pi$ is that of
 Fig.~\ref{pi-combinators}) and compositions (on the right side of the
 same figure). Each line of the figure on the left introduces a pair of
 dual constants\footnote{where $\swapp$ and $\swapt$ are self-dual.}
-that witness the type isomorphism in the middle.\footnote{If recursive
-types and a trace operator are added, the language becomes Turing
-complete~\cite{James:2012:IE:2103656.2103667,rc2011}.}
+that witness the type isomorphism in the middle.
 
 \begin{figure*}[ht]
 \[\begin{array}{cc}
@@ -910,21 +909,28 @@ c2perm = {!!}
 %%%%%%%%%%%%
 \subsection{Example Circuits}
 
-\amr{
-In our previous work we had argued that one can program with  
-permutations on finite sets (many others relate this to reversible  
-computation and more specifically to reversible combinational  
-circuits). Examples of circuits
-}
+The language $\Pi$ is universal for reversible combinational
+circuits~\cite{James:2012:IE:2103656.2103667}.\footnote{With the
+addition of recursive types and trace operators, $\Pi$ become a Turing
+complete reversible
+language~\cite{James:2012:IE:2103656.2103667,rc2011}.} We illustrate
+the expressivenss of the language with a few short examples.
 
-This language $\Pi$ is universal for hardware combinational
-circuits~\cite{James:2012:IE:2103656.2103667}.
+The first example is simply boolean negation which is easily achieved:
+
+\begin{code}
+BOOL : U
+BOOL = PLUS ONE ONE
+
+NOT₁ : BOOL ⟷ BOOL
+NOT₁ = swap₊
+\end{code}
+
+Viewing the combinator as a permutation on finite sets, we might
+visualize it as follows:
 
 \begin{center}
-\begin{tikzpicture}[scale=0.3,every node/.style={scale=0.3}]
- \draw (-10,0) -- (-6,0);
- \node at (-8,0) {$\oplus$};
-
+\begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
   \draw (0,0) ellipse (1cm and 2cm);
   \draw[fill] (0,1) circle [radius=0.025];
   \node[below] at (0,1) {F};
@@ -946,34 +952,27 @@ circuits~\cite{James:2012:IE:2103656.2103667}.
 \end{tikzpicture}
 \end{center}
 
-\begin{code}
-BOOL : U
-BOOL = PLUS ONE ONE
+Naturally there are many ways of encoding boolean negation. The
+following example is a more convoluted circuit that computes the same
+function:
 
-n₁ : BOOL ⟷ BOOL
-n₁ = swap₊
+\begin{code}
+NOT₂ : BOOL ⟷ BOOL
+NOT₂ =  uniti⋆ ◎
+        swap⋆ ◎
+        (swap₊ ⊗ id⟷) ◎
+        swap⋆ ◎
+        unite⋆
 \end{code}
 
-Example Circuit: Not So Simple Negation. 
+Viewing this combinator as a permutation on finite sets, we might
+visualize it as follows:
 
 \begin{center}
-\begin{tikzpicture}[scale=0.3,every node/.style={scale=0.3}]
- \draw (-11,0.5) -- (-10,0.5);
- \draw (-12,-0.5) -- (-10,-0.5);
- \draw (-10,-1) -- (-10,1) -- (-8,1) -- (-8,-1) -- cycle;
- \node at (-9,0) {swap};
- \draw (-8,0.5) -- (-6,0.5);
- \node at (-7,0.5) {$\oplus$};
- \draw (-8,-0.5) -- (-6,-0.5);
- \draw (-6,-1) -- (-6,1) -- (-4,1) -- (-4,-1) -- cycle;
- \node at (-5,0) {swap};
- \draw (-4,0.5) -- (-3,0.5);
- \draw (-4,-0.5) -- (-2,-0.5);
-
-
+\begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
-  \node[below] at (1,2) {*};
+  \node[below] at (1,2) {()};
 
   \draw (0,0) ellipse (0.5cm and 1cm);
   \draw[fill] (0,0.5) circle [radius=0.025];
@@ -1011,7 +1010,7 @@ Example Circuit: Not So Simple Negation.
 
   \draw (7,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (7,2) circle [radius=0.025];
-  \node[below] at (7,2) {*};
+  \node[below] at (7,2) {()};
 
   \draw (8,0) ellipse (0.5cm and 1cm);
   \draw[fill] (8,0.5) circle [radius=0.025];
@@ -1022,16 +1021,52 @@ Example Circuit: Not So Simple Negation.
 \end{tikzpicture}
 \end{center}
 
-\begin{code}
-n₂ : BOOL ⟷ BOOL
-n₂ =  uniti⋆ ◎
-      swap⋆ ◎
-      (swap₊ ⊗ id⟷) ◎
-      swap⋆ ◎
-      unite⋆
-\end{code}
+Writing circuits using the raw syntax for combinators is clearly
+tedious. In other work, we have investigated a compiler from a
+conventional functional language to generate the
+circuits~\cite{James:2012:IE:2103656.2103667}, a systematic technique
+to translate abstract machines to $\Pi$~\cite{rc2012}, and a
+Haskell-like surface language~\cite{theseus} which can be of help in
+writing circuits. These essential tools are however a distraction in
+the current setting and we content ourselves with some Agda syntactic
+sugar illustrated below:
 
-A few more circuits...
+\begin{code}
+BOOL² : U
+BOOL² = TIMES BOOL BOOL
+
+CNOT : BOOL² ⟷ BOOL²
+CNOT = TIMES BOOL BOOL
+         ⟷⟨ id⟷ ⟩
+       TIMES (PLUS x y) BOOL
+         ⟷⟨ dist ⟩
+       PLUS (TIMES x BOOL) (TIMES y BOOL)
+         ⟷⟨ id⟷ ⊕ (id⟷ ⊗ NOT₁) ⟩
+       PLUS (TIMES x BOOL) (TIMES y BOOL)
+         ⟷⟨ factor ⟩
+       TIMES (PLUS x y) BOOL
+         ⟷⟨ id⟷ ⟩
+       TIMES BOOL BOOL □
+  where x = ONE; y = ONE
+
+TOFFOLI : TIMES BOOL BOOL² ⟷ TIMES BOOL BOOL²
+TOFFOLI = TIMES BOOL BOOL² 
+            ⟷⟨ id⟷ ⟩
+          TIMES (PLUS x y) BOOL² 
+            ⟷⟨ dist ⟩
+          PLUS (TIMES x BOOL²) (TIMES y BOOL²)
+            ⟷⟨ id⟷ ⊕ (id⟷ ⊗ CNOT) ⟩ 
+          PLUS (TIMES x BOOL²) (TIMES y BOOL²)
+            ⟷⟨ factor ⟩
+          TIMES (PLUS x y) BOOL²
+            ⟷⟨ id⟷ ⟩ 
+         TIMES BOOL BOOL² □
+  where x = ONE; y = ONE
+\end{code}
+This style makes the intermediate steps explicit showing how the types
+are transformed by each step of the combinators. The example
+incidentally confirms that $\Pi$ is universal for reversible circuits
+since the Toffoli gate is a universal for such circuits.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Semantics}
@@ -1072,7 +1107,7 @@ Circuits. Algebraic manipulation of one circuit to the other:
 
 \begin{code}
 
-negEx : n₂ ⇔ n₁
+negEx : NOT₂ ⇔ NOT₁
 negEx =
   uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆)))
           ⇔⟨ id⇔ ⊡ assoc◎l ⟩
