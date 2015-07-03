@@ -23,6 +23,7 @@
 \usepackage{graphicx}
 \usepackage{textgreek}
 \usepackage{extarrows}
+\usepackage{diagrams}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Macros
@@ -87,6 +88,8 @@ $\displaystyle
 \newcommand{\eqdef}{\stackrel{\triangle}{=}}
 \newcommand{\isoone}{\Leftrightarrow}
 \newcommand{\lolli}{\multimap} 
+\newcommand{\isoarrow}{\stackrel{\sim}{\rightarrow}}
+
 
 %% \DefineVerbatimEnvironment
 %%   {code}{Verbatim}
@@ -409,9 +412,6 @@ _□ t = id⟷
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
-
-\jc{That title was fine for the workshop, but we should think of something 
-better for POPL.}
 
 \begin{itemize}
 \item BACKGROUND: realizing HoTT requires we be able to program with type
@@ -1333,6 +1333,100 @@ sets up the context for our development.
 
 %%%%%%%%%%%%
 \subsection{Monoidal Categories} 
+
+\begin{definition}[Category]
+  \label{ch:pi:def:category}
+  A \emph{category} $\mathbf{C}$ consists of:
+  \begin{itemize}
+    \item a class $|\mathbf{C}|$ of \emph{objects}, denoted $A,B,C,\ldots$;
+    \item for each pair of objects $A,B$, a set
+    $\mathrm{hom}_{\mathbf{C}}(A,B)$ of \emph{morphisms}, which are denoted
+    $f : A \rightarrow B$;
+    \item \emph{identity morphisms} $\mathrm{id}_A : A \rightarrow A$ and the
+    operation of \emph{composition}: if $f : A \rightarrow B$ and $g : B
+    \rightarrow C$, then $g \circ f : A \rightarrow C$ subject to three         
+    equations stating that $\mathrm{id}$ is the left and right unit for
+    composition and that composition is associative:
+    \begin{itemize}
+    \item Unit:
+      {{f (o) id = f = id (o) f}}
+    \item Associativity:
+      {{ h (o) (g (o) f) = (h (o) g) (o) f}}
+    \end{itemize}
+  \end{itemize}
+\end{definition}
+
+An important subtlety of this definition is in the equality of
+arrows. Indeed the programs {{f}} and {{id (o) f}} are different
+syntactic programs and their compilation might be different in any
+concrete implementation of the language {{L}}. Hence the equality of
+arrows should be based upon the semantic equivalence of these two
+programs, for example, using \emph{observational equivalence}. The
+definition of categories allows one to specify the arrows and the
+objects, but is not parametrized by an equivalence relationship over
+the arrows. The `{{=}}' in the definition of categories is the
+mathematical equivalence of the mathematical entities that are the
+arrows. Hence the `operations of {{L}}' that are the arrows must
+already include the relevant equivalence relation on {{L}}
+programs. This is sometimes referred to as a \emph{term model} and
+essentially states that operations of the language {{L}} are the
+equivalence classes of the programs one writes in {{L}}. Thus {{f}}
+and {{id (o) f}} become \emph{the same arrow}.  See Section 2.2 of
+Barr and Wells's book~\cite{DBLP:books/daglib/0080381} for a detailed
+discussion and Def.~2.4 of Moggi's paper~\cite{Moggi:1991:NCM} for an
+example of such usage.
+
+\begin{definition}[Monoidal Category]
+\label{ch:pi:def:MC}
+A \emph{monoidal category}~\cite{maclane} is a category with the following
+additional structure:
+\begin{itemize}
+\item a functor $\otimes$ called the monoidal or tensor product,
+\item an object $I$ called the unit object, and
+\item natural isomorphisms $\alpha_{A,B,C} : (A \otimes B) \otimes C            
+\isoarrow A \otimes (B \otimes C)$, $\lambda_A : I \otimes A \isoarrow A$,
+and $\rho_A : A \otimes I \isoarrow A$, such that the following two
+diagrams (known as the \emph{associativity pentagon} and the \emph{triangle     
+for unit}) commute:
+\end{itemize}
+%                                                                               
+\begin{diagram}
+((A \otimes B) \otimes C) \otimes D) && \rTo^{\alpha} && (A \otimes B) \otimes \
+(C \otimes D) \\
+\dTo^{\alpha \otimes \mathrm{id}_D} &&&& \dTo_{\alpha} \\
+(A \otimes (B \otimes C)) \otimes D & \rTo_{\alpha} & A \otimes ((B \otimes C) \
+\otimes D) & \rTo_{\mathrm{id}_A \otimes \alpha} & A \otimes (B \otimes (C \oti\
+mes D))
+\end{diagram}
+%                                                                               
+\begin{diagram}
+(A \otimes I) \otimes B && \rTo^\alpha && A \otimes (I \otimes B) \\
+& \rdTo_{\rho_A \otimes \mathrm{id}_B} && \ldTo_{\mathrm{id}_A \otimes \lambda_\
+B} \\
+&& A \otimes B
+\end{diagram}
+\end{definition}
+
+\begin{definition}[Symmetric Monoidal Category]
+\label{ch:pi:def:SMC}
+A monoidal category is \emph{symmetric} if it has an isomorphism
+$\sigma_{A,B} : A \otimes B \isoarrow B \otimes A$ where $\sigma$ is a
+natural transformation which satisfies the following two coherence conditions
+(called \emph{bilinerarity} and \emph{symmetry}):
+\end{definition}
+\begin{diagram}
+(A \otimes B) \otimes C & \rTo^{\alpha} & A \otimes (B \otimes C) & \rTo^{\sigm\
+a} & (B \otimes C) \otimes A \\
+\dTo^{\sigma \otimes \mathrm{id}_C} &&&& \dTo_{\alpha} \\
+(B \otimes A) \otimes C & \rTo_{\alpha} & B \otimes (A \otimes C) & \rTo_{\math\
+rm{id}_B \otimes \sigma} & B \otimes (C \otimes A)
+\end{diagram}
+%                                                                               
+\begin{diagram}
+A \otimes B \\
+\dTo^{\sigma} & \rdTo^{\mathrm{id}_A\otimes\mathrm{id}_B} \\
+B \otimes A & \rTo_{\sigma} & A \otimes B
+\end{diagram}
 
 Define monoidal categories; 
 explain categorification of monoid
