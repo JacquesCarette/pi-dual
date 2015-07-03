@@ -1,4 +1,4 @@
-\documentclass[preprint]{sigplanconf}
+\documentclass[authoryear,preprint]{sigplanconf}
 
 \usepackage{agda}
 \usepackage{alltt}
@@ -6,6 +6,8 @@
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
 \usepackage{tikz}
+\usetikzlibrary{cd}
+\usetikzlibrary{quotes}
 \usepackage{amsthm}
 \usepackage{latexsym}
 \usepackage{courier}
@@ -23,7 +25,6 @@
 \usepackage{graphicx}
 \usepackage{textgreek}
 \usepackage{extarrows}
-\usepackage{diagrams}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Macros
@@ -1378,33 +1379,48 @@ example of such usage.
 
 \begin{definition}[Monoidal Category]
 \label{ch:pi:def:MC}
-A \emph{monoidal category}~\cite{maclane} is a category with the following
-additional structure:
+A \emph{monoidal category}~\cite{nla.cat-vn1051288} is a category with
+the following additional structure:
 \begin{itemize}
 \item a functor $\otimes$ called the monoidal or tensor product,
 \item an object $I$ called the unit object, and
-\item natural isomorphisms $\alpha_{A,B,C} : (A \otimes B) \otimes C            
-\isoarrow A \otimes (B \otimes C)$, $\lambda_A : I \otimes A \isoarrow A$,
-and $\rho_A : A \otimes I \isoarrow A$, such that the following two
-diagrams (known as the \emph{associativity pentagon} and the \emph{triangle     
-for unit}) commute:
+\item natural isomorphisms
+  $\alpha_{A,B,C} : (A \otimes B) \otimes C \isoarrow A \otimes (B
+  \otimes C)$,
+  $\lambda_A : I \otimes A \isoarrow A$, and
+  $\rho_A : A \otimes I \isoarrow A$, such that the following two
+  diagrams (known as the \emph{associativity pentagon} and the
+  \emph{triangle for unit}) commute:
 \end{itemize}
 %                                                                               
-\begin{diagram}
-((A \otimes B) \otimes C) \otimes D) && \rTo^{\alpha} && (A \otimes B) \otimes \
-(C \otimes D) \\
-\dTo^{\alpha \otimes \mathrm{id}_D} &&&& \dTo_{\alpha} \\
-(A \otimes (B \otimes C)) \otimes D & \rTo_{\alpha} & A \otimes ((B \otimes C) \
-\otimes D) & \rTo_{\mathrm{id}_A \otimes \alpha} & A \otimes (B \otimes (C \oti\
-mes D))
-\end{diagram}
+\begin{center}
+\begin{tikzcd}[column sep=tiny]
+((A \otimes B) \otimes C) \otimes D)
+  \arrow[rr, "\alpha"]
+  \arrow[d, "\alpha \otimes \mathrm{id}_D"']
+&& (A \otimes B) \otimes (C \otimes D)
+   \arrow[d, "\alpha"]
+\\
+(A \otimes (B \otimes C)) \otimes D
+  \arrow[dr, "\alpha"']
+&& A \otimes (B \otimes (C \otimes D))
+   \arrow[dl, "\mathrm{id}_A \otimes \alpha"]
+\\
+& A \otimes ((B \otimes C) \otimes D)
+\end{tikzcd}
+\end{center}
 %                                                                               
-\begin{diagram}
-(A \otimes I) \otimes B && \rTo^\alpha && A \otimes (I \otimes B) \\
-& \rdTo_{\rho_A \otimes \mathrm{id}_B} && \ldTo_{\mathrm{id}_A \otimes \lambda_\
-B} \\
-&& A \otimes B
-\end{diagram}
+\begin{center}
+\begin{tikzcd}[column sep=tiny]
+(A \otimes I) \otimes B
+  \arrow[rr, "\alpha"]
+  \arrow[dr, "\rho_A \otimes \mathrm{id}_B"']
+&& A \otimes (I \otimes B)
+  \arrow[dl, "\mathrm{id}_A \otimes \lambda_B"]
+\\
+& A \otimes B
+\end{tikzcd}
+\end{center}
 \end{definition}
 
 \begin{definition}[Symmetric Monoidal Category]
@@ -1414,19 +1430,35 @@ $\sigma_{A,B} : A \otimes B \isoarrow B \otimes A$ where $\sigma$ is a
 natural transformation which satisfies the following two coherence conditions
 (called \emph{bilinerarity} and \emph{symmetry}):
 \end{definition}
-\begin{diagram}
-(A \otimes B) \otimes C & \rTo^{\alpha} & A \otimes (B \otimes C) & \rTo^{\sigm\
-a} & (B \otimes C) \otimes A \\
-\dTo^{\sigma \otimes \mathrm{id}_C} &&&& \dTo_{\alpha} \\
-(B \otimes A) \otimes C & \rTo_{\alpha} & B \otimes (A \otimes C) & \rTo_{\math\
-rm{id}_B \otimes \sigma} & B \otimes (C \otimes A)
-\end{diagram}
+\begin{center}
+\begin{tikzcd}[column sep=tiny]
+& A \otimes (B \otimes C) 
+  \arrow[dr, "\sigma"]
+  \arrow[dl, "\alpha"']
+\\
+(A \otimes B) \otimes C
+  \arrow[d, "\sigma \otimes \mathrm{id}_C"] && 
+(B \otimes C) \otimes A
+ \arrow[d, "\alpha"] 
+\\
+(B \otimes A) \otimes C 
+  \arrow[dr, "\alpha"'] &&
+B \otimes (C \otimes A)
+  \arrow[dl, "\mathrm{id}_B \otimes \sigma"]
+\\
+& B \otimes (A \otimes C)
+\end{tikzcd}
+\end{center}
 %                                                                               
-\begin{diagram}
-A \otimes B \\
-\dTo^{\sigma} & \rdTo^{\mathrm{id}_A\otimes\mathrm{id}_B} \\
-B \otimes A & \rTo_{\sigma} & A \otimes B
-\end{diagram}
+\begin{center}
+\begin{tikzcd}[column sep=tiny]
+& A \otimes B 
+  \arrow[dl, "\sigma"']
+  \arrow[dr, "\mathrm{id}_A\otimes\mathrm{id}_B"] 
+\\
+B \otimes A \arrow[rr, "\sigma"] && A \otimes B
+\end{tikzcd}
+\end{center}
 
 Define monoidal categories; 
 explain categorification of monoid
