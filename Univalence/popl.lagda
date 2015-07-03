@@ -665,7 +665,7 @@ equality $=$ is that we can reason one level up about the type of all
 equivalences $\textsc{eq}_{A,B}$. For a given $A$ and $B$, the
 elements of $\textsc{eq}_{A,B}$ are all the ways in which we can prove
 $A \simeq B$. For example,
-$\textsc{eq}_{\AgdaDatatype {Bool},\AgdaDatatype {Bool}}$ has two
+$\textsc{eq}_{\AgdaDatatype {Bool},\AgdaDatatype  {Bool}}$ has two
 elements corresponding to the $\mathrm{id}$-equivalence and to the
 negation-equivalence that were mentioned before. More generally, 
 for finite types $A$ and $B$,
@@ -951,6 +951,7 @@ that witness the type isomorphism in the middle.
 
 %%%%%%%%%%%%
 \subsection{Example Circuits}
+\label{sec:circuits}
 
 The language $\Pi$ is universal for reversible combinational
 circuits~\cite{James:2012:IE:2103656.2103667}.\footnote{With the
@@ -1259,6 +1260,7 @@ explained in the proof of Thm.~\ref{thm:permrig}.
 
 %%%%%%%%%%%%
 \subsection{Rewriting Approach} 
+\label{sec:rewriting}
 
 Having mapped each combinator to a permutation, we can reason about
 valid optimizations mapping a combinator to another by studying the
@@ -1334,83 +1336,12 @@ negEx =
 
 The problem of finding a sound and complete set of rules for reasoning
 about equivalence of permutations is solved by appealing to various
-results about specialized monoidal categories. The following quote
-sets up the context for our development.
-\begin{quote}
-  In Mac Lane’s second coherence result of [...], which has to do with
-  symmetric monoidal categories, it is not intended that all equations
-  between arrows of the same type should hold. What Mac Lane does can
-  be described in logical terms in the following manner. On the one
-  hand, he has an axiomatization, and, on the other hand, he has a
-  model category where arrows are permutations; then he shows that his
-  axiomatization is complete with respect to this model. It is no
-  wonder that his coherence problem reduces to the completeness
-  problem for the usual axiomatization of symmetric
-  groups~\cite{coherence}.
-\end{quote}
+results about specialized monoidal categories. The main technical
+vehicle is that of \emph{categorification}~\cite{math/9802029} which
+is a process, intimately related to homotopy theory, for finding
+category-theoretic analogs of set-theoretic concepts.
 
-%%%%%%%%%%%%
-\subsection{Monoidal Categories} 
-
-\begin{definition}[Category]
-  \label{ch:pi:def:category}
-  A \emph{category} $\mathbf{C}$ consists of:
-  \begin{itemize}
-    \item a class $|\mathbf{C}|$ of \emph{objects}, denoted $A,B,C,\ldots$;
-    \item for each pair of objects $A,B$, a set
-    $\mathrm{hom}_{\mathbf{C}}(A,B)$ of \emph{morphisms}, which are denoted
-    $f : A \rightarrow B$;
-    \item \emph{identity morphisms} $\mathrm{id}_A : A \rightarrow A$ and the
-    operation of \emph{composition}: if $f : A \rightarrow B$ and $g : B
-    \rightarrow C$, then $g \circ f : A \rightarrow C$ subject to three         
-    equations stating that $\mathrm{id}$ is the left and right unit for
-    composition and that composition is associative:
-    \begin{itemize}
-    \item Unit:
-      $f \circ \mathrm{id} = f = \mathrm{id} \circ f$
-    \item Associativity:
-      $h \circ (g \circ f) = (h \circ g) \circ f$
-    \end{itemize}
-  \end{itemize}
-\end{definition}
-
-An important subtlety of this definition is in the equality of
-arrows. Indeed the programs $f$ and $\mathrm{id} \circ f$ are
-different syntactic programs and their compilation might be different
-in any concrete implementation of the language. Hence the equality of
-arrows should be based upon the semantic equivalence of these two
-programs, for example, using \emph{observational equivalence}. The
-definition of categories allows one to specify the arrows and the
-objects, but is not parametrized by an equivalence relationship over
-the arrows. The $=$ in the definition of categories is the
-mathematical equivalence of the mathematical entities that are the
-arrows. Hence the `operations' that are the arrows must already
-include the relevant equivalence relation on programs. This is
-sometimes referred to as a \emph{term model} and essentially states
-that operations of the language are the equivalence classes of the
-programs one writes in the language. Thus $f$ and $\mathrm{id} \circ
-f$ become \emph{the same arrow}.  See Section 2.2 of Barr and Wells's
-book~\cite{DBLP:books/daglib/0080381} for a detailed discussion and
-Def.~2.4 of Moggi's paper~\cite{Moggi:1991:NCM} for an example of such
-usage.
-
-\begin{definition}[Monoidal Category]
-\label{ch:pi:def:MC}
-A \emph{monoidal category}~\cite{nla.cat-vn1051288} is a category with
-the following additional structure:
-\begin{itemize}
-\item a functor $\otimes$ called the monoidal or tensor product,
-\item an object $I$ called the unit object, and
-\item natural isomorphisms
-  $\alpha_{A,B,C} : (A \otimes B) \otimes C \isoarrow A \otimes (B
-  \otimes C)$,
-  $\lambda_A : I \otimes A \isoarrow A$, and
-  $\rho_A : A \otimes I \isoarrow A$, such that the following two
-  diagrams (known as the \emph{associativity pentagon} and the
-  \emph{triangle for unit}) commute:
-\end{itemize}
-%                                                                               
-\begin{center}
+\begin{figure*}
 \begin{tikzcd}[column sep=tiny]
 ((A \otimes B) \otimes C) \otimes D)
   \arrow[rr, "\alpha"]
@@ -1425,9 +1356,7 @@ the following additional structure:
 \\
 & A \otimes ((B \otimes C) \otimes D)
 \end{tikzcd}
-\end{center}
-%                                                                               
-\begin{center}
+\qquad\qquad\qquad
 \begin{tikzcd}[column sep=tiny]
 (A \otimes I) \otimes B
   \arrow[rr, "\alpha"]
@@ -1437,7 +1366,30 @@ the following additional structure:
 \\
 & A \otimes B
 \end{tikzcd}
-\end{center}
+\caption{\label{fig:mon}Pengaton and Triangle Diagrams}
+\end{figure*}
+
+%%%%%%%%%%%%
+\subsection{Monoidal Categories} 
+
+We begin with the conventional definitions for monoidal and symmetric
+monoidal categories. 
+
+\begin{definition}[Monoidal Category]
+\label{ch:pi:def:MC}
+A \emph{monoidal category}~\cite{nla.cat-vn1051288} is a category with
+the following additional structure:
+\begin{itemize}
+\item a functor $\otimes$ called the monoidal or tensor product,
+\item an object $I$ called the unit object, and
+\item natural isomorphisms
+  $\alpha_{A,B,C} : (A \otimes B) \otimes C \isoarrow A \otimes (B
+  \otimes C)$,
+  $\lambda_A : I \otimes A \isoarrow A$, and
+  $\rho_A : A \otimes I \isoarrow A$, such that the two diagrams
+  (known as the \emph{associativity pentagon} and the \emph{triangle
+    for unit}) in Fig.~\ref{fig:mon} commute.
+\end{itemize}
 \end{definition}
 
 \begin{definition}[Symmetric Monoidal Category]
@@ -1477,26 +1429,58 @@ B \otimes A \arrow[rr, "\sigma"] && A \otimes B
 \end{tikzcd}
 \end{center}
 
-Define monoidal categories; 
-explain categorification of monoid
-explain that arrows can be viewed as permutations; not all arrows are
-'equal'; leads to coherence conditions
+According to Mac Lane's coherence theorem, the coherence laws for
+monoidal categories are justified by the desire to equate any two
+isomorphisms built using $\sigma$, $\lambda$, and $\rho$ and having
+the same source and target. Similar considerations justify the
+coherence laws for symmetric monoidal categories. It is important to
+note that the coherence conditions do \emph{not} imply that every pair
+of parallel morphisms with the same source and target are
+equal. Indeed, as Dosen and Petric explain:
+\begin{quote}
+  In Mac Lane’s second coherence result of [...], which has to do with
+  symmetric monoidal categories, it is not intended that all equations
+  between arrows of the same type should hold. What Mac Lane does can
+  be described in logical terms in the following manner. On the one
+  hand, he has an axiomatization, and, on the other hand, he has a
+  model category where arrows are permutations; then he shows that his
+  axiomatization is complete with respect to this model. It is no
+  wonder that his coherence problem reduces to the completeness
+  problem for the usual axiomatization of symmetric
+  groups~\cite{coherence}.
+\end{quote} 
+From a different perspective, Baez and Dolan~\cite{math/9802029}
+explain the source of these coherence laws as arising from homotopy
+theory. In this theory, laws are only imposed up to homotopy with
+these homotopies satisfying certain laws, up again only up to
+homotopy, with these higher homotopies satisfying their own higher
+coherence laws, and so on. Remarkably, they report, among other
+results, that the pentagon identity of Fig.~\ref{fig:mon} arises when
+studying the algebraic structure possessed by a space that is homotopy
+equivalent to a loop space and that the hexagon identity arises in the
+context of spaces homotopy equivalent to double loop spaces.
+
+In our context, we will build monoidal categories where the objects
+are finite types and the morphisms are reversible circuits represented
+as $\Pi$-combinators. Clearly not all reversible circuits mapping
+\AgdaDatatype{Bool} to \AgdaDatatype{Bool} are equal. There are at
+least two distinct such circuits: the identity and boolean
+negation. The coherence laws should not equate these two morphisms and
+they do not. We might also hope that the two versions of boolean
+negation in Sec.~\ref{sec:circuits} and Sec.~\ref{sec:rewriting} could
+be identified using the coherence conditions of monoidal
+categories. This will be the case but, for that, we need categories
+that are much richer than just the symmetric monoidal categories which
+are only categorifications of commutative monoids. We will need to
+consider the categorification of commutative semirings.
 
 %%%%%%%%%%%%
-\subsection{Coherence Conditions} 
-
-for monoidal categories are reasonably easy; explain in detail
-
-%%%%%%%%%%%%
-\subsection{Commutative Rig Groupoids} 
+\subsection{Symmetric Rig Groupoids} 
 
 these things are not very well-known; these are the right beasts that
 are the categorification of commutative semigroups.
 
-\emph{categorification}~\cite{math/9802029} of 
-the natural numbers. A simple (slightly degenerate) example of such
-
-This has been done generically: coherence conditions for commutative  
+This has been done generically: coherence conditions for symmetric
 rig groupoids. These generalize type equivalences and permutations;
  
 We haven't said anything about the categorical structure: it is not
@@ -1506,10 +1490,80 @@ is the next section in which we talk about computational
 interpretation as one of the fundamental things we want from a notion
 of computation is composition (cf. Moggi's original paper on monads).
 
-Type equivalences (such as between $A × B$ and $B × A$) are \textcolor{red}{Functors}.
+Categorification II. 
+The \textcolor{red}{categorification} of a semiring is called a \textcolor{red}{Rig Category}.
+As with a semiring, there are two monoidal structures, which interact through some distributivity laws.
+\begin{theorem}
+The following are \textcolor{red}{Symmetric Bimonoidal Groupoids}:
+\begin{itemize}
+\item The class of all types (\AgdaDatatype{Set})
+\item The set of all finite types
+\item The set of permutations
+\item The set of equivalences between finite types
+\item Our syntactic combinators
+\end{itemize}
+\end{theorem}
+The \textcolor{red}{coherence rules} for Symmetric Bimonoidal groupoids give us 
+\textcolor{red}{58 rules}.
 
-\noindent Equivalences between Functors are \textcolor{red}{Natural Isomorphisms}.  At the value-level,
-they induce $2$-morphisms:
+Categorification III.
+\begin{conj}
+The following are \textcolor{red}{Symmetric Rig Groupoids}:
+\begin{itemize}
+\item The class of all types (\AgdaDatatype{Set})
+\item The set of all finite types, of permutations, of equivalences between finite types
+\item Our syntactic combinators
+\end{itemize}
+\end{conj}
+and of course the punchline:
+\begin{theorem}[Laplaza 1972]
+There is a sound and complete set of \textcolor{red}{coherence rules} for 
+Symmetric Rig Categories.
+\end{theorem}
+\begin{conj}
+The set of coherence rules for Symmetric Rig Groupoids are a sound
+and complete set for \textcolor{red}{circuit equivalence}.
+\end{conj}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Revised $\Pi$ and its Optimizer}
+
+%%%%%%%%%%%%
+\subsection{Revised Syntax}
+
+The refactoring of Pi from the inspiration of symmetric rig groupoids.
+The added combinators~\ref{fig:more} are redundant (from an
+operational perspective) exactly because of the coherences.  But some
+of these higher combinators have rather non-trivial relations to each
+other [ex: pentagon, hexagon, and some of the weirder Laplaza rules].
+Plus the 'minimalistic' Pi leads to much larger programs with LOTS of
+extra redexes.
+
+\begin{figure*}
+\[\begin{array}{rrcll}
+\absorbr :&~ 0 * \tau & \iso & 0 &: \factorzl \\
+\absorbl :&~ \tau * 0 & \iso & 0 &: \factorzr \\
+
+\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor \\
+\distl :&~ \tau_1 * (\tau_2 + \tau_3) & \iso & (\tau_1 * \tau_2) + (\tau_1 * \tau_3)~ &: \factorl 
+\end{array}\]      
+\caption{\label{fig:more}Additional $\Pi$-combinators}
+\end{figure*}
+
+%%%%%%%%%%%%
+\subsection{Optimization Rules}
+
+Here is where we can have the table of important coherence laws. The
+one below is a small and nice example.
+
+What we need now is Pi plus another layer to top to optimize Pi
+  programs; no ad hoc rules; principled rules; 
+
+Type equivalences (such as between $A × B$ and $B × A$) are
+\textcolor{red}{Functors}.
+
+Equivalences between Functors are \textcolor{red}{Natural
+  Isomorphisms}.  At the value-level, they induce $2$-morphisms:
 
 \begin{code}
 postulate
@@ -1576,73 +1630,6 @@ p₂ = (c₂ ⊕ c₁) ◎ swap₊
 
 \end{tikzpicture}
 \end{center}
-
-
-Categorification II. 
-The \textcolor{red}{categorification} of a semiring is called a \textcolor{red}{Rig Category}.
-As with a semiring, there are two monoidal structures, which interact through some distributivity laws.
-\begin{theorem}
-The following are \textcolor{red}{Symmetric Bimonoidal Groupoids}:
-\begin{itemize}
-\item The class of all types (\AgdaDatatype{Set})
-\item The set of all finite types
-\item The set of permutations
-\item The set of equivalences between finite types
-\item Our syntactic combinators
-\end{itemize}
-\end{theorem}
-The \textcolor{red}{coherence rules} for Symmetric Bimonoidal groupoids give us 
-\textcolor{red}{58 rules}.
-
-Categorification III.
-\begin{conj}
-The following are \textcolor{red}{Symmetric Rig Groupoids}:
-\begin{itemize}
-\item The class of all types (\AgdaDatatype{Set})
-\item The set of all finite types, of permutations, of equivalences between finite types
-\item Our syntactic combinators
-\end{itemize}
-\end{conj}
-and of course the punchline:
-\begin{theorem}[Laplaza 1972]
-There is a sound and complete set of \textcolor{red}{coherence rules} for 
-Symmetric Rig Categories.
-\end{theorem}
-\begin{conj}
-The set of coherence rules for Symmetric Rig Groupoids are a sound
-and complete set for \textcolor{red}{circuit equivalence}.
-\end{conj}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Revised $\Pi$ and its Optimizer}
-
-%%%%%%%%%%%%
-\subsection{Revised Syntax}
-
-  The refactoring of Pi from the inspiration of symmetric
-  rig groupoids.  The added combinators are redundant (from an
-  operational perspective) exactly because of the coherences.  But
-  some of these higher combinators have rather non-trivial relations
-  to each other [ex: pentagon, hexagon, and some of the weirder
-  Laplaza rules].  Plus the 'minimalistic' Pi leads to much larger
-  programs with LOTS of extra redexes.
-
-\[\begin{array}{rrcll}
-\absorbr :&~ 0 * \tau & \iso & 0 &: \factorzl \\
-\absorbl :&~ \tau * 0 & \iso & 0 &: \factorzr \\
-
-\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor \\
-\distl :&~ \tau_1 * (\tau_2 + \tau_3) & \iso & (\tau_1 * \tau_2) + (\tau_1 * \tau_3)~ &: \factorl 
-\end{array}\]      
-
-%%%%%%%%%%%%
-\subsection{Optimization Rules}
-
-What we need now is Pi plus another layer to top to optimize Pi
-  programs; no ad hoc rules; principled rules; 
-
-%%%%%%%%%%%%
-\subsection{Examples}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Problem with Higher-Order Functions}
@@ -1820,7 +1807,7 @@ higher-order functions while retaining the multiplicative structure.
 
 \begin{itemize}
 \item add trace to make language Turing complete
-\item generalize from commutative rig to field as a way to get some
+\item generalize from commutative semiring to field as a way to get some
   notion of h.o. functions
 \end{itemize}
 
