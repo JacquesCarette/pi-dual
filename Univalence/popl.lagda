@@ -78,6 +78,15 @@ $\displaystyle
 \newenvironment{floatrule}
     {\hrule width \hsize height .33pt \vspace{.5pc}}
     {\par\addvspace{.5pc}}
+\newcommand{\nodet}[2]{\fcolorbox{black}{white}{$#1$}\fcolorbox{black}{gray!20}{$#2$}}
+\newcommand{\cubt}{\mathbb{T}}
+\newcommand{\ztone}{\mathbb{0}}
+\newcommand{\otone}{\mathbb{1}}
+\newcommand{\ptone}[2]{#1 \boxplus #2}
+\newcommand{\ttone}[2]{#1 \boxtimes #2}
+\newcommand{\eqdef}{\stackrel{\triangle}{=}}
+\newcommand{\isoone}{\Leftrightarrow}
+\newcommand{\lolli}{\multimap} 
 
 %% \DefineVerbatimEnvironment
 %%   {code}{Verbatim}
@@ -404,7 +413,6 @@ _□ t = id⟷
 \jc{That title was fine for the workshop, but we should think of something 
 better for POPL.}
 
-\amr{
 \begin{itemize}
 \item BACKGROUND: realizing HoTT requires we be able to program with type
   equivalences and equivalences of type equivalences and so on;
@@ -415,12 +423,46 @@ better for POPL.}
   that calculus; in other words; rules for writing circuits and rules
   for rewriting (optimizing) circuits
 \end{itemize}
-}
 
-\amr{Define and motivate that we are interested in defining HoTT  
+Define and motivate that we are interested in defining HoTT  
   equivalences of types, characterizing them, computing with them,
-  etc.}
+  etc.
   
+Homotopy type theory (HoTT)~\cite{hottbook} has a convoluted treatment of
+functions. It starts with a class of arbitrary functions, singles out a
+smaller class of ``equivalences'' via extensional methods, and then asserts
+via the \emph{univalence} \textbf{axiom} that the class of functions just
+singled out is equivalent to paths. Why not start with functions that are, by
+construction, equivalences?
+
+The idea that computation should be based on ``equivalences'' is an old one
+and is motivated by physical considerations. Because physics requires various
+conservation principles (including conservation of information) and because
+computation is fundamentally a physical process, every computation is
+fundamentally an equivalence that preserves information. This idea fits well
+with the HoTT philosophy that emphasizes equalities, isomorphisms,
+equivalences, and their computational content.
+
+In more detail, a computational world in which the laws of physics are
+embraced and resources are carefully maintained (e.g., quantum
+computing~\cite{NC00,Abramsky:2004:CSQ:1018438.1021878}), programs must be
+reversible. Although this is apparently a limiting idea, it turns out that
+conventional computation can be viewed as a special case of such
+resource-preserving reversible programs. This thesis has been explored for
+many years from different
+perspectives~\cite{fredkin1982conservative,Toffoli:1980,bennett2010notes,bennett2003notes,Bennett:1973:LRC,Landauer:1961,Landauer}
+and more recently in the context of type
+isomorphisms~\cite{James:2012:IE:2103656.2103667}. 
+
+This paper explores the basic ingredients of HoTT from the perspective that
+computation is all about type isomorphisms. Because the issues involved are
+quite subtle, the paper is an executable \texttt{Agda 2.4.0} file with the
+global \AgdaComment{without-K} option enabled. The main body of the paper
+reconstructs the main features of HoTT for the limited universe of finite
+types consisting of the empty type, the unit type, and sums and products of
+types. Sec.~\ref{intc} outlines directions for extending the result to richer
+types.
+
 Quantum Computing. Quantum physics differs from classical physics in \textcolor{red}{many} ways:
 
 \begin{itemize}
@@ -1272,59 +1314,54 @@ negEx =
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Categorification}
 
-\amr{
-This has been done generically: coherence conditions for
-  commutative rig groupoids. These generalize type equivalences and permutations;
-}
+The problem of finding a sound and complete set of rules for reasoning
+about equivalence of permutations is solved by appealing to various
+results about specialized monoidal categories. The following quote
+sets up the context for our development.
+\begin{quote}
+  In Mac Lane’s second coherence result of [...], which has to do with
+  symmetric monoidal categories, it is not intended that all equations
+  between arrows of the same type should hold. What Mac Lane does can
+  be described in logical terms in the following manner. On the one
+  hand, he has an axiomatization, and, on the other hand, he has a
+  model category where arrows are permutations; then he shows that his
+  axiomatization is complete with respect to this model. It is no
+  wonder that his coherence problem reduces to the completeness
+  problem for the usual axiomatization of symmetric
+  groups~\cite{coherence}.
+\end{quote}
 
 %%%%%%%%%%%%
 \subsection{Monoidal Categories} 
 
+Define monoidal categories; 
+explain categorification of monoid
+explain that arrows can be viewed as permutations; not all arrows are
+'equal'; leads to coherence conditions
+
 %%%%%%%%%%%%
 \subsection{Coherence Conditions} 
+
+for monoidal categories are reasonably easy; explain in detail
 
 %%%%%%%%%%%%
 \subsection{Commutative Rig Groupoids} 
 
-This is where the idea of path and path of paths becomes critical. But
-that does not give us a computational framework because univalence is
-a postulate. The connection to permutations is the one that will give
-us an effective procedure by categorification. Quote from
-Proof-Theoretical Coherence, Kosta Dosen and Zoran Petric,
-\url{http://www.mi.sanu.ac.rs/~kosta/coh.pdf}:
+these things are not very well-known; these are the right beasts that
+are the categorification of commutative semigroups.
 
-\begin{quote}
-In Mac Lane’s second coherence result of [99], which has to do with
-symmetric monoidal categories, it is not intended that all equations
-be- tween arrows of the same type should hold. What Mac Lane does can
-be described in logical terms in the following manner. On the one
-hand, he has an axiomatization, and, on the other hand, he has a model
-category where arrows are permutations; then he shows that his
-axiomatization is complete with respect to this model. It is no wonder
-that his coherence problem reduces to the completeness problem for the
-usual axiomatization of symmetric groups.
-\end{quote}
-
-From the perspective of category theory, the language $\Pi$ models
-what is called a \emph{symmetric bimonoidal groupoid} or a
-\emph{commutative rig groupoid}. These are categories in which every
-morphism is an isomorphism and with two binary operations and
-satisfying the axioms of a commutative semiring up to coherent
-isomorphisms. And indeed the types of the $\Pi$-combinators are
-precisely the commutative semiring axioms. A formal way of saying this
-is that $\Pi$ is the \emph{categorification}~\cite{math/9802029} of
+\emph{categorification}~\cite{math/9802029} of 
 the natural numbers. A simple (slightly degenerate) example of such
-categories is the category of finite sets and permutations in which we
-interpret every $\Pi$-type as a finite set, interpret the values as
-elements in these finite sets, and interpret the combinators as
-permutations.
 
-\amr{We haven't said anything about the categorical structure: it is
-not just a commutative semiring but a commutative rig; this is crucial
+This has been done generically: coherence conditions for commutative  
+rig groupoids. These generalize type equivalences and permutations;
+ 
+We haven't said anything about the categorical structure: it is not
+just a commutative semiring but a commutative rig; this is crucial
 because the former doesn't take composition into account. Perhaps that
 is the next section in which we talk about computational
 interpretation as one of the fundamental things we want from a notion
-of computation is composition (cf. Moggi's original paper on monads).}
+of computation is composition (cf. Moggi's original paper on monads).
 
 Type equivalences (such as between $A × B$ and $B × A$) are \textcolor{red}{Functors}.
 
@@ -1439,7 +1476,6 @@ and complete set for \textcolor{red}{circuit equivalence}.
 %%%%%%%%%%%%
 \subsection{Revised Syntax}
 
-\amr{
   The refactoring of Pi from the inspiration of symmetric
   rig groupoids.  The added combinators are redundant (from an
   operational perspective) exactly because of the coherences.  But
@@ -1447,662 +1483,210 @@ and complete set for \textcolor{red}{circuit equivalence}.
   to each other [ex: pentagon, hexagon, and some of the weirder
   Laplaza rules].  Plus the 'minimalistic' Pi leads to much larger
   programs with LOTS of extra redexes.
-}
+
+\[\begin{array}{rrcll}
+\absorbr :&~ 0 * \tau & \iso & 0 &: \factorzl \\
+\absorbl :&~ \tau * 0 & \iso & 0 &: \factorzr \\
+
+\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor \\
+\distl :&~ \tau_1 * (\tau_2 + \tau_3) & \iso & (\tau_1 * \tau_2) + (\tau_1 * \tau_3)~ &: \factorl 
+\end{array}\]      
 
 %%%%%%%%%%%%
 \subsection{Optimization Rules}
 
-\amr{
 What we need now is Pi plus another layer to top to optimize Pi
   programs; no ad hoc rules; principled rules; 
-}
 
 %%%%%%%%%%%%
 \subsection{Examples}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Problem with Higher-Order Functions}
+\label{intc}
+
+In the context of monoidal categories, it is known that a notion of
+higher-order functions emerges from having an additional degree of
+\emph{symmetry}. In particular, both the \textbf{Int} construction of Joyal,
+Street, and Verity~\citeyearpar{joyal1996traced} and the closely related
+$\mathcal{G}$ construction of linear logic~\cite{gcons} construct
+higher-order \emph{linear} functions by considering a new category built on
+top of a given base traced monoidal category. The objects of the new category
+are of the form $\nodet{\tau_1}{\tau_2}$ where~$\tau_1$ and~$\tau_2$ are
+objects in the base category. Intuitively, this object represents the
+\emph{difference} $\tau_1-\tau_2$ with the component $\tau_1$ viewed as
+conventional type whose elements represent values flowing, as usual, from
+producers to consumers, and the component $\tau_2$ viewed as a \emph{negative
+  type} whose elements represent demands for values or equivalently values
+flowing backwards. Under this interpretation, and as we explain below, a
+function is nothing but an object that converts a demand for an argument into
+the production of a result.
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Conventionl Construction on Unpointed Types} 
+
+We begin our formal development by extending $\Pi$ --- at any level --- 
+with a new universe of
+types $\cubt$ that consists of composite types $\nodet{\tau_1}{\tau_2}$:
+\[\begin{array}{lrcl}
+(\textit{{1d} types}) & 
+  \cubt &::=& \nodet{\tau_1}{\tau_2}
+\end{array}\]
+We will refer to the original types $\tau$ as 0-dimensional (0d) types and to
+the new types $\cubt$ as 1-dimensional (1d) types. The 1d level is a
+``lifted'' instance of $\Pi$ with its own notions of empty, unit, sum, and
+product types, and its corresponding notion of isomorphisms on these 1d
+types.
+
+Our next step is to define lifted versions of the 0d types:
+\[\begin{array}{rcl}
+\ztone &\eqdef& \nodet{0}{0} \\
+\otone &\eqdef& \nodet{1}{0} \\
+\ptone{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} &\eqdef& 
+  \nodet{\tau_1+\tau_3}{\tau_2+\tau_4} \\
+\ttone{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} &\eqdef& \\
+\noalign{\hfill$\nodet{(\tau_1*\tau_3)+(\tau_2*\tau_4)}{(\tau_1*\tau_4)+(\tau_2*\tau_3)}$}
+\end{array}\]
+Building on the idea that $\Pi$ is a categorification of the natural numbers
+and following a long tradition that relates type isomorphisms and arithmetic
+identities~\cite{DiCosmo:2005:SSI:1090732.1090734}, one is tempted to think
+that the \textbf{Int} construction (as its name suggests) produces a
+categorification of the integers. Based on this hypothesis, the definitions
+above can be intuitively understood as arithmetic identities. The same
+arithmetic intuition explains the lifting of isomorphisms to 1d types:
+\[\begin{array}{rcl}
+\nodet{\tau_1}{\tau_2} \isoone \nodet{\tau_3}{\tau_4} &\eqdef& 
+  (\tau_1+\tau_4) \iso (\tau_2+\tau_3)
+\end{array}\]
+In other words, an isomorphism between 1d types is really an isomorphism
+between ``re-arranged'' 0d types where the negative input $\tau_2$ is viewed
+as an output and the negative output $\tau_4$ is viewed as an input. Using
+these ideas, it is now a fairly standard exercise to define the lifted
+versions of most of the combinators in
+Table~\ref{pi-combinators}.\footnote{See
+  Krishnaswami's~\citeyearpar{neelblog} excellent blog post implementing this
+  construction in OCaml.} There are however a few interesting cases whose
+appreciation is essential for the remainder of the paper.
+
+\paragraph*{Easy Lifting.} Many of the 0d combinators lift easily to the 1d
+level. For example:
+\[\begin{array}{rcl}
+\idc &:& \cubt \isoone \cubt \\
+     &:& \nodet{\tau_1}{\tau_2} \isoone \nodet{\tau_1}{\tau_2} \\
+     &\eqdef& (\tau_1+\tau_2) \iso (\tau_2+\tau_1) \\
+\idc &=& \swapp \\
+\\
+\identlp &:& \ztone \boxplus \cubt \isoone \cubt \\
+%%         &\eqdef& (0+\tau_1)-(0+\tau_2) \isoone (\tau_1-\tau_2) \\
+%%         &\eqdef& ((0+\tau_1)+\tau_2) \iso ((0+\tau_2)+\tau_1) \\
+         &=& \assocrp \fatsemi (\idc \oplus \swapp) \fatsemi \assoclp
+\end{array}\]
+
+\paragraph*{Composition using $\mathit{trace}$.} 
+
+\[\begin{array}{r@{\,\,\!}cl}
+(\fatsemi) &:& 
+  (\cubt_1 \isoone \cubt_2) \rightarrow 
+  (\cubt_2 \isoone \cubt_3) \rightarrow 
+  (\cubt_1 \isoone \cubt_3) \\
+%% \mathit{seq} &:& 
+%%   ((\tau_1-\tau_2) \isoone (\tau_3-\tau_4)) \rightarrow
+%%   ((\tau_3-\tau_4) \isoone (\tau_5-\tau_6)) \rightarrow
+%%   ((\tau_1-\tau_2) \isoone (\tau_5-\tau_6)) \\
+%%   &\eqdef& 
+%%   ((\tau_1+\tau_4) \iso (\tau_2+\tau_3)) \rightarrow
+%%   ((\tau_3+\tau_6) \iso (\tau_4+\tau_5)) \rightarrow
+%%   ((\tau_1+\tau_6) \iso (\tau_2+\tau_5)) \\
+f \fatsemi g &=& \mathit{trace}~(\mathit{assoc}_1 \fatsemi 
+  (f \oplus \idc) \fatsemi \mathit{assoc}_2 \fatsemi (g \oplus \idc) 
+  \fatsemi \mathit{assoc}_3)
+\end{array}\]
+
+\paragraph*{New combinators $\mathit{curry}$ and $\mathit{uncurry}$ for higher-order functions.}
+
+\[\begin{array}{rcl}
+\boxminus(\nodet{\tau_1}{\tau_2}) &\eqdef& \nodet{\tau_2}{\tau_1} \\
+\nodet{\tau_1}{\tau_2} \lolli \nodet{\tau_3}{\tau_4} &\eqdef& 
+           \boxminus(\nodet{\tau_1}{\tau_2}) \boxplus \nodet{\tau_3}{\tau_4} \\
+  &\eqdef& \nodet{\tau_2+\tau_3}{\tau_1+\tau_4}
+\end{array}\]
+\[\begin{array}{rcl}
+\mathit{flip} &:& (\cubt_1 \isoone \cubt_2)
+  \rightarrow (\boxminus\cubt_2 \isoone \boxminus\cubt_1) \\
+%% \mathit{flip} &:& ((\tau_1-\tau_2) \isoone (\tau_3-\tau_4))
+%%   \rightarrow (\boxminus(\tau_3-\tau_4) \isoone \boxminus(\tau_1-\tau_2)) \\
+%%   &\eqdef& ((\tau_1-\tau_2) \isoone (\tau_3-\tau_4))
+%%   \rightarrow ((\tau_4-\tau_3) \isoone (\tau_2-\tau_1)) \\
+%%   &\eqdef& ((\tau_1+\tau_4) \iso (\tau_2+\tau_3))
+%%   \rightarrow ((\tau_4+\tau_1) \iso (\tau_3+\tau_2)) \\
+\mathit{flip}~f &=& \swapp \fatsemi f \fatsemi \swapp \\
+\\
+\mathit{curry} &:& 
+  ((\cubt_1\boxplus\cubt_2) \isoone \cubt_3) \rightarrow
+  (\cubt_1 \isoone (\cubt_2 \lolli \cubt_3)) \\
+%% \mathit{curry} &:& 
+%%   (((\tau_1-\tau_2)\boxplus(\tau_3-\tau_4)) \isoone (\tau_5-\tau_6)) \rightarrow
+%%   ((\tau_1-\tau_2) \isoone ((\tau_3-\tau_4) \lolli (\tau_5-\tau_6))) \\
+%%   &\eqdef& 
+%%   (((\tau_1+\tau_3)-(\tau_2+\tau_4)) \isoone (\tau_5-\tau_6)) \rightarrow
+%%   ((\tau_1-\tau_2) \isoone ((\tau_4+\tau_5)-(\tau_3+\tau_6))) \\
+%%   &\eqdef& 
+%%   (((\tau_1+\tau_3)+\tau_6) \iso ((\tau_2+\tau_4)+\tau_5)) \rightarrow
+%%   ((\tau_1+(\tau_4+\tau_5)) \iso (\tau_2+(\tau_3+\tau_6))) \\
+\mathit{curry}~f &=& \assoclp \fatsemi f \fatsemi \assocrp \\
+\\
+\mathit{uncurry} &:& 
+  (\cubt_1 \isoone (\cubt_2 \lolli \cubt_3)) \rightarrow
+  ((\cubt_1\boxplus\cubt_2) \isoone \cubt_3) \\
+\mathit{uncurry}~f &=& \assocrp \fatsemi f \fatsemi \assoclp 
+\end{array}\]
+
+\paragraph*{The ``phony'' multiplication that is not a functor.} 
+The definition for the product of 1d types used above is:
+\[\begin{array}{l}
+\ttone{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} \eqdef \\
+\noalign{$\hfill\nodet{(\tau_1*\tau_3)+(\tau_2*\tau_4)}{(\tau_1*\tau_4)+(\tau_2*\tau_3)}$}
+\end{array}\]
+That definition is ``obvious'' in some sense as it matches the usual
+understanding of types as modeling arithmetic identities. Using this
+definition, it is possible to lift all the 0d combinators involving products
+\emph{except} the functor:
+\[ (\otimes) : 
+  (\cubt_1\isoone\cubt_2) \rightarrow 
+  (\cubt_3\isoone\cubt_4) \rightarrow 
+  ((\cubt_1\boxtimes\cubt_3) \isoone
+   (\cubt_2\boxtimes\cubt_4))
+\]
+After a few failed attempts, we suspected that this definition of
+multiplication is not functorial which would mean that the \textbf{Int}
+construction only provides a limited notion of higher-order functions at the
+cost of losing the multiplicative structure at higher-levels. This
+observation is less well-known that it should be. Further investigation
+reveals that this observation is intimately related to a well-known problem
+in algebraic topology and homotopy theory that was identified thirty years
+ago as the ``phony'' multiplication~\cite{thomason} in a special class
+categories related to ours. This problem was recently
+solved~\cite{ringcompletion} using a technique whose fundamental ingredients
+are to add more dimensions and then take homotopy colimits. It remains to
+investigate whether this idea can be integrated with our development to get
+higher-order functions while retaining the multiplicative structure.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Emails}
-
-Reminder of
-\url{http://mathoverflow.net/questions/106070/int-construction-traced-monoidal-categories-and-grothendieck-group}
-
-Also,
-\url{http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.163.334}
-seems relevant
-
-I had checked and found no traced categories or Int constructions in
-the categories library. I'll think about that and see how best to
-proceed.
-
-The story without trace and without the Int construction is boring as
-a PL story but not hopeless from a more general perspective.
-
-I don't know, that a "symmetric rig" (never mind higher up) is a
-programming language, even if only for "straight line programs" is
-interesting! ;)
-
-But it really does depend on the venue you'd like to send this to.  If
-POPL, then I agree, we need the Int construction.  The more generic
-that can be made, the better.
-
-It might be in 'categories' already!  Have you looked?
-
-In the meantime, I will try to finish the Rig part.  Those coherence
-conditions are non-trivial.
-
-I am thinking that our story can only be compelling if we have a hint
-that h.o. functions might work. We can make that case by “just”
-implementing the Int Construction and showing that a limited notion of
-h.o. functions emerges and leave the big open problem of high to get
-the multiplication etc. for later work. I can start working on that:
-will require adding traced categories and then a generic Int
-Construction in the categories library. What do you think? 
-
-I have the braiding, and symmetric structures done.  Most of the
-RigCategory as well, but very close.
-
-Of course, we're still missing the coherence conditions for Rig.
-
-Can you make sense of how this relates to us?
-
-\url{https://pigworker.wordpress.com/2015/04/01/warming-up-to-homotopy-type-theory/}
-
-Unfortunately not.  Yes, there is a general feeling of relatedness, but I can't pin it down.
-
-I do believe that all our terms have computational rules, so we can't get stuck.
-
-Note that at level 1, we have equivalences between Perm(A,B) and
-Perm(A,B), not Perm(C,D) [look at the signature of <=>]. That said, we
-can probably use a combination of levels 0 and 1 to get there.
-
-Yes, we should dig into the Licata/Harper work and adapt to our
-setting.
-
-Though I think we have some short-term work that we simply need to do
-to ensure our work will rest on a solid basis.  If that crumbles, all
-the rest of the edifice will too.
-
-Trying to get a handle on what we can transport or more precisely if
-we can transport things that HoTT can only do with univalence.
-
-(I use permutation for level 0 to avoid too many uses of 'equivalence'
-which gets confusing.)
-
-Level 0: Given two types A and B, if we have a permutation between
-them then we can transport something of type P(A) to something of type
-P(B).
-
-For example: take P = . + C; we can build a permutation between A+C
-and B+C from the given permutation between A and B
-
-Level 1: Given types A, B, C, and D. let Perm(A,B) be the type of
-permutations between A and B and Perm(C,D) be the type of permutations
-between C and D. If we have a 2d-path between Perm(A,B) and Perm(C,D)
-then we can transport something of type P(Perm(A,B)) to something of
-type P(Perm(C,D)).
-
-This is more interesting. What's a good example though of a property P
-that we can implement?
-
-In think that in HoTT the only way to do this transport is via
-univalence. First you find an equivalence between the spaces of
-permutations, then you use univalence to postulate the existence of a
-path, and then you transport along that path. Is that right?
-
-In HoTT this is exhibited by the failure of canonicity: closed terms
-that are stuck. We can't get closed terms that are stuck: we don't
-have any axioms with no computational rules, right?
-
-Perhaps we can adapt the discussion/example in
-\url{http://homotopytypetheory.org/2011/07/27/canonicity-for-2-dimensional-type-theory/}
-to our setting and build something executable?
-
-I hope not! [only partly joking]
-
-Actually, there is a fair bit about this that I dislike: it seems to
-over-simplify by arbitrarily saying some things are equal when they
-are not.  They might be equivalent, but not equal.
-
-This came up in a different context but looks like it might be useful
-to us too.
-
-\url{http://arxiv.org/pdf/gr-qc/9905020}
-
-Separate.  The Grothendieck construction in this case is about
-fibrations, and is not actually related to the "Grothendieck Group"
-construction, which is related to the Int construction.
-
-Yes. The categories library has a Grothendieck construction. Not sure
-if we can use that or if we need to define a separate Int
-construction? 
-
-Reminder of
-\url{http://mathoverflow.net/questions/106070/int-construction-traced-monoidal-categories-and-grothendieck-group}
-
-Also,
-\url{http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.163.334}
-seems relevant
-
-I had checked and found no traced categories or Int constructions in
-the categories library. I'll think about that and see how best to
-proceed.
-
-The story without trace and without the Int construction is boring as
-a PL story but not hopeless from a more general perspective.
-
-I don't know, that a "symmetric rig" (never mind higher up) is a
-programming language, even if only for "straight line programs" is
-interesting! ;)
-
-But it really does depend on the venue you'd like to send this to.  If
-POPL, then I agree, we need the Int construction.  The more generic
-that can be made, the better.
-
-It might be in 'categories' already!  Have you looked?
-
-In the meantime, I will try to finish the Rig part.  Those coherence
-conditions are non-trivial.
-
-I am thinking that our story can only be compelling if we have a hint
-that h.o. functions might work. We can make that case by “just”
-implementing the Int Construction and showing that a limited notion of
-h.o. functions emerges and leave the big open problem of high to get
-the multiplication etc. for later work. I can start working on that:
-will require adding traced categories and then a generic Int
-Construction in the categories library. What do you think? —Amr
-
-I have the braiding, and symmetric structures done.  Most of the
-RigCategory as well, but very close.
-
-Of course, we're still missing the coherence conditions for Rig.
-
-solutions to quintic equations proof by arnold is all about hott…
-paths and higher degree path etc.
-
-I thought we'd gotten at least one version, but could never prove it
-sound or complete.
-
-Didn’t we get stuck in the reverse direction. We never had it fully,
-or am I misremembering? 
-
-Right.  We have one direction, from Pi combinators to FinVec
-permutations -- c2perm in PiPerm.agda.
-
-Note that quite a bit of the code has (already!!) bit-rotted.  I
-changed the definition of PiLevel0 to make the categorical structure
-better, and that broke many things.  I am in the process of fixing --
-which means introducing combinators all the way back in FinEquiv!!!  I
-split the 0 absorption laws into a right and left law, and so have to
-do the right version; turns out they are non-trivial, because Agda
-only reduces the left law for free. Should be done this morning.
-
-We do not have the other direction currently in the code.  That may
-not be too bad, as we do have LeftCancellation to allow us to define
-things by recursion.
-
-That’s obsolete for now.
-
-By the way, do we have a complement to thm2 that connects to
-Pi. Ideally what we want to say is what I started writing: thm2 gives
-us a semantic bridge between equivalences and FinVec permutations; we
-also need a bridge between FinVec permutations and Pi combinators,
-right? 
-
-Is that going somewhere, or is it an experiment that should be put
-into Obsolete/ ?  
-
-Thanks.  I like that idea ;).
-
-I have a bunch of things I need to do, so I won't really put my head
-into this until the weekend.
-
-I understand the desire to not want to rely on the full coherence
-conditions.  I also don't know how to really understand them until
-we've implemented all of them, and see what they actually say!
-
-As I was trying really hard to come up with a single story, I am a
-little confused as to what "my" story seems to be...  Can you give me
-your best recollection of what I seem to be pushing, and how that is
-different?  Then I would gladly flesh it out for us to do a second
-paper on that.
-
-Instead of discussing this over and over, I think it is clear that
-thm2 will be an important part of any story we will tell. So I think
-what I am going to start doing is to write an explanation of thm2 in a
-way that would be usable in a paper.
-
-I wasn't too worried about the symmetric vs. non-symmetric notion of
-equivalence. The HoTT book has various equivalent definitions of
-equivalence and the one below is one of them.
-
-I do recall the other discussion about extensionality. That discussion
-concluded with the idea that the strongest statement that can be made
-is that HoTT equivalence between finite *enumerated* types is
-equivalent to Vec-based permutations. This is thm2 and it is
-essentially univalence as we noted earlier. My concern however is what
-happens at the next level: once we start talking about equivalences
-between equivalences. We should be to use thm2 to say that this the
-same as talking about equivalences between Vec-based permutations,
-which as you noted earlier is equivalence of categories.
-
-I just really want to avoid the full reliance on the coherence
-conditions. I also noted you have a different story and I am willing
-to go along with your story if you sketch a paper outline for say one
-of the conferences/workshops at
-\url{http://cstheory.stackexchange.com/questions/7900/list-of-tcs-conferences-and-workshops}
-
-Did you see my "HoTT-agda" question on the Agda mailing list on March
-11th, and Dan Licata's reply?
-
-What you wrote reduces to our definition of *equivalence*, not
-permutation.  To prove that equivalence, we would need funext -- see
-my question of February 18th on the Agda mailing list.
-
-Another way to think about it is that this is EXACTLY what thm2
-provides: a proof that for finite A and B, equivalence between A and B
-(as below) is equivalent to permutations implemented as (Vect, Vect,
-pf, pf).
-
-Now, we may want another representation of permutations which uses
-functions (qua bijections) internally instead of vectors.  Then the
-answer to your question would be "yes", modulo the question/answer
-about which encoding of equivalence to use.
-
-Thought a bit more about this. We need a little bridge from HoTT to
-our code and we’re good to go I think.
-
-In HoTT we have several notions of equivalence that are equivalent (in
-the technical sense). The one that seems easiest to work with is the
-following:
-
-A ≃ B if exists f : A → B such that:
-  (exists g : B → A with g o f ~ idA) X
-  (exists h : B → A with f o h ~ idB)
-
-Does this definition reduce to our semantic notion of permutation if A
-and B are finite sets?
-
-I'm ok with a HoTT bias, but concerned that our code does not really
-match that.  But since we have no specific deadline, I guess taking a
-bit more time isn't too bad.
-
-Since propositional equivalence is really HoTT equivalence too, then I
-am not too concerned about that side of things -- our concrete
-permutations should be the same whether in HoTT or in raw Agda.  Same
-with various notions of equivalence, especially since most of the code
-was lifted from a previous HoTT-based attempt at things.
-
-I would certainly agree with the not-not-statement: using a notion of
-equivalence known to be incompatible with HoTT is not a good idea.
-
-I think that I should start trying to write down a more technical
-story so that we can see how things fit together. I am biased towards
-a HoTT-related story which is what I started. If you think we should
-have a different initial bias let me know.
-
-What is there is just one paragraph for now but it already opens a
-question: if we are pursuing that HoTT story we should be able to
-prove that the HoTT notion of equivalence when specialized to finite
-types reduces to permutations. That should be a strong foundation to
-the rest and the precise notion of permutation we get (parameterized
-by enumerations or not should help quite a bit).
-
-More generally always keeping our notions of equivalences (at higher
-levels too) in sync with the HoTT definitions seems to be a good
-thing to do.
-
-... and if these coherence conditions are really complete then it
-should be the case the two pi-combinators are equal iff their
-canonical forms are identical.
-
-So to sum up we would get a nice language for expressing equivalences
-between finite types and a normalization process that transforms each
-equivalence to a canonical form. The latter yield a simple decision
-procedure for comparing equivalences.
-
-Here is a nice idea: we need a canonical form for every
-pi-combinator. Our previous approach gave us something but it was hard
-to work with. I think we can use the coherence conditions to reach a
-canonical form by simply picking a convention that chooses one side of
-every commuting diagram. What do you think? —Amr
-
-Indeed!  Good idea.
-
-However, it may not give us a normal form.  This is because quite a
-few 'simplifications' require to use 'the other' side of a commuting
-diagram first, to expose a combination which simplifies.  Think
-$(x . y^-1) . (y . z) ~~ x . z$.
-
-In other words, because we have associativity and commutativity, we
-need to deal with those specially.  Diagram with sides not all the
-same length are easy to deal with.
-
-However, I think it is not that bad: we can use the objects to help.
-We also had put the objects [aka types] in normal form before (i.e. 1
-+ (1 + (1 + ... )))) ).  The good thing about that is that there are
-very few pi-combinators which preserve that shape, so those ought to
-be the only ones to worry about?  We did get ourselves in the mess
-there too, so I am not sure that's right either!
-
-Here is another thought: 1. think of the combinators as polynomials in
-3 operators, +, * and . (composition).  2. expand things out, with +
-being outer, * middle, . inner.  3. within each . term, use
-combinators to re-order things [we would need to pick a canonical
-order for all single combinators] 4. show this terminates
-
-the issue is that the re-ordering could produce new * and/or + terms.
-But with a well-crafted term order, I think this could be shown
-terminating.
-
-Here is a nice idea: we need a canonical form for every
-pi-combinator. Our previous approach gave us something but it was hard
-to work with. I think we can use the coherence conditions to reach a
-canonical form by simply picking a convention that chooses one side of
-every commuting diagram. What do you think? —Amr
-
-I've been thinking about this some more.  I can't help but think that,
-somehow, Laplaza has already worked that out, and that is what is
-actually in the 2nd half of his 1972 paper!  [Well, that Rig-Category
-'terms' have a canonical form, but that's what we need]
-
-Pi-combinators might be simpler, I don't know.
-
-Another place to look is in Fiore (et al?)'s proof of completeness of
-a similar case.  Again, in their details might be our answer.
-
-What’s the proof strategy for establishing that a CPerm implies a
-Pi-combinator. The original idea was to translate each CPerm to a
-canonical Pi-combinator and then show that every combinator is equal
-to its canonical representative. Is that still the high-level idea?
-
-Well enough.  Last talk on the last day, so people are tired.  Doubt
-we've caused a revolution in reversible computing...  Though when I
-mentioned that the slides were literate Agda, Peter Selinger made a
-point of emphasizing what that meant.
+\section{Conclusion}
+\label{sec:conc}
+
+\begin{itemize}
+\item add trace to make language Turing complete
+\item generalize from commutative rig to field as a way to get some
+  notion of h.o. functions
+\end{itemize}
 
 I think the idea that (reversible circuits == proof terms) is just a
 little too wild for it to sink in quickly.  Same with the idea of
 creating a syntactic language (i.e. Pi) out of the semantic structure
 of the desired denotational semantics (i.e. permutations).  People
 understood, I think, but it might be too much to really 'get'.
-
-If we had a similar story for Caley+T (as they like to call it), it
-might have made a bigger splash.  But we should finish what we have
-first.
-
-Note that I've pushed quite a few things forward in the code.  Most
-are quite straightforward, but they help explain what we are doing,
-and the relation between some of the pieces.  Ideally, there would be
-more of those easy ones [i.e. that evaluation is the same as the
-action of an equivalence which in turn is the same as the action of a
-permutation].  These are all 'extensional' in nature, but still an
-important sanity check.
-
-Yes, I think this can make a full paper -- especially once we finish
-those conjectures.  It depends a little bit on which audience we would
-want to pitch it to.
-
-I think the details are fine.  A little bit of polishing is probably
-all that's left to do.  Some of the transitions between topics might
-be a little abrupt.  And we need to reinforce the message of
-"semantics drive the syntax + syntactic theory is good", which is
-there, but a bit lost in the sea of details.  And the 'optimizing
-circuits' aspect could also be punched up a bit.
-
-Writing it up actually forced me to add PiEquiv.agda to the repository
--- which is trivial (now), but definitely adds to the story.  I think
-there might be some easy theorems relating PiLevel0 as a programming
-language, the action of equivalences, and the action of permutations.
-In other words, we could get that all 3 are the same 'extensionally'
-fairly easily.  What we are still missing is a way to go back from
-either an equivalence or a permutation to a syntactic combinator.
-
-Firstly, thanks Spencer for setting this up.
-
-This is partly a response to Amr, and partly my own take on (computing
-with) graphical languages for monoidal categories.
-
-One of the key ingredients to getting diagrammatic languages to do
-work for you is to actually take the diagrams seriously. String
-diagrams now have very strong coherence theorems which state that an
-equation holds by the axioms of (various kinds of) monoidal categories
-if and only if the diagrams are equal. The most notable of these are
-the theorems of Joyal \& Street in Geometry of Tensor Calculus for
-monoidal, symmetric monoidal, and braided monoidal categories.
-
-If you ignore these theorems and insist on working with the syntax of
-monoidal categories (rather than directly with diagrams), things
-become, as you put it "very painful".
-
-Of course, when it comes to computing with diagrams, the first thing
-you have to make precise is exactly what you mean by "diagram". In
-Joyal \& Street's picture, this literally a geometric object,
-i.e. some points and lines in space. This works very well, and pretty
-much exactly formalises what happens when you do a pen-and-paper proof
-involving string diagrams. However, when it comes to mechanizing
-proofs, you need some way to represent a string diagram as a data
-structure of some kind. From here, there seem to be a few approaches:
-
-(1: combinatoric) its a graph with some extra bells and whistles
-(2: syntactic) its a convenient way of writing down some kind of term
-(3: "lego" style) its a collection of tiles, connected together on a 2D plane
-
-Point of view (1) is basically what Quantomatic is built on. "String
-graphs" aka "open-graphs" give a combinatoric way of working with
-string diagrams, which is sound and complete with respect to (traced)
-symmetric monoidal categories. See arXiv:1011.4114 for details of how
-we did this.
-
-Naively, point of view (2) is that a diagram represents an
-equivalence class of expressions in the syntax of a monoidal category,
-which is basically back to where we started. However, there are more
-convenient syntaxes, which are much closer in spirit to the
-diagrams. Lately, we've had a lot of success in connected with
-abstract tensor notation, which came from Penrose. See
-g. arXiv:1308.3586 and arXiv:1412.8552.
-
-Point of view (3) is the one espoused by the 2D/higher-dimensional
-rewriting people (e.g. Yves Lafont and Samuel Mimram). It is also
-(very entertainingly) used in Pawel Sobocinski's blog:
-http://graphicallinearalgebra.net .
-
-This eliminates the need for the interchange law, but keeps pretty
-much everything else "rigid". This benefits from being able to
-consider more general categories, but is less well-behaved from the
-point of view of rewriting. For example as Lafont/Mimram point out,
-even finite rewrite systems can generate infinite sets of critical
-pairs.
-
-This is a very good example of CCT. As I am sure that you and others
-on the list (e.g., Duncan Ross) know monoidal cats have been suggested
-for quantum mechanics, they are closely related to Petri nets, linear
-logic, and other “net-based” computational systems. There is
-considerable work on graphic syntax.  It would be interesting to know
-more details on your cats and how you formalize them.
  
-My primary CCT interest, so far, has been with what I call
-computational toposes. This is a slight strengthening of an elementary
-topos to make subobject classification work in a computational
-setting. This is very parallel to what you are doing, but aimed at
-engineering modeling. The corresponding graphical syntax is an
-enriched SysML syntax. SysML is a dialect of UML. These toposes can be
-used to provide a formal semantics for engineering modeling.
-
-There's also the perspective that string diagrams of various flavors
-are morphisms in some operad (the composition law of which allows you
-to nest morphisms inside of morphisms).
-
-From that perspective, the string diagrams for traced monoidal
-categories are little more than just bijections between sets. This
-idea, and its connection to rewriting (finding normal forms for
-morphisms in a traced or compact category), is something Jason Morton
-and I have been working on recently.
-
-Yes, I am sure this observation has been made before.  We'd have to
-verify it for all the 2-paths before we really claim this.
-
-[And since monoidal categories are involved in knot theory, this is
-un-surprising from that angle as well]
-
-looking at that 2path picture… if these were physical wires and boxes,
-we could twist the wires, flipping the c1-c2 box and having them cross
-on the other side. So really as we have noted before I am sure, these
-2paths are homotopies in the sense of smooth transformations between
-paths. Not sure what to do with this observation at this point but I
-thought it is worth noting. 
-
-There are some slightly different approaches to implementing a
-category as a computational system which make more intrinsic use of
-logic, than the ones mentioned by Aleks.  As well there is a different
-take on the relationship of graphical languages to the category
-implementation.
-
-A category can be formalized as a kind of elementary axiom system
-using a language with two sorts, map and type (object), with equality
-for each sort.  The signature contain the function symbols, Domain and
-Range. The arguments of both are a map and whose value is a type. The
-abbreviation
-
-                f:X to Y equiv Domain(f) = X and Range(f) = Y
-
-is used for the three place predicate. 
-
-The operations such as the binary composition of maps are represented
-as first order function symbols. Of course the function constructions
-are not interpreted as total functions in the standard first order
-model theory. So, for example, one has axioms such as the typing
-condition
-
-f:Z to Y, g:Y to X implies g(f):Z to X
-
-A function symbol that always produces a map with a unique domain and
-range type, as a function of the arguments, is called a
-constructor. For example, id(X) is a constructor with a type argument.
-This same kind of logic can be used to present linear logics.
-
-For most of the systems that I have looked at the axioms are often “
-rules”, such as the category axioms. Sometimes one needs axioms which
-have rules as consequences.  One can use standard first order
-inference together with rewrite technology to compute.  The axioms for
-a category imply that the terms generate a directed graph. Additional
-axioms provide congruence relations on the graph.
-
-A morphism of an axiom set using constructors is a functor.  When the
-axioms include products and powers, the functors map to sets, this
-yields is a form of Henkin semantics. Thus, while it is not standard
-first order model theory, is well-known.  For other kinds of axiom
-systems a natural semantics might be Hilbert spaces.
-
-With this representation of a category using axioms in the
-“constructor” logic, the axioms and their theory serve as a kind of
-abstract syntax.  The constructor logic approach provides
-standardization for categories which can be given axioms in this
-logic.  Different axiom sets can be viewed as belonging to different
-profiles. The logic representation is independent of any particular
-graphical syntax. A graphical syntax would, of course have to
-interpret that axioms correctly.  Possibly the Joyal and Street
-theorems can be interpreted as proving the graphical representation
-map is a structure preserving functor. Possibly the requirements for a
-complete graphical syntax is that it is an invertible functor.
-
-'m writing you offline for the moment, just to see whether I am
-understanding what you would like. In short, I guess you want a
-principled understanding of where the coherence conditions come from,
-from the perspective of general 2-category theory perhaps (a la work
-of the Australian school headed by Kelly in the 1970's).
-
-We are in some sense categorifying the notion of "commutative
-rig". The role of commutative monoid is categorified by symmetric
-monoidal category, which roughly is the next notion past commutative
-monoid in the stable range on the periodic table.
-
-I believe there is a canonical candidate for the categorification of
-tensor product of commutative monoids. In other words, given symmetric
-monoidal categories A, B, C, the (symmetric monoidal) category of
-functors A x B --> C that are strong symmetric monoidal in separate
-arguments should be equivalent to the (sm) category of strong
-symmetric monoidal functors $A \otimes B --> C$, for this canonical
-tensor product $A \otimes B$. Actually, I don't think we absolutely
-need this construction -- we could phrase everything in terms of
-"multilinear" (i.e. multi-(strong sm)) functors
-$A_1 x ... x A_n --> B$, but it seems a convenience worth taking
-advantage of. In fact, let me give this tensor product a more neutral
-name -- I'll write @, and I for the tensor unit -- because I'll want
-to reserve $\otimes$ for something else (consistent with Laplaza's
-notation).
-
-If S is the 2-category of symmetric monoidal categories, strong
-symmetric monoidal functors, and monoidal natural transformations,
-then this @ should endow S with a structure of (symmetric) monoidal
-2-category, with some other pleasant properties (such as S's being
-symmetric monoidal closed in the appropriate 2-categorical sense). All
-of these facts should be deducible on abstract grounds, by
-categorifying the notion of commutative monad (such as the free
-commutative monoid monad on Set) to an appropriate categorification to
-commutative 2-monad on Cat, and categorifying the work of Kock on
-commutative monads.
-
-In any symmetric monoidal 2-category, we have a notion of
-"pseudo-commutative pseudomonoid", which generalizes the notion of
-symmetric monoidal category in the special case of the monoidal
-2-category (Cat, x). Anyhow, if ($C, \oplus, N)$ is a symmetric
-monoidal category, then I my guess (I've checked some but not all
-details) is that a symmetric rig category is precisely a
-pseudo-commutative pseudomonoid object
-($\otimes: C @ C --> C, U: I --> C$, etc.)
-
-in (S, @). I would consider this is a reasonable description stemming
-from general 2-categorical principles and concepts.
-
-Would this type of thing satisfy your purposes, or are you looking for something else? 
-
-Quite related indeed.  But much more ad hoc, it seems [which they acknowledge].
-
-Something closer to our work \url{http://www.informatik.uni-bremen.de/agra/doc/konf/rc15_ricercar.pdf}
-
-More related work (as I encountered them, but later stuff might be more important):
-
-Diagram Rewriting and Operads, Yves Lafont
-\url{http://iml.univ-mrs.fr/~lafont/pub/diagrams.pdf}
-
-A Homotopical Completion Procedure with Applications to Coherence of Monoids
-\url{http://drops.dagstuhl.de/opus/frontdoor.php?source_opus=4064}
-
-A really nice set of slides that illustrates both of the above
-\url{http://www.lix.polytechnique.fr/Labo/Samuel.Mimram/docs/mimram_kbs.pdf}
-
-I think there is something very important going on in section 7 of 
-\url{http://comp.mq.edu.au/~rgarner/Papers/Glynn.pdf}
-which I also attach.  [I googled 'Knuth Bendix coherence' and these all came up]
-
-There are also seems to be relevant stuff buried (very deep!) in
-chapter 13 of Amadio-Curiens' Domains and Lambda Calculi.
-
-Also, Tarmo Uustalu's "Coherence for skew-monoidal categories",
-available on \url{http://cs.ioc.ee/~tarmo/papers/}
-
-[Apparently I could have saved myself some of that searching time by
-going to \url{http://ncatlab.org/nlab/show/rewriting} !  At the
-bottom, the preprint by Mimram seems very relevant as well]
-
-Somehow, at the end of the day, it seems we're looking for a
-confluent, terminating term-rewriting system for commutative semirings
-terms!
-
-\includegraphics[scale=0.07]{IMAG0342.jpg}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Future Work and Conclusion}
-\label{sec:conc}
-
-\amr{
-\begin{itemize}
-\item add trace to make language Turing complete
-\item generalize from commutative rig to field as a way to get some
-  notion of h.o. functions
-\end{itemize}
-}
-
 We start with the class of all functions $A \rightarrow B$, then
 introduce constraints to filter those functions which correspond to
 type equivalences $A \simeq B$, and then attempt to look for a
@@ -2151,6 +1735,7 @@ types that are related to algebraic numbers including roots and
 imaginary numbers.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \bibliographystyle{abbrvnat}
 \bibliographystyle{abbrvnat}
 \softraggedright
 \bibliography{cites}
@@ -2185,11 +1770,648 @@ a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
 \end{definition}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\end{document}
-         
-\absorbr :&~ 0 * \tau & \iso & 0 &: \factorzl \\
-\absorbl :&~ \tau * 0 & \iso & 0 &: \factorzr \\
+\section{Diagrammatic Optimization}
 
-\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor \\
-\distl :&~ \tau_1 * (\tau_2 + \tau_3) & \iso & (\tau_1 * \tau_2) + (\tau_1 * \tau_3)~ &: \factorl 
-      
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.7}]
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {()};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {()};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.7}]
+  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
+  \draw[red,dashed] (4.8,3.0) -- (9.2,3.0) -- (9.2,-1.5) -- (4.8,-1.5) -- cycle; 
+  \draw[red,dashed] (3.3,3.2) -- (9.4,3.2) -- (9.4,-1.7) -- (3.3,-1.7) -- cycle; 
+  \draw[red,dashed] (1.8,3.4) -- (9.6,3.4) -- (9.6,-1.9) -- (1.8,-1.9) -- cycle; 
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {()};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {()};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.7}]
+  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
+  \draw[red,dashed] (4.8,3.0) -- (9.2,3.0) -- (9.2,-1.5) -- (4.8,-1.5) -- cycle; 
+  \draw[red,dashed] (3.3,2.8) -- (4.4,2.8) -- (4.4,-1.3) -- (3.3,-1.3) -- cycle; 
+  \draw[red,dashed,thick] (1.8,3.0) -- (4.6,3.0) -- (4.6,-1.5) -- (1.8,-1.5) -- cycle; 
+  \draw[red,dashed] (1.6,3.2) -- (9.4,3.2) -- (9.4,-1.7) -- (1.6,-1.7) -- cycle; 
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {()};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {()};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.7}]
+  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
+  \draw[red,dashed] (4.8,3.0) -- (9.2,3.0) -- (9.2,-1.5) -- (4.8,-1.5) -- cycle; 
+  \draw[red,dashed] (3.3,2.8) -- (4.4,2.8) -- (4.4,-1.3) -- (3.3,-1.3) -- cycle; 
+  \draw[red,dashed,thick] (1.8,3.0) -- (4.6,3.0) -- (4.6,-1.5) -- (1.8,-1.5) -- cycle; 
+  \draw[red,dashed] (1.6,3.2) -- (9.4,3.2) -- (9.4,-1.7) -- (1.6,-1.7) -- cycle; 
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {()};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,2)   ;
+  \draw     (2,0.5)  -- (3,-0.5)  ;
+  \draw     (2,-0.5) -- (3,0.5)   ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,0.5)  -- (3.5,0.5)  ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,-0.5) ;
+  \draw     (3.5,0.5)  -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,1)    ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {()};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.7}]
+  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
+  \draw[red,dashed] (4.8,3.0) -- (9.2,3.0) -- (9.2,-1.5) -- (4.8,-1.5) -- cycle; 
+  \draw[red,dashed] (3.3,3.2) -- (9.4,3.2) -- (9.4,-1.7) -- (3.3,-1.7) -- cycle; 
+  \draw[red,dashed] (1.6,3.4) -- (9.6,3.4) -- (9.6,-1.9) -- (1.6,-1.9) -- cycle; 
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {()};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,2)   ;
+  \draw     (2,0.5)  -- (3,-0.5)  ;
+  \draw     (2,-0.5) -- (3,0.5)   ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,0.5)  -- (3.5,0.5)  ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,-0.5) ;
+  \draw     (3.5,0.5)  -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,1)    ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {()};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.7}]
+  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
+  \draw[red,dashed] (4.8,2.6) -- (5.8,2.6) -- (5.8,-1.1) -- (4.8,-1.1) -- cycle; 
+  \draw[red,dashed,thick] (3.5,2.8) -- (6.0,2.8) -- (6.0,-1.3) -- (3.5,-1.3) -- cycle; 
+  \draw[red,dashed] (3.3,3.2) -- (9.4,3.2) -- (9.4,-1.7) -- (3.3,-1.7) -- cycle; 
+  \draw[red,dashed] (1.6,3.4) -- (9.6,3.4) -- (9.6,-1.9) -- (1.6,-1.9) -- cycle; 
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {()};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,2)   ;
+  \draw     (2,0.5)  -- (3,-0.5)  ;
+  \draw     (2,-0.5) -- (3,0.5)   ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,0.5)  -- (3.5,0.5)  ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,-0.5) ;
+  \draw     (3.5,0.5)  -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,1)    ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {()};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.7}]
+  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
+  \draw[red,dashed,thick] (3.5,2.8) -- (6.0,2.8) -- (6.0,-1.3) -- (3.5,-1.3) -- cycle; 
+  \draw[red,dashed] (3.3,3.2) -- (9.4,3.2) -- (9.4,-1.7) -- (3.3,-1.7) -- cycle; 
+  \draw[red,dashed] (1.6,3.4) -- (9.6,3.4) -- (9.6,-1.9) -- (1.6,-1.9) -- cycle; 
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {()};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,2)   ;
+  \draw     (2,0.5)  -- (3,-0.5)  ;
+  \draw     (2,-0.5) -- (3,0.5)   ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,0.5)  -- (3.5,0.5)  ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (7,2)    ;
+  \draw     (3.5,0.5)  -- (8,0.5)  ;
+  \draw     (3.5,-0.5) -- (8,-0.5) ;
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {()};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.7}]
+  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
+  \draw[red,dashed] (1.6,3.4) -- (9.6,3.4) -- (9.6,-1.9) -- (1.6,-1.9) -- cycle; 
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {()};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,2)   ;
+  \draw     (2,0.5)  -- (3,-0.5)  ;
+  \draw     (2,-0.5) -- (3,0.5)   ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,0.5)  -- (3.5,0.5)  ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (7,2)    ;
+  \draw     (3.5,0.5)  -- (8,0.5)  ;
+  \draw     (3.5,-0.5) -- (8,-0.5) ;
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {()};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.7}]
+  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
+  \draw[red,dashed] (1.6,2.6) -- (5.8,2.6) -- (5.8,-1.1) -- (1.6,-1.1) -- cycle; 
+  \draw[red,dashed] (-0.5,2.8) -- (6.0,2.8) -- (6.0,-1.3) -- (-0.5,-1.3) -- cycle; 
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {()};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,2)   ;
+  \draw     (2,0.5)  -- (3,-0.5)  ;
+  \draw     (2,-0.5) -- (3,0.5)   ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,0.5)  -- (3.5,0.5)  ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (7,2)    ;
+  \draw     (3.5,0.5)  -- (8,0.5)  ;
+  \draw     (3.5,-0.5) -- (8,-0.5) ;
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {()};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.7}]
+  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
+  \draw[red,dashed] (3.6,2.6) -- (5.8,2.6) -- (5.8,-1.1) -- (3.6,-1.1) -- cycle; 
+  \draw[red,dashed] (-0.5,2.8) -- (6.0,2.8) -- (6.0,-1.3) -- (-0.5,-1.3) -- cycle; 
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
+  \draw (4.2,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (4.2,2) circle [radius=0.025];
+  \node[below] at (4.2,2) {()};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (4.2,2)    -- (7,2)      ; %% ()
+
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,0.5)  -- (3,-0.5)  ;
+  \draw     (2,-0.5) -- (3,0.5)   ;
+
+  \draw     (3,0.5)  -- (3.5,0.5)  ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,0.5)  -- (8,0.5)  ;
+  \draw     (3.5,-0.5) -- (8,-0.5) ;
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {()};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.7}]
+  \draw[red,dashed] (6.2,2.8) -- (9.0,2.8) -- (9.0,-1.3) -- (6.2,-1.3) -- cycle; 
+  \draw[red,dashed] (3.6,3.0) -- (9.2,3.0) -- (9.2,-1.5) -- (3.6,-1.5) -- cycle; 
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
+  \draw (4.2,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (4.2,2) circle [radius=0.025];
+  \node[below] at (4.2,2) {()};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (4.2,2)    -- (7,2)      ; %% ()
+
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,0.5)  -- (3,-0.5)  ;
+  \draw     (2,-0.5) -- (3,0.5)   ;
+
+  \draw     (3,0.5)  -- (3.5,0.5)  ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,0.5)  -- (8,0.5)  ;
+  \draw     (3.5,-0.5) -- (8,-0.5) ;
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {()};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.7}]
+  \draw[red,dashed] (3.6,3.0) -- (9.2,3.0) -- (9.2,-1.5) -- (3.6,-1.5) -- cycle; 
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,0.5)  -- (3,-0.5)  ;
+  \draw     (2,-0.5) -- (3,0.5)   ;
+
+  \draw     (3,0.5)  -- (3.5,0.5)  ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,0.5)  -- (8,0.5)  ;
+  \draw     (3.5,-0.5) -- (8,-0.5) ;
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.7}]
+  \draw[red,dashed] (-0.7,3.6) -- (9.8,3.6) -- (9.8,-2.1) -- (-0.7,-2.1) -- cycle; 
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,0.5)  -- (3,-0.5)  ;
+  \draw     (2,-0.5) -- (3,0.5)   ;
+
+  \draw     (3,0.5)  -- (3.5,0.5)  ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,0.5)  -- (8,0.5)  ;
+  \draw     (3.5,-0.5) -- (8,-0.5) ;
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}
+\end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
