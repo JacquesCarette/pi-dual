@@ -425,6 +425,8 @@ _□ t = id⟷
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
 
+\url{https://github.com/JacquesCarette/pi-dual}
+
 Reversible circuits are NOT a restriction; they are a generalization;
 conventional irreversible circuits are a special case.
 
