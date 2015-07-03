@@ -1350,32 +1350,32 @@ sets up the context for our development.
     composition and that composition is associative:
     \begin{itemize}
     \item Unit:
-      {{f (o) id = f = id (o) f}}
+      $f \circ \mathrm{id} = f = \mathrm{id} \circ f$
     \item Associativity:
-      {{ h (o) (g (o) f) = (h (o) g) (o) f}}
+      $h \circ (g \circ f) = (h \circ g) \circ f$
     \end{itemize}
   \end{itemize}
 \end{definition}
 
 An important subtlety of this definition is in the equality of
-arrows. Indeed the programs {{f}} and {{id (o) f}} are different
-syntactic programs and their compilation might be different in any
-concrete implementation of the language {{L}}. Hence the equality of
+arrows. Indeed the programs $f$ and $\mathrm{id} \circ f$ are
+different syntactic programs and their compilation might be different
+in any concrete implementation of the language. Hence the equality of
 arrows should be based upon the semantic equivalence of these two
 programs, for example, using \emph{observational equivalence}. The
 definition of categories allows one to specify the arrows and the
 objects, but is not parametrized by an equivalence relationship over
-the arrows. The `{{=}}' in the definition of categories is the
+the arrows. The $=$ in the definition of categories is the
 mathematical equivalence of the mathematical entities that are the
-arrows. Hence the `operations of {{L}}' that are the arrows must
-already include the relevant equivalence relation on {{L}}
-programs. This is sometimes referred to as a \emph{term model} and
-essentially states that operations of the language {{L}} are the
-equivalence classes of the programs one writes in {{L}}. Thus {{f}}
-and {{id (o) f}} become \emph{the same arrow}.  See Section 2.2 of
-Barr and Wells's book~\cite{DBLP:books/daglib/0080381} for a detailed
-discussion and Def.~2.4 of Moggi's paper~\cite{Moggi:1991:NCM} for an
-example of such usage.
+arrows. Hence the `operations' that are the arrows must already
+include the relevant equivalence relation on programs. This is
+sometimes referred to as a \emph{term model} and essentially states
+that operations of the language are the equivalence classes of the
+programs one writes in the language. Thus $f$ and $\mathrm{id} \circ
+f$ become \emph{the same arrow}.  See Section 2.2 of Barr and Wells's
+book~\cite{DBLP:books/daglib/0080381} for a detailed discussion and
+Def.~2.4 of Moggi's paper~\cite{Moggi:1991:NCM} for an example of such
+usage.
 
 \begin{definition}[Monoidal Category]
 \label{ch:pi:def:MC}
