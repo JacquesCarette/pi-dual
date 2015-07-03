@@ -126,7 +126,7 @@ $\displaystyle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
-\title{Representing, Manipulating and Optimizing \ \\ Reversible Circuits}
+\title{ A Sound and Complete Calculus for Reversible Circuit Equivalence}
 \authorinfo{Jacques Carette}
   {McMaster University}
   {carette@mcmaster.ca}
@@ -137,11 +137,22 @@ $\displaystyle
 \maketitle
 
 \begin{abstract}
-We show how a typed set of combinators for reversible computations,
-corresponding exactly to the semiring of permutations, is a convenient
-basis for representing and manipulating reversible circuits.  A
-categorical interpretation also leads to optimization combinators, and
-we demonstrate their utility through an example.
+
+Many recent advances in quantum computing, low-power design,
+nanotechnology, optical information processing, and bioinformatics are
+based on \emph{reversible circuits}. With the aim of designing a
+semantically well-founded approach for modeling and reasoning about
+reversible circuits, we propose viewing such circuits as proof terms
+witnessing equivalences between finite types. Proving that these type
+equivalences satisfy the commutative semiring axioms, we proceed with
+the categorification of type equivalences as \emph{symmetric rig
+groupoids}. The coherence conditions of these categories then
+produces, for free, a sound and complete calculus for reasoning about
+reversible circuit equivalence. The paper consists of the
+``unformalization'' of an Agda package formalizing the connections
+between reversible circuits, equivalences between finite types,
+permutations between finite sets, and symmetric rig groupoids.
+
 \end{abstract}
 
 \AgdaHide{
@@ -413,6 +424,12 @@ _□ t = id⟷
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
+
+Reversible circuits are NOT a restriction; they are a generalization;
+conventional irreversible circuits are a special case.
+
+reversible circuits for supercomputers of the
+future~\cite{DeBenedictis:2005:RLS:1062261.1062325}
 
 \begin{itemize}
 \item BACKGROUND: realizing HoTT requires we be able to program with type
@@ -1118,7 +1135,7 @@ proved.
 
 In conventional programming language research, valid optimizations are
 specified with reference to the \emph{observational equivalence}
-relaion which itself is defined with reference to an \emph{evaluator}.
+relation which itself is defined with reference to an \emph{evaluator}.
 As the language is reversible, a reasonable starting point would then
 be to define forward and backward evaluators with the following
 signatures:
@@ -1236,7 +1253,7 @@ c2perm = {!!}
 \end{code}
 }
 
-\noindent The advantange is that permutations have a concrete
+\noindent The advantage is that permutations have a concrete
 representation which can be effectively compared for equality as
 explained in the proof of Thm.~\ref{thm:permrig}.
 
@@ -1649,7 +1666,7 @@ function is nothing but an object that converts a demand for an argument into
 the production of a result.
 
 %%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Conventionl Construction on Unpointed Types} 
+\subsection{Conventional Construction on Unpointed Types} 
 
 We begin our formal development by extending $\Pi$ --- at any level --- 
 with a new universe of
@@ -1807,12 +1824,6 @@ higher-order functions while retaining the multiplicative structure.
   notion of h.o. functions
 \end{itemize}
 
-I think the idea that (reversible circuits == proof terms) is just a
-little too wild for it to sink in quickly.  Same with the idea of
-creating a syntactic language (i.e. Pi) out of the semantic structure
-of the desired denotational semantics (i.e. permutations).  People
-understood, I think, but it might be too much to really 'get'.
- 
 We start with the class of all functions $A \rightarrow B$, then
 introduce constraints to filter those functions which correspond to
 type equivalences $A \simeq B$, and then attempt to look for a
