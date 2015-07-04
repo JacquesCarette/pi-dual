@@ -100,6 +100,9 @@ $\displaystyle
 \DeclareUnicodeCharacter{9636}{\ensuremath{\Box}}
 %% shorten the longarrow
 \DeclareUnicodeCharacter{10231}{\ensuremath{\leftrightarrow}}
+\DeclareUnicodeCharacter{2097}{\ensuremath{{}_l}}
+\DeclareUnicodeCharacter{7523}{\ensuremath{{}_r}}
+\DeclareUnicodeCharacter{8343}{\ensuremath{{}_l}}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{conj}{Conjecture}
@@ -407,7 +410,7 @@ _▤ : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (c ⇔ c)
 _▤ c = id⇔
 
 open import Equiv using (_≃_; _●_; path⊎; path×)
-import TypeEquiv as TE
+import TypeEquiv as TE hiding (swap₊)
 
 infixr 2  _⟷⟨_⟩_   
 infix  2  _□       
@@ -1341,7 +1344,15 @@ about equivalence of permutations is solved by appealing to various
 results about specialized monoidal categories. The main technical
 vehicle is that of \emph{categorification}~\cite{math/9802029} which
 is a process, intimately related to homotopy theory, for finding
-category-theoretic analogs of set-theoretic concepts.
+category-theoretic analogs of set-theoretic concepts. From an
+intuitive perspective, the algebraic structure of a commutative
+semiring only captures a ``static'' relationship between types; it
+says nothing about how these relationships behave under composition
+which is after all the essence of computation. Thus from a
+programmer's perspective, this categorification process is about
+understanding how type equivalences evolve under compositions, e.g.,
+how two different paths of type equivalences sharing the same source
+and target relate two each other.
 
 \begin{figure*}
 \begin{tikzcd}[column sep=tiny]
@@ -1479,53 +1490,483 @@ consider the categorification of commutative semirings.
 %%%%%%%%%%%%
 \subsection{Symmetric Rig Groupoids} 
 
-these things are not very well-known; these are the right beasts that
-are the categorification of commutative semigroups.
+The categorification of a commutative semiring is interchangeably
+called a \emph{symmetric bimonoidal category} or a \emph{symmetric rig
+  category}. Since we can easily set things up so that every morphism
+is a isomorphism, the category will also be a groupoid. 
 
-This has been done generically: coherence conditions for symmetric
-rig groupoids. These generalize type equivalences and permutations;
+There are several equivalent definitions of rig categories. We use the
+following definition from the ncatlab pages
+(\url{http://ncatlab.org/nlab/show/rig+category}).
+
+\begin{definition}[Rig Category]
+  A \emph{rig category} $C$ is a category with a symmetric monoidal
+  structure $(C,\oplus,0)$ for addition and a monoidal structure
+  $(C,\otimes,1)$ for multiplication together with left and right
+  distributivity natural isomorphisms:
+\[\begin{array}{rcl}
+d_ℓ : x ⊗ (y ⊕ z) &\isoarrow& (x ⊗ y) ⊕ (x ⊗ z) \\
+d_r : (x ⊕ y) ⊗ z &\isoarrow& (x ⊗ z) ⊕ (y ⊗ z) 
+\end{array}\]
+and absorption/annihilation isomorphisms:
+\[\begin{array}{rcl}
+a_ℓ : x ⊗ 0 &\isoarrow& 0 \\
+a_r : 0 ⊗ x &\isoarrow& 0
+\end{array}\]
+satisfying coherence conditions worked out by Laplaza~\cite{laplaza}
+and discussed below. 
+\end{definition}
+
+\begin{definition}[Symmetric Rig Category]
+A \emph{symmetric rig category} is a rig category in which the 
+multiplicative structure is symmetric. 
+\end{definition}
+
+\begin{definition}[Symmetric Rig Groupoid]
+A \emph{symmetric rig groupoid} is a symmetric rig category in which
+every morphism is invertible.
+\end{definition}
+
+The coherence conditions for rig categories were first worked out by
+Laplaza~\cite{laplaza}. Pages 31-35 of his paper report 24 coherence
+conditions that vary from simple diagrams to one that includes 9 nodes
+showing that two distinct ways of simplifying $(A ⊕ B) ⊗ (C ⊕ D)$ to
+$(((A ⊗ C) ⊕ (B ⊗ C)) ⊕ (A ⊗ D)) ⊕ (B ⊗ D)$ commute. The 24 coherence
+conditions are not independent which somewhat simplifies the situation
+and allows us to prove that our structures satisfy the coherence
+conditions. (See Fig.~\ref{fig:terig} for the high-level proof term
+showing that type and type equivalences form a symmetric rig
+category.)
+
+\AgdaHide{
+\begin{code}
+open import Level using (zero; suc)
+import Relation.Binary.PropositionalEquality as P
+open import Relation.Binary using (Rel)
+open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to map⊎)
+open import Data.Product using (_,_; proj₁; proj₂;_×_; Σ) renaming (map to map×)
+open import Data.Unit
+open import Data.Empty
+import Function as F
+
+open import Categories.Category
+open import Categories.Groupoid
+open import Categories.Monoidal
+open import Categories.Monoidal.Helpers
+open import Categories.Bifunctor
+open import Categories.NaturalIsomorphism
+open import Categories.Monoidal.Braided
+open import Categories.Monoidal.Symmetric
+open import Categories.RigCategory
+
+open import Equiv
+open import TypeEquiv
+open import Data.Sum.Properties
+open import Data.SumProd.Properties
+
+-- see EquivSetoid for some additional justification
+-- basically we need g to "pin down" the inverse, else we
+-- get lots of unsolved metas.
+record _≋_ {A B : Set} (eq₁ eq₂ : A ≃ B) : Set where
+  constructor eq
+  field
+    f≡ : ∀ x → eq₁ ⋆ x P.≡ eq₂ ⋆ x
+    g≡ : ∀ x → (sym≃ eq₁) ⋆ x P.≡ (sym≃ eq₂) ⋆ x
  
-We haven't said anything about the categorical structure: it is not
-just a commutative semiring but a commutative rig; this is crucial
-because the former doesn't take composition into account. Perhaps that
-is the next section in which we talk about computational
-interpretation as one of the fundamental things we want from a notion
-of computation is composition (cf. Moggi's original paper on monads).
+id≋ : ∀ {A B : Set} {x : A ≃ B} → x ≋ x
+id≋ = record { f≡ = λ x → P.refl ; g≡ = λ x → P.refl }
 
-Categorification II. 
-The \textcolor{red}{categorification} of a semiring is called a \textcolor{red}{Rig Category}.
-As with a semiring, there are two monoidal structures, which interact through some distributivity laws.
+sym≋ : ∀ {A B : Set} {x y : A ≃ B} → x ≋ y → y ≋ x
+sym≋ (eq f≡ g≡) = eq (λ a → P.sym (f≡ a)) (λ b → P.sym (g≡ b))
+
+flip≋ : {A B : Set} {x y : A ≃ B} → x ≋ y → (sym≃ x) ≋ (sym≃ y)
+flip≋ (eq f≡ g≡) = eq g≡ f≡
+
+trans≋ : ∀ {A B : Set} {x y z : A ≃ B} → x ≋ y → y ≋ z → x ≋ z
+trans≋ (eq f≡ g≡) (eq h≡ i≡) =
+   eq (λ a → P.trans (f≡ a) (h≡ a)) (λ b → P.trans (g≡ b) (i≡ b))
+
+●-resp-≋ : {A B C : Set} {f h : B ≃ C} {g i : A ≃ B} → f ≋ h → g ≋ i →
+  (f ● g) ≋ (h ● i)
+●-resp-≋ {f = f , _} {_ , mkqinv h⁻¹ _ _} {_ , mkqinv g⁻¹ _ _} {i , _}
+  (eq f≡ g≡) (eq h≡ i≡) =
+  eq (λ x → P.trans (P.cong f (h≡ x)) (f≡ (i x)))
+     (λ x → P.trans (P.cong g⁻¹ (g≡ x)) (i≡ (h⁻¹ x)))
+
+-- underlying it all, it uses ∘ and ≡ 
+●-assoc : {A B C D : Set} {f : A ≃ B} {g : B ≃ C} {h : C ≃ D} →
+      ((h ● g) ● f) ≋ (h ● (g ● f))
+●-assoc = eq (λ x → P.refl) (λ x → P.refl)
+
+TypeEquivCat : Category (Level.suc Level.zero) Level.zero Level.zero
+TypeEquivCat = record
+  { Obj = Set
+  ; _⇒_ = _≃_
+  ; _≡_ = _≋_
+  ; id = id≃
+  ; _∘_ = _●_
+  ; assoc = λ {A} {B} {C} {D} {f} {g} {h} → ●-assoc {A} {B} {C} {D} {f} {g} {h}
+  ; identityˡ = eq (λ _ → P.refl) (λ _ → P.refl)
+  ; identityʳ = eq (λ _ → P.refl) (λ _ → P.refl)
+  ; equiv = record { refl = id≋ ; sym = sym≋ ; trans = trans≋ }
+  ; ∘-resp-≡ = ●-resp-≋
+  }
+
+TypeEquivGroupoid : Groupoid TypeEquivCat
+TypeEquivGroupoid = record 
+  { _⁻¹ = sym≃ 
+  ; iso = λ { {_} {_} {f , mkqinv g α β} → record
+    { isoˡ = eq β β
+    ; isoʳ = eq α α
+    } }
+  }
+
+
+⊎-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
+⊎-bifunctor = record
+  { F₀ = λ {( x , y) → x ⊎ y}
+  ; F₁ = λ {(x , y) → path⊎ x y}
+  ; identity = eq map⊎idid≡id map⊎idid≡id
+  ; homomorphism = eq map⊎-∘ map⊎-∘
+  ; F-resp-≡ = λ { (e₁ , e₂) → eq (map⊎-resp-≡ {e₁ = f≡ e₁} {f≡ e₂}) (map⊎-resp-≡ {e₁ =  g≡ e₁} {g≡ e₂}) }
+  }
+  where open _≋_
+  
+module ⊎h = MonoidalHelperFunctors TypeEquivCat ⊎-bifunctor ⊥
+
+0⊎x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
+0⊎x≡x = record 
+  { F⇒G = record
+    { η = λ X → unite₊equiv
+    ; commute = λ f → eq unite₊∘[id,f]≡f∘unite₊ (λ x → P.refl) } 
+  ; F⇐G = record
+    { η = λ X → uniti₊equiv
+    ; commute = λ f → eq (λ x → P.refl) (sym∼ unite₊∘[id,f]≡f∘unite₊) } 
+  ; iso = λ X → record
+    { isoˡ = eq inj₂∘unite₊~id inj₂∘unite₊~id
+    ; isoʳ = eq (λ _ → P.refl) (λ _ → P.refl)
+    }
+  }
+
+x⊎0≡x : NaturalIsomorphism ⊎h.x⊗id ⊎h.x
+x⊎0≡x = record
+  { F⇒G = record
+    { η = λ X → unite₊′equiv
+    ; commute = λ f → eq unite₊′∘[id,f]≡f∘unite₊′ (λ x → P.refl)
+    }
+  ; F⇐G = record
+    { η = λ X → uniti₊′equiv
+    ; commute = λ f → eq (λ x → P.refl) f∘unite₊′≡unite₊′∘[f,id]
+    }
+  ; iso = λ X → record
+    { isoˡ = eq inj₁∘unite₊′~id inj₁∘unite₊′~id
+    ; isoʳ = eq (λ x → P.refl) (λ x → P.refl)
+    }
+  }
+
+[x⊎y]⊎z≡x⊎[y⊎z] : NaturalIsomorphism ⊎h.[x⊗y]⊗z ⊎h.x⊗[y⊗z]
+[x⊎y]⊎z≡x⊎[y⊎z] = record
+  { F⇒G = record
+    { η = λ X → assocr₊equiv
+    ; commute = λ f → eq assocr₊∘[[,],] [[,],]∘assocl₊
+    }
+  ; F⇐G = record
+    { η = λ X → assocl₊equiv
+    ; commute = λ f → eq (sym∼ [[,],]∘assocl₊) (sym∼ assocr₊∘[[,],])
+    }
+  ; iso = λ X → record
+    { isoˡ = eq (p∘!p≡id {p = assocr₊equiv}) (p∘!p≡id {p = assocr₊equiv})
+    ; isoʳ = eq ((p∘!p≡id {p = assocl₊equiv})) ((p∘!p≡id {p = assocl₊equiv}))
+    }
+  }
+
+CPM⊎ : Monoidal TypeEquivCat
+CPM⊎ = record
+  { ⊗ = ⊎-bifunctor
+   ; id = ⊥
+   ; identityˡ = 0⊎x≡x
+   ; identityʳ = x⊎0≡x
+   ; assoc = [x⊎y]⊎z≡x⊎[y⊎z]
+   ; triangle = eq triangle⊎-right triangle⊎-left
+   ; pentagon = eq pentagon⊎-right pentagon⊎-left
+   }
+
+-------
+-- and below, we will have a lot of things which belong in
+-- Data.Product.Properties.  In fact, some of them are ``free'',
+-- in that β-reduction is enough.  However, it might be a good
+-- idea to fully mirror all the ones needed for ⊎.
+
+
+path×-resp-≡ : {A B C D : Set} → {f₀ g₀ : A → B} {f₁ g₁ : C → D} →
+  {e₁ : f₀ ∼ g₀} → {e₂ : f₁ ∼ g₁} →  
+  (x : A × C) → (f₀ (proj₁ x) , f₁ (proj₂ x)) P.≡
+                (g₀ (proj₁ x) , g₁ (proj₂ x))
+path×-resp-≡ {e₁ = f≡} {h≡} (a , c) = P.cong₂ _,_ (f≡ a) (h≡ c)
+
+×-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
+×-bifunctor = record
+  { F₀ = λ {( x , y) → x × y}
+  ; F₁ = λ {(x , y) → path× x y }
+  ; identity = eq (λ x → P.refl) (λ x → P.refl) -- η for products gives this
+  ; homomorphism = eq (λ x → P.refl) (λ x → P.refl) -- again η for products!
+  ; F-resp-≡ = λ { (e₁ , e₂) → eq (path×-resp-≡ {e₁ = f≡ e₁} {f≡ e₂}) ((path×-resp-≡ {e₁ = g≡ e₁} {g≡ e₂}))}
+  }
+  where open _≋_
+
+module ×h = MonoidalHelperFunctors TypeEquivCat ×-bifunctor ⊤
+
+-- again because of η for products, lots of the following have trivial proofs
+1×y≡y : NaturalIsomorphism ×h.id⊗x ×h.x
+1×y≡y = record
+  { F⇒G = record
+    { η = λ X → unite⋆equiv
+    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl)
+    }
+  ; F⇐G = record
+    { η = λ X → uniti⋆equiv
+    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl)
+    }
+  ; iso = λ X → record
+    { isoˡ = eq (λ x → P.refl) (λ x → P.refl)
+    ; isoʳ = eq (λ x → P.refl) (λ x → P.refl)
+    }
+  }
+
+y×1≡y : NaturalIsomorphism ×h.x⊗id ×h.x
+y×1≡y = record
+  { F⇒G = record 
+    { η = λ X → unite⋆′equiv 
+    ;  commute = λ f → eq (λ x → P.refl) (λ x → P.refl) 
+    }
+  ; F⇐G = record 
+    { η = λ X → uniti⋆′equiv 
+    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl) 
+    }
+  ; iso = λ X → record 
+    { isoˡ = eq (λ x → P.refl) (λ x → P.refl) 
+    ; isoʳ = eq (λ x → P.refl) (λ x → P.refl) 
+    }
+  }
+
+[x×y]×z≡x×[y×z] : NaturalIsomorphism ×h.[x⊗y]⊗z ×h.x⊗[y⊗z]
+[x×y]×z≡x×[y×z] = record
+  { F⇒G = record
+    { η = λ X → assocr⋆equiv
+    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl) }
+  ; F⇐G = record
+    { η = λ X → assocl⋆equiv
+    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl) }
+  ; iso = λ X → record
+    { isoˡ = eq (λ x → P.refl) (λ x → P.refl)
+    ; isoʳ = eq (λ x → P.refl) (λ x → P.refl) }
+  }
+
+CPM× : Monoidal TypeEquivCat
+CPM× = record
+  { ⊗ = ×-bifunctor
+  ; id = ⊤
+  ; identityˡ = 1×y≡y
+  ; identityʳ = y×1≡y
+  ; assoc = [x×y]×z≡x×[y×z]
+  ; triangle = eq (λ x → P.refl) (λ x → P.refl)
+  ; pentagon = eq (λ x → P.refl) (λ x → P.refl)
+  }
+
+x⊎y≈y⊎x : NaturalIsomorphism ⊎h.x⊗y ⊎h.y⊗x
+x⊎y≈y⊎x = record 
+  { F⇒G = record 
+    { η = λ X → swap₊equiv 
+    ; commute = λ f → eq swap₊∘[f,g]≡[g,f]∘swap₊ (sym∼ swap₊∘[f,g]≡[g,f]∘swap₊) 
+    } 
+  ; F⇐G = record 
+    { η = λ X → swap₊equiv 
+    ; commute = λ f → eq swap₊∘[f,g]≡[g,f]∘swap₊ (sym∼ swap₊∘[f,g]≡[g,f]∘swap₊) 
+    } 
+  ; iso = λ X → record -- cheat by using the symmetric structure
+    { isoˡ = eq swapswap₊ swapswap₊ 
+    ; isoʳ = eq swapswap₊ swapswap₊ 
+    }
+  }
+
+BM⊎ : Braided CPM⊎
+BM⊎ = record 
+  { braid = x⊎y≈y⊎x 
+  ; hexagon₁ = eq hexagon⊎-right hexagon⊎-left 
+  ; hexagon₂ = eq hexagon⊎-left hexagon⊎-right 
+  }
+
+x×y≈y×x : NaturalIsomorphism ×h.x⊗y ×h.y⊗x
+x×y≈y×x = record
+  { F⇒G = record
+    { η = λ X → swap⋆equiv
+    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl)
+    }
+  ; F⇐G = record
+    { η = λ X → swap⋆equiv
+    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl)
+    }
+  ; iso = λ X → record -- cheat by using the symmetric structure
+    { isoˡ = eq swapswap⋆ swapswap⋆
+    ; isoʳ = eq swapswap⋆ swapswap⋆
+    }
+  }
+
+BM× : Braided CPM×
+BM× = record 
+  { braid = x×y≈y×x 
+  ; hexagon₁ = eq (λ x → P.refl) (λ x → P.refl) 
+  ; hexagon₂ = eq (λ x → P.refl) (λ x → P.refl) 
+  }
+
+SBM⊎ : Symmetric BM⊎
+SBM⊎ = record { symmetry = eq swapswap₊ swapswap₊ }
+
+SBM× : Symmetric BM×
+SBM× = record { symmetry = eq swapswap⋆ swapswap⋆ }
+
+module r = BimonoidalHelperFunctors BM⊎ BM×
+
+x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] : NaturalIsomorphism r.x⊗[y⊕z] r.[x⊗y]⊕[x⊗z]
+x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
+  { F⇒G = record
+    { η = λ X → distlequiv
+    ; commute = λ f → eq distl-commute (λ x → P.sym (factorl-commute x))
+    }
+  ; F⇐G = record
+    { η = λ X → factorlequiv
+    ; commute = λ f → eq factorl-commute (λ x → P.sym (distl-commute x))
+    }
+  ; iso = λ X → record { isoˡ = eq factorl∘distl factorl∘distl
+                       ; isoʳ = eq distl∘factorl distl∘factorl }
+  }
+
+[x⊕y]⊗z≡[x⊗z]⊕[y⊗z] : NaturalIsomorphism r.[x⊕y]⊗z r.[x⊗z]⊕[y⊗z]
+[x⊕y]⊗z≡[x⊗z]⊕[y⊗z] = record
+  { F⇒G = record
+    { η = λ X → distequiv
+    ; commute = λ f → eq dist-commute (λ x → P.sym (factor-commute x))
+    }
+  ; F⇐G = record
+    { η = λ X → factorequiv
+    ; commute = λ f → eq factor-commute (λ x → P.sym (dist-commute x))
+    }
+  ; iso = λ X → record { isoˡ = eq factor∘dist factor∘dist
+                       ; isoʳ = eq dist∘factor dist∘factor }
+  }
+  
+x⊗0≡0 : NaturalIsomorphism r.x⊗0 r.0↑
+x⊗0≡0 = record
+  { F⇒G = record
+    { η = λ X → distzrequiv
+    ; commute = λ f → eq (λ { (_ , ()) }) (λ { () })
+    }
+  ; F⇐G = record
+    { η = λ X → factorzrequiv
+    ; commute = λ f → eq (λ { () }) (λ { (_ , ()) })
+    }
+  ; iso = λ X → record
+    { isoˡ = eq factorzr∘distzr factorzr∘distzr
+    ; isoʳ = eq distzr∘factorzr distzr∘factorzr
+    }
+  }
+
+0⊗x≡0 : NaturalIsomorphism r.0⊗x r.0↑
+0⊗x≡0 = record
+  { F⇒G = record
+    { η = λ X → distzequiv
+    ; commute = λ f → eq (λ { (() , _) }) (λ { () })
+    }
+  ; F⇐G = record
+    { η = λ X → factorzequiv
+    ; commute = λ f → eq (λ { () }) (λ { (() , _)})
+    }
+  ; iso = λ X → record
+    { isoˡ = eq factorz∘distz factorz∘distz
+    ; isoʳ = eq distz∘factorz distz∘factorz
+    }
+  }
+\end{code}
+}
+\begin{figure*}
+\begin{code}
+TERig : RigCategory SBM⊎ SBM×
+TERig = record
+  { distribₗ       = x⊗[y⊕z]≡[x⊗y]⊕[x⊗z]
+  ; distribᵣ       = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z]
+  ; annₗ           = 0⊗x≡0
+  ; annᵣ           = x⊗0≡0
+  ; laplazaI      = eq distl-swap₊-lemma factorl-swap₊-lemma
+  ; laplazaII     = eq dist-swap⋆-lemma factor-swap⋆-lemma
+  ; laplazaIV     = eq dist-dist-assoc-lemma assoc-factor-factor-lemma
+  ; laplazaVI     = eq distl-assoc-lemma assoc-factorl-lemma
+  ; laplazaIX     = eq fully-distribute fully-factor
+  ; laplazaX      = eq distz0≡distrz0 factorz0≡factorzr0
+  ; laplazaXI     = eq distz0≡unite₊∘[distz,distz]∘distl factorz0≡factorl∘[factorz,factorz]∘uniti₊
+  ; laplazaXIII   = eq unite⋆r0≡absorb1 uniti⋆r0≡factorz
+  ; laplazaXV     = eq absorbl≡absorbr∘swap⋆ factorzr≡swap⋆∘factorz
+  ; laplazaXVI    = eq absorbr⇔assocl⋆◎[absorbr⊗id]◎absorbr factorz⇔factorz◎[factorz⊗id]◎assocr⋆
+  ; laplazaXVII   = eq elim-middle-⊥ insert-middle-⊥
+  ; laplazaXIX    = eq elim⊥-A[0⊕B] insert⊕⊥-AB
+  ; laplazaXXIII  = eq elim⊤-1[A⊕B] insert⊤l⊗-A⊕B
+  }
+\end{code}
+\caption{\label{fig:terig}Symmetric Rig Category of Type Equivalences}
+\end{figure*}
+ 
+%%%%%%%%%%%%
+\subsection{Instances of Symmetric Rig Categories} 
+
+As mentioned above we have the following theorem.
+
 \begin{theorem}
-The following are \textcolor{red}{Symmetric Bimonoidal Groupoids}:
-\begin{itemize}
-\item The class of all types (\AgdaDatatype{Set})
-\item The set of all finite types
-\item The set of permutations
-\item The set of equivalences between finite types
-\item Our syntactic combinators
-\end{itemize}
+The collection of all types and type equivalences is a symmetric rig
+groupoid.
 \end{theorem}
-The \textcolor{red}{coherence rules} for Symmetric Bimonoidal groupoids give us 
-\textcolor{red}{58 rules}.
+\begin{proof}
+The objects of the category are Agda types and the morphisms are type
+equivalences. These morphisms directly satisfy the axioms stated in
+the definitions of the various categories. The bulk of the work is in
+ensuring that the coherence conditions are satisfied up to extensional
+equality. The high-level structure of that proof is in
+Fig.~\ref{fig:terig}.
+\end{proof}
 
-Categorification III.
-\begin{conj}
-The following are \textcolor{red}{Symmetric Rig Groupoids}:
-\begin{itemize}
-\item The class of all types (\AgdaDatatype{Set})
-\item The set of all finite types, of permutations, of equivalences between finite types
-\item Our syntactic combinators
-\end{itemize}
-\end{conj}
-and of course the punchline:
-\begin{theorem}[Laplaza 1972]
-There is a sound and complete set of \textcolor{red}{coherence rules} for 
-Symmetric Rig Categories.
+More relevant for our purposes, is the next theorem which applies to
+reversible circuits (represented as $\Pi$-combinators).
+
+\begin{theorem}
+The collection of finite types and $\Pi$-combinators is a symmetric rig
+groupoid.
 \end{theorem}
-\begin{conj}
-The set of coherence rules for Symmetric Rig Groupoids are a sound
-and complete set for \textcolor{red}{circuit equivalence}.
-\end{conj}
+\begin{proof}
+The objects of the category are finite types and the morphisms are the
+$\Pi$-combinators. Short proofs establish that these morphisms satisfy
+the axioms stated in the definitions of the various categories. The
+bulk of the work is in ensuring that the coherence conditions are
+satisfied. This required us to add a few $\Pi$ combinators (see
+Fig.~\ref{fig:more}) and then to add a whole new layer of
+2-combinators (discussed in the next section) witnessing enough
+equivalences of $\Pi$ combinators to prove the coherence laws. The new
+$\Pi$ combinators, also discussed in more detain in the next section,
+are redundant (from an operational perspective) exactly because of the
+coherence conditions; they are however important as they have rather
+non-trivial relations to each other that are captured in the more
+involved coherence laws.
+\end{proof}
+
+Putting the result above together with Laplaza's coherence result
+about rig categories, we conclude our main result. 
+
+\begin{theorem}
+We have two levels of $\Pi$-combinators such that:
+\begin{itemize}
+\item The first set of $\Pi$-combinators is complete for representing
+reversible combinational circuits.
+\item The second set of $\Pi$-combinators is sound and complete for the
+equivalence of circuits represented by the first level of $\Pi$-combinators.
+\end{itemize}
+\end{theorem}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Revised $\Pi$ and its Optimizer}
@@ -1573,8 +2014,8 @@ postulate
   c₂ : {A D : U} → A ⟷ D
 
 p₁ p₂ : {A B C D : U} → PLUS A B ⟷ PLUS C D
-p₁ = swap₊ ◎ (c₁ ⊕ c₂)
-p₂ = (c₂ ⊕ c₁) ◎ swap₊
+p₁ = _⟷_.swap₊ ◎ (c₁ ⊕ c₂)
+p₂ = (c₂ ⊕ c₁) ◎ _⟷_.swap₊
 \end{code}
 
 2-morphism of circuits
