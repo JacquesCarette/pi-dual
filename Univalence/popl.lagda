@@ -1538,6 +1538,7 @@ conditions. (See Fig.~\ref{fig:terig} for the high-level proof term
 showing that type and type equivalences form a symmetric rig
 category.)
 
+\begin{figure*}
 \AgdaHide{
 \begin{code}
 open import Level using (zero; suc)
@@ -1560,7 +1561,7 @@ open import Categories.Monoidal.Symmetric
 open import Categories.RigCategory
 
 open import Equiv
-open import TypeEquiv
+open import TypeEquiv hiding (swap₊)
 open import Data.Sum.Properties
 open import Data.SumProd.Properties
 
@@ -1597,8 +1598,13 @@ trans≋ (eq f≡ g≡) (eq h≡ i≡) =
 ●-assoc : {A B C D : Set} {f : A ≃ B} {g : B ≃ C} {h : C ≃ D} →
       ((h ● g) ● f) ≋ (h ● (g ● f))
 ●-assoc = eq (λ x → P.refl) (λ x → P.refl)
-
-TypeEquivCat : Category (Level.suc Level.zero) Level.zero Level.zero
+\end{code}
+}
+\begin{code}
+TypeEquivCat : Category (Level.suc Level.zero) Level.zero Level.zero -- omitted
+\end{code}
+\AgdaHide{
+\begin{code}
 TypeEquivCat = record
   { Obj = Set
   ; _⇒_ = _≃_
@@ -1611,17 +1617,20 @@ TypeEquivCat = record
   ; equiv = record { refl = id≋ ; sym = sym≋ ; trans = trans≋ }
   ; ∘-resp-≡ = ●-resp-≋
   }
+\end{code}
+}
+\begin{code}
 
 TypeEquivGroupoid : Groupoid TypeEquivCat
 TypeEquivGroupoid = record 
-  { _⁻¹ = sym≃ 
-  ; iso = λ { {_} {_} {f , mkqinv g α β} → record
-    { isoˡ = eq β β
-    ; isoʳ = eq α α
-    } }
-  }
+  { _⁻¹     = sym≃ 
+  ; iso     = λ  { {_} {_} {f , mkqinv g α β} → record {
+                    isoˡ  = eq β β
+                 ;  isoʳ  = eq α α }}}
 
-
+\end{code}
+\AgdaHide{
+\begin{code}
 ⊎-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
 ⊎-bifunctor = record
   { F₀ = λ {( x , y) → x ⊎ y}
@@ -1679,8 +1688,13 @@ x⊎0≡x = record
     ; isoʳ = eq ((p∘!p≡id {p = assocl₊equiv})) ((p∘!p≡id {p = assocl₊equiv}))
     }
   }
-
-CPM⊎ : Monoidal TypeEquivCat
+\end{code}
+}
+\begin{code}
+CPM⊎    : Monoidal TypeEquivCat -- omitted
+\end{code}
+\AgdaHide{
+\begin{code}
 CPM⊎ = record
   { ⊗ = ⊎-bifunctor
    ; id = ⊥
@@ -1761,8 +1775,13 @@ y×1≡y = record
     { isoˡ = eq (λ x → P.refl) (λ x → P.refl)
     ; isoʳ = eq (λ x → P.refl) (λ x → P.refl) }
   }
-
-CPM× : Monoidal TypeEquivCat
+\end{code}
+}
+\begin{code}
+CPM×    : Monoidal TypeEquivCat -- omitted
+\end{code}
+\AgdaHide{
+\begin{code}
 CPM× = record
   { ⊗ = ×-bifunctor
   ; id = ⊤
@@ -1788,8 +1807,14 @@ x⊎y≈y⊎x = record
     ; isoʳ = eq swapswap₊ swapswap₊ 
     }
   }
+\end{code}
+}
+\begin{code}
 
-BM⊎ : Braided CPM⊎
+BM⊎       : Braided CPM⊎ -- omitted
+\end{code}
+\AgdaHide{
+\begin{code}
 BM⊎ = record 
   { braid = x⊎y≈y⊎x 
   ; hexagon₁ = eq hexagon⊎-right hexagon⊎-left 
@@ -1811,20 +1836,31 @@ x×y≈y×x = record
     ; isoʳ = eq swapswap⋆ swapswap⋆
     }
   }
-
-BM× : Braided CPM×
+\end{code}
+}
+\begin{code}
+BM×       : Braided CPM× -- omitted
+\end{code}
+\AgdaHide{
+\begin{code}
 BM× = record 
   { braid = x×y≈y×x 
   ; hexagon₁ = eq (λ x → P.refl) (λ x → P.refl) 
   ; hexagon₂ = eq (λ x → P.refl) (λ x → P.refl) 
   }
+\end{code}
+}
+\begin{code}
 
-SBM⊎ : Symmetric BM⊎
-SBM⊎ = record { symmetry = eq swapswap₊ swapswap₊ }
+SBM⊎    : Symmetric BM⊎ 
+SBM⊎    = record { symmetry = eq swapswap₊ swapswap₊ }
 
-SBM× : Symmetric BM×
-SBM× = record { symmetry = eq swapswap⋆ swapswap⋆ }
+SBM×    : Symmetric BM× 
+SBM×    = record { symmetry = eq swapswap⋆ swapswap⋆ }
 
+\end{code}
+\AgdaHide{
+\begin{code}
 module r = BimonoidalHelperFunctors BM⊎ BM×
 
 x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] : NaturalIsomorphism r.x⊗[y⊕z] r.[x⊗y]⊕[x⊗z]
@@ -1888,14 +1924,13 @@ x⊗0≡0 = record
   }
 \end{code}
 }
-\begin{figure*}
 \begin{code}
-TERig : RigCategory SBM⊎ SBM×
+TERig     : RigCategory SBM⊎ SBM×
 TERig = record
-  { distribₗ       = x⊗[y⊕z]≡[x⊗y]⊕[x⊗z]
-  ; distribᵣ       = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z]
-  ; annₗ           = 0⊗x≡0
-  ; annᵣ           = x⊗0≡0
+  { distribₗ      = x⊗[y⊕z]≡[x⊗y]⊕[x⊗z]
+  ; distribᵣ      = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z]
+  ; annₗ          = 0⊗x≡0
+  ; annᵣ          = x⊗0≡0
   ; laplazaI      = eq distl-swap₊-lemma factorl-swap₊-lemma
   ; laplazaII     = eq dist-swap⋆-lemma factor-swap⋆-lemma
   ; laplazaIV     = eq dist-dist-assoc-lemma assoc-factor-factor-lemma
@@ -1911,7 +1946,7 @@ TERig = record
   ; laplazaXXIII  = eq elim⊤-1[A⊕B] insert⊤l⊗-A⊕B
   }
 \end{code}
-\caption{\label{fig:terig}Symmetric Rig Category of Type Equivalences}
+\caption{\label{fig:terig}Symmetric Rig Groupoid of Type Equivalences}
 \end{figure*}
  
 %%%%%%%%%%%%
@@ -1961,64 +1996,75 @@ about rig categories, we conclude our main result.
 \begin{theorem}
 We have two levels of $\Pi$-combinators such that:
 \begin{itemize}
-\item The first set of $\Pi$-combinators is complete for representing
-reversible combinational circuits.
-\item The second set of $\Pi$-combinators is sound and complete for the
-equivalence of circuits represented by the first level of $\Pi$-combinators.
+\item The first level of $\Pi$-combinators is complete for
+  representing reversible combinational circuits.
+\item The second level of $\Pi$-combinators is sound and complete for
+  the equivalence of circuits represented by the first level.
 \end{itemize}
 \end{theorem}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Revised $\Pi$ and its Optimizer}
 
-%%%%%%%%%%%%
-\subsection{Revised Syntax}
-
-The refactoring of Pi from the inspiration of symmetric rig groupoids.
-The added combinators~\ref{fig:more} are redundant (from an
-operational perspective) exactly because of the coherences.  But some
-of these higher combinators have rather non-trivial relations to each
-other [ex: pentagon, hexagon, and some of the weirder Laplaza rules].
-Plus the 'minimalistic' Pi leads to much larger programs with LOTS of
-extra redexes.
-
-\begin{figure*}
-\[\begin{array}{rrcll}
-\absorbr :&~ 0 * \tau & \iso & 0 &: \factorzl \\
-\absorbl :&~ \tau * 0 & \iso & 0 &: \factorzr \\
-
-\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor \\
-\distl :&~ \tau_1 * (\tau_2 + \tau_3) & \iso & (\tau_1 * \tau_2) + (\tau_1 * \tau_3)~ &: \factorl 
-\end{array}\]      
-\caption{\label{fig:more}Additional $\Pi$-combinators}
-\end{figure*}
+Collecting the previous results we arrive at a universal language for
+expressing reversible combinational circuits \emph{together with} a
+sound and complete metalanguage for reasoning about equivalences of
+programs written in the lower level language.
 
 %%%%%%%%%%%%
-\subsection{Optimization Rules}
+\subsection{Example}
 
-Here is where we can have the table of important coherence laws. The
-one below is a small and nice example.
+The general structure explaining the nature of the second level
+metalanguage and how the two languages fit together from a categorical
+perspective is the following:
+\begin{itemize}
+\item type equivalences for example between $A ⊕ B$ and $B ⊕ A$ are
+  \emph{functors};
+\item equivalences between such functors are \emph{natural
+    isomorphisms}; 
+\item at the value level, these equivalences induce $2$-morphisms.
+\end{itemize}
 
-What we need now is Pi plus another layer to top to optimize Pi
-  programs; no ad hoc rules; principled rules; 
-
-Type equivalences (such as between $A × B$ and $B × A$) are
-\textcolor{red}{Functors}.
-
-Equivalences between Functors are \textcolor{red}{Natural
-  Isomorphisms}.  At the value-level, they induce $2$-morphisms:
-
+For example, assuming we are given two $\Pi$-combinators:
+\AgdaHide{
 \begin{code}
 postulate
-  c₁ : {B C : U} → B ⟷ C
-  c₂ : {A D : U} → A ⟷ D
-
+\end{code}
+}
+\begin{code}
+  c₁ : {B C : U} →  B ⟷ C
+  c₂ : {A D : U} →  A ⟷ D
+\end{code}
+\noindent from which we build two larger combinators $p_1$ and $p_2$ below:
+\begin{code}
 p₁ p₂ : {A B C D : U} → PLUS A B ⟷ PLUS C D
-p₁ = _⟷_.swap₊ ◎ (c₁ ⊕ c₂)
-p₂ = (c₂ ⊕ c₁) ◎ _⟷_.swap₊
+p₁ = swap₊ ◎ (c₁ ⊕ c₂)
+p₂ = (c₂ ⊕ c₁) ◎ swap₊
+\end{code}
+\noindent As reversible circuits, $p_1$ and $p_2$ evaluate as
+follows. If $p_1$ is given the value $\inl{a}$, it first transforms it
+to $\inr{a}$, and then passes it to $c₂$. If $p_2$ is given the value
+$\inl{a}$, it first passes it to $c₂$ and then flips the tag of the
+result. Since $c₂$ is functorial, it must act polymorphically on its
+input and hence, it must be the case that the two evaluations produce
+the same result. This extensional reasoning is embedded once and for
+all in the proofs of coherence and distilled in a 2-level combinator:
+\AgdaHide{
+\begin{code}
+module Y where
+ data _⇔'_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set where
+\end{code}
+}
+\begin{code}
+  swapl₊⇔ :  {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
+             (swap₊ ◎ (c₁ ⊕ c₂)) ⇔' ((c₂ ⊕ c₁) ◎ swap₊)
 \end{code}
 
-2-morphism of circuits
+Pictorially, this 2-level combinator is a 2-path showing how the two
+paths can be transformed to one another. The proof of equivalence can
+be visualized by simply imagining the connections as wires whose
+endpoints are fixed: holding the wires on the right side of the top
+path and flipping them produces the connection in the bottom path:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.6,every node/.style={scale=0.6}]
@@ -2073,6 +2119,46 @@ p₂ = (c₂ ⊕ c₁) ◎ _⟷_.swap₊
 
 \end{tikzpicture}
 \end{center}
+
+%%%%%%%%%%%%
+\subsection{Revised Syntax}
+
+The inspiration of symmetric rig groupoids suggested a refactoring of
+$\Pi$ with additional level-1 combinators.  The added
+combinators~\ref{fig:more} are redundant (from an operational
+perspective) exactly because of the coherence conditions.  In addition
+to being critical to the proofs, they are useful when representing
+circuits leading to smaller programs with fewer redexes.
+
+\begin{figure*}
+\[\begin{array}{rrcll}
+\absorbr :&~ 0 * \tau & \iso & 0 &: \factorzl \\
+\absorbl :&~ \tau * 0 & \iso & 0 &: \factorzr \\
+
+\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor \\
+\distl :&~ \tau_1 * (\tau_2 + \tau_3) & \iso & (\tau_1 * \tau_2) + (\tau_1 * \tau_3)~ &: \factorl 
+\end{array}\]      
+\caption{\label{fig:more}Additional $\Pi$-combinators}
+\end{figure*}
+
+The big addition of course is the level-2 combinators which are
+collected in Fig.~\ref{fig:more2}. To avoid clutter we omit the names
+of the combinators and only show the signatures.
+
+\begin{figure*}
+\[\begin{array}{rcl}
+c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c₃ \\
+(c₁ ⊕ (c₂ ⊕ c₃)) \fatsemi \assoclp & \isoone & \assoclp \fatsemi ((c₁ ⊕ c₂) ⊕ c₃) \\
+((c₁ ⊕ c₂) ⊕ c₃) \fatsemi \assocrp & \isoone & \assocrp \fatsemi (c₁ ⊕ (c₂ ⊕ c₃)) \\
+(c₁ ⊗ (c₂ ⊗ c₃)) \fatsemi \assoclt & \isoone & \assoclt \fatsemi ((c₁ ⊗ c₂) ⊗ c₃) \\
+((c₁ ⊗ c₂) ⊗ c₃) \fatsemi \assocrt & \isoone & \assocrt \fatsemi (c₁ ⊗ (c₂ ⊗ c₃)) \\
+((a ⊕ b) ⊗ c) \fatsemi \dist & \isoone & \dist \fatsemi ((a ⊗ c) ⊕ (b ⊗ c)) \\
+((a ⊗ c) ⊕ (b ⊗ c)) \fatsemi \factor & \isoone & \factor \fatsemi ((a ⊕ b) ⊗ c) \\
+(a ⊗ (b ⊕ c)) \fatsemi \distl & \isoone & \distl \fatsemi ((a ⊗ b) ⊕ (a ⊗ c)) \\
+((a ⊗ b) ⊕ (a ⊗ c)) \fatsemi \factorl & \isoone & \factorl \fatsemi (a ⊗ (b ⊕ c)) \\
+\end{array}\]
+\caption{\label{fig:more2}Signatures of level-2 $\Pi$-combinators}
+\end{figure*}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Problem with Higher-Order Functions}
