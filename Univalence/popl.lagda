@@ -2096,11 +2096,13 @@ function is nothing but an object that converts a demand for an argument into
 the production of a result.
 
 %%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Conventional Construction on Unpointed Types} 
+\subsection{The  \textbf{Int} Construction} 
 
-We begin our formal development by extending $\Pi$ --- at any level --- 
-with a new universe of
-types $\cubt$ that consists of composite types $\nodet{\tau_1}{\tau_2}$:
+For this construction, we assume that we have extended $\Pi$ with a
+trace operator to implement recursion or feedback as was done in our
+previous work~\cite{James:2012:IE:2103656.2103667}. We then extend
+$\Pi$ with a new universe of types $\cubt$ that consists of composite
+types $\nodet{\tau_1}{\tau_2}$:
 \[\begin{array}{lrcl}
 (\textit{{1d} types}) & 
   \cubt &::=& \nodet{\tau_1}{\tau_2}
@@ -2141,7 +2143,7 @@ Table~\ref{pi-combinators}.\footnote{See
   construction in OCaml.} There are however a few interesting cases whose
 appreciation is essential for the remainder of the paper.
 
-\paragraph*{Easy Lifting.} Many of the 0d combinators lift easily to the 1d
+\paragraph*{Trivial cases.} Many of the 0d combinators lift easily to the 1d
 level. For example:
 \[\begin{array}{rcl}
 \idc &:& \cubt \isoone \cubt \\
@@ -2175,7 +2177,7 @@ f \fatsemi g &=& \mathit{trace}~(\mathit{assoc}_1 \fatsemi
   \fatsemi \mathit{assoc}_3)
 \end{array}\]
 
-\paragraph*{New combinators $\mathit{curry}$ and $\mathit{uncurry}$ for higher-order functions.}
+\paragraph*{Higher-order functions.}
 
 \[\begin{array}{rcl}
 \boxminus(\nodet{\tau_1}{\tau_2}) &\eqdef& \nodet{\tau_2}{\tau_1} \\
@@ -2214,7 +2216,7 @@ f \fatsemi g &=& \mathit{trace}~(\mathit{assoc}_1 \fatsemi
 \mathit{uncurry}~f &=& \assocrp \fatsemi f \fatsemi \assoclp 
 \end{array}\]
 
-\paragraph*{The ``phony'' multiplication that is not a functor.} 
+\paragraph*{Products.}
 The definition for the product of 1d types used above is:
 \[\begin{array}{l}
 \ttone{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} \eqdef \\
