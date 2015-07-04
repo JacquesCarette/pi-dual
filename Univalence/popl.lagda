@@ -45,11 +45,15 @@
 \newcommand{\assoc}{\circ}
 \newcommand{\identlp}{\mathit{identl}_+}
 \newcommand{\identrp}{\mathit{identr}_+}
+\newcommand{\identlsp}{\mathit{identls}_+}
+\newcommand{\identrsp}{\mathit{identrs}_+}
 \newcommand{\swapp}{\mathit{swap}_+}
 \newcommand{\assoclp}{\mathit{assocl}_+}
 \newcommand{\assocrp}{\mathit{assocr}_+}
 \newcommand{\identlt}{\mathit{identl}_*}
 \newcommand{\identrt}{\mathit{identr}_*}
+\newcommand{\identlst}{\mathit{identls}_*}
+\newcommand{\identrst}{\mathit{identrs}_*}
 \newcommand{\swapt}{\mathit{swap}_*}
 \newcommand{\assoclt}{\mathit{assocl}_*}
 \newcommand{\assocrt}{\mathit{assocr}_*}
@@ -953,6 +957,10 @@ that witness the type isomorphism in the middle.
 \caption{$\Pi$-combinators~\cite{James:2012:IE:2103656.2103667}
 \label{pi-combinators}}
 \end{figure*}
+
+Every combinator $c$ has an inverse $!c$ according to the figure. The
+inverse is homomorphic on sums and products and flips the order of the
+combinator in sequential composition.
 
 %%%%%%%%%%%%
 \subsection{Example Circuits}
@@ -2047,8 +2055,9 @@ to $\inr{a}$, and then passes it to $c₂$. If $p_2$ is given the value
 $\inl{a}$, it first passes it to $c₂$ and then flips the tag of the
 result. Since $c₂$ is functorial, it must act polymorphically on its
 input and hence, it must be the case that the two evaluations produce
-the same result. This extensional reasoning is embedded once and for
-all in the proofs of coherence and distilled in a 2-level combinator:
+the same result. The situation for the other possible input value is
+symmetric. This extensional reasoning is embedded once and for all in
+the proofs of coherence and distilled in a 2-level combinator:
 \AgdaHide{
 \begin{code}
 module Y where
@@ -2132,6 +2141,9 @@ circuits leading to smaller programs with fewer redexes.
 
 \begin{figure*}
 \[\begin{array}{rrcll}
+\identlsp :&  \tau + 0 & \iso & \tau &: \identrsp \\
+\identlst :&  \tau * 1 & \iso & \tau &: \identrst \\
+
 \absorbr :&~ 0 * \tau & \iso & 0 &: \factorzl \\
 \absorbl :&~ \tau * 0 & \iso & 0 &: \factorzr \\
 
@@ -2148,6 +2160,25 @@ of the combinators and only show the signatures.
 \begin{figure*}
 \[\begin{array}{rcl}
 c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c₃ \\
+\idc \fatsemi c & \isoone & c \\
+c \fatsemi \idc & \isoone & c \\
+c \fatsemi (!~c) & \isoone & \idc \\
+(!~c) \fatsemi c & \isoone & \idc \\
+\\
+\identlp \fatsemi c₂ & \isoone & (c₁ ⊕ c₂) \fatsemi \identlp \\
+\identrp \fatsemi (c₁ ⊕ c₂) & \isoone &  c₂ \fatsemi \identrp \\
+\identlsp \fatsemi c₂ & \isoone & (c₂ ⊕ c₁) \fatsemi \identlsp \\
+\identrsp \fatsemi (c₂ ⊕ c₁) & \isoone &  c₂ \fatsemi \identrsp \\
+\swapp \fatsemi (c₁ ⊕ c₂) & \isoone &  (c₂ ⊕ c₁) \fatsemi \swapp \\
+\\
+\identlt \fatsemi c₂ & \isoone & (c₁ ⊗ c₂) \fatsemi \identlt \\
+\identrt \fatsemi (c₁ ⊗ c₂) & \isoone &  c₂ \fatsemi \identrt \\
+\identlst \fatsemi c₂ & \isoone & (c₂ ⊗ c₁) \fatsemi \identlst \\
+\identrst \fatsemi (c₂ ⊗ c₁) & \isoone &  c₂ \fatsemi \identrst \\
+\swapt \fatsemi (c₁ ⊗ c₂) & \isoone &  (c₂ ⊗ c₁) \fatsemi \swapt \\
+\\
+\swapp \fatsemi \factor & \isoone &  \factor \fatsemi (\swapp ⊗ \idc) \\
+\\
 (c₁ ⊕ (c₂ ⊕ c₃)) \fatsemi \assoclp & \isoone & \assoclp \fatsemi ((c₁ ⊕ c₂) ⊕ c₃) \\
 ((c₁ ⊕ c₂) ⊕ c₃) \fatsemi \assocrp & \isoone & \assocrp \fatsemi (c₁ ⊕ (c₂ ⊕ c₃)) \\
 (c₁ ⊗ (c₂ ⊗ c₃)) \fatsemi \assoclt & \isoone & \assoclt \fatsemi ((c₁ ⊗ c₂) ⊗ c₃) \\
@@ -2157,8 +2188,47 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 (a ⊗ (b ⊕ c)) \fatsemi \distl & \isoone & \distl \fatsemi ((a ⊗ b) ⊕ (a ⊗ c)) \\
 ((a ⊗ b) ⊕ (a ⊗ c)) \fatsemi \factorl & \isoone & \factorl \fatsemi (a ⊗ (b ⊕ c)) \\
 \end{array}\]
+\begin{minipage}{0.5\textwidth}
+\begin{center} 
+\Rule{}
+{}
+{\jdg{}{}{c \isoone c}}
+{}
+\qquad
+\Rule{}
+{\jdg{}{}{c₁ \isoone c₂} \quad \vdash c₂ \isoone c₃}
+{\jdg{}{}{c₁ \isoone c₃}}
+{}
+\qquad
+\Rule{}
+{\jdg{}{}{c₁ \isoone c₃} \quad \vdash c₂ \isoone c₄}
+{\jdg{}{}{(c₁ \fatsemi c₂) \isoone (c₃ \fatsemi c₄)}}
+{}
+\qquad
+\Rule{}
+{\jdg{}{}{c₁ \isoone c₃} \quad \vdash c₂ \isoone c₄}
+{\jdg{}{}{(c₁ ⊕ c₂) \isoone (c₃ ⊕ c₄)}}
+{}
+\qquad
+\Rule{}
+{\jdg{}{}{c₁ \isoone c₃} \quad \vdash c₂ \isoone c₄}
+{\jdg{}{}{(c₁ ⊗ c₂) \isoone (c₃ ⊗ c₄)}}
+{}
+\end{center}
+\end{minipage}
 \caption{\label{fig:more2}Signatures of level-2 $\Pi$-combinators}
 \end{figure*}
+
+As Fig.~\ref{fig:more2} illustrates, we have rules to manipulate code
+fragments rewriting them in a small-step fashion. From our small
+experiments, an effective way to use the rules is to fix a canonical
+representation of circuits that has the ``right'' properties and use
+the rules in a directed fashion to produce that canonical
+representation. For example, Saeedi and
+Markov~\cite{Saeedi:2013:SOR:2431211.2431220} survey several possible
+canonical representations that trade-off various desired
+properties. Of course, finding a rewriting procedure that makes
+progress towards the canonical representation is far from trivial. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Problem with Higher-Order Functions}
