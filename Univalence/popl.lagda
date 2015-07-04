@@ -428,6 +428,13 @@ _□ t = id⟷
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
 
+\jc{do remember that the code which is embedded in this file
+is not the one in the sources below (anymore).  Not sure if it
+matters?}
+
+\jc{Also: double-blind this year!  I guess we need to omit our names.
+I don't think the text will need changed for that.}
+
 \url{https://github.com/JacquesCarette/pi-dual}
 
 Reversible circuits are NOT a restriction; they are a generalization;
@@ -486,6 +493,7 @@ types consisting of the empty type, the unit type, and sums and products of
 types. Sec.~\ref{intc} outlines directions for extending the result to richer
 types.
 
+\begin{comment}
 Quantum Computing. Quantum physics differs from classical physics in \textcolor{red}{many} ways:
 
 \begin{itemize}
@@ -506,7 +514,9 @@ can be smoothly adapted to the quantum world.
 \item There are however what appear to be fundamental differences between the classical and quantum world that make them incompatible
 \item Let us \emph{re-think} classical programming foundations before jumping to the quantum world.
 \end{itemize}
+\end{comment}
 
+\jc{is any of this stuff useful for the introduction, or should it all go?}
 Resource-Aware Classical Computing. 
 \begin{itemize}
 \item The biggest questionable assumption of classical programming is that it is possible
@@ -878,15 +888,16 @@ proved and given a computational interpretation for finite types.
 
 In the previous section, we argued that, up to equivalence, the
 equivalence of types reduces to permutations on finite sets. We recall
-our previous work which proposed a term language for permutations and
+previous work which proposed a term language for permutations and
 adapt it to be used to express, compute with, and reason about type
 equivalences between finite types.
 
 %%%%%%%%%%%%
 \subsection{The $\Pi$-Languages}
 
-In previous work~\cite{James:2012:IE:2103656.2103667}, we introduced
-the $\Pi$ family of languages whose only computations are isomorphisms
+In previous work~\cite{James:2012:IE:2103656.2103667}, 
+the $\Pi$ family of languages was introduced, 
+whose only computations are isomorphisms
 between finite types. We propose that this family of languages is
 exactly the right programmatic interface for manipulating and
 reasoning about type equivalences.
@@ -1071,7 +1082,7 @@ might visualize it as follows:
 \end{center}
 
 Writing circuits using the raw syntax for combinators is clearly
-tedious. In other work, we have investigated a compiler from a
+tedious. In other work, one can find a compiler from a
 conventional functional language to generate the
 circuits~\cite{James:2012:IE:2103656.2103667}, a systematic technique
 to translate abstract machines to $\Pi$~\cite{rc2012}, and a
@@ -1220,7 +1231,8 @@ evalB (c₀ ⊗ c₁) (x , y) = evalB c₀ x , evalB c₁ y
 constructor to its Agda denotation, e.g., it maps the type 0 to
 $\bot$, the type 1 to $\top$, etc. The complete definitions for these
 evaluators can be found in previous
-publications~\cite{rc2011,rc2012,James:2012:IE:2103656.2103667} and
+publications~\cite{rc2011,rc2012,James:2012:IE:2103656.2103667}
+(and in the accompanying Agda code) and
 will not be repeated here. The reason is that, although these
 evaluators adequately serve as semantic specifications, they drive the
 development towards extensional reasoning as evident from the
@@ -1264,7 +1276,7 @@ representation which can be effectively compared for equality as
 explained in the proof of Thm.~\ref{thm:permrig}.
 
 %%%%%%%%%%%%
-\subsection{Rewriting Approach} 
+\subsection{Rewriting Approach}
 \label{sec:rewriting}
 
 Having mapped each combinator to a permutation, we can reason about
@@ -1282,7 +1294,7 @@ module X where
  data _⇔'_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set where
 \end{code}
 }
-\begin{code}
+\begin{code}[gobble=2]
   id⇔     :  {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔' c 
 
   trans⇔  :  {t₁ t₂ : U} {c₁ c₂ c₃ : t₁ ⟷ t₂} → 
@@ -1393,7 +1405,7 @@ monoidal categories.
 A \emph{monoidal category}~\cite{nla.cat-vn1051288} is a category with
 the following additional structure:
 \begin{itemize}
-\item a functor $\otimes$ called the monoidal or tensor product,
+\item a bifunctor $\otimes$ called the monoidal or tensor product,
 \item an object $I$ called the unit object, and
 \item natural isomorphisms
   $\alpha_{A,B,C} : (A \otimes B) \otimes C \isoarrow A \otimes (B
@@ -1488,11 +1500,13 @@ are only categorifications of commutative monoids. We will need to
 consider the categorification of commutative semirings.
 
 %%%%%%%%%%%%
-\subsection{Symmetric Rig Groupoids} 
+\subsection{Symmetric Rig Groupoids}
 
-The categorification of a commutative semiring is interchangeably
-called a \emph{symmetric bimonoidal category} or a \emph{symmetric rig
-  category}. Since we can easily set things up so that every morphism
+The categorification of a commutative semiring is called a
+\emph{symmetric rig category}.  It is build from a \emph{symmetric
+bimonoidal category} to which distributivity natural isomorphisms
+are added, and accompanying coherence laws added.
+Since we can easily set things up so that every morphism
 is a isomorphism, the category will also be a groupoid. 
 
 There are several equivalent definitions of rig categories. We use the
@@ -2014,6 +2028,10 @@ programs written in the lower level language.
 %%%%%%%%%%%%
 \subsection{Example}
 
+\jc{This is weak; I could get away with it in a short talk, but this should
+be made more precise.  It is essentially what the code says, and what
+is encoded by the natural transformations, but there has to be a better
+way to say this.}
 The general structure explaining the nature of the second level
 metalanguage and how the two languages fit together from a categorical
 perspective is the following:
@@ -2123,6 +2141,12 @@ path and flipping them produces the connection in the bottom path:
 %%%%%%%%%%%%
 \subsection{Revised Syntax}
 
+\jc{The second sentence below is a repeat; where does it 
+belong?}  \jc{You're missing 4 combinators from that picture!  
+Plus the ones you added are the ones for absorption and 
+distributivity, NOT the ones which are redundant, they are really
+needed for a proper semring.}
+
 The inspiration of symmetric rig groupoids suggested a refactoring of
 $\Pi$ with additional level-1 combinators.  The added
 combinators~\ref{fig:more} are redundant (from an operational
@@ -2144,6 +2168,17 @@ circuits leading to smaller programs with fewer redexes.
 The big addition of course is the level-2 combinators which are
 collected in Fig.~\ref{fig:more2}. To avoid clutter we omit the names
 of the combinators and only show the signatures.
+
+\jc{I suggest adding the following laplaza combinators to that table:
+I, IV, IX (sorry), X ans XVII.  Also a short paragraph explaining what they
+do.  For some of them, I suggest digging into Data.SumProd.Properties
+and showing some of these too (just as signatures).  The later ones
+are much better.  Anything with a proj in the statement is "wrong"
+(it builds in some premature beta-redexes in the statement), so 
+don't pick those.  But they are theorems which are not in Agda's
+standard library.  Most of the properties of sums and products 
+(aka coherences) were already there, but not these, which are
+interesting interactions between them.}
 
 \begin{figure*}
 \[\begin{array}{rcl}
@@ -2185,8 +2220,8 @@ the production of a result.
 \subsection{The  \textbf{Int} Construction} 
 
 For this construction, we assume that we have extended $\Pi$ with a
-trace operator to implement recursion or feedback as was done in our
-previous work~\cite{James:2012:IE:2103656.2103667}. We then extend
+trace operator to implement recursion or feedback, as done
+in~\cite{James:2012:IE:2103656.2103667}. We then extend
 $\Pi$ with a new universe of types $\cubt$ that consists of composite
 types $\nodet{\tau_1}{\tau_2}$:
 \[\begin{array}{lrcl}
@@ -2199,6 +2234,7 @@ the new types $\cubt$ as 1-dimensional (1d) types. The 1d level is a
 product types, and its corresponding notion of isomorphisms on these 1d
 types.
 
+\jc{should define ; here too}
 Our next step is to define lifted versions of the 0d types:
 \[\begin{array}{rcl}
 \ztone &\eqdef& \nodet{0}{0} \\
@@ -2242,9 +2278,13 @@ level. For example:
 %%         &\eqdef& ((0+\tau_1)+\tau_2) \iso ((0+\tau_2)+\tau_1) \\
          &=& \assocrp \fatsemi (\idc \oplus \swapp) \fatsemi \assoclp
 \end{array}\]
+\jc{are you sure about identl?  The combinator for this in
+PiWithLevel/Pi1.agda is longer and (not surprisingly)
+uses unite and uniti.}
 
 \paragraph*{Composition using $\mathit{trace}$.} 
 
+\jc{assoc1 and assoc2 do not exist, should rename}
 \[\begin{array}{r@{\,\,\!}cl}
 (\fatsemi) &:& 
   (\cubt_1 \isoone \cubt_2) \rightarrow 
@@ -2322,7 +2362,7 @@ After a few failed attempts, we suspected that this definition of
 multiplication is not functorial which would mean that the \textbf{Int}
 construction only provides a limited notion of higher-order functions at the
 cost of losing the multiplicative structure at higher-levels. This
-observation is less well-known that it should be. Further investigation
+observation is less well-known than it should be. Further investigation
 reveals that this observation is intimately related to a well-known problem
 in algebraic topology and homotopy theory that was identified thirty years
 ago as the ``phony'' multiplication~\cite{thomason} in a special class
@@ -2331,6 +2371,9 @@ solved~\cite{ringcompletion} using a technique whose fundamental ingredients
 are to add more dimensions and then take homotopy colimits. It remains to
 investigate whether this idea can be integrated with our development to get
 higher-order functions while retaining the multiplicative structure.
+\jc{I would (syntactically) highlight that the Int construction does NOT
+allow one to lift multiplication in a straightforward manner.  Put it in a "box" or
+something?}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
