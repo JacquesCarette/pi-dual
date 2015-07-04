@@ -95,7 +95,6 @@ $\displaystyle
 \newcommand{\lolli}{\multimap} 
 \newcommand{\isoarrow}{\stackrel{\sim}{\rightarrow}}
 
-
 %% \DefineVerbatimEnvironment
 %%   {code}{Verbatim}
 %%  {} % Add fancy options here if you like.
@@ -133,13 +132,18 @@ $\displaystyle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
-\title{ A Sound and Complete Calculus for Reversible Circuit Equivalence}
-\authorinfo{Jacques Carette}
-  {McMaster University}
-  {carette@mcmaster.ca}
-\authorinfo{Amr Sabry}
-  {Indiana University}
-  {sabry@indiana.edu}
+\title{A Sound and Complete Calculus for Reversible Circuit Equivalence}
+\authorinfo{}{}{}
+
+%% 12 pages + bib
+%% all citations citet (text) or citep (paren)
+
+% \authorinfo{Jacques Carette}
+%                   {McMaster University}
+%                   {carette@mcmaster.ca}
+% \authorinfo{Amr Sabry}
+%                   {Indiana University}
+%                   {sabry@indiana.edu}
 
 \maketitle
 
@@ -153,12 +157,12 @@ reversible circuits, we propose viewing such circuits as proof terms
 witnessing equivalences between finite types. Proving that these type
 equivalences satisfy the commutative semiring axioms, we proceed with
 the categorification of type equivalences as \emph{symmetric rig
-groupoids}. The coherence conditions of these categories then
-produces, for free, a sound and complete calculus for reasoning about
-reversible circuit equivalence. The paper consists of the
-``unformalization'' of an Agda package formalizing the connections
-between reversible circuits, equivalences between finite types,
-permutations between finite sets, and symmetric rig groupoids.
+groupoids}. The coherence conditions of these categories then produce,
+for free, a sound and complete calculus for reasoning about reversible
+circuit equivalence. The paper consists of the ``unformalization'' of
+an Agda package formalizing the connections between reversible
+circuits, equivalences between finite types, permutations between
+finite sets, and symmetric rig groupoids.
 
 \end{abstract}
 
@@ -432,14 +436,13 @@ _□ t = id⟷
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} 
 
-\jc{do remember that the code which is embedded in this file
-is not the one in the sources below (anymore).  Not sure if it
-matters?}
-
-\jc{Also: double-blind this year!  I guess we need to omit our names.
-I don't think the text will need changed for that.}
-
-\url{https://github.com/JacquesCarette/pi-dual}
+%% \jc{do remember that the code which is embedded in this file
+%% is not the one in the sources below (anymore).  Not sure if it
+%% matters?}
+%% 
+%% \jc{Also: double-blind this year!  I guess we need to omit our names.
+%% I don't think the text will need changed for that.}
+%% \url{https://github.com/JacquesCarette/pi-dual}
 
 Reversible circuits are NOT a restriction; they are a generalization;
 conventional irreversible circuits are a special case.
@@ -605,18 +608,19 @@ defined as follows:
 |A \uplus B| &=& |A| + |B| \\
 |A \times B| &=& |A| * |B| 
 \end{array}\] 
-Our starting point is a result by Fiore
-et. al~\cite{Fiore:2004,fiore-remarks} that completely characterizes
-the isomorphisms between finite types using the axioms of commutative
-semirings. (See Appendix~\ref{sec:commrig} for the complete definition
-of commutative semirings.) Intuitively this result states that one can
-interpret each type by its size, and that this identification validates the familiar
+Our starting point is a result by \citet{Fiore:2004,fiore-remarks}
+that completely characterizes the isomorphisms between finite types
+using the axioms of commutative semirings. (See
+Appendix~\ref{sec:commrig} for the complete definition of commutative
+semirings.) Intuitively this result states that one can interpret each
+type by its size, and that this identification validates the familiar
 properties of the natural numbers, and is in fact isomorphic to the
 commutative semiring of the natural numbers.
 
-In previous work ~\cite {James:2012:IE:2103656.2103667}, we introduced
-the $\Pi$ family of languages whose core computations are these
-isomorphisms between finite types. Building on that work and on the
+Our work builds on previous work by
+\citet{James:2012:IE:2103656.2103667} which introduced the $\Pi$
+family of languages whose core computations are these isomorphisms
+between finite types. Building on that work and on the
 growing-in-importance idea that isomorphisms have interesting
 computational content and should not be silently or implicitly
 identified, we first recast Fiore et. al's result in the next section,
@@ -667,8 +671,8 @@ semiring (up to $\simeq$).
   is~$\top$, and the two binary operations are $\uplus$ and $\times$.
 \end{proof}
 
-\jc{Do we want to have a bunch of appendices, or perhaps a web
-link, to all the Agda code which formalizes all of this?}
+%% \jc{Do we want to have a bunch of appendices, or perhaps a web
+%% link, to all the Agda code which formalizes all of this?}
 
 \noindent For example, we have equivalences such as:
 \[\begin{array}{rcl}
@@ -892,19 +896,18 @@ proved and given a computational interpretation for finite types.
 
 In the previous section, we argued that, up to equivalence, the
 equivalence of types reduces to permutations on finite sets. We recall
-previous work which proposed a term language for permutations and
+background work which proposed a term language for permutations and
 adapt it to be used to express, compute with, and reason about type
 equivalences between finite types.
 
 %%%%%%%%%%%%
 \subsection{The $\Pi$-Languages}
 
-In previous work~\cite{James:2012:IE:2103656.2103667}, 
-the $\Pi$ family of languages was introduced, 
-whose only computations are isomorphisms
-between finite types. We propose that this family of languages is
-exactly the right programmatic interface for manipulating and
-reasoning about type equivalences.
+\citet{James:2012:IE:2103656.2103667} introduced the $\Pi$ family of
+languages whose only computations are isomorphisms between finite
+types. We propose that this family of languages is exactly the right
+programmatic interface for manipulating and reasoning about type
+equivalences.
 
 The syntax of the previously-developed $\Pi$ language consists of
 types $\tau$ including the empty type 0, the unit type 1, and
@@ -968,7 +971,7 @@ that witness the type isomorphism in the middle.
 \end{center}
 \end{minipage}
 \end{array}\]
-\caption{$\Pi$-combinators~\cite{James:2012:IE:2103656.2103667}
+\caption{$\Pi$-combinators~\citep{James:2012:IE:2103656.2103667}
 \label{pi-combinators}}
 \end{figure*}
 
@@ -981,11 +984,12 @@ combinator in sequential composition.
 \label{sec:circuits}
 
 The language $\Pi$ is universal for reversible combinational
-circuits~\cite{James:2012:IE:2103656.2103667}.\footnote{With the
-addition of recursive types and trace operators, $\Pi$ become a Turing
-complete reversible
-language~\cite{James:2012:IE:2103656.2103667,rc2011}.} We illustrate
-the expressiveness of the language with a few short examples.
+circuits~\citep{James:2012:IE:2103656.2103667}.\footnote{With the
+  addition of recursive types and trace operators, $\Pi$ become a
+  Turing complete reversible
+  language~\citep{James:2012:IE:2103656.2103667,rc2011}.} We
+illustrate the expressiveness of the language with a few short
+examples.
 
 The first example is simply boolean negation which is easily achieved:
 
@@ -1093,11 +1097,11 @@ might visualize it as follows:
 \end{center}
 
 Writing circuits using the raw syntax for combinators is clearly
-tedious. In other work, one can find a compiler from a
-conventional functional language to generate the
-circuits~\cite{James:2012:IE:2103656.2103667}, a systematic technique
-to translate abstract machines to $\Pi$~\cite{rc2012}, and a
-Haskell-like surface language~\cite{theseus} which can be of help in
+tedious. In other work, one can find a compiler from a conventional
+functional language to generate the
+circuits~\citep{James:2012:IE:2103656.2103667}, a systematic technique
+to translate abstract machines to $\Pi$~\citep{rc2012}, and a
+Haskell-like surface language~\citep{theseus} which can be of help in
 writing circuits. These essential tools are however a distraction in
 the current setting and we content ourselves with some Agda syntactic
 sugar illustrated below:
@@ -1138,7 +1142,7 @@ This style makes the intermediate steps explicit showing how the types
 are transformed in each step by the combinators. The example
 incidentally confirms that $\Pi$ is universal for reversible circuits
 since the Toffoli gate is universal for such
-circuits~\cite{Toffoli:1980}.
+circuits~\citep{Toffoli:1980}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Semantics}
@@ -1241,15 +1245,14 @@ evalB (c₀ ⊗ c₁) (x , y) = evalB c₀ x , evalB c₁ y
 \noindent In the definition, the function $⟦\cdot⟧$ maps each type
 constructor to its Agda denotation, e.g., it maps the type 0 to
 $\bot$, the type 1 to $\top$, etc. The complete definitions for these
-evaluators can be found in previous
-publications~\cite{rc2011,rc2012,James:2012:IE:2103656.2103667}
-(and in the accompanying Agda code) and
-will not be repeated here. The reason is that, although these
-evaluators adequately serve as semantic specifications, they drive the
-development towards extensional reasoning as evident from the
-signatures which map a permutation to a function. We will instead
-pursue a denotational approach mapping the combinators to type
-equivalences or equivalently to permutations:
+evaluators can be found in the papers by
+\citet{rc2011,rc2012,James:2012:IE:2103656.2103667} (and in the
+accompanying Agda code) and will not be repeated here. The reason is
+that, although these evaluators adequately serve as semantic
+specifications, they drive the development towards extensional
+reasoning as evident from the signatures which map a permutation to a
+function. We will instead pursue a denotational approach mapping the
+combinators to type equivalences or equivalently to permutations:
 
 \begin{code}
 c2equiv  :  {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
@@ -1305,7 +1308,8 @@ module X where
  data _⇔'_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set where
 \end{code}
 }
-\begin{code}[gobble=2]
+%% \begin{code}[gobble=2]
+\begin{code}
   id⇔     :  {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔' c 
 
   trans⇔  :  {t₁ t₂ : U} {c₁ c₂ c₃ : t₁ ⟷ t₂} → 
@@ -1365,7 +1369,7 @@ negEx =
 The problem of finding a sound and complete set of rules for reasoning
 about equivalence of permutations is solved by appealing to various
 results about specialized monoidal categories. The main technical
-vehicle is that of \emph{categorification}~\cite{math/9802029} which
+vehicle is that of \emph{categorification}~\citep{math/9802029} which
 is a process, intimately related to homotopy theory, for finding
 category-theoretic analogs of set-theoretic concepts. From an
 intuitive perspective, the algebraic structure of a commutative
@@ -1413,8 +1417,8 @@ monoidal categories.
 
 \begin{definition}[Monoidal Category]
 \label{ch:pi:def:MC}
-A \emph{monoidal category}~\cite{nla.cat-vn1051288} is a category with
-the following additional structure:
+A \emph{monoidal category}~\citep{nla.cat-vn1051288} is a category
+with the following additional structure:
 \begin{itemize}
 \item a bifunctor $\otimes$ called the monoidal or tensor product,
 \item an object $I$ called the unit object, and
@@ -1483,18 +1487,18 @@ equal. Indeed, as Dosen and Petric explain:
   axiomatization is complete with respect to this model. It is no
   wonder that his coherence problem reduces to the completeness
   problem for the usual axiomatization of symmetric
-  groups~\cite{coherence}.
+  groups~\citep{coherence}.
 \end{quote} 
-From a different perspective, Baez and Dolan~\cite{math/9802029}
-explain the source of these coherence laws as arising from homotopy
-theory. In this theory, laws are only imposed up to homotopy with
-these homotopies satisfying certain laws, up again only up to
-homotopy, with these higher homotopies satisfying their own higher
-coherence laws, and so on. Remarkably, they report, among other
-results, that the pentagon identity of Fig.~\ref{fig:mon} arises when
-studying the algebraic structure possessed by a space that is homotopy
-equivalent to a loop space and that the hexagon identity arises in the
-context of spaces homotopy equivalent to double loop spaces.
+From a different perspective, \citet{math/9802029} explain the source
+of these coherence laws as arising from homotopy theory. In this
+theory, laws are only imposed up to homotopy with these homotopies
+satisfying certain laws, up again only up to homotopy, with these
+higher homotopies satisfying their own higher coherence laws, and so
+on. Remarkably, they report, among other results, that the pentagon
+identity of Fig.~\ref{fig:mon} arises when studying the algebraic
+structure possessed by a space that is homotopy equivalent to a loop
+space and that the hexagon identity arises in the context of spaces
+homotopy equivalent to double loop spaces.
 
 In our context, we will build monoidal categories where the objects
 are finite types and the morphisms are reversible circuits represented
@@ -1538,7 +1542,7 @@ and absorption/annihilation isomorphisms:
 a_ℓ : x ⊗ 0 &\isoarrow& 0 \\
 a_r : 0 ⊗ x &\isoarrow& 0
 \end{array}\]
-satisfying coherence conditions worked out by Laplaza~\cite{laplaza}
+satisfying coherence conditions worked out by \citet{laplaza}
 and discussed below. 
 \end{definition}
 
@@ -1553,7 +1557,7 @@ every morphism is invertible.
 \end{definition}
 
 The coherence conditions for rig categories were first worked out by
-Laplaza~\cite{laplaza}. Pages 31-35 of his paper report 24 coherence
+\citet{laplaza}. Pages 31-35 of his paper report 24 coherence
 conditions that vary from simple diagrams to one that includes 9 nodes
 showing that two distinct ways of simplifying $(A ⊕ B) ⊗ (C ⊕ D)$ to
 $(((A ⊗ C) ⊕ (B ⊗ C)) ⊕ (A ⊗ D)) ⊕ (B ⊗ D)$ commute. The 24 coherence
@@ -2016,7 +2020,7 @@ involved coherence laws.
 \end{proof}
 
 Putting the result above together with Laplaza's coherence result
-about rig categories, we conclude our main result. 
+about rig categories, we conclude with our main result. 
 
 \begin{theorem}
 We have two levels of $\Pi$-combinators such that:
@@ -2309,17 +2313,17 @@ As Fig.~\ref{fig:more2} illustrates, we have rules to manipulate code
 fragments rewriting them in a small-step fashion. The rules apply only
 when both sides are well-typed. The small-step nature of the rules
 should allow us to make efficient optimizers following the experience
-in functional languages~\cite{PeytonJones:1998:TOH:299619.299621}. In
+in functional languages~\citep{PeytonJones:1998:TOH:299619.299621}. In
 contrast the coherence conditions are much smaller in number and many
 them express invariants about much bigger ``chunks.'' From our small
 experiments, an effective way to use the rules is to fix a canonical
 representation of circuits that has the ``right'' properties and use
 the rules in a directed fashion to produce that canonical
-representation. For example, Saeedi and
-Markov~\cite{Saeedi:2013:SOR:2431211.2431220} survey several possible
-canonical representations that trade-off various desired
-properties. Of course, finding a rewriting procedure that makes
-progress towards the canonical representation is far from trivial.
+representation. For example, \citet{Saeedi:2013:SOR:2431211.2431220}
+survey several possible canonical representations that trade-off
+various desired properties. Of course, finding a rewriting procedure
+that makes progress towards the canonical representation is far from
+trivial.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Problem with Higher-Order Functions}
@@ -2327,29 +2331,30 @@ progress towards the canonical representation is far from trivial.
 
 In the context of monoidal categories, it is known that a notion of
 higher-order functions emerges from having an additional degree of
-\emph{symmetry}. In particular, both the \textbf{Int} construction of Joyal,
-Street, and Verity~\citeyearpar{joyal1996traced} and the closely related
-$\mathcal{G}$ construction of linear logic~\cite{gcons} construct
-higher-order \emph{linear} functions by considering a new category built on
-top of a given base traced monoidal category. The objects of the new category
-are of the form $\nodet{\tau_1}{\tau_2}$ where~$\tau_1$ and~$\tau_2$ are
-objects in the base category. Intuitively, this object represents the
-\emph{difference} $\tau_1-\tau_2$ with the component $\tau_1$ viewed as
-conventional type whose elements represent values flowing, as usual, from
-producers to consumers, and the component $\tau_2$ viewed as a \emph{negative
-  type} whose elements represent demands for values or equivalently values
-flowing backwards. Under this interpretation, and as we explain below, a
-function is nothing but an object that converts a demand for an argument into
-the production of a result.
+\emph{symmetry}. In particular, both the \textbf{Int} construction of
+\citet{joyal1996traced} and the closely related $\mathcal{G}$
+construction of linear logic~\citep{gcons} construct higher-order
+\emph{linear} functions by considering a new category built on top of
+a given base traced monoidal category. The objects of the new category
+are of the form $\nodet{\tau_1}{\tau_2}$ where~$\tau_1$ and~$\tau_2$
+are objects in the base category. Intuitively, this object represents
+the \emph{difference} $\tau_1-\tau_2$ with the component $\tau_1$
+viewed as conventional type whose elements represent values flowing,
+as usual, from producers to consumers, and the component $\tau_2$
+viewed as a \emph{negative type} whose elements represent demands for
+values or equivalently values flowing backwards. Under this
+interpretation, and as we explain below, a function is nothing but an
+object that converts a demand for an argument into the production of a
+result.
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The  \textbf{Int} Construction} 
 
 For this construction, we assume that we have extended $\Pi$ with a
-trace operator to implement recursion or feedback, as done
-in~\cite{James:2012:IE:2103656.2103667}. We then extend
-$\Pi$ with a new universe of types $\cubt$ that consists of composite
-types $\nodet{\tau_1}{\tau_2}$:
+trace operator to implement recursion or feedback, as done in some of
+the work on $\Pi$~\citep{James:2012:IE:2103656.2103667}. We then
+extend $\Pi$ with a new universe of types $\cubt$ that consists of
+composite types $\nodet{\tau_1}{\tau_2}$:
 \[\begin{array}{lrcl}
 (\textit{{1d} types}) & 
   \cubt &::=& \nodet{\tau_1}{\tau_2}
@@ -2372,7 +2377,7 @@ Our next step is to define lifted versions of the 0d types:
 \end{array}\]
 Building on the idea that $\Pi$ is a categorification of the natural numbers
 and following a long tradition that relates type isomorphisms and arithmetic
-identities~\cite{DiCosmo:2005:SSI:1090732.1090734}, one is tempted to think
+identities~\citep{DiCosmo:2005:SSI:1090732.1090734}, one is tempted to think
 that the \textbf{Int} construction (as its name suggests) produces a
 categorification of the integers. Based on this hypothesis, the definitions
 above can be intuitively understood as arithmetic identities. The same
@@ -2381,15 +2386,15 @@ arithmetic intuition explains the lifting of isomorphisms to 1d types:
 \nodet{\tau_1}{\tau_2} \isoone \nodet{\tau_3}{\tau_4} &\eqdef& 
   (\tau_1+\tau_4) \iso (\tau_2+\tau_3)
 \end{array}\]
-In other words, an isomorphism between 1d types is really an isomorphism
-between ``re-arranged'' 0d types where the negative input $\tau_2$ is viewed
-as an output and the negative output $\tau_4$ is viewed as an input. Using
-these ideas, it is now a fairly standard exercise to define the lifted
-versions of most of the combinators in
-Table~\ref{pi-combinators}.\footnote{See
-  Krishnaswami's~\citeyearpar{neelblog} excellent blog post implementing this
-  construction in OCaml.} There are however a few interesting cases whose
-appreciation is essential for the remainder of the paper.
+In other words, an isomorphism between 1d types is really an
+isomorphism between ``re-arranged'' 0d types where the negative input
+$\tau_2$ is viewed as an output and the negative output $\tau_4$ is
+viewed as an input. Using these ideas, it is now a fairly standard
+exercise to define the lifted versions of most of the combinators in
+Table~\ref{pi-combinators}.\footnote{See \citet{neelblog}'s excellent
+  blog post implementing this construction in OCaml.} There are
+however a few interesting cases whose appreciation is essential for
+the remainder of the paper.
 
 \paragraph*{Trivial cases.} Many of the 0d combinators lift easily to the 1d
 level. For example:
@@ -2491,9 +2496,9 @@ cost of losing the multiplicative structure at higher-levels. This
 observation is less well-known than it should be. Further investigation
 reveals that this observation is intimately related to a well-known problem
 in algebraic topology and homotopy theory that was identified thirty years
-ago as the ``phony'' multiplication~\cite{thomason} in a special class
+ago as the ``phony'' multiplication~\citep{thomason} in a special class
 categories related to ours. This problem was recently
-solved~\cite{ringcompletion} using a technique whose fundamental ingredients
+solved~\citep{ringcompletion} using a technique whose fundamental ingredients
 are to add more dimensions and then take homotopy colimits. It remains to
 investigate whether this idea can be integrated with our development to get
 higher-order functions while retaining the multiplicative structure.
@@ -2557,12 +2562,6 @@ are sensible and that they would give rise to some form of
 higher-order functions. There is also evidence for even more exotic
 types that are related to algebraic numbers including roots and
 imaginary numbers.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% \bibliographystyle{abbrvnat}
-\bibliographystyle{abbrvnat}
-\softraggedright
-\bibliography{cites}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \appendix
@@ -3236,6 +3235,11 @@ a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
 
 \end{tikzpicture}
 \end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{abbrvnat}
+\softraggedright
+\bibliography{cites}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
