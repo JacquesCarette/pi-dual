@@ -43,12 +43,12 @@ factor-commute (inj₁ x) = P.refl
 factor-commute (inj₂ y) = P.refl
 
 distl-swap₊-lemma : {A B C : Set} → (x : (A × (B ⊎ C))) →
-  (distl (proj₁ x , swap₊ (proj₂ x))) P.≡ (swap₊ (distl x))
+  distl (map× F.id swap₊ x) P.≡ (swap₊ (distl x))
 distl-swap₊-lemma (x , inj₁ y) = P.refl
 distl-swap₊-lemma (x , inj₂ y) = P.refl
 
 factorl-swap₊-lemma : {A B C : Set} → (x : (A × C) ⊎ (A × B)) →
-  (proj₁ (factorl x) , swap₊ (proj₂ (factorl x))) P.≡ factorl (swap₊ x)
+  map× F.id swap₊ (factorl x) P.≡ factorl (swap₊ x)
 factorl-swap₊-lemma (inj₁ x) = P.refl
 factorl-swap₊-lemma (inj₂ y) = P.refl
 
@@ -63,15 +63,14 @@ factor-swap⋆-lemma (inj₁ x) = P.refl
 factor-swap⋆-lemma (inj₂ y) = P.refl
 
 dist-dist-assoc-lemma : {A B C D : Set} → (x : (A ⊎ B ⊎ C) × D) →
-  map⊎ dist F.id (dist (assocl₊ (proj₁ x), proj₂ x)) P.≡
+  map⊎ dist F.id (dist (map× assocl₊ F.id x)) P.≡
   assocl₊ (map⊎ F.id dist (dist x))
 dist-dist-assoc-lemma (inj₁ x , d) = P.refl
 dist-dist-assoc-lemma (inj₂ (inj₁ x) , d) = P.refl
 dist-dist-assoc-lemma (inj₂ (inj₂ y) , d) = P.refl
 
 assoc-factor-factor-lemma : {A B C D : Set} → (x : ((A × D) ⊎ (B × D)) ⊎ (C × D)) →
-  (assocr₊ (proj₁ (factor (map⊎ factor F.id x))), proj₂ (factor (map⊎ factor F.id x)))
-  P.≡
+  map× assocr₊ F.id (factor (map⊎ factor F.id x))  P.≡
   factor (map⊎ F.id factor (assocr₊ x))
 assoc-factor-factor-lemma (inj₁ (inj₁ x)) = P.refl
 assoc-factor-factor-lemma (inj₁ (inj₂ y)) = P.refl
@@ -87,15 +86,17 @@ assoc-factorl-lemma : {A B C D : Set} → (x : ((A × B) × C) ⊎ ((A × B) × 
 assoc-factorl-lemma (inj₁ x) = P.refl
 assoc-factorl-lemma (inj₂ y) = P.refl
 
+-- in theory, this actually says that all ⊥ are equal!
 distz0≡distrz0 : (x : ⊥ × ⊥) → distz x P.≡ distzr x
-distz0≡distrz0 (() , ())
+distz0≡distrz0 (() , _)
 
 factorz0≡factorzr0 : (x : ⊥) → factorz x P.≡ factorzr x
 factorz0≡factorzr0 ()
 
 distz0≡unite₊∘[distz,distz]∘distl : {A B : Set} (x : ⊥ × (A ⊎ B)) →
   distz x P.≡ unite₊ (map⊎ distz distz (distl x))
-distz0≡unite₊∘[distz,distz]∘distl (() , _)
+distz0≡unite₊∘[distz,distz]∘distl (() , inj₁ _)
+distz0≡unite₊∘[distz,distz]∘distl (x , inj₂ y) = P.refl
 
 factorz0≡factorl∘[factorz,factorz]∘uniti₊ : {A B : Set} (x : ⊥) →
   factorz x P.≡ factorl {B = A} {B} (map⊎ factorz factorz (uniti₊ x))
