@@ -938,7 +938,10 @@ that witness the type isomorphism in the middle.
 
 \identlt :&  1 * \tau & \iso & \tau &: \identrt \\
 \swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
-\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt 
+\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\
+
+\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor \\
+\distz :&~ 0 * \tau & \iso & 0 ~ &: \factorzl 
 \end{array}
 & 
 \begin{minipage}{0.5\textwidth}
@@ -2171,7 +2174,6 @@ circuits leading to smaller programs with fewer redexes.
 \absorbr :&~ 0 * \tau & \iso & 0 &: \factorzl \\
 \absorbl :&~ \tau * 0 & \iso & 0 &: \factorzr \\
 
-\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor \\
 \distl :&~ \tau_1 * (\tau_2 + \tau_3) & \iso & (\tau_1 * \tau_2) + (\tau_1 * \tau_3)~ &: \factorl 
 \end{array}\]      
 \caption{\label{fig:more}Additional $\Pi$-combinators}
@@ -2213,6 +2215,25 @@ c \fatsemi (!~c) & \isoone & \idc \\
 \swapt \fatsemi (c₁ ⊗ c₂) & \isoone &  (c₂ ⊗ c₁) \fatsemi \swapt \\
 \\
 \swapp \fatsemi \factor & \isoone &  \factor \fatsemi (\swapp ⊗ \idc) \\
+\absorbr & \isoone & \absorbl \\
+\identlt & \isoone & \absorbr \\
+\absorbl & \isoone & \swapt \fatsemi \absorbr \\
+\absorbr & \isoone & (\assoclt \fatsemi (\absorbr ⊗ \idc)) \fatsemi \absorbr \\
+\absorbr & \isoone & (\distl \fatsemi (\absorbr ⊕ \absorbr)) \fatsemi \identlp \\
+(\idc ⊗ \absorbr) \fatsemi \absorbl & \isoone &
+  (\assoclt \fatsemi (\absorbl ⊗ \idc) \fatsemi \absorbr \\
+(\idc ⊗ \identlp) & \isoone & (\distl \fatsemi (\absorbl ⊕ \idc)) \fatsemi \identlp \\
+\identlp & \isoone & \distl \fatsemi (\identlp ⊕ \identlp) \\
+(\distl \fatsemi (\dist ⊕ \dist)) \fatsemi \assoclp & \isoone &
+  ((((\dist \fatsemi (\distl ⊕ \distl)) \fatsemi \assoclp) \fatsemi (\assocrp ⊕ \idc))
+  \fatsemi (\idc ⊕ \swapp) ⊕ \idc)) \fatsemi (\assoclp ⊕ \idc) \\
+\\
+(\idc ⊗ \swapp) \fatsemi \distl & \isoone & \distl \fatsemi \swapp \\
+\dist \fatsemi (\swapt ⊕ \swapt) & \isoone & \swapt \fatsemi \distl \\
+((\assoclp ⊗ \idc) \fatsemi \dist) \fatsemi (\dist ⊕ \idc) & \isoone &
+  (\dist \fatsemi (\idc ⊕ \dist)) \fatsemi \assoclp \\
+\assoclt \fatsemi \distl & \isoone & 
+  ((\idc ⊗ \distl) \fatsemi \distl) \fatsemi (\assoclt ⊕ \assoclt) \\
 \\
 (c₁ ⊕ (c₂ ⊕ c₃)) \fatsemi \assoclp & \isoone & \assoclp \fatsemi ((c₁ ⊕ c₂) ⊕ c₃) \\
 ((c₁ ⊕ c₂) ⊕ c₃) \fatsemi \assocrp & \isoone & \assocrp \fatsemi (c₁ ⊕ (c₂ ⊕ c₃)) \\
@@ -2222,6 +2243,33 @@ c \fatsemi (!~c) & \isoone & \idc \\
 ((a ⊗ c) ⊕ (b ⊗ c)) \fatsemi \factor & \isoone & \factor \fatsemi ((a ⊕ b) ⊗ c) \\
 (a ⊗ (b ⊕ c)) \fatsemi \distl & \isoone & \distl \fatsemi ((a ⊗ b) ⊕ (a ⊗ c)) \\
 ((a ⊗ b) ⊕ (a ⊗ c)) \fatsemi \factorl & \isoone & \factorl \fatsemi (a ⊗ (b ⊕ c)) \\
+\\
+\idc ⊕ \idc & \isoone & \idc \\
+\idc ⊗ \idc & \isoone & \idc \\
+\\
+(c₁ \fatsemi c₃) ⊕ (c₂ \fatsemi c₄) & \isoone & (c₁ ⊕ c₂) \fatsemi (c₃ ⊕ c₄) \\
+(c₁ \fatsemi c₃) ⊗ (c₂ \fatsemi c₄) & \isoone & (c₁ ⊗ c₂) \fatsemi (c₃ ⊗ c₄) \\
+\\
+\identlsp ⊕ \idc & \isoone & \assocrp \fatsemi (\idc ⊕ \identlp) \\
+\identlst ⊗ \idc & \isoone & \assocrt \fatsemi (\idc ⊕ \identlt) \\
+\\
+\assocrp \fatsemi \assocrp & \isoone &
+  ((\assocrp ⊕ \idc) \fatsemi \assocrp) \fatsemi (\idc ⊕ \assocrp) \\
+\assocrt \fatsemi \assocrt & \isoone &
+  ((\assocrt ⊗ \idc) \fatsemi \assocrt) \fatsemi (\idc ⊗ \assocrt) \\
+(\assocrp \fatsemi \swapp) \fatsemi \assocrp & \isoone &
+  ((\swapp ⊕ \idc) \fatsemi \assocrp) \fatsemi (\idc ⊕ \swapp) \\
+(\assoclp \fatsemi \swapp) \fatsemi \assoclp & \isoone &
+  ((\idc ⊕ \swapp) \fatsemi \assoclp) \fatsemi (\swapp ⊕ \idc) \\
+(\assocrt \fatsemi \swapt) \fatsemi \assocrt & \isoone &
+  ((\swapt ⊕ \idc) \fatsemi \assocrt) \fatsemi (\idc ⊗ \swapt) \\
+(\assoclt \fatsemi \swapt) \fatsemi \assoclt & \isoone &
+  ((\idc ⊗ \swapt) \fatsemi \assoclt) \fatsemi (\swapt ⊗ \idc) \\
+\\
+(c ⊗ \idc) \fatsemi \absorbl & \isoone & \absorbl \fatsemi \idc \\
+(\idc ⊗ c) \fatsemi \absorbr & \isoone & \absorbr \fatsemi \idc \\
+\idc \fatsemi \factorzl & \isoone & \factorzl \fatsemi (\idc ⊗ c) \\
+\idc \fatsemi \factorzr & \isoone & \factorzr \fatsemi (c ⊗ \idc) 
 \end{array}\]
 \begin{minipage}{0.5\textwidth}
 \begin{center} 
@@ -2255,7 +2303,12 @@ c \fatsemi (!~c) & \isoone & \idc \\
 \end{figure*}
 
 As Fig.~\ref{fig:more2} illustrates, we have rules to manipulate code
-fragments rewriting them in a small-step fashion. From our small
+fragments rewriting them in a small-step fashion. The rules apply only
+when both sides are well-typed. The small-step nature of the rules
+should allow us to make efficient optimizers following the experience
+in functional languages~\cite{PeytonJones:1998:TOH:299619.299621}. In
+contrast the coherence conditions are much smaller in number and many
+them express invariants about much bigger ``chunks.'' From our small
 experiments, an effective way to use the rules is to fix a canonical
 representation of circuits that has the ``right'' properties and use
 the rules in a directed fashion to produce that canonical
@@ -2263,7 +2316,7 @@ representation. For example, Saeedi and
 Markov~\cite{Saeedi:2013:SOR:2431211.2431220} survey several possible
 canonical representations that trade-off various desired
 properties. Of course, finding a rewriting procedure that makes
-progress towards the canonical representation is far from trivial. 
+progress towards the canonical representation is far from trivial.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Problem with Higher-Order Functions}
