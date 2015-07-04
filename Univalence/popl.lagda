@@ -2195,45 +2195,23 @@ standard library.  Most of the properties of sums and products
 interesting interactions between them.}
 
 \begin{figure*}
-\[\begin{array}{rcl}
-c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c₃ \\
+\[\begin{array}{cc}
+\begin{array}{rcl}
 \idc \fatsemi c & \isoone & c \\
 c \fatsemi \idc & \isoone & c \\
 c \fatsemi (!~c) & \isoone & \idc \\
 (!~c) \fatsemi c & \isoone & \idc \\
+\idc ⊕ \idc & \isoone & \idc \\
+\idc ⊗ \idc & \isoone & \idc \\
+c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c₃ \\
+(c₁ \fatsemi c₃) ⊕ (c₂ \fatsemi c₄) & \isoone & (c₁ ⊕ c₂) \fatsemi (c₃ ⊕ c₄) \\
+(c₁ \fatsemi c₃) ⊗ (c₂ \fatsemi c₄) & \isoone & (c₁ ⊗ c₂) \fatsemi (c₃ ⊗ c₄) \\
 \\
 \identlp \fatsemi c₂ & \isoone & (c₁ ⊕ c₂) \fatsemi \identlp \\
 \identrp \fatsemi (c₁ ⊕ c₂) & \isoone &  c₂ \fatsemi \identrp \\
 \identlsp \fatsemi c₂ & \isoone & (c₂ ⊕ c₁) \fatsemi \identlsp \\
 \identrsp \fatsemi (c₂ ⊕ c₁) & \isoone &  c₂ \fatsemi \identrsp \\
-\swapp \fatsemi (c₁ ⊕ c₂) & \isoone &  (c₂ ⊕ c₁) \fatsemi \swapp \\
-\\
-\identlt \fatsemi c₂ & \isoone & (c₁ ⊗ c₂) \fatsemi \identlt \\
-\identrt \fatsemi (c₁ ⊗ c₂) & \isoone &  c₂ \fatsemi \identrt \\
-\identlst \fatsemi c₂ & \isoone & (c₂ ⊗ c₁) \fatsemi \identlst \\
-\identrst \fatsemi (c₂ ⊗ c₁) & \isoone &  c₂ \fatsemi \identrst \\
-\swapt \fatsemi (c₁ ⊗ c₂) & \isoone &  (c₂ ⊗ c₁) \fatsemi \swapt \\
-\\
-\swapp \fatsemi \factor & \isoone &  \factor \fatsemi (\swapp ⊗ \idc) \\
-\absorbr & \isoone & \absorbl \\
-\identlt & \isoone & \absorbr \\
-\absorbl & \isoone & \swapt \fatsemi \absorbr \\
-\absorbr & \isoone & (\assoclt \fatsemi (\absorbr ⊗ \idc)) \fatsemi \absorbr \\
-\absorbr & \isoone & (\distl \fatsemi (\absorbr ⊕ \absorbr)) \fatsemi \identlp \\
-(\idc ⊗ \absorbr) \fatsemi \absorbl & \isoone &
-  (\assoclt \fatsemi (\absorbl ⊗ \idc) \fatsemi \absorbr \\
-(\idc ⊗ \identlp) & \isoone & (\distl \fatsemi (\absorbl ⊕ \idc)) \fatsemi \identlp \\
-\identlp & \isoone & \distl \fatsemi (\identlp ⊕ \identlp) \\
-(\distl \fatsemi (\dist ⊕ \dist)) \fatsemi \assoclp & \isoone &
-  ((((\dist \fatsemi (\distl ⊕ \distl)) \fatsemi \assoclp) \fatsemi (\assocrp ⊕ \idc))
-  \fatsemi (\idc ⊕ \swapp) ⊕ \idc)) \fatsemi (\assoclp ⊕ \idc) \\
-\\
-(\idc ⊗ \swapp) \fatsemi \distl & \isoone & \distl \fatsemi \swapp \\
-\dist \fatsemi (\swapt ⊕ \swapt) & \isoone & \swapt \fatsemi \distl \\
-((\assoclp ⊗ \idc) \fatsemi \dist) \fatsemi (\dist ⊕ \idc) & \isoone &
-  (\dist \fatsemi (\idc ⊕ \dist)) \fatsemi \assoclp \\
-\assoclt \fatsemi \distl & \isoone & 
-  ((\idc ⊗ \distl) \fatsemi \distl) \fatsemi (\assoclt ⊕ \assoclt) \\
+\identlsp ⊕ \idc & \isoone & \assocrp \fatsemi (\idc ⊕ \identlp) \\
 \\
 (c₁ ⊕ (c₂ ⊕ c₃)) \fatsemi \assoclp & \isoone & \assoclp \fatsemi ((c₁ ⊕ c₂) ⊕ c₃) \\
 ((c₁ ⊕ c₂) ⊕ c₃) \fatsemi \assocrp & \isoone & \assocrp \fatsemi (c₁ ⊕ (c₂ ⊕ c₃)) \\
@@ -2242,17 +2220,47 @@ c \fatsemi (!~c) & \isoone & \idc \\
 ((a ⊕ b) ⊗ c) \fatsemi \dist & \isoone & \dist \fatsemi ((a ⊗ c) ⊕ (b ⊗ c)) \\
 ((a ⊗ c) ⊕ (b ⊗ c)) \fatsemi \factor & \isoone & \factor \fatsemi ((a ⊕ b) ⊗ c) \\
 (a ⊗ (b ⊕ c)) \fatsemi \distl & \isoone & \distl \fatsemi ((a ⊗ b) ⊕ (a ⊗ c)) \\
-((a ⊗ b) ⊕ (a ⊗ c)) \fatsemi \factorl & \isoone & \factorl \fatsemi (a ⊗ (b ⊕ c)) \\
-\\
-\idc ⊕ \idc & \isoone & \idc \\
-\idc ⊗ \idc & \isoone & \idc \\
-\\
-(c₁ \fatsemi c₃) ⊕ (c₂ \fatsemi c₄) & \isoone & (c₁ ⊕ c₂) \fatsemi (c₃ ⊕ c₄) \\
-(c₁ \fatsemi c₃) ⊗ (c₂ \fatsemi c₄) & \isoone & (c₁ ⊗ c₂) \fatsemi (c₃ ⊗ c₄) \\
-\\
-\identlsp ⊕ \idc & \isoone & \assocrp \fatsemi (\idc ⊕ \identlp) \\
+((a ⊗ b) ⊕ (a ⊗ c)) \fatsemi \factorl & \isoone & \factorl \fatsemi (a ⊗ (b ⊕ c)) 
+\end{array}
+&
+\begin{array}{rcl}
+\identlt \fatsemi c₂ & \isoone & (c₁ ⊗ c₂) \fatsemi \identlt \\
+\identrt \fatsemi (c₁ ⊗ c₂) & \isoone &  c₂ \fatsemi \identrt \\
+\identlst \fatsemi c₂ & \isoone & (c₂ ⊗ c₁) \fatsemi \identlst \\
+\identrst \fatsemi (c₂ ⊗ c₁) & \isoone &  c₂ \fatsemi \identrst \\
 \identlst ⊗ \idc & \isoone & \assocrt \fatsemi (\idc ⊕ \identlt) \\
 \\
+\absorbr & \isoone & \identlt \\
+\absorbr & \isoone & \absorbl \\
+\absorbr & \isoone & (\assoclt \fatsemi (\absorbr ⊗ \idc)) \fatsemi \absorbr \\
+\absorbr & \isoone & (\distl \fatsemi (\absorbr ⊕ \absorbr)) \fatsemi \identlp \\
+\absorbl & \isoone & \swapt \fatsemi \absorbr \\
+(c ⊗ \idc) \fatsemi \absorbl & \isoone & \absorbl \fatsemi \idc \\
+(\idc ⊗ c) \fatsemi \absorbr & \isoone & \absorbr \fatsemi \idc \\
+(\idc ⊗ \absorbr) \fatsemi \absorbl & \isoone &
+  (\assoclt \fatsemi (\absorbl ⊗ \idc) \fatsemi \absorbr \\
+(\idc ⊗ \identlp) & \isoone & (\distl \fatsemi (\absorbl ⊕ \idc)) \fatsemi \identlp \\
+\\
+\swapp \fatsemi (c₁ ⊕ c₂) & \isoone &  (c₂ ⊕ c₁) \fatsemi \swapp \\
+\swapt \fatsemi (c₁ ⊗ c₂) & \isoone &  (c₂ ⊗ c₁) \fatsemi \swapt \\
+\swapp \fatsemi \factor & \isoone &  \factor \fatsemi (\swapp ⊗ \idc) \\
+\\
+\identlp & \isoone & \distl \fatsemi (\identlp ⊕ \identlp) \\
+(\idc ⊗ \swapp) \fatsemi \distl & \isoone & \distl \fatsemi \swapp \\
+\dist \fatsemi (\swapt ⊕ \swapt) & \isoone & \swapt \fatsemi \distl \\
+\idc \fatsemi \factorzl & \isoone & \factorzl \fatsemi (\idc ⊗ c) \\
+\idc \fatsemi \factorzr & \isoone & \factorzr \fatsemi (c ⊗ \idc) 
+\end{array}
+\end{array}\]
+\\
+\[\begin{array}{rcl}
+((\assoclp ⊗ \idc) \fatsemi \dist) \fatsemi (\dist ⊕ \idc) & \isoone &
+  (\dist \fatsemi (\idc ⊕ \dist)) \fatsemi \assoclp \\
+(\distl \fatsemi (\dist ⊕ \dist)) \fatsemi \assoclp & \isoone &
+  ((((\dist \fatsemi (\distl ⊕ \distl)) \fatsemi \assoclp) \fatsemi (\assocrp ⊕ \idc))
+  \fatsemi (\idc ⊕ \swapp) ⊕ \idc)) \fatsemi (\assoclp ⊕ \idc) \\
+\assoclt \fatsemi \distl & \isoone & 
+  ((\idc ⊗ \distl) \fatsemi \distl) \fatsemi (\assoclt ⊕ \assoclt) \\
 \assocrp \fatsemi \assocrp & \isoone &
   ((\assocrp ⊕ \idc) \fatsemi \assocrp) \fatsemi (\idc ⊕ \assocrp) \\
 \assocrt \fatsemi \assocrt & \isoone &
@@ -2264,35 +2272,30 @@ c \fatsemi (!~c) & \isoone & \idc \\
 (\assocrt \fatsemi \swapt) \fatsemi \assocrt & \isoone &
   ((\swapt ⊕ \idc) \fatsemi \assocrt) \fatsemi (\idc ⊗ \swapt) \\
 (\assoclt \fatsemi \swapt) \fatsemi \assoclt & \isoone &
-  ((\idc ⊗ \swapt) \fatsemi \assoclt) \fatsemi (\swapt ⊗ \idc) \\
-\\
-(c ⊗ \idc) \fatsemi \absorbl & \isoone & \absorbl \fatsemi \idc \\
-(\idc ⊗ c) \fatsemi \absorbr & \isoone & \absorbr \fatsemi \idc \\
-\idc \fatsemi \factorzl & \isoone & \factorzl \fatsemi (\idc ⊗ c) \\
-\idc \fatsemi \factorzr & \isoone & \factorzr \fatsemi (c ⊗ \idc) 
+  ((\idc ⊗ \swapt) \fatsemi \assoclt) \fatsemi (\swapt ⊗ \idc) 
 \end{array}\]
-\begin{minipage}{0.5\textwidth}
+\begin{minipage}{0.99\textwidth}
 \begin{center} 
 \Rule{}
 {}
 {\jdg{}{}{c \isoone c}}
 {}
-\qquad
+~
 \Rule{}
 {\jdg{}{}{c₁ \isoone c₂} \quad \vdash c₂ \isoone c₃}
 {\jdg{}{}{c₁ \isoone c₃}}
 {}
-\qquad
+~
 \Rule{}
 {\jdg{}{}{c₁ \isoone c₃} \quad \vdash c₂ \isoone c₄}
 {\jdg{}{}{(c₁ \fatsemi c₂) \isoone (c₃ \fatsemi c₄)}}
 {}
-\qquad
+~
 \Rule{}
 {\jdg{}{}{c₁ \isoone c₃} \quad \vdash c₂ \isoone c₄}
 {\jdg{}{}{(c₁ ⊕ c₂) \isoone (c₃ ⊕ c₄)}}
 {}
-\qquad
+~
 \Rule{}
 {\jdg{}{}{c₁ \isoone c₃} \quad \vdash c₂ \isoone c₄}
 {\jdg{}{}{(c₁ ⊗ c₂) \isoone (c₃ ⊗ c₄)}}
