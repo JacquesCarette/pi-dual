@@ -465,7 +465,7 @@ Define and motivate that we are interested in defining HoTT
   equivalences of types, characterizing them, computing with them,
   etc.
   
-Homotopy type theory (HoTT)~\cite{hottbook} has a convoluted treatment of
+Homotopy type theory (HoTT) ~\cite {hottbook} has a convoluted treatment of
 functions. It starts with a class of arbitrary functions, singles out a
 smaller class of ``equivalences'' via extensional methods, and then asserts
 via the \emph{univalence} \textbf{axiom} that the class of functions just
@@ -583,10 +583,10 @@ If we care about resource preservation, then we are concerned with 'type equival
 \section{Equivalences and Commutative Semirings} 
 
 Our starting point is the notion of equivalence of types. We then
-connect this notion to several semiring structures, on finite types,
-permutations and equivalences,
-with the goal of reducing the notion of equivalence for finite types to a
-notion of reversible computation.
+connect this notion to several semiring structures on finite types, on
+permutations, and on equivalences, with the goal of reducing the
+notion of equivalence for finite types to a notion of reversible
+computation.
 
 %%%%%%%%%%%%
 \subsection{Finite Types}
@@ -597,8 +597,8 @@ The elementary building blocks of type theory are the empty type
   type}. Traditional type theory also includes several facilities for
 building infinite types, most notably function types. We will however
 not address infinite types in this paper except for a discussion in
-Sec.~\ref{sec:conc}. We will instead focus on thoroughly understanding
-the computational structures related to finite types.
+Sec.~\ref{intc}. We will instead focus on thoroughly understanding the
+computational structures related to finite types.
 
 An essential property of a finite type $A$ is its size $|A|$ which is
 defined as follows:
@@ -608,32 +608,30 @@ defined as follows:
 |A \uplus B| &=& |A| + |B| \\
 |A \times B| &=& |A| * |B| 
 \end{array}\] 
-Our starting point is a result by \citet{Fiore:2004,fiore-remarks}
-that completely characterizes the isomorphisms between finite types
-using the axioms of commutative semirings. (See
-Appendix~\ref{sec:commrig} for the complete definition of commutative
-semirings.) Intuitively this result states that one can interpret each
-type by its size, and that this identification validates the familiar
-properties of the natural numbers, and is in fact isomorphic to the
-commutative semiring of the natural numbers.
+A result by \citet{Fiore:2004,fiore-remarks} completely characterizes
+the isomorphisms between finite types using the axioms of commutative
+semirings. (See Appendix~\ref{sec:commrig} for the complete definition
+of commutative semirings.) Intuitively this result states that one can
+interpret each type by its size, and that this identification
+validates the familiar properties of the natural numbers, and is in
+fact isomorphic to the commutative semiring of the natural numbers.
 
-Our work builds on previous work by
+Our work builds on this identification together with work by
 \citet{James:2012:IE:2103656.2103667} which introduced the $\Pi$
 family of languages whose core computations are these isomorphisms
-between finite types. Building on that work and on the
-growing-in-importance idea that isomorphisms have interesting
-computational content and should not be silently or implicitly
-identified, we first recast Fiore et. al's result in the next section,
-making explicit that the commutative semiring structure can be defined
-up to the HoTT relation of \emph{type equivalence} instead of strict
-equality~$=$.
+between finite types. Taking into account the growing-in-importance
+idea that isomorphisms have interesting computational content and
+should not be silently or implicitly identified, we first recast Fiore
+et. al's result in the next section, making explicit that the
+commutative semiring structure can be defined up to the HoTT relation
+of \emph{type equivalence} instead of strict equality~$=$.
 
 %%%%%%%%%%%%
 \subsection{Commutative Semirings of Types}
 
 There are several equivalent definitions of the notion of equivalence
-of types. For concreteness, we use the following definition as it
-appears to be the most intuitive in our setting.
+of types~\cite{hottbook}. For concreteness, we use the following
+definition as it appears to be the most intuitive in our setting.
 
 \begin{definition}[Quasi-inverse]
 \label{def:quasi}
@@ -708,16 +706,13 @@ in particular, it is itself a commutative semiring.
   The most important insight is the definition of equivalence of
   equivalences. Two equivalences $e_1, e_2 : \textsc{eq}_{A,B}$ with
   underlying functions $f_1$ and $f_2$ and underlying quasi-inverses
-  $g_1$ and $g_2$ are themselves equivalent if:
-\begin{itemize}
-\item for all $a \in A$, $f_1(a) = f_2(a)$, and 
-\item for all $b \in B$, $g_1(b) = g_2(b)$.
-\end{itemize}
-Given this notion of equivalence of equivalences, the proof proceeds
-smoothly with the additive unit being the vacuous equivalence
-$\bot \simeq \bot$, the multiplicative unit being the trivial
-equivalence $\top \simeq \top$, and the two binary operations being
-essentially a mapping of $\uplus$ and $\times$ over equivalences.
+  $g_1$ and $g_2$ are themselves equivalent if we have that both
+  $f₁ = f₂$ and $g₁ = g₂$ extensionally. Given this notion of
+  equivalence of equivalences, the proof proceeds smoothly with the
+  additive unit being the vacuous equivalence $\bot \simeq \bot$, the
+  multiplicative unit being the trivial equivalence
+  $\top \simeq \top$, and the two binary operations being essentially
+  a mapping of $\uplus$ and $\times$ over equivalences.
 \end{proof}
 
 We reiterate that the commutative semiring axioms in this case are
@@ -762,21 +757,22 @@ relationship between finite types and finite sets.
   $A \simeq B$ then $m = n$.
 \end{theorem}
 \begin{proof}
-We proceed by cases on the possible values for $m$ and $n$. If they
-are different, we quickly get a contradiction. If they are both~0 we
-are done. The interesting situation is when $m = \mathit{suc}~m'$ and
-$n = \mathit{suc}~n'$. The result follows in this case by induction
-assuming we can establish that the equivalence between $A$ and $B$,
-i.e., the equivalence between $\mathsf{Fin}~(\mathit{suc}~m')$ and
-$\mathsf{Fin}~(\mathit{suc}~n')$, implies an equivalence between
-$\mathsf{Fin}~m'$ and $\mathsf{Fin}~n'$. In our setting, we actually
-need to construct a particular equivalence between the smaller sets
-given the equivalence of the larger sets with one additional
-element. This lemma is quite tedious as it requires us to isolate one
-element of $\mathsf{Fin}~(\mathit{suc}~m')$ and analyze every 
-(class of) position
-this element could be mapped to by the larger equivalence and in each
-case construct an equivalence that excludes this element.
+  We proceed by cases on the possible values for $m$ and $n$. If they
+  are different, we quickly get a contradiction. If they are both~0 we
+  are done. The interesting situation is when $m = \mathit{suc}~m'$
+  and $n = \mathit{suc}~n'$. The result follows in this case by
+  induction assuming we can establish that the equivalence between $A$
+  and $B$, i.e., the equivalence between
+  $\mathsf{Fin}~(\mathit{suc}~m')$ and
+  $\mathsf{Fin}~(\mathit{suc}~n')$, implies an equivalence between
+  $\mathsf{Fin}~m'$ and $\mathsf{Fin}~n'$. In a constructive setting,
+  we actually need to construct a particular equivalence between the
+  smaller sets given the equivalence of the larger sets with one
+  additional element. This lemma is quite tedious as it requires us to
+  isolate one element of $\mathsf{Fin}~(\mathit{suc}~m')$ and analyze
+  every class of positions this element could be mapped to by the
+  larger equivalence and in each case construct an equivalence that
+  excludes this element.
 \end{proof}
 
 Given the correspondence between finite types and finite sets, we now
@@ -832,33 +828,25 @@ iso-times = {!!}
   set. Naturally in any well-formed permutations, these two sizes are
   equal but the presence of both types allows us to conveniently
   define a permutation $\mathsf{CPerm}~m~n$ using four components. The
-  first two components are:
-  \begin{itemize}
-  \item a vector of size $n$ containing elements drawn from the finite
-    set $\mathsf{Fin}~m$;
-  \item a dual vector of size $m$ containing elements drawn from the
-    finite set $\mathsf{Fin}~n$;
-  \end{itemize}
-  Each of the above vectors can be interpreted as a map $f$ that acts
-  on the incoming finite set sending the element at index $i$ to
-  position $f !! i$ in the resulting finite set. To guarantee that
-  these maps define an actual permutation, the last two components are
-  proofs that the sequential composition of the maps in both
-  directions produce the identity. Given this representation, we can
-  prove that two permutations are equal if the underlying vectors are
-  strictly equal. The proof proceeds using the vacuous permutation
+  first two components are (i) a vector of size $n$ containing
+  elements drawn from the finite set $\mathsf{Fin}~m$, and (ii) a dual
+  vector of size $m$ containing elements drawn from the finite set
+  $\mathsf{Fin}~n$. Each of these vectors can be interpreted as a map
+  $f$ that acts on the incoming finite set sending the element at
+  index $i$ to position $f !! i$ in the resulting finite set. To
+  guarantee that these maps define an actual permutation, the last two
+  components are proofs that the sequential composition of the maps in
+  both directions produce the identity. Given this representation, we
+  can prove that two permutations are equal if the underlying vectors
+  are strictly equal. The proof proceeds using the vacuous permutation
   $\mathsf{CPerm}~0~0$ for the additive unit and the trivial
   permutation $\mathsf{CPerm}~1~1$ for the multiplicative unit. The
-  binary operations on permutations have the following signatures:
-\[\begin{array}{l}
-\mathsf{CPerm}~m₁~m₂ → \mathsf{CPerm}~n₁~n₂ →
-    \mathsf{CPerm}~(m₁+n₁)~(m₂+n₂) \\
-\mathsf{CPerm}~m₁~m₂ → \mathsf{CPerm}~n₁~n₂ →
-    \mathsf{CPerm}~(m₁*n₁)~(m₂*n₂) 
-\end{array}\]
-Their definition relies on the important property that the union or
-product of vectors denoting permutations distributes over the
-sequential composition of permutations. 
+  binary operations on permutations map $\mathsf{CPerm}~m₁~m₂$ and
+  $\mathsf{CPerm}~n₁~n₂$ to $\mathsf{CPerm}~(m₁+n₁)~(m₂+n₂)$ and
+  $\mathsf{CPerm}~(m₁*n₁)~(m₂*n₂)$ respectively. Their definition
+  relies on the important property that the union or product of
+  vectors denoting permutations distributes over the sequential
+  composition of permutations.
 \end{proof}
 
 \begin{theorem}\label{thm:eqeqperm}
@@ -867,9 +855,9 @@ equivalences $\textsc{eq}_{A,B}$ is equivalent to the type of all
 permutations $\textsc{perm}~m~n$.
 \end{theorem}
 \begin{proof}
-  The main difficulty in this proof was to generalize from sets to
-  setoids to make the equivalence relations explicit. The proof is
-  straightforward but long and tedious.
+  The main difficulty in this proof was to generalize from sets to 
+  setoids to make the equivalence relations explicit. The proof is 
+  straightforward but long and tedious. 
 \end{proof}
 
 \begin{theorem}\label{thm:isoeqperm}
@@ -877,13 +865,15 @@ permutations $\textsc{perm}~m~n$.
   \emph{isomorphism} between the commutative semiring of equivalences
   of finite types and the commutative semiring of permutations.
 \end{theorem}
-
-\jc{the other thing worth pointing out is that every axiom of
-semirings (of types) is an equivalence, and thus corresponds 
-to a permutation.  Some are trivial: associativity of + in particular
-gets mapped to the identity permutation.  However, some are
-more interesting.  In particular, commutativity of * is intimately
-related to matrix transpose.}
+\begin{proof}
+  In the process of this proof, we show that every axiom of semirings
+  of types is an equivalence, and thus corresponds to a permutation.
+  Some of the axioms like the associativity of sums gets mapped to the
+  trivial identity permutation.  However, some are axioms reveal
+  interesting structure as permutations; the most notable is that the
+  commutativity of products maps to a permutation solving the
+  classical problem of in-place matrix transposition.
+\end{proof}
 
 Before concluding, we briefly mention that, with the proper Agda
 definitions, Thm.~\ref{thm:eqeqperm} can be rephrased in a more
@@ -904,40 +894,8 @@ proved and given a computational interpretation for finite types.
 In the previous section, we argued that, up to equivalence, the
 equivalence of types reduces to permutations on finite sets. We recall
 background work which proposed a term language for permutations and
-adapt it to be used to express, compute with, and reason about type
-equivalences between finite types.
-
-%%%%%%%%%%%%
-\subsection{The $\Pi$-Languages}
-
-\citet{James:2012:IE:2103656.2103667} introduced the $\Pi$ family of
-languages whose only computations are isomorphisms between finite
-types. We propose that this family of languages is exactly the right
-programmatic interface for manipulating and reasoning about type
-equivalences.
-
-The syntax of the previously-developed $\Pi$ language consists of
-types $\tau$ including the empty type 0, the unit type 1, and
-conventional sum and product types. The values classified by these
-types are the conventional ones: $()$ of type 1, $\inl{v}$ and
-$\inr{v}$ for injections into sum types, and $(v_1,v_2)$ for product
-types:
-\[\begin{array}{lrcl}
-(\textit{Types}) & 
-  \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
-(\textit{Values}) & 
-  v &::=& () \alt \inl{v} \alt \inr{v} \alt (v_1,v_2) \\
-(\textit{Combinator types}) &&& \tau_1 \iso \tau_2 \\
-(\textit{Combinators}) & 
-  c &::=& [\textit{see Fig.~\ref{pi-combinators}}]
-\end{array}\]
-The interesting syntactic category of $\Pi$ is that of
-\emph{combinators} which are witnesses for type isomorphisms $\tau_1
-\iso \tau_2$. They consist of base combinators (on the left side of
-Fig.~\ref{pi-combinators}) and compositions (on the right side of the
-same figure). Each line of the figure on the left introduces a pair of
-dual constants\footnote{where $\swapp$ and $\swapt$ are self-dual.}
-that witness the type isomorphism in the middle.
+adapt it in later sections to be used to express, compute with, and
+reason about type equivalences between finite types.
 
 \begin{figure*}[ht]
 \[\begin{array}{cc}
@@ -945,11 +903,11 @@ that witness the type isomorphism in the middle.
 \identlp :&  0 + \tau & \iso & \tau &: \identrp \\
 \swapp :&  \tau_1 + \tau_2 & \iso & \tau_2 + \tau_1 &: \swapp \\
 \assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 &: \assocrp \\
-
+\\
 \identlt :&  1 * \tau & \iso & \tau &: \identrt \\
 \swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
 \assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\
-
+\\
 \dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor \\
 \distz :&~ 0 * \tau & \iso & 0 ~ &: \factorzl 
 \end{array}
@@ -978,11 +936,44 @@ that witness the type isomorphism in the middle.
 \end{center}
 \end{minipage}
 \end{array}\]
-\caption{$\Pi$-combinators~\citep{James:2012:IE:2103656.2103667}
+\caption{$\Pi$-combinators~\citep{rc2011,James:2012:IE:2103656.2103667}
 \label{pi-combinators}}
 \end{figure*}
 
-Every combinator $c$ has an inverse $!c$ according to the figure. The
+%%%%%%%%%%%%
+\subsection{The $\Pi$-Languages}
+
+\citet{rc2011,James:2012:IE:2103656.2103667} introduced the $\Pi$
+family of languages whose only computations are permutations
+(isomorphisms) between finite types and which is complete for all
+reversible combinational circuits. We propose that this family of
+languages is exactly the right programmatic interface for manipulating
+and reasoning about type equivalences.
+
+The syntax of the previously-developed $\Pi$ language consists of
+types $\tau$ including the empty type 0, the unit type 1, and
+conventional sum and product types. The values classified by these
+types are the conventional ones: $()$ of type 1, $\inl{v}$ and
+$\inr{v}$ for injections into sum types, and $(v_1,v_2)$ for product
+types:
+\[\begin{array}{lrcl}
+(\textit{Types}) & 
+  \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
+(\textit{Values}) & 
+  v &::=& () \alt \inl{v} \alt \inr{v} \alt (v_1,v_2) \\
+(\textit{Combinator types}) &&& \tau_1 \iso \tau_2 \\
+(\textit{Combinators}) & 
+  c &::=& [\textit{see Fig.~\ref{pi-combinators}}]
+\end{array}\]
+
+The interesting syntactic category of $\Pi$ is that of
+\emph{combinators} which are witnesses for type isomorphisms
+$\tau_1 \iso \tau_2$. They consist of base combinators (on the left
+side of Fig.~\ref{pi-combinators}) and compositions (on the right side
+of the same figure). Each line of the figure on the left introduces a
+pair of dual constants\footnote{where $\swapp$ and $\swapt$ are
+  self-dual.}  that witness the type isomorphism in the middle. Every
+combinator $c$ has an inverse $!c$ according to the figure. The
 inverse is homomorphic on sums and products and flips the order of the
 combinator in sequential composition.
 
@@ -998,8 +989,13 @@ circuits~\citep{James:2012:IE:2103656.2103667}.\footnote{With the
 illustrate the expressiveness of the language with a few short
 examples.
 
-The first example is simply boolean negation which is easily achieved:
+The first example is simply boolean encoding and negation which can
+defined as shown on the left and visualized as a permutation on the right:
 
+\smallskip
+
+\begin{tabular}{cc}
+\begin{minipage}{0.2\textwidth}
 \begin{code}
 BOOL : U
 BOOL = PLUS ONE ONE
@@ -1007,11 +1003,8 @@ BOOL = PLUS ONE ONE
 NOT₁ : BOOL ⟷ BOOL
 NOT₁ = swap₊
 \end{code}
-
-\noindent Viewing the combinator as a permutation on finite sets, we
-might visualize it as follows:
-
-\begin{center}
+\end{minipage}
+& 
 \begin{tikzpicture}[scale=0.3,every node/.style={scale=0.3}]
   \draw (0,0) ellipse (1cm and 2cm);
   \draw[fill] (0,1) circle [radius=0.025];
@@ -1032,11 +1025,15 @@ might visualize it as follows:
   \draw[fill] (6,-1) circle [radius=0.025];
   \node[below] at (6,-1) {T};
 \end{tikzpicture}
-\end{center}
+\end{tabular}
 
+\smallskip  
+ 
 Naturally there are many ways of encoding boolean negation. The
-following example is a more convoluted circuit that computes the same
-function:
+following example implements a more convoluted circuit that computes
+the same function:
+
+\smallskip
 
 \begin{code}
 NOT₂ : BOOL ⟷ BOOL
@@ -1046,6 +1043,8 @@ NOT₂ =  uniti⋆ ◎
         swap⋆ ◎
         unite⋆
 \end{code}
+
+\smallskip 
 
 \noindent Viewing this combinator as a permutation on finite sets, we
 might visualize it as follows:
@@ -1111,7 +1110,9 @@ to translate abstract machines to $\Pi$~\citep{rc2012}, and a
 Haskell-like surface language~\citep{theseus} which can be of help in
 writing circuits. These essential tools are however a distraction in
 the current setting and we content ourselves with some Agda syntactic
-sugar illustrated below:
+sugar illustrated below and used again in the next section:
+
+\smallskip
 
 \begin{code}
 BOOL² : U
@@ -1145,6 +1146,9 @@ TOFFOLI = TIMES BOOL BOOL²
          TIMES BOOL BOOL² □
   where x = ONE; y = ONE
 \end{code}
+
+\smallskip
+
 This style makes the intermediate steps explicit showing how the types
 are transformed in each step by the combinators. The example
 incidentally confirms that $\Pi$ is universal for reversible circuits
@@ -1320,16 +1324,18 @@ module X where
   id⇔     :  {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔' c 
 
   trans⇔  :  {t₁ t₂ : U} {c₁ c₂ c₃ : t₁ ⟷ t₂} → 
-             (c₁ ⇔' c₂) → (c₂ ⇔' c₃) → (c₁ ⇔' c₃) 
+    (c₁ ⇔' c₂) → (c₂ ⇔' c₃) → (c₁ ⇔' c₃) 
 
   assoc⇔  :  {t₁ t₂ t₃ t₄ : U}
-             {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
-             (c₁ ◎ (c₂ ◎ c₃)) ⇔' ((c₁ ◎ c₂) ◎ c₃)
+    {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+    (c₁ ◎ (c₂ ◎ c₃)) ⇔' ((c₁ ◎ c₂) ◎ c₃)
 
-  id◎⇔    :  {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (id⟷ ◎ c) ⇔' c
+  id◎⇔    :  {t₁ t₂ : U} {c : t₁ ⟷ t₂} → 
+    (id⟷ ◎ c) ⇔' c
 
-  swap₊⇔  :  {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
-             (swap₊ ◎ (c₁ ⊕ c₂)) ⇔' ((c₂ ⊕ c₁) ◎ swap₊)
+  swap₊⇔  :  {t₁ t₂ t₃ t₄ : U} 
+    {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
+    (swap₊ ◎ (c₁ ⊕ c₂)) ⇔' ((c₂ ⊕ c₁) ◎ swap₊)
 
 \end{code}
 
@@ -1339,7 +1345,7 @@ come up with a sound and complete set of such rules.
 Before we embark on the categorification program in the next section,
 we show that, with some ingenuity, one can develop a reasonable set of
 rewrite rules that would allow us to prove that the two negation
-circuits from the previous section are actual equivalent:
+circuits from the previous section are actually equivalent:
 
 \begin{code}
 
@@ -1369,6 +1375,10 @@ negEx =
           ⇔⟨ idr◎l ⟩
   swap₊ ▤
 \end{code}
+
+\smallskip
+
+The sequence of rewrites can be visualized in Appendix~\ref{app:opt}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Categorification}
@@ -2601,6 +2611,7 @@ a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Diagrammatic Optimization}
+\label{app:opt}
 
 \begin{center}
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.7}]
