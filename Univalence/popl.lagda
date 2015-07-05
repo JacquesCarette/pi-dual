@@ -2167,7 +2167,7 @@ path and flipping them produces the connection in the bottom path:
 belong?}  \jc{You're missing 4 combinators from that picture!  
 Plus the ones you added are the ones for absorption and 
 distributivity, NOT the ones which are redundant, they are really
-needed for a proper semring.}
+needed for a proper semiring.}
 
 The inspiration of symmetric rig groupoids suggested a refactoring of
 $\Pi$ with additional level-1 combinators.  The added
