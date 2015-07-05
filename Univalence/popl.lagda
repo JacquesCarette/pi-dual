@@ -850,14 +850,22 @@ iso-times = {!!}
   on the incoming finite set sending the element at index $i$ to
   position $f !! i$ in the resulting finite set. To guarantee that
   these maps define an actual permutation, the last two components are
-  proofs that the sequential composition of the maps in both direction
-  produce the identity. Given this representation, we can prove that
-  two permutations are equal if the underlying vectors are strictly
-  equal. The proof proceeds using the vacuous permutation
+  proofs that the sequential composition of the maps in both
+  directions produce the identity. Given this representation, we can
+  prove that two permutations are equal if the underlying vectors are
+  strictly equal. The proof proceeds using the vacuous permutation
   $\mathsf{CPerm}~0~0$ for the additive unit and the trivial
-  permutation $\mathsf{CPerm}~1~1$ for the multiplicative unit.
-\jc{we should detail sum and product as well, as they are 
-non-trivial.}
+  permutation $\mathsf{CPerm}~1~1$ for the multiplicative unit. The
+  binary operations on permutations have the following signatures:
+\[\begin{array}{l}
+\mathsf{CPerm}~m₁~m₂ → \mathsf{CPerm}~n₁~n₂ →
+    \mathsf{CPerm}~(m₁+n₁)~(m₂+n₂) \\
+\mathsf{CPerm}~m₁~m₂ → \mathsf{CPerm}~n₁~n₂ →
+    \mathsf{CPerm}~(m₁*n₁)~(m₂*n₂) 
+\end{array}\]
+Their definition relies on the important property that the union or
+product of vectors denoting permutations distributes over the
+sequential composition of permutations. 
 \end{proof}
 
 \begin{theorem}\label{thm:eqeqperm}
