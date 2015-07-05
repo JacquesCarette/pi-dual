@@ -730,13 +730,6 @@ sufficient to consider just one additional level.
 %%%%%%%%%%%%
 \subsection{Commutative Semirings of Permutations}
 
-\jc{actually, it is equivalences-of-equivalences which are
-fundamentally based on fun-ext; type equivalences themselves
-are mostly computationally effective.  Otherwise they could not
-be equivalent to permutations...  But they are somehow less
-tangible, while permutations are quite concrete.}
-\as{Check the text below please!}
-
 Type equivalences are fundamentally based on function extensionality
 (Def.~\ref{def:quasi} explicitly compares functions for extensional
 equality.) It is folklore that, even when restricted to finite types,
@@ -745,11 +738,11 @@ about about type equivalences. The situation gets worse when
 considering equivalences of equivalences. In the HoTT context, this is
 the open problem of finding a computational interpretation for
 \emph{univalence}. In the case of finite types however, there is a
-computationally-friendly alternative (and as we prove equivalent)
+computationally-friendly alternative
 characterization of type equivalences based on permutations of finite
-sets.
+sets, which we prove to be formally equivalent.
 
-The idea is that, up to equivalence, the only interesting property of
+The idea is that, \emph{up to equivalence}, the only interesting property of
 a finite type is its size, so that type equivalences must be
 size-preserving maps and hence correspond to permutations. For
 example, given two equivalent types $A$ and $B$ of completely
