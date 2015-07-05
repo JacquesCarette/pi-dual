@@ -636,6 +636,7 @@ of types. For concreteness, we use the following definition as it
 appears to be the most intuitive in our setting.
 
 \begin{definition}[Quasi-inverse]
+\label{def:quasi}
   For a function $f : A \rightarrow B$, a \emph{quasi-inverse} of $f$
   is a triple $(g, \alpha, \beta)$, consisting of a function
   $g : B \rightarrow A$ and homotopies
@@ -734,14 +735,19 @@ fundamentally based on fun-ext; type equivalences themselves
 are mostly computationally effective.  Otherwise they could not
 be equivalent to permutations...  But they are somehow less
 tangible, while permutations are quite concrete.}
+\as{Check the text below please!}
 
 Type equivalences are fundamentally based on function extensionality
-and hence are generally not computationally effective. In the HoTT
-context, this is the open problem of finding a computational
-interpretation for \emph{univalence}. In the case of finite types
-however, there is a computationally-friendly alternative (and as we
-prove equivalent) characterization of type equivalences based on
-permutations of finite sets.
+(Def.~\ref{def:quasi} explicitly compares functions for extensional
+equality.) It is folklore that, even when restricted to finite types,
+function extensionality needs to be assumed for effective reasoning
+about about type equivalences. The situation gets worse when
+considering equivalences of equivalences. In the HoTT context, this is
+the open problem of finding a computational interpretation for
+\emph{univalence}. In the case of finite types however, there is a
+computationally-friendly alternative (and as we prove equivalent)
+characterization of type equivalences based on permutations of finite
+sets.
 
 The idea is that, up to equivalence, the only interesting property of
 a finite type is its size, so that type equivalences must be
