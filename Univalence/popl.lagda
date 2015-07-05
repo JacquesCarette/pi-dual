@@ -444,6 +444,43 @@ _□ t = id⟷
 %% I don't think the text will need changed for that.}
 %% \url{https://github.com/JacquesCarette/pi-dual}
 
+\amr{Need motivation...}
+
+\amr{Results...}
+
+\paragraph*{Outline.} The next section reviews equivalences between
+finite types and relates them to various commutative semiring
+structures. The main message of that section is that, up to
+equivalence, the concept of equivalence of finite types is equivalent
+to permutations between finite sets. The latter is computationally
+well-behaved with exisiting reversible programming languages developed
+for programming with permutations and finite-type isomorphisms. This
+family of languages, called $\Pi$, is universal for describing
+combinational (without feedback or state) reversible circuits (see
+Sec.~\ref{sec:3}). The infrastructure of the HoTT-inspired type
+equivalences enriches these languages by viewing their original design
+as 1-paths and systematically producing 2-paths (equivalences between
+equivalences) manifesting themselves as syntactic rules for reasoning
+about equivalences of programs representing reversible
+circuits. Sec.~\ref{sec:4} starts the semantic investigation of the
+$\Pi$ languages emphasizing the denotational approach that maps each
+$\Pi$ program to a type equivalence and a permutation. The section
+also gives a small example showing how a few rules that are sound with
+respect to equivalence of permutations can be used to transform $\Pi$
+programs without reliance on any extensional
+reasoning. Sec.~\ref{sec:5} then reveals that these rules are
+intimately related to the coherence conditions of the categorified
+analogues of type equivalences and permutations, namely, the so-called
+\emph{symmetric rig groupoids}. Sec.~\ref{sec:6} contains that
+``punchline'': a sound and complete set of rules that can be used to
+reason about $\Pi$ programs and their equivalences. Before concluding,
+we devote Sec.~\ref{sec:7} to a detailed analysis of higher-order
+functions in the setting we describe suggesting a possible solution.
+
+\amr{Big question: what do we say about Coquand's et al cubical type theory}
+
+\amr{old stuff follows: might be useful}
+
 Reversible circuits are NOT a restriction; they are a generalization;
 conventional irreversible circuits are a special case.
 
@@ -523,7 +560,7 @@ can be smoothly adapted to the quantum world.
 \end{itemize}
 \end{comment}
 
-\jc{is any of this stuff useful for the introduction, or should it all go?}
+%% \jc{is any of this stuff useful for the introduction, or should it all go?}
 Resource-Aware Classical Computing. 
 \begin{itemize}
 \item The biggest questionable assumption of classical programming is that it is possible
@@ -581,6 +618,7 @@ If we care about resource preservation, then we are concerned with 'type equival
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Equivalences and Commutative Semirings} 
+\label{sec:2}
 
 Our starting point is the notion of equivalence of types. We then
 connect this notion to several semiring structures on finite types, on
@@ -890,6 +928,7 @@ proved and given a computational interpretation for finite types.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Programming with Permutations}
+\label{sec:3}
 
 In the previous section, we argued that, up to equivalence, the
 equivalence of types reduces to permutations on finite sets. We recall
@@ -995,7 +1034,7 @@ defined as shown on the left and visualized as a permutation on the right:
 \smallskip
 
 \begin{tabular}{cc}
-\begin{minipage}{0.2\textwidth}
+\begin{minipage}{0.25\textwidth}
 \begin{code}
 BOOL : U
 BOOL = PLUS ONE ONE
@@ -1157,6 +1196,7 @@ circuits~\citep{Toffoli:1980}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Semantics}
+\label{sec:4}
 
 In the previous sections, we established that type equivalences on
 finite types can be, up to equivalence, expressed as permutations and
@@ -1382,6 +1422,7 @@ The sequence of rewrites can be visualized in Appendix~\ref{app:opt}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Categorification}
+\label{sec:5}
 
 The problem of finding a sound and complete set of rules for reasoning
 about equivalence of permutations is solved by appealing to various
@@ -1391,12 +1432,13 @@ is a process, intimately related to homotopy theory, for finding
 category-theoretic analogs of set-theoretic concepts. From an
 intuitive perspective, the algebraic structure of a commutative
 semiring only captures a ``static'' relationship between types; it
-says nothing about how these relationships behave under composition
-which is after all the essence of computation. Thus from a
-programmer's perspective, this categorification process is about
-understanding how type equivalences evolve under compositions, e.g.,
-how two different paths of type equivalences sharing the same source
-and target relate two each other.
+says nothing about how these relationships behave under
+\emph{composition} which is after all the essence of computation
+(cf. \citet{Moggi:1989:CLM:77350.77353}'s original paper on
+monads). Thus from a programmer's perspective, this categorification
+process is about understanding how type equivalences evolve under
+compositions, e.g., how two different paths of type equivalences
+sharing the same source and target relate two each other.
 
 \begin{figure*}
 \begin{tikzcd}[column sep=tiny]
@@ -2051,6 +2093,7 @@ We have two levels of $\Pi$-combinators such that:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Revised $\Pi$ and its Optimizer}
+\label{sec:6}
 
 Collecting the previous results we arrive at a universal language for
 expressing reversible combinational circuits \emph{together with} a
@@ -2345,6 +2388,7 @@ trivial.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Problem with Higher-Order Functions}
 \label{intc}
+\label{sec:7}
 
 In the context of monoidal categories, it is known that a notion of
 higher-order functions emerges from having an additional degree of
@@ -2526,6 +2570,7 @@ something?}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 \label{sec:conc}
+\label{sec:8}
 
 \begin{itemize}
 \item add trace to make language Turing complete
