@@ -2407,29 +2407,32 @@ viewed as conventional type whose elements represent values flowing,
 as usual, from producers to consumers, and the component $\tau_2$
 viewed as a \emph{negative type} whose elements represent demands for
 values or equivalently values flowing backwards. Under this
-interpretation, and as we explain below, a function is nothing but an
-object that converts a demand for an argument into the production of a
-result.
+interpretation, a function is nothing but an object that converts a
+demand for an argument into the production of a result. We will
+explain in this section that the na\"\i ve generalization of the
+construction from monoidal to bimonoidal (aka rig) categories fails
+but that a recent result by \citet{ringcompletion} might provide a
+path towards a solution.
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The  \textbf{Int} Construction} 
 
 For this construction, we assume that we have extended $\Pi$ with a
 trace operator to implement recursion or feedback, as done in some of
-the work on $\Pi$~\citep{James:2012:IE:2103656.2103667}. We then
+the work on $\Pi$~\citep{rc2011,James:2012:IE:2103656.2103667}. We then
 extend $\Pi$ with a new universe of types $\cubt$ that consists of
 composite types $\nodet{\tau_1}{\tau_2}$:
 \[\begin{array}{lrcl}
 (\textit{{1d} types}) & 
   \cubt &::=& \nodet{\tau_1}{\tau_2}
 \end{array}\]
-We will refer to the original types $\tau$ as 0-dimensional (0d) types and to
-the new types $\cubt$ as 1-dimensional (1d) types. The 1d level is a
-``lifted'' instance of $\Pi$ with its own notions of empty, unit, sum, and
-product types, and its corresponding notion of isomorphisms on these 1d
-types.
+We will refer to the original types $\tau$ as 0-dimensional (0d) types
+and to the new types $\cubt$ as 1-dimensional (1d) types. The 1d level
+is a ``lifted'' instance of $\Pi$ with its own notions of empty, unit,
+sum, and product types, and its corresponding notions of isomorphisms
+and composition on these 1d types.
 
-\jc{should define ; here too}
+%% \jc{should define ; here too}
 Our next step is to define lifted versions of the 0d types:
 \[\begin{array}{rcl}
 \ztone &\eqdef& \nodet{0}{0} \\
@@ -2456,9 +2459,8 @@ $\tau_2$ is viewed as an output and the negative output $\tau_4$ is
 viewed as an input. Using these ideas, it is now a fairly standard
 exercise to define the lifted versions of most of the combinators in
 Table~\ref{pi-combinators}.\footnote{See \citet{neelblog}'s excellent
-  blog post implementing this construction in OCaml.} There are
-however a few interesting cases whose appreciation is essential for
-the remainder of the paper.
+  blog post implementing this construction in OCaml.} We discuss a few
+cases in detail.
 
 \paragraph*{Trivial cases.} Many of the 0d combinators lift easily to the 1d
 level. For example:
@@ -2469,43 +2471,63 @@ level. For example:
 \idc &=& \swapp \\
 \\
 \identlp &:& \ztone \boxplus \cubt \isoone \cubt \\
-%%         &\eqdef& (0+\tau_1)-(0+\tau_2) \isoone (\tau_1-\tau_2) \\
-%%         &\eqdef& ((0+\tau_1)+\tau_2) \iso ((0+\tau_2)+\tau_1) \\
+         &\eqdef& \nodet{0+\tau_1}{0+\tau_2} \isoone \nodet{\tau_1}{\tau_2} \\
+         &\eqdef& ((0+\tau_1)+\tau_2) \iso ((0+\tau_2)+\tau_1) \\
          &=& \assocrp \fatsemi (\idc \oplus \swapp) \fatsemi \assoclp
 \end{array}\]
-\jc{are you sure about identl?  The combinator for this in
-PiWithLevel/Pi1.agda is longer and (not surprisingly)
-uses unite and uniti.}
 
-\paragraph*{Composition using $\mathit{trace}$.} 
+% \jc{are you sure about identl?  The combinator for this in
+% PiWithLevel/Pi1.agda is longer and (not surprisingly)
+% uses unite and uniti.}
 
-\jc{assoc1 and assoc2 do not exist, should rename}
+\paragraph*{Composition using $\mathit{trace}$.} Let
+$\mathit{assoc}_1$, $\mathit{assoc}_2$, and $\mathit{assoc}_3$ be the
+very simple $\Pi$ combinators with the following signatures:
+\[\begin{array}{r@{\,\,\!}cl}
+\mathit{assoc}₁ &:& \tau₁ + (\tau₂ + \tau₃) \leftrightarrow (\tau₂ + \tau₁) + \tau₃ \\
+\mathit{assoc}₂ &:& (\tau₁ + \tau₂) + \tau₃ \leftrightarrow (\tau₂ + \tau₃) + \tau₁ \\
+\mathit{assoc}₃ &:& (\tau₁ + \tau₂) + \tau₃ \leftrightarrow \tau₁ + (\tau₃ + \tau₂) \\
+\end{array}\]
+Composition is then defined as follows:
 \[\begin{array}{r@{\,\,\!}cl}
 (\fatsemi) &:& 
   (\cubt_1 \isoone \cubt_2) \rightarrow 
   (\cubt_2 \isoone \cubt_3) \rightarrow 
   (\cubt_1 \isoone \cubt_3) \\
-%% \mathit{seq} &:& 
-%%   ((\tau_1-\tau_2) \isoone (\tau_3-\tau_4)) \rightarrow
-%%   ((\tau_3-\tau_4) \isoone (\tau_5-\tau_6)) \rightarrow
-%%   ((\tau_1-\tau_2) \isoone (\tau_5-\tau_6)) \\
-%%   &\eqdef& 
-%%   ((\tau_1+\tau_4) \iso (\tau_2+\tau_3)) \rightarrow
-%%   ((\tau_3+\tau_6) \iso (\tau_4+\tau_5)) \rightarrow
-%%   ((\tau_1+\tau_6) \iso (\tau_2+\tau_5)) \\
+ \mathit{seq} &:& 
+   (\nodet{\tau_1}{\tau_2} \isoone \nodet{\tau_3}{\tau_4}) \rightarrow
+   (\nodet{\tau_3}{\tau_4} \isoone \nodet{\tau_5}{\tau_6}) \\
+   && \qquad\rightarrow  (\nodet{\tau_1}{\tau_2} \isoone \nodet{\tau_5}{\tau_6}) \\
+   &\eqdef& 
+   ((\tau_1+\tau_4) \iso (\tau_2+\tau_3)) \rightarrow
+   ((\tau_3+\tau_6) \iso (\tau_4+\tau_5)) \\
+  && \qquad\rightarrow  ((\tau_1+\tau_6) \iso (\tau_2+\tau_5)) \\
 f \fatsemi g &=& \mathit{trace}~(\mathit{assoc}_1 \fatsemi 
   (f \oplus \idc) \fatsemi \mathit{assoc}_2 \fatsemi (g \oplus \idc) 
   \fatsemi \mathit{assoc}_3)
 \end{array}\]
+At the level of 1d-types, the first computation produces
+$\nodet{\tau_3}{\tau_4}$ which is consumed by the second
+computation. Expanding these types, we realize that the $\tau_4$
+produced from the first compution is actually a demand for a value of
+that type and that the $\tau_4$ consumed by the second computation can
+satisfy a demand by an earlier computation. This explains the need for
+a feedback mechanism to send future values back to earlier
+computations. 
 
-\paragraph*{Higher-order functions.}
-
+\paragraph*{Higher-order functions.} Given values that flow in both
+directions, it is fairly straightforward to encode functions. At the
+type level, we have:
 \[\begin{array}{rcl}
 \boxminus(\nodet{\tau_1}{\tau_2}) &\eqdef& \nodet{\tau_2}{\tau_1} \\
 \nodet{\tau_1}{\tau_2} \lolli \nodet{\tau_3}{\tau_4} &\eqdef& 
            \boxminus(\nodet{\tau_1}{\tau_2}) \boxplus \nodet{\tau_3}{\tau_4} \\
   &\eqdef& \nodet{\tau_2+\tau_3}{\tau_1+\tau_4}
 \end{array}\]
+The $\boxminus$ flips producers and consumers and the $\lolli$ states
+that a function is just a transformer demanding values of the input
+type and producing values of the output type. As shown below, it now
+becomes possible to manipulate functions are values by currying and uncurrying:
 \[\begin{array}{rcl}
 \mathit{flip} &:& (\cubt_1 \isoone \cubt_2)
   \rightarrow (\boxminus\cubt_2 \isoone \boxminus\cubt_1) \\
@@ -2537,8 +2559,12 @@ f \fatsemi g &=& \mathit{trace}~(\mathit{assoc}_1 \fatsemi
 \mathit{uncurry}~f &=& \assocrp \fatsemi f \fatsemi \assoclp 
 \end{array}\]
 
-\paragraph*{Products.}
-The definition for the product of 1d types used above is:
+\paragraph*{Products.} The \textbf{Int} construction works perfectly
+well as a technique to define higher-order functions if we just have
+\emph{one} monoidal structure: the additive one as we have assumed so
+far. We will now try to extend the construction to encompass the other
+(multiplicative) monoidal structure. Recall that natural definition
+for the product of 1d types used above was:
 \[\begin{array}{l}
 \ttone{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} \eqdef \\
 \noalign{$\hfill\nodet{(\tau_1*\tau_3)+(\tau_2*\tau_4)}{(\tau_1*\tau_4)+(\tau_2*\tau_3)}$}
@@ -2554,21 +2580,26 @@ definition, it is possible to lift all the 0d combinators involving products
    (\cubt_2\boxtimes\cubt_4))
 \]
 After a few failed attempts, we suspected that this definition of
-multiplication is not functorial which would mean that the \textbf{Int}
-construction only provides a limited notion of higher-order functions at the
-cost of losing the multiplicative structure at higher-levels. This
-observation is less well-known than it should be. Further investigation
-reveals that this observation is intimately related to a well-known problem
-in algebraic topology and homotopy theory that was identified thirty years
-ago as the ``phony'' multiplication~\citep{thomason} in a special class
-categories related to ours. This problem was recently
-solved~\citep{ringcompletion} using a technique whose fundamental ingredients
-are to add more dimensions and then take homotopy colimits. It remains to
-investigate whether this idea can be integrated with our development to get
+multiplication is not functorial which would mean that the
+\textbf{Int} construction only provides a limited notion of
+higher-order functions at the cost of losing the multiplicative
+structure at higher-levels. Further investigation reveals that this
+observation is intimately related to a well-known problem in algebraic
+topology and homotopy theory that was identified thirty years ago as
+the \textbf{``phony'' multiplication}~\citep{thomason} in a special
+class categories related to ours. This observation,
+\textcolor{red}{that the \textbf{Int} construction on the additive
+  monoidal structure does \emph{not} allow one to lift multiplication
+  in a straightforward manner} is less well-known than it should
+be. This problem was however recently solved~\citep{ringcompletion}
+using a technique whose fundamental ingredients are to add more
+dimensions and then take homotopy colimits. It remains to investigate
+whether this idea can be integrated with our development to get
 higher-order functions while retaining the multiplicative structure.
-\jc{I would (syntactically) highlight that the Int construction does NOT
-allow one to lift multiplication in a straightforward manner.  Put it in a "box" or
-something?}
+
+% \jc {I would (syntactically) highlight that the Int construction does
+%   NOT allow one to lift multiplication in a straightforward manner.
+%   Put it in a "box" or something?}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
