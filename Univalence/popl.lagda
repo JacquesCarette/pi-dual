@@ -465,8 +465,8 @@ equivalences) manifesting themselves as syntactic rules for reasoning
 about equivalences of programs representing reversible
 circuits. Sec.~\ref{sec:4} starts the semantic investigation of the
 $\Pi$ languages emphasizing the denotational approach that maps each
-$\Pi$ program to a type equivalence and a permutation. The section
-also gives a small example showing how a few rules that are sound with
+$\Pi$ program to a type equivalence or a permutation. The section also
+gives a small example showing how a few rules that are sound with
 respect to equivalence of permutations can be used to transform $\Pi$
 programs without reliance on any extensional
 reasoning. Sec.~\ref{sec:5} then reveals that these rules are
@@ -2538,7 +2538,7 @@ type level, we have:
 The $\boxminus$ flips producers and consumers and the $\lolli$ states
 that a function is just a transformer demanding values of the input
 type and producing values of the output type. As shown below, it now
-becomes possible to manipulate functions are values by currying and uncurrying:
+becomes possible to manipulate functions as values by currying and uncurrying:
 \[\begin{array}{rcl}
 \mathit{flip} &:& (\cubt_1 \isoone \cubt_2)
   \rightarrow (\boxminus\cubt_2 \isoone \boxminus\cubt_1) \\
@@ -2668,25 +2668,27 @@ well-behaved programming language and its optimizer.
 
 More generally, reversible computational models --- in which all
 functions have inverses --- are known to be universal computational
-models~\citep{Bennett:1973:LRC}. It is therefore, at least plausible,
-that a variant of HoTT based exclusively on reversible functions would
-have better computational properties. Our current result is a step,
-albeit preliminary in that direction as it only applies to finite
-types. However, it is plausible that this approach can be generalized
-to accommodate higher-order functions. The intuitive idea is that our
-current development based on the commutative semiring of the natural
-numbers might be generalizable to the ring of integers or even to the
-field of rational numbers. The generalization to rings would introduce
-\emph{negative types} and the generalization to fields would further
-introduce \emph{fractional types}. As Sec.~\ref{sec:7} suggests, there
-is good evidence that these generalizations would introduce some
-notion of higher-order functions. It is even possible to conceive of
-more exotic types such as types with square roots and imaginary
-numbers by further generalizing the work to the field of
-\emph{algebraic numbers}. These types have been shown to make sense in
-computations involving datatypes such as trees that can be viewed as
-solutions to polynomials over type
-variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
+models~\citep{Bennett:1973:LRC} and more importantly they can be
+defined without any reference to irreversible functions, which
+ironically become the derived notion. It is therefore, at least
+plausible, that a variant of HoTT based exclusively on reversible
+functions would have better computational properties. Our current
+result is a step, albeit preliminary in that direction as it only
+applies to finite types. However, it is plausible that this approach
+can be generalized to accommodate higher-order functions. The
+intuitive idea is that our current development based on the
+commutative semiring of the natural numbers might be generalizable to
+the ring of integers or even to the field of rational numbers. The
+generalization to rings would introduce \emph{negative types} and the
+generalization to fields would further introduce \emph{fractional
+  types}. As Sec.~\ref{sec:7} suggests, there is good evidence that
+these generalizations would introduce some notion of higher-order
+functions. It is even possible to conceive of more exotic types such
+as types with square roots and imaginary numbers by further
+generalizing the work to the field of \emph{algebraic numbers}. These
+types have been shown to make sense in computations involving
+datatypes such as trees that can be viewed as solutions to polynomials
+over type variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \appendix
