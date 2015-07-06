@@ -149,20 +149,21 @@ $\displaystyle
 
 \begin{abstract}
 
-Many recent advances in quantum computing, low-power design,
-nanotechnology, optical information processing, and bioinformatics are
-based on \emph{reversible circuits}. With the aim of designing a
-semantically well-founded approach for modeling and reasoning about
-reversible circuits, we propose viewing such circuits as proof terms
-witnessing equivalences between finite types. Proving that these type
-equivalences satisfy the commutative semiring axioms, we proceed with
-the categorification of type equivalences as \emph{symmetric rig
-groupoids}. The coherence conditions of these categories then produce,
-for free, a sound and complete calculus for reasoning about reversible
-circuit equivalence. The paper consists of the ``unformalization'' of
-an Agda package formalizing the connections between reversible
-circuits, equivalences between finite types, permutations between
-finite sets, and symmetric rig groupoids.
+  Many recent advances in quantum computing, low-power design,
+  nanotechnology, optical information processing, and bioinformatics
+  are based on \emph{reversible circuits}. With the aim of designing a
+  semantically well-founded approach for modeling and reasoning about
+  reversible circuits, we propose viewing such circuits as proof terms
+  witnessing equivalences between finite types. Proving that these
+  type equivalences satisfy the commutative semiring axioms, we
+  proceed with the categorification of type equivalences as
+  \emph{symmetric rig weak groupoids}. The coherence conditions of
+  these categories then produce, for free, a sound and complete
+  calculus for reasoning about reversible circuit equivalence. The
+  paper consists of the ``unformalization'' of an Agda package
+  formalizing the connections between reversible circuits,
+  equivalences between finite types, permutations between finite sets,
+  and symmetric rig weak groupoids.
 
 \end{abstract}
 
@@ -471,11 +472,12 @@ programs without reliance on any extensional
 reasoning. Sec.~\ref{sec:5} then reveals that these rules are
 intimately related to the coherence conditions of the categorified
 analogues of type equivalences and permutations, namely, the so-called
-\emph{symmetric rig groupoids}. Sec.~\ref{sec:6} contains that
+\emph{symmetric rig weak groupoids}. Sec.~\ref{sec:6} contains that
 ``punchline'': a sound and complete set of rules that can be used to
 reason about $\Pi$ programs and their equivalences. Before concluding,
 we devote Sec.~\ref{sec:7} to a detailed analysis of higher-order
-functions in the setting we describe suggesting a possible solution.
+functions in the setting we describe suggesting a possible path
+towards a solution.
 
 \amr{Big question: what do we say about Coquand's et al cubical type theory}
 
@@ -947,8 +949,8 @@ reason about type equivalences between finite types.
 \swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
 \assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\
 \\
-\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor \\
-\distz :&~ 0 * \tau & \iso & 0 ~ &: \factorzl 
+\distz :&~ 0 * \tau & \iso & 0 ~ &: \factorzl \\
+\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor
 \end{array}
 & 
 \begin{minipage}{0.5\textwidth}
@@ -1574,14 +1576,15 @@ are only categorifications of commutative monoids. We will need to
 consider the categorification of commutative semirings.
 
 %%%%%%%%%%%%
-\subsection{Symmetric Rig Groupoids}
+\subsection{Symmetric Rig Weak Groupoids}
 
 The categorification of a commutative semiring is called a
 \emph{symmetric rig category}.  It is build from a \emph{symmetric
-bimonoidal category} to which distributivity natural isomorphisms
-are added, and accompanying coherence laws added.
-Since we can easily set things up so that every morphism
-is a isomorphism, the category will also be a groupoid. 
+  bimonoidal category} to which distributivity natural isomorphisms
+are added, and accompanying coherence laws added.  Since we can easily
+set things up so that every morphism is a isomorphism, the category
+will also be a groupoid. Since the laws of the category only hold up
+to a higher equivalence, the entire setting is that of weak categories.
 
 There are several equivalent definitions of rig categories. We use the
 following definition from the ncatlab pages
@@ -2572,58 +2575,76 @@ something?}
 \label{sec:conc}
 \label{sec:8}
 
+We have developed a tight integration between \emph{reversible
+  circuits} with \emph{symmetric rig weak groupoids} based on the following
+elements:
 \begin{itemize}
-\item add trace to make language Turing complete
-\item generalize from commutative semiring to field as a way to get some
-  notion of h.o. functions
+\item reversible circuits are represented as terms witnessing
+  morphisms between finite types in a symmetric rig groupoid;
+\item the term language for reversible circuits is universal; it could
+  be used as a standalone point-free programming language or as a
+  target for a higher-level language with a more conventional syntax;
+\item the symmetric rig groupoid structure ensures that programs can
+  be combined using sums and products satisfying the familiar laws of
+  these operations; 
+\item the \emph{weak} versions of the categories give us a second
+  level of morphisms that relate programs to equivalent programs and
+  is exactly captured in the coherence conditions of the categories;
+  this level of morphisms also comes equipped with sums and products
+  with the familiar laws and the coherence conditions capture how
+  these operations interact with sequential composition;
+\item a sound and complete optimizer for reversible circuits can be
+  represented as terms that rewrite programs in small steps witnessing
+  this second level of morphisms.
 \end{itemize}
+Our calculus provides a semantically well-founded approach to
+representation, manipulation, and optimization of reversible
+circuits. In principle, subsets of the optimization rules can be
+selected to rewrite programs to several possible canonical forms as
+desired. We aim to investigate such frameworks in the future. 
 
-We start with the class of all functions $A \rightarrow B$, then
-introduce constraints to filter those functions which correspond to
-type equivalences $A \simeq B$, and then attempt to look for a
-convenient computational framework for effective programming with type
-equivalences. In the case of finite types, this is just convoluted as
-the collection of functions corresponding to type equivalences is the
-collection of isomorphisms between finite types and these isomorphisms
-can be inductively defined giving rise to a programming language that
-is complete for combinational
-circuits~\cite{James:2012:IE:2103656.2103667}.
+From a much more general perspective, our result can be viewed as part
+of a larger programme aiming at a better integration of several
+disciplines most notably computation, topology, and physics. Computer
+science has traditionally been founded on models such as the
+$\lambda$-calculus which are at odds with the increasingly relevant
+physical principle of conservation of information as well as the
+recent foundational proposal of HoTT that identifies equivalences
+(i.e., reversible, information-preserving, functions) as a primary
+notion of interest. Currently, these reversible functions are a
+secondary notion defined with reference to the full $\lambda$-calculus
+in what appears to be a detour. In more detail, we currently start
+with the class of all functions $A \rightarrow B$, then introduce
+constraints to filter those functions which correspond to type
+equivalences $A \simeq B$, and then attempt to look for a convenient
+computational framework for effective programming with type
+equivalences. As we have shown, in the case of finite types, this is
+just convoluted as the collection of functions corresponding to type
+equivalences is the collection of isomorphisms between finite types
+and these isomorphisms can be inductively defined giving rise to a
+well-behaved programming language and its optimizer. 
 
-To make these connections precise, we now explore permutations over
-finite sets as an explicit computational realization of isomorphisms
-between finite types and prove that the type of all permutations
-between finite sets is equivalent to the type of type equivalences but
-with better computational properties, i.e., without the reliance on
-function extensionality. 
-
-Our theorem shows that, in the case of finite types, reversible
-computation via type isomorphisms \emph{is} the computational
-interpretation of univalence. The alternative presentation of the
-theorem exposes it as an instance of \emph{univalence}. In the
-conventional HoTT setting, univalence is postulated as an axiom that
-lacking computational content. In more detail, the conventional HoTT
-approach starts with two, a priori, different notions: functions and
-identities (paths), and then postulates an equivalence between a
-particular class of functions (equivalences) and paths. Most functions
-are not equivalences and hence are evidently unrelated to paths. An
-interesting question then poses itself: since reversible computational
-models --- in which all functions have inverses --- are known to be
-universal computational models, what would happen if we considered a
-variant of HoTT based exclusively on reversible functions?  Presumably
-in such a variant, all functions --- being reversible --- would
-potentially correspond to paths and the distinction between the two
-notions would vanish making the univalence postulate unnecessary. This
-is the precise technical idea that is captured in theorem above for
-the limited case of finite types.
-
-We focused on commutative semiring structures. An obvious question is
-whether the entire setup can be generalized to a larger algebraic
-structure like a field. That requires additive and multiplicative
-inverses. There is evidence that this negative and fractional types
-are sensible and that they would give rise to some form of
-higher-order functions. There is also evidence for even more exotic
-types that are related to algebraic numbers including roots and
-imaginary numbers.
+More generally, reversible computational models --- in which all
+functions have inverses --- are known to be universal computational
+models~\citep{Bennett:1973:LRC}. It is therefore, at least plausible,
+that a variant of HoTT based exclusively on reversible functions would
+have better computational properties. Our current result is a step,
+albeit preliminary in that direction as it only applies to finite
+types. However, it is plausible that this approach can be generalized
+to accommodate higher-order functions. The intuitive idea is that our
+current development based on the commutative semiring of the natural
+numbers might be generalizable to the ring of integers or even to the
+field of rational numbers. The generalization to rings would introduce
+\emph{negative types} and the generalization to fields would further
+introduce \emph{fractional types}. As Sec.~\ref{sec:7} suggests, there
+is good evidence that these generalizations would introduce some
+notion of higher-order functions. It is even possible to conceive of
+more exotic types such as types with square roots and imaginary
+numbers by further generalizing the work to the field of
+\emph{algebraic numbers}. These types have been shown to make sense in
+computations involving datatypes such as trees that can be viewed as
+solutions to polynomials over type
+variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \appendix
@@ -2633,12 +2654,12 @@ imaginary numbers.
 Given that the structure of commutative semirings is central to this
 paper, we recall the formal algebraic definition. Commutative rings
 are sometimes called \emph{commutative rigs} as they are commutative
-ring without negative elements.
+rings without negative elements.
 
 \begin{definition}
   A \emph{commutative semiring} consists of a set $R$, two
   distinguished elements of $R$ named 0 and 1, and two binary
-  operations $+$ and $\cdot$, satisfying the following relations for
+  operations~$+$ and $\cdot$, satisfying the following relations for
   any $a,b,c \in R$:
 \[\begin{array}{rcl}
 0 + a &=& a \\
