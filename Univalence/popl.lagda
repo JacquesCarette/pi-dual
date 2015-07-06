@@ -2419,9 +2419,20 @@ path towards a solution.
 
 For this construction, we assume that we have extended $\Pi$ with a
 trace operator to implement recursion or feedback, as done in some of
-the work on $\Pi$~\citep{rc2011,James:2012:IE:2103656.2103667}. We then
-extend $\Pi$ with a new universe of types $\cubt$ that consists of
-composite types $\nodet{\tau_1}{\tau_2}$:
+the work on $\Pi$~\citep{rc2011,James:2012:IE:2103656.2103667}. The trace operator has the following type rule:
+\[
+\Rule{}
+{\jdg{}{}{c : a + b \leftrightarrow a + c}}
+{\jdg{}{}{\mathit{trace}~c : b \leftrightarrow c}}
+{}
+\]
+Under ``normal'' operation, a $b$ input is expected which is injected
+into the sum and fed to the traced computation. The evaluation
+continues until a $c$ value is produced, possibly after feeding
+several intermediate $a$ results back to the input. 
+
+We then extend $\Pi$ with a new universe of types $\cubt$ that
+consists of composite types $\nodet{\tau_1}{\tau_2}$:
 \[\begin{array}{lrcl}
 (\textit{{1d} types}) & 
   \cubt &::=& \nodet{\tau_1}{\tau_2}
