@@ -2655,15 +2655,15 @@ recent foundational proposal of HoTT that identifies equivalences
 (i.e., reversible, information-preserving, functions) as a primary
 notion of interest. Currently, these reversible functions are a
 secondary notion defined with reference to the full $\lambda$-calculus
-in what appears to be a detour. In more detail, we currently start
-with the class of all functions $A \rightarrow B$, then introduce
+in what appears to be a detour. In more detail, current constructions
+start with the class of all functions $A \rightarrow B$, then introduce
 constraints to filter those functions which correspond to type
 equivalences $A \simeq B$, and then attempt to look for a convenient
 computational framework for effective programming with type
 equivalences. As we have shown, in the case of finite types, this is
-just convoluted as the collection of functions corresponding to type
+just convoluted since the collection of functions corresponding to type
 equivalences is the collection of isomorphisms between finite types
-and these isomorphisms can be inductively defined giving rise to a
+and these isomorphisms can be inductively defined, giving rise to a
 well-behaved programming language and its optimizer. 
 
 More generally, reversible computational models --- in which all
