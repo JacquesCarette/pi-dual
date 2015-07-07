@@ -25,6 +25,7 @@
 \usepackage{graphicx}
 \usepackage{textgreek}
 \usepackage{extarrows}
+\usepackage{textcomp}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Macros
@@ -452,41 +453,72 @@ Because physical laws obey various conservation principles (including
 conservation of information) and because computation is fundamentally
 a physical process, every computation is, at the physical level,
 fundamentally an equivalence that preserves information.  The idea
-that computation, at the logical and programmer level, should also be
+that computation, at the logical and programming level, should also be
 based on ``equivalences'' (i.e., invertible processes) was originally
 motivated by such physical
-considerations~\citep{Landauer:1961,PhysRevA.32.3266,Bennett:1973:LRC,Toffoli:1980,fredkin1982conservative,Zuliani:2001:LR}. More
+considerations~\citep{springerlink:10.1007/BF02650179,Landauer:1961,PhysRevA.32.3266,Bennett:1973:LRC,Toffoli:1980,fredkin1982conservative}. More
 recently, the rising importance of energy conservation, the shrinking
 size of technology at which quantum effects become noticeable, and the
 potential for quantum computation and communication, are additional
 physical considerations adding momentum to such reversible
 computational
 models~\citep{Frank:1999:REC:930275,DeBenedictis:2005:RLS:1062261.1062325}. From
-a more theoretical perspective, the recently proposed
-``univalent'' foundation of mathematics~\citep{hottbook}, based on
-Homotopy Type Theory (HoTT), greatly emphasizes computation based on
-\emph{equivalences}.
+a more theoretical perspective, the recently proposed ``univalent''
+foundation of mathematics~\citep{hottbook}, based on Homotopy Type
+Theory (HoTT), greatly emphasizes computation based on
+\emph{equivalences} that are satisfied up to equivalences that are
+themselves satisfied up to equivalence, etc.
 
-\amr{reversible not a restriction; actually a generalization}
+To summarize, we are witnessing a convergence of ideas from several
+distinct research communities (physics, mathematics, and computer
+science) towards basing computations on
+equivalences~\citep{baez2011physics}. A first step in that direction
+was the development of many \emph{reversible programming
+  languages}~(e.g.,
+\citep{Yokoyama:2007:RPL:1244381.1244404,Mackie2011,DiPierro:2006:RCL:1166042.1166047,Kluge:1999:SEMCD,Mu:2004:ILRC,abramsky2005structural}.)
+Typically, programs in these languages correspond to some notion of
+equivalence. But reasoning \emph{about} these programs abandons the
+notion of equivalence and uses conventional irreversible functions to
+specify evaluators and the derived notions of program
+equivalence. This unfortunately misses the beautiful combinatorial
+structure of programs and proofs that was first exposed in the
+historical paper by \citet{Hofmann96thegroupoid} and that is currently
+the center of attention of HoTT and that requires keeping the focus on
+equivalences not only at the conventional level of programs but also
+at the higher levels of programs manipulating equivalences about other
+programs. 
 
-\amr{reversible circuits intead of general purpose computation: limit
-ourselves to finite types: what emerges is an interesting universal
-language for combinational reversible circuits that comes with a
-calculus for writing circuits and a calculus for manipulating that
-calculus; in other words; rules for writing circuits and rules for
-rewriting (optimizing) circuits. Representing Reversible Circuits:
-truth table, matrix, reed muller expansion, product of cycles,
-decision diagram, etc. any easy way to reproduce Figure 4 on p.7 of
-Saeedi and Markov?  important remark: these are all \emph{Boolean}
-circuits!  Most important part: reversible circuits are equivalent to
-permutations.}
+This paper addresses --- and completely solves --- a well-defined part
+of the general problem of programming with equivalences up to
+equivalences. Our approach, we argue, might also be suitable for the
+more general problem. The particular problem we focus on is that of
+programming with the finite types built from the empty type, the unit
+type, and closed under sums and products. Although limited in their
+expressive power, these types are rich enough to express all
+combinational (with no state or feedback) hardware circuits and as we
+show already exhibit substantial combinatorial structure at the ``next
+level'', i.e., at the level of equivalences about equivalences of
+types. What emerges from our study are the following results:
+\begin{itemize}
+\item a universal language for combinational reversible circuits that
+  comes with a calculus for writing circuits and a calculus for
+  manipulating that calculus;
+\item the language itself subsumes various representations for
+  reversible circuits, e.g., truth tables, matrices, product of
+  permutation cycles, etc.~\citep{Saeedi:2013:SOR:2431211.2431220};
+\item the first set of rules is sound and complete with respect to 
+  equivalences of types;
+\item the second set of rules is sound and complete with respect to
+  equivalences of equivalences of types as specified by the first set
+  of rules;
+\end{itemize}
 
 \paragraph*{Outline.} The next section reviews equivalences between
 finite types and relates them to various commutative semiring
 structures. The main message of that section is that, up to
 equivalence, the concept of equivalence of finite types is equivalent
 to permutations between finite sets. The latter is computationally
-well-behaved with exisiting reversible programming languages developed
+well-behaved with existing reversible programming languages developed
 for programming with permutations and finite-type isomorphisms. This
 family of languages, called $\Pi$, is universal for describing
 combinational (without feedback or state) reversible circuits (see
@@ -920,7 +952,8 @@ combinator in sequential composition.
 
 The language $\Pi$ is universal for reversible combinational
 circuits~\citep{James:2012:IE:2103656.2103667}.\footnote{With the
-  addition of recursive types and trace operators, $\Pi$ become a
+  addition of recursive types and trace
+  operators~\citep{Hasegawa:1997:RCS:645893.671607}, $\Pi$ become a
   Turing complete reversible
   language~\citep{James:2012:IE:2103656.2103667,rc2011}.} We
 illustrate the expressiveness of the language with a few short
@@ -1324,9 +1357,10 @@ The sequence of rewrites can be visualized in Appendix~\ref{app:opt}.
 
 The problem of finding a sound and complete set of rules for reasoning
 about equivalence of permutations is solved by appealing to various
-results about specialized monoidal categories. The main technical
-vehicle is that of \emph{categorification}~\citep{math/9802029} which
-is a process, intimately related to homotopy theory, for finding
+results about specialized monoidal
+categories~\citep{selinger-graphical}. The main technical vehicle is
+that of \emph{categorification}~\citep{math/9802029} which is a
+process, intimately related to homotopy theory, for finding
 category-theoretic analogs of set-theoretic concepts. From an
 intuitive perspective, the algebraic structure of a commutative
 semiring only captures a ``static'' relationship between types; it
@@ -1951,7 +1985,7 @@ conditions in a more economic way.
 \subsection{Instances of Symmetric Rig Categories} 
 
 Most of the structures we have discussed so far are instances of
-symmetic rig weak groupoids. 
+symmetric rig weak groupoids. 
 
 \begin{theorem}
   The collection of all types and type equivalences is a symmetric rig
@@ -2293,20 +2327,21 @@ higher-order functions emerges from having an additional degree of
 \citet{joyal1996traced} and the closely related $\mathcal{G}$
 construction of linear logic~\citep{gcons} construct higher-order
 \emph{linear} functions by considering a new category built on top of
-a given base traced monoidal category. The objects of the new category
-are of the form $\nodet{\tau_1}{\tau_2}$ where~$\tau_1$ and~$\tau_2$
-are objects in the base category. Intuitively, this object represents
-the \emph{difference} $\tau_1-\tau_2$ with the component $\tau_1$
-viewed as conventional type whose elements represent values flowing,
-as usual, from producers to consumers, and the component $\tau_2$
-viewed as a \emph{negative type} whose elements represent demands for
-values or equivalently values flowing backwards. Under this
-interpretation, a function is nothing but an object that converts a
-demand for an argument into the production of a result. We will
-explain in this section that the na\"\i ve generalization of the
-construction from monoidal to bimonoidal (aka rig) categories fails
-but that a recent result by \citet{ringcompletion} might provide a
-path towards a solution.
+a given base traced monoidal
+category~\citep{Hasegawa:2009:TMC:1552068.1552069}. The objects of the
+new category are of the form $\nodet{\tau_1}{\tau_2}$ where~$\tau_1$
+and~$\tau_2$ are objects in the base category. Intuitively, this
+object represents the \emph{difference} $\tau_1-\tau_2$ with the
+component $\tau_1$ viewed as conventional type whose elements
+represent values flowing, as usual, from producers to consumers, and
+the component $\tau_2$ viewed as a \emph{negative type} whose elements
+represent demands for values or equivalently values flowing
+backwards. Under this interpretation, a function is nothing but an
+object that converts a demand for an argument into the production of a
+result. We will explain in this section that the na\"\i ve
+generalization of the construction from monoidal to bimonoidal (aka
+rig) categories fails but that a recent result by
+\citet{ringcompletion} might provide a path towards a solution.
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The  \textbf{Int} Construction} 
@@ -2414,7 +2449,7 @@ f \fatsemi g &=& \mathit{trace}~(\mathit{assoc}_1 \fatsemi
 At the level of 1d-types, the first computation produces
 $\nodet{\tau_3}{\tau_4}$ which is consumed by the second
 computation. Expanding these types, we realize that the $\tau_4$
-produced from the first compution is actually a demand for a value of
+produced from the first computation is actually a demand for a value of
 that type and that the $\tau_4$ consumed by the second computation can
 satisfy a demand by an earlier computation. This explains the need for
 a feedback mechanism to send future values back to earlier
