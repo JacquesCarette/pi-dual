@@ -30,7 +30,7 @@
 %% Macros
 
 \newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
-\newcommand{\mm}{\texttt{-}}
+\newcommand{\mm}{\texttt{\textminus}}
 \newcommand{\pp}{\texttt{+}}
 \newcommand{\inl}[1]{\textsf{inl}~#1}
 \newcommand{\inr}[1]{\textsf{inr}~#1}
@@ -462,7 +462,7 @@ potential for quantum computation and communication, are additional
 physical considerations adding momentum to such reversible
 computational
 models~\citep{Frank:1999:REC:930275,DeBenedictis:2005:RLS:1062261.1062325}. From
-a more theoretical perspective, the recently proposed new
+a more theoretical perspective, the recently proposed
 ``univalent'' foundation of mathematics~\citep{hottbook}, based on
 Homotopy Type Theory (HoTT), greatly emphasizes computation based on
 \emph{equivalences}.
@@ -2640,7 +2640,7 @@ $\lambda$-calculus which are at odds with the increasingly relevant
 physical principle of conservation of information as well as the
 recent foundational proposal of HoTT that identifies equivalences
 (i.e., reversible, information-preserving, functions) as a primary
-notion of interest.\footnote{The $\lambda$-calculus is even not
+notion of interest.\footnote{The $\lambda$-calculus is not even
 suitable for keeping track of computational resources; linear
 logic~\citep{Girard87tcs} is a much better framework for that purpose
 but it does not go far enough as it only tracks ``multiplicative
