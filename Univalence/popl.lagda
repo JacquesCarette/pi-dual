@@ -29,6 +29,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Macros
 
+\newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
+\newcommand{\mm}{\texttt{-}}
+\newcommand{\pp}{\texttt{+}}
 \newcommand{\inl}[1]{\textsf{inl}~#1}
 \newcommand{\inr}[1]{\textsf{inr}~#1}
 \newcommand{\idv}[3]{#2 \xrightarrow{#1} #3}
@@ -464,9 +467,9 @@ a more theoretical perspective, the recently proposed new
 Homotopy Type Theory (HoTT), greatly emphasizes computation based on
 \emph{equivalences}.
 
-\amr{Need motivation...}
+reversible circuits intead of general purpose computation
 
-\amr{Results...}
+reversible not a restriction; actually a generalization
 
 \paragraph*{Outline.} The next section reviews equivalences between
 finite types and relates them to various commutative semiring
@@ -496,14 +499,10 @@ analogues of type equivalences and permutations, namely, the so-called
 reason about $\Pi$ programs and their equivalences. Before concluding,
 we devote Sec.~\ref{sec:7} to a detailed analysis of higher-order
 functions in the setting we describe suggesting a possible path
-towards a solution.
-
-\amr{Big question: what do we say about Coquand's et al cubical type theory}
-
-\amr{old stuff follows: might be useful}
-
-Reversible circuits are NOT a restriction; they are a generalization;
-conventional irreversible circuits are a special case.
+towards a solution. We note that because the issues involved are quite
+subtle, the paper is the ``unformalization'' of an executable
+\texttt{Agda 2.4.2.3} package with the global \AgdaComment{without-K}
+option enabled.
 
 \begin{itemize}
 \item BACKGROUND: realizing HoTT requires we be able to program with type
@@ -516,42 +515,6 @@ conventional irreversible circuits are a special case.
   for rewriting (optimizing) circuits
 \end{itemize}
 
-Define and motivate that we are interested in defining HoTT  
-  equivalences of types, characterizing them, computing with them,
-  etc.
-  
-In more detail, a computational world in which the laws of physics are
-embraced and resources are carefully maintained (e.g., quantum
-computing~\citep{NC00,Abramsky:2004:CSQ:1018438.1021878}), programs must be
-reversible. Although this is apparently a limiting idea, it turns out that
-conventional computation can be viewed as a special case of such
-resource-preserving reversible programs. This thesis has been explored for
-many years from different
-perspectives~\citep{fredkin1982conservative,Toffoli:1980,bennett2010notes,bennett2003notes,Bennett:1973:LRC,Landauer:1961,Landauer}
-and more recently in the context of type
-isomorphisms~\citep{James:2012:IE:2103656.2103667}. 
-
-This paper explores the basic ingredients of HoTT from the perspective that
-computation is all about type isomorphisms. Because the issues involved are
-quite subtle, the paper is an executable \texttt{Agda 2.4.0} file with the
-global \AgdaComment{without-K} option enabled. The main body of the paper
-reconstructs the main features of HoTT for the limited universe of finite
-types consisting of the empty type, the unit type, and sums and products of
-types. Sec.~\ref{intc} outlines directions for extending the result to richer
-types.
-
-\begin{comment}
-Quantum Computing. Quantum physics differs from classical physics in \textcolor{red}{many} ways:
-
-\begin{itemize}
-\item Superpositions
-\item Entanglement
-\item Unitary evolution
-\item Composition uses tensor products
-\item Non-unitary measurement
-\end{itemize}
-
-Quantum Computing \& Programming Languages. 
 \begin{itemize}
 \item It is possible to adapt \textcolor{red}{all at once} classical programming
 languages to quantum programming languages.
@@ -561,9 +524,7 @@ can be smoothly adapted to the quantum world.
 \item There are however what appear to be fundamental differences between the classical and quantum world that make them incompatible
 \item Let us \emph{re-think} classical programming foundations before jumping to the quantum world.
 \end{itemize}
-\end{comment}
 
-%% \jc{is any of this stuff useful for the introduction, or should it all go?}
 Resource-Aware Classical Computing. 
 \begin{itemize}
 \item The biggest questionable assumption of classical programming is that it is possible
@@ -615,9 +576,6 @@ theories are one of the candidates for such a popular semantics for
 they require no additional background beyond knowledge of the
 programming language itself, and they provide a direct support for the
 equational reasoning underlying many program transformations.
-
-The primary abstraction in HoTT is 'type equivalences.'
-If we care about resource preservation, then we are concerned with 'type equivalences'.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Equivalences and Commutative Semirings} 
@@ -2569,6 +2527,87 @@ becomes possible to manipulate functions as values by currying and uncurrying:
 \mathit{uncurry}~f &=& \assocrp \fatsemi f \fatsemi \assoclp 
 \end{array}\]
 
+\begin{figure*}
+\[\begin{array}{c}
+\nodet{\tau_1}{\tau_2}
+\quad\nboxtimes{1}{2}\quad
+\nodet{(\nodet{\tau_3}{\tau_4})}{(\nodet{\tau_5}{\tau_6})} \quad= \\
+\\
+\nodet{(\nodet{{(\nodet{\tau_1 * \tau_3}{\tau_1 * \tau_4})}}
+              {{(\nodet{\tau_1 * \tau_5}{\tau_1 * \tau_6})}})}
+      {(\nodet{{(\nodet{\tau_2 * \tau_3}{\tau_2 * \tau_4})}}
+              {{(\nodet{\tau_2 * \tau_5}{\tau_2 * \tau_6})}})}
+\end{array}\]
+\\
+\\
+\begin{center}
+\begin{tikzpicture}
+\node[left] at (-0.4,0) {$\pp$};
+\node[below] at (-0.4,0) {$\tau_1$};
+\draw[fill] (-0.4,0) circle [radius=0.05];
+\node[right] at (0.6,0) {$\mm$};
+\node[below] at (0.6,0) {$\tau_2$};
+\draw[fill] (0.6,0) circle [radius=0.05];
+\draw[-,dotted] (-0.4,0) -- (0.6,0);
+\node at (1.6,0) {$\nboxtimes{1}{2}$}; 
+
+%%
+\node[below] at (2.5,-0.5) {$\tau_3$};
+\node[left] at (2.5,-0.5) {$\pp\pp$};
+\draw[fill] (2.5,-0.5) circle [radius=0.05];
+\node[below] at (3.5,-0.5) {$\tau_4$};
+\node[right] at (3.5,-0.5) {$\pp\mm$};
+\draw[fill] (3.5,-0.5) circle [radius=0.05];
+\draw[-,dotted] (2.5,-0.5) -- (3.5,-0.5);
+\draw[-,dotted] (2.5,-0.5) -- (2.5,0.5);
+\node[above] at (2.5,0.5) {$\tau_5$};
+\node[left] at (2.5,0.5) {$\mm\pp$};
+\draw[fill] (2.5,0.5) circle [radius=0.05];
+\node[above] at (3.5,0.5) {$\tau_6$};
+\node[right] at (3.5,0.5) {$\mm\mm$};
+\draw[fill] (3.5,0.5) circle [radius=0.05];
+\draw[-,dotted] (2.5,0.5) -- (3.5,0.5);
+\draw[-,dotted] (3.5,-0.5) -- (3.5,0.5);
+%% 
+\node at (5,0) {$=$};
+%% 
+\node[left] at (7.5,0.75) {$(\tau_2 * \tau_3)\mm\pp\pp$};
+\draw[fill] (7.5,0.75) circle [radius=0.05];
+\node[right] at (9.5,0.75) {$\mm\pp\mm(\tau_2 * \tau_4)$};
+\draw[fill] (9.5,0.75) circle [radius=0.05];
+\node[above right] at (10.2,1.2) {$\mm\mm\mm(\tau_2 * \tau_6)$};
+\draw[fill] (10.2,1.2) circle [radius=0.05];
+\node[above left] at (8.2,1.2) {$(\tau_2 * \tau_5)\mm\mm\pp$};
+\draw[fill] (8.2,1.2) circle [radius=0.05];
+%%
+\node[left] at (7.5,-0.75) {$(\tau_1 * \tau_3)\pp\pp\pp$};
+\draw[fill] (7.5,-0.75) circle [radius=0.05];
+\node[right] at (9.5,-0.75) {$\pp\pp\mm(\tau_1 * \tau_4)$};
+\draw[fill] (9.5,-0.75) circle [radius=0.05];
+\node[above right] at (10.2,-0.3) {$\pp\mm\mm(\tau_1 * \tau_6)$};
+\draw[fill] (10.2,-0.3) circle [radius=0.05];
+\node[left] at (8.2,-0.3) {$(\tau_1 * \tau_5)\pp\mm\pp$};
+\draw[fill] (8.2,-0.3) circle [radius=0.05];
+%%
+\draw[-,dotted] (7.5,0.75) -- (9.5,0.75);
+\draw[-,dotted] (9.5,0.75) -- (10.2,1.2);
+\draw[-,dotted] (10.2,1.2) -- (8.2,1.2);
+\draw[-,dotted] (8.2,1.2) -- (7.5,0.75);
+%%
+\draw[-,dotted] (7.5,-0.75) -- (9.5,-0.75);
+\draw[-,dotted] (9.5,-0.75) -- (10.2,-0.3);
+\draw[-,dotted,dashed] (10.2,-0.3) -- (8.2,-0.3);
+\draw[-,dotted,dashed] (8.2,-0.3) -- (7.5,-0.75);
+%%
+\draw[-,dotted] (7.5,0.75) -- (7.5,-0.75);
+\draw[-,dotted] (9.5,0.75) -- (9.5,-0.75);
+\draw[-,dotted] (10.2,1.2) -- (10.2,-0.3);
+\draw[-,dotted,dashed] (8.2,1.2) -- (8.2,-0.3);
+\end{tikzpicture}
+\end{center}
+\caption{\label{mult}Example of multiplication of two cubical types.}
+\end{figure*}
+
 \paragraph*{Products.} The \textbf{Int} construction works perfectly
 well as a technique to define higher-order functions if we just have
 \emph{one} monoidal structure: the additive one as we have assumed so
@@ -2603,9 +2642,21 @@ class categories related to ours. This observation,
   in a straightforward manner} is less well-known than it should
 be. This problem was however recently solved~\citep{ringcompletion}
 using a technique whose fundamental ingredients are to add more
-dimensions and then take homotopy colimits. It remains to investigate
-whether this idea can be integrated with our development to get
-higher-order functions while retaining the multiplicative structure.
+dimensions and then take homotopy colimits. 
+
+The process of adding more dimensions is relatively straightforward:
+if the original intuition was that 1d types like
+$\nodet{\tau_1}{\tau_2}$ represent $\tau_1 - \tau_2$, i.e., two types
+one in the $\pp$ direction and one in the $\mm$ direction, then
+multiplication of two such 1d types ought to produce components in the
+$\pp\pp$, $\pp\mm$, $\mm\pp$, and $\mm\mm$ directions and so on. The
+idea is illustrated with a simple example in Fig.~\ref{mult}. It
+remains to investigate whether this idea could lead to a
+generalization of our results to incorporate higher-order functions
+while retaining the multiplicative structure. Another intriguing point
+to consider is the connection between this idea and the recently
+proposed cubical models of type theory that also aim at producing
+computational interpretations of univalence~\cite{cubical}.
 
 % \jc {I would (syntactically) highlight that the Int construction does
 %   NOT allow one to lift multiplication in a straightforward manner.
