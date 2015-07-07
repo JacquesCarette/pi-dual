@@ -3357,6 +3357,7 @@ a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
 \end{center}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
 \bibliographystyle{abbrvnat}
 \softraggedright
 \bibliography{cites}
