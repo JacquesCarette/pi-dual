@@ -2651,18 +2651,23 @@ $\lambda$-calculus which are at odds with the increasingly relevant
 physical principle of conservation of information as well as the
 recent foundational proposal of HoTT that identifies equivalences
 (i.e., reversible, information-preserving, functions) as a primary
-notion of interest. Currently, these reversible functions are a
-secondary notion defined with reference to the full $\lambda$-calculus
-in what appears to be a detour. In more detail, current constructions
-start with the class of all functions $A \rightarrow B$, then introduce
-constraints to filter those functions which correspond to type
-equivalences $A \simeq B$, and then attempt to look for a convenient
-computational framework for effective programming with type
-equivalences. As we have shown, in the case of finite types, this is
-just convoluted since the collection of functions corresponding to type
-equivalences is the collection of isomorphisms between finite types
-and these isomorphisms can be inductively defined, giving rise to a
-well-behaved programming language and its optimizer. 
+notion of interest.\footnote{The $\lambda$-calculus is even not
+suitable for keeping track of computational resources; linear
+logic~\citep{Girard87tcs} is a much better framework for that purpose
+but it does not go far enough as it only tracks ``multiplicative
+resources.''~\citep{superstructural}} Currently, these reversible
+functions are a secondary notion defined with reference to the full
+$\lambda$-calculus in what appears to be a detour. In more detail,
+current constructions start with the class of all functions $A
+\rightarrow B$, then introduce constraints to filter those functions
+which correspond to type equivalences $A \simeq B$, and then attempt
+to look for a convenient computational framework for effective
+programming with type equivalences. As we have shown, in the case of
+finite types, this is just convoluted since the collection of
+functions corresponding to type equivalences is the collection of
+isomorphisms between finite types and these isomorphisms can be
+inductively defined, giving rise to a well-behaved programming
+language and its optimizer.
 
 More generally, reversible computational models --- in which all
 functions have inverses --- are known to be universal computational
