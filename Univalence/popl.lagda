@@ -467,9 +467,19 @@ a more theoretical perspective, the recently proposed new
 Homotopy Type Theory (HoTT), greatly emphasizes computation based on
 \emph{equivalences}.
 
-reversible circuits intead of general purpose computation
+\amr{reversible not a restriction; actually a generalization}
 
-reversible not a restriction; actually a generalization
+\amr{reversible circuits intead of general purpose computation: limit
+ourselves to finite types: what emerges is an interesting universal
+language for combinational reversible circuits that comes with a
+calculus for writing circuits and a calculus for manipulating that
+calculus; in other words; rules for writing circuits and rules for
+rewriting (optimizing) circuits. Representing Reversible Circuits:
+truth table, matrix, reed muller expansion, product of cycles,
+decision diagram, etc. any easy way to reproduce Figure 4 on p.7 of
+Saeedi and Markov?  important remark: these are all \emph{Boolean}
+circuits!  Most important part: reversible circuits are equivalent to
+permutations.}
 
 \paragraph*{Outline.} The next section reviews equivalences between
 finite types and relates them to various commutative semiring
@@ -503,79 +513,6 @@ towards a solution. We note that because the issues involved are quite
 subtle, the paper is the ``unformalization'' of an executable
 \texttt{Agda 2.4.2.3} package with the global \AgdaComment{without-K}
 option enabled.
-
-\begin{itemize}
-\item BACKGROUND: realizing HoTT requires we be able to program with type
-  equivalences and equivalences of type equivalences and so on;
-  univalence is a postulate; caveat Coquand et al.~\citep{cubical}.
-\item RESULT: limit ourselves to finite types: what emerges is an interesting
-  universal language for combinational reversible circuits that comes
-  with a calculus for writing circuits and a calculus for manipulating
-  that calculus; in other words; rules for writing circuits and rules
-  for rewriting (optimizing) circuits
-\end{itemize}
-
-\begin{itemize}
-\item It is possible to adapt \textcolor{red}{all at once} classical programming
-languages to quantum programming languages.
-\item Some excellent examples discussed in this workshop
-\item This assumes that classical programming languages (and implicitly classical physics)
-can be smoothly adapted to the quantum world.
-\item There are however what appear to be fundamental differences between the classical and quantum world that make them incompatible
-\item Let us \emph{re-think} classical programming foundations before jumping to the quantum world.
-\end{itemize}
-
-Resource-Aware Classical Computing. 
-\begin{itemize}
-\item The biggest questionable assumption of classical programming is that it is possible
-to freely copy and discard information
-\item A classical programming language which respects no-cloning and no-discarding is
-the right foundation for an eventual quantum extension
-\item We want these properties to be \textcolor{red}{inherent} in the language; not an afterthought
-filtered by a type system
-\item We want to program with \textcolor{red}{isomorphisms} or \textcolor{red}{equivalences}
-\item The simplest instance is \textcolor{red}{permutations between finite types} which happens to
-correspond to \textcolor{red}{reversible circuits}.
-\end{itemize}
-
-Representing Reversible Circuits: truth table, matrix, reed muller
-expansion, product of cycles, decision diagram, etc.
-
-any easy way to reproduce Figure 4 on p.7 of Saeedi and Markov?
-important remark: these are all \emph{Boolean} circuits!
-Most important part: reversible circuits are equivalent to permutations.
-
-A (Foundational) Syntactic Theory. Ideally, want a notation that
-\begin{enumerate}
-\item is easy to write by programmers
-\item is easy to mechanically manipulate
-\item can be reasoned about
-\item can be optimized.
-\end{enumerate}
-Start with a \emph{foundational} syntactic theory on our way there:
-\begin{enumerate}
-\item easy to explain
-\item clear operational rules
-\item fully justified by the semantics
-\item sound and complete reasoning
-\item sound and complete methods of optimization
-\end{enumerate}
-
-A Syntactic Theory. 
-Ideally want a notation that is easy to write by programmers and that
-is easy to mechanically manipulate for reasoning and optimizing of circuits.
-
-Syntactic calculi good. 
-Popular semantics: Despite the increasing importance of formal
-methods to the computing industry, there has been little advance to
-the notion of a ``popular semantics'' that can be explained to
-\emph{and used} effectively (for example to optimize or simplify
-programs) by non-specialists including programmers and first-year
-students. Although the issue is by no means settled, syntactic
-theories are one of the candidates for such a popular semantics for
-they require no additional background beyond knowledge of the
-programming language itself, and they provide a direct support for the
-equational reasoning underlying many program transformations.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Equivalences and Commutative Semirings} 
