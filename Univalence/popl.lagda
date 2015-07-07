@@ -2579,7 +2579,7 @@ class categories related to ours. This observation,
   in a straightforward manner} is less well-known than it should
 be. This problem was however recently solved~\citep{ringcompletion}
 using a technique whose fundamental ingredients are to add more
-dimensions and then take homotopy colimits. 
+dimensions and then take homotopy colimits.
 
 The process of adding more dimensions is relatively straightforward:
 if the original intuition was that 1d types like
