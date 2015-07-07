@@ -2542,7 +2542,7 @@ becomes possible to manipulate functions as values by currying and uncurrying:
 \draw[-,dotted,dashed] (8.2,1.2) -- (8.2,-0.3);
 \end{tikzpicture}
 \end{center}
-\caption{\label{mult}Example of multiplication of two cubical types.}
+\caption{\label{mult}Example of multiplication of two cartesian types.}
 \end{figure*}
 
 \paragraph*{Products.} The \textbf{Int} construction works perfectly
