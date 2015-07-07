@@ -1355,6 +1355,42 @@ The sequence of rewrites can be visualized in Appendix~\ref{app:opt}.
 \section{Categorification}
 \label{sec:5}
 
+\amr{Laplaza only considers Rig Categories to have 'natural
+  monomorphisms' for distributivity, unlike the definition on
+  nLab. I've tried to read [Kelly 74], but found it to be completely
+  unreadeable.  If distributivity is made an iso, then the coherence
+  conditions "double up", with every one also holding for
+  'factor'. Which is true [proofs already done], and goes to the heart
+  of my comment that we have 2 commuting involutions on level-2
+  combinators.
+
+  However, it did let me observe one thing: we have 2! which says that
+  given (c <-> d), we can get (d <-> c).  What we don't have, and
+  SHOULD, is 2flip which would say that given (c <-> d), we can get (!
+  c <-> ! d).  This is "obviously true".  More, we also ought to be
+  able to prove (easily!) that all (e : c <-> d) 2! (2flip e) ==
+  2flip (2! e) where I really mean == there.}
+
+\amr{show some of the definitions (signatures only) of the coherences
+  (from Data.SumProd.Properties) that correspond to the laplazaYYY
+  lines.
+
+  One of the interesting conclusions of the coherence laws (see the
+  comments in the file above) is that it forces all (putative)
+  elements of bot to be equal.  This comes from the coherence law for
+  the two ways of proving that 0 * 0 = 0.}
+
+
+\amr{Note that a few of those "id" in there are actually "id<-> {ZERO}
+  {ZERO}", that is very important.  Most of the laws having to do with
+  absorb0 have some occurrences of both kinds of id in their
+  signature, which made figuring them out very challenging!  Same with
+  laws involving factor0
+
+  Similarly, the c1 in the identl* exchange law MUST map between ONE
+  (same with identr*).  In the same vein, c1 in the identl+ and
+  identr+ laws must involve ZERO.}
+
 The problem of finding a sound and complete set of rules for reasoning
 about equivalence of permutations is solved by appealing to various
 results about specialized monoidal
