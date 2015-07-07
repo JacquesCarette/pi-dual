@@ -445,6 +445,25 @@ _□ t = id⟷
 %% I don't think the text will need changed for that.}
 %% \url{https://github.com/JacquesCarette/pi-dual}
 
+Because physical laws obey various conservation principles (including
+conservation of information) and because computation is fundamentally
+a physical process, every computation is, at the physical level,
+fundamentally an equivalence that preserves information.  The idea
+that computation, at the logical and programmer level, should also be
+based on ``equivalences'' (i.e., invertible processes) was originally
+motivated by such physical
+considerations~\citep{Landauer:1961,PhysRevA.32.3266,Bennett:1973:LRC,Toffoli:1980,fredkin1982conservative,Zuliani:2001:LR}. More
+recently, the rising importance of energy conservation, the shrinking
+size of technology at which quantum effects become noticeable, and the
+potential for quantum computation and communication, are additional
+physical considerations adding momentum to such reversible
+computational
+models~\citep{Frank:1999:REC:930275,DeBenedictis:2005:RLS:1062261.1062325}. From
+a more theoretical perspective, the recently proposed new
+``univalent'' foundation of mathematics~\citep{hottbook}, based on
+Homotopy Type Theory (HoTT), greatly emphasizes computation based on
+\emph{equivalences}.
+
 \amr{Need motivation...}
 
 \amr{Results...}
@@ -486,13 +505,10 @@ towards a solution.
 Reversible circuits are NOT a restriction; they are a generalization;
 conventional irreversible circuits are a special case.
 
-reversible circuits for supercomputers of the
-future~\cite{DeBenedictis:2005:RLS:1062261.1062325}
-
 \begin{itemize}
 \item BACKGROUND: realizing HoTT requires we be able to program with type
   equivalences and equivalences of type equivalences and so on;
-  univalence is a postulate; caveat Coquand et al.
+  univalence is a postulate; caveat Coquand et al.~\citep{cubical}.
 \item RESULT: limit ourselves to finite types: what emerges is an interesting
   universal language for combinational reversible circuits that comes
   with a calculus for writing circuits and a calculus for manipulating
@@ -504,31 +520,16 @@ Define and motivate that we are interested in defining HoTT
   equivalences of types, characterizing them, computing with them,
   etc.
   
-Homotopy type theory (HoTT) ~\cite {hottbook} has a convoluted treatment of
-functions. It starts with a class of arbitrary functions, singles out a
-smaller class of ``equivalences'' via extensional methods, and then asserts
-via the \emph{univalence} \textbf{axiom} that the class of functions just
-singled out is equivalent to paths. Why not start with functions that are, by
-construction, equivalences?
-
-The idea that computation should be based on ``equivalences'' is an old one
-and is motivated by physical considerations. Because physics requires various
-conservation principles (including conservation of information) and because
-computation is fundamentally a physical process, every computation is
-fundamentally an equivalence that preserves information. This idea fits well
-with the HoTT philosophy that emphasizes equalities, isomorphisms,
-equivalences, and their computational content.
-
 In more detail, a computational world in which the laws of physics are
 embraced and resources are carefully maintained (e.g., quantum
-computing~\cite{NC00,Abramsky:2004:CSQ:1018438.1021878}), programs must be
+computing~\citep{NC00,Abramsky:2004:CSQ:1018438.1021878}), programs must be
 reversible. Although this is apparently a limiting idea, it turns out that
 conventional computation can be viewed as a special case of such
 resource-preserving reversible programs. This thesis has been explored for
 many years from different
-perspectives~\cite{fredkin1982conservative,Toffoli:1980,bennett2010notes,bennett2003notes,Bennett:1973:LRC,Landauer:1961,Landauer}
+perspectives~\citep{fredkin1982conservative,Toffoli:1980,bennett2010notes,bennett2003notes,Bennett:1973:LRC,Landauer:1961,Landauer}
 and more recently in the context of type
-isomorphisms~\cite{James:2012:IE:2103656.2103667}. 
+isomorphisms~\citep{James:2012:IE:2103656.2103667}. 
 
 This paper explores the basic ingredients of HoTT from the perspective that
 computation is all about type isomorphisms. Because the issues involved are
@@ -670,7 +671,7 @@ of \emph{type equivalence} instead of strict equality~$=$.
 \subsection{Commutative Semirings of Types}
 
 There are several equivalent definitions of the notion of equivalence
-of types~\cite{hottbook}. For concreteness, we use the following
+of types~\citep{hottbook}. For concreteness, we use the following
 definition as it appears to be the most intuitive in our setting.
 
 \begin{definition}[Quasi-inverse]
@@ -2673,15 +2674,15 @@ More generally, reversible computational models --- in which all
 functions have inverses --- are known to be universal computational
 models~\citep{Bennett:1973:LRC} and more importantly they can be
 defined without any reference to irreversible functions, which
-ironically become the derived notion. It is therefore, at least
-plausible, that a variant of HoTT based exclusively on reversible
-functions would have better computational properties. Our current
-result is a step, albeit preliminary in that direction as it only
-applies to finite types. However, it is plausible that this approach
-can be generalized to accommodate higher-order functions. The
-intuitive idea is that our current development based on the
-commutative semiring of the natural numbers might be generalizable to
-the ring of integers or even to the field of rational numbers. The
+ironically become the derived notion~\citep{Green:2008:RIC}. It is
+therefore, at least plausible, that a variant of HoTT based
+exclusively on reversible functions would have better computational
+properties. Our current result is a step, albeit preliminary in that
+direction as it only applies to finite types. However, it is plausible
+that this approach can be generalized to accommodate higher-order
+functions. The intuitive idea is that our current development based on
+the commutative semiring of the natural numbers might be generalizable
+to the ring of integers or even to the field of rational numbers. The
 generalization to rings would introduce \emph{negative types} and the
 generalization to fields would further introduce \emph{fractional
   types}. As Sec.~\ref{sec:7} suggests, there is good evidence that
