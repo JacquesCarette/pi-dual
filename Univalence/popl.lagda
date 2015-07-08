@@ -26,6 +26,7 @@
 \usepackage{textgreek}
 \usepackage{extarrows}
 \usepackage{textcomp}
+\usepackage{multicol}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Macros
@@ -1974,7 +1975,7 @@ conditions in a more economic way.
 % \caption{\label{fig:terig}Symmetric Rig Groupoid of Type Equivalences}
 % \end{figure*}
  
-\begin{figure*}
+\begin{figure}
 \[\begin{array}{rrcll}
 \identlsp :&  \tau + 0 & \iso & \tau &: \identrsp \\
 \identlst :&  \tau * 1 & \iso & \tau &: \identrst \\
@@ -1982,10 +1983,11 @@ conditions in a more economic way.
 \absorbr :&~ 0 * \tau & \iso & 0 &: \factorzl \\
 \absorbl :&~ \tau * 0 & \iso & 0 &: \factorzr \\
 
-\distl :&~ \tau_1 * (\tau_2 + \tau_3) & \iso & (\tau_1 * \tau_2) + (\tau_1 * \tau_3)~ &: \factorl 
+\distl :&~ \tau_1 * (\tau_2 + \tau_3) & \iso & (\tau_1 * \tau_2) &: \factorl \\
+&&&                                                               +~ (\tau_1 * \tau_3)
 \end{array}\]      
 \caption{\label{fig:more}Additional $\Pi$-combinators}
-\end{figure*}
+\end{figure}
 
 %%%%%%%%%%%%
 \subsection{Instances of Symmetric Rig Categories} 
@@ -2140,16 +2142,28 @@ Given two $\Pi$-combinators:
 postulate
 \end{code}
 }
+
+\smallskip 
+
 \begin{code}
  c₁ : {B C : U} →  B ⟷ C
  c₂ : {A D : U} →  A ⟷ D
 \end{code}
+
+\smallskip 
+
 \noindent we can build two larger combinators $p_1$ and $p_2$,
+
+\smallskip 
+
 \begin{code}
 p₁ p₂ : {A B C D : U} → PLUS A B ⟷ PLUS C D
 p₁ = _⟷_.swap₊ ◎ (c₁ ⊕ c₂)
 p₂ = (c₂ ⊕ c₁) ◎ _⟷_.swap₊
 \end{code}
+
+\smallskip 
+
 \noindent As reversible circuits, $p_1$ and $p_2$ evaluate as
 follows. If $p_1$ is given the value $\inl{a}$, it first transforms it
 to $\inr{a}$, and then passes it to $c₂$. If $p_2$ is given the value
@@ -2165,10 +2179,16 @@ module Y where
  data _⇔'_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set where
 \end{code}
 }
+
+\smallskip 
+
 \begin{code}
   swapl₊⇔ :  {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
              (_⟷_.swap₊ ◎ (c₁ ⊕ c₂)) ⇔' ((c₂ ⊕ c₁) ◎ _⟷_.swap₊)
 \end{code}
+
+\smallskip 
+
 
 Pictorially, this 2-level combinator is a 2-path showing how the two
 paths can be transformed to one another. The proof of equivalence can
@@ -2319,6 +2339,10 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 (c₁ \fatsemi c₃) ⊕ (c₂ \fatsemi c₄) & \isoone & (c₁ ⊕ c₂) \fatsemi (c₃ ⊕ c₄) \\
 (c₁ \fatsemi c₃) ⊗ (c₂ \fatsemi c₄) & \isoone & (c₁ ⊗ c₂) \fatsemi (c₃ ⊗ c₄) \\
 \\
+\swapp \fatsemi (c₁ ⊕ c₂) & \isoone &  (c₂ ⊕ c₁) \fatsemi \swapp \\
+\swapt \fatsemi (c₁ ⊗ c₂) & \isoone &  (c₂ ⊗ c₁) \fatsemi \swapt \\
+\swapp \fatsemi \factor & \isoone &  \factor \fatsemi (\swapp ⊗ \idc) \\
+\\
 \identlp \fatsemi c₂ & \isoone & (c₁ ⊕ c₂) \fatsemi \identlp \\
 \identrp \fatsemi (c₁ ⊕ c₂) & \isoone &  c₂ \fatsemi \identrp \\
 \identlsp \fatsemi c₂ & \isoone & (c₂ ⊕ c₁) \fatsemi \identlsp \\
@@ -2334,7 +2358,7 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 (a ⊗ (b ⊕ c)) \fatsemi \distl & \isoone & \distl \fatsemi ((a ⊗ b) ⊕ (a ⊗ c)) \\
 ((a ⊗ b) ⊕ (a ⊗ c)) \fatsemi \factorl & \isoone & \factorl \fatsemi (a ⊗ (b ⊕ c)) 
 \end{array}
-&
+& 
 \begin{array}{rcl}
 \identlt \fatsemi c₂ & \isoone & (c₁ ⊗ c₂) \fatsemi \identlt \\
 \identrt \fatsemi (c₁ ⊗ c₂) & \isoone &  c₂ \fatsemi \identrt \\
@@ -2344,18 +2368,18 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 \\
 \absorbr & \isoone & \identlt \\
 \absorbr & \isoone & \absorbl \\
-\absorbr & \isoone & (\assoclt \fatsemi (\absorbr ⊗ \idc)) \fatsemi \absorbr \\
-\absorbr & \isoone & (\distl \fatsemi (\absorbr ⊕ \absorbr)) \fatsemi \identlp \\
+\absorbr & \isoone & (\assoclt \fatsemi (\absorbr ⊗ \idc)) \\
+              && \fatsemi \absorbr \\
+\absorbr & \isoone & (\distl \\
+             && \quad \fatsemi (\absorbr ⊕ \absorbr)) \\
+             && \fatsemi \identlp \\
 \absorbl & \isoone & \swapt \fatsemi \absorbr \\
 (c ⊗ \idc) \fatsemi \absorbl & \isoone & \absorbl \fatsemi \idc \\
 (\idc ⊗ c) \fatsemi \absorbr & \isoone & \absorbr \fatsemi \idc \\
-(\idc ⊗ \absorbr) \fatsemi \absorbl & \isoone &
-  (\assoclt \fatsemi (\absorbl ⊗ \idc) \fatsemi \absorbr \\
-(\idc ⊗ \identlp) & \isoone & (\distl \fatsemi (\absorbl ⊕ \idc)) \fatsemi \identlp \\
-\\
-\swapp \fatsemi (c₁ ⊕ c₂) & \isoone &  (c₂ ⊕ c₁) \fatsemi \swapp \\
-\swapt \fatsemi (c₁ ⊗ c₂) & \isoone &  (c₂ ⊗ c₁) \fatsemi \swapt \\
-\swapp \fatsemi \factor & \isoone &  \factor \fatsemi (\swapp ⊗ \idc) \\
+(\idc ⊗ \absorbr) \fatsemi \absorbl & \isoone & (\assoclt \fatsemi (\absorbl ⊗ \idc) \\
+             && \fatsemi \absorbr \\
+(\idc ⊗ \identlp) & \isoone & (\distl \fatsemi (\absorbl ⊕ \idc)) \\
+            && \fatsemi \identlp \\
 \\
 \identlp & \isoone & \distl \fatsemi (\identlp ⊕ \identlp) \\
 (\idc ⊗ \swapp) \fatsemi \distl & \isoone & \distl \fatsemi \swapp \\
@@ -2364,13 +2388,12 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 \idc \fatsemi \factorzr & \isoone & \factorzr \fatsemi (c ⊗ \idc) 
 \end{array}
 \end{array}\]
-\\
 \[\begin{array}{rcl}
 ((\assoclp ⊗ \idc) \fatsemi \dist) \fatsemi (\dist ⊕ \idc) & \isoone &
   (\dist \fatsemi (\idc ⊕ \dist)) \fatsemi \assoclp \\
 (\distl \fatsemi (\dist ⊕ \dist)) \fatsemi \assoclp & \isoone &
-  ((((\dist \fatsemi (\distl ⊕ \distl)) \fatsemi \assoclp) \fatsemi (\assocrp ⊕ \idc))
-  \fatsemi (\idc ⊕ \swapp) ⊕ \idc)) \fatsemi (\assoclp ⊕ \idc) \\
+  ((((\dist \fatsemi (\distl ⊕ \distl)) \fatsemi \assoclp) \fatsemi (\assocrp ⊕ \idc))\\
+  && \fatsemi (\idc ⊕ \swapp) ⊕ \idc) \fatsemi (\assoclp ⊕ \idc) \\
 \assoclt \fatsemi \distl & \isoone & 
   ((\idc ⊗ \distl) \fatsemi \distl) \fatsemi (\assoclt ⊕ \assoclt) \\
 \assocrp \fatsemi \assocrp & \isoone &
@@ -2386,28 +2409,28 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 (\assoclt \fatsemi \swapt) \fatsemi \assoclt & \isoone &
   ((\idc ⊗ \swapt) \fatsemi \assoclt) \fatsemi (\swapt ⊗ \idc) 
 \end{array}\]
-\begin{minipage}{0.99\textwidth}
+\begin{minipage}{\textwidth}
 \begin{center} 
 \Rule{}
 {}
 {\jdg{}{}{c \isoone c}}
 {}
-~
+%
 \Rule{}
 {\jdg{}{}{c₁ \isoone c₂} \quad \vdash c₂ \isoone c₃}
 {\jdg{}{}{c₁ \isoone c₃}}
 {}
-~
+%
 \Rule{}
 {\jdg{}{}{c₁ \isoone c₃} \quad \vdash c₂ \isoone c₄}
 {\jdg{}{}{(c₁ \fatsemi c₂) \isoone (c₃ \fatsemi c₄)}}
 {}
-~
+%
 \Rule{}
 {\jdg{}{}{c₁ \isoone c₃} \quad \vdash c₂ \isoone c₄}
 {\jdg{}{}{(c₁ ⊕ c₂) \isoone (c₃ ⊕ c₄)}}
 {}
-~
+%
 \Rule{}
 {\jdg{}{}{c₁ \isoone c₃} \quad \vdash c₂ \isoone c₄}
 {\jdg{}{}{(c₁ ⊗ c₂) \isoone (c₃ ⊗ c₄)}}
