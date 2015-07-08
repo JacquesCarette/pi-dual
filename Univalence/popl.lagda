@@ -2000,36 +2000,12 @@ symmetric rig weak groupoids.
   groupoid.
 \end{theorem}
 \begin{proof}
-The objects of the category are Agda types and the morphisms are type
-equivalences. These morphisms directly satisfy the axioms stated in
-the definitions of the various categories. The bulk of the work is in
-ensuring that the coherence conditions are satisfied up to extensional
-equality. 
-\end{proof}
-
-More relevant for our purposes, is the next theorem which applies to
-reversible circuits (represented as $\Pi$-combinators).
-
-\begin{theorem}
-The collection of finite types and $\Pi$-combinators is a symmetric rig
-groupoid.
-\end{theorem}
-\begin{proof}
-  The objects of the category are finite types and the morphisms are
-  the $\Pi$-combinators. Short proofs establish that these morphisms
-  satisfy the axioms stated in the definitions of the various
-  categories. The bulk of the work is in ensuring that the coherence
-  conditions are satisfied. This required us to add a few $\Pi$
-  combinators (see Fig.~\ref{fig:more}) and then to add a whole new
-  layer of 2-combinators (discussed in the next section) witnessing
-  enough equivalences of $\Pi$ combinators to prove the coherence
-  laws. The new $\Pi$ combinators, also discussed in more detail in
-  the next section, are redundant (from an operational perspective)
-  exactly because of the coherence conditions; they are however
-  important as they have rather non-trivial relations to each other
-  that are captured in the more involved coherence laws. We only show
-  the proof of one coherence condition, the first one in Laplaza's
-  paper and shown below:
+  The objects of the category are Agda types and the morphisms are
+  type equivalences. These morphisms directly satisfy the axioms
+  stated in the definitions of the various categories. The bulk of the
+  work is in ensuring that the coherence conditions are satisfied up
+  to extensional equality.  We only show the proof of one coherence
+  condition, the first one in Laplaza's paper shown below:
 
 \smallskip
 
@@ -2048,7 +2024,7 @@ A \otimes (C \oplus B)
 \smallskip
 
 \noindent We first have a lemma that shows that the two paths starting from the
-top left are equivalent:
+top left node are equivalent:
 
 \AgdaHide{
 \begin{code}
@@ -2078,14 +2054,12 @@ distl-swap₊-lemma (x , inj₂ y) = P.refl
 
 \smallskip
 
-\noindent Each combinator is mapped to a type equivalence so for
-example, the combinator \AgdaInductiveConstructor{swap₊} is mapped to
-the function $\AgdaFunction{swap₊} : A ⊎ B → B ⊎ A$. The lemma asserts
-the extensional equivalence of the functions representing the two paths
-for all arguments \AgdaBound{x}. This lemma is sufficient for rig
-\emph{categories}. To also prove that we have a groupoid, we prove a
-converse lemma starting from the bottom-right and following the paths
-backwards towards the top-left node:
+\noindent The lemma asserts the extensional equivalence of the
+functions representing the two paths for all arguments
+\AgdaBound{x}. This lemma is sufficient to prove we have a rig
+\emph{category}. To prove we also have a groupoid, we need a converse
+lemma starting from the bottom right node and following the paths
+backwards towards the top left node:
 
 \smallskip
 
@@ -2110,9 +2084,33 @@ where \AgdaInductiveConstructor{eq} is the equivalence of equivalences used in t
 proof of Thm.~\ref{thm:eqeq}.
 \end{proof}
 
+More relevant for our purposes, is the next theorem which applies to
+reversible circuits (represented as $\Pi$-combinators).
+
+\begin{theorem}
+The collection of finite types and $\Pi$-combinators is a symmetric rig
+groupoid.
+\end{theorem}
+\begin{proof}
+  The objects of the category are finite types and the morphisms are
+  the $\Pi$-combinators. Short proofs establish that these morphisms
+  satisfy the axioms stated in the definitions of the various
+  categories. The bulk of the work is in ensuring that the coherence
+  conditions are satisfied. This required us to add a few $\Pi$
+  combinators (see Fig.~\ref{fig:more}) and then to add a whole new
+  layer of 2-combinators (discussed in the next section) witnessing
+  enough equivalences of~$\Pi$ combinators to prove the coherence
+  laws. The new $\Pi$ combinators, also discussed in more detail in
+  the next section, are redundant (from an operational perspective)
+  exactly because of the coherence conditions; they are however
+  important as they have rather non-trivial relations to each other
+  that are captured in the more involved coherence laws. 
+\end{proof}
+
 Putting the result above together with Laplaza's coherence result
 about rig categories, we conclude with our main result (but the
-punchline is Fig.~\ref{fig:more2} in the next section).
+punchline detailed the second level of combinaors is in
+Fig.~\ref{fig:more2} in the next section).
 
 \begin{theorem}
 We have two levels of $\Pi$-combinators such that:
@@ -2455,6 +2453,32 @@ survey several possible canonical representations that trade-off
 various desired properties. Of course, finding a rewriting procedure
 that makes progress towards the canonical representation is far from
 trivial.
+
+\amr{I now have an accurate count: level 1 of Pi has 110 combinators.
+  And I did find a decent phrasing of soundness at level 1 (which is
+  where I got that number) which is non-trivial to prove.}
+
+\amr{What you wrote in sec. 5 is great... with the caveat that the
+  "proof" for theorem 10 is actually part of the proof for theorem 9!
+
+  There is no 'mapping of combinators to equivalences' going on at all
+  in either of the proofs for thms 9 and 10.
+
+  TypeEquivCat proves thm 9, and uses Data.SumProd.Properties (and
+  Data.Sum.Properties, but not Data.Prod.Properties, which doesn't
+  exist, because all the proofs are 'refl' because of eta).  No Pi in
+  sight.
+
+  Pi1Cat proves thm 10, and uses PiLevel1.  No Equiv or TypeEquiv in
+  sight.  This 'proof' is in fact completely trivial, as it is
+  entirely syntactic and declarative: we give ourselves a Pi
+  combinator (of the right level) for every single proof
+  obligation. And, as you point out, doubled up for the 'groupoid'
+  property.
+
+  PiEquiv, via c2equiv, shows Pi (level 0) is sound wrt type
+  equivalences.  [Because of proof-irrelevance, doing level 1 might
+  not be particularly informative, but might still be worth a try].}
 
 \amr{Read Laplaza's paper in some detail. Questions:
 \begin{itemize}
