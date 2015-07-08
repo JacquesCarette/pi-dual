@@ -522,12 +522,12 @@ to permutations between finite sets. The latter is computationally
 well-behaved with existing reversible programming languages developed
 for programming with permutations and finite-type isomorphisms. This
 family of languages, called $\Pi$, is universal for describing
-combinational (without feedback or state) reversible circuits (see
-Sec.~\ref{sec:3}). The infrastructure of the HoTT-inspired type
-equivalences enriches these languages by viewing their original design
-as 1-paths and systematically producing 2-paths (equivalences between
-equivalences) manifesting themselves as syntactic rules for reasoning
-about equivalences of programs representing reversible
+combinational reversible circuits (see Sec.~\ref{sec:3}). The
+infrastructure of the HoTT-inspired type equivalences enriches these
+languages by viewing their original design as 1-paths and
+systematically producing 2-paths (equivalences between equivalences)
+manifesting themselves as syntactic rules for reasoning about
+equivalences of programs representing reversible
 circuits. Sec.~\ref{sec:4} starts the semantic investigation of the
 $\Pi$ languages emphasizing the denotational approach that maps each
 $\Pi$ program to a type equivalence or a permutation. The section also
@@ -579,11 +579,11 @@ defined as follows:
 \end{array}\] 
 A result by \citet{Fiore:2004,fiore-remarks} completely characterizes
 the isomorphisms between finite types using the axioms of commutative
-semirings. (See Appendix~\ref{sec:commrig} for the complete definition
-of commutative semirings.) Intuitively this result states that one can
-interpret each type by its size, and that this identification
-validates the familiar properties of the natural numbers, and is in
-fact isomorphic to the commutative semiring of the natural numbers.
+semirings.\footnote{Appendix~\ref{sec:commrig} recalls the
+  definition.}  Intuitively this result states that one can interpret
+each type by its size, and that this identification validates the
+familiar properties of the natural numbers, and is in fact isomorphic
+to the commutative semiring of the natural numbers.
 
 Our work builds on this identification together with work by
 \citet{James:2012:IE:2103656.2103667} which introduced the $\Pi$
@@ -599,16 +599,15 @@ of \emph{type equivalence} instead of strict equality~$=$.
 \subsection{Commutative Semirings of Types}
 
 There are several equivalent definitions of the notion of equivalence
-of types~\citep{hottbook}. For concreteness, we use the following
-definition as it appears to be the most intuitive in our setting.
+of types. For concreteness, we use the following definition. 
 
 \begin{definition}[Quasi-inverse]
 \label{def:quasi}
-  For a function $f : A \rightarrow B$, a \emph{quasi-inverse} of $f$
-  is a triple $(g, \alpha, \beta)$, consisting of a function
-  $g : B \rightarrow A$ and homotopies
-  $\alpha : f \circ g = \mathrm{id}_B$ and
-  $\beta : g \circ f = \mathrm{id}_A$.
+For a function $f : A \rightarrow B$, a \emph{quasi-inverse} is a
+triple $(g, \alpha, \beta)$, consisting of a function
+$g : B \rightarrow A$ and homotopies
+$\alpha : f \circ g = \mathrm{id}_B$ and
+$\beta : g \circ f = \mathrm{id}_A$.
 \end{definition}
  
 \begin{definition}[Equivalence of types]
@@ -621,10 +620,10 @@ we are concerned with, not just the fact that two types are
 equivalent, but with the precise way in which they are equivalent. For
 example, there are two equivalences between the type
 \AgdaDatatype{Bool} and itself: one that uses the identity for $f$
-(and hence for the quasi-inverse) and one that uses boolean negation
-for $f$ (and hence for the quasi-inverse). These two equivalences are
-themselves \emph{not} equivalent: each of them can be used to
-``transport'' properties of \AgdaDatatype  {Bool} in a different way.
+(and hence for $g$) and one that uses boolean negation for $f$ (and
+hence for $g$). These two equivalences are themselves \emph{not}
+equivalent: each of them can be used to ``transport'' properties of
+\AgdaDatatype {Bool} in a different way.
 
 It is straightforward to prove that the universe of types
 (\AgdaDatatype{Set} in Agda terminology) is a commutative semiring up
@@ -695,7 +694,7 @@ sufficient to consider just one additional level.
 %%%%%%%%%%%%
 \subsection{Commutative Semirings of Permutations}
 
-Type equivalences are fundamentally based on function extensionality
+Type equivalences are fundamentally based on function extensionality.
 (Def.~\ref{def:quasi} explicitly compares functions for extensional
 equality.) It is folklore that, even when restricted to finite types,
 function extensionality needs to be assumed for effective reasoning
@@ -742,7 +741,7 @@ relationship between finite types and finite sets.
   isolate one element of $\mathsf{Fin}~(\mathit{suc}~m')$ and analyze
   every class of positions this element could be mapped to by the
   larger equivalence and in each case construct an equivalence that
-  excludes this element.
+  excludes it.
 \end{proof}
 
 Given the correspondence between finite types and finite sets, we now
@@ -914,7 +913,7 @@ reason about type equivalences between finite types.
 %%%%%%%%%%%%
 \subsection{The $\Pi$-Languages}
 
-\citet{rc2011,James:2012:IE:2103656.2103667} introduced the $\Pi$
+\citet{rc2011,James:2012:IE:2103656.2103667} introduced the~$\Pi$
 family of languages whose only computations are permutations
 (isomorphisms) between finite types and which is complete for all
 reversible combinational circuits. We propose that this family of
@@ -946,7 +945,7 @@ pair of dual constants\footnote{where $\swapp$ and $\swapt$ are
   self-dual.}  that witness the type isomorphism in the middle. Every
 combinator $c$ has an inverse $!c$ according to the figure. The
 inverse is homomorphic on sums and products and flips the order of the
-combinator in sequential composition.
+combinators in sequential composition.
 
 %%%%%%%%%%%%
 \subsection{Example Circuits}
@@ -1002,27 +1001,24 @@ NOT₁ = swap₊
 \smallskip  
  
 Naturally there are many ways of encoding boolean negation. The
-following example implements a more convoluted circuit that computes
-the same function:
+following cobminator implements a more convoluted circuit that
+computes the same function, which is also visualized os a permutation
+on finite sets:
 
-\smallskip
-
+\begin{tabular}{cc}
+\begin{minipage}{0.25\textwidth}
 \begin{code}
 NOT₂ : BOOL ⟷ BOOL
-NOT₂ =  uniti⋆ ◎
-        swap⋆ ◎
-        (swap₊ ⊗ id⟷) ◎
-        swap⋆ ◎
-        unite⋆
+NOT₂ =
+  uniti⋆ ◎
+  swap⋆ ◎
+  (swap₊ ⊗ id⟷) ◎
+  swap⋆ ◎
+  unite⋆
 \end{code}
-
-\smallskip 
-
-\noindent Viewing this combinator as a permutation on finite sets, we
-might visualize it as follows:
-
-\begin{center}
-\begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
+\end{minipage}
+& 
+\begin{tikzpicture}[scale=0.33,every node/.style={scale=0.33}]
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
   \node[below] at (1,2) {()};
@@ -1072,7 +1068,7 @@ might visualize it as follows:
   \node[below] at (8,-0.5) {T};
 
 \end{tikzpicture}
-\end{center}
+\end{tabular}
 
 Writing circuits using the raw syntax for combinators is clearly
 tedious. In other work, one can find a compiler from a conventional
@@ -1122,10 +1118,9 @@ TOFFOLI = TIMES BOOL BOOL²
 \smallskip
 
 This style makes the intermediate steps explicit showing how the types
-are transformed in each step by the combinators. The example
-incidentally confirms that $\Pi$ is universal for reversible circuits
-since the Toffoli gate is universal for such
-circuits~\citep{Toffoli:1980}.
+are transformed in each step by the combinators. The example confirms
+that $\Pi$ is universal for reversible circuits since the Toffoli gate
+is universal for such circuits~\citep{Toffoli:1980}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Semantics}
@@ -2109,7 +2104,7 @@ groupoid.
 
 Putting the result above together with Laplaza's coherence result
 about rig categories, we conclude with our main result (but the
-punchline detailed the second level of combinaors is in
+punchline detailed the second level of combinators is in
 Fig.~\ref{fig:more2} in the next section).
 
 \begin{theorem}
