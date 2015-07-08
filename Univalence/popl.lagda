@@ -510,7 +510,7 @@ types. What emerges from our study are the following results:
   equivalences of types;
 \item the second set of rules is sound and complete with respect to
   equivalences of equivalences of types as specified by the first set
-  of rules;
+  of rules.
 \end{itemize}
 
 \paragraph*{Outline.} The next section reviews equivalences between
@@ -697,13 +697,13 @@ Type equivalences are fundamentally based on function extensionality
 (Def.~\ref{def:quasi} explicitly compares functions for extensional
 equality.) It is folklore that, even when restricted to finite types,
 function extensionality needs to be assumed for effective reasoning
-about about type equivalences. The situation gets worse when
-considering equivalences of equivalences. In the HoTT context, this is
-the open problem of finding a computational interpretation for
+about type equivalences. The situation gets worse when considering
+equivalences of equivalences. In the HoTT context, this is the open
+problem of finding a computational interpretation for
 \emph{univalence}. In the case of finite types however, there is a
-computationally-friendly alternative
-characterization of type equivalences based on permutations of finite
-sets, which we prove to be formally equivalent.
+computationally-friendly alternative characterization of type
+equivalences based on permutations of finite sets, which we prove to
+be formally equivalent.
 
 The idea is that, \emph{up to equivalence}, the only interesting property of
 a finite type is its size, so that type equivalences must be
@@ -1354,6 +1354,19 @@ The sequence of rewrites can be visualized in Appendix~\ref{app:opt}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Categorification}
 \label{sec:5}
+
+\amr{Read Laplaza's paper in some detail. Questions:
+\begin{itemize}
+\item How can the value of a path only depend on the endpoints and at
+the same we don't identify all parallel paths???
+\item the unique variable condition is just one special case of
+'regular'; it is evident that 1+1 is regular; so how can the two paths
+from 1+1 to 1+1 corresponding to 'id' and 'not' not be equated???
+\item regular: for a in A, if Supp a can be expressed as a sum of
+different elements of A* each of which is a product of different
+elements of X
+\end{itemize}
+}
 
 \amr{Laplaza only considers Rig Categories to have 'natural
   monomorphisms' for distributivity, unlike the definition on
@@ -2759,9 +2772,9 @@ over type variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
 \label{sec:commrig}
  
 Given that the structure of commutative semirings is central to this
-paper, we recall the formal algebraic definition. Commutative rings
-are sometimes called \emph{commutative rigs} as they are commutative
-rings without negative elements.
+paper, we recall the formal algebraic definition. Commutative
+semirings are sometimes called \emph{commutative rigs} as they are
+commutative rings without negative elements.
 
 \begin{definition}
   A \emph{commutative semiring} consists of a set $R$, two
