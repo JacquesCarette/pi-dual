@@ -2821,13 +2821,13 @@ structure at higher-levels. Further investigation reveals that this
 observation is intimately related to a well-known problem in algebraic
 topology and homotopy theory that was identified thirty years ago as
 the \textbf{``phony'' multiplication}~\citep{thomason} in a special
-class categories related to ours. This observation,
-\textcolor{red}{that the \textbf{Int} construction on the additive
-  monoidal structure does \emph{not} allow one to lift multiplication
-  in a straightforward manner} is less well-known than it should
-be. This problem was however recently solved~\citep{ringcompletion}
-using a technique whose fundamental ingredients are to add more
-dimensions and then take homotopy colimits.
+class categories related to ours. This observation, \emph{that the
+  \textbf{Int} construction on the additive monoidal structure does
+  \emph{not} allow one to lift multiplication in a straightforward
+  manner} is less well-known than it should be. This problem was
+however recently solved~\citep{ringcompletion} using a technique whose
+fundamental ingredients are to add more dimensions and then take
+homotopy colimits.
 
 The process of adding more dimensions is relatively straightforward:
 if the original intuition was that 1d types like
