@@ -2458,74 +2458,25 @@ trivial.
   And I did find a decent phrasing of soundness at level 1 (which is
   where I got that number) which is non-trivial to prove.}
 
-\amr{What you wrote in sec. 5 is great... with the caveat that the
-  "proof" for theorem 10 is actually part of the proof for theorem 9!
-
-  There is no 'mapping of combinators to equivalences' going on at all
-  in either of the proofs for thms 9 and 10.
-
-  TypeEquivCat proves thm 9, and uses Data.SumProd.Properties (and
-  Data.Sum.Properties, but not Data.Prod.Properties, which doesn't
-  exist, because all the proofs are 'refl' because of eta).  No Pi in
-  sight.
-
-  Pi1Cat proves thm 10, and uses PiLevel1.  No Equiv or TypeEquiv in
-  sight.  This 'proof' is in fact completely trivial, as it is
-  entirely syntactic and declarative: we give ourselves a Pi
-  combinator (of the right level) for every single proof
-  obligation. And, as you point out, doubled up for the 'groupoid'
-  property.
-
-  PiEquiv, via c2equiv, shows Pi (level 0) is sound wrt type
-  equivalences.  [Because of proof-irrelevance, doing level 1 might
-  not be particularly informative, but might still be worth a try].}
-
-\amr{Read Laplaza's paper in some detail. Questions:
-\begin{itemize}
-\item How can the value of a path only depend on the endpoints and at
-the same we don't identify all parallel paths???
-\item the unique variable condition is just one special case of
-'regular'; it is evident that 1+1 is regular; so how can the two paths
-from 1+1 to 1+1 corresponding to 'id' and 'not' not be equated???
-\item regular: for a in A, if Supp a can be expressed as a sum of
-different elements of A* each of which is a product of different
-elements of X
-\end{itemize}
-}
-
-\amr{Laplaza only considers Rig Categories to have 'natural
-  monomorphisms' for distributivity, unlike the definition on
-  nLab. I've tried to read [Kelly 74], but found it to be completely
-  unreadeable.  If distributivity is made an iso, then the coherence
-  conditions "double up", with every one also holding for
-  'factor'. Which is true [proofs already done], and goes to the heart
-  of my comment that we have 2 commuting involutions on level-2
-  combinators.
-
-  However, it did let me observe one thing: we have 2! which says that
-  given (c <-> d), we can get (d <-> c).  What we don't have, and
+\amr{However, it did let me observe one thing: we have 2! which says
+  that given (c <-> d), we can get (d <-> c).  What we don't have, and
   SHOULD, is 2flip which would say that given (c <-> d), we can get (!
   c <-> ! d).  This is "obviously true".  More, we also ought to be
-  able to prove (easily!) that all (e : c <-> d) 2! (2flip e) ==
-  2flip (2! e) where I really mean == there.}
+  able to prove (easily!) that all (e : c <-> d) 2! (2flip e) == 2flip
+  (2! e) where I really mean == there.}
 
-\amr{show some of the definitions (signatures only) of the coherences
-  (from Data.SumProd.Properties) that correspond to the laplazaYYY
-  lines.
-
-  One of the interesting conclusions of the coherence laws (see the
+\amr{One of the interesting conclusions of the coherence laws (see the
   comments in the file above) is that it forces all (putative)
   elements of bot to be equal.  This comes from the coherence law for
   the two ways of proving that 0 * 0 = 0.}
-
 
 \amr{Note that a few of those "id" in there are actually "id<-> {ZERO}
   {ZERO}", that is very important.  Most of the laws having to do with
   absorb0 have some occurrences of both kinds of id in their
   signature, which made figuring them out very challenging!  Same with
-  laws involving factor0
+  laws involving factor0}
 
-  Similarly, the c1 in the identl* exchange law MUST map between ONE
+\amr{Similarly, the c1 in the identl* exchange law MUST map between ONE
   (same with identr*).  In the same vein, c1 in the identl+ and
   identr+ laws must involve ZERO.}
 
