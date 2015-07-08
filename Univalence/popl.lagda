@@ -1002,7 +1002,7 @@ NOT₁ = swap₊
  
 Naturally there are many ways of encoding boolean negation. The
 following combinator implements a more convoluted circuit that
-computes the same function, which is also visualized os a permutation
+computes the same function, which is also visualized as a permutation
 on finite sets:
 
 \begin{tabular}{cc}
