@@ -666,6 +666,7 @@ and $B$. The type of all equivalences has some non-trivial structure:
 in particular, it is itself a commutative semiring.
 
 \begin{theorem}
+\label{thm:eqeq}
   The type of all equivalences $\textsc{eq}_{A,B}$ for finite types
   $A$ and $B$ forms a commutative semiring up to extensional
   equivalence of equivalences.
@@ -1355,55 +1356,6 @@ The sequence of rewrites can be visualized in Appendix~\ref{app:opt}.
 \section{Categorification}
 \label{sec:5}
 
-\amr{Read Laplaza's paper in some detail. Questions:
-\begin{itemize}
-\item How can the value of a path only depend on the endpoints and at
-the same we don't identify all parallel paths???
-\item the unique variable condition is just one special case of
-'regular'; it is evident that 1+1 is regular; so how can the two paths
-from 1+1 to 1+1 corresponding to 'id' and 'not' not be equated???
-\item regular: for a in A, if Supp a can be expressed as a sum of
-different elements of A* each of which is a product of different
-elements of X
-\end{itemize}
-}
-
-\amr{Laplaza only considers Rig Categories to have 'natural
-  monomorphisms' for distributivity, unlike the definition on
-  nLab. I've tried to read [Kelly 74], but found it to be completely
-  unreadeable.  If distributivity is made an iso, then the coherence
-  conditions "double up", with every one also holding for
-  'factor'. Which is true [proofs already done], and goes to the heart
-  of my comment that we have 2 commuting involutions on level-2
-  combinators.
-
-  However, it did let me observe one thing: we have 2! which says that
-  given (c <-> d), we can get (d <-> c).  What we don't have, and
-  SHOULD, is 2flip which would say that given (c <-> d), we can get (!
-  c <-> ! d).  This is "obviously true".  More, we also ought to be
-  able to prove (easily!) that all (e : c <-> d) 2! (2flip e) ==
-  2flip (2! e) where I really mean == there.}
-
-\amr{show some of the definitions (signatures only) of the coherences
-  (from Data.SumProd.Properties) that correspond to the laplazaYYY
-  lines.
-
-  One of the interesting conclusions of the coherence laws (see the
-  comments in the file above) is that it forces all (putative)
-  elements of bot to be equal.  This comes from the coherence law for
-  the two ways of proving that 0 * 0 = 0.}
-
-
-\amr{Note that a few of those "id" in there are actually "id<-> {ZERO}
-  {ZERO}", that is very important.  Most of the laws having to do with
-  absorb0 have some occurrences of both kinds of id in their
-  signature, which made figuring them out very challenging!  Same with
-  laws involving factor0
-
-  Similarly, the c1 in the identl* exchange law MUST map between ONE
-  (same with identr*).  In the same vein, c1 in the identl+ and
-  identr+ laws must involve ZERO.}
-
 The problem of finding a sound and complete set of rules for reasoning
 about equivalence of permutations is solved by appealing to various
 results about specialized monoidal
@@ -1529,6 +1481,12 @@ equal. Indeed, as Dosen and Petric explain:
   problem for the usual axiomatization of symmetric
   groups~\citep{coherence}.
 \end{quote} 
+The informal idea was already silently used in the examples in
+Sec.~\ref{sec:circuits} in which the types were named \AgdaFunction{x}
+and \AgdaFunction{y} during the derivation to distinguish operations
+that would otherwise be ambiguous if all the types were instantiated
+with \AgdaInductiveConstructor{ONE}.
+
 From a different perspective, \citet{math/9802029} explain the source
 of these coherence laws as arising from homotopy theory. In this
 theory, laws are only imposed up to homotopy with these homotopies
@@ -1550,9 +1508,9 @@ they do not. We might also hope that the two versions of boolean
 negation in Sec.~\ref{sec:circuits} and Sec.~\ref{sec:rewriting} could
 be identified using the coherence conditions of monoidal
 categories. This will be the case but, for that, we need categories
-that are much richer than just the symmetric monoidal categories which
-are only categorifications of commutative monoids. We will need to
-consider the categorification of commutative semirings.
+that are richer than the symmetric monoidal categories which are only
+categorifications of commutative monoids. We will need to consider the
+categorification of commutative semirings.
 
 %%%%%%%%%%%%
 \subsection{Symmetric Rig Weak Groupoids}
@@ -1566,8 +1524,7 @@ will also be a groupoid. Since the laws of the category only hold up
 to a higher equivalence, the entire setting is that of weak categories.
 
 There are several equivalent definitions of rig categories. We use the
-following definition from the ncatlab pages
-(\url{http://ncatlab.org/nlab/show/rig+category}).
+following definition from \citet{nlabrig}.
 
 \begin{definition}[Rig Category]
   A \emph{rig category} $C$ is a category with a symmetric monoidal
@@ -2056,23 +2013,104 @@ The collection of finite types and $\Pi$-combinators is a symmetric rig
 groupoid.
 \end{theorem}
 \begin{proof}
-The objects of the category are finite types and the morphisms are the
-$\Pi$-combinators. Short proofs establish that these morphisms satisfy
-the axioms stated in the definitions of the various categories. The
-bulk of the work is in ensuring that the coherence conditions are
-satisfied. This required us to add a few $\Pi$ combinators (see
-Fig.~\ref{fig:more}) and then to add a whole new layer of
-2-combinators (discussed in the next section) witnessing enough
-equivalences of $\Pi$ combinators to prove the coherence laws. The new
-$\Pi$ combinators, also discussed in more detain in the next section,
-are redundant (from an operational perspective) exactly because of the
-coherence conditions; they are however important as they have rather
-non-trivial relations to each other that are captured in the more
-involved coherence laws.
+  The objects of the category are finite types and the morphisms are
+  the $\Pi$-combinators. Short proofs establish that these morphisms
+  satisfy the axioms stated in the definitions of the various
+  categories. The bulk of the work is in ensuring that the coherence
+  conditions are satisfied. This required us to add a few $\Pi$
+  combinators (see Fig.~\ref{fig:more}) and then to add a whole new
+  layer of 2-combinators (discussed in the next section) witnessing
+  enough equivalences of $\Pi$ combinators to prove the coherence
+  laws. The new $\Pi$ combinators, also discussed in more detail in
+  the next section, are redundant (from an operational perspective)
+  exactly because of the coherence conditions; they are however
+  important as they have rather non-trivial relations to each other
+  that are captured in the more involved coherence laws. We only show
+  the proof of one coherence condition, the first one in Laplaza's
+  paper and shown below:
+
+\smallskip
+
+\begin{tikzcd}[column sep=tiny]
+A \otimes (B \oplus C)
+  \arrow[rrr, "\distl"]
+  \arrow[d, "\mathrm{id}_A \otimes \swapp"']
+&&& (A \otimes B) \oplus (A \otimes C)
+   \arrow[d, "\swapp"]
+\\
+A \otimes (C \oplus B)
+  \arrow[rrr, "\distl"']
+&&& (A \otimes C) \oplus (A \otimes B)
+\end{tikzcd}
+
+\smallskip
+
+\noindent We first have a lemma that shows that the two paths starting from the
+top left are equivalent:
+
+\AgdaHide{
+\begin{code}
+open import Level using (zero; suc)
+import Relation.Binary.PropositionalEquality as P
+open import Relation.Binary using (Rel)
+open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to map⊎)
+open import Data.Product using (_×_; _,_; proj₁; proj₂) renaming (map to map×)
+open import Data.Empty
+open import Data.Unit
+import Function as F
+open import Equiv
+open import TypeEquiv as TE
+open import Data.SumProd.Properties hiding (distl-swap₊-lemma; factorl-swap₊-lemma)
+\end{code}
+}
+
+\smallskip
+
+\begin{code}
+distl-swap₊-lemma : {A B C : Set} → (x : (A × (B ⊎ C))) →
+  TE.distl (map× F.id TE.swap₊ x) P.≡
+  (TE.swap₊ (distl x))
+distl-swap₊-lemma (x , inj₁ y) = P.refl
+distl-swap₊-lemma (x , inj₂ y) = P.refl
+\end{code}
+
+\smallskip
+
+\noindent Each combinator is mapped to a type equivalence so for
+example, the combinator \AgdaInductiveConstructor{swap₊} is mapped to
+the function $\AgdaFunction{swap₊} : A ⊎ B → B ⊎ A$. The lemma asserts
+the extensional equivalence of the functions representing the two paths
+for all arguments \AgdaBound{x}. This lemma is sufficient for rig
+\emph{categories}. To also prove that we have a groupoid, we prove a
+converse lemma starting from the bottom-right and following the paths
+backwards towards the top-left node:
+
+\smallskip
+
+\begin{code}
+factorl-swap₊-lemma : {A B C : Set} →
+  (x : (A × C) ⊎ (A × B)) →
+  map× F.id TE.swap₊ (TE.factorl x) P.≡
+  TE.factorl (TE.swap₊ x)
+factorl-swap₊-lemma (inj₁ x) = P.refl
+factorl-swap₊-lemma (inj₂ y) = P.refl
+\end{code}
+
+\smallskip
+
+\noindent Finally we show that the forward equivalence and the backward
+equivalence are themselves equivalent:
+\[
+\AgdaFunction{laplazaI} =
+  \AgdaInductiveConstructor{eq}~\AgdaFunction{distl-swap₊-lemma}~\AgdaFunction{factorl-swap₊-lemma}
+\]
+where \AgdaInductiveConstructor{eq} is the equivalence of equivalences used in the
+proof of Thm.~\ref{thm:eqeq}.
 \end{proof}
 
 Putting the result above together with Laplaza's coherence result
-about rig categories, we conclude with our main result. 
+about rig categories, we conclude with our main result (but the
+punchline is Fig.~\ref{fig:more2} in the next section).
 
 \begin{theorem}
 We have two levels of $\Pi$-combinators such that:
@@ -2124,8 +2162,8 @@ postulate
 \noindent from which we build two larger combinators $p_1$ and $p_2$ below:
 \begin{code}
 p₁ p₂ : {A B C D : U} → PLUS A B ⟷ PLUS C D
-p₁ = swap₊ ◎ (c₁ ⊕ c₂)
-p₂ = (c₂ ⊕ c₁) ◎ swap₊
+p₁ = _⟷_.swap₊ ◎ (c₁ ⊕ c₂)
+p₂ = (c₂ ⊕ c₁) ◎ _⟷_.swap₊
 \end{code}
 \noindent As reversible circuits, $p_1$ and $p_2$ evaluate as
 follows. If $p_1$ is given the value $\inl{a}$, it first transforms it
@@ -2144,7 +2182,7 @@ module Y where
 }
 \begin{code}
   swapl₊⇔ :  {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
-             (swap₊ ◎ (c₁ ⊕ c₂)) ⇔' ((c₂ ⊕ c₁) ◎ swap₊)
+             (_⟷_.swap₊ ◎ (c₁ ⊕ c₂)) ⇔' ((c₂ ⊕ c₁) ◎ _⟷_.swap₊)
 \end{code}
 
 Pictorially, this 2-level combinator is a 2-path showing how the two
@@ -2364,6 +2402,55 @@ survey several possible canonical representations that trade-off
 various desired properties. Of course, finding a rewriting procedure
 that makes progress towards the canonical representation is far from
 trivial.
+
+\amr{Read Laplaza's paper in some detail. Questions:
+\begin{itemize}
+\item How can the value of a path only depend on the endpoints and at
+the same we don't identify all parallel paths???
+\item the unique variable condition is just one special case of
+'regular'; it is evident that 1+1 is regular; so how can the two paths
+from 1+1 to 1+1 corresponding to 'id' and 'not' not be equated???
+\item regular: for a in A, if Supp a can be expressed as a sum of
+different elements of A* each of which is a product of different
+elements of X
+\end{itemize}
+}
+
+\amr{Laplaza only considers Rig Categories to have 'natural
+  monomorphisms' for distributivity, unlike the definition on
+  nLab. I've tried to read [Kelly 74], but found it to be completely
+  unreadeable.  If distributivity is made an iso, then the coherence
+  conditions "double up", with every one also holding for
+  'factor'. Which is true [proofs already done], and goes to the heart
+  of my comment that we have 2 commuting involutions on level-2
+  combinators.
+
+  However, it did let me observe one thing: we have 2! which says that
+  given (c <-> d), we can get (d <-> c).  What we don't have, and
+  SHOULD, is 2flip which would say that given (c <-> d), we can get (!
+  c <-> ! d).  This is "obviously true".  More, we also ought to be
+  able to prove (easily!) that all (e : c <-> d) 2! (2flip e) ==
+  2flip (2! e) where I really mean == there.}
+
+\amr{show some of the definitions (signatures only) of the coherences
+  (from Data.SumProd.Properties) that correspond to the laplazaYYY
+  lines.
+
+  One of the interesting conclusions of the coherence laws (see the
+  comments in the file above) is that it forces all (putative)
+  elements of bot to be equal.  This comes from the coherence law for
+  the two ways of proving that 0 * 0 = 0.}
+
+
+\amr{Note that a few of those "id" in there are actually "id<-> {ZERO}
+  {ZERO}", that is very important.  Most of the laws having to do with
+  absorb0 have some occurrences of both kinds of id in their
+  signature, which made figuring them out very challenging!  Same with
+  laws involving factor0
+
+  Similarly, the c1 in the identl* exchange law MUST map between ONE
+  (same with identr*).  In the same vein, c1 in the identl+ and
+  identr+ laws must involve ZERO.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Problem with Higher-Order Functions}
@@ -2677,7 +2764,7 @@ generalization of our results to incorporate higher-order functions
 while retaining the multiplicative structure. Another intriguing point
 to consider is the connection between this idea and the recently
 proposed cubical models of type theory that also aim at producing
-computational interpretations of univalence~\cite{cubical}.
+computational interpretations of univalence~\citep{cubical}.
 
 % \jc {I would (syntactically) highlight that the Int construction does
 %   NOT allow one to lift multiplication in a straightforward manner.
