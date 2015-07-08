@@ -16,6 +16,8 @@ open import TypeEquivCat -- for ≋
 open import PiLevel0
 open import PiLevel1
 
+open import Data.Sum.Properties
+
 ------------------------------------------------------------------------------
 -- A combinator t₁ ⟷ t₂ denotes an equivalence to types
 -- note how we don't have to look at the types at all.
@@ -97,9 +99,9 @@ lemma1 (c₀ ⊗ c₁) (x , y) = cong₂ _,_ (lemma1 c₀ x) (lemma1 c₁ y)
 -- c2equiv : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
 cc2equiv : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) →
   c2equiv c₁ ≋ c2equiv c₂
-cc2equiv assoc◎l = ?
-cc2equiv assoc◎r = ?
-cc2equiv assocl⊕l = {!!}
+cc2equiv assoc◎l = eq (λ x → refl) (λ x → refl)
+cc2equiv assoc◎r = {!!}
+cc2equiv assocl⊕l = eq {! sym∼ [[,],]∘assocl₊!} {!!}
 cc2equiv assocl⊕r = {!!}
 cc2equiv assocl⊗l = {!!}
 cc2equiv assocl⊗r = {!!}
