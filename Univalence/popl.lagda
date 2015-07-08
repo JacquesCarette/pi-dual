@@ -2134,32 +2134,17 @@ programs written in the lower level language.
 %%%%%%%%%%%%
 \subsection{Example}
 
-\jc{This is weak; I could get away with it in a short talk, but this should
-be made more precise.  It is essentially what the code says, and what
-is encoded by the natural transformations, but there has to be a better
-way to say this.}
-The general structure explaining the nature of the second level
-metalanguage and how the two languages fit together from a categorical
-perspective is the following:
-\begin{itemize}
-\item type equivalences for example between $A ⊕ B$ and $B ⊕ A$ are
-  \emph{functors};
-\item equivalences between such functors are \emph{natural
-    isomorphisms}; 
-\item at the value level, these equivalences induce $2$-morphisms.
-\end{itemize}
-
-For example, assuming we are given two $\Pi$-combinators:
+Given two $\Pi$-combinators:
 \AgdaHide{
 \begin{code}
 postulate
 \end{code}
 }
 \begin{code}
-  c₁ : {B C : U} →  B ⟷ C
-  c₂ : {A D : U} →  A ⟷ D
+ c₁ : {B C : U} →  B ⟷ C
+ c₂ : {A D : U} →  A ⟷ D
 \end{code}
-\noindent from which we build two larger combinators $p_1$ and $p_2$ below:
+\noindent we can build two larger combinators $p_1$ and $p_2$,
 \begin{code}
 p₁ p₂ : {A B C D : U} → PLUS A B ⟷ PLUS C D
 p₁ = _⟷_.swap₊ ◎ (c₁ ⊕ c₂)
@@ -2245,14 +2230,59 @@ path and flipping them produces the connection in the bottom path:
 \end{tikzpicture}
 \end{center}
 
+Categorically speaking, this combinator expresses exactly that
+the braiding $\sigma_{A,B}$ is a natural transformation, in other
+words that $\sigma_{A,B}$ must commute with $\oplus$.
+
 %%%%%%%%%%%%
 \subsection{Revised Syntax}
 
-\jc{The second sentence below is a repeat; where does it 
-belong?}  \jc{You're missing 4 combinators from that picture!  
-Plus the ones you added are the ones for absorption and 
-distributivity, NOT the ones which are redundant, they are really
-needed for a proper semiring.}
+\jc{What needs to be added here is an English description of the
+structure of a proof of being a symmetric rig weak groupoid.
+In other words, lines 63--371 of TypeEquivCat.  A lot of it
+is to show that a lot of things are natural isomorphisms,
+aka pairs of natural transformations; each natural isomorphism
+induces 2 combinators and 4 coherences, where for each
+combinator we need to know it ``commutes'' with building
+that structure, and that the resulting combinators are
+left and right inverses of each other.  Even just
+$\oplus$ being a bifunctor induces 3 coherences.  And then
+of course each ``structure'' (monoidal, braided, symmetric)
+comes with more, culminating with 13 coherences for rig.
+}
+\jc{The rig combinators themselves are not so mysterious.
+I'll write something quick about each below, please refine!}
+
+The coherence laws for a symmetric rig category, whether
+presented in their full diagrammatic glory or through
+their signatures, may at first appear rather obscure.  But
+these can be ``unformalized'' to relatively understandable
+statements:
+\begin{itemize}
+\item[I] given $A ⊗ (B ⊕ C)$, swapping $B$ and $C$ then
+distributing (on the left) is the same as first distributing,
+then swapping the two summands,
+\item[II] given $(A ⊕ B) ⊗ C$, first switch the order of the
+products then distributing (on the left) is the same as
+distributing (on the right) and then switching the order of
+both products.
+\item[IV] given $(A ⊕ (B ⊕ C)) ⊗ D$, we can either distribute
+then associate, or associate then distribute.
+\item[IX] given $(A ⊕ B) ⊗ (C ⊕ D)$, we can either first
+distribute on the left, map right-distribution and finally
+associate, or we can go ``the long way around'' by
+right-distributing first, then mapping left-distribution,
+and then a long chain of administrative shuffles to get
+to the same point.
+\item[X] given $0 ⊗ 0$, left or right absorption both
+give $0$ in equivalent ways
+\item[XI] given $0 ⊗ (A ⊕ B)$, left absorption or
+distribution, then mapping left absorption, followed
+by (additive) left unit are equivalent.
+\item[XII] given $0 * 1$, left absorption or
+(multiplicative) right unit are equivalent.
+\end{itemize}
+\jc{and so on, as I ran out of time!}
 
 The inspiration of symmetric rig groupoids suggested a refactoring of
 $\Pi$ with additional level-1 combinators.  The added
