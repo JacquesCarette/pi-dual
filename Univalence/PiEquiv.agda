@@ -9,6 +9,7 @@ open ≡-Reasoning
 open import Data.Unit using (⊤; tt)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _,_; proj₁; proj₂)
+open import Function using (_∘_)
 
 open import Equiv
 open import TypeEquiv as TE
@@ -17,6 +18,7 @@ open import PiLevel0
 open import PiLevel1
 
 open import Data.Sum.Properties
+open import Data.SumProd.Properties
 
 ------------------------------------------------------------------------------
 -- A combinator t₁ ⟷ t₂ denotes an equivalence to types
@@ -109,67 +111,67 @@ cc2equiv assocr⊕r = eq assocr₊∘[[,],] [[,],]∘assocl₊
 cc2equiv assocr⊗l = eq (λ x → refl) (λ x → refl)
 cc2equiv assocr⊗r = eq (λ x → refl) (λ x → refl)
 cc2equiv assocr⊕l = eq (sym∼ assocr₊∘[[,],]) (sym∼ [[,],]∘assocl₊)
-cc2equiv dist⇔l = eq {!!} {!!}
-cc2equiv dist⇔r = eq {!!} {!!}
-cc2equiv distl⇔l = eq {!!} {!!}
-cc2equiv distl⇔r = eq {!!} {!!}
-cc2equiv factor⇔l = eq {!!} {!!}
-cc2equiv factor⇔r = eq {!!} {!!}
-cc2equiv factorl⇔l = eq {!!} {!!}
-cc2equiv factorl⇔r = eq {!!} {!!}
-cc2equiv idl◎l = eq {!!} {!!}
-cc2equiv idl◎r = eq {!!} {!!}
-cc2equiv idr◎l = eq {!!} {!!}
-cc2equiv idr◎r = eq {!!} {!!}
+cc2equiv dist⇔l = eq dist-commute (sym ∘ factor-commute)
+cc2equiv dist⇔r = eq (sym ∘ dist-commute) factor-commute
+cc2equiv distl⇔l = eq distl-commute (sym ∘ factorl-commute)
+cc2equiv distl⇔r = eq (sym ∘ distl-commute) factorl-commute
+cc2equiv factor⇔l = eq factor-commute (sym ∘ dist-commute)
+cc2equiv factor⇔r = eq (sym ∘ factor-commute) dist-commute
+cc2equiv factorl⇔l = eq factorl-commute (sym ∘ distl-commute)
+cc2equiv factorl⇔r = eq (sym ∘ factorl-commute) distl-commute
+cc2equiv idl◎l = eq (λ x → refl) (λ x → refl)
+cc2equiv idl◎r = eq (λ x → refl) (λ x → refl)
+cc2equiv idr◎l = eq (λ x → refl) (λ x → refl)
+cc2equiv idr◎r = eq (λ x → refl) (λ x → refl)
 cc2equiv linv◎l = eq {!!} {!!}
 cc2equiv linv◎r = eq {!!} {!!}
 cc2equiv rinv◎l = eq {!!} {!!}
-cc2equiv rinv◎r = eq ? ?
-cc2equiv unite₊l⇔l = eq ? ?
-cc2equiv unite₊l⇔r = eq ? ?
-cc2equiv uniti₊l⇔l = eq ? ?
-cc2equiv uniti₊l⇔r = eq ? ?
-cc2equiv unite₊r⇔l = eq ? ?
-cc2equiv unite₊r⇔r = eq ? ?
-cc2equiv uniti₊r⇔l = eq ? ?
-cc2equiv uniti₊r⇔r = eq ? ?
-cc2equiv swapl₊⇔ = eq ? ?
-cc2equiv swapr₊⇔ = eq ? ?
-cc2equiv unitel⋆⇔l = eq ? ?
-cc2equiv uniter⋆⇔l = eq ? ?
-cc2equiv unitil⋆⇔l = eq ? ?
-cc2equiv unitir⋆⇔l = eq ? ?
-cc2equiv unitel⋆⇔r = eq ? ?
-cc2equiv uniter⋆⇔r = eq ? ?
-cc2equiv unitil⋆⇔r = eq ? ?
-cc2equiv unitir⋆⇔r = eq ? ?
-cc2equiv swapl⋆⇔ = eq ? ?
-cc2equiv swapr⋆⇔ = eq ? ?
-cc2equiv swapfl⋆⇔ = eq ? ?
-cc2equiv swapfr⋆⇔ = eq ? ?
-cc2equiv id⇔ = eq ? ?
-cc2equiv (trans⇔ ce ce₁) = eq ? ?
-cc2equiv (ce ⊡ ce₁) = eq ? ?
-cc2equiv (resp⊕⇔ ce ce₁) = eq ? ?
-cc2equiv (resp⊗⇔ ce ce₁) = eq ? ?
-cc2equiv id⟷⊕id⟷⇔ = eq ? ?
-cc2equiv split⊕-id⟷ = eq ? ?
-cc2equiv hom⊕◎⇔ = eq ? ?
-cc2equiv hom◎⊕⇔ = eq ? ?
-cc2equiv id⟷⊗id⟷⇔ = eq ? ?
-cc2equiv split⊗-id⟷ = eq ? ?
-cc2equiv hom⊗◎⇔ = eq ? ?
-cc2equiv hom◎⊗⇔ = eq ? ?
-cc2equiv triangle⊕l = eq ? ?
-cc2equiv triangle⊕r = eq ? ?
-cc2equiv triangle⊗l = eq ? ?
-cc2equiv triangle⊗r = eq ? ?
-cc2equiv pentagon⊕l = eq ? ?
-cc2equiv pentagon⊕r = eq ? ?
-cc2equiv pentagon⊗l = eq ? ?
-cc2equiv pentagon⊗r = eq ? ?
-cc2equiv hexagonr⊕l = eq ? ?
-cc2equiv hexagonr⊕r = eq ? ?
+cc2equiv rinv◎r = eq {!!} {!!}
+cc2equiv unite₊l⇔l = eq {!!} {!!}
+cc2equiv unite₊l⇔r = eq {!!} {!!}
+cc2equiv uniti₊l⇔l = eq {!!} {!!}
+cc2equiv uniti₊l⇔r = eq {!!} {!!}
+cc2equiv unite₊r⇔l = eq {!!} {!!}
+cc2equiv unite₊r⇔r = eq {!!} {!!}
+cc2equiv uniti₊r⇔l = eq {!!} {!!}
+cc2equiv uniti₊r⇔r = eq {!!} {!!}
+cc2equiv swapl₊⇔ = eq {!!} {!!}
+cc2equiv swapr₊⇔ = eq {!!} {!!}
+cc2equiv unitel⋆⇔l = eq (λ x → refl) (λ x → refl)
+cc2equiv uniter⋆⇔l = eq (λ x → refl) (λ x → refl)
+cc2equiv unitil⋆⇔l = eq (λ x → refl) (λ x → refl)
+cc2equiv unitir⋆⇔l = eq (λ x → refl) (λ x → refl)
+cc2equiv unitel⋆⇔r = eq (λ x → refl) (λ x → refl)
+cc2equiv uniter⋆⇔r = eq (λ x → refl) (λ x → refl)
+cc2equiv unitil⋆⇔r = eq (λ x → refl) (λ x → refl)
+cc2equiv unitir⋆⇔r = eq (λ x → refl) (λ x → refl)
+cc2equiv swapl⋆⇔ = eq (λ x → refl) (λ x → refl)
+cc2equiv swapr⋆⇔ = eq (λ x → refl) (λ x → refl)
+cc2equiv swapfl⋆⇔ = eq {!!} {!!}
+cc2equiv swapfr⋆⇔ = eq {!!} {!!}
+cc2equiv id⇔ = eq (λ x → refl) (λ x → refl)
+cc2equiv (trans⇔ ce ce₁) = eq {!!} {!!}
+cc2equiv (ce ⊡ ce₁) = eq {!!} {!!}
+cc2equiv (resp⊕⇔ ce ce₁) = eq {!!} {!!}
+cc2equiv (resp⊗⇔ ce ce₁) = eq {!!} {!!}
+cc2equiv id⟷⊕id⟷⇔ = eq {!!} {!!}
+cc2equiv split⊕-id⟷ = eq {!!} {!!}
+cc2equiv hom⊕◎⇔ = eq {!!} {!!}
+cc2equiv hom◎⊕⇔ = eq {!!} {!!}
+cc2equiv id⟷⊗id⟷⇔ = eq (λ x → refl) (λ x → refl)
+cc2equiv split⊗-id⟷ = eq (λ x → refl) (λ x → refl)
+cc2equiv hom⊗◎⇔ = eq {!!} {!!}
+cc2equiv hom◎⊗⇔ = eq {!!} {!!}
+cc2equiv triangle⊕l = eq {!!} {!!}
+cc2equiv triangle⊕r = eq {!!} {!!}
+cc2equiv triangle⊗l = eq {!!} {!!}
+cc2equiv triangle⊗r = eq {!!} {!!}
+cc2equiv pentagon⊕l = eq {!!} {!!}
+cc2equiv pentagon⊕r = eq {!!} {!!}
+cc2equiv pentagon⊗l = eq {!!} {!!}
+cc2equiv pentagon⊗r = eq {!!} {!!}
+cc2equiv hexagonr⊕l = eq {!!} {!!}
+cc2equiv hexagonr⊕r = eq {!!} {!!}
 cc2equiv hexagonl⊕l = eq {!!} {!!}
 cc2equiv hexagonl⊕r = eq {!!} {!!}
 cc2equiv hexagonr⊗l = eq {!!} {!!}
