@@ -1001,7 +1001,7 @@ NOT₁ = swap₊
 \smallskip  
  
 Naturally there are many ways of encoding boolean negation. The
-following cobminator implements a more convoluted circuit that
+following combinator implements a more convoluted circuit that
 computes the same function, which is also visualized os a permutation
 on finite sets:
 
@@ -1225,8 +1225,8 @@ evalB (c₀ ⊗ c₁) (x , y) = evalB c₀ x , evalB c₁ y
 constructor to its Agda denotation, e.g., it maps the type 0 to
 $\bot$, the type 1 to $\top$, etc. The complete definitions for these
 evaluators can be found in the papers by
-\citet{rc2011,rc2012,James:2012:IE:2103656.2103667} (and in the
-accompanying Agda code) and will not be repeated here. The reason is
+\citet{rc2011,rc2012,James:2012:IE:2103656.2103667} and in the
+accompanying Agda code and will not be repeated here. The reason is
 that, although these evaluators adequately serve as semantic
 specifications, they drive the development towards extensional
 reasoning as evident from the signatures which map a permutation to a
@@ -1274,20 +1274,22 @@ explained in the proof of Thm.~\ref{thm:permrig}.
 
 Having mapped each combinator to a permutation, we can reason about
 valid optimizations mapping a combinator to another by studying the
-equivalence of permutations on finite sets. The traditional definition
-of equivalence might equate two permutations if their actions on every
-input produce the same output but we again resist that extensional
-reasoning. Instead we are interested in a calculus, a set of rules,
-that can be used to rewrite combinators preserving their meaning. It
-is trivial to come up with a few rules such as:
+equivalence of permutations on finite sets. The definition of
+equivalence might also equate two permutations if their actions on
+every input produce the same output but we again resist that
+extensional reasoning. Instead we are interested in a calculus, a set
+of rules, that can be used to rewrite combinators preserving their
+meaning. It is trivial to come up with a few rules such as:
 
 \AgdaHide{
-\begin{code}
+\begin{code} 
 module X where
  data _⇔'_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set where
 \end{code}
 }
-%% \begin{code}[gobble=2]
+
+\smallskip 
+
 \begin{code}
   id⇔     :  {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔' c 
 
@@ -1307,6 +1309,7 @@ module X where
 
 \end{code}
 
+\smallskip 
 \noindent which are evidently sound. The challenge of course is to
 come up with a sound and complete set of such rules.
 
