@@ -2282,7 +2282,7 @@ isomorphism is composed of 2 natural transformations
 (one in each direction) that must compose to the
 identity.  This in turn induces $4$ coherences laws:
 two \emph{naturality laws} which indicate that the
-combinator commuteswith structure construction, and two which 
+combinator commutes with structure construction, and two which 
 express that the resulting combinators are
 left and right inverses of each other.  But note also that
 there mere desire that 
@@ -2341,23 +2341,22 @@ left or distribute the map left-elimination.
 \end{itemize}
 
 Going through the details of the proof of the coherence theorem
-in~\citet{laplaza} with a ``modern'' eye, one cannot help but
-think of Knuth-Bendix completion.  Although it is known that
-coherence laws for some categorical structures can be obtained
-in this way~\cite{Beke}, it is also known that in the presence
-of certain structures (such as symmetry), Knuth-Bendix completion
-will not terminate.  It would be interesting to know if there is
-indeed a systematic way to obtain these laws; we asked the wider
-mathematical community~\cite{mathoverflowq}, but did not get any
-answers.
+in~\citet{laplaza} with a ``modern'' eye, one cannot help but think of
+Knuth-Bendix completion.  Although it is known that coherence laws for
+some categorical structures can be obtained in this
+way~\cite{Beke2011728}, it is also known that in the presence of
+certain structures (such as symmetry), Knuth-Bendix completion will
+not terminate.  It would be interesting to know if there is indeed a
+systematic way to obtain these laws; the wider mathematical community
+does not seem to know~\cite{mathoverflowq}.
 
-It is worth noting that most (but not all) of the properties of
-$⊎$ were already in Agda's standard library (in
+It is worth noting that most (but not all) of the properties of $⊎$
+were already in Agda's standard library (in
 \AgdaModule{Data.Sum.Properties} to be precise), whereas all
 properties of $×$ were immediately provable due to $η$ expansion.
-None of the mixed properties involved with distributivity
-and absorption were present, although the proof of all of them
-was very straightforward.
+None of the mixed properties involved with distributivity and
+absorption were present, although the proof of all of them was very
+straightforward.
 
 \begin{figure*}
 \[\begin{array}{cc}
@@ -2490,12 +2489,12 @@ that makes progress towards the canonical representation is far from
 trivial.
 
 It should be noted that a few of the ``raw'' signatures in
-Fig.~\ref{fig:more2} are slightly misleading, as we omit the
-signature of the underlying combinators.  For example,
-$\identlt \fatsemi c₂ & \isoone & (c₁ ⊗ c₂) \fatsemi \identlt$
-hides the fact that $c₁$ here is restricted to have signature
-$c₁ : \AgdaInductiveConstructor{ZERO} ⟷ \AgdaInductiveConstructor{ZERO}$.
-The reader should consult the code for full details.
+Fig.~\ref{fig:more2} are slightly misleading, as we omit the signature
+of the underlying combinators.  For example, $\identlt \fatsemi c₂
+\isoone (c₁ ⊗ c₂) \fatsemi \identlt$ hides the fact that $c₁$ here is
+restricted to have signature $c₁ : \AgdaInductiveConstructor{ZERO} ⟷
+\AgdaInductiveConstructor{ZERO}$.  The reader should consult the code
+for full details.
 
 % \amr{However, it did let me observe one thing: we have 2! which says
 %  that given (c <-> d), we can get (d <-> c).  What we don't have, and
