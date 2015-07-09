@@ -974,7 +974,7 @@ circuits~\citep{James:2012:IE:2103656.2103667}.\footnote{With the
 illustrate the expressiveness of the language with a few short
 examples.
 
-The first example is simply boolean encoding and negation which can
+The first example is simply boolean encoding and negation which can be
 defined as shown on the left and visualized as a permutation on finite
 sets on the right:
 
