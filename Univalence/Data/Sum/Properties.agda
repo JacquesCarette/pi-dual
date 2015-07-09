@@ -33,13 +33,13 @@ map⊎-resp-≡ : {A B C D : Set} → {f₀ g₀ : A → B} {f₁ g₁ : C → D
 map⊎-resp-≡ {e₁ = f₀~g₀} (inj₁ x) = P.cong inj₁ (f₀~g₀ x)
 map⊎-resp-≡ {e₂ = f₁~g₁} (inj₂ y) = P.cong inj₂ (f₁~g₁ y)
 
-unite₊∘[id,f]≡f∘unite₊ : {A B : Set} {f : A → B} →
-  (x : ⊥ ⊎ A) → unite₊ (map⊎ F.id f x) P.≡ f (unite₊ x)
+unite₊∘[id,f]≡f∘unite₊ : {A B : Set} {f : A → B} {g : ⊥ → ⊥} →
+  (x : ⊥ ⊎ A) → unite₊ (map⊎ g f x) P.≡ f (unite₊ x)
 unite₊∘[id,f]≡f∘unite₊ (inj₁ ())
 unite₊∘[id,f]≡f∘unite₊ (inj₂ y) = P.refl
 
-unite₊′∘[id,f]≡f∘unite₊′ : {A B : Set} {f : A → B} →
-  (x : A ⊎ ⊥) → unite₊′ (map⊎ f F.id x) P.≡ f (unite₊′ x)
+unite₊′∘[id,f]≡f∘unite₊′ : {A B : Set} {f : A → B} {g : ⊥ → ⊥} →
+  (x : A ⊎ ⊥) → unite₊′ (map⊎ f g x) P.≡ f (unite₊′ x)
 unite₊′∘[id,f]≡f∘unite₊′ (inj₁ x) = P.refl
 unite₊′∘[id,f]≡f∘unite₊′ (inj₂ ())
 
