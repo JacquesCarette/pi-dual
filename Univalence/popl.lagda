@@ -454,32 +454,33 @@ _□ t = id⟷
 
 Because physical laws obey various conservation principles (including
 conservation of information) and because computation is fundamentally
-a physical process, every computation is, at the physical level,
-fundamentally an equivalence that preserves information.  The idea
-that computation, at the logical and programming level, should also be
-based on ``equivalences'' (i.e., invertible processes) was originally
-motivated by such physical
-considerations~\citep{springerlink:10.1007/BF02650179,Landauer:1961,PhysRevA.32.3266,Bennett:1973:LRC,Toffoli:1980,fredkin1982conservative}. More
-recently, the rising importance of energy conservation, the shrinking
-size of technology at which quantum effects become noticeable, and the
-potential for quantum computation and communication, are additional
-physical considerations adding momentum to such reversible
-computational
+a physical process, every computation is, at the physical level, an
+equivalence that preserves information.  The idea that computation, at
+the logical and programming level, should also be based on
+``equivalences'' (i.e., invertible processes) was originally motivated
+by such physical
+considerations~\citep{Landauer:1961,Bennett:1973:LRC,Toffoli:1980,springerlink:10.1007/BF02650179,fredkin1982conservative,PhysRevA.32.3266}. More
+recently, the rising importance of energy conservation for both tiny
+mobile devices and supercomputers, the shrinking size of technology at
+which quantum effects become noticeable, and the potential for quantum
+computation and communication, are additional physical considerations
+adding momentum to such reversible computational
 models~\citep{Frank:1999:REC:930275,DeBenedictis:2005:RLS:1062261.1062325}. From
-a more theoretical perspective, the recently proposed ``univalent''
-foundation of mathematics~\citep{hottbook}, based on Homotopy Type
-Theory (HoTT), greatly emphasizes computation based on
-\emph{equivalences} that are satisfied up to equivalences that are
-themselves satisfied up to equivalence, etc.
+a more theoretical perspective, the recently proposed
+\citet{hottbook}, based on Homotopy Type Theory (HoTT), greatly
+emphasizes computation based on \emph{equivalences} that are satisfied
+up to equivalences that are themselves satisfied up to equivalence,
+etc.
 
 To summarize, we are witnessing a convergence of ideas from several
-distinct research communities (physics, mathematics, and computer
-science) towards basing computations on
+distinct research communities, including physics, mathematics, and
+computer science, towards basing computations on
 equivalences~\citep{baez2011physics}. A first step in that direction
-was the development of many \emph{reversible programming
-  languages}~(e.g.,
-\citep{Yokoyama:2007:RPL:1244381.1244404,Mackie2011,DiPierro:2006:RCL:1166042.1166047,Kluge:1999:SEMCD,Mu:2004:ILRC,abramsky2005structural}.)
-Typically, programs in these languages correspond to some notion of
+is the development of many \emph{reversible programming
+  languages}~(e.g., \citep{Kluge:1999:SEMCD,Mu:2004:ILRC,
+  abramsky2005structural, DiPierro:2006:RCL:1166042.1166047,
+  Yokoyama:2007:RPL:1244381.1244404, Mackie2011}.)  Typically,
+programs in these languages correspond to some notion of
 equivalence. But reasoning \emph{about} these programs abandons the
 notion of equivalence and uses conventional irreversible functions to
 specify evaluators and the derived notions of program
@@ -488,20 +489,23 @@ structure of programs and proofs that was first exposed in the
 historical paper by \citet{Hofmann96thegroupoid} and that is currently
 the center of attention of HoTT and that requires keeping the focus on
 equivalences not only at the conventional level of programs but also
-at the higher levels of programs manipulating equivalences about other
-programs. 
+at the higher levels of programs expressing equivalences, programs
+manipulating equivalences about other programs, etc.
 
 This paper addresses --- and completely solves --- a well-defined part
 of the general problem of programming with equivalences up to
 equivalences. Our approach, we argue, might also be suitable for the
 more general problem. The particular problem we focus on is that of
 programming with the finite types built from the empty type, the unit
-type, and closed under sums and products. Although limited in their
-expressive power, these types are rich enough to express all
-combinational (with no state or feedback) hardware circuits and as we
-show already exhibit substantial combinatorial structure at the ``next
-level'', i.e., at the level of equivalences about equivalences of
-types. What emerges from our study are the following results:
+type, and closed under sums and products, and reasoning about these
+programs between these finite types, i.e., the problem of equivalences
+between types and equivalences between such equivalences. Although
+limited in their expressive power, these types are rich enough to
+express all combinational (with no state or feedback) hardware
+circuits and, as we show, already exhibit substantial combinatorial
+structure at the ``next level'', i.e., at the level of equivalences
+about equivalences of types. What emerges from our study are the
+following results:
 \begin{itemize}
 \item a universal language for combinational reversible circuits that
   comes with a calculus for writing circuits and a calculus for
@@ -532,22 +536,23 @@ manifesting themselves as syntactic rules for reasoning about
 equivalences of programs representing reversible
 circuits. Sec.~\ref{sec:4} starts the semantic investigation of the
 $\Pi$ languages emphasizing the denotational approach that maps each
-$\Pi$ program to a type equivalence or a permutation. The section also
-gives a small example showing how a few rules that are sound with
-respect to equivalence of permutations can be used to transform $\Pi$
-programs without reliance on any extensional
+$\Pi$ program to a type equivalence or equivalently a permutation. The
+section also gives a small example showing how a few rules that are
+sound with respect to equivalence of permutations can be used to
+transform $\Pi$ programs without reliance on any extensional
 reasoning. Sec.~\ref{sec:5} then reveals that these rules are
 intimately related to the coherence conditions of the categorified
-analogues of type equivalences and permutations, namely, the so-called
-\emph{symmetric rig weak groupoids}. Sec.~\ref{sec:6} contains that
-``punchline'': a sound and complete set of rules that can be used to
-reason about $\Pi$ programs and their equivalences. Before concluding,
-we devote Sec.~\ref{sec:7} to a detailed analysis of higher-order
-functions in the setting we describe suggesting a possible path
-towards a solution. We note that because the issues involved are quite
-subtle, the paper is the ``unformalization'' of an executable
-\texttt{Agda 2.4.2.3} package with the global \AgdaComment{without-K}
-option enabled.
+analogues of the commutative semiring structures underlying type
+equivalences and permutations, namely, the so-called \emph{symmetric
+  rig weak groupoids}. Sec.~\ref{sec:6} contains that ``punchline'': a
+sound and complete set of rules that can be used to reason about
+equivalences of $\Pi$ programs. Before concluding, we devote
+Sec.~\ref{sec:7} to a detailed analysis of the problem with extending
+our approach to accommodate higher-order functions, suggesting a
+possible path towards a solution. We note that because the issues
+involved are quite subtle, the paper is the ``unformalization'' of an
+executable \texttt{Agda 2.4.2.3} package with the global
+\AgdaComment{without-K} option enabled.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Equivalences and Commutative Semirings} 
