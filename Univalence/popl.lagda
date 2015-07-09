@@ -129,10 +129,12 @@ $\displaystyle
 \newcommand{\todo}[1]{}
 \fi
 
-\newcommand{\jc}[1]{\authornote{purple}{JC}{#1}}
-\newcommand{\as}[1]{\authornote{magenta}{AS}{#1}}
+\newcommand{\amr}[1]{}
+\newcommand{\jc}[1]{}
 
-\newcommand{\amr}[1]{\fbox{\begin{minipage}{0.4\textwidth}\color{red}{Amr says: {#1}}\end{minipage}}}
+%% \newcommand{\jc}[1]{\authornote{purple}{JC}{#1}}
+%% \newcommand{\as}[1]{\authornote{magenta}{AS}{#1}}
+%% \newcommand{\amr}[1]{\fbox{\begin{minipage}{0.4\textwidth}\color{red}{Amr says: {#1}}\end{minipage}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
