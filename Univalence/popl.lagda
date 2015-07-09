@@ -48,17 +48,17 @@
 \newcommand{\rinv}{r!}
 \newcommand{\invinv}{!!}
 \newcommand{\assoc}{\circ}
-\newcommand{\identlp}{\mathit{identl}_+}
-\newcommand{\identrp}{\mathit{identr}_+}
-\newcommand{\identlsp}{\mathit{identls}_+}
-\newcommand{\identrsp}{\mathit{identrs}_+}
+\newcommand{\identlp}{\mathit{unite}_+}
+\newcommand{\identrp}{\mathit{uniti}_+}
+\newcommand{\identlsp}{\mathit{unites}_+}
+\newcommand{\identrsp}{\mathit{unitis}_+}
 \newcommand{\swapp}{\mathit{swap}_+}
 \newcommand{\assoclp}{\mathit{assocl}_+}
 \newcommand{\assocrp}{\mathit{assocr}_+}
-\newcommand{\identlt}{\mathit{identl}_*}
-\newcommand{\identrt}{\mathit{identr}_*}
-\newcommand{\identlst}{\mathit{identls}_*}
-\newcommand{\identrst}{\mathit{identrs}_*}
+\newcommand{\identlt}{\mathit{unite}_*}
+\newcommand{\identrt}{\mathit{uniti}_*}
+\newcommand{\identlst}{\mathit{unites}_*}
+\newcommand{\identrst}{\mathit{unitis}_*}
 \newcommand{\swapt}{\mathit{swap}_*}
 \newcommand{\assoclt}{\mathit{assocl}_*}
 \newcommand{\assocrt}{\mathit{assocr}_*}
@@ -975,9 +975,10 @@ illustrate the expressiveness of the language with a few short
 examples.
 
 The first example is simply boolean encoding and negation which can
-defined as shown on the left and visualized as a permutation on the right:
+defined as shown on the left and visualized as a permutation on finite
+sets on the right:
 
-\smallskip
+\smallskip 
 
 \begin{tabular}{cc}
 \begin{minipage}{0.25\textwidth}
@@ -1019,7 +1020,9 @@ following combinator implements a more convoluted circuit that
 computes the same function, which is also visualized as a permutation
 on finite sets:
 
-\begin{tabular}{cc}
+\smallskip 
+
+\begin{tabular}{c@{\!\!\!}c}
 \begin{minipage}{0.25\textwidth}
 \begin{code}
 NOT₂ : BOOL ⟷ BOOL
@@ -1032,7 +1035,7 @@ NOT₂ =
 \end{code}
 \end{minipage}
 & 
-\begin{tikzpicture}[scale=0.33,every node/.style={scale=0.33}]
+\begin{tikzpicture}[scale=0.38,every node/.style={scale=0.38}]
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
   \node[below] at (1,2) {()};
