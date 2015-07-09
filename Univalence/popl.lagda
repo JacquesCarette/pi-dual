@@ -798,31 +798,34 @@ iso-times = {!!}
 \begin{proof}
   The proof requires delicate attention to the representation of
   permutations as straightforward attempts turn out not to capture
-  enough of the properties of permutations. A permutation of one set
-  to another is represented using two sizes: $n$ for the size of the
-  input finite set and $m$ for the size of the resulting finite
-  set. Naturally in any well-formed permutations, these two sizes are
-  equal but the presence of both types allows us to conveniently
-  define a permutation $\mathsf{CPerm}~m~n$ using four components. The
-  first two components are (i) a vector of size $n$ containing
-  elements drawn from the finite set $\mathsf{Fin}~m$, and (ii) a dual
-  vector of size $m$ containing elements drawn from the finite set
-  $\mathsf{Fin}~n$. Each of these vectors can be interpreted as a map
-  $f$ that acts on the incoming finite set sending the element at
-  index $i$ to position $f !! i$ in the resulting finite set. To
-  guarantee that these maps define an actual permutation, the last two
-  components are proofs that the sequential composition of the maps in
-  both directions produce the identity. Given this representation, we
-  can prove that two permutations are equal if the underlying vectors
-  are strictly equal. The proof proceeds using the vacuous permutation
-  $\mathsf{CPerm}~0~0$ for the additive unit and the trivial
-  permutation $\mathsf{CPerm}~1~1$ for the multiplicative unit. The
-  binary operations on permutations map $\mathsf{CPerm}~m₁~m₂$ and
-  $\mathsf{CPerm}~n₁~n₂$ to $\mathsf{CPerm}~(m₁+n₁)~(m₂+n₂)$ and
+  enough of the properties of permutations.\footnote{All
+    formalizations of permutations in Agda or Coq known to us do not
+    support the full range of operations that we need including
+    sequential compositions, disjoint unions, and products of
+    permutations.} After several attempts, we settled on formalizing a
+  permutation using the conventional one-line notation, e.g., giving a
+  preferred enumeration 1 2 3 of a set with three elements, the
+  one-line notion 2 3 1 denotes the permutation sending 1 to 2, 2 to
+  3, and 3 to 1. To make sure the sequence of numbers is of the right
+  length and that each number is in the right range, we use Agda
+  vectors $\AgdaPrimitiveType{Vec}~(\AgdaPrimitiveType{Fin}~m)~n$
+  (abbreviated $\AgdaFunction{FinVec}~m~n$). To ensure that the vector
+  elements have no repetitions (i.e., represent 1-1 functions), we
+  include in the representation of each permutation, an inverse vector
+  $\AgdaFunction{FinVec}~n~m$ as well as two proofs asserting that the
+  compositions in both directions produce the identity permutation
+  (which naturally forces $m$ and $n$ to be equal). Given this
+  representation, we can prove that two permutations are equal if the
+  one-line vector representations are strictly equal. The main proof
+  then proceeds using the vacuous permutation $\mathsf{CPerm}~0~0$ for
+  the additive unit and the trivial permutation $\mathsf{CPerm}~1~1$
+  for the multiplicative unit. The binary operations on permutations
+  map $\mathsf{CPerm}~m₁~m₂$ and $\mathsf{CPerm}~n₁~n₂$ to
+  $\mathsf{CPerm}~(m₁+n₁)~(m₂+n₂)$ and
   $\mathsf{CPerm}~(m₁*n₁)~(m₂*n₂)$ respectively. Their definition
-  relies on the important property that the union or product of
-  vectors denoting permutations distributes over the sequential
-  composition of permutations.
+  relies on the properties that the unions and products of the
+  one-line vectors denoting permutations distribute over the
+  sequential compositions of permutations.
 \end{proof}
 
 \begin{theorem}\label{thm:eqeqperm}
@@ -843,12 +846,15 @@ permutations $\textsc{perm}~m~n$.
 \end{theorem}
 \begin{proof}
   In the process of this proof, we show that every axiom of semirings
-  of types is an equivalence, and thus corresponds to a permutation.
-  Some of the axioms like the associativity of sums gets mapped to the
-  trivial identity permutation.  However, some are axioms reveal
-  interesting structure as permutations; the most notable is that the
+  of types is an equivalence and a permutation.  Some of the axioms
+  like the associativity of sums gets mapped to the trivial identity
+  permutation.  However, some axioms reveal interesting structure when
+  expressed as permutations; the most notable is that the
   commutativity of products maps to a permutation solving the
-  classical problem of in-place matrix transposition.
+  classical problem of in-place matrix transposition:
+  \[
+    \AgdaFunction{swap⋆cauchy}~:~(m~n~:~ℕ)~→~\AgdaFunction{FinVec}~(n~*~m)~(m~*~n)
+  \]
 \end{proof}
 
 Before concluding, we briefly mention that, with the proper Agda
@@ -861,8 +867,9 @@ evocative way as follows.
 \]
 \end{theorem}
 
-This formulation shows that the univalence \emph{postulate} can be
-proved and given a computational interpretation for finite types.
+\noindent This formulation shows that the univalence \emph{postulate}
+can be proved and given a computational interpretation for finite
+types.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Programming with Permutations}
