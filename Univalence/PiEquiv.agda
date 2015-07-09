@@ -53,6 +53,7 @@ c2equiv (c ⊕ c₁) = path⊎ (c2equiv c) (c2equiv c₁)
 c2equiv (c ⊗ c₁) = path× (c2equiv c) (c2equiv c₁)
 
 -- and these are 'coherent'
+-- first with evaluation:
 lemma1 : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (v : ⟦ t₂ ⟧) →
   evalB c v ≡ (sym≃ (c2equiv c)) ⋆ v
 lemma1 PiLevel0.unite₊l v = refl
@@ -96,9 +97,38 @@ lemma1 (c₀ ⊕ c₁) (inj₁ x) = cong inj₁ (lemma1 c₀ x)
 lemma1 (c₀ ⊕ c₁) (inj₂ y) = cong inj₂ (lemma1 c₁ y)
 lemma1 (c₀ ⊗ c₁) (x , y) = cong₂ _,_ (lemma1 c₀ x) (lemma1 c₁ y)
 
+-- and with reverse
+!≡sym≃ : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) →
+  c2equiv (! c) ≡ sym≃ (c2equiv c)
+!≡sym≃ unite₊l = refl
+!≡sym≃ uniti₊l = refl
+!≡sym≃ unite₊r = refl
+!≡sym≃ uniti₊r = refl
+!≡sym≃ PiLevel0.swap₊ = refl
+!≡sym≃ PiLevel0.assocl₊ = refl
+!≡sym≃ PiLevel0.assocr₊ = refl
+!≡sym≃ unite⋆l = refl
+!≡sym≃ uniti⋆l = refl
+!≡sym≃ unite⋆r = refl
+!≡sym≃ uniti⋆r = refl
+!≡sym≃ PiLevel0.swap⋆ = refl
+!≡sym≃ PiLevel0.assocl⋆ = refl
+!≡sym≃ PiLevel0.assocr⋆ = refl
+!≡sym≃ absorbr = refl
+!≡sym≃ absorbl = refl
+!≡sym≃ PiLevel0.factorzr = refl
+!≡sym≃ factorzl = refl
+!≡sym≃ PiLevel0.dist = refl
+!≡sym≃ PiLevel0.factor = refl
+!≡sym≃ PiLevel0.distl = refl
+!≡sym≃ PiLevel0.factorl = refl
+!≡sym≃ id⟷ = refl
+!≡sym≃ (c₀ ◎ c₁) = cong₂ _●_ (!≡sym≃ c₀) (!≡sym≃ c₁) 
+!≡sym≃ (c₀ ⊕ c₁) = cong₂ path⊎ (!≡sym≃ c₀) (!≡sym≃ c₁)
+!≡sym≃ (c₀ ⊗ c₁) = cong₂ path× (!≡sym≃ c₀) (!≡sym≃ c₁)
+
 ----------------------------------------------------------
 
--- c2equiv : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
 cc2equiv : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) →
   c2equiv c₁ ≋ c2equiv c₂
 cc2equiv assoc◎l = eq (λ x → refl) (λ x → refl)
@@ -123,14 +153,14 @@ cc2equiv idl◎l = eq (λ x → refl) (λ x → refl)
 cc2equiv idl◎r = eq (λ x → refl) (λ x → refl)
 cc2equiv idr◎l = eq (λ x → refl) (λ x → refl)
 cc2equiv idr◎r = eq (λ x → refl) (λ x → refl)
-cc2equiv linv◎l = eq {!!} {!!}
+cc2equiv (linv◎l {c = c}) = eq (λ x → {!cong (λ y → (y ● c2equiv c) ⋆ x) (!≡sym≃ c)!}) {!!}
 cc2equiv linv◎r = eq {!!} {!!}
 cc2equiv rinv◎l = eq {!!} {!!}
 cc2equiv rinv◎r = eq {!!} {!!}
-cc2equiv unite₊l⇔l = eq {!!} {!!}
-cc2equiv unite₊l⇔r = eq {!!} {!!}
-cc2equiv uniti₊l⇔l = eq {!!} {!!}
-cc2equiv uniti₊l⇔r = eq {!!} {!!}
+cc2equiv unite₊l⇔l = eq (sym∼ unite₊∘[id,f]≡f∘unite₊) (λ x → refl)
+cc2equiv unite₊l⇔r = eq unite₊∘[id,f]≡f∘unite₊ (λ x → refl)
+cc2equiv uniti₊l⇔l = eq (λ x → refl) unite₊∘[id,f]≡f∘unite₊
+cc2equiv uniti₊l⇔r = eq (λ x → refl) (sym∼ unite₊∘[id,f]≡f∘unite₊)
 cc2equiv unite₊r⇔l = eq {!!} {!!}
 cc2equiv unite₊r⇔r = eq {!!} {!!}
 cc2equiv uniti₊r⇔l = eq {!!} {!!}

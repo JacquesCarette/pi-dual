@@ -2180,13 +2180,15 @@ module Y where
 
 \smallskip 
 
+\jc{it would be nice to remove the leading _⟷_ qualifier as
+it is an artifact how all the pieces were put together
+rather than something essential.}
 \begin{code}
-  swapl₊⇔ :  {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
-             (_⟷_.swap₊ ◎ (c₁ ⊕ c₂)) ⇔' ((c₂ ⊕ c₁) ◎ _⟷_.swap₊)
+  swapl₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
+   (_⟷_.swap₊ ◎ (c₁ ⊕ c₂)) ⇔' ((c₂ ⊕ c₁) ◎ _⟷_.swap₊)
 \end{code}
 
 \smallskip 
-
 
 Pictorially, this 2-level combinator is a 2-path showing how the two
 paths can be transformed to one another. The proof of equivalence can
@@ -2255,21 +2257,39 @@ words that $\sigma_{A,B}$ must commute with $\oplus$.
 %%%%%%%%%%%%
 \subsection{Revised Syntax}
 
-\jc{What needs to be added here is an English description of the
-structure of a proof of being a symmetric rig weak groupoid.
-In other words, lines 63--371 of TypeEquivCat.  A lot of it
-is to show that a lot of things are natural isomorphisms,
-aka pairs of natural transformations; each natural isomorphism
-induces 2 combinators and 4 coherences, where for each
-combinator we need to know it ``commutes'' with building
-that structure, and that the resulting combinators are
-left and right inverses of each other.  Even just
-$\oplus$ being a bifunctor induces 3 coherences.  And then
+The inspiration of symmetric rig groupoids suggested a refactoring of
+$\Pi$ with additional level-1 combinators.  The added
+combinators~\ref{fig:more} are redundant (from an operational
+perspective) exactly because of the coherence conditions.  In addition
+to being critical to the proofs, they are useful when representing
+circuits, leading to smaller programs with fewer redexes.
+
+The big addition of course is the level-2 combinators which are
+collected in Fig.~\ref{fig:more2}. To avoid clutter we omit the names
+of the combinators and only show the signatures.
+
+Even though we know that these combinators come from the
+coherence conditions inherence in the definition of a
+symmetric rig weak groupoid, it would still be nice to
+get a better understanding of what these really say.
+About a third of the combinators come from the definition
+of the various natural isomorphisms ($\alpha_{A,B,C},
+\lambda_{A}, \rho_{A}, \sigma_{A,B}, dₗ, dᵣ, aₗ$ and
+$aᵣ$).  The first $4$ natural isomorphisms actually
+occur twice, once for each of the symmetric
+monoidal structures at play.  Each natural
+isomorphism is composed of 2 natural transformations
+(one in each direction) that must compose to the
+identity.  This in turn induces $4$ coherences laws:
+two \emph{naturality laws} which indicate that the
+combinator commuteswith structure construction, and two which 
+express that the resulting combinators are
+left and right inverses of each other.  But note also that
+there mere desire that 
+$\oplus$ be a bifunctor induces 3 coherence laws.  And then
 of course each ``structure'' (monoidal, braided, symmetric)
-comes with more, culminating with 13 coherences for rig.
-}
-\jc{The rig combinators themselves are not so mysterious.
-I'll write something quick about each below, please refine!}
+comes with more, as outlined in the previous section,
+culminating with 13 additional coherence laws for rig.
 
 The coherence laws for a symmetric rig category, whether
 presented in their full diagrammatic glory or through
@@ -2286,6 +2306,10 @@ distributing (on the right) and then switching the order of
 both products.
 \item[IV] given $(A ⊕ (B ⊕ C)) ⊗ D$, we can either distribute
 then associate, or associate then distribute.
+\item[VI] given $A ⊗ (B ⊗ (C ⊕ D))$, we can either
+associate then distribute, or first do the inner
+distribution, then the outer, and map associativity
+on each term.
 \item[IX] given $(A ⊕ B) ⊗ (C ⊕ D)$, we can either first
 distribute on the left, map right-distribution and finally
 associate, or we can go ``the long way around'' by
@@ -2297,32 +2321,43 @@ give $0$ in equivalent ways
 \item[XI] given $0 ⊗ (A ⊕ B)$, left absorption or
 distribution, then mapping left absorption, followed
 by (additive) left unit are equivalent.
-\item[XII] given $0 * 1$, left absorption or
+\item[XIII] given $0 * 1$, left absorption or
 (multiplicative) right unit are equivalent.
+\item[XV] given $A ⊗ 0$, we can either absorb $0$
+on the left, or commute and absorb $0$ on the right.
+\item[XVI] given $0 ⊗ (A ⊗ B)$, we can either
+absorb $0$ on the left, or associate, and then
+absorb twice.
+\item[XVII] given $A ⊗ (0 ⊗ B)$, the two obvious
+paths to $0$ commute.
+\item[XIX] given $A ⊗ (0 ⊕ B)$, we can either
+eliminate the (additive) identity in the right
+term, or distribute, right absorb $0$ in the
+left term, then eliminate the resulting
+(additive) identity to get to $A ⊗ B$.
+\item[XXIII] Given $1 ⊗ (A ⊕ B)$, we can either
+eliminate the (multiplicative) identity on the
+left or distribute the map left-elimination.
 \end{itemize}
-\jc{and so on, as I ran out of time!}
 
-The inspiration of symmetric rig groupoids suggested a refactoring of
-$\Pi$ with additional level-1 combinators.  The added
-combinators~\ref{fig:more} are redundant (from an operational
-perspective) exactly because of the coherence conditions.  In addition
-to being critical to the proofs, they are useful when representing
-circuits leading to smaller programs with fewer redexes.
+Going through the details of the proof of the coherence theorem
+in~\citet{laplaza} with a ``modern'' eye, one cannot help but
+think of Knuth-Bendix completion.  Although it is known that
+coherence laws for some categorical structures can be obtained
+in this way~\cite{Beke}, it is also known that in the presence
+of certain structures (such as symmetry), Knuth-Bendix completion
+will not terminate.  It would be interesting to know if there is
+indeed a systematic way to obtain these laws; we asked the wider
+mathematical community~\cite{mathoverflowq}, but did not get any
+answers.
 
-The big addition of course is the level-2 combinators which are
-collected in Fig.~\ref{fig:more2}. To avoid clutter we omit the names
-of the combinators and only show the signatures.
-
-\jc{I suggest adding the following laplaza combinators to that table:
-I, IV, IX (sorry), X ans XVII.  Also a short paragraph explaining what they
-do.  For some of them, I suggest digging into Data.SumProd.Properties
-and showing some of these too (just as signatures).  The later ones
-are much better.  Anything with a proj in the statement is "wrong"
-(it builds in some premature beta-redexes in the statement), so 
-don't pick those.  But they are theorems which are not in Agda's
-standard library.  Most of the properties of sums and products 
-(aka coherences) were already there, but not these, which are
-interesting interactions between them.}
+It is worth noting that most (but not all) of the properties of
+$⊎$ were already in Agda's standard library (in
+\AgdaModule{Data.Sum.Properties} to be precise), whereas all
+properties of $×$ were immediately provable due to $η$ expansion.
+None of the mixed properties involved with distributivity
+and absorption were present, although the proof of all of them
+was very straightforward.
 
 \begin{figure*}
 \[\begin{array}{cc}
@@ -2444,7 +2479,7 @@ when both sides are well-typed. The small-step nature of the rules
 should allow us to make efficient optimizers following the experience
 in functional languages~\citep{PeytonJones:1998:TOH:299619.299621}. In
 contrast the coherence conditions are much smaller in number and many
-them express invariants about much bigger ``chunks.'' From our small
+then express invariants about much bigger ``chunks.'' From our small
 experiments, an effective way to use the rules is to fix a canonical
 representation of circuits that has the ``right'' properties and use
 the rules in a directed fashion to produce that canonical
@@ -2454,31 +2489,35 @@ various desired properties. Of course, finding a rewriting procedure
 that makes progress towards the canonical representation is far from
 trivial.
 
-\amr{I now have an accurate count: level 1 of Pi has 110 combinators.
-  And I did find a decent phrasing of soundness at level 1 (which is
-  where I got that number) which is non-trivial to prove.}
+It should be noted that a few of the ``raw'' signatures in
+Fig.~\ref{fig:more2} are slightly misleading, as we omit the
+signature of the underlying combinators.  For example,
+$\identlt \fatsemi c₂ & \isoone & (c₁ ⊗ c₂) \fatsemi \identlt$
+hides the fact that $c₁$ here is restricted to have signature
+$c₁ : \AgdaInductiveConstructor{ZERO} ⟷ \AgdaInductiveConstructor{ZERO}$.
+The reader should consult the code for full details.
 
-\amr{However, it did let me observe one thing: we have 2! which says
-  that given (c <-> d), we can get (d <-> c).  What we don't have, and
-  SHOULD, is 2flip which would say that given (c <-> d), we can get (!
-  c <-> ! d).  This is "obviously true".  More, we also ought to be
-  able to prove (easily!) that all (e : c <-> d) 2! (2flip e) == 2flip
-  (2! e) where I really mean == there.}
-
+% \amr{However, it did let me observe one thing: we have 2! which says
+%  that given (c <-> d), we can get (d <-> c).  What we don't have, and
+%  SHOULD, is 2flip which would say that given (c <-> d), we can get (!
+%  c <-> ! d).  This is "obviously true".  More, we also ought to be
+%  able to prove (easily!) that all (e : c <-> d) 2! (2flip e) == 2flip
+%  (2! e) where I really mean == there.}
+%
 \amr{One of the interesting conclusions of the coherence laws (see the
   comments in the file above) is that it forces all (putative)
   elements of bot to be equal.  This comes from the coherence law for
   the two ways of proving that 0 * 0 = 0.}
 
-\amr{Note that a few of those "id" in there are actually "id<-> {ZERO}
-  {ZERO}", that is very important.  Most of the laws having to do with
-  absorb0 have some occurrences of both kinds of id in their
-  signature, which made figuring them out very challenging!  Same with
-  laws involving factor0}
-
-\amr{Similarly, the c1 in the identl* exchange law MUST map between ONE
-  (same with identr*).  In the same vein, c1 in the identl+ and
-  identr+ laws must involve ZERO.}
+% \amr{Note that a few of those "id" in there are actually "id<-> {ZERO}
+%  {ZERO}", that is very important.  Most of the laws having to do with
+%  absorb0 have some occurrences of both kinds of id in their
+%  signature, which made figuring them out very challenging!  Same with
+%  laws involving factor0}
+%
+%\amr{Similarly, the c1 in the identl* exchange law MUST map between ONE
+%  (same with identr*).  In the same vein, c1 in the identl+ and
+%  identr+ laws must involve ZERO.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Problem with Higher-Order Functions}
