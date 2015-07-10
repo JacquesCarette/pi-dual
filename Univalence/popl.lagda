@@ -2177,134 +2177,6 @@ sound and complete metalanguage for reasoning about equivalences of
 programs written in the lower level language.
 
 %%%%%%%%%%%%
-\subsection{1-Paths and 2-Paths: Example}
-
-Given two $\Pi$-combinators:
-\AgdaHide{
-\begin{code}
-postulate
-\end{code}
-}
-
-\smallskip 
-
-\begin{code}
- c₁ : {B C : U} →  B ⟷ C
- c₂ : {A D : U} →  A ⟷ D
-\end{code}
-
-\smallskip 
-
-\noindent we can build two larger combinators $p_1$ and $p_2$,
-
-\smallskip 
-
-\begin{code}
-p₁ p₂ : {A B C D : U} → PLUS A B ⟷ PLUS C D
-p₁ = _⟷_.swap₊ ◎ (c₁ ⊕ c₂)
-p₂ = (c₂ ⊕ c₁) ◎ _⟷_.swap₊
-\end{code}
-
-\smallskip 
-
-\noindent As reversible circuits, $p_1$ and $p_2$ evaluate as
-follows. If $p_1$ is given the value $\inl{a}$, it first transforms it
-to $\inr{a}$, and then passes it to $c₂$. If $p_2$ is given the value
-$\inl{a}$, it first passes it to $c₂$ and then flips the tag of the
-result. Since $c₂$ is functorial, it must act polymorphically on its
-input and hence, it must be the case that the two evaluations produce
-the same result. The situation for the other possible input value is
-symmetric. This extensional reasoning is embedded once and for all in
-the proofs of coherence and distilled in a 2-level combinator:
-
-\[\begin{array}{rcl}
-\AgdaInductiveConstructor{swapl₊⇔} & \AgdaSymbol{:} &
-  \AgdaSymbol{\{}\AgdaBound{t₁}~\AgdaBound{t₂}~
-  \AgdaBound{t₃}~\AgdaBound{t₄}~\AgdaSymbol{:}~\AgdaDatatype{U}\AgdaSymbol{\}}~ 
-  \AgdaSymbol{\{}\AgdaBound{c₁}~\AgdaSymbol{:}~\AgdaBound{t₁}~\AgdaDatatype{⟷}~\AgdaBound{t₂}\AgdaSymbol{\}}~ 
-  \AgdaSymbol{\{}\AgdaBound{c₂}~\AgdaSymbol{:}~\AgdaBound{t₃}~\AgdaDatatype{⟷}~\AgdaBound{t₄}\AgdaSymbol{\}}~
-  \AgdaSymbol{→} \\
-&& \AgdaSymbol{(}
-  \AgdaInductiveConstructor{swap₊}~\AgdaInductiveConstructor{◎}~
-  \AgdaSymbol{(}\AgdaBound{c₁}~\AgdaInductiveConstructor{⊕}~\AgdaBound{c₂}\AgdaSymbol{))}~
-  \AgdaDatatype{⇔}~ 
-  \AgdaSymbol{((}
-  \AgdaBound{c₂}~\AgdaInductiveConstructor{⊕}~\AgdaBound{c₁}\AgdaSymbol{)}~
-  \AgdaInductiveConstructor{◎}~\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}
-\end{array}\]
-
-Pictorially, this 2-level combinator is a 2-path showing how the two
-paths can be transformed to one another. The proof of equivalence can
-be visualized by simply imagining the connections as wires whose
-endpoints are fixed: holding the wires on the right side of the top
-path and flipping them produces the connection in the bottom path:
-
-\begin{center}
-\begin{tikzpicture}[scale=0.6,every node/.style={scale=0.6}]
-  \draw[<->,double,red,thick] (2.25,-1.5) -- (2.25,-2.5) ;
-  \node at (3.3,-2) {$\AgdaInductiveConstructor{swapl₊⇔}$} ;
-  \node at (2.5,-1.3) {$\AgdaSymbol{((}
-    \AgdaBound{c₂}~\AgdaInductiveConstructor{⊕}~\AgdaBound{c₁}\AgdaSymbol{)}~
-     \AgdaInductiveConstructor{◎}~\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}$};
-  \node at (2.5,-2.7) {$\AgdaSymbol{(}
-  \AgdaInductiveConstructor{swap₊}~\AgdaInductiveConstructor{◎}~
-  \AgdaSymbol{(}
-  \AgdaBound{c₁}~\AgdaInductiveConstructor{⊕}~\AgdaBound{c₂}\AgdaSymbol{))}$};
-
-  \draw (-2,-2) ellipse (0.5cm and 1cm);
-  \draw[fill] (-2,-1.5) circle [radius=0.025];
-  \node[below] at (-2.1,-1.5) {$A$};
-  \draw[fill] (-2,-2.5) circle [radius=0.025];
-  \node[below] at (-2.1,-2.5) {$B$};
-
-  \draw (6.5,-2) ellipse (0.5cm and 1cm);
-  \draw[fill] (6.5,-1.5) circle [radius=0.025];
-  \node[below] at (6.7,-1.5) {$C$};
-  \draw[fill] (6.5,-2.5) circle [radius=0.025];
-  \node[below] at (6.7,-2.5) {$D$};
-
-  \draw (-2,-1.5) to[bend left] (1,0.5) ;
-  \draw (-2,-2.5) to[bend left] (1,-0.5) ;
-  \draw[->] (3.5,0.5) to[bend left] (6.5,-1.45) ;
-  \draw[->] (3.5,-0.5) to[bend left] (6.5,-2.45) ;
-
-  \draw (-2,-1.5) to[bend right] (1,-3.5) ;
-  \draw (-2,-2.5) to[bend right] (1,-4.5) ;
-  \draw[->] (3.5,-3.5) to[bend right] (6.5,-1.55) ;
-  \draw[->] (3.5,-4.5) to[bend right] (6.5,-2.55) ;
-
-  \draw     (2.5,-3)  -- (3.5,-3) -- (3.5,-4) -- (2.5,-4) -- cycle ;
-  \draw     (2.5,-4)  -- (3.5,-4) -- (3.5,-5) -- (2.5,-5) -- cycle ;
-
-  \draw     (1,1)  -- (2,1) -- (2,0) -- (1,0) -- cycle ;
-  \draw     (1,0)  -- (2,0) -- (2,-1) -- (1,-1) -- cycle ;
-
-  \node at (3,-3.5) {c₁};
-  \node at (3,-4.5) {c₂};
-
-  \node at (1.5,0.5) {c₂};
-  \node at (1.5,-0.5) {c₁};
-
-  \draw     (2,0.5)  -- (2.5,0.5)  ;
-  \draw     (2,-0.5) -- (2.5,-0.5) ; 
-
-  \draw     (2.5,0.5)  -- (3.5,-0.5)  ;
-  \draw     (2.5,-0.5) -- (3.5,0.5) ; 
-
-  \draw     (1,-3.5)  -- (2,-4.5)    ;
-  \draw     (1,-4.5) -- (2,-3.5)   ; 
-
-  \draw     (2,-3.5)  -- (2.5,-3.5)    ; 
-  \draw     (2,-4.5) -- (2.5,-4.5)   ; 
-
-\end{tikzpicture}
-\end{center}
-
-Categorically speaking, this combinator expresses exactly that
-the braiding $\sigma_{A,B}$ is a natural transformation, in other
-words that $\sigma_{A,B}$ must commute with $\oplus$.
-
-%%%%%%%%%%%%
 \subsection{Revised Syntax: 1-Paths}
 \label {fig:more}
 
@@ -2511,6 +2383,131 @@ axioms are not independent, just like Laplaza’s conditions.}
 %%%%%%%%%%%%
 \subsection{A Syntactic 2-Paths Circuit Optimizer}
  
+Given two $\Pi$-combinators:
+\AgdaHide{
+\begin{code}
+postulate
+\end{code}
+}
+
+\smallskip 
+
+\begin{code}
+ c₁ : {B C : U} →  B ⟷ C
+ c₂ : {A D : U} →  A ⟷ D
+\end{code}
+
+\smallskip 
+
+\noindent we can build two larger combinators $p_1$ and $p_2$,
+
+\smallskip 
+
+\begin{code}
+p₁ p₂ : {A B C D : U} → PLUS A B ⟷ PLUS C D
+p₁ = _⟷_.swap₊ ◎ (c₁ ⊕ c₂)
+p₂ = (c₂ ⊕ c₁) ◎ _⟷_.swap₊
+\end{code}
+
+\smallskip 
+
+\noindent As reversible circuits, $p_1$ and $p_2$ evaluate as
+follows. If $p_1$ is given the value $\inl{a}$, it first transforms it
+to $\inr{a}$, and then passes it to $c₂$. If $p_2$ is given the value
+$\inl{a}$, it first passes it to $c₂$ and then flips the tag of the
+result. Since $c₂$ is functorial, it must act polymorphically on its
+input and hence, it must be the case that the two evaluations produce
+the same result. The situation for the other possible input value is
+symmetric. This extensional reasoning is embedded once and for all in
+the proofs of coherence and distilled in a 2-level combinator:
+
+\[\begin{array}{rcl}
+\AgdaInductiveConstructor{swapl₊⇔} & \AgdaSymbol{:} &
+  \AgdaSymbol{\{}\AgdaBound{t₁}~\AgdaBound{t₂}~
+  \AgdaBound{t₃}~\AgdaBound{t₄}~\AgdaSymbol{:}~\AgdaDatatype{U}\AgdaSymbol{\}}~ 
+  \AgdaSymbol{\{}\AgdaBound{c₁}~\AgdaSymbol{:}~\AgdaBound{t₁}~\AgdaDatatype{⟷}~\AgdaBound{t₂}\AgdaSymbol{\}}~ 
+  \AgdaSymbol{\{}\AgdaBound{c₂}~\AgdaSymbol{:}~\AgdaBound{t₃}~\AgdaDatatype{⟷}~\AgdaBound{t₄}\AgdaSymbol{\}}~
+  \AgdaSymbol{→} \\
+&& \AgdaSymbol{(}
+  \AgdaInductiveConstructor{swap₊}~\AgdaInductiveConstructor{◎}~
+  \AgdaSymbol{(}\AgdaBound{c₁}~\AgdaInductiveConstructor{⊕}~\AgdaBound{c₂}\AgdaSymbol{))}~
+  \AgdaDatatype{⇔}~ 
+  \AgdaSymbol{((}
+  \AgdaBound{c₂}~\AgdaInductiveConstructor{⊕}~\AgdaBound{c₁}\AgdaSymbol{)}~
+  \AgdaInductiveConstructor{◎}~\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}
+\end{array}\]
+
+Pictorially, this 2-level combinator is a 2-path showing how the two
+paths can be transformed to one another. The proof of equivalence can
+be visualized by simply imagining the connections as wires whose
+endpoints are fixed: holding the wires on the right side of the top
+path and flipping them produces the connection in the bottom path:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.6,every node/.style={scale=0.6}]
+  \draw[<->,double,red,thick] (2.25,-1.5) -- (2.25,-2.5) ;
+  \node at (3.3,-2) {$\AgdaInductiveConstructor{swapl₊⇔}$} ;
+  \node at (2.5,-1.3) {$\AgdaSymbol{((}
+    \AgdaBound{c₂}~\AgdaInductiveConstructor{⊕}~\AgdaBound{c₁}\AgdaSymbol{)}~
+     \AgdaInductiveConstructor{◎}~\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}$};
+  \node at (2.5,-2.7) {$\AgdaSymbol{(}
+  \AgdaInductiveConstructor{swap₊}~\AgdaInductiveConstructor{◎}~
+  \AgdaSymbol{(}
+  \AgdaBound{c₁}~\AgdaInductiveConstructor{⊕}~\AgdaBound{c₂}\AgdaSymbol{))}$};
+
+  \draw (-2,-2) ellipse (0.5cm and 1cm);
+  \draw[fill] (-2,-1.5) circle [radius=0.025];
+  \node[below] at (-2.1,-1.5) {$A$};
+  \draw[fill] (-2,-2.5) circle [radius=0.025];
+  \node[below] at (-2.1,-2.5) {$B$};
+
+  \draw (6.5,-2) ellipse (0.5cm and 1cm);
+  \draw[fill] (6.5,-1.5) circle [radius=0.025];
+  \node[below] at (6.7,-1.5) {$C$};
+  \draw[fill] (6.5,-2.5) circle [radius=0.025];
+  \node[below] at (6.7,-2.5) {$D$};
+
+  \draw (-2,-1.5) to[bend left] (1,0.5) ;
+  \draw (-2,-2.5) to[bend left] (1,-0.5) ;
+  \draw[->] (3.5,0.5) to[bend left] (6.5,-1.45) ;
+  \draw[->] (3.5,-0.5) to[bend left] (6.5,-2.45) ;
+
+  \draw (-2,-1.5) to[bend right] (1,-3.5) ;
+  \draw (-2,-2.5) to[bend right] (1,-4.5) ;
+  \draw[->] (3.5,-3.5) to[bend right] (6.5,-1.55) ;
+  \draw[->] (3.5,-4.5) to[bend right] (6.5,-2.55) ;
+
+  \draw     (2.5,-3)  -- (3.5,-3) -- (3.5,-4) -- (2.5,-4) -- cycle ;
+  \draw     (2.5,-4)  -- (3.5,-4) -- (3.5,-5) -- (2.5,-5) -- cycle ;
+
+  \draw     (1,1)  -- (2,1) -- (2,0) -- (1,0) -- cycle ;
+  \draw     (1,0)  -- (2,0) -- (2,-1) -- (1,-1) -- cycle ;
+
+  \node at (3,-3.5) {c₁};
+  \node at (3,-4.5) {c₂};
+
+  \node at (1.5,0.5) {c₂};
+  \node at (1.5,-0.5) {c₁};
+
+  \draw     (2,0.5)  -- (2.5,0.5)  ;
+  \draw     (2,-0.5) -- (2.5,-0.5) ; 
+
+  \draw     (2.5,0.5)  -- (3.5,-0.5)  ;
+  \draw     (2.5,-0.5) -- (3.5,0.5) ; 
+
+  \draw     (1,-3.5)  -- (2,-4.5)    ;
+  \draw     (1,-4.5) -- (2,-3.5)   ; 
+
+  \draw     (2,-3.5)  -- (2.5,-3.5)    ; 
+  \draw     (2,-4.5) -- (2.5,-4.5)   ; 
+
+\end{tikzpicture}
+\end{center}
+
+Categorically speaking, this combinator expresses exactly that
+the braiding $\sigma_{A,B}$ is a natural transformation, in other
+words that $\sigma_{A,B}$ must commute with $\oplus$.
+
 As Fig.~\ref{fig:more2} illustrates, we have rules to manipulate code
 fragments rewriting them in a small-step fashion. The rules apply only
 when both sides are well-typed. The small-step nature of the rules
@@ -2526,6 +2523,11 @@ survey several possible canonical representations that trade-off
 various desired properties. Of course, finding a rewriting procedure
 that makes progress towards the canonical representation is far from
 trivial.
+
+\amr{Viewing 2 path are transformations on permutations on finite sets
+  or as transformations of circuits drawn in a diagrammatic way like
+  in 2path figure swap makes them very intuitive: if you see wires
+  etc. connection to topology etc.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Problem with Higher-Order Functions}
