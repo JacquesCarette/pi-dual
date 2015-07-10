@@ -135,12 +135,12 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
           (swap⋆ ◎ (c₁ ⊗ c₂)) ⇔ ((c₂ ⊗ c₁) ◎ swap⋆)
   swapr⋆⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
           ((c₂ ⊗ c₁) ◎ swap⋆) ⇔ (swap⋆ ◎ (c₁ ⊗ c₂))
-  swapfl⋆⇔ : {t₁ t₂ t₃ : U} → 
+{-   swapfl⋆⇔ : {t₁ t₂ t₃ : U} → 
           (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor) ⇔ 
           (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷))
   swapfr⋆⇔ : {t₁ t₂ t₃ : U} → 
           (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷)) ⇔ 
-         (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor)
+         (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor) -}
   id⇔     : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ c
   trans⇔  : {t₁ t₂ : U} {c₁ c₂ c₃ : t₁ ⟷ t₂} → 
          (c₁ ⇔ c₂) → (c₂ ⇔ c₃) → (c₁ ⇔ c₃)
@@ -340,8 +340,8 @@ _▤ c = id⇔
 2! unitir⋆⇔r = unitil⋆⇔r
 2! swapl⋆⇔ = swapr⋆⇔
 2! swapr⋆⇔ = swapl⋆⇔
-2! swapfl⋆⇔ = swapfr⋆⇔
-2! swapfr⋆⇔ = swapfl⋆⇔
+-- 2! swapfl⋆⇔ = swapfr⋆⇔
+-- 2! swapfr⋆⇔ = swapfl⋆⇔
 2! id⇔ = id⇔
 2! (α ⊡ β) = (2! α) ⊡ (2! β)
 2! (trans⇔ α β) = trans⇔ (2! β) (2! α)
