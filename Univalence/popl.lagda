@@ -8,6 +8,7 @@
 \usepackage{tikz}
 \usetikzlibrary{cd}
 \usetikzlibrary{quotes}
+\usepackage{adjustbox}
 \usepackage{amsthm}
 \usepackage{latexsym}
 \usepackage{courier}
@@ -979,8 +980,8 @@ sets on the right:
 
 \smallskip 
 
-\begin{tabular}{cc}
-\begin{minipage}{0.25\textwidth}
+\begin{tabular}{@{\kern-3em}cc}
+\begin{minipage}[t]{0.25\textwidth}
 \begin{code}
 BOOL : U
 BOOL = PLUS ONE ONE
@@ -990,7 +991,7 @@ NOT₁ = swap₊
 \end{code}
 \end{minipage}
 & 
-\begin{tikzpicture}[scale=0.3,every node/.style={scale=0.3}]
+\adjustbox{valign=t}{\begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
   \draw (0,0) ellipse (1cm and 2cm);
   \draw[fill] (0,1) circle [radius=0.025];
   \node[below] at (0,1) {F};
@@ -1009,7 +1010,7 @@ NOT₁ = swap₊
   \node[below] at (6,1) {F};
   \draw[fill] (6,-1) circle [radius=0.025];
   \node[below] at (6,-1) {T};
-\end{tikzpicture}
+\end{tikzpicture}}
 \end{tabular}
 
 \smallskip  
@@ -1021,8 +1022,8 @@ on finite sets:
 
 \smallskip 
 
-\begin{tabular}{c@{\!\!\!}c}
-\begin{minipage}{0.25\textwidth}
+\begin{tabular}{@{\kern-3em}c@{\!\!\!}c}
+\begin{minipage}[t]{0.25\textwidth}
 \begin{code}
 NOT₂ : BOOL ⟷ BOOL
 NOT₂ =
@@ -1034,7 +1035,7 @@ NOT₂ =
 \end{code}
 \end{minipage}
 & 
-\begin{tikzpicture}[scale=0.38,every node/.style={scale=0.38}]
+\adjustbox{valign=t}{\begin{tikzpicture}[scale=0.53,every node/.style={scale=0.53}]
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
   \node[below] at (1,2) {()};
@@ -1083,8 +1084,10 @@ NOT₂ =
   \draw[fill] (8,-0.5) circle [radius=0.025];
   \node[below] at (8,-0.5) {T};
 
-\end{tikzpicture}
+\end{tikzpicture}}
 \end{tabular}
+
+\smallskip
 
 Writing circuits using the raw syntax for combinators is clearly
 tedious. In other work, one can find a compiler from a conventional
@@ -2033,7 +2036,7 @@ endpoints are fixed: holding the wires on the right side of the top
 path and flipping them produces the connection in the bottom path:
 
 \begin{center}
-\begin{tikzpicture}[scale=0.6,every node/.style={scale=0.6}]
+\begin{tikzpicture}[scale=0.9,every node/.style={scale=0.9}]
   \draw[<->,double,red,thick] (2.25,-1.5) -- (2.25,-2.5) ;
   \node at (3.3,-2) {$\AgdaInductiveConstructor{swapl₊⇔}$} ;
   \node at (2.5,-1.3) {$\AgdaSymbol{((}
@@ -2117,6 +2120,20 @@ trivial.
   or as transformations of circuits drawn in a diagrammatic way like
   in 2path figure swap makes them very intuitive: if you see wires
   etc. connection to topology etc.}
+
+\amr{Of course, when it comes to computing with diagrams, the first thing you have to make precise is exactly what you mean by "diagram". In Joyal \& Street's picture, this literally a geometric object, i.e. some points and lines in space. This works very well, and pretty much exactly formalises what happens when you do a pen-and-paper proof involving string diagrams. However, when it comes to mechanising proofs, you need some way to represent a string diagram as a data structure of some kind. From here, there seem to be a few approaches:
+
+(1: combinatoric) its a graph with some extra bells and whistles
+(2: syntactic) its a convenient way of writing down some kind of term
+(3: "lego" style) its a collection of tiles, connected together on a 2D plane
+
+Point of view (1) is basically what Quantomatic is built on. "String graphs" aka "open-graphs" give a combinatoric way of working with string diagrams, which is sound and complete with respect to (traced) symmetric monoidal categories. See arXiv:1011.4114 for details of how we did this.
+
+Naiively, point of view (2) is that a diagram represents an equivalence class of expressions in the syntax of a monoidal category, which is basically back to where we started. However, there are more convenient syntaxes, which are much closer in spirit to the diagrams. Lately, we've had a lot of success in connected with abstract tensor notation, which came from Penrose. See g. arXiv:1308.3586 and arXiv:1412.8552.
+
+Point of view (3) is the one espoused by the 2D/higher-dimensional rewriting people (e.g. Yves Lafont and Samuel Mimram). It is also (very entertainingly) used in Pawel Sobocinski's blog: http://graphicallinearalgebra.net .
+
+This eliminates the need for the interchange law, but keeps pretty much everything else "rigid". This benefits from being able to consider more general categories, but is less well-behaved from the point of view of rewriting. For example as Lafont/Mimram point out, even finite rewrite systems can generate infinite sets of critical pairs.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Problem with Higher-Order Functions}
