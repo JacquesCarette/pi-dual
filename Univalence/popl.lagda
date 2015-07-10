@@ -1405,7 +1405,7 @@ sharing the same source and target relate two each other.
 \\
 & A \otimes B
 \end{tikzcd}
-\caption{\label{fig:mon}Pengaton and triangle diagrams.}
+\caption{\label{fig:mon}Pentagon and triangle diagrams.}
 \end{figure*}
 
 %%%%%%%%%%%%
