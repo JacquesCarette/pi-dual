@@ -2895,7 +2895,7 @@ notion of interest.\footnote{The $\lambda$-calculus is not even
 suitable for keeping track of computational resources; linear
 logic~\citep{Girard87tcs} is a much better framework for that purpose
 but it does not go far enough as it only tracks ``multiplicative
-resources.''~\citep{superstructural}} Currently, these reversible
+resources''~\citep{superstructural}.} Currently, these reversible
 functions are a secondary notion defined with reference to the full
 $\lambda$-calculus in what appears to be a detour. In more detail,
 current constructions start with the class of all functions $A
