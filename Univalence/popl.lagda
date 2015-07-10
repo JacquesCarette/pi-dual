@@ -2510,6 +2510,10 @@ for full details.
   elements of bot to be equal.  This comes from the coherence law for
   the two ways of proving that 0 * 0 = 0.}
 
+\amr{swapfl* and swapfr* were never used, so I removed them (commented
+them out of PiLevel1).I’d lean towards leaving it and saying that the
+axioms are not independent, just like Laplaza’s conditions.}
+
 % \amr{Note that a few of those "id" in there are actually "id<-> {ZERO}
 %  {ZERO}", that is very important.  Most of the laws having to do with
 %  absorb0 have some occurrences of both kinds of id in their
