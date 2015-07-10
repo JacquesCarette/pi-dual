@@ -94,6 +94,9 @@ _⋆_ : {A B : Set} → (A ≃ B) → (x : A) → B
 p∘!p≡id : {A B : Set} {p : A ≃ B} → (_⋆_ (trans≃ p (sym≃ p))) ∼ (_⋆_ id≃)
 p∘!p≡id {p = f , mkqinv q _ β} = β
 
+!p∘p≡id : {A B : Set} {p : A ≃ B} → (_⋆_ (trans≃ (sym≃ p) p)) ∼ (_⋆_ id≃)
+!p∘p≡id {p = p} = p∘!p≡id {p = sym≃ p}
+
 -- equivalences are injective
 
 inj≃ : {A B : Set} → (eq : A ≃ B) → (x y : A) → (eq ⋆ x ≡ eq ⋆ y → x ≡ y)

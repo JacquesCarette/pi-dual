@@ -128,6 +128,20 @@ lemma1 (c₀ ⊗ c₁) (x , y) = cong₂ _,_ (lemma1 c₀ x) (lemma1 c₁ y)
 !≡sym≃ (c₀ ⊕ c₁) = cong₂ path⊎ (!≡sym≃ c₀) (!≡sym≃ c₁)
 !≡sym≃ (c₀ ⊗ c₁) = cong₂ path× (!≡sym≃ c₀) (!≡sym≃ c₁)
 
+left-inv : {t₁ t₂ : U} (c : t₁ ⟷ t₂) →
+  (c2equiv (! c) ● c2equiv c) ≋ idequiv
+left-inv c =
+  let p = c2equiv c in
+  eq (λ x → trans (cong (λ y → (y ● p) ⋆ x) (!≡sym≃ c)) (p∘!p≡id {p = p} x))
+     (λ x → trans (cong (λ y → ((sym≃ p) ● (sym≃ y)) ⋆ x) (!≡sym≃ c)) (!p∘p≡id {p = sym≃ p} x))
+
+right-inv : {t₁ t₂ : U} (c : t₁ ⟷ t₂) →
+  (c2equiv c ● c2equiv (! c)) ≋ idequiv
+right-inv c =
+  let p = c2equiv c in
+  eq (λ x → trans (cong (λ y → (p ● y) ⋆ x) (!≡sym≃ c)) (!p∘p≡id {p = p} x))
+     (λ x → trans (cong (λ y → ((sym≃ y) ● (sym≃ p)) ⋆ x) (!≡sym≃ c)) (p∘!p≡id {p = sym≃ p} x))
+
 ----------------------------------------------------------
 
 cc2equiv : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) →
@@ -154,10 +168,10 @@ cc2equiv idl◎l = eq (λ x → refl) (λ x → refl)
 cc2equiv idl◎r = eq (λ x → refl) (λ x → refl)
 cc2equiv idr◎l = eq (λ x → refl) (λ x → refl)
 cc2equiv idr◎r = eq (λ x → refl) (λ x → refl)
-cc2equiv (linv◎l {c = c}) = eq (λ x → {!cong (λ y → (y ● c2equiv c) ⋆ x) (!≡sym≃ c)!}) {!!}
-cc2equiv linv◎r = eq {!!} {!!}
-cc2equiv rinv◎l = eq {!!} {!!}
-cc2equiv rinv◎r = eq {!!} {!!}
+cc2equiv (linv◎l {c = c}) = left-inv c
+cc2equiv (linv◎r {c = c}) = sym≋ (left-inv c)
+cc2equiv (rinv◎l {c = c}) = right-inv c
+cc2equiv (rinv◎r {c = c}) = sym≋ (right-inv c)
 cc2equiv unite₊l⇔l = eq (sym∼ unite₊∘[id,f]≡f∘unite₊) (λ x → refl)
 cc2equiv unite₊l⇔r = eq unite₊∘[id,f]≡f∘unite₊ (λ x → refl)
 cc2equiv uniti₊l⇔l = eq (λ x → refl) unite₊∘[id,f]≡f∘unite₊
