@@ -1557,15 +1557,6 @@ A \emph{symmetric rig groupoid} is a symmetric rig category in which
 every morphism is invertible.
 \end{definition}
 
-The coherence conditions for rig categories were worked out by
-\citet{laplaza}. Pages 31-35 of his paper report 24 coherence
-conditions that vary from simple diagrams to one that includes 9 nodes
-showing that two distinct ways of simplifying $(A ⊕ B) ⊗ (C ⊕ D)$ to
-$(((A ⊗ C) ⊕ (B ⊗ C)) ⊕ (A ⊗ D)) ⊕ (B ⊗ D)$ commute. The 24 coherence
-conditions are not independent which somewhat simplifies the situation
-and allows us to prove that our structures satisfy the coherence
-conditions in a more economical way.
-
 % \begin{figure*}
 % \AgdaHide{
 % \begin{code}
@@ -1977,19 +1968,71 @@ conditions in a more economical way.
 % \caption{\label{fig:terig}Symmetric Rig Groupoid of Type Equivalences}
 % \end{figure*}
  
-\begin{figure}
-\[\begin{array}{rrcll}
-\identlsp :&  \tau + 0 & \iso & \tau &: \identrsp \\
-\identlst :&  \tau * 1 & \iso & \tau &: \identrst \\
+The coherence conditions for rig categories were worked out by
+\citet{laplaza}. Pages 31-35 of his paper report 24 coherence
+conditions numbered I to XXIV that vary from simple diagrams to quite
+complicated ones including a diagram with 9 nodes showing that two
+distinct ways of simplifying $(A ⊕ B) ⊗ (C ⊕ D)$ to
+$(((A ⊗ C) ⊕ (B ⊗ C)) ⊕ (A ⊗ D)) ⊕ (B ⊗ D)$ commute. The 24 coherence
+conditions are however not independent and it is sufficient to verify
+one of various smaller subsets, to be chosen depending on the
+situation.  Generally speaking, the coherence laws appear rather
+obscure but, as shown below for many of them, they can be
+``unformalized'' to relatively understandable statements:
+\begin{itemize}
+\item[I] given $A ⊗ (B ⊕ C)$, swapping $B$ and $C$ then distributing
+  (on the left) is the same as first distributing, then swapping the
+  two summands;
+\item[II] given $(A ⊕ B) ⊗ C$, first switching the order of the
+  products then distributing (on the left) is the same as distributing
+  (on the right) and then switching the order of both products;
+\item[IV] given $(A ⊕ (B ⊕ C)) ⊗ D$, we can either distribute then
+  associate, or associate then distribute;
+\item[VI] given $A ⊗ (B ⊗ (C ⊕ D))$, we can either associate then
+  distribute, or first do the inner distribution, then the outer, and
+  map associativity on each term;
+\item[IX] given $(A ⊕ B) ⊗ (C ⊕ D)$, we can either first distribute on
+  the left, map right-distribution and finally associate, or we can go
+  ``the long way around'' by right-distributing first, then mapping
+  left-distribution, and then a long chain of administrative shuffles
+  to get to the same point;
+\item[X] given $0 ⊗ 0$, left or right absorption both give $0$ in
+  equivalent ways;
+\item[XI] given $0 ⊗ (A ⊕ B)$, left absorption or distribution, then
+  mapping left absorption, followed by (additive) left unit are
+  equivalent;
+\item[XIII] given $0 * 1$, left absorption or (multiplicative) right
+  unit are equivalent;
+\item[XV] given $A ⊗ 0$, we can either absorb $0$ on the left, or
+  commute and absorb $0$ on the right;
+\item[XVI] given $0 ⊗ (A ⊗ B)$, we can either absorb $0$ on the left,
+  or associate, and then absorb twice;
+\item[XVII] given $A ⊗ (0 ⊗ B)$, the two obvious paths to $0$ commute;
+\item[XIX] given $A ⊗ (0 ⊕ B)$, we can either eliminate the (additive)
+  identity in the right term, or distribute, right absorb $0$ in the
+  left term, then eliminate the resulting (additive) identity to get
+  to $A ⊗ B$;
+\item[XXIII] Given $1 ⊗ (A ⊕ B)$, we can either eliminate the
+  (multiplicative) identity on the left or distribute the map
+  left-elimination.
+\end{itemize}
 
-\absorbr :&~ 0 * \tau & \iso & 0 &: \factorzl \\
-\absorbl :&~ \tau * 0 & \iso & 0 &: \factorzr \\
+Going through the details of the proof of the coherence theorem
+in~\citet{laplaza} with a ``modern'' eye, one cannot help but think of
+Knuth-Bendix completion.  Although it is known that the coherence laws
+for some categorical structures can be systematically derived in this
+way~\cite{Beke2011728}, it is also known that in the presence of
+certain structures (such as symmetry), Knuth-Bendix completion will
+not terminate.  It would be interesting to know if there is indeed a
+systematic way to obtain these laws from the rewriting perspective
+but, as far as we know, there are no published results to that
+effect. The connections to homotopy theory cited by
+\citet{math/9802029} (and mentioned in the previous section) appear to
+be the best hope for a rational reconstruction of the coherence laws.
 
-\distl :&~ \tau_1 * (\tau_2 + \tau_3) & \iso & (\tau_1 * \tau_2) &: \factorl \\
-&&&                                                               +~ (\tau_1 * \tau_3)
-\end{array}\]      
-\caption{\label{fig:more}Additional $\Pi$-combinators.}
-\end{figure}
+%% \textrm{math}\textbf{\textit{overflow}} about this idea are left
+%% unanswered.
+
 
 %%%%%%%%%%%%
 \subsection{Instances of Symmetric Rig Categories} 
@@ -2099,7 +2142,7 @@ groupoid.
   satisfy the axioms stated in the definitions of the various
   categories. The bulk of the work is in ensuring that the coherence
   conditions are satisfied. This required us to add a few $\Pi$
-  combinators (see Fig.~\ref{fig:more}) and then to add a whole new
+  combinators (see Sec.~\ref{fig:more}) and then to add a whole new
   layer of 2-combinators witnessing enough equivalences of~$\Pi$
   combinators to prove the coherence laws (see
   Fig.~\ref{fig:more2}). The new $\Pi$ combinators, also discussed in
@@ -2134,7 +2177,7 @@ sound and complete metalanguage for reasoning about equivalences of
 programs written in the lower level language.
 
 %%%%%%%%%%%%
-\subsection{Example}
+\subsection{1-Paths and 2-Paths: Example}
 
 Given two $\Pi$-combinators:
 \AgdaHide{
@@ -2185,6 +2228,7 @@ module Y where
 \jc{it would be nice to remove the leading $\leftrightarrow$ qualifier
   as it is an artifact how all the pieces were put together rather
   than something essential.}
+
 \begin{code}
   swapl₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
    (_⟷_.swap₊ ◎ (c₁ ⊕ c₂)) ⇔' ((c₂ ⊕ c₁) ◎ _⟷_.swap₊)
@@ -2257,108 +2301,26 @@ the braiding $\sigma_{A,B}$ is a natural transformation, in other
 words that $\sigma_{A,B}$ must commute with $\oplus$.
 
 %%%%%%%%%%%%
-\subsection{Revised Syntax}
+\subsection{Revised Syntax: 1-Paths}
+\label {fig:more}
 
 The inspiration of symmetric rig groupoids suggested a refactoring of
-$\Pi$ with additional level-1 combinators.  The added
-combinators~\ref{fig:more} are redundant (from an operational
-perspective) exactly because of the coherence conditions.  In addition
-to being critical to the proofs, they are useful when representing
-circuits, leading to smaller programs with fewer redexes.
+$\Pi$ with additional level-1 combinators.  The added combinators
+below are redundant (from an operational perspective) exactly because
+of the coherence conditions.  In addition to being critical to the
+proofs, they are useful when representing circuits, leading to smaller
+programs with fewer redexes:
 
-The big addition of course is the level-2 combinators which are
-collected in Fig.~\ref{fig:more2}. To avoid clutter we omit the names
-of the combinators and only show the signatures.
+\[\begin{array}{rrcll}
+\identlsp :&  \tau + 0 & \iso & \tau &: \identrsp \\
+\identlst :&  \tau * 1 & \iso & \tau &: \identrst \\
 
-Even though we know that these combinators come from the
-coherence conditions inherence in the definition of a
-symmetric rig weak groupoid, it would still be nice to
-get a better understanding of what these really say.
-About a third of the combinators come from the definition
-of the various natural isomorphisms ($\alpha_{A,B,C},
-\lambda_{A}, \rho_{A}, \sigma_{A,B}, dₗ, dᵣ, aₗ$ and
-$aᵣ$).  The first $4$ natural isomorphisms actually
-occur twice, once for each of the symmetric
-monoidal structures at play.  Each natural
-isomorphism is composed of 2 natural transformations
-(one in each direction) that must compose to the
-identity.  This in turn induces $4$ coherences laws:
-two \emph{naturality laws} which indicate that the
-combinator commutes with structure construction, and two which 
-express that the resulting combinators are
-left and right inverses of each other.  But note also that
-there mere desire that 
-$\oplus$ be a bifunctor induces 3 coherence laws.  And then
-of course each ``structure'' (monoidal, braided, symmetric)
-comes with more, as outlined in the previous section,
-culminating with 13 additional coherence laws for rig.
+\absorbr :&~ 0 * \tau & \iso & 0 &: \factorzl \\
+\absorbl :&~ \tau * 0 & \iso & 0 &: \factorzr \\
 
-The coherence laws for a symmetric rig category, whether
-presented in their full diagrammatic glory or through
-their signatures, may at first appear rather obscure.  But
-these can be ``unformalized'' to relatively understandable
-statements:
-\begin{itemize}
-\item[I] given $A ⊗ (B ⊕ C)$, swapping $B$ and $C$ then
-distributing (on the left) is the same as first distributing,
-then swapping the two summands,
-\item[II] given $(A ⊕ B) ⊗ C$, first switch the order of the
-products then distributing (on the left) is the same as
-distributing (on the right) and then switching the order of
-both products.
-\item[IV] given $(A ⊕ (B ⊕ C)) ⊗ D$, we can either distribute
-then associate, or associate then distribute.
-\item[VI] given $A ⊗ (B ⊗ (C ⊕ D))$, we can either
-associate then distribute, or first do the inner
-distribution, then the outer, and map associativity
-on each term.
-\item[IX] given $(A ⊕ B) ⊗ (C ⊕ D)$, we can either first
-distribute on the left, map right-distribution and finally
-associate, or we can go ``the long way around'' by
-right-distributing first, then mapping left-distribution,
-and then a long chain of administrative shuffles to get
-to the same point.
-\item[X] given $0 ⊗ 0$, left or right absorption both
-give $0$ in equivalent ways
-\item[XI] given $0 ⊗ (A ⊕ B)$, left absorption or
-distribution, then mapping left absorption, followed
-by (additive) left unit are equivalent.
-\item[XIII] given $0 * 1$, left absorption or
-(multiplicative) right unit are equivalent.
-\item[XV] given $A ⊗ 0$, we can either absorb $0$
-on the left, or commute and absorb $0$ on the right.
-\item[XVI] given $0 ⊗ (A ⊗ B)$, we can either
-absorb $0$ on the left, or associate, and then
-absorb twice.
-\item[XVII] given $A ⊗ (0 ⊗ B)$, the two obvious
-paths to $0$ commute.
-\item[XIX] given $A ⊗ (0 ⊕ B)$, we can either
-eliminate the (additive) identity in the right
-term, or distribute, right absorb $0$ in the
-left term, then eliminate the resulting
-(additive) identity to get to $A ⊗ B$.
-\item[XXIII] Given $1 ⊗ (A ⊕ B)$, we can either
-eliminate the (multiplicative) identity on the
-left or distribute the map left-elimination.
-\end{itemize}
-
-Going through the details of the proof of the coherence theorem
-in~\citet{laplaza} with a ``modern'' eye, one cannot help but think of
-Knuth-Bendix completion.  Although it is known that coherence laws for
-some categorical structures can be obtained in this
-way~\cite{Beke2011728}, it is also known that in the presence of
-certain structures (such as symmetry), Knuth-Bendix completion will
-not terminate.  It would be interesting to know if there is indeed a
-systematic way to obtain these laws; the wider mathematical community
-does not seem to know~\cite{mathoverflowq}.
-
-It is worth noting that most (but not all) of the properties of $⊎$
-were already in Agda's standard library (in
-\AgdaModule{Data.Sum.Properties} to be precise), whereas all
-properties of $×$ were immediately provable due to $η$ expansion.
-None of the mixed properties involved with distributivity and
-absorption were present, although the proof of all of them was very
-straightforward.
+\distl :&~ \tau_1 * (\tau_2 + \tau_3) & \iso & (\tau_1 * \tau_2) &: \factorl \\
+&&&                                                               +~ (\tau_1 * \tau_3)
+\end{array}\]      
 
 \begin{figure*}
 \[\begin{array}{cc}
@@ -2474,21 +2436,39 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 \caption{\label{fig:more2}Signatures of level-2 $\Pi$-combinators.}
 \end{figure*}
 
-As Fig.~\ref{fig:more2} illustrates, we have rules to manipulate code
-fragments rewriting them in a small-step fashion. The rules apply only
-when both sides are well-typed. The small-step nature of the rules
-should allow us to make efficient optimizers following the experience
-in functional languages~\citep{PeytonJones:1998:TOH:299619.299621}. In
-contrast the coherence conditions are much smaller in number and many
-then express invariants about much bigger ``chunks.'' From our small
-experiments, an effective way to use the rules is to fix a canonical
-representation of circuits that has the ``right'' properties and use
-the rules in a directed fashion to produce that canonical
-representation. For example, \citet{Saeedi:2013:SOR:2431211.2431220}
-survey several possible canonical representations that trade-off
-various desired properties. Of course, finding a rewriting procedure
-that makes progress towards the canonical representation is far from
-trivial.
+%%%%%%%%%%%%
+\subsection{Revised Syntax: 2-Paths}
+ 
+The big addition of course is the level-2 combinators which are
+collected in Fig.~\ref{fig:more2}. To avoid clutter we omit the names
+of the combinators (which are arbitrary) and only show the signatures.
+
+Even though we know that these combinators are justified by the
+coherence conditions inherent in the definition of a symmetric rig
+weak groupoid, it would still be nice to get a better understanding of
+what these really say.  About a third of the combinators come from the
+definition of the various natural isomorphisms
+($\alpha_{A,B,C}, \lambda_{A}, \rho_{A}, \sigma_{A,B}, dₗ, dᵣ, aₗ$ and
+$aᵣ$).  The first $4$ natural isomorphisms actually occur twice, once
+for each of the symmetric monoidal structures at play.  Each natural
+isomorphism is composed of 2 natural transformations (one in each
+direction) that must compose to the identity.  This in turn induces
+$4$ coherences laws: two \emph{naturality laws} which indicate that
+the combinator commutes with structure construction, and two which
+express that the resulting combinators are left and right inverses of
+each other.  But note also that there mere desire that $\oplus$ be a
+bifunctor induces 3 coherence laws.  And then of course each
+``structure'' (monoidal, braided, symmetric) comes with more, as
+outlined in the previous section, culminating with 13 additional
+coherence laws for rig.
+
+It is worth noting that most (but not all) of the properties of $⊎$
+were already in Agda's standard library (in
+\AgdaModule{Data.Sum.Properties} to be precise), whereas all
+properties of $×$ were immediately provable due to $η$ expansion.
+None of the mixed properties involved with distributivity and
+absorption were present, although the proof of all of them was very
+straightforward.
 
 It should be noted that a few of the ``raw'' signatures in
 Fig.~\ref{fig:more2} are slightly misleading, as we omit the signature
@@ -2523,6 +2503,25 @@ axioms are not independent, just like Laplaza’s conditions.}
 %\amr{Similarly, the c1 in the identl* exchange law MUST map between ONE
 %  (same with identr*).  In the same vein, c1 in the identl+ and
 %  identr+ laws must involve ZERO.}
+
+%%%%%%%%%%%%
+\subsection{A Syntactic 2-Paths Circuit Optimizer}
+ 
+As Fig.~\ref{fig:more2} illustrates, we have rules to manipulate code
+fragments rewriting them in a small-step fashion. The rules apply only
+when both sides are well-typed. The small-step nature of the rules
+should allow us to make efficient optimizers following the experience
+in functional languages~\citep{PeytonJones:1998:TOH:299619.299621}. In
+contrast the coherence conditions are much smaller in number and many
+then express invariants about much bigger ``chunks.'' From our small
+experiments, an effective way to use the rules is to fix a canonical
+representation of circuits that has the ``right'' properties and use
+the rules in a directed fashion to produce that canonical
+representation. For example, \citet{Saeedi:2013:SOR:2431211.2431220}
+survey several possible canonical representations that trade-off
+various desired properties. Of course, finding a rewriting procedure
+that makes progress towards the canonical representation is far from
+trivial.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Problem with Higher-Order Functions}
