@@ -920,7 +920,7 @@ reason about type equivalences between finite types.
 \end{center}
 \end{minipage}
 \end{array}\]
-\caption{$\Pi$-combinators~\citep{rc2011,James:2012:IE:2103656.2103667}
+\caption{$\Pi$-combinators~\citep{rc2011,James:2012:IE:2103656.2103667}.
 \label{pi-combinators}}
 \end{figure*}
 
@@ -1376,7 +1376,7 @@ semiring only captures a ``static'' relationship between types; it
 says nothing about how these relationships behave under
 \emph{composition} which is after all the essence of computation
 (cf. \citet{Moggi:1989:CLM:77350.77353}'s original paper on
-monads). Thus from a programmer's perspective, this categorification
+monads). Thus, from a programmer's perspective, this categorification
 process is about understanding how type equivalences evolve under
 compositions, e.g., how two different paths of type equivalences
 sharing the same source and target relate two each other.
@@ -1406,7 +1406,7 @@ sharing the same source and target relate two each other.
 \\
 & A \otimes B
 \end{tikzcd}
-\caption{\label{fig:mon}Pengaton and Triangle Diagrams}
+\caption{\label{fig:mon}Pengaton and triangle diagrams.}
 \end{figure*}
 
 %%%%%%%%%%%%
@@ -1515,21 +1515,21 @@ negation. The coherence laws should not equate these two morphisms and
 they do not. We might also hope that the two versions of boolean
 negation in Sec.~\ref{sec:circuits} and Sec.~\ref{sec:rewriting} could
 be identified using the coherence conditions of monoidal
-categories. This will be the case but, for that, we need categories
-that are richer than the symmetric monoidal categories which are only
-categorifications of commutative monoids. We will need to consider the
-categorification of commutative semirings.
+categories. This is not the case but will be once we capture the full
+structure of commutative semirings categorically. 
 
 %%%%%%%%%%%%
 \subsection{Symmetric Rig Weak Groupoids}
 
-The categorification of a commutative semiring is called a
-\emph{symmetric rig category}.  It is build from a \emph{symmetric
-  bimonoidal category} to which distributivity natural isomorphisms
-are added, and accompanying coherence laws added.  Since we can easily
-set things up so that every morphism is a isomorphism, the category
-will also be a groupoid. Since the laws of the category only hold up
-to a higher equivalence, the entire setting is that of weak categories.
+Symmetric monoidal categories discussed in the previous section are
+the categorifications of commutative monoids. The categorification of
+a commutative semiring is called a \emph{symmetric rig category}.  It
+is build from a \emph{symmetric bimonoidal category} to which
+distributivity natural isomorphisms are added, and accompanying
+coherence laws added.  Since we can easily set things up so that every
+morphism is a isomorphism, the category will also be a groupoid. Since
+the laws of the category only hold up to a higher equivalence, the
+entire setting is that of weak categories.
 
 There are several equivalent definitions of rig categories. We use the
 following definition from \citet{nlabrig}.
@@ -1543,13 +1543,9 @@ following definition from \citet{nlabrig}.
 d_ℓ : x ⊗ (y ⊕ z) &\isoarrow& (x ⊗ y) ⊕ (x ⊗ z) \\
 d_r : (x ⊕ y) ⊗ z &\isoarrow& (x ⊗ z) ⊕ (y ⊗ z) 
 \end{array}\]
-and absorption/annihilation isomorphisms:
-\[\begin{array}{rcl}
-a_ℓ : x ⊗ 0 &\isoarrow& 0 \\
-a_r : 0 ⊗ x &\isoarrow& 0
-\end{array}\]
-satisfying coherence conditions worked out by \citet{laplaza}
-and discussed below. 
+and absorption/annihilation isomorphisms $a_ℓ : x ⊗ 0 \isoarrow 0$ and
+$a_r : 0 ⊗ x \isoarrow 0$ satisfying coherence conditions worked out
+by \citet{laplaza} and discussed below.
 \end{definition}
 
 \begin{definition}[Symmetric Rig Category]
@@ -1562,14 +1558,14 @@ A \emph{symmetric rig groupoid} is a symmetric rig category in which
 every morphism is invertible.
 \end{definition}
 
-The coherence conditions for rig categories were first worked out by
+The coherence conditions for rig categories were worked out by
 \citet{laplaza}. Pages 31-35 of his paper report 24 coherence
 conditions that vary from simple diagrams to one that includes 9 nodes
 showing that two distinct ways of simplifying $(A ⊕ B) ⊗ (C ⊕ D)$ to
 $(((A ⊗ C) ⊕ (B ⊗ C)) ⊕ (A ⊗ D)) ⊕ (B ⊗ D)$ commute. The 24 coherence
 conditions are not independent which somewhat simplifies the situation
 and allows us to prove that our structures satisfy the coherence
-conditions in a more economic way. 
+conditions in a more economical way.
 
 % \begin{figure*}
 % \AgdaHide{
@@ -1993,7 +1989,7 @@ conditions in a more economic way.
 \distl :&~ \tau_1 * (\tau_2 + \tau_3) & \iso & (\tau_1 * \tau_2) &: \factorl \\
 &&&                                                               +~ (\tau_1 * \tau_3)
 \end{array}\]      
-\caption{\label{fig:more}Additional $\Pi$-combinators}
+\caption{\label{fig:more}Additional $\Pi$-combinators.}
 \end{figure}
 
 %%%%%%%%%%%%
@@ -2087,12 +2083,12 @@ equivalence are themselves equivalent:
 \AgdaFunction{laplazaI} =
   \AgdaInductiveConstructor{eq}~\AgdaFunction{distl-swap₊-lemma}~\AgdaFunction{factorl-swap₊-lemma}
 \]
-where \AgdaInductiveConstructor{eq} is the equivalence of equivalences used in the
-proof of Thm.~\ref{thm:eqeq}.
+where \AgdaInductiveConstructor{eq} is the constructor for the
+equivalence of equivalences used in the proof of Thm.~\ref{thm:eqeq}.
 \end{proof}
 
-More relevant for our purposes, is the next theorem which applies to
-reversible circuits (represented as $\Pi$-combinators).
+More directly relevant to our purposes, is the next theorem which
+applies to reversible circuits (represented as $\Pi$-combinators).
 
 \begin{theorem}
 The collection of finite types and $\Pi$-combinators is a symmetric rig
@@ -2105,19 +2101,19 @@ groupoid.
   categories. The bulk of the work is in ensuring that the coherence
   conditions are satisfied. This required us to add a few $\Pi$
   combinators (see Fig.~\ref{fig:more}) and then to add a whole new
-  layer of 2-combinators (discussed in the next section) witnessing
-  enough equivalences of~$\Pi$ combinators to prove the coherence
-  laws. The new $\Pi$ combinators, also discussed in more detail in
-  the next section, are redundant (from an operational perspective)
-  exactly because of the coherence conditions; they are however
-  important as they have rather non-trivial relations to each other
-  that are captured in the more involved coherence laws. 
+  layer of 2-combinators witnessing enough equivalences of~$\Pi$
+  combinators to prove the coherence laws (see
+  Fig.~\ref{fig:more2}). The new $\Pi$ combinators, also discussed in
+  more detail in the next section, are redundant (from an operational
+  perspective) exactly because of the coherence conditions; they are
+  however important as they have rather non-trivial relations to each
+  other that are captured in the more involved coherence laws.
 \end{proof}
 
 Putting the result above together with Laplaza's coherence result
-about rig categories, we conclude with our main result (but the
-punchline detailed the second level of combinators is in
-Fig.~\ref{fig:more2} in the next section).
+about rig categories, we conclude with our main result, which will be
+detailed in the next section by giving the full details of the second
+level of combinators.
 
 \begin{theorem}
 We have two levels of $\Pi$-combinators such that:
@@ -2476,7 +2472,7 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 {}
 \end{center}
 \end{minipage}
-\caption{\label{fig:more2}Signatures of level-2 $\Pi$-combinators}
+\caption{\label{fig:more2}Signatures of level-2 $\Pi$-combinators.}
 \end{figure*}
 
 As Fig.~\ref{fig:more2} illustrates, we have rules to manipulate code
