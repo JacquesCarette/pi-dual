@@ -14,6 +14,7 @@ open import Function using (_∘_)
 open import Equiv
 open import TypeEquiv as TE
 open import TypeEquivCat -- for ≋
+open _≋_
 open import PiLevel0
 open import PiLevel1
 
@@ -179,36 +180,43 @@ cc2equiv swapl⋆⇔ = eq (λ x → refl) (λ x → refl)
 cc2equiv swapr⋆⇔ = eq (λ x → refl) (λ x → refl)
 cc2equiv id⇔ = eq (λ x → refl) (λ x → refl)
 cc2equiv (trans⇔ ce₀ ce₁) = trans≋ (cc2equiv ce₀) (cc2equiv ce₁)
-cc2equiv (ce₀ ⊡ ce₁) = eq {!!} {!!}
-cc2equiv (resp⊕⇔ ce₀ ce₁) = -- there is likely a better way!
-  eq (λ { (inj₁ x) → cong inj₁ (_≋_.f≡ (cc2equiv ce₀) x)
-        ; (inj₂ y) → cong inj₂ (_≋_.f≡ (cc2equiv ce₁) y) })
-      {!!}
-cc2equiv (resp⊗⇔ ce₀ ce₁) = eq {!!} {!!}
-cc2equiv id⟷⊕id⟷⇔ = eq {!!} {!!}
-cc2equiv split⊕-id⟷ = eq {!!} {!!}
-cc2equiv hom⊕◎⇔ = eq {!!} {!!}
-cc2equiv hom◎⊕⇔ = eq {!!} {!!}
+cc2equiv (ce₀ ⊡ ce₁) = ●-resp-≋ (cc2equiv ce₁) (cc2equiv ce₀)  -- flip!
+cc2equiv (resp⊕⇔ ce₀ ce₁) =
+  eq (map⊎-resp-≡ {e₁ = f≡ e₀} {f≡ e₁})
+     (map⊎-resp-≡ {e₁ =  g≡ e₀} {g≡ e₁})
+  where
+    e₀ = cc2equiv ce₀
+    e₁ = cc2equiv ce₁
+cc2equiv (resp⊗⇔ ce₀ ce₁) =
+  eq (path×-resp-≡ {e₁ = f≡ e₀} {f≡ e₁})
+     (path×-resp-≡ {e₁ = g≡ e₀} {g≡ e₁})
+    where
+    e₀ = cc2equiv ce₀
+    e₁ = cc2equiv ce₁
+cc2equiv id⟷⊕id⟷⇔ = eq map⊎idid≡id map⊎idid≡id
+cc2equiv split⊕-id⟷ = eq (sym∼ map⊎idid≡id) (sym∼ map⊎idid≡id)
+cc2equiv hom⊕◎⇔ = eq map⊎-∘ map⊎-∘
+cc2equiv hom◎⊕⇔ = eq (sym∼ map⊎-∘) (sym∼ map⊎-∘)
 cc2equiv id⟷⊗id⟷⇔ = eq (λ x → refl) (λ x → refl)
 cc2equiv split⊗-id⟷ = eq (λ x → refl) (λ x → refl)
 cc2equiv hom⊗◎⇔ = eq (λ x → refl) (λ x → refl)
-cc2equiv hom◎⊗⇔ = eq {!!} {!!}
-cc2equiv triangle⊕l = eq {!!} {!!}
-cc2equiv triangle⊕r = eq {!!} {!!}
-cc2equiv triangle⊗l = eq {!!} {!!}
-cc2equiv triangle⊗r = eq {!!} {!!}
+cc2equiv hom◎⊗⇔ = eq (λ x → refl) (λ x → refl)
+cc2equiv triangle⊕l = eq triangle⊎-right triangle⊎-left
+cc2equiv triangle⊕r = eq (sym∼ triangle⊎-right) (sym∼ triangle⊎-left)
+cc2equiv triangle⊗l = eq (λ x → refl) (λ x → refl)
+cc2equiv triangle⊗r = eq (λ x → refl) (λ x → refl)
 cc2equiv pentagon⊕l = eq {!!} {!!}
 cc2equiv pentagon⊕r = eq {!!} {!!}
-cc2equiv pentagon⊗l = eq {!!} {!!}
-cc2equiv pentagon⊗r = eq {!!} {!!}
+cc2equiv pentagon⊗l = eq (λ x → refl) (λ x → refl)
+cc2equiv pentagon⊗r = eq (λ x → refl) (λ x → refl)
 cc2equiv hexagonr⊕l = eq {!!} {!!}
 cc2equiv hexagonr⊕r = eq {!!} {!!}
 cc2equiv hexagonl⊕l = eq {!!} {!!}
 cc2equiv hexagonl⊕r = eq {!!} {!!}
-cc2equiv hexagonr⊗l = eq {!!} {!!}
-cc2equiv hexagonr⊗r = eq {!!} {!!}
-cc2equiv hexagonl⊗l = eq {!!} {!!}
-cc2equiv hexagonl⊗r = eq {!!} {!!}
+cc2equiv hexagonr⊗l = eq (λ x → refl) (λ x → refl)
+cc2equiv hexagonr⊗r = eq (λ x → refl) (λ x → refl)
+cc2equiv hexagonl⊗l = eq (λ x → refl) (λ x → refl)
+cc2equiv hexagonl⊗r = eq (λ x → refl) (λ x → refl)
 cc2equiv absorbl⇔l = eq {!!} {!!}
 cc2equiv absorbl⇔r = eq {!!} {!!}
 cc2equiv absorbr⇔l = eq {!!} {!!}
