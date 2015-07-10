@@ -2216,25 +2216,22 @@ input and hence, it must be the case that the two evaluations produce
 the same result. The situation for the other possible input value is
 symmetric. This extensional reasoning is embedded once and for all in
 the proofs of coherence and distilled in a 2-level combinator:
-\AgdaHide{
-\begin{code}
-module Y where
- data _⇔'_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set where
-\end{code}
-}
 
-\smallskip 
-
-\jc{it would be nice to remove the leading $\leftrightarrow$ qualifier
-  as it is an artifact how all the pieces were put together rather
-  than something essential.}
-
-\begin{code}
-  swapl₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
-   (_⟷_.swap₊ ◎ (c₁ ⊕ c₂)) ⇔' ((c₂ ⊕ c₁) ◎ _⟷_.swap₊)
-\end{code}
-
-\smallskip 
+\[\begin{array}{rcl}
+\AgdaInductiveConstructor{swapl₊⇔} & \AgdaSymbol{:} &
+  \AgdaSymbol{\{}\AgdaBound{t₁}~\AgdaBound{t₂}~
+  \AgdaBound{t₃}~\AgdaBound{t₄}~\AgdaSymbol{:}~\AgdaDatatype{U}\AgdaSymbol{\}}~ 
+  \AgdaSymbol{\{}\AgdaBound{c₁}~\AgdaSymbol{:}~\AgdaBound{t₁}~\AgdaDatatype{⟷}~\AgdaBound{t₂}\AgdaSymbol{\}}~ 
+  \AgdaSymbol{\{}\AgdaBound{c₂}~\AgdaSymbol{:}~\AgdaBound{t₃}~\AgdaDatatype{⟷}~\AgdaBound{t₄}\AgdaSymbol{\}}~
+  \AgdaSymbol{→} \\
+&& \AgdaSymbol{(}
+  \AgdaInductiveConstructor{swap₊}~\AgdaInductiveConstructor{◎}~
+  \AgdaSymbol{(}\AgdaBound{c₁}~\AgdaInductiveConstructor{⊕}~\AgdaBound{c₂}\AgdaSymbol{))}~
+  \AgdaDatatype{⇔}~ 
+  \AgdaSymbol{(}
+  \AgdaBound{c₂}~\AgdaInductiveConstructor{⊕}~\AgdaBound{c₁}\AgdaSymbol{)}~
+  \AgdaInductiveConstructor{◎}~\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}
+\end{array}\]
 
 Pictorially, this 2-level combinator is a 2-path showing how the two
 paths can be transformed to one another. The proof of equivalence can
