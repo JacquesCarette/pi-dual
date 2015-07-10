@@ -2228,7 +2228,7 @@ the proofs of coherence and distilled in a 2-level combinator:
   \AgdaInductiveConstructor{swap₊}~\AgdaInductiveConstructor{◎}~
   \AgdaSymbol{(}\AgdaBound{c₁}~\AgdaInductiveConstructor{⊕}~\AgdaBound{c₂}\AgdaSymbol{))}~
   \AgdaDatatype{⇔}~ 
-  \AgdaSymbol{(}
+  \AgdaSymbol{((}
   \AgdaBound{c₂}~\AgdaInductiveConstructor{⊕}~\AgdaBound{c₁}\AgdaSymbol{)}~
   \AgdaInductiveConstructor{◎}~\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}
 \end{array}\]
@@ -2241,30 +2241,37 @@ path and flipping them produces the connection in the bottom path:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.6,every node/.style={scale=0.6}]
-  \draw[->,double,red,thick] (2.25,-1.5) -- (2.25,-2.5) ;
-  \node at (2.6,-2) {$\alpha$} ;
+  \draw[<->,double,red,thick] (2.25,-1.5) -- (2.25,-2.5) ;
+  \node at (3.3,-2) {$\AgdaInductiveConstructor{swapl₊⇔}$} ;
+  \node at (2.5,-1.3) {$\AgdaSymbol{((}
+    \AgdaBound{c₂}~\AgdaInductiveConstructor{⊕}~\AgdaBound{c₁}\AgdaSymbol{)}~
+     \AgdaInductiveConstructor{◎}~\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}$};
+  \node at (2.5,-2.7) {$\AgdaSymbol{(}
+  \AgdaInductiveConstructor{swap₊}~\AgdaInductiveConstructor{◎}~
+  \AgdaSymbol{(}
+  \AgdaBound{c₁}~\AgdaInductiveConstructor{⊕}~\AgdaBound{c₂}\AgdaSymbol{))}$};
 
   \draw (-2,-2) ellipse (0.5cm and 1cm);
   \draw[fill] (-2,-1.5) circle [radius=0.025];
-  \node[below] at (-2,-1.5) {$A$};
+  \node[below] at (-2.1,-1.5) {$A$};
   \draw[fill] (-2,-2.5) circle [radius=0.025];
-  \node[below] at (-2,-2.5) {$B$};
+  \node[below] at (-2.1,-2.5) {$B$};
 
   \draw (6.5,-2) ellipse (0.5cm and 1cm);
   \draw[fill] (6.5,-1.5) circle [radius=0.025];
-  \node[below] at (6.5,-1.5) {$C$};
+  \node[below] at (6.7,-1.5) {$C$};
   \draw[fill] (6.5,-2.5) circle [radius=0.025];
-  \node[below] at (6.5,-2.5) {$D$};
+  \node[below] at (6.7,-2.5) {$D$};
 
   \draw (-2,-1.5) to[bend left] (1,0.5) ;
   \draw (-2,-2.5) to[bend left] (1,-0.5) ;
-  \draw[->] (3.5,0.5) to[bend left] (6.5,-1.5) ;
-  \draw[->] (3.5,-0.5) to[bend left] (6.5,-2.5) ;
+  \draw[->] (3.5,0.5) to[bend left] (6.5,-1.45) ;
+  \draw[->] (3.5,-0.5) to[bend left] (6.5,-2.45) ;
 
   \draw (-2,-1.5) to[bend right] (1,-3.5) ;
   \draw (-2,-2.5) to[bend right] (1,-4.5) ;
-  \draw[->] (3.5,-3.5) to[bend right] (6.5,-1.5) ;
-  \draw[->] (3.5,-4.5) to[bend right] (6.5,-2.5) ;
+  \draw[->] (3.5,-3.5) to[bend right] (6.5,-1.55) ;
+  \draw[->] (3.5,-4.5) to[bend right] (6.5,-2.55) ;
 
   \draw     (2.5,-3)  -- (3.5,-3) -- (3.5,-4) -- (2.5,-4) -- cycle ;
   \draw     (2.5,-4)  -- (3.5,-4) -- (3.5,-5) -- (2.5,-5) -- cycle ;
