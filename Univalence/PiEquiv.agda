@@ -220,34 +220,42 @@ cc2equiv hexagonl⊗r = eq (λ x → refl) (λ x → refl)
 cc2equiv absorbl⇔l = eq (λ x → refl) (λ {()})
 cc2equiv absorbl⇔r = eq (λ x → refl) (λ {()})
 cc2equiv absorbr⇔l = eq (λ x → refl) (λ {()})
-cc2equiv absorbr⇔r = eq {!!} {!!}
-cc2equiv factorzl⇔l = eq {!!} {!!}
-cc2equiv factorzl⇔r = eq {!!} {!!}
-cc2equiv factorzr⇔l = eq {!!} {!!}
-cc2equiv factorzr⇔r = eq {!!} {!!}
-cc2equiv swap₊distl⇔l = eq {!!} {!!}
-cc2equiv swap₊distl⇔r = eq {!!} {!!}
-cc2equiv dist-swap⋆⇔l = eq {!!} {!!}
-cc2equiv dist-swap⋆⇔r = eq {!!} {!!}
-cc2equiv assocl₊-dist-dist⇔l = eq {!!} {!!}
-cc2equiv assocl₊-dist-dist⇔r = eq {!!} {!!}
-cc2equiv assocl⋆-distl⇔l = eq {!!} {!!}
-cc2equiv assocl⋆-distl⇔r = eq {!!} {!!}
-cc2equiv absorbr0-absorbl0⇔ = eq {!!} {!!}
-cc2equiv absorbl0-absorbr0⇔ = eq {!!} {!!}
-cc2equiv absorbr⇔distl-absorb-unite = eq {!!} {!!}
-cc2equiv distl-absorb-unite⇔absorbr = eq {!!} {!!}
-cc2equiv unite⋆r0-absorbr1⇔ = eq {!!} {!!}
-cc2equiv absorbr1-unite⋆r-⇔ = eq {!!} {!!}
-cc2equiv absorbl≡swap⋆◎absorbr = eq {!!} {!!}
-cc2equiv swap⋆◎absorbr≡absorbl = eq {!!} {!!}
-cc2equiv absorbr⇔[assocl⋆◎[absorbr⊗id⟷]]◎absorbr = eq {!!} {!!}
-cc2equiv [assocl⋆◎[absorbr⊗id⟷]]◎absorbr⇔absorbr = eq {!!} {!!}
-cc2equiv [id⟷⊗absorbr]◎absorbl⇔assocl⋆◎[absorbl⊗id⟷]◎absorbr = eq {!!} {!!}
-cc2equiv assocl⋆◎[absorbl⊗id⟷]◎absorbr⇔[id⟷⊗absorbr]◎absorbl = eq {!!} {!!}
-cc2equiv elim⊥-A[0⊕B]⇔l = eq {!!} {!!}
-cc2equiv elim⊥-A[0⊕B]⇔r = eq {!!} {!!}
-cc2equiv elim⊥-1[A⊕B]⇔l = eq {!!} {!!}
-cc2equiv elim⊥-1[A⊕B]⇔r = eq {!!} {!!}
-cc2equiv fully-distribute⇔l = eq {!!} {!!}
-cc2equiv fully-distribute⇔r = eq {!!} {!!}
+cc2equiv absorbr⇔r = eq (λ x → refl) (λ {()})
+cc2equiv factorzl⇔l = eq (λ {()}) (λ _ → refl)
+cc2equiv factorzl⇔r = eq (λ {()}) (λ _ → refl)
+cc2equiv factorzr⇔l = eq (λ {()}) (λ _ → refl)
+cc2equiv factorzr⇔r = eq (λ {()}) (λ _ → refl)
+cc2equiv swap₊distl⇔l = eq distl-swap₊-lemma factorl-swap₊-lemma
+cc2equiv swap₊distl⇔r = eq (sym∼ distl-swap₊-lemma) (sym∼ factorl-swap₊-lemma)
+cc2equiv dist-swap⋆⇔l = eq dist-swap⋆-lemma factor-swap⋆-lemma
+cc2equiv dist-swap⋆⇔r = eq (sym∼ dist-swap⋆-lemma) (sym∼ factor-swap⋆-lemma)
+cc2equiv assocl₊-dist-dist⇔l = eq dist-dist-assoc-lemma assoc-factor-factor-lemma
+cc2equiv assocl₊-dist-dist⇔r = eq (sym∼ dist-dist-assoc-lemma) (sym∼ assoc-factor-factor-lemma)
+cc2equiv assocl⋆-distl⇔l = eq distl-assoc-lemma assoc-factorl-lemma
+cc2equiv assocl⋆-distl⇔r = eq (sym∼ distl-assoc-lemma) (sym∼ assoc-factorl-lemma)
+cc2equiv absorbr0-absorbl0⇔ = eq distz0≡distrz0 factorz0≡factorzr0
+cc2equiv absorbl0-absorbr0⇔ = eq (sym∼ distz0≡distrz0) (sym∼ factorz0≡factorzr0)
+cc2equiv absorbr⇔distl-absorb-unite =
+  eq distz0≡unite₊∘[distz,distz]∘distl factorz0≡factorl∘[factorz,factorz]∘uniti₊
+cc2equiv distl-absorb-unite⇔absorbr =
+  eq (sym∼ distz0≡unite₊∘[distz,distz]∘distl)
+     (sym∼ factorz0≡factorl∘[factorz,factorz]∘uniti₊)
+cc2equiv unite⋆r0-absorbr1⇔ = eq unite⋆r0≡absorb1 uniti⋆r0≡factorz
+cc2equiv absorbr1-unite⋆r-⇔ = eq (sym∼ unite⋆r0≡absorb1) (sym∼ uniti⋆r0≡factorz)
+cc2equiv absorbl≡swap⋆◎absorbr = eq absorbl≡absorbr∘swap⋆ factorzr≡swap⋆∘factorz
+cc2equiv swap⋆◎absorbr≡absorbl = eq (sym∼ absorbl≡absorbr∘swap⋆) (sym∼ factorzr≡swap⋆∘factorz)
+cc2equiv absorbr⇔[assocl⋆◎[absorbr⊗id⟷]]◎absorbr =
+  eq absorbr⇔assocl⋆◎[absorbr⊗id]◎absorbr factorz⇔factorz◎[factorz⊗id]◎assocr⋆
+cc2equiv [assocl⋆◎[absorbr⊗id⟷]]◎absorbr⇔absorbr =
+  eq (sym∼ absorbr⇔assocl⋆◎[absorbr⊗id]◎absorbr)
+     (sym∼ factorz⇔factorz◎[factorz⊗id]◎assocr⋆)
+cc2equiv [id⟷⊗absorbr]◎absorbl⇔assocl⋆◎[absorbl⊗id⟷]◎absorbr =
+  eq elim-middle-⊥ insert-middle-⊥
+cc2equiv assocl⋆◎[absorbl⊗id⟷]◎absorbr⇔[id⟷⊗absorbr]◎absorbl =
+  eq (sym∼ elim-middle-⊥) (sym∼ insert-middle-⊥)
+cc2equiv elim⊥-A[0⊕B]⇔l = eq elim⊥-A[0⊕B] insert⊕⊥-AB
+cc2equiv elim⊥-A[0⊕B]⇔r = eq (sym∼ elim⊥-A[0⊕B]) (sym∼ insert⊕⊥-AB)
+cc2equiv elim⊥-1[A⊕B]⇔l = eq elim⊤-1[A⊕B] insert⊤l⊗-A⊕B
+cc2equiv elim⊥-1[A⊕B]⇔r = eq (sym∼ elim⊤-1[A⊕B]) (sym∼ insert⊤l⊗-A⊕B)
+cc2equiv fully-distribute⇔l = eq fully-distribute fully-factor
+cc2equiv fully-distribute⇔r = eq (sym∼ fully-distribute) (sym∼ fully-factor)
