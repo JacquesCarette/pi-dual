@@ -13,7 +13,7 @@
 \usepackage{courier}
 \usepackage{thmtools}
 \usepackage{bbold}
-\usepackage{url}
+\usepackage[hyphens]{url}
 \usepackage{bbm}
 \usepackage{proof}
 \usepackage{amstext}
@@ -129,12 +129,11 @@ $\displaystyle
 \newcommand{\todo}[1]{}
 \fi
 
-\newcommand{\amr}[1]{}
-\newcommand{\jc}[1]{}
+%% \newcommand{\amr}[1]{}
+%% \newcommand{\jc}[1]{}
 
-%% \newcommand{\jc}[1]{\authornote{purple}{JC}{#1}}
-%% \newcommand{\as}[1]{\authornote{magenta}{AS}{#1}}
-%% \newcommand{\amr}[1]{\fbox{\begin{minipage}{0.4\textwidth}\color{red}{Amr says: {#1}}\end{minipage}}}
+\newcommand{\jc}[1]{\authornote{purple}{JC}{#1}}
+\newcommand{\amr}[1]{\fbox{\begin{minipage}{0.4\textwidth}\color{red}{Amr says: {#1}}\end{minipage}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
@@ -2183,9 +2182,9 @@ module Y where
 
 \smallskip 
 
-\jc{it would be nice to remove the leading _⟷_ qualifier as
-it is an artifact how all the pieces were put together
-rather than something essential.}
+\jc{it would be nice to remove the leading $\leftrightarrow$ qualifier
+  as it is an artifact how all the pieces were put together rather
+  than something essential.}
 \begin{code}
   swapl₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
    (_⟷_.swap₊ ◎ (c₁ ⊕ c₂)) ⇔' ((c₂ ⊕ c₁) ◎ _⟷_.swap₊)
@@ -2560,10 +2559,10 @@ the work on $\Pi$~\citep{rc2011,James:2012:IE:2103656.2103667}. The trace operat
 {\jdg{}{}{\mathit{trace}~c : b \leftrightarrow c}}
 {}
 \]
-Under ``normal'' operation, a $b$ input is expected which is injected
+Under ``normal'' operation, a $b$-input is expected which is injected
 into the sum and fed to the traced computation. The evaluation
-continues until a $c$ value is produced, possibly after feeding
-several intermediate $a$ results back to the input. 
+continues until a $c$-value is produced, possibly after feeding
+several intermediate $a$-results back to the input.
 
 We then extend $\Pi$ with a new universe of types $\cubt$ that
 consists of composite types $\nodet{\tau_1}{\tau_2}$:
@@ -2587,13 +2586,15 @@ Our next step is to define lifted versions of the 0d types:
 \ttone{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} &\eqdef& \\
 \noalign{\hfill$\nodet{(\tau_1*\tau_3)+(\tau_2*\tau_4)}{(\tau_1*\tau_4)+(\tau_2*\tau_3)}$}
 \end{array}\]
-Building on the idea that $\Pi$ is a categorification of the natural numbers
-and following a long tradition that relates type isomorphisms and arithmetic
-identities~\citep{DiCosmo:2005:SSI:1090732.1090734}, one is tempted to think
-that the \textbf{Int} construction (as its name suggests) produces a
-categorification of the integers. Based on this hypothesis, the definitions
-above can be intuitively understood as arithmetic identities. The same
-arithmetic intuition explains the lifting of isomorphisms to 1d types:
+Building on the idea that $\Pi$ is a categorification of the natural
+numbers and following a long tradition that relates type isomorphisms
+and arithmetic identities~\citep{DiCosmo:2005:SSI:1090732.1090734},
+one is tempted to think that the \textbf{Int} construction (as its
+name suggests) produces a categorification of the integers. Based on
+this hypothesis, the definitions above can be intuitively understood
+as arithmetic identities. The same arithmetic intuition which says
+$a-b=c-d$ iff $a+d=b+c$ explains the lifting of isomorphisms to 1d
+types:
 \[\begin{array}{rcl}
 \nodet{\tau_1}{\tau_2} \isoone \nodet{\tau_3}{\tau_4} &\eqdef& 
   (\tau_1+\tau_4) \iso (\tau_2+\tau_3)
@@ -2603,7 +2604,7 @@ isomorphism between ``re-arranged'' 0d types where the negative input
 $\tau_2$ is viewed as an output and the negative output $\tau_4$ is
 viewed as an input. Using these ideas, it is now a fairly standard
 exercise to define the lifted versions of most of the combinators in
-Table~\ref{pi-combinators}.\footnote{See \citet{neelblog}'s excellent
+Fig.~\ref{pi-combinators}.\footnote{See \citet{neelblog}'s excellent
   blog post implementing this construction in OCaml.} We discuss a few
 cases in detail.
 
@@ -2639,7 +2640,7 @@ Composition is then defined as follows:
   (\cubt_1 \isoone \cubt_2) \rightarrow 
   (\cubt_2 \isoone \cubt_3) \rightarrow 
   (\cubt_1 \isoone \cubt_3) \\
- \mathit{seq} &:& 
+ (\fatsemi) &:& 
    (\nodet{\tau_1}{\tau_2} \isoone \nodet{\tau_3}{\tau_4}) \rightarrow
    (\nodet{\tau_3}{\tau_4} \isoone \nodet{\tau_5}{\tau_6}) \\
    && \qquad\rightarrow  (\nodet{\tau_1}{\tau_2} \isoone \nodet{\tau_5}{\tau_6}) \\
@@ -2654,11 +2655,11 @@ f \fatsemi g &=& \mathit{trace}~(\mathit{assoc}_1 \fatsemi
 At the level of 1d-types, the first computation produces
 $\nodet{\tau_3}{\tau_4}$ which is consumed by the second
 computation. Expanding these types, we realize that the $\tau_4$
-produced from the first computation is actually a demand for a value of
-that type and that the $\tau_4$ consumed by the second computation can
-satisfy a demand by an earlier computation. This explains the need for
-a feedback mechanism to send future values back to earlier
-computations. 
+produced from the first computation is actually a demand for a value
+of that type and that the $\tau_4$ consumed by the second computation
+is actually produced in the backwards direction to satisfy demands by
+earlier computations. This explains the need for a feedback
+mechanism to send future values back to earlier computations.
 
 \paragraph*{Higher-order functions.} Given values that flow in both
 directions, it is fairly straightforward to encode functions. At the
@@ -2785,12 +2786,15 @@ becomes possible to manipulate functions as values by currying and uncurrying:
 \caption{\label{mult}Example of multiplication of two cartesian types.}
 \end{figure*}
 
-\paragraph*{Products.} The \textbf{Int} construction works perfectly
-well as a technique to define higher-order functions if we just have
-\emph{one} monoidal structure: the additive one as we have assumed so
-far. We will now try to extend the construction to encompass the other
-(multiplicative) monoidal structure. Recall that natural definition
-for the product of 1d types used above was:
+%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Cartesian Types}
+
+The \textbf{Int} construction works perfectly well as a technique to
+define higher-order functions if we just have \emph{one} monoidal
+structure: the additive one as we have assumed so far. We will now try
+to extend the construction to encompass the other (multiplicative)
+monoidal structure. Recall that natural definition for the product of
+1d types used above was:
 \[\begin{array}{l}
 \ttone{\nodet{\tau_1}{\tau_2}}{\nodet{\tau_3}{\tau_4}} \eqdef \\
 \noalign{$\hfill\nodet{(\tau_1*\tau_3)+(\tau_2*\tau_4)}{(\tau_1*\tau_4)+(\tau_2*\tau_3)}$}
@@ -2806,34 +2810,41 @@ definition, it is possible to lift all the 0d combinators involving products
    (\cubt_2\boxtimes\cubt_4))
 \]
 After a few failed attempts, we suspected that this definition of
-multiplication is not functorial which would mean that the
-\textbf{Int} construction only provides a limited notion of
-higher-order functions at the cost of losing the multiplicative
-structure at higher-levels. Further investigation reveals that this
-observation is intimately related to a well-known problem in algebraic
-topology and homotopy theory that was identified thirty years ago as
-the \textbf{``phony'' multiplication}~\citep{thomason} in a special
-class categories related to ours. This observation, \emph{that the
-  \textbf{Int} construction on the additive monoidal structure does
-  \emph{not} allow one to lift multiplication in a straightforward
-  manner} is less well-known than it should be. This problem was
-however recently solved~\citep{ringcompletion} using a technique whose
-fundamental ingredients are to add more dimensions and then take
-homotopy colimits.
+multiplication is not functorial. Further investigation reveals that
+our suspicion is well-justified and that there is indeed a fundamental
+technical problem. Furthermore, this problem is well known in
+algebraic topology and homotopy theory and was identified more than
+thirty years ago and advertised as the \textbf{phony multiplication}
+problem~\citep{thomason}.
 
-The process of adding more dimensions is relatively straightforward:
-if the original intuition was that 1d types like
+\begin{quote}
+  This means that the \textbf{Int} construction only provides a
+  limited notion of higher-order functions at the cost of losing the
+  multiplicative structure at higher-levels.  This observation,
+  \emph{that the \textbf{Int} construction on the additive monoidal
+    structure does \emph{not} allow one to lift multiplication in a
+    straightforward manner} is less well-known than it should be.
+\end{quote}
+
+This long-standing problem was recently solved
+by~\citet{ringcompletion} using a technique whose fundamental
+ingredients are to add more dimensions and then take homotopy
+colimits. The process of adding more dimensions is relatively
+straightforward: if the original intuition was that 1d types like
 $\nodet{\tau_1}{\tau_2}$ represent $\tau_1 - \tau_2$, i.e., two types
 one in the $\pp$ direction and one in the $\mm$ direction, then
 multiplication of two such 1d types ought to produce components in the
-$\pp\pp$, $\pp\mm$, $\mm\pp$, and $\mm\mm$ directions and so on. The
-idea is illustrated with a simple example in Fig.~\ref{mult}. It
-remains to investigate whether this idea could lead to a
-generalization of our results to incorporate higher-order functions
-while retaining the multiplicative structure. Another intriguing point
-to consider is the connection between this idea and the recently
-proposed cubical models of type theory that also aim at producing
-computational interpretations of univalence~\citep{cubical}.
+$\pp\pp$, $\pp\mm$, $\mm\pp$, and $\mm\mm$ directions and so on
+generalizing to more and more dimensions. We call the resulting
+$n$-dimensional types \emph{cartesian types} and we illustrate the
+general idea using a simple example in Fig.~\ref{mult}. It remains to
+investigate whether this idea could lead to a generalization of our
+results to incorporate higher-order functions while retaining the
+multiplicative structure. Another intriguing point to consider is the
+connection between this idea and the recently proposed cubical models
+of type theory that also aim at producing computational
+interpretations of univalence~\citep{cubical} sharing some of the same
+intuition of cartesian types.
 
 % \jc {I would (syntactically) highlight that the Int construction does
 %   NOT allow one to lift multiplication in a straightforward manner.
@@ -2866,11 +2877,11 @@ elements:
   represented as terms that rewrite programs in small steps witnessing
   this second level of morphisms.
 \end{itemize}
-Our calculus provides a semantically well-founded approach to
+Our calculus provides a semantically well-founded approach to the
 representation, manipulation, and optimization of reversible
 circuits. In principle, subsets of the optimization rules can be
 selected to rewrite programs to several possible canonical forms as
-desired. We aim to investigate such frameworks in the future. 
+desired. We aim to investigate such frameworks in the future.
 
 From a much more general perspective, our result can be viewed as part
 of a larger programme aiming at a better integration of several
@@ -2904,23 +2915,26 @@ models~\citep{Bennett:1973:LRC} and more importantly they can be
 defined without any reference to irreversible functions, which
 ironically become the derived notion~\citep{Green:2008:RIC}. It is
 therefore, at least plausible, that a variant of HoTT based
-exclusively on reversible functions would have better computational
-properties. Our current result is a step, albeit preliminary in that
-direction as it only applies to finite types. However, it is plausible
-that this approach can be generalized to accommodate higher-order
-functions. The intuitive idea is that our current development based on
-the commutative semiring of the natural numbers might be generalizable
-to the ring of integers or even to the field of rational numbers. The
-generalization to rings would introduce \emph{negative types} and the
-generalization to fields would further introduce \emph{fractional
-  types}. As Sec.~\ref{sec:7} suggests, there is good evidence that
-these generalizations would introduce some notion of higher-order
-functions. It is even possible to conceive of more exotic types such
-as types with square roots and imaginary numbers by further
-generalizing the work to the field of \emph{algebraic numbers}. These
-types have been shown to make sense in computations involving
-datatypes such as trees that can be viewed as solutions to polynomials
-over type variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
+exclusively on reversible functions that directly correspond to
+equivalences would have better computational properties. Our current
+result is a step, albeit preliminary in that direction as it only
+applies to finite types. However, it is plausible that this
+categorification approach can be generalized to accommodate
+higher-order functions. The intuitive idea is that our current
+development based on the categorification of the commutative semiring
+of the natural numbers might be generalizable to the categorification
+of the ring of integers or even to the categorification of the field
+of rational numbers. The generalization to rings would introduce
+\emph{negative types} and the generalization to fields would further
+introduce \emph{fractional types}. As Sec.~\ref{sec:7} suggests, there
+is good evidence that these generalizations would introduce some
+notion of higher-order functions. It is even possible to conceive of
+more exotic types such as types with square roots and imaginary
+numbers by further generalizing the work to the field of
+\emph{algebraic numbers}. These types have been shown to make sense in
+computations involving recursive datatypes such as trees that can be
+viewed as solutions to polynomials over type
+variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \appendix
@@ -2952,7 +2966,7 @@ a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
 \end{definition}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
+\clearpage
 \bibliographystyle{abbrvnat}
 \softraggedright
 \bibliography{cites}
