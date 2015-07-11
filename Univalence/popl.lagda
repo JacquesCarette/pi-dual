@@ -11,6 +11,7 @@
 \usepackage{adjustbox}
 \usepackage{amsthm}
 \usepackage{latexsym}
+\usepackage{MnSymbol}
 \usepackage{courier}
 \usepackage{thmtools}
 \usepackage{bbold}
@@ -112,6 +113,8 @@ $\displaystyle
 \DeclareUnicodeCharacter{2097}{\ensuremath{{}_l}}
 \DeclareUnicodeCharacter{7523}{\ensuremath{{}_r}}
 \DeclareUnicodeCharacter{8343}{\ensuremath{{}_l}}
+\DeclareUnicodeCharacter{8779}{\ensuremath{\triplesim}}
+\DeclareUnicodeCharacter{9679}{\textbullet}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{conj}{Conjecture}
@@ -1768,6 +1771,13 @@ expressing reversible combinational circuits \emph{together with} a
 sound and complete metalanguage for reasoning about equivalences of
 programs written in the lower level language.
 
+\AgdaHide{
+\begin{code}
+open import TypeEquivCat
+open import PiEquiv hiding (c2equiv; left-inv; cc2equiv)
+\end{code}
+}
+
 %%%%%%%%%%%%
 \subsection{Revised Syntax: 1-Paths}
 \label {fig:more}
@@ -1805,7 +1815,6 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 \\
 \swapp \fatsemi (c₁ ⊕ c₂) & \isoone &  (c₂ ⊕ c₁) \fatsemi \swapp \\
 \swapt \fatsemi (c₁ ⊗ c₂) & \isoone &  (c₂ ⊗ c₁) \fatsemi \swapt \\
-\swapp \fatsemi \factor & \isoone &  \factor \fatsemi (\swapp ⊗ \idc) \\
 \\
 \identlp \fatsemi c₂ & \isoone & (c₁ ⊕ c₂) \fatsemi \identlp \\
 \identrp \fatsemi (c₁ ⊕ c₂) & \isoone &  c₂ \fatsemi \identrp \\
@@ -1953,14 +1962,14 @@ for full details.
 %  able to prove (easily!) that all (e : c <-> d) 2! (2flip e) == 2flip
 %  (2! e) where I really mean == there.}
 %
-\amr{One of the interesting conclusions of the coherence laws (see the
-  comments in the file above) is that it forces all (putative)
-  elements of bot to be equal.  This comes from the coherence law for
-  the two ways of proving that 0 * 0 = 0.}
+% \amr{One of the interesting conclusions of the coherence laws (see the
+%   comments in the file above) is that it forces all (putative)
+%   elements of bot to be equal.  This comes from the coherence law for
+%   the two ways of proving that 0 * 0 = 0.}
 
-\amr{swapfl* and swapfr* were never used, so I removed them (commented
-them out of PiLevel1).I’d lean towards leaving it and saying that the
-axioms are not independent, just like Laplaza’s conditions.}
+%% \amr{swapfl* and swapfr* were never used, so I removed them (commented
+%% them out of PiLevel1).I’d lean towards leaving it and saying that the
+%% axioms are not independent, just like Laplaza’s conditions.}
 
 % \amr{Note that a few of those "id" in there are actually "id<-> {ZERO}
 %  {ZERO}", that is very important.  Most of the laws having to do with
@@ -1973,8 +1982,52 @@ axioms are not independent, just like Laplaza’s conditions.}
 %  identr+ laws must involve ZERO.}
 
 %%%%%%%%%%%%
-\subsection{A Syntactic 2-Paths Circuit Optimizer}
+\subsection{Soundness}
  
+Each 2-level combinator whose signature is in Fig.~\ref{fig:more2}
+gives rise to an equivalence of equivalences of types. The formal Agda
+statement is:
+
+\smallskip 
+
+\begin{code} 
+cc2equiv : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) →
+  c2equiv c₁ ≋ c2equiv c₂
+\end{code}
+\AgdaHide{
+\begin{code}
+cc2equiv = ?
+\end{code}
+}
+
+\smallskip 
+
+where \AgdaSymbol{≋} is the equivalence of equivalences with
+constructor \AgdaInductiveConstructor{eq} defined in the proof of
+Thm.~\ref{thm:eqeq}. Given all the infrastructure, most of the cases
+are fairly straightforward to prove except for the two cases in which
+we need to prove that the left and right composition of the
+equivalence arising from a combinator \AgdaBound{c} and the
+equivalence arising from the inverse \AgdaSymbol{!}~\AgdaBound{c} is
+equivalent to the identity equivalence. Formally:
+
+\smallskip
+
+\begin{code} 
+left-inv : {t₁ t₂ : U} (c : t₁ ⟷ t₂) →
+  (c2equiv (! c) ● c2equiv c) ≋ idequiv
+\end{code}
+\AgdaHide{
+\begin{code}
+left-inv = ?
+\end{code}
+}
+
+\noindent and symmetrically for the flipped case.
+
+%%%%%%%%%%%%
+\subsection{A Syntactic 2-Paths Circuit Optimizer}
+  
 Given two $\Pi$-combinators:
 \AgdaHide{
 \begin{code}
@@ -2116,12 +2169,12 @@ various desired properties. Of course, finding a rewriting procedure
 that makes progress towards the canonical representation is far from
 trivial.
 
-\amr{Viewing 2 path are transformations on permutations on finite sets
-  or as transformations of circuits drawn in a diagrammatic way like
-  in 2path figure swap makes them very intuitive: if you see wires
-  etc. connection to topology etc.}
+\amr{Viewing 2 path are transformations on permutations on finite sets 
+  or as transformations of circuits drawn in a diagrammatic way like 
+  in 2path figure swap makes them very intuitive: if you see wires 
+  etc. connection to topology etc.
 
-\amr{Of course, when it comes to computing with diagrams, the first thing you have to make precise is exactly what you mean by "diagram". In Joyal \& Street's picture, this literally a geometric object, i.e. some points and lines in space. This works very well, and pretty much exactly formalises what happens when you do a pen-and-paper proof involving string diagrams. However, when it comes to mechanising proofs, you need some way to represent a string diagram as a data structure of some kind. From here, there seem to be a few approaches:
+Of course, when it comes to computing with diagrams, the first thing you have to make precise is exactly what you mean by "diagram". In Joyal \& Street's picture, this literally a geometric object, i.e. some points and lines in space. This works very well, and pretty much exactly formalises what happens when you do a pen-and-paper proof involving string diagrams. However, when it comes to mechanising proofs, you need some way to represent a string diagram as a data structure of some kind. From here, there seem to be a few approaches:
 
 (1: combinatoric) its a graph with some extra bells and whistles
 (2: syntactic) its a convenient way of writing down some kind of term
