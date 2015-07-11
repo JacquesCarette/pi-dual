@@ -489,27 +489,24 @@ equivalence. But reasoning \emph{about} these programs abandons the
 notion of equivalence and uses conventional irreversible functions to
 specify evaluators and the derived notions of program
 equivalence. This unfortunately misses the beautiful combinatorial
-structure of programs and proofs that was first exposed in the
-historical paper by \citet{Hofmann96thegroupoid} and that is currently
-the center of attention of HoTT and that requires keeping the focus on
-equivalences not only at the conventional level of programs but also
-at the higher levels of programs expressing equivalences, programs
-manipulating equivalences about other programs, etc.
+structure of equivalences at higher-levels that was first exposed in
+the historical paper by \citet{Hofmann96thegroupoid} and that is
+currently the center of attention of HoTT.
 
 This paper addresses --- and completely solves --- a well-defined part
 of the general problem of programming with equivalences up to
 equivalences. Our approach, we argue, might also be suitable for the
 more general problem. The particular problem we focus on is that of
-programming with the finite types built from the empty type, the unit
-type, and closed under sums and products, and reasoning about these
-programs between these finite types, i.e., the problem of equivalences
-between types and equivalences between such equivalences. Although
-limited in their expressive power, these types are rich enough to
-express all combinational (with no state or feedback) hardware
-circuits and, as we show, already exhibit substantial combinatorial
-structure at the ``next level'', i.e., at the level of equivalences
-about equivalences of types. What emerges from our study are the
-following results:
+programming with equivalences between the finite types built from the
+empty type, the unit type, and closed under sums and products, and
+reasoning about equivalences between these programs between finite
+types, i.e., the problem of equivalences between finite types and
+equivalences between such equivalences. Although limited in their
+expressive power, these types are rich enough to express all
+combinational (with no state or feedback) hardware circuits and, as we
+show, already exhibit substantial combinatorial structure at the
+``next level,'' i.e., at the level of equivalences about equivalences
+of types. What emerges from our study are the following results:
 \begin{itemize}
 \item a universal language for combinational reversible circuits that
   comes with a calculus for writing circuits and a calculus for
@@ -591,11 +588,35 @@ defined as follows:
 \end{array}\] 
 A result by \citet{Fiore:2004,fiore-remarks} completely characterizes
 the isomorphisms between finite types using the axioms of commutative
-semirings.\footnote{Appendix~\ref{sec:commrig} recalls the
-  definition.}  Intuitively this result states that one can interpret
-each type by its size, and that this identification validates the
-familiar properties of the natural numbers, and is in fact isomorphic
-to the commutative semiring of the natural numbers.
+semirings, whose definition we recall below. 
+
+\begin{definition}
+  A \emph{commutative semiring} (sometimes called a \emph{commutative
+    rig} (commutative ri\emph{n}g without negative elements) consists of a
+  set $R$, two distinguished elements of $R$ named 0 and 1, and two
+  binary operations~$+$ and $\cdot$, satisfying the following
+  relations for any $a,b,c \in R$:
+\[\begin{array}{rcl}
+0 + a &=& a \\
+a + b &=& b + a \\
+a + (b + c) &=& (a + b) + c \\
+\\
+1 \cdot a &=& a \\
+a \cdot b &=& b \cdot a \\
+a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
+\\
+0 \cdot a &=& 0 \\
+(a + b) \cdot c &=& (a \cdot c) + (b \cdot c)
+\end{array}\]
+\end{definition}
+
+We emphasize that, in the definition above, the axioms are satisfied
+up to strict equality $=$. The most famous instance of commutative
+semirings if, of course, the natural numbers. Intuitively, Fiore
+et. al's result states that one can interpret each type by its size,
+and that this identification validates the familiar properties of the
+natural numbers, and is in fact isomorphic to the commutative semiring
+of the natural numbers.
 
 Our work builds on this identification together with work by
 \citet{James:2012:IE:2103656.2103667} which introduced the $\Pi$
@@ -653,7 +674,8 @@ semiring (up to $\simeq$).
 %% \jc{Do we want to have a bunch of appendices, or perhaps a web
 %% link, to all the Agda code which formalizes all of this?}
 
-\noindent For example, we have equivalences such as:
+\noindent For example, for arbitrary types $A$, $B$, and $C$, we have
+equivalences such as:
 \[\begin{array}{rcl}
 \bot ⊎ A &\simeq& A \\
 \top \times A &\simeq& A \\
@@ -681,14 +703,14 @@ in particular, it is itself a commutative semiring.
 \label{thm:eqeq}
   The type of all equivalences $\textsc{eq}_{A,B}$ for finite types
   $A$ and $B$ forms a commutative semiring up to extensional
-  equivalence of equivalences.
+  equivalence of equivalences \AgdaSymbol{≋}.
 \end{theorem}
 \begin{proof}
   The most important insight is the definition of equivalence of
   equivalences. Two equivalences $e_1, e_2 : \textsc{eq}_{A,B}$ with
   underlying functions $f_1$ and $f_2$ and underlying quasi-inverses
-  $g_1$ and $g_2$ are themselves equivalent if we have that both
-  $f₁ = f₂$ and $g₁ = g₂$ extensionally. Given this notion of
+  $g_1$ and $g_2$ are themselves equivalent $e₁ ≋ e₂$ if we have that
+  both $f₁ = f₂$ and $g₁ = g₂$ extensionally. Given this notion of
   equivalence of equivalences, the proof proceeds smoothly with the
   additive unit being the vacuous equivalence $\bot \simeq \bot$, the
   multiplicative unit being the trivial equivalence
@@ -731,7 +753,8 @@ $\mathsf{Fin}~6$ and reduce all type equivalences between sets of size
 6 to permutations.
 
 We begin with the following theorem which precisely characterizes the
-relationship between finite types and finite sets.
+relationship between finite types and finite sets by formalizing that
+equivalent finite types must have the same size.
 
 \begin{theorem}
   If $A\simeq \mathsf{Fin}~m$, $B\simeq \mathsf{Fin}~n$ and
@@ -803,25 +826,26 @@ iso-times = {!!}
 \begin{proof}
   The proof requires delicate attention to the representation of
   permutations as straightforward attempts turn out not to capture
-  enough of the properties of permutations.\footnote{All
-    formalizations of permutations in Agda or Coq known to us do not
-    support the full range of operations that we need including
-    sequential compositions, disjoint unions, and products of
-    permutations.} After several attempts, we settled on formalizing a
-  permutation using the conventional one-line notation, e.g., giving a
-  preferred enumeration 1 2 3 of a set with three elements, the
-  one-line notion 2 3 1 denotes the permutation sending 1 to 2, 2 to
-  3, and 3 to 1. To make sure the sequence of numbers is of the right
-  length and that each number is in the right range, we use Agda
-  vectors $\AgdaPrimitiveType{Vec}~(\AgdaPrimitiveType{Fin}~m)~n$
-  (abbreviated $\AgdaFunction{FinVec}~m~n$). To ensure that the vector
+  enough of the properties of permutations.\footnote{None of the
+    formalizations of permutations in Agda or Coq known to us supports
+    the full range of operations that we need including sequential
+    compositions, disjoint unions, and products of permutations.}
+  After several attempts, we settled on formalizing a permutation
+  using the conventional one-line notation, e.g., giving a preferred
+  enumeration 1 2 3 of a set with three elements, the one-line notion
+  2 3 1 denotes the permutation sending 1 to 2, 2 to 3, and 3 to 1. To
+  make sure the sequence of numbers is of the right length and that
+  each number is in the right range, we use Agda vectors
+  $\AgdaPrimitiveType{Vec}~(\AgdaPrimitiveType{Fin}~m)~n$ (abbreviated
+  $\AgdaFunction{FinVec}~m~n$). To further ensure that the vector
   elements have no repetitions (i.e., represent 1-1 functions), we
   include in the representation of each permutation, an inverse vector
   $\AgdaFunction{FinVec}~n~m$ as well as two proofs asserting that the
   compositions in both directions produce the identity permutation
   (which naturally forces $m$ and $n$ to be equal). Given this
   representation, we can prove that two permutations are equal if the
-  one-line vector representations are strictly equal. The main proof
+  one-line vector representations are strictly equal \emph{and} we can
+  support the full range of operations on permutations. The main proof
   then proceeds using the vacuous permutation $\mathsf{CPerm}~0~0$ for
   the additive unit and the trivial permutation $\mathsf{CPerm}~1~1$
   for the multiplicative unit. The binary operations on permutations
@@ -845,9 +869,9 @@ permutations $\textsc{perm}~m~n$.
 \end{proof}
 
 \begin{theorem}\label{thm:isoeqperm}
-  The equivalence of Theorem~\ref{thm:eqeqperm} is an
-  \emph{isomorphism} between the commutative semiring of equivalences
-  of finite types and the commutative semiring of permutations.
+  The equivalence of Thm.~\ref{thm:eqeqperm} is an \emph{isomorphism}
+  between the commutative semiring of equivalences of finite types and
+  the commutative semiring of permutations.
 \end{theorem}
 \begin{proof}
   In the process of this proof, we show that every axiom of semirings
@@ -862,19 +886,29 @@ permutations $\textsc{perm}~m~n$.
   \]
 \end{proof}
 
-Before concluding, we briefly mention that, with the proper Agda
-definitions, Thm.~\ref{thm:eqeqperm} can be rephrased in a more
-evocative way as follows. 
+\vspace{-0.5cm}
+
+Before concluding this section, we recall that, the conventional
+formulation of the univalence \emph{axiom} is:
+\[
+(A ≡ B) ≃ (A ≃ B)
+\]
+where $≡$ is the propositional equality relation and hence $(A ≡ B)$
+is the collection of all identities between types $A$ and $B$. With
+the proper Agda definitions, Thm.~\ref{thm:eqeqperm} can be rephrased
+in a more evocative way as follows.
 
 \begin{theorem}
 \[
-(A ≃ B) ≃ \mathsf{Perm} |A| |B| 
+\mathsf{Perm}~|A|~|B|  ≃ (A ≃ B)
 \]
 \end{theorem}
 
-\noindent This formulation shows that the univalence \emph{postulate}
-can be proved and given a computational interpretation for finite
-types.
+\noindent 
+where $\mathsf{Perm}~|A|~|B|$ is the collection of all permutations
+between the finite sets of the given sizes. This reformulation shows
+that, for the restricted finite types, the theorem proves, and gives a
+computational interpretation of, the univalence axiom. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Programming with Permutations}
@@ -1106,6 +1140,8 @@ sugar illustrated below and used again in the next section:
 
 \smallskip
 
+\begin{tabular}{@{\kern-3em}l}
+\begin{minipage}{0.5\textwidth}
 \begin{code}
 BOOL² : U
 BOOL² = TIMES BOOL BOOL
@@ -1123,13 +1159,28 @@ CNOT = TIMES BOOL BOOL
          ⟷⟨ id⟷ ⟩
        TIMES BOOL BOOL □
   where x = ONE; y = ONE
+\end{code}
+\end{minipage}
+\end{tabular}
 
+\bigskip
+
+\begin{tabular}{@{\kern-3em}l}
+\begin{minipage}{0.5\textwidth}
+\begin{code}  
 TOFFOLI : TIMES BOOL BOOL² ⟷ TIMES BOOL BOOL²
 TOFFOLI = TIMES BOOL BOOL² 
             ⟷⟨ id⟷ ⟩
           TIMES (PLUS x y) BOOL² 
             ⟷⟨ dist ⟩
-          PLUS (TIMES x BOOL²) (TIMES y BOOL²)
+          PLUS (TIMES x BOOL²) (TIMES y BOOL²) 
+\end{code}
+\end{minipage}
+\end{tabular}
+
+\begin{tabular}{@{\kern-3em}l}
+\begin{minipage}{0.5\textwidth}
+\begin{code} 
             ⟷⟨ id⟷ ⊕ (id⟷ ⊗ CNOT) ⟩ 
           PLUS (TIMES x BOOL²) (TIMES y BOOL²)
             ⟷⟨ factor ⟩
@@ -1138,6 +1189,8 @@ TOFFOLI = TIMES BOOL BOOL²
          TIMES BOOL BOOL² □
   where x = ONE; y = ONE
 \end{code}
+\end{minipage}
+\end{tabular}
 
 \smallskip
 
@@ -1245,6 +1298,8 @@ evalB (c₀ ⊗ c₁) (x , y) = evalB c₀ x , evalB c₁ y
 \end{code}
 }
 
+\smallskip
+
 \noindent In the definition, the function $⟦\cdot⟧$ maps each type
 constructor to its Agda denotation, e.g., it maps the type 0 to
 $\bot$, the type 1 to $\top$, etc. The complete definitions for these
@@ -1321,8 +1376,9 @@ the previous section are actually equivalent:
 
 \smallskip 
 
+\begin{tabular}{@{\kern-3em}l}
+\begin{minipage}{0.5\textwidth}
 \begin{code}
-
 negEx : NOT₂ ⇔ NOT₁
 negEx =
   uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆)))
@@ -1343,29 +1399,45 @@ negEx =
           ⇔⟨ unitil⋆⇔ ⊡ id⇔ ⟩
   (swap₊ ◎ uniti⋆) ◎ unite⋆
           ⇔⟨ assoc◎r ⟩
-  swap₊ ◎ (uniti⋆ ◎ unite⋆)
+  swap₊ ◎ (uniti⋆ ◎ unite⋆) 
           ⇔⟨ id⇔ ⊡ linv◎l ⟩
+\end{code}
+\end{minipage}
+\end{tabular}
+
+\begin{tabular}{@{\kern-3em}l}
+\begin{minipage}{0.5\textwidth}
+\begin{code} 
   swap₊ ◎ id⟷
           ⇔⟨ idr◎l ⟩
   swap₊ ▤
 \end{code}
+\end{minipage}
+\end{tabular}
 
 \smallskip
 
 The rules used in the derivation (and which are defined in the Agda
-code) capture the following properties about permutations: the
-sequential composition of permutations is associative, the identity
-permutation is a left and right unit of sequential composition, the
-composition of a permutation with its inverse produces the identity
-permutation, permutations on the set with one element are trivial and
-can be omitted, and swapping and parallel composition commute as
-follows:
+code) are based on the following important property: reasoning about
+permutations is \emph{compositional} in the sense that a permutation
+can be decomposed into parts (using sequential composition, sums, and
+products as constructors) and then one can simplify the parts
+individually. The simplifications used in the derivation correspond to
+the following properties of permutations: the sequential composition
+of permutations is associative; the identity permutation is a left and
+right unit of sequential composition; the composition of a permutation
+with its inverse produces the identity permutation; permutations on
+the set with one element are trivial and can be omitted; and swapping
+and parallel composition commute as follows:
 \[
 \AgdaInductiveConstructor{swap⋆}~\AgdaInductiveConstructor{◎}~(\AgdaBound{c₁}~\AgdaInductiveConstructor{⊗}~\AgdaBound{c₂})~\AgdaInductiveConstructor{⇔}~(\AgdaBound{c₂}~\AgdaInductiveConstructor{⊗}~\AgdaBound{c₁})~\AgdaInductiveConstructor{◎}~\AgdaInductiveConstructor{swap⋆}
 \]
 The accompanying material includes a short slide deck animating the
 sequence of rewrites showing that they are all indeed intuitive
 transformations on the diagrams representing the circuits.
+
+The important question that remains is what other properties of 
+permutations are needed for a complete set of rewrite rules?
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Categorification}
@@ -1936,7 +2008,7 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 %%%%%%%%%%%%
 \subsection{Revised Syntax: 2-Paths}
  
-The big addition of course is the level-2 combinators which are
+The big addition to $\Pi$ is the level-2 combinators which are
 collected in Fig.~\ref{fig:more2}. To avoid clutter we omit the names
 of the combinators (which are arbitrary) and only show the
 \emph{untyped} signatures. The signatures themselves are of course
@@ -2695,36 +2767,6 @@ numbers by further generalizing the work to the field of
 computations involving recursive datatypes such as trees that can be
 viewed as solutions to polynomials over type
 variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\appendix
-%% \newpage
-\section{Commutative Semirings}
-\label{sec:commrig}
- 
-Given that the structure of commutative semirings is central to this
-paper, we recall the formal algebraic definition. Commutative
-semirings are sometimes called \emph{commutative rigs} as they are
-commutative rings without negative elements.
-
-\begin{definition}
-  A \emph{commutative semiring} consists of a set $R$, two
-  distinguished elements of $R$ named 0 and 1, and two binary
-  operations~$+$ and $\cdot$, satisfying the following relations for
-  any $a,b,c \in R$:
-\[\begin{array}{rcl}
-0 + a &=& a \\
-a + b &=& b + a \\
-a + (b + c) &=& (a + b) + c \\
-\\
-1 \cdot a &=& a \\
-a \cdot b &=& b \cdot a \\
-a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
-\\
-0 \cdot a &=& 0 \\
-(a + b) \cdot c &=& (a \cdot c) + (b \cdot c)
-\end{array}\]
-\end{definition}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% \clearpage
