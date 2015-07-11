@@ -1,5 +1,6 @@
 \documentclass[authoryear,preprint]{sigplanconf}
 
+\usepackage{flushend}
 \usepackage{agda}
 \usepackage{alltt}
 \usepackage{fancyvrb}
@@ -555,7 +556,8 @@ our approach to accommodate higher-order functions, suggesting a
 possible path towards a solution. We note that because the issues
 involved are quite subtle, the paper is the ``unformalization'' of an
 executable \texttt{Agda 2.4.2.3} package with the global
-\AgdaComment{without-K} option enabled.
+\AgdaComment{without-K} option enabled.\footnote{We will publish the
+  link to the code repository after the double-blind review process.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Equivalences and Commutative Semirings} 
@@ -1783,11 +1785,7 @@ open import PiEquiv hiding (c2equiv; left-inv; cc2equiv)
 \label {fig:more}
 
 The inspiration of symmetric rig groupoids suggested a refactoring of
-$\Pi$ with additional level-1 combinators.  The added combinators
-below are redundant (from an operational perspective) exactly because
-of the coherence conditions.  In addition to being critical to the
-proofs, they are useful when representing circuits, leading to smaller
-programs with fewer redexes:
+$\Pi$ with the following additional level-1 combinators:  
 
 \[\begin{array}{rrcll}
 \identlsp :&  \tau + 0 & \iso & \tau &: \identrsp \\
@@ -1799,6 +1797,11 @@ programs with fewer redexes:
 \distl :&~ \tau_1 * (\tau_2 + \tau_3) & \iso & (\tau_1 * \tau_2) &: \factorl \\
 &&&                                                               +~ (\tau_1 * \tau_3)
 \end{array}\]      
+
+The added combinators are redundant (from an operational perspective)
+exactly because of the coherence conditions. They are however critical
+to the proofs, and in addition, they are often useful when
+representing circuits, leading to smaller programs with fewer redexes.
 
 \begin{figure*}
 \[\begin{array}{cc}
@@ -1813,8 +1816,10 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 (c₁ \fatsemi c₃) ⊕ (c₂ \fatsemi c₄) & \isoone & (c₁ ⊕ c₂) \fatsemi (c₃ ⊕ c₄) \\
 (c₁ \fatsemi c₃) ⊗ (c₂ \fatsemi c₄) & \isoone & (c₁ ⊗ c₂) \fatsemi (c₃ ⊗ c₄) \\
 \\
+\\
 \swapp \fatsemi (c₁ ⊕ c₂) & \isoone &  (c₂ ⊕ c₁) \fatsemi \swapp \\
 \swapt \fatsemi (c₁ ⊗ c₂) & \isoone &  (c₂ ⊗ c₁) \fatsemi \swapt \\
+\\
 \\
 \identlp \fatsemi c₂ & \isoone & (c₁ ⊕ c₂) \fatsemi \identlp \\
 \identrp \fatsemi (c₁ ⊕ c₂) & \isoone &  c₂ \fatsemi \identrp \\
@@ -1822,7 +1827,8 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 \identrsp \fatsemi (c₂ ⊕ c₁) & \isoone &  c₂ \fatsemi \identrsp \\
 \identlsp ⊕ \idc & \isoone & \assocrp \fatsemi (\idc ⊕ \identlp) \\
 \\
-(c₁ ⊕ (c₂ ⊕ c₃)) \fatsemi \assoclp & \isoone & \assoclp \fatsemi ((c₁ ⊕ c₂) ⊕ c₃) \\
+\\
+ (c₁ ⊕ (c₂ ⊕ c₃)) \fatsemi \assoclp & \isoone & \assoclp \fatsemi ((c₁ ⊕ c₂) ⊕ c₃) \\
 ((c₁ ⊕ c₂) ⊕ c₃) \fatsemi \assocrp & \isoone & \assocrp \fatsemi (c₁ ⊕ (c₂ ⊕ c₃)) \\
 (c₁ ⊗ (c₂ ⊗ c₃)) \fatsemi \assoclt & \isoone & \assoclt \fatsemi ((c₁ ⊗ c₂) ⊗ c₃) \\
 ((c₁ ⊗ c₂) ⊗ c₃) \fatsemi \assocrt & \isoone & \assocrt \fatsemi (c₁ ⊗ (c₂ ⊗ c₃)) \\
@@ -1839,6 +1845,7 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 \identrst \fatsemi (c₂ ⊗ c₁) & \isoone &  c₂ \fatsemi \identrst \\
 \identlst ⊗ \idc & \isoone & \assocrt \fatsemi (\idc ⊕ \identlt) \\
 \\
+\\
 \absorbr & \isoone & \identlt \\
 \absorbr & \isoone & \absorbl \\
 \absorbr & \isoone & (\assoclt \fatsemi (\absorbr ⊗ \idc)) \\
@@ -1854,6 +1861,7 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 (\idc ⊗ \identlp) & \isoone & (\distl \fatsemi (\absorbl ⊕ \idc)) \\
             && \fatsemi \identlp \\
 \\
+\\
 \identlp & \isoone & \distl \fatsemi (\identlp ⊕ \identlp) \\
 (\idc ⊗ \swapp) \fatsemi \distl & \isoone & \distl \fatsemi \swapp \\
 \dist \fatsemi (\swapt ⊕ \swapt) & \isoone & \swapt \fatsemi \distl \\
@@ -1861,6 +1869,8 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 \idc \fatsemi \factorzr & \isoone & \factorzr \fatsemi (c ⊗ \idc) 
 \end{array}
 \end{array}\]
+\\
+\\
 \[\begin{array}{rcl}
 ((\assoclp ⊗ \idc) \fatsemi \dist) \fatsemi (\dist ⊕ \idc) & \isoone &
   (\dist \fatsemi (\idc ⊕ \dist)) \fatsemi \assoclp \\
@@ -1882,6 +1892,8 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 (\assoclt \fatsemi \swapt) \fatsemi \assoclt & \isoone &
   ((\idc ⊗ \swapt) \fatsemi \assoclt) \fatsemi (\swapt ⊗ \idc) 
 \end{array}\]
+\\
+\\
 \begin{minipage}{\textwidth}
 \begin{center} 
 \Rule{}
@@ -1898,7 +1910,13 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 {\jdg{}{}{c₁ \isoone c₃} \quad \vdash c₂ \isoone c₄}
 {\jdg{}{}{(c₁ \fatsemi c₂) \isoone (c₃ \fatsemi c₄)}}
 {}
-%
+\end{center}
+\end{minipage}
+\\
+\\
+\\
+\begin{minipage}{\textwidth}
+\begin{center} 
 \Rule{}
 {\jdg{}{}{c₁ \isoone c₃} \quad \vdash c₂ \isoone c₄}
 {\jdg{}{}{(c₁ ⊕ c₂) \isoone (c₃ ⊕ c₄)}}
@@ -1910,6 +1928,8 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 {}
 \end{center}
 \end{minipage}
+\\
+\\
 \caption{\label{fig:more2}Signatures of level-2 $\Pi$-combinators.}
 \end{figure*}
 
@@ -1918,42 +1938,39 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
  
 The big addition of course is the level-2 combinators which are
 collected in Fig.~\ref{fig:more2}. To avoid clutter we omit the names
-of the combinators (which are arbitrary) and only show the signatures.
+of the combinators (which are arbitrary) and only show the
+\emph{untyped} signatures. The signatures themselves are of course
+typed and in some cases the types add critical information. For
+example, $\identlt \fatsemi c₂ \isoone (c₁ ⊗ c₂) \fatsemi \identlt$
+hides the fact that $c₁$ here is restricted to have signature
+$c₁ : \AgdaInductiveConstructor{ZERO} ⟷
+\AgdaInductiveConstructor{ZERO}$.
+The reader should consult the code for full details.
 
-Even though we know that these combinators are justified by the
-coherence conditions inherent in the definition of a symmetric rig
-weak groupoid, it would still be nice to get a better understanding of
-what these really say.  About a third of the combinators come from the
-definition of the various natural isomorphisms
-($\alpha_{A,B,C}, \lambda_{A}, \rho_{A}, \sigma_{A,B}, dₗ, dᵣ, aₗ$ and
-$aᵣ$).  The first $4$ natural isomorphisms actually occur twice, once
-for each of the symmetric monoidal structures at play.  Each natural
-isomorphism is composed of 2 natural transformations (one in each
-direction) that must compose to the identity.  This in turn induces
-$4$ coherences laws: two \emph{naturality laws} which indicate that
-the combinator commutes with structure construction, and two which
-express that the resulting combinators are left and right inverses of
-each other.  But note also that there mere desire that $\oplus$ be a
-bifunctor induces 3 coherence laws.  And then of course each
-``structure'' (monoidal, braided, symmetric) comes with more, as
-outlined in the previous section, culminating with 13 additional
-coherence laws for rig.
+Generally speaking, the 2-level combinators arise for the following
+reasons. About a third of the combinators come from the definition of
+the various natural isomorphisms $\alpha_{A,B,C}$, $\lambda_{A}$,
+$\rho_{A}$, $\sigma_{A,B}$, $dₗ$, $dᵣ$, $aₗ$ and $aᵣ$.  The first $4$
+natural isomorphisms actually occur twice, once for each of the
+symmetric monoidal structures at play.  Each natural isomorphism is
+composed of 2 natural transformations (one in each direction) that
+must compose to the identity.  This in turn induces $4$ coherences
+laws: two \emph{naturality laws} which indicate that the combinator
+commutes with structure construction, and two which express that the
+resulting combinators are left and right inverses of each other.  We
+note that the mere desire that $\oplus$ be a bifunctor induces 3
+coherence laws.  And then of course each ``structure'' (monoidal,
+braided, symmetric) comes with more, as outlined in the previous
+section, culminating with 13 additional coherence laws for the rig
+structure.
 
-It is worth noting that most (but not all) of the properties of $⊎$
-were already in Agda's standard library (in
+It is worth noting that most (but not all) of the properties involving
+only $⊕$ were already in Agda's standard library (in
 \AgdaModule{Data.Sum.Properties} to be precise), whereas all
-properties of $×$ were immediately provable due to $η$ expansion.
-None of the mixed properties involved with distributivity and
-absorption were present, although the proof of all of them was very
+properties involving only $⊗$ were immediately provable due to $\eta$
+expansion.  None of the mixed properties involved with distributivity
+and absorption were present, although the proof of all of them was
 straightforward.
-
-It should be noted that a few of the ``raw'' signatures in
-Fig.~\ref{fig:more2} are slightly misleading, as we omit the signature
-of the underlying combinators.  For example, $\identlt \fatsemi c₂
-\isoone (c₁ ⊗ c₂) \fatsemi \identlt$ hides the fact that $c₁$ here is
-restricted to have signature $c₁ : \AgdaInductiveConstructor{ZERO} ⟷
-\AgdaInductiveConstructor{ZERO}$.  The reader should consult the code
-for full details.
 
 % \amr{However, it did let me observe one thing: we have 2! which says
 %  that given (c <-> d), we can get (d <-> c).  What we don't have, and
@@ -2002,16 +2019,16 @@ cc2equiv = ?
 
 \smallskip 
 
-where \AgdaSymbol{≋} is the equivalence of equivalences with
+\noindent where \AgdaSymbol{≋} is the equivalence of equivalences with
 constructor \AgdaInductiveConstructor{eq} defined in the proof of
 Thm.~\ref{thm:eqeq}. Given all the infrastructure, most of the cases
 are fairly straightforward to prove except for the two cases in which
 we need to prove that the left and right composition of the
 equivalence arising from a combinator \AgdaBound{c} and the
-equivalence arising from the inverse \AgdaSymbol{!}~\AgdaBound{c} is
+equivalence arising from the inverse \AgdaSymbol{!}~\AgdaBound{c} are
 equivalent to the identity equivalence. Formally:
 
-\smallskip
+\smallskip 
 
 \begin{code} 
 left-inv : {t₁ t₂ : U} (c : t₁ ⟷ t₂) →
@@ -2023,12 +2040,22 @@ left-inv = ?
 \end{code}
 }
 
+\smallskip 
+
 \noindent and symmetrically for the flipped case.
 
 %%%%%%%%%%%%
 \subsection{A Syntactic 2-Paths Circuit Optimizer}
   
-Given two $\Pi$-combinators:
+As Fig.~\ref{fig:more2} illustrates, we have rules to manipulate code
+fragments rewriting them in a small-step fashion. The rules apply only
+when both sides are well-typed. In their textual form, the rules are
+certainly not intuitive. They however become ``evidently correct''
+transformations on circuits when viewed diagrammatically.
+
+Consider two arbitrary $\Pi$-combinators representing circuits of the
+given types:
+
 \AgdaHide{
 \begin{code}
 postulate
@@ -2044,27 +2071,29 @@ postulate
 
 \smallskip 
 
-\noindent we can build two larger combinators $p_1$ and $p_2$,
+\noindent Now consider the circuits \AgdaFunction{p₁} and
+\AgdaFunction{p₂} which use \AgdaFunction{c₁} and \AgdaFunction{c₂}
+as shown below:
 
-\smallskip 
+\[\begin{array}{l}
+\AgdaFunction{p₁}~\AgdaFunction{p₂} ~\AgdaSymbol{:} ~\AgdaSymbol{\{}~\AgdaBound{A} ~\AgdaBound{B} ~\AgdaBound{C} ~\AgdaBound{D} ~\AgdaSymbol{:} ~\AgdaDatatype{U}~\AgdaSymbol{\}} ~\AgdaSymbol{→} ~\AgdaInductiveConstructor{PLUS} ~\AgdaBound{A} ~\AgdaBound{B} ~\AgdaDatatype{⟷} ~\AgdaInductiveConstructor{PLUS} ~\AgdaBound{C} ~\AgdaBound{D}
+\\
+\AgdaFunction{p₁} ~\AgdaSymbol{=} ~\AgdaInductiveConstructor{swap₊} ~\AgdaInductiveConstructor{◎} ~\AgdaSymbol{(}~\AgdaPostulate{c₁} ~\AgdaInductiveConstructor{⊕} ~\AgdaPostulate{c₂}~\AgdaSymbol{)}
+\\
+\AgdaFunction{p₂} ~\AgdaSymbol{=} ~\AgdaSymbol{(}~\AgdaPostulate{c₂} ~\AgdaInductiveConstructor{⊕} ~\AgdaPostulate{c₁}~\AgdaSymbol{)} ~\AgdaInductiveConstructor{◎} ~\AgdaInductiveConstructor{swap₊}
+\end{array}\]
 
-\begin{code}
-p₁ p₂ : {A B C D : U} → PLUS A B ⟷ PLUS C D
-p₁ = _⟷_.swap₊ ◎ (c₁ ⊕ c₂)
-p₂ = (c₂ ⊕ c₁) ◎ _⟷_.swap₊
-\end{code}
-
-\smallskip 
-
-\noindent As reversible circuits, $p_1$ and $p_2$ evaluate as
-follows. If $p_1$ is given the value $\inl{a}$, it first transforms it
-to $\inr{a}$, and then passes it to $c₂$. If $p_2$ is given the value
-$\inl{a}$, it first passes it to $c₂$ and then flips the tag of the
-result. Since $c₂$ is functorial, it must act polymorphically on its
-input and hence, it must be the case that the two evaluations produce
-the same result. The situation for the other possible input value is
-symmetric. This extensional reasoning is embedded once and for all in
-the proofs of coherence and distilled in a 2-level combinator:
+\noindent As reversible circuits, \AgdaFunction{p₁} and
+\AgdaFunction{p₂} evaluate as follows. If \AgdaFunction{p₁} is given
+the value $\inl{a}$, it first transforms it to $\inr{a}$, and then
+passes it to \AgdaFunction{c₂}. If \AgdaFunction{p₂} is given the
+value $\inl{a}$, it first passes it to \AgdaFunction{c₂} and then
+flips the tag of the result. Since \AgdaFunction{c₂} is functorial, it
+must act polymorphically on its input and hence, it must be the case
+that the two evaluations produce the same result. The situation for
+the other possible input value is symmetric. This extensional
+reasoning is embedded once and for all in the proofs of coherence and
+distilled in a 2-level combinator:
 
 \[\begin{array}{rcl}
 \AgdaInductiveConstructor{swapl₊⇔} & \AgdaSymbol{:} &
@@ -2082,11 +2111,14 @@ the proofs of coherence and distilled in a 2-level combinator:
   \AgdaInductiveConstructor{◎}~\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}
 \end{array}\]
 
-Pictorially, this 2-level combinator is a 2-path showing how the two
-paths can be transformed to one another. The proof of equivalence can
-be visualized by simply imagining the connections as wires whose
-endpoints are fixed: holding the wires on the right side of the top
-path and flipping them produces the connection in the bottom path:
+Categorically speaking, this combinator expresses exactly that the
+braiding $\sigma_{A,B}$ is a natural transformation, in other words
+that $\sigma_{A,B}$ must commute with $\oplus$. Pictorially, this
+2-level combinator is a 2-path showing how the two paths can be
+transformed to one another. The proof of equivalence can be visualized
+by simply imagining the connections as wires whose endpoints are
+fixed: holding the wires on the right side of the top path and
+flipping them produces the connection in the bottom path:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.9,every node/.style={scale=0.9}]
@@ -2149,44 +2181,104 @@ path and flipping them produces the connection in the bottom path:
 \end{tikzpicture}
 \end{center}
 
-Categorically speaking, this combinator expresses exactly that
-the braiding $\sigma_{A,B}$ is a natural transformation, in other
-words that $\sigma_{A,B}$ must commute with $\oplus$.
+\begin{comment}
+fully-distribute⇔l : {t₁ t₂ t₃ t₄ : U} → 
+  (distl ◎ (dist {t₁} {t₂} {t₃} ⊕ dist {t₁} {t₂} {t₄})) ◎ assocl₊ ⇔
+  ((((dist ◎ (distl ⊕ distl)) ◎ assocl₊) ◎ (assocr₊ ⊕ id⟷)) ◎ ((id⟷ ⊕ swap₊) ⊕ id⟷)) ◎ (assocl₊ ⊕ id⟷) 
 
-As Fig.~\ref{fig:more2} illustrates, we have rules to manipulate code
-fragments rewriting them in a small-step fashion. The rules apply only
-when both sides are well-typed. The small-step nature of the rules
-should allow us to make efficient optimizers following the experience
-in functional languages~\citep{PeytonJones:1998:TOH:299619.299621}. In
-contrast the coherence conditions are much smaller in number and many
-then express invariants about much bigger ``chunks.'' From our small
+  (distl ◎ (dist ⊕ dist)) ⇔
+  ((dist ◎ (distl ⊕ distl)) ◎ ((id ⊕ swap₊) ⊕ id))
+      
+LHS : 
+  (TIMES (PLUS t₁ t₂) (PLUS t₃ t₄)) ⟷
+  (PLUS (PLUS (PLUS (TIMES t₁ t₃) (TIMES t₂ t₃)) (TIMES t₁ t₄))) (TIMES t₂ t₄)
+
+LHS : (t1+t2)(t3+t4) ⟷ ((t1t3 + t2t3) + t1t4) + t2t4
+
+t1  
+--
+t2  
+        t1
+        --
+        t2
+
+        t3
+        ==
+        t1
+        --
+        t2 
+
+        t4
+t3  
+--
+t4  
+
+
+\end{comment}
+
+% \amr{Viewing 2 path are transformations on permutations on finite
+% sets or as transformations of circuits drawn in a diagrammatic way
+% like in 2path figure swap makes them very intuitive: if you see
+% wires etc. connection to topology etc.
+
+%   Of course, when it comes to computing with diagrams, the first
+%   thing you have to make precise is exactly what you mean by
+%   "diagram". In Joyal \& Street's picture, this literally a
+%   geometric object, i.e. some points and lines in space. This works
+%   very well, and pretty much exactly formalises what happens when
+%   you do a pen-and-paper proof involving string diagrams. However,
+%   when it comes to mechanising proofs, you need some way to
+%   represent a string diagram as a data structure of some kind. From
+%   here, there seem to be a few approaches:
+
+% (1: combinatoric) its a graph with some extra bells and whistles (2:
+% syntactic) its a convenient way of writing down some kind of term
+% (3: "lego" style) its a collection of tiles, connected together on a
+% 2D plane
+
+% Point of view (1) is basically what Quantomatic is built on. "String
+% graphs" aka "open-graphs" give a combinatoric way of working with
+% string diagrams, which is sound and complete with respect to
+% (traced) symmetric monoidal categories. See arXiv:1011.4114 for
+% details of how we did this.
+
+% Naiively, point of view (2) is that a diagram represents an
+% equivalence class of expressions in the syntax of a monoidal
+% category, which is basically back to where we started. However,
+% there are more convenient syntaxes, which are much closer in spirit
+% to the diagrams. Lately, we've had a lot of success in connected
+% with abstract tensor notation, which came from Penrose. See
+% g. arXiv:1308.3586 and arXiv:1412.8552.
+
+% Point of view (3) is the one espoused by the 2D/higher-dimensional
+% rewriting people (e.g. Yves Lafont and Samuel Mimram). It is also
+% (very entertainingly) used in Pawel Sobocinski's blog:
+% http://graphicallinearalgebra.net .
+
+% This eliminates the need for the interchange law, but keeps pretty
+% much everything else "rigid". This benefits from being able to
+% consider more general categories, but is less well-behaved from the
+% point of view of rewriting. For example as Lafont/Mimram point out,
+% even finite rewrite systems can generate infinite sets of critical
+% pairs.}
+
+In contrast to the formal coherence conditions from Laplaza, the
+2-combinators have more of a ``small-step'' nature which, from
+experience with compilers for functional
+languages~\citep{PeytonJones:1998:TOH:299619.299621}, makes them more
+suitable for designing efficient optimizers. From our small
 experiments, an effective way to use the rules is to fix a canonical
-representation of circuits that has the ``right'' properties and use
-the rules in a directed fashion to produce that canonical
-representation. For example, \citet{Saeedi:2013:SOR:2431211.2431220}
-survey several possible canonical representations that trade-off
-various desired properties. Of course, finding a rewriting procedure
-that makes progress towards the canonical representation is far from
-trivial.
-
-\amr{Viewing 2 path are transformations on permutations on finite sets 
-  or as transformations of circuits drawn in a diagrammatic way like 
-  in 2path figure swap makes them very intuitive: if you see wires 
-  etc. connection to topology etc.
-
-Of course, when it comes to computing with diagrams, the first thing you have to make precise is exactly what you mean by "diagram". In Joyal \& Street's picture, this literally a geometric object, i.e. some points and lines in space. This works very well, and pretty much exactly formalises what happens when you do a pen-and-paper proof involving string diagrams. However, when it comes to mechanising proofs, you need some way to represent a string diagram as a data structure of some kind. From here, there seem to be a few approaches:
-
-(1: combinatoric) its a graph with some extra bells and whistles
-(2: syntactic) its a convenient way of writing down some kind of term
-(3: "lego" style) its a collection of tiles, connected together on a 2D plane
-
-Point of view (1) is basically what Quantomatic is built on. "String graphs" aka "open-graphs" give a combinatoric way of working with string diagrams, which is sound and complete with respect to (traced) symmetric monoidal categories. See arXiv:1011.4114 for details of how we did this.
-
-Naiively, point of view (2) is that a diagram represents an equivalence class of expressions in the syntax of a monoidal category, which is basically back to where we started. However, there are more convenient syntaxes, which are much closer in spirit to the diagrams. Lately, we've had a lot of success in connected with abstract tensor notation, which came from Penrose. See g. arXiv:1308.3586 and arXiv:1412.8552.
-
-Point of view (3) is the one espoused by the 2D/higher-dimensional rewriting people (e.g. Yves Lafont and Samuel Mimram). It is also (very entertainingly) used in Pawel Sobocinski's blog: http://graphicallinearalgebra.net .
-
-This eliminates the need for the interchange law, but keeps pretty much everything else "rigid". This benefits from being able to consider more general categories, but is less well-behaved from the point of view of rewriting. For example as Lafont/Mimram point out, even finite rewrite systems can generate infinite sets of critical pairs.}
+representation of circuits that has some desired properties (see many
+such properties in the survey paper of
+\citet{Saeedi:2013:SOR:2431211.2431220}) and use the rules in a
+directed fashion to produce that canonical representation. Of course,
+finding a rewriting procedure that makes progress towards the
+canonical representation is generally far from trivial. Also the
+current syntax is far from intuitive, and it might be critical to have
+either a diagrammatic interface similar to
+Quantomatic~\citep{quantomatic} (which only works for traced symmetric
+monoidal categories) or a radically different syntactic notation such
+as Penrose's abstract tensor notation~\citep{tensor1,tensor2}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Problem with Higher-Order Functions}
@@ -2606,6 +2698,7 @@ variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \appendix
+%% \newpage
 \section{Commutative Semirings}
 \label{sec:commrig}
  
@@ -2634,7 +2727,7 @@ a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
 \end{definition}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\clearpage
+%% \clearpage
 \bibliographystyle{abbrvnat}
 \softraggedright
 \bibliography{cites}
