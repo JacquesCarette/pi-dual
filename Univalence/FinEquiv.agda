@@ -27,7 +27,7 @@ open import Equiv
       path⊎)
 open import TypeEquiv using (swap₊; swapswap₊; swap⋆; swapswap⋆)
 import TypeEquiv as TE
-open import LeqLemmas using (_<?_; cong+r≤; cong+l≤; cong*r≤; sinj≤)
+open import LeqLemmas using (_<?_; cong+r≤; cong+l≤; cong*r≤)
 open import FinNatLemmas 
   using (inj₁-≡; inj₂-≡; inject+-injective; raise-injective; addMul-lemma;
          distribˡ-*-+; *-right-identity)
@@ -276,7 +276,7 @@ abstract
       where 
             q<m : q < m
             q<m with suc q ≤? m 
-            ... | no ¬p = ⊥-elim (absurd-quotient m n q r k k≡r+q*sn (sinj≤ (≰⇒> ¬p)))
+            ... | no ¬p = ⊥-elim (absurd-quotient m n q r k k≡r+q*sn (≤-pred (≰⇒> ¬p)))
             ... | yes p = p
 
     fwd∘bwd~id : {m n : ℕ} → fwd {m} {n} ∘ bwd ∼ id
@@ -295,14 +295,14 @@ abstract
             ≡⟨ sym (k≡r+q*sn) ⟩
           toℕ i ∎)))
       where open ≡-Reasoning
-    ... | no ¬p = ⊥-elim (absurd-quotient m n q r i k≡r+q*sn (sinj≤ (≰⇒> ¬p)))
+    ... | no ¬p = ⊥-elim (absurd-quotient m n q r i k≡r+q*sn (≤-pred (≰⇒> ¬p)))
 
     bwd∘fwd~id : {m n : ℕ} → bwd {m} {n} ∘ fwd ∼ id
     bwd∘fwd~id {n = zero} (b , ())
     bwd∘fwd~id {m} {suc n} (b , d) with fwd (b , d) | inspect fwd (b , d)
     ... | k | [ eq ] with (toℕ k) divMod (suc n)
     ... | result q r pf with suc q ≤? m
-    ... | no ¬p = ⊥-elim (absurd-quotient m n q r k pf (sinj≤ (≰⇒> ¬p)))
+    ... | no ¬p = ⊥-elim (absurd-quotient m n q r k pf (≤-pred (≰⇒> ¬p)))
     ... | yes p = cong₂ _,_  pf₁ (proj₁ same-quot)
       where
         open ≡-Reasoning
