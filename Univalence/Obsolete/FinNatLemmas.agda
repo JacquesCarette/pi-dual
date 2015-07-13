@@ -3,8 +3,7 @@
 module FinNatLemmas where
 
 open import Relation.Binary.PropositionalEquality 
-  using (_≡_; refl; sym; trans; subst; cong; cong₂; proof-irrelevance;
-      module ≡-Reasoning)
+  using (_≡_; refl; sym; trans; subst; cong; proof-irrelevance; module ≡-Reasoning)
 open import Relation.Binary.Core using (_≢_)
 open import Data.Nat.Properties
   using (cancel-+-left; n∸n≡0; +-∸-assoc; m+n∸n≡m; 1+n≰n; m≤m+n;
@@ -226,13 +225,3 @@ addMul-lemma x x′ d r r′ hyp rewrite +-comm (toℕ r) (x * suc d)
                                    | +-comm (toℕ r′) (x′ * suc d)
   = addMul-lemma′ x x′ d r r′ hyp
   
-------------------------------------------------------------------------
--- purely about Nat, but still not in Data.Nat.Properties.Simple
-distribˡ-*-+ : ∀ m n o → m * (n + o)  ≡ m * n + m * o
-distribˡ-*-+ m n o = 
-  trans (*-comm m (n + o)) (
-  trans (distribʳ-*-+ m n o) (
-        (cong₂ _+_ (*-comm n m) (*-comm o m))))
-
-*-right-identity : ∀ n → n * 1 ≡ n
-*-right-identity n = trans (*-comm n 1) (+-right-identity n)

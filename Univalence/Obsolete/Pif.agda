@@ -53,8 +53,6 @@ c2cauchy (c₁ ◎ c₂) =
     (subst Cauchy (size≡! c₁) (c2cauchy c₂)) 
 c2cauchy (c₁ ⊕ c₂) = pcompcauchy (c2cauchy c₁) (c2cauchy c₂) 
 c2cauchy (c₁ ⊗ c₂) = tcompcauchy (c2cauchy c₁) (c2cauchy c₂)  
-c2cauchy unfoldBool = idcauchy 2
-c2cauchy foldBool   = idcauchy 2
 c2cauchy {PLUS ZERO t} unite₊ = idcauchy (size t)
 c2cauchy {t} uniti₊ = idcauchy (size t)
 c2cauchy {PLUS t₁ t₂} swap₊ = swap+cauchy (size t₁) (size t₂)

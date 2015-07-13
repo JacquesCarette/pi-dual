@@ -8,14 +8,21 @@ open import SubstLemmas
 open import VectorLemmas
 open import FiniteFunctions
 open import Proofs
--- open import DivModUtils
+open import PathLemmas
+open import DivModUtils
 open import LeftCancellation
+open import Enumeration
+open import EquivSetoid
 
 -- Structures (Definitions)
 
 open import SetoidUtils
 open import Groupoid
--- open import Everything -- from Categories
+
+{--
+from Categories but does not all work with new Agda version yet
+open import Everything
+--}
 
 -- Equivalences
 
@@ -33,11 +40,16 @@ open import PiPerm
 
 open import FinVec
 open import TypeEquivCat
--- open import SkFinSetCategory  -- unfinished.
--- open import CPermCat -- unfinished
 open import PiLevel0
 open import PiLevel1
 open import Pim2Cat
--- open import Pim1Cat -- unfinished
 open import Pi0Cat
 open import Pi1Cat
+
+{-- 
+Unfinished
+open import SkFinSetCategory  
+open import CPermCat 
+open import Pim1Cat
+--}
+

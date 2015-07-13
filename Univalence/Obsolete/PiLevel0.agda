@@ -27,8 +27,6 @@ open import Data.Unit    using (⊤; tt)
 open import Data.Sum     using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
-open import FinNatLemmas using (distribˡ-*-+; *-right-identity)
-
 ------------------------------------------------------------------------------
 -- Level 0 of Pi
 --
@@ -91,32 +89,24 @@ infixr 50 _◎_
 -- Combinators, permutations, or paths depending on the perspective
 
 data _⟷_ : U → U → Set where
-  unite₊l : {t : U} → PLUS ZERO t ⟷ t
-  uniti₊l : {t : U} → t ⟷ PLUS ZERO t
-  unite₊r : {t : U} → PLUS t ZERO ⟷ t
-  uniti₊r : {t : U} → t ⟷ PLUS t ZERO
+  unite₊  : {t : U} → PLUS ZERO t ⟷ t
+  uniti₊  : {t : U} → t ⟷ PLUS ZERO t
   swap₊   : {t₁ t₂ : U} → PLUS t₁ t₂ ⟷ PLUS t₂ t₁
   assocl₊ : {t₁ t₂ t₃ : U} → PLUS t₁ (PLUS t₂ t₃) ⟷ PLUS (PLUS t₁ t₂) t₃
   assocr₊ : {t₁ t₂ t₃ : U} → PLUS (PLUS t₁ t₂) t₃ ⟷ PLUS t₁ (PLUS t₂ t₃)
-  unite⋆l  : {t : U} → TIMES ONE t ⟷ t
-  uniti⋆l  : {t : U} → t ⟷ TIMES ONE t
-  unite⋆r : {t : U} → TIMES t ONE ⟷ t
-  uniti⋆r : {t : U} → t ⟷ TIMES t ONE
+  unite⋆  : {t : U} → TIMES ONE t ⟷ t
+  uniti⋆  : {t : U} → t ⟷ TIMES ONE t
   swap⋆   : {t₁ t₂ : U} → TIMES t₁ t₂ ⟷ TIMES t₂ t₁
   assocl⋆ : {t₁ t₂ t₃ : U} → TIMES t₁ (TIMES t₂ t₃) ⟷ TIMES (TIMES t₁ t₂) t₃
   assocr⋆ : {t₁ t₂ t₃ : U} → TIMES (TIMES t₁ t₂) t₃ ⟷ TIMES t₁ (TIMES t₂ t₃)
-  absorbr : {t : U} → TIMES ZERO t ⟷ ZERO
+  absorbr  : {t : U} → TIMES ZERO t ⟷ ZERO
   absorbl : {t : U} → TIMES t ZERO ⟷ ZERO
   factorzr : {t : U} → ZERO ⟷ TIMES t ZERO
   factorzl : {t : U} → ZERO ⟷ TIMES ZERO t
   dist    : {t₁ t₂ t₃ : U} → 
-            TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃)
+            TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) 
   factor  : {t₁ t₂ t₃ : U} → 
             PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
-  distl   : {t₁ t₂ t₃ : U } →
-            TIMES t₁ (PLUS t₂ t₃) ⟷ PLUS (TIMES t₁ t₂) (TIMES t₁ t₃)
-  factorl : {t₁ t₂ t₃ : U } →
-            PLUS (TIMES t₁ t₂) (TIMES t₁ t₃) ⟷ TIMES t₁ (PLUS t₂ t₃)
   id⟷    : {t : U} → t ⟷ t
   _◎_     : {t₁ t₂ t₃ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
   _⊕_     : {t₁ t₂ t₃ t₄ : U} → 
@@ -127,15 +117,13 @@ data _⟷_ : U → U → Set where
 -- Syntactic equality of combinators
 
 comb= : {t₁ t₂ t₃ t₄ : U} → (t₁ ⟷ t₂) → (t₃ ⟷ t₄) → Bool
-comb= unite₊l unite₊l = true
-comb= uniti₊l uniti₊l = true
+comb= unite₊ unite₊ = true
+comb= uniti₊ uniti₊ = true
 comb= swap₊ swap₊ = true
 comb= assocl₊ assocl₊ = true
 comb= assocr₊ assocr₊ = true
-comb= unite⋆l unite⋆l = true
-comb= unite⋆r unite⋆r = true
-comb= uniti⋆l uniti⋆l = true
-comb= uniti⋆r uniti⋆r = true
+comb= unite⋆ unite⋆ = true
+comb= uniti⋆ uniti⋆ = true
 comb= swap⋆ swap⋆ = true
 comb= assocl⋆ assocl⋆ = true
 comb= assocr⋆ assocr⋆ = true
@@ -154,12 +142,9 @@ comb= _ _ = false
 -- Extensional evaluator for testing: serves as a specification
 
 eval : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
-eval unite₊l (inj₁ ())
-eval unite₊l (inj₂ v) = v
-eval uniti₊l v = inj₂ v
-eval unite₊r (inj₁ x) = x
-eval unite₊r (inj₂ ())
-eval uniti₊r v = inj₁ v
+eval unite₊ (inj₁ ())
+eval unite₊ (inj₂ v) = v
+eval uniti₊ v = inj₂ v
 eval swap₊ (inj₁ v) = inj₂ v
 eval swap₊ (inj₂ v) = inj₁ v
 eval assocl₊ (inj₁ v) = inj₁ (inj₁ v)
@@ -168,10 +153,8 @@ eval assocl₊ (inj₂ (inj₂ v)) = inj₂ v
 eval assocr₊ (inj₁ (inj₁ v)) = inj₁ v
 eval assocr₊ (inj₁ (inj₂ v)) = inj₂ (inj₁ v)
 eval assocr₊ (inj₂ v) = inj₂ (inj₂ v)
-eval unite⋆l (tt , v) = v
-eval uniti⋆l v = (tt , v)
-eval unite⋆r (v , tt) = v
-eval uniti⋆r v = v , tt
+eval unite⋆ (tt , v) = v
+eval uniti⋆ v = (tt , v)
 eval swap⋆ (v₁ , v₂) = (v₂ , v₁)
 eval assocl⋆ (v₁ , (v₂ , v₃)) = ((v₁ , v₂) , v₃)
 eval assocr⋆ ((v₁ , v₂) , v₃) = (v₁ , (v₂ , v₃))
@@ -183,57 +166,11 @@ eval dist (inj₁ v₁ , v₃) = inj₁ (v₁ , v₃)
 eval dist (inj₂ v₂ , v₃) = inj₂ (v₂ , v₃)
 eval factor (inj₁ (v₁ , v₃)) = (inj₁ v₁ , v₃)
 eval factor (inj₂ (v₂ , v₃)) = (inj₂ v₂ , v₃)
-eval distl (v , inj₁ x) = inj₁ (v , x)
-eval distl (v , inj₂ y) = inj₂ (v , y)
-eval factorl (inj₁ (x , y)) = x , inj₁ y
-eval factorl (inj₂ (x , y)) = x , inj₂ y
 eval id⟷ v = v
 eval (c₁ ◎ c₂) v = eval c₂ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₂ v) = inj₂ (eval c₂ v)
 eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
-
--- useful to have the backwards eval too
-
-evalB : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧
-evalB unite₊l x = inj₂ x
-evalB uniti₊l (inj₁ ())
-evalB uniti₊l (inj₂ y) = y
-evalB unite₊r v = inj₁ v
-evalB uniti₊r (inj₁ x) = x
-evalB uniti₊r (inj₂ ())
-evalB swap₊ (inj₁ x) = inj₂ x
-evalB swap₊ (inj₂ y) = inj₁ y
-evalB assocl₊ (inj₁ (inj₁ x)) = inj₁ x
-evalB assocl₊ (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
-evalB assocl₊ (inj₂ y) = inj₂ (inj₂ y)
-evalB assocr₊ (inj₁ x) = inj₁ (inj₁ x)
-evalB assocr₊ (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
-evalB assocr₊ (inj₂ (inj₂ y)) = inj₂ y
-evalB unite⋆l x = tt , x
-evalB uniti⋆l (tt , x) = x
-evalB unite⋆r v = v , tt
-evalB uniti⋆r (v , tt) = v
-evalB swap⋆ (x , y) = y , x
-evalB assocl⋆ ((x , y) , z) = x , y , z
-evalB assocr⋆ (x , y , z) = (x , y) , z
-evalB absorbr ()
-evalB absorbl ()
-evalB factorzr (_ , ())
-evalB factorzl (() , _)
-evalB dist (inj₁ (x , y)) = inj₁ x , y
-evalB dist (inj₂ (x , y)) = inj₂ x , y
-evalB factor (inj₁ x , z) = inj₁ (x , z)
-evalB factor (inj₂ y , z) = inj₂ (y , z)
-evalB distl (inj₁ (x , y)) = x , inj₁ y
-evalB distl (inj₂ (x , y)) = x , inj₂ y
-evalB factorl (v , inj₁ x) = inj₁ (v , x)
-evalB factorl (v , inj₂ y) = inj₂ (v , y)
-evalB id⟷ x = x
-evalB (c₀ ◎ c₁) x = evalB c₀ (evalB c₁ x)
-evalB (c₀ ⊕ c₁) (inj₁ x) = inj₁ (evalB c₀ x)
-evalB (c₀ ⊕ c₁) (inj₂ y) = inj₂ (evalB c₁ y)
-evalB (c₀ ⊗ c₁) (x , y) = evalB c₀ x , evalB c₁ y
 
 -- A canonical representation of each type as a vector of values. This
 -- fixes a canonical order for the elements of the types: each value
@@ -262,19 +199,15 @@ size≡ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (size t₁ ≡ size t₂)
 -- http://wiki.portal.chalmers.se/agda/
 -- pmwiki.php?n=ReferenceManual.PatternMatching
 size≡ (c₁ ◎ c₂) = trans (size≡ c₁) (size≡ c₂)
-size≡ {PLUS ZERO t} {.t} unite₊l = refl
-size≡ {t} {PLUS ZERO .t} uniti₊l = refl
-size≡ {PLUS t ZERO} unite₊r = +-right-identity (size t)
-size≡ {t} uniti₊r = sym (+-right-identity (size t))
+size≡ {PLUS ZERO t} {.t} unite₊ = refl
+size≡ {t} {PLUS ZERO .t} uniti₊ = refl
 size≡ {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = +-comm (size t₁) (size t₂)
 size≡ {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ = 
   sym (+-assoc (size t₁) (size t₂) (size t₃))
 size≡ {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} assocr₊ = 
   +-assoc (size t₁) (size t₂) (size t₃)
-size≡ {TIMES ONE t} {.t} unite⋆l = +-right-identity (size t)
-size≡ {t} {TIMES ONE .t} uniti⋆l = sym (+-right-identity (size t))
-size≡ {TIMES t ONE} {.t} unite⋆r = *-right-identity (size t)
-size≡ {t} {TIMES .t ONE} uniti⋆r = sym (*-right-identity (size t))
+size≡ {TIMES ONE t} {.t} unite⋆ = +-right-identity (size t)
+size≡ {t} {TIMES ONE .t} uniti⋆ = sym (+-right-identity (size t))
 size≡ {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = *-comm (size t₁) (size t₂)
 size≡ {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} assocl⋆ = 
   sym (*-assoc (size t₁) (size t₂) (size t₃))
@@ -288,9 +221,6 @@ size≡ {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t�
   distribʳ-*-+ (size t₃) (size t₁) (size t₂)
 size≡ {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t₃} factor = 
   sym (distribʳ-*-+ (size t₃) (size t₁) (size t₂))
-size≡ {TIMES t₁ (PLUS t₂ t₃)} distl = distribˡ-*-+ (size t₁) (size t₂) (size t₃)
-size≡ {PLUS (TIMES t₁ t₂) (TIMES .t₁ t₃)} factorl = 
-  sym (distribˡ-*-+ (size t₁) (size t₂) (size t₃))
 size≡ {t} {.t} id⟷ = refl
 size≡ {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = cong₂ _+_ (size≡ c₁) (size≡ c₂)
 size≡ {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = cong₂ _*_ (size≡ c₁) (size≡ c₂)
@@ -344,9 +274,8 @@ NEG3 = NOT ◎ NOT ◎ NOT
 -- spec: (false , true) ∷ (true , false) ∷ []
 NEG4 = NOT ◎ id⟷
 -- spec: (false , true) ∷ (true , false) ∷ []
-NEG5 = uniti⋆l ◎ swap⋆ ◎ (NOT ⊗ id⟷) ◎ swap⋆ ◎ unite⋆l
+NEG5 = uniti⋆ ◎ swap⋆ ◎ (NOT ⊗ id⟷) ◎ swap⋆ ◎ unite⋆
 -- spec: (false , true) ∷ (true , false) ∷ []
-NEG6 = uniti⋆r ◎ (NOT ⊗ id⟷) ◎ unite⋆r -- same as above, but shorter
 
 -- CNOT
 
@@ -514,17 +443,13 @@ FULLADDER =
 -- reduces to id⟷. 
 
 ! : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
-! unite₊l   = uniti₊l
-! uniti₊l   = unite₊l
-! unite₊r   = uniti₊r
-! uniti₊r   = unite₊r
+! unite₊    = uniti₊
+! uniti₊    = unite₊
 ! swap₊     = swap₊
 ! assocl₊   = assocr₊
 ! assocr₊   = assocl₊
-! unite⋆l    = uniti⋆l
-! uniti⋆l    = unite⋆l
-! unite⋆r = uniti⋆r
-! uniti⋆r = unite⋆r
+! unite⋆    = uniti⋆
+! uniti⋆    = unite⋆
 ! swap⋆     = swap⋆
 ! assocl⋆   = assocr⋆
 ! assocr⋆   = assocl⋆
@@ -534,25 +459,19 @@ FULLADDER =
 ! factorzr = absorbl
 ! dist      = factor 
 ! factor    = dist
-! distl     = factorl
-! factorl   = distl
 ! id⟷      = id⟷
 ! (c₁ ◎ c₂) = ! c₂ ◎ ! c₁ 
 ! (c₁ ⊕ c₂) = (! c₁) ⊕ (! c₂)
 ! (c₁ ⊗ c₂) = (! c₁) ⊗ (! c₂)
 
 !! : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → ! (! c) ≡ c
-!! {c = unite₊l} = refl
-!! {c = uniti₊l} = refl
-!! {c = unite₊r} = refl
-!! {c = uniti₊r} = refl
+!! {c = unite₊}  = refl
+!! {c = uniti₊}  = refl
 !! {c = swap₊}   = refl
 !! {c = assocl₊} = refl
 !! {c = assocr₊} = refl
-!! {c = unite⋆l}  = refl
-!! {c = uniti⋆l}  = refl
-!! {c = unite⋆r} = refl
-!! {c = uniti⋆r} = refl
+!! {c = unite⋆}  = refl
+!! {c = uniti⋆}  = refl
 !! {c = swap⋆}   = refl
 !! {c = assocl⋆} = refl
 !! {c = assocr⋆} = refl
@@ -562,8 +481,6 @@ FULLADDER =
 !! {c = factorzr} = refl
 !! {c = dist}    = refl
 !! {c = factor}  = refl
-!! {c = distl}   = refl
-!! {c = factorl} = refl
 !! {c = id⟷}    = refl
 !! {c = c₁ ◎ c₂} = 
   begin (! (! (c₁ ◎ c₂))
@@ -593,19 +510,15 @@ FULLADDER =
 
 size≡! : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (size t₂ ≡ size t₁)
 size≡! (c₁ ◎ c₂) = trans (size≡! c₂) (size≡! c₁)
-size≡! {PLUS ZERO t} {.t} unite₊l = refl
-size≡! {t} {PLUS ZERO .t} uniti₊l = refl
-size≡! {PLUS t ZERO} {.t} unite₊r = sym (+-right-identity (size t))
-size≡! {t} {PLUS .t ZERO} uniti₊r = +-right-identity (size t)
+size≡! {PLUS ZERO t} {.t} unite₊ = refl
+size≡! {t} {PLUS ZERO .t} uniti₊ = refl
 size≡! {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = +-comm (size t₂) (size t₁)
 size≡! {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ = 
   +-assoc (size t₁) (size t₂) (size t₃)
 size≡! {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} assocr₊ = 
   sym (+-assoc (size t₁) (size t₂) (size t₃))
-size≡! {TIMES ONE t} {.t} unite⋆l = sym (+-right-identity (size t))
-size≡! {t} {TIMES ONE .t} uniti⋆l = +-right-identity (size t)
-size≡! {TIMES t ONE} unite⋆r = sym (*-right-identity (size t))
-size≡! {t} {TIMES .t ONE} uniti⋆r = *-right-identity (size t)
+size≡! {TIMES ONE t} {.t} unite⋆ = sym (+-right-identity (size t))
+size≡! {t} {TIMES ONE .t} uniti⋆ = +-right-identity (size t)
 size≡! {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = *-comm (size t₂) (size t₁) 
 size≡! {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} assocl⋆ = 
   *-assoc (size t₁) (size t₂) (size t₃)
@@ -619,10 +532,6 @@ size≡! {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t
   sym (distribʳ-*-+ (size t₃) (size t₁) (size t₂))
 size≡! {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t₃} factor = 
   distribʳ-*-+ (size t₃) (size t₁) (size t₂)
-size≡! {TIMES t₁ (PLUS t₂ t₃)} distl = 
-  sym (distribˡ-*-+ (size t₁) (size t₂) (size t₃))
-size≡! {PLUS (TIMES t₁ t₂) (TIMES .t₁ t₃)} factorl = 
-  distribˡ-*-+ (size t₁) (size t₂) (size t₃)
 size≡! {t} {.t} id⟷ = refl
 size≡! {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = cong₂ _+_ (size≡! c₁) (size≡! c₂)
 size≡! {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = cong₂ _*_ (size≡! c₁) (size≡! c₂)
@@ -634,9 +543,3 @@ size≡!! : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (size≡! (! c) ≡ sym 
 size≡!! c = proof-irrelevance (size≡! (! c)) (sym (size≡! c))
 
 ------------------------------------------------------------------------------
-
-ttt : {t₁ t₂ t₃ t₄ : U} → 
-  (TIMES (PLUS t₁ t₂) (PLUS t₃ t₄)) ⟷
-  (PLUS (PLUS (PLUS (TIMES t₁ t₃) (TIMES t₂ t₃)) (TIMES t₁ t₄))) (TIMES t₂ t₄)
-ttt {t₁} {t₂} {t₃} {t₄} =
-  (distl ◎ (dist {t₁} {t₂} {t₃} ⊕ dist {t₁} {t₂} {t₄})) ◎ assocl₊

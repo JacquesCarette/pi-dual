@@ -8,10 +8,10 @@ open import Level using (Level; _⊔_) renaming (zero to lzero; suc to lsuc)
 
 open import Relation.Binary.PropositionalEquality 
   using (_≡_; refl; sym; trans; subst; subst₂; cong; cong₂; setoid;
-        inspect; Reveal_is_; [_]; proof-irrelevance; module ≡-Reasoning)
+        inspect; [_]; proof-irrelevance; module ≡-Reasoning)
 open import Relation.Binary.PropositionalEquality.TrustMe
   using (trustMe)
-open import Relation.Nullary.Core using (Dec; yes; no; ¬_)
+open import Relation.Nullary using (Dec; yes; no; ¬_)
 open import Data.Nat.Properties
   using (m≢1+m+n; i+j≡0⇒i≡0; i+j≡0⇒j≡0; n≤m+n)
 open import Data.Nat.Properties.Simple 

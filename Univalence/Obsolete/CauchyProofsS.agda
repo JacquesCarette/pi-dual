@@ -63,7 +63,7 @@ open import Data.Unit    using (⊤; tt)
 open import Data.Sum     using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
-open import DivModUtils using (mod-lemma) 
+open import DivModUtils using (mod-lemma)
 open import Proofs
 open import Cauchy
 open import Perm
