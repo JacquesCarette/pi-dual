@@ -12,7 +12,7 @@ open import Data.Nat.Properties
 open import Data.Nat.Properties.Simple 
   using (+-right-identity; +-suc; +-assoc; +-comm; 
         *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
-import Relation.Binary
+import Relation.Binary using (module StrictTotalOrder)
 open import Data.Product using (_×_;_,_)
 open import Data.Empty using (⊥-elim)
 
