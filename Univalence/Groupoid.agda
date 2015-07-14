@@ -11,7 +11,8 @@ open import Data.Empty
 open import Data.Sum
 open import Data.Product
 open import Function using (flip)
-open import Relation.Binary
+open import Relation.Binary using (Rel; IsEquivalence; Reflexive; Transitive;
+  Symmetric; module IsEquivalence)
 
 -- Useful
 Rel0 : Set → Set₁
