@@ -3,10 +3,7 @@
 module PiEquiv where
 
 open import Relation.Binary.PropositionalEquality 
-  using (_≡_; refl; sym; trans; subst; subst₂; cong; cong₂; setoid; 
-        proof-irrelevance; module ≡-Reasoning)
-open ≡-Reasoning
-open import Data.Unit using (⊤; tt)
+  using (_≡_; refl; sym; trans; cong; cong₂)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _,_; proj₁; proj₂)
 open import Function using (_∘_)
