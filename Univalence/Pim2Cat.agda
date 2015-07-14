@@ -6,7 +6,6 @@ open import Level using () renaming (zero to lzero)
 open import Data.Unit
 open import Relation.Binary.Core using (IsEquivalence)
 import Relation.Binary.PropositionalEquality as PE
-import Relation.Binary.PropositionalEquality.Core as PE
 
 open import Categories.Category
 open import Categories.Groupoid

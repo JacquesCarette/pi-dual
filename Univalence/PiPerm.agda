@@ -2,11 +2,8 @@
 
 module PiPerm where
 
-
 open import Relation.Binary.PropositionalEquality 
-  using (_≡_; refl; sym; trans; subst; subst₂; cong; cong₂; setoid; 
-        proof-irrelevance; module ≡-Reasoning)
-open ≡-Reasoning
+  using (_≡_; refl; sym; trans; cong; cong₂)
 
 open import ConcretePermutation
 open import PiLevel0
