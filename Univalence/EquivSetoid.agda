@@ -7,12 +7,11 @@ module EquivSetoid where
 open import Level
 open import Relation.Binary using (Setoid; module Setoid)
 open import Data.Product using (_×_; _,′_; _,_)
-open import Relation.Binary.PropositionalEquality as P using ()
+open import Relation.Binary.PropositionalEquality as P using (setoid; →-to-⟶)
 open import Data.Empty
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 
 open import Equiv using (_≃_)
-open import SetoidUtils
 
 open import Function.Equality
 import Function as Fun
@@ -89,7 +88,7 @@ _✴_ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid
 (equiv f _ _ _) ✴ x = f ⟨$⟩ x  
 
 0S : Setoid zero zero
-0S = ≡-Setoid ⊥
+0S = P.setoid ⊥
 
 -- can't use id because it is not sufficiently dependently typed!
 0≃S : 0S ≃S 0S
@@ -97,12 +96,12 @@ _✴_ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid
 
 -- just to make things prettier
 _≃S≡_ : ∀ {ℓ₁} → (A B : Set ℓ₁) → Set ℓ₁
-A ≃S≡ B = (≡-Setoid A) ≃S (≡-Setoid B)
+A ≃S≡ B = (P.setoid A) ≃S (P.setoid B)
 
 -- Need to be able to take ⊎ of ≃S-Setoids
 _⊎≃S_ : {A B C D : Set} → A ≃S≡ B → C ≃S≡ D → (A ⊎ C) ≃S≡ (B ⊎ D)
 _⊎≃S_ {A} {B} {C} {D} (equiv f g α β) (equiv f₁ g₁ α₁ β₁) = 
-  equiv (→to⟶ ff) (→to⟶ gg) αα ββ
+  equiv (→-to-⟶ ff) (→-to-⟶ gg) αα ββ
   where
     ff : A ⊎ C → B ⊎ D
     ff (inj₁ x) = inj₁ (f ⟨$⟩ x)
@@ -149,8 +148,8 @@ trans≋ (equivS f≡ g≡) (equivS h≡ i≡) =
   }
   where
     open _≃S_
-    AS = ≡-Setoid A
-    BS = ≡-Setoid B
+    AS = P.setoid A
+    BS = P.setoid B
     
 -- equivalences are injective
 inj≃ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} → (eq : A ≃S B) → {x y : Carrier A} → 

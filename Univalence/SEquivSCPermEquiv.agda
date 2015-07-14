@@ -19,7 +19,8 @@ open import Function.Equality   using    (_⇨_; _⟨$⟩_; _⟶_)
                                 renaming (_∘_ to _⊚_; id to id⊚)
 
 open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
+  using (_≡_; refl; sym; trans; cong; cong₂; setoid; →-to-⟶;
+         module ≡-Reasoning)
      
 -- Next are imports from our libraries of Proofs (FiniteFunctions and
 -- VectorLemmas)
@@ -33,7 +34,7 @@ open import Equiv using (_∼_; module qinv; mkqinv; _≃_)
 -- Next we import sets equipped with equivalence relations and
 -- specialize to our notions of equivalence
 
-open import SetoidUtils using (≡-Setoid; →to⟶)
+-- open import SetoidUtils using (→to⟶)
 open import EquivSetoid
   using (_≃S_; module _≃S_; equiv; 0≃S; id≃S; _⊎≃S_; 
          _≋_; module _≋_; equivS;
@@ -65,8 +66,8 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
   equiv fwd' bwd' α β
   where
     open ≡-Reasoning
-    AS = ≡-Setoid A
-    BS = ≡-Setoid B
+    AS = setoid A
+    BS = setoid B
     A≃Fn : A ≃ Fin n
     A≃Fn = (enumA , mkqinv labelA αA βA)
     B≃Fn : B ≃ Fin n
@@ -105,7 +106,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
                ≡⟨ αA i ⟩
             i ∎)
 
-    fwd' : ≃S-Setoid A B ⟶ ≡-Setoid (CPerm n n)
+    fwd' : ≃S-Setoid A B ⟶ setoid (CPerm n n)
     fwd' = record 
      { _⟨$⟩_ = fwd 
       ; cong = λ {i} {j} i≋j → p≡ (finext (λ k → cong enumB (f≡ i≋j (labelA k)) ))
@@ -116,10 +117,10 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
     bwd (cp p₁ p₂ αp βp) = equiv f g α β
       where
         f : AS ⟶ BS
-        f = →to⟶ (λ a → labelB (p₁ !! enumA a))
+        f = →-to-⟶ (λ a → labelB (p₁ !! enumA a))
 
         g : BS ⟶ AS
-        g = →to⟶ (λ b → labelA (p₂ !! (enumB b)))
+        g = →-to-⟶ (λ b → labelA (p₂ !! (enumB b)))
 
         α : Setoid._≈_ (BS ⇨ BS) (f ⊚ g) id⊚
         α {b} {.b} refl = 
@@ -151,7 +152,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
               ≡⟨ βA a ⟩
             a ∎)
 
-    bwd' : ≡-Setoid (CPerm n n) ⟶ ≃S-Setoid A B
+    bwd' : setoid (CPerm n n) ⟶ ≃S-Setoid A B
     bwd' = record 
       { _⟨$⟩_ = bwd 
       ; cong = λ { {π} {.π} refl → equivS (λ _ → refl) (λ _ → refl) }

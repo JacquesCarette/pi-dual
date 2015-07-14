@@ -16,7 +16,6 @@ open import Proofs                      -- clean up 14 July
 
 -- Structures (Definitions)
 
-open import SetoidUtils                 -- 
 open import Groupoid                    -- 
 
 {--

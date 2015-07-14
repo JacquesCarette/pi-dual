@@ -101,10 +101,6 @@ digraph PiDepend {
   Enumeration -> RBP;
   Enumeration -> FinEquiv;
 
-  SetoidUtils -> RBS;
-  SetoidUtils -> DP;
-  SetoidUtils -> RBP
-
   Groupoid -> DE;
   Groupoid -> DS;
   Groupoid -> DP;
@@ -152,7 +148,6 @@ digraph PiDepend {
   EquivSetoid -> DE;
   EquivSetoid -> DS;
   EquivSetoid -> Equiv;
-  EquivSetoid -> SetoidUtils;
 
   FinVec -> DV;
   FinVec -> DS;
@@ -167,7 +162,6 @@ digraph PiDepend {
 
   ConcretePermutation -> RBP;
   ConcretePermutation -> FinVec;
-  ConcretePermutation -> SetoidUtils;
   ConcretePermutation -> Equiv;
   ConcretePermutation -> FinEquiv;
 
@@ -183,7 +177,6 @@ digraph PiDepend {
   SEquivSCPermEquiv -> RBS;
   SEquivSCPermEquiv -> Proofs;
   SEquivSCPermEquiv -> Equiv;
-  SEquivSCPermEquiv -> SetoidUtils;
   SEquivSCPermEquiv -> EquivSetoid;
   SEquivSCPermEquiv -> FinVec;
   SEquivSCPermEquiv -> Enumeration;
