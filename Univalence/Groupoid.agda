@@ -6,37 +6,43 @@
 
 module Groupoid where
 
-open import Level
-open import Data.Empty
-open import Data.Sum
-open import Data.Product
+open import Level using (zero)
+open import Data.Empty using (⊥)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Data.Product using (_×_; proj₁; proj₂; _,_)
 open import Function using (flip)
-open import Relation.Binary using (Rel; IsEquivalence; Reflexive; Transitive;
-  Symmetric; module IsEquivalence)
+open import Relation.Binary
+  using (Rel; IsEquivalence; Reflexive; Symmetric; Transitive;
+         module IsEquivalence)
 
+------------------------------------------------------------------------------
 -- Useful
+
 Rel0 : Set → Set₁
 Rel0 A = Rel A zero
  
 -- 1-groupoids are those where the various laws hold up to ≈.
+
 record 1Groupoid : Set₁ where
   infixr 9 _∘_
   infixr 5 _↝_
   infix  4 _≈_
   field
-    set : Set₀
-    _↝_ : set → set → Set
-    _≈_ : ∀ {A B} → A ↝ B → A ↝ B → Set
-    id : ∀ {x} → x ↝ x
-    _∘_ : ∀ {x y z} → y ↝ z → x ↝ y → x ↝ z
-    _⁻¹ : ∀ {x y} → x ↝ y → y ↝ x
-    lneutr : ∀ {x y}(α : x ↝ y) → id ∘ α ≈ α
-    rneutr : ∀ {x y}(α : x ↝ y) → α ∘ id ≈ α
-    assoc : ∀ {w x y z}(α : y ↝ z)(β : x ↝ y)(δ : w ↝ x) → (α ∘ β) ∘ δ ≈ α ∘ (β ∘ δ)
-    equiv : ∀ {x y} → IsEquivalence (_≈_ {x} {y})
-    linv : ∀ {x y}(α : x ↝ y) → α ⁻¹ ∘ α ≈ id {x}
-    rinv : ∀ {x y}(α : x ↝ y) → α ∘ α ⁻¹ ≈ id {y}
-    ∘-resp-≈ : ∀ {x y z} {f h : y ↝ z} {g i : x ↝ y} → f ≈ h → g ≈ i → f ∘ g ≈ h ∘ i
+    set      : Set₀
+    _↝_      : set → set → Set
+    _≈_      : ∀ {A B} → A ↝ B → A ↝ B → Set
+    id       : ∀ {x} → x ↝ x
+    _∘_      : ∀ {x y z} → y ↝ z → x ↝ y → x ↝ z
+    _⁻¹      : ∀ {x y} → x ↝ y → y ↝ x
+    lneutr   : ∀ {x y} (α : x ↝ y) → id ∘ α ≈ α
+    rneutr   : ∀ {x y} (α : x ↝ y) → α ∘ id ≈ α
+    assoc    : ∀ {w x y z} (α : y ↝ z) (β : x ↝ y) (δ : w ↝ x) →
+               (α ∘ β) ∘ δ ≈ α ∘ (β ∘ δ)
+    equiv    : ∀ {x y} → IsEquivalence (_≈_ {x} {y})
+    linv     : ∀ {x y}(α : x ↝ y) → α ⁻¹ ∘ α ≈ id {x}
+    rinv     : ∀ {x y}(α : x ↝ y) → α ∘ α ⁻¹ ≈ id {y}
+    ∘-resp-≈ : ∀ {x y z} {f h : y ↝ z} {g i : x ↝ y} → f ≈ h → g ≈ i →
+               f ∘ g ≈ h ∘ i
 
 _[_,_] : (C : 1Groupoid) → 1Groupoid.set C → 1Groupoid.set C → Set
 _[_,_] = 1Groupoid._↝_
@@ -45,18 +51,18 @@ open 1Groupoid
 
 _⊎G_ : 1Groupoid → 1Groupoid → 1Groupoid
 A ⊎G B = record 
-  { set = A.set ⊎ B.set
-  ; _↝_ =  _⇛_
-  ; _≈_ = λ {x} → mk≈ {x}   
-  ; id = λ {x} → id⇛ {x}
-  ; _∘_ = λ {x} → _∙G_ {x = x}
-  ; _⁻¹ = λ {x} → inv {x = x}
-  ; lneutr = λ {x} → lid⇛ {x}
-  ; rneutr = λ {x} → rid⇛ {x}
-  ; assoc = λ {x} a b g → assoc∙ {x} a b g
-  ; equiv = λ {x} → equiv≈ {x}
-  ; linv = λ {x} → linv⇛ {x}
-  ; rinv = λ {x} → rinv⇛ {x}
+  { set      = A.set ⊎ B.set
+  ; _↝_      =  _⇛_
+  ; _≈_      = λ {x} → mk≈ {x}   
+  ; id       = λ {x} → id⇛ {x}
+  ; _∘_      = λ {x} → _∙G_ {x = x}
+  ; _⁻¹      = λ {x} → inv {x = x}
+  ; lneutr   = λ {x} → lid⇛ {x}
+  ; rneutr   = λ {x} → rid⇛ {x}
+  ; assoc    = λ {x} a b g → assoc∙ {x} a b g
+  ; equiv    = λ {x} → equiv≈ {x}
+  ; linv     = λ {x} → linv⇛ {x}
+  ; rinv     = λ {x} → rinv⇛ {x}
   ; ∘-resp-≈ = λ {x} → resp {x} }
   where
     module A = 1Groupoid A
@@ -107,7 +113,7 @@ A ⊎G B = record
     rid⇛ {inj₂ _} {inj₂ _} α = B.rneutr α
 
     assoc∙ : {w x y z : C} (α : y ⇛ z) (β : x ⇛ y) (δ : w ⇛ x) → 
-             mk≈ {w} {z} (_∙G_ {w} (_∙G_ {x} α β) δ) (_∙G_ {w} α (_∙G_ {w} β δ))
+           mk≈ {w} {z} (_∙G_ {w} (_∙G_ {x} α β) δ) (_∙G_ {w} α (_∙G_ {w} β δ))
     assoc∙ {inj₁ x} {inj₁ x₁} {inj₁ x₂} {inj₁ x₃} α β γ = A.assoc α β γ
     assoc∙ {inj₁ x} {inj₁ x₁} {inj₁ x₂} {inj₂ y} () _ _
     assoc∙ {inj₁ x} {inj₁ x₁} {inj₂ y} _ () _
@@ -149,7 +155,8 @@ A ⊎G B = record
     trans≈ {inj₂ _} {inj₂ _} = IsEquivalence.trans B.equiv
 
     equiv≈ : {x y : C} → IsEquivalence (mk≈ {x} {y})
-    equiv≈ {x} = record { refl = refl≈ {x}; sym = sym≈ {x}; trans = trans≈ {x} }
+    equiv≈ {x} =
+      record { refl = refl≈ {x}; sym = sym≈ {x}; trans = trans≈ {x} }
 
     resp : {x y z : C} {f h : y ⇛ z} {g i : x ⇛ y} → 
            mk≈ {y} f h → mk≈ {x} g i → mk≈ {x} (_∙G_ {x} f g) (_∙G_ {x} h i)
@@ -162,24 +169,30 @@ A ⊎G B = record
 
 _×G_ : 1Groupoid → 1Groupoid → 1Groupoid
 A ×G B = record 
-  { set = A.set × B.set
-  ; _↝_ =  liftG A._↝_ B._↝_
-  ; _≈_ = liftG A._≈_ B._≈_
-  ; id = A.id , B.id
-  ; _∘_ = liftOp2 {Z₁ = A._↝_} {B._↝_} A._∘_ B._∘_
-  ; _⁻¹ = λ x₁ → A._⁻¹ (proj₁ x₁) , B._⁻¹ (proj₂ x₁)
-  ; lneutr = λ α → A.lneutr (proj₁ α) , B.lneutr (proj₂ α)
-  ; rneutr = λ α → A.rneutr (proj₁ α) , B.rneutr (proj₂ α)
-  ; assoc = λ α β δ → A.assoc (proj₁ α) (proj₁ β) (proj₁ δ) , B.assoc (proj₂ α) (proj₂ β) (proj₂ δ)
-  ; equiv = λ {x} {y} → let module W = IsEquivalence (A.equiv {proj₁ x} {proj₁ y}) 
-                            module Z = IsEquivalence (B.equiv {proj₂ x} {proj₂ y}) in
-            record { refl = W.refl , Z.refl
-                   ; sym = λ i≈j → W.sym (proj₁ i≈j) , Z.sym (proj₂ i≈j)
-                   ; trans = λ i≈j j≈k → (W.trans (proj₁ i≈j) (proj₁ j≈k)) , 
-                                        ((Z.trans (proj₂ i≈j) (proj₂ j≈k))) }
-  ; linv = λ α → A.linv (proj₁ α) , B.linv (proj₂ α)
-  ; rinv = λ α → A.rinv (proj₁ α) , B.rinv (proj₂ α)
-  ; ∘-resp-≈ = λ x₁ x₂ → (A.∘-resp-≈ (proj₁ x₁) (proj₁ x₂)) , B.∘-resp-≈ (proj₂ x₁) (proj₂ x₂) }
+  { set      = A.set × B.set
+  ; _↝_      =  liftG A._↝_ B._↝_
+  ; _≈_      = liftG A._≈_ B._≈_
+  ; id       = A.id , B.id
+  ; _∘_      = liftOp2 {Z₁ = A._↝_} {B._↝_} A._∘_ B._∘_
+  ; _⁻¹      = λ x₁ → A._⁻¹ (proj₁ x₁) , B._⁻¹ (proj₂ x₁)
+  ; lneutr   = λ α → A.lneutr (proj₁ α) , B.lneutr (proj₂ α)
+  ; rneutr   = λ α → A.rneutr (proj₁ α) , B.rneutr (proj₂ α)
+  ; assoc    = λ α β δ →
+                 A.assoc (proj₁ α) (proj₁ β) (proj₁ δ) ,
+                 B.assoc (proj₂ α) (proj₂ β) (proj₂ δ)
+  ; equiv    = λ {x} {y} →
+                 let module W = IsEquivalence (A.equiv {proj₁ x} {proj₁ y}) 
+                     module Z = IsEquivalence (B.equiv {proj₂ x} {proj₂ y}) in
+                 record { refl = W.refl , Z.refl
+                        ; sym = λ i≈j → W.sym (proj₁ i≈j) , Z.sym (proj₂ i≈j)
+                        ; trans = λ i≈j j≈k →
+                                    (W.trans (proj₁ i≈j) (proj₁ j≈k)) , 
+                                    ((Z.trans (proj₂ i≈j) (proj₂ j≈k))) }
+  ; linv     = λ α → A.linv (proj₁ α) , B.linv (proj₂ α)
+  ; rinv     = λ α → A.rinv (proj₁ α) , B.rinv (proj₂ α)
+  ; ∘-resp-≈ = λ x₁ x₂ →
+                 (A.∘-resp-≈ (proj₁ x₁) (proj₁ x₂)) ,
+                  B.∘-resp-≈ (proj₂ x₁) (proj₂ x₂) }
   where
     module A = 1Groupoid A
     module B = 1Groupoid B
@@ -200,6 +213,7 @@ A ×G B = record
     liftOp2 F G = λ x y → F (proj₁ x) (proj₁ y) , G (proj₂ x) (proj₂ y)
 
 -- Discrete paths.  Essentially ≡.
+
 data DPath {A : Set} (x : A) : A → Set where
   reflD : DPath x x
 
@@ -215,7 +229,9 @@ lidD reflD = reflD
 ridD : {A : Set} {x y : A} (α : DPath x y) → DPath (transD α reflD) α
 ridD reflD = reflD
 
-assocD : {A : Set} {w x y z : A} (α : DPath y z) (β : DPath x y) (δ : DPath w x) → DPath (transD (transD α β) δ) (transD α (transD β δ))
+assocD : {A : Set} {w x y z : A}
+         (α : DPath y z) (β : DPath x y) (δ : DPath w x) →
+         DPath (transD (transD α β) δ) (transD α (transD β δ))
 assocD reflD reflD reflD = reflD
 
 linvD : {A : Set} {x y : A} (α : DPath x y) → DPath (transD (symD α) α) reflD
@@ -231,21 +247,23 @@ equivD = λ {A} {x} {y} → record
   ; trans = flip transD }
 
 respD : {A : Set} {x y z : A} {f h : DPath y z} {g i : DPath x y} → 
-    DPath f h → DPath g i → DPath (transD f g) (transD h i)
+        DPath f h → DPath g i → DPath (transD f g) (transD h i)
 respD reflD reflD = reflD
 
 discrete : Set → 1Groupoid
 discrete a =  record
-    { set = a
-    ; _↝_ = DPath
-    ; _≈_ = DPath -- or could use _≡_ .
-    ; id = reflD
-    ; _∘_ = transD
-    ; _⁻¹ = symD
-    ; lneutr = lidD
-    ; rneutr = ridD
-    ; assoc = assocD
-    ; linv = linvD
-    ; rinv = rinvD
-    ; equiv = equivD 
+    { set       = a
+    ; _↝_       = DPath
+    ; _≈_       = DPath -- or could use _≡_ .
+    ; id        = reflD
+    ; _∘_       = transD
+    ; _⁻¹       = symD
+    ; lneutr    = lidD
+    ; rneutr    = ridD
+    ; assoc     = assocD
+    ; linv      = linvD
+    ; rinv      = rinvD
+    ; equiv     = equivD 
     ;  ∘-resp-≈ = respD }
+
+------------------------------------------------------------------------------

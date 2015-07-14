@@ -1,15 +1,16 @@
 {-# OPTIONS --without-K #-}
 
 -- Borrowed from OldUnivalence/Equivalences.agda, without HoTT
+
 module Equiv where
 
-open import Level
-open import Function
-open import Data.Empty using (⊥)
-open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to _⊎→_)
-open import Data.Product using (Σ; _×_; _,_) renaming (map to _×→_)
-open import Relation.Binary.Core
+open import Level using (_⊔_)
+open import Function using (_∘_; id)
+open import Data.Sum renaming (map to _⊎→_)
+open import Data.Product using (Σ; _×_; _,_) renaming (map to _×→_) 
+open import Relation.Binary using (IsEquivalence)
 open import Relation.Binary.PropositionalEquality
+  using (_≡_; refl; sym; trans; cong; cong₂)
 
 infix 4 _∼_
 infix 4 _≃_
@@ -73,6 +74,7 @@ trans≃ (f , feq) (g , geq) = (g ∘ f) , (mkqinv inv α' β')
     β' = λ x → trans (cong fm.g (gm.β (f x))) (fm.β x)
 
 -- more convenient infix version, flipped
+
 _●_ : {A B C : Set} → B ≃ C → A ≃ B → A ≃ C
 a ● b = trans≃ b a
 

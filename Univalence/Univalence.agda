@@ -1,67 +1,75 @@
 module Univalence where
 
--- Basic utilities                      -- clean up 14 July
+-- Basic utilities                        -- clean up 14 July
 
-open import LeqLemmas                   -- clean up 13 July
-open import FinNatLemmas                -- clean up 13 July
-open import SubstLemmas                 -- clean up 13 July
-open import FiniteFunctions             -- clean up 13 July
-open import PathLemmas                  -- clean up 14 July
-open import VectorLemmas                -- clean up 13 July
-open import Proofs                      -- clean up 14 July
--- open import DivModUtils              -- no longer  
+open import LeqLemmas                     -- clean up 13 July
+open import FinNatLemmas                  -- clean up 13 July
+open import SubstLemmas                   -- clean up 13 July
+open import FiniteFunctions               -- clean up 13 July
+open import PathLemmas                    -- clean up 14 July
+open import VectorLemmas                  -- clean up 13 July
+open import Proofs                        -- clean up 14 July
+-- open import DivModUtils                -- no longer  
 
 -- Proofs is a wrapper over all the basic utilities
 -- The only thing imported from now on is Proofs
 
--- Structures (Definitions)
+-- Structures (Definitions)               -- clean up 14 July
 
-open import Groupoid                    -- 
+open import Groupoid                      -- clean up 14 July
 
 {--
-from Categories but does not all work with new Agda version yet
+We use (and extend) the package Categories.
+
+Everything we need works but some of the other parts do not work with
+current version of Agda
+
 open import Everything
 --}
 
--- Equivalences and their properties
+-- Equivalences and their properties      -- 
 
-open import Equiv                       -- 
-open import TypeEquiv                   -- 
-open import FinEquiv                    -- 
-open import LeftCancellation            -- 
-open import Enumeration                 -- 
-open import EquivSetoid                 -- 
+open import Equiv                         -- clean up 14 July
+open import TypeEquiv                     -- 
+open import FinEquiv                      -- 
+open import LeftCancellation              -- 
+open import Enumeration                   -- 
+open import EquivSetoid                   -- 
 
--- Permutations
+-- Permutations                           -- 
 
-open import FinVec                      -- 
-open import ConcretePermutation         --
-open import RepresPerm                  --
+open import FinVec                        -- 
+open import ConcretePermutation           --
+open import RepresPerm                    --
 
--- Relating Equivalences and Permutations
+-- Relating Equivalences and Permutations -- 
 
-open import SEquivSCPermEquiv           -- 
+open import SEquivSCPermEquiv             -- 
 
--- Pi
+-- Pi                                     --
 
-open import PiLevel0                    -- 
-open import PiLevel1                    -- 
+open import PiLevel0                      -- 
+open import PiLevel1                      -- 
 
--- Relating Pi and Permutations
-open import PiPerm                      -- 
+-- Relating Pi and Permutations           -- 
 
--- Relating Pi and Equivalences
-open import PiEquiv                     --
+open import PiPerm                        -- 
 
--- Structures (Instances)
+-- Relating Pi and Equivalences           -- 
 
-open import TypeEquivCat                -- 
-open import Pim2Cat                     -- 
-open import Pi0Cat                      -- 
-open import Pi1Cat                      -- 
+open import PiEquiv                       --
+
+-- Structures (Instances)                 -- 
+
+open import TypeEquivCat                  -- 
+open import Pim2Cat                       -- 
+open import Pi0Cat                        -- 
+open import Pi1Cat                        -- 
 
 {-- 
-Unfinished
+
+Unfinished files
+
 open import SkFinSetCategory  
 open import CPermCat 
 open import Pim1Cat
