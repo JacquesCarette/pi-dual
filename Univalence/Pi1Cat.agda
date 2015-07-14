@@ -35,7 +35,6 @@ module Pi1Cat where
 open import Level using () renaming (zero to lzero)
 open import Relation.Binary.Core using (IsEquivalence)
 open import Data.Product using (_,_)
-open import Data.Fin using (Fin; zero; suc)
 
 open import Categories.Category
 open import Categories.Groupoid
