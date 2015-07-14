@@ -10,8 +10,6 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; subst; con
 open import Data.Sum using (inj₁; inj₂)
 open import Data.Empty
 
-open import Data.Nat.Properties.Simple using ()
-
 ----------------------------------------------
 -- re-open some sub-files 'public'
 open import FiniteFunctions public
