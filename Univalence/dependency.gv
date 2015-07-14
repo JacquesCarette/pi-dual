@@ -81,13 +81,14 @@ digraph PiDepend {
 
   PathLemmas -> RBP;
 
-  Proofs -> FiniteFunctions
-  Proofs -> VectorLemmas
-  Proofs -> SubstLemmas
-  Proofs -> FinNatLemmas
-  Proofs -> PathLemmas
-  Proofs -> DS
-  Proofs -> DE
+  Proofs -> LeqLemmas;
+  Proofs -> FinNatLemmas;
+  Proofs -> SubstLemmas;
+  Proofs -> FiniteFunctions;
+  Proofs -> PathLemmas;
+  Proofs -> VectorLemmas;
+  Proofs -> DS;
+  Proofs -> DE;
 
   Equiv -> DE;
   Equiv -> DS;
@@ -136,10 +137,7 @@ digraph PiDepend {
   FinEquiv -> DU;
   FinEquiv -> Equiv;
   FinEquiv -> TypeEquiv;
-  FinEquiv -> LeqLemmas;
-  FinEquiv -> FinNatLemmas;
-  FinEquiv -> SubstLemmas;
-  FinEquiv -> PathLemmas;
+  FinEquiv -> Proofs;
 
   LeftCancellation -> DE;
   LeftCancellation -> DU;
@@ -161,11 +159,9 @@ digraph PiDepend {
   FinVec -> DP;
   FinVec -> Equiv;
   FinVec -> TypeEquiv;
-  FinVec -> VectorLemmas;
   FinVec -> FinEquiv;
   FinVec -> DNPS;
   FinVec -> DVP;
-  FinVec -> FinNatLemmas;
   FinVec -> Proofs;
   FinVec -> Groupoid;
 
@@ -200,7 +196,7 @@ digraph PiDepend {
   PiLevel0 -> DU;
   PiLevel0 -> DS;
   PiLevel0 -> DP;
-  PiLevel0 -> FinNatLemmas;
+  PiLevel0 -> Proofs;
 
   PiLevel1 -> PiLevel0;
 

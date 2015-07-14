@@ -17,8 +17,8 @@ open import LeqLemmas       public
 open import FinNatLemmas    public
 open import SubstLemmas     public
 open import FiniteFunctions public
-open import VectorLemmas    public
 open import PathLemmas      public
+open import VectorLemmas    public
 
 ------------------------------------------------------------------------------
 -- Some generally useful functions

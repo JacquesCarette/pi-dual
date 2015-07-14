@@ -6,10 +6,13 @@ open import LeqLemmas                   -- clean up 13 July
 open import FinNatLemmas                -- clean up 13 July
 open import SubstLemmas                 -- clean up 13 July
 open import FiniteFunctions             -- clean up 13 July
-open import VectorLemmas                -- clean up 13 July
 open import PathLemmas                  -- clean up 14 July
+open import VectorLemmas                -- clean up 13 July
 open import Proofs                      -- clean up 14 July
 -- open import DivModUtils              -- no longer  
+
+-- Proofs is a wrapper over all the basic utilities
+-- The only thing imported from now on is Proofs
 
 -- Structures (Definitions)
 

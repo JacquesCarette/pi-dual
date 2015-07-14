@@ -37,8 +37,11 @@ open import Data.Product using (_×_; _,′_; proj₁; proj₂)
 open import Equiv
 open import TypeEquiv using (swap₊; swap⋆)
 import TypeEquiv as TE
-open import VectorLemmas using (_!!_; concat-map; map-map-map; lookup-map; map-∘)
 open import FinEquiv using (module Plus; module Times; module PlusTimes)
+open import Proofs using (
+  -- VectorLemmas
+     _!!_; concat-map; map-map-map; lookup-map; map-∘
+     )
 
 ------------------------------------------------------------------------------
 -- Pure vector operations
@@ -76,13 +79,16 @@ module F where
     using (_≡_; refl; sym; trans; cong; cong₂; subst; module ≡-Reasoning)
   open ≡-Reasoning
 
-  open import FiniteFunctions
   open import Equiv using (_∼_)
-  open import VectorLemmas
-    using (lookupassoc; map-++-commute; tabulate-split; left!!; right!!;
-           lookup-++-raise; unSplit; tab++[]≡tab∘̂unite+)
-  open import FinNatLemmas using (inject+0≡uniti+)
-  open import Proofs using (congD!)
+  open import Proofs using (congD!;
+    -- FinNatLemmas
+       inject+0≡uniti+; 
+    -- FiniteFunctions
+       finext; 
+    -- VectorLemmas
+       lookupassoc; map-++-commute; tabulate-split; left!!; right!!;
+       lookup-++-raise; unSplit; tab++[]≡tab∘̂unite+
+       )
 
   open V
 
