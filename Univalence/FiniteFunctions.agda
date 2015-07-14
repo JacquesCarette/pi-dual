@@ -3,8 +3,8 @@
 module FiniteFunctions where
 
 open import Data.Vec using (tabulate; _∷_)
-open import Data.Fin using (Fin; zero; suc)
-open import Data.Nat using (ℕ; zero; suc)
+open import Data.Fin using (Fin; zero; suc) 
+open import Data.Nat using (ℕ; suc) 
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; cong; module ≡-Reasoning)
 open import Function using (_∘_)
@@ -27,3 +27,5 @@ finext {suc n} {_} {f} {g} fi≡gi =
            ≡⟨ refl ⟩
          tabulate g ∎)
   where open ≡-Reasoning
+
+------------------------------------------------------------------------------
