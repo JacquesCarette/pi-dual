@@ -252,5 +252,16 @@ uniti+p∘x≡[0⊎x]∘uniti+p : ∀ {m n} (p : CPerm m n) →
   transp uniti+p p ≡ transp (0p ⊎p p) uniti+p
 uniti+p∘x≡[0⊎x]∘uniti+p p = p≡ (uniti+∘x≡[0⊎x]∘uniti+ {x = CPerm.π p})
 
+-- and the right version
+{-
+unite+rp∘[x⊎0]≡x∘unite+rp : ∀ {m n} (p : CPerm m n) →
+  transp unite+rp (p ⊎p 0p) ≡ transp p unite+rp
+unite+rp∘[x⊎0]≡x∘unite+rp p = p≡ ?
+
+uniti+rp∘[x⊎0]≡x∘uniti+rp : ∀ {m n} (p : CPerm m n) →
+  transp uniti+rp (p ⊎p 0p) ≡ transp p uniti+rp
+uniti+rp∘[x⊎0]≡x∘uniti+rp p = p≡ {!!}
+-}
+
 SCPerm : ℕ → ℕ → Setoid zero zero
 SCPerm m n = ≡-Setoid (CPerm m n)

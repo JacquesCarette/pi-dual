@@ -16,7 +16,6 @@ open import Categories.Bifunctor
 open import Categories.NaturalIsomorphism
 
 open import ConcretePermutation
-open import FinVec -- shouldn't be needed!
 
 CPermCat : Category zero zero zero
 CPermCat = record
@@ -64,14 +63,19 @@ module ⊎h = MonoidalHelperFunctors CPermCat ⊎p-bifunctor 0
   { F⇒G = record { η = λ _ → unite+p ; commute = λ f → unite+p∘[0⊎x]≡x∘unite+p (f 0F) }
   ; F⇐G = record { η = λ _ → uniti+p ; commute = λ f → uniti+p∘x≡[0⊎x]∘uniti+p (f 0F) }
   ; iso = λ X → record { isoˡ = linv uniti+p ; isoʳ = linv unite+p } }
-  where open import Categories.Functor
+
+x⊎0≡x : NaturalIsomorphism ⊎h.x⊗id ⊎h.x
+x⊎0≡x = record
+  { F⇒G = record { η = λ _ → uniti+rp ; commute = λ f → p≡ {!!} }
+  ; F⇐G = record { η = λ _ → unite+rp ; commute = λ f → {!!} }
+  ; iso = λ X → record { isoˡ = linv unite+rp ; isoʳ = linv uniti+rp } }
 
 CPM⊎ : Monoidal CPermCat
 CPM⊎ = record
   { ⊗ = ⊎p-bifunctor
    ; id = 0
    ; identityˡ = 0⊎x≡x
-   ; identityʳ = {!!}
+   ; identityʳ = x⊎0≡x
    ; assoc = {!!}
    ; triangle = {!!}
    ; pentagon = {!!}
