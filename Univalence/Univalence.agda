@@ -3,7 +3,7 @@ module Univalence where
 -- Basic utilities
 
 open import LeqLemmas                   -- clean up 13 July
-open import FinNatLemmas                -- 
+open import FinNatLemmas                -- clean up 13 July
 open import SubstLemmas                 -- 
 open import VectorLemmas                -- 
 open import FiniteFunctions             -- 
