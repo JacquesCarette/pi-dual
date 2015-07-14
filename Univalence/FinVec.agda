@@ -27,7 +27,7 @@
 
 module FinVec where
 
-open import Data.Nat
+open import Data.Nat using (ℕ; _+_; _*_)
 open import Data.Vec renaming (map to mapV; _++_ to _++V_; concat to concatV)
 open import Data.Fin using (Fin; inject+; raise; zero; suc)
 open import Function using (_∘_; id; _$_)
