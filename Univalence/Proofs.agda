@@ -6,20 +6,21 @@ module Proofs where
 
 open import Level using (Level)
 
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; subst; cong)
+open import Relation.Binary.PropositionalEquality
+  using (_≡_; refl; subst; cong)
 open import Data.Sum using (inj₁; inj₂)
-open import Data.Empty
+open import Data.Empty using (⊥)
 
-----------------------------------------------
 -- re-open some sub-files 'public'
-open import FiniteFunctions public
-open import VectorLemmas public
-open import SubstLemmas public
-open import LeqLemmas public
-open import FinNatLemmas public
-open import PathLemmas public
 
----------------------------------------------
+open import LeqLemmas       public
+open import FinNatLemmas    public
+open import SubstLemmas     public
+open import FiniteFunctions public
+open import VectorLemmas    public
+open import PathLemmas      public
+
+------------------------------------------------------------------------------
 -- Some generally useful functions
 
 -- From Alan Jeffrey's post to Agda list
@@ -46,8 +47,7 @@ cong₂D! : {a b c : Level} {A : Set a} {B : A → Set b} {C : Set c}
        → (x₂≡x₁ : x₂ ≡ x₁) → subst B x₂≡x₁ y₂ ≡ y₁ → f x₁ y₁ ≡ f x₂ y₂
 cong₂D! f refl refl = refl
 
-
-----------------------------------------------
-
 inj-injective : ∀ {A B : Set} {a : A} {b : B} → inj₁ a ≡ inj₂ b → ⊥
 inj-injective ()
+
+------------------------------------------------------------------------------

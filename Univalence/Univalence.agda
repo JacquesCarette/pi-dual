@@ -1,14 +1,14 @@
 module Univalence where
 
--- Basic utilities
+-- Basic utilities                      -- clean up 14 July
 
 open import LeqLemmas                   -- clean up 13 July
 open import FinNatLemmas                -- clean up 13 July
 open import SubstLemmas                 -- clean up 13 July
 open import FiniteFunctions             -- clean up 13 July
 open import VectorLemmas                -- clean up 13 July
-open import PathLemmas                  -- 
-open import Proofs                      -- 
+open import PathLemmas                  -- clean up 14 July
+open import Proofs                      -- clean up 14 July
 -- open import DivModUtils              -- no longer  
 
 -- Structures (Definitions)
@@ -31,14 +31,17 @@ open import Enumeration                 --
 open import EquivSetoid                 -- 
 
 -- Permutations
+
 open import FinVec                      -- 
 open import ConcretePermutation         --
 open import RepresPerm                  --
 
 -- Relating Equivalences and Permutations
+
 open import SEquivSCPermEquiv           -- 
 
 -- Pi
+
 open import PiLevel0                    -- 
 open import PiLevel1                    -- 
 
