@@ -14,7 +14,6 @@ open import Data.Empty
 open import Data.Unit
 import Function as F
 
-open import Equiv
 open import TypeEquiv
 
 -- Note that all these lemmas are "simple" in the sense that they
