@@ -3,25 +3,15 @@
 module Enumeration where
 
 open import Equiv
-open import Proofs using (inj-injective)
 open import Data.Empty
-open import Data.Fin using (Fin; inject+; raise; toℕ; fromℕ≤; zero; suc;
-  reduce≥)
-open import Data.Fin.Properties using (inject+-lemma; bounded; fromℕ≤-toℕ;
-  toℕ-raise; toℕ-injective)
-open import Data.Nat using (ℕ;_+_;_*_; _≤?_; _≤_; _≥_;
-  zero; suc; s≤s; z≤n; ≤-pred; module ≤-Reasoning)
-open import Data.Nat.Properties using (¬i+1+j≤i; ≰⇒>)
-open import Data.Nat.Properties.Simple using (+-suc)
-open import Relation.Nullary using (yes; no)
+open import Data.Fin using (Fin; inject+; raise)
+open import Data.Nat using (ℕ; _+_; _*_)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_;_,_; proj₁; proj₂)
 open import Function using (_∘_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans;
   subst; module ≡-Reasoning)
-open import FinEquiv
-open import LeqLemmas
-open import FinNatLemmas
+open import FinEquiv using (Fin0-⊥; module Plus; module Times)
 
 -- An Enumerated 'type' is an isomorphism between a
 -- "set" A and Fin n.  Do note that it comes with a particular
