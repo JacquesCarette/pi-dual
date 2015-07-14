@@ -1,0 +1,234 @@
+// This is a hand-built dependency graph for the development
+// of 2-level Pi.  Only the fundamental dependencies are
+// added here.  For example, if a file import Data.Nat just
+// to have access to the type, it is omitted.  If it
+// uses important functions from a module, it is put in.
+
+// blue nodes indicate part of the standard library.  Only part
+// of those dependencies are put in, the ones which are relevant
+// to us.
+
+digraph PiDepend {
+  DN [label="Data.Nat",color=blue];
+  DNP [label="Data.Nat.Properties",color=blue];
+  DNPS [label="Data.Nat.Properties.Simple",color=blue];
+  DND [label="Data.Nat.DivMod",color=blue];
+  RBP [label="Relation.Binary.PropositionalEquality",color=blue];
+  DP [label="Data.Product",color=blue];
+  DE [label="Data.Empty",color=blue];
+  DS [label="Data.Sum",color=blue];
+  DF [label="Data.Fin",color=blue];
+  DFP [label="Data.Fin.Properties",color=blue];
+  DV [label="Data.Vec",color=blue];
+  DVP [label="Data.Vec.Properties",color=blue]
+  DU [label="Data.Unit",color=blue];
+  RBS [label="Relation.Binary.Setoid",color=blue];
+  RB [label="Relation.Binary",color=blue];
+  DSP [label="Data.Sum.Properties",color=blue];
+  DSPP [label="Data.SumProd.Properties",color=blue];
+
+  DFP -> DF;
+  DNP -> DNPS;
+  DNP -> DN;
+  DNPS -> DN;
+  DFP -> DN;
+  DFP -> RBP;
+  DF -> DN;
+  DV -> DF;
+  DV -> DP;
+  DVP -> DV;
+  DVP -> DE;
+  DVP -> DP;
+  DND -> DN;
+  DND -> DNP;
+  DND -> DFP;
+  DND -> RBP;
+  DSP -> DS;
+  DSPP -> DS;
+  DSPP -> DP;
+
+  DSPP -> TypeEquiv;
+
+  LeqLemmas -> DN;
+  LeqLemmas -> DNP;
+  LeqLemmas -> DNPS;
+
+  FinNatLemmas -> RBP;
+  FinNatLemmas -> DN;
+  FinNatLemmas -> DNP;
+  FinNatLemmas -> DNPS;
+  FinNatLemmas -> DP;
+  FinNatLemmas -> DE;
+  FinNatLemmas -> DF;
+  FinNatLemmas -> DFP;
+
+  SubstLemmas -> RBP;
+
+  FiniteFunctions -> DV;
+  FiniteFunctions -> DVP;
+
+  VectorLemmas -> DV;
+  VectorLemmas -> DVP;
+  VectorLemmas -> RBP;
+  VectorLemmas -> DN;
+  VectorLemmas -> DNPS;
+  VectorLemmas -> DF;
+  VectorLemmas -> DFP;
+  VectorLemmas -> DS;
+  VectorLemmas -> SubstLemmas;
+  VectorLemmas -> FinNatLemmas;
+  VectorLemmas -> FiniteFunctions;
+
+  PathLemmas -> RBP;
+
+  Proofs -> FiniteFunctions
+  Proofs -> VectorLemmas
+  Proofs -> SubstLemmas
+  Proofs -> FinNatLemmas
+  Proofs -> PathLemmas
+  Proofs -> DS
+  Proofs -> DE
+
+  Equiv -> DE;
+  Equiv -> DS;
+  Equiv -> DP;
+
+  Enumeration -> Equiv;
+  Enumeration -> DE;
+  Enumeration -> DS;
+  Enumeration -> DP;
+  Enumeration -> RBP;
+  Enumeration -> FinEquiv;
+
+  SetoidUtils -> RBS;
+  SetoidUtils -> DP;
+  SetoidUtils -> RBP
+
+  Groupoid -> DE;
+  Groupoid -> DS;
+  Groupoid -> DP;
+  Groupoid -> RB;
+
+  TypeEquiv -> DE;
+  TypeEquiv -> DU;
+  TypeEquiv -> DS;
+  TypeEquiv -> DP;
+  TypeEquiv -> Equiv;
+
+  TypeEquivCat -> Categories;
+  TypeEquivCat -> DS;
+  TypeEquivCat -> DP;
+  TypeEquivCat -> DU;
+  TypeEquivCat -> DE;
+  TypeEquivCat -> Equiv;
+  TypeEquivCat -> TypeEquiv;
+  TypeEquivCat -> DSP;
+  TypeEquivCat -> DSPP;
+
+  FinEquiv -> RBP;
+  FinEquiv -> DF;
+  FinEquiv -> DFP;
+  FinEquiv -> DNP;
+  FinEquiv -> DNPS;
+  FinEquiv -> DS;
+  FinEquiv -> DN;
+  FinEquiv -> DND;
+  FinEquiv -> DU;
+  FinEquiv -> Equiv;
+  FinEquiv -> TypeEquiv;
+  FinEquiv -> LeqLemmas;
+  FinEquiv -> FinNatLemmas;
+  FinEquiv -> SubstLemmas;
+  FinEquiv -> PathLemmas;
+
+  LeftCancellation -> DE;
+  LeftCancellation -> DU;
+  LeftCancellation -> DS;
+  LeftCancellation -> DP;
+  LeftCancellation -> RBP;
+  LeftCancellation -> Equiv;
+  LeftCancellation -> TypeEquiv;
+
+  EquivSetoid -> RBS;
+  EquivSetoid -> DP;
+  EquivSetoid -> DE;
+  EquivSetoid -> DS;
+  EquivSetoid -> Equiv;
+  EquivSetoid -> SetoidUtils;
+
+  FinVec -> DV;
+  FinVec -> DS;
+  FinVec -> DP;
+  FinVec -> Equiv;
+  FinVec -> TypeEquiv;
+  FinVec -> VectorLemmas;
+  FinVec -> FinEquiv;
+  FinVec -> DNPS;
+  FinVec -> DVP;
+  FinVec -> FinNatLemmas;
+  FinVec -> Proofs;
+  FinVec -> Groupoid;
+
+  ConcretePermutation -> RBP;
+  ConcretePermutation -> FinVec;
+  ConcretePermutation -> SetoidUtils;
+  ConcretePermutation -> Equiv;
+  ConcretePermutation -> FinEquiv;
+
+  RepresPerm -> Enumeration;
+  RepresPerm -> Equiv;
+  RepresPerm -> TypeEquiv;
+  RepresPerm -> LeftCancellation;
+
+  SEquivSCPermEquiv -> DS;
+  SEquivSCPermEquiv -> DP;
+  SEquivSCPermEquiv -> DV;
+  SEquivSCPermEquiv -> DVP;
+  SEquivSCPermEquiv -> RBS;
+  SEquivSCPermEquiv -> Proofs;
+  SEquivSCPermEquiv -> Equiv;
+  SEquivSCPermEquiv -> SetoidUtils;
+  SEquivSCPermEquiv -> EquivSetoid;
+  SEquivSCPermEquiv -> FinVec;
+  SEquivSCPermEquiv -> Enumeration;
+  SEquivSCPermEquiv -> ConcretePermutation;
+
+  PiLevel0 -> RBP;
+  PiLevel0 -> DNPS;
+  PiLevel0 -> DV;
+  PiLevel0 -> DE;
+  PiLevel0 -> DU;
+  PiLevel0 -> DS;
+  PiLevel0 -> DP;
+  PiLevel0 -> FinNatLemmas;
+
+  PiLevel1 -> PiLevel0;
+
+  PiPerm -> ConcretePermutation;
+  PiPerm -> PiLevel0;
+  PiPerm -> Groupoid;
+
+  PiEquiv -> DS;
+  PiEquiv -> DP;
+  PiEquiv -> Equiv;
+  PiEquiv -> TypeEquiv;
+  PiEquiv -> TypeEquivCat;
+  PiEquiv -> PiLevel0;
+  PiEquiv -> PiLevel1;
+  PiEquiv -> DSP;
+  PiEquiv -> DSPP;
+
+  Pim2Cat -> DU;
+  Pim2Cat -> Categories;
+
+  Pi0Cat -> DU;
+  Pi0Cat -> Categories;
+  Pi0Cat -> DP;
+  Pi0Cat -> PiLevel0;
+
+  Pi1Cat -> DU;
+  Pi1Cat -> Categories;
+  Pi1Cat -> DP;
+  Pi1Cat -> PiLevel0;
+  Pi1Cat -> PiLevel1;
+}
