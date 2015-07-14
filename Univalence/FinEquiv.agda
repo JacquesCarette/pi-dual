@@ -26,12 +26,18 @@ open import Equiv
       path⊎)
 open import TypeEquiv using (swap₊; swapswap₊; swap⋆; swapswap⋆)
 import TypeEquiv as TE
-open import LeqLemmas using (_<?_; cong+r≤; cong+l≤; cong*r≤)
-open import FinNatLemmas 
-  using (inj₁-≡; inj₂-≡; inject+-injective; raise-injective; addMul-lemma;
-         distribˡ-*-+; *-right-identity)
-open import SubstLemmas using (subst-subst)
-open import PathLemmas using (sym-sym)
+
+open import Proofs using (
+  -- LeqLemmas
+     _<?_; cong+r≤; cong+l≤; cong*r≤; 
+  -- FinNatLemmas 
+     inj₁-≡; inj₂-≡; inject+-injective; raise-injective; addMul-lemma;
+     distribˡ-*-+; *-right-identity;
+  -- SubstLemmas
+     subst-subst;
+  -- PathLemmas
+     sym-sym
+     )
 
 -- Abbreviation
 _●_ : {A B C : Set} → A ≃ B → B ≃ C → A ≃ C

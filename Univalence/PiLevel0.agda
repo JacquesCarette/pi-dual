@@ -20,7 +20,10 @@ open import Data.Unit    using (⊤; tt)
 open import Data.Sum     using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
-open import FinNatLemmas using (distribˡ-*-+; *-right-identity)
+open import Proofs using (
+  -- FinNatLemmas
+     distribˡ-*-+; *-right-identity
+  )
 
 ------------------------------------------------------------------------------
 -- Level 0 of Pi

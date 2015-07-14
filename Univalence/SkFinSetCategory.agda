@@ -10,16 +10,6 @@
 
 module SkFinSetCategory where
 
-{-
-open import Data.Nat
-open import Data.Vec renaming (map to mapV; _++_ to _++V_; concat to concatV)
-
-open import Equiv using (p∘!p≡id)
-open import TypeEquiv using (swap₊; swap⋆)
-open import VectorLemmas using (_!!_; concat-map; map-map-map; lookup-map; map-∘)
-open import FinEquiv using (module Plus; module Times; module PlusTimes)
--}
-
 ------------------------------------------------------------------------------
 -- Categorical structure
 
