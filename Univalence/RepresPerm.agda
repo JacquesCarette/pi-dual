@@ -4,7 +4,7 @@ module RepresPerm where
 
 open import Enumeration
 open import Equiv
-open import TypeEquiv using (idequiv)
+  using (_≃_; id≃; sym≃; trans≃; mkqinv; module qinv; _⋆_; path⊎)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
 open import Data.Nat using (ℕ; suc)
 open import Data.Fin using (Fin; zero)
@@ -38,7 +38,7 @@ thm1 {suc n} {0} (rp (fA , isoA) B≃Fm (f , iso)) with B≃Fm ⋆ f (IA.g zero)
   where module IA = qinv isoA
 ... | ()
 thm1 {suc n} {suc m} {A} {B} (rp A≃Fsn B≃Fsm A≃B) = 
-  cong suc (thm1 {n} {m} {Fin n} {Fin m} (rp idequiv idequiv Fn≃Fm))
+  cong suc (thm1 {n} {m} {Fin n} {Fin m} (rp id≃ id≃ Fn≃Fm))
   where
     Fsn≃Fsm : Fin (suc n) ≃ Fin (suc m)
     Fsn≃Fsm = trans≃ (trans≃ (sym≃ A≃Fsn) A≃B) B≃Fsm
@@ -46,6 +46,6 @@ thm1 {suc n} {suc m} {A} {B} (rp A≃Fsn B≃Fsm A≃B) =
     1+n≃1+m = trans≃ (trans≃ (Plus.fwd-iso {suc 0} {n}) Fsn≃Fsm)
                                                     (sym≃ (Plus.fwd-iso {suc 0} {m}))
     ⊤⊎n≃⊤⊎m : (⊤ ⊎ Fin n) ≃ (⊤ ⊎ Fin m)
-    ⊤⊎n≃⊤⊎m = trans≃ (trans≃ (path⊎ (sym≃ Fin1≃⊤)  idequiv) 1+n≃1+m) 
-                                                    (path⊎ Fin1≃⊤ idequiv)
+    ⊤⊎n≃⊤⊎m = trans≃ (trans≃ (path⊎ (sym≃ Fin1≃⊤) id≃) 1+n≃1+m) 
+                                                    (path⊎ Fin1≃⊤ id≃)
     Fn≃Fm = left-cancel-⊤ ⊤⊎n≃⊤⊎m

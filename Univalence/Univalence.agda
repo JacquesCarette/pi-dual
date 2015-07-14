@@ -30,7 +30,7 @@ open import Everything
 -- Equivalences and their properties      -- 
 
 open import Equiv                         -- clean up 14 July
-open import TypeEquiv                     -- 
+open import TypeEquiv                     -- clean up 14 July
 open import FinEquiv                      -- 
 open import LeftCancellation              -- 
 open import Enumeration                   -- 

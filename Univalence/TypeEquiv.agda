@@ -1,14 +1,22 @@
 {-# OPTIONS --without-K #-}
+
 module TypeEquiv where
 
-open import Data.Empty
-open import Data.Unit
-open import Data.Sum renaming (map to _⊎→_)
-open import Data.Product renaming (map to _×→_)
+import Level using (zero; suc)
+open import Data.Empty using (⊥)
+open import Data.Unit using (⊤; tt)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Data.Product using (_×_; proj₁; proj₂; _,_)
+
+open import Algebra using (CommutativeSemiring)
+open import Algebra.Structures
+  using (IsSemigroup; IsCommutativeMonoid; IsCommutativeSemiring)
+  
 open import Function renaming (_∘_ to _○_)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; cong₂)
+open import Relation.Binary.PropositionalEquality using (refl)
 
 open import Equiv
+  using (_∼_; refl∼; _≃_; id≃; sym≃; ≃IsEquiv; mkqinv; path⊎; path×)
 
 ------------------------------------------------------------------------------
 -- Type Equivalences
@@ -77,7 +85,6 @@ unite₊′equiv = (unite₊′ , mkqinv uniti₊′ refl∼ uniti₊′∘unite
 
 uniti₊′equiv : {A : Set} → A ≃ (A ⊎ ⊥)
 uniti₊′equiv = uniti₊′ , mkqinv unite₊′ uniti₊′∘unite₊′ unite₊′∘uniti₊′
-
 
 -- unite⋆ and uniti⋆
 
@@ -267,18 +274,8 @@ distlequiv = distl , (mkqinv factorl distl∘factorl factorl∘distl)
 factorlequiv : {A B C : Set} → ((A × B) ⊎ (A × C)) ≃ (A × (B ⊎ C))
 factorlequiv = sym≃ distlequiv
 
--- identity equivalence 
-
-idequiv : {A : Set} → A ≃ A
-idequiv = id≃
-
 ------------------------------------------------------------------------------
 -- Commutative semiring structure
-
-import Level
-open import Algebra
-open import Algebra.Structures
-open import Relation.Binary.Core
 
 typesPlusIsSG : IsSemigroup {Level.suc Level.zero} {Level.zero} {Set} _≃_ _⊎_
 typesPlusIsSG = record {

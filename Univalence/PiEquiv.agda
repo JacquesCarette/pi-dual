@@ -45,7 +45,7 @@ c2equiv dist = TE.distequiv
 c2equiv factor = TE.factorequiv
 c2equiv distl = TE.distlequiv
 c2equiv factorl = TE.factorlequiv
-c2equiv id⟷ = TE.idequiv
+c2equiv id⟷ = id≃
 c2equiv (c ◎ c₁) = c2equiv c₁ ● c2equiv c
 c2equiv (c ⊕ c₁) = path⊎ (c2equiv c) (c2equiv c₁)
 c2equiv (c ⊗ c₁) = path× (c2equiv c) (c2equiv c₁)
@@ -126,14 +126,14 @@ lemma1 (c₀ ⊗ c₁) (x , y) = cong₂ _,_ (lemma1 c₀ x) (lemma1 c₁ y)
 !≡sym≃ (c₀ ⊗ c₁) = cong₂ path× (!≡sym≃ c₀) (!≡sym≃ c₁)
 
 left-inv : {t₁ t₂ : U} (c : t₁ ⟷ t₂) →
-  (c2equiv (! c) ● c2equiv c) ≋ idequiv
+  (c2equiv (! c) ● c2equiv c) ≋ id≃
 left-inv c =
   let p = c2equiv c in
   eq (λ x → trans (cong (λ y → (y ● p) ⋆ x) (!≡sym≃ c)) (p∘!p≡id {p = p} x))
      (λ x → trans (cong (λ y → ((sym≃ p) ● (sym≃ y)) ⋆ x) (!≡sym≃ c)) (!p∘p≡id {p = sym≃ p} x))
 
 right-inv : {t₁ t₂ : U} (c : t₁ ⟷ t₂) →
-  (c2equiv c ● c2equiv (! c)) ≋ idequiv
+  (c2equiv c ● c2equiv (! c)) ≋ id≃
 right-inv c =
   let p = c2equiv c in
   eq (λ x → trans (cong (λ y → (p ● y) ⋆ x) (!≡sym≃ c)) (!p∘p≡id {p = p} x))
