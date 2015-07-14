@@ -31,10 +31,6 @@ _⊎S_ AS BS = record
     ; trans = λ {x} {y} {z} → trans∼₁ {x} {y} {z} } 
   }
   where
-    open Setoid
-    open import Data.Sum using (_⊎_; inj₁; inj₂)
-    open import Data.Empty using (⊥)
-
     A = Carrier AS
     B = Carrier BS
 
