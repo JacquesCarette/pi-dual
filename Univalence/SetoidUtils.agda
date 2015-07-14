@@ -10,6 +10,8 @@ open import Function.Equality using (_⟶_)
 
 -- open import Equiv
 
+-- I think all of this might be in the standard library -- dig!
+
 -- any type can be made into a setoid over ≡
 ≡-Setoid : ∀ {ℓ} → (A : Set ℓ) → Setoid ℓ ℓ
 ≡-Setoid A = record 
