@@ -2,31 +2,6 @@
 
 module PiLevel1 where
 
-open import Relation.Binary.PropositionalEquality 
-  using (_≡_; refl; sym; trans; subst; subst₂; cong; cong₂; setoid; 
-        proof-irrelevance; module ≡-Reasoning)
-open import Data.Nat.Properties.Simple 
-  using (+-right-identity; +-suc; +-assoc; +-comm; 
-        *-assoc; *-comm; *-right-zero; distribʳ-*-+)
-
-open import Data.Bool using (Bool; false; true; _∧_; _∨_)
-open import Data.Nat using (ℕ; suc; _+_; _∸_; _*_; _<_; _≮_; _≤_; _≰_; 
-  z≤n; s≤s; _≟_; _≤?_; module ≤-Reasoning)
-open import Data.Fin 
-  using (Fin; zero; suc; toℕ; fromℕ; _ℕ-_; _≺_;
-         raise; inject+; inject₁; inject≤; _≻toℕ_) 
-  renaming (_+_ to _F+_)
-
-open import Data.Vec 
-  using (Vec; tabulate; []; _∷_ ; tail; lookup; zip; zipWith; splitAt;
-         _[_]≔_; allFin; toList)
-  renaming (_++_ to _++V_; map to mapV; concat to concatV)
-
-open import Data.Empty   using (⊥; ⊥-elim)
-open import Data.Unit    using (⊤; tt)
-open import Data.Sum     using (_⊎_; inj₁; inj₂)
-open import Data.Product using (_×_; _,_; proj₁; proj₂)
-
 open import PiLevel0
 
 ------------------------------------------------------------------------------
