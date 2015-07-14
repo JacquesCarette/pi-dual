@@ -37,8 +37,7 @@ open import Data.Product using (_×_; _,′_; proj₁; proj₂)
 open import Equiv
 open import TypeEquiv using (swap₊; swap⋆)
 import TypeEquiv as TE
-open import VectorLemmas using (_!!_; concat-map; map-map-map; lookup-map; map-∘;
-  merge-[,])
+open import VectorLemmas using (_!!_; concat-map; map-map-map; lookup-map; map-∘)
 open import FinEquiv using (module Plus; module Times; module PlusTimes)
 
 ------------------------------------------------------------------------------
@@ -822,3 +821,12 @@ G = record {
   rinv = rinv ; 
   ∘-resp-≈ = cong₂ _∘̂_ 
   }
+
+{--
+-- Move to its own spot later
+merge-[,] : {A B C D E : Set} → {h : A → C} → {i : B → D} → {f : C → E}
+  → {g : D → E} → (x : A ⊎ B) →
+    [ f , g ]′ ( map⊎ h i x ) ≡ [ (f ∘ h) , (g ∘ i) ]′ x
+merge-[,] (inj₁ x) = refl
+merge-[,] (inj₂ y) = refl
+--}

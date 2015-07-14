@@ -2,28 +2,25 @@
 
 module FinNatLemmas where
 
-open import Relation.Binary.PropositionalEquality 
-  using (_≡_; refl; sym; trans; subst; cong; cong₂; proof-irrelevance;
-      module ≡-Reasoning)
-open import Relation.Binary.Core using (_≢_)
-open import Data.Nat.Properties
-  using (cancel-+-left; n∸n≡0; +-∸-assoc; m+n∸n≡m; 1+n≰n; m≤m+n;
-         n≤m+n; n≤1+n; cancel-*-right-≤; ≰⇒>; ¬i+1+j≤i; cancel-+-left-≤)
-open import Data.Nat.Properties.Simple 
-  using (+-right-identity; +-suc; +-assoc; +-comm; 
-        *-assoc; *-comm; *-right-zero; distribʳ-*-+; +-*-suc)
-import Relation.Binary using (module StrictTotalOrder)
-open import Data.Product using (_×_;_,_)
 open import Data.Empty using (⊥-elim)
+open import Data.Product using (_×_; _,_)
 
-open import Data.Nat using (ℕ; zero; suc; _+_; _∸_; _*_; _<_; _≮_; _≤_; _≰_; 
-  z≤n; s≤s; _≟_; _≤?_; module ≤-Reasoning)
+open import Data.Nat
+  using (ℕ; zero; suc; _+_; _*_; _<_; _≤_; _∸_; z≤n; s≤s; module ≤-Reasoning)
+open import Data.Nat.Properties
+  using (m+n∸n≡m; m≤m+n; +-∸-assoc; cancel-+-left)
+open import Data.Nat.Properties.Simple 
+  using (+-comm; +-assoc; *-comm; distribʳ-*-+; +-right-identity)
+
 open import Data.Fin 
-  using (Fin; zero; suc; toℕ; fromℕ; fromℕ≤; _ℕ-_; _≺_; reduce≥; 
-         raise; inject+; inject₁; inject≤; _≻toℕ_) 
-  renaming (_+_ to _F+_)
+  using (Fin; zero; suc; toℕ; raise; fromℕ≤; reduce≥; inject+)
 open import Data.Fin.Properties
-  using (bounded; inject+-lemma; to-from; toℕ-injective; toℕ-raise; toℕ-fromℕ≤)
+  using (bounded; toℕ-injective; toℕ-raise; toℕ-fromℕ≤; inject+-lemma)
+
+open import Relation.Binary using (module StrictTotalOrder)
+open import Relation.Binary.Core using (_≢_)
+open import Relation.Binary.PropositionalEquality 
+  using (_≡_; subst; refl; sym; cong; cong₂; trans; module ≡-Reasoning)
 
 ------------------------------------------------------------------------------
 -- Fin and Nat lemmas
@@ -116,9 +113,8 @@ reduce≥-inj m n i j i≥ j≥ ri≡rj =
       (trans (sym (toℕ-reduce≥ m n i i≥))
       (trans (cong toℕ ri≡rj) (toℕ-reduce≥ m n j j≥))))
 
-------------------------------------------------------------------------------
-
-inj₁-toℕ≡ : {m n : ℕ} (i : Fin (m + n)) (i< : toℕ i < m) → toℕ i ≡ toℕ (inject+ n (fromℕ≤ i<))
+inj₁-toℕ≡ : {m n : ℕ} (i : Fin (m + n)) (i< : toℕ i < m) →
+            toℕ i ≡ toℕ (inject+ n (fromℕ≤ i<))
 inj₁-toℕ≡ {0} _ ()
 inj₁-toℕ≡ {suc m} zero (s≤s z≤n) = refl
 inj₁-toℕ≡ {suc (suc m)} (suc i) (s≤s (s≤s i<)) = cong suc (inj₁-toℕ≡ i (s≤s i<))
@@ -127,7 +123,7 @@ inj₁-≡ : {m n : ℕ} (i : Fin (m + n)) (i< : toℕ i < m) → i ≡ inject+ 
 inj₁-≡ i i< = toℕ-injective (inj₁-toℕ≡ i i<)
 
 inj₂-toℕ≡ :  {m n : ℕ} (i : Fin (m + n)) (i≥ : m ≤ toℕ i ) → 
-     toℕ i ≡ toℕ (raise m (reduce≥ i i≥))
+             toℕ i ≡ toℕ (raise m (reduce≥ i i≥))
 inj₂-toℕ≡ {Data.Nat.zero} i i≥ = refl
 inj₂-toℕ≡ {suc m} zero ()
 inj₂-toℕ≡ {suc m} (suc i) (s≤s i≥) = cong suc (inj₂-toℕ≡ i i≥)
@@ -167,6 +163,7 @@ toℕ-invariance : ∀ {n n'} → (i : Fin n) → (eq : n ≡ n') → toℕ (sub
 toℕ-invariance i refl = refl
 
 -- see FinEquiv for the naming
+
 inject+0≡uniti+ : ∀ {m} → (n : Fin m) → (eq : m ≡ m + 0) → inject+ 0 n ≡ subst Fin eq n
 inject+0≡uniti+ {m} n eq = toℕ-injective pf
   where
@@ -188,7 +185,8 @@ inject+0≡uniti+ {m} n eq = toℕ-injective pf
 -- dividend than is consistent with a zero quotient, regardless of
 -- remainders.
 
-large : ∀ {d} {r : Fin (suc d)} x (r′ : Fin (suc d)) → toℕ r ≢ suc x * suc d + toℕ r′
+large : ∀ {d} {r : Fin (suc d)} x (r′ : Fin (suc d)) →
+        toℕ r ≢ suc x * suc d + toℕ r′
 large {d} {r} x r′ pf = irrefl pf (
     start
       suc (toℕ r)
@@ -197,7 +195,7 @@ large {d} {r} x r′ pf = irrefl pf (
     ≤⟨ m≤m+n (suc d) (x * suc d) ⟩
       suc d + x * suc d -- same as (suc x * suc d)
     ≤⟨ m≤m+n (suc x * suc d) (toℕ r′) ⟩
-      suc x * suc d + toℕ r′ -- clearer in two steps, and we'd need assoc anyway
+      suc x * suc d + toℕ r′ -- clearer in two steps; we'd need assoc anyway
     □)
   where
   open ≤-Reasoning
@@ -226,8 +224,8 @@ addMul-lemma x x′ d r r′ hyp rewrite +-comm (toℕ r) (x * suc d)
                                    | +-comm (toℕ r′) (x′ * suc d)
   = addMul-lemma′ x x′ d r r′ hyp
   
-------------------------------------------------------------------------
 -- purely about Nat, but still not in Data.Nat.Properties.Simple
+
 distribˡ-*-+ : ∀ m n o → m * (n + o)  ≡ m * n + m * o
 distribˡ-*-+ m n o = 
   trans (*-comm m (n + o)) (
@@ -236,3 +234,5 @@ distribˡ-*-+ m n o =
 
 *-right-identity : ∀ n → n * 1 ≡ n
 *-right-identity n = trans (*-comm n 1) (+-right-identity n)
+
+------------------------------------------------------------------------
