@@ -5,10 +5,10 @@ module Univalence where
 open import LeqLemmas                   -- clean up 13 July
 open import FinNatLemmas                -- 
 open import SubstLemmas                 -- 
-open import VectorLemmas                -- 
 open import FiniteFunctions             -- 
-open import Proofs                      -- 
+open import VectorLemmas                -- 
 open import PathLemmas                  -- 
+open import Proofs                      -- 
 open import DivModUtils                 -- 
 open import LeftCancellation            -- 
 open import Enumeration                 -- 
