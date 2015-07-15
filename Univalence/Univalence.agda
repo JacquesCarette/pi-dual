@@ -30,9 +30,15 @@ open import Everything
 -- Equivalences and their properties      -- 
 
 open import Equiv                         -- clean up 14 July
+-- Defines extensional equality of functions ∼; quasi-inverses; and
+-- then equivalences ≃
 open import TypeEquiv                     -- clean up 14 July
+-- Proves that types and type equivalences form a commutative semiring
 open import FinEquiv                      -- clean up 14 July
-open import LeftCancellation              -- 
+-- Proves that that finite sets and equivalences form a commutative
+-- semiring
+open import LeftCancellation              -- clean up 14 July
+-- Proves that ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A ≃ B
 open import Enumeration                   -- 
 open import EquivSetoid                   -- 
 
