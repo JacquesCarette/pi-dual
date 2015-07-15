@@ -31,7 +31,7 @@ open import Everything
 
 open import Equiv                         -- clean up 14 July
 open import TypeEquiv                     -- clean up 14 July
-open import FinEquiv                      -- 
+open import FinEquiv                      -- clean up 14 July
 open import LeftCancellation              -- 
 open import Enumeration                   -- 
 open import EquivSetoid                   -- 

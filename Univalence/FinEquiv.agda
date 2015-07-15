@@ -2,48 +2,68 @@
 
 module FinEquiv where
 
-open import Relation.Nullary using (yes; no)
-open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; sym; trans; cong; cong₂; subst; module ≡-Reasoning; inspect; [_])
-open import Data.Fin
-  using (Fin; zero; suc; inject+; raise; toℕ; fromℕ≤; reduce≥)
-open import Data.Fin.Properties
-  using (bounded; inject+-lemma; toℕ-raise; toℕ-injective; toℕ-fromℕ≤)
+-- High-level goal is to establish that finite sets and equivalences
+-- form a commutative semiring.
+
+import Level using (zero)
+
+open import Data.Empty using (⊥; ⊥-elim)
+open import Data.Unit using (⊤; tt)
+open import Data.Sum
+  using (_⊎_; inj₁; inj₂) renaming (map to mapSum)
+open import Data.Product
+  using (_,_; _×_; proj₁; proj₂) renaming (map to mapTimes)
+
+open import Data.Nat
+  using (ℕ; zero; suc; _+_; _*_; ≤-pred; _<_; _≤_; _≥_; _≤?_;
+         module ≤-Reasoning)
+open import Data.Nat.DivMod using (_divMod_; result)
 open import Data.Nat.Properties using (≰⇒>; 1+n≰n; m≤m+n; ¬i+1+j≤i)
 open import Data.Nat.Properties.Simple
-  using (+-suc; +-comm; +-assoc; +-right-identity; *-right-zero; *-assoc;  distribʳ-*-+)
-open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to mapSum)
-open import Data.Product using (_,_; _×_; proj₁; proj₂) renaming (map to mapTimes)
-open import Data.Empty using (⊥; ⊥-elim)
-open import Data.Nat
-  using (ℕ; zero; suc; _+_; _*_; _<_; _≤_; _≥_; ≤-pred; _≤?_; module ≤-Reasoning)
-open import Data.Nat.DivMod using (_divMod_; result)
+  using (+-right-identity; +-assoc; +-suc; +-comm; *-right-zero; *-assoc;
+         distribʳ-*-+)
+
+open import Data.Fin
+  using (Fin; zero; suc; toℕ; fromℕ≤; inject+; raise; reduce≥)
+open import Data.Fin.Properties
+  using (bounded; inject+-lemma; toℕ-raise; toℕ-injective; toℕ-fromℕ≤)
+
+open import Algebra using (CommutativeSemiring)
+open import Algebra.Structures
+  using (IsSemigroup; IsCommutativeMonoid; IsCommutativeSemiring)
+
 open import Function using (_∘_; id)
-open import Data.Unit using (⊤; tt)
+open import Relation.Nullary using (yes; no)
+open import Relation.Binary using (IsEquivalence)
+open import Relation.Binary.PropositionalEquality
+  using (_≡_; refl; sym; trans; cong; cong₂; subst;
+         module ≡-Reasoning; inspect; [_])
+
+--
 
 open import Equiv
-  using (_∼_; _≃_; module qinv; mkqinv; id≃; sym≃; trans≃; _⊎∼_; _×∼_; ≃IsEquiv;
-      path⊎)
-open import TypeEquiv using (swap₊; swapswap₊; swap⋆; swapswap⋆)
-import TypeEquiv as TE
+  using (_∼_; _≃_; id≃; sym≃; trans≃; module qinv; mkqinv; path⊎; _⊎∼_; _×∼_)
+open import TypeEquiv
+  using (swap₊; swapswap₊; assocl₊equiv; swap⋆; swapswap⋆)
 
 open import Proofs using (
   -- LeqLemmas
-     _<?_; cong+r≤; cong+l≤; cong*r≤; 
+      _<?_; cong+r≤; cong+l≤; cong*r≤; 
   -- FinNatLemmas 
-     inj₁-≡; inj₂-≡; inject+-injective; raise-injective; addMul-lemma;
-     distribˡ-*-+; *-right-identity;
+      inj₁-≡; inj₂-≡; inject+-injective; raise-injective; addMul-lemma;
+      *-right-identity; distribˡ-*-+; 
   -- SubstLemmas
-     subst-subst;
+      subst-subst;
   -- PathLemmas
-     sym-sym
-     )
+      sym-sym
+      )
 
+------------------------------------------------------------------------------
 -- Abbreviation
+
 _●_ : {A B C : Set} → A ≃ B → B ≃ C → A ≃ C
 _●_ = trans≃
 
-------------------------------------------------------------------------------
 -- generally useful, leave this at top:
 
 abstract
@@ -82,12 +102,14 @@ abstract
   sym-iso : {m n : ℕ} → (Fin m ≃ Fin n) → (Fin n ≃ Fin m)
   sym-iso = sym≃ 
 
-  trans-iso : {m n o : ℕ} → (Fin m ≃ Fin n) → (Fin n ≃ Fin o) → (Fin m ≃ Fin o) 
+  trans-iso : {m n o : ℕ} → (Fin m ≃ Fin n) → (Fin n ≃ Fin o) → (Fin m ≃ Fin o)
   trans-iso = trans≃ 
 
-  -- Divide into 3 modules
-
+  ----------------------------------------------------------------------------
   module Plus where
+  -- Main goal is to show (Fin m ⊎ Fin n) ≃ Fin (m + n)
+  -- It is then fairly easy to show that ⊎ satisfies the commutative
+  -- monoid axioms
 
     private
       fwd : {m n : ℕ} → (Fin m ⊎ Fin n) → Fin (m + n)
@@ -108,7 +130,8 @@ abstract
       bwd∘fwd~id : {m n : ℕ} → bwd {m} {n} ∘ fwd ∼ id
       bwd∘fwd~id {m} {n} (inj₁ x) with toℕ (inject+ n x) <? m 
       bwd∘fwd~id {n = n} (inj₁ x) | yes p = 
-         cong inj₁ (inject+-injective (fromℕ≤ p) x (sym (inj₁-≡ (inject+ n x) p)))
+         cong inj₁
+           (inject+-injective (fromℕ≤ p) x (sym (inj₁-≡ (inject+ n x) p)))
       bwd∘fwd~id {m} {n} (inj₁ x) | no ¬p = ⊥-elim (1+n≰n pf)
        where
          open ≤-Reasoning
@@ -136,8 +159,11 @@ abstract
                      ≤⟨ p ⟩
                  m ∎)
       bwd∘fwd~id {m} {n} (inj₂ y) | no ¬p = 
-         cong inj₂ (raise-injective {m} (reduce≥ (raise m y) (≤-pred (≰⇒> ¬p))) 
-                      y (sym (inj₂-≡ (raise m y) (≤-pred (≰⇒> ¬p)))))
+         cong inj₂
+           (raise-injective {m}
+             (reduce≥ (raise m y) (≤-pred (≰⇒> ¬p)))
+             y
+             (sym (inj₂-≡ (raise m y) (≤-pred (≰⇒> ¬p)))))
 
     -- public part of module Plus
     fwd-iso : {m n : ℕ} → (Fin m ⊎ Fin n) ≃ Fin (m + n)
@@ -170,8 +196,10 @@ abstract
     unite+r : {m : ℕ} → Fin (m + 0) ≃ Fin m
     unite+r {m} =
       let eq = +-right-identity m in
-      subst Fin eq , mkqinv (subst Fin (sym eq)) (subst-subst eq (sym eq) refl) (
-                            subst-subst (sym eq) eq sym-sym)
+      subst Fin eq ,
+      mkqinv (subst Fin (sym eq))
+             (subst-subst eq (sym eq) refl)
+             (subst-subst (sym eq) eq sym-sym)
 
     -- uniti+
 
@@ -184,11 +212,12 @@ abstract
     -- swap₊
 
     swap+ : {m n : ℕ} → Fin (m + n) ≃ Fin (n + m)
-    swap+ {m} {n} = (swapper m n , mkqinv (swapper n m) (swap-inv n m) (swap-inv m n))
+    swap+ {m} {n} =
+      (swapper m n , mkqinv (swapper n m) (swap-inv n m) (swap-inv m n))
 
     assocl+ : {m n o : ℕ} → Fin (m + (n + o)) ≃ Fin ((m + n) + o)
     assocl+ {m} = (sym≃ (fwd-iso {m})) ● (path⊎ id≃ (sym≃ fwd-iso) ●
-      ((TE.assocl₊equiv ● path⊎ fwd-iso id≃) ● fwd-iso))
+      ((assocl₊equiv ● path⊎ fwd-iso id≃) ● fwd-iso))
 
     assocl+2 : {m n o : ℕ} → Fin (m + (n + o)) ≃ Fin ((m + n) + o)
     assocl+2 {m} {n} {o} =
@@ -201,7 +230,8 @@ abstract
     assocr+ : {m n o : ℕ} → Fin ((m + n) + o) ≃ Fin (m + (n + o))
     assocr+ {m} {n} {o} = sym≃ (assocl+ {m})
 
-    cong+-iso : {m n o p : ℕ} → (Fin m ≃ Fin n) → (Fin o ≃ Fin p) → Fin (m + o) ≃ Fin (n + p)
+    cong+-iso : {m n o p : ℕ} → (Fin m ≃ Fin n) → (Fin o ≃ Fin p) →
+                Fin (m + o) ≃ Fin (n + p)
     cong+-iso {m} {n} {o} {p} (f , feq) (g , geq) = 
       fwd {n} {p} ∘ mapSum f g ∘ bwd {m} {o} , 
       mkqinv
@@ -211,7 +241,7 @@ abstract
                    (fwd {m} {o} (mapSum fm.g gm.g (bwd {n} {p} i)))))
                  ≡⟨ cong
                       (λ x → fwd {n} {p} (mapSum f g x))
-                      (bwd∘fwd~id {m} {o} (mapSum fm.g gm.g (bwd {n} {p} i))) ⟩ 
+                      (bwd∘fwd~id {m} {o} (mapSum fm.g gm.g (bwd {n} {p} i))) ⟩
                  fwd {n} {p} (mapSum f g (mapSum fm.g gm.g (bwd {n} {p} i)))
                  ≡⟨ cong
                       (λ x → fwd {n} {p} x)
@@ -236,21 +266,26 @@ abstract
             module gm = qinv geq
             open ≡-Reasoning
 
+  ----------------------------------------------------------------------------
   module Times where
+  -- main goal is to show (Fin m × Fin n) ≃ Fin (m * n)
+  -- It is then fairly easy to show that × satisfies the commutative
+  -- monoid axioms
 
     fwd : {m n : ℕ} → (Fin m × Fin n) → Fin (m * n)
-    -- fwd {m} {n} (i , k) = inject≤ (fromℕ (toℕ i * n + toℕ k)) (i*n+k≤m*n i k)
     fwd {suc m} {n} (zero , k) = inject+ (m * n) k
     fwd {n = n} (suc i , k) = raise n (fwd (i , k))
 
     private
 
-      soundness : ∀ {m n} (i : Fin m) (j : Fin n) → toℕ (fwd (i , j)) ≡ toℕ i * n + toℕ j
+      soundness : ∀ {m n} (i : Fin m) (j : Fin n) →
+                  toℕ (fwd (i , j)) ≡ toℕ i * n + toℕ j
       soundness {suc m} {n} zero     j = sym (inject+-lemma (m * n) j)
-      soundness {n = n} (suc i) j rewrite toℕ-raise n (fwd (i , j)) | soundness i j 
+      soundness {n = n} (suc i) j
+        rewrite toℕ-raise n (fwd (i , j)) | soundness i j
         = sym (+-assoc n (toℕ i * n) (toℕ j))
 
-      absurd-quotient : (m n q : ℕ) (r : Fin (suc n)) (k : Fin (m * suc n)) 
+      absurd-quotient : (m n q : ℕ) (r : Fin (suc n)) (k : Fin (m * suc n))
            (k≡r+q*sn : toℕ k ≡ toℕ r + q * suc n) (p : m ≤ q) → ⊥
       absurd-quotient m n q r k k≡r+q*sn p = ¬i+1+j≤i (toℕ k) {toℕ r} k≥k+sr
         where k≥k+sr : toℕ k ≥ toℕ k + suc (toℕ r)
@@ -269,7 +304,8 @@ abstract
                        toℕ k ∎)
                         where open ≤-Reasoning
 
-      elim-right-zero : ∀ {ℓ} {Whatever : Set ℓ} (m : ℕ) → Fin (m * 0) → Whatever
+      elim-right-zero : ∀ {ℓ} {Whatever : Set ℓ}
+                        (m : ℕ) → Fin (m * 0) → Whatever
       elim-right-zero m i = ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero m) i))
 
     -- this was fin-project in Perm.agda
@@ -281,7 +317,9 @@ abstract
       where 
             q<m : q < m
             q<m with suc q ≤? m 
-            ... | no ¬p = ⊥-elim (absurd-quotient m n q r k k≡r+q*sn (≤-pred (≰⇒> ¬p)))
+            ... | no ¬p = ⊥-elim
+                            (absurd-quotient m n q r k k≡r+q*sn
+                              (≤-pred (≰⇒> ¬p)))
             ... | yes p = p
 
     fwd∘bwd~id : {m n : ℕ} → fwd {m} {n} ∘ bwd ∼ id
@@ -374,13 +412,19 @@ abstract
     -- swap*
 
     swap* : {m n : ℕ} → Fin (m * n) ≃ Fin (n * m)
-    swap* {m} {n} = (swapper m n , mkqinv (swapper n m) (swap-inv n m) (swap-inv m n))
+    swap* {m} {n} = (swapper m n ,
+                     mkqinv (swapper n m) (swap-inv n m) (swap-inv m n))
 
     assocl* : {m n o : ℕ} → Fin (m * (n * o)) ≃ Fin ((m * n) * o)
     assocl* {m} {n} {o} = subst Fin (sym (*-assoc m n o)) ,
-      mkqinv ((subst Fin (*-assoc m n o)) ) 
-                  (λ x → subst-subst (sym (*-assoc m n o)) (*-assoc m n o) sym-sym x)
-                 (λ x → subst-subst (*-assoc m n o) (sym (*-assoc m n o)) (cong sym refl) x)
+      mkqinv
+        ((subst Fin (*-assoc m n o)))
+        (λ x → subst-subst (sym (*-assoc m n o)) (*-assoc m n o) sym-sym x)
+        (λ x → subst-subst
+                 (*-assoc m n o)
+                 (sym (*-assoc m n o))
+                 (cong sym refl)
+                 x)
 
     assocr* : {m n o : ℕ} → Fin ((m * n) * o) ≃ Fin (m * (n * o))
     assocr* {m} {n} {o} = sym≃ (assocl* {m})
@@ -402,7 +446,8 @@ abstract
     factorzr : {n : ℕ} → Fin 0 ≃ Fin (n * 0)
     factorzr {n} = sym≃ (distzr {n})
 
-    cong*-iso : {m n o p : ℕ} → (Fin m ≃ Fin n) → (Fin o ≃ Fin p) → Fin (m * o) ≃ Fin (n * p)
+    cong*-iso : {m n o p : ℕ} → (Fin m ≃ Fin n) → (Fin o ≃ Fin p) →
+                Fin (m * o) ≃ Fin (n * p)
     cong*-iso {m} {n} {o} {p} (f , feq) (g , geq) = 
       fwd {n} {p} ∘ mapTimes f g ∘ bwd {m} {o} , 
       mkqinv
@@ -412,12 +457,14 @@ abstract
                   (fwd {m} {o} (mapTimes fm.g gm.g (bwd {n} {p} i)))))
                  ≡⟨ cong
                       (λ x → fwd {n} {p} (mapTimes f g x))
-                      (bwd∘fwd~id {m} {o} (mapTimes fm.g gm.g (bwd {n} {p} i))) ⟩ 
-                 fwd {n} {p} (mapTimes f g (mapTimes fm.g gm.g (bwd {n} {p} i)))
+                      (bwd∘fwd~id {m} {o}
+                        (mapTimes fm.g gm.g (bwd {n} {p} i))) ⟩
+                 fwd {n} {p} (mapTimes f g
+                               (mapTimes fm.g gm.g (bwd {n} {p} i)))
                  ≡⟨ cong
                       (λ x → fwd {n} {p} x)
-                      (_×∼_ {f = f} {finv = fm.g} {g = g} {ginv = gm.g} fm.α gm.α
-                        (bwd {n} {p} i)) ⟩
+                      (_×∼_ {f = f} {finv = fm.g} {g = g} {ginv = gm.g}
+                        fm.α gm.α (bwd {n} {p} i)) ⟩
                  fwd {n} {p} (bwd {n} {p} i)
                  ≡⟨ fwd∘bwd~id {n} {p} i ⟩
                  i ∎))
@@ -426,12 +473,13 @@ abstract
                    (fwd {n} {p} (mapTimes f g (bwd {m} {o} i)))))
                  ≡⟨ cong
                       (λ x → fwd {m} {o} (mapTimes fm.g gm.g x))
-                      (bwd∘fwd~id {n} {p} (mapTimes f g (bwd {m} {o} i))) ⟩ 
-                 fwd {m} {o} (mapTimes fm.g gm.g (mapTimes f g (bwd {m} {o} i)))
+                      (bwd∘fwd~id {n} {p} (mapTimes f g (bwd {m} {o} i))) ⟩
+                 fwd {m} {o} (mapTimes fm.g gm.g
+                               (mapTimes f g (bwd {m} {o} i)))
                  ≡⟨ cong
                       (λ x → fwd {m} {o} x)
-                      (_×∼_ {f = fm.g} {finv = f} {g = gm.g} {ginv = g} fm.β gm.β
-                        (bwd {m} {o} i)) ⟩ 
+                      (_×∼_ {f = fm.g} {finv = f} {g = gm.g} {ginv = g}
+                        fm.β gm.β (bwd {m} {o} i)) ⟩ 
                  fwd {m} {o} (bwd {m} {o} i)
                  ≡⟨ fwd∘bwd~id {m} {o} i ⟩
                  i ∎))
@@ -439,9 +487,9 @@ abstract
             module gm = qinv geq
             open ≡-Reasoning
 
-  -- for distributivity
-
+  ----------------------------------------------------------------------------
   module PlusTimes where
+  -- now that we have two monoids, we need to check distributivity
 
     dist : {m n o : ℕ} → Fin ((m + n) * o) ≃ Fin ((m * o) + (n * o))
     dist {m} {n} {o} =
@@ -463,11 +511,6 @@ abstract
 
 ------------------------------------------------------------------------------
 -- Commutative semiring structure
-
-import Level
-open import Algebra
-open import Algebra.Structures
-open import Relation.Binary.Core
 
 _fin≃_ : (m n : ℕ) → Set
 m fin≃ n = Fin m ≃ Fin n
