@@ -2,7 +2,7 @@
 
 module RepresPerm where
 
-open import Enumeration
+open import Enumeration using (Enum)
 open import Equiv
   using (_≃_; id≃; sym≃; trans≃; mkqinv; module qinv; _⋆_; path⊎)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)

@@ -64,7 +64,6 @@ open import Data.Unit    using (⊤; tt)
 open import Data.Sum     using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
-open import DivModUtils using () 
 open import Proofs
 open import Cauchy
 
