@@ -141,13 +141,11 @@ digraph PiDepend {
   LeftCancellation -> DP;
   LeftCancellation -> RBP;
   LeftCancellation -> Equiv;
-  LeftCancellation -> TypeEquiv;
 
   EquivSetoid -> RBS;
   EquivSetoid -> DP;
   EquivSetoid -> DE;
   EquivSetoid -> DS;
-  EquivSetoid -> Equiv;
 
   FinVec -> DV;
   FinVec -> DS;
@@ -165,10 +163,10 @@ digraph PiDepend {
   ConcretePermutation -> Equiv;
   ConcretePermutation -> FinEquiv;
 
-  RepresPerm -> Enumeration;
-  RepresPerm -> Equiv;
-  RepresPerm -> TypeEquiv;
-  RepresPerm -> LeftCancellation;
+//  RepresPerm -> Enumeration;
+//  RepresPerm -> Equiv;
+//  RepresPerm -> TypeEquiv;
+//  RepresPerm -> LeftCancellation;
 
   SEquivSCPermEquiv -> DS;
   SEquivSCPermEquiv -> DP;

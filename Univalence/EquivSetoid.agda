@@ -2,23 +2,40 @@
 
 -- Borrowed from OldUnivalence/Equivalences.agda, without HoTT
 -- and then upgraded to work on Setoid rather than just on ≡
+
 module EquivSetoid where
 
-open import Level
-open import Relation.Binary using (Setoid; module Setoid)
-open import Data.Product using (_×_; _,′_; _,_)
-open import Relation.Binary.PropositionalEquality as P using (setoid; →-to-⟶)
-open import Data.Empty
+open import Level using (Level; zero; _⊔_)
+
+open import Data.Empty using (⊥)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 
-open import Equiv using (_≃_)
+import Function as Fun using (id)
+open import Function.Equality using (id; _∘_; _⟨$⟩_; _⟶_; _⇨_; cong)
+open import Relation.Binary using (module Setoid; Setoid)
+open import Relation.Binary.PropositionalEquality as P using (setoid; →-to-⟶)
 
-open import Function.Equality
-import Function as Fun
+open Setoid
+
+-- Equivalence of setoids
 
 infix 4 _≃S_
 
-open Setoid
+------------------------------------------------------------------------------
+-- A setoid gives us a set and an equivalence relation on that set.
+-- The setoids constructed in PropositionalEquality (P) use ≡ as the
+-- equivalence relation
+
+-- the empty set with ≡ 
+
+0S : Setoid zero zero
+0S = P.setoid ⊥
+
+-- sum of setoids
+-- we take the disjoint union of the carriers and construct a new
+-- equivalence relation that uses the underlying relations on each
+-- summand (and is undefined on elements that come from different
+-- summands)
 
 _⊎S_ : (AS : Setoid zero zero) (BS : Setoid zero zero) → Setoid zero zero
 _⊎S_ AS BS = record 
@@ -54,7 +71,11 @@ _⊎S_ AS BS = record
     trans∼₁ {inj₂ y} {inj₂ y₁} {inj₁ x} i~j ()
     trans∼₁ {inj₂ y} {inj₂ y₁} {inj₂ y₂} i~j j~k = trans BS i~j j~k
 
-record _≃S_ {ℓ₁ ℓ₂ ℓ₃ ℓ₄ : Level} (A : Setoid ℓ₁ ℓ₂) (B : Setoid ℓ₃ ℓ₄)  : Set (ℓ₁ ⊔ ℓ₂ ⊔ ℓ₃ ⊔ ℓ₄) where
+------------------------------------------------------------------------------
+-- Equivalence of setoids
+
+record _≃S_ {ℓ₁ ℓ₂ ℓ₃ ℓ₄ : Level} (A : Setoid ℓ₁ ℓ₂) (B : Setoid ℓ₃ ℓ₄) : 
+  Set (ℓ₁ ⊔ ℓ₂ ⊔ ℓ₃ ⊔ ℓ₄) where
   constructor equiv
 
   field
@@ -66,11 +87,14 @@ record _≃S_ {ℓ₁ ℓ₂ ℓ₃ ℓ₄ : Level} (A : Setoid ℓ₁ ℓ₂) (
 id≃S : ∀ {ℓ₁ ℓ₂} {A : Setoid ℓ₁ ℓ₂} → A ≃S A
 id≃S {A = A} = equiv id id Fun.id Fun.id 
 
-sym≃S : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} → (A ≃S B) → B ≃S A
+sym≃S : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} →
+        (A ≃S B) → B ≃S A
 sym≃S eq = equiv e.g e.f e.β e.α
   where module e = _≃S_ eq
 
-trans≃S : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄ ℓ₅ ℓ₆} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} {C : Setoid ℓ₅ ℓ₆} → A ≃S B → B ≃S C → A ≃S C
+trans≃S : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄ ℓ₅ ℓ₆}
+          {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} {C : Setoid ℓ₅ ℓ₆} →
+          A ≃S B → B ≃S C → A ≃S C
 trans≃S {A = A} {B} {C} A≃B B≃C = equiv f g α' β'
   where
     module fm = _≃S_ A≃B
@@ -84,21 +108,22 @@ trans≃S {A = A} {B} {C} A≃B B≃C = equiv f g α' β'
     β' : _≈_ (A ⇨ A) (g ∘ f) id
     β' = λ z → trans A (cong fm.g (gm.β (cong fm.f (refl A)))) (fm.β z)
 
-_✴_ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} → (A ≃S B) → (x : Carrier A) → Carrier B
+_✴_ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} →
+      (A ≃S B) → (x : Carrier A) → Carrier B
 (equiv f _ _ _) ✴ x = f ⟨$⟩ x  
 
-0S : Setoid zero zero
-0S = P.setoid ⊥
-
 -- can't use id because it is not sufficiently dependently typed!
+
 0≃S : 0S ≃S 0S
 0≃S = equiv id id (λ x → x) (λ x → x) 
 
 -- just to make things prettier
+
 _≃S≡_ : ∀ {ℓ₁} → (A B : Set ℓ₁) → Set ℓ₁
 A ≃S≡ B = (P.setoid A) ≃S (P.setoid B)
 
 -- Need to be able to take ⊎ of ≃S-Setoids
+
 _⊎≃S_ : {A B C D : Set} → A ≃S≡ B → C ≃S≡ D → (A ⊎ C) ≃S≡ (B ⊎ D)
 _⊎≃S_ {A} {B} {C} {D} (equiv f g α β) (equiv f₁ g₁ α₁ β₁) = 
   equiv (→-to-⟶ ff) (→-to-⟶ gg) αα ββ
@@ -117,8 +142,9 @@ _⊎≃S_ {A} {B} {C} {D} (equiv f g α β) (equiv f₁ g₁ α₁ β₁) =
     ββ {inj₂ y} P.refl = P.cong inj₂ (β₁ P.refl)
 
 -- note that this appears to be redundant (especially when looking at
--- the proofs), but having both f and g is needed for inference of other
--- aspects to succeed.  
+-- the proofs), but having both f and g is needed for inference of
+-- other aspects to succeed.
+
 record _≋_ {ℓ₁} {A B : Set ℓ₁} (eq₁ eq₂ : A ≃S≡ B) : Set ℓ₁ where
   constructor equivS
   field
@@ -136,6 +162,7 @@ trans≋ (equivS f≡ g≡) (equivS h≡ i≡) =
    equivS (λ a → P.trans (f≡ a) (h≡ a)) (λ b → P.trans (g≡ b) (i≡ b))
   
 -- WARNING: this is not generic, but specific to ≡-Setoids of functions.
+
 ≃S-Setoid : ∀ {ℓ₁} → (A B : Set ℓ₁) → Setoid ℓ₁ ℓ₁
 ≃S-Setoid {ℓ₁} A B = record 
   { Carrier = AS ≃S BS
@@ -152,8 +179,13 @@ trans≋ (equivS f≡ g≡) (equivS h≡ i≡) =
     BS = P.setoid B
     
 -- equivalences are injective
-inj≃ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} → (eq : A ≃S B) → {x y : Carrier A} → 
-  _≈_ B (eq ✴ x)  (eq ✴ y) → _≈_ A x y
-inj≃ {A = A'} (equiv f g _ β) p = A.trans (A.sym (β A.refl)) (A.trans (cong g p) (β A.refl))
+
+inj≃ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} →
+       (eq : A ≃S B) → {x y : Carrier A} → 
+       _≈_ B (eq ✴ x)  (eq ✴ y) → _≈_ A x y
+inj≃ {A = A'} (equiv f g _ β) p =
+  A.trans (A.sym (β A.refl)) (A.trans (cong g p) (β A.refl))
   where
     module A = Setoid A'
+
+------------------------------------------------------------------------------

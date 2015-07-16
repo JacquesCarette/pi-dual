@@ -1,21 +1,21 @@
 module Univalence where
 
--- Basic utilities                        -- clean up 14 July
+-- Basic utilities                        
 
-open import LeqLemmas                     -- clean up 13 July
-open import FinNatLemmas                  -- clean up 13 July
-open import SubstLemmas                   -- clean up 13 July
-open import FiniteFunctions               -- clean up 13 July
-open import PathLemmas                    -- clean up 14 July
-open import VectorLemmas                  -- clean up 13 July
-open import Proofs                        -- clean up 14 July
+open import LeqLemmas                     
+open import FinNatLemmas                  
+open import SubstLemmas                   
+open import FiniteFunctions               
+open import PathLemmas                    
+open import VectorLemmas                  
+open import Proofs                        
 
 -- Proofs is a wrapper over all the basic utilities
 -- The only thing imported from now on is Proofs
 
--- Structures (Definitions)               -- clean up 14 July
+-- Structures (Definitions)               
 
-open import Groupoid                      -- clean up 14 July
+open import Groupoid                      
 
 {--
 We use (and extend) the package Categories.
@@ -26,50 +26,50 @@ current version of Agda
 open import Everything
 --}
 
--- Equivalences and their properties      -- 
+-- Equivalences and their properties      
 
-open import Equiv                         -- clean up 14 July
+open import Equiv                         
 -- Defines extensional equality of functions ∼; quasi-inverses; and
 -- then equivalences ≃
-open import TypeEquiv                     -- clean up 14 July
+open import TypeEquiv                     
 -- Proves that types and type equivalences form a commutative semiring
-open import FinEquiv                      -- clean up 14 July
+open import FinEquiv                      
 -- Proves that that finite sets and equivalences form a commutative
 -- semiring
-open import LeftCancellation              -- clean up 14 July
+open import LeftCancellation              
 -- Proves that ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A ≃ B
-open import Enumeration                   -- 
-open import EquivSetoid                   -- 
+open import EquivSetoid                   -- HERE
+open import Enumeration                   -- TODO
 
--- Permutations                           -- 
+-- Permutations                           -- TODO
 
-open import FinVec                        -- 
-open import ConcretePermutation           --
-open import RepresPerm                    --
+open import FinVec                        -- TODO
+open import ConcretePermutation           -- TODO
+-- open import RepresPerm                    -- not used
 
--- Relating Equivalences and Permutations -- 
+-- Relating Equivalences and Permutations -- TODO
 
-open import SEquivSCPermEquiv             -- 
+open import SEquivSCPermEquiv             -- TODO
 
--- Pi                                     --
+-- Pi                                     -- TODO
 
-open import PiLevel0                      -- 
-open import PiLevel1                      -- 
+open import PiLevel0                      -- TODO
+open import PiLevel1                      -- TODO
 
--- Relating Pi and Permutations           -- 
+-- Relating Pi and Permutations           -- TODO
 
-open import PiPerm                        -- 
+open import PiPerm                        -- TODO
 
--- Relating Pi and Equivalences           -- 
+-- Relating Pi and Equivalences           -- TODO
 
-open import PiEquiv                       --
+open import PiEquiv                       -- TODO
 
--- Structures (Instances)                 -- 
+-- Structures (Instances)                 -- TODO
 
-open import TypeEquivCat                  -- 
-open import Pim2Cat                       -- 
-open import Pi0Cat                        -- 
-open import Pi1Cat                        -- 
+open import TypeEquivCat                  -- TODO
+open import Pim2Cat                       -- TODO
+open import Pi0Cat                        -- TODO
+open import Pi1Cat                        -- TODO
 
 {-- 
 
