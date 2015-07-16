@@ -74,6 +74,8 @@ _⊎S_ AS BS = record
 ------------------------------------------------------------------------------
 -- Equivalence of setoids
 
+-- Two setoids are equivalent if 
+
 record _≃S_ {ℓ₁ ℓ₂ ℓ₃ ℓ₄ : Level} (A : Setoid ℓ₁ ℓ₂) (B : Setoid ℓ₃ ℓ₄) : 
   Set (ℓ₁ ⊔ ℓ₂ ⊔ ℓ₃ ⊔ ℓ₄) where
   constructor equiv
