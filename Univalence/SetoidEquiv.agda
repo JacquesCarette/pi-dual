@@ -3,7 +3,7 @@
 -- Borrowed from OldUnivalence/Equivalences.agda, without HoTT
 -- and then upgraded to work on Setoid rather than just on ≡
 
-module EquivSetoid where
+module SetoidEquiv where
 
 open import Level using (Level; zero; _⊔_)
 

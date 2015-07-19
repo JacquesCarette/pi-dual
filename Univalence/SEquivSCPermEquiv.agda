@@ -35,7 +35,7 @@ open import Equiv using (_∼_; module qinv; mkqinv; _≃_)
 -- specialize to our notions of equivalence
 
 -- open import SetoidUtils using (→to⟶)
-open import EquivSetoid
+open import SetoidEquiv
   using (_≃S_; module _≃S_; equiv; 0≃S; id≃S; _⊎≃S_; 
          _≋_; module _≋_; equivS;
          _≃S≡_; ≃S-Setoid)
@@ -52,7 +52,7 @@ open import EquivSetoid
 open import FinVec using (module F) 
 open F using (~⇒≡; !!⇒∘̂; _∘̂_; 1C!!i≡i; cauchyext)
 
-open import Enumeration         using (Enum; 0E; _⊕e_; eval-left; eval-right) 
+open import EnumEquiv using (Enum; 0E; _⊕e_; eval-left; eval-right) 
 open import ConcretePermutation using (CPerm; cp; p≡; 0p; idp; _⊎p_; SCPerm) 
 
 ------------------------------------------------------------------------------

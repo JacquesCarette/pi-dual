@@ -1,6 +1,6 @@
 {-# OPTIONS --without-K #-}
 
-module Enumeration where
+module EnumEquiv where
 
 open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Nat using (ℕ; _+_; _*_)
@@ -24,6 +24,9 @@ open import FinEquiv using (module Plus; module Times; Fin0-⊥)
 Enum : ∀ {ℓ} → (A : Set ℓ) → (n : ℕ) →  Set ℓ
 Enum A n = A ≃ Fin n
 
+0E : Enum ⊥ 0
+0E = ⊥-elim , mkqinv Fin0-⊥ (λ { () }) (λ { () })
+
 -- from TypeEquiv and CauchyEquiv we can get operations on enumerations
 -- (note: should generalize TypeEquiv to using Level)
 
@@ -31,11 +34,8 @@ _⊕e_ : {A : Set} {B : Set} {n m : ℕ} →
   Enum A n → Enum B m → Enum (A ⊎ B) (n + m)
 eA ⊕e eB = trans≃ (path⊎ eA eB) Plus.fwd-iso
 
-_⊛e_ : {A B : Set} {n m : ℕ} → Enum A n → Enum B m → Enum (A × B) (n * m)
-eA ⊛e eB = trans≃ (path× eA eB) Times.fwd-iso
-
-0E : Enum ⊥ 0
-0E = ⊥-elim , mkqinv Fin0-⊥ (λ { () }) (λ { () })
+-- _⊛e_ : {A B : Set} {n m : ℕ} → Enum A n → Enum B m → Enum (A × B) (n * m)
+-- eA ⊛e eB = trans≃ (path× eA eB) Times.fwd-iso
 
 -- evaluating an ⊕e on the left component
 
