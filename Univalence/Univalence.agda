@@ -44,7 +44,9 @@ open import EnumEquiv
 open import SetoidEquiv                   -- HERE
 -- do a version of EquivSetoid specialized for finite sets that
 -- include an enumeration just like quasi-inverses include one
--- particular function to specify the equivalence
+-- particular function to specify the equivalence; must really be done
+-- in conjection with SEquivSCPermEquiv so let's wait until
+-- dependencies satisfied...
 
 ------------------------------------------------------------------------------
 -- Permutations                           -- TODO
