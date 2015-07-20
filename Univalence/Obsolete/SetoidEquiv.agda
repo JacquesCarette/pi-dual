@@ -3,7 +3,7 @@
 -- Borrowed from OldUnivalence/Equivalences.agda, without HoTT
 -- and then upgraded to work on Setoid rather than just on ≡
 
-module EquivSetoid where
+module SetoidEquiv where
 
 open import Level using (Level; zero; _⊔_)
 
@@ -11,8 +11,8 @@ open import Data.Empty using (⊥)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 
 import Function as Fun using (id)
-open import Function.Equality using (id; _∘_; _⟨$⟩_; _⟶_; _⇨_; cong)
-open import Relation.Binary using (module Setoid; Setoid)
+open import Function.Equality using (id; _∘_; _⟶_; _⟨$⟩_; _⇨_; cong) 
+open import Relation.Binary using (Setoid; module Setoid)
 open import Relation.Binary.PropositionalEquality as P using (setoid; →-to-⟶)
 
 open Setoid
@@ -28,8 +28,10 @@ infix 4 _≃S_
 
 -- the empty set with ≡ 
 
+{--
 0S : Setoid zero zero
 0S = P.setoid ⊥
+--}
 
 -- sum of setoids
 -- we take the disjoint union of the carriers and construct a new
@@ -37,6 +39,7 @@ infix 4 _≃S_
 -- summand (and is undefined on elements that come from different
 -- summands)
 
+{--
 _⊎S_ : (AS : Setoid zero zero) (BS : Setoid zero zero) → Setoid zero zero
 _⊎S_ AS BS = record 
   { Carrier = A ⊎ B 
@@ -70,6 +73,7 @@ _⊎S_ AS BS = record
     trans∼₁ {inj₂ y} {inj₁ x} () j~k
     trans∼₁ {inj₂ y} {inj₂ y₁} {inj₁ x} i~j ()
     trans∼₁ {inj₂ y} {inj₂ y₁} {inj₂ y₂} i~j j~k = trans BS i~j j~k
+--}
 
 ------------------------------------------------------------------------------
 -- Equivalence of setoids
@@ -86,6 +90,7 @@ record _≃S_ {ℓ₁ ℓ₂ ℓ₃ ℓ₄ : Level} (A : Setoid ℓ₁ ℓ₂) (
     α : ∀ {x y} → _≈_ B x y → _≈_ B ((f ∘ g) ⟨$⟩ x) y
     β : ∀ {x y} → _≈_ A x y → _≈_ A ((g ∘ f) ⟨$⟩ x) y
 
+{--
 id≃S : ∀ {ℓ₁ ℓ₂} {A : Setoid ℓ₁ ℓ₂} → A ≃S A
 id≃S {A = A} = equiv id id Fun.id Fun.id 
 
@@ -113,11 +118,14 @@ trans≃S {A = A} {B} {C} A≃B B≃C = equiv f g α' β'
 _✴_ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} →
       (A ≃S B) → (x : Carrier A) → Carrier B
 (equiv f _ _ _) ✴ x = f ⟨$⟩ x  
+--}
 
 -- can't use id because it is not sufficiently dependently typed!
 
+{--
 0≃S : 0S ≃S 0S
 0≃S = equiv id id (λ x → x) (λ x → x) 
+--}
 
 -- just to make things prettier
 
@@ -125,7 +133,7 @@ _≃S≡_ : ∀ {ℓ₁} → (A B : Set ℓ₁) → Set ℓ₁
 A ≃S≡ B = (P.setoid A) ≃S (P.setoid B)
 
 -- Need to be able to take ⊎ of ≃S-Setoids
-
+{--
 _⊎≃S_ : {A B C D : Set} → A ≃S≡ B → C ≃S≡ D → (A ⊎ C) ≃S≡ (B ⊎ D)
 _⊎≃S_ {A} {B} {C} {D} (equiv f g α β) (equiv f₁ g₁ α₁ β₁) = 
   equiv (→-to-⟶ ff) (→-to-⟶ gg) αα ββ
@@ -142,7 +150,7 @@ _⊎≃S_ {A} {B} {C} {D} (equiv f g α β) (equiv f₁ g₁ α₁ β₁) =
     ββ : {x y : A ⊎ C} → x P.≡ y → gg (ff x) P.≡ y
     ββ {inj₁ x} P.refl = P.cong inj₁ (β P.refl)
     ββ {inj₂ y} P.refl = P.cong inj₂ (β₁ P.refl)
-
+--}
 -- note that this appears to be redundant (especially when looking at
 -- the proofs), but having both f and g is needed for inference of
 -- other aspects to succeed.
@@ -182,6 +190,7 @@ trans≋ (equivS f≡ g≡) (equivS h≡ i≡) =
     
 -- equivalences are injective
 
+{--
 inj≃ : ∀ {ℓ₁ ℓ₂ ℓ₃ ℓ₄} {A : Setoid ℓ₁ ℓ₂} {B : Setoid ℓ₃ ℓ₄} →
        (eq : A ≃S B) → {x y : Carrier A} → 
        _≈_ B (eq ✴ x)  (eq ✴ y) → _≈_ A x y
@@ -189,5 +198,6 @@ inj≃ {A = A'} (equiv f g _ β) p =
   A.trans (A.sym (β A.refl)) (A.trans (cong g p) (β A.refl))
   where
     module A = Setoid A'
+--}
 
 ------------------------------------------------------------------------------

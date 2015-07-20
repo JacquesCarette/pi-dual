@@ -1,5 +1,7 @@
 {-# OPTIONS --without-K #-}
 
+-- This should really be called FinSet. From nlab:
+
 -- FinSet is the category of finite sets and all functions between
 -- them: the full subcategory of Set on finite sets. It is easy (and
 -- thus common) to make FinSet skeletal; there is one object for each
@@ -25,19 +27,13 @@
 
 module FinVec where
 
-import Level
 open import Data.Nat using (ℕ; _+_; _*_)
 open import Data.Vec renaming (map to mapV; _++_ to _++V_; concat to concatV)
 open import Data.Fin using (Fin; inject+; raise; zero; suc)
 open import Function using (_∘_; id; _$_)
 open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_]′) renaming (map to map⊎)
 open import Data.Product using (_×_; _,′_; proj₁; proj₂)
-open import Algebra
-open import Algebra.Structures
-open import Relation.Binary.Core
-open import Relation.Binary.PropositionalEquality using (subst; sym; trans; cong₂)
 
-open import Groupoid
 open import Equiv
 open import TypeEquiv using (swap₊; swap⋆)
 import TypeEquiv as TE
@@ -46,6 +42,13 @@ open import Proofs using (
   -- VectorLemmas
      _!!_; concat-map; map-map-map; lookup-map; map-∘
      )
+import Level
+open import Algebra
+open import Algebra.Structures
+open import Relation.Binary.Core
+open import Relation.Binary.PropositionalEquality using (subst; sym; trans; cong₂)
+open import Groupoid
+
 
 ------------------------------------------------------------------------------
 -- Pure vector operations
@@ -352,6 +355,28 @@ module F where
             ≡⟨ sym (lookup∘tabulate id _) ⟩
           tabulate id !! (tabulate (λ y → x !! y) !! i) ∎)
     
+{-    
+    x⊎1C₀≡x : ∀ {m n} {x : FinVec m n} → x ⊎c (1C {0}) ≡ ?
+    x⊎1C₀≡x {m} {n} {x = x} = 
+      let e = proj₁ (Plus.unite+) in
+      let i = proj₁ (Plus.uniti+) in
+      let eq = sym (+-right-identity m) in
+      begin (
+        tabulate (λ j → inject+ 0 (x !! j)) ++V []
+          ≡⟨ cong (λ x → x ++V []) (finext (λ j → inject+0≡uniti+ (x !! j) eq)) ⟩
+        tabulate (λ j → i (x !! j)) ++V []
+          ≡⟨ tab++[]≡tab∘̂unite+ (λ j → i (x !! j)) (+-right-identity n) ⟩
+        tabulate (λ j → i (x !! e j))
+          ≡⟨ finext (λ j → sym (lookup∘tabulate (λ k → i (x !! k)) (e j))) ⟩
+        tabulate (λ j → tabulate (λ k → i (x !! k)) !! (e j))
+          ≡⟨ finext (λ j → cong₂ _!!_
+                           (finext (λ k → sym (lookup∘tabulate i (x !! k))))
+                           (sym (lookup∘tabulate e j))) ⟩
+        tabulate (λ j →
+           (tabulate (λ k → tabulate i !! (x !! k))) !! ((tabulate e) !! j))
+         ∎)
+      where open ≡-Reasoning -}
+
     1C⊎1C≡1C : ∀ {m n} → 1C {m} ⊎c 1C {n} ≡ 1C
     1C⊎1C≡1C {m} {n} = 
       begin (
@@ -406,6 +431,52 @@ module F where
     [,]-commute (inj₁ x) = refl
     [,]-commute (inj₂ y) = refl
 
+{-
+    assocl-commute : ∀ {m₁ m₂ m₃ n₁ n₂ n₃} {a : FinVec m₁ n₁} {b : FinVec m₂ n₂}
+      {c : FinVec m₃ n₃} → assocl+ {n₁} ∘̂ ((a ⊎c b) ⊎c c) ≡ (a ⊎c (b ⊎c c)) ∘̂ assocl+ {m₁}
+    assocl-commute {m₁} {m₂} {m₃} {n₁} {n₂} {n₃} {a} {b} {c} = begin (
+      assocl+ {n₁} ∘̂ ((a ⊎c b) ⊎c c)
+        ≡⟨ cong (λ x → assocl+ {n₁} ∘̂ x) (trans (⊎-equiv (a ⊎c b) c) (cong (λ x → x ⊎fv c) (⊎-equiv a b))) ⟩
+      assocl+ {n₁} ∘̂ ((a ⊎fv b) ⊎fv c)
+        ≡⟨ refl ⟩
+      tabulate (λ i → ((a ⊎fv b) ⊎fv c) !! (assocl+ {n₁} !! i))
+        ≡⟨ finext pf₁ ⟩
+      tabulate (λ i → assocl+ {m₁} !! ((a ⊎fv (b ⊎fv c)) !! i) )
+        ≡⟨ refl ⟩
+      (a ⊎fv (b ⊎fv c)) ∘̂ assocl+ {m₁}
+        ≡⟨ cong (λ x → x ∘̂ assocl+ {m₁}) (sym (trans (cong (λ x → a ⊎c x) (⊎-equiv b c)) (⊎-equiv a (b ⊎fv c)))) ⟩
+      (a ⊎c (b ⊎c c)) ∘̂ assocl+ {m₁} ∎)
+      where
+        pf₁ : ∀ i →  ((a ⊎fv b) ⊎fv c) !! (assocl+ {n₁} !! i) ≡ assocl+ {m₁} !! ((a ⊎fv (b ⊎fv c)) !! i)
+        pf₁ i =
+          let assoc1 k = proj₁ (Plus.assocl+ {n₁}) k in
+          let assoc2 k = proj₁ (Plus.assocl+ {m₁} {m₂}) k in
+          let abc!! = (_!!_ ((a ⊎fv b) ⊎fv c)) in
+          let a!! = (_!!_ a) in let b!! = (_!!_ b) in let c!! = (_!!_ c) in
+          let ab!! = (_!!_ (a ⊎fv b)) in
+          let bc!! = (_!!_ (b ⊎fv c)) in
+          let iso4 = ((sym≃ (Plus.fwd-iso {n₁})) ● ((path⊎ id≃ (sym≃ Plus.fwd-iso)) ● (TE.assocl₊equiv ● (path⊎ Plus.fwd-iso id≃)))) in
+          let iso3 = (sym≃ (Plus.fwd-iso {n₁})) ● ((path⊎ id≃ (sym≃ Plus.fwd-iso)) ● (TE.assocl₊equiv)) in
+          let iso4b = (path⊎ id≃ (sym≃ Plus.fwd-iso) ● ((TE.assocl₊equiv ● path⊎ Plus.fwd-iso id≃) ● Plus.fwd-iso)) in
+          begin (
+          ((a ⊎fv b) ⊎fv c) !! (assocl+ {n₁} !! i)
+            ≡⟨ cong abc!! (lookup∘tabulate _ i) ⟩
+          abc!! (assoc1 i)
+            ≡⟨ lookup∘tabulate _ (assoc1 i) ⟩
+          fwd (map⊎ ab!! c!! (bwd (assoc1 i)))
+            ≡⟨ cong (fwd ∘ map⊎ ab!! c!!) (bwd∘fwd~id (iso4 ⋆ i)) ⟩
+          fwd (map⊎ ab!! c!! (iso4 ⋆ i))
+            ≡⟨ cong fwd (merge-[,] {h = fwd} {i = id} (iso3 ⋆ i)) ⟩
+          fwd (map⊎ (ab!! ∘ fwd) c!! (iso3 ⋆ i))
+            ≡⟨ {!!} ⟩
+          iso4b ⋆ (map⊎ a!! bc!! (bwd i))
+            ≡⟨ sym (cong (λ x → iso4b ⋆ x) (bwd∘fwd~id (map⊎ a!! bc!! (bwd i)))) ⟩
+          assoc2 (fwd (map⊎ a!! bc!! (bwd i)))
+            ≡⟨ sym (cong assoc2 (lookup∘tabulate _ i)) ⟩
+          assoc2 ((a ⊎fv (b ⊎fv c)) !! i)
+            ≡⟨ sym (lookup∘tabulate assoc2 _) ⟩
+          assocl+ {m₁} !! ((a ⊎fv (b ⊎fv c)) !! i) ∎)
+-}
     -- properties of multiplicative composition
     unite*∘̂uniti*~id : ∀ {m} → (unite* {m}) ∘̂ uniti* ≡ 1C {1 * m}
     unite*∘̂uniti*~id {m} = ~⇒≡ {m} {n = 1 * m} (p∘!p≡id {p = Times.unite* {m}})
@@ -756,4 +827,11 @@ G = record {
   ∘-resp-≈ = cong₂ _∘̂_ 
   }
 
-------------------------------------------------------------------------------
+{--
+-- Move to its own spot later
+merge-[,] : {A B C D E : Set} → {h : A → C} → {i : B → D} → {f : C → E}
+  → {g : D → E} → (x : A ⊎ B) →
+    [ f , g ]′ ( map⊎ h i x ) ≡ [ (f ∘ h) , (g ∘ i) ]′ x
+merge-[,] (inj₁ x) = refl
+merge-[,] (inj₂ y) = refl
+--}

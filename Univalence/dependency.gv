@@ -94,12 +94,12 @@ digraph PiDepend {
   Equiv -> DS;
   Equiv -> DP;
 
-  Enumeration -> Equiv;
-  Enumeration -> DE;
-  Enumeration -> DS;
-  Enumeration -> DP;
-  Enumeration -> RBP;
-  Enumeration -> FinEquiv;
+  EnumEquiv -> Equiv;
+  EnumEquiv -> DE;
+  EnumEquiv -> DS;
+  EnumEquiv -> DP;
+  EnumEquiv -> RBP;
+  EnumEquiv -> FinEquiv;
 
   Groupoid -> DE;
   Groupoid -> DS;
@@ -135,17 +135,17 @@ digraph PiDepend {
   FinEquiv -> TypeEquiv;
   FinEquiv -> Proofs;
 
-  LeftCancellation -> DE;
-  LeftCancellation -> DU;
-  LeftCancellation -> DS;
-  LeftCancellation -> DP;
-  LeftCancellation -> RBP;
-  LeftCancellation -> Equiv;
+//  LeftCancellation -> DE;
+//  LeftCancellation -> DU;
+//  LeftCancellation -> DS;
+//  LeftCancellation -> DP;
+//  LeftCancellation -> RBP;
+//  LeftCancellation -> Equiv;
 
-  EquivSetoid -> RBS;
-  EquivSetoid -> DP;
-  EquivSetoid -> DE;
-  EquivSetoid -> DS;
+  SetoidEquiv -> RBS;
+//  SetoidEquiv -> DP;
+//  SetoidEquiv -> DE;
+//  SetoidEquiv -> DS;
 
   FinVec -> DV;
   FinVec -> DS;
@@ -163,7 +163,7 @@ digraph PiDepend {
   ConcretePermutation -> Equiv;
   ConcretePermutation -> FinEquiv;
 
-//  RepresPerm -> Enumeration;
+//  RepresPerm -> EnumEquiv;
 //  RepresPerm -> Equiv;
 //  RepresPerm -> TypeEquiv;
 //  RepresPerm -> LeftCancellation;
@@ -175,9 +175,9 @@ digraph PiDepend {
   SEquivSCPermEquiv -> RBS;
   SEquivSCPermEquiv -> Proofs;
   SEquivSCPermEquiv -> Equiv;
-  SEquivSCPermEquiv -> EquivSetoid;
+  SEquivSCPermEquiv -> SetoidEquiv;
   SEquivSCPermEquiv -> FinVec;
-  SEquivSCPermEquiv -> Enumeration;
+  SEquivSCPermEquiv -> EnumEquiv;
   SEquivSCPermEquiv -> ConcretePermutation;
 
   PiLevel0 -> RBP;
