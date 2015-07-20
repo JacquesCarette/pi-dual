@@ -6,10 +6,11 @@ open import Level using () renaming (zero to lzero)
 open import Data.Empty
 open import Data.Unit using (⊤; tt)
 open import Data.Nat
--- open import Relation.Nullary.Core using (yes; no)
 open import Relation.Nullary using (yes; no)
 open import Relation.Binary.Core using (Reflexive; IsEquivalence)
 open import Relation.Binary.PropositionalEquality using (refl; sym)
+
+open import PiU
 
 open import Categories.Category
 open import Categories.Groupoid
@@ -23,25 +24,11 @@ open import Categories.Monoidal.Symmetric
 ------------------------------------------------------------------------------
 -- Level -1 of Pi
 
--- U is a collection of types.
---
 -- Between any two types, there is either no identification or exactly
 -- one identification: the most sensible thing to do is to identify
 -- all the empty types in one cluster; identify all the non-empty
 -- types in another cluster; and have NO identifications between the
 -- two clusters
-
-data U : Set where
-  ZERO  : U
-  ONE   : U
-  PLUS  : U → U → U
-  TIMES : U → U → U
-
-toℕ : U → ℕ
-toℕ ZERO = 0
-toℕ ONE = 1
-toℕ (PLUS t₁ t₂) = toℕ t₁ + toℕ t₂
-toℕ (TIMES t₁ t₂) = toℕ t₁ * toℕ t₂ 
 
 bool⟷ : (t₁ t₂ : U) → Set
 bool⟷ t₁ t₂ with toℕ t₁ ≟ toℕ t₂
@@ -59,15 +46,6 @@ sym⟷ s t eq with toℕ s ≟ toℕ t | toℕ t ≟ toℕ s
 ... | yes x | no y = y (sym x)
 ... | no x | yes y = tt -- weird!
 ... | no x | no y = eq
-
-{- we don't actually need this
-bool⟷Equiv : {t₁ t₂ : U} → IsEquivalence bool⟷
-bool⟷Equiv = record 
-  { refl = λ {t} → refl⟷ t
-  ; sym = λ {i} {j} → sym⟷ i j 
-  ; trans = {!!} 
-  }
--}
 
 triv≡ : {t₁ t₂ : U} → (f g : bool⟷ t₁ t₂) → Set
 triv≡ _ _ = ⊤
