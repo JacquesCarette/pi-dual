@@ -39,8 +39,9 @@ open import TypeEquiv
 open import FinEquiv                      
 -- Proves that that finite sets and equivalences form a commutative
 -- semiring
+open import EnumEquiv
+-- An enumeration of a set A is an equivalence between A and Fin m
 open import SetoidEquiv                   -- HERE
-open import EnumEquiv                     -- TODO
 -- do a version of EquivSetoid specialized for finite sets that
 -- include an enumeration just like quasi-inverses include one
 -- particular function to specify the equivalence
