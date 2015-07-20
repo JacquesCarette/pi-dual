@@ -12,8 +12,11 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong;
     module ≡-Reasoning)
 -- open import Relation.Binary using (Setoid; module Setoid)
 
-open import FinVec -- and below, import from that
+open import FinVec using (module F)
 open F
+
+-- using (FinVec; _∘̂_; ∘̂-rid; 1C; ∘̂-assoc; ∘̂-lid; ~⇒≡;
+--  unite+; uniti+; unite+∘̂uniti+~id; uniti+∘̂unite+~id)
 
 open import Equiv using (_≃_; sym≃; p∘!p≡id)
 open import FinEquiv using (module Plus; module Times; module PlusTimes)

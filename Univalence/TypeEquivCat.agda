@@ -1,34 +1,72 @@
 {-# OPTIONS --without-K #-}
-
 module TypeEquivCat where
 
 open import Level using (zero; suc)
-import Relation.Binary.PropositionalEquality as P
-open import Relation.Binary using (Rel)
-open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to map⊎)
-open import Data.Product using (_,_; proj₁; proj₂;_×_; Σ) renaming (map to map×)
-open import Data.Unit
-open import Data.Empty
-import Function as F
 
-open import Categories.Category
-open import Categories.Groupoid
-open import Categories.Monoidal
-open import Categories.Monoidal.Helpers
-open import Categories.Bifunctor
-open import Categories.NaturalIsomorphism
-open import Categories.Monoidal.Braided
-open import Categories.Monoidal.Symmetric
+open import Data.Empty using (⊥)
+open import Data.Unit using (⊤)
+open import Data.Sum using (_⊎_)
+open import Data.Product using (_,_; _×_; proj₁; proj₂)
+
+import Relation.Binary.PropositionalEquality as P
+  using (_≡_; refl; sym; trans; cong; cong₂)
+
+open import Categories.Category using (Category)
+open import Categories.Groupoid using (Groupoid)
+open import Categories.Monoidal using (Monoidal)
+open import Categories.Monoidal.Helpers using (module MonoidalHelperFunctors)
+open import Categories.Bifunctor using (Bifunctor)
+open import Categories.NaturalIsomorphism using (NaturalIsomorphism)
+open import Categories.Monoidal.Braided using (Braided)
+open import Categories.Monoidal.Symmetric using (Symmetric)
 open import Categories.RigCategory
+  using (RigCategory; module BimonoidalHelperFunctors)
 
 open import Equiv
+  using (_∼_; sym∼; mkqinv; _≃_; id≃; sym≃; _●_; _⋆_; p∘!p≡id; 
+         path⊎; path×)
 open import TypeEquiv
+  using (unite₊equiv; uniti₊equiv; unite₊′equiv; uniti₊′equiv;
+         assocr₊equiv; assocl₊equiv;
+         unite⋆equiv; uniti⋆equiv; unite⋆′equiv; uniti⋆′equiv;
+         assocr⋆equiv; assocl⋆equiv; swap₊equiv; swapswap₊;
+         swapswap⋆; swap⋆equiv;
+         distequiv; factorequiv; factor∘dist; dist∘factor; 
+         distlequiv; factorlequiv; factorl∘distl; distl∘factorl;
+         distzequiv; factorzequiv; factorz∘distz; distz∘factorz;
+         distzrequiv; factorzrequiv; factorzr∘distzr; distzr∘factorzr)
 open import Data.Sum.Properties
+  using (map⊎idid≡id; map⊎-∘; map⊎-resp-≡; 
+         unite₊∘[id,f]≡f∘unite₊; inj₁∘unite₊′~id; inj₂∘unite₊~id;
+         unite₊′∘[id,f]≡f∘unite₊′; f∘unite₊′≡unite₊′∘[f,id];
+         assocr₊∘[[,],]; [[,],]∘assocl₊;
+         triangle⊎-right; triangle⊎-left;
+         pentagon⊎-right; pentagon⊎-left;
+         swap₊∘[f,g]≡[g,f]∘swap₊;
+         hexagon⊎-right; hexagon⊎-left)
 open import Data.SumProd.Properties
+  using (dist-commute; factor-commute; distl-commute; factorl-commute;
+         dist-swap⋆-lemma; factor-swap⋆-lemma; 
+         distl-swap₊-lemma; factorl-swap₊-lemma;
+         dist-dist-assoc-lemma; assoc-factor-factor-lemma;
+         distl-assoc-lemma; assoc-factorl-lemma;
+         fully-distribute; fully-factor;
+         distz0≡distrz0; factorz0≡factorzr0;
+         distz0≡unite₊∘[distz,distz]∘distl;
+         factorz0≡factorl∘[factorz,factorz]∘uniti₊;
+         unite⋆r0≡absorb1; uniti⋆r0≡factorz;
+         absorbl≡absorbr∘swap⋆; factorzr≡swap⋆∘factorz;
+         absorbr⇔assocl⋆◎[absorbr⊗id]◎absorbr;
+         factorz⇔factorz◎[factorz⊗id]◎assocr⋆;
+         elim-middle-⊥; insert-middle-⊥;
+         elim⊥-A[0⊕B]; insert⊕⊥-AB;
+         elim⊤-1[A⊕B]; insert⊤l⊗-A⊕B)
 
+------------------------------------------------------------------------------
 -- see EquivSetoid for some additional justification
 -- basically we need g to "pin down" the inverse, else we
 -- get lots of unsolved metas.
+
 record _≋_ {A B : Set} (eq₁ eq₂ : A ≃ B) : Set where
   constructor eq
   field
@@ -90,7 +128,10 @@ TypeEquivGroupoid = record
   ; F₁ = λ {(x , y) → path⊎ x y}
   ; identity = eq map⊎idid≡id map⊎idid≡id
   ; homomorphism = eq map⊎-∘ map⊎-∘
-  ; F-resp-≡ = λ { (e₁ , e₂) → eq (map⊎-resp-≡ {e₁ = f≡ e₁} {f≡ e₂}) (map⊎-resp-≡ {e₁ =  g≡ e₁} {g≡ e₂}) }
+  ; F-resp-≡ = λ { (e₁ , e₂) →
+                   eq
+                    (map⊎-resp-≡ {e₁ = f≡ e₁} {f≡ e₂})
+                    (map⊎-resp-≡ {e₁ =  g≡ e₁} {g≡ e₂}) }
   }
   where open _≋_
   
@@ -172,7 +213,10 @@ path×-resp-≡ {e₁ = f≡} {h≡} (a , c) = P.cong₂ _,_ (f≡ a) (h≡ c)
   ; F₁ = λ {(x , y) → path× x y }
   ; identity = eq (λ x → P.refl) (λ x → P.refl) -- η for products gives this
   ; homomorphism = eq (λ x → P.refl) (λ x → P.refl) -- again η for products!
-  ; F-resp-≡ = λ { (e₁ , e₂) → eq (path×-resp-≡ {e₁ = f≡ e₁} {f≡ e₂}) ((path×-resp-≡ {e₁ = g≡ e₁} {g≡ e₂}))}
+  ; F-resp-≡ = λ { (e₁ , e₂) →
+                   eq
+                    (path×-resp-≡ {e₁ = f≡ e₁} {f≡ e₂})
+                    ((path×-resp-≡ {e₁ = g≡ e₁} {g≡ e₂}))}
   }
   where open _≋_
 
@@ -239,11 +283,11 @@ x⊎y≈y⊎x : NaturalIsomorphism ⊎h.x⊗y ⊎h.y⊗x
 x⊎y≈y⊎x = record 
   { F⇒G = record 
     { η = λ X → swap₊equiv 
-    ; commute = λ f → eq swap₊∘[f,g]≡[g,f]∘swap₊ (sym∼ swap₊∘[f,g]≡[g,f]∘swap₊) 
+    ; commute = λ f → eq swap₊∘[f,g]≡[g,f]∘swap₊ (sym∼ swap₊∘[f,g]≡[g,f]∘swap₊)
     } 
   ; F⇐G = record 
     { η = λ X → swap₊equiv 
-    ; commute = λ f → eq swap₊∘[f,g]≡[g,f]∘swap₊ (sym∼ swap₊∘[f,g]≡[g,f]∘swap₊) 
+    ; commute = λ f → eq swap₊∘[f,g]≡[g,f]∘swap₊ (sym∼ swap₊∘[f,g]≡[g,f]∘swap₊)
     } 
   ; iso = λ X → record -- cheat by using the symmetric structure
     { isoˡ = eq swapswap₊ swapswap₊ 
@@ -361,10 +405,14 @@ TERig = record
   ; laplazaVI = eq distl-assoc-lemma assoc-factorl-lemma
   ; laplazaIX = eq fully-distribute fully-factor
   ; laplazaX = eq distz0≡distrz0 factorz0≡factorzr0
-  ; laplazaXI = eq distz0≡unite₊∘[distz,distz]∘distl factorz0≡factorl∘[factorz,factorz]∘uniti₊
+  ; laplazaXI = eq
+                 distz0≡unite₊∘[distz,distz]∘distl
+                 factorz0≡factorl∘[factorz,factorz]∘uniti₊
   ; laplazaXIII = eq unite⋆r0≡absorb1 uniti⋆r0≡factorz
   ; laplazaXV = eq absorbl≡absorbr∘swap⋆ factorzr≡swap⋆∘factorz
-  ; laplazaXVI = eq absorbr⇔assocl⋆◎[absorbr⊗id]◎absorbr factorz⇔factorz◎[factorz⊗id]◎assocr⋆
+  ; laplazaXVI = eq
+                  absorbr⇔assocl⋆◎[absorbr⊗id]◎absorbr
+                  factorz⇔factorz◎[factorz⊗id]◎assocr⋆
   ; laplazaXVII = eq elim-middle-⊥ insert-middle-⊥
   ; laplazaXIX = eq elim⊥-A[0⊕B] insert⊕⊥-AB
   ; laplazaXXIII = eq elim⊤-1[A⊕B] insert⊤l⊗-A⊕B
@@ -387,3 +435,5 @@ TERig = record
 -- as well as natural monomorphisms
 -- δ : A × (B ⊎ C) → (A × B) ⊎ (A × C)
 -- δ# : (A ⊎ B) × C → (A × C) ⊎ (B × C)
+
+------------------------------------------------------------------------------

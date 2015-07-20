@@ -17,7 +17,7 @@ open import Proofs
 ------------------------------------------------------------------------------
 -- Structures (Definitions)
 
-open import Groupoid
+open import Groupoid -- should replace our uses in FinVec and PiPerm with Categories.Groupoid
 
 {--
 We use (and extend) the package Categories.
@@ -47,6 +47,13 @@ open import SetoidEquiv                   -- HERE
 -- particular function to specify the equivalence; must really be done
 -- in conjection with SEquivSCPermEquiv so let's wait until
 -- dependencies satisfied...
+
+-- organize by kind; first all typeequiv; then all perms; then all pi
+-- then relate each kind to others
+
+open import Data.Sum.Properties
+open import Data.SumProd.Properties
+open import TypeEquivCat                  -- TODO
 
 ------------------------------------------------------------------------------
 -- Permutations                           -- TODO
