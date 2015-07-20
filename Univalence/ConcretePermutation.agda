@@ -8,9 +8,9 @@ open import Data.Fin using (Fin) -- for convenience
 open import Data.Vec using (tabulate)
 open import Data.Product using (proj₁)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans;
-    proof-irrelevance; cong₂; setoid; 
+    proof-irrelevance; cong₂; -- setoid; 
     module ≡-Reasoning)
-open import Relation.Binary using (Setoid; module Setoid)
+-- open import Relation.Binary using (Setoid; module Setoid)
 
 open import FinVec -- and below, import from that
 open F
@@ -262,5 +262,5 @@ uniti+rp∘[x⊎0]≡x∘uniti+rp : ∀ {m n} (p : CPerm m n) →
 uniti+rp∘[x⊎0]≡x∘uniti+rp p = p≡ {!!}
 -}
 
-SCPerm : ℕ → ℕ → Setoid zero zero
-SCPerm m n = setoid (CPerm m n)
+-- SCPerm : ℕ → ℕ → Setoid zero zero
+-- SCPerm m n = setoid (CPerm m n)

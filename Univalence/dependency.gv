@@ -143,9 +143,9 @@ digraph PiDepend {
 //  LeftCancellation -> Equiv;
 
   SetoidEquiv -> RBS;
-  SetoidEquiv -> DP;
-  SetoidEquiv -> DE;
-  SetoidEquiv -> DS;
+//  SetoidEquiv -> DP;
+//  SetoidEquiv -> DE;
+//  SetoidEquiv -> DS;
 
   FinVec -> DV;
   FinVec -> DS;

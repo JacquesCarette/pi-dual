@@ -22,7 +22,7 @@ open import FinEquiv using (Fin0-⊥; module Plus)
 Enum : ∀ {ℓ} → (A : Set ℓ) → (n : ℕ) →  Set ℓ
 Enum A n = A ≃ Fin n
 
--- We only some additive equivalences:
+-- We only need some additive equivalences...
 
 0E : Enum ⊥ 0
 0E = ⊥-elim , mkqinv Fin0-⊥ (λ { () }) (λ { () })

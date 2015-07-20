@@ -1,23 +1,23 @@
 module Univalence where
 
 ------------------------------------------------------------------------------
--- Basic utilities                        
+-- Basic utilities
 
-open import LeqLemmas                     
-open import FinNatLemmas                  
-open import SubstLemmas                   
-open import FiniteFunctions               
-open import PathLemmas                    
-open import VectorLemmas                  
-open import Proofs                        
+open import LeqLemmas
+open import FinNatLemmas
+open import SubstLemmas
+open import FiniteFunctions
+open import PathLemmas
+open import VectorLemmas
+open import Proofs
 
 -- Proofs is a wrapper over all the basic utilities
 -- The only thing imported from now on is Proofs
 
 ------------------------------------------------------------------------------
--- Structures (Definitions)               
+-- Structures (Definitions)
 
-open import Groupoid                      
+open import Groupoid
 
 {--
 We use (and extend) the package Categories.
@@ -29,14 +29,14 @@ open import Everything
 --}
 
 ------------------------------------------------------------------------------
--- Equivalences and their properties      
+-- Equivalences and their properties
 
-open import Equiv                         
+open import Equiv
 -- Defines extensional equality of functions ∼; quasi-inverses; and
 -- then equivalences ≃
-open import TypeEquiv                     
+open import TypeEquiv
 -- Proves that types and type equivalences form a commutative semiring
-open import FinEquiv                      
+open import FinEquiv
 -- Proves that that finite sets and equivalences form a commutative
 -- semiring
 open import EnumEquiv

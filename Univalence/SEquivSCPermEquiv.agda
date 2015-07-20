@@ -4,7 +4,8 @@ module SEquivSCPermEquiv where
 
 -- Data types from standard library
 
-open import Data.Nat     using (_+_) 
+open import Level        using (zero)
+open import Data.Nat     using (ℕ; _+_) 
 open import Data.Fin     using (Fin; inject+; raise) 
 open import Data.Sum     using (inj₁; inj₂)
 open import Data.Product using (_,_; proj₁; proj₂)
@@ -14,7 +15,7 @@ open import Function     using (_∘_; id)
 -- Properties from standard library
 
 open import Data.Vec.Properties using    (lookup∘tabulate)
-open import Relation.Binary     using    (module Setoid)
+open import Relation.Binary     using    (Setoid)
 open import Function.Equality   using    (_⇨_; _⟨$⟩_; _⟶_)
                                 renaming (_∘_ to _⊚_; id to id⊚)
 
@@ -34,11 +35,20 @@ open import Equiv using (_∼_; module qinv; mkqinv; _≃_)
 -- Next we import sets equipped with equivalence relations and
 -- specialize to our notions of equivalence
 
--- open import SetoidUtils using (→to⟶)
 open import SetoidEquiv
-  using (_≃S_; module _≃S_; equiv; 0≃S; id≃S; _⊎≃S_; 
-         _≋_; module _≋_; equivS;
-         _≃S≡_; ≃S-Setoid)
+  using (
+  ≃S-Setoid;        -- statement of thm2
+  _≃S_;             -- statement of thm2
+  module _≃S_;      -- proof of thm2 
+  module _≋_;       -- proof of thm2 
+  equiv;            -- proof of thm2 
+  equivS;           -- proof of thm2 
+  _≋_               -- proof of thm2 
+--  id≃S;
+--  0≃S;
+--  _≃S≡_;
+--  _⊎≃S_
+  )
 
 -- Finally we import our definition of permutations. We start with Vec
 -- (Fin m) n for arbitrary m and n which---if well-formed---would
@@ -53,10 +63,13 @@ open import FinVec using (module F)
 open F using (~⇒≡; !!⇒∘̂; _∘̂_; 1C!!i≡i; cauchyext)
 
 open import EnumEquiv using (Enum; 0E; _⊕e_; eval-left; eval-right) 
-open import ConcretePermutation using (CPerm; cp; p≡; 0p; idp; _⊎p_; SCPerm) 
+open import ConcretePermutation using (CPerm; cp; p≡; 0p; idp; _⊎p_) -- ; SCPerm) 
 
 ------------------------------------------------------------------------------
 -- The big (semantic) theorem!
+
+SCPerm : ℕ → ℕ → Setoid zero zero
+SCPerm m n = setoid (CPerm m n)
 
 -- For convenience, use only a single size, even though we could use 2.
 
@@ -204,6 +217,10 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
 --   c. + (done)
 --   d. *
 
+{--
+
+Is this still important or has it been subsumed by the categorical work ???
+
 open _≃S_
 
 lemma_1a : ∀ {n} {A : Set} → (EA : Enum A n) → f (thm2 EA EA) ⟨$⟩ id≃S ≡ idp
@@ -273,3 +290,6 @@ lemma3 {n₁} {n₂} {EA = EA} {EB} {EC} {ED} (equiv f₄ g₄ α₄ β₄) (equ
            raise n₁ (enumD (f₅ ⟨$⟩ qC.g i))
              ≡⟨ cong (raise n₁) (sym (lookup∘tabulate _ i)) ⟩
            raise n₁ (tabulate (λ i₁ → enumD (f₅ ⟨$⟩ qC.g i₁)) !! i) ∎)
+
+--}
+
