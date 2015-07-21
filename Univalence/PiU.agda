@@ -3,6 +3,13 @@
 {- Define the ``universe'' for Pi.  All versions of Pi
   share the same universe.  Where they differ is in what
   combinators exist between members of the universe. -}
+-- ZERO is a type with no elements
+-- ONE is a type with one element 'tt'
+-- PLUS ONE ONE is a type with elements 'false' and 'true'
+-- and so on for all finite types built from ZERO, ONE, PLUS, and TIMES
+-- 
+-- We also have that U is a type with elements ZERO, ONE, PLUS ONE ONE, 
+--   TIMES BOOL BOOL, etc.
 
 module PiU where
 

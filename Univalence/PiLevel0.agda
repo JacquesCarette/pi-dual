@@ -25,22 +25,11 @@ open import Proofs using (
      distribˡ-*-+; *-right-identity
   )
 
+open import PiU using (U; ZERO; ONE; PLUS; TIMES; toℕ)
+
 ------------------------------------------------------------------------------
 -- Level 0 of Pi
 --
--- ZERO is a type with no elements
--- ONE is a type with one element 'tt'
--- PLUS ONE ONE is a type with elements 'false' and 'true'
--- and so on for all finite types built from ZERO, ONE, PLUS, and TIMES
--- 
--- We also have that U is a type with elements ZERO, ONE, PLUS ONE ONE, 
---   TIMES BOOL BOOL, etc.
-
-data U : Set where
-  ZERO  : U
-  ONE   : U
-  PLUS  : U → U → U
-  TIMES : U → U → U
 
 ⟦_⟧ : U → Set 
 ⟦ ZERO ⟧        = ⊥ 
@@ -236,10 +225,7 @@ evalB (c₀ ⊗ c₁) (x , y) = evalB c₀ x , evalB c₁ y
 -- has a canonical index.
 
 size : U → ℕ
-size ZERO          = 0
-size ONE           = 1
-size (PLUS t₁ t₂)  = size t₁ + size t₂
-size (TIMES t₁ t₂) = size t₁ * size t₂
+size = toℕ
 
 utoVec : (t : U) → Vec ⟦ t ⟧ (size t)
 utoVec ZERO          = []
@@ -588,46 +574,7 @@ FULLADDER =
 -- size≡ and !
 
 size≡! : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (size t₂ ≡ size t₁)
-size≡! (c₁ ◎ c₂) = trans (size≡! c₂) (size≡! c₁)
-size≡! {PLUS ZERO t} {.t} unite₊l = refl
-size≡! {t} {PLUS ZERO .t} uniti₊l = refl
-size≡! {PLUS t ZERO} {.t} unite₊r = sym (+-right-identity (size t))
-size≡! {t} {PLUS .t ZERO} uniti₊r = +-right-identity (size t)
-size≡! {PLUS t₁ t₂} {PLUS .t₂ .t₁} swap₊ = +-comm (size t₂) (size t₁)
-size≡! {PLUS t₁ (PLUS t₂ t₃)} {PLUS (PLUS .t₁ .t₂) .t₃} assocl₊ = 
-  +-assoc (size t₁) (size t₂) (size t₃)
-size≡! {PLUS (PLUS t₁ t₂) t₃} {PLUS .t₁ (PLUS .t₂ .t₃)} assocr₊ = 
-  sym (+-assoc (size t₁) (size t₂) (size t₃))
-size≡! {TIMES ONE t} {.t} unite⋆l = sym (+-right-identity (size t))
-size≡! {t} {TIMES ONE .t} uniti⋆l = +-right-identity (size t)
-size≡! {TIMES t ONE} unite⋆r = sym (*-right-identity (size t))
-size≡! {t} {TIMES .t ONE} uniti⋆r = *-right-identity (size t)
-size≡! {TIMES t₁ t₂} {TIMES .t₂ .t₁} swap⋆ = *-comm (size t₂) (size t₁) 
-size≡! {TIMES t₁ (TIMES t₂ t₃)} {TIMES (TIMES .t₁ .t₂) .t₃} assocl⋆ = 
-  *-assoc (size t₁) (size t₂) (size t₃)
-size≡! {TIMES (TIMES t₁ t₂) t₃} {TIMES .t₁ (TIMES .t₂ .t₃)} assocr⋆ = 
-  sym (*-assoc (size t₁) (size t₂) (size t₃))
-size≡! {TIMES .ZERO t} {ZERO} absorbr = refl
-size≡! {TIMES t .ZERO} {ZERO} absorbl = sym (*-right-zero (size t))
-size≡! {ZERO} {TIMES ZERO t} factorzl = refl
-size≡! {ZERO} {TIMES t ZERO} factorzr = *-right-zero (size t)
-size≡! {TIMES (PLUS t₁ t₂) t₃} {PLUS (TIMES .t₁ .t₃) (TIMES .t₂ .t₃)} dist = 
-  sym (distribʳ-*-+ (size t₃) (size t₁) (size t₂))
-size≡! {PLUS (TIMES t₁ t₃) (TIMES t₂ .t₃)} {TIMES (PLUS .t₁ .t₂) .t₃} factor = 
-  distribʳ-*-+ (size t₃) (size t₁) (size t₂)
-size≡! {TIMES t₁ (PLUS t₂ t₃)} distl = 
-  sym (distribˡ-*-+ (size t₁) (size t₂) (size t₃))
-size≡! {PLUS (TIMES t₁ t₂) (TIMES .t₁ t₃)} factorl = 
-  distribˡ-*-+ (size t₁) (size t₂) (size t₃)
-size≡! {t} {.t} id⟷ = refl
-size≡! {PLUS t₁ t₂} {PLUS t₃ t₄} (c₁ ⊕ c₂) = cong₂ _+_ (size≡! c₁) (size≡! c₂)
-size≡! {TIMES t₁ t₂} {TIMES t₃ t₄} (c₁ ⊗ c₂) = cong₂ _*_ (size≡! c₁) (size≡! c₂)
-
-size∼! : {t₁ t₂ : U} → (c₁ c₂ : t₁ ⟷ t₂) → (size≡! c₁ ≡ size≡! c₂)
-size∼! c₁ c₂ = proof-irrelevance (size≡! c₁) (size≡! c₂)
-
-size≡!! : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (size≡! (! c) ≡ sym (size≡! c))
-size≡!! c = proof-irrelevance (size≡! (! c)) (sym (size≡! c))
+size≡! c = sym (size≡ c)
 
 ------------------------------------------------------------------------------
 
