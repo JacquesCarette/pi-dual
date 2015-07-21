@@ -4,6 +4,7 @@ module PiLevel1 where
 
 open import PiU
 open import PiLevel0
+open import Pi0Examples
 
 ------------------------------------------------------------------------------
 -- Level 1: first non-trivial 2 paths

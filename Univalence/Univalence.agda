@@ -78,6 +78,10 @@ open import Pi0Cat
 -- the set of natural numbers which makes it a 0-type. (We do not
 -- distinguish 'id' and 'not'.)
 
+open import Pi0Examples
+-- Pi0 is interesting as a programming language for reversible
+-- circuits. This module has a few examples.
+
 open import PiLevel1
 open import Pi1Cat
 -- If the relation on finite types is modeled after type isomorphisms
