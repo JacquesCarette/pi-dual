@@ -5,39 +5,47 @@
 
 module Data.SumProd.Properties where
 
-open import Level using (zero; suc)
-import Relation.Binary.PropositionalEquality as P
-open import Relation.Binary using (Rel)
+open import Data.Empty using (⊥)
+open import Data.Unit using (⊤)
 open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to map⊎)
-open import Data.Product using (_×_; _,_; proj₁; proj₂) renaming (map to map×)
-open import Data.Empty
-open import Data.Unit
-import Function as F
+open import Data.Product using (_×_; _,_) renaming (map to map×) -- ; proj₁; proj₂) 
+
+import Relation.Binary.PropositionalEquality as P using (_≡_; refl)
+import Function as F using (id)
 
 open import TypeEquiv
+  using (unite₊; uniti₊; swap₊; assocl₊; assocr₊;
+         unite⋆; uniti⋆; unite⋆′; uniti⋆′; swap⋆; assocl⋆; assocr⋆;
+         distz; distzr; factorz; factorzr;
+         dist; factor; distl; factorl)
 
+------------------------------------------------------------------------------
 -- Note that all these lemmas are "simple" in the sense that they
 -- are all about map⊎ rather than [_,_]
 
-distl-commute : {A B C D E F : Set} → {f : A → D} {g : B → E} {h : C → F} →
-  (x : A × (B ⊎ C)) → distl (map× f (map⊎ g h) x) P.≡ (map⊎ (map× f g) (map× f h) (distl x))
+distl-commute : {A B C D E F : Set} →
+  {f : A → D} {g : B → E} {h : C → F} → (x : A × (B ⊎ C)) →
+  distl (map× f (map⊎ g h) x) P.≡ (map⊎ (map× f g) (map× f h) (distl x))
 distl-commute (a , inj₁ x) = P.refl
 distl-commute (a , inj₂ y) = P.refl
 
-factorl-commute : {A B C D E F : Set} → {f : A → D} {g : B → E} {h : C → F} →
-  (x : (A × B) ⊎ (A × C)) → factorl (map⊎ (map× f g) (map× f h) x) P.≡
-                            (map× f (map⊎ g h) (factorl x))
+factorl-commute : {A B C D E F : Set} →
+  {f : A → D} {g : B → E} {h : C → F} → (x : (A × B) ⊎ (A × C)) →
+  factorl (map⊎ (map× f g) (map× f h) x) P.≡
+  (map× f (map⊎ g h) (factorl x))
 factorl-commute (inj₁ (a , b)) = P.refl
 factorl-commute (inj₂ (a , c)) = P.refl
 
-dist-commute : {A B C D E F : Set} → {f : A → D} {g : B → E} {h : C → F} →
-  (x : (A ⊎ B) × C) → dist (map× (map⊎ f g) h x) P.≡ (map⊎ (map× f h) (map× g h) (dist x))
+dist-commute : {A B C D E F : Set} →
+  {f : A → D} {g : B → E} {h : C → F} → (x : (A ⊎ B) × C) →
+  dist (map× (map⊎ f g) h x) P.≡ (map⊎ (map× f h) (map× g h) (dist x))
 dist-commute (inj₁ x , c) = P.refl
 dist-commute (inj₂ y , c) = P.refl
 
-factor-commute : {A B C D E F : Set} → {f : A → D} {g : B → E} {h : C → F} →
-  (x : (A × C) ⊎ (B × C)) → factor (map⊎ (map× f h) (map× g h) x) P.≡
-                           (map× (map⊎ f g) h (factor x))
+factor-commute : {A B C D E F : Set} →
+  {f : A → D} {g : B → E} {h : C → F} → (x : (A × C) ⊎ (B × C)) →
+  factor (map⊎ (map× f h) (map× g h) x) P.≡
+  (map× (map⊎ f g) h (factor x))
 factor-commute (inj₁ x) = P.refl
 factor-commute (inj₂ y) = P.refl
 
@@ -68,7 +76,8 @@ dist-dist-assoc-lemma (inj₁ x , d) = P.refl
 dist-dist-assoc-lemma (inj₂ (inj₁ x) , d) = P.refl
 dist-dist-assoc-lemma (inj₂ (inj₂ y) , d) = P.refl
 
-assoc-factor-factor-lemma : {A B C D : Set} → (x : ((A × D) ⊎ (B × D)) ⊎ (C × D)) →
+assoc-factor-factor-lemma : {A B C D : Set} →
+  (x : ((A × D) ⊎ (B × D)) ⊎ (C × D)) →
   map× assocr₊ F.id (factor (map⊎ factor F.id x))  P.≡
   factor (map⊎ F.id factor (assocr₊ x))
 assoc-factor-factor-lemma (inj₁ (inj₁ x)) = P.refl
@@ -128,7 +137,8 @@ elim-middle-⊥ : {A B : Set} (x : A × (⊥ × B)) →
 elim-middle-⊥ x = P.refl
 
 insert-middle-⊥ : {A B : Set} (x : ⊥) →
-  map× F.id (factorz {B}) (factorzr {A} x) P.≡ assocr⋆ (map× factorzr F.id (factorz x))
+  map× F.id (factorz {B}) (factorzr {A} x) P.≡
+  assocr⋆ (map× factorzr F.id (factorz x))
 insert-middle-⊥ ()
 
 elim⊥-A[0⊕B] : {A B : Set} (x : A × (⊥ ⊎ B)) →
@@ -152,18 +162,28 @@ insert⊤l⊗-A⊕B (inj₂ y) = P.refl
 
 fully-distribute : {A B C D : Set} (x : (A ⊎ B) × (C ⊎ D)) →
   assocl₊ (map⊎ dist dist (distl x)) P.≡
-  map⊎ assocl₊ F.id (map⊎ (map⊎ F.id swap₊) F.id (map⊎ assocr₊ F.id (assocl₊
-    (map⊎ distl distl (dist x)))))
+  map⊎ assocl₊ F.id
+    (map⊎
+      (map⊎ F.id swap₊) F.id
+        (map⊎ assocr₊ F.id
+          (assocl₊ (map⊎ distl distl (dist x)))))
 fully-distribute (inj₁ x , inj₁ x₁) = P.refl
 fully-distribute (inj₁ x , inj₂ y) = P.refl
 fully-distribute (inj₂ y , inj₁ x) = P.refl
 fully-distribute (inj₂ y , inj₂ y₁) = P.refl
 
-fully-factor : {A B C D : Set} (x : (((A × C) ⊎ (B × C)) ⊎ (A × D)) ⊎ (B × D)) →
+fully-factor : {A B C D : Set}
+  (x : (((A × C) ⊎ (B × C)) ⊎ (A × D)) ⊎ (B × D)) →
   factorl (map⊎ factor factor (assocr₊ x)) P.≡
-  factor (map⊎ factorl factorl (assocr₊ (map⊎ assocl₊ F.id (map⊎ (map⊎ F.id swap₊) F.id
-    (map⊎ assocr₊ F.id x)))))
+  factor
+    (map⊎ factorl factorl
+      (assocr₊
+        (map⊎ assocl₊ F.id
+          (map⊎ (map⊎ F.id swap₊) F.id
+            (map⊎ assocr₊ F.id x)))))
 fully-factor (inj₁ (inj₁ (inj₁ (a , c)))) = P.refl
 fully-factor (inj₁ (inj₁ (inj₂ (b , c)))) = P.refl
 fully-factor (inj₁ (inj₂ (a , d))) = P.refl
 fully-factor (inj₂ (b , d)) = P.refl
+
+------------------------------------------------------------------------------

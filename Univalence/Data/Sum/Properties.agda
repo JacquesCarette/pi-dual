@@ -5,16 +5,16 @@
 
 module Data.Sum.Properties where
 
-open import Level using (zero; suc)
-import Relation.Binary.PropositionalEquality as P
-open import Relation.Binary using (Rel)
+open import Data.Empty using (⊥)
 open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to map⊎)
-open import Data.Empty
-import Function as F
 
-open import Equiv
-open import TypeEquiv
+import Relation.Binary.PropositionalEquality as P using (_≡_; refl; cong)
+import Function as F using (id; _∘_)
 
+open import Equiv using (_∼_)
+open import TypeEquiv using (unite₊; unite₊′; swap₊; assocl₊; assocr₊)
+
+------------------------------------------------------------------------------
 -- Note that all these lemmas are "simple" in the sense that they
 -- are all about map⊎ rather than [_,_]
 
@@ -22,7 +22,8 @@ map⊎idid≡id : {A B : Set} → (x : A ⊎ B) → map⊎ F.id F.id x P.≡ x
 map⊎idid≡id (inj₁ x) = P.refl
 map⊎idid≡id (inj₂ y) = P.refl
 
-map⊎-∘ : {A B C D E F : Set} → {f : A → C} {g : B → D} {h : C → E} {i : D → F} →
+map⊎-∘ : {A B C D E F : Set} →
+  {f : A → C} {g : B → D} {h : C → E} {i : D → F} →
   ∀ x → map⊎ (h F.∘ f) (i F.∘ g) x P.≡ map⊎ h i (map⊎ f g x)
 map⊎-∘ (inj₁ x) = P.refl
 map⊎-∘ (inj₂ y) = P.refl
@@ -56,27 +57,29 @@ inj₁∘unite₊′~id : {A : Set} → (x : A ⊎ ⊥) → inj₁ (unite₊′ 
 inj₁∘unite₊′~id (inj₁ x) = P.refl
 inj₁∘unite₊′~id (inj₂ ())
 
-assocr₊∘[[,],] : {A B C D E F : Set} → {f₀ : A → D} {f₁ : B → E} {f₂ : C → F} →
-  (x : (A ⊎ B) ⊎ C) →
-    assocr₊ (map⊎ (map⊎ f₀ f₁) f₂ x) P.≡ map⊎ f₀ (map⊎ f₁ f₂) (assocr₊ x)
+assocr₊∘[[,],] : {A B C D E F : Set} →
+  {f₀ : A → D} {f₁ : B → E} {f₂ : C → F} → (x : (A ⊎ B) ⊎ C) →
+  assocr₊ (map⊎ (map⊎ f₀ f₁) f₂ x) P.≡ map⊎ f₀ (map⊎ f₁ f₂) (assocr₊ x)
 assocr₊∘[[,],] (inj₁ (inj₁ x)) = P.refl
 assocr₊∘[[,],] (inj₁ (inj₂ y)) = P.refl
 assocr₊∘[[,],] (inj₂ y) = P.refl
 
-[[,],]∘assocl₊ : {A B C D E F : Set} → {f₀ : A → D} {f₁ : B → E} {f₂ : C → F} →
-  (x : A ⊎ (B ⊎ C)) →
-     map⊎ (map⊎ f₀ f₁) f₂ (assocl₊ x) P.≡ assocl₊ (map⊎ f₀ (map⊎ f₁ f₂) x)
+[[,],]∘assocl₊ : {A B C D E F : Set} →
+  {f₀ : A → D} {f₁ : B → E} {f₂ : C → F} → (x : A ⊎ (B ⊎ C)) →
+  map⊎ (map⊎ f₀ f₁) f₂ (assocl₊ x) P.≡ assocl₊ (map⊎ f₀ (map⊎ f₁ f₂) x)
 [[,],]∘assocl₊ (inj₁ x) = P.refl
 [[,],]∘assocl₊ (inj₂ (inj₁ x)) = P.refl
 [[,],]∘assocl₊ (inj₂ (inj₂ y)) = P.refl
 
-triangle⊎-right : {A B : Set} → (x : (A ⊎ ⊥) ⊎ B) → map⊎ unite₊′ F.id x P.≡ map⊎ F.id unite₊ (assocr₊ x)
+triangle⊎-right : {A B : Set} → (x : (A ⊎ ⊥) ⊎ B) →
+  map⊎ unite₊′ F.id x P.≡ map⊎ F.id unite₊ (assocr₊ x)
 triangle⊎-right (inj₁ (inj₁ x)) = P.refl
 triangle⊎-right (inj₁ (inj₂ ()))
 triangle⊎-right (inj₂ y) = P.refl
 
 -- note how C is completely arbitrary here (and not ⊥ like in the above)
-triangle⊎-left : {A B C : Set} → (x : A ⊎ B) → map⊎ (inj₁ {B = C}) F.id x P.≡ assocl₊ (map⊎ F.id inj₂ x)
+triangle⊎-left : {A B C : Set} → (x : A ⊎ B) →
+  map⊎ (inj₁ {B = C}) F.id x P.≡ assocl₊ (map⊎ F.id inj₂ x)
 triangle⊎-left (inj₁ x) = P.refl
 triangle⊎-left (inj₂ y) = P.refl
 
@@ -112,3 +115,4 @@ hexagon⊎-left (inj₁ x) = P.refl
 hexagon⊎-left (inj₂ (inj₁ x)) = P.refl
 hexagon⊎-left (inj₂ (inj₂ y)) = P.refl
 
+------------------------------------------------------------------------------

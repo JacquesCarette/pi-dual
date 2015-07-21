@@ -1,7 +1,5 @@
 {-# OPTIONS --without-K #-}
 
--- Borrowed from OldUnivalence/Equivalences.agda, without HoTT
-
 module Equiv where
 
 open import Level using (_⊔_)

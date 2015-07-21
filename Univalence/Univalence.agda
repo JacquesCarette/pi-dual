@@ -37,11 +37,15 @@ open import Equiv
 -- Equivalences between types (type isomorphisms)
 
 open import TypeEquiv
--- Proves that types and type equivalences form a commutative semiring
-
+-- Proves that types and type equivalences form a commutative rig
 open import Data.Sum.Properties
+-- Proves simple properties about equivalences such as:
+-- inj₂ (unite₊ x) ≡ x
 open import Data.SumProd.Properties
-open import TypeEquivCat                  -- TODO
+-- Proves simple properties about equivalences such as:
+-- distzr x ≡ distz (swap⋆ x)
+open import TypeEquivCat
+-- Proves that types and type equivalences form a commutative rig category
 
 ------------------------------------------------------------------------------
 -- Equivalences between finite sets (enumerations and permutations)
