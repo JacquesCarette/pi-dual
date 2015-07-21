@@ -31,21 +31,62 @@ open import Everything
 
 open import Equiv
 -- Defines extensional equality of functions ∼; quasi-inverses; and
--- then equivalences ≃
+-- then equivalences ≃ between spaces
 
 ------------------------------------------------------------------------------
 -- Equivalences between types (type isomorphisms)
 
 open import TypeEquiv
--- Proves that types and type equivalences form a commutative rig
+-- Proves that types and type equivalences form a commutative semiring
+-- in the Algebra sense
 open import Data.Sum.Properties
--- Proves simple properties about equivalences such as:
+-- Proves simple properties about type equivalences such as:
 -- inj₂ (unite₊ x) ≡ x
 open import Data.SumProd.Properties
--- Proves simple properties about equivalences such as:
+-- Proves simple properties about type equivalences such as:
 -- distzr x ≡ distz (swap⋆ x)
 open import TypeEquivCat
--- Proves that types and type equivalences form a commutative rig category
+-- Proves that types and type equivalences form a commutative rig
+-- groupoid. The equality between morphisms is extensional.
+
+------------------------------------------------------------------------------
+-- Equivalences between Pi-types
+
+-- First we introduce a univere U of finite types
+
+-- A trivial relation on finite types is to identify all the types;
+-- this makes U a contractible (-2)-type, i.e., a singleton
+
+-- The same relation makes U a non-empty (-1)-type.
+
+-- If the relation on finite types is modeled after type isomorphisms
+-- and all isomorphisms of the same type are equated, we collapse U to
+-- the set of natural numbers which makes it a 0-type. (We do not
+-- distinguish 'id' and 'not'.)
+
+-- If the relation on finite types is modeled after type isomorphisms
+-- and only the isomorphisms corresponding to the coherence conditions
+-- of rig categories are equated, we make U a 1-type. (We do
+-- distinguish 'id' and 'not'.) The higher-level equality on the
+-- 2-morphisms is extensional. 
+
+-- How to make U a 2-type, 3-type, etc. ???
+
+open import PiU
+open import PiLevelm2
+open import PiLevelm1
+open import PiLevel0
+open import PiLevel1
+
+open import Pim2Cat
+open import Pim1Cat
+open import Pi0Cat
+open import Pi1Cat
+
+------------------------------------------------------------------------------
+-- Now we want to relate Pi-types and type equivalences; we will use
+-- permutations as an intermediary
+
 
 ------------------------------------------------------------------------------
 -- Equivalences between finite sets (enumerations and permutations)
@@ -58,18 +99,6 @@ open import EnumEquiv
 open import FinEquiv
 -- Proves that that finite sets and equivalences form a commutative
 -- semiring
-
-------------------------------------------------------------------------------
--- Equivalences between Pi-types
-
-open import PiU
-open import PiLevel0                      -- TODO
-open import PiLevel1                      -- TODO
-
-open import Pim2Cat                       -- TODO
-open import Pim1Cat                       -- TODO
-open import Pi0Cat                        -- TODO
-open import Pi1Cat                        -- TODO
 
 ------------------------------------------------------------------------------
 -- Equivalences between setoids

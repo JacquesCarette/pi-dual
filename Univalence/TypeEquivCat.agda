@@ -1,5 +1,10 @@
 {-# OPTIONS --without-K #-}
+
 module TypeEquivCat where
+
+-- We will define a rig category whose objects are types and whose
+-- morphisms are type equivalences; and where the equivalence of
+-- morphisms ≋ is extensional
 
 open import Level using (zero; suc)
 
@@ -63,16 +68,20 @@ open import Data.SumProd.Properties
          elim⊤-1[A⊕B]; insert⊤l⊗-A⊕B)
 
 ------------------------------------------------------------------------------
--- see EquivSetoid for some additional justification
--- basically we need g to "pin down" the inverse, else we
--- get lots of unsolved metas.
+-- Extensional equivalence of morphisms (which are type equivalences)
 
 record _≋_ {A B : Set} (eq₁ eq₂ : A ≃ B) : Set where
   constructor eq
   field
     f≡ : ∀ x → eq₁ ⋆ x P.≡ eq₂ ⋆ x
     g≡ : ∀ x → (sym≃ eq₁) ⋆ x P.≡ (sym≃ eq₂) ⋆ x
+  -- see EquivSetoid for some additional justification
+  -- basically we need g to "pin down" the inverse, else we
+  -- get lots of unsolved metas.
  
+-- The equivalence of morphisms is an equivalence relation that
+-- respects composition
+
 id≋ : ∀ {A B : Set} {x : A ≃ B} → x ≋ x
 id≋ = record { f≡ = λ x → P.refl ; g≡ = λ x → P.refl }
 
@@ -94,9 +103,16 @@ trans≋ (eq f≡ g≡) (eq h≡ i≡) =
      (λ x → P.trans (P.cong g⁻¹ (g≡ x)) (i≡ (h⁻¹ x)))
 
 -- underlying it all, it uses ∘ and ≡ 
+
 ●-assoc : {A B C D : Set} {f : A ≃ B} {g : B ≃ C} {h : C ≃ D} →
       ((h ● g) ● f) ≋ (h ● (g ● f))
 ●-assoc = eq (λ x → P.refl) (λ x → P.refl)
+
+------------------------------------------------------------------------------
+-- Now we show that types with type equivalences are a commutative rig
+-- groupoid
+
+-- First it is a category
 
 TypeEquivCat : Category (suc zero) zero zero
 TypeEquivCat = record
@@ -112,6 +128,8 @@ TypeEquivCat = record
   ; ∘-resp-≡ = ●-resp-≋
   }
 
+-- The category has inverses and hence a groupoid
+
 TypeEquivGroupoid : Groupoid TypeEquivCat
 TypeEquivGroupoid = record 
   { _⁻¹ = sym≃ 
@@ -121,6 +139,7 @@ TypeEquivGroupoid = record
     } }
   }
 
+-- The additive structure is monoidal
 
 ⊎-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
 ⊎-bifunctor = record
@@ -194,12 +213,12 @@ CPM⊎ = record
    ; pentagon = eq pentagon⊎-right pentagon⊎-left
    }
 
--------
--- and below, we will have a lot of things which belong in
--- Data.Product.Properties.  In fact, some of them are ``free'',
--- in that β-reduction is enough.  However, it might be a good
--- idea to fully mirror all the ones needed for ⊎.
+-- The multiplicative structure is also monoidal
 
+-- below, we will have a lot of things which belong in
+-- Data.Product.Properties.  In fact, some of them are ``free'', in
+-- that β-reduction is enough.  However, it might be a good idea to
+-- fully mirror all the ones needed for ⊎.
 
 path×-resp-≡ : {A B C D : Set} → {f₀ g₀ : A → B} {f₁ g₁ : C → D} →
   {e₁ : f₀ ∼ g₀} → {e₂ : f₁ ∼ g₁} →  
@@ -223,6 +242,7 @@ path×-resp-≡ {e₁ = f≡} {h≡} (a , c) = P.cong₂ _,_ (f≡ a) (h≡ c)
 module ×h = MonoidalHelperFunctors TypeEquivCat ×-bifunctor ⊤
 
 -- again because of η for products, lots of the following have trivial proofs
+
 1×y≡y : NaturalIsomorphism ×h.id⊗x ×h.x
 1×y≡y = record
   { F⇒G = record
@@ -279,6 +299,8 @@ CPM× = record
   ; pentagon = eq (λ x → P.refl) (λ x → P.refl)
   }
 
+-- The monoidal structures are symmetric
+
 x⊎y≈y⊎x : NaturalIsomorphism ⊎h.x⊗y ⊎h.y⊗x
 x⊎y≈y⊎x = record 
   { F⇒G = record 
@@ -330,6 +352,9 @@ SBM⊎ = record { symmetry = eq swapswap₊ swapswap₊ }
 
 SBM× : Symmetric BM×
 SBM× = record { symmetry = eq swapswap⋆ swapswap⋆ }
+
+-- And finally the multiplicative structure distributes over the
+-- additive one
 
 module r = BimonoidalHelperFunctors BM⊎ BM×
 
