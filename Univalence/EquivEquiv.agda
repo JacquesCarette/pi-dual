@@ -2,9 +2,6 @@
 
 module EquivEquiv where
 
--- Equivalences between type equivalances 
--- An extensional relation ≋
-
 open import Data.Product using (_,_) -- ; _×_; proj₁; proj₂)
 
 import Relation.Binary.PropositionalEquality as P
@@ -13,7 +10,7 @@ import Relation.Binary.PropositionalEquality as P
 open import Equiv using (mkqinv; _≃_; sym≃; _●_; _⋆_)
 
 ------------------------------------------------------------------------------
--- Extensional equivalence of type equivalences
+-- Extensional equivalence of equivalences
 
 record _≋_ {A B : Set} (eq₁ eq₂ : A ≃ B) : Set where
   constructor eq
@@ -24,8 +21,8 @@ record _≋_ {A B : Set} (eq₁ eq₂ : A ≃ B) : Set where
   -- basically we need g to "pin down" the inverse, else we
   -- get lots of unsolved metas.
  
--- The equivalence of type equivalences is an equivalence relation
--- that respects composition
+-- The equivalence of equivalences is an equivalence relation that
+-- respects composition
 
 id≋ : ∀ {A B : Set} {x : A ≃ B} → x ≋ x
 id≋ = record { f≡ = λ x → P.refl ; g≡ = λ x → P.refl }

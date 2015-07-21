@@ -20,7 +20,7 @@ open import Proofs
 -- We use (and extend) the package Categories.
 -- 
 -- Everything we need works but some of the other parts do not work with
--- current version of Agda
+-- the current version of Agda
 -- 
 {--
 open import Everything
@@ -50,23 +50,32 @@ open import Data.SumProd.Properties
 -- distzr x ≡ distz (swap⋆ x)
 open import TypeEquivCat
 -- Proves that types and type equivalences form a commutative rig
--- groupoid up to the extensional equality between equivalences
+-- groupoid up to extensional equality of equivalences
 
 ------------------------------------------------------------------------------
 -- Equivalences between Pi-types
 
+open import PiU
 -- First we introduce a univere U of finite types
 
+open import PiLevelm2
+open import Pim2Cat
 -- A trivial relation on finite types is to identify all the types;
 -- this makes U a contractible (-2)-type, i.e., a singleton
 
+open import PiLevelm1
+open import Pim1Cat
 -- The same relation makes U a non-empty (-1)-type.
 
+open import PiLevel0
+open import Pi0Cat
 -- If the relation on finite types is modeled after type isomorphisms
 -- and all isomorphisms of the same type are equated, we collapse U to
 -- the set of natural numbers which makes it a 0-type. (We do not
 -- distinguish 'id' and 'not'.)
 
+open import PiLevel1
+open import Pi1Cat
 -- If the relation on finite types is modeled after type isomorphisms
 -- and only the isomorphisms corresponding to the coherence conditions
 -- of rig categories are equated, we make U a 1-type. (We do
@@ -74,17 +83,6 @@ open import TypeEquivCat
 -- 2-morphisms is extensional. 
 
 -- How to make U a 2-type, 3-type, etc. ???
-
-open import PiU
-open import PiLevelm2
-open import PiLevelm1
-open import PiLevel0
-open import PiLevel1
-
-open import Pim2Cat
-open import Pim1Cat
-open import Pi0Cat
-open import Pi1Cat
 
 ------------------------------------------------------------------------------
 -- Now we want to relate Pi-types and type equivalences; we will use
