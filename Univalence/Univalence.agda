@@ -49,7 +49,7 @@ open import Data.SumProd.Properties
 -- Proves simple properties about type equivalences such as:
 -- distzr x ≡ distz (swap⋆ x)
 open import TypeEquivCat
--- Proves that types and type equivalences form a commutative rig
+-- Proves that types and type equivalences form a symmetric rig
 -- groupoid up to extensional equality of equivalences
 
 ------------------------------------------------------------------------------
@@ -61,11 +61,15 @@ open import PiU
 open import PiLevelm2
 open import Pim2Cat
 -- A trivial relation on finite types is to identify all the types;
--- this makes U a contractible (-2)-type, i.e., a singleton
-
-open import PiLevelm1
-open import Pim1Cat
--- The same relation makes U a non-empty (-1)-type.
+-- this makes U a contractible (-2)-type, i.e., a singleton.
+--
+-- The Pi types with the trivial relation that identifies all the
+-- types form a trivial symmetric rig groupoid up to propositional
+-- equality.
+--
+-- A (-1)-type is either empty or a singleton. The previous setup at
+-- level -2 collapsed U to a singleton and hence also make U a
+-- (-1)-type
 
 open import PiLevel0
 open import Pi0Cat
