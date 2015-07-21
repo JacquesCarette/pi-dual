@@ -583,3 +583,13 @@ ttt : {t₁ t₂ t₃ t₄ : U} →
   (PLUS (PLUS (PLUS (TIMES t₁ t₃) (TIMES t₂ t₃)) (TIMES t₁ t₄))) (TIMES t₂ t₄)
 ttt {t₁} {t₂} {t₃} {t₄} =
   (distl ◎ (dist {t₁} {t₂} {t₃} ⊕ dist {t₁} {t₂} {t₄})) ◎ assocl₊
+
+------------------------------------------------------------------------------
+
+-- generalized CNOT
+gcnot : {A B C : U} → (TIMES (PLUS A B) (PLUS C C)) ⟷ (TIMES (PLUS A B) (PLUS C C))
+gcnot = dist ◎ (id⟷ ⊕ (id⟷ ⊗ swap₊)) ◎ factor
+
+-- Generalized Toffolli gate.  See what 'arithmetic' it performs.
+GToffoli : {A B C D E : U} → TIMES (PLUS A B) (TIMES (PLUS C D) (PLUS E E)) ⟷ TIMES (PLUS A B) (TIMES (PLUS C D) (PLUS E E))
+GToffoli = dist ◎ (id⟷ ⊕ (id⟷ ⊗ gcnot)) ◎ factor
