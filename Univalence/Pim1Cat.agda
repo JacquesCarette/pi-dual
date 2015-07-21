@@ -8,7 +8,8 @@ open import Data.Unit using (⊤; tt)
 open import Data.Nat
 open import Relation.Nullary using (yes; no)
 open import Relation.Binary.Core using (Reflexive; IsEquivalence)
-open import Relation.Binary.PropositionalEquality using (refl; sym)
+open import Relation.Binary.PropositionalEquality
+  using (refl; sym; trans)
 
 open import PiU
 
@@ -44,7 +45,7 @@ sym⟷ : (s t : U) → bool⟷ s t → bool⟷ t s
 sym⟷ s t eq with toℕ s ≟ toℕ t | toℕ t ≟ toℕ s
 ... | yes x | yes y = eq
 ... | yes x | no y = y (sym x)
-... | no x | yes y = tt -- weird!
+sym⟷ s t () | no x | yes y
 ... | no x | no y = eq
 
 triv≡ : {t₁ t₂ : U} → (f g : bool⟷ t₁ t₂) → Set
@@ -53,9 +54,20 @@ triv≡ _ _ = ⊤
 triv≡Equiv : {t₁ t₂ : U} → IsEquivalence (triv≡ {t₁} {t₂})
 triv≡Equiv = record 
   { refl = tt
-  ; sym = λ _ → tt
+  ; sym = λ a → a
   ; trans = λ _ _ → tt
   }
+
+∘⟷ : {a b c : U} → bool⟷ b c → bool⟷ a b → bool⟷ a c
+∘⟷ {a} {b} {c} bc ab with toℕ b ≟ toℕ c | toℕ a ≟ toℕ b | toℕ a ≟ toℕ c
+∘⟷ bc ab | yes p | yes p₁ | yes p₂ = tt
+∘⟷ bc ab | yes p | yes p₁ | no ¬p = ¬p (trans p₁ p)
+∘⟷ bc () | yes p | no ¬p | yes p₁
+∘⟷ bc () | yes p | no ¬p | no ¬p₁
+∘⟷ () ab | no ¬p | yes p | yes p₁
+∘⟷ () ab | no ¬p | yes p | no ¬p₁
+∘⟷ () () | no ¬p | no ¬p₁ | yes p
+∘⟷ () () | no ¬p | no ¬p₁ | no ¬p₂
 
 -- It is a category...
 
@@ -65,7 +77,7 @@ PiCat = record
   ; _⇒_ = bool⟷
   ; _≡_ = λ {t₁} {t₂} → triv≡ {t₁} {t₂}
   ; id = λ {t} → refl⟷ t 
-  ; _∘_ = λ bc ab → {!!}
+  ; _∘_ = λ bc ab → ∘⟷ bc ab
   ; assoc = tt
   ; identityˡ = tt
   ; identityʳ = tt
