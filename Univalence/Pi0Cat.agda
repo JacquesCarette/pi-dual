@@ -31,9 +31,10 @@ open import Categories.RigCategory
 
 -- explicit using clause, to show what parts are used. 
 -- in the order they were needed below, too.
-open import PiLevel0 using (U; _⟷_; id⟷; _◎_; !;
-  PLUS; _⊕_; ZERO; unite₊l; uniti₊l; unite₊r; uniti₊r; swap₊; assocr₊; assocl₊;
-  TIMES; _⊗_; ONE; unite⋆l; uniti⋆l; unite⋆r; uniti⋆r; swap⋆; assocr⋆; assocl⋆;
+open import PiU using (U; PLUS; ZERO; TIMES; ONE)
+open import PiLevel0 using (_⟷_; id⟷; _◎_; !;
+  _⊕_; unite₊l; uniti₊l; unite₊r; uniti₊r; swap₊; assocr₊; assocl₊;
+  _⊗_; unite⋆l; uniti⋆l; unite⋆r; uniti⋆r; swap⋆; assocr⋆; assocl⋆;
   absorbl; absorbr; factorzl; factorzr;
   dist; factor; distl; factorl)
 

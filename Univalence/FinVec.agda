@@ -37,7 +37,7 @@ open import Algebra.Structures
 open import Relation.Binary.Core
 open import Relation.Binary.PropositionalEquality using (subst; sym; trans; cong₂)
 
-open import Groupoid
+-- open import Groupoid
 open import Equiv
 open import TypeEquiv using (swap₊; swap⋆)
 import TypeEquiv as TE
@@ -729,6 +729,7 @@ cauchyCSR = record {
   }
 
 ------------------------------------------------------------------------------
+{--
 -- Groupoid structure
 
 private
@@ -755,5 +756,5 @@ G = record {
   rinv = rinv ; 
   ∘-resp-≈ = cong₂ _∘̂_ 
   }
-
+--}
 ------------------------------------------------------------------------------

@@ -2,6 +2,7 @@
 
 module PiLevel1 where
 
+open import PiU
 open import PiLevel0
 
 ------------------------------------------------------------------------------

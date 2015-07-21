@@ -12,6 +12,7 @@ open import Equiv
 open import TypeEquiv as TE
 open import TypeEquivCat -- for ≋
 open _≋_
+open import PiU
 open import PiLevel0
 open import PiLevel1
 

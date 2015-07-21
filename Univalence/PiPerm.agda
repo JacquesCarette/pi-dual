@@ -6,8 +6,9 @@ open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; cong; cong₂)
 
 open import ConcretePermutation
+open import PiU
 open import PiLevel0
-open import Groupoid
+-- open import Groupoid
 
 ------------------------------------------------------------------------------
 -- A combinator t₁ ⟷ t₂ denotes a permutation.
@@ -139,6 +140,8 @@ resp∼ c₁∼c₂ c₃∼c₄ = cong₂ transp c₁∼c₂ c₃∼c₄
 -- types (t : U); the 1paths are ⟷; and the 2paths between them are
 -- based on extensional equivalence ∼
 
+{--
+
 G : 1Groupoid
 G = record
         { set = U
@@ -160,6 +163,8 @@ G = record
         ; ∘-resp-≈ = λ {_} {_} {_} {p} {q} {r} {s} p∼q r∼s → 
                     resp∼ {c₁ = r} {s} {p} {q} r∼s p∼q 
         }
+
+--}
 
 -- There are additional laws that should hold:
 -- 

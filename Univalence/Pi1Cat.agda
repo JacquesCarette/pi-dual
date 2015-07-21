@@ -46,14 +46,15 @@ open import Categories.Monoidal.Braided
 open import Categories.Monoidal.Symmetric
 open import Categories.RigCategory
 
+open import PiU using (U; PLUS; ZERO; TIMES; ONE)
 open import PiLevel0
-  using (U; _⟷_; id⟷; _◎_;
+  using (_⟷_; id⟷; _◎_;
         !; !!;
-        PLUS; _⊕_; ZERO;
+        _⊕_; 
         unite₊l; uniti₊l; unite₊r; uniti₊r;
         swap₊;
         assocr₊; assocl₊;
-        TIMES; _⊗_; ONE;
+        _⊗_; 
         unite⋆l; uniti⋆l; unite⋆r; uniti⋆r;
         swap⋆;
         assocr⋆; assocl⋆;

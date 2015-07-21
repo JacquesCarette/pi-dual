@@ -156,7 +156,7 @@ digraph PiDepend {
   FinVec -> DNPS;
   FinVec -> DVP;
   FinVec -> Proofs;
-  FinVec -> Groupoid;
+//  FinVec -> Groupoid;
 
   ConcretePermutation -> RBP;
   ConcretePermutation -> FinVec;
@@ -193,7 +193,7 @@ digraph PiDepend {
 
   PiPerm -> ConcretePermutation;
   PiPerm -> PiLevel0;
-  PiPerm -> Groupoid;
+//  PiPerm -> Groupoid;
 
   PiEquiv -> DS;
   PiEquiv -> DP;
