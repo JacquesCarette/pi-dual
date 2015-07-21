@@ -32,6 +32,9 @@ open import Everything
 open import Equiv
 -- Defines extensional equality of functions ∼; quasi-inverses; and
 -- then equivalences ≃ between spaces
+open import EquivEquiv
+-- Defines an extensional equivalence relation to be used to equate
+-- equivalences so we can talk about equivalences up to equivalence
 
 ------------------------------------------------------------------------------
 -- Equivalences between types (type isomorphisms)
@@ -47,7 +50,7 @@ open import Data.SumProd.Properties
 -- distzr x ≡ distz (swap⋆ x)
 open import TypeEquivCat
 -- Proves that types and type equivalences form a commutative rig
--- groupoid. The equality between morphisms is extensional.
+-- groupoid up to the extensional equality between equivalences
 
 ------------------------------------------------------------------------------
 -- Equivalences between Pi-types

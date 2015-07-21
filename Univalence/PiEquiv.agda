@@ -9,9 +9,10 @@ open import Data.Product using (Σ; _,_; proj₁; proj₂)
 open import Function using (_∘_)
 
 open import Equiv
-open import TypeEquiv as TE
-open import TypeEquivCat -- for ≋
+open import EquivEquiv 
 open _≋_
+open import TypeEquiv as TE
+open import TypeEquivCat
 open import PiU
 open import PiLevel0
 open import PiLevel1
