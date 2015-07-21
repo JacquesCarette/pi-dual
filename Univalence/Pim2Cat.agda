@@ -2,59 +2,47 @@
 
 module Pim2Cat where
 
-open import Level using () renaming (zero to lzero)
-open import Data.Unit
-open import Relation.Binary.Core using (IsEquivalence)
-import Relation.Binary.PropositionalEquality as PE
+open import Level using (zero)
 
-open import Categories.Category
-open import Categories.Groupoid
-open import Categories.Monoidal
-open import Categories.Monoidal.Helpers
-open import Categories.Bifunctor
-open import Categories.NaturalIsomorphism
-open import Categories.Monoidal.Braided
-open import Categories.Monoidal.Symmetric
+import Relation.Binary.PropositionalEquality as P
+  using (_≡_; refl; isEquivalence) 
+
+open import Categories.Category using (Category)
+open import Categories.Groupoid using (Groupoid)
+
+open import PiU using (U)
+open import PiLevelm2 using (_⟷_; collapse)
+
+-- We will define a rig category whose objects are Pi types and whose
+-- morphisms are the trivial equivalence that identifies all Pi types;
+-- and where the equivalence of morphisms is propositional equality ≡
 
 ------------------------------------------------------------------------------
--- Level -2 of Pi
+-- First it is a category
 
--- U is a collection of types.
--- 
--- Between any two types there is exactly one identification 'tt'.
--- 
--- This identifies all types and makes U a singleton.
+triv : {A B : U} → (f : A ⟷ B) → (collapse P.≡ f)
+triv collapse = P.refl 
 
-data U : Set where
-  ZERO  : U
-  ONE   : U
-  PLUS  : U → U → U
-  TIMES : U → U → U
-
-triv⟷ : (t₁ t₂ : U) → Set
-triv⟷ _ _ = ⊤
-
-triv⟷Equiv : {t₁ t₂ : U} → IsEquivalence triv⟷
-triv⟷Equiv = record 
-  { refl = tt
-  ; sym = λ _ → tt
-  ; trans = λ _ _ → tt
+Pim2Cat : Category zero zero zero
+Pim2Cat = record
+  { Obj = U
+  ; _⇒_ = _⟷_
+  ; _≡_ = P._≡_
+  ; id = collapse
+  ; _∘_ = λ _ _ → collapse
+  ; assoc = P.refl 
+  ; identityˡ = λ {A} {B} {f} → triv f
+  ; identityʳ = λ {A} {B} {f} → triv f
+  ; equiv = P.isEquivalence
+  ; ∘-resp-≡ = λ _ _ → P.refl
   }
 
--- It is a category...
+-- and a groupoid
 
-PiCat : Category lzero lzero lzero
-PiCat = record
-  { Obj = U
-  ; _⇒_ = triv⟷
-  ; _≡_ = PE._≡_
-  ; id = tt
-  ; _∘_ = λ _ _ → tt
-  ; assoc = PE.refl
-  ; identityˡ = PE.refl
-  ; identityʳ = PE.refl 
-  ; equiv = PE.isEquivalence
-  ; ∘-resp-≡ = λ _ _ → PE.refl
+Pim2Groupoid : Groupoid Pim2Cat
+Pim2Groupoid = record 
+  { _⁻¹ = λ _ → collapse
+  ; iso = record { isoˡ = P.refl; isoʳ = P.refl }
   }
 
 ------------------------------------------------------------------------------

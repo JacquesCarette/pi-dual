@@ -37,7 +37,7 @@ open import EquivEquiv
 -- equivalences so we can talk about equivalences up to equivalence
 
 ------------------------------------------------------------------------------
--- Equivalences between types (type isomorphisms)
+-- Equivalences between Agda types (type isomorphisms)
 
 open import TypeEquiv
 -- Proves that types and type equivalences form a commutative semiring
@@ -53,7 +53,7 @@ open import TypeEquivCat
 -- groupoid up to extensional equality of equivalences
 
 ------------------------------------------------------------------------------
--- Equivalences between Pi-types
+-- Equivalences between Pi types (combinators)
 
 open import PiU
 -- First we introduce a univere U of finite types
