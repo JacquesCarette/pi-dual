@@ -2,56 +2,32 @@
 
 module Pi0Cat where
 
--- Proving that Pi with trivial 2 paths structure is a symmetric rig groupoid
---
--- U is a collection of types
---
--- Between any two types, there could be zero, one, or many
--- identifications. If there is more than one idenfication we force
--- them to be the same; so 'id' and 'not' at BOOL ⟷ BOOL are the same
--- and U effectively collapses to the set of natural numbers
--- 
--- Definition 3.1.1.
--- A type A is a set if for all x,y : A and all p,q : x=y, we have p=q.
+-- Proving that Pi at level 0 symmetric rig groupoid
 
 open import Level using () renaming (zero to lzero)
-open import Data.Unit
-open import Relation.Binary.Core using (IsEquivalence)
+open import Data.Unit using (tt)
 open import Data.Product using (_,_)
 
-open import Categories.Category
-open import Categories.Groupoid
-open import Categories.Monoidal
-open import Categories.Monoidal.Helpers
-open import Categories.Bifunctor
-open import Categories.NaturalIsomorphism
-open import Categories.Monoidal.Braided
-open import Categories.Monoidal.Symmetric
+open import Categories.Category using (Category)
+open import Categories.Groupoid using (Groupoid)
+open import Categories.Monoidal using (Monoidal)
+open import Categories.Monoidal.Helpers using (module MonoidalHelperFunctors)
+open import Categories.Bifunctor using (Bifunctor)
+open import Categories.NaturalIsomorphism using (NaturalIsomorphism)
+open import Categories.Monoidal.Braided using (Braided)
+open import Categories.Monoidal.Symmetric using (Symmetric)
 open import Categories.RigCategory
+  using (RigCategory; module BimonoidalHelperFunctors)
 
--- explicit using clause, to show what parts are used. 
--- in the order they were needed below, too.
 open import PiU using (U; PLUS; ZERO; TIMES; ONE)
-open import PiLevel0 using (_⟷_; id⟷; _◎_; !;
+open import PiLevel0 using (_⟷_; !; triv≡; triv≡Equiv; 
+  id⟷; _◎_;
   _⊕_; unite₊l; uniti₊l; unite₊r; uniti₊r; swap₊; assocr₊; assocl₊;
   _⊗_; unite⋆l; uniti⋆l; unite⋆r; uniti⋆r; swap⋆; assocr⋆; assocl⋆;
   absorbl; absorbr; factorzl; factorzr;
   dist; factor; distl; factorl)
 
 ------------------------------------------------------------------------------
--- Trivial equivalence; equates all morphisms of the same type so for
--- example id and not : BOOL ⟷ BOOL are equated
-
-triv≡ : {t₁ t₂ : U} → (f g : t₁ ⟷ t₂) → Set
-triv≡ _ _ = ⊤
-
-triv≡Equiv : {t₁ t₂ : U} → IsEquivalence (triv≡ {t₁} {t₂})
-triv≡Equiv = record 
-  { refl = tt
-  ; sym = λ _ → tt
-  ; trans = λ _ _ → tt
-  }
-
 -- It is a category...
 
 PiCat : Category lzero lzero lzero

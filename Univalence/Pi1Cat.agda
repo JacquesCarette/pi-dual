@@ -84,7 +84,7 @@ PiCat = record
   ; assoc = assoc◎l 
   ; identityˡ = idr◎l 
   ; identityʳ = idl◎l 
-  ; equiv = ⇔Equiv 
+  ; equiv = ⇔Equiv
   ; ∘-resp-≡ = λ f g → g ⊡ f 
   }
 
@@ -296,3 +296,5 @@ Pi0Rig = record
   ; laplazaXIX = elim⊥-A[0⊕B]⇔l 
   ; laplazaXXIII = elim⊥-1[A⊕B]⇔l
   }
+
+------------------------------------------------------------------------------

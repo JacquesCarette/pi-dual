@@ -5,34 +5,14 @@ module Pi0Examples where
 open import PiU using (U; ZERO; ONE; PLUS; TIMES) 
 open import PiLevel0
   using (_⟷_; 
-         unite₊l;
-         uniti₊l;
-         unite₊r;
-         uniti₊r;
-         swap₊;
-         assocl₊;
-         assocr₊;
-         unite⋆l;
-         uniti⋆l;
-         unite⋆r;
-         uniti⋆r;
-         swap⋆;
-         assocl⋆;
-         assocr⋆;
-         absorbr;
-         absorbl;
-         factorzr;
-         factorzl;
-         dist;
-         factor;
-         distl;
-         factorl;
-         id⟷;
-         _◎_;
-         _⊕_;
-         _⊗_)
+         unite₊l; uniti₊l; unite₊r; uniti₊r; swap₊; assocl₊; assocr₊;
+         unite⋆l; uniti⋆l; unite⋆r; uniti⋆r; swap⋆; assocl⋆; assocr⋆;
+         absorbr; absorbl; factorzr; factorzl;
+         dist; factor; distl; factorl;
+         id⟷; _◎_; _⊕_; _⊗_)
 
 ------------------------------------------------------------------------------
+-- Example circuits on booleans
 
 BOOL : U
 BOOL  = PLUS ONE ONE 
@@ -53,20 +33,12 @@ _ ⟷⟨ α ⟩ β = α ◎ β
 _□ : (t : U) → {t : U} → (t ⟷ t)
 _□ t = id⟷
 
--- calculate and print specification of a combinator
-
---spec : {t₁ t₂ : U} → (t₁ ⟷ t₂) → Vec (⟦ t₁ ⟧ × ⟦ t₂ ⟧) (size t₁)
---spec {t₁} {t₂} c = mapV (λ v₁ → (v₁ , eval c v₁)) (utoVec t₁)
-
--- For easier manipulation of Bool
 foldBool unfoldBool : BOOL ⟷ BOOL
 foldBool = id⟷
 unfoldBool = id⟷
 
--- Many ways of negating a BOOL. Again, it is absolutely critical that there
--- is NO path between false⟷ and true⟷. These permutations instead are based
--- on paths between x and neg (neg x) which are the trivial paths on each of
--- the two points in BOOL.
+------------------------------------------------------------------------------
+-- Many ways of negating a BOOL. 
 
 NOT : BOOL ⟷ BOOL
 NOT = unfoldBool ◎ swap₊ ◎ foldBool
@@ -243,6 +215,7 @@ FULLADDER =
 -- ((true  , (true  , true)  , true)  , true  , false , true  , false) ∷ []
 
 ------------------------------------------------------------------------------
+-- Generalized CNOT and TOFFOLI
 
 ttt : {t₁ t₂ t₃ t₄ : U} → 
   (TIMES (PLUS t₁ t₂) (PLUS t₃ t₄)) ⟷
@@ -250,14 +223,18 @@ ttt : {t₁ t₂ t₃ t₄ : U} →
 ttt {t₁} {t₂} {t₃} {t₄} =
   (distl ◎ (dist {t₁} {t₂} {t₃} ⊕ dist {t₁} {t₂} {t₄})) ◎ assocl₊
 
-------------------------------------------------------------------------------
-
 -- generalized CNOT
-gcnot : {A B C : U} → (TIMES (PLUS A B) (PLUS C C)) ⟷ (TIMES (PLUS A B) (PLUS C C))
+
+gcnot : {A B C : U} →
+        (TIMES (PLUS A B) (PLUS C C)) ⟷ (TIMES (PLUS A B) (PLUS C C))
 gcnot = dist ◎ (id⟷ ⊕ (id⟷ ⊗ swap₊)) ◎ factor
 
 -- Generalized Toffolli gate.  See what 'arithmetic' it performs.
-GToffoli : {A B C D E : U} → TIMES (PLUS A B) (TIMES (PLUS C D) (PLUS E E)) ⟷ TIMES (PLUS A B) (TIMES (PLUS C D) (PLUS E E))
+
+GToffoli : {A B C D E : U} →
+           TIMES (PLUS A B) (TIMES (PLUS C D) (PLUS E E)) ⟷
+           TIMES (PLUS A B) (TIMES (PLUS C D) (PLUS E E))
 GToffoli = dist ◎ (id⟷ ⊕ (id⟷ ⊗ gcnot)) ◎ factor
 
 ------------------------------------------------------------------------------
+

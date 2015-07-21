@@ -2,7 +2,16 @@
 
 module PiLevel0 where
 
+-- We refine the trivial relation used in level-(-2). We do not
+-- identify all types: only those of the same "size". So between any
+-- two types, there could be zero, one, or many identifications. If
+-- there is more than one idenfication we force them to be the same;
+-- so 'id' and 'not' at BOOL ⟷ BOOL are the same and U effectively
+-- collapses to the set of natural numbers
+
+open import Data.Unit using (⊤; tt)
 open import Data.Nat using (ℕ) 
+open import Relation.Binary.Core using (IsEquivalence)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; cong₂; module ≡-Reasoning)
 
@@ -19,8 +28,7 @@ infixr 50 _◎_
 size : U → ℕ
 size = toℕ
 
--- Combinators: we refine the trivial relation used in level-(-2). We
--- do not identify all types: only those of the same "size"
+-- Combinators 
 
 data _⟷_ : U → U → Set where
   unite₊l : {t : U} → PLUS ZERO t ⟷ t
@@ -56,6 +64,20 @@ data _⟷_ : U → U → Set where
   _⊗_     : {t₁ t₂ t₃ t₄ : U} → 
             (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
 
+-- At the next level we have a trivial equivalence that equates all
+-- morphisms of the same type so for example id and not : BOOL ⟷ BOOL
+-- are equated
+
+triv≡ : {t₁ t₂ : U} → (f g : t₁ ⟷ t₂) → Set
+triv≡ _ _ = ⊤
+
+triv≡Equiv : {t₁ t₂ : U} → IsEquivalence (triv≡ {t₁} {t₂})
+triv≡Equiv = record 
+  { refl = tt
+  ; sym = λ _ → tt
+  ; trans = λ _ _ → tt
+  }
+
 ------------------------------------------------------------------------------
 -- Every combinator has an inverse. There are actually many
 -- syntactically different inverses but they are all equivalent.
@@ -88,52 +110,7 @@ data _⟷_ : U → U → Set where
 ! (c₁ ⊕ c₂) = (! c₁) ⊕ (! c₂)
 ! (c₁ ⊗ c₂) = (! c₁) ⊗ (! c₂)
 
-!! : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → ! (! c) ≡ c
-!! {c = unite₊l} = refl
-!! {c = uniti₊l} = refl
-!! {c = unite₊r} = refl
-!! {c = uniti₊r} = refl
-!! {c = swap₊}   = refl
-!! {c = assocl₊} = refl
-!! {c = assocr₊} = refl
-!! {c = unite⋆l} = refl
-!! {c = uniti⋆l} = refl
-!! {c = unite⋆r} = refl
-!! {c = uniti⋆r} = refl
-!! {c = swap⋆}   = refl
-!! {c = assocl⋆} = refl
-!! {c = assocr⋆} = refl
-!! {c = absorbr} = refl
-!! {c = absorbl} = refl
-!! {c = factorzl} = refl
-!! {c = factorzr} = refl
-!! {c = dist} = refl
-!! {c = factor} = refl
-!! {c = distl} = refl
-!! {c = factorl} = refl
-!! {c = id⟷} = refl
-!! {c = c₁ ◎ c₂} = 
-  begin (! (! (c₁ ◎ c₂))
-           ≡⟨ refl ⟩
-         ! (! c₂ ◎ ! c₁)
-           ≡⟨ refl ⟩ 
-         ! (! c₁) ◎ ! (! c₂)
-           ≡⟨ cong₂ _◎_ (!! {c = c₁}) (!! {c = c₂}) ⟩ 
-         c₁ ◎ c₂ ∎)
-  where open ≡-Reasoning
-!! {c = c₁ ⊕ c₂} = 
-  begin (! (! (c₁ ⊕ c₂))
-           ≡⟨ refl ⟩
-         ! (! c₁) ⊕ ! (! c₂)
-           ≡⟨ cong₂ _⊕_ (!! {c = c₁}) (!! {c = c₂}) ⟩ 
-         c₁ ⊕ c₂ ∎)
-  where open ≡-Reasoning
-!! {c = c₁ ⊗ c₂} = 
-  begin (! (! (c₁ ⊗ c₂))
-           ≡⟨ refl ⟩
-         ! (! c₁) ⊗ ! (! c₂)
-           ≡⟨ cong₂ _⊗_ (!! {c = c₁}) (!! {c = c₂}) ⟩ 
-         c₁ ⊗ c₂ ∎)
-  where open ≡-Reasoning
+!! : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → triv≡ (! (! c)) c
+!! = tt
 
 ------------------------------------------------------------------------------

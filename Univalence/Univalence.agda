@@ -88,7 +88,12 @@ open import Pi1Cat
 -- and only the isomorphisms corresponding to the coherence conditions
 -- of rig categories are equated, we make U a 1-type. (We do
 -- distinguish 'id' and 'not'.) The higher-level equality on the
--- 2-morphisms is extensional. 
+-- 2-morphisms is trivial, i.e., all two level morphisms are equated.
+
+open import Pi1Examples
+-- Pi1 is interesting as a programming language for reversible
+-- circuits that has its own optimizer. This module has a few
+-- examples.
 
 -- How to make U a 2-type, 3-type, etc. ???
 

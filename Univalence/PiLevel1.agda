@@ -2,17 +2,27 @@
 
 module PiLevel1 where
 
-open import PiU
+open import Data.Unit using (⊤; tt)
+open import Relation.Binary.Core using (IsEquivalence)
+
+open import PiU using (U; ZERO; ONE; PLUS; TIMES)
 open import PiLevel0
-open import Pi0Examples
+  -- hiding triv≡ certainly
+  using (_⟷_; !;
+         unite₊l; uniti₊l; unite₊r; uniti₊r; swap₊; assocl₊; assocr₊;
+         unite⋆l; uniti⋆l; unite⋆r; uniti⋆r; swap⋆; assocl⋆; assocr⋆;
+         absorbr; absorbl; factorzr; factorzl;
+         dist; factor; distl; factorl;
+         id⟷; _◎_; _⊕_; _⊗_)
 
 ------------------------------------------------------------------------------
--- Level 1: first non-trivial 2 paths
+-- Level 1: instead of using triv≡ to reason about equivalence of
+-- combinators, we use the following 2-combinators
 
 infix  30 _⇔_
 
 data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set where
-  assoc◎l : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
+  assoc◎l : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} →
           (c₁ ◎ (c₂ ◎ c₃)) ⇔ ((c₁ ◎ c₂) ◎ c₃)
   assoc◎r : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
           ((c₁ ◎ c₂) ◎ c₃) ⇔ (c₁ ◎ (c₂ ◎ c₃))
@@ -112,17 +122,11 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
           (swap⋆ ◎ (c₁ ⊗ c₂)) ⇔ ((c₂ ⊗ c₁) ◎ swap⋆)
   swapr⋆⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
           ((c₂ ⊗ c₁) ◎ swap⋆) ⇔ (swap⋆ ◎ (c₁ ⊗ c₂))
-{-   swapfl⋆⇔ : {t₁ t₂ t₃ : U} → 
-          (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor) ⇔ 
-          (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷))
-  swapfr⋆⇔ : {t₁ t₂ t₃ : U} → 
-          (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷)) ⇔ 
-         (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor) -}
   id⇔     : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ c
   trans⇔  : {t₁ t₂ : U} {c₁ c₂ c₃ : t₁ ⟷ t₂} → 
          (c₁ ⇔ c₂) → (c₂ ⇔ c₃) → (c₁ ⇔ c₃)
   _⊡_  : {t₁ t₂ t₃ : U} 
-         {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
+         {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} →
          (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ◎ c₂) ⇔ (c₃ ◎ c₄)
   resp⊕⇔  : {t₁ t₂ t₃ t₄ : U} 
          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
@@ -156,45 +160,57 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
   triangle⊗r : {t₁ t₂ : U} →
     (assocr⋆ ◎ (id⟷ {t₁} ⊗ unite⋆l {t₂})) ⇔ (unite⋆r ⊗ id⟷)
   pentagon⊕l : {t₁ t₂ t₃ t₄ : U} →
-    assocr₊ ◎ (assocr₊ {t₁} {t₂} {PLUS t₃ t₄}) ⇔ ((assocr₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ assocr₊)
+    assocr₊ ◎ (assocr₊ {t₁} {t₂} {PLUS t₃ t₄}) ⇔
+    ((assocr₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ assocr₊)
   pentagon⊕r : {t₁ t₂ t₃ t₄ : U} →
-    ((assocr₊ {t₁} {t₂} {t₃} ⊕ id⟷ {t₄}) ◎ assocr₊) ◎ (id⟷ ⊕ assocr₊) ⇔ assocr₊ ◎ assocr₊
+    ((assocr₊ {t₁} {t₂} {t₃} ⊕ id⟷ {t₄}) ◎ assocr₊) ◎ (id⟷ ⊕ assocr₊) ⇔
+    assocr₊ ◎ assocr₊
   pentagon⊗l : {t₁ t₂ t₃ t₄ : U} →
-    assocr⋆ ◎ (assocr⋆ {t₁} {t₂} {TIMES t₃ t₄}) ⇔ ((assocr⋆ ⊗ id⟷) ◎ assocr⋆) ◎ (id⟷ ⊗ assocr⋆)
+    assocr⋆ ◎ (assocr⋆ {t₁} {t₂} {TIMES t₃ t₄}) ⇔
+    ((assocr⋆ ⊗ id⟷) ◎ assocr⋆) ◎ (id⟷ ⊗ assocr⋆)
   pentagon⊗r : {t₁ t₂ t₃ t₄ : U} →
-    ((assocr⋆ {t₁} {t₂} {t₃} ⊗ id⟷ {t₄}) ◎ assocr⋆) ◎ (id⟷ ⊗ assocr⋆) ⇔ assocr⋆ ◎ assocr⋆
+    ((assocr⋆ {t₁} {t₂} {t₃} ⊗ id⟷ {t₄}) ◎ assocr⋆) ◎ (id⟷ ⊗ assocr⋆) ⇔ 
+    assocr⋆ ◎ assocr⋆
   hexagonr⊕l : {t₁ t₂ t₃ : U} →
-     (assocr₊ ◎ swap₊) ◎ assocr₊ {t₁} {t₂} {t₃} ⇔ ((swap₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ swap₊)
+    (assocr₊ ◎ swap₊) ◎ assocr₊ {t₁} {t₂} {t₃} ⇔
+    ((swap₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ swap₊)
   hexagonr⊕r : {t₁ t₂ t₃ : U} →
-     ((swap₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ swap₊) ⇔ (assocr₊ ◎ swap₊) ◎ assocr₊ {t₁} {t₂} {t₃}
+    ((swap₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ swap₊) ⇔
+    (assocr₊ ◎ swap₊) ◎ assocr₊ {t₁} {t₂} {t₃}
   hexagonl⊕l : {t₁ t₂ t₃ : U} →
-     (assocl₊ ◎ swap₊) ◎ assocl₊ {t₁} {t₂} {t₃} ⇔ ((id⟷ ⊕ swap₊) ◎ assocl₊) ◎ (swap₊ ⊕ id⟷)
+    (assocl₊ ◎ swap₊) ◎ assocl₊ {t₁} {t₂} {t₃} ⇔
+    ((id⟷ ⊕ swap₊) ◎ assocl₊) ◎ (swap₊ ⊕ id⟷)
   hexagonl⊕r : {t₁ t₂ t₃ : U} →
-     ((id⟷ ⊕ swap₊) ◎ assocl₊) ◎ (swap₊ ⊕ id⟷) ⇔ (assocl₊ ◎ swap₊) ◎ assocl₊ {t₁} {t₂} {t₃}
+    ((id⟷ ⊕ swap₊) ◎ assocl₊) ◎ (swap₊ ⊕ id⟷) ⇔
+    (assocl₊ ◎ swap₊) ◎ assocl₊ {t₁} {t₂} {t₃}
   hexagonr⊗l : {t₁ t₂ t₃ : U} →
-     (assocr⋆ ◎ swap⋆) ◎ assocr⋆ {t₁} {t₂} {t₃} ⇔ ((swap⋆ ⊗ id⟷) ◎ assocr⋆) ◎ (id⟷ ⊗ swap⋆)
+    (assocr⋆ ◎ swap⋆) ◎ assocr⋆ {t₁} {t₂} {t₃} ⇔
+    ((swap⋆ ⊗ id⟷) ◎ assocr⋆) ◎ (id⟷ ⊗ swap⋆)
   hexagonr⊗r : {t₁ t₂ t₃ : U} →
-     ((swap⋆ ⊗ id⟷) ◎ assocr⋆) ◎ (id⟷ ⊗ swap⋆) ⇔ (assocr⋆ ◎ swap⋆) ◎ assocr⋆ {t₁} {t₂} {t₃}
+    ((swap⋆ ⊗ id⟷) ◎ assocr⋆) ◎ (id⟷ ⊗ swap⋆) ⇔
+    (assocr⋆ ◎ swap⋆) ◎ assocr⋆ {t₁} {t₂} {t₃}
   hexagonl⊗l : {t₁ t₂ t₃ : U} →
-     (assocl⋆ ◎ swap⋆) ◎ assocl⋆ {t₁} {t₂} {t₃} ⇔ ((id⟷ ⊗ swap⋆) ◎ assocl⋆) ◎ (swap⋆ ⊗ id⟷)
+    (assocl⋆ ◎ swap⋆) ◎ assocl⋆ {t₁} {t₂} {t₃} ⇔
+    ((id⟷ ⊗ swap⋆) ◎ assocl⋆) ◎ (swap⋆ ⊗ id⟷)
   hexagonl⊗r : {t₁ t₂ t₃ : U} →
-     ((id⟷ ⊗ swap⋆) ◎ assocl⋆) ◎ (swap⋆ ⊗ id⟷) ⇔ (assocl⋆ ◎ swap⋆) ◎ assocl⋆ {t₁} {t₂} {t₃}
+    ((id⟷ ⊗ swap⋆) ◎ assocl⋆) ◎ (swap⋆ ⊗ id⟷) ⇔
+    (assocl⋆ ◎ swap⋆) ◎ assocl⋆ {t₁} {t₂} {t₃}
   absorbl⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
     (c₁ ⊗ id⟷ {ZERO}) ◎ absorbl ⇔ absorbl ◎ id⟷ {ZERO}
   absorbl⇔r : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
-     absorbl ◎ id⟷ {ZERO} ⇔ (c₁ ⊗ id⟷ {ZERO}) ◎ absorbl
+    absorbl ◎ id⟷ {ZERO} ⇔ (c₁ ⊗ id⟷ {ZERO}) ◎ absorbl
   absorbr⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
     (id⟷ {ZERO} ⊗ c₁) ◎ absorbr ⇔ absorbr ◎ id⟷ {ZERO}
   absorbr⇔r : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
-     absorbr ◎ id⟷ {ZERO} ⇔ (id⟷ {ZERO} ⊗ c₁) ◎ absorbr
+    absorbr ◎ id⟷ {ZERO} ⇔ (id⟷ {ZERO} ⊗ c₁) ◎ absorbr
   factorzl⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
     id⟷ ◎ factorzl ⇔ factorzl ◎ (id⟷ ⊗ c₁)
   factorzl⇔r : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
-     factorzl ◎ (id⟷ {ZERO} ⊗ c₁) ⇔ id⟷ {ZERO} ◎ factorzl
+    factorzl ◎ (id⟷ {ZERO} ⊗ c₁) ⇔ id⟷ {ZERO} ◎ factorzl
   factorzr⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
-     id⟷ ◎ factorzr ⇔ factorzr ◎ (c₁ ⊗ id⟷)
+    id⟷ ◎ factorzr ⇔ factorzr ◎ (c₁ ⊗ id⟷)
   factorzr⇔r : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
-     factorzr ◎ (c₁ ⊗ id⟷) ⇔ id⟷ ◎ factorzr
+    factorzr ◎ (c₁ ⊗ id⟷) ⇔ id⟷ ◎ factorzr
   -- from the coherence conditions of RigCategory
   swap₊distl⇔l : {t₁ t₂ t₃ : U} →
     (id⟷ {t₁} ⊗ swap₊ {t₂} {t₃}) ◎ distl ⇔ distl ◎ swap₊
@@ -206,47 +222,46 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
     swap⋆ ◎ distl {t₁} {t₂} {t₃} ⇔ dist ◎ (swap⋆ ⊕ swap⋆)
   assocl₊-dist-dist⇔l : {t₁ t₂ t₃ t₄ : U} →
     ((assocl₊ {t₁} {t₂} {t₃} ⊗ id⟷ {t₄}) ◎ dist) ◎ (dist ⊕ id⟷) ⇔
-      (dist ◎ (id⟷ ⊕ dist)) ◎ assocl₊
+    (dist ◎ (id⟷ ⊕ dist)) ◎ assocl₊
   assocl₊-dist-dist⇔r : {t₁ t₂ t₃ t₄ : U} →
     (dist {t₁} ◎ (id⟷ ⊕ dist {t₂} {t₃} {t₄})) ◎ assocl₊ ⇔
-      ((assocl₊ ⊗ id⟷) ◎ dist) ◎ (dist ⊕ id⟷)
+    ((assocl₊ ⊗ id⟷) ◎ dist) ◎ (dist ⊕ id⟷)
   assocl⋆-distl⇔l : {t₁ t₂ t₃ t₄ : U} →
-    assocl⋆ {t₁} {t₂} ◎ distl {TIMES t₁ t₂} {t₃} {t₄} ⇔ ((id⟷ ⊗ distl) ◎ distl) ◎ (assocl⋆ ⊕ assocl⋆)
+    assocl⋆ {t₁} {t₂} ◎ distl {TIMES t₁ t₂} {t₃} {t₄} ⇔
+    ((id⟷ ⊗ distl) ◎ distl) ◎ (assocl⋆ ⊕ assocl⋆)
   assocl⋆-distl⇔r : {t₁ t₂ t₃ t₄ : U} →
-    ((id⟷ ⊗ distl) ◎ distl) ◎ (assocl⋆ ⊕ assocl⋆) ⇔ assocl⋆ {t₁} {t₂} ◎ distl {TIMES t₁ t₂} {t₃} {t₄}  
-
+    ((id⟷ ⊗ distl) ◎ distl) ◎ (assocl⋆ ⊕ assocl⋆) ⇔
+    assocl⋆ {t₁} {t₂} ◎ distl {TIMES t₁ t₂} {t₃} {t₄}  
   absorbr0-absorbl0⇔ : absorbr {ZERO} ⇔ absorbl {ZERO}
   absorbl0-absorbr0⇔ : absorbl {ZERO} ⇔ absorbr {ZERO}
-
   absorbr⇔distl-absorb-unite : {t₁ t₂ : U} →
     absorbr ⇔ (distl {t₂ = t₁} {t₂} ◎ (absorbr ⊕ absorbr)) ◎ unite₊l
   distl-absorb-unite⇔absorbr : {t₁ t₂ : U} →
     (distl {t₂ = t₁} {t₂} ◎ (absorbr ⊕ absorbr)) ◎ unite₊l ⇔ absorbr
-
   unite⋆r0-absorbr1⇔ : unite⋆r ⇔ absorbr
   absorbr1-unite⋆r-⇔ : absorbr ⇔ unite⋆r
-
   absorbl≡swap⋆◎absorbr : {t₁ : U} → absorbl {t₁} ⇔ swap⋆ ◎ absorbr
   swap⋆◎absorbr≡absorbl : {t₁ : U} → swap⋆ ◎ absorbr ⇔ absorbl {t₁}
-
   absorbr⇔[assocl⋆◎[absorbr⊗id⟷]]◎absorbr : {t₁ t₂ : U} →
     absorbr ⇔ (assocl⋆ {ZERO} {t₁} {t₂} ◎ (absorbr ⊗ id⟷)) ◎ absorbr
   [assocl⋆◎[absorbr⊗id⟷]]◎absorbr⇔absorbr : {t₁ t₂ : U} →
     (assocl⋆ {ZERO} {t₁} {t₂} ◎ (absorbr ⊗ id⟷)) ◎ absorbr ⇔ absorbr
-
   [id⟷⊗absorbr]◎absorbl⇔assocl⋆◎[absorbl⊗id⟷]◎absorbr : {t₁ t₂ : U} →
-    (id⟷ ⊗ absorbr {t₂}) ◎ absorbl {t₁} ⇔ (assocl⋆ ◎ (absorbl ⊗ id⟷)) ◎ absorbr
+    (id⟷ ⊗ absorbr {t₂}) ◎ absorbl {t₁} ⇔
+    (assocl⋆ ◎ (absorbl ⊗ id⟷)) ◎ absorbr
   assocl⋆◎[absorbl⊗id⟷]◎absorbr⇔[id⟷⊗absorbr]◎absorbl : {t₁ t₂ : U} →
-    (assocl⋆ ◎ (absorbl ⊗ id⟷)) ◎ absorbr ⇔  (id⟷ ⊗ absorbr {t₂}) ◎ absorbl {t₁}
-
+    (assocl⋆ ◎ (absorbl ⊗ id⟷)) ◎ absorbr ⇔
+    (id⟷ ⊗ absorbr {t₂}) ◎ absorbl {t₁}
   elim⊥-A[0⊕B]⇔l : {t₁ t₂ : U} →
-     (id⟷ {t₁} ⊗ unite₊l {t₂}) ⇔ (distl ◎ (absorbl ⊕ id⟷)) ◎ unite₊l
+     (id⟷ {t₁} ⊗ unite₊l {t₂}) ⇔
+     (distl ◎ (absorbl ⊕ id⟷)) ◎ unite₊l
   elim⊥-A[0⊕B]⇔r : {t₁ t₂ : U} →
      (distl ◎ (absorbl ⊕ id⟷)) ◎ unite₊l ⇔ (id⟷ {t₁} ⊗ unite₊l {t₂})
-
-  elim⊥-1[A⊕B]⇔l : {t₁ t₂ : U} → unite⋆l ⇔ distl ◎ (unite⋆l {t₁} ⊕ unite⋆l {t₂})
-  elim⊥-1[A⊕B]⇔r : {t₁ t₂ : U} → distl ◎ (unite⋆l {t₁} ⊕ unite⋆l {t₂}) ⇔ unite⋆l
-
+  elim⊥-1[A⊕B]⇔l : {t₁ t₂ : U} →
+    unite⋆l ⇔ 
+    distl ◎ (unite⋆l {t₁} ⊕ unite⋆l {t₂})
+  elim⊥-1[A⊕B]⇔r : {t₁ t₂ : U} →
+    distl ◎ (unite⋆l {t₁} ⊕ unite⋆l {t₂}) ⇔ unite⋆l
   fully-distribute⇔l : {t₁ t₂ t₃ t₄ : U} → 
     (distl ◎ (dist {t₁} {t₂} {t₃} ⊕ dist {t₁} {t₂} {t₄})) ◎ assocl₊ ⇔
       ((((dist ◎ (distl ⊕ distl)) ◎ assocl₊) ◎ (assocr₊ ⊕ id⟷)) ◎
@@ -256,18 +271,22 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
        ((id⟷ ⊕ swap₊) ⊕ id⟷)) ◎ (assocl₊ ⊕ id⟷) ⇔
     (distl ◎ (dist {t₁} {t₂} {t₃} ⊕ dist {t₁} {t₂} {t₄})) ◎ assocl₊
 
--- better syntax for writing 2paths
+-- At the next level we have a trivial equivalence that equates all
+-- morphisms of the same type so for example id and not : BOOL ⟷ BOOL
+-- are equated
 
-infix  2  _▤       
-infixr 2  _⇔⟨_⟩_   
+triv≡ : {t₁ t₂ : U} {f g : t₁ ⟷ t₂} → (α β : f ⇔ g) → Set
+triv≡ _ _ = ⊤
 
-_⇔⟨_⟩_ : {t₁ t₂ : U} (c₁ : t₁ ⟷ t₂) {c₂ : t₁ ⟷ t₂} {c₃ : t₁ ⟷ t₂} → 
-         (c₁ ⇔ c₂) → (c₂ ⇔ c₃) → (c₁ ⇔ c₃)
-_ ⇔⟨ α ⟩ β = trans⇔ α β
+triv≡Equiv : {t₁ t₂ : U} {f₁ f₂ : t₁ ⟷ t₂} → 
+             IsEquivalence (triv≡ {t₁} {t₂} {f₁} {f₂})
+triv≡Equiv = record 
+  { refl = tt
+  ; sym = λ _ → tt
+  ; trans = λ _ _ → tt
+  }
 
-_▤ : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (c ⇔ c)
-_▤ c = id⇔
-
+------------------------------------------------------------------------------
 -- Inverses for 2paths
 
 2! : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} → (c₁ ⇔ c₂) → (c₂ ⇔ c₁)
@@ -317,8 +336,6 @@ _▤ c = id⇔
 2! unitir⋆⇔r = unitil⋆⇔r
 2! swapl⋆⇔ = swapr⋆⇔
 2! swapr⋆⇔ = swapl⋆⇔
--- 2! swapfl⋆⇔ = swapfr⋆⇔
--- 2! swapfr⋆⇔ = swapfl⋆⇔
 2! id⇔ = id⇔
 2! (α ⊡ β) = (2! α) ⊡ (2! β)
 2! (trans⇔ α β) = trans⇔ (2! β) (2! α)
@@ -387,39 +404,7 @@ _▤ c = id⇔
 2! fully-distribute⇔l = fully-distribute⇔r
 2! fully-distribute⇔r = fully-distribute⇔l
 
--- a nice example of 2 paths
-
-neg₁ neg₂ neg₃ neg₄ neg₅ : BOOL ⟷ BOOL
-neg₁ = swap₊
-neg₂ = id⟷ ◎ swap₊
-neg₃ = swap₊ ◎ swap₊ ◎ swap₊
-neg₄ = swap₊ ◎ id⟷
-neg₅ = uniti⋆l ◎ swap⋆ ◎ (swap₊ ⊗ id⟷) ◎ swap⋆ ◎ unite⋆l
-neg₆ = uniti⋆r ◎ (swap₊ {ONE} {ONE} ⊗ id⟷) ◎ unite⋆r
-
-negEx : neg₅ ⇔ neg₁
-negEx = uniti⋆l ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆l)))
-          ⇔⟨ id⇔ ⊡ assoc◎l ⟩
-        uniti⋆l ◎ ((swap⋆ ◎ (swap₊ ⊗ id⟷)) ◎ (swap⋆ ◎ unite⋆l))
-          ⇔⟨ id⇔ ⊡ (swapl⋆⇔ ⊡ id⇔) ⟩
-        uniti⋆l ◎ (((id⟷ ⊗ swap₊) ◎ swap⋆) ◎ (swap⋆ ◎ unite⋆l))
-          ⇔⟨ id⇔ ⊡ assoc◎r ⟩
-        uniti⋆l ◎ ((id⟷ ⊗ swap₊) ◎ (swap⋆ ◎ (swap⋆ ◎ unite⋆l)))
-          ⇔⟨ id⇔ ⊡ (id⇔ ⊡ assoc◎l) ⟩
-        uniti⋆l ◎ ((id⟷ ⊗ swap₊) ◎ ((swap⋆ ◎ swap⋆) ◎ unite⋆l))
-          ⇔⟨ id⇔ ⊡ (id⇔ ⊡ (linv◎l ⊡ id⇔)) ⟩
-        uniti⋆l ◎ ((id⟷ ⊗ swap₊) ◎ (id⟷ ◎ unite⋆l))
-          ⇔⟨ id⇔ ⊡ (id⇔ ⊡ idl◎l) ⟩
-        uniti⋆l ◎ ((id⟷ ⊗ swap₊) ◎ unite⋆l)
-          ⇔⟨ assoc◎l ⟩
-        (uniti⋆l ◎ (id⟷ ⊗ swap₊)) ◎ unite⋆l
-          ⇔⟨ unitil⋆⇔l ⊡ id⇔ ⟩
-        (swap₊ ◎ uniti⋆l) ◎ unite⋆l
-          ⇔⟨ assoc◎r ⟩
-        swap₊ ◎ (uniti⋆l ◎ unite⋆l)
-          ⇔⟨ id⇔ ⊡ linv◎l ⟩
-        swap₊ ◎ id⟷
-          ⇔⟨ idr◎l ⟩
-        swap₊ ▤
+2!! : {t₁ t₂ : U} {f g : t₁ ⟷ t₂} {α : f ⇔ g} → triv≡ (2! (2! α)) α
+2!! = tt
 
 ------------------------------------------------------------------------------
