@@ -23,10 +23,11 @@ digraph PiDepend {
   DVP [label="Data.Vec.Properties",color=blue]
   DU [label="Data.Unit",color=blue];
   RBS [label="Relation.Binary.Setoid",color=blue];
-  RB [label="Relation.Binary",color=blue];
+//  RB [label="Relation.Binary",color=blue];
   DSP [label="Data.Sum.Properties",color=blue];
   DSPP [label="Data.SumProd.Properties",color=blue];
-
+  Cat [label="Categories",color=red];
+  
   DFP -> DF;
   DNP -> DNPS;
   DNP -> DN;
@@ -101,10 +102,10 @@ digraph PiDepend {
   EnumEquiv -> RBP;
   EnumEquiv -> FinEquiv;
 
-  Groupoid -> DE;
-  Groupoid -> DS;
-  Groupoid -> DP;
-  Groupoid -> RB;
+//  Groupoid -> DE;
+//  Groupoid -> DS;
+//  Groupoid -> DP;
+//  Groupoid -> RB;
 
   TypeEquiv -> DE;
   TypeEquiv -> DU;
@@ -112,7 +113,7 @@ digraph PiDepend {
   TypeEquiv -> DP;
   TypeEquiv -> Equiv;
 
-  TypeEquivCat -> Categories;
+  TypeEquivCat -> Cat;
   TypeEquivCat -> DS;
   TypeEquivCat -> DP;
   TypeEquivCat -> DU;
@@ -206,15 +207,15 @@ digraph PiDepend {
   PiEquiv -> DSPP;
 
   Pim2Cat -> DU;
-  Pim2Cat -> Categories;
+  Pim2Cat -> Cat;
 
   Pi0Cat -> DU;
-  Pi0Cat -> Categories;
+  Pi0Cat -> Cat;
   Pi0Cat -> DP;
   Pi0Cat -> PiLevel0;
 
   Pi1Cat -> DU;
-  Pi1Cat -> Categories;
+  Pi1Cat -> Cat;
   Pi1Cat -> DP;
   Pi1Cat -> PiLevel0;
   Pi1Cat -> PiLevel1;
