@@ -320,20 +320,33 @@ Pi1Rig = record
   ; iso = record { isoˡ = tt ; isoʳ = tt }
   }
 
+⊕⟷-bifunctor : (t₁ t₂ : U) →
+  Bifunctor (⟷Cat t₁ t₂) (⟷Cat t₁ t₂) (⟷Cat t₁ t₂)
+⊕⟷-bifunctor t₁ t₂ = record
+  { F₀ = λ {(f , g) → {!!} } 
+  ; F₁ = λ {(α , β) → {!!} }
+  ; identity = tt 
+  ; homomorphism = tt 
+  ; F-resp-≡ = λ _ → tt
+  }
+
+{--
+
 ⊕⟷-bifunctor : (t₁ t₂ t₃ t₄ : U) →
   Bifunctor (⟷Cat t₁ t₂) (⟷Cat t₃ t₄) (⟷Cat (PLUS t₁ t₃) (PLUS t₂ t₄))
 ⊕⟷-bifunctor t₁ t₂ t₃ t₄ = record
   { F₀ = λ {(f , g) → f ⊕ g } 
-  ; F₁ = λ {(α , β) → {!!} } 
-  ; identity = {!!} 
-  ; homomorphism = {!!} 
-  ; F-resp-≡ = λ {(x , y) → {!!} } 
+  ; F₁ = λ {(α , β) → resp⊕⇔ α β } 
+  ; identity = tt 
+  ; homomorphism = tt 
+  ; F-resp-≡ = λ _ → tt
   }
 
-
-{--
-
-module ⊎h = MonoidalHelperFunctors ⟷Cat ⊕-bifunctor ZERO
+module ⊎⟷h (t₁ t₂ t₃ t₄ : U) =
+  MonoidalHelperFunctors
+    (⟷Cat (PLUS t₁ t₃) (PLUS t₂ t₄))
+    (⊕⟷-bifunctor t₁ t₂ t₃ t₄)
+    ?
 
 0⊕x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
 0⊕x≡x = record 
