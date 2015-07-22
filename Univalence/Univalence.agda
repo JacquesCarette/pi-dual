@@ -18,13 +18,18 @@ open import Proofs
 -- Structures (Definitions)
 
 -- We use (and extend) the package Categories.
--- 
--- Everything we need works but some of the other parts do not work with
--- the current version of Agda
--- 
-{--
-open import Everything
---}
+
+open import Categories.Category
+open import Categories.Groupoid
+open import Categories.Monoidal
+open import Categories.Monoidal.Helpers
+open import Categories.Functor
+open import Categories.Bifunctor
+open import Categories.NaturalIsomorphism
+open import Categories.Monoidal.Braided
+open import Categories.Monoidal.Symmetric
+open import Categories.RigCategory
+open import Categories.2-Category
 
 ------------------------------------------------------------------------------
 -- Equivalences
