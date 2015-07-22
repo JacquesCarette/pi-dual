@@ -322,12 +322,21 @@ idF {t} = record
   ; F-resp-≡ = λ _ → tt 
   }
 
+∘-bifunctor : {t₁ t₂ t₃ : U} → Bifunctor (⟷Cat t₂ t₃) (⟷Cat t₁ t₂) (⟷Cat t₁ t₃)
+∘-bifunctor = record
+  { F₀ = λ {(f , g) → g ◎ f} 
+  ; F₁ = λ {(α , β) → β ⊡ α} 
+  ; identity = tt 
+  ; homomorphism = tt 
+  ; F-resp-≡ = λ _ → tt 
+  }
+
 Pi1-2Cat : 2-Category lzero lzero lzero lzero
 Pi1-2Cat = record
   { Obj = U
   ; _⇒_ = ⟷Cat
   ; id = idF
-  ; —∘— = {!!}
+  ; —∘— = ∘-bifunctor
   ; assoc = {!!}
   ; identityˡ = {!!}
   ; identityʳ = {!!}
