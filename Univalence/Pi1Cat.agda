@@ -11,9 +11,11 @@ open import Data.Product using (_,_)
 open import Function using (flip)
 
 open import Categories.Category using (Category)
+open import Categories.Terminal using (OneC)
 open import Categories.Groupoid using (Groupoid)
 open import Categories.Monoidal using (Monoidal)
 open import Categories.Monoidal.Helpers using (module MonoidalHelperFunctors)
+open import Categories.Functor using (Functor)
 open import Categories.Bifunctor using (Bifunctor)
 open import Categories.NaturalIsomorphism using (NaturalIsomorphism)
 open import Categories.Monoidal.Braided using (Braided)
@@ -311,11 +313,20 @@ Pi1Rig = record
   ; ∘-resp-≡ = λ _ _ → tt
   }
 
+idF : {t : U} → Functor {lzero} {lzero} {lzero} OneC (⟷Cat t t)
+idF {t} = record
+  { F₀ = λ _ → id⟷ {t} 
+  ; F₁ = λ _ → id⇔ 
+  ; identity = tt 
+  ; homomorphism = tt 
+  ; F-resp-≡ = λ _ → tt 
+  }
+
 Pi1-2Cat : 2-Category lzero lzero lzero lzero
 Pi1-2Cat = record
   { Obj = U
   ; _⇒_ = ⟷Cat
-  ; id = {!!}
+  ; id = idF
   ; —∘— = {!!}
   ; assoc = {!!}
   ; identityˡ = {!!}
