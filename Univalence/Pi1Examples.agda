@@ -2,10 +2,13 @@
 
 module Pi1Examples where
 
-open import PiU using (U; ZERO; ONE; PLUS; TIMES) 
-open import PiLevel0
-open import Pi0Examples
-open import PiLevel1
+open import PiU using (U; ONE) 
+open import PiLevel0 using (_⟷_; _◎_; _⊗_; id⟷;
+  swap₊; unite⋆l; unite⋆r;
+  swap⋆; uniti⋆l; uniti⋆r)
+open import Pi0Examples using (BOOL)
+open import PiLevel1 using (_⇔_; id⇔; trans⇔; _⊡_;
+  assoc◎l; swapl⋆⇔; assoc◎r; linv◎l; idl◎l; idr◎l; unitil⋆⇔l)
 
 ------------------------------------------------------------------------------
 -- Better syntax for writing 2paths
