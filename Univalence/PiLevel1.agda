@@ -7,7 +7,7 @@ open import Relation.Binary.Core using (IsEquivalence)
 
 open import PiU using (U; ZERO; ONE; PLUS; TIMES)
 open import PiLevel0
-  -- hiding triv≡ certainly
+  -- hiding triv≡ certainly; we are replacing it with _⇔_
   using (_⟷_; !;
          unite₊l; uniti₊l; unite₊r; uniti₊r; swap₊; assocl₊; assocr₊;
          unite⋆l; uniti⋆l; unite⋆r; uniti⋆r; swap⋆; assocl⋆; assocr⋆;

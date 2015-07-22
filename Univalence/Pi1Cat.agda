@@ -6,7 +6,9 @@ module Pi1Cat where
 -- symmetric rig 2-groupoid
 
 open import Level using () renaming (zero to lzero)
+open import Data.Unit using (tt)
 open import Data.Product using (_,_)
+open import Function using (flip)
 
 open import Categories.Category using (Category)
 open import Categories.Groupoid using (Groupoid)
@@ -18,7 +20,7 @@ open import Categories.Monoidal.Braided using (Braided)
 open import Categories.Monoidal.Symmetric using (Symmetric)
 open import Categories.RigCategory
   using (RigCategory; module BimonoidalHelperFunctors)
-open import Categories.2-Category using ()
+open import Categories.2-Category using (2-Category)
 
 open import PiU using (U; PLUS; ZERO; TIMES; ONE)
 open import PiLevel0
@@ -35,7 +37,8 @@ open import PiLevel0
         absorbl; absorbr; factorzl; factorzr;
         dist; factor; distl; factorl)
 
-open import PiLevel1 using (_⇔_; ⇔Equiv; _⊡_;
+open import PiLevel1 using (_⇔_; ⇔Equiv; triv≡; triv≡Equiv;
+ id⇔; trans⇔; _⊡_;
  assoc◎l; idr◎l; idl◎l; linv◎l; rinv◎l;
  id⟷⊕id⟷⇔; hom⊕◎⇔; resp⊕⇔;
  unite₊l⇔r; uniti₊l⇔r; unite₊r⇔r; uniti₊r⇔r;
@@ -56,11 +59,10 @@ open import PiLevel1 using (_⇔_; ⇔Equiv; _⊡_;
  )
 
 ------------------------------------------------------------------------------
--- The equality of morphisms is derived from the coherence conditions
--- of the appropriate categories
+-- Pi1 is a category...
 
-PiCat : Category lzero lzero lzero
-PiCat = record
+Pi1Cat : Category lzero lzero lzero
+Pi1Cat = record
   { Obj = U
   ; _⇒_ = _⟷_
   ; _≡_ = _⇔_
@@ -73,15 +75,17 @@ PiCat = record
   ; ∘-resp-≡ = λ f g → g ⊡ f 
   }
 
-PiGroupoid : Groupoid PiCat
-PiGroupoid = record 
+-- and a groupoid ...
+
+Pi1Groupoid : Groupoid Pi1Cat
+Pi1Groupoid = record 
   { _⁻¹ = ! 
   ; iso = record { isoˡ = linv◎l ; isoʳ = rinv◎l } 
   }
 
 -- additive bifunctor and monoidal structure
 
-⊕-bifunctor : Bifunctor PiCat PiCat PiCat
+⊕-bifunctor : Bifunctor Pi1Cat Pi1Cat Pi1Cat
 ⊕-bifunctor = record
   { F₀ = λ {(u , v) → PLUS u v}
   ; F₁ = λ {(x⟷y , z⟷w) → x⟷y ⊕ z⟷w }
@@ -90,7 +94,7 @@ PiGroupoid = record
   ; F-resp-≡ = λ {(x , y) → resp⊕⇔ x y}
   }
 
-module ⊎h = MonoidalHelperFunctors PiCat ⊕-bifunctor ZERO
+module ⊎h = MonoidalHelperFunctors Pi1Cat ⊕-bifunctor ZERO
 
 -- note how powerful linv◎l/rinv◎l are in iso below
 
@@ -108,7 +112,6 @@ x⊕0≡x = record
   ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l }
   }
 
-
 [x⊕y]⊕z≡x⊕[y⊕z] : NaturalIsomorphism ⊎h.[x⊗y]⊗z ⊎h.x⊗[y⊗z]
 [x⊕y]⊕z≡x⊕[y⊕z] = record
   { F⇒G = record
@@ -122,7 +125,9 @@ x⊕0≡x = record
   ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l }
   }
 
-M⊕ : Monoidal PiCat
+-- and a monoidal category (additive)
+
+M⊕ : Monoidal Pi1Cat
 M⊕ = record
   { ⊗ = ⊕-bifunctor
   ; id = ZERO
@@ -135,7 +140,7 @@ M⊕ = record
 
 -- multiplicative bifunctor and monoidal structure
 
-⊗-bifunctor : Bifunctor PiCat PiCat PiCat
+⊗-bifunctor : Bifunctor Pi1Cat Pi1Cat Pi1Cat
 ⊗-bifunctor = record
   { F₀ = λ {(u , v) → TIMES u v}
   ; F₁ = λ {(x⟷y , z⟷w) → x⟷y ⊗ z⟷w }
@@ -144,7 +149,7 @@ M⊕ = record
   ; F-resp-≡ = λ {(x , y) → resp⊗⇔ x y}
   }
 
-module ×h = MonoidalHelperFunctors PiCat ⊗-bifunctor ONE
+module ×h = MonoidalHelperFunctors Pi1Cat ⊗-bifunctor ONE
 
 1⊗x≡x : NaturalIsomorphism ×h.id⊗x ×h.x
 1⊗x≡x = record 
@@ -183,7 +188,9 @@ x⊗1≡x = record
   ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l }
   }
 
-M⊗ : Monoidal PiCat
+-- and a monoidal category (multiplicative)
+
+M⊗ : Monoidal Pi1Cat
 M⊗ = record
   { ⊗ = ⊗-bifunctor
   ; id = ONE
@@ -219,6 +226,8 @@ BM⊗ = record
   ; hexagon₁ = hexagonr⊗l
   ; hexagon₂ = hexagonl⊗l
   }
+
+-- with both monoidal structures being symmetric
 
 SBM⊕ : Symmetric BM⊕
 SBM⊕ = record { symmetry = linv◎l }
@@ -262,8 +271,10 @@ x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
   ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l }
   }
 
-Pi0Rig : RigCategory SBM⊕ SBM⊗
-Pi0Rig = record 
+-- and the multiplicative structure distributing over the additive one
+
+Pi1Rig : RigCategory SBM⊕ SBM⊗
+Pi1Rig = record 
   { distribₗ = x⊗[y⊕z]≡[x⊗y]⊕[x⊗z]
   ; distribᵣ = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] 
   ; annₗ = 0⊗x≡0 
@@ -281,6 +292,34 @@ Pi0Rig = record
   ; laplazaXVII = [id⟷⊗absorbr]◎absorbl⇔assocl⋆◎[absorbl⊗id⟷]◎absorbr
   ; laplazaXIX = elim⊥-A[0⊕B]⇔l 
   ; laplazaXXIII = elim⊥-1[A⊕B]⇔l
+  }
+
+------------------------------------------------------------------------------
+-- The morphisms of the Pi1 category have structure: we have a 2-category
+
+⟷Cat : (t₁ t₂ : U) → Category lzero lzero lzero
+⟷Cat t₁ t₂ = record
+  { Obj = t₁ ⟷ t₂
+  ; _⇒_ = _⇔_
+  ; _≡_ = triv≡
+  ; id = id⇔
+  ; _∘_ = flip trans⇔
+  ; assoc = tt
+  ; identityˡ = tt
+  ; identityʳ = tt
+  ; equiv = triv≡Equiv
+  ; ∘-resp-≡ = λ _ _ → tt
+  }
+
+Pi1-2Cat : 2-Category lzero lzero lzero lzero
+Pi1-2Cat = record
+  { Obj = U
+  ; _⇒_ = ⟷Cat
+  ; id = {!!}
+  ; —∘— = {!!}
+  ; assoc = {!!}
+  ; identityˡ = {!!}
+  ; identityʳ = {!!}
   }
 
 ------------------------------------------------------------------------------

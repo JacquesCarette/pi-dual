@@ -88,7 +88,7 @@ open import Pi0Examples
 -- circuits. This module has a few examples.
 
 open import PiLevel1
-open import Pi1Cat
+-- open import Pi1Cat -- UNDER DEVELOPMENT
 -- If the relation on finite types is modeled after type isomorphisms
 -- and only the isomorphisms corresponding to the coherence conditions
 -- of rig categories are equated, we make U a 1-type. (We do
