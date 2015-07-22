@@ -272,8 +272,7 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
     (distl ◎ (dist {t₁} {t₂} {t₃} ⊕ dist {t₁} {t₂} {t₄})) ◎ assocl₊
 
 -- At the next level we have a trivial equivalence that equates all
--- morphisms of the same type so for example id and not : BOOL ⟷ BOOL
--- are equated
+-- 2-morphisms of the same type.
 
 triv≡ : {t₁ t₂ : U} {f g : t₁ ⟷ t₂} → (α β : f ⇔ g) → Set
 triv≡ _ _ = ⊤
@@ -406,5 +405,14 @@ triv≡Equiv = record
 
 2!! : {t₁ t₂ : U} {f g : t₁ ⟷ t₂} {α : f ⇔ g} → triv≡ (2! (2! α)) α
 2!! = tt
+
+-- This makes _⇔_ an equivalence relation...
+
+⇔Equiv : {t₁ t₂ : U} → IsEquivalence (_⇔_ {t₁} {t₂})
+⇔Equiv = record 
+  { refl = id⇔
+  ; sym = 2!
+  ; trans = trans⇔ 
+  }
 
 ------------------------------------------------------------------------------

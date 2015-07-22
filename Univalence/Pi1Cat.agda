@@ -3,49 +3,22 @@
 module Pi1Cat where
 
 -- Proving that Pi with one level of interesting 2 path structure is a
--- symmetric rig groupoid
---
--- U is a collection of types
---
--- Between any two types, there could be zero, one, or many
--- identifications. If there is more than one idenfication, any two
--- idenfications can themselves have no identifications between them
--- (id and not at BOOL ⟷ BOOL) or they can have exactly one
--- identification between them (id and id∘id). Effectively, two types
--- may be identified by several permutations. These permutations can
--- be expressed in different ways but permutations that have the same
--- extensional behavior are identified and permutations that have
--- different extensional behavior are not identified. Interesting the
--- identifications between permutations are essentially the coherent
--- conditions of monoidal categories. The following quote is
--- enlightening:
---
--- What Mac Lane does can be described in logical terms in the
--- following manner. On the one hand, he has an axiomatization, and,
--- on the other hand, he has a model category where arrows are
--- permutations; then he shows that his axiomatization is complete
--- with respect to this model. It is no wonder that his coherence
--- problem reduces to the completeness problem for the usual
--- axiomatization of symmetric groups. (p.3 of
--- http://www.mi.sanu.ac.rs/~kosta/coh.pdf)
--- 
--- Definition 3.1.7. A type A is a 1-type if for all x, y : A and p, q
--- : x = y and r, s : p = q, we have r = s.
+-- symmetric rig 2-groupoid
 
 open import Level using () renaming (zero to lzero)
-open import Relation.Binary.Core using (IsEquivalence)
 open import Data.Product using (_,_)
 
-open import Categories.Category
-open import Categories.Groupoid
-open import Categories.Monoidal
-open import Categories.Monoidal.Helpers
-open import Categories.Bifunctor
-open import Categories.NaturalIsomorphism
-open import Categories.Monoidal.Braided
-open import Categories.Monoidal.Symmetric
+open import Categories.Category using (Category)
+open import Categories.Groupoid using (Groupoid)
+open import Categories.Monoidal using (Monoidal)
+open import Categories.Monoidal.Helpers using (module MonoidalHelperFunctors)
+open import Categories.Bifunctor using (Bifunctor)
+open import Categories.NaturalIsomorphism using (NaturalIsomorphism)
+open import Categories.Monoidal.Braided using (Braided)
+open import Categories.Monoidal.Symmetric using (Symmetric)
 open import Categories.RigCategory
-open import Categories.2-Category
+  using (RigCategory; module BimonoidalHelperFunctors)
+open import Categories.2-Category using ()
 
 open import PiU using (U; PLUS; ZERO; TIMES; ONE)
 open import PiLevel0
@@ -62,18 +35,29 @@ open import PiLevel0
         absorbl; absorbr; factorzl; factorzr;
         dist; factor; distl; factorl)
 
-open import PiLevel1
+open import PiLevel1 using (_⇔_; ⇔Equiv; _⊡_;
+ assoc◎l; idr◎l; idl◎l; linv◎l; rinv◎l;
+ id⟷⊕id⟷⇔; hom⊕◎⇔; resp⊕⇔;
+ unite₊l⇔r; uniti₊l⇔r; unite₊r⇔r; uniti₊r⇔r;
+ assocr⊕r; assocl⊕l; triangle⊕l; pentagon⊕l;
+ id⟷⊗id⟷⇔; hom⊗◎⇔; resp⊗⇔;
+ uniter⋆⇔l; unitir⋆⇔l; uniter⋆⇔r; unitir⋆⇔r;
+ assocr⊗r; assocl⊗l; triangle⊗l; pentagon⊗l;
+ swapr₊⇔; hexagonr⊕l; hexagonl⊕l;
+ swapr⋆⇔; hexagonr⊗l; hexagonl⊗l;
+ absorbl⇔l; factorzr⇔l; absorbr⇔l; factorzl⇔l;
+ distl⇔l; factorl⇔l; dist⇔l; factor⇔l;
+ swap₊distl⇔l; dist-swap⋆⇔l; assocl₊-dist-dist⇔l; assocl⋆-distl⇔l;
+ fully-distribute⇔l; absorbr0-absorbl0⇔; absorbr⇔distl-absorb-unite;
+ unite⋆r0-absorbr1⇔; absorbl≡swap⋆◎absorbr;
+ absorbr⇔[assocl⋆◎[absorbr⊗id⟷]]◎absorbr;
+ [id⟷⊗absorbr]◎absorbl⇔assocl⋆◎[absorbl⊗id⟷]◎absorbr;
+ elim⊥-A[0⊕B]⇔l; elim⊥-1[A⊕B]⇔l
+ )
 
 ------------------------------------------------------------------------------
 -- The equality of morphisms is derived from the coherence conditions
 -- of the appropriate categories
-
-⇔Equiv : {t₁ t₂ : U} → IsEquivalence (_⇔_ {t₁} {t₂})
-⇔Equiv = record 
-  { refl = id⇔
-  ; sym = 2!
-  ; trans = trans⇔ 
-  }
 
 PiCat : Category lzero lzero lzero
 PiCat = record
@@ -96,6 +80,7 @@ PiGroupoid = record
   }
 
 -- additive bifunctor and monoidal structure
+
 ⊕-bifunctor : Bifunctor PiCat PiCat PiCat
 ⊕-bifunctor = record
   { F₀ = λ {(u , v) → PLUS u v}
@@ -108,6 +93,7 @@ PiGroupoid = record
 module ⊎h = MonoidalHelperFunctors PiCat ⊕-bifunctor ZERO
 
 -- note how powerful linv◎l/rinv◎l are in iso below
+
 0⊕x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
 0⊕x≡x = record 
   { F⇒G = record { η = λ X → unite₊l ; commute = λ f → unite₊l⇔r } 
@@ -147,9 +133,8 @@ M⊕ = record
   ; pentagon = pentagon⊕l
   }
 
-------------------------------------------------------------------------------
-
 -- multiplicative bifunctor and monoidal structure
+
 ⊗-bifunctor : Bifunctor PiCat PiCat PiCat
 ⊗-bifunctor = record
   { F₀ = λ {(u , v) → TIMES u v}

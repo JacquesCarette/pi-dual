@@ -73,7 +73,7 @@ open import Pim2Cat
 -- equality.
 --
 -- A (-1)-type is either empty or a singleton. The previous setup at
--- level -2 collapsed U to a singleton and hence also make U a
+-- level -2 collapsed U to a singleton and hence also makes U a
 -- (-1)-type
 
 open import PiLevel0
