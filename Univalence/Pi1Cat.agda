@@ -10,13 +10,17 @@ open import Data.Unit using (tt)
 open import Data.Product using (_,_)
 open import Function using (flip)
 
-open import Categories.Category using (Category; module Heterogeneous)
+open import Categories.Category
+  using (Category; module Category; module Heterogeneous)
 open import Categories.Terminal using (OneC; unit)
 open import Categories.Groupoid using (Groupoid)
 open import Categories.Monoidal using (Monoidal)
 open import Categories.Monoidal.Helpers using (module MonoidalHelperFunctors)
-open import Categories.Functor using (Functor)
-open import Categories.Bifunctor using (Bifunctor)
+open import Categories.Functor using (Functor; module Functor)
+open import Categories.Product using (Product; assocʳ; πʳ; πˡ)
+open import Categories.Bifunctor
+  using (Bifunctor; reduce-×)
+  renaming (id to Fid; _∘_ to _F∘_)
 open import Categories.NaturalIsomorphism using (NaturalIsomorphism)
 open import Categories.Monoidal.Braided using (Braided)
 open import Categories.Monoidal.Symmetric using (Symmetric)
@@ -368,9 +372,6 @@ idF {t} = record
   ; F-resp-≡ = λ _ → tt 
   }
 
-{--
-This is where the strict version fails:
-
 Pi1-2Cat : 2-Category lzero lzero lzero lzero
 Pi1-2Cat = record
   { Obj = U
@@ -378,19 +379,55 @@ Pi1-2Cat = record
   ; id = idF
   ; —∘— = ∘-bifunctor
   ; assoc =
-    λ { {A} {B} {C} {D} {(CD₁ , BC₁ , AB₁)} {(CD₂ , BC₂ , AB₂)} (f₁ , f₂ , f₃) →
-      let module m = Heterogeneous (⟷Cat A D) in
-      {!m.≡⇒∼ tt!}}
+    λ { {A} {B} {C} {D} → 
+{--
+        {(CD⊗[BC⊗AB]  , (BC⊗AB  , AB ))}
+        {(CD⊗[BC⊗AB]' , (BC⊗AB' , AB'))}
+        (CD⊗[BC⊗AB]⇒CD⊗[BC⊗AB]' , (BC⊗AB⇒BC⊗AB' , AB⇒AB')) → 
+      let module Funl = Functor ((reduce-×
+                                  (∘-bifunctor {{!!}} {{!!}} {{!!}})
+                                  (∘-bifunctor {{!!}} {{!!}} {{!!}})
+                                   Fid)
+                                 F∘
+                                 (assocʳ CD BC AB))
+          module Funr = Functor (reduce-×
+                                  (∘-bifunctor {{!!}} {{!!}} {{!!}})
+                                  Fid
+                                  (∘-bifunctor {{!!}} {{!!}} {{!!}}))
+          module m = Heterogeneous AD in 
+--}
+--      let module m = Heterogeneous (⟷Cat {!!} {!!}) in 
+--      {!λ _ → m.≡⇒∼ tt!}}
+      λ _ → {!!} }
   ; identityˡ =
-    λ { {A} {B} (unit , β) →
-      let module m = Heterogeneous (⟷Cat A B) in
-      {!!}}
+      λ { {A} {B} ONE⊗AB →
+        let module m = Heterogeneous (⟷Cat A B) in
+        {!m.≡⇒∼ {g = Functor.F₁ πʳ ONE⊗AB} ?!} }
+
+{--
+Sure looks like it is expecting the two combinators to be identical!!
+A bug in 2-Category???
+Data.Product.proj₂
+(Functor.F₀ (idF Categories.Product.⁂ Fid) (unit , .proj₂))
+◎
+Data.Product.proj₁
+(Functor.F₀ (idF Categories.Product.⁂ Fid) (unit , .proj₂))
+!= .proj₂ of type A ⟷ B
+when checking that the expression
+m.≡⇒∼ {g = Functor.F₁ πʳ ONE⊗AB} ? has type
+Functor.F₁ (reduce-× ∘-bifunctor idF Fid) ONE⊗AB m.∼
+Functor.F₁ πʳ ONE⊗AB
+--}
+--    λ { {A} {B} (unit , β) →
+--      let module m = Heterogeneous (⟷Cat A B) in
+--      {!!}}
   ; identityʳ =
     λ { {A} {B} (α , unit) →
       let module m = Heterogeneous (⟷Cat A B) in
       {!!}} -- would like to use (a lifted version of idl◎l)
   }
 
+{--
 For hole 2, we essentially want to show that the two functors 
 (α -∘- id) and α are related by:
   
@@ -401,7 +438,6 @@ data _∼_ {A B} (f : A ⇒ B) : ∀ {X Y} → (X ⇒ Y) → Set (ℓ ⊔ e) whe
 
 The problem is that the definition of ~ has ≡ hardwired. We have
 instead ⇔ are our equality relation.
-
 --}
 
 ------------------------------------------------------------------------------
