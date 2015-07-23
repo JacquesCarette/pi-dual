@@ -298,7 +298,8 @@ Pi1Rig = record
 
 ------------------------------------------------------------------------------
 -- The morphisms of the Pi1 category have structure; they form a
--- category, something like another Symmetric Rig Groupoid actually
+-- category, something like another Symmetric Rig Groupoid but more
+-- general
 
 ⟷Cat : (t₁ t₂ : U) → Category lzero lzero lzero
 ⟷Cat t₁ t₂ = record
@@ -346,7 +347,8 @@ Pi1Rig = record
   }
 
 ------------------------------------------------------------------------------
--- We have a 2-category
+-- We have a 2-category but NOT a strict one. Again we need to
+-- generalize so that equality is up to ⇔ instead of ≡ 
 
 idF : {t : U} → Functor {lzero} {lzero} {lzero} OneC (⟷Cat t t)
 idF {t} = record
@@ -365,6 +367,9 @@ idF {t} = record
   ; homomorphism = tt 
   ; F-resp-≡ = λ _ → tt 
   }
+
+{--
+This is where the strict version fails:
 
 Pi1-2Cat : 2-Category lzero lzero lzero lzero
 Pi1-2Cat = record
@@ -386,10 +391,8 @@ Pi1-2Cat = record
       {!!}} -- would like to use (a lifted version of idl◎l)
   }
 
-{--
-
-for hole 2, we essentially want to show that the two functors (α -∘-
-id) and α are related by:
+For hole 2, we essentially want to show that the two functors 
+(α -∘- id) and α are related by:
   
 data _∼_ {A B} (f : A ⇒ B) : ∀ {X Y} → (X ⇒ Y) → Set (ℓ ⊔ e) where
     ≡⇒∼ : {g : A ⇒ B} → .(f ≡ g) → f ∼ g

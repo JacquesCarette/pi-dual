@@ -88,7 +88,7 @@ open import Pi0Examples
 -- circuits. This module has a few examples.
 
 open import PiLevel1
--- open import Pi1Cat -- UNDER DEVELOPMENT
+open import Pi1Cat
 -- If the relation on finite types is modeled after type isomorphisms
 -- and only the isomorphisms corresponding to the coherence conditions
 -- of rig categories are equated, we make U a 1-type. (We do
@@ -103,15 +103,29 @@ open import Pi1Examples
 -- How to make U a 2-type, 3-type, etc. ???
 
 ------------------------------------------------------------------------------
--- Now we want to relate Pi-types and type equivalences; we will use
--- permutations as an intermediary
+-- Now we want to relate Pi-types and type equivalences. The punchline
+-- would be that TypeEquivCat is isomorphic to Pi1Cat. But the setup
+-- for Pi1Cat allows us to keep going up and down the levels unlike
+-- the setup for TypeEquivCat which has extensional equivalence
+-- hardwired and can't be generalized to level 2.
 
+-- Are permutations of intrinsic interest ???
+
+-- Are they really really necessary as a stepping stone to prove the
+-- correspondence between TypeEquivCat and Pi1Cat ???
 
 ------------------------------------------------------------------------------
--- Equivalences between finite sets (enumerations and permutations)
 
-open import FinVec                        -- TODO
-open import ConcretePermutation           -- TODO
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Wavefront ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-- Equivalences between finite sets (enumerations and permutations);
+-- Equivalences between setoids; Equivalences between equivalences;
+-- Unfinished files; Unused files
+
+open import FinVec
+open import ConcretePermutation
 
 open import EnumEquiv
 -- An enumeration of a set A is an equivalence between A and Fin m
@@ -119,41 +133,25 @@ open import FinEquiv
 -- Proves that that finite sets and equivalences form a commutative
 -- semiring
 
-------------------------------------------------------------------------------
--- Equivalences between setoids
-
-open import SetoidEquiv                   -- HERE
+open import SetoidEquiv
 -- do a version of EquivSetoid specialized for finite sets that
 -- include an enumeration just like quasi-inverses include one
 -- particular function to specify the equivalence; must really be done
 -- in conjection with SEquivSCPermEquiv so let's wait until
 -- dependencies satisfied...
 
-------------------------------------------------------------------------------
--- Equivalences between equivalences
+open import SEquivSCPermEquiv
+open import PiPerm
+open import PiEquiv
 
-open import SEquivSCPermEquiv             -- TODO
-open import PiPerm                        -- TODO
-open import PiEquiv                       -- TODO
+-- open import SkFinSetCategory
+-- open import CPermCat
+-- open import Pim1Cat
 
-------------------------------------------------------------------------------
--- Unfinished files
-
-{--
-open import SkFinSetCategory  
-open import CPermCat 
-open import Pim1Cat
---}
-
-------------------------------------------------------------------------------
--- Not used 
-
-{--
-open import LeftCancellation              
+-- open import LeftCancellation
 -- Proves that ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A ≃ B
-open import RepresPerm
-open import Groupoid
+-- open import RepresPerm
+-- open import Groupoid
 -- should be subsumed by Categories.Groupoid
---}
 
 ------------------------------------------------------------------------------
