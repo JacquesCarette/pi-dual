@@ -17,7 +17,7 @@ open import Categories.Groupoid using (Groupoid)
 open import Categories.Monoidal using (Monoidal)
 open import Categories.Monoidal.Helpers using (module MonoidalHelperFunctors)
 open import Categories.Functor using (Functor; module Functor)
-open import Categories.Product using (Product; assocʳ; πʳ; πˡ)
+open import Categories.Product using (Product; assocʳ; _⁂_; πʳ; πˡ)
 open import Categories.Bifunctor
   using (Bifunctor; reduce-×)
   renaming (id to Fid; _∘_ to _F∘_)
@@ -372,6 +372,14 @@ idF {t} = record
   ; F-resp-≡ = λ _ → tt 
   }
 
+xxx : {A B : U} {c₁ c₂ : A ⟷ B} {α : c₁ ⇔ c₂} →
+      let module m = Heterogeneous (⟷Cat A B) in
+      (Functor.F₁ (∘-bifunctor F∘ (idF ⁂ Fid)) (unit , α))
+      m.∼
+      (Functor.F₁ πʳ (unit , α))
+xxx = {!!} 
+
+
 Pi1-2Cat : 2-Category lzero lzero lzero lzero
 Pi1-2Cat = record
   { Obj = U
@@ -400,9 +408,17 @@ Pi1-2Cat = record
 --      {!λ _ → m.≡⇒∼ tt!}}
       λ _ → {!!} }
   ; identityˡ =
-      λ { {A} {B} {unit , c₁} {unit , c₂} (unit , AB) →
+      λ { {A} {B} {unit , c₁} {unit , c₂} (unit , α) →
+      -- c₁ and c₂ are combinators of type A ⟷ B
+      -- α is a 2-combinator of type c₁ ⇒ c₂
         let module m = Heterogeneous (⟷Cat A B) in
-        {!m.≡⇒∼ {g = Functor.F₁ πʳ (unit , AB)} ?!} }
+        -- We want to prove:
+        -- Functor.F₁ (∘-bifunctor F∘ (idF ⁂ Fid)) (unit , α)
+        -- m.∼
+        -- Functor.F₁ πʳ (unit , α)
+--        {!m.≡⇒∼ {g = Functor.F₁ πʳ (unit , α)} ?!} }
+        {!!}
+        }
 
 {--
 Sure looks like it is expecting the two combinators to be identical!!
