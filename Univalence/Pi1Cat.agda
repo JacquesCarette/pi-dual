@@ -10,7 +10,7 @@ open import Data.Unit using (tt)
 open import Data.Product using (_,_)
 open import Function using (flip)
 
-open import Categories.Category using (Category)
+open import Categories.Category using (Category; module Heterogeneous)
 open import Categories.Terminal using (OneC)
 open import Categories.Groupoid using (Groupoid)
 open import Categories.Monoidal using (Monoidal)
@@ -563,7 +563,9 @@ Pi1-2Cat = record
   ; _⇒_ = ⟷Cat
   ; id = idF
   ; —∘— = ∘-bifunctor
-  ; assoc = {!!}
+  ; assoc = λ { {A} {B} {C} {D} {(CD₁ , BC₁ , AB₁)} {(CD₂ , BC₂ , AB₂)} (f₁ , f₂ , f₃) →
+                       let module m = Heterogeneous (⟷Cat A D) in
+                       {!m.≡⇒∼ tt!}}
   ; identityˡ = {!!}
   ; identityʳ = {!!}
   }
