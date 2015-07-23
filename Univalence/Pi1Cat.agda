@@ -12,7 +12,7 @@ open import Function using (flip)
 
 open import Categories.Category
   using (Category; module Category; module Heterogeneous)
-open import Categories.Terminal using (OneC; unit)
+open import Categories.Terminal using (OneC; unit; Unit)
 open import Categories.Groupoid using (Groupoid)
 open import Categories.Monoidal using (Monoidal)
 open import Categories.Monoidal.Helpers using (module MonoidalHelperFunctors)
@@ -400,9 +400,9 @@ Pi1-2Cat = record
 --      {!λ _ → m.≡⇒∼ tt!}}
       λ _ → {!!} }
   ; identityˡ =
-      λ { {A} {B} ONE⊗AB →
+      λ { {A} {B} {unit , c₁} {unit , c₂} (unit , AB) →
         let module m = Heterogeneous (⟷Cat A B) in
-        {!m.≡⇒∼ {g = Functor.F₁ πʳ ONE⊗AB} ?!} }
+        {!m.≡⇒∼ {g = Functor.F₁ πʳ (unit , AB)} ?!} }
 
 {--
 Sure looks like it is expecting the two combinators to be identical!!
