@@ -11,7 +11,7 @@ open import Data.Product using (_,_)
 open import Function using (flip)
 
 open import Categories.Category using (Category; module Heterogeneous)
-open import Categories.Terminal using (OneC)
+open import Categories.Terminal using (OneC; unit)
 open import Categories.Groupoid using (Groupoid)
 open import Categories.Monoidal using (Monoidal)
 open import Categories.Monoidal.Helpers using (module MonoidalHelperFunctors)
@@ -298,7 +298,7 @@ Pi1Rig = record
 
 ------------------------------------------------------------------------------
 -- The morphisms of the Pi1 category have structure; they form a
--- category, a Symmetric Rig Groupod actually
+-- category, something like another Symmetric Rig Groupoid actually
 
 ⟷Cat : (t₁ t₂ : U) → Category lzero lzero lzero
 ⟷Cat t₁ t₂ = record
@@ -320,17 +320,10 @@ Pi1Rig = record
   ; iso = record { isoˡ = tt ; isoʳ = tt }
   }
 
-⊕⟷-bifunctor : (t₁ t₂ : U) →
-  Bifunctor (⟷Cat t₁ t₂) (⟷Cat t₁ t₂) (⟷Cat t₁ t₂)
-⊕⟷-bifunctor t₁ t₂ = record
-  { F₀ = λ {(f , g) → {!!} } 
-  ; F₁ = λ {(α , β) → {!!} }
-  ; identity = tt 
-  ; homomorphism = tt 
-  ; F-resp-≡ = λ _ → tt
-  }
-
-{--
+-- These feel like the right notions of bifunctor but of course they
+-- are relating different categories so the rest of the development to
+-- RigCategory would need to be generalized if we were to use these
+-- definitions of bifunctors.
 
 ⊕⟷-bifunctor : (t₁ t₂ t₃ t₄ : U) →
   Bifunctor (⟷Cat t₁ t₂) (⟷Cat t₃ t₄) (⟷Cat (PLUS t₁ t₃) (PLUS t₂ t₄))
@@ -342,199 +335,15 @@ Pi1Rig = record
   ; F-resp-≡ = λ _ → tt
   }
 
-module ⊎⟷h (t₁ t₂ t₃ t₄ : U) =
-  MonoidalHelperFunctors
-    (⟷Cat (PLUS t₁ t₃) (PLUS t₂ t₄))
-    (⊕⟷-bifunctor t₁ t₂ t₃ t₄)
-    ?
-
-0⊕x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
-0⊕x≡x = record 
-  { F⇒G = record { η = λ X → unite₊l ; commute = λ f → unite₊l⇔r } 
-  ; F⇐G = record { η = λ X → uniti₊l ; commute = λ f → uniti₊l⇔r } 
-  ; iso = λ X → record { isoˡ = linv◎l; isoʳ = rinv◎l }
+⊗⟷-bifunctor : (t₁ t₂ t₃ t₄ : U) →
+  Bifunctor (⟷Cat t₁ t₂) (⟷Cat t₃ t₄) (⟷Cat (TIMES t₁ t₃) (TIMES t₂ t₄))
+⊗⟷-bifunctor t₁ t₂ t₃ t₄ = record
+  { F₀ = λ {(f , g) → f ⊗ g }
+  ; F₁ = λ {(α , β) → resp⊗⇔ α β }
+  ; identity = tt
+  ; homomorphism = tt
+  ; F-resp-≡ = λ _ → tt
   }
-
-x⊕0≡x : NaturalIsomorphism ⊎h.x⊗id ⊎h.x
-x⊕0≡x = record
-  { F⇒G = record { η = λ X → unite₊r ; commute = λ f → unite₊r⇔r }
-  ; F⇐G = record { η = λ X → uniti₊r ; commute = λ f → uniti₊r⇔r }
-  ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l }
-  }
-
-[x⊕y]⊕z≡x⊕[y⊕z] : NaturalIsomorphism ⊎h.[x⊗y]⊗z ⊎h.x⊗[y⊗z]
-[x⊕y]⊕z≡x⊕[y⊕z] = record
-  { F⇒G = record
-    { η = λ X → assocr₊
-    ; commute = λ f → assocr⊕r
-    }
-  ; F⇐G = record
-    { η = λ X → assocl₊
-    ; commute = λ f → assocl⊕l
-    }
-  ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l }
-  }
-
-M⊕ : Monoidal ⟷Cat
-M⊕ = record
-  { ⊗ = ⊕-bifunctor
-  ; id = ZERO
-  ; identityˡ = 0⊕x≡x
-  ; identityʳ = x⊕0≡x
-  ; assoc = [x⊕y]⊕z≡x⊕[y⊕z]
-  ; triangle = triangle⊕l
-  ; pentagon = pentagon⊕l
-  }
-
-⊗-bifunctor : Bifunctor ⟷Cat ⟷Cat ⟷Cat
-⊗-bifunctor = record
-  { F₀ = λ {(u , v) → TIMES u v}
-  ; F₁ = λ {(x⟷y , z⟷w) → x⟷y ⊗ z⟷w }
-  ; identity = id⟷⊗id⟷⇔
-  ; homomorphism = hom⊗◎⇔
-  ; F-resp-≡ = λ {(x , y) → resp⊗⇔ x y}
-  }
-
-module ×h = MonoidalHelperFunctors ⟷Cat ⊗-bifunctor ONE
-
-1⊗x≡x : NaturalIsomorphism ×h.id⊗x ×h.x
-1⊗x≡x = record 
-  { F⇒G = record
-    { η = λ X → unite⋆l
-    ; commute = λ f → uniter⋆⇔l } 
-  ; F⇐G = record
-    { η = λ X → uniti⋆l
-    ; commute = λ f → unitir⋆⇔l } 
-  ; iso = λ X → record { isoˡ = linv◎l; isoʳ = rinv◎l }
-  }
-
-x⊗1≡x : NaturalIsomorphism ×h.x⊗id ×h.x
-x⊗1≡x = record
-  { F⇒G = record
-    { η = λ X → unite⋆r 
-    ; commute = λ f → uniter⋆⇔r
-    }
-  ; F⇐G = record
-    { η = λ X → uniti⋆r
-    ; commute = λ f → unitir⋆⇔r 
-    }
-  ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l }
-  }
-
-[x⊗y]⊗z≡x⊗[y⊗z] : NaturalIsomorphism ×h.[x⊗y]⊗z ×h.x⊗[y⊗z]
-[x⊗y]⊗z≡x⊗[y⊗z] = record
-  { F⇒G = record
-    { η = λ X → assocr⋆
-    ; commute = λ f → assocr⊗r
-    }
-  ; F⇐G = record
-    { η = λ X → assocl⋆
-    ; commute = λ f → assocl⊗l
-    }
-  ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l }
-  }
-
-M⊗ : Monoidal ⟷Cat
-M⊗ = record
-  { ⊗ = ⊗-bifunctor
-  ; id = ONE
-  ; identityˡ = 1⊗x≡x
-  ; identityʳ = x⊗1≡x
-  ; assoc = [x⊗y]⊗z≡x⊗[y⊗z]
-  ; triangle = triangle⊗l
-  ; pentagon = pentagon⊗l
-  }
-
-x⊕y≡y⊕x : NaturalIsomorphism ⊎h.x⊗y ⊎h.y⊗x
-x⊕y≡y⊕x = record 
-  { F⇒G = record { η = λ X → swap₊ ; commute = λ f → swapr₊⇔ } 
-  ; F⇐G = record { η = λ X → swap₊ ; commute = λ f → swapr₊⇔ } 
-  ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l } }
-
-BM⊕ : Braided M⊕
-BM⊕ = record
-  { braid = x⊕y≡y⊕x
-  ; hexagon₁ = hexagonr⊕l
-  ; hexagon₂ = hexagonl⊕l
-  }
-
-x⊗y≡y⊗x : NaturalIsomorphism ×h.x⊗y ×h.y⊗x
-x⊗y≡y⊗x = record 
-  { F⇒G = record { η = λ X → swap⋆ ; commute = λ f → swapr⋆⇔ } 
-  ; F⇐G = record { η = λ X → swap⋆ ; commute = λ f → swapr⋆⇔ } 
-  ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l } }
-
-BM⊗ : Braided M⊗
-BM⊗ = record
-  { braid = x⊗y≡y⊗x
-  ; hexagon₁ = hexagonr⊗l
-  ; hexagon₂ = hexagonl⊗l
-  }
-
-SBM⊕ : Symmetric BM⊕
-SBM⊕ = record { symmetry = linv◎l }
-
-SBM⊗ : Symmetric BM⊗
-SBM⊗ = record { symmetry = rinv◎l }
-
-module r = BimonoidalHelperFunctors BM⊕ BM⊗
-
-x⊗0≡0 : NaturalIsomorphism r.x⊗0 r.0↑
-x⊗0≡0 = record 
-  { F⇒G = record
-    { η = λ X → absorbl
-    ; commute = λ f → absorbl⇔l
-    } 
-  ; F⇐G = record
-    { η = λ X → factorzr
-    ; commute = λ f → factorzr⇔l
-    } 
-  ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l } 
-  }
-
-0⊗x≡0 : NaturalIsomorphism r.0⊗x r.0↑
-0⊗x≡0 = record
-  { F⇒G = record { η = λ X → absorbr ; commute = λ f → absorbr⇔l }
-  ; F⇐G = record { η = λ X → factorzl ; commute = λ f → factorzl⇔l }
-  ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l }
-  }
-
-x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] : NaturalIsomorphism r.x⊗[y⊕z] r.[x⊗y]⊕[x⊗z]
-x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
-  { F⇒G = record { η = λ _ → distl ; commute = λ f → distl⇔l }
-  ; F⇐G = record { η = λ _ → factorl ; commute = λ f → factorl⇔l }
-  ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l }
-  }
-
-[x⊕y]⊗z≡[x⊗z]⊕[y⊗z] : NaturalIsomorphism r.[x⊕y]⊗z r.[x⊗z]⊕[y⊗z]
-[x⊕y]⊗z≡[x⊗z]⊕[y⊗z] = record
-  { F⇒G = record { η = λ X → dist ; commute = λ f → dist⇔l }
-  ; F⇐G = record { η = λ X → factor ; commute = λ f → factor⇔l }
-  ; iso = λ X → record { isoˡ = linv◎l ; isoʳ = rinv◎l }
-  }
-
-⟷Rig : RigCategory SBM⊕ SBM⊗
-⟷Rig = record 
-  { distribₗ = x⊗[y⊕z]≡[x⊗y]⊕[x⊗z]
-  ; distribᵣ = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] 
-  ; annₗ = 0⊗x≡0 
-  ; annᵣ = x⊗0≡0
-  ; laplazaI = swap₊distl⇔l
-  ; laplazaII = dist-swap⋆⇔l
-  ; laplazaIV = assocl₊-dist-dist⇔l
-  ; laplazaVI = assocl⋆-distl⇔l
-  ; laplazaIX = fully-distribute⇔l
-  ; laplazaX = absorbr0-absorbl0⇔
-  ; laplazaXI = absorbr⇔distl-absorb-unite
-  ; laplazaXIII = unite⋆r0-absorbr1⇔
-  ; laplazaXV = absorbl≡swap⋆◎absorbr
-  ; laplazaXVI =  absorbr⇔[assocl⋆◎[absorbr⊗id⟷]]◎absorbr
-  ; laplazaXVII = [id⟷⊗absorbr]◎absorbl⇔assocl⋆◎[absorbl⊗id⟷]◎absorbr
-  ; laplazaXIX = elim⊥-A[0⊕B]⇔l 
-  ; laplazaXXIII = elim⊥-1[A⊕B]⇔l
-  }
-
---}
 
 ------------------------------------------------------------------------------
 -- We have a 2-category
@@ -563,11 +372,33 @@ Pi1-2Cat = record
   ; _⇒_ = ⟷Cat
   ; id = idF
   ; —∘— = ∘-bifunctor
-  ; assoc = λ { {A} {B} {C} {D} {(CD₁ , BC₁ , AB₁)} {(CD₂ , BC₂ , AB₂)} (f₁ , f₂ , f₃) →
-                       let module m = Heterogeneous (⟷Cat A D) in
-                       {!m.≡⇒∼ tt!}}
-  ; identityˡ = {!!}
-  ; identityʳ = {!!}
+  ; assoc =
+    λ { {A} {B} {C} {D} {(CD₁ , BC₁ , AB₁)} {(CD₂ , BC₂ , AB₂)} (f₁ , f₂ , f₃) →
+      let module m = Heterogeneous (⟷Cat A D) in
+      {!m.≡⇒∼ tt!}}
+  ; identityˡ =
+    λ { {A} {B} (unit , β) →
+      let module m = Heterogeneous (⟷Cat A B) in
+      {!!}}
+  ; identityʳ =
+    λ { {A} {B} (α , unit) →
+      let module m = Heterogeneous (⟷Cat A B) in
+      {!!}} -- would like to use (a lifted version of idl◎l)
   }
+
+{--
+
+for hole 2, we essentially want to show that the two functors (α -∘-
+id) and α are related by:
+  
+data _∼_ {A B} (f : A ⇒ B) : ∀ {X Y} → (X ⇒ Y) → Set (ℓ ⊔ e) where
+    ≡⇒∼ : {g : A ⇒ B} → .(f ≡ g) → f ∼ g
+
+(defined in Category.Heteregenous)
+
+The problem is that the definition of ~ has ≡ hardwired. We have
+instead ⇔ are our equality relation.
+
+--}
 
 ------------------------------------------------------------------------------
