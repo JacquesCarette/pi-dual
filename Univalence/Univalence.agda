@@ -42,7 +42,7 @@ open import EquivEquiv
 -- equivalences so we can talk about equivalences up to equivalence
 
 ------------------------------------------------------------------------------
--- Equivalences between Agda types (type isomorphisms)
+-- Equivalences between Agda types (extensional type isomorphisms)
 
 open import TypeEquiv
 -- Proves that types and type equivalences form a commutative semiring
@@ -93,7 +93,8 @@ open import Pi1Cat
 -- and only the isomorphisms corresponding to the coherence conditions
 -- of rig categories are equated, we make U a 1-type. (We do
 -- distinguish 'id' and 'not'.) The higher-level equality on the
--- 2-morphisms is trivial, i.e., all two level morphisms are equated.
+-- 2-morphisms is trivial, i.e., all two level morphisms are
+-- equated. This should yield a weak 2-category (i.e., a bicategory).
 
 open import Pi1Examples
 -- Pi1 is interesting as a programming language for reversible
@@ -103,35 +104,54 @@ open import Pi1Examples
 -- How to make U a 2-type, 3-type, etc. ???
 
 ------------------------------------------------------------------------------
+-- Equivalences between enumerated types (permutations) 
+
+-- clean up the following and then we want the punchline to be that we
+-- have symmetric rig category of permutations
+
+open import FinEquiv
+open import EnumEquiv
+open import FinVec
+open import ConcretePermutation
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Wavefront ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+
+
+
+
+
+
+
 -- Now we want to relate Pi-types and type equivalences. The punchline
 -- would be that TypeEquivCat is isomorphic to Pi1Cat. But the setup
 -- for Pi1Cat allows us to keep going up and down the levels unlike
 -- the setup for TypeEquivCat which has extensional equivalence
 -- hardwired and can't be generalized to level 2.
 
--- Are permutations of intrinsic interest ???
-
 -- Are they really really necessary as a stepping stone to prove the
 -- correspondence between TypeEquivCat and Pi1Cat ???
-
-------------------------------------------------------------------------------
-
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Wavefront ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -- Equivalences between finite sets (enumerations and permutations);
 -- Equivalences between setoids; Equivalences between equivalences;
 -- Unfinished files; Unused files
-
-open import FinVec
-open import ConcretePermutation
-
-open import EnumEquiv
--- An enumeration of a set A is an equivalence between A and Fin m
-open import FinEquiv
--- Proves that that finite sets and equivalences form a commutative
--- semiring
 
 open import SetoidEquiv
 -- do a version of EquivSetoid specialized for finite sets that
@@ -141,7 +161,7 @@ open import SetoidEquiv
 -- dependencies satisfied...
 
 open import SEquivSCPermEquiv
-open import PiPerm
+-- open import PiPerm -- IN PROGRESS
 open import PiEquiv
 
 -- open import SkFinSetCategory

@@ -10,23 +10,18 @@ open import Data.Unit using (tt)
 open import Data.Product using (_,_)
 open import Function using (flip)
 
-open import Categories.Category
-  using (Category; module Category; module Heterogeneous)
-open import Categories.Terminal using (OneC; unit; Unit)
+open import Categories.Category using (Category)
+open import Categories.Terminal using (OneC)
 open import Categories.Groupoid using (Groupoid)
 open import Categories.Monoidal using (Monoidal)
 open import Categories.Monoidal.Helpers using (module MonoidalHelperFunctors)
-open import Categories.Functor using (Functor; module Functor)
-open import Categories.Product using (Product; assocʳ; _⁂_; πʳ; πˡ)
-open import Categories.Bifunctor
-  using (Bifunctor; reduce-×)
-  renaming (id to Fid; _∘_ to _F∘_)
+open import Categories.Functor using (Functor)
+open import Categories.Bifunctor using (Bifunctor)
 open import Categories.NaturalIsomorphism using (NaturalIsomorphism)
 open import Categories.Monoidal.Braided using (Braided)
 open import Categories.Monoidal.Symmetric using (Symmetric)
 open import Categories.RigCategory
   using (RigCategory; module BimonoidalHelperFunctors)
-open import Categories.2-Category using (2-Category)
 
 open import PiU using (U; PLUS; ZERO; TIMES; ONE)
 open import PiLevel0
@@ -372,144 +367,63 @@ idF {t} = record
   ; F-resp-≡ = λ _ → tt 
   }
 
-xxx : {A B : U} {c₁ c₂ : A ⟷ B} {α : c₁ ⇔ c₂} →
-      let module m = Heterogeneous (⟷Cat A B) in
-      (Functor.F₁ (∘-bifunctor F∘ (idF ⁂ Fid)) (unit , α))
-      -- normalizes to    α ⊡ id⇔
-      m.∼
-      (Functor.F₁ (πʳ {lzero} {lzero} {lzero} {C = OneC} {⟷Cat A B}) (unit , α))
-      -- normalizes to    α
-xxx {A} {B} {c₁} {c₂} {α} =
-  let module m = Heterogeneous (⟷Cat A B) in
-  {!!} 
-
 {--
-  _⊡_  : {t₁ t₂ t₃ : U} 
-         {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} →
-         (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ◎ c₂) ⇔ (c₃ ◎ c₄)
-
-c₁ c₂ : A ⟷ B
-c₃ : B ⟷ C
-
-α : c₁ ⇔ c₂
-id⇔ : c₃ ⇔ c₃
-
-So we want a trivial 3-morphism between:
-
-α ⊡ id⇔ : c₁ ◎ c₃ ⇔ c₂ ◎ c₃
-α        : c₁ ⇔ c₂
-
-But these are not of the same type, even if c₃ is id⟷ : B ⟷ B 
-
-So perhaps triv≡ needs to be refined. Instead of:
-
-triv≡ : {t₁ t₂ : U} {f g : t₁ ⟷ t₂} → (α β : f ⇔ g) → Set
-triv≡ _ _ = ⊤
-
-we might want something like:
-
-triv≡ : {t₁ t₂ : U} {f g f' g' : t₁ ⟷ t₂} → 
-  {f⇔ : f ⇔ f'} {g⇔ : g ⇔ g'} → 
-  (α : f ⇔ g) (β : f' ⇔ g') → Set
-triv≡ _ _ = ⊤
-
-This would allow us to relate things of syntactically different types
-as long as these types are related.
-
-
---}
-
-
-yyy : {A B C : U} {c₁ c₂ : A ⟷ B} {c₃ : B ⟷ B} {α : c₁ ⇔ c₂} →
-      let module m = Heterogeneous (⟷Cat A B) in
-      (_⊡_ {A} {B} {B} {c₁} {c₃} {c₂} {c₃} α id⇔) m.∼ α
-yyy {A} {B} = 
-  let module m = Heterogeneous (⟷Cat A B) in 
-  {!m.≡⇒∼ ?!}
-
-{--
-  .c₁ ◎ .c₃ != .c₁ of type A ⟷ B
-  when checking that the expression m.≡⇒∼ ? has type
-  (.α ⊡ id⇔) m.∼ .α
---}
-
-
--- m.≡⇒∼
-
 Pi1-2Cat : 2-Category lzero lzero lzero lzero
 Pi1-2Cat = record
   { Obj = U
   ; _⇒_ = ⟷Cat
   ; id = idF
   ; —∘— = ∘-bifunctor
-  ; assoc =
-    λ { {A} {B} {C} {D} → 
-{--
-        {(CD⊗[BC⊗AB]  , (BC⊗AB  , AB ))}
-        {(CD⊗[BC⊗AB]' , (BC⊗AB' , AB'))}
-        (CD⊗[BC⊗AB]⇒CD⊗[BC⊗AB]' , (BC⊗AB⇒BC⊗AB' , AB⇒AB')) → 
-      let module Funl = Functor ((reduce-×
-                                  (∘-bifunctor {{!!}} {{!!}} {{!!}})
-                                  (∘-bifunctor {{!!}} {{!!}} {{!!}})
-                                   Fid)
-                                 F∘
-                                 (assocʳ CD BC AB))
-          module Funr = Functor (reduce-×
-                                  (∘-bifunctor {{!!}} {{!!}} {{!!}})
-                                  Fid
-                                  (∘-bifunctor {{!!}} {{!!}} {{!!}}))
-          module m = Heterogeneous AD in 
---}
---      let module m = Heterogeneous (⟷Cat {!!} {!!}) in 
---      {!λ _ → m.≡⇒∼ tt!}}
-      λ _ → {!!} }
-  ; identityˡ =
-      λ { {A} {B} {unit , c₁} {unit , c₂} (unit , α) →
-      -- c₁ and c₂ are combinators of type A ⟷ B
-      -- α is a 2-combinator of type c₁ ⇒ c₂
-        let module m = Heterogeneous (⟷Cat A B) in
-        -- We want to prove:
-        -- Functor.F₁ (∘-bifunctor F∘ (idF ⁂ Fid)) (unit , α)
-        -- m.∼
-        -- Functor.F₁ πʳ (unit , α)
---        {!m.≡⇒∼ {g = Functor.F₁ πʳ (unit , α)} ?!} }
-        {!!}
-        }
+  ; assoc = {!!}
+  ; identityˡ = {!!} }
+              
+The definition of 2-Category is STRICT, which means that for proof of
+identityˡ requires the following diagram to commute:
 
-{--
-Sure looks like it is expecting the two combinators to be identical!!
-A bug in 2-Category???
-Data.Product.proj₂
-(Functor.F₀ (idF Categories.Product.⁂ Fid) (unit , .proj₂))
-◎
-Data.Product.proj₁
-(Functor.F₀ (idF Categories.Product.⁂ Fid) (unit , .proj₂))
-!= .proj₂ of type A ⟷ B
-when checking that the expression
-m.≡⇒∼ {g = Functor.F₁ πʳ ONE⊗AB} ? has type
-Functor.F₁ (reduce-× ∘-bifunctor idF Fid) ONE⊗AB m.∼
-Functor.F₁ πʳ ONE⊗AB
---}
---    λ { {A} {B} (unit , β) →
---      let module m = Heterogeneous (⟷Cat A B) in
---      {!!}}
-  ; identityʳ =
-    λ { {A} {B} (α , unit) →
-      let module m = Heterogeneous (⟷Cat A B) in
-      {!!}} -- would like to use (a lifted version of idl◎l)
-  }
+Assume the following 1-paths:
 
-{--
-For hole 2, we essentially want to show that the two functors 
-(α -∘- id) and α are related by:
-  
-data _∼_ {A B} (f : A ⇒ B) : ∀ {X Y} → (X ⇒ Y) → Set (ℓ ⊔ e) where
-    ≡⇒∼ : {g : A ⇒ B} → .(f ≡ g) → f ∼ g
+c₁ c₂ : A ⟷ B
+id_B  : B ⟷ B
 
-(defined in Category.Heteregenous)
+and the following 2-paths:
 
-The problem is that the definition of ~ has ≡ hardwired. We have
-instead ⇔ are our equality relation.
+α       : c₁ ⇔ c₂
+id_id_B : id_B ⇔ id_B
+
+We can construct the 2-path:
+
+α ⊡ id_id_B : c₁ ◎ id_B ⇔ c₂ ◎ id_B
+
+The property identityˡ requires that there is a 3-path between 
+
+  α   and   α ⊡ id_id_B
+
+and indeed there are "equivalent" in some sense as:
+
+  α ⊡ id_id_B : c₁ ◎ id_B ⇔ c₂ ◎ id_B
+
+can be viewed as having the equivalent type:
+
+  α ⊡ id_id_B : c₁ ⇔ c₂
+
+and we identify all 2-paths of the same type. 
+
+This reasoning however requires that identityˡ is asserted up to the
+2-paths relating c₁ ◎ id_B and c₁ on one hand and c₂ ◎ id_B and c₂ on
+the other hand. 
+
+Formally the nlab page http://ncatlab.org/nlab/show/2-category
+explains this as follows:
+
+  For some purposes, strict 2-categories are too strict: one would
+  like to allow composition of morphisms to be associative and unital
+  only up to coherent invertible 2-morphisms. A direct generalization
+  of the above “enriched” definition produces the classical notion of
+  bicategory.
+
+So to conclude what we really need is a weak version of 2-Category
+which is known as 'bicategory'.
+
 --}
 
 ------------------------------------------------------------------------------
