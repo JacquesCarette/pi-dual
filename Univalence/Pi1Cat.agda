@@ -376,8 +376,8 @@ xxx : {A B : U} {c₁ c₂ : A ⟷ B} {α : c₁ ⇔ c₂} →
       let module m = Heterogeneous (⟷Cat A B) in
       (Functor.F₁ (∘-bifunctor F∘ (idF ⁂ Fid)) (unit , α))
       m.∼
-      (Functor.F₁ πʳ (unit , α))
-xxx = {!!} 
+      (Functor.F₁ (πʳ {lzero} {lzero} {lzero} {C = OneC} {⟷Cat A B}) (unit , α))
+xxx {A} {B} = {!let module m = Heterogeneous (⟷Cat A B) in m.≡⇒∼ ?!} 
 
 
 Pi1-2Cat : 2-Category lzero lzero lzero lzero
