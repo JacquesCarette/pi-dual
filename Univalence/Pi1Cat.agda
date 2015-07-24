@@ -375,10 +375,66 @@ idF {t} = record
 xxx : {A B : U} {c₁ c₂ : A ⟷ B} {α : c₁ ⇔ c₂} →
       let module m = Heterogeneous (⟷Cat A B) in
       (Functor.F₁ (∘-bifunctor F∘ (idF ⁂ Fid)) (unit , α))
+      -- normalizes to    α ⊡ id⇔
       m.∼
       (Functor.F₁ (πʳ {lzero} {lzero} {lzero} {C = OneC} {⟷Cat A B}) (unit , α))
-xxx {A} {B} = {!let module m = Heterogeneous (⟷Cat A B) in m.≡⇒∼ ?!} 
+      -- normalizes to    α
+xxx {A} {B} {c₁} {c₂} {α} =
+  let module m = Heterogeneous (⟷Cat A B) in
+  {!!} 
 
+{--
+  _⊡_  : {t₁ t₂ t₃ : U} 
+         {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} →
+         (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ◎ c₂) ⇔ (c₃ ◎ c₄)
+
+c₁ c₂ : A ⟷ B
+c₃ : B ⟷ C
+
+α : c₁ ⇔ c₂
+id⇔ : c₃ ⇔ c₃
+
+So we want a trivial 3-morphism between:
+
+α ⊡ id⇔ : c₁ ◎ c₃ ⇔ c₂ ◎ c₃
+α        : c₁ ⇔ c₂
+
+But these are not of the same type, even if c₃ is id⟷ : B ⟷ B 
+
+So perhaps triv≡ needs to be refined. Instead of:
+
+triv≡ : {t₁ t₂ : U} {f g : t₁ ⟷ t₂} → (α β : f ⇔ g) → Set
+triv≡ _ _ = ⊤
+
+we might want something like:
+
+triv≡ : {t₁ t₂ : U} {f g f' g' : t₁ ⟷ t₂} → 
+  {f⇔ : f ⇔ f'} {g⇔ : g ⇔ g'} → 
+  (α : f ⇔ g) (β : f' ⇔ g') → Set
+triv≡ _ _ = ⊤
+
+This would allow us to relate things of syntactically different types
+as long as these types are related.
+
+
+--}
+
+
+yyy : {A B C : U} {c₁ c₂ : A ⟷ B} {c₃ : B ⟷ B} {α : c₁ ⇔ c₂} →
+      let module m = Heterogeneous (⟷Cat A B) in
+      (_⊡_ {A} {B} {B} {c₁} {c₃} {c₂} {c₃} α id⇔) m.∼ α
+yyy {A} {B} = 
+  let module m = Heterogeneous (⟷Cat A B) in 
+  {!m.≡⇒∼ ?!}
+
+{--
+  .c₁ ◎ .c₃ != .c₁ of type A ⟷ B
+  when checking that the expression m.≡⇒∼ ? has type
+  (.α ⊡ id⇔) m.∼ .α
+--}
+
+
+-- m.≡⇒∼
 
 Pi1-2Cat : 2-Category lzero lzero lzero lzero
 Pi1-2Cat = record
