@@ -8,6 +8,7 @@ open import Relation.Binary.PropositionalEquality
 open import ConcretePermutation
 open import PiU
 open import PiLevel0
+open import PiLevel1
 -- open import Groupoid
 
 ------------------------------------------------------------------------------
@@ -79,6 +80,119 @@ c2perm id⟷ = idp
 !≡symp (c ◎ c₁) = p≡ (cong₂ (λ x y → CPerm.π (transp x y)) (!≡symp c₁) (!≡symp c))
 !≡symp (c ⊕ c₁) = p≡ (cong₂ (λ x y → CPerm.π (x ⊎p y)) (!≡symp c) (!≡symp c₁))
 !≡symp (c ⊗ c₁) = p≡ (cong₂ (λ x y → CPerm.π (x ×p y)) (!≡symp c) (!≡symp c₁))
+
+-----------------------------------------------------------------------------
+cc2perm : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) →
+  c2perm c₁ ≡ c2perm c₂
+cc2perm assoc◎l = p≡ {!!}
+cc2perm assoc◎r = {!!}
+cc2perm assocl⊕l = {!!}
+cc2perm assocl⊕r = {!!}
+cc2perm assocl⊗l = {!!}
+cc2perm assocl⊗r = {!!}
+cc2perm assocr⊕r = {!!}
+cc2perm assocr⊗l = {!!}
+cc2perm assocr⊗r = {!!}
+cc2perm assocr⊕l = {!!}
+cc2perm dist⇔l = {!!}
+cc2perm dist⇔r = {!!}
+cc2perm distl⇔l = {!!}
+cc2perm distl⇔r = {!!}
+cc2perm factor⇔l = {!!}
+cc2perm factor⇔r = {!!}
+cc2perm factorl⇔l = {!!}
+cc2perm factorl⇔r = {!!}
+cc2perm idl◎l = {!!}
+cc2perm idl◎r = {!!}
+cc2perm idr◎l = {!!}
+cc2perm idr◎r = {!!}
+cc2perm linv◎l = {!!}
+cc2perm linv◎r = {!!}
+cc2perm rinv◎l = {!!}
+cc2perm rinv◎r = {!!}
+cc2perm unite₊l⇔l = {!!}
+cc2perm unite₊l⇔r = {!!}
+cc2perm uniti₊l⇔l = {!!}
+cc2perm uniti₊l⇔r = {!!}
+cc2perm unite₊r⇔l = {!!}
+cc2perm unite₊r⇔r = {!!}
+cc2perm uniti₊r⇔l = {!!}
+cc2perm uniti₊r⇔r = {!!}
+cc2perm swapl₊⇔ = {!!}
+cc2perm swapr₊⇔ = {!!}
+cc2perm unitel⋆⇔l = {!!}
+cc2perm uniter⋆⇔l = {!!}
+cc2perm unitil⋆⇔l = {!!}
+cc2perm unitir⋆⇔l = {!!}
+cc2perm unitel⋆⇔r = {!!}
+cc2perm uniter⋆⇔r = {!!}
+cc2perm unitil⋆⇔r = p≡ {!!}
+cc2perm unitir⋆⇔r = {!!}
+cc2perm swapl⋆⇔ = {!!}
+cc2perm swapr⋆⇔ = {!!}
+cc2perm id⇔ = {!!}
+cc2perm (trans⇔ ce ce₁) = {!!}
+cc2perm (ce ⊡ ce₁) = {!!}
+cc2perm (resp⊕⇔ ce ce₁) = {!!}
+cc2perm (resp⊗⇔ ce ce₁) = {!!}
+cc2perm id⟷⊕id⟷⇔ = {!!}
+cc2perm split⊕-id⟷ = {!!}
+cc2perm hom⊕◎⇔ = {!!}
+cc2perm hom◎⊕⇔ = {!!}
+cc2perm id⟷⊗id⟷⇔ = {!!}
+cc2perm split⊗-id⟷ = {!!}
+cc2perm hom⊗◎⇔ = {!!}
+cc2perm hom◎⊗⇔ = {!!}
+cc2perm triangle⊕l = {!!}
+cc2perm triangle⊕r = {!!}
+cc2perm triangle⊗l = {!!}
+cc2perm triangle⊗r = {!!}
+cc2perm pentagon⊕l = {!!}
+cc2perm pentagon⊕r = {!!}
+cc2perm pentagon⊗l = {!!}
+cc2perm pentagon⊗r = {!!}
+cc2perm hexagonr⊕l = {!!}
+cc2perm hexagonr⊕r = {!!}
+cc2perm hexagonl⊕l = {!!}
+cc2perm hexagonl⊕r = {!!}
+cc2perm hexagonr⊗l = {!!}
+cc2perm hexagonr⊗r = {!!}
+cc2perm hexagonl⊗l = {!!}
+cc2perm hexagonl⊗r = {!!}
+cc2perm absorbl⇔l = {!!}
+cc2perm absorbl⇔r = {!!}
+cc2perm absorbr⇔l = {!!}
+cc2perm absorbr⇔r = {!!}
+cc2perm factorzl⇔l = {!!}
+cc2perm factorzl⇔r = {!!}
+cc2perm factorzr⇔l = {!!}
+cc2perm factorzr⇔r = {!!}
+cc2perm swap₊distl⇔l = {!!}
+cc2perm swap₊distl⇔r = {!!}
+cc2perm dist-swap⋆⇔l = {!!}
+cc2perm dist-swap⋆⇔r = {!!}
+cc2perm assocl₊-dist-dist⇔l = {!!}
+cc2perm assocl₊-dist-dist⇔r = {!!}
+cc2perm assocl⋆-distl⇔l = {!!}
+cc2perm assocl⋆-distl⇔r = {!!}
+cc2perm absorbr0-absorbl0⇔ = {!!}
+cc2perm absorbl0-absorbr0⇔ = {!!}
+cc2perm absorbr⇔distl-absorb-unite = {!!}
+cc2perm distl-absorb-unite⇔absorbr = {!!}
+cc2perm unite⋆r0-absorbr1⇔ = {!!}
+cc2perm absorbr1-unite⋆r-⇔ = {!!}
+cc2perm absorbl≡swap⋆◎absorbr = {!!}
+cc2perm swap⋆◎absorbr≡absorbl = {!!}
+cc2perm absorbr⇔[assocl⋆◎[absorbr⊗id⟷]]◎absorbr = {!!}
+cc2perm [assocl⋆◎[absorbr⊗id⟷]]◎absorbr⇔absorbr = {!!}
+cc2perm [id⟷⊗absorbr]◎absorbl⇔assocl⋆◎[absorbl⊗id⟷]◎absorbr = {!!}
+cc2perm assocl⋆◎[absorbl⊗id⟷]◎absorbr⇔[id⟷⊗absorbr]◎absorbl = {!!}
+cc2perm elim⊥-A[0⊕B]⇔l = {!!}
+cc2perm elim⊥-A[0⊕B]⇔r = {!!}
+cc2perm elim⊥-1[A⊕B]⇔l = {!!}
+cc2perm elim⊥-1[A⊕B]⇔r = {!!}
+cc2perm fully-distribute⇔l = p≡ {!!}
+cc2perm fully-distribute⇔r = {!!}
 
 ------------------------------------------------------------------------------
 -- Extensional equivalence of combinators
