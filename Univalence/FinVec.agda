@@ -37,11 +37,27 @@ open import Algebra.Structures
 open import Relation.Binary.Core
 open import Relation.Binary.PropositionalEquality using (subst; sym; trans; cong₂)
 
--- open import Groupoid
-open import Equiv
-open import TypeEquiv using (swap₊; swap⋆)
-import TypeEquiv as TE
-open import FinEquiv using (module Plus; module Times; module PlusTimes)
+open import Equiv using (p∘!p≡id)
+open import TypeEquiv using (swap₊)
+import FinEquiv using (module Plus; module Times; module PlusTimes)
+open FinEquiv.Plus using ()
+  renaming (fwd-iso to plus-fwd-iso; swapper to plus-swapper;
+  unite+ to plus-unite+; uniti+ to plus-uniti+;
+  unite+r to plus-unite+r; uniti+r to plus-uniti+r;
+  assocl+ to plus-assocl+; assocr+ to plus-assocr+;
+  swap-inv to plus-swap-inv)
+open FinEquiv.Times using ()
+  renaming (fwd to times-fwd; bwd to times-bwd; swapper to times-swapper;
+  fwd∘bwd~id to times-fwd∘bwd~id; bwd∘fwd~id to times-bwd∘fwd~id;
+  swap-inv to times-swap-inv; 
+  unite* to times-unite*; uniti* to times-uniti*;
+  unite*r to times-unite*r; uniti*r to times-uniti*r;
+  assocl* to times-assocl*; assocr* to times-assocr*;
+  distz to times-distz; factorz to times-factorz;
+  distzr to times-distzr; factorzr to times-factorzr)
+open FinEquiv.PlusTimes using ()
+  renaming (dist to plustimes-dist; factor to plustimes-factor;
+            distl to plustimes-distl; factorl to plustimes-factorl)
 open import Proofs using (
   -- VectorLemmas
      _!!_; concat-map; map-map-map; lookup-map; map-∘
@@ -102,13 +118,13 @@ module F where
 
   private
     fwd : {m n : ℕ} → (Fin m ⊎ Fin n) → Fin (m + n)
-    fwd = proj₁ Plus.fwd-iso
+    fwd = proj₁ plus-fwd-iso
 
     bwd : {m n : ℕ} → Fin (m + n) → (Fin m ⊎ Fin n)
-    bwd = Equiv.qinv.g (proj₂ Plus.fwd-iso)
+    bwd = Equiv.qinv.g (proj₂ plus-fwd-iso)
 
     bwd∘fwd~id : {m n : ℕ} → bwd {m} {n} ∘ fwd ∼ id
-    bwd∘fwd~id = Equiv.qinv.β (proj₂ Plus.fwd-iso)
+    bwd∘fwd~id = Equiv.qinv.β (proj₂ plus-fwd-iso)
     
   -- make all the definitions abstract.  Note that the type isn't,
   -- otherwise we could not do anything at all with it!
@@ -133,7 +149,7 @@ module F where
     -- [ vm , vm₊₁ , ... , vm+n-1 ,     v₀ , v₁   , v₂   , ... , vm-1 ]
 
     swap+cauchy : (m n : ℕ) → FinVec (n + m) (m + n)
-    swap+cauchy m n = tabulate (Plus.swapper m n)
+    swap+cauchy m n = tabulate (plus-swapper m n)
 
     -- Parallel additive composition
     -- conceptually, what we want is
@@ -168,7 +184,7 @@ module F where
     -- Transpositions in α correspond to swapping entire rows
     -- Transpositions in β correspond to swapping entire columns
     _×c_ : ∀ {m₁ n₁ m₂ n₂} → FinVec m₁ m₂ → FinVec n₁ n₂ → FinVec (m₁ * n₁) (m₂ * n₂)
-    α ×c β = mapV Times.fwd (α ×v β)
+    α ×c β = mapV times-fwd (α ×v β)
 
     -- swap⋆
     -- 
@@ -183,7 +199,7 @@ module F where
       -- inject≤ (fromℕ (toℕ d * m + toℕ b)) (i*n+k≤m*n d b)
 
     swap⋆cauchy : (m n : ℕ) → FinVec (n * m) (m * n)
-    swap⋆cauchy m n = tabulate (Times.swapper m n)
+    swap⋆cauchy m n = tabulate (times-swapper m n)
       -- mapV transposeIndex (V.tcomp 1C 1C)
 
     -------------------------------------------------------------------------------------------
@@ -191,58 +207,58 @@ module F where
     -- from properties, rather than being operators
 
     unite+ : {m : ℕ} → FinVec m (0 + m)
-    unite+ {m} = tabulate (proj₁ (Plus.unite+ {m}))
+    unite+ {m} = tabulate (proj₁ (plus-unite+ {m}))
 
     uniti+ : {m : ℕ} → FinVec (0 + m) m
-    uniti+ {m} = tabulate (proj₁ (Plus.uniti+ {m}))
+    uniti+ {m} = tabulate (proj₁ (plus-uniti+ {m}))
 
     unite+r : {m : ℕ} → FinVec m (m + 0)
-    unite+r {m} = tabulate (proj₁ (Plus.unite+r {m}))
+    unite+r {m} = tabulate (proj₁ (plus-unite+r {m}))
 
     uniti+r : {m : ℕ} → FinVec (m + 0) m
-    uniti+r {m} = tabulate (proj₁ (Plus.uniti+r {m}))
+    uniti+r {m} = tabulate (proj₁ (plus-uniti+r {m}))
     
     assocl+ : {m n o : ℕ} → FinVec  ((m + n) + o) (m + (n + o))
-    assocl+ {m} {n} {o} = tabulate (proj₁ (Plus.assocl+ {m} {n} {o}))
+    assocl+ {m} {n} {o} = tabulate (proj₁ (plus-assocl+ {m} {n} {o}))
 
     assocr+ : {m n o : ℕ} → FinVec  (m + (n + o)) (m + n + o)
-    assocr+ {m} {n} {o} = tabulate (proj₁ (Plus.assocr+ {m} {n} {o}))
+    assocr+ {m} {n} {o} = tabulate (proj₁ (plus-assocr+ {m} {n} {o}))
 
     unite* : {m : ℕ} → FinVec m (1 * m)
-    unite* {m} = tabulate (proj₁ (Times.unite* {m}))
+    unite* {m} = tabulate (proj₁ (times-unite* {m}))
 
     uniti* : {m : ℕ} → FinVec (1 * m) m
-    uniti* {m} = tabulate (proj₁ (Times.uniti* {m}))
+    uniti* {m} = tabulate (proj₁ (times-uniti* {m}))
 
     unite*r : {m : ℕ} → FinVec m (m * 1)
-    unite*r {m} = tabulate (proj₁ (Times.unite*r {m}))
+    unite*r {m} = tabulate (proj₁ (times-unite*r {m}))
 
     uniti*r : {m : ℕ} → FinVec (m * 1) m
-    uniti*r {m} = tabulate (proj₁ (Times.uniti*r {m}))
+    uniti*r {m} = tabulate (proj₁ (times-uniti*r {m}))
 
     assocl* : {m n o : ℕ} → FinVec  ((m * n) * o) (m * (n * o))
-    assocl* {m} {n} {o} = tabulate (proj₁ (Times.assocl* {m} {n} {o}))
+    assocl* {m} {n} {o} = tabulate (proj₁ (times-assocl* {m} {n} {o}))
 
     assocr* : {m n o : ℕ} → FinVec  (m * (n * o)) (m * n * o)
-    assocr* {m} {n} {o} = tabulate (proj₁ (Times.assocr* {m} {n} {o}))
+    assocr* {m} {n} {o} = tabulate (proj₁ (times-assocr* {m} {n} {o}))
 
     dist*+ : ∀ {m n o} → FinVec (m * o + n * o) ((m + n) * o)
-    dist*+ {m} {n} {o} = tabulate (proj₁ (PlusTimes.dist {m} {n} {o}))
+    dist*+ {m} {n} {o} = tabulate (proj₁ (plustimes-dist {m} {n} {o}))
 
     factor*+ : ∀ {m n o} → FinVec ((m + n) * o) (m * o + n * o)
-    factor*+ {m} {n} {o} = tabulate (proj₁ (PlusTimes.factor {m} {n} {o}))
+    factor*+ {m} {n} {o} = tabulate (proj₁ (plustimes-factor {m} {n} {o}))
 
     distl*+ : ∀ {m n o} → FinVec (m * n + m * o) (m * (n + o))
-    distl*+ {m} {n} {o} = tabulate (proj₁ (PlusTimes.distl {m} {n} {o}))
+    distl*+ {m} {n} {o} = tabulate (proj₁ (plustimes-distl {m} {n} {o}))
 
     factorl*+ : ∀ {m n o} → FinVec (m * (n + o)) (m * n + m * o)
-    factorl*+ {m} {n} {o} = tabulate (proj₁ (PlusTimes.factorl {m} {n} {o}))
+    factorl*+ {m} {n} {o} = tabulate (proj₁ (plustimes-factorl {m} {n} {o}))
 
     right-zero*l : ∀ {m} → FinVec 0 (m * 0)
-    right-zero*l {m} = tabulate (proj₁ (Times.distzr {m}))
+    right-zero*l {m} = tabulate (proj₁ (times-distzr {m}))
 
     right-zero*r : ∀ {m} → FinVec (m * 0) 0
-    right-zero*r {m} = tabulate (proj₁ (Times.factorzr {m}))
+    right-zero*r {m} = tabulate (proj₁ (times-factorzr {m}))
    
     -------------------------------------------------------------------------------------------
     -- Below here, we start with properties
@@ -367,25 +383,25 @@ module F where
     1C!!i≡i = lookup∘tabulate id _
 
     unite+∘̂uniti+~id : ∀ {m} → (unite+ {m}) ∘̂ uniti+ ≡ 1C {m}
-    unite+∘̂uniti+~id {m} = ~⇒≡ {m} {n = m} (p∘!p≡id {p = Plus.unite+ {m}})
+    unite+∘̂uniti+~id {m} = ~⇒≡ {m} {n = m} (p∘!p≡id {p = plus-unite+ {m}})
 
     uniti+∘̂unite+~id : ∀ {m} → (uniti+ {m}) ∘̂ unite+ ≡ 1C {m}
-    uniti+∘̂unite+~id {m} = ~⇒≡ {m} {n = m} (p∘!p≡id {p = Plus.uniti+})
+    uniti+∘̂unite+~id {m} = ~⇒≡ {m} {n = m} (p∘!p≡id {p = plus-uniti+})
 
     unite+r∘̂uniti+r~id : ∀ {m} → (unite+r {m}) ∘̂ uniti+r ≡ 1C {m + 0}
-    unite+r∘̂uniti+r~id {m} = ~⇒≡ {m} (p∘!p≡id {p = Plus.unite+r {m}})
+    unite+r∘̂uniti+r~id {m} = ~⇒≡ {m} (p∘!p≡id {p = plus-unite+r {m}})
 
     uniti+r∘̂unite+r~id : ∀ {m} → (uniti+r {m}) ∘̂ unite+r ≡ 1C {m}
-    uniti+r∘̂unite+r~id {m} = ~⇒≡ (p∘!p≡id {p = Plus.uniti+r})
+    uniti+r∘̂unite+r~id {m} = ~⇒≡ (p∘!p≡id {p = plus-uniti+r})
 
     assocl+∘̂assocr+~id : ∀ {m n o} → assocl+ {m} {n} {o} ∘̂ assocr+ {m} ≡ 1C
-    assocl+∘̂assocr+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = Plus.assocl+ {m}})
+    assocl+∘̂assocr+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = plus-assocl+ {m}})
 
     assocr+∘̂assocl+~id : ∀ {m n o} → assocr+ {m} {n} {o} ∘̂ assocl+ {m} ≡ 1C
-    assocr+∘̂assocl+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = Plus.assocr+ {m}})
+    assocr+∘̂assocl+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = plus-assocr+ {m}})
 
     swap+-inv : ∀ {m n} → swap+cauchy m n ∘̂ swap+cauchy n m ≡ 1C
-    swap+-inv {m} {n} = ~⇒≡ (Plus.swap-inv m n)
+    swap+-inv {m} {n} = ~⇒≡ (plus-swap-inv m n)
 
     idˡ⊕ : ∀ {m n} {x : FinVec m n} → uniti+ ∘̂ (1C {0} ⊎c x) ≡ x ∘̂ uniti+
     idˡ⊕ {m} {n} {x} = finext pf
@@ -408,40 +424,40 @@ module F where
 
     -- properties of multiplicative composition
     unite*∘̂uniti*~id : ∀ {m} → (unite* {m}) ∘̂ uniti* ≡ 1C {1 * m}
-    unite*∘̂uniti*~id {m} = ~⇒≡ {m} {n = 1 * m} (p∘!p≡id {p = Times.unite* {m}})
+    unite*∘̂uniti*~id {m} = ~⇒≡ {m} {n = 1 * m} (p∘!p≡id {p = times-unite* {m}})
 
     uniti*∘̂unite*~id : ∀ {m} → (uniti* {m}) ∘̂ unite* ≡ 1C {m}
-    uniti*∘̂unite*~id {m} = ~⇒≡ {1 * m} {n = m} (p∘!p≡id {p = Times.uniti* {m}})
+    uniti*∘̂unite*~id {m} = ~⇒≡ {1 * m} {n = m} (p∘!p≡id {p = times-uniti* {m}})
 
     unite*r∘̂uniti*r~id : ∀ {m} → (unite*r {m}) ∘̂ uniti*r ≡ 1C {m * 1}
-    unite*r∘̂uniti*r~id {m} = ~⇒≡ {m} {n = m * 1} (p∘!p≡id {p = Times.unite*r {m}})
+    unite*r∘̂uniti*r~id {m} = ~⇒≡ {m} {n = m * 1} (p∘!p≡id {p = times-unite*r {m}})
 
     uniti*r∘̂unite*r~id : ∀ {m} → (uniti*r {m}) ∘̂ unite*r ≡ 1C {m}
-    uniti*r∘̂unite*r~id {m} = ~⇒≡ {m * 1} {n = m} (p∘!p≡id {p = Times.uniti*r {m}})
+    uniti*r∘̂unite*r~id {m} = ~⇒≡ {m * 1} {n = m} (p∘!p≡id {p = times-uniti*r {m}})
 
     assocl*∘̂assocr*~id : ∀ {m n o} → assocl* {m} {n} {o} ∘̂ assocr* {m} ≡ 1C
-    assocl*∘̂assocr*~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = Times.assocl* {m}})
+    assocl*∘̂assocr*~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = times-assocl* {m}})
 
     assocr*∘̂assocl*~id : ∀ {m n o} → assocr* {m} {n} {o} ∘̂ assocl* {m} ≡ 1C
-    assocr*∘̂assocl*~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = Times.assocr* {m}})
+    assocr*∘̂assocl*~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = times-assocr* {m}})
 
     dist*+∘̂factor*+~id : ∀ {m n o} → dist*+ {m} {n} {o} ∘̂ factor*+ {m} ≡ 1C
-    dist*+∘̂factor*+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = PlusTimes.dist {m}})
+    dist*+∘̂factor*+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = plustimes-dist {m}})
 
     factor*+∘̂dist*+~id : ∀ {m n o} → factor*+ {m} {n} {o} ∘̂ dist*+ {m} ≡ 1C
-    factor*+∘̂dist*+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = PlusTimes.factor {m}})
+    factor*+∘̂dist*+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = plustimes-factor {m}})
 
     distl*+∘̂factorl*+~id : ∀ {m n o} → distl*+ {m} {n} {o} ∘̂ factorl*+ {m} ≡ 1C
-    distl*+∘̂factorl*+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = PlusTimes.distl {m}})
+    distl*+∘̂factorl*+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = plustimes-distl {m}})
 
     factorl*+∘̂distl*+~id : ∀ {m n o} → factorl*+ {m} {n} {o} ∘̂ distl*+ {m} ≡ 1C
-    factorl*+∘̂distl*+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = PlusTimes.factorl {m}})
+    factorl*+∘̂distl*+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = plustimes-factorl {m}})
 
     right-zero*l∘̂right-zero*r~id : ∀ {m} → right-zero*l {m} ∘̂ right-zero*r {m} ≡ 1C {m * 0}
-    right-zero*l∘̂right-zero*r~id {m} = ~⇒≡ {f = proj₁ (Times.factorzr {m})} (p∘!p≡id {p = Times.distzr {m}})
+    right-zero*l∘̂right-zero*r~id {m} = ~⇒≡ {f = proj₁ (times-factorzr {m})} (p∘!p≡id {p = times-distzr {m}})
 
     right-zero*r∘̂right-zero*l~id : ∀ {m} → right-zero*r {m} ∘̂ right-zero*l {m} ≡ 1C
-    right-zero*r∘̂right-zero*l~id {m} = ~⇒≡ { f = proj₁ (Times.factorz {m})} (p∘!p≡id {p = Times.distz {m}})
+    right-zero*r∘̂right-zero*l~id {m} = ~⇒≡ { f = proj₁ (times-factorz {m})} (p∘!p≡id {p = times-distz {m}})
 
     private
       left⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : FinVec m₁ n₁) → (p₂ : FinVec m₂ n₂)
@@ -509,34 +525,34 @@ module F where
     
     private
       concat!! : {A : Set} {m n : ℕ} → (a : Fin m) → (b : Fin n) → (xss : Vec (Vec A n) m) →
-        concatV xss !! (Times.fwd (a ,′ b)) ≡ (xss !! a) !! b
+        concatV xss !! (times-fwd (a ,′ b)) ≡ (xss !! a) !! b
       concat!! zero b (xs ∷ xss) = lookup-++-inject+ xs (concatV xss) b
       concat!! (suc a) b (xs ∷ xss) = 
-        trans (lookup-++-raise xs (concatV xss) (Times.fwd (a ,′ b))) (concat!! a b xss) 
+        trans (lookup-++-raise xs (concatV xss) (times-fwd (a ,′ b))) (concat!! a b xss) 
 
       ×c-equiv : {m₁ m₂ n₁ n₂ : ℕ} (p₁ : FinVec m₁ n₁) (p₂ : FinVec m₂ n₂) →
-        (p₁ ×c p₂) ≡ concatV (mapV (λ y → mapV Times.fwd (mapV (λ x → y ,′ x) p₂)) p₁)
+        (p₁ ×c p₂) ≡ concatV (mapV (λ y → mapV times-fwd (mapV (λ x → y ,′ x) p₂)) p₁)
       ×c-equiv p₁ p₂ =
         let zss = mapV  (λ b → mapV (λ x → b ,′ x) p₂) p₁ in
         begin (
           (p₁ ×c p₂)
             ≡⟨ refl ⟩
-          mapV Times.fwd (concatV zss)
-            ≡⟨ sym (concat-map zss Times.fwd) ⟩
-          concatV (mapV (mapV Times.fwd) zss)
-            ≡⟨ cong concatV (map-map-map Times.fwd (λ b → mapV (λ x → b ,′ x) p₂) p₁) ⟩
-           concatV (mapV (λ y → mapV Times.fwd (mapV (λ x → y ,′ x) p₂)) p₁) ∎)
+          mapV times-fwd (concatV zss)
+            ≡⟨ sym (concat-map zss times-fwd) ⟩
+          concatV (mapV (mapV times-fwd) zss)
+            ≡⟨ cong concatV (map-map-map times-fwd (λ b → mapV (λ x → b ,′ x) p₂) p₁) ⟩
+           concatV (mapV (λ y → mapV times-fwd (mapV (λ x → y ,′ x) p₂)) p₁) ∎)
 
       lookup-2d : {A : Set} (m n : ℕ) → (k : Fin (m * n)) → {f : Fin m × Fin n → A} →
-         concatV (tabulate {m} (λ i → tabulate {n} (λ j → f (i ,′ j)))) !! k ≡ f (Times.bwd k)
+         concatV (tabulate {m} (λ i → tabulate {n} (λ j → f (i ,′ j)))) !! k ≡ f (times-bwd k)
       lookup-2d m n k {f} =
         let lhs =  concatV (tabulate {m} (λ i → tabulate {n} (λ j → f (i ,′ j)))) in
-        let a = proj₁ (Times.bwd {m} {n} k) in
-        let b = proj₂ (Times.bwd {m} {n} k) in
+        let a = proj₁ (times-bwd {m} {n} k) in
+        let b = proj₂ (times-bwd {m} {n} k) in
         begin (
           lhs !! k 
-            ≡⟨ cong (_!!_ lhs) (sym (Times.fwd∘bwd~id {m} k)) ⟩
-          lhs !! (Times.fwd (a ,′ b))
+            ≡⟨ cong (_!!_ lhs) (sym (times-fwd∘bwd~id {m} k)) ⟩
+          lhs !! (times-fwd (a ,′ b))
             ≡⟨ concat!! a b _ ⟩
           (tabulate {m} (λ i → tabulate {n} (λ j → f (i ,′ j))) !! a) !! b
             ≡⟨ cong (λ x → x !! b) (lookup∘tabulate _ a) ⟩
@@ -544,25 +560,25 @@ module F where
             ≡⟨ lookup∘tabulate _ b ⟩
           f (a ,′ b)
             ≡⟨ refl ⟩
-          f (Times.bwd k) ∎)
+          f (times-bwd k) ∎)
 
       ×c!! : {m₁ m₂ n₁ n₂ : ℕ} (p₁ : FinVec m₁ n₁) (p₂ : FinVec m₂ n₂) (k : Fin (n₁ * n₂)) →
-        (p₁ ×c p₂) !! k ≡ Times.fwd (p₁ !! proj₁ (Times.bwd k) ,′ p₂ !! proj₂ (Times.bwd {n₁} k))
+        (p₁ ×c p₂) !! k ≡ times-fwd (p₁ !! proj₁ (times-bwd k) ,′ p₂ !! proj₂ (times-bwd {n₁} k))
       ×c!! {n₁ = n₁} p₁ p₂ k =
-        let a = proj₁ (Times.bwd {n₁} k) in
-        let b = proj₂ (Times.bwd {n₁} k) in
+        let a = proj₁ (times-bwd {n₁} k) in
+        let b = proj₂ (times-bwd {n₁} k) in
         begin (
           (p₁ ×c p₂) !! k
-            ≡⟨ cong₂ _!!_ (×c-equiv p₁ p₂) (sym (Times.fwd∘bwd~id {n₁} k)) ⟩
-          concatV (mapV (λ y → mapV Times.fwd (mapV (λ x → y ,′ x) p₂)) p₁) !! Times.fwd (a ,′ b)
+            ≡⟨ cong₂ _!!_ (×c-equiv p₁ p₂) (sym (times-fwd∘bwd~id {n₁} k)) ⟩
+          concatV (mapV (λ y → mapV times-fwd (mapV (λ x → y ,′ x) p₂)) p₁) !! times-fwd (a ,′ b)
             ≡⟨ concat!! a b _ ⟩
-          ((mapV (λ y → mapV Times.fwd (mapV (λ x → y ,′ x) p₂)) p₁) !! a) !! b
+          ((mapV (λ y → mapV times-fwd (mapV (λ x → y ,′ x) p₂)) p₁) !! a) !! b
             ≡⟨ cong (λ x → x !! b) (lookup-map a _ p₁) ⟩
-          mapV Times.fwd (mapV (λ x → p₁ !! a ,′ x) p₂) !! b
-            ≡⟨ cong (λ x → x !! b) (sym (map-∘ Times.fwd _ p₂)) ⟩
-          mapV (Times.fwd ∘ (λ x → p₁ !! a ,′ x)) p₂ !! b
+          mapV times-fwd (mapV (λ x → p₁ !! a ,′ x) p₂) !! b
+            ≡⟨ cong (λ x → x !! b) (sym (map-∘ times-fwd _ p₂)) ⟩
+          mapV (times-fwd ∘ (λ x → p₁ !! a ,′ x)) p₂ !! b
             ≡⟨ lookup-map b _ p₂ ⟩
-          Times.fwd (p₁ !! a ,′ p₂ !! b) ∎)
+          times-fwd (p₁ !! a ,′ p₂ !! b) ∎)
 
     ×c-distrib : ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : FinVec m₁ n₁} → {p₂ : FinVec m₂ n₂}
       → {p₃ : FinVec m₃ m₁} → {p₄ : FinVec m₄ m₂} →
@@ -576,42 +592,42 @@ module F where
          tabulate {n₁ * n₂} (λ i → p₃₄ !! (p₁₂ !! i))
            ≡⟨ finext (λ j → cong (_!!_ p₃₄) (×c!! p₁ p₂ j)) ⟩
          tabulate {n₁ * n₂}
-           (λ i → p₃₄ !! Times.fwd (p₁ !! proj₁ (Times.bwd i) ,′ p₂ !! proj₂ (Times.bwd i)))
+           (λ i → p₃₄ !! times-fwd (p₁ !! proj₁ (times-bwd i) ,′ p₂ !! proj₂ (times-bwd i)))
            ≡⟨ finext (λ j → ×c!! p₃ p₄ _) ⟩
          tabulate (λ i →
-           let k = Times.fwd (p₁ !! proj₁ (Times.bwd i) ,′ p₂ !! proj₂ (Times.bwd i)) in
-           Times.fwd (p₃ !! proj₁ (Times.bwd k) ,′ p₄ !! proj₂ (Times.bwd k)))
-           ≡⟨ finext (λ i → cong₂ (λ x y → Times.fwd (p₃ !! proj₁ x ,′ p₄ !! proj₂ y))
-                     (Times.bwd∘fwd~id {m₁} {m₂} (p₁ !! proj₁ (Times.bwd i) ,′ _))
-                     (Times.bwd∘fwd~id (_ ,′ p₂ !! proj₂ (Times.bwd i)))) ⟩
-         tabulate (λ i → Times.fwd (p₃ !! (p₁ !! proj₁ (Times.bwd i)) ,′
-                                    (p₄ !! (p₂ !! proj₂ (Times.bwd i)))))
+           let k = times-fwd (p₁ !! proj₁ (times-bwd i) ,′ p₂ !! proj₂ (times-bwd i)) in
+           times-fwd (p₃ !! proj₁ (times-bwd k) ,′ p₄ !! proj₂ (times-bwd k)))
+           ≡⟨ finext (λ i → cong₂ (λ x y → times-fwd (p₃ !! proj₁ x ,′ p₄ !! proj₂ y))
+                     (times-bwd∘fwd~id {m₁} {m₂} (p₁ !! proj₁ (times-bwd i) ,′ _))
+                     (times-bwd∘fwd~id (_ ,′ p₂ !! proj₂ (times-bwd i)))) ⟩
+         tabulate (λ i → times-fwd (p₃ !! (p₁ !! proj₁ (times-bwd i)) ,′
+                                    (p₄ !! (p₂ !! proj₂ (times-bwd i)))))
            ≡⟨ finext (λ k → sym (lookup-2d n₁ n₂ k)) ⟩
          tabulate (λ k →
            concatV (tabulate {n₁} (λ z →
                     tabulate {n₂} (λ w →
-                    Times.fwd ((p₃ !! (p₁ !! z)) ,′ (p₄ !! (p₂ !! w))))))
+                    times-fwd ((p₃ !! (p₁ !! z)) ,′ (p₄ !! (p₂ !! w))))))
            !! k)
 
            ≡⟨ tabulate∘lookup _ ⟩
          concatV (tabulate {n₁} (λ z →
                   tabulate {n₂} (λ w →
-                  Times.fwd ((p₃ !! (p₁ !! z)) ,′ (p₄ !! (p₂ !! w))))))
+                  times-fwd ((p₃ !! (p₁ !! z)) ,′ (p₄ !! (p₂ !! w))))))
            ≡⟨ cong
                concatV
                (finext (λ i →
-                 tabulate-∘ Times.fwd (λ w → ((p₃ !! (p₁ !! i)) ,′ (p₄ !! (p₂ !! w)))) )) ⟩
+                 tabulate-∘ times-fwd (λ w → ((p₃ !! (p₁ !! i)) ,′ (p₄ !! (p₂ !! w)))) )) ⟩
          concatV (tabulate (λ z →
-                  mapV Times.fwd (tabulate (λ w → (p₃ !! (p₁ !! z)) ,′ (p₄ !! (p₂ !! w))))))
+                  mapV times-fwd (tabulate (λ w → (p₃ !! (p₁ !! z)) ,′ (p₄ !! (p₂ !! w))))))
            ≡⟨ cong
                concatV
                (finext (λ i →
                  cong
-                   (mapV Times.fwd)
+                   (mapV times-fwd)
                    (tabulate-∘ (λ x → (p₃ !! (p₁ !! i)) ,′ x) (_!!_ p₄ ∘ _!!_ p₂)))) ⟩
-         concatV (tabulate (λ z → mapV Times.fwd (mapV (λ x → (p₃ !! (p₁ !! z)) ,′ x) p₂₄)))
+         concatV (tabulate (λ z → mapV times-fwd (mapV (λ x → (p₃ !! (p₁ !! z)) ,′ x) p₂₄)))
            ≡⟨ cong concatV (tabulate-∘ _ (_!!_ p₃ ∘ _!!_ p₁)) ⟩
-         concatV (mapV (λ y → mapV Times.fwd (mapV (λ x → y ,′ x) p₂₄)) p₁₃)
+         concatV (mapV (λ y → mapV times-fwd (mapV (λ x → y ,′ x) p₂₄)) p₁₃)
            ≡⟨ sym (×c-equiv p₁₃ p₂₄) ⟩
          (p₁ ∘̂ p₃) ×c (p₂ ∘̂ p₄) ∎)
 
@@ -623,25 +639,25 @@ module F where
       begin (
         1C {m} ×c 1C
           ≡⟨ ×c-equiv 1C 1C ⟩
-        concatV (mapV (λ y → mapV Times.fwd (mapV (_,′_ y) (1C {n}))) (1C {m}))
+        concatV (mapV (λ y → mapV times-fwd (mapV (_,′_ y) (1C {n}))) (1C {m}))
           ≡⟨ cong (concatV {n = m}) (sym (tabulate-∘ _ id)) ⟩
-        concatV {n = m} (tabulate (λ y → mapV Times.fwd (mapV (_,′_ y) (1C {n}))))
-          ≡⟨ cong (concatV {n = m}) (finext (λ y → sym (map-∘ Times.fwd (λ x → y ,′ x) 1C))) ⟩
-        concatV (tabulate {n = m} (λ y → mapV (Times.fwd ∘ (_,′_ y)) (1C {n})))
+        concatV {n = m} (tabulate (λ y → mapV times-fwd (mapV (_,′_ y) (1C {n}))))
+          ≡⟨ cong (concatV {n = m}) (finext (λ y → sym (map-∘ times-fwd (λ x → y ,′ x) 1C))) ⟩
+        concatV (tabulate {n = m} (λ y → mapV (times-fwd ∘ (_,′_ y)) (1C {n})))
           ≡⟨ cong
               (concatV {m = n} {m})
-              (finext (λ y → sym (tabulate-∘ (Times.fwd ∘ (_,′_ y)) id))) ⟩
-        concatV (tabulate {n = m} (λ a → tabulate {n = n} (λ b → Times.fwd (a ,′ b))))
+              (finext (λ y → sym (tabulate-∘ (times-fwd ∘ (_,′_ y)) id))) ⟩
+        concatV (tabulate {n = m} (λ a → tabulate {n = n} (λ b → times-fwd (a ,′ b))))
           ≡⟨ sym (tabulate∘lookup _) ⟩
         tabulate (λ k →
-        concatV (tabulate {n = m} (λ a → tabulate {n = n} (λ b → Times.fwd (a ,′ b)))) !! k)
+        concatV (tabulate {n = m} (λ a → tabulate {n = n} (λ b → times-fwd (a ,′ b)))) !! k)
           ≡⟨ finext (λ k → lookup-2d m n k) ⟩
-        tabulate (λ k → Times.fwd {m} {n} (Times.bwd k))
-          ≡⟨ finext (Times.fwd∘bwd~id {m} {n}) ⟩
+        tabulate (λ k → times-fwd {m} {n} (times-bwd k))
+          ≡⟨ finext (times-fwd∘bwd~id {m} {n}) ⟩
         1C {m * n} ∎ )
 
     swap*-inv : ∀ {m n} → swap⋆cauchy m n ∘̂ swap⋆cauchy n m ≡ 1C
-    swap*-inv {m} {n} = ~⇒≡ (Times.swap-inv m n)
+    swap*-inv {m} {n} = ~⇒≡ (times-swap-inv m n)
 
     ------------------------
     -- A few "reveal" functions, to let us peek into the representation

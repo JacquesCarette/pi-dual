@@ -110,10 +110,20 @@ open import Pi1Examples
 -- have symmetric rig category of permutations
 
 open import FinEquiv
-open import EnumEquiv
-open import FinVec
-open import ConcretePermutation
+-- equivalences between finite sets Fin...
+-- has nothing to do with permutations: move to equiv section above???
 
+open import EnumEquiv
+-- equivalence between A and Fin m is an enumeration of A
+
+open import FinVec
+-- pre-permutations between finite sets (represented as vectors)
+
+open import ConcretePermutation
+-- a permutation is two pre-permutations with proofs that they are inverses
+
+open import CPermCat
+-- showing that permutations form a rig category etc.
 
 
 
@@ -165,7 +175,6 @@ open import SEquivSCPermEquiv
 open import PiEquiv
 
 -- open import SkFinSetCategory
--- open import CPermCat
 -- open import Pim1Cat
 
 -- open import LeftCancellation
