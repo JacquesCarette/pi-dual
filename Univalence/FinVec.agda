@@ -25,19 +25,28 @@
 
 module FinVec where
 
-import Level
+import Level using (zero)
 open import Data.Nat using (ℕ; _+_; _*_)
-open import Data.Vec renaming (map to mapV; _++_ to _++V_; concat to concatV)
-open import Data.Fin using (Fin; inject+; raise; zero; suc)
-open import Function using (_∘_; id; _$_)
-open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_]′) renaming (map to map⊎)
-open import Data.Product using (_×_; _,′_; proj₁; proj₂)
-open import Algebra
-open import Algebra.Structures
-open import Relation.Binary.Core
-open import Relation.Binary.PropositionalEquality using (subst; sym; trans; cong₂)
+open import Data.Fin using (Fin; zero; suc; inject+; raise)
+open import Data.Sum
+  using (_⊎_; inj₁; inj₂; [_,_]′)
+  renaming (map to map⊎)
+open import Data.Product using (_×_; proj₁; proj₂; _,′_) 
+open import Data.Vec
+  using (Vec; _∷_; []; tabulate; _>>=_; allFin)
+  renaming (_++_ to _++V_; map to mapV; concat to concatV)
+open import Data.Vec.Properties
+  using (lookup-allFin; tabulate∘lookup; lookup∘tabulate; lookup-++-inject+;
+         tabulate-∘)
+open import Function using (_∘_; id)
+open import Algebra using (CommutativeSemiring)
+open import Algebra.Structures using
+  (IsSemigroup; IsCommutativeMonoid; IsCommutativeSemiring)
+open import Relation.Binary using (IsEquivalence)
+open import Relation.Binary.PropositionalEquality
+  using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
 
-open import Equiv using (p∘!p≡id)
+open import Equiv using (_∼_; p∘!p≡id)
 open import TypeEquiv using (swap₊)
 import FinEquiv using (module Plus; module Times; module PlusTimes)
 open FinEquiv.Plus using ()
@@ -59,8 +68,12 @@ open FinEquiv.PlusTimes using ()
   renaming (dist to plustimes-dist; factor to plustimes-factor;
             distl to plustimes-distl; factorl to plustimes-factorl)
 open import Proofs using (
+  -- FiniteFunctions
+     finext; 
   -- VectorLemmas
-     _!!_; concat-map; map-map-map; lookup-map; map-∘
+     lookup-++-raise; lookupassoc; tabulate-split; _!!_; unSplit;
+     concat-map; map-map-map; lookup-map; map-∘;
+     left!!; right!!
      )
 
 ------------------------------------------------------------------------------
@@ -91,24 +104,6 @@ private
 -- We need to define (at least) 0, 1, +, *, ∘, swap+, swap*
 
 module F where
-
-  open import Data.Nat.Properties.Simple using (+-right-identity)
-  open import Data.Vec.Properties
-    using (lookup-allFin; tabulate∘lookup; lookup∘tabulate; tabulate-∘; lookup-++-inject+)
-  open import Relation.Binary.PropositionalEquality
-    using (_≡_; refl; sym; trans; cong; cong₂; subst; module ≡-Reasoning)
-  open ≡-Reasoning
-
-  open import Equiv using (_∼_)
-  open import Proofs using (congD!;
-    -- FinNatLemmas
-       inject+0≡uniti+; 
-    -- FiniteFunctions
-       finext; 
-    -- VectorLemmas
-       lookupassoc; map-++-commute; tabulate-split; left!!; right!!;
-       lookup-++-raise; unSplit; tab++[]≡tab∘̂unite+
-       )
 
   open V
 
@@ -353,6 +348,7 @@ module F where
             x !! i
               ≡⟨ sym (lookup∘tabulate id (x !! i)) ⟩
             tabulate id !! (x !! i) ∎)
+          where open ≡-Reasoning
             
     uniti+∘x≡[0⊎x]∘uniti+ : ∀ {m n} {x : FinVec m n} →
       uniti+ ∘̂ x ≡ (1C {0} ⊎c x) ∘̂ uniti+
@@ -367,7 +363,8 @@ module F where
           tabulate (λ y → x !! y) !! i
             ≡⟨ sym (lookup∘tabulate id _) ⟩
           tabulate id !! (tabulate (λ y → x !! y) !! i) ∎)
-    
+          where open ≡-Reasoning
+
     1C⊎1C≡1C : ∀ {m n} → 1C {m} ⊎c 1C {n} ≡ 1C
     1C⊎1C≡1C {m} {n} = 
       begin (
@@ -481,6 +478,7 @@ module F where
             inject+ m₄ (p₃ !! (p₁ !! i))
               ≡⟨ cong (inject+ m₄) (sym (lookup∘tabulate _ i)) ⟩
             inject+ m₄ ((p₁ ∘̂ p₃) !! i) ∎ )
+          where open ≡-Reasoning
 
       right⊎⊎!! :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → (p₁ : FinVec m₁ n₁) → (p₂ : FinVec m₂ n₂)
         → (p₃ : FinVec m₃ m₁) → (p₄ : FinVec m₄ m₂) → (i : Fin n₂) → 
@@ -503,6 +501,7 @@ module F where
           raise m₃ (p₄ !! (p₂ !! i))
             ≡⟨ cong (raise m₃) (sym (lookup∘tabulate _ i)) ⟩
           raise m₃ ((p₂ ∘̂ p₄) !! i) ∎ )
+          where open ≡-Reasoning
 
     ⊎c-distrib : ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : FinVec m₁ n₁} → {p₂ : FinVec m₂ n₂}
       → {p₃ : FinVec m₃ m₁} → {p₄ : FinVec m₄ m₂} →
@@ -519,6 +518,7 @@ module F where
         tabulate {n₂} (λ i → raise m₃ ((p₂ ∘̂ p₄) !! i))
           ≡⟨ refl ⟩
         (p₁ ∘̂ p₃) ⊎c (p₂ ∘̂ p₄) ∎)
+        where open ≡-Reasoning
 
     ------------------------------------------------------------------------------
     -- properties of ×c
@@ -542,6 +542,7 @@ module F where
           concatV (mapV (mapV times-fwd) zss)
             ≡⟨ cong concatV (map-map-map times-fwd (λ b → mapV (λ x → b ,′ x) p₂) p₁) ⟩
            concatV (mapV (λ y → mapV times-fwd (mapV (λ x → y ,′ x) p₂)) p₁) ∎)
+          where open ≡-Reasoning
 
       lookup-2d : {A : Set} (m n : ℕ) → (k : Fin (m * n)) → {f : Fin m × Fin n → A} →
          concatV (tabulate {m} (λ i → tabulate {n} (λ j → f (i ,′ j)))) !! k ≡ f (times-bwd k)
@@ -561,6 +562,7 @@ module F where
           f (a ,′ b)
             ≡⟨ refl ⟩
           f (times-bwd k) ∎)
+          where open ≡-Reasoning
 
       ×c!! : {m₁ m₂ n₁ n₂ : ℕ} (p₁ : FinVec m₁ n₁) (p₂ : FinVec m₂ n₂) (k : Fin (n₁ * n₂)) →
         (p₁ ×c p₂) !! k ≡ times-fwd (p₁ !! proj₁ (times-bwd k) ,′ p₂ !! proj₂ (times-bwd {n₁} k))
@@ -579,6 +581,7 @@ module F where
           mapV (times-fwd ∘ (λ x → p₁ !! a ,′ x)) p₂ !! b
             ≡⟨ lookup-map b _ p₂ ⟩
           times-fwd (p₁ !! a ,′ p₂ !! b) ∎)
+          where open ≡-Reasoning
 
     ×c-distrib : ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : FinVec m₁ n₁} → {p₂ : FinVec m₂ n₂}
       → {p₃ : FinVec m₃ m₁} → {p₄ : FinVec m₄ m₂} →
@@ -630,6 +633,7 @@ module F where
          concatV (mapV (λ y → mapV times-fwd (mapV (λ x → y ,′ x) p₂₄)) p₁₃)
            ≡⟨ sym (×c-equiv p₁₃ p₂₄) ⟩
          (p₁ ∘̂ p₃) ×c (p₂ ∘̂ p₄) ∎)
+         where open ≡-Reasoning
 
     -- there might be a simpler proofs of this using tablate∘lookup right
     -- at the start.
@@ -655,6 +659,7 @@ module F where
         tabulate (λ k → times-fwd {m} {n} (times-bwd k))
           ≡⟨ finext (times-fwd∘bwd~id {m} {n}) ⟩
         1C {m * n} ∎ )
+        where open ≡-Reasoning        
 
     swap*-inv : ∀ {m n} → swap⋆cauchy m n ∘̂ swap⋆cauchy n m ≡ 1C
     swap*-inv {m} {n} = ~⇒≡ (times-swap-inv m n)

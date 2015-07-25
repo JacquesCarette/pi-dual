@@ -22,7 +22,6 @@ open import Categories.Monoidal.Braided using (Braided)
 open import Categories.Monoidal.Symmetric using (Symmetric)
 open import Categories.RigCategory
   using (RigCategory; module BimonoidalHelperFunctors)
-
 open import Categories.Bicategory using (Bicategory)
 
 open import PiU using (U; PLUS; ZERO; TIMES; ONE)

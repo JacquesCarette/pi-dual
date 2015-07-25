@@ -2,36 +2,44 @@
 
 module ConcretePermutation where
 
-open import Level using (zero)
-open import Data.Nat using (ℕ;_+_;_*_)
-open import Data.Fin using (Fin) -- for convenience
-open import Data.Vec using (tabulate)
-open import Data.Product using (proj₁)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans;
-    proof-irrelevance; cong₂; -- setoid; 
-    module ≡-Reasoning)
--- open import Relation.Binary using (Setoid; module Setoid)
+open import Data.Nat using (ℕ; _+_; _*_)
+open import Relation.Binary.PropositionalEquality
+  using (_≡_; refl; sym; cong; cong₂; module ≡-Reasoning; proof-irrelevance)
 
-open import FinVec using (module F)
-open F
+import FinVec using (module F)
+open FinVec.F
+  using (FinVec; _∘̂_; 1C; _⊎c_; _×c_;
+         ⊎c-distrib; 1C⊎1C≡1C; 
+         ×c-distrib; 1C×1C≡1C;
+         ∘̂-lid; ∘̂-rid; ∘̂-assoc;
+         1C₀⊎x≡x; unite+∘[0⊎x]≡x∘unite+; uniti+∘x≡[0⊎x]∘uniti+;
+         unite+; uniti+; unite+∘̂uniti+~id; uniti+∘̂unite+~id;
+         unite+r; uniti+r; unite+r∘̂uniti+r~id; uniti+r∘̂unite+r~id;
+         assocl+; assocr+; assocl+∘̂assocr+~id; assocr+∘̂assocl+~id;
+         swap+cauchy; swap+-inv;
+         unite*; uniti*; unite*∘̂uniti*~id; uniti*∘̂unite*~id;
+         unite*r; uniti*r; unite*r∘̂uniti*r~id; uniti*r∘̂unite*r~id;
+         assocl*; assocr*; assocl*∘̂assocr*~id; assocr*∘̂assocl*~id;
+         swap⋆cauchy; swap*-inv;
+         dist*+; factor*+; dist*+∘̂factor*+~id; factor*+∘̂dist*+~id;
+         distl*+; factorl*+; distl*+∘̂factorl*+~id; factorl*+∘̂distl*+~id;
+         right-zero*l; right-zero*r;
+           right-zero*l∘̂right-zero*r~id; right-zero*r∘̂right-zero*l~id
+         )
 
--- using (FinVec; _∘̂_; ∘̂-rid; 1C; ∘̂-assoc; ∘̂-lid; ~⇒≡;
---  unite+; uniti+; unite+∘̂uniti+~id; uniti+∘̂unite+~id)
-
--- open import Equiv using (_≃_; sym≃; p∘!p≡id)
--- open import FinEquiv using (module Plus; module Times; module PlusTimes)
-
+------------------------------------------------------------------------------
 -- a concrete permutation has 4 components:
 -- - the permutation
 -- - its inverse
 -- - and 2 proofs that it is indeed inverse
+
 record CPerm (values : ℕ) (size : ℕ) : Set where
   constructor cp
   field
     π : FinVec values size
     πᵒ : FinVec size values
-    αp : π ∘̂ πᵒ ≡ F.1C
-    βp : πᵒ ∘̂ π ≡ F.1C
+    αp : π ∘̂ πᵒ ≡ 1C
+    βp : πᵒ ∘̂ π ≡ 1C
 
 πᵒ≡ : ∀ {m n} → (π₁ π₂ : CPerm m n) → (CPerm.π π₁ ≡ CPerm.π π₂) → (CPerm.πᵒ π₁ ≡ CPerm.πᵒ π₂)
 πᵒ≡ {n} (cp π πᵒ αp βp) (cp .π πᵒ₁ αp₁ βp₁) refl =
@@ -65,20 +73,21 @@ transp {n} (cp π πᵒ αp βp) (cp π₁ πᵒ₁ αp₁ βp₁) = cp (π ∘�
         (π ∘̂ π₁) ∘̂ (πᵒ₁ ∘̂ πᵒ)      ≡⟨ ∘̂-assoc _ _ _ ⟩
         ((π ∘̂ π₁) ∘̂ πᵒ₁) ∘̂ πᵒ      ≡⟨ cong (λ x → x ∘̂ πᵒ) (sym (∘̂-assoc _ _ _)) ⟩
         (π ∘̂ (π₁ ∘̂ πᵒ₁)) ∘̂ πᵒ      ≡⟨ cong (λ x → (π ∘̂ x) ∘̂ πᵒ) (αp₁) ⟩
-        (π ∘̂ F.1C) ∘̂ πᵒ       ≡⟨ cong (λ x → x ∘̂ πᵒ) (∘̂-rid _) ⟩
+        (π ∘̂ 1C) ∘̂ πᵒ       ≡⟨ cong (λ x → x ∘̂ πᵒ) (∘̂-rid _) ⟩
         π ∘̂ πᵒ                     ≡⟨ αp ⟩
-        F.1C ∎)
+        1C ∎)
     pf₂ : (πᵒ₁ ∘̂ πᵒ) ∘̂ (π ∘̂ π₁) ≡ 1C
     pf₂ =
       begin (
         (πᵒ₁ ∘̂ πᵒ) ∘̂ (π ∘̂ π₁)     ≡⟨ ∘̂-assoc _ _ _ ⟩
         ((πᵒ₁ ∘̂ πᵒ) ∘̂ π) ∘̂ π₁     ≡⟨ cong (λ x → x ∘̂ π₁) (sym (∘̂-assoc _ _ _)) ⟩
         (πᵒ₁ ∘̂ (πᵒ ∘̂ π)) ∘̂ π₁     ≡⟨ cong (λ x → (πᵒ₁ ∘̂ x) ∘̂ π₁) βp ⟩
-        (πᵒ₁ ∘̂ F.1C) ∘̂ π₁     ≡⟨ cong (λ x → x ∘̂ π₁) (∘̂-rid _) ⟩
+        (πᵒ₁ ∘̂ 1C) ∘̂ π₁     ≡⟨ cong (λ x → x ∘̂ π₁) (∘̂-rid _) ⟩
          πᵒ₁ ∘̂ π₁                 ≡⟨ βp₁ ⟩
-        F.1C ∎)
+        1C ∎)
 
 -- zero permutation
+
 0p : CPerm 0 0
 0p = idp {0}
 
@@ -86,7 +95,6 @@ _⊎p_ : ∀ {m₁ m₂ n₁ n₂} → CPerm m₁ m₂ → CPerm n₁ n₂ → C
 _⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ⊎c (π π₁)) ((πᵒ π₀) ⊎c (πᵒ π₁)) pf₁ pf₂
   where
     open CPerm
-    open F
     open ≡-Reasoning
     pf₁ : (π π₀ ⊎c π π₁) ∘̂ (πᵒ π₀ ⊎c πᵒ π₁) ≡ 1C
     pf₁ =
@@ -198,15 +206,17 @@ factorlp : {m n o : ℕ} → CPerm (m * (n + o)) (m * n + m * o)
 factorlp {m} = symp (distlp {m})
 
 -- right-zero absorbing permutation
+
 0pr : ∀ {n} → CPerm 0 (n * 0)
 0pr {n} = cp (right-zero*l {n}) (right-zero*r {n}) 
     right-zero*l∘̂right-zero*r~id right-zero*r∘̂right-zero*l~id
 
 -- and its symmetric version
+
 0pl : ∀ {n} → CPerm (n * 0) 0
 0pl {n} = symp (0pr {n})
 
-------------------------------------------------------------------------------------------------------
+--
 
 ridp : ∀ {m₁ m₂} {p : CPerm m₂ m₁} → transp p idp ≡ p
 ridp {p = p} = p≡ (∘̂-rid (CPerm.π p))
@@ -245,9 +255,10 @@ transp-resp-≡ refl refl = refl
 ×p-distrib {p₁ = p₁} = p≡ (sym (×c-distrib {p₁ = CPerm.π p₁}))
 
 0p⊎x≡x : ∀ {m n} {p : CPerm m n} → idp {0} ⊎p p ≡ p
-0p⊎x≡x {p = p} = p≡ F.1C₀⊎x≡x
+0p⊎x≡x {p = p} = p≡ 1C₀⊎x≡x
 
 -- this comes from looking at things categorically:
+
 unite+p∘[0⊎x]≡x∘unite+p : ∀ {m n} (p : CPerm m n) →
   transp unite+p (0p ⊎p p) ≡ transp p unite+p
 unite+p∘[0⊎x]≡x∘unite+p p = p≡ unite+∘[0⊎x]≡x∘unite+
@@ -269,3 +280,5 @@ uniti+rp∘[x⊎0]≡x∘uniti+rp p = p≡ {!!}
 
 -- SCPerm : ℕ → ℕ → Setoid zero zero
 -- SCPerm m n = setoid (CPerm m n)
+
+------------------------------------------------------------------------------
