@@ -4,18 +4,27 @@ module CPermCat where
 
 open import Level using (zero)
 open import Data.Nat using (ℕ; _+_; _*_)
-open import Data.Fin renaming (zero to 0F) hiding (_+_)
+open import Data.Fin using () renaming (zero to 0F) 
 open import Data.Product using (_,_)
 import Relation.Binary.PropositionalEquality as P
+  using (_≡_; refl; sym; cong₂; isEquivalence)
 
-open import Categories.Category
-open import Categories.Groupoid
-open import Categories.Monoidal
-open import Categories.Monoidal.Helpers
-open import Categories.Bifunctor
-open import Categories.NaturalIsomorphism
+open import Categories.Category using (Category)
+open import Categories.Groupoid using (Groupoid)
+open import Categories.Monoidal using (Monoidal)
+open import Categories.Monoidal.Helpers using (module MonoidalHelperFunctors)
+open import Categories.Bifunctor using (Bifunctor)
+open import Categories.NaturalIsomorphism using (NaturalIsomorphism)
+open import Categories.Monoidal.Braided using (Braided)
+open import Categories.Monoidal.Symmetric using (Symmetric)
+open import Categories.RigCategory
+  using (RigCategory; module BimonoidalHelperFunctors)
 
-open import ConcretePermutation
+open import ConcretePermutation using (CPerm;
+  idp; symp; transp; assocp;
+  _⊎p_; ⊎p-distrib; 1p⊎1p≡1p; _×p_; ×p-distrib; 1p×1p≡1p;
+  unite+p; uniti+p; unite+p∘[0⊎x]≡x∘unite+p; uniti+p∘x≡[0⊎x]∘uniti+p;
+  lidp; ridp; linv; rinv)
 
 ------------------------------------------------------------------------------
 

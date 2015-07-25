@@ -2,30 +2,57 @@
 
 module ConcretePermutation where
 
+import Level using (zero)
 open import Data.Nat using (ℕ; _+_; _*_)
+open import Data.Fin using (Fin; zero; suc; inject+; raise)
+open import Data.Sum
+  using (_⊎_; inj₁; inj₂; [_,_]′)
+  renaming (map to map⊎)
+open import Data.Product using (_×_; proj₁; proj₂; _,′_) 
+open import Data.Vec
+  using (Vec; _∷_; []; tabulate; _>>=_; allFin)
+  renaming (_++_ to _++V_; map to mapV; concat to concatV)
+open import Data.Vec.Properties
+  using (lookup-allFin; tabulate∘lookup; lookup∘tabulate; lookup-++-inject+;
+         tabulate-∘)
+open import Function using (_∘_; id)
+open import Algebra using (CommutativeSemiring)
+open import Algebra.Structures using
+  (IsSemigroup; IsCommutativeMonoid; IsCommutativeSemiring)
+open import Relation.Binary using (IsEquivalence)
 open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; sym; cong; cong₂; module ≡-Reasoning; proof-irrelevance)
+  using (_≡_; refl; sym; trans;
+         cong; cong₂; module ≡-Reasoning; proof-irrelevance)
+
+open import Proofs using (
+  -- FiniteFunctions
+     finext; 
+  -- VectorLemmas
+     lookup-++-raise; lookupassoc; tabulate-split; _!!_; unSplit;
+     concat-map; map-map-map; lookup-map; map-∘;
+     left!!; right!!
+     )
 
 import FinVec using (module F)
 open FinVec.F
-  using (FinVec; _∘̂_; 1C; _⊎c_; _×c_;
-         ⊎c-distrib; 1C⊎1C≡1C; 
-         ×c-distrib; 1C×1C≡1C;
-         ∘̂-lid; ∘̂-rid; ∘̂-assoc;
-         1C₀⊎x≡x; unite+∘[0⊎x]≡x∘unite+; uniti+∘x≡[0⊎x]∘uniti+;
-         unite+; uniti+; unite+∘̂uniti+~id; uniti+∘̂unite+~id;
-         unite+r; uniti+r; unite+r∘̂uniti+r~id; uniti+r∘̂unite+r~id;
-         assocl+; assocr+; assocl+∘̂assocr+~id; assocr+∘̂assocl+~id;
-         swap+cauchy; swap+-inv;
-         unite*; uniti*; unite*∘̂uniti*~id; uniti*∘̂unite*~id;
-         unite*r; uniti*r; unite*r∘̂uniti*r~id; uniti*r∘̂unite*r~id;
-         assocl*; assocr*; assocl*∘̂assocr*~id; assocr*∘̂assocl*~id;
-         swap⋆cauchy; swap*-inv;
-         dist*+; factor*+; dist*+∘̂factor*+~id; factor*+∘̂dist*+~id;
-         distl*+; factorl*+; distl*+∘̂factorl*+~id; factorl*+∘̂distl*+~id;
-         right-zero*l; right-zero*r;
-           right-zero*l∘̂right-zero*r~id; right-zero*r∘̂right-zero*l~id
-         )
+ using (FinVec; _∘̂_; 1C;
+ ∘̂-lid; ∘̂-rid; ∘̂-assoc; _⊎c_; _×c_;
+ ⊎c-distrib; 1C⊎1C≡1C; 
+ ×c-distrib; 1C×1C≡1C;
+ 1C₀⊎x≡x; unite+∘[0⊎x]≡x∘unite+; uniti+∘x≡[0⊎x]∘uniti+;
+ unite+; uniti+; unite+∘̂uniti+~id; uniti+∘̂unite+~id;
+ unite+r; uniti+r; unite+r∘̂uniti+r~id; uniti+r∘̂unite+r~id;
+ assocl+; assocr+; assocl+∘̂assocr+~id; assocr+∘̂assocl+~id;
+ swap+cauchy; swap+-inv;
+ unite*; uniti*; unite*∘̂uniti*~id; uniti*∘̂unite*~id;
+ unite*r; uniti*r; unite*r∘̂uniti*r~id; uniti*r∘̂unite*r~id;
+ assocl*; assocr*; assocl*∘̂assocr*~id; assocr*∘̂assocl*~id;
+ swap⋆cauchy; swap*-inv;
+ dist*+; factor*+; dist*+∘̂factor*+~id; factor*+∘̂dist*+~id;
+ distl*+; factorl*+; distl*+∘̂factorl*+~id; factorl*+∘̂distl*+~id;
+ right-zero*l; right-zero*r;
+ right-zero*l∘̂right-zero*r~id; right-zero*r∘̂right-zero*l~id
+ )
 
 ------------------------------------------------------------------------------
 -- a concrete permutation has 4 components:
@@ -282,3 +309,4 @@ uniti+rp∘[x⊎0]≡x∘uniti+rp p = p≡ {!!}
 -- SCPerm m n = setoid (CPerm m n)
 
 ------------------------------------------------------------------------------
+
