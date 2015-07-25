@@ -23,6 +23,8 @@ open import Categories.Monoidal.Symmetric using (Symmetric)
 open import Categories.RigCategory
   using (RigCategory; module BimonoidalHelperFunctors)
 
+open import Categories.Bicategory using (Bicategory)
+
 open import PiU using (U; PLUS; ZERO; TIMES; ONE)
 open import PiLevel0
   using (_⟷_; id⟷; _◎_;
@@ -56,7 +58,9 @@ open import PiLevel1 using (_⇔_; ⇔Equiv; triv≡; triv≡Equiv; 2!;
  unite⋆r0-absorbr1⇔; absorbl≡swap⋆◎absorbr;
  absorbr⇔[assocl⋆◎[absorbr⊗id⟷]]◎absorbr;
  [id⟷⊗absorbr]◎absorbl⇔assocl⋆◎[absorbl⊗id⟷]◎absorbr;
- elim⊥-A[0⊕B]⇔l; elim⊥-1[A⊕B]⇔l
+ elim⊥-A[0⊕B]⇔l; elim⊥-1[A⊕B]⇔l;
+-- for bicategory
+ idr◎r; idl◎r; assoc◎r
  )
 
 ------------------------------------------------------------------------------
@@ -367,6 +371,28 @@ idF {t} = record
   ; F-resp-≡ = λ _ → tt 
   }
 
+Pi1-Bicat : Bicategory lzero lzero lzero lzero
+Pi1-Bicat = record
+  { Obj = U 
+  ; _⇒_ = ⟷Cat 
+  ; id = idF 
+  ; —∘— = ∘-bifunctor 
+  ; λᵤ = record 
+    { F⇒G = record { η = λ X → idr◎l ; commute = λ {f → tt} } 
+    ; F⇐G = record { η = λ X → idr◎r ; commute = λ {X} {Y} f → tt } 
+    ; iso = λ X → record { isoˡ = tt ; isoʳ = tt }
+    }
+  ; ρᵤ = record 
+    { F⇒G = record { η = λ X → idl◎l ; commute = λ {X} {Y} f → tt } 
+    ; F⇐G = record { η = λ X → idl◎r ; commute = λ {X} {Y} f → tt }
+    ; iso = λ X → record { isoˡ = tt ; isoʳ = tt }
+    } 
+  ; α = record
+    { F⇒G = record { η = λ _ → assoc◎l ; commute = λ {X} {Y} f → tt } 
+    ; F⇐G = record { η = λ _ → assoc◎r ; commute = λ {X} {Y} f → tt }
+    ; iso = λ X → record { isoˡ = tt ; isoʳ = tt }
+    }
+  }
 {--
 Pi1-2Cat : 2-Category lzero lzero lzero lzero
 Pi1-2Cat = record
