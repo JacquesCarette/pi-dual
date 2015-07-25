@@ -17,6 +17,8 @@ open import Categories.NaturalIsomorphism
 
 open import ConcretePermutation
 
+------------------------------------------------------------------------------
+
 CPermCat : Category zero zero zero
 CPermCat = record
   { Obj = ℕ
@@ -64,6 +66,8 @@ module ⊎h = MonoidalHelperFunctors CPermCat ⊎p-bifunctor 0
   ; F⇐G = record { η = λ _ → uniti+p ; commute = λ f → uniti+p∘x≡[0⊎x]∘uniti+p (f 0F) }
   ; iso = λ X → record { isoˡ = linv uniti+p ; isoʳ = linv unite+p } }
 
+{--
+
 x⊎0≡x : NaturalIsomorphism ⊎h.x⊗id ⊎h.x
 x⊎0≡x = record
   { F⇒G = record { η = λ _ → uniti+rp ; commute = λ f → p≡ {!!} }
@@ -95,3 +99,7 @@ CPM× = record
   ; triangle = {!!}
   ; pentagon = {!!}
   }
+
+--}
+
+------------------------------------------------------------------------------
