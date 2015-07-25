@@ -350,8 +350,7 @@ Pi1Rig = record
   }
 
 ------------------------------------------------------------------------------
--- We have a 2-category but NOT a strict one. Again we need to
--- generalize so that equality is up to ⇔ instead of ≡ 
+-- We have a 2-category but NOT a strict one. 
 
 idF : {t : U} → Functor {lzero} {lzero} {lzero} OneC (⟷Cat t t)
 idF {t} = record
@@ -393,7 +392,10 @@ Pi1-Bicat = record
     ; iso = λ X → record { isoˡ = tt ; isoʳ = tt }
     }
   }
+
 {--
+Here is why Pi1 is NOT a strict 2-Category:
+
 Pi1-2Cat : 2-Category lzero lzero lzero lzero
 Pi1-2Cat = record
   { Obj = U

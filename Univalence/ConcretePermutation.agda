@@ -18,8 +18,8 @@ open F
 -- using (FinVec; _∘̂_; ∘̂-rid; 1C; ∘̂-assoc; ∘̂-lid; ~⇒≡;
 --  unite+; uniti+; unite+∘̂uniti+~id; uniti+∘̂unite+~id)
 
-open import Equiv using (_≃_; sym≃; p∘!p≡id)
-open import FinEquiv using (module Plus; module Times; module PlusTimes)
+-- open import Equiv using (_≃_; sym≃; p∘!p≡id)
+-- open import FinEquiv using (module Plus; module Times; module PlusTimes)
 
 -- a concrete permutation has 4 components:
 -- - the permutation
@@ -111,6 +111,7 @@ _⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ⊎c (π π₁))
 
 -- For the rest of the permutations, it is convenient to lift things from
 -- FinVec in one go; but don't use it yet, it makes other things fall apart
+{--
 mkPerm : {m n : ℕ} (eq : Fin m ≃ Fin n) → CPerm m n
 mkPerm {m} {n} eq = cp p q p∘̂q≡1 q∘̂p≡1
   where
@@ -120,6 +121,7 @@ mkPerm {m} {n} eq = cp p q p∘̂q≡1 q∘̂p≡1
     q = tabulate f
     q∘̂p≡1 = ~⇒≡ {f = g} {g = f} (p∘!p≡id {p = eq})
     p∘̂q≡1 = ~⇒≡ {f = f} {g = g} (p∘!p≡id {p = sym≃ eq})
+--}
 
 unite+p : {m : ℕ} → CPerm m (0 + m)
 unite+p {m} = cp (unite+ {m}) (uniti+ {m}) (unite+∘̂uniti+~id {m}) (uniti+∘̂unite+~id {m})

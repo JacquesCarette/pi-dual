@@ -29,7 +29,7 @@ open import Categories.NaturalIsomorphism
 open import Categories.Monoidal.Braided
 open import Categories.Monoidal.Symmetric
 open import Categories.RigCategory
-open import Categories.2-Category
+open import Categories.Bicategory
 
 ------------------------------------------------------------------------------
 -- Equivalences
