@@ -59,9 +59,8 @@ open import SetoidEquiv
 -- vectors with two proofs that they compose to the identity
 -- permutation.
 
-open import FinVec using (module F) 
-open F using (~⇒≡; !!⇒∘̂; _∘̂_; 1C!!i≡i; cauchyext)
-
+open import FinVec using (_∘̂_; 1C)
+open import FinVecProperties using (~⇒≡; !!⇒∘̂; 1C!!i≡i; cauchyext)
 open import EnumEquiv using (Enum; 0E; _⊕e_; eval-left; eval-right) 
 open import ConcretePermutation using (CPerm; cp; p≡; 0p; idp; _⊎p_) -- ; SCPerm) 
 
@@ -144,7 +143,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
               ≡⟨ cong labelB (!!⇒∘̂ _ _ (enumB b)) ⟩
             labelB ((p₂ ∘̂ p₁) !! enumB b)
               ≡⟨ cong (λ x → (labelB (x !! enumB b))) βp ⟩
-           labelB (F.1C !! enumB b)
+           labelB (1C !! enumB b)
               ≡⟨ cong labelB 1C!!i≡i ⟩
            labelB (enumB b)
               ≡⟨ βB b ⟩
@@ -159,7 +158,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
               ≡⟨ cong labelA (!!⇒∘̂ _ _ (enumA a)) ⟩
             labelA ((p₁ ∘̂ p₂) !! enumA a)
               ≡⟨ cong (λ x → labelA (x !! enumA a)) αp ⟩
-            labelA (F.1C !! enumA a)
+            labelA (1C !! enumA a)
               ≡⟨ cong labelA 1C!!i≡i ⟩
             labelA (enumA a)
               ≡⟨ βA a ⟩

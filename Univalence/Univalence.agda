@@ -153,6 +153,7 @@ open import FinEquiv
 
 
 open import FinVec
+open import FinVecProperties
 open import ConcretePermutation
 open import CPermCat
 

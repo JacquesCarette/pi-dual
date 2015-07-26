@@ -33,26 +33,8 @@ open import Proofs using (
      left!!; right!!
      )
 
-import FinVec using (module F)
-open FinVec.F
- using (FinVec; _∘̂_; 1C;
- ∘̂-lid; ∘̂-rid; ∘̂-assoc; _⊎c_; _×c_;
- ⊎c-distrib; 1C⊎1C≡1C; 
- ×c-distrib; 1C×1C≡1C;
- 1C₀⊎x≡x; unite+∘[0⊎x]≡x∘unite+; uniti+∘x≡[0⊎x]∘uniti+;
- unite+; uniti+; unite+∘̂uniti+~id; uniti+∘̂unite+~id;
- unite+r; uniti+r; unite+r∘̂uniti+r~id; uniti+r∘̂unite+r~id;
- assocl+; assocr+; assocl+∘̂assocr+~id; assocr+∘̂assocl+~id;
- swap+cauchy; swap+-inv;
- unite*; uniti*; unite*∘̂uniti*~id; uniti*∘̂unite*~id;
- unite*r; uniti*r; unite*r∘̂uniti*r~id; uniti*r∘̂unite*r~id;
- assocl*; assocr*; assocl*∘̂assocr*~id; assocr*∘̂assocl*~id;
- swap⋆cauchy; swap*-inv;
- dist*+; factor*+; dist*+∘̂factor*+~id; factor*+∘̂dist*+~id;
- distl*+; factorl*+; distl*+∘̂factorl*+~id; factorl*+∘̂distl*+~id;
- right-zero*l; right-zero*r;
- right-zero*l∘̂right-zero*r~id; right-zero*r∘̂right-zero*l~id
- )
+open import FinVec -- using () 
+open import FinVecProperties -- using () 
 
 ------------------------------------------------------------------------------
 -- a concrete permutation has 4 components:
@@ -68,7 +50,8 @@ record CPerm (values : ℕ) (size : ℕ) : Set where
     αp : π ∘̂ πᵒ ≡ 1C
     βp : πᵒ ∘̂ π ≡ 1C
 
-πᵒ≡ : ∀ {m n} → (π₁ π₂ : CPerm m n) → (CPerm.π π₁ ≡ CPerm.π π₂) → (CPerm.πᵒ π₁ ≡ CPerm.πᵒ π₂)
+πᵒ≡ : ∀ {m n} → (π₁ π₂ : CPerm m n) → (CPerm.π π₁ ≡ CPerm.π π₂) →
+  (CPerm.πᵒ π₁ ≡ CPerm.πᵒ π₂)
 πᵒ≡ {n} (cp π πᵒ αp βp) (cp .π πᵒ₁ αp₁ βp₁) refl =
   begin (
     πᵒ                  ≡⟨ sym (∘̂-rid πᵒ) ⟩
@@ -80,8 +63,10 @@ record CPerm (values : ℕ) (size : ℕ) : Set where
   where open ≡-Reasoning
 
 p≡ : ∀ {m n} → {π₁ π₂ : CPerm m n} → (CPerm.π π₁ ≡ CPerm.π π₂) → π₁ ≡ π₂
-p≡ {m} {n} {cp π πᵒ αp βp} {cp .π πᵒ₁ αp₁ βp₁} refl with πᵒ≡ (cp π πᵒ αp βp) (cp π πᵒ₁ αp₁ βp₁) refl
-p≡ {m} {n} {cp π πᵒ αp βp} {cp .π .πᵒ αp₁ βp₁} refl | refl with proof-irrelevance αp αp₁ | proof-irrelevance βp βp₁
+p≡ {m} {n} {cp π πᵒ αp βp} {cp .π πᵒ₁ αp₁ βp₁} refl with
+  πᵒ≡ (cp π πᵒ αp βp) (cp π πᵒ₁ αp₁ βp₁) refl
+p≡ {m} {n} {cp π πᵒ αp βp} {cp .π .πᵒ αp₁ βp₁} refl | refl
+  with proof-irrelevance αp αp₁ | proof-irrelevance βp βp₁
 p≡ {m} {n} {cp π πᵒ αp βp} {cp .π .πᵒ .αp .βp} refl | refl | refl | refl = refl
 
 idp : ∀ {n} → CPerm n n
@@ -119,7 +104,8 @@ transp {n} (cp π πᵒ αp βp) (cp π₁ πᵒ₁ αp₁ βp₁) = cp (π ∘�
 0p = idp {0}
 
 _⊎p_ : ∀ {m₁ m₂ n₁ n₂} → CPerm m₁ m₂ → CPerm n₁ n₂ → CPerm (m₁ + n₁) (m₂ + n₂)
-_⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ⊎c (π π₁)) ((πᵒ π₀) ⊎c (πᵒ π₁)) pf₁ pf₂
+_⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ =
+  cp ((π π₀) ⊎c (π π₁)) ((πᵒ π₀) ⊎c (πᵒ π₁)) pf₁ pf₂
   where
     open CPerm
     open ≡-Reasoning
@@ -159,49 +145,64 @@ mkPerm {m} {n} eq = cp p q p∘̂q≡1 q∘̂p≡1
 --}
 
 unite+p : {m : ℕ} → CPerm m (0 + m)
-unite+p {m} = cp (unite+ {m}) (uniti+ {m}) (unite+∘̂uniti+~id {m}) (uniti+∘̂unite+~id {m})
+unite+p {m} =
+  cp (unite+ {m}) (uniti+ {m}) (unite+∘̂uniti+~id {m}) (uniti+∘̂unite+~id {m})
 
 uniti+p : {m : ℕ} → CPerm (0 + m) m
 uniti+p {m} = symp (unite+p {m})
 
 unite+rp : {m : ℕ} → CPerm m (m + 0)
-unite+rp {m} = cp (unite+r {m}) (uniti+r) (unite+r∘̂uniti+r~id) (uniti+r∘̂unite+r~id)
+unite+rp {m} =
+  cp (unite+r {m}) (uniti+r) (unite+r∘̂uniti+r~id) (uniti+r∘̂unite+r~id)
 
 uniti+rp : {m : ℕ} → CPerm (m + 0) m
 uniti+rp {m} = symp (unite+rp {m})
 
 assocl+p : {m n o : ℕ} → CPerm ((m + n) + o) (m + (n + o))
-assocl+p {m} = cp (assocl+ {m}) (assocr+ {m})  (assocl+∘̂assocr+~id {m}) (assocr+∘̂assocl+~id {m})
+assocl+p {m} =
+  cp
+    (assocl+ {m}) (assocr+ {m})
+    (assocl+∘̂assocr+~id {m}) (assocr+∘̂assocl+~id {m})
 
 assocr+p : {m n o : ℕ} → CPerm (m + (n + o)) ((m + n) + o)
 assocr+p {m} = symp (assocl+p {m})
 
 swap+p : {m n : ℕ} → CPerm (n + m) (m + n)
-swap+p {m} {n} = cp (swap+cauchy m n) (swap+cauchy n m) (swap+-inv {m}) (swap+-inv {n})
+swap+p {m} {n} =
+  cp (swap+cauchy m n) (swap+cauchy n m) (swap+-inv {m}) (swap+-inv {n})
 
 unite*p : {m : ℕ} → CPerm m (1 * m)
-unite*p {m} = cp (unite* {m}) (uniti* {m}) (unite*∘̂uniti*~id {m}) (uniti*∘̂unite*~id {m})
+unite*p {m} =
+  cp (unite* {m}) (uniti* {m}) (unite*∘̂uniti*~id {m}) (uniti*∘̂unite*~id {m})
 
 uniti*p : {m : ℕ} → CPerm (1 * m) m
 uniti*p {m} = symp (unite*p {m})
 
 unite*rp : {m : ℕ} → CPerm m (m * 1)
-unite*rp {m} = cp (unite*r {m}) (uniti*r {m}) (unite*r∘̂uniti*r~id {m}) (uniti*r∘̂unite*r~id {m})
+unite*rp {m} =
+  cp
+    (unite*r {m}) (uniti*r {m})
+    (unite*r∘̂uniti*r~id {m}) (uniti*r∘̂unite*r~id {m})
 
 uniti*rp : {m : ℕ} → CPerm (m * 1) m
 uniti*rp {m} = symp (unite*rp {m})
 
 swap*p : {m n : ℕ} → CPerm (n * m) (m * n)
-swap*p {m} {n} = cp (swap⋆cauchy m n) (swap⋆cauchy n m) (swap*-inv {m}) (swap*-inv {n})
+swap*p {m} {n} =
+  cp (swap⋆cauchy m n) (swap⋆cauchy n m) (swap*-inv {m}) (swap*-inv {n})
 
 assocl*p : {m n o : ℕ} → CPerm ((m * n) * o) (m * (n * o))
-assocl*p {m} = cp (assocl* {m}) (assocr* {m})  (assocl*∘̂assocr*~id {m}) (assocr*∘̂assocl*~id {m})
+assocl*p {m} =
+  cp
+    (assocl* {m}) (assocr* {m})
+    (assocl*∘̂assocr*~id {m}) (assocr*∘̂assocl*~id {m})
 
 assocr*p : {m n o : ℕ} → CPerm (m * (n * o)) ((m * n) * o)
 assocr*p {m} = symp (assocl*p {m})
 
 _×p_ : ∀ {m₁ m₂ n₁ n₂} → CPerm m₁ m₂ → CPerm n₁ n₂ → CPerm (m₁ * n₁) (m₂ * n₂)
-_×p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ×c (π π₁)) ((πᵒ π₀) ×c (πᵒ π₁)) pf₁ pf₂
+_×p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ =
+  cp ((π π₀) ×c (π π₁)) ((πᵒ π₀) ×c (πᵒ π₁)) pf₁ pf₂
   where
     open CPerm
     open ≡-Reasoning
@@ -221,13 +222,19 @@ _×p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ×c (π π₁)) (
         1C ∎)
 
 distp : {m n o : ℕ} → CPerm (m * o + n * o) ((m + n) * o)
-distp {m} {n} {o} = cp (dist*+ {m}) (factor*+ {m}) (dist*+∘̂factor*+~id {m}) (factor*+∘̂dist*+~id {m})
+distp {m} {n} {o} =
+  cp
+    (dist*+ {m}) (factor*+ {m})
+    (dist*+∘̂factor*+~id {m}) (factor*+∘̂dist*+~id {m})
 
 factorp : {m n o : ℕ} → CPerm ((m + n) * o) (m * o + n * o)
 factorp {m} = symp (distp {m})
 
 distlp : {m n o : ℕ} → CPerm (m * n + m * o) (m * (n + o))
-distlp {m} {n} {o} = cp (distl*+ {m}) (factorl*+ {m}) (distl*+∘̂factorl*+~id {m}) (factorl*+∘̂distl*+~id {m})
+distlp {m} {n} {o} =
+  cp
+    (distl*+ {m}) (factorl*+ {m})
+    (distl*+∘̂factorl*+~id {m}) (factorl*+∘̂distl*+~id {m})
 
 factorlp : {m n o : ℕ} → CPerm (m * (n + o)) (m * n + m * o)
 factorlp {m} = symp (distlp {m})
@@ -235,8 +242,10 @@ factorlp {m} = symp (distlp {m})
 -- right-zero absorbing permutation
 
 0pr : ∀ {n} → CPerm 0 (n * 0)
-0pr {n} = cp (right-zero*l {n}) (right-zero*r {n}) 
-    right-zero*l∘̂right-zero*r~id right-zero*r∘̂right-zero*l~id
+0pr {n} =
+  cp
+    (right-zero*l {n}) (right-zero*r {n}) 
+    (right-zero*l∘̂right-zero*r~id {n}) (right-zero*r∘̂right-zero*l~id {n})
 
 -- and its symmetric version
 
@@ -251,9 +260,11 @@ ridp {p = p} = p≡ (∘̂-rid (CPerm.π p))
 lidp : ∀ {m₁ m₂} {p : CPerm m₂ m₁} → transp idp p ≡ p
 lidp {p = p} = p≡ (∘̂-lid (CPerm.π p))
 
-assocp : ∀ {m₁ m₂ m₃ n₁} → {p₁ : CPerm m₁ n₁} → {p₂ : CPerm m₂ m₁} → {p₃ : CPerm m₃ m₂} → 
+assocp : ∀ {m₁ m₂ m₃ n₁} → {p₁ : CPerm m₁ n₁} → {p₂ : CPerm m₂ m₁} →
+  {p₃ : CPerm m₃ m₂} → 
   transp p₁ (transp p₂ p₃) ≡ transp (transp p₁ p₂) p₃
-assocp {p₁ = p₁} {p₂} {p₃} = p≡ (∘̂-assoc (CPerm.π p₁) (CPerm.π p₂) (CPerm.π p₃))
+assocp {p₁ = p₁} {p₂} {p₃} =
+  p≡ (∘̂-assoc (CPerm.π p₁) (CPerm.π p₂) (CPerm.π p₃))
 
 linv : ∀ {m₁ m₂} (p : CPerm m₂ m₁) → transp p (symp p) ≡ idp
 linv p = p≡ (CPerm.αp p)
