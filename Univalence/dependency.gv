@@ -91,6 +91,8 @@ digraph PiDepend {
   Proofs -> DS;
   Proofs -> DE;
 
+//
+
   Equiv -> DE;
   Equiv -> DS;
   Equiv -> DP;
@@ -151,18 +153,16 @@ digraph PiDepend {
   FinVec -> DV;
   FinVec -> DS;
   FinVec -> DP;
+  FinVec -> DNPS;
+  FinVec -> DVP;
   FinVec -> Equiv;
   FinVec -> TypeEquiv;
   FinVec -> FinEquiv;
-  FinVec -> DNPS;
-  FinVec -> DVP;
   FinVec -> Proofs;
 //  FinVec -> Groupoid;
 
   ConcretePermutation -> RBP;
   ConcretePermutation -> FinVec;
-  ConcretePermutation -> Equiv;
-  ConcretePermutation -> FinEquiv;
 
 //  RepresPerm -> EnumEquiv;
 //  RepresPerm -> Equiv;

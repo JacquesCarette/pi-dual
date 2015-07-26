@@ -22,7 +22,6 @@ open import Categories.Monoidal.Braided using (Braided)
 open import Categories.Monoidal.Symmetric using (Symmetric)
 open import Categories.RigCategory
   using (RigCategory; module BimonoidalHelperFunctors)
-
 open import Categories.Bicategory using (Bicategory)
 
 open import PiU using (U; PLUS; ZERO; TIMES; ONE)
@@ -350,8 +349,7 @@ Pi1Rig = record
   }
 
 ------------------------------------------------------------------------------
--- We have a 2-category but NOT a strict one. Again we need to
--- generalize so that equality is up to ⇔ instead of ≡ 
+-- We have a 2-category but NOT a strict one. 
 
 idF : {t : U} → Functor {lzero} {lzero} {lzero} OneC (⟷Cat t t)
 idF {t} = record
@@ -395,7 +393,10 @@ Pi1-Bicat = record
   ; triangle = λ {A} {B} {C} f g → tt
   ; pentagon = λ {A} {B} {C} {D} {E} f g h i → tt
   }
+
 {--
+Here is why Pi1 is NOT a strict 2-Category:
+
 Pi1-2Cat : 2-Category lzero lzero lzero lzero
 Pi1-2Cat = record
   { Obj = U

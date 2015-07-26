@@ -2,52 +2,69 @@
 
 module ConcretePermutation where
 
-open import Level using (zero)
-open import Data.Nat using (ℕ;_+_;_*_)
-open import Data.Fin using (Fin) -- for convenience
-open import Data.Vec using (tabulate)
-open import Data.Product using (proj₁)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; trans;
-    proof-irrelevance; cong₂; -- setoid; 
-    module ≡-Reasoning)
--- open import Relation.Binary using (Setoid; module Setoid)
+import Level using (zero)
 
-open import FinVec using (module F)
-open F
+open import Data.Nat using (ℕ; _+_; _*_)
 
--- using (FinVec; _∘̂_; ∘̂-rid; 1C; ∘̂-assoc; ∘̂-lid; ~⇒≡;
---  unite+; uniti+; unite+∘̂uniti+~id; uniti+∘̂unite+~id)
+open import Algebra using (CommutativeSemiring)
+open import Algebra.Structures using
+  (IsSemigroup; IsCommutativeMonoid; IsCommutativeSemiring)
 
-open import Equiv using (_≃_; sym≃; p∘!p≡id)
-open import FinEquiv using (module Plus; module Times; module PlusTimes)
+open import Relation.Binary using (IsEquivalence)
+open import Relation.Binary.PropositionalEquality
+  using (_≡_; refl; sym; cong; cong₂; module ≡-Reasoning)
 
--- a concrete permutation has 4 components:
--- - the permutation
--- - its inverse
--- - and 2 proofs that it is indeed inverse
+--
+
+open import FinVec
+  using (FinVec; 1C; _∘̂_; _⊎c_; _×c_; 
+         unite+; uniti+;
+         unite+r; uniti+r;
+         assocl+; assocr+;
+         swap+cauchy;
+         unite*; uniti*;
+         unite*r; uniti*r;
+         assocl*; assocr*;
+         swap⋆cauchy;
+         dist*+; factor*+;
+         distl*+; factorl*+;
+         right-zero*l; right-zero*r)
+
+open import FinVecProperties
+  using (∘̂-assoc; ∘̂-lid; ∘̂-rid;
+         1C⊎1C≡1C; 1C×1C≡1C; 1C₀⊎x≡x;
+         ⊎c-distrib; ×c-distrib;
+         unite+∘̂uniti+~id; uniti+∘̂unite+~id;
+         unite+r∘̂uniti+r~id; uniti+r∘̂unite+r~id;
+         assocl+∘̂assocr+~id; assocr+∘̂assocl+~id;
+         swap+-inv;
+         unite*∘̂uniti*~id; uniti*∘̂unite*~id;
+         unite*r∘̂uniti*r~id; uniti*r∘̂unite*r~id;
+         assocl*∘̂assocr*~id; assocr*∘̂assocl*~id;
+         swap*-inv;
+         dist*+∘̂factor*+~id; factor*+∘̂dist*+~id;
+         distl*+∘̂factorl*+~id; factorl*+∘̂distl*+~id;
+         right-zero*l∘̂right-zero*r~id; right-zero*r∘̂right-zero*l~id)
+
+------------------------------------------------------------------------------
+-- A concrete permutation has 4 components:
+-- - the one-line notation for a permutation
+-- - the one-line notation for the inverse permutation
+-- - and 2 proofs that these are indeed inverses
+
 record CPerm (values : ℕ) (size : ℕ) : Set where
   constructor cp
   field
-    π : FinVec values size
+    π  : FinVec values size
     πᵒ : FinVec size values
-    αp : π ∘̂ πᵒ ≡ F.1C
-    βp : πᵒ ∘̂ π ≡ F.1C
+    αp : π ∘̂ πᵒ ≡ 1C
+    βp : πᵒ ∘̂ π ≡ 1C
 
-πᵒ≡ : ∀ {m n} → (π₁ π₂ : CPerm m n) → (CPerm.π π₁ ≡ CPerm.π π₂) → (CPerm.πᵒ π₁ ≡ CPerm.πᵒ π₂)
-πᵒ≡ {n} (cp π πᵒ αp βp) (cp .π πᵒ₁ αp₁ βp₁) refl =
-  begin (
-    πᵒ                  ≡⟨ sym (∘̂-rid πᵒ) ⟩
-    πᵒ ∘̂ 1C          ≡⟨  cong (_∘̂_ πᵒ) (sym αp₁)  ⟩
-    πᵒ ∘̂ (π ∘̂ πᵒ₁)      ≡⟨ ∘̂-assoc πᵒ π πᵒ₁ ⟩
-    (πᵒ ∘̂ π) ∘̂ πᵒ₁      ≡⟨ cong (λ x → x ∘̂ πᵒ₁) βp ⟩
-    1C ∘̂ πᵒ₁            ≡⟨ ∘̂-lid πᵒ₁ ⟩
-    πᵒ₁ ∎)
-  where open ≡-Reasoning
+------------------------------------------------------------------------------
+-- Now the goal is to prove that CPerm m n is a commutative semiring
+-- (including symmetry now)
 
-p≡ : ∀ {m n} → {π₁ π₂ : CPerm m n} → (CPerm.π π₁ ≡ CPerm.π π₂) → π₁ ≡ π₂
-p≡ {m} {n} {cp π πᵒ αp βp} {cp .π πᵒ₁ αp₁ βp₁} refl with πᵒ≡ (cp π πᵒ αp βp) (cp π πᵒ₁ αp₁ βp₁) refl
-p≡ {m} {n} {cp π πᵒ αp βp} {cp .π .πᵒ αp₁ βp₁} refl | refl with proof-irrelevance αp αp₁ | proof-irrelevance βp βp₁
-p≡ {m} {n} {cp π πᵒ αp βp} {cp .π .πᵒ .αp .βp} refl | refl | refl | refl = refl
+-- First it is an equivalence relation
 
 idp : ∀ {n} → CPerm n n
 idp {n} = cp 1C 1C (∘̂-rid _) (∘̂-lid _)
@@ -62,31 +79,35 @@ transp {n} (cp π πᵒ αp βp) (cp π₁ πᵒ₁ αp₁ βp₁) = cp (π ∘�
     pf₁ : (π ∘̂ π₁) ∘̂ (πᵒ₁ ∘̂ πᵒ) ≡ 1C
     pf₁ =
       begin (
-        (π ∘̂ π₁) ∘̂ (πᵒ₁ ∘̂ πᵒ)      ≡⟨ ∘̂-assoc _ _ _ ⟩
-        ((π ∘̂ π₁) ∘̂ πᵒ₁) ∘̂ πᵒ      ≡⟨ cong (λ x → x ∘̂ πᵒ) (sym (∘̂-assoc _ _ _)) ⟩
-        (π ∘̂ (π₁ ∘̂ πᵒ₁)) ∘̂ πᵒ      ≡⟨ cong (λ x → (π ∘̂ x) ∘̂ πᵒ) (αp₁) ⟩
-        (π ∘̂ F.1C) ∘̂ πᵒ       ≡⟨ cong (λ x → x ∘̂ πᵒ) (∘̂-rid _) ⟩
-        π ∘̂ πᵒ                     ≡⟨ αp ⟩
-        F.1C ∎)
+        (π ∘̂ π₁) ∘̂ (πᵒ₁ ∘̂ πᵒ) ≡⟨ ∘̂-assoc _ _ _ ⟩
+        ((π ∘̂ π₁) ∘̂ πᵒ₁) ∘̂ πᵒ ≡⟨ cong (λ x → x ∘̂ πᵒ) (sym (∘̂-assoc _ _ _)) ⟩
+        (π ∘̂ (π₁ ∘̂ πᵒ₁)) ∘̂ πᵒ ≡⟨ cong (λ x → (π ∘̂ x) ∘̂ πᵒ) (αp₁) ⟩
+        (π ∘̂ 1C) ∘̂ πᵒ         ≡⟨ cong (λ x → x ∘̂ πᵒ) (∘̂-rid _) ⟩
+        π ∘̂ πᵒ                ≡⟨ αp ⟩
+        1C ∎)
     pf₂ : (πᵒ₁ ∘̂ πᵒ) ∘̂ (π ∘̂ π₁) ≡ 1C
     pf₂ =
       begin (
-        (πᵒ₁ ∘̂ πᵒ) ∘̂ (π ∘̂ π₁)     ≡⟨ ∘̂-assoc _ _ _ ⟩
-        ((πᵒ₁ ∘̂ πᵒ) ∘̂ π) ∘̂ π₁     ≡⟨ cong (λ x → x ∘̂ π₁) (sym (∘̂-assoc _ _ _)) ⟩
-        (πᵒ₁ ∘̂ (πᵒ ∘̂ π)) ∘̂ π₁     ≡⟨ cong (λ x → (πᵒ₁ ∘̂ x) ∘̂ π₁) βp ⟩
-        (πᵒ₁ ∘̂ F.1C) ∘̂ π₁     ≡⟨ cong (λ x → x ∘̂ π₁) (∘̂-rid _) ⟩
-         πᵒ₁ ∘̂ π₁                 ≡⟨ βp₁ ⟩
-        F.1C ∎)
+        (πᵒ₁ ∘̂ πᵒ) ∘̂ (π ∘̂ π₁) ≡⟨ ∘̂-assoc _ _ _ ⟩
+        ((πᵒ₁ ∘̂ πᵒ) ∘̂ π) ∘̂ π₁ ≡⟨ cong (λ x → x ∘̂ π₁) (sym (∘̂-assoc _ _ _)) ⟩
+        (πᵒ₁ ∘̂ (πᵒ ∘̂ π)) ∘̂ π₁ ≡⟨ cong (λ x → (πᵒ₁ ∘̂ x) ∘̂ π₁) βp ⟩
+        (πᵒ₁ ∘̂ 1C) ∘̂ π₁       ≡⟨ cong (λ x → x ∘̂ π₁) (∘̂-rid _) ⟩
+         πᵒ₁ ∘̂ π₁             ≡⟨ βp₁ ⟩
+        1C ∎)
 
+-- units
 -- zero permutation
+
 0p : CPerm 0 0
 0p = idp {0}
 
+-- Additive monoid
+
 _⊎p_ : ∀ {m₁ m₂ n₁ n₂} → CPerm m₁ m₂ → CPerm n₁ n₂ → CPerm (m₁ + n₁) (m₂ + n₂)
-_⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ⊎c (π π₁)) ((πᵒ π₀) ⊎c (πᵒ π₁)) pf₁ pf₂
+_⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ =
+  cp ((π π₀) ⊎c (π π₁)) ((πᵒ π₀) ⊎c (πᵒ π₁)) pf₁ pf₂
   where
     open CPerm
-    open F
     open ≡-Reasoning
     pf₁ : (π π₀ ⊎c π π₁) ∘̂ (πᵒ π₀ ⊎c πᵒ π₁) ≡ 1C
     pf₁ =
@@ -109,62 +130,44 @@ _⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ⊎c (π π₁))
           ≡⟨ 1C⊎1C≡1C {m₁} ⟩
         1C ∎ )
 
--- For the rest of the permutations, it is convenient to lift things from
--- FinVec in one go; but don't use it yet, it makes other things fall apart
-mkPerm : {m n : ℕ} (eq : Fin m ≃ Fin n) → CPerm m n
-mkPerm {m} {n} eq = cp p q p∘̂q≡1 q∘̂p≡1
-  where
-    f = proj₁ eq
-    g = proj₁ (sym≃ eq)
-    p = tabulate g -- note the flip!
-    q = tabulate f
-    q∘̂p≡1 = ~⇒≡ {f = g} {g = f} (p∘!p≡id {p = eq})
-    p∘̂q≡1 = ~⇒≡ {f = f} {g = g} (p∘!p≡id {p = sym≃ eq})
+-- units
 
 unite+p : {m : ℕ} → CPerm m (0 + m)
-unite+p {m} = cp (unite+ {m}) (uniti+ {m}) (unite+∘̂uniti+~id {m}) (uniti+∘̂unite+~id {m})
+unite+p {m} =
+  cp (unite+ {m}) (uniti+ {m}) (unite+∘̂uniti+~id {m}) (uniti+∘̂unite+~id {m})
 
 uniti+p : {m : ℕ} → CPerm (0 + m) m
 uniti+p {m} = symp (unite+p {m})
 
 unite+rp : {m : ℕ} → CPerm m (m + 0)
-unite+rp {m} = cp (unite+r {m}) (uniti+r) (unite+r∘̂uniti+r~id) (uniti+r∘̂unite+r~id)
+unite+rp {m} =
+  cp (unite+r {m}) (uniti+r) (unite+r∘̂uniti+r~id) (uniti+r∘̂unite+r~id)
 
 uniti+rp : {m : ℕ} → CPerm (m + 0) m
 uniti+rp {m} = symp (unite+rp {m})
 
+-- commutativity
+
+swap+p : {m n : ℕ} → CPerm (n + m) (m + n)
+swap+p {m} {n} =
+  cp (swap+cauchy m n) (swap+cauchy n m) (swap+-inv {m}) (swap+-inv {n})
+
+-- associativity
+
 assocl+p : {m n o : ℕ} → CPerm ((m + n) + o) (m + (n + o))
-assocl+p {m} = cp (assocl+ {m}) (assocr+ {m})  (assocl+∘̂assocr+~id {m}) (assocr+∘̂assocl+~id {m})
+assocl+p {m} =
+  cp
+    (assocl+ {m}) (assocr+ {m})
+    (assocl+∘̂assocr+~id {m}) (assocr+∘̂assocl+~id {m})
 
 assocr+p : {m n o : ℕ} → CPerm (m + (n + o)) ((m + n) + o)
 assocr+p {m} = symp (assocl+p {m})
 
-swap+p : {m n : ℕ} → CPerm (n + m) (m + n)
-swap+p {m} {n} = cp (swap+cauchy m n) (swap+cauchy n m) (swap+-inv {m}) (swap+-inv {n})
-
-unite*p : {m : ℕ} → CPerm m (1 * m)
-unite*p {m} = cp (unite* {m}) (uniti* {m}) (unite*∘̂uniti*~id {m}) (uniti*∘̂unite*~id {m})
-
-uniti*p : {m : ℕ} → CPerm (1 * m) m
-uniti*p {m} = symp (unite*p {m})
-
-unite*rp : {m : ℕ} → CPerm m (m * 1)
-unite*rp {m} = cp (unite*r {m}) (uniti*r {m}) (unite*r∘̂uniti*r~id {m}) (uniti*r∘̂unite*r~id {m})
-
-uniti*rp : {m : ℕ} → CPerm (m * 1) m
-uniti*rp {m} = symp (unite*rp {m})
-
-swap*p : {m n : ℕ} → CPerm (n * m) (m * n)
-swap*p {m} {n} = cp (swap⋆cauchy m n) (swap⋆cauchy n m) (swap*-inv {m}) (swap*-inv {n})
-
-assocl*p : {m n o : ℕ} → CPerm ((m * n) * o) (m * (n * o))
-assocl*p {m} = cp (assocl* {m}) (assocr* {m})  (assocl*∘̂assocr*~id {m}) (assocr*∘̂assocl*~id {m})
-
-assocr*p : {m n o : ℕ} → CPerm (m * (n * o)) ((m * n) * o)
-assocr*p {m} = symp (assocl*p {m})
+-- Multiplicative monoid
 
 _×p_ : ∀ {m₁ m₂ n₁ n₂} → CPerm m₁ m₂ → CPerm n₁ n₂ → CPerm (m₁ * n₁) (m₂ * n₂)
-_×p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ×c (π π₁)) ((πᵒ π₀) ×c (πᵒ π₁)) pf₁ pf₂
+_×p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ =
+  cp ((π π₀) ×c (π π₁)) ((πᵒ π₀) ×c (πᵒ π₁)) pf₁ pf₂
   where
     open CPerm
     open ≡-Reasoning
@@ -183,87 +186,129 @@ _×p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ = cp ((π π₀) ×c (π π₁)) (
         1C ×c 1C                          ≡⟨ 1C×1C≡1C ⟩
         1C ∎)
 
+-- units
+
+unite*p : {m : ℕ} → CPerm m (1 * m)
+unite*p {m} =
+  cp (unite* {m}) (uniti* {m}) (unite*∘̂uniti*~id {m}) (uniti*∘̂unite*~id {m})
+
+uniti*p : {m : ℕ} → CPerm (1 * m) m
+uniti*p {m} = symp (unite*p {m})
+
+unite*rp : {m : ℕ} → CPerm m (m * 1)
+unite*rp {m} =
+  cp
+    (unite*r {m}) (uniti*r {m})
+    (unite*r∘̂uniti*r~id {m}) (uniti*r∘̂unite*r~id {m})
+
+uniti*rp : {m : ℕ} → CPerm (m * 1) m
+uniti*rp {m} = symp (unite*rp {m})
+
+-- commutativity
+
+swap*p : {m n : ℕ} → CPerm (n * m) (m * n)
+swap*p {m} {n} =
+  cp (swap⋆cauchy m n) (swap⋆cauchy n m) (swap*-inv {m}) (swap*-inv {n})
+
+-- associativity
+
+assocl*p : {m n o : ℕ} → CPerm ((m * n) * o) (m * (n * o))
+assocl*p {m} =
+  cp
+    (assocl* {m}) (assocr* {m})
+    (assocl*∘̂assocr*~id {m}) (assocr*∘̂assocl*~id {m})
+
+assocr*p : {m n o : ℕ} → CPerm (m * (n * o)) ((m * n) * o)
+assocr*p {m} = symp (assocl*p {m})
+
+-- Distributivity
+
+-- right-zero absorbing permutation
+
+0pr : ∀ {n} → CPerm 0 (n * 0)
+0pr {n} =
+  cp
+    (right-zero*l {n}) (right-zero*r {n}) 
+    (right-zero*l∘̂right-zero*r~id {n}) (right-zero*r∘̂right-zero*l~id {n})
+
+-- and its symmetric version
+
+0pl : ∀ {n} → CPerm (n * 0) 0
+0pl {n} = symp (0pr {n})
+
 distp : {m n o : ℕ} → CPerm (m * o + n * o) ((m + n) * o)
-distp {m} {n} {o} = cp (dist*+ {m}) (factor*+ {m}) (dist*+∘̂factor*+~id {m}) (factor*+∘̂dist*+~id {m})
+distp {m} {n} {o} =
+  cp
+    (dist*+ {m}) (factor*+ {m})
+    (dist*+∘̂factor*+~id {m}) (factor*+∘̂dist*+~id {m})
 
 factorp : {m n o : ℕ} → CPerm ((m + n) * o) (m * o + n * o)
 factorp {m} = symp (distp {m})
 
 distlp : {m n o : ℕ} → CPerm (m * n + m * o) (m * (n + o))
-distlp {m} {n} {o} = cp (distl*+ {m}) (factorl*+ {m}) (distl*+∘̂factorl*+~id {m}) (factorl*+∘̂distl*+~id {m})
+distlp {m} {n} {o} =
+  cp
+    (distl*+ {m}) (factorl*+ {m})
+    (distl*+∘̂factorl*+~id {m}) (factorl*+∘̂distl*+~id {m})
 
 factorlp : {m n o : ℕ} → CPerm (m * (n + o)) (m * n + m * o)
 factorlp {m} = symp (distlp {m})
 
--- right-zero absorbing permutation
-0pr : ∀ {n} → CPerm 0 (n * 0)
-0pr {n} = cp (right-zero*l {n}) (right-zero*r {n}) 
-    right-zero*l∘̂right-zero*r~id right-zero*r∘̂right-zero*l~id
+------------------------------------------------------------------------------
+-- Commutative semiring structure 
 
--- and its symmetric version
-0pl : ∀ {n} → CPerm (n * 0) 0
-0pl {n} = symp (0pr {n})
+cpermIsEquiv : IsEquivalence {Level.zero} {Level.zero} {ℕ} CPerm
+cpermIsEquiv = record {
+  refl = idp; 
+  sym = symp; 
+  trans = λ p q → transp q p
+  }
 
-------------------------------------------------------------------------------------------------------
+cpermPlusIsSG : IsSemigroup {Level.zero} {Level.zero} {ℕ} CPerm _+_
+cpermPlusIsSG = record {
+  isEquivalence = cpermIsEquiv ; 
+  assoc = λ m n o → assocl+p {m} {n} {o} ; 
+  ∙-cong = _⊎p_ 
+  }
 
-ridp : ∀ {m₁ m₂} {p : CPerm m₂ m₁} → transp p idp ≡ p
-ridp {p = p} = p≡ (∘̂-rid (CPerm.π p))
+cpermTimesIsSG : IsSemigroup {Level.zero} {Level.zero} {ℕ} CPerm _*_
+cpermTimesIsSG = record {
+  isEquivalence = cpermIsEquiv ;
+  assoc = λ m n o → assocl*p {m} {n} {o} ;
+  ∙-cong = _×p_
+  }
 
-lidp : ∀ {m₁ m₂} {p : CPerm m₂ m₁} → transp idp p ≡ p
-lidp {p = p} = p≡ (∘̂-lid (CPerm.π p))
+cpermPlusIsCM : IsCommutativeMonoid CPerm _+_ 0
+cpermPlusIsCM = record {
+  isSemigroup = cpermPlusIsSG ;
+  identityˡ = λ m → idp ;
+  comm = λ m n → swap+p {n} {m}
+  }
 
-assocp : ∀ {m₁ m₂ m₃ n₁} → {p₁ : CPerm m₁ n₁} → {p₂ : CPerm m₂ m₁} → {p₃ : CPerm m₃ m₂} → 
-  transp p₁ (transp p₂ p₃) ≡ transp (transp p₁ p₂) p₃
-assocp {p₁ = p₁} {p₂} {p₃} = p≡ (∘̂-assoc (CPerm.π p₁) (CPerm.π p₂) (CPerm.π p₃))
+cpermTimesIsCM : IsCommutativeMonoid CPerm _*_ 1
+cpermTimesIsCM = record {
+  isSemigroup = cpermTimesIsSG ;
+  identityˡ = λ m → uniti*p {m} ;
+  comm = λ m n → swap*p {n} {m}
+  }
 
-linv : ∀ {m₁ m₂} (p : CPerm m₂ m₁) → transp p (symp p) ≡ idp
-linv p = p≡ (CPerm.αp p)
+cpermIsCSR : IsCommutativeSemiring CPerm _+_ _*_ 0 1
+cpermIsCSR = record {
+  +-isCommutativeMonoid = cpermPlusIsCM ;
+  *-isCommutativeMonoid = cpermTimesIsCM ; 
+  distribʳ = λ o m n → factorp {m} {n} {o} ; 
+  zeroˡ = λ m → 0p
+  }
 
-rinv : ∀ {m₁ m₂} (p : CPerm m₂ m₁) → transp (symp p) p ≡ idp
-rinv p = p≡ (CPerm.βp p)
+cpermCSR : CommutativeSemiring Level.zero Level.zero
+cpermCSR = record {
+  Carrier = ℕ ;
+  _≈_ = CPerm;
+  _+_ = _+_ ;
+  _*_ = _*_ ;
+  0# = 0 ;
+  1# = 1 ;
+  isCommutativeSemiring = cpermIsCSR
+  }
 
-transp-resp-≡ : ∀ {m₁ m₂ m₃} {f h : CPerm m₂ m₃} {g i : CPerm m₁ m₂} → 
-  f ≡ h → g ≡ i → transp f g ≡ transp h i
-transp-resp-≡ refl refl = refl
-
-1p⊎1p≡1p : ∀ {m n} → idp {m} ⊎p idp {n} ≡ idp
-1p⊎1p≡1p {m} = p≡ (1C⊎1C≡1C {m})
-
-1p×1p≡1p : ∀ {m n} → idp {m} ×p idp {n} ≡ idp
-1p×1p≡1p {m} = p≡ (1C×1C≡1C {m})
-
-⊎p-distrib :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : CPerm m₁ n₁} → {p₂ : CPerm m₂ n₂}
-    → {p₃ : CPerm m₃ m₁} → {p₄ : CPerm m₄ m₂} →
-      transp (p₁ ⊎p p₂) (p₃ ⊎p p₄) ≡ (transp p₁ p₃) ⊎p (transp p₂ p₄)
-⊎p-distrib {p₁ = p₁} = p≡ (⊎c-distrib {p₁ = CPerm.π p₁})
-
-×p-distrib :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : CPerm m₁ n₁} → {p₂ : CPerm m₂ n₂}
-    → {p₃ : CPerm m₃ m₁} → {p₄ : CPerm m₄ m₂} →
-      (transp p₁ p₃) ×p (transp p₂ p₄) ≡ transp (p₁ ×p p₂) (p₃ ×p p₄)
-×p-distrib {p₁ = p₁} = p≡ (sym (×c-distrib {p₁ = CPerm.π p₁}))
-
-0p⊎x≡x : ∀ {m n} {p : CPerm m n} → idp {0} ⊎p p ≡ p
-0p⊎x≡x {p = p} = p≡ F.1C₀⊎x≡x
-
--- this comes from looking at things categorically:
-unite+p∘[0⊎x]≡x∘unite+p : ∀ {m n} (p : CPerm m n) →
-  transp unite+p (0p ⊎p p) ≡ transp p unite+p
-unite+p∘[0⊎x]≡x∘unite+p p = p≡ unite+∘[0⊎x]≡x∘unite+
-
-uniti+p∘x≡[0⊎x]∘uniti+p : ∀ {m n} (p : CPerm m n) →
-  transp uniti+p p ≡ transp (0p ⊎p p) uniti+p
-uniti+p∘x≡[0⊎x]∘uniti+p p = p≡ (uniti+∘x≡[0⊎x]∘uniti+ {x = CPerm.π p})
-
--- and the right version
-{-
-unite+rp∘[x⊎0]≡x∘unite+rp : ∀ {m n} (p : CPerm m n) →
-  transp unite+rp (p ⊎p 0p) ≡ transp p unite+rp
-unite+rp∘[x⊎0]≡x∘unite+rp p = p≡ ?
-
-uniti+rp∘[x⊎0]≡x∘uniti+rp : ∀ {m n} (p : CPerm m n) →
-  transp uniti+rp (p ⊎p 0p) ≡ transp p uniti+rp
-uniti+rp∘[x⊎0]≡x∘uniti+rp p = p≡ {!!}
--}
-
--- SCPerm : ℕ → ℕ → Setoid zero zero
--- SCPerm m n = setoid (CPerm m n)
+------------------------------------------------------------------------------

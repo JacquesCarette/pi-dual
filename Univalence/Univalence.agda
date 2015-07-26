@@ -29,7 +29,7 @@ open import Categories.NaturalIsomorphism
 open import Categories.Monoidal.Braided
 open import Categories.Monoidal.Symmetric
 open import Categories.RigCategory
-open import Categories.2-Category
+open import Categories.Bicategory
 
 ------------------------------------------------------------------------------
 -- Equivalences
@@ -106,35 +106,67 @@ open import Pi1Examples
 ------------------------------------------------------------------------------
 -- Equivalences between enumerated types (permutations) 
 
--- clean up the following and then we want the punchline to be that we
--- have symmetric rig category of permutations
+-- Finding a good representation of permutations is tricky.
+
+-- We begin (in FinEquiv) by proving various equivalences between
+-- finite sets like:
+--   Fin (m + n) ≃ Fin m ⊎ Fin n
+-- and
+--   Fin (m * n) ≃ Fin m × Fin n
+-- We make sure we have enough equivalences to model a commutative
+-- semiring.
+
+-- We can compose equivalences from FinEquiv and TypeEquiv to get
+-- equivalences that correspond to permutations on finite sets, e.g.,
+--   Fin (m + n) ≃ Fin m ⊎ Fin n ≃ Fin n ⊎ Fin m ≃ Fin (n + m)
+-- At this point these permutations are represented as extensional
+-- functions. In FinVec, we represent these extensional functions
+-- using the one-line notation of permutations represented in Agda as
+-- the type 'Vec (Fin m) n' (which we abbreviate as 'FinVec m n').
+-- The setup allows us to directly extract one-line permutations from
+-- the equivalences. For example, the one-line notation for:
+--   FinVec ((m + n) + o) (m + (n + o))
+-- is extracted using 'tabulate' of the equivalence between:
+--   Fin ((m + n) + o) and Fin (m + (n + o))
+-- The fact that we have equivalences for the entire commutative
+-- semiring axioms means that we also easily define the one-line
+-- notation for composing permutations:
+--   FinVec m₁ m₂ → FinVec n₁ n₂ → FinVec (m₁ + n₁) (m₂ + n₂)
+--   FinVec m₁ m₂ → FinVec n₁ n₂ → FinVec (m₁ * n₁) (m₂ * n₂)
+
+-- What remains now is to explicitly include proofs that the one-line
+-- notation has an inverse and that the two compositions yield the
+-- identity permutation. This is one in ConcretePermutation and
+-- consists mostly of making explicit the proofs that are implicit in
+-- FinEquiv and FinVec.
+
+-- The punchline is that finite sets and permutations form a symmetric
+-- rig category.
 
 open import FinEquiv
--- equivalences between finite sets Fin...
--- has nothing to do with permutations: move to equiv section above???
-
-open import EnumEquiv
--- equivalence between A and Fin m is an enumeration of A
+-- Establishes that Fin m ≃ Fin n is a commutative semiring
 
 open import FinVec
--- pre-permutations between finite sets (represented as vectors)
+-- Establishes that Vec (Fin m) n is a commutative semiring
+-- (modulo symmetry)
+
+open import FinVecProperties
+-- Establishes properties of permutations represented in the one-line
+-- notation by either exploiting their connections to type
+-- equivalences or their representations as vectors. The most involved
+-- property is probably:
+-- (p₁ ×c p₂) ∘̂ (p₃ ×c p₄) ≡ (p₁ ∘̂ p₃) ×c (p₂ ∘̂ p₄)
 
 open import ConcretePermutation
--- a permutation is two pre-permutations with proofs that they are inverses
+-- Establishes that CPerm m n is a commutative semiring (including
+-- symmetry now)
 
-open import CPermCat
--- showing that permutations form a rig category etc.
+open import ConcretePermutationProperties
+-- Establishes properties of concrete permutations that are necessary
+-- to show that it is symmetric rig category
 
-
-
-
-
-
-
-
-
-
-
+-- open import CPermCat -- IN PROGRESS
+-- Establishes that CPerm m n is a symmetric rig category
 
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Wavefront ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -162,6 +194,9 @@ open import CPermCat
 -- Equivalences between finite sets (enumerations and permutations);
 -- Equivalences between setoids; Equivalences between equivalences;
 -- Unfinished files; Unused files
+
+open import EnumEquiv
+-- equivalence between A and Fin m is an enumeration of A
 
 open import SetoidEquiv
 -- do a version of EquivSetoid specialized for finite sets that
