@@ -122,15 +122,15 @@ abstract
 
 module Plus where
 
+ -- Main goal is to show (Fin m ⊎ Fin n) ≃ Fin (m + n) It is then
+ -- fairly easy to show that ⊎ satisfies the commutative monoid
+ -- axioms
+
+ fwd : {m n : ℕ} → (Fin m ⊎ Fin n) → Fin (m + n)
+ fwd {m} {n} (inj₁ x) = inject+ n x
+ fwd {m} {n} (inj₂ y) = raise m y
+
  abstract
-
-  -- Main goal is to show (Fin m ⊎ Fin n) ≃ Fin (m + n) It is then
-  -- fairly easy to show that ⊎ satisfies the commutative monoid
-  -- axioms
-
-  fwd : {m n : ℕ} → (Fin m ⊎ Fin n) → Fin (m + n)
-  fwd {m} {n} (inj₁ x) = inject+ n x
-  fwd {m} {n} (inj₂ y) = raise m y
 
   bwd : {m n : ℕ} → Fin (m + n) → (Fin m ⊎ Fin n)
   bwd {m} {n} i with toℕ i <? m
@@ -179,112 +179,114 @@ module Plus where
          (reduce≥ (raise m y) (≤-pred (≰⇒> ¬p)))
          y
          (sym (inj₂-≡ (raise m y) (≤-pred (≰⇒> ¬p)))))
+
+ -- the rest is not abstract
   
-  -- the main equivalence
+ -- the main equivalence
 
-  fwd-iso : {m n : ℕ} → (Fin m ⊎ Fin n) ≃ Fin (m + n)
-  fwd-iso {m} {n} = fwd , mkqinv bwd (fwd∘bwd~id {m}) (bwd∘fwd~id {m})
+ fwd-iso : {m n : ℕ} → (Fin m ⊎ Fin n) ≃ Fin (m + n)
+ fwd-iso {m} {n} = fwd , mkqinv bwd (fwd∘bwd~id {m}) (bwd∘fwd~id {m})
 
-  -- additive monoid equivalences
+ -- additive monoid equivalences
 
-  -- unite+
+ -- unite+
 
-  unite+ : {m : ℕ} → Fin (0 + m) ≃ Fin m
-  unite+ {m} = id , mkqinv id (λ x → refl) (λ _ → refl)
+ unite+ : {m : ℕ} → Fin (0 + m) ≃ Fin m
+ unite+ {m} = id , mkqinv id (λ x → refl) (λ _ → refl)
 
-  -- and on the other side as well
+ -- and on the other side as well
 
-  unite+r : {m : ℕ} → Fin (m + 0) ≃ Fin m
-  unite+r {m} =
-    let eq = +-right-identity m in
-    subst Fin eq ,
-    mkqinv (subst Fin (sym eq))
-           (subst-subst eq (sym eq) refl)
-           (subst-subst (sym eq) eq sym-sym)
+ unite+r : {m : ℕ} → Fin (m + 0) ≃ Fin m
+ unite+r {m} =
+   let eq = +-right-identity m in
+   subst Fin eq ,
+   mkqinv (subst Fin (sym eq))
+          (subst-subst eq (sym eq) refl)
+          (subst-subst (sym eq) eq sym-sym)
 
-  -- uniti+
+ -- uniti+
 
-  uniti+ : {m : ℕ} → Fin m ≃ Fin (0 + m)
-  uniti+ = sym≃ unite+
+ uniti+ : {m : ℕ} → Fin m ≃ Fin (0 + m)
+ uniti+ = sym≃ unite+
 
-  uniti+r : {m : ℕ} → Fin m ≃ Fin (m + 0)
-  uniti+r = sym≃ unite+r
-  
-  -- swap₊
+ uniti+r : {m : ℕ} → Fin m ≃ Fin (m + 0)
+ uniti+r = sym≃ unite+r
 
-  swapper : (m n : ℕ) → Fin (m + n) → Fin (n + m)
-  swapper m n = fwd ∘ swap₊ ∘ bwd {m} {n} 
+ -- swap₊
 
-  swap-inv : (m n : ℕ) → ∀ i → swapper n m (swapper m n i) ≡ i
-  swap-inv m n i = 
-    begin (
-      fwd (swap₊ (bwd {n} {m} (fwd (swap₊ (bwd {m} {n} i)))))
-        ≡⟨ cong (λ x → fwd (swap₊ x)) (bwd∘fwd~id {n} {m} (swap₊ (bwd i))) ⟩
-      fwd (swap₊ (swap₊ (bwd {m} i)))
-        ≡⟨ cong fwd (swapswap₊ (bwd {m} i)) ⟩
-      fwd (bwd {m} {n} i)
-        ≡⟨ fwd∘bwd~id {m} i ⟩
-      i ∎ )
-    where open ≡-Reasoning
+ swapper : (m n : ℕ) → Fin (m + n) → Fin (n + m)
+ swapper m n = fwd ∘ swap₊ ∘ bwd {m} {n} 
 
-  swap+ : {m n : ℕ} → Fin (m + n) ≃ Fin (n + m)
-  swap+ {m} {n} =
-    (swapper m n , mkqinv (swapper n m) (swap-inv n m) (swap-inv m n))
+ swap-inv : (m n : ℕ) → ∀ i → swapper n m (swapper m n i) ≡ i
+ swap-inv m n i = 
+   begin (
+     fwd (swap₊ (bwd {n} {m} (fwd (swap₊ (bwd {m} {n} i)))))
+       ≡⟨ cong (λ x → fwd (swap₊ x)) (bwd∘fwd~id {n} {m} (swap₊ (bwd i))) ⟩
+     fwd (swap₊ (swap₊ (bwd {m} i)))
+       ≡⟨ cong fwd (swapswap₊ (bwd {m} i)) ⟩
+     fwd (bwd {m} {n} i)
+       ≡⟨ fwd∘bwd~id {m} i ⟩
+     i ∎ )
+   where open ≡-Reasoning
 
-  -- associativity
+ swap+ : {m n : ℕ} → Fin (m + n) ≃ Fin (n + m)
+ swap+ {m} {n} =
+   (swapper m n , mkqinv (swapper n m) (swap-inv n m) (swap-inv m n))
 
-  assocl+ : {m n o : ℕ} → Fin (m + (n + o)) ≃ Fin ((m + n) + o)
-  assocl+ {m} = (sym≃ (fwd-iso {m})) ● (path⊎ id≃ (sym≃ fwd-iso) ●
-    ((assocl₊equiv ● path⊎ fwd-iso id≃) ● fwd-iso))
+ -- associativity
 
-  assocl+2 : {m n o : ℕ} → Fin (m + (n + o)) ≃ Fin ((m + n) + o)
-  assocl+2 {m} {n} {o} =
-    let eq = +-assoc m n o in
-    subst Fin (sym eq) ,
-    mkqinv (subst Fin eq)
-               (subst-subst (sym eq) eq sym-sym)
-               (subst-subst eq (sym eq) (cong sym refl))
+ assocl+ : {m n o : ℕ} → Fin (m + (n + o)) ≃ Fin ((m + n) + o)
+ assocl+ {m} = (sym≃ (fwd-iso {m})) ● (path⊎ id≃ (sym≃ fwd-iso) ●
+   ((assocl₊equiv ● path⊎ fwd-iso id≃) ● fwd-iso))
 
-  assocr+ : {m n o : ℕ} → Fin ((m + n) + o) ≃ Fin (m + (n + o))
-  assocr+ {m} {n} {o} = sym≃ (assocl+ {m})
+ assocl+2 : {m n o : ℕ} → Fin (m + (n + o)) ≃ Fin ((m + n) + o)
+ assocl+2 {m} {n} {o} =
+   let eq = +-assoc m n o in
+   subst Fin (sym eq) ,
+   mkqinv (subst Fin eq)
+              (subst-subst (sym eq) eq sym-sym)
+              (subst-subst eq (sym eq) (cong sym refl))
 
-  -- congruence
+ assocr+ : {m n o : ℕ} → Fin ((m + n) + o) ≃ Fin (m + (n + o))
+ assocr+ {m} {n} {o} = sym≃ (assocl+ {m})
 
-  cong+-iso : {m n o p : ℕ} → (Fin m ≃ Fin n) → (Fin o ≃ Fin p) →
-              Fin (m + o) ≃ Fin (n + p)
-  cong+-iso {m} {n} {o} {p} (f , feq) (g , geq) = 
-    fwd {n} {p} ∘ mapSum f g ∘ bwd {m} {o} , 
-    mkqinv
-      (fwd {m} {o} ∘ mapSum fm.g gm.g ∘ bwd {n} {p})
-      (λ i →
-        begin (fwd {n} {p} (mapSum f g (bwd {m} {o} 
-                 (fwd {m} {o} (mapSum fm.g gm.g (bwd {n} {p} i)))))
-               ≡⟨ cong
-                    (λ x → fwd {n} {p} (mapSum f g x))
-                    (bwd∘fwd~id {m} {o} (mapSum fm.g gm.g (bwd {n} {p} i))) ⟩
-               fwd {n} {p} (mapSum f g (mapSum fm.g gm.g (bwd {n} {p} i)))
-               ≡⟨ cong
-                    (λ x → fwd {n} {p} x)
-                    ((fm.α ⊎∼ gm.α) (bwd {n} {p} i)) ⟩
-               fwd {n} {p} (bwd {n} {p} i)
-               ≡⟨ fwd∘bwd~id {n} {p} i ⟩
-               i ∎))
-      (λ i →
-        begin (fwd {m} {o} (mapSum fm.g gm.g (bwd {n} {p}
-                 (fwd {n} {p} (mapSum f g (bwd {m} {o} i)))))
-               ≡⟨ cong
-                    (λ x → fwd {m} {o} (mapSum fm.g gm.g x))
-                    (bwd∘fwd~id {n} {p} (mapSum f g (bwd {m} {o} i))) ⟩
-               fwd {m} {o} (mapSum fm.g gm.g (mapSum f g (bwd {m} {o} i)))
-               ≡⟨ cong
-                   (λ x → fwd {m} {o} x)
-                   ((fm.β ⊎∼ gm.β) (bwd {m} {o} i))  ⟩
-               fwd {m} {o} (bwd {m} {o} i)
-               ≡⟨ fwd∘bwd~id {m} {o} i ⟩
-               i ∎))
-    where module fm = qinv feq
-          module gm = qinv geq
-          open ≡-Reasoning
+ -- congruence
+
+ cong+-iso : {m n o p : ℕ} → (Fin m ≃ Fin n) → (Fin o ≃ Fin p) →
+             Fin (m + o) ≃ Fin (n + p)
+ cong+-iso {m} {n} {o} {p} (f , feq) (g , geq) = 
+   fwd {n} {p} ∘ mapSum f g ∘ bwd {m} {o} , 
+   mkqinv
+     (fwd {m} {o} ∘ mapSum fm.g gm.g ∘ bwd {n} {p})
+     (λ i →
+       begin (fwd {n} {p} (mapSum f g (bwd {m} {o} 
+                (fwd {m} {o} (mapSum fm.g gm.g (bwd {n} {p} i)))))
+              ≡⟨ cong
+                   (λ x → fwd {n} {p} (mapSum f g x))
+                   (bwd∘fwd~id {m} {o} (mapSum fm.g gm.g (bwd {n} {p} i))) ⟩
+              fwd {n} {p} (mapSum f g (mapSum fm.g gm.g (bwd {n} {p} i)))
+              ≡⟨ cong
+                   (λ x → fwd {n} {p} x)
+                   ((fm.α ⊎∼ gm.α) (bwd {n} {p} i)) ⟩
+              fwd {n} {p} (bwd {n} {p} i)
+              ≡⟨ fwd∘bwd~id {n} {p} i ⟩
+              i ∎))
+     (λ i →
+       begin (fwd {m} {o} (mapSum fm.g gm.g (bwd {n} {p}
+                (fwd {n} {p} (mapSum f g (bwd {m} {o} i)))))
+              ≡⟨ cong
+                   (λ x → fwd {m} {o} (mapSum fm.g gm.g x))
+                   (bwd∘fwd~id {n} {p} (mapSum f g (bwd {m} {o} i))) ⟩
+              fwd {m} {o} (mapSum fm.g gm.g (mapSum f g (bwd {m} {o} i)))
+              ≡⟨ cong
+                  (λ x → fwd {m} {o} x)
+                  ((fm.β ⊎∼ gm.β) (bwd {m} {o} i))  ⟩
+              fwd {m} {o} (bwd {m} {o} i)
+              ≡⟨ fwd∘bwd~id {m} {o} i ⟩
+              i ∎))
+   where module fm = qinv feq
+         module gm = qinv geq
+         open ≡-Reasoning
 
 -----------------------------------------------------------------------------
 -- Multiplicative monoid
@@ -500,8 +502,6 @@ module Times where
 -- Distributivity of multiplication over addition
 
 module PlusTimes where
-
- abstract
 
   -- now that we have two monoids, we need to check distributivity
 
