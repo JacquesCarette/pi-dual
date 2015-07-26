@@ -388,10 +388,12 @@ Pi1-Bicat = record
     ; iso = λ X → record { isoˡ = tt ; isoʳ = tt }
     } 
   ; α = record
-    { F⇒G = record { η = λ _ → assoc◎l ; commute = λ {X} {Y} f → tt } 
-    ; F⇐G = record { η = λ _ → assoc◎r ; commute = λ {X} {Y} f → tt }
+    { F⇒G = record { η = λ _ → assoc◎r ; commute = λ {X} {Y} f → tt } 
+    ; F⇐G = record { η = λ _ → assoc◎l ; commute = λ {X} {Y} f → tt }
     ; iso = λ X → record { isoˡ = tt ; isoʳ = tt }
     }
+  ; triangle = λ {A} {B} {C} f g → tt
+  ; pentagon = λ {A} {B} {C} {D} {E} f g h i → tt
   }
 {--
 Pi1-2Cat : 2-Category lzero lzero lzero lzero
