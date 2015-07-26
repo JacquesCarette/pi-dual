@@ -122,6 +122,8 @@ abstract
 
 module Plus where
 
+ abstract
+
   -- Main goal is to show (Fin m ⊎ Fin n) ≃ Fin (m + n) It is then
   -- fairly easy to show that ⊎ satisfies the commutative monoid
   -- axioms
@@ -288,6 +290,8 @@ module Plus where
 -- Multiplicative monoid
 
 module Times where
+
+ abstract
 
   -- main goal is to show (Fin m × Fin n) ≃ Fin (m * n) It is then
   -- fairly easy to show that × satisfies the commutative monoid
@@ -497,6 +501,8 @@ module Times where
 -- Distributivity of multiplication over addition
 
 module PlusTimes where
+
+ abstract
 
   -- now that we have two monoids, we need to check distributivity
 
