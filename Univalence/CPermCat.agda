@@ -30,7 +30,8 @@ open import ConcretePermutationProperties
   using (assocp; lidp; ridp; linv; rinv;
          1p⊎1p≡1p; 1p×1p≡1p;
          ⊎p-distrib; ×p-distrib;
-         unite+p∘[0⊎x]≡x∘unite+p; uniti+p∘x≡[0⊎x]∘uniti+p)
+         unite+p∘[0⊎x]≡x∘unite+p; uniti+p∘x≡[0⊎x]∘uniti+p;
+         uniti+rp∘[x⊎0]≡x∘uniti+rp; unite+rp∘[x⊎0]≡x∘unite+rp)
 
 ------------------------------------------------------------------------------
 -- CPerm is is a category
@@ -88,10 +89,10 @@ module ⊎h = MonoidalHelperFunctors CPermCat ⊎p-bifunctor 0
 x⊕0≡x : NaturalIsomorphism ⊎h.x⊗id ⊎h.x
 x⊕0≡x = record
   { F⇒G = record { η = λ _ → uniti+rp
-                 ; commute = {!!}
+                 ; commute = λ f → uniti+rp∘[x⊎0]≡x∘uniti+rp (f 0F)
                  } 
   ; F⇐G = record { η = λ _ → unite+rp
-                 ; commute = {!!}
+                 ; commute = λ f → unite+rp∘[x⊎0]≡x∘unite+rp (f 0F)
                  }
   ; iso = λ X → record { isoˡ = linv unite+rp ; isoʳ = linv uniti+rp }
   }

@@ -250,6 +250,14 @@ uniti+∘x≡[0⊎x]∘uniti+ {m} {n} {x} = finext pf
       tabulate id !! (tabulate (λ y → x !! y) !! i) ∎)
       where open ≡-Reasoning
 
+uniti+r∘[x⊎0]≡x∘uniti+r : ∀ {m n} {x : FinVec m n} →
+    uniti+r ∘̂ (x ⊎c 1C {0}) ≡ x ∘̂ uniti+r
+uniti+r∘[x⊎0]≡x∘uniti+r {m} {n} {x} = {!!} 
+
+unite+r∘[x⊎0]≡x∘unite+r : ∀ {m n} {x : FinVec m n} →
+    unite+r ∘̂ x ≡ (x ⊎c 1C {0}) ∘̂ unite+r
+unite+r∘[x⊎0]≡x∘unite+r {m} {n} {x} = {!!} 
+
 idˡ⊕ : ∀ {m n} {x : FinVec m n} → uniti+ ∘̂ (1C {0} ⊎c x) ≡ x ∘̂ uniti+
 idˡ⊕ {m} {n} {x} = finext pf
   where

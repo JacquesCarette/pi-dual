@@ -13,11 +13,12 @@ open import FinVecProperties
   using (∘̂-assoc; ∘̂-lid; ∘̂-rid;
          1C₀⊎x≡x; 1C⊎1C≡1C; 1C×1C≡1C;
          ⊎c-distrib; ×c-distrib;
-         unite+∘[0⊎x]≡x∘unite+; uniti+∘x≡[0⊎x]∘uniti+)
+         unite+∘[0⊎x]≡x∘unite+; uniti+∘x≡[0⊎x]∘uniti+;
+         uniti+r∘[x⊎0]≡x∘uniti+r; unite+r∘[x⊎0]≡x∘unite+r)
 
 open import ConcretePermutation
   using (CPerm; cp; idp; symp; transp; _⊎p_; _×p_;
-         0p; unite+p; uniti+p) 
+         0p; unite+p; uniti+p; unite+rp; uniti+rp) 
 
 ------------------------------------------------------------------------------
 -- Properties of concrete permutations that are needed to show that
@@ -96,6 +97,14 @@ unite+p∘[0⊎x]≡x∘unite+p p = p≡ unite+∘[0⊎x]≡x∘unite+
 uniti+p∘x≡[0⊎x]∘uniti+p : ∀ {m n} (p : CPerm m n) →
   transp uniti+p p ≡ transp (0p ⊎p p) uniti+p
 uniti+p∘x≡[0⊎x]∘uniti+p p = p≡ (uniti+∘x≡[0⊎x]∘uniti+ {x = CPerm.π p})
+
+uniti+rp∘[x⊎0]≡x∘uniti+rp : ∀ {m n} (p : CPerm m n) →
+  transp uniti+rp (p ⊎p 0p) ≡ transp p uniti+rp
+uniti+rp∘[x⊎0]≡x∘uniti+rp p = p≡ uniti+r∘[x⊎0]≡x∘uniti+r
+
+unite+rp∘[x⊎0]≡x∘unite+rp : ∀ {m n} (p : CPerm m n) →
+  transp unite+rp p ≡ transp (p ⊎p 0p) unite+rp
+unite+rp∘[x⊎0]≡x∘unite+rp p = p≡ unite+r∘[x⊎0]≡x∘unite+r
 
 -- Multiplicatives
 
