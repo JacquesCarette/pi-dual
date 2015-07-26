@@ -144,6 +144,14 @@ open import Pi1Examples
 -- rig category.
 
 open import FinEquiv
+-- Fin m ≃ Fin n is a commutative semiring
+
+
+
+
+
+
+
 open import FinVec
 open import ConcretePermutation
 open import CPermCat
