@@ -183,7 +183,18 @@ factorl*+∘̂distl*+~id : ∀ {m n o} → factorl*+ {m} {n} {o} ∘̂ distl*+ {
 factorl*+∘̂distl*+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = PlusTimes.factorl {m}})
 
 ------------------------------------------------------------------------------
--- Properties of sequential composition 
+
+
+
+
+
+
+
+
+
+
+
+-- Now the main properties of sequential composition
 
 0C∘̂0C≡0C : 1C {0} ∘̂ 1C {0} ≡ 1C {0}
 0C∘̂0C≡0C = refl
@@ -199,25 +210,10 @@ factorl*+∘̂distl*+~id {m} {_} {o} = ~⇒≡ (p∘!p≡id {p = PlusTimes.facto
 ∘̂-lid : {m n : ℕ} → (π : Vec (Fin m) n) → 1C ∘̂ π ≡ π
 ∘̂-lid π = trans (finext (λ i → cong (_!!_ π) (lookup-allFin i))) (cauchyext π)
 
-------------------------------------------------------------------------------
--- Properties of additive composition
+--
 
 1C₀⊎x≡x : ∀ {m n} {x : FinVec m n} → 1C {0} ⊎c x ≡ x
 1C₀⊎x≡x {x = x} = cauchyext x
-
-1C⊎1C≡1C : ∀ {m n} → 1C {m} ⊎c 1C {n} ≡ 1C
-1C⊎1C≡1C {m} {n} = 
-  begin (
-     tabulate {m} (inject+ n ∘ _!!_ 1C) ++V tabulate {n} (raise m ∘ _!!_ 1C)
-       ≡⟨ cong₂ (_++V_ {m = m})
-           (finext (λ i → cong (inject+ n) (lookup-allFin i)))
-           (finext (λ i → cong (raise m) (lookup-allFin i))) ⟩
-     tabulate {m} (inject+ n) ++V tabulate {n} (raise m)
-       ≡⟨ unSplit {m} id ⟩
-     tabulate {m + n} id ∎)
-  where open ≡-Reasoning
-
--- interactions with sequential composition
 
 unite+∘[0⊎x]≡x∘unite+ : ∀ {m n} {x : FinVec m n} →
   unite+ ∘̂ (1C {0} ⊎c x) ≡ x ∘̂ unite+
@@ -250,6 +246,18 @@ uniti+∘x≡[0⊎x]∘uniti+ {m} {n} {x} = finext pf
       tabulate id !! (tabulate (λ y → x !! y) !! i) ∎)
       where open ≡-Reasoning
 
+1C⊎1C≡1C : ∀ {m n} → 1C {m} ⊎c 1C {n} ≡ 1C
+1C⊎1C≡1C {m} {n} = 
+  begin (
+     tabulate {m} (inject+ n ∘ _!!_ 1C) ++V tabulate {n} (raise m ∘ _!!_ 1C)
+       ≡⟨ cong₂ (_++V_ {m = m})
+           (finext (λ i → cong (inject+ n) (lookup-allFin i)))
+           (finext (λ i → cong (raise m) (lookup-allFin i))) ⟩
+     tabulate {m} (inject+ n) ++V tabulate {n} (raise m)
+       ≡⟨ unSplit {m} id ⟩
+     tabulate {m + n} id ∎)
+  where open ≡-Reasoning
+
 idˡ⊕ : ∀ {m n} {x : FinVec m n} → uniti+ ∘̂ (1C {0} ⊎c x) ≡ x ∘̂ uniti+
 idˡ⊕ {m} {n} {x} = finext pf
   where
@@ -263,6 +271,13 @@ idˡ⊕ {m} {n} {x} = finext pf
       x !! i
         ≡⟨ sym (lookup∘tabulate id (x !! i)) ⟩
       tabulate id !! (x !! i) ∎)
+
+-- [,]-commute : {A B C D E : Set} → {f : A → C} → {g : B → C} → {h : C → D} →
+--   ∀ x → h ([ f , g ]′ x) ≡ [ (h ∘ f) , (h ∘ g) ]′ x
+-- [,]-commute (inj₁ x) = refl
+-- [,]-commute (inj₂ y) = refl
+
+--
 
 private
 
@@ -330,9 +345,6 @@ private
       ≡⟨ refl ⟩
     (p₁ ∘̂ p₃) ⊎c (p₂ ∘̂ p₄) ∎)
     where open ≡-Reasoning
-
-------------------------------------------------------------------------------
--- Properties of multiplicative composition
 
 private
   
@@ -405,32 +417,6 @@ private
       Times.fwd (p₁ !! a ,′ p₂ !! b) ∎)
       where open ≡-Reasoning
 
-1C×1C≡1C : ∀ {m n} → (1C {m} ×c 1C {n}) ≡ 1C {m * n}
-1C×1C≡1C {m} {n} = 
-  begin (
-    1C {m} ×c 1C
-      ≡⟨ ×c-equiv 1C 1C ⟩
-    concatV (mapV (λ y → mapV Times.fwd (mapV (_,′_ y) (1C {n}))) (1C {m}))
-      ≡⟨ cong (concatV {n = m}) (sym (tabulate-∘ _ id)) ⟩
-    concatV {n = m} (tabulate (λ y → mapV Times.fwd (mapV (_,′_ y) (1C {n}))))
-      ≡⟨ cong (concatV {n = m})
-          (finext (λ y → sym (map-∘ Times.fwd (λ x → y ,′ x) 1C))) ⟩
-    concatV (tabulate {n = m} (λ y → mapV (Times.fwd ∘ (_,′_ y)) (1C {n})))
-      ≡⟨ cong
-          (concatV {m = n} {m})
-          (finext (λ y → sym (tabulate-∘ (Times.fwd ∘ (_,′_ y)) id))) ⟩
-    concatV (tabulate {n = m}
-              (λ a → tabulate {n = n} (λ b → Times.fwd (a ,′ b))))
-      ≡⟨ sym (tabulate∘lookup _) ⟩
-    tabulate (λ k →
-    concatV (tabulate {n = m}
-              (λ a → tabulate {n = n} (λ b → Times.fwd (a ,′ b)))) !! k)
-      ≡⟨ finext (λ k → lookup-2d m n k) ⟩
-    tabulate (λ k → Times.fwd {m} {n} (Times.bwd k))
-      ≡⟨ finext (Times.fwd∘bwd~id {m} {n}) ⟩
-    1C {m * n} ∎ )
-    where open ≡-Reasoning        
-
 ×c-distrib : ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : FinVec m₁ n₁} → {p₂ : FinVec m₂ n₂}
   → {p₃ : FinVec m₃ m₁} → {p₄ : FinVec m₄ m₂} →
     (p₁ ×c p₂) ∘̂ (p₃ ×c p₄) ≡ (p₁ ∘̂ p₃) ×c (p₂ ∘̂ p₄)
@@ -490,6 +476,34 @@ private
        ≡⟨ sym (×c-equiv p₁₃ p₂₄) ⟩
      (p₁ ∘̂ p₃) ×c (p₂ ∘̂ p₄) ∎)
      where open ≡-Reasoning
+
+-- there might be a simpler proofs of this using tablate∘lookup
+
+1C×1C≡1C : ∀ {m n} → (1C {m} ×c 1C {n}) ≡ 1C {m * n}
+1C×1C≡1C {m} {n} = 
+  begin (
+    1C {m} ×c 1C
+      ≡⟨ ×c-equiv 1C 1C ⟩
+    concatV (mapV (λ y → mapV Times.fwd (mapV (_,′_ y) (1C {n}))) (1C {m}))
+      ≡⟨ cong (concatV {n = m}) (sym (tabulate-∘ _ id)) ⟩
+    concatV {n = m} (tabulate (λ y → mapV Times.fwd (mapV (_,′_ y) (1C {n}))))
+      ≡⟨ cong (concatV {n = m})
+          (finext (λ y → sym (map-∘ Times.fwd (λ x → y ,′ x) 1C))) ⟩
+    concatV (tabulate {n = m} (λ y → mapV (Times.fwd ∘ (_,′_ y)) (1C {n})))
+      ≡⟨ cong
+          (concatV {m = n} {m})
+          (finext (λ y → sym (tabulate-∘ (Times.fwd ∘ (_,′_ y)) id))) ⟩
+    concatV (tabulate {n = m}
+              (λ a → tabulate {n = n} (λ b → Times.fwd (a ,′ b))))
+      ≡⟨ sym (tabulate∘lookup _) ⟩
+    tabulate (λ k →
+    concatV (tabulate {n = m}
+              (λ a → tabulate {n = n} (λ b → Times.fwd (a ,′ b)))) !! k)
+      ≡⟨ finext (λ k → lookup-2d m n k) ⟩
+    tabulate (λ k → Times.fwd {m} {n} (Times.bwd k))
+      ≡⟨ finext (Times.fwd∘bwd~id {m} {n}) ⟩
+    1C {m * n} ∎ )
+    where open ≡-Reasoning        
 
 ------------------------------------------------------------------------------
 -- A few "reveal" functions, to let us peek into the representation

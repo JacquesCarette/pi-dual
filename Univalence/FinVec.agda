@@ -49,7 +49,8 @@ open import Proofs using (
 -- semiring, e.g., we can take unions and products of such one-line
 -- notations of permutations, etc.
 
--- This is the type representing permutations in the one-line notation
+-- This is the type representing permutations in the one-line
+-- notation. We will show that it is a commutative semiring
 
 FinVec : ℕ → ℕ → Set
 FinVec m n = Vec (Fin m) n
@@ -62,10 +63,12 @@ FinVec m n = Vec (Fin m) n
 -- corresponds to ⊥ ≃ ⊥ × A and other impossibilities but don't use
 -- it, as it is abstract and will confuse external proofs!
 
-0C : FinVec 0 0
-0C = 1C {0}
+abstract
 
--- Sequential composition
+  0C : FinVec 0 0
+  0C = 1C {0}
+
+-- sequential composition (transitivity)
 
 _∘̂_ : {n₀ n₁ n₂ : ℕ} → Vec (Fin n₁) n₀ → Vec (Fin n₂) n₁ → Vec (Fin n₂) n₀
 π₁ ∘̂ π₂ = tabulate (_!!_ π₂ ∘ _!!_ π₁)
@@ -121,6 +124,8 @@ _⊎fv_ {m₁} α β =
   where
     open ≡-Reasoning
         
+-- additive units
+
 unite+ : {m : ℕ} → FinVec m (0 + m)
 unite+ {m} = tabulate (proj₁ (Plus.unite+ {m}))
 
@@ -133,6 +138,8 @@ unite+r {m} = tabulate (proj₁ (Plus.unite+r {m}))
 uniti+r : {m : ℕ} → FinVec (m + 0) m
 uniti+r {m} = tabulate (proj₁ (Plus.uniti+r {m}))
     
+-- commutativity
+
 -- swap the first m elements with the last n elements
 -- [ v₀ , v₁   , v₂   , ... , vm-1 ,     vm , vm₊₁ , ... , vm+n-1 ]
 -- ==>
@@ -140,6 +147,8 @@ uniti+r {m} = tabulate (proj₁ (Plus.uniti+r {m}))
 
 swap+cauchy : (m n : ℕ) → FinVec (n + m) (m + n)
 swap+cauchy m n = tabulate (Plus.swapper m n)
+
+-- associativity
 
 assocl+ : {m n o : ℕ} → FinVec  ((m + n) + o) (m + (n + o))
 assocl+ {m} {n} {o} = tabulate (proj₁ (Plus.assocl+ {m} {n} {o}))
@@ -163,6 +172,8 @@ _×c_ : ∀ {m₁ n₁ m₂ n₂} → FinVec m₁ m₂ → FinVec n₁ n₂ →
        FinVec (m₁ * n₁) (m₂ * n₂)
 α ×c β = mapV Times.fwd (α ×v β)
 
+-- multiplicative units
+
 unite* : {m : ℕ} → FinVec m (1 * m)
 unite* {m} = tabulate (proj₁ (Times.unite* {m}))
 
@@ -174,6 +185,8 @@ unite*r {m} = tabulate (proj₁ (Times.unite*r {m}))
 
 uniti*r : {m : ℕ} → FinVec (m * 1) m
 uniti*r {m} = tabulate (proj₁ (Times.uniti*r {m}))
+
+-- commutativity
 
 -- swap⋆
 -- 
@@ -190,6 +203,8 @@ uniti*r {m} = tabulate (proj₁ (Times.uniti*r {m}))
 swap⋆cauchy : (m n : ℕ) → FinVec (n * m) (m * n)
 swap⋆cauchy m n = tabulate (Times.swapper m n)
 -- mapV transposeIndex (V.tcomp 1C 1C)
+
+-- associativity
 
 assocl* : {m n o : ℕ} → FinVec  ((m * n) * o) (m * (n * o))
 assocl* {m} {n} {o} = tabulate (proj₁ (Times.assocl* {m} {n} {o}))
@@ -219,7 +234,8 @@ right-zero*r : ∀ {m} → FinVec (m * 0) 0
 right-zero*r {m} = tabulate (proj₁ (PlusTimes.factorzr {m}))
    
 ------------------------------------------------------------------------------
--- Commutative semiring structure
+-- Putting it all together, we have a commutative semiring structure
+-- (modulo symmetry)
 
 _cauchy≃_ : (m n : ℕ) → Set
 m cauchy≃ n = FinVec m n

@@ -62,7 +62,8 @@ open import SetoidEquiv
 open import FinVec using (_∘̂_; 1C)
 open import FinVecProperties using (~⇒≡; !!⇒∘̂; 1C!!i≡i; cauchyext)
 open import EnumEquiv using (Enum; 0E; _⊕e_; eval-left; eval-right) 
-open import ConcretePermutation using (CPerm; cp; p≡; 0p; idp; _⊎p_) -- ; SCPerm) 
+open import ConcretePermutation -- using (CPerm; cp; p≡; 0p; idp; _⊎p_) -- ; SCPerm) 
+open import ConcretePermutationProperties -- using (CPerm; cp; p≡; 0p; idp; _⊎p_) -- ; SCPerm) 
 
 ------------------------------------------------------------------------------
 -- The big (semantic) theorem!

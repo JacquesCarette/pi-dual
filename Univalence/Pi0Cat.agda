@@ -53,6 +53,7 @@ PiGroupoid = record
   }
 
 -- additive bifunctor and monoidal structure
+
 ⊕-bifunctor : Bifunctor PiCat PiCat PiCat
 ⊕-bifunctor = record
   { F₀ = λ {(u , v) → PLUS u v}
@@ -119,6 +120,7 @@ M⊕ = record
   }
 
 -- multiplicative bifunctor and monoidal structure
+
 ⊗-bifunctor : Bifunctor PiCat PiCat PiCat
 ⊗-bifunctor =  record
   { F₀ = λ {(u , v) → TIMES u v}
@@ -258,5 +260,6 @@ Pi0Rig = record
   ; laplazaXIX = tt
   ; laplazaXXIII = tt
   }
+
 ------------------------------------------------------------------------------
 

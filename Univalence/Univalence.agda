@@ -144,29 +144,29 @@ open import Pi1Examples
 -- rig category.
 
 open import FinEquiv
--- Fin m ≃ Fin n is a commutative semiring
-
-
-
-
-
-
+-- Establishes that Fin m ≃ Fin n is a commutative semiring
 
 open import FinVec
+-- Establishes that Vec (Fin m) n is a commutative semiring
+-- (modulo symmetry)
+
 open import FinVecProperties
+-- Establishes properties of permutations represented in the one-line
+-- notation by either exploiting their connections to type
+-- equivalences or their representations as vectors. The most involved
+-- property is probably:
+-- (p₁ ×c p₂) ∘̂ (p₃ ×c p₄) ≡ (p₁ ∘̂ p₃) ×c (p₂ ∘̂ p₄)
+
 open import ConcretePermutation
-open import CPermCat
+-- Establishes that CPerm m n is a commutative semiring (including
+-- symmetry now)
 
+open import ConcretePermutationProperties
+-- Establishes properties of concrete permutations that are necessary
+-- to show that it is symmetric rig category
 
-
-
-
-
-
-
-
-
-
+-- open import CPermCat -- IN PROGRESS
+-- Establishes that CPerm m n is a symmetric rig category
 
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Wavefront ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
