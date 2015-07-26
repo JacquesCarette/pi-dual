@@ -62,6 +62,10 @@ lidp {p = p} = p≡ (∘̂-lid (CPerm.π p))
 ridp : ∀ {m₁ m₂} {p : CPerm m₂ m₁} → transp p idp ≡ p
 ridp {p = p} = p≡ (∘̂-rid (CPerm.π p))
 
+transp-resp-≡ : ∀ {m₁ m₂ m₃} {f h : CPerm m₂ m₃} {g i : CPerm m₁ m₂} → 
+  f ≡ h → g ≡ i → transp f g ≡ transp h i
+transp-resp-≡ refl refl = refl
+
 -- Inverses
 
 linv : ∀ {m₁ m₂} (p : CPerm m₂ m₁) → transp p (symp p) ≡ idp
@@ -69,10 +73,6 @@ linv p = p≡ (CPerm.αp p)
 
 rinv : ∀ {m₁ m₂} (p : CPerm m₂ m₁) → transp (symp p) p ≡ idp
 rinv p = p≡ (CPerm.βp p)
-
-transp-resp-≡ : ∀ {m₁ m₂ m₃} {f h : CPerm m₂ m₃} {g i : CPerm m₁ m₂} → 
-  f ≡ h → g ≡ i → transp f g ≡ transp h i
-transp-resp-≡ refl refl = refl
 
 -- Additives
 

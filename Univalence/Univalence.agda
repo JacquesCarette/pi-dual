@@ -104,7 +104,7 @@ open import Pi1Examples
 -- How to make U a 2-type, 3-type, etc. ???
 
 ------------------------------------------------------------------------------
--- Equivalences between enumerated types (permutations) 
+-- Equivalences between Fin types (permutations) 
 
 -- Finding a good representation of permutations is tricky.
 

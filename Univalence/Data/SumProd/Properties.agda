@@ -95,6 +95,7 @@ assoc-factorl-lemma (inj₁ x) = P.refl
 assoc-factorl-lemma (inj₂ y) = P.refl
 
 -- in theory, this actually says that all ⊥ are equal!
+
 distz0≡distrz0 : (x : ⊥ × ⊥) → distz x P.≡ distzr x
 distz0≡distrz0 (() , _)
 

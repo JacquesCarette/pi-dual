@@ -24,7 +24,7 @@ open import Categories.RigCategory
 
 open import ConcretePermutation
   using (CPerm; idp; symp; transp; _⊎p_; _×p_;
-         unite+p; uniti+p)
+         unite+p; uniti+p; unite+rp; uniti+rp)
 
 open import ConcretePermutationProperties
   using (assocp; lidp; ridp; linv; rinv;
@@ -34,7 +34,7 @@ open import ConcretePermutationProperties
 
 ------------------------------------------------------------------------------
 -- CPerm is is a category
--- Permutations can be compared for strict propositional equality
+-- Permutations can be compared by strict propositional equality
 
 CPermCat : Category zero zero zero
 CPermCat = record
@@ -87,15 +87,16 @@ module ⊎h = MonoidalHelperFunctors CPermCat ⊎p-bifunctor 0
 
 x⊕0≡x : NaturalIsomorphism ⊎h.x⊗id ⊎h.x
 x⊕0≡x = record
-  { F⇒G = record { η = {!!}
+  { F⇒G = record { η = λ _ → uniti+rp
                  ; commute = {!!}
                  } 
-  ; F⇐G = record { η = {!!}
+  ; F⇐G = record { η = λ _ → unite+rp
                  ; commute = {!!}
                  }
-  ; iso = λ X → record { isoˡ = {!!} ; isoʳ = {!!} }
+  ; iso = λ X → record { isoˡ = linv unite+rp ; isoʳ = linv uniti+rp }
   }
 
+{--
 [x⊕y]⊕z≡x⊕[y⊕z] : NaturalIsomorphism ⊎h.[x⊗y]⊗z ⊎h.x⊗[y⊗z]
 [x⊕y]⊕z≡x⊕[y⊕z] = record
   { F⇒G = record
@@ -281,4 +282,5 @@ Pi1Rig = record
   ; laplazaXXIII = {!!} 
   }
 
+--}
 ------------------------------------------------------------------------------
