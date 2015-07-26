@@ -291,8 +291,6 @@ module Plus where
 
 module Times where
 
- abstract
-
   -- main goal is to show (Fin m × Fin n) ≃ Fin (m * n) It is then
   -- fairly easy to show that × satisfies the commutative monoid
   -- axioms
@@ -301,31 +299,32 @@ module Times where
   fwd {suc m} {n} (zero , k) = inject+ (m * n) k
   fwd {n = n} (suc i , k) = raise n (fwd (i , k))
 
-  soundness : ∀ {m n} (i : Fin m) (j : Fin n) →
-              toℕ (fwd (i , j)) ≡ toℕ i * n + toℕ j
-  soundness {suc m} {n} zero     j = sym (inject+-lemma (m * n) j)
-  soundness {n = n} (suc i) j
-    rewrite toℕ-raise n (fwd (i , j)) | soundness i j
-    = sym (+-assoc n (toℕ i * n) (toℕ j))
+  private
+    soundness : ∀ {m n} (i : Fin m) (j : Fin n) →
+                toℕ (fwd (i , j)) ≡ toℕ i * n + toℕ j
+    soundness {suc m} {n} zero     j = sym (inject+-lemma (m * n) j)
+    soundness {n = n} (suc i) j
+      rewrite toℕ-raise n (fwd (i , j)) | soundness i j
+      = sym (+-assoc n (toℕ i * n) (toℕ j))
 
-  absurd-quotient : (m n q : ℕ) (r : Fin (suc n)) (k : Fin (m * suc n))
-       (k≡r+q*sn : toℕ k ≡ toℕ r + q * suc n) (p : m ≤ q) → ⊥
-  absurd-quotient m n q r k k≡r+q*sn p = ¬i+1+j≤i (toℕ k) {toℕ r} k≥k+sr
-    where k≥k+sr : toℕ k ≥ toℕ k + suc (toℕ r)
-          k≥k+sr = begin (toℕ k + suc (toℕ r)
-                     ≡⟨ +-suc (toℕ k) (toℕ r) ⟩
-                   suc (toℕ k) + toℕ r
-                     ≤⟨ cong+r≤ (bounded k) (toℕ r) ⟩ 
-                   (m * suc n) + toℕ r
-                     ≡⟨ +-comm (m * suc n) (toℕ r) ⟩ 
-                   toℕ r + (m * suc n)
-                     ≡⟨ refl ⟩ 
-                   toℕ r + m * suc n
-                     ≤⟨ cong+l≤ (cong*r≤ p (suc n)) (toℕ r) ⟩ 
-                   toℕ r + q * suc n
-                     ≡⟨ sym k≡r+q*sn ⟩
-                   toℕ k ∎)
-                    where open ≤-Reasoning
+    absurd-quotient : (m n q : ℕ) (r : Fin (suc n)) (k : Fin (m * suc n))
+         (k≡r+q*sn : toℕ k ≡ toℕ r + q * suc n) (p : m ≤ q) → ⊥
+    absurd-quotient m n q r k k≡r+q*sn p = ¬i+1+j≤i (toℕ k) {toℕ r} k≥k+sr
+      where k≥k+sr : toℕ k ≥ toℕ k + suc (toℕ r)
+            k≥k+sr = begin (toℕ k + suc (toℕ r)
+                       ≡⟨ +-suc (toℕ k) (toℕ r) ⟩
+                     suc (toℕ k) + toℕ r
+                       ≤⟨ cong+r≤ (bounded k) (toℕ r) ⟩ 
+                     (m * suc n) + toℕ r
+                       ≡⟨ +-comm (m * suc n) (toℕ r) ⟩ 
+                     toℕ r + (m * suc n)
+                       ≡⟨ refl ⟩ 
+                     toℕ r + m * suc n
+                       ≤⟨ cong+l≤ (cong*r≤ p (suc n)) (toℕ r) ⟩ 
+                     toℕ r + q * suc n
+                       ≡⟨ sym k≡r+q*sn ⟩
+                     toℕ k ∎)
+                      where open ≤-Reasoning
 
   elim-right-zero : ∀ {ℓ} {Whatever : Set ℓ}
                     (m : ℕ) → Fin (m * 0) → Whatever
@@ -365,7 +364,7 @@ module Times where
   bwd∘fwd~id {n = zero} (b , ())
   bwd∘fwd~id {m} {suc n} (b , d) with fwd (b , d) | inspect fwd (b , d)
   ... | k | [ eq ] with (toℕ k) divMod (suc n)
-  ... | result q r pf with suc q ≤? m
+  ... | result q r pf with q <? m
   ... | no ¬p = ⊥-elim (absurd-quotient m n q r k pf (≤-pred (≰⇒> ¬p)))
   ... | yes p = cong₂ _,_  pf₁ (proj₁ same-quot)
     where
