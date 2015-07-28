@@ -252,7 +252,15 @@ uniti+∘x≡[0⊎x]∘uniti+ {m} {n} {x} = finext pf
 
 uniti+r∘[x⊎0]≡x∘uniti+r : ∀ {m n} {x : FinVec m n} →
     uniti+r ∘̂ (x ⊎c 1C {0}) ≡ x ∘̂ uniti+r
-uniti+r∘[x⊎0]≡x∘uniti+r {m} {n} {x} = {!!} 
+uniti+r∘[x⊎0]≡x∘uniti+r {m} {n} {x} = finext pf
+  where
+    pf : (i : Fin n) → (x ⊎c 1C {0}) !! (uniti+r !! i) ≡
+         uniti+r !! (x !! i)
+    pf i = begin (
+      (x ⊎c 1C {0}) !! ((tabulate (proj₁ Plus.uniti+r)) !! i)
+        ≡⟨ {!!} ⟩ 
+      uniti+r !! (x !! i) ∎)
+      where open ≡-Reasoning
 
 unite+r∘[x⊎0]≡x∘unite+r : ∀ {m n} {x : FinVec m n} →
     unite+r ∘̂ x ≡ (x ⊎c 1C {0}) ∘̂ unite+r
