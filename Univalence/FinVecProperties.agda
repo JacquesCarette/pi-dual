@@ -3,11 +3,12 @@
 module FinVecProperties where
 
 open import Data.Nat using (ℕ; _+_; _*_)
-open import Data.Fin using (Fin; zero; suc; inject+; raise)
+open import Data.Fin using (Fin; zero; suc; inject+; raise; toℕ)
 open import Data.Sum using (inj₁; inj₂; [_,_]′)
 open import Data.Product using (_×_; proj₁; proj₂; _,′_)
 
 open import Data.Nat.Properties.Simple using (+-right-identity)
+open import Data.Fin.Properties using (toℕ-injective; inject+-lemma)
 
 open import Data.Vec
    using (Vec; []; _∷_; tabulate; allFin)
@@ -39,7 +40,9 @@ open import Proofs using (
   -- VectorLemmas
        _!!_; lookupassoc; unSplit; lookup-++-raise; tabulate-split; 
        concat-map; left!!; right!!; map-map-map; lookup-map; map-∘;
-       lookup-subst
+       lookup-subst;
+  -- FinNatLemmas
+      toℕ-fin
      )
 
 ------------------------------------------------------------------------------
@@ -256,8 +259,17 @@ uniti+∘x≡[0⊎x]∘uniti+ {m} {n} {x} = finext pf
 private
   n+0≡inject+0 : (n : ℕ) → (i : Fin n) → (eq : n ≡ n + 0) →
     subst Fin eq i ≡ inject+ 0 i
-  n+0≡inject+0 n i eq = {!!}
-
+  n+0≡inject+0 n i eq = toℕ-injective pf
+    where
+      open ≡-Reasoning
+      pf : toℕ (subst Fin eq i) ≡ toℕ (inject+ 0 i)
+      pf = begin (
+        toℕ (subst Fin eq i)
+          ≡⟨ toℕ-fin n (n + 0) eq i ⟩
+        toℕ i
+          ≡⟨ inject+-lemma {n} 0 i ⟩
+        toℕ (inject+ 0 i) ∎)
+  
 uniti+r∘[x⊎0]≡x∘uniti+r : ∀ {m n} {x : FinVec m n} →
     uniti+r ∘̂ (x ⊎c 1C {0}) ≡ x ∘̂ uniti+r
 uniti+r∘[x⊎0]≡x∘uniti+r {m} {n} {x} = finext pf
