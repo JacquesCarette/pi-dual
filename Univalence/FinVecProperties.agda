@@ -7,6 +7,8 @@ open import Data.Fin using (Fin; zero; suc; inject+; raise)
 open import Data.Sum using (inj₁; inj₂; [_,_]′)
 open import Data.Product using (_×_; proj₁; proj₂; _,′_)
 
+open import Data.Nat.Properties.Simple using (+-right-identity)
+
 open import Data.Vec
    using (Vec; []; _∷_; tabulate; allFin)
    renaming (_++_ to _++V_; concat to concatV; map to mapV)
@@ -15,7 +17,7 @@ open import Data.Vec.Properties
            lookup-++-inject+; tabulate-∘)
 
 open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
+  using (_≡_; refl; sym; trans; cong; cong₂; subst; module ≡-Reasoning)
 open import Function using (_∘_; id)
 
 --
@@ -36,7 +38,8 @@ open import Proofs using (
        finext; 
   -- VectorLemmas
        _!!_; lookupassoc; unSplit; lookup-++-raise; tabulate-split; 
-       concat-map; left!!; right!!; map-map-map; lookup-map; map-∘
+       concat-map; left!!; right!!; map-map-map; lookup-map; map-∘;
+       lookup-subst
      )
 
 ------------------------------------------------------------------------------
@@ -250,6 +253,11 @@ uniti+∘x≡[0⊎x]∘uniti+ {m} {n} {x} = finext pf
       tabulate id !! (tabulate (λ y → x !! y) !! i) ∎)
       where open ≡-Reasoning
 
+private
+  n+0≡inject+0 : (n : ℕ) → (i : Fin n) → (eq : n ≡ n + 0) →
+    subst Fin eq i ≡ inject+ 0 i
+  n+0≡inject+0 n i eq = {!!}
+
 uniti+r∘[x⊎0]≡x∘uniti+r : ∀ {m n} {x : FinVec m n} →
     uniti+r ∘̂ (x ⊎c 1C {0}) ≡ x ∘̂ uniti+r
 uniti+r∘[x⊎0]≡x∘uniti+r {m} {n} {x} = finext pf
@@ -258,7 +266,15 @@ uniti+r∘[x⊎0]≡x∘uniti+r {m} {n} {x} = finext pf
          uniti+r !! (x !! i)
     pf i = begin (
       (x ⊎c 1C {0}) !! ((tabulate (proj₁ Plus.uniti+r)) !! i)
-        ≡⟨ {!!} ⟩ 
+        ≡⟨ cong (_!!_ (x ⊎c 1C {0})) (lookup∘tabulate (proj₁ Plus.uniti+r) i) ⟩
+      (x ⊎c 1C {0}) !! (proj₁ Plus.uniti+r i)
+        ≡⟨ cong (_!!_ (x ⊎c 1C {0})) (n+0≡inject+0 n i (sym (+-right-identity n))) ⟩
+      (x ⊎c 1C {0}) !! (inject+ 0 i)
+        ≡⟨ left!! i (λ z → inject+ 0 (x !! z)) {λ {()}}⟩
+      inject+ 0 (x !! i)
+        ≡⟨ sym (n+0≡inject+0 m (x !! i) (sym (+-right-identity m))) ⟩
+      subst Fin (sym (+-right-identity m)) (x !! i)
+        ≡⟨ sym (lookup∘tabulate (subst Fin (sym (+-right-identity m))) (x !! i) ) ⟩
       uniti+r !! (x !! i) ∎)
       where open ≡-Reasoning
 
