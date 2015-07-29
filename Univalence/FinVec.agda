@@ -135,6 +135,9 @@ uniti+ {m} = tabulate (proj₁ (Plus.uniti+ {m}))
 unite+r : {m : ℕ} → FinVec m (m + 0)
 unite+r {m} = tabulate (proj₁ (Plus.unite+r {m}))
 
+unite+r' : {m : ℕ} → FinVec m (m + 0)
+unite+r' {m} = tabulate (proj₁ (Plus.unite+r' {m}))
+
 uniti+r : {m : ℕ} → FinVec (m + 0) m
 uniti+r {m} = tabulate (proj₁ (Plus.uniti+r {m}))
     

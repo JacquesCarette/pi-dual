@@ -150,18 +150,18 @@ open import FinVec
 -- Establishes that Vec (Fin m) n is a commutative semiring
 -- (modulo symmetry)
 
-open import FinVecProperties
+-- open import FinVecProperties -- IN PROGRESS
 -- Establishes properties of permutations represented in the one-line
 -- notation by either exploiting their connections to type
 -- equivalences or their representations as vectors. The most involved
 -- property is probably:
 -- (p₁ ×c p₂) ∘̂ (p₃ ×c p₄) ≡ (p₁ ∘̂ p₃) ×c (p₂ ∘̂ p₄)
 
-open import ConcretePermutation
+-- open import ConcretePermutation -- IN PROGRESS
 -- Establishes that CPerm m n is a commutative semiring (including
 -- symmetry now)
 
-open import ConcretePermutationProperties
+-- open import ConcretePermutationProperties -- IN PROGRESS
 -- Establishes properties of concrete permutations that are necessary
 -- to show that it is symmetric rig category
 
@@ -222,7 +222,7 @@ open import SetoidEquiv
 -- in conjection with SEquivSCPermEquiv so let's wait until
 -- dependencies satisfied...
 
-open import SEquivSCPermEquiv
+-- open import SEquivSCPermEquiv -- IN PROGRESS
 -- open import PiPerm -- IN PROGRESS
 open import PiEquiv
 

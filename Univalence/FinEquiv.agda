@@ -233,6 +233,12 @@ module Plus where
  swap+ {m} {n} =
    (swapper m n , mkqinv (swapper n m) (swap-inv n m) (swap-inv m n))
 
+ -- units that use swap
+
+ unite+r' : {m : ℕ} → Fin (m + 0) ≃ Fin m
+ unite+r' {m} = swapper m 0 ,
+                mkqinv (swapper 0 m) (swap-inv 0 m) (swap-inv m 0) 
+
  -- associativity
 
  assocl+ : {m n o : ℕ} → Fin (m + (n + o)) ≃ Fin ((m + n) + o)

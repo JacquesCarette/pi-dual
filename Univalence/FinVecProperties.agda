@@ -27,6 +27,7 @@ open import Equiv using (_∼_; p∘!p≡id)
 open import FinEquiv using (module Plus; module Times; module PlusTimes)
 open import FinVec using (FinVec; 0C; 1C; _∘̂_; _⊎c_; _×c_;
   unite+; uniti+; unite+r; uniti+r;
+  unite+r'; -- alternative definition of unite+r using equivalences
   swap+cauchy; assocl+; assocr+;
   unite*; uniti*; unite*r; uniti*r;
   swap⋆cauchy; assocl*; assocr*;
@@ -293,6 +294,22 @@ uniti+r∘[x⊎0]≡x∘uniti+r {m} {n} {x} = finext pf
 unite+r∘[x⊎0]≡x∘unite+r : ∀ {m n} {x : FinVec m n} →
     unite+r ∘̂ x ≡ (x ⊎c 1C {0}) ∘̂ unite+r
 unite+r∘[x⊎0]≡x∘unite+r {m} {n} {x} = {!!} 
+
+unite+r'∘[x⊎0]≡x∘unite+r' : ∀ {m n} {x : FinVec m n} →
+    unite+r' ∘̂ x ≡ (x ⊎c 1C {0}) ∘̂ unite+r'
+unite+r'∘[x⊎0]≡x∘unite+r' {m} {n} {x} =
+  finext xxx
+  where xxx : (_!!_ x) ∘ (_!!_ unite+r') ∼ (_!!_ unite+r') ∘ (_!!_ (x ⊎c 1C))
+        xxx = {!!}
+
+-- unite+r' : FinVec m (m + 0)
+-- unite+r' = tabulate (proj₁ Plus.unite+r')
+--
+-- Plus.unite+r' : {m : ℕ} → Fin (m + 0) ≃ Fin m
+-- Plus.unite+r' {m} = swapper m 0 ,
+--                     mkqinv (swapper 0 m) (swap-inv 0 m) (swap-inv m 0) 
+
+
 
 idˡ⊕ : ∀ {m n} {x : FinVec m n} → uniti+ ∘̂ (1C {0} ⊎c x) ≡ x ∘̂ uniti+
 idˡ⊕ {m} {n} {x} = finext pf
