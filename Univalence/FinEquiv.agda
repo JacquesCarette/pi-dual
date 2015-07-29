@@ -46,7 +46,7 @@ open import Equiv
   using (_∼_; _≃_; id≃; sym≃; trans≃;
          mkqinv; module qinv; path⊎; _⊎∼_; _×∼_)
 open import TypeEquiv
-  using (swap₊; swapswap₊; assocl₊equiv; swap⋆; swapswap⋆)
+  using (swap₊; swapswap₊; assocl₊equiv; swap⋆; swapswap⋆; unite₊′equiv)
 
 open import Proofs using (
   -- LeqLemmas
@@ -236,8 +236,7 @@ module Plus where
  -- units that use swap
 
  unite+r' : {m : ℕ} → Fin (m + 0) ≃ Fin m
- unite+r' {m} = swapper m 0 ,
-                mkqinv (swapper 0 m) (swap-inv 0 m) (swap-inv m 0) 
+ unite+r' {m} = (sym≃ (fwd-iso {m} {0})) ● (path⊎ id≃ F0≃⊥ ● unite₊′equiv)
 
  -- associativity
 

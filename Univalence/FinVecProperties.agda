@@ -299,8 +299,10 @@ unite+r'∘[x⊎0]≡x∘unite+r' : ∀ {m n} {x : FinVec m n} →
     unite+r' ∘̂ x ≡ (x ⊎c 1C {0}) ∘̂ unite+r'
 unite+r'∘[x⊎0]≡x∘unite+r' {m} {n} {x} =
   finext xxx
-  where xxx : (_!!_ x) ∘ (_!!_ unite+r') ∼ (_!!_ unite+r') ∘ (_!!_ (x ⊎c 1C))
-        xxx = {!!}
+  where
+        open ≡-Reasoning
+        xxx : (_!!_ x) ∘ (_!!_ unite+r') ∼ (_!!_ unite+r') ∘ (_!!_ (x ⊎c 1C))
+        xxx i = {!!}
 
 -- unite+r' : FinVec m (m + 0)
 -- unite+r' = tabulate (proj₁ Plus.unite+r')
