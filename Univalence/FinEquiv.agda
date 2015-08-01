@@ -33,7 +33,7 @@ open import Algebra using (CommutativeSemiring)
 open import Algebra.Structures
   using (IsSemigroup; IsCommutativeMonoid; IsCommutativeSemiring)
 
-open import Function using (_∘_; id)
+open import Function using (_∘_; id; case_of_)
 open import Relation.Nullary using (yes; no)
 open import Relation.Binary using (IsEquivalence)
 open import Relation.Binary.PropositionalEquality
@@ -133,9 +133,10 @@ module Plus where
  abstract
 
   bwd : {m n : ℕ} → Fin (m + n) → (Fin m ⊎ Fin n)
-  bwd {m} {n} i with toℕ i <? m
-  ... | yes p = inj₁ (fromℕ≤ p)
-  ... | no ¬p = inj₂ (reduce≥ i (≤-pred (≰⇒> ¬p)))
+  bwd {m} {n} = λ i → case (toℕ i <? m) of λ
+    { (yes p) → inj₁ (fromℕ≤ p)
+     ; (no ¬p) → inj₂ (reduce≥ i (≤-pred (≰⇒> ¬p)))
+     }
 
   fwd∘bwd~id : {m n : ℕ} → fwd {m} {n} ∘ bwd ∼ id
   fwd∘bwd~id {m} i with toℕ i <? m
