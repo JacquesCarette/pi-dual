@@ -302,7 +302,10 @@ unite+r'∘[x⊎0]≡x∘unite+r' {m} {n} {x} =
   where
         open ≡-Reasoning
         xxx : (_!!_ x) ∘ (_!!_ unite+r') ∼ (_!!_ unite+r') ∘ (_!!_ (x ⊎c 1C))
-        xxx i = {!!}
+        xxx i = begin
+                  (x !! (unite+r' !! i))
+                  ≡⟨ {!!} ⟩
+                  (unite+r' !! ((x ⊎c 1C) !! i)) ∎
 
 -- unite+r' : FinVec m (m + 0)
 -- unite+r' = tabulate (proj₁ Plus.unite+r')

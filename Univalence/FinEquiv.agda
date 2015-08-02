@@ -205,6 +205,11 @@ module Plus where
           (subst-subst eq (sym eq) refl)
           (subst-subst (sym eq) eq sym-sym)
 
+ -- without using subst directly
+
+ unite+r' : {m : ℕ} → Fin (m + 0) ≃ Fin m
+ unite+r' {m} = (sym≃ (fwd-iso {m} {0})) ● (path⊎ id≃ F0≃⊥ ● unite₊′equiv)
+
  -- uniti+
 
  uniti+ : {m : ℕ} → Fin m ≃ Fin (0 + m)
@@ -233,11 +238,6 @@ module Plus where
  swap+ : {m n : ℕ} → Fin (m + n) ≃ Fin (n + m)
  swap+ {m} {n} =
    (swapper m n , mkqinv (swapper n m) (swap-inv n m) (swap-inv m n))
-
- -- units that use swap
-
- unite+r' : {m : ℕ} → Fin (m + 0) ≃ Fin m
- unite+r' {m} = (sym≃ (fwd-iso {m} {0})) ● (path⊎ id≃ F0≃⊥ ● unite₊′equiv)
 
  -- associativity
 
