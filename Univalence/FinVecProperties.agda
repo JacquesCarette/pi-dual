@@ -2,13 +2,14 @@
 
 module FinVecProperties where
 
-open import Data.Nat using (ℕ; _+_; _*_)
+open import Data.Nat using (ℕ; _+_; _*_;_≤?_)
 open import Data.Fin using (Fin; zero; suc; inject+; raise; toℕ)
 open import Data.Sum using (inj₁; inj₂; [_,_]′)
 open import Data.Product using (_×_; proj₁; proj₂; _,′_)
 
 open import Data.Nat.Properties.Simple using (+-right-identity)
 open import Data.Fin.Properties using (toℕ-injective; inject+-lemma)
+open import Data.Sum.Properties -- FIXME
 
 open import Data.Vec
    using (Vec; []; _∷_; tabulate; allFin)
@@ -19,12 +20,13 @@ open import Data.Vec.Properties
 
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; cong; cong₂; subst; module ≡-Reasoning)
-open import Function using (_∘_; id)
+open import Relation.Nullary using (yes; no)
+open import Function using (_∘_; id; case_of_)
 
 --
 
-open import Equiv using (_∼_; p∘!p≡id)
-open import FinEquiv using (module Plus; module Times; module PlusTimes)
+open import Equiv using (_∼_; p∘!p≡id; path⊎; id≃; sym≃; _⋆_)
+open import FinEquiv using (F0≃⊥; module Plus; module Times; module PlusTimes)
 open import FinVec using (FinVec; 0C; 1C; _∘̂_; _⊎c_; _×c_;
   unite+; uniti+; unite+r; uniti+r;
   unite+r'; -- alternative definition of unite+r using equivalences
@@ -34,6 +36,12 @@ open import FinVec using (FinVec; 0C; 1C; _∘̂_; _⊎c_; _×c_;
   dist*+; factor*+; distl*+; factorl*+;
   right-zero*l; right-zero*r
   ) 
+
+--
+-- we need some type equivalences too, as FinEquiv uses them
+open import TypeEquiv
+
+--
 
 open import Proofs using (
   -- FiniteFunctions
@@ -55,11 +63,11 @@ open import Proofs using (
 
 infix 4 _∼p_
 
-_∼p_ : {n m : ℕ} (p₁ p₂ : Vec (Fin m) n) → Set
+_∼p_ : {n : ℕ} {A : Set} (p₁ p₂ : Vec A n) → Set
 _∼p_ {n} p₁ p₂ = (i : Fin n) → p₁ !! i ≡ p₂ !! i
 
-∼p⇒≡ : {n : ℕ} {p₁ p₂ : Vec (Fin n) n} → (p₁ ∼p p₂) → p₁ ≡ p₂
-∼p⇒≡ {n} {p₁} {p₂} eqv = 
+∼p⇒≡ : {n : ℕ} {A : Set} {p₁ p₂ : Vec A n} → (p₁ ∼p p₂) → p₁ ≡ p₂
+∼p⇒≡ {n} {A} {p₁} {p₂} eqv = 
   begin (
     p₁                            ≡⟨ sym (tabulate∘lookup p₁) ⟩
     tabulate (_!!_ p₁)            ≡⟨ finext eqv ⟩
@@ -291,26 +299,41 @@ uniti+r∘[x⊎0]≡x∘uniti+r {m} {n} {x} = finext pf
       uniti+r !! (x !! i) ∎)
       where open ≡-Reasoning
 
+{-
 unite+r∘[x⊎0]≡x∘unite+r : ∀ {m n} {x : FinVec m n} →
     unite+r ∘̂ x ≡ (x ⊎c 1C {0}) ∘̂ unite+r
-unite+r∘[x⊎0]≡x∘unite+r {m} {n} {x} = {!!} 
+unite+r∘[x⊎0]≡x∘unite+r {m} {n} {x} = ∼p⇒≡ {!∘̂⇒∘ ? ?!}
+
+foo : ∀ {m n} {f : Fin n → Fin m} →
+    unite+r' ∘̂ (tabulate f) ≡ ((tabulate f) ⊎c 1C {0}) ∘̂ unite+r'
+foo {m} {n} {f} = ∼p⇒≡ {!!}
 
 unite+r'∘[x⊎0]≡x∘unite+r' : ∀ {m n} {x : FinVec m n} →
     unite+r' ∘̂ x ≡ (x ⊎c 1C {0}) ∘̂ unite+r'
-unite+r'∘[x⊎0]≡x∘unite+r' {m} {n} {x} =
-  finext xxx
+unite+r'∘[x⊎0]≡x∘unite+r' {m} {n} {x} = {!∘̂⇒∘ ?!}
+  where
+    xxx : (i : Fin (n + 0)) → (x !! (Plus.unite+r' ⋆ i)) ≡ (Plus.unite+r' ⋆ ((x ⊎c 1C {0}) !! i))
+    xxx i = {!!}
+{-  finext xxx
   where
         open ≡-Reasoning
         xxx : (_!!_ x) ∘ (_!!_ unite+r') ∼ (_!!_ unite+r') ∘ (_!!_ (x ⊎c 1C))
-        xxx i = {!!}
-
+        xxx i = begin (
+            x !! (tabulate (proj₁ Plus.unite+r') !! i)
+              ≡⟨ cong (_!!_ x) (lookup∘tabulate (proj₁ Plus.unite+r') i) ⟩
+            x !! (proj₁ Plus.unite+r' i)
+              ≡⟨ cong (_!!_ x) (unite₊′∘[id,f]≡f∘unite₊′ (path⊎ id≃ F0≃⊥ ⋆ (sym≃ Plus.fwd-iso ⋆ i))) ⟩
+            x !! {!!}
+              ≡⟨ {!!} ⟩
+            tabulate (proj₁ Plus.unite+r') !! ((x ⊎c 1C) !! i) ∎)
+-}        
 -- unite+r' : FinVec m (m + 0)
 -- unite+r' = tabulate (proj₁ Plus.unite+r')
 --
 -- Plus.unite+r' : {m : ℕ} → Fin (m + 0) ≃ Fin m
 -- Plus.unite+r' {m} = swapper m 0 ,
 --                     mkqinv (swapper 0 m) (swap-inv 0 m) (swap-inv m 0) 
-
+-}
 
 
 idˡ⊕ : ∀ {m n} {x : FinVec m n} → uniti+ ∘̂ (1C {0} ⊎c x) ≡ x ∘̂ uniti+

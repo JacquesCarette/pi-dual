@@ -14,7 +14,7 @@ open import FinVecProperties
          1C₀⊎x≡x; 1C⊎1C≡1C; 1C×1C≡1C;
          ⊎c-distrib; ×c-distrib;
          unite+∘[0⊎x]≡x∘unite+; uniti+∘x≡[0⊎x]∘uniti+;
-         uniti+r∘[x⊎0]≡x∘uniti+r; unite+r∘[x⊎0]≡x∘unite+r)
+         uniti+r∘[x⊎0]≡x∘uniti+r) --  unite+r∘[x⊎0]≡x∘unite+r
 
 open import ConcretePermutation
   using (CPerm; cp; idp; symp; transp; _⊎p_; _×p_;
@@ -102,9 +102,11 @@ uniti+rp∘[x⊎0]≡x∘uniti+rp : ∀ {m n} (p : CPerm m n) →
   transp uniti+rp (p ⊎p 0p) ≡ transp p uniti+rp
 uniti+rp∘[x⊎0]≡x∘uniti+rp p = p≡ uniti+r∘[x⊎0]≡x∘uniti+r
 
+{-
 unite+rp∘[x⊎0]≡x∘unite+rp : ∀ {m n} (p : CPerm m n) →
   transp unite+rp p ≡ transp (p ⊎p 0p) unite+rp
 unite+rp∘[x⊎0]≡x∘unite+rp p = p≡ unite+r∘[x⊎0]≡x∘unite+r
+-}
 
 -- Multiplicatives
 

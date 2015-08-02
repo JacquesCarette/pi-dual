@@ -43,8 +43,8 @@ open import SetoidEquiv
   module _≋_;       -- proof of thm2 
   equiv;            -- proof of thm2 
   equivS;           -- proof of thm2 
-  _≋_               -- proof of thm2 
---  id≃S;
+  _≋_              -- proof of thm2
+--  id≃S
 --  0≃S;
 --  _≃S≡_;
 --  _⊎≃S_
@@ -71,11 +71,9 @@ open import ConcretePermutationProperties -- using (CPerm; cp; p≡; 0p; idp; _�
 SCPerm : ℕ → ℕ → Setoid zero zero
 SCPerm m n = setoid (CPerm m n)
 
--- For convenience, use only a single size, even though we could use 2.
-
-thm2 : ∀ {n} {A B : Set} → Enum A n → Enum B n → 
-  (≃S-Setoid A B) ≃S (SCPerm n n)
-thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB) = 
+thm2 : ∀ {n m} {A B : Set} → Enum A n → Enum B m → 
+  (≃S-Setoid A B) ≃S (SCPerm m n)
+thm2 {n} {m} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB) = 
   equiv fwd' bwd' α β
   where
     open ≡-Reasoning
@@ -83,18 +81,18 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
     BS = setoid B
     A≃Fn : A ≃ Fin n
     A≃Fn = (enumA , mkqinv labelA αA βA)
-    B≃Fn : B ≃ Fin n
+    B≃Fn : B ≃ Fin m
     B≃Fn = (enumB , mkqinv labelB αB βB)
-    CP⇨ = SCPerm n n ⇨ SCPerm n n
+    CP⇨ = SCPerm m n ⇨ SCPerm m n
 
-    fwd : (AS ≃S BS) → CPerm n n
+    fwd : (AS ≃S BS) → CPerm m n
     fwd A≃B = cp (tabulate f) (tabulate g) (~⇒≡ β) (~⇒≡ α)
       where
         module A≃SB = _≃S_ A≃B
-        f : Fin n → Fin n
+        f : Fin n → Fin m
         f j = enumB (A≃SB.f ⟨$⟩ labelA j)
 
-        g : Fin n → Fin n
+        g : Fin m → Fin n
         g j =  enumA (A≃SB.g ⟨$⟩ labelB j) 
 
         α : f ∘ g ∼ id
@@ -119,14 +117,14 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
                ≡⟨ αA i ⟩
             i ∎)
 
-    fwd' : ≃S-Setoid A B ⟶ setoid (CPerm n n)
+    fwd' : ≃S-Setoid A B ⟶ setoid (CPerm m n)
     fwd' = record 
      { _⟨$⟩_ = fwd 
       ; cong = λ {i} {j} i≋j → p≡ (finext (λ k → cong enumB (f≡ i≋j (labelA k)) ))
      }
        where open _≋_
 
-    bwd : CPerm n n → (AS ≃S BS)
+    bwd : CPerm m n → (AS ≃S BS)
     bwd (cp p₁ p₂ αp βp) = equiv f g α β
       where
         f : AS ⟶ BS
@@ -165,7 +163,7 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
               ≡⟨ βA a ⟩
             a ∎)
 
-    bwd' : setoid (CPerm n n) ⟶ ≃S-Setoid A B
+    bwd' : setoid (CPerm m n) ⟶ ≃S-Setoid A B
     bwd' = record 
       { _⟨$⟩_ = bwd 
       ; cong = λ { {π} {.π} refl → equivS (λ _ → refl) (λ _ → refl) }
@@ -220,6 +218,10 @@ thm2 {n} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB)
 {--
 
 Is this still important or has it been subsumed by the categorical work ???
+
+Still important, I believe.  It will be used in proving the categorical
+components of CPermCat.
+
 
 open _≃S_
 
@@ -290,6 +292,4 @@ lemma3 {n₁} {n₂} {EA = EA} {EB} {EC} {ED} (equiv f₄ g₄ α₄ β₄) (equ
            raise n₁ (enumD (f₅ ⟨$⟩ qC.g i))
              ≡⟨ cong (raise n₁) (sym (lookup∘tabulate _ i)) ⟩
            raise n₁ (tabulate (λ i₁ → enumD (f₅ ⟨$⟩ qC.g i₁)) !! i) ∎)
-
---}
-
+-}
