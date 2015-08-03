@@ -5,6 +5,9 @@ module ConcretePermutation where
 import Level using (zero)
 
 open import Data.Nat using (ℕ; _+_; _*_)
+open import Data.Fin using (Fin)
+open import Data.Product using (proj₁; proj₂)
+open import Data.Vec using (tabulate)
 
 open import Algebra using (CommutativeSemiring)
 open import Algebra.Structures using
@@ -14,6 +17,7 @@ open import Relation.Binary using (IsEquivalence)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; cong; cong₂; module ≡-Reasoning)
 
+open import Equiv using (_≃_; sym≃;p∘!p≡id)
 --
 
 open import FinVec
@@ -32,6 +36,7 @@ open import FinVec
 
 open import FinVecProperties
   using (∘̂-assoc; ∘̂-lid; ∘̂-rid;
+         ~⇒≡;
          1C⊎1C≡1C; 1C×1C≡1C; 1C₀⊎x≡x;
          ⊎c-distrib; ×c-distrib;
          unite+∘̂uniti+~id; uniti+∘̂unite+~id;
@@ -129,6 +134,18 @@ _⊎p_ {m₁} {m₂} {n₁} {n₂} π₀ π₁ =
         1C {m₁} ⊎c 1C {n₁}
           ≡⟨ 1C⊎1C≡1C {m₁} ⟩
         1C ∎ )
+
+-- For the rest of the permutations, it is convenient to lift things from
+-- FinVec in one go
+mkPerm : {m n : ℕ} → (Fin m ≃ Fin n) → CPerm m n
+mkPerm {m} {n} eq = cp p q p∘̂q≡1 q∘̂p≡1
+  where
+    f = proj₁ eq
+    g = proj₁ (sym≃ eq)
+    p = tabulate g -- note the flip!
+    q = tabulate f
+    q∘̂p≡1 = ~⇒≡ {f = g} {g = f} (p∘!p≡id {p = eq})
+    p∘̂q≡1 = ~⇒≡ {f = f} {g = g} (p∘!p≡id {p = sym≃ eq})
 
 -- units
 

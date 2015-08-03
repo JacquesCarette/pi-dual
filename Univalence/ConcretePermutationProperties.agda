@@ -3,7 +3,23 @@
 module ConcretePermutationProperties where
 
 open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; sym; cong; module ≡-Reasoning; proof-irrelevance)
+  using (_≡_; refl; sym; trans; cong; module ≡-Reasoning; proof-irrelevance; setoid)
+open import Relation.Binary using (Setoid; module Setoid)
+
+open import Level using (zero)
+open import Data.Nat using (ℕ)
+open import Data.Fin using (Fin)
+open import Data.Vec using (tabulate)
+open import Data.Product using (_,_)
+
+open import Proofs using (
+  -- FiniteFunctions
+  finext
+  )
+--
+
+open import Equiv using (_≃_; qinv; mkqinv)
+open import SetoidEquiv using (_≋_; _≃S≡_)
 
 --
 
@@ -13,11 +29,13 @@ open import FinVecProperties
   using (∘̂-assoc; ∘̂-lid; ∘̂-rid;
          1C₀⊎x≡x; 1C⊎1C≡1C; 1C×1C≡1C;
          ⊎c-distrib; ×c-distrib;
+         ~⇒≡;
          unite+∘[0⊎x]≡x∘unite+; uniti+∘x≡[0⊎x]∘uniti+;
          uniti+r∘[x⊎0]≡x∘uniti+r) --  unite+r∘[x⊎0]≡x∘unite+r
 
 open import ConcretePermutation
   using (CPerm; cp; idp; symp; transp; _⊎p_; _×p_;
+         mkPerm;
          0p; unite+p; uniti+p; unite+rp; uniti+rp) 
 
 ------------------------------------------------------------------------------
@@ -47,6 +65,27 @@ p≡ {m} {n} {cp π πᵒ αp βp} {cp .π πᵒ₁ αp₁ βp₁} refl with
 p≡ {m} {n} {cp π πᵒ αp βp} {cp .π .πᵒ αp₁ βp₁} refl | refl
   with proof-irrelevance αp αp₁ | proof-irrelevance βp βp₁
 p≡ {m} {n} {cp π πᵒ αp βp} {cp .π .πᵒ .αp .βp} refl | refl | refl | refl = refl
+
+SCPerm : ℕ → ℕ → Setoid zero zero
+SCPerm m n = setoid (CPerm m n)
+
+mkSCPerm : ∀ {ℓ} {A B : Set ℓ} → (eq₁ : A ≃ B) → A ≃S≡ B
+mkSCPerm (f , mkqinv g α β) =
+  SetoidEquiv.equiv (record { _⟨$⟩_ = f ; cong = cong f })
+                    (record { _⟨$⟩_ = g ; cong = cong g })
+                    (λ {x} x≡y → trans (α x) x≡y)
+                    (λ {x} x≡y → trans (β x) x≡y)
+
+≃⇒≡ : ∀ {m n} → {eq₁ eq₂ : Fin m ≃ Fin n} →
+  (eq₁₂ : mkSCPerm eq₁ ≋ mkSCPerm eq₂) → mkPerm eq₁ ≡ mkPerm eq₂
+≃⇒≡ (SetoidEquiv.equivS f≡ g≡) = p≡ (finext g≡)
+  where open Equiv.qinv
+
+{-
+unite+rp∘[x⊎0]≡x∘unite+rp : ∀ {m n} (p : CPerm m n) →
+  transp unite+rp p ≡ transp (p ⊎p 0p) unite+rp
+unite+rp∘[x⊎0]≡x∘unite+rp p = p≡ unite+r∘[x⊎0]≡x∘unite+r
+-}
 
 ------------------------------------------------------------------------------
 -- Composition
