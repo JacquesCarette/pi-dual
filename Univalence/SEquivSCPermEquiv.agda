@@ -61,19 +61,18 @@ open import SetoidEquiv
 
 open import FinVec using (_∘̂_; 1C)
 open import FinVecProperties using (~⇒≡; !!⇒∘̂; 1C!!i≡i; cauchyext)
-open import EnumEquiv using (Enum; 0E; _⊕e_; eval-left; eval-right) 
+open import EnumEquiv using (Enum; 0E; _⊕e_; eval-left; eval-right)
+open import FiniteType using (FiniteType; ∣_∣)
 open import ConcretePermutation -- using (CPerm; cp; p≡; 0p; idp; _⊎p_) -- ; SCPerm) 
 open import ConcretePermutationProperties -- using (CPerm; cp; p≡; 0p; idp; _⊎p_) -- ; SCPerm) 
 
 ------------------------------------------------------------------------------
 -- The big (semantic) theorem!
 
-SCPerm : ℕ → ℕ → Setoid zero zero
-SCPerm m n = setoid (CPerm m n)
-
-thm2 : ∀ {n m} {A B : Set} → Enum A n → Enum B m → 
-  (≃S-Setoid A B) ≃S (SCPerm m n)
-thm2 {n} {m} {A} {B} (enumA , mkqinv labelA αA βA) (enumB , mkqinv labelB αB βB) = 
+thm2 : ∀ {A B : Set} → (a : FiniteType A) → (b : FiniteType B) →
+  (≃S-Setoid A B) ≃S (SCPerm ∣ b ∣ ∣ a ∣)
+thm2 {A} {B} (n , (enumA , mkqinv labelA αA βA))
+             (m , (enumB , mkqinv labelB αB βB)) = 
   equiv fwd' bwd' α β
   where
     open ≡-Reasoning

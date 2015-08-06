@@ -168,8 +168,8 @@ open import FinVec
 -- open import CPermCat -- IN PROGRESS
 -- Establishes that CPerm m n is a symmetric rig category
 
-
-
+-- FiniteType ???
+-- SCEquivSCPermEquiv ???
 
 
 
