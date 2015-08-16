@@ -18,9 +18,9 @@ open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
 
 open import Equiv
-  using (_∼_; refl∼; _≃_; id≃; sym≃; ≃IsEquiv; mkqinv; path⊎; path×)
+  using (_∼_; refl∼; _≃_; id≃; sym≃; ≃IsEquiv; mkqinv; path⊎; path×; _●_)
 import TypeEquiv as TE
-  using (swap₊; swapswap₊)
+  using (swap₊equiv)
 open import FiniteType
 
 ------------------------------------------------------------------------------
@@ -29,27 +29,7 @@ open import FiniteType
 -- swap₊
 
 swap₊ : {A B : Set} → FiniteType (A ⊎ B) → FiniteType (B ⊎ A)
-swap₊ (m , f , mkqinv g α β) =
-  (m ,
-  f ○ TE.swap₊ ,
-  mkqinv
-    (TE.swap₊ ○ g)
-    (λ x → begin 
-            ((f ○ TE.swap₊) ○ TE.swap₊ ○ g) x
-              ≡⟨ refl ⟩
-            (f ((TE.swap₊ ○ TE.swap₊) (g x)))
-              ≡⟨ cong (λ h → f h) (TE.swapswap₊ (g x)) ⟩ 
-            (f (id (g x)))
-              ≡⟨ refl ⟩ 
-            (f ○ g) x
-              ≡⟨ α x ⟩
-            x ∎)
-    (λ x → begin
-            (TE.swap₊ (g (f (TE.swap₊ x)))
-              ≡⟨ cong (λ h → TE.swap₊ h) (β (TE.swap₊ x)) ⟩
-            (TE.swap₊ (TE.swap₊ x))
-              ≡⟨ TE.swapswap₊ x ⟩
-            x ∎)))
+swap₊ (m , eq) = (m , eq ● TE.swap₊equiv )
 
 {--
 
