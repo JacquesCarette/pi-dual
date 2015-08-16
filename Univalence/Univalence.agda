@@ -59,6 +59,9 @@ open import TypeEquivCat
 
 ------------------------------------------------------------------------------
 -- Equivalences between Pi types (combinators)
+-- Because Pi does not rely on extensionality it is easy to iterate
+-- equivalences up and down. The following shows levels -2, -1, 0, and
+-- 1.
 
 open import PiU
 -- First we introduce a univere U of finite types
@@ -104,7 +107,42 @@ open import Pi1Examples
 -- How to make U a 2-type, 3-type, etc. ???
 
 ------------------------------------------------------------------------------
--- Equivalences between Fin types (permutations) 
+-- Equivalences between finite types (permutations) 
+
+-- A finite type is a set which is equivalent to Fin n for some
+-- n. Note that the equivalence gives a particular enumeration of the
+-- elements of the set. The punchline is that finite sets and
+-- permutations form a symmetric rig groupoid.
+-- 
+-- It is possible to directly write permutations between finite types
+-- but this is extremely tedious especially if we want to prove that
+-- we have enough structure to model a symmetric rig groupoid. What we
+-- will do instead is to derive these permutations from equivalences
+-- as illustrated by the digram below:
+-- 
+-- (A;Fin m) <—-Equivalence-—> (B;Fin n)
+--                  ||
+--                  || EquivPerm 
+--                  ||
+-- (A;Fin m) <—-Permutation-—> (B;Fin n)
+--
+-- The equivalence EquivPerm is a 2-equivalence between equivalences
+-- and permutations. We will use to automatically transport the
+-- symmetric rig groupoid structure from equivalences to permutations.
+
+open import FiniteType
+-- We begin with a short definition of a finite type which is a set
+-- with a particular equivalence to Fin n for some n
+
+-- define FiniteTypeEquiv     -- top line
+-- define FiniteTpyeEquivCat  -- structure of equivalences
+-- define Permutation         -- should be simple definition
+-- define EquivPerm           -- big thm
+-- define EquivPermTransport  -- might be just an application of thm
+
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Wavefront ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -- Finding a good representation of permutations is tricky.
 
@@ -140,13 +178,10 @@ open import Pi1Examples
 -- consists mostly of making explicit the proofs that are implicit in
 -- FinEquiv and FinVec.
 
--- The punchline is that finite sets and permutations form a symmetric
--- rig category.
-
-open import FinEquiv
+-- open import FinEquiv
 -- Establishes that Fin m ≃ Fin n is a commutative semiring
 
-open import FinVec
+-- open import FinVec
 -- Establishes that Vec (Fin m) n is a commutative semiring
 -- (modulo symmetry)
 
@@ -171,34 +206,6 @@ open import FinVec
 -- FiniteType ???
 -- SCEquivSCPermEquiv ???
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Wavefront ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-
-
-
-
-
-
-
-
 -- Now we want to relate Pi-types and type equivalences. The punchline
 -- would be that TypeEquivCat is isomorphic to Pi1Cat. But the setup
 -- for Pi1Cat allows us to keep going up and down the levels unlike
@@ -212,10 +219,10 @@ open import FinVec
 -- Equivalences between setoids; Equivalences between equivalences;
 -- Unfinished files; Unused files
 
-open import EnumEquiv
+-- open import EnumEquiv
 -- equivalence between A and Fin m is an enumeration of A
 
-open import SetoidEquiv
+-- open import SetoidEquiv
 -- do a version of EquivSetoid specialized for finite sets that
 -- include an enumeration just like quasi-inverses include one
 -- particular function to specify the equivalence; must really be done
@@ -224,7 +231,7 @@ open import SetoidEquiv
 
 -- open import SEquivSCPermEquiv -- IN PROGRESS
 -- open import PiPerm -- IN PROGRESS
-open import PiEquiv
+-- open import PiEquiv
 
 -- open import SkFinSetCategory
 -- open import Pim1Cat

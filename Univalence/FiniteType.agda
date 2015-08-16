@@ -3,7 +3,7 @@
 module FiniteType where
 
 open import Equiv using (_≃_)
-open import Data.Product using (Σ;_,_)
+open import Data.Product using (Σ; _,_)
 open import Data.Nat using (ℕ)
 open import Data.Fin using (Fin)
 
@@ -17,3 +17,5 @@ FiniteType A = Σ ℕ (λ n → A ≃ Fin n)
 
 ∣_∣ : {A : Set} → FiniteType A → ℕ
 ∣ (n , _) ∣ = n
+
+--------------------------------------------------------------------------
