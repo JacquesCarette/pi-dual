@@ -134,6 +134,8 @@ open import FiniteType
 -- We begin with a short definition of a finite type which is a set
 -- with a particular equivalence to Fin n for some n
 
+
+
 -- define FiniteTypeEquiv     -- top line
 -- define FiniteTpyeEquivCat  -- structure of equivalences
 -- define Permutation         -- should be simple definition
