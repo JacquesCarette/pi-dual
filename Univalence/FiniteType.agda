@@ -12,10 +12,7 @@ open import Data.Fin using (Fin)
 -- A finite type is a type which is equivalent to Fin n
 --
 
-FiniteType : Set → Set
-FiniteType A = Σ ℕ (λ n → A ≃ Fin n)
-
-∣_∣ : {A : Set} → FiniteType A → ℕ
-∣ (n , _) ∣ = n
+FiniteType : ∀ {ℓ} → (A : Set ℓ) → (n : ℕ) →  Set ℓ
+FiniteType A n = A ≃ Fin n
 
 --------------------------------------------------------------------------

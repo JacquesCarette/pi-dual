@@ -5,6 +5,7 @@ module FiniteTypeEquiv where
 import Level using (zero; suc)
 open import Data.Empty using (⊥)
 open import Data.Unit using (⊤; tt)
+open import Data.Nat using (ℕ; _+_)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; proj₁; proj₂; _,_)
 
@@ -19,6 +20,7 @@ open ≡-Reasoning
 
 open import Equiv
   using (_∼_; refl∼; _≃_; id≃; sym≃; ≃IsEquiv; mkqinv; path⊎; path×; _●_)
+open import FinEquiv using (module Plus)
 import TypeEquiv as TE
   using (swap₊equiv)
 open import FiniteType
@@ -28,17 +30,11 @@ open import FiniteType
 
 -- swap₊
 
-swap₊ : {A B : Set} → FiniteType (A ⊎ B) → FiniteType (B ⊎ A)
-swap₊ (m , eq) = (m , eq ● TE.swap₊equiv )
+swap₊ : {A B : Set} {m n : ℕ} →
+  FiniteType (A ⊎ B) (m + n) → FiniteType (B ⊎ A) (n + m)
+swap₊ {A} {B} {m} {n} eq = Plus.swap+ {m} {n} ● eq ● TE.swap₊equiv
 
 {--
-
-swapswap₊ : {A B : Set} → swap₊ ○ swap₊ {A} {B} ∼ id
-swapswap₊ (inj₁ a) = refl
-swapswap₊ (inj₂ b) = refl
-
-swap₊equiv : {A B : Set} → (A ⊎ B) ≃ (B ⊎ A)
-swap₊equiv = (swap₊ , mkqinv swap₊ swapswap₊ swapswap₊)
 
 -- unite₊ and uniti₊
 
