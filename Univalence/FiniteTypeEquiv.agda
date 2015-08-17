@@ -15,7 +15,7 @@ open import Algebra.Structures
   
 open import Function renaming (_∘_ to _○_)
 open import Relation.Binary.PropositionalEquality
-  using (refl; cong; module ≡-Reasoning)
+  using (refl; cong; module ≡-Reasoning; setoid)
 open ≡-Reasoning
 
 open import Equiv
@@ -30,9 +30,29 @@ open import FiniteType
 
 -- swap₊
 
+open import SetoidEquiv
+open import ConcretePermutationProperties
+
 swap₊ : {A B : Set} {m n : ℕ} →
-  FiniteType (A ⊎ B) (m + n) → FiniteType (B ⊎ A) (n + m)
-swap₊ {A} {B} {m} {n} eq = Plus.swap+ {m} {n} ● eq ● TE.swap₊equiv
+  ≃S-Setoid (setoid (FiniteType (A ⊎ B) (m + n))) (setoid (FiniteType (B ⊎ A) (n + m)))
+swap₊ {A} {B} {m} {n} = ?
+
+-- Semantic Theorem
+
+thm : {A B : Set} {m n : ℕ} →
+  (FiniteType A m ≃ FiniteType B n) ≃S (SCPerm n m)
+thm = ? 
+
+-- 
+
+
+{--
+(f , mkqinv g {!!} {!!})
+  where f : FiniteType (A ⊎ B) (m + n) → FiniteType (B ⊎ A) (n + m)
+        f eq = Plus.swap+ {m} {n} ● eq ● TE.swap₊equiv
+        g : FiniteType (B ⊎ A) (n + m) → FiniteType (A ⊎ B) (m + n)
+        g eq = Plus.swap+ {n} {m} ● eq ● TE.swap₊equiv
+-}
 
 {--
 

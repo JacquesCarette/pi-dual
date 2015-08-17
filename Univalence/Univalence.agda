@@ -131,30 +131,40 @@ open import Pi1Examples
 -- symmetric rig groupoid structure from equivalences to permutations.
 
 open import FiniteType
--- We begin with a short definition of a finite type which is a set
--- with a particular equivalence to Fin n for some n
+-- We begin with a short definition of a finite type which is a set A
+-- of a given size m and a particular equivalence between A and Fin m.
 
+open import FinEquiv
+-- As an intermediate step, we prove various equivalences between
+-- Fin types like:
+--   Fin (m + n) ≃ Fin m ⊎ Fin n
+-- and
+--   Fin (m * n) ≃ Fin m × Fin n
+-- We make sure we have enough equivalences to model a commutative
+-- semiring.
 
+open FiniteTypeEquiv
+-- Composes previously defined equivalences to establish things like:
+-- FiniteType (A ⊎ B) (m + n) ≃ FiniteType (B ⊎ A) (n + m)
 
--- define FiniteTypeEquiv     -- top line
--- define FiniteTpyeEquivCat  -- structure of equivalences
--- define Permutation         -- should be simple definition
--- define EquivPerm           -- big thm
--- define EquivPermTransport  -- might be just an application of thm
+-- FiniteTpyeEquivCat
+-- show that Finite types and equivalences for a symmetric rig groupoid
+
+-- define Permutation
+-- should be simple definition
+
+-- define EquivPerm
+-- big thm
+
+-- define EquivPermTransport
+-- might be just an application of thm to derive the symmetric rig
+-- structure on permutations
 
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Wavefront ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -- Finding a good representation of permutations is tricky.
-
--- We begin (in FinEquiv) by proving various equivalences between
--- finite sets like:
---   Fin (m + n) ≃ Fin m ⊎ Fin n
--- and
---   Fin (m * n) ≃ Fin m × Fin n
--- We make sure we have enough equivalences to model a commutative
--- semiring.
 
 -- We can compose equivalences from FinEquiv and TypeEquiv to get
 -- equivalences that correspond to permutations on finite sets, e.g.,
