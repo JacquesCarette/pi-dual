@@ -32,5 +32,13 @@ A ≃ B = Σ (A → B) qinv
 
 univalence : {A B : Set} {m n : ℕ} →
   (A ≃ Fin m) → (B ≃ Fin n) → (CPerm m n) ≃ (A ≃ B)
-univalence = {!!} 
+univalence {A} {B} {m} {n} A≃Fm B≃Fn = fwd , mkqinv bwd α {!!} 
+  where
+    fwd : CPerm m n → A ≃ B
+    fwd p = {!!}
 
+    bwd : A ≃ B → CPerm m n
+    bwd eq = {!!}
+
+    α : (fwd ○ bwd) ∼ id
+    α x = {!!}
