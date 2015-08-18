@@ -63,7 +63,7 @@ sym≃ : ∀ {ℓ ℓ′} {A : Set ℓ} {B : Set ℓ′} → (A ≃ B) → B ≃
 sym≃ (A→B , equiv) = e.g , mkqinv A→B e.β e.α
   where module e = qinv equiv
 
-trans≃ : {A B C : Set} → A ≃ B → B ≃ C → A ≃ C
+trans≃ :  ∀ {ℓ ℓ′ ℓ″} {A : Set ℓ} {B : Set ℓ′} {C : Set ℓ″} → A ≃ B → B ≃ C → A ≃ C
 trans≃ (f , feq) (g , geq) = (g ∘ f) , (mkqinv inv α' β')
   where
     module fm = qinv feq
@@ -74,7 +74,7 @@ trans≃ (f , feq) (g , geq) = (g ∘ f) , (mkqinv inv α' β')
 
 -- more convenient infix version, flipped
 
-_●_ : {A B C : Set} → B ≃ C → A ≃ B → A ≃ C
+_●_ : ∀ {ℓ ℓ′ ℓ″} {A : Set ℓ} {B : Set ℓ′} {C : Set ℓ″} → B ≃ C → A ≃ B → A ≃ C
 a ● b = trans≃ b a
 
 ≃IsEquiv : IsEquivalence {Level.suc Level.zero} {Level.zero} {Set} _≃_
