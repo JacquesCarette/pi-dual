@@ -3,8 +3,7 @@
 module FinEquiv where
 
 -- The goal is to establish that finite sets and equivalences form a
--- commutative semiring. This is the first step towards deriving a
--- good representation of permutations.
+-- commutative semiring. 
 
 import Level using (zero)
 

@@ -87,7 +87,7 @@ a ● b = trans≃ b a
 ------------------------------------------------------------------------------
 -- A few properties of equivalences
 
-_⋆_ : {A B : Set} → (A ≃ B) → (x : A) → B
+_⋆_ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (A ≃ B) → (x : A) → B
 (f , _) ⋆ x = f x 
 
 -- there-and-back is identity

@@ -34,9 +34,6 @@ open import FinVecProperties
          uniti+r∘[x⊎0]≡x∘uniti+r) --  unite+r∘[x⊎0]≡x∘unite+r
 
 open import ConcretePermutation
-  using (CPerm; cp; idp; symp; transp; _⊎p_; _×p_;
-         mkPerm;
-         0p; unite+p; uniti+p; unite+rp; uniti+rp) 
 
 ------------------------------------------------------------------------------
 -- Properties of concrete permutations that are needed to show that

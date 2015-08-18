@@ -109,33 +109,44 @@ open import Pi1Examples
 ------------------------------------------------------------------------------
 -- Equivalences between finite types (permutations) 
 
--- A finite type is a set which is equivalent to Fin n for some
--- n. Note that the equivalence gives a particular enumeration of the
--- elements of the set. The punchline is that finite sets and
--- permutations form a symmetric rig groupoid.
+-- A finite type is a set Fin n for some n. It is possible to directly
+-- write permutations between finite types but this is extremely
+-- tedious especially if we want to prove that we have enough
+-- structure to model a symmetric rig groupoid. What we will do
+-- instead is to derive these permutations from equivalences as
+-- illustrated by the digram below:
 -- 
--- It is possible to directly write permutations between finite types
--- but this is extremely tedious especially if we want to prove that
--- we have enough structure to model a symmetric rig groupoid. What we
--- will do instead is to derive these permutations from equivalences
--- as illustrated by the digram below:
--- 
--- (A;Fin m) <—-Equivalence-—> (B;Fin n)
---                  ||
---                  || EquivPerm 
---                  ||
--- (A;Fin m) <—-Permutation-—> (B;Fin n)
+-- Fin m <—-Equivalence-—> Fin n
+--            ||
+--            || Univalence
+--            ||
+-- Fin m <—-Permutation-—> Fin n
 --
--- The equivalence EquivPerm is a 2-equivalence between equivalences
--- and permutations. We will use to automatically transport the
--- symmetric rig groupoid structure from equivalences to permutations.
+-- The vertical line is evocative of the univalence postulate: it is
+-- an equivalence between equivalences and concrete identifications
+-- expressed as permutations. It is relatively easy to establish the
+-- symmetric rig groupoid structure in the top line and then
+-- automatically transport it to the bottom line.
 
-open import FiniteType
--- We begin with a short definition of a finite type which is a set A
--- of a given size m and a particular equivalence between A and Fin m.
+open import ConcretePermutation
+-- Defines a permutation of a finite set 'Fin m' using two vectors of
+-- the form Vec (Fin m) m. The first occurrence of m bounds the values
+-- in the vector and the second bounds the length of the vector. To
+-- guarantee that each value in Fin m occurs exactly once in the
+-- vector, the representation of permutations includes two proofs that
+-- the composition of the two vectors is the identity permutation (in
+-- both directions). A crucial property of such permutations is that
+-- they can be compared for equality using just ≡ which is elaborated
+-- on in the module.
+--
+-- Ultimately we want to prove that finite sets and permutations form
+-- a symmetric rig groupoid. Although it is possible to prove this
+-- directly, it is extremely tedious. We will instead develop all the
+-- infrastructure using equivalences on finite sets and transport it
+-- using a specialized instance of 'univalence'.
 
 open import FinEquiv
--- As an intermediate step, we prove various equivalences between
+-- Defines the top line. We prove various equivalences between
 -- Fin types like:
 --   Fin (m + n) ≃ Fin m ⊎ Fin n
 -- and
@@ -143,7 +154,16 @@ open import FinEquiv
 -- We make sure we have enough equivalences to model a commutative
 -- semiring.
 
-open FiniteTypeEquiv
+open import FinEquivCat -- TODO
+-- Establishes that finite types and equivalences for a symmetric rig
+-- groupoid. This is the structure we want to transport to permutations.
+
+-- Now the big theorem and that's it
+
+open import SEquivSCPermEquiv
+
+
+
 -- Composes previously defined equivalences to establish things like:
 -- FiniteType (A ⊎ B) (m + n) ≃ FiniteType (B ⊎ A) (n + m)
 
@@ -159,10 +179,6 @@ open FiniteTypeEquiv
 -- define EquivPermTransport
 -- might be just an application of thm to derive the symmetric rig
 -- structure on permutations
-
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Wavefront ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -- Finding a good representation of permutations is tricky.
 
@@ -217,6 +233,10 @@ open FiniteTypeEquiv
 
 -- FiniteType ???
 -- SCEquivSCPermEquiv ???
+
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Wavefront ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -- Now we want to relate Pi-types and type equivalences. The punchline
 -- would be that TypeEquivCat is isomorphic to Pi1Cat. But the setup

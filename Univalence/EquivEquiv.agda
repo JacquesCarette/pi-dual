@@ -2,8 +2,10 @@
 
 module EquivEquiv where
 
-open import Data.Product using (_,_) -- ; _×_; proj₁; proj₂)
+open import Level using (Level; _⊔_)
+open import Data.Product using (_,_) 
 
+open import Relation.Binary using (Setoid)
 import Relation.Binary.PropositionalEquality as P
   using (_≡_; refl; sym; trans; cong)
 
@@ -12,28 +14,31 @@ open import Equiv using (mkqinv; _≃_; sym≃; _●_; _⋆_)
 ------------------------------------------------------------------------------
 -- Extensional equivalence of equivalences
 
-record _≋_ {A B : Set} (eq₁ eq₂ : A ≃ B) : Set where
+-- We need g to "pin down" the inverse, else we get lots of unsolved
+-- metas.
+
+record _≋_ {ℓ ℓ' : Level} {A : Set ℓ} {B : Set ℓ'} (eq₁ eq₂ : A ≃ B) :
+  Set (ℓ ⊔ ℓ') where
   constructor eq
   field
     f≡ : ∀ x → eq₁ ⋆ x P.≡ eq₂ ⋆ x
     g≡ : ∀ x → (sym≃ eq₁) ⋆ x P.≡ (sym≃ eq₂) ⋆ x
-  -- see EquivSetoid for some additional justification
-  -- basically we need g to "pin down" the inverse, else we
-  -- get lots of unsolved metas.
  
 -- The equivalence of equivalences is an equivalence relation that
 -- respects composition
 
-id≋ : ∀ {A B : Set} {x : A ≃ B} → x ≋ x
+id≋ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {x : A ≃ B} → x ≋ x
 id≋ = record { f≡ = λ x → P.refl ; g≡ = λ x → P.refl }
 
-sym≋ : ∀ {A B : Set} {x y : A ≃ B} → x ≋ y → y ≋ x
+sym≋ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {x y : A ≃ B} → x ≋ y → y ≋ x
 sym≋ (eq f≡ g≡) = eq (λ a → P.sym (f≡ a)) (λ b → P.sym (g≡ b))
 
-flip≋ : {A B : Set} {x y : A ≃ B} → x ≋ y → (sym≃ x) ≋ (sym≃ y)
+flip≋ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {x y : A ≃ B} →
+        x ≋ y → (sym≃ x) ≋ (sym≃ y)
 flip≋ (eq f≡ g≡) = eq g≡ f≡
 
-trans≋ : ∀ {A B : Set} {x y z : A ≃ B} → x ≋ y → y ≋ z → x ≋ z
+trans≋ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {x y z : A ≃ B} →
+         x ≋ y → y ≋ z → x ≋ z
 trans≋ (eq f≡ g≡) (eq h≡ i≡) =
    eq (λ a → P.trans (f≡ a) (h≡ a)) (λ b → P.trans (g≡ b) (i≡ b))
 
@@ -49,5 +54,18 @@ trans≋ (eq f≡ g≡) (eq h≡ i≡) =
 ●-assoc : {A B C D : Set} {f : A ≃ B} {g : B ≃ C} {h : C ≃ D} →
       ((h ● g) ● f) ≋ (h ● (g ● f))
 ●-assoc = eq (λ x → P.refl) (λ x → P.refl)
+
+-- The setoid of equivalences under ≋
+
+_S≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Setoid (ℓ ⊔ ℓ') (ℓ ⊔ ℓ')
+_S≃_ A B = record
+ { Carrier = A ≃ B
+ ; _≈_ = _≋_
+ ; isEquivalence = record
+   { refl = id≋
+   ; sym = sym≋
+   ; trans = trans≋
+   }
+ }
 
 ------------------------------------------------------------------------------
