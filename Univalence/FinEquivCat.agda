@@ -2,6 +2,10 @@
 
 module FinEquivCat where
 
+-- We will define a rig category whose objects are Fin types and whose
+-- morphisms are type equivalences; and where the equivalence of
+-- morphisms ≋ is extensional
+
 open import Level using () renaming (zero to lzero; suc to lsuc)
 import Relation.Binary.PropositionalEquality as P
 open import Relation.Binary using (Rel)
@@ -13,20 +17,24 @@ open import Data.Unit
 open import Data.Empty
 import Function as F
 
-open import Categories.Category
-open import Categories.Groupoid
-open import Categories.Monoidal
-open import Categories.Monoidal.Helpers
-open import Categories.Bifunctor
-open import Categories.NaturalIsomorphism
-open import Categories.Monoidal.Braided
+open import Categories.Category using (Category)
+open import Categories.Groupoid using (Groupoid)
+open import Categories.Monoidal using (Monoidal)
+open import Categories.Monoidal.Helpers using (module MonoidalHelperFunctors)
+open import Categories.Bifunctor using (Bifunctor)
+open import Categories.NaturalIsomorphism using (NaturalIsomorphism)
+open import Categories.Monoidal.Braided using (Braided)
+open import Categories.Monoidal.Symmetric using (Symmetric)
+open import Categories.RigCategory
+  using (RigCategory; module BimonoidalHelperFunctors)
 
 open import FinEquiv using (_fin≃_; _●_; module Plus)
 open import Equiv using (id≃; sym≃; mkqinv; _∼_; sym∼)
-open import TypeEquivCat using (_≋_; eq; id≋; sym≋; trans≋; ●-resp-≋)
+open import EquivEquiv using (_≋_; eq; id≋; sym≋; trans≋; ●-resp-≋)
 open import Data.Sum.Properties
 
 ------------------------------------------------------------------------------
+-- Fin and type equivalences are a category
 
 FinEquivCat : Category lzero lzero lzero
 FinEquivCat = record
@@ -51,6 +59,7 @@ FinEquivGroupoid = record
     } }
   }
 
+{--
 private
   fwd : ∀ {m n} → Fin m ⊎ Fin n → Fin (m + n)
   fwd {m} {n} = proj₁ (Plus.fwd-iso {m} {n})
@@ -68,4 +77,6 @@ private
     open Plus
     pf₁ : ∀ {m n} → (fwd {m} {n} F.∘ (map⊎ F.id F.id) F.∘ bwd) ∼ F.id
     pf₁ y = P.trans (P.cong fwd (map⊎idid≡id (bwd y))) (fwd∘bwd~id y)
+--}
 
+------------------------------------------------------------------------------

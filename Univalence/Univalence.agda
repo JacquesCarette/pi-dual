@@ -37,6 +37,7 @@ open import Categories.Bicategory
 open import Equiv
 -- Defines extensional equality of functions ∼; quasi-inverses; and
 -- then equivalences ≃ between spaces
+
 open import EquivEquiv
 -- Defines an extensional equivalence relation to be used to equate
 -- equivalences so we can talk about equivalences up to equivalence
@@ -47,18 +48,22 @@ open import EquivEquiv
 open import TypeEquiv
 -- Proves that types and type equivalences form a commutative semiring
 -- in the Algebra sense
+
 open import Data.Sum.Properties
 -- Proves simple properties about type equivalences such as:
 -- inj₂ (unite₊ x) ≡ x
+
 open import Data.SumProd.Properties
 -- Proves simple properties about type equivalences such as:
 -- distzr x ≡ distz (swap⋆ x)
+
 open import TypeEquivCat
 -- Proves that types and type equivalences form a symmetric rig
 -- groupoid up to extensional equality of equivalences
 
 ------------------------------------------------------------------------------
 -- Equivalences between Pi types (combinators)
+-- 
 -- Because Pi does not rely on extensionality it is easy to iterate
 -- equivalences up and down. The following shows levels -2, -1, 0, and
 -- 1.
@@ -107,8 +112,8 @@ open import Pi1Examples
 -- How to make U a 2-type, 3-type, etc. ???
 
 ------------------------------------------------------------------------------
--- Equivalences between finite types (permutations) 
-
+-- Equivalences between Fin types (permutations) 
+-- 
 -- A finite type is a set Fin n for some n. It is possible to directly
 -- write permutations between finite types but this is extremely
 -- tedious especially if we want to prove that we have enough
@@ -158,9 +163,23 @@ open import FinEquivCat -- TODO
 -- Establishes that finite types and equivalences for a symmetric rig
 -- groupoid. This is the structure we want to transport to permutations.
 
--- Now the big theorem and that's it
+open import SEquivSCPermEquiv -- TODO
+-- An instance of univalence that allows us to transport all the
+-- structure from FinEquivCat to permutations
 
-open import SEquivSCPermEquiv
+open import CPermCat -- TODO
+-- Establishes that CPerm m n is a symmetric rig category by
+-- transporting the structure from FinEquivCat using univalence
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -237,6 +256,18 @@ open import SEquivSCPermEquiv
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Wavefront ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-- We have three representations of types: Agda types, Pi types, and Fin types
+-- 
+-- We have three equivalence relations between types: extensional
+-- equivalences, combinators, and permutations
+-- 
+-- Each type representation suggests a natural choice for the
+-- equivalence relation.
+-- 
+-- We have so far presented each instance separately. Now we focus on
+-- relating the different type representations.
+-- 
 
 -- Now we want to relate Pi-types and type equivalences. The punchline
 -- would be that TypeEquivCat is isomorphic to Pi1Cat. But the setup

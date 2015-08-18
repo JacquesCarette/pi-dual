@@ -69,8 +69,8 @@ _S≃_ A B = record
  }
 
 ------------------------------------------------------------------------------
-
 -- Upon much reflexion, I think the proper definition of ≋ is
+
 record _≋′_ {ℓ ℓ' : Level} {A : Set ℓ} {B : Set ℓ'} (eq₁ eq₂ : A ≃ B) :
   Set (ℓ ⊔ ℓ') where
   constructor eq′
@@ -79,3 +79,5 @@ record _≋′_ {ℓ ℓ' : Level} {A : Set ℓ} {B : Set ℓ'} (eq₁ eq₂ : A
     pB : B ≃ B -- automorphism of B
     f≡ : ∀ x → eq₁ ⋆ x P.≡ (pB ● (eq₂ ● pA)) ⋆ x
     g≡ : ∀ x → (sym≃ eq₁) ⋆ x P.≡ (pA ● (sym≃ eq₂ ● pB)) ⋆ x
+
+------------------------------------------------------------------------------

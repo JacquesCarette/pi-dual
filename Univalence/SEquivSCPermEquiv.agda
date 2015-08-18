@@ -59,10 +59,15 @@ univalence {m} {n} = equiv fwd bwd α β
   where
 
     fwd' : (CPerm m n) → (Fin m ≃ Fin n)
-    fwd' = {!!} 
+    fwd' (cp π πᵒ αp βp) =
+      (λ m → πᵒ !! m) ,
+      mkqinv (λ n → π !! n) (λ m → {!!}) {!!}  
+
+--αp : π ConcretePermutation.∘̂ πᵒ ≡ ConcretePermutation.1C
+--βp : πᵒ ConcretePermutation.∘̂ π ≡ ConcretePermutation.1C
 
     bwd' : (Fin m ≃ Fin n) → (CPerm m n)
-    bwd' = {!!} 
+    bwd' = {!!}
 
     fwd : (SCPerm m n) ⟶ (Fin m S≃ Fin n)
     fwd = record
