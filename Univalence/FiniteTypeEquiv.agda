@@ -108,9 +108,8 @@ record _≃S_ {ℓ₁ ℓ₂ ℓ₃ ℓ₄ : Level} (A : Setoid ℓ₁ ℓ₂) (
     α : ∀ {x y} → Setoid._≈_ B x y → Setoid._≈_ B ((f ∘ g) ⟨$⟩ x) y
     β : ∀ {x y} → Setoid._≈_ A x y → Setoid._≈_ A ((g ∘ f) ⟨$⟩ x) y
 
-univalence : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {m n : ℕ} →
-  (A ≃ Fin m) → (B ≃ Fin n) → _≃S_ {ℓ} {ℓ} {ℓ ⊔ ℓ'} {ℓ ⊔ ℓ'} (SCPerm m n) (A S≃ B)
-univalence {A} {B} {m} {n} A≃Fm B≃Fn =
-  equiv {!!} {!!} {!!} {!!}
+univalence : {m n : ℕ} →
+  _≃S_ {zero} {zero} {zero} {zero} (SCPerm m n) (Fin m S≃ Fin n)
+univalence {m} {n} = equiv {!!} {!!} {!!} {!!}
 
 ------------------------------------------------------------------------------
