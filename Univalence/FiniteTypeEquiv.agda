@@ -23,6 +23,8 @@ record CPerm {ℓ : Level} (values : ℕ) (size : ℕ) : Set ℓ where
     αp : π ∘̂ πᵒ ≡ 1C
     βp : πᵒ ∘̂ π ≡ 1C
 
+-- Permutations are compared by ≡
+
 -- The setoid of permutations under ≡ 
 
 SCPerm : ∀ {ℓ} → ℕ → ℕ → Setoid ℓ ℓ
@@ -50,7 +52,8 @@ sym≃ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (A ≃ B) → (B ≃ A)
 sym≃ (A→B , equiv) = e.g , mkqinv A→B e.β e.α
   where module e = qinv equiv
 
--- Equivalence of equivalences
+-- Equivalences are compared by ≋ which reduces to extensional
+-- equality of the underlying back and forth functions
 
 _⋆_ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (A ≃ B) → (x : A) → B
 (f , _) ⋆ x = f x 
@@ -88,8 +91,11 @@ _S≃_ A B = record
 ------------------------------------------------------------------------------
 -- Univalence...
 
--- Now we need a version of ≃ that relates setoids each with its own
--- equivalence relation
+-- On one side we have permutations under ≡
+-- On the other we have equivalences under ≋
+-- 
+-- The equivalence of these two sides uses a version of ≃ (called ≃S)
+-- that relates setoids each with its own equivalence relation
 
 infix 4 _≃S_
 
@@ -107,3 +113,4 @@ univalence : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {m n : ℕ} →
 univalence {A} {B} {m} {n} A≃Fm B≃Fn =
   equiv {!!} {!!} {!!} {!!}
 
+------------------------------------------------------------------------------
