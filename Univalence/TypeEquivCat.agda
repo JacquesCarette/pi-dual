@@ -28,7 +28,7 @@ open import Categories.RigCategory
   using (RigCategory; module BimonoidalHelperFunctors)
 
 open import Equiv
-  using (_∼_; sym∼; mkqinv; _≃_; id≃; sym≃; _●_; _⋆_; p∘!p≡id; 
+  using (_∼_; sym∼; _≃_; isequiv; id≃; sym≃; _●_; _⋆_; p∘!p≡id; g-left-inv;
          path⊎; path×)
 open import EquivEquiv
   using (_≋_; eq; id≋; sym≋; trans≋; ●-assoc; ●-resp-≋; module _≋_)
@@ -95,11 +95,14 @@ TypeEquivCat = record
 TypeEquivGroupoid : Groupoid TypeEquivCat
 TypeEquivGroupoid = record 
   { _⁻¹ = sym≃ 
-  ; iso = λ { {_} {_} {f , mkqinv g α β} → record
+  ; iso = λ { {_} {_} {A≃B} →
+    let α = isequiv.α (proj₂ A≃B) in
+    let β = g-left-inv A≃B in record
     { isoˡ = eq β β
     ; isoʳ = eq α α
     } }
   }
+
 
 -- The additive structure is monoidal
 

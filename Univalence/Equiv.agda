@@ -5,10 +5,10 @@ module Equiv where
 open import Level using (_⊔_)
 open import Function using (_∘_; id)
 open import Data.Sum renaming (map to _⊎→_)
-open import Data.Product using (Σ; _×_; _,_) renaming (map to _×→_) 
+open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂) renaming (map to _×→_) 
 open import Relation.Binary using (IsEquivalence)
 open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; sym; trans; cong; cong₂)
+  using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
 
 infix 4 _∼_
 infix 4 _≃_
@@ -31,46 +31,53 @@ trans∼ : {A B : Set} {f g h : A → B} → (f ∼ g) → (g ∼ h) → (f ∼ 
 trans∼ H G x = trans (H x)  (G x)
 
 ------------------------------------------------------------------------------
--- Quasi-inverses a la HoTT: given a function f : A → B, a
--- quasi-inverse is a function g : B → A together two proofs that the
--- compositions of f and g are extensionally equivalent to the
--- identity
-
-record qinv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : Set (ℓ ⊔ ℓ') where
-  constructor mkqinv
+-- Equivalences a la HoTT:
+record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
+  Set (ℓ ⊔ ℓ') where
+  constructor iseq
   field
-    g : B → A
+    g : B → A 
     α : (f ∘ g) ∼ id
-    β : (g ∘ f) ∼ id
-
-idqinv : ∀ {ℓ} → {A : Set ℓ} → qinv {A = A} id
-idqinv = record {
-           g = id ;
-           α = λ b → refl ; 
-           β = λ a → refl
-         }
-         
+    h : B → A
+    β : (h ∘ f) ∼ id
+    
 ------------------------------------------------------------------------------
 -- Equivalences between sets A and B: a function f and a quasi-inverse for f. 
 
 _≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ ⊔ ℓ')
-A ≃ B = Σ (A → B) qinv
+A ≃ B = Σ (A → B) isequiv
 
 id≃ : ∀ {ℓ} {A : Set ℓ} → A ≃ A
-id≃ = (id , idqinv)
+id≃ = (id , iseq id (λ _ → refl) id (λ _ → refl))
 
-sym≃ : ∀ {ℓ ℓ′} {A : Set ℓ} {B : Set ℓ′} → (A ≃ B) → B ≃ A
-sym≃ (A→B , equiv) = e.g , mkqinv A→B e.β e.α
-  where module e = qinv equiv
-
-trans≃ :  ∀ {ℓ ℓ′ ℓ″} {A : Set ℓ} {B : Set ℓ′} {C : Set ℓ″} → A ≃ B → B ≃ C → A ≃ C
-trans≃ (f , feq) (g , geq) = (g ∘ f) , (mkqinv inv α' β')
+g-left-inv : ∀ {ℓ ℓ′} {A : Set ℓ} {B : Set ℓ′} →
+  (eq : A ≃ B) → (isequiv.g (proj₂ eq) ∘ proj₁ eq ∼ id)
+g-left-inv (f , iseq g α h β) = pf
   where
-    module fm = qinv feq
-    module gm = qinv geq
-    inv = fm.g ∘ gm.g
+    open ≡-Reasoning
+    pf : (g ∘ f) ∼ id
+    pf x = begin (
+      g (f x)
+        ≡⟨ sym (β (g (f x))) ⟩
+      h (f (g (f x)))
+        ≡⟨ cong h (α (f x)) ⟩
+      h (f x)
+        ≡⟨ β x ⟩
+      x ∎)
+      
+sym≃ : ∀ {ℓ ℓ′} {A : Set ℓ} {B : Set ℓ′} → (A ≃ B) → B ≃ A
+sym≃ (A→B , equiv) = e.g , (iseq A→B (g-left-inv (A→B , equiv)) A→B e.α)
+  where module e = isequiv equiv
+  
+trans≃ :  ∀ {ℓ ℓ′ ℓ″} {A : Set ℓ} {B : Set ℓ′} {C : Set ℓ″} → A ≃ B → B ≃ C → A ≃ C
+trans≃ (f , feq) (g , geq) = (g ∘ f) , (iseq g′ α' h′ β')
+  where
+    module fm = isequiv feq
+    module gm = isequiv geq
+    g′ = fm.g ∘ gm.g
+    h′ = fm.h ∘ gm.h
     α' = λ x → trans (cong g (fm.α (gm.g x))) (gm.α x)
-    β' = λ x → trans (cong fm.g (gm.β (f x))) (fm.β x)
+    β' = λ x → trans (cong fm.h (gm.β (f x))) (fm.β x)
 
 -- more convenient infix version, flipped
 
@@ -93,7 +100,7 @@ _⋆_ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (A ≃ B) → (x : A) �
 -- there-and-back is identity
 
 p∘!p≡id : {A B : Set} {p : A ≃ B} → (_⋆_ (trans≃ p (sym≃ p))) ∼ (_⋆_ id≃)
-p∘!p≡id {p = f , mkqinv q _ β} = β
+p∘!p≡id {p = p} =  g-left-inv p
 
 !p∘p≡id : {A B : Set} {p : A ≃ B} → (_⋆_ (trans≃ (sym≃ p) p)) ∼ (_⋆_ id≃)
 !p∘p≡id {p = p} = p∘!p≡id {p = sym≃ p}
@@ -101,8 +108,11 @@ p∘!p≡id {p = f , mkqinv q _ β} = β
 -- equivalences are injective
 
 inj≃ : {A B : Set} → (eq : A ≃ B) → (x y : A) → (eq ⋆ x ≡ eq ⋆ y → x ≡ y)
-inj≃ (f , mkqinv g α β) x y p = trans (sym (β x)) (trans (cong g p) (β y))
-
+inj≃ (f , iseq g α h β) x y p = trans
+  (sym (β x)) (trans
+  (cong h p) (
+  β y))
+  
 -- equivalence is a congruence for plus/times
 
 -- ⊕
@@ -116,9 +126,9 @@ _⊎∼_ α β (inj₂ y) = cong inj₂ (β y)
 path⊎ : {A B C D : Set} → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
 path⊎ (fp , eqp) (fq , eqq) = 
   Data.Sum.map fp fq , 
-  mkqinv (P.g ⊎→ Q.g) (P.α ⊎∼ Q.α) (P.β ⊎∼ Q.β)
-  where module P = qinv eqp
-        module Q = qinv eqq
+  iseq (P.g ⊎→ Q.g) (P.α ⊎∼ Q.α) (P.h ⊎→ Q.h) (P.β ⊎∼ Q.β)
+  where module P = isequiv eqp
+        module Q = isequiv eqq
 
 -- ⊗
 
@@ -130,12 +140,13 @@ _×∼_ α β (x , y) = cong₂ _,_ (α x) (β y)
 path× : {A B C D : Set} → A ≃ C → B ≃ D → (A × B) ≃ (C × D)
 path× {A} {B} {C} {D} (fp , eqp) (fq , eqq) = 
   Data.Product.map fp fq , 
-  mkqinv 
+  iseq 
     (P.g ×→ Q.g) 
-    (_×∼_ {A} {B} {C} {D} {fp} {P.g} {fq} {Q.g} P.α Q.α) 
-    (_×∼_ {C} {D} {A} {B} {P.g} {fp} {Q.g} {fq} P.β Q.β)
-  where module P = qinv eqp
-        module Q = qinv eqq
+    (_×∼_ {f = fp} {g = fq} P.α Q.α)
+    (P.h ×→ Q.h)
+    (_×∼_ {f = P.h} {g = Q.h} P.β Q.β)
+  where module P = isequiv eqp
+        module Q = isequiv eqq
 
 ------------------------------------------------------------------------------
 

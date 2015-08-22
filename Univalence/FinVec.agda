@@ -32,7 +32,7 @@ open import Function using (_∘_; id)
 
 --
 
-open import Equiv using (_∼_; p∘!p≡id; module qinv)
+open import Equiv using (_∼_; p∘!p≡id)
 open import TypeEquiv using (swap₊)
 open import FinEquiv using (module Plus; module Times; module PlusTimes)
 

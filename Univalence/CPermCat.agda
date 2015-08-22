@@ -23,15 +23,15 @@ open import Categories.RigCategory
 --
 
 open import ConcretePermutation
-  using (CPerm; idp; symp; transp; _⊎p_; _×p_;
-         unite+p; uniti+p; unite+rp; uniti+rp)
+--  using (CPerm; idp; symp; transp; _⊎p_; _×p_;
+--         unite+p; uniti+p; unite+rp; uniti+rp)
 
 open import ConcretePermutationProperties
   using (assocp; lidp; ridp; linv; rinv;
          1p⊎1p≡1p; 1p×1p≡1p;
-         ⊎p-distrib; ×p-distrib;
-         unite+p∘[0⊎x]≡x∘unite+p; uniti+p∘x≡[0⊎x]∘uniti+p;
-         uniti+rp∘[x⊎0]≡x∘uniti+rp; unite+rp∘[x⊎0]≡x∘unite+rp)
+         ⊎p-distrib; ×p-distrib)
+--         unite+p∘[0⊎x]≡x∘unite+p; uniti+p∘x≡[0⊎x]∘uniti+p;
+--         uniti+rp∘[x⊎0]≡x∘uniti+rp; unite+rp∘[x⊎0]≡x∘unite+rp)
 
 ------------------------------------------------------------------------------
 -- CPerm is is a category
@@ -75,6 +75,8 @@ CPermGroupoid = record
 
 module ⊎h = MonoidalHelperFunctors CPermCat ⊎p-bifunctor 0
 
+{- these are all commented out because unite+p and companions are 
+  no longer defined!
 0⊕x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
 0⊕x≡x = record
   { F⇒G = record { η = λ _ → unite+p
@@ -96,6 +98,7 @@ x⊕0≡x = record
                  }
   ; iso = λ X → record { isoˡ = linv unite+rp ; isoʳ = linv uniti+rp }
   }
+-}
 
 {--
 [x⊕y]⊕z≡x⊕[y⊕z] : NaturalIsomorphism ⊎h.[x⊗y]⊗z ⊎h.x⊗[y⊗z]

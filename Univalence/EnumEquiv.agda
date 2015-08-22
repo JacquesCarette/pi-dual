@@ -12,7 +12,7 @@ open import Function using (_∘_)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; cong; module ≡-Reasoning)
 
-open import Equiv using (_≃_; trans≃; path⊎; mkqinv; module qinv) 
+open import Equiv using (_≃_; trans≃; path⊎; iseq; module isequiv) 
 open import FinEquiv using (Fin0-⊥; module Plus) 
 
 ------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ Enum A n = A ≃ Fin n
 -- We only need some additive equivalences...
 
 0E : Enum ⊥ 0
-0E = ⊥-elim , mkqinv Fin0-⊥ (λ { () }) (λ { () })
+0E = ⊥-elim , iseq Fin0-⊥ (λ { () }) Fin0-⊥ (λ { () })
 
 _⊕e_ : {A : Set} {B : Set} {n m : ℕ} →
        Enum A n → Enum B m → Enum (A ⊎ B) (n + m)
@@ -34,7 +34,7 @@ eA ⊕e eB = trans≃ (path⊎ eA eB) Plus.fwd-iso
 -- shorthand to select the element indexed by i in the enumeration
 
 select : {A B : Set} (eq : A ≃ B) → (B → A)
-select (_ , mkqinv g _ _) = g
+select (_ , iseq g _ _ _) = g
 
 -- The enumeration of (A ⊎ B) is an enumeration of A followed by an
 -- enumeration of B; in other words if we have an equivalence between
@@ -46,7 +46,7 @@ select (_ , mkqinv g _ _) = g
 eval-left : {A B : Set} {m n : ℕ} {eA : Enum A m} {eB : Enum B n} (i : Fin m) →
   select (eA ⊕e eB) (inject+ n i) ≡ inj₁ (select eA i)
 eval-left {m = m} {n} {eA} {eB} i =
-  let (fwd , mkqinv bwd _ bwd∘fwd~id) = Plus.fwd-iso {m} {n} in 
+  let (fwd , iseq bwd _ _ bwd∘fwd~id) = Plus.fwd-iso {m} {n} in 
   begin (
     select (eA ⊕e eB) (inject+ n i)
       ≡⟨ refl ⟩ -- β reduce ⊕e, reverse-β Plus.fwd
@@ -64,7 +64,7 @@ eval-left {m = m} {n} {eA} {eB} i =
 eval-right : {A B : Set} {m n : ℕ} {eA : Enum A m} {eB : Enum B n} →
   (i : Fin n) → select (eA ⊕e eB) (raise m i) ≡ inj₂ (select eB i)
 eval-right {eA = eA} {eB} i = 
-  cong (select (path⊎ eA eB)) (qinv.β (proj₂ Plus.fwd-iso) (inj₂ i))
+  cong (select (path⊎ eA eB)) (isequiv.β (proj₂ Plus.fwd-iso) (inj₂ i))
 
 ------------------------------------------------------------------------------
 -- We can also do the same for multiplication but it's not needed

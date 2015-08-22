@@ -18,12 +18,12 @@ open import Proofs using (
   )
 --
 
-open import Equiv using (_≃_; qinv; mkqinv)
+open import Equiv using (_≃_; iseq)
 open import SetoidEquiv using (_≋_; _≃S≡_)
 
 --
 
-open import FinVec using (1C; _∘̂_)
+-- open import FinVec using (1C; _∘̂_)
      
 open import FinVecProperties 
   using (∘̂-assoc; ∘̂-lid; ∘̂-rid;
@@ -63,22 +63,21 @@ p≡ {m} {n} {cp π πᵒ αp βp} {cp .π .πᵒ αp₁ βp₁} refl | refl
   with proof-irrelevance αp αp₁ | proof-irrelevance βp βp₁
 p≡ {m} {n} {cp π πᵒ αp βp} {cp .π .πᵒ .αp .βp} refl | refl | refl | refl = refl
 
-SCPerm : ℕ → ℕ → Setoid zero zero
-SCPerm m n = setoid (CPerm m n)
-
+{-
 mkSCPerm : ∀ {ℓ} {A B : Set ℓ} → (eq₁ : A ≃ B) → A ≃S≡ B
-mkSCPerm (f , mkqinv g α β) =
+mkSCPerm (f , iseq g α h β) =
   SetoidEquiv.equiv (record { _⟨$⟩_ = f ; cong = cong f })
                     (record { _⟨$⟩_ = g ; cong = cong g })
                     (λ {x} x≡y → trans (α x) x≡y)
                     (λ {x} x≡y → trans (β x) x≡y)
+
 
 ≃⇒≡ : ∀ {m n} → {eq₁ eq₂ : Fin m ≃ Fin n} →
   (eq₁₂ : mkSCPerm eq₁ ≋ mkSCPerm eq₂) → mkPerm eq₁ ≡ mkPerm eq₂
 ≃⇒≡ (SetoidEquiv.equivS f≡ g≡) = p≡ (finext g≡)
   where open Equiv.qinv
 
-{-
+
 unite+rp∘[x⊎0]≡x∘unite+rp : ∀ {m n} (p : CPerm m n) →
   transp unite+rp p ≡ transp (p ⊎p 0p) unite+rp
 unite+rp∘[x⊎0]≡x∘unite+rp p = p≡ unite+r∘[x⊎0]≡x∘unite+r
@@ -125,7 +124,7 @@ rinv p = p≡ (CPerm.βp p)
 ⊎p-distrib {p₁ = p₁} = p≡ (⊎c-distrib {p₁ = CPerm.π p₁})
 
 -- interaction with composition
-
+{-  The underlying permutations are no longer defined!
 unite+p∘[0⊎x]≡x∘unite+p : ∀ {m n} (p : CPerm m n) →
   transp unite+p (0p ⊎p p) ≡ transp p unite+p
 unite+p∘[0⊎x]≡x∘unite+p p = p≡ unite+∘[0⊎x]≡x∘unite+
@@ -137,6 +136,7 @@ uniti+p∘x≡[0⊎x]∘uniti+p p = p≡ (uniti+∘x≡[0⊎x]∘uniti+ {x = CPe
 uniti+rp∘[x⊎0]≡x∘uniti+rp : ∀ {m n} (p : CPerm m n) →
   transp uniti+rp (p ⊎p 0p) ≡ transp p uniti+rp
 uniti+rp∘[x⊎0]≡x∘uniti+rp p = p≡ uniti+r∘[x⊎0]≡x∘uniti+r
+-}
 
 {-
 unite+rp∘[x⊎0]≡x∘unite+rp : ∀ {m n} (p : CPerm m n) →

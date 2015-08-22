@@ -9,7 +9,7 @@ open import Relation.Binary using (Setoid)
 import Relation.Binary.PropositionalEquality as P
   using (_≡_; refl; sym; trans; cong)
 
-open import Equiv using (mkqinv; _≃_; sym≃; _●_; _⋆_)
+open import Equiv using (iseq; _≃_; sym≃; _●_; _⋆_)
 
 ------------------------------------------------------------------------------
 -- Extensional equivalence of equivalences
@@ -44,7 +44,7 @@ trans≋ (eq f≡ g≡) (eq h≡ i≡) =
 
 ●-resp-≋ : {A B C : Set} {f h : B ≃ C} {g i : A ≃ B} → f ≋ h → g ≋ i →
   (f ● g) ≋ (h ● i)
-●-resp-≋ {f = f , _} {_ , mkqinv h⁻¹ _ _} {_ , mkqinv g⁻¹ _ _} {i , _}
+●-resp-≋ {f = f , _} {_ , iseq h⁻¹ _ _ _} {_ , iseq g⁻¹ _ _ _} {i , _}
   (eq f≡ g≡) (eq h≡ i≡) =
   eq (λ x → P.trans (P.cong f (h≡ x)) (f≡ (i x)))
      (λ x → P.trans (P.cong g⁻¹ (g≡ x)) (i≡ (h⁻¹ x)))

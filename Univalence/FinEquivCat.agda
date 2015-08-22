@@ -29,7 +29,7 @@ open import Categories.RigCategory
   using (RigCategory; module BimonoidalHelperFunctors)
 
 open import FinEquiv using (_fin≃_; _●_; module Plus)
-open import Equiv using (id≃; sym≃; mkqinv; _∼_; sym∼)
+open import Equiv using (id≃; sym≃; isequiv; g-left-inv; _∼_; sym∼)
 open import EquivEquiv using (_≋_; eq; id≋; sym≋; trans≋; ●-resp-≋)
 open import Data.Sum.Properties
 
@@ -53,7 +53,9 @@ FinEquivCat = record
 FinEquivGroupoid : Groupoid FinEquivCat
 FinEquivGroupoid = record 
   { _⁻¹ = sym≃ 
-  ; iso = λ { {_} {_} {f , mkqinv g α β} → record
+  ; iso = λ { {_} {_} {A≃B} →
+    let α = isequiv.α (proj₂ A≃B) in
+    let β = g-left-inv A≃B in record
     { isoˡ = eq β β
     ; isoʳ = eq α α
     } }
