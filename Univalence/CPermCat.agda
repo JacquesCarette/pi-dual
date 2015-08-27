@@ -22,16 +22,20 @@ open import Categories.RigCategory
 
 --
 
-open import ConcretePermutation
+open import ConcretePermutation using (CPerm)
 --  using (CPerm; idp; symp; transp; _⊎p_; _×p_;
 --         unite+p; uniti+p; unite+rp; uniti+rp)
 
-open import ConcretePermutationProperties
-  using (assocp; lidp; ridp; linv; rinv;
-         1p⊎1p≡1p; 1p×1p≡1p;
-         ⊎p-distrib; ×p-distrib)
+-- open import ConcretePermutationProperties
+--   using (assocp; lidp; ridp; linv; rinv)
+--         1p⊎1p≡1p; 1p×1p≡1p;
+--         ⊎p-distrib; ×p-distrib)
 --         unite+p∘[0⊎x]≡x∘unite+p; uniti+p∘x≡[0⊎x]∘uniti+p;
 --         uniti+rp∘[x⊎0]≡x∘uniti+rp; unite+rp∘[x⊎0]≡x∘unite+rp)
+
+open import Permutation using (idp; symp; transp; _⊎p_; _×p_)
+open import PermutationProperties
+  using (assocp; lidp; ridp; rinv; linv)
 
 ------------------------------------------------------------------------------
 -- CPerm is is a category
@@ -60,7 +64,7 @@ CPermGroupoid = record
   }
 
 -- additive bifunctor and monoidal structure
-
+{-
 ⊎p-bifunctor : Bifunctor CPermCat CPermCat CPermCat
 ⊎p-bifunctor = record
   { F₀ = λ { (n , m) → n + m }
@@ -74,6 +78,7 @@ CPermGroupoid = record
 -- the 0 below is the id from CPermMonoidal
 
 module ⊎h = MonoidalHelperFunctors CPermCat ⊎p-bifunctor 0
+-}
 
 {- these are all commented out because unite+p and companions are 
   no longer defined!
