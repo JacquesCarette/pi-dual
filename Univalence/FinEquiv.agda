@@ -42,8 +42,8 @@ open import Relation.Binary.PropositionalEquality
 --
 
 open import Equiv
-  using (_∼_; _≃_; id≃; sym≃; trans≃;
-         mkqinv; module qinv; path⊎; _⊎∼_; _×∼_)
+  using (_∼_; _≃_; id≃; sym≃; trans≃; _●_;
+         iseq; module isequiv; path⊎; _⊎∼_; _×∼_)
 open import TypeEquiv
   using (swap₊; swapswap₊; assocl₊equiv; swap⋆; swapswap⋆; unite₊′equiv)
 
@@ -60,27 +60,11 @@ open import Proofs using (
   )
 
 ------------------------------------------------------------------------------
--- Abbreviation (opposite of the abbreviation in Equiv though)
-
-_●_ : {A B C : Set} → A ≃ B → B ≃ C → A ≃ C
-_●_ = trans≃
-
 -- This is the relation we are interested in showing is a commutative
 -- semiring.
 
 _fin≃_ : (m n : ℕ) → Set
 m fin≃ n = Fin m ≃ Fin n
-
--- First it is evidently an equivalence relation
-
-id-iso : {m : ℕ} → Fin m ≃ Fin m
-id-iso = id≃ 
-
-sym-iso : {m n : ℕ} → (Fin m ≃ Fin n) → (Fin n ≃ Fin m)
-sym-iso = sym≃ 
-
-trans-iso : {m n o : ℕ} → (Fin m ≃ Fin n) → (Fin n ≃ Fin o) → (Fin m ≃ Fin o)
-trans-iso = trans≃ 
 
 -- Additive unit and multiplicative unit are Fin 0 and Fin 1 which are
 -- equivalent to ⊥ and ⊤
@@ -91,7 +75,7 @@ abstract
   Fin0-⊥ ()
 
   F0≃⊥ : Fin 0 ≃ ⊥
-  F0≃⊥ = f , mkqinv g α β
+  F0≃⊥ = f , iseq g α g β
     where
       f : Fin 0 → ⊥
       f ()
@@ -103,7 +87,7 @@ abstract
       β ()
 
   Fin1≃⊤ : Fin 1 ≃ ⊤
-  Fin1≃⊤ = f , mkqinv g α β
+  Fin1≃⊤ = f , iseq g α g β
     where
       f : Fin 1 → ⊤
       f zero = tt
@@ -181,14 +165,14 @@ module Plus where
   -- the main equivalence
 
   fwd-iso : {m n : ℕ} → (Fin m ⊎ Fin n) ≃ Fin (m + n)
-  fwd-iso {m} {n} = fwd , mkqinv bwd (fwd∘bwd~id {m}) (bwd∘fwd~id {m})
+  fwd-iso {m} {n} = fwd , iseq bwd (fwd∘bwd~id {m}) bwd (bwd∘fwd~id {m})
 
   -- additive monoid equivalences
 
   -- unite+
 
   unite+ : {m : ℕ} → Fin (0 + m) ≃ Fin m
-  unite+ {m} = id , mkqinv id (λ x → refl) (λ _ → refl)
+  unite+ {m} = id , iseq id (λ x → refl) id (λ _ → refl)
 
   -- and on the other side as well
 
@@ -196,9 +180,10 @@ module Plus where
   unite+r {m} =
     let eq = +-right-identity m in
     subst Fin eq ,
-    mkqinv (subst Fin (sym eq))
-           (subst-subst eq (sym eq) refl)
-           (subst-subst (sym eq) eq sym-sym)
+    iseq (subst Fin (sym eq))
+         (subst-subst eq (sym eq) refl)
+         (subst Fin (sym eq))
+         (subst-subst (sym eq) eq sym-sym)
 
   -- uniti+
 
@@ -227,26 +212,18 @@ module Plus where
 
   swap+ : {m n : ℕ} → Fin (m + n) ≃ Fin (n + m)
   swap+ {m} {n} =
-    (swapper m n , mkqinv (swapper n m) (swap-inv n m) (swap-inv m n))
+    (swapper m n , iseq (swapper n m) (swap-inv n m) (swapper n m) (swap-inv m n))
 
   -- units that use swap
 
   unite+r' : {m : ℕ} → Fin (m + 0) ≃ Fin m
-  unite+r' {m} = (sym≃ (fwd-iso {m} {0})) ● (path⊎ id≃ F0≃⊥ ● unite₊′equiv)
+  unite+r' {m} =  (unite₊′equiv ● path⊎ id≃ F0≃⊥) ● (sym≃ (fwd-iso {m} {0}))
 
   -- associativity
 
   assocl+ : {m n o : ℕ} → Fin (m + (n + o)) ≃ Fin ((m + n) + o)
-  assocl+ {m} = (sym≃ (fwd-iso {m})) ● (path⊎ id≃ (sym≃ fwd-iso) ●
-    ((assocl₊equiv ● path⊎ fwd-iso id≃) ● fwd-iso))
-
-  assocl+2 : {m n o : ℕ} → Fin (m + (n + o)) ≃ Fin ((m + n) + o)
-  assocl+2 {m} {n} {o} =
-    let eq = +-assoc m n o in
-    subst Fin (sym eq) ,
-    mkqinv (subst Fin eq)
-               (subst-subst (sym eq) eq sym-sym)
-               (subst-subst eq (sym eq) (cong sym refl))
+  assocl+ {m} = fwd-iso ● (path⊎ fwd-iso id≃ ● (assocl₊equiv ●
+    (path⊎ id≃ (sym≃ fwd-iso) ● sym≃ (fwd-iso {m}))))
 
   assocr+ : {m n o : ℕ} → Fin ((m + n) + o) ≃ Fin (m + (n + o))
   assocr+ {m} {n} {o} = sym≃ (assocl+ {m})
@@ -257,7 +234,7 @@ module Plus where
               Fin (m + o) ≃ Fin (n + p)
   cong+-iso {m} {n} {o} {p} (f , feq) (g , geq) = 
     fwd {n} {p} ∘ mapSum f g ∘ bwd {m} {o} , 
-    mkqinv
+    iseq
       (fwd {m} {o} ∘ mapSum fm.g gm.g ∘ bwd {n} {p})
       (λ i →
         begin (fwd {n} {p} (mapSum f g (bwd {m} {o} 
@@ -272,21 +249,22 @@ module Plus where
                fwd {n} {p} (bwd {n} {p} i)
                ≡⟨ fwd∘bwd~id {n} {p} i ⟩
                i ∎))
+      (fwd {m} {o} ∘ mapSum fm.h gm.h ∘ bwd {n} {p})
       (λ i →
-        begin (fwd {m} {o} (mapSum fm.g gm.g (bwd {n} {p}
+        begin (fwd {m} {o} (mapSum fm.h gm.h (bwd {n} {p}
                  (fwd {n} {p} (mapSum f g (bwd {m} {o} i)))))
                ≡⟨ cong
-                    (λ x → fwd {m} {o} (mapSum fm.g gm.g x))
+                    (λ x → fwd {m} {o} (mapSum fm.h gm.h x))
                     (bwd∘fwd~id {n} {p} (mapSum f g (bwd {m} {o} i))) ⟩
-               fwd {m} {o} (mapSum fm.g gm.g (mapSum f g (bwd {m} {o} i)))
+               fwd {m} {o} (mapSum fm.h gm.h (mapSum f g (bwd {m} {o} i)))
                ≡⟨ cong
                    (λ x → fwd {m} {o} x)
                    ((fm.β ⊎∼ gm.β) (bwd {m} {o} i))  ⟩
                fwd {m} {o} (bwd {m} {o} i)
                ≡⟨ fwd∘bwd~id {m} {o} i ⟩
                i ∎))
-    where module fm = qinv feq
-          module gm = qinv geq
+    where module fm = isequiv feq
+          module gm = isequiv geq
           open ≡-Reasoning
 
 -----------------------------------------------------------------------------
@@ -386,7 +364,7 @@ module Times where
       pf₁ = (toℕ-injective (trans (toℕ-fromℕ≤ p) (proj₂ same-quot)))
 
   fwd-iso : {m n : ℕ} → (Fin m × Fin n) ≃ Fin (m * n)
-  fwd-iso {m} {n} = fwd , mkqinv bwd (fwd∘bwd~id {m}) (bwd∘fwd~id {m})
+  fwd-iso {m} {n} = fwd , iseq bwd (fwd∘bwd~id {m}) bwd (bwd∘fwd~id {m})
 
   -- multiplicative monoid equivalences
 
@@ -396,9 +374,10 @@ module Times where
   unite* {m} =
     let eq = +-right-identity m in
     subst Fin eq ,
-    mkqinv (subst Fin (sym eq))
-               (subst-subst eq (sym eq) (cong sym refl))
-               (subst-subst (sym eq) eq sym-sym)
+    iseq (subst Fin (sym eq))
+         (subst-subst eq (sym eq) (cong sym refl))
+         (subst Fin (sym eq))
+         (subst-subst (sym eq) eq sym-sym)
 
   -- uniti*
 
@@ -411,9 +390,10 @@ module Times where
   unite*r {m} = 
     let eq = *-right-identity m in
     subst Fin eq , 
-    mkqinv (subst Fin (sym eq))
-                 (subst-subst eq (sym eq) refl)
-                 (subst-subst (sym eq) eq sym-sym)
+    iseq (subst Fin (sym eq))
+         (subst-subst eq (sym eq) refl)
+         (subst Fin (sym eq))
+         (subst-subst (sym eq) eq sym-sym)
 
   -- uniti*r
   uniti*r : {m : ℕ} → Fin m ≃ Fin (m * 1)
@@ -438,15 +418,16 @@ module Times where
 
   swap* : {m n : ℕ} → Fin (m * n) ≃ Fin (n * m)
   swap* {m} {n} = (swapper m n ,
-                   mkqinv (swapper n m) (swap-inv n m) (swap-inv m n))
+                   iseq (swapper n m) (swap-inv n m) (swapper n m) (swap-inv m n))
 
   -- associativity
 
   assocl* : {m n o : ℕ} → Fin (m * (n * o)) ≃ Fin ((m * n) * o)
   assocl* {m} {n} {o} = subst Fin (sym (*-assoc m n o)) ,
-    mkqinv
+    iseq
       ((subst Fin (*-assoc m n o)))
       (λ x → subst-subst (sym (*-assoc m n o)) (*-assoc m n o) sym-sym x)
+      ((subst Fin (*-assoc m n o)))
       (λ x → subst-subst
                (*-assoc m n o)
                (sym (*-assoc m n o))
@@ -462,7 +443,7 @@ module Times where
               Fin (m * o) ≃ Fin (n * p)
   cong*-iso {m} {n} {o} {p} (f , feq) (g , geq) = 
     fwd {n} {p} ∘ mapTimes f g ∘ bwd {m} {o} , 
-    mkqinv
+    iseq
       (fwd {m} {o} ∘ mapTimes fm.g gm.g ∘ bwd {n} {p})
       (λ i →
         begin (fwd {n} {p} (mapTimes f g (bwd {m} {o}
@@ -480,23 +461,24 @@ module Times where
                fwd {n} {p} (bwd {n} {p} i)
                ≡⟨ fwd∘bwd~id {n} {p} i ⟩
                i ∎))
+      (fwd {m} {o} ∘ mapTimes fm.h gm.h ∘ bwd {n} {p})
       (λ i →
-        begin (fwd {m} {o} (mapTimes fm.g gm.g (bwd {n} {p}
+        begin (fwd {m} {o} (mapTimes fm.h gm.h (bwd {n} {p}
                  (fwd {n} {p} (mapTimes f g (bwd {m} {o} i)))))
                ≡⟨ cong
-                    (λ x → fwd {m} {o} (mapTimes fm.g gm.g x))
+                    (λ x → fwd {m} {o} (mapTimes fm.h gm.h x))
                     (bwd∘fwd~id {n} {p} (mapTimes f g (bwd {m} {o} i))) ⟩
-               fwd {m} {o} (mapTimes fm.g gm.g
+               fwd {m} {o} (mapTimes fm.h gm.h
                              (mapTimes f g (bwd {m} {o} i)))
                ≡⟨ cong
                     (λ x → fwd {m} {o} x)
-                    (_×∼_ {f = fm.g} {finv = f} {g = gm.g} {ginv = g}
+                    (_×∼_ {f = fm.h} {finv = f} {g = gm.h} {ginv = g}
                       fm.β gm.β (bwd {m} {o} i)) ⟩ 
                fwd {m} {o} (bwd {m} {o} i)
                ≡⟨ fwd∘bwd~id {m} {o} i ⟩
                i ∎))
-    where module fm = qinv feq
-          module gm = qinv geq
+    where module fm = isequiv feq
+          module gm = isequiv geq
           open ≡-Reasoning
 
 ------------------------------------------------------------------------------
@@ -507,7 +489,7 @@ module PlusTimes where
   -- now that we have two monoids, we need to check distributivity
 
   distz : {m : ℕ} → Fin (0 * m) ≃ Fin 0
-  distz {m} = id-iso 
+  distz {m} = id≃ 
 
   factorz : {m : ℕ} → Fin 0 ≃ Fin (0 * m)
   factorz {m} = sym≃ (distz {m})
@@ -516,8 +498,9 @@ module PlusTimes where
   distzr {m} = 
     let eq = *-right-zero m in
     subst Fin eq ,
-    mkqinv (subst Fin (sym eq)) 
+    iseq (subst Fin (sym eq)) 
                 (subst-subst eq (sym eq) refl)
+                (subst Fin (sym eq))
                 (subst-subst (sym eq) eq sym-sym)
 
   factorzr : {n : ℕ} → Fin 0 ≃ Fin (n * 0)
@@ -526,8 +509,8 @@ module PlusTimes where
   dist : {m n o : ℕ} → Fin ((m + n) * o) ≃ Fin ((m * o) + (n * o))
   dist {m} {n} {o} =
     let d = distribʳ-*-+ o m n in
-    subst Fin d , mkqinv (subst Fin (sym d)) (subst-subst d (sym d) refl)
-                         (subst-subst (sym d) d sym-sym)
+    subst Fin d , iseq (subst Fin (sym d)) (subst-subst d (sym d) refl)
+                       (subst Fin (sym d)) (subst-subst (sym d) d sym-sym)
 
   factor : {m n o : ℕ} → Fin ((m * o) + (n * o)) ≃ Fin ((m + n) * o) 
   factor {m} {n} {o} = sym≃ (dist {m} {n} {o}) 
@@ -535,8 +518,8 @@ module PlusTimes where
   distl : {m n o : ℕ} → Fin (m * (n + o)) ≃ Fin ((m * n) + (m * o))
   distl {m} {n} {o} =
     let d = distribˡ-*-+ m n o in
-    subst Fin d , mkqinv (subst Fin (sym d)) (subst-subst d (sym d) refl)
-                         (subst-subst (sym d) d sym-sym)
+    subst Fin d , iseq (subst Fin (sym d)) (subst-subst d (sym d) refl)
+                       (subst Fin (sym d)) (subst-subst (sym d) d sym-sym)
 
   factorl : {m n o : ℕ} → Fin ((m * n) + (m * o)) ≃ Fin (m * (n + o)) 
   factorl {m} {n} {o} = sym≃ (distl {m} {n} {o}) 
@@ -544,21 +527,21 @@ module PlusTimes where
 ------------------------------------------------------------------------------
 -- Summarizing... we have a commutative semiring structure
 
-fin≃IsEquiv : IsEquivalence {Level.zero} {Level.zero} {ℕ} _fin≃_
+fin≃IsEquiv : IsEquivalence _fin≃_
 fin≃IsEquiv = record {
-  refl = id-iso ;
-  sym = sym-iso ;
-  trans = trans-iso 
+  refl = id≃ ;
+  sym = sym≃ ;
+  trans = trans≃ 
   }
 
-finPlusIsSG : IsSemigroup {Level.zero} {Level.zero} {ℕ} _fin≃_ _+_
+finPlusIsSG : IsSemigroup _fin≃_ _+_
 finPlusIsSG = record {
   isEquivalence = fin≃IsEquiv ; 
   assoc = λ m n o → Plus.assocr+ {m} {n} {o} ;
   ∙-cong = Plus.cong+-iso 
   }
 
-finTimesIsSG : IsSemigroup {Level.zero} {Level.zero} {ℕ} _fin≃_ _*_
+finTimesIsSG : IsSemigroup _fin≃_ _*_
 finTimesIsSG = record {
   isEquivalence = fin≃IsEquiv ;
   assoc = λ m n o → Times.assocr* {m} {n} {o} ;
@@ -568,7 +551,7 @@ finTimesIsSG = record {
 finPlusIsCM : IsCommutativeMonoid _fin≃_ _+_ 0
 finPlusIsCM = record {
   isSemigroup = finPlusIsSG ;
-  identityˡ = λ m → id-iso ;
+  identityˡ = λ m → id≃ ;
   comm = λ m n → Plus.swap+ {m} {n} 
   }
 

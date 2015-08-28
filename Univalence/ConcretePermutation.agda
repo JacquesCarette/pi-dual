@@ -5,23 +5,19 @@ module ConcretePermutation where
 open import Level renaming (zero to lzero) hiding (suc)
 
 open import Data.Nat using (ℕ)
-open import Data.Fin using (Fin; zero; inject+; fromℕ)
-open import Data.Vec using (Vec; tabulate; allFin; _∷_; [])
-open import Data.Vec.Properties using (tabulate∘lookup; lookup-allFin)
+open import Data.Fin using (Fin)
+open import Data.Vec using (Vec; tabulate; allFin)
+open import Data.Vec.Properties using (tabulate∘lookup)
 
 open import Function using (_∘_)
 open import Relation.Binary using (Setoid) 
-open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; sym; trans; cong; 
-        module ≡-Reasoning; proof-irrelevance; setoid)
+open import Relation.Binary.PropositionalEquality using (_≡_; setoid)
 
 --
 
 open import Proofs using (
-  -- FiniteFunctions
-       finext; 
   -- VectorLemmas
-   _!!_; lookupassoc
+   _!!_
    )
 
 ------------------------------------------------------------------------------
@@ -65,43 +61,6 @@ SCPerm m n = setoid (CPerm m n)
 
 cauchyext : {m n : ℕ} (π : FinVec m n) → tabulate (_!!_ π) ≡ π
 cauchyext π = tabulate∘lookup π
-
--- Properties of composition
-
-∘̂-assoc : {m₁ m₂ m₃ m₄ : ℕ} →
-         (a : Vec (Fin m₂) m₁) (b : Vec (Fin m₃) m₂) (c : Vec (Fin m₄) m₃) → 
-         a ∘̂ (b ∘̂ c) ≡ (a ∘̂ b) ∘̂ c
-∘̂-assoc a b c = finext (lookupassoc a b c)
-
-∘̂-rid : {m n : ℕ} → (π : Vec (Fin m) n) → π ∘̂ 1C ≡ π
-∘̂-rid π = trans (finext (λ i → lookup-allFin (π !! i))) (cauchyext π)
-
-∘̂-lid : {m n : ℕ} → (π : Vec (Fin m) n) → 1C ∘̂ π ≡ π
-∘̂-lid π = trans (finext (λ i → cong (_!!_ π) (lookup-allFin i))) (cauchyext π)
-
--- If the forward components are equal, then so are the backward ones
-
-πᵒ≡ : ∀ {m n} → (π₁ π₂ : CPerm m n) → (CPerm.π π₁ ≡ CPerm.π π₂) →
-      (CPerm.πᵒ π₁ ≡ CPerm.πᵒ π₂)
-πᵒ≡ {n} (cp π πᵒ αp βp) (cp .π πᵒ₁ αp₁ βp₁) refl =
-  begin (
-    πᵒ                  ≡⟨ sym (∘̂-rid πᵒ) ⟩
-    πᵒ ∘̂ 1C             ≡⟨  cong (_∘̂_ πᵒ) (sym αp₁)  ⟩
-    πᵒ ∘̂ (π ∘̂ πᵒ₁)      ≡⟨ ∘̂-assoc πᵒ π πᵒ₁ ⟩
-    (πᵒ ∘̂ π) ∘̂ πᵒ₁      ≡⟨ cong (λ x → x ∘̂ πᵒ₁) βp ⟩
-    1C ∘̂ πᵒ₁            ≡⟨ ∘̂-lid πᵒ₁ ⟩
-    πᵒ₁ ∎)
-  where open ≡-Reasoning
-
--- If the forward components are equal, then so are the entire
--- concrete permutations
-
-p≡ : ∀ {m n} → {π₁ π₂ : CPerm m n} → (CPerm.π π₁ ≡ CPerm.π π₂) → π₁ ≡ π₂
-p≡ {m} {n} {cp π πᵒ αp βp} {cp .π πᵒ₁ αp₁ βp₁} refl with
-  πᵒ≡ (cp π πᵒ αp βp) (cp π πᵒ₁ αp₁ βp₁) refl
-p≡ {m} {n} {cp π πᵒ αp βp} {cp .π .πᵒ αp₁ βp₁} refl | refl
-  with proof-irrelevance αp αp₁ | proof-irrelevance βp βp₁
-p≡ {m} {n} {cp π πᵒ αp βp} {cp .π .πᵒ .αp .βp} refl | refl | refl | refl = refl
 
 ------------------------------------------------------------------------------
 -- I always mix up which way the permutation works. Here is a small

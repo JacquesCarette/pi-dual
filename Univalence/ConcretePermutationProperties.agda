@@ -3,37 +3,32 @@
 module ConcretePermutationProperties where
 
 open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; sym; trans; cong; module ≡-Reasoning; proof-irrelevance; setoid)
-open import Relation.Binary using (Setoid; module Setoid)
-
-open import Level using (zero)
-open import Data.Nat using (ℕ)
-open import Data.Fin using (Fin)
-open import Data.Vec using (tabulate)
-open import Data.Product using (_,_)
-
-open import Proofs using (
-  -- FiniteFunctions
-  finext
-  )
---
-
-open import Equiv using (_≃_; qinv; mkqinv)
-open import SetoidEquiv using (_≋_; _≃S≡_)
+  using (_≡_; refl; sym; trans; cong; module ≡-Reasoning; proof-irrelevance)
 
 --
 
-open import FinVec using (1C; _∘̂_)
-     
-open import FinVecProperties 
-  using (∘̂-assoc; ∘̂-lid; ∘̂-rid;
-         1C₀⊎x≡x; 1C⊎1C≡1C; 1C×1C≡1C;
-         ⊎c-distrib; ×c-distrib;
-         ~⇒≡;
-         unite+∘[0⊎x]≡x∘unite+; uniti+∘x≡[0⊎x]∘uniti+;
-         uniti+r∘[x⊎0]≡x∘uniti+r) --  unite+r∘[x⊎0]≡x∘unite+r
-
+-- open import FinVecProperties using (∘̂-assoc; ∘̂-lid; ∘̂-rid)
 open import ConcretePermutation
+------------------------------------------------------------------------------
+-- Properties of vectors where are only used to prove some properties
+-- of concrete permutations -> do not export them.  
+private
+  open import Data.Nat using (ℕ)
+  open import Data.Fin using (Fin)
+  open import Data.Vec using (Vec)
+  open import Data.Vec.Properties using (lookup-allFin)
+  open import Proofs using (finext; lookupassoc; _!!_)
+  
+  ∘̂-assoc : {m₁ m₂ m₃ m₄ : ℕ} →
+           (a : Vec (Fin m₂) m₁) (b : Vec (Fin m₃) m₂) (c : Vec (Fin m₄) m₃) → 
+           a ∘̂ (b ∘̂ c) ≡ (a ∘̂ b) ∘̂ c
+  ∘̂-assoc a b c = finext (lookupassoc a b c)
+
+  ∘̂-rid : {m n : ℕ} → (π : Vec (Fin m) n) → π ∘̂ 1C ≡ π
+  ∘̂-rid π = trans (finext (λ i → lookup-allFin (π !! i))) (cauchyext π)
+
+  ∘̂-lid : {m n : ℕ} → (π : Vec (Fin m) n) → 1C ∘̂ π ≡ π
+  ∘̂-lid π = trans (finext (λ i → cong (_!!_ π) (lookup-allFin i))) (cauchyext π)
 
 ------------------------------------------------------------------------------
 -- Properties of concrete permutations that are needed to show that
@@ -62,96 +57,5 @@ p≡ {m} {n} {cp π πᵒ αp βp} {cp .π πᵒ₁ αp₁ βp₁} refl with
 p≡ {m} {n} {cp π πᵒ αp βp} {cp .π .πᵒ αp₁ βp₁} refl | refl
   with proof-irrelevance αp αp₁ | proof-irrelevance βp βp₁
 p≡ {m} {n} {cp π πᵒ αp βp} {cp .π .πᵒ .αp .βp} refl | refl | refl | refl = refl
-
-SCPerm : ℕ → ℕ → Setoid zero zero
-SCPerm m n = setoid (CPerm m n)
-
-mkSCPerm : ∀ {ℓ} {A B : Set ℓ} → (eq₁ : A ≃ B) → A ≃S≡ B
-mkSCPerm (f , mkqinv g α β) =
-  SetoidEquiv.equiv (record { _⟨$⟩_ = f ; cong = cong f })
-                    (record { _⟨$⟩_ = g ; cong = cong g })
-                    (λ {x} x≡y → trans (α x) x≡y)
-                    (λ {x} x≡y → trans (β x) x≡y)
-
-≃⇒≡ : ∀ {m n} → {eq₁ eq₂ : Fin m ≃ Fin n} →
-  (eq₁₂ : mkSCPerm eq₁ ≋ mkSCPerm eq₂) → mkPerm eq₁ ≡ mkPerm eq₂
-≃⇒≡ (SetoidEquiv.equivS f≡ g≡) = p≡ (finext g≡)
-  where open Equiv.qinv
-
-{-
-unite+rp∘[x⊎0]≡x∘unite+rp : ∀ {m n} (p : CPerm m n) →
-  transp unite+rp p ≡ transp (p ⊎p 0p) unite+rp
-unite+rp∘[x⊎0]≡x∘unite+rp p = p≡ unite+r∘[x⊎0]≡x∘unite+r
--}
-
-------------------------------------------------------------------------------
--- Composition
-
-assocp : ∀ {m₁ m₂ m₃ n₁} → {p₁ : CPerm m₁ n₁} → {p₂ : CPerm m₂ m₁} →
-  {p₃ : CPerm m₃ m₂} → 
-  transp p₁ (transp p₂ p₃) ≡ transp (transp p₁ p₂) p₃
-assocp {p₁ = p₁} {p₂} {p₃} =
-  p≡ (∘̂-assoc (CPerm.π p₁) (CPerm.π p₂) (CPerm.π p₃))
-
-lidp : ∀ {m₁ m₂} {p : CPerm m₂ m₁} → transp idp p ≡ p
-lidp {p = p} = p≡ (∘̂-lid (CPerm.π p))
-
-ridp : ∀ {m₁ m₂} {p : CPerm m₂ m₁} → transp p idp ≡ p
-ridp {p = p} = p≡ (∘̂-rid (CPerm.π p))
-
-transp-resp-≡ : ∀ {m₁ m₂ m₃} {f h : CPerm m₂ m₃} {g i : CPerm m₁ m₂} → 
-  f ≡ h → g ≡ i → transp f g ≡ transp h i
-transp-resp-≡ refl refl = refl
-
--- Inverses
-
-linv : ∀ {m₁ m₂} (p : CPerm m₂ m₁) → transp p (symp p) ≡ idp
-linv p = p≡ (CPerm.αp p)
-
-rinv : ∀ {m₁ m₂} (p : CPerm m₂ m₁) → transp (symp p) p ≡ idp
-rinv p = p≡ (CPerm.βp p)
-
--- Additives
-
-0p⊎x≡x : ∀ {m n} {p : CPerm m n} → idp {0} ⊎p p ≡ p
-0p⊎x≡x {p = p} = p≡ 1C₀⊎x≡x
-
-1p⊎1p≡1p : ∀ {m n} → idp {m} ⊎p idp {n} ≡ idp
-1p⊎1p≡1p {m} = p≡ (1C⊎1C≡1C {m})
-
-⊎p-distrib :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : CPerm m₁ n₁} → {p₂ : CPerm m₂ n₂}
-    → {p₃ : CPerm m₃ m₁} → {p₄ : CPerm m₄ m₂} →
-      transp (p₁ ⊎p p₂) (p₃ ⊎p p₄) ≡ (transp p₁ p₃) ⊎p (transp p₂ p₄)
-⊎p-distrib {p₁ = p₁} = p≡ (⊎c-distrib {p₁ = CPerm.π p₁})
-
--- interaction with composition
-
-unite+p∘[0⊎x]≡x∘unite+p : ∀ {m n} (p : CPerm m n) →
-  transp unite+p (0p ⊎p p) ≡ transp p unite+p
-unite+p∘[0⊎x]≡x∘unite+p p = p≡ unite+∘[0⊎x]≡x∘unite+
-
-uniti+p∘x≡[0⊎x]∘uniti+p : ∀ {m n} (p : CPerm m n) →
-  transp uniti+p p ≡ transp (0p ⊎p p) uniti+p
-uniti+p∘x≡[0⊎x]∘uniti+p p = p≡ (uniti+∘x≡[0⊎x]∘uniti+ {x = CPerm.π p})
-
-uniti+rp∘[x⊎0]≡x∘uniti+rp : ∀ {m n} (p : CPerm m n) →
-  transp uniti+rp (p ⊎p 0p) ≡ transp p uniti+rp
-uniti+rp∘[x⊎0]≡x∘uniti+rp p = p≡ uniti+r∘[x⊎0]≡x∘uniti+r
-
-{-
-unite+rp∘[x⊎0]≡x∘unite+rp : ∀ {m n} (p : CPerm m n) →
-  transp unite+rp p ≡ transp (p ⊎p 0p) unite+rp
-unite+rp∘[x⊎0]≡x∘unite+rp p = p≡ unite+r∘[x⊎0]≡x∘unite+r
--}
-
--- Multiplicatives
-
-1p×1p≡1p : ∀ {m n} → idp {m} ×p idp {n} ≡ idp
-1p×1p≡1p {m} = p≡ (1C×1C≡1C {m})
-
-×p-distrib :  ∀ {m₁ m₂ m₃ m₄ n₁ n₂} → {p₁ : CPerm m₁ n₁} → {p₂ : CPerm m₂ n₂}
-    → {p₃ : CPerm m₃ m₁} → {p₄ : CPerm m₄ m₂} →
-      (transp p₁ p₃) ×p (transp p₂ p₄) ≡ transp (p₁ ×p p₂) (p₃ ×p p₄)
-×p-distrib {p₁ = p₁} = p≡ (sym (×c-distrib {p₁ = CPerm.π p₁}))
 
 ------------------------------------------------------------------------------
