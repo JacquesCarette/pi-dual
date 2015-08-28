@@ -42,7 +42,7 @@ open import Relation.Binary.PropositionalEquality
 --
 
 open import Equiv
-  using (_∼_; _≃_; id≃; sym≃; trans≃;
+  using (_∼_; _≃_; id≃; sym≃; trans≃; _●_;
          iseq; module isequiv; path⊎; _⊎∼_; _×∼_)
 open import TypeEquiv
   using (swap₊; swapswap₊; assocl₊equiv; swap⋆; swapswap⋆; unite₊′equiv)
@@ -60,27 +60,11 @@ open import Proofs using (
   )
 
 ------------------------------------------------------------------------------
--- Abbreviation (opposite of the abbreviation in Equiv though)
-
-_●_ : {A B C : Set} → A ≃ B → B ≃ C → A ≃ C
-_●_ = trans≃
-
 -- This is the relation we are interested in showing is a commutative
 -- semiring.
 
 _fin≃_ : (m n : ℕ) → Set
 m fin≃ n = Fin m ≃ Fin n
-
--- First it is evidently an equivalence relation
-
-id-iso : {m : ℕ} → Fin m ≃ Fin m
-id-iso = id≃ 
-
-sym-iso : {m n : ℕ} → (Fin m ≃ Fin n) → (Fin n ≃ Fin m)
-sym-iso = sym≃ 
-
-trans-iso : {m n o : ℕ} → (Fin m ≃ Fin n) → (Fin n ≃ Fin o) → (Fin m ≃ Fin o)
-trans-iso = trans≃ 
 
 -- Additive unit and multiplicative unit are Fin 0 and Fin 1 which are
 -- equivalent to ⊥ and ⊤
@@ -233,22 +217,13 @@ module Plus where
   -- units that use swap
 
   unite+r' : {m : ℕ} → Fin (m + 0) ≃ Fin m
-  unite+r' {m} = (sym≃ (fwd-iso {m} {0})) ● (path⊎ id≃ F0≃⊥ ● unite₊′equiv)
+  unite+r' {m} =  (unite₊′equiv ● path⊎ id≃ F0≃⊥) ● (sym≃ (fwd-iso {m} {0}))
 
   -- associativity
 
   assocl+ : {m n o : ℕ} → Fin (m + (n + o)) ≃ Fin ((m + n) + o)
-  assocl+ {m} = (sym≃ (fwd-iso {m})) ● (path⊎ id≃ (sym≃ fwd-iso) ●
-    ((assocl₊equiv ● path⊎ fwd-iso id≃) ● fwd-iso))
-
-  assocl+2 : {m n o : ℕ} → Fin (m + (n + o)) ≃ Fin ((m + n) + o)
-  assocl+2 {m} {n} {o} =
-    let eq = +-assoc m n o in
-    subst Fin (sym eq) ,
-    iseq (subst Fin eq)
-         (subst-subst (sym eq) eq sym-sym)
-         (subst Fin eq)
-         (subst-subst eq (sym eq) (cong sym refl))
+  assocl+ {m} = fwd-iso ● (path⊎ fwd-iso id≃ ● (assocl₊equiv ●
+    (path⊎ id≃ (sym≃ fwd-iso) ● sym≃ (fwd-iso {m}))))
 
   assocr+ : {m n o : ℕ} → Fin ((m + n) + o) ≃ Fin (m + (n + o))
   assocr+ {m} {n} {o} = sym≃ (assocl+ {m})
@@ -514,7 +489,7 @@ module PlusTimes where
   -- now that we have two monoids, we need to check distributivity
 
   distz : {m : ℕ} → Fin (0 * m) ≃ Fin 0
-  distz {m} = id-iso 
+  distz {m} = id≃ 
 
   factorz : {m : ℕ} → Fin 0 ≃ Fin (0 * m)
   factorz {m} = sym≃ (distz {m})
@@ -552,21 +527,21 @@ module PlusTimes where
 ------------------------------------------------------------------------------
 -- Summarizing... we have a commutative semiring structure
 
-fin≃IsEquiv : IsEquivalence {Level.zero} {Level.zero} {ℕ} _fin≃_
+fin≃IsEquiv : IsEquivalence _fin≃_
 fin≃IsEquiv = record {
-  refl = id-iso ;
-  sym = sym-iso ;
-  trans = trans-iso 
+  refl = id≃ ;
+  sym = sym≃ ;
+  trans = trans≃ 
   }
 
-finPlusIsSG : IsSemigroup {Level.zero} {Level.zero} {ℕ} _fin≃_ _+_
+finPlusIsSG : IsSemigroup _fin≃_ _+_
 finPlusIsSG = record {
   isEquivalence = fin≃IsEquiv ; 
   assoc = λ m n o → Plus.assocr+ {m} {n} {o} ;
   ∙-cong = Plus.cong+-iso 
   }
 
-finTimesIsSG : IsSemigroup {Level.zero} {Level.zero} {ℕ} _fin≃_ _*_
+finTimesIsSG : IsSemigroup _fin≃_ _*_
 finTimesIsSG = record {
   isEquivalence = fin≃IsEquiv ;
   assoc = λ m n o → Times.assocr* {m} {n} {o} ;
@@ -576,7 +551,7 @@ finTimesIsSG = record {
 finPlusIsCM : IsCommutativeMonoid _fin≃_ _+_ 0
 finPlusIsCM = record {
   isSemigroup = finPlusIsSG ;
-  identityˡ = λ m → id-iso ;
+  identityˡ = λ m → id≃ ;
   comm = λ m n → Plus.swap+ {m} {n} 
   }
 
