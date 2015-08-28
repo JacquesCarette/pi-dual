@@ -28,8 +28,8 @@ open import Categories.Monoidal.Symmetric using (Symmetric)
 open import Categories.RigCategory
   using (RigCategory; module BimonoidalHelperFunctors)
 
-open import FinEquiv using (_fin≃_; _●_; module Plus)
-open import Equiv using (id≃; sym≃; isequiv; g-left-inv; _∼_; sym∼)
+open import FinEquiv using (_fin≃_; module Plus)
+open import Equiv using (id≃; sym≃; isequiv; g-left-inv; _∼_; sym∼; _●_)
 open import EquivEquiv using (_≋_; eq; id≋; sym≋; trans≋; ●-resp-≋)
 open import Data.Sum.Properties
 
@@ -42,7 +42,7 @@ FinEquivCat = record
   ; _⇒_ = _fin≃_
   ; _≡_ = _≋_
   ; id = id≃
-  ; _∘_ = λ bc ab → ab ● bc 
+  ; _∘_ = _●_ 
   ; assoc = eq (λ _ → P.refl) (λ _ → P.refl) 
   ; identityˡ = eq (λ _ → P.refl) (λ _ → P.refl) 
   ; identityʳ = eq (λ _ → P.refl) (λ _ → P.refl) 
