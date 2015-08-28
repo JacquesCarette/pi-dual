@@ -20,7 +20,7 @@ open import Relation.Binary.PropositionalEquality
 
 open import Proofs using (_!!_; finext)
 open import Equiv using (_≃_; iseq; module isequiv; g-left-inv)
-open import EquivEquiv using (_S≃_; eq; _≋_)
+open import EquivEquiv using (_S≃_; eq; _≋_; id≋)
 open import ConcretePermutation using (CPerm; cp; _∘̂_; 1C; cauchyext; SCPerm)
 open import ConcretePermutationProperties using (p≡)
 
@@ -78,9 +78,6 @@ univalence {m} {n} = equiv fwd bwd α β
             ≡⟨ lookup∘tabulate id m ⟩
           m ∎)
         
---αp : π ConcretePermutation.∘̂ πᵒ ≡ ConcretePermutation.1C
---βp : πᵒ ConcretePermutation.∘̂ π ≡ ConcretePermutation.1C
-
     bwd' : (Fin m ≃ Fin n) → (CPerm m n)
     bwd' (f , iseq g α h β) =
       cp (tabulate g) (tabulate f) g∘̂f≡1C f∘̂g≡1C
@@ -108,13 +105,13 @@ univalence {m} {n} = equiv fwd bwd α β
     fwd : (SCPerm m n) ⟶ (Fin m S≃ Fin n)
     fwd = record
       { _⟨$⟩_ = fwd'
-      ; cong = λ { {π} {.π} refl → eq (λ x → refl) (λ x → refl) }
+      ; cong = λ { {π} {.π} refl → id≋ }
       }
 
     bwd : (Fin m S≃ Fin n) ⟶ (SCPerm m n)
     bwd = record
       { _⟨$⟩_ = bwd'
-      ; cong = λ {eq₁} {eq₂} eq₁≋eq₂ → p≡ (finext (_≋_.g≡ eq₁≋eq₂))
+      ; cong = λ eq₁≋eq₂ → p≡ (finext (_≋_.g≡ eq₁≋eq₂))
       }
 
     α : {eq₁ eq₂ : Fin m ≃ Fin n} → eq₁ ≋ eq₂ → (fwd ⊚ bwd ⟨$⟩ eq₁) ≋ eq₂
