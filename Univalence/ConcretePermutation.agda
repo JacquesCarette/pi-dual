@@ -2,11 +2,11 @@
 
 module ConcretePermutation where
 
-open import Level using (zero)
+open import Level renaming (zero to lzero) hiding (suc)
 
 open import Data.Nat using (ℕ)
-open import Data.Fin using (Fin)
-open import Data.Vec using (Vec; tabulate; allFin)
+open import Data.Fin using (Fin; zero; inject+; fromℕ)
+open import Data.Vec using (Vec; tabulate; allFin; _∷_; [])
 open import Data.Vec.Properties using (tabulate∘lookup; lookup-allFin)
 
 open import Function using (_∘_)
@@ -57,7 +57,7 @@ record CPerm (values : ℕ) (size : ℕ) : Set where
 
 -- The set of permutations under _≡_
 
-SCPerm : ℕ → ℕ → Setoid zero zero
+SCPerm : ℕ → ℕ → Setoid lzero lzero
 SCPerm m n = setoid (CPerm m n)
 
 -- This is just tabulate∘lookup, but it hides the details; should this
@@ -104,3 +104,34 @@ p≡ {m} {n} {cp π πᵒ αp βp} {cp .π .πᵒ αp₁ βp₁} refl | refl
 p≡ {m} {n} {cp π πᵒ αp βp} {cp .π .πᵒ .αp .βp} refl | refl | refl | refl = refl
 
 ------------------------------------------------------------------------------
+-- I always mix up which way the permutation works. Here is a small
+-- example to serve as a reminder:
+
+-- values
+
+0₅ 1₅ 2₅ 3₅ 4₅ : Fin 5
+0₅ = zero
+1₅ = inject+ 3 (fromℕ 1)
+2₅ = inject+ 2 (fromℕ 2)
+3₅ = inject+ 1 (fromℕ 3)
+4₅ = fromℕ 4
+
+-- indices
+
+0₃ 1₃ 2₃ : Fin 3
+0₃ = zero
+1₃ = inject+ 1 (fromℕ 1)
+2₃ = fromℕ 2
+
+πex : FinVec 5 3
+πex = 4₅ ∷ 3₅ ∷ 2₅ ∷ [] 
+
+fex : Fin 3 → Fin 5
+fex i = πex !! i
+
+-- fex 0₃ => 4₅
+-- fex 1₃ => 3₅
+-- fex 2₃ => 2₅
+
+------------------------------------------------------------------------------
+

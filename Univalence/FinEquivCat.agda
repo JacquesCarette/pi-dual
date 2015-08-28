@@ -8,14 +8,15 @@ module FinEquivCat where
 
 open import Level using () renaming (zero to lzero; suc to lsuc)
 import Relation.Binary.PropositionalEquality as P
+  using (refl; trans; cong)
 open import Relation.Binary using (Rel)
 open import Data.Nat using (ℕ; _+_; _*_)
 open import Data.Fin using (Fin)
 open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to map⊎)
 open import Data.Product using (_,_; proj₁; proj₂;_×_; Σ) renaming (map to map×)
-open import Data.Unit
-open import Data.Empty
-import Function as F
+open import Data.Unit using ()
+open import Data.Empty using ()
+import Function as F using (_∘_; id)
 
 open import Categories.Category using (Category)
 open import Categories.Groupoid using (Groupoid)
@@ -32,6 +33,7 @@ open import FinEquiv using (_fin≃_; _●_; module Plus)
 open import Equiv using (id≃; sym≃; mkqinv; _∼_; sym∼)
 open import EquivEquiv using (_≋_; eq; id≋; sym≋; trans≋; ●-resp-≋)
 open import Data.Sum.Properties
+  using (map⊎idid≡id)
 
 ------------------------------------------------------------------------------
 -- Fin and type equivalences are a category
@@ -59,24 +61,25 @@ FinEquivGroupoid = record
     } }
   }
 
+-- The additive structure is monoidal
+
 {--
 private
   fwd : ∀ {m n} → Fin m ⊎ Fin n → Fin (m + n)
   fwd {m} {n} = proj₁ (Plus.fwd-iso {m} {n})
+--}
 
 ⊎-bifunctor : Bifunctor FinEquivCat FinEquivCat FinEquivCat
 ⊎-bifunctor = record
   { F₀ = λ {(m , n) → m + n}
   ; F₁ = λ {( m≃n , o≃p ) → Plus.cong+-iso m≃n o≃p}
-  ; identity = eq pf₁ pf₁
+  ; identity = {!!} -- eq pf₁ pf₁
   ; homomorphism = λ { {f = (f₀ , mkqinv g₀ _ _) , (f₁ , mkqinv g₁ _ _)}
                        {    (f₂ , mkqinv g₂ _ _) , (f₃ , mkqinv g₃ _ _)} → eq {!!} {!!} }
   ; F-resp-≡ = λ x → eq (λ x₁ → {!!}) {!!}
   }
   where
-    open Plus
-    pf₁ : ∀ {m n} → (fwd {m} {n} F.∘ (map⊎ F.id F.id) F.∘ bwd) ∼ F.id
-    pf₁ y = P.trans (P.cong fwd (map⊎idid≡id (bwd y))) (fwd∘bwd~id y)
---}
+    pf₁ : ∀ {m n} → (Plus.fwd {m} {n} F.∘ (map⊎ F.id F.id) F.∘ Plus.bwd) ∼ F.id
+    pf₁ y = P.trans (P.cong Plus.fwd (map⊎idid≡id (Plus.bwd y))) (Plus.fwd∘bwd~id y)
 
 ------------------------------------------------------------------------------
