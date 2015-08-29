@@ -100,7 +100,7 @@ _⋆_ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (A ≃ B) → (x : A) �
 -- there-and-back is identity
 
 p∘!p≡id : {A B : Set} {p : A ≃ B} → (_⋆_ (trans≃ p (sym≃ p))) ∼ (_⋆_ id≃)
-p∘!p≡id {p = p} =  g-left-inv p
+p∘!p≡id {p = p} = g-left-inv p
 
 !p∘p≡id : {A B : Set} {p : A ≃ B} → (_⋆_ (trans≃ (sym≃ p) p)) ∼ (_⋆_ id≃)
 !p∘p≡id {p = p} = p∘!p≡id {p = sym≃ p}
