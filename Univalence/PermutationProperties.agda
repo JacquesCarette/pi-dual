@@ -82,7 +82,7 @@ rinv p = let e = p⇒e p in ≋⇒≡ (begin (
 
 
 -- Additives
-{-
+
 1p⊎1p≡1p : ∀ {m n} → idp {m} ⊎p idp {n} ≡ idp
 1p⊎1p≡1p {m} {n} =
   let em = p⇒e (e⇒p (id≃ {A = Fin m})) in
@@ -92,7 +92,7 @@ rinv p = let e = p⇒e p in ≋⇒≡ (begin (
     ≋⟨ {!!} ⟩
   id≃ {A = Fin (m + n)} ∎))
   where open ≋-Reasoning
--} 
+ 
 {-
 0p⊎x≡x : ∀ {m n} {p : CPerm m n} → idp {0} ⊎p p ≡ p
 0p⊎x≡x {p = p} = p≡ 1C₀⊎x≡x
