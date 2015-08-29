@@ -64,21 +64,20 @@ CPermGroupoid = record
   }
 
 -- additive bifunctor and monoidal structure
-{-
+
 ⊎p-bifunctor : Bifunctor CPermCat CPermCat CPermCat
 ⊎p-bifunctor = record
   { F₀ = λ { (n , m) → n + m }
   ; F₁ = λ { (p₁ , p₂) → p₁ ⊎p p₂ }
-  ; identity = λ { {m , n} → 1p⊎1p≡1p {m} {n}}
+  ; identity = λ { {m , n} → {!!}} -- 1p⊎1p≡1p {m} {n}}
   ; homomorphism = λ { {m₁ , m₂} {n₁ , n₂} {o₁ , o₂} {p₁ , p₂} {q₁ , q₂} →
-      P.sym (⊎p-distrib {n₁} {n₂} {m₁} {m₂} {o₁} {o₂} {q₁} {q₂} {p₁} {p₂}) }
+      {!!} } -- P.sym (⊎p-distrib {n₁} {n₂} {m₁} {m₂} {o₁} {o₂} {q₁} {q₂} {p₁} {p₂}) }
   ; F-resp-≡ = λ { (p₁≡p₃ , p₂≡p₄) → P.cong₂ _⊎p_ p₁≡p₃ p₂≡p₄ }
   }
 
 -- the 0 below is the id from CPermMonoidal
 
 module ⊎h = MonoidalHelperFunctors CPermCat ⊎p-bifunctor 0
--}
 
 {- these are all commented out because unite+p and companions are 
   no longer defined!
