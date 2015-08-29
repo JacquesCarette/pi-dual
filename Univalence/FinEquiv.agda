@@ -45,7 +45,8 @@ open import Equiv
   using (_∼_; _≃_; id≃; sym≃; trans≃; _●_;
          iseq; module isequiv; path⊎; _⊎∼_; _×∼_)
 open import TypeEquiv
-  using (swap₊; swapswap₊; assocl₊equiv; swap⋆; swapswap⋆; unite₊′equiv)
+  using (assocl₊equiv; swap⋆; swapswap⋆; unite₊′equiv;
+    unite₊equiv; swap₊equiv)
 
 open import Proofs using (
   -- LeqLemmas
@@ -172,20 +173,14 @@ module Plus where
   -- unite+
 
   unite+ : {m : ℕ} → Fin (0 + m) ≃ Fin m
-  unite+ {m} = id , iseq id (λ x → refl) id (λ _ → refl)
+  unite+ = unite₊equiv ● (path⊎ F0≃⊥ id≃ ● sym≃ fwd-iso)
 
   -- and on the other side as well
 
   unite+r : {m : ℕ} → Fin (m + 0) ≃ Fin m
-  unite+r {m} =
-    let eq = +-right-identity m in
-    subst Fin eq ,
-    iseq (subst Fin (sym eq))
-         (subst-subst eq (sym eq) refl)
-         (subst Fin (sym eq))
-         (subst-subst (sym eq) eq sym-sym)
+  unite+r = unite₊′equiv ● (path⊎ id≃ F0≃⊥ ● sym≃ fwd-iso)
 
-  -- uniti+
+-- uniti+
 
   uniti+ : {m : ℕ} → Fin m ≃ Fin (0 + m)
   uniti+ = sym≃ unite+
@@ -195,29 +190,8 @@ module Plus where
 
   -- swap₊
 
-  swapper : (m n : ℕ) → Fin (m + n) → Fin (n + m)
-  swapper m n = fwd ∘ swap₊ ∘ bwd {m} {n} 
-
-  swap-inv : (m n : ℕ) → ∀ i → swapper n m (swapper m n i) ≡ i
-  swap-inv m n i = 
-    begin (
-      fwd (swap₊ (bwd {n} {m} (fwd (swap₊ (bwd {m} {n} i)))))
-        ≡⟨ cong (λ x → fwd (swap₊ x)) (bwd∘fwd~id {n} {m} (swap₊ (bwd i))) ⟩
-      fwd (swap₊ (swap₊ (bwd {m} i)))
-        ≡⟨ cong fwd (swapswap₊ (bwd {m} i)) ⟩
-      fwd (bwd {m} {n} i)
-        ≡⟨ fwd∘bwd~id {m} i ⟩
-      i ∎ )
-    where open ≡-Reasoning
-
   swap+ : {m n : ℕ} → Fin (m + n) ≃ Fin (n + m)
-  swap+ {m} {n} =
-    (swapper m n , iseq (swapper n m) (swap-inv n m) (swapper n m) (swap-inv m n))
-
-  -- units that use swap
-
-  unite+r' : {m : ℕ} → Fin (m + 0) ≃ Fin m
-  unite+r' {m} =  (unite₊′equiv ● path⊎ id≃ F0≃⊥) ● (sym≃ (fwd-iso {m} {0}))
+  swap+ {m} {n} = fwd-iso {n} ● (swap₊equiv ● sym≃ fwd-iso)
 
   -- associativity
 
@@ -232,40 +206,7 @@ module Plus where
 
   cong+-iso : {m n o p : ℕ} → (Fin m ≃ Fin n) → (Fin o ≃ Fin p) →
               Fin (m + o) ≃ Fin (n + p)
-  cong+-iso {m} {n} {o} {p} (f , feq) (g , geq) = 
-    fwd {n} {p} ∘ mapSum f g ∘ bwd {m} {o} , 
-    iseq
-      (fwd {m} {o} ∘ mapSum fm.g gm.g ∘ bwd {n} {p})
-      (λ i →
-        begin (fwd {n} {p} (mapSum f g (bwd {m} {o} 
-                 (fwd {m} {o} (mapSum fm.g gm.g (bwd {n} {p} i)))))
-               ≡⟨ cong
-                    (λ x → fwd {n} {p} (mapSum f g x))
-                    (bwd∘fwd~id {m} {o} (mapSum fm.g gm.g (bwd {n} {p} i))) ⟩
-               fwd {n} {p} (mapSum f g (mapSum fm.g gm.g (bwd {n} {p} i)))
-               ≡⟨ cong
-                    (λ x → fwd {n} {p} x)
-                    ((fm.α ⊎∼ gm.α) (bwd {n} {p} i)) ⟩
-               fwd {n} {p} (bwd {n} {p} i)
-               ≡⟨ fwd∘bwd~id {n} {p} i ⟩
-               i ∎))
-      (fwd {m} {o} ∘ mapSum fm.h gm.h ∘ bwd {n} {p})
-      (λ i →
-        begin (fwd {m} {o} (mapSum fm.h gm.h (bwd {n} {p}
-                 (fwd {n} {p} (mapSum f g (bwd {m} {o} i)))))
-               ≡⟨ cong
-                    (λ x → fwd {m} {o} (mapSum fm.h gm.h x))
-                    (bwd∘fwd~id {n} {p} (mapSum f g (bwd {m} {o} i))) ⟩
-               fwd {m} {o} (mapSum fm.h gm.h (mapSum f g (bwd {m} {o} i)))
-               ≡⟨ cong
-                   (λ x → fwd {m} {o} x)
-                   ((fm.β ⊎∼ gm.β) (bwd {m} {o} i))  ⟩
-               fwd {m} {o} (bwd {m} {o} i)
-               ≡⟨ fwd∘bwd~id {m} {o} i ⟩
-               i ∎))
-    where module fm = isequiv feq
-          module gm = isequiv geq
-          open ≡-Reasoning
+  cong+-iso Fm≃Fn Fo≃Fp = fwd-iso ● (path⊎ Fm≃Fn Fo≃Fp ● sym≃ fwd-iso)
 
 -----------------------------------------------------------------------------
 -- Multiplicative monoid
