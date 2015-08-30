@@ -4,7 +4,7 @@ module CPermCat where
 
 open import Level using (zero)
 open import Data.Nat using (ℕ; _+_; _*_)
-open import Data.Fin using () renaming (zero to 0F) 
+open import Data.Fin using () renaming (zero to 0F)
 open import Data.Product using (_,_)
 import Relation.Binary.PropositionalEquality as P
   using (_≡_; refl; sym; cong₂; isEquivalence)
@@ -23,15 +23,6 @@ open import Categories.RigCategory
 --
 
 open import ConcretePermutation using (CPerm)
---  using (CPerm; idp; symp; transp; _⊎p_; _×p_;
---         unite+p; uniti+p; unite+rp; uniti+rp)
-
--- open import ConcretePermutationProperties
---   using (assocp; lidp; ridp; linv; rinv)
---         1p⊎1p≡1p; 1p×1p≡1p;
---         ⊎p-distrib; ×p-distrib)
---         unite+p∘[0⊎x]≡x∘unite+p; uniti+p∘x≡[0⊎x]∘uniti+p;
---         uniti+rp∘[x⊎0]≡x∘uniti+rp; unite+rp∘[x⊎0]≡x∘unite+rp)
 
 open import Permutation using (idp; symp; transp; _⊎p_; _×p_)
 open import PermutationProperties
@@ -45,7 +36,7 @@ CPermCat : Category zero zero zero
 CPermCat = record
   { Obj = ℕ
   ; _⇒_ = CPerm
-  ; _≡_ = P._≡_ 
+  ; _≡_ = P._≡_
   ; id = idp
   ; _∘_ = transp
   ; assoc = λ {_} {_} {_} {_} {f} {g} {h} → P.sym (assocp {p₁ = h} {g} {f})
@@ -58,28 +49,29 @@ CPermCat = record
 -- ... and a groupoid
 
 CPermGroupoid : Groupoid CPermCat
-CPermGroupoid = record 
-  { _⁻¹ = symp 
-  ; iso = λ {_} {_} {f} → record { isoˡ = rinv f ; isoʳ = linv f } 
+CPermGroupoid = record
+  { _⁻¹ = symp
+  ; iso = λ {_} {_} {f} → record { isoˡ = rinv f ; isoʳ = linv f }
   }
 
 -- additive bifunctor and monoidal structure
-
+{-
 ⊎p-bifunctor : Bifunctor CPermCat CPermCat CPermCat
 ⊎p-bifunctor = record
   { F₀ = λ { (n , m) → n + m }
   ; F₁ = λ { (p₁ , p₂) → p₁ ⊎p p₂ }
-  ; identity = λ { {m , n} → {!!}} -- 1p⊎1p≡1p {m} {n}}
+  ; identity = λ { {m , n} → 1p⊎1p≡1p {m} {n}}
   ; homomorphism = λ { {m₁ , m₂} {n₁ , n₂} {o₁ , o₂} {p₁ , p₂} {q₁ , q₂} →
-      {!!} } -- P.sym (⊎p-distrib {n₁} {n₂} {m₁} {m₂} {o₁} {o₂} {q₁} {q₂} {p₁} {p₂}) }
+      P.sym (⊎p-distrib {n₁} {n₂} {m₁} {m₂} {o₁} {o₂} {q₁} {q₂} {p₁} {p₂}) }
   ; F-resp-≡ = λ { (p₁≡p₃ , p₂≡p₄) → P.cong₂ _⊎p_ p₁≡p₃ p₂≡p₄ }
   }
 
 -- the 0 below is the id from CPermMonoidal
 
 module ⊎h = MonoidalHelperFunctors CPermCat ⊎p-bifunctor 0
+-}
 
-{- these are all commented out because unite+p and companions are 
+{- these are all commented out because unite+p and companions are
   no longer defined!
 0⊕x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
 0⊕x≡x = record
@@ -96,7 +88,7 @@ x⊕0≡x : NaturalIsomorphism ⊎h.x⊗id ⊎h.x
 x⊕0≡x = record
   { F⇒G = record { η = λ _ → uniti+rp
                  ; commute = λ f → uniti+rp∘[x⊎0]≡x∘uniti+rp (f 0F)
-                 } 
+                 }
   ; F⇐G = record { η = λ _ → unite+rp
                  ; commute = λ f → unite+rp∘[x⊎0]≡x∘unite+rp (f 0F)
                  }
@@ -108,12 +100,12 @@ x⊕0≡x = record
 [x⊕y]⊕z≡x⊕[y⊕z] : NaturalIsomorphism ⊎h.[x⊗y]⊗z ⊎h.x⊗[y⊗z]
 [x⊕y]⊕z≡x⊕[y⊕z] = record
   { F⇒G = record
-    { η = {!!} 
-    ; commute = {!!} 
+    { η = {!!}
+    ; commute = {!!}
     }
   ; F⇐G = record
-    { η = {!!} 
-    ; commute = {!!} 
+    { η = {!!}
+    ; commute = {!!}
     }
   ; iso = λ X → record { isoˡ = {!!} ; isoʳ = {!!} }
   }
@@ -146,13 +138,13 @@ M⊕ = record
 module ×h = MonoidalHelperFunctors CPermCat ×p-bifunctor 1
 
 1⊗x≡x : NaturalIsomorphism ×h.id⊗x ×h.x
-1⊗x≡x = record 
+1⊗x≡x = record
   { F⇒G = record
-    { η = {!!} 
+    { η = {!!}
     ; commute = {!!}
     }
   ; F⇐G = record
-    { η = {!!} 
+    { η = {!!}
     ; commute = {!!}
     }
   ; iso = λ X → record { isoˡ = {!!} ; isoʳ = {!!} }
@@ -161,12 +153,12 @@ module ×h = MonoidalHelperFunctors CPermCat ×p-bifunctor 1
 x⊗1≡x : NaturalIsomorphism ×h.x⊗id ×h.x
 x⊗1≡x = record
   { F⇒G = record
-    { η = {!!} 
-    ; commute = {!!} 
+    { η = {!!}
+    ; commute = {!!}
     }
   ; F⇐G = record
-    { η = {!!} 
-    ; commute = {!!} 
+    { η = {!!}
+    ; commute = {!!}
     }
   ; iso = λ X → record { isoˡ = {!!} ; isoʳ = {!!} }
   }
@@ -174,12 +166,12 @@ x⊗1≡x = record
 [x⊗y]⊗z≡x⊗[y⊗z] : NaturalIsomorphism ×h.[x⊗y]⊗z ×h.x⊗[y⊗z]
 [x⊗y]⊗z≡x⊗[y⊗z] = record
   { F⇒G = record
-    { η = {!!} 
-    ; commute = {!!} 
+    { η = {!!}
+    ; commute = {!!}
     }
   ; F⇐G = record
     { η = {!!}
-    ; commute = {!!} 
+    ; commute = {!!}
     }
   ; iso = λ X → record { isoˡ = {!!} ; isoʳ = {!!} }
   }
@@ -198,7 +190,7 @@ M⊗ = record
   }
 
 x⊕y≡y⊕x : NaturalIsomorphism ⊎h.x⊗y ⊎h.y⊗x
-x⊕y≡y⊕x = record 
+x⊕y≡y⊕x = record
   { F⇒G = record { η = {!!} ; commute = {!!} }
   ; F⇐G = record { η = {!!} ; commute = {!!} }
   ; iso = λ X → record { isoˡ = {!!} ; isoʳ = {!!} } }
@@ -211,7 +203,7 @@ BM⊕ = record
   }
 
 x⊗y≡y⊗x : NaturalIsomorphism ×h.x⊗y ×h.y⊗x
-x⊗y≡y⊗x = record 
+x⊗y≡y⊗x = record
   { F⇒G = record { η = {!!} ; commute = {!!} }
   ; F⇐G = record { η = {!!} ; commute = {!!} }
   ; iso = λ X → record { isoˡ = {!!} ; isoʳ = {!!} } }
@@ -219,8 +211,8 @@ x⊗y≡y⊗x = record
 BM⊗ : Braided M⊗
 BM⊗ = record
   { braid = x⊗y≡y⊗x
-  ; hexagon₁ = {!!} 
-  ; hexagon₂ = {!!} 
+  ; hexagon₁ = {!!}
+  ; hexagon₂ = {!!}
   }
 
 -- with both monoidal structures being symmetric
@@ -234,16 +226,16 @@ SBM⊗ = record { symmetry = {!!} }
 module r = BimonoidalHelperFunctors BM⊕ BM⊗
 
 x⊗0≡0 : NaturalIsomorphism r.x⊗0 r.0↑
-x⊗0≡0 = record 
+x⊗0≡0 = record
   { F⇒G = record
-    { η = {!!} 
-    ; commute = {!!} 
-    } 
+    { η = {!!}
+    ; commute = {!!}
+    }
   ; F⇐G = record
-    { η = {!!} 
-    ; commute = {!!} 
-    } 
-  ; iso = λ X → record { isoˡ = {!!} ; isoʳ = {!!} } 
+    { η = {!!}
+    ; commute = {!!}
+    }
+  ; iso = λ X → record { isoˡ = {!!} ; isoʳ = {!!} }
   }
 
 0⊗x≡0 : NaturalIsomorphism r.0⊗x r.0↑
@@ -270,24 +262,24 @@ x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
 -- and the multiplicative structure distributing over the additive one
 
 Pi1Rig : RigCategory SBM⊕ SBM⊗
-Pi1Rig = record 
+Pi1Rig = record
   { distribₗ = x⊗[y⊕z]≡[x⊗y]⊕[x⊗z]
-  ; distribᵣ = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] 
-  ; annₗ = 0⊗x≡0 
+  ; distribᵣ = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z]
+  ; annₗ = 0⊗x≡0
   ; annᵣ = x⊗0≡0
-  ; laplazaI = {!!} 
-  ; laplazaII = {!!} 
-  ; laplazaIV = {!!} 
-  ; laplazaVI = {!!} 
-  ; laplazaIX = {!!} 
-  ; laplazaX = {!!} 
-  ; laplazaXI = {!!} 
-  ; laplazaXIII = {!!} 
-  ; laplazaXV = {!!} 
-  ; laplazaXVI =  {!!} 
-  ; laplazaXVII = {!!} 
-  ; laplazaXIX = {!!} 
-  ; laplazaXXIII = {!!} 
+  ; laplazaI = {!!}
+  ; laplazaII = {!!}
+  ; laplazaIV = {!!}
+  ; laplazaVI = {!!}
+  ; laplazaIX = {!!}
+  ; laplazaX = {!!}
+  ; laplazaXI = {!!}
+  ; laplazaXIII = {!!}
+  ; laplazaXV = {!!}
+  ; laplazaXVI =  {!!}
+  ; laplazaXVII = {!!}
+  ; laplazaXIX = {!!}
+  ; laplazaXXIII = {!!}
   }
 
 --}

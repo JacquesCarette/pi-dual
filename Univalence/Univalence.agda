@@ -32,6 +32,20 @@ open import Categories.RigCategory
 open import Categories.Bicategory
 
 ------------------------------------------------------------------------------
+-- General
+--
+-- We have three representations of types: Agda types, Pi types, and
+-- Fin types. We have three equivalence relations between types:
+-- extensional equivalences, Pi combinators, and Vec
+-- permutations. Each type representation suggests a natural choice
+-- for the equivalence relation:
+--
+-- Agda_Type <===== extensional equivalence =====> Agda_Type
+-- Pi_Type   <=====      Pi combinator      =====> Pi_Type
+-- Fin_Type  <=====     Vec permutation     =====> Fin_Type
+--
+--
+------------------------------------------------------------------------------
 -- Equivalences
 
 open import Equiv
@@ -136,13 +150,15 @@ open import Pi1Examples
 open import ConcretePermutation
 -- Defines a permutation of a finite set 'Fin m' using two vectors of
 -- the form Vec (Fin m) m. The first occurrence of m bounds the values
--- in the vector and the second bounds the length of the vector. To
--- guarantee that each value in Fin m occurs exactly once in the
--- vector, the representation of permutations includes two proofs that
--- the composition of the two vectors is the identity permutation (in
--- both directions). A crucial property of such permutations is that
--- they can be compared for equality using just ≡ which is elaborated
--- on in the module.
+-- in the vector and the second bounds the length of the vector. In
+-- general, a permutation 'Vec (Fin m) n' can be viewed as a function
+-- that maps indices in 'Fin n' to values in 'Fin m'. To guarantee
+-- that each value in Fin m occurs exactly once in the vector, the
+-- representation of permutations includes two proofs that the
+-- composition of the two vectors is the identity permutation (in both
+-- directions). A crucial property of such permutations is that they
+-- can be compared for equality using just ≡ which is elaborated on in
+-- the module.
 --
 -- Ultimately we want to prove that finite sets and permutations form
 -- a symmetric rig groupoid. Although it is possible to prove this
@@ -246,14 +262,6 @@ open import CPermCat -- TODO
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Wavefront ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--- We have three representations of types: Agda types, Pi types, and Fin types
--- 
--- We have three equivalence relations between types: extensional
--- equivalences, combinators, and permutations
--- 
--- Each type representation suggests a natural choice for the
--- equivalence relation.
--- 
 -- We have so far presented each instance separately. Now we focus on
 -- relating the different type representations.
 -- 
