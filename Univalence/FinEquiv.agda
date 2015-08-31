@@ -43,10 +43,11 @@ open import Relation.Binary.PropositionalEquality
 
 open import Equiv
   using (_∼_; _≃_; id≃; sym≃; trans≃; _●_;
-         iseq; module isequiv; path⊎; _⊎∼_; _×∼_)
+         iseq; module isequiv; path⊎; path×; _×∼_)
 open import TypeEquiv
   using (assocl₊equiv; swap⋆; swapswap⋆; unite₊′equiv;
-    unite₊equiv; swap₊equiv)
+    unite₊equiv; swap₊equiv;
+    unite⋆equiv; unite⋆′equiv)
 
 open import Proofs using (
   -- LeqLemmas
@@ -312,13 +313,7 @@ module Times where
   -- unite*
 
   unite* : {m : ℕ} → Fin (1 * m) ≃ Fin m
-  unite* {m} =
-    let eq = +-right-identity m in
-    subst Fin eq ,
-    iseq (subst Fin (sym eq))
-         (subst-subst eq (sym eq) (cong sym refl))
-         (subst Fin (sym eq))
-         (subst-subst (sym eq) eq sym-sym)
+  unite* {m} = unite⋆equiv ● (path× Fin1≃⊤ id≃ ● sym≃ fwd-iso)
 
   -- uniti*
 
@@ -328,13 +323,7 @@ module Times where
   -- unite*r
 
   unite*r : {m : ℕ} → Fin (m * 1) ≃ Fin m
-  unite*r {m} = 
-    let eq = *-right-identity m in
-    subst Fin eq , 
-    iseq (subst Fin (sym eq))
-         (subst-subst eq (sym eq) refl)
-         (subst Fin (sym eq))
-         (subst-subst (sym eq) eq sym-sym)
+  unite*r {m} = unite⋆′equiv ● (path× id≃ Fin1≃⊤ ● sym≃ fwd-iso)
 
   -- uniti*r
   uniti*r : {m : ℕ} → Fin m ≃ Fin (m * 1)
