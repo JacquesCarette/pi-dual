@@ -45,9 +45,9 @@ open import Equiv
   using (_∼_; _≃_; id≃; sym≃; trans≃; _●_;
          iseq; module isequiv; path⊎; path×; _×∼_)
 open import TypeEquiv
-  using (assocl₊equiv; swap⋆; swapswap⋆; unite₊′equiv;
+  using (assocl₊equiv; unite₊′equiv;
     unite₊equiv; swap₊equiv;
-    unite⋆equiv; unite⋆′equiv)
+    unite⋆equiv; unite⋆′equiv; swap⋆equiv; assocl⋆equiv)
 
 open import Proofs using (
   -- LeqLemmas
@@ -331,38 +331,14 @@ module Times where
 
   -- swap*
 
-  swapper : (m n : ℕ) → Fin (m * n) → Fin (n * m)
-  swapper m n = fwd ∘ swap⋆ ∘ bwd {m} {n} 
-
-  swap-inv : (m n : ℕ) → ∀ i → swapper n m (swapper m n i) ≡ i
-  swap-inv m n i = 
-    begin (
-      fwd (swap⋆ (bwd {n} {m} (fwd (swap⋆ (bwd {m} {n} i)))))
-        ≡⟨ cong (λ x → fwd (swap⋆ x)) (bwd∘fwd~id {n} {m} (swap⋆ (bwd i))) ⟩
-      fwd (swap⋆ (swap⋆ (bwd {m} i)))
-        ≡⟨ cong fwd (swapswap⋆ (bwd {m} i)) ⟩
-      fwd (bwd {m} {n} i)
-        ≡⟨ fwd∘bwd~id {m} i ⟩
-      i ∎ )
-    where open ≡-Reasoning
-
   swap* : {m n : ℕ} → Fin (m * n) ≃ Fin (n * m)
-  swap* {m} {n} = (swapper m n ,
-                   iseq (swapper n m) (swap-inv n m) (swapper n m) (swap-inv m n))
-
+  swap* {m} {n} = fwd-iso {n} ● (swap⋆equiv ● sym≃ fwd-iso)
+  
   -- associativity
 
   assocl* : {m n o : ℕ} → Fin (m * (n * o)) ≃ Fin ((m * n) * o)
-  assocl* {m} {n} {o} = subst Fin (sym (*-assoc m n o)) ,
-    iseq
-      ((subst Fin (*-assoc m n o)))
-      (λ x → subst-subst (sym (*-assoc m n o)) (*-assoc m n o) sym-sym x)
-      ((subst Fin (*-assoc m n o)))
-      (λ x → subst-subst
-               (*-assoc m n o)
-               (sym (*-assoc m n o))
-               (cong sym refl)
-               x)
+  assocl* {m} {n} {o} = fwd-iso ● (path× fwd-iso id≃ ● (assocl⋆equiv ●
+    (path× id≃ (sym≃ fwd-iso) ● sym≃ (fwd-iso {m}))))
 
   assocr* : {m n o : ℕ} → Fin ((m * n) * o) ≃ Fin (m * (n * o))
   assocr* {m} {n} {o} = sym≃ (assocl* {m})
