@@ -34,11 +34,14 @@ e⇒p e = _≃S_.g univalence ⟨$⟩ e
 p⇒e : ∀ {m n} → CPerm m n → (Fin m ≃ Fin n)
 p⇒e p = _≃S_.f univalence ⟨$⟩ p
 
-αu : ∀ {m n} → {e : Fin m ≃ Fin n} → e ≋ e → p⇒e (e⇒p e) ≋ e
-αu e≋e = _≃S_.α univalence e≋e
+αu : ∀ {m n} → {e f : Fin m ≃ Fin n} → e ≋ f → p⇒e (e⇒p e) ≋ f
+αu e≋f = _≃S_.α univalence e≋f
 
-βu : ∀ {m n} → {p : CPerm m n} → p ≡ p → e⇒p (p⇒e p) ≡ p
-βu p≡p = _≃S_.β univalence p≡p
+βu : ∀ {m n} → {p q : CPerm m n} → p ≡ q → e⇒p (p⇒e p) ≡ q
+βu p≡q = _≃S_.β univalence p≡q
+
+α₁ : ∀ {m n} → {e : Fin m ≃ Fin n} → p⇒e (e⇒p e) ≋ e
+α₁ {e = e} = αu (id≋ {x = e}) -- Agda can infer here, but this helps later?
 
 -- inside an e⇒p, we can freely replace equivalences
 -- this expresses the fundamental property that equivalent equivalences
@@ -66,8 +69,9 @@ idp {n} = e⇒p (id≃ {A = Fin n})
 
 -- disjoint union
 _⊎p_ : ∀ {m₁ m₂ n₁ n₂} → CPerm m₁ m₂ → CPerm n₁ n₂ → CPerm (m₁ + n₁) (m₂ + n₂)
-p₁ ⊎p p₂ = e⇒p (Plus.cong+-iso (p⇒e p₁) (p⇒e p₂))
-
+p₁ ⊎p p₂ = e⇒p ((p⇒e p₁) +F (p⇒e p₂))
+  where open Plus
+  
 -- cartesian product
 _×p_ : ∀ {m₁ m₂ n₁ n₂} → CPerm m₁ m₂ → CPerm n₁ n₂ → CPerm (m₁ * n₁) (m₂ * n₂)
 p₁ ×p p₂ = e⇒p (Times.cong*-iso (p⇒e p₁) (p⇒e p₂))
