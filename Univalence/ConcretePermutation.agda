@@ -5,8 +5,8 @@ module ConcretePermutation where
 open import Level renaming (zero to lzero) hiding (suc)
 
 open import Data.Nat using (ℕ)
-open import Data.Fin using (Fin)
-open import Data.Vec using (Vec; tabulate; allFin)
+open import Data.Fin using (Fin; zero; inject+; fromℕ)
+open import Data.Vec using (Vec; tabulate; allFin; []; _∷_)
 open import Data.Vec.Properties using (tabulate∘lookup)
 
 open import Function using (_∘_)
