@@ -77,9 +77,9 @@ rinv≋ x = eq (λ z → g-left-inv x z) (λ z → g-left-inv x z)
 
 -- underlying it all, it uses ∘ and ≡, thus associativity is immediate
 
-●-assoc : {A B C D : Set} {f : A ≃ B} {g : B ≃ C} {h : C ≃ D} →
+●-assoc : {A B C D : Set} (f : A ≃ B) (g : B ≃ C) (h : C ≃ D) →
       ((h ● g) ● f) ≋ (h ● (g ● f))
-●-assoc = eq (λ x → P.refl) (λ x → P.refl)
+●-assoc _ _ _ = eq (λ x → P.refl) (λ x → P.refl)
 
 -- The setoid of equivalences under ≋
 
