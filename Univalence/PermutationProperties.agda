@@ -7,9 +7,13 @@ open import Data.Fin using (Fin)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; cong; module ≡-Reasoning; proof-irrelevance; setoid)
 open import Function.Equality   using    (_⟨$⟩_)
-open import Data.Product using (proj₂)
+open import Data.Sum using (_⊎_)
+open import Data.Product using (_,_; proj₁; proj₂)
 --
 
+open import Data.Sum.Properties
+  using (map⊎idid≡id)
+  
 open import FinEquiv using (module Plus)
 open import ConcretePermutation
 open import Permutation
@@ -29,7 +33,7 @@ assocp {p₁ = p₁} {p₂} {p₃} =
   e₁ ● (p⇒e (e⇒p (e₂ ● e₃)))
     ≋⟨ right-α-over-● e₁ (e₂ ● e₃) ⟩ 
   e₁ ● (e₂ ● e₃)
-    ≋⟨ sym≋ (●-assoc {f = e₃} {e₂} {e₁}) ⟩
+    ≋⟨ sym≋ (●-assoc e₃ e₂ e₁) ⟩
   (e₁ ● e₂) ● e₃
     ≋⟨ sym≋ (left-α-over-● (e₁ ● e₂) e₃) ⟩
   p⇒e (e⇒p (e₁ ● e₂)) ● e₃ ∎))
@@ -83,15 +87,26 @@ rinv p = let e = p⇒e p in ≋⇒≡ (begin (
 
 -- Additives
 
-1p⊎1p≡1p : ∀ {m n} → idp {m} ⊎p idp {n} ≡ idp
+1p⊎1p≡1p : ∀ {m n} → idp {m} ⊎p idp {n} ≡ idp {m + n}
 1p⊎1p≡1p {m} {n} =
   let em = p⇒e (e⇒p (id≃ {A = Fin m})) in
   let en = p⇒e (e⇒p (id≃ {A = Fin n})) in
+  let f≋ = id≋ {x = Plus.fwd-iso {m} {n}} in
+  let g≋ = id≋ {x = sym≃ (Plus.fwd-iso {m} {n})} in
   ≋⇒≡ (begin (
-  Plus.cong+-iso em en
-    ≋⟨ {!!} ⟩
+  em +F en
+    ≋⟨ id≋ ⟩
+  Plus.fwd-iso ● (path⊎ em en ● sym≃ Plus.fwd-iso)
+    ≋⟨ ●-resp-≋ f≋ (●-resp-≋ (path⊎-resp-≋ α₁ α₁) g≋) ⟩
+  Plus.fwd-iso ● (path⊎ (id≃ {A = Fin m}) id≃ ● (sym≃ Plus.fwd-iso))
+    ≋⟨ ●-resp-≋ f≋ (●-resp-≋ {f = path⊎ id≃ id≃} {id≃} (eq map⊎idid≡id map⊎idid≡id) g≋) ⟩
+  Plus.fwd-iso {m} {n} ● (id≃ {A = Fin m ⊎ Fin n} ● (sym≃ Plus.fwd-iso))
+    ≋⟨ ●-resp-≋ {f = Plus.fwd-iso} {Plus.fwd-iso} {id≃ ● sym≃ Plus.fwd-iso} {sym≃ Plus.fwd-iso} f≋ (eq (λ _ → refl) (λ _ → refl)) ⟩
+  Plus.fwd-iso {m} ● (sym≃ Plus.fwd-iso)  
+    ≋⟨ linv≋ (Plus.fwd-iso {m}) ⟩
   id≃ {A = Fin (m + n)} ∎))
   where open ≋-Reasoning
+        open Plus
  
 {-
 0p⊎x≡x : ∀ {m n} {p : CPerm m n} → idp {0} ⊎p p ≡ p

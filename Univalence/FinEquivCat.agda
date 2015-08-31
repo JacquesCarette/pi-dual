@@ -65,23 +65,15 @@ FinEquivGroupoid = record
 
 -- The additive structure is monoidal
 
-{--
-private
-  fwd : ∀ {m n} → Fin m ⊎ Fin n → Fin (m + n)
-  fwd {m} {n} = proj₁ (Plus.fwd-iso {m} {n})
---}
-
+{-
 ⊎-bifunctor : Bifunctor FinEquivCat FinEquivCat FinEquivCat
 ⊎-bifunctor = record
   { F₀ = λ {(m , n) → m + n}
-  ; F₁ = λ {( m≃n , o≃p ) → Plus.cong+-iso m≃n o≃p}
-  ; identity = {!!} -- eq pf₁ pf₁
-  ; homomorphism = λ { {f = (f₀ , mkqinv g₀ _ _) , (f₁ , mkqinv g₁ _ _)}
-                       {    (f₂ , mkqinv g₂ _ _) , (f₃ , mkqinv g₃ _ _)} → eq {!!} {!!} }
+  ; F₁ = λ {( m≃n , o≃p ) → m≃n +F o≃p}
+  ; identity = {!!}
+  ; homomorphism = {!!}
   ; F-resp-≡ = λ x → eq (λ x₁ → {!!}) {!!}
   }
-  where
-    pf₁ : ∀ {m n} → (Plus.fwd {m} {n} F.∘ (map⊎ F.id F.id) F.∘ Plus.bwd) ∼ F.id
-    pf₁ y = P.trans (P.cong Plus.fwd (map⊎idid≡id (Plus.bwd y))) (Plus.fwd∘bwd~id y)
-
+  where open Plus
+-}
 ------------------------------------------------------------------------------

@@ -204,9 +204,9 @@ module Plus where
 
   -- congruence
 
-  cong+-iso : {m n o p : ℕ} → (Fin m ≃ Fin n) → (Fin o ≃ Fin p) →
+  _+F_ : {m n o p : ℕ} → (Fin m ≃ Fin n) → (Fin o ≃ Fin p) →
               Fin (m + o) ≃ Fin (n + p)
-  cong+-iso Fm≃Fn Fo≃Fp = fwd-iso ● (path⊎ Fm≃Fn Fo≃Fp ● sym≃ fwd-iso)
+  Fm≃Fn +F Fo≃Fp = fwd-iso ● (path⊎ Fm≃Fn Fo≃Fp ● sym≃ fwd-iso)
 
 -----------------------------------------------------------------------------
 -- Multiplicative monoid
@@ -479,7 +479,7 @@ finPlusIsSG : IsSemigroup _fin≃_ _+_
 finPlusIsSG = record {
   isEquivalence = fin≃IsEquiv ; 
   assoc = λ m n o → Plus.assocr+ {m} {n} {o} ;
-  ∙-cong = Plus.cong+-iso 
+  ∙-cong = Plus._+F_
   }
 
 finTimesIsSG : IsSemigroup _fin≃_ _*_
