@@ -47,7 +47,8 @@ open import Equiv
 open import TypeEquiv
   using (assocl₊equiv; unite₊′equiv;
     unite₊equiv; swap₊equiv;
-    unite⋆equiv; unite⋆′equiv; swap⋆equiv; assocl⋆equiv)
+    unite⋆equiv; unite⋆′equiv; swap⋆equiv; assocl⋆equiv;
+    distzequiv; distzrequiv)
 
 open import Proofs using (
   -- LeqLemmas
@@ -345,47 +346,9 @@ module Times where
 
   -- congruence
 
-  cong*-iso : {m n o p : ℕ} → (Fin m ≃ Fin n) → (Fin o ≃ Fin p) →
+  _*F_ : {m n o p : ℕ} → (Fin m ≃ Fin n) → (Fin o ≃ Fin p) →
               Fin (m * o) ≃ Fin (n * p)
-  cong*-iso {m} {n} {o} {p} (f , feq) (g , geq) = 
-    fwd {n} {p} ∘ mapTimes f g ∘ bwd {m} {o} , 
-    iseq
-      (fwd {m} {o} ∘ mapTimes fm.g gm.g ∘ bwd {n} {p})
-      (λ i →
-        begin (fwd {n} {p} (mapTimes f g (bwd {m} {o}
-                (fwd {m} {o} (mapTimes fm.g gm.g (bwd {n} {p} i)))))
-               ≡⟨ cong
-                    (λ x → fwd {n} {p} (mapTimes f g x))
-                    (bwd∘fwd~id {m} {o}
-                      (mapTimes fm.g gm.g (bwd {n} {p} i))) ⟩
-               fwd {n} {p} (mapTimes f g
-                             (mapTimes fm.g gm.g (bwd {n} {p} i)))
-               ≡⟨ cong
-                    (λ x → fwd {n} {p} x)
-                    (_×∼_ {f = f} {finv = fm.g} {g = g} {ginv = gm.g}
-                      fm.α gm.α (bwd {n} {p} i)) ⟩
-               fwd {n} {p} (bwd {n} {p} i)
-               ≡⟨ fwd∘bwd~id {n} {p} i ⟩
-               i ∎))
-      (fwd {m} {o} ∘ mapTimes fm.h gm.h ∘ bwd {n} {p})
-      (λ i →
-        begin (fwd {m} {o} (mapTimes fm.h gm.h (bwd {n} {p}
-                 (fwd {n} {p} (mapTimes f g (bwd {m} {o} i)))))
-               ≡⟨ cong
-                    (λ x → fwd {m} {o} (mapTimes fm.h gm.h x))
-                    (bwd∘fwd~id {n} {p} (mapTimes f g (bwd {m} {o} i))) ⟩
-               fwd {m} {o} (mapTimes fm.h gm.h
-                             (mapTimes f g (bwd {m} {o} i)))
-               ≡⟨ cong
-                    (λ x → fwd {m} {o} x)
-                    (_×∼_ {f = fm.h} {finv = f} {g = gm.h} {ginv = g}
-                      fm.β gm.β (bwd {m} {o} i)) ⟩ 
-               fwd {m} {o} (bwd {m} {o} i)
-               ≡⟨ fwd∘bwd~id {m} {o} i ⟩
-               i ∎))
-    where module fm = isequiv feq
-          module gm = isequiv geq
-          open ≡-Reasoning
+  Fm≃Fn *F Fo≃Fp = fwd-iso ● (path× Fm≃Fn Fo≃Fp ● sym≃ fwd-iso)
 
 ------------------------------------------------------------------------------
 -- Distributivity of multiplication over addition
@@ -394,20 +357,16 @@ module PlusTimes where
 
   -- now that we have two monoids, we need to check distributivity
 
+  -- note that the sequence below is "logically right", *but* could be
+  -- replaced by id≃ !
   distz : {m : ℕ} → Fin (0 * m) ≃ Fin 0
-  distz {m} = id≃ 
+  distz {m} = sym≃ F0≃⊥ ● (distzequiv ● (path× F0≃⊥ id≃ ● sym≃ (Times.fwd-iso {0} {m})))
 
   factorz : {m : ℕ} → Fin 0 ≃ Fin (0 * m)
   factorz {m} = sym≃ (distz {m})
 
   distzr : {m : ℕ} → Fin (m * 0) ≃ Fin 0
-  distzr {m} = 
-    let eq = *-right-zero m in
-    subst Fin eq ,
-    iseq (subst Fin (sym eq)) 
-                (subst-subst eq (sym eq) refl)
-                (subst Fin (sym eq))
-                (subst-subst (sym eq) eq sym-sym)
+  distzr {m} = sym≃ F0≃⊥ ● (distzrequiv ● (path× id≃ F0≃⊥ ● sym≃ (Times.fwd-iso {m} {0})))
 
   factorzr : {n : ℕ} → Fin 0 ≃ Fin (n * 0)
   factorzr {n} = sym≃ (distzr {n})
@@ -451,7 +410,7 @@ finTimesIsSG : IsSemigroup _fin≃_ _*_
 finTimesIsSG = record {
   isEquivalence = fin≃IsEquiv ;
   assoc = λ m n o → Times.assocr* {m} {n} {o} ;
-  ∙-cong = Times.cong*-iso
+  ∙-cong = Times._*F_
   }
 
 finPlusIsCM : IsCommutativeMonoid _fin≃_ _+_ 0
