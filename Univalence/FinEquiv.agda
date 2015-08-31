@@ -9,10 +9,8 @@ import Level using (zero)
 
 open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Unit using (⊤; tt)
-open import Data.Sum
-  using (_⊎_; inj₁; inj₂) renaming (map to mapSum)
-open import Data.Product
-  using (_,_; _×_; proj₁; proj₂) renaming (map to mapTimes)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Data.Product using (_,_; _×_; proj₁; proj₂)
 
 open import Data.Nat
   using (ℕ; zero; suc; _+_; _*_; ≤-pred; _<_; _≤_; _≥_; _≤?_;
@@ -20,8 +18,7 @@ open import Data.Nat
 open import Data.Nat.DivMod using (_divMod_; result)
 open import Data.Nat.Properties using (≰⇒>; 1+n≰n; m≤m+n; ¬i+1+j≤i)
 open import Data.Nat.Properties.Simple
-  using (+-right-identity; +-assoc; +-suc; +-comm;
-        *-right-zero; *-assoc; distribʳ-*-+)
+  using (+-right-identity; +-assoc; +-suc; +-comm; *-right-zero)
 
 open import Data.Fin
   using (Fin; zero; suc; inject+; raise; toℕ; fromℕ≤; reduce≥)
@@ -43,23 +40,18 @@ open import Relation.Binary.PropositionalEquality
 
 open import Equiv
   using (_∼_; _≃_; id≃; sym≃; trans≃; _●_;
-         iseq; module isequiv; path⊎; path×; _×∼_)
+         iseq; module isequiv; path⊎; path×)
 open import TypeEquiv
   using (assocl₊equiv; unite₊′equiv;
     unite₊equiv; swap₊equiv;
     unite⋆equiv; unite⋆′equiv; swap⋆equiv; assocl⋆equiv;
-    distzequiv; distzrequiv)
+    distzequiv; distzrequiv; distequiv; distlequiv)
 
 open import Proofs using (
   -- LeqLemmas
   _<?_; cong+r≤; cong+l≤; cong*r≤; 
   -- FinNatLemmas 
-  inj₁-≡; inj₂-≡; inject+-injective; raise-injective; addMul-lemma;
-  *-right-identity; distribˡ-*-+; 
-  -- SubstLemmas
-  subst-subst;
-  -- PathLemmas
-  sym-sym
+  inj₁-≡; inj₂-≡; inject+-injective; raise-injective; addMul-lemma
   )
 
 ------------------------------------------------------------------------------
@@ -372,19 +364,18 @@ module PlusTimes where
   factorzr {n} = sym≃ (distzr {n})
 
   dist : {m n o : ℕ} → Fin ((m + n) * o) ≃ Fin ((m * o) + (n * o))
-  dist {m} {n} {o} =
-    let d = distribʳ-*-+ o m n in
-    subst Fin d , iseq (subst Fin (sym d)) (subst-subst d (sym d) refl)
-                       (subst Fin (sym d)) (subst-subst (sym d) d sym-sym)
+  dist {m} {n} {o} = Plus.fwd-iso {m * o} {n * o}
+    ● path⊎ (Times.fwd-iso {m} {o}) Times.fwd-iso
+    ● distequiv ● (path× (sym≃ Plus.fwd-iso) id≃ ● sym≃ (Times.fwd-iso {m + n} {o}))
 
   factor : {m n o : ℕ} → Fin ((m * o) + (n * o)) ≃ Fin ((m + n) * o) 
   factor {m} {n} {o} = sym≃ (dist {m} {n} {o}) 
 
   distl : {m n o : ℕ} → Fin (m * (n + o)) ≃ Fin ((m * n) + (m * o))
-  distl {m} {n} {o} =
-    let d = distribˡ-*-+ m n o in
-    subst Fin d , iseq (subst Fin (sym d)) (subst-subst d (sym d) refl)
-                       (subst Fin (sym d)) (subst-subst (sym d) d sym-sym)
+  distl {m} {n} {o} = Plus.fwd-iso {m * n} {m * o}
+    ● path⊎ (Times.fwd-iso {m} {n}) Times.fwd-iso
+    ● distlequiv ● (path× id≃ (sym≃ Plus.fwd-iso) ● sym≃ (Times.fwd-iso {m} {n + o}))
+
 
   factorl : {m n o : ℕ} → Fin ((m * n) + (m * o)) ≃ Fin (m * (n + o)) 
   factorl {m} {n} {o} = sym≃ (distl {m} {n} {o}) 
