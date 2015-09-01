@@ -74,12 +74,13 @@ p₁ ⊎p p₂ = e⇒p ((p⇒e p₁) +F (p⇒e p₂))
   
 -- cartesian product
 _×p_ : ∀ {m₁ m₂ n₁ n₂} → CPerm m₁ m₂ → CPerm n₁ n₂ → CPerm (m₁ * n₁) (m₂ * n₂)
-p₁ ×p p₂ = e⇒p (Times.cong*-iso (p⇒e p₁) (p⇒e p₂))
-
+p₁ ×p p₂ = e⇒p ((p⇒e p₁) *F (p⇒e p₂))
+  where open Times
+  
 -- symmetry
 symp : ∀ {m n} → CPerm m n → CPerm n m
 symp p = e⇒p (sym≃ (p⇒e p))
 
 -- transitivity; note the 'transposition' of the arguments!
 transp : ∀ {m₁ m₂ m₃} → CPerm m₂ m₁ → CPerm m₃ m₂ → CPerm m₃ m₁
-transp p₁ p₂ = e⇒p (trans≃ (p⇒e p₂) (p⇒e p₁))
+transp p₁ p₂ = e⇒p ((p⇒e p₁) ● (p⇒e p₂))
