@@ -31,7 +31,8 @@ open import Categories.RigCategory
 
 open import FinEquiv using (_fin≃_; module Plus)
 open import Equiv using (id≃; sym≃; isequiv; g-left-inv; _∼_; sym∼; _●_)
-open import EquivEquiv using (_≋_; eq; id≋; sym≋; trans≋; ●-resp-≋)
+open import EquivEquiv
+  using (_≋_; eq; id≋; sym≋; trans≋; ●-resp-≋; ●-assoc; lid≋; rid≋)
 open import Data.Sum.Properties
   using (map⊎idid≡id)
 
@@ -45,9 +46,9 @@ FinEquivCat = record
   ; _≡_ = _≋_
   ; id = id≃
   ; _∘_ = _●_ 
-  ; assoc = eq (λ _ → P.refl) (λ _ → P.refl) 
-  ; identityˡ = eq (λ _ → P.refl) (λ _ → P.refl) 
-  ; identityʳ = eq (λ _ → P.refl) (λ _ → P.refl) 
+  ; assoc = λ { {f = f} {g} {h} → ●-assoc f g h}
+  ; identityˡ = lid≋
+  ; identityʳ = rid≋ 
   ; equiv = record { refl = id≋ ; sym = sym≋ ; trans = trans≋ } 
   ; ∘-resp-≡ = ●-resp-≋ 
   }
