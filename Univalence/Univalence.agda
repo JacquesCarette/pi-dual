@@ -5,9 +5,9 @@ module Univalence where
 
 open import LeqLemmas
 open import FinNatLemmas
-open import SubstLemmas
+-- open import SubstLemmas
 open import FiniteFunctions
-open import PathLemmas
+-- open import PathLemmas
 open import VectorLemmas
 open import Proofs
 
