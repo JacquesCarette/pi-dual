@@ -8,7 +8,7 @@ open import FinNatLemmas
 -- open import SubstLemmas
 open import FiniteFunctions
 -- open import PathLemmas
-open import VectorLemmas
+open import VectorLemmas -- only _!!_ and lookupassoc are needed
 open import Proofs
 
 -- Proofs is a wrapper over all the basic utilities
