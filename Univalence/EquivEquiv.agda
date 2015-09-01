@@ -75,6 +75,12 @@ linv≋ x = eq (λ z → isequiv.α (proj₂ x) z) (λ z → isequiv.α (proj₂
 rinv≋ : ∀ {ℓ} {A B : Set ℓ} (x : A ≃ B) → ((sym≃ x) ● x) ≋ id≃
 rinv≋ x = eq (λ z → g-left-inv x z) (λ z → g-left-inv x z)
 
+lid≋ : ∀ {ℓ} {A B : Set ℓ} {f : A ≃ B} → (id≃ ● f) ≋ f
+lid≋ = eq (λ _ → P.refl) (λ _ → P.refl)
+
+rid≋ : ∀ {ℓ} {A B : Set ℓ} {f : A ≃ B} → (f ● id≃) ≋ f
+rid≋ = eq (λ _ → P.refl) (λ _ → P.refl)
+
 -- underlying it all, it uses ∘ and ≡, thus associativity is immediate
 
 ●-assoc : {A B C D : Set} (f : A ≃ B) (g : B ≃ C) (h : C ≃ D) →
