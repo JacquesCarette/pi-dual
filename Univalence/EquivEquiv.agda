@@ -68,12 +68,12 @@ path⊎-resp-≋ {f = f , fe} {h , he} {g , ge} {i , ie}
     flip (inj₁ x) = P.cong inj₁ (g≡ x)
     flip (inj₂ y) = P.cong inj₂ (i≡ y)
 
-linv≋ : ∀ {ℓ} {A B : Set ℓ} (x : A ≃ B) →
+rinv≋ : ∀ {ℓ} {A B : Set ℓ} (x : A ≃ B) →
   (x ● (sym≃ x)) ≋ id≃ {A = B}
-linv≋ x = eq (λ z → isequiv.α (proj₂ x) z) (λ z → isequiv.α (proj₂ x) z)
+rinv≋ x = eq (λ z → isequiv.α (proj₂ x) z) (λ z → isequiv.α (proj₂ x) z)
 
-rinv≋ : ∀ {ℓ} {A B : Set ℓ} (x : A ≃ B) → ((sym≃ x) ● x) ≋ id≃
-rinv≋ x = eq (λ z → g-left-inv x z) (λ z → g-left-inv x z)
+linv≋ : ∀ {ℓ} {A B : Set ℓ} (x : A ≃ B) → ((sym≃ x) ● x) ≋ id≃
+linv≋ x = eq (λ z → g-left-inv x z) (λ z → g-left-inv x z)
 
 lid≋ : ∀ {ℓ} {A B : Set ℓ} {f : A ≃ B} → (id≃ ● f) ≋ f
 lid≋ = eq (λ _ → P.refl) (λ _ → P.refl)

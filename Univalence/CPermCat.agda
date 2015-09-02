@@ -51,7 +51,7 @@ CPermCat = record
 CPermGroupoid : Groupoid CPermCat
 CPermGroupoid = record
   { _⁻¹ = symp
-  ; iso = λ {_} {_} {f} → record { isoˡ = rinv f ; isoʳ = linv f }
+  ; iso = λ {_} {_} {f} → record { isoˡ = linv f ; isoʳ = rinv f }
   }
 
 -- additive bifunctor and monoidal structure

@@ -65,22 +65,22 @@ transp-resp-≡ refl refl = refl
 
 -- Inverses
 
-linv : ∀ {m₁ m₂} (p : CPerm m₂ m₁) → transp p (symp p) ≡ idp
-linv p = let e = p⇒e p in ≋⇒≡ (begin (
+rinv : ∀ {m₁ m₂} (p : CPerm m₂ m₁) → transp p (symp p) ≡ idp
+rinv p = let e = p⇒e p in ≋⇒≡ (begin (
   e ● (p⇒e (e⇒p (sym≃ e)))
     ≋⟨ right-α-over-● e (sym≃ e) ⟩
   e ● (sym≃ e)
-    ≋⟨ linv≋ e ⟩
+    ≋⟨ rinv≋ e ⟩
   id≃ ∎))
   where open ≋-Reasoning
   
 
-rinv : ∀ {m₁ m₂} (p : CPerm m₂ m₁) → transp (symp p) p ≡ idp
-rinv p = let e = p⇒e p in ≋⇒≡ (begin (
+linv : ∀ {m₁ m₂} (p : CPerm m₂ m₁) → transp (symp p) p ≡ idp
+linv p = let e = p⇒e p in ≋⇒≡ (begin (
   (p⇒e (e⇒p (sym≃ e))) ● e
     ≋⟨ left-α-over-● (sym≃ e) e ⟩
   (sym≃ e) ● e
-    ≋⟨ rinv≋ e ⟩
+    ≋⟨ linv≋ e ⟩
   id≃ ∎))
   where open ≋-Reasoning
 
@@ -103,7 +103,7 @@ rinv p = let e = p⇒e p in ≋⇒≡ (begin (
   Plus.fwd-iso {m} {n} ● (id≃ {A = Fin m ⊎ Fin n} ● (sym≃ Plus.fwd-iso))
     ≋⟨ ●-resp-≋ {f = Plus.fwd-iso} {Plus.fwd-iso} {id≃ ● sym≃ Plus.fwd-iso} {sym≃ Plus.fwd-iso} f≋ (eq (λ _ → refl) (λ _ → refl)) ⟩
   Plus.fwd-iso {m} ● (sym≃ Plus.fwd-iso)  
-    ≋⟨ linv≋ (Plus.fwd-iso {m}) ⟩
+    ≋⟨ rinv≋ (Plus.fwd-iso {m}) ⟩
   id≃ {A = Fin (m + n)} ∎))
   where open ≋-Reasoning
         open Plus

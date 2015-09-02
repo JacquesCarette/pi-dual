@@ -84,7 +84,7 @@ TypeEquivCat = record
   ; id = id≃
   ; _∘_ = _●_
   ; assoc = λ {A} {B} {C} {D} {f} {g} {h} → ●-assoc f g h
-  ; identityˡ = eq (λ _ → P.refl) (λ _ → P.refl)
+  ; identityˡ = {!!}
   ; identityʳ = eq (λ _ → P.refl) (λ _ → P.refl)
   ; equiv = record { refl = id≋ ; sym = sym≋ ; trans = trans≋ }
   ; ∘-resp-≡ = ●-resp-≋
