@@ -63,6 +63,9 @@ open import TypeEquiv
 -- Proves that types and type equivalences form a commutative semiring
 -- in the Algebra sense
 
+open import TypeEquivEquiv
+-- All the equivalences between (type) equivalences
+
 open import Data.Sum.Properties
 -- Proves simple properties about type equivalences such as:
 -- inj₂ (unite₊ x) ≡ x
