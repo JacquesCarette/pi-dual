@@ -31,7 +31,8 @@ open import Equiv
   using (_∼_; sym∼; _≃_; isequiv; id≃; sym≃; _●_; _⋆_; p∘!p≡id; g-left-inv;
          path⊎; path×)
 open import EquivEquiv
-  using (_≋_; eq; id≋; sym≋; trans≋; ●-assoc; ●-resp-≋; module _≋_)
+  using (_≋_; eq; id≋; sym≋; trans≋; ●-assoc; ●-resp-≋;
+    linv≋; rinv≋; lid≋; rid≋; module _≋_)
 
 open import TypeEquiv
   using (unite₊equiv; uniti₊equiv; unite₊′equiv; uniti₊′equiv;
@@ -84,8 +85,8 @@ TypeEquivCat = record
   ; id = id≃
   ; _∘_ = _●_
   ; assoc = λ {A} {B} {C} {D} {f} {g} {h} → ●-assoc f g h
-  ; identityˡ = {!!}
-  ; identityʳ = eq (λ _ → P.refl) (λ _ → P.refl)
+  ; identityˡ = lid≋
+  ; identityʳ = rid≋
   ; equiv = record { refl = id≋ ; sym = sym≋ ; trans = trans≋ }
   ; ∘-resp-≡ = ●-resp-≋
   }
