@@ -33,7 +33,7 @@ assocp {p₁ = p₁} {p₂} {p₃} =
   e₁ ● (p⇒e (e⇒p (e₂ ● e₃)))
     ≋⟨ right-α-over-● e₁ (e₂ ● e₃) ⟩ 
   e₁ ● (e₂ ● e₃)
-    ≋⟨ sym≋ (●-assoc e₃ e₂ e₁) ⟩
+    ≋⟨ sym≋ (●-assoc {f = e₃} {e₂} {e₁}) ⟩
   (e₁ ● e₂) ● e₃
     ≋⟨ sym≋ (left-α-over-● (e₁ ● e₂) e₃) ⟩
   p⇒e (e⇒p (e₁ ● e₂)) ● e₃ ∎))
