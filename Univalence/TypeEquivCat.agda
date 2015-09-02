@@ -96,11 +96,9 @@ TypeEquivCat = record
 TypeEquivGroupoid : Groupoid TypeEquivCat
 TypeEquivGroupoid = record 
   { _⁻¹ = sym≃ 
-  ; iso = λ { {_} {_} {A≃B} →
-    let α = isequiv.α (proj₂ A≃B) in
-    let β = g-left-inv A≃B in record
-    { isoˡ = eq β β
-    ; isoʳ = eq α α
+  ; iso = λ { {f = A≃B} → record
+    { isoˡ = linv≋ A≃B
+    ; isoʳ = rinv≋ A≃B
     } }
   }
 
