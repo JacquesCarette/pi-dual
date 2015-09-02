@@ -29,10 +29,10 @@ map⊎-∘ (inj₁ x) = P.refl
 map⊎-∘ (inj₂ y) = P.refl
 
 map⊎-resp-≡ : {A B C D : Set} → {f₀ g₀ : A → B} {f₁ g₁ : C → D} →
-  {e₁ : f₀ ∼ g₀} → {e₂ : f₁ ∼ g₁} →  
+  (e₁ : f₀ ∼ g₀) → (e₂ : f₁ ∼ g₁) →  
   (x : A ⊎ C) → map⊎ f₀ f₁ x P.≡ map⊎ g₀ g₁ x
-map⊎-resp-≡ {e₁ = f₀~g₀} (inj₁ x) = P.cong inj₁ (f₀~g₀ x)
-map⊎-resp-≡ {e₂ = f₁~g₁} (inj₂ y) = P.cong inj₂ (f₁~g₁ y)
+map⊎-resp-≡ f₀~g₀ _ (inj₁ x) = P.cong inj₁ (f₀~g₀ x)
+map⊎-resp-≡ _ f₁~g₁ (inj₂ y) = P.cong inj₂ (f₁~g₁ y)
 
 unite₊∘[id,f]≡f∘unite₊ : {A B : Set} {f : A → B} {g : ⊥ → ⊥} →
   (x : ⊥ ⊎ A) → unite₊ (map⊎ g f x) P.≡ f (unite₊ x)

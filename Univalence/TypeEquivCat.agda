@@ -11,7 +11,7 @@ open import Level using (zero; suc)
 open import Data.Empty using (⊥)
 open import Data.Unit using (⊤)
 open import Data.Sum using (_⊎_)
-open import Data.Product using (_,_; _×_; proj₁; proj₂)
+open import Data.Product using (_,_; _×_; proj₁; proj₂; uncurry)
 
 import Relation.Binary.PropositionalEquality as P
   using (_≡_; refl; sym; trans; cong; cong₂)
@@ -110,14 +110,11 @@ TypeEquivGroupoid = record
 
 ⊎-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
 ⊎-bifunctor = record
-  { F₀ = λ {( x , y) → x ⊎ y}
-  ; F₁ = λ {(x , y) → path⊎ x y}
+  { F₀ = uncurry _⊎_
+  ; F₁ = uncurry path⊎
   ; identity = [id,id]≋id
   ; homomorphism = [h●f,i●g]≋[h,i]●[f,g]
-  ; F-resp-≡ = λ { (e₁ , e₂) →
-                   eq
-                    (map⊎-resp-≡ {e₁ = f≡ e₁} {f≡ e₂})
-                    (map⊎-resp-≡ {e₁ =  g≡ e₁} {g≡ e₂}) }
+  ; F-resp-≡ = uncurry path⊎-respects-≋
   }
   where open _≋_
   
