@@ -44,8 +44,11 @@ open import TypeEquiv
          distlequiv; factorlequiv; factorl∘distl; distl∘factorl;
          distzequiv; factorzequiv; factorz∘distz; distz∘factorz;
          distzrequiv; factorzrequiv; factorzr∘distzr; distzr∘factorzr)
+
+open import TypeEquivEquiv -- need them all!
+
 open import Data.Sum.Properties
-  using (map⊎idid≡id; map⊎-∘; map⊎-resp-≡; 
+  using (map⊎-∘; map⊎-resp-≡; 
          unite₊∘[id,f]≡f∘unite₊; inj₁∘unite₊′~id; inj₂∘unite₊~id;
          unite₊′∘[id,f]≡f∘unite₊′; f∘unite₊′≡unite₊′∘[f,id];
          assocr₊∘[[,],]; [[,],]∘assocl₊;
@@ -109,8 +112,8 @@ TypeEquivGroupoid = record
 ⊎-bifunctor = record
   { F₀ = λ {( x , y) → x ⊎ y}
   ; F₁ = λ {(x , y) → path⊎ x y}
-  ; identity = eq map⊎idid≡id map⊎idid≡id
-  ; homomorphism = eq map⊎-∘ map⊎-∘
+  ; identity = [id,id]≋id
+  ; homomorphism = [h●f,i●g]≋[h,i]●[f,g]
   ; F-resp-≡ = λ { (e₁ , e₂) →
                    eq
                     (map⊎-resp-≡ {e₁ = f≡ e₁} {f≡ e₂})
