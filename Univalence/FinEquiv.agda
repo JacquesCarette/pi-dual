@@ -54,6 +54,7 @@ open import Proofs using (
   inj₁-≡; inj₂-≡; inject+-injective; raise-injective; addMul-lemma
   )
 
+
 ------------------------------------------------------------------------------
 -- This is the relation we are interested in showing is a commutative
 -- semiring.
@@ -99,7 +100,8 @@ abstract
 -- Additive monoid
 
 module Plus where
-
+  infix 9 _+F_
+  
   -- Main goal is to show (Fin m ⊎ Fin n) ≃ Fin (m + n) It is then
   -- fairly easy to show that ⊎ satisfies the commutative monoid
   -- axioms
@@ -206,7 +208,8 @@ module Plus where
 -- Multiplicative monoid
 
 module Times where
-
+  infixl 7 _*F_
+  
   -- main goal is to show (Fin m × Fin n) ≃ Fin (m * n) It is then
   -- fairly easy to show that × satisfies the commutative monoid
   -- axioms
@@ -306,7 +309,7 @@ module Times where
   -- unite*
 
   unite* : {m : ℕ} → Fin (1 * m) ≃ Fin m
-  unite* {m} = unite⋆equiv ● (path× Fin1≃⊤ id≃ ● sym≃ fwd-iso)
+  unite* {m} = unite⋆equiv ● path× Fin1≃⊤ id≃ ● sym≃ fwd-iso
 
   -- uniti*
 
