@@ -48,8 +48,7 @@ open import TypeEquiv
 open import TypeEquivEquiv -- need them all!
 
 open import Data.Sum.Properties
-  using (map⊎-∘; map⊎-resp-≡; 
-         unite₊∘[id,f]≡f∘unite₊; inj₁∘unite₊′~id; inj₂∘unite₊~id;
+  using (unite₊∘[id,f]≡f∘unite₊; inj₁∘unite₊′~id; inj₂∘unite₊~id;
          unite₊′∘[id,f]≡f∘unite₊′; f∘unite₊′≡unite₊′∘[f,id];
          assocr₊∘[[,],]; [[,],]∘assocl₊;
          triangle⊎-right; triangle⊎-left;
@@ -129,8 +128,8 @@ module ⊎h = MonoidalHelperFunctors TypeEquivCat ⊎-bifunctor ⊥
     { η = λ X → uniti₊equiv
     ; commute = λ f → eq (λ x → P.refl) (sym∼ unite₊∘[id,f]≡f∘unite₊) } 
   ; iso = λ X → record
-    { isoˡ = eq inj₂∘unite₊~id inj₂∘unite₊~id
-    ; isoʳ = eq (λ _ → P.refl) (λ _ → P.refl)
+    { isoˡ = linv≋ unite₊equiv
+    ; isoʳ = rinv≋ unite₊equiv
     }
   }
 
