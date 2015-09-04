@@ -57,10 +57,10 @@ unite₊∘uniti₊ : {A : Set} → unite₊ ○ uniti₊ ∼ id {A = A}
 unite₊∘uniti₊ _ = refl
 
 unite₊equiv : {A : Set} → (⊥ ⊎ A) ≃ A
-unite₊equiv = (unite₊ , iseq uniti₊ refl∼ uniti₊ uniti₊∘unite₊)
+unite₊equiv = (unite₊ , iseq uniti₊ unite₊∘uniti₊ uniti₊ uniti₊∘unite₊)
 
 uniti₊equiv : {A : Set} → A ≃ (⊥ ⊎ A)
-uniti₊equiv = uniti₊ , iseq unite₊ uniti₊∘unite₊ unite₊ unite₊∘uniti₊
+uniti₊equiv = sym≃ unite₊equiv
 
 -- unite₊′ and uniti₊′
 
