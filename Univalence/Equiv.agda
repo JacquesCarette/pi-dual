@@ -12,7 +12,7 @@ open import Relation.Binary.PropositionalEquality
 
 infix 4 _∼_
 infix 4 _≃_
-infixl 4 _●_
+infixr 9 _●_
 
 ------------------------------------------------------------------------------
 -- Extensional equivalence of functions
