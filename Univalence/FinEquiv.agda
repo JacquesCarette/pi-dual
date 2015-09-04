@@ -319,7 +319,7 @@ module Times where
   -- unite*r
 
   unite*r : {m : ℕ} → Fin (m * 1) ≃ Fin m
-  unite*r {m} = unite⋆′equiv ● (path× id≃ Fin1≃⊤ ● sym≃ fwd-iso)
+  unite*r {m} = unite⋆′equiv ● path× id≃ Fin1≃⊤ ● sym≃ fwd-iso
 
   -- uniti*r
   uniti*r : {m : ℕ} → Fin m ≃ Fin (m * 1)
@@ -328,22 +328,22 @@ module Times where
   -- swap*
 
   swap* : {m n : ℕ} → Fin (m * n) ≃ Fin (n * m)
-  swap* {m} {n} = fwd-iso {n} ● (swap⋆equiv ● sym≃ fwd-iso)
+  swap* {m} {n} = fwd-iso {n} ● swap⋆equiv ● sym≃ fwd-iso
   
   -- associativity
 
   assocl* : {m n o : ℕ} → Fin (m * (n * o)) ≃ Fin ((m * n) * o)
-  assocl* {m} {n} {o} = fwd-iso ● (path× fwd-iso id≃ ● (assocl⋆equiv ●
-    (path× id≃ (sym≃ fwd-iso) ● sym≃ (fwd-iso {m}))))
+  assocl* {m} {n} {o} = fwd-iso ● path× fwd-iso id≃ ● assocl⋆equiv ●
+    path× id≃ (sym≃ fwd-iso) ● sym≃ (fwd-iso {m})
 
   assocr* : {m n o : ℕ} → Fin ((m * n) * o) ≃ Fin (m * (n * o))
   assocr* {m} {n} {o} = sym≃ (assocl* {m})
 
   -- congruence
 
-  _*F_ : {m n o p : ℕ} → (Fin m ≃ Fin n) → (Fin o ≃ Fin p) →
+  _*F_ : {m n o p : ℕ} → Fin m ≃ Fin n → Fin o ≃ Fin p →
               Fin (m * o) ≃ Fin (n * p)
-  Fm≃Fn *F Fo≃Fp = fwd-iso ● (path× Fm≃Fn Fo≃Fp ● sym≃ fwd-iso)
+  Fm≃Fn *F Fo≃Fp = fwd-iso ● path× Fm≃Fn Fo≃Fp ● sym≃ fwd-iso
 
 ------------------------------------------------------------------------------
 -- Distributivity of multiplication over addition
@@ -355,13 +355,13 @@ module PlusTimes where
   -- note that the sequence below is "logically right", *but* could be
   -- replaced by id≃ !
   distz : {m : ℕ} → Fin (0 * m) ≃ Fin 0
-  distz {m} = sym≃ F0≃⊥ ● (distzequiv ● (path× F0≃⊥ id≃ ● sym≃ (Times.fwd-iso {0} {m})))
+  distz {m} = sym≃ F0≃⊥ ● distzequiv ● path× F0≃⊥ id≃ ● sym≃ (Times.fwd-iso {0} {m})
 
   factorz : {m : ℕ} → Fin 0 ≃ Fin (0 * m)
   factorz {m} = sym≃ (distz {m})
 
   distzr : {m : ℕ} → Fin (m * 0) ≃ Fin 0
-  distzr {m} = sym≃ F0≃⊥ ● (distzrequiv ● (path× id≃ F0≃⊥ ● sym≃ (Times.fwd-iso {m} {0})))
+  distzr {m} = sym≃ F0≃⊥ ● distzrequiv ● path× id≃ F0≃⊥ ● sym≃ (Times.fwd-iso {m} {0})
 
   factorzr : {n : ℕ} → Fin 0 ≃ Fin (n * 0)
   factorzr {n} = sym≃ (distzr {n})
@@ -369,7 +369,7 @@ module PlusTimes where
   dist : {m n o : ℕ} → Fin ((m + n) * o) ≃ Fin ((m * o) + (n * o))
   dist {m} {n} {o} = Plus.fwd-iso {m * o} {n * o}
     ● path⊎ (Times.fwd-iso {m} {o}) Times.fwd-iso
-    ● distequiv ● (path× (sym≃ Plus.fwd-iso) id≃ ● sym≃ (Times.fwd-iso {m + n} {o}))
+    ● distequiv ● path× (sym≃ Plus.fwd-iso) id≃ ● sym≃ (Times.fwd-iso {m + n} {o})
 
   factor : {m n o : ℕ} → Fin ((m * o) + (n * o)) ≃ Fin ((m + n) * o) 
   factor {m} {n} {o} = sym≃ (dist {m} {n} {o}) 
@@ -377,7 +377,7 @@ module PlusTimes where
   distl : {m n o : ℕ} → Fin (m * (n + o)) ≃ Fin ((m * n) + (m * o))
   distl {m} {n} {o} = Plus.fwd-iso {m * n} {m * o}
     ● path⊎ (Times.fwd-iso {m} {n}) Times.fwd-iso
-    ● distlequiv ● (path× id≃ (sym≃ Plus.fwd-iso) ● sym≃ (Times.fwd-iso {m} {n + o}))
+    ● distlequiv ● path× id≃ (sym≃ Plus.fwd-iso) ● sym≃ (Times.fwd-iso {m} {n + o})
 
 
   factorl : {m n o : ℕ} → Fin ((m * n) + (m * o)) ≃ Fin (m * (n + o)) 
