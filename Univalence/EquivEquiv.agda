@@ -22,6 +22,8 @@ open import Equiv
 -- We need g to "pin down" the inverse, else we get lots of unsolved
 -- metas.
 
+infix 4 _≋_
+
 record _≋_ {ℓ ℓ' : Level} {A : Set ℓ} {B : Set ℓ'} (eq₁ eq₂ : A ≃ B) :
   Set (ℓ ⊔ ℓ') where
   constructor eq
@@ -73,7 +75,7 @@ rinv≋ : ∀ {ℓ} {A B : Set ℓ} (x : A ≃ B) →
 rinv≋ x = eq (λ z → isequiv.α (proj₂ x) z) (λ z → isequiv.α (proj₂ x) z)
 
 linv≋ : ∀ {ℓ} {A B : Set ℓ} (x : A ≃ B) → ((sym≃ x) ● x) ≋ id≃
-linv≋ x = eq (λ z → g-left-inv x z) (λ z → g-left-inv x z)
+linv≋ x = eq (g-left-inv x) (g-left-inv x)
 
 lid≋ : ∀ {ℓ} {A B : Set ℓ} {f : A ≃ B} → (id≃ ● f) ≋ f
 lid≋ = eq (λ _ → P.refl) (λ _ → P.refl)
