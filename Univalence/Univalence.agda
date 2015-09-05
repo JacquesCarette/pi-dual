@@ -68,7 +68,7 @@ open import TypeEquivEquiv
 
 open import Data.Sum.Properties
 -- Proves simple properties about type equivalences such as:
--- inj₂ (unite₊ x) ≡ x
+-- uniti₊ (unite₊ x) ≡ x
 
 open import Data.SumProd.Properties
 -- Proves simple properties about type equivalences such as:
