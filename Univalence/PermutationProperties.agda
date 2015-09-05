@@ -11,14 +11,16 @@ open import Data.Sum using (_⊎_)
 open import Data.Product using (_,_; proj₁; proj₂)
 --
 
-open import FinEquiv using (module Plus)
-open Plus using (⊎≃+; +≃⊎)
+import FinEquiv using (module Plus) -- don't open, just import
+open FinEquiv.Plus using (_+F_; ⊎≃+; +≃⊎)
 open import ConcretePermutation
 open import Permutation
 open import SEquivSCPermEquiv
-open import Equiv
+open import Equiv using (_●_; id≃; sym≃; _⊎≃_)
 open import EquivEquiv
-open import TypeEquivEquiv
+  using (id≋; sym≋; ●-assoc; ●-resp-≋; lid≋; rid≋; linv≋; rinv≋;
+    ⊎≃-resp-≋; module ≋-Reasoning)
+open import TypeEquivEquiv using ([id,id]≋id)
 
 ------------------------------------------------------------------------------
 -- Composition
@@ -105,7 +107,6 @@ linv p = let e = p⇒e p in ≋⇒≡ (begin (
     ≋⟨ rinv≋ (⊎≃+ {m}) ⟩
   id≃ {A = Fin (m + n)} ∎))
   where open ≋-Reasoning
-        open Plus
  
 {-
 0p⊎x≡x : ∀ {m n} {p : CPerm m n} → idp {0} ⊎p p ≡ p
