@@ -12,8 +12,10 @@ open import Function using (_∘_)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; cong; module ≡-Reasoning)
 
-open import Equiv using (_≃_; trans≃; path⊎; iseq; module isequiv) 
+open import Equiv using (_≃_; trans≃; _⊎≃_; iseq; module isequiv) 
 open import FinEquiv using (Fin0-⊥; module Plus) 
+
+open Plus using (+≃⊎; ⊎≃+)
 
 ------------------------------------------------------------------------------
 -- An equivalence between a set 'A' and a finite set 'Fin n' is an
@@ -29,7 +31,7 @@ Enum A n = A ≃ Fin n
 
 _⊕e_ : {A : Set} {B : Set} {n m : ℕ} →
        Enum A n → Enum B m → Enum (A ⊎ B) (n + m)
-eA ⊕e eB = trans≃ (path⊎ eA eB) Plus.fwd-iso
+eA ⊕e eB = trans≃ (eA ⊎≃ eB) ⊎≃+
 
 -- shorthand to select the element indexed by i in the enumeration
 
@@ -46,17 +48,17 @@ select (_ , iseq g _ _ _) = g
 eval-left : {A B : Set} {m n : ℕ} {eA : Enum A m} {eB : Enum B n} (i : Fin m) →
   select (eA ⊕e eB) (inject+ n i) ≡ inj₁ (select eA i)
 eval-left {m = m} {n} {eA} {eB} i =
-  let (fwd , iseq bwd _ _ bwd∘fwd~id) = Plus.fwd-iso {m} {n} in 
+  let (fwd , iseq bwd _ _ bwd∘fwd~id) = ⊎≃+ {m} {n} in 
   begin (
     select (eA ⊕e eB) (inject+ n i)
       ≡⟨ refl ⟩ -- β reduce ⊕e, reverse-β Plus.fwd
-    select (trans≃ (path⊎ eA eB) Plus.fwd-iso) (fwd (inj₁ i))
+    select (trans≃ (eA ⊎≃ eB) ⊎≃+) (fwd (inj₁ i))
       ≡⟨ refl ⟩ -- expand qinv.g and trans≃
-    select (path⊎ eA eB) (select (Plus.fwd-iso) (fwd (inj₁ i)))
+    select (eA ⊎≃ eB) (select ⊎≃+ (fwd (inj₁ i)))
       ≡⟨ refl ⟩ -- expand rhs
-    select (path⊎ eA eB) ((bwd ∘ fwd) (inj₁ i))
-      ≡⟨ cong (select (path⊎ eA eB)) (bwd∘fwd~id (inj₁ i)) ⟩
-    select (path⊎ eA eB) (inj₁ i)
+    select (eA ⊎≃ eB) ((bwd ∘ fwd) (inj₁ i))
+      ≡⟨ cong (select (eA ⊎≃ eB)) (bwd∘fwd~id (inj₁ i)) ⟩
+    select (eA ⊎≃ eB) (inj₁ i)
       ≡⟨ refl ⟩ -- by definition of path⊎
     inj₁ (select eA i) ∎)
   where open ≡-Reasoning
@@ -64,7 +66,7 @@ eval-left {m = m} {n} {eA} {eB} i =
 eval-right : {A B : Set} {m n : ℕ} {eA : Enum A m} {eB : Enum B n} →
   (i : Fin n) → select (eA ⊕e eB) (raise m i) ≡ inj₂ (select eB i)
 eval-right {eA = eA} {eB} i = 
-  cong (select (path⊎ eA eB)) (isequiv.β (proj₂ Plus.fwd-iso) (inj₂ i))
+  cong (select (eA ⊎≃ eB)) (isequiv.β (proj₂ ⊎≃+) (inj₂ i))
 
 ------------------------------------------------------------------------------
 -- We can also do the same for multiplication but it's not needed
