@@ -12,7 +12,10 @@ open import Relation.Binary.PropositionalEquality
 
 infix 4 _∼_
 infix 4 _≃_
-infixr 9 _●_
+infixr 5 _●_
+
+infix 8 _⊎≃_
+infixr 7 _×≃_
 
 ------------------------------------------------------------------------------
 -- Extensional equivalence of functions
@@ -123,8 +126,8 @@ _⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : 
 _⊎∼_ α β (inj₁ x) = cong inj₁ (α x) 
 _⊎∼_ α β (inj₂ y) = cong inj₂ (β y)
 
-path⊎ : {A B C D : Set} → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
-path⊎ (fp , eqp) (fq , eqq) = 
+_⊎≃_ : {A B C D : Set} → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
+(fp , eqp) ⊎≃ (fq , eqq) = 
   Data.Sum.map fp fq , 
   iseq (P.g ⊎→ Q.g) (P.α ⊎∼ Q.α) (P.h ⊎→ Q.h) (P.β ⊎∼ Q.β)
   where module P = isequiv eqp
@@ -137,8 +140,8 @@ _×∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D
   (f ×→ g) ∘ (finv ×→ ginv) ∼ id {A = C × D}
 _×∼_ α β (x , y) = cong₂ _,_ (α x) (β y)
  
-path× : {A B C D : Set} → A ≃ C → B ≃ D → (A × B) ≃ (C × D)
-path× {A} {B} {C} {D} (fp , eqp) (fq , eqq) = 
+_×≃_ : {A B C D : Set} → A ≃ C → B ≃ D → (A × B) ≃ (C × D)
+(fp , eqp) ×≃ (fq , eqq) = 
   Data.Product.map fp fq , 
   iseq 
     (P.g ×→ Q.g) 

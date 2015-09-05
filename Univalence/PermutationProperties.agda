@@ -96,10 +96,10 @@ linv p = let e = p⇒e p in ≋⇒≡ (begin (
   ≋⇒≡ (begin (
   em +F en
     ≋⟨ id≋ ⟩
-  Plus.fwd-iso ● (path⊎ em en ● sym≃ Plus.fwd-iso)
-    ≋⟨ ●-resp-≋ f≋ (●-resp-≋ (path⊎-resp-≋ α₁ α₁) g≋) ⟩
-  Plus.fwd-iso ● (path⊎ (id≃ {A = Fin m}) id≃ ● (sym≃ Plus.fwd-iso))
-    ≋⟨ ●-resp-≋ f≋ (●-resp-≋ {f = path⊎ id≃ id≃} {id≃} (eq map⊎idid≡id map⊎idid≡id) g≋) ⟩
+  Plus.fwd-iso ● em ⊎≃ en ● sym≃ Plus.fwd-iso
+    ≋⟨ ●-resp-≋ f≋ (●-resp-≋ (⊎≃-resp-≋ α₁ α₁) g≋) ⟩
+  Plus.fwd-iso ● ((id≃ {A = Fin m}) ⊎≃ id≃ ● (sym≃ Plus.fwd-iso))
+    ≋⟨ ●-resp-≋ f≋ (●-resp-≋ {f = id≃ ⊎≃ id≃} {id≃} (eq map⊎idid≡id map⊎idid≡id) g≋) ⟩
   Plus.fwd-iso {m} {n} ● (id≃ {A = Fin m ⊎ Fin n} ● (sym≃ Plus.fwd-iso))
     ≋⟨ ●-resp-≋ {f = Plus.fwd-iso} {Plus.fwd-iso} {id≃ ● sym≃ Plus.fwd-iso} {sym≃ Plus.fwd-iso} f≋ (eq (λ _ → refl) (λ _ → refl)) ⟩
   Plus.fwd-iso {m} ● (sym≃ Plus.fwd-iso)  

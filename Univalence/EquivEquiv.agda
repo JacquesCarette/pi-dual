@@ -14,7 +14,7 @@ import Relation.Binary.EqReasoning as EqR
 
 open import Equiv
  using (module isequiv; iseq; _≃_; id≃; sym≃; _●_; _∼_; g-left-inv;
-   path⊎)
+   _⊎≃_)
 
 ------------------------------------------------------------------------------
 -- Extensional equivalence of equivalences
@@ -57,16 +57,16 @@ trans≋ (eq f≡ g≡) (eq h≡ i≡) =
   eq (λ x → P.trans (P.cong f (h≡ x)) (f≡ (i x)))
      (λ x → P.trans (P.cong g⁻¹ (g≡ x)) (i≡ (h⁻¹ x)))
 
-path⊎-resp-≋ : {A B C D : Set} {f h : A ≃ B} {g i : C ≃ D} → f ≋ h → g ≋ i →
-  (path⊎ f g) ≋ (path⊎ h i)
-path⊎-resp-≋ {f = f , fe} {h , he} {g , ge} {i , ie}
+⊎≃-resp-≋ : {A B C D : Set} {f h : A ≃ B} {g i : C ≃ D} → f ≋ h → g ≋ i →
+  f ⊎≃ g ≋ h ⊎≃ i
+⊎≃-resp-≋ {f = f , fe} {h , he} {g , ge} {i , ie}
   (eq f≡ g≡) (eq h≡ i≡) = eq f⊎g~h⊎i flip
   where
-    f⊎g~h⊎i : proj₁ (path⊎ (f , fe) (g , ge)) ∼ proj₁ (path⊎ (h , he) (i , ie))
+    f⊎g~h⊎i : proj₁ ((f , fe) ⊎≃ (g , ge)) ∼ proj₁ ((h , he) ⊎≃ (i , ie))
     f⊎g~h⊎i (inj₁ x) = P.cong inj₁ (f≡ x)
     f⊎g~h⊎i (inj₂ y) = P.cong inj₂ (h≡ y)
-    flip : isequiv.g (proj₂ (path⊎ (f , fe) (g , ge))) ∼
-           isequiv.g (proj₂ (path⊎ (h , he) (i , ie)))
+    flip : isequiv.g (proj₂ ((f , fe) ⊎≃ (g , ge))) ∼
+           isequiv.g (proj₂ ((h , he) ⊎≃ (i , ie)))
     flip (inj₁ x) = P.cong inj₁ (g≡ x)
     flip (inj₂ y) = P.cong inj₂ (i≡ y)
 

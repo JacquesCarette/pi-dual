@@ -16,7 +16,7 @@ open import Function renaming (_∘_ to _○_)
 open import Relation.Binary.PropositionalEquality using (refl)
 
 open import Equiv
-  using (_∼_; refl∼; _≃_; id≃; sym≃; ≃IsEquiv; iseq; path⊎; path×)
+  using (_∼_; refl∼; _≃_; id≃; sym≃; ≃IsEquiv; iseq; _⊎≃_; _×≃_)
 
 ------------------------------------------------------------------------------
 -- Type Equivalences
@@ -281,14 +281,14 @@ typesPlusIsSG : IsSemigroup {Level.suc Level.zero} {Level.zero} {Set} _≃_ _⊎
 typesPlusIsSG = record {
   isEquivalence = ≃IsEquiv ;
   assoc = λ t₁ t₂ t₃ → assocr₊equiv {t₁} {t₂} {t₃} ;
-  ∙-cong = path⊎
+  ∙-cong = _⊎≃_
   }
 
 typesTimesIsSG : IsSemigroup {Level.suc Level.zero} {Level.zero} {Set} _≃_ _×_
 typesTimesIsSG = record {
   isEquivalence = ≃IsEquiv ;
   assoc = λ t₁ t₂ t₃ → assocr⋆equiv {t₁} {t₂} {t₃} ;
-  ∙-cong = path×
+  ∙-cong = _×≃_
   }
 
 typesPlusIsCM : IsCommutativeMonoid _≃_ _⊎_ ⊥

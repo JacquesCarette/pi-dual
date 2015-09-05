@@ -29,7 +29,7 @@ open import Categories.RigCategory
 
 open import Equiv
   using (_∼_; sym∼; _≃_; isequiv; id≃; sym≃; _●_; _⋆_; p∘!p≡id; g-left-inv;
-         path⊎; path×)
+         _⊎≃_; _×≃_)
 open import EquivEquiv
   using (_≋_; eq; id≋; sym≋; trans≋; ●-assoc; ●-resp-≋;
     linv≋; rinv≋; lid≋; rid≋; module _≋_)
@@ -110,10 +110,10 @@ TypeEquivGroupoid = record
 ⊎-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
 ⊎-bifunctor = record
   { F₀ = uncurry _⊎_
-  ; F₁ = uncurry path⊎
+  ; F₁ = uncurry _⊎≃_
   ; identity = [id,id]≋id
   ; homomorphism = [h●f,i●g]≋[h,i]●[f,g]
-  ; F-resp-≡ = uncurry path⊎-respects-≋
+  ; F-resp-≡ = uncurry ⊎≃-respects-≋
   }
   where open _≋_
   
@@ -191,8 +191,8 @@ path×-resp-≡ {e₁ = f≡} {h≡} (a , c) = P.cong₂ _,_ (f≡ a) (h≡ c)
 
 ×-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
 ×-bifunctor = record
-  { F₀ = λ {( x , y) → x × y}
-  ; F₁ = λ {(x , y) → path× x y }
+  { F₀ = uncurry _×_
+  ; F₁ = uncurry _×≃_
   ; identity = eq (λ x → P.refl) (λ x → P.refl) -- η for products gives this
   ; homomorphism = eq (λ x → P.refl) (λ x → P.refl) -- again η for products!
   ; F-resp-≡ = λ { (e₁ , e₂) →
