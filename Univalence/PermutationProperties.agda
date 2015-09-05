@@ -11,15 +11,14 @@ open import Data.Sum using (_⊎_)
 open import Data.Product using (_,_; proj₁; proj₂)
 --
 
-open import Data.Sum.Properties
-  using (map⊎idid≡id)
-  
 open import FinEquiv using (module Plus)
+open Plus using (⊎≃+; +≃⊎)
 open import ConcretePermutation
 open import Permutation
 open import SEquivSCPermEquiv
 open import Equiv
 open import EquivEquiv
+open import TypeEquivEquiv
 
 ------------------------------------------------------------------------------
 -- Composition
@@ -44,7 +43,7 @@ lidp {p = p} = trans (≋⇒≡ (begin (
   (p⇒e (e⇒p id≃)) ● (p⇒e p)
     ≋⟨ left-α-over-● id≃ (p⇒e p) ⟩
   id≃ ● (p⇒e p)
-    ≋⟨ eq (λ _ → refl) (λ _ → refl) ⟩
+    ≋⟨ lid≋ ⟩
   (p⇒e p) ∎))) (βu refl)
   where open ≋-Reasoning
 
@@ -53,7 +52,7 @@ ridp {p = p} = trans (≋⇒≡ (begin (
   (p⇒e p) ● (p⇒e (e⇒p id≃))
     ≋⟨ right-α-over-● (p⇒e p) id≃ ⟩
   (p⇒e p) ● id≃
-    ≋⟨ eq (λ _ → refl) (λ _ → refl) ⟩
+    ≋⟨ rid≋ ⟩
   (p⇒e p) ∎))) (βu refl)
   where open ≋-Reasoning
   
@@ -91,19 +90,19 @@ linv p = let e = p⇒e p in ≋⇒≡ (begin (
 1p⊎1p≡1p {m} {n} =
   let em = p⇒e (e⇒p (id≃ {A = Fin m})) in
   let en = p⇒e (e⇒p (id≃ {A = Fin n})) in
-  let f≋ = id≋ {x = Plus.fwd-iso {m} {n}} in
-  let g≋ = id≋ {x = sym≃ (Plus.fwd-iso {m} {n})} in
+  let f≋ = id≋ {x = ⊎≃+ {m} {n}} in
+  let g≋ = id≋ {x = +≃⊎ {m} {n}} in
   ≋⇒≡ (begin (
   em +F en
     ≋⟨ id≋ ⟩
-  Plus.fwd-iso ● em ⊎≃ en ● sym≃ Plus.fwd-iso
+  ⊎≃+ ● em ⊎≃ en ● +≃⊎
     ≋⟨ ●-resp-≋ f≋ (●-resp-≋ (⊎≃-resp-≋ α₁ α₁) g≋) ⟩
-  Plus.fwd-iso ● ((id≃ {A = Fin m}) ⊎≃ id≃ ● (sym≃ Plus.fwd-iso))
-    ≋⟨ ●-resp-≋ f≋ (●-resp-≋ {f = id≃ ⊎≃ id≃} {id≃} (eq map⊎idid≡id map⊎idid≡id) g≋) ⟩
-  Plus.fwd-iso {m} {n} ● (id≃ {A = Fin m ⊎ Fin n} ● (sym≃ Plus.fwd-iso))
-    ≋⟨ ●-resp-≋ {f = Plus.fwd-iso} {Plus.fwd-iso} {id≃ ● sym≃ Plus.fwd-iso} {sym≃ Plus.fwd-iso} f≋ (eq (λ _ → refl) (λ _ → refl)) ⟩
-  Plus.fwd-iso {m} ● (sym≃ Plus.fwd-iso)  
-    ≋⟨ rinv≋ (Plus.fwd-iso {m}) ⟩
+  ⊎≃+ ● (id≃ {A = Fin m}) ⊎≃ id≃ ● +≃⊎
+    ≋⟨ ●-resp-≋ f≋ (●-resp-≋ [id,id]≋id g≋) ⟩
+  ⊎≃+ ● id≃ {A = Fin m ⊎ Fin n} ● +≃⊎
+    ≋⟨ ●-resp-≋ f≋ (lid≋ {f = +≃⊎}) ⟩
+  ⊎≃+ {m} ● +≃⊎ 
+    ≋⟨ rinv≋ (⊎≃+ {m}) ⟩
   id≃ {A = Fin (m + n)} ∎))
   where open ≋-Reasoning
         open Plus
