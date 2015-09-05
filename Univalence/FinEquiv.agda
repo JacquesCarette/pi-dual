@@ -164,17 +164,24 @@ module Plus where
   fwd-iso : {m n : ℕ} → (Fin m ⊎ Fin n) ≃ Fin (m + n)
   fwd-iso {m} {n} = fwd , iseq bwd (fwd∘bwd~id {m}) bwd (bwd∘fwd~id {m})
 
+  -- aliases for the above which are more convenient
+  ⊎≃+ : {m n : ℕ} → (Fin m ⊎ Fin n) ≃ Fin (m + n)
+  ⊎≃+ = fwd-iso
+
+  +≃⊎ : {m n : ℕ} → Fin (m + n) ≃ (Fin m ⊎ Fin n)
+  +≃⊎ = sym≃ fwd-iso
+  
   -- additive monoid equivalences
 
   -- unite+
 
   unite+ : {m : ℕ} → Fin (0 + m) ≃ Fin m
-  unite+ = unite₊equiv ● ((F0≃⊥ ⊎≃ id≃) ● sym≃ fwd-iso)
+  unite+ = unite₊equiv ● F0≃⊥ ⊎≃ id≃ ● +≃⊎
 
   -- and on the other side as well
 
   unite+r : {m : ℕ} → Fin (m + 0) ≃ Fin m
-  unite+r = unite₊′equiv ● ((id≃ ⊎≃ F0≃⊥) ● sym≃ fwd-iso)
+  unite+r = unite₊′equiv ● id≃ ⊎≃ F0≃⊥ ● +≃⊎
 
 -- uniti+
 
@@ -187,22 +194,21 @@ module Plus where
   -- swap₊
 
   swap+ : {m n : ℕ} → Fin (m + n) ≃ Fin (n + m)
-  swap+ {m} {n} = fwd-iso {n} ● (swap₊equiv ● sym≃ fwd-iso)
+  swap+ {m} = ⊎≃+ ● swap₊equiv ● +≃⊎ {m}
 
   -- associativity
 
   assocl+ : {m n o : ℕ} → Fin (m + (n + o)) ≃ Fin ((m + n) + o)
-  assocl+ {m} = fwd-iso ● ((fwd-iso ⊎≃ id≃) ● (assocl₊equiv ●
-    ((id≃ ⊎≃ (sym≃ fwd-iso)) ● sym≃ (fwd-iso {m}))))
+  assocl+ {m} = ⊎≃+ ● ⊎≃+ ⊎≃ id≃ ● assocl₊equiv ● id≃ ⊎≃ +≃⊎ ● +≃⊎ {m}
 
   assocr+ : {m n o : ℕ} → Fin ((m + n) + o) ≃ Fin (m + (n + o))
-  assocr+ {m} {n} {o} = sym≃ (assocl+ {m})
+  assocr+ {m} = sym≃ (assocl+ {m})
 
   -- congruence
 
   _+F_ : {m n o p : ℕ} → (Fin m ≃ Fin n) → (Fin o ≃ Fin p) →
               Fin (m + o) ≃ Fin (n + p)
-  Fm≃Fn +F Fo≃Fp = fwd-iso ● ((Fm≃Fn ⊎≃ Fo≃Fp) ● sym≃ fwd-iso)
+  Fm≃Fn +F Fo≃Fp = ⊎≃+ ● Fm≃Fn ⊎≃ Fo≃Fp ● +≃⊎
 
 -----------------------------------------------------------------------------
 -- Multiplicative monoid
@@ -304,12 +310,19 @@ module Times where
   fwd-iso : {m n : ℕ} → (Fin m × Fin n) ≃ Fin (m * n)
   fwd-iso {m} {n} = fwd , iseq bwd (fwd∘bwd~id {m}) bwd (bwd∘fwd~id {m})
 
+  -- convenient aliases
+  ×≃* : {m n : ℕ} → (Fin m × Fin n) ≃ Fin (m * n)
+  ×≃* = fwd-iso
+
+  *≃× : {m n : ℕ} → Fin (m * n) ≃ (Fin m × Fin n)
+  *≃× = sym≃ ×≃*
+  
   -- multiplicative monoid equivalences
 
   -- unite*
 
   unite* : {m : ℕ} → Fin (1 * m) ≃ Fin m
-  unite* {m} = unite⋆equiv ● Fin1≃⊤ ×≃ id≃ ● sym≃ fwd-iso
+  unite* {m} = unite⋆equiv ● Fin1≃⊤ ×≃ id≃ ● *≃×
 
   -- uniti*
 
@@ -319,7 +332,7 @@ module Times where
   -- unite*r
 
   unite*r : {m : ℕ} → Fin (m * 1) ≃ Fin m
-  unite*r {m} = unite⋆′equiv ● id≃ ×≃ Fin1≃⊤ ● sym≃ fwd-iso
+  unite*r {m} = unite⋆′equiv ● id≃ ×≃ Fin1≃⊤ ● *≃×
 
   -- uniti*r
   uniti*r : {m : ℕ} → Fin m ≃ Fin (m * 1)
@@ -328,13 +341,12 @@ module Times where
   -- swap*
 
   swap* : {m n : ℕ} → Fin (m * n) ≃ Fin (n * m)
-  swap* {m} {n} = fwd-iso {n} ● swap⋆equiv ● sym≃ fwd-iso
+  swap* {m} {n} = ×≃* ● swap⋆equiv ● *≃× {m}
   
   -- associativity
 
   assocl* : {m n o : ℕ} → Fin (m * (n * o)) ≃ Fin ((m * n) * o)
-  assocl* {m} {n} {o} = fwd-iso ● fwd-iso ×≃ id≃ ● assocl⋆equiv ●
-    id≃ ×≃ (sym≃ fwd-iso) ● sym≃ (fwd-iso {m})
+  assocl* {m} {n} {o} = ×≃* ● ×≃* ×≃ id≃ ● assocl⋆equiv ● id≃ ×≃ *≃× ● *≃× {m}
 
   assocr* : {m n o : ℕ} → Fin ((m * n) * o) ≃ Fin (m * (n * o))
   assocr* {m} {n} {o} = sym≃ (assocl* {m})
@@ -343,7 +355,7 @@ module Times where
 
   _*F_ : {m n o p : ℕ} → Fin m ≃ Fin n → Fin o ≃ Fin p →
               Fin (m * o) ≃ Fin (n * p)
-  Fm≃Fn *F Fo≃Fp = fwd-iso ● Fm≃Fn ×≃ Fo≃Fp ● sym≃ fwd-iso
+  Fm≃Fn *F Fo≃Fp = ×≃* ● Fm≃Fn ×≃ Fo≃Fp ● *≃×
 
 ------------------------------------------------------------------------------
 -- Distributivity of multiplication over addition
@@ -355,33 +367,35 @@ module PlusTimes where
   -- note that the sequence below is "logically right", *but* could be
   -- replaced by id≃ !
   distz : {m : ℕ} → Fin (0 * m) ≃ Fin 0
-  distz {m} = sym≃ F0≃⊥ ● distzequiv ● F0≃⊥ ×≃ id≃ ● sym≃ (Times.fwd-iso {0} {m})
+  distz {m} = sym≃ F0≃⊥ ● distzequiv ● F0≃⊥ ×≃ id≃ ● *≃× {0} {m}
+    where open Times
 
   factorz : {m : ℕ} → Fin 0 ≃ Fin (0 * m)
   factorz {m} = sym≃ (distz {m})
 
   distzr : {m : ℕ} → Fin (m * 0) ≃ Fin 0
-  distzr {m} = sym≃ F0≃⊥ ● distzrequiv ● id≃ ×≃ F0≃⊥ ● sym≃ (Times.fwd-iso {m} {0})
+  distzr {m} = sym≃ F0≃⊥ ● distzrequiv ● id≃ ×≃ F0≃⊥ ● *≃× {m} {0}
+    where open Times
 
   factorzr : {n : ℕ} → Fin 0 ≃ Fin (n * 0)
   factorzr {n} = sym≃ (distzr {n})
 
   dist : {m n o : ℕ} → Fin ((m + n) * o) ≃ Fin ((m * o) + (n * o))
-  dist {m} {n} {o} = Plus.fwd-iso {m * o} {n * o}
-    ● (Times.fwd-iso {m} {o}) ⊎≃ Times.fwd-iso
-    ● distequiv ● (sym≃ Plus.fwd-iso) ×≃ id≃ ● sym≃ (Times.fwd-iso {m + n} {o})
+  dist {m} {n} {o} = ⊎≃+ {m * o} {n * o} ● ×≃* {m} ⊎≃ ×≃* ● distequiv ● +≃⊎ ×≃ id≃ ● *≃×
+    where open Times
+          open Plus
 
   factor : {m n o : ℕ} → Fin ((m * o) + (n * o)) ≃ Fin ((m + n) * o) 
-  factor {m} {n} {o} = sym≃ (dist {m} {n} {o}) 
+  factor {m} = sym≃ (dist {m}) 
 
   distl : {m n o : ℕ} → Fin (m * (n + o)) ≃ Fin ((m * n) + (m * o))
-  distl {m} {n} {o} = Plus.fwd-iso {m * n} {m * o}
-    ● (Times.fwd-iso {m} {n}) ⊎≃ Times.fwd-iso
-    ● distlequiv ● id≃ ×≃ (sym≃ Plus.fwd-iso) ● sym≃ (Times.fwd-iso {m} {n + o})
+  distl {m} {n} {o} = ⊎≃+ {m * n} {m * o} ● ×≃* {m} ⊎≃ ×≃* ● distlequiv ● id≃ ×≃ +≃⊎ ● *≃×
+    where open Plus
+          open Times
 
 
   factorl : {m n o : ℕ} → Fin ((m * n) + (m * o)) ≃ Fin (m * (n + o)) 
-  factorl {m} {n} {o} = sym≃ (distl {m} {n} {o}) 
+  factorl {m} = sym≃ (distl {m}) 
 
 ------------------------------------------------------------------------------
 -- Summarizing... we have a commutative semiring structure
