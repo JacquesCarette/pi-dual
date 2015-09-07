@@ -24,13 +24,13 @@ _∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} →
       (f g : (x : A) → P x) → Set (ℓ ⊔ ℓ')
 _∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → f x ≡ g x
 
-refl∼ : {A B : Set} {f : A → B} → (f ∼ f)
+refl∼ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {f : A → B} → (f ∼ f)
 refl∼ {A} {B} {f} x = refl
 
-sym∼ : {A B : Set} {f g : A → B} → (f ∼ g) → (g ∼ f)
+sym∼ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {f g : A → B} → (f ∼ g) → (g ∼ f)
 sym∼ H x = sym (H x) 
 
-trans∼ : {A B : Set} {f g h : A → B} → (f ∼ g) → (g ∼ h) → (f ∼ h)
+trans∼ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {f g h : A → B} → (f ∼ g) → (g ∼ h) → (f ∼ h)
 trans∼ H G x = trans (H x)  (G x)
 
 ------------------------------------------------------------------------------
@@ -102,15 +102,15 @@ _⋆_ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (A ≃ B) → (x : A) �
 
 -- there-and-back is identity
 
-p∘!p≡id : {A B : Set} {p : A ≃ B} → (_⋆_ (trans≃ p (sym≃ p))) ∼ (_⋆_ id≃)
+p∘!p≡id : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {p : A ≃ B} → (_⋆_ (trans≃ p (sym≃ p))) ∼ (_⋆_ id≃)
 p∘!p≡id {p = p} = g-left-inv p
 
-!p∘p≡id : {A B : Set} {p : A ≃ B} → (_⋆_ (trans≃ (sym≃ p) p)) ∼ (_⋆_ id≃)
+!p∘p≡id : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {p : A ≃ B} → (_⋆_ (trans≃ (sym≃ p) p)) ∼ (_⋆_ id≃)
 !p∘p≡id {p = p} = p∘!p≡id {p = sym≃ p}
 
 -- equivalences are injective
 
-inj≃ : {A B : Set} → (eq : A ≃ B) → (x y : A) → (eq ⋆ x ≡ eq ⋆ y → x ≡ y)
+inj≃ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (eq : A ≃ B) → (x y : A) → (eq ⋆ x ≡ eq ⋆ y → x ≡ y)
 inj≃ (f , iseq g α h β) x y p = trans
   (sym (β x)) (trans
   (cong h p) (
@@ -120,13 +120,15 @@ inj≃ (f , iseq g α h β) x y p = trans
 
 -- ⊕
 
-_⊎∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
+_⊎∼_ : ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
+  {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
   (α : f ∘ finv ∼ id) → (β : g ∘ ginv ∼ id) → 
   (f ⊎→ g) ∘ (finv ⊎→ ginv) ∼ id {A = C ⊎ D}
 _⊎∼_ α β (inj₁ x) = cong inj₁ (α x) 
 _⊎∼_ α β (inj₂ y) = cong inj₂ (β y)
 
-_⊎≃_ : {A B C D : Set} → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
+_⊎≃_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
+  → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
 (fp , eqp) ⊎≃ (fq , eqq) = 
   Data.Sum.map fp fq , 
   iseq (P.g ⊎→ Q.g) (P.α ⊎∼ Q.α) (P.h ⊎→ Q.h) (P.β ⊎∼ Q.β)
@@ -135,12 +137,14 @@ _⊎≃_ : {A B C D : Set} → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
 
 -- ⊗
 
-_×∼_ : {A B C D : Set} {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
+_×∼_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
+  {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
   (α : f ∘ finv ∼ id) → (β : g ∘ ginv ∼ id) → 
   (f ×→ g) ∘ (finv ×→ ginv) ∼ id {A = C × D}
 _×∼_ α β (x , y) = cong₂ _,_ (α x) (β y)
  
-_×≃_ : {A B C D : Set} → A ≃ C → B ≃ D → (A × B) ≃ (C × D)
+_×≃_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
+  → A ≃ C → B ≃ D → (A × B) ≃ (C × D)
 (fp , eqp) ×≃ (fq , eqq) = 
   Data.Product.map fp fq , 
   iseq 
