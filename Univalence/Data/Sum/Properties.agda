@@ -9,10 +9,11 @@ open import Data.Empty using (⊥)
 open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to map⊎)
 
 import Relation.Binary.PropositionalEquality as P using (_≡_; refl; cong)
-import Function as F using (id; _∘_)
+open import Function as F using (id; _∘_)
 
 open import Equiv using (_∼_)
-open import TypeEquiv using (unite₊; unite₊′; swap₊; assocl₊; assocr₊)
+open import TypeEquiv
+  using (unite₊; uniti₊; unite₊′; swap₊; assocl₊; assocr₊)
 
 ------------------------------------------------------------------------------
 -- Note that all these lemmas are "simple" in the sense that they
@@ -38,6 +39,12 @@ unite₊∘[id,f]≡f∘unite₊ : {A B : Set} {f : A → B} {g : ⊥ → ⊥} �
   (x : ⊥ ⊎ A) → unite₊ (map⊎ g f x) P.≡ f (unite₊ x)
 unite₊∘[id,f]≡f∘unite₊ (inj₁ ())
 unite₊∘[id,f]≡f∘unite₊ (inj₂ y) = P.refl
+
+-- and the 'converse', of sorts; g is used here because
+-- this is usually applied with g = f⁻¹
+[id,g]∘uniti₊≡uniti₊∘g : {A B : Set} {f : A → B} →
+  (map⊎ id f ∘ uniti₊) ∼ (uniti₊ ∘ f)
+[id,g]∘uniti₊≡uniti₊∘g x = P.refl
 
 unite₊′∘[id,f]≡f∘unite₊′ : {A B : Set} {f : A → B} {g : ⊥ → ⊥} →
   (x : A ⊎ ⊥) → unite₊′ (map⊎ f g x) P.≡ f (unite₊′ x)
