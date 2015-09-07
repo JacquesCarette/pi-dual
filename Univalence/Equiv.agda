@@ -5,7 +5,7 @@ module Equiv where
 open import Level using (_⊔_)
 open import Function using (_∘_; id)
 open import Data.Sum renaming (map to _⊎→_)
-open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂) renaming (map to _×→_) 
+open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂) renaming (map to _×→_)
 open import Relation.Binary using (IsEquivalence)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
@@ -20,7 +20,7 @@ infixr 7 _×≃_
 ------------------------------------------------------------------------------
 -- Extensional equivalence of functions
 
-_∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} → 
+_∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} →
       (f g : (x : A) → P x) → Set (ℓ ⊔ ℓ')
 _∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → f x ≡ g x
 
@@ -28,24 +28,24 @@ refl∼ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {f : A → B} → (f ∼ f
 refl∼ {A} {B} {f} x = refl
 
 sym∼ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {f g : A → B} → (f ∼ g) → (g ∼ f)
-sym∼ H x = sym (H x) 
+sym∼ H x = sym (H x)
 
 trans∼ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {f g h : A → B} → (f ∼ g) → (g ∼ h) → (f ∼ h)
 trans∼ H G x = trans (H x)  (G x)
 
 ------------------------------------------------------------------------------
 -- Equivalences a la HoTT:
-record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) : 
+record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) :
   Set (ℓ ⊔ ℓ') where
   constructor iseq
   field
-    g : B → A 
+    g : B → A
     α : (f ∘ g) ∼ id
     h : B → A
     β : (h ∘ f) ∼ id
-    
+
 ------------------------------------------------------------------------------
--- Equivalences between sets A and B: a function f and a quasi-inverse for f. 
+-- Equivalences between sets A and B: a function f and a quasi-inverse for f.
 
 _≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ ⊔ ℓ')
 A ≃ B = Σ (A → B) isequiv
@@ -67,11 +67,11 @@ g-left-inv (f , iseq g α h β) = pf
       h (f x)
         ≡⟨ β x ⟩
       x ∎)
-      
+
 sym≃ : ∀ {ℓ ℓ′} {A : Set ℓ} {B : Set ℓ′} → (A ≃ B) → B ≃ A
 sym≃ (A→B , equiv) = e.g , (iseq A→B (g-left-inv (A→B , equiv)) A→B e.α)
   where module e = isequiv equiv
-  
+
 trans≃ :  ∀ {ℓ ℓ′ ℓ″} {A : Set ℓ} {B : Set ℓ′} {C : Set ℓ″} → A ≃ B → B ≃ C → A ≃ C
 trans≃ (f , feq) (g , geq) = (g ∘ f) , (iseq g′ α' h′ β')
   where
@@ -91,14 +91,14 @@ a ● b = trans≃ b a
 ≃IsEquiv = record {
   refl = id≃ ;
   sym = sym≃ ;
-  trans = trans≃ 
+  trans = trans≃
   }
 
 ------------------------------------------------------------------------------
 -- A few properties of equivalences
 
 _⋆_ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (A ≃ B) → (x : A) → B
-(f , _) ⋆ x = f x 
+(f , _) ⋆ x = f x
 
 -- there-and-back is identity
 
@@ -115,22 +115,22 @@ inj≃ (f , iseq g α h β) x y p = trans
   (sym (β x)) (trans
   (cong h p) (
   β y))
-  
+
 -- equivalence is a congruence for plus/times
 
 -- ⊕
 
 _⊎∼_ : ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
   {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
-  (α : f ∘ finv ∼ id) → (β : g ∘ ginv ∼ id) → 
+  (α : f ∘ finv ∼ id) → (β : g ∘ ginv ∼ id) →
   (f ⊎→ g) ∘ (finv ⊎→ ginv) ∼ id {A = C ⊎ D}
-_⊎∼_ α β (inj₁ x) = cong inj₁ (α x) 
+_⊎∼_ α β (inj₁ x) = cong inj₁ (α x)
 _⊎∼_ α β (inj₂ y) = cong inj₂ (β y)
 
 _⊎≃_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
   → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
-(fp , eqp) ⊎≃ (fq , eqq) = 
-  Data.Sum.map fp fq , 
+(fp , eqp) ⊎≃ (fq , eqq) =
+  Data.Sum.map fp fq ,
   iseq (P.g ⊎→ Q.g) (P.α ⊎∼ Q.α) (P.h ⊎→ Q.h) (P.β ⊎∼ Q.β)
   where module P = isequiv eqp
         module Q = isequiv eqq
@@ -139,16 +139,16 @@ _⊎≃_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓ
 
 _×∼_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
   {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
-  (α : f ∘ finv ∼ id) → (β : g ∘ ginv ∼ id) → 
+  (α : f ∘ finv ∼ id) → (β : g ∘ ginv ∼ id) →
   (f ×→ g) ∘ (finv ×→ ginv) ∼ id {A = C × D}
 _×∼_ α β (x , y) = cong₂ _,_ (α x) (β y)
- 
+
 _×≃_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
   → A ≃ C → B ≃ D → (A × B) ≃ (C × D)
-(fp , eqp) ×≃ (fq , eqq) = 
-  Data.Product.map fp fq , 
-  iseq 
-    (P.g ×→ Q.g) 
+(fp , eqp) ×≃ (fq , eqq) =
+  Data.Product.map fp fq ,
+  iseq
+    (P.g ×→ Q.g)
     (_×∼_ {f = fp} {g = fq} P.α Q.α)
     (P.h ×→ Q.h)
     (_×∼_ {f = P.h} {g = Q.h} P.β Q.β)
@@ -156,4 +156,3 @@ _×≃_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC
         module Q = isequiv eqq
 
 ------------------------------------------------------------------------------
-
