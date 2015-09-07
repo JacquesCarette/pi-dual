@@ -6,9 +6,10 @@ module TypeEquivCat where
 -- morphisms are type equivalences; and where the equivalence of
 -- morphisms ≋ is extensional
 
-open import Level using (zero; suc)
+open import Level renaming (zero to lzero; suc to lsuc)
 
 open import Data.Empty using (⊥)
+open import Data.Fin using (zero; suc)
 open import Data.Unit using (⊤)
 open import Data.Sum using (_⊎_)
 open import Data.Product using (_,_; _×_; proj₁; proj₂; uncurry)
@@ -32,7 +33,7 @@ open import Equiv
          _⊎≃_; _×≃_)
 open import EquivEquiv
   using (_≋_; eq; id≋; sym≋; trans≋; ●-assoc; ●-resp-≋;
-    linv≋; rinv≋; lid≋; rid≋; module _≋_)
+    linv≋; rinv≋; lid≋; rid≋; flip-sym≋; module _≋_)
 
 open import TypeEquiv
   using (unite₊equiv; uniti₊equiv; unite₊′equiv; uniti₊′equiv;
@@ -79,7 +80,7 @@ open import Data.SumProd.Properties
 
 -- First it is a category
 
-TypeEquivCat : Category (suc zero) zero zero
+TypeEquivCat : Category (lsuc lzero) lzero lzero
 TypeEquivCat = record
   { Obj = Set
   ; _⇒_ = _≃_
@@ -122,12 +123,12 @@ module ⊎h = MonoidalHelperFunctors TypeEquivCat ⊎-bifunctor ⊥
 0⊎x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
 0⊎x≡x = record 
   { F⇒G = record
-    { η = λ X → unite₊equiv
-    ; commute = λ f → eq unite₊∘[id,f]≡f∘unite₊ (λ x → P.refl) } 
+    { η = λ _ → unite₊equiv
+    ; commute = λ f → unite₊-nat }
   ; F⇐G = record
-    { η = λ X → uniti₊equiv
-    ; commute = λ f → eq (λ x → P.refl) (sym∼ unite₊∘[id,f]≡f∘unite₊) } 
-  ; iso = λ X → record
+    { η = λ _ → uniti₊equiv
+    ; commute = λ f →  uniti₊-nat {f = f zero}  } 
+  ; iso = λ _ → record
     { isoˡ = linv≋ unite₊equiv
     ; isoʳ = rinv≋ unite₊equiv
     }
@@ -136,7 +137,7 @@ module ⊎h = MonoidalHelperFunctors TypeEquivCat ⊎-bifunctor ⊥
 x⊎0≡x : NaturalIsomorphism ⊎h.x⊗id ⊎h.x
 x⊎0≡x = record
   { F⇒G = record
-    { η = λ X → unite₊′equiv
+    { η = λ _ → unite₊′equiv
     ; commute = λ f → eq unite₊′∘[id,f]≡f∘unite₊′ (λ x → P.refl)
     }
   ; F⇐G = record
@@ -144,19 +145,19 @@ x⊎0≡x = record
     ; commute = λ f → eq (λ x → P.refl) f∘unite₊′≡unite₊′∘[f,id]
     }
   ; iso = λ X → record
-    { isoˡ = eq inj₁∘unite₊′~id inj₁∘unite₊′~id
-    ; isoʳ = eq (λ x → P.refl) (λ x → P.refl)
+    { isoˡ = linv≋ unite₊′equiv
+    ; isoʳ = rinv≋ unite₊′equiv
     }
   }
 
 [x⊎y]⊎z≡x⊎[y⊎z] : NaturalIsomorphism ⊎h.[x⊗y]⊗z ⊎h.x⊗[y⊗z]
 [x⊎y]⊎z≡x⊎[y⊎z] = record
   { F⇒G = record
-    { η = λ X → assocr₊equiv
+    { η = λ _ → assocr₊equiv
     ; commute = λ f → eq assocr₊∘[[,],] [[,],]∘assocl₊
     }
   ; F⇐G = record
-    { η = λ X → assocl₊equiv
+    { η = λ _ → assocl₊equiv
     ; commute = λ f → eq (sym∼ [[,],]∘assocl₊) (sym∼ assocr₊∘[[,],])
     }
   ; iso = λ X → record
