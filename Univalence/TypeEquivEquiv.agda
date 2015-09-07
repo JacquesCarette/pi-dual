@@ -4,14 +4,15 @@ module TypeEquivEquiv where
 
 open import Equiv using (sym∼; sym≃; _⊎≃_; id≃; _≃_; _●_; module isequiv)
 open import TypeEquiv
-  using (unite₊equiv; uniti₊equiv)
+  using (unite₊equiv; uniti₊equiv; unite₊′equiv; uniti₊′equiv)
 open import EquivEquiv
 
 open import Data.Empty using (⊥)
-open import Data.Product using (proj₁)
+-- open import Data.Product using (proj₁)
 open import Data.Sum.Properties
   using (map⊎idid≡id; map⊎-∘; map⊎-resp-≡;
-    unite₊∘[id,f]≡f∘unite₊; [id,g]∘uniti₊≡uniti₊∘g)
+    unite₊∘[id,f]≡f∘unite₊; [id,g]∘uniti₊≡uniti₊∘g;
+    unite₊′∘[f,id]≡f∘unite₊′; [g,id]∘uniti₊′≡uniti₊′∘g)
 
 -- we define all the equivalences-between-equivalences that hold
 -- between type equivalences.
@@ -43,3 +44,12 @@ uniti₊-nat : ∀ {A B} {f : A ≃ B} →
   uniti₊equiv ● f ≋ (id≃ {A = ⊥} ⊎≃ f) ● uniti₊equiv
 uniti₊-nat = eq (sym∼ [id,g]∘uniti₊≡uniti₊∘g) (sym∼ unite₊∘[id,f]≡f∘unite₊)
 -- uniti₊-nat = {! flip-sym≋ unite₊-nat !} -- doesnt't type check :-(
+
+unite₊′-nat : ∀ {A B} {f : A ≃ B} →
+  unite₊′equiv ● (f ⊎≃ id≃ {A = ⊥}) ≋ f ● unite₊′equiv
+unite₊′-nat =
+  eq unite₊′∘[f,id]≡f∘unite₊′ [g,id]∘uniti₊′≡uniti₊′∘g
+
+uniti₊′-nat : ∀ {A B} {f : A ≃ B} →
+  uniti₊′equiv ● f ≋ (f ⊎≃ id≃ {A = ⊥}) ● uniti₊′equiv
+uniti₊′-nat = eq (sym∼ [g,id]∘uniti₊′≡uniti₊′∘g) (sym∼ unite₊′∘[f,id]≡f∘unite₊′)

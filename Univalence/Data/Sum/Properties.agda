@@ -13,7 +13,8 @@ open import Function as F using (id; _∘_)
 
 open import Equiv using (_∼_)
 open import TypeEquiv
-  using (unite₊; uniti₊; unite₊′; swap₊; assocl₊; assocr₊)
+  using (unite₊; uniti₊; unite₊′; uniti₊′;
+    swap₊; assocl₊; assocr₊)
 
 ------------------------------------------------------------------------------
 -- Note that all these lemmas are "simple" in the sense that they
@@ -35,8 +36,8 @@ map⊎-resp-≡ : {A B C D : Set} → {f₀ g₀ : A → B} {f₁ g₁ : C → D
 map⊎-resp-≡ f₀~g₀ _ (inj₁ x) = P.cong inj₁ (f₀~g₀ x)
 map⊎-resp-≡ _ f₁~g₁ (inj₂ y) = P.cong inj₂ (f₁~g₁ y)
 
-unite₊∘[id,f]≡f∘unite₊ : {A B : Set} {f : A → B} {g : ⊥ → ⊥} →
-  (x : ⊥ ⊎ A) → unite₊ (map⊎ g f x) P.≡ f (unite₊ x)
+unite₊∘[id,f]≡f∘unite₊ : {A B : Set} {f : A → B} →
+  (x : ⊥ ⊎ A) → unite₊ (map⊎ id f x) P.≡ f (unite₊ x)
 unite₊∘[id,f]≡f∘unite₊ (inj₁ ())
 unite₊∘[id,f]≡f∘unite₊ (inj₂ y) = P.refl
 
@@ -46,14 +47,14 @@ unite₊∘[id,f]≡f∘unite₊ (inj₂ y) = P.refl
   (map⊎ id f ∘ uniti₊) ∼ (uniti₊ ∘ f)
 [id,g]∘uniti₊≡uniti₊∘g x = P.refl
 
-unite₊′∘[id,f]≡f∘unite₊′ : {A B : Set} {f : A → B} {g : ⊥ → ⊥} →
-  (x : A ⊎ ⊥) → unite₊′ (map⊎ f g x) P.≡ f (unite₊′ x)
-unite₊′∘[id,f]≡f∘unite₊′ (inj₁ x) = P.refl
-unite₊′∘[id,f]≡f∘unite₊′ (inj₂ ())
+unite₊′∘[f,id]≡f∘unite₊′ : {A B : Set} {f : A → B} →
+  (x : A ⊎ ⊥) → unite₊′ (map⊎ f id x) P.≡ f (unite₊′ x)
+unite₊′∘[f,id]≡f∘unite₊′ (inj₁ x) = P.refl
+unite₊′∘[f,id]≡f∘unite₊′ (inj₂ ())
 
-inj₂∘unite₊~id : {A : Set} → (x : ⊥ ⊎ A) → inj₂ (unite₊ x) P.≡ x
-inj₂∘unite₊~id (inj₁ ())
-inj₂∘unite₊~id (inj₂ y) = P.refl
+[g,id]∘uniti₊′≡uniti₊′∘g : {A B : Set} {g : A → B} →
+  (map⊎ g id ∘ uniti₊′) ∼ (uniti₊′ ∘ g)
+[g,id]∘uniti₊′≡uniti₊′∘g x = P.refl
 
 f∘unite₊′≡unite₊′∘[f,id] : {A B : Set} {f : A → B} →
   (x : A ⊎ ⊥) → f (unite₊′ x) P.≡ unite₊′ (map⊎ f F.id x)

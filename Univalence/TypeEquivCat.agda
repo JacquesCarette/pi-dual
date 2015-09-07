@@ -49,9 +49,7 @@ open import TypeEquiv
 open import TypeEquivEquiv -- need them all!
 
 open import Data.Sum.Properties
-  using (unite₊∘[id,f]≡f∘unite₊; inj₁∘unite₊′~id; inj₂∘unite₊~id;
-         unite₊′∘[id,f]≡f∘unite₊′; f∘unite₊′≡unite₊′∘[f,id];
-         assocr₊∘[[,],]; [[,],]∘assocl₊;
+  using (assocr₊∘[[,],]; [[,],]∘assocl₊;
          triangle⊎-right; triangle⊎-left;
          pentagon⊎-right; pentagon⊎-left;
          swap₊∘[f,g]≡[g,f]∘swap₊;
@@ -127,7 +125,7 @@ module ⊎h = MonoidalHelperFunctors TypeEquivCat ⊎-bifunctor ⊥
     ; commute = λ f → unite₊-nat }
   ; F⇐G = record
     { η = λ _ → uniti₊equiv
-    ; commute = λ f →  uniti₊-nat {f = f zero}  } 
+    ; commute = λ f →  uniti₊-nat } 
   ; iso = λ _ → record
     { isoˡ = linv≋ unite₊equiv
     ; isoʳ = rinv≋ unite₊equiv
@@ -138,11 +136,11 @@ x⊎0≡x : NaturalIsomorphism ⊎h.x⊗id ⊎h.x
 x⊎0≡x = record
   { F⇒G = record
     { η = λ _ → unite₊′equiv
-    ; commute = λ f → eq unite₊′∘[id,f]≡f∘unite₊′ (λ x → P.refl)
+    ; commute = λ f → unite₊′-nat
     }
   ; F⇐G = record
     { η = λ X → uniti₊′equiv
-    ; commute = λ f → eq (λ x → P.refl) f∘unite₊′≡unite₊′∘[f,id]
+    ; commute = λ f → uniti₊′-nat
     }
   ; iso = λ X → record
     { isoˡ = linv≋ unite₊′equiv
