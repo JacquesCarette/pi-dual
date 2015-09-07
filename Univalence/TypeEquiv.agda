@@ -84,7 +84,7 @@ unite₊′equiv : {A : Set} → (A ⊎ ⊥) ≃ A
 unite₊′equiv = (unite₊′ , iseq uniti₊′ refl∼ uniti₊′ uniti₊′∘unite₊′)
 
 uniti₊′equiv : {A : Set} → A ≃ (A ⊎ ⊥)
-uniti₊′equiv = uniti₊′ , iseq unite₊′ uniti₊′∘unite₊′ unite₊′ unite₊′∘uniti₊′
+uniti₊′equiv = sym≃ unite₊′equiv
 
 -- unite⋆ and uniti⋆
 
@@ -101,7 +101,7 @@ unite⋆equiv : {A : Set} → (⊤ × A) ≃ A
 unite⋆equiv = unite⋆ , iseq uniti⋆ refl∼ uniti⋆ uniti⋆∘unite⋆
 
 uniti⋆equiv : {A : Set} → A ≃ (⊤ × A)
-uniti⋆equiv = uniti⋆ , iseq unite⋆ uniti⋆∘unite⋆ unite⋆ refl∼
+uniti⋆equiv = sym≃ unite⋆equiv
 
 -- unite⋆′ and uniti⋆′
 
@@ -118,7 +118,7 @@ unite⋆′equiv : {A : Set} → (A × ⊤) ≃ A
 unite⋆′equiv = unite⋆′ , iseq uniti⋆′ refl∼ uniti⋆′ uniti⋆′∘unite⋆′
 
 uniti⋆′equiv : {A : Set} → A ≃ (A × ⊤)
-uniti⋆′equiv = uniti⋆′ , iseq unite⋆′ uniti⋆′∘unite⋆′ unite⋆′ refl∼
+uniti⋆′equiv = sym≃ unite⋆′equiv
 
 -- swap⋆
 
@@ -158,8 +158,7 @@ assocl₊equiv =
   assocl₊ , iseq assocr₊ assocl₊∘assocr₊ assocr₊ assocr₊∘assocl₊
 
 assocr₊equiv : {A B C : Set} → ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C))
-assocr₊equiv = 
-  assocr₊ , iseq assocl₊ assocr₊∘assocl₊ assocl₊ assocl₊∘assocr₊
+assocr₊equiv = sym≃ assocl₊equiv
 
 -- assocl⋆ and assocr⋆
 
@@ -180,8 +179,7 @@ assocl⋆equiv =
   assocl⋆ , iseq assocr⋆ assocl⋆∘assocr⋆ assocr⋆ assocr⋆∘assocl⋆
 
 assocr⋆equiv : {A B C : Set} → ((A × B) × C) ≃ (A × (B × C))
-assocr⋆equiv = 
-  assocr⋆ , iseq assocl⋆ assocr⋆∘assocl⋆ assocl⋆ assocl⋆∘assocr⋆
+assocr⋆equiv = sym≃ assocl⋆equiv
 
 -- distz and factorz, on left
 
@@ -202,8 +200,7 @@ distzequiv {A} =
   distz , iseq factorz (distz∘factorz {A}) factorz factorz∘distz
 
 factorzequiv : {A : Set} → ⊥ ≃ (⊥ × A)
-factorzequiv {A} = 
-  factorz , iseq distz factorz∘distz distz (distz∘factorz {A})
+factorzequiv {A} = sym≃ distzequiv
 
 -- distz and factorz, on right
 
@@ -248,7 +245,7 @@ distequiv : {A B C : Set} → ((A ⊎ B) × C) ≃ ((A × C) ⊎ (B × C))
 distequiv = dist , iseq factor dist∘factor factor factor∘dist
 
 factorequiv : {A B C : Set} →  ((A × C) ⊎ (B × C)) ≃ ((A ⊎ B) × C)
-factorequiv = factor , (iseq dist factor∘dist dist dist∘factor)
+factorequiv = sym≃ distequiv
 
 -- dist and factor, on left
 
@@ -269,7 +266,7 @@ factorl∘distl (a , inj₁ x) = refl
 factorl∘distl (a , inj₂ y) = refl
 
 distlequiv : {A B C : Set} → (A × (B ⊎ C)) ≃ ((A × B) ⊎ (A × C))
-distlequiv = distl , (iseq factorl distl∘factorl factorl factorl∘distl)
+distlequiv = distl , iseq factorl distl∘factorl factorl factorl∘distl
 
 factorlequiv : {A B C : Set} → ((A × B) ⊎ (A × C)) ≃ (A × (B ⊎ C))
 factorlequiv = sym≃ distlequiv
