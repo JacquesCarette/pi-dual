@@ -13,7 +13,7 @@ import Relation.Binary.PropositionalEquality as P
 import Relation.Binary.EqReasoning as EqR
 
 open import Equiv
- using (module isequiv; iseq; _≃_; id≃; sym≃; _●_; _∼_; g-left-inv;
+ using (module isequiv; iseq; _≃_; id≃; sym≃; _●_; _∼_; sym∼; g-left-inv;
    _⊎≃_)
 
 ------------------------------------------------------------------------------
@@ -44,6 +44,13 @@ sym≋ (eq f≡ g≡) = eq (λ a → P.sym (f≡ a)) (λ b → P.sym (g≡ b))
 flip≋ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {x y : A ≃ B} →
         x ≋ y → (sym≃ x) ≋ (sym≃ y)
 flip≋ (eq f≡ g≡) = eq g≡ f≡
+
+-- unfortunately, while this has the 'right' implementation,
+-- and the type *looks* right, it isn't quite, basically
+-- because g ≠ h in ≃.  Investigate this later.
+flip-sym≋ :  ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {x y : A ≃ B}→
+        x ≋ y → sym≃ y ≋ sym≃ x
+flip-sym≋ (eq f≡ g≡) = eq (sym∼ g≡) (sym∼ f≡)
 
 trans≋ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {x y z : A ≃ B} →
          x ≋ y → y ≋ z → x ≋ z
