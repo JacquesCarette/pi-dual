@@ -153,12 +153,13 @@ assocr₊∘assocl₊ (inj₁ a) = refl
 assocr₊∘assocl₊ (inj₂ (inj₁ b)) = refl
 assocr₊∘assocl₊ (inj₂ (inj₂ c)) = refl
 
-assocl₊equiv : {A B C : Set} → (A ⊎ (B ⊎ C)) ≃ ((A ⊎ B) ⊎ C)
-assocl₊equiv = 
-  assocl₊ , iseq assocr₊ assocl₊∘assocr₊ assocr₊ assocr₊∘assocl₊
-
 assocr₊equiv : {A B C : Set} → ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C))
-assocr₊equiv = sym≃ assocl₊equiv
+assocr₊equiv =
+  assocr₊ , iseq assocl₊ assocr₊∘assocl₊ assocl₊ assocl₊∘assocr₊
+
+assocl₊equiv : {A B C : Set} → (A ⊎ (B ⊎ C)) ≃ ((A ⊎ B) ⊎ C)
+assocl₊equiv = sym≃ assocr₊equiv
+
 
 -- assocl⋆ and assocr⋆
 
