@@ -1,4 +1,3 @@
-We thank the reviewers for their comments.
 
 A general theme of the reviews appears to request a better presentation of the theorems and how they all relate to each other. A compressed and intuitive presentation would be as follows. First we have three independent constructions:
 
@@ -8,7 +7,7 @@ A general theme of the reviews appears to request a better presentation of the t
 
   A : Pi       <----------- Pi-combinators ----------> B : Pi
 
-Each construction relates a family of types via appropriate relations; each construction has a rig structure (additive and multiplicative units, commutative and associative sums and products, and distributivity of products over sums). We then have a second level:
+Each construction relates a particular representation of types via appropriate relations; each construction has a rig structure (additive and multiplicative units, commutative and associative sums and products, and distributivity of products over sums). We then have a second level:
 
   e : HoTT-Equivalence <----------- Eq. of equivalences --------> f : HoTT-Equivalence
 
@@ -16,7 +15,6 @@ Each construction relates a family of types via appropriate relations; each cons
  
   c : Pi-combinators     <------------- Pi-optimizations --------> d : Pi-combinators
 
-We then have theorems that connect some of the constructions vertically allowing us to move across representations.
+The two levels of constructions are connected via appropriate categories. For example, we have a category whose objects are Pi types, whose morphisms are Pi-combinators, and whose equality of morphisms if Pi-optimizations and this category is a (free) symmetric rig groupoid. We finally have theorems that connect some of the constructions vertically allowing us to move across representations.
 
-This are the "raw" results without interpretation, context, or applications. Perhaps unfortunately the current presentation of the paper mixes these "raw" results with theoretical connections to HoTT and univalence and with practical connections to reversible circuits and their optimizations. The connections are there and we are important to appreciate the significance of the theorems but the presentation could indeed be better. 
-
+This are the "raw" results without interpretation, context, or applications. Perhaps unfortunately the current presentation of the paper mixes these "raw" results with theoretical connections to HoTT, with Agda formalization concerns, and with practical connections to reversible circuits and their optimizations. We acknowledge that these connections are somewhat distracting and that the presentation could be much improved but these connections are all critical and essential. Indeed some of the connections above are trivial in "conventional mathematics" but some of that triviality hides implicit isomorphisms (changes of representations) that are important computationally.  Our construction shows, for example, that transporting properties across equivalences of finite types can be done via executing permutations, something which has a clear computational cost and which itself depends on the choice of representations of the permutations. Since this is POPL, the presentation is also biased towards turning the constructions into actual executable programming languages with executable optimizers and with an eye towards higher-order extensions. To our knowledge, there are no programming languages for representing --and reasoning about-- a rich notion of "permutations" (including sums and products). Furthermore, the higher-order extensions are crucial for abstractions over such permutations by allowing the permutations themselves to be treated as data that can be constructed and examined dynamically.
