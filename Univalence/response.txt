@@ -1,0 +1,22 @@
+We thank the reviewers for their comments.
+
+A general theme of the reviews appears to request a better presentation of the theorems and how they all relate to each other. A compressed and intuitive presentation would be as follows. First we have three independent constructions:
+
+  A : Set     <------- HoTT-style equivalences -------> B : Set 
+
+  A : Fin m <----------- Permutations ------------> B : Fin n 
+
+  A : Pi       <----------- Pi-combinators ----------> B : Pi
+
+Each construction relates a family of types via appropriate relations; each construction has a rig structure (additive and multiplicative units, commutative and associative sums and products, and distributivity of products over sums). We then have a second level:
+
+  e : HoTT-Equivalence <----------- Eq. of equivalences --------> f : HoTT-Equivalence
+
+  p : Permutations         <----------- Eq. of permutations ------->  q : Permutations
+ 
+  c : Pi-combinators     <------------- Pi-optimizations --------> d : Pi-combinators
+
+We then have theorems that connect some of the constructions vertically allowing us to move across representations.
+
+This are the "raw" results without interpretation, context, or applications. Perhaps unfortunately the current presentation of the paper mixes these "raw" results with theoretical connections to HoTT and univalence and with practical connections to reversible circuits and their optimizations. The connections are there and we are important to appreciate the significance of the theorems but the presentation could indeed be better. 
+
