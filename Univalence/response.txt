@@ -44,7 +44,7 @@ can be done via executing permutations, something which has a clear
 computational cost and which itself depends on the choice of representations of
 the permutations. Since this is POPL, the presentation emphasizes turning these
 constructions into actual executable programming constructs of a programming
-language, complete with executable optimizers, and with an eye towards
+language, complete with executable optimizer, and with an eye towards
 higher-order extensions. To our knowledge, there are no programming languages
 for representing --and reasoning about-- a rich notion of "permutations"
 (including sums and products).  Furthermore, the higher-order extensions are
@@ -81,6 +81,9 @@ Specific (and short with apologies) responses:
   ``proper'' categorical semantics guide us to define the syntax of a new
   version of Pi which had better meta-properties.
 
+  So it is not the coherences which are more "small step", it is the 
+  underlying programming language.
+
 * Proofs: All the theorems (except Thm 2) are in our Agda formalization. This
   code was not presentable as an artifact at the time of submission and
   required some serious refactoring which is under progress. Thm 2 is indeed
@@ -96,5 +99,37 @@ Specific (and short with apologies) responses:
 
 * Completeness in Thm 11. *** BRIEFLY EXPLAIN HOW WE GET COMPLETENESS FROM LAPLAZA ***
 
-* *** COMMENT ON PHONY MULTIPLICATION ***
+* lifting of the 0d combinators: The problem is when given a : T1 <=> T2,
+  b : T3 <=> T4, to construct something of type T1 x T3 <=> T2 x T4.  If
+  b is the identity, yes it works.  But it does not work in general.
+  There is even an (easy!) general definition for what it ought to be.
+  The point is that that definition is not functorial.  If it were, that
+  would contradiction Thomasson's result.
+
+* We would like to remark that Thomasson believed strongly enough that a 
+  particular construction (which had been published several times) was in 
+  fact wrong, that he published a paper point exactly that, and only that.
+  Most PL theorists would not understand that this result actually applies to
+  constructions they are familiar with: the Int-construction, which applies so
+  nicely to language built atop linear logic.  We believe, just as strongly 
+  as Thomasson, that pointing out that the ``obvious'' generalization to
+  the setting with two monoidal constructions (such as ours) does not work,
+  for the same reasons.  Yes, we do realize that including a negative result
+  in paper makes it harder to publish; we nevertheless feel that we can save
+  others a lot of fruitless pain by attempting to do so.
+
+* Referee 4 thinks that "The main result of the paper is that the category of
+  finite sets and bijections, with the two monoidal structures given by sum and
+  product, is the free rig groupoid." And then further that " A serious
+  weakness is that the main result has no proof, nor even a proof sketch."  This
+  would be because we did not actually claim this result as a theorem!  [We
+  believe it to be true, but as of this writing, that proof is still 
+  incomplete.]
+  Our main result is that weak rig categories are exactly the setting for the
+  semantics for a programming language of reversible circuits.  Furthermore, the
+  coherence laws of such a category exactly give complete rules for deciding
+  equivalence of such circuits.  In other words, theorems 10 and 11.  We also
+  consider theorem 9 (that *all* types, not just finite ones, equivalences and
+  equivalences-of-equivalences), form a weak rig groupoid to be quite important
+  for PL theory.
 
