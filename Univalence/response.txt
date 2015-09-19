@@ -104,7 +104,31 @@ Specific (and short with apologies) responses:
   b is the identity, yes it works.  But it does not work in general.
   There is even an (easy!) general definition for what it ought to be.
   The point is that that definition is not functorial.  If it were, that
-  would contradiction Thomasson's result.
+  would contradiction Thomasson's result. Regarding the construction
+  given at the end of the report, there is a problem in the last step:
+
+T1 = a - b
+T2 = a' - b'
+T3 = c - d
+T4 = c' - d'
+
+a : T1 <=> T2
+   : a + b' <-> a' + b
+
+a' : T1 x T3 <=> T2 x T3
+   : (a-b) x (c-d) <=> (a'-b') x (c-d)
+   : (ac+bd - bc+ad) <=> (a'c+b'd - b'c+a'd)
+   : ac+bd+b'c+a'd <-> a'c+b'd+bc+ad
+
+b : T3 <=> T4
+b : c + d' <-> c' + d
+
+b' : T2 x T3 <=> T2 x T4
+    : (a'-b') x (c-d) <=> (a'-b') x (c'-d')
+    : (a'c+b'd - b'c+a'd) <=> (a'c'+b'd' - b'c'+a'd')
+    : a'c'+b'd+b'c'+a'd' <-> a'c'+b'd'+b'c+a'd
+
+Now a' and b' do not compose.
 
 * We would like to remark that Thomasson believed strongly enough that a 
   particular construction (which had been published several times) was in 
