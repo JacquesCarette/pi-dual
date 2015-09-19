@@ -1,0 +1,37 @@
+
+A general theme of the reviews appears to request a better presentation of the theorems and how they all relate to each other. A compressed and intuitive presentation would be as follows. First we have three independent constructions:
+
+  A : Set     <------- HoTT-style equivalences -------> B : Set 
+
+  A : Fin m <----------- Permutations ------------> B : Fin n 
+
+  A : Pi       <----------- Pi-combinators ----------> B : Pi
+
+Each construction relates a particular representation of types via appropriate relations; each construction has a rig structure (additive and multiplicative units, commutative and associative sums and products, and distributivity of products over sums). We then have a second level:
+
+  e : HoTT-Equivalence <----------- Eq. of equivalences --------> f : HoTT-Equivalence
+
+  p : Permutations         <----------- Eq. of permutations ------->  q : Permutations
+ 
+  c : Pi-combinators     <------------- Pi-optimizations --------> d : Pi-combinators
+
+The two levels of constructions are connected via appropriate categories. For example, we have a category whose objects are Pi types, whose morphisms are Pi-combinators, and whose equality of morphisms if Pi-optimizations and this category is a (free) symmetric rig groupoid. We finally have theorems that connect some of the constructions vertically allowing us to move across representations.
+
+This are the "raw" results without interpretation, context, or applications. Perhaps unfortunately the current presentation of the paper mixes these "raw" results with theoretical connections to HoTT, with Agda formalization concerns, and with practical connections to reversible circuits and their optimizations. We acknowledge that these connections are somewhat distracting and that the presentation could be much improved but these connections are all critical and essential. Indeed some of the connections above are trivial in "conventional mathematics" but some of that triviality hides implicit isomorphisms (changes of representations) that are important computationally.  Our construction shows, for example, that transporting properties across equivalences of finite types can be done via executing permutations, something which has a clear computational cost and which itself depends on the choice of representations of the permutations. Since this is POPL, the presentation is also biased towards turning the constructions into actual executable programming languages with executable optimizers and with an eye towards higher-order extensions. To our knowledge, there are no programming languages for representing --and reasoning about-- a rich notion of "permutations" (including sums and products). Furthermore, the higher-order extensions are crucial for abstractions over such permutations by allowing the permutations themselves to be treated as data that can be constructed and examined dynamically.
+
+Specific (and short with apologies) responses:
+
+* I think our excitement with all the connections apparently left a "hint of arrogance." We sincerely apologize for that.
+
+* The supplementary material gives one small example of rewriting circuits using the 2-axioms. We do not have larger experiments at this point but we have done enough to notice that the rewriting of one circuit to another does not necessarily take an exponential number of steps: the diagram on p.10 shows an equivalence that is independent of the sizes of c1 and c2 and the sizes of A, B, C, and D.
+
+* Our axioms vs. Lapalaza diagrams: In some sense they are indeed "the same". The general process is to give judicious names to each side of each diagram and then proceed to prove equivalence of the two expressions. In some cases this was achieved by adding a 2-axiom that directly relates the terms but in others it was possible to simplify the two sides using other 2-axioms. The process led us to refine the original 1-axioms of Pi which implicitly collapsed certain terms that should only been related by explicit non-trivial paths.
+
+* Proofs: All the theorems (except Thm 2) are in our Agda formalization. This code was not presentable as an artifact at the time of submission and required some serious refactoring which is under progress. Thm 2 is indeed wrong was the informal statement was included by mistake (but it is subsumed by Thm 9).
+
+* The 3rd axiom on p9 says c;(!c)=id which proves that swap;swap=id. (The bottom of p4 notes that every combinator has a dual according to figure 1 with swap being its own inverse.) The existence of inverses for 1-combinators is a meta-property (not a constructor of the inductive datatype of combinators but a function mapping combinators to combinators). The same applies to inverses for 2-combinators.
+
+* Completeness in Thm 11. *** BRIEFLY EXPLAIN HOW WE GET COMPLETENESS FROM LAPLAZA ***
+
+* *** COMMENT ON PHONY MULTIPLICATION ***
+
