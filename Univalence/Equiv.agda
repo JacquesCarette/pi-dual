@@ -34,53 +34,41 @@ trans∼ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {f g h : A → B} → (f 
 trans∼ H G x = trans (H x)  (G x)
 
 ------------------------------------------------------------------------------
--- Equivalences a la HoTT:
-record isequiv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) :
+-- Quasi-equivalences a la HoTT:
+record isqinv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) :
   Set (ℓ ⊔ ℓ') where
-  constructor iseq
+  constructor qinv
   field
     g : B → A
     α : (f ∘ g) ∼ id
-    h : B → A
-    β : (h ∘ f) ∼ id
+    β : (g ∘ f) ∼ id
+
+-- We explicitly choose quasi-equivalences, even though these
+-- these are not a proposition.  This is fine for us, as we're
+-- explicitly looking at equivalences-of-equivalences, and we
+-- so we prefer a symmetric definition over a truncated one.
 
 ------------------------------------------------------------------------------
 -- Equivalences between sets A and B: a function f and a quasi-inverse for f.
 
 _≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ ⊔ ℓ')
-A ≃ B = Σ (A → B) isequiv
+A ≃ B = Σ (A → B) isqinv
 
 id≃ : ∀ {ℓ} {A : Set ℓ} → A ≃ A
-id≃ = (id , iseq id (λ _ → refl) id (λ _ → refl))
-
-g-left-inv : ∀ {ℓ ℓ′} {A : Set ℓ} {B : Set ℓ′} →
-  (eq : A ≃ B) → (isequiv.g (proj₂ eq) ∘ proj₁ eq ∼ id)
-g-left-inv (f , iseq g α h β) = pf
-  where
-    open ≡-Reasoning
-    pf : (g ∘ f) ∼ id
-    pf x = begin (
-      g (f x)
-        ≡⟨ sym (β (g (f x))) ⟩
-      h (f (g (f x)))
-        ≡⟨ cong h (α (f x)) ⟩
-      h (f x)
-        ≡⟨ β x ⟩
-      x ∎)
+id≃ = (id , qinv id (λ _ → refl) (λ _ → refl))
 
 sym≃ : ∀ {ℓ ℓ′} {A : Set ℓ} {B : Set ℓ′} → (A ≃ B) → B ≃ A
-sym≃ (A→B , equiv) = e.g , (iseq A→B (g-left-inv (A→B , equiv)) A→B e.α)
-  where module e = isequiv equiv
+sym≃ (A→B , equiv) = e.g , qinv A→B e.β e.α
+  where module e = isqinv equiv
 
 trans≃ :  ∀ {ℓ ℓ′ ℓ″} {A : Set ℓ} {B : Set ℓ′} {C : Set ℓ″} → A ≃ B → B ≃ C → A ≃ C
-trans≃ (f , feq) (g , geq) = (g ∘ f) , (iseq g′ α' h′ β')
+trans≃ (f , feq) (g , geq) = (g ∘ f) , (qinv g′ α' β')
   where
-    module fm = isequiv feq
-    module gm = isequiv geq
+    module fm = isqinv feq
+    module gm = isqinv geq
     g′ = fm.g ∘ gm.g
-    h′ = fm.h ∘ gm.h
     α' = λ x → trans (cong g (fm.α (gm.g x))) (gm.α x)
-    β' = λ x → trans (cong fm.h (gm.β (f x))) (fm.β x)
+    β' = λ x → trans (cong fm.g (gm.β (f x))) (fm.β x)
 
 -- more convenient infix version, flipped
 
@@ -103,7 +91,7 @@ _⋆_ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (A ≃ B) → (x : A) �
 -- there-and-back is identity
 
 p∘!p≡id : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {p : A ≃ B} → (_⋆_ (trans≃ p (sym≃ p))) ∼ (_⋆_ id≃)
-p∘!p≡id {p = p} = g-left-inv p
+p∘!p≡id {p = p} = isqinv.β (proj₂ p)
 
 !p∘p≡id : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {p : A ≃ B} → (_⋆_ (trans≃ (sym≃ p) p)) ∼ (_⋆_ id≃)
 !p∘p≡id {p = p} = p∘!p≡id {p = sym≃ p}
@@ -111,9 +99,9 @@ p∘!p≡id {p = p} = g-left-inv p
 -- equivalences are injective
 
 inj≃ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (eq : A ≃ B) → (x y : A) → (eq ⋆ x ≡ eq ⋆ y → x ≡ y)
-inj≃ (f , iseq g α h β) x y p = trans
+inj≃ (f , qinv g α β) x y p = trans
   (sym (β x)) (trans
-  (cong h p) (
+  (cong g p) (
   β y))
 
 -- equivalence is a congruence for plus/times
@@ -131,9 +119,9 @@ _⊎≃_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓ
   → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
 (fp , eqp) ⊎≃ (fq , eqq) =
   Data.Sum.map fp fq ,
-  iseq (P.g ⊎→ Q.g) (P.α ⊎∼ Q.α) (P.h ⊎→ Q.h) (P.β ⊎∼ Q.β)
-  where module P = isequiv eqp
-        module Q = isequiv eqq
+  qinv (P.g ⊎→ Q.g) (P.α ⊎∼ Q.α) (P.β ⊎∼ Q.β)
+  where module P = isqinv eqp
+        module Q = isqinv eqq
 
 -- ⊗
 
@@ -147,12 +135,11 @@ _×≃_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC
   → A ≃ C → B ≃ D → (A × B) ≃ (C × D)
 (fp , eqp) ×≃ (fq , eqq) =
   Data.Product.map fp fq ,
-  iseq
+  qinv
     (P.g ×→ Q.g)
     (_×∼_ {f = fp} {g = fq} P.α Q.α)
-    (P.h ×→ Q.h)
-    (_×∼_ {f = P.h} {g = Q.h} P.β Q.β)
-  where module P = isequiv eqp
-        module Q = isequiv eqq
+    (_×∼_ {f = P.g} {g = Q.g} P.β Q.β)
+  where module P = isqinv eqp
+        module Q = isqinv eqq
 
 ------------------------------------------------------------------------------

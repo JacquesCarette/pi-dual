@@ -2,7 +2,7 @@
 
 module TypeEquivEquiv where
 
-open import Equiv using (sym∼; sym≃; _⊎≃_; id≃; _≃_; _●_; module isequiv)
+open import Equiv using (sym∼; sym≃; _⊎≃_; id≃; _≃_; _●_)
 open import TypeEquiv
   using (unite₊equiv; uniti₊equiv; unite₊′equiv; uniti₊′equiv)
 open import EquivEquiv

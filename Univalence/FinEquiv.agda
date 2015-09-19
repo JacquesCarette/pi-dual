@@ -40,7 +40,7 @@ open import Relation.Binary.PropositionalEquality
 
 open import Equiv
   using (_∼_; _≃_; id≃; sym≃; trans≃; _●_;
-         iseq; module isequiv; _⊎≃_; _×≃_)
+         qinv; module isqinv; _⊎≃_; _×≃_)
 open import TypeEquiv
   using (assocl₊equiv; unite₊′equiv;
     unite₊equiv; swap₊equiv;
@@ -71,7 +71,7 @@ abstract
   Fin0-⊥ ()
 
   F0≃⊥ : Fin 0 ≃ ⊥
-  F0≃⊥ = f , iseq g α g β
+  F0≃⊥ = f , qinv g α β
     where
       f : Fin 0 → ⊥
       f ()
@@ -83,7 +83,7 @@ abstract
       β ()
 
   Fin1≃⊤ : Fin 1 ≃ ⊤
-  Fin1≃⊤ = f , iseq g α g β
+  Fin1≃⊤ = f , qinv g α β
     where
       f : Fin 1 → ⊤
       f zero = tt
@@ -162,7 +162,7 @@ module Plus where
   -- the main equivalence
 
   fwd-iso : {m n : ℕ} → (Fin m ⊎ Fin n) ≃ Fin (m + n)
-  fwd-iso {m} {n} = fwd , iseq bwd (fwd∘bwd~id {m}) bwd (bwd∘fwd~id {m})
+  fwd-iso {m} {n} = fwd , qinv bwd (fwd∘bwd~id {m}) (bwd∘fwd~id {m})
 
   -- aliases for the above which are more convenient
   ⊎≃+ : {m n : ℕ} → (Fin m ⊎ Fin n) ≃ Fin (m + n)
@@ -308,7 +308,7 @@ module Times where
       pf₁ = (toℕ-injective (trans (toℕ-fromℕ≤ p) (proj₂ same-quot)))
 
   fwd-iso : {m n : ℕ} → (Fin m × Fin n) ≃ Fin (m * n)
-  fwd-iso {m} {n} = fwd , iseq bwd (fwd∘bwd~id {m}) bwd (bwd∘fwd~id {m})
+  fwd-iso {m} {n} = fwd , qinv bwd (fwd∘bwd~id {m}) (bwd∘fwd~id {m})
 
   -- convenient aliases
   ×≃* : {m n : ℕ} → (Fin m × Fin n) ≃ Fin (m * n)

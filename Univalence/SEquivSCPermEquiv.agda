@@ -19,7 +19,7 @@ open import Relation.Binary.PropositionalEquality
 --
 
 open import Proofs using (_!!_; finext)
-open import Equiv using (_≃_; iseq; module isequiv; g-left-inv)
+open import Equiv using (_≃_; qinv; module isqinv)
 open import EquivEquiv using (_S≃_; eq; _≋_; id≋)
 open import ConcretePermutation using (CPerm; cp; _∘̂_; 1C; cauchyext; SCPerm)
 open import ConcretePermutationProperties using (p≡)
@@ -56,7 +56,7 @@ univalence {m} {n} = equiv fwd bwd α β
     fwd' : (CPerm m n) → (Fin m ≃ Fin n)
     fwd' (cp π πᵒ αp βp) =
       (λ m → πᵒ !! m) ,
-      let index = (λ n → π !! n) in iseq index pf₁ index pf₂  
+      let index = (λ n → π !! n) in qinv index pf₁ pf₂  
       where
         open ≡-Reasoning
         pf₁ : ∀ m → πᵒ !! (π !! m) ≡ m
@@ -79,7 +79,7 @@ univalence {m} {n} = equiv fwd bwd α β
           m ∎)
         
     bwd' : (Fin m ≃ Fin n) → (CPerm m n)
-    bwd' (f , iseq g α h β) =
+    bwd' (f , qinv g α β) =
       cp (tabulate g) (tabulate f) g∘̂f≡1C f∘̂g≡1C
       where
        open ≡-Reasoning
@@ -99,7 +99,7 @@ univalence {m} {n} = equiv fwd bwd α β
          g (tabulate f !! i)
            ≡⟨ cong g (lookup∘tabulate f i) ⟩
          g (f i)
-           ≡⟨ g-left-inv ((f , iseq g α h β)) i ⟩
+           ≡⟨ β i ⟩
          i ∎))
 
     fwd : (SCPerm m n) ⟶ (Fin m S≃ Fin n)
@@ -117,7 +117,7 @@ univalence {m} {n} = equiv fwd bwd α β
     α : {eq₁ eq₂ : Fin m ≃ Fin n} → eq₁ ≋ eq₂ → (fwd ⊚ bwd ⟨$⟩ eq₁) ≋ eq₂
     α {eq₁} {eq₂} eq₁≋eq₂ =
       eq (λ x → trans (lookup∘tabulate (proj₁ eq₁) x) (_≋_.f≡ eq₁≋eq₂ x))
-         (λ x → trans (lookup∘tabulate (isequiv.g (proj₂ eq₁)) x) (_≋_.g≡ eq₁≋eq₂ x)) 
+         (λ x → trans (lookup∘tabulate (isqinv.g (proj₂ eq₁)) x) (_≋_.g≡ eq₁≋eq₂ x)) 
 
     β : {π₁ π₂ : CPerm m n} → π₁ ≡ π₂ → (bwd ⊚ fwd ⟨$⟩ π₁) ≡ π₂
     β {π} {.π} refl = p≡ (cauchyext (CPerm.π π)) 

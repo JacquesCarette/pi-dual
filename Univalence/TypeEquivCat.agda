@@ -29,8 +29,7 @@ open import Categories.RigCategory
   using (RigCategory; module BimonoidalHelperFunctors)
 
 open import Equiv
-  using (_∼_; sym∼; _≃_; isequiv; id≃; sym≃; _●_; _⋆_; p∘!p≡id; g-left-inv;
-         _⊎≃_; _×≃_)
+  using (_∼_; sym∼; _≃_; id≃; sym≃; _●_; _⊎≃_; _×≃_)
 open import EquivEquiv
   using (_≋_; eq; id≋; sym≋; trans≋; ●-assoc; ●-resp-≋;
     linv≋; rinv≋; lid≋; rid≋; flip-sym≋; module _≋_)

@@ -13,7 +13,7 @@ import Relation.Binary.PropositionalEquality as P
 import Relation.Binary.EqReasoning as EqR
 
 open import Equiv
- using (module isequiv; iseq; _≃_; id≃; sym≃; _●_; _∼_; sym∼; g-left-inv;
+ using (module isqinv; qinv; _≃_; id≃; sym≃; _●_; _∼_; sym∼;
    _⊎≃_)
 
 ------------------------------------------------------------------------------
@@ -27,7 +27,7 @@ infix 4 _≋_
 record _≋_ {ℓ ℓ' : Level} {A : Set ℓ} {B : Set ℓ'} (eq₁ eq₂ : A ≃ B) :
   Set (ℓ ⊔ ℓ') where
   constructor eq
-  open isequiv
+  open isqinv
   field
     f≡ : proj₁ eq₁ ∼ proj₁ eq₂
     g≡ : g (proj₂ eq₁) ∼ g (proj₂ eq₂)
@@ -59,7 +59,7 @@ trans≋ (eq f≡ g≡) (eq h≡ i≡) =
 
 ●-resp-≋ : {A B C : Set} {f h : B ≃ C} {g i : A ≃ B} → f ≋ h → g ≋ i →
   (f ● g) ≋ (h ● i)
-●-resp-≋ {f = f , _} {_ , iseq h⁻¹ _ _ _} {_ , iseq g⁻¹ _ _ _} {i , _}
+●-resp-≋ {f = f , _} {_ , qinv h⁻¹ _ _} {_ , qinv g⁻¹ _ _} {i , _}
   (eq f≡ g≡) (eq h≡ i≡) =
   eq (λ x → P.trans (P.cong f (h≡ x)) (f≡ (i x)))
      (λ x → P.trans (P.cong g⁻¹ (g≡ x)) (i≡ (h⁻¹ x)))
@@ -72,17 +72,17 @@ trans≋ (eq f≡ g≡) (eq h≡ i≡) =
     f⊎g~h⊎i : proj₁ ((f , fe) ⊎≃ (g , ge)) ∼ proj₁ ((h , he) ⊎≃ (i , ie))
     f⊎g~h⊎i (inj₁ x) = P.cong inj₁ (f≡ x)
     f⊎g~h⊎i (inj₂ y) = P.cong inj₂ (h≡ y)
-    flip : isequiv.g (proj₂ ((f , fe) ⊎≃ (g , ge))) ∼
-           isequiv.g (proj₂ ((h , he) ⊎≃ (i , ie)))
+    flip : isqinv.g (proj₂ ((f , fe) ⊎≃ (g , ge))) ∼
+           isqinv.g (proj₂ ((h , he) ⊎≃ (i , ie)))
     flip (inj₁ x) = P.cong inj₁ (g≡ x)
     flip (inj₂ y) = P.cong inj₂ (i≡ y)
 
 rinv≋ : ∀ {ℓ} {A B : Set ℓ} (x : A ≃ B) →
   (x ● (sym≃ x)) ≋ id≃ {A = B}
-rinv≋ x = eq (λ z → isequiv.α (proj₂ x) z) (λ z → isequiv.α (proj₂ x) z)
+rinv≋ x = eq (λ z → isqinv.α (proj₂ x) z) (λ z → isqinv.α (proj₂ x) z)
 
 linv≋ : ∀ {ℓ} {A B : Set ℓ} (x : A ≃ B) → ((sym≃ x) ● x) ≋ id≃
-linv≋ x = eq (g-left-inv x) (g-left-inv x)
+linv≋ x = eq (isqinv.β (proj₂ x)) (isqinv.β (proj₂ x))
 
 lid≋ : ∀ {ℓ} {A B : Set ℓ} {f : A ≃ B} → (id≃ ● f) ≋ f
 lid≋ = eq (λ _ → P.refl) (λ _ → P.refl)

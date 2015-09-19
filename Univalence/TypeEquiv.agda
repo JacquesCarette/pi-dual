@@ -16,7 +16,7 @@ open import Function renaming (_∘_ to _○_)
 open import Relation.Binary.PropositionalEquality using (refl)
 
 open import Equiv
-  using (_∼_; refl∼; _≃_; id≃; sym≃; ≃IsEquiv; iseq; _⊎≃_; _×≃_)
+  using (_∼_; refl∼; _≃_; id≃; sym≃; ≃IsEquiv; qinv; _⊎≃_; _×≃_)
 
 ------------------------------------------------------------------------------
 -- Type Equivalences
@@ -36,7 +36,7 @@ swapswap₊ (inj₁ a) = refl
 swapswap₊ (inj₂ b) = refl
 
 swap₊equiv : {A B : Set} → (A ⊎ B) ≃ (B ⊎ A)
-swap₊equiv = (swap₊ , iseq swap₊ swapswap₊ swap₊ swapswap₊)
+swap₊equiv = (swap₊ , qinv swap₊ swapswap₊ swapswap₊)
 
 -- unite₊ and uniti₊
 
@@ -57,7 +57,7 @@ unite₊∘uniti₊ : {A : Set} → unite₊ ○ uniti₊ ∼ id {A = A}
 unite₊∘uniti₊ _ = refl
 
 unite₊equiv : {A : Set} → (⊥ ⊎ A) ≃ A
-unite₊equiv = (unite₊ , iseq uniti₊ unite₊∘uniti₊ uniti₊ uniti₊∘unite₊)
+unite₊equiv = (unite₊ , qinv uniti₊ unite₊∘uniti₊ uniti₊∘unite₊)
 
 uniti₊equiv : {A : Set} → A ≃ (⊥ ⊎ A)
 uniti₊equiv = sym≃ unite₊equiv
@@ -81,7 +81,7 @@ unite₊′∘uniti₊′ : {A : Set} → unite₊′ ○ uniti₊′ ∼ id {A 
 unite₊′∘uniti₊′ _ = refl
 
 unite₊′equiv : {A : Set} → (A ⊎ ⊥) ≃ A
-unite₊′equiv = (unite₊′ , iseq uniti₊′ refl∼ uniti₊′ uniti₊′∘unite₊′)
+unite₊′equiv = (unite₊′ , qinv uniti₊′ refl∼ uniti₊′∘unite₊′)
 
 uniti₊′equiv : {A : Set} → A ≃ (A ⊎ ⊥)
 uniti₊′equiv = sym≃ unite₊′equiv
@@ -98,7 +98,7 @@ uniti⋆∘unite⋆ : {A : Set} → uniti⋆ ○ unite⋆ ∼ id {A = ⊤ × A}
 uniti⋆∘unite⋆ (tt , x) = refl
 
 unite⋆equiv : {A : Set} → (⊤ × A) ≃ A
-unite⋆equiv = unite⋆ , iseq uniti⋆ refl∼ uniti⋆ uniti⋆∘unite⋆
+unite⋆equiv = unite⋆ , qinv uniti⋆ refl∼ uniti⋆∘unite⋆
 
 uniti⋆equiv : {A : Set} → A ≃ (⊤ × A)
 uniti⋆equiv = sym≃ unite⋆equiv
@@ -115,7 +115,7 @@ uniti⋆′∘unite⋆′ : {A : Set} → uniti⋆′ ○ unite⋆′ ∼ id {A 
 uniti⋆′∘unite⋆′ (x , tt) = refl
 
 unite⋆′equiv : {A : Set} → (A × ⊤) ≃ A
-unite⋆′equiv = unite⋆′ , iseq uniti⋆′ refl∼ uniti⋆′ uniti⋆′∘unite⋆′
+unite⋆′equiv = unite⋆′ , qinv uniti⋆′ refl∼ uniti⋆′∘unite⋆′
 
 uniti⋆′equiv : {A : Set} → A ≃ (A × ⊤)
 uniti⋆′equiv = sym≃ unite⋆′equiv
@@ -129,7 +129,7 @@ swapswap⋆ : {A B : Set} → swap⋆ ○ swap⋆ ∼ id {A = A × B}
 swapswap⋆ (a , b) = refl 
 
 swap⋆equiv : {A B : Set} → (A × B) ≃ (B × A)
-swap⋆equiv = swap⋆ , iseq swap⋆ swapswap⋆ swap⋆ swapswap⋆
+swap⋆equiv = swap⋆ , qinv swap⋆ swapswap⋆ swapswap⋆
 
 -- assocl₊ and assocr₊
 
@@ -155,7 +155,7 @@ assocr₊∘assocl₊ (inj₂ (inj₂ c)) = refl
 
 assocr₊equiv : {A B C : Set} → ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C))
 assocr₊equiv =
-  assocr₊ , iseq assocl₊ assocr₊∘assocl₊ assocl₊ assocl₊∘assocr₊
+  assocr₊ , qinv assocl₊ assocr₊∘assocl₊ assocl₊∘assocr₊
 
 assocl₊equiv : {A B C : Set} → (A ⊎ (B ⊎ C)) ≃ ((A ⊎ B) ⊎ C)
 assocl₊equiv = sym≃ assocr₊equiv
@@ -177,7 +177,7 @@ assocr⋆∘assocl⋆ = refl∼
 
 assocl⋆equiv : {A B C : Set} → (A × (B × C)) ≃ ((A × B) × C)
 assocl⋆equiv = 
-  assocl⋆ , iseq assocr⋆ assocl⋆∘assocr⋆ assocr⋆ assocr⋆∘assocl⋆
+  assocl⋆ , qinv assocr⋆ assocl⋆∘assocr⋆ assocr⋆∘assocl⋆
 
 assocr⋆equiv : {A B C : Set} → ((A × B) × C) ≃ (A × (B × C))
 assocr⋆equiv = sym≃ assocl⋆equiv
@@ -198,7 +198,7 @@ factorz∘distz (() , proj₂)
 
 distzequiv : {A : Set} → (⊥ × A) ≃ ⊥
 distzequiv {A} = 
-  distz , iseq factorz (distz∘factorz {A}) factorz factorz∘distz
+  distz , qinv factorz (distz∘factorz {A}) factorz∘distz
 
 factorzequiv : {A : Set} → ⊥ ≃ (⊥ × A)
 factorzequiv {A} = sym≃ distzequiv
@@ -219,7 +219,7 @@ factorzr∘distzr (_ , ())
 
 distzrequiv : {A : Set} → (A × ⊥) ≃ ⊥
 distzrequiv {A} = 
-  distzr , iseq factorzr (distzr∘factorzr {A}) factorzr factorzr∘distzr
+  distzr , qinv factorzr (distzr∘factorzr {A}) factorzr∘distzr
 
 factorzrequiv : {A : Set} → ⊥ ≃ (A × ⊥)
 factorzrequiv {A} = sym≃ distzrequiv
@@ -243,7 +243,7 @@ factor∘dist (inj₁ x , c) = refl
 factor∘dist (inj₂ y , c) = refl
 
 distequiv : {A B C : Set} → ((A ⊎ B) × C) ≃ ((A × C) ⊎ (B × C))
-distequiv = dist , iseq factor dist∘factor factor factor∘dist
+distequiv = dist , qinv factor dist∘factor factor∘dist
 
 factorequiv : {A B C : Set} →  ((A × C) ⊎ (B × C)) ≃ ((A ⊎ B) × C)
 factorequiv = sym≃ distequiv
@@ -267,7 +267,7 @@ factorl∘distl (a , inj₁ x) = refl
 factorl∘distl (a , inj₂ y) = refl
 
 distlequiv : {A B C : Set} → (A × (B ⊎ C)) ≃ ((A × B) ⊎ (A × C))
-distlequiv = distl , iseq factorl distl∘factorl factorl factorl∘distl
+distlequiv = distl , qinv factorl distl∘factorl factorl∘distl
 
 factorlequiv : {A B C : Set} → ((A × B) ⊎ (A × C)) ≃ (A × (B ⊎ C))
 factorlequiv = sym≃ distlequiv
