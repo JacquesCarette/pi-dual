@@ -105,7 +105,8 @@ Specific (and short with apologies) responses:
   There is even an (easy!) general definition for what it ought to be.
   The point is that that definition is not functorial.  If it were, that
   would contradiction Thomasson's result. Regarding the construction
-  given at the end of the report, there is a problem in the last step:
+  given at the end of the report, that part is right, it is the 'next'
+  step which breaks down.  In more detail
 
 T1 = a - b
 T2 = a' - b'
@@ -119,6 +120,8 @@ a' : T1 x T3 <=> T2 x T3
    : (a-b) x (c-d) <=> (a'-b') x (c-d)
    : (ac+bd - bc+ad) <=> (a'c+b'd - b'c+a'd)
    : ac+bd+b'c+a'd <-> a'c+b'd+bc+ad
+
+(same as in the given proof, just flipped)
 
 b : T3 <=> T4
 b : c + d' <-> c' + d
