@@ -159,8 +159,8 @@ x⊎0≡x = record
     ; commute = λ f → eq (sym∼ [[,],]∘assocl₊) (sym∼ assocr₊∘[[,],])
     }
   ; iso = λ X → record
-    { isoˡ = eq (p∘!p≡id {p = assocr₊equiv}) (p∘!p≡id {p = assocr₊equiv})
-    ; isoʳ = eq ((p∘!p≡id {p = assocl₊equiv})) ((p∘!p≡id {p = assocl₊equiv}))
+    { isoˡ = linv≋ assocr₊equiv
+    ; isoʳ = rinv≋ assocr₊equiv
     }
   }
 
@@ -216,8 +216,8 @@ module ×h = MonoidalHelperFunctors TypeEquivCat ×-bifunctor ⊤
     ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl)
     }
   ; iso = λ X → record
-    { isoˡ = eq (λ x → P.refl) (λ x → P.refl)
-    ; isoʳ = eq (λ x → P.refl) (λ x → P.refl)
+    { isoˡ = linv≋ unite⋆equiv
+    ; isoʳ = rinv≋ unite⋆equiv
     }
   }
 
@@ -232,8 +232,8 @@ y×1≡y = record
     ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl) 
     }
   ; iso = λ X → record 
-    { isoˡ = eq (λ x → P.refl) (λ x → P.refl) 
-    ; isoʳ = eq (λ x → P.refl) (λ x → P.refl) 
+    { isoˡ = linv≋ unite⋆′equiv
+    ; isoʳ = rinv≋ unite⋆′equiv
     }
   }
 
@@ -246,8 +246,8 @@ y×1≡y = record
     { η = λ X → assocl⋆equiv
     ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl) }
   ; iso = λ X → record
-    { isoˡ = eq (λ x → P.refl) (λ x → P.refl)
-    ; isoʳ = eq (λ x → P.refl) (λ x → P.refl) }
+    { isoˡ = linv≋ assocr⋆equiv
+    ; isoʳ = rinv≋ assocr⋆equiv }
   }
 
 CPM× : Monoidal TypeEquivCat
@@ -270,12 +270,12 @@ x⊎y≈y⊎x = record
     ; commute = λ f → eq swap₊∘[f,g]≡[g,f]∘swap₊ (sym∼ swap₊∘[f,g]≡[g,f]∘swap₊)
     } 
   ; F⇐G = record 
-    { η = λ X → swap₊equiv 
+    { η = λ X → sym≃ swap₊equiv -- this is not *equal* to swap₊equiv !
     ; commute = λ f → eq swap₊∘[f,g]≡[g,f]∘swap₊ (sym∼ swap₊∘[f,g]≡[g,f]∘swap₊)
     } 
-  ; iso = λ X → record -- cheat by using the symmetric structure
-    { isoˡ = eq swapswap₊ swapswap₊ 
-    ; isoʳ = eq swapswap₊ swapswap₊ 
+  ; iso = λ X → record
+    { isoˡ = linv≋ swap₊equiv 
+    ; isoʳ = rinv≋ swap₊equiv 
     }
   }
 
@@ -293,12 +293,12 @@ x×y≈y×x = record
     ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl)
     }
   ; F⇐G = record
-    { η = λ X → swap⋆equiv
+    { η = λ X → sym≃ swap⋆equiv -- this is not *equal* to swap⋆equiv!
     ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl)
     }
-  ; iso = λ X → record -- cheat by using the symmetric structure
-    { isoˡ = eq swapswap⋆ swapswap⋆
-    ; isoʳ = eq swapswap⋆ swapswap⋆
+  ; iso = λ X → record
+    { isoˡ = linv≋ swap⋆equiv
+    ; isoʳ = rinv≋ swap⋆equiv
     }
   }
 
@@ -330,8 +330,8 @@ x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
     { η = λ X → factorlequiv
     ; commute = λ f → eq factorl-commute (λ x → P.sym (distl-commute x))
     }
-  ; iso = λ X → record { isoˡ = eq factorl∘distl factorl∘distl
-                       ; isoʳ = eq distl∘factorl distl∘factorl }
+  ; iso = λ X → record { isoˡ = linv≋ distlequiv
+                       ; isoʳ = rinv≋ distlequiv }
   }
 
 [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] : NaturalIsomorphism r.[x⊕y]⊗z r.[x⊗z]⊕[y⊗z]
@@ -344,8 +344,8 @@ x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
     { η = λ X → factorequiv
     ; commute = λ f → eq factor-commute (λ x → P.sym (dist-commute x))
     }
-  ; iso = λ X → record { isoˡ = eq factor∘dist factor∘dist
-                       ; isoʳ = eq dist∘factor dist∘factor }
+  ; iso = λ X → record { isoˡ = linv≋ distequiv
+                       ; isoʳ = rinv≋ distequiv }
   }
   
 x⊗0≡0 : NaturalIsomorphism r.x⊗0 r.0↑
@@ -359,8 +359,8 @@ x⊗0≡0 = record
     ; commute = λ f → eq (λ { () }) (λ { (_ , ()) })
     }
   ; iso = λ X → record
-    { isoˡ = eq factorzr∘distzr factorzr∘distzr
-    ; isoʳ = eq distzr∘factorzr distzr∘factorzr
+    { isoˡ = linv≋ distzrequiv
+    ; isoʳ = rinv≋ distzrequiv
     }
   }
 
@@ -375,8 +375,8 @@ x⊗0≡0 = record
     ; commute = λ f → eq (λ { () }) (λ { (() , _)})
     }
   ; iso = λ X → record
-    { isoˡ = eq factorz∘distz factorz∘distz
-    ; isoʳ = eq distz∘factorz distz∘factorz
+    { isoˡ = linv≋ distzequiv
+    ; isoʳ = rinv≋ distzequiv
     }
   }
 
