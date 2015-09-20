@@ -151,11 +151,11 @@ x⊎0≡x = record
 [x⊎y]⊎z≡x⊎[y⊎z] = record
   { F⇒G = record
     { η = λ _ → assocr₊equiv
-    ; commute = λ f → eq assocr₊∘[[,],] [[,],]∘assocl₊
+    ; commute = λ f → assocr₊-nat
     }
   ; F⇐G = record
     { η = λ _ → assocl₊equiv
-    ; commute = λ f → eq (sym∼ [[,],]∘assocl₊) (sym∼ assocr₊∘[[,],])
+    ; commute = λ f → assocl₊-nat
     }
   ; iso = λ X → record
     { isoˡ = linv≋ assocr₊equiv
@@ -170,7 +170,7 @@ CPM⊎ = record
    ; identityˡ = 0⊎x≡x
    ; identityʳ = x⊎0≡x
    ; assoc = [x⊎y]⊎z≡x⊎[y⊎z]
-   ; triangle = eq triangle⊎-right triangle⊎-left
+   ; triangle = ⊎≃-triangle
    ; pentagon = eq pentagon⊎-right pentagon⊎-left
    }
 

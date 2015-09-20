@@ -56,14 +56,10 @@ unite₊′∘[f,id]≡f∘unite₊′ (inj₂ ())
   (map⊎ g id ∘ uniti₊′) ∼ (uniti₊′ ∘ g)
 [g,id]∘uniti₊′≡uniti₊′∘g x = P.refl
 
-f∘unite₊′≡unite₊′∘[f,id] : {A B : Set} {f : A → B} →
-  (x : A ⊎ ⊥) → f (unite₊′ x) P.≡ unite₊′ (map⊎ f F.id x)
-f∘unite₊′≡unite₊′∘[f,id] (inj₁ x) = P.refl
-f∘unite₊′≡unite₊′∘[f,id] (inj₂ ())
-
-inj₁∘unite₊′~id : {A : Set} → (x : A ⊎ ⊥) → inj₁ (unite₊′ x) P.≡ x
-inj₁∘unite₊′~id (inj₁ x) = P.refl
-inj₁∘unite₊′~id (inj₂ ())
+-- f∘unite₊′≡unite₊′∘[f,id] : {A B : Set} {f : A → B} →
+--   (x : A ⊎ ⊥) → f (unite₊′ x) P.≡ unite₊′ (map⊎ f F.id x)
+-- f∘unite₊′≡unite₊′∘[f,id] (inj₁ x) = P.refl
+-- f∘unite₊′≡unite₊′∘[f,id] (inj₂ ())
 
 assocr₊∘[[,],] : {A B C D E F : Set} →
   {f₀ : A → D} {f₁ : B → E} {f₂ : C → F} → (x : (A ⊎ B) ⊎ C) →

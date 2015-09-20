@@ -45,9 +45,6 @@ flip≋ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {x y : A ≃ B} →
         x ≋ y → (sym≃ x) ≋ (sym≃ y)
 flip≋ (eq f≡ g≡) = eq g≡ f≡
 
--- unfortunately, while this has the 'right' implementation,
--- and the type *looks* right, it isn't quite, basically
--- because g ≠ h in ≃.  Investigate this later.
 flip-sym≋ :  ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {x y : A ≃ B}→
         x ≋ y → sym≃ y ≋ sym≃ x
 flip-sym≋ (eq f≡ g≡) = eq (sym∼ g≡) (sym∼ f≡)

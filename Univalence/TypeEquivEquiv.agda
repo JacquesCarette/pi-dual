@@ -4,15 +4,20 @@ module TypeEquivEquiv where
 
 open import Equiv using (sym∼; sym≃; _⊎≃_; id≃; _≃_; _●_)
 open import TypeEquiv
-  using (unite₊equiv; uniti₊equiv; unite₊′equiv; uniti₊′equiv)
+  using (unite₊equiv; uniti₊equiv; unite₊′equiv; uniti₊′equiv;
+    assocr₊equiv; assocl₊equiv)
 open import EquivEquiv
 
 open import Data.Empty using (⊥)
--- open import Data.Product using (proj₁)
+open import Data.Sum using (_⊎_)
+
 open import Data.Sum.Properties
   using (map⊎idid≡id; map⊎-∘; map⊎-resp-≡;
     unite₊∘[id,f]≡f∘unite₊; [id,g]∘uniti₊≡uniti₊∘g;
-    unite₊′∘[f,id]≡f∘unite₊′; [g,id]∘uniti₊′≡uniti₊′∘g)
+    unite₊′∘[f,id]≡f∘unite₊′; [g,id]∘uniti₊′≡uniti₊′∘g;
+    assocr₊∘[[,],]; [[,],]∘assocl₊;
+    triangle⊎-left; triangle⊎-right;
+    pentagon⊎-right; pentagon⊎-left)
 
 -- we define all the equivalences-between-equivalences that hold
 -- between type equivalences.
@@ -42,8 +47,7 @@ unite₊-nat =
 
 uniti₊-nat : ∀ {A B} {f : A ≃ B} →
   uniti₊equiv ● f ≋ (id≃ {A = ⊥} ⊎≃ f) ● uniti₊equiv
-uniti₊-nat = eq (sym∼ [id,g]∘uniti₊≡uniti₊∘g) (sym∼ unite₊∘[id,f]≡f∘unite₊)
--- uniti₊-nat = {! flip-sym≋ unite₊-nat !} -- doesnt't type check :-(
+uniti₊-nat =  flip-sym≋ unite₊-nat
 
 unite₊′-nat : ∀ {A B} {f : A ≃ B} →
   unite₊′equiv ● (f ⊎≃ id≃ {A = ⊥}) ≋ f ● unite₊′equiv
@@ -52,4 +56,23 @@ unite₊′-nat =
 
 uniti₊′-nat : ∀ {A B} {f : A ≃ B} →
   uniti₊′equiv ● f ≋ (f ⊎≃ id≃ {A = ⊥}) ● uniti₊′equiv
-uniti₊′-nat = eq (sym∼ [g,id]∘uniti₊′≡uniti₊′∘g) (sym∼ unite₊′∘[f,id]≡f∘unite₊′)
+uniti₊′-nat = flip-sym≋ unite₊′-nat
+
+assocr₊-nat : ∀ {A B C D E F : Set} →
+  {f₀ : A ≃ D} {f₁ : B ≃ E} {f₂ : C ≃ F} →
+  assocr₊equiv ● ((f₀ ⊎≃ f₁) ⊎≃ f₂) ≋ (f₀ ⊎≃ (f₁ ⊎≃ f₂)) ● assocr₊equiv
+assocr₊-nat = eq assocr₊∘[[,],] [[,],]∘assocl₊
+
+assocl₊-nat : ∀ {A B C D E F : Set} →
+  {f₀ : A ≃ D} {f₁ : B ≃ E} {f₂ : C ≃ F} →
+  assocl₊equiv ● (f₀ ⊎≃ (f₁ ⊎≃ f₂)) ≋ ((f₀ ⊎≃ f₁) ⊎≃ f₂) ● assocl₊equiv
+assocl₊-nat = flip-sym≋ assocr₊-nat
+
+⊎≃-triangle : ∀ {A B : Set} →
+  unite₊′equiv ⊎≃ id≃ ≋ (id≃ ⊎≃ unite₊equiv) ● assocr₊equiv {A} {⊥} {B}
+⊎≃-triangle = eq triangle⊎-right triangle⊎-left
+
+⊎≃-pentagon : ∀ {A B C D : Set} →
+  assocr₊equiv {A} {B} {C ⊎ D} ● assocr₊equiv ≋
+  (id≃ ⊎≃ assocr₊equiv) ● assocr₊equiv ● (assocr₊equiv ⊎≃ id≃)
+⊎≃-pentagon = eq pentagon⊎-right pentagon⊎-left
