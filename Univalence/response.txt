@@ -1,7 +1,128 @@
-A general theme of the reviews appears to request a better presentation of the
-theorems and how they all relate to each other. A compressed and intuitive
-presentation would be as follows. First we have three independent
-constructions:
+Specific responses:
+
+* I think our excitement with all the connections apparently left a
+  "hint of arrogance." We sincerely apologize for that, and will fix.
+
+* The supplementary material gives one small example of rewriting
+  circuits using the 2-axioms. We do not have larger experiments at
+  this point but we have done enough to notice that the rewriting of
+  one circuit to another does not necessarily take an exponential
+  number of steps: the diagram on p.10 shows an equivalence that is
+  independent of the sizes of c1 and c2 and the sizes of A, B, C, and
+  D.
+
+* Our axioms vs. Laplaza diagrams: Yes, the level 2 combinators for
+  distributivity properties and the interaction of combinators
+  involving 0 are the same.  We apparently were not clear enough about
+  what changed:
+
+  The general process of incorporating these diagrams as combinators
+  is to give judicious names to each natural transformation of each
+  diagram representing a natural isomorphism, and then proceed to
+  prove equivalence of the two expressions (for all 3
+  constructions). In some cases this was achieved by adding a 2-axiom
+  that directly relates the terms but in others it was possible to
+  simplify the two sides using other 2-axioms. The process led us to
+  refine the original 1-axioms of Pi which implicitly collapsed
+  certain terms that should only been related by explicit non-trivial
+  paths. Thus the most apparent changes were to the programming
+  language Pi itself, and not the combinators derived from Laplaza's
+  diagrams.  In other words, we let the ``proper'' categorical
+  semantics guide us to define the syntax of a new version of Pi which
+  had better meta-properties.
+
+  So it is not the coherences which are more "small step", it is the
+  underlying programming language.
+
+* Proofs: All the theorems (except Thm 2 and Thm 11) are in our Agda
+  formalization. This code was not presentable as an artifact at the
+  time of submission and required some serious refactoring which is
+  under progress. Thm 2 is indeed wrong and the informal statement was
+  included by mistake; the core of what we meant to convey is in the
+  (correct) Thm 9. For Thm 11, the first part was proved in previous
+  work; the second part follows from the logical interpretation of
+  coherence in the categorical sense as completeness of a syntactic
+  axiomatization (Pi axioms) with respect to a model (rig category of
+  type equivalences) (see e.g.,
+  http://www.mi.sanu.ac.rs/~kosta/coh.pdf)
+
+* The 3rd axiom on p9 says c;(!c)=id which proves that
+  swap;swap=id. (The bottom of p4 notes that every combinator has a
+  dual according to figure 1 with swap being its own inverse.) The
+  existence of inverses for 1-combinators is a meta-property (not a
+  constructor of the inductive datatype of combinators but a function
+  mapping combinators to combinators). The same applies to inverses
+  for 2-combinators.
+
+* lifting of the 0d combinators: The problem is when given a : T1 <=>
+  T2, b : T3 <=> T4, to construct something of type T1 x T3 <=> T2 x
+  T4.  If b is the identity, yes it works.  But it does not work in
+  general.  There is even an (easy!) general definition for what it
+  ought to be.  The point is that that definition is not functorial.
+  If it were, that would contradiction Thomasson's result. Regarding
+  the construction given at the end of the report, that part is right,
+  it is the 'next' step which breaks down.  In more detail
+
+  T1 = a - b
+  T2 = a' - b'
+  T3 = c - d
+  T4 = c' - d'
+
+  a : T1 <=> T2
+     : a + b' <-> a' + b
+
+  a' : T1 x T3 <=> T2 x T3
+     : (a-b) x (c-d) <=> (a'-b') x (c-d)
+     : (ac+bd - bc+ad) <=> (a'c+b'd - b'c+a'd)
+     : ac+bd+b'c+a'd <-> a'c+b'd+bc+ad
+
+  (same as in the given proof, just flipped)
+
+  b : T3 <=> T4
+  b : c + d' <-> c' + d
+
+  b' : T2 x T3 <=> T2 x T4
+      : (a'-b') x (c-d) <=> (a'-b') x (c'-d')
+      : (a'c+b'd - b'c+a'd) <=> (a'c'+b'd' - b'c'+a'd')
+      : a'c'+b'd+b'c'+a'd' <-> a'c'+b'd'+b'c+a'd
+
+  Now a' and b' do not compose.
+
+* We would like to remark that Thomasson believed strongly enough that
+  a particular construction (which had been published several times)
+  was in fact wrong, that he published a paper point exactly that, and
+  only that.  Most PL theorists would not understand that this result
+  actually applies to constructions they are familiar with: the
+  Int-construction, which applies so nicely to language built atop
+  linear logic.  We believe, just as strongly as Thomasson, that
+  pointing out that the ``obvious'' generalization to the setting with
+  two monoidal constructions (such as ours) does not work, for the
+  same reasons.  Yes, we do realize that including a negative result
+  in paper makes it harder to publish; we nevertheless feel that we
+  can save others a lot of fruitless pain by attempting to do so.
+
+* Referee 4 states that "The main result of the paper is that the
+  category of finite sets and bijections, with the two monoidal
+  structures given by sum and product, is the free rig groupoid." And
+  then further that " A serious weakness is that the main result has
+  no proof, nor even a proof sketch."  This would be because we did
+  not actually claim this result as a theorem!  [We believe it to be
+  true, but as of this writing, that proof is still incomplete.]  Our
+  main result is that weak rig categories are exactly the setting for
+  the semantics for a programming language of reversible circuits.
+  Furthermore, the coherence laws of such a category exactly give
+  complete rules for deciding equivalence of such circuits.  In other
+  words, theorems 10 and 11.  We also consider theorem 9 (that *all*
+  types, not just finite ones, equivalences and
+  equivalences-of-equivalences), form a weak rig groupoid to be quite
+  important for PL theory.
+
+-- Optional general comment
+
+A general theme of the reviews appears to request a better
+presentation of the theorems and how they all relate to each other. A
+compressed and intuitive presentation would be as follows. First we
+have three independent constructions:
 
   A : Set    <------- HoTT-style equivalences -------> B : Set 
 
@@ -9,10 +130,11 @@ constructions:
 
   A : Pi     <------------ Pi-combinators -----------> B : Pi
 
-Each construction relates a particular representation of types via appropriate
-relations; each construction has a rig structure (additive and multiplicative
-units, commutative and associative sums and products, and distributivity of
-products over sums). We then have a second level:
+Each construction relates a particular representation of types via
+appropriate relations; each construction has a rig structure (additive
+and multiplicative units, commutative and associative sums and
+products, and distributivity of products over sums). We then have a
+second level:
 
   e : HoTT-Equivalence <--------- Equiv. of equivalences --------> f : HoTT-Equivalence
 
@@ -20,143 +142,38 @@ products over sums). We then have a second level:
  
   c : Pi-combinators   <-------------- Pi-optimizations ---------> d : Pi-combinators
 
-The two levels of constructions are connected, and form categories. For
-example, we have a category whose objects are Pi types, whose morphisms are
-Pi-combinators, and whose equality of morphisms is Pi-optimizations; this
-category is a (free) symmetric rig groupoid. We finally have theorems that
-connect some of the constructions vertically allowing us to move across
-representations.
+The two levels of constructions are connected, and form
+categories. For example, we have a category whose objects are Pi
+types, whose morphisms are Pi-combinators, and whose equality of
+morphisms is Pi-optimizations; this category is a (free) symmetric rig
+groupoid. We finally have theorems that connect some of the
+constructions vertically allowing us to move across representations.
 
-These are the "raw" results without interpretation, context, or applications.
-Perhaps unfortunately, the current presentation of the paper mixes these "raw"
-results with theoretical connections to HoTT, with Agda formalization concerns,
-and with practical connections to reversible circuits and their optimizations.
-We acknowledge that these connections can be perceived as distracting, and that
-their presentation could be much improved (which we are working on), BUT these
-connections are all critical and essential -- and are why this is being sent to
-POPL rather than (say) Theory and Applications of Category Theory. 
+These are the "raw" results without interpretation, context, or
+applications.  Perhaps unfortunately, the current presentation of the
+paper mixes these "raw" results with theoretical connections to HoTT,
+with Agda formalization concerns, and with practical connections to
+reversible circuits and their optimizations.  We acknowledge that
+these connections can be perceived as distracting, and that their
+presentation could be much improved (which we are working on), BUT
+these connections are all critical and essential -- and are why this
+is being sent to POPL rather than (say) Theory and Applications of
+Category Theory.
 
-Indeed some of the connections above are trivial in "conventional mathematics";
-however some of those same connections hide implicit isomorphisms (changes of
-representations) that are important computationally.  Our construction shows,
-for example, that transporting properties across equivalences of finite types
-can be done via executing permutations, something which has a clear
-computational cost and which itself depends on the choice of representations of
-the permutations. Since this is POPL, the presentation emphasizes turning these
-constructions into actual executable programming constructs of a programming
-language, complete with executable optimizer, and with an eye towards
-higher-order extensions. To our knowledge, there are no programming languages
-for representing --and reasoning about-- a rich notion of "permutations"
-(including sums and products).  Furthermore, the higher-order extensions are
-crucial for abstractions over such permutations by allowing the permutations
-themselves to be treated as data that can be constructed and examined
-dynamically.
-
-Specific (and short with apologies) responses:
-
-* I think our excitement with all the connections apparently left a "hint of
-  arrogance." We sincerely apologize for that, and will fix.
-
-* The supplementary material gives one small example of rewriting circuits
-  using the 2-axioms. We do not have larger experiments at this point but we
-  have done enough to notice that the rewriting of one circuit to another does
-  not necessarily take an exponential number of steps: the diagram on p.10
-  shows an equivalence that is independent of the sizes of c1 and c2 and the
-  sizes of A, B, C, and D.
-
-* Our axioms vs. Laplaza diagrams: Yes, the level 2 combinators for 
-  distributivity properties and the interaction of combinators involving 0
-  are the same.  We apparently were not clear enough about what changed:
-
-  The general process of incorporating these diagrams as combinators is to give
-  judicious names to each natural transformation of each diagram representing
-  a natural isomorphism, and then proceed to prove equivalence of the two
-  expressions (for all 3 constructions). In some cases this was achieved by
-  adding a 2-axiom that directly relates the terms but in others it was possible
-  to simplify the two sides using other 2-axioms. The process led us to refine
-  the original 1-axioms of Pi which implicitly collapsed certain terms that
-  should only been related by explicit non-trivial paths. Thus the most 
-  apparent changes were to the programming language Pi itself, and not the
-  combinators derived from Laplaza's diagrams.  In other words, we let the
-  ``proper'' categorical semantics guide us to define the syntax of a new
-  version of Pi which had better meta-properties.
-
-  So it is not the coherences which are more "small step", it is the 
-  underlying programming language.
-
-* Proofs: All the theorems (except Thm 2) are in our Agda formalization. This
-  code was not presentable as an artifact at the time of submission and
-  required some serious refactoring which is under progress. Thm 2 is indeed
-  wrong and the informal statement was included by mistake; the core of what
-  we meant to convey is in the (correct) Thm 9.
-
-* The 3rd axiom on p9 says c;(!c)=id which proves that swap;swap=id. (The
-  bottom of p4 notes that every combinator has a dual according to figure 1
-  with swap being its own inverse.) The existence of inverses for 1-combinators
-  is a meta-property (not a constructor of the inductive datatype of
-  combinators but a function mapping combinators to combinators). The same
-  applies to inverses for 2-combinators.
-
-* Completeness in Thm 11. *** BRIEFLY EXPLAIN HOW WE GET COMPLETENESS FROM LAPLAZA ***
-
-* lifting of the 0d combinators: The problem is when given a : T1 <=> T2,
-  b : T3 <=> T4, to construct something of type T1 x T3 <=> T2 x T4.  If
-  b is the identity, yes it works.  But it does not work in general.
-  There is even an (easy!) general definition for what it ought to be.
-  The point is that that definition is not functorial.  If it were, that
-  would contradiction Thomasson's result. Regarding the construction
-  given at the end of the report, that part is right, it is the 'next'
-  step which breaks down.  In more detail
-
-T1 = a - b
-T2 = a' - b'
-T3 = c - d
-T4 = c' - d'
-
-a : T1 <=> T2
-   : a + b' <-> a' + b
-
-a' : T1 x T3 <=> T2 x T3
-   : (a-b) x (c-d) <=> (a'-b') x (c-d)
-   : (ac+bd - bc+ad) <=> (a'c+b'd - b'c+a'd)
-   : ac+bd+b'c+a'd <-> a'c+b'd+bc+ad
-
-(same as in the given proof, just flipped)
-
-b : T3 <=> T4
-b : c + d' <-> c' + d
-
-b' : T2 x T3 <=> T2 x T4
-    : (a'-b') x (c-d) <=> (a'-b') x (c'-d')
-    : (a'c+b'd - b'c+a'd) <=> (a'c'+b'd' - b'c'+a'd')
-    : a'c'+b'd+b'c'+a'd' <-> a'c'+b'd'+b'c+a'd
-
-Now a' and b' do not compose.
-
-* We would like to remark that Thomasson believed strongly enough that a 
-  particular construction (which had been published several times) was in 
-  fact wrong, that he published a paper point exactly that, and only that.
-  Most PL theorists would not understand that this result actually applies to
-  constructions they are familiar with: the Int-construction, which applies so
-  nicely to language built atop linear logic.  We believe, just as strongly 
-  as Thomasson, that pointing out that the ``obvious'' generalization to
-  the setting with two monoidal constructions (such as ours) does not work,
-  for the same reasons.  Yes, we do realize that including a negative result
-  in paper makes it harder to publish; we nevertheless feel that we can save
-  others a lot of fruitless pain by attempting to do so.
-
-* Referee 4 thinks that "The main result of the paper is that the category of
-  finite sets and bijections, with the two monoidal structures given by sum and
-  product, is the free rig groupoid." And then further that " A serious
-  weakness is that the main result has no proof, nor even a proof sketch."  This
-  would be because we did not actually claim this result as a theorem!  [We
-  believe it to be true, but as of this writing, that proof is still 
-  incomplete.]
-  Our main result is that weak rig categories are exactly the setting for the
-  semantics for a programming language of reversible circuits.  Furthermore, the
-  coherence laws of such a category exactly give complete rules for deciding
-  equivalence of such circuits.  In other words, theorems 10 and 11.  We also
-  consider theorem 9 (that *all* types, not just finite ones, equivalences and
-  equivalences-of-equivalences), form a weak rig groupoid to be quite important
-  for PL theory.
-
+Indeed some of the connections above are trivial in "conventional
+mathematics"; however some of those same connections hide implicit
+isomorphisms (changes of representations) that are important
+computationally.  Our construction shows, for example, that
+transporting properties across equivalences of finite types can be
+done via executing permutations, something which has a clear
+computational cost and which itself depends on the choice of
+representations of the permutations. Since this is POPL, the
+presentation emphasizes turning these constructions into actual
+executable programming constructs of a programming language, complete
+with executable optimizer, and with an eye towards higher-order
+extensions. To our knowledge, there are no programming languages for
+representing --and reasoning about-- a rich notion of "permutations"
+(including sums and products).  Furthermore, the higher-order
+extensions are crucial for abstractions over such permutations by
+allowing the permutations themselves to be treated as data that can be
+constructed and examined dynamically.
