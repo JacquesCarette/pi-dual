@@ -2,7 +2,7 @@
 
 module TypeEquivEquiv where
 
-open import Equiv using (sym∼; sym≃; _⊎≃_; id≃; _≃_; _●_)
+open import Equiv using (sym∼; sym≃; _⊎≃_; id≃; _≃_; _●_; _×≃_; qinv)
 open import TypeEquiv
   using (unite₊equiv; uniti₊equiv; unite₊′equiv; uniti₊′equiv;
     assocr₊equiv; assocl₊equiv)
@@ -10,6 +10,7 @@ open import EquivEquiv
 
 open import Data.Empty using (⊥)
 open import Data.Sum using (_⊎_)
+open import Data.Product using (_,_)
 
 open import Data.Sum.Properties
   using (map⊎idid≡id; map⊎-∘; map⊎-resp-≡;
@@ -19,8 +20,14 @@ open import Data.Sum.Properties
     triangle⊎-left; triangle⊎-right;
     pentagon⊎-right; pentagon⊎-left)
 
+open import Data.Product.Properties
+  using (id×id∼id; ×∘∼∘×; ×→-resp-∼)
+  
 -- we define all the equivalences-between-equivalences that hold
 -- between type equivalences.
+
+----
+-- equivalences for the ⊎ structure
 
 [id,id]≋id : ∀ {A B : Set} → id≃ {A = A} ⊎≃ id≃ {A = B} ≋ id≃
 [id,id]≋id = eq map⊎idid≡id map⊎idid≡id
@@ -76,3 +83,20 @@ assocl₊-nat = flip-sym≋ assocr₊-nat
   assocr₊equiv {A} {B} {C ⊎ D} ● assocr₊equiv ≋
   (id≃ ⊎≃ assocr₊equiv) ● assocr₊equiv ● (assocr₊equiv ⊎≃ id≃)
 ⊎≃-pentagon = eq pentagon⊎-right pentagon⊎-left
+
+----
+-- equivalences for the × structure
+id×id≋id : ∀ {A B : Set} → id≃ {A = A} ×≃ id≃ {A = B} ≋ id≃
+id×id≋id = eq id×id∼id id×id∼id
+
+×●≋●× : {A B C D E F : Set} →
+  {f : A ≃ C} {g : B ≃ D} {h : C ≃ E} {i : D ≃ F} →
+  (h ● f) ×≃ (i ● g) ≋ (h ×≃ i) ● (f ×≃ g)
+×●≋●× {f = f , qinv f′ _ _} {g , qinv g′ _ _} {h , qinv h′ _ _} {i , qinv i′ _ _} =
+  eq (×∘∼∘× {f = f} {g} {h} {i}) (×∘∼∘× {f = h′} {i′} {f′} {g′})
+
+×≃-resp-≋ :  ∀ {A B C D : Set} {f g : A ≃ B} {h i : C ≃ D} →
+  (e₁ : f ≋ g) → (e₂ : h ≋ i) → f ×≃ h ≋ g ×≃ i
+×≃-resp-≋ e₁ e₂ = eq (×→-resp-∼ (f≡ e₁) (f≡ e₂))
+                     (×→-resp-∼ (g≡ e₁) (g≡ e₂))
+  where open _≋_

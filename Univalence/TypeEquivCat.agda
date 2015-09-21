@@ -48,10 +48,7 @@ open import TypeEquiv
 open import TypeEquivEquiv -- need them all!
 
 open import Data.Sum.Properties
-  using (assocr₊∘[[,],]; [[,],]∘assocl₊;
-         triangle⊎-right; triangle⊎-left;
-         pentagon⊎-right; pentagon⊎-left;
-         swap₊∘[f,g]≡[g,f]∘swap₊;
+  using (swap₊∘[f,g]≡[g,f]∘swap₊;
          hexagon⊎-right; hexagon⊎-left)
 open import Data.SumProd.Properties
   using (dist-commute; factor-commute; distl-commute; factorl-commute;
@@ -171,7 +168,7 @@ CPM⊎ = record
    ; identityʳ = x⊎0≡x
    ; assoc = [x⊎y]⊎z≡x⊎[y⊎z]
    ; triangle = ⊎≃-triangle
-   ; pentagon = eq pentagon⊎-right pentagon⊎-left
+   ; pentagon = ⊎≃-pentagon
    }
 
 -- The multiplicative structure is also monoidal
@@ -181,22 +178,14 @@ CPM⊎ = record
 -- that β-reduction is enough.  However, it might be a good idea to
 -- fully mirror all the ones needed for ⊎.
 
-path×-resp-≡ : {A B C D : Set} → {f₀ g₀ : A → B} {f₁ g₁ : C → D} →
-  {e₁ : f₀ ∼ g₀} → {e₂ : f₁ ∼ g₁} →  
-  (x : A × C) → (f₀ (proj₁ x) , f₁ (proj₂ x)) P.≡
-                (g₀ (proj₁ x) , g₁ (proj₂ x))
-path×-resp-≡ {e₁ = f≡} {h≡} (a , c) = P.cong₂ _,_ (f≡ a) (h≡ c)
-
 ×-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
 ×-bifunctor = record
   { F₀ = uncurry _×_
   ; F₁ = uncurry _×≃_
-  ; identity = eq (λ x → P.refl) (λ x → P.refl) -- η for products gives this
-  ; homomorphism = eq (λ x → P.refl) (λ x → P.refl) -- again η for products!
-  ; F-resp-≡ = λ { (e₁ , e₂) →
-                   eq
-                    (path×-resp-≡ {e₁ = f≡ e₁} {f≡ e₂})
-                    ((path×-resp-≡ {e₁ = g≡ e₁} {g≡ e₂}))}
+  ; identity = id×id≋id
+      -- the following would have unresolved metas without the extra precision
+  ; homomorphism = λ { {f = (f , g)} {h , i} → ×●≋●× {f = f} {g} {h} {i}}
+  ; F-resp-≡ = uncurry ×≃-resp-≋
   }
   where open _≋_
 
