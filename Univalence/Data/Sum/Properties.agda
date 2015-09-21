@@ -56,11 +56,6 @@ unite₊′∘[f,id]≡f∘unite₊′ (inj₂ ())
   (map⊎ g id ∘ uniti₊′) ∼ (uniti₊′ ∘ g)
 [g,id]∘uniti₊′≡uniti₊′∘g x = P.refl
 
--- f∘unite₊′≡unite₊′∘[f,id] : {A B : Set} {f : A → B} →
---   (x : A ⊎ ⊥) → f (unite₊′ x) P.≡ unite₊′ (map⊎ f F.id x)
--- f∘unite₊′≡unite₊′∘[f,id] (inj₁ x) = P.refl
--- f∘unite₊′≡unite₊′∘[f,id] (inj₂ ())
-
 assocr₊∘[[,],] : {A B C D E F : Set} →
   {f₀ : A → D} {f₁ : B → E} {f₂ : C → F} → (x : (A ⊎ B) ⊎ C) →
   assocr₊ (map⊎ (map⊎ f₀ f₁) f₂ x) P.≡ map⊎ f₀ (map⊎ f₁ f₂) (assocr₊ x)
@@ -100,7 +95,6 @@ pentagon⊎-left (inj₁ x) = P.refl
 pentagon⊎-left (inj₂ (inj₁ x)) = P.refl
 pentagon⊎-left (inj₂ (inj₂ (inj₁ x))) = P.refl
 pentagon⊎-left (inj₂ (inj₂ (inj₂ y))) = P.refl
-
 
 swap₊∘[f,g]≡[g,f]∘swap₊ : {A B C D : Set} {f : A → C} {g : B → D} →
   (x : A ⊎ B) → swap₊ (map⊎ f g x) P.≡ map⊎ g f (swap₊ x)
