@@ -35,7 +35,7 @@ open import EquivEquiv
   using (_≋_; eq; id≋; sym≋; trans≋; ●-resp-≋; ●-assoc; lid≋; rid≋;
     linv≋; rinv≋)
 open import Data.Sum.Properties
-  using (map⊎idid≡id)
+  using (id⊎id∼id)
 
 ------------------------------------------------------------------------------
 -- Fin and type equivalences are a category
