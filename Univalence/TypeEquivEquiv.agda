@@ -13,7 +13,7 @@ open import Data.Sum using (_⊎_)
 open import Data.Product using (_,_)
 
 open import Data.Sum.Properties
-  using (map⊎idid≡id; map⊎-∘; map⊎-resp-≡;
+  using (id⊎id∼id; ⊎∘∼∘⊎; ⊎→-resp-∼;
     unite₊∘[id,f]≡f∘unite₊; [id,g]∘uniti₊≡uniti₊∘g;
     unite₊′∘[f,id]≡f∘unite₊′; [g,id]∘uniti₊′≡uniti₊′∘g;
     assocr₊∘[[,],]; [[,],]∘assocl₊;
@@ -30,19 +30,19 @@ open import Data.Product.Properties
 -- equivalences for the ⊎ structure
 
 [id,id]≋id : ∀ {A B : Set} → id≃ {A = A} ⊎≃ id≃ {A = B} ≋ id≃
-[id,id]≋id = eq map⊎idid≡id map⊎idid≡id
+[id,id]≋id = eq id⊎id∼id id⊎id∼id
 
 -- ● and ⊎≃ commute.  Better name?
 [h●f,i●g]≋[h,i]●[f,g] : {A B C D E F : Set} →
   {f : A ≃ C} {g : B ≃ D} {h : C ≃ E} {i : D ≃ F} →
   (h ● f) ⊎≃ (i ● g) ≋ (h ⊎≃ i) ● (f ⊎≃ g)
-[h●f,i●g]≋[h,i]●[f,g] = eq map⊎-∘ map⊎-∘
+[h●f,i●g]≋[h,i]●[f,g] = eq ⊎∘∼∘⊎ ⊎∘∼∘⊎
 
 -- ⊎≃ respects ≋
 ⊎≃-respects-≋ : ∀ {A B C D} {f g : A ≃ B} {h i : C ≃ D} →
   (e₁ : f ≋ g) → (e₂ : h ≋ i) → f ⊎≃ h ≋ g ⊎≃ i
 ⊎≃-respects-≋ (eq f~g f⁻¹~g⁻¹) (eq h~i h⁻¹~i⁻¹) =
-  eq (map⊎-resp-≡ f~g h~i) (map⊎-resp-≡ f⁻¹~g⁻¹ h⁻¹~i⁻¹)
+  eq (⊎→-resp-∼ f~g h~i) (⊎→-resp-∼ f⁻¹~g⁻¹ h⁻¹~i⁻¹)
 
 -- Use '-nat' to signify that operation induces a
 -- natural transformation, and that the induced operation
