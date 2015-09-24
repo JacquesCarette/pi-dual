@@ -5,10 +5,13 @@ module TypeEquivEquiv where
 open import Equiv using (sym∼; sym≃; _⊎≃_; id≃; _≃_; _●_; _×≃_; qinv)
 open import TypeEquiv
   using (unite₊equiv; uniti₊equiv; unite₊′equiv; uniti₊′equiv;
-    assocr₊equiv; assocl₊equiv)
+    assocr₊equiv; assocl₊equiv;
+    unite⋆equiv; uniti⋆equiv; unite⋆′equiv; uniti⋆′equiv;
+    assocr⋆equiv; assocl⋆equiv)
 open import EquivEquiv
 
 open import Data.Empty using (⊥)
+open import Data.Unit using (⊤)
 open import Data.Sum using (_⊎_)
 open import Data.Product using (_,_)
 
@@ -21,7 +24,8 @@ open import Data.Sum.Properties
     pentagon⊎-right; pentagon⊎-left)
 
 open import Data.Product.Properties
-  using (id×id∼id; ×∘∼∘×; ×→-resp-∼)
+  using (id×id∼id; ×∘∼∘×; ×→-resp-∼;
+    unite⋆-coh; uniti⋆-coh)
   
 -- we define all the equivalences-between-equivalences that hold
 -- between type equivalences.
@@ -102,3 +106,32 @@ id×id≋id = eq id×id∼id id×id∼id
 ×≃-resp-≋ e₁ e₂ = eq (×→-resp-∼ (f≡ e₁) (f≡ e₂))
                      (×→-resp-∼ (g≡ e₁) (g≡ e₂))
   where open _≋_
+
+unite⋆-nat : ∀ {A B} {f : A ≃ B} →
+  unite⋆equiv ● (id≃ {A = ⊤} ×≃ f) ≋ f ● unite⋆equiv
+unite⋆-nat =
+  eq unite⋆-coh uniti⋆-coh
+{-
+uniti₊-nat : ∀ {A B} {f : A ≃ B} →
+  uniti₊equiv ● f ≋ (id≃ {A = ⊥} ⊎≃ f) ● uniti₊equiv
+uniti₊-nat =  flip-sym≋ unite₊-nat
+
+unite₊′-nat : ∀ {A B} {f : A ≃ B} →
+  unite₊′equiv ● (f ⊎≃ id≃ {A = ⊥}) ≋ f ● unite₊′equiv
+unite₊′-nat =
+  eq unite₊′∘[f,id]≡f∘unite₊′ [g,id]∘uniti₊′≡uniti₊′∘g
+
+uniti₊′-nat : ∀ {A B} {f : A ≃ B} →
+  uniti₊′equiv ● f ≋ (f ⊎≃ id≃ {A = ⊥}) ● uniti₊′equiv
+uniti₊′-nat = flip-sym≋ unite₊′-nat
+
+assocr₊-nat : ∀ {A B C D E F : Set} →
+  {f₀ : A ≃ D} {f₁ : B ≃ E} {f₂ : C ≃ F} →
+  assocr₊equiv ● ((f₀ ⊎≃ f₁) ⊎≃ f₂) ≋ (f₀ ⊎≃ (f₁ ⊎≃ f₂)) ● assocr₊equiv
+assocr₊-nat = eq assocr₊∘[[,],] [[,],]∘assocl₊
+
+assocl₊-nat : ∀ {A B C D E F : Set} →
+  {f₀ : A ≃ D} {f₁ : B ≃ E} {f₂ : C ≃ F} →
+  assocl₊equiv ● (f₀ ⊎≃ (f₁ ⊎≃ f₂)) ≋ ((f₀ ⊎≃ f₁) ⊎≃ f₂) ● assocl₊equiv
+assocl₊-nat = flip-sym≋ assocr₊-nat
+-}

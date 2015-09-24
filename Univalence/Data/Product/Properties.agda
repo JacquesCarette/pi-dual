@@ -56,25 +56,20 @@ assocr⋆-coh : {A B C D E F : Set} →
   assocr⋆ ∘ ((f₀ ×→ f₁) ×→ f₂) ∼ (f₀ ×→ (f₁ ×→ f₂)) ∘ assocr⋆
 assocr⋆-coh _ = P.refl
 
-
 assocl⋆-coh : {A B C D E F : Set} →
   {f₀ : A → D} {f₁ : B → E} {f₂ : C → F} →
   ((f₀ ×→ f₁) ×→ f₂) ∘ assocl⋆ ∼ assocl⋆ ∘ (f₀ ×→ (f₁ ×→ f₂))
 assocl⋆-coh _ = P.refl
 
+triangle⋆-right : {A B : Set} →
+  unite⋆′ ×→ id {A = B} ∼ (id {A = A} ×→ unite⋆) ∘ assocr⋆
+triangle⋆-right _ = P.refl
+
+triangle⋆-left : {A B : Set} →
+  uniti⋆′ ×→ id {A = B} ∼ assocl⋆ {A} ∘ (id ×→ uniti⋆)
+triangle⋆-left _ = P.refl
+
 {-
-triangle⊎-right : {A B : Set} → (x : (A ⊎ ⊥) ⊎ B) →
-  map⊎ unite₊′ F.id x P.≡ map⊎ F.id unite₊ (assocr₊ x)
-triangle⊎-right (inj₁ (inj₁ x)) = P.refl
-triangle⊎-right (inj₁ (inj₂ ()))
-triangle⊎-right (inj₂ y) = P.refl
-
--- note how C is completely arbitrary here (and not ⊥ like in the above)
-triangle⊎-left : {A B C : Set} → (x : A ⊎ B) →
-  map⊎ (inj₁ {B = C}) F.id x P.≡ assocl₊ (map⊎ F.id inj₂ x)
-triangle⊎-left (inj₁ x) = P.refl
-triangle⊎-left (inj₂ y) = P.refl
-
 pentagon⊎-right : {A B C D : Set} → (x : ((A ⊎ B) ⊎ C) ⊎ D) →
   assocr₊ (assocr₊ x) P.≡ map⊎ F.id assocr₊ (assocr₊ (map⊎ assocr₊ F.id x))
 pentagon⊎-right (inj₁ (inj₁ (inj₁ x))) = P.refl
