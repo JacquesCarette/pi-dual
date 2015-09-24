@@ -107,7 +107,7 @@ TypeEquivGroupoid = record
   { F₀ = uncurry _⊎_
   ; F₁ = uncurry _⊎≃_
   ; identity = [id,id]≋id
-  ; homomorphism = [h●f,i●g]≋[h,i]●[f,g]
+  ; homomorphism = ⊎●≋●⊎
   ; F-resp-≡ = uncurry ⊎≃-respects-≋
   }
   where open _≋_
@@ -167,8 +167,8 @@ CPM⊎ = record
    ; identityˡ = 0⊎x≡x
    ; identityʳ = x⊎0≡x
    ; assoc = [x⊎y]⊎z≡x⊎[y⊎z]
-   ; triangle = ⊎≃-triangle
-   ; pentagon = ⊎≃-pentagon
+   ; triangle = unite-assocr₊-coh
+   ; pentagon = assocr₊-coh
    }
 
 -- The multiplicative structure is also monoidal
