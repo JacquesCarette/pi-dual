@@ -11,8 +11,10 @@ open import Data.Sum using (_⊎_)
 open import Data.Product using (_,_; proj₁; proj₂)
 --
 
-import FinEquiv using (module Plus) -- don't open, just import
-open FinEquiv.Plus using (_+F_; ⊎≃+; +≃⊎)
+import FinEquivPlusTimes using (module Plus) -- don't open, just import
+import FinEquivTypeEquiv using (module PlusE) -- don't open, just import
+open FinEquivPlusTimes.Plus using (⊎≃+; +≃⊎)
+open FinEquivTypeEquiv.PlusE using (_+F_)
 open import ConcretePermutation
 open import Permutation
 open import SEquivSCPermEquiv

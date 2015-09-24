@@ -126,7 +126,7 @@ module TimesE where
 ------------------------------------------------------------------------------
 -- Distributivity of multiplication over addition
 
-module PlusTimes where
+module PlusTimesE where
 
   -- now that we have two monoids, we need to check distributivity
 
@@ -205,8 +205,8 @@ finIsCSR : IsCommutativeSemiring _fin≃_ _+_ _*_ 0 1
 finIsCSR = record {
   +-isCommutativeMonoid = finPlusIsCM ;
   *-isCommutativeMonoid = finTimesIsCM ;
-  distribʳ = λ o m n → PlusTimes.dist {m} {n} {o} ;
-  zeroˡ = λ m → PlusTimes.distz {m}
+  distribʳ = λ o m n → PlusTimesE.dist {m} {n} {o} ;
+  zeroˡ = λ m → PlusTimesE.distz {m}
   }
 
 finCSR : CommutativeSemiring Level.zero Level.zero

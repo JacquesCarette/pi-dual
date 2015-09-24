@@ -29,7 +29,7 @@ open import Categories.Monoidal.Symmetric using (Symmetric)
 open import Categories.RigCategory
   using (RigCategory; module BimonoidalHelperFunctors)
 
-open import FinEquiv using (_fin≃_; module Plus)
+open import FinEquivTypeEquiv using (_fin≃_; module PlusE)
 open import Equiv using (id≃; sym≃; _∼_; sym∼; _●_)
 open import EquivEquiv
   using (_≋_; eq; id≋; sym≋; trans≋; ●-resp-≋; ●-assoc; lid≋; rid≋;

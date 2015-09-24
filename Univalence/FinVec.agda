@@ -34,7 +34,8 @@ open import Function using (_∘_; id)
 
 open import Equiv using (_∼_; p∘!p≡id)
 open import TypeEquiv using (swap₊)
-open import FinEquiv using (module Plus; module Times; module PlusTimes)
+open import FinEquivPlusTimes using (module Plus; module Times)
+open import FinEquivTypeEquiv using (module PlusE; module TimesE; module PlusTimesE)
 
 open import Proofs using (
   -- FiniteFunctions
@@ -127,19 +128,19 @@ _⊎fv_ {m₁} α β =
 -- additive units
 
 unite+ : {m : ℕ} → FinVec m (0 + m)
-unite+ {m} = tabulate (proj₁ (Plus.unite+ {m}))
+unite+ {m} = tabulate (proj₁ (PlusE.unite+ {m}))
 
 uniti+ : {m : ℕ} → FinVec (0 + m) m
-uniti+ {m} = tabulate (proj₁ (Plus.uniti+ {m}))
+uniti+ {m} = tabulate (proj₁ (PlusE.uniti+ {m}))
 
 unite+r : {m : ℕ} → FinVec m (m + 0)
-unite+r {m} = tabulate (proj₁ (Plus.unite+r {m}))
+unite+r {m} = tabulate (proj₁ (PlusE.unite+r {m}))
 
-unite+r' : {m : ℕ} → FinVec m (m + 0)
-unite+r' {m} = tabulate (proj₁ (Plus.unite+r' {m}))
+-- unite+r' : {m : ℕ} → FinVec m (m + 0)
+-- unite+r' {m} = tabulate (proj₁ (PlusE.unite+r' {m}))
 
 uniti+r : {m : ℕ} → FinVec (m + 0) m
-uniti+r {m} = tabulate (proj₁ (Plus.uniti+r {m}))
+uniti+r {m} = tabulate (proj₁ (PlusE.uniti+r {m}))
     
 -- commutativity
 
@@ -148,16 +149,16 @@ uniti+r {m} = tabulate (proj₁ (Plus.uniti+r {m}))
 -- ==>
 -- [ vm , vm₊₁ , ... , vm+n-1 ,     v₀ , v₁   , v₂   , ... , vm-1 ]
 
-swap+cauchy : (m n : ℕ) → FinVec (n + m) (m + n)
-swap+cauchy m n = tabulate (Plus.swapper m n)
+-- swap+cauchy : (m n : ℕ) → FinVec (n + m) (m + n)
+-- swap+cauchy m n = tabulate (Plus.swapper m n)
 
 -- associativity
 
 assocl+ : {m n o : ℕ} → FinVec  ((m + n) + o) (m + (n + o))
-assocl+ {m} {n} {o} = tabulate (proj₁ (Plus.assocl+ {m} {n} {o}))
+assocl+ {m} {n} {o} = tabulate (proj₁ (PlusE.assocl+ {m} {n} {o}))
 
 assocr+ : {m n o : ℕ} → FinVec  (m + (n + o)) (m + n + o)
-assocr+ {m} {n} {o} = tabulate (proj₁ (Plus.assocr+ {m} {n} {o}))
+assocr+ {m} {n} {o} = tabulate (proj₁ (PlusE.assocr+ {m} {n} {o}))
 
 ------------------------------------------------------------------------------
 -- Multiplicative monoid
@@ -178,16 +179,16 @@ _×c_ : ∀ {m₁ n₁ m₂ n₂} → FinVec m₁ m₂ → FinVec n₁ n₂ →
 -- multiplicative units
 
 unite* : {m : ℕ} → FinVec m (1 * m)
-unite* {m} = tabulate (proj₁ (Times.unite* {m}))
+unite* {m} = tabulate (proj₁ (TimesE.unite* {m}))
 
 uniti* : {m : ℕ} → FinVec (1 * m) m
-uniti* {m} = tabulate (proj₁ (Times.uniti* {m}))
+uniti* {m} = tabulate (proj₁ (TimesE.uniti* {m}))
 
 unite*r : {m : ℕ} → FinVec m (m * 1)
-unite*r {m} = tabulate (proj₁ (Times.unite*r {m}))
+unite*r {m} = tabulate (proj₁ (TimesE.unite*r {m}))
 
 uniti*r : {m : ℕ} → FinVec (m * 1) m
-uniti*r {m} = tabulate (proj₁ (Times.uniti*r {m}))
+uniti*r {m} = tabulate (proj₁ (TimesE.uniti*r {m}))
 
 -- commutativity
 
@@ -203,38 +204,38 @@ uniti*r {m} = tabulate (proj₁ (Times.uniti*r {m}))
 -- transposeIndex = Times.fwd ∘ swap
 -- inject≤ (fromℕ (toℕ d * m + toℕ b)) (i*n+k≤m*n d b)
 
-swap⋆cauchy : (m n : ℕ) → FinVec (n * m) (m * n)
-swap⋆cauchy m n = tabulate (Times.swapper m n)
+-- swap⋆cauchy : (m n : ℕ) → FinVec (n * m) (m * n)
+-- swap⋆cauchy m n = tabulate (Times.swapper m n)
 -- mapV transposeIndex (V.tcomp 1C 1C)
 
 -- associativity
 
 assocl* : {m n o : ℕ} → FinVec  ((m * n) * o) (m * (n * o))
-assocl* {m} {n} {o} = tabulate (proj₁ (Times.assocl* {m} {n} {o}))
+assocl* {m} {n} {o} = tabulate (proj₁ (TimesE.assocl* {m} {n} {o}))
 
 assocr* : {m n o : ℕ} → FinVec  (m * (n * o)) (m * n * o)
-assocr* {m} {n} {o} = tabulate (proj₁ (Times.assocr* {m} {n} {o}))
+assocr* {m} {n} {o} = tabulate (proj₁ (TimesE.assocr* {m} {n} {o}))
 
 ------------------------------------------------------------------------------
 -- Distributivity
 
 dist*+ : ∀ {m n o} → FinVec (m * o + n * o) ((m + n) * o)
-dist*+ {m} {n} {o} = tabulate (proj₁ (PlusTimes.dist {m} {n} {o}))
+dist*+ {m} {n} {o} = tabulate (proj₁ (PlusTimesE.dist {m} {n} {o}))
 
 factor*+ : ∀ {m n o} → FinVec ((m + n) * o) (m * o + n * o)
-factor*+ {m} {n} {o} = tabulate (proj₁ (PlusTimes.factor {m} {n} {o}))
+factor*+ {m} {n} {o} = tabulate (proj₁ (PlusTimesE.factor {m} {n} {o}))
 
 distl*+ : ∀ {m n o} → FinVec (m * n + m * o) (m * (n + o))
-distl*+ {m} {n} {o} = tabulate (proj₁ (PlusTimes.distl {m} {n} {o}))
+distl*+ {m} {n} {o} = tabulate (proj₁ (PlusTimesE.distl {m} {n} {o}))
 
 factorl*+ : ∀ {m n o} → FinVec (m * (n + o)) (m * n + m * o)
-factorl*+ {m} {n} {o} = tabulate (proj₁ (PlusTimes.factorl {m} {n} {o}))
+factorl*+ {m} {n} {o} = tabulate (proj₁ (PlusTimesE.factorl {m} {n} {o}))
 
 right-zero*l : ∀ {m} → FinVec 0 (m * 0)
-right-zero*l {m} = tabulate (proj₁ (PlusTimes.distzr {m}))
+right-zero*l {m} = tabulate (proj₁ (PlusTimesE.distzr {m}))
 
 right-zero*r : ∀ {m} → FinVec (m * 0) 0
-right-zero*r {m} = tabulate (proj₁ (PlusTimes.factorzr {m}))
+right-zero*r {m} = tabulate (proj₁ (PlusTimesE.factorzr {m}))
    
 ------------------------------------------------------------------------------
 -- Putting it all together, we have a commutative semiring structure
@@ -276,6 +277,7 @@ cauchyTimesIsSG = record {
   ∙-cong = _×c_
   }
 
+{--
 cauchyPlusIsCM : IsCommutativeMonoid _cauchy≃_ _+_ 0
 cauchyPlusIsCM = record {
   isSemigroup = cauchyPlusIsSG ;
@@ -308,5 +310,6 @@ cauchyCSR = record {
   1# = 1 ;
   isCommutativeSemiring = cauchyIsCSR
   }
+--}
 
 ------------------------------------------------------------------------------

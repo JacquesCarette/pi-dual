@@ -17,7 +17,7 @@ open import Equiv using (_≃_; id≃; sym≃; trans≃; _●_)
 open import ConcretePermutation
 open import ConcretePermutationProperties
 open import SEquivSCPermEquiv
-open import FinEquiv using (module Plus; module Times)
+open import FinEquivTypeEquiv using (module PlusE; module TimesE)
 open import EquivEquiv
 
 open import Proofs using (
@@ -70,12 +70,12 @@ idp {n} = e⇒p (id≃ {A = Fin n})
 -- disjoint union
 _⊎p_ : ∀ {m₁ m₂ n₁ n₂} → CPerm m₁ m₂ → CPerm n₁ n₂ → CPerm (m₁ + n₁) (m₂ + n₂)
 p₁ ⊎p p₂ = e⇒p ((p⇒e p₁) +F (p⇒e p₂))
-  where open Plus
+  where open PlusE
   
 -- cartesian product
 _×p_ : ∀ {m₁ m₂ n₁ n₂} → CPerm m₁ m₂ → CPerm n₁ n₂ → CPerm (m₁ * n₁) (m₂ * n₂)
 p₁ ×p p₂ = e⇒p ((p⇒e p₁) *F (p⇒e p₂))
-  where open Times
+  where open TimesE
   
 -- symmetry
 symp : ∀ {m n} → CPerm m n → CPerm n m
