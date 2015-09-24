@@ -38,12 +38,6 @@ open import Proofs using (
   )
 
 ------------------------------------------------------------------------------
--- This is the relation we are interested in showing is a commutative
--- semiring.
-
-_fin≃_ : (m n : ℕ) → Set
-m fin≃ n = Fin m ≃ Fin n
-
 -- Additive unit and multiplicative unit are Fin 0 and Fin 1 which are
 -- equivalent to ⊥ and ⊤
 
