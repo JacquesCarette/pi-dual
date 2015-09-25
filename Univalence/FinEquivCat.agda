@@ -80,7 +80,7 @@ FinEquivGroupoid = record
 ⊎-bifunctor = record
   { F₀ = uncurry _+_ 
   ; F₁ = uncurry _+F_
-  ; identity = {![id,id]≋id!}
+  ; identity = [id,id]≋id
   ; homomorphism = {!!}
   ; F-resp-≡ = λ x → eq (λ x₁ → {!!}) {!!}
   }

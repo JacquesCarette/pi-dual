@@ -2,8 +2,14 @@
 
 module FinEquivEquiv where
 
+open import Data.Product using (_×_; proj₁; proj₂)
+
 open import Equiv using (sym∼; sym≃; _⊎≃_; id≃; _≃_; _●_; _×≃_; qinv)
+open import FinEquivPlusTimes using (module Plus)
+open Plus using (⊎≃+; +≃⊎)
 open import FinEquivTypeEquiv
+  using (module PlusE; module TimesE; module PlusTimesE)
+open PlusE using (_+F_)
 open import EquivEquiv
 
 open import Data.Empty using (⊥)
@@ -28,10 +34,24 @@ open import Data.Product.Properties
 ------------------------------------------------------------------------------
 -- equivalences for the ⊎ structure
 
-[id,id]≋id : ∀ {m n : ℕ} →
-  id≃ {A = Fin m} ⊎≃ id≃ {A = Fin n} ≋ id≃ {A = Fin m ⊎ Fin n}
-[id,id]≋id = eq id⊎id∼id id⊎id∼id 
+[id,id]≋id : ∀ {p : ℕ × ℕ} →
+    let m = proj₁ p in let n = proj₂ p in
+    id≃ {A = Fin m} +F id≃ {A = Fin n} ≋ id≃
+[id,id]≋id {(m , n)} = eq {!!} {!!}
 
+{--
+  let em = id≃ {A = Fin m} in 
+  let en = id≃ {A = Fin n} in 
+  let em⊎en = id≃ {A = Fin m ⊎ Fin n} in 
+  let em+n = id≃ {A = Fin (m + n)} in 
+  begin (
+  em +F en
+    ≋⟨ id≋ ⟩
+  ⊎≃+ ● (em ⊎≃ en) ● +≃⊎
+    ≋⟨ {!!} ⟩
+  em+n ∎)
+  where open ≋-Reasoning
+--}
 
 ------------------------------------------------------------------------------
 
