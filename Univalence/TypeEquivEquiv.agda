@@ -25,7 +25,8 @@ open import Data.Sum.Properties
 
 open import Data.Product.Properties
   using (id×id∼id; ×∘∼∘×; ×→-resp-∼;
-    unite⋆-coh; uniti⋆-coh)
+    unite⋆-coh; uniti⋆-coh; unite⋆′-coh; uniti⋆′-coh;
+    assocr⋆-coh; assocl⋆-coh)
   
 -- we define all the equivalences-between-equivalences that hold
 -- between type equivalences.
@@ -109,29 +110,26 @@ id×id≋id = eq id×id∼id id×id∼id
 
 unite⋆-nat : ∀ {A B} {f : A ≃ B} →
   unite⋆equiv ● (id≃ {A = ⊤} ×≃ f) ≋ f ● unite⋆equiv
-unite⋆-nat =
-  eq unite⋆-coh uniti⋆-coh
-{-
-uniti₊-nat : ∀ {A B} {f : A ≃ B} →
-  uniti₊equiv ● f ≋ (id≃ {A = ⊥} ⊎≃ f) ● uniti₊equiv
-uniti₊-nat =  flip-sym≋ unite₊-nat
+unite⋆-nat = eq unite⋆-coh uniti⋆-coh
 
-unite₊′-nat : ∀ {A B} {f : A ≃ B} →
-  unite₊′equiv ● (f ⊎≃ id≃ {A = ⊥}) ≋ f ● unite₊′equiv
-unite₊′-nat =
-  eq unite₊′∘[f,id]≡f∘unite₊′ [g,id]∘uniti₊′≡uniti₊′∘g
+uniti⋆-nat : ∀ {A B} {f : A ≃ B} →
+  uniti⋆equiv ● f ≋ (id≃ {A = ⊤} ×≃ f) ● uniti⋆equiv
+uniti⋆-nat =  flip-sym≋ unite⋆-nat
 
-uniti₊′-nat : ∀ {A B} {f : A ≃ B} →
-  uniti₊′equiv ● f ≋ (f ⊎≃ id≃ {A = ⊥}) ● uniti₊′equiv
-uniti₊′-nat = flip-sym≋ unite₊′-nat
+unite⋆′-nat : ∀ {A B} {f : A ≃ B} →
+  unite⋆′equiv ● (f ×≃ id≃ {A = ⊤}) ≋ f ● unite⋆′equiv
+unite⋆′-nat = eq unite⋆′-coh uniti⋆′-coh
 
-assocr₊-nat : ∀ {A B C D E F : Set} →
+uniti⋆′-nat : ∀ {A B} {f : A ≃ B} →
+  uniti⋆′equiv ● f ≋ (f ×≃ id≃ {A = ⊤}) ● uniti⋆′equiv
+uniti⋆′-nat = flip-sym≋ unite⋆′-nat
+
+assocr⋆-nat : ∀ {A B C D E F : Set} →
   {f₀ : A ≃ D} {f₁ : B ≃ E} {f₂ : C ≃ F} →
-  assocr₊equiv ● ((f₀ ⊎≃ f₁) ⊎≃ f₂) ≋ (f₀ ⊎≃ (f₁ ⊎≃ f₂)) ● assocr₊equiv
-assocr₊-nat = eq assocr₊∘[[,],] [[,],]∘assocl₊
+  assocr⋆equiv ● ((f₀ ×≃ f₁) ×≃ f₂) ≋ (f₀ ×≃ (f₁ ×≃ f₂)) ● assocr⋆equiv
+assocr⋆-nat = eq assocr⋆-coh assocl⋆-coh
 
-assocl₊-nat : ∀ {A B C D E F : Set} →
+assocl⋆-nat : ∀ {A B C D E F : Set} →
   {f₀ : A ≃ D} {f₁ : B ≃ E} {f₂ : C ≃ F} →
-  assocl₊equiv ● (f₀ ⊎≃ (f₁ ⊎≃ f₂)) ≋ ((f₀ ⊎≃ f₁) ⊎≃ f₂) ● assocl₊equiv
-assocl₊-nat = flip-sym≋ assocr₊-nat
--}
+  assocl⋆equiv ● (f₀ ×≃ (f₁ ×≃ f₂)) ≋ ((f₀ ×≃ f₁) ×≃ f₂) ● assocl⋆equiv
+assocl⋆-nat = flip-sym≋ assocr⋆-nat
