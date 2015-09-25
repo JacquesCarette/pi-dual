@@ -31,27 +31,32 @@ open import Data.Product.Properties
   using (id×id∼id; ×∘∼∘×; ×→-resp-∼;
     unite⋆-coh; uniti⋆-coh)
 
+open import TypeEquivEquiv using ([id,id]≋id)
+
 ------------------------------------------------------------------------------
 -- equivalences for the ⊎ structure
 
-[id,id]≋id : ∀ {p : ℕ × ℕ} →
+[id+id]≋id : ∀ {p : ℕ × ℕ} →
     let m = proj₁ p in let n = proj₂ p in
     id≃ {A = Fin m} +F id≃ {A = Fin n} ≋ id≃
-[id,id]≋id {(m , n)} = eq {!!} {!!}
-
-{--
+[id+id]≋id {(m , n)} =
   let em = id≃ {A = Fin m} in 
   let en = id≃ {A = Fin n} in 
   let em⊎en = id≃ {A = Fin m ⊎ Fin n} in 
-  let em+n = id≃ {A = Fin (m + n)} in 
+  let em+n = id≃ {A = Fin (m + n)} in
+  let f≋ = id≋ {x = ⊎≃+ {m} {n}} in
+  let g≋ = id≋ {x = +≃⊎ {m} {n}} in
   begin (
   em +F en
     ≋⟨ id≋ ⟩
   ⊎≃+ ● (em ⊎≃ en) ● +≃⊎
-    ≋⟨ {!!} ⟩
+    ≋⟨ ●-resp-≋ f≋ (●-resp-≋ [id,id]≋id g≋) ⟩
+  ⊎≃+ ● id≃ {A = Fin m ⊎ Fin n} ● +≃⊎
+    ≋⟨ ●-resp-≋ f≋ (lid≋ {f = +≃⊎}) ⟩
+  ⊎≃+ {m} ● +≃⊎ 
+    ≋⟨ rinv≋ (⊎≃+ {m}) ⟩
   em+n ∎)
   where open ≋-Reasoning
---}
 
 ------------------------------------------------------------------------------
 
