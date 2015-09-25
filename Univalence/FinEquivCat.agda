@@ -7,16 +7,19 @@ module FinEquivCat where
 -- morphisms ≋ is extensional
 
 open import Level using () renaming (zero to lzero; suc to lsuc)
+
+open import Data.Empty using ()
+open import Data.Fin using (Fin)
+open import Data.Nat using (ℕ; _+_; _*_)
+open import Data.Unit using ()
+open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to map⊎)
+open import Data.Product
+  using (_,_; proj₁; proj₂;_×_; Σ; uncurry)
+  renaming (map to map×)
+import Function as F using (_∘_; id)
+
 import Relation.Binary.PropositionalEquality as P
   using (refl; trans; cong)
-open import Relation.Binary using (Rel)
-open import Data.Nat using (ℕ; _+_; _*_)
-open import Data.Fin using (Fin)
-open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to map⊎)
-open import Data.Product using (_,_; proj₁; proj₂;_×_; Σ) renaming (map to map×)
-open import Data.Unit using ()
-open import Data.Empty using ()
-import Function as F using (_∘_; id)
 
 open import Categories.Category using (Category)
 open import Categories.Groupoid using (Groupoid)
@@ -29,11 +32,17 @@ open import Categories.Monoidal.Symmetric using (Symmetric)
 open import Categories.RigCategory
   using (RigCategory; module BimonoidalHelperFunctors)
 
-open import FinEquivTypeEquiv using (_fin≃_; module PlusE)
 open import Equiv using (id≃; sym≃; _∼_; sym∼; _●_)
 open import EquivEquiv
   using (_≋_; eq; id≋; sym≋; trans≋; ●-resp-≋; ●-assoc; lid≋; rid≋;
-    linv≋; rinv≋)
+         linv≋; rinv≋; module _≋_)
+
+open import FinEquivTypeEquiv
+  using (_fin≃_; module PlusE; module TimesE; module PlusTimesE)
+open PlusE using (_+F_)  
+open import FinEquivEquiv
+  using ([id,id]≋id)
+
 open import Data.Sum.Properties
   using (id⊎id∼id)
 
@@ -67,15 +76,14 @@ FinEquivGroupoid = record
 
 -- The additive structure is monoidal
 
-{-
 ⊎-bifunctor : Bifunctor FinEquivCat FinEquivCat FinEquivCat
 ⊎-bifunctor = record
-  { F₀ = λ {(m , n) → m + n}
-  ; F₁ = λ {( m≃n , o≃p ) → m≃n +F o≃p}
-  ; identity = {!!}
+  { F₀ = uncurry _+_ 
+  ; F₁ = uncurry _+F_
+  ; identity = {![id,id]≋id!}
   ; homomorphism = {!!}
   ; F-resp-≡ = λ x → eq (λ x₁ → {!!}) {!!}
   }
-  where open Plus
--}
+  where open _≋_
+
 ------------------------------------------------------------------------------
