@@ -72,7 +72,7 @@ intro-inv-r f =
     (h ● f) +F (i ● g)
       ≋⟨ id≋ ⟩
     ⊎≃+ ● ((h ● f) ⊎≃ (i ● g)) ● +≃⊎
-      ≋⟨ f≋ ◎ (⊎●≋●⊎ ◎ g≋) ⟩
+      ≋⟨ f≋ ◎ (⊎●≋●⊎ ◎ g≋) ⟩ -- the real work, rest is shuffling
     ⊎≃+ ● ((h ⊎≃ i) ● (f ⊎≃ g)) ● +≃⊎
       ≋⟨ ●-assocl {f = +≃⊎} { (h ⊎≃ i) ● (f ⊎≃ g) } {⊎≃+} ⟩
     (⊎≃+ ● ((h ⊎≃ i) ● (f ⊎≃ g))) ● +≃⊎
@@ -82,7 +82,7 @@ intro-inv-r f =
     ((⊎≃+ ● (h ⊎≃ i ● +≃⊎) ● ⊎≃+) ● f ⊎≃ g) ● +≃⊎
       ≋⟨ (●-assocl {f = ⊎≃+} {h ⊎≃ i ● +≃⊎} {⊎≃+} ◎ id≋fg) ◎ g≋ ⟩
     (((⊎≃+ ● (h ⊎≃ i ● +≃⊎)) ● ⊎≃+) ● f ⊎≃ g) ● +≃⊎
-      ≋⟨ id≋ ⟩
+      ≋⟨ id≋ ⟩ -- the left part is done, show it
     ((h +F i ● ⊎≃+) ● f ⊎≃ g) ● +≃⊎
       ≋⟨ ●-assoc {f = f ⊎≃ g} {⊎≃+} {h +F i} ◎ g≋ ⟩
     (h +F i ● (⊎≃+ ● f ⊎≃ g)) ● +≃⊎
