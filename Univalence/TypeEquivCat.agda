@@ -31,7 +31,7 @@ open import Categories.RigCategory
 open import Equiv
   using (_∼_; sym∼; _≃_; id≃; sym≃; _●_; _⊎≃_; _×≃_)
 open import EquivEquiv
-  using (_≋_; eq; id≋; sym≋; trans≋; ●-assoc; ●-resp-≋;
+  using (_≋_; eq; id≋; sym≋; trans≋; ●-assoc; _◎_;
     linv≋; rinv≋; lid≋; rid≋; flip-sym≋; module _≋_)
 
 open import TypeEquiv
@@ -85,7 +85,7 @@ TypeEquivCat = record
   ; identityˡ = lid≋
   ; identityʳ = rid≋
   ; equiv = record { refl = id≋ ; sym = sym≋ ; trans = trans≋ }
-  ; ∘-resp-≡ = ●-resp-≋
+  ; ∘-resp-≡ = _◎_
   }
 
 -- The category has inverses and hence a groupoid
@@ -197,11 +197,11 @@ module ×h = MonoidalHelperFunctors TypeEquivCat ×-bifunctor ⊤
 1×y≡y = record
   { F⇒G = record
     { η = λ X → unite⋆equiv
-    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl)
+    ; commute = λ f → unite⋆-nat
     }
   ; F⇐G = record
     { η = λ X → uniti⋆equiv
-    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl)
+    ; commute = λ f → uniti⋆-nat
     }
   ; iso = λ X → record
     { isoˡ = linv≋ unite⋆equiv
@@ -213,11 +213,11 @@ y×1≡y : NaturalIsomorphism ×h.x⊗id ×h.x
 y×1≡y = record
   { F⇒G = record 
     { η = λ X → unite⋆′equiv 
-    ;  commute = λ f → eq (λ x → P.refl) (λ x → P.refl) 
+    ;  commute = λ f → unite⋆′-nat
     }
   ; F⇐G = record 
     { η = λ X → uniti⋆′equiv 
-    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl) 
+    ; commute = λ f → uniti⋆′-nat
     }
   ; iso = λ X → record 
     { isoˡ = linv≋ unite⋆′equiv
@@ -229,10 +229,10 @@ y×1≡y = record
 [x×y]×z≡x×[y×z] = record
   { F⇒G = record
     { η = λ X → assocr⋆equiv
-    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl) }
+    ; commute = λ f → assocr⋆-nat }
   ; F⇐G = record
     { η = λ X → assocl⋆equiv
-    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl) }
+    ; commute = λ f → assocl⋆-nat }
   ; iso = λ X → record
     { isoˡ = linv≋ assocr⋆equiv
     ; isoʳ = rinv≋ assocr⋆equiv }

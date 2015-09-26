@@ -24,7 +24,7 @@ _⊎→_ = map⊎
 
 ------------------------------------------------------------------------------
 -- Note that all these lemmas are "simple" in the sense that they
--- are all about map⊎ rather than [_,_]
+-- are all about ⊎→ (i.e. map⊎) rather than [_,_]
 
 id⊎id∼id : {A B : Set} → (F.id {A = A} ⊎→ F.id {A = B}) ∼ F.id
 id⊎id∼id (inj₁ x) = P.refl

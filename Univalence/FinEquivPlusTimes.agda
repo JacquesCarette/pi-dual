@@ -135,9 +135,9 @@ module Plus where
          (sym (inj₂-≡ (raise m y) (≤-pred (≰⇒> ¬p)))))
 
   -- the main equivalence
-
-  fwd-iso : {m n : ℕ} → (Fin m ⊎ Fin n) ≃ Fin (m + n)
-  fwd-iso {m} {n} = fwd , qinv bwd (fwd∘bwd~id {m}) (bwd∘fwd~id {m})
+  abstract
+    fwd-iso : {m n : ℕ} → (Fin m ⊎ Fin n) ≃ Fin (m + n)
+    fwd-iso {m} {n} = fwd , qinv bwd (fwd∘bwd~id {m}) (bwd∘fwd~id {m})
 
   -- aliases for the above which are more convenient
   ⊎≃+ : {m n : ℕ} → (Fin m ⊎ Fin n) ≃ Fin (m + n)
@@ -242,8 +242,9 @@ module Times where
       same-quot = addMul-lemma q (toℕ b) n r d ( sym eq' )
       pf₁ = (toℕ-injective (trans (toℕ-fromℕ≤ p) (proj₂ same-quot)))
 
-  fwd-iso : {m n : ℕ} → (Fin m × Fin n) ≃ Fin (m * n)
-  fwd-iso {m} {n} = fwd , qinv bwd (fwd∘bwd~id {m}) (bwd∘fwd~id {m})
+  abstract
+    fwd-iso : {m n : ℕ} → (Fin m × Fin n) ≃ Fin (m * n)
+    fwd-iso {m} {n} = fwd , qinv bwd (fwd∘bwd~id {m}) (bwd∘fwd~id {m})
 
   -- convenient aliases
   ×≃* : {m n : ℕ} → (Fin m × Fin n) ≃ Fin (m * n)

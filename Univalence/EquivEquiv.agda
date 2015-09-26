@@ -54,9 +54,9 @@ trans≋ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {x y z : A ≃ B} →
 trans≋ (eq f≡ g≡) (eq h≡ i≡) =
    eq (λ a → P.trans (f≡ a) (h≡ a)) (λ b → P.trans (g≡ b) (i≡ b))
 
-●-resp-≋ : {A B C : Set} {f h : B ≃ C} {g i : A ≃ B} → f ≋ h → g ≋ i →
+_◎_ : {A B C : Set} {f h : B ≃ C} {g i : A ≃ B} → f ≋ h → g ≋ i →
   (f ● g) ≋ (h ● i)
-●-resp-≋ {f = f , _} {_ , qinv h⁻¹ _ _} {_ , qinv g⁻¹ _ _} {i , _}
+_◎_ {f = f , _} {_ , qinv h⁻¹ _ _} {_ , qinv g⁻¹ _ _} {i , _}
   (eq f≡ g≡) (eq h≡ i≡) =
   eq (λ x → P.trans (P.cong f (h≡ x)) (f≡ (i x)))
      (λ x → P.trans (P.cong g⁻¹ (g≡ x)) (i≡ (h⁻¹ x)))
@@ -92,6 +92,10 @@ rid≋ = eq (λ _ → P.refl) (λ _ → P.refl)
 ●-assoc : {A B C D : Set} {f : A ≃ B} {g : B ≃ C} {h : C ≃ D} →
       ((h ● g) ● f) ≋ (h ● (g ● f))
 ●-assoc = eq (λ x → P.refl) (λ x → P.refl)
+
+●-assocl : {A B C D : Set} {f : A ≃ B} {g : B ≃ C} {h : C ≃ D} →
+       h ● (g ● f) ≋ (h ● g) ● f
+●-assocl {f = f} {g} {h} = sym≋ (●-assoc {f = f} {g} {h})
 
 -- The setoid of equivalences under ≋
 
