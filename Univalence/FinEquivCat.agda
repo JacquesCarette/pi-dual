@@ -41,8 +41,7 @@ open import FinEquivTypeEquiv
   using (_fin≃_; module PlusE; module TimesE; module PlusTimesE)
 open PlusE using (_+F_)  
 open import FinEquivEquiv
-  using ([id,id]≋id)
-
+  using ([id+id]≋id)
 open import Data.Sum.Properties
   using (id⊎id∼id)
 
@@ -80,7 +79,7 @@ FinEquivGroupoid = record
 ⊎-bifunctor = record
   { F₀ = uncurry _+_ 
   ; F₁ = uncurry _+F_
-  ; identity = [id,id]≋id
+  ; identity = λ { {(m , n)} → [id+id]≋id {(m , n)}}
   ; homomorphism = {!!}
   ; F-resp-≡ = λ x → eq (λ x₁ → {!!}) {!!}
   }
