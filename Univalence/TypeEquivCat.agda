@@ -31,7 +31,7 @@ open import Categories.RigCategory
 open import Equiv
   using (_∼_; sym∼; _≃_; id≃; sym≃; _●_; _⊎≃_; _×≃_)
 open import EquivEquiv
-  using (_≋_; eq; id≋; sym≋; trans≋; ●-assoc; ●-resp-≋;
+  using (_≋_; eq; id≋; sym≋; trans≋; ●-assoc; _◎_;
     linv≋; rinv≋; lid≋; rid≋; flip-sym≋; module _≋_)
 
 open import TypeEquiv
@@ -85,7 +85,7 @@ TypeEquivCat = record
   ; identityˡ = lid≋
   ; identityʳ = rid≋
   ; equiv = record { refl = id≋ ; sym = sym≋ ; trans = trans≋ }
-  ; ∘-resp-≡ = ●-resp-≋
+  ; ∘-resp-≡ = _◎_
   }
 
 -- The category has inverses and hence a groupoid

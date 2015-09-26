@@ -5,10 +5,12 @@ module FinEquivEquiv where
 open import Data.Product using (_×_; proj₁; proj₂)
 
 open import Equiv using (sym∼; sym≃; _⊎≃_; id≃; _≃_; _●_; _×≃_; qinv)
+
 open import FinEquivPlusTimes using (module Plus)
 open Plus using (⊎≃+; +≃⊎)
+
 open import FinEquivTypeEquiv
-  using (module PlusE; module TimesE; module PlusTimesE)
+  using (_fin≃_; module PlusE; module TimesE; module PlusTimesE)
 open PlusE using (_+F_)
 open import EquivEquiv
 
@@ -19,19 +21,8 @@ open import Data.Fin using (Fin)
 open import Data.Sum using (_⊎_)
 open import Data.Product using (_,_)
 
-open import Data.Sum.Properties
-  using (id⊎id∼id; ⊎∘∼∘⊎; ⊎→-resp-∼;
-    unite₊∘[id,f]≡f∘unite₊; [id,g]∘uniti₊≡uniti₊∘g;
-    unite₊′∘[f,id]≡f∘unite₊′; [g,id]∘uniti₊′≡uniti₊′∘g;
-    assocr₊∘[[,],]; [[,],]∘assocl₊;
-    triangle⊎-left; triangle⊎-right;
-    pentagon⊎-right; pentagon⊎-left)
-
-open import Data.Product.Properties
-  using (id×id∼id; ×∘∼∘×; ×→-resp-∼;
-    unite⋆-coh; uniti⋆-coh)
-
-open import TypeEquivEquiv using ([id,id]≋id)
+open import TypeEquivEquiv 
+  using ([id,id]≋id; ⊎●≋●⊎)
 
 ------------------------------------------------------------------------------
 -- equivalences for the ⊎ structure
@@ -50,14 +41,56 @@ open import TypeEquivEquiv using ([id,id]≋id)
   em +F en
     ≋⟨ id≋ ⟩
   ⊎≃+ ● (em ⊎≃ en) ● +≃⊎
-    ≋⟨ ●-resp-≋ f≋ (●-resp-≋ [id,id]≋id g≋) ⟩
+    ≋⟨ f≋ ◎ ([id,id]≋id ◎ g≋) ⟩
   ⊎≃+ ● id≃ {A = Fin m ⊎ Fin n} ● +≃⊎
-    ≋⟨ ●-resp-≋ f≋ (lid≋ {f = +≃⊎}) ⟩
+    ≋⟨ f≋ ◎ lid≋ {f = +≃⊎} ⟩
   ⊎≃+ {m} ● +≃⊎ 
     ≋⟨ rinv≋ (⊎≃+ {m}) ⟩
   em+n ∎)
   where open ≋-Reasoning
 
+intro-inv-r : {m n o p : ℕ} (f : (Fin m ⊎ Fin n) ≃ (Fin o ⊎ Fin p)) → f ≋ (f ● +≃⊎) ● ⊎≃+
+intro-inv-r f = 
+  begin (
+    f
+      ≋⟨ sym≋ rid≋ ⟩
+    f ● id≃
+      ≋⟨ id≋ {x = f} ◎ sym≋ (linv≋ ⊎≃+) ⟩
+    f ● (+≃⊎ ● ⊎≃+)
+      ≋⟨ ●-assocl {f = ⊎≃+} {+≃⊎} {f} ⟩
+    (f ● +≃⊎) ● ⊎≃+ ∎)
+  where open ≋-Reasoning
+
++●≋●+ : {A B C D E F : ℕ} →
+  {f : A fin≃ C} {g : B fin≃ D} {h : C fin≃ E} {i : D fin≃ F} →
+  (h ● f) +F (i ● g) ≋ (h +F i) ● (f +F g)
++●≋●+ {f = f} {g} {h} {i} =
+  let f≋ = id≋ {x = ⊎≃+} in
+  let g≋ = id≋ {x = +≃⊎} in
+  let id≋fg = id≋ {x = f ⊎≃ g} in
+  begin (
+    (h ● f) +F (i ● g)
+      ≋⟨ id≋ ⟩
+    ⊎≃+ ● ((h ● f) ⊎≃ (i ● g)) ● +≃⊎
+      ≋⟨ f≋ ◎ (⊎●≋●⊎ ◎ g≋) ⟩
+    ⊎≃+ ● ((h ⊎≃ i) ● (f ⊎≃ g)) ● +≃⊎
+      ≋⟨ ●-assocl {f = +≃⊎} { (h ⊎≃ i) ● (f ⊎≃ g) } {⊎≃+} ⟩
+    (⊎≃+ ● ((h ⊎≃ i) ● (f ⊎≃ g))) ● +≃⊎
+      ≋⟨ ●-assocl {f = f ⊎≃ g} {h ⊎≃ i} {⊎≃+} ◎ g≋ ⟩
+    ((⊎≃+ ● h ⊎≃ i) ● f ⊎≃ g) ● +≃⊎
+      ≋⟨ ((f≋ ◎ intro-inv-r (h ⊎≃ i)) ◎ id≋fg) ◎ g≋ ⟩
+    ((⊎≃+ ● (h ⊎≃ i ● +≃⊎) ● ⊎≃+) ● f ⊎≃ g) ● +≃⊎
+      ≋⟨ (●-assocl {f = ⊎≃+} {h ⊎≃ i ● +≃⊎} {⊎≃+} ◎ id≋fg) ◎ g≋ ⟩
+    (((⊎≃+ ● (h ⊎≃ i ● +≃⊎)) ● ⊎≃+) ● f ⊎≃ g) ● +≃⊎
+      ≋⟨ id≋ ⟩
+    ((h +F i ● ⊎≃+) ● f ⊎≃ g) ● +≃⊎
+      ≋⟨ ●-assoc {f = f ⊎≃ g} {⊎≃+} {h +F i} ◎ g≋ ⟩
+    (h +F i ● (⊎≃+ ● f ⊎≃ g)) ● +≃⊎
+      ≋⟨ ●-assoc {f = +≃⊎} {⊎≃+ ● f ⊎≃ g} {h +F i}⟩
+    (h +F i) ● ((⊎≃+ ● f ⊎≃ g) ● +≃⊎)
+      ≋⟨ id≋ {x = h +F i} ◎ ●-assoc {f = +≃⊎} {f ⊎≃ g} {⊎≃+}⟩
+    (h +F i) ● (f +F g) ∎)
+  where open ≋-Reasoning
 ------------------------------------------------------------------------------
 
 

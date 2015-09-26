@@ -34,17 +34,15 @@ open import Categories.RigCategory
 
 open import Equiv using (id≃; sym≃; _∼_; sym∼; _●_)
 open import EquivEquiv
-  using (_≋_; eq; id≋; sym≋; trans≋; ●-resp-≋; ●-assoc; lid≋; rid≋;
+  using (_≋_; eq; id≋; sym≋; trans≋; _◎_; ●-assoc; lid≋; rid≋;
          linv≋; rinv≋; module _≋_)
 
 open import FinEquivTypeEquiv
   using (_fin≃_; module PlusE; module TimesE; module PlusTimesE)
 open PlusE using (_+F_)  
 open import FinEquivEquiv
-  using ([id+id]≋id)
+  using ([id+id]≋id; +●≋●+)
 
-open import Data.Sum.Properties
-  using (id⊎id∼id)
 
 ------------------------------------------------------------------------------
 -- Fin and type equivalences are a category
@@ -62,7 +60,7 @@ FinEquivCat = record
   ; identityˡ = lid≋
   ; identityʳ = rid≋ 
   ; equiv = record { refl = id≋ ; sym = sym≋ ; trans = trans≋ } 
-  ; ∘-resp-≡ = ●-resp-≋ 
+  ; ∘-resp-≡ = _◎_
   }
 
 FinEquivGroupoid : Groupoid FinEquivCat
@@ -81,8 +79,8 @@ FinEquivGroupoid = record
   { F₀ = uncurry _+_ 
   ; F₁ = uncurry _+F_
   ; identity = [id+id]≋id
-  ; homomorphism = {!!}
-  ; F-resp-≡ = λ x → eq (λ x₁ → {!!}) {!!}
+  ; homomorphism = +●≋●+
+  ; F-resp-≡ = uncurry {!!}
   }
   where open _≋_
 
