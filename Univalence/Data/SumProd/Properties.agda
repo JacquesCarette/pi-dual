@@ -44,7 +44,7 @@ distl-coh (a , inj₂ y) = P.refl
 
 factorl-coh : {A B C D E F : Set} →
   {f : A → D} {g : B → E} {h : C → F} →
-  factorl ∘ ((f ×→ g) ⊎→ (f ×→ h)) ∼ (f ×→ (g ⊎→ h)) ∘ factorl
+  (f ×→ (g ⊎→ h)) ∘ factorl ∼ factorl ∘ ((f ×→ g) ⊎→ (f ×→ h))
 factorl-coh (inj₁ (a , b)) = P.refl
 factorl-coh (inj₂ (a , c)) = P.refl
 
@@ -99,7 +99,7 @@ distl-assoc-lemma : {A B C D : Set} →
 distl-assoc-lemma (a , b , inj₁ x) = P.refl
 distl-assoc-lemma (a , b , inj₂ y) = P.refl
 
-assoc-factorl-lemma : {A B C D : Set} → -- (x : ((A × B) × C) ⊎ ((A × B) × D)) →
+assoc-factorl-lemma : {A B C D : Set} →
   assocr⋆ ∘ factorl {A × B} {C} {D} ∼ (id ×→ factorl) ∘ factorl ∘ (assocr⋆ ⊎→ assocr⋆)
 assoc-factorl-lemma (inj₁ x) = P.refl
 assoc-factorl-lemma (inj₂ y) = P.refl

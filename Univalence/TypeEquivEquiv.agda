@@ -7,7 +7,8 @@ open import TypeEquiv
   using (unite₊equiv; uniti₊equiv; unite₊′equiv; uniti₊′equiv;
     assocr₊equiv; assocl₊equiv; swap₊equiv;
     unite⋆equiv; uniti⋆equiv; unite⋆′equiv; uniti⋆′equiv;
-    assocr⋆equiv; assocl⋆equiv; swap⋆equiv)
+    assocr⋆equiv; assocl⋆equiv; swap⋆equiv;
+    distlequiv; factorlequiv)
 open import EquivEquiv
 
 open import Data.Empty using (⊥)
@@ -31,7 +32,9 @@ open import Data.Product.Properties
     triangle⋆-left; triangle⋆-right;
     pentagon⋆-right; pentagon⋆-left;
     swap⋆-coh; hexagon×-right; hexagon×-left)
-  
+
+open import Data.SumProd.Properties -- TODO: list them
+
 -- we define all the equivalences-between-equivalences that hold
 -- between type equivalences.
 
@@ -180,3 +183,15 @@ assocl⋆-swap⋆-coh : ∀ {A B C : Set} →
   assocl⋆equiv {A} {B} {C} ● swap⋆equiv ● assocl⋆equiv {B} {C} {A} ≋
   swap⋆equiv ×≃ id≃ ● assocl⋆equiv ● id≃ ×≃ swap⋆equiv
 assocl⋆-swap⋆-coh = eq hexagon×-left hexagon×-right
+
+-------------------
+-- distributivity
+distl-nat : {A B C D E F : Set} →
+  {f : A ≃ D} {g : B ≃ E} {h : C ≃ F} →
+  distlequiv ● (f ×≃ (g ⊎≃ h)) ≋ ((f ×≃ g) ⊎≃ (f ×≃ h)) ● distlequiv
+distl-nat = eq distl-coh factorl-coh
+
+factorl-nat : {A B C D E F : Set} →
+  {f : A ≃ D} {g : B ≃ E} {h : C ≃ F} →
+   factorlequiv ● ((f ×≃ g) ⊎≃ (f ×≃ h)) ≋ (f ×≃ (g ⊎≃ h)) ● factorlequiv
+factorl-nat = flip-sym≋ distl-nat
