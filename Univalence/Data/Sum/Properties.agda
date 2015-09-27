@@ -101,10 +101,10 @@ pentagon⊎-left (inj₂ (inj₁ x)) = P.refl
 pentagon⊎-left (inj₂ (inj₂ (inj₁ x))) = P.refl
 pentagon⊎-left (inj₂ (inj₂ (inj₂ y))) = P.refl
 
-swap₊∘[f,g]≡[g,f]∘swap₊ : {A B C D : Set} {f : A → C} {g : B → D} →
+swap₊-coh : {A B C D : Set} {f : A → C} {g : B → D} →
   swap₊ ∘ (f ⊎→ g) ∼ (g ⊎→ f) ∘ swap₊
-swap₊∘[f,g]≡[g,f]∘swap₊ (inj₁ x) = P.refl
-swap₊∘[f,g]≡[g,f]∘swap₊ (inj₂ y) = P.refl
+swap₊-coh (inj₁ x) = P.refl
+swap₊-coh (inj₂ y) = P.refl
 
 hexagon⊎-right : {A B C : Set} →
   assocr₊ {A = B} {C} {A} ∘ swap₊ ∘ assocr₊ ∼ (F.id ⊎→ swap₊) ∘ assocr₊ ∘ (swap₊ ⊎→ F.id)

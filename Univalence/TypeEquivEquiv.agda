@@ -5,7 +5,7 @@ module TypeEquivEquiv where
 open import Equiv using (sym∼; sym≃; _⊎≃_; id≃; _≃_; _●_; _×≃_; qinv)
 open import TypeEquiv
   using (unite₊equiv; uniti₊equiv; unite₊′equiv; uniti₊′equiv;
-    assocr₊equiv; assocl₊equiv;
+    assocr₊equiv; assocl₊equiv; swap₊equiv;
     unite⋆equiv; uniti⋆equiv; unite⋆′equiv; uniti⋆′equiv;
     assocr⋆equiv; assocl⋆equiv)
 open import EquivEquiv
@@ -21,7 +21,8 @@ open import Data.Sum.Properties
     unite₊′∘[f,id]≡f∘unite₊′; [g,id]∘uniti₊′≡uniti₊′∘g;
     assocr₊∘[[,],]; [[,],]∘assocl₊;
     triangle⊎-left; triangle⊎-right;
-    pentagon⊎-right; pentagon⊎-left)
+    pentagon⊎-right; pentagon⊎-left;
+    swap₊-coh)
 
 open import Data.Product.Properties
   using (id×id∼id; ×∘∼∘×; ×→-resp-∼;
@@ -91,6 +92,10 @@ assocr₊-coh : ∀ {A B C D : Set} →
   (id≃ ⊎≃ assocr₊equiv) ● assocr₊equiv ● (assocr₊equiv ⊎≃ id≃)
 assocr₊-coh = eq pentagon⊎-right pentagon⊎-left
 
+swap₊-nat : {A B C D : Set} {f : A ≃ C} {g : B ≃ D} →
+  swap₊equiv ● (f ⊎≃ g) ≋ (g ⊎≃ f) ● swap₊equiv
+swap₊-nat = eq swap₊-coh (sym∼ swap₊-coh)
+
 ----
 -- equivalences for the × structure
 id×id≋id : ∀ {A B : Set} → id≃ {A = A} ×≃ id≃ {A = B} ≋ id≃
@@ -133,3 +138,16 @@ assocl⋆-nat : ∀ {A B C D E F : Set} →
   {f₀ : A ≃ D} {f₁ : B ≃ E} {f₂ : C ≃ F} →
   assocl⋆equiv ● (f₀ ×≃ (f₁ ×≃ f₂)) ≋ ((f₀ ×≃ f₁) ×≃ f₂) ● assocl⋆equiv
 assocl⋆-nat = flip-sym≋ assocr⋆-nat
+
+{-
+-- often called 'triangle'
+unite-assocr₊-coh : ∀ {A B : Set} →
+  unite₊′equiv ⊎≃ id≃ ≋ (id≃ ⊎≃ unite₊equiv) ● assocr₊equiv {A} {⊥} {B}
+unite-assocr₊-coh = eq triangle⊎-right triangle⊎-left
+
+-- often called 'pentagon'
+assocr₊-coh : ∀ {A B C D : Set} →
+  assocr₊equiv {A} {B} {C ⊎ D} ● assocr₊equiv ≋
+  (id≃ ⊎≃ assocr₊equiv) ● assocr₊equiv ● (assocr₊equiv ⊎≃ id≃)
+assocr₊-coh = eq pentagon⊎-right pentagon⊎-left
+-}

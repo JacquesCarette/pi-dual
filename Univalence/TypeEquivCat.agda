@@ -48,7 +48,7 @@ open import TypeEquiv
 open import TypeEquivEquiv -- need them all!
 
 open import Data.Sum.Properties
-  using (swap₊∘[f,g]≡[g,f]∘swap₊;
+  using (swap₊-coh;
          hexagon⊎-right; hexagon⊎-left)
 open import Data.SumProd.Properties
   using (dist-commute; factor-commute; distl-commute; factorl-commute;
@@ -255,11 +255,11 @@ x⊎y≈y⊎x : NaturalIsomorphism ⊎h.x⊗y ⊎h.y⊗x
 x⊎y≈y⊎x = record 
   { F⇒G = record 
     { η = λ X → swap₊equiv 
-    ; commute = λ f → eq swap₊∘[f,g]≡[g,f]∘swap₊ (sym∼ swap₊∘[f,g]≡[g,f]∘swap₊)
+    ; commute = λ f → swap₊-nat
     } 
   ; F⇐G = record 
-    { η = λ X → sym≃ swap₊equiv -- this is not *equal* to swap₊equiv !
-    ; commute = λ f → eq swap₊∘[f,g]≡[g,f]∘swap₊ (sym∼ swap₊∘[f,g]≡[g,f]∘swap₊)
+    { η = λ X → sym≃ swap₊equiv
+    ; commute = λ f → swap₊-nat
     } 
   ; iso = λ X → record
     { isoˡ = linv≋ swap₊equiv 
