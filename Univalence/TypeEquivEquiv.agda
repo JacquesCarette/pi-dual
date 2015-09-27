@@ -13,7 +13,7 @@ open import EquivEquiv
 open import Data.Empty using (⊥)
 open import Data.Unit using (⊤)
 open import Data.Sum using (_⊎_)
-open import Data.Product using (_,_)
+open import Data.Product using (_,_; _×_)
 
 open import Data.Sum.Properties
   using (id⊎id∼id; ⊎∘∼∘⊎; ⊎→-resp-∼;
@@ -27,7 +27,9 @@ open import Data.Sum.Properties
 open import Data.Product.Properties
   using (id×id∼id; ×∘∼∘×; ×→-resp-∼;
     unite⋆-coh; uniti⋆-coh; unite⋆′-coh; uniti⋆′-coh;
-    assocr⋆-coh; assocl⋆-coh)
+    assocr⋆-wf; assocl⋆-wf;
+    triangle⋆-left; triangle⋆-right;
+    pentagon⋆-right; pentagon⋆-left)
   
 -- we define all the equivalences-between-equivalences that hold
 -- between type equivalences.
@@ -144,22 +146,20 @@ uniti⋆′-nat = flip-sym≋ unite⋆′-nat
 assocr⋆-nat : ∀ {A B C D E F : Set} →
   {f₀ : A ≃ D} {f₁ : B ≃ E} {f₂ : C ≃ F} →
   assocr⋆equiv ● ((f₀ ×≃ f₁) ×≃ f₂) ≋ (f₀ ×≃ (f₁ ×≃ f₂)) ● assocr⋆equiv
-assocr⋆-nat = eq assocr⋆-coh assocl⋆-coh
+assocr⋆-nat = eq assocr⋆-wf assocl⋆-wf
 
 assocl⋆-nat : ∀ {A B C D E F : Set} →
   {f₀ : A ≃ D} {f₁ : B ≃ E} {f₂ : C ≃ F} →
   assocl⋆equiv ● (f₀ ×≃ (f₁ ×≃ f₂)) ≋ ((f₀ ×≃ f₁) ×≃ f₂) ● assocl⋆equiv
 assocl⋆-nat = flip-sym≋ assocr⋆-nat
 
-{-
 -- often called 'triangle'
-unite-assocr₊-coh : ∀ {A B : Set} →
-  unite₊′equiv ⊎≃ id≃ ≋ (id≃ ⊎≃ unite₊equiv) ● assocr₊equiv {A} {⊥} {B}
-unite-assocr₊-coh = eq triangle⊎-right triangle⊎-left
+unite-assocr⋆-coh : ∀ {A B : Set} →
+  unite⋆′equiv ×≃ id≃ ≋ (id≃ ×≃ unite⋆equiv) ● assocr⋆equiv {A} {⊤} {B}
+unite-assocr⋆-coh = eq triangle⋆-right triangle⋆-left
 
 -- often called 'pentagon'
-assocr₊-coh : ∀ {A B C D : Set} →
-  assocr₊equiv {A} {B} {C ⊎ D} ● assocr₊equiv ≋
-  (id≃ ⊎≃ assocr₊equiv) ● assocr₊equiv ● (assocr₊equiv ⊎≃ id≃)
-assocr₊-coh = eq pentagon⊎-right pentagon⊎-left
--}
+assocr⋆-coh : ∀ {A B C D : Set} →
+  assocr⋆equiv {A} {B} {C × D} ● assocr⋆equiv ≋
+  (id≃ ×≃ assocr⋆equiv) ● assocr⋆equiv ● (assocr⋆equiv ×≃ id≃)
+assocr⋆-coh = eq pentagon⋆-right pentagon⋆-left

@@ -242,8 +242,8 @@ CPM× = record
   ; identityˡ = 1×y≡y
   ; identityʳ = y×1≡y
   ; assoc = [x×y]×z≡x×[y×z]
-  ; triangle = eq (λ x → P.refl) (λ x → P.refl)
-  ; pentagon = eq (λ x → P.refl) (λ x → P.refl)
+  ; triangle = unite-assocr⋆-coh
+  ; pentagon = assocr⋆-coh
   }
 
 -- The monoidal structures are symmetric

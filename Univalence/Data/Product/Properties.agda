@@ -51,15 +51,16 @@ uniti⋆′-coh : {A B : Set} {g : A → B} →
   (g ×→ id) ∘ uniti⋆′ ∼ uniti⋆′ ∘ g
 uniti⋆′-coh x = P.refl
 
-assocr⋆-coh : {A B C D E F : Set} →
+-- wf = well-formed.  Need a better name than 'coh' everywhere
+assocr⋆-wf : {A B C D E F : Set} →
   {f₀ : A → D} {f₁ : B → E} {f₂ : C → F} →
   assocr⋆ ∘ ((f₀ ×→ f₁) ×→ f₂) ∼ (f₀ ×→ (f₁ ×→ f₂)) ∘ assocr⋆
-assocr⋆-coh _ = P.refl
+assocr⋆-wf _ = P.refl
 
-assocl⋆-coh : {A B C D E F : Set} →
+assocl⋆-wf : {A B C D E F : Set} →
   {f₀ : A → D} {f₁ : B → E} {f₂ : C → F} →
   ((f₀ ×→ f₁) ×→ f₂) ∘ assocl⋆ ∼ assocl⋆ ∘ (f₀ ×→ (f₁ ×→ f₂))
-assocl⋆-coh _ = P.refl
+assocl⋆-wf _ = P.refl
 
 triangle⋆-right : {A B : Set} →
   unite⋆′ ×→ id {A = B} ∼ (id {A = A} ×→ unite⋆) ∘ assocr⋆
@@ -69,22 +70,15 @@ triangle⋆-left : {A B : Set} →
   uniti⋆′ ×→ id {A = B} ∼ assocl⋆ {A} ∘ (id ×→ uniti⋆)
 triangle⋆-left _ = P.refl
 
+pentagon⋆-right : {A B C D : Set} →
+  assocr⋆ ∘ assocr⋆ {A × B} {C} {D} ∼ id ×→ assocr⋆ ∘ assocr⋆ ∘ assocr⋆ ×→ id
+pentagon⋆-right _ = P.refl
+
+pentagon⋆-left : {A B C D : Set} →
+  assocl⋆ ∘ assocl⋆ {A} {B} {C × D} ∼ assocl⋆ ×→ id ∘ assocl⋆ ∘ id ×→ assocl⋆
+pentagon⋆-left _ = P.refl
+
 {-
-pentagon⊎-right : {A B C D : Set} → (x : ((A ⊎ B) ⊎ C) ⊎ D) →
-  assocr₊ (assocr₊ x) P.≡ map⊎ F.id assocr₊ (assocr₊ (map⊎ assocr₊ F.id x))
-pentagon⊎-right (inj₁ (inj₁ (inj₁ x))) = P.refl
-pentagon⊎-right (inj₁ (inj₁ (inj₂ y))) = P.refl
-pentagon⊎-right (inj₁ (inj₂ y)) = P.refl
-pentagon⊎-right (inj₂ y) = P.refl
-
-pentagon⊎-left : {A B C D : Set} → (x : A ⊎ B ⊎ C ⊎ D) →
-  assocl₊ (assocl₊ x) P.≡ map⊎ assocl₊ F.id (assocl₊ (map⊎ F.id assocl₊ x))
-pentagon⊎-left (inj₁ x) = P.refl
-pentagon⊎-left (inj₂ (inj₁ x)) = P.refl
-pentagon⊎-left (inj₂ (inj₂ (inj₁ x))) = P.refl
-pentagon⊎-left (inj₂ (inj₂ (inj₂ y))) = P.refl
-
-
 swap₊∘[f,g]≡[g,f]∘swap₊ : {A B C D : Set} {f : A → C} {g : B → D} →
   (x : A ⊎ B) → swap₊ (map⊎ f g x) P.≡ map⊎ g f (swap₊ x)
 swap₊∘[f,g]≡[g,f]∘swap₊ (inj₁ x) = P.refl
