@@ -48,7 +48,7 @@ open import TypeEquiv
 open import TypeEquivEquiv -- need them all!
 
 open import Data.SumProd.Properties
-  using (dist-commute; factor-commute; distl-commute; factorl-commute;
+  using (dist-coh; factor-coh; distl-coh; factorl-coh;
          dist-swap⋆-lemma; factor-swap⋆-lemma; 
          distl-swap₊-lemma; factorl-swap₊-lemma;
          dist-dist-assoc-lemma; assoc-factor-factor-lemma;
@@ -186,8 +186,6 @@ CPM⊎ = record
 
 module ×h = MonoidalHelperFunctors TypeEquivCat ×-bifunctor ⊤
 
--- again because of η for products, lots of the following have trivial proofs
-
 1×y≡y : NaturalIsomorphism ×h.id⊗x ×h.x
 1×y≡y = record
   { F⇒G = record
@@ -301,17 +299,18 @@ SBM× = record { symmetry = linv≋ swap⋆equiv }
 -- And finally the multiplicative structure distributes over the
 -- additive one
 
+-- HERE
 module r = BimonoidalHelperFunctors BM⊎ BM×
 
 x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] : NaturalIsomorphism r.x⊗[y⊕z] r.[x⊗y]⊕[x⊗z]
 x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
   { F⇒G = record
     { η = λ X → distlequiv
-    ; commute = λ f → eq distl-commute (λ x → P.sym (factorl-commute x))
+    ; commute = λ f → eq distl-coh (λ x → P.sym (factorl-coh x))
     }
   ; F⇐G = record
     { η = λ X → factorlequiv
-    ; commute = λ f → eq factorl-commute (λ x → P.sym (distl-commute x))
+    ; commute = λ f → eq factorl-coh (λ x → P.sym (distl-coh x))
     }
   ; iso = λ X → record { isoˡ = linv≋ distlequiv
                        ; isoʳ = rinv≋ distlequiv }
@@ -321,11 +320,11 @@ x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
 [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] = record
   { F⇒G = record
     { η = λ X → distequiv
-    ; commute = λ f → eq dist-commute (λ x → P.sym (factor-commute x))
+    ; commute = λ f → eq dist-coh (λ x → P.sym (factor-coh x))
     }
   ; F⇐G = record
     { η = λ X → factorequiv
-    ; commute = λ f → eq factor-commute (λ x → P.sym (dist-commute x))
+    ; commute = λ f → eq factor-coh (λ x → P.sym (dist-coh x))
     }
   ; iso = λ X → record { isoˡ = linv≋ distequiv
                        ; isoʳ = rinv≋ distequiv }
