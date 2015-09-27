@@ -9,13 +9,12 @@ module TypeEquivCat where
 open import Level renaming (zero to lzero; suc to lsuc)
 
 open import Data.Empty using (⊥)
-open import Data.Fin using (zero; suc)
 open import Data.Unit using (⊤)
 open import Data.Sum using (_⊎_)
-open import Data.Product using (_,_; _×_; proj₁; proj₂; uncurry)
+open import Data.Product using (_,_; _×_; uncurry)
 
 import Relation.Binary.PropositionalEquality as P
-  using (_≡_; refl; sym; trans; cong; cong₂)
+  using (sym)
 
 open import Categories.Category using (Category)
 open import Categories.Groupoid using (Groupoid)
@@ -29,11 +28,12 @@ open import Categories.RigCategory
   using (RigCategory; module BimonoidalHelperFunctors)
 
 open import Equiv
-  using (_∼_; sym∼; _≃_; id≃; sym≃; _●_; _⊎≃_; _×≃_)
+  using (_≃_; id≃; sym≃; _●_; _⊎≃_; _×≃_)
 open import EquivEquiv
   using (_≋_; eq; id≋; sym≋; trans≋; ●-assoc; _◎_;
-    linv≋; rinv≋; lid≋; rid≋; flip-sym≋; module _≋_)
+    linv≋; rinv≋; lid≋; rid≋; flip-sym≋)
 
+-- list all explicitly, but these are all equivalences
 open import TypeEquiv
   using (unite₊equiv; uniti₊equiv; unite₊′equiv; uniti₊′equiv;
          assocr₊equiv; assocl₊equiv;
@@ -107,7 +107,6 @@ TypeEquivGroupoid = record
   ; homomorphism = ⊎●≋●⊎
   ; F-resp-≡ = uncurry ⊎≃-respects-≋
   }
-  where open _≋_
   
 module ⊎h = MonoidalHelperFunctors TypeEquivCat ⊎-bifunctor ⊥
 
@@ -184,7 +183,6 @@ CPM⊎ = record
   ; homomorphism = λ { {f = (f , g)} {h , i} → ×●≋●× {f = f} {g} {h} {i}}
   ; F-resp-≡ = uncurry ×≃-resp-≋
   }
-  where open _≋_
 
 module ×h = MonoidalHelperFunctors TypeEquivCat ×-bifunctor ⊤
 
@@ -275,11 +273,11 @@ x×y≈y×x : NaturalIsomorphism ×h.x⊗y ×h.y⊗x
 x×y≈y×x = record
   { F⇒G = record
     { η = λ X → swap⋆equiv
-    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl)
+    ; commute = λ _ → swap⋆-nat
     }
   ; F⇐G = record
-    { η = λ X → sym≃ swap⋆equiv -- this is not *equal* to swap⋆equiv!
-    ; commute = λ f → eq (λ x → P.refl) (λ x → P.refl)
+    { η = λ X → sym≃ swap⋆equiv
+    ; commute = λ f → swap⋆-nat
     }
   ; iso = λ X → record
     { isoˡ = linv≋ swap⋆equiv
@@ -290,15 +288,15 @@ x×y≈y×x = record
 BM× : Braided CPM×
 BM× = record 
   { braid = x×y≈y×x 
-  ; hexagon₁ = eq (λ x → P.refl) (λ x → P.refl) 
-  ; hexagon₂ = eq (λ x → P.refl) (λ x → P.refl) 
+  ; hexagon₁ = assocr⋆-swap⋆-coh
+  ; hexagon₂ = assocl⋆-swap⋆-coh 
   }
 
 SBM⊎ : Symmetric BM⊎
-SBM⊎ = record { symmetry = eq swapswap₊ swapswap₊ }
+SBM⊎ = record { symmetry = linv≋ swap₊equiv }
 
 SBM× : Symmetric BM×
-SBM× = record { symmetry = eq swapswap⋆ swapswap⋆ }
+SBM× = record { symmetry = linv≋ swap⋆equiv }
 
 -- And finally the multiplicative structure distributes over the
 -- additive one

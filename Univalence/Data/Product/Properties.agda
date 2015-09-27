@@ -78,22 +78,15 @@ pentagon⋆-left : {A B C D : Set} →
   assocl⋆ ∘ assocl⋆ {A} {B} {C × D} ∼ assocl⋆ ×→ id ∘ assocl⋆ ∘ id ×→ assocl⋆
 pentagon⋆-left _ = P.refl
 
-{-
-swap₊∘[f,g]≡[g,f]∘swap₊ : {A B C D : Set} {f : A → C} {g : B → D} →
-  (x : A ⊎ B) → swap₊ (map⊎ f g x) P.≡ map⊎ g f (swap₊ x)
-swap₊∘[f,g]≡[g,f]∘swap₊ (inj₁ x) = P.refl
-swap₊∘[f,g]≡[g,f]∘swap₊ (inj₂ y) = P.refl
+swap⋆-coh : {A B C D : Set} {f : A → C} {g : B → D} →
+  swap⋆ ∘ (f ×→ g) ∼ (g ×→ f) ∘ swap⋆
+swap⋆-coh _ = P.refl
 
-hexagon⊎-right : {A B C : Set} → (x : (A ⊎ B) ⊎ C) →
-  assocr₊ (swap₊ (assocr₊ x)) P.≡ map⊎ F.id swap₊ (assocr₊ (map⊎ swap₊ F.id x))
-hexagon⊎-right (inj₁ (inj₁ x)) = P.refl
-hexagon⊎-right (inj₁ (inj₂ y)) = P.refl
-hexagon⊎-right (inj₂ y) = P.refl
+hexagon×-right : {A B C : Set} →
+  assocr⋆ {A = B} {C} {A} ∘ swap⋆ ∘ assocr⋆ ∼ (id ×→ swap⋆) ∘ assocr⋆ ∘ (swap⋆ ×→ id)
+hexagon×-right _ = P.refl
 
-hexagon⊎-left : {A B C : Set} → (x : A ⊎ B ⊎ C) →
-  assocl₊ (swap₊ (assocl₊ x)) P.≡ map⊎ swap₊ F.id (assocl₊ (map⊎ F.id swap₊ x))
-hexagon⊎-left (inj₁ x) = P.refl
-hexagon⊎-left (inj₂ (inj₁ x)) = P.refl
-hexagon⊎-left (inj₂ (inj₂ y)) = P.refl
--}
+hexagon×-left : {A B C : Set} →
+  assocl⋆ {A = A} {B} {C} ∘ swap⋆ ∘ assocl⋆ ∼ (swap⋆ ×→ id) ∘ assocl⋆ ∘ (id ×→ swap⋆)
+hexagon×-left _ = P.refl
 ------------------------------------------------------------------------------
