@@ -47,9 +47,6 @@ open import TypeEquiv
 
 open import TypeEquivEquiv -- need them all!
 
-open import Data.Sum.Properties
-  using (swap₊-coh;
-         hexagon⊎-right; hexagon⊎-left)
 open import Data.SumProd.Properties
   using (dist-commute; factor-commute; distl-commute; factorl-commute;
          dist-swap⋆-lemma; factor-swap⋆-lemma; 
@@ -270,8 +267,8 @@ x⊎y≈y⊎x = record
 BM⊎ : Braided CPM⊎
 BM⊎ = record 
   { braid = x⊎y≈y⊎x 
-  ; hexagon₁ = eq hexagon⊎-right hexagon⊎-left 
-  ; hexagon₂ = eq hexagon⊎-left hexagon⊎-right 
+  ; hexagon₁ = assocr₊-swap₊-coh 
+  ; hexagon₂ = assocl₊-swap₊-coh 
   }
 
 x×y≈y×x : NaturalIsomorphism ×h.x⊗y ×h.y⊗x

@@ -22,7 +22,7 @@ open import Data.Sum.Properties
     assocr₊∘[[,],]; [[,],]∘assocl₊;
     triangle⊎-left; triangle⊎-right;
     pentagon⊎-right; pentagon⊎-left;
-    swap₊-coh)
+    swap₊-coh; hexagon⊎-right; hexagon⊎-left)
 
 open import Data.Product.Properties
   using (id×id∼id; ×∘∼∘×; ×→-resp-∼;
@@ -95,6 +95,18 @@ assocr₊-coh = eq pentagon⊎-right pentagon⊎-left
 swap₊-nat : {A B C D : Set} {f : A ≃ C} {g : B ≃ D} →
   swap₊equiv ● (f ⊎≃ g) ≋ (g ⊎≃ f) ● swap₊equiv
 swap₊-nat = eq swap₊-coh (sym∼ swap₊-coh)
+
+-- often called 'hexagon'
+assocr₊-swap₊-coh : ∀ {A B C : Set} →
+  assocr₊equiv {B} {C} {A} ● swap₊equiv ● assocr₊equiv {A} {B} {C} ≋
+  id≃ ⊎≃ swap₊equiv ● assocr₊equiv ● swap₊equiv ⊎≃ id≃
+assocr₊-swap₊-coh = eq hexagon⊎-right hexagon⊎-left
+
+-- and in the opposite direction
+assocl₊-swap₊-coh : ∀ {A B C : Set} →
+  assocl₊equiv {A} {B} {C} ● swap₊equiv ● assocl₊equiv {B} {C} {A} ≋
+  swap₊equiv ⊎≃ id≃ ● assocl₊equiv ● id≃ ⊎≃ swap₊equiv
+assocl₊-swap₊-coh = eq hexagon⊎-left hexagon⊎-right
 
 ----
 -- equivalences for the × structure
