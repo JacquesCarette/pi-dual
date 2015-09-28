@@ -39,7 +39,7 @@ open import EquivEquiv
 
 open import FinEquivTypeEquiv
   using (_fin≃_; module PlusE; module TimesE; module PlusTimesE)
-open PlusE using (_+F_)  
+open PlusE using (_+F_; unite+; uniti+)
 open import FinEquivEquiv
   using ([id+id]≋id; +●≋●+; _◎F_)
 
@@ -82,5 +82,21 @@ FinEquivGroupoid = record
   ; F-resp-≡ = uncurry _◎F_
   }
   where open _≋_
+
+module ⊎h = MonoidalHelperFunctors FinEquivCat ⊎-bifunctor 0
+
+0⊎x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
+0⊎x≡x = record 
+  { F⇒G = record
+    { η = λ _ → unite+  
+    ; commute = λ f → {!!} }
+  ; F⇐G = record
+    { η = λ _ → uniti+ 
+    ; commute = λ f →  {!!} }
+  ; iso = λ _ → record
+    { isoˡ = {!!} 
+    ; isoʳ = {!!} 
+    }
+  }
 
 ------------------------------------------------------------------------------
