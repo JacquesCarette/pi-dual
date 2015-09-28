@@ -81,16 +81,20 @@ factorz-coh : {A B : Set} → {f : B → A} → {g : ⊥ → ⊥} →
 factorz-coh ()
 
 ---------------------------------------------------------------
--- various coherence lemmas 
-distl-swap₊-lemma : {A B C : Set} →
-  distl ∘ (id {A = A} ×→ swap₊ {B} {C}) ∼ swap₊ ∘ distl
-distl-swap₊-lemma (x , inj₁ y) = P.refl
-distl-swap₊-lemma (x , inj₂ y) = P.refl
+-- various coherence lemmas
 
-factorl-swap₊-lemma : {A B C : Set} →
+-- These will be named for the action they perform on the
+-- underlying type, rather than for the program they
+-- represent.  
+A×[B⊎C]→[A×C]⊎[A×B] : {A B C : Set} →
+  distl ∘ (id {A = A} ×→ swap₊ {B} {C}) ∼ swap₊ ∘ distl
+A×[B⊎C]→[A×C]⊎[A×B] (x , inj₁ y) = P.refl
+A×[B⊎C]→[A×C]⊎[A×B] (x , inj₂ y) = P.refl
+
+[A×C]⊎[A×B]→A×[B⊎C] : {A B C : Set} →
   (id ×→ swap₊) ∘ factorl ∼ factorl ∘ swap₊ {A × C} {A × B}
-factorl-swap₊-lemma (inj₁ x) = P.refl
-factorl-swap₊-lemma (inj₂ y) = P.refl
+[A×C]⊎[A×B]→A×[B⊎C] (inj₁ x) = P.refl
+[A×C]⊎[A×B]→A×[B⊎C] (inj₂ y) = P.refl
 
 dist-swap⋆-lemma : {A B C : Set} →
   (swap⋆ ⊎→ swap⋆) ∘ dist ∼ distl ∘ swap⋆ {A ⊎ B} {C}

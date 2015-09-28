@@ -228,3 +228,11 @@ distz-nat {f = (f , qinv h _ _)} {(_ , qinv g _ _)} =
 factorz-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
   factorzequiv ● g ≋ (g ×≃ f) ● factorzequiv
 factorz-nat {f = f} = flip-sym≋ (distz-nat {f = sym≃ f})
+
+------------------------------------------
+-- some equivalences for which there are two 'obvious'
+-- programs, but are in fact equivalent.  Named after
+-- the types which are witnessed to be equivalent.
+A×[B⊎C]≃[A×C]⊎[A×B] : {A B C : Set} →
+  distlequiv ● (id≃ {A = A} ×≃ swap₊equiv {B} {C}) ≋ swap₊equiv ● distlequiv
+A×[B⊎C]≃[A×C]⊎[A×B] = eq A×[B⊎C]→[A×C]⊎[A×B] [A×C]⊎[A×B]→A×[B⊎C]

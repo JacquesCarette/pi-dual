@@ -49,9 +49,7 @@ open import TypeEquiv
 open import TypeEquivEquiv -- need them all!
 
 open import Data.SumProd.Properties
-  using (dist-coh; factor-coh; distl-coh; factorl-coh;
-         dist-swap⋆-lemma; factor-swap⋆-lemma; 
-         distl-swap₊-lemma; factorl-swap₊-lemma;
+  using (dist-swap⋆-lemma; factor-swap⋆-lemma;
          dist-dist-assoc-lemma; assoc-factor-factor-lemma;
          distl-assoc-lemma; assoc-factorl-lemma;
          fully-distribute; fully-factor;
@@ -345,7 +343,7 @@ x⊗0≡0 = record
     ; isoʳ = rinv≋ distzrequiv
     }
   }
--- HERE
+
 0⊗x≡0 : NaturalIsomorphism r.0⊗x r.0↑
 0⊗x≡0 = record
   { F⇒G = record
@@ -361,14 +359,14 @@ x⊗0≡0 = record
     ; isoʳ = rinv≋ distzequiv
     }
   }
-
+-- HERE
 TERig : RigCategory SBM⊎ SBM×
 TERig = record
   { distribₗ = x⊗[y⊕z]≡[x⊗y]⊕[x⊗z]
   ; distribᵣ = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z]
   ; annₗ = 0⊗x≡0
   ; annᵣ = x⊗0≡0
-  ; laplazaI = eq distl-swap₊-lemma factorl-swap₊-lemma
+  ; laplazaI = A×[B⊎C]≃[A×C]⊎[A×B]
   ; laplazaII = eq dist-swap⋆-lemma factor-swap⋆-lemma
   ; laplazaIV = eq dist-dist-assoc-lemma assoc-factor-factor-lemma
   ; laplazaVI = eq distl-assoc-lemma assoc-factorl-lemma
