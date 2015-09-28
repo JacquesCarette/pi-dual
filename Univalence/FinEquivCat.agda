@@ -41,7 +41,7 @@ open import FinEquivTypeEquiv
   using (_fin≃_; module PlusE; module TimesE; module PlusTimesE)
 open PlusE using (_+F_)  
 open import FinEquivEquiv
-  using ([id+id]≋id; +●≋●+)
+  using ([id+id]≋id; +●≋●+; _◎F_)
 
 ------------------------------------------------------------------------------
 -- Fin and type equivalences are a category
@@ -79,7 +79,7 @@ FinEquivGroupoid = record
   ; F₁ = uncurry _+F_
   ; identity = [id+id]≋id
   ; homomorphism = +●≋●+
-  ; F-resp-≡ = uncurry {!!}
+  ; F-resp-≡ = uncurry _◎F_
   }
   where open _≋_
 
