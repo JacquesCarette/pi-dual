@@ -56,7 +56,7 @@ dist-coh (inj₂ y , c) = P.refl
 
 factor-coh : {A B C D E F : Set} →
   {f : A → D} {g : B → E} {h : C → F} →
-  factor ∘ ((f ×→ h) ⊎→ (g ×→ h)) ∼ ((f ⊎→ g) ×→ h) ∘ factor
+  ((f ⊎→ g) ×→ h) ∘ factor ∼ factor ∘ ((f ×→ h) ⊎→ (g ×→ h))
 factor-coh (inj₁ x) = P.refl
 factor-coh (inj₂ y) = P.refl
 

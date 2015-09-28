@@ -320,11 +320,11 @@ x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
 [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] = record
   { F⇒G = record
     { η = λ X → distequiv
-    ; commute = λ f → eq dist-coh (λ x → P.sym (factor-coh x))
+    ; commute = λ f → dist-nat
     }
   ; F⇐G = record
     { η = λ X → factorequiv
-    ; commute = λ f → eq factor-coh (λ x → P.sym (dist-coh x))
+    ; commute = λ f → factor-nat
     }
   ; iso = λ X → record { isoˡ = linv≋ distequiv
                        ; isoʳ = rinv≋ distequiv }

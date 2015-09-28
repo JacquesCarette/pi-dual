@@ -8,7 +8,7 @@ open import TypeEquiv
     assocr₊equiv; assocl₊equiv; swap₊equiv;
     unite⋆equiv; uniti⋆equiv; unite⋆′equiv; uniti⋆′equiv;
     assocr⋆equiv; assocl⋆equiv; swap⋆equiv;
-    distlequiv; factorlequiv)
+    distlequiv; factorlequiv; distequiv; factorequiv)
 open import EquivEquiv
 
 open import Data.Empty using (⊥)
@@ -195,3 +195,13 @@ factorl-nat : {A B C D E F : Set} →
   {f : A ≃ D} {g : B ≃ E} {h : C ≃ F} →
    factorlequiv ● ((f ×≃ g) ⊎≃ (f ×≃ h)) ≋ (f ×≃ (g ⊎≃ h)) ● factorlequiv
 factorl-nat = flip-sym≋ distl-nat
+
+dist-nat : {A B C D E F : Set} →
+  {f : A ≃ D} {g : B ≃ E} {h : C ≃ F} →
+  distequiv ● ((f ⊎≃ g) ×≃ h) ≋ ((f ×≃ h) ⊎≃ (g ×≃ h)) ● distequiv
+dist-nat = eq dist-coh factor-coh
+
+factor-nat : {A B C D E F : Set} →
+  {f : A ≃ D} {g : B ≃ E} {h : C ≃ F} →
+  factorequiv ● ((f ×≃ h) ⊎≃ (g ×≃ h)) ≋ ((f ⊎≃ g) ×≃ h) ● factorequiv
+factor-nat = flip-sym≋ dist-nat
