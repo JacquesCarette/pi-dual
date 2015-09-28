@@ -236,3 +236,12 @@ factorz-nat {f = f} = flip-sym≋ (distz-nat {f = sym≃ f})
 A×[B⊎C]≃[A×C]⊎[A×B] : {A B C : Set} →
   distlequiv ● (id≃ {A = A} ×≃ swap₊equiv {B} {C}) ≋ swap₊equiv ● distlequiv
 A×[B⊎C]≃[A×C]⊎[A×B] = eq A×[B⊎C]→[A×C]⊎[A×B] [A×C]⊎[A×B]→A×[B⊎C]
+
+[A⊎B]×C≃[C×A]⊎[C×B] : {A B C : Set} →
+  (swap⋆equiv ⊎≃ swap⋆equiv) ● distequiv ≋ distlequiv ● swap⋆equiv {A ⊎ B} {C}
+[A⊎B]×C≃[C×A]⊎[C×B] = eq [A⊎B]×C→[C×A]⊎[C×B] [C×A]⊎[C×B]→[A⊎B]×C
+
+[A⊎B⊎C]×D≃[A×D⊎B×D]⊎C×D : {A B C D : Set} →
+  (distequiv ⊎≃ id≃) ● distequiv ● (assocl₊equiv {A} {B} {C} ×≃ id≃ {A = D}) ≋
+  assocl₊equiv ● (id≃ ⊎≃ distequiv) ● distequiv
+[A⊎B⊎C]×D≃[A×D⊎B×D]⊎C×D = eq [A⊎B⊎C]×D→[A×D⊎B×D]⊎C×D [A×D⊎B×D]⊎C×D→[A⊎B⊎C]×D

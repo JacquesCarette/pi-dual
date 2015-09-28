@@ -49,8 +49,7 @@ open import TypeEquiv
 open import TypeEquivEquiv -- need them all!
 
 open import Data.SumProd.Properties
-  using (dist-swap⋆-lemma; factor-swap⋆-lemma;
-         dist-dist-assoc-lemma; assoc-factor-factor-lemma;
+  using (
          distl-assoc-lemma; assoc-factorl-lemma;
          fully-distribute; fully-factor;
          distz0≡distrz0; factorz0≡factorzr0;
@@ -372,8 +371,8 @@ TERig = record
   -- the underlying ones of the symmetric bimonoidal groupoid
   -- are in fact to be identified.
   ; laplazaI = A×[B⊎C]≃[A×C]⊎[A×B]
-  ; laplazaII = eq dist-swap⋆-lemma factor-swap⋆-lemma
-  ; laplazaIV = eq dist-dist-assoc-lemma assoc-factor-factor-lemma
+  ; laplazaII = [A⊎B]×C≃[C×A]⊎[C×B]
+  ; laplazaIV = [A⊎B⊎C]×D≃[A×D⊎B×D]⊎C×D
   ; laplazaVI = eq distl-assoc-lemma assoc-factorl-lemma
   ; laplazaIX = eq fully-distribute fully-factor
   ; laplazaX = eq distz0≡distrz0 factorz0≡factorzr0

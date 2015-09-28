@@ -96,29 +96,30 @@ A×[B⊎C]→[A×C]⊎[A×B] (x , inj₂ y) = P.refl
 [A×C]⊎[A×B]→A×[B⊎C] (inj₁ x) = P.refl
 [A×C]⊎[A×B]→A×[B⊎C] (inj₂ y) = P.refl
 
-dist-swap⋆-lemma : {A B C : Set} →
+[A⊎B]×C→[C×A]⊎[C×B] : {A B C : Set} →
   (swap⋆ ⊎→ swap⋆) ∘ dist ∼ distl ∘ swap⋆ {A ⊎ B} {C}
-dist-swap⋆-lemma (inj₁ x , z) = P.refl
-dist-swap⋆-lemma (inj₂ y , z) = P.refl
+[A⊎B]×C→[C×A]⊎[C×B] (inj₁ x , z) = P.refl
+[A⊎B]×C→[C×A]⊎[C×B] (inj₂ y , z) = P.refl
 
-factor-swap⋆-lemma : {A B C : Set} →
+[C×A]⊎[C×B]→[A⊎B]×C : {A B C : Set} →
   factor ∘ (swap⋆ {C} {A} ⊎→ swap⋆ {C} {B}) ∼ swap⋆ ∘ factorl
-factor-swap⋆-lemma (inj₁ x) = P.refl
-factor-swap⋆-lemma (inj₂ y) = P.refl
+[C×A]⊎[C×B]→[A⊎B]×C (inj₁ x) = P.refl
+[C×A]⊎[C×B]→[A⊎B]×C (inj₂ y) = P.refl
 
-dist-dist-assoc-lemma : {A B C D : Set} →
+-- × binds tighter than ⊎ (in the name)
+[A⊎B⊎C]×D→[A×D⊎B×D]⊎C×D : {A B C D : Set} →
   (dist ⊎→ id) ∘ dist ∘ (assocl₊ {A} {B} {C} ×→ id {A = D}) ∼
   assocl₊ ∘ (id ⊎→ dist) ∘ dist
-dist-dist-assoc-lemma (inj₁ x , d) = P.refl
-dist-dist-assoc-lemma (inj₂ (inj₁ x) , d) = P.refl
-dist-dist-assoc-lemma (inj₂ (inj₂ y) , d) = P.refl
+[A⊎B⊎C]×D→[A×D⊎B×D]⊎C×D (inj₁ x , d) = P.refl
+[A⊎B⊎C]×D→[A×D⊎B×D]⊎C×D (inj₂ (inj₁ x) , d) = P.refl
+[A⊎B⊎C]×D→[A×D⊎B×D]⊎C×D (inj₂ (inj₂ y) , d) = P.refl
 
-assoc-factor-factor-lemma : {A B C D : Set} →
+[A×D⊎B×D]⊎C×D→[A⊎B⊎C]×D : {A B C D : Set} →
   (assocr₊ ×→ id) ∘ factor ∘ (factor {A} {B} {D} ⊎→ id {A = C × D}) ∼
   factor ∘ (id ⊎→ factor) ∘ assocr₊
-assoc-factor-factor-lemma (inj₁ (inj₁ x)) = P.refl
-assoc-factor-factor-lemma (inj₁ (inj₂ y)) = P.refl
-assoc-factor-factor-lemma (inj₂ y) = P.refl
+[A×D⊎B×D]⊎C×D→[A⊎B⊎C]×D (inj₁ (inj₁ x)) = P.refl
+[A×D⊎B×D]⊎C×D→[A⊎B⊎C]×D (inj₁ (inj₂ y)) = P.refl
+[A×D⊎B×D]⊎C×D→[A⊎B⊎C]×D (inj₂ y) = P.refl
 
 distl-assoc-lemma : {A B C D : Set} →
   distl ∘ assocl⋆ {A} {B} {C ⊎ D} ∼ (assocl⋆ ⊎→ assocl⋆) ∘ distl ∘ (id ×→ distl)
