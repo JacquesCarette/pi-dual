@@ -359,13 +359,18 @@ x⊗0≡0 = record
     ; isoʳ = rinv≋ distzequiv
     }
   }
--- HERE
+
 TERig : RigCategory SBM⊎ SBM×
 TERig = record
+  -- new combinators
   { distribₗ = x⊗[y⊕z]≡[x⊗y]⊕[x⊗z]
   ; distribᵣ = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z]
   ; annₗ = 0⊗x≡0
   ; annᵣ = x⊗0≡0
+  -- derived identities which are ``coherent'' in that the
+  -- two natural programs, using the new combinators and
+  -- the underlying ones of the symmetric bimonoidal groupoid
+  -- are in fact to be identified.
   ; laplazaI = A×[B⊎C]≃[A×C]⊎[A×B]
   ; laplazaII = eq dist-swap⋆-lemma factor-swap⋆-lemma
   ; laplazaIV = eq dist-dist-assoc-lemma assoc-factor-factor-lemma
