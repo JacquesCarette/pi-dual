@@ -50,7 +50,6 @@ open import TypeEquivEquiv -- need them all!
 
 open import Data.SumProd.Properties
   using (
-         distl-assoc-lemma; assoc-factorl-lemma;
          fully-distribute; fully-factor;
          distz0≡distrz0; factorz0≡factorzr0;
          distz0≡unite₊∘[distz,distz]∘distl;
@@ -373,7 +372,7 @@ TERig = record
   ; laplazaI = A×[B⊎C]≃[A×C]⊎[A×B]
   ; laplazaII = [A⊎B]×C≃[C×A]⊎[C×B]
   ; laplazaIV = [A⊎B⊎C]×D≃[A×D⊎B×D]⊎C×D
-  ; laplazaVI = eq distl-assoc-lemma assoc-factorl-lemma
+  ; laplazaVI = A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D
   ; laplazaIX = eq fully-distribute fully-factor
   ; laplazaX = eq distz0≡distrz0 factorz0≡factorzr0
   ; laplazaXI = eq

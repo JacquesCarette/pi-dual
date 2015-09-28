@@ -121,15 +121,16 @@ A×[B⊎C]→[A×C]⊎[A×B] (x , inj₂ y) = P.refl
 [A×D⊎B×D]⊎C×D→[A⊎B⊎C]×D (inj₁ (inj₂ y)) = P.refl
 [A×D⊎B×D]⊎C×D→[A⊎B⊎C]×D (inj₂ y) = P.refl
 
-distl-assoc-lemma : {A B C D : Set} →
-  distl ∘ assocl⋆ {A} {B} {C ⊎ D} ∼ (assocl⋆ ⊎→ assocl⋆) ∘ distl ∘ (id ×→ distl)
-distl-assoc-lemma (a , b , inj₁ x) = P.refl
-distl-assoc-lemma (a , b , inj₂ y) = P.refl
 
-assoc-factorl-lemma : {A B C D : Set} →
+A×B×[C⊎D]→[A×B]×C⊎[A×B]×D : {A B C D : Set} →
+  distl ∘ assocl⋆ {A} {B} {C ⊎ D} ∼ (assocl⋆ ⊎→ assocl⋆) ∘ distl ∘ (id ×→ distl)
+A×B×[C⊎D]→[A×B]×C⊎[A×B]×D (a , b , inj₁ x) = P.refl
+A×B×[C⊎D]→[A×B]×C⊎[A×B]×D (a , b , inj₂ y) = P.refl
+
+[A×B]×C⊎[A×B]×D→A×B×[C⊎D] : {A B C D : Set} →
   assocr⋆ ∘ factorl {A × B} {C} {D} ∼ (id ×→ factorl) ∘ factorl ∘ (assocr⋆ ⊎→ assocr⋆)
-assoc-factorl-lemma (inj₁ x) = P.refl
-assoc-factorl-lemma (inj₂ y) = P.refl
+[A×B]×C⊎[A×B]×D→A×B×[C⊎D] (inj₁ x) = P.refl
+[A×B]×C⊎[A×B]×D→A×B×[C⊎D] (inj₂ y) = P.refl
 
 -- in theory, this actually says that all ⊥ are equal!
 

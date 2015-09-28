@@ -245,3 +245,8 @@ A×[B⊎C]≃[A×C]⊎[A×B] = eq A×[B⊎C]→[A×C]⊎[A×B] [A×C]⊎[A×B]�
   (distequiv ⊎≃ id≃) ● distequiv ● (assocl₊equiv {A} {B} {C} ×≃ id≃ {A = D}) ≋
   assocl₊equiv ● (id≃ ⊎≃ distequiv) ● distequiv
 [A⊎B⊎C]×D≃[A×D⊎B×D]⊎C×D = eq [A⊎B⊎C]×D→[A×D⊎B×D]⊎C×D [A×D⊎B×D]⊎C×D→[A⊎B⊎C]×D
+
+A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D : {A B C D : Set} →
+  distlequiv ● assocl⋆equiv {A} {B} {C ⊎ D} ≋
+  (assocl⋆equiv ⊎≃ assocl⋆equiv) ● distlequiv ● (id≃ ×≃ distlequiv)
+A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D = eq A×B×[C⊎D]→[A×B]×C⊎[A×B]×D [A×B]×C⊎[A×B]×D→A×B×[C⊎D]
