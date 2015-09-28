@@ -330,7 +330,6 @@ x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
                        ; isoʳ = rinv≋ distequiv }
   }
 
--- HERE
 x⊗0≡0 : NaturalIsomorphism r.x⊗0 r.0↑
 x⊗0≡0 = record
   { F⇒G = record
@@ -346,16 +345,16 @@ x⊗0≡0 = record
     ; isoʳ = rinv≋ distzrequiv
     }
   }
-
+-- HERE
 0⊗x≡0 : NaturalIsomorphism r.0⊗x r.0↑
 0⊗x≡0 = record
   { F⇒G = record
     { η = λ X → distzequiv
-    ; commute = λ f → eq (λ { (() , _) }) (λ { () })
+    ; commute = λ f → distz-nat {f = f zero}
     }
   ; F⇐G = record
     { η = λ X → factorzequiv
-    ; commute = λ f → eq (λ { () }) (λ { (() , _)})
+    ; commute = λ f → factorz-nat {f = f zero}
     }
   ; iso = λ X → record
     { isoˡ = linv≋ distzequiv

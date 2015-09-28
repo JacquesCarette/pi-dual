@@ -218,3 +218,13 @@ distzr-nat {f = (f , qinv h _ _)} {(_ , qinv g _ _)} =
 factorzr-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
   factorzrequiv ● g ≋ (f ×≃ g) ● factorzrequiv
 factorzr-nat {f = f} = flip-sym≋ (distzr-nat {f = sym≃ f})
+
+-- same comment as above
+distz-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
+  distzequiv ● (g ×≃ f) ≋ g ● distzequiv
+distz-nat {f = (f , qinv h _ _)} {(_ , qinv g _ _)} =
+  eq (distz-coh {f = f}) (factorz-coh {f = h} {g})
+
+factorz-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
+  factorzequiv ● g ≋ (g ×≃ f) ● factorzequiv
+factorz-nat {f = f} = flip-sym≋ (distz-nat {f = sym≃ f})

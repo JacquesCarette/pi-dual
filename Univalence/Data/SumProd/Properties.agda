@@ -60,7 +60,7 @@ factor-coh : {A B C D E F : Set} →
 factor-coh (inj₁ x) = P.refl
 factor-coh (inj₂ y) = P.refl
 
--- note how this is true without relying on ⊥
+-- note how this is true without relying on ⊥ as input
 distzr-coh : {A B : Set} → {f : A → B} → {g : ⊥ → ⊥} →
   distzr ∘ (f ×→ g) ∼ g ∘ distzr
 distzr-coh _ = P.refl
@@ -69,6 +69,16 @@ distzr-coh _ = P.refl
 factorzr-coh : {A B : Set} → {f : B → A} → {g : ⊥ → ⊥} →
   (f ×→ g) ∘ factorzr ∼ factorzr ∘ g
 factorzr-coh ()
+
+-- note how this is true without relying on ⊥ as input
+distz-coh : {A B : Set} → {f : A → B} → {g : ⊥ → ⊥} →
+  distz ∘ (g ×→ f) ∼ g ∘ distz
+distz-coh _ = P.refl
+
+-- but this is only true because of ⊥
+factorz-coh : {A B : Set} → {f : B → A} → {g : ⊥ → ⊥} →
+  (g ×→ f) ∘ factorz ∼ factorz ∘ g
+factorz-coh ()
 
 ---------------------------------------------------------------
 -- various coherence lemmas 
