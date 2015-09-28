@@ -250,3 +250,10 @@ A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D : {A B C D : Set} →
   distlequiv ● assocl⋆equiv {A} {B} {C ⊎ D} ≋
   (assocl⋆equiv ⊎≃ assocl⋆equiv) ● distlequiv ● (id≃ ×≃ distlequiv)
 A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D = eq A×B×[C⊎D]→[A×B]×C⊎[A×B]×D [A×B]×C⊎[A×B]×D→A×B×[C⊎D]
+
+0×0≃0 : distzequiv ≋ distzrequiv
+0×0≃0 = eq 0×0→0 0→0×0
+
+0×[A⊎B]≃0 : {A B : Set} →
+  distzequiv ≋ unite₊equiv ● (distzequiv ⊎≃ distzequiv) ● distlequiv {⊥} {A} {B}
+0×[A⊎B]≃0 = eq 0×[A⊎B]→0 0→0×[A⊎B]

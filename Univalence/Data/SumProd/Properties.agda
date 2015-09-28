@@ -133,21 +133,22 @@ A×B×[C⊎D]→[A×B]×C⊎[A×B]×D (a , b , inj₂ y) = P.refl
 [A×B]×C⊎[A×B]×D→A×B×[C⊎D] (inj₂ y) = P.refl
 
 -- in theory, this actually says that all ⊥ are equal!
+-- the annotations can be inferred, but this makes it
+-- clearer still
+0×0→0 : distz {⊥} ∼ distzr {⊥}
+0×0→0 (() , ())
 
-distz0≡distrz0 : distz ∼ distzr
-distz0≡distrz0 (() , _)
+0→0×0 : factorz {⊥} ∼ factorzr {⊥}
+0→0×0 ()
 
-factorz0≡factorzr0 : factorz ∼ factorzr
-factorz0≡factorzr0 ()
-
-distz0≡unite₊∘[distz,distz]∘distl : {A B : Set} →
+0×[A⊎B]→0 : {A B : Set} →
   distz ∼ unite₊ ∘ (distz ⊎→ distz) ∘ distl {⊥} {A} {B}
-distz0≡unite₊∘[distz,distz]∘distl (() , inj₁ _)
-distz0≡unite₊∘[distz,distz]∘distl (x , inj₂ y) = P.refl
+0×[A⊎B]→0 (() , inj₁ _)
+0×[A⊎B]→0 (_  , inj₂ _) = P.refl
 
-factorz0≡factorl∘[factorz,factorz]∘uniti₊ : {A B : Set} →
+0→0×[A⊎B] : {A B : Set} →
   factorz ∼ factorl {B = A} {B} ∘ (factorz ⊎→ factorz) ∘ uniti₊
-factorz0≡factorl∘[factorz,factorz]∘uniti₊ ()
+0→0×[A⊎B] ()
 
 unite⋆r0≡absorb1 : unite⋆′ ∼ distz
 unite⋆r0≡absorb1 _ = P.refl
