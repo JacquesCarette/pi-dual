@@ -22,7 +22,7 @@ open import Data.Sum using (_⊎_)
 open import Data.Product using (_,_)
 
 open import TypeEquivEquiv 
-  using ([id,id]≋id; ⊎●≋●⊎)
+  using ([id,id]≋id; ⊎●≋●⊎; ⊎≃-respects-≋)
 
 ------------------------------------------------------------------------------
 -- equivalences for the ⊎ structure
@@ -91,6 +91,23 @@ intro-inv-r f =
       ≋⟨ id≋ {x = h +F i} ◎ ●-assoc {f = +≃⊎} {f ⊎≃ g} {⊎≃+}⟩
     (h +F i) ● (f +F g) ∎)
   where open ≋-Reasoning
+
+_◎F_ : {A B C D : ℕ} {f₁ g₁ : A fin≃ B} {f₂ g₂ : C fin≃ D} →
+  (f₁ ≋ g₁) → (f₂ ≋ g₂) → (f₁ +F f₂ ≋ g₁ +F g₂)
+_◎F_ {A} {B} {C} {D} {f₁} {g₁} {f₂} {g₂} f₁≋g₁ f₂≋g₂ =
+  let f≋ = id≋ {x = ⊎≃+} in
+  let g≋ = id≋ {x = +≃⊎} in
+  begin (
+    f₁ +F f₂
+      ≋⟨ id≋ ⟩ 
+    ⊎≃+ ● (f₁ ⊎≃ f₂) ● +≃⊎
+      ≋⟨ f≋ ◎ (⊎≃-respects-≋ f₁≋g₁ f₂≋g₂ ◎ g≋) ⟩
+    ⊎≃+ ● (g₁ ⊎≃ g₂) ● +≃⊎
+      ≋⟨ id≋ ⟩ 
+    g₁ +F g₂ ∎)
+  where open ≋-Reasoning
+
+
 ------------------------------------------------------------------------------
 
 

@@ -1,0 +1,101 @@
+\documentclass{llncs}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Permutations}
+\titlerunning{Permutations}
+\author{Jacque Carette \and Amr Sabry}
+\authorrunning{Carette and Sabry}
+\institute{? \\
+\email{...@...}
+\and
+...}
+\maketitle
+
+\begin{abstract}
+
+\keywords{}
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Common Representations}
+
+Say we want to write the permutation between \verb|Fin 3 x Fin 2| and
+\verb|Fin 2 x Fin 3|. First let's enumerate the two sets in some
+canonical order:
+\begin{verbatim}
+Fin 3 x Fin 2 = { (0,0), (0,1), (1,0), (1,1), (2,0), (2,1) } 
+Fin 2 x Fin 3 = { (0,0), (0,1), (0,2), (1,0), (1,1), (1,2) }
+\end{verbatim}
+
+Then the permutation can be visualized as:
+
+\begin{verbatim} 
+Fin 3 x Fin 2 = { (0,0), (0,1), (1,0), (1,1), (2,0), (2,1) }
+                    |      |      |      |      |      |
+                    |      |      |      +---------+   |
+                    |      |      |             |  |   |
+                    |      +-------------+      |  |   |
+                    |             |      |      |  |   |
+                    |      +------+      |      |  |   |
+                    |      |             |      |  |   |
+                    |      |      +-------------+  |   |
+                    |      |      |      |         |   |
+                    |      |      |      |      +--+   |
+                    |      |      |      |      |      |
+Fin 2 x Fin 3 = { (0,0), (0,1), (0,2), (1,0), (1,1), (1,2) }
+\end{verbatim}
+
+How to represent this in a way that amenable to efficient and
+convenient manipulation. There are several common representations:
+
+\begin{itemize}
+\item Truth table
+\item Matrix
+\item Reed-Muller expansion
+\item Cycle expansion
+\item Decision diagram
+\item Vectors
+\item Factorial representation
+\item Terms of a programming language
+\end{itemize}
+
+As vectors we would get:
+\begin{verbatim}
+p = [ 0, 3, 1, 4, 2, 5 ]
+\end{verbatim}
+which says that the item at position \verb|i| goes to the item at
+position \verb|p(i)|. 
+
+As a sequence of transpositions, we would get several possible
+representations... etc.
+
+Very difficult to work with such representations. Imagine trying to
+write big permutations for a reversible adder. Imagine trying to prove
+properties of such permutations (bimonoidal structure). Etc.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Essence}
+
+Our point is that the essence of the permutation above is a type
+equivalence that is trivial to prove. Indeed the equivalence between
+\verb|A x B| and \verb|B x A| is trivial to prove. We can once and for
+all derive |Fin m x Fin n ~= Fin (m * n)| from such a type
+equivalence. We can derive the two monoidal structures and their
+interactions. Our main theorem is that:
+\begin{verbatim}
+Fin, ~=, ~~~ is a weak rig groupoid
+\end{verbatim}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{acm}
+\bibliography{cites}
+\end{document}
+
+
+
