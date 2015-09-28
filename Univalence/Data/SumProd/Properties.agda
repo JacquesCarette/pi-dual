@@ -60,6 +60,18 @@ factor-coh : {A B C D E F : Set} →
 factor-coh (inj₁ x) = P.refl
 factor-coh (inj₂ y) = P.refl
 
+-- note how this is true without relying on ⊥
+distzr-coh : {A B : Set} → {f : A → B} → {g : ⊥ → ⊥} →
+  distzr ∘ (f ×→ g) ∼ g ∘ distzr
+distzr-coh _ = P.refl
+
+-- but this is only true because of ⊥
+factorzr-coh : {A B : Set} → {f : B → A} → {g : ⊥ → ⊥} →
+  (f ×→ g) ∘ factorzr ∼ factorzr ∘ g
+factorzr-coh ()
+
+---------------------------------------------------------------
+-- various coherence lemmas 
 distl-swap₊-lemma : {A B C : Set} →
   distl ∘ (id {A = A} ×→ swap₊ {B} {C}) ∼ swap₊ ∘ distl
 distl-swap₊-lemma (x , inj₁ y) = P.refl

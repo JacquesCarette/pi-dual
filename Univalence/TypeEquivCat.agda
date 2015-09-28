@@ -12,6 +12,7 @@ open import Data.Empty using (⊥)
 open import Data.Unit using (⊤)
 open import Data.Sum using (_⊎_)
 open import Data.Product using (_,_; _×_; uncurry)
+open import Data.Fin using (zero; suc) -- needed for distributivity
 
 import Relation.Binary.PropositionalEquality as P
   using (sym)
@@ -315,7 +316,6 @@ x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
                        ; isoʳ = rinv≋ distlequiv }
   }
 
--- HERE
 [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] : NaturalIsomorphism r.[x⊕y]⊗z r.[x⊗z]⊕[y⊗z]
 [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] = record
   { F⇒G = record
@@ -329,16 +329,17 @@ x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
   ; iso = λ X → record { isoˡ = linv≋ distequiv
                        ; isoʳ = rinv≋ distequiv }
   }
-  
+
+-- HERE
 x⊗0≡0 : NaturalIsomorphism r.x⊗0 r.0↑
 x⊗0≡0 = record
   { F⇒G = record
     { η = λ X → distzrequiv
-    ; commute = λ f → eq (λ { (_ , ()) }) (λ { () })
+    ; commute = λ f → distzr-nat {f = f zero}
     }
   ; F⇐G = record
     { η = λ X → factorzrequiv
-    ; commute = λ f → eq (λ { () }) (λ { (_ , ()) })
+    ; commute = λ f → factorzr-nat {f = f zero}
     }
   ; iso = λ X → record
     { isoˡ = linv≋ distzrequiv

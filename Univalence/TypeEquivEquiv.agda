@@ -8,13 +8,14 @@ open import TypeEquiv
     assocr₊equiv; assocl₊equiv; swap₊equiv;
     unite⋆equiv; uniti⋆equiv; unite⋆′equiv; uniti⋆′equiv;
     assocr⋆equiv; assocl⋆equiv; swap⋆equiv;
-    distlequiv; factorlequiv; distequiv; factorequiv)
+    distlequiv; factorlequiv; distequiv; factorequiv;
+    distzrequiv; factorzrequiv; distzequiv; factorzequiv)
 open import EquivEquiv
 
 open import Data.Empty using (⊥)
 open import Data.Unit using (⊤)
 open import Data.Sum using (_⊎_)
-open import Data.Product using (_,_; _×_)
+open import Data.Product using (_,_; _×_; proj₁)
 
 open import Data.Sum.Properties
   using (id⊎id∼id; ⊎∘∼∘⊎; ⊎→-resp-∼;
@@ -205,3 +206,15 @@ factor-nat : {A B C D E F : Set} →
   {f : A ≃ D} {g : B ≃ E} {h : C ≃ F} →
   factorequiv ● ((f ×≃ h) ⊎≃ (g ×≃ h)) ≋ ((f ⊎≃ g) ×≃ h) ● factorequiv
 factor-nat = flip-sym≋ dist-nat
+
+-- note how we don't use id≃ but an arbitrary ⊥ ≃ ⊥.
+-- because this law under-specifies f and g, we need to
+-- be explicit in our calls
+distzr-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
+  distzrequiv ● (f ×≃ g) ≋ g ● distzrequiv
+distzr-nat {f = (f , qinv h _ _)} {(_ , qinv g _ _)} =
+  eq (distzr-coh {f = f}) (factorzr-coh {f = h} {g})
+
+factorzr-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
+  factorzrequiv ● g ≋ (f ×≃ g) ● factorzrequiv
+factorzr-nat {f = f} = flip-sym≋ (distzr-nat {f = sym≃ f})
