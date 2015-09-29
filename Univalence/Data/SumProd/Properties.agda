@@ -197,6 +197,7 @@ A⊎B→1×[A⊎B] : {A B : Set} →
 A⊎B→1×[A⊎B] (inj₁ x) = P.refl
 A⊎B→1×[A⊎B] (inj₂ y) = P.refl
 
+-- [A⊎B]×[C⊎D]→[[A×C⊎B×C]⊎A×D]⊎B×D
 fully-distribute : {A B C D : Set} →
   assocl₊ ∘ (dist ⊎→ dist) ∘ distl ∼
   (assocl₊ ⊎→ id) ∘ ((id ⊎→ swap₊) ⊎→ id) ∘
