@@ -162,21 +162,21 @@ A×0→0 _ = P.refl
 0→A×0 : {A : Set} → factorzr {A} ∼ swap⋆ ∘ factorz
 0→A×0 ()
 
-absorbr⇔assocl⋆◎[absorbr⊗id]◎absorbr : {A B : Set} →
+0×A×B→0 : {A B : Set} →
   distz ∼ distz ∘ (distz ×→ id) ∘ assocl⋆ {⊥} {A} {B}
-absorbr⇔assocl⋆◎[absorbr⊗id]◎absorbr x = P.refl
+0×A×B→0 _ = P.refl
 
-factorz⇔factorz◎[factorz⊗id]◎assocr⋆ : {A B : Set} →
+0→0×A×B : {A B : Set} →
   factorz ∼ assocr⋆ {B = A} {B} ∘ (factorz ×→ id) ∘ factorz
-factorz⇔factorz◎[factorz⊗id]◎assocr⋆ ()
+0→0×A×B ()
 
-elim-middle-⊥ : {A B : Set} →
+A×0×B→0 : {A B : Set} →
   distzr ∘ (id ×→ distz) ∼ distz ∘ (distzr ×→ id) ∘ assocl⋆ {A} {⊥} {B}
-elim-middle-⊥ x = P.refl
+A×0×B→0 x = P.refl
 
-insert-middle-⊥ : {A B : Set} →
+0→A×0×B : {A B : Set} →
   (id ×→ factorz {B}) ∘ factorzr {A} ∼ assocr⋆ ∘ (factorzr ×→ id) ∘ factorz
-insert-middle-⊥ ()
+0→A×0×B ()
 
 elim⊥-A[0⊕B] : {A B : Set} →
   (id {A = A} ×→ unite₊ {B}) ∼ unite₊ ∘ (distzr ⊎→ id) ∘ distl
