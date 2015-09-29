@@ -94,8 +94,8 @@ module ⊎h = MonoidalHelperFunctors FinEquivCat ⊎-bifunctor 0
     { η = λ _ → uniti+ 
     ; commute = λ f →  {!!} }
   ; iso = λ _ → record
-    { isoˡ = {!!} 
-    ; isoʳ = {!!} 
+    { isoˡ = linv≋ unite+ 
+    ; isoʳ = rinv≋ unite+ 
     }
   }
 

@@ -11,7 +11,7 @@ open Plus using (⊎≃+; +≃⊎)
 
 open import FinEquivTypeEquiv
   using (_fin≃_; module PlusE; module TimesE; module PlusTimesE)
-open PlusE using (_+F_)
+open PlusE using (_+F_; unite+)
 open import EquivEquiv
 
 open import Data.Empty using (⊥)
@@ -107,7 +107,20 @@ _◎F_ {A} {B} {C} {D} {f₁} {g₁} {f₂} {g₂} f₁≋g₁ f₂≋g₂ =
     g₁ +F g₂ ∎)
   where open ≋-Reasoning
 
+unite₊-nat : ∀ {A B} {f : A fin≃ B} →
+  unite+ ● (id≃ {A = Fin 0} +F f) ≋ f ● unite+
+unite₊-nat {A} {B} {f} = 
+  begin (
+    unite+ ● (id≃ {A = Fin 0} +F f) 
+      ≋⟨ id≋ ⟩ 
+    unite+ ● ⊎≃+ ● (id≃ ⊎≃ f) ● +≃⊎
+      ≋⟨ {!!} ⟩ 
+    f ● unite+ ∎)
+  where open ≋-Reasoning
+
+-- Fin (0 + m) ≃ Fin m 
+-- Fin (0 + m) ≃ Fin (0 + n)
+
+-- Fin m ≃ Fin (0 + n)
 
 ------------------------------------------------------------------------------
-
-
