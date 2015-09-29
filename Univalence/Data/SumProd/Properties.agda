@@ -197,24 +197,22 @@ A⊎B→1×[A⊎B] : {A B : Set} →
 A⊎B→1×[A⊎B] (inj₁ x) = P.refl
 A⊎B→1×[A⊎B] (inj₂ y) = P.refl
 
--- [A⊎B]×[C⊎D]→[[A×C⊎B×C]⊎A×D]⊎B×D
-fully-distribute : {A B C D : Set} →
+[A⊎B]×[C⊎D]→[[A×C⊎B×C]⊎A×D]⊎B×D : {A B C D : Set} →
   assocl₊ ∘ (dist ⊎→ dist) ∘ distl ∼
   (assocl₊ ⊎→ id) ∘ ((id ⊎→ swap₊) ⊎→ id) ∘
      (assocr₊ ⊎→ id) ∘ assocl₊ ∘ (distl ⊎→ distl) ∘ dist {A} {B} {C ⊎ D}
-fully-distribute (inj₁ x , inj₁ x₁) = P.refl
-fully-distribute (inj₁ x , inj₂ y) = P.refl
-fully-distribute (inj₂ y , inj₁ x) = P.refl
-fully-distribute (inj₂ y , inj₂ y₁) = P.refl
+[A⊎B]×[C⊎D]→[[A×C⊎B×C]⊎A×D]⊎B×D (inj₁ x , inj₁ x₁) = P.refl
+[A⊎B]×[C⊎D]→[[A×C⊎B×C]⊎A×D]⊎B×D (inj₁ x , inj₂ y) = P.refl
+[A⊎B]×[C⊎D]→[[A×C⊎B×C]⊎A×D]⊎B×D (inj₂ y , inj₁ x) = P.refl
+[A⊎B]×[C⊎D]→[[A×C⊎B×C]⊎A×D]⊎B×D (inj₂ y , inj₂ y₁) = P.refl
 
-fully-factor : {A B C D : Set} →
-  -- (x : (((A × C) ⊎ (B × C)) ⊎ (A × D)) ⊎ (B × D)) →
+[[A×C⊎B×C]⊎A×D]⊎B×D→[A⊎B]×[C⊎D] : {A B C D : Set} →
   factorl ∘ (factor ⊎→ factor) ∘ assocr₊ ∼
   factor ∘ (factorl ⊎→ factorl) ∘ assocr₊ ∘(assocl₊ ⊎→ id) ∘
       ((id ⊎→ swap₊) ⊎→ id) ∘ (assocr₊ {A × C} ⊎→ id {A = B × D})
-fully-factor (inj₁ (inj₁ (inj₁ (a , c)))) = P.refl
-fully-factor (inj₁ (inj₁ (inj₂ (b , c)))) = P.refl
-fully-factor (inj₁ (inj₂ (a , d))) = P.refl
-fully-factor (inj₂ (b , d)) = P.refl
+[[A×C⊎B×C]⊎A×D]⊎B×D→[A⊎B]×[C⊎D] (inj₁ (inj₁ (inj₁ (a , c)))) = P.refl
+[[A×C⊎B×C]⊎A×D]⊎B×D→[A⊎B]×[C⊎D] (inj₁ (inj₁ (inj₂ (b , c)))) = P.refl
+[[A×C⊎B×C]⊎A×D]⊎B×D→[A⊎B]×[C⊎D] (inj₁ (inj₂ (a , d))) = P.refl
+[[A×C⊎B×C]⊎A×D]⊎B×D→[A⊎B]×[C⊎D] (inj₂ (b , d)) = P.refl
 
 ------------------------------------------------------------------------------

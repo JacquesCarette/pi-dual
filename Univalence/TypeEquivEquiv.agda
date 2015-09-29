@@ -280,3 +280,12 @@ A×[0+B]≃A×B = eq A×[0+B]→A×B A×B→A×[0+B]
 1×[A⊎B]≃A⊎B : {A B : Set} →
   unite⋆equiv ≋ (unite⋆equiv ⊎≃ unite⋆equiv) ● distlequiv {⊤} {A} {B}
 1×[A⊎B]≃A⊎B = eq 1×[A⊎B]→A⊎B A⊎B→1×[A⊎B]
+
+[A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D : {A B C D : Set} →
+  assocl₊equiv ● (distequiv ⊎≃ distequiv) ● distlequiv ≋
+  (assocl₊equiv ⊎≃ id≃) ● ((id≃ ⊎≃ swap₊equiv) ⊎≃ id≃) ●
+     (assocr₊equiv ⊎≃ id≃) ● assocl₊equiv ● 
+        (distlequiv ⊎≃ distlequiv) ● distequiv {A} {B} {C ⊎ D}
+[A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D = 
+  eq [A⊎B]×[C⊎D]→[[A×C⊎B×C]⊎A×D]⊎B×D 
+       [[A×C⊎B×C]⊎A×D]⊎B×D→[A⊎B]×[C⊎D]

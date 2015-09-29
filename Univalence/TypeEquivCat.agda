@@ -48,10 +48,6 @@ open import TypeEquiv
 
 open import TypeEquivEquiv -- need them all!
 
-open import Data.SumProd.Properties
-  using (
-         fully-distribute; fully-factor)
-
 ------------------------------------------------------------------------------
 -- We show that types with type equivalences are a commutative rig
 -- groupoid
@@ -363,7 +359,7 @@ TERig = record
   ; laplazaII = [A⊎B]×C≃[C×A]⊎[C×B]
   ; laplazaIV = [A⊎B⊎C]×D≃[A×D⊎B×D]⊎C×D
   ; laplazaVI = A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D
-  ; laplazaIX = eq fully-distribute fully-factor
+  ; laplazaIX = [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D
   ; laplazaX = 0×0≃0
   ; laplazaXI = 0×[A⊎B]≃0
   ; laplazaXIII = 0×1≃0
