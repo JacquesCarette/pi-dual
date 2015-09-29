@@ -41,18 +41,16 @@ open import TypeEquiv
          unite⋆equiv; uniti⋆equiv; unite⋆′equiv; uniti⋆′equiv;
          assocr⋆equiv; assocl⋆equiv; swap₊equiv; swapswap₊;
          swapswap⋆; swap⋆equiv;
-         distequiv; factorequiv; factor∘dist; dist∘factor; 
-         distlequiv; factorlequiv; factorl∘distl; distl∘factorl;
-         distzequiv; factorzequiv; factorz∘distz; distz∘factorz;
-         distzrequiv; factorzrequiv; factorzr∘distzr; distzr∘factorzr)
+         distequiv; factorequiv;
+         distlequiv; factorlequiv;
+         distzequiv; factorzequiv;
+         distzrequiv; factorzrequiv)
 
 open import TypeEquivEquiv -- need them all!
 
 open import Data.SumProd.Properties
   using (
-         fully-distribute; fully-factor;
-         elim⊥-A[0⊕B]; insert⊕⊥-AB;
-         elim⊤-1[A⊕B]; insert⊤l⊗-A⊕B)
+         fully-distribute; fully-factor)
 
 ------------------------------------------------------------------------------
 -- We show that types with type equivalences are a commutative rig
@@ -372,8 +370,8 @@ TERig = record
   ; laplazaXV = A×0≃0
   ; laplazaXVI = 0×A×B≃0
   ; laplazaXVII = A×0×B≃0
-  ; laplazaXIX = eq elim⊥-A[0⊕B] insert⊕⊥-AB
-  ; laplazaXXIII = eq elim⊤-1[A⊕B] insert⊤l⊗-A⊕B
+  ; laplazaXIX = A×[0+B]≃A×B
+  ; laplazaXXIII = 1×[A⊎B]≃A⊎B
   }
 
 -- Notes from Laplaza, 72

@@ -272,4 +272,11 @@ A×0×B≃0 : {A B : Set} →
   distzrequiv ● (id≃ ×≃ distzequiv)  ≋ 
   distzequiv ● (distzrequiv ×≃ id≃) ● assocl⋆equiv {A} {⊥} {B}
 A×0×B≃0 = eq A×0×B→0 0→A×0×B
- 
+
+A×[0+B]≃A×B : {A B : Set} →
+  (id≃ {A = A} ×≃ unite₊equiv {B}) ≋ unite₊equiv ● (distzrequiv ⊎≃ id≃) ● distlequiv
+A×[0+B]≃A×B = eq A×[0+B]→A×B A×B→A×[0+B]
+
+1×[A⊎B]≃A⊎B : {A B : Set} →
+  unite⋆equiv ≋ (unite⋆equiv ⊎≃ unite⋆equiv) ● distlequiv {⊤} {A} {B}
+1×[A⊎B]≃A⊎B = eq 1×[A⊎B]→A⊎B A⊎B→1×[A⊎B]

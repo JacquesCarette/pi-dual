@@ -172,30 +172,30 @@ A×0→0 _ = P.refl
 
 A×0×B→0 : {A B : Set} →
   distzr ∘ (id ×→ distz) ∼ distz ∘ (distzr ×→ id) ∘ assocl⋆ {A} {⊥} {B}
-A×0×B→0 x = P.refl
+A×0×B→0 _ = P.refl
 
 0→A×0×B : {A B : Set} →
   (id ×→ factorz {B}) ∘ factorzr {A} ∼ assocr⋆ ∘ (factorzr ×→ id) ∘ factorz
 0→A×0×B ()
 
-elim⊥-A[0⊕B] : {A B : Set} →
+A×[0+B]→A×B : {A B : Set} →
   (id {A = A} ×→ unite₊ {B}) ∼ unite₊ ∘ (distzr ⊎→ id) ∘ distl
-elim⊥-A[0⊕B] (a , inj₁ ())
-elim⊥-A[0⊕B] (a , inj₂ y) = P.refl
+A×[0+B]→A×B (_ , inj₁ ())
+A×[0+B]→A×B (_ , inj₂ _) = P.refl
 
-insert⊕⊥-AB : {A B : Set} →
+A×B→A×[0+B] : {A B : Set} →
   (id ×→ uniti₊) ∼ factorl ∘ (factorzr ⊎→ id) ∘ uniti₊ {A × B}
-insert⊕⊥-AB (a , b) = P.refl
+A×B→A×[0+B] (_ , _) = P.refl
 
-elim⊤-1[A⊕B] : {A B : Set} →
+1×[A⊎B]→A⊎B : {A B : Set} →
   unite⋆ ∼ (unite⋆ ⊎→ unite⋆) ∘ distl {⊤} {A} {B}
-elim⊤-1[A⊕B] (tt , inj₁ x) = P.refl
-elim⊤-1[A⊕B] (tt , inj₂ y) = P.refl
+1×[A⊎B]→A⊎B (tt , inj₁ x) = P.refl
+1×[A⊎B]→A⊎B (tt , inj₂ y) = P.refl
 
-insert⊤l⊗-A⊕B : {A B : Set} →
+A⊎B→1×[A⊎B] : {A B : Set} →
   uniti⋆ ∼ factorl ∘ (uniti⋆ {A} ⊎→ uniti⋆ {B})
-insert⊤l⊗-A⊕B (inj₁ x) = P.refl
-insert⊤l⊗-A⊕B (inj₂ y) = P.refl
+A⊎B→1×[A⊎B] (inj₁ x) = P.refl
+A⊎B→1×[A⊎B] (inj₂ y) = P.refl
 
 fully-distribute : {A B C D : Set} →
   assocl₊ ∘ (dist ⊎→ dist) ∘ distl ∼
