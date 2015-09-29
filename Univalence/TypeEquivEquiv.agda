@@ -257,3 +257,9 @@ A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D = eq A×B×[C⊎D]→[A×B]×C⊎[A×B]×D
 0×[A⊎B]≃0 : {A B : Set} →
   distzequiv ≋ unite₊equiv ● (distzequiv ⊎≃ distzequiv) ● distlequiv {⊥} {A} {B}
 0×[A⊎B]≃0 = eq 0×[A⊎B]→0 0→0×[A⊎B]
+
+0×1≃0 : unite⋆′equiv  ≋ distzequiv
+0×1≃0 = eq 0×1→0 0→0×1
+
+A×0≃0 : {A : Set} → distzrequiv {A} ≋ distzequiv ● swap⋆equiv
+A×0≃0 = eq A×0→0 0→A×0

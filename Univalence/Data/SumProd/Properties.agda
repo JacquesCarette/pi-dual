@@ -150,17 +150,17 @@ A×B×[C⊎D]→[A×B]×C⊎[A×B]×D (a , b , inj₂ y) = P.refl
   factorz ∼ factorl {B = A} {B} ∘ (factorz ⊎→ factorz) ∘ uniti₊
 0→0×[A⊎B] ()
 
-unite⋆r0≡absorb1 : unite⋆′ ∼ distz
-unite⋆r0≡absorb1 _ = P.refl
+0×1→0 : unite⋆′ {⊥} ∼ distz {⊤}
+0×1→0 _ = P.refl
 
-uniti⋆r0≡factorz : uniti⋆′ ∼ factorz
-uniti⋆r0≡factorz ()
+0→0×1 : uniti⋆′ {⊥} ∼ factorz {⊤}
+0→0×1 ()
 
-absorbl≡absorbr∘swap⋆ : {A : Set} → distzr {A} ∼ distz ∘ swap⋆
-absorbl≡absorbr∘swap⋆ _ = P.refl
+A×0→0 : {A : Set} → distzr {A} ∼ distz ∘ swap⋆
+A×0→0 _ = P.refl
 
-factorzr≡swap⋆∘factorz : {A : Set} → factorzr {A} ∼ swap⋆ ∘ factorz
-factorzr≡swap⋆∘factorz ()
+0→A×0 : {A : Set} → factorzr {A} ∼ swap⋆ ∘ factorz
+0→A×0 ()
 
 absorbr⇔assocl⋆◎[absorbr⊗id]◎absorbr : {A B : Set} →
   distz ∼ distz ∘ (distz ×→ id) ∘ assocl⋆ {⊥} {A} {B}

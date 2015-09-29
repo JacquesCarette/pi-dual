@@ -51,8 +51,6 @@ open import TypeEquivEquiv -- need them all!
 open import Data.SumProd.Properties
   using (
          fully-distribute; fully-factor;
-         unite⋆r0≡absorb1; uniti⋆r0≡factorz;
-         absorbl≡absorbr∘swap⋆; factorzr≡swap⋆∘factorz;
          absorbr⇔assocl⋆◎[absorbr⊗id]◎absorbr;
          factorz⇔factorz◎[factorz⊗id]◎assocr⋆;
          elim-middle-⊥; insert-middle-⊥;
@@ -373,8 +371,8 @@ TERig = record
   ; laplazaIX = eq fully-distribute fully-factor
   ; laplazaX = 0×0≃0
   ; laplazaXI = 0×[A⊎B]≃0
-  ; laplazaXIII = eq unite⋆r0≡absorb1 uniti⋆r0≡factorz
-  ; laplazaXV = eq absorbl≡absorbr∘swap⋆ factorzr≡swap⋆∘factorz
+  ; laplazaXIII = 0×1≃0
+  ; laplazaXV = A×0≃0
   ; laplazaXVI = eq
                   absorbr⇔assocl⋆◎[absorbr⊗id]◎absorbr
                   factorz⇔factorz◎[factorz⊗id]◎assocr⋆
