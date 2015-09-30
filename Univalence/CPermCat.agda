@@ -5,7 +5,7 @@ module CPermCat where
 open import Level using (zero)
 open import Data.Nat using (ℕ; _+_; _*_)
 open import Data.Fin using () renaming (zero to 0F)
-open import Data.Product using (_,_)
+open import Data.Product using (_,_; uncurry)
 import Relation.Binary.PropositionalEquality as P
   using (_≡_; refl; sym; cong₂; isEquivalence)
 
@@ -24,9 +24,9 @@ open import Categories.RigCategory
 
 open import ConcretePermutation using (CPerm)
 
-open import Permutation using (idp; symp; transp; _⊎p_; _×p_)
+open import Permutation using (idp; symp; _●p_; _⊎p_; _×p_)
 open import PermutationProperties
-  using (assocp; lidp; ridp; rinv; linv)
+  using (assocp; lidp; ridp; rinv; linv; 1p⊎1p≡1p; ⊎p●p≡●p⊎p)
 
 ------------------------------------------------------------------------------
 -- CPerm is is a category
@@ -38,8 +38,8 @@ CPermCat = record
   ; _⇒_ = CPerm
   ; _≡_ = P._≡_
   ; id = idp
-  ; _∘_ = transp
-  ; assoc = λ {_} {_} {_} {_} {f} {g} {h} → P.sym (assocp {p₁ = h} {g} {f})
+  ; _∘_ = _●p_
+  ; assoc = λ {_} {_} {_} {_} {f} {g} {h} → assocp {p₁ = h} {g} {f}
   ; identityˡ = lidp
   ; identityʳ = ridp
   ; equiv = P.isEquivalence
@@ -55,21 +55,20 @@ CPermGroupoid = record
   }
 
 -- additive bifunctor and monoidal structure
-{-
+
 ⊎p-bifunctor : Bifunctor CPermCat CPermCat CPermCat
 ⊎p-bifunctor = record
-  { F₀ = λ { (n , m) → n + m }
-  ; F₁ = λ { (p₁ , p₂) → p₁ ⊎p p₂ }
-  ; identity = λ { {m , n} → 1p⊎1p≡1p {m} {n}}
-  ; homomorphism = λ { {m₁ , m₂} {n₁ , n₂} {o₁ , o₂} {p₁ , p₂} {q₁ , q₂} →
-      P.sym (⊎p-distrib {n₁} {n₂} {m₁} {m₂} {o₁} {o₂} {q₁} {q₂} {p₁} {p₂}) }
-  ; F-resp-≡ = λ { (p₁≡p₃ , p₂≡p₄) → P.cong₂ _⊎p_ p₁≡p₃ p₂≡p₄ }
+  { F₀ = uncurry _+_
+  ; F₁ = uncurry _⊎p_
+  ; identity = 1p⊎1p≡1p
+    -- perhaps the weird order below means the underlying combinators should be fixed?
+  ; homomorphism = λ { {_} {_} {_} {p₁ , p₂} {q₁ , q₂} → ⊎p●p≡●p⊎p {f = q₁} {q₂} {p₁} {p₂}}
+  ; F-resp-≡ = uncurry (P.cong₂ _⊎p_)
   }
 
 -- the 0 below is the id from CPermMonoidal
 
 module ⊎h = MonoidalHelperFunctors CPermCat ⊎p-bifunctor 0
--}
 
 {- these are all commented out because unite+p and companions are
   no longer defined!
