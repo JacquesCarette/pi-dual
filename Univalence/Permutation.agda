@@ -25,6 +25,11 @@ open import Proofs using (
   finext
   )
 
+infixr 5 _●p_
+
+infix 8 _⊎p_
+infixr 7 _×p_
+
 ------------------------------------------------------------------------------
 
 -- useful short-hands; these should all be moved elsewhere.
@@ -52,11 +57,11 @@ p⇒e p = _≃S_.f univalence ⟨$⟩ p
 -- combination of above, where we use αu on left/right of ●
 right-α-over-● : ∀ {m n o} → (e₁ : Fin n ≃ Fin o) → (e₂ : Fin m ≃ Fin n) →
     (e₁ ● (p⇒e (e⇒p e₂))) ≋ (e₁ ● e₂)
-right-α-over-● e₁ e₂ = ●-resp-≋ (id≋ {x = e₁}) (αu {e = e₂} id≋)
+right-α-over-● e₁ e₂ = (id≋ {x = e₁}) ◎ (αu {e = e₂} id≋)
 
 left-α-over-● : ∀ {m n o} → (e₁ : Fin n ≃ Fin o) → (e₂ : Fin m ≃ Fin n) →
     ((p⇒e (e⇒p e₁)) ● e₂) ≋ (e₁ ● e₂)
-left-α-over-● e₁ e₂ = ●-resp-≋ (αu {e = e₁} id≋) (id≋ {x = e₂})
+left-α-over-● e₁ e₂ = (αu {e = e₁} id≋) ◎ (id≋ {x = e₂})
 
 ------------------------------------------------------------------------------
 -- zero permutation
@@ -82,5 +87,5 @@ symp : ∀ {m n} → CPerm m n → CPerm n m
 symp p = e⇒p (sym≃ (p⇒e p))
 
 -- transitivity; note the 'transposition' of the arguments!
-transp : ∀ {m₁ m₂ m₃} → CPerm m₂ m₁ → CPerm m₃ m₂ → CPerm m₃ m₁
-transp p₁ p₂ = e⇒p ((p⇒e p₁) ● (p⇒e p₂))
+_●p_ : ∀ {m₁ m₂ m₃} → CPerm m₂ m₁ → CPerm m₃ m₂ → CPerm m₃ m₁
+p₁ ●p p₂ = e⇒p ((p⇒e p₁) ● (p⇒e p₂))
