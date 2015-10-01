@@ -11,7 +11,7 @@ open Plus using (⊎≃+; +≃⊎)
 
 open import FinEquivTypeEquiv
   using (_fin≃_; module PlusE; module TimesE; module PlusTimesE)
-open PlusE using (_+F_; unite+)
+open PlusE using (_+F_; unite+; uniti+)
 open import EquivEquiv
 
 open import Data.Empty using (⊥)
@@ -21,8 +21,8 @@ open import Data.Fin using (Fin)
 open import Data.Sum using (_⊎_)
 open import Data.Product using (_,_)
 
-open import TypeEquivEquiv 
-  using ([id,id]≋id; ⊎●≋●⊎; ⊎≃-respects-≋)
+import TypeEquivEquiv as T
+  using ([id,id]≋id; ⊎●≋●⊎; ⊎≃-respects-≋; unite₊-nat)
 
 ------------------------------------------------------------------------------
 -- equivalences for the ⊎ structure
@@ -41,7 +41,7 @@ open import TypeEquivEquiv
   em +F en
     ≋⟨ id≋ ⟩
   ⊎≃+ ● (em ⊎≃ en) ● +≃⊎
-    ≋⟨ f≋ ◎ ([id,id]≋id ◎ g≋) ⟩
+    ≋⟨ f≋ ◎ (T.[id,id]≋id ◎ g≋) ⟩
   ⊎≃+ ● id≃ {A = Fin m ⊎ Fin n} ● +≃⊎
     ≋⟨ f≋ ◎ lid≋ {f = +≃⊎} ⟩
   ⊎≃+ {m} ● +≃⊎ 
@@ -72,7 +72,7 @@ intro-inv-r f =
     (h ● f) +F (i ● g)
       ≋⟨ id≋ ⟩
     ⊎≃+ ● ((h ● f) ⊎≃ (i ● g)) ● +≃⊎
-      ≋⟨ f≋ ◎ (⊎●≋●⊎ ◎ g≋) ⟩ -- the real work, rest is shuffling
+      ≋⟨ f≋ ◎ (T.⊎●≋●⊎ ◎ g≋) ⟩ -- the real work, rest is shuffling
     ⊎≃+ ● ((h ⊎≃ i) ● (f ⊎≃ g)) ● +≃⊎
       ≋⟨ ●-assocl {f = +≃⊎} { (h ⊎≃ i) ● (f ⊎≃ g) } {⊎≃+} ⟩
     (⊎≃+ ● ((h ⊎≃ i) ● (f ⊎≃ g))) ● +≃⊎
@@ -101,26 +101,33 @@ _◎F_ {A} {B} {C} {D} {f₁} {g₁} {f₂} {g₂} f₁≋g₁ f₂≋g₂ =
     f₁ +F f₂
       ≋⟨ id≋ ⟩ 
     ⊎≃+ ● (f₁ ⊎≃ f₂) ● +≃⊎
-      ≋⟨ f≋ ◎ (⊎≃-respects-≋ f₁≋g₁ f₂≋g₂ ◎ g≋) ⟩
+      ≋⟨ f≋ ◎ (T.⊎≃-respects-≋ f₁≋g₁ f₂≋g₂ ◎ g≋) ⟩
     ⊎≃+ ● (g₁ ⊎≃ g₂) ● +≃⊎
       ≋⟨ id≋ ⟩ 
     g₁ +F g₂ ∎)
   where open ≋-Reasoning
 
+id0≃ : Fin 0 ≃ Fin 0
+id0≃ = id≃ {A = Fin 0}
+
 unite₊-nat : ∀ {A B} {f : A fin≃ B} →
-  unite+ ● (id≃ {A = Fin 0} +F f) ≋ f ● unite+
+  unite+ ● (id0≃ +F f) ≋ f ● unite+
 unite₊-nat {A} {B} {f} = 
   begin (
-    unite+ ● (id≃ {A = Fin 0} +F f) 
+    unite+ ● (id0≃ +F f) 
       ≋⟨ id≋ ⟩ 
     unite+ ● ⊎≃+ ● (id≃ ⊎≃ f) ● +≃⊎
       ≋⟨ {!!} ⟩ 
     f ● unite+ ∎)
   where open ≋-Reasoning
 
--- Fin (0 + m) ≃ Fin m 
--- Fin (0 + m) ≃ Fin (0 + n)
-
--- Fin m ≃ Fin (0 + n)
+uniti₊-nat : ∀ {A B} {f : A fin≃ B} →
+  uniti+ ● f ≋ (id0≃ +F f) ● uniti+
+uniti₊-nat {A} {B} {f} = 
+  begin (
+    uniti+ ● f 
+      ≋⟨ {!!} ⟩ 
+    (id0≃ +F f) ● uniti+ ∎)
+  where open ≋-Reasoning
 
 ------------------------------------------------------------------------------

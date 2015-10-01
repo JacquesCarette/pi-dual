@@ -41,7 +41,7 @@ open import FinEquivTypeEquiv
   using (_fin≃_; module PlusE; module TimesE; module PlusTimesE)
 open PlusE using (_+F_; unite+; uniti+)
 open import FinEquivEquiv
-  using ([id+id]≋id; +●≋●+; _◎F_)
+  using ([id+id]≋id; +●≋●+; _◎F_; unite₊-nat; uniti₊-nat)
 
 ------------------------------------------------------------------------------
 -- Fin and type equivalences are a category
@@ -89,10 +89,10 @@ module ⊎h = MonoidalHelperFunctors FinEquivCat ⊎-bifunctor 0
 0⊎x≡x = record 
   { F⇒G = record
     { η = λ _ → unite+  
-    ; commute = λ f → {!!} }
+    ; commute = λ _ → unite₊-nat }
   ; F⇐G = record
     { η = λ _ → uniti+ 
-    ; commute = λ f →  {!!} }
+    ; commute = λ _ →  uniti₊-nat }
   ; iso = λ _ → record
     { isoˡ = linv≋ unite+ 
     ; isoʳ = rinv≋ unite+ 
