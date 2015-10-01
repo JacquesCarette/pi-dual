@@ -11,7 +11,7 @@ open Plus using (⊎≃+; +≃⊎)
 
 open import FinEquivTypeEquiv
   using (_fin≃_; module PlusE; module TimesE; module PlusTimesE)
-open PlusE using (_+F_; unite+)
+open PlusE using (_+F_; unite+; uniti+)
 open import EquivEquiv
 open import TypeEquiv
   using (unite₊equiv)
@@ -109,13 +109,16 @@ _◎F_ {A} {B} {C} {D} {f₁} {g₁} {f₂} {g₂} f₁≋g₁ f₂≋g₂ =
     g₁ +F g₂ ∎)
   where open ≋-Reasoning
 
+id0≃ : Fin 0 ≃ Fin 0
+id0≃ = id≃ {A = Fin 0}
+
 unite₊-nat : ∀ {A B} {f : A fin≃ B} →
-  unite+ ● (id≃ {A = Fin 0} +F f) ≋ f ● unite+
+  unite+ ● (id0≃ +F f) ≋ f ● unite+
 unite₊-nat {A} {B} {f} =
   let rhs≋ = id≋ {x = (id≃ ⊎≃ f) ● +≃⊎} in
   let f≋ = id≋ {x = ⊎≃+} in
   begin (
-    unite+ ● (id≃ {A = Fin 0} +F f) 
+    unite+ ● (id0≃ +F f) 
       ≋⟨ id≋ ⟩ 
     (unite₊equiv ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎) ● ⊎≃+ ● ((id≃ ⊎≃ f) ● +≃⊎)
       ≋⟨ ●-assocl {f = (id≃ ⊎≃ f) ● +≃⊎} {⊎≃+} {unite₊equiv ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎} ⟩
@@ -139,4 +142,13 @@ unite₊-nat {A} {B} {f} =
 
 -- Fin m ≃ Fin (0 + n)
 
+uniti₊-nat : ∀ {A B} {f : A fin≃ B} →
+  uniti+ ● f ≋ (id0≃ +F f) ● uniti+
+uniti₊-nat {A} {B} {f} = 
+  begin (
+    uniti+ ● f 
+      ≋⟨ {!!} ⟩ 
+    (id0≃ +F f) ● uniti+ ∎)
+  where open ≋-Reasoning
+-- I believe the above is just flip-sym≋ unite₊-nat !
 ------------------------------------------------------------------------------
