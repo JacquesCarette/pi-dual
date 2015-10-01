@@ -142,13 +142,20 @@ unite₊-nat {A} {B} {f} =
 
 -- Fin m ≃ Fin (0 + n)
 
+xxx : ∀ {A B} {f : A fin≃ B} → sym≃ (f ● unite+) ≋ sym≃ (unite+ ● (id0≃ +F f))
+xxx = flip-sym≋ unite₊-nat
+
 uniti₊-nat : ∀ {A B} {f : A fin≃ B} →
   uniti+ ● f ≋ (id0≃ +F f) ● uniti+
-uniti₊-nat {A} {B} {f} = 
+uniti₊-nat = {!!}
+
+-- uniti₊-nat {A} {B} {f} = flip-sym≋ unite₊-nat
+{--
   begin (
     uniti+ ● f 
       ≋⟨ {!!} ⟩ 
     (id0≃ +F f) ● uniti+ ∎)
   where open ≋-Reasoning
+--}
 -- I believe the above is just flip-sym≋ unite₊-nat !
 ------------------------------------------------------------------------------

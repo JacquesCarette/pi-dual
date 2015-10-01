@@ -12,6 +12,8 @@ import Relation.Binary.PropositionalEquality as P
 
 import Relation.Binary.EqReasoning as EqR
 
+open import Function using (_∘_)
+
 open import Equiv
  using (module isqinv; qinv; _≃_; id≃; sym≃; _●_; _∼_; sym∼;
    _⊎≃_)
@@ -86,6 +88,15 @@ lid≋ = eq (λ _ → P.refl) (λ _ → P.refl)
 
 rid≋ : ∀ {ℓ} {A B : Set ℓ} {f : A ≃ B} → (f ● id≃) ≋ f
 rid≋ = eq (λ _ → P.refl) (λ _ → P.refl)
+
+--
+
+sym≃● : ∀ {A B C : Set} {g : B ≃ C} {f : A ≃ B} →
+        sym≃ (g ● f) ≋ sym≃ f ● sym≃ g
+sym≃● {g = (g , geq)} {f = (f , feq)} =
+  let module fm = isqinv feq
+      module gm = isqinv geq
+   in eq {!!} {!!} 
 
 -- underlying it all, it uses ∘ and ≡, thus associativity is immediate
 
