@@ -6,13 +6,15 @@ open import Data.Product using (_×_; proj₁; proj₂)
 
 open import Equiv using (sym∼; sym≃; _⊎≃_; id≃; _≃_; _●_; _×≃_; qinv)
 
-open import FinEquivPlusTimes using (module Plus)
+open import FinEquivPlusTimes using (F0≃⊥; module Plus)
 open Plus using (⊎≃+; +≃⊎)
 
 open import FinEquivTypeEquiv
   using (_fin≃_; module PlusE; module TimesE; module PlusTimesE)
 open PlusE using (_+F_; unite+)
 open import EquivEquiv
+open import TypeEquiv
+  using (unite₊equiv)
 
 open import Data.Empty using (⊥)
 open import Data.Unit using (⊤)
@@ -21,8 +23,8 @@ open import Data.Fin using (Fin)
 open import Data.Sum using (_⊎_)
 open import Data.Product using (_,_)
 
-open import TypeEquivEquiv 
-  using ([id,id]≋id; ⊎●≋●⊎; ⊎≃-respects-≋)
+import TypeEquivEquiv as T
+  using ([id,id]≋id; ⊎●≋●⊎; ⊎≃-respects-≋; unite₊-nat)
 
 ------------------------------------------------------------------------------
 -- equivalences for the ⊎ structure
@@ -41,7 +43,7 @@ open import TypeEquivEquiv
   em +F en
     ≋⟨ id≋ ⟩
   ⊎≃+ ● (em ⊎≃ en) ● +≃⊎
-    ≋⟨ f≋ ◎ ([id,id]≋id ◎ g≋) ⟩
+    ≋⟨ f≋ ◎ (T.[id,id]≋id ◎ g≋) ⟩
   ⊎≃+ ● id≃ {A = Fin m ⊎ Fin n} ● +≃⊎
     ≋⟨ f≋ ◎ lid≋ {f = +≃⊎} ⟩
   ⊎≃+ {m} ● +≃⊎ 
@@ -49,7 +51,7 @@ open import TypeEquivEquiv
   em+n ∎)
   where open ≋-Reasoning
 
-intro-inv-r : {m n o p : ℕ} (f : (Fin m ⊎ Fin n) ≃ (Fin o ⊎ Fin p)) → f ≋ (f ● +≃⊎) ● ⊎≃+
+intro-inv-r : {m n : ℕ} {B : Set} (f : (Fin m ⊎ Fin n) ≃ B) → f ≋ (f ● +≃⊎) ● ⊎≃+
 intro-inv-r f = 
   begin (
     f
@@ -72,7 +74,7 @@ intro-inv-r f =
     (h ● f) +F (i ● g)
       ≋⟨ id≋ ⟩
     ⊎≃+ ● ((h ● f) ⊎≃ (i ● g)) ● +≃⊎
-      ≋⟨ f≋ ◎ (⊎●≋●⊎ ◎ g≋) ⟩ -- the real work, rest is shuffling
+      ≋⟨ f≋ ◎ (T.⊎●≋●⊎ ◎ g≋) ⟩ -- the real work, rest is shuffling
     ⊎≃+ ● ((h ⊎≃ i) ● (f ⊎≃ g)) ● +≃⊎
       ≋⟨ ●-assocl {f = +≃⊎} { (h ⊎≃ i) ● (f ⊎≃ g) } {⊎≃+} ⟩
     (⊎≃+ ● ((h ⊎≃ i) ● (f ⊎≃ g))) ● +≃⊎
@@ -101,7 +103,7 @@ _◎F_ {A} {B} {C} {D} {f₁} {g₁} {f₂} {g₂} f₁≋g₁ f₂≋g₂ =
     f₁ +F f₂
       ≋⟨ id≋ ⟩ 
     ⊎≃+ ● (f₁ ⊎≃ f₂) ● +≃⊎
-      ≋⟨ f≋ ◎ (⊎≃-respects-≋ f₁≋g₁ f₂≋g₂ ◎ g≋) ⟩
+      ≋⟨ f≋ ◎ (T.⊎≃-respects-≋ f₁≋g₁ f₂≋g₂ ◎ g≋) ⟩
     ⊎≃+ ● (g₁ ⊎≃ g₂) ● +≃⊎
       ≋⟨ id≋ ⟩ 
     g₁ +F g₂ ∎)
@@ -109,15 +111,29 @@ _◎F_ {A} {B} {C} {D} {f₁} {g₁} {f₂} {g₂} f₁≋g₁ f₂≋g₂ =
 
 unite₊-nat : ∀ {A B} {f : A fin≃ B} →
   unite+ ● (id≃ {A = Fin 0} +F f) ≋ f ● unite+
-unite₊-nat {A} {B} {f} = 
+unite₊-nat {A} {B} {f} =
+  let rhs≋ = id≋ {x = (id≃ ⊎≃ f) ● +≃⊎} in
+  let f≋ = id≋ {x = ⊎≃+} in
   begin (
     unite+ ● (id≃ {A = Fin 0} +F f) 
       ≋⟨ id≋ ⟩ 
-    unite+ ● ⊎≃+ ● (id≃ ⊎≃ f) ● +≃⊎
-      ≋⟨ {!!} ⟩ 
+    (unite₊equiv ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎) ● ⊎≃+ ● ((id≃ ⊎≃ f) ● +≃⊎)
+      ≋⟨ ●-assocl {f = (id≃ ⊎≃ f) ● +≃⊎} {⊎≃+} {unite₊equiv ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎} ⟩
+    ((unite₊equiv ● ((F0≃⊥ ⊎≃ id≃) ● +≃⊎)) ● ⊎≃+) ● (id≃ ⊎≃ f) ● +≃⊎
+      ≋⟨ (●-assocl {f = +≃⊎} {F0≃⊥ ⊎≃ id≃} {unite₊equiv} ◎ f≋ ) ◎ rhs≋ ⟩
+    (((unite₊equiv ● (F0≃⊥ ⊎≃ id≃)) ● +≃⊎) ● ⊎≃+) ● (id≃ ⊎≃ f) ● +≃⊎
+      ≋⟨ sym≋ (intro-inv-r (unite₊equiv ● (F0≃⊥ ⊎≃ id≃))) ◎ rhs≋ ⟩
+    (unite₊equiv ● (F0≃⊥ ⊎≃ id≃)) ● (id≃ ⊎≃ f) ● +≃⊎
+      ≋⟨ {!!} ⟩ -- need a lemma that allows to exchange
+    (unite₊equiv ● (id≃ ⊎≃ f)) ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎ 
+      ≋⟨ T.unite₊-nat ◎ id≋ {x = (F0≃⊥ ⊎≃ id≃) ● +≃⊎} ⟩
+    (f ● unite₊equiv) ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎
+      ≋⟨ ●-assoc {f = (F0≃⊥ ⊎≃ id≃) ● +≃⊎} {unite₊equiv} {f} ⟩
+    f ● unite₊equiv ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎
+      ≋⟨ id≋ ⟩
     f ● unite+ ∎)
   where open ≋-Reasoning
-
+-- (h ● f) +F (i ● g) ≋ (h +F i) ● (f +F g)
 -- Fin (0 + m) ≃ Fin m 
 -- Fin (0 + m) ≃ Fin (0 + n)
 
