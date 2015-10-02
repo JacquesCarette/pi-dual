@@ -11,10 +11,10 @@ open Plus using (⊎≃+; +≃⊎)
 
 open import FinEquivTypeEquiv
   using (_fin≃_; module PlusE; module TimesE; module PlusTimesE)
-open PlusE using (_+F_; unite+; uniti+)
+open PlusE using (_+F_; unite+; uniti+; unite+r; uniti+r)
 open import EquivEquiv
 open import TypeEquiv
-  using (unite₊equiv)
+  using (unite₊equiv; unite₊′equiv)
 
 open import Data.Empty using (⊥)
 open import Data.Unit using (⊤)
@@ -26,7 +26,7 @@ import Relation.Binary.PropositionalEquality as P using (refl)
 
 import TypeEquivEquiv as T
   using ([id,id]≋id; ⊎●≋●⊎; ⊎≃-respects-≋; unite₊-nat;
-    [g+1]●[1+f]≋[1+f]●[g+1])
+    [g+1]●[1+f]≋[1+f]●[g+1]; unite₊′-nat)
 
 ------------------------------------------------------------------------------
 -- equivalences for the ⊎ structure
@@ -192,4 +192,30 @@ uniti₊-nat {f = f} =
     (id0≃ +F f) ● uniti+ ∎)
   where open ≋-Reasoning
 
+unite₊r-nat : {m n : ℕ} {f : m fin≃ n} →
+  unite+r ● (f +F id0≃) ≋ f ● unite+r
+unite₊r-nat {m} {n} {f} =
+  let 1+⊥ = id≃ ⊎≃ F0≃⊥ in
+  let f+1 = f ⊎≃ id≃ in
+  let g≋ = id≋ {x = +≃⊎} in
+  let rhs≋ = id≋ {x = f+1 ● +≃⊎} in
+  begin (
+    unite+r ● (f +F id0≃) 
+      ≋⟨ id≋ ⟩ 
+    (unite₊′equiv ● 1+⊥ ● +≃⊎) ● ⊎≃+ ● (f+1 ● +≃⊎)
+      ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩ -- lots of assoc
+    (((unite₊′equiv ● 1+⊥) ● +≃⊎) ● ⊎≃+) ● (f+1 ● +≃⊎)
+      ≋⟨ sym≋ (intro-inv-r (unite₊′equiv ● 1+⊥)) ◎ rhs≋ ⟩
+    (unite₊′equiv ● 1+⊥) ● (f+1 ● +≃⊎)
+      ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩ -- lots of assoc
+    (unite₊′equiv ● (1+⊥ ● f+1)) ● +≃⊎
+      ≋⟨ (id≋ {x = unite₊′equiv} ◎ sym≋ (T.[g+1]●[1+f]≋[1+f]●[g+1] {f = F0≃⊥} {f})) ◎ g≋ ⟩
+    (unite₊′equiv ● (f ⊎≃ id≃) ● (id≃ ⊎≃ F0≃⊥)) ● +≃⊎ -- the id≃ are at different types!
+      ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩ -- lots of assoc 
+    (unite₊′equiv ● (f ⊎≃ id≃)) ● (id≃ ⊎≃ F0≃⊥) ● +≃⊎
+      ≋⟨ T.unite₊′-nat ◎ id≋ {x = (id≃ ⊎≃ F0≃⊥) ● +≃⊎} ⟩
+    (f ● unite₊′equiv) ● (id≃ ⊎≃ F0≃⊥) ● +≃⊎
+      ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩ -- assoc + defn
+    f ● unite+r ∎)
+  where open ≋-Reasoning
 ------------------------------------------------------------------------------
