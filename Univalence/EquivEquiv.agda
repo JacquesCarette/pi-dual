@@ -93,10 +93,7 @@ rid≋ = eq (λ _ → P.refl) (λ _ → P.refl)
 
 sym≃● : ∀ {A B C : Set} {g : B ≃ C} {f : A ≃ B} →
         sym≃ (g ● f) ≋ sym≃ f ● sym≃ g
-sym≃● {g = (g , geq)} {f = (f , feq)} =
-  let module fm = isqinv feq
-      module gm = isqinv geq
-   in eq {!!} {!!} 
+sym≃● = eq (λ _ → P.refl) (λ _ → P.refl) 
 
 -- underlying it all, it uses ∘ and ≡, thus associativity is immediate
 
