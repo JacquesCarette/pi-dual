@@ -22,6 +22,7 @@ open import Data.Nat using (ℕ; _+_)
 open import Data.Fin using (Fin)
 open import Data.Sum using (_⊎_)
 open import Data.Product using (_,_)
+import Relation.Binary.PropositionalEquality as P using (refl)
 
 import TypeEquivEquiv as T
   using ([id,id]≋id; ⊎●≋●⊎; ⊎≃-respects-≋; unite₊-nat;
@@ -113,35 +114,42 @@ _◎F_ {A} {B} {C} {D} {f₁} {g₁} {f₂} {g₂} f₁≋g₁ f₂≋g₂ =
 id0≃ : Fin 0 ≃ Fin 0
 id0≃ = id≃ {A = Fin 0}
 
-unite₊-nat : ∀ {A B} {f : A fin≃ B} →
+unite₊-nat : {m n : ℕ} {f : m fin≃ n} →
   unite+ ● (id0≃ +F f) ≋ f ● unite+
-unite₊-nat {A} {B} {f} =
+unite₊-nat {m} {n} {f} =
   let rhs≋ = id≋ {x = (id≃ ⊎≃ f) ● +≃⊎} in
-  let f≋ = id≋ {x = ⊎≃+} in
+  let f≋ = id≋ {x = ⊎≃+ {m} {n}} in
   let g≋ = id≋ {x = +≃⊎} in
   begin (
     unite+ ● (id0≃ +F f) 
       ≋⟨ id≋ ⟩ 
     (unite₊equiv ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎) ● ⊎≃+ ● ((id≃ ⊎≃ f) ● +≃⊎)
-      ≋⟨ ●-assocl {f = (id≃ ⊎≃ f) ● +≃⊎} {⊎≃+} {unite₊equiv ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎} ⟩
+      ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩
+      -- ≋⟨ ●-assocl {f = (id≃ ⊎≃ f) ● +≃⊎} {⊎≃+} {unite₊equiv ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎} ⟩
     ((unite₊equiv ● ((F0≃⊥ ⊎≃ id≃) ● +≃⊎)) ● ⊎≃+) ● (id≃ ⊎≃ f) ● +≃⊎
-      ≋⟨ (●-assocl {f = +≃⊎} {F0≃⊥ ⊎≃ id≃} {unite₊equiv} ◎ f≋ ) ◎ rhs≋ ⟩
+      ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩
+--       ≋⟨ (●-assocl {f = +≃⊎} {F0≃⊥ ⊎≃ id≃} {unite₊equiv} ◎ f≋ ) ◎ rhs≋ ⟩
     (((unite₊equiv ● (F0≃⊥ ⊎≃ id≃)) ● +≃⊎) ● ⊎≃+) ● (id≃ ⊎≃ f) ● +≃⊎
       ≋⟨ sym≋ (intro-inv-r (unite₊equiv ● (F0≃⊥ ⊎≃ id≃))) ◎ rhs≋ ⟩
     (unite₊equiv ● (F0≃⊥ ⊎≃ id≃)) ● (id≃ ⊎≃ f) ● +≃⊎
-      ≋⟨ ●-assocl {f = +≃⊎} {id≃ ⊎≃ f} {unite₊equiv ● (F0≃⊥ ⊎≃ id≃)} ⟩
+      ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩
+--      ≋⟨ ●-assocl {f = +≃⊎} {id≃ ⊎≃ f} {unite₊equiv ● (F0≃⊥ ⊎≃ id≃)} ⟩
     ((unite₊equiv ● (F0≃⊥ ⊎≃ id≃)) ● (id≃ ⊎≃ f)) ● +≃⊎
-      ≋⟨ ●-assoc {f = id≃ ⊎≃ f} {F0≃⊥ ⊎≃ id≃} {unite₊equiv} ◎ g≋ ⟩
+      ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩
+--      ≋⟨ ●-assoc {f = id≃ ⊎≃ f} {F0≃⊥ ⊎≃ id≃} {unite₊equiv} ◎ g≋ ⟩
     (unite₊equiv ● (F0≃⊥ ⊎≃ id≃) ● (id≃ ⊎≃ f)) ● +≃⊎
       ≋⟨ (id≋ {x = unite₊equiv} ◎ (T.[g+1]●[1+f]≋[1+f]●[g+1] {f = f} {F0≃⊥})) ◎ g≋ ⟩
     (unite₊equiv ● ((id≃ ⊎≃ f) ● (F0≃⊥ ⊎≃ id≃))) ● +≃⊎
-      ≋⟨ ●-assocl {f = F0≃⊥ ⊎≃ id≃} {id≃ ⊎≃ f} {unite₊equiv} ◎ g≋ ⟩
+      ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩
+--      ≋⟨ ●-assocl {f = F0≃⊥ ⊎≃ id≃} {id≃ ⊎≃ f} {unite₊equiv} ◎ g≋ ⟩
     ((unite₊equiv ● (id≃ ⊎≃ f)) ● (F0≃⊥ ⊎≃ id≃)) ● +≃⊎
-      ≋⟨ ●-assoc {f = +≃⊎} {F0≃⊥ ⊎≃ id≃} {unite₊equiv ● (id≃ ⊎≃ f)} ⟩
+      ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩
+--      ≋⟨ ●-assoc {f = +≃⊎} {F0≃⊥ ⊎≃ id≃} {unite₊equiv ● (id≃ ⊎≃ f)} ⟩
     (unite₊equiv ● (id≃ ⊎≃ f)) ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎ 
       ≋⟨ T.unite₊-nat ◎ id≋ {x = (F0≃⊥ ⊎≃ id≃) ● +≃⊎} ⟩
     (f ● unite₊equiv) ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎
-      ≋⟨ ●-assoc {f = (F0≃⊥ ⊎≃ id≃) ● +≃⊎} {unite₊equiv} {f} ⟩
+      ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩
+--      ≋⟨ ●-assoc {f = (F0≃⊥ ⊎≃ id≃) ● +≃⊎} {unite₊equiv} {f} ⟩
     f ● unite₊equiv ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎
       ≋⟨ id≋ ⟩
     f ● unite+ ∎)
