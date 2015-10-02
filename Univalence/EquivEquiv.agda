@@ -110,7 +110,8 @@ sym≃● = eq (λ _ → P.refl) (λ _ → P.refl)
 
 ●-assocl : {A B C D : Set} {f : A ≃ B} {g : B ≃ C} {h : C ≃ D} →
        h ● (g ● f) ≋ (h ● g) ● f
-●-assocl {f = f} {g} {h} = sym≋ (●-assoc {f = f} {g} {h})
+●-assocl {f = f} {g} {h} = eq (λ _ → P.refl) (λ _ → P.refl)
+  -- sym≋ (●-assoc {f = f} {g} {h})
 
 -- The setoid of equivalences under ≋
 
