@@ -24,7 +24,8 @@ open import Data.Sum using (_⊎_)
 open import Data.Product using (_,_)
 
 import TypeEquivEquiv as T
-  using ([id,id]≋id; ⊎●≋●⊎; ⊎≃-respects-≋; unite₊-nat)
+  using ([id,id]≋id; ⊎●≋●⊎; ⊎≃-respects-≋; unite₊-nat;
+    [g+1]●[1+f]≋[1+f]●[g+1])
 
 ------------------------------------------------------------------------------
 -- equivalences for the ⊎ structure
@@ -117,6 +118,7 @@ unite₊-nat : ∀ {A B} {f : A fin≃ B} →
 unite₊-nat {A} {B} {f} =
   let rhs≋ = id≋ {x = (id≃ ⊎≃ f) ● +≃⊎} in
   let f≋ = id≋ {x = ⊎≃+} in
+  let g≋ = id≋ {x = +≃⊎} in
   begin (
     unite+ ● (id0≃ +F f) 
       ≋⟨ id≋ ⟩ 
@@ -127,7 +129,15 @@ unite₊-nat {A} {B} {f} =
     (((unite₊equiv ● (F0≃⊥ ⊎≃ id≃)) ● +≃⊎) ● ⊎≃+) ● (id≃ ⊎≃ f) ● +≃⊎
       ≋⟨ sym≋ (intro-inv-r (unite₊equiv ● (F0≃⊥ ⊎≃ id≃))) ◎ rhs≋ ⟩
     (unite₊equiv ● (F0≃⊥ ⊎≃ id≃)) ● (id≃ ⊎≃ f) ● +≃⊎
-      ≋⟨ {!!} ⟩ -- need a lemma that allows to exchange
+      ≋⟨ ●-assocl {f = +≃⊎} {id≃ ⊎≃ f} {unite₊equiv ● (F0≃⊥ ⊎≃ id≃)} ⟩
+    ((unite₊equiv ● (F0≃⊥ ⊎≃ id≃)) ● (id≃ ⊎≃ f)) ● +≃⊎
+      ≋⟨ ●-assoc {f = id≃ ⊎≃ f} {F0≃⊥ ⊎≃ id≃} {unite₊equiv} ◎ g≋ ⟩
+    (unite₊equiv ● (F0≃⊥ ⊎≃ id≃) ● (id≃ ⊎≃ f)) ● +≃⊎
+      ≋⟨ (id≋ {x = unite₊equiv} ◎ (T.[g+1]●[1+f]≋[1+f]●[g+1] {f = f} {F0≃⊥})) ◎ g≋ ⟩
+    (unite₊equiv ● ((id≃ ⊎≃ f) ● (F0≃⊥ ⊎≃ id≃))) ● +≃⊎
+      ≋⟨ ●-assocl {f = F0≃⊥ ⊎≃ id≃} {id≃ ⊎≃ f} {unite₊equiv} ◎ g≋ ⟩
+    ((unite₊equiv ● (id≃ ⊎≃ f)) ● (F0≃⊥ ⊎≃ id≃)) ● +≃⊎
+      ≋⟨ ●-assoc {f = +≃⊎} {F0≃⊥ ⊎≃ id≃} {unite₊equiv ● (id≃ ⊎≃ f)} ⟩
     (unite₊equiv ● (id≃ ⊎≃ f)) ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎ 
       ≋⟨ T.unite₊-nat ◎ id≋ {x = (F0≃⊥ ⊎≃ id≃) ● +≃⊎} ⟩
     (f ● unite₊equiv) ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎
@@ -145,10 +155,15 @@ unite₊-nat {A} {B} {f} =
 xxx : ∀ {A B} {f : A fin≃ B} → sym≃ (f ● unite+) ≋ sym≃ (unite+ ● (id0≃ +F f))
 xxx = flip-sym≋ unite₊-nat
 
+{-
 uniti₊-nat : ∀ {A B} {f : A fin≃ B} →
-  uniti+ ● f ≋ (id0≃ +F f) ● uniti+
-uniti₊-nat = {!!}
-
+  uniti+ ● (sym≃ f) ≋ (id0≃ +F (sym≃ f)) ● uniti+
+uniti₊-nat {_} {_} {f} =
+  trans≋ (sym≋ (sym≃● {g = f} {unite+}))
+  (trans≋ (flip-sym≋ unite₊-nat) (
+  (trans≋ (sym≃● {g = unite+} {id0≃ +F f})
+          ({!!} ◎ id≋ {x = uniti+}))))
+-}
 -- uniti₊-nat {A} {B} {f} = flip-sym≋ unite₊-nat
 {--
   begin (
