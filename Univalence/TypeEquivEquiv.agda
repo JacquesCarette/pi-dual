@@ -289,3 +289,27 @@ A×[0+B]≃A×B = eq A×[0+B]→A×B A×B→A×[0+B]
 [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D = 
   eq [A⊎B]×[C⊎D]→[[A×C⊎B×C]⊎A×D]⊎B×D 
        [[A×C⊎B×C]⊎A×D]⊎B×D→[A⊎B]×[C⊎D]
+
+------------------------------------------------------------------------
+-- also useful
+
+[g+1]●[1+f]≋g+f : {A B C D : Set} {f : A ≃ B} {g : C ≃ D} →
+  (g ⊎≃ id≃) ● (id≃ ⊎≃ f) ≋ g ⊎≃ f
+[g+1]●[1+f]≋g+f {f = f} {g} = begin (
+  (g ⊎≃ id≃) ● (id≃ ⊎≃ f)
+    ≋⟨ sym≋ ⊎●≋●⊎ ⟩
+  (g ● id≃) ⊎≃ (id≃ ● f)
+    ≋⟨ ⊎≃-resp-≋ rid≋ lid≋ ⟩
+  g ⊎≃ f ∎)
+  where open ≋-Reasoning
+
+-- same proof as above, just written compactly
+[1+f]●[g+1]≋g+f : {A B C D : Set} {f : A ≃ B} {g : C ≃ D} →
+  (id≃ ⊎≃ f) ● (g ⊎≃ id≃) ≋ g ⊎≃ f
+[1+f]●[g+1]≋g+f {f = f} {g} =
+  trans≋ (sym≋ ⊎●≋●⊎) (⊎≃-resp-≋ lid≋ rid≋)
+
+-- put then together
+[g+1]●[1+f]≋[1+f]●[g+1] : {A B C D : Set} {f : A ≃ B} {g : C ≃ D} →
+  (g ⊎≃ id≃) ● (id≃ ⊎≃ f) ≋ (id≃ ⊎≃ f) ● (g ⊎≃ id≃)
+[g+1]●[1+f]≋[1+f]●[g+1] = trans≋ [g+1]●[1+f]≋g+f (sym≋ [1+f]●[g+1]≋g+f)
