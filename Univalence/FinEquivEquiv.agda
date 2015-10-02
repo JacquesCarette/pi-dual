@@ -152,25 +152,36 @@ unite₊-nat {A} {B} {f} =
 
 -- Fin m ≃ Fin (0 + n)
 
-xxx : ∀ {A B} {f : A fin≃ B} → sym≃ (f ● unite+) ≋ sym≃ (unite+ ● (id0≃ +F f))
-xxx = flip-sym≋ unite₊-nat
+sym+F : ∀ {A B C D} {f : A fin≃ B} {g : C fin≃ D} →
+  sym≃ (f +F g) ≋ sym≃ f +F sym≃ g
+sym+F {f = f} {g = g} =
+  begin (
+    sym≃ (f +F g) 
+      ≋⟨ id≋ ⟩ 
+    (sym≃ +≃⊎ ● (sym≃ f ⊎≃ sym≃ g)) ● sym≃ ⊎≃+
+      ≋⟨ ●-assoc {f = sym≃ ⊎≃+} {g = (sym≃ f ⊎≃ sym≃ g)} {h = sym≃ +≃⊎} ⟩ 
+    sym≃ +≃⊎ ● ((sym≃ f ⊎≃ sym≃ g) ● sym≃ ⊎≃+)
+      ≋⟨ id≋ ⟩ 
+    sym≃ f +F sym≃ g ∎)
+  where open ≋-Reasoning
 
-{-
 uniti₊-nat : ∀ {A B} {f : A fin≃ B} →
-  uniti+ ● (sym≃ f) ≋ (id0≃ +F (sym≃ f)) ● uniti+
-uniti₊-nat {_} {_} {f} =
-  trans≋ (sym≋ (sym≃● {g = f} {unite+}))
-  (trans≋ (flip-sym≋ unite₊-nat) (
-  (trans≋ (sym≃● {g = unite+} {id0≃ +F f})
-          ({!!} ◎ id≋ {x = uniti+}))))
--}
--- uniti₊-nat {A} {B} {f} = flip-sym≋ unite₊-nat
-{--
+  uniti+ ● f ≋ (id0≃ +F f) ● uniti+
+uniti₊-nat {f = f} = 
   begin (
     uniti+ ● f 
-      ≋⟨ {!!} ⟩ 
+      ≋⟨ id≋ ⟩ 
+    sym≃ unite+ ● sym≃ (sym≃ f)
+      ≋⟨ id≋ ⟩ 
+    sym≃ (sym≃ f ● unite+)
+      ≋⟨ flip-sym≋ unite₊-nat ⟩ 
+    sym≃ (unite+ ● (id0≃ +F sym≃ f))
+      ≋⟨ id≋ ⟩ 
+    sym≃ (id0≃ +F sym≃ f) ● uniti+
+      ≋⟨  sym+F ◎ id≋ {x = uniti+} ⟩ 
+    (id0≃ +F sym≃ (sym≃ f)) ● uniti+
+      ≋⟨ id≋ ⟩ 
     (id0≃ +F f) ● uniti+ ∎)
   where open ≋-Reasoning
---}
--- I believe the above is just flip-sym≋ unite₊-nat !
+
 ------------------------------------------------------------------------------

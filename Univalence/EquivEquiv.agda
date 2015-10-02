@@ -91,9 +91,16 @@ rid≋ = eq (λ _ → P.refl) (λ _ → P.refl)
 
 --
 
+{--
+not needed: equivalent to id≋ 
+
+symsym : ∀ {A B : Set} {f : A ≃ B} → sym≃ (sym≃ f) ≋ f
+symsym = eq (λ _ → P.refl) (λ _ → P.refl)  
+
 sym≃● : ∀ {A B C : Set} {g : B ≃ C} {f : A ≃ B} →
         sym≃ (g ● f) ≋ sym≃ f ● sym≃ g
 sym≃● = eq (λ _ → P.refl) (λ _ → P.refl) 
+--}
 
 -- underlying it all, it uses ∘ and ≡, thus associativity is immediate
 
