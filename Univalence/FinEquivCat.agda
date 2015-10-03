@@ -47,6 +47,7 @@ open PlusTimesE using (distz; factorz; distzr; factorzr;
 open import FinEquivEquiv
   using ([id+id]≋id; +●≋●+; _+≋_;
          unite₊-nat; unite₊r-nat; uniti₊-nat; uniti₊r-nat;
+         assocr₊-nat; assocl₊-nat; unite-assocr₊-coh; assocr₊-coh; 
          id*id≋id)
 
 ------------------------------------------------------------------------------
@@ -123,11 +124,11 @@ x⊎0≡x = record
 [x⊎y]⊎z≡x⊎[y⊎z] = record
   { F⇒G = record
     { η = λ X → assocr+ {m = X zero}
-    ; commute = {!!} 
+    ; commute = λ _ → assocr₊-nat 
     }
   ; F⇐G = record
     { η = λ X → assocl+ {m = X zero}
-    ; commute = {!!} 
+    ; commute = λ _ → assocl₊-nat 
     }
   ; iso = λ X → record
     { isoˡ = linv≋ assocr+ 
@@ -142,8 +143,8 @@ CPM⊎ = record
    ; identityˡ = 0⊎x≡x
    ; identityʳ = x⊎0≡x
    ; assoc = [x⊎y]⊎z≡x⊎[y⊎z]
-   ; triangle = {!!} 
-   ; pentagon = {!!} 
+   ; triangle = unite-assocr₊-coh
+   ; pentagon = assocr₊-coh
    }
 
 -- The multiplicative structure is monoidal
