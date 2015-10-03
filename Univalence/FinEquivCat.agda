@@ -43,7 +43,7 @@ open PlusE using (_+F_; unite+; unite+r; uniti+; uniti+r)
 open TimesE using (_*F_)
 open import FinEquivEquiv
   using ([id+id]≋id; +●≋●+; _+≋_;
-         unite₊-nat; unite₊r-nat; uniti₊-nat;
+         unite₊-nat; unite₊r-nat; uniti₊-nat; uniti₊r-nat;
          id*id≋id)
 
 ------------------------------------------------------------------------------
@@ -105,17 +105,43 @@ x⊎0≡x : NaturalIsomorphism ⊎h.x⊗id ⊎h.x
 x⊎0≡x = record
   { F⇒G = record
     { η = λ _ → unite+r 
-    ; commute = λ _ → unite₊r-nat 
-    }
+    ; commute = λ _ → unite₊r-nat }
   ; F⇐G = record
     { η = λ _ → uniti+r 
-    ; commute = λ _ → {!!} 
+    ; commute = λ _ → uniti₊r-nat 
     }
   ; iso = λ X → record
     { isoˡ = linv≋ unite+r
     ; isoʳ = rinv≋ unite+r
     }
   }
+
+[x⊎y]⊎z≡x⊎[y⊎z] : NaturalIsomorphism ⊎h.[x⊗y]⊗z ⊎h.x⊗[y⊗z]
+[x⊎y]⊎z≡x⊎[y⊎z] = record
+  { F⇒G = record
+    { η = {!!} 
+    ; commute = {!!} 
+    }
+  ; F⇐G = record
+    { η = λ _ → {!!} 
+    ; commute = {!!} 
+    }
+  ; iso = λ X → record
+    { isoˡ = {!!} 
+    ; isoʳ = {!!} 
+    }
+  }
+
+CPM⊎ : Monoidal FinEquivCat
+CPM⊎ = record
+  { ⊗ = ⊎-bifunctor
+   ; id = 0
+   ; identityˡ = 0⊎x≡x
+   ; identityʳ = x⊎0≡x
+   ; assoc = [x⊎y]⊎z≡x⊎[y⊎z]
+   ; triangle = {!!} 
+   ; pentagon = {!!} 
+   }
 
 -- The multiplicative structure is monoidal
 
