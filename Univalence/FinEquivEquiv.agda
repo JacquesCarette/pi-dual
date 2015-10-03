@@ -218,4 +218,5 @@ unite₊r-nat {m} {n} {f} =
       ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩ -- assoc + defn
     f ● unite+r ∎)
   where open ≋-Reasoning
+
 ------------------------------------------------------------------------------
