@@ -40,9 +40,11 @@ open import EquivEquiv
 open import FinEquivTypeEquiv
   using (_fin≃_; module PlusE; module TimesE; module PlusTimesE)
 open PlusE using (_+F_; unite+; unite+r; uniti+; uniti+r)
+open TimesE using (_*F_)
 open import FinEquivEquiv
-  using ([id+id]≋id; +●≋●+; _◎F_;
-         unite₊-nat; unite₊r-nat; uniti₊-nat)
+  using ([id+id]≋id; +●≋●+; _+≋_;
+         unite₊-nat; unite₊r-nat; uniti₊-nat;
+         id*id≋id)
 
 ------------------------------------------------------------------------------
 -- Fin and type equivalences are a category
@@ -80,9 +82,8 @@ FinEquivGroupoid = record
   ; F₁ = uncurry _+F_
   ; identity = [id+id]≋id
   ; homomorphism = +●≋●+
-  ; F-resp-≡ = uncurry _◎F_
+  ; F-resp-≡ = uncurry _+≋_
   }
-  where open _≋_
 
 module ⊎h = MonoidalHelperFunctors FinEquivCat ⊎-bifunctor 0
 
@@ -108,7 +109,7 @@ x⊎0≡x = record
     }
   ; F⇐G = record
     { η = λ _ → uniti+r 
-    ; commute = {!!} 
+    ; commute = λ _ → {!!} 
     }
   ; iso = λ X → record
     { isoˡ = linv≋ unite+r
@@ -116,5 +117,15 @@ x⊎0≡x = record
     }
   }
 
+-- The multiplicative structure is monoidal
+
+×-bifunctor : Bifunctor FinEquivCat FinEquivCat FinEquivCat
+×-bifunctor = record
+  { F₀ = uncurry _*_ 
+  ; F₁ = uncurry _*F_
+  ; identity = id*id≋id
+  ; homomorphism = {!!}
+  ; F-resp-≡ = {!!}
+  }
 
 ------------------------------------------------------------------------------

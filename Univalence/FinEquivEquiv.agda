@@ -6,19 +6,21 @@ open import Data.Product using (_×_; proj₁; proj₂)
 
 open import Equiv using (sym∼; sym≃; _⊎≃_; id≃; _≃_; _●_; _×≃_; qinv)
 
-open import FinEquivPlusTimes using (F0≃⊥; module Plus)
+open import FinEquivPlusTimes using (F0≃⊥; module Plus; module Times)
 open Plus using (⊎≃+; +≃⊎)
+open Times using (×≃*; *≃×)
 
 open import FinEquivTypeEquiv
   using (_fin≃_; module PlusE; module TimesE; module PlusTimesE)
 open PlusE using (_+F_; unite+; uniti+; unite+r; uniti+r)
+open TimesE using (_*F_)
 open import EquivEquiv
 open import TypeEquiv
   using (unite₊equiv; unite₊′equiv)
 
 open import Data.Empty using (⊥)
 open import Data.Unit using (⊤)
-open import Data.Nat using (ℕ; _+_)
+open import Data.Nat using (ℕ; _+_; _*_)
 open import Data.Fin using (Fin)
 open import Data.Sum using (_⊎_)
 open import Data.Product using (_,_)
@@ -26,7 +28,8 @@ import Relation.Binary.PropositionalEquality as P using (refl)
 
 import TypeEquivEquiv as T
   using ([id,id]≋id; ⊎●≋●⊎; ⊎≃-respects-≋; unite₊-nat;
-    [g+1]●[1+f]≋[1+f]●[g+1]; unite₊′-nat)
+    [g+1]●[1+f]≋[1+f]●[g+1]; unite₊′-nat;
+    id×id≋id)
 
 ------------------------------------------------------------------------------
 -- equivalences for the ⊎ structure
@@ -96,9 +99,9 @@ intro-inv-r f =
     (h +F i) ● (f +F g) ∎)
   where open ≋-Reasoning
 
-_◎F_ : {A B C D : ℕ} {f₁ g₁ : A fin≃ B} {f₂ g₂ : C fin≃ D} →
+_+≋_ : {A B C D : ℕ} {f₁ g₁ : A fin≃ B} {f₂ g₂ : C fin≃ D} →
   (f₁ ≋ g₁) → (f₂ ≋ g₂) → (f₁ +F f₂ ≋ g₁ +F g₂)
-_◎F_ {A} {B} {C} {D} {f₁} {g₁} {f₂} {g₂} f₁≋g₁ f₂≋g₂ =
+_+≋_ {A} {B} {C} {D} {f₁} {g₁} {f₂} {g₂} f₁≋g₁ f₂≋g₂ =
   let f≋ = id≋ {x = ⊎≃+} in
   let g≋ = id≋ {x = +≃⊎} in
   begin (
@@ -220,3 +223,26 @@ unite₊r-nat {m} {n} {f} =
   where open ≋-Reasoning
 
 ------------------------------------------------------------------------------
+
+-- and the multiplicative structure
+
+id*id≋id : ∀ {m n : ℕ} →
+    id≃ {A = Fin m} *F id≃ {A = Fin n} ≋ id≃
+id*id≋id {m} {n} =
+  let em = id≃ {A = Fin m} in 
+  let en = id≃ {A = Fin n} in 
+  let em×en = id≃ {A = Fin m × Fin n} in 
+  let em*n = id≃ {A = Fin (m * n)} in
+  let f≋ = id≋ {x = ×≃* {m} {n}} in
+  let g≋ = id≋ {x = *≃× {m} {n}} in
+  begin (
+  em *F en
+    ≋⟨ id≋ ⟩
+  ×≃* ● (em ×≃ en) ● *≃×
+    ≋⟨ f≋ ◎ (T.id×id≋id ◎ g≋) ⟩
+  ×≃* ● id≃ {A = Fin m × Fin n} ● *≃×
+    ≋⟨ f≋ ◎ lid≋ {f = *≃×} ⟩
+  ×≃* {m} ● *≃× 
+    ≋⟨ rinv≋ (×≃* {m}) ⟩
+  em*n ∎)
+  where open ≋-Reasoning
