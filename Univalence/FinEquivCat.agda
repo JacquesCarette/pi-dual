@@ -8,8 +8,7 @@ module FinEquivCat where
 
 open import Level using () renaming (zero to lzero; suc to lsuc)
 
-open import Data.Empty using ()
-open import Data.Fin using (Fin)
+open import Data.Fin using (Fin; zero; suc)
 open import Data.Nat using (ℕ; _+_; _*_)
 open import Data.Unit using ()
 open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to map⊎)
@@ -123,11 +122,11 @@ x⊎0≡x = record
 [x⊎y]⊎z≡x⊎[y⊎z] : NaturalIsomorphism ⊎h.[x⊗y]⊗z ⊎h.x⊗[y⊗z]
 [x⊎y]⊎z≡x⊎[y⊎z] = record
   { F⇒G = record
-    { η = λ _ → assocr+ {m = {!!}} {n = {!!}} {o = {!!}}
+    { η = λ X → assocr+ {m = X zero}
     ; commute = {!!} 
     }
   ; F⇐G = record
-    { η = λ _ → assocl+ 
+    { η = λ X → assocl+ {m = X zero}
     ; commute = {!!} 
     }
   ; iso = λ X → record
@@ -195,10 +194,10 @@ y×1≡y = record
 [x×y]×z≡x×[y×z] : NaturalIsomorphism ×h.[x⊗y]⊗z ×h.x⊗[y⊗z]
 [x×y]×z≡x×[y×z] = record
   { F⇒G = record
-    { η = λ X → assocr* 
+    { η = λ X → assocr* {m = X zero}
     ; commute = {!!} }
   ; F⇐G = record
-    { η = λ X → assocl* 
+    { η = λ X → assocl* {m = X zero}
     ; commute = {!!} }
   ; iso = λ X → record
     { isoˡ = linv≋ assocr* 
@@ -221,16 +220,16 @@ CPM× = record
 x⊎y≈y⊎x : NaturalIsomorphism ⊎h.x⊗y ⊎h.y⊗x
 x⊎y≈y⊎x = record 
   { F⇒G = record 
-    { η = λ _ → swap+
+    { η = λ X → swap+ {m = X zero}
     ; commute = {!!} 
     } 
   ; F⇐G = record 
-    { η = λ _ → swap+ 
+    { η = λ X → swap+ {m = X (suc zero)}
     ; commute = {!!} 
     } 
   ; iso = λ X → record
-    { isoˡ = linv≋ swap+
-    ; isoʳ = rinv≋ swap+ 
+    { isoˡ = {!!} 
+    ; isoʳ = {!!} 
     }
   }
 
@@ -244,16 +243,16 @@ BM⊎ = record
 x×y≈y×x : NaturalIsomorphism ×h.x⊗y ×h.y⊗x
 x×y≈y×x = record
   { F⇒G = record
-    { η = λ _ → swap*
+    { η = λ X → swap* {m = X zero}
     ; commute = {!!} 
     }
   ; F⇐G = record
-    { η = λ _ → swap* 
+    { η = λ X → swap* {m = X (suc zero)} 
     ; commute = {!!} 
     }
   ; iso = λ X → record
-    { isoˡ = linv≋ swap* 
-    ; isoʳ = rinv≋ swap* 
+    { isoˡ = {!!} 
+    ; isoʳ = {!!} 
     }
   }
 
@@ -265,10 +264,10 @@ BM× = record
   }
 
 SBM⊎ : Symmetric BM⊎
-SBM⊎ = record { symmetry = linv≋ swap+ }
+SBM⊎ = record { symmetry = {!!} }
 
 SBM× : Symmetric BM×
-SBM× = record { symmetry = linv≋ swap* }
+SBM× = record { symmetry = {!!} }
 
 -- And finally the multiplicative structure distributes over the
 -- additive one
@@ -278,60 +277,60 @@ module r = BimonoidalHelperFunctors BM⊎ BM×
 x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] : NaturalIsomorphism r.x⊗[y⊕z] r.[x⊗y]⊕[x⊗z]
 x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
   { F⇒G = record
-    { η = λ _ → distl
+    { η = λ X → distl {m = X zero}
     ; commute = {!!}
     }
   ; F⇐G = record
-    { η = λ _ → factorl
+    { η = λ X → factorl {m = X zero}
     ; commute = {!!}
     }
-  ; iso = λ X → record { isoˡ = linv≋ distl
-                       ; isoʳ = rinv≋ distl }
+  ; iso = λ X → record { isoˡ = {!!} 
+                       ; isoʳ = {!!} }
   }
 
 [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] : NaturalIsomorphism r.[x⊕y]⊗z r.[x⊗z]⊕[y⊗z]
 [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] = record
   { F⇒G = record
-    { η = λ _ → dist
+    { η = λ X → dist {m = X zero}
     ; commute = {!!}
     }
   ; F⇐G = record
-    { η = λ _ → factor
+    { η = λ X → factor {m = X zero}
     ; commute = {!!}
     }
-  ; iso = λ X → record { isoˡ = linv≋ dist
-                       ; isoʳ = rinv≋ dist }
+  ; iso = λ X → record { isoˡ = {!!}
+                       ; isoʳ = {!!} }
   }
 
 x⊗0≡0 : NaturalIsomorphism r.x⊗0 r.0↑
 x⊗0≡0 = record
   { F⇒G = record
-    { η = λ _ → distzr
+    { η = λ X → distzr {m = X zero}
     ; commute = {!!}
     }
   ; F⇐G = record
-    { η = λ _ → factorzr
+    { η = λ X → factorzr {n = X zero}
     ; commute = {!!}
     }
   ; iso = λ X → record
-    { isoˡ = linv≋ distzr
-    ; isoʳ = rinv≋ distzr
+    { isoˡ = {!!} 
+    ; isoʳ = {!!} 
     }
   }
 
 0⊗x≡0 : NaturalIsomorphism r.0⊗x r.0↑
 0⊗x≡0 = record
   { F⇒G = record
-    { η = λ _ → distz
+    { η = λ X → distz {m = X zero}
     ; commute = {!!}
     }
   ; F⇐G = record
-    { η = λ _ → factorz
+    { η = λ X → factorz {m = X zero}
     ; commute = {!!}
     }
   ; iso = λ X → record
-    { isoˡ = linv≋ distz
-    ; isoʳ = rinv≋ distz
+    { isoˡ = {!!}
+    ; isoʳ = {!!}
     }
   }
 
