@@ -48,7 +48,9 @@ open import FinEquivEquiv
   using ([id+id]≋id; +●≋●+; _+≋_;
          unite₊-nat; unite₊r-nat; uniti₊-nat; uniti₊r-nat;
          assocr₊-nat; assocl₊-nat; unite-assocr₊-coh; assocr₊-coh; 
-         id*id≋id)
+         id*id≋id; *●≋●*; _*≋_;
+         unite*-nat; unite*r-nat; uniti*-nat; uniti*r-nat;
+         assocr*-nat; assocl*-nat; unite-assocr*-coh; assocr*-coh)
 
 ------------------------------------------------------------------------------
 -- Fin and type equivalences are a category
@@ -154,8 +156,8 @@ CPM⊎ = record
   { F₀ = uncurry _*_ 
   ; F₁ = uncurry _*F_
   ; identity = id*id≋id
-  ; homomorphism = {!!}
-  ; F-resp-≡ = {!!}
+  ; homomorphism = *●≋●*
+  ; F-resp-≡ = uncurry _*≋_
   }
 
 module ×h = MonoidalHelperFunctors FinEquivCat ×-bifunctor 1
@@ -164,11 +166,11 @@ module ×h = MonoidalHelperFunctors FinEquivCat ×-bifunctor 1
 1×y≡y = record
   { F⇒G = record
     { η = λ _ → unite* 
-    ; commute = {!!} 
+    ; commute = λ f → {!!} -- unite*-nat 
     }
   ; F⇐G = record
     { η = λ _ → uniti* 
-    ; commute = {!!} 
+    ; commute = λ f → {!!} -- unite*r-nat
     }
   ; iso = λ X → record
     { isoˡ = linv≋ unite* 
@@ -179,12 +181,12 @@ module ×h = MonoidalHelperFunctors FinEquivCat ×-bifunctor 1
 y×1≡y : NaturalIsomorphism ×h.x⊗id ×h.x
 y×1≡y = record
   { F⇒G = record 
-    { η = λ _ → unite*r 
-    ;  commute = {!!} 
+    { η = λ X → unite*r 
+    ;  commute = λ f → {!!} -- uniti*-nat
     }
   ; F⇐G = record 
-    { η = λ _ → uniti*r 
-    ; commute = {!!} 
+    { η = λ X → uniti*r 
+    ; commute = λ f → {!!} -- uniti*r-nat
     }
   ; iso = λ X → record 
     { isoˡ = linv≋ unite*r 
@@ -196,10 +198,10 @@ y×1≡y = record
 [x×y]×z≡x×[y×z] = record
   { F⇒G = record
     { η = λ X → assocr* {m = X zero}
-    ; commute = {!!} }
+    ; commute = λ _ → assocr*-nat }
   ; F⇐G = record
     { η = λ X → assocl* {m = X zero}
-    ; commute = {!!} }
+    ; commute = λ _ → assocl*-nat }
   ; iso = λ X → record
     { isoˡ = linv≋ assocr* 
     ; isoʳ = rinv≋ assocr* }
@@ -212,8 +214,8 @@ CPM× = record
   ; identityˡ = 1×y≡y
   ; identityʳ = y×1≡y
   ; assoc = [x×y]×z≡x×[y×z]
-  ; triangle = {!!} 
-  ; pentagon = {!!} 
+  ; triangle = unite-assocr*-coh
+  ; pentagon = assocr*-coh
   }
 
 -- The monoidal structures are symmetric

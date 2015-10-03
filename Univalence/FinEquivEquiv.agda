@@ -16,7 +16,7 @@ open Times using (×≃*; *≃×)
 open import FinEquivTypeEquiv
   using (_fin≃_; module PlusE; module TimesE; module PlusTimesE)
 open PlusE using (_+F_; unite+; uniti+; unite+r; uniti+r; assocr+; assocl+)
-open TimesE using (_*F_)
+open TimesE using (_*F_; unite*; uniti*; unite*r; uniti*r; assocr*; assocl*)
 open import EquivEquiv
 open import TypeEquiv
   using (unite₊equiv; unite₊′equiv)
@@ -36,6 +36,9 @@ import TypeEquivEquiv as T
 
 ------------------------------------------------------------------------------
 -- equivalences for the ⊎ structure
+
+id0≃ : Fin 0 ≃ Fin 0
+id0≃ = id≃ {A = Fin 0}
 
 postulate 
   [id+id]≋id : ∀ {p : ℕ × ℕ} →
@@ -136,9 +139,6 @@ _+≋_ {A} {B} {C} {D} {f₁} {g₁} {f₂} {g₂} f₁≋g₁ f₂≋g₂ =
     g₁ +F g₂ ∎)
   where open ≋-Reasoning
 --}
-
-id0≃ : Fin 0 ≃ Fin 0
-id0≃ = id≃ {A = Fin 0}
 
 postulate 
   unite₊-nat : {m n : ℕ} {f : m fin≃ n} →
@@ -314,6 +314,9 @@ postulate
 ------------------------------------------------------------------------------
 -- and the multiplicative structure
 
+id1≃ : Fin 1 ≃ Fin 1
+id1≃ = id≃ {A = Fin 1}
+
 postulate 
   id*id≋id : ∀ {m n : ℕ} →
       id≃ {A = Fin m} *F id≃ {A = Fin n} ≋ id≃
@@ -340,5 +343,53 @@ id*id≋id {m} {n} =
   em*n ∎)
   where open ≋-Reasoning
 --}
+
+postulate
+  *●≋●* : {A B C D E F : ℕ} →
+    {f : A fin≃ C} {g : B fin≃ D} {h : C fin≃ E} {i : D fin≃ F} →
+    (h ● f) *F (i ● g) ≋ (h *F i) ● (f *F g)
+
+postulate
+  _*≋_ : {A B C D : ℕ} {f₁ g₁ : A fin≃ B} {f₂ g₂ : C fin≃ D} →
+    (f₁ ≋ g₁) → (f₂ ≋ g₂) → (f₁ *F f₂ ≋ g₁ *F g₂)
+
+postulate 
+  unite*-nat : {m n : ℕ} {f : m fin≃ n} →
+    unite* ● (id1≃ *F f) ≋ f ● unite*
+
+postulate 
+ uniti*-nat : ∀ {A B} {f : A fin≃ B} →
+    uniti* ● f ≋ (id1≃ *F f) ● uniti*
+
+postulate
+  unite*r-nat : {m n : ℕ} {f : m fin≃ n} →
+   unite*r ● (f *F id1≃) ≋ f ● unite*r
+
+postulate 
+  uniti*r-nat : {m n : ℕ} {f : m fin≃ n} →
+      uniti*r ● f ≋ (f *F id1≃) ● uniti*r
+
+postulate
+  assocr*-nat : {m n o m' n' o' : ℕ}
+    {f : m fin≃ m'} {g : n fin≃ n'} {h : o fin≃ o'} → 
+    assocr* {m'} {n'} {o'} ● ((f *F g) *F h) ≋
+    (f *F (g *F h)) ● assocr* {m} {n} {o}
+
+postulate
+  assocl*-nat : {m n o m' n' o' : ℕ}
+    {f : m fin≃ m'} {g : n fin≃ n'} {h : o fin≃ o'} → 
+    assocl* {m'} {n'} {o'} ● (f *F (g *F h)) ≋
+    ((f *F g) *F h) ● assocl* {m} {n} {o}
+
+postulate
+  unite-assocr*-coh : {m n : ℕ} → 
+    unite*r {m = m} *F id≃ {A = Fin n} ≋
+    (id≃ {A = Fin m} *F unite* {m = n}) ● assocr* {m} {1} {n}
+
+postulate
+  assocr*-coh : {m n o p : ℕ} → 
+    assocr* {m} {n} {o * p} ● assocr* {m * n} {o} {p} ≋
+    (id≃ {A = Fin m} *F assocr* {n} {o} {p}) ●
+      assocr* {m} {n * o} {p} ● (assocr* {m} {n} {o} *F id≃ {A = Fin p})
 
 ------------------------------------------------------------------------------
