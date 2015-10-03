@@ -81,60 +81,61 @@ module Plus where
   -- fairly easy to show that ⊎ satisfies the commutative monoid
   -- axioms
 
-  fwd : {m n : ℕ} → (Fin m ⊎ Fin n) → Fin (m + n)
-  fwd {m} {n} (inj₁ x) = inject+ n x
-  fwd {m} {n} (inj₂ y) = raise m y
+  private
+    fwd : {m n : ℕ} → (Fin m ⊎ Fin n) → Fin (m + n)
+    fwd {m} {n} (inj₁ x) = inject+ n x
+    fwd {m} {n} (inj₂ y) = raise m y
 
-  bwd : {m n : ℕ} → Fin (m + n) → (Fin m ⊎ Fin n)
-  bwd {m} {n} = λ i → case (toℕ i <? m) of λ
-    { (yes p) → inj₁ (fromℕ≤ p)
-     ; (no ¬p) → inj₂ (reduce≥ i (≤-pred (≰⇒> ¬p)))
-     }
+    bwd : {m n : ℕ} → Fin (m + n) → (Fin m ⊎ Fin n)
+    bwd {m} {n} = λ i → case (toℕ i <? m) of λ
+      { (yes p) → inj₁ (fromℕ≤ p)
+       ; (no ¬p) → inj₂ (reduce≥ i (≤-pred (≰⇒> ¬p)))
+       }
 
-  fwd∘bwd~id : {m n : ℕ} → fwd {m} {n} ∘ bwd ∼ id
-  fwd∘bwd~id {m} i with toℕ i <? m
-  fwd∘bwd~id i | yes p = sym (inj₁-≡ i p)
-  fwd∘bwd~id i | no ¬p = sym (inj₂-≡ i (≤-pred (≰⇒> ¬p)))
+    fwd∘bwd~id : {m n : ℕ} → fwd {m} {n} ∘ bwd ∼ id
+    fwd∘bwd~id {m} i with toℕ i <? m
+    fwd∘bwd~id i | yes p = sym (inj₁-≡ i p)
+    fwd∘bwd~id i | no ¬p = sym (inj₂-≡ i (≤-pred (≰⇒> ¬p)))
 
-  bwd∘fwd~id : {m n : ℕ} → bwd {m} {n} ∘ fwd ∼ id
-  bwd∘fwd~id {m} {n} (inj₁ x) with toℕ (inject+ n x) <? m 
-  bwd∘fwd~id {n = n} (inj₁ x) | yes p = 
-     cong inj₁
-       (inject+-injective (fromℕ≤ p) x (sym (inj₁-≡ (inject+ n x) p)))
-  bwd∘fwd~id {m} {n} (inj₁ x) | no ¬p = ⊥-elim (1+n≰n pf)
-   where
-     open ≤-Reasoning
-     pf : suc (toℕ x) ≤ toℕ x
-     pf = let q =  (≤-pred (≰⇒> ¬p)) in 
-            begin (
-              suc (toℕ x)
-                ≤⟨ bounded x ⟩
-              m
-                ≤⟨ q ⟩
-              toℕ (inject+ n x)
-                ≡⟨ sym (inject+-lemma n x) ⟩
-              toℕ x ∎ )
-  bwd∘fwd~id {m} {n} (inj₂ y) with toℕ (raise m y) <? m 
-  bwd∘fwd~id {m} {n} (inj₂ y) | yes p = ⊥-elim (1+n≰n pf)
-   where
-     open ≤-Reasoning
-     pf : suc m ≤ m
-     pf = begin (
-             suc m
-                 ≤⟨ m≤m+n (suc m) (toℕ y) ⟩
-             suc (m + toℕ y)
-                 ≡⟨ cong suc (sym (toℕ-raise m y)) ⟩
-             suc (toℕ (raise m y))
-                 ≤⟨ p ⟩
-             m ∎)
-  bwd∘fwd~id {m} {n} (inj₂ y) | no ¬p = 
-     cong inj₂
-       (raise-injective {m}
-         (reduce≥ (raise m y) (≤-pred (≰⇒> ¬p)))
-         y
-         (sym (inj₂-≡ (raise m y) (≤-pred (≰⇒> ¬p)))))
+    bwd∘fwd~id : {m n : ℕ} → bwd {m} {n} ∘ fwd ∼ id
+    bwd∘fwd~id {m} {n} (inj₁ x) with toℕ (inject+ n x) <? m 
+    bwd∘fwd~id {n = n} (inj₁ x) | yes p = 
+       cong inj₁
+         (inject+-injective (fromℕ≤ p) x (sym (inj₁-≡ (inject+ n x) p)))
+    bwd∘fwd~id {m} {n} (inj₁ x) | no ¬p = ⊥-elim (1+n≰n pf)
+     where
+       open ≤-Reasoning
+       pf : suc (toℕ x) ≤ toℕ x
+       pf = let q =  (≤-pred (≰⇒> ¬p)) in 
+              begin (
+                suc (toℕ x)
+                  ≤⟨ bounded x ⟩
+                m
+                  ≤⟨ q ⟩
+                toℕ (inject+ n x)
+                  ≡⟨ sym (inject+-lemma n x) ⟩
+                toℕ x ∎ )
+    bwd∘fwd~id {m} {n} (inj₂ y) with toℕ (raise m y) <? m 
+    bwd∘fwd~id {m} {n} (inj₂ y) | yes p = ⊥-elim (1+n≰n pf)
+     where
+       open ≤-Reasoning
+       pf : suc m ≤ m
+       pf = begin (
+               suc m
+                   ≤⟨ m≤m+n (suc m) (toℕ y) ⟩
+               suc (m + toℕ y)
+                   ≡⟨ cong suc (sym (toℕ-raise m y)) ⟩
+               suc (toℕ (raise m y))
+                   ≤⟨ p ⟩
+               m ∎)
+    bwd∘fwd~id {m} {n} (inj₂ y) | no ¬p = 
+       cong inj₂
+         (raise-injective {m}
+           (reduce≥ (raise m y) (≤-pred (≰⇒> ¬p)))
+           y
+           (sym (inj₂-≡ (raise m y) (≤-pred (≰⇒> ¬p)))))
 
-  -- the main equivalence
+   -- the main equivalence
   abstract
     fwd-iso : {m n : ℕ} → (Fin m ⊎ Fin n) ≃ Fin (m + n)
     fwd-iso {m} {n} = fwd , qinv bwd (fwd∘bwd~id {m}) (bwd∘fwd~id {m})
@@ -155,11 +156,11 @@ module Times where
   -- fairly easy to show that × satisfies the commutative monoid
   -- axioms
 
-  fwd : {m n : ℕ} → (Fin m × Fin n) → Fin (m * n)
-  fwd {suc m} {n} (zero , k) = inject+ (m * n) k
-  fwd {n = n} (suc i , k) = raise n (fwd (i , k))
-
   private
+    fwd : {m n : ℕ} → (Fin m × Fin n) → Fin (m * n)
+    fwd {suc m} {n} (zero , k) = inject+ (m * n) k
+    fwd {n = n} (suc i , k) = raise n (fwd (i , k))
+
     soundness : ∀ {m n} (i : Fin m) (j : Fin n) →
                 toℕ (fwd (i , j)) ≡ toℕ i * n + toℕ j
     soundness {suc m} {n} zero     j = sym (inject+-lemma (m * n) j)
@@ -186,61 +187,61 @@ module Times where
                      toℕ k ∎)
                       where open ≤-Reasoning
 
-  elim-right-zero : ∀ {ℓ} {Whatever : Set ℓ}
-                    (m : ℕ) → Fin (m * 0) → Whatever
-  elim-right-zero m i = ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero m) i))
+    elim-right-zero : ∀ {ℓ} {Whatever : Set ℓ}
+                      (m : ℕ) → Fin (m * 0) → Whatever
+    elim-right-zero m i = ⊥-elim (Fin0-⊥ (subst Fin (*-right-zero m) i))
 
-  bwd : {m n : ℕ} → Fin (m * n) → (Fin m × Fin n)
-  bwd {m} {0} k = elim-right-zero m k
-  bwd {m} {suc n} k with (toℕ k) divMod (suc n)
-  ... | result q r k≡r+q*sn = (fromℕ≤ {q} {m} (q<m) , r)
-    where 
-          q<m : q < m
-          q<m with suc q ≤? m 
-          ... | no ¬p = ⊥-elim
-                          (absurd-quotient m n q r k k≡r+q*sn
-                            (≤-pred (≰⇒> ¬p)))
-          ... | yes p = p
+    bwd : {m n : ℕ} → Fin (m * n) → (Fin m × Fin n)
+    bwd {m} {0} k = elim-right-zero m k
+    bwd {m} {suc n} k with (toℕ k) divMod (suc n)
+    ... | result q r k≡r+q*sn = (fromℕ≤ {q} {m} (q<m) , r)
+      where 
+            q<m : q < m
+            q<m with suc q ≤? m 
+            ... | no ¬p = ⊥-elim
+                            (absurd-quotient m n q r k k≡r+q*sn
+                              (≤-pred (≰⇒> ¬p)))
+            ... | yes p = p
 
-  fwd∘bwd~id : {m n : ℕ} → fwd {m} {n} ∘ bwd ∼ id
-  fwd∘bwd~id {m} {zero} i = elim-right-zero m i
-  fwd∘bwd~id {m} {suc n} i with (toℕ i) divMod (suc n)
-  ... | result q r k≡r+q*sn with suc q ≤? m
-  ... | yes p = toℕ-injective (
-      begin (
-        toℕ (fwd (fromℕ≤ p , r))
-          ≡⟨ soundness (fromℕ≤ p) r ⟩
-        toℕ (fromℕ≤ p) * (suc n) + toℕ r
-          ≡⟨ cong (λ x → x * (suc n) + toℕ r) (toℕ-fromℕ≤ p) ⟩
-        q * (suc n) + toℕ r
-          ≡⟨ +-comm _ (toℕ r) ⟩
-        toℕ r  + q * (suc n)
-          ≡⟨ sym (k≡r+q*sn) ⟩
-        toℕ i ∎))
-      where open ≡-Reasoning
-  ... | no ¬p = ⊥-elim (absurd-quotient m n q r i k≡r+q*sn (≤-pred (≰⇒> ¬p)))
+    fwd∘bwd~id : {m n : ℕ} → fwd {m} {n} ∘ bwd ∼ id
+    fwd∘bwd~id {m} {zero} i = elim-right-zero m i
+    fwd∘bwd~id {m} {suc n} i with (toℕ i) divMod (suc n)
+    ... | result q r k≡r+q*sn with suc q ≤? m
+    ... | yes p = toℕ-injective (
+        begin (
+          toℕ (fwd (fromℕ≤ p , r))
+            ≡⟨ soundness (fromℕ≤ p) r ⟩
+          toℕ (fromℕ≤ p) * (suc n) + toℕ r
+            ≡⟨ cong (λ x → x * (suc n) + toℕ r) (toℕ-fromℕ≤ p) ⟩
+          q * (suc n) + toℕ r
+            ≡⟨ +-comm _ (toℕ r) ⟩
+          toℕ r  + q * (suc n)
+            ≡⟨ sym (k≡r+q*sn) ⟩
+          toℕ i ∎))
+        where open ≡-Reasoning
+    ... | no ¬p = ⊥-elim (absurd-quotient m n q r i k≡r+q*sn (≤-pred (≰⇒> ¬p)))
 
-  bwd∘fwd~id : {m n : ℕ} → bwd {m} {n} ∘ fwd ∼ id
-  bwd∘fwd~id {n = zero} (b , ())
-  bwd∘fwd~id {m} {suc n} (b , d) with fwd (b , d) | inspect fwd (b , d)
-  ... | k | [ eq ] with (toℕ k) divMod (suc n)
-  ... | result q r pf with q <? m
-  ... | no ¬p = ⊥-elim (absurd-quotient m n q r k pf (≤-pred (≰⇒> ¬p)))
-  ... | yes p = cong₂ _,_  pf₁ (proj₁ same-quot)
-    where
-      open ≡-Reasoning
-      eq' : toℕ d + toℕ b * suc n ≡ toℕ r + q * suc n
-      eq' = begin (
-        toℕ d + toℕ b * suc n
-          ≡⟨ +-comm (toℕ d) _ ⟩
-        toℕ b * suc n + toℕ d
-          ≡⟨ trans (sym (soundness b d)) (cong toℕ eq) ⟩
-        toℕ k
-          ≡⟨ pf ⟩
-        toℕ r + q * suc n ∎ )
-      same-quot : (r ≡ d) × (q ≡ toℕ b)
-      same-quot = addMul-lemma q (toℕ b) n r d ( sym eq' )
-      pf₁ = (toℕ-injective (trans (toℕ-fromℕ≤ p) (proj₂ same-quot)))
+    bwd∘fwd~id : {m n : ℕ} → bwd {m} {n} ∘ fwd ∼ id
+    bwd∘fwd~id {n = zero} (b , ())
+    bwd∘fwd~id {m} {suc n} (b , d) with fwd (b , d) | inspect fwd (b , d)
+    ... | k | [ eq ] with (toℕ k) divMod (suc n)
+    ... | result q r pf with q <? m
+    ... | no ¬p = ⊥-elim (absurd-quotient m n q r k pf (≤-pred (≰⇒> ¬p)))
+    ... | yes p = cong₂ _,_  pf₁ (proj₁ same-quot)
+      where
+        open ≡-Reasoning
+        eq' : toℕ d + toℕ b * suc n ≡ toℕ r + q * suc n
+        eq' = begin (
+          toℕ d + toℕ b * suc n
+            ≡⟨ +-comm (toℕ d) _ ⟩
+          toℕ b * suc n + toℕ d
+            ≡⟨ trans (sym (soundness b d)) (cong toℕ eq) ⟩
+          toℕ k
+            ≡⟨ pf ⟩
+          toℕ r + q * suc n ∎ )
+        same-quot : (r ≡ d) × (q ≡ toℕ b)
+        same-quot = addMul-lemma q (toℕ b) n r d ( sym eq' )
+        pf₁ = (toℕ-injective (trans (toℕ-fromℕ≤ p) (proj₂ same-quot)))
 
   abstract
     fwd-iso : {m n : ℕ} → (Fin m × Fin n) ≃ Fin (m * n)
