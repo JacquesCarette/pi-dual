@@ -222,8 +222,26 @@ unite₊r-nat {m} {n} {f} =
     f ● unite+r ∎)
   where open ≋-Reasoning
 
-------------------------------------------------------------------------------
+uniti₊r-nat : {m n : ℕ} {f : m fin≃ n} →
+    uniti+r ● f ≋ (f +F id0≃) ● uniti+r
+uniti₊r-nat {f = f} =
+  begin (
+    uniti+r ● f 
+      ≋⟨ id≋ ⟩
+     sym≃ unite+r ● sym≃ (sym≃ f)
+      ≋⟨ id≋ ⟩
+     sym≃ (sym≃ f ● unite+r)
+      ≋⟨ flip-sym≋ unite₊r-nat ⟩
+     sym≃ (unite+r ● (sym≃ f +F id0≃))
+      ≋⟨ id≋ ⟩
+     sym≃ (sym≃ f +F id0≃) ● uniti+r
+      ≋⟨ sym+F ◎ id≋ {x = uniti+r} ⟩
+     (sym≃ (sym≃ f) +F id0≃) ● uniti+r
+      ≋⟨ id≋ ⟩
+    (f +F id0≃) ● uniti+r ∎)
+  where open ≋-Reasoning
 
+------------------------------------------------------------------------------
 -- and the multiplicative structure
 
 id*id≋id : ∀ {m n : ℕ} →
@@ -246,3 +264,5 @@ id*id≋id {m} {n} =
     ≋⟨ rinv≋ (×≃* {m}) ⟩
   em*n ∎)
   where open ≋-Reasoning
+
+------------------------------------------------------------------------------
