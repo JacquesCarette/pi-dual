@@ -71,6 +71,8 @@ FinEquivCat = record
   ; ∘-resp-≡ = _◎_
   }
 
+{--
+
 FinEquivGroupoid : Groupoid FinEquivCat
 FinEquivGroupoid = record 
   { _⁻¹ = sym≃ 
@@ -149,6 +151,8 @@ CPM⊎ = record
    ; pentagon = assocr₊-coh
    }
 
+--}
+
 -- The multiplicative structure is monoidal
 
 ×-bifunctor : Bifunctor FinEquivCat FinEquivCat FinEquivCat
@@ -218,6 +222,7 @@ CPM× = record
   ; pentagon = assocr*-coh
   }
 
+{--
 -- The monoidal structures are symmetric
 
 x⊎y≈y⊎x : NaturalIsomorphism ⊎h.x⊗y ⊎h.y⊗x
@@ -357,5 +362,7 @@ TERig = record
   ; laplazaXIX = {!!}
   ; laplazaXXIII = {!!}
   }
+
+--}
 
 ------------------------------------------------------------------------------
