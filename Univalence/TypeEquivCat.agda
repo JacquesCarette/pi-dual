@@ -39,8 +39,8 @@ open import TypeEquiv
   using (unite₊equiv; uniti₊equiv; unite₊′equiv; uniti₊′equiv;
          assocr₊equiv; assocl₊equiv;
          unite⋆equiv; uniti⋆equiv; unite⋆′equiv; uniti⋆′equiv;
-         assocr⋆equiv; assocl⋆equiv; swap₊equiv; swapswap₊;
-         swapswap⋆; swap⋆equiv;
+         assocr⋆equiv; assocl⋆equiv; swap₊equiv;
+         swap⋆equiv;
          distequiv; factorequiv;
          distlequiv; factorlequiv;
          distzequiv; factorzequiv;
