@@ -48,6 +48,12 @@ private
 -- we define all the equivalences-between-equivalences that hold
 -- between type equivalences.
 
+-- TODO: quite possibly, everything here should be abstract, as
+-- it shouldn't be useful to look into the structure of the proofs,
+-- but just that they do, indeed exist.  That and the proofs are in
+-- fact rather boring, consisting of explicit sequences of
+-- unveil --> delegate to lower level -> veil
+-- operations.
 ----
 -- equivalences for the ⊎ structure
 
@@ -307,6 +313,7 @@ A×[0+B]≃A×B = eq A×[0+B]→A×B A×B→A×[0+B]
 -}
 ------------------------------------------------------------------------
 -- ≋ has, predictably, an additive structure as well
+
 _⊎≋_ : {A B C D : Set} {f h : A ≃ B} {g i : C ≃ D} → f ≋ h → g ≋ i →
   f ⊎≃ g ≋ h ⊎≃ i
 f≋h ⊎≋ g≋i = 
