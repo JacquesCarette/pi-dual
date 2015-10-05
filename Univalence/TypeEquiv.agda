@@ -31,9 +31,10 @@ swap₊ : {A B : Set} → A ⊎ B → B ⊎ A
 swap₊ (inj₁ a) = inj₂ a
 swap₊ (inj₂ b) = inj₁ b
 
-swapswap₊ : {A B : Set} → swap₊ ○ swap₊ {A} {B} ∼ id
-swapswap₊ (inj₁ a) = refl
-swapswap₊ (inj₂ b) = refl
+abstract
+  swapswap₊ : {A B : Set} → swap₊ ○ swap₊ {A} {B} ∼ id
+  swapswap₊ (inj₁ a) = refl
+  swapswap₊ (inj₂ b) = refl
 
 swap₊equiv : {A B : Set} → (A ⊎ B) ≃ (B ⊎ A)
 swap₊equiv = (swap₊ , qinv swap₊ swapswap₊ swapswap₊)
@@ -47,14 +48,15 @@ unite₊ (inj₂ y) = y
 uniti₊ : {A : Set} → A → ⊥ ⊎ A
 uniti₊ a = inj₂ a
 
-uniti₊∘unite₊ : {A : Set} → uniti₊ ○ unite₊ ∼ id {A = ⊥ ⊎ A}
-uniti₊∘unite₊ (inj₁ ())
-uniti₊∘unite₊ (inj₂ y) = refl
+abstract
+  uniti₊∘unite₊ : {A : Set} → uniti₊ ○ unite₊ ∼ id {A = ⊥ ⊎ A}
+  uniti₊∘unite₊ (inj₁ ())
+  uniti₊∘unite₊ (inj₂ y) = refl
 
--- this is so easy, Agda can figure it out by itself (see below)
+  -- this is so easy, Agda can figure it out by itself (see below)
 
-unite₊∘uniti₊ : {A : Set} → unite₊ ○ uniti₊ ∼ id {A = A}
-unite₊∘uniti₊ _ = refl
+  unite₊∘uniti₊ : {A : Set} → unite₊ ○ uniti₊ ∼ id {A = A}
+  unite₊∘uniti₊ _ = refl
 
 unite₊equiv : {A : Set} → (⊥ ⊎ A) ≃ A
 unite₊equiv = (unite₊ , qinv uniti₊ unite₊∘uniti₊ uniti₊∘unite₊)
@@ -71,14 +73,15 @@ unite₊′ (inj₂ ())
 uniti₊′ : {A : Set} → A → A ⊎ ⊥
 uniti₊′ a = inj₁ a
 
-uniti₊′∘unite₊′ : {A : Set} → uniti₊′ ○ unite₊′ ∼ id {A = A ⊎ ⊥}
-uniti₊′∘unite₊′ (inj₁ _) = refl
-uniti₊′∘unite₊′ (inj₂ ())
+abstract
+  uniti₊′∘unite₊′ : {A : Set} → uniti₊′ ○ unite₊′ ∼ id {A = A ⊎ ⊥}
+  uniti₊′∘unite₊′ (inj₁ _) = refl
+  uniti₊′∘unite₊′ (inj₂ ())
 
--- this is so easy, Agda can figure it out by itself (see below)
+  -- this is so easy, Agda can figure it out by itself (see below)
 
-unite₊′∘uniti₊′ : {A : Set} → unite₊′ ○ uniti₊′ ∼ id {A = A}
-unite₊′∘uniti₊′ _ = refl
+  unite₊′∘uniti₊′ : {A : Set} → unite₊′ ○ uniti₊′ ∼ id {A = A}
+  unite₊′∘uniti₊′ _ = refl
 
 unite₊′equiv : {A : Set} → (A ⊎ ⊥) ≃ A
 unite₊′equiv = (unite₊′ , qinv uniti₊′ refl∼ uniti₊′∘unite₊′)
@@ -94,8 +97,9 @@ unite⋆ (tt , x) = x
 uniti⋆ : {A : Set} → A → ⊤ × A
 uniti⋆ x = tt , x
 
-uniti⋆∘unite⋆ : {A : Set} → uniti⋆ ○ unite⋆ ∼ id {A = ⊤ × A}
-uniti⋆∘unite⋆ (tt , x) = refl
+abstract
+  uniti⋆∘unite⋆ : {A : Set} → uniti⋆ ○ unite⋆ ∼ id {A = ⊤ × A}
+  uniti⋆∘unite⋆ (tt , x) = refl
 
 unite⋆equiv : {A : Set} → (⊤ × A) ≃ A
 unite⋆equiv = unite⋆ , qinv uniti⋆ refl∼ uniti⋆∘unite⋆
@@ -111,8 +115,9 @@ unite⋆′ (x , tt) = x
 uniti⋆′ : {A : Set} → A → A × ⊤
 uniti⋆′ x = x , tt
 
-uniti⋆′∘unite⋆′ : {A : Set} → uniti⋆′ ○ unite⋆′ ∼ id {A = A × ⊤}
-uniti⋆′∘unite⋆′ (x , tt) = refl
+abstract
+  uniti⋆′∘unite⋆′ : {A : Set} → uniti⋆′ ○ unite⋆′ ∼ id {A = A × ⊤}
+  uniti⋆′∘unite⋆′ (x , tt) = refl
 
 unite⋆′equiv : {A : Set} → (A × ⊤) ≃ A
 unite⋆′equiv = unite⋆′ , qinv uniti⋆′ refl∼ uniti⋆′∘unite⋆′
@@ -125,8 +130,9 @@ uniti⋆′equiv = sym≃ unite⋆′equiv
 swap⋆ : {A B : Set} → A × B → B × A
 swap⋆ (a , b) = (b , a)
 
-swapswap⋆ : {A B : Set} → swap⋆ ○ swap⋆ ∼ id {A = A × B}
-swapswap⋆ (a , b) = refl 
+abstract
+  swapswap⋆ : {A B : Set} → swap⋆ ○ swap⋆ ∼ id {A = A × B}
+  swapswap⋆ (a , b) = refl 
 
 swap⋆equiv : {A B : Set} → (A × B) ≃ (B × A)
 swap⋆equiv = swap⋆ , qinv swap⋆ swapswap⋆ swapswap⋆
@@ -143,15 +149,16 @@ assocr₊ (inj₁ (inj₁ a)) = inj₁ a
 assocr₊ (inj₁ (inj₂ b)) = inj₂ (inj₁ b)
 assocr₊ (inj₂ c) = inj₂ (inj₂ c)
 
-assocl₊∘assocr₊ : {A B C : Set} → assocl₊ ○ assocr₊ ∼ id {A = ((A ⊎ B) ⊎ C)}
-assocl₊∘assocr₊ (inj₁ (inj₁ a)) = refl
-assocl₊∘assocr₊ (inj₁ (inj₂ b)) = refl
-assocl₊∘assocr₊ (inj₂ c) = refl
+abstract
+  assocl₊∘assocr₊ : {A B C : Set} → assocl₊ ○ assocr₊ ∼ id {A = ((A ⊎ B) ⊎ C)}
+  assocl₊∘assocr₊ (inj₁ (inj₁ a)) = refl
+  assocl₊∘assocr₊ (inj₁ (inj₂ b)) = refl
+  assocl₊∘assocr₊ (inj₂ c) = refl
 
-assocr₊∘assocl₊ : {A B C : Set} → assocr₊ ○ assocl₊ ∼ id {A = (A ⊎ (B ⊎ C))}
-assocr₊∘assocl₊ (inj₁ a) = refl
-assocr₊∘assocl₊ (inj₂ (inj₁ b)) = refl
-assocr₊∘assocl₊ (inj₂ (inj₂ c)) = refl
+  assocr₊∘assocl₊ : {A B C : Set} → assocr₊ ○ assocl₊ ∼ id {A = (A ⊎ (B ⊎ C))}
+  assocr₊∘assocl₊ (inj₁ a) = refl
+  assocr₊∘assocl₊ (inj₂ (inj₁ b)) = refl
+  assocr₊∘assocl₊ (inj₂ (inj₂ c)) = refl
 
 assocr₊equiv : {A B C : Set} → ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C))
 assocr₊equiv =
@@ -169,11 +176,12 @@ assocl⋆ (a , (b , c)) = ((a , b) , c)
 assocr⋆ : {A B C : Set} → ((A × B) × C) → (A × (B × C))
 assocr⋆ ((a , b) , c) = (a , (b , c))
 
-assocl⋆∘assocr⋆ : {A B C : Set} → assocl⋆ ○ assocr⋆ ∼ id {A = ((A × B) × C)}
-assocl⋆∘assocr⋆ = refl∼
+abstract
+  assocl⋆∘assocr⋆ : {A B C : Set} → assocl⋆ ○ assocr⋆ ∼ id {A = ((A × B) × C)}
+  assocl⋆∘assocr⋆ = refl∼
 
-assocr⋆∘assocl⋆ : {A B C : Set} → assocr⋆ ○ assocl⋆ ∼ id {A = (A × (B × C))}
-assocr⋆∘assocl⋆ = refl∼
+  assocr⋆∘assocl⋆ : {A B C : Set} → assocr⋆ ○ assocl⋆ ∼ id {A = (A × (B × C))}
+  assocr⋆∘assocl⋆ = refl∼
 
 assocl⋆equiv : {A B C : Set} → (A × (B × C)) ≃ ((A × B) × C)
 assocl⋆equiv = 
@@ -189,12 +197,13 @@ distz = proj₁
 
 factorz : {A : Set} → ⊥ → (⊥ × A)
 factorz ()
- 
-distz∘factorz : {A : Set} → distz ○ factorz {A} ∼ id
-distz∘factorz ()
 
-factorz∘distz : {A : Set} → factorz {A} ○ distz ∼ id
-factorz∘distz (() , proj₂)
+abstract
+  distz∘factorz : {A : Set} → distz ○ factorz {A} ∼ id
+  distz∘factorz ()
+
+  factorz∘distz : {A : Set} → factorz {A} ○ distz ∼ id
+  factorz∘distz (() , proj₂)
 
 distzequiv : {A : Set} → (⊥ × A) ≃ ⊥
 distzequiv {A} = 
@@ -210,12 +219,13 @@ distzr = proj₂
 
 factorzr : {A : Set} → ⊥ → (A × ⊥)
 factorzr ()
- 
-distzr∘factorzr : {A : Set} → distzr ○ factorzr {A} ∼ id
-distzr∘factorzr ()
 
-factorzr∘distzr : {A : Set} → factorzr {A} ○ distzr ∼ id
-factorzr∘distzr (_ , ())
+abstract
+  distzr∘factorzr : {A : Set} → distzr ○ factorzr {A} ∼ id
+  distzr∘factorzr ()
+
+  factorzr∘distzr : {A : Set} → factorzr {A} ○ distzr ∼ id
+  factorzr∘distzr (_ , ())
 
 distzrequiv : {A : Set} → (A × ⊥) ≃ ⊥
 distzrequiv {A} = 
@@ -234,13 +244,14 @@ factor : {A B C : Set} → (A × C) ⊎ (B × C) → ((A ⊎ B) × C)
 factor (inj₁ (a , c)) = inj₁ a , c
 factor (inj₂ (b , c)) = inj₂ b , c
 
-dist∘factor : {A B C : Set} → dist {A} {B} {C} ○ factor ∼ id
-dist∘factor (inj₁ x) = refl
-dist∘factor (inj₂ y) = refl
+abstract
+  dist∘factor : {A B C : Set} → dist {A} {B} {C} ○ factor ∼ id
+  dist∘factor (inj₁ x) = refl
+  dist∘factor (inj₂ y) = refl
 
-factor∘dist : {A B C : Set} → factor {A} {B} {C} ○ dist ∼ id
-factor∘dist (inj₁ x , c) = refl
-factor∘dist (inj₂ y , c) = refl
+  factor∘dist : {A B C : Set} → factor {A} {B} {C} ○ dist ∼ id
+  factor∘dist (inj₁ x , c) = refl
+  factor∘dist (inj₂ y , c) = refl
 
 distequiv : {A B C : Set} → ((A ⊎ B) × C) ≃ ((A × C) ⊎ (B × C))
 distequiv = dist , qinv factor dist∘factor factor∘dist
@@ -258,13 +269,14 @@ factorl : {A B C : Set} → (A × B) ⊎ (A × C) → A × (B ⊎ C)
 factorl (inj₁ (x , y)) = x , inj₁ y
 factorl (inj₂ (x , y)) = x , inj₂ y
 
-distl∘factorl : {A B C : Set} → distl {A} {B} {C} ○ factorl ∼ id
-distl∘factorl (inj₁ (x , y)) = refl
-distl∘factorl (inj₂ (x , y)) = refl
+abstract
+  distl∘factorl : {A B C : Set} → distl {A} {B} {C} ○ factorl ∼ id
+  distl∘factorl (inj₁ (x , y)) = refl
+  distl∘factorl (inj₂ (x , y)) = refl
 
-factorl∘distl : {A B C : Set} → factorl {A} {B} {C} ○ distl ∼ id
-factorl∘distl (a , inj₁ x) = refl
-factorl∘distl (a , inj₂ y) = refl
+  factorl∘distl : {A B C : Set} → factorl {A} {B} {C} ○ distl ∼ id
+  factorl∘distl (a , inj₁ x) = refl
+  factorl∘distl (a , inj₂ y) = refl
 
 distlequiv : {A B C : Set} → (A × (B ⊎ C)) ≃ ((A × B) ⊎ (A × C))
 distlequiv = distl , qinv factorl distl∘factorl factorl∘distl

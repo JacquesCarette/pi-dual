@@ -179,7 +179,7 @@ open import FinEquivTypeEquiv
 -- We make sure we have enough equivalences to model a commutative
 -- semiring.
 
-open import FinEquivCat -- TODO
+-- open import FinEquivCat -- TODO
 -- Establishes that finite types and equivalences for a symmetric rig
 -- groupoid. This is the structure we want to transport to permutations.
 

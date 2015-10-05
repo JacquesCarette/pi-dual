@@ -1,5 +1,8 @@
 {-# OPTIONS --without-K #-}
 
+-- USING POSTULATES DURING DEVELOPMENT BECAUSE TYPE CHECKING WAS TAKING WAY TOO MUCH TIME
+-- REPLACE ALL POSTULATES BY THE ACTUAL PROOFS
+
 module FinEquivEquiv where
 
 open import Data.Product using (_×_; proj₁; proj₂)
@@ -12,8 +15,8 @@ open Times using (×≃*; *≃×)
 
 open import FinEquivTypeEquiv
   using (_fin≃_; module PlusE; module TimesE; module PlusTimesE)
-open PlusE using (_+F_; unite+; uniti+; unite+r; uniti+r)
-open TimesE using (_*F_)
+open PlusE using (_+F_; unite+; uniti+; unite+r; uniti+r; assocr+; assocl+)
+open TimesE using (_*F_; unite*; uniti*; unite*r; uniti*r; assocr*; assocl*)
 open import EquivEquiv
 open import TypeEquiv
   using (unite₊equiv; unite₊′equiv)
@@ -34,6 +37,15 @@ import TypeEquivEquiv as T
 ------------------------------------------------------------------------------
 -- equivalences for the ⊎ structure
 
+id0≃ : Fin 0 ≃ Fin 0
+id0≃ = id≃ {A = Fin 0}
+
+postulate 
+  [id+id]≋id : ∀ {p : ℕ × ℕ} →
+      let m = proj₁ p in let n = proj₂ p in
+      id≃ {A = Fin m} +F id≃ {A = Fin n} ≋ id≃
+
+{--
 [id+id]≋id : ∀ {p : ℕ × ℕ} →
     let m = proj₁ p in let n = proj₂ p in
     id≃ {A = Fin m} +F id≃ {A = Fin n} ≋ id≃
@@ -67,7 +79,14 @@ intro-inv-r+ f =
       ≋⟨ ●-assocl {f = ⊎≃+} {+≃⊎} {f} ⟩
     (f ● +≃⊎) ● ⊎≃+ ∎)
   where open ≋-Reasoning
+--}
 
+postulate
+  +●≋●+ : {A B C D E F : ℕ} →
+    {f : A fin≃ C} {g : B fin≃ D} {h : C fin≃ E} {i : D fin≃ F} →
+    (h ● f) +F (i ● g) ≋ (h +F i) ● (f +F g)
+
+{--
 +●≋●+ : {A B C D E F : ℕ} →
   {f : A fin≃ C} {g : B fin≃ D} {h : C fin≃ E} {i : D fin≃ F} →
   (h ● f) +F (i ● g) ≋ (h +F i) ● (f +F g)
@@ -98,24 +117,13 @@ intro-inv-r+ f =
       ≋⟨ id≋ {x = h +F i} ◎ ●-assoc {f = +≃⊎} {f ⊎≃ g} {⊎≃+}⟩
     (h +F i) ● (f +F g) ∎)
   where open ≋-Reasoning
+--}
 
-*●≋●* : {A B C D E F : ℕ} →
-  {f : A fin≃ C} {g : B fin≃ D} {h : C fin≃ E} {i : D fin≃ F} →
-  (h ● f) *F (i ● g) ≋ (h *F i) ● (f *F g)
-*●≋●* {f = f} {g} {h} {i} =
-  let f≋ = id≋ {x = ×≃*} in
-  let g≋ = id≋ {x = *≃×} in
-  let id≋fg = id≋ {x = f ×≃ g} in
-  begin (
-    (h ● f) *F (i ● g)
-      ≋⟨ id≋ ⟩
-    ×≃* ● ((h ● f) ×≃ (i ● g)) ● *≃×
-      ≋⟨ f≋ ◎ (T.×●≋●× {f = f} {g} {h} {i} ◎ g≋) ⟩
-    ×≃* ● ((h ×≃ i) ● (f ×≃ g)) ● *≃×
-      ≋⟨ {!!} ⟩
-     (h *F i) ● (f *F g) ∎)
-  where open ≋-Reasoning
+postulate
+  _+≋_ : {A B C D : ℕ} {f₁ g₁ : A fin≃ B} {f₂ g₂ : C fin≃ D} →
+    (f₁ ≋ g₁) → (f₂ ≋ g₂) → (f₁ +F f₂ ≋ g₁ +F g₂)
 
+{--
 _+≋_ : {A B C D : ℕ} {f₁ g₁ : A fin≃ B} {f₂ g₂ : C fin≃ D} →
   (f₁ ≋ g₁) → (f₂ ≋ g₂) → (f₁ +F f₂ ≋ g₁ +F g₂)
 _+≋_ {A} {B} {C} {D} {f₁} {g₁} {f₂} {g₂} f₁≋g₁ f₂≋g₂ =
@@ -130,10 +138,13 @@ _+≋_ {A} {B} {C} {D} {f₁} {g₁} {f₂} {g₂} f₁≋g₁ f₂≋g₂ =
       ≋⟨ id≋ ⟩ 
     g₁ +F g₂ ∎)
   where open ≋-Reasoning
+--}
 
-id0≃ : Fin 0 ≃ Fin 0
-id0≃ = id≃ {A = Fin 0}
+postulate 
+  unite₊-nat : {m n : ℕ} {f : m fin≃ n} →
+    unite+ ● (id0≃ +F f) ≋ f ● unite+
 
+{--
 unite₊-nat : {m n : ℕ} {f : m fin≃ n} →
   unite+ ● (id0≃ +F f) ≋ f ● unite+
 unite₊-nat {m} {n} {f} =
@@ -194,7 +205,13 @@ sym+F {f = f} {g = g} =
 -- only when viewed extensionally.  It does NOT have
 -- id≋ as a proof -- perhaps because id≋ has too
 -- restrictive a type?
+--}
 
+postulate 
+ uniti₊-nat : ∀ {A B} {f : A fin≃ B} →
+    uniti+ ● f ≋ (id0≃ +F f) ● uniti+
+
+{--
 uniti₊-nat : ∀ {A B} {f : A fin≃ B} →
   uniti+ ● f ≋ (id0≃ +F f) ● uniti+
 uniti₊-nat {f = f} = 
@@ -213,7 +230,13 @@ uniti₊-nat {f = f} =
       ≋⟨ id≋ ⟩ 
     (id0≃ +F f) ● uniti+ ∎)
   where open ≋-Reasoning
+--}
 
+postulate
+  unite₊r-nat : {m n : ℕ} {f : m fin≃ n} →
+   unite+r ● (f +F id0≃) ≋ f ● unite+r
+
+{--
 unite₊r-nat : {m n : ℕ} {f : m fin≃ n} →
   unite+r ● (f +F id0≃) ≋ f ● unite+r
 unite₊r-nat {m} {n} {f} =
@@ -240,7 +263,13 @@ unite₊r-nat {m} {n} {f} =
       ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩ -- assoc + defn
     f ● unite+r ∎)
   where open ≋-Reasoning
+--}
 
+postulate 
+  uniti₊r-nat : {m n : ℕ} {f : m fin≃ n} →
+      uniti+r ● f ≋ (f +F id0≃) ● uniti+r
+
+{--
 uniti₊r-nat : {m n : ℕ} {f : m fin≃ n} →
     uniti+r ● f ≋ (f +F id0≃) ● uniti+r
 uniti₊r-nat {f = f} =
@@ -259,10 +288,42 @@ uniti₊r-nat {f = f} =
       ≋⟨ id≋ ⟩
     (f +F id0≃) ● uniti+r ∎)
   where open ≋-Reasoning
+--}
+
+postulate
+  assocr₊-nat : {m n o m' n' o' : ℕ}
+    {f : m fin≃ m'} {g : n fin≃ n'} {h : o fin≃ o'} → 
+    assocr+ {m'} {n'} {o'} ● ((f +F g) +F h) ≋
+    (f +F (g +F h)) ● assocr+ {m} {n} {o}
+
+postulate
+  assocl₊-nat : {m n o m' n' o' : ℕ}
+    {f : m fin≃ m'} {g : n fin≃ n'} {h : o fin≃ o'} → 
+    assocl+ {m'} {n'} {o'} ● (f +F (g +F h)) ≋
+    ((f +F g) +F h) ● assocl+ {m} {n} {o}
+
+postulate
+  unite-assocr₊-coh : {m n : ℕ} → 
+    unite+r {m = m} +F id≃ {A = Fin n} ≋
+    (id≃ {A = Fin m} +F unite+ {m = n}) ● assocr+ {m} {0} {n}
+
+postulate
+  assocr₊-coh : {m n o p : ℕ} → 
+    assocr+ {m} {n} {o + p} ● assocr+ {m + n} {o} {p} ≋
+    (id≃ {A = Fin m} +F assocr+ {n} {o} {p}) ●
+      assocr+ {m} {n + o} {p} ● (assocr+ {m} {n} {o} +F id≃ {A = Fin p})
 
 ------------------------------------------------------------------------------
 -- and the multiplicative structure
 
+id1≃ : Fin 1 ≃ Fin 1
+id1≃ = id≃ {A = Fin 1}
+
+postulate 
+  id*id≋id : ∀ {m n : ℕ} →
+      id≃ {A = Fin m} *F id≃ {A = Fin n} ≋ id≃
+
+{--
 id*id≋id : ∀ {m n : ℕ} →
     id≃ {A = Fin m} *F id≃ {A = Fin n} ≋ id≃
 id*id≋id {m} {n} =
@@ -283,5 +344,73 @@ id*id≋id {m} {n} =
     ≋⟨ rinv≋ (×≃* {m}) ⟩
   em*n ∎)
   where open ≋-Reasoning
+--}
+
+postulate
+  *●≋●* : {A B C D E F : ℕ} →
+    {f : A fin≃ C} {g : B fin≃ D} {h : C fin≃ E} {i : D fin≃ F} →
+    (h ● f) *F (i ● g) ≋ (h *F i) ● (f *F g)
+
+{-
+*●≋●* : {A B C D E F : ℕ} →
+  {f : A fin≃ C} {g : B fin≃ D} {h : C fin≃ E} {i : D fin≃ F} →
+  (h ● f) *F (i ● g) ≋ (h *F i) ● (f *F g)
+*●≋●* {f = f} {g} {h} {i} =
+  let f≋ = id≋ {x = ×≃*} in
+  let g≋ = id≋ {x = *≃×} in
+  let id≋fg = id≋ {x = f ×≃ g} in
+  begin (
+    (h ● f) *F (i ● g)
+      ≋⟨ id≋ ⟩
+    ×≃* ● ((h ● f) ×≃ (i ● g)) ● *≃×
+      ≋⟨ f≋ ◎ (T.×●≋●× {f = f} {g} {h} {i} ◎ g≋) ⟩
+    ×≃* ● ((h ×≃ i) ● (f ×≃ g)) ● *≃×
+      ≋⟨ {!!} ⟩
+     (h *F i) ● (f *F g) ∎)
+  where open ≋-Reasoning
+-}
+
+postulate
+  _*≋_ : {A B C D : ℕ} {f₁ g₁ : A fin≃ B} {f₂ g₂ : C fin≃ D} →
+    (f₁ ≋ g₁) → (f₂ ≋ g₂) → (f₁ *F f₂ ≋ g₁ *F g₂)
+
+postulate 
+  unite*-nat : {m n : ℕ} {f : m fin≃ n} →
+    unite* ● (id1≃ *F f) ≋ f ● unite*
+
+postulate 
+ uniti*-nat : ∀ {A B} {f : A fin≃ B} →
+    uniti* ● f ≋ (id1≃ *F f) ● uniti*
+
+postulate
+  unite*r-nat : {m n : ℕ} {f : m fin≃ n} →
+   unite*r ● (f *F id1≃) ≋ f ● unite*r
+
+postulate 
+  uniti*r-nat : {m n : ℕ} {f : m fin≃ n} →
+      uniti*r ● f ≋ (f *F id1≃) ● uniti*r
+
+postulate
+  assocr*-nat : {m n o m' n' o' : ℕ}
+    {f : m fin≃ m'} {g : n fin≃ n'} {h : o fin≃ o'} → 
+    assocr* {m'} {n'} {o'} ● ((f *F g) *F h) ≋
+    (f *F (g *F h)) ● assocr* {m} {n} {o}
+
+postulate
+  assocl*-nat : {m n o m' n' o' : ℕ}
+    {f : m fin≃ m'} {g : n fin≃ n'} {h : o fin≃ o'} → 
+    assocl* {m'} {n'} {o'} ● (f *F (g *F h)) ≋
+    ((f *F g) *F h) ● assocl* {m} {n} {o}
+
+postulate
+  unite-assocr*-coh : {m n : ℕ} → 
+    unite*r {m = m} *F id≃ {A = Fin n} ≋
+    (id≃ {A = Fin m} *F unite* {m = n}) ● assocr* {m} {1} {n}
+
+postulate
+  assocr*-coh : {m n o p : ℕ} → 
+    assocr* {m} {n} {o * p} ● assocr* {m * n} {o} {p} ≋
+    (id≃ {A = Fin m} *F assocr* {n} {o} {p}) ●
+      assocr* {m} {n * o} {p} ● (assocr* {m} {n} {o} *F id≃ {A = Fin p})
 
 ------------------------------------------------------------------------------
