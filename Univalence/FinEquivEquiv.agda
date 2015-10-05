@@ -29,7 +29,7 @@ import Relation.Binary.PropositionalEquality as P using (refl)
 import TypeEquivEquiv as T
   using ([id,id]≋id; ⊎●≋●⊎; ⊎≃-respects-≋; unite₊-nat;
     [g+1]●[1+f]≋[1+f]●[g+1]; unite₊′-nat;
-    id×id≋id)
+    id×id≋id; ×●≋●×)
 
 ------------------------------------------------------------------------------
 -- equivalences for the ⊎ structure
@@ -56,8 +56,8 @@ import TypeEquivEquiv as T
   em+n ∎)
   where open ≋-Reasoning
 
-intro-inv-r : {m n : ℕ} {B : Set} (f : (Fin m ⊎ Fin n) ≃ B) → f ≋ (f ● +≃⊎) ● ⊎≃+
-intro-inv-r f = 
+intro-inv-r+ : {m n : ℕ} {B : Set} (f : (Fin m ⊎ Fin n) ≃ B) → f ≋ (f ● +≃⊎) ● ⊎≃+
+intro-inv-r+ f = 
   begin (
     f
       ≋⟨ sym≋ rid≋ ⟩
@@ -85,7 +85,7 @@ intro-inv-r f =
     (⊎≃+ ● ((h ⊎≃ i) ● (f ⊎≃ g))) ● +≃⊎
       ≋⟨ ●-assocl {f = f ⊎≃ g} {h ⊎≃ i} {⊎≃+} ◎ g≋ ⟩
     ((⊎≃+ ● h ⊎≃ i) ● f ⊎≃ g) ● +≃⊎
-      ≋⟨ ((f≋ ◎ intro-inv-r (h ⊎≃ i)) ◎ id≋fg) ◎ g≋ ⟩
+      ≋⟨ ((f≋ ◎ intro-inv-r+ (h ⊎≃ i)) ◎ id≋fg) ◎ g≋ ⟩
     ((⊎≃+ ● (h ⊎≃ i ● +≃⊎) ● ⊎≃+) ● f ⊎≃ g) ● +≃⊎
       ≋⟨ (●-assocl {f = ⊎≃+} {h ⊎≃ i ● +≃⊎} {⊎≃+} ◎ id≋fg) ◎ g≋ ⟩
     (((⊎≃+ ● (h ⊎≃ i ● +≃⊎)) ● ⊎≃+) ● f ⊎≃ g) ● +≃⊎
@@ -97,6 +97,23 @@ intro-inv-r f =
     (h +F i) ● ((⊎≃+ ● f ⊎≃ g) ● +≃⊎)
       ≋⟨ id≋ {x = h +F i} ◎ ●-assoc {f = +≃⊎} {f ⊎≃ g} {⊎≃+}⟩
     (h +F i) ● (f +F g) ∎)
+  where open ≋-Reasoning
+
+*●≋●* : {A B C D E F : ℕ} →
+  {f : A fin≃ C} {g : B fin≃ D} {h : C fin≃ E} {i : D fin≃ F} →
+  (h ● f) *F (i ● g) ≋ (h *F i) ● (f *F g)
+*●≋●* {f = f} {g} {h} {i} =
+  let f≋ = id≋ {x = ×≃*} in
+  let g≋ = id≋ {x = *≃×} in
+  let id≋fg = id≋ {x = f ×≃ g} in
+  begin (
+    (h ● f) *F (i ● g)
+      ≋⟨ id≋ ⟩
+    ×≃* ● ((h ● f) ×≃ (i ● g)) ● *≃×
+      ≋⟨ f≋ ◎ (T.×●≋●× {f = f} {g} {h} {i} ◎ g≋) ⟩
+    ×≃* ● ((h ×≃ i) ● (f ×≃ g)) ● *≃×
+      ≋⟨ {!!} ⟩
+     (h *F i) ● (f *F g) ∎)
   where open ≋-Reasoning
 
 _+≋_ : {A B C D : ℕ} {f₁ g₁ : A fin≃ B} {f₂ g₂ : C fin≃ D} →
@@ -133,7 +150,7 @@ unite₊-nat {m} {n} {f} =
       ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩
 --       ≋⟨ (●-assocl {f = +≃⊎} {F0≃⊥ ⊎≃ id≃} {unite₊equiv} ◎ f≋ ) ◎ rhs≋ ⟩
     (((unite₊equiv ● (F0≃⊥ ⊎≃ id≃)) ● +≃⊎) ● ⊎≃+) ● (id≃ ⊎≃ f) ● +≃⊎
-      ≋⟨ sym≋ (intro-inv-r (unite₊equiv ● (F0≃⊥ ⊎≃ id≃))) ◎ rhs≋ ⟩
+      ≋⟨ sym≋ (intro-inv-r+ (unite₊equiv ● (F0≃⊥ ⊎≃ id≃))) ◎ rhs≋ ⟩
     (unite₊equiv ● (F0≃⊥ ⊎≃ id≃)) ● (id≃ ⊎≃ f) ● +≃⊎
       ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩
 --      ≋⟨ ●-assocl {f = +≃⊎} {id≃ ⊎≃ f} {unite₊equiv ● (F0≃⊥ ⊎≃ id≃)} ⟩
@@ -157,15 +174,11 @@ unite₊-nat {m} {n} {f} =
       ≋⟨ id≋ ⟩
     f ● unite+ ∎)
   where open ≋-Reasoning
--- (h ● f) +F (i ● g) ≋ (h +F i) ● (f +F g)
--- Fin (0 + m) ≃ Fin m 
--- Fin (0 + m) ≃ Fin (0 + n)
 
--- Fin m ≃ Fin (0 + n)
-
+-- sym≃ distributes over +F
 sym+F : ∀ {A B C D} {f : A fin≃ B} {g : C fin≃ D} →
   sym≃ (f +F g) ≋ sym≃ f +F sym≃ g
-sym+F {f = f} {g = g} =
+sym+F {f = f} {g = g} = 
   begin (
     sym≃ (f +F g) 
       ≋⟨ id≋ ⟩ 
@@ -175,6 +188,12 @@ sym+F {f = f} {g = g} =
       ≋⟨ id≋ ⟩ 
     sym≃ f +F sym≃ g ∎)
   where open ≋-Reasoning
+-- note that the above *also* has 'proof'
+-- eq (λ _ → P.refl) (λ _ → P.refl)
+-- in other words, it holds definitionally, but
+-- only when viewed extensionally.  It does NOT have
+-- id≋ as a proof -- perhaps because id≋ has too
+-- restrictive a type?
 
 uniti₊-nat : ∀ {A B} {f : A fin≃ B} →
   uniti+ ● f ≋ (id0≃ +F f) ● uniti+
@@ -208,7 +227,7 @@ unite₊r-nat {m} {n} {f} =
     (unite₊′equiv ● 1+⊥ ● +≃⊎) ● ⊎≃+ ● (f+1 ● +≃⊎)
       ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩ -- lots of assoc
     (((unite₊′equiv ● 1+⊥) ● +≃⊎) ● ⊎≃+) ● (f+1 ● +≃⊎)
-      ≋⟨ sym≋ (intro-inv-r (unite₊′equiv ● 1+⊥)) ◎ rhs≋ ⟩
+      ≋⟨ sym≋ (intro-inv-r+ (unite₊′equiv ● 1+⊥)) ◎ rhs≋ ⟩
     (unite₊′equiv ● 1+⊥) ● (f+1 ● +≃⊎)
       ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩ -- lots of assoc
     (unite₊′equiv ● (1+⊥ ● f+1)) ● +≃⊎
