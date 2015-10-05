@@ -36,6 +36,8 @@ m fin≃ n = Fin m ≃ Fin n
 -- Additive monoid
 
 module PlusE where
+ abstract
+
   infix 9 _+F_
   
   -- additive monoid equivalences
@@ -81,6 +83,8 @@ module PlusE where
 -- Multiplicative monoid
 
 module TimesE where
+ abstract
+
   infixl 7 _*F_
   
   -- multiplicative monoid equivalences
@@ -127,6 +131,7 @@ module TimesE where
 -- Distributivity of multiplication over addition
 
 module PlusTimesE where
+ abstract
 
   -- now that we have two monoids, we need to check distributivity
 

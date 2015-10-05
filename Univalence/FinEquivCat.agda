@@ -177,8 +177,8 @@ module ×h = MonoidalHelperFunctors FinEquivCat ×-bifunctor 1
     ; commute = λ f → {!!} -- unite*r-nat
     }
   ; iso = λ X → record
-    { isoˡ = linv≋ unite* 
-    ; isoʳ = rinv≋ unite* 
+    { isoˡ = {!!} -- linv≋ unite* 
+    ; isoʳ = {!!} -- rinv≋ unite* 
     }
   }
 
@@ -193,8 +193,8 @@ y×1≡y = record
     ; commute = λ f → {!!} -- uniti*r-nat
     }
   ; iso = λ X → record 
-    { isoˡ = linv≋ unite*r 
-    ; isoʳ = rinv≋ unite*r 
+    { isoˡ = {!!} -- linv≋ unite*r 
+    ; isoʳ = {!!} -- rinv≋ unite*r 
     }
   }
 
@@ -207,8 +207,8 @@ y×1≡y = record
     { η = λ X → assocl* {m = X zero}
     ; commute = λ _ → assocl*-nat }
   ; iso = λ X → record
-    { isoˡ = linv≋ assocr* 
-    ; isoʳ = rinv≋ assocr* }
+    { isoˡ = {!!} -- linv≋ assocr* 
+    ; isoʳ = {!!} } -- rinv≋ assocr* }
   }
 
 CPM× : Monoidal FinEquivCat
