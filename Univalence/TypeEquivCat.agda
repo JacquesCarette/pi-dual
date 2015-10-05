@@ -12,7 +12,7 @@ open import Data.Empty using (⊥)
 open import Data.Unit using (⊤)
 open import Data.Sum using (_⊎_)
 open import Data.Product using (_,_; _×_; uncurry)
-open import Data.Fin using (zero; suc) -- needed for distributivity
+open import Data.Fin using (Fin; zero; suc) -- needed for distributivity
 
 import Relation.Binary.PropositionalEquality as P
   using (sym)
@@ -47,6 +47,11 @@ open import TypeEquiv
          distzrequiv; factorzrequiv)
 
 open import TypeEquivEquiv -- need them all!
+
+-- convenience
+one two : Fin 3
+one = suc zero
+two = suc (suc zero)
 
 ------------------------------------------------------------------------------
 -- We show that types with type equivalences are a commutative rig
@@ -96,17 +101,18 @@ module ⊎h = MonoidalHelperFunctors TypeEquivCat ⊎-bifunctor ⊥
 0⊎x≡x : NaturalIsomorphism ⊎h.id⊗x ⊎h.x
 0⊎x≡x = record 
   { F⇒G = record
-    { η = λ _ → unite₊equiv
-    ; commute = λ f → unite₊-nat }
+    { η = λ X → unite₊equiv {X zero}
+    ; commute = λ f → unite₊-nat {f = f zero} }
   ; F⇐G = record
-    { η = λ _ → uniti₊equiv
-    ; commute = λ f →  uniti₊-nat } 
+    { η = λ X → uniti₊equiv {X zero}
+    ; commute = λ f →  uniti₊-nat {f = f zero} } 
   ; iso = λ _ → record
     { isoˡ = linv≋ unite₊equiv
     ; isoʳ = rinv≋ unite₊equiv
     }
   }
 
+{-
 x⊎0≡x : NaturalIsomorphism ⊎h.x⊗id ⊎h.x
 x⊎0≡x = record
   { F⇒G = record
@@ -126,7 +132,7 @@ x⊎0≡x = record
 [x⊎y]⊎z≡x⊎[y⊎z] : NaturalIsomorphism ⊎h.[x⊗y]⊗z ⊎h.x⊗[y⊗z]
 [x⊎y]⊎z≡x⊎[y⊎z] = record
   { F⇒G = record
-    { η = λ _ → assocr₊equiv
+    { η = λ X → assocr₊equiv {X zero} {X one} {X two}
     ; commute = λ f → assocr₊-nat
     }
   ; F⇐G = record
@@ -230,12 +236,12 @@ CPM× = record
 x⊎y≈y⊎x : NaturalIsomorphism ⊎h.x⊗y ⊎h.y⊗x
 x⊎y≈y⊎x = record 
   { F⇒G = record 
-    { η = λ X → swap₊equiv 
-    ; commute = λ f → swap₊-nat
+    { η = λ X → swap₊equiv {X zero} {X (suc zero)}
+    ; commute = λ f → swap₊-nat {f = f zero} {f (suc zero)}
     } 
   ; F⇐G = record 
-    { η = λ X → sym≃ swap₊equiv
-    ; commute = λ f → swap₊-nat
+    { η = λ X → sym≃ (swap₊equiv {X zero} {X (suc zero)})
+    ; commute = λ f → swap₊-nat {f = f (suc zero)} {f zero}
     } 
   ; iso = λ X → record
     { isoˡ = linv≋ swap₊equiv 
@@ -331,15 +337,15 @@ x⊗0≡0 = record
 0⊗x≡0 : NaturalIsomorphism r.0⊗x r.0↑
 0⊗x≡0 = record
   { F⇒G = record
-    { η = λ X → distzequiv
+    { η = λ X → distzequiv {X zero}
     ; commute = λ f → distz-nat {f = f zero}
     }
   ; F⇐G = record
-    { η = λ X → factorzequiv
+    { η = λ X → factorzequiv {X zero}
     ; commute = λ f → factorz-nat {f = f zero}
     }
   ; iso = λ X → record
-    { isoˡ = linv≋ distzequiv
+    { isoˡ = linv≋ (distzequiv {X zero})
     ; isoʳ = rinv≋ distzequiv
     }
   }
@@ -369,7 +375,7 @@ TERig = record
   ; laplazaXIX = A×[0+B]≃A×B
   ; laplazaXXIII = 1×[A⊎B]≃A⊎B
   }
-
+-}
 -- Notes from Laplaza, 72
 -- All of 2, 9, 10, 15
 -- one of each of {1,3}, {4,5}, {6,7}, {9, 12},{13,,14},

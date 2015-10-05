@@ -25,7 +25,7 @@ _∼_ : ∀ {ℓ ℓ'} → {A : Set ℓ} {P : A → Set ℓ'} →
 _∼_ {ℓ} {ℓ'} {A} {P} f g = (x : A) → f x ≡ g x
 
 refl∼ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {f : A → B} → (f ∼ f)
-refl∼ {A} {B} {f} x = refl
+refl∼ {A} {B} {f} _ = refl
 
 sym∼ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {f g : A → B} → (f ∼ g) → (g ∼ f)
 sym∼ H x = sym (H x)
@@ -40,8 +40,8 @@ record isqinv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) :
   constructor qinv
   field
     g : B → A
-    α : (f ∘ g) ∼ id
-    β : (g ∘ f) ∼ id
+    .α : (f ∘ g) ∼ id
+    .β : (g ∘ f) ∼ id
 
 -- We explicitly choose quasi-equivalences, even though these
 -- these are not a proposition.  This is fine for us, as we're
@@ -51,7 +51,7 @@ record isqinv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) :
 ------------------------------------------------------------------------------
 -- Equivalences between sets A and B: a function f and a quasi-inverse for f.
 
-_≃_ : ∀ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') → Set (ℓ ⊔ ℓ')
+_≃_ : ∀ {ℓ ℓ'} → Set ℓ → Set ℓ' → Set (ℓ ⊔ ℓ')
 A ≃ B = Σ (A → B) isqinv
 
 id≃ : ∀ {ℓ} {A : Set ℓ} → A ≃ A
@@ -61,19 +61,22 @@ sym≃ : ∀ {ℓ ℓ′} {A : Set ℓ} {B : Set ℓ′} → (A ≃ B) → B ≃
 sym≃ (A→B , equiv) = e.g , qinv A→B e.β e.α
   where module e = isqinv equiv
 
-trans≃ :  ∀ {ℓ ℓ′ ℓ″} {A : Set ℓ} {B : Set ℓ′} {C : Set ℓ″} → A ≃ B → B ≃ C → A ≃ C
-trans≃ (f , feq) (g , geq) = (g ∘ f) , (qinv g′ α' β')
-  where
-    module fm = isqinv feq
-    module gm = isqinv geq
-    g′ = fm.g ∘ gm.g
-    α' = λ x → trans (cong g (fm.α (gm.g x))) (gm.α x)
-    β' = λ x → trans (cong fm.g (gm.β (f x))) (fm.β x)
+abstract
+  trans≃ :  ∀ {ℓ ℓ′ ℓ″} {A : Set ℓ} {B : Set ℓ′} {C : Set ℓ″} → A ≃ B → B ≃ C → A ≃ C
+  trans≃ {A = A} {B} {C} (f , qinv f⁻¹ fα fβ) (g , qinv g⁻¹ gα gβ) = 
+    (g ∘ f) , (qinv (f⁻¹ ∘ g⁻¹) (λ x → trans (cong g (fα (g⁻¹ x))) (gα x))
+                                          (λ x → trans (cong f⁻¹ (gβ (f x))) (fβ x)))
+  -- more convenient infix version, flipped
+  _●_ : ∀ {ℓ ℓ′ ℓ″} {A : Set ℓ} {B : Set ℓ′} {C : Set ℓ″} → B ≃ C → A ≃ B → A ≃ C
+  a ● b = trans≃ b a
 
--- more convenient infix version, flipped
+  β₁ : ∀ {ℓ ℓ′ ℓ″} {A : Set ℓ} {B : Set ℓ′} {C : Set ℓ″} {f : B ≃ C} {g : A ≃ B} →
+    proj₁ (f ● g) ∼ (proj₁ f ∘ proj₁ g)
+  β₁ x = refl
 
-_●_ : ∀ {ℓ ℓ′ ℓ″} {A : Set ℓ} {B : Set ℓ′} {C : Set ℓ″} → B ≃ C → A ≃ B → A ≃ C
-a ● b = trans≃ b a
+  β₂ : ∀ {ℓ ℓ′ ℓ″} {A : Set ℓ} {B : Set ℓ′} {C : Set ℓ″} {f : B ≃ C} {g : A ≃ B} →
+    isqinv.g (proj₂ (f ● g)) ∼ (isqinv.g (proj₂ g) ∘ (isqinv.g (proj₂ f)))
+  β₂  x = refl
 
 ≃IsEquiv : IsEquivalence {Level.suc Level.zero} {Level.zero} {Set} _≃_
 ≃IsEquiv = record {
@@ -82,11 +85,18 @@ a ● b = trans≃ b a
   trans = trans≃
   }
 
+-- useful throughout below as an abbreviation
+gg : ∀ {ℓ ℓ′} {A : Set ℓ} {B : Set ℓ′} → (A ≃ B) → (B → A)
+gg z = isqinv.g (proj₂ z)
+
 ------------------------------------------------------------------------------
 -- A few properties of equivalences
+{-
+-- these are no longer needed!
 
 _⋆_ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (A ≃ B) → (x : A) → B
 (f , _) ⋆ x = f x
+
 
 -- there-and-back is identity
 
@@ -103,33 +113,55 @@ inj≃ (f , qinv g α β) x y p = trans
   (sym (β x)) (trans
   (cong g p) (
   β y))
-
+-}
 -- equivalence is a congruence for plus/times
 
 -- ⊕
 
-_⊎∼_ : ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
-  {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
-  (α : f ∘ finv ∼ id) → (β : g ∘ ginv ∼ id) →
-  (f ⊎→ g) ∘ (finv ⊎→ ginv) ∼ id {A = C ⊎ D}
-_⊎∼_ α β (inj₁ x) = cong inj₁ (α x)
-_⊎∼_ α β (inj₂ y) = cong inj₂ (β y)
+abstract
+  _⊎∼_ : ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
+    {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
+    (α : f ∘ finv ∼ id) → (β : g ∘ ginv ∼ id) →
+    (f ⊎→ g) ∘ (finv ⊎→ ginv) ∼ id {A = C ⊎ D}
+  _⊎∼_ α β (inj₁ x) = cong inj₁ (α x)
+  _⊎∼_ α β (inj₂ y) = cong inj₂ (β y)
 
-_⊎≃_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
-  → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
-(fp , eqp) ⊎≃ (fq , eqq) =
-  Data.Sum.map fp fq ,
-  qinv (P.g ⊎→ Q.g) (P.α ⊎∼ Q.α) (P.β ⊎∼ Q.β)
-  where module P = isqinv eqp
-        module Q = isqinv eqq
+  _⊎≃_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
+    → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
+  (fp , eqp) ⊎≃ (fq , eqq) =
+    Data.Sum.map fp fq ,
+    qinv (P.g ⊎→ Q.g) (P.α ⊎∼ Q.α) (P.β ⊎∼ Q.β)
+    where module P = isqinv eqp
+          module Q = isqinv eqq
+
+  β⊎₁ : ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
+    → {f : A ≃ C} → {g : B ≃ D} → proj₁ (f ⊎≃ g) ∼ Data.Sum.map (proj₁ f) (proj₁ g)
+  β⊎₁ _ = refl
+
+  β⊎₂ : ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
+    → {f : A ≃ C} → {g : B ≃ D} → gg (f ⊎≃ g) ∼ Data.Sum.map (gg f) (gg g)
+  β⊎₂ _ = refl
+
+  cong∘l : {A B C : Set} {g i : A → B} → (f : B → C) →
+    (g ∼ i) → (f ∘ g) ∼ (f ∘ i)
+  cong∘l f g~i x = cong f (g~i x)
+
+  cong∘r : {A B C : Set} {f h : B → C} → (g : A → B) →
+    (f ∼ h) → (f ∘ g) ∼ (h ∘ g)
+  cong∘r g f~h x = f~h (g x)
+
+  cong₂∘ : {A B C : Set} {f h : B → C} {g i : A → B} → 
+    (f ∼ h) → (g ∼ i) → f ∘ g ∼ h ∘ i
+  cong₂∘ {h = h} {g} f~h g~i x = trans (f~h (g x)) (cong h (g~i x))
 
 -- ⊗
 
-_×∼_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
-  {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
-  (α : f ∘ finv ∼ id) → (β : g ∘ ginv ∼ id) →
-  (f ×→ g) ∘ (finv ×→ ginv) ∼ id {A = C × D}
-_×∼_ α β (x , y) = cong₂ _,_ (α x) (β y)
+abstract
+    _×∼_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
+      {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
+      (α : f ∘ finv ∼ id) → (β : g ∘ ginv ∼ id) →
+      (f ×→ g) ∘ (finv ×→ ginv) ∼ id {A = C × D}
+    _×∼_ α β (x , y) = cong₂ _,_ (α x) (β y)
 
 _×≃_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
   → A ≃ C → B ≃ D → (A × B) ≃ (C × D)

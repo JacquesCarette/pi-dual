@@ -8,7 +8,7 @@ module Data.Sum.Properties where
 open import Data.Empty using (⊥)
 open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to map⊎)
 
-import Relation.Binary.PropositionalEquality as P using (_≡_; refl; cong)
+import Relation.Binary.PropositionalEquality as P using (_≡_; refl; cong; trans)
 open import Function as F using (id; _∘_)
 
 open import Equiv using (_∼_)
@@ -27,6 +27,12 @@ _⊎→_ = map⊎
 -- are all about ⊎→ (i.e. map⊎) rather than [_,_]
 
 abstract
+
+  cong₂⊎ : {A B C D : Set} {f h : A → B} {g i : C → D} → 
+    (f ∼ h) → (g ∼ i) → f ⊎→ g ∼ h ⊎→ i
+  cong₂⊎ f∼h g∼i (inj₁ x) = P.cong inj₁ (f∼h x)
+  cong₂⊎ f∼h g∼i (inj₂ y) = P.cong inj₂ (g∼i y)
+
   id⊎id∼id : {A B : Set} → (F.id {A = A} ⊎→ F.id {A = B}) ∼ F.id
   id⊎id∼id (inj₁ x) = P.refl
   id⊎id∼id (inj₂ y) = P.refl
@@ -43,39 +49,38 @@ abstract
   ⊎→-resp-∼ f₀~g₀ _ (inj₁ x) = P.cong inj₁ (f₀~g₀ x)
   ⊎→-resp-∼ _ f₁~g₁ (inj₂ y) = P.cong inj₂ (f₁~g₁ y)
 
-  unite₊∘[id,f]≡f∘unite₊ : {A B : Set} {f : A → B} →
+  unite₊-coh : {A B : Set} {f : A → B} →
     unite₊ ∘ (id ⊎→ f) ∼ f ∘ unite₊
-  unite₊∘[id,f]≡f∘unite₊ (inj₁ ())
-  unite₊∘[id,f]≡f∘unite₊ (inj₂ y) = P.refl
+  unite₊-coh (inj₁ ())
+  unite₊-coh (inj₂ y) = P.refl
 
   -- and the 'converse', of sorts; g is used here because
   -- this is usually applied with g = f⁻¹
-  [id,g]∘uniti₊≡uniti₊∘g : {A B : Set} {f : A → B} →
-    (id ⊎→ f) ∘ uniti₊ ∼ uniti₊ ∘ f
-  [id,g]∘uniti₊≡uniti₊∘g x = P.refl
+  uniti₊-coh : {A B : Set} {f : A → B} → (id ⊎→ f) ∘ uniti₊ ∼ uniti₊ ∘ f
+  uniti₊-coh x = P.refl
 
-  unite₊′∘[f,id]≡f∘unite₊′ : {A B : Set} {f : A → B} →
+  unite₊′-coh : {A B : Set} {f : A → B} →
     unite₊′ ∘ (f ⊎→ id) ∼ f ∘ unite₊′
-  unite₊′∘[f,id]≡f∘unite₊′ (inj₁ x) = P.refl
-  unite₊′∘[f,id]≡f∘unite₊′ (inj₂ ())
+  unite₊′-coh (inj₁ x) = P.refl
+  unite₊′-coh (inj₂ ())
 
-  [g,id]∘uniti₊′≡uniti₊′∘g : {A B : Set} {g : A → B} →
+  uniti₊′-coh : {A B : Set} {g : A → B} →
     (g ⊎→ id) ∘ uniti₊′ ∼ (uniti₊′ ∘ g)
-  [g,id]∘uniti₊′≡uniti₊′∘g x = P.refl
+  uniti₊′-coh x = P.refl
 
-  assocr₊∘[[,],] : {A B C D E F : Set} →
+  assocr₊-wf : {A B C D E F : Set} →
     {f₀ : A → D} {f₁ : B → E} {f₂ : C → F} →
     assocr₊ ∘ ((f₀ ⊎→ f₁) ⊎→ f₂) ∼ (f₀ ⊎→ (f₁ ⊎→ f₂)) ∘ assocr₊
-  assocr₊∘[[,],] (inj₁ (inj₁ x)) = P.refl
-  assocr₊∘[[,],] (inj₁ (inj₂ y)) = P.refl
-  assocr₊∘[[,],] (inj₂ y) = P.refl
+  assocr₊-wf (inj₁ (inj₁ x)) = P.refl
+  assocr₊-wf (inj₁ (inj₂ y)) = P.refl
+  assocr₊-wf (inj₂ y) = P.refl
 
-  [[,],]∘assocl₊ : {A B C D E F : Set} →
+  assocl₊-wf : {A B C D E F : Set} →
     {f₀ : A → D} {f₁ : B → E} {f₂ : C → F} →
     ((f₀ ⊎→ f₁) ⊎→ f₂) ∘ assocl₊ ∼ assocl₊ ∘ (f₀ ⊎→ (f₁ ⊎→ f₂))
-  [[,],]∘assocl₊ (inj₁ x) = P.refl
-  [[,],]∘assocl₊ (inj₂ (inj₁ x)) = P.refl
-  [[,],]∘assocl₊ (inj₂ (inj₂ y)) = P.refl
+  assocl₊-wf (inj₁ x) = P.refl
+  assocl₊-wf (inj₂ (inj₁ x)) = P.refl
+  assocl₊-wf (inj₂ (inj₂ y)) = P.refl
 
   triangle⊎-right : {A B : Set} →
     unite₊′ ⊎→ F.id {A = B} ∼ (F.id {A = A} ⊎→ unite₊) ∘ assocr₊
