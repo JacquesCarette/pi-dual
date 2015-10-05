@@ -306,6 +306,15 @@ A×[0+B]≃A×B = eq A×[0+B]→A×B A×B→A×[0+B]
        [[A×C⊎B×C]⊎A×D]⊎B×D→[A⊎B]×[C⊎D]
 -}
 ------------------------------------------------------------------------
+-- ≋ has, predictably, an additive structure as well
+_⊎≋_ : {A B C D : Set} {f h : A ≃ B} {g i : C ≃ D} → f ≋ h → g ≋ i →
+  f ⊎≃ g ≋ h ⊎≃ i
+f≋h ⊎≋ g≋i = 
+  eq (β⊎₁ ⊙ cong₂⊎ (f≡ f≋h) (f≡ g≋i) ⊙ ! β⊎₁)
+     (β⊎₂ ⊙ cong₂⊎ (g≡ f≋h) (g≡ g≋i) ⊙ ! β⊎₂)
+  where open _≋_
+  
+------------------------------------------------------------------------
 -- also useful
 
 [g+1]●[1+f]≋g+f : {A B C D : Set} {f : A ≃ B} {g : C ≃ D} →
@@ -314,7 +323,7 @@ A×[0+B]≃A×B = eq A×[0+B]→A×B A×B→A×[0+B]
   (g ⊎≃ id≃) ● (id≃ ⊎≃ f)
     ≋⟨ sym≋ ⊎●≋●⊎ ⟩
   (g ● id≃) ⊎≃ (id≃ ● f)
-    ≋⟨ ⊎≃-resp-≋ rid≋ lid≋ ⟩
+    ≋⟨ rid≋ ⊎≋ lid≋ ⟩
   g ⊎≃ f ∎)
   where open ≋-Reasoning
 
@@ -322,7 +331,7 @@ A×[0+B]≃A×B = eq A×[0+B]→A×B A×B→A×[0+B]
 [1+f]●[g+1]≋g+f : {A B C D : Set} {f : A ≃ B} {g : C ≃ D} →
   (id≃ ⊎≃ f) ● (g ⊎≃ id≃) ≋ g ⊎≃ f
 [1+f]●[g+1]≋g+f {f = f} {g} =
-  trans≋ (sym≋ ⊎●≋●⊎) (⊎≃-resp-≋ lid≋ rid≋)
+  trans≋ (sym≋ ⊎●≋●⊎) (lid≋ ⊎≋ rid≋)
 
 -- put then together
 [g+1]●[1+f]≋[1+f]●[g+1] : {A B C D : Set} {f : A ≃ B} {g : C ≃ D} →
