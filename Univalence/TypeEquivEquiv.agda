@@ -3,7 +3,7 @@
 module TypeEquivEquiv where
 
 open import Equiv 
-  using (sym∼; trans∼; sym≃; 
+  using (refl∼; sym∼; trans∼; sym≃; 
     _⊎≃_; id≃; _≃_; _●_; _×≃_; qinv; gg;
     β⊎₁; β⊎₂; β₁; β₂; cong∘l; cong∘r; cong₂∘)
 open import TypeEquiv
@@ -89,26 +89,58 @@ uniti₊-nat : ∀ {A B} {f : A ≃ B} →
 uniti₊-nat =  
   eq (β₁ ⊙ ! uniti₊-coh ⊙ ! cong∘r (proj₁ uniti₊equiv) β⊎₁ ⊙ ! β₁) 
        (β₂ ⊙ ! unite₊-coh ⊙ ! cong∘l (gg uniti₊equiv) β⊎₂ ⊙ ! β₂)
-{-
+
 unite₊′-nat : ∀ {A B} {f : A ≃ B} →
   unite₊′equiv ● (f ⊎≃ id≃ {A = ⊥}) ≋ f ● unite₊′equiv
 unite₊′-nat =
-  eq unite₊′∘[f,id]≡f∘unite₊′ [g,id]∘uniti₊′≡uniti₊′∘g
+  eq (β₁ ⊙ cong∘l (proj₁ unite₊′equiv) β⊎₁ ⊙ unite₊′-coh ⊙ ! β₁)
+     (β₂ ⊙ cong∘r (gg unite₊′equiv) β⊎₂ ⊙ uniti₊′-coh ⊙ ! β₂)
 
 uniti₊′-nat : ∀ {A B} {f : A ≃ B} →
   uniti₊′equiv ● f ≋ (f ⊎≃ id≃ {A = ⊥}) ● uniti₊′equiv
-uniti₊′-nat = flip-sym≋ unite₊′-nat
+uniti₊′-nat =
+  eq (β₁ ⊙ ! uniti₊′-coh ⊙ ! cong∘r (proj₁ uniti₊′equiv) β⊎₁ ⊙ ! β₁) 
+       (β₂ ⊙ ! unite₊′-coh ⊙ ! cong∘l (gg uniti₊′equiv) β⊎₂ ⊙ ! β₂)
+
 
 assocr₊-nat : ∀ {A B C D E F : Set} →
   {f₀ : A ≃ D} {f₁ : B ≃ E} {f₂ : C ≃ F} →
   assocr₊equiv ● ((f₀ ⊎≃ f₁) ⊎≃ f₂) ≋ (f₀ ⊎≃ (f₁ ⊎≃ f₂)) ● assocr₊equiv
-assocr₊-nat = eq assocr₊∘[[,],] [[,],]∘assocl₊
+assocr₊-nat {A} {B} {C} {D} {E} {F} {f₀} {f₁} {f₂} =
+  let assocrDEF = proj₁ (assocr₊equiv {D} {E} {F}) in
+  let assocrABC = proj₁ (assocr₊equiv {A} {B} {C}) in
+  let assoclDEF = gg (assocr₊equiv {D} {E} {F}) in
+  let assoclABC = gg (assocr₊equiv {A} {B} {C}) in
+  eq (β₁ ⊙ cong∘l assocrDEF β⊎₁ ⊙
+           cong∘l assocrDEF (cong₂⊎ β⊎₁ refl∼) ⊙
+           assocr₊-wf ⊙
+           ! cong∘r assocrABC (cong₂⊎ refl∼ β⊎₁) ⊙
+           ! cong∘r assocrABC β⊎₁ ⊙ ! β₁)
+     (β₂ ⊙ cong∘r assoclDEF (β⊎₂ {f = f₀ ⊎≃ f₁} {f₂}) ⊙
+           cong∘r assoclDEF (cong₂⊎ β⊎₂ refl∼) ⊙
+           assocl₊-wf ⊙
+          ! cong∘l assoclABC (cong₂⊎ refl∼ β⊎₂) ⊙
+          ! cong∘l assoclABC (β⊎₂ {f = f₀} {f₁ ⊎≃ f₂}) ⊙ ! β₂)
 
 assocl₊-nat : ∀ {A B C D E F : Set} →
   {f₀ : A ≃ D} {f₁ : B ≃ E} {f₂ : C ≃ F} →
   assocl₊equiv ● (f₀ ⊎≃ (f₁ ⊎≃ f₂)) ≋ ((f₀ ⊎≃ f₁) ⊎≃ f₂) ● assocl₊equiv
-assocl₊-nat = flip-sym≋ assocr₊-nat
-
+assocl₊-nat {A} {B} {C} {D} {E} {F} {f₀} {f₁} {f₂} =
+  let assoclDEF = proj₁ (assocl₊equiv {D} {E} {F}) in
+  let assoclABC = proj₁ (assocl₊equiv {A} {B} {C}) in
+  let assocrDEF = gg (assocl₊equiv {D} {E} {F}) in
+  let assocrABC = gg (assocl₊equiv {A} {B} {C}) in
+  eq (β₁ ⊙ cong∘l assoclDEF β⊎₁ ⊙
+           cong∘l assoclDEF (cong₂⊎ refl∼ β⊎₁) ⊙
+           ! assocl₊-wf ⊙
+           ! cong∘r assoclABC (cong₂⊎ β⊎₁ refl∼) ⊙
+           ! cong∘r assoclABC β⊎₁ ⊙ ! β₁)
+     (β₂ ⊙ cong∘r assocrDEF (β⊎₂ {f = f₀} {f₁ ⊎≃ f₂}) ⊙
+           cong∘r assocrDEF (cong₂⊎ refl∼ β⊎₂) ⊙
+           ! assocr₊-wf ⊙
+           ! cong∘l assocrABC (cong₂⊎ β⊎₂ refl∼) ⊙
+           ! cong∘l assocrABC (β⊎₂ {f = f₀ ⊎≃ f₁} {f₂}) ⊙ ! β₂)
+{-
 -- often called 'triangle'
 unite-assocr₊-coh : ∀ {A B : Set} →
   unite₊′equiv ⊎≃ id≃ ≋ (id≃ ⊎≃ unite₊equiv) ● assocr₊equiv {A} {⊥} {B}

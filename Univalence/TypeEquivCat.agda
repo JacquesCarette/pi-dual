@@ -112,16 +112,15 @@ module ⊎h = MonoidalHelperFunctors TypeEquivCat ⊎-bifunctor ⊥
     }
   }
 
-{-
 x⊎0≡x : NaturalIsomorphism ⊎h.x⊗id ⊎h.x
 x⊎0≡x = record
   { F⇒G = record
-    { η = λ _ → unite₊′equiv
-    ; commute = λ f → unite₊′-nat
+    { η = λ X → unite₊′equiv {X zero}
+    ; commute = λ f → unite₊′-nat {f = f zero}
     }
   ; F⇐G = record
-    { η = λ X → uniti₊′equiv
-    ; commute = λ f → uniti₊′-nat
+    { η = λ X → uniti₊′equiv {X zero}
+    ; commute = λ f → uniti₊′-nat {f = f zero}
     }
   ; iso = λ X → record
     { isoˡ = linv≋ unite₊′equiv
@@ -133,18 +132,18 @@ x⊎0≡x = record
 [x⊎y]⊎z≡x⊎[y⊎z] = record
   { F⇒G = record
     { η = λ X → assocr₊equiv {X zero} {X one} {X two}
-    ; commute = λ f → assocr₊-nat
+    ; commute = λ f → assocr₊-nat {f₀ = f zero} {f one} {f two}
     }
   ; F⇐G = record
-    { η = λ _ → assocl₊equiv
-    ; commute = λ f → assocl₊-nat
+    { η = λ X → assocl₊equiv {X zero} {X one} {X two}
+    ; commute = λ f → assocl₊-nat {f₀ = f zero} {f one} {f two}
     }
   ; iso = λ X → record
     { isoˡ = linv≋ assocr₊equiv
     ; isoʳ = rinv≋ assocr₊equiv
     }
   }
-
+{-
 CPM⊎ : Monoidal TypeEquivCat
 CPM⊎ = record
   { ⊗ = ⊎-bifunctor
