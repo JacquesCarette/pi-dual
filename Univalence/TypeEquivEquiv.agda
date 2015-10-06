@@ -33,8 +33,8 @@ open import Data.Product.Properties
   using (id×id∼id; ×∘∼∘×; _×∼_;
     unite⋆-coh; uniti⋆-coh; unite⋆′-coh; uniti⋆′-coh;
     assocr⋆-wf; assocl⋆-wf;
-    triangle⋆-left; triangle⋆-right;
-    pentagon⋆-right; pentagon⋆-left;
+    triangle×-left; triangle×-right;
+    pentagon×-right; pentagon×-left;
     swap⋆-coh; hexagon×-right; hexagon×-left)
 
 open import Data.SumProd.Properties -- TODO: list them
@@ -104,7 +104,6 @@ uniti₊′-nat : ∀ {A B} {f : A ≃ B} →
 uniti₊′-nat =
   eq (β₁ ⊙ ! uniti₊′-coh ⊙ ! cong∘r (proj₁ uniti₊′equiv) β⊎₁ ⊙ ! β₁) 
        (β₂ ⊙ ! unite₊′-coh ⊙ ! cong∘l (gg uniti₊′equiv) β⊎₂ ⊙ ! β₂)
-
 
 assocr₊-nat : ∀ {A B C D E F : Set} →
   {f₀ : A ≃ D} {f₁ : B ≃ E} {f₂ : C ≃ F} →
@@ -199,44 +198,88 @@ e₁ ×≋ e₂ = eq (β×₁ ⊙ (f≡ e₁) ×∼ (f≡ e₂) ⊙ ! β×₁)
               (β×₂ ⊙ (g≡ e₁) ×∼ (g≡ e₂) ⊙ ! β×₂)
   where open _≋_
 
-{-
+
 unite⋆-nat : ∀ {A B} {f : A ≃ B} →
   unite⋆equiv ● (id≃ {A = ⊤} ×≃ f) ≋ f ● unite⋆equiv
-unite⋆-nat = eq unite⋆-coh uniti⋆-coh
+unite⋆-nat = -- eq unite⋆-coh uniti⋆-coh
+  eq (β₁ ⊙ cong∘l (proj₁ unite⋆equiv) β×₁ ⊙ unite⋆-coh ⊙ ! β₁)
+     (β₂ ⊙ cong∘r (gg unite⋆equiv) β×₂ ⊙ uniti⋆-coh ⊙ ! β₂)
 
 uniti⋆-nat : ∀ {A B} {f : A ≃ B} →
   uniti⋆equiv ● f ≋ (id≃ {A = ⊤} ×≃ f) ● uniti⋆equiv
-uniti⋆-nat =  flip-sym≋ unite⋆-nat
-
+uniti⋆-nat = -- flip-sym≋ unite⋆-nat
+  eq (β₁ ⊙ ! uniti⋆-coh ⊙ ! cong∘r (proj₁ uniti⋆equiv) β×₁ ⊙ ! β₁)
+     (β₂ ⊙ ! unite⋆-coh ⊙ ! cong∘l (gg uniti⋆equiv) β×₂ ⊙ ! β₂)
+  
 unite⋆′-nat : ∀ {A B} {f : A ≃ B} →
   unite⋆′equiv ● (f ×≃ id≃ {A = ⊤}) ≋ f ● unite⋆′equiv
-unite⋆′-nat = eq unite⋆′-coh uniti⋆′-coh
-
+unite⋆′-nat = -- eq unite⋆′-coh uniti⋆′-coh
+  eq (β₁ ⊙ cong∘l (proj₁ unite⋆′equiv) β×₁ ⊙ unite⋆′-coh ⊙ ! β₁)
+     (β₂ ⊙ cong∘r (gg unite⋆′equiv) β×₂ ⊙ uniti⋆′-coh ⊙ ! β₂)
+  
 uniti⋆′-nat : ∀ {A B} {f : A ≃ B} →
   uniti⋆′equiv ● f ≋ (f ×≃ id≃ {A = ⊤}) ● uniti⋆′equiv
-uniti⋆′-nat = flip-sym≋ unite⋆′-nat
+uniti⋆′-nat = -- flip-sym≋ unite⋆′-nat
+  eq (β₁ ⊙ ! uniti⋆′-coh ⊙ ! cong∘r (proj₁ uniti⋆′equiv) β×₁ ⊙ ! β₁)
+     (β₂ ⊙ ! unite⋆′-coh ⊙ ! cong∘l (gg uniti⋆′equiv) β×₂ ⊙ ! β₂)
 
 assocr⋆-nat : ∀ {A B C D E F : Set} →
   {f₀ : A ≃ D} {f₁ : B ≃ E} {f₂ : C ≃ F} →
   assocr⋆equiv ● ((f₀ ×≃ f₁) ×≃ f₂) ≋ (f₀ ×≃ (f₁ ×≃ f₂)) ● assocr⋆equiv
-assocr⋆-nat = eq assocr⋆-wf assocl⋆-wf
-
+assocr⋆-nat {A} {B} {C} {D} {E} {F} {f₀} {f₁} {f₂} = -- eq assocr⋆-wf assocl⋆-wf
+  let assocrDEF = proj₁ (assocr⋆equiv {D} {E} {F}) in
+  let assocrABC = proj₁ (assocr⋆equiv {A} {B} {C}) in
+  let assoclDEF = gg (assocr⋆equiv {D} {E} {F}) in
+  let assoclABC = gg (assocr⋆equiv {A} {B} {C}) in
+  eq (β₁ ⊙ cong∘l assocrDEF β×₁ ⊙
+           cong∘l assocrDEF (β×₁ ×∼ refl∼) ⊙
+           assocr⋆-wf ⊙
+           ! cong∘r assocrABC (refl∼ ×∼ β×₁) ⊙
+           ! cong∘r assocrABC β×₁ ⊙ ! β₁)
+     (β₂ ⊙ cong∘r assoclDEF (β×₂ {f = f₀ ×≃ f₁} {f₂}) ⊙
+           cong∘r assoclDEF (β×₂ ×∼ refl∼) ⊙
+           assocl⋆-wf ⊙
+          ! cong∘l assoclABC (refl∼ ×∼ β×₂) ⊙
+          ! cong∘l assoclABC (β×₂ {f = f₀} {f₁ ×≃ f₂}) ⊙ ! β₂)
 assocl⋆-nat : ∀ {A B C D E F : Set} →
   {f₀ : A ≃ D} {f₁ : B ≃ E} {f₂ : C ≃ F} →
   assocl⋆equiv ● (f₀ ×≃ (f₁ ×≃ f₂)) ≋ ((f₀ ×≃ f₁) ×≃ f₂) ● assocl⋆equiv
-assocl⋆-nat = flip-sym≋ assocr⋆-nat
+assocl⋆-nat {A} {B} {C} {D} {E} {F} {f₀} {f₁} {f₂}  = -- flip-sym≋ assocr⋆-nat
+  let assoclDEF = proj₁ (assocl⋆equiv {D} {E} {F}) in
+  let assoclABC = proj₁ (assocl⋆equiv {A} {B} {C}) in
+  let assocrDEF = gg (assocl⋆equiv {D} {E} {F}) in
+  let assocrABC = gg (assocl⋆equiv {A} {B} {C}) in
+  eq (β₁ ⊙ cong∘l assoclDEF β×₁ ⊙
+           cong∘l assoclDEF (refl∼ ×∼ β×₁) ⊙
+           ! assocl⋆-wf ⊙
+           ! cong∘r assoclABC (β×₁ ×∼ refl∼) ⊙
+           ! cong∘r assoclABC β×₁ ⊙ ! β₁)
+     (β₂ ⊙ cong∘r assocrDEF (β×₂ {f = f₀} {f₁ ×≃ f₂}) ⊙
+           cong∘r assocrDEF (refl∼ ×∼ β×₂) ⊙
+           ! assocr⋆-wf ⊙
+           ! cong∘l assocrABC (β×₂ ×∼ refl∼) ⊙
+           ! cong∘l assocrABC (β×₂ {f = f₀ ×≃ f₁} {f₂}) ⊙ ! β₂)
 
 -- often called 'triangle'
 unite-assocr⋆-coh : ∀ {A B : Set} →
   unite⋆′equiv ×≃ id≃ ≋ (id≃ ×≃ unite⋆equiv) ● assocr⋆equiv {A} {⊤} {B}
-unite-assocr⋆-coh = eq triangle⋆-right triangle⋆-left
+unite-assocr⋆-coh =
+  eq (β×₁ ⊙ triangle×-right ⊙ ! (β₁ ⊙ cong∘r (proj₁ assocr⋆equiv) β×₁))
+     (β×₂ ⊙ triangle×-left ⊙ ! (β₂ ⊙ cong∘l (gg assocr⋆equiv) β×₂))
 
 -- often called 'pentagon'
 assocr⋆-coh : ∀ {A B C D : Set} →
   assocr⋆equiv {A} {B} {C × D} ● assocr⋆equiv ≋
   (id≃ ×≃ assocr⋆equiv) ● assocr⋆equiv ● (assocr⋆equiv ×≃ id≃)
-assocr⋆-coh = eq pentagon⋆-right pentagon⋆-left
+assocr⋆-coh =
+ eq (β₁ ⊙ pentagon×-right ⊙
+     ! (β₁ ⊙ cong₂∘ β×₁ β₁ ⊙
+        cong∘l ((proj₁ id≃ ×→ proj₁ assocr⋆equiv) ∘ proj₁ assocr⋆equiv) β×₁))
+    (β₂ ⊙ pentagon×-left ⊙
+     ! (β₂ ⊙ cong₂∘ β₂ β×₂ ⊙
+        cong∘r (gg assocr⋆equiv ∘ (gg id≃ ×→ gg assocr⋆equiv)) β×₂))
 
+{-
 swap⋆-nat : {A B C D : Set} {f : A ≃ C} {g : B ≃ D} →
   swap⋆equiv ● (f ×≃ g) ≋ (g ×≃ f) ● swap⋆equiv
 swap⋆-nat = eq swap⋆-coh swap⋆-coh

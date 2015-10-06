@@ -65,21 +65,21 @@ abstract
     ((f₀ ×→ f₁) ×→ f₂) ∘ assocl⋆ ∼ assocl⋆ ∘ (f₀ ×→ (f₁ ×→ f₂))
   assocl⋆-wf _ = P.refl
 
-  triangle⋆-right : {A B : Set} →
+  triangle×-right : {A B : Set} →
     unite⋆′ ×→ id {A = B} ∼ (id {A = A} ×→ unite⋆) ∘ assocr⋆
-  triangle⋆-right _ = P.refl
+  triangle×-right _ = P.refl
 
-  triangle⋆-left : {A B : Set} →
+  triangle×-left : {A B : Set} →
     uniti⋆′ ×→ id {A = B} ∼ assocl⋆ {A} ∘ (id ×→ uniti⋆)
-  triangle⋆-left _ = P.refl
+  triangle×-left _ = P.refl
 
-  pentagon⋆-right : {A B C D : Set} →
+  pentagon×-right : {A B C D : Set} →
     assocr⋆ ∘ assocr⋆ {A × B} {C} {D} ∼ id ×→ assocr⋆ ∘ assocr⋆ ∘ assocr⋆ ×→ id
-  pentagon⋆-right _ = P.refl
+  pentagon×-right _ = P.refl
 
-  pentagon⋆-left : {A B C D : Set} →
+  pentagon×-left : {A B C D : Set} →
     assocl⋆ ∘ assocl⋆ {A} {B} {C × D} ∼ assocl⋆ ×→ id ∘ assocl⋆ ∘ id ×→ assocl⋆
-  pentagon⋆-left _ = P.refl
+  pentagon×-left _ = P.refl
 
   swap⋆-coh : {A B C D : Set} {f : A → C} {g : B → D} →
     swap⋆ ∘ (f ×→ g) ∼ (g ×→ f) ∘ swap⋆

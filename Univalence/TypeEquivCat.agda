@@ -167,16 +167,16 @@ CPM⊎ = record
   }
 
 module ×h = MonoidalHelperFunctors TypeEquivCat ×-bifunctor ⊤
-{-
+
 1×y≡y : NaturalIsomorphism ×h.id⊗x ×h.x
 1×y≡y = record
   { F⇒G = record
-    { η = λ X → unite⋆equiv
-    ; commute = λ f → unite⋆-nat
+    { η = λ X → unite⋆equiv {X zero}
+    ; commute = λ f → unite⋆-nat {f = f zero}
     }
   ; F⇐G = record
-    { η = λ X → uniti⋆equiv
-    ; commute = λ f → uniti⋆-nat
+    { η = λ X → uniti⋆equiv {X zero}
+    ; commute = λ f → uniti⋆-nat {f = f zero}
     }
   ; iso = λ X → record
     { isoˡ = linv≋ unite⋆equiv
@@ -187,12 +187,12 @@ module ×h = MonoidalHelperFunctors TypeEquivCat ×-bifunctor ⊤
 y×1≡y : NaturalIsomorphism ×h.x⊗id ×h.x
 y×1≡y = record
   { F⇒G = record 
-    { η = λ X → unite⋆′equiv 
-    ;  commute = λ f → unite⋆′-nat
+    { η = λ X → unite⋆′equiv {X zero}
+    ;  commute = λ f → unite⋆′-nat {f = f zero}
     }
   ; F⇐G = record 
-    { η = λ X → uniti⋆′equiv 
-    ; commute = λ f → uniti⋆′-nat
+    { η = λ X → uniti⋆′equiv {X zero}
+    ; commute = λ f → uniti⋆′-nat {f = f zero}
     }
   ; iso = λ X → record 
     { isoˡ = linv≋ unite⋆′equiv
@@ -203,11 +203,11 @@ y×1≡y = record
 [x×y]×z≡x×[y×z] : NaturalIsomorphism ×h.[x⊗y]⊗z ×h.x⊗[y⊗z]
 [x×y]×z≡x×[y×z] = record
   { F⇒G = record
-    { η = λ X → assocr⋆equiv
-    ; commute = λ f → assocr⋆-nat }
+    { η = λ X → assocr⋆equiv {X zero} {X one} {X two}
+    ; commute = λ f → assocr⋆-nat {f₀ = f zero} {f one} {f two}}
   ; F⇐G = record
-    { η = λ X → assocl⋆equiv
-    ; commute = λ f → assocl⋆-nat }
+    { η = λ X → assocl⋆equiv {X zero} {X one} {X two}
+    ; commute = λ f → assocl⋆-nat {f₀ = f zero} {f one} {f two}}
   ; iso = λ X → record
     { isoˡ = linv≋ assocr⋆equiv
     ; isoʳ = rinv≋ assocr⋆equiv }
@@ -225,7 +225,7 @@ CPM× = record
   }
 
 -- The monoidal structures are symmetric
-
+{-
 x⊎y≈y⊎x : NaturalIsomorphism ⊎h.x⊗y ⊎h.y⊗x
 x⊎y≈y⊎x = record 
   { F⇒G = record 
