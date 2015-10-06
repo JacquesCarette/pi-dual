@@ -5,7 +5,7 @@ module TypeEquivEquiv where
 open import Equiv 
   using (refl∼; sym∼; trans∼; sym≃; 
     _⊎≃_; id≃; _≃_; _●_; _×≃_; qinv; gg;
-    β⊎₁; β⊎₂; β₁; β₂; cong∘l; cong∘r; cong₂∘)
+    β⊎₁; β⊎₂; β₁; β₂; cong∘l; cong∘r; cong₂∘; β×₁; β×₂)
 open import TypeEquiv
   using (unite₊equiv; uniti₊equiv; unite₊′equiv; uniti₊′equiv;
     assocr₊equiv; assocl₊equiv; swap₊equiv;
@@ -30,7 +30,7 @@ open import Data.Sum.Properties
     swap₊-coh; hexagon⊎-right; hexagon⊎-left)
 
 open import Data.Product.Properties
-  using (id×id∼id; ×∘∼∘×; ×→-resp-∼;
+  using (id×id∼id; ×∘∼∘×; _×∼_;
     unite⋆-coh; uniti⋆-coh; unite⋆′-coh; uniti⋆′-coh;
     assocr⋆-wf; assocl⋆-wf;
     triangle⋆-left; triangle⋆-right;
@@ -179,24 +179,27 @@ assocl₊-swap₊-coh : ∀ {A B C : Set} →
   assocl₊equiv {A} {B} {C} ● swap₊equiv ● assocl₊equiv {B} {C} {A} ≋
   swap₊equiv ⊎≃ id≃ ● assocl₊equiv ● id≃ ⊎≃ swap₊equiv
 assocl₊-swap₊-coh = eq hexagon⊎-left hexagon⊎-right
+-}
 
 ----
 -- equivalences for the × structure
 id×id≋id : ∀ {A B : Set} → id≃ {A = A} ×≃ id≃ {A = B} ≋ id≃
-id×id≋id = eq id×id∼id id×id∼id
+id×id≋id = eq (β×₁ ⊙ id×id∼id) (β×₂ ⊙ id×id∼id)
 
 ×●≋●× : {A B C D E F : Set} →
   {f : A ≃ C} {g : B ≃ D} {h : C ≃ E} {i : D ≃ F} →
   (h ● f) ×≃ (i ● g) ≋ (h ×≃ i) ● (f ×≃ g)
-×●≋●× {f = f , qinv f′ _ _} {g , qinv g′ _ _} {h , qinv h′ _ _} {i , qinv i′ _ _} =
-  eq (×∘∼∘× {f = f} {g} {h} {i}) (×∘∼∘× {f = h′} {i′} {f′} {g′})
-
-×≃-resp-≋ :  ∀ {A B C D : Set} {f g : A ≃ B} {h i : C ≃ D} →
-  (e₁ : f ≋ g) → (e₂ : h ≋ i) → f ×≃ h ≋ g ×≃ i
-×≃-resp-≋ e₁ e₂ = eq (×→-resp-∼ (f≡ e₁) (f≡ e₂))
-                     (×→-resp-∼ (g≡ e₁) (g≡ e₂))
+×●≋●× {f = f , qinv f⁻¹ _ _} {g , qinv g⁻¹ _ _} {h , qinv h⁻¹ _ _} {i , qinv i⁻¹ _ _} = 
+  eq (β×₁ ⊙ β₁ ×∼ β₁ ⊙ (×∘∼∘× {f = f} {g} {h} {i}) ⊙ ! cong₂∘ β×₁ β×₁ ⊙ ! β₁)
+     (β×₂ ⊙ β₂ ×∼ β₂ ⊙ (×∘∼∘× {f = h⁻¹} {i⁻¹} {f⁻¹} {g⁻¹}) ⊙ ! cong₂∘ β×₂ β×₂ ⊙ ! β₂)
+     
+_×≋_ :  ∀ {A B C D : Set} {f g : A ≃ B} {h i : C ≃ D} →
+  f ≋ g → h ≋ i → f ×≃ h ≋ g ×≃ i
+e₁ ×≋ e₂ = eq (β×₁ ⊙ (f≡ e₁) ×∼ (f≡ e₂) ⊙ ! β×₁)
+              (β×₂ ⊙ (g≡ e₁) ×∼ (g≡ e₂) ⊙ ! β×₂)
   where open _≋_
 
+{-
 unite⋆-nat : ∀ {A B} {f : A ≃ B} →
   unite⋆equiv ● (id≃ {A = ⊤} ×≃ f) ≋ f ● unite⋆equiv
 unite⋆-nat = eq unite⋆-coh uniti⋆-coh

@@ -155,7 +155,7 @@ CPM⊎ = record
    }
 
 -- The multiplicative structure is also monoidal
-{-
+
 ×-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
 ×-bifunctor = record
   { F₀ = uncurry _×_
@@ -163,11 +163,11 @@ CPM⊎ = record
   ; identity = id×id≋id
       -- the following would have unresolved metas without the extra precision
   ; homomorphism = λ { {f = (f , g)} {h , i} → ×●≋●× {f = f} {g} {h} {i}}
-  ; F-resp-≡ = uncurry ×≃-resp-≋
+  ; F-resp-≡ = uncurry _×≋_
   }
 
 module ×h = MonoidalHelperFunctors TypeEquivCat ×-bifunctor ⊤
-
+{-
 1×y≡y : NaturalIsomorphism ×h.id⊗x ×h.x
 1×y≡y = record
   { F⇒G = record

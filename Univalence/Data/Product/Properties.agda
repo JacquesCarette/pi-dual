@@ -18,6 +18,8 @@ open import TypeEquiv
   using (unite⋆; uniti⋆; unite⋆′; uniti⋆′;
     swap⋆; assocl⋆; assocr⋆)
 
+infixr 12 _×∼_
+
 ------------------------------------------------------------------------------
 
 abstract
@@ -29,10 +31,10 @@ abstract
     (h ∘ f) ×→ (i ∘ g) ∼ (h ×→ i) ∘ (f ×→ g)
   ×∘∼∘× x = P.refl
 
-  ×→-resp-∼ : {A B C D : Set} → {f₀ g₀ : A → B} {f₁ g₁ : C → D} →
+  _×∼_ : {A B C D : Set} → {f₀ g₀ : A → B} {f₁ g₁ : C → D} →
     (e₁ : f₀ ∼ g₀) → (e₂ : f₁ ∼ g₁) →
     f₀ ×→ f₁ ∼ g₀ ×→ g₁
-  ×→-resp-∼ e₁ e₂ x = P.cong₂ _,_ (e₁ (proj₁ x)) (e₂ (proj₂ x))
+  _×∼_ e₁ e₂ x = P.cong₂ _,_ (e₁ (proj₁ x)) (e₂ (proj₂ x))
 
   unite⋆-coh : {A B : Set} {f : A → B} →
     unite⋆ ∘ (id ×→ f) ∼ f ∘ unite⋆

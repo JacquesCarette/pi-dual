@@ -114,6 +114,20 @@ inj≃ (f , qinv g α β) x y p = trans
   (cong g p) (
   β y))
 -}
+
+-- generally useful
+cong∘l : {A B C : Set} {g i : A → B} → (f : B → C) →
+  (g ∼ i) → (f ∘ g) ∼ (f ∘ i)
+cong∘l f g~i x = cong f (g~i x)
+
+cong∘r : {A B C : Set} {f h : B → C} → (g : A → B) →
+  (f ∼ h) → (f ∘ g) ∼ (h ∘ g)
+cong∘r g f~h x = f~h (g x)
+
+cong₂∘ : {A B C : Set} {f h : B → C} {g i : A → B} → 
+  (f ∼ h) → (g ∼ i) → f ∘ g ∼ h ∘ i
+cong₂∘ {h = h} {g} f~h g~i x = trans (f~h (g x)) (cong h (g~i x))
+
 -- equivalence is a congruence for plus/times
 
 -- ⊕
@@ -143,36 +157,33 @@ abstract
     → {f : A ≃ C} → {g : B ≃ D} → gg (f ⊎≃ g) ∼ Data.Sum.map (gg f) (gg g)
   β⊎₂ _ = refl
 
-  cong∘l : {A B C : Set} {g i : A → B} → (f : B → C) →
-    (g ∼ i) → (f ∘ g) ∼ (f ∘ i)
-  cong∘l f g~i x = cong f (g~i x)
-
-  cong∘r : {A B C : Set} {f h : B → C} → (g : A → B) →
-    (f ∼ h) → (f ∘ g) ∼ (h ∘ g)
-  cong∘r g f~h x = f~h (g x)
-
-  cong₂∘ : {A B C : Set} {f h : B → C} {g i : A → B} → 
-    (f ∼ h) → (g ∼ i) → f ∘ g ∼ h ∘ i
-  cong₂∘ {h = h} {g} f~h g~i x = trans (f~h (g x)) (cong h (g~i x))
-
 -- ⊗
 
 abstract
+  private
     _×∼_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
       {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
       (α : f ∘ finv ∼ id) → (β : g ∘ ginv ∼ id) →
       (f ×→ g) ∘ (finv ×→ ginv) ∼ id {A = C × D}
     _×∼_ α β (x , y) = cong₂ _,_ (α x) (β y)
 
-_×≃_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
-  → A ≃ C → B ≃ D → (A × B) ≃ (C × D)
-(fp , eqp) ×≃ (fq , eqq) =
-  Data.Product.map fp fq ,
-  qinv
-    (P.g ×→ Q.g)
-    (_×∼_ {f = fp} {g = fq} P.α Q.α)
-    (_×∼_ {f = P.g} {g = Q.g} P.β Q.β)
-  where module P = isqinv eqp
-        module Q = isqinv eqq
+  _×≃_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
+    → A ≃ C → B ≃ D → (A × B) ≃ (C × D)
+  (fp , eqp) ×≃ (fq , eqq) =
+    Data.Product.map fp fq ,
+    qinv
+      (P.g ×→ Q.g)
+      (_×∼_ {f = fp} {g = fq} P.α Q.α)
+      (_×∼_ {f = P.g} {g = Q.g} P.β Q.β)
+    where module P = isqinv eqp
+          module Q = isqinv eqq
+
+  β×₁ : ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
+    → {f : A ≃ C} → {g : B ≃ D} → proj₁ (f ×≃ g) ∼ Data.Product.map (proj₁ f) (proj₁ g)
+  β×₁ _ = refl
+
+  β×₂ : ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
+    → {f : A ≃ C} → {g : B ≃ D} → gg (f ×≃ g) ∼ Data.Product.map (gg f) (gg g)
+  β×₂ _ = refl
 
 ------------------------------------------------------------------------------
