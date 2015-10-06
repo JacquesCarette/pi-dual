@@ -15,8 +15,10 @@ open Times using (×≃*; *≃×)
 
 open import FinEquivTypeEquiv
   using (_fin≃_; module PlusE; module TimesE; module PlusTimesE)
-open PlusE using (_+F_; unite+; uniti+; unite+r; uniti+r; assocr+; assocl+)
-open TimesE using (_*F_; unite*; uniti*; unite*r; uniti*r; assocr*; assocl*)
+open PlusE using (_+F_; unite+; uniti+; unite+r; uniti+r; assocr+; assocl+;
+                 swap+; sswap+)
+open TimesE using (_*F_; unite*; uniti*; unite*r; uniti*r; assocr*; assocl*;
+                  swap*; sswap*)
 open import EquivEquiv
 open import TypeEquiv
   using (unite₊equiv; unite₊′equiv)
@@ -313,6 +315,26 @@ postulate
     (id≃ {A = Fin m} +F assocr+ {n} {o} {p}) ●
       assocr+ {m} {n + o} {p} ● (assocr+ {m} {n} {o} +F id≃ {A = Fin p})
 
+postulate
+  swap₊-nat : {m n o p : ℕ} {f : m fin≃ o} {g : n fin≃ p} →
+    swap+ {o} {p} ● (f +F g) ≋ (g +F f) ● swap+ {m} {n}
+
+postulate
+  sswap₊-nat : {m n o p : ℕ} {f : m fin≃ o} {g : n fin≃ p} →
+    sswap+ {o} {p} ● (g +F f) ≋ (f +F g) ● sswap+ {m} {n}
+
+postulate
+  assocr₊-swap₊-coh : {m n o : ℕ} →
+    assocr+ {n} {o} {m} ● swap+ {m} {n + o} ● assocr+ {m} {n} {o} ≋
+    (id≃ {A = Fin n} +F swap+ {m} {o}) ●
+      assocr+ {n} {m} {o} ● (swap+ {m} {n} +F id≃ {A = Fin o})
+
+postulate
+  assocl₊-swap₊-coh : {m n o : ℕ} →
+    assocl+ {o} {m} {n} ● swap+ {m + n} {o} ● assocl+ {m} {n} {o} ≋
+    (swap+ {m} {o} +F id≃ {A = Fin n}) ● 
+      assocl+ {m} {o} {n} ● (id≃ {A = Fin m} +F swap+ {n} {o})
+
 ------------------------------------------------------------------------------
 -- and the multiplicative structure
 
@@ -412,5 +434,25 @@ postulate
     assocr* {m} {n} {o * p} ● assocr* {m * n} {o} {p} ≋
     (id≃ {A = Fin m} *F assocr* {n} {o} {p}) ●
       assocr* {m} {n * o} {p} ● (assocr* {m} {n} {o} *F id≃ {A = Fin p})
+
+postulate
+  swap*-nat : {m n o p : ℕ} {f : m fin≃ o} {g : n fin≃ p} →
+    swap* {o} {p} ● (f *F g) ≋ (g *F f) ● swap* {m} {n}
+
+postulate
+  sswap*-nat : {m n o p : ℕ} {f : m fin≃ o} {g : n fin≃ p} →
+    sswap* {o} {p} ● (g *F f) ≋ (f *F g) ● sswap* {m} {n}
+
+postulate
+  assocr*-swap*-coh : {m n o : ℕ} →
+    assocr* {n} {o} {m} ● swap* {m} {n * o} ● assocr* {m} {n} {o} ≋
+    (id≃ {A = Fin n} *F swap* {m} {o}) ●
+      assocr* {n} {m} {o} ● (swap* {m} {n} *F id≃ {A = Fin o})
+
+postulate
+  assocl*-swap*-coh : {m n o : ℕ} →
+    assocl* {o} {m} {n} ● swap* {m * n} {o} ● assocl* {m} {n} {o} ≋
+    (swap* {m} {o} *F id≃ {A = Fin n}) ● 
+      assocl* {m} {o} {n} ● (id≃ {A = Fin m} *F swap* {n} {o})
 
 ------------------------------------------------------------------------------

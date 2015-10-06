@@ -36,6 +36,7 @@ m fin≃ n = Fin m ≃ Fin n
 -- Additive monoid
 
 module PlusE where
+
  abstract
 
   infix 9 _+F_
@@ -52,14 +53,6 @@ module PlusE where
   unite+r : {m : ℕ} → Fin (m + 0) ≃ Fin m
   unite+r = unite₊′equiv ● id≃ ⊎≃ F0≃⊥ ● +≃⊎
 
--- uniti+
-
-  uniti+ : {m : ℕ} → Fin m ≃ Fin (0 + m)
-  uniti+ = sym≃ unite+
-
-  uniti+r : {m : ℕ} → Fin m ≃ Fin (m + 0)
-  uniti+r = sym≃ unite+r
-
   -- swap₊
 
   swap+ : {m n : ℕ} → Fin (m + n) ≃ Fin (n + m)
@@ -70,19 +63,31 @@ module PlusE where
   assocl+ : {m n o : ℕ} → Fin (m + (n + o)) ≃ Fin ((m + n) + o)
   assocl+ {m} = ⊎≃+ ● ⊎≃+ ⊎≃ id≃ ● assocl₊equiv ● id≃ ⊎≃ +≃⊎ ● +≃⊎ {m}
 
-  assocr+ : {m n o : ℕ} → Fin ((m + n) + o) ≃ Fin (m + (n + o))
-  assocr+ {m} = sym≃ (assocl+ {m})
-
   -- congruence
 
   _+F_ : {m n o p : ℕ} → (Fin m ≃ Fin n) → (Fin o ≃ Fin p) →
               Fin (m + o) ≃ Fin (n + p)
   Fm≃Fn +F Fo≃Fp = ⊎≃+ ● Fm≃Fn ⊎≃ Fo≃Fp ● +≃⊎
 
+ -- end of abstract block
+
+ uniti+ : {m : ℕ} → Fin m ≃ Fin (0 + m)
+ uniti+ = sym≃ unite+
+
+ uniti+r : {m : ℕ} → Fin m ≃ Fin (m + 0)
+ uniti+r = sym≃ unite+r
+
+ assocr+ : {m n o : ℕ} → Fin ((m + n) + o) ≃ Fin (m + (n + o))
+ assocr+ {m} = sym≃ (assocl+ {m})
+
+ sswap+ : {m n : ℕ} → Fin (n + m) ≃ Fin (m + n)
+ sswap+ {m} {n} = sym≃ (swap+ {m} {n})
+
 -----------------------------------------------------------------------------
 -- Multiplicative monoid
 
 module TimesE where
+
  abstract
 
   infixl 7 _*F_
@@ -94,19 +99,10 @@ module TimesE where
   unite* : {m : ℕ} → Fin (1 * m) ≃ Fin m
   unite* {m} = unite⋆equiv ● Fin1≃⊤ ×≃ id≃ ● *≃×
 
-  -- uniti*
-
-  uniti* : {m : ℕ} → Fin m ≃ Fin (1 * m)
-  uniti* = sym≃ unite*
-
   -- unite*r
 
   unite*r : {m : ℕ} → Fin (m * 1) ≃ Fin m
   unite*r {m} = unite⋆′equiv ● id≃ ×≃ Fin1≃⊤ ● *≃×
-
-  -- uniti*r
-  uniti*r : {m : ℕ} → Fin m ≃ Fin (m * 1)
-  uniti*r = sym≃ unite*r
 
   -- swap*
 
@@ -118,19 +114,31 @@ module TimesE where
   assocl* : {m n o : ℕ} → Fin (m * (n * o)) ≃ Fin ((m * n) * o)
   assocl* {m} {n} {o} = ×≃* ● ×≃* ×≃ id≃ ● assocl⋆equiv ● id≃ ×≃ *≃× ● *≃× {m}
 
-  assocr* : {m n o : ℕ} → Fin ((m * n) * o) ≃ Fin (m * (n * o))
-  assocr* {m} {n} {o} = sym≃ (assocl* {m})
-
   -- congruence
 
   _*F_ : {m n o p : ℕ} → Fin m ≃ Fin n → Fin o ≃ Fin p →
               Fin (m * o) ≃ Fin (n * p)
   Fm≃Fn *F Fo≃Fp = ×≃* ● Fm≃Fn ×≃ Fo≃Fp ● *≃×
 
+ -- end of abstract block
+
+ uniti* : {m : ℕ} → Fin m ≃ Fin (1 * m)
+ uniti* = sym≃ unite*
+
+ uniti*r : {m : ℕ} → Fin m ≃ Fin (m * 1)
+ uniti*r = sym≃ unite*r
+
+ assocr* : {m n o : ℕ} → Fin ((m * n) * o) ≃ Fin (m * (n * o))
+ assocr* {m} {n} {o} = sym≃ (assocl* {m})
+
+ sswap* : {m n : ℕ} → Fin (n * m) ≃ Fin (m * n)
+ sswap* {m} {n} = sym≃ (swap* {m} {n})
+
 ------------------------------------------------------------------------------
 -- Distributivity of multiplication over addition
 
 module PlusTimesE where
+
  abstract
 
   -- now that we have two monoids, we need to check distributivity
@@ -148,25 +156,26 @@ module PlusTimesE where
   distzr {m} = sym≃ F0≃⊥ ● distzrequiv ● id≃ ×≃ F0≃⊥ ● *≃× {m} {0}
     where open Times
 
-  factorzr : {n : ℕ} → Fin 0 ≃ Fin (n * 0)
-  factorzr {n} = sym≃ (distzr {n})
-
   dist : {m n o : ℕ} → Fin ((m + n) * o) ≃ Fin ((m * o) + (n * o))
   dist {m} {n} {o} = ⊎≃+ {m * o} {n * o} ● ×≃* {m} ⊎≃ ×≃* ● distequiv ● +≃⊎ ×≃ id≃ ● *≃×
     where open Times
           open Plus
-
-  factor : {m n o : ℕ} → Fin ((m * o) + (n * o)) ≃ Fin ((m + n) * o) 
-  factor {m} = sym≃ (dist {m}) 
 
   distl : {m n o : ℕ} → Fin (m * (n + o)) ≃ Fin ((m * n) + (m * o))
   distl {m} {n} {o} = ⊎≃+ {m * n} {m * o} ● ×≃* {m} ⊎≃ ×≃* ● distlequiv ● id≃ ×≃ +≃⊎ ● *≃×
     where open Plus
           open Times
 
+ -- end of abstract block
 
-  factorl : {m n o : ℕ} → Fin ((m * n) + (m * o)) ≃ Fin (m * (n + o)) 
-  factorl {m} = sym≃ (distl {m}) 
+ factorzr : {n : ℕ} → Fin 0 ≃ Fin (n * 0)
+ factorzr {n} = sym≃ (distzr {n})
+
+ factor : {m n o : ℕ} → Fin ((m * o) + (n * o)) ≃ Fin ((m + n) * o) 
+ factor {m} = sym≃ (dist {m}) 
+
+ factorl : {m n o : ℕ} → Fin ((m * n) + (m * o)) ≃ Fin (m * (n + o)) 
+ factorl {m} = sym≃ (distl {m}) 
 
 ------------------------------------------------------------------------------
 -- Summarizing... we have a commutative semiring structure
