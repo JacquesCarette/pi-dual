@@ -162,23 +162,51 @@ assocr₊-coh = -- eq pentagon⊎-right pentagon⊎-left
      ! (β₂ ⊙ cong₂∘ β₂ β⊎₂ ⊙
         cong∘r (gg assocr₊equiv ∘ (gg id≃ ⊎→ gg assocr₊equiv)) β⊎₂))
 
-{-
+
 swap₊-nat : {A B C D : Set} {f : A ≃ C} {g : B ≃ D} →
   swap₊equiv ● (f ⊎≃ g) ≋ (g ⊎≃ f) ● swap₊equiv
-swap₊-nat = eq swap₊-coh (sym∼ swap₊-coh)
+swap₊-nat =
+  eq (β₁ ⊙ cong∘l (proj₁ swap₊equiv) β⊎₁ ⊙ swap₊-coh ⊙
+        ! (β₁ ⊙ cong∘r (proj₁ swap₊equiv) β⊎₁))
+     (β₂ ⊙ cong∘r (gg swap₊equiv) β⊎₂ ⊙ sym∼ swap₊-coh ⊙
+        ! (β₂ ⊙ cong∘l (gg swap₊equiv) β⊎₂))
 
 -- often called 'hexagon'
 assocr₊-swap₊-coh : ∀ {A B C : Set} →
   assocr₊equiv {B} {C} {A} ● swap₊equiv ● assocr₊equiv {A} {B} {C} ≋
-  id≃ ⊎≃ swap₊equiv ● assocr₊equiv ● swap₊equiv ⊎≃ id≃
-assocr₊-swap₊-coh = eq hexagon⊎-right hexagon⊎-left
+  id≃ ⊎≃ swap₊equiv ● assocr₊equiv {B} {A} {C} ● swap₊equiv ⊎≃ id≃
+assocr₊-swap₊-coh {A} {B} {C} = -- eq hexagon⊎-right hexagon⊎-left
+  let assocrBCA = proj₁ (assocr₊equiv {B} {C} {A}) in
+  let assocrABC = proj₁ (assocr₊equiv {A} {B} {C}) in
+  let assocrBAC = proj₁ (assocr₊equiv {B} {A} {C}) in
+  let swapAC = proj₁ id≃ ⊎→ proj₁ (swap₊equiv {A} {C}) in
+  let assoclBCA = gg (assocr₊equiv {B} {C} {A}) in
+  let assoclABC = gg (assocr₊equiv {A} {B} {C}) in
+  let assoclBAC = gg (assocr₊equiv {B} {A} {C}) in
+  let swapCA = gg id≃ ⊎→ gg (swap₊equiv {A} {C}) in
+  eq (β₁ ⊙ cong∘l assocrBCA β₁ ⊙ hexagon⊎-right ⊙
+      ! (β₁ ⊙ cong₂∘ β⊎₁ β₁ ⊙ cong∘l (swapAC ∘ assocrBAC) β⊎₁))
+     (β₂ ⊙ cong∘r assoclBCA β₂ ⊙ hexagon⊎-left ⊙
+      ! (β₂ ⊙ cong₂∘ β₂ β⊎₂ ⊙ cong∘r (assoclBAC ∘ swapCA) β⊎₂))
 
 -- and in the opposite direction
 assocl₊-swap₊-coh : ∀ {A B C : Set} →
   assocl₊equiv {A} {B} {C} ● swap₊equiv ● assocl₊equiv {B} {C} {A} ≋
   swap₊equiv ⊎≃ id≃ ● assocl₊equiv ● id≃ ⊎≃ swap₊equiv
-assocl₊-swap₊-coh = eq hexagon⊎-left hexagon⊎-right
--}
+assocl₊-swap₊-coh {A} {B} {C} = -- eq hexagon⊎-left hexagon⊎-right
+  let assoclBCA = proj₁ (assocl₊equiv {B} {C} {A}) in
+  let assoclABC = proj₁ (assocl₊equiv {A} {B} {C}) in
+  let assoclBAC = proj₁ (assocl₊equiv {B} {A} {C}) in
+  let swapBA = proj₁ (swap₊equiv {B} {A}) ⊎→ proj₁ id≃ in
+  let assocrBCA = gg (assocl₊equiv {B} {C} {A}) in
+  let assocrABC = gg (assocl₊equiv {A} {B} {C}) in
+  let assocrBAC = gg (assocl₊equiv {B} {A} {C}) in
+  let swapAB = gg (swap₊equiv {B} {A}) ⊎→ proj₁ id≃ in
+  eq (β₁ ⊙ (cong∘l assoclABC β₁ ⊙ hexagon⊎-left) ⊙
+      ! (β₁ ⊙ cong₂∘ β⊎₁ β₁ ⊙ cong∘l (swapBA ∘ assoclBAC) β⊎₁))
+     (β₂ ⊙ cong∘r assocrABC β₂ ⊙ hexagon⊎-right ⊙
+      ! (β₂ ⊙ cong₂∘ β₂ β⊎₂ ⊙ cong∘r (assocrBAC ∘ swapAB) β⊎₂))
+
 
 ----
 -- equivalences for the × structure

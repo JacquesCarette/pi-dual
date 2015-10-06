@@ -225,7 +225,7 @@ CPM× = record
   }
 
 -- The monoidal structures are symmetric
-{-
+
 x⊎y≈y⊎x : NaturalIsomorphism ⊎h.x⊗y ⊎h.y⊗x
 x⊎y≈y⊎x = record 
   { F⇒G = record 
@@ -248,7 +248,7 @@ BM⊎ = record
   ; hexagon₁ = assocr₊-swap₊-coh 
   ; hexagon₂ = assocl₊-swap₊-coh 
   }
-
+{-
 x×y≈y×x : NaturalIsomorphism ×h.x⊗y ×h.y⊗x
 x×y≈y×x = record
   { F⇒G = record
