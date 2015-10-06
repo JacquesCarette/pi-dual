@@ -349,14 +349,27 @@ assocl⋆-swap⋆-coh {A} {B} {C} =
       ! (β₁ ⊙ cong₂∘ β×₁ β₁ ⊙ cong∘l (swapBA ∘ assoclBAC) β×₁))
      (β₂ ⊙ cong∘r assocrABC β₂ ⊙ hexagon×-right ⊙
       ! (β₂ ⊙ cong₂∘ β₂ β×₂ ⊙ cong∘r (assocrBAC ∘ swapAB) β×₂))
-{-
+
 -------------------
 -- distributivity
 distl-nat : {A B C D E F : Set} →
   {f : A ≃ D} {g : B ≃ E} {h : C ≃ F} →
   distlequiv ● (f ×≃ (g ⊎≃ h)) ≋ ((f ×≃ g) ⊎≃ (f ×≃ h)) ● distlequiv
-distl-nat = eq distl-coh factorl-coh
-
+distl-nat {A} {B} {C} {D} {E} {F} {f} {g} {h} = -- eq distl-coh factorl-coh
+  let distlDEF = proj₁ (distlequiv {D} {E} {F}) in
+  let distlABC = proj₁ (distlequiv {A} {B} {C}) in
+  let factorlDEF = gg (distlequiv {D} {E} {F}) in
+  let factorlABC = gg (distlequiv {A} {B} {C}) in
+  eq (β₁ ⊙ cong∘l distlDEF β×₁ ⊙ cong∘l distlDEF (refl∼ ×∼ β⊎₁) ⊙
+      distl-coh ⊙
+      ! (β₁ ⊙ cong∘r distlABC β⊎₁ ⊙ cong∘r distlABC (β×₁ ⊎∼ β×₁)))
+     (β₂ ⊙ cong∘r factorlDEF β×₂ ⊙
+           cong∘r factorlDEF (refl∼ {f = gg f} ×∼ β⊎₂ {f = g} {h}) ⊙
+      factorl-coh ⊙
+      ! (β₂ ⊙ cong∘l factorlABC (β⊎₂ {f = f ×≃ g} {f ×≃ h}) ⊙
+              cong∘l factorlABC (β×₂ ⊎∼ β×₂)))
+     
+{-
 factorl-nat : {A B C D E F : Set} →
   {f : A ≃ D} {g : B ≃ E} {h : C ≃ F} →
    factorlequiv ● ((f ×≃ g) ⊎≃ (f ×≃ h)) ≋ (f ×≃ (g ⊎≃ h)) ● factorlequiv
@@ -472,8 +485,7 @@ A×[0+B]≃A×B = eq A×[0+B]→A×B A×B→A×[0+B]
 -- same proof as above, just written compactly
 [1+f]●[g+1]≋g+f : {A B C D : Set} {f : A ≃ B} {g : C ≃ D} →
   (id≃ ⊎≃ f) ● (g ⊎≃ id≃) ≋ g ⊎≃ f
-[1+f]●[g+1]≋g+f {f = f} {g} =
-  trans≋ (sym≋ ⊎●≋●⊎) (lid≋ ⊎≋ rid≋)
+[1+f]●[g+1]≋g+f = trans≋ (sym≋ ⊎●≋●⊎) (lid≋ ⊎≋ rid≋)
 
 -- put then together
 [g+1]●[1+f]≋[1+f]●[g+1] : {A B C D : Set} {f : A ≃ B} {g : C ≃ D} →
