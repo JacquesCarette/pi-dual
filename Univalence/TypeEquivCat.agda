@@ -342,7 +342,7 @@ x⊗0≡0 = record
     ; isoʳ = rinv≋ distzequiv
     }
   }
-{-
+
 TERig : RigCategory SBM⊎ SBM×
 TERig = record
   -- new combinators
@@ -354,21 +354,22 @@ TERig = record
   -- two natural programs, using the new combinators and
   -- the underlying ones of the symmetric bimonoidal groupoid
   -- are in fact to be identified.
-  ; laplazaI = A×[B⊎C]≃[A×C]⊎[A×B]
-  ; laplazaII = [A⊎B]×C≃[C×A]⊎[C×B]
-  ; laplazaIV = [A⊎B⊎C]×D≃[A×D⊎B×D]⊎C×D
-  ; laplazaVI = A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D
-  ; laplazaIX = [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D
+  ; laplazaI = λ {X} → A×[B⊎C]≃[A×C]⊎[A×B] {X zero} {X one} {X two}
+  ; laplazaII = λ {X} → [A⊎B]×C≃[C×A]⊎[C×B] {X zero} {X one} {X two}
+  ; laplazaIV = λ {X} → [A⊎B⊎C]×D≃[A×D⊎B×D]⊎C×D {X zero} {X (suc zero)}
+                          {X (suc (suc zero))} {X (suc (suc (suc zero)))}
+  ; laplazaVI = {!!} -- A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D
+  ; laplazaIX = {!!} -- [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D
   ; laplazaX = 0×0≃0
-  ; laplazaXI = 0×[A⊎B]≃0
+  ; laplazaXI = λ {X} → 0×[A⊎B]≃0 {X zero} {X (suc zero)}
   ; laplazaXIII = 0×1≃0
-  ; laplazaXV = A×0≃0
-  ; laplazaXVI = 0×A×B≃0
-  ; laplazaXVII = A×0×B≃0
-  ; laplazaXIX = A×[0+B]≃A×B
-  ; laplazaXXIII = 1×[A⊎B]≃A⊎B
+  ; laplazaXV = λ {X} → A×0≃0 {X zero}
+  ; laplazaXVI = {!!} -- 0×A×B≃0
+  ; laplazaXVII = {!!} -- A×0×B≃0
+  ; laplazaXIX = {!!} -- A×[0+B]≃A×B
+  ; laplazaXXIII = {!!} -- 1×[A⊎B]≃A⊎B
   }
--}
+
 -- Notes from Laplaza, 72
 -- All of 2, 9, 10, 15
 -- one of each of {1,3}, {4,5}, {6,7}, {9, 12},{13,,14},
