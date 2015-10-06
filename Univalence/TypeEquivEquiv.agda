@@ -414,19 +414,26 @@ factor-nat {A} {B} {C} {D} {E} {F} {f} {g} {h} = -- flip-sym≋ dist-nat
      (β₂ ⊙ cong∘r distDEF (β⊎₂ {f = f ×≃ h} {g ×≃ h} ⊙ (β×₂ ⊎∼ β×₂)) ⊙
      sym∼ dist-coh ⊙ 
      ! (β₂ ⊙ cong∘l distABC (β×₂ {f = f ⊎≃ g} {h} ⊙ (β⊎₂ ×∼ refl∼))))
-{-
+
 -- note how we don't use id≃ but an arbitrary ⊥ ≃ ⊥.
 -- because this law under-specifies f and g, we need to
 -- be explicit in our calls
 distzr-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
   distzrequiv ● (f ×≃ g) ≋ g ● distzrequiv
 distzr-nat {f = (f , qinv h _ _)} {(_ , qinv g _ _)} =
-  eq (distzr-coh {f = f}) (factorzr-coh {f = h} {g})
+  -- eq (distzr-coh {f = f}) (factorzr-coh {f = h} {g})
+  eq (β₁ ⊙ cong∘l (proj₁ distzrequiv) β×₁ ⊙ distzr-coh {f = f} ⊙ ! β₁)
+     (β₂ ⊙ cong∘r (gg distzrequiv) β×₂ ⊙ factorzr-coh {f = h} {g} ⊙ ! β₂)
 
 factorzr-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
   factorzrequiv ● g ≋ (f ×≃ g) ● factorzrequiv
-factorzr-nat {f = f} = flip-sym≋ (distzr-nat {f = sym≃ f})
-
+factorzr-nat {f = f} = -- flip-sym≋ (distzr-nat {f = sym≃ f})
+  eq (β₁ ⊙ sym∼ (factorzr-coh {f = proj₁ f}) ⊙
+     ! (β₁ ⊙ cong∘r (proj₁ factorzrequiv) β×₁) )
+     --
+     (β₂ ⊙ sym∼ (distzr-coh {f = gg f}) ⊙
+     ! (β₂ ⊙ cong∘l (gg factorzrequiv) β×₂))
+{-
 -- same comment as above
 distz-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
   distzequiv ● (g ×≃ f) ≋ g ● distzequiv
