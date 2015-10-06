@@ -119,12 +119,13 @@ inj≃ (f , qinv g α β) x y p = trans
 -- ⊕
 
 abstract
-  _⊎∼_ : ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
-    {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
-    (α : f ∘ finv ∼ id) → (β : g ∘ ginv ∼ id) →
-    (f ⊎→ g) ∘ (finv ⊎→ ginv) ∼ id {A = C ⊎ D}
-  _⊎∼_ α β (inj₁ x) = cong inj₁ (α x)
-  _⊎∼_ α β (inj₂ y) = cong inj₂ (β y)
+  private
+    _⊎∼_ : ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
+      {f : A → C} {finv : C → A} {g : B → D} {ginv : D → B} →
+      (α : f ∘ finv ∼ id) → (β : g ∘ ginv ∼ id) →
+      (f ⊎→ g) ∘ (finv ⊎→ ginv) ∼ id {A = C ⊎ D}
+    _⊎∼_ α β (inj₁ x) = cong inj₁ (α x)
+    _⊎∼_ α β (inj₂ y) = cong inj₂ (β y)
 
   _⊎≃_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
     → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
