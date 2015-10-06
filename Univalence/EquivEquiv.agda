@@ -89,24 +89,6 @@ _◎_ {f = f} {h} {g} {i}
           ≡⟨ P.sym (β₂ x) ⟩
         gg (h ● i) x ∎)
 
-{-
-⊎≃-resp-≋ : {A B C D : Set} {f h : A ≃ B} {g i : C ≃ D} → f ≋ h → g ≋ i →
-  f ⊎≃ g ≋ h ⊎≃ i
-⊎≃-resp-≋ {f = f} {h} {g} {i}
-  (eq f≡ g≡) (eq h≡ i≡) = eq f⊎g~h⊎i flip
-  where
-    .f⊎g~h⊎i : proj₁ (f ⊎≃ g) ∼ proj₁ (h ⊎≃ i)
-    f⊎g~h⊎i (inj₁ x) = 
-      P.trans (β⊎₁ (inj₁ x)) (
-      P.trans (P.cong inj₁ (f≡ x))
-              (P.sym (β⊎₁ (inj₁ x)))) -- P.cong inj₁ (f≡ x)
-    f⊎g~h⊎i (inj₂ y) = {!!} -- P.cong inj₂ (h≡ y)
-    .flip : isqinv.g (proj₂ (f ⊎≃ g)) ∼
-           isqinv.g (proj₂ (h ⊎≃ i))
-    flip (inj₁ x) = {!!} -- P.cong inj₁ (g≡ x)
-    flip (inj₂ y) = {!!} -- P.cong inj₂ (i≡ y)
--}
-
 rinv≋ : ∀ {ℓ} {A B : Set ℓ} (x : A ≃ B) →
   (x ● (sym≃ x)) ≋ id≃ {A = B}
 rinv≋ (_ , qinv _ α _) = eq (trans∼ β₁ α) (trans∼ β₂ α)

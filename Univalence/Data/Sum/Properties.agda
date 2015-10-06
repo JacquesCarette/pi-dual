@@ -17,6 +17,7 @@ open import TypeEquiv
     swap₊; assocl₊; assocr₊)
 
 infix 8 _⊎→_
+infix 12 _⊎∼_
 
 _⊎→_ : ∀ {a b c d} {A : Set a} {B : Set b} {C : Set c} {D : Set d} →
       (A → C) → (B → D) → (A ⊎ B → C ⊎ D)
@@ -28,11 +29,6 @@ _⊎→_ = map⊎
 
 abstract
 
-  cong₂⊎ : {A B C D : Set} {f h : A → B} {g i : C → D} → 
-    (f ∼ h) → (g ∼ i) → f ⊎→ g ∼ h ⊎→ i
-  cong₂⊎ f∼h g∼i (inj₁ x) = P.cong inj₁ (f∼h x)
-  cong₂⊎ f∼h g∼i (inj₂ y) = P.cong inj₂ (g∼i y)
-
   id⊎id∼id : {A B : Set} → (F.id {A = A} ⊎→ F.id {A = B}) ∼ F.id
   id⊎id∼id (inj₁ x) = P.refl
   id⊎id∼id (inj₂ y) = P.refl
@@ -43,11 +39,11 @@ abstract
   ⊎∘∼∘⊎ (inj₁ x) = P.refl
   ⊎∘∼∘⊎ (inj₂ y) = P.refl
 
-  ⊎→-resp-∼ : {A B C D : Set} → {f₀ g₀ : A → B} {f₁ g₁ : C → D} →
+  _⊎∼_ : {A B C D : Set} → {f₀ g₀ : A → B} {f₁ g₁ : C → D} →
     (e₁ : f₀ ∼ g₀) → (e₂ : f₁ ∼ g₁) →  
     f₀ ⊎→ f₁ ∼ g₀ ⊎→ g₁
-  ⊎→-resp-∼ f₀~g₀ _ (inj₁ x) = P.cong inj₁ (f₀~g₀ x)
-  ⊎→-resp-∼ _ f₁~g₁ (inj₂ y) = P.cong inj₂ (f₁~g₁ y)
+  _⊎∼_ f₀~g₀ _ (inj₁ x) = P.cong inj₁ (f₀~g₀ x)
+  _⊎∼_ _ f₁~g₁ (inj₂ y) = P.cong inj₂ (f₁~g₁ y)
 
   unite₊-coh : {A B : Set} {f : A → B} →
     unite₊ ∘ (id ⊎→ f) ∼ f ∘ unite₊

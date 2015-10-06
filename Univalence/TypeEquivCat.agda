@@ -84,7 +84,6 @@ TypeEquivGroupoid = record
     } }
   }
 
-
 -- The additive structure is monoidal
 
 ⊎-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
@@ -93,7 +92,7 @@ TypeEquivGroupoid = record
   ; F₁ = uncurry _⊎≃_
   ; identity = [id,id]≋id
   ; homomorphism = ⊎●≋●⊎
-  ; F-resp-≡ = uncurry ⊎≃-respects-≋
+  ; F-resp-≡ = uncurry _⊎≋_
   }
   
 module ⊎h = MonoidalHelperFunctors TypeEquivCat ⊎-bifunctor ⊥
@@ -143,7 +142,7 @@ x⊎0≡x = record
     ; isoʳ = rinv≋ assocr₊equiv
     }
   }
-{-
+
 CPM⊎ : Monoidal TypeEquivCat
 CPM⊎ = record
   { ⊗ = ⊎-bifunctor
@@ -156,12 +155,7 @@ CPM⊎ = record
    }
 
 -- The multiplicative structure is also monoidal
-
--- below, we will have a lot of things which belong in
--- Data.Product.Properties.  In fact, some of them are ``free'', in
--- that β-reduction is enough.  However, it might be a good idea to
--- fully mirror all the ones needed for ⊎.
-
+{-
 ×-bifunctor : Bifunctor TypeEquivCat TypeEquivCat TypeEquivCat
 ×-bifunctor = record
   { F₀ = uncurry _×_

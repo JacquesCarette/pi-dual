@@ -19,9 +19,10 @@ open import Data.Empty using (⊥)
 open import Data.Unit using (⊤)
 open import Data.Sum using (_⊎_)
 open import Data.Product using (_,_; _×_; proj₁)
+open import Function using (_∘_)
 
 open import Data.Sum.Properties
-  using (cong₂⊎; id⊎id∼id; ⊎∘∼∘⊎; ⊎→-resp-∼;
+  using (id⊎id∼id; ⊎∘∼∘⊎; _⊎∼_;
     unite₊-coh; uniti₊-coh; unite₊′-coh; uniti₊′-coh;
     assocr₊-wf; assocl₊-wf;
     triangle⊎-left; triangle⊎-right;
@@ -65,15 +66,17 @@ private
   {f : A ≃ C} {g : B ≃ D} {h : C ≃ E} {i : D ≃ F} →
   (h ● f) ⊎≃ (i ● g) ≋ (h ⊎≃ i) ● (f ⊎≃ g)
 ⊎●≋●⊎ = 
-  eq (β⊎₁ ⊙ cong₂⊎ β₁ β₁ ⊙ ⊎∘∼∘⊎ ⊙ ! cong₂∘ β⊎₁ β⊎₁ ⊙ ! β₁)
-       (β⊎₂ ⊙ cong₂⊎ β₂ β₂ ⊙ ⊎∘∼∘⊎ ⊙ ! cong₂∘ β⊎₂ β⊎₂ ⊙ ! β₂)
+  eq (β⊎₁ ⊙ β₁ ⊎∼ β₁ ⊙ ⊎∘∼∘⊎ ⊙ ! cong₂∘ β⊎₁ β⊎₁ ⊙ ! β₁)
+     (β⊎₂ ⊙ β₂ ⊎∼ β₂ ⊙ ⊎∘∼∘⊎ ⊙ ! cong₂∘ β⊎₂ β⊎₂ ⊙ ! β₂)
 
--- ⊎≃ respects ≋
-⊎≃-respects-≋ : {A B C D : Set} {f g : A ≃ B} {h i : C ≃ D} →
-  (e₁ : f ≋ g) → (e₂ : h ≋ i) → f ⊎≃ h ≋ g ⊎≃ i
-⊎≃-respects-≋ (eq f~g f⁻¹~g⁻¹) (eq h~i h⁻¹~i⁻¹) =
-  eq (β⊎₁ ⊙ ⊎→-resp-∼ f~g h~i ⊙ ! β⊎₁) 
-       (β⊎₂ ⊙ ⊎→-resp-∼ f⁻¹~g⁻¹ h⁻¹~i⁻¹ ⊙ ! β⊎₂) 
+-- ≋ has, predictably, an additive structure as well
+
+_⊎≋_ : {A B C D : Set} {f h : A ≃ B} {g i : C ≃ D} → f ≋ h → g ≋ i →
+  f ⊎≃ g ≋ h ⊎≃ i
+f≋h ⊎≋ g≋i = 
+  eq (β⊎₁ ⊙ (f≡ f≋h) ⊎∼ (f≡ g≋i) ⊙ ! β⊎₁)
+     (β⊎₂ ⊙ (g≡ f≋h) ⊎∼ (g≡ g≋i) ⊙ ! β⊎₂)
+  where open _≋_
 
 -- Use '-nat' to signify that operation induces a
 -- natural transformation, and that the induced operation
@@ -112,14 +115,14 @@ assocr₊-nat {A} {B} {C} {D} {E} {F} {f₀} {f₁} {f₂} =
   let assoclDEF = gg (assocr₊equiv {D} {E} {F}) in
   let assoclABC = gg (assocr₊equiv {A} {B} {C}) in
   eq (β₁ ⊙ cong∘l assocrDEF β⊎₁ ⊙
-           cong∘l assocrDEF (cong₂⊎ β⊎₁ refl∼) ⊙
+           cong∘l assocrDEF (β⊎₁ ⊎∼ refl∼) ⊙
            assocr₊-wf ⊙
-           ! cong∘r assocrABC (cong₂⊎ refl∼ β⊎₁) ⊙
+           ! cong∘r assocrABC (refl∼ ⊎∼ β⊎₁) ⊙
            ! cong∘r assocrABC β⊎₁ ⊙ ! β₁)
      (β₂ ⊙ cong∘r assoclDEF (β⊎₂ {f = f₀ ⊎≃ f₁} {f₂}) ⊙
-           cong∘r assoclDEF (cong₂⊎ β⊎₂ refl∼) ⊙
+           cong∘r assoclDEF (β⊎₂ ⊎∼ refl∼) ⊙
            assocl₊-wf ⊙
-          ! cong∘l assoclABC (cong₂⊎ refl∼ β⊎₂) ⊙
+          ! cong∘l assoclABC (refl∼ ⊎∼ β⊎₂) ⊙
           ! cong∘l assoclABC (β⊎₂ {f = f₀} {f₁ ⊎≃ f₂}) ⊙ ! β₂)
 
 assocl₊-nat : ∀ {A B C D E F : Set} →
@@ -131,27 +134,36 @@ assocl₊-nat {A} {B} {C} {D} {E} {F} {f₀} {f₁} {f₂} =
   let assocrDEF = gg (assocl₊equiv {D} {E} {F}) in
   let assocrABC = gg (assocl₊equiv {A} {B} {C}) in
   eq (β₁ ⊙ cong∘l assoclDEF β⊎₁ ⊙
-           cong∘l assoclDEF (cong₂⊎ refl∼ β⊎₁) ⊙
+           cong∘l assoclDEF (refl∼ ⊎∼ β⊎₁) ⊙
            ! assocl₊-wf ⊙
-           ! cong∘r assoclABC (cong₂⊎ β⊎₁ refl∼) ⊙
+           ! cong∘r assoclABC (β⊎₁ ⊎∼ refl∼) ⊙
            ! cong∘r assoclABC β⊎₁ ⊙ ! β₁)
      (β₂ ⊙ cong∘r assocrDEF (β⊎₂ {f = f₀} {f₁ ⊎≃ f₂}) ⊙
-           cong∘r assocrDEF (cong₂⊎ refl∼ β⊎₂) ⊙
+           cong∘r assocrDEF (refl∼ ⊎∼ β⊎₂) ⊙
            ! assocr₊-wf ⊙
-           ! cong∘l assocrABC (cong₂⊎ β⊎₂ refl∼) ⊙
+           ! cong∘l assocrABC (β⊎₂ ⊎∼ refl∼) ⊙
            ! cong∘l assocrABC (β⊎₂ {f = f₀ ⊎≃ f₁} {f₂}) ⊙ ! β₂)
-{-
+
 -- often called 'triangle'
 unite-assocr₊-coh : ∀ {A B : Set} →
   unite₊′equiv ⊎≃ id≃ ≋ (id≃ ⊎≃ unite₊equiv) ● assocr₊equiv {A} {⊥} {B}
-unite-assocr₊-coh = eq triangle⊎-right triangle⊎-left
+unite-assocr₊-coh = -- eq triangle⊎-right triangle⊎-left
+  eq (β⊎₁ ⊙ triangle⊎-right ⊙ ! (β₁ ⊙ cong∘r (proj₁ assocr₊equiv) β⊎₁))
+     (β⊎₂ ⊙ triangle⊎-left ⊙ ! (β₂ ⊙ cong∘l (gg assocr₊equiv) β⊎₂))
 
 -- often called 'pentagon'
 assocr₊-coh : ∀ {A B C D : Set} →
   assocr₊equiv {A} {B} {C ⊎ D} ● assocr₊equiv ≋
   (id≃ ⊎≃ assocr₊equiv) ● assocr₊equiv ● (assocr₊equiv ⊎≃ id≃)
-assocr₊-coh = eq pentagon⊎-right pentagon⊎-left
+assocr₊-coh = -- eq pentagon⊎-right pentagon⊎-left
+ eq (β₁ ⊙ pentagon⊎-right ⊙
+     ! (β₁ ⊙ cong₂∘ β⊎₁ β₁ ⊙
+        cong∘l ((proj₁ id≃ ⊎→ proj₁ assocr₊equiv) ∘ proj₁ assocr₊equiv) β⊎₁))
+    (β₂ ⊙ pentagon⊎-left ⊙
+     ! (β₂ ⊙ cong₂∘ β₂ β⊎₂ ⊙
+        cong∘r (gg assocr₊equiv ∘ (gg id≃ ⊎→ gg assocr₊equiv)) β⊎₂))
 
+{-
 swap₊-nat : {A B C D : Set} {f : A ≃ C} {g : B ≃ D} →
   swap₊equiv ● (f ⊎≃ g) ≋ (g ⊎≃ f) ● swap₊equiv
 swap₊-nat = eq swap₊-coh (sym∼ swap₊-coh)
@@ -343,15 +355,6 @@ A×[0+B]≃A×B = eq A×[0+B]→A×B A×B→A×[0+B]
   eq [A⊎B]×[C⊎D]→[[A×C⊎B×C]⊎A×D]⊎B×D 
        [[A×C⊎B×C]⊎A×D]⊎B×D→[A⊎B]×[C⊎D]
 -}
-------------------------------------------------------------------------
--- ≋ has, predictably, an additive structure as well
-
-_⊎≋_ : {A B C D : Set} {f h : A ≃ B} {g i : C ≃ D} → f ≋ h → g ≋ i →
-  f ⊎≃ g ≋ h ⊎≃ i
-f≋h ⊎≋ g≋i = 
-  eq (β⊎₁ ⊙ cong₂⊎ (f≡ f≋h) (f≡ g≋i) ⊙ ! β⊎₁)
-     (β⊎₂ ⊙ cong₂⊎ (g≡ f≋h) (g≡ g≋i) ⊙ ! β⊎₂)
-  where open _≋_
   
 ------------------------------------------------------------------------
 -- also useful
