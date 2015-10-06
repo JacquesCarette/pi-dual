@@ -38,19 +38,38 @@ open import EquivEquiv
 
 open import FinEquivTypeEquiv
   using (_fin≃_; module PlusE; module TimesE; module PlusTimesE)
-open PlusE using (_+F_; unite+; unite+r; uniti+; uniti+r; swap+;
-                  assocl+; assocr+)
-open TimesE using (_*F_; unite*; uniti*; unite*r; uniti*r; swap*;
-                   assocl*; assocr*)
+open PlusE using (_+F_; unite+; unite+r; uniti+; uniti+r;
+                  swap+; sswap+; assocl+; assocr+)
+open TimesE using (_*F_; unite*; uniti*; unite*r; uniti*r; 
+                  swap*; sswap*; assocl*; assocr*)
 open PlusTimesE using (distz; factorz; distzr; factorzr;
                        dist; factor; distl; factorl)
 open import FinEquivEquiv
-  using ([id+id]≋id; +●≋●+; _+≋_;
-         unite₊-nat; unite₊r-nat; uniti₊-nat; uniti₊r-nat;
-         assocr₊-nat; assocl₊-nat; unite-assocr₊-coh; assocr₊-coh; 
-         id*id≋id; *●≋●*; _*≋_;
-         unite*-nat; unite*r-nat; uniti*-nat; uniti*r-nat;
-         assocr*-nat; assocl*-nat; unite-assocr*-coh; assocr*-coh)
+  using (
+    [id+id]≋id; +●≋●+; _+≋_;
+    unite₊-nat; unite₊r-nat; uniti₊-nat; uniti₊r-nat;
+    assocr₊-nat; assocl₊-nat; unite-assocr₊-coh; assocr₊-coh;
+    swap₊-nat; sswap₊-nat; assocr₊-swap₊-coh; assocl₊-swap₊-coh; 
+    id*id≋id; *●≋●*; _*≋_;
+    unite*-nat; unite*r-nat; uniti*-nat; uniti*r-nat;
+    assocr*-nat; assocl*-nat; unite-assocr*-coh; assocr*-coh;
+    swap*-nat; sswap*-nat; assocr*-swap*-coh; assocl*-swap*-coh;
+    distl-nat; factorl-nat; dist-nat; factor-nat;
+    distzr-nat; factorzr-nat; distz-nat; factorz-nat;
+    A×[B⊎C]≃[A×C]⊎[A×B]; 
+    [A⊎B]×C≃[C×A]⊎[C×B]; 
+    [A⊎B⊎C]×D≃[A×D⊎B×D]⊎C×D; 
+    A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D; 
+    [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D;
+    0×0≃0;
+    0×[A⊎B]≃0;
+    0×1≃0;
+    A×0≃0;
+    0×A×B≃0;
+    A×0×B≃0;
+    A×[0+B]≃A×B;
+    1×[A⊎B]≃A⊎B
+  )
 
 ------------------------------------------------------------------------------
 -- Fin and type equivalences are a category
@@ -70,8 +89,6 @@ FinEquivCat = record
   ; equiv = record { refl = id≋ ; sym = sym≋ ; trans = trans≋ } 
   ; ∘-resp-≡ = _◎_
   }
-
-{--
 
 FinEquivGroupoid : Groupoid FinEquivCat
 FinEquivGroupoid = record 
@@ -104,8 +121,8 @@ module ⊎h = MonoidalHelperFunctors FinEquivCat ⊎-bifunctor 0
     { η = λ _ → uniti+ 
     ; commute = λ _ →  uniti₊-nat }
   ; iso = λ _ → record
-    { isoˡ = linv≋ unite+ 
-    ; isoʳ = rinv≋ unite+ 
+    { isoˡ = linv≋ unite+
+    ; isoʳ = rinv≋ unite+
     }
   }
 
@@ -135,8 +152,8 @@ x⊎0≡x = record
     ; commute = λ _ → assocl₊-nat 
     }
   ; iso = λ X → record
-    { isoˡ = linv≋ assocr+ 
-    ; isoʳ = rinv≋ assocr+ 
+    { isoˡ = linv≋ assocr+
+    ; isoʳ = rinv≋ assocr+
     }
   }
 
@@ -150,8 +167,6 @@ CPM⊎ = record
    ; triangle = unite-assocr₊-coh
    ; pentagon = assocr₊-coh
    }
-
---}
 
 -- The multiplicative structure is monoidal
 
@@ -170,15 +185,15 @@ module ×h = MonoidalHelperFunctors FinEquivCat ×-bifunctor 1
 1×y≡y = record
   { F⇒G = record
     { η = λ _ → unite* 
-    ; commute = λ f → {!!} -- unite*-nat 
+    ; commute = λ _ → unite*-nat
     }
   ; F⇐G = record
     { η = λ _ → uniti* 
-    ; commute = λ f → {!!} -- unite*r-nat
+    ; commute = λ _ → uniti*-nat
     }
   ; iso = λ X → record
-    { isoˡ = linv≋ unite* 
-    ; isoʳ = rinv≋ unite* 
+    { isoˡ = linv≋ unite*
+    ; isoʳ = rinv≋ unite*
     }
   }
 
@@ -186,15 +201,15 @@ y×1≡y : NaturalIsomorphism ×h.x⊗id ×h.x
 y×1≡y = record
   { F⇒G = record 
     { η = λ X → unite*r 
-    ;  commute = λ f → {!!} -- uniti*-nat
+    ;  commute = λ _ → unite*r-nat
     }
   ; F⇐G = record 
     { η = λ X → uniti*r 
-    ; commute = λ f → {!!} -- uniti*r-nat
+    ; commute = λ _ → uniti*r-nat
     }
   ; iso = λ X → record 
-    { isoˡ = linv≋ unite*r 
-    ; isoʳ = rinv≋ unite*r 
+    { isoˡ = linv≋ unite*r
+    ; isoʳ = rinv≋ unite*r
     }
   }
 
@@ -207,7 +222,7 @@ y×1≡y = record
     { η = λ X → assocl* {m = X zero}
     ; commute = λ _ → assocl*-nat }
   ; iso = λ X → record
-    { isoˡ = linv≋ assocr* 
+    { isoˡ = linv≋ assocr*
     ; isoʳ = rinv≋ assocr* }
   }
 
@@ -222,60 +237,59 @@ CPM× = record
   ; pentagon = assocr*-coh
   }
 
-{--
 -- The monoidal structures are symmetric
 
 x⊎y≈y⊎x : NaturalIsomorphism ⊎h.x⊗y ⊎h.y⊗x
 x⊎y≈y⊎x = record 
   { F⇒G = record 
     { η = λ X → swap+ {m = X zero}
-    ; commute = {!!} 
+    ; commute = λ _ → swap₊-nat
     } 
   ; F⇐G = record 
-    { η = λ X → swap+ {m = X (suc zero)}
-    ; commute = {!!} 
+    { η = λ X → sswap+ {m = X zero} {n = X (suc zero)}
+    ; commute = λ _ → sswap₊-nat 
     } 
   ; iso = λ X → record
-    { isoˡ = {!!} 
-    ; isoʳ = {!!} 
+    { isoˡ = linv≋ swap+ 
+    ; isoʳ = rinv≋ swap+ 
     }
   }
 
 BM⊎ : Braided CPM⊎
 BM⊎ = record 
   { braid = x⊎y≈y⊎x 
-  ; hexagon₁ = {!!} 
-  ; hexagon₂ = {!!} 
+  ; hexagon₁ = assocr₊-swap₊-coh
+  ; hexagon₂ = assocl₊-swap₊-coh  
   }
 
 x×y≈y×x : NaturalIsomorphism ×h.x⊗y ×h.y⊗x
 x×y≈y×x = record
   { F⇒G = record
     { η = λ X → swap* {m = X zero}
-    ; commute = {!!} 
+    ; commute = λ _ → swap*-nat 
     }
   ; F⇐G = record
-    { η = λ X → swap* {m = X (suc zero)} 
-    ; commute = {!!} 
+    { η = λ X → sswap* {m = X zero} 
+    ; commute = λ _ → sswap*-nat 
     }
   ; iso = λ X → record
-    { isoˡ = {!!} 
-    ; isoʳ = {!!} 
+    { isoˡ = linv≋ swap* 
+    ; isoʳ = rinv≋ swap* 
     }
   }
 
 BM× : Braided CPM×
 BM× = record 
   { braid = x×y≈y×x 
-  ; hexagon₁ = {!!} 
-  ; hexagon₂ = {!!} 
+  ; hexagon₁ = assocr*-swap*-coh 
+  ; hexagon₂ = assocl*-swap*-coh 
   }
 
 SBM⊎ : Symmetric BM⊎
-SBM⊎ = record { symmetry = {!!} }
+SBM⊎ = record { symmetry = linv≋ sswap+ }
 
 SBM× : Symmetric BM×
-SBM× = record { symmetry = {!!} }
+SBM× = record { symmetry = linv≋ sswap* }
 
 -- And finally the multiplicative structure distributes over the
 -- additive one
@@ -286,43 +300,43 @@ x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] : NaturalIsomorphism r.x⊗[y⊕z] r.[x⊗y]⊕[
 x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
   { F⇒G = record
     { η = λ X → distl {m = X zero}
-    ; commute = {!!}
+    ; commute = λ _ → distl-nat
     }
   ; F⇐G = record
     { η = λ X → factorl {m = X zero}
-    ; commute = {!!}
+    ; commute = λ _ → factorl-nat
     }
-  ; iso = λ X → record { isoˡ = {!!} 
-                       ; isoʳ = {!!} }
+  ; iso = λ X → record { isoˡ = linv≋ distl 
+                       ; isoʳ = rinv≋ distl }
   }
 
 [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] : NaturalIsomorphism r.[x⊕y]⊗z r.[x⊗z]⊕[y⊗z]
 [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] = record
   { F⇒G = record
     { η = λ X → dist {m = X zero}
-    ; commute = {!!}
+    ; commute = λ _ → dist-nat
     }
   ; F⇐G = record
     { η = λ X → factor {m = X zero}
-    ; commute = {!!}
+    ; commute = λ _ → factor-nat
     }
-  ; iso = λ X → record { isoˡ = {!!}
-                       ; isoʳ = {!!} }
+  ; iso = λ X → record { isoˡ = linv≋ dist
+                       ; isoʳ = rinv≋ dist }
   }
 
 x⊗0≡0 : NaturalIsomorphism r.x⊗0 r.0↑
 x⊗0≡0 = record
   { F⇒G = record
     { η = λ X → distzr {m = X zero}
-    ; commute = {!!}
+    ; commute = λ _ → distzr-nat
     }
   ; F⇐G = record
     { η = λ X → factorzr {n = X zero}
-    ; commute = {!!}
+    ; commute = λ _ → factorzr-nat
     }
   ; iso = λ X → record
-    { isoˡ = {!!} 
-    ; isoʳ = {!!} 
+    { isoˡ = linv≋ distzr 
+    ; isoʳ = rinv≋ distzr 
     }
   }
 
@@ -330,15 +344,15 @@ x⊗0≡0 = record
 0⊗x≡0 = record
   { F⇒G = record
     { η = λ X → distz {m = X zero}
-    ; commute = {!!}
+    ; commute = λ _ → distz-nat
     }
   ; F⇐G = record
     { η = λ X → factorz {m = X zero}
-    ; commute = {!!}
+    ; commute = λ _ → factorz-nat
     }
   ; iso = λ X → record
-    { isoˡ = {!!}
-    ; isoʳ = {!!}
+    { isoˡ = linv≋ distz
+    ; isoʳ = rinv≋ distz
     }
   }
 
@@ -348,21 +362,19 @@ TERig = record
   ; distribᵣ = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z]
   ; annₗ = 0⊗x≡0
   ; annᵣ = x⊗0≡0
-  ; laplazaI = {!!}
-  ; laplazaII = {!!}
-  ; laplazaIV = {!!}
-  ; laplazaVI = {!!}
-  ; laplazaIX = {!!}
-  ; laplazaX = {!!}
-  ; laplazaXI = {!!}
-  ; laplazaXIII = {!!}
-  ; laplazaXV = {!!}
-  ; laplazaXVI = {!!}
-  ; laplazaXVII = {!!}
-  ; laplazaXIX = {!!}
-  ; laplazaXXIII = {!!}
+  ; laplazaI = A×[B⊎C]≃[A×C]⊎[A×B]
+  ; laplazaII = [A⊎B]×C≃[C×A]⊎[C×B]
+  ; laplazaIV = [A⊎B⊎C]×D≃[A×D⊎B×D]⊎C×D
+  ; laplazaVI = A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D
+  ; laplazaIX = [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D
+  ; laplazaX = 0×0≃0
+  ; laplazaXI = 0×[A⊎B]≃0
+  ; laplazaXIII = 0×1≃0
+  ; laplazaXV = A×0≃0
+  ; laplazaXVI = 0×A×B≃0
+  ; laplazaXVII = A×0×B≃0
+  ; laplazaXIX = A×[0+B]≃A×B
+  ; laplazaXXIII = 1×[A⊎B]≃A⊎B
   }
-
---}
 
 ------------------------------------------------------------------------------
