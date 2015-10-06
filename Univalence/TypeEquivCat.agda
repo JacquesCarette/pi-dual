@@ -296,7 +296,7 @@ x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
   ; iso = λ X → record { isoˡ = linv≋ distlequiv
                        ; isoʳ = rinv≋ distlequiv }
   }
-{-
+
 [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] : NaturalIsomorphism r.[x⊕y]⊗z r.[x⊗z]⊕[y⊗z]
 [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] = record
   { F⇒G = record
@@ -310,7 +310,7 @@ x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
   ; iso = λ X → record { isoˡ = linv≋ distequiv
                        ; isoʳ = rinv≋ distequiv }
   }
-
+{-
 x⊗0≡0 : NaturalIsomorphism r.x⊗0 r.0↑
 x⊗0≡0 = record
   { F⇒G = record

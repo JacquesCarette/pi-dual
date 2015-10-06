@@ -382,17 +382,39 @@ factorl-nat {A} {B} {C} {D} {E} {F} {f} {g} {h} = -- flip-sym≋ distl-nat
      (β₂ ⊙ cong∘r distlDEF (β⊎₂ {f = f ×≃ g} {f ×≃ h} ⊙ (β×₂ ⊎∼ β×₂)) ⊙
      sym∼ distl-coh ⊙ 
      ! (β₂ ⊙ cong∘l distlABC (β×₂ {f = f} {g ⊎≃ h} ⊙ (refl∼ ×∼ β⊎₂))))
-{-
+
 dist-nat : {A B C D E F : Set} →
   {f : A ≃ D} {g : B ≃ E} {h : C ≃ F} →
   distequiv ● ((f ⊎≃ g) ×≃ h) ≋ ((f ×≃ h) ⊎≃ (g ×≃ h)) ● distequiv
-dist-nat = eq dist-coh factor-coh
+dist-nat {A} {B} {C} {D} {E} {F} {f} {g} {h} = -- eq dist-coh factor-coh
+  let distDEF = proj₁ (distequiv {D} {E} {F}) in
+  let distABC = proj₁ (distequiv {A} {B} {C}) in
+  let factorDEF = gg (distequiv {D} {E} {F}) in
+  let factorABC = gg (distequiv {A} {B} {C}) in
+  eq (β₁ ⊙ cong∘l distDEF (β×₁ ⊙ (β⊎₁ ×∼ refl∼)) ⊙
+      dist-coh ⊙
+      ! (β₁ ⊙ cong∘r distABC (β⊎₁ ⊙ (β×₁ ⊎∼ β×₁))))
+      --
+     (β₂ ⊙ cong∘r factorDEF (β×₂ {f = f ⊎≃ g} {h} ⊙ (β⊎₂ ×∼ refl∼)) ⊙
+      factor-coh ⊙
+      ! (β₂ ⊙ cong∘l factorABC (β⊎₂ {f = f ×≃ h} {g ×≃ h} ⊙ (β×₂ ⊎∼ β×₂))))     
 
 factor-nat : {A B C D E F : Set} →
   {f : A ≃ D} {g : B ≃ E} {h : C ≃ F} →
   factorequiv ● ((f ×≃ h) ⊎≃ (g ×≃ h)) ≋ ((f ⊎≃ g) ×≃ h) ● factorequiv
-factor-nat = flip-sym≋ dist-nat
-
+factor-nat {A} {B} {C} {D} {E} {F} {f} {g} {h} = -- flip-sym≋ dist-nat
+  let factorDEF = proj₁ (factorequiv {D} {E} {F}) in
+  let factorABC = proj₁ (factorequiv {A} {B} {C}) in
+  let distDEF = gg (factorequiv {D} {E} {F}) in
+  let distABC = gg (factorequiv {A} {B} {C}) in
+  eq (β₁ ⊙ cong∘l factorDEF (β⊎₁ ⊙ (β×₁ ⊎∼ β×₁)) ⊙
+      sym∼ factor-coh ⊙
+      ! (β₁ ⊙ cong∘r factorABC (β×₁ ⊙ (β⊎₁ ×∼ refl∼)) ))
+     --
+     (β₂ ⊙ cong∘r distDEF (β⊎₂ {f = f ×≃ h} {g ×≃ h} ⊙ (β×₂ ⊎∼ β×₂)) ⊙
+     sym∼ dist-coh ⊙ 
+     ! (β₂ ⊙ cong∘l distABC (β×₂ {f = f ⊎≃ g} {h} ⊙ (β⊎₂ ×∼ refl∼))))
+{-
 -- note how we don't use id≃ but an arbitrary ⊥ ≃ ⊥.
 -- because this law under-specifies f and g, we need to
 -- be explicit in our calls
