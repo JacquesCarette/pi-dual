@@ -277,7 +277,7 @@ SBM⊎ = record { symmetry = linv≋ swap₊equiv }
 
 SBM× : Symmetric BM×
 SBM× = record { symmetry = linv≋ swap⋆equiv }
-{-
+
 -- And finally the multiplicative structure distributes over the
 -- additive one
 
@@ -286,17 +286,17 @@ module r = BimonoidalHelperFunctors BM⊎ BM×
 x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] : NaturalIsomorphism r.x⊗[y⊕z] r.[x⊗y]⊕[x⊗z]
 x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
   { F⇒G = record
-    { η = λ X → distlequiv
-    ; commute = λ f → distl-nat
+    { η = λ X → distlequiv {X zero} {X one} {X two}
+    ; commute = λ f → distl-nat {f = f zero} {f one} {f two}
     }
   ; F⇐G = record
-    { η = λ X → factorlequiv
-    ; commute = λ f → factorl-nat
+    { η = λ X → factorlequiv {X zero} {X one} {X two}
+    ; commute = λ f → factorl-nat {f = f zero} {f one} {f two}
     }
   ; iso = λ X → record { isoˡ = linv≋ distlequiv
                        ; isoʳ = rinv≋ distlequiv }
   }
-
+{-
 [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] : NaturalIsomorphism r.[x⊕y]⊗z r.[x⊗z]⊕[y⊗z]
 [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] = record
   { F⇒G = record

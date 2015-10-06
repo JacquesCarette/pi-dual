@@ -2,7 +2,7 @@
 
 module TypeEquivEquiv where
 
-open import Equiv 
+open import Equiv
   using (refl∼; sym∼; trans∼; sym≃; 
     _⊎≃_; id≃; _≃_; _●_; _×≃_; qinv; gg;
     β⊎₁; β⊎₂; β₁; β₂; cong∘l; cong∘r; cong₂∘; β×₁; β×₂)
@@ -113,8 +113,7 @@ assocr₊-nat {A} {B} {C} {D} {E} {F} {f₀} {f₁} {f₂} =
   let assocrABC = proj₁ (assocr₊equiv {A} {B} {C}) in
   let assoclDEF = gg (assocr₊equiv {D} {E} {F}) in
   let assoclABC = gg (assocr₊equiv {A} {B} {C}) in
-  eq (β₁ ⊙ cong∘l assocrDEF β⊎₁ ⊙
-           cong∘l assocrDEF (β⊎₁ ⊎∼ refl∼) ⊙
+  eq (β₁ ⊙ cong∘l assocrDEF (β⊎₁ ⊙ (β⊎₁ ⊎∼ refl∼)) ⊙
            assocr₊-wf ⊙
            ! cong∘r assocrABC (refl∼ ⊎∼ β⊎₁) ⊙
            ! cong∘r assocrABC β⊎₁ ⊙ ! β₁)
@@ -360,21 +359,30 @@ distl-nat {A} {B} {C} {D} {E} {F} {f} {g} {h} = -- eq distl-coh factorl-coh
   let distlABC = proj₁ (distlequiv {A} {B} {C}) in
   let factorlDEF = gg (distlequiv {D} {E} {F}) in
   let factorlABC = gg (distlequiv {A} {B} {C}) in
-  eq (β₁ ⊙ cong∘l distlDEF β×₁ ⊙ cong∘l distlDEF (refl∼ ×∼ β⊎₁) ⊙
+  eq (β₁ ⊙ cong∘l distlDEF (β×₁ ⊙ (refl∼ ×∼ β⊎₁)) ⊙
       distl-coh ⊙
-      ! (β₁ ⊙ cong∘r distlABC β⊎₁ ⊙ cong∘r distlABC (β×₁ ⊎∼ β×₁)))
-     (β₂ ⊙ cong∘r factorlDEF β×₂ ⊙
-           cong∘r factorlDEF (refl∼ {f = gg f} ×∼ β⊎₂ {f = g} {h}) ⊙
+      ! (β₁ ⊙ cong∘r distlABC (β⊎₁ ⊙ (β×₁ ⊎∼ β×₁))))
+      --
+     (β₂ ⊙ cong∘r factorlDEF (β×₂ {f = f} {g ⊎≃ h} ⊙ (refl∼ ×∼ β⊎₂)) ⊙
       factorl-coh ⊙
-      ! (β₂ ⊙ cong∘l factorlABC (β⊎₂ {f = f ×≃ g} {f ×≃ h}) ⊙
-              cong∘l factorlABC (β×₂ ⊎∼ β×₂)))
-     
-{-
+      ! (β₂ ⊙ cong∘l factorlABC (β⊎₂ {f = f ×≃ g} {f ×≃ h} ⊙ (β×₂ ⊎∼ β×₂))))     
+
 factorl-nat : {A B C D E F : Set} →
   {f : A ≃ D} {g : B ≃ E} {h : C ≃ F} →
    factorlequiv ● ((f ×≃ g) ⊎≃ (f ×≃ h)) ≋ (f ×≃ (g ⊎≃ h)) ● factorlequiv
-factorl-nat = flip-sym≋ distl-nat
-
+factorl-nat {A} {B} {C} {D} {E} {F} {f} {g} {h} = -- flip-sym≋ distl-nat
+  let factorlDEF = proj₁ (factorlequiv {D} {E} {F}) in
+  let factorlABC = proj₁ (factorlequiv {A} {B} {C}) in
+  let distlDEF = gg (factorlequiv {D} {E} {F}) in
+  let distlABC = gg (factorlequiv {A} {B} {C}) in
+  eq (β₁ ⊙ cong∘l factorlDEF (β⊎₁ ⊙ (β×₁ ⊎∼ β×₁)) ⊙
+      sym∼ factorl-coh ⊙
+      ! (β₁ ⊙ cong∘r factorlABC (β×₁ ⊙ (refl∼ ×∼ β⊎₁)) ))
+     --
+     (β₂ ⊙ cong∘r distlDEF (β⊎₂ {f = f ×≃ g} {f ×≃ h} ⊙ (β×₂ ⊎∼ β×₂)) ⊙
+     sym∼ distl-coh ⊙ 
+     ! (β₂ ⊙ cong∘l distlABC (β×₂ {f = f} {g ⊎≃ h} ⊙ (refl∼ ×∼ β⊎₂))))
+{-
 dist-nat : {A B C D E F : Set} →
   {f : A ≃ D} {g : B ≃ E} {h : C ≃ F} →
   distequiv ● ((f ⊎≃ g) ×≃ h) ≋ ((f ×≃ h) ⊎≃ (g ×≃ h)) ● distequiv
