@@ -248,7 +248,7 @@ BM⊎ = record
   ; hexagon₁ = assocr₊-swap₊-coh 
   ; hexagon₂ = assocl₊-swap₊-coh 
   }
-{-
+
 x×y≈y×x : NaturalIsomorphism ×h.x⊗y ×h.y⊗x
 x×y≈y×x = record
   { F⇒G = record
@@ -277,7 +277,7 @@ SBM⊎ = record { symmetry = linv≋ swap₊equiv }
 
 SBM× : Symmetric BM×
 SBM× = record { symmetry = linv≋ swap⋆equiv }
-
+{-
 -- And finally the multiplicative structure distributes over the
 -- additive one
 
