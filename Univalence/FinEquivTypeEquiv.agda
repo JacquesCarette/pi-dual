@@ -37,8 +37,6 @@ m fin≃ n = Fin m ≃ Fin n
 
 module PlusE where
 
- abstract
-
   infix 9 _+F_
   
   -- additive monoid equivalences
@@ -69,26 +67,22 @@ module PlusE where
               Fin (m + o) ≃ Fin (n + p)
   Fm≃Fn +F Fo≃Fp = ⊎≃+ ● Fm≃Fn ⊎≃ Fo≃Fp ● +≃⊎
 
- -- end of abstract block
+  uniti+ : {m : ℕ} → Fin m ≃ Fin (0 + m)
+  uniti+ = sym≃ unite+
 
- uniti+ : {m : ℕ} → Fin m ≃ Fin (0 + m)
- uniti+ = sym≃ unite+
+  uniti+r : {m : ℕ} → Fin m ≃ Fin (m + 0)
+  uniti+r = sym≃ unite+r
 
- uniti+r : {m : ℕ} → Fin m ≃ Fin (m + 0)
- uniti+r = sym≃ unite+r
+  assocr+ : {m n o : ℕ} → Fin ((m + n) + o) ≃ Fin (m + (n + o))
+  assocr+ {m} = sym≃ (assocl+ {m})
 
- assocr+ : {m n o : ℕ} → Fin ((m + n) + o) ≃ Fin (m + (n + o))
- assocr+ {m} = sym≃ (assocl+ {m})
-
- sswap+ : {m n : ℕ} → Fin (n + m) ≃ Fin (m + n)
- sswap+ {m} {n} = sym≃ (swap+ {m} {n})
+  sswap+ : {m n : ℕ} → Fin (n + m) ≃ Fin (m + n)
+  sswap+ {m} {n} = sym≃ (swap+ {m} {n})
 
 -----------------------------------------------------------------------------
 -- Multiplicative monoid
 
 module TimesE where
-
- abstract
 
   infixl 7 _*F_
   
@@ -120,26 +114,22 @@ module TimesE where
               Fin (m * o) ≃ Fin (n * p)
   Fm≃Fn *F Fo≃Fp = ×≃* ● Fm≃Fn ×≃ Fo≃Fp ● *≃×
 
- -- end of abstract block
+  uniti* : {m : ℕ} → Fin m ≃ Fin (1 * m)
+  uniti* = sym≃ unite*
 
- uniti* : {m : ℕ} → Fin m ≃ Fin (1 * m)
- uniti* = sym≃ unite*
+  uniti*r : {m : ℕ} → Fin m ≃ Fin (m * 1)
+  uniti*r = sym≃ unite*r
 
- uniti*r : {m : ℕ} → Fin m ≃ Fin (m * 1)
- uniti*r = sym≃ unite*r
+  assocr* : {m n o : ℕ} → Fin ((m * n) * o) ≃ Fin (m * (n * o))
+  assocr* {m} {n} {o} = sym≃ (assocl* {m})
 
- assocr* : {m n o : ℕ} → Fin ((m * n) * o) ≃ Fin (m * (n * o))
- assocr* {m} {n} {o} = sym≃ (assocl* {m})
-
- sswap* : {m n : ℕ} → Fin (n * m) ≃ Fin (m * n)
- sswap* {m} {n} = sym≃ (swap* {m} {n})
+  sswap* : {m n : ℕ} → Fin (n * m) ≃ Fin (m * n)
+  sswap* {m} {n} = sym≃ (swap* {m} {n})
 
 ------------------------------------------------------------------------------
 -- Distributivity of multiplication over addition
 
 module PlusTimesE where
-
- abstract
 
   -- now that we have two monoids, we need to check distributivity
 
@@ -148,9 +138,6 @@ module PlusTimesE where
   distz : {m : ℕ} → Fin (0 * m) ≃ Fin 0
   distz {m} = sym≃ F0≃⊥ ● distzequiv ● F0≃⊥ ×≃ id≃ ● *≃× {0} {m}
     where open Times
-
-  factorz : {m : ℕ} → Fin 0 ≃ Fin (0 * m)
-  factorz {m} = sym≃ (distz {m})
 
   distzr : {m : ℕ} → Fin (m * 0) ≃ Fin 0
   distzr {m} = sym≃ F0≃⊥ ● distzrequiv ● id≃ ×≃ F0≃⊥ ● *≃× {m} {0}
@@ -166,16 +153,17 @@ module PlusTimesE where
     where open Plus
           open Times
 
- -- end of abstract block
+  factorzr : {n : ℕ} → Fin 0 ≃ Fin (n * 0)
+  factorzr {n} = sym≃ (distzr {n})
 
- factorzr : {n : ℕ} → Fin 0 ≃ Fin (n * 0)
- factorzr {n} = sym≃ (distzr {n})
+  factorz : {m : ℕ} → Fin 0 ≃ Fin (0 * m)
+  factorz {m} = sym≃ (distz {m})
 
- factor : {m n o : ℕ} → Fin ((m * o) + (n * o)) ≃ Fin ((m + n) * o) 
- factor {m} = sym≃ (dist {m}) 
+  factor : {m n o : ℕ} → Fin ((m * o) + (n * o)) ≃ Fin ((m + n) * o) 
+  factor {m} = sym≃ (dist {m}) 
 
- factorl : {m n o : ℕ} → Fin ((m * n) + (m * o)) ≃ Fin (m * (n + o)) 
- factorl {m} = sym≃ (distl {m}) 
+  factorl : {m n o : ℕ} → Fin ((m * n) + (m * o)) ≃ Fin (m * (n + o)) 
+  factorl {m} = sym≃ (distl {m}) 
 
 ------------------------------------------------------------------------------
 -- Summarizing... we have a commutative semiring structure

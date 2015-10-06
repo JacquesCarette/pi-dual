@@ -45,14 +45,31 @@ open TimesE using (_*F_; unite*; uniti*; unite*r; uniti*r;
 open PlusTimesE using (distz; factorz; distzr; factorzr;
                        dist; factor; distl; factorl)
 open import FinEquivEquiv
-  using ([id+id]≋id; +●≋●+; _+≋_;
-         unite₊-nat; unite₊r-nat; uniti₊-nat; uniti₊r-nat;
-         assocr₊-nat; assocl₊-nat; unite-assocr₊-coh; assocr₊-coh;
-         swap₊-nat; sswap₊-nat; assocr₊-swap₊-coh; assocl₊-swap₊-coh; 
-         id*id≋id; *●≋●*; _*≋_;
-         unite*-nat; unite*r-nat; uniti*-nat; uniti*r-nat;
-         assocr*-nat; assocl*-nat; unite-assocr*-coh; assocr*-coh;
-         swap*-nat; sswap*-nat; assocr*-swap*-coh; assocl*-swap*-coh)
+  using (
+    [id+id]≋id; +●≋●+; _+≋_;
+    unite₊-nat; unite₊r-nat; uniti₊-nat; uniti₊r-nat;
+    assocr₊-nat; assocl₊-nat; unite-assocr₊-coh; assocr₊-coh;
+    swap₊-nat; sswap₊-nat; assocr₊-swap₊-coh; assocl₊-swap₊-coh; 
+    id*id≋id; *●≋●*; _*≋_;
+    unite*-nat; unite*r-nat; uniti*-nat; uniti*r-nat;
+    assocr*-nat; assocl*-nat; unite-assocr*-coh; assocr*-coh;
+    swap*-nat; sswap*-nat; assocr*-swap*-coh; assocl*-swap*-coh;
+    distl-nat; factorl-nat; dist-nat; factor-nat;
+    distzr-nat; factorzr-nat; distz-nat; factorz-nat;
+    A×[B⊎C]≃[A×C]⊎[A×B]; 
+    [A⊎B]×C≃[C×A]⊎[C×B]; 
+    [A⊎B⊎C]×D≃[A×D⊎B×D]⊎C×D; 
+    A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D; 
+    [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D;
+    0×0≃0;
+    0×[A⊎B]≃0;
+    0×1≃0;
+    A×0≃0;
+    0×A×B≃0;
+    A×0×B≃0;
+    A×[0+B]≃A×B;
+    1×[A⊎B]≃A⊎B
+  )
 
 ------------------------------------------------------------------------------
 -- Fin and type equivalences are a category
@@ -283,43 +300,43 @@ x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] : NaturalIsomorphism r.x⊗[y⊕z] r.[x⊗y]⊕[
 x⊗[y⊕z]≡[x⊗y]⊕[x⊗z] = record
   { F⇒G = record
     { η = λ X → distl {m = X zero}
-    ; commute = {!!}
+    ; commute = λ _ → distl-nat
     }
   ; F⇐G = record
     { η = λ X → factorl {m = X zero}
-    ; commute = {!!}
+    ; commute = λ _ → factorl-nat
     }
-  ; iso = λ X → record { isoˡ = {!!} 
-                       ; isoʳ = {!!} }
+  ; iso = λ X → record { isoˡ = linv≋ distl 
+                       ; isoʳ = rinv≋ distl }
   }
 
 [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] : NaturalIsomorphism r.[x⊕y]⊗z r.[x⊗z]⊕[y⊗z]
 [x⊕y]⊗z≡[x⊗z]⊕[y⊗z] = record
   { F⇒G = record
     { η = λ X → dist {m = X zero}
-    ; commute = {!!}
+    ; commute = λ _ → dist-nat
     }
   ; F⇐G = record
     { η = λ X → factor {m = X zero}
-    ; commute = {!!}
+    ; commute = λ _ → factor-nat
     }
-  ; iso = λ X → record { isoˡ = {!!}
-                       ; isoʳ = {!!} }
+  ; iso = λ X → record { isoˡ = linv≋ dist
+                       ; isoʳ = rinv≋ dist }
   }
 
 x⊗0≡0 : NaturalIsomorphism r.x⊗0 r.0↑
 x⊗0≡0 = record
   { F⇒G = record
     { η = λ X → distzr {m = X zero}
-    ; commute = {!!}
+    ; commute = λ _ → distzr-nat
     }
   ; F⇐G = record
     { η = λ X → factorzr {n = X zero}
-    ; commute = {!!}
+    ; commute = λ _ → factorzr-nat
     }
   ; iso = λ X → record
-    { isoˡ = {!!} 
-    ; isoʳ = {!!} 
+    { isoˡ = linv≋ distzr 
+    ; isoʳ = rinv≋ distzr 
     }
   }
 
@@ -327,15 +344,15 @@ x⊗0≡0 = record
 0⊗x≡0 = record
   { F⇒G = record
     { η = λ X → distz {m = X zero}
-    ; commute = {!!}
+    ; commute = λ _ → distz-nat
     }
   ; F⇐G = record
     { η = λ X → factorz {m = X zero}
-    ; commute = {!!}
+    ; commute = λ _ → factorz-nat
     }
   ; iso = λ X → record
-    { isoˡ = {!!}
-    ; isoʳ = {!!}
+    { isoˡ = linv≋ distz
+    ; isoʳ = rinv≋ distz
     }
   }
 
@@ -345,19 +362,19 @@ TERig = record
   ; distribᵣ = [x⊕y]⊗z≡[x⊗z]⊕[y⊗z]
   ; annₗ = 0⊗x≡0
   ; annᵣ = x⊗0≡0
-  ; laplazaI = {!!}
-  ; laplazaII = {!!}
-  ; laplazaIV = {!!}
-  ; laplazaVI = {!!}
-  ; laplazaIX = {!!}
-  ; laplazaX = {!!}
-  ; laplazaXI = {!!}
-  ; laplazaXIII = {!!}
-  ; laplazaXV = {!!}
-  ; laplazaXVI = {!!}
-  ; laplazaXVII = {!!}
-  ; laplazaXIX = {!!}
-  ; laplazaXXIII = {!!}
+  ; laplazaI = A×[B⊎C]≃[A×C]⊎[A×B]
+  ; laplazaII = [A⊎B]×C≃[C×A]⊎[C×B]
+  ; laplazaIV = [A⊎B⊎C]×D≃[A×D⊎B×D]⊎C×D
+  ; laplazaVI = A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D
+  ; laplazaIX = [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D
+  ; laplazaX = 0×0≃0
+  ; laplazaXI = 0×[A⊎B]≃0
+  ; laplazaXIII = 0×1≃0
+  ; laplazaXV = A×0≃0
+  ; laplazaXVI = 0×A×B≃0
+  ; laplazaXVII = A×0×B≃0
+  ; laplazaXIX = A×[0+B]≃A×B
+  ; laplazaXXIII = 1×[A⊎B]≃A⊎B
   }
 
 ------------------------------------------------------------------------------
