@@ -326,7 +326,7 @@ x⊗0≡0 = record
     ; isoʳ = rinv≋ distzrequiv
     }
   }
-{-
+
 0⊗x≡0 : NaturalIsomorphism r.0⊗x r.0↑
 0⊗x≡0 = record
   { F⇒G = record
@@ -342,7 +342,7 @@ x⊗0≡0 = record
     ; isoʳ = rinv≋ distzequiv
     }
   }
-
+{-
 TERig : RigCategory SBM⊎ SBM×
 TERig = record
   -- new combinators

@@ -427,23 +427,27 @@ distzr-nat {f = (f , qinv h _ _)} {(_ , qinv g _ _)} =
 
 factorzr-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
   factorzrequiv ● g ≋ (f ×≃ g) ● factorzrequiv
-factorzr-nat {f = f} = -- flip-sym≋ (distzr-nat {f = sym≃ f})
-  eq (β₁ ⊙ sym∼ (factorzr-coh {f = proj₁ f}) ⊙
+factorzr-nat {f = f , qinv f⁻¹ _ _} = -- flip-sym≋ (distzr-nat {f = sym≃ f})
+  eq (β₁ ⊙ sym∼ (factorzr-coh {f = f}) ⊙
      ! (β₁ ⊙ cong∘r (proj₁ factorzrequiv) β×₁) )
      --
-     (β₂ ⊙ sym∼ (distzr-coh {f = gg f}) ⊙
+     (β₂ ⊙ sym∼ (distzr-coh {f = f⁻¹}) ⊙
      ! (β₂ ⊙ cong∘l (gg factorzrequiv) β×₂))
-{-
+
 -- same comment as above
 distz-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
   distzequiv ● (g ×≃ f) ≋ g ● distzequiv
 distz-nat {f = (f , qinv h _ _)} {(_ , qinv g _ _)} =
-  eq (distz-coh {f = f}) (factorz-coh {f = h} {g})
-
+  eq (β₁ ⊙ cong∘l (proj₁ distzequiv) β×₁ ⊙ distz-coh {f = f} ⊙ ! β₁)
+     (β₂ ⊙ cong∘r (gg distzequiv) β×₂ ⊙ factorz-coh {f = h} ⊙ ! β₂)
+     
 factorz-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
   factorzequiv ● g ≋ (g ×≃ f) ● factorzequiv
-factorz-nat {f = f} = flip-sym≋ (distz-nat {f = sym≃ f})
-
+factorz-nat {f = (f , qinv f⁻¹ _ _)} =
+  eq (β₁ ⊙ (sym∼ (factorz-coh {f = f})) ⊙
+        ! (β₁ ⊙ cong∘r (proj₁ factorzequiv) β×₁))
+     (β₂ ⊙ (sym∼ (distz-coh {f = f⁻¹})) ⊙ ! (β₂ ⊙ cong∘l (gg factorzequiv) β×₂))
+{-
 ------------------------------------------
 -- some equivalences for which there are two 'obvious'
 -- programs, but are in fact equivalent.  Named after
