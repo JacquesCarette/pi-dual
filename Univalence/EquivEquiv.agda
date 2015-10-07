@@ -103,17 +103,15 @@ rid≋ : ∀ {ℓ} {A B : Set ℓ} {f : A ≃ B} → (f ● id≃) ≋ f
 rid≋ = eq β₁ β₂
 
 --
-
-{--
-not needed: equivalent to id≋ 
-
+{-
 symsym : ∀ {A B : Set} {f : A ≃ B} → sym≃ (sym≃ f) ≋ f
 symsym = eq (λ _ → P.refl) (λ _ → P.refl)  
+-}
 
 sym≃● : ∀ {A B C : Set} {g : B ≃ C} {f : A ≃ B} →
         sym≃ (g ● f) ≋ sym≃ f ● sym≃ g
-sym≃● = eq (λ _ → P.refl) (λ _ → P.refl) 
---}
+sym≃● {g = (g , qinv g⁻¹ _ _)} {(f , qinv f⁻¹ _ _)} =
+  eq (trans∼ β₂ (sym∼ β₁)) (trans∼ β₁ (sym∼ β₂)) 
 
 -- underlying it all, it uses ∘ and ≡, thus associativity is immediate
 

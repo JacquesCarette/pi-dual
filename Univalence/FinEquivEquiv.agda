@@ -124,44 +124,31 @@ _+≋_ {A} {B} {C} {D} {f₁} {g₁} {f₂} {g₂} f₁≋g₁ f₂≋g₂ =
 unite₊-nat : {m n : ℕ} {f : m fin≃ n} →
   unite+ ● (id0≃ +F f) ≋ f ● unite+
 unite₊-nat {m} {n} {f} =
-  let rhs≋ = id≋ {x = (id≃ ⊎≃ f) ● +≃⊎} in
-  let f≋ = id≋ {x = ⊎≃+ {m} {n}} in
-  let g≋ = id≋ {x = +≃⊎} in
   begin (
     unite+ ● (id0≃ +F f) 
       ≋⟨ id≋ ⟩ 
     (unite₊equiv ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎) ● ⊎≃+ ● ((id≃ ⊎≃ f) ● +≃⊎)
-      -- ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩
       ≋⟨ ●-assocl {f = (id≃ ⊎≃ f) ● +≃⊎} {⊎≃+} {unite₊equiv ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎} ⟩
-    ((unite₊equiv ● ((F0≃⊥ ⊎≃ id≃) ● +≃⊎)) ● ⊎≃+) ● (id≃ ⊎≃ f) ● +≃⊎
-      ≋⟨ {!!} ⟩
-{-
-      -- ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩
-      ≋⟨ (●-assocl {f = +≃⊎} {F0≃⊥ ⊎≃ id≃} {unite₊equiv} ◎ f≋ ) ◎ rhs≋ ⟩
-    (((unite₊equiv ● (F0≃⊥ ⊎≃ id≃)) ● +≃⊎) ● ⊎≃+) ● (id≃ ⊎≃ f) ● +≃⊎
-      ≋⟨ sym≋ (intro-inv-r+ (unite₊equiv ● (F0≃⊥ ⊎≃ id≃))) ◎ ? ⟩
+    ((unite₊equiv ● ((F0≃⊥ ⊎≃ id≃) ● +≃⊎)) ● ⊎≃+) ● ((id≃ ⊎≃ f) ● +≃⊎)
+      ≋⟨ (●-assocl ◎ id≋) ◎ id≋ ⟩
+    (((unite₊equiv ● (F0≃⊥ ⊎≃ id≃)) ● +≃⊎) ● ⊎≃+) ● (id≃ ⊎≃ f) ● +≃⊎ 
+      ≋⟨ sym≋ (intro-inv-r+ (unite₊equiv ● (F0≃⊥ ⊎≃ id≃))) ◎ id≋ ⟩
     (unite₊equiv ● (F0≃⊥ ⊎≃ id≃)) ● (id≃ ⊎≃ f) ● +≃⊎
---      ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩
-      ≋⟨ ●-assocl {f = +≃⊎} {id≃ ⊎≃ f} {unite₊equiv ● (F0≃⊥ ⊎≃ id≃)} ⟩
+      ≋⟨ ●-assocl ⟩
     ((unite₊equiv ● (F0≃⊥ ⊎≃ id≃)) ● (id≃ ⊎≃ f)) ● +≃⊎
---      ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩
-      ≋⟨ ●-assoc {f = id≃ ⊎≃ f} {F0≃⊥ ⊎≃ id≃} {unite₊equiv} ◎ g≋ ⟩
+      ≋⟨ ●-assoc ◎ id≋ ⟩
     (unite₊equiv ● (F0≃⊥ ⊎≃ id≃) ● (id≃ ⊎≃ f)) ● +≃⊎
-      ≋⟨ (id≋ {x = unite₊equiv} ◎ (T.[g+1]●[1+f]≋[1+f]●[g+1] {f = f} {F0≃⊥})) ◎ g≋ ⟩
+      ≋⟨ (id≋ ◎ (T.[g+1]●[1+f]≋[1+f]●[g+1] {f = f} {F0≃⊥})) ◎ id≋ ⟩
     (unite₊equiv ● ((id≃ ⊎≃ f) ● (F0≃⊥ ⊎≃ id≃))) ● +≃⊎
---      ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩
-      ≋⟨ ●-assocl {f = F0≃⊥ ⊎≃ id≃} {id≃ ⊎≃ f} {unite₊equiv} ◎ g≋ ⟩
+      ≋⟨ ●-assocl ◎ id≋ ⟩
     ((unite₊equiv ● (id≃ ⊎≃ f)) ● (F0≃⊥ ⊎≃ id≃)) ● +≃⊎
---      ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩
-      ≋⟨ ●-assoc {f = +≃⊎} {F0≃⊥ ⊎≃ id≃} {unite₊equiv ● (id≃ ⊎≃ f)} ⟩
-    (unite₊equiv ● (id≃ ⊎≃ f)) ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎ 
-      ≋⟨ T.unite₊-nat ◎ id≋ {x = (F0≃⊥ ⊎≃ id≃) ● +≃⊎} ⟩
+      ≋⟨ ●-assoc ⟩
+    (unite₊equiv ● (id≃ ⊎≃ f)) ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎
+      ≋⟨ T.unite₊-nat ◎ id≋ ⟩
     (f ● unite₊equiv) ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎
---      ≋⟨ eq (λ _ → P.refl) (λ _ → P.refl) ⟩
-      ≋⟨ ●-assoc {f = (F0≃⊥ ⊎≃ id≃) ● +≃⊎} {unite₊equiv} {f} ⟩
+      ≋⟨ ●-assoc ⟩
     f ● unite₊equiv ● (F0≃⊥ ⊎≃ id≃) ● +≃⊎
       ≋⟨ id≋ ⟩
--}
     f ● unite+ ∎)
   where open ≋-Reasoning
 
@@ -172,12 +159,16 @@ sym+F {f = f} {g = g} =
   begin (
     sym≃ (f +F g) 
       ≋⟨ id≋ ⟩
-    {!!}
-      ≋⟨ {!!} ⟩ {-
+    sym≃ (⊎≃+ ● (f ⊎≃ g ● +≃⊎))
+      ≋⟨ sym≃● ⟩
+    sym≃ (f ⊎≃ g ● +≃⊎) ● sym≃ ⊎≃+
+      ≋⟨ sym≃● ◎ id≋ ⟩
+    (sym≃ +≃⊎ ● sym≃ (f ⊎≃ g)) ● sym≃ ⊎≃+ {-
     (sym≃ +≃⊎ ● (sym≃ f ⊎≃ sym≃ g)) ● sym≃ ⊎≃+
-      ≋⟨ ●-assoc {f = sym≃ ⊎≃+} {g = (sym≃ f ⊎≃ sym≃ g)} {h = sym≃ +≃⊎} ⟩ 
+      ≋⟨ ●-assoc {f = sym≃ ⊎≃+} {g = (sym≃ f ⊎≃ sym≃ g)} {h = sym≃ +≃⊎} ⟩ -}
+      ≋⟨ {!!} ⟩
     sym≃ +≃⊎ ● ((sym≃ f ⊎≃ sym≃ g) ● sym≃ ⊎≃+)
-      ≋⟨ id≋ ⟩ -}
+      ≋⟨ id≋ ⟩
     sym≃ f +F sym≃ g ∎)
   where open ≋-Reasoning
 -- note that the above *also* has 'proof'
@@ -194,11 +185,11 @@ uniti₊-nat {f = f} =
     uniti+ ● f 
       ≋⟨ id≋ ⟩ 
     sym≃ unite+ ● sym≃ (sym≃ f)
-      ≋⟨ {!!} ⟩ 
+      ≋⟨ sym≋ sym≃● ⟩ 
     sym≃ (sym≃ f ● unite+)
       ≋⟨ flip-sym≋ unite₊-nat ⟩ 
     sym≃ (unite+ ● (id0≃ +F sym≃ f))
-      ≋⟨ {!!} ⟩ 
+      ≋⟨ sym≃● ⟩ 
     sym≃ (id0≃ +F sym≃ f) ● uniti+
       ≋⟨  sym+F ◎ id≋ {x = uniti+} ⟩ 
     (id0≃ +F sym≃ (sym≃ f)) ● uniti+
@@ -217,7 +208,9 @@ unite₊r-nat {m} {n} {f} =
     unite+r ● (f +F id0≃) 
       ≋⟨ id≋ ⟩ 
     (unite₊′equiv ● 1+⊥ ● +≃⊎) ● ⊎≃+ ● (f+1 ● +≃⊎)
-      ≋⟨ {!!} ⟩ -- lots of assoc
+      ≋⟨ ●-assocl ⟩
+    ((unite₊′equiv ● 1+⊥ ● +≃⊎) ● ⊎≃+) ● (f+1 ● +≃⊎)
+      ≋⟨ (●-assocl ◎ id≋) ◎ id≋ ⟩
     (((unite₊′equiv ● 1+⊥) ● +≃⊎) ● ⊎≃+) ● (f+1 ● +≃⊎)
       ≋⟨ sym≋ (intro-inv-r+ (unite₊′equiv ● 1+⊥)) ◎ rhs≋ ⟩
     (unite₊′equiv ● 1+⊥) ● (f+1 ● +≃⊎)
@@ -240,11 +233,11 @@ uniti₊r-nat {f = f} =
     uniti+r ● f 
       ≋⟨ id≋ ⟩
      sym≃ unite+r ● sym≃ (sym≃ f)
-      ≋⟨ {!!} ⟩
+      ≋⟨ sym≋ sym≃● ⟩
      sym≃ (sym≃ f ● unite+r)
       ≋⟨ flip-sym≋ unite₊r-nat ⟩
      sym≃ (unite+r ● (sym≃ f +F id0≃))
-      ≋⟨ {!!} ⟩
+      ≋⟨ sym≃● ⟩
      sym≃ (sym≃ f +F id0≃) ● uniti+r
       ≋⟨ sym+F ◎ id≋ {x = uniti+r} ⟩
      (sym≃ (sym≃ f) +F id0≃) ● uniti+r
