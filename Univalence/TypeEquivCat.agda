@@ -358,16 +358,17 @@ TERig = record
   ; laplazaII = λ {X} → [A⊎B]×C≃[C×A]⊎[C×B] {X zero} {X one} {X two}
   ; laplazaIV = λ {X} → [A⊎B⊎C]×D≃[A×D⊎B×D]⊎C×D {X zero} {X (suc zero)}
                           {X (suc (suc zero))} {X (suc (suc (suc zero)))}
-  ; laplazaVI = {!!} -- A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D
+  ; laplazaVI = λ {X} → A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D {X zero} {X (suc zero)}
+                          {X (suc (suc zero))} {X (suc (suc (suc zero)))}
   ; laplazaIX = {!!} -- [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D
   ; laplazaX = 0×0≃0
   ; laplazaXI = λ {X} → 0×[A⊎B]≃0 {X zero} {X (suc zero)}
   ; laplazaXIII = 0×1≃0
   ; laplazaXV = λ {X} → A×0≃0 {X zero}
-  ; laplazaXVI = {!!} -- 0×A×B≃0
-  ; laplazaXVII = {!!} -- A×0×B≃0
-  ; laplazaXIX = {!!} -- A×[0+B]≃A×B
-  ; laplazaXXIII = {!!} -- 1×[A⊎B]≃A⊎B
+  ; laplazaXVI = λ {X} → 0×A×B≃0 {X zero} {X (suc zero)}
+  ; laplazaXVII = λ {X} → A×0×B≃0 {X zero} {X (suc zero)}
+  ; laplazaXIX = λ {X} → A×[0+B]≃A×B {X zero} {X (suc zero)}
+  ; laplazaXXIII = λ {X} → 1×[A⊎B]≃A⊎B {X zero} {X (suc zero)}
   }
 
 -- Notes from Laplaza, 72

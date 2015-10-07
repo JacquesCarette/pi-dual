@@ -475,12 +475,16 @@ A×[B⊎C]≃[A×C]⊎[A×B] = -- eq A×[B⊎C]→[A×C]⊎[A×B] [A×C]⊎[A×B
      (β₂ ⊙ cong₂∘ (β₂ ⊙ cong∘r (gg distequiv) β×₂) β⊎₂ ⊙
       [A×D⊎B×D]⊎C×D→[A⊎B⊎C]×D ⊙
       ! (β₂ ⊙ cong∘r (gg assocl₊equiv) (β₂ ⊙ cong∘l (gg distequiv) β⊎₂)))
-{-
+
 A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D : {A B C D : Set} →
   distlequiv ● assocl⋆equiv {A} {B} {C ⊎ D} ≋
   (assocl⋆equiv ⊎≃ assocl⋆equiv) ● distlequiv ● (id≃ ×≃ distlequiv)
-A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D = eq A×B×[C⊎D]→[A×B]×C⊎[A×B]×D [A×B]×C⊎[A×B]×D→A×B×[C⊎D]
--}
+A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D =
+  eq (β₁ ⊙ A×B×[C⊎D]→[A×B]×C⊎[A×B]×D ⊙ 
+      ! (β₁ ⊙ cong₂∘ β⊎₁ (β₁ ⊙ cong∘l (proj₁ distlequiv) β×₁)))
+     (β₂ ⊙ [A×B]×C⊎[A×B]×D→A×B×[C⊎D] ⊙ 
+      ! (β₂ ⊙ cong₂∘ (β₂ ⊙ cong∘r (gg distlequiv) β×₂) β⊎₂))
+
 0×0≃0 : distzequiv ≋ distzrequiv
 0×0≃0 = eq 0×0→0 0→0×0
 
@@ -497,24 +501,42 @@ A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D = eq A×B×[C⊎D]→[A×B]×C⊎[A×B]×D
 
 A×0≃0 : {A : Set} → distzrequiv {A} ≋ distzequiv ● swap⋆equiv
 A×0≃0 = eq (A×0→0 ⊙ ! β₁) (0→A×0 ⊙ ! β₂)
-{-
+
 0×A×B≃0 : {A B : Set} →
   distzequiv ≋ distzequiv ● (distzequiv ×≃ id≃) ● assocl⋆equiv {⊥} {A} {B}
-0×A×B≃0 = eq 0×A×B→0 0→0×A×B
+0×A×B≃0 =
+  let distzB = proj₁ distzequiv in
+  let factorzA = gg distzequiv in
+  eq (0×A×B→0 ⊙
+      ! (β₁ ⊙ cong∘l distzB (β₁ ⊙ cong∘r (proj₁ assocl⋆equiv) β×₁)))
+     (0→0×A×B ⊙
+       ! (β₂ ⊙ cong∘r factorzA (β₂ ⊙ cong∘l (gg assocl⋆equiv) β×₂)))
 
 A×0×B≃0 : {A B : Set} →
   distzrequiv ● (id≃ ×≃ distzequiv)  ≋ 
   distzequiv ● (distzrequiv ×≃ id≃) ● assocl⋆equiv {A} {⊥} {B}
-A×0×B≃0 = eq A×0×B→0 0→A×0×B
+A×0×B≃0 =
+  eq (β₁ ⊙ cong∘l (proj₁ distzrequiv) β×₁ ⊙ A×0×B→0 ⊙
+      ! (β₁ ⊙ cong∘l (proj₁ distzequiv)
+                     (β₁ ⊙ cong∘r (proj₁ assocl⋆equiv) β×₁)))
+     (β₂ ⊙ cong∘r (gg distzrequiv) β×₂ ⊙  0→A×0×B ⊙
+      ! (β₂ ⊙ cong∘r (gg distzequiv)
+                      (β₂ ⊙ cong∘l (gg assocl⋆equiv) β×₂)))
 
 A×[0+B]≃A×B : {A B : Set} →
   (id≃ {A = A} ×≃ unite₊equiv {B}) ≋ unite₊equiv ● (distzrequiv ⊎≃ id≃) ● distlequiv
-A×[0+B]≃A×B = eq A×[0+B]→A×B A×B→A×[0+B]
+A×[0+B]≃A×B =
+  eq (β×₁ ⊙ A×[0+B]→A×B ⊙
+      ! (β₁ ⊙ cong∘l (proj₁ unite₊equiv) (β₁ ⊙ cong∘r (proj₁ distlequiv) β⊎₁)))
+     (β×₂ ⊙ A×B→A×[0+B] ⊙
+      ! (β₂ ⊙ cong∘r (gg unite₊equiv) (β₂ ⊙ cong∘l (gg distlequiv) β⊎₂)))
 
 1×[A⊎B]≃A⊎B : {A B : Set} →
   unite⋆equiv ≋ (unite⋆equiv ⊎≃ unite⋆equiv) ● distlequiv {⊤} {A} {B}
-1×[A⊎B]≃A⊎B = eq 1×[A⊎B]→A⊎B A⊎B→1×[A⊎B]
-
+1×[A⊎B]≃A⊎B =
+  eq (1×[A⊎B]→A⊎B ⊙ ! (β₁ ⊙ cong∘r (proj₁ distlequiv) β⊎₁))
+     (A⊎B→1×[A⊎B] ⊙ ! (β₂ ⊙ cong∘l (gg distlequiv) β⊎₂))
+{-
 [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D : {A B C D : Set} →
   assocl₊equiv ● (distequiv ⊎≃ distequiv) ● distlequiv ≋
   (assocl₊equiv ⊎≃ id≃) ● ((id≃ ⊎≃ swap₊equiv) ⊎≃ id≃) ●
