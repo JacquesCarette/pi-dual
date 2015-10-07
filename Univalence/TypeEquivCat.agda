@@ -360,7 +360,8 @@ TERig = record
                           {X (suc (suc zero))} {X (suc (suc (suc zero)))}
   ; laplazaVI = λ {X} → A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D {X zero} {X (suc zero)}
                           {X (suc (suc zero))} {X (suc (suc (suc zero)))}
-  ; laplazaIX = {!!} -- [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D
+  ; laplazaIX = λ {X} → [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D {X zero} {X (suc zero)}
+                          {X (suc (suc zero))} {X (suc (suc (suc zero)))}
   ; laplazaX = 0×0≃0
   ; laplazaXI = λ {X} → 0×[A⊎B]≃0 {X zero} {X (suc zero)}
   ; laplazaXIII = 0×1≃0

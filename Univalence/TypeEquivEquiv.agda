@@ -536,16 +536,30 @@ A×[0+B]≃A×B =
 1×[A⊎B]≃A⊎B =
   eq (1×[A⊎B]→A⊎B ⊙ ! (β₁ ⊙ cong∘r (proj₁ distlequiv) β⊎₁))
      (A⊎B→1×[A⊎B] ⊙ ! (β₂ ⊙ cong∘l (gg distlequiv) β⊎₂))
-{-
+
 [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D : {A B C D : Set} →
   assocl₊equiv ● (distequiv ⊎≃ distequiv) ● distlequiv ≋
   (assocl₊equiv ⊎≃ id≃) ● ((id≃ ⊎≃ swap₊equiv) ⊎≃ id≃) ●
      (assocr₊equiv ⊎≃ id≃) ● assocl₊equiv ● 
         (distlequiv ⊎≃ distlequiv) ● distequiv {A} {B} {C ⊎ D}
 [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D = 
-  eq [A⊎B]×[C⊎D]→[[A×C⊎B×C]⊎A×D]⊎B×D 
-       [[A×C⊎B×C]⊎A×D]⊎B×D→[A⊎B]×[C⊎D]
--}
+  eq (β₁ ⊙ cong∘l (proj₁ assocl₊equiv)
+                  (β₁ ⊙ cong∘r (proj₁ distlequiv) β⊎₁) ⊙
+      [A⊎B]×[C⊎D]→[[A×C⊎B×C]⊎A×D]⊎B×D ⊙
+      ! (β₁ ⊙ cong₂∘ β⊎₁ (β₁ ⊙ cong₂∘ (β⊎₁ ⊙ (β⊎₁ ⊎∼ refl∼))
+              (β₁ ⊙ cong₂∘ β⊎₁ (β₁ ⊙ cong∘l (proj₁ assocl₊equiv)
+                    (β₁ ⊙ cong∘r (proj₁ distequiv) β⊎₁))))))
+      --
+     (β₂ ⊙ cong∘r (gg assocl₊equiv) (β₂ ⊙ cong∘l (gg distlequiv) β⊎₂) ⊙
+      [[A×C⊎B×C]⊎A×D]⊎B×D→[A⊎B]×[C⊎D] ⊙
+      ! (β₂ ⊙ cong₂∘
+          (β₂ ⊙ cong₂∘
+            (β₂ ⊙ cong₂∘
+              (β₂ ⊙ cong∘r (gg assocl₊equiv) (β₂ ⊙ cong∘l (gg distequiv) β⊎₂))
+              β⊎₂)
+            (β⊎₂ {f = id≃ ⊎≃ swap₊equiv} ⊙ (β⊎₂ ⊎∼ refl∼)))
+          β⊎₂))
+
   
 ------------------------------------------------------------------------
 -- also useful
