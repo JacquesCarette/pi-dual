@@ -4,7 +4,7 @@ module FinEquivEquiv where
 
 open import Data.Product using (_×_; proj₁; proj₂)
 
-open import Equiv using (sym∼; sym≃; _⊎≃_; id≃; _≃_; _●_; _×≃_; qinv)
+open import Equiv using (refl∼; sym∼; sym≃; _⊎≃_; id≃; _≃_; _●_; _×≃_; qinv)
 
 open import FinEquivPlusTimes using (F0≃⊥; module Plus; module Times)
 open Plus using (⊎≃+; +≃⊎)
@@ -31,9 +31,12 @@ open import Data.Product using (_,_)
 import Relation.Binary.PropositionalEquality as P using (refl)
 
 import TypeEquivEquiv as T
-  using ([id,id]≋id; ⊎●≋●⊎; _⊎≋_; unite₊-nat;
+  using ([id,id]≋id; ⊎●≋●⊎; _⊎≋_; sym≃-distrib;
+    unite₊-nat;
     [g+1]●[1+f]≋[1+f]●[g+1]; unite₊′-nat;
-    id×id≋id; ×●≋●×)
+    id×id≋id; ×●≋●×;
+    -- much lower down
+    0×0≃0)
 
 ------------------------------------------------------------------------------
 -- equivalences for the ⊎ structure
@@ -163,20 +166,14 @@ sym+F {f = f} {g = g} =
       ≋⟨ sym≃● ⟩
     sym≃ (f ⊎≃ g ● +≃⊎) ● sym≃ ⊎≃+
       ≋⟨ sym≃● ◎ id≋ ⟩
-    (sym≃ +≃⊎ ● sym≃ (f ⊎≃ g)) ● sym≃ ⊎≃+ {-
+    (sym≃ +≃⊎ ● sym≃ (f ⊎≃ g)) ● sym≃ ⊎≃+
+      ≋⟨ (id≋ ◎ T.sym≃-distrib) ◎ id≋ ⟩ 
     (sym≃ +≃⊎ ● (sym≃ f ⊎≃ sym≃ g)) ● sym≃ ⊎≃+
-      ≋⟨ ●-assoc {f = sym≃ ⊎≃+} {g = (sym≃ f ⊎≃ sym≃ g)} {h = sym≃ +≃⊎} ⟩ -}
-      ≋⟨ {!!} ⟩
+      ≋⟨ ●-assoc ⟩
     sym≃ +≃⊎ ● ((sym≃ f ⊎≃ sym≃ g) ● sym≃ ⊎≃+)
       ≋⟨ id≋ ⟩
     sym≃ f +F sym≃ g ∎)
   where open ≋-Reasoning
--- note that the above *also* has 'proof'
--- eq (λ _ → P.refl) (λ _ → P.refl)
--- in other words, it holds definitionally, but
--- only when viewed extensionally.  It does NOT have
--- id≋ as a proof -- perhaps because id≋ has too
--- restrictive a type?
 
 uniti₊-nat : ∀ {A B} {f : A fin≃ B} →
   uniti+ ● f ≋ (id0≃ +F f) ● uniti+
@@ -214,15 +211,17 @@ unite₊r-nat {m} {n} {f} =
     (((unite₊′equiv ● 1+⊥) ● +≃⊎) ● ⊎≃+) ● (f+1 ● +≃⊎)
       ≋⟨ sym≋ (intro-inv-r+ (unite₊′equiv ● 1+⊥)) ◎ rhs≋ ⟩
     (unite₊′equiv ● 1+⊥) ● (f+1 ● +≃⊎)
-      ≋⟨ {!!} ⟩ -- lots of assoc
+      ≋⟨ trans≋ ●-assocl (●-assoc ◎ id≋) ⟩
     (unite₊′equiv ● (1+⊥ ● f+1)) ● +≃⊎
       ≋⟨ (id≋ {x = unite₊′equiv} ◎ sym≋ (T.[g+1]●[1+f]≋[1+f]●[g+1] {f = F0≃⊥} {f})) ◎ g≋ ⟩
     (unite₊′equiv ● (f ⊎≃ id≃) ● (id≃ ⊎≃ F0≃⊥)) ● +≃⊎ -- the id≃ are at different types!
-      ≋⟨ {!!} ⟩ -- lots of assoc 
+      ≋⟨ ●-assocl ◎ id≋ ⟩
+    ((unite₊′equiv ● (f ⊎≃ id≃)) ● (id≃ ⊎≃ F0≃⊥)) ● +≃⊎
+      ≋⟨ ●-assoc ⟩
     (unite₊′equiv ● (f ⊎≃ id≃)) ● (id≃ ⊎≃ F0≃⊥) ● +≃⊎
       ≋⟨ T.unite₊′-nat ◎ id≋ {x = (id≃ ⊎≃ F0≃⊥) ● +≃⊎} ⟩
     (f ● unite₊′equiv) ● (id≃ ⊎≃ F0≃⊥) ● +≃⊎
-      ≋⟨ {!!} ⟩ -- assoc + defn
+      ≋⟨ ●-assoc ⟩ -- assoc + defn
     f ● unite+r ∎)
   where open ≋-Reasoning
 
@@ -314,19 +313,32 @@ id*id≋id {m} {n} =
   em*n ∎)
   where open ≋-Reasoning
 
+intro-inv-r* : {m n : ℕ} {B : Set} (f : (Fin m × Fin n) ≃ B) → f ≋ (f ● *≃×) ● ×≃*
+intro-inv-r* f = 
+  begin (
+    f
+      ≋⟨ sym≋ rid≋ ⟩
+    f ● id≃
+      ≋⟨ id≋ {x = f} ◎ sym≋ (linv≋ ×≃*) ⟩
+    f ● (*≃× ● ×≃*)
+      ≋⟨ ●-assocl  ⟩
+    (f ● *≃×) ● ×≃* ∎)
+  where open ≋-Reasoning
+
 *●≋●* : {A B C D E F : ℕ} →
   {f : A fin≃ C} {g : B fin≃ D} {h : C fin≃ E} {i : D fin≃ F} →
   (h ● f) *F (i ● g) ≋ (h *F i) ● (f *F g)
 *●≋●* {f = f} {g} {h} {i} =
-  let f≋ = id≋ {x = ×≃*} in
-  let g≋ = id≋ {x = *≃×} in
-  let id≋fg = id≋ {x = f ×≃ g} in
   begin (
     (h ● f) *F (i ● g)
       ≋⟨ id≋ ⟩
     ×≃* ● ((h ● f) ×≃ (i ● g)) ● *≃×
-      ≋⟨ f≋ ◎ (T.×●≋●× {f = f} {g} {h} {i} ◎ g≋) ⟩
+      ≋⟨ id≋ ◎ (T.×●≋●× {f = f} {g} {h} {i} ◎ id≋) ⟩
     ×≃* ● ((h ×≃ i) ● (f ×≃ g)) ● *≃×
+      ≋⟨ ●-assocl ⟩
+    (×≃* ● (h ×≃ i) ● (f ×≃ g)) ● *≃×
+      ≋⟨ (id≋ ◎ (intro-inv-r* (h ×≃ i) ◎ id≋)) ◎ id≋ ⟩
+    {!!}
       ≋⟨ {!!} ⟩
     (h *F i) ● (f *F g) ∎)
   where open ≋-Reasoning
@@ -472,9 +484,11 @@ A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D = {!!}
       (distl {m} {o} {p} +F distl {n} {o} {p}) ● dist {m} {n} {o + p}
 [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D = {!!} 
 
+-- can't be done via equational reasoning!?!?
+-- cannot even dig into T.0×0≃0 as f≋ is abstract
 0×0≃0 : distz {0} ≋ distzr {0}
-0×0≃0 = {!!} 
-
+0×0≃0 = eq (λ {()}) (λ {()}) -- wow, talk about low-level reasoning!
+  
 0×[A⊎B]≃0 : {m n : ℕ} →
     distz {m + n} ≋ unite+ ● (distz {m} +F distz {n}) ● distl {0} {m} {n}
 0×[A⊎B]≃0 = {!!} 

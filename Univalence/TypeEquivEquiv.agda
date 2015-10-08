@@ -78,6 +78,14 @@ f≋h ⊎≋ g≋i =
      (β⊎₂ ⊙ (g≡ f≋h) ⊎∼ (g≡ g≋i) ⊙ ! β⊎₂)
   where open _≋_
 
+-- strangely, this is not needed by Rig Category.  However, it
+-- belongs to the structure of a Monoidal Groupoid (I think!  Should
+-- be checked), and is quite useful on its own.
+sym≃-distrib : ∀ {A B C D : Set} {f : A ≃ B} {g : C ≃ D} →
+  sym≃ (f ⊎≃ g) ≋ sym≃ f ⊎≃ sym≃ g
+sym≃-distrib = -- note how the proof mixes ₁ and ₂ !
+  eq (β⊎₂ ⊙ ! β⊎₁) (β⊎₁ ⊙ ! β⊎₂)
+  
 -- Use '-nat' to signify that operation induces a
 -- natural transformation, and that the induced operation
 -- satisfies the naturality condition thus encoded
