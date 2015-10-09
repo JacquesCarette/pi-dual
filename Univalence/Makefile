@@ -1,11 +1,9 @@
 
-all : popl.pdf talk.pdf p.pdf
+esop.pdf : latex/esop.tex
+	pdflatex latex/esop.tex; bibtex esop
 
-popl.pdf : latex/popl.tex
-	pdflatex latex/popl.tex; bibtex popl
-
-latex/popl.tex : popl.lagda
-	agda --allow-unsolved-metas --latex -i . -i $(AGDALIB) -i $(CATLIB) popl.lagda
+latex/esop.tex : esop.lagda
+	agda --allow-unsolved-metas --latex -i . -i $(AGDALIB) -i $(CATLIB) esop.lagda
 
 talk.pdf : latex/talk.tex
 	pdflatex latex/talk.tex
