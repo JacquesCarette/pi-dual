@@ -143,7 +143,9 @@ $\displaystyle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
-\title{A Curry-Howard Isomorphism for Reversible Programming Languages and Semiring Laws}
+\title{A Curry-Howard Isomorphism between \\
+  Reversible Programming Languages \\
+  and Semirings}
 \titlerunning{Reversible Languages and Semirings}
 \author{Jacques Carette \and Amr Sabry}
 \institute{?\\
@@ -154,21 +156,21 @@ $\displaystyle
 
 \begin{abstract}
 
-  Many recent advances in quantum computing, low-power design,
-  nanotechnology, optical information processing, and bioinformatics
-  are based on \emph{reversible circuits}. With the aim of designing a
-  semantically well-founded approach for modeling and reasoning about
-  reversible circuits, we propose viewing such circuits as proof terms
-  witnessing equivalences between finite types. Proving that these
-  type equivalences satisfy the commutative semiring axioms, we
-  proceed with the categorification of type equivalences as
-  \emph{symmetric rig weak groupoids}. The coherence conditions of
-  these categories then produce, for free, a sound and complete
-  calculus for reasoning about reversible circuit equivalence. The
-  paper consists of the ``unformalization'' of an Agda package
-  formalizing the connections between reversible circuits,
-  equivalences between finite types, permutations between finite sets,
-  and symmetric rig weak groupoids.
+The original formulation of the Curry-Howard isomorphism relates
+propositional logic to the simply-typed $\lambda$-calculus at three
+levels: the syntax of propositions corresponds to the syntax of types;
+the proofs of propositions correspond to programs of the corresponding
+types; and the normalization of proofs corresponds to the evaluation
+of programs. This rich correspondence has inspired our community for
+half a century but it is arguable that this connection is at odds with
+a modern confluence of ideas that attaches computational content,
+resource conservation, and homotopy theoretic meaning to type
+isomorphisms. We propose a variant of this correspondence that relates
+semirings to reversible programming languages as follows: the syntax
+of semiring elements corresponds to the syntax of types; the proofs of
+semiring identities correspond to programs of the corresponding types;
+the equivalences of algebraic proofs corresponds to meaning-preserving
+program transformations and optimizations.
 
 \end{abstract}
 
