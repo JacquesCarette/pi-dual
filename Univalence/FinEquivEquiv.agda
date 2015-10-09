@@ -20,7 +20,7 @@ open PlusTimesE using (distz; factorz; distzr; factorzr;
                        dist; factor; distl; factorl)
 open import EquivEquiv
 open import TypeEquiv
-  using (unite₊equiv; unite₊′equiv)
+  using (unite₊equiv; unite₊′equiv; assocl₊equiv)
 
 open import Data.Empty using (⊥)
 open import Data.Unit using (⊤)
@@ -32,7 +32,7 @@ import Relation.Binary.PropositionalEquality as P using (refl)
 
 import TypeEquivEquiv as T
   using ([id,id]≋id; ⊎●≋●⊎; _⊎≋_; sym≃-distrib;
-    unite₊-nat;
+    unite₊-nat; assocl₊-nat;
     [g+1]●[1+f]≋[1+f]●[g+1]; unite₊′-nat;
     id×id≋id; ×●≋●×;
     -- much lower down
@@ -244,28 +244,125 @@ uniti₊r-nat {f = f} =
     (f +F id0≃) ● uniti+r ∎)
   where open ≋-Reasoning
 
+-- assocl+ is the one which is defined directly (?)
+assocl₊-nat : {m n o m' n' o' : ℕ}
+    {f : m fin≃ m'} {g : n fin≃ n'} {h : o fin≃ o'} → 
+    assocl+ {m'} {n'} {o'} ● (f +F (g +F h)) ≋
+    ((f +F g) +F h) ● assocl+ {m} {n} {o}
+-- expand the definitions right away, the pattern is clear
+assocl₊-nat {m} {n} {o} {f = f} {g} {h} =
+  let αmno = assocl₊equiv {Fin m} {Fin n} {Fin o} in
+  begin ( 
+  (⊎≃+ ● ⊎≃+ ⊎≃ id≃ ● assocl₊equiv ● id≃ ⊎≃ +≃⊎ ● +≃⊎) ● 
+            ⊎≃+ ● ((f ⊎≃ (⊎≃+ ● g ⊎≃ h ● +≃⊎)) ● +≃⊎)
+    ≋⟨ ●-assocl ⟩
+  ((⊎≃+ ● ⊎≃+ ⊎≃ id≃ ● assocl₊equiv ● id≃ ⊎≃ +≃⊎ ● +≃⊎) ● ⊎≃+) ● 
+            (f ⊎≃ (⊎≃+ ● g ⊎≃ h ● +≃⊎) ● +≃⊎)
+    ≋⟨ ((id≋ ◎ (id≋ ◎ ●-assocl)) ◎ id≋) ◎ id≋ ⟩
+  ((⊎≃+ ● ⊎≃+ ⊎≃ id≃ ● (assocl₊equiv ● id≃ ⊎≃ +≃⊎) ● +≃⊎) ● ⊎≃+) ● 
+            (f ⊎≃ (⊎≃+ ● g ⊎≃ h ● +≃⊎) ● +≃⊎)
+    ≋⟨ ((id≋ ◎ ●-assocl) ◎ id≋) ◎ id≋ ⟩
+  ((⊎≃+ ● (⊎≃+ ⊎≃ id≃ ● (assocl₊equiv ● id≃ ⊎≃ +≃⊎)) ● +≃⊎) ● ⊎≃+) ● 
+            (f ⊎≃ (⊎≃+ ● g ⊎≃ h ● +≃⊎) ● +≃⊎)
+    ≋⟨ (●-assocl ◎ id≋) ◎ id≋ ⟩
+  (((⊎≃+ ● (⊎≃+ ⊎≃ id≃ ● (assocl₊equiv ● id≃ ⊎≃ +≃⊎))) ● +≃⊎) ● ⊎≃+) ● 
+            (f ⊎≃ (⊎≃+ ● g ⊎≃ h ● +≃⊎) ● +≃⊎)
+    ≋⟨ sym≋ (intro-inv-r+ (⊎≃+ ● (⊎≃+ ⊎≃ id≃ ● (assocl₊equiv ● id≃ ⊎≃ +≃⊎)))) ◎ id≋ ⟩
+   (⊎≃+ ● (⊎≃+ ⊎≃ id≃ ● (assocl₊equiv ● id≃ ⊎≃ +≃⊎))) ●
+          (f ⊎≃ (⊎≃+ ● g ⊎≃ h ● +≃⊎) ● +≃⊎)
+    ≋⟨ ●-assoc ⟩
+  ⊎≃+ ● (⊎≃+ ⊎≃ id≃ ● (assocl₊equiv ● id≃ ⊎≃ +≃⊎)) ●  
+          (f ⊎≃ (⊎≃+ ● g ⊎≃ h ● +≃⊎) ● +≃⊎)
+    ≋⟨ id≋ ◎ (●-assocl ◎ id≋) ⟩
+  ⊎≃+ ● ((⊎≃+ ⊎≃ id≃ ● assocl₊equiv) ● id≃ ⊎≃ +≃⊎) ●  
+          (f ⊎≃ (⊎≃+ ● g ⊎≃ h ● +≃⊎) ● +≃⊎)
+    ≋⟨ id≋ ◎ ●-assoc ⟩
+  ⊎≃+ ● (⊎≃+ ⊎≃ id≃ ● assocl₊equiv) ● (id≃ ⊎≃ +≃⊎ ●  
+          (f ⊎≃ (⊎≃+ ● g ⊎≃ h ● +≃⊎) ● +≃⊎))
+    ≋⟨ id≋ ◎ (id≋ ◎ ●-assocl) ⟩
+  ⊎≃+ ● (⊎≃+ ⊎≃ id≃ ● assocl₊equiv) ● ((id≃ ⊎≃ +≃⊎ ●  
+          f ⊎≃ (⊎≃+ ● g ⊎≃ h ● +≃⊎)) ● +≃⊎)
+    ≋⟨ id≋ ◎ (id≋ ◎ (sym≋ T.⊎●≋●⊎ ◎ id≋)) ⟩
+  ⊎≃+ ● (⊎≃+ ⊎≃ id≃ ● assocl₊equiv) ● ((id≃ ● f) ⊎≃ (+≃⊎ ● (⊎≃+ ● g ⊎≃ h ● +≃⊎))) ● +≃⊎
+    ≋⟨ id≋ ◎ (id≋ ◎ (T._⊎≋_ (trans≋ lid≋ (sym≋ rid≋)) (trans≋ ●-assocl  (trans≋ (linv≋ ⊎≃+ ◎ id≋) lid≋)) ◎ id≋)) ⟩
+  ⊎≃+ ● (⊎≃+ ⊎≃ id≃ ● assocl₊equiv) ● ((f ● id≃) ⊎≃ (g ⊎≃ h ● +≃⊎)) ● +≃⊎
+    ≋⟨ id≋ ◎ (id≋ ◎ (T.⊎●≋●⊎ ◎ id≋)) ⟩
+  ⊎≃+ ● (⊎≃+ ⊎≃ id≃ ● assocl₊equiv) ● (f ⊎≃ (g ⊎≃ h) ● id≃ ⊎≃ +≃⊎) ● +≃⊎
+    ≋⟨ id≋ ◎ ●-assocl ⟩
+  ⊎≃+ ● ((⊎≃+ ⊎≃ id≃ ● assocl₊equiv) ● (f ⊎≃ (g ⊎≃ h) ● id≃ ⊎≃ +≃⊎)) ● +≃⊎
+    ≋⟨ id≋ ◎ (●-assocl ◎ id≋) ⟩
+  ⊎≃+ ● (((⊎≃+ ⊎≃ id≃ ● assocl₊equiv) ● f ⊎≃ (g ⊎≃ h)) ● id≃ ⊎≃ +≃⊎) ● +≃⊎
+    ≋⟨ id≋ ◎ ((●-assoc ◎ id≋) ◎ id≋) ⟩
+  ⊎≃+ ● ((⊎≃+ ⊎≃ id≃ ● (assocl₊equiv ● f ⊎≃ (g ⊎≃ h))) ● id≃ ⊎≃ +≃⊎) ● +≃⊎
+    ≋⟨ id≋ ◎ ( ((id≋ ◎ T.assocl₊-nat) ◎ id≋) ◎ id≋) ⟩
+  ⊎≃+ ● ((⊎≃+ ⊎≃ id≃ ● ((f ⊎≃ g) ⊎≃ h) ● assocl₊equiv) ● id≃ ⊎≃ +≃⊎) ● +≃⊎
+    ≋⟨ id≋ ◎ ((●-assocl ◎ id≋)  ◎ id≋) ⟩
+  ⊎≃+ ● (((⊎≃+ ⊎≃ id≃ ● (f ⊎≃ g) ⊎≃ h) ● assocl₊equiv) ● id≃ ⊎≃ +≃⊎) ● +≃⊎
+    ≋⟨ id≋ ◎ (((T+1-nat ◎ id≋) ◎ id≋) ◎ id≋) ⟩
+  ⊎≃+ ● ((((⊎≃+ ● f ⊎≃ g ● +≃⊎) ● ⊎≃+) ⊎≃ (h ● id≃) ● assocl₊equiv) ● id≃ ⊎≃ +≃⊎) ● +≃⊎
+    ≋⟨ id≋ ◎ ●-assoc ⟩
+  ⊎≃+ ● (((⊎≃+ ● f ⊎≃ g ● +≃⊎) ● ⊎≃+) ⊎≃ (h ● id≃) ● assocl₊equiv) ● (id≃ ⊎≃ +≃⊎ ● +≃⊎)
+    ≋⟨ id≋ ◎ ●-assoc ⟩
+  ⊎≃+ ● ((⊎≃+ ● f ⊎≃ g ● +≃⊎) ● ⊎≃+) ⊎≃ (h ● id≃) ● (assocl₊equiv ● id≃ ⊎≃ +≃⊎ ● +≃⊎)
+    ≋⟨ ●-assocl ⟩
+  (⊎≃+ ● ((⊎≃+ ● (f ⊎≃ g) ● +≃⊎) ● ⊎≃+) ⊎≃ (h ● id≃)) ● (αmno ● id≃ ⊎≃ +≃⊎ ● +≃⊎)
+    ≋⟨ (id≋ ◎ T.⊎●≋●⊎ ) ◎ id≋ ⟩
+  (⊎≃+ ●  (((⊎≃+ ● (f ⊎≃ g) ● +≃⊎) ⊎≃ h) ● (⊎≃+ ⊎≃ id≃))) ●
+           (αmno ● id≃ ⊎≃ +≃⊎ ● +≃⊎)
+    ≋⟨ ●-assocl ◎ id≋ ⟩
+  ((⊎≃+ ●  ((⊎≃+ ● (f ⊎≃ g) ● +≃⊎) ⊎≃ h)) ● (⊎≃+ ⊎≃ id≃)) ●
+           (αmno ● id≃ ⊎≃ +≃⊎ ● +≃⊎)
+    ≋⟨ ●-assoc ⟩
+  (⊎≃+ ●  ((⊎≃+ ● (f ⊎≃ g) ● +≃⊎) ⊎≃ h)) ● 
+            (⊎≃+ ⊎≃ id≃ ● αmno ● id≃ ⊎≃ +≃⊎ ● +≃⊎)
+    ≋⟨ id≋ ◎ sym≋ lid≋ ⟩
+  (⊎≃+ ●  ((⊎≃+ ● (f ⊎≃ g) ● +≃⊎) ⊎≃ h)) ● 
+            id≃ ● (⊎≃+ ⊎≃ id≃ ● αmno ● id≃ ⊎≃ +≃⊎ ● +≃⊎)
+    ≋⟨ id≋ ◎ (sym≋ (rinv≋ +≃⊎) ◎ id≋) ⟩
+  (⊎≃+ ●  ((⊎≃+ ● (f ⊎≃ g) ● +≃⊎) ⊎≃ h)) ● 
+            (+≃⊎ ● ⊎≃+) ● (⊎≃+ ⊎≃ id≃ ● αmno ● id≃ ⊎≃ +≃⊎ ● +≃⊎)
+    ≋⟨ id≋ ◎ ●-assoc ⟩
+  ((⊎≃+ ●  ((⊎≃+ ● (f ⊎≃ g) ● +≃⊎) ⊎≃ h))) ● 
+            (+≃⊎ ● ⊎≃+ ● ⊎≃+ ⊎≃ id≃ ● αmno ● id≃ ⊎≃ +≃⊎ ● +≃⊎)
+    ≋⟨ ●-assocl ⟩
+  ((⊎≃+ ●  ((⊎≃+ ● (f ⊎≃ g) ● +≃⊎) ⊎≃ h)) ● +≃⊎) ● 
+            (⊎≃+ ● ⊎≃+ ⊎≃ id≃ ● αmno ● id≃ ⊎≃ +≃⊎ ● +≃⊎) 
+    ≋⟨ ●-assoc ◎ id≋ ⟩
+  (⊎≃+ ● ((⊎≃+ ● (f ⊎≃ g) ● +≃⊎) ⊎≃ h) ● +≃⊎) ● 
+            (⊎≃+ ● ⊎≃+ ⊎≃ id≃ ● αmno ● id≃ ⊎≃ +≃⊎ ● +≃⊎) ∎) 
+  where 
+    open ≋-Reasoning
+    T+1-nat : ⊎≃+ ⊎≃ id≃ ● (f ⊎≃ g) ⊎≃ h ≋  ((⊎≃+ ● f ⊎≃ g ● +≃⊎) ● ⊎≃+) ⊎≃ (h ● id≃)
+    T+1-nat = begin (
+      ⊎≃+ ⊎≃ id≃ ● (f ⊎≃ g) ⊎≃ h
+        ≋⟨ sym≋ (T.⊎●≋●⊎) ⟩
+      (⊎≃+ ● f ⊎≃ g) ⊎≃ (id≃ ● h)
+        ≋⟨ id≋ T.⊎≋ (trans≋ lid≋ (sym≋ rid≋))⟩
+      (⊎≃+ ● f ⊎≃ g) ⊎≃ (h ● id≃)
+        ≋⟨ trans≋ (intro-inv-r+ ((⊎≃+ ● f ⊎≃ g))) ●-assoc T.⊎≋ id≋ ⟩
+        ((⊎≃+ ● f ⊎≃ g) ● +≃⊎ ● ⊎≃+) ⊎≃ (h ● id≃)
+         ≋⟨ trans≋ ●-assocl (●-assoc ◎ id≋) T.⊎≋ id≋ ⟩
+       ((⊎≃+ ● f ⊎≃ g ● +≃⊎) ● ⊎≃+) ⊎≃ (h ● id≃) ∎)
+
 assocr₊-nat : {m n o m' n' o' : ℕ}
     {f : m fin≃ m'} {g : n fin≃ n'} {h : o fin≃ o'} → 
     assocr+ {m'} {n'} {o'} ● ((f +F g) +F h) ≋
     (f +F (g +F h)) ● assocr+ {m} {n} {o}
 assocr₊-nat = {!!} 
-
-assocl₊-nat : {m n o m' n' o' : ℕ}
-    {f : m fin≃ m'} {g : n fin≃ n'} {h : o fin≃ o'} → 
-    assocl+ {m'} {n'} {o'} ● (f +F (g +F h)) ≋
-    ((f +F g) +F h) ● assocl+ {m} {n} {o}
-assocl₊-nat = {!!} 
+  where open ≋-Reasoning
 
 unite-assocr₊-coh : {m n : ℕ} → 
     unite+r {m = m} +F id≃ {A = Fin n} ≋
     (id≃ {A = Fin m} +F unite+ {m = n}) ● assocr+ {m} {0} {n}
 unite-assocr₊-coh = {!!} 
+  where open ≋-Reasoning
 
 assocr₊-coh : {m n o p : ℕ} → 
     assocr+ {m} {n} {o + p} ● assocr+ {m + n} {o} {p} ≋
     (id≃ {A = Fin m} +F assocr+ {n} {o} {p}) ●
       assocr+ {m} {n + o} {p} ● (assocr+ {m} {n} {o} +F id≃ {A = Fin p})
 assocr₊-coh = {!!} 
+  where open ≋-Reasoning
 
 swap₊-nat : {m n o p : ℕ} {f : m fin≃ o} {g : n fin≃ p} →
     swap+ {o} {p} ● (f +F g) ≋ (g +F f) ● swap+ {m} {n}
@@ -280,11 +377,14 @@ assocr₊-swap₊-coh : {m n o : ℕ} →
     (id≃ {A = Fin n} +F swap+ {m} {o}) ●
       assocr+ {n} {m} {o} ● (swap+ {m} {n} +F id≃ {A = Fin o})
 assocr₊-swap₊-coh = {!!} 
+  where open ≋-Reasoning
 
 assocl₊-swap₊-coh : {m n o : ℕ} →
     assocl+ {o} {m} {n} ● swap+ {m + n} {o} ● assocl+ {m} {n} {o} ≋
     (swap+ {m} {o} +F id≃ {A = Fin n}) ● 
       assocl+ {m} {o} {n} ● (id≃ {A = Fin m} +F swap+ {n} {o})
+assocl₊-swap₊-coh = {!!}
+  where open ≋-Reasoning
 
 ------------------------------------------------------------------------------
 -- and the multiplicative structure
@@ -358,7 +458,6 @@ uniti*-nat = {!!}
 unite*r-nat : {m n : ℕ} {f : m fin≃ n} →
    unite*r ● (f *F id1≃) ≋ f ● unite*r
 unite*r-nat = {!!} 
-assocl₊-swap₊-coh = {!!} 
 
 uniti*r-nat : {m n : ℕ} {f : m fin≃ n} →
       uniti*r ● f ≋ (f *F id1≃) ● uniti*r
