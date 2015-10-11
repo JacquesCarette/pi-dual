@@ -1,9 +1,13 @@
 \documentclass[oribibl]{llncs}
 
+\usepackage{savesym}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\savesymbol{vec}
 \usepackage{flushend}
 \usepackage{agda}
 \usepackage{alltt}
-\usepackage{fancyvrb}
+%\usepackage{fancyvrb}
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
 \usepackage{tikz}
@@ -11,7 +15,7 @@
 \usetikzlibrary{quotes}
 \usepackage{adjustbox}
 %% \usepackage{amsthm}
-\usepackage{latexsym}
+% \usepackage{latexsym}
 \usepackage{MnSymbol}
 \usepackage{courier}
 \usepackage{thmtools}
@@ -20,8 +24,6 @@
 \usepackage{bbm}
 \usepackage{proof}
 %% \usepackage{amstext}
-\usepackage{amssymb}
-\usepackage{amsmath}
 \usepackage{comment}
 \usepackage{stmaryrd}
 \usepackage{listings}
@@ -30,6 +32,7 @@
 \usepackage{extarrows}
 \usepackage{textcomp}
 \usepackage{multicol}
+\usepackage{natbib}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Macros
@@ -44,9 +47,9 @@
 \newcommand{\idt}[3]{#2 \equiv_{#1} #3}
 \newcommand{\idrt}[3]{#3 \equiv_{#1} #2}
 \newcommand{\refl}[1]{\textsf{refl}~#1}
-\newcommand{\lid}{\textsf{lid}}
+%\newcommand{\lid}{\textsf{lid}}
 \newcommand{\alt}{~|~}
-\newcommand{\rid}{\textsf{rid}}
+%\newcommand{\rid}{\textsf{rid}}
 \newcommand{\linv}{l!}
 \newcommand{\rinv}{r!}
 \newcommand{\invinv}{!!}
@@ -117,9 +120,9 @@ $\displaystyle
 \DeclareUnicodeCharacter{8779}{\ensuremath{\triplesim}}
 \DeclareUnicodeCharacter{9679}{\textbullet}
 
-\newtheorem{theorem}{Theorem}
-\newtheorem{conj}{Conjecture}
-\newtheorem{definition}{Definition}
+%\newtheorem{theorem}{Theorem}
+%\newtheorem{conj}{Conjecture}
+%\newtheorem{definition}{Definition}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Comments
@@ -2258,7 +2261,7 @@ variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% \clearpage
 \bibliographystyle{abbrvnat}
-\softraggedright
+%\softraggedright
 \bibliography{cites}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
