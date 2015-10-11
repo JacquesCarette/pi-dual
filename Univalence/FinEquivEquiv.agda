@@ -250,10 +250,11 @@ assocl₊-nat : {m n o m' n' o' : ℕ}
     assocl+ {m'} {n'} {o'} ● (f +F (g +F h)) ≋
     ((f +F g) +F h) ● assocl+ {m} {n} {o}
 -- expand the definitions right away, the pattern is clear
-assocl₊-nat {m} {n} {o} {f = f} {g} {h} =
+assocl₊-nat {m} {n} {o} {m'} {n'} {o'} {f} {g} {h} =
+  let αmno' = assocl₊equiv {Fin m'} {Fin n'} {Fin o'} in
   let αmno = assocl₊equiv {Fin m} {Fin n} {Fin o} in
   begin ( 
-  (⊎≃+ ● ⊎≃+ ⊎≃ id≃ ● assocl₊equiv ● id≃ ⊎≃ +≃⊎ ● +≃⊎) ● 
+  (⊎≃+ ● ⊎≃+ ⊎≃ id≃ ● αmno' ● id≃ ⊎≃ +≃⊎ ● +≃⊎) ● 
             ⊎≃+ ● ((f ⊎≃ (⊎≃+ ● g ⊎≃ h ● +≃⊎)) ● +≃⊎)
     ≋⟨ ●-assocl ⟩
   ((⊎≃+ ● ⊎≃+ ⊎≃ id≃ ● assocl₊equiv ● id≃ ⊎≃ +≃⊎ ● +≃⊎) ● ⊎≃+) ● 
@@ -348,9 +349,24 @@ assocr₊-nat : {m n o m' n' o' : ℕ}
     {f : m fin≃ m'} {g : n fin≃ n'} {h : o fin≃ o'} → 
     assocr+ {m'} {n'} {o'} ● ((f +F g) +F h) ≋
     (f +F (g +F h)) ● assocr+ {m} {n} {o}
-assocr₊-nat = {!!} 
+assocr₊-nat {m} {n} {o} {m'} {n'} {o'} {f} {g} {h} = begin (
+  assocr+ {m'} {n'} {o'} ● ((f +F g) +F h)
+    ≋⟨ id≋ ⟩
+  sym≃ assocl+ ● sym≃ (sym≃ ((f +F g) +F h))
+    ≋⟨ sym≋ (sym≃● {f = assocl+}) ⟩
+  sym≃ (sym≃ ((f +F g) +F h) ● assocl+ {m'} {n'} {o'})
+    ≋⟨ flip≋ ((trans≋ sym+F (sym+F +≋ id≋ )) ◎ id≋) ⟩
+  sym≃ (((sym≃ f +F sym≃ g) +F sym≃ h) ● assocl+ {m'})
+    ≋⟨ flip-sym≋ assocl₊-nat ⟩
+  sym≃ (assocl+ {m} {n} {o} ● (sym≃ f +F (sym≃ g +F sym≃ h)))
+    ≋⟨ flip≋ (id≋ ◎ (trans≋ (id≋ +≋ (sym≋ sym+F)) (sym≋ sym+F))) ⟩
+  sym≃ ( assocl+ ● sym≃ (f +F (g +F h)))
+    ≋⟨ sym≃● ⟩
+  sym≃ (sym≃ (f +F (g +F h))) ● sym≃ (assocl+ {m} {n} {o})
+    ≋⟨ id≋ ⟩
+  (f +F (g +F h)) ● (assocr+ {m} {n} {o}) ∎)
   where open ≋-Reasoning
-
+{-
 unite-assocr₊-coh : {m n : ℕ} → 
     unite+r {m = m} +F id≃ {A = Fin n} ≋
     (id≃ {A = Fin m} +F unite+ {m = n}) ● assocr+ {m} {0} {n}
@@ -616,5 +632,5 @@ A×[0+B]≃A×B = {!!}
 1×[A⊎B]≃A⊎B : {m n : ℕ} →
     unite* ≋ (unite* {m} +F unite* {n}) ● distl {1} {m} {n}
 1×[A⊎B]≃A⊎B = {!!} 
-
+-}
 ------------------------------------------------------------------------------
