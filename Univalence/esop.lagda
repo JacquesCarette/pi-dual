@@ -146,15 +146,19 @@ $\displaystyle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
-\title{A Curry-Howard Isomorphism between \\
-  Reversible Programming Languages \\
-  and Semirings}
-\titlerunning{Reversible Languages and Semirings}
+%\title{A Curry-Howard Isomorphism between \\
+%  Reversible Programming Languages \\
+%  and Semirings}
+%\titlerunning{Reversible Languages and Semirings}
+\title{Computing with Semirings and Weak Rig Groupoids}
+\titlerunning{Computing with Rig Groupoids}
 \author{Jacques Carette \and Amr Sabry}
-\institute{?\\
-\email{...@...}
+\institute{McMaster University\\
+\email{carette@mcmaster.ca}
 \and
-...}
+Indiana Uiversity
+\email{sabry@indiana.edu}
+}
 \maketitle
 
 \begin{abstract}
@@ -165,16 +169,19 @@ levels: the syntax of propositions corresponds to the syntax of types;
 the proofs of propositions correspond to programs of the corresponding
 types; and the normalization of proofs corresponds to the evaluation
 of programs. This rich correspondence has inspired our community for
-half a century but it is arguable that this connection is at odds with
-a modern confluence of ideas that attaches computational content,
-resource conservation, and homotopy theoretic meaning to type
-isomorphisms. We propose a variant of this correspondence that relates
-semirings to reversible programming languages as follows: the syntax
-of semiring elements corresponds to the syntax of types; the proofs of
-semiring identities correspond to programs of the corresponding types;
-the equivalences of algebraic proofs corresponds to meaning-preserving
-program transformations and optimizations.
-
+half a century, and has been updated to deal with more modern ideas
+such as resource conservation and the homotopy theoretic approach to
+type isomorphisms.  We propose a variant of this correspondence that
+very naturally relates semirings to reversible programming languages:
+the syntax of semiring elements corresponds to the syntax of types;
+the proofs of semiring identities correspond to (reversible) programs
+of the corresponding types;  and equivalences between algebraic proofs
+corresponds to meaning-preserving program transformations and optimizations.
+These latter equivalences are not ad hoc: the same way semirings arise
+naturally out of the structure of types, a categorical look at the
+structure of proof terms gives rise to (at least) a weak rig groupoid
+structure, and the coherence laws are exactly the program transformations
+we seek. 
 \end{abstract}
 
 \AgdaHide{
@@ -845,8 +852,6 @@ permutations $\textsc{perm}~m~n$.
   \]
 \end{proof}
 
-\vspace{-0.5cm}
-
 Before concluding this section, we recall that, the conventional
 formulation of the univalence \emph{axiom} is:
 \[
@@ -880,7 +885,7 @@ adapt it in later sections to be used to express, compute with, and
 reason about type equivalences between finite types.
 
 \begin{figure*}[ht]
-\[\begin{array}{cc}
+\[
 \begin{array}{rrcll}
 \identlp :&  0 + \tau & \iso & \tau &: \identrp \\
 \swapp :&  \tau_1 + \tau_2 & \iso & \tau_2 + \tau_1 &: \swapp \\
@@ -893,9 +898,14 @@ reason about type equivalences between finite types.
 \distz :&~ 0 * \tau & \iso & 0 ~ &: \factorzl \\
 \dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor
 \end{array}
-& 
-\begin{minipage}{0.5\textwidth}
-\begin{center} 
+\]
+\caption{$\Pi$-terms~\citep{rc2011,James:2012:IE:2103656.2103667}.
+\label{pi-terms}}
+\end{figure*}
+
+\begin{figure*}[ht]
+\[
+\begin{minipage}{0.8\textwidth}
 \Rule{}
 {}
 {\jdg{}{}{\idc : \tau \iso \tau}}
@@ -915,11 +925,10 @@ reason about type equivalences between finite types.
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
 {\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
 {}
-\end{center}
 \end{minipage}
-\end{array}\]
-\caption{$\Pi$-combinators~\citep{rc2011,James:2012:IE:2103656.2103667}.
-\label{pi-combinators}}
+\]
+\caption{$\Pi$-combinators.}
+\label{pi-combinators}
 \end{figure*}
 
 %%%%%%%%%%%%
@@ -1307,8 +1316,9 @@ compositions, e.g., how two different paths of type equivalences
 sharing the same source and target relate two each other.
 
 \begin{figure*}
+\begin{center}
 \begin{tikzcd}[column sep=tiny]
-((A \otimes B) \otimes C) \otimes D)
+((A \otimes B) \otimes C) \otimes D
   \arrow[rr, "\alpha"]
   \arrow[d, "\alpha \otimes \mathrm{id}_D"']
 && (A \otimes B) \otimes (C \otimes D)
@@ -1318,10 +1328,11 @@ sharing the same source and target relate two each other.
   \arrow[dr, "\alpha"']
 && A \otimes (B \otimes (C \otimes D))
    \arrow[dl, "\mathrm{id}_A \otimes \alpha"]
-\\
 & A \otimes ((B \otimes C) \otimes D)
 \end{tikzcd}
-\qquad\qquad\qquad
+\end{center}
+%\qquad\qquad\qquad
+\begin{center}
 \begin{tikzcd}[column sep=tiny]
 (A \otimes I) \otimes B
   \arrow[rr, "\alpha"]
@@ -1331,6 +1342,7 @@ sharing the same source and target relate two each other.
 \\
 & A \otimes B
 \end{tikzcd}
+\end{center}
 \caption{\label{fig:mon}Pentagon and triangle diagrams.}
 \end{figure*}
 
@@ -1710,8 +1722,8 @@ $\Pi$ with the following additional level-1 combinators:
 \absorbr :&~ 0 * \tau & \iso & 0 &: \factorzl \\
 \absorbl :&~ \tau * 0 & \iso & 0 &: \factorzr \\
 
-\distl :&~ \tau_1 * (\tau_2 + \tau_3) & \iso & (\tau_1 * \tau_2) &: \factorl \\
-&&&                                                               +~ (\tau_1 * \tau_3)
+\distl :&~ \tau_1 * (\tau_2 + \tau_3) & \iso & (\tau_1 * \tau_2) 
+                                               +~ (\tau_1 * \tau_3) &: \factorl
 \end{array}\]      
 
 The added combinators are redundant (from an operational perspective)
