@@ -375,9 +375,13 @@ executable \texttt{Agda 2.4.2.3} package with the global
 
 As our starting point is the notion of equivalence of types, we
 explain this in detail. As semirings are similarly important,
-these are also formally defined.  We then give several examples
-of relevance: semiring structures on types, on (skeletal) finite sets.  This
-will allow us to connect these notions to that of (typed) reversible
+these are also formally defined.  We then give an important example:
+the semiring structure on types.  Other structures (finite sets and
+permutations, finite types and equivalences) do not quite carry a
+semiring structure -- in the very same way that matrices do not quite carry
+a ring structure.  This will however motivate us to find the right 
+setting to exhibit what this semiring-like structure really is.
+That will then allow us to connect these notions to that of (typed) reversible
 computation.
 
 %%%%%%%%%%%%
@@ -491,7 +495,7 @@ to adapt this definition.
 
 \begin{definition}
 Given an equivalence relation $\simeq$ on a set $R$, a 
-$\simeq$-semiring on $R$ is a semiring where $=$ is replaced by
+\emph{$\simeq$-semiring} on $R$ is a semiring where $=$ is replaced by
 $\simeq$ in all the defining relations.
 \end{definition}
 
@@ -552,6 +556,10 @@ $A$) elements witnessing the various possible identifications of $A$
 and $B$. The type of all equivalences has some non-trivial structure,
 which will be examined in detail in section~\ref{sec:categorification}.
 
+Note that finite types \emph{do not} form a commutative semiring: the
+extra ``size'' information is incompatible with the universally 
+quantified nature of the semiring axioms.
+
 \todo{find a good home for the definition of equivalence-of-equivalence.}
 \todo{figure out when to first mention $\Pi$ and cite.}
 \begin{comment}
@@ -593,32 +601,27 @@ of \emph{type equivalence} instead of strict equality~$=$.
 \end{comment}
 
 %%%%%%%%%%%%
-\subsection{Commutative Semirings of Permutations}
+\subsection{Permutations}
 
-\todo{Some of the theorems in here are correct, but the title is
-not.  Permutations do not form a semiring!  They do form a Rig
-though.  It is the difference between typed and untyped.  Because
-permutations are typed by two (!!) naturals, we need to go up a 
-level.  What is true is that there is a second semiring structure
-on the naturals, where the operations are the same, but the 
-equivalence relation is based on equivalences between finite sets.}
+Although permutations do not form a semiring (for the same reason
+that finite types do not), they ``almost'' do.  As they are a 
+crucial ingredient later on, we present some basic results here.
+Informally, a permutation is a bijection between two canonically
+finite sets.  We formalize this as
+
+\jc{need to define some these things formally.  Maybe give the
+Agda?  Probably not, as we don't want to talk about permutations very
+much here.  In fact, perhaps cut things down instead of add?  This is
+about type equivalences, we can downplay permutations.  Not sure.}
+
+\begin{definition}
+A \emph{permutation} is a $4$-tuple ...
+\end{definition}
 
 \jc{the introductory material in the paragraph below is now bogus.
 I have fixed our definitions (to agree with our code), so that we
 don't have that confusion.  We need to figure out what we really 
 want to say here!}
-Type equivalences are fundamentally based on function extensionality.
-(Def.~\ref{def:quasi} explicitly compares functions for extensional
-equality.) It is folklore that, even when restricted to finite types,
-function extensionality needs to be assumed for effective reasoning
-about type equivalences. The situation gets worse when considering
-equivalences of equivalences. In the HoTT context, this is the open
-problem of finding a computational interpretation for
-\emph{univalence}. In the case of finite types however, there is a
-computationally-friendly alternative characterization of type
-equivalences based on permutations of finite sets, which we prove to
-be formally equivalent.
-
 The idea is that, \emph{up to equivalence}, the only interesting property of
 a finite type is its size, so that type equivalences must be
 size-preserving maps and hence correspond to permutations. For
