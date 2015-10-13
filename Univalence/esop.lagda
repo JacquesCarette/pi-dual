@@ -226,20 +226,41 @@ transformations:
   (\tau_1 \uplus \tau_3) \times (\tau_2 \uplus \tau_3) 
 \end{array}\]
 
-The connection to logic, as inspiring as it is, is however not
-directly useful if one is concerned with \emph{type isomorphisms}. The
-study of type isomorphisms became recently popular during at least two
-short periods: in the early 1990s when they were used to search large
-libraries, and in the mid 2000s when they were studied from a
+This connection to logic, as inspiring as it is, only cares whether a
+type is inhabited or not. For example, when translated to the world of
+types, the first tautology above states that the type $\tau \times
+\tau$ is inhabited iff the type $\tau$ is inhabited. Furthermore, the
+proofs of the two implications give rise to two functions that produce
+an element from one type given an element of the other. This framework
+is however of no direct help if one is concerned with other richer
+properties of types and their relationships. For example, type
+isomorphisms are an important property of types that is more refined
+than mere inhabitance of types as it clearly distinguishes $\tau
+\times \tau$ and $\tau$.
+
+The study of type isomorphisms became recently popular during at least
+two short periods: in the early 1990s when they were used to search
+large libraries, and in the mid 2000s when they were studied from a
 categorical perspective. In the last few years, type isomorphisms
 became one of the central concepts in homotopy type theory which is
-entirely based on type equivalences. 
+entirely based on type equivalences. These connections exposed even
+more interesting structure of type isomorphisms at higher
+levels. Consider the two isomorphisms between the type $\top + \top$
+and itself. One of these is the identity and the other is the twist
+map. These isomorphisms are themselves ``not equivalent'' one level up
+in the sense to be formalized. And the chain of equivalences continues. 
 
-The question we ask is whether there is a natural correspondence, in
-the style of the Curry-Howard correspondence between types and some
-existing mathematical entities, which would bring forth the structure
-of type isomorphisms. We argue that semirings and their
-categorification are exactly these entities. 
+The question we ask therefore is whether there is a natural
+correspondence, in the style of the Curry-Howard correspondence
+between types and some existing mathematical entities, which would
+bring forth the structure of type isomorphisms and their equivalences
+at higher levels. We argue that semirings and their categorification
+are exactly these entities.
+
+
+
+
+
 
 \newpage
 
