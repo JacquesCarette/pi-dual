@@ -150,276 +150,49 @@ $\displaystyle
 %  Reversible Programming Languages \\
 %  and Semirings}
 %\titlerunning{Reversible Languages and Semirings}
-\title{Computing with Semirings and Weak Rig Groupoids}
+\title{Computing with \\ Semirings and Weak Rig Groupoids}
 \titlerunning{Computing with Rig Groupoids}
 \author{Jacques Carette \and Amr Sabry}
-\institute{McMaster University\\
-\email{carette@mcmaster.ca}
+\institute{McMaster University (\email{carette@mcmaster.ca})
 \and
-Indiana Uiversity
-\email{sabry@indiana.edu}
+Indiana University (\email{sabry@indiana.edu})
 }
 \maketitle
 
 \begin{abstract}
 
-The original formulation of the Curry-Howard isomorphism relates
-propositional logic to the simply-typed $\lambda$-calculus at three
-levels: the syntax of propositions corresponds to the syntax of types;
-the proofs of propositions correspond to programs of the corresponding
-types; and the normalization of proofs corresponds to the evaluation
-of programs. This rich correspondence has inspired our community for
-half a century, and has been updated to deal with more modern ideas
-such as resource conservation and the homotopy theoretic approach to
-type isomorphisms.  We propose a variant of this correspondence that
-very naturally relates semirings to reversible programming languages:
-the syntax of semiring elements corresponds to the syntax of types;
-the proofs of semiring identities correspond to (reversible) programs
-of the corresponding types;  and equivalences between algebraic proofs
-corresponds to meaning-preserving program transformations and optimizations.
-These latter equivalences are not ad hoc: the same way semirings arise
-naturally out of the structure of types, a categorical look at the
-structure of proof terms gives rise to (at least) a weak rig groupoid
-structure, and the coherence laws are exactly the program transformations
-we seek. 
+  The original formulation of the Curry-Howard isomorphism relates
+  propositional logic to the simply-typed $\lambda$-calculus at three
+  levels: the syntax of propositions corresponds to the syntax of
+  types; the proofs of propositions correspond to programs of the
+  corresponding types; and the normalization of proofs corresponds to
+  the evaluation of programs. This rich correspondence has inspired
+  our community for half a century and has been generalized to deal
+  with more advanced logics and programming models. We propose a
+  variant of this correspondence for physically-inspired logics and
+  models with a focus on resource conservation and for recent homotopy
+  theoretic approaches to type theory. 
+
+  Our proposed correspondence very naturally relates semirings to
+  reversible programming languages: the syntax of semiring elements
+  corresponds to the syntax of types; the proofs of semiring
+  identities correspond to (reversible) programs of the corresponding
+  types; and equivalences between algebraic proofs corresponds to
+  meaning-preserving program transformations and optimizations.  These
+  latter equivalences are not ad hoc: the same way semirings arise
+  naturally out of the structure of types, a categorical look at the
+  structure of proof terms gives rise to (at least) a weak rig
+  groupoid structure, and the coherence laws are exactly the program
+  transformations we seek.
 \end{abstract}
 
 \AgdaHide{
 \begin{code}
-open import Data.Empty
-open import Data.Unit
-open import Data.Sum
-open import Data.Product
-open import Data.Nat
-open import Data.Fin hiding (_+_)
-
-data U : Set where
-  ZERO  : U
-  ONE   : U
-  PLUS  : U → U → U
-  TIMES : U → U → U
-
-size : U → ℕ
-size ZERO          = 0
-size ONE           = 1
-size (PLUS t₁ t₂)  = size t₁ + size t₂
-size (TIMES t₁ t₂) = size t₁ * size t₂
-
-infix  30 _⟷_
-infixr 50 _◎_
-
-data _⟷_ : U → U → Set where
-  unite₊  : {t : U} → PLUS ZERO t ⟷ t
-  uniti₊  : {t : U} → t ⟷ PLUS ZERO t
-  swap₊   : {t₁ t₂ : U} → PLUS t₁ t₂ ⟷ PLUS t₂ t₁
-  assocl₊ : {t₁ t₂ t₃ : U} → PLUS t₁ (PLUS t₂ t₃) ⟷ PLUS (PLUS t₁ t₂) t₃
-  assocr₊ : {t₁ t₂ t₃ : U} → PLUS (PLUS t₁ t₂) t₃ ⟷ PLUS t₁ (PLUS t₂ t₃)
-  unite⋆  : {t : U} → TIMES ONE t ⟷ t
-  uniti⋆  : {t : U} → t ⟷ TIMES ONE t
-  swap⋆   : {t₁ t₂ : U} → TIMES t₁ t₂ ⟷ TIMES t₂ t₁
-  assocl⋆ : {t₁ t₂ t₃ : U} → TIMES t₁ (TIMES t₂ t₃) ⟷ TIMES (TIMES t₁ t₂) t₃
-  assocr⋆ : {t₁ t₂ t₃ : U} → TIMES (TIMES t₁ t₂) t₃ ⟷ TIMES t₁ (TIMES t₂ t₃)
-  absorbr  : {t : U} → TIMES ZERO t ⟷ ZERO
-  absorbl : {t : U} → TIMES t ZERO ⟷ ZERO
-  factorzr : {t : U} → ZERO ⟷ TIMES t ZERO
-  factorzl : {t : U} → ZERO ⟷ TIMES ZERO t
-  dist    : {t₁ t₂ t₃ : U} → TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) 
-  factor  : {t₁ t₂ t₃ : U} → PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
-  id⟷    : {t : U} → t ⟷ t
-  _◎_     : {t₁ t₂ t₃ : U}    → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
-  _⊕_     : {t₁ t₂ t₃ t₄ : U} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
-  _⊗_     : {t₁ t₂ t₃ t₄ : U} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
-
-! : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
-! unite₊    = uniti₊
-! uniti₊    = unite₊
-! swap₊     = swap₊
-! assocl₊   = assocr₊
-! assocr₊   = assocl₊
-! unite⋆    = uniti⋆
-! uniti⋆    = unite⋆
-! swap⋆     = swap⋆
-! assocl⋆   = assocr⋆
-! assocr⋆   = assocl⋆
-! absorbl     = factorzr
-! absorbr     = factorzl
-! factorzl  = absorbr
-! factorzr = absorbl
-! dist      = factor 
-! factor    = dist
-! id⟷      = id⟷
-! (c₁ ◎ c₂) = ! c₂ ◎ ! c₁ 
-! (c₁ ⊕ c₂) = (! c₁) ⊕ (! c₂)
-! (c₁ ⊗ c₂) = (! c₁) ⊗ (! c₂)
-
-⟦_⟧ : U → Set 
-⟦ ZERO ⟧        = ⊥ 
-⟦ ONE ⟧         = ⊤
-⟦ PLUS t₁ t₂ ⟧  = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
-⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
-
-infix  30 _⇔_
-
-data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set where
-  assoc◎l : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
-          (c₁ ◎ (c₂ ◎ c₃)) ⇔ ((c₁ ◎ c₂) ◎ c₃)
-  assoc◎r : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₃ ⟷ t₄} → 
-          ((c₁ ◎ c₂) ◎ c₃) ⇔ (c₁ ◎ (c₂ ◎ c₃))
-  assocl⊕l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          ((c₁ ⊕ (c₂ ⊕ c₃)) ◎ assocl₊) ⇔ (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃))
-  assocl⊕r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          (assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃)) ⇔ ((c₁ ⊕ (c₂ ⊕ c₃)) ◎ assocl₊)
-  assocl⊗l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          ((c₁ ⊗ (c₂ ⊗ c₃)) ◎ assocl⋆) ⇔ (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃))
-  assocl⊗r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃)) ⇔ ((c₁ ⊗ (c₂ ⊗ c₃)) ◎ assocl⋆)
-  assocr⊕r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          (((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊) ⇔ (assocr₊ ◎ (c₁ ⊕ (c₂ ⊕ c₃)))
-  assocr⊗l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-           (assocr⋆ ◎ (c₁ ⊗ (c₂ ⊗ c₃))) ⇔ (((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆)
-  assocr⊗r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          (((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆) ⇔ (assocr⋆ ◎ (c₁ ⊗ (c₂ ⊗ c₃)))
-  assocr⊕l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-           (assocr₊ ◎ (c₁ ⊕ (c₂ ⊕ c₃))) ⇔ (((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊)
-  assoc⊗l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          (c₁ ⊗ (c₂ ⊗ c₃)) ⇔ (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆)
-  assoc⊗r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          (assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆) ⇔ (c₁ ⊗ (c₂ ⊗ c₃))
-  dist⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          ((c₁ ⊕ c₂) ⊗ c₃) ⇔ (dist ◎ ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃)) ◎ factor)
-  factor⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          (dist ◎ ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃)) ◎ factor) ⇔ ((c₁ ⊕ c₂) ⊗ c₃)
-  idl◎l   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (id⟷ ◎ c) ⇔ c
-  idl◎r   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ id⟷ ◎ c
-  idr◎l   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (c ◎ id⟷) ⇔ c
-  idr◎r   : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ (c ◎ id⟷) 
-  linv◎l  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (c ◎ ! c) ⇔ id⟷
-  linv◎r  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ⇔ (c ◎ ! c) 
-  rinv◎l  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (! c ◎ c) ⇔ id⟷
-  rinv◎r  : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → id⟷ ⇔ (! c ◎ c) 
-  unitel₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
-          (unite₊ ◎ c₂) ⇔ ((c₁ ⊕ c₂) ◎ unite₊)
-  uniter₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
-          ((c₁ ⊕ c₂) ◎ unite₊) ⇔ (unite₊ ◎ c₂)
-  unitil₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
-          (uniti₊ ◎ (c₁ ⊕ c₂)) ⇔ (c₂ ◎ uniti₊)
-  unitir₊⇔ : {t₁ t₂ : U} {c₁ : ZERO ⟷ ZERO} {c₂ : t₁ ⟷ t₂} → 
-          (c₂ ◎ uniti₊) ⇔ (uniti₊ ◎ (c₁ ⊕ c₂))
-  unitial₊⇔ : {t₁ t₂ : U} → (uniti₊ {PLUS t₁ t₂} ◎ assocl₊) ⇔ (uniti₊ ⊕ id⟷)
-  unitiar₊⇔ : {t₁ t₂ : U} → (uniti₊ {t₁} ⊕ id⟷ {t₂}) ⇔ (uniti₊ ◎ assocl₊)
-  swapl₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
-          (swap₊ ◎ (c₁ ⊕ c₂)) ⇔ ((c₂ ⊕ c₁) ◎ swap₊)
-  swapr₊⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
-          ((c₂ ⊕ c₁) ◎ swap₊) ⇔ (swap₊ ◎ (c₁ ⊕ c₂))
-  unitel⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
-          (unite⋆ ◎ c₂) ⇔ ((c₁ ⊗ c₂) ◎ unite⋆)
-  uniter⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
-          ((c₁ ⊗ c₂) ◎ unite⋆) ⇔ (unite⋆ ◎ c₂)
-  unitil⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
-          (uniti⋆ ◎ (c₁ ⊗ c₂)) ⇔ (c₂ ◎ uniti⋆)
-  unitir⋆⇔ : {t₁ t₂ : U} {c₁ : ONE ⟷ ONE} {c₂ : t₁ ⟷ t₂} → 
-          (c₂ ◎ uniti⋆) ⇔ (uniti⋆ ◎ (c₁ ⊗ c₂))
-  unitial⋆⇔ : {t₁ t₂ : U} → (uniti⋆ {TIMES t₁ t₂} ◎ assocl⋆) ⇔ (uniti⋆ ⊗ id⟷)
-  unitiar⋆⇔ : {t₁ t₂ : U} → (uniti⋆ {t₁} ⊗ id⟷ {t₂}) ⇔ (uniti⋆ ◎ assocl⋆)
-  swapl⋆⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
-          (swap⋆ ◎ (c₁ ⊗ c₂)) ⇔ ((c₂ ⊗ c₁) ◎ swap⋆)
-  swapr⋆⇔ : {t₁ t₂ t₃ t₄ : U} {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} → 
-          ((c₂ ⊗ c₁) ◎ swap⋆) ⇔ (swap⋆ ◎ (c₁ ⊗ c₂))
-  swapfl⋆⇔ : {t₁ t₂ t₃ : U} → 
-          (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor) ⇔ 
-          (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷))
-  swapfr⋆⇔ : {t₁ t₂ t₃ : U} → 
-          (factor ◎ (swap₊ {t₂} {t₁} ⊗ id⟷)) ⇔ 
-         (swap₊ {TIMES t₂ t₃} {TIMES t₁ t₃} ◎ factor)
-  id⇔     : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → c ⇔ c
-  trans⇔  : {t₁ t₂ : U} {c₁ c₂ c₃ : t₁ ⟷ t₂} → 
-         (c₁ ⇔ c₂) → (c₂ ⇔ c₃) → (c₁ ⇔ c₃)
-  _⊡_  : {t₁ t₂ t₃ : U} 
-         {c₁ : t₁ ⟷ t₂} {c₂ : t₂ ⟷ t₃} {c₃ : t₁ ⟷ t₂} {c₄ : t₂ ⟷ t₃} → 
-         (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ◎ c₂) ⇔ (c₃ ◎ c₄)
-  resp⊕⇔  : {t₁ t₂ t₃ t₄ : U} 
-         {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
-         (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊕ c₂) ⇔ (c₃ ⊕ c₄)
-  resp⊗⇔  : {t₁ t₂ t₃ t₄ : U} 
-         {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₁ ⟷ t₂} {c₄ : t₃ ⟷ t₄} → 
-         (c₁ ⇔ c₃) → (c₂ ⇔ c₄) → (c₁ ⊗ c₂) ⇔ (c₃ ⊗ c₄)
-  -- below are the combinators added for the RigCategory structure
-  id⟷⊕id⟷⇔ : {t₁ t₂ : U} → (id⟷ {t₁} ⊕ id⟷ {t₂}) ⇔ id⟷
-  split⊕-id⟷ : {t₁ t₂ : U} → (id⟷ {PLUS t₁ t₂}) ⇔ (id⟷ ⊕ id⟷)
-  hom⊕◎⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₅ ⟷ t₁} {c₂ : t₆ ⟷ t₂}
-        {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
-        ((c₁ ◎ c₃) ⊕ (c₂ ◎ c₄)) ⇔ ((c₁ ⊕ c₂) ◎ (c₃ ⊕ c₄))
-  hom◎⊕⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₅ ⟷ t₁} {c₂ : t₆ ⟷ t₂}
-        {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
-         ((c₁ ⊕ c₂) ◎ (c₃ ⊕ c₄)) ⇔ ((c₁ ◎ c₃) ⊕ (c₂ ◎ c₄))
-  id⟷⊗id⟷⇔ : {t₁ t₂ : U} → (id⟷ {t₁} ⊗ id⟷ {t₂}) ⇔ id⟷
-  split⊗-id⟷ : {t₁ t₂ : U} → (id⟷ {TIMES t₁ t₂}) ⇔ (id⟷ ⊗ id⟷)
-  hom⊗◎⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₅ ⟷ t₁} {c₂ : t₆ ⟷ t₂}
-        {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
-        ((c₁ ◎ c₃) ⊗ (c₂ ◎ c₄)) ⇔ ((c₁ ⊗ c₂) ◎ (c₃ ⊗ c₄))
-  hom◎⊗⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₅ ⟷ t₁} {c₂ : t₆ ⟷ t₂}
-        {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
-         ((c₁ ⊗ c₂) ◎ (c₃ ⊗ c₄)) ⇔ ((c₁ ◎ c₃) ⊗ (c₂ ◎ c₄))
-  triangle⊕l : {t₁ t₂ : U} →
-    ((swap₊ ◎ unite₊ {t₁}) ⊕ id⟷ {t₂}) ⇔ assocr₊ ◎ (id⟷ ⊕ unite₊)
-  triangle⊕r : {t₁ t₂ : U} →
-    (assocr₊ ◎ (id⟷ {t₁} ⊕ unite₊ {t₂})) ⇔ ((swap₊ ◎ unite₊) ⊕ id⟷)
-  triangle⊗l : {t₁ t₂ : U} →
-    ((swap⋆ ◎ unite⋆ {t₁}) ⊗ id⟷ {t₂}) ⇔ assocr⋆ ◎ (id⟷ ⊗ unite⋆)
-  triangle⊗r : {t₁ t₂ : U} →
-    (assocr⋆ ◎ (id⟷ {t₁} ⊗ unite⋆ {t₂})) ⇔ ((swap⋆ ◎ unite⋆) ⊗ id⟷)
-  pentagon⊕l : {t₁ t₂ t₃ t₄ : U} →
-    assocr₊ ◎ (assocr₊ {t₁} {t₂} {PLUS t₃ t₄}) ⇔ ((assocr₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ assocr₊)
-  pentagon⊕r : {t₁ t₂ t₃ t₄ : U} →
-    ((assocr₊ {t₁} {t₂} {t₃} ⊕ id⟷ {t₄}) ◎ assocr₊) ◎ (id⟷ ⊕ assocr₊) ⇔ assocr₊ ◎ assocr₊
-  pentagon⊗l : {t₁ t₂ t₃ t₄ : U} →
-    assocr⋆ ◎ (assocr⋆ {t₁} {t₂} {TIMES t₃ t₄}) ⇔ ((assocr⋆ ⊗ id⟷) ◎ assocr⋆) ◎ (id⟷ ⊗ assocr⋆)
-  pentagon⊗r : {t₁ t₂ t₃ t₄ : U} →
-    ((assocr⋆ {t₁} {t₂} {t₃} ⊗ id⟷ {t₄}) ◎ assocr⋆) ◎ (id⟷ ⊗ assocr⋆) ⇔ assocr⋆ ◎ assocr⋆
-  hexagonr⊕l : {t₁ t₂ t₃ : U} →
-     (assocr₊ ◎ swap₊) ◎ assocr₊ {t₁} {t₂} {t₃} ⇔ ((swap₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ swap₊)
-  hexagonr⊕r : {t₁ t₂ t₃ : U} →
-     ((swap₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ swap₊) ⇔ (assocr₊ ◎ swap₊) ◎ assocr₊ {t₁} {t₂} {t₃}
-  hexagonl⊕l : {t₁ t₂ t₃ : U} →
-     (assocl₊ ◎ swap₊) ◎ assocl₊ {t₁} {t₂} {t₃} ⇔ ((id⟷ ⊕ swap₊) ◎ assocl₊) ◎ (swap₊ ⊕ id⟷)
-  hexagonl⊕r : {t₁ t₂ t₃ : U} →
-     ((id⟷ ⊕ swap₊) ◎ assocl₊) ◎ (swap₊ ⊕ id⟷) ⇔ (assocl₊ ◎ swap₊) ◎ assocl₊ {t₁} {t₂} {t₃}
-  hexagonr⊗l : {t₁ t₂ t₃ : U} →
-     (assocr⋆ ◎ swap⋆) ◎ assocr⋆ {t₁} {t₂} {t₃} ⇔ ((swap⋆ ⊗ id⟷) ◎ assocr⋆) ◎ (id⟷ ⊗ swap⋆)
-  hexagonr⊗r : {t₁ t₂ t₃ : U} →
-     ((swap⋆ ⊗ id⟷) ◎ assocr⋆) ◎ (id⟷ ⊗ swap⋆) ⇔ (assocr⋆ ◎ swap⋆) ◎ assocr⋆ {t₁} {t₂} {t₃}
-  hexagonl⊗l : {t₁ t₂ t₃ : U} →
-     (assocl⋆ ◎ swap⋆) ◎ assocl⋆ {t₁} {t₂} {t₃} ⇔ ((id⟷ ⊗ swap⋆) ◎ assocl⋆) ◎ (swap⋆ ⊗ id⟷)
-  hexagonl⊗r : {t₁ t₂ t₃ : U} →
-     ((id⟷ ⊗ swap⋆) ◎ assocl⋆) ◎ (swap⋆ ⊗ id⟷) ⇔ (assocl⋆ ◎ swap⋆) ◎ assocl⋆ {t₁} {t₂} {t₃}
-  absorbl⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
-    (c₁ ⊗ id⟷ {ZERO}) ◎ absorbl ⇔ absorbl ◎ id⟷ {ZERO}
-  absorbl⇔r : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
-     absorbl ◎ id⟷ {ZERO} ⇔ (c₁ ⊗ id⟷ {ZERO}) ◎ absorbl
-  absorbr⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
-    (id⟷ {ZERO} ⊗ c₁) ◎ absorbr ⇔ absorbr ◎ id⟷ {ZERO}
-  absorbr⇔r : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
-     absorbr ◎ id⟷ {ZERO} ⇔ (id⟷ {ZERO} ⊗ c₁) ◎ absorbr
-  factorzl⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
-    id⟷ ◎ factorzl ⇔ factorzl ◎ (id⟷ ⊗ c₁)
-  factorzl⇔r : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
-     factorzl ◎ (id⟷ {ZERO} ⊗ c₁) ⇔ id⟷ {ZERO} ◎ factorzl
-  factorzr⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
-     id⟷ ◎ factorzr ⇔ factorzr ◎ (c₁ ⊗ id⟷)
-  factorzr⇔r : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
-     factorzr ◎ (c₁ ⊗ id⟷) ⇔ id⟷ ◎ factorzr
+open import PiU
+open import PiLevel0
+open import Pi0Examples
+open import PiLevel1
+open import Pi1Examples
 \end{code}
 }
 
@@ -433,6 +206,44 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
 %% \jc{Also: double-blind this year!  I guess we need to omit our names.
 %% I don't think the text will need changed for that.}
 %% \url{https://github.com/JacquesCarette/pi-dual}
+
+The elementary building blocks of type theory are the empty type
+($\bot$), the unit type ($\top$), the sum type ($\uplus$), and the
+product type ($\times$). The traditional Curry-Howard isomorphism
+which goes back to at least 1969 relates these types to logical
+propositions as follows: the type $\bot$ corresponds to the absurd
+proposition with no proof; the type $\top$ corresponds to the
+trivially true proposition; the type $\tau_1 \uplus \tau_2$
+corresponds to the disjunction of the corresponding propositions, and
+the type $\tau_1 \times \tau_2$ corresponds to the conjunction of the
+corresponding propositions. The following tautologies of propositional
+logic therefore give rise to functions witnessing the back-and-forth
+transformations:
+\[\begin{array}{rcl}
+\tau \uplus \tau  &\Leftrightarrow& \tau \\
+ \tau \times \tau  &\Leftrightarrow& \tau \\
+ (\tau_1 \times \tau_2) \uplus \tau_3  &\Leftrightarrow& 
+  (\tau_1 \uplus \tau_3) \times (\tau_2 \uplus \tau_3) 
+\end{array}\]
+
+The connection to logic, as inspiring as it is, is however not
+directly useful if one is concerned with \emph{type isomorphisms}. The
+study of type isomorphisms became recently popular during at least two
+short periods: in the early 1990s when they were used to search large
+libraries, and in the mid 2000s when they were studied from a
+categorical perspective. In the last few years, type isomorphisms
+became one of the central concepts in homotopy type theory which is
+entirely based on type equivalences. 
+
+The question we ask is whether there is a natural correspondence, in
+the style of the Curry-Howard correspondence between types and some
+existing mathematical entities, which would bring forth the structure
+of type isomorphisms. We argue that semirings and their
+categorification are exactly these entities. 
+
+\newpage
+
+
 
 Because physical laws obey various conservation principles (including
 conservation of information) and because computation is fundamentally
@@ -1145,75 +956,75 @@ As the language is reversible, a reasonable starting point would then
 be to define forward and backward evaluators with the following
 signatures:
 
-\begin{code}
-eval   : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
-evalB  : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧
-\end{code}
-\AgdaHide{
-\begin{code}
-eval unite₊ (inj₁ ())
-eval unite₊ (inj₂ v) = v
-eval uniti₊ v = inj₂ v
-eval swap₊ (inj₁ v) = inj₂ v
-eval swap₊ (inj₂ v) = inj₁ v
-eval assocl₊ (inj₁ v) = inj₁ (inj₁ v)
-eval assocl₊ (inj₂ (inj₁ v)) = inj₁ (inj₂ v)
-eval assocl₊ (inj₂ (inj₂ v)) = inj₂ v
-eval assocr₊ (inj₁ (inj₁ v)) = inj₁ v
-eval assocr₊ (inj₁ (inj₂ v)) = inj₂ (inj₁ v)
-eval assocr₊ (inj₂ v) = inj₂ (inj₂ v)
-eval unite⋆ (tt , v) = v
-eval uniti⋆ v = (tt , v)
-eval swap⋆ (v₁ , v₂) = (v₂ , v₁)
-eval assocl⋆ (v₁ , (v₂ , v₃)) = ((v₁ , v₂) , v₃)
-eval assocr⋆ ((v₁ , v₂) , v₃) = (v₁ , (v₂ , v₃))
-eval absorbr (() , _)
-eval absorbl (_ , ())
-eval factorzl ()
-eval factorzr ()
-eval dist (inj₁ v₁ , v₃) = inj₁ (v₁ , v₃)
-eval dist (inj₂ v₂ , v₃) = inj₂ (v₂ , v₃)
-eval factor (inj₁ (v₁ , v₃)) = (inj₁ v₁ , v₃)
-eval factor (inj₂ (v₂ , v₃)) = (inj₂ v₂ , v₃)
-eval id⟷ v = v
-eval (c₁ ◎ c₂) v = eval c₂ (eval c₁ v)
-eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
-eval (c₁ ⊕ c₂) (inj₂ v) = inj₂ (eval c₂ v)
-eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
+-- \begin{code}
+-- eval   : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
+-- evalB  : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧
+-- \end{code}
+-- \AgdaHide{
+-- \begin{code}
+-- eval unite₊ (inj₁ ())
+-- eval unite₊ (inj₂ v) = v
+-- eval uniti₊ v = inj₂ v
+-- eval swap₊ (inj₁ v) = inj₂ v
+-- eval swap₊ (inj₂ v) = inj₁ v
+-- eval assocl₊ (inj₁ v) = inj₁ (inj₁ v)
+-- eval assocl₊ (inj₂ (inj₁ v)) = inj₁ (inj₂ v)
+-- eval assocl₊ (inj₂ (inj₂ v)) = inj₂ v
+-- eval assocr₊ (inj₁ (inj₁ v)) = inj₁ v
+-- eval assocr₊ (inj₁ (inj₂ v)) = inj₂ (inj₁ v)
+-- eval assocr₊ (inj₂ v) = inj₂ (inj₂ v)
+-- eval unite⋆ (tt , v) = v
+-- eval uniti⋆ v = (tt , v)
+-- eval swap⋆ (v₁ , v₂) = (v₂ , v₁)
+-- eval assocl⋆ (v₁ , (v₂ , v₃)) = ((v₁ , v₂) , v₃)
+-- eval assocr⋆ ((v₁ , v₂) , v₃) = (v₁ , (v₂ , v₃))
+-- eval absorbr (() , _)
+-- eval absorbl (_ , ())
+-- eval factorzl ()
+-- eval factorzr ()
+-- eval dist (inj₁ v₁ , v₃) = inj₁ (v₁ , v₃)
+-- eval dist (inj₂ v₂ , v₃) = inj₂ (v₂ , v₃)
+-- eval factor (inj₁ (v₁ , v₃)) = (inj₁ v₁ , v₃)
+-- eval factor (inj₂ (v₂ , v₃)) = (inj₂ v₂ , v₃)
+-- eval id⟷ v = v
+-- eval (c₁ ◎ c₂) v = eval c₂ (eval c₁ v)
+-- eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
+-- eval (c₁ ⊕ c₂) (inj₂ v) = inj₂ (eval c₂ v)
+-- eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
 
--- useful to have the backwards eval too
+-- -- useful to have the backwards eval too
 
-evalB unite₊ x = inj₂ x
-evalB uniti₊ (inj₁ ())
-evalB uniti₊ (inj₂ y) = y
-evalB swap₊ (inj₁ x) = inj₂ x
-evalB swap₊ (inj₂ y) = inj₁ y
-evalB assocl₊ (inj₁ (inj₁ x)) = inj₁ x
-evalB assocl₊ (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
-evalB assocl₊ (inj₂ y) = inj₂ (inj₂ y)
-evalB assocr₊ (inj₁ x) = inj₁ (inj₁ x)
-evalB assocr₊ (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
-evalB assocr₊ (inj₂ (inj₂ y)) = inj₂ y
-evalB unite⋆ x = tt , x
-evalB uniti⋆ (tt , x) = x
-evalB swap⋆ (x , y) = y , x
-evalB assocl⋆ ((x , y) , z) = x , y , z
-evalB assocr⋆ (x , y , z) = (x , y) , z
-evalB absorbr ()
-evalB absorbl ()
-evalB factorzr (_ , ())
-evalB factorzl (() , _)
-evalB dist (inj₁ (x , y)) = inj₁ x , y
-evalB dist (inj₂ (x , y)) = inj₂ x , y
-evalB factor (inj₁ x , z) = inj₁ (x , z)
-evalB factor (inj₂ y , z) = inj₂ (y , z)
-evalB id⟷ x = x
-evalB (c₀ ◎ c₁) x = evalB c₀ (evalB c₁ x)
-evalB (c₀ ⊕ c₁) (inj₁ x) = inj₁ (evalB c₀ x)
-evalB (c₀ ⊕ c₁) (inj₂ y) = inj₂ (evalB c₁ y)
-evalB (c₀ ⊗ c₁) (x , y) = evalB c₀ x , evalB c₁ y
-\end{code}
-}
+-- evalB unite₊ x = inj₂ x
+-- evalB uniti₊ (inj₁ ())
+-- evalB uniti₊ (inj₂ y) = y
+-- evalB swap₊ (inj₁ x) = inj₂ x
+-- evalB swap₊ (inj₂ y) = inj₁ y
+-- evalB assocl₊ (inj₁ (inj₁ x)) = inj₁ x
+-- evalB assocl₊ (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
+-- evalB assocl₊ (inj₂ y) = inj₂ (inj₂ y)
+-- evalB assocr₊ (inj₁ x) = inj₁ (inj₁ x)
+-- evalB assocr₊ (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
+-- evalB assocr₊ (inj₂ (inj₂ y)) = inj₂ y
+-- evalB unite⋆ x = tt , x
+-- evalB uniti⋆ (tt , x) = x
+-- evalB swap⋆ (x , y) = y , x
+-- evalB assocl⋆ ((x , y) , z) = x , y , z
+-- evalB assocr⋆ (x , y , z) = (x , y) , z
+-- evalB absorbr ()
+-- evalB absorbl ()
+-- evalB factorzr (_ , ())
+-- evalB factorzl (() , _)
+-- evalB dist (inj₁ (x , y)) = inj₁ x , y
+-- evalB dist (inj₂ (x , y)) = inj₂ x , y
+-- evalB factor (inj₁ x , z) = inj₁ (x , z)
+-- evalB factor (inj₂ y , z) = inj₂ (y , z)
+-- evalB id⟷ x = x
+-- evalB (c₀ ◎ c₁) x = evalB c₀ (evalB c₁ x)
+-- evalB (c₀ ⊕ c₁) (inj₁ x) = inj₁ (evalB c₀ x)
+-- evalB (c₀ ⊕ c₁) (inj₂ y) = inj₂ (evalB c₁ y)
+-- evalB (c₀ ⊗ c₁) (x , y) = evalB c₀ x , evalB c₁ y
+-- \end{code}
+-- }
 
 \smallskip
 
@@ -1318,7 +1129,7 @@ sharing the same source and target relate two each other.
 \begin{figure*}
 \begin{center}
 \begin{tikzcd}[column sep=tiny]
-((A \otimes B) \otimes C) \otimes D
+((A \otimes B) \otimes C) \otimes D)
   \arrow[rr, "\alpha"]
   \arrow[d, "\alpha \otimes \mathrm{id}_D"']
 && (A \otimes B) \otimes (C \otimes D)
@@ -1328,6 +1139,7 @@ sharing the same source and target relate two each other.
   \arrow[dr, "\alpha"']
 && A \otimes (B \otimes (C \otimes D))
    \arrow[dl, "\mathrm{id}_A \otimes \alpha"]
+\\
 & A \otimes ((B \otimes C) \otimes D)
 \end{tikzcd}
 \end{center}
@@ -1615,13 +1427,13 @@ open import TypeEquiv as TE
 
 \smallskip
 
-\begin{code}
-distl-swap₊-lemma : {A B C : Set} → (x : (A × (B ⊎ C))) →
-  TE.distl (map× F.id TE.swap₊ x) P.≡
-  (TE.swap₊ (distl x))
-distl-swap₊-lemma (x , inj₁ y) = P.refl
-distl-swap₊-lemma (x , inj₂ y) = P.refl
-\end{code}
+-- \begin{code}
+-- distl-swap₊-lemma : {A B C : Set} → (x : (A × (B ⊎ C))) →
+--   TE.distl (map× F.id TE.swap₊ x) P.≡
+--   (TE.swap₊ (distl x))
+-- distl-swap₊-lemma (x , inj₁ y) = P.refl
+-- distl-swap₊-lemma (x , inj₂ y) = P.refl
+-- \end{code}
 
 \smallskip
 
