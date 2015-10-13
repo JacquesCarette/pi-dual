@@ -232,38 +232,34 @@ types, the first tautology above states that the type $\tau \times
 \tau$ is inhabited iff the type $\tau$ is inhabited. Furthermore, the
 proofs of the two implications give rise to two functions that produce
 an element from one type given an element of the other. This framework
-is however of no direct help if one is concerned with other richer
+is however of no direct help if one is concerned with other, richer
 properties of types and their relationships. For example, type
-isomorphisms are an important property of types that is more refined
-than mere inhabitance of types as it clearly distinguishes $\tau
+isomorphisms are an important relation between types that is more refined
+than mere inhabitance of types as they clearly distinguishes $\tau
 \times \tau$ and $\tau$.
 
 The study of type isomorphisms became recently popular during at least
 two short periods: in the early 1990s when they were used to search
 large libraries, and in the mid 2000s when they were studied from a
 categorical perspective. In the last few years, type isomorphisms
-became one of the central concepts in homotopy type theory which is
-entirely based on type equivalences. These connections exposed even
-more interesting structure of type isomorphisms at higher
-levels. Consider the two isomorphisms between the type $\top + \top$
+became one of the central concepts in homotopy type theory, where
+type equivalences feature prominently in the \emph{univalence axiom}.
+These connections exposed that there is even
+more interesting structure arising from type isomorphisms at higher
+levels. For example, consider the two isomorphisms between the type $\top + \top$
 and itself. One of these is the identity and the other is the twist
 map. These isomorphisms are themselves ``not equivalent'' one level up
 in the sense to be formalized. And the chain of equivalences continues. 
 
 The question we ask therefore is whether there is a natural
-correspondence, in the style of the Curry-Howard correspondence
+correspondence, in the style of the Curry-Howard correspondence,
 between types and some existing mathematical entities, which would
 bring forth the structure of type isomorphisms and their equivalences
 at higher levels. We argue that semirings and their categorification
 are exactly these entities.
 
 
-
-
-
-
-\newpage
-
+\begin{comment}
 
 
 Because physical laws obey various conservation principles (including
@@ -330,6 +326,13 @@ of types. What emerges from our study are the following results:
   equivalences of equivalences of types as specified by the first set
   of rules.
 \end{itemize}
+
+\end{comment}
+
+\todo{Restore some of the link to physics-based computation and
+reversible computation.  Detail what our contributions are.}  
+
+\todo{The outline will need to be tweaked once it settles}
 
 \paragraph*{Outline.} The next section reviews equivalences between
 finite types and relates them to various commutative semiring
