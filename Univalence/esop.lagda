@@ -497,10 +497,9 @@ semiring (up to $\simeq$).
 \begin{proof}
   As expected, the additive unit is $\bot$, the multiplicative unit
   is~$\top$, and the two binary operations are $\uplus$ and $\times$.
+  The functions witnessing explicit equivalences are straightforward.
+  \qed
 \end{proof}
-
-%% \jc{Do we want to have a bunch of appendices, or perhaps a web
-%% link, to all the Agda code which formalizes all of this?}
 
 \noindent For example, for arbitrary types $A$, $B$, and $C$, we have
 equivalences such as:
@@ -513,8 +512,9 @@ A \times (B \uplus C) &\simeq& (A \times B) \uplus (A \times C)
 \end{array}\]
 
 One of the advantages of using equivalence $\simeq$ instead of strict
-equality $=$ is that we can reason one level up about the type of all
-equivalences $\textsc{eq}_{A,B}$. For a given $A$ and $B$, the
+equality $=$ is that we can form a type of all equivalences
+$\textsc{eq}_{A,B}$, and then investigate its structure.  In particular,
+for a given $A$ and $B$, the
 elements of $\textsc{eq}_{A,B}$ are all the ways in which we can prove
 $A \simeq B$. For example,
 $\textsc{eq}_{\AgdaDatatype {Bool},\AgdaDatatype  {Bool}}$ has two
@@ -524,9 +524,12 @@ for finite types $A$ and $B$,
 the type $\textsc{eq}_{A,B}$ is only inhabited if $A$ and~$B$ have the
 same size in which case the type has $|A|~!$ (factorial of the size of
 $A$) elements witnessing the various possible identifications of $A$
-and $B$. The type of all equivalences has some non-trivial structure:
-in particular, it is itself a commutative semiring.
+and $B$. The type of all equivalences has some non-trivial structure,
+which will be examined in detail in section~\ref{sec:categorification}.
 
+\todo{find a good home for the definition of equivalence-of-equivalence.}
+\todo{figure out when to first mention $\Pi$ and cite.}
+\begin{comment}
 \begin{theorem}
 \label{thm:eqeq}
   The type of all equivalences $\textsc{eq}_{A,B}$ for finite types
@@ -562,6 +565,7 @@ should not be silently or implicitly identified, we first recast Fiore
 et. al's result in the next section, making explicit that the
 commutative semiring structure can be defined up to the HoTT relation
 of \emph{type equivalence} instead of strict equality~$=$.
+\end{comment}
 
 %%%%%%%%%%%%
 \subsection{Commutative Semirings of Permutations}
