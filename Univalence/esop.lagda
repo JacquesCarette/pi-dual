@@ -389,20 +389,55 @@ The elementary building blocks of type theory are the empty type
   type}. Traditional type theory also includes several facilities for
 building infinite types, most notably function types. We will however
 not address infinite types in this paper except for a discussion in
-Sec.~\ref{intc}. We will instead focus on thoroughly understanding the
-computational structures related to finite types.
+Sec.~\ref{sec:lim}. We will instead focus on thoroughly understanding the
+computational structures related to types, with particular emphasis on
+finite types.  Note that we will always explicitly indicate when our
+results require finiteness.
 
-An essential property of a finite type $A$ is its size $|A|$ which is
-defined as follows:
+An essential property of a finite type $A$ is its size $|A|$, defined as
 \[\begin{array}{rcl}
 |\bot| &=& 0 \\
 |\top| &=& 1 \\
 |A \uplus B| &=& |A| + |B| \\
 |A \times B| &=& |A| * |B| 
 \end{array}\] 
+
+There are several equivalent definitions of the notion of equivalence%
+\footnote{For reasons beyond the scope of this paper, we do not use any
+of the definitions of equivalence which make it a \emph{mere proposition},
+as we want a definition which is syntactically symmetric.}
+of types. For concreteness, we use the following definition. 
+
+% Equiv:qinv
+\begin{definition}[Quasi-inverse]
+\label{def:quasi}
+For a function $f : A \rightarrow B$, a \emph{quasi-inverse} is a
+triple $(g, \alpha, \beta)$, consisting of a function
+$g : B \rightarrow A$ and homotopies
+$\alpha : f \circ g = \mathrm{id}_B$ and
+$\beta : g \circ f = \mathrm{id}_A$.
+\end{definition}
+ 
+\begin{definition}[Equivalence of types]
+  Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
+  function $f : A \rightarrow B$ together with a quasi-inverse for $f$.
+\end{definition}
+ 
+The definition of equivalence is parameterized by a function~$f$:
+we are concerned with not just the fact that two types are
+equivalent, but with the precise way in which they are equivalent. For
+example, as mentioned earlier, there are two equivalences between the type
+\AgdaDatatype{Bool} and itself: one that uses the identity for $f$
+(and hence for $g$) and one that uses boolean negation for $f$ (and
+hence for $g$). These two equivalences are themselves \emph{not}
+equivalent: each of them can be used to ``transport'' properties of
+\AgdaDatatype {Bool} in a different way.
+
 A result by \citet{Fiore:2004,fiore-remarks} completely characterizes
 the isomorphisms between finite types using the axioms of commutative
-semirings, whose definition we recall below. 
+semirings, whose definition we now turn to.
+
+\subsection{Semirings}
 
 \begin{definition}
   A \emph{commutative semiring} (sometimes called a \emph{commutative
@@ -426,57 +461,36 @@ a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
 
 We emphasize that, in the definition above, the axioms are satisfied
 up to strict equality $=$. The most famous instance of commutative
-semirings if, of course, the natural numbers. Intuitively, Fiore
-et. al's result states that one can interpret each type by its size,
-and that this identification validates the familiar properties of the
-natural numbers, and is in fact isomorphic to the commutative semiring
-of the natural numbers.
+semirings is, of course, the natural numbers $\mathbb{N}$.  We need
+to adapt this definition.
 
-Our work builds on this identification together with work by
-\citet{James:2012:IE:2103656.2103667} which introduced the $\Pi$
-family of languages whose core computations are these isomorphisms
-between finite types. Taking into account the growing-in-importance
-idea that isomorphisms have interesting computational content and
-should not be silently or implicitly identified, we first recast Fiore
-et. al's result in the next section, making explicit that the
-commutative semiring structure can be defined up to the HoTT relation
-of \emph{type equivalence} instead of strict equality~$=$.
+\begin{definition}
+Given an equivalence relation $\simeq$ on a set $R$, a 
+$\simeq$-semiring on $R$ is a semiring where $=$ is replaced by
+$\simeq$ in all the defining relations.
+\end{definition}
+
+It should be noted that, in Agda's standard library, semirings
+are axiomatized as $\simeq$-semirings.  This is because in constructive
+type theory, there is no global equality ($=$) predicate, and thus
+it is more natural to define notions which are relative to an
+equivalence relation.
 
 %%%%%%%%%%%%
 \subsection{Commutative Semirings of Types}
 
-There are several equivalent definitions of the notion of equivalence
-of types. For concreteness, we use the following definition. 
+Intuitively, Fiore et. al's result states that one can interpret each 
+finite type by its size, and that this identification validates the 
+familiar properties of the natural numbers, and is in fact isomorphic 
+to the commutative semiring of the natural numbers.
 
-\begin{definition}[Quasi-inverse]
-\label{def:quasi}
-For a function $f : A \rightarrow B$, a \emph{quasi-inverse} is a
-triple $(g, \alpha, \beta)$, consisting of a function
-$g : B \rightarrow A$ and homotopies
-$\alpha : f \circ g = \mathrm{id}_B$ and
-$\beta : g \circ f = \mathrm{id}_A$.
-\end{definition}
- 
-\begin{definition}[Equivalence of types]
-  Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
-  function $f : A \rightarrow B$ together with a quasi-inverse for $f$.
-\end{definition}
- 
-As the definition of equivalence is parameterized by a function~$f$,
-we are concerned with, not just the fact that two types are
-equivalent, but with the precise way in which they are equivalent. For
-example, there are two equivalences between the type
-\AgdaDatatype{Bool} and itself: one that uses the identity for $f$
-(and hence for $g$) and one that uses boolean negation for $f$ (and
-hence for $g$). These two equivalences are themselves \emph{not}
-equivalent: each of them can be used to ``transport'' properties of
-\AgdaDatatype {Bool} in a different way.
-
-It is straightforward to prove that the universe of types
+First, we do not need to assume finiteness to prove that
+the universe of types
 (\AgdaDatatype{Set} in Agda terminology) is a commutative semiring up
 to equivalence of types~$\simeq$.
 
-\begin{theorem}
+% TypeEquiv:typesCSR
+\begin{theorem}\label{thm:typesCSR}
 The collection of all types (\AgdaDatatype{Set}) forms a commutative 
 semiring (up to $\simeq$). 
 \end{theorem}
@@ -538,6 +552,16 @@ equivalences.  We could, in principle, consider a weaker notion of
 equivalence of equivalences and attempt to iterate the construction
 but for the purposes of modeling circuits and optimizations, it is
 sufficient to consider just one additional level.
+
+Our work builds on this identification together with work by
+\citet{James:2012:IE:2103656.2103667} which introduced the $\Pi$
+family of languages whose core computations are these isomorphisms
+between finite types. Taking into account the growing-in-importance
+idea that isomorphisms have interesting computational content and
+should not be silently or implicitly identified, we first recast Fiore
+et. al's result in the next section, making explicit that the
+commutative semiring structure can be defined up to the HoTT relation
+of \emph{type equivalence} instead of strict equality~$=$.
 
 %%%%%%%%%%%%
 \subsection{Commutative Semirings of Permutations}
@@ -2119,5 +2143,18 @@ variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
 %\softraggedright
 \bibliography{cites}
 
+\appendix
+
+\section{Code Roadmap}
+
+For those who wish to delve into the code, we give a quick roadmap here,
+with links between the results in our paper and where the formalization
+can be found.  We put module names in \texttt{typewriter} font below.
+
+Equivalences are defined in \texttt{Equiv}.  This is used in
+\texttt{TypeEquiv} to define equivalences between types; these are 
+assembled to show that \AgdaPrimitiveType{Set} has the structure of
+a $\simeq$-semiring, \AgdaFunction{typesCSR}, which is our
+Theorem~\ref{thm:typesCSR}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
