@@ -406,16 +406,39 @@ There are several equivalent definitions of the notion of equivalence%
 \footnote{For reasons beyond the scope of this paper, we do not use any
 of the definitions of equivalence which make it a \emph{mere proposition},
 as we want a definition which is syntactically symmetric.}
-of types. For concreteness, we use the following definition. 
+of types. Let us start with a definition which assumes extensionality:
 
-% Equiv:qinv
-\begin{definition}[Quasi-inverse]
+% Bad definition!
+\begin{definition}[Quasi-inverse, extensionally]
+\label{def:quasi-ext}
+For a function $f : A \rightarrow B$, an \emph{extensional quasi-inverse} is a
+triple $(g, \alpha, \beta)$, consisting of a function
+$g : B \rightarrow A$ which satisfies the two (named) equalities
+$\alpha : f \circ g = \mathrm{id}_B$ and
+$\beta : g \circ f = \mathrm{id}_A$.
+\end{definition}
+ 
+The above definition compares equality of functions (which is why
+we call it \emph{extensional}), which is well-known to be problematic
+for computational purposes.  Instead, we replace the equalities between
+functions with \emph{homotopies}, giving us
+
+\begin{definition}[homotopy]
+\label{def:homotopy}
+Two functions $f,g:A \rightarrow B$ are \emph{homotopic} if
+$\forall x:A. f(x) = g(x)$.
+\end{definition}
+
+\noindent It is easy to prove that homotopies (for any given function
+space $A \rightarrow B$) are an equivalence relation.
+
+\begin{definition}[Quasi-inverse, homotopically]
 \label{def:quasi}
 For a function $f : A \rightarrow B$, a \emph{quasi-inverse} is a
 triple $(g, \alpha, \beta)$, consisting of a function
-$g : B \rightarrow A$ and homotopies
-$\alpha : f \circ g = \mathrm{id}_B$ and
-$\beta : g \circ f = \mathrm{id}_A$.
+$g : B \rightarrow A$ and two homotopies
+$\alpha : f \circ g \sim \mathrm{id}_B$ and
+$\beta : g \circ f \sim \mathrm{id}_A$.
 \end{definition}
  
 \begin{definition}[Equivalence of types]
@@ -436,6 +459,8 @@ equivalent: each of them can be used to ``transport'' properties of
 A result by \citet{Fiore:2004,fiore-remarks} completely characterizes
 the isomorphisms between finite types using the axioms of commutative
 semirings, whose definition we now turn to.
+\jc{should we explicitly state this result?  Right now, we are rather
+implicit about it.}
 
 \subsection{Semirings}
 
@@ -570,6 +595,18 @@ of \emph{type equivalence} instead of strict equality~$=$.
 %%%%%%%%%%%%
 \subsection{Commutative Semirings of Permutations}
 
+\todo{Some of the theorems in here are correct, but the title is
+not.  Permutations do not form a semiring!  They do form a Rig
+though.  It is the difference between typed and untyped.  Because
+permutations are typed by two (!!) naturals, we need to go up a 
+level.  What is true is that there is a second semiring structure
+on the naturals, where the operations are the same, but the 
+equivalence relation is based on equivalences between finite sets.}
+
+\jc{the introductory material in the paragraph below is now bogus.
+I have fixed our definitions (to agree with our code), so that we
+don't have that confusion.  We need to figure out what we really 
+want to say here!}
 Type equivalences are fundamentally based on function extensionality.
 (Def.~\ref{def:quasi} explicitly compares functions for extensional
 equality.) It is folklore that, even when restricted to finite types,
