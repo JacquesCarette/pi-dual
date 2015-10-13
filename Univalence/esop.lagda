@@ -334,6 +334,9 @@ reversible computation.  Detail what our contributions are.}
 
 \todo{The outline will need to be tweaked once it settles}
 
+\todo{Every single theorem should have, in a comment above it, the
+name of a source file and an Agda statement which has a proof.}
+
 \paragraph*{Outline.} The next section reviews equivalences between
 finite types and relates them to various commutative semiring
 structures. The main message of that section is that, up to
@@ -348,7 +351,7 @@ languages by viewing their original design as 1-paths and
 systematically producing 2-paths (equivalences between equivalences)
 manifesting themselves as syntactic rules for reasoning about
 equivalences of programs representing reversible
-circuits. Sec.~\ref{sec:4} starts the semantic investigation of the
+circuits. Sec.~\ref{sec:sem} starts the semantic investigation of the
 $\Pi$ languages emphasizing the denotational approach that maps each
 $\Pi$ program to a type equivalence or equivalently a permutation. The
 section also gives a small example showing how a few rules that are
@@ -358,33 +361,31 @@ reasoning. Sec.~\ref{sec:5} then reveals that these rules are
 intimately related to the coherence conditions of the categorified
 analogues of the commutative semiring structures underlying type
 equivalences and permutations, namely, the so-called \emph{symmetric
-  rig weak groupoids}. Sec.~\ref{sec:6} contains that ``punchline'': a
-sound and complete set of rules that can be used to reason about
-equivalences of $\Pi$ programs. Before concluding, we devote
-Sec.~\ref{sec:7} to a detailed analysis of the problem with extending
-our approach to accommodate higher-order functions, suggesting a
-possible path towards a solution. We note that because the issues
+rig weak groupoids}. Sec.~\ref{sec:categorification} contains that
+``punchline'': a sound and complete set of rules that can be used to reason
+about equivalences of $\Pi$ programs.  We note that because the issues
 involved are quite subtle, the paper is the ``unformalization'' of an
 executable \texttt{Agda 2.4.2.3} package with the global
-\AgdaComment{without-K} option enabled.\footnote{We will publish the
-  link to the code repository after the double-blind review process.}
+\AgdaComment{without-K} option enabled.\footnote{Available at
+\url{http://github.com//JacquesCarette/pi-dual/Univalence}.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Equivalences and Commutative Semirings} 
-\label{sec:2}
+\label{sec:equiv}
 
-Our starting point is the notion of equivalence of types. We then
-connect this notion to several semiring structures on finite types, on
-permutations, and on equivalences, with the goal of reducing the
-notion of equivalence for finite types to a notion of reversible
+As our starting point is the notion of equivalence of types, we
+explain this in detail. As semirings are similarly important,
+these are also formally defined.  We then give several examples
+of relevance: semiring structures on types, on (skeletal) finite sets.  This
+will allow us to connect these notions to that of (typed) reversible
 computation.
 
 %%%%%%%%%%%%
-\subsection{Finite Types}
+\subsection{Equivalences of Types}
 
 The elementary building blocks of type theory are the empty type
 ($\bot$), the unit type ($\top$), and the sum ($\uplus$) and product
-($\times$) types. These constructors can encode any \emph{finite
+($\times$) types. In particular, these constructors can encode any \emph{finite
   type}. Traditional type theory also includes several facilities for
 building infinite types, most notably function types. We will however
 not address infinite types in this paper except for a discussion in
@@ -711,7 +712,7 @@ computational interpretation of, the univalence axiom.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Programming with Permutations}
-\label{sec:3}
+\label{sec:prog}
 
 In the previous section, we argued that, up to equivalence, the
 equivalence of types reduces to permutations on finite sets. We recall
@@ -953,7 +954,7 @@ is universal for such circuits~\citep{Toffoli:1980}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Semantics}
-\label{sec:4}
+\label{sec:sem}
 
 In the previous sections, we established that type equivalences on
 finite types can be, up to equivalence, expressed as permutations and
@@ -1131,7 +1132,7 @@ permutations are needed for a complete set of rewrite rules?
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Categorification}
-\label{sec:5}
+\label{sec:categorification}
 
 The problem of finding a sound and complete set of rules for reasoning
 about equivalence of permutations is solved by appealing to various
@@ -1531,7 +1532,7 @@ We have two levels of $\Pi$-combinators such that:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Revised $\Pi$ and its Optimizer}
-\label{sec:6}
+\label{sec:revised}
 
 Collecting the previous results we arrive at a universal language for
 expressing reversible combinational circuits \emph{together with} a
@@ -2020,10 +2021,13 @@ Quantomatic~\citep{quantomatic} (which only works for traced symmetric
 monoidal categories) or a radically different syntactic notation such
 as Penrose's abstract tensor notation~\citep{tensor1,tensor2}.
 
+\section{Limitations}
+\label{sec:lim}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 \label{sec:conc}
-\label{sec:8}
+%\label{sec:8}
 
 We have developed a tight integration between \emph{reversible
   circuits} with \emph{symmetric rig weak groupoids} based on the following
@@ -2096,7 +2100,9 @@ of the natural numbers might be generalizable to the categorification
 of the ring of integers or even to the categorification of the field
 of rational numbers. The generalization to rings would introduce
 \emph{negative types} and the generalization to fields would further
-introduce \emph{fractional types}. As Sec.~\ref{sec:7} suggests, there
+introduce \emph{fractional types}. 
+\begin{comment}
+As Sec.~\ref{sec:revised} suggests, there
 is good evidence that these generalizations would introduce some
 notion of higher-order functions. It is even possible to conceive of
 more exotic types such as types with square roots and imaginary
@@ -2105,6 +2111,7 @@ numbers by further generalizing the work to the field of
 computations involving recursive datatypes such as trees that can be
 viewed as solutions to polynomials over type
 variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
+\end{comment}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% \clearpage
