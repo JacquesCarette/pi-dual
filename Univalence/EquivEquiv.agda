@@ -31,8 +31,8 @@ record _≋_ {ℓ ℓ' : Level} {A : Set ℓ} {B : Set ℓ'} (eq₁ eq₂ : A �
   constructor eq
   open isqinv
   field
-    .f≡ : proj₁ eq₁ ∼ proj₁ eq₂
-    .g≡ : g (proj₂ eq₁) ∼ g (proj₂ eq₂)
+    f≡ : proj₁ eq₁ ∼ proj₁ eq₂
+    g≡ : g (proj₂ eq₁) ∼ g (proj₂ eq₂)
  
 -- The equivalence of equivalences is an equivalence relation that
 -- respects composition
@@ -65,7 +65,7 @@ _◎_ {f = f} {h} {g} {i}
   --   (λ x → {!!} ) -- P.trans (P.cong g⁻¹ (g≡ x)) (i≡ (h⁻¹ x)))
   where
     open P.≡-Reasoning
-    .fwd : proj₁  (f ● g) ∼ proj₁ (h ● i)
+    fwd : proj₁  (f ● g) ∼ proj₁ (h ● i)
     fwd x =  begin (
       proj₁ (f ● g) x
         ≡⟨ β₁ x ⟩
@@ -76,7 +76,7 @@ _◎_ {f = f} {h} {g} {i}
       proj₁ h (proj₁ i x)
         ≡⟨ P.sym (β₁ x) ⟩
       proj₁ (h ● i) x ∎)
-    .bwd :  gg (f ● g) ∼ gg (h ● i)
+    bwd :  gg (f ● g) ∼ gg (h ● i)
     bwd x = 
       begin (
         gg (f ● g) x

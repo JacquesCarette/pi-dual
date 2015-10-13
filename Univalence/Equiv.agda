@@ -40,8 +40,8 @@ record isqinv {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} (f : A → B) :
   constructor qinv
   field
     g : B → A
-    .α : (f ∘ g) ∼ id
-    .β : (g ∘ f) ∼ id
+    α : (f ∘ g) ∼ id
+    β : (g ∘ f) ∼ id
 
 -- We explicitly choose quasi-equivalences, even though these
 -- these are not a proposition.  This is fine for us, as we're

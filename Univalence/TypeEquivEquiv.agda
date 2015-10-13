@@ -435,8 +435,8 @@ distzr-nat {f = (f , qinv h _ _)} {(_ , qinv g _ _)} =
 
 factorzr-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
   factorzrequiv ● g ≋ (f ×≃ g) ● factorzrequiv
-factorzr-nat {f = f , qinv f⁻¹ _ _} = -- flip-sym≋ (distzr-nat {f = sym≃ f})
-  eq (β₁ ⊙ sym∼ (factorzr-coh {f = f}) ⊙
+factorzr-nat {f = f , qinv f⁻¹ _ _} {g , _} = -- flip-sym≋ (distzr-nat {f = sym≃ f})
+  eq (β₁ ⊙ sym∼ (factorzr-coh {f = f} {g}) ⊙
      ! (β₁ ⊙ cong∘r (proj₁ factorzrequiv) β×₁) )
      --
      (β₂ ⊙ sym∼ (distzr-coh {f = f⁻¹}) ⊙
@@ -447,12 +447,12 @@ distz-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
   distzequiv ● (g ×≃ f) ≋ g ● distzequiv
 distz-nat {f = (f , qinv h _ _)} {(_ , qinv g _ _)} =
   eq (β₁ ⊙ cong∘l (proj₁ distzequiv) β×₁ ⊙ distz-coh {f = f} ⊙ ! β₁)
-     (β₂ ⊙ cong∘r (gg distzequiv) β×₂ ⊙ factorz-coh {f = h} ⊙ ! β₂)
+     (β₂ ⊙ cong∘r (gg distzequiv) β×₂ ⊙ factorz-coh {f = h} {g} ⊙ ! β₂)
      
 factorz-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
   factorzequiv ● g ≋ (g ×≃ f) ● factorzequiv
-factorz-nat {f = (f , qinv f⁻¹ _ _)} =
-  eq (β₁ ⊙ (sym∼ (factorz-coh {f = f})) ⊙
+factorz-nat {f = (f , qinv f⁻¹ _ _)} {g , _} =
+  eq (β₁ ⊙ (sym∼ (factorz-coh {f = f} {g})) ⊙
         ! (β₁ ⊙ cong∘r (proj₁ factorzequiv) β×₁))
      (β₂ ⊙ (sym∼ (distz-coh {f = f⁻¹})) ⊙ ! (β₂ ⊙ cong∘l (gg factorzequiv) β×₂))
 

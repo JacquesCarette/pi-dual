@@ -21,8 +21,8 @@ open import SEquivSCPermEquiv
 open import Equiv using (_●_; id≃; sym≃; _⊎≃_)
 open import EquivEquiv
   using (id≋; sym≋; ●-assoc; _◎_; lid≋; rid≋; linv≋; rinv≋;
-    ⊎≃-resp-≋; module ≋-Reasoning)
---open import TypeEquivEquiv using ([id,id]≋id)
+     module ≋-Reasoning)
+open import TypeEquivEquiv using (_⊎≋_)
 open import FinEquivEquiv using ([id+id]≋id; +●≋●+)
 
 open ≋-Reasoning
@@ -91,7 +91,7 @@ linv p = let e = p⇒e p in ≋⇒≡ (begin (
   p⇒e (e⇒p (e₁ ● e₃)) +F p⇒e (e⇒p (e₂ ● e₄))
     ≋⟨ id≋ ⟩ -- inline +F
   ⊎≃+ ● (p⇒e (e⇒p (e₁ ● e₃)) ⊎≃ p⇒e (e⇒p (e₂ ● e₄))) ● +≃⊎
-    ≋⟨ f≋ ◎ ((⊎≃-resp-≋ α₁ α₁) ◎ g≋) ⟩
+    ≋⟨ f≋ ◎ ((α₁ ⊎≋ α₁) ◎ g≋) ⟩
   ⊎≃+ ● ((e₁ ● e₃) ⊎≃ (e₂ ● e₄)) ● +≃⊎
     ≋⟨ +●≋●+ ⟩
   (e₁ +F e₂) ● (e₃ +F e₄)
@@ -110,7 +110,7 @@ linv p = let e = p⇒e p in ≋⇒≡ (begin (
   em +F en
     ≋⟨ id≋ ⟩
   ⊎≃+ ● em ⊎≃ en ● +≃⊎
-    ≋⟨ f≋ ◎ ((⊎≃-resp-≋ α₁ α₁) ◎ g≋) ⟩
+    ≋⟨ f≋ ◎ ((α₁ ⊎≋ α₁) ◎ g≋) ⟩
   ⊎≃+ ● (id≃ {A = Fin m}) ⊎≃ id≃ ● +≃⊎
     ≋⟨ [id+id]≋id ⟩
   id≃ {A = Fin (m + n)} ∎))
