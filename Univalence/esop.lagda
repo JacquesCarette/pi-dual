@@ -535,9 +535,63 @@ equivalent: each of them can be used to ``transport'' properties of
 
 A result by \citet{Fiore:2004,fiore-remarks} completely characterizes
 the isomorphisms between finite types using the axioms of commutative
-semirings, whose definition we now turn to.
-\jc{should we explicitly state this result?  Right now, we are rather
-implicit about it.}
+semirings, whose definition we now turn to. The result which is proved
+in Lemma 2.2 of~\citet{fiore-remarks} is repeated below along with all
+supporting definitions.
+
+\begin{definition}[$\mathcal{D}$] The equational theory $\mathcal{D}$
+  consists of the following identities:
+\[\begin{array}{l}
+1 \cdot x = x \qquad 
+  x \cdot y = y \cdot x \qquad
+  (x \cdot y) \cdot z = x \cdot (y \cdot z) \\
+x + 0 = x \qquad 
+  x + y = y + x \qquad 
+  (x + y) + z = x + (y + z) \\
+x \cdot 0 = 0 \qquad 
+  x \cdot (y + z) = x \cdot y + x \cdot z 
+\end{array}\]
+\end{definition}
+
+\begin{definition}
+We let $\mathcal{D}[T]$ be the
+  category with objects given by types over base types in $T$ and
+  morphisms $\tau_1 \to \tau_2$ given by equivalence classes $[ x : \tau_1 
+  \vdash t : \tau_2]$ of well-typed terms under the equivalence
+  identifying $(x : \tau_1 \vdash t : \tau_2)$ and $(x' : \tau_1
+  \vdash t' : \tau_2)$ iff the judgement $x : \tau_1 \vdash t =
+  t'[x/x'] : \tau_2$ is derivable. Composition is by substitution
+\[ 
+  [ x' : \tau_2 \vdash t' : \tau_3] \circ [ x : \tau_1 \vdash t : \tau_2] = 
+  [ x : \tau_1 \vdash t'[t/x'] : \tau_3] 
+\]
+with identities given by $[x : \tau \vdash x : \tau]$.
+\end{definition}
+
+\begin{definition}
+The category $\mathbf{F}$ is the
+  category of finite sets and functions. The translation
+  $\overline{\cdot}$ is:
+\[\begin{array}{l}
+\overline{x} = x \mbox{~($x$ is a variable)} \qquad
+  \overline{1} = 1 \qquad 
+  \overline{e_1 \cdot e_2} = \overline{e_1} \times \overline{e_2} \qquad 
+  \overline{0} = 0 \qquad 
+  \overline{e_1 + e_2} = \overline{e_1} + \overline{e_2} 
+\end{array}\]
+\end{definition}
+
+\begin{proposition} For arithmetic expressions $e_1$ and $e_2$ in the 
+  language given by 1, 0, $\cdot$, and + and with unknowns in a set
+  $U$, the following statements are equivalent. The notation $\cong$ is type isomorphism.
+\begin{enumerate}
+\item $\mathcal{D} \vdash e_1 = e_2$.
+\item $\overline{e_1} \cong \overline{e_2} \mbox{~in~} \mathcal{D}[U]$.
+\item $\mathbf{F} \vdash \overline{e_1} = \overline{e_2}$.
+\item $N_0 \models e_1 = e_2$.
+\end{enumerate}
+\end{proposition}
+
 
 \subsection{Semirings}
 
