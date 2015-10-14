@@ -372,15 +372,78 @@ executable \texttt{Agda 2.4.2.3} package with the global
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Computing with Semirings}
 
-\paragraph*{Syntax}
+We explore the main ingredients that would constitute a Curry-Howard
+like correspondence between (commutative) semirings and (constructive)
+type theory.
+
+%%%
+\subsection{Semirings}
+
+We begin with the familiar definition of the algebraic structure of
+commutative semirings.
+
+\begin{definition}
+  A \emph{commutative semiring} (sometimes called a \emph{commutative
+    rig} (commutative ri\emph{n}g without negative elements) consists of a
+  set $R$, two distinguished elements of $R$ named 0 and 1, and two
+  binary operations~$+$ and $\cdot$, satisfying the following
+  relations for any $a,b,c \in R$:
+\[\begin{array}{rcl}
+0 + a &=& a \\
+a + b &=& b + a \\
+a + (b + c) &=& (a + b) + c \\
+\\
+1 \cdot a &=& a \\
+a \cdot b &=& b \cdot a \\
+a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
+\\
+0 \cdot a &=& 0 \\
+(a + b) \cdot c &=& (a \cdot c) + (b \cdot c)
+\end{array}\]
+\end{definition}
+
+If one were to focus on the \emph{syntax} of the semiring elements,
+they would be described using the following grammar:
+\[\begin{array}{rcl}
+a &::=& 0 \alt 1 \alt a + b \alt a \cdot b
+\end{array}\]
+
+This grammar evidently corresponds to the grammar for the finite types in
+type theory:
+\[\begin{array}{rcl}
+\tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 \times \tau_2 
+\end{array}\]
+
+We will show that this --- so far --- superficial correspondence
+scratches the surface of a beautiful correspondence of rich
+combinatorial structure.
+
+%%% 
+\section*{Semiring Identities and Programs}
+
+Having matched the syntax of semiring elements and the syntax of
+types, we examine the computational counterpart of the semiring
+identities. When viewed from the type theory world, each semiring
+identity asserts that two types are ``equal.'' We do not however
+typically view types such as \verb|T1| and \verb|T2| below as
+``equal.''
 
 \begin{verbatim}
-Semiring elements: 0, 1, +, *
+data Bool   = True | False 
+data UpDown = Up | Down
+data Color  = Red | Green | Blue
+data Dir    = North | East | South | West
 
-Syntax of types: 0, 1, +, * 
+data T1 = X (Bool,Color)
+data T2 = Y Dir | Z UpDown
 \end{verbatim}
 
-\paragraph*{Identities}
+As an example, the semiring identity $1 \cdot a = a$ would
+correspond to some kind of ``equality'' between the types $1 \times A$
+and $A$. Finding out the right notion of ``equality'' to use is subtle
+and will actually be a main part of the paper. For now let us simply
+parameterize the relation between types by some equivalence relation
+$\simeq$.
 
 \begin{verbatim} 
 Semiring: 1 * n = n
@@ -981,7 +1044,7 @@ types:
 \[\begin{array}{lrcl}
 (\textit{Types}) & 
   \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
-(\textit{Values}) & 
+ (\textit{Values}) & 
   v &::=& () \alt \inl{v} \alt \inr{v} \alt (v_1,v_2) \\
 (\textit{Combinator types}) &&& \tau_1 \iso \tau_2 \\
 (\textit{Combinators}) & 
