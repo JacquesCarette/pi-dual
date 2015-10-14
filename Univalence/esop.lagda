@@ -86,8 +86,8 @@
 \newcommand{\Rule}[4]{
 \makebox{{\rm #1}
 $\displaystyle
-\frac{\begin{array}{l}#2\\\end{array}}
-{\begin{array}{l}#3\\\end{array}}$
+\frac{\begin{array}{l}#2 \\\end{array}}
+{\begin{array}{l}#3      \\\end{array}}$
  #4}}
 \newcommand{\jdg}[3]{#2 \proves_{#1} #3}
 \newcommand{\adjoint}[1]{#1^{\dagger}}
@@ -147,10 +147,10 @@ $\displaystyle
 \begin{document}
 
 %\title{A Curry-Howard Isomorphism between \\
-%  Reversible Programming Languages \\
+%  Reversible Programming Languages        \\
 %  and Semirings}
 %\titlerunning{Reversible Languages and Semirings}
-\title{Computing with \\ Semirings and Weak Rig Groupoids}
+\title{Computing with                      \\ Semirings and Weak Rig Groupoids}
 \titlerunning{Computing with Rig Groupoids}
 \author{Jacques Carette \and Amr Sabry}
 \institute{McMaster University (\email{carette@mcmaster.ca})
@@ -220,9 +220,9 @@ corresponding propositions. The following tautologies of propositional
 logic therefore give rise to functions witnessing the back-and-forth
 transformations:
 \[\begin{array}{rcl}
-\tau \uplus \tau  &\Leftrightarrow& \tau \\
- \tau \times \tau  &\Leftrightarrow& \tau \\
- (\tau_1 \times \tau_2) \uplus \tau_3  &\Leftrightarrow& 
+\tau \uplus \tau                      & \Leftrightarrow & \tau \\
+ \tau \times \tau                     & \Leftrightarrow & \tau \\
+ (\tau_1 \times \tau_2) \uplus \tau_3 & \Leftrightarrow & 
   (\tau_1 \uplus \tau_3) \times (\tau_2 \uplus \tau_3) 
 \end{array}\]
 
@@ -388,30 +388,30 @@ commutative semirings.
   set $R$, two distinguished elements of $R$ named 0 and 1, and two
   binary operations~$+$ and $\cdot$, satisfying the following
   relations for any $a,b,c \in R$:
-\[\begin{array}{rcl}
-0 + a &=& a \\
-a + b &=& b + a \\
-a + (b + c) &=& (a + b) + c \\
-\\
-1 \cdot a &=& a \\
-a \cdot b &=& b \cdot a \\
-a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
-\\
-0 \cdot a &=& 0 \\
-(a + b) \cdot c &=& (a \cdot c) + (b \cdot c)
+\[\begin{array}{rcll}
+0 + a               & = & a                   & (\mbox{+-unit}) \\
+a + b               & = & b + a             & (\mbox{+-sym})  \\
+a + (b + c)         & = & (a + b) + c    & (\mbox{+-assoc}) \\
+                                              \\
+1 \cdot a           & = & a                   & (\mbox{$\cdot$-unit}) \\
+a \cdot b           & = & b \cdot a         & (\mbox{$\cdot$-sym})  \\
+a \cdot (b \cdot c) & = & (a \cdot b) \cdot c & (\mbox{$\cdot$-assoc}) \\
+                                              \\
+0 \cdot a           & = & 0                   & (\mbox{$\cdot$-0}) \\
+(a + b) \cdot c     & = & (a \cdot c) + (b \cdot c) & (\mbox{$\cdot$-+})
 \end{array}\]
 \end{definition}
 
 If one were to focus on the \emph{syntax} of the semiring elements,
 they would be described using the following grammar:
 \[\begin{array}{rcl}
-a &::=& 0 \alt 1 \alt a + b \alt a \cdot b
+a & ::= & 0 \alt 1 \alt a + b \alt a \cdot b
 \end{array}\]
 
 This grammar evidently corresponds to the grammar for the finite types in
 type theory:
 \[\begin{array}{rcl}
-\tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 \times \tau_2 
+\tau & ::= & \bot \alt \top \alt \tau_1 \uplus \tau_2 \alt \tau_1 \times \tau_2 
 \end{array}\]
 
 We will show that this --- so far --- superficial correspondence
@@ -419,49 +419,67 @@ scratches the surface of a beautiful correspondence of rich
 combinatorial structure.
 
 %%% 
-\section*{Semiring Identities and Programs}
+\section{Semiring Identities and Isomorphisms}
 
 Having matched the syntax of semiring elements and the syntax of
 types, we examine the computational counterpart of the semiring
-identities. When viewed from the type theory world, each semiring
-identity asserts that two types are ``equal.'' We do not however
-typically view types such as \verb|T1| and \verb|T2| below as
+identities. When viewed from the type theory side, each semiring
+identity asserts that two types are ``equal.'' For example, the
+identity unit-$\cdot$, i.e., $1 \cdot a = a$ asserts that the types
+$\top \times A$ and $A$ are ``equal.'' One way to express such an
+``equality'' computationally is to exhibit two functions mediating
+between the two types and prove that these two functions are
+inverses. Specifically, we could define:
+\[\begin{array}{rcl}
+f &:& \top \times A \to A \\
+f~(\texttt{tt} , x) &=& x \\
+\\
+g &:& A \to \top \times A \\
+g~x &=& (\texttt{tt} , x) 
+\end{array}\] 
+and prove $f \circ g = g \circ f = \mathit{id}$. One could use this
+proof to ``equate'' the two types, but computationally speaking it is
+more appropriate to keep the identity of the types separate and speak
+of \emph{isomorphisms}.
+
+%%%
+\section{Proof Relevance}
+
+In the world of semirings, there are many proofs of $a + a = a +
+a$. Consider the following two proofs:
+\[\begin{array}{l@{\qquad}rcl@{\qquad}l}
+\textit{pf}_1 : & a + a &=& a + a & \mbox{(because $=$ is reflexive)} \\
+\textit{pf}_2 : & a + a &=& a + a & \mbox{(using $+$-sym)}
+\end{array}\]
+In some cases, we might not care \emph{how} a semiring identity was
+proved and it might then be acceptable to treat $\textit{pf}_1$ and
+$\textit{pf}_2$ as ``equal.'' But although these two proofs of
+$a + a = a + a$ look identical in the , they use different
+``justifications'' and these justifications are clearly \emph{not}
 ``equal.''
 
-\begin{verbatim}
-data Bool   = True | False 
-data UpDown = Up | Down
-data Color  = Red | Green | Blue
-data Dir    = North | East | South | West
+When viewed from the computational side, the situation is as
+follows. The first proof gives rise to one isomorphism using the
+self-inverse function $\textit{id}$. The second proof gives rise to
+another isomorphism using another self-inverse function
+$\textit{swap}$ defined as:
+\[\begin{array}{rcl}
+\textit{swap} &:& A \uplus B \to B \uplus A \\
+\textit{swap}~\texttt{inj}_1~x &=& \texttt{inj}_2~x \\
+\textit{swap}~\texttt{inj}_2~x &=& \texttt{inj}_1~x 
+\end{array}\]
+Now it is clear that even though both $\textit{id}$ and
+$\textit{swap}$ can be used to establish an isomorphism between $A
+\uplus A$ and itself, their actions are different. Semantically
+speaking, these two functions are different and no program
+transformation or optimization should ever identify them.
 
-data T1 = X (Bool,Color)
-data T2 = Y Dir | Z UpDown
-\end{verbatim}
+The discussion above should not however lead one to conclude that
+programs resulting from different proofs are always semantically
+different. Consider for example, the following two proofs of
+$(a + 0) + b = a + b$:
 
-As an example, the semiring identity $1 \cdot a = a$ would
-correspond to some kind of ``equality'' between the types $1 \times A$
-and $A$. Finding out the right notion of ``equality'' to use is subtle
-and will actually be a main part of the paper. For now let us simply
-parameterize the relation between types by some equivalence relation
-$\simeq$.
 
-\begin{verbatim} 
-Semiring: 1 * n = n
-
-Programs p : 1 x A -> A
-         q : A -> 1 x A
-
-such that p o q = q o p = id
-
-Do not immediately give away what = 
-should be... 
-
-our goal is to expand = and expose the 
-computational structure it has and that is 
-collapsed in the semiring world
-\end{verbatim}
-
-\paragraph*{Proof transformations}
 
 \begin{verbatim}
 Here are two proofs that 
