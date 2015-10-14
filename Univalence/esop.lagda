@@ -177,7 +177,7 @@ Indiana University (\email{sabry@indiana.edu})
   reversible programming languages: the syntax of semiring elements
   corresponds to the syntax of types; the proofs of semiring
   identities correspond to (reversible) programs of the corresponding
-  types; and equivalences between algebraic proofs corresponds to
+  types; and equivalences between algebraic proofs correspond to
   meaning-preserving program transformations and optimizations.  These
   latter equivalences are not ad hoc: the same way semirings arise
   naturally out of the structure of types, a categorical look at the
@@ -368,6 +368,79 @@ involved are quite subtle, the paper is the ``unformalization'' of an
 executable \texttt{Agda 2.4.2.3} package with the global
 \AgdaComment{without-K} option enabled.\footnote{Available at
 \url{http://github.com//JacquesCarette/pi-dual/Univalence}.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Computing with Semirings}
+
+\paragraph*{Syntax}
+
+\begin{verbatim}
+Semiring elements: 0, 1, +, *
+
+Syntax of types: 0, 1, +, * 
+\end{verbatim}
+
+\paragraph*{Identities}
+
+\begin{verbatim} 
+Semiring: 1 * n = n
+
+Programs p : 1 x A -> A
+         q : A -> 1 x A
+
+such that p o q = q o p = id
+
+Do not immediately give away what = 
+should be... 
+
+our goal is to expand = and expose the 
+computational structure it has and that is 
+collapsed in the semiring world
+\end{verbatim}
+
+\paragraph*{Proof transformations}
+
+\begin{verbatim}
+Here are two proofs that 
+  a + (b + c)  = b + (a + c)
+
+pf1 : a + (b + c)
+    = (a + b) + c
+    = (b + a) + c
+    = b + (a + c)
+
+pf2 : a + (b + c)
+    = (b + c) + a
+    = b + (c + a)
+    = b + (a + c)
+
+Here are two proofs of
+  (a + 0) + b = a + b
+
+pf3 : (a + 0) + b 
+    = a + (0 + b)
+    = a + b
+
+pf4 : (a + 0) + b
+    = a + b
+
+Each proof corresponds to a program. Can one 
+program be proved equivalent to the other? 
+Can one transform the program for pf1 to 
+the program for pf2 using small rewrites? Can
+one optimize pf3 to pf4? 
+
+Is there any structure of these proofs?
+\end{verbatim}
+
+\paragraph*{Main ideas}
+
+What we are really really asking on a technical ground is how to
+``un-collapse'' the = in the definition of semirings. That equal sign
+corresponds to programs going back and forth that are equivalent in
+some sense. And this equivalence of program has some structure itself.
+That is the main body of the paper.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Equivalences and Commutative Semirings} 
