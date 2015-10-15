@@ -370,7 +370,7 @@ executable \texttt{Agda 2.4.2.3} package with the global
 \url{http://github.com//JacquesCarette/pi-dual/Univalence}.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Computing with Semirings}
+\section{Informal Development}
 
 We explore the main ingredients that would constitute a Curry-Howard
 like correspondence between (commutative) semirings and (constructive)
@@ -388,7 +388,7 @@ commutative semirings.
   set $R$, two distinguished elements of $R$ named 0 and 1, and two
   binary operations~$+$ and $\cdot$, satisfying the following
   relations for any $a,b,c \in R$:
-\[\begin{array}{rcll}
+\[\begin{array}{rcl@{\qquad}l}
 0 + a               & = & a                   & (\mbox{+-unit}) \\
 a + b               & = & b + a             & (\mbox{+-sym})  \\
 a + (b + c)         & = & (a + b) + c    & (\mbox{+-assoc}) \\
@@ -419,7 +419,7 @@ scratches the surface of a beautiful correspondence of rich
 combinatorial structure.
 
 %%% 
-\section{Semiring Identities and Isomorphisms}
+\subsection{Semiring Identities and Isomorphisms}
 
 Having matched the syntax of semiring elements and the syntax of
 types, we examine the computational counterpart of the semiring
@@ -429,13 +429,10 @@ identity unit-$\cdot$, i.e., $1 \cdot a = a$ asserts that the types
 $\top \times A$ and $A$ are ``equal.'' One way to express such an
 ``equality'' computationally is to exhibit two functions mediating
 between the two types and prove that these two functions are
-inverses. Specifically, we could define:
-\[\begin{array}{rcl}
-f &:& \top \times A \to A \\
-f~(\texttt{tt} , x) &=& x \\
-\\
-g &:& A \to \top \times A \\
-g~x &=& (\texttt{tt} , x) 
+inverses. Specifically, we define:
+\[\begin{array}{l@{\qquad}l}
+f : \top \times A \to A & g : A \to \top \times A \\
+f~(\texttt{tt} , x) = x & g~x = (\texttt{tt} , x) 
 \end{array}\] 
 and prove $f \circ g = g \circ f = \mathit{id}$. One could use this
 proof to ``equate'' the two types, but computationally speaking it is
@@ -443,7 +440,7 @@ more appropriate to keep the identity of the types separate and speak
 of \emph{isomorphisms}.
 
 %%%
-\section{Proof Relevance}
+\subsection{Proof Relevance}
 
 In the world of semirings, there are many proofs of $a + a = a +
 a$. Consider the following two proofs:
@@ -463,10 +460,10 @@ follows. The first proof gives rise to one isomorphism using the
 self-inverse function $\textit{id}$. The second proof gives rise to
 another isomorphism using another self-inverse function
 $\textit{swap}$ defined as:
-\[\begin{array}{rcl}
-\textit{swap} &:& A \uplus B \to B \uplus A \\
-\textit{swap}~\texttt{inj}_1~x &=& \texttt{inj}_2~x \\
-\textit{swap}~\texttt{inj}_2~x &=& \texttt{inj}_1~x 
+\[\begin{array}{l}
+\textit{swap} : A \uplus B \to B \uplus A \\
+\textit{swap}~(\texttt{inj}_1~x) = \texttt{inj}_2~x \\
+\textit{swap}~(\texttt{inj}_2~x) = \texttt{inj}_1~x 
 \end{array}\]
 Now it is clear that even though both $\textit{id}$ and
 $\textit{swap}$ can be used to establish an isomorphism between $A
@@ -478,50 +475,91 @@ The discussion above should not however lead one to conclude that
 programs resulting from different proofs are always semantically
 different. Consider for example, the following two proofs of
 $(a + 0) + b = a + b$:
+\[\begin{array}{l@{\qquad}rcl@{\qquad}l}
+\textit{pf}_3 : & (a + 0) + b &=& (0 + a) + b & \mbox{(using $+$-sym}) \\
+& &=& a + b & \mbox{(using $+$-unit)}  \\
+\\
+\textit{pf}_4 : & (a + 0) + b &=& a + (0 + b) & \mbox{(using $+$-assoc and $=$ is symmetric)} \\
+& &=& a + b & \mbox{(using $+$-unit)}
+\end{array}\]
+On the computational side, the proofs induce the following two isomorphisms between 
+$(A \uplus \bot) \uplus B$ and $A \uplus B$. The first isomorphism 
+takes the values in $(A \uplus \bot) \uplus B$ along the following 
+``paths'' to values in $A \uplus B$:
+\[\begin{array}{l}
+\texttt{inj}_1~(\texttt{inj}_1~x) \mapsto \texttt{inj}_1~(\texttt{inj}_2~x) \mapsto \texttt{inj}_1~x \\
+\texttt{inj}_2~x \mapsto \texttt{inj}_2~x 
+\end{array}\]
+The second isomorphism however follows the following ``paths'':
+\[\begin{array}{l}
+\texttt{inj}_1~(\texttt{inj}_1~x) \mapsto \texttt{inj}_1~x \\
+\texttt{inj}_2~x \mapsto \texttt{inj}_2~(\texttt{inj}_2~x) \mapsto \texttt{inj}_2~x
+\end{array}\]
+The fact that these two computations are, unlike the case of
+\textit{id} and \textit{swap} from the previous example, semantically
+equivalent is not immediately obvious. Viewing the two computations
+diagrammatically as shown below does however seem to justify the
+equivalence in the sense that the top paths can be continuously
+transformed to the bottom paths:
 
+\begin{center}
+\begin{tikzpicture}[scale=0.9,every node/.style={scale=0.9}]
+  \draw (-2,-2) ellipse (0.5cm and 1cm);
+  \draw[fill] (-2,-1.5) circle [radius=0.025];
+  \node[below] at (-2.1,-1.5) {$A$};
+  \draw[fill] (-2,-2.5) circle [radius=0.025];
+  \node[below] at (-2.1,-2.5) {$\bot$};
+  \draw (-2,-2.5) ellipse (1cm and 1.7cm);
+  \draw[fill] (-2,-3.35) circle [radius=0.025];
+  \node[below] at (-2.1,-3.35) {$B$};
 
+  \draw (6.5,-2) ellipse (0.5cm and 1cm);
+  \draw[fill] (6.5,-1.5) circle [radius=0.025];
+  \node[below] at (6.65,-1.5) {$A$};
+  \draw[fill] (6.5,-2.5) circle [radius=0.025];
+  \node[below] at (6.65,-2.5) {$B$};
 
-\begin{verbatim}
-Here are two proofs that 
-  a + (b + c)  = b + (a + c)
+  \draw (1.5,0.5) ellipse (0.5cm and 1cm);
+  \draw[fill] (1.5,1) circle [radius=0.025];
+  \node[below] at (1.4,1) {$\bot$};
+  \draw[fill] (1.5,0) circle [radius=0.025];
+  \node[below] at (1.4,0) {$A$};
+  \draw (1.5,0) ellipse (1cm and 1.7cm);
+  \draw[fill] (1.5,-0.85) circle [radius=0.025];
+  \node[below] at (1.4,-0.85) {$B$};
 
-pf1 : a + (b + c)
-    = (a + b) + c
-    = (b + a) + c
-    = b + (a + c)
+  \draw (2.5,-4) ellipse (0.5cm and 1cm);
+  \draw[fill] (2.5,-2.5) circle [radius=0.025];
+  \node[below] at (2.4,-2.5) {$A$};
+  \draw[fill] (2.5,-3.5) circle [radius=0.025];
+  \node[below] at (2.4,-3.5) {$\bot$};
+  \draw (2.5,-3.5) ellipse (1cm and 1.7cm);
+  \draw[fill] (2.5,-4.35) circle [radius=0.025];
+  \node[below] at (2.4,-4.35) {$B$};
 
-pf2 : a + (b + c)
-    = (b + c) + a
-    = b + (c + a)
-    = b + (a + c)
+  \draw[->] (-2,-1.5) to[bend left] (1.5,0) ;
+  \draw[->] (-2,-3.35) to[bend left] (1.5,-0.85) ;
+  \draw[->] (1.5,0) to[bend left] (6.5,-1.45) ;
+  \draw[->] (1.5,-0.85) to[bend left] (6.5,-2.45) ;
 
-Here are two proofs of
-  (a + 0) + b = a + b
+  \draw[->] (-2,-1.5) to[bend right] (2.5,-2.5) ;
+  \draw[->] (-2,-3.35) to[bend right] (2.5,-4.35) ;
+  \draw[->] (2.5,-2.5) to[bend right] (6.5,-1.55) ;
+  \draw[->] (2.5,-4.35) to[bend right] (6.5,-2.55) ;
 
-pf3 : (a + 0) + b 
-    = a + (0 + b)
-    = a + b
+\end{tikzpicture}
+\end{center}
 
-pf4 : (a + 0) + b
-    = a + b
+%%% 
+\subsection{Summary} 
 
-Each proof corresponds to a program. Can one 
-program be proved equivalent to the other? 
-Can one transform the program for pf1 to 
-the program for pf2 using small rewrites? Can
-one optimize pf3 to pf4? 
-
-Is there any structure of these proofs?
-\end{verbatim}
-
-\paragraph*{Main ideas}
-
-What we are really really asking on a technical ground is how to
-``un-collapse'' the = in the definition of semirings. That equal sign
-corresponds to programs going back and forth that are equivalent in
-some sense. And this equivalence of program has some structure itself.
-That is the main body of the paper.
-
+To summarize this high-level presentation, a well-founded reversible
+programming language along with its accompanying program
+transformations and optimizations can be naturally extracted from an
+algebraic semiring structure. The correspondence between the algebraic
+manipulations in semirings and program transformations is so tight
+that quite complex program transformations can be derived from mundane
+algebraic manipulations.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Equivalences and Commutative Semirings} 
