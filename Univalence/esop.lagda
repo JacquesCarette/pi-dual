@@ -37,6 +37,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Macros
 
+\newcommand{\tc}{\AgdaInductiveConstructor{tt}}
+\newcommand{\fun}[1]{\AgdaFunction{#1}}
+\newcommand{\injl}[1]{\AgdaInductiveConstructor{inj₁}~#1}
+\newcommand{\injr}[1]{\AgdaInductiveConstructor{inj₂}~#1}
 \newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
 \newcommand{\mm}{\texttt{\textminus}}
 \newcommand{\pp}{\texttt{+}}
@@ -431,13 +435,14 @@ $\top \times A$ and $A$ are ``equal.'' One way to express such an
 between the two types and prove that these two functions are
 inverses. Specifically, we define:
 \[\begin{array}{l@{\qquad}l}
-f : \top \times A \to A & g : A \to \top \times A \\
-f~(\texttt{tt} , x) = x & g~x = (\texttt{tt} , x) 
+\fun{f} ~:~ \top \times A \to A & \fun{f⁻} : A \to \top \times A \\
+\fun{f}~(\tc , x) = x & \fun{f⁻}~x = (\tc, x) 
 \end{array}\] 
-and prove $f \circ g = g \circ f = \mathit{id}$. One could use this
-proof to ``equate'' the two types, but computationally speaking it is
-more appropriate to keep the identity of the types separate and speak
-of \emph{isomorphisms}.
+and prove
+$\fun{f} \circ \fun{f⁻} = \fun{f⁻} \circ \fun{f} = \fun{id}$. One
+could use this proof to ``equate'' the two types, but computationally
+speaking it is more appropriate to keep the identity of the types
+separate and speak of \emph{isomorphisms}.
 
 %%%
 \subsection{Proof Relevance}
@@ -445,28 +450,27 @@ of \emph{isomorphisms}.
 In the world of semirings, there are many proofs of $a + a = a +
 a$. Consider the following two proofs:
 \[\begin{array}{l@{\qquad}rcl@{\qquad}l}
-\textit{pf}_1 : & a + a &=& a + a & \mbox{(because $=$ is reflexive)} \\
-\textit{pf}_2 : & a + a &=& a + a & \mbox{(using $+$-sym)}
+\fun{pf₁} : & a + a &=& a + a & \mbox{(because $=$ is reflexive)} \\
+\fun{pf₂} : & a + a &=& a + a & \mbox{(using $+$-sym)}
 \end{array}\]
 In some cases, we might not care \emph{how} a semiring identity was
-proved and it might then be acceptable to treat $\textit{pf}_1$ and
-$\textit{pf}_2$ as ``equal.'' But although these two proofs of
-$a + a = a + a$ look identical in the , they use different
-``justifications'' and these justifications are clearly \emph{not}
-``equal.''
+proved and it might then be acceptable to treat $\fun{pf₁}$ and
+$\fun{pf₂}$ as ``equal.'' But although these two proofs of
+$a + a = a + a$ look identical, they use different ``justifications''
+and these justifications are clearly \emph{not} ``equal.''
 
 When viewed from the computational side, the situation is as
 follows. The first proof gives rise to one isomorphism using the
-self-inverse function $\textit{id}$. The second proof gives rise to
+self-inverse function $\fun{id}$. The second proof gives rise to
 another isomorphism using another self-inverse function
-$\textit{swap}$ defined as:
+$\fun{swap}$ defined as:
 \[\begin{array}{l}
-\textit{swap} : A \uplus B \to B \uplus A \\
-\textit{swap}~(\texttt{inj}_1~x) = \texttt{inj}_2~x \\
-\textit{swap}~(\texttt{inj}_2~x) = \texttt{inj}_1~x 
+\fun{swap} ~:~ A \uplus B \to B \uplus A \\
+\fun{swap}~(\injl{x}) = \injr{x} \\
+\fun{swap}~(\injr{x}) = \injl{x} 
 \end{array}\]
-Now it is clear that even though both $\textit{id}$ and
-$\textit{swap}$ can be used to establish an isomorphism between $A
+Now it is clear that even though both $\fun{id}$ and
+$\fun{swap}$ can be used to establish an isomorphism between $A
 \uplus A$ and itself, their actions are different. Semantically
 speaking, these two functions are different and no program
 transformation or optimization should ever identify them.
@@ -476,90 +480,126 @@ programs resulting from different proofs are always semantically
 different. Consider for example, the following two proofs of
 $(a + 0) + b = a + b$:
 \[\begin{array}{l@{\qquad}rcl@{\qquad}l}
-\textit{pf}_3 : & (a + 0) + b &=& (0 + a) + b & \mbox{(using $+$-sym}) \\
+\fun{pf₃} : & (a + 0) + b &=& (0 + a) + b & \mbox{(using $+$-sym}) \\
 & &=& a + b & \mbox{(using $+$-unit)}  \\
 \\
-\textit{pf}_4 : & (a + 0) + b &=& a + (0 + b) & \mbox{(using $+$-assoc and $=$ is symmetric)} \\
+\fun{pf₄} : & (a + 0) + b &=& a + (0 + b) & \mbox{(using $+$-assoc and $=$ is symmetric)} \\
 & &=& a + b & \mbox{(using $+$-unit)}
 \end{array}\]
 On the computational side, the proofs induce the following two isomorphisms between 
-$(A \uplus \bot) \uplus B$ and $A \uplus B$. The first isomorphism 
-takes the values in $(A \uplus \bot) \uplus B$ along the following 
-``paths'' to values in $A \uplus B$:
-\[\begin{array}{l}
-\texttt{inj}_1~(\texttt{inj}_1~x) \mapsto \texttt{inj}_1~(\texttt{inj}_2~x) \mapsto \texttt{inj}_1~x \\
-\texttt{inj}_2~x \mapsto \texttt{inj}_2~x 
+$(A \uplus \bot) \uplus B$ and $A \uplus B$. The first isomorphism \fun{pf₃}
+takes the values in $(A \uplus \bot) \uplus B$ using the composition
+of the following two isomorphisms:
+\[\begin{array}{l@{\qquad}l}
+\fun{f₁} ~:~ (A \uplus \bot) \uplus B \to (\bot \uplus A) \uplus B 
+  & \fun{f₁⁻} ~:~ (\bot \uplus A) \uplus B \to (A \uplus \bot) \uplus B \\
+\fun{f₁} (\injl{(\injl{x})}) = \injl{(\injr{x})} & 
+  \fun{f₁⁻} (\injl{(\injr{x})}) = \injl{(\injl{x})}) \\
+\fun{f₁} (\injr{x}) = \injr{x} & 
+  \fun{f₁⁻} (\injr{x}) = \injr{x}) \\
+\\
+\fun{f₂} ~:~ (\bot \uplus A) \uplus B \to A \uplus B & 
+  \fun{f₂⁻} ~:~ A \uplus B \to (\bot \uplus A) \uplus B \\  
+\fun{f₂} (\injl{(\injr{x})}) = \injl{x} & 
+  \fun{f₂⁻} (\injl{x}) = \injl{(\injr{x})} \\
+\fun{f₂} (\injr{x}) = \injr{x} & 
+  \fun{f₂⁻} (\injr{x}) = \injr{x}
 \end{array}\]
-The second isomorphism however follows the following ``paths'':
-\[\begin{array}{l}
-\texttt{inj}_1~(\texttt{inj}_1~x) \mapsto \texttt{inj}_1~x \\
-\texttt{inj}_2~x \mapsto \texttt{inj}_2~(\texttt{inj}_2~x) \mapsto \texttt{inj}_2~x
+We calculate that composition corresponding to \fun{pf₃} as:
+\[\begin{array}{l@{\qquad}l}
+\fun{f₁₂} ~:~ (A \uplus \bot) \uplus B \to A \uplus B & 
+  \fun{f₁₂⁻} ~:~ A \uplus B \to (A \uplus \bot) \uplus B \\
+\fun{f₁₂} (\injl{(\injl{x})}) = \injl{x} & 
+  \fun{f₁₂⁻} (\injl{x}) = \injl{(\injl{x})}) \\
+\fun{f₁₂} (\injr{x}) = \injr{x} & 
+  \fun{f₁₂⁻} (\injr{x}) = \injr{x}) 
 \end{array}\]
-The fact that these two computations are, unlike the case of
-\textit{id} and \textit{swap} from the previous example, semantically
-equivalent is not immediately obvious. Viewing the two computations
-diagrammatically as shown below does however seem to justify the
-equivalence in the sense that the top paths can be continuously
-transformed to the bottom paths:
+We can similarly calculate the isomorphism corresponding to \fun{pf₄}
+and verify that it is identical to the one above. 
 
-\begin{center}
-\begin{tikzpicture}[scale=0.9,every node/.style={scale=0.9}]
-  \draw (-2,-2) ellipse (0.5cm and 1cm);
-  \draw[fill] (-2,-1.5) circle [radius=0.025];
-  \node[below] at (-2.1,-1.5) {$A$};
-  \draw[fill] (-2,-2.5) circle [radius=0.025];
-  \node[below] at (-2.1,-2.5) {$\bot$};
-  \draw (-2,-2.5) ellipse (1cm and 1.7cm);
-  \draw[fill] (-2,-3.35) circle [radius=0.025];
-  \node[below] at (-2.1,-3.35) {$B$};
+% along the following ``paths'' to values in $A \uplus B$:
+% \[\begin{array}{l}
+% \texttt{inj}_1~(\texttt{inj}_1~x) \mapsto \texttt{inj}_1~(\texttt{inj}_2~x) \mapsto \texttt{inj}_1~x \\
+% \texttt{inj}_2~x \mapsto \texttt{inj}_2~x 
+% \end{array}\] 
+% The second isomorphism carries the values along different ``paths'':
+% \[\begin{array}{l}
+% \texttt{inj}_1~(\texttt{inj}_1~x) \mapsto \texttt{inj}_1~x \\
+% \texttt{inj}_2~x \mapsto \texttt{inj}_2~(\texttt{inj}_2~x) \mapsto \texttt{inj}_2~x
+% \end{array}\]
+% These two computations are, unlike the case of \textit{id} and
+% \textit{swap} from the previous example, semantically equivalent. This
+% is not immediately obvious but one can get some intuition by viewing
+% the two computations diagrammatically as shown below. The diagram
+% shows the two top paths can be continuously transformed to the two
+% bottom paths:
 
-  \draw (6.5,-2) ellipse (0.5cm and 1cm);
-  \draw[fill] (6.5,-1.5) circle [radius=0.025];
-  \node[below] at (6.65,-1.5) {$A$};
-  \draw[fill] (6.5,-2.5) circle [radius=0.025];
-  \node[below] at (6.65,-2.5) {$B$};
+% \begin{center}
+% \begin{tikzpicture}[scale=0.9,every node/.style={scale=0.9}]
+%   \draw (-2,-2) ellipse (0.5cm and 1cm);
+%   \draw[fill] (-2,-1.5) circle [radius=0.025];
+%   \node[below] at (-2.1,-1.5) {$A$};
+%   \draw[fill] (-2,-2.5) circle [radius=0.025];
+%   \node[below] at (-2.1,-2.5) {$\bot$};
+%   \draw (-2,-2.5) ellipse (1cm and 1.7cm);
+%   \draw[fill] (-2,-3.35) circle [radius=0.025];
+%   \node[below] at (-2.1,-3.35) {$B$};
 
-  \draw (1.5,0.5) ellipse (0.5cm and 1cm);
-  \draw[fill] (1.5,1) circle [radius=0.025];
-  \node[below] at (1.4,1) {$\bot$};
-  \draw[fill] (1.5,0) circle [radius=0.025];
-  \node[below] at (1.4,0) {$A$};
-  \draw (1.5,0) ellipse (1cm and 1.7cm);
-  \draw[fill] (1.5,-0.85) circle [radius=0.025];
-  \node[below] at (1.4,-0.85) {$B$};
+%   \draw (6.5,-2) ellipse (0.5cm and 1cm);
+%   \draw[fill] (6.5,-1.5) circle [radius=0.025];
+%   \node[below] at (6.65,-1.5) {$A$};
+%   \draw[fill] (6.5,-2.5) circle [radius=0.025];
+%   \node[below] at (6.65,-2.5) {$B$};
 
-  \draw (2.5,-4) ellipse (0.5cm and 1cm);
-  \draw[fill] (2.5,-2.5) circle [radius=0.025];
-  \node[below] at (2.4,-2.5) {$A$};
-  \draw[fill] (2.5,-3.5) circle [radius=0.025];
-  \node[below] at (2.4,-3.5) {$\bot$};
-  \draw (2.5,-3.5) ellipse (1cm and 1.7cm);
-  \draw[fill] (2.5,-4.35) circle [radius=0.025];
-  \node[below] at (2.4,-4.35) {$B$};
+%   \draw (1.5,0.5) ellipse (0.5cm and 1cm);
+%   \draw[fill] (1.5,1) circle [radius=0.025];
+%   \node[below] at (1.4,1) {$\bot$};
+%   \draw[fill] (1.5,0) circle [radius=0.025];
+%   \node[below] at (1.4,0) {$A$};
+%   \draw (1.5,0) ellipse (1cm and 1.7cm);
+%   \draw[fill] (1.5,-0.85) circle [radius=0.025];
+%   \node[below] at (1.4,-0.85) {$B$};
 
-  \draw[->] (-2,-1.5) to[bend left] (1.5,0) ;
-  \draw[->] (-2,-3.35) to[bend left] (1.5,-0.85) ;
-  \draw[->] (1.5,0) to[bend left] (6.5,-1.45) ;
-  \draw[->] (1.5,-0.85) to[bend left] (6.5,-2.45) ;
+%   \draw (2.5,-4) ellipse (0.5cm and 1cm);
+%   \draw[fill] (2.5,-2.5) circle [radius=0.025];
+%   \node[below] at (2.4,-2.5) {$A$};
+%   \draw[fill] (2.5,-3.5) circle [radius=0.025];
+%   \node[below] at (2.4,-3.5) {$\bot$};
+%   \draw (2.5,-3.5) ellipse (1cm and 1.7cm);
+%   \draw[fill] (2.5,-4.35) circle [radius=0.025];
+%   \node[below] at (2.4,-4.35) {$B$};
 
-  \draw[->] (-2,-1.5) to[bend right] (2.5,-2.5) ;
-  \draw[->] (-2,-3.35) to[bend right] (2.5,-4.35) ;
-  \draw[->] (2.5,-2.5) to[bend right] (6.5,-1.55) ;
-  \draw[->] (2.5,-4.35) to[bend right] (6.5,-2.55) ;
+%   \draw[->] (-2,-1.5) to[bend left] (1.5,0) ;
+%   \draw[->] (-2,-3.35) to[bend left] (1.5,-0.85) ;
+%   \draw[->] (1.5,0) to[bend left] (6.5,-1.45) ;
+%   \draw[->] (1.5,-0.85) to[bend left] (6.5,-2.45) ;
 
-\end{tikzpicture}
-\end{center}
+%   \draw[->] (-2,-1.5) to[bend right] (2.5,-2.5) ;
+%   \draw[->] (-2,-3.35) to[bend right] (2.5,-4.35) ;
+%   \draw[->] (2.5,-2.5) to[bend right] (6.5,-1.55) ;
+%   \draw[->] (2.5,-4.35) to[bend right] (6.5,-2.55) ;
+
+% \end{tikzpicture}
+% \end{center}
 
 %%% 
 \subsection{Summary} 
 
-To summarize this high-level presentation, a well-founded reversible
-programming language along with its accompanying program
-transformations and optimizations can be naturally extracted from an
-algebraic semiring structure. The correspondence between the algebraic
+To summarize this high-level presentation, there is a natural
+computational model that emerges from viewing types as syntax for
+semiring elements and semiring identities as type isomorphisms. The
+correspondence continues further between justifications for semiring
+identities and valid program transformations and optimizations. There
+is a long way however from noticing such a correspondence to
+formalizing it in such way that a well-founded reversible programming
+language along with its accompanying program transformations and
+optimizations can be naturally extracted from the algebraic semiring
+structure. Furthermore, the correspondence between the algebraic
 manipulations in semirings and program transformations is so tight
-that quite complex program transformations can be derived from mundane
-algebraic manipulations.
+that it should be possible to conveniently move back and forth between
+the two worlds transporting results that are evident in one domain to
+the other. The remainder of the paper is about such a formalization
+and its applications. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Equivalences and Commutative Semirings} 
