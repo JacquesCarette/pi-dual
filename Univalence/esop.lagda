@@ -374,19 +374,19 @@ executable \texttt{Agda 2.4.2.3} package with the global
 \url{http://github.com//JacquesCarette/pi-dual/Univalence}.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Informal Development}
+\section{Informal Development}\label{sec:informal}
 
 We explore the main ingredients that would constitute a Curry-Howard
 like correspondence between (commutative) semirings and (constructive)
 type theory.
 
 %%%
-\subsection{Semirings}
+\subsection{Semirings}\label{sec:semirings}
 
 We begin with the familiar definition of the algebraic structure of
 commutative semirings.
 
-\begin{definition}
+\begin{definition}\label{defn:csr}
   A \emph{commutative semiring} (sometimes called a \emph{commutative
     rig} (commutative ri\emph{n}g without negative elements) consists of a
   set $R$, two distinguished elements of $R$ named 0 and 1, and two
@@ -625,7 +625,7 @@ data U : Set where
   TIMES : U → U → U
 \end{code}
 \noindent to define the universe \AgdaDatatype{U} of finite types.
-There is an obvious mapping from \AdgaDatatype{U} to $\mathbb{N}$:
+There is an obvious mapping from \AgdaDatatype{U} to $\mathbb{N}$:
 
 \begin{code}
 toℕ : U → ℕ
@@ -657,6 +657,8 @@ $\alpha : f \circ g = \mathrm{id}_B$ and
 $\beta : g \circ f = \mathrm{id}_A$.
 \end{definition}
  
+\jc{I will first write this using informal mathematics.  Once it
+is correct, it is easy enough to switch to Agda}
 The above definition uses equality of functions (which is why
 we call it \emph{extensional}), which is well-known to be problematic
 for computational purposes.  Instead, we replace the equalities between
@@ -694,6 +696,84 @@ example, as mentioned earlier, there are two equivalences between the type
 hence for $g$). These two equivalences are themselves \emph{not}
 equivalent: each of them can be used to ``transport'' properties of
 \AgdaDatatype {Bool} in a different way.
+
+We emphasize that, in the definition of commutative semiring 
+(Definition~\ref{defn:csr} in Section~\ref{sec:semirings}), the axioms 
+are satisfied
+up to strict equality $=$. The most famous instance of commutative
+semirings is, of course, the natural numbers $\mathbb{N}$.  We need
+to adapt this definition.
+
+\begin{definition}
+Given an equivalence relation $\simeq$ on a set $R$, a 
+\emph{$\simeq$-semiring} on $R$ is a semiring where $=$ is replaced by
+$\simeq$ in all the defining relations.
+\end{definition}
+
+It should be noted that, in Agda's standard library, semirings
+are axiomatized as $\simeq$-semirings.  This is because in constructive
+type theory, there is no global equality ($=$) predicate, and thus
+it is more natural to define notions which are relative to an
+equivalence relation.
+
+Before proving that our syntactic model \AgdaDatatype{U} forms a
+commutative semiring, it is instructive to show that
+the universe of types (\AgdaDatatype{Set} in Agda terminology) 
+itself is a commutative semiring up
+to equivalence of types~$\simeq$.
+
+% TypeEquiv:typesCSR
+\begin{theorem}\label{thm:typesCSR}
+The collection of all types (\AgdaDatatype{Set}) forms a commutative 
+semiring (up to $\simeq$). 
+\end{theorem}
+\begin{proof}
+  As expected, the additive unit is $\bot$, the multiplicative unit
+  is~$\top$, and the two binary operations are $\uplus$ and $\times$.
+  The functions witnessing explicit equivalences are straightforward.
+  \qed
+\end{proof}
+
+\noindent For example, for arbitrary types $A$, $B$, and $C$, we have
+equivalences such as:
+\[\begin{array}{rcl}
+\bot ⊎ A &\simeq& A \\
+\top \times A &\simeq& A \\
+A \times (B \times C) &\simeq& (A \times B) \times C \\
+A \times \bot &\simeq& \bot \\
+A \times (B \uplus C) &\simeq& (A \times B) \uplus (A \times C) 
+\end{array}\]
+
+\jc{now: add Pi0 as the language of proof terms.  I guess it might
+make sense to add a restricted version, prove it is a semiring 
+(see the new Pi0Semiring), and then extend it later?}
+
+\subsection{Proof transformations and equivalence of equivalences}
+
+One of the advantages of using equivalence $\simeq$ instead of strict
+equality $=$ is that we can form a type of all equivalences
+$\textsc{eq}_{A,B}$, and then investigate its structure.  In particular,
+for a given $A$ and $B$, the
+elements of $\textsc{eq}_{A,B}$ are all the ways in which we can prove
+$A \simeq B$. For example,
+$\textsc{eq}_{\AgdaDatatype {Bool},\AgdaDatatype  {Bool}}$ has two
+elements corresponding to the $\mathrm{id}$-equivalence and to the
+negation-equivalence that were mentioned before. More generally, 
+for finite types $A$ and $B$,
+the type $\textsc{eq}_{A,B}$ is only inhabited if $A$ and~$B$ have the
+same size in which case the type has $|A|~!$ (factorial of the size of
+$A$) elements witnessing the various possible identifications of $A$
+and $B$. The type of all equivalences has some non-trivial structure,
+which will be examined in detail in section~\ref{sec:categorification}.
+
+Note that finite types \emph{do not} form a commutative semiring: the
+extra ``size'' information is incompatible with the universally 
+quantified nature of the semiring axioms.
+
+\todo{find a good home for the definition of equivalence-of-equivalence.}
+\todo{figure out when to first mention $\Pi$ and cite.}
+
+\subsection{Linking Finite Types and Semirings}
 
 A result by \citet{Fiore:2004,fiore-remarks} completely characterizes
 the isomorphisms between finite types using the axioms of commutative
@@ -754,82 +834,11 @@ The category $\mathbf{F}$ is the
 \end{enumerate}
 \end{proposition}
 
-
-\jc{old stuff, kept here as a reminder}
-We emphasize that, in the definition above, the axioms are satisfied
-up to strict equality $=$. The most famous instance of commutative
-semirings is, of course, the natural numbers $\mathbb{N}$.  We need
-to adapt this definition.
-
-\begin{definition}
-Given an equivalence relation $\simeq$ on a set $R$, a 
-\emph{$\simeq$-semiring} on $R$ is a semiring where $=$ is replaced by
-$\simeq$ in all the defining relations.
-\end{definition}
-
-It should be noted that, in Agda's standard library, semirings
-are axiomatized as $\simeq$-semirings.  This is because in constructive
-type theory, there is no global equality ($=$) predicate, and thus
-it is more natural to define notions which are relative to an
-equivalence relation.
-
-%%%%%%%%%%%%
-\subsection{Commutative Semirings of Types}
-
 Intuitively, Fiore et. al's result states that one can interpret each 
 finite type by its size, and that this identification validates the 
 familiar properties of the natural numbers, and is in fact isomorphic 
 to the commutative semiring of the natural numbers.
 
-First, we do not need to assume finiteness to prove that
-the universe of types
-(\AgdaDatatype{Set} in Agda terminology) is a commutative semiring up
-to equivalence of types~$\simeq$.
-
-% TypeEquiv:typesCSR
-\begin{theorem}\label{thm:typesCSR}
-The collection of all types (\AgdaDatatype{Set}) forms a commutative 
-semiring (up to $\simeq$). 
-\end{theorem}
-\begin{proof}
-  As expected, the additive unit is $\bot$, the multiplicative unit
-  is~$\top$, and the two binary operations are $\uplus$ and $\times$.
-  The functions witnessing explicit equivalences are straightforward.
-  \qed
-\end{proof}
-
-\noindent For example, for arbitrary types $A$, $B$, and $C$, we have
-equivalences such as:
-\[\begin{array}{rcl}
-\bot ⊎ A &\simeq& A \\
-\top \times A &\simeq& A \\
-A \times (B \times C) &\simeq& (A \times B) \times C \\
-A \times \bot &\simeq& \bot \\
-A \times (B \uplus C) &\simeq& (A \times B) \uplus (A \times C) 
-\end{array}\]
-
-One of the advantages of using equivalence $\simeq$ instead of strict
-equality $=$ is that we can form a type of all equivalences
-$\textsc{eq}_{A,B}$, and then investigate its structure.  In particular,
-for a given $A$ and $B$, the
-elements of $\textsc{eq}_{A,B}$ are all the ways in which we can prove
-$A \simeq B$. For example,
-$\textsc{eq}_{\AgdaDatatype {Bool},\AgdaDatatype  {Bool}}$ has two
-elements corresponding to the $\mathrm{id}$-equivalence and to the
-negation-equivalence that were mentioned before. More generally, 
-for finite types $A$ and $B$,
-the type $\textsc{eq}_{A,B}$ is only inhabited if $A$ and~$B$ have the
-same size in which case the type has $|A|~!$ (factorial of the size of
-$A$) elements witnessing the various possible identifications of $A$
-and $B$. The type of all equivalences has some non-trivial structure,
-which will be examined in detail in section~\ref{sec:categorification}.
-
-Note that finite types \emph{do not} form a commutative semiring: the
-extra ``size'' information is incompatible with the universally 
-quantified nature of the semiring axioms.
-
-\todo{find a good home for the definition of equivalence-of-equivalence.}
-\todo{figure out when to first mention $\Pi$ and cite.}
 \begin{comment}
 \begin{theorem}
 \label{thm:eqeq}
@@ -869,7 +878,7 @@ of \emph{type equivalence} instead of strict equality~$=$.
 \end{comment}
 
 %%%%%%%%%%%%
-\subsection{Permutations}
+\section{Permutations}
 
 Although permutations do not form a semiring (for the same reason
 that finite types do not), they ``almost'' do.  As they are a 
