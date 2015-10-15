@@ -192,7 +192,7 @@ Indiana University (\email{sabry@indiana.edu})
 
 \AgdaHide{
 \begin{code}
-open import PiU
+open import Data.Nat
 open import PiLevel0
 open import Pi0Examples
 open import PiLevel1
@@ -429,7 +429,7 @@ Having matched the syntax of semiring elements and the syntax of
 types, we examine the computational counterpart of the semiring
 identities. When viewed from the type theory side, each semiring
 identity asserts that two types are ``equal.'' For example, the
-identity unit-$\cdot$, i.e., $1 \cdot a = a$ asserts that the types
+identity $\cdot$-unit, i.e., $1 \cdot a = a$ asserts that the types
 $\top \times A$ and $A$ are ``equal.'' One way to express such an
 ``equality'' computationally is to exhibit two functions mediating
 between the two types and prove that these two functions are
@@ -475,6 +475,9 @@ $\fun{swap}$ can be used to establish an isomorphism between $A
 speaking, these two functions are different and no program
 transformation or optimization should ever identify them.
 
+\jc{both proofs below implicitly use 'naturality', or
+\AgdaFunction{cong} in Agda parlance;  Also, I don't see
+where symmetry of = comes in?}
 The discussion above should not however lead one to conclude that
 programs resulting from different proofs are always semantically
 different. Consider for example, the following two proofs of
@@ -602,43 +605,43 @@ the other. The remainder of the paper is about such a formalization
 and its applications. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Equivalences and Commutative Semirings} 
+\section{Equivalences and Commutative Semirings, formally} 
 \label{sec:equiv}
 
-As our starting point is the notion of equivalence of types, we
-explain this in detail. As semirings are similarly important,
-these are also formally defined.  We then give an important example:
-the semiring structure on types.  Other structures (finite sets and
-permutations, finite types and equivalences) do not quite carry a
-semiring structure -- in the very same way that matrices do not quite carry
-a ring structure.  This will however motivate us to find the right 
-setting to exhibit what this semiring-like structure really is.
-That will then allow us to connect these notions to that of (typed) reversible
-computation.
+We now redo the material of the previous section, but with 
+formal definitions throughout.  When the Agda code is just as
+clear as informal ``paper mathematics'', we choose formality.
 
 %%%%%%%%%%%%
+\subsection{Semiring of Finite Types}
+
+Our previous grammar for $\tau$ can be formalized as
+
+\begin{code}
+data U : Set where
+  ZERO  : U
+  ONE   : U
+  PLUS  : U → U → U
+  TIMES : U → U → U
+\end{code}
+\noindent to define the universe \AgdaDatatype{U} of finite types.
+There is an obvious mapping from \AdgaDatatype{U} to $\mathbb{N}$:
+
+\begin{code}
+toℕ : U → ℕ
+toℕ ZERO = 0
+toℕ ONE = 1
+toℕ (PLUS t₁ t₂) = toℕ t₁ + toℕ t₂
+toℕ (TIMES t₁ t₂) = toℕ t₁ * toℕ t₂ 
+\end{code}
+
+We will indeed see that \AgdaDatatype{U} and $\mathbb{N}$ are
+isomorphic (as semirings).  But to do so, we first need to
+formalize when two types are equivalent.
+
 \subsection{Equivalences of Types}
 
-The elementary building blocks of type theory are the empty type
-($\bot$), the unit type ($\top$), and the sum ($\uplus$) and product
-($\times$) types. In particular, these constructors can encode any \emph{finite
-  type}. Traditional type theory also includes several facilities for
-building infinite types, most notably function types. We will however
-not address infinite types in this paper except for a discussion in
-Sec.~\ref{sec:lim}. We will instead focus on thoroughly understanding the
-computational structures related to types, with particular emphasis on
-finite types.  Note that we will always explicitly indicate when our
-results require finiteness.
-
-An essential property of a finite type $A$ is its size $|A|$, defined as
-\[\begin{array}{rcl}
-|\bot| &=& 0 \\
-|\top| &=& 1 \\
-|A \uplus B| &=& |A| + |B| \\
-|A \times B| &=& |A| * |B| 
-\end{array}\] 
-
-There are several equivalent definitions of the notion of equivalence%
+There are actually several equivalent definitions of the notion of equivalence%
 \footnote{For reasons beyond the scope of this paper, we do not use any
 of the definitions of equivalence which make it a \emph{mere proposition},
 as we want a definition which is syntactically symmetric.}
@@ -654,7 +657,7 @@ $\alpha : f \circ g = \mathrm{id}_B$ and
 $\beta : g \circ f = \mathrm{id}_A$.
 \end{definition}
  
-The above definition compares equality of functions (which is why
+The above definition uses equality of functions (which is why
 we call it \emph{extensional}), which is well-known to be problematic
 for computational purposes.  Instead, we replace the equalities between
 functions with \emph{homotopies}, giving us
@@ -752,28 +755,7 @@ The category $\mathbf{F}$ is the
 \end{proposition}
 
 
-\subsection{Semirings}
-
-\begin{definition}
-  A \emph{commutative semiring} (sometimes called a \emph{commutative
-    rig} (commutative ri\emph{n}g without negative elements) consists of a
-  set $R$, two distinguished elements of $R$ named 0 and 1, and two
-  binary operations~$+$ and $\cdot$, satisfying the following
-  relations for any $a,b,c \in R$:
-\[\begin{array}{rcl}
-0 + a &=& a \\
-a + b &=& b + a \\
-a + (b + c) &=& (a + b) + c \\
-\\
-1 \cdot a &=& a \\
-a \cdot b &=& b \cdot a \\
-a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
-\\
-0 \cdot a &=& 0 \\
-(a + b) \cdot c &=& (a \cdot c) + (b \cdot c)
-\end{array}\]
-\end{definition}
-
+\jc{old stuff, kept here as a reminder}
 We emphasize that, in the definition above, the axioms are satisfied
 up to strict equality $=$. The most famous instance of commutative
 semirings is, of course, the natural numbers $\mathbb{N}$.  We need
@@ -2151,17 +2133,17 @@ transformations on circuits when viewed diagrammatically.
 Consider two arbitrary $\Pi$-combinators representing circuits of the
 given types:
 
+\smallskip 
+
 \AgdaHide{
 \begin{code}
-postulate
+-- postulate
 \end{code}
 }
 
-\smallskip 
-
 \begin{code}
- c₁ : {B C : U} →  B ⟷ C
- c₂ : {A D : U} →  A ⟷ D
+--  c₁ : {B C : U} →  B ⟷ C
+--  c₂ : {A D : U} →  A ⟷ D
 \end{code}
 
 \smallskip 
