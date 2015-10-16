@@ -669,6 +669,7 @@ definition which is syntactically symmetric.}
 Two functions $f,g:A \rightarrow B$ are \emph{homotopic} if
 $\forall x:A. f(x) = g(x)$. In Agda, we write:
 
+\medskip 
 \begin{code}
 _∼_ : ∀ {A : Set} {P : A → Set} → (f g : (x : A) → P x) → Set
 _∼_  {A} f g = (x : A) → f x ≡ g x
@@ -683,6 +684,7 @@ $g : B \rightarrow A$ and two homotopies
 $\alpha : f \circ g \sim \mathrm{id}_B$ and
 $\beta : g \circ f \sim \mathrm{id}_A$. In Agda, we write:
 
+\medskip 
 \begin{code}
 record isqinv {A : Set} {B : Set} (f : A → B) : Set where
   constructor qinv
@@ -698,6 +700,7 @@ record isqinv {A : Set} {B : Set} (f : A → B) : Set where
   function $f : A \rightarrow B$ together with a quasi-inverse for
   $f$. In Agda, we write:
 
+\medskip 
 \begin{code}
 _≃_ : Set → Set → Set
 A ≃ B = Σ (A → B) isqinv
@@ -732,6 +735,7 @@ postulate
 \end{code}
 }
 
+\medskip 
 \begin{code} 
 typesCSR : CommutativeSemiring (Level.suc Level.zero) Level.zero
 typesCSR = record {
@@ -744,14 +748,15 @@ typesCSR = record {
   isCommutativeSemiring = typesIsCSR
   }
 \end{code}
-The functions, homotopies, and quasi-inverses witnessing the explicit
+\medskip  
+ \noindent The functions, homotopies, and quasi-inverses witnessing the explicit
 equivalences are defined within \AgdaFunction{typesIsCSR} and are
 straightforward. For future reference, we list some of these equivalences:
 \[\begin{array}{rcl}
 \AgdaFunction{unite₊≃} &:& (⊥ ⊎ A) ≃ A \\
 \AgdaFunction{swap₊≃} &:& (A ⊎ B) ≃ (B ⊎ A) \\
 \AgdaFunction{assoc₊≃} &:& ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C)) \\
-\AgdaSymbol{\_⊎≃\_} &:&  (A ≃ C) → (B ≃ D) → ((A ⊎ B) ≃ (C ⊎ D))
+\_\AgdaSymbol{⊎≃}\_ &:&  (A ≃ C) → (B ≃ D) → ((A ⊎ B) ≃ (C ⊎ D))
 \end{array}\]
 \qed
 \end{proof}
@@ -797,6 +802,8 @@ postulate
 
 \end{code}
 }
+
+\medskip 
 \begin{code}
 pf₁ : {A : Set} → (A ⊎ A) ≃ (A ⊎ A)
 pf₁ = id≃ 
@@ -811,7 +818,8 @@ pf₄ : {A B : Set} → ((A ⊎ ⊥) ⊎ B) ≃ (A ⊎ B)
 pf₄ = trans≃ assoc₊≃ (id≃ ⊎≃ unite₊≃) 
 \end{code}
 
-In order to argue that \AgdaFunction{pf₃} and \AgdaFunction{pf₄} are
+\medskip  
+ In order to argue that \AgdaFunction{pf₃} and \AgdaFunction{pf₄} are
 equivalent, we therefore need a notion of equivalence of
 equivalences. Our definition is fairly straightforward: two
 equivalences are equivalent if there exist homotopies between their
@@ -826,6 +834,8 @@ Two equivalences $e_1, e_2 : A ≃ B$ are themselves equivalent $e_1.f ∼
 infix 4 _≋_
 \end{code}
 }
+
+\medskip 
 \begin{code}
 record _≋_ {A B : Set} (eq₁ eq₂ : A ≃ B) : Set where
   constructor eq
