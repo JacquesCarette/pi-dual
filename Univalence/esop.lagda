@@ -192,13 +192,17 @@ Indiana University (\email{sabry@indiana.edu})
 \end{abstract}
 
 \AgdaHide{
-\begin{code}
-open import Data.Nat
-open import PiLevel0
-open import Pi0Examples
-open import PiLevel1
-open import Pi1Examples
-\end{code}
+\begin{code} 
+import Level
+open import Data.Empty using (⊥)
+open import Data.Unit using (⊤)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
+open import Algebra using (CommutativeSemiring)
+open import Algebra.Structures using (IsCommutativeSemiring)
+open import Function using (_∘_; id)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+\end{code} 
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -660,10 +664,15 @@ scope of this paper, we do not use any of the definitions of
 equivalence which make it a \emph{mere proposition}, as we want a
 definition which is syntactically symmetric.}
  
-\begin{definition}[Equivalence of types]
-  Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
-  function $f : A \rightarrow B$ together with a quasi-inverse for
-  $f$.
+\begin{definition}[homotopy]
+\label{def:homotopy}
+Two functions $f,g:A \rightarrow B$ are \emph{homotopic} if
+$\forall x:A. f(x) = g(x)$.
+
+\begin{code}
+_∼_ : ∀ {A : Set} {P : A → Set} → (f g : (x : A) → P x) → Set
+_∼_  {A} {P} f g = (x : A) → f x ≡ g x
+\end{code}
 \end{definition}
 
 \begin{definition}[Quasi-inverse]
@@ -673,12 +682,26 @@ triple $(g, \alpha, \beta)$, consisting of a function
 $g : B \rightarrow A$ and two homotopies
 $\alpha : f \circ g \sim \mathrm{id}_B$ and
 $\beta : g \circ f \sim \mathrm{id}_A$.
+
+\begin{code}
+record isqinv {A : Set} {B : Set} (f : A → B) : Set where
+  constructor qinv
+  field
+    g : B → A
+    α : (f ∘ g) ∼ id
+    β : (g ∘ f) ∼ id
+\end{code}
 \end{definition}
- 
-\begin{definition}[homotopy]
-\label{def:homotopy}
-Two functions $f,g:A \rightarrow B$ are \emph{homotopic} if
-$\forall x:A. f(x) = g(x)$.
+
+\begin{definition}[Equivalence of types]
+  Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
+  function $f : A \rightarrow B$ together with a quasi-inverse for
+  $f$.
+
+\begin{code}
+_≃_ : Set → Set → Set
+A ≃ B = Σ (A → B) isqinv
+\end{code}
 \end{definition}
 
 \noindent It is easy to prove that homotopies (for any given function
@@ -697,16 +720,10 @@ semiring (up to $\simeq$).
 \begin{proof}
 The relevant structure is:
 \AgdaHide{
-\begin{code} 
-import Level
-open import Data.Empty using (⊥)
-open import Data.Unit using (⊤)
-open import Data.Sum using (_⊎_)
-open import Data.Product using (_×_)
-open import Equiv using (_≃_) 
-open import TypeEquiv using (typesIsCSR)
-open import Algebra using (CommutativeSemiring)
-\end{code} 
+\begin{code}
+postulate
+  typesIsCSR : IsCommutativeSemiring _≃_ _⊎_ _×_ ⊥ ⊤
+\end{code}
 }
 
 \begin{code} 
@@ -726,60 +743,87 @@ equivalences are defined within \AgdaFunction{typesIsCSR} and are
 straightforward.\qed
 \end{proof}
 
-\noindent For example, for arbitrary types $A$, $B$, and $C$, we have
-equivalences such as:
-\[\begin{array}{rcl}
-\bot ⊎ A &\simeq& A \\
-\top \times A &\simeq& A \\
-A \times (B \times C) &\simeq& (A \times B) \times C \\
-A \times \bot &\simeq& \bot \\
-A \times (B \uplus C) &\simeq& (A \times B) \uplus (A \times C) 
-\end{array}\]
-
-
 %%%
-\subsection{...}
+\subsection{Equivalences of Equivalences}
 
-% % Bad definition!
-% \begin{definition}[Quasi-inverse, extensionally]
-% \label{def:quasi-ext}
-% For a function $f : A \rightarrow B$, an \emph{extensional quasi-inverse} is a
-% triple $(g, \alpha, \beta)$, consisting of a function
-% $g : B \rightarrow A$ which satisfies the two (named) equalities
-% $\alpha : f \circ g = \mathrm{id}_B$ and
-% $\beta : g \circ f = \mathrm{id}_A$.
-% \end{definition}
- 
-% \jc{I will first write this using informal mathematics.  Once it
-% is correct, it is easy enough to switch to Agda}
-% The above definition uses equality of functions (which is why
-% we call it \emph{extensional}), which is well-known to be problematic
-% for computational purposes.  Instead, we replace the equalities between
-% functions with \emph{homotopies}, giving us
+In the terminology of Sec.~\ref{subsec:proofrelev}, an equivalence $≃$
+denotes a proof of a semiring identity. Thus the proofs
+\AgdaFunction{pf₁}, \AgdaFunction{pf₂}, \AgdaFunction{pf₃}, and
+\AgdaFunction{pf₄} can be written formally as:
+\AgdaHide{
+\begin{code}
+id≃ : ∀ {A : Set} → A ≃ A
+id≃ = (id , qinv id (λ _ → refl) (λ _ → refl))
 
-\begin{definition}
-Given an equivalence relation $\simeq$ on a set $R$, a 
-\emph{$\simeq$-semiring} on $R$ is a semiring where $=$ is replaced by
-$\simeq$ in all the defining relations.
-\end{definition}
+sym≃ : ∀ {A B : Set} → (A ≃ B) → B ≃ A
+sym≃ (A→B , equiv) = e.g , qinv A→B e.β e.α
+  where module e = isqinv equiv
 
-We emphasize that, in the definition of commutative semiring 
-(Definition~\ref{defn:csr} in Section~\ref{sec:semirings}), the axioms 
-are satisfied
-up to strict equality $=$. The most famous instance of commutative
-semirings is, of course, the natural numbers $\mathbb{N}$.  We need
-to adapt this definition.
+postulate
+  trans≃ :  ∀ {A B C : Set} → (A ≃ B) → (B ≃ C) → (A ≃ C)
 
- It should be noted that, in Agda's standard library, semirings
-are axiomatized as $\simeq$-semirings.  This is because in constructive
-type theory, there is no global equality ($=$) predicate, and thus
-it is more natural to define notions which are relative to an
-equivalence relation.
+swap₊ : {A B : Set} → A ⊎ B → B ⊎ A
+swap₊ (inj₁ a) = inj₂ a
+swap₊ (inj₂ b) = inj₁ b
 
-Before proving that our syntactic model \AgdaDatatype{U} forms a
+swapswap₊ : {A B : Set} → (swap₊ ∘ (swap₊ {A} {B})) ∼ id
+swapswap₊ (inj₁ a) = refl
+swapswap₊ (inj₂ b) = refl
 
-%%%
-\subsection{Proof transformations and equivalence of equivalences}
+postulate
+  unite₊≃ : {A : Set} → (⊥ ⊎ A) ≃ A
+
+postulate
+  swap₊≃ : {A B : Set} → (A ⊎ B) ≃ (B ⊎ A)
+
+postulate
+  assoc₊≃ : {A B C : Set} → ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C))
+
+postulate
+  _⊎≃_ :  ∀ {A B C D} → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
+
+\end{code}
+}
+\begin{code}
+pf₁ : {A : Set} → (A ⊎ A) ≃ (A ⊎ A)
+pf₁ = id≃ 
+
+pf₂ : {A : Set} → (A ⊎ A) ≃ (A ⊎ A)
+pf₂ = swap₊≃
+
+pf₃ : {A B : Set} → ((A ⊎ ⊥) ⊎ B) ≃ (A ⊎ B)
+pf₃ = trans≃ (swap₊≃ ⊎≃ id≃) (unite₊≃ ⊎≃ id≃) 
+
+pf₄ : {A B : Set} → ((A ⊎ ⊥) ⊎ B) ≃ (A ⊎ B)
+pf₄ = trans≃ assoc₊≃ (id≃ ⊎≃ unite₊≃) 
+\end{code}
+
+In order to argue that \AgdaFunction{pf₃} and \AgdaFunction{pf₄} are
+equivalent, we therefore need a notion of equivalence of equivalences.
+
+\AgdaHide{
+\begin{code}
+infix 4 _≋_
+\end{code}
+}
+\begin{code}
+record _≋_ {A B : Set} (eq₁ eq₂ : A ≃ B) : Set where
+  constructor eq
+  open isqinv
+  field
+    f≡ : proj₁ eq₁ ∼ proj₁ eq₂
+    g≡ : g (proj₂ eq₁) ∼ g (proj₂ eq₂)
+ \end{code}
+
+% \noindent For example, for arbitrary types $A$, $B$, and $C$, we have
+% equivalences such as:
+% \[\begin{array}{rcl}
+% \bot ⊎ A &\simeq& A \\
+% \top \times A &\simeq& A \\
+% A \times (B \times C) &\simeq& (A \times B) \times C \\
+% A \times \bot &\simeq& \bot \\
+% A \times (B \uplus C) &\simeq& (A \times B) \uplus (A \times C) 
+% \end{array}\]
 
 One of the advantages of using equivalence $\simeq$ instead of strict
 equality $=$ is that we can form a type of all equivalences
@@ -908,8 +952,10 @@ commutative semiring structure can be defined up to the HoTT relation
 of \emph{type equivalence} instead of strict equality~$=$.
 \end{comment}
 
-%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Permutations}
+
+now give names to equivalences ...
 
 Although permutations do not form a semiring (for the same reason
 that finite types do not), they ``almost'' do.  As they are a 
@@ -1174,6 +1220,45 @@ and is homomorphic on sums and products.
 \label{pi-combinators}
 \end{figure*}
 
+% % Bad definition!
+% \begin{definition}[Quasi-inverse, extensionally]
+% \label{def:quasi-ext}
+% For a function $f : A \rightarrow B$, an \emph{extensional quasi-inverse} is a
+% triple $(g, \alpha, \beta)$, consisting of a function
+% $g : B \rightarrow A$ which satisfies the two (named) equalities
+% $\alpha : f \circ g = \mathrm{id}_B$ and
+% $\beta : g \circ f = \mathrm{id}_A$.
+% \end{definition}
+ 
+% \jc{I will first write this using informal mathematics.  Once it
+% is correct, it is easy enough to switch to Agda}
+% The above definition uses equality of functions (which is why
+% we call it \emph{extensional}), which is well-known to be problematic
+% for computational purposes.  Instead, we replace the equalities between
+% functions with \emph{homotopies}, giving us
+
+% \begin{definition}
+% Given an equivalence relation $\simeq$ on a set $R$, a 
+% \emph{$\simeq$-semiring} on $R$ is a semiring where $=$ is replaced by
+% $\simeq$ in all the defining relations.
+% \end{definition}
+
+% We emphasize that, in the definition of commutative semiring 
+% (Definition~\ref{defn:csr} in Section~\ref{sec:semirings}), the axioms 
+% are satisfied
+% up to strict equality $=$. The most famous instance of commutative
+% semirings is, of course, the natural numbers $\mathbb{N}$.  We need
+% to adapt this definition.
+
+%  It should be noted that, in Agda's standard library, semirings
+% are axiomatized as $\simeq$-semirings.  This is because in constructive
+% type theory, there is no global equality ($=$) predicate, and thus
+% it is more natural to define notions which are relative to an
+% equivalence relation.
+
+% %%%
+% \subsection{Proof transformations and equivalence of equivalences}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Programming with Permutations}
 \label{sec:prog}
@@ -1334,6 +1419,16 @@ is universal for such circuits~\citep{Toffoli:1980}.
 
 %%%%%%%%%%%%
 \subsection{Semiring of Finite Types}
+
+\AgdaHide{
+\begin{code}
+open import Data.Nat
+open import PiLevel0
+open import Pi0Examples
+open import PiLevel1
+open import Pi1Examples
+\end{code}
+}
 
 Our previous grammar for $\tau$ can be formalized as
 
@@ -2351,6 +2446,7 @@ Quantomatic~\citep{quantomatic} (which only works for traced symmetric
 monoidal categories) or a radically different syntactic notation such
 as Penrose's abstract tensor notation~\citep{tensor1,tensor2}.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Limitations}
 \label{sec:lim}
 
