@@ -8,7 +8,7 @@ open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; Σ; _,_; proj₁; proj₂)
 open import Relation.Binary.PropositionalEquality 
   using (_≡_; refl; sym; trans; cong; cong₂)
-open import Function using (_∘_)
+open import Function using (_∘_; id)
 
 open import Equiv
 open import EquivEquiv 
@@ -115,6 +115,9 @@ evalB (c₀ ⊕ c₁) (inj₁ x) = inj₁ (evalB c₀ x)
 evalB (c₀ ⊕ c₁) (inj₂ y) = inj₂ (evalB c₁ y)
 evalB (c₀ ⊗ c₁) (x , y) = evalB c₀ x , evalB c₁ y
 
+-- should probably prove that these are inverses!
+-- to a certain extent, no need, because here's
+-- the right way to do it:
 c2equiv : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
 c2equiv unite₊l = TE.unite₊equiv
 c2equiv uniti₊l = TE.uniti₊equiv
@@ -390,3 +393,24 @@ cc2equiv elim⊥-1[A⊕B]⇔l = 1×[A⊎B]≃A⊎B
 cc2equiv elim⊥-1[A⊕B]⇔r = sym≋ 1×[A⊎B]≃A⊎B
 cc2equiv fully-distribute⇔l = [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D
 cc2equiv fully-distribute⇔r = sym≋ [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D
+
+--
+-- These programs really are equivalent.  Here's two ways to see that:
+
+-- 1. they give the same results as programs:
+≋⇒≡ : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) →
+  eval c₁ ∼ eval c₂
+≋⇒≡ c₁ c₂ ce =
+  trans∼ (lemma0 c₁) (
+  trans∼ (_≋_.f≡ (cc2equiv ce))
+         (sym∼ (lemma0 c₂)))
+
+-- 2. in fact, you can run one forward, then the other
+--    backward, and that's the identity
+ping-pong : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) →
+  evalB c₂ ∘ eval c₁ ∼ id
+ping-pong c₁ c₂ ce = 
+  trans∼ (cong₂∘ (lemma1 c₂) (lemma0 c₁)) (
+  trans∼ (cong∘r (proj₁ (c2equiv c₁)) (_≋_.f≡ (flip≋ (cc2equiv (2! ce))) )) (
+  trans∼(sym∼ β₁)
+         (_≋_.f≡ (linv≋ (c2equiv c₁)))))
