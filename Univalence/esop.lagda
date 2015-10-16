@@ -664,14 +664,14 @@ scope of this paper, we do not use any of the definitions of
 equivalence which make it a \emph{mere proposition}, as we want a
 definition which is syntactically symmetric.}
  
-\begin{definition}[homotopy]
+\begin{definition}[Homotopy]
 \label{def:homotopy}
 Two functions $f,g:A \rightarrow B$ are \emph{homotopic} if
-$\forall x:A. f(x) = g(x)$.
+$\forall x:A. f(x) = g(x)$. In Agda, we write:
 
 \begin{code}
 _∼_ : ∀ {A : Set} {P : A → Set} → (f g : (x : A) → P x) → Set
-_∼_  {A} {P} f g = (x : A) → f x ≡ g x
+_∼_  {A} f g = (x : A) → f x ≡ g x
 \end{code}
 \end{definition}
 
@@ -681,7 +681,7 @@ For a function $f : A \rightarrow B$, a \emph{quasi-inverse} is a
 triple $(g, \alpha, \beta)$, consisting of a function
 $g : B \rightarrow A$ and two homotopies
 $\alpha : f \circ g \sim \mathrm{id}_B$ and
-$\beta : g \circ f \sim \mathrm{id}_A$.
+$\beta : g \circ f \sim \mathrm{id}_A$. In Agda, we write:
 
 \begin{code}
 record isqinv {A : Set} {B : Set} (f : A → B) : Set where
@@ -696,7 +696,7 @@ record isqinv {A : Set} {B : Set} (f : A → B) : Set where
 \begin{definition}[Equivalence of types]
   Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
   function $f : A \rightarrow B$ together with a quasi-inverse for
-  $f$.
+  $f$. In Agda, we write:
 
 \begin{code}
 _≃_ : Set → Set → Set
@@ -705,7 +705,13 @@ A ≃ B = Σ (A → B) isqinv
 \end{definition}
 
 \noindent It is easy to prove that homotopies (for any given function
-space $A \rightarrow B$) are an equivalence relation.
+space $A \rightarrow B$) are an equivalence relation. It is also straightforward to
+show that $≃$ is an equivalence relation by defining:
+\[\begin{array}{rcl}
+\AgdaFunction{id≃} &:& A ≃ A \\
+\AgdaFunction{sym≃} &:& (A ≃ B) → (B ≃ A) \\
+\AgdaFunction{trans≃} &:& (A ≃ B) → (B ≃ C) → (A ≃ C)
+\end{array}\]
 
 The definition of equivalence allows us to formalize the presentation
 of Sec.~\ref{subsec:isos} by proving that every commutative semiring
@@ -740,7 +746,14 @@ typesCSR = record {
 \end{code}
 The functions, homotopies, and quasi-inverses witnessing the explicit
 equivalences are defined within \AgdaFunction{typesIsCSR} and are
-straightforward.\qed
+straightforward. For future reference, we list some of these equivalences:
+\[\begin{array}{rcl}
+\AgdaFunction{unite₊≃} &:& (⊥ ⊎ A) ≃ A \\
+\AgdaFunction{swap₊≃} &:& (A ⊎ B) ≃ (B ⊎ A) \\
+\AgdaFunction{assoc₊≃} &:& ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C)) \\
+\AgdaSymbol{\_⊎≃\_} &:&  (A ≃ C) → (B ≃ D) → ((A ⊎ B) ≃ (C ⊎ D))
+\end{array}\]
+\qed
 \end{proof}
 
 %%%
@@ -799,7 +812,14 @@ pf₄ = trans≃ assoc₊≃ (id≃ ⊎≃ unite₊≃)
 \end{code}
 
 In order to argue that \AgdaFunction{pf₃} and \AgdaFunction{pf₄} are
-equivalent, we therefore need a notion of equivalence of equivalences.
+equivalent, we therefore need a notion of equivalence of
+equivalences. Our definition is fairly straightforward: two
+equivalences are equivalent if there exist homotopies between their
+underlying functions.
+
+\begin{definition}[Equivalence of equivalences]
+Two equivalences $e_1, e_2 : A ≃ B$ are themselves equivalent $e_1.f ∼
+  e_2.f$ and $e_1.g ∼ e_2.g$. In Agda, we write:
 
 \AgdaHide{
 \begin{code}
@@ -813,7 +833,17 @@ record _≋_ {A B : Set} (eq₁ eq₂ : A ≃ B) : Set where
   field
     f≡ : proj₁ eq₁ ∼ proj₁ eq₂
     g≡ : g (proj₂ eq₁) ∼ g (proj₂ eq₂)
- \end{code}
+\end{code}
+\end{definition}
+
+We could now verify that \AgdaFunction{pf₃} is indeed equivalent to
+\AgdaFunction{pf₄} by proving
+\AgdaFunction{pf₃}~\AgdaSymbol{≋}~\AgdaFunction{pf₄}. Such a proof
+exists in the accompanying code in \AgdaModule{TypeEquivEquiv} but
+requires a surprising of tedious infrastructure to present. We explore
+a much more direct and intuitive to reason about such equivalences of
+equivalences in the next sections.
+
 
 % \noindent For example, for arbitrary types $A$, $B$, and $C$, we have
 % equivalences such as:
@@ -825,400 +855,400 @@ record _≋_ {A B : Set} (eq₁ eq₂ : A ≃ B) : Set where
 % A \times (B \uplus C) &\simeq& (A \times B) \uplus (A \times C) 
 % \end{array}\]
 
-One of the advantages of using equivalence $\simeq$ instead of strict
-equality $=$ is that we can form a type of all equivalences
-$\textsc{eq}_{A,B}$, and then investigate its structure.  In particular,
-for a given $A$ and $B$, the
-elements of $\textsc{eq}_{A,B}$ are all the ways in which we can prove
-$A \simeq B$. For example,
-$\textsc{eq}_{\AgdaDatatype {Bool},\AgdaDatatype  {Bool}}$ has two
-elements corresponding to the $\mathrm{id}$-equivalence and to the
-negation-equivalence that were mentioned before. More generally, 
-for finite types $A$ and $B$,
-the type $\textsc{eq}_{A,B}$ is only inhabited if $A$ and~$B$ have the
-same size in which case the type has $|A|~!$ (factorial of the size of
-$A$) elements witnessing the various possible identifications of $A$
-and $B$. The type of all equivalences has some non-trivial structure,
-which will be examined in detail in section~\ref{sec:categorification}.
+% One of the advantages of using equivalence $\simeq$ instead of strict
+% equality $=$ is that we can form a type of all equivalences
+% $\textsc{eq}_{A,B}$, and then investigate its structure.  In particular,
+% for a given $A$ and $B$, the
+% elements of $\textsc{eq}_{A,B}$ are all the ways in which we can prove
+% $A \simeq B$. For example,
+% $\textsc{eq}_{\AgdaDatatype {Bool},\AgdaDatatype  {Bool}}$ has two
+% elements corresponding to the $\mathrm{id}$-equivalence and to the
+% negation-equivalence that were mentioned before. More generally, 
+% for finite types $A$ and $B$,
+% the type $\textsc{eq}_{A,B}$ is only inhabited if $A$ and~$B$ have the
+% same size in which case the type has $|A|~!$ (factorial of the size of
+% $A$) elements witnessing the various possible identifications of $A$
+% and $B$. The type of all equivalences has some non-trivial structure,
+% which will be examined in detail in section~\ref{sec:categorification}.
 
-Note that finite types \emph{do not} form a commutative semiring: the
-extra ``size'' information is incompatible with the universally 
-quantified nature of the semiring axioms.
+% Note that finite types \emph{do not} form a commutative semiring: the
+% extra ``size'' information is incompatible with the universally 
+% quantified nature of the semiring axioms.
 
-\todo{find a good home for the definition of equivalence-of-equivalence.}
-\todo{figure out when to first mention $\Pi$ and cite.}
+% \todo{find a good home for the definition of equivalence-of-equivalence.}
+% \todo{figure out when to first mention $\Pi$ and cite.}
 
-\subsection{Linking Finite Types and Semirings}
+% \subsection{Linking Finite Types and Semirings}
 
-A result by \citet{Fiore:2004,fiore-remarks} completely characterizes
-the isomorphisms between finite types using the axioms of commutative
-semirings, whose definition we now turn to. The result which is proved
-in Lemma 2.2 of~\citet{fiore-remarks} is repeated below along with all
-supporting definitions.
+% A result by \citet{Fiore:2004,fiore-remarks} completely characterizes
+% the isomorphisms between finite types using the axioms of commutative
+% semirings, whose definition we now turn to. The result which is proved
+% in Lemma 2.2 of~\citet{fiore-remarks} is repeated below along with all
+% supporting definitions.
 
-\begin{definition}[$\mathcal{D}$] The equational theory $\mathcal{D}$
-  consists of the following identities:
-\[\begin{array}{l}
-1 \cdot x = x \qquad 
-  x \cdot y = y \cdot x \qquad
-  (x \cdot y) \cdot z = x \cdot (y \cdot z) \\
-x + 0 = x \qquad 
-  x + y = y + x \qquad 
-  (x + y) + z = x + (y + z) \\
-x \cdot 0 = 0 \qquad 
-  x \cdot (y + z) = x \cdot y + x \cdot z 
-\end{array}\]
-\end{definition}
+% \begin{definition}[$\mathcal{D}$] The equational theory $\mathcal{D}$
+%   consists of the following identities:
+% \[\begin{array}{l}
+% 1 \cdot x = x \qquad 
+%   x \cdot y = y \cdot x \qquad
+%   (x \cdot y) \cdot z = x \cdot (y \cdot z) \\
+% x + 0 = x \qquad 
+%   x + y = y + x \qquad 
+%   (x + y) + z = x + (y + z) \\
+% x \cdot 0 = 0 \qquad 
+%   x \cdot (y + z) = x \cdot y + x \cdot z 
+% \end{array}\]
+% \end{definition}
 
-\begin{definition}
-We let $\mathcal{D}[T]$ be the
-  category with objects given by types over base types in $T$ and
-  morphisms $\tau_1 \to \tau_2$ given by equivalence classes $[ x : \tau_1 
-  \vdash t : \tau_2]$ of well-typed terms under the equivalence
-  identifying $(x : \tau_1 \vdash t : \tau_2)$ and $(x' : \tau_1
-  \vdash t' : \tau_2)$ iff the judgement $x : \tau_1 \vdash t =
-  t'[x/x'] : \tau_2$ is derivable. Composition is by substitution
-\[ 
-  [ x' : \tau_2 \vdash t' : \tau_3] \circ [ x : \tau_1 \vdash t : \tau_2] = 
-  [ x : \tau_1 \vdash t'[t/x'] : \tau_3] 
-\]
-with identities given by $[x : \tau \vdash x : \tau]$.
-\end{definition}
+% \begin{definition}
+% We let $\mathcal{D}[T]$ be the
+%   category with objects given by types over base types in $T$ and
+%   morphisms $\tau_1 \to \tau_2$ given by equivalence classes $[ x : \tau_1 
+%   \vdash t : \tau_2]$ of well-typed terms under the equivalence
+%   identifying $(x : \tau_1 \vdash t : \tau_2)$ and $(x' : \tau_1
+%   \vdash t' : \tau_2)$ iff the judgement $x : \tau_1 \vdash t =
+%   t'[x/x'] : \tau_2$ is derivable. Composition is by substitution
+% \[ 
+%   [ x' : \tau_2 \vdash t' : \tau_3] \circ [ x : \tau_1 \vdash t : \tau_2] = 
+%   [ x : \tau_1 \vdash t'[t/x'] : \tau_3] 
+% \]
+% with identities given by $[x : \tau \vdash x : \tau]$.
+% \end{definition}
 
-\begin{definition}
-The category $\mathbf{F}$ is the
-  category of finite sets and functions. The translation
-  $\overline{\cdot}$ is:
-\[\begin{array}{l}
-\overline{x} = x \mbox{~($x$ is a variable)} \qquad
-  \overline{1} = 1 \qquad 
-  \overline{e_1 \cdot e_2} = \overline{e_1} \times \overline{e_2} \qquad 
-  \overline{0} = 0 \qquad 
-  \overline{e_1 + e_2} = \overline{e_1} + \overline{e_2} 
-\end{array}\]
-\end{definition}
+% \begin{definition}
+% The category $\mathbf{F}$ is the
+%   category of finite sets and functions. The translation
+%   $\overline{\cdot}$ is:
+% \[\begin{array}{l}
+% \overline{x} = x \mbox{~($x$ is a variable)} \qquad
+%   \overline{1} = 1 \qquad 
+%   \overline{e_1 \cdot e_2} = \overline{e_1} \times \overline{e_2} \qquad 
+%   \overline{0} = 0 \qquad 
+%   \overline{e_1 + e_2} = \overline{e_1} + \overline{e_2} 
+% \end{array}\]
+% \end{definition}
 
-\begin{proposition} For arithmetic expressions $e_1$ and $e_2$ in the 
-  language given by 1, 0, $\cdot$, and + and with unknowns in a set
-  $U$, the following statements are equivalent. The notation $\cong$ is type isomorphism.
-\begin{enumerate}
-\item $\mathcal{D} \vdash e_1 = e_2$.
-\item $\overline{e_1} \cong \overline{e_2} \mbox{~in~} \mathcal{D}[U]$.
-\item $\mathbf{F} \vdash \overline{e_1} = \overline{e_2}$.
-\item $N_0 \models e_1 = e_2$.
-\end{enumerate}
-\end{proposition}
+% \begin{proposition} For arithmetic expressions $e_1$ and $e_2$ in the 
+%   language given by 1, 0, $\cdot$, and + and with unknowns in a set
+%   $U$, the following statements are equivalent. The notation $\cong$ is type isomorphism.
+% \begin{enumerate}
+% \item $\mathcal{D} \vdash e_1 = e_2$.
+% \item $\overline{e_1} \cong \overline{e_2} \mbox{~in~} \mathcal{D}[U]$.
+% \item $\mathbf{F} \vdash \overline{e_1} = \overline{e_2}$.
+% \item $N_0 \models e_1 = e_2$.
+% \end{enumerate}
+% \end{proposition}
 
-Intuitively, Fiore et. al's result states that one can interpret each 
-finite type by its size, and that this identification validates the 
-familiar properties of the natural numbers, and is in fact isomorphic 
-to the commutative semiring of the natural numbers.
+% Intuitively, Fiore et. al's result states that one can interpret each 
+% finite type by its size, and that this identification validates the 
+% familiar properties of the natural numbers, and is in fact isomorphic 
+% to the commutative semiring of the natural numbers.
 
-\begin{comment}
-\begin{theorem}
-\label{thm:eqeq}
-  The type of all equivalences $\textsc{eq}_{A,B}$ for finite types
-  $A$ and $B$ forms a commutative semiring up to extensional
-  equivalence of equivalences \AgdaSymbol{≋}.
-\end{theorem}
-\begin{proof}
-  The most important insight is the definition of equivalence of
-  equivalences. Two equivalences $e_1, e_2 : \textsc{eq}_{A,B}$ with
-  underlying functions $f_1$ and $f_2$ and underlying quasi-inverses
-  $g_1$ and $g_2$ are themselves equivalent $e₁ ≋ e₂$ if we have that
-  both $f₁ = f₂$ and $g₁ = g₂$ extensionally. Given this notion of
-  equivalence of equivalences, the proof proceeds smoothly with the
-  additive unit being the vacuous equivalence $\bot \simeq \bot$, the
-  multiplicative unit being the trivial equivalence
-  $\top \simeq \top$, and the two binary operations being essentially
-  a mapping of $\uplus$ and $\times$ over equivalences.
-\end{proof}
+% \begin{comment}
+% \begin{theorem}
+% \label{thm:eqeq}
+%   The type of all equivalences $\textsc{eq}_{A,B}$ for finite types
+%   $A$ and $B$ forms a commutative semiring up to extensional
+%   equivalence of equivalences \AgdaSymbol{≋}.
+% \end{theorem}
+% \begin{proof}
+%   The most important insight is the definition of equivalence of
+%   equivalences. Two equivalences $e_1, e_2 : \textsc{eq}_{A,B}$ with
+%   underlying functions $f_1$ and $f_2$ and underlying quasi-inverses
+%   $g_1$ and $g_2$ are themselves equivalent $e₁ ≋ e₂$ if we have that
+%   both $f₁ = f₂$ and $g₁ = g₂$ extensionally. Given this notion of
+%   equivalence of equivalences, the proof proceeds smoothly with the
+%   additive unit being the vacuous equivalence $\bot \simeq \bot$, the
+%   multiplicative unit being the trivial equivalence
+%   $\top \simeq \top$, and the two binary operations being essentially
+%   a mapping of $\uplus$ and $\times$ over equivalences.
+% \end{proof}
 
-We reiterate that the commutative semiring axioms in this case are
-satisfied up to extensional equality of the functions underlying the
-equivalences.  We could, in principle, consider a weaker notion of
-equivalence of equivalences and attempt to iterate the construction
-but for the purposes of modeling circuits and optimizations, it is
-sufficient to consider just one additional level.
+% We reiterate that the commutative semiring axioms in this case are
+% satisfied up to extensional equality of the functions underlying the
+% equivalences.  We could, in principle, consider a weaker notion of
+% equivalence of equivalences and attempt to iterate the construction
+% but for the purposes of modeling circuits and optimizations, it is
+% sufficient to consider just one additional level.
 
-Our work builds on this identification together with work by
-\citet{James:2012:IE:2103656.2103667} which introduced the $\Pi$
-family of languages whose core computations are these isomorphisms
-between finite types. Taking into account the growing-in-importance
-idea that isomorphisms have interesting computational content and
-should not be silently or implicitly identified, we first recast Fiore
-et. al's result in the next section, making explicit that the
-commutative semiring structure can be defined up to the HoTT relation
-of \emph{type equivalence} instead of strict equality~$=$.
-\end{comment}
+% Our work builds on this identification together with work by
+% \citet{James:2012:IE:2103656.2103667} which introduced the $\Pi$
+% family of languages whose core computations are these isomorphisms
+% between finite types. Taking into account the growing-in-importance
+% idea that isomorphisms have interesting computational content and
+% should not be silently or implicitly identified, we first recast Fiore
+% et. al's result in the next section, making explicit that the
+% commutative semiring structure can be defined up to the HoTT relation
+% of \emph{type equivalence} instead of strict equality~$=$.
+% \end{comment}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Permutations}
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Permutations}
 
-now give names to equivalences ...
+% now give names to equivalences ...
 
-Although permutations do not form a semiring (for the same reason
-that finite types do not), they ``almost'' do.  As they are a 
-crucial ingredient later on, we present some basic results here.
-Informally, a permutation is a bijection between two canonically
-finite sets.  We formalize this as
+% Although permutations do not form a semiring (for the same reason
+% that finite types do not), they ``almost'' do.  As they are a 
+% crucial ingredient later on, we present some basic results here.
+% Informally, a permutation is a bijection between two canonically
+% finite sets.  We formalize this as
 
-\jc{need to define some these things formally.  Maybe give the
-Agda?  Probably not, as we don't want to talk about permutations very
-much here.  In fact, perhaps cut things down instead of add?  This is
-about type equivalences, we can downplay permutations.  Not sure.}
+% \jc{need to define some these things formally.  Maybe give the
+% Agda?  Probably not, as we don't want to talk about permutations very
+% much here.  In fact, perhaps cut things down instead of add?  This is
+% about type equivalences, we can downplay permutations.  Not sure.}
 
-\begin{definition}
-A \emph{permutation} is a $4$-tuple ...
-\end{definition}
+% \begin{definition}
+% A \emph{permutation} is a $4$-tuple ...
+% \end{definition}
 
-\jc{the introductory material in the paragraph below is now bogus.
-I have fixed our definitions (to agree with our code), so that we
-don't have that confusion.  We need to figure out what we really 
-want to say here!}
-The idea is that, \emph{up to equivalence}, the only interesting property of
-a finite type is its size, so that type equivalences must be
-size-preserving maps and hence correspond to permutations. For
-example, given two equivalent types $A$ and $B$ of completely
-different structure, e.g.,
-$A = (\top \uplus \top) \times (\top \uplus (\top \uplus \top))$ and
-$B = \top \uplus (\top \uplus (\top \uplus (\top \uplus (\top \uplus
-(\top \uplus \bot)))))$,
-we can find equivalences from either type to the finite set
-$\mathsf{Fin}~6$ and reduce all type equivalences between sets of size
-6 to permutations.
+% \jc{the introductory material in the paragraph below is now bogus.
+% I have fixed our definitions (to agree with our code), so that we
+% don't have that confusion.  We need to figure out what we really 
+% want to say here!}
+% The idea is that, \emph{up to equivalence}, the only interesting property of
+% a finite type is its size, so that type equivalences must be
+% size-preserving maps and hence correspond to permutations. For
+% example, given two equivalent types $A$ and $B$ of completely
+% different structure, e.g.,
+% $A = (\top \uplus \top) \times (\top \uplus (\top \uplus \top))$ and
+% $B = \top \uplus (\top \uplus (\top \uplus (\top \uplus (\top \uplus
+% (\top \uplus \bot)))))$,
+% we can find equivalences from either type to the finite set
+% $\mathsf{Fin}~6$ and reduce all type equivalences between sets of size
+% 6 to permutations.
 
-We begin with the following theorem which precisely characterizes the
-relationship between finite types and finite sets by formalizing that
-equivalent finite types must have the same size.
+% We begin with the following theorem which precisely characterizes the
+% relationship between finite types and finite sets by formalizing that
+% equivalent finite types must have the same size.
 
-\begin{theorem}
-  If $A\simeq \mathsf{Fin}~m$, $B\simeq \mathsf{Fin}~n$ and
-  $A \simeq B$ then $m = n$.
-\end{theorem}
-\begin{proof}
-  We proceed by cases on the possible values for $m$ and $n$. If they
-  are different, we quickly get a contradiction. If they are both~0 we
-  are done. The interesting situation is when $m = \mathit{suc}~m'$
-  and $n = \mathit{suc}~n'$. The result follows in this case by
-  induction assuming we can establish that the equivalence between $A$
-  and $B$, i.e., the equivalence between
-  $\mathsf{Fin}~(\mathit{suc}~m')$ and
-  $\mathsf{Fin}~(\mathit{suc}~n')$, implies an equivalence between
-  $\mathsf{Fin}~m'$ and $\mathsf{Fin}~n'$. In a constructive setting,
-  we actually need to construct a particular equivalence between the
-  smaller sets given the equivalence of the larger sets with one
-  additional element. This lemma is quite tedious as it requires us to
-  isolate one element of $\mathsf{Fin}~(\mathit{suc}~m')$ and analyze
-  every class of positions this element could be mapped to by the
-  larger equivalence and in each case construct an equivalence that
-  excludes it.
-\end{proof}
+% \begin{theorem}
+%   If $A\simeq \mathsf{Fin}~m$, $B\simeq \mathsf{Fin}~n$ and
+%   $A \simeq B$ then $m = n$.
+% \end{theorem}
+% \begin{proof}
+%   We proceed by cases on the possible values for $m$ and $n$. If they
+%   are different, we quickly get a contradiction. If they are both~0 we
+%   are done. The interesting situation is when $m = \mathit{suc}~m'$
+%   and $n = \mathit{suc}~n'$. The result follows in this case by
+%   induction assuming we can establish that the equivalence between $A$
+%   and $B$, i.e., the equivalence between
+%   $\mathsf{Fin}~(\mathit{suc}~m')$ and
+%   $\mathsf{Fin}~(\mathit{suc}~n')$, implies an equivalence between
+%   $\mathsf{Fin}~m'$ and $\mathsf{Fin}~n'$. In a constructive setting,
+%   we actually need to construct a particular equivalence between the
+%   smaller sets given the equivalence of the larger sets with one
+%   additional element. This lemma is quite tedious as it requires us to
+%   isolate one element of $\mathsf{Fin}~(\mathit{suc}~m')$ and analyze
+%   every class of positions this element could be mapped to by the
+%   larger equivalence and in each case construct an equivalence that
+%   excludes it.
+% \end{proof}
 
-Given the correspondence between finite types and finite sets, we now
-prove that equivalences on finite types are equivalent to permutations
-on finite sets. We proceed in steps: first by proving that finite sets
-for a commutative semiring up to $\simeq$ (Thm.~\ref{thm:finrig});
-second by proving that, at the next level, the type of permutations
-between finite sets is also a commutative semiring up to strict
-equality of the representations of permutations
-(Thm.~\ref{thm:permrig}); third by proving that the type of type
-equivalences is equivalent to the type of permutations
-(Thm.~\ref{thm:eqeqperm}); and finally by proving that the commutative
-semiring of type equivalences is isomorphic to the commutative
-semiring of permutations (Thm.~\ref{thm:isoeqperm}). This series of
-theorems will therefore justify our focus in the next section of
-develop a term language for permutations as a way to compute with type
-equivalences.
+% Given the correspondence between finite types and finite sets, we now
+% prove that equivalences on finite types are equivalent to permutations
+% on finite sets. We proceed in steps: first by proving that finite sets
+% for a commutative semiring up to $\simeq$ (Thm.~\ref{thm:finrig});
+% second by proving that, at the next level, the type of permutations
+% between finite sets is also a commutative semiring up to strict
+% equality of the representations of permutations
+% (Thm.~\ref{thm:permrig}); third by proving that the type of type
+% equivalences is equivalent to the type of permutations
+% (Thm.~\ref{thm:eqeqperm}); and finally by proving that the commutative
+% semiring of type equivalences is isomorphic to the commutative
+% semiring of permutations (Thm.~\ref{thm:isoeqperm}). This series of
+% theorems will therefore justify our focus in the next section of
+% develop a term language for permutations as a way to compute with type
+% equivalences.
 
-\begin{theorem}\label{thm:finrig}
-  The collection of all finite types ($\AgdaDatatype{Fin}~m$ for
-  natural number $m$) forms a commutative semiring (up to $\simeq$).
-\end{theorem}
-\begin{proof}
-  The additive unit is \AgdaDatatype{Fin}~$0$ and the multiplicative unit
-  is \AgdaDatatype{Fin}~$1$.  For the two binary operations, the proof
-  crucially relies on the following equivalences:
-\end{proof}
+% \begin{theorem}\label{thm:finrig}
+%   The collection of all finite types ($\AgdaDatatype{Fin}~m$ for
+%   natural number $m$) forms a commutative semiring (up to $\simeq$).
+% \end{theorem}
+% \begin{proof}
+%   The additive unit is \AgdaDatatype{Fin}~$0$ and the multiplicative unit
+%   is \AgdaDatatype{Fin}~$1$.  For the two binary operations, the proof
+%   crucially relies on the following equivalences:
+% \end{proof}
  
-\begin{theorem}\label{thm:permrig}
-  The collection of all permutations $\textsc{perm}_{m,n}$ between
-  finite sets $\mathsf{Fin}~m$ and $\mathsf{Fin}~n$ forms a
-  commutative semiring up to strict equality of the representations of
-  the permutations.
-\end{theorem}
-\begin{proof}
-  The proof requires delicate attention to the representation of
-  permutations as straightforward attempts turn out not to capture
-  enough of the properties of permutations.\footnote{None of the
-    formalizations of permutations in Agda or Coq known to us supports
-    the full range of operations that we need including sequential
-    compositions, disjoint unions, and products of permutations.}
-  After several attempts, we settled on formalizing a permutation
-  using the conventional one-line notation, e.g., giving a preferred
-  enumeration 1 2 3 of a set with three elements, the one-line notion
-  2 3 1 denotes the permutation sending 1 to 2, 2 to 3, and 3 to 1. To
-  make sure the sequence of numbers is of the right length and that
-  each number is in the right range, we use Agda vectors
-  $\AgdaPrimitiveType{Vec}~(\AgdaPrimitiveType{Fin}~m)~n$ (abbreviated
-  $\AgdaFunction{FinVec}~m~n$). To further ensure that the vector
-  elements have no repetitions (i.e., represent 1-1 functions), we
-  include in the representation of each permutation, an inverse vector
-  $\AgdaFunction{FinVec}~n~m$ as well as two proofs asserting that the
-  compositions in both directions produce the identity permutation
-  (which naturally forces $m$ and $n$ to be equal). Given this
-  representation, we can prove that two permutations are equal if the
-  one-line vector representations are strictly equal \emph{and} we can
-  support the full range of operations on permutations. The main proof
-  then proceeds using the vacuous permutation $\mathsf{CPerm}~0~0$ for
-  the additive unit and the trivial permutation $\mathsf{CPerm}~1~1$
-  for the multiplicative unit. The binary operations on permutations
-  map $\mathsf{CPerm}~m₁~m₂$ and $\mathsf{CPerm}~n₁~n₂$ to
-  $\mathsf{CPerm}~(m₁+n₁)~(m₂+n₂)$ and
-  $\mathsf{CPerm}~(m₁*n₁)~(m₂*n₂)$ respectively. Their definition
-  relies on the properties that the unions and products of the
-  one-line vectors denoting permutations distribute over the
-  sequential compositions of permutations.
-\end{proof}
+% \begin{theorem}\label{thm:permrig}
+%   The collection of all permutations $\textsc{perm}_{m,n}$ between
+%   finite sets $\mathsf{Fin}~m$ and $\mathsf{Fin}~n$ forms a
+%   commutative semiring up to strict equality of the representations of
+%   the permutations.
+% \end{theorem}
+% \begin{proof}
+%   The proof requires delicate attention to the representation of
+%   permutations as straightforward attempts turn out not to capture
+%   enough of the properties of permutations.\footnote{None of the
+%     formalizations of permutations in Agda or Coq known to us supports
+%     the full range of operations that we need including sequential
+%     compositions, disjoint unions, and products of permutations.}
+%   After several attempts, we settled on formalizing a permutation
+%   using the conventional one-line notation, e.g., giving a preferred
+%   enumeration 1 2 3 of a set with three elements, the one-line notion
+%   2 3 1 denotes the permutation sending 1 to 2, 2 to 3, and 3 to 1. To
+%   make sure the sequence of numbers is of the right length and that
+%   each number is in the right range, we use Agda vectors
+%   $\AgdaPrimitiveType{Vec}~(\AgdaPrimitiveType{Fin}~m)~n$ (abbreviated
+%   $\AgdaFunction{FinVec}~m~n$). To further ensure that the vector
+%   elements have no repetitions (i.e., represent 1-1 functions), we
+%   include in the representation of each permutation, an inverse vector
+%   $\AgdaFunction{FinVec}~n~m$ as well as two proofs asserting that the
+%   compositions in both directions produce the identity permutation
+%   (which naturally forces $m$ and $n$ to be equal). Given this
+%   representation, we can prove that two permutations are equal if the
+%   one-line vector representations are strictly equal \emph{and} we can
+%   support the full range of operations on permutations. The main proof
+%   then proceeds using the vacuous permutation $\mathsf{CPerm}~0~0$ for
+%   the additive unit and the trivial permutation $\mathsf{CPerm}~1~1$
+%   for the multiplicative unit. The binary operations on permutations
+%   map $\mathsf{CPerm}~m₁~m₂$ and $\mathsf{CPerm}~n₁~n₂$ to
+%   $\mathsf{CPerm}~(m₁+n₁)~(m₂+n₂)$ and
+%   $\mathsf{CPerm}~(m₁*n₁)~(m₂*n₂)$ respectively. Their definition
+%   relies on the properties that the unions and products of the
+%   one-line vectors denoting permutations distribute over the
+%   sequential compositions of permutations.
+% \end{proof}
 
-\begin{theorem}\label{thm:eqeqperm}
-If $A ≃ \mathsf{Fin}~m$ and $B ≃ \mathsf{Fin}~n$, then the type of all
-equivalences $\textsc{eq}_{A,B}$ is equivalent to the type of all
-permutations $\textsc{perm}~m~n$.
-\end{theorem}
-\begin{proof}
-  The main difficulty in this proof was to generalize from sets to 
-  setoids to make the equivalence relations explicit. The proof is 
-  straightforward but long and tedious. 
-\end{proof}
+% \begin{theorem}\label{thm:eqeqperm}
+% If $A ≃ \mathsf{Fin}~m$ and $B ≃ \mathsf{Fin}~n$, then the type of all
+% equivalences $\textsc{eq}_{A,B}$ is equivalent to the type of all
+% permutations $\textsc{perm}~m~n$.
+% \end{theorem}
+% \begin{proof}
+%   The main difficulty in this proof was to generalize from sets to 
+%   setoids to make the equivalence relations explicit. The proof is 
+%   straightforward but long and tedious. 
+% \end{proof}
 
-\begin{theorem}\label{thm:isoeqperm}
-  The equivalence of Thm.~\ref{thm:eqeqperm} is an \emph{isomorphism}
-  between the commutative semiring of equivalences of finite types and
-  the commutative semiring of permutations.
-\end{theorem}
-\begin{proof}
-  In the process of this proof, we show that every axiom of semirings
-  of types is an equivalence and a permutation.  Some of the axioms
-  like the associativity of sums gets mapped to the trivial identity
-  permutation.  However, some axioms reveal interesting structure when
-  expressed as permutations; the most notable is that the
-  commutativity of products maps to a permutation solving the
-  classical problem of in-place matrix transposition:
-  \[
-    \AgdaFunction{swap⋆cauchy}~:~(m~n~:~ℕ)~→~\AgdaFunction{FinVec}~(n~*~m)~(m~*~n)
-  \]
-\end{proof}
+% \begin{theorem}\label{thm:isoeqperm}
+%   The equivalence of Thm.~\ref{thm:eqeqperm} is an \emph{isomorphism}
+%   between the commutative semiring of equivalences of finite types and
+%   the commutative semiring of permutations.
+% \end{theorem}
+% \begin{proof}
+%   In the process of this proof, we show that every axiom of semirings
+%   of types is an equivalence and a permutation.  Some of the axioms
+%   like the associativity of sums gets mapped to the trivial identity
+%   permutation.  However, some axioms reveal interesting structure when
+%   expressed as permutations; the most notable is that the
+%   commutativity of products maps to a permutation solving the
+%   classical problem of in-place matrix transposition:
+%   \[
+%     \AgdaFunction{swap⋆cauchy}~:~(m~n~:~ℕ)~→~\AgdaFunction{FinVec}~(n~*~m)~(m~*~n)
+%   \]
+% \end{proof}
 
-Before concluding this section, we recall that, the conventional
-formulation of the univalence \emph{axiom} is:
-\[
-(A ≡ B) ≃ (A ≃ B)
-\]
-where $≡$ is the propositional equality relation and hence $(A ≡ B)$
-is the collection of all identities between types $A$ and $B$. With
-the proper Agda definitions, Thm.~\ref{thm:eqeqperm} can be rephrased
-in a more evocative way as follows.
+% Before concluding this section, we recall that, the conventional
+% formulation of the univalence \emph{axiom} is:
+% \[
+% (A ≡ B) ≃ (A ≃ B)
+% \]
+% where $≡$ is the propositional equality relation and hence $(A ≡ B)$
+% is the collection of all identities between types $A$ and $B$. With
+% the proper Agda definitions, Thm.~\ref{thm:eqeqperm} can be rephrased
+% in a more evocative way as follows.
 
-\begin{theorem}
-\[
-\mathsf{Perm}~|A|~|B|  ≃ (A ≃ B)
-\]
-\end{theorem}
+% \begin{theorem}
+% \[
+% \mathsf{Perm}~|A|~|B|  ≃ (A ≃ B)
+% \]
+% \end{theorem}
 
-\noindent 
-where $\mathsf{Perm}~|A|~|B|$ is the collection of all permutations
-between the finite sets of the given sizes. This reformulation shows
-that, for the restricted finite types, the theorem proves, and gives a
-computational interpretation of, the univalence axiom. 
+% \noindent 
+% where $\mathsf{Perm}~|A|~|B|$ is the collection of all permutations
+% between the finite sets of the given sizes. This reformulation shows
+% that, for the restricted finite types, the theorem proves, and gives a
+% computational interpretation of, the univalence axiom. 
 
-From a programming point of view,  we need to have a syntactic
-language which embodies these type equivalences.  
-\citet{rc2011,James:2012:IE:2103656.2103667} introduced the~$\Pi$
-family of languages whose only computations are
-isomorphisms between finite types and which is complete for all
-reversible combinatorial circuits. 
+% From a programming point of view,  we need to have a syntactic
+% language which embodies these type equivalences.  
+% \citet{rc2011,James:2012:IE:2103656.2103667} introduced the~$\Pi$
+% family of languages whose only computations are
+% isomorphisms between finite types and which is complete for all
+% reversible combinatorial circuits. 
 
-The syntactic components of our language are as follows:
-\[\begin{array}{lrcl}
-(\textit{Types}) & 
-  \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
- (\textit{Values}) & 
-  v &::=& () \alt \inl{v} \alt \inr{v} \alt (v_1,v_2) \\
-(\textit{Combinator types}) &&& \tau_1 \iso \tau_2 \\
-(\textit{Terms and Combinators}) & 
-  c &::=& [\textit{see Fig.~\ref{pi-terms} and ~\ref{pi-combinators}}]
-\end{array}\]
-The values classified by these
-types are the conventional ones: $()$ of type 1, $\inl{v}$ and
-$\inr{v}$ for injections into sum types, and $(v_1,v_2)$ for product
-types.
+% The syntactic components of our language are as follows:
+% \[\begin{array}{lrcl}
+% (\textit{Types}) & 
+%   \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
+%  (\textit{Values}) & 
+%   v &::=& () \alt \inl{v} \alt \inr{v} \alt (v_1,v_2) \\
+% (\textit{Combinator types}) &&& \tau_1 \iso \tau_2 \\
+% (\textit{Terms and Combinators}) & 
+%   c &::=& [\textit{see Fig.~\ref{pi-terms} and ~\ref{pi-combinators}}]
+% \end{array}\]
+% The values classified by these
+% types are the conventional ones: $()$ of type 1, $\inl{v}$ and
+% $\inr{v}$ for injections into sum types, and $(v_1,v_2)$ for product
+% types.
 
-Figure~\ref{pi-terms} gives
-the terms which correspond to the axioms of commutative semirings.
-Each line of the figure introduces a
-pair of dual constants\footnote{where $\idc$, $\swapp$ and $\swapt$ are
-self-dual.}  that witness the type isomorphism in the middle. 
-Figure~\ref{pi-combinators} adds to that $3$ combinators, which come
-from the requirement that $\iso$ be transitive (giving a sequential
-composition operator), and that $\iso$
-be a congruence for both $+$ and $*$ (giving a way to take sums and products of
-combinators).  That latter congruence requirement is usually invisible
-in classical mathematics, but appears when doing proof-relevant
-mathematics.
+% Figure~\ref{pi-terms} gives
+% the terms which correspond to the axioms of commutative semirings.
+% Each line of the figure introduces a
+% pair of dual constants\footnote{where $\idc$, $\swapp$ and $\swapt$ are
+% self-dual.}  that witness the type isomorphism in the middle. 
+% Figure~\ref{pi-combinators} adds to that $3$ combinators, which come
+% from the requirement that $\iso$ be transitive (giving a sequential
+% composition operator), and that $\iso$
+% be a congruence for both $+$ and $*$ (giving a way to take sums and products of
+% combinators).  That latter congruence requirement is usually invisible
+% in classical mathematics, but appears when doing proof-relevant
+% mathematics.
 
-The attentive reader will
-notice that there are many more combinators here than in
-Definition~\ref{defn:csr}.  This is because we want the language
-to be composed of \emph{equivalences}, and we want the reversibility
-of the language to be a theorem, at the level of the syntax.
-In particular, every
-combinator $c$ has an inverse $!c$ according to the figure. The
-inverse flips the order of the combinators in sequential composition,
-and is homomorphic on sums and products.
+% The attentive reader will
+% notice that there are many more combinators here than in
+% Definition~\ref{defn:csr}.  This is because we want the language
+% to be composed of \emph{equivalences}, and we want the reversibility
+% of the language to be a theorem, at the level of the syntax.
+% In particular, every
+% combinator $c$ has an inverse $!c$ according to the figure. The
+% inverse flips the order of the combinators in sequential composition,
+% and is homomorphic on sums and products.
 
-\begin{figure*}[ht]
-\[
-\begin{array}{rrcll}
-\idc :& \tau & \iso & \tau &: \idc \\
-\identlp :&  0 + \tau & \iso & \tau &: \identrp \\
-\swapp :&  \tau_1 + \tau_2 & \iso & \tau_2 + \tau_1 &: \swapp \\
-\assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 &: \assocrp \\
-\\
-\identlt :&  1 * \tau & \iso & \tau &: \identrt \\
-\swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
-\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\
-\\
-\distz :&~ 0 * \tau & \iso & 0 ~ &: \factorzl \\
-\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor
-\end{array}
-\]
-\caption{$\Pi$-terms~\citep{rc2011,James:2012:IE:2103656.2103667}.
-\label{pi-terms}}
-\end{figure*}
+% \begin{figure*}[ht]
+% \[
+% \begin{array}{rrcll}
+% \idc :& \tau & \iso & \tau &: \idc \\
+% \identlp :&  0 + \tau & \iso & \tau &: \identrp \\
+% \swapp :&  \tau_1 + \tau_2 & \iso & \tau_2 + \tau_1 &: \swapp \\
+% \assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 &: \assocrp \\
+% \\
+% \identlt :&  1 * \tau & \iso & \tau &: \identrt \\
+% \swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
+% \assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\
+% \\
+% \distz :&~ 0 * \tau & \iso & 0 ~ &: \factorzl \\
+% \dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor
+% \end{array}
+% \]
+% \caption{$\Pi$-terms~\citep{rc2011,James:2012:IE:2103656.2103667}.
+% \label{pi-terms}}
+% \end{figure*}
 
-\begin{figure*}[ht]
-\[
-\begin{minipage}{0.8\textwidth}
-\Rule{}
-{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
-{\jdg{}{}{c_1 \fatsemi c_2 : \tau_1 \iso \tau_3}}
-{}
-\qquad
-\Rule{}
-{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
-{\jdg{}{}{c_1 \oplus c_2 : \tau_1 + \tau_3 \iso \tau_2 + \tau_4}}
-{}
-\qquad
-\Rule{}
-{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
-{\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
-{}
-\end{minipage}
-\]
-\caption{$\Pi$-combinators.}
-\label{pi-combinators}
-\end{figure*}
+% \begin{figure*}[ht]
+% \[
+% \begin{minipage}{0.8\textwidth}
+% \Rule{}
+% {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
+% {\jdg{}{}{c_1 \fatsemi c_2 : \tau_1 \iso \tau_3}}
+% {}
+% \qquad
+% \Rule{}
+% {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
+% {\jdg{}{}{c_1 \oplus c_2 : \tau_1 + \tau_3 \iso \tau_2 + \tau_4}}
+% {}
+% \qquad
+% \Rule{}
+% {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
+% {\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
+% {}
+% \end{minipage}
+% \]
+% \caption{$\Pi$-combinators.}
+% \label{pi-combinators}
+% \end{figure*}
 
 % % Bad definition!
 % \begin{definition}[Quasi-inverse, extensionally]
