@@ -695,7 +695,7 @@ record isqinv {A : Set} {B : Set} (f : A → B) : Set where
 \end{code}
 \end{definition}
 
-\begin{definition}[Equivalence of types]
+\begin{definition}[Equivalence of types]\label{def:eq}
   Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
   function $f : A \rightarrow B$ together with a quasi-inverse for
   $f$. In Agda, we write:
@@ -851,10 +851,12 @@ We could now verify that \AgdaFunction{pf₃} is indeed equivalent to
 \AgdaFunction{pf₄} by proving
 \AgdaFunction{pf₃}~\AgdaSymbol{≋}~\AgdaFunction{pf₄}. Such a proof
 exists in the accompanying code in \AgdaModule{TypeEquivEquiv} but
-requires a surprising of tedious infrastructure to present. We explore
+requires a surprisingly tedious infrastructure to present. We explore
 a much more direct and intuitive to reason about such equivalences of
-equivalences in the next sections.
-
+equivalences in the next sections. Of major importance will be
+ensuring that our definition of equivalence of equivalence satisfies
+some notion of soundness and completeness relative to proof
+equivalence in the world of semirings.
 
 % \noindent For example, for arbitrary types $A$, $B$, and $C$, we have
 % equivalences such as:
@@ -1173,104 +1175,6 @@ equivalences in the next sections.
 % that, for the restricted finite types, the theorem proves, and gives a
 % computational interpretation of, the univalence axiom. 
 
-% From a programming point of view,  we need to have a syntactic
-% language which embodies these type equivalences.  
-% \citet{rc2011,James:2012:IE:2103656.2103667} introduced the~$\Pi$
-% family of languages whose only computations are
-% isomorphisms between finite types and which is complete for all
-% reversible combinatorial circuits. 
-
-% The syntactic components of our language are as follows:
-% \[\begin{array}{lrcl}
-% (\textit{Types}) & 
-%   \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
-%  (\textit{Values}) & 
-%   v &::=& () \alt \inl{v} \alt \inr{v} \alt (v_1,v_2) \\
-% (\textit{Combinator types}) &&& \tau_1 \iso \tau_2 \\
-% (\textit{Terms and Combinators}) & 
-%   c &::=& [\textit{see Fig.~\ref{pi-terms} and ~\ref{pi-combinators}}]
-% \end{array}\]
-% The values classified by these
-% types are the conventional ones: $()$ of type 1, $\inl{v}$ and
-% $\inr{v}$ for injections into sum types, and $(v_1,v_2)$ for product
-% types.
-
-% Figure~\ref{pi-terms} gives
-% the terms which correspond to the axioms of commutative semirings.
-% Each line of the figure introduces a
-% pair of dual constants\footnote{where $\idc$, $\swapp$ and $\swapt$ are
-% self-dual.}  that witness the type isomorphism in the middle. 
-% Figure~\ref{pi-combinators} adds to that $3$ combinators, which come
-% from the requirement that $\iso$ be transitive (giving a sequential
-% composition operator), and that $\iso$
-% be a congruence for both $+$ and $*$ (giving a way to take sums and products of
-% combinators).  That latter congruence requirement is usually invisible
-% in classical mathematics, but appears when doing proof-relevant
-% mathematics.
-
-% The attentive reader will
-% notice that there are many more combinators here than in
-% Definition~\ref{defn:csr}.  This is because we want the language
-% to be composed of \emph{equivalences}, and we want the reversibility
-% of the language to be a theorem, at the level of the syntax.
-% In particular, every
-% combinator $c$ has an inverse $!c$ according to the figure. The
-% inverse flips the order of the combinators in sequential composition,
-% and is homomorphic on sums and products.
-
-% \begin{figure*}[ht]
-% \[
-% \begin{array}{rrcll}
-% \idc :& \tau & \iso & \tau &: \idc \\
-% \identlp :&  0 + \tau & \iso & \tau &: \identrp \\
-% \swapp :&  \tau_1 + \tau_2 & \iso & \tau_2 + \tau_1 &: \swapp \\
-% \assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 &: \assocrp \\
-% \\
-% \identlt :&  1 * \tau & \iso & \tau &: \identrt \\
-% \swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
-% \assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\
-% \\
-% \distz :&~ 0 * \tau & \iso & 0 ~ &: \factorzl \\
-% \dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor
-% \end{array}
-% \]
-% \caption{$\Pi$-terms~\citep{rc2011,James:2012:IE:2103656.2103667}.
-% \label{pi-terms}}
-% \end{figure*}
-
-% \begin{figure*}[ht]
-% \[
-% \begin{minipage}{0.8\textwidth}
-% \Rule{}
-% {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
-% {\jdg{}{}{c_1 \fatsemi c_2 : \tau_1 \iso \tau_3}}
-% {}
-% \qquad
-% \Rule{}
-% {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
-% {\jdg{}{}{c_1 \oplus c_2 : \tau_1 + \tau_3 \iso \tau_2 + \tau_4}}
-% {}
-% \qquad
-% \Rule{}
-% {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
-% {\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
-% {}
-% \end{minipage}
-% \]
-% \caption{$\Pi$-combinators.}
-% \label{pi-combinators}
-% \end{figure*}
-
-% % Bad definition!
-% \begin{definition}[Quasi-inverse, extensionally]
-% \label{def:quasi-ext}
-% For a function $f : A \rightarrow B$, an \emph{extensional quasi-inverse} is a
-% triple $(g, \alpha, \beta)$, consisting of a function
-% $g : B \rightarrow A$ which satisfies the two (named) equalities
-% $\alpha : f \circ g = \mathrm{id}_B$ and
-% $\beta : g \circ f = \mathrm{id}_A$.
-% \end{definition}
- 
 % \jc{I will first write this using informal mathematics.  Once it
 % is correct, it is easy enough to switch to Agda}
 % The above definition uses equality of functions (which is why
@@ -1297,18 +1201,122 @@ equivalences in the next sections.
 % it is more natural to define notions which are relative to an
 % equivalence relation.
 
-% %%%
+% % Bad definition!
+% \begin{definition}[Quasi-inverse, extensionally]
+% \label{def:quasi-ext}
+% For a function $f : A \rightarrow B$, an \emph{extensional quasi-inverse} is a
+% triple $(g, \alpha, \beta)$, consisting of a function
+% $g : B \rightarrow A$ which satisfies the two (named) equalities
+% $\alpha : f \circ g = \mathrm{id}_B$ and
+% $\beta : g \circ f = \mathrm{id}_A$.
+% \end{definition}
+ 
 % \subsection{Proof transformations and equivalence of equivalences}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Programming with Permutations}
 \label{sec:prog}
 
-In the previous section, we argued that, up to equivalence, the
-equivalence of types reduces to permutations on finite sets. We recall
-background work which proposed a term language for permutations and
-adapt it in later sections to be used to express, compute with, and
-reason about type equivalences between finite types.
+We have established and formalized a correspondence between semirings
+and types which relates semiring identities to the type equivalences
+of Def.~\ref{def:eq}. We have further introduced the infrastructure
+needed to reason about equivalences of equivalences so that we can
+reason about the relation between different proofs of the same
+semiring identity. As we aim to refine these relationsips to a
+Curry-Howard like correspondence, we now turn our attention to
+developing an programming language. The first step will be to
+introduce syntax that denotes type equivalences. Thus instead of
+having to repeatedly introduce functions and their inverses and proofs
+of homotopies, we would simply use a term language that exactly
+expresses type equivalences and nothing else. 
+
+%%%%%%%%%%
+\subsection{Syntax of $\Pi$}
+
+From a programming point of view,  we need to have a syntactic
+language which embodies these type equivalences.  
+\citet{rc2011,James:2012:IE:2103656.2103667} introduced the~$\Pi$
+family of languages whose only computations are
+isomorphisms between finite types and which is complete for all
+reversible combinatorial circuits. 
+
+The syntactic components of our language are as follows:
+\[\begin{array}{lrcl}
+(\textit{Types}) & 
+  \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
+ (\textit{Values}) & 
+  v &::=& () \alt \inl{v} \alt \inr{v} \alt (v_1,v_2) \\
+(\textit{Combinator types}) &&& \tau_1 \iso \tau_2 \\
+(\textit{Terms and Combinators}) & 
+  c &::=& [\textit{see Fig.~\ref{pi-terms} and ~\ref{pi-combinators}}]
+\end{array}\]
+The values classified by these
+types are the conventional ones: $()$ of type 1, $\inl{v}$ and
+$\inr{v}$ for injections into sum types, and $(v_1,v_2)$ for product
+types.
+
+Figure~\ref{pi-terms} gives the terms which correspond to the axioms
+of commutative semirings.  Each line of the figure introduces a pair
+of dual constants\footnote{where $\idc$, $\swapp$ and $\swapt$ are
+  self-dual.}  that witness the type isomorphism in the middle.
+Figure~\ref{pi-combinators} adds to that $3$ combinators, which come
+from the requirement that $\iso$ be transitive (giving a sequential
+composition operator), and that $\iso$ be a congruence for both $+$
+and $*$ (giving a way to take sums and products of combinators).  That
+latter congruence requirement is usually invisible in classical
+mathematics, but appears when doing proof-relevant mathematics.
+
+The attentive reader will notice that there are many more combinators
+here than in Definition~\ref{defn:csr}.  This is because we want the
+language to be composed of \emph{equivalences}, and we want the
+reversibility of the language to be a theorem, at the level of the
+syntax.  In particular, every combinator $c$ has an inverse $!c$
+according to the figure. The inverse flips the order of the
+combinators in sequential composition, and is homomorphic on sums and
+products.
+
+\begin{figure*}[ht]
+\[
+\begin{array}{rrcll}
+\idc :& \tau & \iso & \tau &: \idc \\
+\identlp :&  0 + \tau & \iso & \tau &: \identrp \\
+\swapp :&  \tau_1 + \tau_2 & \iso & \tau_2 + \tau_1 &: \swapp \\
+\assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 &: \assocrp \\
+\\
+\identlt :&  1 * \tau & \iso & \tau &: \identrt \\
+\swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
+\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\
+\\
+\distz :&~ 0 * \tau & \iso & 0 ~ &: \factorzl \\
+\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor
+\end{array}
+\]
+\caption{$\Pi$-terms~\citep{rc2011,James:2012:IE:2103656.2103667}.
+\label{pi-terms}}
+\end{figure*}
+
+\begin{figure*}[ht]
+\[
+\begin{minipage}{0.8\textwidth}
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
+{\jdg{}{}{c_1 \fatsemi c_2 : \tau_1 \iso \tau_3}}
+{}
+\qquad
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
+{\jdg{}{}{c_1 \oplus c_2 : \tau_1 + \tau_3 \iso \tau_2 + \tau_4}}
+{}
+\qquad
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
+{\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
+{}
+\end{minipage}
+\]
+\caption{$\Pi$-combinators.}
+\label{pi-combinators}
+\end{figure*}
 
 %%%%%%%%%%%%
 \subsection{Example Circuits}
