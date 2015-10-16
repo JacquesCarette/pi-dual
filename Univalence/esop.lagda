@@ -1,4 +1,5 @@
-\documentclass[oribibl]{llncs}
+%% \documentclass[oribibl]{llncs}
+\documentclass{llncs}
 
 \usepackage{savesym}
 \usepackage{amssymb}
@@ -177,7 +178,7 @@ Indiana University (\email{sabry@indiana.edu})
   models with a focus on resource conservation and for recent homotopy
   theoretic approaches to type theory. 
 
-  Our proposed correspondence very naturally relates semirings to
+  Our proposed correspondence naturally relates semirings to
   reversible programming languages: the syntax of semiring elements
   corresponds to the syntax of types; the proofs of semiring
   identities correspond to (reversible) programs of the corresponding
@@ -244,28 +245,44 @@ than mere inhabitance of types as they clearly distinguishes $\tau
 
 The study of type isomorphisms became recently popular during at least
 two short periods: in the early 1990s when they were used to search
-large libraries, and in the mid 2000s when they were studied from a
-categorical perspective. In the last few years, type isomorphisms
-became one of the central concepts in homotopy type theory, where
-type equivalences feature prominently in the \emph{univalence axiom}.
-These connections exposed that there is even
-more interesting structure arising from type isomorphisms at higher
-levels. For example, consider the two isomorphisms between the type $\top + \top$
-and itself. One of these is the identity and the other is the twist
-map. These isomorphisms are themselves ``not equivalent'' one level up
-in the sense to be formalized. And the chain of equivalences continues. 
+large libraries~\citep{Rittri:1989:UTS:99370.99384}, and in the mid
+2000s when they were studied from a categorical
+perspective~\citep{Fiore:2004,fiore-remarks,Fiore2004707}. In the last
+few years, type isomorphisms became one of the central concepts in
+homotopy type theory, where type equivalences feature prominently in
+the \emph{univalence axiom}.  These connections exposed that there is
+even more interesting structure arising from type isomorphisms at
+higher levels. For example, consider the two isomorphisms between the
+type $\top + \top$ and itself. One of these is the identity and the
+other is the twist map. These isomorphisms are themselves ``not
+equivalent'' one level up in the sense to be formalized. And the chain
+of reasoning continues.
 
 The question we ask therefore is whether there is a natural
 correspondence, in the style of the Curry-Howard correspondence,
 between types and some existing mathematical entities, which would
 bring forth the structure of type isomorphisms and their equivalences
 at higher levels. We argue that semirings and their categorification
-are exactly these entities.
-
+are exactly these entities. In a broader sense, such a correspondence
+connects computation with mathematical structures common in topology
+and physics thus opening the door for deeper and more fruitful
+interactions among these disciplines~\citep{rosetta}. In more detail,
+because physical laws obey various conservation principles (including
+conservation of information) and because computation is fundamentally
+a physical process, every computation is, at the physical level, an
+equivalence that preserves information.  The idea that computation, at
+the logical and programming level, should also be based on
+``equivalences'' (i.e., invertible processes) was originally motivated
+by such physical
+considerations~\citep{Landauer:1961,Bennett:1973:LRC,Toffoli:1980,springerlink:10.1007/BF02650179,fredkin1982conservative,PhysRevA.32.3266}. More
+recently, the rising importance of energy conservation for both tiny
+mobile devices and supercomputers, the shrinking size of technology at
+which quantum effects become noticeable, and the potential for quantum
+computation and communication, are additional physical considerations
+adding momentum to such reversible computational
+models~\citep{Frank:1999:REC:930275,DeBenedictis:2005:RLS:1062261.1062325}.
 
 \begin{comment}
-
-
 Because physical laws obey various conservation principles (including
 conservation of information) and because computation is fundamentally
 a physical process, every computation is, at the physical level, an
@@ -333,45 +350,46 @@ of types. What emerges from our study are the following results:
 
 \end{comment}
 
-\todo{Restore some of the link to physics-based computation and
-reversible computation.  Detail what our contributions are.}  
+%% \todo{Restore some of the link to physics-based computation and
+%% reversible computation.  Detail what our contributions are.}  
 
-\todo{The outline will need to be tweaked once it settles}
+%% \todo{The outline will need to be tweaked once it settles}
 
-\todo{Every single theorem should have, in a comment above it, the
-name of a source file and an Agda statement which has a proof.}
+%% \todo{Every single theorem should have, in a comment above it, the
+%% name of a source file and an Agda statement which has a proof.}
 
-\paragraph*{Outline.} The next section reviews equivalences between
-finite types and relates them to various commutative semiring
-structures. The main message of that section is that, up to
-equivalence, the concept of equivalence of finite types is equivalent
-to permutations between finite sets. The latter is computationally
-well-behaved with existing reversible programming languages developed
-for programming with permutations and finite-type isomorphisms. This
-family of languages, called $\Pi$, is universal for describing
-combinational reversible circuits (see Sec.~\ref{sec:3}). The
-infrastructure of the HoTT-inspired type equivalences enriches these
-languages by viewing their original design as 1-paths and
-systematically producing 2-paths (equivalences between equivalences)
-manifesting themselves as syntactic rules for reasoning about
-equivalences of programs representing reversible
-circuits. Sec.~\ref{sec:sem} starts the semantic investigation of the
-$\Pi$ languages emphasizing the denotational approach that maps each
-$\Pi$ program to a type equivalence or equivalently a permutation. The
-section also gives a small example showing how a few rules that are
-sound with respect to equivalence of permutations can be used to
-transform $\Pi$ programs without reliance on any extensional
-reasoning. Sec.~\ref{sec:5} then reveals that these rules are
-intimately related to the coherence conditions of the categorified
-analogues of the commutative semiring structures underlying type
-equivalences and permutations, namely, the so-called \emph{symmetric
-rig weak groupoids}. Sec.~\ref{sec:categorification} contains that
-``punchline'': a sound and complete set of rules that can be used to reason
-about equivalences of $\Pi$ programs.  We note that because the issues
-involved are quite subtle, the paper is the ``unformalization'' of an
-executable \texttt{Agda 2.4.2.3} package with the global
-\AgdaComment{without-K} option enabled.\footnote{Available at
-\url{http://github.com//JacquesCarette/pi-dual/Univalence}.}
+\paragraph*{Outline.} 
+
+% The next section reviews equivalences between finite types and relates
+% them to various commutative semiring structures. The main message of
+% that section is that, up to equivalence, the concept of equivalence of
+% finite types is equivalent to permutations between finite sets. The
+% latter is computationally well-behaved with existing reversible
+% programming languages developed for programming with permutations and
+% finite-type isomorphisms. This family of languages, called $\Pi$, is
+% universal for describing combinational reversible circuits (see
+% Sec.~\ref{sec:3}). The infrastructure of the HoTT-inspired type
+% equivalences enriches these languages by viewing their original design
+% as 1-paths and systematically producing 2-paths (equivalences between
+% equivalences) manifesting themselves as syntactic rules for reasoning
+% about equivalences of programs representing reversible
+% circuits. Sec.~\ref{sec:sem} starts the semantic investigation of the
+% $\Pi$ languages emphasizing the denotational approach that maps each
+% $\Pi$ program to a type equivalence or equivalently a permutation. The
+% section also gives a small example showing how a few rules that are
+% sound with respect to equivalence of permutations can be used to
+% transform $\Pi$ programs without reliance on any extensional
+% reasoning. Sec.~\ref{sec:5} then reveals that these rules are
+% intimately related to the coherence conditions of the categorified
+% analogues of the commutative semiring structures underlying type
+% equivalences and permutations, namely, the so-called \emph{symmetric
+%   rig weak groupoids}. Sec.~\ref{sec:categorification} contains that
+% ``punchline'': a sound and complete set of rules that can be used to
+% reason about equivalences of $\Pi$ programs.  We note that because the
+% issues involved are quite subtle, the paper is the ``unformalization''
+% of an executable \texttt{Agda 2.4.2.3} package with the global
+% \AgdaComment{without-K} option enabled.\footnote{Available at
+%   \url{http://github.com//JacquesCarette/pi-dual/Univalence}.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Informal Development}\label{sec:informal}
@@ -475,18 +493,20 @@ $\fun{swap}$ can be used to establish an isomorphism between $A
 speaking, these two functions are different and no program
 transformation or optimization should ever identify them.
 
-\jc{both proofs below implicitly use 'naturality', or
-\AgdaFunction{cong} in Agda parlance;  Also, I don't see
-where symmetry of = comes in?}
+% \jc{both proofs below implicitly use 'naturality', or
+% \AgdaFunction{cong} in Agda parlance;  Also, I don't see
+% where symmetry of = comes in?}
 The discussion above should not however lead one to conclude that
 programs resulting from different proofs are always semantically
 different. Consider for example, the following two proofs of
-$(a + 0) + b = a + b$:
+$(a + 0) + b = a + b$. To avoid clutter in this informal presentation,
+we omit the justifications that refer to the fact that is a congruence
+relation:
 \[\begin{array}{l@{\qquad}rcl@{\qquad}l}
 \fun{pf₃} : & (a + 0) + b &=& (0 + a) + b & \mbox{(using $+$-sym}) \\
 & &=& a + b & \mbox{(using $+$-unit)}  \\
 \\
-\fun{pf₄} : & (a + 0) + b &=& a + (0 + b) & \mbox{(using $+$-assoc and $=$ is symmetric)} \\
+\fun{pf₄} : & (a + 0) + b &=& a + (0 + b) & \mbox{(using $+$-assoc)} \\
 & &=& a + b & \mbox{(using $+$-unit)}
 \end{array}\]
 On the computational side, the proofs induce the following two isomorphisms between 
@@ -1730,7 +1750,7 @@ Going through the details of the proof of the coherence theorem
 in~\citet{laplaza} with a ``modern'' eye, one cannot help but think of
 Knuth-Bendix completion.  Although it is known that the coherence laws
 for some categorical structures can be systematically derived in this
-way~\cite{Beke2011728}, it is also known that in the presence of
+way~\citep{Beke2011728}, it is also known that in the presence of
 certain structures (such as symmetry), Knuth-Bendix completion will
 not terminate.  It would be interesting to know if there is indeed a
 systematic way to obtain these laws from the rewriting perspective
