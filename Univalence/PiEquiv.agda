@@ -55,8 +55,8 @@ eval uniti⋆r v = v , tt
 eval swap⋆ (v₁ , v₂) = (v₂ , v₁)
 eval assocl⋆ (v₁ , (v₂ , v₃)) = ((v₁ , v₂) , v₃)
 eval assocr⋆ ((v₁ , v₂) , v₃) = (v₁ , (v₂ , v₃))
-eval absorbr (() , _)
-eval absorbl (_ , ())
+eval absorbr (x , _) = x
+eval absorbl (_ , y) = y
 eval factorzl ()
 eval factorzr ()
 eval dist (inj₁ v₁ , v₃) = inj₁ (v₁ , v₃)
@@ -99,8 +99,8 @@ evalB assocl⋆ ((x , y) , z) = x , y , z
 evalB assocr⋆ (x , y , z) = (x , y) , z
 evalB absorbr ()
 evalB absorbl ()
-evalB factorzr (_ , ())
-evalB factorzl (() , _)
+evalB factorzr (_ , x) = x
+evalB factorzl (x , _) = x
 evalB dist (inj₁ (x , y)) = inj₁ x , y
 evalB dist (inj₂ (x , y)) = inj₂ x , y
 evalB factor (inj₁ x , z) = inj₁ (x , z)
@@ -145,6 +145,53 @@ c2equiv (c ⊗ c₁) = (c2equiv c) ×≃ (c2equiv c₁)
 
 -- and these are 'coherent'
 -- first with evaluation:
+lemma0 : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (v : ⟦ t₁ ⟧) →
+  eval c v ≡ proj₁ (c2equiv c) v
+lemma0 unite₊l (inj₁ ())
+lemma0 unite₊l (inj₂ y) = refl
+lemma0 uniti₊l v = refl
+lemma0 unite₊r (inj₁ x) = refl
+lemma0 unite₊r (inj₂ ())
+lemma0 uniti₊r v = refl
+lemma0 PiLevel0.swap₊ (inj₁ x) = refl
+lemma0 PiLevel0.swap₊ (inj₂ y) = refl
+lemma0 PiLevel0.assocl₊ (inj₁ x) = refl
+lemma0 PiLevel0.assocl₊ (inj₂ (inj₁ x)) = refl
+lemma0 PiLevel0.assocl₊ (inj₂ (inj₂ y)) = refl
+lemma0 PiLevel0.assocr₊ (inj₁ (inj₁ x)) = refl
+lemma0 PiLevel0.assocr₊ (inj₁ (inj₂ y)) = refl
+lemma0 PiLevel0.assocr₊ (inj₂ y) = refl
+lemma0 unite⋆l v = refl -- yay for η !
+lemma0 uniti⋆l v = refl
+lemma0 unite⋆r v = refl
+lemma0 uniti⋆r v = refl
+lemma0 PiLevel0.swap⋆ v = refl
+lemma0 PiLevel0.assocl⋆ v = refl
+lemma0 PiLevel0.assocr⋆ v = refl
+lemma0 absorbr v = refl
+lemma0 absorbl v = refl
+lemma0 factorzr ()
+lemma0 factorzl ()
+lemma0 PiLevel0.dist (inj₁ x , proj₂) = refl
+lemma0 PiLevel0.dist (inj₂ y , proj₂) = refl
+lemma0 PiLevel0.factor (inj₁ x) = refl
+lemma0 PiLevel0.factor (inj₂ y) = refl
+lemma0 PiLevel0.distl (proj₁ , inj₁ x) = refl
+lemma0 PiLevel0.distl (proj₁ , inj₂ y) = refl
+lemma0 PiLevel0.factorl (inj₁ x) = refl
+lemma0 PiLevel0.factorl (inj₂ y) = refl
+lemma0 id⟷ v = refl
+lemma0 (c ◎ c₁) v =
+  trans (cong (eval c₁) (lemma0 c v)) (
+  trans (lemma0 c₁ (proj₁ (c2equiv c) v))
+        (sym (β₁ v)))
+lemma0 (c ⊕ c₁) (inj₁ x) =
+  trans (cong inj₁ (lemma0 c x)) (sym (β⊎₁ (inj₁ x)))
+lemma0 (c ⊕ c₁) (inj₂ y) =
+ trans (cong inj₂ (lemma0 c₁ y)) (sym (β⊎₁ (inj₂ y)))
+lemma0 (c ⊗ c₁) (x , y) =
+  trans (cong₂ _,_ (lemma0 c x) (lemma0 c₁ y)) (sym (β×₁ (x , y)))
+
 lemma1 : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (v : ⟦ t₂ ⟧) →
   evalB c v ≡ proj₁ (sym≃ (c2equiv c)) v
 lemma1 PiLevel0.unite₊l v = refl
