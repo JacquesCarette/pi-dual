@@ -749,7 +749,8 @@ typesCSR = record {
   }
 \end{code}
 \medskip  
- \noindent The functions, homotopies, and quasi-inverses witnessing the explicit
+
+\noindent The functions, homotopies, and quasi-inverses witnessing the explicit
 equivalences are defined within \AgdaFunction{typesIsCSR} and are
 straightforward. For future reference, we list some of these equivalences:
 \[\begin{array}{rcl}
