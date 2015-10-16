@@ -89,14 +89,14 @@ abstract
 gg : ∀ {ℓ ℓ′} {A : Set ℓ} {B : Set ℓ′} → (A ≃ B) → (B → A)
 gg z = isqinv.g (proj₂ z)
 
+{-
 ------------------------------------------------------------------------------
 -- A few properties of equivalences
-{-
--- these are no longer needed!
+
+-- these are no longer needed
 
 _⋆_ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (A ≃ B) → (x : A) → B
 (f , _) ⋆ x = f x
-
 
 -- there-and-back is identity
 
@@ -105,6 +105,7 @@ p∘!p≡id {p = p} = isqinv.β (proj₂ p)
 
 !p∘p≡id : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {p : A ≃ B} → (_⋆_ (trans≃ (sym≃ p) p)) ∼ (_⋆_ id≃)
 !p∘p≡id {p = p} = p∘!p≡id {p = sym≃ p}
+
 
 -- equivalences are injective
 

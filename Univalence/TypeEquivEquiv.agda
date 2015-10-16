@@ -81,36 +81,36 @@ f≋h ⊎≋ g≋i =
 -- strangely, this is not needed by Rig Category.  However, it
 -- belongs to the structure of a Monoidal Groupoid (I think!  Should
 -- be checked), and is quite useful on its own.
-sym≃-distrib : ∀ {A B C D : Set} {f : A ≃ B} {g : C ≃ D} →
+sym≃-distrib⊎ : ∀ {A B C D : Set} {f : A ≃ B} {g : C ≃ D} →
   sym≃ (f ⊎≃ g) ≋ sym≃ f ⊎≃ sym≃ g
-sym≃-distrib = -- note how the proof mixes ₁ and ₂ !
+sym≃-distrib⊎ = -- note how the proof mixes ₁ and ₂ !
   eq (β⊎₂ ⊙ ! β⊎₁) (β⊎₁ ⊙ ! β⊎₂)
   
 -- Use '-nat' to signify that operation induces a
 -- natural transformation, and that the induced operation
 -- satisfies the naturality condition thus encoded
-unite₊-nat : ∀ {A B} {f : A ≃ B} →
-  unite₊equiv ● (id≃ {A = ⊥} ⊎≃ f) ≋ f ● unite₊equiv
-unite₊-nat =
+unite₊-nat : ∀ {A B} {f : A ≃ B} {g : ⊥ ≃ ⊥} →
+  unite₊equiv ● (g ⊎≃ f) ≋ f ● unite₊equiv
+unite₊-nat {g = g} =
   eq (β₁ ⊙ cong∘l (proj₁ unite₊equiv) β⊎₁ ⊙ unite₊-coh ⊙ ! β₁) 
-       (β₂ ⊙ cong∘r (gg unite₊equiv) β⊎₂ ⊙ uniti₊-coh ⊙ ! β₂)
+       (β₂ ⊙ cong∘r (gg unite₊equiv) β⊎₂ ⊙ uniti₊-coh {g = gg g} ⊙ ! β₂)
 
-uniti₊-nat : ∀ {A B} {f : A ≃ B} →
-  uniti₊equiv ● f ≋ (id≃ {A = ⊥} ⊎≃ f) ● uniti₊equiv
-uniti₊-nat =  
-  eq (β₁ ⊙ ! uniti₊-coh ⊙ ! cong∘r (proj₁ uniti₊equiv) β⊎₁ ⊙ ! β₁) 
+uniti₊-nat : ∀ {A B} {f : A ≃ B} {g : ⊥ ≃ ⊥} →
+  uniti₊equiv ● f ≋ (g ⊎≃ f) ● uniti₊equiv
+uniti₊-nat {g = g} =  
+  eq (β₁ ⊙ ! uniti₊-coh {g = proj₁ g} ⊙ ! cong∘r (proj₁ uniti₊equiv) β⊎₁ ⊙ ! β₁) 
        (β₂ ⊙ ! unite₊-coh ⊙ ! cong∘l (gg uniti₊equiv) β⊎₂ ⊙ ! β₂)
 
-unite₊′-nat : ∀ {A B} {f : A ≃ B} →
-  unite₊′equiv ● (f ⊎≃ id≃ {A = ⊥}) ≋ f ● unite₊′equiv
-unite₊′-nat =
+unite₊′-nat : ∀ {A B} {f : A ≃ B} {g : ⊥ ≃ ⊥} →
+  unite₊′equiv ● (f ⊎≃ g) ≋ f ● unite₊′equiv
+unite₊′-nat {g = g} =
   eq (β₁ ⊙ cong∘l (proj₁ unite₊′equiv) β⊎₁ ⊙ unite₊′-coh ⊙ ! β₁)
-     (β₂ ⊙ cong∘r (gg unite₊′equiv) β⊎₂ ⊙ uniti₊′-coh ⊙ ! β₂)
+     (β₂ ⊙ cong∘r (gg unite₊′equiv) β⊎₂ ⊙ uniti₊′-coh {g = gg g} ⊙ ! β₂)
 
-uniti₊′-nat : ∀ {A B} {f : A ≃ B} →
-  uniti₊′equiv ● f ≋ (f ⊎≃ id≃ {A = ⊥}) ● uniti₊′equiv
-uniti₊′-nat =
-  eq (β₁ ⊙ ! uniti₊′-coh ⊙ ! cong∘r (proj₁ uniti₊′equiv) β⊎₁ ⊙ ! β₁) 
+uniti₊′-nat : ∀ {A B} {f : A ≃ B} {g : ⊥ ≃ ⊥} →
+  uniti₊′equiv ● f ≋ (f ⊎≃ g) ● uniti₊′equiv
+uniti₊′-nat {g = g} =
+  eq (β₁ ⊙ ! uniti₊′-coh {g = proj₁ g} ⊙ ! cong∘r (proj₁ uniti₊′equiv) β⊎₁ ⊙ ! β₁) 
        (β₂ ⊙ ! unite₊′-coh ⊙ ! cong∘l (gg uniti₊′equiv) β⊎₂ ⊙ ! β₂)
 
 assocr₊-nat : ∀ {A B C D E F : Set} →
@@ -232,27 +232,32 @@ e₁ ×≋ e₂ = eq (β×₁ ⊙ (f≡ e₁) ×∼ (f≡ e₂) ⊙ ! β×₁)
               (β×₂ ⊙ (g≡ e₁) ×∼ (g≡ e₂) ⊙ ! β×₂)
   where open _≋_
 
+sym≃-distrib× : ∀ {A B C D : Set} {f : A ≃ B} {g : C ≃ D} →
+  sym≃ (f ×≃ g) ≋ sym≃ f ×≃ sym≃ g
+sym≃-distrib× = -- note how the proof mixes ₁ and ₂ !
+  eq (β×₂ ⊙ ! β×₁) (β×₁ ⊙ ! β×₂)
 
-unite⋆-nat : ∀ {A B} {f : A ≃ B} →
-  unite⋆equiv ● (id≃ {A = ⊤} ×≃ f) ≋ f ● unite⋆equiv
+
+unite⋆-nat : ∀ {A B} {f : A ≃ B} {g : ⊤ ≃ ⊤} →
+  unite⋆equiv ● (g ×≃ f) ≋ f ● unite⋆equiv
 unite⋆-nat = -- eq unite⋆-coh uniti⋆-coh
   eq (β₁ ⊙ cong∘l (proj₁ unite⋆equiv) β×₁ ⊙ unite⋆-coh ⊙ ! β₁)
      (β₂ ⊙ cong∘r (gg unite⋆equiv) β×₂ ⊙ uniti⋆-coh ⊙ ! β₂)
 
-uniti⋆-nat : ∀ {A B} {f : A ≃ B} →
-  uniti⋆equiv ● f ≋ (id≃ {A = ⊤} ×≃ f) ● uniti⋆equiv
+uniti⋆-nat : ∀ {A B} {f : A ≃ B} {g : ⊤ ≃ ⊤} →
+  uniti⋆equiv ● f ≋ (g ×≃ f) ● uniti⋆equiv
 uniti⋆-nat = -- flip-sym≋ unite⋆-nat
   eq (β₁ ⊙ ! uniti⋆-coh ⊙ ! cong∘r (proj₁ uniti⋆equiv) β×₁ ⊙ ! β₁)
      (β₂ ⊙ ! unite⋆-coh ⊙ ! cong∘l (gg uniti⋆equiv) β×₂ ⊙ ! β₂)
   
-unite⋆′-nat : ∀ {A B} {f : A ≃ B} →
-  unite⋆′equiv ● (f ×≃ id≃ {A = ⊤}) ≋ f ● unite⋆′equiv
+unite⋆′-nat : ∀ {A B} {f : A ≃ B} {g : ⊤ ≃ ⊤} →
+  unite⋆′equiv ● (f ×≃ g) ≋ f ● unite⋆′equiv
 unite⋆′-nat = -- eq unite⋆′-coh uniti⋆′-coh
   eq (β₁ ⊙ cong∘l (proj₁ unite⋆′equiv) β×₁ ⊙ unite⋆′-coh ⊙ ! β₁)
      (β₂ ⊙ cong∘r (gg unite⋆′equiv) β×₂ ⊙ uniti⋆′-coh ⊙ ! β₂)
   
-uniti⋆′-nat : ∀ {A B} {f : A ≃ B} →
-  uniti⋆′equiv ● f ≋ (f ×≃ id≃ {A = ⊤}) ● uniti⋆′equiv
+uniti⋆′-nat : ∀ {A B} {f : A ≃ B} {g : ⊤ ≃ ⊤} →
+  uniti⋆′equiv ● f ≋ (f ×≃ g) ● uniti⋆′equiv
 uniti⋆′-nat = -- flip-sym≋ unite⋆′-nat
   eq (β₁ ⊙ ! uniti⋆′-coh ⊙ ! cong∘r (proj₁ uniti⋆′equiv) β×₁ ⊙ ! β₁)
      (β₂ ⊙ ! unite⋆′-coh ⊙ ! cong∘l (gg uniti⋆′equiv) β×₂ ⊙ ! β₂)

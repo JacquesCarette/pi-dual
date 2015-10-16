@@ -126,6 +126,8 @@ open import Pi1Examples
 -- circuits that has its own optimizer. This module has a few
 -- examples.
 
+open import PiEquiv
+
 -- How to make U a 2-type, 3-type, etc. ???
 
 ------------------------------------------------------------------------------

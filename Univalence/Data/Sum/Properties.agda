@@ -45,23 +45,22 @@ abstract
   _⊎∼_ f₀~g₀ _ (inj₁ x) = P.cong inj₁ (f₀~g₀ x)
   _⊎∼_ _ f₁~g₁ (inj₂ y) = P.cong inj₂ (f₁~g₁ y)
 
-  unite₊-coh : {A B : Set} {f : A → B} →
-    unite₊ ∘ (id ⊎→ f) ∼ f ∘ unite₊
+  unite₊-coh : {A B : Set} {f : A → B} {g : ⊥ → ⊥} →
+    unite₊ ∘ (g ⊎→ f) ∼ f ∘ unite₊
   unite₊-coh (inj₁ ())
   unite₊-coh (inj₂ y) = P.refl
 
-  -- and the 'converse', of sorts; g is used here because
-  -- this is usually applied with g = f⁻¹
-  uniti₊-coh : {A B : Set} {f : A → B} → (id ⊎→ f) ∘ uniti₊ ∼ uniti₊ ∘ f
+  uniti₊-coh : {A B : Set} {f : A → B} {g : ⊥ → ⊥} →
+    (g ⊎→ f) ∘ uniti₊ ∼ uniti₊ ∘ f
   uniti₊-coh x = P.refl
 
-  unite₊′-coh : {A B : Set} {f : A → B} →
-    unite₊′ ∘ (f ⊎→ id) ∼ f ∘ unite₊′
+  unite₊′-coh : {A B : Set} {f : A → B} {g : ⊥ → ⊥} →
+    unite₊′ ∘ (f ⊎→ g) ∼ f ∘ unite₊′
   unite₊′-coh (inj₁ x) = P.refl
   unite₊′-coh (inj₂ ())
 
-  uniti₊′-coh : {A B : Set} {g : A → B} →
-    (g ⊎→ id) ∘ uniti₊′ ∼ (uniti₊′ ∘ g)
+  uniti₊′-coh : {A B : Set} {f : A → B} {g : ⊥ → ⊥} →
+    (f ⊎→ g) ∘ uniti₊′ ∼ (uniti₊′ ∘ f)
   uniti₊′-coh x = P.refl
 
   assocr₊-wf : {A B C D E F : Set} →

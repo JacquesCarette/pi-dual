@@ -31,7 +31,7 @@ open import Data.Product using (_,_)
 import Relation.Binary.PropositionalEquality as P using (refl)
 
 import TypeEquivEquiv as T
-  using ([id,id]≋id; ⊎●≋●⊎; _⊎≋_; sym≃-distrib;
+  using ([id,id]≋id; ⊎●≋●⊎; _⊎≋_; sym≃-distrib⊎;
     unite₊-nat; assocl₊-nat;
     [g+1]●[1+f]≋[1+f]●[g+1]; unite₊′-nat;
     id×id≋id; ×●≋●×;
@@ -167,7 +167,7 @@ sym+F {f = f} {g = g} =
     sym≃ (f ⊎≃ g ● +≃⊎) ● sym≃ ⊎≃+
       ≋⟨ sym≃● ◎ id≋ ⟩
     (sym≃ +≃⊎ ● sym≃ (f ⊎≃ g)) ● sym≃ ⊎≃+
-      ≋⟨ (id≋ ◎ T.sym≃-distrib) ◎ id≋ ⟩ 
+      ≋⟨ (id≋ ◎ T.sym≃-distrib⊎) ◎ id≋ ⟩ 
     (sym≃ +≃⊎ ● (sym≃ f ⊎≃ sym≃ g)) ● sym≃ ⊎≃+
       ≋⟨ ●-assoc ⟩
     sym≃ +≃⊎ ● ((sym≃ f ⊎≃ sym≃ g) ● sym≃ ⊎≃+)
@@ -243,7 +243,7 @@ uniti₊r-nat {f = f} =
       ≋⟨ id≋ ⟩
     (f +F id0≃) ● uniti+r ∎)
   where open ≋-Reasoning
-
+{-
 -- assocl+ is the one which is defined directly (?)
 assocl₊-nat : {m n o m' n' o' : ℕ}
     {f : m fin≃ m'} {g : n fin≃ n'} {h : o fin≃ o'} → 
@@ -366,11 +366,15 @@ assocr₊-nat {m} {n} {o} {m'} {n'} {o'} {f} {g} {h} = begin (
     ≋⟨ id≋ ⟩
   (f +F (g +F h)) ● (assocr+ {m} {n} {o}) ∎)
   where open ≋-Reasoning
-{-
+
+
 unite-assocr₊-coh : {m n : ℕ} → 
     unite+r {m = m} +F id≃ {A = Fin n} ≋
     (id≃ {A = Fin m} +F unite+ {m = n}) ● assocr+ {m} {0} {n}
-unite-assocr₊-coh = {!!} 
+unite-assocr₊-coh {m} {n} =  begin (
+  ⊎≃+ ● (unite₊′equiv {Fin m} ● id≃ ⊎≃ F0≃⊥ ● +≃⊎) ⊎≃ id≃ {A = Fin n} ● +≃⊎
+    ≋⟨ {!!} ⟩
+  (⊎≃+ ● (id≃ ⊎≃ (unite₊equiv ● F0≃⊥ ⊎≃ id≃ ● +≃⊎)) ● +≃⊎) ● sym≃ (assocl+ {m} {0} {n}) ∎) 
   where open ≋-Reasoning
 
 assocr₊-coh : {m n o p : ℕ} → 
