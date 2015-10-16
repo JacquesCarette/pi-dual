@@ -249,14 +249,14 @@ large libraries~\citep{Rittri:1989:UTS:99370.99384}, and in the mid
 2000s when they were studied from a categorical
 perspective~\citep{Fiore:2004,fiore-remarks,Fiore2004707}. In the last
 few years, type isomorphisms became one of the central concepts in
-homotopy type theory, where type equivalences feature prominently in
-the \emph{univalence axiom}.  These connections exposed that there is
-even more interesting structure arising from type isomorphisms at
-higher levels. For example, consider the two isomorphisms between the
-type $\top + \top$ and itself. One of these is the identity and the
-other is the twist map. These isomorphisms are themselves ``not
-equivalent'' one level up in the sense to be formalized. And the chain
-of reasoning continues.
+homotopy type theory (HoTT)~\citep{hottbook}, where type equivalences
+feature prominently in the \emph{univalence axiom}.  These connections
+exposed that there is even more interesting structure arising from
+type isomorphisms at higher levels. For example, consider the two
+isomorphisms between the type $\top + \top$ and itself. One of these
+is the identity and the other is the twist map. These isomorphisms are
+themselves ``not equivalent'' one level up in the sense to be
+formalized. And the chain of reasoning continues.
 
 The question we ask therefore is whether there is a natural
 correspondence, in the style of the Curry-Howard correspondence,
@@ -298,7 +298,7 @@ computation and communication, are additional physical considerations
 adding momentum to such reversible computational
 models~\citep{Frank:1999:REC:930275,DeBenedictis:2005:RLS:1062261.1062325}. From
 a more theoretical perspective, the recently proposed
-\citet{hottbook}, based on Homotopy Type Theory (HoTT), greatly
+\citet {hottbook}, based on Homotopy Type Theory (HoTT), greatly
 emphasizes computation based on \emph{equivalences} that are satisfied
 up to equivalences that are themselves satisfied up to equivalence,
 etc.
@@ -442,6 +442,7 @@ combinatorial structure.
 
 %%% 
 \subsection{Semiring Identities and Isomorphisms}
+\label{subsec:isos}
 
 Having matched the syntax of semiring elements and the syntax of
 types, we examine the computational counterpart of the semiring
@@ -464,6 +465,7 @@ separate and speak of \emph{isomorphisms}.
 
 %%%
 \subsection{Proof Relevance}
+\label{subsec:proofrelev}
 
 In the world of semirings, there are many proofs of $a + a = a +
 a$. Consider the following two proofs:
@@ -625,65 +627,54 @@ the other. The remainder of the paper is about such a formalization
 and its applications. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Equivalences and Commutative Semirings, formally} 
+%% \section{Equivalences and Commutative Semirings, formally} 
+\section{Equivalences}
 \label{sec:equiv}
 
-We now redo the material of the previous section, but with 
-formal definitions throughout.  When the Agda code is just as
-clear as informal ``paper mathematics'', we choose formality.
+The previous section used two informal notions of equivalence: 
+equivalences between types (corresponding to semiring identities), and
+equivalences between programs corresponding to proofs of semiring
+identities. We give precise definitions to these notions. 
 
-%%%%%%%%%%%%
-\subsection{Semiring of Finite Types}
+% We now redo the material of the previous section, but with formal
+% definitions throughout.  When the Agda code is just as clear as
+% informal ``paper mathematics'', we choose formality.
 
-Our previous grammar for $\tau$ can be formalized as
+%%%
+\subsection{Type Equivalences}
 
-\begin{code}
-data U : Set where
-  ZERO  : U
-  ONE   : U
-  PLUS  : U → U → U
-  TIMES : U → U → U
-\end{code}
-\noindent to define the universe \AgdaDatatype{U} of finite types.
-There is an obvious mapping from \AgdaDatatype{U} to $\mathbb{N}$:
+As a first approximation, Sec.~\ref{subsec:isos} identifies two types
+when there is an isomorphism between them.  The next section
+(Sec.~\ref{subsec:proofrelev}) however reveals that we want to reason
+at a higher-level about equivalences of such isomorphisms. We
+therefore follow the HoTT approach and expose one of the functions
+forming the isomorphism in order to explicitly encode the precise way
+in which the two types are equivalent. Thus, for example, as mentioned
+earlier, there are two equivalences between the type
+\AgdaDatatype{Bool} and itself: one that uses the identity map and one
+that uses boolean negation. These two equivalences have enough
+information to prove that they are \emph{not} themselves equivalent.
 
-\begin{code}
-toℕ : U → ℕ
-toℕ ZERO = 0
-toℕ ONE = 1
-toℕ (PLUS t₁ t₂) = toℕ t₁ + toℕ t₂
-toℕ (TIMES t₁ t₂) = toℕ t₁ * toℕ t₂ 
-\end{code}
+Our definition is presented next.\footnote{For reasons beyond the
+scope of this paper, we do not use any of the definitions of
+equivalence which make it a \emph{mere proposition}, as we want a
+definition which is syntactically symmetric.}
+ 
+\begin{definition}[Equivalence of types]
+  Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
+  function $f : A \rightarrow B$ together with a quasi-inverse for
+  $f$.
+\end{definition}
 
-We will indeed see that \AgdaDatatype{U} and $\mathbb{N}$ are
-isomorphic (as semirings).  But to do so, we first need to
-formalize when two types are equivalent.
-
-\subsection{Equivalences of Types}
-
-There are actually several equivalent definitions of the notion of equivalence%
-\footnote{For reasons beyond the scope of this paper, we do not use any
-of the definitions of equivalence which make it a \emph{mere proposition},
-as we want a definition which is syntactically symmetric.}
-of types. Let us start with a definition which assumes extensionality:
-
-% Bad definition!
-\begin{definition}[Quasi-inverse, extensionally]
-\label{def:quasi-ext}
-For a function $f : A \rightarrow B$, an \emph{extensional quasi-inverse} is a
+\begin{definition}[Quasi-inverse]
+\label{def:quasi}
+For a function $f : A \rightarrow B$, a \emph{quasi-inverse} is a
 triple $(g, \alpha, \beta)$, consisting of a function
-$g : B \rightarrow A$ which satisfies the two (named) equalities
-$\alpha : f \circ g = \mathrm{id}_B$ and
-$\beta : g \circ f = \mathrm{id}_A$.
+$g : B \rightarrow A$ and two homotopies
+$\alpha : f \circ g \sim \mathrm{id}_B$ and
+$\beta : g \circ f \sim \mathrm{id}_A$.
 \end{definition}
  
-\jc{I will first write this using informal mathematics.  Once it
-is correct, it is easy enough to switch to Agda}
-The above definition uses equality of functions (which is why
-we call it \emph{extensional}), which is well-known to be problematic
-for computational purposes.  Instead, we replace the equalities between
-functions with \emph{homotopies}, giving us
-
 \begin{definition}[homotopy]
 \label{def:homotopy}
 Two functions $f,g:A \rightarrow B$ are \emph{homotopic} if
@@ -693,54 +684,10 @@ $\forall x:A. f(x) = g(x)$.
 \noindent It is easy to prove that homotopies (for any given function
 space $A \rightarrow B$) are an equivalence relation.
 
-\begin{definition}[Quasi-inverse, homotopically]
-\label{def:quasi}
-For a function $f : A \rightarrow B$, a \emph{quasi-inverse} is a
-triple $(g, \alpha, \beta)$, consisting of a function
-$g : B \rightarrow A$ and two homotopies
-$\alpha : f \circ g \sim \mathrm{id}_B$ and
-$\beta : g \circ f \sim \mathrm{id}_A$.
-\end{definition}
- 
-\begin{definition}[Equivalence of types]
-  Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
-  function $f : A \rightarrow B$ together with a quasi-inverse for $f$.
-\end{definition}
- 
-The definition of equivalence is parameterized by a function~$f$:
-we are concerned with not just the fact that two types are
-equivalent, but with the precise way in which they are equivalent. For
-example, as mentioned earlier, there are two equivalences between the type
-\AgdaDatatype{Bool} and itself: one that uses the identity for $f$
-(and hence for $g$) and one that uses boolean negation for $f$ (and
-hence for $g$). These two equivalences are themselves \emph{not}
-equivalent: each of them can be used to ``transport'' properties of
-\AgdaDatatype {Bool} in a different way.
-
-We emphasize that, in the definition of commutative semiring 
-(Definition~\ref{defn:csr} in Section~\ref{sec:semirings}), the axioms 
-are satisfied
-up to strict equality $=$. The most famous instance of commutative
-semirings is, of course, the natural numbers $\mathbb{N}$.  We need
-to adapt this definition.
-
-\begin{definition}
-Given an equivalence relation $\simeq$ on a set $R$, a 
-\emph{$\simeq$-semiring} on $R$ is a semiring where $=$ is replaced by
-$\simeq$ in all the defining relations.
-\end{definition}
-
-It should be noted that, in Agda's standard library, semirings
-are axiomatized as $\simeq$-semirings.  This is because in constructive
-type theory, there is no global equality ($=$) predicate, and thus
-it is more natural to define notions which are relative to an
-equivalence relation.
-
-Before proving that our syntactic model \AgdaDatatype{U} forms a
-commutative semiring, it is instructive to show that
-the universe of types (\AgdaDatatype{Set} in Agda terminology) 
-itself is a commutative semiring up
-to equivalence of types~$\simeq$.
+The definition of equivalence allows us to formalize the presentation
+of Sec.~\ref{subsec:isos} by proving that every commutative semiring
+identity is satisfied by types in the universe (\AgdaDatatype{Set}) up
+to~$≃$.
 
 % TypeEquiv:typesCSR
 \begin{theorem}\label{thm:typesCSR}
@@ -748,10 +695,35 @@ The collection of all types (\AgdaDatatype{Set}) forms a commutative
 semiring (up to $\simeq$). 
 \end{theorem}
 \begin{proof}
-  As expected, the additive unit is $\bot$, the multiplicative unit
-  is~$\top$, and the two binary operations are $\uplus$ and $\times$.
-  The functions witnessing explicit equivalences are straightforward.
-  \qed
+The relevant structure is:
+\AgdaHide{
+\begin{code} 
+import Level
+open import Data.Empty using (⊥)
+open import Data.Unit using (⊤)
+open import Data.Sum using (_⊎_)
+open import Data.Product using (_×_)
+open import Equiv using (_≃_) 
+open import TypeEquiv using (typesIsCSR)
+open import Algebra using (CommutativeSemiring)
+\end{code} 
+}
+
+\begin{code} 
+typesCSR : CommutativeSemiring (Level.suc Level.zero) Level.zero
+typesCSR = record {
+  Carrier = Set ;
+  _≈_ = _≃_ ;
+  _+_ = _⊎_ ;
+  _*_ = _×_ ;
+  0#  = ⊥ ;
+  1#  = ⊤ ;
+  isCommutativeSemiring = typesIsCSR
+  }
+\end{code}
+The functions, homotopies, and quasi-inverses witnessing the explicit
+equivalences are defined within \AgdaFunction{typesIsCSR} and are
+straightforward.\qed
 \end{proof}
 
 \noindent For example, for arbitrary types $A$, $B$, and $C$, we have
@@ -764,94 +736,49 @@ A \times \bot &\simeq& \bot \\
 A \times (B \uplus C) &\simeq& (A \times B) \uplus (A \times C) 
 \end{array}\]
 
-From a programming point of view,  we need to have a syntactic
-language which embodies these type equivalences.  
-\citet{rc2011,James:2012:IE:2103656.2103667} introduced the~$\Pi$
-family of languages whose only computations are
-isomorphisms between finite types and which is complete for all
-reversible combinatorial circuits. 
 
-The syntactic components of our language are as follows:
-\[\begin{array}{lrcl}
-(\textit{Types}) & 
-  \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
- (\textit{Values}) & 
-  v &::=& () \alt \inl{v} \alt \inr{v} \alt (v_1,v_2) \\
-(\textit{Combinator types}) &&& \tau_1 \iso \tau_2 \\
-(\textit{Terms and Combinators}) & 
-  c &::=& [\textit{see Fig.~\ref{pi-terms} and ~\ref{pi-combinators}}]
-\end{array}\]
-The values classified by these
-types are the conventional ones: $()$ of type 1, $\inl{v}$ and
-$\inr{v}$ for injections into sum types, and $(v_1,v_2)$ for product
-types.
+%%%
+\subsection{...}
 
-Figure~\ref{pi-terms} gives
-the terms which correspond to the axioms of commutative semirings.
-Each line of the figure introduces a
-pair of dual constants\footnote{where $\idc$, $\swapp$ and $\swapt$ are
-self-dual.}  that witness the type isomorphism in the middle. 
-Figure~\ref{pi-combinators} adds to that $3$ combinators, which come
-from the requirement that $\iso$ be transitive (giving a sequential
-composition operator), and that $\iso$
-be a congruence for both $+$ and $*$ (giving a way to take sums and products of
-combinators).  That latter congruence requirement is usually invisible
-in classical mathematics, but appears when doing proof-relevant
-mathematics.
+% % Bad definition!
+% \begin{definition}[Quasi-inverse, extensionally]
+% \label{def:quasi-ext}
+% For a function $f : A \rightarrow B$, an \emph{extensional quasi-inverse} is a
+% triple $(g, \alpha, \beta)$, consisting of a function
+% $g : B \rightarrow A$ which satisfies the two (named) equalities
+% $\alpha : f \circ g = \mathrm{id}_B$ and
+% $\beta : g \circ f = \mathrm{id}_A$.
+% \end{definition}
+ 
+% \jc{I will first write this using informal mathematics.  Once it
+% is correct, it is easy enough to switch to Agda}
+% The above definition uses equality of functions (which is why
+% we call it \emph{extensional}), which is well-known to be problematic
+% for computational purposes.  Instead, we replace the equalities between
+% functions with \emph{homotopies}, giving us
 
-The attentive reader will
-notice that there are many more combinators here than in
-Definition~\ref{defn:csr}.  This is because we want the language
-to be composed of \emph{equivalences}, and we want the reversibility
-of the language to be a theorem, at the level of the syntax.
-In particular, every
-combinator $c$ has an inverse $!c$ according to the figure. The
-inverse flips the order of the combinators in sequential composition,
-and is homomorphic on sums and products.
+\begin{definition}
+Given an equivalence relation $\simeq$ on a set $R$, a 
+\emph{$\simeq$-semiring} on $R$ is a semiring where $=$ is replaced by
+$\simeq$ in all the defining relations.
+\end{definition}
 
-\begin{figure*}[ht]
-\[
-\begin{array}{rrcll}
-\idc :& \tau & \iso & \tau &: \idc \\
-\identlp :&  0 + \tau & \iso & \tau &: \identrp \\
-\swapp :&  \tau_1 + \tau_2 & \iso & \tau_2 + \tau_1 &: \swapp \\
-\assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 &: \assocrp \\
-\\
-\identlt :&  1 * \tau & \iso & \tau &: \identrt \\
-\swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
-\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\
-\\
-\distz :&~ 0 * \tau & \iso & 0 ~ &: \factorzl \\
-\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor
-\end{array}
-\]
-\caption{$\Pi$-terms~\citep{rc2011,James:2012:IE:2103656.2103667}.
-\label{pi-terms}}
-\end{figure*}
+We emphasize that, in the definition of commutative semiring 
+(Definition~\ref{defn:csr} in Section~\ref{sec:semirings}), the axioms 
+are satisfied
+up to strict equality $=$. The most famous instance of commutative
+semirings is, of course, the natural numbers $\mathbb{N}$.  We need
+to adapt this definition.
 
-\begin{figure*}[ht]
-\[
-\begin{minipage}{0.8\textwidth}
-\Rule{}
-{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
-{\jdg{}{}{c_1 \fatsemi c_2 : \tau_1 \iso \tau_3}}
-{}
-\qquad
-\Rule{}
-{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
-{\jdg{}{}{c_1 \oplus c_2 : \tau_1 + \tau_3 \iso \tau_2 + \tau_4}}
-{}
-\qquad
-\Rule{}
-{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
-{\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
-{}
-\end{minipage}
-\]
-\caption{$\Pi$-combinators.}
-\label{pi-combinators}
-\end{figure*}
+ It should be noted that, in Agda's standard library, semirings
+are axiomatized as $\simeq$-semirings.  This is because in constructive
+type theory, there is no global equality ($=$) predicate, and thus
+it is more natural to define notions which are relative to an
+equivalence relation.
 
+Before proving that our syntactic model \AgdaDatatype{U} forms a
+
+%%%
 \subsection{Proof transformations and equivalence of equivalences}
 
 One of the advantages of using equivalence $\simeq$ instead of strict
@@ -1159,6 +1086,94 @@ between the finite sets of the given sizes. This reformulation shows
 that, for the restricted finite types, the theorem proves, and gives a
 computational interpretation of, the univalence axiom. 
 
+From a programming point of view,  we need to have a syntactic
+language which embodies these type equivalences.  
+\citet{rc2011,James:2012:IE:2103656.2103667} introduced the~$\Pi$
+family of languages whose only computations are
+isomorphisms between finite types and which is complete for all
+reversible combinatorial circuits. 
+
+The syntactic components of our language are as follows:
+\[\begin{array}{lrcl}
+(\textit{Types}) & 
+  \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
+ (\textit{Values}) & 
+  v &::=& () \alt \inl{v} \alt \inr{v} \alt (v_1,v_2) \\
+(\textit{Combinator types}) &&& \tau_1 \iso \tau_2 \\
+(\textit{Terms and Combinators}) & 
+  c &::=& [\textit{see Fig.~\ref{pi-terms} and ~\ref{pi-combinators}}]
+\end{array}\]
+The values classified by these
+types are the conventional ones: $()$ of type 1, $\inl{v}$ and
+$\inr{v}$ for injections into sum types, and $(v_1,v_2)$ for product
+types.
+
+Figure~\ref{pi-terms} gives
+the terms which correspond to the axioms of commutative semirings.
+Each line of the figure introduces a
+pair of dual constants\footnote{where $\idc$, $\swapp$ and $\swapt$ are
+self-dual.}  that witness the type isomorphism in the middle. 
+Figure~\ref{pi-combinators} adds to that $3$ combinators, which come
+from the requirement that $\iso$ be transitive (giving a sequential
+composition operator), and that $\iso$
+be a congruence for both $+$ and $*$ (giving a way to take sums and products of
+combinators).  That latter congruence requirement is usually invisible
+in classical mathematics, but appears when doing proof-relevant
+mathematics.
+
+The attentive reader will
+notice that there are many more combinators here than in
+Definition~\ref{defn:csr}.  This is because we want the language
+to be composed of \emph{equivalences}, and we want the reversibility
+of the language to be a theorem, at the level of the syntax.
+In particular, every
+combinator $c$ has an inverse $!c$ according to the figure. The
+inverse flips the order of the combinators in sequential composition,
+and is homomorphic on sums and products.
+
+\begin{figure*}[ht]
+\[
+\begin{array}{rrcll}
+\idc :& \tau & \iso & \tau &: \idc \\
+\identlp :&  0 + \tau & \iso & \tau &: \identrp \\
+\swapp :&  \tau_1 + \tau_2 & \iso & \tau_2 + \tau_1 &: \swapp \\
+\assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 &: \assocrp \\
+\\
+\identlt :&  1 * \tau & \iso & \tau &: \identrt \\
+\swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
+\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\
+\\
+\distz :&~ 0 * \tau & \iso & 0 ~ &: \factorzl \\
+\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor
+\end{array}
+\]
+\caption{$\Pi$-terms~\citep{rc2011,James:2012:IE:2103656.2103667}.
+\label{pi-terms}}
+\end{figure*}
+
+\begin{figure*}[ht]
+\[
+\begin{minipage}{0.8\textwidth}
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
+{\jdg{}{}{c_1 \fatsemi c_2 : \tau_1 \iso \tau_3}}
+{}
+\qquad
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
+{\jdg{}{}{c_1 \oplus c_2 : \tau_1 + \tau_3 \iso \tau_2 + \tau_4}}
+{}
+\qquad
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
+{\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
+{}
+\end{minipage}
+\]
+\caption{$\Pi$-combinators.}
+\label{pi-combinators}
+\end{figure*}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Programming with Permutations}
 \label{sec:prog}
@@ -1316,6 +1331,37 @@ This style makes the intermediate steps explicit showing how the types
 are transformed in each step by the combinators. The example confirms
 that $\Pi$ is universal for reversible circuits since the Toffoli gate
 is universal for such circuits~\citep{Toffoli:1980}.
+
+%%%%%%%%%%%%
+\subsection{Semiring of Finite Types}
+
+Our previous grammar for $\tau$ can be formalized as
+
+\begin{code}
+data U : Set where
+  ZERO  : U
+  ONE   : U
+  PLUS  : U → U → U
+  TIMES : U → U → U
+\end{code}
+\noindent to define the universe \AgdaDatatype{U} of finite types.
+There is an obvious mapping from \AgdaDatatype{U} to $\mathbb{N}$:
+
+\begin{code}
+toℕ : U → ℕ
+toℕ ZERO = 0
+toℕ ONE = 1
+toℕ (PLUS t₁ t₂) = toℕ t₁ + toℕ t₂
+toℕ (TIMES t₁ t₂) = toℕ t₁ * toℕ t₂ 
+\end{code}
+
+We will indeed see that \AgdaDatatype{U} and $\mathbb{N}$ are
+isomorphic (as semirings).  But to do so, we first need to
+formalize when two types are equivalent.
+
+\subsection{Equivalences of Types}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Semantics}
