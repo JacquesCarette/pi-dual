@@ -832,7 +832,6 @@ and is homomorphic on sums and products.
 \label{pi-combinators}
 \end{figure*}
 
-
 \subsection{Proof transformations and equivalence of equivalences}
 
 One of the advantages of using equivalence $\simeq$ instead of strict
@@ -2268,87 +2267,6 @@ flipping them produces the connection in the bottom path:
 \end{tikzpicture}
 \end{center}
 
-\begin{comment}
-fully-distribute⇔l : {t₁ t₂ t₃ t₄ : U} → 
-  (distl ◎ (dist {t₁} {t₂} {t₃} ⊕ dist {t₁} {t₂} {t₄})) ◎ assocl₊ ⇔
-  ((((dist ◎ (distl ⊕ distl)) ◎ assocl₊) ◎ (assocr₊ ⊕ id⟷)) ◎ ((id⟷ ⊕ swap₊) ⊕ id⟷)) ◎ (assocl₊ ⊕ id⟷) 
-
-  (distl ◎ (dist ⊕ dist)) ⇔
-  ((dist ◎ (distl ⊕ distl)) ◎ ((id ⊕ swap₊) ⊕ id))
-      
-LHS : 
-  (TIMES (PLUS t₁ t₂) (PLUS t₃ t₄)) ⟷
-  (PLUS (PLUS (PLUS (TIMES t₁ t₃) (TIMES t₂ t₃)) (TIMES t₁ t₄))) (TIMES t₂ t₄)
-
-LHS : (t1+t2)(t3+t4) ⟷ ((t1t3 + t2t3) + t1t4) + t2t4
-
-t1  
---
-t2  
-        t1
-        --
-        t2
-
-        t3
-        ==
-        t1
-        --
-        t2 
-
-        t4
-t3  
---
-t4  
-
-
-\end{comment}
-
-% \amr{Viewing 2 path are transformations on permutations on finite
-% sets or as transformations of circuits drawn in a diagrammatic way
-% like in 2path figure swap makes them very intuitive: if you see
-% wires etc. connection to topology etc.
-
-%   Of course, when it comes to computing with diagrams, the first
-%   thing you have to make precise is exactly what you mean by
-%   "diagram". In Joyal \& Street's picture, this literally a
-%   geometric object, i.e. some points and lines in space. This works
-%   very well, and pretty much exactly formalises what happens when
-%   you do a pen-and-paper proof involving string diagrams. However,
-%   when it comes to mechanising proofs, you need some way to
-%   represent a string diagram as a data structure of some kind. From
-%   here, there seem to be a few approaches:
-
-% (1: combinatoric) its a graph with some extra bells and whistles (2:
-% syntactic) its a convenient way of writing down some kind of term
-% (3: "lego" style) its a collection of tiles, connected together on a
-% 2D plane
-
-% Point of view (1) is basically what Quantomatic is built on. "String
-% graphs" aka "open-graphs" give a combinatoric way of working with
-% string diagrams, which is sound and complete with respect to
-% (traced) symmetric monoidal categories. See arXiv:1011.4114 for
-% details of how we did this.
-
-% Naiively, point of view (2) is that a diagram represents an
-% equivalence class of expressions in the syntax of a monoidal
-% category, which is basically back to where we started. However,
-% there are more convenient syntaxes, which are much closer in spirit
-% to the diagrams. Lately, we've had a lot of success in connected
-% with abstract tensor notation, which came from Penrose. See
-% g. arXiv:1308.3586 and arXiv:1412.8552.
-
-% Point of view (3) is the one espoused by the 2D/higher-dimensional
-% rewriting people (e.g. Yves Lafont and Samuel Mimram). It is also
-% (very entertainingly) used in Pawel Sobocinski's blog:
-% http://graphicallinearalgebra.net .
-
-% This eliminates the need for the interchange law, but keeps pretty
-% much everything else "rigid". This benefits from being able to
-% consider more general categories, but is less well-behaved from the
-% point of view of rewriting. For example as Lafont/Mimram point out,
-% even finite rewrite systems can generate infinite sets of critical
-% pairs.}
-
 In contrast to the formal coherence conditions from Laplaza, the
 2-combinators have more of a ``small-step'' nature which, from
 experience with compilers for functional
@@ -2375,6 +2293,59 @@ as Penrose's abstract tensor notation~\citep{tensor1,tensor2}.
 \label{sec:conc}
 %\label{sec:8}
 
+The traditional Curry-Howard correspondance is based on
+``mere logic''\footnote{to use the HoTT terminology}.  That is, it
+is based around \emph{proof inhabitation}: two types, like two
+propositions, are regarded as ``the same'' when one is inhabited
+if and only if the other is.  In that sense, the propositions
+$A$ and $A \wedge A$, are indeed the same, as are the type
+$T$ and $T \times T$.  This is all centered around proof
+irrelevant mathematics.
+
+What we have shown is that if we shift to proof relevant
+mathematics, computationally relevant equivalences,
+explicit homotopies, and algebra, something quite new emerges:
+an actual isomorphism between proof terms and reversible
+computations.  Furthermore, what algebraic structure to use
+is not mysterious: it is exactly the algebraic structure of
+the semantics.  In the case of finite types (with sums and
+products), this turns out to be commutative semirings.
+
+But the Curry-Howard correspondance promises more: that 
+proof transformations correspond to program transformations.
+However, in a proof irrelevant setting, this is rather awkward;
+similarly, in a extensional setting, program equivalence is a
+rather coarse concept.
+
+But, in our setting, both of these issues disappear.  The key to
+proceed was to realize that there exists combinators which
+make equivalences\footnote{and permutations, but
+I don't know if we can bring that in} look like a semiring,
+but do not actually have a semiring structure.  The next 
+insight is to ``remember'' that a monoidal category is
+really a model of a \emph{typed monoid}; in a way, a 
+monoidal category is a \emph{categorified} monoid.  So
+what we needed was a categorified version of commutative
+semirings.  Luckily, this had already been done, in the form
+of Rig categories.  Modifying this to have a weaker notion
+of equivalence and having all morphisms invertiable was
+quite straightforward.
+
+Again, being proof relevant mattered: it quickly became 
+apparent that the \emph{coherence laws} involved in
+weak Rig Groupoids were \emph{exactly} the program
+equivalences that were needed.  So rather than fumbling 
+around finding various equivalences and hoping to 
+stumble on enough of them to be complete, a systematic
+design emerged: given a 1-algebra of types parametrized
+by an equivalence $\simeq$, one should seek a 
+$2$-algebra (aka typed algebra, aka categorification
+of the given $1$-algebra) that corresponds to it.
+The coherence laws then emerge as a complete set of
+program transformations.  This, of course, clearly
+points the way to further generalizations.
+
+\begin{comment}
 We have developed a tight integration between \emph{reversible
   circuits} with \emph{symmetric rig weak groupoids} based on the following
 elements:
@@ -2447,16 +2418,6 @@ of the ring of integers or even to the categorification of the field
 of rational numbers. The generalization to rings would introduce
 \emph{negative types} and the generalization to fields would further
 introduce \emph{fractional types}. 
-\begin{comment}
-As Sec.~\ref{sec:revised} suggests, there
-is good evidence that these generalizations would introduce some
-notion of higher-order functions. It is even possible to conceive of
-more exotic types such as types with square roots and imaginary
-numbers by further generalizing the work to the field of
-\emph{algebraic numbers}. These types have been shown to make sense in
-computations involving recursive datatypes such as trees that can be
-viewed as solutions to polynomials over type
-variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
 \end{comment}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
