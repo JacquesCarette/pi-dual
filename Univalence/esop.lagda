@@ -130,6 +130,9 @@ $\displaystyle
 %\newtheorem{definition}{Definition}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Hyphenation
+\hyphenation{e-vi-dent}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Comments
 
 \newif\ifcomments\commentstrue
@@ -149,6 +152,7 @@ $\displaystyle
 \newcommand{\amr}[1]{\fbox{\begin{minipage}{0.4\textwidth}\color{red}{Amr says: {#1}}\end{minipage}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{document}
 
 %\title{A Curry-Howard Isomorphism between \\
@@ -166,7 +170,7 @@ Indiana University (\email{sabry@indiana.edu})
 
 \begin{abstract}
 
-  The original formulation of the Curry-Howard correspondance relates
+  The original formulation of the Curry-Howard correspondence relates
   propositional logic to the simply-typed $\lambda$-calculus at three
   levels: the syntax of propositions corresponds to the syntax of
   types; the proofs of propositions correspond to programs of the
@@ -178,7 +182,7 @@ Indiana University (\email{sabry@indiana.edu})
   % variant of this correspondence for physically-inspired logics and
   % models with a focus on conservation of information, and for recent homotopy
   % theoretic approaches to type theory. 
-  We propose a variant of this correspondance which is inspired by
+  We propose a variant of this correspondence which is inspired by
   conservation of information and recent homotopy theoretic approaches
   to type theory.
 
@@ -193,7 +197,7 @@ Indiana University (\email{sabry@indiana.edu})
   structure of proof terms gives rise to (at least) a weak rig
   groupoid structure, and the coherence laws are exactly the program
   transformations we seek.  Thus it is algebra, rather than logic,
-  which finally leads us to our correspondance.
+  which finally leads us to our correspondence.
 \end{abstract}
 
 \AgdaHide{
@@ -215,7 +219,7 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
 The elementary building blocks of type theory are the empty type
 ($\bot$), the unit type ($\top$), the sum type ($\uplus$), and the
-product type ($\times$). The traditional Curry-Howard correspondance
+product type ($\times$). The traditional Curry-Howard correspondence
 which goes back to at least 1969 relates these types to logical
 propositions as follows: the type $\bot$ corresponds to the absurd
 proposition with no proof; the type $\top$ corresponds to the
@@ -386,11 +390,13 @@ of types. What emerges from our study are the following results:
 % equivalences and permutations, namely, the so-called \emph{symmetric
 %   rig weak groupoids}. Sec.~\ref{sec:categorification} contains that
 % ``punchline'': a sound and complete set of rules that can be used to
-% reason about equivalences of $\Pi$ programs.  We note that because the
-% issues involved are quite subtle, the paper is the ``unformalization''
-% of an executable \texttt{Agda 2.4.2.3} package with the global
-% \AgdaComment{without-K} option enabled.\footnote{Available at
-%   \url{http://github.com//JacquesCarette/pi-dual/Univalence}.}
+% reason about equivalences of $\Pi$ programs.  
+
+We note that because the
+issues involved are quite subtle, the paper is the ``unformalization''
+of an executable \texttt{Agda 2.4.2.3} package with the global
+\AgdaComment{without-K} option enabled.\footnote{Available at
+  \url{http://github.com//JacquesCarette/pi-dual/Univalence}.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Informal Development}\label{sec:informal}
@@ -503,7 +509,7 @@ The discussion above should not however lead one to conclude that
 programs resulting from different proofs are always semantically
 different. Consider for example, the following two proofs of
 $(a + 0) + b = a + b$. To avoid clutter in this informal presentation,
-we omit the justifications that refer to the fact that is a congruence
+we omit the justifications that refer to the fact that $=$ is a congruence
 relation:
 \[\begin{array}{l@{\qquad}rcl@{\qquad}l}
 \fun{pf₃} : & (a + 0) + b &=& (0 + a) + b & \mbox{(using $+$-sym}) \\
@@ -531,7 +537,7 @@ of the following two isomorphisms:
 \fun{f₂} (\injr{x}) = \injr{x} & 
   \fun{f₂⁻} (\injr{x}) = \injr{x}
 \end{array}\]
-We calculate that composition corresponding to \fun{pf₃} as:
+We calculate that composition corresponding to \fun{pf₃} is:
 \[\begin{array}{l@{\qquad}l}
 \fun{f₁₂} ~:~ (A \uplus \bot) \uplus B \to A \uplus B & 
   \fun{f₁₂⁻} ~:~ A \uplus B \to (A \uplus \bot) \uplus B \\
@@ -2539,7 +2545,7 @@ as Penrose's abstract tensor notation~\citep{tensor1,tensor2}.
 \label{sec:conc}
 %\label{sec:8}
 
-The traditional Curry-Howard correspondance is based on
+The traditional Curry-Howard correspondence is based on
 ``mere logic''\footnote{to use the HoTT terminology}.  That is, it
 is based around \emph{proof inhabitation}: two types, like two
 propositions, are regarded as ``the same'' when one is inhabited
@@ -2557,7 +2563,7 @@ is not mysterious: it is exactly the algebraic structure of
 the semantics.  In the case of finite types (with sums and
 products), this turns out to be commutative semirings.
 
-But the Curry-Howard correspondance promises more: that 
+But the Curry-Howard correspondence promises more: that 
 proof transformations correspond to program transformations.
 However, in a proof irrelevant setting, this is rather awkward;
 similarly, in a extensional setting, program equivalence is a
