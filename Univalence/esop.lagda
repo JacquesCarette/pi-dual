@@ -153,6 +153,9 @@ $\displaystyle
 \newcommand{\jc}[1]{\authornote{purple}{JC}{#1}}
 \newcommand{\amr}[1]{\fbox{\begin{minipage}{0.4\textwidth}\color{red}{Amr says: {#1}}\end{minipage}}}
 
+
+\newcommand{\AgdaArgument}[1]{#1}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
@@ -796,16 +799,12 @@ module A where
 
 \medskip 
 \begin{code}
-  pf₁ : {A : Set} → (A ⊎ A) ≃ (A ⊎ A)
+  pf₁ pf₂ : {A : Set} → (A ⊎ A) ≃ (A ⊎ A)
   pf₁ = id≃ 
-
-  pf₂ : {A : Set} → (A ⊎ A) ≃ (A ⊎ A)
   pf₂ = swap₊≃
 
-  pf₃ : {A B : Set} → ((A ⊎ ⊥) ⊎ B) ≃ (A ⊎ B)
+  pf₃ pf₄ : {A B : Set} → ((A ⊎ ⊥) ⊎ B) ≃ (A ⊎ B)
   pf₃ = trans≃ (swap₊≃ ⊎≃ id≃) (unite₊≃ ⊎≃ id≃) 
-
-  pf₄ : {A B : Set} → ((A ⊎ ⊥) ⊎ B) ≃ (A ⊎ B)
   pf₄ = trans≃ assoc₊≃ (id≃ ⊎≃ unite₊≃) 
 \end{code}
 
@@ -838,6 +837,7 @@ In Agda, we write:
       g≡ : g (proj₂ eq₁) ∼ g (proj₂ eq₂)
 \end{code}
 
+\medskip
 Note that we cannot use the type $\left(A \simeq B\right) \simeq
 \left(A \simeq B\right)$ as ``equivalence of equivalence'' (even
 though it is well formed).  The problem is that the homotopies
@@ -1387,6 +1387,7 @@ FULLADDER = swap⋆ ◎ (swap⋆ ⊗ id⟷) ◎ assocr⋆ ◎ swap⋆ ◎ (PERES
                        (id⟷ ⊗ PERES) ◎ (id⟷ ⊗ assocr⋆)
 \end{code}
 
+\medskip
 Although writing circuits using the raw syntax for combinators is
 tedious, the examples illustrate the programming language nature of
 $\Pi$. In other work, one can find a compiler from a conventional
@@ -1402,13 +1403,26 @@ i.e, that we can really compute with semirings.
 
 In addition to being a reversible programming language, $\Pi$ is also
 a language for expressing proofs that correspond to semiring
-identities. Thus we can write our proofs \AgdaFunction{pf₁},
+identities. Thus we can write variants of our proofs \AgdaFunction{pf₁},
 \AgdaFunction{pf₂}, \AgdaFunction{pf₃}, and \AgdaFunction{pf₄} from
 Sec.~\ref{sec:informal}:
 
+\AgdaHide{
+\begin{code}
+postulate
+    unite₊ : {t : U} → PLUS ZERO t ⟷ t
+\end{code}
+}
+
 \medskip
 \begin{code}
+pf₁π pf₂π : {A : U} → PLUS A A ⟷ PLUS A A
+pf₁π = id⟷ 
+pf₂π = swap₊
 
+pf₃π pf₄π : {A B : U} → PLUS (PLUS A ZERO) B ⟷ PLUS A B
+pf₃π = (swap₊ ⊕ id⟷) ◎ (unite₊ ⊕ id⟷)
+pf₄π = assocr₊ ◎ (id⟷ ⊕ unite₊)
 \end{code}
 
 %%%%%%%%%%%%
@@ -1443,135 +1457,69 @@ Sec.~\ref{sec:informal}:
 %%%%%%%%%%%%
 \subsection{Semantics}
 
-In the previous sections, we established that type equivalences on
-finite types can be, up to equivalence, expressed as permutations and
-proposed a term language for expressing permutations on finite types
-that is complete for reversible combinational circuits. We are now
-ready for the main technical contribution of the paper: an effective
-computational framework for reasoning \emph{about} type
-equivalences. From a programming perspective, this framework manifests
-itself as a collection of rewrite rules for optimizing circuit
-descriptions in $\Pi$. Naturally we are not concerned with just any
-collection of rewrite rules but with a sound and complete
-collection. The current section will set up the framework and
-illustrate its use on one example and the next sections will introduce
-the categorical framework in which soundness and completeness can be
-proved.
+In previous work, we defined an operational semantics for $\Pi$ via
+forward and backward evaluators with the following signatures:
 
-In conventional programming language research, valid optimizations are
-specified with reference to the \emph{observational equivalence}
-relation which itself is defined with reference to an \emph{evaluator}.
-As the language is reversible, a reasonable starting point would then
-be to define forward and backward evaluators with the following
-signatures:
+\medskip
+\begin{code}
+⟦_⟧ : U → Set 
+⟦ ZERO ⟧        = ⊥ 
+⟦ ONE ⟧         = ⊤
+⟦ PLUS t₁ t₂ ⟧  = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
+⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
 
-\[\begin{array}{rcl}
-\mathit{eval}  &:&  (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧ \\ 
-eval unite₊ (inj₁ ()) \\
-eval unite₊ (inj₂ v) &=& v  \\ 
-eval uniti₊ v &=& inj₂ v  \\ 
-eval swap₊ (inj₁ v) &=& inj₂ v  \\ 
-eval swap₊ (inj₂ v) &=& inj₁ v  \\ 
-eval assocl₊ (inj₁ v) &=& inj₁ (inj₁ v)  \\ 
-eval assocl₊ (inj₂ (inj₁ v)) &=& inj₁ (inj₂ v)  \\ 
-eval assocl₊ (inj₂ (inj₂ v)) &=& inj₂ v  \\ 
-eval assocr₊ (inj₁ (inj₁ v)) &=& inj₁ v  \\ 
-eval assocr₊ (inj₁ (inj₂ v)) &=& inj₂ (inj₁ v)  \\ 
-eval assocr₊ (inj₂ v) &=& inj₂ (inj₂ v)  \\ 
-eval unite⋆ (tt , v) &=& v  \\ 
-eval uniti⋆ v &=& (tt , v)  \\ 
-eval swap⋆ (v₁ , v₂) &=& (v₂ , v₁)  \\ 
-eval assocl⋆ (v₁ , (v₂ , v₃)) &=& ((v₁ , v₂) , v₃)  \\ 
-eval assocr⋆ ((v₁ , v₂) , v₃) &=& (v₁ , (v₂ , v₃))  \\ 
-eval absorbr (() , _)  \\ 
-eval absorbl (_ , ())  \\ 
-eval factorzl ()  \\ 
-eval factorzr ()   \\ 
-eval dist (inj₁ v₁ , v₃) &=& inj₁ (v₁ , v₃)   \\ 
-eval dist (inj₂ v₂ , v₃) &=& inj₂ (v₂ , v₃)   \\ 
-eval factor (inj₁ (v₁ , v₃)) &=& (inj₁ v₁ , v₃)   \\ 
-eval factor (inj₂ (v₂ , v₃)) &=& (inj₂ v₂ , v₃)   \\ 
-eval id⟷ v &=& v   \\ 
-eval (c₁ ◎ c₂) v &=& eval c₂ (eval c₁ v)   \\ 
-eval (c₁ ⊕ c₂) (inj₁ v) &=& inj₁ (eval c₁ v)   \\ 
-eval (c₁ ⊕ c₂) (inj₂ v) &=& inj₂ (eval c₂ v)   \\ 
-eval (c₁ ⊗ c₂) (v₁ , v₂) &=& (eval c₁ v₁ , eval c₂ v₂)
-\end{array}\]
+eval : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
+\end{code}
+\AgdaHide{
+\begin{code}
+eval = {!!} 
+\end{code}
+}
+\begin{code}
+evalB : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧
+\end{code}
+\AgdaHide{
+\begin{code}
+evalB = {!!} 
+\end{code}
+}
 
-also say that every combinator $⟷$ maps to $≃$
+\medskip \noindent In the definition, the function $⟦\cdot⟧$ maps each
+type constructor to its Agda denotation. This operational semantics
+serves as an adequate semantic specification if one focuses solely on
+the standalone programming language for reversible boolean
+circuits. If one is also interested in using $\Pi$ for expressing
+semiring identities as type equivalences then the following properties
+are of more interest:
 
-\noindent In the definition, the function $⟦\cdot⟧$ maps each type
-constructor to its Agda denotation, e.g., it maps the type 0 to
-$\bot$, the type 1 to $\top$, etc. The complete definitions for these
-evaluators can be found in the papers by
-\citet{rc2011,rc2012,James:2012:IE:2103656.2103667} and in the
-accompanying Agda code and will not be repeated here. The reason is
-that, although these evaluators adequately serve as semantic
-specifications, they drive the development towards extensional
-reasoning as evident from the signatures which map a permutation to a
-function. We will instead pursue a denotational approach mapping the
-combinators to type equivalences or equivalently to permutations:
+\medskip
+\AgdaHide{
+\begin{code}
+postulate
+  sym≃ : ∀ {A B : Set} → (A ≃ B) → B ≃ A
+\end{code}
+}
+\begin{code}
+c2equiv : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) →
+  ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
 
-\noindent The advantage is that permutations have a concrete
-representation which can be effectively compared for equality as
-explained in the proof of Thm.~\ref{thm:permrig}.
+lemma0 : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (v : ⟦ t₁ ⟧) →
+  eval c v ≡ proj₁ (c2equiv c) v
 
-Having mapped each combinator to a permutation, we can reason about
-valid optimizations mapping a combinator to another by studying the
-equivalence of permutations on finite sets. Strict equality of
-permutations would distinguish the permutations corresponding to
-$\AgdaBound{c}$ and
-$\AgdaInductiveConstructor{id⟷}~\AgdaInductiveConstructor{◎}~\AgdaBound{c}$
-for a combinator $c$ and hence is inappropriate for reasoning about
-optimizations and equivalences of circuits. Of course, we could easily
-justify this particular equivalence, and many others, by calculating
-the actions of the two permutations on arbitrary incoming sets and
-checking that the results are identical; this extensional reasoning is
-however \emph{not} our stated goal. We need instead, proof
-\emph{terms} witnessing \emph{all} possible equivalences on
-permutations.
+lemma1 : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (v : ⟦ t₂ ⟧) →
+  evalB c v ≡ proj₁ (sym≃ (c2equiv c)) v
+\end{code}
+\AgdaHide{
+\begin{code}
+c2equiv = {!!}
+lemma0 = {!!}
+lemma1 = {!!}
+\end{code}
+}
 
-Before we embark on the categorification program that will allow us to
-find this complete collection of rules in the next section, we show
-that, with some ingenuity, one can develop a reasonable set of rewrite
-rules that is rich enough to prove that the two negation circuits from
-the previous section are actually equivalent:
-
-\smallskip 
-
-\begin{tabular}{@{\kern-3em}l}
-\begin{minipage}{0.5\textwidth}
-\end{minipage}
-\end{tabular}
-
-\begin{tabular}{@{\kern-3em}l}
-\begin{minipage}{0.5\textwidth}
-\end{minipage}
-\end{tabular}
-
-\smallskip
-
-The rules used in the derivation (and which are defined in the Agda
-code) are based on the following important property: reasoning about
-permutations is \emph{compositional} in the sense that a permutation
-can be decomposed into parts (using sequential composition, sums, and
-products as constructors) and then one can simplify the parts
-individually. The simplifications used in the derivation correspond to
-the following properties of permutations: the sequential composition
-of permutations is associative; the identity permutation is a left and
-right unit of sequential composition; the composition of a permutation
-with its inverse produces the identity permutation; permutations on
-the set with one element are trivial and can be omitted; and swapping
-and parallel composition commute as follows:
-\[
-\AgdaInductiveConstructor{swap⋆}~\AgdaInductiveConstructor{◎}~(\AgdaBound{c₁}~\AgdaInductiveConstructor{⊗}~\AgdaBound{c₂})~\AgdaInductiveConstructor{⇔}~(\AgdaBound{c₂}~\AgdaInductiveConstructor{⊗}~\AgdaBound{c₁})~\AgdaInductiveConstructor{◎}~\AgdaInductiveConstructor{swap⋆}
-\]
-The accompanying material includes a short slide deck animating the
-sequence of rewrites showing that they are all indeed intuitive
-transformations on the diagrams representing the circuits.
-
-The important question that remains is what other properties of 
-permutations are needed for a complete set of rewrite rules?
+\medskip The first property confirms that every $\Pi$ term encodes a
+type equivalence; the second and third confirm that these type
+equivalences are coherent with respect to the operational semantics.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Categorification}
