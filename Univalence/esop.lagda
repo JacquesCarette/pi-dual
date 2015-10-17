@@ -166,17 +166,21 @@ Indiana University (\email{sabry@indiana.edu})
 
 \begin{abstract}
 
-  The original formulation of the Curry-Howard isomorphism relates
+  The original formulation of the Curry-Howard correspondance relates
   propositional logic to the simply-typed $\lambda$-calculus at three
   levels: the syntax of propositions corresponds to the syntax of
   types; the proofs of propositions correspond to programs of the
   corresponding types; and the normalization of proofs corresponds to
   the evaluation of programs. This rich correspondence has inspired
   our community for half a century and has been generalized to deal
-  with more advanced logics and programming models. We propose a
-  variant of this correspondence for physically-inspired logics and
-  models with a focus on resource conservation and for recent homotopy
-  theoretic approaches to type theory. 
+  with more advanced logics and programming models. 
+  % We propose a
+  % variant of this correspondence for physically-inspired logics and
+  % models with a focus on conservation of information, and for recent homotopy
+  % theoretic approaches to type theory. 
+  We propose a variant of this correspondance which is inspired by
+  conservation of information and recent homotopy theoretic approaches
+  to type theory.
 
   Our proposed correspondence naturally relates semirings to
   reversible programming languages: the syntax of semiring elements
@@ -188,7 +192,8 @@ Indiana University (\email{sabry@indiana.edu})
   naturally out of the structure of types, a categorical look at the
   structure of proof terms gives rise to (at least) a weak rig
   groupoid structure, and the coherence laws are exactly the program
-  transformations we seek.
+  transformations we seek.  Thus it is algebra, rather than logic,
+  which finally leads us to our correspondance.
 \end{abstract}
 
 \AgdaHide{
@@ -208,17 +213,9 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}\label{sec:intro}
 
-%% \jc{do remember that the code which is embedded in this file
-%% is not the one in the sources below (anymore).  Not sure if it
-%% matters?}
-%% 
-%% \jc{Also: double-blind this year!  I guess we need to omit our names.
-%% I don't think the text will need changed for that.}
-%% \url{https://github.com/JacquesCarette/pi-dual}
-
 The elementary building blocks of type theory are the empty type
 ($\bot$), the unit type ($\top$), the sum type ($\uplus$), and the
-product type ($\times$). The traditional Curry-Howard isomorphism
+product type ($\times$). The traditional Curry-Howard correspondance
 which goes back to at least 1969 relates these types to logical
 propositions as follows: the type $\bot$ corresponds to the absurd
 proposition with no proof; the type $\top$ corresponds to the
@@ -259,14 +256,14 @@ exposed that there is even more interesting structure arising from
 type isomorphisms at higher levels. For example, consider the two
 isomorphisms between the type $\top + \top$ and itself. One of these
 is the identity and the other is the twist map. These isomorphisms are
-themselves ``not equivalent'' one level up in the sense to be
+themselves ``not equivalent'' one level up in a sense to be
 formalized. And the chain of reasoning continues.
 
-The question we ask therefore is whether there is a natural
+The question we therefore ask is whether there is a natural
 correspondence, in the style of the Curry-Howard correspondence,
 between types and some existing mathematical entities, which would
 bring forth the structure of type isomorphisms and their equivalences
-at higher levels. We argue that semirings and their categorification
+at higher levels. We argue that commutative semirings and their categorification
 are exactly these entities. In a broader sense, such a correspondence
 connects computation with mathematical structures common in topology
 and physics thus opening the door for deeper and more fruitful
