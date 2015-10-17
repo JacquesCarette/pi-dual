@@ -362,7 +362,18 @@ of types. What emerges from our study are the following results:
 %% \todo{Every single theorem should have, in a comment above it, the
 %% name of a source file and an Agda statement which has a proof.}
 
-\paragraph*{Outline.} 
+\paragraph*{Outline.} The next section discusses the correspondence
+between semirings and types at an intuitive informal
+level. Sec.~\ref{sec:equiv} formalizes the notions of equivalences of
+types and equivalences of equivalences which are the semantic building
+blocks for the computational side of the Curry-Howard style
+correspondence we aim for. Sec.~\ref{sec:prog} introduces a reversible
+programming language which exactly captures type
+equivalences. Sec.~\ref{sec:categorification} lays the categorical
+foundation for developing a second language that exactly captures
+equivalences between equivalences. Sec.~\ref{sec:revised} introduces such
+a language. The remaining sections put our work in perspective, point
+out its limitations and directions for future work, and conclude.
 
 % The next section reviews equivalences between finite types and relates
 % them to various commutative semiring structures. The main message of
@@ -1237,7 +1248,7 @@ and types which relates semiring identities to the type equivalences
 of Def.~\ref{def:eq}. We have further introduced the infrastructure
 needed to reason about equivalences of equivalences so that we can
 reason about the relation between different proofs of the same
-semiring identity. As we aim to refine these relationsips to a
+semiring identity. As we aim to refine these relationships to a
 Curry-Howard like correspondence, we now turn our attention to
 developing an actual programming language. The first step will be to
 introduce syntax that denotes type equivalences. Thus instead of
@@ -2577,7 +2588,7 @@ monoidal category is a \emph{categorified} monoid.  So
 what we needed was a categorified version of commutative
 semirings.  Luckily, this had already been done, in the form
 of Rig categories.  Modifying this to have a weaker notion
-of equivalence and having all morphisms invertiable was
+of equivalence and having all morphisms invertible was
 quite straightforward.
 
 Again, being proof relevant mattered: it quickly became 
