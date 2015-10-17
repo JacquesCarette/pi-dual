@@ -154,7 +154,7 @@ $\displaystyle
 \newcommand{\amr}[1]{\fbox{\begin{minipage}{0.4\textwidth}\color{red}{Amr says: {#1}}\end{minipage}}}
 
 
-\newcommand{\AgdaArgument}[1]{#1}
+%\newcommand{\AgdaArgument}[1]{#1}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1389,7 +1389,7 @@ FULLADDER = swap⋆ ◎ (swap⋆ ⊗ id⟷) ◎ assocr⋆ ◎ swap⋆ ◎ (PERES
                        assocr⋆ ◎ (id⟷ ⊗ swap⋆) ◎ assocr⋆ ◎ (id⟷ ⊗ assocl⋆) ◎ 
                        (id⟷ ⊗ PERES) ◎ (id⟷ ⊗ assocr⋆)
 \end{code}
-
+}
 \medskip
 Although writing circuits using the raw syntax for combinators is
 tedious, the examples illustrate the programming language nature of
@@ -1503,8 +1503,7 @@ postulate
 \end{code}
 }
 \begin{code}
-c2equiv : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) →
-  ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
+c2equiv : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
 
 lemma0 : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (v : ⟦ t₁ ⟧) →
   eval c v ≡ proj₁ (c2equiv c) v
@@ -2647,6 +2646,7 @@ computations involving recursive datatypes such as trees that can be
 viewed as solutions to polynomials over type
 variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
 
+\begin{comment}
 \appendix
 \section{Code Roadmap}
 
@@ -2659,6 +2659,7 @@ Equivalences are defined in \texttt{Equiv}.  This is used in
 assembled to show that \AgdaPrimitiveType{Set} has the structure of
 a $\simeq$-semiring, \AgdaFunction{typesCSR}, which is our
 Theorem~\ref{thm:typesCSR}
+\end{comment}
 
 \begin{comment}
 We have developed a tight integration between \emph{reversible
