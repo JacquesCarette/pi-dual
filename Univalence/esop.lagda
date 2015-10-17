@@ -1,4 +1,5 @@
-%% \documentclass[oribibl]{llncs}
+%% \documentclass[oribibl]{llncs} 
+%% 25 pages + 2 pages bib
 \documentclass{llncs}
 
 \usepackage{savesym}
@@ -618,7 +619,6 @@ the other. The remainder of the paper is about such a formalization
 and its applications. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% \section{Equivalences and Commutative Semirings, formally} 
 \section{Equivalences}
 \label{sec:equiv}
 
@@ -997,9 +997,6 @@ equivalence in the world of semirings.
 % of \emph{type equivalence} instead of strict equality~$=$.
 % \end{comment}
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \section{Permutations}
-
 % now give names to equivalences ...
 
 % Although permutations do not form a semiring (for the same reason
@@ -1321,6 +1318,25 @@ products.
 %%%%%%%%%%%%
 \subsection{Example Programs}
 
+The family of $\Pi$ languages was previously introduced as standalone
+reversible programming languages. The fragment without recursive types
+discussed in this paper is universal for reversible booleans
+circuits~\citep{James:2012:IE:2103656.2103667}. With the addition of
+recursive types and trace
+operators~\citep{Hasegawa:1997:RCS:645893.671607}, $\Pi$ become a
+Turing complete reversible
+language~\citep{James:2012:IE:2103656.2103667,rc2011}. 
+
+Although writing circuits using the raw syntax for
+combinators is tedious, we illustrate the programming language nature
+of $\Pi$ using a few examples.\footnote{In other work, one can find a
+  compiler from a conventional functional language to generate the
+  circuits~\citep{James:2012:IE:2103656.2103667}, a systematic
+  technique to translate abstract machines to $\Pi$~\citep{rc2012},
+  and a Haskell-like surface language~\citep{theseus} which can be of
+  help in writing circuits.} These examples reinforce the first part
+of the title, i.e, that we can really compute with semirings. 
+
 \AgdaHide{
 \begin{code}
 open import PiU using (U; ZERO; ONE; PLUS; TIMES) 
@@ -1337,201 +1353,46 @@ _□ : (t : U) → {t : U} → (t ⟷ t)
 _□ t = id⟷
 \end{code}
 }
+
+We begin by encoding the types of booleans and pairs of booleans,
+write a few simple gates like the Toffoli gate~\citep{Toffoli:1980},
+and use them to write a reversible full adder~\citep{revadder}. 
+
+
+\medskip 
+\footnotesize{
 \begin{code}
 BOOL : U
 BOOL  = PLUS ONE ONE 
 
-BOOL² : U
-BOOL² = TIMES BOOL BOOL
-
+BOOL² : U  
+BOOL² = TIMES BOOL BOOL  
+ 
+BOOL³ : U  
+BOOL³ = TIMES BOOL² BOOL  
+ 
 NOT : BOOL ⟷ BOOL
 NOT = swap₊
 
-NEG1 NEG2 NEG3 NEG4 NEG5 : BOOL ⟷ BOOL
-NEG1 = swap₊
-NEG2 = id⟷ ◎ NOT 
-NEG3 = NOT ◎ NOT ◎ NOT 
-NEG4 = NOT ◎ id⟷
-NEG5 = uniti⋆l ◎ swap⋆ ◎ (NOT ⊗ id⟷) ◎ swap⋆ ◎ unite⋆l
-NEG6 = uniti⋆r ◎ (NOT ⊗ id⟷) ◎ unite⋆r 
-
--- CNOT
-
 CNOT : BOOL² ⟷ BOOL²
-CNOT = TIMES BOOL BOOL
-         ⟷⟨ id⟷ ⟩
-       TIMES (PLUS x y) BOOL
-         ⟷⟨ dist ⟩
-       PLUS (TIMES x BOOL) (TIMES y BOOL)
-         ⟷⟨ id⟷ ⊕ (id⟷ ⊗ NOT) ⟩
-       PLUS (TIMES x BOOL) (TIMES y BOOL)
-         ⟷⟨ factor ⟩
-       TIMES (PLUS x y) BOOL
-         ⟷⟨ id⟷ ⟩
-       TIMES BOOL BOOL □
-  where x = ONE; y = ONE
-
--- TOFFOLI
+CNOT = dist ◎ (id⟷ ⊕ (id⟷ ⊗ NOT)) ◎ factor 
 
 TOFFOLI : TIMES BOOL BOOL² ⟷ TIMES BOOL BOOL²
-TOFFOLI = TIMES BOOL BOOL² 
-            ⟷⟨ id⟷ ⟩
-          TIMES (PLUS x y) BOOL² 
-            ⟷⟨ dist ⟩
-          PLUS (TIMES x BOOL²) (TIMES y BOOL²)
-            ⟷⟨ id⟷ ⊕ (id⟷ ⊗ CNOT) ⟩ 
-          PLUS (TIMES x BOOL²) (TIMES y BOOL²)
-            ⟷⟨ factor ⟩
-          TIMES (PLUS x y) BOOL²
-            ⟷⟨ id⟷ ⟩
-         TIMES BOOL BOOL² □
-  where x = ONE; y = ONE
+TOFFOLI = dist ◎ (id⟷ ⊕ (id⟷ ⊗ CNOT))  ◎ factor  
+
+PERES : BOOL³ ⟷ BOOL³
+PERES = (id⟷ ⊗ NOT) ◎ assocr⋆ ◎ (id⟷ ⊗ swap⋆) ◎ 
+             TOFFOLI ◎ (id⟷ ⊗ (NOT ⊗ id⟷)) ◎ TOFFOLI ◎ 
+             (id⟷ ⊗ swap⋆) ◎ (id⟷ ⊗ (NOT ⊗ id⟷)) ◎ 
+             TOFFOLI ◎ (id⟷ ⊗ (NOT ⊗ id⟷)) ◎ assocl⋆
+
+-- Input:     (z, ((n1, n2), cin))) 
+-- Output:  (g1, (g2, (sum, cout))) 
+FULLADDER : TIMES BOOL BOOL³ ⟷ TIMES BOOL (TIMES BOOL BOOL²)
+FULLADDER = swap⋆ ◎ (swap⋆ ⊗ id⟷) ◎ assocr⋆ ◎ swap⋆ ◎ (PERES ⊗ id⟷) ◎
+                       assocr⋆ ◎ (id⟷ ⊗ swap⋆) ◎ assocr⋆ ◎ (id⟷ ⊗ assocl⋆) ◎ 
+                       (id⟷ ⊗ PERES) ◎ (id⟷ ⊗ assocr⋆)
 \end{code}
- 
- 
-The language $\Pi$ is universal for reversible combinational
-circuits~\citep{James:2012:IE:2103656.2103667}.\footnote{With the
-  addition of recursive types and trace
-  operators~\citep{Hasegawa:1997:RCS:645893.671607}, $\Pi$ become a
-  Turing complete reversible
-  language~\citep{James:2012:IE:2103656.2103667,rc2011}.} We
-illustrate the expressiveness of the language with a few short
-examples.
-
-The first example is simply boolean encoding and negation which can be
-defined as shown on the left and visualized as a permutation on finite
-sets on the right:
-
-\smallskip 
-
-\begin{tabular}{@{\kern-3em}cc}
-\begin{minipage}[t]{0.25\textwidth}
-\end{minipage}
-& 
-\adjustbox{valign=t}{\begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
-  \draw (0,0) ellipse (1cm and 2cm);
-  \draw[fill] (0,1) circle [radius=0.025];
-  \node[below] at (0,1) {F};
-  \draw[fill] (0,-1) circle [radius=0.025];
-  \node[below] at (0,-1) {T};
-
-  \draw     (0,1)  -- (2,1)  ;
-  \draw     (0,-1) -- (2,-1) ;
-  \draw     (2,1)  -- (4,-1) ;
-  \draw     (2,-1) -- (4,1)  ;
-  \draw[->] (4,1)  -- (6,1)  ;
-  \draw[->] (4,-1) -- (6,-1) ;
-
-  \draw (6,0) ellipse (1cm and 2cm);
-  \draw[fill] (6,1) circle [radius=0.025];
-  \node[below] at (6,1) {F};
-  \draw[fill] (6,-1) circle [radius=0.025];
-  \node[below] at (6,-1) {T};
-\end{tikzpicture}}
-\end{tabular}
-
-\smallskip  
- 
-Naturally there are many ways of encoding boolean negation. The
-following combinator implements a more convoluted circuit that
-computes the same function, which is also visualized as a permutation
-on finite sets:
-
-\smallskip 
-
-\begin{tabular}{@{\kern-3em}c@{\!\!\!}c}
-\begin{minipage}[t]{0.25\textwidth}
-\end{minipage}
-& 
-\adjustbox{valign=t}{\begin{tikzpicture}[scale=0.53,every node/.style={scale=0.53}]
-  \draw (1,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (1,2) circle [radius=0.025];
-  \node[below] at (1,2) {()};
-
-  \draw (0,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (0,0.5) circle [radius=0.025];
-  \node[below] at (0,0.5) {F};
-  \draw[fill] (0,-0.5) circle [radius=0.025];
-  \node[below] at (0,-0.5) {T};
-
-  \draw     (1,2)    -- (2,2)      ; %% ()
-  \draw     (0,0.5)  -- (2,0.5)    ; %% F
-  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
-
-  \draw     (2,2)    -- (3,-0.5)   ;
-  \draw     (2,0.5)  -- (3,2)      ;
-  \draw     (2,-0.5) -- (3,1)      ;
-
-  \draw     (3,2)    -- (3.5,2)    ;
-  \draw     (3,1)    -- (3.5,1)    ;
-  \draw     (3,-0.5) -- (3.5,-0.5) ; 
-
-  \draw     (3.5,2)    -- (4.5,1)    ;
-  \draw     (3.5,1)    -- (4.5,2)    ;
-  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
-
-  \draw     (4.5,2)    -- (5,2)    ;
-  \draw     (4.5,1)    -- (5,1)    ;
-  \draw     (4.5,-0.5) -- (5,-0.5) ;
-
-  \draw     (5,2)    -- (6,0.5)  ;
-  \draw     (5,1)    -- (6,-0.5) ;
-  \draw     (5,-0.5) -- (6,2)    ; 
-
-  \draw     (6,2)    -- (7,2)    ;
-  \draw     (6,0.5)  -- (8,0.5)  ;
-  \draw     (6,-0.5) -- (8,-0.5) ; 
-
-  \draw (7,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (7,2) circle [radius=0.025];
-  \node[below] at (7,2) {()};
-
-  \draw (8,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (8,0.5) circle [radius=0.025];
-  \node[below] at (8,0.5) {F};
-  \draw[fill] (8,-0.5) circle [radius=0.025];
-  \node[below] at (8,-0.5) {T};
-
-\end{tikzpicture}}
-\end{tabular}
-
-\smallskip
-
-Writing circuits using the raw syntax for combinators is clearly
-tedious. In other work, one can find a compiler from a conventional
-functional language to generate the
-circuits~\citep{James:2012:IE:2103656.2103667}, a systematic technique
-to translate abstract machines to $\Pi$~\citep{rc2012}, and a
-Haskell-like surface language~\citep{theseus} which can be of help in
-writing circuits. These essential tools are however a distraction in
-the current setting and we content ourselves with some Agda syntactic
-sugar illustrated below and used again in the next section:
-
-\smallskip
-
-\begin{tabular}{@{\kern-3em}l}
-\begin{minipage}{0.5\textwidth}
-\end{minipage}
-\end{tabular}
-
-\bigskip
-
-\begin{tabular}{@{\kern-3em}l}
-\begin{minipage}{0.5\textwidth}
-\end{minipage}
-\end{tabular}
-
-\begin{tabular}{@{\kern-3em}l}
-\begin{minipage}{0.5\textwidth}
-\end{minipage}
-\end{tabular}
-
-\smallskip
-
-This style makes the intermediate steps explicit showing how the types
-are transformed in each step by the combinators. The example confirms
-that $\Pi$ is universal for reversible circuits since the Toffoli gate
-is universal for such circuits~\citep{Toffoli:1980}.
 
 %%%%%%%%%%%%
 \subsection{Example Proofs}
@@ -2368,6 +2229,97 @@ equivalent to the identity equivalence. Formally:
 %%%%%%%%%%%%
 \subsection{A Syntactic 2-Paths Circuit Optimizer}
   
+\begin{tabular}{@{\kern-3em}cc}
+\begin{minipage}[t]{0.25\textwidth}
+\end{minipage}
+& 
+\adjustbox{valign=t}{\begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
+  \draw (0,0) ellipse (1cm and 2cm);
+  \draw[fill] (0,1) circle [radius=0.025];
+  \node[below] at (0,1) {F};
+  \draw[fill] (0,-1) circle [radius=0.025];
+  \node[below] at (0,-1) {T};
+
+  \draw     (0,1)  -- (2,1)  ;
+  \draw     (0,-1) -- (2,-1) ;
+  \draw     (2,1)  -- (4,-1) ;
+  \draw     (2,-1) -- (4,1)  ;
+  \draw[->] (4,1)  -- (6,1)  ;
+  \draw[->] (4,-1) -- (6,-1) ;
+
+  \draw (6,0) ellipse (1cm and 2cm);
+  \draw[fill] (6,1) circle [radius=0.025];
+  \node[below] at (6,1) {F};
+  \draw[fill] (6,-1) circle [radius=0.025];
+  \node[below] at (6,-1) {T};
+\end{tikzpicture}}
+\end{tabular}
+
+\smallskip  
+ 
+Naturally there are many ways of encoding boolean negation. The
+following combinator implements a more convoluted circuit that
+computes the same function, which is also visualized as a permutation
+on finite sets:
+
+\smallskip 
+
+\begin{tabular}{@{\kern-3em}c@{\!\!\!}c}
+\begin{minipage}[t]{0.25\textwidth}
+\end{minipage}
+& 
+\adjustbox{valign=t}{\begin{tikzpicture}[scale=0.53,every node/.style={scale=0.53}]
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {()};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {()};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}}
+\end{tabular}
+
 As Fig.~\ref{fig:more2} illustrates, we have rules to manipulate code
 fragments rewriting them in a small-step fashion. The rules apply only
 when both sides are well-typed. In their textual form, the rules are
@@ -2519,6 +2471,26 @@ either a diagrammatic interface similar to
 Quantomatic~\citep{quantomatic} (which only works for traced symmetric
 monoidal categories) or a radically different syntactic notation such
 as Penrose's abstract tensor notation~\citep{tensor1,tensor2}.
+
+% \begin{code}
+% -- 1. they give the same results as programs:
+% ≋⇒≡ : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) →
+%   eval c₁ ∼ eval c₂
+% ≋⇒≡ c₁ c₂ ce =
+%   trans∼ (lemma0 c₁) (
+%   trans∼ (_≋_.f≡ (cc2equiv ce))
+%          (sym∼ (lemma0 c₂)))
+
+% -- 2. in fact, you can run one forward, then the other
+% --    backward, and that's the identity
+% ping-pong : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) →
+%   evalB c₂ ∘ eval c₁ ∼ id
+% ping-pong c₁ c₂ ce = 
+%   trans∼ (cong₂∘ (lemma1 c₂) (lemma0 c₁)) (
+%   trans∼ (cong∘r (proj₁ (c2equiv c₁)) (_≋_.f≡ (flip≋ (cc2equiv (2! ce))) )) (
+%   trans∼(sym∼ β₁)
+%          (_≋_.f≡ (linv≋ (c2equiv c₁)))))
+% \end{code}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Limitations}
