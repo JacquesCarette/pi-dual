@@ -811,7 +811,7 @@ module A where
 \end{code}
 
 \medskip  
- In order to argue that \AgdaFunction{pf₃} and \AgdaFunction{pf₄} are
+In order to argue that \AgdaFunction{pf₃} and \AgdaFunction{pf₄} are
 equivalent, we therefore need a notion of equivalence of
 equivalences. Our definition is fairly straightforward: two
 equivalences are equivalent if there exist homotopies between their
@@ -857,12 +857,10 @@ We could now verify that \AgdaFunction{pf₃} is indeed equivalent to
 \AgdaFunction{pf₄} by proving
 \AgdaFunction{pf₃}~\AgdaSymbol{≋}~\AgdaFunction{pf₄}. Such a proof
 exists in the accompanying code in \AgdaModule{TypeEquivEquiv} but
-requires a surprisingly tedious infrastructure to present. We explore
-a much more direct and intuitive to reason about such equivalences of
-equivalences in the next sections. Of major importance will be
-ensuring that our definition of equivalence of equivalence satisfies
-some notion of soundness and completeness relative to proof
-equivalence in the world of semirings.
+requires a surprisingly tedious infrastructure to present. We will
+have to wait until Secs.~\ref{sec:categorification}
+and~\ref{sec:revised} to see this proof.
+
 
 % \noindent For example, for arbitrary types $A$, $B$, and $C$, we have
 % equivalences such as:
@@ -1341,7 +1339,7 @@ full adder~\citep{revadder}:
 \AgdaHide{
 \begin{code}
 open import PiU
-open import PiLevel0
+open import PiLevel0 hiding (triv≡)
 
 infixr 2  _⟷⟨_⟩_   
 infix  2  _□       
@@ -1356,7 +1354,7 @@ _□ t = id⟷
 }
 
 \medskip 
-\footnotesize{
+{\footnotesize{
 \begin{code}
 BOOL : U
 BOOL  = PLUS ONE ONE 
@@ -1389,6 +1387,7 @@ FULLADDER = swap⋆ ◎ (swap⋆ ⊗ id⟷) ◎ assocr⋆ ◎ swap⋆ ◎ (PERES
                        assocr⋆ ◎ (id⟷ ⊗ swap⋆) ◎ assocr⋆ ◎ (id⟷ ⊗ assocl⋆) ◎ 
                        (id⟷ ⊗ PERES) ◎ (id⟷ ⊗ assocr⋆)
 \end{code}
+}}
 
 \medskip
 Although writing circuits using the raw syntax for combinators is
@@ -1920,12 +1919,20 @@ where \AgdaInductiveConstructor{eq} is the constructor for $≋$. \qed
 Following the lead of Sec.~\ref{sec:prog}, we now develop an actual
 programming language whose terms denote equivalences of
 equivalences. Since we already have $\Pi$ whose terms denote
-equivalences, what we actually need a language whose terms denote
+equivalences, what we actually need is a language whose terms denote
 equivalences of $\Pi$ terms. One can think of such a language as a
 language for expressing valid program transformations and
 optimizations of $\Pi$ programs. We will call the terms and
 combinators of the original $\Pi$ language, level-0 terms, and the
 terms and combinators of the new language, level-1 terms. 
+
+As explained in the previous section, theere is a systematic way to
+``discover'' the level-1 terms which is driven by the coherence
+conditions. During our proofs, we collected all the level-1 terms that
+were needed to realize all the coherence conditions. This exercise
+suggested a refactoring of the original level-0 terms and a few
+iterations. We present the final result and then give the main
+theorem.
 
 %%%
 \subsection{Revised Syntax of Level-0 Terms} 
@@ -2127,84 +2134,11 @@ straightforward.
 %%%
 \subsection{Example Level 1 Programs} 
 
-A Syntactic 2-Paths Circuit Optimizer
-  
-\adjustbox{valign=t}{\begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
-  \draw (0,0) ellipse (1cm and 2cm);
-  \draw[fill] (0,1) circle [radius=0.025];
-  \node[below] at (0,1) {F};
-  \draw[fill] (0,-1) circle [radius=0.025];
-  \node[below] at (0,-1) {T};
-
-  \draw     (0,1)  -- (2,1)  ;
-  \draw     (0,-1) -- (2,-1) ;
-  \draw     (2,1)  -- (4,-1) ;
-  \draw     (2,-1) -- (4,1)  ;
-  \draw[->] (4,1)  -- (6,1)  ;
-  \draw[->] (4,-1) -- (6,-1) ;
-
-  \draw (6,0) ellipse (1cm and 2cm);
-  \draw[fill] (6,1) circle [radius=0.025];
-  \node[below] at (6,1) {F};
-  \draw[fill] (6,-1) circle [radius=0.025];
-  \node[below] at (6,-1) {T};
-\end{tikzpicture}}
-
-\adjustbox{valign=t}{\begin{tikzpicture}[scale=0.53,every node/.style={scale=0.53}]
-  \draw (1,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (1,2) circle [radius=0.025];
-  \node[below] at (1,2) {()};
-
-  \draw (0,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (0,0.5) circle [radius=0.025];
-  \node[below] at (0,0.5) {F};
-  \draw[fill] (0,-0.5) circle [radius=0.025];
-  \node[below] at (0,-0.5) {T};
-
-  \draw     (1,2)    -- (2,2)      ; %% ()
-  \draw     (0,0.5)  -- (2,0.5)    ; %% F
-  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
-
-  \draw     (2,2)    -- (3,-0.5)   ;
-  \draw     (2,0.5)  -- (3,2)      ;
-  \draw     (2,-0.5) -- (3,1)      ;
-
-  \draw     (3,2)    -- (3.5,2)    ;
-  \draw     (3,1)    -- (3.5,1)    ;
-  \draw     (3,-0.5) -- (3.5,-0.5) ; 
-
-  \draw     (3.5,2)    -- (4.5,1)    ;
-  \draw     (3.5,1)    -- (4.5,2)    ;
-  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
-
-  \draw     (4.5,2)    -- (5,2)    ;
-  \draw     (4.5,1)    -- (5,1)    ;
-  \draw     (4.5,-0.5) -- (5,-0.5) ;
-
-  \draw     (5,2)    -- (6,0.5)  ;
-  \draw     (5,1)    -- (6,-0.5) ;
-  \draw     (5,-0.5) -- (6,2)    ; 
-
-  \draw     (6,2)    -- (7,2)    ;
-  \draw     (6,0.5)  -- (8,0.5)  ;
-  \draw     (6,-0.5) -- (8,-0.5) ; 
-
-  \draw (7,2) ellipse (0.5cm and 0.5cm);
-  \draw[fill] (7,2) circle [radius=0.025];
-  \node[below] at (7,2) {()};
-
-  \draw (8,0) ellipse (0.5cm and 1cm);
-  \draw[fill] (8,0.5) circle [radius=0.025];
-  \node[below] at (8,0.5) {F};
-  \draw[fill] (8,-0.5) circle [radius=0.025];
-  \node[below] at (8,-0.5) {T};
-
-\end{tikzpicture}}
- 
-Naturally there are many ways of encoding boolean negation. The
-following combinator implements a more convoluted circuit that
-computes the same function, which is also visualized as a permutation
-on finite sets:
+A pleasant outcome of having the level-1 terms is that they also give
+rise to an interesting programming language which, in our context, can
+be viewed as a language for expressing transformations and
+optimizations of boolean circuits. We illustrate the idea with a few
+small examples.
 
 As Figs. ~\ref {fig:more2} and~\ref {fig:more3} illustrate, we have
 rules to manipulate code fragments rewriting them in a small-step
@@ -2220,13 +2154,13 @@ given types:
 
 \AgdaHide{
 \begin{code}
--- postulate
+postulate
 \end{code}
 }
 
 \begin{code}
---  c₁ : {B C : U} →  B ⟷ C
---  c₂ : {A D : U} →  A ⟷ D
+  c₁ : {B C : U} →  B ⟷ C
+  c₂ : {A D : U} →  A ⟷ D
 \end{code}
 
 \medskip 
@@ -2253,7 +2187,7 @@ must act polymorphically on its input and hence, it must be the case
 that the two evaluations produce the same result. The situation for
 the other possible input value is symmetric. This extensional
 reasoning is embedded once and for all in the proofs of coherence and
-distilled in a 2-level combinator:
+distilled in a 1-level combinator:
 
 \[\begin{array}{rcl}
 \AgdaInductiveConstructor{swapl₊⇔} & \AgdaSymbol{:} &
@@ -2274,7 +2208,7 @@ distilled in a 2-level combinator:
 Categorically speaking, this combinator expresses exactly that the
 braiding $\sigma_{A,B}$ is a natural transformation, in other words
 that $\sigma_{A,B}$ must commute with $\oplus$. Pictorially, this
-2-level combinator is a 2-path showing how the two paths can be
+1-level combinator is a 2-path showing how the two paths can be
 transformed to one another. The proof of equivalence can be visualized
 by simply imagining the connections as wires whose endpoints are
 fixed: holding the wires on the right side of the top path and
@@ -2341,6 +2275,116 @@ flipping them produces the connection in the bottom path:
 \end{tikzpicture}
 \end{center}
 
+
+
+Consider two possible circuits realizing boolean negation. The first
+circuit is direct and trivial:
+
+\medskip
+
+\begin{tabular}{@{\kern-3em}c@{\qquad\qquad\qquad\qquad\qquad}c}
+\begin{minipage}[t]{0.25\textwidth}
+\begin{code}
+NOT₁ : BOOL ⟷ BOOL
+NOT₁ = PiLevel0.swap₊
+\end{code}
+\end{minipage}
+& 
+\adjustbox{valign=t}{\begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
+  \draw (0,0) ellipse (1cm and 2cm);
+  \draw[fill] (0,1) circle [radius=0.025];
+  \node[below] at (0,1) {F};
+  \draw[fill] (0,-1) circle [radius=0.025];
+  \node[below] at (0,-1) {T};
+
+  \draw     (0,1)  -- (2,1)  ;
+  \draw     (0,-1) -- (2,-1) ;
+  \draw     (2,1)  -- (4,-1) ;
+  \draw     (2,-1) -- (4,1)  ;
+  \draw[->] (4,1)  -- (6,1)  ;
+  \draw[->] (4,-1) -- (6,-1) ;
+
+  \draw (6,0) ellipse (1cm and 2cm);
+  \draw[fill] (6,1) circle [radius=0.025];
+  \node[below] at (6,1) {F};
+  \draw[fill] (6,-1) circle [radius=0.025];
+  \node[below] at (6,-1) {T};
+\end{tikzpicture}}
+\end{tabular}
+
+\medskip
+ 
+The second circuit is more convoluted:
+
+\medskip
+
+\begin{tabular}{@{\kern-3em}c@{\qquad\qquad\qquad\qquad\qquad}c}
+\begin{minipage}[t]{0.25\textwidth}
+\begin{code}
+NOT₂ : BOOL ⟷ BOOL
+NOT₂ =
+  uniti⋆l ◎
+  PiLevel0.swap⋆ ◎
+  (PiLevel0.swap₊ ⊗ id⟷) ◎
+  PiLevel0.swap⋆ ◎
+  unite⋆l
+\end{code}
+\end{minipage}
+& 
+\adjustbox{valign=t}{\begin{tikzpicture}[scale=0.53,every node/.style={scale=0.9}]
+  \draw (1,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (1,2) circle [radius=0.025];
+  \node[below] at (1,2) {()};
+
+  \draw (0,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (0,0.5) circle [radius=0.025];
+  \node[below] at (0,0.5) {F};
+  \draw[fill] (0,-0.5) circle [radius=0.025];
+  \node[below] at (0,-0.5) {T};
+
+  \draw     (1,2)    -- (2,2)      ; %% ()
+  \draw     (0,0.5)  -- (2,0.5)    ; %% F
+  \draw     (0,-0.5) -- (2,-0.5)   ; %% T
+
+  \draw     (2,2)    -- (3,-0.5)   ;
+  \draw     (2,0.5)  -- (3,2)      ;
+  \draw     (2,-0.5) -- (3,1)      ;
+
+  \draw     (3,2)    -- (3.5,2)    ;
+  \draw     (3,1)    -- (3.5,1)    ;
+  \draw     (3,-0.5) -- (3.5,-0.5) ; 
+
+  \draw     (3.5,2)    -- (4.5,1)    ;
+  \draw     (3.5,1)    -- (4.5,2)    ;
+  \draw     (3.5,-0.5) -- (4.5,-0.5) ; 
+
+  \draw     (4.5,2)    -- (5,2)    ;
+  \draw     (4.5,1)    -- (5,1)    ;
+  \draw     (4.5,-0.5) -- (5,-0.5) ;
+
+  \draw     (5,2)    -- (6,0.5)  ;
+  \draw     (5,1)    -- (6,-0.5) ;
+  \draw     (5,-0.5) -- (6,2)    ; 
+
+  \draw     (6,2)    -- (7,2)    ;
+  \draw     (6,0.5)  -- (8,0.5)  ;
+  \draw     (6,-0.5) -- (8,-0.5) ; 
+
+  \draw (7,2) ellipse (0.5cm and 0.5cm);
+  \draw[fill] (7,2) circle [radius=0.025];
+  \node[below] at (7,2) {()};
+
+  \draw (8,0) ellipse (0.5cm and 1cm);
+  \draw[fill] (8,0.5) circle [radius=0.025];
+  \node[below] at (8,0.5) {F};
+  \draw[fill] (8,-0.5) circle [radius=0.025];
+  \node[below] at (8,-0.5) {T};
+
+\end{tikzpicture}}
+\end{tabular}
+
+\medskip
+
 In contrast to the formal coherence conditions from Laplaza, the
 2-combinators have more of a ``small-step'' nature which, from
 experience with compilers for functional
@@ -2365,22 +2409,27 @@ as Penrose's abstract tensor notation~\citep{tensor1,tensor2}.
 proof irrelevance at this level; weak category; equivalence of
 equivalence of equivalences trivial
 
-%%%
-\subsection{Semantics}
-
-Each 2-level combinator whose signature is in Figs. ~\ref{fig:more2}
-and~\ref{fig:more3} gives rise to an equivalence of equivalences of
-types. The formal Agda statement is:
-
 \AgdaHide{
 \begin{code}
 open import EquivEquiv 
 open _≋_
-open import PiLevel1
+open import PiLevel1 hiding (triv≡)
 open import PiEquiv using (c2equiv)
 
 \end{code}
 }
+\begin{code}
+triv≡ : {t₁ t₂ : U} {f g : t₁ ⟷ t₂} → (α β : f ⇔ g) → Set
+triv≡ _ _ = ⊤
+\end{code}
+
+%%%
+\subsection{Semantics}
+
+Each 1-level combinator whose signature is in Figs. ~\ref{fig:more2}
+and~\ref{fig:more3} gives rise to an equivalence of equivalences of
+types. The formal Agda statement is:
+
 \begin{code}
 !≡sym≃ : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) →
   PiEquiv.c2equiv (! c) EquivEquiv.≋ Equiv.sym≃ (PiEquiv.c2equiv c)
@@ -2402,12 +2451,12 @@ ping-pong : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) →
 \end{code}
 \AgdaHide{
 \begin{code}
-!≡sym≃ = ? 
-left-inv = ? 
-right-inv = ? 
-cc2equiv = ? 
-≋⇒≡ = ?
-ping-pong = ? 
+!≡sym≃ = {!!} 
+left-inv = {!!} 
+right-inv = {!!} 
+cc2equiv = {!!} 
+≋⇒≡ = {!!}
+ping-pong = {!!} 
 \end{code}
 }
 
