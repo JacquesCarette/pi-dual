@@ -384,7 +384,8 @@ definitions for Groupoid, Rig category and Bicategory.  This fork is
 available from \url{https://github.com/JacquesCarette/categories}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Informal Development}\label{sec:informal}
+\section{Informal Development}
+\label{sec:informal}
 
 We explore the main ingredients that would constitute a Curry-Howard
 like correspondence between (commutative) semirings and (constructive)
@@ -1327,19 +1328,15 @@ operators~\citep{Hasegawa:1997:RCS:645893.671607}, $\Pi$ become a
 Turing complete reversible
 language~\citep{James:2012:IE:2103656.2103667,rc2011}. 
 
-Although writing circuits using the raw syntax for
-combinators is tedious, we illustrate the programming language nature
-of $\Pi$ using a few examples.\footnote{In other work, one can find a
-  compiler from a conventional functional language to generate the
-  circuits~\citep{James:2012:IE:2103656.2103667}, a systematic
-  technique to translate abstract machines to $\Pi$~\citep{rc2012},
-  and a Haskell-like surface language~\citep{theseus} which can be of
-  help in writing circuits.} These examples reinforce the first part
-of the title, i.e, that we can really compute with semirings. 
+We illustrate the expressiveness of $\Pi$ with a few small programs:
+we begin by defining the universe of types \AgdaDatatype{U},
+encoding the types of booleans, write a few simple gates like the
+Toffoli gate~\citep{Toffoli:1980}, and use them to write a reversible
+full adder~\citep{revadder}:
 
 \AgdaHide{
 \begin{code}
-open import PiU using (U; ZERO; ONE; PLUS; TIMES) 
+open import PiU
 open import PiLevel0
 
 infixr 2  _⟷⟨_⟩_   
@@ -1353,11 +1350,6 @@ _□ : (t : U) → {t : U} → (t ⟷ t)
 _□ t = id⟷
 \end{code}
 }
-
-We begin by encoding the types of booleans and pairs of booleans,
-write a few simple gates like the Toffoli gate~\citep{Toffoli:1980},
-and use them to write a reversible full adder~\citep{revadder}. 
-
 
 \medskip 
 \footnotesize{
@@ -1394,10 +1386,29 @@ FULLADDER = swap⋆ ◎ (swap⋆ ⊗ id⟷) ◎ assocr⋆ ◎ swap⋆ ◎ (PERES
                        (id⟷ ⊗ PERES) ◎ (id⟷ ⊗ assocr⋆)
 \end{code}
 
+Although writing circuits using the raw syntax for combinators is
+tedious, the examples illustrate the programming language nature of
+$\Pi$. In other work, one can find a compiler from a conventional
+functional language to generate the
+circuits~\citep{James:2012:IE:2103656.2103667}, a systematic technique
+to translate abstract machines to $\Pi$~\citep{rc2012}, and a
+Haskell-like surface language~\citep{theseus} which can be of help in
+writing circuits, which further reinforce the first part of the title,
+i.e, that we can really compute with semirings.
+
 %%%%%%%%%%%%
 \subsection{Example Proofs}
 
-Write pf1, pf2, pf3, and pf4
+In addition to being a reversible programming language, $\Pi$ is also
+a language for expressing proofs that correspond to semiring
+identities. Thus we can write our proofs \AgdaFunction{pf₁},
+\AgdaFunction{pf₂}, \AgdaFunction{pf₃}, and \AgdaFunction{pf₄} from
+Sec.~\ref{sec:informal}:
+
+\medskip
+\begin{code}
+
+\end{code}
 
 %%%%%%%%%%%%
 %% \subsection{Semiring of Finite Types}
