@@ -1702,7 +1702,7 @@ permutations are needed for a complete set of rewrite rules?
 \label{sec:categorification}
 
 The problem of finding a sound and complete set of rules for reasoning
-about equivalence of permutations is solved by appealing to various
+about equivalences is solved by appealing to various
 results about specialized monoidal
 categories~\citep{selinger-graphical}. The main technical vehicle is
 that of \emph{categorification}~\citep{math/9802029} which is a
@@ -1717,6 +1717,13 @@ monads). Thus, from a programmer's perspective, this categorification
 process is about understanding how type equivalences evolve under
 compositions, e.g., how two different paths of type equivalences
 sharing the same source and target relate two each other.
+
+Thus what we seek is a structure ``like'' a commutative semiring,
+but where the elements of the carrier, equivalences, are typed.
+What we seek then is a way to define two monoidal structures
+atop our category of types, which respects the commutative
+semiring structure of the types.  Because the details matter,
+we now turn to monoidal categories.
 
 \begin{figure*}
 \begin{center}
@@ -1830,15 +1837,15 @@ equal. Indeed, as Dosen and Petric explain:
   problem for the usual axiomatization of symmetric
   groups~\citep{coherence}.
 \end{quote} 
-The informal idea was already silently used in the examples in
-Sec.~\ref{sec:circuits} in which the types were named \AgdaFunction{x}
-and \AgdaFunction{y} during the derivation to distinguish operations
-that would otherwise be ambiguous if all the types were instantiated
-with \AgdaInductiveConstructor{ONE}.
+%The informal idea was already silently used in the examples in
+%Sec.~\ref{sec:circuits} in which the types were named \AgdaFunction{x}
+%and \AgdaFunction{y} during the derivation to distinguish operations
+%that would otherwise be ambiguous if all the types were instantiated
+%with \AgdaInductiveConstructor{ONE}.
 
 From a different perspective, \citet{math/9802029} explain the source
 of these coherence laws as arising from homotopy theory. In this
-theory, laws are only imposed up to homotopy with these homotopies
+theory, laws are only imposed up to homotopy, with these homotopies
 satisfying certain laws, up again only up to homotopy, with these
 higher homotopies satisfying their own higher coherence laws, and so
 on. Remarkably, they report, among other results, that the pentagon
@@ -1848,16 +1855,16 @@ space and that the hexagon identity arises in the context of spaces
 homotopy equivalent to double loop spaces.
 
 In our context, we will build monoidal categories where the objects
-are finite types and the morphisms are reversible circuits represented
-as $\Pi$-combinators. Clearly not all reversible circuits mapping
-\AgdaDatatype{Bool} to \AgdaDatatype{Bool} are equal. There are at
-least two distinct such circuits: the identity and boolean
-negation. The coherence laws should not equate these two morphisms and
-they do not. We might also hope that the two versions of boolean
-negation in Sec.~\ref{sec:circuits} and Sec.~\ref{sec:rewriting} could
-be identified using the coherence conditions of monoidal
-categories. This is not the case but will be once we capture the full
-structure of commutative semirings categorically. 
+are finite types and the morphisms are equivalences represented
+as $\Pi$-combinators.  As we have mentioned multiple times,
+there are two different equivalences between $A+A$ and itself;
+the coherence laws should not equate these two morphisms and
+they do not. 
+%We might also hope that the two versions of boolean
+%negation in Sec.~\ref{sec:circuits} and Sec.~\ref{sec:rewriting} could
+%be identified using the coherence conditions of monoidal
+%categories. This is not the case but will be once we capture the full
+%structure of commutative semirings categorically. 
 
 %%%%%%%%%%%%
 \subsection{Symmetric Rig Weak Groupoids}
@@ -1870,7 +1877,8 @@ distributivity and absorption natural isomorphisms are added, and
 accompanying coherence laws added.  Since we can easily set things up
 so that every morphism is an isomorphism, the category will also be a
 groupoid. Since the laws of the category only hold up to a higher
-equivalence, the entire setting is that of weak categories.
+equivalence, the entire setting is that of weak categories 
+(aka bicategories).
 
 There are several equivalent definitions of rig categories. We use the
 following definition from \citet{nlabrig}.
@@ -1968,7 +1976,7 @@ be the best hope for a rational reconstruction of the coherence laws.
 %%%%%%%%%%%%
 \subsection{Instances of Symmetric Rig Categories} 
 
-Most of the structures we have discussed so far are instances of
+Of course, the main structure of study, is indeed a
 symmetric rig weak groupoids. 
 
 \begin{theorem}
@@ -2055,19 +2063,19 @@ equivalence are indeed related to the same diagram:
 \AgdaFunction{laplazaI} =
   \AgdaInductiveConstructor{eq}~\AgdaFunction{distl-swap₊-lemma}~\AgdaFunction{factorl-swap₊-lemma}
 \]
-where \AgdaInductiveConstructor{eq} is the constructor for the
-equivalence of equivalences used in the proof of Thm.~\ref{thm:eqeq}.
+where \AgdaInductiveConstructor{eq} is the constructor for $\equiv$.
 \end{proof}
 
 More directly relevant to our purposes, is the next theorem which
 applies to reversible circuits (represented as $\Pi$-combinators).
 
 \begin{theorem}
-The collection of finite types and $\Pi$-combinators is a symmetric rig
+The universe $U$ and $\Pi$-combinators is a symmetric rig
 groupoid.
 \end{theorem}
 \begin{proof}
-  The objects of the category are finite types and the morphisms are
+  The objects of the category are the syntax of finite types,
+  and the morphisms are
   the $\Pi$-combinators. Short proofs establish that these morphisms
   satisfy the axioms stated in the definitions of the various
   categories. The bulk of the work is in ensuring that the coherence
@@ -2082,6 +2090,7 @@ groupoid.
   other that are captured in the more involved coherence laws.
 \end{proof}
 
+\begin{comment}
 Putting the result above together with Laplaza's coherence result
 about rig categories, we conclude with our main result, which will be
 detailed in the next section by giving the full details of the second
@@ -2096,6 +2105,7 @@ We have two levels of $\Pi$-combinators such that:
   the equivalence of circuits represented by the first level.
 \end{itemize}
 \end{theorem}
+\end{comment}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Revised $\Pi$ and its Optimizer}
