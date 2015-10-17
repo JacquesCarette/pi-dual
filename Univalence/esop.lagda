@@ -1318,6 +1318,22 @@ according to the figure. The inverse flips the order of the
 combinators in sequential composition, and is homomorphic on sums and
 products.
 
+We formalize $\tau$ by creating a universe $U$ with the syntax
+for (finite) types; formally in Agda, we get
+
+\AgdaHide{
+\begin{code}
+module Foo where
+\end{code}
+}
+\begin{code}
+  data U : Set where
+    ZERO  : U
+    ONE   : U
+    PLUS  : U → U → U
+    TIMES : U → U → U
+\end{code}
+
 %%%%%%%%%%%%
 \subsection{Example Programs}
 
@@ -1432,13 +1448,6 @@ pf₄π = assocr₊ ◎ (id⟷ ⊕ unite₊)
 
 % Our previous grammar for $\tau$ can be formalized as
 
-% \begin{code}
-% data U : Set where
-%   ZERO  : U
-%   ONE   : U
-%   PLUS  : U → U → U
-%   TIMES : U → U → U
-% \end{code}
 % \noindent to define the universe \AgdaDatatype{U} of finite types.
 % There is an obvious mapping from \AgdaDatatype{U} to $\mathbb{N}$:
 
@@ -1490,7 +1499,9 @@ evalB = {!!}
 type constructor to its Agda denotation. This operational semantics
 serves as an adequate semantic specification if one focuses solely on
 the standalone programming language for reversible boolean
-circuits. If one is also interested in using $\Pi$ for expressing
+circuits. It is straightforward to prove that \AgdaFunction{eval}
+and \AgdaFunction{evalB} are indeed inverses of each other.
+If one is also interested in using $\Pi$ for expressing
 semiring identities as type equivalences then the following properties
 are of more interest:
 
@@ -1518,9 +1529,13 @@ lemma1 = {!!}
 \end{code}
 }
 
-\medskip The first property confirms that every $\Pi$ term encodes a
-type equivalence; the second and third confirm that these type
+\medskip The first function confirms that every $\Pi$ term encodes a
+type equivalence; the two lemmas confirm that these type
 equivalences are coherent with respect to the operational semantics.
+
+Naturally, we define the denotational semantics of $\Pi$ to be
+type equivalences.  The above lemmas show that our operational and
+denotational semantics coincide.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Categorification}
