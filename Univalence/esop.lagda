@@ -771,52 +771,54 @@ denotes a proof of a semiring identity. Thus the proofs
 \AgdaFunction{pf₄} can be written formally as:
 \AgdaHide{
 \begin{code}
-id≃ : ∀ {A : Set} → A ≃ A
-id≃ = (id , qinv id (λ _ → refl) (λ _ → refl))
+module A where
 
-sym≃ : ∀ {A B : Set} → (A ≃ B) → B ≃ A
-sym≃ (A→B , equiv) = e.g , qinv A→B e.β e.α
-  where module e = isqinv equiv
+  id≃ : ∀ {A : Set} → A ≃ A
+  id≃ = (id , qinv id (λ _ → refl) (λ _ → refl))
 
-postulate
-  trans≃ :  ∀ {A B C : Set} → (A ≃ B) → (B ≃ C) → (A ≃ C)
+  sym≃ : ∀ {A B : Set} → (A ≃ B) → B ≃ A
+  sym≃ (A→B , equiv) = e.g , qinv A→B e.β e.α
+    where module e = isqinv equiv
 
-swap₊ : {A B : Set} → A ⊎ B → B ⊎ A
-swap₊ (inj₁ a) = inj₂ a
-swap₊ (inj₂ b) = inj₁ b
+  postulate
+    trans≃ :  ∀ {A B C : Set} → (A ≃ B) → (B ≃ C) → (A ≃ C)
 
-swapswap₊ : {A B : Set} → (swap₊ ∘ (swap₊ {A} {B})) ∼ id
-swapswap₊ (inj₁ a) = refl
-swapswap₊ (inj₂ b) = refl
+  swap₊ : {A B : Set} → A ⊎ B → B ⊎ A
+  swap₊ (inj₁ a) = inj₂ a
+  swap₊ (inj₂ b) = inj₁ b
 
-postulate
-  unite₊≃ : {A : Set} → (⊥ ⊎ A) ≃ A
+  swapswap₊ : {A B : Set} → (swap₊ ∘ (swap₊ {A} {B})) ∼ id
+  swapswap₊ (inj₁ a) = refl
+  swapswap₊ (inj₂ b) = refl
 
-postulate
-  swap₊≃ : {A B : Set} → (A ⊎ B) ≃ (B ⊎ A)
+  postulate
+    unite₊≃ : {A : Set} → (⊥ ⊎ A) ≃ A
 
-postulate
-  assoc₊≃ : {A B C : Set} → ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C))
+  postulate
+    swap₊≃ : {A B : Set} → (A ⊎ B) ≃ (B ⊎ A)
 
-postulate
-  _⊎≃_ :  ∀ {A B C D} → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
+  postulate
+    assoc₊≃ : {A B C : Set} → ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C))
+
+  postulate
+    _⊎≃_ :  ∀ {A B C D} → A ≃ C → B ≃ D → (A ⊎ B) ≃ (C ⊎ D)
 
 \end{code}
 }
 
 \medskip 
 \begin{code}
-pf₁ : {A : Set} → (A ⊎ A) ≃ (A ⊎ A)
-pf₁ = id≃ 
+  pf₁ : {A : Set} → (A ⊎ A) ≃ (A ⊎ A)
+  pf₁ = id≃ 
 
-pf₂ : {A : Set} → (A ⊎ A) ≃ (A ⊎ A)
-pf₂ = swap₊≃
+  pf₂ : {A : Set} → (A ⊎ A) ≃ (A ⊎ A)
+  pf₂ = swap₊≃
 
-pf₃ : {A B : Set} → ((A ⊎ ⊥) ⊎ B) ≃ (A ⊎ B)
-pf₃ = trans≃ (swap₊≃ ⊎≃ id≃) (unite₊≃ ⊎≃ id≃) 
+  pf₃ : {A B : Set} → ((A ⊎ ⊥) ⊎ B) ≃ (A ⊎ B)
+  pf₃ = trans≃ (swap₊≃ ⊎≃ id≃) (unite₊≃ ⊎≃ id≃) 
 
-pf₄ : {A B : Set} → ((A ⊎ ⊥) ⊎ B) ≃ (A ⊎ B)
-pf₄ = trans≃ assoc₊≃ (id≃ ⊎≃ unite₊≃) 
+  pf₄ : {A B : Set} → ((A ⊎ ⊥) ⊎ B) ≃ (A ⊎ B)
+  pf₄ = trans≃ assoc₊≃ (id≃ ⊎≃ unite₊≃) 
 \end{code}
 
 \medskip  
@@ -832,18 +834,18 @@ Two equivalences $e_1, e_2 : A ≃ B$ are themselves equivalent $e_1.f ∼
 
 \AgdaHide{
 \begin{code}
-infix 4 _≋_
+  infix 4 _≋_
 \end{code}
 }
 
 \medskip 
 \begin{code}
-record _≋_ {A B : Set} (eq₁ eq₂ : A ≃ B) : Set where
-  constructor eq
-  open isqinv
-  field
-    f≡ : proj₁ eq₁ ∼ proj₁ eq₂
-    g≡ : g (proj₂ eq₁) ∼ g (proj₂ eq₂)
+  record _≋_ {A B : Set} (eq₁ eq₂ : A ≃ B) : Set where
+    constructor eq
+    open isqinv
+    field
+      f≡ : proj₁ eq₁ ∼ proj₁ eq₂
+      g≡ : g (proj₂ eq₁) ∼ g (proj₂ eq₂)
 \end{code}
 \end{definition}
 
@@ -1230,50 +1232,6 @@ having to repeatedly introduce functions and their inverses and proofs
 of homotopies, we would simply use a term language that exactly
 expresses type equivalences and nothing else. 
 
-%%%%%%%%%%
-\subsection{Syntax of $\Pi$}
-
-In previous work, \citet{rc2011,James:2012:IE:2103656.2103667}
-introduced the~$\Pi$ family of reversible languages whose only
-computations are isomorphisms between types. The simplest of these
-languages is exactly the language we seek for capturing type
-equivalences arising from semiring identities.
-
-The syntactic components of our language are as follows:
-\[\begin{array}{lrcl}
-(\textit{Types}) & 
-  \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
- (\textit{Values}) & 
-  v &::=& () \alt \inl{v} \alt \inr{v} \alt (v_1,v_2) \\
-(\textit{Combinator types}) &&& \tau_1 \iso \tau_2 \\
-(\textit{Terms and Combinators}) & 
-  c &::=& [\textit{see Fig.~\ref{pi-terms} and ~\ref{pi-combinators}}]
-\end{array}\]
-The values classified by these
-types are the conventional ones: $()$ of type 1, $\inl{v}$ and
-$\inr{v}$ for injections into sum types, and $(v_1,v_2)$ for product
-types.
-
-Figure~\ref{pi-terms} gives the terms which correspond to the identities
-of commutative semirings.  Each line of the figure introduces a pair
-of dual constants\footnote{where $\idc$, $\swapp$ and $\swapt$ are
-  self-dual.}  that witness the type isomorphism in the middle.
-Figure~\ref{pi-combinators} adds to that $3$ combinators, which come
-from the requirement that $\iso$ be transitive (giving a sequential
-composition operator), and that $\iso$ be a congruence for both $+$
-and $*$ (giving a way to take sums and products of combinators).  That
-latter congruence requirement is usually invisible in classical
-mathematics, but appears when doing proof-relevant mathematics.
-
-The attentive reader will notice that there are many more combinators
-here than in Definition~\ref{defn:csr}.  This is because we want the
-language to be composed of \emph{equivalences}, and we want the
-reversibility of the language to be a theorem, at the level of the
-syntax.  In particular, every combinator $c$ has an inverse $!c$
-according to the figure. The inverse flips the order of the
-combinators in sequential composition, and is homomorphic on sums and
-products.
-
 \begin{figure*}[ht]
 \[
 \begin{array}{rrcll}
@@ -1317,10 +1275,120 @@ products.
 \label{pi-combinators}
 \end{figure*}
 
-%%%%%%%%%%%%
-\subsection{Example Circuits}
-\label{sec:circuits}
+%%%%%%%%%%
+\subsection{Syntax of $\Pi$}
 
+In previous work, \citet{rc2011,James:2012:IE:2103656.2103667}
+introduced the~$\Pi$ family of reversible languages whose only
+computations are isomorphisms between types. The simplest of these
+languages is exactly the language we seek for capturing type
+equivalences arising from semiring identities.
+
+The syntactic components of our language are as follows:
+\[\begin{array}{lrcl}
+(\textit{Types}) & 
+  \tau &::=& 0 \alt 1 \alt \tau_1 + \tau_2 \alt \tau_1 * \tau_2 \\
+ (\textit{Values}) & 
+  v &::=& () \alt \inl{v} \alt \inr{v} \alt (v_1,v_2) \\
+(\textit{Combinator types}) &&& \tau_1 \iso \tau_2 \\
+(\textit{Terms and Combinators}) & 
+  c &::=& [\textit{see Figs.~\ref{pi-terms} and ~\ref{pi-combinators}}]
+\end{array}\]
+The values classified by the finite types types are the conventional
+ones: $()$ of type 1, $\inl{v}$ and $\inr{v}$ for injections into sum
+types, and $(v_1,v_2)$ for product types.
+
+Fig.~\ref{pi-terms} gives the terms which correspond to the identities
+of commutative semirings.  Each line of the figure introduces a pair
+of dual constants\footnote{where $\idc$, $\swapp$ and $\swapt$ are
+  self-dual.}  that witness the type isomorphism in the middle.
+Fig.~\ref{pi-combinators} adds to that $3$ combinators, which come
+from the requirement that $\iso$ be transitive (giving a sequential
+composition operator), and that $\iso$ be a congruence for both $+$
+and $*$ (giving a way to take sums and products of combinators).  That
+latter congruence requirement is usually invisible in classical
+mathematics, but appears when doing proof-relevant mathematics.
+
+The attentive reader will notice that there are many more combinators
+here than in Def.~\ref{defn:csr}.  This is because we want the
+language to be composed of \emph{equivalences}, and we want the
+reversibility of the language to be a theorem, at the level of the
+syntax.  In particular, every combinator $c$ has an inverse $!c$
+according to the figure. The inverse flips the order of the
+combinators in sequential composition, and is homomorphic on sums and
+products.
+
+%%%%%%%%%%%%
+\subsection{Example Programs}
+
+\AgdaHide{
+\begin{code}
+open import PiU using (U; ZERO; ONE; PLUS; TIMES) 
+open import PiLevel0
+
+infixr 2  _⟷⟨_⟩_   
+infix  2  _□       
+
+_⟷⟨_⟩_ : (t₁ : U) {t₂ : U} {t₃ : U} → 
+          (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃) 
+_ ⟷⟨ α ⟩ β = α ◎ β
+
+_□ : (t : U) → {t : U} → (t ⟷ t)
+_□ t = id⟷
+\end{code}
+}
+\begin{code}
+BOOL : U
+BOOL  = PLUS ONE ONE 
+
+BOOL² : U
+BOOL² = TIMES BOOL BOOL
+
+NOT : BOOL ⟷ BOOL
+NOT = swap₊
+
+NEG1 NEG2 NEG3 NEG4 NEG5 : BOOL ⟷ BOOL
+NEG1 = swap₊
+NEG2 = id⟷ ◎ NOT 
+NEG3 = NOT ◎ NOT ◎ NOT 
+NEG4 = NOT ◎ id⟷
+NEG5 = uniti⋆l ◎ swap⋆ ◎ (NOT ⊗ id⟷) ◎ swap⋆ ◎ unite⋆l
+NEG6 = uniti⋆r ◎ (NOT ⊗ id⟷) ◎ unite⋆r 
+
+-- CNOT
+
+CNOT : BOOL² ⟷ BOOL²
+CNOT = TIMES BOOL BOOL
+         ⟷⟨ id⟷ ⟩
+       TIMES (PLUS x y) BOOL
+         ⟷⟨ dist ⟩
+       PLUS (TIMES x BOOL) (TIMES y BOOL)
+         ⟷⟨ id⟷ ⊕ (id⟷ ⊗ NOT) ⟩
+       PLUS (TIMES x BOOL) (TIMES y BOOL)
+         ⟷⟨ factor ⟩
+       TIMES (PLUS x y) BOOL
+         ⟷⟨ id⟷ ⟩
+       TIMES BOOL BOOL □
+  where x = ONE; y = ONE
+
+-- TOFFOLI
+
+TOFFOLI : TIMES BOOL BOOL² ⟷ TIMES BOOL BOOL²
+TOFFOLI = TIMES BOOL BOOL² 
+            ⟷⟨ id⟷ ⟩
+          TIMES (PLUS x y) BOOL² 
+            ⟷⟨ dist ⟩
+          PLUS (TIMES x BOOL²) (TIMES y BOOL²)
+            ⟷⟨ id⟷ ⊕ (id⟷ ⊗ CNOT) ⟩ 
+          PLUS (TIMES x BOOL²) (TIMES y BOOL²)
+            ⟷⟨ factor ⟩
+          TIMES (PLUS x y) BOOL²
+            ⟷⟨ id⟷ ⟩
+         TIMES BOOL BOOL² □
+  where x = ONE; y = ONE
+\end{code}
+ 
+ 
 The language $\Pi$ is universal for reversible combinational
 circuits~\citep{James:2012:IE:2103656.2103667}.\footnote{With the
   addition of recursive types and trace
@@ -1466,49 +1534,41 @@ that $\Pi$ is universal for reversible circuits since the Toffoli gate
 is universal for such circuits~\citep{Toffoli:1980}.
 
 %%%%%%%%%%%%
-\subsection{Semiring of Finite Types}
+\subsection{Example Proofs}
 
-\AgdaHide{
-\begin{code}
-open import Data.Nat
-open import PiLevel0
-open import Pi0Examples
-open import PiLevel1
-open import Pi1Examples
-\end{code}
-}
+Write pf1, pf2, pf3, and pf4
 
-Our previous grammar for $\tau$ can be formalized as
+%%%%%%%%%%%%
+%% \subsection{Semiring of Finite Types}
 
-\begin{code}
-data U : Set where
-  ZERO  : U
-  ONE   : U
-  PLUS  : U → U → U
-  TIMES : U → U → U
-\end{code}
-\noindent to define the universe \AgdaDatatype{U} of finite types.
-There is an obvious mapping from \AgdaDatatype{U} to $\mathbb{N}$:
+% Our previous grammar for $\tau$ can be formalized as
 
-\begin{code}
-toℕ : U → ℕ
-toℕ ZERO = 0
-toℕ ONE = 1
-toℕ (PLUS t₁ t₂) = toℕ t₁ + toℕ t₂
-toℕ (TIMES t₁ t₂) = toℕ t₁ * toℕ t₂ 
-\end{code}
+% \begin{code}
+% data U : Set where
+%   ZERO  : U
+%   ONE   : U
+%   PLUS  : U → U → U
+%   TIMES : U → U → U
+% \end{code}
+% \noindent to define the universe \AgdaDatatype{U} of finite types.
+% There is an obvious mapping from \AgdaDatatype{U} to $\mathbb{N}$:
 
-We will indeed see that \AgdaDatatype{U} and $\mathbb{N}$ are
-isomorphic (as semirings).  But to do so, we first need to
-formalize when two types are equivalent.
+% \begin{code}
+% toℕ : U → ℕ
+% toℕ ZERO = 0
+% toℕ ONE = 1
+% toℕ (PLUS t₁ t₂) = toℕ t₁ + toℕ t₂
+% toℕ (TIMES t₁ t₂) = toℕ t₁ * toℕ t₂ 
+% \end{code}
 
-\subsection{Equivalences of Types}
+% We will indeed see that \AgdaDatatype{U} and $\mathbb{N}$ are
+% isomorphic (as semirings).  But to do so, we first need to
+% formalize when two types are equivalent.
 
+% \subsection{Equivalences of Types}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Semantics}
-\label{sec:sem}
+%%%%%%%%%%%%
+\subsection{Semantics}
 
 In the previous sections, we established that type equivalences on
 finite types can be, up to equivalence, expressed as permutations and
@@ -1525,9 +1585,6 @@ illustrate its use on one example and the next sections will introduce
 the categorical framework in which soundness and completeness can be
 proved.
 
-%%%%%%%%%%%%
-\subsection{Operational and Denotational Semantics}
-
 In conventional programming language research, valid optimizations are
 specified with reference to the \emph{observational equivalence}
 relation which itself is defined with reference to an \emph{evaluator}.
@@ -1535,77 +1592,40 @@ As the language is reversible, a reasonable starting point would then
 be to define forward and backward evaluators with the following
 signatures:
 
--- \begin{code}
--- eval   : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
--- evalB  : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧
--- \end{code}
--- \AgdaHide{
--- \begin{code}
--- eval unite₊ (inj₁ ())
--- eval unite₊ (inj₂ v) = v
--- eval uniti₊ v = inj₂ v
--- eval swap₊ (inj₁ v) = inj₂ v
--- eval swap₊ (inj₂ v) = inj₁ v
--- eval assocl₊ (inj₁ v) = inj₁ (inj₁ v)
--- eval assocl₊ (inj₂ (inj₁ v)) = inj₁ (inj₂ v)
--- eval assocl₊ (inj₂ (inj₂ v)) = inj₂ v
--- eval assocr₊ (inj₁ (inj₁ v)) = inj₁ v
--- eval assocr₊ (inj₁ (inj₂ v)) = inj₂ (inj₁ v)
--- eval assocr₊ (inj₂ v) = inj₂ (inj₂ v)
--- eval unite⋆ (tt , v) = v
--- eval uniti⋆ v = (tt , v)
--- eval swap⋆ (v₁ , v₂) = (v₂ , v₁)
--- eval assocl⋆ (v₁ , (v₂ , v₃)) = ((v₁ , v₂) , v₃)
--- eval assocr⋆ ((v₁ , v₂) , v₃) = (v₁ , (v₂ , v₃))
--- eval absorbr (() , _)
--- eval absorbl (_ , ())
--- eval factorzl ()
--- eval factorzr ()
--- eval dist (inj₁ v₁ , v₃) = inj₁ (v₁ , v₃)
--- eval dist (inj₂ v₂ , v₃) = inj₂ (v₂ , v₃)
--- eval factor (inj₁ (v₁ , v₃)) = (inj₁ v₁ , v₃)
--- eval factor (inj₂ (v₂ , v₃)) = (inj₂ v₂ , v₃)
--- eval id⟷ v = v
--- eval (c₁ ◎ c₂) v = eval c₂ (eval c₁ v)
--- eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
--- eval (c₁ ⊕ c₂) (inj₂ v) = inj₂ (eval c₂ v)
--- eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
+\[\begin{array}{rcl}
+\mathit{eval}  &:&  (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧ \\ 
+eval unite₊ (inj₁ ()) \\
+eval unite₊ (inj₂ v) &=& v  \\ 
+eval uniti₊ v &=& inj₂ v  \\ 
+eval swap₊ (inj₁ v) &=& inj₂ v  \\ 
+eval swap₊ (inj₂ v) &=& inj₁ v  \\ 
+eval assocl₊ (inj₁ v) &=& inj₁ (inj₁ v)  \\ 
+eval assocl₊ (inj₂ (inj₁ v)) &=& inj₁ (inj₂ v)  \\ 
+eval assocl₊ (inj₂ (inj₂ v)) &=& inj₂ v  \\ 
+eval assocr₊ (inj₁ (inj₁ v)) &=& inj₁ v  \\ 
+eval assocr₊ (inj₁ (inj₂ v)) &=& inj₂ (inj₁ v)  \\ 
+eval assocr₊ (inj₂ v) &=& inj₂ (inj₂ v)  \\ 
+eval unite⋆ (tt , v) &=& v  \\ 
+eval uniti⋆ v &=& (tt , v)  \\ 
+eval swap⋆ (v₁ , v₂) &=& (v₂ , v₁)  \\ 
+eval assocl⋆ (v₁ , (v₂ , v₃)) &=& ((v₁ , v₂) , v₃)  \\ 
+eval assocr⋆ ((v₁ , v₂) , v₃) &=& (v₁ , (v₂ , v₃))  \\ 
+eval absorbr (() , _)  \\ 
+eval absorbl (_ , ())  \\ 
+eval factorzl ()  \\ 
+eval factorzr ()   \\ 
+eval dist (inj₁ v₁ , v₃) &=& inj₁ (v₁ , v₃)   \\ 
+eval dist (inj₂ v₂ , v₃) &=& inj₂ (v₂ , v₃)   \\ 
+eval factor (inj₁ (v₁ , v₃)) &=& (inj₁ v₁ , v₃)   \\ 
+eval factor (inj₂ (v₂ , v₃)) &=& (inj₂ v₂ , v₃)   \\ 
+eval id⟷ v &=& v   \\ 
+eval (c₁ ◎ c₂) v &=& eval c₂ (eval c₁ v)   \\ 
+eval (c₁ ⊕ c₂) (inj₁ v) &=& inj₁ (eval c₁ v)   \\ 
+eval (c₁ ⊕ c₂) (inj₂ v) &=& inj₂ (eval c₂ v)   \\ 
+eval (c₁ ⊗ c₂) (v₁ , v₂) &=& (eval c₁ v₁ , eval c₂ v₂)
+\end{array}\]
 
--- -- useful to have the backwards eval too
-
--- evalB unite₊ x = inj₂ x
--- evalB uniti₊ (inj₁ ())
--- evalB uniti₊ (inj₂ y) = y
--- evalB swap₊ (inj₁ x) = inj₂ x
--- evalB swap₊ (inj₂ y) = inj₁ y
--- evalB assocl₊ (inj₁ (inj₁ x)) = inj₁ x
--- evalB assocl₊ (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
--- evalB assocl₊ (inj₂ y) = inj₂ (inj₂ y)
--- evalB assocr₊ (inj₁ x) = inj₁ (inj₁ x)
--- evalB assocr₊ (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
--- evalB assocr₊ (inj₂ (inj₂ y)) = inj₂ y
--- evalB unite⋆ x = tt , x
--- evalB uniti⋆ (tt , x) = x
--- evalB swap⋆ (x , y) = y , x
--- evalB assocl⋆ ((x , y) , z) = x , y , z
--- evalB assocr⋆ (x , y , z) = (x , y) , z
--- evalB absorbr ()
--- evalB absorbl ()
--- evalB factorzr (_ , ())
--- evalB factorzl (() , _)
--- evalB dist (inj₁ (x , y)) = inj₁ x , y
--- evalB dist (inj₂ (x , y)) = inj₂ x , y
--- evalB factor (inj₁ x , z) = inj₁ (x , z)
--- evalB factor (inj₂ y , z) = inj₂ (y , z)
--- evalB id⟷ x = x
--- evalB (c₀ ◎ c₁) x = evalB c₀ (evalB c₁ x)
--- evalB (c₀ ⊕ c₁) (inj₁ x) = inj₁ (evalB c₀ x)
--- evalB (c₀ ⊕ c₁) (inj₂ y) = inj₂ (evalB c₁ y)
--- evalB (c₀ ⊗ c₁) (x , y) = evalB c₀ x , evalB c₁ y
--- \end{code}
--- }
-
-\smallskip
+also say that every combinator $⟷$ maps to $≃$
 
 \noindent In the definition, the function $⟦\cdot⟧$ maps each type
 constructor to its Agda denotation, e.g., it maps the type 0 to
@@ -1622,10 +1642,6 @@ combinators to type equivalences or equivalently to permutations:
 \noindent The advantage is that permutations have a concrete
 representation which can be effectively compared for equality as
 explained in the proof of Thm.~\ref{thm:permrig}.
-
-%%%%%%%%%%%%
-\subsection{Rewriting Approach}
-\label{sec:rewriting}
 
 Having mapped each combinator to a permutation, we can reason about
 valid optimizations mapping a combinator to another by studying the
