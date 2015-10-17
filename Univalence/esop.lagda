@@ -355,11 +355,6 @@ of types. What emerges from our study are the following results:
 
 \end{comment}
 
-%% \todo{Restore some of the link to physics-based computation and
-%% reversible computation.  Detail what our contributions are.}  
-
-%% \todo{The outline will need to be tweaked once it settles}
-
 %% \todo{Every single theorem should have, in a comment above it, the
 %% name of a source file and an Agda statement which has a proof.}
 
@@ -376,36 +371,8 @@ equivalences between equivalences. Sec.~\ref{sec:revised} introduces such
 a language. The remaining sections put our work in perspective, point
 out its limitations and directions for future work, and conclude.
 
-% The next section reviews equivalences between finite types and relates
-% them to various commutative semiring structures. The main message of
-% that section is that, up to equivalence, the concept of equivalence of
-% finite types is equivalent to permutations between finite sets. The
-% latter is computationally well-behaved with existing reversible
-% programming languages developed for programming with permutations and
-% finite-type isomorphisms. This family of languages, called $\Pi$, is
-% universal for describing combinational reversible circuits (see
-% Sec.~\ref{sec:3}). The infrastructure of the HoTT-inspired type
-% equivalences enriches these languages by viewing their original design
-% as 1-paths and systematically producing 2-paths (equivalences between
-% equivalences) manifesting themselves as syntactic rules for reasoning
-% about equivalences of programs representing reversible
-% circuits. Sec.~\ref{sec:sem} starts the semantic investigation of the
-% $\Pi$ languages emphasizing the denotational approach that maps each
-% $\Pi$ program to a type equivalence or equivalently a permutation. The
-% section also gives a small example showing how a few rules that are
-% sound with respect to equivalence of permutations can be used to
-% transform $\Pi$ programs without reliance on any extensional
-% reasoning. Sec.~\ref{sec:5} then reveals that these rules are
-% intimately related to the coherence conditions of the categorified
-% analogues of the commutative semiring structures underlying type
-% equivalences and permutations, namely, the so-called \emph{symmetric
-%   rig weak groupoids}. Sec.~\ref{sec:categorification} contains that
-% ``punchline'': a sound and complete set of rules that can be used to
-% reason about equivalences of $\Pi$ programs.  
-
-We note that because the
-issues involved are quite subtle, the paper is the ``unformalization''
-of an executable \texttt{Agda 2.4.2.3} package with the global
+We note that because the issues involved are quite subtle, the paper is partly
+an ``unformalization'' of an executable \texttt{Agda 2.4.2.3} package with the global
 \AgdaComment{without-K} option enabled.\footnote{Available at
   \url{http://github.com//JacquesCarette/pi-dual/Univalence}.}
 
