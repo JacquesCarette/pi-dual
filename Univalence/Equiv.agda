@@ -117,15 +117,18 @@ inj≃ (f , qinv g α β) x y p = trans
 -}
 
 -- generally useful
-cong∘l : {A B C : Set} {g i : A → B} → (f : B → C) →
+cong∘l : ∀ {ℓ ℓ′ ℓ″} {A : Set ℓ} {B : Set ℓ′} {C : Set ℓ″}
+  {g i : A → B} → (f : B → C) →
   (g ∼ i) → (f ∘ g) ∼ (f ∘ i)
 cong∘l f g~i x = cong f (g~i x)
 
-cong∘r : {A B C : Set} {f h : B → C} → (g : A → B) →
+cong∘r : ∀ {ℓ ℓ′ ℓ″} {A : Set ℓ} {B : Set ℓ′} {C : Set ℓ″} 
+  {f h : B → C} → (g : A → B) →
   (f ∼ h) → (f ∘ g) ∼ (h ∘ g)
 cong∘r g f~h x = f~h (g x)
 
-cong₂∘ : {A B C : Set} {f h : B → C} {g i : A → B} → 
+cong₂∘ : ∀ {ℓ ℓ′ ℓ″} {A : Set ℓ} {B : Set ℓ′} {C : Set ℓ″}
+  {f h : B → C} {g i : A → B} → 
   (f ∼ h) → (g ∼ i) → f ∘ g ∼ h ∘ i
 cong₂∘ {h = h} {g} f~h g~i x = trans (f~h (g x)) (cong h (g~i x))
 
