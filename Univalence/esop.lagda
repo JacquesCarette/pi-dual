@@ -18,13 +18,12 @@
 %% \usepackage{amsthm}
 % \usepackage{latexsym}
 \usepackage{MnSymbol}
+\usepackage{bbm}
+\usepackage{proof}
 \usepackage{courier}
 \usepackage{thmtools}
 \usepackage{bbold}
-\usepackage[hyphens]{url}
-\usepackage{bbm}
-\usepackage{proof}
-%% \usepackage{amstext}
+\usepackage{hyperref}
 \usepackage{comment}
 \usepackage{stmaryrd}
 \usepackage{listings}
@@ -35,6 +34,8 @@
 \usepackage{multicol}
 \usepackage{natbib}
 
+%\usepackage[hyphens]{url}
+%% \usepackage{amstext}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Macros
 
@@ -373,8 +374,13 @@ out its limitations and directions for future work, and conclude.
 
 We note that because the issues involved are quite subtle, the paper is partly
 an ``unformalization'' of an executable \texttt{Agda 2.4.2.3} package with the global
-\AgdaComment{without-K} option enabled.\footnote{Available at
-  \url{http://github.com//JacquesCarette/pi-dual/Univalence}.}
+\AgdaComment{without-K} option enabled. The code is available at
+\url{http://github.com//JacquesCarette/pi-dual/Univalence}.
+We also make crucial use of a substantial library of categorical 
+structures; we forked our copy from
+\url{https://github.com/copumpkin/categories} and augmented it with
+definitions for Groupoid, Rig category and Bicategory.  This fork is
+available from \url{https://github.com/JacquesCarette/categories}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Informal Development}\label{sec:informal}
@@ -1715,7 +1721,7 @@ process is about understanding how type equivalences evolve under
 compositions, e.g., how two different paths of type equivalences
 sharing the same source and target relate two each other.
 
-Thus what we seek is a structure ``like'' a commutative semiring,
+Thus what we seek is a structure like a commutative semiring,
 but where the elements of the carrier, equivalences, are typed.
 What we seek then is a way to define two monoidal structures
 atop our category of types, which respects the commutative
