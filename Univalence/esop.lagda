@@ -623,7 +623,7 @@ the other. The remainder of the paper is about such a formalization
 and its applications. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Equivalences}
+\section{Type Equivalences and Equivalences of Equivalences}
 \label{sec:equiv}
 
 The previous section used two informal notions of equivalence: 
@@ -718,7 +718,9 @@ The collection of all types (\AgdaDatatype{Set}) forms a commutative
 semiring (up to $\simeq$). 
 \end{theorem}
 \begin{proof}
-The relevant structure is:
+As expected, the additive unit is $\bot$, the multiplicative unit
+is~$\top$, and the two binary operations are $\uplus$ and $\times$.
+The relevant structure in Agda is:
 \AgdaHide{
 \begin{code}
 postulate
@@ -1276,6 +1278,7 @@ expresses type equivalences and nothing else.
 
 %%%%%%%%%%
 \subsection{Syntax of $\Pi$}
+\label{subsec:pi}
 
 In previous work, \citet{rc2011,James:2012:IE:2103656.2103667}
 introduced the~$\Pi$ family of reversible languages whose only
@@ -1525,45 +1528,51 @@ equivalences are coherent with respect to the operational semantics.
 \section{Categorification}
 \label{sec:categorification}
 
-The problem of finding a sound and complete set of rules for reasoning
-about equivalences is solved by appealing to various
-results about specialized monoidal
-categories~\citep{selinger-graphical}. The main technical vehicle is
-that of \emph{categorification}~\citep{math/9802029} which is a
-process, intimately related to homotopy theory, for finding
-category-theoretic analogs of set-theoretic concepts. From an
-intuitive perspective, the algebraic structure of a commutative
-semiring only captures a ``static'' relationship between types; it
-says nothing about how these relationships behave under
-\emph{composition} which is after all the essence of computation
-(cf. \citet{Moggi:1989:CLM:77350.77353}'s original paper on
-monads). Thus, from a programmer's perspective, this categorification
-process is about understanding how type equivalences evolve under
-compositions, e.g., how two different paths of type equivalences
-sharing the same source and target relate two each other.
+We have seen two important ways of modeling equivalences between
+finite types: using back-and-forth functions that compose to the
+identity as in Def.~\ref{def:eq} and using a programming language
+tailored to only express permutations between finite types as in
+Sec.~\ref{subsec:pi}. 
 
-Thus what we seek is a structure like a commutative semiring,
-but where the elements of the carrier, equivalences, are typed.
-What we seek then is a way to define two monoidal structures
-atop our category of types, which respects the commutative
-semiring structure of the types.  
+Our next goal is to model equivalences of equivalences in the same
+way. Attempting to discover such equivalences of equivalences when
+working directly with functions or with the syntax of a programming
+proves quite awkward. It, however, turns out that the solution to this
+problem is evident if we first generalize our models of type
+equivalences to the categorical setting. As we explain, in the right
+class of categories, we would have the objects representing types, the
+morphisms representing type equivalences, and the \emph{coherence
+  conditions} representing equivalences of equivalences. Our task of
+modeling equivalences of equivalences then reduces to ``reading off''
+the coherence conditions for each instance of the general categorical
+framework.
 
-We should note that the definition of \AgdaRecord{Category}
-that
-we use is parametrized by an equivalence relation for its Hom.
-Since we want a category with equivalences as morphism,
-we naturally use $≋$ for that notion of Hom-equality.  We 
-will later encounter what is needed for $Π$.
+% rules for reasoning about equivalences: we will solve this problem by
+% appealing to various results about specialized monoidal
+% categories~\citep{selinger-graphical}. The main technical vehicle is
+% that of \emph{categorification}~\citep{math/9802029} which is a
+% process, intimately related to homotopy theory, for finding
+% category-theoretic analogs of set-theoretic concepts. From an
+% intuitive perspective, the algebraic structure of a commutative
+% semiring only captures a ``static'' relationship between types; it
+% says nothing about how these relationships behave under
+% \emph{composition} which is after all the essence of computation
+% (cf. \citet{Moggi:1989:CLM:77350.77353}'s original paper on
+% monads). Thus, from a programmer's perspective, this categorification
+% process is about understanding how type equivalences evolve under
+% compositions, e.g., how two different paths of type equivalences
+% sharing the same source and target relate two each other. Thus what we
+% seek is a structure like a commutative semiring, but where the
+% elements of the carrier, equivalences, are typed.  What we seek then
+% is a way to define two monoidal structures atop our category of types,
+% which respects the commutative semiring structure of the types.
 
-As the details matter, we will be explicit about the 
-definition of monoidal category, before turning to rig
-categories.
-
-%%%%%%%%%%%%
+%%%%%%%%%%%
 \subsection{Monoidal Categories} 
 
-We begin with the conventional definitions for monoidal and symmetric
-monoidal categories. 
+As the details matter, we will be explicit about the definition of all
+the categorical notions involved. We begin with the conventional
+definitions for monoidal and symmetric monoidal categories.
 
 \begin{figure*}
 \begin{center}
@@ -1688,12 +1697,6 @@ structure possessed by a space that is homotopy equivalent to a loop
 space and that the hexagon identity arises in the context of spaces
 homotopy equivalent to double loop spaces.
 
-In our context, we will build monoidal categories where the objects
-are finite types and the morphisms are equivalences represented
-as $\Pi$-combinators.  As we have mentioned multiple times,
-there are two different equivalences between $A+A$ and itself;
-the coherence laws should not equate these two morphisms and
-they do not. 
 %We might also hope that the two versions of boolean
 %negation in Sec.~\ref{sec:circuits} and Sec.~\ref{sec:rewriting} could
 %be identified using the coherence conditions of monoidal
@@ -1809,14 +1812,18 @@ be the best hope for a rational reconstruction of the coherence laws.
 %% \textrm{math}\textbf{\textit{overflow}} about this idea are left
 %% unanswered.
 
-That \AgdaFunction{pf₃} and \AgdaFunction{pf₄} are equivalent
-is exactly the statement of coherence law XVII.
-
 %%%%%%%%%%%%
-\subsection{Instances of Symmetric Rig Categories} 
+\subsection{The Symmetric Rig Groupoid of Types and Type Equivalences} 
 
-Of course, the main structure of study, is indeed a
-symmetric rig weak groupoids. 
+It is no coincidence that the equivalence between \AgdaFunction{pf₃}
+and \AgdaFunction{pf₄} is exactly the statement of coherence law
+XVII. Indeed, we can generalize our model of types and type
+equivalences to a symmetric rig weak groupoid and this will, by
+construction, prove all equivalences between type equivalences like
+\AgdaFunction{pf₃}~\AgdaSymbol{≋}~\AgdaFunction{pf₄} that should be
+equated, while, again by construction, \emph{not} identifying type
+equivalences like \AgdaFunction{pf₁} and \AgdaFunction{pf₂} that
+should not be equated.
 
 \begin{theorem}
   The collection of all types and type equivalences is a symmetric rig
@@ -1824,13 +1831,17 @@ symmetric rig weak groupoids.
 \end{theorem}
 \begin{proof}
   The objects of the category are Agda types and the morphisms are
-  type equivalences. These morphisms directly satisfy the axioms
-  stated in the definitions of the various categories. The bulk of the
-  work is in ensuring that the coherence conditions are satisfied up
-  to homotopy.  We only show the proof of one coherence
-  condition, the first one in Laplaza's paper:
+  type equivalences. We should note that the definition of
+  \AgdaRecord{Category} that we use is parametrized by an equivalence
+  relation for its Hom.  Since we want a category with equivalences as
+  morphisms, we naturally use $≋$ for that notion of Hom-equality.
+  These morphisms directly satisfy the axioms stated in the
+  definitions of the various categories. The bulk of the work is in
+  ensuring that the coherence conditions are satisfied up to homotopy.
+  We only show the proof of one coherence condition, the first one in
+  Laplaza's paper:
 
-\smallskip
+\medskip
 
 \begin{tikzcd}[column sep=tiny]
 A \otimes (B \oplus C)
@@ -1844,7 +1855,7 @@ A \otimes (C \oplus B)
 &&& (A \otimes C) \oplus (A \otimes B)
 \end{tikzcd}
 
-\smallskip
+\medskip
 
 \noindent We first have a lemma that shows that the two paths starting from the
 top left node are equivalent:
@@ -1865,7 +1876,7 @@ open import TypeEquiv as TE
 \end{code}
 }
 
-\smallskip
+\medskip
 
 \begin{code}
 A×[B⊎C]→[A×C]⊎[A×B] : {A B C : Set} →
@@ -1873,7 +1884,7 @@ A×[B⊎C]→[A×C]⊎[A×B] : {A B C : Set} →
 A×[B⊎C]→[A×C]⊎[A×B] (x , inj₁ y) = refl
 A×[B⊎C]→[A×C]⊎[A×B] (x , inj₂ y) = refl
 \end{code}
-\smallskip
+\medskip
 
 \noindent The lemma asserts the that the two paths between
 $A ⊗ (B ⊕ C)$ and $(A ⊗ C) ⊕ (A ⊗ B)$ are homotopic. To show that
@@ -1881,7 +1892,7 @@ we have a groupoid, we also need to know that the converse lemma
 also holds, i.e. that reversing all arrows also gives a diagram for
 a homotopy, in other words:
 
-\smallskip
+\medskip
 
 \begin{code}
 [A×C]⊎[A×B]→A×[B⊎C] : {A B C : Set} →
@@ -1890,7 +1901,7 @@ a homotopy, in other words:
 [A×C]⊎[A×B]→A×[B⊎C] (inj₂ y) = refl
 \end{code}
 
-\smallskip
+\medskip
 
 \noindent Finally we show that the forward equivalence and the backward
 equivalence are indeed related to the same diagram:
@@ -1902,69 +1913,25 @@ equivalence are indeed related to the same diagram:
 where \AgdaInductiveConstructor{eq} is the constructor for $≋$. \qed
 \end{proof}
 
-More directly relevant to our purposes, is the next theorem which
-applies to reversible programs, i.e. programs expressed using 
-$\Pi$ terms and combinators .
-
-\begin{theorem}
-The universe $U$ and $\Pi$ terms and combinators is a symmetric rig
-groupoid.
-\end{theorem}
-\begin{proof}
-  The objects of the category are the syntax of finite types,
-  and the morphisms are
-  the $\Pi$ term and combinators. Short proofs establish that these morphisms
-  satisfy the axioms stated in the definitions of the various
-  categories. The bulk of the work is in ensuring that the coherence
-  conditions are satisfied. This required us to add a few $\Pi$
-  combinators (see Sec.~\ref{fig:more}) and then to add a whole new
-  layer of 2-combinators witnessing enough equivalences of~$\Pi$
-  combinators to satisfy the coherence laws (see
-  Fig.~\ref{fig:more2}). The new $\Pi$ 1-combinators, also discussed in
-  more detail in the next section, are redundant (from an operational
-  perspective) exactly because of the coherence conditions; they are
-  however important as they have rather non-trivial relations to each
-  other that are captured in the more involved coherence laws.
-\end{proof}
-
-\begin{comment}
-Putting the result above together with Laplaza's coherence result
-about rig categories, we conclude with our main result, which will be
-detailed in the next section by giving the full details of the second
-level of combinators.
-
-\begin{theorem}
-We have two levels of $\Pi$-combinators such that:
-\begin{itemize}
-\item The first level of $\Pi$-combinators is complete for
-  representing reversible combinational circuits.
-\item The second level of $\Pi$-combinators is sound and complete for
-  the equivalence of circuits represented by the first level.
-\end{itemize}
-\end{theorem}
-\end{comment}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Revised $\Pi$ and its Optimizer}
+\section{Programming with Equivalences of Equivalences} 
 \label{sec:revised}
 
-Collecting the previous results we arrive at a universal language for
-expressing reversible combinational circuits \emph{together with} a
-sound and complete metalanguage for reasoning about equivalences of
-programs written in the lower level language.
+Following the lead of Sec.~\ref{sec:prog}, we now develop an actual
+programming language whose terms denote equivalences of
+equivalences. Since we already have $\Pi$ whose terms denote
+equivalences, what we actually need a language whose terms denote
+equivalences of $\Pi$ terms. One can think of such a language as a
+language for expressing valid program transformations and
+optimizations of $\Pi$ programs. We will call the terms and
+combinators of the original $\Pi$ language, level-0 terms, and the
+terms and combinators of the new language, level-1 terms. 
 
-\AgdaHide{
-\begin{code}
-open import TypeEquivCat
-\end{code}
-}
-
-%%%%%%%%%%%%
-\subsection{Revised Syntax: 1-Paths}
-\label {fig:more}
+%%%
+\subsection{Revised Syntax of Level-0 Terms} 
 
 The inspiration of symmetric rig groupoids suggested a refactoring of
-$\Pi$ with the following additional level-1 combinators:  
+$\Pi$ with the following additional level-0 combinators:  
 
 \[\begin{array}{rrcll}
 \identlsp :&  \tau + 0 & \iso & \tau &: \identrsp \\
@@ -1983,8 +1950,7 @@ to the proofs, and in addition, they are often useful when
 representing circuits, leading to smaller programs with fewer redexes.
 
 \begin{figure*}
-\[\begin{array}{cc}
-\begin{array}{rcl}
+\[\begin{array}{rcl}
 \idc \fatsemi c & \isoone & c \\
 c \fatsemi \idc & \isoone & c \\
 c \fatsemi (!~c) & \isoone & \idc \\
@@ -2015,9 +1981,14 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 ((a ⊗ c) ⊕ (b ⊗ c)) \fatsemi \factor & \isoone & \factor \fatsemi ((a ⊕ b) ⊗ c) \\
 (a ⊗ (b ⊕ c)) \fatsemi \distl & \isoone & \distl \fatsemi ((a ⊗ b) ⊕ (a ⊗ c)) \\
 ((a ⊗ b) ⊕ (a ⊗ c)) \fatsemi \factorl & \isoone & \factorl \fatsemi (a ⊗ (b ⊕ c)) 
-\end{array}
-& 
-\begin{array}{rcl}
+\end{array}\]
+\caption{\label{fig:more2}Signatures of level-2 $\Pi$-combinators
+  (Part I).}
+\end{figure*}
+
+
+\begin{figure*}
+\[\begin{array}{rcl}
 \identlt \fatsemi c₂ & \isoone & (c₁ ⊗ c₂) \fatsemi \identlt \\
 \identrt \fatsemi (c₁ ⊗ c₂) & \isoone &  c₂ \fatsemi \identrt \\
 \identlst \fatsemi c₂ & \isoone & (c₂ ⊗ c₁) \fatsemi \identlst \\
@@ -2046,7 +2017,6 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 \dist \fatsemi (\swapt ⊕ \swapt) & \isoone & \swapt \fatsemi \distl \\
 \idc \fatsemi \factorzl & \isoone & \factorzl \fatsemi (\idc ⊗ c) \\
 \idc \fatsemi \factorzr & \isoone & \factorzr \fatsemi (c ⊗ \idc) 
-\end{array}
 \end{array}\]
 \\
 \\
@@ -2109,24 +2079,26 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 \end{minipage}
 \\
 \\
-\caption{\label{fig:more2}Signatures of level-2 $\Pi$-combinators.}
+\caption{\label{fig:more3}Signatures of level-2 $\Pi$-combinators
+  (Part II).}
 \end{figure*}
 
-%%%%%%%%%%%%
-\subsection{Revised Syntax: 2-Paths}
- 
-The big addition to $\Pi$ is the level-2 combinators which are
-collected in Fig.~\ref{fig:more2}. To avoid clutter we omit the names
-of the combinators (which are arbitrary) and only show the
-\emph{untyped} signatures. The signatures themselves are of course
-typed and in some cases the types add critical information. For
-example, $\identlt \fatsemi c₂ \isoone (c₁ ⊗ c₂) \fatsemi \identlt$
-hides the fact that $c₁$ here is restricted to have signature
+%%%
+\subsection{Syntax of Level-1 Terms} 
+
+The big addition to $\Pi$ is the level-1 combinators which are
+collected in Figs.~\ref{fig:more2} and~\ref {fig:more3}. To avoid
+clutter we omit the names of the combinators (which are arbitrary) and
+only show the \emph{untyped} signatures. The signatures themselves are
+of course typed and in some cases the types add critical
+information. For example,
+$\identlt \fatsemi c₂ \isoone (c₁ ⊗ c₂) \fatsemi \identlt$ hides the
+fact that $c₁$ here is restricted to have signature
 $c₁ : \AgdaInductiveConstructor{ZERO} ⟷
 \AgdaInductiveConstructor{ZERO}$.
 The reader should consult the code for full details.
 
-Generally speaking, the 2-level combinators arise for the following
+Generally speaking, the level-1 combinators arise for the following
 reasons. About a third of the combinators come from the definition of
 the various natural isomorphisms $\alpha_{A,B,C}$, $\lambda_{A}$,
 $\rho_{A}$, $\sigma_{A,B}$, $dₗ$, $dᵣ$, $aₗ$ and $aᵣ$.  The first $4$
@@ -2151,61 +2123,11 @@ expansion.  None of the mixed properties involved with distributivity
 and absorption were present, although the proof of all of them was
 straightforward.
 
-% \amr{However, it did let me observe one thing: we have 2! which says
-%  that given (c <-> d), we can get (d <-> c).  What we don't have, and
-%  SHOULD, is 2flip which would say that given (c <-> d), we can get (!
-%  c <-> ! d).  This is "obviously true".  More, we also ought to be
-%  able to prove (easily!) that all (e : c <-> d) 2! (2flip e) == 2flip
-%  (2! e) where I really mean == there.}
-%
-% \amr{One of the interesting conclusions of the coherence laws (see the
-%   comments in the file above) is that it forces all (putative)
-%   elements of bot to be equal.  This comes from the coherence law for
-%   the two ways of proving that 0 * 0 = 0.}
+%%%
+\subsection{Example Level 1 Programs} 
 
-%% \amr{swapfl* and swapfr* were never used, so I removed them (commented
-%% them out of PiLevel1).I’d lean towards leaving it and saying that the
-%% axioms are not independent, just like Laplaza’s conditions.}
-
-% \amr{Note that a few of those "id" in there are actually "id<-> {ZERO}
-%  {ZERO}", that is very important.  Most of the laws having to do with
-%  absorb0 have some occurrences of both kinds of id in their
-%  signature, which made figuring them out very challenging!  Same with
-%  laws involving factor0}
-%
-%\amr{Similarly, the c1 in the identl* exchange law MUST map between ONE
-%  (same with identr*).  In the same vein, c1 in the identl+ and
-%  identr+ laws must involve ZERO.}
-
-%%%%%%%%%%%%
-\subsection{Soundness}
- 
-Each 2-level combinator whose signature is in Fig.~\ref{fig:more2}
-gives rise to an equivalence of equivalences of types. The formal Agda
-statement is:
-
-\smallskip 
-
-\noindent where \AgdaSymbol{≋} is the equivalence of equivalences with
-constructor \AgdaInductiveConstructor{eq} defined in the proof of
-Thm.~\ref{thm:eqeq}. Given all the infrastructure, most of the cases
-are fairly straightforward to prove except for the two cases in which
-we need to prove that the left and right composition of the
-equivalence arising from a combinator \AgdaBound{c} and the
-equivalence arising from the inverse \AgdaSymbol{!}~\AgdaBound{c} are
-equivalent to the identity equivalence. Formally:
-
-\smallskip 
-
-\noindent and symmetrically for the flipped case.
-
-%%%%%%%%%%%%
-\subsection{A Syntactic 2-Paths Circuit Optimizer}
+A Syntactic 2-Paths Circuit Optimizer
   
-\begin{tabular}{@{\kern-3em}cc}
-\begin{minipage}[t]{0.25\textwidth}
-\end{minipage}
-& 
 \adjustbox{valign=t}{\begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
   \draw (0,0) ellipse (1cm and 2cm);
   \draw[fill] (0,1) circle [radius=0.025];
@@ -2226,21 +2148,7 @@ equivalent to the identity equivalence. Formally:
   \draw[fill] (6,-1) circle [radius=0.025];
   \node[below] at (6,-1) {T};
 \end{tikzpicture}}
-\end{tabular}
 
-\smallskip  
- 
-Naturally there are many ways of encoding boolean negation. The
-following combinator implements a more convoluted circuit that
-computes the same function, which is also visualized as a permutation
-on finite sets:
-
-\smallskip 
-
-\begin{tabular}{@{\kern-3em}c@{\!\!\!}c}
-\begin{minipage}[t]{0.25\textwidth}
-\end{minipage}
-& 
 \adjustbox{valign=t}{\begin{tikzpicture}[scale=0.53,every node/.style={scale=0.53}]
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
@@ -2291,18 +2199,23 @@ on finite sets:
   \node[below] at (8,-0.5) {T};
 
 \end{tikzpicture}}
-\end{tabular}
+ 
+Naturally there are many ways of encoding boolean negation. The
+following combinator implements a more convoluted circuit that
+computes the same function, which is also visualized as a permutation
+on finite sets:
 
-As Fig.~\ref{fig:more2} illustrates, we have rules to manipulate code
-fragments rewriting them in a small-step fashion. The rules apply only
-when both sides are well-typed. In their textual form, the rules are
-certainly not intuitive. They however become ``evidently correct''
-transformations on circuits when viewed diagrammatically.
+As Figs. ~\ref {fig:more2} and~\ref {fig:more3} illustrate, we have
+rules to manipulate code fragments rewriting them in a small-step
+fashion. The rules apply only when both sides are well-typed. In their
+textual form, the rules are certainly not intuitive. They however
+become ``evidently correct'' transformations on circuits when viewed
+diagrammatically.
 
 Consider two arbitrary $\Pi$-combinators representing circuits of the
 given types:
 
-\smallskip 
+\medskip 
 
 \AgdaHide{
 \begin{code}
@@ -2315,7 +2228,7 @@ given types:
 --  c₂ : {A D : U} →  A ⟷ D
 \end{code}
 
-\smallskip 
+\medskip 
 
 \noindent Now consider the circuits \AgdaFunction{p₁} and
 \AgdaFunction{p₂} which use \AgdaFunction{c₁} and \AgdaFunction{c₂}
@@ -2445,6 +2358,122 @@ Quantomatic~\citep{quantomatic} (which only works for traced symmetric
 monoidal categories) or a radically different syntactic notation such
 as Penrose's abstract tensor notation~\citep{tensor1,tensor2}.
 
+%%%
+\subsection{Example Level 1 Proofs} 
+
+proof irrelevance at this level; weak category; equivalence of
+equivalence of equivalences trivial
+
+%%%
+\subsection{Semantics}
+
+Each 2-level combinator whose signature is in Figs. ~\ref{fig:more2}
+and~\ref{fig:more3} gives rise to an equivalence of equivalences of
+types. The formal Agda statement is:
+
+\medskip 
+
+\noindent where \AgdaSymbol{≋} is the equivalence of equivalences with
+constructor \AgdaInductiveConstructor{eq}. Given all the
+infrastructure, most of the cases are fairly straightforward to prove
+except for the two cases in which we need to prove that the left and
+right composition of the equivalence arising from a combinator
+\AgdaBound{c} and the equivalence arising from the inverse
+\AgdaSymbol{!}~\AgdaBound{c} are equivalent to the identity
+equivalence. Formally:
+
+\medskip 
+
+\noindent and symmetrically for the flipped case.
+
+The next theorem shows that the two levels of $\Pi$ form a symmetric
+rig groupoid, thus capturing equivalences of types at level 0, and
+equivalences of equivalences at level 1. 
+
+\begin{theorem}
+The universe $U$ and $\Pi$ terms and combinators form a symmetric rig
+groupoid.
+\end{theorem}
+\begin{proof}
+  The objects of the category are the syntax of finite types, and the
+  morphisms are the $\Pi$ term and combinators. Short proofs establish
+  that these morphisms satisfy the axioms stated in the definitions of
+  the various categories. The bulk of the work is in ensuring that the
+  coherence conditions are satisfied. This required us to add a few
+  $\Pi$ combinators and then to add a whole new layer of 2-combinators
+  witnessing enough equivalences of~$\Pi$ combinators to satisfy the
+  coherence laws (see Figs. ~\ref {fig:more2} and~\ref
+  {fig:more3}). The new $\Pi$ 1-combinators, also discussed in more
+  detail in the next section, are redundant (from an operational
+  perspective) exactly because of the coherence conditions; they are
+  however important as they have rather non-trivial relations to each
+  other that are captured in the more involved coherence laws.
+\end{proof}
+
+\begin{comment}
+Putting the result above together with Laplaza's coherence result
+about rig categories, we conclude with our main result, which will be
+detailed in the next section by giving the full details of the second
+level of combinators.
+
+\begin{theorem}
+We have two levels of $\Pi$-combinators such that:
+\begin{itemize}
+\item The first level of $\Pi$-combinators is complete for
+  representing reversible combinational circuits.
+\item The second level of $\Pi$-combinators is sound and complete for
+  the equivalence of circuits represented by the first level.
+\end{itemize}
+\end{theorem}
+\end{comment}
+
+ Just as we found a convenient
+programming language for capturing type equivalences, we would
+similarly like to have a programming language for capturing
+equivalences of equivalences. Just like $\Pi$, such a language would
+play the dual role of being a programming language for expressing
+\emph{transformations} on reversible booleans circuits and of being a
+framework for reasoning about proofs of semiring identities and their
+equivalence.
+ 
+Collecting the previous results we arrive at a universal language for
+expressing reversible combinational circuits \emph{together with} a
+sound and complete metalanguage for reasoning about equivalences of
+programs written in the lower level language.
+
+\AgdaHide{
+\begin{code}
+open import TypeEquivCat
+\end{code}
+}
+
+
+% \amr{However, it did let me observe one thing: we have 2! which says
+%  that given (c <-> d), we can get (d <-> c).  What we don't have, and
+%  SHOULD, is 2flip which would say that given (c <-> d), we can get (!
+%  c <-> ! d).  This is "obviously true".  More, we also ought to be
+%  able to prove (easily!) that all (e : c <-> d) 2! (2flip e) == 2flip
+%  (2! e) where I really mean == there.}
+%
+% \amr{One of the interesting conclusions of the coherence laws (see the
+%   comments in the file above) is that it forces all (putative)
+%   elements of bot to be equal.  This comes from the coherence law for
+%   the two ways of proving that 0 * 0 = 0.}
+
+%% \amr{swapfl* and swapfr* were never used, so I removed them (commented
+%% them out of PiLevel1).I’d lean towards leaving it and saying that the
+%% axioms are not independent, just like Laplaza’s conditions.}
+
+% \amr{Note that a few of those "id" in there are actually "id<-> {ZERO}
+%  {ZERO}", that is very important.  Most of the laws having to do with
+%  absorb0 have some occurrences of both kinds of id in their
+%  signature, which made figuring them out very challenging!  Same with
+%  laws involving factor0}
+%
+%\amr{Similarly, the c1 in the identl* exchange law MUST map between ONE
+%  (same with identr*).  In the same vein, c1 in the identl+ and
+%  identr+ laws must involve ZERO.}
+
 % \begin{code}
 % -- 1. they give the same results as programs:
 % ≋⇒≡ : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) →
@@ -2466,22 +2495,17 @@ as Penrose's abstract tensor notation~\citep{tensor1,tensor2}.
 % \end{code}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Limitations}
-\label{sec:lim}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 \label{sec:conc}
 %\label{sec:8}
 
-The traditional Curry-Howard correspondence is based on
-``mere logic''\footnote{to use the HoTT terminology}.  That is, it
-is based around \emph{proof inhabitation}: two types, like two
-propositions, are regarded as ``the same'' when one is inhabited
-if and only if the other is.  In that sense, the propositions
-$A$ and $A \wedge A$, are indeed the same, as are the type
-$T$ and $T \times T$.  This is all centered around proof
-irrelevant mathematics.
+The traditional Curry-Howard correspondence is based on ``mere
+logic\footnote{to use the HoTT terminology}.''  That is, it is based
+around \emph{proof inhabitation}: two types, like two propositions,
+are regarded as ``the same'' when one is inhabited if and only if the
+other is.  In that sense, the propositions $A$ and $A \wedge A$, are
+indeed the same, as are the types $T$ and $T \times T$.  This is all
+centered around proof irrelevant mathematics.
 
 What we have shown is that if we shift to proof relevant
 mathematics, computationally relevant equivalences,
@@ -2492,25 +2516,22 @@ is not mysterious: it is exactly the algebraic structure of
 the semantics.  In the case of finite types (with sums and
 products), this turns out to be commutative semirings.
 
-But the Curry-Howard correspondence promises more: that 
-proof transformations correspond to program transformations.
-However, in a proof irrelevant setting, this is rather awkward;
-similarly, in a extensional setting, program equivalence is a
-rather coarse concept.
-
-But, in our setting, both of these issues disappear.  The key to
-proceed was to realize that there exists combinators which
-make equivalences\footnote{and permutations, but
-I don't know if we can bring that in} look like a semiring,
-but do not actually have a semiring structure.  The next 
-insight is to ``remember'' that a monoidal category is
-really a model of a \emph{typed monoid}; in a way, a 
-monoidal category is a \emph{categorified} monoid.  So
-what we needed was a categorified version of commutative
-semirings.  Luckily, this had already been done, in the form
-of Rig categories.  Modifying this to have a weaker notion
-of equivalence and having all morphisms invertible was
-quite straightforward.
+But the Curry-Howard correspondence promises more: that proof
+transformations correspond to program transformations.  In a proof
+irrelevant setting, this is rather awkward; similarly, in a
+extensional setting, program equivalence is a rather coarse
+concept. But, in our setting, both of these issues disappear.  The key
+to proceed was to realize that there exist combinators which make
+equivalences 
+%%\footnote{and permutations, but I don't know if we can bring that in} 
+look like a semiring, but do not actually have a semiring structure.
+The next insight is to ``remember'' that a monoidal category is really
+a model of a \emph{typed monoid}; in a way, a monoidal category is a
+\emph{categorified} monoid.  So what we needed was a categorified
+version of commutative semirings.  Luckily, this had already been
+done, in the form of Rig categories.  Modifying this to have a weaker
+notion of equivalence and having all morphisms invertible was quite
+straightforward.
 
 Again, being proof relevant mattered: it quickly became 
 apparent that the \emph{coherence laws} involved in
@@ -2525,6 +2546,93 @@ of the given $1$-algebra) that corresponds to it.
 The coherence laws then emerge as a complete set of
 program transformations.  This, of course, clearly
 points the way to further generalizations.
+
+The correspondence established in the paper provides a semantically
+well-founded approach to the representation, manipulation, and
+optimization of reversible circuits with the following main ingredients:
+\begin{itemize}
+\item reversible circuits are represented as terms witnessing
+  morphisms between finite types in a symmetric rig groupoid;
+\item the term language for reversible circuits is universal; it could
+  be used as a standalone point-free programming language or as a
+  target for a higher-level language with a more conventional syntax;
+\item the symmetric rig groupoid structure ensures that programs can
+  be combined using sums and products satisfying the familiar laws of
+  these operations; 
+\item the \emph{weak} versions of the categories give us a second
+  level of morphisms that relate programs to equivalent programs and
+  is exactly captured in the coherence conditions of the categories;
+  this level of morphisms also comes equipped with sums and products
+  with the familiar laws and the coherence conditions capture how
+  these operations interact with sequential composition;
+\item a sound and complete optimizer for reversible circuits can be
+  represented as terms that rewrite programs in small steps witnessing
+  this second level of morphisms.
+\end{itemize}
+
+From a much more general perspective, our result can be viewed as part
+of a larger programme aiming at a better integration of several
+disciplines most notably computation, topology, and physics. Computer
+science has traditionally been founded on models such as the
+$\lambda$-calculus which are at odds with the increasingly relevant
+physical principle of conservation of information as well as the
+recent foundational proposal of HoTT that identifies equivalences
+(i.e., reversible, information-preserving, functions) as a primary
+notion of interest.\footnote{The $\lambda$-calculus is not even
+suitable for keeping track of computational resources; linear
+logic~\citep{Girard87tcs} is a much better framework for that purpose
+but it does not go far enough as it only tracks ``multiplicative
+resources''~\citep{superstructural}.} Currently, these reversible
+functions are a secondary notion defined with reference to the full
+$\lambda$-calculus in what appears to be a detour. In more detail,
+current constructions start with the class of all functions $A
+\rightarrow B$, then introduce constraints to filter those functions
+which correspond to type equivalences $A \simeq B$, and then attempt
+to look for a convenient computational framework for effective
+programming with type equivalences. As we have shown, in the case of
+finite types, this is just convoluted since the collection of
+functions corresponding to type equivalences is the collection of
+isomorphisms between finite types and these isomorphisms can be
+inductively defined, giving rise to a well-behaved programming
+language and its optimizer.
+
+More generally, reversible computational models --- in which all
+functions have inverses --- are known to be universal computational
+models~\citep{Bennett:1973:LRC} and more importantly they can be
+defined without any reference to irreversible functions, which
+ironically become the derived notion~\citep{Green:2008:RIC}. It is
+therefore, at least plausible, that a variant of HoTT based
+exclusively on reversible functions that directly correspond to
+equivalences would have better computational properties. Our current
+result is a step, albeit preliminary in that direction as it only
+applies to finite types. However, it is plausible that this
+categorification approach can be generalized to accommodate
+higher-order functions. The intuitive idea is that our current
+development based on the categorification of the commutative semiring
+of the natural numbers might be generalizable to the categorification
+of the ring of integers or even to the categorification of the field
+of rational numbers. The generalization to rings would introduce
+\emph{negative types} and the generalization to fields would further
+introduce \emph{fractional types}. It is even possible to conceive of
+more exotic types such as types with square roots and imaginary
+numbers by further generalizing the work to the field of
+\emph{algebraic numbers}. These types have been shown to make sense in
+computations involving recursive datatypes such as trees that can be
+viewed as solutions to polynomials over type
+variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
+
+\appendix
+\section{Code Roadmap}
+
+For those who wish to delve into the code, we give a quick roadmap here,
+with links between the results in our paper and where the formalization
+can be found.  We put module names in \texttt{typewriter} font below.
+
+Equivalences are defined in \texttt{Equiv}.  This is used in
+\texttt{TypeEquiv} to define equivalences between types; these are 
+assembled to show that \AgdaPrimitiveType{Set} has the structure of
+a $\simeq$-semiring, \AgdaFunction{typesCSR}, which is our
+Theorem~\ref{thm:typesCSR}
 
 \begin{comment}
 We have developed a tight integration between \emph{reversible
@@ -2607,18 +2715,5 @@ introduce \emph{fractional types}.
 %\softraggedright
 \bibliography{cites}
 
-\appendix
-
-\section{Code Roadmap}
-
-For those who wish to delve into the code, we give a quick roadmap here,
-with links between the results in our paper and where the formalization
-can be found.  We put module names in \texttt{typewriter} font below.
-
-Equivalences are defined in \texttt{Equiv}.  This is used in
-\texttt{TypeEquiv} to define equivalences between types; these are 
-assembled to show that \AgdaPrimitiveType{Set} has the structure of
-a $\simeq$-semiring, \AgdaFunction{typesCSR}, which is our
-Theorem~\ref{thm:typesCSR}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
