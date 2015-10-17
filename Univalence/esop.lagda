@@ -1871,7 +1871,7 @@ open import Data.SumProd.Properties using (_×→_)
 open import Data.Empty
 open import Data.Unit
 import Function as F
-open import Equiv hiding (_∼_)
+open import Equiv hiding (_∼_; sym≃; isqinv)
 open import TypeEquiv as TE
 \end{code}
 }
@@ -1951,6 +1951,7 @@ representing circuits, leading to smaller programs with fewer redexes.
 
 \begin{figure*}
 \[\begin{array}{rcl}
+\\
 \idc \fatsemi c & \isoone & c \\
 c \fatsemi \idc & \isoone & c \\
 c \fatsemi (!~c) & \isoone & \idc \\
@@ -1982,7 +1983,7 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 (a ⊗ (b ⊕ c)) \fatsemi \distl & \isoone & \distl \fatsemi ((a ⊗ b) ⊕ (a ⊗ c)) \\
 ((a ⊗ b) ⊕ (a ⊗ c)) \fatsemi \factorl & \isoone & \factorl \fatsemi (a ⊗ (b ⊕ c)) 
 \end{array}\]
-\caption{\label{fig:more2}Signatures of level-2 $\Pi$-combinators
+\caption{\label{fig:more2}Signatures of level-1 $\Pi$-combinators
   (Part I).}
 \end{figure*}
 
@@ -2079,7 +2080,7 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 \end{minipage}
 \\
 \\
-\caption{\label{fig:more3}Signatures of level-2 $\Pi$-combinators
+\caption{\label{fig:more3}Signatures of level-1 $\Pi$-combinators
   (Part II).}
 \end{figure*}
 
@@ -2371,7 +2372,54 @@ Each 2-level combinator whose signature is in Figs. ~\ref{fig:more2}
 and~\ref{fig:more3} gives rise to an equivalence of equivalences of
 types. The formal Agda statement is:
 
-\medskip 
+\AgdaHide{
+\begin{code}
+open import EquivEquiv 
+open _≋_
+open import PiLevel1
+open import PiEquiv using (c2equiv)
+
+\end{code}
+}
+\begin{code}
+!≡sym≃ : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) →
+  PiEquiv.c2equiv (! c) EquivEquiv.≋ Equiv.sym≃ (PiEquiv.c2equiv c)
+
+left-inv : {t₁ t₂ : U} (c : t₁ ⟷ t₂) →
+  (PiEquiv.c2equiv (! c) ● PiEquiv.c2equiv c) ≋ id≃
+
+right-inv : {t₁ t₂ : U} (c : t₁ ⟷ t₂) →
+  (PiEquiv.c2equiv c ● PiEquiv.c2equiv (! c)) ≋ id≃
+
+cc2equiv : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) →
+  PiEquiv.c2equiv c₁ ≋ PiEquiv.c2equiv c₂
+
+≋⇒≡ : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) →
+  eval c₁ ∼ eval c₂
+
+ping-pong : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) →
+  (evalB c₂ ∘ eval c₁) ∼ id 
+\end{code}
+\AgdaHide{
+\begin{code}
+!≡sym≃ = ? 
+left-inv = ? 
+right-inv = ? 
+cc2equiv = ? 
+≋⇒≡ = ?
+ping-pong = ? 
+\end{code}
+}
+
+-- 1. they give the same results as programs:
+
+-- 2. in fact, you can run one forward, then the other
+--    backward, and that's the identity
+
+
+
+
+
 
 \noindent where \AgdaSymbol{≋} is the equivalence of equivalences with
 constructor \AgdaInductiveConstructor{eq}. Given all the
@@ -2381,8 +2429,6 @@ right composition of the equivalence arising from a combinator
 \AgdaBound{c} and the equivalence arising from the inverse
 \AgdaSymbol{!}~\AgdaBound{c} are equivalent to the identity
 equivalence. Formally:
-
-\medskip 
 
 \noindent and symmetrically for the flipped case.
 
@@ -2473,26 +2519,6 @@ open import TypeEquivCat
 %\amr{Similarly, the c1 in the identl* exchange law MUST map between ONE
 %  (same with identr*).  In the same vein, c1 in the identl+ and
 %  identr+ laws must involve ZERO.}
-
-% \begin{code}
-% -- 1. they give the same results as programs:
-% ≋⇒≡ : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) →
-%   eval c₁ ∼ eval c₂
-% ≋⇒≡ c₁ c₂ ce =
-%   trans∼ (lemma0 c₁) (
-%   trans∼ (_≋_.f≡ (cc2equiv ce))
-%          (sym∼ (lemma0 c₂)))
-
-% -- 2. in fact, you can run one forward, then the other
-% --    backward, and that's the identity
-% ping-pong : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) →
-%   evalB c₂ ∘ eval c₁ ∼ id
-% ping-pong c₁ c₂ ce = 
-%   trans∼ (cong₂∘ (lemma1 c₂) (lemma0 c₁)) (
-%   trans∼ (cong∘r (proj₁ (c2equiv c₁)) (_≋_.f≡ (flip≋ (cc2equiv (2! ce))) )) (
-%   trans∼(sym∼ β₁)
-%          (_≋_.f≡ (linv≋ (c2equiv c₁)))))
-% \end{code}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
