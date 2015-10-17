@@ -847,6 +847,19 @@ record _≋_ {A B : Set} (eq₁ eq₂ : A ≃ B) : Set where
 \end{code}
 \end{definition}
 
+Note that we cannot use the type $\left(A \simeq B\right) \simeq
+\left(A \simeq B\right)$ as ``equivalence of equivalence'' (even
+though it is well formed).  The problem is that the homotopies
+in such a type ($\alpha$ and $\beta$) would equate two elements
+of type $A \simeq B$ using $\equiv$, but the components of
+$\simeq$ contain functions -- and such an equality would require
+extensionality.  But since equating two equivalences essentially
+boils down to equating those functions, we simply need to do the
+same as we did before, and move to homotopies.  Thus our
+definition\footnote{Strictly speaking, the $g\equiv$ component
+is redundant, from a logical perspective, as it is derivable.  From 
+a computational perspective, it is very convenient.}.
+
 We could now verify that \AgdaFunction{pf₃} is indeed equivalent to
 \AgdaFunction{pf₄} by proving
 \AgdaFunction{pf₃}~\AgdaSymbol{≋}~\AgdaFunction{pf₄}. Such a proof
@@ -1214,7 +1227,7 @@ equivalence in the world of semirings.
 % \subsection{Proof transformations and equivalence of equivalences}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Programming with Permutations}
+\section{Programming with Equivalences}
 \label{sec:prog}
 
 We have established and formalized a correspondence between semirings
