@@ -1237,7 +1237,7 @@ needed to reason about equivalences of equivalences so that we can
 reason about the relation between different proofs of the same
 semiring identity. As we aim to refine these relationsips to a
 Curry-Howard like correspondence, we now turn our attention to
-developing an programming language. The first step will be to
+developing an actual programming language. The first step will be to
 introduce syntax that denotes type equivalences. Thus instead of
 having to repeatedly introduce functions and their inverses and proofs
 of homotopies, we would simply use a term language that exactly
@@ -1246,12 +1246,11 @@ expresses type equivalences and nothing else.
 %%%%%%%%%%
 \subsection{Syntax of $\Pi$}
 
-From a programming point of view,  we need to have a syntactic
-language which embodies these type equivalences.  
-\citet{rc2011,James:2012:IE:2103656.2103667} introduced the~$\Pi$
-family of languages whose only computations are
-isomorphisms between finite types and which is complete for all
-reversible combinatorial circuits. 
+In previous work, \citet{rc2011,James:2012:IE:2103656.2103667}
+introduced the~$\Pi$ family of reversible languages whose only
+computations are isomorphisms between types. The simplest of these
+languages is exactly the language we seek for capturing type
+equivalences arising from semiring identities.
 
 The syntactic components of our language are as follows:
 \[\begin{array}{lrcl}
@@ -1268,7 +1267,7 @@ types are the conventional ones: $()$ of type 1, $\inl{v}$ and
 $\inr{v}$ for injections into sum types, and $(v_1,v_2)$ for product
 types.
 
-Figure~\ref{pi-terms} gives the terms which correspond to the axioms
+Figure~\ref{pi-terms} gives the terms which correspond to the identities
 of commutative semirings.  Each line of the figure introduces a pair
 of dual constants\footnote{where $\idc$, $\swapp$ and $\swapt$ are
   self-dual.}  that witness the type isomorphism in the middle.
@@ -1292,6 +1291,7 @@ products.
 \[
 \begin{array}{rrcll}
 \idc :& \tau & \iso & \tau &: \idc \\
+\\
 \identlp :&  0 + \tau & \iso & \tau &: \identrp \\
 \swapp :&  \tau_1 + \tau_2 & \iso & \tau_2 + \tau_1 &: \swapp \\
 \assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 &: \assocrp \\
@@ -1310,7 +1310,6 @@ products.
 
 \begin{figure*}[ht]
 \[
-\begin{minipage}{0.8\textwidth}
 \Rule{}
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
 {\jdg{}{}{c_1 \fatsemi c_2 : \tau_1 \iso \tau_3}}
@@ -1320,12 +1319,12 @@ products.
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
 {\jdg{}{}{c_1 \oplus c_2 : \tau_1 + \tau_3 \iso \tau_2 + \tau_4}}
 {}
-\qquad
+\]
+\[
 \Rule{}
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
 {\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
 {}
-\end{minipage}
 \]
 \caption{$\Pi$-combinators.}
 \label{pi-combinators}
