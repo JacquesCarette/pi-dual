@@ -818,7 +818,9 @@ underlying functions.
 
 \begin{definition}[Equivalence of equivalences]
 Two equivalences $e_1, e_2 : A ≃ B$ are themselves equivalent $e_1.f ∼
-  e_2.f$ and $e_1.g ∼ e_2.g$. In Agda, we write:
+  e_2.f$ and $e_1.g ∼ e_2.g$. 
+\end{definition}
+In Agda, we write:
 
 \AgdaHide{
 \begin{code}
@@ -835,7 +837,6 @@ Two equivalences $e_1, e_2 : A ≃ B$ are themselves equivalent $e_1.f ∼
       f≡ : proj₁ eq₁ ∼ proj₁ eq₂
       g≡ : g (proj₂ eq₁) ∼ g (proj₂ eq₂)
 \end{code}
-\end{definition}
 
 Note that we cannot use the type $\left(A \simeq B\right) \simeq
 \left(A \simeq B\right)$ as ``equivalence of equivalence'' (even
@@ -1597,8 +1598,24 @@ Thus what we seek is a structure like a commutative semiring,
 but where the elements of the carrier, equivalences, are typed.
 What we seek then is a way to define two monoidal structures
 atop our category of types, which respects the commutative
-semiring structure of the types.  Because the details matter,
-we now turn to monoidal categories.
+semiring structure of the types.  
+
+We should note that the definition of \AgdaRecord{Category}
+that
+we use is parametrized by an equivalence relation for its Hom.
+Since we want a category with equivalences as morphism,
+we naturally use $≋$ for that notion of Hom-equality.  We 
+will later encounter what is needed for $Π$.
+
+As the details matter, we will be explicit about the 
+definition of monoidal category, before turning to rig
+categories.
+
+%%%%%%%%%%%%
+\subsection{Monoidal Categories} 
+
+We begin with the conventional definitions for monoidal and symmetric
+monoidal categories. 
 
 \begin{figure*}
 \begin{center}
@@ -1631,12 +1648,6 @@ we now turn to monoidal categories.
 \end{center}
 \caption{\label{fig:mon}Pentagon and triangle diagrams.}
 \end{figure*}
-
-%%%%%%%%%%%%
-\subsection{Monoidal Categories} 
-
-We begin with the conventional definitions for monoidal and symmetric
-monoidal categories. 
 
 \begin{definition}[Monoidal Category]
 \label{ch:pi:def:MC}
@@ -1742,14 +1753,14 @@ they do not.
 %structure of commutative semirings categorically. 
 
 %%%%%%%%%%%%
-\subsection{Symmetric Rig Weak Groupoids}
+\subsection{Weak Symmetric Rig Groupoids}
 
 Symmetric monoidal categories discussed in the previous section are
 the categorifications of commutative monoids. The categorification of
 a commutative semiring is called a \emph{symmetric rig category}.  It
 is built from a \emph{symmetric bimonoidal category} to which
 distributivity and absorption natural isomorphisms are added, and
-accompanying coherence laws added.  Since we can easily set things up
+accompanying coherence laws.  Since we can easily set things up
 so that every morphism is an isomorphism, the category will also be a
 groupoid. Since the laws of the category only hold up to a higher
 equivalence, the entire setting is that of weak categories 
@@ -1792,7 +1803,10 @@ conditions are however not independent and it is sufficient to verify
 one of various smaller subsets, to be chosen depending on the
 situation.  Generally speaking, the coherence laws appear rather
 obscure but, as shown below for many of them, they can be
-``unformalized'' to relatively understandable statements:
+``unformalized'' to relatively understandable statements.
+They all express that two different means of getting between
+two equivalent types are equivalent.  Thus we give 
+programming-oriented descriptions of these as follows:
 \begin{itemize}
 \item[I] given $A ⊗ (B ⊕ C)$, swapping $B$ and $C$ then distributing
   (on the left) is the same as first distributing, then swapping the
@@ -1847,6 +1861,8 @@ be the best hope for a rational reconstruction of the coherence laws.
 %% \textrm{math}\textbf{\textit{overflow}} about this idea are left
 %% unanswered.
 
+That \AgdaFunction{pf₃} and \AgdaFunction{pf₄} are equivalent
+is exactly the statement of coherence law XVII.
 
 %%%%%%%%%%%%
 \subsection{Instances of Symmetric Rig Categories} 
@@ -1863,8 +1879,8 @@ symmetric rig weak groupoids.
   type equivalences. These morphisms directly satisfy the axioms
   stated in the definitions of the various categories. The bulk of the
   work is in ensuring that the coherence conditions are satisfied up
-  to extensional equality.  We only show the proof of one coherence
-  condition, the first one in Laplaza's paper shown below:
+  to homotopy.  We only show the proof of one coherence
+  condition, the first one in Laplaza's paper:
 
 \smallskip
 
@@ -1888,46 +1904,42 @@ top left node are equivalent:
 \AgdaHide{
 \begin{code}
 open import Level using (zero; suc)
-import Relation.Binary.PropositionalEquality as P
+open import Relation.Binary.PropositionalEquality
 open import Relation.Binary using (Rel)
 open import Data.Sum using (_⊎_; inj₁; inj₂) renaming (map to map⊎)
 open import Data.Product using (_×_; _,_; proj₁; proj₂) renaming (map to map×)
+open import Data.SumProd.Properties using (_×→_)
 open import Data.Empty
 open import Data.Unit
 import Function as F
-open import Equiv
+open import Equiv hiding (_∼_)
 open import TypeEquiv as TE
 \end{code}
 }
 
 \smallskip
 
--- \begin{code}
--- distl-swap₊-lemma : {A B C : Set} → (x : (A × (B ⊎ C))) →
---   TE.distl (map× F.id TE.swap₊ x) P.≡
---   (TE.swap₊ (distl x))
--- distl-swap₊-lemma (x , inj₁ y) = P.refl
--- distl-swap₊-lemma (x , inj₂ y) = P.refl
--- \end{code}
-
+\begin{code}
+A×[B⊎C]→[A×C]⊎[A×B] : {A B C : Set} →
+  (TE.distl ∘ (id {A = A} ×→ TE.swap₊ {B} {C})) ∼ (TE.swap₊ ∘ TE.distl)
+A×[B⊎C]→[A×C]⊎[A×B] (x , inj₁ y) = refl
+A×[B⊎C]→[A×C]⊎[A×B] (x , inj₂ y) = refl
+\end{code}
 \smallskip
 
-\noindent The lemma asserts the extensional equivalence of the
-functions representing the two paths for all arguments
-\AgdaBound{x}. This lemma is sufficient to prove we have a rig
-\emph{category}. To prove we also have a groupoid, we need a converse
-lemma starting from the bottom right node and following the paths
-backwards towards the top left node:
+\noindent The lemma asserts the that the two paths between
+$A ⊗ (B ⊕ C)$ and $(A ⊗ C) ⊕ (A ⊗ B)$ are homotopic. To show that
+we have a groupoid, we also need to know that the converse lemma
+also holds, i.e. that reversing all arrows also gives a diagram for
+a homotopy, in other words:
 
 \smallskip
 
 \begin{code}
-factorl-swap₊-lemma : {A B C : Set} →
-  (x : (A × C) ⊎ (A × B)) →
-  map× F.id TE.swap₊ (TE.factorl x) P.≡
-  TE.factorl (TE.swap₊ x)
-factorl-swap₊-lemma (inj₁ x) = P.refl
-factorl-swap₊-lemma (inj₂ y) = P.refl
+[A×C]⊎[A×B]→A×[B⊎C] : {A B C : Set} →
+  ((id ×→ TE.swap₊) ∘ TE.factorl) ∼ (TE.factorl ∘ TE.swap₊ {A × C} {A × B})
+[A×C]⊎[A×B]→A×[B⊎C] (inj₁ x) = refl
+[A×C]⊎[A×B]→A×[B⊎C] (inj₂ y) = refl
 \end{code}
 
 \smallskip
@@ -1936,28 +1948,30 @@ factorl-swap₊-lemma (inj₂ y) = P.refl
 equivalence are indeed related to the same diagram:
 \[
 \AgdaFunction{laplazaI} =
-  \AgdaInductiveConstructor{eq}~\AgdaFunction{distl-swap₊-lemma}~\AgdaFunction{factorl-swap₊-lemma}
+  \AgdaInductiveConstructor{eq}~\AgdaFunction{A×[B⊎C]→[A×C]⊎[A×B]}~
+  \AgdaFunction{[A×C]⊎[A×B]→A×[B⊎C]}
 \]
-where \AgdaInductiveConstructor{eq} is the constructor for $\equiv$.
+where \AgdaInductiveConstructor{eq} is the constructor for $≋$. \qed
 \end{proof}
 
 More directly relevant to our purposes, is the next theorem which
-applies to reversible circuits (represented as $\Pi$-combinators).
+applies to reversible programs, i.e. programs expressed using 
+$\Pi$ terms and combinators .
 
 \begin{theorem}
-The universe $U$ and $\Pi$-combinators is a symmetric rig
+The universe $U$ and $\Pi$ terms and combinators is a symmetric rig
 groupoid.
 \end{theorem}
 \begin{proof}
   The objects of the category are the syntax of finite types,
   and the morphisms are
-  the $\Pi$-combinators. Short proofs establish that these morphisms
+  the $\Pi$ term and combinators. Short proofs establish that these morphisms
   satisfy the axioms stated in the definitions of the various
   categories. The bulk of the work is in ensuring that the coherence
   conditions are satisfied. This required us to add a few $\Pi$
   combinators (see Sec.~\ref{fig:more}) and then to add a whole new
   layer of 2-combinators witnessing enough equivalences of~$\Pi$
-  combinators to prove the coherence laws (see
+  combinators to satisfy the coherence laws (see
   Fig.~\ref{fig:more2}). The new $\Pi$ 1-combinators, also discussed in
   more detail in the next section, are redundant (from an operational
   perspective) exactly because of the coherence conditions; they are
