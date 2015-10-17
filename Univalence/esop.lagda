@@ -1856,6 +1856,7 @@ should not be equated.
 
 \medskip
 
+\begin{center}
 \begin{tikzcd}[column sep=tiny]
 A \otimes (B \oplus C)
   \arrow[rrr, "\distl"]
@@ -1867,6 +1868,7 @@ A \otimes (C \oplus B)
   \arrow[rrr, "\distl"']
 &&& (A \otimes C) \oplus (A \otimes B)
 \end{tikzcd}
+\end{center}
 
 \medskip
 
@@ -1940,7 +1942,7 @@ optimizations of $\Pi$ programs. We will call the terms and
 combinators of the original $\Pi$ language, level-0 terms, and the
 terms and combinators of the new language, level-1 terms. 
 
-As explained in the previous section, theere is a systematic way to
+As explained in the previous section, there is a systematic way to
 ``discover'' the level-1 terms which is driven by the coherence
 conditions. During our proofs, we collected all the level-1 terms that
 were needed to realize all the coherence conditions. This exercise
@@ -2141,9 +2143,12 @@ It is worth noting that most (but not all) of the properties involving
 only $⊕$ were already in Agda's standard library (in
 \AgdaModule{Data.Sum.Properties} to be precise), whereas all
 properties involving only $⊗$ were immediately provable due to $\eta$
-expansion.  None of the mixed properties involved with distributivity
+expansion.  Nevertheless, for symmetry and clarity, we created a
+\AgdaModule{Data.Prod.Properties} to collect all of these.
+None of the mixed properties involved with distributivity
 and absorption were present, although the proof of all of them was
-straightforward.
+straightforward.  Their statement, on the other hand, was at times
+rather complex (see \AgdaModule{Data.SumProd.Properties}).
 
 %%%
 \subsection{Example Level 1 Programs} 
@@ -2469,11 +2474,18 @@ respect to the level-0 semantics. Formally, in Agda, we have:
 \begin{code}
 cc2equiv : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) →
   PiEquiv.c2equiv c₁ ≋ PiEquiv.c2equiv c₂
+\end{code}
+\noindent In other words, equivalent programs exactly denote equivalent
+equivalences.
 
--- if c₁ ⇔ c₂, they give the same results as programs:
+This is all compatible with the operational semantics as well,
+so that equivalent programs always give the same values; more
+amusingly, if we run one program then run an equivalent program
+backwards, we get the identity:
+
+\begin{code}
 ≋⇒≡ : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) → eval c₁ ∼ eval c₂
 
--- if c₁ ⇔ c₂, running one forward and the other backward is id
 ping-pong : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) → (evalB c₂ ∘ eval c₁) ∼ id 
 \end{code}
 \AgdaHide{
@@ -2483,6 +2495,10 @@ cc2equiv = {!!}
 ping-pong = {!!} 
 \end{code}
 }
+\noindent It should be stressed that $c_1$ and $c_2$ can be 
+arbitrarily complex programs (albeit equivalent), the above 
+optimization property holds.  So we have the promise of a
+very effective optimizer for such programs.
 
 The next theorem is the main result: it shows that the two levels of
 $\Pi$ form a symmetric rig groupoid, thus capturing equivalences of
