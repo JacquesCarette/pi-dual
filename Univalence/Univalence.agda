@@ -171,7 +171,7 @@ open import ConcretePermutation
 -- infrastructure using equivalences on finite sets and transport it
 -- using a specialized instance of 'univalence'.
 
-open import FinEquivPlusTimes
+open import FinEquivPlusTimes -- does not load anymore !!!
 open import FinEquivTypeEquiv
 -- Defines the top line. We prove various equivalences between
 -- Fin types like:
