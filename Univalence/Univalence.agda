@@ -171,8 +171,9 @@ open import ConcretePermutation
 -- infrastructure using equivalences on finite sets and transport it
 -- using a specialized instance of 'univalence'.
 
-open import FinEquivPlusTimes -- does not load anymore !!!
-open import FinEquivTypeEquiv
+open import FinEquivPlusTimes -- XXX 
+open import FinEquivTypeEquiv -- XXX
+
 -- Defines the top line. We prove various equivalences between
 -- Fin types like:
 --   Fin (m + n) ≃ Fin m ⊎ Fin n
@@ -185,11 +186,11 @@ open import FinEquivTypeEquiv
 -- Establishes that finite types and equivalences for a symmetric rig
 -- groupoid. This is the structure we want to transport to permutations.
 
-open import SEquivSCPermEquiv -- TODO
+open import SEquivSCPermEquiv -- XXX TODO
 -- An instance of univalence that allows us to transport all the
 -- structure from FinEquivCat to permutations
 
-open import CPermCat -- TODO
+open import CPermCat -- XXX TODO
 -- Establishes that CPerm m n is a symmetric rig category by
 -- transporting the structure from FinEquivCat using univalence
 

@@ -10,7 +10,8 @@ open import Data.Product using (_,_; _×_; proj₁; proj₂)
 open import Data.Nat
   using (ℕ; zero; suc; _+_; _*_; _<_; _≤_; ≤-pred; _≥_; _≤?_;
          module ≤-Reasoning)
-open import Data.Nat.DivMod using (_divMod_; result)
+-- open import Data.Nat.DivMod using (_divMod_; result)
+open import DivMod23 using (_divMod_; result)
 open import Data.Nat.Properties using (≰⇒>; 1+n≰n; m≤m+n; ¬i+1+j≤i)
 open import Data.Nat.Properties.Simple
   using (+-assoc; +-suc; +-comm; *-right-zero) 
@@ -212,8 +213,8 @@ module Times where
     ... | no ¬p = ⊥-elim (absurd-quotient m n q r i k≡r+q*sn (≤-pred (≰⇒> ¬p)))
     ... | yes p = toℕ-injective (
        begin (
-          toℕ (fwd (bwd {m} {suc n} i))
-            ≡⟨ {!!} ⟩ 
+--          toℕ (fwd (bwd {m} {suc n} i))
+--            ≡⟨ {!!} ⟩ 
           toℕ (fwd (fromℕ≤ {q} {m} p , r))
             ≡⟨ soundness (fromℕ≤ p) r ⟩
           toℕ (fromℕ≤ p) * (suc n) + toℕ r
@@ -233,8 +234,8 @@ module Times where
     ... | no ¬p = ⊥-elim (absurd-quotient m n q r k pf (≤-pred (≰⇒> ¬p)))
     ... | yes p =
         begin (
-          bwd {m} {suc n} k
-            ≡⟨ {!!} ⟩ 
+--          bwd {m} {suc n} k
+--            ≡⟨ {!!} ⟩ 
           (fromℕ≤ {q} {m} p , r)
             ≡⟨ cong₂ _,_ pf₁ (proj₁ same-quot) ⟩ 
           (b , d) ∎)
