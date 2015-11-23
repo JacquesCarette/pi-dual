@@ -82,6 +82,7 @@ module Plus where
   -- axioms
 
   private
+
     fwd : {m n : ℕ} → (Fin m ⊎ Fin n) → Fin (m + n)
     fwd {m} {n} (inj₁ x) = inject+ n x
     fwd {m} {n} (inj₂ y) = raise m y
@@ -157,6 +158,7 @@ module Times where
   -- axioms
 
   private
+
     fwd : {m n : ℕ} → (Fin m × Fin n) → Fin (m * n)
     fwd {suc m} {n} (zero , k) = inject+ (m * n) k
     fwd {n = n} (suc i , k) = raise n (fwd (i , k))
@@ -207,9 +209,12 @@ module Times where
     fwd∘bwd~id {m} {zero} i = elim-right-zero m i
     fwd∘bwd~id {m} {suc n} i with (toℕ i) divMod (suc n)
     ... | result q r k≡r+q*sn with suc q ≤? m
+    ... | no ¬p = ⊥-elim (absurd-quotient m n q r i k≡r+q*sn (≤-pred (≰⇒> ¬p)))
     ... | yes p = toℕ-injective (
-        begin (
-          toℕ (fwd (fromℕ≤ p , r))
+       begin (
+          toℕ (fwd (bwd {m} {suc n} i))
+            ≡⟨ {!!} ⟩ 
+          toℕ (fwd (fromℕ≤ {q} {m} p , r))
             ≡⟨ soundness (fromℕ≤ p) r ⟩
           toℕ (fromℕ≤ p) * (suc n) + toℕ r
             ≡⟨ cong (λ x → x * (suc n) + toℕ r) (toℕ-fromℕ≤ p) ⟩
@@ -218,8 +223,7 @@ module Times where
           toℕ r  + q * (suc n)
             ≡⟨ sym (k≡r+q*sn) ⟩
           toℕ i ∎))
-        where open ≡-Reasoning
-    ... | no ¬p = ⊥-elim (absurd-quotient m n q r i k≡r+q*sn (≤-pred (≰⇒> ¬p)))
+       where open ≡-Reasoning 
 
     bwd∘fwd~id : {m n : ℕ} → bwd {m} {n} ∘ fwd ∼ id
     bwd∘fwd~id {n = zero} (b , ())
@@ -227,7 +231,13 @@ module Times where
     ... | k | [ eq ] with (toℕ k) divMod (suc n)
     ... | result q r pf with q <? m
     ... | no ¬p = ⊥-elim (absurd-quotient m n q r k pf (≤-pred (≰⇒> ¬p)))
-    ... | yes p = cong₂ _,_  pf₁ (proj₁ same-quot)
+    ... | yes p =
+        begin (
+          bwd {m} {suc n} k
+            ≡⟨ {!!} ⟩ 
+          (fromℕ≤ {q} {m} p , r)
+            ≡⟨ cong₂ _,_ pf₁ (proj₁ same-quot) ⟩ 
+          (b , d) ∎)
       where
         open ≡-Reasoning
         eq' : toℕ d + toℕ b * suc n ≡ toℕ r + q * suc n
@@ -241,7 +251,7 @@ module Times where
           toℕ r + q * suc n ∎ )
         same-quot : (r ≡ d) × (q ≡ toℕ b)
         same-quot = addMul-lemma q (toℕ b) n r d ( sym eq' )
-        pf₁ = (toℕ-injective (trans (toℕ-fromℕ≤ p) (proj₂ same-quot)))
+        pf₁ = toℕ-injective (trans (toℕ-fromℕ≤ p) (proj₂ same-quot))
 
   abstract
     fwd-iso : {m n : ℕ} → (Fin m × Fin n) ≃ Fin (m * n)
