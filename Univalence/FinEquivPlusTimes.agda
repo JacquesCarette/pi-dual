@@ -195,18 +195,18 @@ module Times where
 
     bwd : {m n : ℕ} → Fin (m * n) → (Fin m × Fin n)
     bwd {m} {0} k = elim-right-zero m k
-    bwd {m} {suc n} k with toℕ k | inspect toℕ k | (toℕ k) divMod (suc n) 
-    bwd {m} {suc n} k | .(toℕ r + q * suc n) | [ eq ] | result q r refl =
+    bwd {m} {suc n} k with (toℕ k) divMod (suc n) 
+    bwd {m} {suc n} k | result q r pf =
       (fromℕ≤ {q} {m} q<m , r)
       where q<m : q < m
             q<m with suc q ≤? m 
-            ... | no ¬p = ⊥-elim (absurd-quotient m n q r k eq (≤-pred (≰⇒> ¬p)))
+            ... | no ¬p = ⊥-elim (absurd-quotient m n q r k pf (≤-pred (≰⇒> ¬p)))
             ... | yes p = p
 
     fwd∘bwd~id : {m n : ℕ} → fwd {m} {n} ∘ bwd ∼ id
     fwd∘bwd~id {m} {zero} i = elim-right-zero m i
-    fwd∘bwd~id {m} {suc n} i with toℕ i | inspect toℕ i | (toℕ i) divMod (suc n) 
-    fwd∘bwd~id {m} {suc n} i | .(toℕ r + q * suc n) | [ eq ] | result q r refl
+    fwd∘bwd~id {m} {suc n} i with (toℕ i) divMod (suc n) 
+    fwd∘bwd~id {m} {suc n} i | result q r eq
       with suc q ≤? m
     ... | no ¬p = ⊥-elim (absurd-quotient m n q r i eq (≤-pred (≰⇒> ¬p)))
     ... | yes p = toℕ-injective (
@@ -222,14 +222,12 @@ module Times where
           toℕ i ∎))
        where open ≡-Reasoning 
 
-    bwd∘fwd~id : {m n : ℕ} → bwd {m} {n} ∘ fwd ∼ id
+    bwd∘fwd~id : {m n : ℕ} → (x : Fin m × Fin n) →
+        bwd {m} {n} (fwd x) ≡ id x
     bwd∘fwd~id {m} {zero} (b , ())
-    bwd∘fwd~id {m} {suc n} (b , d) with fwd (b , d) -- | inspect fwd (b , d)
-    bwd∘fwd~id {m} {suc n} (b , d) | k -- | [ bdeq ]
-      with toℕ k | inspect toℕ k | (toℕ k) divMod (suc n) 
-    bwd∘fwd~id {m} {suc n} (b , d) | k | -- [ bdeq ] | 
-      .(toℕ r + q * suc n) | [ eqk ] | result q r refl with q <? m
-    ... | no ¬p = ⊥-elim (absurd-quotient m n q r k eqk (≤-pred (≰⇒> ¬p)))
+    bwd∘fwd~id {m} {suc n} (b , d) with (toℕ (fwd (b , d)) divMod (suc n)) 
+    bwd∘fwd~id {m} {suc n} (b , d) | result q r eqk with q <? m
+    ... | no ¬p = ⊥-elim (absurd-quotient m n q r (fwd (b , d)) eqk (≤-pred (≰⇒> ¬p)))
     ... | yes p = 
         begin (
           (fromℕ≤ {q} {m} p , r)
@@ -242,8 +240,8 @@ module Times where
           toℕ d + toℕ b * suc n
             ≡⟨ +-comm (toℕ d) _ ⟩
           toℕ b * suc n + toℕ d
-            ≡⟨ trans (sym (soundness b d)) (cong toℕ {!!}) ⟩
-          toℕ k
+            ≡⟨ sym (soundness b d) ⟩
+          toℕ (fwd (b , d))
             ≡⟨ eqk ⟩
           toℕ r + q * suc n ∎ )
         same-quot : (r ≡ d) × (q ≡ toℕ b)
