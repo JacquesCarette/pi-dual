@@ -195,8 +195,8 @@ module Times where
 
     bwd : {m n : ℕ} → Fin (m * n) → (Fin m × Fin n)
     bwd {m} {0} k = elim-right-zero m k
-    bwd {m} {suc n} k with (toℕ k) divMod (suc n) 
-    bwd {m} {suc n} k | result q r pf =
+    bwd {m} {suc n} k with toℕ k | inspect toℕ k | (toℕ k) divMod (suc n) 
+    bwd {m} {suc n} k | .(toℕ r + q * suc n) | [ pf ] | result q r refl =
       (fromℕ≤ {q} {m} q<m , r)
       where q<m : q < m
             q<m with suc q ≤? m 
@@ -205,8 +205,8 @@ module Times where
 
     fwd∘bwd~id : {m n : ℕ} → fwd {m} {n} ∘ bwd ∼ id
     fwd∘bwd~id {m} {zero} i = elim-right-zero m i
-    fwd∘bwd~id {m} {suc n} i with (toℕ i) divMod (suc n) 
-    fwd∘bwd~id {m} {suc n} i | result q r eq
+    fwd∘bwd~id {m} {suc n} i with toℕ i | inspect toℕ i | (toℕ i) divMod (suc n) 
+    fwd∘bwd~id {m} {suc n} i | .(toℕ r + q * suc n) | [ eq ] | result q r refl
       with suc q ≤? m
     ... | no ¬p = ⊥-elim (absurd-quotient m n q r i eq (≤-pred (≰⇒> ¬p)))
     ... | yes p = toℕ-injective (
@@ -225,8 +225,8 @@ module Times where
     bwd∘fwd~id : {m n : ℕ} → (x : Fin m × Fin n) →
         bwd {m} {n} (fwd x) ≡ id x
     bwd∘fwd~id {m} {zero} (b , ())
-    bwd∘fwd~id {m} {suc n} (b , d) with (toℕ (fwd (b , d)) divMod (suc n)) 
-    bwd∘fwd~id {m} {suc n} (b , d) | result q r eqk with q <? m
+    bwd∘fwd~id {m} {suc n} (b , d) with toℕ (fwd (b , d)) | inspect toℕ (fwd (b , d)) | (toℕ (fwd (b , d)) divMod (suc n)) 
+    bwd∘fwd~id {m} {suc n} (b , d) | .(toℕ r + q * suc n) | [ eqk ] | result q r refl with q <? m
     ... | no ¬p = ⊥-elim (absurd-quotient m n q r (fwd (b , d)) eqk (≤-pred (≰⇒> ¬p)))
     ... | yes p = 
         begin (
