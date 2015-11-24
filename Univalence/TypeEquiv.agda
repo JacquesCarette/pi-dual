@@ -32,6 +32,7 @@ swap₊ (inj₁ a) = inj₂ a
 swap₊ (inj₂ b) = inj₁ b
 
 abstract
+
   swapswap₊ : {A B : Set} → swap₊ ○ swap₊ {A} {B} ∼ id
   swapswap₊ (inj₁ a) = refl
   swapswap₊ (inj₂ b) = refl
@@ -49,6 +50,7 @@ uniti₊ : {A : Set} → A → ⊥ ⊎ A
 uniti₊ a = inj₂ a
 
 abstract
+
   uniti₊∘unite₊ : {A : Set} → uniti₊ ○ unite₊ ∼ id {A = ⊥ ⊎ A}
   uniti₊∘unite₊ (inj₁ ())
   uniti₊∘unite₊ (inj₂ y) = refl
@@ -74,6 +76,7 @@ uniti₊′ : {A : Set} → A → A ⊎ ⊥
 uniti₊′ a = inj₁ a
 
 abstract
+
   uniti₊′∘unite₊′ : {A : Set} → uniti₊′ ○ unite₊′ ∼ id {A = A ⊎ ⊥}
   uniti₊′∘unite₊′ (inj₁ _) = refl
   uniti₊′∘unite₊′ (inj₂ ())
@@ -98,6 +101,7 @@ uniti⋆ : {A : Set} → A → ⊤ × A
 uniti⋆ x = tt , x
 
 abstract
+
   uniti⋆∘unite⋆ : {A : Set} → uniti⋆ ○ unite⋆ ∼ id {A = ⊤ × A}
   uniti⋆∘unite⋆ (tt , x) = refl
 
@@ -116,6 +120,7 @@ uniti⋆′ : {A : Set} → A → A × ⊤
 uniti⋆′ x = x , tt
 
 abstract
+
   uniti⋆′∘unite⋆′ : {A : Set} → uniti⋆′ ○ unite⋆′ ∼ id {A = A × ⊤}
   uniti⋆′∘unite⋆′ (x , tt) = refl
 
@@ -131,6 +136,7 @@ swap⋆ : {A B : Set} → A × B → B × A
 swap⋆ (a , b) = (b , a)
 
 abstract
+
   swapswap⋆ : {A B : Set} → swap⋆ ○ swap⋆ ∼ id {A = A × B}
   swapswap⋆ (a , b) = refl 
 
@@ -150,6 +156,7 @@ assocr₊ (inj₁ (inj₂ b)) = inj₂ (inj₁ b)
 assocr₊ (inj₂ c) = inj₂ (inj₂ c)
 
 abstract
+
   assocl₊∘assocr₊ : {A B C : Set} → assocl₊ ○ assocr₊ ∼ id {A = ((A ⊎ B) ⊎ C)}
   assocl₊∘assocr₊ (inj₁ (inj₁ a)) = refl
   assocl₊∘assocr₊ (inj₁ (inj₂ b)) = refl
@@ -177,6 +184,7 @@ assocr⋆ : {A B C : Set} → ((A × B) × C) → (A × (B × C))
 assocr⋆ ((a , b) , c) = (a , (b , c))
 
 abstract
+
   assocl⋆∘assocr⋆ : {A B C : Set} → assocl⋆ ○ assocr⋆ ∼ id {A = ((A × B) × C)}
   assocl⋆∘assocr⋆ = refl∼
 
@@ -199,6 +207,7 @@ factorz : {A : Set} → ⊥ → (⊥ × A)
 factorz ()
 
 abstract
+
   distz∘factorz : {A : Set} → distz ○ factorz {A} ∼ id
   distz∘factorz ()
 
@@ -221,6 +230,7 @@ factorzr : {A : Set} → ⊥ → (A × ⊥)
 factorzr ()
 
 abstract
+
   distzr∘factorzr : {A : Set} → distzr ○ factorzr {A} ∼ id
   distzr∘factorzr ()
 
@@ -245,6 +255,7 @@ factor (inj₁ (a , c)) = inj₁ a , c
 factor (inj₂ (b , c)) = inj₂ b , c
 
 abstract
+
   dist∘factor : {A B C : Set} → dist {A} {B} {C} ○ factor ∼ id
   dist∘factor (inj₁ x) = refl
   dist∘factor (inj₂ y) = refl
@@ -270,6 +281,7 @@ factorl (inj₁ (x , y)) = x , inj₁ y
 factorl (inj₂ (x , y)) = x , inj₂ y
 
 abstract
+
   distl∘factorl : {A B C : Set} → distl {A} {B} {C} ○ factorl ∼ id
   distl∘factorl (inj₁ (x , y)) = refl
   distl∘factorl (inj₂ (x , y)) = refl

@@ -62,6 +62,7 @@ private
 [id,id]≋id = eq (β⊎₁ ⊙ id⊎id∼id) (β⊎₂ ⊙ id⊎id∼id)
 
 -- ● and ⊎≃ commute.
+
 ⊎●≋●⊎ : {A B C D E F : Set} →
   {f : A ≃ C} {g : B ≃ D} {h : C ≃ E} {i : D ≃ F} →
   (h ● f) ⊎≃ (i ● g) ≋ (h ⊎≃ i) ● (f ⊎≃ g)
@@ -81,6 +82,7 @@ f≋h ⊎≋ g≋i =
 -- strangely, this is not needed by Rig Category.  However, it
 -- belongs to the structure of a Monoidal Groupoid (I think!  Should
 -- be checked), and is quite useful on its own.
+
 sym≃-distrib⊎ : ∀ {A B C D : Set} {f : A ≃ B} {g : C ≃ D} →
   sym≃ (f ⊎≃ g) ≋ sym≃ f ⊎≃ sym≃ g
 sym≃-distrib⊎ = -- note how the proof mixes ₁ and ₂ !
@@ -89,6 +91,7 @@ sym≃-distrib⊎ = -- note how the proof mixes ₁ and ₂ !
 -- Use '-nat' to signify that operation induces a
 -- natural transformation, and that the induced operation
 -- satisfies the naturality condition thus encoded
+
 unite₊-nat : ∀ {A B} {f : A ≃ B} {g : ⊥ ≃ ⊥} →
   unite₊equiv ● (g ⊎≃ f) ≋ f ● unite₊equiv
 unite₊-nat {g = g} =
@@ -169,7 +172,6 @@ assocr₊-coh = -- eq pentagon⊎-right pentagon⊎-left
      ! (β₂ ⊙ cong₂∘ β₂ β⊎₂ ⊙
         cong∘r (gg assocr₊equiv ∘ (gg id≃ ⊎→ gg assocr₊equiv)) β⊎₂))
 
-
 swap₊-nat : {A B C D : Set} {f : A ≃ C} {g : B ≃ D} →
   swap₊equiv ● (f ⊎≃ g) ≋ (g ⊎≃ f) ● swap₊equiv
 swap₊-nat =
@@ -197,6 +199,7 @@ assocr₊-swap₊-coh {A} {B} {C} = -- eq hexagon⊎-right hexagon⊎-left
       ! (β₂ ⊙ cong₂∘ β₂ β⊎₂ ⊙ cong∘r (assoclBAC ∘ swapCA) β⊎₂))
 
 -- and in the opposite direction
+
 assocl₊-swap₊-coh : ∀ {A B C : Set} →
   assocl₊equiv {A} {B} {C} ● swap₊equiv ● assocl₊equiv {B} {C} {A} ≋
   swap₊equiv ⊎≃ id≃ ● assocl₊equiv {B} {A} {C} ● id≃ ⊎≃ swap₊equiv
@@ -214,8 +217,8 @@ assocl₊-swap₊-coh {A} {B} {C} = -- eq hexagon⊎-left hexagon⊎-right
      (β₂ ⊙ cong∘r assocrABC β₂ ⊙ hexagon⊎-right ⊙
       ! (β₂ ⊙ cong₂∘ β₂ β⊎₂ ⊙ cong∘r (assocrBAC ∘ swapAB) β⊎₂))
 
-----
 -- equivalences for the × structure
+
 id×id≋id : ∀ {A B : Set} → id≃ {A = A} ×≃ id≃ {A = B} ≋ id≃
 id×id≋id = eq (β×₁ ⊙ id×id∼id) (β×₂ ⊙ id×id∼id)
 
@@ -300,6 +303,7 @@ assocl⋆-nat {A} {B} {C} {D} {E} {F} {f₀} {f₁} {f₂}  = -- flip-sym≋ ass
            ! cong∘l assocrABC (β×₂ {f = f₀ ×≃ f₁} {f₂}) ⊙ ! β₂)
 
 -- often called 'triangle'
+
 unite-assocr⋆-coh : ∀ {A B : Set} →
   unite⋆′equiv ×≃ id≃ ≋ (id≃ ×≃ unite⋆equiv) ● assocr⋆equiv {A} {⊤} {B}
 unite-assocr⋆-coh =
@@ -307,6 +311,7 @@ unite-assocr⋆-coh =
      (β×₂ ⊙ triangle×-left ⊙ ! (β₂ ⊙ cong∘l (gg assocr⋆equiv) β×₂))
 
 -- often called 'pentagon'
+
 assocr⋆-coh : ∀ {A B C D : Set} →
   assocr⋆equiv {A} {B} {C × D} ● assocr⋆equiv ≋
   (id≃ ×≃ assocr⋆equiv) ● assocr⋆equiv ● (assocr⋆equiv ×≃ id≃)
@@ -327,6 +332,7 @@ swap⋆-nat =
         ! (β₂ ⊙ cong∘l (gg swap⋆equiv) β×₂))
 
 -- often called 'hexagon'
+
 assocr⋆-swap⋆-coh : ∀ {A B C : Set} →
   assocr⋆equiv {B} {C} {A} ● swap⋆equiv ● assocr⋆equiv {A} {B} {C} ≋
   id≃ ×≃ swap⋆equiv ● assocr⋆equiv {B} {A} {C} ● swap⋆equiv ×≃ id≃
@@ -345,6 +351,7 @@ assocr⋆-swap⋆-coh {A} {B} {C} =
       ! (β₂ ⊙ cong₂∘ β₂ β×₂ ⊙ cong∘r (assoclBAC ∘ swapCA) β×₂))
 
 -- and in the opposite direction
+
 assocl⋆-swap⋆-coh : ∀ {A B C : Set} →
   assocl⋆equiv {A} {B} {C} ● swap⋆equiv ● assocl⋆equiv {B} {C} {A} ≋
   swap⋆equiv ×≃ id≃ ● assocl⋆equiv {B} {A} {C} ● id≃ ×≃ swap⋆equiv
@@ -362,8 +369,8 @@ assocl⋆-swap⋆-coh {A} {B} {C} =
      (β₂ ⊙ cong∘r assocrABC β₂ ⊙ hexagon×-right ⊙
       ! (β₂ ⊙ cong₂∘ β₂ β×₂ ⊙ cong∘r (assocrBAC ∘ swapAB) β×₂))
 
--------------------
 -- distributivity
+
 distl-nat : {A B C D E F : Set} →
   {f : A ≃ D} {g : B ≃ E} {h : C ≃ F} →
   distlequiv ● (f ×≃ (g ⊎≃ h)) ≋ ((f ×≃ g) ⊎≃ (f ×≃ h)) ● distlequiv
@@ -431,6 +438,7 @@ factor-nat {A} {B} {C} {D} {E} {F} {f} {g} {h} = -- flip-sym≋ dist-nat
 -- note how we don't use id≃ but an arbitrary ⊥ ≃ ⊥.
 -- because this law under-specifies f and g, we need to
 -- be explicit in our calls
+
 distzr-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
   distzrequiv ● (f ×≃ g) ≋ g ● distzrequiv
 distzr-nat {f = (f , qinv h _ _)} {(_ , qinv g _ _)} =
@@ -448,6 +456,7 @@ factorzr-nat {f = f , qinv f⁻¹ _ _} {g , _} = -- flip-sym≋ (distzr-nat {f =
      ! (β₂ ⊙ cong∘l (gg factorzrequiv) β×₂))
 
 -- same comment as above
+
 distz-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
   distzequiv ● (g ×≃ f) ≋ g ● distzequiv
 distz-nat {f = (f , qinv h _ _)} {(_ , qinv g _ _)} =
@@ -461,10 +470,10 @@ factorz-nat {f = (f , qinv f⁻¹ _ _)} {g , _} =
         ! (β₁ ⊙ cong∘r (proj₁ factorzequiv) β×₁))
      (β₂ ⊙ (sym∼ (distz-coh {f = f⁻¹})) ⊙ ! (β₂ ⊙ cong∘l (gg factorzequiv) β×₂))
 
-------------------------------------------
 -- some equivalences for which there are two 'obvious'
 -- programs, but are in fact equivalent.  Named after
 -- the types which are witnessed to be equivalent.
+
 A×[B⊎C]≃[A×C]⊎[A×B] : {A B C : Set} →
   distlequiv ● (id≃ {A = A} ×≃ swap₊equiv {B} {C}) ≋ swap₊equiv ● distlequiv
 A×[B⊎C]≃[A×C]⊎[A×B] = -- eq A×[B⊎C]→[A×C]⊎[A×B] [A×C]⊎[A×B]→A×[B⊎C]
@@ -574,7 +583,7 @@ A×[0+B]≃A×B =
           β⊎₂))
 
   
-------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- also useful
 
 [g+1]●[1+f]≋g+f : {A B C D : Set} {f : A ≃ B} {g : C ≃ D} →
@@ -588,12 +597,15 @@ A×[0+B]≃A×B =
   where open ≋-Reasoning
 
 -- same proof as above, just written compactly
+
 [1+f]●[g+1]≋g+f : {A B C D : Set} {f : A ≃ B} {g : C ≃ D} →
   (id≃ ⊎≃ f) ● (g ⊎≃ id≃) ≋ g ⊎≃ f
 [1+f]●[g+1]≋g+f = trans≋ (sym≋ ⊎●≋●⊎) (lid≋ ⊎≋ rid≋)
 
 -- put then together
+
 [g+1]●[1+f]≋[1+f]●[g+1] : {A B C D : Set} {f : A ≃ B} {g : C ≃ D} →
   (g ⊎≃ id≃) ● (id≃ ⊎≃ f) ≋ (id≃ ⊎≃ f) ● (g ⊎≃ id≃)
 [g+1]●[1+f]≋[1+f]●[g+1] = trans≋ [g+1]●[1+f]≋g+f (sym≋ [1+f]●[g+1]≋g+f)
 
+------------------------------------------------------------------------------
