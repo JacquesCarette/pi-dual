@@ -10,8 +10,7 @@ open import Data.Product using (_,_; _×_; proj₁; proj₂)
 open import Data.Nat
   using (ℕ; zero; suc; _+_; _*_; _<_; _≤_; ≤-pred; _≥_; _≤?_;
          module ≤-Reasoning)
--- open import Data.Nat.DivMod using (_divMod_; result)
-open import DivMod23 using (_divMod_; result)
+open import Data.Nat.DivMod using (_divMod_; result)
 open import Data.Nat.Properties using (≰⇒>; 1+n≰n; m≤m+n; ¬i+1+j≤i)
 open import Data.Nat.Properties.Simple
   using (+-assoc; +-suc; +-comm; *-right-zero) 
@@ -196,25 +195,22 @@ module Times where
 
     bwd : {m n : ℕ} → Fin (m * n) → (Fin m × Fin n)
     bwd {m} {0} k = elim-right-zero m k
-    bwd {m} {suc n} k with (toℕ k) divMod (suc n)
-    ... | result q r k≡r+q*sn = (fromℕ≤ {q} {m} (q<m) , r)
-      where 
-            q<m : q < m
+    bwd {m} {suc n} k with toℕ k | inspect toℕ k | (toℕ k) divMod (suc n) 
+    bwd {m} {suc n} k | .(toℕ r + q * suc n) | [ eq ] | result q r refl =
+      (fromℕ≤ {q} {m} q<m , r)
+      where q<m : q < m
             q<m with suc q ≤? m 
-            ... | no ¬p = ⊥-elim
-                            (absurd-quotient m n q r k k≡r+q*sn
-                              (≤-pred (≰⇒> ¬p)))
+            ... | no ¬p = ⊥-elim (absurd-quotient m n q r k eq (≤-pred (≰⇒> ¬p)))
             ... | yes p = p
 
     fwd∘bwd~id : {m n : ℕ} → fwd {m} {n} ∘ bwd ∼ id
     fwd∘bwd~id {m} {zero} i = elim-right-zero m i
-    fwd∘bwd~id {m} {suc n} i with (toℕ i) divMod (suc n)
-    ... | result q r k≡r+q*sn with suc q ≤? m
-    ... | no ¬p = ⊥-elim (absurd-quotient m n q r i k≡r+q*sn (≤-pred (≰⇒> ¬p)))
+    fwd∘bwd~id {m} {suc n} i with toℕ i | inspect toℕ i | (toℕ i) divMod (suc n) 
+    fwd∘bwd~id {m} {suc n} i | .(toℕ r + q * suc n) | [ eq ] | result q r refl
+      with suc q ≤? m
+    ... | no ¬p = ⊥-elim (absurd-quotient m n q r i eq (≤-pred (≰⇒> ¬p)))
     ... | yes p = toℕ-injective (
        begin (
---          toℕ (fwd (bwd {m} {suc n} i))
---            ≡⟨ {!!} ⟩ 
           toℕ (fwd (fromℕ≤ {q} {m} p , r))
             ≡⟨ soundness (fromℕ≤ p) r ⟩
           toℕ (fromℕ≤ p) * (suc n) + toℕ r
@@ -222,20 +218,20 @@ module Times where
           q * (suc n) + toℕ r
             ≡⟨ +-comm _ (toℕ r) ⟩
           toℕ r  + q * (suc n)
-            ≡⟨ sym (k≡r+q*sn) ⟩
+            ≡⟨ sym eq ⟩ 
           toℕ i ∎))
        where open ≡-Reasoning 
 
     bwd∘fwd~id : {m n : ℕ} → bwd {m} {n} ∘ fwd ∼ id
-    bwd∘fwd~id {n = zero} (b , ())
-    bwd∘fwd~id {m} {suc n} (b , d) with fwd (b , d) | inspect fwd (b , d)
-    ... | k | [ eq ] with (toℕ k) divMod (suc n)
-    ... | result q r pf with q <? m
-    ... | no ¬p = ⊥-elim (absurd-quotient m n q r k pf (≤-pred (≰⇒> ¬p)))
-    ... | yes p =
+    bwd∘fwd~id {m} {zero} (b , ())
+    bwd∘fwd~id {m} {suc n} (b , d) with fwd (b , d) -- | inspect fwd (b , d)
+    bwd∘fwd~id {m} {suc n} (b , d) | k -- | [ bdeq ]
+      with toℕ k | inspect toℕ k | (toℕ k) divMod (suc n) 
+    bwd∘fwd~id {m} {suc n} (b , d) | k | -- [ bdeq ] | 
+      .(toℕ r + q * suc n) | [ eqk ] | result q r refl with q <? m
+    ... | no ¬p = ⊥-elim (absurd-quotient m n q r k eqk (≤-pred (≰⇒> ¬p)))
+    ... | yes p = 
         begin (
---          bwd {m} {suc n} k
---            ≡⟨ {!!} ⟩ 
           (fromℕ≤ {q} {m} p , r)
             ≡⟨ cong₂ _,_ pf₁ (proj₁ same-quot) ⟩ 
           (b , d) ∎)
@@ -246,9 +242,9 @@ module Times where
           toℕ d + toℕ b * suc n
             ≡⟨ +-comm (toℕ d) _ ⟩
           toℕ b * suc n + toℕ d
-            ≡⟨ trans (sym (soundness b d)) (cong toℕ eq) ⟩
+            ≡⟨ trans (sym (soundness b d)) (cong toℕ {!!}) ⟩
           toℕ k
-            ≡⟨ pf ⟩
+            ≡⟨ eqk ⟩
           toℕ r + q * suc n ∎ )
         same-quot : (r ≡ d) × (q ≡ toℕ b)
         same-quot = addMul-lemma q (toℕ b) n r d ( sym eq' )
