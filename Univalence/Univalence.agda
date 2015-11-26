@@ -189,9 +189,9 @@ open import FinEquivTypeEquiv
 -- We make sure we have enough equivalences to model a commutative
 -- semiring.
 
-open import FinEquivEquivPlus
-open import FinEquivEquivTimes
-open import FinEquivEquivPlusTimes
+-- open import FinEquivEquivPlus
+-- open import FinEquivEquivTimes
+-- open import FinEquivEquivPlusTimes
 -- open import FinEquivCat 
 
 -- Establishes that finite types and equivalences for a symmetric rig
@@ -202,7 +202,7 @@ open import SEquivSCPermEquiv
 -- An instance of univalence that allows us to transport all the
 -- structure from FinEquivCat to permutations
 
-open import CPermCat 
+-- open import CPermCat 
 
 -- Establishes that CPerm m n is a symmetric rig category by
 -- transporting the structure from FinEquivCat using univalence
