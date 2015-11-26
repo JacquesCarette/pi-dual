@@ -31,12 +31,8 @@ open import Data.Product using (_,_)
 import Relation.Binary.PropositionalEquality as P using (refl)
 
 import TypeEquivEquiv as T
-  using ([id,id]≋id; ⊎●≋●⊎; _⊎≋_; sym≃-distrib⊎;
-    unite₊-nat; assocl₊-nat;
-    [g+1]●[1+f]≋[1+f]●[g+1]; unite₊′-nat;
-    id×id≋id; ×●≋●×;
-    -- much lower down
-    0×0≃0)
+  using (
+    id×id≋id; ×●≋●×) 
 
 ------------------------------------------------------------------------------
 -- Equivalences for the multiplicative structure
