@@ -282,7 +282,9 @@ assocl₊-nat {m} {n} {o} {m'} {n'} {o'} {f} {g} {h} =
           f ⊎≃ (⊎≃+ ● g ⊎≃ h ● +≃⊎)) ● +≃⊎)
     ≋⟨ id≋ ◎ (id≋ ◎ (sym≋ T.⊎●≋●⊎ ◎ id≋)) ⟩
   ⊎≃+ ● (⊎≃+ ⊎≃ id≃ ● assocl₊equiv) ● ((id≃ ● f) ⊎≃ (+≃⊎ ● (⊎≃+ ● g ⊎≃ h ● +≃⊎))) ● +≃⊎
-    ≋⟨ id≋ ◎ (id≋ ◎ (T._⊎≋_ (trans≋ lid≋ (sym≋ rid≋)) (trans≋ ●-assocl  (trans≋ (linv≋ ⊎≃+ ◎ id≋) lid≋)) ◎ id≋)) ⟩
+    ≋⟨ id≋ ◎ (id≋ ◎ (T._⊎≋_
+                     (trans≋ lid≋ (sym≋ rid≋))
+                     (trans≋ ●-assocl  (trans≋ (linv≋ ⊎≃+ ◎ id≋) lid≋)) ◎ id≋)) ⟩
   ⊎≃+ ● (⊎≃+ ⊎≃ id≃ ● assocl₊equiv) ● ((f ● id≃) ⊎≃ (g ⊎≃ h ● +≃⊎)) ● +≃⊎
     ≋⟨ id≋ ◎ (id≋ ◎ (T.⊎●≋●⊎ ◎ id≋)) ⟩
   ⊎≃+ ● (⊎≃+ ⊎≃ id≃ ● assocl₊equiv) ● (f ⊎≃ (g ⊎≃ h) ● id≃ ⊎≃ +≃⊎) ● +≃⊎
@@ -363,7 +365,6 @@ assocr₊-nat {m} {n} {o} {m'} {n'} {o'} {f} {g} {h} = begin (
     ≋⟨ id≋ ⟩
   (f +F (g +F h)) ● (assocr+ {m} {n} {o}) ∎)
   where open ≋-Reasoning
-
 
 unite-assocr₊-coh : {m n : ℕ} → 
     unite+r {m = m} +F id≃ {A = Fin n} ≋
