@@ -12,10 +12,11 @@ import Relation.Binary.PropositionalEquality as P
 
 import Relation.Binary.EqReasoning as EqR
 
-open import Function using (_∘_)
+open import Function using (id; _∘_)
 
 open import Equiv
- using (module isqinv; qinv; _≃_; id≃; sym≃; _●_; _∼_; sym∼; trans∼;
+ using (module isqinv; qinv; _≃_; id≃; sym≃; _●_; 
+   _∼_; refl∼; sym∼; trans∼; cong∘r; cong∘l;
    _⊎≃_; β₁; β₂; gg; β⊎₁; β⊎₂)
 
 ------------------------------------------------------------------------------
@@ -33,6 +34,20 @@ record _≋_ {ℓ ℓ' : Level} {A : Set ℓ} {B : Set ℓ'} (eq₁ eq₂ : A �
   field
     f≡ : proj₁ eq₁ ∼ proj₁ eq₂
     g≡ : g (proj₂ eq₁) ∼ g (proj₂ eq₂)
+
+  -- the proof could use ∼-Reasoning if we had defined it
+  g≡′ : g (proj₂ eq₁) ∼ g (proj₂ eq₂)
+  g≡′ = 
+    trans∼ (cong∘r g₁ (refl∼ {f = id})) ( -- id ∘ g₁
+    trans∼ (cong∘r g₁ (sym∼ (β (proj₂ eq₂)))) 
+    (trans∼ (cong∘l g₂ (cong∘r g₁ (sym∼ f≡))) (
+                  (cong∘l g₂ (α (proj₂ eq₁))))))
+    where
+      g₁ = g (proj₂ eq₁)
+      g₂ = g (proj₂ eq₂)
+      f₁ = proj₁ eq₁
+      f₂ = proj₁ eq₂
+
  
 -- The equivalence of equivalences is an equivalence relation that
 -- respects composition

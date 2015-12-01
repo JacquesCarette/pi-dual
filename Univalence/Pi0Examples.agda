@@ -72,6 +72,7 @@ CNOT = TIMES BOOL BOOL
          ⟷⟨ foldBool ⊗ id⟷ ⟩
        TIMES BOOL BOOL □
   where x = ONE; y = ONE
+
 -- spec: 
 -- ((false , false) , false , false) ∷
 -- ((false , true)  , false , true)  ∷
@@ -93,6 +94,7 @@ TOFFOLI = TIMES BOOL BOOL²
             ⟷⟨ foldBool ⊗ id⟷ ⟩
          TIMES BOOL BOOL² □
   where x = ONE; y = ONE
+
 -- spec:
 -- ((false , false , false) , false , false , false) ∷
 -- ((false , false , true)  , false , false , true)  ∷

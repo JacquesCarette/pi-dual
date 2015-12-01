@@ -5,10 +5,8 @@ module Univalence where
 
 open import LeqLemmas
 open import FinNatLemmas
--- open import SubstLemmas
 open import FiniteFunctions
--- open import PathLemmas
-open import VectorLemmas -- only _!!_ and lookupassoc are needed
+open import VectorLemmas     -- only _!!_ and lookupassoc are needed
 open import Proofs
 
 -- Proofs is a wrapper over all the basic utilities
@@ -86,10 +84,12 @@ open import TypeEquivCat
 -- 1.
 
 open import PiU
+
 -- First we introduce a univere U of finite types
 
 open import PiLevelm2
 open import Pim2Cat
+
 -- A trivial relation on finite types is to identify all the types;
 -- this makes U a contractible (-2)-type, i.e., a singleton.
 --
@@ -103,17 +103,20 @@ open import Pim2Cat
 
 open import PiLevel0
 open import Pi0Cat
+
 -- If the relation on finite types is modeled after type isomorphisms
 -- and all isomorphisms of the same type are equated, we collapse U to
 -- the set of natural numbers which makes it a 0-type. (We do not
 -- distinguish 'id' and 'not'.)
 
 open import Pi0Examples
+
 -- Pi0 is interesting as a programming language for reversible
 -- circuits. This module has a few examples.
 
 open import PiLevel1
 open import Pi1Cat
+
 -- If the relation on finite types is modeled after type isomorphisms
 -- and only the isomorphisms corresponding to the coherence conditions
 -- of rig categories are equated, we make U a 1-type. (We do
@@ -122,11 +125,14 @@ open import Pi1Cat
 -- equated. This should yield a weak 2-category (i.e., a bicategory).
 
 open import Pi1Examples
+
 -- Pi1 is interesting as a programming language for reversible
 -- circuits that has its own optimizer. This module has a few
 -- examples.
 
 open import PiEquiv
+
+-- Each pi combinator is an equivalence
 
 -- How to make U a 2-type, 3-type, etc. ???
 
@@ -153,6 +159,7 @@ open import PiEquiv
 -- automatically transport it to the bottom line.
 
 open import ConcretePermutation
+
 -- Defines a permutation of a finite set 'Fin m' using two vectors of
 -- the form Vec (Fin m) m. The first occurrence of m bounds the values
 -- in the vector and the second bounds the length of the vector. In
@@ -171,8 +178,9 @@ open import ConcretePermutation
 -- infrastructure using equivalences on finite sets and transport it
 -- using a specialized instance of 'univalence'.
 
-open import FinEquivPlusTimes
-open import FinEquivTypeEquiv
+open import FinEquivPlusTimes 
+open import FinEquivTypeEquiv 
+
 -- Defines the top line. We prove various equivalences between
 -- Fin types like:
 --   Fin (m + n) ≃ Fin m ⊎ Fin n
@@ -181,29 +189,27 @@ open import FinEquivTypeEquiv
 -- We make sure we have enough equivalences to model a commutative
 -- semiring.
 
--- open import FinEquivCat -- TODO
+-- open import FinEquivEquivPlus
+-- open import FinEquivEquivTimes
+-- open import FinEquivEquivPlusTimes
+-- open import FinEquivCat 
+
 -- Establishes that finite types and equivalences for a symmetric rig
 -- groupoid. This is the structure we want to transport to permutations.
 
-open import SEquivSCPermEquiv -- TODO
+open import SEquivSCPermEquiv 
+
 -- An instance of univalence that allows us to transport all the
 -- structure from FinEquivCat to permutations
 
-open import CPermCat -- TODO
+-- open import CPermCat 
+
 -- Establishes that CPerm m n is a symmetric rig category by
 -- transporting the structure from FinEquivCat using univalence
 
-
-
-
-
-
-
-
-
-
-
-
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Wavefront ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -- Composes previously defined equivalences to establish things like:
 -- FiniteType (A ⊎ B) (m + n) ≃ FiniteType (B ⊎ A) (n + m)
@@ -250,23 +256,19 @@ open import CPermCat -- TODO
 -- open import FinEquiv
 -- Establishes that Fin m ≃ Fin n is a commutative semiring
 
--- open import ConcretePermutation -- IN PROGRESS
+-- open import ConcretePermutation 
 -- Establishes that CPerm m n is a commutative semiring (including
 -- symmetry now)
 
--- open import ConcretePermutationProperties -- IN PROGRESS
+-- open import ConcretePermutationProperties 
 -- Establishes properties of concrete permutations that are necessary
 -- to show that it is symmetric rig category
 
--- open import CPermCat -- IN PROGRESS
+-- open import CPermCat 
 -- Establishes that CPerm m n is a symmetric rig category
 
 -- FiniteType ???
 -- SCEquivSCPermEquiv ???
-
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Wavefront ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -- We have so far presented each instance separately. Now we focus on
 -- relating the different type representations.
@@ -295,8 +297,8 @@ open import CPermCat -- TODO
 -- in conjection with SEquivSCPermEquiv so let's wait until
 -- dependencies satisfied...
 
--- open import SEquivSCPermEquiv -- IN PROGRESS
--- open import PiPerm -- IN PROGRESS
+-- open import SEquivSCPermEquiv 
+-- open import PiPerm 
 -- open import PiEquiv
 
 -- open import SkFinSetCategory
@@ -307,5 +309,9 @@ open import CPermCat -- TODO
 -- open import RepresPerm
 -- open import Groupoid
 -- should be subsumed by Categories.Groupoid
+
+-- Old proofs
+-- open import SubstLemmas
+-- open import PathLemmas
 
 ------------------------------------------------------------------------------

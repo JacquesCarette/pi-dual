@@ -15,9 +15,7 @@ open import Data.Empty using (⊥)
 
 open import LeqLemmas       public
 open import FinNatLemmas    public
--- open import SubstLemmas     public
 open import FiniteFunctions public
--- open import PathLemmas      public
 open import VectorLemmas    public
 
 ------------------------------------------------------------------------------

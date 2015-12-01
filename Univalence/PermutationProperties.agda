@@ -23,7 +23,7 @@ open import EquivEquiv
   using (id≋; sym≋; ●-assoc; _◎_; lid≋; rid≋; linv≋; rinv≋;
      module ≋-Reasoning)
 open import TypeEquivEquiv using (_⊎≋_)
-open import FinEquivEquiv using ([id+id]≋id; +●≋●+)
+open import FinEquivEquivPlus using ([id+id]≋id; +●≋●+)
 
 open ≋-Reasoning
 

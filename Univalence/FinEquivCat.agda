@@ -44,16 +44,17 @@ open TimesE using (_*F_; unite*; uniti*; unite*r; uniti*r;
                   swap*; sswap*; assocl*; assocr*)
 open PlusTimesE using (distz; factorz; distzr; factorzr;
                        dist; factor; distl; factorl)
-open import FinEquivEquiv
-  using (
+open import FinEquivEquivPlus using (
     [id+id]≋id; +●≋●+; _+≋_;
     unite₊-nat; unite₊r-nat; uniti₊-nat; uniti₊r-nat;
     assocr₊-nat; assocl₊-nat; unite-assocr₊-coh; assocr₊-coh;
-    swap₊-nat; sswap₊-nat; assocr₊-swap₊-coh; assocl₊-swap₊-coh; 
+    swap₊-nat; sswap₊-nat; assocr₊-swap₊-coh; assocl₊-swap₊-coh)
+open import FinEquivEquivTimes using (
     id*id≋id; *●≋●*; _*≋_;
     unite*-nat; unite*r-nat; uniti*-nat; uniti*r-nat;
     assocr*-nat; assocl*-nat; unite-assocr*-coh; assocr*-coh;
-    swap*-nat; sswap*-nat; assocr*-swap*-coh; assocl*-swap*-coh;
+    swap*-nat; sswap*-nat; assocr*-swap*-coh; assocl*-swap*-coh)
+open import FinEquivEquivPlusTimes using (
     distl-nat; factorl-nat; dist-nat; factor-nat;
     distzr-nat; factorzr-nat; distz-nat; factorz-nat;
     A×[B⊎C]≃[A×C]⊎[A×B]; 
@@ -68,8 +69,7 @@ open import FinEquivEquiv
     0×A×B≃0;
     A×0×B≃0;
     A×[0+B]≃A×B;
-    1×[A⊎B]≃A⊎B
-  )
+    1×[A⊎B]≃A⊎B)
 
 ------------------------------------------------------------------------------
 -- Fin and type equivalences are a category

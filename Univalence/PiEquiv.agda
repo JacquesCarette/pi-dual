@@ -118,6 +118,7 @@ evalB (c₀ ⊗ c₁) (x , y) = evalB c₀ x , evalB c₁ y
 -- should probably prove that these are inverses!
 -- to a certain extent, no need, because here's
 -- the right way to do it:
+
 c2equiv : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
 c2equiv unite₊l = TE.unite₊equiv
 c2equiv uniti₊l = TE.uniti₊equiv
@@ -148,6 +149,7 @@ c2equiv (c ⊗ c₁) = (c2equiv c) ×≃ (c2equiv c₁)
 
 -- and these are 'coherent'
 -- first with evaluation:
+
 lemma0 : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (v : ⟦ t₁ ⟧) →
   eval c v ≡ proj₁ (c2equiv c) v
 lemma0 unite₊l (inj₁ ())
@@ -239,6 +241,7 @@ lemma1 (c₀ ⊕ c₁) (inj₂ y) = trans (cong inj₂ (lemma1 c₁ y)) (sym (β
 lemma1 (c₀ ⊗ c₁) (x , y) = trans (cong₂ _,_ (lemma1 c₀ x) (lemma1 c₁ y)) (sym (β×₂ (x , y)))
 
 -- and with reverse
+
 !≡sym≃ : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) →
   c2equiv (! c) ≋ sym≃ (c2equiv c)
 !≡sym≃ unite₊l = id≋
@@ -398,6 +401,7 @@ cc2equiv fully-distribute⇔r = sym≋ [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]
 -- These programs really are equivalent.  Here's two ways to see that:
 
 -- 1. they give the same results as programs:
+
 ≋⇒≡ : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) →
   eval c₁ ∼ eval c₂
 ≋⇒≡ c₁ c₂ ce =
@@ -407,6 +411,7 @@ cc2equiv fully-distribute⇔r = sym≋ [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]
 
 -- 2. in fact, you can run one forward, then the other
 --    backward, and that's the identity
+
 ping-pong : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) →
   evalB c₂ ∘ eval c₁ ∼ id
 ping-pong c₁ c₂ ce = 

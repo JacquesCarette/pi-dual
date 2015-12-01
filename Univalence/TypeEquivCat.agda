@@ -35,6 +35,7 @@ open import EquivEquiv
     linv≋; rinv≋; lid≋; rid≋; flip-sym≋)
 
 -- list all explicitly, but these are all equivalences
+
 open import TypeEquiv
   using (unite₊equiv; uniti₊equiv; unite₊′equiv; uniti₊′equiv;
          assocr₊equiv; assocl₊equiv;
