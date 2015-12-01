@@ -12,7 +12,7 @@ open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; cong)
   renaming (trans to _∘_; sym to !_)
 
-open import Equiv using (_∼_; _≃_; sym≃; _⋆_; inj≃; mkqinv)
+open import Equiv using (_∼_; _≃_; sym≃; inj≃; qinv; _●_)
 
 ------------------------------------------------------------------------------
 -- This is WAY simpler than using 'with' and 'inspect'!
@@ -44,23 +44,23 @@ inj₂≡ refl = refl
 -- use injectivity of equivalences to go from f x ≡ f y to x ≡ y
 
 injectivity : {A B : Set} (equiv : (⊤ ⊎ A) ≃ (⊤ ⊎ B)) →
-  (a : A) → equiv ⋆ inj₁ tt ≡ equiv ⋆ inj₂ a → (inj₁ tt ≡ inj₂ a) 
+  (a : A) → proj₁ equiv (inj₁ tt) ≡ proj₁ equiv (inj₂ a) → (inj₁ tt ≡ inj₂ a) 
 injectivity equiv x path = inj≃ equiv (inj₁ tt) (inj₂ x) path
 
 left-cancel-⊤ : {A B : Set} →  ((⊤ ⊎ A) ≃ (⊤ ⊎ B)) → A ≃ B
-left-cancel-⊤ {A} {B} (f₁ , mkqinv g₁ α₁ β₁) =
-  let eqv = (f₁ , mkqinv g₁ α₁ β₁) in
+left-cancel-⊤ {A} {B} (f₁ , qinv g₁ α₁ β₁) =
+  let eqv = (f₁ , qinv g₁ α₁ β₁) in
   let v₁ = mkV f₁ (inj₁ tt) in
   let v₂ = mkV g₁ (inj₁ tt) in
   mk₁ {A} {B} eqv v₁ v₂
   where
     mk₁ : {A B : Set} (e : (⊤ ⊎ A) ≃ (⊤ ⊎ B)) → 
-              let (f₁ , mkqinv g₁ α₁ β₁) = e in 
+              let (f₁ , qinv g₁ α₁ β₁) = e in 
               Ev f₁ (inj₁ tt) → Ev g₁ (inj₁ tt) → A ≃ B
-    mk₁ {A} {B} (f , mkqinv g α β) (ev (inj₁ tt) eq₁) (ev (inj₁ tt) eq₂) = A≃B
+    mk₁ {A} {B} (f , qinv g α β) (ev (inj₁ tt) eq₁) (ev (inj₁ tt) eq₂) = A≃B
       where
         equiv : (⊤ ⊎ A) ≃ (⊤ ⊎ B)
-        equiv = (f , mkqinv g α β)
+        equiv = (f , qinv g α β)
 
         elim-path : {X Y Z : Set} → (e : (⊤ ⊎ X) ≃ (⊤ ⊎ Y)) → (x : X) → 
            (proj₁ e) (inj₁ tt) ≡ (proj₁ e) (inj₂ x) → Z
@@ -106,20 +106,20 @@ left-cancel-⊤ {A} {B} (f₁ , mkqinv g₁ α₁ β₁) =
         ββ a = let ev₁ = mkV f (inj₂ a) in mkβ a ev₁ (mkV g (inj₂ (mkf a ev₁)))
 
         A≃B : A ≃ B
-        A≃B = ff , mkqinv gg αα ββ
+        A≃B = ff , qinv gg αα ββ
 
-    mk₁ (f , mkqinv g α β) (ev (inj₁ tt) eq₁) (ev (inj₂ a) eq₂) = 
-      let e = (f , mkqinv g α β) in
+    mk₁ (f , qinv g α β) (ev (inj₁ tt) eq₁) (ev (inj₂ a) eq₂) = 
+      let e = (f , qinv g α β) in
       ⊥-elim
         (bad-path tt a
           (injectivity e a ((eq₁ ∘ ! (α (inj₁ tt))) ∘ cong f eq₂)))
-    mk₁ (f , mkqinv g α β) (ev (inj₂ b) eq₁) (ev (inj₁ tt) eq₂) = 
+    mk₁ (f , qinv g α β) (ev (inj₂ b) eq₁) (ev (inj₁ tt) eq₂) = 
      ⊥-elim (bad-path tt b (((! α (inj₁ tt)) ∘ cong f eq₂) ∘ eq₁))
-    mk₁ {A} {B} (f , mkqinv g α β) (ev (inj₂ x) ftt=x) (ev (inj₂ y) gtt=y) =
+    mk₁ {A} {B} (f , qinv g α β) (ev (inj₂ x) ftt=x) (ev (inj₂ y) gtt=y) =
       A≃B
       where
         equiv : (⊤ ⊎ A) ≃ (⊤ ⊎ B)
-        equiv = (f , mkqinv g α β)
+        equiv = (f , qinv g α β)
 
         elim-path : {X Y Z : Set} → (e : (⊤ ⊎ X) ≃ (⊤ ⊎ Y)) → (x : X) → 
            (proj₁ e) (inj₁ tt) ≡ (proj₁ e) (inj₂ x) → Z
@@ -177,6 +177,15 @@ left-cancel-⊤ {A} {B} (f₁ , mkqinv g₁ α₁ β₁) =
         ββ a = let ev₁ = mkV f (inj₂ a) in mkβ a ev₁ (mkV g (inj₂ (mkf a ev₁)))
 
         A≃B : A ≃ B
-        A≃B = ff , mkqinv gg αα ββ
+        A≃B = ff , qinv gg αα ββ
 
 ------------------------------------------------------------------------------
+
+open import Data.Nat using (ℕ; _+_)
+open import Data.Fin using (Fin)
+open import FinEquivPlusTimes using (module Plus; Fin1≃⊤)
+open Plus using (⊎≃+; +≃⊎)
+open import Equiv using (_⊎≃_; id≃)
+
+left-cancel-1 : {m n : ℕ} →  (Fin (1 + m) ≃ Fin (1 + n)) → Fin m ≃ Fin n
+left-cancel-1 pf = left-cancel-⊤ ((Fin1≃⊤ ⊎≃ id≃) ● +≃⊎ ● (pf ● ⊎≃+) ● (sym≃ Fin1≃⊤ ⊎≃ id≃))
