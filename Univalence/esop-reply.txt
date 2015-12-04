@@ -1,0 +1,74 @@
+Thanks to all three referees for very thorough reviews; we will fix all *** ??? identifies types *** and other clear mistakes that have been identified.
+
+In particular, Referee 1 points out "Section 5.3 then discusses that Types and Type equivalences form a symmetric rig groupoid. On the description there is a mistake about which coherence conditions justify pf3 == pf4.
+
+   The very reason for why pf3 and pf4 are isomorphic is precisely the "unit coherence" for symmetric
+   monoidal categories, not number XVII."
+
+Thank you, you are quite right.  This was a bad example on our part, and is likely a cut-and-paste error.  Our apologies.
+
+There are a few statements in the reviews that we find inaccurate:
+
+      - "Section 5 gives a categorical presentation for the finite types previously introduced."
+
+A minor point, but a categorical presentation should never be about objects, but about morphisms.  And indeed, our work is not about just types, or just finite finite types, but indeed about equivalences.
+
+  	- "I put this paper as a weak reject as I do not find the contributions as remarkable and new as the
+	authors claim. It is well known that type algebra restricted to "0 , 1 , * , +" have a semiring
+	structure up to isomorphism."
+
+And of course, we entirely agree -- and cite papers that prove much more than this.  So this is not at all what our paper is about.  Our paper is about the fact that:
+
+ a. axioms for semirings correspond exactly to equivalences, which are the *terms* of a (reversible) programming language
+
+ b. that, viewed categorically, equivalences of equivalences for categorified semirings (rig categories) give terms for a language of program transformations.
+
+It is important to note that, outside of HoTT [a very small community indeed], no one has ever written down what "equivalences of equivalences" even means.  We had to ask (see post on MathOverflow), and even then, experts had to have a bit of a debate before settling on a definition that was independent of univalence. This is a crucial novelty of our work -- that this correct, new, univalence-free definition of "equivalence of equivalence" is EXACTLY the 'right' set of terms for a language of program transformations.  We believe this insight is non-trivial.
+
+      - "I would have enjoyed seeing more applications of this insight, for instance, can you use some
+      sort of ring solver or proof by reflection to infer type isomorphisms?"
+
+Inferring type isomorphisms has been done in previous work (by others). But the answer to the question as posed is no.  We would need, at the very least, a Rig Category solver to find anything interesting, i.e., to infer equivalences-of-equivalences which are, in some sense 'optimizations'.  This is future work - and is likely to be rather challenging.
+
+*** DELETE
+
+    - "Lemma c2equic states that given a reversible-computation in \Pi, with type c : t1 <-> t2, then
+      the denotation of both types is equivalent. Moreover, they also state that t1 = t2 are equal in the
+      underlying semiring."
+
+We most definitely do not state this, as it is false.  This is not the content of any of c2equiv, lemma0 or lemma1 in section 4.4.
+
+***
+
+	- "Coherence conditions can be worked out in a mechanical fashion. "
+
+Working out coherence conditions for complex categorical definitions is still an art, as far as we know.  Most of the work on rewriting does not apply, as the algorithms they have are not terminating in our situation.  There are some theoretical papers (which we cite) which lays some ground work but these, as far as we know, have never been implemented.  Yes, of course the ones for monoidal categories are easy.  The ones for Rig Categories are not.  We have asked several experts, and none could give us a solid explanation of how to derive these.  See, for example, the unanswered question about this on MathOverflow.
+
+Also note that there are categories where doing commutativity twice is NOT the same as the identity (ex: braided but non-symmetric monoidal categories).  So this is not a free coherence.
+
+     	  - "It is also worth mentioning that an operation automatically satisfies all the
+	  relevant coherence laws if it is defined by an universal property."
+
+Indeed.  And if we were doing category theory instead of programming language theory, that is the route we would have taken.  But since we need to be 100% constructive, we did not chose that route.
+
+	 - The question "You state that "all" types and type equivalences make up a symmetric rig
+	 groupoid. I assume you mean that this structure arises on top of the cannonical product and
+	 coprodut. Why such a general result? Wouldn't it suffice to prove it for your universe of types? Not
+	 to mention your proof does not convince me how "all" types are handled."
+
+In part because the general result is much easier to prove.  And [ongoing work] that the result for the smaller universe of types follow from the general result.
+
+Our proof is for "Set" in Agda, and is verified by Agda.
+
+    	  - "I also believe that proving those simple facts in Agda is overkill, it makes the proof cluttered
+	  and hard to read. "
+
+As far as we know there is no published result that states that "Set" is a weak Rig groupoid. It is not really a simple fact. In addtion, as is now becoming the 'gold standard' in PL meta-theory, we believe that there are great advantages in using proof assistants for our work.  Furthermore, we had several plausible conjectures shown to be (subtly!) false because we used Agda.  But giving these here would be new research.
+
+[Yes, theorem 3 does hold by construction.  We should state that more clearly, thank you.  The theorems before it, on the same page, are not so trivial]
+
+      	   - "Bad points: it would be interesting to understand what happens by adding  recursive types"
+
+*** That seems to be talking about something else: recursive types are a different story, aren't they ***
+
+We entirely agree, and have been working on that for over 2 years now.  The problem is that adding 'trace' tends to completely collapse the whole structure.  We have some ideas on how to deal with that.  This is the problem of "rig completion" which was open for decades, and has only recently been solved.  The solution is not obviously constructive, unfortunately.
