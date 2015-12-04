@@ -106,15 +106,15 @@ p∘!p≡id {p = p} = isqinv.β (proj₂ p)
 !p∘p≡id : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} {p : A ≃ B} → (_⋆_ (trans≃ (sym≃ p) p)) ∼ (_⋆_ id≃)
 !p∘p≡id {p = p} = p∘!p≡id {p = sym≃ p}
 
-
+-}
 -- equivalences are injective
 
-inj≃ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (eq : A ≃ B) → (x y : A) → (eq ⋆ x ≡ eq ⋆ y → x ≡ y)
+inj≃ : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'} → (eq : A ≃ B) → (x y : A) → (proj₁ eq x ≡ proj₁ eq y → x ≡ y)
 inj≃ (f , qinv g α β) x y p = trans
   (sym (β x)) (trans
   (cong g p) (
   β y))
--}
+
 
 -- generally useful
 cong∘l : ∀ {ℓ ℓ′ ℓ″} {A : Set ℓ} {B : Set ℓ′} {C : Set ℓ″}
