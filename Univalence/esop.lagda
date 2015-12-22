@@ -720,7 +720,7 @@ _∼_  {A} f g = (x : A) → f x ≡ g x
 
 \begin{definition}[Quasi-inverse]
 \label{def:quasi}
-For a function $f : A \rightarrow B$, a \emph{quasi-inverse} is a
+For a function $f : A \rightarrow B$, a \emph{quasi-inverse} of $f$ is a
 triple $(g, \alpha, \beta)$, consisting of a function
 $g : B \rightarrow A$ and two homotopies
 $\alpha : f \circ g \sim \mathrm{id}_B$ and
@@ -869,8 +869,8 @@ equivalences are equivalent if there exist homotopies between their
 underlying functions.
 
 \begin{definition}[Equivalence of equivalences]
-Two equivalences $e_1, e_2 : A ≃ B$ are themselves equivalent $e_1.f ∼
-  e_2.f$ and $e_1.g ∼ e_2.g$. 
+Two equivalences $\mathit{eq}_1, \mathit{eq}_2 : A ≃ B$ are themselves equivalent
+if $\mathit{eq}_1.f ∼ \mathit{eq}_2.f$ and $\mathit{eq}_1.g ∼ \mathit{eq}_2.g$. 
 \end{definition}
 In Agda, we write:
 
@@ -900,7 +900,7 @@ $\simeq$ contain functions -- and such an equality would require
 extensionality.  But since equating two equivalences essentially
 boils down to equating those functions, we simply need to do the
 same as we did before, and move to homotopies.  Thus our
-definition\footnote{Strictly speaking, the $g\equiv$ component
+definition\footnote{Strictly speaking, the \AgdaField{g≡} component
 is redundant, from a logical perspective, as it is derivable.  From 
 a computational perspective, it is very convenient.}.
 
@@ -2817,26 +2817,6 @@ introduce \emph{fractional types}.
 The final version of the paper is limited to 25pages LNCS style and it
 is due to be submitted through easychair by 8 January 2016.
 
-The authors start by mentioning the existence of a Curry-Howard-like
-correspondence between a given type language and semirings. An
-informal intuition is given for the readers, which is easy to follow
-(Section 2).  Section 3 then revisits the topics of the previous
-section in a more formal manner, using notions from Homotopy type
-theory. After introducing the preliminary notions, the authors stress
-that they are interested in identifying the equivalent equivalences.
-
-A brief section about "programming with equivalences" follows, where
-we are introduced to a bunch of well-known type isomorphisms and
-several examples (section 4.2). The type algebra of the universe can
-be seen as a semiring, where the semiring axioms correspond to
-proof-relevant transformations.
-
-Section 5 gives a categorical presention for the finite types
-previously introduced. Section 5.2 gives with a few definitions and a
-textual description of the coherence conditions for everything to
-work. Section 6 then gives a more 'programmers' approach to working
-with equivalences of equivalences.
-
 I put this paper as a weak reject as I do not find the contributions
 as remarkable and new as the authors claim. It is well known that type
 algebra restricted to "0 , 1 , * , +" have a semiring structure up to
@@ -2949,12 +2929,6 @@ p6l14:
  and now you call it Bool. They are indeed isomorphic, but sticking
  to the same notation might be a good idea.
 
-definition 3:
- "For a function f : A -> B, a quasi-inverse FOR/OF f ..."
-
-definition 5:
- "... are themselves equivalent IFF ..."
-
 p8l13:
  "The problem is that homotopies in such a type (\alpha and \beta)"
  Who are \alpha and \beta? Maybe you meant "A" and "B".
@@ -3028,21 +3002,12 @@ circuits.
 - page 16, line 22: please write what Hom is
 - page 20, line 18: what you mean here with braided? Is it not the
  same as symmetric?
-- page 20, line -9: too much whitespace after Figs.
-- page 22, line -3: too much whitespace after Figs.
 - page 23, proof of Th. 3: this proof seems taken literally from an
  old version of the paper, with different notations. In particular,
  in the proof you speak about levels 1 and 2, while before you were
  using levels 0 and 1; furthermore you say that additional level 0
  combinators are presented in the next section, while they were
  presented and discussed at the beginning of the section
-
-Following Curry-Howard, the paper relates types to semiring elements,
-and semiring identities to type isomorphisms, which are also
-reversible programs.  It then pushes these ideas up the tower of
-equivalences.  It defines combinators at several levels of the tower,
-and gives some examples of (reversible) programs/circuits that can be
-expressed.
 
 Sections 1 and 2 were clear and engaging.  I felt that I understood
 (at least) the contours of the work's connection to Curry-Howard, and
@@ -3052,12 +3017,6 @@ prominently in the \emph{univalence axiom}."  If you are going to use
 a connection to the univalence axiom as an argument for your work's
 importance, you should at least try to explain what a univalence axiom
 is.
-
-The paper handles the dependence on Agda (as Sec. 1 says, "the paper
-is partly an 'unformalization' of an...Agda...package") rather well,
-and largely succeeds in not making knowledge of Agda a prerequisite,
-but I have some suggestions for improvement; see detailed comments
-below.
 
 "The elementary building blocks of type theory are..."  This is an
 awfully strong assertion. The connectives listed are a reasonable set
@@ -3094,10 +3053,6 @@ Definition 2 would be a good opportunity to explain some Agda for the unfamiliar
  • the meaning of "Set".
 
 Actually I would have liked the entire definition to be explained in this way.
-
-Def. 5: Use eq1, eq2 instead of e1, e2, to better match the Agda.
-
-Footnote 4: drop the space between g and ≡.
 
 4.1: "Fig. 2 adds to that 3 combinators," Please mention each specific
 combinator along with its explanation, in this sentence.
