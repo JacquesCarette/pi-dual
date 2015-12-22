@@ -243,15 +243,15 @@ transformations:
 
 This connection to logic, as inspiring as it is, only cares whether a
 type is inhabited or not. For example, when translated to the world of
-types, the second tautology above states that the type $\tau \times
-\tau$ is inhabited iff the type $\tau$ is inhabited. Furthermore, the
-proofs of the two implications give rise to two functions that produce
-an element from one type given an element of the other. This framework
-is however of no direct help if one is concerned with other, richer
-properties of types and their relationships. For example, type
-isomorphisms are an important relation between types that is more refined
-than mere inhabitance of types as they clearly distinguishes $\tau
-\times \tau$ and $\tau$.
+types, the second tautology above states that the type
+$\tau \times \tau$ is inhabited iff the type $\tau$ is
+inhabited. Furthermore, the proofs of the two implications give rise
+to two functions that produce an element from one type given an
+element of the other. This framework is however of no direct help if
+one is concerned with other, richer properties of types and their
+relationships. For example, type isomorphisms are an important
+relation between types that is more refined than mere inhabitance of
+types as they clearly distinguish $\tau \times \tau$ and $\tau$.
 
 The study of type isomorphisms became recently popular during at least
 two short periods: in the early 1990s when they were used to search
@@ -326,7 +326,7 @@ equivalence. But reasoning \emph{about} these programs abandons the
 notion of equivalence and uses conventional irreversible functions to
 specify evaluators and the derived notions of program
 equivalence. This unfortunately misses the beautiful combinatorial
-structure of equivalences at higher-levels that was first exposed in
+structure of equivalences at higher levels that was first exposed in
 the historical paper by \citet{Hofmann96thegroupoid} and that is
 currently the center of attention of HoTT.
 
@@ -359,6 +359,57 @@ of types. What emerges from our study are the following results:
 \end{itemize}
 
 \end{comment}
+
+\amr{integrate the following paragraphs that used to be in the
+  conclusion with the intro}
+
+The traditional Curry-Howard correspondence is based on ``mere logic
+(to use the HoTT terminology).''  That is, it is based around
+\emph{proof inhabitation}: two types, like two propositions, are
+regarded as ``the same'' when one is inhabited if and only if the
+other is.  In that sense, the propositions $A$ and $A \wedge A$, are
+indeed the same, as are the types $T$ and $T \times T$.  This is all
+centered around proof irrelevant mathematics.
+
+What we have shown is that if we shift to proof relevant
+mathematics, computationally relevant equivalences,
+explicit homotopies, and algebra, something quite new emerges:
+an actual isomorphism between proof terms and reversible
+computations.  Furthermore, what algebraic structure to use
+is not mysterious: it is exactly the algebraic structure of
+the semantics.  In the case of finite types (with sums and
+products), this turns out to be commutative semirings.
+
+But the Curry-Howard correspondence promises more: that proof
+transformations correspond to program transformations.  In a proof
+irrelevant setting, this is rather awkward; similarly, in a
+extensional setting, program equivalence is a rather coarse
+concept. But, in our setting, both of these issues disappear.  The key
+to proceed was to realize that there exist combinators which make
+equivalences 
+%%\footnote{and permutations, but I don't know if we can bring that in} 
+look like a semiring, but do not actually have a semiring structure.
+The next insight is to ``remember'' that a monoidal category is really
+a model of a \emph{typed monoid}; in a way, a monoidal category is a
+\emph{categorified} monoid.  So what we needed was a categorified
+version of commutative semirings.  Luckily, this had already been
+done, in the form of Rig categories.  Modifying this to have a weaker
+notion of equivalence and having all morphisms invertible was quite
+straightforward.
+
+Again, being proof relevant mattered: it quickly became 
+apparent that the \emph{coherence laws} involved in
+weak Rig Groupoids were \emph{exactly} the program
+equivalences that were needed.  So rather than fumbling 
+around finding various equivalences and hoping to 
+stumble on enough of them to be complete, a systematic
+design emerged: given a 1-algebra of types parametrized
+by an equivalence $\simeq$, one should seek a 
+$2$-algebra (aka typed algebra, aka categorification
+of the given $1$-algebra) that corresponds to it.
+The coherence laws then emerge as a complete set of
+program transformations.  This, of course, clearly
+points the way to further generalizations.
 
 %% \todo{Every single theorem should have, in a comment above it, the
 %% name of a source file and an Agda statement which has a proof.}
@@ -612,15 +663,15 @@ semiring elements and semiring identities as type isomorphisms. The
 correspondence continues further between justifications for semiring
 identities and valid program transformations and optimizations. There
 is a long way however from noticing such a correspondence to
-formalizing it in such way that a well-founded reversible programming
-language along with its accompanying program transformations and
-optimizations can be naturally extracted from the algebraic semiring
-structure. Furthermore, the correspondence between the algebraic
-manipulations in semirings and program transformations is so tight
-that it should be possible to conveniently move back and forth between
-the two worlds transporting results that are evident in one domain to
-the other. The remainder of the paper is about such a formalization
-and its applications. 
+formalizing it in such a way that a well-founded reversible
+programming language along with its accompanying program
+transformations and optimizations can be naturally extracted from the
+algebraic semiring structure. Furthermore, the correspondence between
+the algebraic manipulations in semirings and program transformations
+is so tight that it should be possible to conveniently move back and
+forth between the two worlds transporting results that are evident in
+one domain to the other. The remainder of the paper is about such a
+formalization and its applications.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Type Equivalences and Equivalences of Equivalences}
@@ -641,7 +692,7 @@ identities. We give precise definitions to these notions.
 As a first approximation, Sec.~\ref{subsec:isos} identifies two types
 when there is an isomorphism between them.  The next section
 (Sec.~\ref{subsec:proofrelev}) however reveals that we want to reason
-at a higher-level about equivalences of such isomorphisms. We
+at a higher level about equivalences of such isomorphisms. We
 therefore follow the HoTT approach and expose one of the functions
 forming the isomorphism in order to explicitly encode the precise way
 in which the two types are equivalent. Thus, for example, as mentioned
@@ -1228,8 +1279,8 @@ Curry-Howard like correspondence, we now turn our attention to
 developing an actual programming language. The first step will be to
 introduce syntax that denotes type equivalences. Thus instead of
 having to repeatedly introduce functions and their inverses and proofs
-of homotopies, we would simply use a term language that exactly
-expresses type equivalences and nothing else. 
+of homotopies, we will simply use a term language that exactly
+expresses type equivalences and nothing else.
 
 \begin{figure*}[ht]
 \[
@@ -1339,18 +1390,18 @@ module Foo where
 
 The family of $\Pi$ languages was previously introduced as standalone
 reversible programming languages. The fragment without recursive types
-discussed in this paper is universal for reversible booleans
+discussed in this paper is universal for reversible boolean
 circuits~\citep{James:2012:IE:2103656.2103667}. With the addition of
 recursive types and trace
-operators~\citep{Hasegawa:1997:RCS:645893.671607}, $\Pi$ become a
-Turing complete reversible
-language~\citep{James:2012:IE:2103656.2103667,rc2011}. 
+operators~\citep{Hasegawa:1997:RCS:645893.671607}, $\Pi$ becomes a
+Turing-complete reversible
+language~\citep{James:2012:IE:2103656.2103667,rc2011}.
 
 We illustrate the expressiveness of $\Pi$ with a few small programs:
-we begin by defining the universe of types \AgdaDatatype{U},
-encoding the types of booleans, write a few simple gates like the
-Toffoli gate~\citep{Toffoli:1980}, and use them to write a reversible
-full adder~\citep{revadder}:
+we begin by defining the universe of types \AgdaDatatype{U}. We then
+encode the type of booleans, write a few simple gates like the Toffoli
+gate~\citep{Toffoli:1980}, and use them to write a reversible full
+adder~\citep{revadder}:
 
 \AgdaHide{
 \begin{code}
@@ -1405,16 +1456,15 @@ FULLADDER = swap⋆ ◎ (swap⋆ ⊗ id⟷) ◎ assocr⋆ ◎ swap⋆ ◎ (PERES
 \end{code}
 }}
 
-\medskip
-Although writing circuits using the raw syntax for combinators is
-tedious, the examples illustrate the programming language nature of
-$\Pi$. In other work, one can find a compiler from a conventional
-functional language to generate the
+\medskip Although writing circuits using the raw syntax for
+combinators is tedious, the examples illustrate the programming
+language nature of $\Pi$. In other work, one can find a compiler from
+a conventional functional language to generate the
 circuits~\citep{James:2012:IE:2103656.2103667}, a systematic technique
 to translate abstract machines to $\Pi$~\citep{rc2012}, and a
 Haskell-like surface language~\citep{theseus} which can be of help in
 writing circuits, which further reinforce the first part of the title,
-i.e, that we can really compute with semirings.
+i.e., that we can really compute with semirings.
 
 %%%%%%%%%%%%
 \subsection{Example Proofs}
@@ -1899,9 +1949,8 @@ A×[B⊎C]→[A×C]⊎[A×B] : {A B C : Set} →
 A×[B⊎C]→[A×C]⊎[A×B] (x , inj₁ y) = refl
 A×[B⊎C]→[A×C]⊎[A×B] (x , inj₂ y) = refl
 \end{code}
-\medskip
 
-\noindent The lemma asserts the that the two paths between
+\medskip\noindent The lemma asserts the that the two paths between
 $A ⊗ (B ⊕ C)$ and $(A ⊗ C) ⊕ (A ⊗ B)$ are homotopic. To show that
 we have a groupoid, we also need to know that the converse lemma
 also holds, i.e. that reversing all arrows also gives a diagram for
@@ -1916,9 +1965,7 @@ a homotopy, in other words:
 [A×C]⊎[A×B]→A×[B⊎C] (inj₂ y) = refl
 \end{code}
 
-\medskip
-
-\noindent Finally we show that the forward equivalence and the backward
+\medskip\noindent Finally we show that the forward equivalence and the backward
 equivalence are indeed related to the same diagram:
 \[
 \AgdaFunction{laplazaI} =
@@ -2129,7 +2176,7 @@ $\rho_{A}$, $\sigma_{A,B}$, $dₗ$, $dᵣ$, $aₗ$ and $aᵣ$.  The first $4$
 natural isomorphisms actually occur twice, once for each of the
 symmetric monoidal structures at play.  Each natural isomorphism is
 composed of 2 natural transformations (one in each direction) that
-must compose to the identity.  This in turn induces $4$ coherences
+must compose to the identity.  This in turn induces $4$ coherence
 laws: two \emph{naturality laws} which indicate that the combinator
 commutes with structure construction, and two which express that the
 resulting combinators are left and right inverses of each other.  We
@@ -2159,7 +2206,7 @@ be viewed as a language for expressing transformations and
 optimizations of boolean circuits. We illustrate the idea with a few
 small examples.
 
-As Figs. ~\ref {fig:more2} and~\ref {fig:more3} illustrate, we have
+As Figs.~\ref {fig:more2} and~\ref {fig:more3} illustrate, we have
 rules to manipulate code fragments rewriting them in a small-step
 fashion. The rules apply only when both sides are well-typed. In their
 textual form, the rules are certainly not intuitive. They however
@@ -2180,9 +2227,7 @@ postulate
   c₂ : {A D : U} →  A ⟷ D
 \end{code}
 
-\medskip 
-
-\noindent Now consider the circuits \AgdaFunction{p₁} and
+\medskip\noindent Now consider the circuits \AgdaFunction{p₁} and
 \AgdaFunction{p₂} which use \AgdaFunction{c₁} and \AgdaFunction{c₂}
 as shown below:
 
@@ -2418,14 +2463,15 @@ open import PiEquiv using (c2equiv)
 \end{code}
 }
 
-Here is a complete proof in level-1 $\Pi$ using the small-step
+\medskip\noindent Here is a complete proof in level-1 $\Pi$ using the small-step
 rewriting style that shows that the two circuits are equivalent.
 
 \begin{tabular}{@{\kern-3em}l}
 \begin{minipage}{0.5\textwidth}
 \begin{code}
 negEx : NOT₂ ⇔ NOT₁
-negEx = uniti⋆l ◎ (PiLevel0.swap⋆ ◎ ((PiLevel0.swap₊ ⊗ id⟷) ◎ (PiLevel0.swap⋆ ◎ unite⋆l)))
+negEx = uniti⋆l ◎ 
+              (PiLevel0.swap⋆ ◎ ((PiLevel0.swap₊ ⊗ id⟷) ◎ (PiLevel0.swap⋆ ◎ unite⋆l)))
           ⇔⟨ id⇔ ⊡ assoc◎l ⟩
         uniti⋆l ◎ ((PiLevel0.swap⋆ ◎ (PiLevel0.swap₊ ⊗ id⟷)) ◎ (PiLevel0.swap⋆ ◎ unite⋆l))
           ⇔⟨ id⇔ ⊡ (swapl⋆⇔ ⊡ id⇔) ⟩
@@ -2466,7 +2512,7 @@ negEx = uniti⋆l ◎ (PiLevel0.swap⋆ ◎ ((PiLevel0.swap₊ ⊗ id⟷) ◎ (P
 %%%
 \subsection{Semantics}
 
-Each 1-level combinator whose signature is in Figs. ~\ref{fig:more2}
+Each 1-level combinator whose signature is in Figs.~\ref{fig:more2}
 and~\ref{fig:more3} gives rise to an equivalence of equivalences of
 types. Furthermore, the level-1 combinators are coherent with the
 respect to the level-0 semantics. Formally, in Agda, we have:
@@ -2475,7 +2521,8 @@ respect to the level-0 semantics. Formally, in Agda, we have:
 cc2equiv : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) →
   PiEquiv.c2equiv c₁ ≋ PiEquiv.c2equiv c₂
 \end{code}
-\noindent In other words, equivalent programs exactly denote equivalent
+
+\medskip\noindent In other words, equivalent programs exactly denote equivalent
 equivalences.
 
 This is all compatible with the operational semantics as well,
@@ -2485,9 +2532,10 @@ backwards, we get the identity:
 
 \begin{code}
 ≋⇒≡ : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) → eval c₁ ∼ eval c₂
-
-ping-pong : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) → (evalB c₂ ∘ eval c₁) ∼ id 
+ping-pong : 
+  {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) → (evalB c₂ ∘ eval c₁) ∼ id 
 \end{code}
+
 \AgdaHide{
 \begin{code}
 cc2equiv = {!!} 
@@ -2495,7 +2543,8 @@ cc2equiv = {!!}
 ping-pong = {!!} 
 \end{code}
 }
-\noindent It should be stressed that $c_1$ and $c_2$ can be 
+
+\medskip\noindent It should be stressed that $c_1$ and $c_2$ can be 
 arbitrarily complex programs (albeit equivalent), the above 
 optimization property holds.  So we have the promise of a
 very effective optimizer for such programs.
@@ -2516,7 +2565,7 @@ groupoid.
   coherence conditions are satisfied. This required us to add a few
   $\Pi$ combinators and then to add a whole new layer of 2-combinators
   witnessing enough equivalences of~$\Pi$ combinators to satisfy the
-  coherence laws (see Figs. ~\ref {fig:more2} and~\ref
+  coherence laws (see Figs.~\ref {fig:more2} and~\ref
   {fig:more3}). The new $\Pi$ 1-combinators, also discussed in more
   detail in the next section, are redundant (from an operational
   perspective) exactly because of the coherence conditions; they are
@@ -2593,54 +2642,6 @@ open import TypeEquivCat
 \label{sec:conc}
 %\label{sec:8}
 
-The traditional Curry-Howard correspondence is based on ``mere
-logic\footnote{to use the HoTT terminology}.''  That is, it is based
-around \emph{proof inhabitation}: two types, like two propositions,
-are regarded as ``the same'' when one is inhabited if and only if the
-other is.  In that sense, the propositions $A$ and $A \wedge A$, are
-indeed the same, as are the types $T$ and $T \times T$.  This is all
-centered around proof irrelevant mathematics.
-
-What we have shown is that if we shift to proof relevant
-mathematics, computationally relevant equivalences,
-explicit homotopies, and algebra, something quite new emerges:
-an actual isomorphism between proof terms and reversible
-computations.  Furthermore, what algebraic structure to use
-is not mysterious: it is exactly the algebraic structure of
-the semantics.  In the case of finite types (with sums and
-products), this turns out to be commutative semirings.
-
-But the Curry-Howard correspondence promises more: that proof
-transformations correspond to program transformations.  In a proof
-irrelevant setting, this is rather awkward; similarly, in a
-extensional setting, program equivalence is a rather coarse
-concept. But, in our setting, both of these issues disappear.  The key
-to proceed was to realize that there exist combinators which make
-equivalences 
-%%\footnote{and permutations, but I don't know if we can bring that in} 
-look like a semiring, but do not actually have a semiring structure.
-The next insight is to ``remember'' that a monoidal category is really
-a model of a \emph{typed monoid}; in a way, a monoidal category is a
-\emph{categorified} monoid.  So what we needed was a categorified
-version of commutative semirings.  Luckily, this had already been
-done, in the form of Rig categories.  Modifying this to have a weaker
-notion of equivalence and having all morphisms invertible was quite
-straightforward.
-
-Again, being proof relevant mattered: it quickly became 
-apparent that the \emph{coherence laws} involved in
-weak Rig Groupoids were \emph{exactly} the program
-equivalences that were needed.  So rather than fumbling 
-around finding various equivalences and hoping to 
-stumble on enough of them to be complete, a systematic
-design emerged: given a 1-algebra of types parametrized
-by an equivalence $\simeq$, one should seek a 
-$2$-algebra (aka typed algebra, aka categorification
-of the given $1$-algebra) that corresponds to it.
-The coherence laws then emerge as a complete set of
-program transformations.  This, of course, clearly
-points the way to further generalizations.
-
 The correspondence established in the paper provides a semantically
 well-founded approach to the representation, manipulation, and
 optimization of reversible circuits with the following main ingredients:
@@ -2694,25 +2695,24 @@ More generally, reversible computational models --- in which all
 functions have inverses --- are known to be universal computational
 models~\citep{Bennett:1973:LRC} and more importantly they can be
 defined without any reference to irreversible functions, which
-ironically become the derived notion~\citep{Green:2008:RIC}. It is
-therefore, at least plausible, that a variant of HoTT based
-exclusively on reversible functions that directly correspond to
-equivalences would have better computational properties. Our current
-result is a step, albeit preliminary in that direction as it only
-applies to finite types. However, it is plausible that this
-categorification approach can be generalized to accommodate
-higher-order functions. The intuitive idea is that our current
-development based on the categorification of the commutative semiring
-of the natural numbers might be generalizable to the categorification
-of the ring of integers or even to the categorification of the field
-of rational numbers. The generalization to rings would introduce
-\emph{negative types} and the generalization to fields would further
-introduce \emph{fractional types}. It is even possible to conceive of
-more exotic types such as types with square roots and imaginary
-numbers by further generalizing the work to the field of
-\emph{algebraic numbers}. These types have been shown to make sense in
-computations involving recursive datatypes such as trees that can be
-viewed as solutions to polynomials over type
+ironically become the derived notion~\citep{Green:2008:RIC}. It is,
+therefore, at least plausible that a variant of HoTT based exclusively
+on reversible functions that directly correspond to equivalences would
+have better computational properties. Our current result is a step,
+albeit preliminary, in that direction as it only applies to finite
+types. However, it is plausible that this categorification approach
+can be generalized to accommodate higher-order functions. The
+intuitive idea is that our current development based on the
+categorification of the commutative semiring of the natural numbers
+might be generalizable to the categorification of the ring of integers
+or even to the categorification of the field of rational numbers. The
+generalization to rings would introduce \emph{negative types} and the
+generalization to fields would further introduce \emph{fractional
+  types}. It is even possible to conceive of more exotic types such as
+types with square roots and imaginary numbers by further generalizing
+the work to the field of \emph{algebraic numbers}. These types have
+been shown to make sense in computations involving recursive datatypes
+such as trees that can be viewed as solutions to polynomials over type
 variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
 
 \begin{comment}
@@ -2814,44 +2814,8 @@ introduce \emph{fractional types}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
 
-Congratulations!
-
-Your paper 
-
-Computing with semirings and weak rig groupoids 
-
-has been accepted for presentation at ESOP 2016 in Eindhoven
-and it is expected that at least one author attends the conference
-to present the paper.
-
 The final version of the paper is limited to 25pages LNCS style and it
 is due to be submitted through easychair by 8 January 2016.
-In many cases, the reviewers have added notes from the discussion
-at the pc meeting to the reviews and additional reviews
-have been written since the rebuttal period. Please take these notes 
-into account when revising the paper.
-
-Looking forward to meeting you at the conference
-Peter Thiemann, pc chair, ESOP 2016
-
-
------------------------ REVIEW 1 ---------------------
-PAPER: 106
-TITLE: Computing with semirings and weak rig groupoids
-AUTHORS: Jacques Carette and Amr Sabry
-
-OVERALL EVALUATION: -1 (reject)
-REVIEWER'S CONFIDENCE: 4 (high)
-
------------ REVIEW -----------
-Review on Submission 106.
-
-title: "Computing with Semirings and Weak Rig Grupoids"
-authors: "Carette J. and Sabry A."
-
-
-Summary
-=======
 
 The authors start by mentioning the existence of a Curry-Howard-like
 correspondence between a given type language and semirings. An
@@ -2872,10 +2836,6 @@ previously introduced. Section 5.2 gives with a few definitions and a
 textual description of the coherence conditions for everything to
 work. Section 6 then gives a more 'programmers' approach to working
 with equivalences of equivalences.
-
-
-Comments
-========
 
 I put this paper as a weak reject as I do not find the contributions
 as remarkable and new as the authors claim. It is well known that type
@@ -2906,9 +2866,6 @@ c2equic states that given a reversible-computation in \Pi, with type c
 equivalent. Moreover, they also state that t1 = t2 are equal in the
 underlying semiring. I believe this section could receive more
 attention and again enforce the connection you want to make.
-
-Section 5:
-
 
 The coherence conditions discussion, in section 5, is very long and unclear.
 Coherence conditions can be worked out in a mechanical fashion. 
@@ -2982,9 +2939,6 @@ Theorem 3 holds by construction... if you constructed your combinator-calculus
 based on the laws of the natural transformations for a symmetric rig groupoid, 
 it would be very strange if they did NOT show that structure. 
 
-Typos and less relevant comments.
-=================================
-
 p3: Definition 1:
  Wouldn't it be more decriptive to call +-sym and *-sym
  +-comm and *-comm, respectively? But that's a syntactical remark
@@ -3022,18 +2976,6 @@ notation helps a lot.
 Figure 3 & Def 7:
  Adding the equational reading of the diagrams would be of great value.
 
-
------------------------ REVIEW 2 ---------------------
-PAPER: 106
-TITLE: Computing with semirings and weak rig groupoids
-AUTHORS: Jacques Carette and Amr Sabry
-
-OVERALL EVALUATION: 2 (strong accept)
-REVIEWER'S CONFIDENCE: 3 (medium)
-
------------ REVIEW -----------
-Summary
-
 Inspired by Curry-Howard correspondence, the paper presents a
 correspondence that relates semirings to given reversible programming
 languages.  While Curry-Howard correspondence only checks whether
@@ -3049,8 +2991,6 @@ from coherence conditions of symmetric rig categories. This language
 can be used to express transformations and optimizations of boolean
 circuits.
 
-	Good points
-
 - the presented correspondence is novel as far as I know, and tight
 
 - the languages of equivalences and of equivalences of equivalences
@@ -3063,12 +3003,8 @@ circuits.
 - the paper is clear and well-written; most of it can be understood by
  a reader with limited familiarity with the discussed topics
 
-	Bad points
-
 - it would be interesting to understand what happens by adding
  recursive types
-
-	Detailed comments
 
 - page 5, lines 12 and 19: there is one ) too much
 - page 6, def. 2: are homotopic -> are homotopic, written f ~ g, 
@@ -3081,8 +3017,6 @@ circuits.
 - page 8, lines 17-21: I do not understand this, but this is probably
  due to my limited familiarity with homotopy type theory
 - page 9, line -9: types types -> types
-- page 10, line 19: booleans circuits -> boolean circuits
-- page 10, line 20: \PI become -> \PI becomes
 - page 10, lines -3 and -1, and elsewhere: I guess the symbol after
  dist and the ones before factor are sequential compositions, isn't
  it?
@@ -3103,62 +3037,56 @@ circuits.
  combinators are presented in the next section, while they were
  presented and discussed at the beginning of the section
 
+Following Curry-Howard, the paper relates types to semiring elements,
+and semiring identities to type isomorphisms, which are also
+reversible programs.  It then pushes these ideas up the tower of
+equivalences.  It defines combinators at several levels of the tower,
+and gives some examples of (reversible) programs/circuits that can be
+expressed.
 
------------------------ REVIEW 3 ---------------------
-PAPER: 106
-TITLE: Computing with semirings and weak rig groupoids
-AUTHORS: Jacques Carette and Amr Sabry
+Sections 1 and 2 were clear and engaging.  I felt that I understood
+(at least) the contours of the work's connection to Curry-Howard, and
+type isomorphisms and semirings.  OTOH, homotopy type theory felt more
+like a buzzword, with p. 2 saying "type equivalences feature
+prominently in the \emph{univalence axiom}."  If you are going to use
+a connection to the univalence axiom as an argument for your work's
+importance, you should at least try to explain what a univalence axiom
+is.
 
-OVERALL EVALUATION: 1 (accept)
-REVIEWER'S CONFIDENCE: 2 (low)
+The paper handles the dependence on Agda (as Sec. 1 says, "the paper
+is partly an 'unformalization' of an...Agda...package") rather well,
+and largely succeeds in not making knowledge of Agda a prerequisite,
+but I have some suggestions for improvement; see detailed comments
+below.
 
------------ REVIEW -----------
-••• Summary of paper •••
+"The elementary building blocks of type theory are..."  This is an
+awfully strong assertion. The connectives listed are a reasonable set
+of building blocks, but the term "type theory" is already contentious
+(is it Martin-Löf-related theories, or anything that feels like a type
+system? (I take the latter view)), and other sets of "elements" are
+reasonable; for example, Σ could be taken as fundamental, or → could
+be added, or → could replace several of the others.
 
-Following Curry-Howard, the paper relates types to semiring elements, and semiring identities to type isomorphisms, which are also reversible programs.  It then pushes these ideas up the tower of equivalences.  It defines combinators at several levels of the tower, and gives some examples of (reversible) programs/circuits that can be expressed.
-
-
-••• Summary of review •••
-
-Sections 1 and 2 were clear and engaging.  I felt that I understood (at least) the contours of the work's connection to Curry-Howard, and type isomorphisms and semirings.  OTOH, homotopy type theory felt more like a buzzword, with p. 2 saying "type equivalences feature prominently in the \emph{univalence axiom}."  If you are going to use a connection to the univalence axiom as an argument for your work's importance, you should at least try to explain what a univalence axiom is.
-
-The paper handles the dependence on Agda (as Sec. 1 says, "the paper is partly an 'unformalization' of an...Agda...package") rather well, and largely succeeds in not making knowledge of Agda a prerequisite, but I have some suggestions for improvement; see detailed comments below.
-
-The categorical foundations developed in the later parts of the paper are beyond me (having forgotten what little category theory I learned years ago).
-
-The paper generally seemed well-structured, but the first half or so of the conclusion (Sec. 7) felt like it would be better appended to the introduction, especially as the introduction ends somewhat abruptly.  (The last part of the conclusion, which describes future work, is probably best left where it is.)
-
-Given my ignorance of both Agda and (more importantly) category theory, I can't usefully assess much of the paper, but what I can understand is intriguing, and so my (uninformed) opinion is that the paper should be accepted.
-
-
-••• Detailed comments •••
-
-•• Section 1 ••
-
-"The elementary building blocks of type theory are..."  This is an awfully strong assertion. The connectives listed are a reasonable set of building blocks, but the term "type theory" is already contentious (is it Martin-Löf-related theories, or anything that feels like a type system? (I take the latter view)), and other sets of "elements" are reasonable; for example, Σ could be taken as fundamental, or → could be added, or → could replace several of the others.
-
-typo: "they clearly distinguishes"
-
-"computation is fundamentally a physical process": This struck me as either tautological ("computation" defined as something that is physical, e.g. as what physical computers do) or a debatable philosophical question.
-
-
-•• Section 2 ••
+"computation is fundamentally a physical process": This struck me as
+either tautological ("computation" defined as something that is
+physical, e.g. as what physical computers do) or a debatable
+philosophical question.
 
 typo: "Curry-Howard like" → "Curry--Howard-like" (en dash then hyphen)
 typo: unclosed paren in Def. 1
 
-"the familiar definition of...commutative semirings": This definition *was* more or less familiar to me, but to avoid annoying readers who have entirely forgotten the definition, "usual definition" or "standard definition" would be more agreeable.
+"the familiar definition of...commutative semirings": This definition
+*was* more or less familiar to me, but to avoid annoying readers who
+have entirely forgotten the definition, "usual definition" or
+"standard definition" would be more agreeable.
 
 2.2: The superscripted hyphen on 'f' is tiny.
 
-"it is more appropriate to keep the identity of the types separate":  Probably.  You can certainly say it *seems* more appropriate.  But the question is less clear for some type systems.  For example, with an intersection type (∩ or ∧) it is not clear whether τ1 ∩ τ2 should be distinguished from τ2 ∩ τ1.
-
-2.4: typo: "in such way"
-
-
-•• Section 3 ••
-
-3.1: typo: "higher-level": drop hyphen
+"it is more appropriate to keep the identity of the types separate":
+Probably.  You can certainly say it *seems* more appropriate.  But the
+question is less clear for some type systems.  For example, with an
+intersection type (∩ or ∧) it is not clear whether τ1 ∩ τ2 should be
+distinguished from τ2 ∩ τ1.
 
 Definition 2 would be a good opportunity to explain some Agda for the unfamiliar reader, for example:
 
@@ -3171,46 +3099,31 @@ Def. 5: Use eq1, eq2 instead of e1, e2, to better match the Agda.
 
 Footnote 4: drop the space between g and ≡.
 
+4.1: "Fig. 2 adds to that 3 combinators," Please mention each specific
+combinator along with its explanation, in this sentence.
 
-•• Section 4 ••
+"The attentive reader will notice...many more combinators here than in
+Def. 1."  If this is meant simply to say that there were no
+combinators in Def. 1, and now 3 (I am not sure that 3 is "many more"
+than 0, anyway), it would be clearer to say that.  The current
+sentence sounds a little too cute.
 
-"we would simply use": I think you mean *will*, not would.
+"every combinator c has an inverse !c according to the figure": The
+figure never mentions !, so "according to the figure" is questionable.
+You seem to define ! informally in this paragraph; I would either give
+a proper definition, or else drop the "!c"—I could find no use of ! in
+the rest of the paper, so better to avoid burdening the reader with
+one more symbol.
 
-4.1: "Fig. 2 adds to that 3 combinators,"  Please mention each specific combinator along with its explanation, in this sentence.
+I would suggest that the statement (5.0, p. 12) that "Our next goal is
+to model equivalences of equivalences in the same way" could use more
+motivation or explanation, even if it only repeats or summarizes parts
+of Section 1.
 
-"The attentive reader will notice...many more combinators here than in Def. 1."  If this is meant simply to say that there were no combinators in Def. 1, and now 3 (I am not sure that 3 is "many more" than 0, anyway), it would be clearer to say that.  The current sentence sounds a little too cute.
-
-"every combinator c has an inverse !c according to the figure":  The figure never mentions !, so "according to the figure" is questionable.  You seem to define ! informally in this paragraph; I would either give a proper definition, or else drop the "!c"—I could find no use of ! in the rest of the paper, so better to avoid burdening the reader with one more symbol.
-
-4.2: typos: "reversible booleans circuits", "Π become", "Turing complete" (needs hyphen), "i.e,"
-clausal disagreement: "we begin by defining...encoding...write...use"
-
-4.4: The space around  〚〛 is excessive, e.g.  〚  ZERO  〛 , but I imagine this is annoying to fix.
-
-
-•• Section 5 ••
-
-As mentioned, I've forgotten the little category theory I once knew, so I'm not of much use in this section.
-
-I would suggest that the statement (5.0, p. 12) that "Our next goal is to model equivalences of equivalences in the same way" could use more motivation or explanation, even if it only repeats or summarizes parts of Section 1.
-
-
-•• Section 6 ••
-
-Figs. 4 and 5 are long, and the explanation in 6.2 is rather brief; the end feels almost like an unconvincing advertisement ("buy 13 coherence laws, get another 13 free"?).  That may be a little unfair; perhaps the authors have thought about it, but there is no "interesting" explanation to give.  In any case, maybe it would be useful to label laws (or blocks of laws) *in the figure*, e.g. "Naturality laws for ...:" or something similar.
-
-typo "4 coherences laws"
-
-In 6.3, and elsewhere when "Figs.   4 and 5" appears, there is a lot of extra space before the 4 (presumably due to an extra " " or "~" in the TeX, maybe in concert with TeX's entertaining habit of believing that every "." is the end of a sentence and needs extra space; you may want something like "Fig.~" or "Fig.\ ").
-
-6.4: Vertical spacing is strange in this section, and the "ping-pong" definition runs into the margin.
-
-
-•• Section 7 ••
-
-Footnote 6 is probably better (certainly more compact) as a parenthetical.
-
-Much of this section felt like it would be more appropriate (perhaps in a slightly adjusted form) as part of the introduction, not the conclusion.
-
-typo: "It is+,+ therefore, at least plausible-,-" (add first comma, drop second)
-typo: "albeit preliminary+,+"
+Figs. 4 and 5 are long, and the explanation in 6.2 is rather brief;
+the end feels almost like an unconvincing advertisement ("buy 13
+coherence laws, get another 13 free"?).  That may be a little unfair;
+perhaps the authors have thought about it, but there is no
+"interesting" explanation to give.  In any case, maybe it would be
+useful to label laws (or blocks of laws) *in the figure*,
+e.g. "Naturality laws for ...:" or something similar.
