@@ -37,6 +37,14 @@
 
 %\usepackage[hyphens]{url}
 %% \usepackage{amstext}
+
+
+%% Add black rectangles to overfull lines so that we can see them;
+%% remove before final version!!!
+%% \setlength{\overfullrule}{5pt}
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Macros
 
@@ -500,12 +508,12 @@ $\top \times A$ and $A$ are ``equal.'' One way to express such an
 ``equality'' computationally is to exhibit two functions mediating
 between the two types and prove that these two functions are
 inverses. Specifically, we define:
-\[\begin{array}{l@{\qquad}l}
-\fun{f} ~:~ \top \times A \to A & \fun{f⁻} : A \to \top \times A \\
-\fun{f}~(\tc , x) = x & \fun{f⁻}~x = (\tc, x) 
+\[\begin{array}{l@{\qquad\qquad}l}
+\fun{f} ~:~ \top \times A \to A & \bar{\fun{f}} : A \to \top \times A \\
+\fun{f}~(\tc , x) = x & \bar{\fun{f}}~x = (\tc, x) 
 \end{array}\] 
 and prove
-$\fun{f} \circ \fun{f⁻} = \fun{f⁻} \circ \fun{f} = \fun{id}$. One
+$\fun{f} \circ \bar{\fun{f}} = \bar{\fun{f}} \circ \fun{f} = \fun{id}$. One
 could use this proof to ``equate'' the two types, but computationally
 speaking it is more appropriate to keep the identity of the types
 separate and speak of \emph{isomorphisms}.
@@ -562,29 +570,29 @@ On the computational side, the proofs induce the following two isomorphisms betw
 $(A \uplus \bot) \uplus B$ and $A \uplus B$. The first isomorphism \fun{pf₃}
 takes the values in $(A \uplus \bot) \uplus B$ using the composition
 of the following two isomorphisms:
-\[\begin{array}{l@{\qquad}l}
+\[\begin{array}{l@{\qquad\qquad}l}
 \fun{f₁} ~:~ (A \uplus \bot) \uplus B \to (\bot \uplus A) \uplus B 
-  & \fun{f₁⁻} ~:~ (\bot \uplus A) \uplus B \to (A \uplus \bot) \uplus B \\
+  & \overline{\fun{f₁}} ~:~ (\bot \uplus A) \uplus B \to (A \uplus \bot) \uplus B \\
 \fun{f₁} (\injl{(\injl{x})}) = \injl{(\injr{x})} & 
-  \fun{f₁⁻} (\injl{(\injr{x})}) = \injl{(\injl{x})} \\
+  \overline{\fun{f₁}} (\injl{(\injr{x})}) = \injl{(\injl{x})} \\
 \fun{f₁} (\injr{x}) = \injr{x} & 
-  \fun{f₁⁻} (\injr{x}) = \injr{x} \\
+  \overline{\fun{f₁}} (\injr{x}) = \injr{x} \\
 \\
 \fun{f₂} ~:~ (\bot \uplus A) \uplus B \to A \uplus B & 
-  \fun{f₂⁻} ~:~ A \uplus B \to (\bot \uplus A) \uplus B \\  
+  \overline{\fun{f₂}} ~:~ A \uplus B \to (\bot \uplus A) \uplus B \\  
 \fun{f₂} (\injl{(\injr{x})}) = \injl{x} & 
-  \fun{f₂⁻} (\injl{x}) = \injl{(\injr{x})} \\
+  \overline{\fun{f₂}} (\injl{x}) = \injl{(\injr{x})} \\
 \fun{f₂} (\injr{x}) = \injr{x} & 
-  \fun{f₂⁻} (\injr{x}) = \injr{x}
+  \overline{\fun{f₂}} (\injr{x}) = \injr{x}
 \end{array}\]
 We calculate that composition corresponding to \fun{pf₃} is:
-\[\begin{array}{l@{\qquad}l}
+\[\begin{array}{l@{\qquad\qquad}l}
 \fun{f₁₂} ~:~ (A \uplus \bot) \uplus B \to A \uplus B & 
-  \fun{f₁₂⁻} ~:~ A \uplus B \to (A \uplus \bot) \uplus B \\
+  \overline{\fun{f₁₂}} ~:~ A \uplus B \to (A \uplus \bot) \uplus B \\
 \fun{f₁₂} (\injl{(\injl{x})}) = \injl{x} & 
-  \fun{f₁₂⁻} (\injl{x}) = \injl{(\injl{x})} \\
+  \overline{\fun{f₁₂}} (\injl{x}) = \injl{(\injl{x})} \\
 \fun{f₁₂} (\injr{x}) = \injr{x} & 
-  \fun{f₁₂⁻} (\injr{x}) = \injr{x}
+  \overline{\fun{f₁₂}} (\injr{x}) = \injr{x}
 \end{array}\]
 We can similarly calculate the isomorphism corresponding to \fun{pf₄}
 and verify that it is identical to the one above. 
@@ -758,7 +766,7 @@ show that $≃$ is an equivalence relation by defining:
 \AgdaFunction{trans≃} &:& (A ≃ B) → (B ≃ C) → (A ≃ C)
 \end{array}\]
 
-The definition of equivalence allows us to formalize the presentation
+\noindent The definition of equivalence allows us to formalize the presentation
 of Sec.~\ref{subsec:isos} by proving that every commutative semiring
 identity is satisfied by types in the universe (\AgdaDatatype{Set}) up
 to~$≃$.
@@ -1369,22 +1377,6 @@ according to the figure. The inverse flips the order of the
 combinators in sequential composition, and is homomorphic on sums and
 products.
 
-We formalize $\tau$ by creating a universe $U$ with the syntax
-for (finite) types; formally in Agda, we get
-
-\AgdaHide{
-\begin{code}
-module Foo where
-\end{code}
-}
-\begin{code}
-  data U : Set where
-    ZERO  : U
-    ONE   : U
-    PLUS  : U → U → U
-    TIMES : U → U → U
-\end{code}
-
 %%%%%%%%%%%%
 \subsection{Example Programs}
 
@@ -1398,15 +1390,34 @@ Turing-complete reversible
 language~\citep{James:2012:IE:2103656.2103667,rc2011}.
 
 We illustrate the expressiveness of $\Pi$ with a few small programs:
-we begin by defining the universe of types \AgdaDatatype{U}. We then
-encode the type of booleans, write a few simple gates like the Toffoli
-gate~\citep{Toffoli:1980}, and use them to write a reversible full
-adder~\citep{revadder}:
+we begin by defining the universe of types \AgdaDatatype{U}:
+
+{\setlength{\mathindent}{0cm}
+
+\medskip 
+\AgdaHide{
+\begin{code}
+module Foo where
+\end{code}
+}
+\begin{code}
+  data U : Set where
+    ZERO  : U
+    ONE   : U
+    PLUS  : U → U → U
+    TIMES : U → U → U
+\end{code}
+
+}
+
+\medskip\noindent We then encode the type of booleans, write a few simple gates like the
+Toffoli gate~\citep{Toffoli:1980}, and use them to write a reversible
+full adder~\citep{revadder}:
 
 \AgdaHide{
 \begin{code}
 open import PiU
-open import PiLevel0 hiding (triv≡)
+open import PiLevel0 as Pi0 hiding (triv≡)
 
 infixr 2  _⟷⟨_⟩_   
 infix  2  _□       
@@ -1449,10 +1460,10 @@ PERES = (id⟷ ⊗ NOT) ◎ assocr⋆ ◎ (id⟷ ⊗ swap⋆) ◎
 
 -- Input:     (z, ((n1, n2), cin))) 
 -- Output:  (g1, (g2, (sum, cout))) 
-FULLADDER : TIMES BOOL BOOL³ ⟷ TIMES BOOL (TIMES BOOL BOOL²)
-FULLADDER = swap⋆ ◎ (swap⋆ ⊗ id⟷) ◎ assocr⋆ ◎ swap⋆ ◎ (PERES ⊗ id⟷) ◎
-                       assocr⋆ ◎ (id⟷ ⊗ swap⋆) ◎ assocr⋆ ◎ (id⟷ ⊗ assocl⋆) ◎ 
-                       (id⟷ ⊗ PERES) ◎ (id⟷ ⊗ assocr⋆)
+F_ADDER : TIMES BOOL BOOL³ ⟷ TIMES BOOL (TIMES BOOL BOOL²)
+F_ADDER = swap⋆ ◎ (swap⋆ ⊗ id⟷) ◎ assocr⋆ ◎ swap⋆ ◎ (PERES ⊗ id⟷) ◎
+  assocr⋆ ◎ (id⟷ ⊗ swap⋆) ◎ assocr⋆ ◎ (id⟷ ⊗ assocl⋆) ◎ 
+  (id⟷ ⊗ PERES) ◎ (id⟷ ⊗ assocr⋆)
 \end{code}
 }}
 
@@ -1943,12 +1954,16 @@ open import TypeEquiv as TE
 
 \medskip
 
+{\setlength{\mathindent}{0cm}
+
 \begin{code}
 A×[B⊎C]→[A×C]⊎[A×B] : {A B C : Set} →
   (TE.distl ∘ (id {A = A} ×→ TE.swap₊ {B} {C})) ∼ (TE.swap₊ ∘ TE.distl)
 A×[B⊎C]→[A×C]⊎[A×B] (x , inj₁ y) = refl
 A×[B⊎C]→[A×C]⊎[A×B] (x , inj₂ y) = refl
 \end{code}
+
+}
 
 \medskip\noindent The lemma asserts the that the two paths between
 $A ⊗ (B ⊕ C)$ and $(A ⊗ C) ⊕ (A ⊗ B)$ are homotopic. To show that
@@ -1958,12 +1973,16 @@ a homotopy, in other words:
 
 \medskip
 
+{\setlength{\mathindent}{0cm}
+
 \begin{code}
 [A×C]⊎[A×B]→A×[B⊎C] : {A B C : Set} →
-  ((id ×→ TE.swap₊) ∘ TE.factorl) ∼ (TE.factorl ∘ TE.swap₊ {A × C} {A × B})
+ ((id ×→ TE.swap₊) ∘ TE.factorl) ∼ (TE.factorl ∘ TE.swap₊ {A × C} {A × B})
 [A×C]⊎[A×B]→A×[B⊎C] (inj₁ x) = refl
 [A×C]⊎[A×B]→A×[B⊎C] (inj₂ y) = refl
 \end{code}
+
+}
 
 \medskip\noindent Finally we show that the forward equivalence and the backward
 equivalence are indeed related to the same diagram:
@@ -2095,7 +2114,8 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 ((\assoclp ⊗ \idc) \fatsemi \dist) \fatsemi (\dist ⊕ \idc) & \isoone &
   (\dist \fatsemi (\idc ⊕ \dist)) \fatsemi \assoclp \\
 (\distl \fatsemi (\dist ⊕ \dist)) \fatsemi \assoclp & \isoone &
-  ((((\dist \fatsemi (\distl ⊕ \distl)) \fatsemi \assoclp) \fatsemi (\assocrp ⊕ \idc))\\
+  ((((\dist \fatsemi (\distl ⊕ \distl)) \fatsemi \assoclp) \\
+  && \fatsemi (\assocrp ⊕ \idc)) \\
   && \fatsemi (\idc ⊕ \swapp) ⊕ \idc) \fatsemi (\assoclp ⊕ \idc) \\
 \assoclt \fatsemi \distl & \isoone & 
   ((\idc ⊗ \distl) \fatsemi \distl) \fatsemi (\assoclt ⊕ \assoclt) \\
@@ -2190,7 +2210,7 @@ It is worth noting that most (but not all) of the properties involving
 only $⊕$ were already in Agda's standard library (in
 \AgdaModule{Data.Sum.Properties} to be precise), whereas all
 properties involving only $⊗$ were immediately provable due to $\eta$
-expansion.  Nevertheless, for symmetry and clarity, we created a
+expansion.  Nevertheless, for symmetry and clarity, we created a module
 \AgdaModule{Data.Prod.Properties} to collect all of these.
 None of the mixed properties involved with distributivity
 and absorption were present, although the proof of all of them was
@@ -2349,10 +2369,10 @@ negation. The first circuit is direct and trivial:
 \medskip
 
 \begin{tabular}{@{\kern-3em}c@{\qquad\qquad\qquad\qquad\qquad}c}
-\begin{minipage}[t]{0.25\textwidth}
+\begin{minipage}[t]{0.4\textwidth}
 \begin{code}
 NOT₁ : BOOL ⟷ BOOL
-NOT₁ = PiLevel0.swap₊
+NOT₁ = Pi0.swap₊
 \end{code}
 \end{minipage}
 & 
@@ -2384,20 +2404,20 @@ The second circuit is more convoluted:
 
 \medskip
 
-\begin{tabular}{@{\kern-3em}c@{\qquad\qquad\qquad\qquad\qquad}c}
-\begin{minipage}[t]{0.25\textwidth}
+\begin{tabular}{@{\kern-3em}c@{\quad}c}
+\begin{minipage}[t]{0.5\textwidth}
 \begin{code}
 NOT₂ : BOOL ⟷ BOOL
 NOT₂ =
   uniti⋆l ◎
-  PiLevel0.swap⋆ ◎
-  (PiLevel0.swap₊ ⊗ id⟷) ◎
-  PiLevel0.swap⋆ ◎
+  Pi0.swap⋆ ◎
+  (Pi0.swap₊ ⊗ id⟷) ◎
+  Pi0.swap⋆ ◎
   unite⋆l
 \end{code}
 \end{minipage}
 & 
-\adjustbox{valign=t}{\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.7}]
+\adjustbox{valign=t}{\begin{tikzpicture}[scale=0.6,every node/.style={scale=0.6}]
   \draw (1,2) ellipse (0.5cm and 0.5cm);
   \draw[fill] (1,2) circle [radius=0.025];
   \node[below] at (1,2) {()};
@@ -2466,37 +2486,41 @@ open import PiEquiv using (c2equiv)
 \medskip\noindent Here is a complete proof in level-1 $\Pi$ using the small-step
 rewriting style that shows that the two circuits are equivalent.
 
-\begin{tabular}{@{\kern-3em}l}
-\begin{minipage}{0.5\textwidth}
+\medskip
+
+\renewcommand{\AgdaIndent}[1]{$\;$}
+
+{\setlength{\mathindent}{0cm}
 \begin{code}
 negEx : NOT₂ ⇔ NOT₁
-negEx = uniti⋆l ◎ 
-              (PiLevel0.swap⋆ ◎ ((PiLevel0.swap₊ ⊗ id⟷) ◎ (PiLevel0.swap⋆ ◎ unite⋆l)))
+negEx = uniti⋆l ◎ (Pi0.swap⋆ ◎ ((Pi0.swap₊ ⊗ id⟷) ◎ (Pi0.swap⋆ ◎ unite⋆l)))
           ⇔⟨ id⇔ ⊡ assoc◎l ⟩
-        uniti⋆l ◎ ((PiLevel0.swap⋆ ◎ (PiLevel0.swap₊ ⊗ id⟷)) ◎ (PiLevel0.swap⋆ ◎ unite⋆l))
+        uniti⋆l ◎ ((Pi0.swap⋆ ◎ (Pi0.swap₊ ⊗ id⟷)) ◎ (Pi0.swap⋆ ◎ unite⋆l))
           ⇔⟨ id⇔ ⊡ (swapl⋆⇔ ⊡ id⇔) ⟩
-        uniti⋆l ◎ (((id⟷ ⊗ PiLevel0.swap₊) ◎ PiLevel0.swap⋆) ◎ (PiLevel0.swap⋆ ◎ unite⋆l))
+        uniti⋆l ◎ (((id⟷ ⊗ Pi0.swap₊) ◎ Pi0.swap⋆) ◎ (Pi0.swap⋆ ◎ unite⋆l))
           ⇔⟨ id⇔ ⊡ assoc◎r ⟩
-        uniti⋆l ◎ ((id⟷ ⊗ PiLevel0.swap₊) ◎ (PiLevel0.swap⋆ ◎ (PiLevel0.swap⋆ ◎ unite⋆l)))
+        uniti⋆l ◎ ((id⟷ ⊗ Pi0.swap₊) ◎ (Pi0.swap⋆ ◎ (Pi0.swap⋆ ◎ unite⋆l)))
           ⇔⟨ id⇔ ⊡ (id⇔ ⊡ assoc◎l) ⟩
-        uniti⋆l ◎ ((id⟷ ⊗ PiLevel0.swap₊) ◎ ((PiLevel0.swap⋆ ◎ PiLevel0.swap⋆) ◎ unite⋆l))
+        uniti⋆l ◎ ((id⟷ ⊗ Pi0.swap₊) ◎ ((Pi0.swap⋆ ◎ Pi0.swap⋆) ◎ unite⋆l))
           ⇔⟨ id⇔ ⊡ (id⇔ ⊡ (linv◎l ⊡ id⇔)) ⟩
-        uniti⋆l ◎ ((id⟷ ⊗ PiLevel0.swap₊) ◎ (id⟷ ◎ unite⋆l))
+        uniti⋆l ◎ ((id⟷ ⊗ Pi0.swap₊) ◎ (id⟷ ◎ unite⋆l))
           ⇔⟨ id⇔ ⊡ (id⇔ ⊡ idl◎l) ⟩
-        uniti⋆l ◎ ((id⟷ ⊗ PiLevel0.swap₊) ◎ unite⋆l)
+        uniti⋆l ◎ ((id⟷ ⊗ Pi0.swap₊) ◎ unite⋆l)
           ⇔⟨ assoc◎l ⟩
-        (uniti⋆l ◎ (id⟷ ⊗ PiLevel0.swap₊)) ◎ unite⋆l
+        (uniti⋆l ◎ (id⟷ ⊗ Pi0.swap₊)) ◎ unite⋆l
           ⇔⟨ unitil⋆⇔l ⊡ id⇔ ⟩
-        (PiLevel0.swap₊ ◎ uniti⋆l) ◎ unite⋆l
+        (Pi0.swap₊ ◎ uniti⋆l) ◎ unite⋆l
           ⇔⟨ assoc◎r ⟩
-        PiLevel0.swap₊ ◎ (uniti⋆l ◎ unite⋆l)
+        Pi0.swap₊ ◎ (uniti⋆l ◎ unite⋆l)
           ⇔⟨ id⇔ ⊡ linv◎l ⟩
-        PiLevel0.swap₊ ◎ id⟷
+        Pi0.swap₊ ◎ id⟷
           ⇔⟨ idr◎l ⟩
-        PiLevel0.swap₊ ▤
+        Pi0.swap₊ ▤
 \end{code}
-\end{minipage}
-\end{tabular}
+
+}
+
+\renewcommand{\AgdaIndent}[1]{$\;\;$}
 
 %%%
 % \subsection{Example Level 1 Proofs} 
@@ -2642,9 +2666,10 @@ open import TypeEquivCat
 \label{sec:conc}
 %\label{sec:8}
 
-The correspondence established in the paper provides a semantically
-well-founded approach to the representation, manipulation, and
-optimization of reversible circuits with the following main ingredients:
+The correspondence between rigs and types established in the paper
+provides a semantically well-founded approach to the representation,
+manipulation, and optimization of reversible circuits with the
+following main ingredients:
 \begin{itemize}
 \item reversible circuits are represented as terms witnessing
   morphisms between finite types in a symmetric rig groupoid;
@@ -2947,21 +2972,6 @@ notation helps a lot.
 Figure 3 & Def 7:
  Adding the equational reading of the diagrams would be of great value.
 
-Inspired by Curry-Howard correspondence, the paper presents a
-correspondence that relates semirings to given reversible programming
-languages.  While Curry-Howard correspondence only checks whether
-types are inhabited, the correspondence here considers whether types
-are isomorphic.  The syntax of semiring elements corresponds to the
-syntax of finite types. The proofs of identities between semiring
-elements correspond to programs in a reversible language defined in
-the literature (with collaboration from one of the authors) which is
-universal for reversible boolean circuits. Equivalences between proofs
-correspond to meaning-preserving program transformations, written in a
-new reversible language, whose constructs are systematically derived
-from coherence conditions of symmetric rig categories. This language
-can be used to express transformations and optimizations of boolean
-circuits.
-
 - it would be interesting to understand what happens by adding
  recursive types
 
@@ -3011,8 +3021,6 @@ be added, or → could replace several of the others.
 either tautological ("computation" defined as something that is
 physical, e.g. as what physical computers do) or a debatable
 philosophical question.
-
-2.2: The superscripted hyphen on 'f' is tiny.
 
 "it is more appropriate to keep the identity of the types separate":
 Probably.  You can certainly say it *seems* more appropriate.  But the
