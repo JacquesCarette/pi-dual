@@ -448,12 +448,12 @@ type theory.
 %%%
 \subsection{Semirings}\label{sec:semirings}
 
-We begin with the familiar definition of the algebraic structure of
+We begin with the standard definition of the algebraic structure of
 commutative semirings.
 
 \begin{definition}\label{defn:csr}
-  A \emph{commutative semiring} (sometimes called a \emph{commutative
-    rig} (commutative ri\emph{n}g without negative elements) consists of a
+  A \emph{commutative semiring} sometimes called a \emph{commutative
+    rig} (ri\emph{n}g without negative elements) consists of a
   set $R$, two distinguished elements of $R$ named 0 and 1, and two
   binary operations~$+$ and $\cdot$, satisfying the following
   relations for any $a,b,c \in R$:
@@ -566,9 +566,9 @@ of the following two isomorphisms:
 \fun{f₁} ~:~ (A \uplus \bot) \uplus B \to (\bot \uplus A) \uplus B 
   & \fun{f₁⁻} ~:~ (\bot \uplus A) \uplus B \to (A \uplus \bot) \uplus B \\
 \fun{f₁} (\injl{(\injl{x})}) = \injl{(\injr{x})} & 
-  \fun{f₁⁻} (\injl{(\injr{x})}) = \injl{(\injl{x})}) \\
+  \fun{f₁⁻} (\injl{(\injr{x})}) = \injl{(\injl{x})} \\
 \fun{f₁} (\injr{x}) = \injr{x} & 
-  \fun{f₁⁻} (\injr{x}) = \injr{x}) \\
+  \fun{f₁⁻} (\injr{x}) = \injr{x} \\
 \\
 \fun{f₂} ~:~ (\bot \uplus A) \uplus B \to A \uplus B & 
   \fun{f₂⁻} ~:~ A \uplus B \to (\bot \uplus A) \uplus B \\  
@@ -582,9 +582,9 @@ We calculate that composition corresponding to \fun{pf₃} is:
 \fun{f₁₂} ~:~ (A \uplus \bot) \uplus B \to A \uplus B & 
   \fun{f₁₂⁻} ~:~ A \uplus B \to (A \uplus \bot) \uplus B \\
 \fun{f₁₂} (\injl{(\injl{x})}) = \injl{x} & 
-  \fun{f₁₂⁻} (\injl{x}) = \injl{(\injl{x})}) \\
+  \fun{f₁₂⁻} (\injl{x}) = \injl{(\injl{x})} \\
 \fun{f₁₂} (\injr{x}) = \injr{x} & 
-  \fun{f₁₂⁻} (\injr{x}) = \injr{x}) 
+  \fun{f₁₂⁻} (\injr{x}) = \injr{x}
 \end{array}\]
 We can similarly calculate the isomorphism corresponding to \fun{pf₄}
 and verify that it is identical to the one above. 
@@ -1275,7 +1275,7 @@ of Def.~\ref{def:eq}. We have further introduced the infrastructure
 needed to reason about equivalences of equivalences so that we can
 reason about the relation between different proofs of the same
 semiring identity. As we aim to refine these relationships to a
-Curry-Howard like correspondence, we now turn our attention to
+Curry--Howard-like correspondence, we now turn our attention to
 developing an actual programming language. The first step will be to
 introduce syntax that denotes type equivalences. Thus instead of
 having to repeatedly introduce functions and their inverses and proofs
@@ -1345,7 +1345,7 @@ The syntactic components of our language are as follows:
 (\textit{Terms and Combinators}) & 
   c &::=& [\textit{see Figs.~\ref{pi-terms} and ~\ref{pi-combinators}}]
 \end{array}\]
-The values classified by the finite types types are the conventional
+The values classified by the finite types are the conventional
 ones: $()$ of type 1, $\inl{v}$ and $\inr{v}$ for injections into sum
 types, and $(v_1,v_2)$ for product types.
 
@@ -1600,15 +1600,15 @@ Sec.~\ref{subsec:pi}.
 Our next goal is to model equivalences of equivalences in the same
 way. Attempting to discover such equivalences of equivalences when
 working directly with functions or with the syntax of a programming
-proves quite awkward. It, however, turns out that the solution to this
-problem is evident if we first generalize our models of type
-equivalences to the categorical setting. As we explain, in the right
-class of categories, we would have the objects representing types, the
-morphisms representing type equivalences, and the \emph{coherence
-  conditions} representing equivalences of equivalences. Our task of
-modeling equivalences of equivalences then reduces to ``reading off''
-the coherence conditions for each instance of the general categorical
-framework.
+language proves quite awkward. It, however, turns out that the
+solution to this problem is evident if we first generalize our models
+of type equivalences to the categorical setting. As we explain, in the
+right class of categories, we would have the objects representing
+types, the morphisms representing type equivalences, and the
+\emph{coherence conditions} representing equivalences of
+equivalences. Our task of modeling equivalences of equivalences then
+reduces to ``reading off'' the coherence conditions for each instance
+of the general categorical framework.
 
 % rules for reasoning about equivalences: we will solve this problem by
 % appealing to various results about specialized monoidal
@@ -1752,7 +1752,7 @@ equal. Indeed, as Dosen and Petric explain:
 From a different perspective, \citet{math/9802029} explain the source
 of these coherence laws as arising from homotopy theory. In this
 theory, laws are only imposed up to homotopy, with these homotopies
-satisfying certain laws, up again only up to homotopy, with these
+satisfying certain laws, again only up to homotopy, with these
 higher homotopies satisfying their own higher coherence laws, and so
 on. Remarkably, they report, among other results, that the pentagon
 identity of Fig.~\ref{fig:mon} arises when studying the algebraic
@@ -2814,7 +2814,7 @@ introduce \emph{fractional types}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
 
-The final version of the paper is limited to 25pages LNCS style and it
+The final version of the paper is limited to 27pages LNCS style and it
 is due to be submitted through easychair by 8 January 2016.
 
 I put this paper as a weak reject as I do not find the contributions
@@ -2912,9 +2912,6 @@ cannonical product and coprodut. Why such a general result? Wouldn't it
 suffice to prove it for your universe of types? Not to mention your proof 
 does not convince me how "all" types are handled. 
 
-I also believe that proving those simple facts in Agda is overkill,
-it makes the proof cluttered and hard to read. 
-
 Theorem 3 holds by construction... if you constructed your combinator-calculus
 based on the laws of the natural transformations for a symmetric rig groupoid, 
 it would be very strange if they did NOT show that structure. 
@@ -2965,22 +2962,9 @@ from coherence conditions of symmetric rig categories. This language
 can be used to express transformations and optimizations of boolean
 circuits.
 
-- the presented correspondence is novel as far as I know, and tight
-
-- the languages of equivalences and of equivalences of equivalences
- are relevant, given their relation with reversible boolean circuits
- and transformations of reversible boolean circuits
-
-- the results in the paper are formalized using the Agda programming
- language
-
-- the paper is clear and well-written; most of it can be understood by
- a reader with limited familiarity with the discussed topics
-
 - it would be interesting to understand what happens by adding
  recursive types
 
-- page 5, lines 12 and 19: there is one ) too much
 - page 6, def. 2: are homotopic -> are homotopic, written f ~ g, 
 - page 6, def. 2: this seems the standard definition of equality
  between functions, and is different from the definition of homotopy
@@ -2990,12 +2974,9 @@ circuits.
 - page 8, line 9: equivalent -> equivalent, written \symbol, iff
 - page 8, lines 17-21: I do not understand this, but this is probably
  due to my limited familiarity with homotopy type theory
-- page 9, line -9: types types -> types
 - page 10, lines -3 and -1, and elsewhere: I guess the symbol after
  dist and the ones before factor are sequential compositions, isn't
  it?
-- page 12, line -12: programming -> programming language
-- page 14, line 16: up again only up -> again only up
 - page 15, condition XVI: in the second path you need to absorb just
  once
 - page 15, condition XVII: please write it explicitly
@@ -3030,14 +3011,6 @@ be added, or → could replace several of the others.
 either tautological ("computation" defined as something that is
 physical, e.g. as what physical computers do) or a debatable
 philosophical question.
-
-typo: "Curry-Howard like" → "Curry--Howard-like" (en dash then hyphen)
-typo: unclosed paren in Def. 1
-
-"the familiar definition of...commutative semirings": This definition
-*was* more or less familiar to me, but to avoid annoying readers who
-have entirely forgotten the definition, "usual definition" or
-"standard definition" would be more agreeable.
 
 2.2: The superscripted hyphen on 'f' is tiny.
 
