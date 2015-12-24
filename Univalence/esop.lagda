@@ -1,6 +1,8 @@
-%% \documentclass[oribibl]{llncs} 
-%% 25 pages + 2 pages bib
+%% The final version of the paper is limited to 27pages LNCS style and it
+%% is due to be submitted through easychair by 8 January 2016.
+
 \documentclass{llncs}
+%% \documentclass[oribibl]{llncs} 
 
 \usepackage{savesym}
 \usepackage{amssymb}
@@ -9,7 +11,7 @@
 \usepackage{flushend}
 \usepackage{agda}
 \usepackage{alltt}
-%\usepackage{fancyvrb}
+%% \usepackage{fancyvrb}
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
 \usepackage{tikz}
@@ -17,7 +19,7 @@
 \usetikzlibrary{quotes}
 \usepackage{adjustbox}
 %% \usepackage{amsthm}
-% \usepackage{latexsym}
+%% \usepackage{latexsym}
 \usepackage{MnSymbol}
 \usepackage{bbm}
 \usepackage{proof}
@@ -35,15 +37,12 @@
 \usepackage{multicol}
 \usepackage{natbib}
 
-%\usepackage[hyphens]{url}
+%% \usepackage[hyphens]{url}
 %% \usepackage{amstext}
-
 
 %% Add black rectangles to overfull lines so that we can see them;
 %% remove before final version!!!
 %% \setlength{\overfullrule}{5pt}
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Macros
@@ -62,9 +61,9 @@
 \newcommand{\idt}[3]{#2 \equiv_{#1} #3}
 \newcommand{\idrt}[3]{#3 \equiv_{#1} #2}
 \newcommand{\refl}[1]{\textsf{refl}~#1}
-%\newcommand{\lid}{\textsf{lid}}
+%% \newcommand{\lid}{\textsf{lid}}
 \newcommand{\alt}{~|~}
-%\newcommand{\rid}{\textsf{rid}}
+%% \newcommand{\rid}{\textsf{rid}}
 \newcommand{\linv}{l!}
 \newcommand{\rinv}{r!}
 \newcommand{\invinv}{!!}
@@ -142,6 +141,7 @@ $\displaystyle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Hyphenation
 \hyphenation{e-vi-dent}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Comments
 
@@ -161,18 +161,12 @@ $\displaystyle
 \newcommand{\jc}[1]{\authornote{purple}{JC}{#1}}
 \newcommand{\amr}[1]{\fbox{\begin{minipage}{0.4\textwidth}\color{red}{Amr says: {#1}}\end{minipage}}}
 
-
 %\newcommand{\AgdaArgument}[1]{#1}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \begin{document}
 
-%\title{A Curry-Howard Isomorphism between \\
-%  Reversible Programming Languages        \\
-%  and Semirings}
-%\titlerunning{Reversible Languages and Semirings}
-\title{Computing with                      \\ Semirings and Weak Rig Groupoids}
+\title{Computing with \\ Semirings and Weak Rig Groupoids}
 \titlerunning{Computing with Rig Groupoids}
 \author{Jacques Carette \and Amr Sabry}
 \institute{McMaster University (\email{carette@mcmaster.ca})
@@ -300,73 +294,73 @@ computation and communication, are additional physical considerations
 adding momentum to such reversible computational
 models~\citep{Frank:1999:REC:930275,DeBenedictis:2005:RLS:1062261.1062325}.
 
-\begin{comment}
-Because physical laws obey various conservation principles (including
-conservation of information) and because computation is fundamentally
-a physical process, every computation is, at the physical level, an
-equivalence that preserves information.  The idea that computation, at
-the logical and programming level, should also be based on
-``equivalences'' (i.e., invertible processes) was originally motivated
-by such physical
-considerations~\citep{Landauer:1961,Bennett:1973:LRC,Toffoli:1980,springerlink:10.1007/BF02650179,fredkin1982conservative,PhysRevA.32.3266}. More
-recently, the rising importance of energy conservation for both tiny
-mobile devices and supercomputers, the shrinking size of technology at
-which quantum effects become noticeable, and the potential for quantum
-computation and communication, are additional physical considerations
-adding momentum to such reversible computational
-models~\citep{Frank:1999:REC:930275,DeBenedictis:2005:RLS:1062261.1062325}. From
-a more theoretical perspective, the recently proposed
-\citet {hottbook}, based on Homotopy Type Theory (HoTT), greatly
-emphasizes computation based on \emph{equivalences} that are satisfied
-up to equivalences that are themselves satisfied up to equivalence,
-etc.
+% \begin{comment}
+% Because physical laws obey various conservation principles (including
+% conservation of information) and because computation is fundamentally
+% a physical process, every computation is, at the physical level, an
+% equivalence that preserves information.  The idea that computation, at
+% the logical and programming level, should also be based on
+% ``equivalences'' (i.e., invertible processes) was originally motivated
+% by such physical
+% considerations~\citep{Landauer:1961,Bennett:1973:LRC,Toffoli:1980,springerlink:10.1007/BF02650179,fredkin1982conservative,PhysRevA.32.3266}. More
+% recently, the rising importance of energy conservation for both tiny
+% mobile devices and supercomputers, the shrinking size of technology at
+% which quantum effects become noticeable, and the potential for quantum
+% computation and communication, are additional physical considerations
+% adding momentum to such reversible computational
+% models~\citep{Frank:1999:REC:930275,DeBenedictis:2005:RLS:1062261.1062325}. From
+% a more theoretical perspective, the recently proposed
+% \citet {hottbook}, based on Homotopy Type Theory (HoTT), greatly
+% emphasizes computation based on \emph{equivalences} that are satisfied
+% up to equivalences that are themselves satisfied up to equivalence,
+% etc.
 
-To summarize, we are witnessing a convergence of ideas from several
-distinct research communities, including physics, mathematics, and
-computer science, towards basing computations on
-equivalences~\citep{baez2011physics}. A first step in that direction
-is the development of many \emph{reversible programming
-  languages}~(e.g., \citep{Kluge:1999:SEMCD,Mu:2004:ILRC,
-  abramsky2005structural, DiPierro:2006:RCL:1166042.1166047,
-  Yokoyama:2007:RPL:1244381.1244404, Mackie2011}.)  Typically,
-programs in these languages correspond to some notion of
-equivalence. But reasoning \emph{about} these programs abandons the
-notion of equivalence and uses conventional irreversible functions to
-specify evaluators and the derived notions of program
-equivalence. This unfortunately misses the beautiful combinatorial
-structure of equivalences at higher levels that was first exposed in
-the historical paper by \citet{Hofmann96thegroupoid} and that is
-currently the center of attention of HoTT.
+% To summarize, we are witnessing a convergence of ideas from several
+% distinct research communities, including physics, mathematics, and
+% computer science, towards basing computations on
+% equivalences~\citep{baez2011physics}. A first step in that direction
+% is the development of many \emph{reversible programming
+%   languages}~(e.g., \citep{Kluge:1999:SEMCD,Mu:2004:ILRC,
+%   abramsky2005structural, DiPierro:2006:RCL:1166042.1166047,
+%   Yokoyama:2007:RPL:1244381.1244404, Mackie2011}.)  Typically,
+% programs in these languages correspond to some notion of
+% equivalence. But reasoning \emph{about} these programs abandons the
+% notion of equivalence and uses conventional irreversible functions to
+% specify evaluators and the derived notions of program
+% equivalence. This unfortunately misses the beautiful combinatorial
+% structure of equivalences at higher levels that was first exposed in
+% the historical paper by \citet{Hofmann96thegroupoid} and that is
+% currently the center of attention of HoTT.
 
-This paper addresses --- and completely solves --- a well-defined part
-of the general problem of programming with equivalences up to
-equivalences. Our approach, we argue, might also be suitable for the
-more general problem. The particular problem we focus on is that of
-programming with equivalences between the finite types built from the
-empty type, the unit type, and closed under sums and products, and
-reasoning about equivalences between these programs between finite
-types, i.e., the problem of equivalences between finite types and
-equivalences between such equivalences. Although limited in their
-expressive power, these types are rich enough to express all
-combinational (with no state or feedback) hardware circuits and, as we
-show, already exhibit substantial combinatorial structure at the
-``next level,'' i.e., at the level of equivalences about equivalences
-of types. What emerges from our study are the following results:
-\begin{itemize}
-\item a universal language for combinational reversible circuits that
-  comes with a calculus for writing circuits and a calculus for
-  manipulating that calculus;
-\item the language itself subsumes various representations for
-  reversible circuits, e.g., truth tables, matrices, product of
-  permutation cycles, etc.~\citep{Saeedi:2013:SOR:2431211.2431220};
-\item the first set of rules is sound and complete with respect to 
-  equivalences of types;
-\item the second set of rules is sound and complete with respect to
-  equivalences of equivalences of types as specified by the first set
-  of rules.
-\end{itemize}
+% This paper addresses --- and completely solves --- a well-defined part
+% of the general problem of programming with equivalences up to
+% equivalences. Our approach, we argue, might also be suitable for the
+% more general problem. The particular problem we focus on is that of
+% programming with equivalences between the finite types built from the
+% empty type, the unit type, and closed under sums and products, and
+% reasoning about equivalences between these programs between finite
+% types, i.e., the problem of equivalences between finite types and
+% equivalences between such equivalences. Although limited in their
+% expressive power, these types are rich enough to express all
+% combinational (with no state or feedback) hardware circuits and, as we
+% show, already exhibit substantial combinatorial structure at the
+% ``next level,'' i.e., at the level of equivalences about equivalences
+% of types. What emerges from our study are the following results:
+% \begin{itemize}
+% \item a universal language for combinational reversible circuits that
+%   comes with a calculus for writing circuits and a calculus for
+%   manipulating that calculus;
+% \item the language itself subsumes various representations for
+%   reversible circuits, e.g., truth tables, matrices, product of
+%   permutation cycles, etc.~\citep{Saeedi:2013:SOR:2431211.2431220};
+% \item the first set of rules is sound and complete with respect to 
+%   equivalences of types;
+% \item the second set of rules is sound and complete with respect to
+%   equivalences of equivalences of types as specified by the first set
+%   of rules.
+% \end{itemize}
 
-\end{comment}
+% \end{comment}
 
 \amr{integrate the following paragraphs that used to be in the
   conclusion with the intro}
@@ -2597,22 +2591,22 @@ groupoid.
   other that are captured in the more involved coherence laws.
 \end{proof}
 
-\begin{comment}
-Putting the result above together with Laplaza's coherence result
-about rig categories, we conclude with our main result, which will be
-detailed in the next section by giving the full details of the second
-level of combinators.
+% \begin{comment}
+% Putting the result above together with Laplaza's coherence result
+% about rig categories, we conclude with our main result, which will be
+% detailed in the next section by giving the full details of the second
+% level of combinators.
 
-\begin{theorem}
-We have two levels of $\Pi$-combinators such that:
-\begin{itemize}
-\item The first level of $\Pi$-combinators is complete for
-  representing reversible combinational circuits.
-\item The second level of $\Pi$-combinators is sound and complete for
-  the equivalence of circuits represented by the first level.
-\end{itemize}
-\end{theorem}
-\end{comment}
+% \begin{theorem}
+% We have two levels of $\Pi$-combinators such that:
+% \begin{itemize}
+% \item The first level of $\Pi$-combinators is complete for
+%   representing reversible combinational circuits.
+% \item The second level of $\Pi$-combinators is sound and complete for
+%   the equivalence of circuits represented by the first level.
+% \end{itemize}
+% \end{theorem}
+% \end{comment}
 
 %  Just as we found a convenient
 % programming language for capturing type equivalences, we would
@@ -2740,120 +2734,127 @@ been shown to make sense in computations involving recursive datatypes
 such as trees that can be viewed as solutions to polynomials over type
 variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
 
-\begin{comment}
-\appendix
-\section{Code Roadmap}
+% \begin{comment}
+% \appendix
+% \section{Code Roadmap}
 
-For those who wish to delve into the code, we give a quick roadmap here,
-with links between the results in our paper and where the formalization
-can be found.  We put module names in \texttt{typewriter} font below.
+% For those who wish to delve into the code, we give a quick roadmap here,
+% with links between the results in our paper and where the formalization
+% can be found.  We put module names in \texttt{typewriter} font below.
 
-Equivalences are defined in \texttt{Equiv}.  This is used in
-\texttt{TypeEquiv} to define equivalences between types; these are 
-assembled to show that \AgdaPrimitiveType{Set} has the structure of
-a $\simeq$-semiring, \AgdaFunction{typesCSR}, which is our
-Theorem~\ref{thm:typesCSR}
-\end{comment}
+% Equivalences are defined in \texttt{Equiv}.  This is used in
+% \texttt{TypeEquiv} to define equivalences between types; these are 
+% assembled to show that \AgdaPrimitiveType{Set} has the structure of
+% a $\simeq$-semiring, \AgdaFunction{typesCSR}, which is our
+% Theorem~\ref{thm:typesCSR}
+% \end{comment}
 
-\begin{comment}
-We have developed a tight integration between \emph{reversible
-  circuits} with \emph{symmetric rig weak groupoids} based on the following
-elements:
-\begin{itemize}
-\item reversible circuits are represented as terms witnessing
-  morphisms between finite types in a symmetric rig groupoid;
-\item the term language for reversible circuits is universal; it could
-  be used as a standalone point-free programming language or as a
-  target for a higher-level language with a more conventional syntax;
-\item the symmetric rig groupoid structure ensures that programs can
-  be combined using sums and products satisfying the familiar laws of
-  these operations; 
-\item the \emph{weak} versions of the categories give us a second
-  level of morphisms that relate programs to equivalent programs and
-  is exactly captured in the coherence conditions of the categories;
-  this level of morphisms also comes equipped with sums and products
-  with the familiar laws and the coherence conditions capture how
-  these operations interact with sequential composition;
-\item a sound and complete optimizer for reversible circuits can be
-  represented as terms that rewrite programs in small steps witnessing
-  this second level of morphisms.
-\end{itemize}
-Our calculus provides a semantically well-founded approach to the
-representation, manipulation, and optimization of reversible
-circuits. In principle, subsets of the optimization rules can be
-selected to rewrite programs to several possible canonical forms as
-desired. We aim to investigate such frameworks in the future.
+% \begin{comment}
+% We have developed a tight integration between \emph{reversible
+%   circuits} with \emph{symmetric rig weak groupoids} based on the following
+% elements:
+% \begin{itemize}
+% \item reversible circuits are represented as terms witnessing
+%   morphisms between finite types in a symmetric rig groupoid;
+% \item the term language for reversible circuits is universal; it could
+%   be used as a standalone point-free programming language or as a
+%   target for a higher-level language with a more conventional syntax;
+% \item the symmetric rig groupoid structure ensures that programs can
+%   be combined using sums and products satisfying the familiar laws of
+%   these operations; 
+% \item the \emph{weak} versions of the categories give us a second
+%   level of morphisms that relate programs to equivalent programs and
+%   is exactly captured in the coherence conditions of the categories;
+%   this level of morphisms also comes equipped with sums and products
+%   with the familiar laws and the coherence conditions capture how
+%   these operations interact with sequential composition;
+% \item a sound and complete optimizer for reversible circuits can be
+%   represented as terms that rewrite programs in small steps witnessing
+%   this second level of morphisms.
+% \end{itemize}
+% Our calculus provides a semantically well-founded approach to the
+% representation, manipulation, and optimization of reversible
+% circuits. In principle, subsets of the optimization rules can be
+% selected to rewrite programs to several possible canonical forms as
+% desired. We aim to investigate such frameworks in the future.
 
-From a much more general perspective, our result can be viewed as part
-of a larger programme aiming at a better integration of several
-disciplines most notably computation, topology, and physics. Computer
-science has traditionally been founded on models such as the
-$\lambda$-calculus which are at odds with the increasingly relevant
-physical principle of conservation of information as well as the
-recent foundational proposal of HoTT that identifies equivalences
-(i.e., reversible, information-preserving, functions) as a primary
-notion of interest.\footnote{The $\lambda$-calculus is not even
-suitable for keeping track of computational resources; linear
-logic~\citep{Girard87tcs} is a much better framework for that purpose
-but it does not go far enough as it only tracks ``multiplicative
-resources''~\citep{superstructural}.} Currently, these reversible
-functions are a secondary notion defined with reference to the full
-$\lambda$-calculus in what appears to be a detour. In more detail,
-current constructions start with the class of all functions $A
-\rightarrow B$, then introduce constraints to filter those functions
-which correspond to type equivalences $A \simeq B$, and then attempt
-to look for a convenient computational framework for effective
-programming with type equivalences. As we have shown, in the case of
-finite types, this is just convoluted since the collection of
-functions corresponding to type equivalences is the collection of
-isomorphisms between finite types and these isomorphisms can be
-inductively defined, giving rise to a well-behaved programming
-language and its optimizer.
+% From a much more general perspective, our result can be viewed as part
+% of a larger programme aiming at a better integration of several
+% disciplines most notably computation, topology, and physics. Computer
+% science has traditionally been founded on models such as the
+% $\lambda$-calculus which are at odds with the increasingly relevant
+% physical principle of conservation of information as well as the
+% recent foundational proposal of HoTT that identifies equivalences
+% (i.e., reversible, information-preserving, functions) as a primary
+% notion of interest.\footnote{The $\lambda$-calculus is not even
+% suitable for keeping track of computational resources; linear
+% logic~\citep{Girard87tcs} is a much better framework for that purpose
+% but it does not go far enough as it only tracks ``multiplicative
+% resources''~\citep{superstructural}.} Currently, these reversible
+% functions are a secondary notion defined with reference to the full
+% $\lambda$-calculus in what appears to be a detour. In more detail,
+% current constructions start with the class of all functions $A
+% \rightarrow B$, then introduce constraints to filter those functions
+% which correspond to type equivalences $A \simeq B$, and then attempt
+% to look for a convenient computational framework for effective
+% programming with type equivalences. As we have shown, in the case of
+% finite types, this is just convoluted since the collection of
+% functions corresponding to type equivalences is the collection of
+% isomorphisms between finite types and these isomorphisms can be
+% inductively defined, giving rise to a well-behaved programming
+% language and its optimizer.
 
-More generally, reversible computational models --- in which all
-functions have inverses --- are known to be universal computational
-models~\citep{Bennett:1973:LRC} and more importantly they can be
-defined without any reference to irreversible functions, which
-ironically become the derived notion~\citep{Green:2008:RIC}. It is
-therefore, at least plausible, that a variant of HoTT based
-exclusively on reversible functions that directly correspond to
-equivalences would have better computational properties. Our current
-result is a step, albeit preliminary in that direction as it only
-applies to finite types. However, it is plausible that this
-categorification approach can be generalized to accommodate
-higher-order functions. The intuitive idea is that our current
-development based on the categorification of the commutative semiring
-of the natural numbers might be generalizable to the categorification
-of the ring of integers or even to the categorification of the field
-of rational numbers. The generalization to rings would introduce
-\emph{negative types} and the generalization to fields would further
-introduce \emph{fractional types}. 
-\end{comment}
+% More generally, reversible computational models --- in which all
+% functions have inverses --- are known to be universal computational
+% models~\citep{Bennett:1973:LRC} and more importantly they can be
+% defined without any reference to irreversible functions, which
+% ironically become the derived notion~\citep{Green:2008:RIC}. It is
+% therefore, at least plausible, that a variant of HoTT based
+% exclusively on reversible functions that directly correspond to
+% equivalences would have better computational properties. Our current
+% result is a step, albeit preliminary in that direction as it only
+% applies to finite types. However, it is plausible that this
+% categorification approach can be generalized to accommodate
+% higher-order functions. The intuitive idea is that our current
+% development based on the categorification of the commutative semiring
+% of the natural numbers might be generalizable to the categorification
+% of the ring of integers or even to the categorification of the field
+% of rational numbers. The generalization to rings would introduce
+% \emph{negative types} and the generalization to fields would further
+% introduce \emph{fractional types}. 
+% \end{comment}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% \clearpage
 \bibliographystyle{abbrvnat}
-%\softraggedright
+%% \softraggedright
 \bibliography{cites}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
 
-The final version of the paper is limited to 27pages LNCS style and it
-is due to be submitted through easychair by 8 January 2016.
+%% Reviews to address
 
-I put this paper as a weak reject as I do not find the contributions
-as remarkable and new as the authors claim. It is well known that type
-algebra restricted to "0 , 1 , * , +" have a semiring structure up to
-isomorphism.  If I understand correctly, the relevant part comes from
-having a symmetric rig groupoid in the category of types and terms,
-which then gives you the laws your combinator calculus should satisfy
-to stay coherent. I would have enjoyed seeing more applications of
-this insight, for instance, can you use some sort of ring solver or
-proof by reflection to infer type isomorphisms?  I can imagine some
+If I understand correctly, the relevant part comes from having a
+symmetric rig groupoid in the category of types and terms, which then
+gives you the laws your combinator calculus should satisfy to stay
+coherent. I would have enjoyed seeing more applications of this
+insight, for instance, can you use some sort of ring solver or proof
+by reflection to infer type isomorphisms?  I can imagine some
 interesting applications of this for generic programming over finite
 types -- but at the moment I'd like to see further applications of
 these results.
+
+*** REPLY
+
+Inferring type isomorphisms has been done in previous work (by
+others). But the answer to the question as posed is no.  We would
+need, at the very least, a Rig Category solver to find anything
+interesting, i.e., to infer equivalences-of-equivalences which are, in
+some sense 'optimizations'.  This is future work - and is likely to be
+rather challenging.
+
+***
 
 For instance, I would have liked to see the optimization-related
 claims elaborated further.  For instance, the ping-pong law, which
@@ -2883,6 +2884,33 @@ Otherwise the theory built on top of that is of no resemblance to commutative
 monoids. In a monoid, a + b = b + a = a + b, so applying commutativity twice
 boils down to the original term. In categorical terms: commutativity
 after commutativity = identity. 
+
+*** REPLY
+
+Working out coherence conditions for complex categorical definitions
+is still an art, as far as we know.  Most of the work on rewriting
+does not apply, as the algorithms they have are not terminating in our
+situation.  There are some theoretical papers (which we cite) which
+lays some ground work but these, as far as we know, have never been
+implemented.  Yes, of course the ones for monoidal categories are
+easy.  The ones for Rig Categories are not.  We have asked several
+experts, and none could give us a solid explanation of how to derive
+these.  See, for example, the unanswered question about this on
+MathOverflow.  [If Referee #1 knows of an actual answer, we would love
+to hear it / get references!]
+
+Also note that there are categories where doing commutativity twice is
+NOT the same as the identity (ex: braided but non-symmetric monoidal
+categories).  So this is not a free coherence.
+
+     	  - "It is also worth mentioning that an operation automatically satisfies all the
+	  relevant coherence laws if it is defined by an universal property."
+
+Indeed.  And if we were doing category theory instead of programming
+language theory, that is the route we would have taken.  But since we
+need to be 100% constructive, we could not choose that route.
+
+***
 
 I believe that here a discussion on how homotopies and natural transformations
 relate, or working one or two coherence conditions out, would be of more value
@@ -2930,6 +2958,18 @@ and pf3 and pf4 regard coproducts.
 Here is yet another oportunity to show how the coherence laws capture
 the homotopies you seek. 
 
+*** REPLY
+In particular, Referee 1 points out "Section 5.3 then discusses that Types and
+Type equivalences form a symmetric rig groupoid. On the description there is a
+mistake about which coherence conditions justify pf3 == pf4:
+
+   The very reason for why pf3 and pf4 are isomorphic is precisely the "unit coherence" for symmetric
+   monoidal categories, not number XVII."
+
+Thank you, you are quite right.  This was a bad example on our part, and is likely a cut-and-paste error.  Our apologies.
+
+***
+
 Theorem 2:
 You state that "all" types and type equivalences make up a symmetric rig 
 groupoid. I assume you mean that this structure arises on top of the 
@@ -2940,6 +2980,14 @@ does not convince me how "all" types are handled.
 Theorem 3 holds by construction... if you constructed your combinator-calculus
 based on the laws of the natural transformations for a symmetric rig groupoid, 
 it would be very strange if they did NOT show that structure. 
+
+*** REPLY
+
+[Yes, theorem 3 does hold by construction.  We should state that more
+clearly, thank you.  The theorems before it, on the same page, are not
+so trivial]
+
+***
 
 p3: Definition 1:
  Wouldn't it be more decriptive to call +-sym and *-sym
@@ -2974,6 +3022,20 @@ Figure 3 & Def 7:
 
 - it would be interesting to understand what happens by adding
  recursive types
+
+*** REPLY
+
+We entirely agree, we would also love to understand what happens by
+adding recursive types.  We have been working on that for over 2 years
+now.  The problem is that adding 'trace' (the obvious thing to do on
+the categorical side) tends to completely collapse the whole
+structure.  Again, see several [answered] questions on MathOverflow on
+this topic.  We have some ideas on how to deal with that.  This is the
+problem of "rig completion" which was open for decades, and has only
+recently been solved.  The solution is not obviously constructive,
+unfortunately.
+
+***
 
 - page 6, def. 2: are homotopic -> are homotopic, written f ~ g, 
 - page 6, def. 2: this seems the standard definition of equality
@@ -3063,3 +3125,27 @@ perhaps the authors have thought about it, but there is no
 "interesting" explanation to give.  In any case, maybe it would be
 useful to label laws (or blocks of laws) *in the figure*,
 e.g. "Naturality laws for ...:" or something similar.
+
+
+*** MORE REPLIES
+
+Our paper is about the fact that:
+
+a. axioms for semirings correspond exactly to equivalences, which are
+the *terms* of a (reversible) programming language
+
+ b. that, viewed categorically, equivalences of equivalences for
+ categorified semirings (rig categories) give terms for a language of
+ program transformations.
+
+ It is important to note that, outside of HoTT [a very small community
+ indeed], no one has ever written down what "equivalences of
+ equivalences" even means.  We had to ask (see post on MathOverflow),
+ and even then, experts had to have a bit of a debate before settling
+ on a definition that was independent of univalence. This is a crucial
+ novelty of our work -- that this correct, new, univalence-free
+ definition of "equivalence of equivalence" is EXACTLY the 'right' set
+ of terms for a language of program transformations.  We believe this
+ insight is non-trivial.
+
+***
