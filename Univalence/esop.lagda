@@ -159,7 +159,7 @@ $\displaystyle
 %% \newcommand{\jc}[1]{}
 
 \newcommand{\jc}[1]{\authornote{purple}{JC}{#1}}
-\newcommand{\amr}[1]{\fbox{\begin{minipage}{0.4\textwidth}\color{red}{Amr says: {#1}}\end{minipage}}}
+\newcommand{\amr}[1]{\fbox{\begin{minipage}{0.9\textwidth}\color{red}{Amr says: {#1}}\end{minipage}}}
 
 %\newcommand{\AgdaArgument}[1]{#1}
 
@@ -801,6 +801,7 @@ equivalences are defined within \AgdaFunction{typesIsCSR} and are
 straightforward. For future reference, we list some of these equivalences:
 \[\begin{array}{rcl}
 \AgdaFunction{unite₊≃} &:& (⊥ ⊎ A) ≃ A \\
+\AgdaFunction{unite₊′≃} &:& (A ⊎ ⊥) ≃ A \\
 \AgdaFunction{swap₊≃} &:& (A ⊎ B) ≃ (B ⊎ A) \\
 \AgdaFunction{assoc₊≃} &:& ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C)) \\
 \_\AgdaSymbol{⊎≃}\_ &:&  (A ≃ C) → (B ≃ D) → ((A ⊎ B) ≃ (C ⊎ D))
@@ -810,6 +811,7 @@ straightforward. For future reference, we list some of these equivalences:
 
 %%%
 \subsection{Equivalences of Equivalences}
+\label{sub:eqeq}
 
 In the terminology of Sec.~\ref{subsec:proofrelev}, an equivalence $≃$
 denotes a proof of a semiring identity. Thus the proofs
@@ -1592,6 +1594,14 @@ Naturally, we define the denotational semantics of $\Pi$ to be
 type equivalences.  The above lemmas show that our operational and
 denotational semantics coincide.
 
+\amr{Section 4.4 is a brief discussion on semantics. The authors argue that
+their semantics are correct with respect to type equivalences. Lemma
+c2equic states that given a reversible-computation in $\Pi$, with type $c
+: t1 \leftrightarrow t2$, then the denotation of both types is
+equivalent. Moreover, they also state that $t1 = t2$ are equal in the
+underlying semiring. I believe this section could receive more
+attention and again enforce the connection you want to make.}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Categorification}
 \label{sec:categorification}
@@ -1771,6 +1781,11 @@ homotopy equivalent to double loop spaces.
 %categories. This is not the case but will be once we capture the full
 %structure of commutative semirings categorically. 
 
+\amr{I believe that here a discussion on how homotopies and natural transformations
+relate, or working one or two coherence conditions out, would be of more value
+than the why's of it. The explanations by Dosen and Petric, and, Baez and 
+Dolan only makes it more confusing for the unfamiliar reader.}
+
 %%%%%%%%%%%%
 \subsection{Weak Symmetric Rig Groupoids}
 
@@ -1883,11 +1898,47 @@ be the best hope for a rational reconstruction of the coherence laws.
 %%%%%%%%%%%%
 \subsection{The Symmetric Rig Groupoid of Types and Type Equivalences} 
 
-It is no coincidence that the equivalence between \AgdaFunction{pf₃}
-and \AgdaFunction{pf₄} is exactly the statement of coherence law
-XVII. Indeed, we can generalize our model of types and type
-equivalences to a symmetric rig weak groupoid and this will, by
-construction, prove all equivalences between type equivalences like
+\amr{Did we forget the unit coherence law in the definition of
+  symmetric monoidal categories???}
+
+It is no coincidence that the homotopy between \AgdaFunction{pf₃} and
+\AgdaFunction{pf₄} discussed in Sec.~\ref{sub:eqeq} follows from the
+coherence conditions of symmetric monoidal categories:
+
+\[\begin{array}{rcll}
+\AgdaFunction{pf₃} &=& \AgdaInductiveConstructor{trans≃}~ 
+  (\AgdaInductiveConstructor{swap₊≃}~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{id≃})~
+  (\AgdaInductiveConstructor{unite₊≃}~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{id≃}) \\
+  &=&
+  (\AgdaInductiveConstructor{trans≃}~\AgdaInductiveConstructor{swap₊≃}~\AgdaInductiveConstructor{unite₊≃}) 
+   ~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{id≃} 
+  & (\AgdaInductiveConstructor{⊎≃} \mbox{~is~a~functor}) \\
+  &=&
+  \AgdaInductiveConstructor{unite₊′≃}~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{id≃} 
+  & (\mbox{unit~coherence~law ????}) \\
+  &=& 
+    \AgdaInductiveConstructor{trans≃}~\AgdaInductiveConstructor{assoc₊≃}~
+    (\AgdaInductiveConstructor{id≃}~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{unite₊≃}) 
+   & (\mbox{triangle}) \\
+  &=& \AgdaFunction{pf₄}
+\end{array}\] 
+
+     % pf3 = (\lambda + id) . (\sigma + id)
+     % pf4 = (id + \lambda) . \alpha
+
+     % Proof of pf3 == pf4
+
+     %   (\lambda + id) . (\sigma + id) == (id + \lambda) . \alpha
+     % iff { functor + ; triangle for unit }
+     %   (\lamda . \sigma + id) == \rho + id
+     % iff { unit coherence: \lambda . \sigma == \rho }
+     %   \rho + id == \rho + id
+     % iff {}
+     %   true.
+
+Indeed, we can generalize our model of types and type equivalences to
+a symmetric rig weak groupoid and this will, by construction, prove
+all equivalences between type equivalences like
 \AgdaFunction{pf₃}~\AgdaSymbol{≋}~\AgdaFunction{pf₄} that should be
 equated, while, again by construction, \emph{not} identifying type
 equivalences like \AgdaFunction{pf₁} and \AgdaFunction{pf₂} that
@@ -1908,6 +1959,13 @@ should not be equated.
   ensuring that the coherence conditions are satisfied up to homotopy.
   We only show the proof of one coherence condition, the first one in
   Laplaza's paper:
+
+\amr{Theorem 2:
+You state that "all" types and type equivalences make up a symmetric rig 
+groupoid. I assume you mean that this structure arises on top of the 
+cannonical product and coprodut. Why such a general result? Wouldn't it 
+suffice to prove it for your universe of types? Not to mention your proof 
+does not convince me how "all" types are handled.}
 
 \medskip
 
@@ -1987,6 +2045,42 @@ equivalence are indeed related to the same diagram:
 \]
 where \AgdaInductiveConstructor{eq} is the constructor for $≋$. \qed
 \end{proof}
+
+\amr{The coherence conditions discussion, in section 5, is very long and unclear.
+Coherence conditions can be worked out in a mechanical fashion. 
+Take the symmetry triangle, for instance. If we have an arrow
+$A >< B -> A >< B$, this arrow can be one of two things: (A) the identity arrow
+or (B) two consecutive swaps. But in our category, arrows represent
+isomorphisms. If $\sigma$ is an isomorphism, then so is $\sigma . \sigma$. 
+They ought to be the same arrow in the underlying category, then. 
+Otherwise the theory built on top of that is of no resemblance to commutative
+monoids. In a monoid, $a + b = b + a = a + b$, so applying commutativity twice
+boils down to the original term. In categorical terms: commutativity
+after commutativity = identity. 
+
+Working out coherence conditions for complex categorical definitions
+is still an art, as far as we know.  Most of the work on rewriting
+does not apply, as the algorithms they have are not terminating in our
+situation.  There are some theoretical papers (which we cite) which
+lays some ground work but these, as far as we know, have never been
+implemented.  Yes, of course the ones for monoidal categories are
+easy.  The ones for Rig Categories are not.  We have asked several
+experts, and none could give us a solid explanation of how to derive
+these.  See, for example, the unanswered question about this on
+MathOverflow.  [If Referee \#1 knows of an actual answer, we would love
+to hear it / get references!]
+
+Also note that there are categories where doing commutativity twice is
+NOT the same as the identity (ex: braided but non-symmetric monoidal
+categories).  So this is not a free coherence.
+
+     	  - "It is also worth mentioning that an operation automatically satisfies all the
+	  relevant coherence laws if it is defined by an universal property."
+
+Indeed.  And if we were doing category theory instead of programming
+language theory, that is the route we would have taken.  But since we
+need to be 100\% constructive, we could not choose that route.
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Programming with Equivalences of Equivalences} 
@@ -2591,6 +2685,16 @@ groupoid.
   other that are captured in the more involved coherence laws.
 \end{proof}
 
+\amr{
+Theorem 3 holds by construction... if you constructed your combinator-calculus
+based on the laws of the natural transformations for a symmetric rig groupoid, 
+it would be very strange if they did NOT show that structure. 
+
+[Yes, theorem 3 does hold by construction.  We should state that more
+clearly, thank you.  The theorems before it, on the same page, are not
+so trivial]
+}
+
 % \begin{comment}
 % Putting the result above together with Laplaza's coherence result
 % about rig categories, we conclude with our main result, which will be
@@ -2628,6 +2732,10 @@ open import TypeEquivCat
 \end{code}
 }
 
+\amr{On the XXIV coherence conditions took from Laplaza: I fail to see how an 
+algebraic description of those would not be programming-oriented. Not to 
+mention it would be much easier to read and relate to the previous section. 
+Again, if details mater, a textual description is out of place.}
 
 % \amr{However, it did let me observe one thing: we have 2! which says
 %  that given (c <-> d), we can get (d <-> c).  What we don't have, and
@@ -2734,6 +2842,33 @@ been shown to make sense in computations involving recursive datatypes
 such as trees that can be viewed as solutions to polynomials over type
 variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
 
+\amr{possible future work: If I understand correctly, the relevant
+  part comes from having a symmetric rig groupoid in the category of
+  types and terms, which then gives you the laws your combinator
+  calculus should satisfy to stay coherent. I would have enjoyed
+  seeing more applications of this insight, for instance, can you use
+  some sort of ring solver or proof by reflection to infer type
+  isomorphisms?  I can imagine some interesting applications of this
+  for generic programming over finite types -- but at the moment I'd
+  like to see further applications of these results.
+
+  Inferring type isomorphisms has been done in previous work (by
+  others). But the answer to the question as posed is no.  We would
+  need, at the very least, a Rig Category solver to find anything
+  interesting, i.e., to infer equivalences-of-equivalences which are,
+  in some sense 'optimizations'.  This is future work - and is likely
+  to be rather challenging.}
+ 
+\amr{more possible future work: For instance, I would have liked to
+  see the optimization-related claims elaborated further.  For
+  instance, the ping-pong law, which states that running equivalent
+  equivalences in a "contravariant" fashion will result in the
+  identity. Maybe this is a bit too good of an optimizer if stated
+  this way, as it results in a very complex, yet useless
+  computation. It would have been more interesting if the authors
+  showed how to "shrink" circuits, using some notion of order in a
+  semiring to lead their optimizations, for instance.}
+
 % \begin{comment}
 % \appendix
 % \section{Code Roadmap}
@@ -2824,6 +2959,9 @@ variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
 % introduce \emph{fractional types}. 
 % \end{comment}
 
+\ackname 
+\amr{Thank reviewers. NSF support.}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% \clearpage
 \bibliographystyle{abbrvnat}
@@ -2832,160 +2970,6 @@ variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
-
-%% Reviews to address
-
-If I understand correctly, the relevant part comes from having a
-symmetric rig groupoid in the category of types and terms, which then
-gives you the laws your combinator calculus should satisfy to stay
-coherent. I would have enjoyed seeing more applications of this
-insight, for instance, can you use some sort of ring solver or proof
-by reflection to infer type isomorphisms?  I can imagine some
-interesting applications of this for generic programming over finite
-types -- but at the moment I'd like to see further applications of
-these results.
-
-*** REPLY
-
-Inferring type isomorphisms has been done in previous work (by
-others). But the answer to the question as posed is no.  We would
-need, at the very least, a Rig Category solver to find anything
-interesting, i.e., to infer equivalences-of-equivalences which are, in
-some sense 'optimizations'.  This is future work - and is likely to be
-rather challenging.
-
-***
-
-For instance, I would have liked to see the optimization-related
-claims elaborated further.  For instance, the ping-pong law, which
-states that running equivalent equivalences in a "contravariant"
-fashion will result in the identity. Maybe this is a bit too good of
-an optimizer if stated this way, as it results in a very complex, yet
-useless computation. It would have been more interesting if the
-authors showed how to "shrink" circuits, using some notion of order in
-a semiring to lead their optimizations, for instance.
-
-Section 4.4 is a brief discussion on semantics. The authors argue that
-their semantics are correct with respect to type equivalences. Lemma
-c2equic states that given a reversible-computation in \Pi, with type c
-: t1 <-> t2, then the denotation of both types is
-equivalent. Moreover, they also state that t1 = t2 are equal in the
-underlying semiring. I believe this section could receive more
-attention and again enforce the connection you want to make.
-
-The coherence conditions discussion, in section 5, is very long and unclear.
-Coherence conditions can be worked out in a mechanical fashion. 
-Take the symmetry triangle, for instance. If we have an arrow
-A >< B -> A >< B, this arrow can be one of two things: (A) the identity arrow
-or (B) two consecutive swaps. But in our category, arrows represent
-isomorphisms. If \sigma is an isomorphism, then so is \sigma . \sigma . 
-They ought to be the same arrow in the underlying category, then. 
-Otherwise the theory built on top of that is of no resemblance to commutative
-monoids. In a monoid, a + b = b + a = a + b, so applying commutativity twice
-boils down to the original term. In categorical terms: commutativity
-after commutativity = identity. 
-
-*** REPLY
-
-Working out coherence conditions for complex categorical definitions
-is still an art, as far as we know.  Most of the work on rewriting
-does not apply, as the algorithms they have are not terminating in our
-situation.  There are some theoretical papers (which we cite) which
-lays some ground work but these, as far as we know, have never been
-implemented.  Yes, of course the ones for monoidal categories are
-easy.  The ones for Rig Categories are not.  We have asked several
-experts, and none could give us a solid explanation of how to derive
-these.  See, for example, the unanswered question about this on
-MathOverflow.  [If Referee #1 knows of an actual answer, we would love
-to hear it / get references!]
-
-Also note that there are categories where doing commutativity twice is
-NOT the same as the identity (ex: braided but non-symmetric monoidal
-categories).  So this is not a free coherence.
-
-     	  - "It is also worth mentioning that an operation automatically satisfies all the
-	  relevant coherence laws if it is defined by an universal property."
-
-Indeed.  And if we were doing category theory instead of programming
-language theory, that is the route we would have taken.  But since we
-need to be 100% constructive, we could not choose that route.
-
-***
-
-I believe that here a discussion on how homotopies and natural transformations
-relate, or working one or two coherence conditions out, would be of more value
-than the why's of it. The explanations by Dosen and Petric, and, Baez and 
-Dolan only makes it more confusing for the unfamiliar reader. 
-
-It is also worth mentioning that an operation automatically satisfies all the
-relevant coherence laws if it is defined by an universal property. Take
-Set and products for instance. If we take the product A >< B, for every A, B, 
-making cartesian product an operation, we have associativity, left unit and 
-right unit cannonically defined. Moreover, they satisfy the coherence 
-conditions, turning (Set, >< , 1) into a monoidal category. 
-
-On the XXIV coherence conditions took from Laplaza: I fail to see how an 
-algebraic description of those would not be programming-oriented. Not to 
-mention it would be much easier to read and relate to the previous section. 
-Again, if details mater, a textual description is out of place.
-
-Section 5.3 then discusses that Types and Type equivalences form a symmetric 
-rig groupoid. On the description there is a mistake about which coherence 
-conditions justify pf3 == pf4
-
-The very reason for why pf3 and pf4 are isomorphic is precisely the "unit 
-coherence" for symmetric monoidal categories, not number XVII.
-
-     Number XVII reads as follows:
-       al . id >< ar == ar . (al >< id) . \alpha^-1
-
-And I fail to see where it applies to pf3 and pf4, as XVII deals with products
-and pf3 and pf4 regard coproducts.
-
-     pf3 = (\lambda + id) . (\sigma + id)
-     pf4 = (id + \lambda) . \alpha
-
-     Proof of pf3 == pf4
-
-       (\lambda + id) . (\sigma + id) == (id + \lambda) . \alpha
-     iff { functor + ; triangle for unit }
-       (\lamda . \sigma + id) == \rho + id
-     iff { unit coherence: \lambda . \sigma == \rho }
-       \rho + id == \rho + id
-     iff {}
-       true.
-
-Here is yet another oportunity to show how the coherence laws capture
-the homotopies you seek. 
-
-*** REPLY
-In particular, Referee 1 points out "Section 5.3 then discusses that Types and
-Type equivalences form a symmetric rig groupoid. On the description there is a
-mistake about which coherence conditions justify pf3 == pf4:
-
-   The very reason for why pf3 and pf4 are isomorphic is precisely the "unit coherence" for symmetric
-   monoidal categories, not number XVII."
-
-Thank you, you are quite right.  This was a bad example on our part, and is likely a cut-and-paste error.  Our apologies.
-
-***
-
-Theorem 2:
-You state that "all" types and type equivalences make up a symmetric rig 
-groupoid. I assume you mean that this structure arises on top of the 
-cannonical product and coprodut. Why such a general result? Wouldn't it 
-suffice to prove it for your universe of types? Not to mention your proof 
-does not convince me how "all" types are handled. 
-
-Theorem 3 holds by construction... if you constructed your combinator-calculus
-based on the laws of the natural transformations for a symmetric rig groupoid, 
-it would be very strange if they did NOT show that structure. 
-
-*** REPLY
-
-[Yes, theorem 3 does hold by construction.  We should state that more
-clearly, thank you.  The theorems before it, on the same page, are not
-so trivial]
 
 ***
 
@@ -3017,7 +3001,7 @@ would improve readability. Instead of TIMES, for instance, call it _><_ .
 Your sequential composition is different in 4.1 and 4.2. Again, maintaining 
 notation helps a lot.
 
-Figure 3 & Def 7:
+Figure 3 \& Def 7:
  Adding the equational reading of the diagrams would be of great value.
 
 - it would be interesting to understand what happens by adding
@@ -3148,4 +3132,3 @@ the *terms* of a (reversible) programming language
  of terms for a language of program transformations.  We believe this
  insight is non-trivial.
 
-***
