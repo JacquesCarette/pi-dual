@@ -224,6 +224,14 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}\label{sec:intro}
 
+\amr{"The elementary building blocks of type theory are..."  This is an
+awfully strong assertion. The connectives listed are a reasonable set
+of building blocks, but the term "type theory" is already contentious
+(is it Martin-Löf-related theories, or anything that feels like a type
+system? (I take the latter view)), and other sets of "elements" are
+reasonable; for example, Σ could be taken as fundamental, or → could
+be added, or → could replace several of the others.}
+
 The elementary building blocks of type theory are the empty type
 ($\bot$), the unit type ($\top$), the sum type ($\uplus$), and the
 product type ($\times$). The traditional Curry-Howard correspondence
@@ -269,6 +277,11 @@ isomorphisms between the type $\top + \top$ and itself. One of these
 is the identity and the other is the twist map. These isomorphisms are
 themselves ``not equivalent'' one level up in a sense to be
 formalized. And the chain of reasoning continues.
+
+\amr{"computation is fundamentally a physical process": This struck me as
+either tautological ("computation" defined as something that is
+physical, e.g. as what physical computers do) or a debatable
+philosophical question.}
 
 The question we therefore ask is whether there is a natural
 correspondence, in the style of the Curry-Howard correspondence,
@@ -453,6 +466,11 @@ type theory.
 We begin with the standard definition of the algebraic structure of
 commutative semirings.
 
+\amr{p3: Definition 1:
+ Wouldn't it be more decriptive to call +-sym and *-sym
+ +-comm and *-comm, respectively? But that's a syntactical remark
+ and I leave it to the author's judgment.}
+
 \begin{definition}\label{defn:csr}
   A \emph{commutative semiring} sometimes called a \emph{commutative
     rig} (ri\emph{n}g without negative elements) consists of a
@@ -507,10 +525,17 @@ inverses. Specifically, we define:
 \fun{f}~(\tc , x) = x & \bar{\fun{f}}~x = (\tc, x) 
 \end{array}\] 
 and prove
-$\fun{f} \circ \bar{\fun{f}} = \bar{\fun{f}} \circ \fun{f} = \fun{id}$. One
-could use this proof to ``equate'' the two types, but computationally
-speaking it is more appropriate to keep the identity of the types
-separate and speak of \emph{isomorphisms}.
+$\fun{f} \circ \bar{\fun{f}} = \bar{\fun{f}} \circ \fun{f} =
+\fun{id}$.
+One could use this proof to ``equate'' the two types, but
+computationally speaking it is more appropriate to keep the identity
+of the types separate and speak of \emph{isomorphisms}.
+
+\amr{"it is more appropriate to keep the identity of the types separate":
+Probably.  You can certainly say it *seems* more appropriate.  But the
+question is less clear for some type systems.  For example, with an
+intersection type (∩ or ∧) it is not clear whether τ1 ∩ τ2 should be
+distinguished from τ2 ∩ τ1.}
 
 %%%
 \subsection{Proof Relevance}
@@ -675,6 +700,15 @@ forth between the two worlds transporting results that are evident in
 one domain to the other. The remainder of the paper is about such a
 formalization and its applications.
 
+\amr{Sections 1 and 2 were clear and engaging.  I felt that I understood
+(at least) the contours of the work's connection to Curry-Howard, and
+type isomorphisms and semirings.  OTOH, homotopy type theory felt more
+like a buzzword, with p. 2 saying "type equivalences feature
+prominently in the \emph{univalence axiom}."  If you are going to use
+a connection to the univalence axiom as an argument for your work's
+importance, you should at least try to explain what a univalence axiom
+is.}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Type Equivalences and Equivalences of Equivalences}
 \label{sec:equiv}
@@ -690,6 +724,11 @@ identities. We give precise definitions to these notions.
 
 %%%
 \subsection{Type Equivalences}
+
+\amr{p6l14:
+ On the example mentioned "earlier" you use the type T + T,
+ and now you call it Bool. They are indeed isomorphic, but sticking
+ to the same notation might be a good idea.}
 
 As a first approximation, Sec.~\ref{subsec:isos} identifies two types
 when there is an isomorphism between them.  The next section
@@ -708,6 +747,20 @@ scope of this paper, we do not use any of the definitions of
 equivalence which make it a \emph{mere proposition}, as we want a
 definition which is syntactically symmetric.}
  
+\amr{Definition 2 would be a good opportunity to explain some Agda for the unfamiliar reader, for example:
+\begin{itemize}
+\item "(f g : ...)" is not application of f to g, but a declaration that both f and g are "...";
+\item the meaning of "Set".
+\end{itemize}
+Actually I would have liked the entire definition to be explained in this way.}
+
+\amr{
+- page 6, def. 2: are homotopic $->$ are homotopic, written $f ~ g$, 
+
+- page 6, def. 2: this seems the standard definition of equality
+ between functions, and is different from the definition of homotopy
+ in topological spaces}
+
 \begin{definition}[Homotopy]
 \label{def:homotopy}
 Two functions $f,g:A \rightarrow B$ are \emph{homotopic} if
@@ -719,6 +772,9 @@ _∼_ : ∀ {A : Set} {P : A → Set} → (f g : (x : A) → P x) → Set
 _∼_  {A} f g = (x : A) → f x ≡ g x
 \end{code}
 \end{definition}
+
+\amr{- page 6, def. 3: can you give an example of functions which are 
+ quasi-inverse but not inverse?}
 
 \begin{definition}[Quasi-inverse]
 \label{def:quasi}
@@ -872,6 +928,8 @@ equivalences. Our definition is fairly straightforward: two
 equivalences are equivalent if there exist homotopies between their
 underlying functions.
 
+\amr{- page 8, line 9: equivalent $->$ equivalent, written ``symbol'', iff}
+
 \begin{definition}[Equivalence of equivalences]
 Two equivalences $\mathit{eq}_1, \mathit{eq}_2 : A ≃ B$ are themselves equivalent
 if $\mathit{eq}_1.f ∼ \mathit{eq}_2.f$ and $\mathit{eq}_1.g ∼ \mathit{eq}_2.g$. 
@@ -894,8 +952,14 @@ In Agda, we write:
       g≡ : g (proj₂ eq₁) ∼ g (proj₂ eq₂)
 \end{code}
 
-\medskip
-Note that we cannot use the type $\left(A \simeq B\right) \simeq
+\amr{p8l13:
+ "The problem is that homotopies in such a type ($\alpha$ and $\beta$)"
+ Who are $\alpha$ and $\beta$? Maybe you meant "A" and "B".}
+
+\amr{- page 8, lines 17-21: I do not understand this, but this is probably
+ due to my limited familiarity with homotopy type theory}
+
+\medskip Note that we cannot use the type $\left(A \simeq B\right) \simeq
 \left(A \simeq B\right)$ as ``equivalence of equivalence'' (even
 though it is well formed).  The problem is that the homotopies
 in such a type ($\alpha$ and $\beta$) would equate two elements
@@ -1329,6 +1393,14 @@ expresses type equivalences and nothing else.
 \label{pi-combinators}
 \end{figure*}
 
+\amr{figure 1: If they are all isomorphisms, wouldn't it be simpler to
+  define $unite-+$ and then use $(unite-+)^{-1}$ instead of
+  $uniti-+$ ?
+
+  figure 2: here you call the transformations that correspond to
+  $+-sym$ (resp $*-sym$) $+-swap$ (resp $*-swap$). I believe that
+  stressing the same names should make the connection clearer.}
+
 %%%%%%%%%%
 \subsection{Syntax of $\Pi$}
 \label{subsec:pi}
@@ -1353,6 +1425,9 @@ The values classified by the finite types are the conventional
 ones: $()$ of type 1, $\inl{v}$ and $\inr{v}$ for injections into sum
 types, and $(v_1,v_2)$ for product types.
 
+\amr{4.1: "Fig. 2 adds to that 3 combinators," Please mention each specific 
+combinator along with its explanation, in this sentence.}
+
 Fig.~\ref{pi-terms} gives the terms which correspond to the identities
 of commutative semirings.  Each line of the figure introduces a pair
 of dual constants\footnote{where $\idc$, $\swapp$ and $\swapt$ are
@@ -1364,6 +1439,12 @@ and $*$ (giving a way to take sums and products of combinators).  That
 latter congruence requirement is usually invisible in classical
 mathematics, but appears when doing proof-relevant mathematics.
 
+\amr{"The attentive reader will notice...many more combinators here than in
+Def. 1."  If this is meant simply to say that there were no
+combinators in Def. 1, and now 3 (I am not sure that 3 is "many more"
+than 0, anyway), it would be clearer to say that.  The current
+sentence sounds a little too cute.}
+
 The attentive reader will notice that there are many more combinators
 here than in Def.~\ref{defn:csr}.  This is because we want the
 language to be composed of \emph{equivalences}, and we want the
@@ -1372,6 +1453,13 @@ syntax.  In particular, every combinator $c$ has an inverse $!c$
 according to the figure. The inverse flips the order of the
 combinators in sequential composition, and is homomorphic on sums and
 products.
+
+\amr{"every combinator c has an inverse !c according to the figure": The
+figure never mentions !, so "according to the figure" is questionable.
+You seem to define ! informally in this paragraph; I would either give
+a proper definition, or else drop the "!c"—I could find no use of ! in
+the rest of the paper, so better to avoid burdening the reader with
+one more symbol.}
 
 %%%%%%%%%%%%
 \subsection{Example Programs}
@@ -1387,6 +1475,15 @@ language~\citep{James:2012:IE:2103656.2103667,rc2011}.
 
 We illustrate the expressiveness of $\Pi$ with a few small programs:
 we begin by defining the universe of types \AgdaDatatype{U}:
+
+\amr{Section 4.2: Using Agda's mixfix for defining your universe
+would improve readability. Instead of TIMES, for instance, call it $\_><\_$ . 
+Your sequential composition is different in 4.1 and 4.2. Again, maintaining 
+notation helps a lot.}
+
+\amr{- page 10, lines -3 and -1, and elsewhere: I guess the symbol after
+ dist and the ones before factor are sequential compositions, isn't
+ it?}
 
 {\setlength{\mathindent}{0cm}
 
@@ -1612,6 +1709,11 @@ identity as in Def.~\ref{def:eq} and using a programming language
 tailored to only express permutations between finite types as in
 Sec.~\ref{subsec:pi}. 
 
+\amr{I would suggest that the statement (5.0, p. 12) that "Our next goal is
+to model equivalences of equivalences in the same way" could use more
+motivation or explanation, even if it only repeats or summarizes parts
+of Section 1.}
+
 Our next goal is to model equivalences of equivalences in the same
 way. Attempting to discover such equivalences of equivalences when
 working directly with functions or with the syntax of a programming
@@ -1651,6 +1753,9 @@ of the general categorical framework.
 As the details matter, we will be explicit about the definition of all
 the categorical notions involved. We begin with the conventional
 definitions for monoidal and symmetric monoidal categories.
+
+\amr{Figure 3 \& Def 7:
+ Adding the equational reading of the diagrams would be of great value.}
 
 \begin{figure*}
 \begin{center}
@@ -1827,6 +1932,10 @@ A \emph{symmetric rig groupoid} is a symmetric rig category in which
 every morphism is invertible.
 \end{definition}
 
+\amr{- page 15, condition XVI: in the second path you need to absorb just 
+ once 
+- page 15, condition XVII: please write it explicitly}
+
 The coherence conditions for rig categories were worked out by
 \citet{laplaza}. Pages 31-35 of his paper report 24 coherence
 conditions numbered I to XXIV that vary from simple diagrams to quite
@@ -1943,6 +2052,8 @@ all equivalences between type equivalences like
 equated, while, again by construction, \emph{not} identifying type
 equivalences like \AgdaFunction{pf₁} and \AgdaFunction{pf₂} that
 should not be equated.
+
+\amr{- page 16, line 22: please write what Hom is }
 
 \begin{theorem}
   The collection of all types and type equivalences is a symmetric rig
@@ -2262,6 +2373,15 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
   (Part II).}
 \end{figure*}
 
+\amr{Figs. 4 and 5 are long, and the explanation in 6.2 is rather brief;
+the end feels almost like an unconvincing advertisement ("buy 13
+coherence laws, get another 13 free"?).  That may be a little unfair;
+perhaps the authors have thought about it, but there is no
+"interesting" explanation to give.  In any case, maybe it would be
+useful to label laws (or blocks of laws) \textbf{in the figure},
+e.g. "Naturality laws for ...:" or something similar.}
+
+
 %%%
 \subsection{Syntax of Level-1 Terms} 
 
@@ -2276,6 +2396,9 @@ fact that $c₁$ here is restricted to have signature
 $c₁ : \AgdaInductiveConstructor{ZERO} ⟷
 \AgdaInductiveConstructor{ZERO}$.
 The reader should consult the code for full details.
+
+\amr{- page 20, line 18: what you mean here with braided? Is it not the 
+ same as symmetric?}
 
 Generally speaking, the level-1 combinators arise for the following
 reasons. About a third of the combinators come from the definition of
@@ -2665,6 +2788,13 @@ The next theorem is the main result: it shows that the two levels of
 $\Pi$ form a symmetric rig groupoid, thus capturing equivalences of
 types at level 0, and equivalences of equivalences at level 1.
 
+\amr{- page 23, proof of Th. 3: this proof seems taken literally from an
+ old version of the paper, with different notations. In particular,
+ in the proof you speak about levels 1 and 2, while before you were
+ using levels 0 and 1; furthermore you say that additional level 0
+ combinators are presented in the next section, while they were
+ presented and discussed at the beginning of the section}
+
 \begin{theorem}
 The universe $U$ and $\Pi$ terms and combinators form a symmetric rig
 groupoid.
@@ -2869,6 +2999,38 @@ variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
   showed how to "shrink" circuits, using some notion of order in a
   semiring to lead their optimizations, for instance.}
 
+\amr{Our paper is about the fact that:
+\begin{itemize}
+\item axioms for semirings correspond exactly to equivalences, which are
+the \textbf{terms} of a (reversible) programming language
+
+\item that, viewed categorically, equivalences of equivalences for
+ categorified semirings (rig categories) give terms for a language of
+ program transformations.
+\end{itemize}
+ It is important to note that, outside of HoTT [a very small community
+ indeed], no one has ever written down what "equivalences of
+ equivalences" even means.  We had to ask (see post on MathOverflow),
+ and even then, experts had to have a bit of a debate before settling
+ on a definition that was independent of univalence. This is a crucial
+ novelty of our work -- that this correct, new, univalence-free
+ definition of "equivalence of equivalence" is EXACTLY the 'right' set
+ of terms for a language of program transformations.  We believe this
+ insight is non-trivial.}
+
+\amr{- it would be interesting to understand what happens by adding
+ recursive types
+
+We entirely agree, we would also love to understand what happens by
+adding recursive types.  We have been working on that for over 2 years
+now.  The problem is that adding 'trace' (the obvious thing to do on
+the categorical side) tends to completely collapse the whole
+structure.  Again, see several [answered] questions on MathOverflow on
+this topic.  We have some ideas on how to deal with that.  This is the
+problem of "rig completion" which was open for decades, and has only
+recently been solved.  The solution is not obviously constructive,
+unfortunately.}
+
 % \begin{comment}
 % \appendix
 % \section{Code Roadmap}
@@ -2970,165 +3132,4 @@ variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
-
-***
-
-p3: Definition 1:
- Wouldn't it be more decriptive to call +-sym and *-sym
- +-comm and *-comm, respectively? But that's a syntactical remark
- and I leave it to the author's judgment. 
-
-p6l14:
- On the example mentioned "earlier" you use the type T + T,
- and now you call it Bool. They are indeed isomorphic, but sticking
- to the same notation might be a good idea.
-
-p8l13:
- "The problem is that homotopies in such a type (\alpha and \beta)"
- Who are \alpha and \beta? Maybe you meant "A" and "B".
-
-figure 1:
- If they are all isomorphisms, wouldn't it be simpler to 
- define unite-+ and then use (unite-+)^{-1} instead of uniti-+ ?
-
-figure 2:
- here you call the transformations that correspond to
- +-sym (resp *-sym) +-swap (resp *-swap). I believe that stressing the
- same names should make the connection clearer.
-
-Section 4.2: Using Agda's mixfix for defining your universe
-would improve readability. Instead of TIMES, for instance, call it _><_ . 
-Your sequential composition is different in 4.1 and 4.2. Again, maintaining 
-notation helps a lot.
-
-Figure 3 \& Def 7:
- Adding the equational reading of the diagrams would be of great value.
-
-- it would be interesting to understand what happens by adding
- recursive types
-
-*** REPLY
-
-We entirely agree, we would also love to understand what happens by
-adding recursive types.  We have been working on that for over 2 years
-now.  The problem is that adding 'trace' (the obvious thing to do on
-the categorical side) tends to completely collapse the whole
-structure.  Again, see several [answered] questions on MathOverflow on
-this topic.  We have some ideas on how to deal with that.  This is the
-problem of "rig completion" which was open for decades, and has only
-recently been solved.  The solution is not obviously constructive,
-unfortunately.
-
-***
-
-- page 6, def. 2: are homotopic -> are homotopic, written f ~ g, 
-- page 6, def. 2: this seems the standard definition of equality
- between functions, and is different from the definition of homotopy
- in topological spaces
-- page 6, def. 3: can you give an example of functions which are
- quasi-inverse but not inverse?
-- page 8, line 9: equivalent -> equivalent, written \symbol, iff
-- page 8, lines 17-21: I do not understand this, but this is probably
- due to my limited familiarity with homotopy type theory
-- page 10, lines -3 and -1, and elsewhere: I guess the symbol after
- dist and the ones before factor are sequential compositions, isn't
- it?
-- page 15, condition XVI: in the second path you need to absorb just
- once
-- page 15, condition XVII: please write it explicitly
-- page 16, line 22: please write what Hom is
-- page 20, line 18: what you mean here with braided? Is it not the
- same as symmetric?
-- page 23, proof of Th. 3: this proof seems taken literally from an
- old version of the paper, with different notations. In particular,
- in the proof you speak about levels 1 and 2, while before you were
- using levels 0 and 1; furthermore you say that additional level 0
- combinators are presented in the next section, while they were
- presented and discussed at the beginning of the section
-
-Sections 1 and 2 were clear and engaging.  I felt that I understood
-(at least) the contours of the work's connection to Curry-Howard, and
-type isomorphisms and semirings.  OTOH, homotopy type theory felt more
-like a buzzword, with p. 2 saying "type equivalences feature
-prominently in the \emph{univalence axiom}."  If you are going to use
-a connection to the univalence axiom as an argument for your work's
-importance, you should at least try to explain what a univalence axiom
-is.
-
-"The elementary building blocks of type theory are..."  This is an
-awfully strong assertion. The connectives listed are a reasonable set
-of building blocks, but the term "type theory" is already contentious
-(is it Martin-Löf-related theories, or anything that feels like a type
-system? (I take the latter view)), and other sets of "elements" are
-reasonable; for example, Σ could be taken as fundamental, or → could
-be added, or → could replace several of the others.
-
-"computation is fundamentally a physical process": This struck me as
-either tautological ("computation" defined as something that is
-physical, e.g. as what physical computers do) or a debatable
-philosophical question.
-
-"it is more appropriate to keep the identity of the types separate":
-Probably.  You can certainly say it *seems* more appropriate.  But the
-question is less clear for some type systems.  For example, with an
-intersection type (∩ or ∧) it is not clear whether τ1 ∩ τ2 should be
-distinguished from τ2 ∩ τ1.
-
-Definition 2 would be a good opportunity to explain some Agda for the unfamiliar reader, for example:
-
- • "(f g : ...)" is not application of f to g, but a declaration that both f and g are "...";
- • the meaning of "Set".
-
-Actually I would have liked the entire definition to be explained in this way.
-
-4.1: "Fig. 2 adds to that 3 combinators," Please mention each specific
-combinator along with its explanation, in this sentence.
-
-"The attentive reader will notice...many more combinators here than in
-Def. 1."  If this is meant simply to say that there were no
-combinators in Def. 1, and now 3 (I am not sure that 3 is "many more"
-than 0, anyway), it would be clearer to say that.  The current
-sentence sounds a little too cute.
-
-"every combinator c has an inverse !c according to the figure": The
-figure never mentions !, so "according to the figure" is questionable.
-You seem to define ! informally in this paragraph; I would either give
-a proper definition, or else drop the "!c"—I could find no use of ! in
-the rest of the paper, so better to avoid burdening the reader with
-one more symbol.
-
-I would suggest that the statement (5.0, p. 12) that "Our next goal is
-to model equivalences of equivalences in the same way" could use more
-motivation or explanation, even if it only repeats or summarizes parts
-of Section 1.
-
-Figs. 4 and 5 are long, and the explanation in 6.2 is rather brief;
-the end feels almost like an unconvincing advertisement ("buy 13
-coherence laws, get another 13 free"?).  That may be a little unfair;
-perhaps the authors have thought about it, but there is no
-"interesting" explanation to give.  In any case, maybe it would be
-useful to label laws (or blocks of laws) *in the figure*,
-e.g. "Naturality laws for ...:" or something similar.
-
-
-*** MORE REPLIES
-
-Our paper is about the fact that:
-
-a. axioms for semirings correspond exactly to equivalences, which are
-the *terms* of a (reversible) programming language
-
- b. that, viewed categorically, equivalences of equivalences for
- categorified semirings (rig categories) give terms for a language of
- program transformations.
-
- It is important to note that, outside of HoTT [a very small community
- indeed], no one has ever written down what "equivalences of
- equivalences" even means.  We had to ask (see post on MathOverflow),
- and even then, experts had to have a bit of a debate before settling
- on a definition that was independent of univalence. This is a crucial
- novelty of our work -- that this correct, new, univalence-free
- definition of "equivalence of equivalence" is EXACTLY the 'right' set
- of terms for a language of program transformations.  We believe this
- insight is non-trivial.
 
