@@ -687,23 +687,22 @@ when there is an isomorphism between them.  The next section
 at a higher level about equivalences of such isomorphisms. We
 therefore follow the HoTT approach and expose one of the functions
 forming the isomorphism in order to explicitly encode the precise way
-in which the two types are equivalent. Thus, for example, as mentioned
-earlier, there are two equivalences between the type
-\AgdaDatatype{Bool} and itself: one that uses the identity map and one
-that uses boolean negation. These two equivalences have enough
-information to prove that they are \emph{not} themselves equivalent.
+in which the two types are equivalent. Thus, the two equivalences
+between \AgdaDatatype{Bool} and itself will be distinguished by the
+underlying witness of the isomorphism. 
 
-Our definition is presented next.\footnote{For reasons beyond the
-scope of this paper, we do not use any of the definitions of
-equivalence which make it a \emph{mere proposition}, as we want a
-definition which is syntactically symmetric.}
+Technically our definition of type equivalence relies on
+quasi-inverses and homotopies defined next.\footnote{For reasons
+  beyond the scope of this paper, we do not use any of the definitions
+  of equivalence which make it a \emph{mere proposition}, as we want a
+  definition which is syntactically symmetric.}
  
-\amr{Definition 2 would be a good opportunity to explain some Agda for the unfamiliar reader, for example:
-\begin{itemize}
-\item "(f g : ...)" is not application of f to g, but a declaration that both f and g are "...";
-\item the meaning of "Set".
-\end{itemize}
-Actually I would have liked the entire definition to be explained in this way.}
+% \amr{Definition 2 would be a good opportunity to explain some Agda for the unfamiliar reader, for example:
+% \begin{itemize}
+% \item "(f g : ...)" is not application of f to g, but a declaration that both f and g are "...";
+% \item the meaning of "Set".
+% \end{itemize}
+% Actually I would have liked the entire definition to be explained in this way.}
 
 %% \amr{page 6, def. 2: this seems the standard definition of equality
 %%  between functions, and is different from the definition of homotopy
@@ -719,15 +718,17 @@ g$, if $\forall x:A. f(x) = g(x)$. In Agda, we write:
 _∼_ : ∀ {A : Set} {P : A → Set} → (f g : (x : A) → P x) → Set
 _∼_  {A} f g = (x : A) → f x ≡ g x
 \end{code}
+
+\medskip\noindent where \AgdaFunction{Set} is the universe of Agda types.
 \end{definition}
 
 \noindent In the HoTT world, there is a distinction between the identification
 of two functions $f=g$ and the fact that the functions produce equal
-values on all inputs $f ∼ g$: the two notions are \emph{equivalent}
-but are not themselves identified.
+values on all inputs $f ∼ g$: the two notions are traditionally
+identified but are only \emph{equivalent} in the HoTT context. 
 
-\amr{- page 6, def. 3: can you give an example of functions which are 
- quasi-inverse but not inverse?}
+% \amr{- page 6, def. 3: can you give an example of functions which are 
+%  quasi-inverse but not inverse?}
 
 \begin{definition}[Quasi-inverse]
 \label{def:quasi}
@@ -747,6 +748,10 @@ record isqinv {A : Set} {B : Set} (f : A → B) : Set where
     β : (g ∘ f) ∼ id
 \end{code}
 \end{definition}
+
+The terminology ``quasi-inverse'' was chosen in the HoTT context as a
+reminder that this is a poorly-behaved notion by itself as the same
+function $f : A → B$ may have multiple \emph{unequal} quasi-inverses.
 
 \begin{definition}[Equivalence of types]\label{def:eq}
   Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
@@ -874,12 +879,24 @@ module A where
   pf₄ = trans≃ assoc₊≃ (id≃ ⊎≃ unite₊≃) 
 \end{code}
 
-\medskip  
-In order to argue that \AgdaFunction{pf₃} and \AgdaFunction{pf₄} are
-equivalent, we therefore need a notion of equivalence of
-equivalences. Our definition is fairly straightforward: two
+\medskip In order to argue that \AgdaFunction{pf₃} and
+\AgdaFunction{pf₄} are equivalent, we therefore need a notion of
+equivalence of equivalences. To motivate our definition below, we
+first consider the obvious idea of using $\AgdaSymbol{≃}$ to relate
+equivalences. In that case, an equivalence of equivalences of type
+$\left(A \simeq B\right) \simeq \left(A \simeq B\right)$ would include
+functions $f$ and $g$ mapping between $\left(A \simeq B\right)$ and
+itself in addition to two homotopies $α$ and $β$ witnessing
+$(f ∘ g) ∼ \AgdaFunction{id}$ and $(g ∘ f) ∼ \AgdaFunction{id}$
+respectively. Expanding the definition of a homotopy, we note that $α$
+and $β$ would therefore attempt to compare equivalences (which include
+functions) using propositional equality $≡$. In other words, we need
+to resolve to homotopies again to compare these functions: two
 equivalences are equivalent if there exist homotopies between their
-underlying functions.
+underlying functions.\footnote{Strictly speaking, the \AgdaField{g≡}
+  component is redundant, from a logical perspective, as it is
+  derivable.  From a computational perspective, it is very
+  convenient.}
 
 \begin{definition}[Equivalence of equivalences]
   Two equivalences $\mathit{eq}_1, \mathit{eq}_2 : A ≃ B$ are
@@ -905,28 +922,15 @@ In Agda, we write:
       g≡ : g (proj₂ eq₁) ∼ g (proj₂ eq₂)
 \end{code}
 
-\amr{p8l13:
- "The problem is that homotopies in such a type ($\alpha$ and $\beta$)"
- Who are $\alpha$ and $\beta$? Maybe you meant "A" and "B".}
+% \amr{p8l13:
+%  "The problem is that homotopies in such a type ($\alpha$ and $\beta$)"
+%  Who are $\alpha$ and $\beta$? Maybe you meant "A" and "B".}
 
-\amr{- page 8, lines 17-21: I do not understand this, but this is probably
- due to my limited familiarity with homotopy type theory}
+% \amr{- page 8, lines 17-21: I do not understand this, but this is probably
+%  due to my limited familiarity with homotopy type theory}
 
-\medskip Note that we cannot use the type $\left(A \simeq B\right) \simeq
-\left(A \simeq B\right)$ as ``equivalence of equivalence'' (even
-though it is well formed).  The problem is that the homotopies
-in such a type ($\alpha$ and $\beta$) would equate two elements
-of type $A \simeq B$ using $\equiv$, but the components of
-$\simeq$ contain functions -- and such an equality would require
-extensionality.  But since equating two equivalences essentially
-boils down to equating those functions, we simply need to do the
-same as we did before, and move to homotopies.  Thus our
-definition\footnote{Strictly speaking, the \AgdaField{g≡} component
-is redundant, from a logical perspective, as it is derivable.  From 
-a computational perspective, it is very convenient.}.
-
-We could now verify that \AgdaFunction{pf₃} is indeed equivalent to
-\AgdaFunction{pf₄} by proving
+\medskip We could now verify that \AgdaFunction{pf₃} is indeed
+equivalent to \AgdaFunction{pf₄} by proving
 \AgdaFunction{pf₃}~\AgdaSymbol{≋}~\AgdaFunction{pf₄}. Such a proof
 exists in the accompanying code in \AgdaModule{TypeEquivEquiv} but
 requires a surprisingly tedious infrastructure to present. We will
