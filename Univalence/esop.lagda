@@ -705,17 +705,14 @@ definition which is syntactically symmetric.}
 \end{itemize}
 Actually I would have liked the entire definition to be explained in this way.}
 
-\amr{
-- page 6, def. 2: are homotopic $->$ are homotopic, written $f ~ g$, 
-
-- page 6, def. 2: this seems the standard definition of equality
- between functions, and is different from the definition of homotopy
- in topological spaces}
+%% \amr{page 6, def. 2: this seems the standard definition of equality
+%%  between functions, and is different from the definition of homotopy
+%% in topological spaces}
 
 \begin{definition}[Homotopy]
 \label{def:homotopy}
-Two functions $f,g:A \rightarrow B$ are \emph{homotopic} if
-$\forall x:A. f(x) = g(x)$. In Agda, we write:
+Two functions $f,g:A \rightarrow B$ are \emph{homotopic}, written $f ∼
+g$, if $\forall x:A. f(x) = g(x)$. In Agda, we write:
 
 \medskip 
 \begin{code}
@@ -723,6 +720,11 @@ _∼_ : ∀ {A : Set} {P : A → Set} → (f g : (x : A) → P x) → Set
 _∼_  {A} f g = (x : A) → f x ≡ g x
 \end{code}
 \end{definition}
+
+\noindent In the HoTT world, there is a distinction between the identification
+of two functions $f=g$ and the fact that the functions produce equal
+values on all inputs $f ∼ g$: the two notions are \emph{equivalent}
+but are not themselves identified.
 
 \amr{- page 6, def. 3: can you give an example of functions which are 
  quasi-inverse but not inverse?}
@@ -879,11 +881,11 @@ equivalences. Our definition is fairly straightforward: two
 equivalences are equivalent if there exist homotopies between their
 underlying functions.
 
-\amr{- page 8, line 9: equivalent $->$ equivalent, written ``symbol'', iff}
-
 \begin{definition}[Equivalence of equivalences]
-Two equivalences $\mathit{eq}_1, \mathit{eq}_2 : A ≃ B$ are themselves equivalent
-if $\mathit{eq}_1.f ∼ \mathit{eq}_2.f$ and $\mathit{eq}_1.g ∼ \mathit{eq}_2.g$. 
+  Two equivalences $\mathit{eq}_1, \mathit{eq}_2 : A ≃ B$ are
+  themselves equivalent, written $\mathit{eq}_2 ≋ \mathit{eq}_2$, if
+  $\mathit{eq}_1.f ∼ \mathit{eq}_2.f$ and
+  $\mathit{eq}_1.g ∼ \mathit{eq}_2.g$.
 \end{definition}
 In Agda, we write:
 
