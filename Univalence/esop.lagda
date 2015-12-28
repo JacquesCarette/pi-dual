@@ -221,18 +221,18 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 \end{code} 
 }
 
+% \amr{"The elementary building blocks of type theory are..."  This is an
+% awfully strong assertion. The connectives listed are a reasonable set
+% of building blocks, but the term "type theory" is already contentious
+% (is it Martin-Löf-related theories, or anything that feels like a type
+% system? (I take the latter view)), and other sets of "elements" are
+% reasonable; for example, Σ could be taken as fundamental, or → could
+% be added, or → could replace several of the others.}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}\label{sec:intro}
 
-\amr{"The elementary building blocks of type theory are..."  This is an
-awfully strong assertion. The connectives listed are a reasonable set
-of building blocks, but the term "type theory" is already contentious
-(is it Martin-Löf-related theories, or anything that feels like a type
-system? (I take the latter view)), and other sets of "elements" are
-reasonable; for example, Σ could be taken as fundamental, or → could
-be added, or → could replace several of the others.}
-
-The elementary building blocks of type theory are the empty type
+Elementary building blocks of type theory include the empty type
 ($\bot$), the unit type ($\top$), the sum type ($\uplus$), and the
 product type ($\times$). The traditional Curry-Howard correspondence
 which goes back to at least 1969 relates these types to logical
@@ -263,42 +263,53 @@ relationships. For example, type isomorphisms are an important
 relation between types that is more refined than mere inhabitance of
 types as they clearly distinguish $\tau \times \tau$ and $\tau$.
 
+% \amr{Sections 1 and 2 were clear and engaging.  I felt that I understood
+% (at least) the contours of the work's connection to Curry-Howard, and
+% type isomorphisms and semirings.  OTOH, homotopy type theory felt more
+% like a buzzword, with p. 2 saying "type equivalences feature
+% prominently in the \emph{univalence axiom}."  If you are going to use
+% a connection to the univalence axiom as an argument for your work's
+% importance, you should at least try to explain what a univalence axiom
+% is.}
+
 The study of type isomorphisms became recently popular during at least
 two short periods: in the early 1990s when they were used to search
 large libraries~\citep{Rittri:1989:UTS:99370.99384}, and in the mid
 2000s when they were studied from a categorical
-perspective~\citep{Fiore:2004,fiore-remarks,Fiore2004707}. In the last
-few years, type isomorphisms became one of the central concepts in
-homotopy type theory (HoTT)~\citep{hottbook}, where type equivalences
-feature prominently in the \emph{univalence axiom}.  These connections
-exposed that there is even more interesting structure arising from
-type isomorphisms at higher levels. For example, consider the two
-isomorphisms between the type $\top + \top$ and itself. One of these
-is the identity and the other is the twist map. These isomorphisms are
-themselves ``not equivalent'' one level up in a sense to be
-formalized. And the chain of reasoning continues.
+perspective~\citep{Fiore:2004,Fiore2004707,fiore-remarks}. In the
+last few years, type isomorphisms became one of the central concepts
+in homotopy type theory (HoTT)~\citep{hottbook}, where type
+equivalences feature prominently. %% in the \emph{univalence axiom}.
+These connections exposed that there is even more interesting
+structure arising from type isomorphisms at higher levels. For
+example, let \AgdaDatatype{Bool} abbreviate the type $\top + \top$ and
+consider the two isomorphisms between the type \AgdaDatatype{Bool} and
+itself. One of these is the identity and the other is the twist
+(negation) map. These isomorphisms are themselves ``not equivalent''
+one level up in a sense to be formalized. And the chain of reasoning
+continues.
 
-\amr{"computation is fundamentally a physical process": This struck me as
-either tautological ("computation" defined as something that is
-physical, e.g. as what physical computers do) or a debatable
-philosophical question.}
+% \amr{"computation is fundamentally a physical process": This struck me as
+% either tautological ("computation" defined as something that is
+% physical, e.g. as what physical computers do) or a debatable
+% philosophical question.}
 
 The question we therefore ask is whether there is a natural
 correspondence, in the style of the Curry-Howard correspondence,
 between types and some existing mathematical entities, which would
 bring forth the structure of type isomorphisms and their equivalences
-at higher levels. We argue that commutative semirings and their categorification
-are exactly these entities. In a broader sense, such a correspondence
-connects computation with mathematical structures common in topology
-and physics thus opening the door for deeper and more fruitful
+at higher levels. We argue that, for the case of finite types,
+commutative semirings and their categorification are exactly these
+entities. In a broader sense, such a correspondence connects
+computation with mathematical structures common in topology and
+physics thus opening the door for deeper and more fruitful
 interactions among these disciplines~\citep{rosetta}. In more detail,
 because physical laws obey various conservation principles (including
-conservation of information) and because computation is fundamentally
-a physical process, every computation is, at the physical level, an
-equivalence that preserves information.  The idea that computation, at
-the logical and programming level, should also be based on
-``equivalences'' (i.e., invertible processes) was originally motivated
-by such physical
+conservation of information), every computation is, at the physical
+level, an equivalence that preserves information.  The idea that
+computation, at the logical and programming level, should also be
+based on ``equivalences'' (i.e., invertible processes) was originally
+motivated by such physical
 considerations~\citep{Landauer:1961,Bennett:1973:LRC,Toffoli:1980,springerlink:10.1007/BF02650179,fredkin1982conservative,PhysRevA.32.3266}. More
 recently, the rising importance of energy conservation for both tiny
 mobile devices and supercomputers, the shrinking size of technology at
@@ -375,57 +386,6 @@ models~\citep{Frank:1999:REC:930275,DeBenedictis:2005:RLS:1062261.1062325}.
 
 % \end{comment}
 
-\amr{integrate the following paragraphs that used to be in the
-  conclusion with the intro}
-
-The traditional Curry-Howard correspondence is based on ``mere logic
-(to use the HoTT terminology).''  That is, it is based around
-\emph{proof inhabitation}: two types, like two propositions, are
-regarded as ``the same'' when one is inhabited if and only if the
-other is.  In that sense, the propositions $A$ and $A \wedge A$, are
-indeed the same, as are the types $T$ and $T \times T$.  This is all
-centered around proof irrelevant mathematics.
-
-What we have shown is that if we shift to proof relevant
-mathematics, computationally relevant equivalences,
-explicit homotopies, and algebra, something quite new emerges:
-an actual isomorphism between proof terms and reversible
-computations.  Furthermore, what algebraic structure to use
-is not mysterious: it is exactly the algebraic structure of
-the semantics.  In the case of finite types (with sums and
-products), this turns out to be commutative semirings.
-
-But the Curry-Howard correspondence promises more: that proof
-transformations correspond to program transformations.  In a proof
-irrelevant setting, this is rather awkward; similarly, in a
-extensional setting, program equivalence is a rather coarse
-concept. But, in our setting, both of these issues disappear.  The key
-to proceed was to realize that there exist combinators which make
-equivalences 
-%%\footnote{and permutations, but I don't know if we can bring that in} 
-look like a semiring, but do not actually have a semiring structure.
-The next insight is to ``remember'' that a monoidal category is really
-a model of a \emph{typed monoid}; in a way, a monoidal category is a
-\emph{categorified} monoid.  So what we needed was a categorified
-version of commutative semirings.  Luckily, this had already been
-done, in the form of Rig categories.  Modifying this to have a weaker
-notion of equivalence and having all morphisms invertible was quite
-straightforward.
-
-Again, being proof relevant mattered: it quickly became 
-apparent that the \emph{coherence laws} involved in
-weak Rig Groupoids were \emph{exactly} the program
-equivalences that were needed.  So rather than fumbling 
-around finding various equivalences and hoping to 
-stumble on enough of them to be complete, a systematic
-design emerged: given a 1-algebra of types parametrized
-by an equivalence $\simeq$, one should seek a 
-$2$-algebra (aka typed algebra, aka categorification
-of the given $1$-algebra) that corresponds to it.
-The coherence laws then emerge as a complete set of
-program transformations.  This, of course, clearly
-points the way to further generalizations.
-
 %% \todo{Every single theorem should have, in a comment above it, the
 %% name of a source file and an Agda statement which has a proof.}
 
@@ -433,7 +393,7 @@ points the way to further generalizations.
 between semirings and types at an intuitive informal
 level. Sec.~\ref{sec:equiv} formalizes the notions of equivalences of
 types and equivalences of equivalences which are the semantic building
-blocks for the computational side of the Curry-Howard style
+blocks for the computational side of the Curry--Howard-style
 correspondence we aim for. Sec.~\ref{sec:prog} introduces a reversible
 programming language which exactly captures type
 equivalences. Sec.~\ref{sec:categorification} lays the categorical
@@ -443,22 +403,22 @@ a language. The remaining sections put our work in perspective, point
 out its limitations and directions for future work, and conclude.
 
 We note that because the issues involved are quite subtle, the paper is partly
-an ``unformalization'' of an executable \texttt{Agda 2.4.2.3} package with the global
+an ``unformalization'' of an executable \texttt{Agda 2.4.2.4} package with the global
 \AgdaComment{without-K} option enabled. The code is available at
 \url{http://github.com//JacquesCarette/pi-dual/Univalence}.
 We also make crucial use of a substantial library of categorical 
 structures; we forked our copy from
 \url{https://github.com/copumpkin/categories} and augmented it with
-definitions for Groupoid, Rig category and Bicategory.  This fork is
+definitions for Groupoid, Rig Category and Bicategory.  This fork is
 available from \url{https://github.com/JacquesCarette/categories}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Informal Development}
 \label{sec:informal}
 
-We explore the main ingredients that would constitute a Curry-Howard
-like correspondence between (commutative) semirings and (constructive)
-type theory.
+We explore the main ingredients that would constitute a
+Curry--Howard-like correspondence between (commutative) semirings and
+(constructive) type theory.
 
 %%%
 \subsection{Semirings}\label{sec:semirings}
@@ -466,10 +426,10 @@ type theory.
 We begin with the standard definition of the algebraic structure of
 commutative semirings.
 
-\amr{p3: Definition 1:
- Wouldn't it be more decriptive to call +-sym and *-sym
- +-comm and *-comm, respectively? But that's a syntactical remark
- and I leave it to the author's judgment.}
+% \amr{p3: Definition 1:
+%  Wouldn't it be more decriptive to call +-sym and *-sym
+%  +-comm and *-comm, respectively? But that's a syntactical remark
+%  and I leave it to the author's judgment.}
 
 \begin{definition}\label{defn:csr}
   A \emph{commutative semiring} sometimes called a \emph{commutative
@@ -479,11 +439,11 @@ commutative semirings.
   relations for any $a,b,c \in R$:
 \[\begin{array}{rcl@{\qquad}l}
 0 + a               & = & a                   & (\mbox{+-unit}) \\
-a + b               & = & b + a             & (\mbox{+-sym})  \\
+a + b               & = & b + a             & (\mbox{+-swap})  \\
 a + (b + c)         & = & (a + b) + c    & (\mbox{+-assoc}) \\
                                               \\
 1 \cdot a           & = & a                   & (\mbox{$\cdot$-unit}) \\
-a \cdot b           & = & b \cdot a         & (\mbox{$\cdot$-sym})  \\
+a \cdot b           & = & b \cdot a         & (\mbox{$\cdot$-swap})  \\
 a \cdot (b \cdot c) & = & (a \cdot b) \cdot c & (\mbox{$\cdot$-assoc}) \\
                                               \\
 0 \cdot a           & = & 0                   & (\mbox{$\cdot$-0}) \\
@@ -520,22 +480,22 @@ $\top \times A$ and $A$ are ``equal.'' One way to express such an
 ``equality'' computationally is to exhibit two functions mediating
 between the two types and prove that these two functions are
 inverses. Specifically, we define:
-\[\begin{array}{l@{\qquad\qquad}l}
+\[\begin{array}{l@{\qquad\qquad\qquad\qquad}l}
 \fun{f} ~:~ \top \times A \to A & \bar{\fun{f}} : A \to \top \times A \\
 \fun{f}~(\tc , x) = x & \bar{\fun{f}}~x = (\tc, x) 
 \end{array}\] 
 and prove
 $\fun{f} \circ \bar{\fun{f}} = \bar{\fun{f}} \circ \fun{f} =
 \fun{id}$.
-One could use this proof to ``equate'' the two types, but
-computationally speaking it is more appropriate to keep the identity
+One could use this proof to ``equate'' the two types but, in our
+proof-relevant development, it is more appropriate to keep the identity
 of the types separate and speak of \emph{isomorphisms}.
 
-\amr{"it is more appropriate to keep the identity of the types separate":
-Probably.  You can certainly say it *seems* more appropriate.  But the
-question is less clear for some type systems.  For example, with an
-intersection type (∩ or ∧) it is not clear whether τ1 ∩ τ2 should be
-distinguished from τ2 ∩ τ1.}
+% \amr{"it is more appropriate to keep the identity of the types separate":
+% Probably.  You can certainly say it *seems* more appropriate.  But the
+% question is less clear for some type systems.  For example, with an
+% intersection type (∩ or ∧) it is not clear whether τ1 ∩ τ2 should be
+% distinguished from τ2 ∩ τ1.}
 
 %%%
 \subsection{Proof Relevance}
@@ -545,7 +505,7 @@ In the world of semirings, there are many proofs of $a + a = a +
 a$. Consider the following two proofs:
 \[\begin{array}{l@{\qquad}rcl@{\qquad}l}
 \fun{pf₁} : & a + a &=& a + a & \mbox{(because $=$ is reflexive)} \\
-\fun{pf₂} : & a + a &=& a + a & \mbox{(using $+$-sym)}
+\fun{pf₂} : & a + a &=& a + a & \mbox{(using $+$-swap)}
 \end{array}\]
 In some cases, we might not care \emph{how} a semiring identity was
 proved and it might then be acceptable to treat $\fun{pf₁}$ and
@@ -579,7 +539,7 @@ $(a + 0) + b = a + b$. To avoid clutter in this informal presentation,
 we omit the justifications that refer to the fact that $=$ is a congruence
 relation:
 \[\begin{array}{l@{\qquad}rcl@{\qquad}l}
-\fun{pf₃} : & (a + 0) + b &=& (0 + a) + b & \mbox{(using $+$-sym}) \\
+\fun{pf₃} : & (a + 0) + b &=& (0 + a) + b & \mbox{(using $+$-swap}) \\
 & &=& a + b & \mbox{(using $+$-unit)}  \\
 \\
 \fun{pf₄} : & (a + 0) + b &=& a + (0 + b) & \mbox{(using $+$-assoc)} \\
@@ -604,7 +564,7 @@ of the following two isomorphisms:
 \fun{f₂} (\injr{x}) = \injr{x} & 
   \overline{\fun{f₂}} (\injr{x}) = \injr{x}
 \end{array}\]
-We calculate that composition corresponding to \fun{pf₃} is:
+We calculate that composition corresponding to \fun{pf₃} as:
 \[\begin{array}{l@{\qquad\qquad}l}
 \fun{f₁₂} ~:~ (A \uplus \bot) \uplus B \to A \uplus B & 
   \overline{\fun{f₁₂}} ~:~ A \uplus B \to (A \uplus \bot) \uplus B \\
@@ -700,15 +660,6 @@ forth between the two worlds transporting results that are evident in
 one domain to the other. The remainder of the paper is about such a
 formalization and its applications.
 
-\amr{Sections 1 and 2 were clear and engaging.  I felt that I understood
-(at least) the contours of the work's connection to Curry-Howard, and
-type isomorphisms and semirings.  OTOH, homotopy type theory felt more
-like a buzzword, with p. 2 saying "type equivalences feature
-prominently in the \emph{univalence axiom}."  If you are going to use
-a connection to the univalence axiom as an argument for your work's
-importance, you should at least try to explain what a univalence axiom
-is.}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Type Equivalences and Equivalences of Equivalences}
 \label{sec:equiv}
@@ -722,13 +673,13 @@ identities. We give precise definitions to these notions.
 % definitions throughout.  When the Agda code is just as clear as
 % informal ``paper mathematics'', we choose formality.
 
+% \amr{p6l14:
+%  On the example mentioned "earlier" you use the type T + T,
+%  and now you call it Bool. They are indeed isomorphic, but sticking
+%  to the same notation might be a good idea.}
+
 %%%
 \subsection{Type Equivalences}
-
-\amr{p6l14:
- On the example mentioned "earlier" you use the type T + T,
- and now you call it Bool. They are indeed isomorphic, but sticking
- to the same notation might be a good idea.}
 
 As a first approximation, Sec.~\ref{subsec:isos} identifies two types
 when there is an isomorphism between them.  The next section
@@ -1393,13 +1344,13 @@ expresses type equivalences and nothing else.
 \label{pi-combinators}
 \end{figure*}
 
-\amr{figure 1: If they are all isomorphisms, wouldn't it be simpler to
-  define $unite-+$ and then use $(unite-+)^{-1}$ instead of
-  $uniti-+$ ?
+% \amr{figure 1: If they are all isomorphisms, wouldn't it be simpler to
+%   define $unite-+$ and then use $(unite-+)^{-1}$ instead of
+%   $uniti-+$ ?
 
-  figure 2: here you call the transformations that correspond to
-  $+-sym$ (resp $*-sym$) $+-swap$ (resp $*-swap$). I believe that
-  stressing the same names should make the connection clearer.}
+%   figure 2: here you call the transformations that correspond to
+%   $+-sym$ (resp $*-sym$) $+-swap$ (resp $*-swap$). I believe that
+%   stressing the same names should make the connection clearer.}
 
 %%%%%%%%%%
 \subsection{Syntax of $\Pi$}
@@ -2898,6 +2849,56 @@ Again, if details mater, a textual description is out of place.}
 \label{sec:conc}
 %\label{sec:8}
 
+\amr{integrate the following paragraphs with the intro?}
+
+The traditional Curry-Howard correspondence is based on ``mere logic
+(to use the HoTT terminology).''  That is, it is based around
+\emph{proof inhabitation}: two types, like two propositions, are
+regarded as ``the same'' when one is inhabited if and only if the
+other is.  In that sense, the propositions $A$ and $A \wedge A$, are
+indeed the same, as are the types $T$ and $T \times T$.  This is all
+centered around proof irrelevant mathematics.
+
+What we have shown is that if we shift to proof relevant
+mathematics, computationally relevant equivalences,
+explicit homotopies, and algebra, something quite new emerges:
+an actual isomorphism between proof terms and reversible
+computations.  Furthermore, what algebraic structure to use
+is not mysterious: it is exactly the algebraic structure of
+the semantics.  In the case of finite types (with sums and
+products), this turns out to be commutative semirings.
+
+But the Curry-Howard correspondence promises more: that proof
+transformations correspond to program transformations.  In a proof
+irrelevant setting, this is rather awkward; similarly, in a
+extensional setting, program equivalence is a rather coarse
+concept. But, in our setting, both of these issues disappear.  The key
+to proceed was to realize that there exist combinators which make
+equivalences 
+%%\footnote{and permutations, but I don't know if we can bring that in} 
+look like a semiring, but do not actually have a semiring structure.
+The next insight is to ``remember'' that a monoidal category is really
+a model of a \emph{typed monoid}; in a way, a monoidal category is a
+\emph{categorified} monoid.  So what we needed was a categorified
+version of commutative semirings.  Luckily, this had already been
+done, in the form of Rig categories.  Modifying this to have a weaker
+notion of equivalence and having all morphisms invertible was quite
+straightforward.
+
+Again, being proof relevant mattered: it quickly became 
+apparent that the \emph{coherence laws} involved in
+weak Rig Groupoids were \emph{exactly} the program
+equivalences that were needed.  So rather than fumbling 
+around finding various equivalences and hoping to 
+stumble on enough of them to be complete, a systematic
+design emerged: given a 1-algebra of types parametrized
+by an equivalence $\simeq$, one should seek a 
+$2$-algebra (aka typed algebra, aka categorification
+of the given $1$-algebra) that corresponds to it.
+The coherence laws then emerge as a complete set of
+program transformations.  This, of course, clearly
+points the way to further generalizations.
+ 
 The correspondence between rigs and types established in the paper
 provides a semantically well-founded approach to the representation,
 manipulation, and optimization of reversible circuits with the
