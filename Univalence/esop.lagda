@@ -1398,14 +1398,14 @@ proof-relevant mathematics.
 By construction, each term in the language has an inverse defined
 below. 
 
-\begin{definition}{Syntactic Inverse $!$} Each $\Pi$-term $c$ has a
+\begin{definition}[Syntactic Inverse $!$] Each $\Pi$-term $c$ has a
   syntactic inverse $!c$. We only show a few representative clauses:
 \[\begin{array}{rcl}
 !\idc &=& \idc \\
 !\identlp &=& \identrp \\
 !\identrp &=& \identlp \\
-!(c_1 \fatsemi c_2) &=& !c_2 \fatsemi !c_1 \\
-!(c_1 \oplus c_2) &=& !c_1 \oplus !c_2
+!(c_1 \fatsemi c_2) &=& !c_2 ~\fatsemi~ !c_1 \\
+!(c_1 \oplus c_2) &=& !c_1 ~\oplus~ !c_2
 \end{array}\]
 \end{definition}
 
