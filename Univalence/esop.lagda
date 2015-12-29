@@ -456,7 +456,6 @@ they would be described using the following grammar:
 \[\begin{array}{rcl}
 a & ::= & 0 \alt 1 \alt a + b \alt a \cdot b
 \end{array}\]
-
 This grammar evidently corresponds to the grammar for the finite types in
 type theory:
 \[\begin{array}{rcl}
@@ -812,9 +811,8 @@ typesCSR = record {
   isCommutativeSemiring = typesIsCSR
   }
 \end{code}}}
-\medskip  
 
-\noindent The functions, homotopies, and quasi-inverses witnessing the explicit
+\medskip\noindent The functions, homotopies, and quasi-inverses witnessing the explicit
 equivalences are defined within \AgdaFunction{typesIsCSR} and are
 straightforward. For future reference, we list some of these equivalences:
 \[\begin{array}{rcl}
@@ -884,7 +882,7 @@ module A where
   pf₄ = trans≃ assoc₊≃ (id≃ ⊎≃ unite₊≃) 
 \end{code}}}
 
-\medskip In order to argue that \AgdaFunction{pf₃} and
+\smallskip In order to argue that \AgdaFunction{pf₃} and
 \AgdaFunction{pf₄} are equivalent, we therefore need a notion of
 equivalence of equivalences. To motivate our definition below, we
 first consider the obvious idea of using $\AgdaSymbol{≃}$ to relate
@@ -934,7 +932,7 @@ In Agda, we write:
 % \amr{- page 8, lines 17-21: I do not understand this, but this is probably
 %  due to my limited familiarity with homotopy type theory}
 
-\medskip We could now verify that \AgdaFunction{pf₃} is indeed
+\smallskip We could now verify that \AgdaFunction{pf₃} is indeed
 equivalent to \AgdaFunction{pf₄} by proving
 \AgdaFunction{pf₃}~\AgdaSymbol{≋}~\AgdaFunction{pf₄}. Such a proof
 exists in the accompanying code in \AgdaModule{TypeEquivEquiv} but
@@ -1461,7 +1459,7 @@ module Foo where
 
 }
 
-\medskip\noindent We then encode the type of booleans, write a few simple gates like the
+\smallskip\noindent We then encode the type of booleans, write a few simple gates like the
 Toffoli gate~\citep{Toffoli:1980}, and use them to write a reversible
 full adder~\citep{revadder}:
 
@@ -1527,7 +1525,7 @@ F_ADDER = swap⋆ ◎ (swap⋆ ⊗ id⟷) ◎ assocr⋆ ◎ swap⋆ ◎ (PERES �
 \end{code}
 }}
 
-\medskip Although writing circuits using the raw syntax for
+\smallskip Although writing circuits using the raw syntax for
 combinators is tedious, the examples illustrate the programming
 language nature of $\Pi$. In other work, one can find a compiler from
 a conventional functional language to generate the
@@ -1605,7 +1603,7 @@ equivalences:
 c2equiv : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
 \end{code}}}
 
-\medskip \noindent In the definition, the function $⟦\cdot⟧$ maps each
+\smallskip\noindent In the definition, the function $⟦\cdot⟧$ maps each
 type constructor to its Agda denotation. The function
 \AgdaFunction{c2equiv} confirms that every $\Pi$ term encodes a type
 equivalence.
@@ -1626,7 +1624,7 @@ evalB = {!!}
 \end{code}
 }
 
-\medskip This operational semantics serves as an adequate semantic
+\smallskip This operational semantics serves as an adequate semantic
 specification if one focuses solely on the standalone programming
 language for reversible boolean circuits. It is indeed straightforward to
 prove that \AgdaFunction{eval} and \AgdaFunction{evalB} are 
@@ -1659,8 +1657,8 @@ lemma1 = {!!}
 \end{code}
 }
 
-\medskip The two lemmas confirm that these type equivalences are
-coherent with respect to the operational semantics, i.e., that the
+\smallskip\noindent The two lemmas confirm that these type equivalences
+are coherent with respect to the operational semantics, i.e., that the
 operational and denotational semantics of $\Pi$ coincide.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2058,9 +2056,7 @@ A \otimes (C \oplus B)
 \end{tikzcd}
 \end{center}
 
-\medskip
-
-\noindent We first have a lemma that shows that the two paths starting from the
+\smallskip\noindent We first have a lemma that shows that the two paths starting from the
 top left node are equivalent:
 
 \AgdaHide{
@@ -2093,7 +2089,7 @@ A×[B⊎C]→[A×C]⊎[A×B] (x , inj₂ y) = refl
 
 }
 
-\medskip\noindent The lemma asserts the that the two paths between
+\smallskip\noindent The lemma asserts the that the two paths between
 $A ⊗ (B ⊕ C)$ and $(A ⊗ C) ⊕ (A ⊗ B)$ are homotopic. To show that
 we have a groupoid, we also need to know that the converse lemma
 also holds, i.e. that reversing all arrows also gives a diagram for
@@ -2113,7 +2109,7 @@ a homotopy, in other words:
 
 }
 
-\medskip\noindent Finally we show that the forward equivalence and the backward
+\smallskip\noindent Finally we show that the forward equivalence and the backward
 equivalence are indeed related to the same diagram:
 \[
 \AgdaFunction{laplazaI} =
@@ -2425,7 +2421,7 @@ postulate
   c₂ : {A D : U} →  A ⟷ D
 \end{code}}}
 
-\medskip\noindent Now consider the circuits \AgdaFunction{p₁} and
+\smallskip\noindent Now consider the circuits \AgdaFunction{p₁} and
 \AgdaFunction{p₂} which use \AgdaFunction{c₁} and \AgdaFunction{c₂}
 as shown below:
 
@@ -2577,7 +2573,7 @@ NOT₁ = Pi0.swap₊
 \end{tikzpicture}}
 \end{tabular}
 
-\medskip
+\smallskip
  
 The second circuit is more convoluted:
 
@@ -2649,10 +2645,6 @@ NOT₂ =
 \end{tikzpicture}}
 \end{tabular}
 
-\medskip
-
-\smallskip 
-
 \AgdaHide{
 \begin{code}
 open import EquivEquiv hiding (_◎_) 
@@ -2663,7 +2655,7 @@ open import PiEquiv using (c2equiv)
 \end{code}
 }
 
-\medskip\noindent Here is a complete proof in level-1 $\Pi$ using the small-step
+\smallskip\noindent Here is a complete proof in level-1 $\Pi$ using the small-step
 rewriting style that shows that the two circuits are equivalent.
 
 \medskip
@@ -2728,7 +2720,7 @@ cc2equiv :  {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) →
             PiEquiv.c2equiv c₁ ≋ PiEquiv.c2equiv c₂
 \end{code}}}
 
-\medskip\noindent In other words, equivalent programs exactly denote equivalent
+\smallskip\noindent In other words, equivalent programs exactly denote equivalent
 equivalences.
 
 This is all compatible with the operational semantics as well,
@@ -2750,7 +2742,7 @@ ping-pong = {!!}
 \end{code}
 }
 
-\medskip\noindent It should be stressed that $c_1$ and $c_2$ can be 
+\smallskip\noindent It should be stressed that $c_1$ and $c_2$ can be 
 arbitrarily complex programs (albeit equivalent), the above 
 optimization property holds.  So we have the promise of a
 very effective optimizer for such programs.
