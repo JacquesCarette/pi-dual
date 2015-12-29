@@ -1332,7 +1332,7 @@ expresses type equivalences and nothing else.
 \[
 \Rule{}
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
-{\jdg{}{}{c_1 \fatsemi c_2 : \tau_1 \iso \tau_3}}
+{\jdg{}{}{c_1 \odot c_2 : \tau_1 \iso \tau_3}}
 {}
 \qquad
 \Rule{}
@@ -1387,9 +1387,9 @@ of commutative semirings.  Each line of the figure introduces a pair
 of dual constants\footnote{where $\idc$, $\swapp$ and $\swapt$ are
   self-dual.}  that witness the type isomorphism in the
 middle. Fig.~\ref{pi-combinators} adds to that $3$ combinators
-$\fatsemi$, $\oplus$, and $\otimes$, which come from the requirement
+$\odot$, $\oplus$, and $\otimes$, which come from the requirement
 that $\iso$ be transitive (giving a sequential composition operator
-$\fatsemi$), and that $\iso$ be a congruence for both $+$ and $*$
+$\odot$), and that $\iso$ be a congruence for both $+$ and $*$
 (giving a way to take sums and products of combinators using $\oplus$
 and $\otimes$ respectively).  That latter congruence requirement is
 usually invisible in classical mathematics, but appears when doing
@@ -1404,7 +1404,7 @@ below.
 !\idc &=& \idc \\
 !\identlp &=& \identrp \\
 !\identrp &=& \identlp \\
-!(c_1 \fatsemi c_2) &=& !c_2 ~\fatsemi~ !c_1 \\
+!(c_1 \odot c_2) &=& !c_2 ~\odot~ !c_1 \\
 !(c_1 \oplus c_2) &=& !c_1 ~\oplus~ !c_2
 \end{array}\]
 \end{definition}
@@ -1430,15 +1430,6 @@ language~\citep{James:2012:IE:2103656.2103667,rc2011}.
 
 We illustrate the expressiveness of $\Pi$ with a few small programs:
 we begin by defining the universe of types \AgdaDatatype{U}:
-
-\amr{Section 4.2: Using Agda's mixfix for defining your universe
-would improve readability. Instead of TIMES, for instance, call it $\_><\_$ . 
-Your sequential composition is different in 4.1 and 4.2. Again, maintaining 
-notation helps a lot.}
-
-\amr{- page 10, lines -3 and -1, and elsewhere: I guess the symbol after
- dist and the ones before factor are sequential compositions, isn't
- it?}
 
 {\setlength{\mathindent}{0cm}
 
@@ -2195,36 +2186,36 @@ representing circuits, leading to smaller programs with fewer redexes.
 \begin{figure*}
 \[\begin{array}{rcl}
 \\
-\idc \fatsemi c & \isoone & c \\
-c \fatsemi \idc & \isoone & c \\
-c \fatsemi (!~c) & \isoone & \idc \\
-(!~c) \fatsemi c & \isoone & \idc \\
+\idc \odot c & \isoone & c \\
+c \odot \idc & \isoone & c \\
+c \odot (!~c) & \isoone & \idc \\
+(!~c) \odot c & \isoone & \idc \\
 \idc ⊕ \idc & \isoone & \idc \\
 \idc ⊗ \idc & \isoone & \idc \\
-c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c₃ \\
-(c₁ \fatsemi c₃) ⊕ (c₂ \fatsemi c₄) & \isoone & (c₁ ⊕ c₂) \fatsemi (c₃ ⊕ c₄) \\
-(c₁ \fatsemi c₃) ⊗ (c₂ \fatsemi c₄) & \isoone & (c₁ ⊗ c₂) \fatsemi (c₃ ⊗ c₄) \\
+c₁ \odot (c₂ \odot c₃) & \isoone & (c₁ \odot c₂) \odot c₃ \\
+(c₁ \odot c₃) ⊕ (c₂ \odot c₄) & \isoone & (c₁ ⊕ c₂) \odot (c₃ ⊕ c₄) \\
+(c₁ \odot c₃) ⊗ (c₂ \odot c₄) & \isoone & (c₁ ⊗ c₂) \odot (c₃ ⊗ c₄) \\
 \\
 \\
-\swapp \fatsemi (c₁ ⊕ c₂) & \isoone &  (c₂ ⊕ c₁) \fatsemi \swapp \\
-\swapt \fatsemi (c₁ ⊗ c₂) & \isoone &  (c₂ ⊗ c₁) \fatsemi \swapt \\
+\swapp \odot (c₁ ⊕ c₂) & \isoone &  (c₂ ⊕ c₁) \odot \swapp \\
+\swapt \odot (c₁ ⊗ c₂) & \isoone &  (c₂ ⊗ c₁) \odot \swapt \\
 \\
 \\
-\identlp \fatsemi c₂ & \isoone & (c₁ ⊕ c₂) \fatsemi \identlp \\
-\identrp \fatsemi (c₁ ⊕ c₂) & \isoone &  c₂ \fatsemi \identrp \\
-\identlsp \fatsemi c₂ & \isoone & (c₂ ⊕ c₁) \fatsemi \identlsp \\
-\identrsp \fatsemi (c₂ ⊕ c₁) & \isoone &  c₂ \fatsemi \identrsp \\
-\identlsp ⊕ \idc & \isoone & \assocrp \fatsemi (\idc ⊕ \identlp) \\
+\identlp \odot c₂ & \isoone & (c₁ ⊕ c₂) \odot \identlp \\
+\identrp \odot (c₁ ⊕ c₂) & \isoone &  c₂ \odot \identrp \\
+\identlsp \odot c₂ & \isoone & (c₂ ⊕ c₁) \odot \identlsp \\
+\identrsp \odot (c₂ ⊕ c₁) & \isoone &  c₂ \odot \identrsp \\
+\identlsp ⊕ \idc & \isoone & \assocrp \odot (\idc ⊕ \identlp) \\
 \\
 \\
- (c₁ ⊕ (c₂ ⊕ c₃)) \fatsemi \assoclp & \isoone & \assoclp \fatsemi ((c₁ ⊕ c₂) ⊕ c₃) \\
-((c₁ ⊕ c₂) ⊕ c₃) \fatsemi \assocrp & \isoone & \assocrp \fatsemi (c₁ ⊕ (c₂ ⊕ c₃)) \\
-(c₁ ⊗ (c₂ ⊗ c₃)) \fatsemi \assoclt & \isoone & \assoclt \fatsemi ((c₁ ⊗ c₂) ⊗ c₃) \\
-((c₁ ⊗ c₂) ⊗ c₃) \fatsemi \assocrt & \isoone & \assocrt \fatsemi (c₁ ⊗ (c₂ ⊗ c₃)) \\
-((a ⊕ b) ⊗ c) \fatsemi \dist & \isoone & \dist \fatsemi ((a ⊗ c) ⊕ (b ⊗ c)) \\
-((a ⊗ c) ⊕ (b ⊗ c)) \fatsemi \factor & \isoone & \factor \fatsemi ((a ⊕ b) ⊗ c) \\
-(a ⊗ (b ⊕ c)) \fatsemi \distl & \isoone & \distl \fatsemi ((a ⊗ b) ⊕ (a ⊗ c)) \\
-((a ⊗ b) ⊕ (a ⊗ c)) \fatsemi \factorl & \isoone & \factorl \fatsemi (a ⊗ (b ⊕ c)) 
+ (c₁ ⊕ (c₂ ⊕ c₃)) \odot \assoclp & \isoone & \assoclp \odot ((c₁ ⊕ c₂) ⊕ c₃) \\
+((c₁ ⊕ c₂) ⊕ c₃) \odot \assocrp & \isoone & \assocrp \odot (c₁ ⊕ (c₂ ⊕ c₃)) \\
+(c₁ ⊗ (c₂ ⊗ c₃)) \odot \assoclt & \isoone & \assoclt \odot ((c₁ ⊗ c₂) ⊗ c₃) \\
+((c₁ ⊗ c₂) ⊗ c₃) \odot \assocrt & \isoone & \assocrt \odot (c₁ ⊗ (c₂ ⊗ c₃)) \\
+((a ⊕ b) ⊗ c) \odot \dist & \isoone & \dist \odot ((a ⊗ c) ⊕ (b ⊗ c)) \\
+((a ⊗ c) ⊕ (b ⊗ c)) \odot \factor & \isoone & \factor \odot ((a ⊕ b) ⊗ c) \\
+(a ⊗ (b ⊕ c)) \odot \distl & \isoone & \distl \odot ((a ⊗ b) ⊕ (a ⊗ c)) \\
+((a ⊗ b) ⊕ (a ⊗ c)) \odot \factorl & \isoone & \factorl \odot (a ⊗ (b ⊕ c)) 
 \end{array}\]
 \caption{\label{fig:more2}Signatures of level-1 $\Pi$-combinators
   (Part I).}
@@ -2233,58 +2224,58 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 
 \begin{figure*}
 \[\begin{array}{rcl}
-\identlt \fatsemi c₂ & \isoone & (c₁ ⊗ c₂) \fatsemi \identlt \\
-\identrt \fatsemi (c₁ ⊗ c₂) & \isoone &  c₂ \fatsemi \identrt \\
-\identlst \fatsemi c₂ & \isoone & (c₂ ⊗ c₁) \fatsemi \identlst \\
-\identrst \fatsemi (c₂ ⊗ c₁) & \isoone &  c₂ \fatsemi \identrst \\
-\identlst ⊗ \idc & \isoone & \assocrt \fatsemi (\idc ⊕ \identlt) \\
+\identlt \odot c₂ & \isoone & (c₁ ⊗ c₂) \odot \identlt \\
+\identrt \odot (c₁ ⊗ c₂) & \isoone &  c₂ \odot \identrt \\
+\identlst \odot c₂ & \isoone & (c₂ ⊗ c₁) \odot \identlst \\
+\identrst \odot (c₂ ⊗ c₁) & \isoone &  c₂ \odot \identrst \\
+\identlst ⊗ \idc & \isoone & \assocrt \odot (\idc ⊕ \identlt) \\
 \\
 \\
 \absorbr & \isoone & \identlt \\
 \absorbr & \isoone & \absorbl \\
-\absorbr & \isoone & (\assoclt \fatsemi (\absorbr ⊗ \idc)) \\
-              && \fatsemi \absorbr \\
+\absorbr & \isoone & (\assoclt \odot (\absorbr ⊗ \idc)) \\
+              && \odot \absorbr \\
 \absorbr & \isoone & (\distl \\
-             && \quad \fatsemi (\absorbr ⊕ \absorbr)) \\
-             && \fatsemi \identlp \\
-\absorbl & \isoone & \swapt \fatsemi \absorbr \\
-(c ⊗ \idc) \fatsemi \absorbl & \isoone & \absorbl \fatsemi \idc \\
-(\idc ⊗ c) \fatsemi \absorbr & \isoone & \absorbr \fatsemi \idc \\
-(\idc ⊗ \absorbr) \fatsemi \absorbl & \isoone & (\assoclt \fatsemi (\absorbl ⊗ \idc) \\
-             && \fatsemi \absorbr \\
-(\idc ⊗ \identlp) & \isoone & (\distl \fatsemi (\absorbl ⊕ \idc)) \\
-            && \fatsemi \identlp \\
+             && \quad \odot (\absorbr ⊕ \absorbr)) \\
+             && \odot \identlp \\
+\absorbl & \isoone & \swapt \odot \absorbr \\
+(c ⊗ \idc) \odot \absorbl & \isoone & \absorbl \odot \idc \\
+(\idc ⊗ c) \odot \absorbr & \isoone & \absorbr \odot \idc \\
+(\idc ⊗ \absorbr) \odot \absorbl & \isoone & (\assoclt \odot (\absorbl ⊗ \idc) \\
+             && \odot \absorbr \\
+(\idc ⊗ \identlp) & \isoone & (\distl \odot (\absorbl ⊕ \idc)) \\
+            && \odot \identlp \\
 \\
 \\
-\identlp & \isoone & \distl \fatsemi (\identlp ⊕ \identlp) \\
-(\idc ⊗ \swapp) \fatsemi \distl & \isoone & \distl \fatsemi \swapp \\
-\dist \fatsemi (\swapt ⊕ \swapt) & \isoone & \swapt \fatsemi \distl \\
-\idc \fatsemi \factorzl & \isoone & \factorzl \fatsemi (\idc ⊗ c) \\
-\idc \fatsemi \factorzr & \isoone & \factorzr \fatsemi (c ⊗ \idc) 
+\identlp & \isoone & \distl \odot (\identlp ⊕ \identlp) \\
+(\idc ⊗ \swapp) \odot \distl & \isoone & \distl \odot \swapp \\
+\dist \odot (\swapt ⊕ \swapt) & \isoone & \swapt \odot \distl \\
+\idc \odot \factorzl & \isoone & \factorzl \odot (\idc ⊗ c) \\
+\idc \odot \factorzr & \isoone & \factorzr \odot (c ⊗ \idc) 
 \end{array}\]
 \\
 \\
 \[\begin{array}{rcl}
-((\assoclp ⊗ \idc) \fatsemi \dist) \fatsemi (\dist ⊕ \idc) & \isoone &
-  (\dist \fatsemi (\idc ⊕ \dist)) \fatsemi \assoclp \\
-(\distl \fatsemi (\dist ⊕ \dist)) \fatsemi \assoclp & \isoone &
-  ((((\dist \fatsemi (\distl ⊕ \distl)) \fatsemi \assoclp) \\
-  && \fatsemi (\assocrp ⊕ \idc)) \\
-  && \fatsemi (\idc ⊕ \swapp) ⊕ \idc) \fatsemi (\assoclp ⊕ \idc) \\
-\assoclt \fatsemi \distl & \isoone & 
-  ((\idc ⊗ \distl) \fatsemi \distl) \fatsemi (\assoclt ⊕ \assoclt) \\
-\assocrp \fatsemi \assocrp & \isoone &
-  ((\assocrp ⊕ \idc) \fatsemi \assocrp) \fatsemi (\idc ⊕ \assocrp) \\
-\assocrt \fatsemi \assocrt & \isoone &
-  ((\assocrt ⊗ \idc) \fatsemi \assocrt) \fatsemi (\idc ⊗ \assocrt) \\
-(\assocrp \fatsemi \swapp) \fatsemi \assocrp & \isoone &
-  ((\swapp ⊕ \idc) \fatsemi \assocrp) \fatsemi (\idc ⊕ \swapp) \\
-(\assoclp \fatsemi \swapp) \fatsemi \assoclp & \isoone &
-  ((\idc ⊕ \swapp) \fatsemi \assoclp) \fatsemi (\swapp ⊕ \idc) \\
-(\assocrt \fatsemi \swapt) \fatsemi \assocrt & \isoone &
-  ((\swapt ⊕ \idc) \fatsemi \assocrt) \fatsemi (\idc ⊗ \swapt) \\
-(\assoclt \fatsemi \swapt) \fatsemi \assoclt & \isoone &
-  ((\idc ⊗ \swapt) \fatsemi \assoclt) \fatsemi (\swapt ⊗ \idc) 
+((\assoclp ⊗ \idc) \odot \dist) \odot (\dist ⊕ \idc) & \isoone &
+  (\dist \odot (\idc ⊕ \dist)) \odot \assoclp \\
+(\distl \odot (\dist ⊕ \dist)) \odot \assoclp & \isoone &
+  ((((\dist \odot (\distl ⊕ \distl)) \odot \assoclp) \\
+  && \odot (\assocrp ⊕ \idc)) \\
+  && \odot (\idc ⊕ \swapp) ⊕ \idc) \odot (\assoclp ⊕ \idc) \\
+\assoclt \odot \distl & \isoone & 
+  ((\idc ⊗ \distl) \odot \distl) \odot (\assoclt ⊕ \assoclt) \\
+\assocrp \odot \assocrp & \isoone &
+  ((\assocrp ⊕ \idc) \odot \assocrp) \odot (\idc ⊕ \assocrp) \\
+\assocrt \odot \assocrt & \isoone &
+  ((\assocrt ⊗ \idc) \odot \assocrt) \odot (\idc ⊗ \assocrt) \\
+(\assocrp \odot \swapp) \odot \assocrp & \isoone &
+  ((\swapp ⊕ \idc) \odot \assocrp) \odot (\idc ⊕ \swapp) \\
+(\assoclp \odot \swapp) \odot \assoclp & \isoone &
+  ((\idc ⊕ \swapp) \odot \assoclp) \odot (\swapp ⊕ \idc) \\
+(\assocrt \odot \swapt) \odot \assocrt & \isoone &
+  ((\swapt ⊕ \idc) \odot \assocrt) \odot (\idc ⊗ \swapt) \\
+(\assoclt \odot \swapt) \odot \assoclt & \isoone &
+  ((\idc ⊗ \swapt) \odot \assoclt) \odot (\swapt ⊗ \idc) 
 \end{array}\]
 \\
 \\
@@ -2302,7 +2293,7 @@ c₁ \fatsemi (c₂ \fatsemi c₃) & \isoone & (c₁ \fatsemi c₂) \fatsemi c�
 %
 \Rule{}
 {\jdg{}{}{c₁ \isoone c₃} \quad \vdash c₂ \isoone c₄}
-{\jdg{}{}{(c₁ \fatsemi c₂) \isoone (c₃ \fatsemi c₄)}}
+{\jdg{}{}{(c₁ \odot c₂) \isoone (c₃ \odot c₄)}}
 {}
 \end{center}
 \end{minipage}
@@ -2346,7 +2337,7 @@ clutter we omit the names of the combinators (which are arbitrary) and
 only show the \emph{untyped} signatures. The signatures themselves are
 of course typed and in some cases the types add critical
 information. For example,
-$\identlt \fatsemi c₂ \isoone (c₁ ⊗ c₂) \fatsemi \identlt$ hides the
+$\identlt \odot c₂ \isoone (c₁ ⊗ c₂) \odot \identlt$ hides the
 fact that $c₁$ here is restricted to have signature
 $c₁ : \AgdaInductiveConstructor{ZERO} ⟷
 \AgdaInductiveConstructor{ZERO}$.
