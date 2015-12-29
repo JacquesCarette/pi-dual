@@ -723,7 +723,7 @@ _∼_  {A} f g = (x : A) → f x ≡ g x
 \end{definition}
 
 \noindent In the HoTT world, there is a distinction between the identification
-of two functions $f=g$ and the fact that the functions produce equal
+of two functions $f \equiv g$ and the fact that the functions produce equal
 values on all inputs $f ∼ g$: the two notions are traditionally
 identified but are only \emph{equivalent} in the HoTT context. 
 
@@ -886,10 +886,10 @@ first consider the obvious idea of using $\AgdaSymbol{≃}$ to relate
 equivalences. In that case, an equivalence of equivalences of type
 $\left(A \simeq B\right) \simeq \left(A \simeq B\right)$ would include
 functions $f$ and $g$ mapping between $\left(A \simeq B\right)$ and
-itself in addition to two homotopies $α$ and $β$ witnessing
+itself in addition to two homotopies $\alpha$ and $\beta$ witnessing
 $(f ∘ g) ∼ \AgdaFunction{id}$ and $(g ∘ f) ∼ \AgdaFunction{id}$
-respectively. Expanding the definition of a homotopy, we note that $α$
-and $β$ would therefore attempt to compare equivalences (which include
+respectively. Expanding the definition of a homotopy, we note that $\alpha$
+and $\beta$ would therefore attempt to compare equivalences (which include
 functions) using propositional equality $≡$. In other words, we need
 to resolve to homotopies again to compare these functions: two
 equivalences are equivalent if there exist homotopies between their
