@@ -714,12 +714,13 @@ Two functions $f,g:A \rightarrow B$ are \emph{homotopic}, written $f ∼
 g$, if $\forall x:A. f(x) = g(x)$. In Agda, we write:
 
 \medskip 
+{\footnotesize{
 \begin{code}
 _∼_ : ∀ {A : Set} {P : A → Set} → (f g : (x : A) → P x) → Set
 _∼_  {A} f g = (x : A) → f x ≡ g x
-\end{code}
+\end{code}}}
 
-\medskip\noindent where \AgdaFunction{Set} is the universe of Agda types.
+\smallskip\noindent where \AgdaFunction{Set} is the universe of Agda types.
 \end{definition}
 
 \noindent In the HoTT world, there is a distinction between the identification
@@ -739,6 +740,7 @@ $\alpha : f \circ g \sim \mathrm{id}_B$ and
 $\beta : g \circ f \sim \mathrm{id}_A$. In Agda, we write:
 
 \medskip 
+{\footnotesize{
 \begin{code}
 record isqinv {A : Set} {B : Set} (f : A → B) : Set where
   constructor qinv
@@ -746,7 +748,7 @@ record isqinv {A : Set} {B : Set} (f : A → B) : Set where
     g : B → A
     α : (f ∘ g) ∼ id
     β : (g ∘ f) ∼ id
-\end{code}
+\end{code}}}
 \end{definition}
 
 \noindent The terminology ``quasi-inverse'' was chosen in the HoTT context as a
@@ -759,10 +761,11 @@ function $f : A → B$ may have multiple \emph{unequal} quasi-inverses.
   $f$. In Agda, we write:
 
 \medskip 
+{\footnotesize{
 \begin{code}
 _≃_ : Set → Set → Set
 A ≃ B = Σ (A → B) isqinv
-\end{code}
+\end{code}}}
 \end{definition}
 
 \noindent It is easy to prove that homotopies (for any given function
@@ -796,6 +799,7 @@ postulate
 }
 
 \medskip 
+{\footnotesize{
 \begin{code} 
 typesCSR : CommutativeSemiring (Level.suc Level.zero) Level.zero
 typesCSR = record {
@@ -807,7 +811,7 @@ typesCSR = record {
   1#  = ⊤ ;
   isCommutativeSemiring = typesIsCSR
   }
-\end{code}
+\end{code}}}
 \medskip  
 
 \noindent The functions, homotopies, and quasi-inverses witnessing the explicit
@@ -869,6 +873,7 @@ module A where
 }
 
 \medskip 
+{\footnotesize{
 \begin{code}
   pf₁ pf₂ : {A : Set} → (A ⊎ A) ≃ (A ⊎ A)
   pf₁ = id≃ 
@@ -877,7 +882,7 @@ module A where
   pf₃ pf₄ : {A B : Set} → ((A ⊎ ⊥) ⊎ B) ≃ (A ⊎ B)
   pf₃ = trans≃ (swap₊≃ ⊎≃ id≃) (unite₊≃ ⊎≃ id≃) 
   pf₄ = trans≃ assoc₊≃ (id≃ ⊎≃ unite₊≃) 
-\end{code}
+\end{code}}}
 
 \medskip In order to argue that \AgdaFunction{pf₃} and
 \AgdaFunction{pf₄} are equivalent, we therefore need a notion of
@@ -903,9 +908,7 @@ underlying functions.\footnote{Strictly speaking, the \AgdaField{g≡}
   themselves equivalent, written $\mathit{eq}_2 ≋ \mathit{eq}_2$, if
   $\mathit{eq}_1.f ∼ \mathit{eq}_2.f$ and
   $\mathit{eq}_1.g ∼ \mathit{eq}_2.g$.
-\end{definition}
 In Agda, we write:
-
 \AgdaHide{
 \begin{code}
   infix 4 _≋_
@@ -913,6 +916,7 @@ In Agda, we write:
 }
 
 \medskip 
+{\footnotesize{
 \begin{code}
   record _≋_ {A B : Set} (eq₁ eq₂ : A ≃ B) : Set where
     constructor eq
@@ -920,7 +924,8 @@ In Agda, we write:
     field
       f≡ : proj₁ eq₁ ∼ proj₁ eq₂
       g≡ : g (proj₂ eq₁) ∼ g (proj₂ eq₂)
-\end{code}
+\end{code}}}
+\end{definition}
 
 % \amr{p8l13:
 %  "The problem is that homotopies in such a type ($\alpha$ and $\beta$)"
@@ -1399,14 +1404,20 @@ By construction, each term in the language has an inverse defined
 below. 
 
 \begin{definition}[Syntactic Inverse $!$] Each $\Pi$-term $c$ has a
-  syntactic inverse $!c$. We only show a few representative clauses:
+  syntactic inverse~$!c$. We only show a few representative clauses:
+\begin{multicols}{2}
 \[\begin{array}{rcl}
 !\idc &=& \idc \\
 !\identlp &=& \identrp \\
-!\identrp &=& \identlp \\
-!(c_1 \odot c_2) &=& !c_2 ~\odot~ !c_1 \\
-!(c_1 \oplus c_2) &=& !c_1 ~\oplus~ !c_2
+!\identrp &=& \identlp 
 \end{array}\]
+\break
+\[\begin{array}{rcl}
+!(c_1 \odot c_2) &=& !c_2 ~\odot~ !c_1 \\
+!(c_1 \oplus c_2) &=& !c_1 ~\oplus~ !c_2 \\
+!(c_1 \otimes c_2) &=& !c_1 ~\otimes~ !c_2 
+\end{array}\]
+\end{multicols}
 \end{definition}
 
 % language to be composed of \emph{equivalences}, and we want the
@@ -1439,13 +1450,14 @@ we begin by defining the universe of types \AgdaDatatype{U}:
 module Foo where
 \end{code}
 }
+{\footnotesize{
 \begin{code}
   data U : Set where
     ZERO  : U
     ONE   : U
     PLUS  : U → U → U
     TIMES : U → U → U
-\end{code}
+\end{code}}}
 
 }
 
@@ -1471,6 +1483,8 @@ _□ t = id⟷
 }
 
 \medskip 
+
+\begin{multicols}{2}
 {\footnotesize{
 \begin{code}
 BOOL : U
@@ -1478,13 +1492,20 @@ BOOL  = PLUS ONE ONE
 
 BOOL² : U  
 BOOL² = TIMES BOOL BOOL  
- 
+\end{code}}}
+\break
+{\footnotesize{
+\begin{code}
 BOOL³ : U  
 BOOL³ = TIMES BOOL² BOOL  
- 
+
 NOT : BOOL ⟷ BOOL
 NOT = swap₊
+\end{code}}}
+\end{multicols}
 
+{\footnotesize{
+\begin{code}
 CNOT : BOOL² ⟷ BOOL²
 CNOT = dist ◎ (id⟷ ⊕ (id⟷ ⊗ NOT)) ◎ factor 
 
@@ -1513,7 +1534,7 @@ a conventional functional language to generate the
 circuits~\citep{James:2012:IE:2103656.2103667}, a systematic technique
 to translate abstract machines to $\Pi$~\citep{rc2012}, and a
 Haskell-like surface language~\citep{theseus} which can be of help in
-writing circuits, which further reinforce the first part of the title,
+writing circuits. All that reinforces the first part of the title,
 i.e., that we can really compute with semirings.
 
 %%%%%%%%%%%%
@@ -1533,6 +1554,7 @@ postulate
 }
 
 \medskip
+{\footnotesize{
 \begin{code}
 pf₁π pf₂π : {A : U} → PLUS A A ⟷ PLUS A A
 pf₁π = id⟷ 
@@ -1541,7 +1563,7 @@ pf₂π = swap₊
 pf₃π pf₄π : {A B : U} → PLUS (PLUS A ZERO) B ⟷ PLUS A B
 pf₃π = (swap₊ ⊕ id⟷) ◎ (unite₊ ⊕ id⟷)
 pf₄π = assocr₊ ◎ (id⟷ ⊕ unite₊)
-\end{code}
+\end{code}}}
 
 %%%%%%%%%%%%
 %% \subsection{Semiring of Finite Types}
@@ -1568,10 +1590,11 @@ pf₄π = assocr₊ ◎ (id⟷ ⊕ unite₊)
 %%%%%%%%%%%%
 \subsection{Semantics}
 
-In previous work, we defined an operational semantics for $\Pi$ via
-forward and backward evaluators with the following signatures:
+Naturally, we define the denotational semantics of $\Pi$ to be type
+equivalences:
 
 \medskip
+{\footnotesize{
 \begin{code}
 ⟦_⟧ : U → Set 
 ⟦ ZERO ⟧        = ⊥ 
@@ -1579,29 +1602,37 @@ forward and backward evaluators with the following signatures:
 ⟦ PLUS t₁ t₂ ⟧  = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
 ⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
 
-eval : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
-\end{code}
+c2equiv : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
+\end{code}}}
+
+\medskip \noindent In the definition, the function $⟦\cdot⟧$ maps each
+type constructor to its Agda denotation. The function
+\AgdaFunction{c2equiv} confirms that every $\Pi$ term encodes a type
+equivalence.
+
+In previous work, we also defined an operational semantics for $\Pi$
+via forward and backward evaluators with the following signatures:
+
+\medskip
+{\footnotesize{
+\begin{code}
+eval   : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
+evalB  : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧
+\end{code}}}
 \AgdaHide{
 \begin{code}
 eval = {!!} 
-\end{code}
-}
-\begin{code}
-evalB : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧
-\end{code}
-\AgdaHide{
-\begin{code}
 evalB = {!!} 
 \end{code}
 }
 
-\medskip \noindent In the definition, the function $⟦\cdot⟧$ maps each
-type constructor to its Agda denotation. This operational semantics
-serves as an adequate semantic specification if one focuses solely on
-the standalone programming language for reversible boolean
-circuits. It is straightforward to prove that \AgdaFunction{eval}
-and \AgdaFunction{evalB} are indeed inverses of each other.
-If one is also interested in using $\Pi$ for expressing
+\medskip This operational semantics serves as an adequate semantic
+specification if one focuses solely on the standalone programming
+language for reversible boolean circuits. It is indeed straightforward to
+prove that \AgdaFunction{eval} and \AgdaFunction{evalB} are 
+inverses of each other.  
+
+If, in addition, one is also interested in using $\Pi$ for expressing
 semiring identities as type equivalences then the following properties
 are of more interest:
 
@@ -1612,15 +1643,14 @@ postulate
   sym≃ : ∀ {A B : Set} → (A ≃ B) → B ≃ A
 \end{code}
 }
+{\footnotesize{
 \begin{code}
-c2equiv : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
+lemma0 :  {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (v : ⟦ t₁ ⟧) → 
+          eval c v ≡ proj₁ (c2equiv c) v
 
-lemma0 : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (v : ⟦ t₁ ⟧) →
-  eval c v ≡ proj₁ (c2equiv c) v
-
-lemma1 : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (v : ⟦ t₂ ⟧) →
-  evalB c v ≡ proj₁ (sym≃ (c2equiv c)) v
-\end{code}
+lemma1 :  {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → (v : ⟦ t₂ ⟧) → 
+          evalB c v ≡ proj₁ (sym≃ (c2equiv c)) v
+\end{code}}}
 \AgdaHide{
 \begin{code}
 c2equiv = {!!}
@@ -1629,21 +1659,9 @@ lemma1 = {!!}
 \end{code}
 }
 
-\medskip The first function confirms that every $\Pi$ term encodes a
-type equivalence; the two lemmas confirm that these type
-equivalences are coherent with respect to the operational semantics.
-
-Naturally, we define the denotational semantics of $\Pi$ to be
-type equivalences.  The above lemmas show that our operational and
-denotational semantics coincide.
-
-\amr{Section 4.4 is a brief discussion on semantics. The authors argue that
-their semantics are correct with respect to type equivalences. Lemma
-c2equic states that given a reversible-computation in $\Pi$, with type $c
-: t1 \leftrightarrow t2$, then the denotation of both types is
-equivalent. Moreover, they also state that $t1 = t2$ are equal in the
-underlying semiring. I believe this section could receive more
-attention and again enforce the connection you want to make.}
+\medskip The two lemmas confirm that these type equivalences are
+coherent with respect to the operational semantics, i.e., that the
+operational and denotational semantics of $\Pi$ coincide.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Categorification}
@@ -2065,12 +2083,13 @@ open import TypeEquiv as TE
 
 {\setlength{\mathindent}{0cm}
 
+{\footnotesize{
 \begin{code}
 A×[B⊎C]→[A×C]⊎[A×B] : {A B C : Set} →
   (TE.distl ∘ (id {A = A} ×→ TE.swap₊ {B} {C})) ∼ (TE.swap₊ ∘ TE.distl)
 A×[B⊎C]→[A×C]⊎[A×B] (x , inj₁ y) = refl
 A×[B⊎C]→[A×C]⊎[A×B] (x , inj₂ y) = refl
-\end{code}
+\end{code}}}
 
 }
 
@@ -2084,12 +2103,13 @@ a homotopy, in other words:
 
 {\setlength{\mathindent}{0cm}
 
+{\footnotesize{
 \begin{code}
 [A×C]⊎[A×B]→A×[B⊎C] : {A B C : Set} →
  ((id ×→ TE.swap₊) ∘ TE.factorl) ∼ (TE.factorl ∘ TE.swap₊ {A × C} {A × B})
 [A×C]⊎[A×B]→A×[B⊎C] (inj₁ x) = refl
 [A×C]⊎[A×B]→A×[B⊎C] (inj₂ y) = refl
-\end{code}
+\end{code}}}
 
 }
 
@@ -2399,10 +2419,11 @@ postulate
 \end{code}
 }
 
+{\footnotesize{
 \begin{code}
   c₁ : {B C : U} →  B ⟷ C
   c₂ : {A D : U} →  A ⟷ D
-\end{code}
+\end{code}}}
 
 \medskip\noindent Now consider the circuits \AgdaFunction{p₁} and
 \AgdaFunction{p₂} which use \AgdaFunction{c₁} and \AgdaFunction{c₂}
@@ -2527,10 +2548,11 @@ negation. The first circuit is direct and trivial:
 
 \begin{tabular}{@{\kern-3em}c@{\qquad\qquad\qquad\qquad\qquad}c}
 \begin{minipage}[t]{0.4\textwidth}
+{\footnotesize{
 \begin{code}
 NOT₁ : BOOL ⟷ BOOL
 NOT₁ = Pi0.swap₊
-\end{code}
+\end{code}}}
 \end{minipage}
 & 
 \adjustbox{valign=t}{\begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
@@ -2563,6 +2585,7 @@ The second circuit is more convoluted:
 
 \begin{tabular}{@{\kern-3em}c@{\quad}c}
 \begin{minipage}[t]{0.5\textwidth}
+{\footnotesize{
 \begin{code}
 NOT₂ : BOOL ⟷ BOOL
 NOT₂ =
@@ -2571,7 +2594,7 @@ NOT₂ =
   (Pi0.swap₊ ⊗ id⟷) ◎
   Pi0.swap⋆ ◎
   unite⋆l
-\end{code}
+\end{code}}}
 \end{minipage}
 & 
 \adjustbox{valign=t}{\begin{tikzpicture}[scale=0.6,every node/.style={scale=0.6}]
@@ -2648,6 +2671,7 @@ rewriting style that shows that the two circuits are equivalent.
 \renewcommand{\AgdaIndent}[1]{$\;$}
 
 {\setlength{\mathindent}{0cm}
+{\footnotesize{
 \begin{code}
 negEx : NOT₂ ⇔ NOT₁
 negEx = uniti⋆l ◎ (Pi0.swap⋆ ◎ ((Pi0.swap₊ ⊗ id⟷) ◎ (Pi0.swap⋆ ◎ unite⋆l)))
@@ -2673,7 +2697,7 @@ negEx = uniti⋆l ◎ (Pi0.swap⋆ ◎ ((Pi0.swap₊ ⊗ id⟷) ◎ (Pi0.swap⋆
         Pi0.swap₊ ◎ id⟷
           ⇔⟨ idr◎l ⟩
         Pi0.swap₊ ▤
-\end{code}
+\end{code}}}
 
 }
 
@@ -2698,10 +2722,10 @@ and~\ref{fig:more3} gives rise to an equivalence of equivalences of
 types. Furthermore, the level-1 combinators are coherent with the
 respect to the level-0 semantics. Formally, in Agda, we have:
 
+{\footnotesize{
 \begin{code}
-cc2equiv : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) →
-  PiEquiv.c2equiv c₁ ≋ PiEquiv.c2equiv c₂
-\end{code}
+cc2equiv : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) → PiEquiv.c2equiv c₁ ≋ PiEquiv.c2equiv c₂
+\end{code}}}
 
 \medskip\noindent In other words, equivalent programs exactly denote equivalent
 equivalences.
@@ -2711,11 +2735,11 @@ so that equivalent programs always give the same values; more
 amusingly, if we run one program then run an equivalent program
 backwards, we get the identity:
 
+{\footnotesize{
 \begin{code}
 ≋⇒≡ : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) → eval c₁ ∼ eval c₂
-ping-pong : 
-  {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) → (evalB c₂ ∘ eval c₁) ∼ id 
-\end{code}
+ping-pong : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) → (evalB c₂ ∘ eval c₁) ∼ id 
+\end{code}}}
 
 \AgdaHide{
 \begin{code}
