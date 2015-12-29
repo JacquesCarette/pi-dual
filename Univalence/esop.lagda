@@ -732,7 +732,7 @@ identified but are only \emph{equivalent} in the HoTT context.
 
 \begin{definition}[Quasi-inverse]
 \label{def:quasi}
-For a function $f : A \rightarrow B$, a \emph{quasi-inverse} of $f$ is a
+For a function $f : A \rightarrow B$, a \emph{quasi-inverse} of~$f$ is a
 triple $(g, \alpha, \beta)$, consisting of a function
 $g : B \rightarrow A$ and two homotopies
 $\alpha : f \circ g \sim \mathrm{id}_B$ and
@@ -749,7 +749,7 @@ record isqinv {A : Set} {B : Set} (f : A → B) : Set where
 \end{code}
 \end{definition}
 
-The terminology ``quasi-inverse'' was chosen in the HoTT context as a
+\noindent The terminology ``quasi-inverse'' was chosen in the HoTT context as a
 reminder that this is a poorly-behaved notion by itself as the same
 function $f : A → B$ may have multiple \emph{unequal} quasi-inverses.
 
@@ -1379,44 +1379,42 @@ The syntactic components of our language are as follows:
   c &::=& [\textit{see Figs.~\ref{pi-terms} and ~\ref{pi-combinators}}]
 \end{array}\]
 The values classified by the finite types are the conventional
-ones: $()$ of type 1, $\inl{v}$ and $\inr{v}$ for injections into sum
+ones: $()$ of type 1, $(\inl{v})$ and $(\inr{v})$ for injections into sum
 types, and $(v_1,v_2)$ for product types.
-
-\amr{4.1: "Fig. 2 adds to that 3 combinators," Please mention each specific 
-combinator along with its explanation, in this sentence.}
 
 Fig.~\ref{pi-terms} gives the terms which correspond to the identities
 of commutative semirings.  Each line of the figure introduces a pair
 of dual constants\footnote{where $\idc$, $\swapp$ and $\swapt$ are
-  self-dual.}  that witness the type isomorphism in the middle.
-Fig.~\ref{pi-combinators} adds to that $3$ combinators, which come
-from the requirement that $\iso$ be transitive (giving a sequential
-composition operator), and that $\iso$ be a congruence for both $+$
-and $*$ (giving a way to take sums and products of combinators).  That
-latter congruence requirement is usually invisible in classical
-mathematics, but appears when doing proof-relevant mathematics.
+  self-dual.}  that witness the type isomorphism in the
+middle. Fig.~\ref{pi-combinators} adds to that $3$ combinators
+$\fatsemi$, $\oplus$, and $\otimes$, which come from the requirement
+that $\iso$ be transitive (giving a sequential composition operator
+$\fatsemi$), and that $\iso$ be a congruence for both $+$ and $*$
+(giving a way to take sums and products of combinators using $\oplus$
+and $\otimes$ respectively).  That latter congruence requirement is
+usually invisible in classical mathematics, but appears when doing
+proof-relevant mathematics.
 
-\amr{"The attentive reader will notice...many more combinators here than in
-Def. 1."  If this is meant simply to say that there were no
-combinators in Def. 1, and now 3 (I am not sure that 3 is "many more"
-than 0, anyway), it would be clearer to say that.  The current
-sentence sounds a little too cute.}
+By construction, each term in the language has an inverse defined
+below. 
 
-The attentive reader will notice that there are many more combinators
-here than in Def.~\ref{defn:csr}.  This is because we want the
-language to be composed of \emph{equivalences}, and we want the
-reversibility of the language to be a theorem, at the level of the
-syntax.  In particular, every combinator $c$ has an inverse $!c$
-according to the figure. The inverse flips the order of the
-combinators in sequential composition, and is homomorphic on sums and
-products.
+\begin{definition}{Syntactic Inverse $!$} Each $\Pi$-term $c$ has a
+  syntactic inverse $!c$. We only show a few representative clauses:
+\[\begin{array}{rcl}
+!\idc &=& \idc \\
+!\identlp &=& \identrp \\
+!\identrp &=& \identlp \\
+!(c_1 \fatsemi c_2) &=& !c_2 \fatsemi !c_1 \\
+!(c_1 \oplus c_2) &=& !c_1 \oplus !c_2
+\end{array}\]
+\end{definition}
 
-\amr{"every combinator c has an inverse !c according to the figure": The
-figure never mentions !, so "according to the figure" is questionable.
-You seem to define ! informally in this paragraph; I would either give
-a proper definition, or else drop the "!c"—I could find no use of ! in
-the rest of the paper, so better to avoid burdening the reader with
-one more symbol.}
+% language to be composed of \emph{equivalences}, and we want the
+% reversibility of the language to be a theorem, at the level of the
+% syntax.  In particular, every combinator $c$ has an inverse $!c$
+% according to the figure. The inverse flips the order of the
+% combinators in sequential composition, and is homomorphic on sums and
+% products.
 
 %%%%%%%%%%%%
 \subsection{Example Programs}
