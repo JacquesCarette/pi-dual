@@ -2106,7 +2106,7 @@ a homotopy, in other words:
 {\footnotesize{
 \begin{code}
 [A×C]⊎[A×B]→A×[B⊎C] : {A B C : Set} →
- ((id ×→ TE.swap₊) ∘ TE.factorl) ∼ (TE.factorl ∘ TE.swap₊ {A × C} {A × B})
+  ((id ×→ TE.swap₊) ∘ TE.factorl) ∼ (TE.factorl ∘ TE.swap₊ {A × C} {A × B})
 [A×C]⊎[A×B]→A×[B⊎C] (inj₁ x) = refl
 [A×C]⊎[A×B]→A×[B⊎C] (inj₂ y) = refl
 \end{code}}}
@@ -2724,7 +2724,8 @@ respect to the level-0 semantics. Formally, in Agda, we have:
 
 {\footnotesize{
 \begin{code}
-cc2equiv : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) → PiEquiv.c2equiv c₁ ≋ PiEquiv.c2equiv c₂
+cc2equiv :  {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) → 
+            PiEquiv.c2equiv c₁ ≋ PiEquiv.c2equiv c₂
 \end{code}}}
 
 \medskip\noindent In other words, equivalent programs exactly denote equivalent
@@ -2737,8 +2738,8 @@ backwards, we get the identity:
 
 {\footnotesize{
 \begin{code}
-≋⇒≡ : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) → eval c₁ ∼ eval c₂
-ping-pong : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) → (evalB c₂ ∘ eval c₁) ∼ id 
+≋⇒≡ : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (e : c₁ ⇔ c₂) → eval c₁ ∼ eval c₂
+ping-pong : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (e : c₁ ⇔ c₂) → (evalB c₂ ∘ eval c₁) ∼ id 
 \end{code}}}
 
 \AgdaHide{
