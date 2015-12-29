@@ -1491,7 +1491,9 @@ BOOL  = PLUS ONE ONE
 BOOL² : U  
 BOOL² = TIMES BOOL BOOL  
 \end{code}}}
-\break
+\end{multicols}
+
+\begin{multicols}{2}
 {\footnotesize{
 \begin{code}
 BOOL³ : U  
