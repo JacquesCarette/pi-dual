@@ -1723,8 +1723,8 @@ As the details matter, we will be explicit about the definition of all
 the categorical notions involved. We begin with the conventional
 definitions for monoidal and symmetric monoidal categories.
 
-\amr{Figure 3 \& Def 7:
- Adding the equational reading of the diagrams would be of great value.}
+% \amr{Figure 3 \& Def 7:
+%  Adding the equational reading of the diagrams would be of great value.}
 
 \begin{definition}[Monoidal Category]
 \label{ch:pi:def:MC}
@@ -1771,12 +1771,15 @@ with the following additional structure:
 \end{center}
 \end{definition}
 
-\begin{definition}[Symmetric Monoidal Category]
+\begin{definition}[Braided and Symmetric Monoidal Categories]
 \label{ch:pi:def:SMC}
-A monoidal category is \emph{symmetric} if it has an isomorphism
+A monoidal category is \emph{braided} if it has an isomorphism
 $\sigma_{A,B} : A \otimes B \isoarrow B \otimes A$ where $\sigma$ is a
-natural transformation which satisfies the following three coherence conditions
-(called \emph{unit coherence}, \emph{symmetry}, and \emph{bilinerarity})
+natural transformation which satisfies the \emph{unit coherence}
+triangle (below on the left) and the \emph{bilinerarity} hexagon
+below. A braided monoidal category is \emph{symmetry} if it
+additionally satisfies the \emph{symmetry} triangle (below on the
+right).
 \begin{center}
 \begin{tikzcd}[column sep=tiny]
 & A \otimes I 
@@ -1814,14 +1817,14 @@ B \otimes (C \otimes A)
 \end{center}
 \end{definition}
 
-According to Mac Lane's coherence theorem, the coherence laws for
-monoidal categories are justified by the desire to equate any two
-isomorphisms built using $\sigma$, $\lambda$, and $\rho$ and having
-the same source and target. Similar considerations justify the
-coherence laws for symmetric monoidal categories. It is important to
-note that the coherence conditions do \emph{not} imply that every pair
-of parallel morphisms with the same source and target are
-equal. Indeed, as Dosen and Petric explain:
+According to Mac Lane's coherence theorem, the triangle and pentagon
+coherence laws for monoidal categories are justified by the desire to
+equate any two isomorphisms built using $\sigma$, $\lambda$, and
+$\rho$ and having the same source and target. Similar considerations
+justify the coherence laws for symmetric monoidal categories. It is
+important to note that the coherence conditions do \emph{not} imply
+that every pair of parallel morphisms with the same source and target
+are equal. Indeed, as Dosen and Petric explain:
 \begin{quote}
   In Mac Lane’s second coherence result of [...], which has to do with
   symmetric monoidal categories, it is not intended that all equations
@@ -1857,10 +1860,46 @@ loop spaces.
 %categories. This is not the case but will be once we capture the full
 %structure of commutative semirings categorically. 
 
-\amr{I believe that here a discussion on how homotopies and natural transformations
-relate, or working one or two coherence conditions out, would be of more value
-than the why's of it. The explanations by Dosen and Petric, and, Baez and 
-Dolan only makes it more confusing for the unfamiliar reader.}
+As a concrete example relating homotopies and coherence conditions,
+the homotopy between \AgdaFunction{pf₃} and \AgdaFunction{pf₄}
+discussed in Sec.~\ref{sub:eqeq} follows from the coherence conditions
+of symmetric monoidal categories as follows:
+
+\[\begin{array}{rcll}
+\AgdaFunction{pf₃} &=& \AgdaInductiveConstructor{trans≃}~ 
+  (\AgdaInductiveConstructor{swap₊≃}~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{id≃})~
+  (\AgdaInductiveConstructor{unite₊≃}~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{id≃}) \\
+  &=&
+  (\AgdaInductiveConstructor{trans≃}~\AgdaInductiveConstructor{swap₊≃}~\AgdaInductiveConstructor{unite₊≃}) 
+   ~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{id≃} 
+  & (\AgdaInductiveConstructor{⊎≃} \mbox{~is~a~functor}) \\
+  &=&
+  \AgdaInductiveConstructor{unite₊′≃}~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{id≃} 
+  & (\mbox{unit~coherence~law}) \\
+  &=& 
+    \AgdaInductiveConstructor{trans≃}~\AgdaInductiveConstructor{assoc₊≃}~
+    (\AgdaInductiveConstructor{id≃}~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{unite₊≃}) 
+   & (\mbox{triangle}) \\
+  &=& \AgdaFunction{pf₄}
+\end{array}\] 
+
+     % pf3 = (\lambda + id) . (\sigma + id)
+     % pf4 = (id + \lambda) . \alpha
+
+     % Proof of pf3 == pf4
+
+     %   (\lambda + id) . (\sigma + id) == (id + \lambda) . \alpha
+     % iff { functor + ; triangle for unit }
+     %   (\lamda . \sigma + id) == \rho + id
+     % iff { unit coherence: \lambda . \sigma == \rho }
+     %   \rho + id == \rho + id
+     % iff {}
+     %   true.
+
+% \amr{I believe that here a discussion on how homotopies and natural transformations
+% relate, or working one or two coherence conditions out, would be of more value
+% than the why's of it. The explanations by Dosen and Petric, and, Baez and 
+% Dolan only makes it more confusing for the unfamiliar reader.}
 
 %%%%%%%%%%%%
 \subsection{Weak Symmetric Rig Groupoids}
@@ -1902,10 +1941,6 @@ multiplicative structure is symmetric.
 A \emph{symmetric rig groupoid} is a symmetric rig category in which
 every morphism is invertible.
 \end{definition}
-
-\amr{- page 15, condition XVI: in the second path you need to absorb just 
- once 
-- page 15, condition XVII: please write it explicitly}
 
 The coherence conditions for rig categories were worked out by
 \citet{laplaza}. Pages 31-35 of his paper report 24 coherence
@@ -1949,7 +1984,8 @@ programming-oriented descriptions of these as follows:
   commute and absorb $0$ on the right;
 \item[XVI] given $0 ⊗ (A ⊗ B)$, we can either absorb $0$ on the left,
   or associate, and then absorb twice;
-\item[XVII] given $A ⊗ (0 ⊗ B)$, the two obvious paths to $0$ commute;
+\item[XVII] given $A ⊗ (0 ⊗ B)$, we can directly absorb twice to reach
+  $0$ or we can associate to the left and then absorb twice; 
 \item[XIX] given $A ⊗ (0 ⊕ B)$, we can either eliminate the (additive)
   identity in the right term, or distribute, right absorb $0$ in the
   left term, then eliminate the resulting (additive) identity to get
@@ -1978,75 +2014,27 @@ be the best hope for a rational reconstruction of the coherence laws.
 %%%%%%%%%%%%
 \subsection{The Symmetric Rig Groupoid of Types and Type Equivalences} 
 
-It is no coincidence that the homotopy between \AgdaFunction{pf₃} and
-\AgdaFunction{pf₄} discussed in Sec.~\ref{sub:eqeq} follows from the
-coherence conditions of symmetric monoidal categories:
-
-\[\begin{array}{rcll}
-\AgdaFunction{pf₃} &=& \AgdaInductiveConstructor{trans≃}~ 
-  (\AgdaInductiveConstructor{swap₊≃}~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{id≃})~
-  (\AgdaInductiveConstructor{unite₊≃}~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{id≃}) \\
-  &=&
-  (\AgdaInductiveConstructor{trans≃}~\AgdaInductiveConstructor{swap₊≃}~\AgdaInductiveConstructor{unite₊≃}) 
-   ~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{id≃} 
-  & (\AgdaInductiveConstructor{⊎≃} \mbox{~is~a~functor}) \\
-  &=&
-  \AgdaInductiveConstructor{unite₊′≃}~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{id≃} 
-  & (\mbox{unit~coherence~law}) \\
-  &=& 
-    \AgdaInductiveConstructor{trans≃}~\AgdaInductiveConstructor{assoc₊≃}~
-    (\AgdaInductiveConstructor{id≃}~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{unite₊≃}) 
-   & (\mbox{triangle}) \\
-  &=& \AgdaFunction{pf₄}
-\end{array}\] 
-
-     % pf3 = (\lambda + id) . (\sigma + id)
-     % pf4 = (id + \lambda) . \alpha
-
-     % Proof of pf3 == pf4
-
-     %   (\lambda + id) . (\sigma + id) == (id + \lambda) . \alpha
-     % iff { functor + ; triangle for unit }
-     %   (\lamda . \sigma + id) == \rho + id
-     % iff { unit coherence: \lambda . \sigma == \rho }
-     %   \rho + id == \rho + id
-     % iff {}
-     %   true.
-
-Indeed, we can generalize our model of types and type equivalences to
-a symmetric rig weak groupoid and this will, by construction, prove
-all equivalences between type equivalences like
+We are now ready for the generalization of our model of types and type
+equivalences to a symmetric rig weak groupoid and this will, by
+construction, prove all equivalences between type equivalences like
 \AgdaFunction{pf₃}~\AgdaSymbol{≋}~\AgdaFunction{pf₄} that should be
 equated, while, again by construction, \emph{not} identifying type
 equivalences like \AgdaFunction{pf₁} and \AgdaFunction{pf₂} that
 should not be equated.
 
-\amr{- page 16, line 22: please write what Hom is }
-
 \begin{theorem}
-  The collection of all types and type equivalences is a symmetric rig
-  groupoid.
+  The category whose objects are Agda types and whose morphisms are
+  type equivalences is a symmetric rig groupoid.
 \end{theorem}
 \begin{proof}
-  The objects of the category are Agda types and the morphisms are
-  type equivalences. We should note that the definition of
-  \AgdaRecord{Category} that we use is parametrized by an equivalence
-  relation for its Hom.  Since we want a category with equivalences as
-  morphisms, we naturally use $≋$ for that notion of Hom-equality.
-  These morphisms directly satisfy the axioms stated in the
-  definitions of the various categories. The bulk of the work is in
-  ensuring that the coherence conditions are satisfied up to homotopy.
-  We only show the proof of one coherence condition, the first one in
-  Laplaza's paper:
-
-\amr{Theorem 2:
-You state that "all" types and type equivalences make up a symmetric rig 
-groupoid. I assume you mean that this structure arises on top of the 
-cannonical product and coprodut. Why such a general result? Wouldn't it 
-suffice to prove it for your universe of types? Not to mention your proof 
-does not convince me how "all" types are handled.}
-
-\medskip
+  The definition of \AgdaRecord{Category} that we use is parametrized
+  by an equivalence relation for its collection of morphisms between
+  objects.  Since we want a category with equivalences as morphisms,
+  we naturally use $≋$ for that notion of morphism-equality.  These
+  morphisms directly satisfy the axioms stated in the definitions of
+  the various categories. The bulk of the work is in ensuring that the
+  coherence conditions are satisfied up to homotopy.  We only show the
+  proof of one coherence condition, the first one in Laplaza's paper:
 
 \begin{center}
 \begin{tikzcd}[column sep=tiny]
@@ -2062,7 +2050,7 @@ A \otimes (C \oplus B)
 \end{tikzcd}
 \end{center}
 
-\smallskip\noindent We first have a lemma that shows that the two paths starting from the
+\noindent We first have a lemma that shows that the two paths starting from the
 top left node are equivalent:
 
 \AgdaHide{
@@ -2125,41 +2113,41 @@ equivalence are indeed related to the same diagram:
 where \AgdaInductiveConstructor{eq} is the constructor for $≋$. \qed
 \end{proof}
 
-\amr{The coherence conditions discussion, in section 5, is very long and unclear.
-Coherence conditions can be worked out in a mechanical fashion. 
-Take the symmetry triangle, for instance. If we have an arrow
-$A >< B -> A >< B$, this arrow can be one of two things: (A) the identity arrow
-or (B) two consecutive swaps. But in our category, arrows represent
-isomorphisms. If $\sigma$ is an isomorphism, then so is $\sigma . \sigma$. 
-They ought to be the same arrow in the underlying category, then. 
-Otherwise the theory built on top of that is of no resemblance to commutative
-monoids. In a monoid, $a + b = b + a = a + b$, so applying commutativity twice
-boils down to the original term. In categorical terms: commutativity
-after commutativity = identity. 
+% \amr{The coherence conditions discussion, in section 5, is very long and unclear.
+% Coherence conditions can be worked out in a mechanical fashion. 
+% Take the symmetry triangle, for instance. If we have an arrow
+% $A >< B -> A >< B$, this arrow can be one of two things: (A) the identity arrow
+% or (B) two consecutive swaps. But in our category, arrows represent
+% isomorphisms. If $\sigma$ is an isomorphism, then so is $\sigma . \sigma$. 
+% They ought to be the same arrow in the underlying category, then. 
+% Otherwise the theory built on top of that is of no resemblance to commutative
+% monoids. In a monoid, $a + b = b + a = a + b$, so applying commutativity twice
+% boils down to the original term. In categorical terms: commutativity
+% after commutativity = identity. 
 
-Working out coherence conditions for complex categorical definitions
-is still an art, as far as we know.  Most of the work on rewriting
-does not apply, as the algorithms they have are not terminating in our
-situation.  There are some theoretical papers (which we cite) which
-lays some ground work but these, as far as we know, have never been
-implemented.  Yes, of course the ones for monoidal categories are
-easy.  The ones for Rig Categories are not.  We have asked several
-experts, and none could give us a solid explanation of how to derive
-these.  See, for example, the unanswered question about this on
-MathOverflow.  [If Referee \#1 knows of an actual answer, we would love
-to hear it / get references!]
+% Working out coherence conditions for complex categorical definitions
+% is still an art, as far as we know.  Most of the work on rewriting
+% does not apply, as the algorithms they have are not terminating in our
+% situation.  There are some theoretical papers (which we cite) which
+% lays some ground work but these, as far as we know, have never been
+% implemented.  Yes, of course the ones for monoidal categories are
+% easy.  The ones for Rig Categories are not.  We have asked several
+% experts, and none could give us a solid explanation of how to derive
+% these.  See, for example, the unanswered question about this on
+% MathOverflow.  [If Referee \#1 knows of an actual answer, we would love
+% to hear it / get references!]
 
-Also note that there are categories where doing commutativity twice is
-NOT the same as the identity (ex: braided but non-symmetric monoidal
-categories).  So this is not a free coherence.
+% Also note that there are categories where doing commutativity twice is
+% NOT the same as the identity (ex: braided but non-symmetric monoidal
+% categories).  So this is not a free coherence.
 
-     	  - "It is also worth mentioning that an operation automatically satisfies all the
-	  relevant coherence laws if it is defined by an universal property."
+%      	  - "It is also worth mentioning that an operation automatically satisfies all the
+% 	  relevant coherence laws if it is defined by an universal property."
 
-Indeed.  And if we were doing category theory instead of programming
-language theory, that is the route we would have taken.  But since we
-need to be 100\% constructive, we could not choose that route.
-}
+% Indeed.  And if we were doing category theory instead of programming
+% language theory, that is the route we would have taken.  But since we
+% need to be 100\% constructive, we could not choose that route.
+% }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Programming with Equivalences of Equivalences} 
@@ -2364,9 +2352,6 @@ fact that $c₁$ here is restricted to have signature
 $c₁ : \AgdaInductiveConstructor{ZERO} ⟷
 \AgdaInductiveConstructor{ZERO}$.
 The reader should consult the code for full details.
-
-\amr{- page 20, line 18: what you mean here with braided? Is it not the 
- same as symmetric?}
 
 Generally speaking, the level-1 combinators arise for the following
 reasons. About a third of the combinators come from the definition of
