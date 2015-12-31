@@ -1901,6 +1901,10 @@ of symmetric monoidal categories as follows:
 % than the why's of it. The explanations by Dosen and Petric, and, Baez and 
 % Dolan only makes it more confusing for the unfamiliar reader.}
 
+\noindent The derivation assumes that the category of types and type
+equivalences is symmetric monoidal --- a result which will be proved
+in a more general form in Thm.~\ref{thm:catequiv} below.
+
 %%%%%%%%%%%%
 \subsection{Weak Symmetric Rig Groupoids}
 
@@ -2023,6 +2027,7 @@ equivalences like \AgdaFunction{pf₁} and \AgdaFunction{pf₂} that
 should not be equated.
 
 \begin{theorem}
+\label{thm:catequiv}
   The category whose objects are Agda types and whose morphisms are
   type equivalences is a symmetric rig groupoid.
 \end{theorem}
@@ -2329,15 +2334,6 @@ c₁ \odot (c₂ \odot c₃) & \isoone & (c₁ \odot c₂) \odot c₃ \\
   (Part II).}
 \end{figure}
 
-\amr{Figs. 4 and 5 are long, and the explanation in 6.2 is rather brief;
-the end feels almost like an unconvincing advertisement ("buy 13
-coherence laws, get another 13 free"?).  That may be a little unfair;
-perhaps the authors have thought about it, but there is no
-"interesting" explanation to give.  In any case, maybe it would be
-useful to label laws (or blocks of laws) \textbf{in the figure},
-e.g. "Naturality laws for ...:" or something similar.}
-
-
 %%%
 \subsection{Syntax of Level-1 Terms} 
 
@@ -2380,6 +2376,14 @@ None of the mixed properties involved with distributivity
 and absorption were present, although the proof of all of them was
 straightforward.  Their statement, on the other hand, was at times
 rather complex (see \AgdaModule{Data.SumProd.Properties}).
+
+\amr{Figs. 4 and 5 are long, and the explanation in 6.2 is rather brief;
+the end feels almost like an unconvincing advertisement ("buy 13
+coherence laws, get another 13 free"?).  That may be a little unfair;
+perhaps the authors have thought about it, but there is no
+"interesting" explanation to give.  In any case, maybe it would be
+useful to label laws (or blocks of laws) \textbf{in the figure},
+e.g. "Naturality laws for ...:" or something similar.}
 
 %%%
 \subsection{Example Level 1 Programs} 
