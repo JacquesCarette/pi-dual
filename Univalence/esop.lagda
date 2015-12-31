@@ -1310,7 +1310,7 @@ having to repeatedly introduce functions and their inverses and proofs
 of homotopies, we will simply use a term language that exactly
 expresses type equivalences and nothing else.
 
-\begin{figure*}[ht]
+\begin{figure}[t]
 \[
 \begin{array}{rrcll}
 \idc :& \tau & \iso & \tau &: \idc \\
@@ -1329,9 +1329,9 @@ expresses type equivalences and nothing else.
 \]
 \caption{$\Pi$-terms~\citep{rc2011,James:2012:IE:2103656.2103667}.
 \label{pi-terms}}
-\end{figure*}
+\end{figure}
 
-\begin{figure*}[ht]
+\begin{figure}[t]
 \[
 \Rule{}
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
@@ -1351,7 +1351,7 @@ expresses type equivalences and nothing else.
 \]
 \caption{$\Pi$-combinators.}
 \label{pi-combinators}
-\end{figure*}
+\end{figure}
 
 % \amr{figure 1: If they are all isomorphisms, wouldn't it be simpler to
 %   define $unite-+$ and then use $(unite-+)^{-1}$ instead of
@@ -1671,25 +1671,30 @@ We have seen two important ways of modeling equivalences between
 finite types: using back-and-forth functions that compose to the
 identity as in Def.~\ref{def:eq} and using a programming language
 tailored to only express permutations between finite types as in
-Sec.~\ref{subsec:pi}. 
+Sec.~\ref{subsec:pi}. In terms of our desired Curry--Howard-like
+correspondence, we have so far related the syntax of semiring elements
+to types and the proofs of semiring identities to programs of the
+appropriate types. The last important component of the Curry-Howard
+correspondence is to relate semiring proof transformations to program
+transformations. 
 
-\amr{I would suggest that the statement (5.0, p. 12) that "Our next goal is
-to model equivalences of equivalences in the same way" could use more
-motivation or explanation, even if it only repeats or summarizes parts
-of Section 1.}
+% \amr{I would suggest that the statement (5.0, p. 12) that "Our next goal is
+% to model equivalences of equivalences in the same way" could use more
+% motivation or explanation, even if it only repeats or summarizes parts
+% of Section 1.}
 
-Our next goal is to model equivalences of equivalences in the same
-way. Attempting to discover such equivalences of equivalences when
-working directly with functions or with the syntax of a programming
-language proves quite awkward. It, however, turns out that the
-solution to this problem is evident if we first generalize our models
-of type equivalences to the categorical setting. As we explain, in the
-right class of categories, we would have the objects representing
-types, the morphisms representing type equivalences, and the
-\emph{coherence conditions} representing equivalences of
-equivalences. Our task of modeling equivalences of equivalences then
-reduces to ``reading off'' the coherence conditions for each instance
-of the general categorical framework.
+Our next goal is therefore to reason about equivalences of
+equivalences. Attempting to discover such equivalences of equivalences
+when working directly with functions or with the syntax of a
+programming language proves quite awkward. It, however, turns out that
+the solution to this problem is evident if we first generalize our
+models of type equivalences to the categorical setting. As we explain,
+in the right class of categories, the objects represent types, the
+morphisms represent type equivalences, and the \emph{coherence
+  conditions} will represent equivalences of equivalences. Our task of
+modeling equivalences of equivalences then reduces to ``reading off''
+the coherence conditions for each instance of the general categorical
+framework.
 
 % rules for reasoning about equivalences: we will solve this problem by
 % appealing to various results about specialized monoidal
@@ -1721,7 +1726,21 @@ definitions for monoidal and symmetric monoidal categories.
 \amr{Figure 3 \& Def 7:
  Adding the equational reading of the diagrams would be of great value.}
 
-\begin{figure*}
+\begin{definition}[Monoidal Category]
+\label{ch:pi:def:MC}
+A \emph{monoidal category}~\citep{nla.cat-vn1051288} is a category
+with the following additional structure:
+\begin{itemize}
+\item a bifunctor $\otimes$ called the monoidal or tensor product,
+\item an object $I$ called the unit object, and
+\item natural isomorphisms
+  $\alpha_{A,B,C} : (A \otimes B) \otimes C \isoarrow A \otimes (B
+  \otimes C)$,
+  $\lambda_A : I \otimes A \isoarrow A$, and
+  $\rho_A : A \otimes I \isoarrow A$, such that the two diagrams below
+  (known as the \emph{associativity pentagon} and the \emph{triangle
+    for unit}) commute.
+\end{itemize}
 \begin{center}
 \begin{tikzcd}[column sep=tiny]
 ((A \otimes B) \otimes C) \otimes D)
@@ -1750,34 +1769,31 @@ definitions for monoidal and symmetric monoidal categories.
 & A \otimes B
 \end{tikzcd}
 \end{center}
-\caption{\label{fig:mon}Pentagon and triangle diagrams.}
-\end{figure*}
-
-\begin{definition}[Monoidal Category]
-\label{ch:pi:def:MC}
-A \emph{monoidal category}~\citep{nla.cat-vn1051288} is a category
-with the following additional structure:
-\begin{itemize}
-\item a bifunctor $\otimes$ called the monoidal or tensor product,
-\item an object $I$ called the unit object, and
-\item natural isomorphisms
-  $\alpha_{A,B,C} : (A \otimes B) \otimes C \isoarrow A \otimes (B
-  \otimes C)$,
-  $\lambda_A : I \otimes A \isoarrow A$, and
-  $\rho_A : A \otimes I \isoarrow A$, such that the two diagrams
-  (known as the \emph{associativity pentagon} and the \emph{triangle
-    for unit}) in Fig.~\ref{fig:mon} commute.
-\end{itemize}
 \end{definition}
 
 \begin{definition}[Symmetric Monoidal Category]
 \label{ch:pi:def:SMC}
 A monoidal category is \emph{symmetric} if it has an isomorphism
 $\sigma_{A,B} : A \otimes B \isoarrow B \otimes A$ where $\sigma$ is a
-natural transformation which satisfies the following two coherence conditions
-(called \emph{bilinerarity} and \emph{symmetry}):
-\end{definition}
+natural transformation which satisfies the following three coherence conditions
+(called \emph{unit coherence}, \emph{symmetry}, and \emph{bilinerarity})
 \begin{center}
+\begin{tikzcd}[column sep=tiny]
+& A \otimes I 
+  \arrow[dl, "\sigma"']
+  \arrow[dr, "\rho_A"]
+\\
+I \otimes A \arrow[rr, "\lambda_A"] && A 
+\end{tikzcd}
+%
+\begin{tikzcd}[column sep=tiny]
+& A \otimes B 
+  \arrow[dl, "\sigma"']
+  \arrow[dr, "\mathrm{id}_A\otimes\mathrm{id}_B"] 
+\\
+B \otimes A \arrow[rr, "\sigma"] && A \otimes B
+\end{tikzcd}
+%
 \begin{tikzcd}[column sep=tiny]
 & A \otimes (B \otimes C) 
   \arrow[dr, "\sigma"]
@@ -1796,16 +1812,7 @@ B \otimes (C \otimes A)
 & B \otimes (A \otimes C)
 \end{tikzcd}
 \end{center}
-%                                                                               
-\begin{center}
-\begin{tikzcd}[column sep=tiny]
-& A \otimes B 
-  \arrow[dl, "\sigma"']
-  \arrow[dr, "\mathrm{id}_A\otimes\mathrm{id}_B"] 
-\\
-B \otimes A \arrow[rr, "\sigma"] && A \otimes B
-\end{tikzcd}
-\end{center}
+\end{definition}
 
 According to Mac Lane's coherence theorem, the coherence laws for
 monoidal categories are justified by the desire to equate any two
@@ -1836,13 +1843,13 @@ equal. Indeed, as Dosen and Petric explain:
 From a different perspective, \citet{math/9802029} explain the source
 of these coherence laws as arising from homotopy theory. In this
 theory, laws are only imposed up to homotopy, with these homotopies
-satisfying certain laws, again only up to homotopy, with these
-higher homotopies satisfying their own higher coherence laws, and so
+satisfying certain laws, again only up to homotopy, with these higher
+homotopies satisfying their own higher coherence laws, and so
 on. Remarkably, they report, among other results, that the pentagon
-identity of Fig.~\ref{fig:mon} arises when studying the algebraic
-structure possessed by a space that is homotopy equivalent to a loop
-space and that the hexagon identity arises in the context of spaces
-homotopy equivalent to double loop spaces.
+identity arises when studying the algebraic structure possessed by a
+space that is homotopy equivalent to a loop space and that the hexagon
+identity arises in the context of spaces homotopy equivalent to double
+loop spaces.
 
 %We might also hope that the two versions of boolean
 %negation in Sec.~\ref{sec:circuits} and Sec.~\ref{sec:rewriting} could
@@ -1971,9 +1978,6 @@ be the best hope for a rational reconstruction of the coherence laws.
 %%%%%%%%%%%%
 \subsection{The Symmetric Rig Groupoid of Types and Type Equivalences} 
 
-\amr{Did we forget the unit coherence law in the definition of
-  symmetric monoidal categories???}
-
 It is no coincidence that the homotopy between \AgdaFunction{pf₃} and
 \AgdaFunction{pf₄} discussed in Sec.~\ref{sub:eqeq} follows from the
 coherence conditions of symmetric monoidal categories:
@@ -1988,7 +1992,7 @@ coherence conditions of symmetric monoidal categories:
   & (\AgdaInductiveConstructor{⊎≃} \mbox{~is~a~functor}) \\
   &=&
   \AgdaInductiveConstructor{unite₊′≃}~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{id≃} 
-  & (\mbox{unit~coherence~law ????}) \\
+  & (\mbox{unit~coherence~law}) \\
   &=& 
     \AgdaInductiveConstructor{trans≃}~\AgdaInductiveConstructor{assoc₊≃}~
     (\AgdaInductiveConstructor{id≃}~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{unite₊≃}) 
@@ -2201,7 +2205,7 @@ exactly because of the coherence conditions. They are however critical
 to the proofs, and in addition, they are often useful when
 representing circuits, leading to smaller programs with fewer redexes.
 
-\begin{figure*}
+\begin{figure}[t]
 \[\begin{array}{rcl}
 \\
 \idc \odot c & \isoone & c \\
@@ -2237,10 +2241,10 @@ c₁ \odot (c₂ \odot c₃) & \isoone & (c₁ \odot c₂) \odot c₃ \\
 \end{array}\]
 \caption{\label{fig:more2}Signatures of level-1 $\Pi$-combinators
   (Part I).}
-\end{figure*}
+\end{figure}
 
 
-\begin{figure*}
+\begin{figure}[t]
 \[\begin{array}{rcl}
 \identlt \odot c₂ & \isoone & (c₁ ⊗ c₂) \odot \identlt \\
 \identrt \odot (c₁ ⊗ c₂) & \isoone &  c₂ \odot \identrt \\
@@ -2335,7 +2339,7 @@ c₁ \odot (c₂ \odot c₃) & \isoone & (c₁ \odot c₂) \odot c₃ \\
 \\
 \caption{\label{fig:more3}Signatures of level-1 $\Pi$-combinators
   (Part II).}
-\end{figure*}
+\end{figure}
 
 \amr{Figs. 4 and 5 are long, and the explanation in 6.2 is rather brief;
 the end feels almost like an unconvincing advertisement ("buy 13
