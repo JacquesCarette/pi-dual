@@ -2226,7 +2226,17 @@ representing circuits, leading to smaller programs with fewer redexes.
 \Rule{}
   {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₅ ⟷ t₆}
   {((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆ ⇔ assocr⋆ ◎ (c₁ ⊗ (c₂ ⊗ c₃))}
-  {} 
+  {} \\
+\\
+\Rule{}
+  {}
+  {assocr₊ ◎ assocr₊ ⇔ ((assocr₊ ⊕ id) ◎ assocr₊) ◎ (id ⊕ assocr₊)}
+  {} \\
+\\
+\Rule{}
+  {}
+  {assocr⋆ ◎ assocr⋆ ⇔ ((assocr⋆ ⊗ id) ◎ assocr⋆) ◎ (id ⊗ assocr⋆)}
+  {}
 \end{array}\]
 \caption{Signatures of level-1 $\Pi$-combinators: associativity}
 \end{figure}
@@ -2253,7 +2263,7 @@ representing circuits, leading to smaller programs with fewer redexes.
   {((a ⊗ b) ⊕ (a ⊗ c)) ◎ factorl ⇔ factorl ◎ (a ⊗ (b ⊕ c))}
   {}
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: distribute and factor} 
+\caption{Signatures of level-1 $\Pi$-combinators: factoring}
 \end{figure}
 
 \begin{figure}[t]
@@ -2301,43 +2311,48 @@ representing circuits, leading to smaller programs with fewer redexes.
 \[\begin{array}{c}
 \Rule{}
   {c₁ : 0 ⟷ 0 \quad c₂ : t₁ ⟷ t₂} 
-  {(unite₊l ◎ c₂) ⇔ ((c₁ ⊕ c₂) ◎ unite₊l)}
+  {unite₊l ◎ c₂ ⇔ (c₁ ⊕ c₂) ◎ unite₊l}
   {} \\
 \\
 \Rule{}
   {c₁ : 0 ⟷ 0 \quad c₂ : t₁ ⟷ t₂} 
-  {(uniti₊l ◎ (c₁ ⊕ c₂)) ⇔ (c₂ ◎ uniti₊l)}
+  {uniti₊l ◎ (c₁ ⊕ c₂) ⇔ c₂ ◎ uniti₊l}
   {} \\
 \\
 \Rule{}
   {c₁ : 0 ⟷ 0 \quad c₂ : t₁ ⟷ t₂}
-  {(unite₊r ◎ c₂) ⇔ ((c₂ ⊕ c₁) ◎ unite₊r)}
+  {unite₊r ◎ c₂ ⇔ (c₂ ⊕ c₁) ◎ unite₊r}
   {} \\
 \\
 \Rule{}
   {c₁ : 0 ⟷ 0 \quad c₂ : t₁ ⟷ t₂} 
-  {(uniti₊r ◎ (c₂ ⊕ c₁)) ⇔ (c₂ ◎ uniti₊r)}
+  {uniti₊r ◎ (c₂ ⊕ c₁) ⇔ c₂ ◎ uniti₊r}
   {} \\
 \\
 \Rule{}
   {c₁ : 1 ⟷ 1 \quad c₂ : t₁ ⟷ t₂} 
-  {(unite⋆l ◎ c₂) ⇔ ((c₁ ⊗ c₂) ◎ unite⋆l)}
+  {unite⋆l ◎ c₂ ⇔ (c₁ ⊗ c₂) ◎ unite⋆l}
   {} \\
 \\
 \Rule{}
   {c₁ : 1 ⟷ 1 \quad c₂ : t₁ ⟷ t₂} 
-  {(uniti⋆l ◎ (c₁ ⊗ c₂)) ⇔ (c₂ ◎ uniti⋆l)}
+  {uniti⋆l ◎ (c₁ ⊗ c₂) ⇔ c₂ ◎ uniti⋆l}
   {} \\
 \\
 \Rule{}
   {c₁ : 1 ⟷ 1 \quad c₂ : t₁ ⟷ t₂}
-  {(unite⋆r ◎ c₂) ⇔ ((c₂ ⊗ c₁) ◎ unite⋆r)}
+  {unite⋆r ◎ c₂ ⇔ (c₂ ⊗ c₁) ◎ unite⋆r}
   {} \\
 \\
 \Rule{}
   {c₁ : 1 ⟷ 1 \quad c₂ : t₁ ⟷ t₂} 
-  {(uniti⋆r ◎ (c₂ ⊗ c₁)) ⇔ (c₂ ◎ uniti⋆r)}
-  {}
+  {uniti⋆r ◎ (c₂ ⊗ c₁) ⇔ c₂ ◎ uniti⋆r}
+  {} 
+
+    unite⋆l ⇔ 
+    distl ◎ (unite⋆l {t₁} ⊕ unite⋆l {t₂}) 
+
+
 \end{array}\]
 \caption{Signatures of level-1 $\Pi$-combinators: unit}
 \end{figure}
@@ -2346,15 +2361,34 @@ representing circuits, leading to smaller programs with fewer redexes.
 \[\begin{array}{c}
 \Rule{}
   {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄} 
-  {(swap₊ ◎ (c₁ ⊕ c₂)) ⇔ ((c₂ ⊕ c₁) ◎ swap₊)}
+  {swap₊ ◎ (c₁ ⊕ c₂) ⇔ (c₂ ⊕ c₁) ◎ swap₊}
   {} \\
 \\
 \Rule{}
   {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄} 
-  {(swap⋆ ◎ (c₁ ⊗ c₂)) ⇔ ((c₂ ⊗ c₁) ◎ swap⋆)}
-  {} 
+  {swap⋆ ◎ (c₁ ⊗ c₂) ⇔ (c₂ ⊗ c₁) ◎ swap⋆}
+  {} \\
+\Rule{}
+  {}
+  {(assocr₊ ◎ swap₊) ◎ assocr₊ ⇔ ((swap₊ ⊕ id) ◎ assocr₊) ◎ (id ⊕ swap₊)}
+  {} \\
+\\
+\Rule{}
+  {}
+  {(assocl₊ ◎ swap₊) ◎ assocl₊ ⇔ ((id ⊕ swap₊) ◎ assocl₊) ◎ (swap₊ ⊕ id)}
+  {} \\
+\\
+\Rule{}
+  {}
+  {(assocr⋆ ◎ swap⋆) ◎ assocr⋆ ⇔ ((swap⋆ ⊗ id) ◎ assocr⋆) ◎ (id ⊗ swap⋆)}
+  {} \\
+\\
+\Rule{}
+  {}
+  {(assocl⋆ ◎ swap⋆) ◎ assocl⋆ ⇔ ((id ⊗ swap⋆) ◎ assocl⋆) ◎ (swap⋆ ⊗ id)}
+  {}
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: commutativity}
+\caption{Signatures of level-1 $\Pi$-combinators: commutativity and associativity}
 \end{figure}
 
 \begin{figure}[t]
@@ -2369,228 +2403,108 @@ representing circuits, leading to smaller programs with fewer redexes.
   {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₁ ⟷ t₂ \quad c₄ : t₃ ⟷ t₄
    \quad c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
   {c₁ ⊗ c₂ ⇔ c₃ ⊗ c₄}
+  {} \\
+\\
+\Rule{}
   {}
+  {id ⊕ id ⇔ id}
+  {} \\
+\\
+\Rule{}
+  {c₁ : t₅ ⟷ t₁ \quad c₂ : t₆ ⟷ t₂ \quad c₃ : t₁ ⟷ t₃ \quad c₄ : t₂ ⟷ t₄}
+  {(c₁ ◎ c₃) ⊕ (c₂ ◎ c₄) ⇔ (c₁ ⊕ c₂) ◎ (c₃ ⊕ c₄)}
+  {} \\
+\\
+\Rule{}
+  {}
+  {id ⊗ id ⇔ id}
+  {} \\
+\\
+\Rule{}
+  {c₁ : t₅ ⟷ t₁ \quad c₂ : t₆ ⟷ t₂ \quad c₃ : t₁ ⟷ t₃ \quad c₄ : t₂ ⟷ t₄}
+  {(c₁ ◎ c₃) ⊗ (c₂ ◎ c₄) ⇔ (c₁ ⊗ c₂) ◎ (c₃ ⊗ c₄)}
+  {} 
 \end{array}\]
 \caption{Signatures of level-1 $\Pi$-combinators: functors}
 \end{figure}
 
-
-
-%%% WAVEFRONT
-
-  id⊕id⇔ : {t₁ t₂ : U} → (id {t₁} ⊕ id {t₂}) ⇔ id
-  hom⊕◎⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₅ ⟷ t₁} {c₂ : t₆ ⟷ t₂}
-        {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
-        ((c₁ ◎ c₃) ⊕ (c₂ ◎ c₄)) ⇔ ((c₁ ⊕ c₂) ◎ (c₃ ⊕ c₄))
-  id⊗id⇔ : {t₁ t₂ : U} → (id {t₁} ⊗ id {t₂}) ⇔ id
-  hom⊗◎⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₅ ⟷ t₁} {c₂ : t₆ ⟷ t₂}
-        {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
-        ((c₁ ◎ c₃) ⊗ (c₂ ◎ c₄)) ⇔ ((c₁ ⊗ c₂) ◎ (c₃ ⊗ c₄))
-
-  triangle⊕l : {t₁ t₂ : U} →
-    (unite₊r {t₁} ⊕ id {t₂}) ⇔ assocr₊ ◎ (id ⊕ unite₊l)
-  triangle⊗l : {t₁ t₂ : U} →
-    ((unite⋆r {t₁}) ⊗ id {t₂}) ⇔ assocr⋆ ◎ (id ⊗ unite⋆l)
-  pentagon⊕l : {t₁ t₂ t₃ t₄ : U} →
-    assocr₊ ◎ (assocr₊ {t₁} {t₂} {PLUS t₃ t₄}) ⇔
-    ((assocr₊ ⊕ id) ◎ assocr₊) ◎ (id ⊕ assocr₊)
-  pentagon⊗l : {t₁ t₂ t₃ t₄ : U} →
-    assocr⋆ ◎ (assocr⋆ {t₁} {t₂} {TIMES t₃ t₄}) ⇔
-    ((assocr⋆ ⊗ id) ◎ assocr⋆) ◎ (id ⊗ assocr⋆)
-  hexagonr⊕l : {t₁ t₂ t₃ : U} →
-    (assocr₊ ◎ swap₊) ◎ assocr₊ {t₁} {t₂} {t₃} ⇔
-    ((swap₊ ⊕ id) ◎ assocr₊) ◎ (id ⊕ swap₊)
-  hexagonl⊕l : {t₁ t₂ t₃ : U} →
-    (assocl₊ ◎ swap₊) ◎ assocl₊ {t₁} {t₂} {t₃} ⇔
-    ((id ⊕ swap₊) ◎ assocl₊) ◎ (swap₊ ⊕ id)
-  hexagonr⊗l : {t₁ t₂ t₃ : U} →
-    (assocr⋆ ◎ swap⋆) ◎ assocr⋆ {t₁} {t₂} {t₃} ⇔
-    ((swap⋆ ⊗ id) ◎ assocr⋆) ◎ (id ⊗ swap⋆)
-  hexagonl⊗l : {t₁ t₂ t₃ : U} →
-    (assocl⋆ ◎ swap⋆) ◎ assocl⋆ {t₁} {t₂} {t₃} ⇔
-    ((id ⊗ swap⋆) ◎ assocl⋆) ◎ (swap⋆ ⊗ id)
-  absorbl⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
-    (c₁ ⊗ id {0}) ◎ absorbl ⇔ absorbl ◎ id {0}
-  absorbr⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
-    (id {0} ⊗ c₁) ◎ absorbr ⇔ absorbr ◎ id {0}
-  factorzl⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
-    id ◎ factorzl ⇔ factorzl ◎ (id ⊗ c₁)
-  factorzr⇔l : {t₁ t₂ : U} {c₁ : t₁ ⟷ t₂} →
-    id ◎ factorzr ⇔ factorzr ◎ (c₁ ⊗ id)
-  swap₊distl⇔l : {t₁ t₂ t₃ : U} →
-    (id {t₁} ⊗ swap₊ {t₂} {t₃}) ◎ distl ⇔ distl ◎ swap₊
-  dist-swap⋆⇔l : {t₁ t₂ t₃ : U} →
-    dist {t₁} {t₂} {t₃} ◎ (swap⋆ ⊕ swap⋆) ⇔ swap⋆ ◎ distl
-  assocl₊-dist-dist⇔l : {t₁ t₂ t₃ t₄ : U} →
-    ((assocl₊ {t₁} {t₂} {t₃} ⊗ id {t₄}) ◎ dist) ◎ (dist ⊕ id) ⇔
-    (dist ◎ (id ⊕ dist)) ◎ assocl₊
-  assocl⋆-distl⇔l : {t₁ t₂ t₃ t₄ : U} →
-    assocl⋆ {t₁} {t₂} ◎ distl {TIMES t₁ t₂} {t₃} {t₄} ⇔
-    ((id ⊗ distl) ◎ distl) ◎ (assocl⋆ ⊕ assocl⋆)
-  absorbr0-absorbl0⇔ : absorbr {0} ⇔ absorbl {0}
-  absorbr⇔distl-absorb-unite : {t₁ t₂ : U} →
-    absorbr ⇔ (distl {t₂ = t₁} {t₂} ◎ (absorbr ⊕ absorbr)) ◎ unite₊l
-  unite⋆r0-absorbr1⇔ : unite⋆r ⇔ absorbr
-  absorbl≡swap⋆◎absorbr : {t₁ : U} → absorbl {t₁} ⇔ swap⋆ ◎ absorbr
-  absorbr⇔[assocl⋆◎[absorbr⊗id]]◎absorbr : {t₁ t₂ : U} →
-    absorbr ⇔ (assocl⋆ {0} {t₁} {t₂} ◎ (absorbr ⊗ id)) ◎ absorbr
-  [id⊗absorbr]◎absorbl⇔assocl⋆◎[absorbl⊗id]◎absorbr : {t₁ t₂ : U} →
-    (id ⊗ absorbr {t₂}) ◎ absorbl {t₁} ⇔
-    (assocl⋆ ◎ (absorbl ⊗ id)) ◎ absorbr
-  elim⊥-A[0⊕B]⇔l : {t₁ t₂ : U} →
-     (id {t₁} ⊗ unite₊l {t₂}) ⇔
-     (distl ◎ (absorbl ⊕ id)) ◎ unite₊l
-  elim⊥-1[A⊕B]⇔l : {t₁ t₂ : U} →
-    unite⋆l ⇔ 
-    distl ◎ (unite⋆l {t₁} ⊕ unite⋆l {t₂})
-  fully-distribute⇔l : {t₁ t₂ t₃ t₄ : U} → 
-    (distl ◎ (dist {t₁} {t₂} {t₃} ⊕ dist {t₁} {t₂} {t₄})) ◎ assocl₊ ⇔
-      ((((dist ◎ (distl ⊕ distl)) ◎ assocl₊) ◎ (assocr₊ ⊕ id)) ◎
-         ((id ⊕ swap₊) ⊕ id)) ◎ (assocl₊ ⊕ id)
-
-
-
-
-
-
-
-
-
-
 \begin{figure}[t]
-\[\begin{array}{rcl}
+\[\begin{array}{c}
+\Rule{}
+  {}
+  {unite₊r ⊕ id ⇔ assocr₊ ◎ (id ⊕ unite₊l)}
+  {} \\
 \\
-\idc \odot c & \isoone & c \\
-c \odot \idc & \isoone & c \\
-c \odot (!~c) & \isoone & \idc \\
-(!~c) \odot c & \isoone & \idc \\
-\idc ⊕ \idc & \isoone & \idc \\
-\idc ⊗ \idc & \isoone & \idc \\
-c₁ \odot (c₂ \odot c₃) & \isoone & (c₁ \odot c₂) \odot c₃ \\
-(c₁ \odot c₃) ⊕ (c₂ \odot c₄) & \isoone & (c₁ ⊕ c₂) \odot (c₃ ⊕ c₄) \\
-(c₁ \odot c₃) ⊗ (c₂ \odot c₄) & \isoone & (c₁ ⊗ c₂) \odot (c₃ ⊗ c₄) \\
-\\
-\\
-\swapp \odot (c₁ ⊕ c₂) & \isoone &  (c₂ ⊕ c₁) \odot \swapp \\
-\swapt \odot (c₁ ⊗ c₂) & \isoone &  (c₂ ⊗ c₁) \odot \swapt \\
-\\
-\\
-\identlp \odot c₂ & \isoone & (c₁ ⊕ c₂) \odot \identlp \\
-\identrp \odot (c₁ ⊕ c₂) & \isoone &  c₂ \odot \identrp \\
-\identlsp \odot c₂ & \isoone & (c₂ ⊕ c₁) \odot \identlsp \\
-\identrsp \odot (c₂ ⊕ c₁) & \isoone &  c₂ \odot \identrsp \\
-\identlsp ⊕ \idc & \isoone & \assocrp \odot (\idc ⊕ \identlp) \\
-\\
-\\
- (c₁ ⊕ (c₂ ⊕ c₃)) \odot \assoclp & \isoone & \assoclp \odot ((c₁ ⊕ c₂) ⊕ c₃) \\
-((c₁ ⊕ c₂) ⊕ c₃) \odot \assocrp & \isoone & \assocrp \odot (c₁ ⊕ (c₂ ⊕ c₃)) \\
-(c₁ ⊗ (c₂ ⊗ c₃)) \odot \assoclt & \isoone & \assoclt \odot ((c₁ ⊗ c₂) ⊗ c₃) \\
-((c₁ ⊗ c₂) ⊗ c₃) \odot \assocrt & \isoone & \assocrt \odot (c₁ ⊗ (c₂ ⊗ c₃)) \\
-((a ⊕ b) ⊗ c) \odot \dist & \isoone & \dist \odot ((a ⊗ c) ⊕ (b ⊗ c)) \\
-((a ⊗ c) ⊕ (b ⊗ c)) \odot \factor & \isoone & \factor \odot ((a ⊕ b) ⊗ c) \\
-(a ⊗ (b ⊕ c)) \odot \distl & \isoone & \distl \odot ((a ⊗ b) ⊕ (a ⊗ c)) \\
-((a ⊗ b) ⊕ (a ⊗ c)) \odot \factorl & \isoone & \factorl \odot (a ⊗ (b ⊕ c)) 
+\Rule{}
+  {}
+  {unite⋆r ⊗ id ⇔ assocr⋆ ◎ (id ⊗ unite⋆l)}
+  {}
 \end{array}\]
-\caption{\label{fig:more2}Signatures of level-1 $\Pi$-combinators
-  (Part I).}
+\caption{Signatures of level-1 $\Pi$-combinators: unit and associativity}
 \end{figure}
 
 
 \begin{figure}[t]
-\[\begin{array}{rcl}
-\identlt \odot c₂ & \isoone & (c₁ ⊗ c₂) \odot \identlt \\
-\identrt \odot (c₁ ⊗ c₂) & \isoone &  c₂ \odot \identrt \\
-\identlst \odot c₂ & \isoone & (c₂ ⊗ c₁) \odot \identlst \\
-\identrst \odot (c₂ ⊗ c₁) & \isoone &  c₂ \odot \identrst \\
-\identlst ⊗ \idc & \isoone & \assocrt \odot (\idc ⊕ \identlt) \\
-\\
-\\
-\absorbr & \isoone & \identlt \\
-\absorbr & \isoone & \absorbl \\
-\absorbr & \isoone & (\assoclt \odot (\absorbr ⊗ \idc)) \\
-              && \odot \absorbr \\
-\absorbr & \isoone & (\distl \\
-             && \quad \odot (\absorbr ⊕ \absorbr)) \\
-             && \odot \identlp \\
-\absorbl & \isoone & \swapt \odot \absorbr \\
-(c ⊗ \idc) \odot \absorbl & \isoone & \absorbl \odot \idc \\
-(\idc ⊗ c) \odot \absorbr & \isoone & \absorbr \odot \idc \\
-(\idc ⊗ \absorbr) \odot \absorbl & \isoone & (\assoclt \odot (\absorbl ⊗ \idc) \\
-             && \odot \absorbr \\
-(\idc ⊗ \identlp) & \isoone & (\distl \odot (\absorbl ⊕ \idc)) \\
-            && \odot \identlp \\
-\\
-\\
-\identlp & \isoone & \distl \odot (\identlp ⊕ \identlp) \\
-(\idc ⊗ \swapp) \odot \distl & \isoone & \distl \odot \swapp \\
-\dist \odot (\swapt ⊕ \swapt) & \isoone & \swapt \odot \distl \\
-\idc \odot \factorzl & \isoone & \factorzl \odot (\idc ⊗ c) \\
-\idc \odot \factorzr & \isoone & \factorzr \odot (c ⊗ \idc) 
+\[\begin{array}{c}
+
+    {c₁ : t₁ ⟷ t₂} →
+    (c₁ ⊗ id {0}) ◎ absorbl ⇔ absorbl ◎ id {0}
+
+    {c₁ : t₁ ⟷ t₂} →
+    (id {0} ⊗ c₁) ◎ absorbr ⇔ absorbr ◎ id {0}
+
+    {c₁ : t₁ ⟷ t₂} →
+    id ◎ factorzl ⇔ factorzl ◎ (id ⊗ c₁)
+
+    {c₁ : t₁ ⟷ t₂} →
+    id ◎ factorzr ⇔ factorzr ◎ (c₁ ⊗ id)
+
+   absorbr {0} ⇔ absorbl {0}
+
+    absorbr ⇔ (distl {t₂ = t₁} {t₂} ◎ (absorbr ⊕ absorbr)) ◎ unite₊l
+
+    unite⋆r ⇔ absorbr
+
+    absorbl {t₁} ⇔ swap⋆ ◎ absorbr
+
+    absorbr ⇔ (assocl⋆ {0} {t₁} {t₂} ◎ (absorbr ⊗ id)) ◎ absorbr
+
+    (id ⊗ absorbr {t₂}) ◎ absorbl {t₁} ⇔
+    (assocl⋆ ◎ (absorbl ⊗ id)) ◎ absorbr
+
+     (id {t₁} ⊗ unite₊l {t₂}) ⇔
+     (distl ◎ (absorbl ⊕ id)) ◎ unite₊l
+
 \end{array}\]
-\\
-\\
-\[\begin{array}{rcl}
-((\assoclp ⊗ \idc) \odot \dist) \odot (\dist ⊕ \idc) & \isoone &
-  (\dist \odot (\idc ⊕ \dist)) \odot \assoclp \\
-(\distl \odot (\dist ⊕ \dist)) \odot \assoclp & \isoone &
-  ((((\dist \odot (\distl ⊕ \distl)) \odot \assoclp) \\
-  && \odot (\assocrp ⊕ \idc)) \\
-  && \odot (\idc ⊕ \swapp) ⊕ \idc) \odot (\assoclp ⊕ \idc) \\
-\assoclt \odot \distl & \isoone & 
-  ((\idc ⊗ \distl) \odot \distl) \odot (\assoclt ⊕ \assoclt) \\
-\assocrp \odot \assocrp & \isoone &
-  ((\assocrp ⊕ \idc) \odot \assocrp) \odot (\idc ⊕ \assocrp) \\
-\assocrt \odot \assocrt & \isoone &
-  ((\assocrt ⊗ \idc) \odot \assocrt) \odot (\idc ⊗ \assocrt) \\
-(\assocrp \odot \swapp) \odot \assocrp & \isoone &
-  ((\swapp ⊕ \idc) \odot \assocrp) \odot (\idc ⊕ \swapp) \\
-(\assoclp \odot \swapp) \odot \assoclp & \isoone &
-  ((\idc ⊕ \swapp) \odot \assoclp) \odot (\swapp ⊕ \idc) \\
-(\assocrt \odot \swapt) \odot \assocrt & \isoone &
-  ((\swapt ⊕ \idc) \odot \assocrt) \odot (\idc ⊗ \swapt) \\
-(\assoclt \odot \swapt) \odot \assoclt & \isoone &
-  ((\idc ⊗ \swapt) \odot \assoclt) \odot (\swapt ⊗ \idc) 
+\caption{Signatures of level-1 $\Pi$-combinators: zero}
+\end{figure}
+
+\begin{figure}[t]
+\[\begin{array}{c}
+
+    ((assocl₊ {t₁} {t₂} {t₃} ⊗ id {t₄}) ◎ dist) ◎ (dist ⊕ id) ⇔
+    (dist ◎ (id ⊕ dist)) ◎ assocl₊ 
+
+    assocl⋆ {t₁} {t₂} ◎ distl {TIMES t₁ t₂} {t₃} {t₄} ⇔
+    ((id ⊗ distl) ◎ distl) ◎ (assocl⋆ ⊕ assocl⋆) 
+
 \end{array}\]
-\\
-\\
-\begin{minipage}{\textwidth}
-\begin{center} 
-\Rule{}
-{}
-{\jdg{}{}{c \isoone c}}
-{}
-%
-\Rule{}
-{\jdg{}{}{c₁ \isoone c₂} \quad \vdash c₂ \isoone c₃}
-{\jdg{}{}{c₁ \isoone c₃}}
-{}
-%
-\Rule{}
-{\jdg{}{}{c₁ \isoone c₃} \quad \vdash c₂ \isoone c₄}
-{\jdg{}{}{(c₁ \odot c₂) \isoone (c₃ \odot c₄)}}
-{}
-\end{center}
-\end{minipage}
-\\
-\\
-\\
-\begin{minipage}{\textwidth}
-\begin{center} 
-\Rule{}
-{\jdg{}{}{c₁ \isoone c₃} \quad \vdash c₂ \isoone c₄}
-{\jdg{}{}{(c₁ ⊕ c₂) \isoone (c₃ ⊕ c₄)}}
-{}
-%
-\Rule{}
-{\jdg{}{}{c₁ \isoone c₃} \quad \vdash c₂ \isoone c₄}
-{\jdg{}{}{(c₁ ⊗ c₂) \isoone (c₃ ⊗ c₄)}}
-{}
-\end{center}
-\end{minipage}
-\\
-\\
-\caption{\label{fig:more3}Signatures of level-1 $\Pi$-combinators
-  (Part II).}
+\caption{Signatures of level-1 $\Pi$-combinators: associativity and distributivity}
+\end{figure}
+
+\begin{figure}[t]
+\[\begin{array}{c}
+
+    (id {t₁} ⊗ swap₊ {t₂} {t₃}) ◎ distl ⇔ distl ◎ swap₊
+
+    dist {t₁} {t₂} {t₃} ◎ (swap⋆ ⊕ swap⋆) ⇔ swap⋆ ◎ distl
+
+    (distl ◎ (dist {t₁} {t₂} {t₃} ⊕ dist {t₁} {t₂} {t₄})) ◎ assocl₊ ⇔
+      ((((dist ◎ (distl ⊕ distl)) ◎ assocl₊) ◎ (assocr₊ ⊕ id)) ◎
+         ((id ⊕ swap₊) ⊕ id)) ◎ (assocl₊ ⊕ id)
+
+\end{array}\]
+\caption{Signatures of level-1 $\Pi$-combinators: commutativity and distributivity}
 \end{figure}
 
 %%%
