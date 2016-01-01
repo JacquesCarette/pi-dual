@@ -752,7 +752,9 @@ record isqinv {A : Set} {B : Set} (f : A → B) : Set where
 
 \noindent The terminology ``quasi-inverse'' was chosen in the HoTT context as a
 reminder that this is a poorly-behaved notion by itself as the same
-function $f : A → B$ may have multiple \emph{unequal} quasi-inverses.
+function $f : A → B$ may have multiple unequal quasi-inverses; however, up to
+homotopy, all quasi-inverses are equivalent.
+\jc{I am not sure we even want that whole paragraph in the paper.}
 
 \begin{definition}[Equivalence of types]\label{def:eq}
   Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
