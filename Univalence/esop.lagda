@@ -1592,8 +1592,7 @@ pf₄π = assocr₊ ◎ (id⟷ ⊕ unite₊)
 %%%%%%%%%%%%
 \subsection{Semantics}
 
-Naturally, we define the denotational semantics of $\Pi$ to be type
-equivalences:
+We define the denotational semantics of $\Pi$ to be type equivalences:
 
 \medskip
 {\footnotesize{
