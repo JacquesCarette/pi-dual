@@ -1494,6 +1494,9 @@ BOOL² : U
 BOOL² = TIMES BOOL BOOL  
 \end{code}}}
 \end{multicols}
+\jc{we might wish to refrain from micro-optimizing line breaks until
+we are quite sure the earlier paper won't change, as these tend to
+make things much worse when they are no longer needed.}
 
 \begin{multicols}{2}
 {\footnotesize{
