@@ -2198,6 +2198,9 @@ exactly because of the coherence conditions. They are however critical
 to the proofs, and in addition, they are often useful when
 representing circuits, leading to smaller programs with fewer redexes.
 
+\amr{need to make the level-0 names in the code are the same names we use in
+  the paper}
+
 \begin{figure}[t]
 \[\begin{array}{c}
 \Rule{}
@@ -2240,20 +2243,26 @@ representing circuits, leading to smaller programs with fewer redexes.
   {(assocr⋆ ◎ (c₁ ⊗ (c₂ ⊗ c₃))) ⇔ (((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆)}
   {} \\
 \\
+\Rule{}
+  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₅ ⟷ t₆}
+  {(((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆) ⇔ (assocr⋆ ◎ (c₁ ⊗ (c₂ ⊗ c₃)))}
+  {} \\
+\\
+\Rule{}
+  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₅ ⟷ t₆} 
+  {(assocr₊ ◎ (c₁ ⊕ (c₂ ⊕ c₃))) ⇔ (((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊)}
+  {} \\
+\\
+\Rule{}
+  {a : t₁ ⟷ t₂ \quad b : t₃ ⟷ t₄ \quad c : t₅ ⟷ t₆} 
+  {((a ⊕ b) ⊗ c) ◎ dist ⇔ dist ◎ ((a ⊗ c) ⊕ (b ⊗ c))}
+  {} \\
+\\
 
 
 %%% WAVEFRONT
 
 
-  assocr⊗r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-          (((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆) ⇔ (assocr⋆ ◎ (c₁ ⊗ (c₂ ⊗ c₃)))
-  assocr⊕l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {c₁ : t₁ ⟷ t₂} {c₂ : t₃ ⟷ t₄} {c₃ : t₅ ⟷ t₆} → 
-           (assocr₊ ◎ (c₁ ⊕ (c₂ ⊕ c₃))) ⇔ (((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊)
-  dist⇔l : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
-          {a : t₁ ⟷ t₂} {b : t₃ ⟷ t₄} {c : t₅ ⟷ t₆} →
-      ((a ⊕ b) ⊗ c) ◎ dist ⇔ dist ◎ ((a ⊗ c) ⊕ (b ⊗ c))
   dist⇔r : {t₁ t₂ t₃ t₄ t₅ t₆ : U} 
           {a : t₁ ⟷ t₂} {b : t₃ ⟷ t₄} {c : t₅ ⟷ t₆} →
       dist ◎ ((a ⊗ c) ⊕ (b ⊗ c)) ⇔ ((a ⊕ b) ⊗ c) ◎ dist
