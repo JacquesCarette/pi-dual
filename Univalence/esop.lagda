@@ -727,7 +727,7 @@ of two functions $f \equiv g$ and the fact that the functions produce equal
 values on all inputs $f ∼ g$: the two notions are traditionally
 identified but are only \emph{equivalent} in the HoTT context. 
 
-% \amr{- page 6, def. 3: can you give an example of functions which are 
+% \amr{ page 6, def. 3: can you give an example of functions which are 
 %  quasi-inverse but not inverse?}
 
 \begin{definition}[Quasi-inverse]
@@ -929,7 +929,7 @@ In Agda, we write:
 %  "The problem is that homotopies in such a type ($\alpha$ and $\beta$)"
 %  Who are $\alpha$ and $\beta$? Maybe you meant "A" and "B".}
 
-% \amr{- page 8, lines 17-21: I do not understand this, but this is probably
+% \amr{ page 8, lines 17-21: I do not understand this, but this is probably
 %  due to my limited familiarity with homotopy type theory}
 
 \smallskip We could now verify that \AgdaFunction{pf₃} is indeed
@@ -1354,7 +1354,7 @@ expresses type equivalences and nothing else.
 \end{figure}
 
 % \amr{figure 1: If they are all isomorphisms, wouldn't it be simpler to
-%   define $unite-+$ and then use $(unite-+)^{-1}$ instead of
+%   define $unite-+$ and then use $(unite-+)^{ -1}$ instead of
 %   $uniti-+$ ?
 
 %   figure 2: here you call the transformations that correspond to
@@ -3005,7 +3005,7 @@ The next theorem is the main result: it shows that the two levels of
 $\Pi$ form a symmetric rig groupoid, thus capturing equivalences of
 types at level 0, and equivalences of equivalences at level 1.
 
-\amr{- page 23, proof of Th. 3: this proof seems taken literally from an
+\amr{ page 23, proof of Th. 3: this proof seems taken literally from an
  old version of the paper, with different notations. In particular,
  in the proof you speak about levels 1 and 2, while before you were
  using levels 0 and 1; furthermore you say that additional level 0
@@ -3285,7 +3285,7 @@ the \textbf{terms} of a (reversible) programming language
  of terms for a language of program transformations.  We believe this
  insight is non-trivial.}
 
-\amr{- it would be interesting to understand what happens by adding
+\amr{ it would be interesting to understand what happens by adding
  recursive types
 
 We entirely agree, we would also love to understand what happens by
