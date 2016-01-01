@@ -68,32 +68,32 @@
 \newcommand{\rinv}{r!}
 \newcommand{\invinv}{!!}
 \newcommand{\assoc}{\circ}
-\newcommand{\identlp}{\mathit{unite}_+}
-\newcommand{\identrp}{\mathit{uniti}_+}
-\newcommand{\identlsp}{\mathit{unites}_+}
-\newcommand{\identrsp}{\mathit{unitis}_+}
+\newcommand{\identlp}{\mathit{unite}_+\mathit{l}}
+\newcommand{\identrp}{\mathit{uniti}_+\mathit{l}}
+\newcommand{\identlsp}{\mathit{unite}_+\mathit{r}}
+\newcommand{\identrsp}{\mathit{uniti}_+\mathit{r}}
 \newcommand{\swapp}{\mathit{swap}_+}
 \newcommand{\assoclp}{\mathit{assocl}_+}
 \newcommand{\assocrp}{\mathit{assocr}_+}
-\newcommand{\identlt}{\mathit{unite}_*}
-\newcommand{\identrt}{\mathit{uniti}_*}
-\newcommand{\identlst}{\mathit{unites}_*}
-\newcommand{\identrst}{\mathit{unitis}_*}
+\newcommand{\identlt}{\mathit{unite}_*\mathit{l}}
+\newcommand{\identrt}{\mathit{uniti}_*\mathit{l}}
+\newcommand{\identlst}{\mathit{unite}_*\mathit{r}}
+\newcommand{\identrst}{\mathit{uniti}_*\mathit{r}}
 \newcommand{\swapt}{\mathit{swap}_*}
 \newcommand{\assoclt}{\mathit{assocl}_*}
 \newcommand{\assocrt}{\mathit{assocr}_*}
-\newcommand{\distz}{\mathit{dist}_0}
-\newcommand{\factorzl}{\mathit{factorl}_0}
-\newcommand{\factorzr}{\mathit{factorr}_0}
-\newcommand{\absorbl}{\mathit{absorbl}_0}
-\newcommand{\absorbr}{\mathit{absorbr}_0}
+\newcommand{\absorbr}{\mathit{absorbr}}
+\newcommand{\absorbl}{\mathit{absorbl}}
+\newcommand{\factorzr}{\mathit{factorzr}}
+\newcommand{\factorzl}{\mathit{factorzl}}
 \newcommand{\dist}{\mathit{dist}}
 \newcommand{\factor}{\mathit{factor}}
 \newcommand{\distl}{\mathit{distl}}
 \newcommand{\factorl}{\mathit{factorl}}
+\newcommand{\distz}{\mathit{absorbr}}
 \newcommand{\iso}{\leftrightarrow}
 \newcommand{\proves}{\vdash}
-\newcommand{\idc}{\mathit{id}}
+\newcommand{\idc}{\mathit{id}\!\!\leftrightarrow}
 \newcommand{\ap}[2]{\mathit{ap}~#1~#2}
 \newcommand{\evalone}[2]{#1~\triangleright~#2}
 \newcommand{\evaloneb}[2]{#1~\triangleleft~#2}
@@ -2186,10 +2186,7 @@ $\Pi$ with the following additional level-0 combinators:
 \[\begin{array}{rrcll}
 \identlsp :&  \tau + 0 & \iso & \tau &: \identrsp \\
 \identlst :&  \tau * 1 & \iso & \tau &: \identrst \\
-
-\absorbr :&~ 0 * \tau & \iso & 0 &: \factorzl \\
 \absorbl :&~ \tau * 0 & \iso & 0 &: \factorzr \\
-
 \distl :&~ \tau_1 * (\tau_2 + \tau_3) & \iso & (\tau_1 * \tau_2) 
                                                +~ (\tau_1 * \tau_3) &: \factorl
 \end{array}\]      
@@ -2198,9 +2195,6 @@ The added combinators are redundant, from an operational perspective,
 exactly because of the coherence conditions. They are however critical
 to the proofs, and in addition, they are often useful when
 representing circuits, leading to smaller programs with fewer redexes.
-
-\amr{need to make the level-0 names in the code are the same names we use in
-  the paper}
 
 \begin{figure}[t]
 \[\begin{array}{c}
@@ -2211,32 +2205,32 @@ representing circuits, leading to smaller programs with fewer redexes.
 \\
 \Rule{}
   {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₅ ⟷ t₆} 
-  {(c₁ ⊕ (c₂ ⊕ c₃)) ◎ assocl₊ ⇔ assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃)}
+  {(c₁ ⊕ (c₂ ⊕ c₃)) ◎ \assoclp ⇔ \assoclp ◎ ((c₁ ⊕ c₂) ⊕ c₃)}
   {} \\
 \\
 \Rule{}
   {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₅ ⟷ t₆}
-  {(c₁ ⊗ (c₂ ⊗ c₃)) ◎ assocl⋆ ⇔ assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃)}
+  {(c₁ ⊗ (c₂ ⊗ c₃)) ◎ \assoclt ⇔ \assoclt ◎ ((c₁ ⊗ c₂) ⊗ c₃)}
   {} \\
 \\
 \Rule{}
   {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₅ ⟷ t₆} 
-  {((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊ ⇔ assocr₊ ◎ (c₁ ⊕ (c₂ ⊕ c₃))}
+  {((c₁ ⊕ c₂) ⊕ c₃) ◎ \assocrp ⇔ \assocrp ◎ (c₁ ⊕ (c₂ ⊕ c₃))}
   {} \\
 \\
 \Rule{}
   {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₅ ⟷ t₆}
-  {((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆ ⇔ assocr⋆ ◎ (c₁ ⊗ (c₂ ⊗ c₃))}
+  {((c₁ ⊗ c₂) ⊗ c₃) ◎ \assocrt ⇔ \assocrt ◎ (c₁ ⊗ (c₂ ⊗ c₃))}
   {} \\
 \\
 \Rule{}
   {}
-  {assocr₊ ◎ assocr₊ ⇔ ((assocr₊ ⊕ id) ◎ assocr₊) ◎ (id ⊕ assocr₊)}
+  {\assocrp ◎ \assocrp ⇔ ((\assocrp ⊕ \idc) ◎ \assocrp) ◎ (\idc ⊕ \assocrp)}
   {} \\
 \\
 \Rule{}
   {}
-  {assocr⋆ ◎ assocr⋆ ⇔ ((assocr⋆ ⊗ id) ◎ assocr⋆) ◎ (id ⊗ assocr⋆)}
+  {\assocrt ◎ \assocrt ⇔ ((\assocrt ⊗ \idc) ◎ \assocrt) ◎ (\idc ⊗ \assocrt)}
   {}
 \end{array}\]
 \caption{Signatures of level-1 $\Pi$-combinators: associativity}
@@ -2246,22 +2240,22 @@ representing circuits, leading to smaller programs with fewer redexes.
 \[\begin{array}{c}
 \Rule{}
   {a : t₁ ⟷ t₂ \quad b : t₃ ⟷ t₄ \quad c : t₅ ⟷ t₆} 
-  {((a ⊕ b) ⊗ c) ◎ dist ⇔ dist ◎ ((a ⊗ c) ⊕ (b ⊗ c))}
+  {((a ⊕ b) ⊗ c) ◎ \dist ⇔ \dist ◎ ((a ⊗ c) ⊕ (b ⊗ c))}
   {} \\
 \\
 \Rule{}
   {a : t₁ ⟷ t₂ \quad b : t₃ ⟷ t₄ \quad c : t₅ ⟷ t₆}
-  {(a ⊗ (b ⊕ c)) ◎ distl ⇔ distl ◎ ((a ⊗ b) ⊕ (a ⊗ c))}
+  {(a ⊗ (b ⊕ c)) ◎ \distl ⇔ \distl ◎ ((a ⊗ b) ⊕ (a ⊗ c))}
   {} \\
 \\
 \Rule{}
   {a : t₁ ⟷ t₂ \quad b : t₃ ⟷ t₄ \quad c : t₅ ⟷ t₆} 
-  {((a ⊗ c) ⊕ (b ⊗ c)) ◎ factor ⇔ factor ◎ ((a ⊕ b) ⊗ c)}
+  {((a ⊗ c) ⊕ (b ⊗ c)) ◎ \factor ⇔ \factor ◎ ((a ⊕ b) ⊗ c)}
   {} \\
 \\
 \Rule{}
   {a : t₁ ⟷ t₂ \quad b : t₃ ⟷ t₄ \quad c : t₅ ⟷ t₆}
-  {((a ⊗ b) ⊕ (a ⊗ c)) ◎ factorl ⇔ factorl ◎ (a ⊗ (b ⊕ c))}
+  {((a ⊗ b) ⊕ (a ⊗ c)) ◎ \factorl ⇔ \factorl ◎ (a ⊗ (b ⊕ c))}
   {}
 \end{array}\]
 \caption{Signatures of level-1 $\Pi$-combinators: factoring}
@@ -2271,22 +2265,22 @@ representing circuits, leading to smaller programs with fewer redexes.
 \[\begin{array}{c}
 \Rule{}
   {c : t₁ ⟷ t₂}
-  {id ◎ c ⇔ c}
+  {\idc ◎ c ⇔ c}
   {}
 \quad 
 \Rule{}
   {c : t₁ ⟷ t₂}
-  {c ◎ id ⇔ c}
+  {c ◎ \idc ⇔ c}
   {} \\
 \\
 \Rule{}
   {c : t₁ ⟷ t₂}
-  {c\,◎\,! c ⇔ id}
+  {c\,◎\,! c ⇔ \idc}
   {} 
 \quad 
 \Rule{}
   {c : t₁ ⟷ t₂}
-  {! c ◎ c ⇔ id}
+  {! c ◎ c ⇔ \idc}
   {} \\
 \\
 \Rule{}
@@ -2312,48 +2306,48 @@ representing circuits, leading to smaller programs with fewer redexes.
 \[\begin{array}{c}
 \Rule{}
   {c₁ : 0 ⟷ 0 \quad c₂ : t₁ ⟷ t₂} 
-  {unite₊l ◎ c₂ ⇔ (c₁ ⊕ c₂) ◎ unite₊l}
+  {\identlp ◎ c₂ ⇔ (c₁ ⊕ c₂) ◎ \identlp}
   {} \\
 \\
 \Rule{}
   {c₁ : 0 ⟷ 0 \quad c₂ : t₁ ⟷ t₂} 
-  {uniti₊l ◎ (c₁ ⊕ c₂) ⇔ c₂ ◎ uniti₊l}
+  {\identrp ◎ (c₁ ⊕ c₂) ⇔ c₂ ◎ \identrp}
   {} \\
 \\
 \Rule{}
   {c₁ : 0 ⟷ 0 \quad c₂ : t₁ ⟷ t₂}
-  {unite₊r ◎ c₂ ⇔ (c₂ ⊕ c₁) ◎ unite₊r}
+  {\identlsp ◎ c₂ ⇔ (c₂ ⊕ c₁) ◎ \identlsp}
   {} \\
 \\
 \Rule{}
   {c₁ : 0 ⟷ 0 \quad c₂ : t₁ ⟷ t₂} 
-  {uniti₊r ◎ (c₂ ⊕ c₁) ⇔ c₂ ◎ uniti₊r}
+  {\identrsp ◎ (c₂ ⊕ c₁) ⇔ c₂ ◎ \identrsp}
   {} \\
 \\
 \Rule{}
   {c₁ : 1 ⟷ 1 \quad c₂ : t₁ ⟷ t₂} 
-  {unite⋆l ◎ c₂ ⇔ (c₁ ⊗ c₂) ◎ unite⋆l}
+  {\identlt ◎ c₂ ⇔ (c₁ ⊗ c₂) ◎ \identlt}
   {} \\
 \\
 \Rule{}
   {c₁ : 1 ⟷ 1 \quad c₂ : t₁ ⟷ t₂} 
-  {uniti⋆l ◎ (c₁ ⊗ c₂) ⇔ c₂ ◎ uniti⋆l}
+  {\identrt ◎ (c₁ ⊗ c₂) ⇔ c₂ ◎ \identrp}
   {} \\
 \\
 \Rule{}
   {c₁ : 1 ⟷ 1 \quad c₂ : t₁ ⟷ t₂}
-  {unite⋆r ◎ c₂ ⇔ (c₂ ⊗ c₁) ◎ unite⋆r}
+  {\identlst ◎ c₂ ⇔ (c₂ ⊗ c₁) ◎ \identlst}
   {} \\
 \\
 \Rule{}
   {c₁ : 1 ⟷ 1 \quad c₂ : t₁ ⟷ t₂} 
-  {uniti⋆r ◎ (c₂ ⊗ c₁) ⇔ c₂ ◎ uniti⋆r}
-  {} 
-
-    unite⋆l ⇔ 
-    distl ◎ (unite⋆l {t₁} ⊕ unite⋆l {t₂}) 
-
-
+  {\identrst ◎ (c₂ ⊗ c₁) ⇔ c₂ ◎ \identrst}
+  {} \\
+\\
+\Rule{}
+  {}
+  {\identlt ⇔ \distl ◎ (\identlt ⊕ \identlt)}
+  {}
 \end{array}\]
 \caption{Signatures of level-1 $\Pi$-combinators: unit}
 \end{figure}
@@ -2371,22 +2365,22 @@ representing circuits, leading to smaller programs with fewer redexes.
   {} \\
 \Rule{}
   {}
-  {(assocr₊ ◎ swap₊) ◎ assocr₊ ⇔ ((swap₊ ⊕ id) ◎ assocr₊) ◎ (id ⊕ swap₊)}
+  {(assocr₊ ◎ swap₊) ◎ assocr₊ ⇔ ((swap₊ ⊕ \idc) ◎ assocr₊) ◎ (\idc ⊕ swap₊)}
   {} \\
 \\
 \Rule{}
   {}
-  {(assocl₊ ◎ swap₊) ◎ assocl₊ ⇔ ((id ⊕ swap₊) ◎ assocl₊) ◎ (swap₊ ⊕ id)}
+  {(assocl₊ ◎ swap₊) ◎ assocl₊ ⇔ ((\idc ⊕ swap₊) ◎ assocl₊) ◎ (swap₊ ⊕ \idc)}
   {} \\
 \\
 \Rule{}
   {}
-  {(assocr⋆ ◎ swap⋆) ◎ assocr⋆ ⇔ ((swap⋆ ⊗ id) ◎ assocr⋆) ◎ (id ⊗ swap⋆)}
+  {(assocr⋆ ◎ swap⋆) ◎ assocr⋆ ⇔ ((swap⋆ ⊗ \idc) ◎ assocr⋆) ◎ (\idc ⊗ swap⋆)}
   {} \\
 \\
 \Rule{}
   {}
-  {(assocl⋆ ◎ swap⋆) ◎ assocl⋆ ⇔ ((id ⊗ swap⋆) ◎ assocl⋆) ◎ (swap⋆ ⊗ id)}
+  {(assocl⋆ ◎ swap⋆) ◎ assocl⋆ ⇔ ((\idc ⊗ swap⋆) ◎ assocl⋆) ◎ (swap⋆ ⊗ \idc)}
   {}
 \end{array}\]
 \caption{Signatures of level-1 $\Pi$-combinators: commutativity and associativity}
@@ -2408,7 +2402,7 @@ representing circuits, leading to smaller programs with fewer redexes.
 \\
 \Rule{}
   {}
-  {id ⊕ id ⇔ id}
+  {\idc ⊕ \idc ⇔ \idc}
   {} \\
 \\
 \Rule{}
@@ -2418,7 +2412,7 @@ representing circuits, leading to smaller programs with fewer redexes.
 \\
 \Rule{}
   {}
-  {id ⊗ id ⇔ id}
+  {\idc ⊗ \idc ⇔ \idc}
   {} \\
 \\
 \Rule{}
@@ -2433,12 +2427,12 @@ representing circuits, leading to smaller programs with fewer redexes.
 \[\begin{array}{c}
 \Rule{}
   {}
-  {unite₊r ⊕ id ⇔ assocr₊ ◎ (id ⊕ unite₊l)}
+  {unite₊r ⊕ \idc ⇔ assocr₊ ◎ (\idc ⊕ unite₊l)}
   {} \\
 \\
 \Rule{}
   {}
-  {unite⋆r ⊗ id ⇔ assocr⋆ ◎ (id ⊗ unite⋆l)}
+  {unite⋆r ⊗ \idc ⇔ assocr⋆ ◎ (\idc ⊗ unite⋆l)}
   {}
 \end{array}\]
 \caption{Signatures of level-1 $\Pi$-combinators: unit and associativity}
@@ -2449,16 +2443,16 @@ representing circuits, leading to smaller programs with fewer redexes.
 \[\begin{array}{c}
 
     {c₁ : t₁ ⟷ t₂} →
-    (c₁ ⊗ id {0}) ◎ absorbl ⇔ absorbl ◎ id {0}
+    (c₁ ⊗ \idc {0}) ◎ absorbl ⇔ absorbl ◎ \idc {0}
 
     {c₁ : t₁ ⟷ t₂} →
-    (id {0} ⊗ c₁) ◎ absorbr ⇔ absorbr ◎ id {0}
+    (\idc {0} ⊗ c₁) ◎ absorbr ⇔ absorbr ◎ \idc {0}
 
     {c₁ : t₁ ⟷ t₂} →
-    id ◎ factorzl ⇔ factorzl ◎ (id ⊗ c₁)
+    \idc ◎ factorzl ⇔ factorzl ◎ (\idc ⊗ c₁)
 
     {c₁ : t₁ ⟷ t₂} →
-    id ◎ factorzr ⇔ factorzr ◎ (c₁ ⊗ id)
+    \idc ◎ factorzr ⇔ factorzr ◎ (c₁ ⊗ \idc)
 
    absorbr {0} ⇔ absorbl {0}
 
@@ -2468,13 +2462,13 @@ representing circuits, leading to smaller programs with fewer redexes.
 
     absorbl {t₁} ⇔ swap⋆ ◎ absorbr
 
-    absorbr ⇔ (assocl⋆ {0} {t₁} {t₂} ◎ (absorbr ⊗ id)) ◎ absorbr
+    absorbr ⇔ (assocl⋆ {0} {t₁} {t₂} ◎ (absorbr ⊗ \idc)) ◎ absorbr
 
-    (id ⊗ absorbr {t₂}) ◎ absorbl {t₁} ⇔
-    (assocl⋆ ◎ (absorbl ⊗ id)) ◎ absorbr
+    (\idc ⊗ absorbr {t₂}) ◎ absorbl {t₁} ⇔
+    (assocl⋆ ◎ (absorbl ⊗ \idc)) ◎ absorbr
 
-     (id {t₁} ⊗ unite₊l {t₂}) ⇔
-     (distl ◎ (absorbl ⊕ id)) ◎ unite₊l
+     (\idc {t₁} ⊗ unite₊l {t₂}) ⇔
+     (distl ◎ (absorbl ⊕ \idc)) ◎ unite₊l
 
 \end{array}\]
 \caption{Signatures of level-1 $\Pi$-combinators: zero}
@@ -2483,11 +2477,11 @@ representing circuits, leading to smaller programs with fewer redexes.
 \begin{figure}[t]
 \[\begin{array}{c}
 
-    ((assocl₊ {t₁} {t₂} {t₃} ⊗ id {t₄}) ◎ dist) ◎ (dist ⊕ id) ⇔
-    (dist ◎ (id ⊕ dist)) ◎ assocl₊ 
+    ((assocl₊ {t₁} {t₂} {t₃} ⊗ \idc {t₄}) ◎ dist) ◎ (dist ⊕ \idc) ⇔
+    (dist ◎ (\idc ⊕ dist)) ◎ assocl₊ 
 
     assocl⋆ {t₁} {t₂} ◎ distl {TIMES t₁ t₂} {t₃} {t₄} ⇔
-    ((id ⊗ distl) ◎ distl) ◎ (assocl⋆ ⊕ assocl⋆) 
+    ((\idc ⊗ distl) ◎ distl) ◎ (assocl⋆ ⊕ assocl⋆) 
 
 \end{array}\]
 \caption{Signatures of level-1 $\Pi$-combinators: associativity and distributivity}
@@ -2496,13 +2490,13 @@ representing circuits, leading to smaller programs with fewer redexes.
 \begin{figure}[t]
 \[\begin{array}{c}
 
-    (id {t₁} ⊗ swap₊ {t₂} {t₃}) ◎ distl ⇔ distl ◎ swap₊
+    (\idc {t₁} ⊗ swap₊ {t₂} {t₃}) ◎ distl ⇔ distl ◎ swap₊
 
     dist {t₁} {t₂} {t₃} ◎ (swap⋆ ⊕ swap⋆) ⇔ swap⋆ ◎ distl
 
     (distl ◎ (dist {t₁} {t₂} {t₃} ⊕ dist {t₁} {t₂} {t₄})) ◎ assocl₊ ⇔
-      ((((dist ◎ (distl ⊕ distl)) ◎ assocl₊) ◎ (assocr₊ ⊕ id)) ◎
-         ((id ⊕ swap₊) ⊕ id)) ◎ (assocl₊ ⊕ id)
+      ((((dist ◎ (distl ⊕ distl)) ◎ assocl₊) ◎ (assocr₊ ⊕ \idc)) ◎
+         ((\idc ⊕ swap₊) ⊕ \idc)) ◎ (assocl₊ ⊕ \idc)
 
 \end{array}\]
 \caption{Signatures of level-1 $\Pi$-combinators: commutativity and distributivity}
