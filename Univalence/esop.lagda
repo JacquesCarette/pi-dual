@@ -2197,7 +2197,8 @@ to the proofs, and in addition, they are often useful when
 representing circuits, leading to smaller programs with fewer redexes.
 
 \begin{figure}[t]
-\[\begin{array}{c}
+\[\def\arraystretch{1.3}
+\begin{array}{c}
 \Rule{}
   {c₁ : t₁ ⟷ t₂ \quad c₂ : t₂ ⟷ t₃ \quad c₃ : t₃ ⟷ t₄}
   {c₁ ◎ (c₂ ◎ c₃) ⇔ (c₁ ◎ c₂) ◎ c₃}
@@ -2228,11 +2229,12 @@ representing circuits, leading to smaller programs with fewer redexes.
   {\assocrt ◎ \assocrt ⇔ ((\assocrt ⊗ \idc) ◎ \assocrt) ◎ (\idc ⊗ \assocrt)}
 %%  {}
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: associativity}
+\caption{\label{figj}Signatures of level-1 $\Pi$-combinators: associativity}
 \end{figure}
   
 \begin{figure}[t]
-\[\begin{array}{c}
+\[\def\arraystretch{1.3}
+\begin{array}{c}
 \Rule{}
   {a : t₁ ⟷ t₂ \quad b : t₃ ⟷ t₄ \quad c : t₅ ⟷ t₆} 
   {((a ⊕ b) ⊗ c) ◎ \dist ⇔ \dist ◎ ((a ⊗ c) ⊕ (b ⊗ c))}
@@ -2250,11 +2252,12 @@ representing circuits, leading to smaller programs with fewer redexes.
   {((a ⊗ b) ⊕ (a ⊗ c)) ◎ \factorl ⇔ \factorl ◎ (a ⊗ (b ⊕ c))}
   {}
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: distributivity and factoring}
+\caption{\label{figi}Signatures of level-1 $\Pi$-combinators: distributivity and factoring}
 \end{figure}
 
 \begin{figure}[t]
-\[\begin{array}{c}
+\[\def\arraystretch{1.3}
+\begin{array}{c}
 \Rule{}
   {c : t₁ ⟷ t₂}
   {\idc ◎ c ⇔ c}
@@ -2289,11 +2292,12 @@ representing circuits, leading to smaller programs with fewer redexes.
   {c₁ ◎ c₂ ⇔ c₃ ◎ c₄}
   {}
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: identity and composition}
+\caption{\label{figh}Signatures of level-1 $\Pi$-combinators: identity and composition}
 \end{figure}
 
 \begin{figure}[t]
-\[\begin{array}{c}
+\[\def\arraystretch{1.3}
+\begin{array}{c}
 \Rule{}
   {c₁ : 0 ⟷ 0 \quad c₂ : t₁ ⟷ t₂} 
   {\identlp ◎ c₂ ⇔ (c₁ ⊕ c₂) ◎ \identlp}
@@ -2331,11 +2335,12 @@ representing circuits, leading to smaller programs with fewer redexes.
   {\identlt ⇔ \distl ◎ (\identlt ⊕ \identlt)}
 %%  {}
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: unit}
+\caption{\label{figg}Signatures of level-1 $\Pi$-combinators: unit}
 \end{figure}
 
 \begin{figure}[t]
-\[\begin{array}{c}
+\[\def\arraystretch{1.3}
+\begin{array}{c}
 \Rule{}
   {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄} 
   {\swapp ◎ (c₁ ⊕ c₂) ⇔ (c₂ ⊕ c₁) ◎ \swapp}
@@ -2364,11 +2369,12 @@ representing circuits, leading to smaller programs with fewer redexes.
   {(\assoclt ◎ \swapt) ◎ \assoclt ⇔ ((\idc ⊗ \swapt) ◎ \assoclt) ◎ (\swapt ⊗ \idc)}
 %%  {}
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: commutativity and associativity}
+\caption{\label{figf}Signatures of level-1 $\Pi$-combinators: commutativity and associativity}
 \end{figure}
 
 \begin{figure}[t]
-\[\begin{array}{c}
+\[\def\arraystretch{1.3}
+\begin{array}{c}
 \Rule{}
   {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₁ ⟷ t₂ \quad c₄ : t₃ ⟷ t₄
   \quad c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
@@ -2398,11 +2404,12 @@ representing circuits, leading to smaller programs with fewer redexes.
   {(c₁ ◎ c₃) ⊗ (c₂ ◎ c₄) ⇔ (c₁ ⊗ c₂) ◎ (c₃ ⊗ c₄)}
   {} 
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: functors}
+\caption{\label{fige}Signatures of level-1 $\Pi$-combinators: functors}
 \end{figure}
 
 \begin{figure}[t]
-\[\begin{array}{c}
+\[\def\arraystretch{1.3}
+\begin{array}{c}
 %% \Rule{}
 %%   {}
   {\identlsp ⊕ \idc ⇔ \assocrp ◎ (\idc ⊕ \identlp)}
@@ -2413,12 +2420,13 @@ representing circuits, leading to smaller programs with fewer redexes.
   {\identlst ⊗ \idc ⇔ \assocrt ◎ (\idc ⊗ \identlt)}
 %%   {}
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: unit and associativity}
+\caption{\label{figd}Signatures of level-1 $\Pi$-combinators: unit and associativity}
 \end{figure}
 
 
 \begin{figure}[t]
-\[\begin{array}{c}
+\[\def\arraystretch{1.3}
+\begin{array}{c}
 \Rule{}
   {c₁ : t₁ ⟷ t₂}
   {(c₁ ⊗ \idc) ◎ \absorbl ⇔ \absorbl ◎ \idc}
@@ -2470,11 +2478,12 @@ representing circuits, leading to smaller programs with fewer redexes.
   {\idc ⊗ \identlp ⇔ (\distl ◎ (\absorbl ⊕ \idc)) ◎ \identlp}
 %%   {}
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: zero}
+\caption{\label{figc}Signatures of level-1 $\Pi$-combinators: zero}
 \end{figure}
 
 \begin{figure}[t]
-\[\begin{array}{c}
+\[\def\arraystretch{1.3}
+\begin{array}{c}
 %% \Rule{}
 %%   {}
   {((\assoclp ⊗ \idc) ◎ \dist) ◎ (\dist ⊕ \idc) ⇔ (\dist ◎ (\idc ⊕ \dist)) ◎ \assoclp}
@@ -2485,38 +2494,35 @@ representing circuits, leading to smaller programs with fewer redexes.
   {\assoclt ◎ \distl ⇔ ((\idc ⊗ \distl) ◎ \distl) ◎ (\assoclt ⊕ \assoclt)}
 %%   {}
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: associativity and distributivity}
+\caption{\label{figb}Signatures of level-1 $\Pi$-combinators: associativity and distributivity}
 \end{figure}
 
 \begin{figure}[t]
-\[\begin{array}{rcl}
+\[\def\arraystretch{1.3}
+\begin{array}{rcl}
   (\idc ⊗ \swapp) ◎ \distl &⇔& \distl ◎ \swapp
 \\
   \dist ◎ (\swapt ⊕ \swapt) &⇔& \swapt ◎ \distl
 \\
   (\distl ◎ (\dist ⊕ \dist)) ◎ \assoclp &⇔&   
-   ((((\dist ◎ (\distl ⊕ \distl)) ◎ \assoclp) ◎ \\
-&& (\assocrp ⊕ \idc)) ◎ \\
-&& ((\idc ⊕ \swapp) ⊕ \idc)) ◎ \\
+   \dist ◎ (\distl ⊕ \distl) ◎ \assoclp ~◎ \\
+&& (\assocrp ⊕ \idc) ~◎ \\
+&& ((\idc ⊕ \swapp) ⊕ \idc) ~◎ \\
 &&      (\assoclp ⊕ \idc)
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: commutativity and distributivity}
+\caption{\label{figa}Signatures of level-1 $\Pi$-combinators: commutativity and distributivity}
 \end{figure}
 
 %%%
 \subsection{Syntax of Level-1 Terms} 
 
 The big addition to $\Pi$ is the level-1 combinators which are
-collected in Figs.~\ref{fig:more2} and~\ref {fig:more3}. To avoid
-clutter we omit the names of the combinators (which are arbitrary) and
-only show the \emph{untyped} signatures. The signatures themselves are
-of course typed and in some cases the types add critical
-information. For example,
-$\identlt \odot c₂ \isoone (c₁ ⊗ c₂) \odot \identlt$ hides the
-fact that $c₁$ here is restricted to have signature
-$c₁ : \AgdaInductiveConstructor{ZERO} ⟷
-\AgdaInductiveConstructor{ZERO}$.
-The reader should consult the code for full details.
+collected in Figs.~\ref{figj}--\ref{figa}. To avoid clutter we omit
+the names of the combinators (which are arbitrary) and omit some of
+the implicit type parameters. The reader should consult the code for
+full details.
+
+\amr{revise the following}
 
 Generally speaking, the level-1 combinators arise for the following
 reasons. About a third of the combinators come from the definition of
@@ -2546,14 +2552,6 @@ and absorption were present, although the proof of all of them was
 straightforward.  Their statement, on the other hand, was at times
 rather complex (see \AgdaModule{Data.SumProd.Properties}).
 
-\amr{Figs. 4 and 5 are long, and the explanation in 6.2 is rather brief;
-the end feels almost like an unconvincing advertisement ("buy 13
-coherence laws, get another 13 free"?).  That may be a little unfair;
-perhaps the authors have thought about it, but there is no
-"interesting" explanation to give.  In any case, maybe it would be
-useful to label laws (or blocks of laws) \textbf{in the figure},
-e.g. "Naturality laws for ...:" or something similar.}
-
 %%%
 \subsection{Example Level 1 Programs} 
 
@@ -2563,11 +2561,11 @@ be viewed as a language for expressing transformations and
 optimizations of boolean circuits. We illustrate the idea with a few
 small examples.
 
-As Figs.~\ref {fig:more2} and~\ref {fig:more3} illustrate, we have
-rules to manipulate code fragments rewriting them in a small-step
-fashion. The rules apply only when both sides are well-typed. In their
-textual form, the rules are certainly not intuitive. They however
-become ``evidently correct'' transformations on circuits when viewed
+As Figs.~\ref {figj}--\ref {figa} illustrate, we have rules to
+manipulate code fragments rewriting them in a small-step fashion. The
+rules apply only when both sides are well-typed. In their textual
+form, the rules are certainly not intuitive. They however become
+``evidently correct'' transformations on circuits when viewed
 diagrammatically. As an example, consider two arbitrary
 $\Pi$-combinators representing circuits of the given types:
 
@@ -2873,10 +2871,11 @@ negEx = uniti⋆l ◎ (Pi0.swap⋆ ◎ ((Pi0.swap₊ ⊗ id⟷) ◎ (Pi0.swap⋆
 %%%
 \subsection{Semantics}
 
-Each 1-level combinator whose signature is in Figs.~\ref{fig:more2}
-and~\ref{fig:more3} gives rise to an equivalence of equivalences of
-types. Furthermore, the level-1 combinators are coherent with the
-respect to the level-0 semantics. Formally, in Agda, we have:
+Each 1-level combinator whose signature is in
+Figs.~\ref{figj}--\ref{figa} gives rise to an equivalence of
+equivalences of types. Furthermore, the level-1 combinators are
+coherent with the respect to the level-0 semantics. Formally, in Agda,
+we have:
 
 {\footnotesize{
 \begin{code}
@@ -2934,12 +2933,12 @@ groupoid.
   coherence conditions are satisfied. This required us to add a few
   $\Pi$ combinators and then to add a whole new layer of 2-combinators
   witnessing enough equivalences of~$\Pi$ combinators to satisfy the
-  coherence laws (see Figs.~\ref {fig:more2} and~\ref
-  {fig:more3}). The new $\Pi$ 1-combinators, also discussed in more
-  detail in the next section, are redundant (from an operational
-  perspective) exactly because of the coherence conditions; they are
-  however important as they have rather non-trivial relations to each
-  other that are captured in the more involved coherence laws.
+  coherence laws (see Figs.~\ref {figj}--\ref{figa}). The new $\Pi$
+  1-combinators, also discussed in more detail in the next section,
+  are redundant (from an operational perspective) exactly because of
+  the coherence conditions; they are however important as they have
+  rather non-trivial relations to each other that are captured in the
+  more involved coherence laws.
 \end{proof}
 
 \amr{
