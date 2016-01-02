@@ -1551,13 +1551,6 @@ identities. Thus we can write variants of our proofs \AgdaFunction{pf₁},
 \AgdaFunction{pf₂}, \AgdaFunction{pf₃}, and \AgdaFunction{pf₄} from
 Sec.~\ref{sec:informal}:
 
-\AgdaHide{
-\begin{code}
-postulate
-    unite₊ : {t : U} → PLUS ZERO t ⟷ t
-\end{code}
-}
-
 \medskip
 {\footnotesize{
 \begin{code}
@@ -1566,8 +1559,8 @@ pf₁π = id⟷
 pf₂π = swap₊
 
 pf₃π pf₄π : {A B : U} → PLUS (PLUS A ZERO) B ⟷ PLUS A B
-pf₃π = (swap₊ ⊕ id⟷) ◎ (unite₊ ⊕ id⟷)
-pf₄π = assocr₊ ◎ (id⟷ ⊕ unite₊)
+pf₃π = (swap₊ ⊕ id⟷) ◎ (unite₊l ⊕ id⟷)
+pf₄π = assocr₊ ◎ (id⟷ ⊕ unite₊l)
 \end{code}}}
 
 %%%%%%%%%%%%
@@ -2200,359 +2193,213 @@ to the proofs, and in addition, they are often useful when
 representing circuits, leading to smaller programs with fewer redexes.
 
 \begin{figure}[t]
-\[\begin{array}{c}
-\Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₂ ⟷ t₃ \quad c₃ : t₃ ⟷ t₄}
+Let $c₁ : t₁ ⟷ t₂$,  $c₂ : t₂ ⟷ t₃$, and $c₃ : t₃ ⟷ t₄$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
   {c₁ ◎ (c₂ ◎ c₃) ⇔ (c₁ ◎ c₂) ◎ c₃}
-  {}  \\
 \\
-\Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₅ ⟷ t₆} 
   {(c₁ ⊕ (c₂ ⊕ c₃)) ◎ \assoclp ⇔ \assoclp ◎ ((c₁ ⊕ c₂) ⊕ c₃)}
-  {} \\
 \\
-\Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₅ ⟷ t₆}
   {(c₁ ⊗ (c₂ ⊗ c₃)) ◎ \assoclt ⇔ \assoclt ◎ ((c₁ ⊗ c₂) ⊗ c₃)}
-  {} \\
 \\
-\Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₅ ⟷ t₆} 
   {((c₁ ⊕ c₂) ⊕ c₃) ◎ \assocrp ⇔ \assocrp ◎ (c₁ ⊕ (c₂ ⊕ c₃))}
-  {} \\
 \\
-\Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₅ ⟷ t₆}
   {((c₁ ⊗ c₂) ⊗ c₃) ◎ \assocrt ⇔ \assocrt ◎ (c₁ ⊗ (c₂ ⊗ c₃))}
-  {} \\
 \\
-\Rule{}
-  {}
   {\assocrp ◎ \assocrp ⇔ ((\assocrp ⊕ \idc) ◎ \assocrp) ◎ (\idc ⊕ \assocrp)}
-  {} \\
 \\
-\Rule{}
-  {}
   {\assocrt ◎ \assocrt ⇔ ((\assocrt ⊗ \idc) ◎ \assocrt) ◎ (\idc ⊗ \assocrt)}
-  {}
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: associativity}
+\caption{\label{figj}Signatures of level-1 $\Pi$-combinators: associativity}
 \end{figure}
   
 \begin{figure}[t]
-\[\begin{array}{c}
-\Rule{}
-  {a : t₁ ⟷ t₂ \quad b : t₃ ⟷ t₄ \quad c : t₅ ⟷ t₆} 
+Let $a : t₁ ⟷ t₂$, $b : t₃ ⟷ t₄$, and $c : t₅ ⟷ t₆$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
   {((a ⊕ b) ⊗ c) ◎ \dist ⇔ \dist ◎ ((a ⊗ c) ⊕ (b ⊗ c))}
-  {} \\
 \\
-\Rule{}
-  {a : t₁ ⟷ t₂ \quad b : t₃ ⟷ t₄ \quad c : t₅ ⟷ t₆}
   {(a ⊗ (b ⊕ c)) ◎ \distl ⇔ \distl ◎ ((a ⊗ b) ⊕ (a ⊗ c))}
-  {} \\
 \\
-\Rule{}
-  {a : t₁ ⟷ t₂ \quad b : t₃ ⟷ t₄ \quad c : t₅ ⟷ t₆} 
   {((a ⊗ c) ⊕ (b ⊗ c)) ◎ \factor ⇔ \factor ◎ ((a ⊕ b) ⊗ c)}
-  {} \\
 \\
-\Rule{}
-  {a : t₁ ⟷ t₂ \quad b : t₃ ⟷ t₄ \quad c : t₅ ⟷ t₆}
   {((a ⊗ b) ⊕ (a ⊗ c)) ◎ \factorl ⇔ \factorl ◎ (a ⊗ (b ⊕ c))}
-  {}
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: factoring}
+\caption{\label{figi}Signatures of level-1 $\Pi$-combinators: distributivity and factoring}
 \end{figure}
 
 \begin{figure}[t]
-\[\begin{array}{c}
-\Rule{}
-  {c : t₁ ⟷ t₂}
-  {\idc ◎ c ⇔ c}
-  {}
+Let $c, c₁, c₂, c₃ : t₁ ⟷ t₂$ and $c', c'' : t₃ ⟷ t₄$: 
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\idc ◎ \, c ⇔ c}
 \quad 
-\Rule{}
-  {c : t₁ ⟷ t₂}
   {c ◎ \idc ⇔ c}
-  {} \\
-\\
-\Rule{}
-  {c : t₁ ⟷ t₂}
+\quad
   {c\,◎\,! c ⇔ \idc}
-  {} 
 \quad 
-\Rule{}
-  {c : t₁ ⟷ t₂}
   {! c ◎ c ⇔ \idc}
-  {} \\
 \\
-\Rule{}
-  {c : t₁ ⟷ t₂}
   {c ⇔ c}
-  {} 
 \quad 
 \Rule{}
-  {c₁~c₂~c₃ : t₁ ⟷ t₂ \quad c₁ ⇔ c₂ \quad c₂ ⇔ c₃}
+  {c₁ ⇔ c₂ \quad c₂ ⇔ c₃}
   {c₁ ⇔ c₃}
-  {} \\
-\\
-\Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₂ ⟷ t₃ \quad c₃ : t₁ ⟷ t₂ \quad c₄ : t₂ ⟷ t₃
-  \quad c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
-  {c₁ ◎ c₂ ⇔ c₃ ◎ c₄}
-  {}
-\end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: identity and composition}
-\end{figure}
-
-\begin{figure}[t]
-\[\begin{array}{c}
-\Rule{}
-  {c₁ : 0 ⟷ 0 \quad c₂ : t₁ ⟷ t₂} 
-  {\identlp ◎ c₂ ⇔ (c₁ ⊕ c₂) ◎ \identlp}
-  {} \\
-\\
-\Rule{}
-  {c₁ : 0 ⟷ 0 \quad c₂ : t₁ ⟷ t₂} 
-  {\identrp ◎ (c₁ ⊕ c₂) ⇔ c₂ ◎ \identrp}
-  {} \\
-\\
-\Rule{}
-  {c₁ : 0 ⟷ 0 \quad c₂ : t₁ ⟷ t₂}
-  {\identlsp ◎ c₂ ⇔ (c₂ ⊕ c₁) ◎ \identlsp}
-  {} \\
-\\
-\Rule{}
-  {c₁ : 0 ⟷ 0 \quad c₂ : t₁ ⟷ t₂} 
-  {\identrsp ◎ (c₂ ⊕ c₁) ⇔ c₂ ◎ \identrsp}
-  {} \\
-\\
-\Rule{}
-  {c₁ : 1 ⟷ 1 \quad c₂ : t₁ ⟷ t₂} 
-  {\identlt ◎ c₂ ⇔ (c₁ ⊗ c₂) ◎ \identlt}
-  {} \\
-\\
-\Rule{}
-  {c₁ : 1 ⟷ 1 \quad c₂ : t₁ ⟷ t₂} 
-  {\identrt ◎ (c₁ ⊗ c₂) ⇔ c₂ ◎ \identrp}
-  {} \\
-\\
-\Rule{}
-  {c₁ : 1 ⟷ 1 \quad c₂ : t₁ ⟷ t₂}
-  {\identlst ◎ c₂ ⇔ (c₂ ⊗ c₁) ◎ \identlst}
-  {} \\
-\\
-\Rule{}
-  {c₁ : 1 ⟷ 1 \quad c₂ : t₁ ⟷ t₂} 
-  {\identrst ◎ (c₂ ⊗ c₁) ⇔ c₂ ◎ \identrst}
-  {} \\
-\\
-\Rule{}
-  {}
-  {\identlt ⇔ \distl ◎ (\identlt ⊕ \identlt)}
-  {}
-\end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: unit}
-\end{figure}
-
-\begin{figure}[t]
-\[\begin{array}{c}
-\Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄} 
-  {\swapp ◎ (c₁ ⊕ c₂) ⇔ (c₂ ⊕ c₁) ◎ \swapp}
-  {} \\
-\\
-\Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄} 
-  {\swapt ◎ (c₁ ⊗ c₂) ⇔ (c₂ ⊗ c₁) ◎ \swapt}
-  {} \\
-\Rule{}
-  {}
-  {(\assocrp ◎ \swapp) ◎ \assocrp ⇔ ((\swapp ⊕ \idc) ◎ \assocrp) ◎ (\idc ⊕ \swapp)}
-  {} \\
-\\
-\Rule{}
-  {}
-  {(\assoclp ◎ \swapp) ◎ \assoclp ⇔ ((\idc ⊕ \swapp) ◎ \assoclp) ◎ (\swapp ⊕ \idc)}
-  {} \\
-\\
-\Rule{}
-  {}
-  {(\assocrt ◎ \swapt) ◎ \assocrt ⇔ ((\swapt ⊗ \idc) ◎ \assocrt) ◎ (\idc ⊗ \swapt)}
-  {} \\
-\\
-\Rule{}
-  {}
-  {(\assoclt ◎ \swapt) ◎ \assoclt ⇔ ((\idc ⊗ \swapt) ◎ \assoclt) ◎ (\swapt ⊗ \idc)}
-  {}
-\end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: commutativity and associativity}
-\end{figure}
-
-\begin{figure}[t]
-\[\begin{array}{c}
-\Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₁ ⟷ t₂ \quad c₄ : t₃ ⟷ t₄
-  \quad c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
-  {c₁ ⊕ c₂ ⇔ c₃ ⊕ c₄}
-  {} \\
-\\
-\Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₁ ⟷ t₂ \quad c₄ : t₃ ⟷ t₄
-   \quad c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
-  {c₁ ⊗ c₂ ⇔ c₃ ⊗ c₄}
-  {} \\
-\\
-\Rule{}
-  {}
-  {\idc ⊕ \idc ⇔ \idc}
-  {} \\
-\\
-\Rule{}
-  {c₁ : t₅ ⟷ t₁ \quad c₂ : t₆ ⟷ t₂ \quad c₃ : t₁ ⟷ t₃ \quad c₄ : t₂ ⟷ t₄}
-  {(c₁ ◎ c₃) ⊕ (c₂ ◎ c₄) ⇔ (c₁ ⊕ c₂) ◎ (c₃ ⊕ c₄)}
-  {} \\
-\\
-\Rule{}
-  {}
-  {\idc ⊗ \idc ⇔ \idc}
-  {} \\
-\\
-\Rule{}
-  {c₁ : t₅ ⟷ t₁ \quad c₂ : t₆ ⟷ t₂ \quad c₃ : t₁ ⟷ t₃ \quad c₄ : t₂ ⟷ t₄}
-  {(c₁ ◎ c₃) ⊗ (c₂ ◎ c₄) ⇔ (c₁ ⊗ c₂) ◎ (c₃ ⊗ c₄)}
   {} 
+\quad
+\Rule{}
+  {c₁ ⇔ c' \quad c₂ ⇔ c''}
+  {c₁ ◎ c₂ ⇔ c' ◎ c''}
+  {}
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: functors}
+\caption{\label{figh}Signatures of level-1 $\Pi$-combinators: identity and composition}
 \end{figure}
 
 \begin{figure}[t]
-\[\begin{array}{c}
-\Rule{}
-  {}
-  {\identlsp ⊕ \idc ⇔ \assocrp ◎ (\idc ⊕ \identlp)}
-  {} \\
+Let $c₀ : 0 ⟷ 0$, $c₁ : 1 ⟷ 1$, and $c : t₁ ⟷ t₂$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\identlp ◎ c ⇔ (c₀ ⊕ c) ◎ \identlp}
+\quad 
+  {\identrp ◎ (c₀ ⊕ c) ⇔ c ◎ \identrp}
 \\
-\Rule{}
-  {}
-  {\identlst ⊗ \idc ⇔ \assocrt ◎ (\idc ⊗ \identlt)}
-  {}
+  {\identlsp ◎ c ⇔ (c ⊕ c₀) ◎ \identlsp}
+\quad
+  {\identrsp ◎ (c ⊕ c₀) ⇔ c ◎ \identrsp}
+\\
+  {\identlt ◎ c ⇔ (c₁ ⊗ c) ◎ \identlt}
+\quad
+  {\identrt ◎ (c₁ ⊗ c) ⇔ c ◎ \identrp}
+\\
+  {\identlst ◎ c ⇔ (c ⊗ c₁) ◎ \identlst}
+\quad
+  {\identrst ◎ (c ⊗ c₁) ⇔ c ◎ \identrst}
+\\
+  {\identlt ⇔ \distl ◎ (\identlt ⊕ \identlt)}
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: unit and associativity}
+\caption{\label{figg}Signatures of level-1 $\Pi$-combinators: unit}
+\end{figure}
+
+\begin{figure}[t]
+Let $c₁ : t₁ ⟷ t₂$ and $c₂ : t₃ ⟷ t₄$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\swapp ◎ (c₁ ⊕ c₂) ⇔ (c₂ ⊕ c₁) ◎ \swapp}
+\quad
+  {\swapt ◎ (c₁ ⊗ c₂) ⇔ (c₂ ⊗ c₁) ◎ \swapt}
+\\
+  {(\assocrp ◎ \swapp) ◎ \assocrp ⇔ ((\swapp ⊕ \idc) ◎ \assocrp) ◎ (\idc ⊕ \swapp)}
+\\
+  {(\assoclp ◎ \swapp) ◎ \assoclp ⇔ ((\idc ⊕ \swapp) ◎ \assoclp) ◎ (\swapp ⊕ \idc)}
+\\
+  {(\assocrt ◎ \swapt) ◎ \assocrt ⇔ ((\swapt ⊗ \idc) ◎ \assocrt) ◎ (\idc ⊗ \swapt)}
+\\
+  {(\assoclt ◎ \swapt) ◎ \assoclt ⇔ ((\idc ⊗ \swapt) ◎ \assoclt) ◎ (\swapt ⊗ \idc)}
+\end{array}\]
+\caption{\label{figf}Signatures of level-1 $\Pi$-combinators: commutativity and associativity}
+\end{figure}
+
+\begin{figure}[t]
+Let $c₁ : t₁ ⟷ t₂$, $c₂ : t₃ ⟷ t₄$, $c₃ : t₁ ⟷ t₂$, and $c₄ : t₃ ⟷ t₄$. \\
+Let $a₁ : t₅ ⟷ t₁$,  $a₂ : t₆ ⟷ t₂$, $a₃ : t₁ ⟷ t₃$, and $a₄ : t₂ ⟷ t₄$.
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+\Rule{}
+  {c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
+  {c₁ ⊕ c₂ ⇔ c₃ ⊕ c₄}
+  {} \quad
+\Rule{}
+  {c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
+  {c₁ ⊗ c₂ ⇔ c₃ ⊗ c₄}
+  {} 
+\\
+  {\idc ⊕ \, \idc ⇔ \idc}
+\quad
+  {\idc ⊗ \, \idc ⇔ \idc}
+\\
+  {(a₁ ◎ a₃) ⊕ (a₂ ◎ a₄) ⇔ (a₁ ⊕ a₂) ◎ (a₃ ⊕ a₄)}
+\\
+  {(a₁ ◎ a₃) ⊗ (a₂ ◎ a₄) ⇔ (a₁ ⊗ a₂) ◎ (a₃ ⊗ a₄)}
+\end{array}\]
+\caption{\label{fige}Signatures of level-1 $\Pi$-combinators: functors}
+\end{figure}
+
+\begin{figure}[t]
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\identlsp ⊕ \idc ⇔ \assocrp ◎ (\idc ⊕ \, \identlp)}
+\\
+  {\identlst ⊗ \idc ⇔ \assocrt ◎ (\idc ⊗ \, \identlt)}
+\end{array}\]
+\caption{\label{figd}Signatures of level-1 $\Pi$-combinators: unit and associativity}
 \end{figure}
 
 
 \begin{figure}[t]
-\[\begin{array}{c}
-\Rule{}
-  {c₁ : t₁ ⟷ t₂}
-  {(c₁ ⊗ \idc) ◎ \absorbl ⇔ \absorbl ◎ \idc}
-  {} \\
+Let $c : t₁ ⟷ t₂$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {(c ⊗ \idc) ◎ \absorbl ⇔ \absorbl ◎ \idc}
+\quad
+  {(\idc ⊗ c) ◎ \absorbr ⇔ \absorbr ◎ \idc}
 \\
-\Rule{}
-  {c₁ : t₁ ⟷ t₂}
-  {(\idc ⊗ c₁) ◎ \absorbr ⇔ \absorbr ◎ \idc}
-  {} \\
+  {\idc ◎ \factorzl ⇔ \factorzl ◎ (\idc ⊗ c)}
+\quad
+  {\idc ◎ \factorzr ⇔ \factorzr ◎ (c ⊗ \idc)}
 \\
-\Rule{}
-  {c₁ : t₁ ⟷ t₂} 
-  {\idc ◎ \factorzl ⇔ \factorzl ◎ (\idc ⊗ c₁)}
-  {} \\
-\\
-\Rule{}
-  {c₁ : t₁ ⟷ t₂}
-  {\idc ◎ \factorzr ⇔ \factorzr ◎ (c₁ ⊗ \idc)}
-  {} \\
-\\
-\Rule{}
-  {}
   {\absorbr ⇔ \absorbl}
-  {} \\
 \\
-\Rule{}
-  {}
   {\absorbr ⇔ (\distl ◎ (\absorbr ⊕ \absorbr)) ◎ \identlp}
-  {} \\
 \\
-\Rule{}
-  {}
   {\identlst ⇔ \absorbr}
-  {} \\
-\\
-\Rule{}
-  {}
+\quad
   {\absorbl ⇔ \swapt ◎ \absorbr}
-  {} \\
 \\
-\Rule{}
-  {}
   {\absorbr ⇔ (\assoclt ◎ (\absorbr ⊗ \idc)) ◎ \absorbr}
-  {} \\
 \\
-\Rule{}
-  {}
   {(\idc ⊗ \absorbr) ◎ \absorbl ⇔ (\assoclt ◎ (\absorbl ⊗ \idc)) ◎ \absorbr}
-  {} \\
 \\
-\Rule{}
-  {}
   {\idc ⊗ \identlp ⇔ (\distl ◎ (\absorbl ⊕ \idc)) ◎ \identlp}
-  {}
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: zero}
+\caption{\label{figc}Signatures of level-1 $\Pi$-combinators: zero}
 \end{figure}
 
 \begin{figure}[t]
-\[\begin{array}{c}
-\Rule{}
-  {}
+\[\def\arraystretch{1.3}
+\begin{array}{c}
   {((\assoclp ⊗ \idc) ◎ \dist) ◎ (\dist ⊕ \idc) ⇔ (\dist ◎ (\idc ⊕ \dist)) ◎ \assoclp}
-  {} \\
 \\
-\Rule{}
-  {}
   {\assoclt ◎ \distl ⇔ ((\idc ⊗ \distl) ◎ \distl) ◎ (\assoclt ⊕ \assoclt)}
-  {}
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: associativity and distributivity}
+\caption{\label{figb}Signatures of level-1 $\Pi$-combinators: associativity and distributivity}
 \end{figure}
 
 \begin{figure}[t]
-\[\begin{array}{c}
-\Rule{}
-  {}
-  {(\idc ⊗ \swapp) ◎ \distl ⇔ \distl ◎ \swapp}
-  {} \\
+\[\def\arraystretch{1.3}
+\begin{array}{rcl}
+  (\idc ⊗ \swapp) ◎ \distl &⇔& \distl ◎ \swapp
 \\
-\Rule{}
-  {}
-  {\dist ◎ (\swapt ⊕ \swapt) ⇔ \swapt ◎ \distl}
-  {} \\
+  \dist ◎ (\swapt ⊕ \swapt) &⇔& \swapt ◎ \distl
 \\
-\Rule{}
-  {}
-  {(\distl ◎ (\dist ⊕ \dist)) ◎ \assoclp ⇔   
-   ((((\dist ◎ (\distl ⊕ \distl)) ◎ \assoclp) ◎ (\assocrp ⊕ \idc)) ◎
-   ((\idc ⊕ \swapp) ⊕ \idc)) ◎ (\assoclp ⊕ \idc)}
-  {}
+  (\distl ◎ (\dist ⊕ \dist)) ◎ \assoclp &⇔&   
+   \dist ◎ (\distl ⊕ \distl) ◎ \assoclp ~◎ \\
+&& (\assocrp ⊕ \idc) ~◎ \\
+&& ((\idc ⊕ \swapp) ⊕ \idc) ~◎ \\
+&&      (\assoclp ⊕ \idc)
 \end{array}\]
-\caption{Signatures of level-1 $\Pi$-combinators: commutativity and distributivity}
+\caption{\label{figa}Signatures of level-1 $\Pi$-combinators: commutativity and distributivity}
 \end{figure}
 
 %%%
 \subsection{Syntax of Level-1 Terms} 
 
 The big addition to $\Pi$ is the level-1 combinators which are
-collected in Figs.~\ref{fig:more2} and~\ref {fig:more3}. To avoid
-clutter we omit the names of the combinators (which are arbitrary) and
-only show the \emph{untyped} signatures. The signatures themselves are
-of course typed and in some cases the types add critical
-information. For example,
-$\identlt \odot c₂ \isoone (c₁ ⊗ c₂) \odot \identlt$ hides the
-fact that $c₁$ here is restricted to have signature
-$c₁ : \AgdaInductiveConstructor{ZERO} ⟷
-\AgdaInductiveConstructor{ZERO}$.
-The reader should consult the code for full details.
+collected in Figs.~\ref{figj}--\ref{figa}. To avoid clutter we omit
+the names of the combinators (which are arbitrary) and omit some of
+the implicit type parameters. The reader should consult the code for
+full details.
+
+\amr{revise the following}
 
 Generally speaking, the level-1 combinators arise for the following
 reasons. About a third of the combinators come from the definition of
@@ -2582,16 +2429,8 @@ and absorption were present, although the proof of all of them was
 straightforward.  Their statement, on the other hand, was at times
 rather complex (see \AgdaModule{Data.SumProd.Properties}).
 
-\amr{Figs. 4 and 5 are long, and the explanation in 6.2 is rather brief;
-the end feels almost like an unconvincing advertisement ("buy 13
-coherence laws, get another 13 free"?).  That may be a little unfair;
-perhaps the authors have thought about it, but there is no
-"interesting" explanation to give.  In any case, maybe it would be
-useful to label laws (or blocks of laws) \textbf{in the figure},
-e.g. "Naturality laws for ...:" or something similar.}
-
 %%%
-\subsection{Example Level 1 Programs} 
+\subsection{Example Level-1 Programs} 
 
 A pleasant outcome of having the level-1 terms is that they also give
 rise to an interesting programming language which, in our context, can
@@ -2599,11 +2438,11 @@ be viewed as a language for expressing transformations and
 optimizations of boolean circuits. We illustrate the idea with a few
 small examples.
 
-As Figs.~\ref {fig:more2} and~\ref {fig:more3} illustrate, we have
-rules to manipulate code fragments rewriting them in a small-step
-fashion. The rules apply only when both sides are well-typed. In their
-textual form, the rules are certainly not intuitive. They however
-become ``evidently correct'' transformations on circuits when viewed
+As Figs.~\ref {figj}--\ref {figa} illustrate, we have rules to
+manipulate code fragments rewriting them in a small-step fashion. The
+rules apply only when both sides are well-typed. In their textual
+form, the rules are certainly not intuitive. They however become
+``evidently correct'' transformations on circuits when viewed
 diagrammatically. As an example, consider two arbitrary
 $\Pi$-combinators representing circuits of the given types:
 
@@ -2643,7 +2482,7 @@ must act polymorphically on its input and hence, it must be the case
 that the two evaluations produce the same result. The situation for
 the other possible input value is symmetric. This extensional
 reasoning is embedded once and for all in the proofs of coherence and
-distilled in a 1-level combinator:
+distilled in a level-1 combinator:
 
 \[\begin{array}{rcl}
 \AgdaInductiveConstructor{swapl₊⇔} & \AgdaSymbol{:} &
@@ -2664,7 +2503,7 @@ distilled in a 1-level combinator:
 Categorically speaking, this combinator expresses exactly that the
 braiding $\sigma_{A,B}$ is a natural transformation, in other words
 that $\sigma_{A,B}$ must commute with $\oplus$. Pictorially, this
-1-level combinator is a 2-path showing how the two paths can be
+level-1 combinator is a 2-path showing how the two paths can be
 transformed to one another. The proof of equivalence can be visualized
 by simply imagining the connections as wires whose endpoints are
 fixed: holding the wires on the right side of the top path and
@@ -2858,6 +2697,8 @@ open import PiEquiv using (c2equiv)
 \smallskip\noindent Here is a complete proof in level-1 $\Pi$ using the small-step
 rewriting style that shows that the two circuits are equivalent.
 
+\amr{the names of level-1 combinators have not been defined; refer to figures in comments?}
+
 \medskip
 
 \renewcommand{\AgdaIndent}[1]{$\;$}
@@ -2907,12 +2748,33 @@ negEx = uniti⋆l ◎ (Pi0.swap⋆ ◎ ((Pi0.swap₊ ⊗ id⟷) ◎ (Pi0.swap⋆
 % \end{code}
 
 %%%
+\subsection{Example Level-1 Proofs} 
+
+In addition to proving circuit optimizations, we can also prove
+equivalences of semiring proofs. As we discussed we expect
+\AgdaFunction{pf₃π} and \AgdaFunction{pf₄π} to be equivalent
+proofs. The following derivation shows how:
+
+\amr{complete this proof and refer to figures as needed}
+
+\medskip
+{\footnotesize{
+\begin{code}
+pf₃π⇔pf₄π : {A B : U} → pf₃π {A} {B} ⇔ pf₄π {A} {B}
+pf₃π⇔pf₄π {A} {B} =
+  (Pi0.swap₊ ⊕ id⟷) ◎ (unite₊l ⊕ id⟷)
+    ⇔⟨ {!!} ⟩
+  Pi0.assocr₊ ◎ (id⟷ ⊕ unite₊l) ▤
+\end{code}}}
+
+%%%
 \subsection{Semantics}
 
-Each 1-level combinator whose signature is in Figs.~\ref{fig:more2}
-and~\ref{fig:more3} gives rise to an equivalence of equivalences of
-types. Furthermore, the level-1 combinators are coherent with the
-respect to the level-0 semantics. Formally, in Agda, we have:
+Each level-1 combinator whose signature is in
+Figs.~\ref{figj}--\ref{figa} gives rise to an equivalence of
+equivalences of types. Furthermore, the level-1 combinators are
+coherent with the respect to the level-0 semantics. Formally, in Agda,
+we have:
 
 {\footnotesize{
 \begin{code}
@@ -2949,7 +2811,7 @@ very effective optimizer for such programs.
 
 The next theorem is the main result: it shows that the two levels of
 $\Pi$ form a symmetric rig groupoid, thus capturing equivalences of
-types at level 0, and equivalences of equivalences at level 1.
+types at level-0, and equivalences of equivalences at level-1.
 
 \amr{ page 23, proof of Th. 3: this proof seems taken literally from an
  old version of the paper, with different notations. In particular,
@@ -2970,12 +2832,12 @@ groupoid.
   coherence conditions are satisfied. This required us to add a few
   $\Pi$ combinators and then to add a whole new layer of 2-combinators
   witnessing enough equivalences of~$\Pi$ combinators to satisfy the
-  coherence laws (see Figs.~\ref {fig:more2} and~\ref
-  {fig:more3}). The new $\Pi$ 1-combinators, also discussed in more
-  detail in the next section, are redundant (from an operational
-  perspective) exactly because of the coherence conditions; they are
-  however important as they have rather non-trivial relations to each
-  other that are captured in the more involved coherence laws.
+  coherence laws (see Figs.~\ref {figj}--\ref{figa}). The new $\Pi$
+  1-combinators, also discussed in more detail in the next section,
+  are redundant (from an operational perspective) exactly because of
+  the coherence conditions; they are however important as they have
+  rather non-trivial relations to each other that are captured in the
+  more involved coherence laws.
 \end{proof}
 
 \amr{
