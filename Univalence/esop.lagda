@@ -2197,212 +2197,133 @@ to the proofs, and in addition, they are often useful when
 representing circuits, leading to smaller programs with fewer redexes.
 
 \begin{figure}[t]
+Let $c₁ : t₁ ⟷ t₂$,  $c₂ : t₂ ⟷ t₃$, and $c₃ : t₃ ⟷ t₄$:
 \[\def\arraystretch{1.3}
 \begin{array}{c}
-\Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₂ ⟷ t₃ \quad c₃ : t₃ ⟷ t₄}
   {c₁ ◎ (c₂ ◎ c₃) ⇔ (c₁ ◎ c₂) ◎ c₃}
-  {}  \\
-\Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₅ ⟷ t₆} 
-  {(c₁ ⊕ (c₂ ⊕ c₃)) ◎ \assoclp ⇔ \assoclp ◎ ((c₁ ⊕ c₂) ⊕ c₃)}
-  {} \\
-\Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₅ ⟷ t₆}
-  {(c₁ ⊗ (c₂ ⊗ c₃)) ◎ \assoclt ⇔ \assoclt ◎ ((c₁ ⊗ c₂) ⊗ c₃)}
-  {} \\
-\Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₅ ⟷ t₆} 
-  {((c₁ ⊕ c₂) ⊕ c₃) ◎ \assocrp ⇔ \assocrp ◎ (c₁ ⊕ (c₂ ⊕ c₃))}
-  {} \\
-\Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₅ ⟷ t₆}
-  {((c₁ ⊗ c₂) ⊗ c₃) ◎ \assocrt ⇔ \assocrt ◎ (c₁ ⊗ (c₂ ⊗ c₃))}
-  {} \\
-%% \Rule{}
-%%  {}
-  {\assocrp ◎ \assocrp ⇔ ((\assocrp ⊕ \idc) ◎ \assocrp) ◎ (\idc ⊕ \assocrp)}
-%%   {} \\
 \\
-%% \Rule{}
-%%  {}
+  {(c₁ ⊕ (c₂ ⊕ c₃)) ◎ \assoclp ⇔ \assoclp ◎ ((c₁ ⊕ c₂) ⊕ c₃)}
+\\
+  {(c₁ ⊗ (c₂ ⊗ c₃)) ◎ \assoclt ⇔ \assoclt ◎ ((c₁ ⊗ c₂) ⊗ c₃)}
+\\
+  {((c₁ ⊕ c₂) ⊕ c₃) ◎ \assocrp ⇔ \assocrp ◎ (c₁ ⊕ (c₂ ⊕ c₃))}
+\\
+  {((c₁ ⊗ c₂) ⊗ c₃) ◎ \assocrt ⇔ \assocrt ◎ (c₁ ⊗ (c₂ ⊗ c₃))}
+\\
+  {\assocrp ◎ \assocrp ⇔ ((\assocrp ⊕ \idc) ◎ \assocrp) ◎ (\idc ⊕ \assocrp)}
+\\
   {\assocrt ◎ \assocrt ⇔ ((\assocrt ⊗ \idc) ◎ \assocrt) ◎ (\idc ⊗ \assocrt)}
-%%  {}
 \end{array}\]
 \caption{\label{figj}Signatures of level-1 $\Pi$-combinators: associativity}
 \end{figure}
   
 \begin{figure}[t]
+Let $a : t₁ ⟷ t₂$, $b : t₃ ⟷ t₄$, and $c : t₅ ⟷ t₆$:
 \[\def\arraystretch{1.3}
 \begin{array}{c}
-\Rule{}
-  {a : t₁ ⟷ t₂ \quad b : t₃ ⟷ t₄ \quad c : t₅ ⟷ t₆} 
   {((a ⊕ b) ⊗ c) ◎ \dist ⇔ \dist ◎ ((a ⊗ c) ⊕ (b ⊗ c))}
-  {} \\
-\Rule{}
-  {a : t₁ ⟷ t₂ \quad b : t₃ ⟷ t₄ \quad c : t₅ ⟷ t₆}
+\\
   {(a ⊗ (b ⊕ c)) ◎ \distl ⇔ \distl ◎ ((a ⊗ b) ⊕ (a ⊗ c))}
-  {} \\
-\Rule{}
-  {a : t₁ ⟷ t₂ \quad b : t₃ ⟷ t₄ \quad c : t₅ ⟷ t₆} 
+\\
   {((a ⊗ c) ⊕ (b ⊗ c)) ◎ \factor ⇔ \factor ◎ ((a ⊕ b) ⊗ c)}
-  {} \\
-\Rule{}
-  {a : t₁ ⟷ t₂ \quad b : t₃ ⟷ t₄ \quad c : t₅ ⟷ t₆}
+\\
   {((a ⊗ b) ⊕ (a ⊗ c)) ◎ \factorl ⇔ \factorl ◎ (a ⊗ (b ⊕ c))}
-  {}
 \end{array}\]
 \caption{\label{figi}Signatures of level-1 $\Pi$-combinators: distributivity and factoring}
 \end{figure}
 
 \begin{figure}[t]
+Let $c, c₁, c₂, c₃ : t₁ ⟷ t₂$ and $c', c'' : t₃ ⟷ t₄$: 
 \[\def\arraystretch{1.3}
 \begin{array}{c}
-\Rule{}
-  {c : t₁ ⟷ t₂}
-  {\idc ◎ c ⇔ c}
-  {}
+  {\idc ◎ \, c ⇔ c}
+\quad 
+  {c ◎ \idc ⇔ c}
+\quad
+  {c\,◎\,! c ⇔ \idc}
+\quad 
+  {! c ◎ c ⇔ \idc}
+\\
+  {c ⇔ c}
 \quad 
 \Rule{}
-  {c : t₁ ⟷ t₂}
-  {c ◎ \idc ⇔ c}
-  {}
+  {c₁ ⇔ c₂ \quad c₂ ⇔ c₃}
+  {c₁ ⇔ c₃}
+  {} 
 \quad
 \Rule{}
-  {c : t₁ ⟷ t₂}
-  {c\,◎\,! c ⇔ \idc}
-  {} 
-\quad 
-\Rule{}
-  {c : t₁ ⟷ t₂}
-  {! c ◎ c ⇔ \idc}
-  {} \\
-\Rule{}
-  {c : t₁ ⟷ t₂}
-  {c ⇔ c}
-  {} 
-\quad 
-\Rule{}
-  {c₁~c₂~c₃ : t₁ ⟷ t₂ \quad c₁ ⇔ c₂ \quad c₂ ⇔ c₃}
-  {c₁ ⇔ c₃}
-  {} \\
-\Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₂ ⟷ t₃ \quad c₃ : t₁ ⟷ t₂ \quad c₄ : t₂ ⟷ t₃
-  \quad c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
-  {c₁ ◎ c₂ ⇔ c₃ ◎ c₄}
+  {c₁ ⇔ c' \quad c₂ ⇔ c''}
+  {c₁ ◎ c₂ ⇔ c' ◎ c''}
   {}
 \end{array}\]
 \caption{\label{figh}Signatures of level-1 $\Pi$-combinators: identity and composition}
 \end{figure}
 
 \begin{figure}[t]
+Let $c₀ : 0 ⟷ 0$, $c₁ : 1 ⟷ 1$, and $c : t₁ ⟷ t₂$:
 \[\def\arraystretch{1.3}
 \begin{array}{c}
-\Rule{}
-  {c₁ : 0 ⟷ 0 \quad c₂ : t₁ ⟷ t₂} 
-  {\identlp ◎ c₂ ⇔ (c₁ ⊕ c₂) ◎ \identlp}
-  {} \quad 
-\Rule{}
-  {c₁ : 0 ⟷ 0 \quad c₂ : t₁ ⟷ t₂} 
-  {\identrp ◎ (c₁ ⊕ c₂) ⇔ c₂ ◎ \identrp}
-  {} \\
-\Rule{}
-  {c₁ : 0 ⟷ 0 \quad c₂ : t₁ ⟷ t₂}
-  {\identlsp ◎ c₂ ⇔ (c₂ ⊕ c₁) ◎ \identlsp}
-  {} \quad
-\Rule{}
-  {c₁ : 0 ⟷ 0 \quad c₂ : t₁ ⟷ t₂} 
-  {\identrsp ◎ (c₂ ⊕ c₁) ⇔ c₂ ◎ \identrsp}
-  {} \\
-\Rule{}
-  {c₁ : 1 ⟷ 1 \quad c₂ : t₁ ⟷ t₂} 
-  {\identlt ◎ c₂ ⇔ (c₁ ⊗ c₂) ◎ \identlt}
-  {} \quad
-\Rule{}
-  {c₁ : 1 ⟷ 1 \quad c₂ : t₁ ⟷ t₂} 
-  {\identrt ◎ (c₁ ⊗ c₂) ⇔ c₂ ◎ \identrp}
-  {} \\
-\Rule{}
-  {c₁ : 1 ⟷ 1 \quad c₂ : t₁ ⟷ t₂}
-  {\identlst ◎ c₂ ⇔ (c₂ ⊗ c₁) ◎ \identlst}
-  {} \quad
-\Rule{}
-  {c₁ : 1 ⟷ 1 \quad c₂ : t₁ ⟷ t₂} 
-  {\identrst ◎ (c₂ ⊗ c₁) ⇔ c₂ ◎ \identrst}
-  {} \\
-%% \Rule{}
-%%  {}
+  {\identlp ◎ c ⇔ (c₀ ⊕ c) ◎ \identlp}
+\quad 
+  {\identrp ◎ (c₀ ⊕ c) ⇔ c ◎ \identrp}
+\\
+  {\identlsp ◎ c ⇔ (c ⊕ c₀) ◎ \identlsp}
+\quad
+  {\identrsp ◎ (c ⊕ c₀) ⇔ c ◎ \identrsp}
+\\
+  {\identlt ◎ c ⇔ (c₁ ⊗ c) ◎ \identlt}
+\quad
+  {\identrt ◎ (c₁ ⊗ c) ⇔ c ◎ \identrp}
+\\
+  {\identlst ◎ c ⇔ (c ⊗ c₁) ◎ \identlst}
+\quad
+  {\identrst ◎ (c ⊗ c₁) ⇔ c ◎ \identrst}
+\\
   {\identlt ⇔ \distl ◎ (\identlt ⊕ \identlt)}
-%%  {}
 \end{array}\]
 \caption{\label{figg}Signatures of level-1 $\Pi$-combinators: unit}
 \end{figure}
 
 \begin{figure}[t]
+Let $c₁ : t₁ ⟷ t₂$ and $c₂ : t₃ ⟷ t₄$:
 \[\def\arraystretch{1.3}
 \begin{array}{c}
-\Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄} 
   {\swapp ◎ (c₁ ⊕ c₂) ⇔ (c₂ ⊕ c₁) ◎ \swapp}
-  {} \quad
-\Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄} 
+\quad
   {\swapt ◎ (c₁ ⊗ c₂) ⇔ (c₂ ⊗ c₁) ◎ \swapt}
-  {} \\
-%% \Rule{}
-%%  {}
+\\
   {(\assocrp ◎ \swapp) ◎ \assocrp ⇔ ((\swapp ⊕ \idc) ◎ \assocrp) ◎ (\idc ⊕ \swapp)}
-%%  {} \\
 \\
-%% \Rule{}
-%%  {}
   {(\assoclp ◎ \swapp) ◎ \assoclp ⇔ ((\idc ⊕ \swapp) ◎ \assoclp) ◎ (\swapp ⊕ \idc)}
-%%  {} \\
 \\
-%% \Rule{}
-%%  {}
   {(\assocrt ◎ \swapt) ◎ \assocrt ⇔ ((\swapt ⊗ \idc) ◎ \assocrt) ◎ (\idc ⊗ \swapt)}
-%%  {} \\
 \\
-%% \Rule{}
-%%  {}
   {(\assoclt ◎ \swapt) ◎ \assoclt ⇔ ((\idc ⊗ \swapt) ◎ \assoclt) ◎ (\swapt ⊗ \idc)}
-%%  {}
 \end{array}\]
 \caption{\label{figf}Signatures of level-1 $\Pi$-combinators: commutativity and associativity}
 \end{figure}
 
 \begin{figure}[t]
+Let $c₁ : t₁ ⟷ t₂$, $c₂ : t₃ ⟷ t₄$, $c₃ : t₁ ⟷ t₂$, and $c₄ : t₃ ⟷ t₄$. \\
+Let $a₁ : t₅ ⟷ t₁$,  $a₂ : t₆ ⟷ t₂$, $a₃ : t₁ ⟷ t₃$, and $a₄ : t₂ ⟷ t₄$.
 \[\def\arraystretch{1.3}
 \begin{array}{c}
 \Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₁ ⟷ t₂ \quad c₄ : t₃ ⟷ t₄
-  \quad c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
+  {c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
   {c₁ ⊕ c₂ ⇔ c₃ ⊕ c₄}
-  {} \\
+  {} \quad
 \Rule{}
-  {c₁ : t₁ ⟷ t₂ \quad c₂ : t₃ ⟷ t₄ \quad c₃ : t₁ ⟷ t₂ \quad c₄ : t₃ ⟷ t₄
-   \quad c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
+  {c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
   {c₁ ⊗ c₂ ⇔ c₃ ⊗ c₄}
-  {} \\
-%% \Rule{}
-%%   {}
-  {\idc ⊕ \idc ⇔ \idc}
-%%   {} 
-\quad
-%% \Rule{}
-%%   {}
-  {\idc ⊗ \idc ⇔ \idc}
-%%   {} 
-\\
-\Rule{}
-  {c₁ : t₅ ⟷ t₁ \quad c₂ : t₆ ⟷ t₂ \quad c₃ : t₁ ⟷ t₃ \quad c₄ : t₂ ⟷ t₄}
-  {(c₁ ◎ c₃) ⊕ (c₂ ◎ c₄) ⇔ (c₁ ⊕ c₂) ◎ (c₃ ⊕ c₄)}
-  {} \\
-\Rule{}
-  {c₁ : t₅ ⟷ t₁ \quad c₂ : t₆ ⟷ t₂ \quad c₃ : t₁ ⟷ t₃ \quad c₄ : t₂ ⟷ t₄}
-  {(c₁ ◎ c₃) ⊗ (c₂ ◎ c₄) ⇔ (c₁ ⊗ c₂) ◎ (c₃ ⊗ c₄)}
   {} 
+\\
+  {\idc ⊕ \idc ⇔ \idc}
+\quad
+  {\idc ⊗ \idc ⇔ \idc}
+\\
+  {(a₁ ◎ a₃) ⊕ (a₂ ◎ a₄) ⇔ (a₁ ⊕ a₂) ◎ (a₃ ⊕ a₄)}
+\\
+  {(a₁ ◎ a₃) ⊗ (a₂ ◎ a₄) ⇔ (a₁ ⊗ a₂) ◎ (a₃ ⊗ a₄)}
 \end{array}\]
 \caption{\label{fige}Signatures of level-1 $\Pi$-combinators: functors}
 \end{figure}
@@ -2410,73 +2331,39 @@ representing circuits, leading to smaller programs with fewer redexes.
 \begin{figure}[t]
 \[\def\arraystretch{1.3}
 \begin{array}{c}
-%% \Rule{}
-%%   {}
   {\identlsp ⊕ \idc ⇔ \assocrp ◎ (\idc ⊕ \identlp)}
-%%   {} 
 \\
-%% \Rule{}
-%%   {}
   {\identlst ⊗ \idc ⇔ \assocrt ◎ (\idc ⊗ \identlt)}
-%%   {}
 \end{array}\]
 \caption{\label{figd}Signatures of level-1 $\Pi$-combinators: unit and associativity}
 \end{figure}
 
 
 \begin{figure}[t]
+Let $c : t₁ ⟷ t₂$:
 \[\def\arraystretch{1.3}
 \begin{array}{c}
-\Rule{}
-  {c₁ : t₁ ⟷ t₂}
-  {(c₁ ⊗ \idc) ◎ \absorbl ⇔ \absorbl ◎ \idc}
-  {} \quad
-\Rule{}
-  {c₁ : t₁ ⟷ t₂}
-  {(\idc ⊗ c₁) ◎ \absorbr ⇔ \absorbr ◎ \idc}
-  {} \\
-\Rule{}
-  {c₁ : t₁ ⟷ t₂} 
-  {\idc ◎ \factorzl ⇔ \factorzl ◎ (\idc ⊗ c₁)}
-  {} \quad
-\Rule{}
-  {c₁ : t₁ ⟷ t₂}
-  {\idc ◎ \factorzr ⇔ \factorzr ◎ (c₁ ⊗ \idc)}
-  {} \\
-%% \Rule{}
-%%   {}
-  {\absorbr ⇔ \absorbl}
-%%   {} 
-\\
-%% \Rule{}
-%%   {}
-  {\absorbr ⇔ (\distl ◎ (\absorbr ⊕ \absorbr)) ◎ \identlp}
-%%   {} 
-\\
-%% \Rule{}
-%%   {}
-  {\identlst ⇔ \absorbr}
-%%   {} 
+  {(c ⊗ \idc) ◎ \absorbl ⇔ \absorbl ◎ \idc}
 \quad
-%% \Rule{}
-%%   {}
+  {(\idc ⊗ c) ◎ \absorbr ⇔ \absorbr ◎ \idc}
+\\
+  {\idc ◎ \factorzl ⇔ \factorzl ◎ (\idc ⊗ c)}
+\quad
+  {\idc ◎ \factorzr ⇔ \factorzr ◎ (c ⊗ \idc)}
+\\
+  {\absorbr ⇔ \absorbl}
+\\
+  {\absorbr ⇔ (\distl ◎ (\absorbr ⊕ \absorbr)) ◎ \identlp}
+\\
+  {\identlst ⇔ \absorbr}
+\quad
   {\absorbl ⇔ \swapt ◎ \absorbr}
-%%   {} 
 \\
-%% \Rule{}
-%%   {}
   {\absorbr ⇔ (\assoclt ◎ (\absorbr ⊗ \idc)) ◎ \absorbr}
-%%   {} 
 \\
-%% \Rule{}
-%%   {}
   {(\idc ⊗ \absorbr) ◎ \absorbl ⇔ (\assoclt ◎ (\absorbl ⊗ \idc)) ◎ \absorbr}
-%%   {} 
 \\
-%% \Rule{}
-%%   {}
   {\idc ⊗ \identlp ⇔ (\distl ◎ (\absorbl ⊕ \idc)) ◎ \identlp}
-%%   {}
 \end{array}\]
 \caption{\label{figc}Signatures of level-1 $\Pi$-combinators: zero}
 \end{figure}
@@ -2484,15 +2371,9 @@ representing circuits, leading to smaller programs with fewer redexes.
 \begin{figure}[t]
 \[\def\arraystretch{1.3}
 \begin{array}{c}
-%% \Rule{}
-%%   {}
   {((\assoclp ⊗ \idc) ◎ \dist) ◎ (\dist ⊕ \idc) ⇔ (\dist ◎ (\idc ⊕ \dist)) ◎ \assoclp}
-%%   {} \\
 \\
-%% \Rule{}
-%%   {}
   {\assoclt ◎ \distl ⇔ ((\idc ⊗ \distl) ◎ \distl) ◎ (\assoclt ⊕ \assoclt)}
-%%   {}
 \end{array}\]
 \caption{\label{figb}Signatures of level-1 $\Pi$-combinators: associativity and distributivity}
 \end{figure}
