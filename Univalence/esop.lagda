@@ -2434,7 +2434,7 @@ straightforward.  Their statement, on the other hand, was at times
 rather complex (see \AgdaModule{Data.SumProd.Properties}).
 
 %%%
-\subsection{Example Level 1 Programs} 
+\subsection{Example Level-1 Programs} 
 
 A pleasant outcome of having the level-1 terms is that they also give
 rise to an interesting programming language which, in our context, can
@@ -2486,7 +2486,7 @@ must act polymorphically on its input and hence, it must be the case
 that the two evaluations produce the same result. The situation for
 the other possible input value is symmetric. This extensional
 reasoning is embedded once and for all in the proofs of coherence and
-distilled in a 1-level combinator:
+distilled in a level-1 combinator:
 
 \[\begin{array}{rcl}
 \AgdaInductiveConstructor{swapl₊⇔} & \AgdaSymbol{:} &
@@ -2507,7 +2507,7 @@ distilled in a 1-level combinator:
 Categorically speaking, this combinator expresses exactly that the
 braiding $\sigma_{A,B}$ is a natural transformation, in other words
 that $\sigma_{A,B}$ must commute with $\oplus$. Pictorially, this
-1-level combinator is a 2-path showing how the two paths can be
+level-1 combinator is a 2-path showing how the two paths can be
 transformed to one another. The proof of equivalence can be visualized
 by simply imagining the connections as wires whose endpoints are
 fixed: holding the wires on the right side of the top path and
@@ -2750,7 +2750,7 @@ negEx = uniti⋆l ◎ (Pi0.swap⋆ ◎ ((Pi0.swap₊ ⊗ id⟷) ◎ (Pi0.swap⋆
 % \end{code}
 
 %%%
-\subsection{Example Level 1 Proofs} 
+\subsection{Example Level-1 Proofs} 
 
 \amr{need a proof oriented example; i actually wanted to add one to
   the submission and only remembered after the deadline.}
@@ -2758,7 +2758,7 @@ negEx = uniti⋆l ◎ (Pi0.swap⋆ ◎ ((Pi0.swap₊ ⊗ id⟷) ◎ (Pi0.swap⋆
 %%%
 \subsection{Semantics}
 
-Each 1-level combinator whose signature is in
+Each level-1 combinator whose signature is in
 Figs.~\ref{figj}--\ref{figa} gives rise to an equivalence of
 equivalences of types. Furthermore, the level-1 combinators are
 coherent with the respect to the level-0 semantics. Formally, in Agda,
@@ -2799,7 +2799,7 @@ very effective optimizer for such programs.
 
 The next theorem is the main result: it shows that the two levels of
 $\Pi$ form a symmetric rig groupoid, thus capturing equivalences of
-types at level 0, and equivalences of equivalences at level 1.
+types at level-0, and equivalences of equivalences at level-1.
 
 \amr{ page 23, proof of Th. 3: this proof seems taken literally from an
  old version of the paper, with different notations. In particular,
