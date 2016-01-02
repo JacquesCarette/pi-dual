@@ -2317,9 +2317,9 @@ Let $a₁ : t₅ ⟷ t₁$,  $a₂ : t₆ ⟷ t₂$, $a₃ : t₁ ⟷ t₃$, and
   {c₁ ⊗ c₂ ⇔ c₃ ⊗ c₄}
   {} 
 \\
-  {\idc ⊕ \idc ⇔ \idc}
+  {\idc ⊕ \, \idc ⇔ \idc}
 \quad
-  {\idc ⊗ \idc ⇔ \idc}
+  {\idc ⊗ \, \idc ⇔ \idc}
 \\
   {(a₁ ◎ a₃) ⊕ (a₂ ◎ a₄) ⇔ (a₁ ⊕ a₂) ◎ (a₃ ⊕ a₄)}
 \\
@@ -2331,9 +2331,9 @@ Let $a₁ : t₅ ⟷ t₁$,  $a₂ : t₆ ⟷ t₂$, $a₃ : t₁ ⟷ t₃$, and
 \begin{figure}[t]
 \[\def\arraystretch{1.3}
 \begin{array}{c}
-  {\identlsp ⊕ \idc ⇔ \assocrp ◎ (\idc ⊕ \identlp)}
+  {\identlsp ⊕ \idc ⇔ \assocrp ◎ (\idc ⊕ \, \identlp)}
 \\
-  {\identlst ⊗ \idc ⇔ \assocrt ◎ (\idc ⊗ \identlt)}
+  {\identlst ⊗ \idc ⇔ \assocrt ◎ (\idc ⊗ \, \identlt)}
 \end{array}\]
 \caption{\label{figd}Signatures of level-1 $\Pi$-combinators: unit and associativity}
 \end{figure}
