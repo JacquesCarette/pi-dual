@@ -2750,6 +2750,12 @@ negEx = uniti⋆l ◎ (Pi0.swap⋆ ◎ ((Pi0.swap₊ ⊗ id⟷) ◎ (Pi0.swap⋆
 % \end{code}
 
 %%%
+\subsection{Example Level 1 Proofs} 
+
+\amr{need a proof oriented example; i actually wanted to add one to
+  the submission and only remembered after the deadline.}
+
+%%%
 \subsection{Semantics}
 
 Each 1-level combinator whose signature is in
