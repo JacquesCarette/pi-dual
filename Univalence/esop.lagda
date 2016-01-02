@@ -2498,7 +2498,7 @@ representing circuits, leading to smaller programs with fewer redexes.
    ((((\dist ◎ (\distl ⊕ \distl)) ◎ \assoclp) ◎ \\
 && (\assocrp ⊕ \idc)) ◎ \\
 && ((\idc ⊕ \swapp) ⊕ \idc)) ◎ \\
-      (\assoclp ⊕ \idc)
+&&      (\assoclp ⊕ \idc)
 \end{array}\]
 \caption{Signatures of level-1 $\Pi$-combinators: commutativity and distributivity}
 \end{figure}
