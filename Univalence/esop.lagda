@@ -1548,13 +1548,6 @@ identities. Thus we can write variants of our proofs \AgdaFunction{pf₁},
 \AgdaFunction{pf₂}, \AgdaFunction{pf₃}, and \AgdaFunction{pf₄} from
 Sec.~\ref{sec:informal}:
 
-\AgdaHide{
-\begin{code}
-postulate
-    unite₊ : {t : U} → PLUS ZERO t ⟷ t
-\end{code}
-}
-
 \medskip
 {\footnotesize{
 \begin{code}
@@ -1563,8 +1556,8 @@ pf₁π = id⟷
 pf₂π = swap₊
 
 pf₃π pf₄π : {A B : U} → PLUS (PLUS A ZERO) B ⟷ PLUS A B
-pf₃π = (swap₊ ⊕ id⟷) ◎ (unite₊ ⊕ id⟷)
-pf₄π = assocr₊ ◎ (id⟷ ⊕ unite₊)
+pf₃π = (swap₊ ⊕ id⟷) ◎ (unite₊l ⊕ id⟷)
+pf₄π = assocr₊ ◎ (id⟷ ⊕ unite₊l)
 \end{code}}}
 
 %%%%%%%%%%%%
@@ -2701,6 +2694,8 @@ open import PiEquiv using (c2equiv)
 \smallskip\noindent Here is a complete proof in level-1 $\Pi$ using the small-step
 rewriting style that shows that the two circuits are equivalent.
 
+\amr{the names of level-1 combinators have not been defined; refer to figures in comments?}
+
 \medskip
 
 \renewcommand{\AgdaIndent}[1]{$\;$}
@@ -2752,8 +2747,22 @@ negEx = uniti⋆l ◎ (Pi0.swap⋆ ◎ ((Pi0.swap₊ ⊗ id⟷) ◎ (Pi0.swap⋆
 %%%
 \subsection{Example Level-1 Proofs} 
 
-\amr{need a proof oriented example; i actually wanted to add one to
-  the submission and only remembered after the deadline.}
+In addition to proving circuit optimizations, we can also prove
+equivalences of semiring proofs. As we discussed we expect
+\AgdaFunction{pf₃π} and \AgdaFunction{pf₄π} to be equivalent
+proofs. The following derivation shows how:
+
+\amr{complete this proof and refer to figures as needed}
+
+\medskip
+{\footnotesize{
+\begin{code}
+pf₃π⇔pf₄π : {A B : U} → pf₃π {A} {B} ⇔ pf₄π {A} {B}
+pf₃π⇔pf₄π {A} {B} =
+  (Pi0.swap₊ ⊕ id⟷) ◎ (unite₊l ⊕ id⟷)
+    ⇔⟨ {!!} ⟩
+  Pi0.assocr₊ ◎ (id⟷ ⊕ unite₊l) ▤
+\end{code}}}
 
 %%%
 \subsection{Semantics}
