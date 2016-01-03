@@ -107,6 +107,13 @@ abstract
   swap₊-coh (inj₁ x) = P.refl
   swap₊-coh (inj₂ y) = P.refl
 
+  unite₊-swap-coh-right : {A : Set} → unite₊ {A} ∼ unite₊′ ∘ swap₊
+  unite₊-swap-coh-right (inj₁ ())
+  unite₊-swap-coh-right (inj₂ y) = P.refl
+
+  unite₊-swap-coh-left : {A : Set} → uniti₊ {A} ∼ swap₊ ∘ uniti₊′
+  unite₊-swap-coh-left x = P.refl
+
   hexagon⊎-right : {A B C : Set} →
     assocr₊ {A = B} {C} {A} ∘ swap₊ ∘ assocr₊ ∼ (F.id ⊎→ swap₊) ∘ assocr₊ ∘ (swap₊ ⊎→ F.id)
   hexagon⊎-right (inj₁ (inj₁ x)) = P.refl

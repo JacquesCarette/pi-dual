@@ -85,6 +85,12 @@ abstract
     swap⋆ ∘ (f ×→ g) ∼ (g ×→ f) ∘ swap⋆
   swap⋆-coh _ = P.refl
 
+  unite⋆-swap-coh-right : {A : Set} → unite⋆ {A} ∼ unite⋆′ ∘ swap⋆
+  unite⋆-swap-coh-right x = P.refl
+
+  unite⋆-swap-coh-left : {A : Set} → uniti⋆ {A} ∼ swap⋆ ∘ uniti⋆′
+  unite⋆-swap-coh-left x = P.refl
+
   hexagon×-right : {A B C : Set} →
     assocr⋆ {A = B} {C} {A} ∘ swap⋆ ∘ assocr⋆ ∼ (id ×→ swap⋆) ∘ assocr⋆ ∘ (swap⋆ ×→ id)
   hexagon×-right _ = P.refl

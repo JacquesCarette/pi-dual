@@ -27,7 +27,8 @@ open import Data.Sum.Properties
     assocr₊-wf; assocl₊-wf;
     triangle⊎-left; triangle⊎-right;
     pentagon⊎-right; pentagon⊎-left;
-    swap₊-coh; hexagon⊎-right; hexagon⊎-left)
+    swap₊-coh; unite₊-swap-coh-left; unite₊-swap-coh-right; 
+    hexagon⊎-right; hexagon⊎-left)
 
 open import Data.Product.Properties
   using (id×id∼id; ×∘∼∘×; _×∼_;
@@ -35,7 +36,8 @@ open import Data.Product.Properties
     assocr⋆-wf; assocl⋆-wf;
     triangle×-left; triangle×-right;
     pentagon×-right; pentagon×-left;
-    swap⋆-coh; hexagon×-right; hexagon×-left)
+    swap⋆-coh;  unite⋆-swap-coh-left; unite⋆-swap-coh-right;
+    hexagon×-right; hexagon×-left)
 
 open import Data.SumProd.Properties -- TODO: list them
 
@@ -179,6 +181,12 @@ swap₊-nat =
         ! (β₁ ⊙ cong∘r (proj₁ swap₊equiv) β⊎₁))
      (β₂ ⊙ cong∘r (gg swap₊equiv) β⊎₂ ⊙ sym∼ swap₊-coh ⊙
         ! (β₂ ⊙ cong∘l (gg swap₊equiv) β⊎₂))
+
+-- also called 'triangle', but better to call it 'unit coherence'
+unite₊l-coh : {A : Set} →
+  unite₊equiv {A} ≋ unite₊′equiv ● swap₊equiv
+unite₊l-coh = 
+  eq (unite₊-swap-coh-right ⊙ ! β₁) (unite₊-swap-coh-left ⊙ ! β₂)
 
 -- often called 'hexagon'
 assocr₊-swap₊-coh : ∀ {A B C : Set} →
@@ -330,6 +338,12 @@ swap⋆-nat =
         ! (β₁ ⊙ cong∘r (proj₁ swap⋆equiv) β×₁))
      (β₂ ⊙ cong∘r (gg swap⋆equiv) β×₂ ⊙ sym∼ swap⋆-coh ⊙
         ! (β₂ ⊙ cong∘l (gg swap⋆equiv) β×₂))
+
+-- also called 'triangle', but better to call it 'unit coherence'
+unite⋆l-coh : {A : Set} →
+  unite⋆equiv {A} ≋ unite⋆′equiv ● swap⋆equiv
+unite⋆l-coh = 
+  eq (unite⋆-swap-coh-right ⊙ ! β₁) (unite⋆-swap-coh-left ⊙ ! β₂)
 
 -- often called 'hexagon'
 
