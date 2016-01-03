@@ -2368,6 +2368,14 @@ Let $c : t₁ ⟷ t₂$:
 \\
   {\assoclt ◎ \distl ⇔ ((\idc ⊗ \distl) ◎ \distl) ◎ (\assoclt ⊕ \assoclt)}
 \end{array}\]
+\[\def\arraystretch{1.3}
+\begin{array}{rcl}
+  (\distl ◎ (\dist ⊕ \dist)) ◎ \assoclp &⇔&   
+   \dist ◎ (\distl ⊕ \distl) ◎ \assoclp ~◎ \\
+&& (\assocrp ⊕ \idc) ~◎ \\
+&& ((\idc ⊕ \swapp) ⊕ \idc) ~◎ \\
+&&      (\assoclp ⊕ \idc)
+\end{array}\]
 \caption{\label{figb}Signatures of level-1 $\Pi$-combinators: associativity and distributivity}
 \end{figure}
 
@@ -2377,12 +2385,6 @@ Let $c : t₁ ⟷ t₂$:
   (\idc ⊗ \swapp) ◎ \distl &⇔& \distl ◎ \swapp
 \\
   \dist ◎ (\swapt ⊕ \swapt) &⇔& \swapt ◎ \distl
-\\
-  (\distl ◎ (\dist ⊕ \dist)) ◎ \assoclp &⇔&   
-   \dist ◎ (\distl ⊕ \distl) ◎ \assoclp ~◎ \\
-&& (\assocrp ⊕ \idc) ~◎ \\
-&& ((\idc ⊕ \swapp) ⊕ \idc) ~◎ \\
-&&      (\assoclp ⊕ \idc)
 \end{array}\]
 \caption{\label{figa}Signatures of level-1 $\Pi$-combinators: commutativity and distributivity}
 \end{figure}
@@ -2757,10 +2759,16 @@ proofs. The following derivation shows how:
 \medskip
 {\footnotesize{
 \begin{code}
-pf₃π⇔pf₄π : {A B : U} → pf₃π {A} {B} ⇔ pf₄π {A} {B}
-pf₃π⇔pf₄π {A} {B} =
+pfEx : {A B : U} → pf₃π {A} {B} ⇔ pf₄π {A} {B}
+pfEx {A} {B} =
   (Pi0.swap₊ ⊕ id⟷) ◎ (unite₊l ⊕ id⟷)
-    ⇔⟨ {!!} ⟩
+    ⇔⟨ hom◎⊕⇔ ⟩
+  (Pi0.swap₊ ◎ unite₊l) ⊕ (id⟷ ◎ id⟷)
+    ⇔⟨  resp⊕⇔ id⇔ idl◎l ⟩ 
+  (Pi0.swap₊ ◎ unite₊l) ⊕ id⟷
+    ⇔⟨ resp⊕⇔ {!!} id⇔ ⟩
+  unite₊r ⊕ id⟷
+    ⇔⟨ triangle⊕l ⟩
   Pi0.assocr₊ ◎ (id⟷ ⊕ unite₊l) ▤
 \end{code}}}
 
