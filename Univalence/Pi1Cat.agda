@@ -48,8 +48,8 @@ open import PiLevel1 using (_⇔_; ⇔Equiv; triv≡; triv≡Equiv; 2!;
  id⟷⊗id⟷⇔; hom⊗◎⇔; resp⊗⇔;
  uniter⋆⇔l; unitir⋆⇔l; uniter⋆⇔r; unitir⋆⇔r;
  assocr⊗r; assocl⊗l; triangle⊗l; pentagon⊗l;
- swapr₊⇔; hexagonr⊕l; hexagonl⊕l;
- swapr⋆⇔; hexagonr⊗l; hexagonl⊗l;
+ swapr₊⇔; unite₊l-coh-l; hexagonr⊕l; hexagonl⊕l;
+ swapr⋆⇔; unite⋆l-coh-l; hexagonr⊗l; hexagonl⊗l;
  absorbl⇔l; factorzr⇔l; absorbr⇔l; factorzl⇔l;
  distl⇔l; factorl⇔l; dist⇔l; factor⇔l;
  swap₊distl⇔l; dist-swap⋆⇔l; assocl₊-dist-dist⇔l; assocl⋆-distl⇔l;
@@ -214,6 +214,7 @@ x⊕y≡y⊕x = record
 BM⊕ : Braided M⊕
 BM⊕ = record
   { braid = x⊕y≡y⊕x
+  ; unit-coh = unite₊l-coh-l
   ; hexagon₁ = hexagonr⊕l
   ; hexagon₂ = hexagonl⊕l
   }
@@ -227,6 +228,7 @@ x⊗y≡y⊗x = record
 BM⊗ : Braided M⊗
 BM⊗ = record
   { braid = x⊗y≡y⊗x
+  ; unit-coh = unite⋆l-coh-l
   ; hexagon₁ = hexagonr⊗l
   ; hexagon₂ = hexagonl⊗l
   }

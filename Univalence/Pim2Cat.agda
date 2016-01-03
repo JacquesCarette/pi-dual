@@ -219,7 +219,8 @@ xPLUSy≈yPLUSx = record
 
 BMPLUS : Braided CPMPLUS
 BMPLUS = record 
-  { braid = xPLUSy≈yPLUSx 
+  { braid = xPLUSy≈yPLUSx
+  ; unit-coh = P.refl
   ; hexagon₁ = P.refl
   ; hexagon₂ = P.refl
   }
@@ -242,7 +243,8 @@ xTIMESy≈yTIMESx = record
 
 BMTIMES : Braided CPMTIMES
 BMTIMES = record 
-  { braid = xTIMESy≈yTIMESx 
+  { braid = xTIMESy≈yTIMESx
+  ; unit-coh = P.refl
   ; hexagon₁ = P.refl
   ; hexagon₂ = P.refl
   }

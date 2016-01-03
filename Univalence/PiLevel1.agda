@@ -151,6 +151,7 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
   hom◎⊗⇔ : {t₁ t₂ t₃ t₄ t₅ t₆ : U} {c₁ : t₅ ⟷ t₁} {c₂ : t₆ ⟷ t₂}
         {c₃ : t₁ ⟷ t₃} {c₄ : t₂ ⟷ t₄} →
          ((c₁ ⊗ c₂) ◎ (c₃ ⊗ c₄)) ⇔ ((c₁ ◎ c₃) ⊗ (c₂ ◎ c₄))
+  -- associativity triangle
   triangle⊕l : {t₁ t₂ : U} →
     (unite₊r {t₁} ⊕ id⟷ {t₂}) ⇔ assocr₊ ◎ (id⟷ ⊕ unite₊l)
   triangle⊕r : {t₁ t₂ : U} →
@@ -171,6 +172,12 @@ data _⇔_ : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₁ ⟷ t₂) → Set whe
   pentagon⊗r : {t₁ t₂ t₃ t₄ : U} →
     ((assocr⋆ {t₁} {t₂} {t₃} ⊗ id⟷ {t₄}) ◎ assocr⋆) ◎ (id⟷ ⊗ assocr⋆) ⇔ 
     assocr⋆ ◎ assocr⋆
+  -- from the braiding
+  -- unit coherence
+  unite₊l-coh-l : {t₁ : U} → unite₊l {t₁} ⇔ swap₊ ◎ unite₊r
+  unite₊l-coh-r : {t₁ : U} → swap₊ ◎ unite₊r ⇔ unite₊l {t₁}
+  unite⋆l-coh-l : {t₁ : U} → unite⋆l {t₁} ⇔ swap⋆ ◎ unite⋆r
+  unite⋆l-coh-r : {t₁ : U} → swap⋆ ◎ unite⋆r ⇔ unite⋆l {t₁}
   hexagonr⊕l : {t₁ t₂ t₃ : U} →
     (assocr₊ ◎ swap₊) ◎ assocr₊ {t₁} {t₂} {t₃} ⇔
     ((swap₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ swap₊)
@@ -356,6 +363,10 @@ triv≡Equiv = record
 2! pentagon⊕r = pentagon⊕l
 2! pentagon⊗l = pentagon⊗r
 2! pentagon⊗r = pentagon⊗l
+2! unite₊l-coh-l = unite₊l-coh-r
+2! unite₊l-coh-r = unite₊l-coh-l
+2! unite⋆l-coh-l = unite⋆l-coh-r
+2! unite⋆l-coh-r = unite⋆l-coh-l
 2! hexagonr⊕l = hexagonr⊕r
 2! hexagonr⊕r = hexagonr⊕l
 2! hexagonl⊕l = hexagonl⊕r
@@ -414,5 +425,17 @@ triv≡Equiv = record
   ; sym = 2!
   ; trans = trans⇔ 
   }
+
+------------------------------------------------------------------------------
+
+-- Unit coherence has two versions, but one is derivable
+-- from the other.  As it turns out, one of our examples
+-- needs the 'flipped' version.
+
+unite₊r-coh-r : {t₁ : U} → swap₊ ◎ unite₊l ⇔ unite₊r {t₁}
+unite₊r-coh-r = 
+  trans⇔ (id⇔ ⊡ unite₊l-coh-l) (
+  trans⇔ assoc◎l ((
+  trans⇔ (linv◎l ⊡ id⇔) idl◎l ) ) )
 
 ------------------------------------------------------------------------------

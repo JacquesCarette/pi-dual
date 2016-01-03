@@ -245,7 +245,8 @@ x⊎y≈y⊎x = record
 
 BM⊎ : Braided CPM⊎
 BM⊎ = record 
-  { braid = x⊎y≈y⊎x 
+  { braid = x⊎y≈y⊎x
+  ; unit-coh = unite₊l-coh 
   ; hexagon₁ = assocr₊-swap₊-coh 
   ; hexagon₂ = assocl₊-swap₊-coh 
   }
@@ -269,6 +270,7 @@ x×y≈y×x = record
 BM× : Braided CPM×
 BM× = record 
   { braid = x×y≈y×x 
+  ; unit-coh = unite⋆l-coh
   ; hexagon₁ = assocr⋆-swap⋆-coh
   ; hexagon₂ = assocl⋆-swap⋆-coh 
   }

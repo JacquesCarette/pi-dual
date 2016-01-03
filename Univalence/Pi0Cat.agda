@@ -193,7 +193,7 @@ x⊕y≡y⊕x = record
   ; iso = λ X → record { isoˡ = tt ; isoʳ = tt } }
 
 BM⊕ : Braided M⊕
-BM⊕ = record { braid = x⊕y≡y⊕x ; hexagon₁ = tt ; hexagon₂ = tt }
+BM⊕ = record { braid = x⊕y≡y⊕x ; unit-coh = tt; hexagon₁ = tt ; hexagon₂ = tt }
 
 x⊗y≡y⊗x : NaturalIsomorphism ⊗h.x⊗y ⊗h.y⊗x
 x⊗y≡y⊗x = record 
@@ -202,7 +202,7 @@ x⊗y≡y⊗x = record
   ; iso = λ X → record { isoˡ = tt ; isoʳ = tt } }
 
 BM⊗ : Braided M⊗
-BM⊗ = record { braid = x⊗y≡y⊗x ; hexagon₁ = tt ; hexagon₂ = tt }
+BM⊗ = record { braid = x⊗y≡y⊗x ; unit-coh = tt; hexagon₁ = tt ; hexagon₂ = tt }
 
 SBM⊕ : Symmetric BM⊕
 SBM⊕ = record { symmetry = tt }
