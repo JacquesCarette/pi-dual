@@ -2068,6 +2068,7 @@ open import Data.Unit
 import Function as F
 open import Equiv hiding (_∼_; sym≃; isqinv)
 open import TypeEquiv as TE
+open import TypeEquivEquiv using (_⊎≋_)
 \end{code}
 }
 
@@ -2763,7 +2764,11 @@ proofs. The following derivation shows how:
 pf₃π⇔pf₄π : {A B : U} → pf₃π {A} {B} ⇔ pf₄π {A} {B}
 pf₃π⇔pf₄π {A} {B} =
   (Pi0.swap₊ ⊕ id⟷) ◎ (unite₊l ⊕ id⟷)
-    ⇔⟨ {!!} ⟩
+    ⇔⟨  hom◎⊕⇔ ⟩
+  (Pi0.swap₊ ◎ unite₊l) ⊕ (id⟷ ◎ id⟷)
+    ⇔⟨ resp⊕⇔  unite₊r-coh-r idl◎l ⟩
+  unite₊r ⊕ id⟷
+    ⇔⟨ triangle⊕l ⟩
   Pi0.assocr₊ ◎ (id⟷ ⊕ unite₊l) ▤
 \end{code}}}
 
