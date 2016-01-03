@@ -2232,7 +2232,7 @@ Let $c, c₁, c₂, c₃ : t₁ ⟷ t₂$ and $c', c'' : t₃ ⟷ t₄$:
 \begin{array}{c}
   {\idc ◎ \, c ⇔ c}
 \quad 
-  {c \, ◎ \idc ⇔ c}
+  {c \, ◎ \idc ~⇔ c}
 \quad
   {c\,\, ◎\,! c ⇔ \idc}
 \quad 
