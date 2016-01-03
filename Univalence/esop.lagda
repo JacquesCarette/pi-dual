@@ -1492,12 +1492,7 @@ BOOL  = PLUS ONE ONE
 
 BOOL² : U  
 BOOL² = TIMES BOOL BOOL  
-\end{code}}}
-\end{multicols}
 
-\begin{multicols}{2}
-{\footnotesize{
-\begin{code}
 BOOL³ : U  
 BOOL³ = TIMES BOOL² BOOL  
 
@@ -1505,6 +1500,12 @@ NOT : BOOL ⟷ BOOL
 NOT = swap₊
 \end{code}}}
 \end{multicols}
+
+% \begin{multicols}{2}
+% {\footnotesize{
+% \begin{code}
+% \end{code}}}
+% \end{multicols}
 
 {\footnotesize{
 \begin{code}
@@ -2231,9 +2232,9 @@ Let $c, c₁, c₂, c₃ : t₁ ⟷ t₂$ and $c', c'' : t₃ ⟷ t₄$:
 \begin{array}{c}
   {\idc ◎ \, c ⇔ c}
 \quad 
-  {c ◎ \idc ⇔ c}
+  {c \, ◎ \idc ⇔ c}
 \quad
-  {c\,◎\,! c ⇔ \idc}
+  {c\,\, ◎\,! c ⇔ \idc}
 \quad 
   {! c ◎ c ⇔ \idc}
 \\
@@ -2257,19 +2258,19 @@ Let $c₀ : 0 ⟷ 0$, $c₁ : 1 ⟷ 1$, and $c : t₁ ⟷ t₂$:
 \[\def\arraystretch{1.3}
 \begin{array}{c}
   {\identlp ◎ c ⇔ (c₀ ⊕ c) ◎ \identlp}
-\quad 
+\qquad 
   {\identrp ◎ (c₀ ⊕ c) ⇔ c ◎ \identrp}
 \\
   {\identlsp ◎ c ⇔ (c ⊕ c₀) ◎ \identlsp}
-\quad
+\qquad
   {\identrsp ◎ (c ⊕ c₀) ⇔ c ◎ \identrsp}
 \\
   {\identlt ◎ c ⇔ (c₁ ⊗ c) ◎ \identlt}
-\quad
+\qquad
   {\identrt ◎ (c₁ ⊗ c) ⇔ c ◎ \identrp}
 \\
   {\identlst ◎ c ⇔ (c ⊗ c₁) ◎ \identlst}
-\quad
+\qquad
   {\identrst ◎ (c ⊗ c₁) ⇔ c ◎ \identrst}
 \\
   {\identlt ⇔ \distl ◎ (\identlt ⊕ \identlt)}
@@ -2304,14 +2305,15 @@ Let $a₁ : t₅ ⟷ t₁$,  $a₂ : t₆ ⟷ t₂$, $a₃ : t₁ ⟷ t₃$, and
 \Rule{}
   {c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
   {c₁ ⊕ c₂ ⇔ c₃ ⊕ c₄}
-  {} \quad
+  {}
+\qquad
 \Rule{}
   {c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
   {c₁ ⊗ c₂ ⇔ c₃ ⊗ c₄}
   {} 
 \\
   {\idc ⊕ \, \idc ⇔ \idc}
-\quad
+\qquad
   {\idc ⊗ \, \idc ⇔ \idc}
 \\
   {(a₁ ◎ a₃) ⊕ (a₂ ◎ a₄) ⇔ (a₁ ⊕ a₂) ◎ (a₃ ⊕ a₄)}
@@ -2324,9 +2326,9 @@ Let $a₁ : t₅ ⟷ t₁$,  $a₂ : t₆ ⟷ t₂$, $a₃ : t₁ ⟷ t₃$, and
 \begin{figure}[t]
 \[\def\arraystretch{1.3}
 \begin{array}{c}
-  {\identlsp ⊕ \idc ⇔ \assocrp ◎ (\idc ⊕ \, \identlp)}
+  {\identlsp ⊕ \idc ~⇔~ \assocrp ◎ (\idc ⊕ \, \identlp)}
 \\
-  {\identlst ⊗ \idc ⇔ \assocrt ◎ (\idc ⊗ \, \identlt)}
+  {\identlst ⊗ \idc ~⇔~ \assocrt ◎ (\idc ⊗ \, \identlt)}
 \end{array}\]
 \caption{\label{figd}Signatures of level-1 $\Pi$-combinators: unit and associativity}
 \end{figure}
@@ -2338,25 +2340,25 @@ Let $c : t₁ ⟷ t₂$:
 \begin{array}{c}
   {(c ⊗ \idc) ◎ \absorbl ⇔ \absorbl ◎ \idc}
 \quad
-  {(\idc ⊗ c) ◎ \absorbr ⇔ \absorbr ◎ \idc}
+  {(\idc \, ⊗ c) ◎ \absorbr ⇔ \absorbr ◎ \idc}
 \\
-  {\idc ◎ \factorzl ⇔ \factorzl ◎ (\idc ⊗ c)}
+  {\idc ◎ \, \factorzl ⇔ \factorzl ◎ (\idc ⊗ c)}
 \quad
-  {\idc ◎ \factorzr ⇔ \factorzr ◎ (c ⊗ \idc)}
+  {\idc ◎ \, \factorzr ⇔ \factorzr ◎ (c ⊗ \idc)}
 \\
   {\absorbr ⇔ \absorbl}
 \\
   {\absorbr ⇔ (\distl ◎ (\absorbr ⊕ \absorbr)) ◎ \identlp}
 \\
   {\identlst ⇔ \absorbr}
-\quad
+\qquad
   {\absorbl ⇔ \swapt ◎ \absorbr}
 \\
   {\absorbr ⇔ (\assoclt ◎ (\absorbr ⊗ \idc)) ◎ \absorbr}
 \\
   {(\idc ⊗ \absorbr) ◎ \absorbl ⇔ (\assoclt ◎ (\absorbl ⊗ \idc)) ◎ \absorbr}
 \\
-  {\idc ⊗ \identlp ⇔ (\distl ◎ (\absorbl ⊕ \idc)) ◎ \identlp}
+  {\idc ⊗ \, \identlp ⇔ (\distl ◎ (\absorbl ⊕ \idc)) ◎ \identlp}
 \end{array}\]
 \caption{\label{figc}Signatures of level-1 $\Pi$-combinators: zero}
 \end{figure}
@@ -2368,6 +2370,7 @@ Let $c : t₁ ⟷ t₂$:
 \\
   {\assoclt ◎ \distl ⇔ ((\idc ⊗ \distl) ◎ \distl) ◎ (\assoclt ⊕ \assoclt)}
 \end{array}\]
+\vspace{-0.5em}
 \[\def\arraystretch{1.3}
 \begin{array}{rcl}
   (\distl ◎ (\dist ⊕ \dist)) ◎ \assoclp &⇔&   
@@ -2398,7 +2401,9 @@ the names of the combinators (which are arbitrary) and omit some of
 the implicit type parameters. The reader should consult the code for
 full details.
 
-\amr{revise the following}
+\amr{revise the following; rules are types but implicit types omitted;
+things like absorbr ⇔ absorbl only make sense at type 0 etc.; unit
+coherence missing or perhaps provable}
 
 Generally speaking, the level-1 combinators arise for the following
 reasons. About a third of the combinators come from the definition of
@@ -2764,9 +2769,7 @@ pfEx {A} {B} =
   (Pi0.swap₊ ⊕ id⟷) ◎ (unite₊l ⊕ id⟷)
     ⇔⟨ hom◎⊕⇔ ⟩
   (Pi0.swap₊ ◎ unite₊l) ⊕ (id⟷ ◎ id⟷)
-    ⇔⟨  resp⊕⇔ id⇔ idl◎l ⟩ 
-  (Pi0.swap₊ ◎ unite₊l) ⊕ id⟷
-    ⇔⟨ resp⊕⇔ {!!} id⇔ ⟩
+    ⇔⟨ resp⊕⇔ {!!} idl◎l ⟩  
   unite₊r ⊕ id⟷
     ⇔⟨ triangle⊕l ⟩
   Pi0.assocr₊ ◎ (id⟷ ⊕ unite₊l) ▤
@@ -2781,6 +2784,7 @@ equivalences of types. Furthermore, the level-1 combinators are
 coherent with the respect to the level-0 semantics. Formally, in Agda,
 we have:
 
+\medskip
 {\footnotesize{
 \begin{code}
 cc2equiv :  {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) → 
@@ -2795,6 +2799,7 @@ so that equivalent programs always give the same values; more
 amusingly, if we run one program then run an equivalent program
 backwards, we get the identity:
 
+\medskip
 {\footnotesize{
 \begin{code}
 ≋⇒≡ : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (e : c₁ ⇔ c₂) → eval c₁ ∼ eval c₂
