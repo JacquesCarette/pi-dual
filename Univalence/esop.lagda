@@ -1389,14 +1389,14 @@ types, and $(v_1,v_2)$ for product types.
 
 Fig.~\ref{pi-terms} gives the terms which correspond to the identities
 of commutative semirings.  Each line of the figure introduces a pair
-of dual constants\footnote{where $\idc$, $\swapp$ and $\swapt$ are
-  self-dual.}  that witness the type isomorphism in the
+of dual constants (where $\idc$, $\swapp$ and $\swapt$ are self-dual)
+that witness the type isomorphism in the
 middle. Fig.~\ref{pi-combinators} adds to that $3$ combinators
-$\odot$, $\oplus$, and $\otimes$, which come from the requirement
-that $\iso$ be transitive (giving a sequential composition operator
-$\odot$), and that $\iso$ be a congruence for both $+$ and $*$
-(giving a way to take sums and products of combinators using $\oplus$
-and $\otimes$ respectively).  That latter congruence requirement is
+$\odot$, $\oplus$, and $\otimes$, which come from the requirement that
+$\iso$ be transitive (giving a sequential composition operator
+$\odot$), and that $\iso$ be a congruence for both $+$ and $*$ (giving
+a way to take sums and products of combinators using $\oplus$ and
+$\otimes$ respectively).  That latter congruence requirement is
 usually invisible in classical mathematics, but appears when doing
 proof-relevant mathematics.
 
@@ -1405,19 +1405,20 @@ below.
 
 \begin{definition}[Syntactic Inverse $!$] Each $\Pi$-term $c$ has a
   syntactic inverse~$!c$. We only show a few representative clauses:
-\begin{multicols}{2}
-\[\begin{array}{rcl}
+\vspace{-2mm}
+\[\begin{array}{c@{\qquad}c}
+\begin{array}{rcl}
 !\idc &=& \idc \\
 !\identlp &=& \identrp \\
 !\identrp &=& \identlp 
-\end{array}\]
-\break
-\[\begin{array}{rcl}
+\end{array}
+&
+\begin{array}{rcl}
 !(c_1 \odot c_2) &=& !c_2 ~\odot~ !c_1 \\
 !(c_1 \oplus c_2) &=& !c_1 ~\oplus~ !c_2 \\
 !(c_1 \otimes c_2) &=& !c_1 ~\otimes~ !c_2 
+\end{array}
 \end{array}\]
-\end{multicols}
 \end{definition}
 
 % language to be composed of \emph{equivalences}, and we want the
@@ -1501,17 +1502,18 @@ NOT = swap₊
 \end{code}}}
 \end{multicols}
 
-% \begin{multicols}{2}
-% {\footnotesize{
-% \begin{code}
-% \end{code}}}
-% \end{multicols}
+\vspace{-3mm}
 
 {\footnotesize{
 \begin{code}
 CNOT : BOOL² ⟷ BOOL²
 CNOT = dist ◎ (id⟷ ⊕ (id⟷ ⊗ NOT)) ◎ factor 
+\end{code}}}
 
+\pagebreak[3]
+
+{\footnotesize{
+\begin{code}
 TOFFOLI : TIMES BOOL BOOL² ⟷ TIMES BOOL BOOL²
 TOFFOLI = dist ◎ (id⟷ ⊕ (id⟷ ⊗ CNOT))  ◎ factor  
 
@@ -1752,7 +1754,7 @@ with the following additional structure:
 & A \otimes ((B \otimes C) \otimes D)
 \end{tikzcd}
 \end{center}
-%\qquad\qquad\qquad
+\qquad\qquad\qquad
 \begin{center}
 \begin{tikzcd}[column sep=tiny]
 (A \otimes I) \otimes B
@@ -1775,6 +1777,7 @@ triangle (below on the left) and the \emph{bilinerarity} hexagon
 below. A braided monoidal category is \emph{symmetry} if it
 additionally satisfies the \emph{symmetry} triangle (below on the
 right).
+
 \begin{center}
 \begin{tikzcd}[column sep=tiny]
 & A \otimes I 
@@ -1783,7 +1786,7 @@ right).
 \\
 I \otimes A \arrow[rr, "\lambda_A"] && A 
 \end{tikzcd}
-%
+\qquad\qquad
 \begin{tikzcd}[column sep=tiny]
 & A \otimes B 
   \arrow[dl, "\sigma"']
@@ -1791,7 +1794,9 @@ I \otimes A \arrow[rr, "\lambda_A"] && A
 \\
 B \otimes A \arrow[rr, "\sigma"] && A \otimes B
 \end{tikzcd}
-%
+\end{center}
+
+\begin{center}
 \begin{tikzcd}[column sep=tiny]
 & A \otimes (B \otimes C) 
   \arrow[dr, "\sigma"]
@@ -2275,6 +2280,10 @@ Let $c₀ : 0 ⟷ 0$, $c₁ : 1 ⟷ 1$, and $c : t₁ ⟷ t₂$:
   {\identrst ◎ (c ⊗ c₁) ⇔ c ◎ \identrst}
 \\
   {\identlt ⇔ \distl ◎ (\identlt ⊕ \identlt)}
+\\
+\identlp ⇔ \swapp ◎ \identrsp
+\qquad
+\identlt ⇔ \swapt ◎ \identrst
 \end{array}\]
 \caption{\label{figg}Signatures of level-1 $\Pi$-combinators: unit}
 \end{figure}
