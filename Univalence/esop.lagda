@@ -939,9 +939,8 @@ equivalent to \AgdaFunction{pf₄} by proving
 \AgdaFunction{pf₃}~\AgdaSymbol{≋}~\AgdaFunction{pf₄}. Such a proof
 exists in the accompanying code in \AgdaModule{TypeEquivEquiv} but
 requires a surprisingly tedious infrastructure to present. We will
-have to wait until Secs.~\ref{sec:categorification}
-and~\ref{sec:revised} to see this proof.
-
+have to wait until Secs.~\ref{sub:monoidal} and~\ref{sub:level1proof}
+to see this proof.
 
 % \noindent For example, for arbitrary types $A$, $B$, and $C$, we have
 % equivalences such as:
@@ -1715,6 +1714,7 @@ framework.
 
 %%%%%%%%%%%
 \subsection{Monoidal Categories} 
+\label{sub:monoidal}
 
 As the details matter, we will be explicit about the definition of all
 the categorical notions involved. We begin with the conventional
@@ -1945,6 +1945,11 @@ multiplicative structure is symmetric.
 A \emph{symmetric rig groupoid} is a symmetric rig category in which
 every morphism is invertible.
 \end{definition}
+
+\amr{On the XXIV coherence conditions took from Laplaza: I fail to see how an 
+algebraic description of those would not be programming-oriented. Not to 
+mention it would be much easier to read and relate to the previous section. 
+Again, if details mater, a textual description is out of place.}
 
 The coherence conditions for rig categories were worked out by
 \citet{laplaza}. Pages 31-35 of his paper report 24 coherence
@@ -2238,7 +2243,7 @@ Let $c, c₁, c₂, c₃ : t₁ ⟷ t₂$ and $c', c'' : t₃ ⟷ t₄$:
 \begin{array}{c}
   {\idc ◎ \, c ⇔ c}
 \quad 
-  {c \, ◎ \idc ~⇔ c}
+  {c \, ◎ \idc \, ⇔ c}
 \quad
   {c\,\, ◎\,! c ⇔ \idc}
 \quad 
@@ -2322,9 +2327,9 @@ Let $a₁ : t₅ ⟷ t₁$,  $a₂ : t₆ ⟷ t₂$, $a₃ : t₁ ⟷ t₃$, and
   {c₁ ⊗ c₂ ⇔ c₃ ⊗ c₄}
   {} 
 \\
-  {\idc ⊕ \, \idc ⇔ \idc}
+  {\idc ⊕ \, \idc \, ⇔ \idc}
 \qquad
-  {\idc ⊗ \, \idc ⇔ \idc}
+  {\idc ⊗ \, \idc \, ⇔ \idc}
 \\
   {(a₁ ◎ a₃) ⊕ (a₂ ◎ a₄) ⇔ (a₁ ⊕ a₂) ◎ (a₃ ⊕ a₄)}
 \\
@@ -2411,10 +2416,6 @@ the names of the combinators (which are arbitrary) and omit some of
 the implicit type parameters. The reader should consult the code for
 full details.
 
-\amr{revise the following; rules are types but implicit types omitted;
-things like absorbr ⇔ absorbl only make sense at type 0 etc.; unit
-coherence missing or perhaps provable}
-
 Generally speaking, the level-1 combinators arise for the following
 reasons. About a third of the combinators come from the definition of
 the various natural isomorphisms $\alpha_{A,B,C}$, $\lambda_{A}$,
@@ -2426,20 +2427,24 @@ must compose to the identity.  This in turn induces $4$ coherence
 laws: two \emph{naturality laws} which indicate that the combinator
 commutes with structure construction, and two which express that the
 resulting combinators are left and right inverses of each other.  We
-note that the mere desire that $\oplus$ be a bifunctor induces 3
+note that the mere desire that~$\oplus$ be a bifunctor induces 3
 coherence laws.  And then of course each ``structure'' (monoidal,
 braided, symmetric) comes with more, as outlined in the previous
 section, culminating with 13 additional coherence laws for the rig
 structure.
 
-It is worth noting that most (but not all) of the properties involving
-only $⊕$ were already in Agda's standard library (in
+In our presentation, we group the level-1 combinators according to the
+dominant property of interest, e.g., associativity in Fig.~\ref{figj},
+or according to the main two interacting properties, e.g.,
+commutativity and associativity in Fig.~\ref{figf}. It is worth noting
+that most (but not all) of the properties involving only $⊕$ were
+already in Agda's standard library (in
 \AgdaModule{Data.Sum.Properties} to be precise), whereas all
 properties involving only $⊗$ were immediately provable due to $\eta$
-expansion.  Nevertheless, for symmetry and clarity, we created a module
-\AgdaModule{Data.Prod.Properties} to collect all of these.
-None of the mixed properties involved with distributivity
-and absorption were present, although the proof of all of them was
+expansion.  Nevertheless, for symmetry and clarity, we created a
+module \AgdaModule{Data.Prod.Properties} to collect all of these.
+None of the mixed properties involved with distributivity and
+absorption were present, although the proofs for all of them were
 straightforward.  Their statement, on the other hand, was at times
 rather complex (see \AgdaModule{Data.SumProd.Properties}).
 
@@ -2496,7 +2501,7 @@ must act polymorphically on its input and hence, it must be the case
 that the two evaluations produce the same result. The situation for
 the other possible input value is symmetric. This extensional
 reasoning is embedded once and for all in the proofs of coherence and
-distilled in a level-1 combinator:
+distilled in a level-1 combinator (see the first combinator in Fig.~\ref{figf}):
 
 \[\begin{array}{rcl}
 \AgdaInductiveConstructor{swapl₊⇔} & \AgdaSymbol{:} &
@@ -2515,13 +2520,13 @@ distilled in a level-1 combinator:
 \end{array}\]
 
 Categorically speaking, this combinator expresses exactly that the
-braiding $\sigma_{A,B}$ is a natural transformation, in other words
-that $\sigma_{A,B}$ must commute with $\oplus$. Pictorially, this
-level-1 combinator is a 2-path showing how the two paths can be
-transformed to one another. The proof of equivalence can be visualized
-by simply imagining the connections as wires whose endpoints are
-fixed: holding the wires on the right side of the top path and
-flipping them produces the connection in the bottom path:
+braiding~$\sigma_{A,B}$ is a natural transformation, in other words
+that $\sigma_{A,B}$ must commute with~$\oplus$. Pictorially, this
+level-1 combinator is a 2-path showing how the two programs (paths)
+can be transformed to one another. The proof of equivalence can be
+visualized by simply imagining the connections as wires whose
+endpoints are fixed: holding the wires on the right side of the top
+path and flipping them produces the connection in the bottom path:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.9,every node/.style={scale=0.9}]
@@ -2589,9 +2594,11 @@ it might be critical to have either a diagrammatic interface similar
 to Quantomatic~\citep{quantomatic} (which only works for traced
 symmetric monoidal categories) or a radically different syntactic
 notation such as Penrose's abstract tensor
-notation~\citep{tensor1,tensor2}. Meanwhile, as another small but
-complete example, consider two possible circuits realizing boolean
-negation. The first circuit is direct and trivial:
+notation~\citep{tensor1,tensor2}. 
+
+We conclude this section with a small but complete example showing how
+to prove the equivalence of two circuits implementing boolean
+negation. The first circuit uses the direct realization of boolean negation:
 
 \medskip
 
@@ -2626,9 +2633,7 @@ NOT₁ = Pi0.swap₊
 \end{tikzpicture}}
 \end{tabular}
 
-\smallskip
- 
-The second circuit is more convoluted:
+\smallskip\noindent The second circuit is more convoluted:
 
 \medskip
 
@@ -2708,10 +2713,10 @@ open import PiEquiv using (c2equiv)
 \end{code}
 }
 
-\smallskip\noindent Here is a complete proof in level-1 $\Pi$ using the small-step
-rewriting style that shows that the two circuits are equivalent.
-
-\amr{the names of level-1 combinators have not been defined; refer to figures in comments?}
+\smallskip\noindent Here is a complete proof in level-1 $\Pi$ using
+the small-step rewriting style that shows that the two circuits are
+equivalent. The proofs uses the names of the level-1 combinators from
+the accompanying code.
 
 \medskip
 
@@ -2763,13 +2768,13 @@ negEx = uniti⋆l ◎ (Pi0.swap⋆ ◎ ((Pi0.swap₊ ⊗ id⟷) ◎ (Pi0.swap⋆
 
 %%%
 \subsection{Example Level-1 Proofs} 
+\label{sub:level1proof}
 
 In addition to proving circuit optimizations, we can also prove
-equivalences of semiring proofs. As we discussed we expect
-\AgdaFunction{pf₃π} and \AgdaFunction{pf₄π} to be equivalent
-proofs. The following derivation shows how:
-
-\amr{complete this proof and refer to figures as needed}
+equivalences of semiring proofs. As discussed in
+Sec.~\ref{subsec:proofrelev}, we expect \AgdaFunction{pf₃π} and
+\AgdaFunction{pf₄π} to be equivalent proofs. The following derivation
+shows the derivation using level-1 combinators:
 
 \medskip
 {\footnotesize{
@@ -2831,14 +2836,9 @@ very effective optimizer for such programs.
 
 The next theorem is the main result: it shows that the two levels of
 $\Pi$ form a symmetric rig groupoid, thus capturing equivalences of
-types at level-0, and equivalences of equivalences at level-1.
-
-\amr{ page 23, proof of Th. 3: this proof seems taken literally from an
- old version of the paper, with different notations. In particular,
- in the proof you speak about levels 1 and 2, while before you were
- using levels 0 and 1; furthermore you say that additional level 0
- combinators are presented in the next section, while they were
- presented and discussed at the beginning of the section}
+types at level-0, and equivalences of equivalences at level-1. The
+theorem essentially holds by construction as the level-1 combinators
+were distilled from the proof. 
 
 \begin{theorem}
 The universe $U$ and $\Pi$ terms and combinators form a symmetric rig
@@ -2846,29 +2846,16 @@ groupoid.
 \end{theorem}
 \begin{proof}
   The objects of the category are the syntax of finite types, and the
-  morphisms are the $\Pi$ term and combinators. Short proofs establish
-  that these morphisms satisfy the axioms stated in the definitions of
-  the various categories. The bulk of the work is in ensuring that the
-  coherence conditions are satisfied. This required us to add a few
-  $\Pi$ combinators and then to add a whole new layer of 2-combinators
-  witnessing enough equivalences of~$\Pi$ combinators to satisfy the
-  coherence laws (see Figs.~\ref {figj}--\ref{figa}). The new $\Pi$
-  1-combinators, also discussed in more detail in the next section,
-  are redundant (from an operational perspective) exactly because of
-  the coherence conditions; they are however important as they have
-  rather non-trivial relations to each other that are captured in the
-  more involved coherence laws.
+  morphisms are the $\Pi$ terms and combinators. Short proofs
+  establish that these morphisms satisfy the axioms stated in the
+  definitions of the various categories. The bulk of the work is in
+  ensuring that the coherence conditions are satisfied. As explained
+  earlier in this section, this required us to add a few additional
+  level-0 $\Pi$ combinators and then to add a whole new layer of
+  level-1 combinators witnessing enough equivalences of level-0 $\Pi$
+  combinators to satisfy the coherence laws (see
+  Figs.~\ref{figj}--\ref{figa}).
 \end{proof}
-
-\amr{
-Theorem 3 holds by construction... if you constructed your combinator-calculus
-based on the laws of the natural transformations for a symmetric rig groupoid, 
-it would be very strange if they did NOT show that structure. 
-
-[Yes, theorem 3 does hold by construction.  We should state that more
-clearly, thank you.  The theorems before it, on the same page, are not
-so trivial]
-}
 
 % \begin{comment}
 % Putting the result above together with Laplaza's coherence result
@@ -2906,11 +2893,6 @@ so trivial]
 open import TypeEquivCat
 \end{code}
 }
-
-\amr{On the XXIV coherence conditions took from Laplaza: I fail to see how an 
-algebraic description of those would not be programming-oriented. Not to 
-mention it would be much easier to read and relate to the previous section. 
-Again, if details mater, a textual description is out of place.}
 
 % \amr{However, it did let me observe one thing: we have 2! which says
 %  that given (c <-> d), we can get (d <-> c).  What we don't have, and
@@ -3216,8 +3198,9 @@ unfortunately.}
 % introduce \emph{fractional types}. 
 % \end{comment}
 
-\ackname 
-\amr{Thank reviewers. NSF support.}
+\ackname We would like sincerely thank the reviewers for their
+excellent and detailed comments. This material is based upon work
+supported by the National Science Foundation under Grant No. 1217454.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% \clearpage
