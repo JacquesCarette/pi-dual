@@ -177,7 +177,7 @@ Indiana University (\email{sabry@indiana.edu})
 
 \begin{abstract}
 
-  The original formulation of the Curry-Howard correspondence relates
+  The original formulation of the Curry--Howard correspondence relates
   propositional logic to the simply-typed $\lambda$-calculus at three
   levels: the syntax of propositions corresponds to the syntax of
   types; the proofs of propositions correspond to programs of the
@@ -234,7 +234,7 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
 Elementary building blocks of type theory include the empty type
 ($\bot$), the unit type ($\top$), the sum type ($\uplus$), and the
-product type ($\times$). The traditional Curry-Howard correspondence
+product type ($\times$). The traditional Curry--Howard correspondence
 which goes back to at least 1969 relates these types to logical
 propositions as follows: the type $\bot$ corresponds to the absurd
 proposition with no proof; the type $\top$ corresponds to the
@@ -254,8 +254,8 @@ transformations:
 This connection to logic, as inspiring as it is, only cares whether a
 type is inhabited or not. For example, when translated to the world of
 types, the second tautology above states that the type
-$\tau \times \tau$ is inhabited iff the type $\tau$ is
-inhabited. Furthermore, the proofs of the two implications give rise
+$\tau \times \tau$ is inhabited iff the type $\tau$ is.
+Furthermore, the proofs of the two implications give rise
 to two functions that produce an element from one type given an
 element of the other. This framework is however of no direct help if
 one is concerned with other, richer properties of types and their
@@ -272,7 +272,7 @@ types as they clearly distinguish $\tau \times \tau$ and $\tau$.
 % importance, you should at least try to explain what a univalence axiom
 % is.}
 
-The study of type isomorphisms became recently popular during at least
+The study of type isomorphisms became popular during at least
 two short periods: in the early 1990s when they were used to search
 large libraries~\citep{Rittri:1989:UTS:99370.99384}, and in the mid
 2000s when they were studied from a categorical
@@ -286,8 +286,8 @@ example, let \AgdaDatatype{Bool} abbreviate the type $\top + \top$ and
 consider the two isomorphisms between the type \AgdaDatatype{Bool} and
 itself. One of these is the identity and the other is the twist
 (negation) map. These isomorphisms are themselves ``not equivalent''
-one level up in a sense to be formalized. And the chain of reasoning
-continues.
+in a sense to be formalized.
+% And the chain of reasoning continues.
 
 % \amr{"computation is fundamentally a physical process": This struck me as
 % either tautological ("computation" defined as something that is
@@ -295,14 +295,14 @@ continues.
 % philosophical question.}
 
 The question we therefore ask is whether there is a natural
-correspondence, in the style of the Curry-Howard correspondence,
+correspondence, in the style of the Curry--Howard correspondence,
 between types and some existing mathematical entities, which would
 bring forth the structure of type isomorphisms and their equivalences
 at higher levels. We argue that, for the case of finite types,
 commutative semirings and their categorification are exactly these
 entities. In a broader sense, such a correspondence connects
 computation with mathematical structures common in topology and
-physics thus opening the door for deeper and more fruitful
+physics, thus opening the door for deeper and more fruitful
 interactions among these disciplines~\citep{rosetta}. In more detail,
 because physical laws obey various conservation principles (including
 conservation of information), every computation is, at the physical
@@ -454,7 +454,7 @@ a \cdot (b \cdot c) & = & (a \cdot b) \cdot c & (\mbox{$\cdot$-assoc}) \\
 If one were to focus on the \emph{syntax} of the semiring elements,
 they would be described using the following grammar:
 \[\begin{array}{rcl}
-a & ::= & 0 \alt 1 \alt a + b \alt a \cdot b
+a,b & ::= & 0 \alt 1 \alt a + b \alt a \cdot b
 \end{array}\]
 This grammar corresponds to the grammar for the finite types in
 type theory:
@@ -501,7 +501,7 @@ of the types separate and speak of \emph{isomorphisms}.
 \label{subsec:proofrelev}
 
 In the world of semirings, there are many proofs of $a + a = a +
-a$. Consider the following two proofs:
+a$. Consider
 \[\begin{array}{l@{\qquad}rcl@{\qquad}l}
 \fun{pf₁} : & a + a &=& a + a & \mbox{(because $=$ is reflexive)} \\
 \fun{pf₂} : & a + a &=& a + a & \mbox{(using $+$-swap)}
@@ -1962,8 +1962,9 @@ situation.  Generally speaking, the coherence laws appear rather
 obscure but they can be unpacked and
 ``unformalized'' to relatively understandable statements.
 They all express that two different means of getting between
-two equivalent types are equivalent.  Thus we give 
-programming-oriented descriptions of these as follows:
+two equivalent types are equivalent.  Thus we can
+give programming-oriented descriptions of these along the
+following lines:
 \begin{itemize}
 \item[I] given $A ⊗ (B ⊕ C)$, swapping $B$ and $C$ then distributing
   (on the left) is the same as first distributing, then swapping the
@@ -1971,37 +1972,38 @@ programming-oriented descriptions of these as follows:
 \item[II] given $(A ⊕ B) ⊗ C$, first switching the order of the
   products then distributing (on the left) is the same as distributing
   (on the right) and then switching the order of both products;
-\item[IV] given $(A ⊕ (B ⊕ C)) ⊗ D$, we can either distribute then
-  associate, or associate then distribute;
-\item[VI] given $A ⊗ (B ⊗ (C ⊕ D))$, we can either associate then
-  distribute, or first do the inner distribution, then the outer, and
-  map associativity on each term;
+% \item[IV] given $(A ⊕ (B ⊕ C)) ⊗ D$, we can either distribute then
+%  associate, or associate then distribute;
+% \item[VI] given $A ⊗ (B ⊗ (C ⊕ D))$, we can either associate then
+%  distribute, or first do the inner distribution, then the outer, and
+%  map associativity on each term;
 \item[IX] given $(A ⊕ B) ⊗ (C ⊕ D)$, we can either first distribute on
   the left, map right-distribution and finally associate, or we can go
   ``the long way around'' by right-distributing first, then mapping
   left-distribution, and then a long chain of administrative shuffles
   to get to the same point;
-\item[X] given $0 ⊗ 0$, left or right absorption both give $0$ in
-  equivalent ways;
-\item[XI] given $0 ⊗ (A ⊕ B)$, left absorption or distribution, then
-  mapping left absorption, followed by (additive) left unit are
-  equivalent;
-\item[XIII] given $0 * 1$, left absorption or (multiplicative) right
-  unit are equivalent;
-\item[XV] given $A ⊗ 0$, we can either absorb $0$ on the left, or
-  commute and absorb $0$ on the right;
-\item[XVI] given $0 ⊗ (A ⊗ B)$, we can either absorb $0$ on the left,
-  or associate, and then absorb twice;
-\item[XVII] given $A ⊗ (0 ⊗ B)$, we can directly absorb twice to reach
-  $0$ or we can associate to the left and then absorb twice; 
-\item[XIX] given $A ⊗ (0 ⊕ B)$, we can either eliminate the (additive)
-  identity in the right term, or distribute, right absorb $0$ in the
-  left term, then eliminate the resulting (additive) identity to get
-  to $A ⊗ B$;
-\item[XXIII] Given $1 ⊗ (A ⊕ B)$, we can either eliminate the
-  (multiplicative) identity on the left or distribute the map
-  left-elimination.
+% \item[X] given $0 ⊗ 0$, left or right absorption both give $0$ in
+%  equivalent ways;
+% \item[XI] given $0 ⊗ (A ⊕ B)$, left absorption or distribution, then
+%  mapping left absorption, followed by (additive) left unit are
+%  equivalent;
+% \item[XIII] given $0 * 1$, left absorption or (multiplicative) right
+%  unit are equivalent;
+% \item[XV] given $A ⊗ 0$, we can either absorb $0$ on the left, or
+%   commute and absorb $0$ on the right;
+% \item[XVI] given $0 ⊗ (A ⊗ B)$, we can either absorb $0$ on the left,
+%  or associate, and then absorb twice;
+% \item[XVII] given $A ⊗ (0 ⊗ B)$, we can directly absorb twice to reach
+%  $0$ or we can associate to the left and then absorb twice; 
+% \item[XIX] given $A ⊗ (0 ⊕ B)$, we can either eliminate the (additive)
+%   identity in the right term, or distribute, right absorb $0$ in the
+%  left term, then eliminate the resulting (additive) identity to get
+%  to $A ⊗ B$;
+% \item[XXIII] Given $1 ⊗ (A ⊕ B)$, we can either eliminate the
+%  (multiplicative) identity on the left or distribute the map
+%  left-elimination.
 \end{itemize}
+\noindent and so on.
 
 Going through the details of the proof of the coherence theorem
 in~\cite{laplaza} with a ``modern'' eye, one cannot help but think of
@@ -2178,8 +2180,7 @@ As explained in the previous section, there is a systematic way to
 conditions. During our proofs, we collected all the level-1 terms that
 were needed to realize all the coherence conditions. This exercise
 suggested a refactoring of the original level-0 terms and a few
-iterations. We present the final result and then give the main
-theorem.
+iterations.
 
 %%%
 \subsection{Revised Syntax of Level-0 Terms} 
@@ -2410,7 +2411,7 @@ Let $c : t₁ ⟷ t₂$:
 \subsection{Syntax of Level-1 Terms} 
 
 The big addition to $\Pi$ is the level-1 combinators which are
-collected in Figs.~\ref{figj}--\ref{figa}. To avoid clutter we omit
+collected in Figs.~\ref{figj} -- \ref{figa}. To avoid clutter we omit
 the names of the combinators (which are arbitrary) and omit some of
 the implicit type parameters. The reader should consult the code for
 full details.
@@ -2478,7 +2479,7 @@ postulate
   c₂ : {A D : U} →  A ⟷ D
 \end{code}}}
 
-\smallskip\noindent Now consider the circuits \AgdaFunction{p₁} and
+\noindent Now consider the circuits \AgdaFunction{p₁} and
 \AgdaFunction{p₂} which use \AgdaFunction{c₁} and \AgdaFunction{c₂}
 as shown below:
 
