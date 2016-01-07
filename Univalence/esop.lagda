@@ -643,7 +643,7 @@ and verify that it is identical to the one above.
 %%% 
 \subsection{Summary} 
 
-To summarize this high-level presentation, there is a natural
+To summarize, there is a natural
 computational model that emerges from viewing types as syntax for
 semiring elements and semiring identities as type isomorphisms. The
 correspondence continues further between justifications for semiring
@@ -664,9 +664,9 @@ formalization and its applications.
 \label{sec:equiv}
 
 The previous section used two informal notions of equivalence: 
-equivalences between types (corresponding to semiring identities), and
-equivalences between programs corresponding to proofs of semiring
-identities. We give precise definitions to these notions. 
+between types, corresponding to semiring identities, and
+between programs, corresponding to proofs of semiring
+identities. We make this precise. 
 
 % We now redo the material of the previous section, but with formal
 % definitions throughout.  When the Agda code is just as clear as
@@ -719,11 +719,11 @@ _∼_ : ∀ {A : Set} {P : A → Set} → (f g : (x : A) → P x) → Set
 _∼_  {A} f g = (x : A) → f x ≡ g x
 \end{code}}}
 
-\smallskip\noindent where \AgdaFunction{Set} is the universe of Agda types.
+\noindent where \AgdaFunction{Set} is the universe of Agda types.
 \end{definition}
 
 \noindent In the HoTT world, there is a distinction between the identification
-of two functions $f \equiv g$ and the fact that the functions produce equal
+of two functions $f \equiv g$, and two functions producing equal
 values on all inputs $f ∼ g$: the two notions are traditionally
 identified but are only \emph{equivalent} in the HoTT context. 
 
@@ -803,13 +803,9 @@ postulate
 typesCSR : CommutativeSemiring (Level.suc Level.zero) Level.zero
 typesCSR = record {
   Carrier = Set ;
-  _≈_ = _≃_ ;
-  _+_ = _⊎_ ;
-  _*_ = _×_ ;
-  0#  = ⊥ ;
-  1#  = ⊤ ;
-  isCommutativeSemiring = typesIsCSR
-  }
+  _≈_ = _≃_ ;  _+_ = _⊎_ ; _*_ = _×_ ;
+  0#  = ⊥ ; 1#  = ⊤ ;
+  isCommutativeSemiring = typesIsCSR  }
 \end{code}}}
 
 \medskip\noindent The functions, homotopies, and quasi-inverses witnessing the explicit
@@ -822,7 +818,6 @@ straightforward. For future reference, we list some of these equivalences:
 \AgdaFunction{assoc₊≃} &:& ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C)) \\
 \_\AgdaSymbol{⊎≃}\_ &:&  (A ≃ C) → (B ≃ D) → ((A ⊎ B) ≃ (C ⊎ D))
 \end{array}\]
-\qed
 \end{proof}
 
 %%%
@@ -932,11 +927,10 @@ In Agda, we write:
 % \amr{ page 8, lines 17-21: I do not understand this, but this is probably
 %  due to my limited familiarity with homotopy type theory}
 
-\smallskip We could now verify that \AgdaFunction{pf₃} is indeed
-equivalent to \AgdaFunction{pf₄} by proving
+\smallskip We could now verify that indeed
 \AgdaFunction{pf₃}~\AgdaSymbol{≋}~\AgdaFunction{pf₄}. Such a proof
-exists in the accompanying code in \AgdaModule{TypeEquivEquiv} but
-requires a surprisingly tedious infrastructure to present. We will
+exists in the accompanying code but
+requires a surprising amount of tedious infrastructure to present. We will
 have to wait until Secs.~\ref{sub:monoidal} and~\ref{sub:level1proof}
 to see this proof.
 
@@ -1366,10 +1360,9 @@ expresses type equivalences and nothing else.
 
 In previous work, Bowman, James and Sabry \cite{rc2011,James:2012:IE:2103656.2103667}
 introduced the~$\Pi$ family of reversible languages whose only
-computations are isomorphisms between types. The simplest of these
-languages is exactly the language we seek for capturing type
+computations are isomorphisms between types. The simplest member of $\Pi$
+is exactly the language we seek for capturing type
 equivalences arising from semiring identities.
-
 The syntactic components of our language are as follows:
 \[\begin{array}{lrcl}
 (\textit{Types}) & 
@@ -1393,15 +1386,15 @@ $\odot$, $\oplus$, and $\otimes$, which come from the requirement that
 $\iso$ be transitive (giving a sequential composition operator
 $\odot$), and that $\iso$ be a congruence for both $+$ and $*$ (giving
 a way to take sums and products of combinators using $\oplus$ and
-$\otimes$ respectively).  That latter congruence requirement is
-usually invisible in classical mathematics, but appears when doing
-proof-relevant mathematics.
+$\otimes$ respectively).  This latter congruence requirement is
+classically invisible, but appears when being
+proof-relevant.
 
-By construction, each term in the language has an inverse defined
-below. 
+By construction, each term in the language has an inverse:
 
-\begin{definition}[Syntactic Inverse $!$] Each $\Pi$-term $c$ has a
-  syntactic inverse~$!c$. We only show a few representative clauses:
+\begin{definition}[Syntactic Inverse $!$] Each $\Pi$-term
+$c : \tau_1 \iso \tau_2$ has a
+syntactic inverse~$!c : \tau_2 \iso \tau_1$. We only show a few representative clauses:
 \vspace{ -2mm}
 \[\begin{array}{c@{\qquad}c}
 \begin{array}{rcl}
@@ -1442,7 +1435,7 @@ we begin by defining the universe of types \AgdaDatatype{U}:
 
 {\setlength{\mathindent}{0cm}
 
-\medskip 
+% \medskip 
 \AgdaHide{
 \begin{code}
 module Foo where
@@ -1456,10 +1449,10 @@ module Foo where
     PLUS  : U → U → U
     TIMES : U → U → U
 \end{code}}}
-
 }
 
-\smallskip\noindent We then encode the type of booleans, write a few simple gates like the
+\vspace{ -2mm}
+\noindent We then encode the type of booleans, write a few simple gates like the
 Toffoli gate~\citep{Toffoli:1980}, and use them to write a reversible
 full adder~\citep{revadder}:
 
@@ -1480,8 +1473,7 @@ _□ t = id⟷
 \end{code}
 }
 
-\medskip 
-
+% \smallskip
 \begin{multicols}{2}
 {\footnotesize{
 \begin{code}
@@ -1499,7 +1491,7 @@ NOT = swap₊
 \end{code}}}
 \end{multicols}
 
-\vspace{ -3mm}
+\vspace{ -4mm}
 
 {\footnotesize{
 \begin{code}
@@ -1515,10 +1507,9 @@ TOFFOLI : TIMES BOOL BOOL² ⟷ TIMES BOOL BOOL²
 TOFFOLI = dist ◎ (id⟷ ⊕ (id⟷ ⊗ CNOT))  ◎ factor  
 
 PERES : BOOL³ ⟷ BOOL³
-PERES = (id⟷ ⊗ NOT) ◎ assocr⋆ ◎ (id⟷ ⊗ swap⋆) ◎ 
-             TOFFOLI ◎ (id⟷ ⊗ (NOT ⊗ id⟷)) ◎ TOFFOLI ◎ 
-             (id⟷ ⊗ swap⋆) ◎ (id⟷ ⊗ (NOT ⊗ id⟷)) ◎ 
-             TOFFOLI ◎ (id⟷ ⊗ (NOT ⊗ id⟷)) ◎ assocl⋆
+PERES = (id⟷ ⊗ NOT) ◎ assocr⋆ ◎ (id⟷ ⊗ swap⋆) ◎ TOFFOLI ◎
+  (id⟷ ⊗ (NOT ⊗ id⟷)) ◎ TOFFOLI ◎ (id⟷ ⊗ swap⋆) ◎
+  (id⟷ ⊗ (NOT ⊗ id⟷)) ◎ TOFFOLI ◎ (id⟷ ⊗ (NOT ⊗ id⟷)) ◎ assocl⋆
 
 -- Input:     (z, ((n1, n2), cin))) 
 -- Output:  (g1, (g2, (sum, cout))) 
@@ -1529,13 +1520,13 @@ F_ADDER = swap⋆ ◎ (swap⋆ ⊗ id⟷) ◎ assocr⋆ ◎ swap⋆ ◎ (PERES �
 \end{code}
 }}
 
-\smallskip Although writing circuits using the raw syntax for
+Although writing circuits using the raw syntax for
 combinators is tedious, the examples illustrate the programming
 language nature of $\Pi$. In other work, one can find a compiler from
-a conventional functional language to generate the
+a conventional functional language to
 circuits~\citep{James:2012:IE:2103656.2103667}, a systematic technique
 to translate abstract machines to $\Pi$~\citep{rc2012}, and a
-Haskell-like surface language~\citep{theseus} which can be of help in
+Haskell-like surface language~\citep{theseus} which can ease
 writing circuits. All that reinforces the first part of the title,
 i.e., that we can really compute with semirings.
 
