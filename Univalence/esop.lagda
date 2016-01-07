@@ -2449,9 +2449,9 @@ be viewed as a language for expressing transformations and
 optimizations of boolean circuits. We illustrate the idea with a few
 small examples.
 
-As Figs.~\ref {figj}--\ref {figa} illustrate, we have rules to
-manipulate code fragments rewriting them in a small-step fashion. The
-rules apply only when both sides are well-typed. In their textual
+Figs.~\ref {figj}--\ref {figa} contain rules to
+manipulate well-typed code fragments by rewriting them in a small-step
+fashion. In their textual
 form, the rules are certainly not intuitive. They however become
 ``evidently correct'' transformations on circuits when viewed
 diagrammatically. As an example, consider two arbitrary
@@ -2489,8 +2489,8 @@ the value $\inl{a}$, it first transforms it to $\inr{a}$, and then
 passes it to \AgdaFunction{c₂}. If \AgdaFunction{p₂} is given the
 value $\inl{a}$, it first passes it to \AgdaFunction{c₂} and then
 flips the tag of the result. Since \AgdaFunction{c₂} is functorial, it
-must act polymorphically on its input and hence, it must be the case
-that the two evaluations produce the same result. The situation for
+must act polymorphically on its input and hence the two evaluations
+must produce the same result. The situation for
 the other possible input value is symmetric. This extensional
 reasoning is embedded once and for all in the proofs of coherence and
 distilled in a level-1 combinator (see the first combinator in Fig.~\ref{figf}):
@@ -2513,15 +2513,16 @@ distilled in a level-1 combinator (see the first combinator in Fig.~\ref{figf}):
 
 Categorically speaking, this combinator expresses exactly that the
 braiding~$\sigma_{A,B}$ is a natural transformation, in other words
-that $\sigma_{A,B}$ must commute with~$\oplus$. Pictorially, this
-level-1 combinator is a 2-path showing how the two programs (paths)
-can be transformed to one another. The proof of equivalence can be
-visualized by simply imagining the connections as wires whose
+that $\sigma_{A,B}$ must commute with~$\oplus$. Pictorially,
+\AgdaInductiveConstructor{swapl₊⇔}
+is a 2-path showing how the two programs
+can be transformed to one another. This can be
+visualized by imagining the connections as wires whose
 endpoints are fixed: holding the wires on the right side of the top
 path and flipping them produces the connection in the bottom path:
 
 \begin{center}
-\begin{tikzpicture}[scale=0.9,every node/.style={scale=0.9}]
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
   \draw[<->,double,red,thick] (2.25,-1.5) -- (2.25,-2.5) ;
   \node at (3.3,-2) {$\AgdaInductiveConstructor{swapl₊⇔}$} ;
   \node at (2.5,-1.3) {$\AgdaSymbol{((}
@@ -2748,7 +2749,7 @@ negEx = uniti⋆l ◎ (Pi0.swap⋆ ◎ ((Pi0.swap₊ ⊗ id⟷) ◎ (Pi0.swap⋆
 \renewcommand{\AgdaIndent}[1]{$\;\;$}
 
 %%%
-% \subsection{Example Level 1 Proofs} 
+% \subsection{Example Level 1 Proof} 
 
 % As before $\Pi$ proof irrelevance at this level; weak category; equivalence of
 % equivalence of equivalences trivial
@@ -2759,7 +2760,7 @@ negEx = uniti⋆l ◎ (Pi0.swap⋆ ◎ ((Pi0.swap₊ ⊗ id⟷) ◎ (Pi0.swap⋆
 % \end{code}
 
 %%%
-\subsection{Example Level-1 Proofs} 
+\subsection{Example Level-1 Proof} 
 \label{sub:level1proof}
 
 In addition to proving circuit optimizations, we can also prove
@@ -2822,15 +2823,15 @@ ping-pong = {!!}
 }
 
 \smallskip\noindent It should be stressed that $c_1$ and $c_2$ can be 
-arbitrarily complex programs (albeit equivalent), the above 
+arbitrarily complex programs (albeit equivalent), and still the above 
 optimization property holds.  So we have the promise of a
 very effective optimizer for such programs.
 
-The next theorem is the main result: it shows that the two levels of
+The next theorem is both trivial (as it holds by construction), and
+central to the correspondance:  we distilled the level-1 combinators
+to make its proof trivial.  It shows that the two levels of
 $\Pi$ form a symmetric rig groupoid, thus capturing equivalences of
-types at level-0, and equivalences of equivalences at level-1. The
-theorem essentially holds by construction as the level-1 combinators
-were distilled from the proof. 
+types at level-0, and equivalences of equivalences at level-1.
 
 \begin{theorem}
 The universe $U$ and $\Pi$ terms and combinators form a symmetric rig
