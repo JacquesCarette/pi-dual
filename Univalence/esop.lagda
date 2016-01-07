@@ -1402,7 +1402,7 @@ below.
 
 \begin{definition}[Syntactic Inverse $!$] Each $\Pi$-term $c$ has a
   syntactic inverse~$!c$. We only show a few representative clauses:
-\vspace{-2mm}
+\vspace{ -2mm}
 \[\begin{array}{c@{\qquad}c}
 \begin{array}{rcl}
 !\idc &=& \idc \\
@@ -1437,7 +1437,7 @@ operators~\citep{Hasegawa:1997:RCS:645893.671607}, $\Pi$ becomes a
 Turing-complete reversible
 language~\citep{James:2012:IE:2103656.2103667,rc2011}.
 
-We illustrate the expressiveness of $\Pi$ with a few small programs:
+We illustrate the expressiveness of $\Pi$ with a few small programs;
 we begin by defining the universe of types \AgdaDatatype{U}:
 
 {\setlength{\mathindent}{0cm}
@@ -1867,14 +1867,14 @@ of symmetric monoidal categories as follows:
 \AgdaFunction{pf₃} &=& \AgdaInductiveConstructor{trans≃}~ 
   (\AgdaInductiveConstructor{swap₊≃}~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{id≃})~
   (\AgdaInductiveConstructor{unite₊≃}~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{id≃}) \\
-  &=&
+  &≋&
   (\AgdaInductiveConstructor{trans≃}~\AgdaInductiveConstructor{swap₊≃}~\AgdaInductiveConstructor{unite₊≃}) 
    ~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{id≃} 
   & (\AgdaInductiveConstructor{⊎≃} \mbox{~is~a~functor}) \\
-  &=&
+  &≋&
   \AgdaInductiveConstructor{unite₊′≃}~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{id≃} 
   & (\mbox{unit~coherence~law}) \\
-  &=& 
+  &≋& 
     \AgdaInductiveConstructor{trans≃}~\AgdaInductiveConstructor{assoc₊≃}~
     (\AgdaInductiveConstructor{id≃}~\AgdaInductiveConstructor{⊎≃}~\AgdaInductiveConstructor{unite₊≃}) 
    & (\mbox{triangle}) \\
