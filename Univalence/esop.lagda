@@ -1764,7 +1764,7 @@ with the following additional structure:
 A monoidal category is \emph{braided} if it has an isomorphism
 $\sigma_{A,B} : A \otimes B \isoarrow B \otimes A$ where $\sigma$ is a
 natural transformation which satisfies the \emph{unit coherence}
-triangle (below on the left) and the \emph{bilinerarity} hexagon
+triangle (below on the left) and the \emph{bilinearity} hexagon
 below. A braided monoidal category is \emph{symmetry} if it
 additionally satisfies the \emph{symmetry} triangle (below on the
 right).
@@ -2828,7 +2828,7 @@ optimization property holds.  So we have the promise of a
 very effective optimizer for such programs.
 
 The next theorem is both trivial (as it holds by construction), and
-central to the correspondance:  we distilled the level-1 combinators
+central to the correspondence:  we distilled the level-1 combinators
 to make its proof trivial.  It shows that the two levels of
 $\Pi$ form a symmetric rig groupoid, thus capturing equivalences of
 types at level-0, and equivalences of equivalences at level-1.
