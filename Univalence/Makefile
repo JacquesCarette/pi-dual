@@ -1,6 +1,6 @@
 
 esop.pdf : latex/esop.tex
-	pdflatex latex/esop.tex; bibtex esop
+	pdflatex latex/esop.tex; bibtex esop; pdflatex latex/esop.tex; pdflatex latex/esop.tex
 
 latex/esop.tex : esop.lagda
 	agda --allow-unsolved-metas --latex -i . -i $(AGDALIB) -i $(CATLIB) esop.lagda
