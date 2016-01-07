@@ -29,7 +29,7 @@
 \usepackage{hyperref}
 \usepackage{comment}
 \usepackage{stmaryrd}
-\usepackage{listings}
+%\usepackage{listings}
 \usepackage{graphicx}
 \usepackage{textgreek}
 \usepackage{extarrows}
@@ -1364,7 +1364,7 @@ expresses type equivalences and nothing else.
 \subsection{Syntax of $\Pi$}
 \label{subsec:pi}
 
-In previous work, \citet{rc2011,James:2012:IE:2103656.2103667}
+In previous work, Bowman, James and Sabry \cite{rc2011,James:2012:IE:2103656.2103667}
 introduced the~$\Pi$ family of reversible languages whose only
 computations are isomorphisms between types. The simplest of these
 languages is exactly the language we seek for capturing type
@@ -1499,7 +1499,7 @@ NOT = swap₊
 \end{code}}}
 \end{multicols}
 
-\vspace{-3mm}
+\vspace{ -3mm}
 
 {\footnotesize{
 \begin{code}
@@ -1841,7 +1841,8 @@ are equal. Indeed, as Dosen and Petric explain:
 %that would otherwise be ambiguous if all the types were instantiated
 %with \AgdaInductiveConstructor{ONE}.
 
-From a different perspective, \citet{math/9802029} explain the source
+From a different perspective, Baez and Dolan~\citep{math/9802029}
+explain the source
 of these coherence laws as arising from homotopy theory. In this
 theory, laws are only imposed up to homotopy, with these homotopies
 satisfying certain laws, again only up to homotopy, with these higher
@@ -1907,7 +1908,7 @@ in a more general form in Thm.~\ref{thm:catequiv} below.
 \subsection{Weak Symmetric Rig Groupoids}
 
 Symmetric monoidal categories discussed in the previous section are
-the categorifications of commutative monoids. The categorification of
+the categorification of commutative monoids. The categorification of
 a commutative semiring is called a \emph{symmetric rig category}.  It
 is built from a \emph{symmetric bimonoidal category} to which
 distributivity and absorption natural isomorphisms are added, and
@@ -1918,7 +1919,7 @@ equivalence, the entire setting is that of weak categories
 (aka bicategories).
 
 There are several equivalent definitions of rig categories. We use the
-following definition from \citet{nlabrig}.
+following definition from the nLab~\cite{nlabrig}.
 
 \begin{definition}[Rig Category]
   A \emph{rig category} $C$ is a category with a symmetric monoidal
@@ -1930,8 +1931,8 @@ d_ℓ : x ⊗ (y ⊕ z) &\isoarrow& (x ⊗ y) ⊕ (x ⊗ z) \\
 d_r : (x ⊕ y) ⊗ z &\isoarrow& (x ⊗ z) ⊕ (y ⊗ z) 
 \end{array}\]
 and absorption/annihilation isomorphisms $a_ℓ : x ⊗ 0 \isoarrow 0$ and
-$a_r : 0 ⊗ x \isoarrow 0$ satisfying coherence conditions worked out
-by \citet{laplaza} and discussed below.
+$a_r : 0 ⊗ x \isoarrow 0$ satisfying coherence conditions \citep{laplaza}
+discussed below.
 \end{definition}
 
 \begin{definition}[Symmetric Rig Category]
@@ -1944,13 +1945,13 @@ A \emph{symmetric rig groupoid} is a symmetric rig category in which
 every morphism is invertible.
 \end{definition}
 
-\amr{On the XXIV coherence conditions took from Laplaza: I fail to see how an 
-algebraic description of those would not be programming-oriented. Not to 
-mention it would be much easier to read and relate to the previous section. 
-Again, if details mater, a textual description is out of place.}
+%\amr{On the XXIV coherence conditions took from Laplaza: I fail to see how an 
+%algebraic description of those would not be programming-oriented. Not to 
+%mention it would be much easier to read and relate to the previous section. 
+%Again, if details mater, a textual description is out of place.}
 
 The coherence conditions for rig categories were worked out by
-\citet{laplaza}. Pages 31-35 of his paper report 24 coherence
+Laplaza~\citep{laplaza}. Pages 31-35 of his paper report 24 coherence
 conditions numbered I to XXIV that vary from simple diagrams to quite
 complicated ones including a diagram with 9 nodes showing that two
 distinct ways of simplifying $(A ⊕ B) ⊗ (C ⊕ D)$ to
@@ -1958,7 +1959,7 @@ $(((A ⊗ C) ⊕ (B ⊗ C)) ⊕ (A ⊗ D)) ⊕ (B ⊗ D)$ commute. The 24 cohere
 conditions are however not independent and it is sufficient to verify
 one of various smaller subsets, to be chosen depending on the
 situation.  Generally speaking, the coherence laws appear rather
-obscure but, as shown below for many of them, they can be
+obscure but they can be unpacked and
 ``unformalized'' to relatively understandable statements.
 They all express that two different means of getting between
 two equivalent types are equivalent.  Thus we give 
@@ -2003,7 +2004,7 @@ programming-oriented descriptions of these as follows:
 \end{itemize}
 
 Going through the details of the proof of the coherence theorem
-in~\citet{laplaza} with a ``modern'' eye, one cannot help but think of
+in~\cite{laplaza} with a ``modern'' eye, one cannot help but think of
 Knuth-Bendix completion.  Although it is known that the coherence laws
 for some categorical structures can be systematically derived in this
 way~\citep{Beke2011728}, it is also known that in the presence of
@@ -2012,7 +2013,7 @@ not terminate.  It would be interesting to know if there is indeed a
 systematic way to obtain these laws from the rewriting perspective
 but, as far as we know, there are no published results to that
 effect. The connections to homotopy theory cited by
-\citet{math/9802029} (and mentioned in the previous section) appear to
+Baez and Dolan~\cite{math/9802029} (and mentioned in the previous section) appear to
 be the best hope for a rational reconstruction of the coherence laws.
 
 %% \textrm{math}\textbf{\textit{overflow}} about this idea are left
@@ -2383,7 +2384,7 @@ Let $c : t₁ ⟷ t₂$:
 \\
   {\assoclt ◎ \distl ⇔ ((\idc ⊗ \distl) ◎ \distl) ◎ (\assoclt ⊕ \assoclt)}
 \end{array}\]
-\vspace{-0.5em}
+\vspace{ -0.5em}
 \[\def\arraystretch{1.3}
 \begin{array}{rcl}
   (\distl ◎ (\dist ⊕ \dist)) ◎ \assoclp &⇔&   
@@ -3047,64 +3048,65 @@ been shown to make sense in computations involving recursive datatypes
 such as trees that can be viewed as solutions to polynomials over type
 variables~\citep{seventrees,Fiore:2004,Fiore2004707}.
 
-\amr{possible future work: If I understand correctly, the relevant
-  part comes from having a symmetric rig groupoid in the category of
-  types and terms, which then gives you the laws your combinator
-  calculus should satisfy to stay coherent. I would have enjoyed
-  seeing more applications of this insight, for instance, can you use
-  some sort of ring solver or proof by reflection to infer type
-  isomorphisms?  I can imagine some interesting applications of this
-  for generic programming over finite types -- but at the moment I'd
-  like to see further applications of these results.
+% \amr{possible future work: If I understand correctly, the relevant
+%  part comes from having a symmetric rig groupoid in the category of
+%  types and terms, which then gives you the laws your combinator
+%  calculus should satisfy to stay coherent. I would have enjoyed
+%  seeing more applications of this insight, for instance, can you use
+%  some sort of ring solver or proof by reflection to infer type
+%  isomorphisms?  I can imagine some interesting applications of this
+%  for generic programming over finite types -- but at the moment I'd
+%  like to see further applications of these results.
+%
+%  Inferring type isomorphisms has been done in previous work (by
+%  others). But the answer to the question as posed is no.  We would
+%  need, at the very least, a Rig Category solver to find anything
+%  interesting, i.e., to infer equivalences-of-equivalences which are,
+%  in some sense 'optimizations'.  This is future work - and is likely
+%  to be rather challenging.}
+% 
+%\amr{more possible future work: For instance, I would have liked to
+%  see the optimization-related claims elaborated further.  For
+%  instance, the ping-pong law, which states that running equivalent
+%  equivalences in a "contravariant" fashion will result in the
+%  identity. Maybe this is a bit too good of an optimizer if stated
+%  this way, as it results in a very complex, yet useless
+%  computation. It would have been more interesting if the authors
+%  showed how to "shrink" circuits, using some notion of order in a
+%  semiring to lead their optimizations, for instance.}
+%
+% \amr{Our paper is about the fact that:
+% \begin{itemize}
+% \item axioms for semirings correspond exactly to equivalences, which are
+% the \textbf{terms} of a (reversible) programming language
+% 
+% \item that, viewed categorically, equivalences of equivalences for
+%  categorified semirings (rig categories) give terms for a language of
+%  program transformations.
+% \end{itemize}
+% It is important to note that, outside of HoTT [a very small community
+% indeed], no one has ever written down what "equivalences of
+% equivalences" even means.  We had to ask (see post on MathOverflow),
+% and even then, experts had to have a bit of a debate before settling
+% on a definition that was independent of univalence. This is a crucial
+% novelty of our work -- that this correct, new, univalence-free
+% definition of "equivalence of equivalence" is EXACTLY the 'right' set
+% of terms for a language of program transformations.  We believe this
+% insight is non-trivial.
+% }
 
-  Inferring type isomorphisms has been done in previous work (by
-  others). But the answer to the question as posed is no.  We would
-  need, at the very least, a Rig Category solver to find anything
-  interesting, i.e., to infer equivalences-of-equivalences which are,
-  in some sense 'optimizations'.  This is future work - and is likely
-  to be rather challenging.}
- 
-\amr{more possible future work: For instance, I would have liked to
-  see the optimization-related claims elaborated further.  For
-  instance, the ping-pong law, which states that running equivalent
-  equivalences in a "contravariant" fashion will result in the
-  identity. Maybe this is a bit too good of an optimizer if stated
-  this way, as it results in a very complex, yet useless
-  computation. It would have been more interesting if the authors
-  showed how to "shrink" circuits, using some notion of order in a
-  semiring to lead their optimizations, for instance.}
-
-\amr{Our paper is about the fact that:
-\begin{itemize}
-\item axioms for semirings correspond exactly to equivalences, which are
-the \textbf{terms} of a (reversible) programming language
-
-\item that, viewed categorically, equivalences of equivalences for
- categorified semirings (rig categories) give terms for a language of
- program transformations.
-\end{itemize}
- It is important to note that, outside of HoTT [a very small community
- indeed], no one has ever written down what "equivalences of
- equivalences" even means.  We had to ask (see post on MathOverflow),
- and even then, experts had to have a bit of a debate before settling
- on a definition that was independent of univalence. This is a crucial
- novelty of our work -- that this correct, new, univalence-free
- definition of "equivalence of equivalence" is EXACTLY the 'right' set
- of terms for a language of program transformations.  We believe this
- insight is non-trivial.}
-
-\amr{ it would be interesting to understand what happens by adding
- recursive types
-
-We entirely agree, we would also love to understand what happens by
-adding recursive types.  We have been working on that for over 2 years
-now.  The problem is that adding 'trace' (the obvious thing to do on
-the categorical side) tends to completely collapse the whole
-structure.  Again, see several [answered] questions on MathOverflow on
-this topic.  We have some ideas on how to deal with that.  This is the
-problem of "rig completion" which was open for decades, and has only
-recently been solved.  The solution is not obviously constructive,
-unfortunately.}
+%\amr{ it would be interesting to understand what happens by adding
+% recursive types
+%
+% We entirely agree, we would also love to understand what happens by
+% adding recursive types.  We have been working on that for over 2 years
+% now.  The problem is that adding 'trace' (the obvious thing to do on
+% the categorical side) tends to completely collapse the whole
+% structure.  Again, see several [answered] questions on MathOverflow on
+% this topic.  We have some ideas on how to deal with that.  This is the
+% problem of "rig completion" which was open for decades, and has only
+% recently been solved.  The solution is not obviously constructive,
+% unfortunately.}
 
 % \begin{comment}
 % \appendix
@@ -3202,7 +3204,7 @@ supported by the National Science Foundation under Grant No. 1217454.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% \clearpage
-\bibliographystyle{abbrvnat}
+\bibliographystyle{plain}
 %% \softraggedright
 \bibliography{cites}
 
