@@ -1551,6 +1551,7 @@ pf₃π = (swap₊ ⊕ id⟷) ◎ (unite₊l ⊕ id⟷)
 pf₄π = assocr₊ ◎ (id⟷ ⊕ unite₊l)
 \end{code}}}
 
+\vspace{ -5mm }
 %%%%%%%%%%%%
 %% \subsection{Semiring of Finite Types}
 
@@ -1590,7 +1591,7 @@ We define the denotational semantics of $\Pi$ to be type equivalences:
 c2equiv : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
 \end{code}}}
 
-\smallskip\noindent In the definition, the function $⟦\cdot⟧$ maps each
+\vspace{ -4mm} \noindent The function $⟦\cdot⟧$ maps each
 type constructor to its Agda denotation. The function
 \AgdaFunction{c2equiv} confirms that every $\Pi$ term encodes a type
 equivalence.
@@ -1611,9 +1612,10 @@ evalB = {!!}
 \end{code}
 }
 
-\smallskip This operational semantics serves as an adequate semantic
-specification if one focuses solely on the standalone programming
-language for reversible boolean circuits. It is indeed straightforward to
+\vspace{ -3mm }
+This operational semantics serves as an adequate semantic
+specification if one focuses solely on a programming
+language for reversible boolean circuits. It is straightforward to
 prove that \AgdaFunction{eval} and \AgdaFunction{evalB} are 
 inverses of each other.  
 
@@ -1644,7 +1646,7 @@ lemma1 = {!!}
 \end{code}
 }
 
-\smallskip\noindent The two lemmas confirm that these type equivalences
+\vspace{ -3mm}\noindent The two lemmas confirm that these type equivalences
 are coherent with respect to the operational semantics, i.e., that the
 operational and denotational semantics of $\Pi$ coincide.
 
@@ -1653,10 +1655,10 @@ operational and denotational semantics of $\Pi$ coincide.
 \label{sec:categorification}
 
 We have seen two important ways of modeling equivalences between
-finite types: using back-and-forth functions that compose to the
-identity as in Def.~\ref{def:eq} and using a programming language
-tailored to only express permutations between finite types as in
-Sec.~\ref{subsec:pi}. In terms of our desired Curry--Howard-like
+types: using back-and-forth functions that compose to the
+identity (Def.~\ref{def:eq}) and using a programming language
+tailored to only express isomorphisms between types (Sec.~\ref{subsec:pi}).
+In terms of our desired Curry--Howard-like
 correspondence, we have so far related the syntax of semiring elements
 to types and the proofs of semiring identities to programs of the
 appropriate types. The last important component of the Curry-Howard
@@ -1668,10 +1670,10 @@ transformations.
 % motivation or explanation, even if it only repeats or summarizes parts
 % of Section 1.}
 
-Our next goal is therefore to reason about equivalences of
-equivalences. Attempting to discover such equivalences of equivalences
-when working directly with functions or with the syntax of a
-programming language proves quite awkward. It, however, turns out that
+We thus need to reason about equivalences of
+equivalences. Attempting to discover these
+when working directly with equivalences, or with the syntax of a
+programming language, proves quite awkward. It, however, turns out that
 the solution to this problem is evident if we first generalize our
 models of type equivalences to the categorical setting. As we explain,
 in the right class of categories, the objects represent types, the
