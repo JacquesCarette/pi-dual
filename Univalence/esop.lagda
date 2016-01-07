@@ -423,7 +423,7 @@ Curry--Howard-like correspondence between (commutative) semirings and
 %%%
 \subsection{Semirings}\label{sec:semirings}
 
-We begin with the standard definition of the algebraic structure of
+We begin with the standard definition of
 commutative semirings.
 
 % \amr{p3: Definition 1:
@@ -456,7 +456,7 @@ they would be described using the following grammar:
 \[\begin{array}{rcl}
 a & ::= & 0 \alt 1 \alt a + b \alt a \cdot b
 \end{array}\]
-This grammar evidently corresponds to the grammar for the finite types in
+This grammar corresponds to the grammar for the finite types in
 type theory:
 \[\begin{array}{rcl}
 \tau & ::= & \bot \alt \top \alt \tau_1 \uplus \tau_2 \alt \tau_1 \times \tau_2 
@@ -727,9 +727,6 @@ of two functions $f \equiv g$ and the fact that the functions produce equal
 values on all inputs $f ∼ g$: the two notions are traditionally
 identified but are only \emph{equivalent} in the HoTT context. 
 
-% \amr{ page 6, def. 3: can you give an example of functions which are 
-%  quasi-inverse but not inverse?}
-
 \begin{definition}[Quasi-inverse]
 \label{def:quasi}
 For a function $f : A \rightarrow B$, a \emph{quasi-inverse} of~$f$ is a
@@ -753,8 +750,9 @@ record isqinv {A : Set} {B : Set} (f : A → B) : Set where
 \noindent The terminology ``quasi-inverse'' was chosen in the HoTT context as a
 reminder that this is a poorly-behaved notion by itself as the same
 function $f : A → B$ may have multiple unequal quasi-inverses; however, up to
-homotopy, all quasi-inverses are equivalent.
-\jc{I am not sure we even want that whole paragraph in the paper.}
+homotopy, all quasi-inverses are equivalent.  From a quasi-inverse, one can
+build an inverse (and vice-versa); however, in a proof-relevant setting,
+logical equivalence is insufficient.
 
 \begin{definition}[Equivalence of types]\label{def:eq}
   Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
