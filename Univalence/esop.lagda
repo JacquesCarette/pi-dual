@@ -15,7 +15,8 @@
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
 \usepackage{tikz}
-\usetikzlibrary{cd}
+\usepackage{tikz-cd}
+%% \usetikzlibrary{cd}
 \usetikzlibrary{quotes}
 \usepackage{adjustbox}
 %% \usepackage{amsthm}
