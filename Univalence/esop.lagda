@@ -1893,26 +1893,25 @@ of symmetric monoidal categories as follows:
 % than the why's of it. The explanations by Dosen and Petric, and, Baez and 
 % Dolan only makes it more confusing for the unfamiliar reader.}
 
-\noindent The derivation assumes that the category of types and type
+\noindent The derivation assumes that the category of types and
 equivalences is symmetric monoidal --- a result which will be proved
-in a more general form in Thm.~\ref{thm:catequiv} below.
+in a more general form in Thm.~\ref{thm:catequiv}.
 
 %%%%%%%%%%%%
 \subsection{Weak Symmetric Rig Groupoids}
 
-Symmetric monoidal categories discussed in the previous section are
+Symmetric monoidal categories are
 the categorification of commutative monoids. The categorification of
 a commutative semiring is called a \emph{symmetric rig category}.  It
 is built from a \emph{symmetric bimonoidal category} to which
 distributivity and absorption natural isomorphisms are added, and
-accompanying coherence laws.  Since we can easily set things up
-so that every morphism is an isomorphism, the category will also be a
-groupoid. Since the laws of the category only hold up to a higher
-equivalence, the entire setting is that of weak categories 
-(aka bicategories).
+accompanying coherence laws.  Since we can set things up
+so that every morphism is an isomorphism, it will also be a
+groupoid. Also, as the laws of the category only hold up to a higher
+equivalence, the entire setting is that of weak categories (aka bicategories).
 
-There are several equivalent definitions of rig categories. We use the
-following definition from the nLab~\cite{nlabrig}.
+There are several equivalent definitions of rig categories; we use the
+following from the nLab~\cite{nlabrig}.
 
 \begin{definition}[Rig Category]
   A \emph{rig category} $C$ is a category with a symmetric monoidal
@@ -2918,7 +2917,7 @@ open import TypeEquivCat
 \label{sec:conc}
 %\label{sec:8}
 
-\amr{integrate the following paragraphs with the intro?}
+% \amr{integrate the following paragraphs with the intro?}
 
 The traditional Curry-Howard correspondence is based on ``mere logic
 (to use the HoTT terminology).''  That is, it is based around
