@@ -1733,15 +1733,15 @@ with the following additional structure:
 \begin{center}
 \begin{tikzcd}[column sep=tiny]
 ((A \otimes B) \otimes C) \otimes D)
-  \arrow[rr, "\alpha"]
-  \arrow[d, "\alpha \otimes \mathrm{id}_D"']
+  \arrow{rr}{\alpha}
+  \arrow{d}{\alpha \otimes \mathrm{id}_D}
 && (A \otimes B) \otimes (C \otimes D)
-   \arrow[d, "\alpha"]
+   \arrow{d} {\alpha}
 \\
 (A \otimes (B \otimes C)) \otimes D
-  \arrow[dr, "\alpha"']
+  \arrow{dr} {\alpha}
 && A \otimes (B \otimes (C \otimes D))
-   \arrow[dl, "\mathrm{id}_A \otimes \alpha"]
+   \arrow{dl} {\mathrm{id}_A \otimes \alpha}
 \\
 & A \otimes ((B \otimes C) \otimes D)
 \end{tikzcd}
@@ -1750,10 +1750,10 @@ with the following additional structure:
 \begin{center}
 \begin{tikzcd}[column sep=tiny]
 (A \otimes I) \otimes B
-  \arrow[rr, "\alpha"]
-  \arrow[dr, "\rho_A \otimes \mathrm{id}_B"']
+  \arrow{rr} {\alpha}
+  \arrow{dr} {\rho_A \otimes \mathrm{id}_B}
 && A \otimes (I \otimes B)
-  \arrow[dl, "\mathrm{id}_A \otimes \lambda_B"]
+  \arrow{dl} {\mathrm{id}_A \otimes \lambda_B}
 \\
 & A \otimes B
 \end{tikzcd}
@@ -1773,36 +1773,36 @@ right).
 \begin{center}
 \begin{tikzcd}[column sep=tiny]
 & A \otimes I 
-  \arrow[dl, "\sigma"']
-  \arrow[dr, "\rho_A"]
+  \arrow{dl} {\sigma}
+  \arrow{dr} {\rho_A}
 \\
-I \otimes A \arrow[rr, "\lambda_A"] && A 
+I \otimes A \arrow{rr} {\lambda_A} && A 
 \end{tikzcd}
 \qquad\qquad
 \begin{tikzcd}[column sep=tiny]
 & A \otimes B 
-  \arrow[dl, "\sigma"']
-  \arrow[dr, "\mathrm{id}_A\otimes\mathrm{id}_B"] 
+  \arrow{dl} {\sigma}
+  \arrow{dr} {\mathrm{id}_A\otimes\mathrm{id}_B} 
 \\
-B \otimes A \arrow[rr, "\sigma"] && A \otimes B
+B \otimes A \arrow{rr} {\sigma} && A \otimes B
 \end{tikzcd}
 \end{center}
 
 \begin{center}
 \begin{tikzcd}[column sep=tiny]
 & A \otimes (B \otimes C) 
-  \arrow[dr, "\sigma"]
-  \arrow[dl, "\alpha"']
+  \arrow{dr} {\sigma}
+  \arrow{dl} {\alpha}
 \\
 (A \otimes B) \otimes C
-  \arrow[d, "\sigma \otimes \mathrm{id}_C"] && 
+  \arrow{d} {\sigma \otimes \mathrm{id}_C} && 
 (B \otimes C) \otimes A
- \arrow[d, "\alpha"] 
+ \arrow{d} {\alpha} 
 \\
 (B \otimes A) \otimes C 
-  \arrow[dr, "\alpha"'] &&
+  \arrow{dr} {\alpha} &&
 B \otimes (C \otimes A)
-  \arrow[dl, "\mathrm{id}_B \otimes \sigma"]
+  \arrow{dl} {\mathrm{id}_B \otimes \sigma}
 \\
 & B \otimes (A \otimes C)
 \end{tikzcd}
@@ -2043,13 +2043,13 @@ should not be equated.
 \begin{center}
 \begin{tikzcd}[column sep=tiny]
 A \otimes (B \oplus C)
-  \arrow[rrr, "\distl"]
-  \arrow[d, "\mathrm{id}_A \otimes \swapp"']
+  \arrow{rrr} {\distl}
+  \arrow{d} {\mathrm{id}_A \otimes \swapp}
 &&& (A \otimes B) \oplus (A \otimes C)
-   \arrow[d, "\swapp"]
+   \arrow{d} {\swapp}
 \\
 A \otimes (C \oplus B)
-  \arrow[rrr, "\distl"']
+  \arrow{rrr} {\distl}
 &&& (A \otimes C) \oplus (A \otimes B)
 \end{tikzcd}
 \end{center}
