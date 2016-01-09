@@ -1734,12 +1734,12 @@ with the following additional structure:
 \begin{tikzcd}[column sep=tiny]
 ((A \otimes B) \otimes C) \otimes D)
   \arrow{rr}{\alpha}
-  \arrow{d}{\alpha \otimes \mathrm{id}_D}
+  \arrow{d}[swap]{\alpha \otimes \mathrm{id}_D}
 && (A \otimes B) \otimes (C \otimes D)
    \arrow{d} {\alpha}
 \\
 (A \otimes (B \otimes C)) \otimes D
-  \arrow{dr} {\alpha}
+  \arrow{dr}[swap]{\alpha}
 && A \otimes (B \otimes (C \otimes D))
    \arrow{dl} {\mathrm{id}_A \otimes \alpha}
 \\
@@ -1751,7 +1751,7 @@ with the following additional structure:
 \begin{tikzcd}[column sep=tiny]
 (A \otimes I) \otimes B
   \arrow{rr} {\alpha}
-  \arrow{dr} {\rho_A \otimes \mathrm{id}_B}
+  \arrow{dr}[swap]{\rho_A \otimes \mathrm{id}_B}
 && A \otimes (I \otimes B)
   \arrow{dl} {\mathrm{id}_A \otimes \lambda_B}
 \\
@@ -1776,31 +1776,31 @@ right).
   \arrow{dl}[swap]{\sigma}
   \arrow{dr} {\rho_A}
 \\
-I \otimes A \arrow{rr} {\lambda_A} && A 
+I \otimes A \arrow{rr}[swap]{\lambda_A} && A 
 \end{tikzcd}
 \qquad\qquad
 \begin{tikzcd}[column sep=tiny]
 & A \otimes B 
-  \arrow{dl} {\sigma}
+  \arrow{dl}[swap]{\sigma}
   \arrow{dr} {\mathrm{id}_A\otimes\mathrm{id}_B} 
 \\
-B \otimes A \arrow{rr} {\sigma} && A \otimes B
+B \otimes A \arrow{rr}[swap]{\sigma} && A \otimes B
 \end{tikzcd}
 \end{center}
 
 \begin{center}
 \begin{tikzcd}[column sep=tiny]
 & A \otimes (B \otimes C) 
-  \arrow{dr} {\sigma}
-  \arrow{dl} {\alpha}
+  \arrow{dr}{\sigma}
+  \arrow{dl}[swap]{\alpha}
 \\
 (A \otimes B) \otimes C
-  \arrow{d} {\sigma \otimes \mathrm{id}_C} && 
+  \arrow{d}[swap]{\sigma \otimes \mathrm{id}_C} && 
 (B \otimes C) \otimes A
  \arrow{d} {\alpha} 
 \\
 (B \otimes A) \otimes C 
-  \arrow{dr} {\alpha} &&
+  \arrow{dr}[swap]{\alpha} &&
 B \otimes (C \otimes A)
   \arrow{dl} {\mathrm{id}_B \otimes \sigma}
 \\
@@ -2044,12 +2044,12 @@ should not be equated.
 \begin{tikzcd}[column sep=tiny]
 A \otimes (B \oplus C)
   \arrow{rrr} {\distl}
-  \arrow{d} {\mathrm{id}_A \otimes \swapp}
+  \arrow{d}[swap]{\mathrm{id}_A \otimes \swapp}
 &&& (A \otimes B) \oplus (A \otimes C)
    \arrow{d} {\swapp}
 \\
 A \otimes (C \oplus B)
-  \arrow{rrr} {\distl}
+  \arrow{rrr}[swap]{\distl}
 &&& (A \otimes C) \oplus (A \otimes B)
 \end{tikzcd}
 \end{center}
