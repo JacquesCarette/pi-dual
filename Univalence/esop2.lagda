@@ -1773,7 +1773,7 @@ right).
 \begin{center}
 \begin{tikzcd}[column sep=tiny]
 & A \otimes I 
-  \arrow{dl} {\sigma}
+  \arrow{dl}[swap]{\sigma}
   \arrow{dr} {\rho_A}
 \\
 I \otimes A \arrow{rr} {\lambda_A} && A 
