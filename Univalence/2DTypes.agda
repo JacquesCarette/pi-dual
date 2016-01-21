@@ -13,6 +13,7 @@ open import Relation.Binary using (Setoid)
 open import Data.Nat using (ℕ) renaming (suc to ℕsuc)
 open import Data.Fin using (Fin; zero; suc)
 open import Data.Vec using (Vec; lookup; _∷_; [])
+open import Data.Integer hiding (suc)
 
 open import VectorLemmas using (_!!_)
 open import PiU
@@ -32,6 +33,7 @@ open import Categories.Equivalence.Strong
 
 -- should probably make this level-polymorphic
 record Typ : Set where
+  constructor typ
   field
     carr : U
     len : ℕ -- number of non-trivial automorphisms
@@ -279,3 +281,15 @@ private
 -- And so 1T′ is equivalent to 1T.  This can be interpreted to mean
 -- that swap₊ (perhaps more precisely, id⟷ ∷ swap₊ ∷ [] ) is the
 -- representation of a 'negative type'.
+
+---------------
+-- Cardinality function
+card : Typ → ℤ
+card (typ carr len _ _ _ _) = (+ size carr) - (+ len)
+
+-- check
+card-1T : card 1T ≡ + 1
+card-1T = refl
+
+card-1T′ : card 1T′ ≡ + 1
+card-1T′ = refl
