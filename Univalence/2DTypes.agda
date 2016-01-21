@@ -293,3 +293,39 @@ card-1T = refl
 
 card-1T′ : card 1T′ ≡ + 1
 card-1T′ = refl
+
+--------------
+-- Conjecture...
+
+-- to make this work, we're going to postulate another loop
+-- and that it is idempotent:
+postulate
+  loop : ZERO ⟷ ZERO
+  idemp : loop ◎ loop ⇔ loop
+  
+private
+  cc : Fin 2 → Fin 2 → Fin 2
+  cc zero zero = zero
+  cc zero (suc zero) = suc zero
+  cc (suc zero) zero = suc zero
+  cc (suc zero) (suc zero) = suc zero
+  cc (suc (suc ())) _
+  cc _ (suc (suc ()))
+
+  two-loops : Vec (ZERO ⟷ ZERO) 2
+  two-loops = id⟷ ∷ loop ∷ []
+
+  tl-coh :   ∀ (i j : Fin 2) →
+        ((two-loops !! i) ◎ (two-loops !! j) ⇔ (two-loops !! (cc j i)))
+  tl-coh zero zero = idl◎l
+  tl-coh zero (suc zero) = idl◎l
+  tl-coh (suc zero) zero = idr◎l
+  tl-coh (suc zero) (suc zero) = {!idemp!}
+  tl-coh (suc (suc ())) _
+  tl-coh _ (suc (suc ()))
+  
+-1T : Typ
+-1T = typ ZERO 1 two-loops id⇔ cc tl-coh
+
+card--1T : card -1T ≡ -[1+ 0 ] -- indeed -1 ...
+card--1T = refl
