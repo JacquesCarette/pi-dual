@@ -10,9 +10,9 @@ open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Product
 open import Function using (_∘_)
 open import Relation.Binary using (Setoid)
-open import Data.Nat using (ℕ) renaming (suc to ℕsuc)
+open import Data.Nat using (ℕ) renaming (suc to ℕsuc; _+_ to _ℕ+_; _*_ to _ℕ*_)
 open import Data.Fin using (Fin; zero; suc)
-open import Data.Vec using (Vec; lookup; _∷_; [])
+open import Data.Vec using (Vec; lookup; _∷_; []; zipWith)
 open import Data.Integer hiding (suc)
 
 open import VectorLemmas using (_!!_)
@@ -329,3 +329,98 @@ private
 
 card--1T : card -1T ≡ -[1+ 0 ] -- indeed -1 ...
 card--1T = refl
+
+{--
+Here is my current thinking:
+
+* A type is a package of:
+ - a carrier (that comes with the trivial automorphism)
+ - a collection of non-trivial automorphisms that have a groupoid structure
+ Let’s denote this package by ‘R A (Auto A)'
+
+* The collection of non-trivial automorphisms could very well be
+  missing (i.e., empty) and we then recover plain sets like Bool etc.
+
+* Now here is the interesting bit: the carrier itself could be
+  missing, i.e., a parameter. In that case we get something like:
+
+ A -> R A (Auto A)
+
+ That thing could be treated as outside the universe of types but we
+ are proposing to enlarge the universe of type to also include it as a
+ fractional type. Of course we need a way to combine such a fractional
+ type with a carrier to get a regular type so we need another
+ operation _[_] to do the instantiation.
+
+* So to revise, a type is:
+
+ T ::= R A (Auto A)    |    /\ A . T    |     T[A] 
+
+To make sure this behaves like fractional types, we want /\ A. T and
+T[A] to behave like a product. It is a product of course but a
+dependent one.
+--}
+
+-- Parameterized type
+-- Frac supposed to 1/t
+-- instantiate Frac with u to get u/t
+-- make sure t/t is 1
+-- define eta and epsilon and check axioms
+
+{-- Syntax of types --}
+
+-- collection of n automorphisms on set u
+
+Auto : (u : U) (n : ℕ) → Set
+Auto u n = Vec (u ⟷ u) n
+
+-- not sure about +A and *A... perhaps they are irrelevant anyway
+_+A_ : {u₁ u₂ : U} {n : ℕ} → Auto u₁ n → Auto u₂ n → Auto (PLUS u₁ u₂) n
+auto₁ +A auto₂ = zipWith _⊕_ auto₁ auto₂
+
+_*A_ : {u₁ u₂ : U} {n : ℕ} → Auto u₁ n → Auto u₂ n → Auto (TIMES u₁ u₂) n
+auto₁ *A auto₂ = zipWith _⊗_ auto₁ auto₂
+
+data T : (u : U) → {n : ℕ} → (auto : Auto u n) → Set where
+  UT   : (u : U) → {n : ℕ} → (auto : Auto u n) → T u auto
+  _+T_ : {u₁ u₂ : U} {n : ℕ} {auto₁ : Auto u₁ n} {auto₂ : Auto u₂ n} → 
+         T u₁ auto₁ → T u₂ auto₂ → T (PLUS u₁ u₂) (auto₁ +A auto₂)
+  _*T_ : {u₁ u₂ : U} {n : ℕ} {auto₁ : Auto u₁ n} {auto₂ : Auto u₂ n} → 
+         T u₁ auto₁ → T u₂ auto₂ → T (TIMES u₁ u₂) (auto₁ *A auto₂)
+  -- given a function that produces some automorphisms from a set u
+  -- we can use this function to build a type once we are given a set u
+  FT   : {n : ℕ} → (f : (u : U) → Auto u n) → (u' : U) → T u' {n} (f u')
+
+-- Abbreviations
+
+trivA : (u : U) → Vec (u ⟷ u) 1
+trivA u = (id⟷ ∷ [])
+
+factorial : ℕ → ℕ
+factorial 0 = 1
+factorial (ℕsuc n) = ℕsuc n ℕ* factorial n
+
+-- enumerate all automorphisms over a set u : U
+allA : (u : U) → Vec (u ⟷ u) (factorial (size u))
+allA u = {!!} 
+
+liftU : (u : U) → T u (trivA u)
+liftU u = UT u (id⟷ ∷ [])
+
+ZT : T ZERO (trivA ZERO)
+ZT = liftU ZERO
+
+OT : T ONE (trivA ONE)
+OT = liftU ONE
+
+-- if we had ωD instead of 2D we might get "real" products here???
+
+_*TU_ : {u₁ : U} {n : ℕ} {auto₁ : Auto u₁ n} →
+        T u₁ auto₁ → (u₂ : U) → {auto : Auto (TIMES u₁ u₂) n} → T (TIMES u₁ u₂) auto
+t *TU u = {!!} -- FT (λ _ → t) u
+
+-- should not be trivA; but if more general need some condition to guarantee sizes
+-- are equal
+1/ : (u' : U) → T u' (trivA u')
+1/ u' = FT (λ u → trivA u) u'
+
