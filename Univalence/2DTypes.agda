@@ -424,3 +424,16 @@ t *TU u = {!!} -- FT (λ _ → t) u
 1/ : (u' : U) → T u' (trivA u')
 1/ u' = FT (λ u → trivA u) u'
 
+-- let's try an example
+
+3U : U
+3U = PLUS ONE (PLUS ONE ONE)
+
+3T : T 3U (trivA 3U)
+3T = liftU 3U
+
+--1/3T : T ONE (trivA 3U)
+--1/3T = ?
+
+
+
