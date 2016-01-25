@@ -371,9 +371,36 @@ dependent one.
 
 -- collection of n automorphisms on set u
 
-Auto : (u : U) (n : ℕ) → Set
-Auto u n = Vec (u ⟷ u) n
+Auto : (u : U) → Set
+Auto u = Σ[ n ∈ ℕ ] (Vec (u ⟷ u) n)
 
+trivA : (u : U) → Auto u
+trivA u = (1 , id⟷ ∷ [])
+
+data T : (u₁ : U) → {u₂ : U} → Auto u₂ → Set where
+  UT : (u : U) → T u (trivA u) -- regular sets
+  FT : (u₁ u₂ : U) → (auto₂ : Auto u₂) → T u₁ auto₂
+
+-- Regular sets
+
+ZT : T ZERO (trivA ZERO)
+ZT = UT ZERO
+
+OT : T ONE (trivA ONE)
+OT = UT ONE
+
+-- one third
+
+3U : U
+3U = PLUS ONE (PLUS ONE ONE)
+
+3T : T 3U (trivA 3U)
+3T = UT 3U
+
+1/3T : T ONE (trivA 3U)
+1/3T = FT ONE 3U (trivA 3U)
+
+{--
 -- not sure about +A and *A... perhaps they are irrelevant anyway
 _+A_ : {u₁ u₂ : U} {n : ℕ} → Auto u₁ n → Auto u₂ n → Auto (PLUS u₁ u₂) n
 auto₁ +A auto₂ = zipWith _⊕_ auto₁ auto₂
@@ -424,16 +451,5 @@ t *TU u = {!!} -- FT (λ _ → t) u
 1/ : (u' : U) → T u' (trivA u')
 1/ u' = FT (λ u → trivA u) u'
 
--- let's try an example
 
-3U : U
-3U = PLUS ONE (PLUS ONE ONE)
-
-3T : T 3U (trivA 3U)
-3T = liftU 3U
-
---1/3T : T ONE (trivA 3U)
---1/3T = ?
-
-
-
+--}
