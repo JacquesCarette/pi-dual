@@ -369,8 +369,6 @@ dependent one.
 
 {-- Syntax of types --}
 
--- collection of n automorphisms on set u
-
 Auto : (u : U) → Set
 Auto u = Σ[ n ∈ ℕ ] (Vec (u ⟷ u) n)
 
@@ -391,65 +389,38 @@ OT = UT ONE
 
 -- one third
 
+2U : U
+2U = PLUS ONE ONE
+
 3U : U
 3U = PLUS ONE (PLUS ONE ONE)
 
 3T : T 3U (trivA 3U)
 3T = UT 3U
 
-1/3T : T ONE (trivA 3U)
-1/3T = FT ONE 3U (trivA 3U)
+-- could add the remaining two but these are sufficient I think
+all3A : Auto 3U
+all3A = (4 , id⟷ ∷
+             (id⟷ ⊕ swap₊) ∷
+             (assocl₊ ◎ (swap₊ ⊕ id⟷) ◎ assocr₊) ∷
+             ((id⟷ ⊕ swap₊) ◎ (assocl₊ ◎ (swap₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ swap₊)) ∷
+             [])
 
-{--
--- not sure about +A and *A... perhaps they are irrelevant anyway
-_+A_ : {u₁ u₂ : U} {n : ℕ} → Auto u₁ n → Auto u₂ n → Auto (PLUS u₁ u₂) n
-auto₁ +A auto₂ = zipWith _⊕_ auto₁ auto₂
+1/3T : T ONE all3A 
+1/3T = FT ONE 3U all3A
 
-_*A_ : {u₁ u₂ : U} {n : ℕ} → Auto u₁ n → Auto u₂ n → Auto (TIMES u₁ u₂) n
-auto₁ *A auto₂ = zipWith _⊗_ auto₁ auto₂
+-- notice that a/b + c/b = (a+c) / b
+-- So 1/3T + 1/3T is
 
-data T : (u : U) → {n : ℕ} → (auto : Auto u n) → Set where
-  UT   : (u : U) → {n : ℕ} → (auto : Auto u n) → T u auto
-  _+T_ : {u₁ u₂ : U} {n : ℕ} {auto₁ : Auto u₁ n} {auto₂ : Auto u₂ n} → 
-         T u₁ auto₁ → T u₂ auto₂ → T (PLUS u₁ u₂) (auto₁ +A auto₂)
-  _*T_ : {u₁ u₂ : U} {n : ℕ} {auto₁ : Auto u₁ n} {auto₂ : Auto u₂ n} → 
-         T u₁ auto₁ → T u₂ auto₂ → T (TIMES u₁ u₂) (auto₁ *A auto₂)
-  -- given a function that produces some automorphisms from a set u
-  -- we can use this function to build a type once we are given a set u
-  FT   : {n : ℕ} → (f : (u : U) → Auto u n) → (u' : U) → T u' {n} (f u')
+2/3T : T 2U all3A
+2/3T = FT 2U 3U all3A
 
--- Abbreviations
+-- one more
 
-trivA : (u : U) → Vec (u ⟷ u) 1
-trivA u = (id⟷ ∷ [])
+3/3T : T 3U all3A
+3/3T = FT 3U 3U all3A
 
-factorial : ℕ → ℕ
-factorial 0 = 1
-factorial (ℕsuc n) = ℕsuc n ℕ* factorial n
-
--- enumerate all automorphisms over a set u : U
-allA : (u : U) → Vec (u ⟷ u) (factorial (size u))
-allA u = {!!} 
-
-liftU : (u : U) → T u (trivA u)
-liftU u = UT u (id⟷ ∷ [])
-
-ZT : T ZERO (trivA ZERO)
-ZT = liftU ZERO
-
-OT : T ONE (trivA ONE)
-OT = liftU ONE
-
--- if we had ωD instead of 2D we might get "real" products here???
-
-_*TU_ : {u₁ : U} {n : ℕ} {auto₁ : Auto u₁ n} →
-        T u₁ auto₁ → (u₂ : U) → {auto : Auto (TIMES u₁ u₂) n} → T (TIMES u₁ u₂) auto
-t *TU u = {!!} -- FT (λ _ → t) u
-
--- should not be trivA; but if more general need some condition to guarantee sizes
--- are equal
-1/ : (u' : U) → T u' (trivA u')
-1/ u' = FT (λ u → trivA u) u'
+-- Now eta applied to 3/3T should match the carrier with the autos and produce the plain OT
 
 
---}
+
