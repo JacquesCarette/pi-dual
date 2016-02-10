@@ -35,27 +35,31 @@ The code in p.10 is the worst of all. Here are the problems:
 
 Sect. 4.3, line 3, occurrences of pf_1, pf_2, pf_3, and pf_4 above the baseline.
 
+Bottom of p.13, pf_3 and pf_4 above the baseline.
 
-********** CONTINUE FROM SECT. 5.1 
+First paragraph in Sect. 5.3: pf_3 \~~~ pf_4, pf_1, and pf_2 all above the baseline.
+
+Last line before Sect. 6: "where eq is the ..." should NOT be indented. 
+
+Figures 3-13: In the original manuscript, we worked hard to spread the figures over several pages in a way that flows well with the text. The current grouping loses that correspondence. In addition, all the occurrences of "Let..." should be left-aligned and the equations should be centered not right-aligned. Fig. 8 is a particularly bad example of this right-alignment.
+
+Last paragraph of Sect. 6.2: "whereas all properties involving only \oplus" should be "whereas all properties involving only \otimes"
+
+p.13, p_1, p_2, c_1, and c_2 above the baseline in several places. Also an occurrence of swapl_+<=> is too far above the baseline.
+
+The diagram with the two ovals, rectangles, and wires on p.20 CANNOT be placed in the middle of the figures. It is a continuation of the text on the previous page and must flow with the text.
+
+p.21, in the code fragment negEx, line 4, the name "unite*l" is missing "*" which makes look like two separate names.
+
+p.22, pf_3\pi and pf_4\pi above the baseline in line 2 of Sect. 6.4
+
+line 3 of Sect. 6.5 "with the respect to" should be "with respect to". This is an error in the original manuscript.
+
+Ref 3. "knuth bendix" should be "knuth-bendix"
+
+Ref 9. Missing ~ before the name kosta
 
 
 
 
 
-
----------------------------------------------------------------------------------
-
-
-
-
-p.15 baseline for 3 items in the first paragraph of 5.3
-
-p.16 why was the \noindent on "where eq is the constructor.." removed?
-
-p.17 and 20: we, on purpose, put the figures on more pages, not just two.
-
-p. 17-20:  for Figures 3,4,5,6,7,8 and 10
-  - "Let" should be left-aligned
-  - the rest should be centered, not right-aligned
-
-p. 20. the diagram belongs with the text that is at the bottom of p.19, not in the middle of diagrams!  This is extremely confusing as is.
