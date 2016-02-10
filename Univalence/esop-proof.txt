@@ -1,0 +1,61 @@
+
+Bloomington, IN, USA
+  There are several Bloomington towns
+
+All occurrences of \bot and \top should be of the same size. On lines 1 and 2 of the Introduction, the sizes of \bot and \top are are different than in the first left display in Sect. 2.2. The correct size is the smaller tighter one in the display in Sect. 2.2. All other occurrences in the Introduction and Sect. 2.1 should be changed.
+
+The following is an error in our original manuscript: "Let Bool abbreviate the type \top + \top" should be "Let Bool abbreviate the type \top \uplus \top"
+
+In Sect. 2.2, we have two displays defining function f and \overline{f}. The two function names are then used in text below. But the occurrences of f in the display and in the text look very different (font, color, AND baseline). This is a common SERIOUS problem that repeats throughout the paper. The font (especially for things in green and blue) looks fuzzy.
+
+In Sect. 2.3, the occurrences of pf_1 and pf_2 in the text under the display are visibly above the baseline.
+
+In the second line of p.5, we also an occurrence of pf_3 that is clearly above the baseline. After the first set of displays and then at the end of the subsection, we have occurrences of pf_3 and pf_4 above the baseline.
+
+In Definitions 2, 3, and 4, the Agda code should NOT be centered. This is a global comment applying to every code fragment in the paper. All code must be left-aligned with a small indentation of two spaces typically. Space is significant is Agda programs!
+
+Sect. 3.2, second line: pf_1, pf_2, pf_3, and pf_4 are above the baseline. Same problem with pf_3 and pf_4 after the display.
+
+p.8 line 1: "propositional equality =" should be "propositional equality \equiv".
+
+Definition 5: "written eq_2 \~~~ eq_2" should be "written eq_1 \~~~ eq_2". This is a mistake in the original paper.
+
+After the definition "pf_3 \~~~ pf_4" is above the baseline. 
+
+The code in p.10 is the worst of all. Here are the problems:
+  - many of the names have extra spaces in them:
+       "swap_+"  is written as "swap _+" with an extra space
+       it should be "swap_*" with no space after the "swap"
+       it should be "id<->" with no space after the "id" and with the <-> lower
+       it should be "assocr_*" with no space after "assocr"
+       it should be "assocl_*" with no space after "assocl"
+       the operators \circledot, \oplus, \otimes should have equal spacing on their left and right
+       the operators \circledot, \oplus, \otimes should be on the baseline
+       
+
+Sect. 4.3, line 3, occurrences of pf_1, pf_2, pf_3, and pf_4 above the baseline.
+
+
+********** CONTINUE FROM SECT. 5.1 
+
+
+
+
+
+
+---------------------------------------------------------------------------------
+
+
+
+
+p.15 baseline for 3 items in the first paragraph of 5.3
+
+p.16 why was the \noindent on "where eq is the constructor.." removed?
+
+p.17 and 20: we, on purpose, put the figures on more pages, not just two.
+
+p. 17-20:  for Figures 3,4,5,6,7,8 and 10
+  - "Let" should be left-aligned
+  - the rest should be centered, not right-aligned
+
+p. 20. the diagram belongs with the text that is at the bottom of p.19, not in the middle of diagrams!  This is extremely confusing as is.
