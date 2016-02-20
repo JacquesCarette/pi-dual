@@ -406,9 +406,9 @@ cc2equiv fully-distribute⇔r = sym≋ [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]
 
 -- 1. they give the same results as programs:
 
-≋⇒≡ : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) →
+≋⇒≡ : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) →
   eval c₁ ∼ eval c₂
-≋⇒≡ c₁ c₂ ce =
+≋⇒≡ {c₁ = c₁} {c₂} ce =
   trans∼ (lemma0 c₁) (
   trans∼ (_≋_.f≡ (cc2equiv ce))
          (sym∼ (lemma0 c₂)))
@@ -416,9 +416,9 @@ cc2equiv fully-distribute⇔r = sym≋ [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]
 -- 2. in fact, you can run one forward, then the other
 --    backward, and that's the identity
 
-ping-pong : {t₁ t₂ : U} (c₁ c₂ : t₁ ⟷ t₂) (ce : c₁ ⇔ c₂) →
+ping-pong : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) →
   evalB c₂ ∘ eval c₁ ∼ id
-ping-pong c₁ c₂ ce = 
+ping-pong {c₁ = c₁} {c₂} ce = 
   trans∼ (cong₂∘ (lemma1 c₂) (lemma0 c₁)) (
   trans∼ (cong∘r (proj₁ (c2equiv c₁)) (_≋_.f≡ (flip≋ (cc2equiv (2! ce))) )) (
   trans∼(sym∼ β₁)

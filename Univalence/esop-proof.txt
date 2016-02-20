@@ -1,0 +1,65 @@
+
+Bloomington, IN, USA
+  There are several Bloomington towns
+
+All occurrences of \bot and \top should be of the same size. On lines 1 and 2 of the Introduction, the sizes of \bot and \top are are different than in the first left display in Sect. 2.2. The correct size is the smaller tighter one in the display in Sect. 2.2. All other occurrences in the Introduction and Sect. 2.1 should be changed.
+
+The following is an error in our original manuscript: "Let Bool abbreviate the type \top + \top" should be "Let Bool abbreviate the type \top \uplus \top"
+
+In Sect. 2.2, we have two displays defining function f and \overline{f}. The two function names are then used in text below. But the occurrences of f in the display and in the text look very different (font, color, AND baseline). This is a common SERIOUS problem that repeats throughout the paper. The font (especially for things in green and blue) looks fuzzy.
+
+In Sect. 2.3, the occurrences of pf_1 and pf_2 in the text under the display are visibly above the baseline.
+
+In the second line of p.5, we also an occurrence of pf_3 that is clearly above the baseline. After the first set of displays and then at the end of the subsection, we have occurrences of pf_3 and pf_4 above the baseline.
+
+In Definitions 2, 3, and 4, the Agda code should NOT be centered. This is a global comment applying to every code fragment in the paper. All code must be left-aligned with a small indentation of two spaces typically. Space is significant is Agda programs!
+
+Sect. 3.2, second line: pf_1, pf_2, pf_3, and pf_4 are above the baseline. Same problem with pf_3 and pf_4 after the display.
+
+p.8 line 1: "propositional equality =" should be "propositional equality \equiv".
+
+Definition 5: "written eq_2 \~~~ eq_2" should be "written eq_1 \~~~ eq_2". This is a mistake in the original paper.
+
+After the definition "pf_3 \~~~ pf_4" is above the baseline. 
+
+The code in p.10 is the worst of all. Here are the problems:
+  - many of the names have extra spaces in them:
+       "swap_+"  is written as "swap _+" with an extra space
+       it should be "swap_*" with no space after the "swap"
+       it should be "id<->" with no space after the "id" and with the <-> lower
+       it should be "assocr_*" with no space after "assocr"
+       it should be "assocl_*" with no space after "assocl"
+       the operators \circledot, \oplus, \otimes should have equal spacing on their left and right
+       the operators \circledot, \oplus, \otimes should be on the baseline
+       
+
+Sect. 4.3, line 3, occurrences of pf_1, pf_2, pf_3, and pf_4 above the baseline.
+
+Bottom of p.13, pf_3 and pf_4 above the baseline.
+
+First paragraph in Sect. 5.3: pf_3 \~~~ pf_4, pf_1, and pf_2 all above the baseline.
+
+Last line before Sect. 6: "where eq is the ..." should NOT be indented. 
+
+Figures 3-13: In the original manuscript, we worked hard to spread the figures over several pages in a way that flows well with the text. The current grouping loses that correspondence. In addition, all the occurrences of "Let..." should be left-aligned and the equations should be centered not right-aligned. Fig. 8 is a particularly bad example of this right-alignment.
+
+Last paragraph of Sect. 6.2: "whereas all properties involving only \oplus" should be "whereas all properties involving only \otimes"
+
+p.13, p_1, p_2, c_1, and c_2 above the baseline in several places. Also an occurrence of swapl_+<=> is too far above the baseline.
+
+The diagram with the two ovals, rectangles, and wires on p.20 CANNOT be placed in the middle of the figures. It is a continuation of the text on the previous page and must flow with the text.
+
+p.21, in the code fragment negEx, line 4, the name "unite*l" is missing "*" which makes look like two separate names.
+
+p.22, pf_3\pi and pf_4\pi above the baseline in line 2 of Sect. 6.4
+
+line 3 of Sect. 6.5 "with the respect to" should be "with respect to". This is an error in the original manuscript.
+
+Ref 3. "knuth bendix" should be "knuth-bendix"
+
+Ref 9. Missing ~ before the name kosta
+
+
+
+
+

@@ -1,0 +1,13 @@
+A few comments:
+
+Bibliography:
+
+In citation 3, capitalize Knuth-Bendix
+
+Citation 17, the names of the authors are:
+  Green, A.S., Altenkirch, T.:
+
+Citation 19, I think we should keep Md. as the first name not just M.
+
+Citation 27: The last name is "Mac Lane"
+
