@@ -1,5 +1,13 @@
 A few comments:
 
+PDF bookmarks:
+- the title contains a whole bunch of chinese characters after the official title
+
+Code:
+- the code for pf_1 and pf_2, and swap on p.126 should not be centered
+- the code after "we list some of these equivalences" on p.129 should not be
+  centered
+
 Bibliography:
 
 In citation 3, capitalize Knuth-Bendix
