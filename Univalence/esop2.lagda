@@ -17,7 +17,7 @@
 \usepackage{tikz}
 \usepackage{tikz-cd}
 %% \usetikzlibrary{cd}
-\usetikzlibrary{quotes}
+%% \usetikzlibrary{quotes}
 \usepackage{adjustbox}
 %% \usepackage{amsthm}
 %% \usepackage{latexsym}
