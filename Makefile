@@ -1,10 +1,10 @@
 
-all : p.pdf
+all : pearl.pdf
 
-p.pdf : latex/p.tex
-	pdflatex latex/p.tex
+pearl.pdf : latex/pearl.tex
+	pdflatex latex/pearl.tex
 
-latex/p.tex : p.lagda
-	agda --allow-unsolved-metas --latex -i . -i $(AGDALIB) p.lagda
+latex/pearl.tex : pearl.lagda
+	agda --allow-unsolved-metas --latex -i . -i $(AGDALIB) pearl.lagda
 
 
