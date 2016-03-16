@@ -102,6 +102,7 @@ $\displaystyle
 \newcommand{\isoone}{\Leftrightarrow}
 \newcommand{\lolli}{\multimap} 
 \newcommand{\isoarrow}{\stackrel{\sim}{\rightarrow}}
+\newcommand{\C}{\mathbf{\mathcal{C}}}
 
 %% \DefineVerbatimEnvironment
 %%   {code}{Verbatim}
@@ -151,7 +152,7 @@ $\displaystyle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
-\title{HOT, HoTT Effects}
+\title{HoTT Effects}
 \subtitle{Functional Pearl}
 \authorinfo{}{}{}
 
@@ -159,12 +160,12 @@ $\displaystyle
 
 \begin{abstract}
 
-Homotopy type theory is much more complex than plain type theory. The
-additional complexity can be justified if one is concerned with
-applications to homotopy theory. But can this complexity be justified
-from a purely type theoretic perspective? This pearl gives an
-intuitive answer building on the observation that proofs in the
-practice of type theory are effectful objects. 
+  Homotopy type theory is much more complex than plain type
+  theory. The additional complexity can be justified if one is
+  concerned with applications to homotopy theory. But can this
+  complexity be justified from a purely type theoretic perspective?
+  This pearl gives an intuitive answer building on the observation
+  that proofs are effectful objects.
 
 \end{abstract}
 
@@ -253,7 +254,7 @@ If however the proposition is true, the type $x ≡ y$ must contain at
 least one element so that we can provide proofs of the proposition
 that $x$ and $y$ are equal. The minimum we might expect is to be able
 to prove the proposition if the two objects $x$ and $y$ are actually
-identical. In our Agda package, we can write $\AgdaFunction{refl}~x$
+identical. In our Agda package, we write $\AgdaFunction{refl}~x$
 for that proof object:
 
 \medskip 
@@ -419,7 +420,7 @@ $\AgdaDatatype{Bool} ≡ \AgdaDatatype{Bool}$ that we have produced must
 actually be kept distinct. Collapsing them allows us in a few short
 steps to identify \AgdaInductiveConstructor{false} and
 \AgdaInductiveConstructor{true} which renders the entire logic
-inconsistent. This distinction must be maintained as we use
+inconsistent. This distinction must be diligently maintained as we use
 \AgdaFunction{b≡₁} and \AgdaFunction{b≡₂} to build larger and larger
 proofs and establish richer and richer properties. Consider the
 following examples:
@@ -474,8 +475,8 @@ properties along paths.
 
 Switching language, instead of viewing an element of $A ≡ B$ as a
 proof of equality, we view it as a path from the space $A$ to the
-space $B$. Paths come equipped with the combinatorial structure
-alluded to above:
+space~$B$. This is not a priori a symmetric notion but paths come
+equipped with additional combinatorial structure:
 
 \begin{itemize}
 \item For every path $p : x \equiv y$, there exists an inverse path
@@ -506,9 +507,10 @@ same conditions one level higher, e.g., $!~(!\alpha) \equiv \alpha$.
 Continuing the path interpretation, a function from space $A$ to space
 $B$ must map the points of $A$ to the points of $B$ as usual but it
 must also \emph{respect the path structure}. Topologically, this
-corresponds to saying that every function is \emph{continuous}, acting
-on paths by continuously deforming them to new paths. We relabel
-\AgdaFunction{cong} to convey this new meaning:
+corresponds to saying that every function is \emph{continuous}, i.e.,
+functions act on paths by continuously deforming them to new paths. We
+relabel \AgdaFunction{cong} to \AgdaFunction{ap} convey this new
+meaning:
 
 \medskip 
 
@@ -606,10 +608,10 @@ higher-order structure of paths in a concrete way. We explain this
 point in detail using one example: the topological circle. This space
 refers to the one-dimensional circumference of the two-dimensional
 disk in the plane. Abstractly speaking, the space can be specified as
-follows:\footnote{Agda is not designed for higher-inductive types that
-  include points and paths. A proper encoding of the circle
-  higher-inductive is possible but would be distracting. We present
-  the main ingredients as postulates for clarity.}
+follows:\footnote{Agda is not designed for modeling higher-inductive
+  types that include points and paths. A proper encoding of the circle
+  is possible but would be distracting. We present the main
+  ingredients as postulates for clarity.}
 
 \medskip 
 
@@ -627,7 +629,7 @@ We postulate the existence of a point \AgdaFunction{base} lying on the
 circle and a way to go from this point to itself using a path called
 \AgdaFunction{loop}. A priori there is another path from
 \AgdaFunction{base} to itself,
-$\AgdaFunction{refl}~\AgdaFunction{base}$, which is involves not
+$\AgdaFunction{refl}~\AgdaFunction{base}$, which involves not
 moving at all. Because paths are closed under composition, there is
 yet another way to go from \AgdaFunction{base} to itself that involves
 going around the loop twice and hence evidently $n$ times for
@@ -708,7 +710,7 @@ First note that only the types differ; the implementation is
 identical. In fact, the only difference between the two principles is
 that the induction principle uses dependent functions whereas the
 recursion principle uses non-dependent functions. To gain some
-intuition we should two simple functions defined using the recursion
+intuition we show two simple functions defined using the recursion
 principle and one property established using the induction principle:
 
 \medskip
@@ -820,7 +822,7 @@ space $B$ two known paths: $\alpha$ which relates
 $f(\AgdaFunction{base})$ to $\AgdaFunction{b}$ and the path
 $\AgdaFunction{p} : \AgdaFunction{b} ≡ \AgdaFunction{b}$ which is
 assumed to exist as the target space must have enough structure. What
-$\beta$ asserts is that this path $\AgdaFunction{p}$ cannot be an
+$\beta$ asserts is that this path~$\AgdaFunction{p}$ cannot be an
 arbitrary path in $B$: it must incorporate whatever the action of $f$
 on \AgdaFunction{loop} was. In the figure, it is apparent that the
 obvious way to relate $\AgdaFunction{ap}~f~\AgdaFunction{loop}$ and
@@ -871,11 +873,11 @@ connection to \AgdaFunction{loop} and \AgdaFunction{p} that is useful
 to keep in mind and that is a programming language theory
 perspective. Both \AgdaFunction{refl}~\AgdaFunction{base} and
 \AgdaFunction{loop} are paths in the space $\AgdaFunction{base} ≡
-\AgdaFunction{base}$. The first is trivial path and we will think of
+\AgdaFunction{base}$. The first is a trivial path and we will think of
 it as a pure function with no side effects and the second is a path
 that cannot be identified with the trivial \AgdaFunction{refl} path and
 we will think of it as a function with possible side effects. The
-function $f$ is arbitrary but given that \AgdaFunction{loop} is viewed
+function~$f$ is arbitrary but given that \AgdaFunction{loop} is viewed
 as an object with side effects, its action on \AgdaFunction{loop} may
 also have side effects. Therefore, when moving from the space $S¹$ to
 another space $B$, the side effects in the action of $f$ on
@@ -912,11 +914,12 @@ taken into account.
 The above material, except perhaps for its exposition, is
 standard. The goal was to show enough of HoTT to get an appreciation
 of its complexity and understand that the main reason for this
-complexity is the existence of non-equivalent paths. To sum it up,
-given a space~$A$, two points $x$ and $y$ in $A$, and two proofs $p$
-and $q$ of type $x ≡ y$, we, in general, know nothing about the
-relationship between $p$ and~$q$. It is true that there are both
-proofs of the identity $x ≡ y$ and these proofs may be different in
+complexity is the existence of non-trivial paths which, in some
+intuitive sense, can be though of as operations with side effects. To
+sum it up, given a space~$A$, two points $x$ and $y$ in $A$, and two
+proofs $p$ and $q$ of type $x ≡ y$, we, in general, know nothing about
+the relationship between $p$ and~$q$. It is true that there are both
+proofs of the identity $x ≡ y$ but these proofs may be different in a
 critical way that would make it inconsistent to identify them. In the
 topological world, it is easy to visualize such a situation:
 
@@ -934,8 +937,9 @@ topological world, it is easy to visualize such a situation:
 The idea is that the large space $A$ (the square) has a hole (in
 blue). The two paths connect $x$ and $y$ but are separated by the hole
 and hence there is no way to perform a continuous deformation (without
-cutting and gluing) of one path to the other. What could possibly be
-the parallel situation in a conventional computational setting?
+cutting and gluing) of one path to the other. The question is whether
+a similar intuition can be develop in a conventional computational
+setting?
 
 %%%
 \subsection{Concurrency}
@@ -943,167 +947,115 @@ the parallel situation in a conventional computational setting?
 A first hint comes from a paper
 by~\citet{Gunawardena:2001:HC:377786.377845} which views the diagram
 above as representing the concurrent execution of two processes. One
-process $H$ makes progress along the horizontal dimension and the
-other $V$ makes progress along the vertical dimension. The paths from
-$x$ and $y$ correspond to all the legal interleavings of the two
-processes. Along the way of the computation the processes need to
-acquire exclusive access to a shared resource. As soon as process $H$
-acquires the resource, all interleavings moving up are forbidden until
-the resource is released and symmetrically when process $V$ acquires
-the resource all interleavings moving to the right are forbidden until
-the resource is released. In other words, the blue square represents a
-forbidden zone. Furthermore, all interleavings to the right of the
-blue square are equivalent executions and similarly for all
-interleavings going to the left of the blue square are equivalent
-executions. However it would be incorrect to equate executions going
-on different sides of the blue square. 
+process $H$ makes progress depicted along the horizontal dimension and
+the other $V$ makes progress depicted along the vertical
+dimension. The paths from $x$ and $y$ correspond to all the legal
+interleavings of the two processes. Now assume that during their
+computation, the processes need to acquire exclusive access to a
+shared resource. As soon as process $H$ acquires the resource, all
+interleavings moving up in the vertical direction are forbidden until
+the resource is released and symmetrically if process $V$ acquires the
+resource all interleavings moving to the right in the horizontal
+direction are forbidden until the resource is released. In other
+words, the blue square represents a forbidden zone. Furthermore, all
+interleavings to the right of the blue square are equivalent
+executions in which process $H$ acquires the resource first and
+similarly all interleavings going to the left of the blue square are
+equivalent executions in which process $V$ acquires the resource
+first. It would clearly be incorrect to equate executions that are on
+different sides of the blue square.
 
-The connection to concurrency outlined suggests that paths can be
-viewed as embodying conventional computational effects related to
+The connection to concurrency outlined above suggests that paths can
+be viewed as embodying conventional computational effects related to
 acquiring and releasing locks and not just the special effects arising
 from the homotopy theoretic interpretation (if one may call the
 trajectory of a path around holes in the space as a form of
 computational effect). Even more generally, and abstracting from the
-particular example of concurrency theory, we will argue that paths may
-embody arbitrary computational effects.
+particular example of concurrency theory, we argue that paths may be
+viewed as embodying some general notion of computational effects.
 
 %%%
 \subsection{Effectful Proofs}
 
 Forgetting about the homotopy theoretic interpretation and returning
-to the terminology of Secs.~\ref{sec1} and~\ref{sec2}, objects of type
+to the terminology of Secs.~\ref{sec2} and~\ref{sec3}, objects of type
 $x ≡ y$ are proofs of the equivalence of $x$ and $y$. If we postulate
 for a moment that these proofs may embody computational effects then
 all the special treatment of paths arising from the homotopy
 interpretation can be justified on purely computational grounds by
 appealing to the familiar reasoning laws governing computational
 effects using monads, type-and-effect systems, effect handlers,
-etc. For example, if we imagine that \AgdaFunction{loop} in the definition
-of $S¹$ represents a proof with a computational effect, then given an
-arbitrary function from $S¹$ to some space $B$, it is natural to
-expect the proof object $\AgdaFunction{ap}~f~\AgdaFunction{loop}$ to
-also have a computational effect in which case this proof cannot in
-general be equivalent to another proof with no effects or with
-different computational effects. 
+etc. For example, if we imagine that \AgdaFunction{loop} in the
+definition of $S¹$ represents a proof with a computational effect,
+then given an arbitrary function from $S¹$ to some space $B$, it is
+natural to expect the proof object
+$\AgdaFunction{ap}~f~\AgdaFunction{loop}$ to also have a computational
+effect in which case this proof cannot in general be equivalent to
+another proof with no effects or with different computational
+effects. Similarly following \AgdaFunction{loop} twice thus
+experiencing the computational effect twice would not necessarily be
+the same as experiencing it once. However, in order to be consistent
+with the tenets of HoTT it should be possible to experience the
+computational effect in the opposite direction in a way that cancels
+out.\footnote{This reversibility of computational effects does not
+  apply to acquiring and releasing locks which is why the connections
+  between homotopy and concurrency were been further developed using
+  \emph{directed} homotopy theory~\cite{Fajstrup2006241}.} The
+question therefore is what kind of such reversible computational
+effects could be embodied in proof objects? We address this last point
+in the next section.
 
-The question therefore is what kind of computational effects are
-embodied in proof objects? The answer is none really unless one takes
-seriously the \emph{operational} semantics of proof languages used in
-theorem provers. This is the subject of the next section. 
+%%%
+\subsection{Reversible Monads} 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Operational Semantics of Theorem Provers}
+Putting the previous observations together, the type of proofs $x ≡ y$
+in some space $A$ should be treated as a monadic type involving a
+reversible effect. Note that the monad laws together with the
+reversibility requirement give us the combinational structure of paths
+in Sec.~\ref{sub:paths}. The presence of monadic effects ensures that
+path equivalence is treated delicately: we certainly cannot identify
+all paths and must accept the complex combinatorial structure that
+arises from the desire to keep certain paths distinct. 
 
-Here is a proof of a simple property on natural numbers:
+So what is a ``reversible monadic effect''? This precise question is
+answered in a paper by~\citet{Heunen:2015:RMC:2875516.2875606} which
+argues that effectful computations are reversible \emph{precisely}
+when the monad in question is Frobenius as specified in the following
+two definitions.
 
-\medskip
+\begin{definition}[Dagger Category]
+A \emph{dagger} is a functor $\dagger : \C^{\mathrm{op}} \rightarrow
+\C$ satisfying $A^\dagger = A$ on objects and $f^{\dagger\dagger} = f$
+on morphisms. A \emph{dagger category} is a category equipped with a
+dagger. 
+\end{definition}
 
-\begin{code}
-right-unit+ : (n : ℕ) → (n + 0 ≡ n)
-right-unit+ 0 = refl 0
-right-unit+ (suc m) = cong suc (right-unit+ m) 
-\end{code}
+Note that any groupoid is a dagger category. 
 
-\medskip
+\begin{definition}[Frobenius Monad~\cite{Heunen:2015:RMC:2875516.2875606}]
+A \emph{Frobenius monad} on a dagger category $\C$ is a monad
+$(T,\mu,\eta)$ on $\C$ with $T(f^\dagger) = T(f)^\dagger$ and: 
+\[
+  T(\mu_A) \circ \mu^\dagger_{T(A)} = \mu_{T(A)} \circ T(\mu^\dagger_{A}).
+\]
+\end{definition}
 
-In Martin-L\"of type theory, proofs are typically represented as
-dependent functions. For example, the following proof is a function
-from the set of natural numbers to propositions; the result type of
-this function depends on the \emph{value} of the input:
+Note that daggers make any monad give rise to a comonad and hence that
+the definition of a Frobenius monad is essentially about the
+interaction between the monad and its comonad counterpart.
 
-In conventional type theory, such functions are \emph{pure}. Is it,
-however, possible to conceive of situations in which such functions
-may have computational effects?
-
-Connections to monads: effects have a right unit, left unit, and
-  an associative composition operation; these are lemmas that we can
-  prove for arbitrary effects using J.
-
-Instead of homotopy etc how about a purely type theoretic
-interpretation of proofs. In an actual proof assistant proofs are not
-just pure functions: they have holes at various times exceptions etc. 
-
-\cite{MR2666883}
-
-So if we consider proofs with effects then we don't need the homotopy
-interpretation; we get the same complex combinatorial structure!!!
-
-
-If some effects commute for example, then a 2 level path can express
-that etc. properties of effects represented as 2-paths
-
-One might argue that this is the only interesting proof of this
-property and that any proof of the same property will be essentially
-equivalent. This can formalized as follows:
-
-\medskip
-
-\begin{code}
-nat-irr : {n : ℕ} → (p : n + 0 ≡ n) → (q : n + 0 ≡ n) → (p ≡ q)
-nat-irr p q = proof-irrelevance p q
-\end{code}
-
-\medskip
-
-But now consider the following incomplete proof:
-
-\medskip
-
-\begin{code}
-right-unit+I : (n : ℕ) → (n + 0 ≡ n)
-right-unit+I 0 = refl 0
-right-unit+I (suc m) = {!!}
-\end{code}
-
-\medskip
-
-\begin{code}
-ppI : {n : ℕ} → (right-unit+ n) ≡ (right-unit+I n)
-ppI {n} = nat-irr (right-unit+ n) (right-unit+I n)
-\end{code}
-
-\medskip
-
-Now just looking at the above two lines and not knowing the rest of
-the rest of the context, one might argue that we are in a precarious
-situation. We have equated a complete proof with an incomplete proof
-that may or may not ever be completed but \AgdaFunction{ppI} does not
-record that distinction. Now imagine the situation with complex proofs
-that may have holes in different parts, manipulating proofs with no
-formal account of dependencies is dangerous. One solution is to
-arbitrarily forbid such incomplete proofs from propagating beyond the
-boundaries of a module. Another is to use HoTT!
-
-As we argue, the quite complex machinery develop to deal with
-topological spaces is exactly the machinery needed to deal with such
-incomplete proofs.
-
+%% If some effects commute for example, then a 2 level path can express 
+%% that etc. properties of effects represented as 2-paths 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 
-Fresh look at effects: solves composition of effects!
-
-patch theory
-
-map holes in proofs to agda implementation using metavariables etc.
-
-open terms ??
-
-Application of hott
-
-Real programs have computational effects. Type and effect systems were
-designed to reason about which program transformations are safe. For
-example, if the effect system tracks read and write operations then it
-can be used to discover scheduling constraints.
-
-HoTT complicates type theory quite a bit; justified if one looks at
-homotopy theory; but if we stick to conventional programs and proofs
-what justifies that additional complexity? Our answer: proofs that
-involve computational effects! If you have pure proofs you can
-collapse them all to yes/no. If the proofs have effects you cannot
-collapse them and we have to distinguish them: a proof with an effect
-is not the same as a proof with no effect or with two effects.
+The pearl leaves many unanswered questions but we believe it meets the
+first criterion for pearls by providing a new and thought-provoking
+way of looking at an old idea (HoTT). Specifically, the complex
+structure of HoTT is not specific to homotopy theory but arises
+naturally from the consideration of proofs embodying reversible
+computational effects.
 
 %% all the stuff with subst we did before may be was the right thing from
 %% the hott perspective ???
@@ -1528,3 +1480,80 @@ perspective this reversible language with effects.
   prove for arbitrary effects using J.
 
 \end{itemize}
+
+\begin{code}
+right-unit+ : (n : ℕ) → (n + 0 ≡ n)
+right-unit+ 0 = refl 0
+right-unit+ (suc m) = cong suc (right-unit+ m) 
+\end{code}
+
+\medskip
+
+In Martin-L\"of type theory, proofs are typically represented as
+dependent functions. For example, the following proof is a function
+from the set of natural numbers to propositions; the result type of
+this function depends on the \emph{value} of the input:
+
+In conventional type theory, such functions are \emph{pure}. Is it,
+however, possible to conceive of situations in which such functions
+may have computational effects?
+
+Connections to monads: effects have a right unit, left unit, and an
+associative composition operation; these are lemmas that we can prove
+for arbitrary effects using J.
+
+Instead of homotopy etc how about a purely type theoretic
+interpretation of proofs. In an actual proof assistant proofs are not
+just pure functions: they have holes at various times exceptions etc. 
+
+\cite{MR2666883}
+
+So if we consider proofs with effects then we don't need the homotopy
+interpretation; we get the same complex combinatorial structure!!!
+
+One might argue that this is the only interesting proof of this
+property and that any proof of the same property will be essentially
+equivalent. This can formalized as follows:
+
+\medskip
+
+\begin{code}
+nat-irr : {n : ℕ} → (p : n + 0 ≡ n) → (q : n + 0 ≡ n) → (p ≡ q)
+nat-irr p q = proof-irrelevance p q
+\end{code}
+
+\medskip
+
+But now consider the following incomplete proof:
+
+\medskip
+
+\begin{code}
+right-unit+I : (n : ℕ) → (n + 0 ≡ n)
+right-unit+I 0 = refl 0
+right-unit+I (suc m) = {!!}
+\end{code}
+
+\medskip
+
+\begin{code}
+ppI : {n : ℕ} → (right-unit+ n) ≡ (right-unit+I n)
+ppI {n} = nat-irr (right-unit+ n) (right-unit+I n)
+\end{code}
+
+\medskip
+
+Now just looking at the above two lines and not knowing the rest of
+the rest of the context, one might argue that we are in a precarious
+situation. We have equated a complete proof with an incomplete proof
+that may or may not ever be completed but \AgdaFunction{ppI} does not
+record that distinction. Now imagine the situation with complex proofs
+that may have holes in different parts, manipulating proofs with no
+formal account of dependencies is dangerous. One solution is to
+arbitrarily forbid such incomplete proofs from propagating beyond the
+boundaries of a module. Another is to use HoTT!
+
+As we argue, the quite complex machinery develop to deal with
+topological spaces is exactly the machinery needed to deal with such
+incomplete proofs.
+
