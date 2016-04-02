@@ -105,28 +105,52 @@ $\displaystyle
 \newcommand{\as}[1]{\authornote{magenta}{AS}{#1}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\title[Reversible Circuits]{Representing, Manipulating and Optimizing \ \\ Reversible Circuits}
+\title[Computing with Rigs]{Computing with Semirings and Weak Rig Groupoids}
 \author[Carette-Sabry]{Jacques Carette \and Amr Sabry}
 \institute[McMaster-IU]{McMaster University \and Indiana University}
-\date{June 11, 2015}
+\date{7 April 2016}
 \begin{document}
 \maketitle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Resource-Aware Classical Computing}
-
+\begin{frame}{Outline}
+\jc{Outline in the sense of fill-this-in, not as a slide to stay}
 \begin{itemize}
-\vfill\item The biggest questionable assumption of classical programming is that it is possible
-to freely copy and discard information
-\vfill\item A classical programming language which respects no-cloning and no-discarding is
-the right foundation for an eventual quantum extension
-\vfill\item We want these properties to be \textcolor{red}{inherent} in the language; not an afterthought
-filtered by a type system
-\vfill\item We want to program with \textcolor{red}{isomorphisms} or \textcolor{red}{equivalences}
-\vfill\item The simplest instance is \textcolor{red}{permutations between finite types} which happens to
-correspond to \textcolor{red}{reversible circuits}.
+\item Usual Curry-Howard (true, false, or, and)
+\item enriched: symmetry, true and X, false or X
+\item unusual? X or X iff X.  X and X iff X. true or X iff true
+\item reversibility enters the picture: only isos
+\item define isos.  give tricky examples?
+\item give Pi terms
+\item recognize this... proof terms for semirings
+\item give Pi combinators too
+\item nice prop: syntactic reversibility
+\item example programs, proofs
+\item semantics of Pi
+\item Q: when are Pi programs equivalent? (motivates looking at equiv of equiv)
+\item but do note that Pi programs do NOT form a semiring, even if we have combinators
+  (types don't match).  Need to categorify.
+\item and keep going
+
+
+
 \end{itemize}
 \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{frame}{Resource-Aware Classical Computing}
+%
+%\begin{itemize}
+%\vfill\item The biggest questionable assumption of classical programming is that it is possible
+%to freely copy and discard information
+%\vfill\item A classical programming language which respects no-cloning and no-discarding is
+% the right foundation for an eventual quantum extension
+% \vfill\item We want these properties to be \textcolor{red}{inherent} in the language; not an afterthought
+% filtered by a type system
+%\vfill\item We want to program with \textcolor{red}{isomorphisms} or \textcolor{red}{equivalences}
+%\vfill\item The simplest instance is \textcolor{red}{permutations between finite types} which happens to
+%correspond to \textcolor{red}{reversible circuits}.
+%\end{itemize}
+%\end{frame}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
