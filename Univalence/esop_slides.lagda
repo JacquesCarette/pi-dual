@@ -113,35 +113,6 @@ $\displaystyle
 \maketitle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Quantum Computing}
-
-Quantum physics differs from classical physics in \textcolor{red}{many} ways:
-
-\begin{itemize}
-\vfill\item Superpositions
-\vfill\item Entanglement
-\vfill\item Unitary evolution
-\vfill\item Composition uses tensor products
-\vfill\item Non-unitary measurement
-\end{itemize}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Quantum Computing \& Programming Languages} 
-
-\begin{itemize}
-\vfill\item It is possible to adapt \textcolor{red}{all at once} classical programming
-languages to quantum programming languages.
-\vfill\item Some excellent examples discussed in this workshop
-\vfill\item This assumes that classical programming languages (and implicitly classical physics)
-can be smoothly adapted to the quantum world.
-\vfill\item There are however what appear to be fundamental differences between the classical and quantum world that make them incompatible
-\vfill\item Let us \emph{re-think} classical programming foundations before jumping to the quantum world.
-\end{itemize}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Resource-Aware Classical Computing}
 
 \begin{itemize}
@@ -157,59 +128,6 @@ correspond to \textcolor{red}{reversible circuits}.
 \end{itemize}
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{comment}
-\begin{frame}{Representing Reversible Circuits}
-
-truth table, matrix, reed muller expansion, product of cycles,
-decision diagram, etc.
-
-\jc{any easy way to reproduce Figure 4 on p.7 of Saeedi and Markov?}
-\jc{important remark: these are all \emph{Boolean} circuits!}
-
-Most important part: reversible circuits are equivalent to permutations.
-\end{frame}
-\end{comment}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{A (Foundational) Syntactic Theory}
-Ideally, want a notation that
-\begin{enumerate}
-\item is easy to write by programmers
-\item is easy to mechanically manipulate
-\item can be reasoned about
-\item can be optimized.
-\end{enumerate}
-\pause
-Start with a \emph{foundational} syntactic theory on our way there:
-\begin{enumerate}
-\item easy to explain
-\item clear operational rules
-\item fully justified by the semantics
-\item sound and complete reasoning
-\item sound and complete methods of optimization
-\end{enumerate}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \begin{frame}{A Syntactic Theory}
-% 
-% Ideally want a notation that is easy to write by programmers and that
-% is easy to mechnically manipulate for reasoning and optimizing of circuits.
-% 
-% Syntactic calculi good
-% 
-% Popular semantics: Despite the increasing importance of formal
-% methods to the computing industry, there has been little advance to
-% the notion of a ``popular semantics'' that can be explained to
-% \emph{and used} effectively (for example to optimize or simplify
-% programs) by non-specialists including programmers and first-year
-% students. Although the issue is by no means settled, syntactic
-% theories are one of the candidates for such a popular semantics for
-% they require no additional background beyond knowledge of the
-% programming language itself, and they provide a direct support for the
-% equational reasoning underlying many program transformations.
-% 
-% \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Starting Point}
@@ -281,30 +199,6 @@ A more evocative phrasing might be:
 $$ (A ≃ B) ≃ \mathsf{Perm} |A| $$
 \end{theorem}
 \end{frame}
-
-% \begin{frame}{A Calculus of Permutations} 
-% 
-% Syntactic theories only rely on transforming source programs to other           
-% programs, much like algebraic calculation. Since only the                       
-% \emph{syntax} of the programming language is relevant to the syntactic          
-% theory, the theory is accessible to non-specialists like programmers            
-% or students.                                                                    
-%                                                                                 
-% In more detail, it is a general problem that, despite its fundamental           
-% value, formal semantics of programming languages is generally                   
-% inaccessible to the computing public. As Schmidt argues in a recent             
-% position statement on strategic directions for research on programming          
-% languages~\cite{popularsem}:                                                    
-% \begin{quote}                                                                   
-% \ldots formal semantics has fed upon increasing complexity of concepts          
-% and notation at the expense of calculational clarity. A newcomer to             
-% the area is expected to specialize in one or more of domain theory,             
-% inuitionistic type theory, category theory, linear logic, process              
-% algebra, continuation-passing style, or whatever. These                         
-% specializations have generated more experts but fewer general users.            
-% \end{quote}                                                                     
-%
-% \end{frame}
 
 \begin{frame}[fragile]{A Calculus of Permutations}
 
