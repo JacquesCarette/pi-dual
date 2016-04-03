@@ -1,3 +1,8 @@
+esop_slides.pdf : latex/esop_slides.tex esop_slides.lagda
+	pdflatex latex/esop_slides.tex; bibtex esop_slides; pdflatex latex/esop_slides.tex; pdflatex latex/esop_slides.tex
+
+latex/esop_slides.tex : esop_slides.lagda
+	agda --allow-unsolved-metas --latex -i . -i $(AGDALIB) -i $(CATLIB) esop_slides.lagda
 
 esop2.pdf : latex/esop2.tex
 	pdflatex latex/esop2.tex; bibtex esop2; pdflatex latex/esop2.tex; pdflatex latex/esop2.tex

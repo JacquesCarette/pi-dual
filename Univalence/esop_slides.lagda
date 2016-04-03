@@ -73,6 +73,10 @@ $\displaystyle
     {\hrule width \hsize height .33pt \vspace{.5pc}}
     {\par\addvspace{.5pc}}
 
+% for the slides
+\newcommand{\true}{\mathit{true}}
+\newcommand{\false}{\mathit{false}}
+
 %% \DefineVerbatimEnvironment
 %%   {code}{Verbatim}
 %%  {} % Add fancy options here if you like.
@@ -132,10 +136,25 @@ $\displaystyle
   (types don't match).  Need to categorify.
 \item and keep going
 
-
-
 \end{itemize}
 \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Simple Curry-Howard}
+\begin{tabular}{c|c}
+Logic & Types \\ \hline
+$\true$ & $\top$ \\
+$\false$ & $\bot$ \\
+$∧$ & $×$ \\
+$∨$ & $⊎$ \\
+\end{tabular}
+\pause
+\begin{tabular}{c|c}
+Implication & Term \\ \hline
+comm & swap \\ % expand this out, and continue
+\end{tabular}
+\end{frame}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \begin{frame}{Resource-Aware Classical Computing}
 %
