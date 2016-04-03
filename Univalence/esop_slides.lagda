@@ -88,6 +88,7 @@ $\displaystyle
 
 \setbeamertemplate{theorems}[ams style]
 \setbeamertemplate{blocks}[rounded][shadow=false]
+\setbeamertemplate{navigation symbols}{}%remove navigation symbols
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \renewcommand{\AgdaCodeStyle}{\small}
@@ -120,10 +121,10 @@ $\displaystyle
 \begin{frame}{Outline}
 \jc{Outline in the sense of fill-this-in, not as a slide to stay}
 \begin{itemize}
-\item Usual Curry-Howard (true, false, or, and)
-\item enriched: symmetry, true and X, false or X
-\item unusual? X or X iff X.  X and X iff X. true or X iff true
-\item reversibility enters the picture: only isos
+\item[\checkmark] Usual Curry-Howard (true, false, or, and)
+\item[\checkmark] enriched: symmetry, true and X, false or X
+\item[\checkmark] unusual? X or X iff X.  X and X iff X. true or X iff true
+\item[\checkmark] reversibility enters the picture: only isos
 \item define isos.  give tricky examples?
 \item give Pi terms
 \item recognize this... proof terms for semirings
@@ -140,21 +141,93 @@ $\displaystyle
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Simple Curry-Howard}
+\begin{frame}[fragile]{Simple Curry-Howard}
+\AgdaHide{
+\begin{code}
+open import Data.Empty
+open import Data.Unit
+open import Data.Sum
+open import Data.Product
+\end{code}
+}
+\begin{minipage}[t]{.22\textwidth}
+Constructors
+
 \begin{tabular}{c|c}
 Logic & Types \\ \hline
 $\true$ & $\top$ \\
 $\false$ & $\bot$ \\
 $∧$ & $×$ \\
 $∨$ & $⊎$ \\
+$\Rightarrow$ & $\rightarrow$ \\
+$\forall$ & Π \\
+$\exists$ & Σ \\
+\end{tabular}
+\end{minipage}
+\pause
+\renewcommand{\arraystretch}{1.2}
+\begin{minipage}[t]{0.74\textwidth}
+Digging deeper:
+
+\begin{tabular}{p{3.3cm}|l}
+Logical Implication & Inhabiting Term \\ \hline
+$ A∧B ⇒ B∧A $ & $\lambda \{(a , b) → (b , a)\}$ \\
+$ \true ∧ A ⇒ A $ & $\lambda \{(\mathit{tt} , a) → a\}$ \\
+$ A ⇒ \true ∧ A $ & $\lambda a → \mathit{tt} , a$ \\
+$ \false ∨ A ⇒ A $ &
+\hspace*{ -2.5em}
+\begin{minipage}{0.4\textwidth}
+\begin{code}
+⊥e₊ : {A : Set} → ⊥ ⊎ A → A
+⊥e₊ (inj₁ ())
+⊥e₊ (inj₂ y) = y
+\end{code}
+\end{minipage} \\
+$A ⇒ \false ∨ A $ &
+\hspace*{ -2.5em}
+\begin{minipage}{0.3\textwidth}
+\begin{code}
+⊥i₊ : {A : Set} → A → ⊥ ⊎ A
+⊥i₊ a = inj₂ a
+\end{code}
+\end{minipage} \\
 \end{tabular}
 \pause
-\begin{tabular}{c|c}
-Implication & Term \\ \hline
-comm & swap \\ % expand this out, and continue
+\vspace{3mm}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{p{3.3cm}|l}
+Logical Equivalence & Type Isomorphism \\ \hline
+$ A ∧ B ⇔ B ∧ A $ & $A × B ≃ B × A$ \\
+$ \true ∧ A ⇔ A$ & $⊤ × A ≃ A$ \\
+$ \false ∨ A ⇔ A$ & $⊥ ⊎ A ≃ A$ \\
 \end{tabular}
+\end{minipage}
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Classical Curry-Howard: Inhabitation}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{p{3.3cm}|l}
+Logical Equivalence & Type non-Isomorphism \\ \hline
+$ A ∨ A ⇔ A $ & $A ⊎ A ≄ A$ \\
+$ A ∧ A ⇔ A $ & $A × A ≄ A$ \\
+$ \true ∨ A ⇔ A$ & $⊥ ⊎ A ≄ A$ \\
+\end{tabular}
+\vfill
+There \emph{are} functions which witness inhabitation in each direction, but these
+\textcolor{red}{forget information}, i.e. are not inverses.
+\vfill
+\pause
+Desideratum: only isomorphisms in the right column.\\
+Motivation and inspiration:
+\begin{itemize}
+\item Reversible computing.  Quantum computing.
+\item Homotopy Type Theory.
+\end{itemize}
+\vfill
+\pause
+Q: What should the left column be?
+\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \begin{frame}{Resource-Aware Classical Computing}
 %
@@ -176,15 +249,6 @@ comm & swap \\ % expand this out, and continue
 \begin{frame}{Starting Point}
 \emph{Typed} isomorphisms.  First, a universe of (finite) types
 \vspace*{0.4cm}
-\AgdaHide{
-\begin{code}
-open import Data.Empty
-open import Data.Unit
-open import Data.Sum
-open import Data.Product
-\end{code}
-}
-
 \begin{code}
 data U : Set where
   ZERO  : U
