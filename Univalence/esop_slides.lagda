@@ -13,7 +13,7 @@
 \fi
 
 % \usepackage{agda}
-\usepackage{fancyvrb}
+% \usepackage{fancyvrb}
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
 \usepackage{tikz}
@@ -63,6 +63,7 @@
 \newcommand{\assocrt}{\mathit{assocr}_*}
 \newcommand{\distz}{\mathit{dist}_0}
 \newcommand{\factorz}{\mathit{factor}_0}
+\newcommand{\factorzl}{\mathit{factorl}_0}
 \newcommand{\dist}{\mathit{dist}}
 \newcommand{\factor}{\mathit{factor}}
 \newcommand{\iso}{\leftrightarrow}
@@ -136,10 +137,16 @@ $\displaystyle
 \item[\checkmark] enriched: symmetry, true and X, false or X
 \item[\checkmark] unusual? X or X iff X.  X and X iff X. true or X iff true
 \item[\checkmark] reversibility enters the picture: only isos
-\item define isos.  give tricky examples?
-\item give Pi terms
-\item recognize this... proof terms for semirings
-\item give Pi combinators too
+\item[\checkmark] define isos.  give tricky examples?
+\item[\checkmark] give type isos.
+\item[\checkmark] recognize this... proof terms for semirings
+\item observations:
+1. the inhabitants of isos are the proof terms of basic semiring identities
+2. the proof terms for a semiring make a nice base language
+3. both are missing combinators
+4. A x A ~ A x A has two proofs, which are not equal
+\item idea: make a PL whose types are isos and terms are iso combinators
+\item give combinators
 \item nice prop: syntactic reversibility
 \item example programs, proofs
 \item semantics of Pi
@@ -184,6 +191,7 @@ $\exists$ & Σ \\
 \begin{minipage}[t]{0.74\textwidth}
 Digging deeper:
 
+\renewcommand{\AgdaCodeStyle}{\footnotesize}
 \begin{tabular}{p{3.3cm}|l}
 Logical Implication & Inhabiting Term \\ \hline
 $ A∧B ⇒ B∧A $ & $\lambda \{(a , b) → (b , a)\}$ \\
@@ -191,12 +199,11 @@ $ \true ∧ A ⇒ A $ & $\lambda \{(\mathit{tt} , a) → a\}$ \\
 $ A ⇒ \true ∧ A $ & $\lambda a → \mathit{tt} , a$ \\
 $ \false ∨ A ⇒ A $ &
 \begin{minipage}{0.4\textwidth}
-{\large{
 \begin{code}
 ⊥e₊ : {A : Set} → ⊥ ⊎ A → A
 ⊥e₊ (inj₁ ())
 ⊥e₊ (inj₂ y) = y
-\end{code}}}
+\end{code}
 \end{minipage} \\
 $A ⇒ \false ∨ A $ &
 \begin{minipage}{0.3\textwidth}
@@ -240,20 +247,21 @@ Motivation and inspiration:
 \end{itemize}
 \vfill
 \pause
-Q: What should the left column be?
+Q: What would the table look like then?
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Type isomorphisms}
+\begin{frame}{Type isomorphisms I}
+\renewcommand{\AgdaCodeStyle}{\footnotesize}
+
 \begin{definition}[Homotopy]\label{def:homotopy}
 Two functions $f,g:A \rightarrow B$ are \emph{homotopic}, written $f ∼
 g$, if $\forall x:A. f(x) = g(x)$.
 \medskip 
-{
 \begin{code}
 _∼_ : ∀ {A : Set} {P : A → Set} → (f g : (x : A) → P x) → Set
 _∼_ {A} f g = (x : A) → f x ≡ g x
-\end{code}}
+\end{code}
 \end{definition}
 \pause
 \begin{definition}[Quasi-inverse]
@@ -264,8 +272,7 @@ $g : B \rightarrow A$ and two homotopies
 $\alpha : f \circ g \sim \mathrm{id}_B$ and
 $\beta : g \circ f \sim \mathrm{id}_A$.
 
-\medskip 
-{\footnotesize{
+\medskip
 \begin{code}
 record isqinv {A : Set} {B : Set} (f : A → B) : Set where
   constructor qinv
@@ -273,9 +280,66 @@ record isqinv {A : Set} {B : Set} (f : A → B) : Set where
     g : B → A
     α : (f ∘ g) ∼ id
     β : (g ∘ f) ∼ id
-\end{code}}}
+\end{code}
 \end{definition}
 \end{frame}
+
+\begin{frame}{Type isomorphisms II}
+\begin{definition}[Equivalence of types]\label{def:eq}
+  Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
+  function $f : A \rightarrow B$ together with a quasi-inverse for
+  $f$. 
+\medskip 
+\begin{code}
+_≃_ : Set → Set → Set
+A ≃ B = Σ (A → B) isqinv
+\end{code}
+\end{definition}
+\pause
+(Tricky) Example\\
+\begin{code}
+left0e : {A : Set} → ⊥ × A → ⊥
+left0e (b , _) = b
+left0i : {A : Set} → ⊥ → ⊥ × A
+left0i ()
+
+left0ei : {A : Set} → (left0e {A} ∘ left0i) ∼ id
+left0ei ()
+left0ie : {A : Set} → (left0i {A} ∘ left0e) ∼ id
+left0ie (() , _)
+\end{code}
+\end{frame}
+
+\begin{frame}{Type isomorphisms III}
+\[\begin{array}{rcl}
+⊥ ⊎ a               & ≃ & a                  \\
+a ⊎ b               & ≃ & b ⊎ a             \\
+a ⊎ (b ⊎ c)         & ≃ & (a ⊎ b) ⊎ c    \\
+                                              \\
+⊤ × a           & ≃ & a                  \\
+a × b           & ≃ & b × a         \\
+a × (b × c) & ≃ & (a × b) × c \\
+                                              \\
+⊥ × a           & ≃ & ⊥                   \\
+(a ⊎ b) × c     & ≃ & (a × c) ⊎ (b × c)
+\end{array}\]
+\end{frame}
+
+\begin{frame}{Semiring Equalities}
+\[\begin{array}{rcl}
+0 + a               & = & a                  \\
+a + b               & = & b + a             \\
+a + (b + c)         & = & (a + b) + c    \\
+                                              \\
+1 \cdot a           & = & a                  \\
+a \cdot b           & = & b \cdot a         \\
+a \cdot (b \cdot c) & = & (a \cdot b) \cdot c \\
+                                              \\
+0 \cdot a           & = & 0                   \\
+(a + b) \cdot c     & = & (a \cdot c) + (b \cdot c)
+\end{array}\]
+\end{frame}
+
 \end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1412,7 +1476,7 @@ By id-unit-right:
 
 \AgdaHide{
 \begin{code}
-open import Equiv using (_≃_; _●_; _⊎≃_; _×≃_; id≃)
+open import Equiv using (_●_; _⊎≃_; _×≃_; id≃)
 import TypeEquiv as TE
 \end{code}
 }
@@ -1431,110 +1495,15 @@ c2equiv : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ 
 
 \AgdaHide{
 \begin{code}
-eval unite₊ (inj₁ ())
-eval unite₊ (inj₂ v) = v
-eval uniti₊ v = inj₂ v
-eval swap₊ (inj₁ v) = inj₂ v
-eval swap₊ (inj₂ v) = inj₁ v
-eval assocl₊ (inj₁ v) = inj₁ (inj₁ v)
-eval assocl₊ (inj₂ (inj₁ v)) = inj₁ (inj₂ v)
-eval assocl₊ (inj₂ (inj₂ v)) = inj₂ v
-eval assocr₊ (inj₁ (inj₁ v)) = inj₁ v
-eval assocr₊ (inj₁ (inj₂ v)) = inj₂ (inj₁ v)
-eval assocr₊ (inj₂ v) = inj₂ (inj₂ v)
-eval unite⋆ (tt , v) = v
-eval uniti⋆ v = (tt , v)
-eval swap⋆ (v₁ , v₂) = (v₂ , v₁)
-eval assocl⋆ (v₁ , (v₂ , v₃)) = ((v₁ , v₂) , v₃)
-eval assocr⋆ ((v₁ , v₂) , v₃) = (v₁ , (v₂ , v₃))
-eval absorbr (() , _)
-eval absorbl (_ , ())
-eval factorzl ()
-eval factorzr ()
-eval dist (inj₁ v₁ , v₃) = inj₁ (v₁ , v₃)
-eval dist (inj₂ v₂ , v₃) = inj₂ (v₂ , v₃)
-eval factor (inj₁ (v₁ , v₃)) = (inj₁ v₁ , v₃)
-eval factor (inj₂ (v₂ , v₃)) = (inj₂ v₂ , v₃)
-eval id⟷ v = v
-eval (c₁ ◎ c₂) v = eval c₂ (eval c₁ v)
-eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
-eval (c₁ ⊕ c₂) (inj₂ v) = inj₂ (eval c₂ v)
-eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
-
--- useful to have the backwards eval too
-
-evalB unite₊ x = inj₂ x
-evalB uniti₊ (inj₁ ())
-evalB uniti₊ (inj₂ y) = y
-evalB swap₊ (inj₁ x) = inj₂ x
-evalB swap₊ (inj₂ y) = inj₁ y
-evalB assocl₊ (inj₁ (inj₁ x)) = inj₁ x
-evalB assocl₊ (inj₁ (inj₂ y)) = inj₂ (inj₁ y)
-evalB assocl₊ (inj₂ y) = inj₂ (inj₂ y)
-evalB assocr₊ (inj₁ x) = inj₁ (inj₁ x)
-evalB assocr₊ (inj₂ (inj₁ x)) = inj₁ (inj₂ x)
-evalB assocr₊ (inj₂ (inj₂ y)) = inj₂ y
-evalB unite⋆ x = tt , x
-evalB uniti⋆ (tt , x) = x
-evalB swap⋆ (x , y) = y , x
-evalB assocl⋆ ((x , y) , z) = x , y , z
-evalB assocr⋆ (x , y , z) = (x , y) , z
-evalB absorbr ()
-evalB absorbl ()
-evalB factorzr (_ , ())
-evalB factorzl (() , _)
-evalB dist (inj₁ (x , y)) = inj₁ x , y
-evalB dist (inj₂ (x , y)) = inj₂ x , y
-evalB factor (inj₁ x , z) = inj₁ (x , z)
-evalB factor (inj₂ y , z) = inj₂ (y , z)
-evalB id⟷ x = x
-evalB (c₀ ◎ c₁) x = evalB c₀ (evalB c₁ x)
-evalB (c₀ ⊕ c₁) (inj₁ x) = inj₁ (evalB c₀ x)
-evalB (c₀ ⊕ c₁) (inj₂ y) = inj₂ (evalB c₁ y)
-evalB (c₀ ⊗ c₁) (x , y) = evalB c₀ x , evalB c₁ y
-
-c2equiv unite₊ = TE.unite₊equiv
-c2equiv uniti₊ = TE.uniti₊equiv
-c2equiv swap₊ = TE.swap₊equiv
-c2equiv assocl₊ = TE.assocl₊equiv
-c2equiv assocr₊ = TE.assocr₊equiv
-c2equiv unite⋆ = TE.unite⋆equiv
-c2equiv uniti⋆ = TE.uniti⋆equiv
-c2equiv swap⋆ = TE.swap⋆equiv
-c2equiv assocl⋆ = TE.assocl⋆equiv
-c2equiv assocr⋆ = TE.assocr⋆equiv
-c2equiv absorbr = TE.distzequiv
-c2equiv absorbl = TE.distzrequiv
-c2equiv factorzr = TE.factorzrequiv
-c2equiv factorzl = TE.factorzequiv
-c2equiv dist = TE.distequiv
-c2equiv factor = TE.factorequiv
-c2equiv id⟷ = id≃
-c2equiv (c ◎ c₁) = c2equiv c₁ ● c2equiv c
-c2equiv (c ⊕ c₁) = (c2equiv c) ⊎≃ (c2equiv c₁)
-c2equiv (c ⊗ c₁) = (c2equiv c) ×≃ (c2equiv c₁)
+eval p v = {!!}
+evalB p v = {!!}
+c2equiv cc = {!!}
 \end{code}
 }
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Manipulating circuits}
-
-Nice framework, but:
-\begin{itemize}
-\item We don't want ad hoc rewriting rules.
-\begin{itemize}
-\item Our current set has \textcolor{red}{76 rules}!
-\end{itemize}
-\item Notions of soundness; completeness; canonicity in some sense.
-\begin{itemize}
-\item Are all the rules valid? (yes)
-\item Are they enough? (next topic)
-\item Are there canonical representations of circuits? (open)
-\end{itemize}
-\end{itemize}
-
-\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Categorification I}
