@@ -1,7 +1,18 @@
 \documentclass[11pt]{beamer}
 \usetheme{Boadilla}
 
-\usepackage{agda}
+% make the spacing less generous
+\ifdefined\mathindent
+  \newcommand{\oldmathindent}{\mathindent}
+  \renewcommand{\mathindent}{0mm}
+  \usepackage{agda}
+  % \renewcommand{\mathindent}{\oldmathindent}
+\else
+  \newcommand{\mathindent}{0mm}
+  \usepackage{agda}
+\fi
+
+% \usepackage{agda}
 \usepackage{fancyvrb}
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
@@ -11,7 +22,7 @@
 \usepackage{courier}
 \usepackage{thmtools}
 \usepackage{bbold}
-\usepackage{url}
+% \usepackage{url}
 \usepackage{bbm}
 \usepackage{proof}
 \usepackage{amstext}
@@ -19,7 +30,7 @@
 \usepackage{amsmath}
 \usepackage{comment}
 \usepackage{stmaryrd}
-\usepackage{listings}
+% \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{textgreek}
 \usepackage{extarrows}
@@ -111,7 +122,7 @@ $\displaystyle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \title[Computing with Rigs]{Computing with Semirings and Weak Rig Groupoids}
-\author[Carette-Sabry]{Jacques Carette \and Amr Sabry}
+\author[Carette-Sabry]{\textcolor{blue}{Jacques Carette} \and Amr Sabry}
 \institute[McMaster-IU]{McMaster University \and Indiana University}
 \date{7 April 2016}
 \begin{document}
@@ -148,6 +159,10 @@ open import Data.Empty
 open import Data.Unit
 open import Data.Sum
 open import Data.Product
+
+open import Relation.Binary.PropositionalEquality
+  using (_≡_; refl)
+open import Function using (_∘_; id)
 \end{code}
 }
 \begin{minipage}[t]{.22\textwidth}
@@ -175,16 +190,15 @@ $ A∧B ⇒ B∧A $ & $\lambda \{(a , b) → (b , a)\}$ \\
 $ \true ∧ A ⇒ A $ & $\lambda \{(\mathit{tt} , a) → a\}$ \\
 $ A ⇒ \true ∧ A $ & $\lambda a → \mathit{tt} , a$ \\
 $ \false ∨ A ⇒ A $ &
-\hspace*{ -2.5em}
 \begin{minipage}{0.4\textwidth}
+{\large{
 \begin{code}
 ⊥e₊ : {A : Set} → ⊥ ⊎ A → A
 ⊥e₊ (inj₁ ())
 ⊥e₊ (inj₂ y) = y
-\end{code}
+\end{code}}}
 \end{minipage} \\
 $A ⇒ \false ∨ A $ &
-\hspace*{ -2.5em}
 \begin{minipage}{0.3\textwidth}
 \begin{code}
 ⊥i₊ : {A : Set} → A → ⊥ ⊎ A
@@ -208,10 +222,10 @@ $ \false ∨ A ⇔ A$ & $⊥ ⊎ A ≃ A$ \\
 \begin{frame}{Classical Curry-Howard: Inhabitation}
 \renewcommand{\arraystretch}{1.5}
 \begin{tabular}{p{3.3cm}|l}
-Logical Equivalence & Type non-Isomorphism \\ \hline
+Logical Equivalence & Type \textcolor{red}{non-}Isomorphism \\ \hline
 $ A ∨ A ⇔ A $ & $A ⊎ A ≄ A$ \\
 $ A ∧ A ⇔ A $ & $A × A ≄ A$ \\
-$ \true ∨ A ⇔ A$ & $⊥ ⊎ A ≄ A$ \\
+$ \true ∨ A ⇔ \true$ & $⊤ ⊎ A ≄ ⊤$ \\
 \end{tabular}
 \vfill
 There \emph{are} functions which witness inhabitation in each direction, but these
@@ -228,26 +242,45 @@ Motivation and inspiration:
 \pause
 Q: What should the left column be?
 \end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \begin{frame}{Resource-Aware Classical Computing}
-%
-%\begin{itemize}
-%\vfill\item The biggest questionable assumption of classical programming is that it is possible
-%to freely copy and discard information
-%\vfill\item A classical programming language which respects no-cloning and no-discarding is
-% the right foundation for an eventual quantum extension
-% \vfill\item We want these properties to be \textcolor{red}{inherent} in the language; not an afterthought
-% filtered by a type system
-%\vfill\item We want to program with \textcolor{red}{isomorphisms} or \textcolor{red}{equivalences}
-%\vfill\item The simplest instance is \textcolor{red}{permutations between finite types} which happens to
-%correspond to \textcolor{red}{reversible circuits}.
-%\end{itemize}
-%\end{frame}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Starting Point}
-\emph{Typed} isomorphisms.  First, a universe of (finite) types
+\begin{frame}{Type isomorphisms}
+\begin{definition}[Homotopy]\label{def:homotopy}
+Two functions $f,g:A \rightarrow B$ are \emph{homotopic}, written $f ∼
+g$, if $\forall x:A. f(x) = g(x)$.
+\medskip 
+{
+\begin{code}
+_∼_ : ∀ {A : Set} {P : A → Set} → (f g : (x : A) → P x) → Set
+_∼_ {A} f g = (x : A) → f x ≡ g x
+\end{code}}
+\end{definition}
+\pause
+\begin{definition}[Quasi-inverse]
+\label{def:quasi}
+For a function $f : A \rightarrow B$, a \emph{quasi-inverse} of~$f$ is a
+triple $(g, \alpha, \beta)$, consisting of a function
+$g : B \rightarrow A$ and two homotopies
+$\alpha : f \circ g \sim \mathrm{id}_B$ and
+$\beta : g \circ f \sim \mathrm{id}_A$.
+
+\medskip 
+{\footnotesize{
+\begin{code}
+record isqinv {A : Set} {B : Set} (f : A → B) : Set where
+  constructor qinv
+  field
+    g : B → A
+    α : (f ∘ g) ∼ id
+    β : (g ∘ f) ∼ id
+\end{code}}}
+\end{definition}
+\end{frame}
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Reifying isomorphisms}
+First, a universe of (finite) types
 \vspace*{0.4cm}
 \begin{code}
 data U : Set where
@@ -288,25 +321,6 @@ $\mathsf{Perm} n$.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Equivalences and semirings II}
-Semiring structures abound.  We can define them on:
-\begin{enumerate}
-\item equivalences (disjoint union and cartesian product)
-\item permutations (disjoint union and tensor product)
-\end{enumerate}
-\pause
-The point, of course, is that they are related:
-\begin{theorem}
-The equivalence of Theorem~\ref{Perm} is an \textcolor{red}{isomorphism} between the
-semirings of equivalences of finite types, and of permutations.
-\end{theorem}
-\pause
-A more evocative phrasing might be:
-\begin{theorem}
-$$ (A ≃ B) ≃ \mathsf{Perm} |A| $$
-\end{theorem}
-\end{frame}
-
 \begin{frame}[fragile]{A Calculus of Permutations}
 
 First conclusion: it might be useful to \emph{reify} a (sound and complete) set of
