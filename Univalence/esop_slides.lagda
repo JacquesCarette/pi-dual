@@ -137,13 +137,13 @@ $\displaystyle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Outline}
 \begin{itemize}
-\item[\checkmark] Usual Curry-Howard (true, false, or, and)
-\item[\checkmark] enriched: symmetry, true and X, false or X
-\item[\checkmark] unusual? X or X iff X.  X and X iff X. true or X iff true
-\item[\checkmark] reversibility enters the picture: only isos
-\item[\checkmark] define isos.  give tricky examples?
-\item[\checkmark] give type isos.
-\item[\checkmark] recognize this... proof terms for semirings
+%\item[\checkmark] Usual Curry-Howard (true, false, or, and)
+%\item[\checkmark] enriched: symmetry, true and X, false or X
+%\item[\checkmark] unusual? X or X iff X.  X and X iff X. true or X iff true
+%\item[\checkmark] reversibility enters the picture: only isos
+%\item[\checkmark] define isos.  give tricky examples?
+%\item[\checkmark] give type isos.
+%\item[\checkmark] recognize this... proof terms for semirings
 \item[\checkmark] observations:
 1. the inhabitants of isos are the proof terms of basic semiring identities
 2. the proof terms for a semiring make a nice base language
@@ -176,7 +176,7 @@ open import Function using (_∘_; id)
 \end{code}
 }
 \begin{minipage}[t]{.22\textwidth}
-Constructors
+Constructors\vspace*{4mm}
 
 \begin{tabular}{c|c}
 Logic & Types \\ \hline
@@ -303,9 +303,9 @@ A ≃ B = Σ (A → B) isqinv
 (Tricky) Example\\
 \begin{code}
 left0e : {A : Set} → ⊥ × A → ⊥
-left0e (b , _) = b
+left0e = proj₁
 left0i : {A : Set} → ⊥ → ⊥ × A
-left0i ()
+left0i = ⊥-elim
 
 left0ei : {A : Set} → (left0e {A} ∘ left0i) ∼ id
 left0ei ()
@@ -315,7 +315,7 @@ left0ie (() , _)
 \end{frame}
 
 \begin{frame}{Type isomorphisms III}
-\begin{minipage}{0.49\textwidth}
+\begin{minipage}{0.55\textwidth}
 {Type isomorphisms}
 \[\begin{array}{rcl}
 ⊥ ⊎ A               & ≃ & A                  \\
@@ -331,7 +331,7 @@ A × (B × C) & ≃ & (A × B) × C \\
 \end{array}\]
 \end{minipage}
 \pause
-\begin{minipage}{0.49\textwidth}
+\begin{minipage}{0.44\textwidth}
 {Semiring Equalities}
 \[\begin{array}{rcl}
 0 + a               & = & a                  \\
@@ -350,24 +350,29 @@ a \cdot (b \cdot c) & = & (a \cdot b) \cdot c \\
 
 \begin{frame}{Observations}
 \begin{enumerate}
+\vfill
 \item<pro@1-> the inhabitants of type isomorphisms are \textcolor{red}{exactly}
 the proof terms of basic commutative semiring identities
+\vfill
 \item<pro@1-> \uncover<2->{the proof terms for a commutative semiring make a nice base programming language}
+\vfill
 \item<con@1-> \uncover<3->{both are missing combinators
 \begin{itemize}
 \item how would I prove $(0 ⊎ A) × (B × C) ≃ (A × B) × C$ ?
 \end{itemize}
-}
-\item<con@1-> \uncover<4->{$A x A ≃ A x A$ has two proofs, \textcolor{red}{which are not equal}
+} \vfill
+\item<con@1-> \uncover<4->{$A\ x\ A\ ≃\ A\ x\ A$ has two proofs, \textcolor{red}{which are not equal}
 \begin{itemize}
 \item identity
 \item swap (commutativity)
 \end{itemize}
 }
 \end{enumerate}
-
-\pause
-\large Let's make a programming language out of semiring identities / type isomorphisms!
+\vfill
+\uncover<5->{\textcolor{green}{
+\Large Let's make a PL out of semiring identities / type isomorphisms!
+}}
+\vfill
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -393,6 +398,7 @@ and its interpretation \vspace*{0.4cm}
 ⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
 \end{code}
 
+\vspace*{0.4cm}
 For notational brevity, we will denote these $0, 1, + and *$ respectively.
 \end{frame}
 
@@ -452,405 +458,43 @@ is:
 \[
 (\idc \otimes (\dist \odot (\identlt \otimes \identlt)))
 \odot
-(\dist \odot (\identlt \otimes \identlt))
+(\dist \odot (\identlt \oplus \identlt))
 \]
 \vfill
 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Semantics I: Operational}
-
-\vfill
-A very simple exercise:                                                                                      
-\[\begin{array}{rcl} 
-\mathit{eval} &:& (a \iso b) \rightarrow a \rightarrow b \\
-\mathit{eval}~\idc~a &=& a \\
-\mathit{eval}~\identlt~((),a) &=& a \\
-\mathit{eval}~\identrt~a &=& ((),a) \\
-\mathit{eval}~\swapt~(a,b) &=& (b,a) \\
-\ldots
-\end{array}\]
-
-\vfill                 
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Semantics II: Model}
-
-There is a very simple and adequate model:
-
-\vfill
-\begin{itemize}
-\vfill\item A type is interpreted as a \red{finite set} (i.e., a natural number)
-\vfill\item $0$ is the empty set (the number 0)
-\vfill\item $1$ is a singleton set (the number 1)
-\vfill\item $+$ is disjoint union (addition of natural numbers)
-\vfill\item $\times$ is cartesian product (multiplication of natural numbers)
-\vfill\item Combinators are permutations (algebraic identities of natural numbers)
-\end{itemize}
-\vfill
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Semantics}
-
-\begin{itemize}
-
-\vfill\item We can make this more abstract. The semantics is given by a
-\red{symmetric bimonoidal category} (also known as a \red{rig category}).
-
-\vfill\item This opens connections to various interesting topics: linear
-logic, games, quantum mechanics, groupoids, topology, homotopy type theory,
-etc.
-
-\vfill\item Of immediate interest, it gives us a formal graphical
-semantics that is much more intuitive.
-
-\end{itemize}
-\vfill
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Graphical Semantics}
-
-\begin{itemize}
-
-\vfill
-\item Graphical languages for monoidal categories date back to \red{Penrose's
-  string diagrams}
-
-\vfill
-
-\item Values are \red{waves} or \red{particles}.
-
-\vfill
-
-\item Combinators are interconnections of wires.
-
-\vfill
-\item Computation is modeled as the flow of \red{waves} or \red{particles} on
-  the wires.
-
-\vfill
-
-\end{itemize}
-
-\end{frame} 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Graphical notation: Wires} 
-
-  The simplest sort of diagram is the $\idc : b \iso b$ combinator which is
-  simply represented as a wire labeled by its type $b$.
-
-  When tracing a computation, one might imagine a value $v$ of type $b$
-  on the wire.
-
-\begin{multicols}{2}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/b-wire.pdf}
-}
-\end{center}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/b-wire-value.pdf}
-}
-\end{center}
-  \end{multicols}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Graphical notation: Products} 
-
-  The product type $b_1*b_2$ may be represented using either one wire labeled
-  $b_1*b_2$ or two parallel wires labeled $b_1$ and $b_2$. 
-
-\begin{multicols}{2}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/product-one-wire.pdf}
-}
-\end{center}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/product-one-wire-value.pdf}
-}
-\end{center}
-\end{multicols}
-\vfill
-\begin{multicols}{2}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/product-two-wires.pdf}
-}
-\end{center}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/product-two-wires-value.pdf}
-}
-\end{center}
-\end{multicols}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Graphical notation: Sums} 
-
- Sum types may similarly be represented by one wire or using
-  parallel wires with a $+$ operator between them. 
-\begin{multicols}{2}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/sum-one-wire.pdf}
-}
-\end{center}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/sum-two-wires-left-value.pdf}
-}
-\end{center}
-\end{multicols}
-\vfill
-\begin{multicols}{2}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/sum-two-wires.pdf}
-}
-\end{center}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/sum-two-wires-right-value.pdf}
-}
-\end{center}
-\end{multicols}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Graphical notation: Associativity} 
-
-Associativity is implicit in the graphical language. Three parallel
-  wires represent $b_1*(b_2*b_3)$ or $(b_1*b_2)*b_3$, based on the context.
-
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/assoc.pdf}
-}
-\end{center}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Graphical notation: Commutativity} 
-
-Commutativity is represented by crisscrossing wires.
-\begin{multicols}{2}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/swap_times.pdf}
-}
-\end{center}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/swap_plus.pdf}
-}
-\end{center}
-\end{multicols}
-
-\vfill
-
-\begin{multicols}{2}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/swap_times_value.pdf}
-}
-\end{center}
-\begin{center}
-\scalebox{0.95}{
-\includegraphics{diagrams/swap_plus_value.pdf}
-}
-\end{center}
-\end{multicols}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Graphical notation: Distributivity and Factoring} 
-
-  Distributivity and factoring are represented using the dual boxes shown
-  below:
-\begin{multicols}{2}
-\begin{center}
-  \includegraphics{diagrams/dist.pdf}
-\end{center}
-\begin{center}
-  \includegraphics{diagrams/factor.pdf}
-\end{center}
-\end{multicols}
-
-\vfill
-
-\begin{multicols}{2}
-\begin{center}
-  \includegraphics{diagrams/dist-wire-value1.pdf}
-\end{center}
-\begin{center}
-  \includegraphics{diagrams/dist-wire-value2.pdf}
-\end{center}
-\end{multicols}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Justification}
-
-\vfill
-
-Theorem (Joyal and Street 1991): A well-formed equation between morphisms in
-the language of symmetric monoidal categories follows from the axioms of
-symmetric monoidal categories if and only if it holds, up to isomorphisms of
-diagrams, in the graphical language.
-
-\vfill
-
-In English: can use the diagrams to reason about evaluation.
-
-\vfill
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Booleans, Negation}
-
-\vfill
-
-We encode booleans by \red{ $\mathit{bool} = 1 + 1$ } 
-
-\vfill
-
-Negation:
-
-\begin{multicols}{2}
-\begin{center}
-  \includegraphics{diagrams/swap_plus.pdf}
-\end{center}
-
-\begin{center}
-  \includegraphics{diagrams/swap_plus_value.pdf}
-\end{center}
-  
-\end{multicols}
-
-\vfill
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Conditionals}
-  
-\begin{itemize}
-
-\item Reversible conditional:
-\[
-\mathit{if}_c (\mathit{flag}, b) =
-  \textbf{if}~\mathit{flag}~\textbf{then}~(\mathit{flag}, c(b))~\textbf{else}~(\mathit{flag}, b)
-\]
-
-\vfill
-
-\item Given $c : b \iso b$ then:
-
-\[\begin{array}{rcl}
-\mathit{if}_c &:& \mathit{bool} * b \iso \mathit{bool} * b \\
-\mathit{if}_c &=& \dist \odot ((\idc \otimes c) \oplus \idc) \otimes \factor
-\end{array}\]
-
-\vfill
-
-\begin{center}
-  \includegraphics{diagrams/cnot.pdf}
-\end{center}
-
-\vfill
-\end{itemize}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Fredkin and Toffoli Gates}
-  
-\begin{itemize}
-
-\vfill
-\item Universal gates for reversible combinational circuits
-
-\vfill
-\item Fredkin gate: $\mathit{if}_{\swapt}$
-
-\vfill
-\item Toffoli gate: $\mathit{if}_{\mathit{if}_{\swapt}}$
-
-\begin{center}
-  \includegraphics{diagrams/toffoli.pdf}
-\end{center}
-
-\vfill
-\end{itemize}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{So far: A simple language}
-
-\begin{itemize}
-\vfill\item universal for combinational hardware circuits
-\end{itemize}
-
-\vfill
-
-\end{frame}
-
-
-
-\end{document}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{And in Agda}
-
+\begin{frame}[fragile]{$\Pi$ in Agda:}
 \AgdaHide{
 \begin{code}
 infix  30 _⟷_
 infixr 50 _◎_
 \end{code}
 }
-\renewcommand{\AgdaCodeStyle}{\tiny}
-
+\renewcommand{\AgdaCodeStyle}{\scriptsize}
 \begin{code}
 data _⟷_ : U → U → Set where
-  unite₊  : {t : U} → PLUS ZERO t ⟷ t
-  uniti₊  : {t : U} → t ⟷ PLUS ZERO t
-  swap₊   : {t₁ t₂ : U} → PLUS t₁ t₂ ⟷ PLUS t₂ t₁
-  assocl₊ : {t₁ t₂ t₃ : U} → PLUS t₁ (PLUS t₂ t₃) ⟷ PLUS (PLUS t₁ t₂) t₃
-  assocr₊ : {t₁ t₂ t₃ : U} → PLUS (PLUS t₁ t₂) t₃ ⟷ PLUS t₁ (PLUS t₂ t₃)
-  unite⋆  : {t : U} → TIMES ONE t ⟷ t
-  uniti⋆  : {t : U} → t ⟷ TIMES ONE t
-  swap⋆   : {t₁ t₂ : U} → TIMES t₁ t₂ ⟷ TIMES t₂ t₁
-  assocl⋆ : {t₁ t₂ t₃ : U} → TIMES t₁ (TIMES t₂ t₃) ⟷ TIMES (TIMES t₁ t₂) t₃
-  assocr⋆ : {t₁ t₂ t₃ : U} → TIMES (TIMES t₁ t₂) t₃ ⟷ TIMES t₁ (TIMES t₂ t₃)
-  absorbr  : {t : U} → TIMES ZERO t ⟷ ZERO
-  absorbl : {t : U} → TIMES t ZERO ⟷ ZERO
-  factorzr : {t : U} → ZERO ⟷ TIMES t ZERO
-  factorzl : {t : U} → ZERO ⟷ TIMES ZERO t
-  dist    : {t₁ t₂ t₃ : U} → TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) 
-  factor  : {t₁ t₂ t₃ : U} → PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
-  id⟷    : {t : U} → t ⟷ t
-  _◎_     : {t₁ t₂ t₃ : U}    → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
-  _⊕_     : {t₁ t₂ t₃ t₄ : U} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
-  _⊗_     : {t₁ t₂ t₃ t₄ : U} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
+ unite₊  : {t : U} → PLUS ZERO t ⟷ t
+ uniti₊  : {t : U} → t ⟷ PLUS ZERO t
+ swap₊   : {t₁ t₂ : U} → PLUS t₁ t₂ ⟷ PLUS t₂ t₁
+ assocl₊ : {t₁ t₂ t₃ : U} → PLUS t₁ (PLUS t₂ t₃) ⟷ PLUS (PLUS t₁ t₂) t₃
+ assocr₊ : {t₁ t₂ t₃ : U} → PLUS (PLUS t₁ t₂) t₃ ⟷ PLUS t₁ (PLUS t₂ t₃)
+ unite⋆  : {t : U} → TIMES ONE t ⟷ t
+ uniti⋆  : {t : U} → t ⟷ TIMES ONE t
+ swap⋆   : {t₁ t₂ : U} → TIMES t₁ t₂ ⟷ TIMES t₂ t₁
+ assocl⋆ : {t₁ t₂ t₃ : U} → TIMES t₁ (TIMES t₂ t₃) ⟷ TIMES (TIMES t₁ t₂) t₃
+ assocr⋆ : {t₁ t₂ t₃ : U} → TIMES (TIMES t₁ t₂) t₃ ⟷ TIMES t₁ (TIMES t₂ t₃)
+ absorbr  : {t : U} → TIMES ZERO t ⟷ ZERO
+ absorbl : {t : U} → TIMES t ZERO ⟷ ZERO
+ factorzr : {t : U} → ZERO ⟷ TIMES t ZERO
+ factorzl : {t : U} → ZERO ⟷ TIMES ZERO t
+ dist    : {t₁ t₂ t₃ : U} → TIMES (PLUS t₁ t₂) t₃ ⟷ PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) 
+ factor  : {t₁ t₂ t₃ : U} → PLUS (TIMES t₁ t₃) (TIMES t₂ t₃) ⟷ TIMES (PLUS t₁ t₂) t₃
+ id⟷    : {t : U} → t ⟷ t
+ _◎_     : {t₁ t₂ t₃ : U}    → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+ _⊕_     : {t₁ t₂ t₃ t₄ : U} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
+ _⊗_     : {t₁ t₂ t₃ t₄ : U} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → TIMES t₁ t₂ ⟷ TIMES t₃ t₄
 \end{code}
 \AgdaHide{
 \begin{code}
@@ -877,6 +521,28 @@ data _⟷_ : U → U → Set where
 ! (c₁ ⊗ c₂) = (! c₁) ⊗ (! c₂)
 \end{code}
 }
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Semantics I: Operational}
+show parts of eval and evalB
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Semantics II: Model}
+
+There is a very simple and adequate model:
+
+\vfill
+\begin{itemize}
+\vfill\item A type is interpreted as a \red{finite set} (i.e., a natural number)
+\vfill\item $0$ is the empty set (the number 0)
+\vfill\item $1$ is a singleton set (the number 1)
+\vfill\item $+$ is disjoint union (addition of natural numbers)
+\vfill\item $\times$ is cartesian product (multiplication of natural numbers)
+\vfill\item Combinators are permutations (algebraic identities of natural numbers)
+\end{itemize}
+\vfill
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -995,6 +661,29 @@ n₂ =  uniti⋆ ◎
       swap⋆ ◎
       unite⋆
 \end{code}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Fredkin and Toffoli Gates}
+  
+\begin{itemize}
+\item Universal gates for reversible combinational circuits
+\item Toffoli gate:\\
+\begin{code}
+BOOL² : U  
+BOOL² = TIMES BOOL BOOL  
+
+Toffoli : TIMES BOOL BOOL² ⟷ TIMES BOOL BOOL²
+Toffoli = dist ◎ (id⟷ ⊕ (id⟷ ⊗ cnot))  ◎ factor
+  where
+    cnot : BOOL² ⟷ BOOL²
+    cnot = dist ◎ (id⟷ ⊕ (id⟷ ⊗ swap₊)) ◎ factor
+\end{code}
+\begin{center}
+  \includegraphics{diagrams/toffoli.pdf}
+\end{center}
+\end{itemize}
 
 \end{frame}
 
@@ -2052,9 +1741,252 @@ and complete set for \textcolor{red}{circuit equivalence}.
 \end{conj}
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Graphical Semantics}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{?}
+\begin{itemize}
+
+\vfill
+\item Graphical languages for monoidal categories date back to \red{Penrose's
+  string diagrams}
+
+\vfill
+
+\item Values are \red{waves} or \red{particles}.
+
+\vfill
+
+\item Combinators are interconnections of wires.
+
+\vfill
+\item Computation is modeled as the flow of \red{waves} or \red{particles} on
+  the wires.
+
+\vfill
+
+\end{itemize}
+
+\end{frame} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Graphical notation: Wires} 
+
+  The simplest sort of diagram is the $\idc : b \iso b$ combinator which is
+  simply represented as a wire labeled by its type $b$.
+
+  When tracing a computation, one might imagine a value $v$ of type $b$
+  on the wire.
+
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/b-wire.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/b-wire-value.pdf}
+}
+\end{center}
+  \end{multicols}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Graphical notation: Products} 
+
+  The product type $b_1*b_2$ may be represented using either one wire labeled
+  $b_1*b_2$ or two parallel wires labeled $b_1$ and $b_2$. 
+
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/product-one-wire.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/product-one-wire-value.pdf}
+}
+\end{center}
+\end{multicols}
+\vfill
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/product-two-wires.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/product-two-wires-value.pdf}
+}
+\end{center}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Graphical notation: Sums} 
+
+ Sum types may similarly be represented by one wire or using
+  parallel wires with a $+$ operator between them. 
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/sum-one-wire.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/sum-two-wires-left-value.pdf}
+}
+\end{center}
+\end{multicols}
+\vfill
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/sum-two-wires.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/sum-two-wires-right-value.pdf}
+}
+\end{center}
+\end{multicols}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Graphical notation: Associativity} 
+
+Associativity is implicit in the graphical language. Three parallel
+  wires represent $b_1*(b_2*b_3)$ or $(b_1*b_2)*b_3$, based on the context.
+
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/assoc.pdf}
+}
+\end{center}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Graphical notation: Commutativity} 
+
+Commutativity is represented by crisscrossing wires.
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/swap_times.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/swap_plus.pdf}
+}
+\end{center}
+\end{multicols}
+
+\vfill
+
+\begin{multicols}{2}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/swap_times_value.pdf}
+}
+\end{center}
+\begin{center}
+\scalebox{0.95}{
+\includegraphics{diagrams/swap_plus_value.pdf}
+}
+\end{center}
+\end{multicols}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Graphical notation: Distributivity and Factoring} 
+
+  Distributivity and factoring are represented using the dual boxes shown
+  below:
+\begin{multicols}{2}
+\begin{center}
+  \includegraphics{diagrams/dist.pdf}
+\end{center}
+\begin{center}
+  \includegraphics{diagrams/factor.pdf}
+\end{center}
+\end{multicols}
+
+\vfill
+
+\begin{multicols}{2}
+\begin{center}
+  \includegraphics{diagrams/dist-wire-value1.pdf}
+\end{center}
+\begin{center}
+  \includegraphics{diagrams/dist-wire-value2.pdf}
+\end{center}
+\end{multicols}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Booleans, Negation}
+
+\vfill
+
+We encode booleans by \red{ $\mathit{bool} = 1 + 1$ } 
+
+\vfill
+
+Negation:
+
+\begin{multicols}{2}
+\begin{center}
+  \includegraphics{diagrams/swap_plus.pdf}
+\end{center}
+
+\begin{center}
+  \includegraphics{diagrams/swap_plus_value.pdf}
+\end{center}
+  
+\end{multicols}
+
+\vfill
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Conditionals}
+  
+\begin{itemize}
+
+\item Reversible conditional:
+\[
+\mathit{if}_c (\mathit{flag}, b) =
+  \textbf{if}~\mathit{flag}~\textbf{then}~(\mathit{flag}, c(b))~\textbf{else}~(\mathit{flag}, b)
+\]
+
+\vfill
+
+\item Given $c : b \iso b$ then:
+
+\[\begin{array}{rcl}
+\mathit{if}_c &:& \mathit{bool} * b \iso \mathit{bool} * b \\
+\mathit{if}_c &=& \dist \odot ((\idc \otimes c) \oplus \idc) \otimes \factor
+\end{array}\]
+
+\vfill
+
+\begin{center}
+  \includegraphics{diagrams/cnot.pdf}
+\end{center}
+
+\vfill
+\end{itemize}
+
 \end{frame}
