@@ -35,6 +35,9 @@
 \usepackage{textgreek}
 \usepackage{extarrows}
 
+\newenvironment{proenv}{\only{\setbeamercolor{local structure}{fg=green}}}{}
+\newenvironment{conenv}{\only{\setbeamercolor{local structure}{fg=red}}}{}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Macros
 
@@ -131,7 +134,6 @@ $\displaystyle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Outline}
-\jc{Outline in the sense of fill-this-in, not as a slide to stay}
 \begin{itemize}
 \item[\checkmark] Usual Curry-Howard (true, false, or, and)
 \item[\checkmark] enriched: symmetry, true and X, false or X
@@ -140,13 +142,13 @@ $\displaystyle
 \item[\checkmark] define isos.  give tricky examples?
 \item[\checkmark] give type isos.
 \item[\checkmark] recognize this... proof terms for semirings
-\item observations:
+\item[\checkmark] observations:
 1. the inhabitants of isos are the proof terms of basic semiring identities
 2. the proof terms for a semiring make a nice base language
 3. both are missing combinators
 4. A x A ~ A x A has two proofs, which are not equal
-\item idea: make a PL whose types are isos and terms are iso combinators
-\item give combinators
+\item[\checkmark] idea: make a PL whose types are isos and terms are iso combinators
+\item[\checkmark] give combinators
 \item nice prop: syntactic reversibility
 \item example programs, proofs
 \item semantics of Pi
@@ -311,21 +313,24 @@ left0ie (() , _)
 \end{frame}
 
 \begin{frame}{Type isomorphisms III}
+\begin{minipage}{0.49\textwidth}
+{Type isomorphisms}
 \[\begin{array}{rcl}
-⊥ ⊎ a               & ≃ & a                  \\
-a ⊎ b               & ≃ & b ⊎ a             \\
-a ⊎ (b ⊎ c)         & ≃ & (a ⊎ b) ⊎ c    \\
+⊥ ⊎ A               & ≃ & A                  \\
+A ⊎ B               & ≃ & B ⊎ A             \\
+A ⊎ (B ⊎ C)         & ≃ & (A ⊎ B) ⊎ C    \\
                                               \\
-⊤ × a           & ≃ & a                  \\
-a × b           & ≃ & b × a         \\
-a × (b × c) & ≃ & (a × b) × c \\
+⊤ × A           & ≃ & A                  \\
+A × B           & ≃ & B × A         \\
+A × (B × C) & ≃ & (A × B) × C \\
                                               \\
-⊥ × a           & ≃ & ⊥                   \\
-(a ⊎ b) × c     & ≃ & (a × c) ⊎ (b × c)
+⊥ × A           & ≃ & ⊥                   \\
+(A ⊎ B) × C     & ≃ & (A × C) ⊎ (B × C)
 \end{array}\]
-\end{frame}
-
-\begin{frame}{Semiring Equalities}
+\end{minipage}
+\pause
+\begin{minipage}{0.49\textwidth}
+{Semiring Equalities}
 \[\begin{array}{rcl}
 0 + a               & = & a                  \\
 a + b               & = & b + a             \\
@@ -338,13 +343,35 @@ a \cdot (b \cdot c) & = & (a \cdot b) \cdot c \\
 0 \cdot a           & = & 0                   \\
 (a + b) \cdot c     & = & (a \cdot c) + (b \cdot c)
 \end{array}\]
+\end{minipage}
 \end{frame}
 
-\end{document}
+\begin{frame}{Observations}
+\begin{enumerate}
+\item<pro@1-> the inhabitants of type isomorphisms are \textcolor{red}{exactly}
+the proof terms of basic commutative semiring identities
+\item<pro@1-> \uncover<2->{the proof terms for a commutative semiring make a nice base programming language}
+\item<con@1-> \uncover<3->{both are missing combinators
+\begin{itemize}
+\item how would I prove $(0 ⊎ A) × (B × C) ≃ (A × B) × C$ ?
+\end{itemize}
+}
+\item<con@1-> \uncover<4->{$A x A ≃ A x A$ has two proofs, \textcolor{red}{which are not equal}
+\begin{itemize}
+\item identity
+\item swap (commutativity)
+\end{itemize}
+}
+\end{enumerate}
+
+\pause
+\large Let's make a programming language out of semiring identities / type isomorphisms!
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Reifying isomorphisms}
 First, a universe of (finite) types
+
 \vspace*{0.4cm}
 \begin{code}
 data U : Set where
@@ -354,36 +381,54 @@ data U : Set where
   TIMES : U → U → U
 
 \end{code}
-and its interpretation
-\begin{code}
+and its interpretation \vspace*{0.4cm}
 
+\begin{code}
 ⟦_⟧ : U → Set 
 ⟦ ZERO ⟧        = ⊥ 
 ⟦ ONE ⟧         = ⊤
 ⟦ PLUS t₁ t₂ ⟧  = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
 ⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
 \end{code}
+
+For notational brevity, we will denote these $0, 1, + and *$ respectively.
 \end{frame}
 
-\begin{frame}{Equivalences and semirings}
-If we denote type equivalence by $\simeq$, then we can prove that
-\begin{theorem}
-The collection of all types (\AgdaDatatype{Set}) forms a commutative
-semiring (up to $\simeq$).
-\end{theorem}
-\pause
-We also get
-\begin{theorem}
-If $A\simeq \mathsf{Fin} m$, $B\simeq \mathsf{Fin} n$ and $A \simeq B$ then $m ≡ n$.
-\end{theorem}
-(whose \emph{constructive} proof is quite subtle).
-\begin{theorem}\label{Perm}
-If $A ≃ \mathsf{Fin} m$ and $B ≃ \mathsf{Fin} n$, then the type of all
-equivalences $A ≃ B$ is equivalent to the type of all permutations
-$\mathsf{Perm} n$.
-\end{theorem}
+\begin{frame}{The $\Pi$ Language}
+\vspace*{ -2em}
+\[
+\begin{array}{rrcll}
+\idc :& \tau & \iso & \tau &: \idc \\
+\identlp :&  0 + \tau & \iso & \tau &: \identrp \\
+\swapp :&  \tau_1 + \tau_2 & \iso & \tau_2 + \tau_1 &: \swapp \\
+\assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 &: \assocrp \\
+\identlt :&  1 * \tau & \iso & \tau &: \identrt \\
+\swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
+\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\
+\distz :&~ 0 * \tau & \iso & 0 ~ &: \factorzl \\
+\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor
+\end{array}
+\]
+\[
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
+{\jdg{}{}{c_1 \odot c_2 : \tau_1 \iso \tau_3}}
+{}
+\qquad
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
+{\jdg{}{}{c_1 \oplus c_2 : \tau_1 + \tau_3 \iso \tau_2 + \tau_4}}
+{}
+\]
+\[
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
+{\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
+{}
+\]
 \end{frame}
 
+\end{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{A Calculus of Permutations}
 
