@@ -12,29 +12,29 @@
   \usepackage{agda}
 \fi
 
-% \usepackage{agda}
 % \usepackage{fancyvrb}
 \usepackage{ucs}
 \usepackage{multicol}
 \usepackage[utf8x]{inputenc}
 \usepackage{tikz}
-\usepackage{amsthm}
-\usepackage{latexsym}
-\usepackage{courier}
+%\usepackage{amsthm}
+%\usepackage{latexsym}
+%\usepackage{courier}
 \usepackage{thmtools}
 \usepackage{bbold}
 % \usepackage{url}
-\usepackage{bbm}
+\usepackage{MnSymbol}
+%\usepackage{bbm}
 \usepackage{proof}
 \usepackage{amstext}
-\usepackage{amssymb}
+%\usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{comment}
 \usepackage{stmaryrd}
 % \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{textgreek}
-\usepackage{extarrows}
+%\usepackage{extarrows}
 
 \newcommand{\red}[1]{{\color{red}{#1}}}
 \newenvironment{proenv}{\only{\setbeamercolor{local structure}{fg=green}}}{}
@@ -100,6 +100,7 @@ $\displaystyle
 
 \DeclareUnicodeCharacter{9678}{\ensuremath{\odot}}
 \DeclareUnicodeCharacter{9636}{\ensuremath{\Box}}
+\DeclareUnicodeCharacter{8779}{\ensuremath{\triplesim}}
 
 \newtheorem{conj}{Conjecture}
 
@@ -133,33 +134,6 @@ $\displaystyle
 \date{7 April 2016}
 \begin{document}
 \maketitle
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Outline}
-\begin{itemize}
-%\item[\checkmark] Usual Curry-Howard (true, false, or, and)
-%\item[\checkmark] enriched: symmetry, true and X, false or X
-%\item[\checkmark] unusual? X or X iff X.  X and X iff X. true or X iff true
-%\item[\checkmark] reversibility enters the picture: only isos
-%\item[\checkmark] define isos.  give tricky examples?
-%\item[\checkmark] give type isos.
-%\item[\checkmark] recognize this... proof terms for semirings
-\item[\checkmark] observations:
-1. the inhabitants of isos are the proof terms of basic semiring identities
-2. the proof terms for a semiring make a nice base language
-3. both are missing combinators
-4. A x A ~ A x A has two proofs, which are not equal
-\item[\checkmark] idea: make a PL whose types are isos and terms are iso combinators
-\item[\checkmark] give combinators
-\item[\checkmark] example programs, nice prop: syntactic reversibility
-\item[\checkmark] semantics of Pi (operational, and also Nat model)
-\item[\checkmark] Q: when are Pi programs equivalent? (motivates looking at equiv of equiv)
-\item but do note that Pi programs do NOT form a semiring, even if we have combinators
-  (types don't match).  Need to categorify.
-\item and keep going
-
-\end{itemize}
-\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Simple Curry-Howard}
@@ -1742,85 +1716,43 @@ negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆
 \end{code}
 \end{frame}
 
+\begin{frame}[fragile]{Equivalence of Equivalences}
+\begin{definition}[Equivalence of equivalences]
+  Two equivalences $\mathit{eq}_1, \mathit{eq}_2 : A ≃ B$ are
+  themselves equivalent, written $\mathit{eq}_2 \triplesim \mathit{eq}_2$, if
+  the forward and backward functions underlying $\mathit{eq}_1$ and
+  $\mathit{eq}_2$ are homotopic.
+\AgdaHide{
+\begin{code}
+infix 4 _≋_
+\end{code}
+}
+\begin{code}
+record _≋_ {A B : Set} (eq₁ eq₂ : A ≃ B) : Set where
+  constructor eq
+  open isqinv
+  field
+    f≡ : proj₁ eq₁ ∼ proj₁ eq₂
+    g≡ : g (proj₂ eq₁) ∼ g (proj₂ eq₂)
+\end{code}
+\end{definition}
+\pause
+\begin{theorem}
+Taking \AgdaDatatype{Set} as objects, $≃$ for Homomorphisms and $\triplesim$ as
+equivalence of $≃$ gives a Groupoid.
+\end{theorem}
+\end{frame}
+
+\begin{frame}{Categorification}
+Coherence rules.  For what categorical structure?  As with $\Pi$, just bake it in.
+Revise $Π$.  Tons of coherences (give them!).  Double them up to get syntactic reversibility here too.
+
+Finish with a CH-like table?
+\end{frame}
 \end{document}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Categorification I}
-Type equivalences (such as between $A × B$ and $B × A$) are \textcolor{red}{Functors}.
 
-\noindent Equivalences between Functors are \textcolor{red}{Natural Isomorphisms}.  At the value-level,
-they induce $2$-morphisms:
-
-\begin{code}
-postulate
-  c₁ : {B C : U} → B ⟷ C
-  c₂ : {A D : U} → A ⟷ D
-
-p₁ p₂ : {A B C D : U} → PLUS A B ⟷ PLUS C D
-p₁ = swap₊ ◎ (c₁ ⊕ c₂)
-p₂ = (c₂ ⊕ c₁) ◎ swap₊
-\end{code}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{2-morphism of circuits}
-
-\begin{center}
-\begin{tikzpicture}
-  \draw[->,double,red,thick] (2.25,-1.5) -- (2.25,-2.5) ;
-  \node at (2.6,-2) {$\alpha$} ;
-
-  \draw (-2,-2) ellipse (0.5cm and 1cm);
-  \draw[fill] (-2,-1.5) circle [radius=0.025];
-  \node[below] at (-2,-1.5) {$A$};
-  \draw[fill] (-2,-2.5) circle [radius=0.025];
-  \node[below] at (-2,-2.5) {$B$};
-
-  \draw (6.5,-2) ellipse (0.5cm and 1cm);
-  \draw[fill] (6.5,-1.5) circle [radius=0.025];
-  \node[below] at (6.5,-1.5) {$C$};
-  \draw[fill] (6.5,-2.5) circle [radius=0.025];
-  \node[below] at (6.5,-2.5) {$D$};
-
-  \draw (-2,-1.5) to[bend left] (1,0.5) ;
-  \draw (-2,-2.5) to[bend left] (1,-0.5) ;
-  \draw[->] (3.5,0.5) to[bend left] (6.5,-1.5) ;
-  \draw[->] (3.5,-0.5) to[bend left] (6.5,-2.5) ;
-
-  \draw (-2,-1.5) to[bend right] (1,-3.5) ;
-  \draw (-2,-2.5) to[bend right] (1,-4.5) ;
-  \draw[->] (3.5,-3.5) to[bend right] (6.5,-1.5) ;
-  \draw[->] (3.5,-4.5) to[bend right] (6.5,-2.5) ;
-
-  \draw     (2.5,-3)  -- (3.5,-3) -- (3.5,-4) -- (2.5,-4) -- cycle ;
-  \draw     (2.5,-4)  -- (3.5,-4) -- (3.5,-5) -- (2.5,-5) -- cycle ;
-
-  \draw     (1,1)  -- (2,1) -- (2,0) -- (1,0) -- cycle ;
-  \draw     (1,0)  -- (2,0) -- (2,-1) -- (1,-1) -- cycle ;
-
-  \node at (3,-3.5) {c₁};
-  \node at (3,-4.5) {c₂};
-
-  \node at (1.5,0.5) {c₂};
-  \node at (1.5,-0.5) {c₁};
-
-  \draw     (2,0.5)  -- (2.5,0.5)  ;
-  \draw     (2,-0.5) -- (2.5,-0.5) ; 
-
-  \draw     (2.5,0.5)  -- (3.5,-0.5)  ;
-  \draw     (2.5,-0.5) -- (3.5,0.5) ; 
-
-  \draw     (1,-3.5)  -- (2,-4.5)    ;
-  \draw     (1,-4.5) -- (2,-3.5)   ; 
-
-  \draw     (2,-3.5)  -- (2.5,-3.5)    ; 
-  \draw     (2,-4.5) -- (2.5,-4.5)   ; 
-
-\end{tikzpicture}
-\end{center}
-
-\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Categorification II}
