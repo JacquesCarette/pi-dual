@@ -151,8 +151,8 @@ $\displaystyle
 4. A x A ~ A x A has two proofs, which are not equal
 \item[\checkmark] idea: make a PL whose types are isos and terms are iso combinators
 \item[\checkmark] give combinators
-\item example programs, proofs, nice prop: syntactic reversibility
-\item semantics of Pi
+\item[\checkmark] example programs, nice prop: syntactic reversibility
+\item[\checkmark] semantics of Pi (operational, and also Nat model)
 \item Q: when are Pi programs equivalent? (motivates looking at equiv of equiv)
 \item but do note that Pi programs do NOT form a semiring, even if we have combinators
   (types don't match).  Need to categorify.
@@ -375,34 +375,7 @@ the proof terms of basic commutative semiring identities
 \vfill
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Reifying isomorphisms}
-First, a universe of (finite) types
-
-\vspace*{0.4cm}
-\begin{code}
-data U : Set where
-  ZERO  : U
-  ONE   : U
-  PLUS  : U → U → U
-  TIMES : U → U → U
-
-\end{code}
-and its interpretation \vspace*{0.4cm}
-
-\begin{code}
-⟦_⟧ : U → Set 
-⟦ ZERO ⟧        = ⊥ 
-⟦ ONE ⟧         = ⊤
-⟦ PLUS t₁ t₂ ⟧  = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
-⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
-\end{code}
-
-\vspace*{0.4cm}
-For notational brevity, we will denote these $0, 1, + and *$ respectively.
-\end{frame}
-
-\begin{frame}{The $\Pi$ Language}
+\begin{frame}{The $\Pi$ Language: reifying isomorphisms}
 \vspace*{ -2em}
 \[
 \begin{array}{rrcll}
@@ -456,7 +429,7 @@ is:
 \vfill
 
 \[
-(\idc \otimes (\dist \odot (\identlt \otimes \identlt)))
+(\idc \otimes (\dist \odot (\identlt \oplus \identlt)))
 \odot
 (\dist \odot (\identlt \oplus \identlt))
 \]
@@ -465,7 +438,35 @@ is:
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{$\Pi$ in Agda:}
+\begin{frame}{Syntactically, in Agda}
+Start with a universe of (finite) types
+
+\vspace*{0.4cm}
+\begin{code}
+data U : Set where
+  ZERO  : U
+  ONE   : U
+  PLUS  : U → U → U
+  TIMES : U → U → U
+
+\end{code}
+and its interpretation \vspace*{0.4cm}
+
+\begin{code}
+⟦_⟧ : U → Set 
+⟦ ZERO ⟧        = ⊥ 
+⟦ ONE ⟧         = ⊤
+⟦ PLUS t₁ t₂ ⟧  = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
+⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
+\end{code}
+
+\vspace*{0.4cm}
+For notational brevity, we will denote these $0, 1, +$, and $*$ respectively.
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{and the combinators:}
 \AgdaHide{
 \begin{code}
 infix  30 _⟷_
@@ -496,7 +497,91 @@ data _⟷_ : U → U → Set where
  _⊕_     : {t₁ t₂ t₃ t₄ : U} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (PLUS t₁ t₂ ⟷ PLUS t₃ t₄)
  _⊗_     : {t₁ t₂ t₃ t₄ : U} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → TIMES t₁ t₂ ⟷ TIMES t₃ t₄
 \end{code}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Semantics I: Operational}
+It really is a PL:\\ \vfill
+\begin{code}
+eval   : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
+eval unite₊ (inj₁ ())
+eval unite₊ (inj₂ y) = y
+eval uniti₊ x = inj₂ x
+eval swap₊ (inj₁ x) = inj₂ x
+eval swap₊ (inj₂ y) = inj₁ y
+\end{code}
+$\ldots$\\ \vfill
 \AgdaHide{
+\begin{code}
+eval assocl₊ x = {!!}
+eval assocr₊ x = {!!}
+eval unite⋆ x = {!!}
+eval uniti⋆ x = {!!}
+eval swap⋆ x = {!!}
+eval assocl⋆ x = {!!}
+eval assocr⋆ x = {!!}
+eval absorbr x = {!!}
+eval absorbl x = {!!}
+eval factorzr x = {!!}
+eval factorzl x = {!!}
+eval dist x = {!!}
+eval factor x = {!!}
+eval id⟷ x = {!!}
+eval (c ◎ c₁) x = {!!}
+eval (c ⊕ c₁) x = {!!}
+eval (c ⊗ c₁) x = {!!}
+\end{code}
+} \pause
+And it can also be run backwards: \vfill
+\begin{code}
+evalB  : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧
+\end{code}
+\AgdaHide{
+\begin{code}
+evalB unite₊ x = {!!}
+evalB uniti₊ x = {!!}
+evalB swap₊ x = {!!}
+evalB assocl₊ x = {!!}
+evalB assocr₊ x = {!!}
+evalB unite⋆ x = {!!}
+evalB uniti⋆ x = {!!}
+evalB swap⋆ x = {!!}
+evalB assocl⋆ x = {!!}
+evalB assocr⋆ x = {!!}
+evalB absorbr x = {!!}
+evalB absorbl x = {!!}
+evalB factorzr x = {!!}
+evalB factorzl x = {!!}
+evalB dist x = {!!}
+evalB factor x = {!!}
+evalB id⟷ x = x
+\end{code}
+}
+$\ldots$\\ \vfill
+\begin{code}
+evalB (c₀ ◎ c₁) x = evalB c₀ (evalB c₁ x) 
+evalB (c₀ ⊕ c₁) (inj₁ x) = inj₁ (evalB c₀ x)
+evalB (c₀ ⊕ c₁) (inj₂ y) = inj₂ (evalB c₁ y)
+evalB (c₀ ⊗ c₁) (x , y) = evalB c₀ x , evalB c₁ y
+\end{code}
+\end{frame}
+
+\begin{frame}[fragile]{Good properties I}
+\vfill
+Forward and backward are inverses of each other:
+\begin{code}
+fwd∘bwd∼id : ∀ {t₁ t₂} → (c : t₁ ⟷ t₂) → (eval c ∘ evalB c) ∼ id
+bwd∘fwd∼id : ∀ {t₁ t₂} → (c : t₁ ⟷ t₂) → (evalB c ∘ eval c) ∼ id
+\end{code}
+\AgdaHide{
+\begin{code}
+fwd∘bwd∼id c x = {!!}
+bwd∘fwd∼id c x = {!!}
+\end{code}
+}
+\vfill
+We have a \textcolor{red}{syntactic} reverse operator:\\
 \begin{code}
 ! : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
 ! unite₊    = uniti₊
@@ -504,6 +589,10 @@ data _⟷_ : U → U → Set where
 ! swap₊     = swap₊
 ! assocl₊   = assocr₊
 ! assocr₊   = assocl₊
+\end{code}
+$\ldots$
+\AgdaHide{
+\begin{code}
 ! unite⋆    = uniti⋆
 ! uniti⋆    = unite⋆
 ! swap⋆     = swap⋆
@@ -521,32 +610,94 @@ data _⟷_ : U → U → Set where
 ! (c₁ ⊗ c₂) = (! c₁) ⊗ (! c₂)
 \end{code}
 }
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Semantics I: Operational}
-show parts of eval and evalB
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Semantics II: Model}
-
-There is a very simple and adequate model:
-
 \vfill
+which behaves as expected:
+\begin{code}
+!∼B : ∀ {t₁ t₂} → (c : t₁ ⟷ t₂) → eval (! c) ∼ evalB c 
+\end{code}
+
+\AgdaHide{
+\begin{code}
+!∼B c x = {!!}
+\end{code}
+}
+\end{frame}
+
+\begin{frame}[fragile]{Good properties II}
+Every syntactic combinator induces a type equivalence:
+\begin{code}
+c2equiv : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
+\end{code}
+\vfill
+which also behaves nicely:
+\AgdaHide{
+\begin{code}
+postulate
+  sym≃ : ∀ {A B : Set} → (A ≃ B) → B ≃ A
+\end{code}
+}
+
+\begin{code}
+lemma0 :  {t₁ t₂ : U} → (c : t₁ ⟷ t₂) →
+          eval c ∼ proj₁ (c2equiv c)
+
+lemma1 :  {t₁ t₂ : U} → (c : t₁ ⟷ t₂) →
+          evalB c ∼ proj₁ (sym≃ (c2equiv c))
+\end{code}
+\AgdaHide{
+\begin{code}
+c2equiv cc = {!!}
+lemma0 c = {!!}
+lemma1 c = {!!}
+\end{code}
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Semantics II: $\mathbb{B}$ as a Model}
+A simple and adequate model: finite sets and bijections (and its decategorification):
 \begin{itemize}
-\vfill\item A type is interpreted as a \red{finite set} (i.e., a natural number)
-\vfill\item $0$ is the empty set (the number 0)
-\vfill\item $1$ is a singleton set (the number 1)
-\vfill\item $+$ is disjoint union (addition of natural numbers)
-\vfill\item $\times$ is cartesian product (multiplication of natural numbers)
-\vfill\item Combinators are permutations (algebraic identities of natural numbers)
+\item A type is interpreted as a \red{finite set} (i.e., a natural number)
+\item $0$ is the empty set (the number 0)
+\item $1$ is a singleton set (the number 1)
+\item $+$ is disjoint union (addition of natural numbers)
+\item $\times$ is cartesian product (multiplication of natural numbers)
+\item Combinators are \textcolor{red}{permutations} (algebraic identities of natural numbers)
 \end{itemize}
 \vfill
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Fredkin and Toffoli Gates}
+  
+\begin{itemize}
+\item Universal gates for reversible combinational circuits
+\item Toffoli gate:\\
+\begin{code}
+BOOL BOOL² : U
+BOOL = PLUS ONE ONE 
+BOOL² = TIMES BOOL BOOL  
+
+Toffoli : TIMES BOOL BOOL² ⟷ TIMES BOOL BOOL²
+Toffoli = dist ◎ (id⟷ ⊕ (id⟷ ⊗ cnot))  ◎ factor
+  where
+    cnot : BOOL² ⟷ BOOL²
+    cnot = dist ◎ (id⟷ ⊕ (id⟷ ⊗ swap₊)) ◎ factor
+\end{code}
+\begin{center}
+  \includegraphics{diagrams/toffoli.pdf}
+\end{center}
+\end{itemize}
+
+\end{frame}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Example Circuit: Simple Negation}
+\begin{frame}[fragile]{Proofs}
+toto
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Example: Simple Negation}
 
 \begin{center}
 \begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
@@ -575,17 +726,16 @@ There is a very simple and adequate model:
 \end{center}
 
 \begin{code}
-BOOL : U
-BOOL = PLUS ONE ONE
-
 n₁ : BOOL ⟷ BOOL
 n₁ = swap₊
 \end{code}
 
+\vphantom{Just some text to line things up}
+
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Example Circuit: Not So Simple Negation}
+\begin{frame}[fragile]{Example: Not So Simple Negation}
 
 \begin{center}
 \begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
@@ -662,32 +812,11 @@ n₂ =  uniti⋆ ◎
       unite⋆
 \end{code}
 
+\pause
+
+Question: are these \textcolor{red}{equivalent} combinators?
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Fredkin and Toffoli Gates}
-  
-\begin{itemize}
-\item Universal gates for reversible combinational circuits
-\item Toffoli gate:\\
-\begin{code}
-BOOL² : U  
-BOOL² = TIMES BOOL BOOL  
-
-Toffoli : TIMES BOOL BOOL² ⟷ TIMES BOOL BOOL²
-Toffoli = dist ◎ (id⟷ ⊕ (id⟷ ⊗ cnot))  ◎ factor
-  where
-    cnot : BOOL² ⟷ BOOL²
-    cnot = dist ◎ (id⟷ ⊕ (id⟷ ⊗ swap₊)) ◎ factor
-\end{code}
-\begin{center}
-  \includegraphics{diagrams/toffoli.pdf}
-\end{center}
-\end{itemize}
-
-\end{frame}
-
-\end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Reasoning about Example Circuits}
@@ -903,6 +1032,8 @@ negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆
         swap₊ ▤
 \end{code}
 \end{frame}
+
+\end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Visually}
@@ -1601,29 +1732,14 @@ import TypeEquiv as TE
 \end{code}
 }
 
-We get forward and backward evaluators
-\begin{code}
-eval : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
-evalB : {t₁ t₂ : U} → (t₁ ⟷ t₂) → ⟦ t₂ ⟧ → ⟦ t₁ ⟧
-\end{code}
-\pause
-
 which really do behave as expected
-\begin{code}
-c2equiv : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
-\end{code}
 
-\AgdaHide{
-\begin{code}
-eval p v = {!!}
-evalB p v = {!!}
-c2equiv cc = {!!}
-\end{code}
 }
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Manipulating circuits}
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Categorification I}
