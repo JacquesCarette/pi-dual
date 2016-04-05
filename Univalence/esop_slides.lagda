@@ -149,8 +149,7 @@ $\displaystyle
 4. A x A ~ A x A has two proofs, which are not equal
 \item[\checkmark] idea: make a PL whose types are isos and terms are iso combinators
 \item[\checkmark] give combinators
-\item nice prop: syntactic reversibility
-\item example programs, proofs
+\item example programs, proofs, nice prop: syntactic reversibility
 \item semantics of Pi
 \item Q: when are Pi programs equivalent? (motivates looking at equiv of equiv)
 \item but do note that Pi programs do NOT form a semiring, even if we have combinators
@@ -428,14 +427,8 @@ For notational brevity, we will denote these $0, 1, + and *$ respectively.
 \]
 \end{frame}
 
-\end{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{A Calculus of Permutations}
-
-First conclusion: it might be useful to \emph{reify} a (sound and complete) set of
-equivalences as combinators, such as the fundamental ``proof rules''
-of semirings:
-\pause
+\begin{frame}[fragile]{And in Agda}
 
 \AgdaHide{
 \begin{code}
@@ -613,6 +606,8 @@ n₂ =  uniti⋆ ◎
 \end{code}
 
 \end{frame}
+
+\end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Reasoning about Example Circuits}
