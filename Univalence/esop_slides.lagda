@@ -321,7 +321,8 @@ A × (B × C) & ≃ & (A × B) × C \\
 \end{minipage}
 \pause
 \begin{minipage}{0.44\textwidth}
-{Semiring Equalities}
+{Semiring Equalities}\\
+{(Sound and complete)}
 \[\begin{array}{rcl}
 0 + a               & = & a                  \\
 a + b               & = & b + a             \\
@@ -358,7 +359,7 @@ the proof terms of basic commutative semiring identities
 }
 \end{enumerate}
 \vfill
-\uncover<5->{\textcolor{green}{
+\uncover<5->{\textcolor{green!70!black}{
 \Large Let's make a PL out of semiring identities / type isomorphisms!
 }}
 \vfill
@@ -427,10 +428,11 @@ is:
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Syntactically, in Agda}
+\begin{frame}{Syntactically}
 Start with a universe of (finite) types
 
 \vspace*{0.4cm}
+\renewcommand{\AgdaCodeStyle}{\footnotesize}
 \begin{code}
 data U : Set where
   ZERO  : U
@@ -613,7 +615,7 @@ which behaves as expected:
 \end{frame}
 
 \begin{frame}[fragile]{Good properties II}
-Every syntactic combinator induces a type equivalence:
+Every syntactic combinator \textcolor{red}{induces} a type equivalence:
 \begin{code}
 c2equiv : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) → ⟦ t₁ ⟧ ≃ ⟦ t₂ ⟧
 \end{code}
@@ -711,7 +713,7 @@ while \AgdaFunction{pf₃π} and \AgdaFunction{pf₄π} are \textcolor{red}{equi
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Example: Simple Negation}
+\begin{frame}[fragile]{Visual example: Simple Negation}
 
 \begin{center}
 \begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
@@ -749,7 +751,7 @@ n₁ = swap₊
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Example: Not So Simple Negation}
+\begin{frame}[fragile]{Visual example: Not So Simple Negation}
 
 \begin{center}
 \begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
@@ -1752,22 +1754,23 @@ record _≋_ {A B : Set} (eq₁ eq₂ : A ≃ B) : Set where
     g≡ : g (proj₂ eq₁) ∼ g (proj₂ eq₂)
 \end{code}
 \end{definition}
-\pause
-\begin{theorem}
-Taking \AgdaDatatype{Set} as objects, $≃$ for Homomorphisms and $\triplesim$ as
-equivalence of $≃$ gives a Groupoid.
-\end{theorem}
 \end{frame}
 
 \begin{frame}{Categorification}
 
+\begin{theorem}
+Taking \AgdaDatatype{Set} as objects, $≃$ for homomorphisms and $\triplesim$ as
+equivalence of $≃$ gives a Groupoid.
+\end{theorem}
+
+\pause
+
 \begin{itemize}
-\vfill\item Objects are finite types $A$
 
-\vfill\item Morphisms are equivalences between types $≃$ \\
-(identity equivalence exists $\idc_{\simeq}$ and equivalences compose $\boxdot$)
+\item identity equivalence exists $\idc_{\simeq}$
+\item equivalences compose $\boxdot$)
 
-\vfill\item \red{Coherence Laws} require the identity equivalence to
+\item \red{Coherence Laws} require the identity equivalence to
 be a left and right unit for composition and composition to be associative
 
 \[\begin{array}{rcl}
@@ -1776,6 +1779,11 @@ E \boxdot \idc_{\simeq} &≋& E \\
 E_1 \boxdot (E_2 \boxdot E_3) &≋& (E_1 \boxdot E_2) \boxdot E_3
 \end{array}\]
 \end{itemize}
+
+\pause
+
+And that is the source of our next level combinators!
+
 \end{frame}
 
 \begin{frame}{Categorification II}
