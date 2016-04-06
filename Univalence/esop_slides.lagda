@@ -35,6 +35,7 @@
 \usepackage{graphicx}
 \usepackage{textgreek}
 %\usepackage{extarrows}
+\usepackage{tabularx}
 
 \newcommand{\red}[1]{{\color{red}{#1}}}
 \newenvironment{proenv}{\only{\setbeamercolor{local structure}{fg=green}}}{}
@@ -61,8 +62,12 @@
 \newcommand{\swapp}{\mathit{swap}_+}
 \newcommand{\assoclp}{\mathit{assocl}_+}
 \newcommand{\assocrp}{\mathit{assocr}_+}
+\newcommand{\identlsp}{\mathit{unite}_+\mathit{r}}
+\newcommand{\identrsp}{\mathit{uniti}_+\mathit{r}}
 \newcommand{\identlt}{\mathit{identl}_*}
 \newcommand{\identrt}{\mathit{identr}_*}
+\newcommand{\identlst}{\mathit{unite}_*\mathit{r}}
+\newcommand{\identrst}{\mathit{uniti}_*\mathit{r}}
 \newcommand{\swapt}{\mathit{swap}_*}
 \newcommand{\assoclt}{\mathit{assocl}_*}
 \newcommand{\assocrt}{\mathit{assocr}_*}
@@ -71,6 +76,11 @@
 \newcommand{\factorzl}{\mathit{factorl}_0}
 \newcommand{\dist}{\mathit{dist}}
 \newcommand{\factor}{\mathit{factor}}
+\newcommand{\distl}{\mathit{distl}}
+\newcommand{\factorl}{\mathit{factorl}}
+\newcommand{\absorbr}{\mathit{absorbr}}
+\newcommand{\absorbl}{\mathit{absorbl}}
+\newcommand{\factorzr}{\mathit{factorzr}}
 \newcommand{\iso}{\leftrightarrow}
 \newcommand{\proves}{\vdash}
 \newcommand{\idc}{\mathit{id}}
@@ -1768,7 +1778,7 @@ equivalence of $≃$ gives a Groupoid.
 \begin{itemize}
 
 \item identity equivalence exists $\idc_{\simeq}$
-\item equivalences compose $\boxdot$)
+\item equivalences compose $\boxdot$
 
 \item \red{Coherence Laws} require the identity equivalence to
 be a left and right unit for composition and composition to be associative
@@ -1782,44 +1792,45 @@ E_1 \boxdot (E_2 \boxdot E_3) &≋& (E_1 \boxdot E_2) \boxdot E_3
 
 \pause
 
-And that is the source of our next level combinators!
+\textcolor{green!60!black}{\Large And that is the source of our next level combinators}
 
 \end{frame}
 
 \begin{frame}{Categorification II}
 The category of finite types and equivalences is much richer than a plain category:
 \begin{itemize}
+\vfill\item every morphism has an inverse; \red{it is a groupoid}
 \vfill\item $\oplus,\bot$ is a commutative monoid; \red{category is symmetric monoidal}
-\vfill\item $\otimes,\top$ is another commutative monoid; the multiplicative monoid distributes over
-the additive one; \red{it is a rig category}
-\vfill\item every morphism has an inverse; \red{it is a rig groupoid}
+\vfill\item $\otimes,\top$ is another commutative monoid; \red{category is symmetric bi-monoidal}
+\vfill\item the multiplicative monoid distributes over the additive one; \red{it is a rig groupoid}
 \vfill\item equivalence of morphisms is up to $≋$; \red{category is a weak rig groupoid}
+\vfill\item in fact, a \red{weak rig groupoid bicategory} !
 \end{itemize}
 \vfill
 \end{frame}
+
+% \begin{frame}{Categorification III}
+%
+%One of the coherence laws of monoidal categories:
+%\begin{itemize}
+%\vfill\item We have an equivalence $E_1 : (A \oplus \bot) \oplus B ≃ A \oplus (\bot \oplus B)$
+%\vfill\item We have an equivalence $E_2 : (A \oplus \bot) \oplus B ≃ A \oplus B$
+%\vfill\item We have an equivalence $E_3 : A \oplus (\bot \oplus B) ≃ A \oplus B$
+%\vfill\item Coherence law: $E_1 \boxdot E_3 ≋ E_2$
+%\end{itemize}
+%\vfill
+%\end{frame}
 
 \begin{frame}{Categorification III}
 
-One of the coherence laws of monoidal categories:
-\begin{itemize}
-\vfill\item We have an equivalence $E_1 : (A \oplus \bot) \oplus B ≃ A \oplus (\bot \oplus B)$
-\vfill\item We have an equivalence $E_2 : (A \oplus \bot) \oplus B ≃ A \oplus B$
-\vfill\item We have an equivalence $E_3 : A \oplus (\bot \oplus B) ≃ A \oplus B$
-\vfill\item Coherence law: $E_1 \boxdot E_3 ≋ E_2$
-\end{itemize}
-\vfill
-\end{frame}
-
-\begin{frame}{Categorification IV}
-
-Each coherence law is an equivalence of equivalence, which is an
-equivalence of combinational circuits, which is an equivalence of
-$\Pi$ programs, which is an equivalence of permutations.
+Each coherence law is an equivalence of equivalences, which is an
+equivalence of combinational circuits, which \textcolor{red}{must} be an equivalence of
+$\Pi$ programs.
 
 \begin{itemize}
-\vfill\item The full set of coherence laws is huge
+\vfill\item The full set of coherence laws is huge ($56+1$ laws)
 \vfill\item Add them to $\Pi$, level 2
-\vfill\item Double them to give syntactic reversibility
+\vfill\item Double them to give syntactic reversibility ($2·56 + 1 = 113$ laws)
 \vfill\item Can write $\Pi$ programs (now level 1) and can write level
 2 programs that manipulate level 1 programs in semantically-preserving
 ways!
@@ -1827,10 +1838,11 @@ ways!
 
 \end{frame}
 
+\newcolumntype{C}[1]{>{\hsize=#1\hsize\centering\arraybackslash}X}
 
-\begin{frame}{Revised Curry-Howard}
+\begin{frame}{Revised Curry-Howard (here)}
 
-\begin{tabular}{|c|c|}
+\begin{tabularx}{12cm}{|C{0.35}|C{0.65}|}
 \hline
 & \\
 Rig of natural numbers & Syntax of finite types \\
@@ -1839,18 +1851,203 @@ with 0, 1, +, and * & \\
 & \\
 \hline
 & \\
-Rig identities & Type isomorphisms \\
+Semiring identities & Type isomorphisms \\
 $a+0 = a$ & $A \uplus \bot ≃ A$ \\
 Proofs & Programs (reversible) \\
 & \\
 \hline
 & \\
 Rig category & Programs \\
-(focus on composition) & (focus on composition) \\
-Coherence laws & Program evaluation and optimization \\
+$\Rightarrow$ & $\Rightarrow$ \\
+Coherence laws & Program equivalences and transformation \\
 \hline
-\end{tabular}
+\end{tabularx}
 
+\end{frame}
+
+\begin{frame}{Revised Curry-Howard (speculation)}
+
+\begin{tabularx}{12cm}{|C{0.35}|C{0.65}|}
+\hline
+& \\
+\textcolor{red}{Algebra} & Syntactic classifier \\
+& ``type'' \\
+\hline
+& \\
+Equations & Isomorphisms \\
+& \\
+\hline
+& \\
+Proofs & Programs (reversible) \\
+& \\
+\hline
+& \\
+Categorification & Programs \\
+$\Rightarrow$ & $\Rightarrow$ \\
+\textcolor{red}{Coherence laws} & Program equivalences and transformation \\
+\hline
+\end{tabularx}
+
+\end{frame}
+
+\begin{frame}[fragile]{$\Pi$ level 2}
+\vspace*{ -4mm}
+\setlength{\columnsep}{ -3mm}
+\begin{multicols}{2}
+\scalebox{.5}{
+\begin{minipage}{\textwidth}
+Let $c₁ : t₁ ⟷ t₂$,  $c₂ : t₂ ⟷ t₃$, and $c₃ : t₃ ⟷ t₄$: \\
+$
+\def\arraystretch{1.3}
+\begin{array}{c}
+  {c₁ ◎ (c₂ ◎ c₃) ⇔ (c₁ ◎ c₂) ◎ c₃}
+\\
+  {(c₁ ⊕ (c₂ ⊕ c₃)) ◎ \assoclp ⇔ \assoclp ◎ ((c₁ ⊕ c₂) ⊕ c₃)}
+\\
+  {(c₁ ⊗ (c₂ ⊗ c₃)) ◎ \assoclt ⇔ \assoclt ◎ ((c₁ ⊗ c₂) ⊗ c₃)}
+\\
+  {((c₁ ⊕ c₂) ⊕ c₃) ◎ \assocrp ⇔ \assocrp ◎ (c₁ ⊕ (c₂ ⊕ c₃))}
+\\
+  {((c₁ ⊗ c₂) ⊗ c₃) ◎ \assocrt ⇔ \assocrt ◎ (c₁ ⊗ (c₂ ⊗ c₃))}
+\\
+  {\assocrp ◎ \assocrp ⇔ ((\assocrp ⊕ \idc) ◎ \assocrp) ◎ (\idc ⊕ \assocrp)}
+\\
+  {\assocrt ◎ \assocrt ⇔ ((\assocrt ⊗ \idc) ◎ \assocrt) ◎ (\idc ⊗ \assocrt)}
+\end{array} $ \\
+
+\vspace*{2mm}
+$\def\arraystretch{1.3}
+\begin{array}{c}
+  {((a ⊕ b) ⊗ c) ◎ \dist ⇔ \dist ◎ ((a ⊗ c) ⊕ (b ⊗ c))}  \\
+  {(a ⊗ (b ⊕ c)) ◎ \distl ⇔ \distl ◎ ((a ⊗ b) ⊕ (a ⊗ c))}  \\
+  {((a ⊗ c) ⊕ (b ⊗ c)) ◎ \factor ⇔ \factor ◎ ((a ⊕ b) ⊗ c)}  \\
+  {((a ⊗ b) ⊕ (a ⊗ c)) ◎ \factorl ⇔ \factorl ◎ (a ⊗ (b ⊕ c))}
+\end{array}$
+
+\vspace*{1cm}
+Let $c, c₁, c₂, c₃ : t₁ ⟷ t₂$ and $c', c'' : t₃ ⟷ t₄$: \hspace*{\fill}
+
+$\def\arraystretch{1.3}
+\begin{array}{c}
+  {\idc ◎ \, c ⇔ c}      \quad 
+  {c \, ◎ \idc \, ⇔ c}   \quad
+  {c\,\, ◎\,! c ⇔ \idc}  \quad 
+  {! c ◎ c ⇔ \idc}       \\
+  {c ⇔ c}                \quad 
+\Rule{}
+  {c₁ ⇔ c₂ \quad c₂ ⇔ c₃}
+  {c₁ ⇔ c₃}
+  {}  \quad
+\Rule{}
+  {c₁ ⇔ c' \quad c₂ ⇔ c''}
+  {c₁ ◎ c₂ ⇔ c' ◎ c''}
+  {}
+\end{array} $
+
+Let $c₀ : 0 ⟷ 0$, $c₁ : 1 ⟷ 1$, and $c : t₁ ⟷ t₂$:
+
+$\def\arraystretch{1.3}
+\begin{array}{c}
+  {\identlp ◎ c ⇔ (c₀ ⊕ c) ◎ \identlp}  \qquad 
+  {\identrp ◎ (c₀ ⊕ c) ⇔ c ◎ \identrp}  \\
+  {\identlsp ◎ c ⇔ (c ⊕ c₀) ◎ \identlsp}  \qquad
+  {\identrsp ◎ (c ⊕ c₀) ⇔ c ◎ \identrsp}  \\
+  {\identlt ◎ c ⇔ (c₁ ⊗ c) ◎ \identlt}  \qquad
+  {\identrt ◎ (c₁ ⊗ c) ⇔ c ◎ \identrp}  \\
+  {\identlst ◎ c ⇔ (c ⊗ c₁) ◎ \identlst}  \qquad
+  {\identrst ◎ (c ⊗ c₁) ⇔ c ◎ \identrst}  \\
+  {\identlt ⇔ \distl ◎ (\identlt ⊕ \identlt)} \\
+  \identlp ⇔ \swapp ◎ \identrsp  \qquad
+  \identlt ⇔ \swapt ◎ \identrst
+\end{array} $
+
+$\def\arraystretch{1.3}
+\begin{array}{rcl}
+  (\idc ⊗ \swapp) ◎ \distl &⇔& \distl ◎ \swapp
+\\
+  \dist ◎ (\swapt ⊕ \swapt) &⇔& \swapt ◎ \distl
+\end{array}$
+\end{minipage}
+}
+\scalebox{0.48}{
+\begin{minipage}{\textwidth}
+Let $c₁ : t₁ ⟷ t₂$ and $c₂ : t₃ ⟷ t₄$:
+
+$\def\arraystretch{1.3}
+\begin{array}{c}
+{\swapp ◎ (c₁ ⊕ c₂) ⇔ (c₂ ⊕ c₁) ◎ \swapp}  \quad
+{\swapt ◎ (c₁ ⊗ c₂) ⇔ (c₂ ⊗ c₁) ◎ \swapt}  \\
+{(\assocrp ◎ \swapp) ◎ \assocrp ⇔ ((\swapp ⊕ \idc) ◎ \assocrp) ◎ (\idc ⊕ \swapp)}  \\
+{(\assoclp ◎ \swapp) ◎ \assoclp ⇔ ((\idc ⊕ \swapp) ◎ \assoclp) ◎ (\swapp ⊕ \idc)}  \\
+{(\assocrt ◎ \swapt) ◎ \assocrt ⇔ ((\swapt ⊗ \idc) ◎ \assocrt) ◎ (\idc ⊗ \swapt)}  \\
+{(\assoclt ◎ \swapt) ◎ \assoclt ⇔ ((\idc ⊗ \swapt) ◎ \assoclt) ◎ (\swapt ⊗ \idc)}
+\end{array}$
+
+Let $c₁ : t₁ ⟷ t₂$, $c₂ : t₃ ⟷ t₄$, $c₃ : t₁ ⟷ t₂$, and $c₄ : t₃ ⟷ t₄$. \\
+Let $a₁ : t₅ ⟷ t₁$,  $a₂ : t₆ ⟷ t₂$, $a₃ : t₁ ⟷ t₃$, and $a₄ : t₂ ⟷ t₄$.
+
+$\def\arraystretch{1.3}
+\begin{array}{c}
+\Rule{}
+  {c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
+  {c₁ ⊕ c₂ ⇔ c₃ ⊕ c₄}
+  {}
+\qquad
+\Rule{}
+  {c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
+  {c₁ ⊗ c₂ ⇔ c₃ ⊗ c₄}
+  {} 
+\\
+  {\idc ⊕ \, \idc \, ⇔ \idc}
+\qquad
+  {\idc ⊗ \, \idc \, ⇔ \idc}
+\\
+  {(a₁ ◎ a₃) ⊕ (a₂ ◎ a₄) ⇔ (a₁ ⊕ a₂) ◎ (a₃ ⊕ a₄)}
+\\
+  {(a₁ ◎ a₃) ⊗ (a₂ ◎ a₄) ⇔ (a₁ ⊗ a₂) ◎ (a₃ ⊗ a₄)}
+\end{array}$
+
+$\def\arraystretch{1.3}
+\begin{array}{c}
+  {\identlsp ⊕ \idc ~⇔~ \assocrp ◎ (\idc ⊕ \, \identlp)}
+\\
+  {\identlst ⊗ \idc ~⇔~ \assocrt ◎ (\idc ⊗ \, \identlt)}
+\end{array}$
+
+Let $c : t₁ ⟷ t₂$:
+
+$\def\arraystretch{1.3}
+\begin{array}{c}
+  {(c ⊗ \idc) ◎ \absorbl ⇔ \absorbl ◎ \idc} \quad
+  {(\idc \, ⊗ c) ◎ \absorbr ⇔ \absorbr ◎ \idc} \\
+  {\idc ◎ \, \factorzl ⇔ \factorzl ◎ (\idc ⊗ c)} \quad
+  {\idc ◎ \, \factorzr ⇔ \factorzr ◎ (c ⊗ \idc)} \\
+  {\absorbr ⇔ \absorbl} \\
+  {\absorbr ⇔ (\distl ◎ (\absorbr ⊕ \absorbr)) ◎ \identlp} \\
+  {\identlst ⇔ \absorbr} \qquad
+  {\absorbl ⇔ \swapt ◎ \absorbr} \\
+  {\absorbr ⇔ (\assoclt ◎ (\absorbr ⊗ \idc)) ◎ \absorbr} \\
+  {(\idc ⊗ \absorbr) ◎ \absorbl ⇔ (\assoclt ◎ (\absorbl ⊗ \idc)) ◎ \absorbr} \\
+  {\idc ⊗ \, \identlp ⇔ (\distl ◎ (\absorbl ⊕ \idc)) ◎ \identlp}
+\end{array}$
+
+$\def\arraystretch{1.3}
+\begin{array}{c}
+  {((\assoclp ⊗ \idc) ◎ \dist) ◎ (\dist ⊕ \idc) ⇔ (\dist ◎ (\idc ⊕ \dist)) ◎ \assoclp}
+\\
+  {\assoclt ◎ \distl ⇔ ((\idc ⊗ \distl) ◎ \distl) ◎ (\assoclt ⊕ \assoclt)}
+\end{array}$
+\vspace{ -0.5em}
+$\def\arraystretch{1.3}
+\begin{array}{rcl}
+  (\distl ◎ (\dist ⊕ \dist)) ◎ \assoclp &⇔&   
+   \dist ◎ (\distl ⊕ \distl) ◎ \assoclp ~◎ \\
+&& (\assocrp ⊕ \idc) ~◎ ((\idc ⊕ \swapp) ⊕ \idc) ~◎ \\
+&& (\assoclp ⊕ \idc)
+\end{array}$
+\end{minipage}
+}
+\end{multicols}
 \end{frame}
 
 \end{document}
