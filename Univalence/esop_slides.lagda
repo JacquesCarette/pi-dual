@@ -1830,7 +1830,7 @@ $\Pi$ programs.
 \begin{itemize}
 \vfill\item The full set of coherence laws is huge ($56+1$ laws)
 \vfill\item Add them to $\Pi$, level 2
-\vfill\item Double them to give syntactic reversibility ($2·56 + 1 = 113$ laws)
+\vfill\item Double them to give syntactic reversibility ($2 \cdot 56 + 1 = 113$ laws)
 \vfill\item Can write $\Pi$ programs (now level 1) and can write level
 2 programs that manipulate level 1 programs in semantically-preserving
 ways!
@@ -1840,55 +1840,6 @@ ways!
 
 \newcolumntype{C}[1]{>{\hsize=#1\hsize\centering\arraybackslash}X}
 
-\begin{frame}{Revised Curry-Howard (here)}
-
-\begin{tabularx}{12cm}{|C{0.35}|C{0.65}|}
-\hline
-& \\
-Rig of natural numbers & Syntax of finite types \\
-with 0, 1, +, and * & \\
-(1+1)*(1+0) & $(\top \uplus \top) × (\top \uplus \bot)$ \\
-& \\
-\hline
-& \\
-Semiring identities & Type isomorphisms \\
-$a+0 = a$ & $A \uplus \bot ≃ A$ \\
-Proofs & Programs (reversible) \\
-& \\
-\hline
-& \\
-Rig category & Programs \\
-$\Rightarrow$ & $\Rightarrow$ \\
-Coherence laws & Program equivalences and transformation \\
-\hline
-\end{tabularx}
-
-\end{frame}
-
-\begin{frame}{Revised Curry-Howard (speculation)}
-
-\begin{tabularx}{12cm}{|C{0.35}|C{0.65}|}
-\hline
-& \\
-\textcolor{red}{Algebra} & Syntactic classifier \\
-& ``type'' \\
-\hline
-& \\
-Equations & Isomorphisms \\
-& \\
-\hline
-& \\
-Proofs & Programs (reversible) \\
-& \\
-\hline
-& \\
-Categorification & Programs \\
-$\Rightarrow$ & $\Rightarrow$ \\
-\textcolor{red}{Coherence laws} & Program equivalences and transformation \\
-\hline
-\end{tabularx}
-
-\end{frame}
 
 \begin{frame}[fragile]{$\Pi$ level 2}
 \vspace*{ -4mm}
@@ -2048,6 +1999,56 @@ $\def\arraystretch{1.3}
 \end{minipage}
 }
 \end{multicols}
+\end{frame}
+
+\begin{frame}{Revised Curry-Howard (here)}
+
+\begin{tabularx}{12cm}{|C{0.35}|C{0.65}|}
+\hline
+& \\
+Rig of natural numbers & Syntax of finite types \\
+with 0, 1, +, and * & \\
+(1+1)*(1+0) & $(\top \uplus \top) × (\top \uplus \bot)$ \\
+& \\
+\hline
+& \\
+Semiring identities & Type isomorphisms \\
+$a+0 = a$ & $A \uplus \bot ≃ A$ \\
+Proofs & Programs (reversible) \\
+& \\
+\hline
+& \\
+Rig category & Programs \\
+$\Rightarrow$ & $\Rightarrow$ \\
+Coherence laws & Program equivalences and transformation \\
+\hline
+\end{tabularx}
+
+\end{frame}
+
+\begin{frame}{Revised Curry-Howard (speculation)}
+
+\begin{tabularx}{12cm}{|C{0.35}|C{0.65}|}
+\hline
+& \\
+\textcolor{red}{Algebra} & Syntactic classifier \\
+& ``type'' \\
+\hline
+& \\
+Equations & Isomorphisms \\
+& \\
+\hline
+& \\
+Proofs & Programs (reversible) \\
+& \\
+\hline
+& \\
+Categorification & Programs \\
+$\Rightarrow$ & $\Rightarrow$ \\
+\textcolor{red}{Coherence laws} & Program equivalences and transformation \\
+\hline
+\end{tabularx}
+
 \end{frame}
 
 \end{document}
