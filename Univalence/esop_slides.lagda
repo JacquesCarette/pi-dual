@@ -127,6 +127,9 @@ $\displaystyle
 \newcommand{\jc}[1]{\authornote{purple}{JC}{#1}}
 \newcommand{\as}[1]{\authornote{magenta}{AS}{#1}}
 
+%% shorten the longarrow
+\DeclareUnicodeCharacter{10231}{\ensuremath{\leftrightarrow}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \title[Computing with Rigs]{Computing with Semirings and Weak Rig Groupoids}
 \author[Carette-Sabry]{\textcolor{blue}{Jacques Carette} \and Amr Sabry}
@@ -266,7 +269,8 @@ record isqinv {A : Set} {B : Set} (f : A → B) : Set where
 \begin{definition}[Equivalence of types]\label{def:eq}
   Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
   function $f : A \rightarrow B$ together with a quasi-inverse for
-  $f$. 
+  $f$.
+  
 \medskip 
 \begin{code}
 _≃_ : Set → Set → Set
@@ -275,6 +279,7 @@ A ≃ B = Σ (A → B) isqinv
 \end{definition}
 \pause
 (Tricky) Example\\
+\begin{multicols}{2}
 \begin{code}
 left0e : {A : Set} → ⊥ × A → ⊥
 left0e = proj₁
@@ -286,11 +291,21 @@ left0ei ()
 left0ie : {A : Set} → (left0i {A} ∘ left0e) ∼ id
 left0ie (() , _)
 \end{code}
+\columnbreak
+\begin{code}
+
+⊥≃ : {A : Set} → (⊥ × A) ≃ ⊥
+⊥≃ =  left0e ,
+      qinv left0i left0ei left0ie
+\end{code}
+\end{multicols}
+
 \end{frame}
 
 \begin{frame}{Type isomorphisms III}
 \begin{minipage}{0.55\textwidth}
-{Type isomorphisms}
+{Type isomorphisms}\\
+{(Sound and complete)}
 \[\begin{array}{rcl}
 ⊥ ⊎ A               & ≃ & A                  \\
 A ⊎ B               & ≃ & B ⊎ A             \\
@@ -1727,6 +1742,7 @@ negEx = uniti⋆ ◎ (swap⋆ ◎ ((swap₊ ⊗ id⟷) ◎ (swap⋆ ◎ unite⋆
 infix 4 _≋_
 \end{code}
 }
+
 \begin{code}
 record _≋_ {A B : Set} (eq₁ eq₂ : A ≃ B) : Set where
   constructor eq
@@ -1744,15 +1760,101 @@ equivalence of $≃$ gives a Groupoid.
 \end{frame}
 
 \begin{frame}{Categorification}
+
+\begin{itemize}
+\vfill\item Objects are finite types $A$
+
+\vfill\item Morphisms are equivalences between types $≃$ \\
+(identity equivalence exists $\idc_{\simeq}$ and equivalences compose $\boxdot$)
+
+\vfill\item \red{Coherence Laws} require the identity equivalence to
+be a left and right unit for composition and composition to be associative
+
+\[\begin{array}{rcl}
+\idc_{\simeq} \boxdot E &≋& E \\
+E \boxdot \idc_{\simeq} &≋& E \\
+E_1 \boxdot (E_2 \boxdot E_3) &≋& (E_1 \boxdot E_2) \boxdot E_3
+\end{array}\]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Categorification II}
+The category of finite types and equivalences is much richer than a plain category:
+\begin{itemize}
+\vfill\item $\oplus,\bot$ is a commutative monoid; \red{category is symmetric monoidal}
+\vfill\item $\otimes,\top$ is another commutative monoid; the multiplicative monoid distributes over
+the additive one; \red{it is a rig category}
+\vfill\item every morphism has an inverse; \red{it is a rig groupoid}
+\vfill\item equivalence of morphisms is up to $≋$; \red{category is a weak rig groupoid}
+\end{itemize}
+\vfill
+\end{frame}
+
+\begin{frame}{Categorification III}
+
+One of the coherence laws of monoidal categories:
+\begin{itemize}
+\vfill\item We have an equivalence $E_1 : (A \oplus \bot) \oplus B ≃ A \oplus (\bot \oplus B)$
+\vfill\item We have an equivalence $E_2 : (A \oplus \bot) \oplus B ≃ A \oplus B$
+\vfill\item We have an equivalence $E_3 : A \oplus (\bot \oplus B) ≃ A \oplus B$
+\vfill\item Coherence law: $E_1 \boxdot E_3 ≋ E_2$
+\end{itemize}
+\vfill
+\end{frame}
+
+\begin{frame}{Categorification IV}
+
+Each coherence law is an equivalence of equivalence, which is an
+equivalence of combinational circuits, which is an equivalence of
+$\Pi$ programs, which is an equivalence of permutations.
+
+\begin{itemize}
+\vfill\item The full set of coherence laws is huge
+\vfill\item Add them to $\Pi$, level 2
+\vfill\item Double them to give syntactic reversibility
+\vfill\item Can write $\Pi$ programs (now level 1) and can write level
+2 programs that manipulate level 1 programs in semantically-preserving
+ways!
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Revised Curry-Howard}
+
+\begin{tabular}{|c|c|}
+\hline
+& \\
+Rig of natural numbers & Syntax of finite types \\
+with 0, 1, +, and * & \\
+(1+1)*(1+0) & $(\top \uplus \top) × (\top \uplus \bot)$ \\
+& \\
+\hline
+& \\
+Rig identities & Type isomorphisms \\
+$a+0 = a$ & $A \uplus \bot ≃ A$ \\
+Proofs & Programs (reversible) \\
+& \\
+\hline
+& \\
+Rig category & Programs \\
+(focus on composition) & (focus on composition) \\
+Coherence laws & Program evaluation and optimization \\
+\hline
+\end{tabular}
+
+\end{frame}
+
+\end{document}
+
+%%%
+
+\begin{frame}
 Coherence rules.  For what categorical structure?  As with $\Pi$, just bake it in.
 Revise $Π$.  Tons of coherences (give them!).  Double them up to get syntactic reversibility here too.
 
 Finish with a CH-like table?
 \end{frame}
-\end{document}
-
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Categorification II}
