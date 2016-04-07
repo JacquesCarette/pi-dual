@@ -648,7 +648,7 @@ lemma1 :  {t₁ t₂ : U} → (c : t₁ ⟷ t₂) →
 
 \pause
 \vfill
-Foundational PL design method:
+A foundational PL design method:
 \begin{enumerate}
 \item figure out a good denotational semantics,
 \item derive a syntax for it,
