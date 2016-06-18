@@ -439,3 +439,34 @@ unite₊r-coh-r =
   trans⇔ (linv◎l ⊡ id⇔) idl◎l ) ) )
 
 ------------------------------------------------------------------------------
+
+-- It is often useful to have that reversing c twice is ⇔ c rather than ≡
+-- Unfortunately, it needs a 'proof', which is quite dull, though
+-- it does have 3 non-trivial cases.
+!!⇔id : {t₁ t₂ : U} {c : t₁ ⟷ t₂} → (! (! c)) ⇔ c
+!!⇔id {c = unite₊l} = id⇔
+!!⇔id {c = uniti₊l} = id⇔
+!!⇔id {c = unite₊r} = id⇔
+!!⇔id {c = uniti₊r} = id⇔
+!!⇔id {c = swap₊} = id⇔
+!!⇔id {c = assocl₊} = id⇔
+!!⇔id {c = assocr₊} = id⇔
+!!⇔id {c = unite⋆l} = id⇔
+!!⇔id {c = uniti⋆l} = id⇔
+!!⇔id {c = unite⋆r} = id⇔
+!!⇔id {c = uniti⋆r} = id⇔
+!!⇔id {c = swap⋆} = id⇔
+!!⇔id {c = assocl⋆} = id⇔
+!!⇔id {c = assocr⋆} = id⇔
+!!⇔id {c = absorbr} = id⇔
+!!⇔id {c = absorbl} = id⇔
+!!⇔id {c = factorzr} = id⇔
+!!⇔id {c = factorzl} = id⇔
+!!⇔id {c = dist} = id⇔
+!!⇔id {c = factor} = id⇔
+!!⇔id {c = distl} = id⇔
+!!⇔id {c = factorl} = id⇔
+!!⇔id {c = id⟷} = id⇔
+!!⇔id {c = c ◎ c₁} = !!⇔id ⊡ !!⇔id
+!!⇔id {c = c ⊕ c₁} = resp⊕⇔ !!⇔id !!⇔id
+!!⇔id {c = c ⊗ c₁} = resp⊗⇔ !!⇔id !!⇔id
