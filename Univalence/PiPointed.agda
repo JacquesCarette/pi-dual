@@ -25,7 +25,7 @@ open Membership-≡
 open import Data.List.Properties using ()
 
 open import Categories.Groupoid.Sum using () renaming (Sum to GSum)
-open import Categories.Groupoid using () renaming (Product to GProduct)
+open import Categories.Groupoid.Product using () renaming (Product to GProduct)
 
 open import PiU using (U; ZERO; ONE; PLUS; TIMES; toℕ)
 open import PiLevel0
@@ -33,7 +33,7 @@ open import PiLevel1
 open import PiEquiv renaming (eval to ap; evalB to apB)
 open import Equiv
 
-infix 40 _^_
+open import PiIter
 
 data Pointed (t : U) : Set where
   ∙ : ⟦ t ⟧ → Pointed t
@@ -170,148 +170,71 @@ extract-GS[]≡id⟷ .nil refl (p , Fwd ())
 extract-GS[]≡id⟷ .nil refl (p , Bwd ())
 extract-GS[]≡id⟷ .nil refl (p , Neu) = refl
 
-_^_ : {τ : U} → (p : τ ⟷ τ) → (k : ℤ) → (τ ⟷ τ)
-p ^ (+ 0) = id⟷
-p ^ (+ (suc k)) = p ◎ (p ^ (+ k))
-p ^ -[1+ 0 ] = ! p
-p ^ (-[1+ (suc k) ]) = (! p) ◎ (p ^ -[1+ k ])
-
--- useful properties of ^
--- because ^ is iterated composition of the same thing,
--- then by associativity, we can hive off compositions
--- from left or right
-
-assoc1 : {τ : U} → {p : τ ⟷ τ} → (m : ℕ) →
-  (p ◎ (p ^ (+ m))) ⇔ ((p ^ (+ m)) ◎ p)
-assoc1 ℕ.zero = trans⇔ idr◎l idl◎r
-assoc1 (suc m) = trans⇔ (id⇔ ⊡ assoc1 m) assoc◎l
-
-assoc1- : {τ : U} → {p : τ ⟷ τ} → (m : ℕ) →
-  ((! p) ◎ (p ^ -[1+ m ])) ⇔ ((p ^ -[1+ m ]) ◎ (! p))
-assoc1- ℕ.zero = id⇔
-assoc1- (suc m) = trans⇔ (id⇔ ⊡ assoc1- m) assoc◎l
-
--- Property of ^: negating exponent is same as
--- composing in the other direction, then reversing.
-^⇔! : {τ : U} → {p : τ ⟷ τ} → (k : ℤ) →
-  (p ^ (ℤ- k)) ⇔ ! (p ^ k)
-^⇔! (+_ ℕ.zero) = id⇔
--- need to dig deeper, as we end up negating
-^⇔! (+_ (suc ℕ.zero)) = idl◎r
-^⇔! (+_ (suc (suc n))) = trans⇔ (assoc1- n) (^⇔! (+ suc n) ⊡ id⇔)
-^⇔! {p = p} (-[1+_] ℕ.zero) = trans⇔ idr◎l (2! !!⇔id) -- (!!⇔id {c = p})
-^⇔! {p = p} (-[1+_] (suc n)) =
-  trans⇔ (assoc1 (suc n)) ((^⇔! -[1+ n ]) ⊡ 2! !!⇔id) -- (!!⇔id p))
-
--- first match on m, n, then proof is purely PiLevel1
-lower : {τ : U} {p : τ ⟷ τ} (m n : ℤ) →
-  p ^ (m ℤ+ n) ⇔ ((p ^ m) ◎ (p ^ n))
-lower (+_ ℕ.zero) (+_ n) = idl◎r
-lower (+_ ℕ.zero) (-[1+_] n) = idl◎r
-lower (+_ (suc m)) (+_ n) =
-  trans⇔ (id⇔ ⊡ lower (+ m) (+ n)) assoc◎l
-lower {p = p} (+_ (suc m)) (-[1+_] ℕ.zero) = 
-  trans⇔ idr◎r (trans⇔ (id⇔ ⊡ linv◎r) (
-  trans⇔ assoc◎l (2! (assoc1 m) ⊡ id⇔)))  -- p ^ ((m + 1) -1)
-lower (+_ (suc m)) (-[1+_] (suc n)) = -- p ^ ((m + 1) -(1+1+n)
-  trans⇔ (lower (+ m) (-[1+ n ])) (
-  trans⇔ ((trans⇔ idr◎r (id⇔ ⊡ linv◎r))  ⊡ id⇔) (
-  trans⇔ assoc◎r (trans⇔ (id⇔ ⊡ assoc◎r) (
-  trans⇔ assoc◎l (2! (assoc1 m) ⊡ id⇔))))) 
-lower (-[1+_] m) (+_ ℕ.zero) = idr◎r
-lower (-[1+_] ℕ.zero) (+_ (suc n)) = 2! (trans⇔ assoc◎l (
-  trans⇔ (rinv◎l ⊡ id⇔) idl◎l))
-lower (-[1+_] (suc m)) (+_ (suc n)) = -- p ^ (-(1+m) + (n+1))
-  trans⇔ (lower (-[1+ m ]) (+ n)) (
-    trans⇔ ((trans⇔ idr◎r (id⇔ ⊡ rinv◎r))  ⊡ id⇔) (
-  trans⇔ assoc◎r (trans⇔ (id⇔ ⊡ assoc◎r) (
-  trans⇔ assoc◎l ((2! (assoc1- m)) ⊡ id⇔)))))
-lower (-[1+_] ℕ.zero) (-[1+_] n) = id⇔
-lower (-[1+_] (suc m)) (-[1+_] n) = -- p ^ (-(1+1+m) - (1+n))
-  trans⇔ (id⇔ ⊡ lower (-[1+ m ]) (-[1+ n ])) assoc◎l
-
--- i.e. Perm is: for all i, any p' such that
--- p' ⇔ p ^ i
-
-record Perm {τ : U} (p : τ ⟷ τ) : Set where
-  constructor perm
-  field
-    iter : ℤ
-    p' : τ ⟷ τ
-    p'⇔p^i : p' ⇔ (p ^ iter)
-
--- Equality of Perm. 
-record _≡c_ {τ : U} {p : τ ⟷ τ} (q r : Perm p) : Set where
-  constructor eqc
-  field
-    iter≡ : Perm.iter q ≡ Perm.iter r
-    p⇔ : Perm.p' q ⇔ Perm.p' r
-
 private
-  Perm→CombS :  ∀ {τ : U} (c : τ ⟷ τ) → Perm c → CombS (c ∷: nil)
-  Perm→CombS p (perm (+_ n) _ _) = replicate n (p , Fwd (here refl))
-  Perm→CombS p (perm (-[1+_] n) _ _) = replicate (suc n) (p , Bwd (here refl))
+  Iter→CombS :  ∀ {τ : U} (c : τ ⟷ τ) → Iter c → CombS (c ∷: nil)
+  Iter→CombS p (iter (+_ n) _ _) = replicate n (p , Fwd (here refl))
+  Iter→CombS p (iter (-[1+_] n) _ _) = replicate (suc n) (p , Bwd (here refl))
 
-  CombS→Perm : ∀ {τ : U} (c : τ ⟷ τ) → CombS (c ∷: nil) → Perm c
-  CombS→Perm p nil = perm (+ 0) id⟷ id⇔
-  CombS→Perm p (x ∷: xs) with CombS→Perm p xs
-  CombS→Perm p ((.p , Fwd (here refl)) ∷: xs) | perm i q pf =
-      perm (ℤsuc i) (p ◎ q) (trans⇔ (id⇔ ⊡ pf)
+  CombS→Iter : ∀ {τ : U} (c : τ ⟷ τ) → CombS (c ∷: nil) → Iter c
+  CombS→Iter p nil = iter (+ 0) id⟷ id⇔
+  CombS→Iter p (x ∷: xs) with CombS→Iter p xs
+  CombS→Iter p ((.p , Fwd (here refl)) ∷: xs) | iter i q pf =
+      iter (ℤsuc i) (p ◎ q) (trans⇔ (id⇔ ⊡ pf)
         (trans⇔ (idr◎r ⊡ id⇔) (2! (lower (+ 1) i))))
-  CombS→Perm p ((p' , Fwd (there ())) ∷: xs) | perm i q pf
-  CombS→Perm p ((.p , Bwd (here refl)) ∷: xs) | perm i q pf =
-     perm (i ℤ+ -[1+ 0 ]) (q ◎ (! p))
+  CombS→Iter p ((p' , Fwd (there ())) ∷: xs) | iter i q pf
+  CombS→Iter p ((.p , Bwd (here refl)) ∷: xs) | iter i q pf =
+     iter (i ℤ+ -[1+ 0 ]) (q ◎ (! p))
        (trans⇔ (pf ⊡ id⇔) (2! (lower i -[1+ 0 ])))
-  CombS→Perm p ((p' , Bwd (there ())) ∷: xs) | perm i q pf
-  CombS→Perm p ((p' , Neu) ∷: xs) | perm i q pf = perm i q pf
+  CombS→Iter p ((p' , Bwd (there ())) ∷: xs) | iter i q pf
+  CombS→Iter p ((p' , Neu) ∷: xs) | iter i q pf = iter i q pf
 
   -- split Fwd case from Bwd
   preserve-iter : ∀ {τ : U} (c : τ ⟷ τ) → (n : ℕ) →
-    let p = CombS→Perm c (replicate n (c , Fwd (here refl))) in
-    Perm.iter p ≡ + n
+    let p = CombS→Iter c (replicate n (c , Fwd (here refl))) in
+    Iter.i p ≡ + n
   preserve-iter c zero = refl
   preserve-iter c (suc n) = cong ℤsuc (preserve-iter c n)
 
   preserve-iterB : ∀ {τ : U} (c : τ ⟷ τ) → (n : ℕ) →
-    let p = CombS→Perm c (replicate (suc n) (c , Bwd (here refl))) in
-    Perm.iter p ≡ -[1+ n ]
+    let p = CombS→Iter c (replicate (suc n) (c , Bwd (here refl))) in
+    Iter.i p ≡ -[1+ n ]
   preserve-iterB c zero = refl
   preserve-iterB c (suc i) = P.trans
     (cong (λ z → z ℤ+ -[1+ 0 ]) (preserve-iterB c i))
     (cong (λ z → -[1+ (suc z) ]) (+-right-identity i))
 
-  P2C2P : ∀ {τ : U} (c : τ ⟷ τ) → (p : Perm c) → (CombS→Perm c (Perm→CombS c p)) ≡c p
-  P2C2P c (perm (+_ zero) p' p'⇔p^i) = eqc refl (2! p'⇔p^i)
-  P2C2P c (perm (+_ (suc n)) p' p'⇔p^i) with CombS→Perm c (replicate n (c , Fwd (here refl))) | P.inspect (λ nn → CombS→Perm c (replicate nn (c , Fwd (here refl)))) n
-  ... | perm i q pf | [ eq ] =
-    let i=n = (P.trans (cong Perm.iter (P.sym eq)) (preserve-iter c n)) in
+  P2C2P : ∀ {τ : U} (c : τ ⟷ τ) → (p : Iter c) → (CombS→Iter c (Iter→CombS c p)) ≡c p
+  P2C2P c (iter (+_ zero) p' p'⇔p^i) = eqc refl (2! p'⇔p^i)
+  P2C2P c (iter (+_ (suc n)) p' p'⇔p^i) with CombS→Iter c (replicate n (c , Fwd (here refl))) | P.inspect (λ nn → CombS→Iter c (replicate nn (c , Fwd (here refl)))) n
+  ... | iter i q pf | [ eq ] =
+    let i=n = (P.trans (cong Iter.i (P.sym eq)) (preserve-iter c n)) in
     eqc (cong ℤsuc i=n) (trans⇔ (id⇔ {c = c} ⊡ pf)
         (trans⇔ (id⇔ ⊡ P.subst (λ j → c ^ i ⇔ c ^ j) i=n (id⇔ {c = c ^ i})) (2! p'⇔p^i)))
-  P2C2P c (perm (-[1+_] n) p' p'⇔p^i) with CombS→Perm c (replicate (suc n) (c , Bwd (here refl))) | P.inspect (λ nn → CombS→Perm c (replicate (suc nn) (c , Bwd (here refl)))) n
-  ... | perm i q pf | [ eq ] = 
-    let i=n = P.trans (cong Perm.iter (P.sym eq)) (preserve-iterB c n) in
+  P2C2P c (iter (-[1+_] n) p' p'⇔p^i) with CombS→Iter c (replicate (suc n) (c , Bwd (here refl))) | P.inspect (λ nn → CombS→Iter c (replicate (suc nn) (c , Bwd (here refl)))) n
+  ... | iter i q pf | [ eq ] = 
+    let i=n = P.trans (cong Iter.i (P.sym eq)) (preserve-iterB c n) in
     eqc i=n (trans⇔ (P.subst (λ j → q ⇔ c ^ j) i=n pf) (2! p'⇔p^i))
 
   C2P2C :  ∀ {τ : U} (c : τ ⟷ τ) → (q : CombS (c ∷: nil)) →
-    interp (Perm→CombS c (CombS→Perm c q)) ⇔ interp q
+    interp (Iter→CombS c (CombS→Iter c q)) ⇔ interp q
   C2P2C c nil = id⇔
-  C2P2C c (x ∷: q) with CombS→Perm c q | (C2P2C c) q
-  C2P2C c ((.c , Fwd (here refl)) ∷: q) | perm (+_ n) p' pf | pf2 = id⇔ ⊡ pf2
-  C2P2C c ((.c , Fwd (here refl)) ∷: q) | perm (-[1+_] zero) p' pf | pf2 =
+  C2P2C c (x ∷: q) with CombS→Iter c q | (C2P2C c) q
+  C2P2C c ((.c , Fwd (here refl)) ∷: q) | iter (+_ n) p' pf | pf2 = id⇔ ⊡ pf2
+  C2P2C c ((.c , Fwd (here refl)) ∷: q) | iter (-[1+_] zero) p' pf | pf2 =
     trans⇔ (linv◎r {c = c}) (id⇔ ⊡ trans⇔ idr◎r pf2) 
-  C2P2C c ((.c , Fwd (here refl)) ∷: q) | perm (-[1+_] (suc n)) p' pf | pf2 =
+  C2P2C c ((.c , Fwd (here refl)) ∷: q) | iter (-[1+_] (suc n)) p' pf | pf2 =
     trans⇔ (trans⇔ idl◎r (linv◎r ⊡ id⇔)) (trans⇔ assoc◎r (id⇔ ⊡ pf2))
-  C2P2C c ((comb , Fwd (there ())) ∷: q) | perm i p' pf | pf2
-  C2P2C c ((.c , Bwd (here refl)) ∷: q) | perm (+_ zero) p' pf | pf2 = id⇔ ⊡ pf2
-  C2P2C c ((.c , Bwd (here refl)) ∷: q) | perm (+_ (suc n)) p' pf | pf2 = 
+  C2P2C c ((comb , Fwd (there ())) ∷: q) | iter i p' pf | pf2
+  C2P2C c ((.c , Bwd (here refl)) ∷: q) | iter (+_ zero) p' pf | pf2 = id⇔ ⊡ pf2
+  C2P2C c ((.c , Bwd (here refl)) ∷: q) | iter (+_ (suc n)) p' pf | pf2 = 
     trans⇔ (trans⇔ idl◎r (rinv◎r ⊡ id⇔)) (trans⇔ assoc◎r (id⇔ ⊡ pf2))
-  C2P2C c ((.c , Bwd (here refl)) ∷: q) | perm (-[1+_] n) p' pf | pf2 =
+  C2P2C c ((.c , Bwd (here refl)) ∷: q) | iter (-[1+_] n) p' pf | pf2 =
     id⇔ {c = ! c} ⊡ (P.subst (λ j → ! c ◎ foldr _◎_ id⟷ (Lmap extract (replicate j (c , Bwd (here refl)))) ⇔ foldr _◎_ id⟷ (Lmap extract q)) (P.sym (+-right-identity n)) pf2)
-  C2P2C c ((comb , Bwd (there ())) ∷: q) | perm i p' pf | pf2
-  C2P2C c ((comb , Neu) ∷: q) | perm i p' pf | pf2 = trans⇔ pf2 idl◎r
+  C2P2C c ((comb , Bwd (there ())) ∷: q) | iter i p' pf | pf2
+  C2P2C c ((comb , Neu) ∷: q) | iter i p' pf | pf2 = trans⇔ pf2 idl◎r
   
 -- we would like to say:
---    Perm[p]≃CombS[p] : ∀ {τ : U} (p : τ ⟷ τ) → Perm p ≃ CombS (p ∷: nil)
+--    Iter[p]≃CombS[p] : ∀ {τ : U} (p : τ ⟷ τ) → Iter p ≃ CombS (p ∷: nil)
 -- but the homotopies have the wrong type (≡ rather than ≡c and ⇔).
 
 -----------
