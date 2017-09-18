@@ -1,6 +1,6 @@
 {-# LANGUAGE GADTs, TypeOperators, DataKinds, RankNTypes #-}
 {-# LANGUAGE TypeFamilies, MultiParamTypeClasses, FlexibleInstances #-}
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE ScopedTypeVariables, AllowAmbiguousTypes #-}
 {-# OPTIONS -Wall #-}
 
 {--
@@ -521,9 +521,48 @@ plusG (GM f) (GM g) = GM h
        assoc4 
     -- Either (Either am cm) (Either bp dp)
 
+{--
+
+T1 = a - b
+T2 = a' - b'
+T3 = c - d
+T4 = c' - d'
+
+a : T1 <=> T2
+a : a + b' <-> a' + b
+
+a' : T1 x T3 <=> T2 x T3
+a' : (a-b) x (c-d) <=> (a'-b') x (c-d)
+a' : (ac+bd - bc+ad) <=> (a'c+b'd - b'c+a'd)
+a' : (ac+bd+b'c+a'd <-> a'c+b'd+bc+ad)
+
+b : T3 <=> T4
+b : c + d' <-> c' + d
+
+b' : T2 x T3 <=> T2 x T4
+b' : (a'-b') x (c-d) <=> (a'-b') x (c'-d')
+b' : (a'c+b'd - b'c+a'd) <=> (a'c'+b'd' - b'c'+a'd')
+b' : (a'c'+b'd+b'c'+a'd' <-> a'c'+b'd'+b'c+a'd)
+
+
+
+--}
+
+a' :: (t1 ~ (a :- b), t2 ~ (a' :- b'), t3 ~ (c :- d)) =>
+      GM t1 t2 -> GM (t1,t3) (t2,t3)
+a' (GM f) = error "todo" -- GM (helper f)
+--  where helper :: R (Either (Pos a) (Neg b')) (Either (Neg a') (Pos b)) ->
+--                  R (Either (Pos () (Neg b)) (Either (Neg a) (Pos b)) 
+--  type TimesG (ap :- am) (bp :- bm) = 
+--    (Either (ap,bp) (am,bm)) :- (Either (am,bp) (ap,bm))
+--        helper = error "todo"
+
+
 timesG :: (a ~ (ap :- am), b ~ (bp :- bm), c ~ (cp :- cm), d ~ (dp :- dm)) =>
           GM a b -> GM c d -> GM (TimesG a c) (TimesG b d)
-timesG = error "try something else!"
+timesG (GM f) (GM g) = GM h
+  where
+    h = error "try something else!"
 
 plusZeroLG :: (a ~ (ap :- am)) => GM (PlusG ZeroG a) a
 plusZeroLG = 
