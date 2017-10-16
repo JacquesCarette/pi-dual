@@ -2,6 +2,11 @@
 \usepackage{fullpage}
 \title{Embracing the Laws of Physics: \\ Reversible Models of Computation}
 \author{Jacques Carette, Roshan James, Amr Sabry}
+
+\newcommand{\amr}[1]{\fbox{Amr says:} \textbf{#1}}
+\newcommand{\jc}[1]{\fbox{Jacques says:} \textbf{#1}}
+\newcommand{\roshan}[1]{\fbox{Roshan says:} \textbf{#1}}
+
 \begin{document}
 \maketitle 
 
@@ -11,8 +16,13 @@
 Abstract models of computation: Turing machine, RAM, Von Neumann
 architecture, $\lambda$-calculus, logic, discrete mathematics
 
+\jc{why are logic and DM listed alongside MoC?}
+
 Cyber-physical systems increasingly common. Are computing foundations
 adequate? 
+\jc{your questioning of MoC below is not about CPS! Should either
+foreshadow the next section 'properly' here, or add a leading 
+example based on CPS to MoC section}
 
 Toffoli 1980: Mathematical models of computation are abstract
 constructions, by their nature unfettered by physical laws. However,
@@ -42,6 +52,22 @@ abstract models.
   and DEMA however
 \end{itemize}
 
+\jc{While all the above are true (and not exhaustive), what I also read
+is that the first two are actually ``the same'' point mostly related
+to scale and distributivity, the 3rd is about inequate models (but not 
+related to physics), while the 4th is about the physics of devices.
+They are not about CPS. And not about Quantum either. So how are these
+motivating a deeper look at how quantum affects our MoC? It feels to me
+that we ought to have a quantum ``example'' here already.}
+
+\jc{What this seems to motivate is to look at our models with respect
+to what we're trying to achieve.  Models are, by definition, abstractions
+that ``abstract away'' irrelevant details. So the point would be that
+some details that we thought were irrelevant really are not.
+So I could see this section motivating a whole programme of
+targetted de-abstraction. This could lead into the focus of this paper
+following one strand, namely one aspect of quantum physics.}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Physics, Computation, and Logic}
 
@@ -65,6 +91,15 @@ mathematics is not executable, and physical laws which invoke that can
 not really be satisfactory. They are references to illusionary
 procedures.  (Landauer 1996 and 1999)
 
+\jc{No access to infinite memory/tape just means that ``infinitary''
+arguments do not go through. The MoC with reversible computation 
+assumes totally reliable operations (but not necessarily infinitely
+many). You leap to ``continuum'' mathematics without justification.
+While QC does use the continuum in non-trivial ways, and physical
+reality is ``discrete'' at the atomic level (but who knows at the
+quantum level?!?), I don't think that's where you want to go here.
+But see below.}
+
 I want to talk about the possibility that there is to be an exact
 simulation, that the computer will do exactly the same as nature. If
 this is to be proved and the type of computer is as I've already
@@ -76,6 +111,16 @@ down into infinitesimal distances, wavelengths to get infinitely
 great, terms to be summed in infinite order, and so forth; and
 therefore, if this proposition is right, physical law is wrong.
 (Feynman 1981)
+
+\jc{In a sense, physics already does this: statistical mechanics.
+Even though the systems under study are explicitly discrete, albeit
+will huge numbers of particules, the behaviour is approximated (!!)
+via a continuous model. Same in economics with Black-Scholes.
+The real problem are those conclusions drawn from such models which
+*require* arbitrarily small values to exist, and even worse, for
+the underlying values (reals) to be connected, i.e. form an actual
+continuum. What Feynman is asking here is 'finiteness of information',
+which is what things like Type-2 computability also ask for.}
 
 \paragraph*{Revise Computer Science.}
 
@@ -119,6 +164,14 @@ nature, it is more reasonable to learn from her. Instead of
 interpreting quantum into logic, we shall interpret logic into
 quantum. (Girard 2007)
 
+\jc{One must be careful with this argument: we have a ``current 
+understanding'' of quantum physics, which could be quite flawed.
+So what we want to do is to learn from thsoe parts of quantum physics
+which seem to be extremely stable (like conservation of information!)
+first. As researchers, we can certainly speculate on it all, but it
+makes sense to vigorously pursue the conclusions one can draw from
+those aspects of (quantum) physics that seem stable.}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conservation of Information}
 
@@ -133,10 +186,29 @@ reversible
 Several pages on reversible logic; reversible family of level 1 and
 level 2 languages (Pi);
 
+\jc{Should we also have a quick survey of other works in reversible
+computation? Most of the other work I know tries to start from 
+well known models of computation or well known programming languages,
+and then adapts them to be reversible. Pi is different in that it 
+starts from the semantic implications of reversibility. Then, because
+it adds types, rather than control-flow (or even data-flow) as its 
+next layer of ``understanding'', this leads to equivalences, isomorphisms,
+etc.  This then leads, quite naturally, to finding that the ``proof
+language'' of semirings (and Rig Groupoids at level 2) is actually a 
+programming language. And it is Pi. This is a neat twist on Curry-Howard
+because CH is about \textbf{inhabitation} only. But with ``conservation
+of information'' as the basis, a different kind of correspondance
+arises; in fact, this one may well be an actual isomorphism.}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Applications}
 
 Perhaps Information Flow Security
+
+\jc{This is where I am still least sure. I am wary of either doing
+new research with such a tight timeline, or of being too speculative.
+If there are papers on this already, perhaps references to them could
+be put here?}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions}
