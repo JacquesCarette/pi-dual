@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[12pt]{article}
 \usepackage{fullpage}
 \title{Embracing the Laws of Physics: \\ Reversible Models of Computation}
 \author{Jacques Carette, Roshan James, Amr Sabry}
@@ -8,27 +8,135 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
+Abstract models of computation: Turing machine, RAM, Von Neumann
+architecture, $\lambda$-calculus, logic, discrete mathematics
+
+Cyber-physical systems increasingly common. Are computing foundations
+adequate? 
+
+Toffoli 1980: Mathematical models of computation are abstract
+constructions, by their nature unfettered by physical laws. However,
+if these models are to give indications that are relevant to concrete
+computing, they must somehow capture, albeit in a selective and
+stylized way, certain general physical restrictions to which all
+concrete computing processes are subjected.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Models of Computation}
 
-Computation in the ``real world'' vs. idealized computation in abstract models
+Computation in the ``real world'' vs. idealized computation in
+abstract models. 
+\begin{itemize}
+\item Mathematical abstraction of sorting is well-understood; sorting
+  petabytes of data violates many of the assumptions: hardware
+  component failure frequent, global synchronization impossible;
+  consistency must be eventual; etc. 
+\item Mathematical abstraction of sortedness property: easy; in the
+  real world with petabytes of evolving data; it is not clear that it
+  is even possible to check sortedness; easy to get inconsistent
+  results
+\item Noise does not exist in our mathematical abstractions of
+  computation; essential use in differential privacy
+\item Mathematical models of secure computing typically ignore power
+  consumption, electromagnetic signatures; actual attacks based on DPA
+  and DEMA however
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Physics, Computation, and Logic}
 
-Conflict between Church-Turing thesis, textbook quantum mechanics, and RSA. 
+Conflict between Church-Turing thesis, textbook quantum mechanics, and
+RSA: Either Shor’s algorithm is not ``natural''. (Textbook quantum
+mechanics is wrong); or, Shor’s algorithm is ``natural'' and there is
+no classical counterpart. (There are ``natural'' computing models that
+are exponentially faster than the Turing Machine); or, there is an
+efficient classical factoring algorithm. (Possible but surprising); At
+least one of these wild claims is true!!!
 
-Conflict between quantum mechanics and logic.
+Conflict between quantum mechanics and logic. Possibilities:
+
+\paragraph*{Revise quantum mechanics}.
+
+The mathematician's vision of an unlimited sequence of totally
+reliable operations is unlikely to be implementable in this real
+universe.  But the real world is unlikely to supply us with unlimited
+memory or unlimited Turing machine tapes. Therefore, continuum
+mathematics is not executable, and physical laws which invoke that can
+not really be satisfactory. They are references to illusionary
+procedures.  (Landauer 1996 and 1999)
+
+I want to talk about the possibility that there is to be an exact
+simulation, that the computer will do exactly the same as nature. If
+this is to be proved and the type of computer is as I've already
+explained, then it's going to be necessary that everything that
+happens in a finite volume of space and time would have to be exactly
+analyzable with a finite number of logical operations. The present
+theory of physics is not that way, apparently. It allows space to go
+down into infinitesimal distances, wavelengths to get infinitely
+great, terms to be summed in infinite order, and so forth; and
+therefore, if this proposition is right, physical law is wrong.
+(Feynman 1981)
+
+\paragraph*{Revise Computer Science.}
+
+Another thing that had been suggested early was that natural laws are
+reversible, but that computer rules are not. But this turned out to be
+false; the computer rules can be reversible, and it has been a very,
+very useful thing to notice and to discover that. This is a place
+where the relationship of physics and computation has turned itself
+the other way and told us something about the possibilities of
+computation. So this is an interesting subject because it tells us
+something about computer rules…  (Feynman 1981)
+
+Turing hoped that his abstracted-paper-tape model was so simple, so
+transparent and well defined, that it would not depend on any
+assumptions about physics that could conceivably be falsified, and
+therefore that it could become the basis of an abstract theory of
+computation that was independent of the underlying physics. ‘He
+thought,’ as Feynman once put it, ‘that he understood paper.’ But he
+was mistaken. Real, quantum-mechanical paper is wildly different from
+the abstract stuff that the Turing machine uses. The Turing machine is
+entirely classical, and does not allow for the possibility the paper
+might have different symbols written on it in different universes, and
+that those might interfere with one another.  (Deutsch 1985)
+
+Ed Fredkin pursued the idea that information must be finite in
+density. One day, he announced that things must be even more simple
+than that. He said that he was going to assume that information itself
+is conserved. ``You’re out of you mind, Ed.'' I pronounced. ``That’s
+completely ridiculous. Nothing could happen in such a world. There
+couldn’t even be logical gates. No decisions could ever be made.'' But
+when Fredkin gets one of his ideas, he’s quite immune to objections
+like that; indeed, they fuel him with energy. Soon he went on to
+assume that information processing must also be reversible — and
+invented what’s now called the Fredkin gate. (Minsky 1999)
+
+Even revise the laws of thought themselves: In other terms, what is so
+good in logic that quantum physics should obey? Can't we imagine that
+our conceptions about logic are wrong, so wrong that they are unable
+to cope with the quantum miracle? […] Instead of teaching logic to
+nature, it is more reasonable to learn from her. Instead of
+interpreting quantum into logic, we shall interpret logic into
+quantum. (Girard 2007)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conservation of Information}
 
-Pi languages
+A physical principle of computation
+
+No creation of information
+No duplication of information
+
+All programs, proofs, deductions are equivalences, isomorphisms,
+reversible
+
+Several pages on reversible logic; reversible family of level 1 and
+level 2 languages (Pi);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Application: Information Flow Security}
+\section{Applications}
 
-??
+Perhaps Information Flow Security
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions}
