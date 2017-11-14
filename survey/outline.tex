@@ -1,11 +1,14 @@
 \documentclass{article}
 \usepackage{fullpage}
+\usepackage{url}
 \title{Embracing the Laws of Physics: \\ Reversible Models of Computation}
 \author{Jacques Carette, Roshan P. James, Amr Sabry}
 
 \newcommand{\amr}[1]{\fbox{Amr says:} \textbf{#1}}
 \newcommand{\jc}[1]{\fbox{Jacques says:} \textbf{#1}}
 \newcommand{\roshan}[1]{\fbox{Roshan says:} \textbf{#1}}
+
+\newcommand{\lcal}{\ensuremath{\lambda}-calculus}
 
 \begin{document}
 \maketitle
@@ -138,6 +141,598 @@ abstract models.
 % So I could see this section motivating a whole programme of
 % targeted de-abstraction. This could lead into the focus of this paper
 % following one strand, namely one aspect of quantum physics.}
+
+\begin{small}
+\begin{quote}
+``Turing hoped that his abstracted-paper-tape model was so simple, so
+  transparent and well defined, that it would not depend on any
+  assumptions about physics that could conceivably be falsified, and
+  therefore that it could become the basis of an abstract theory of
+  computation that was independent of the underlying physics.  `He
+  thought,' as Feynman once put it, `that he understood paper.' But he
+  was mistaken.''
+\end{quote}
+\hfill --- \emph{The Fabric of Reality}~\cite{deutsch}
+\end{small}
+
+%%%
+\subsection{Software: Foundations and Applications}
+
+We begin with a bold thesis: \textit{common computational models
+  embody various physical assumptions that are plainly
+  \emph{wrong}}. As we discuss in the remainder of this chapter, we
+are not the first to make such a statement. We do, however, make two
+novel contributions:
+\begin{itemize}
+\item we argue on pragmatic terms that our physically incorrect
+  computational abstractions contribute significantly to the
+  ``software crisis'' and that they inhibit advances in new emerging
+  application domains; 
+\item we identify the physical principle of \textbf{conservation of
+  information} as a simple twist to our computational models that has,
+  as we demonstrate in this book, far reaching theoretical and
+  practical positive consequences to the science of computing.
+\end{itemize}
+
+To appreciate the first point, we examine various textbook abstractions and
+contrast them with the actual (i.e., physical) computational situations to
+which they correspond. Generally speaking, we find that textbook algorithms
+differ from ``real programs'' in their assumptions about their environment of
+operation. In textbook abstractions, the surrounding environment which
+includes, for example, the data on which the algorithm operates is considered
+static and well-defined. In the real world, this environment is dynamic and
+noisy. 
+
+\paragraph*{Sorting.} 
+One might consider sorting to be a fairly simple ``solved'' problem. Indeed
+textbook sorting algorithms have been formally specified, proved correct,
+analyzed in the best case, worst case, average case, and are even taught in
+many high school curricula. A beginner programmer can readily implement such
+algorithms to sort ``real data'' --- or can he?
+
+Under some assumptions, the answer is clearly yes. However, a moment's
+reflection should convince us that the textbook algorithm is too idealized
+and that sorting real data in the real world is still a challenge!  Consider
+the following quote posted on the Google research blog in 2011:
+\begin{quote}
+  Almost three years ago we announced results of the first ever ``petasort''
+  \ldots . It completed in just over six hours on 4000 computers. Recently we
+  repeated the experiment using 8000 computers. The execution time was 33
+  minutes, an order of magnitude improvement~\cite{petasort}.
+\end{quote}
+What happens at the petabyte scale that makes sorting such a
+challenge? The answer is simply that ``the real world happens!'' In
+the real world, many of the idealized mathematical assumptions
+embodied in our computational models are invalidated. For example,
+proper hardware functioning can no longer be taken for granted as
+component failure becomes the norm, global synchronization becomes
+impossible, determinism becomes expensive to maintain, speculative
+execution becomes necessary, global consistency becomes impractical to
+maintain, and eventual consistency is accepted; etc. There have been
+many attempts to taken some of these issues into account in various
+computational models but these attempts are arguably not going far
+enough by not questioning the physical assumptions in our
+computational models and re-thinking our very foundations.
+
+\paragraph*{Binary Search.} 
+In the idealized textbook setting, the binary search algorithm has the
+precondition that the data is sorted. Even if we just have a few thousands
+items, na\"\i vely checking sortedness (in linear time) defeats the purpose of
+the efficient (logarithmic) binary search. If we have petabytes of
+(changing!) data, is it even possible, in principle, to check sortedness? In
+fact, in this dynamic situation, one is likely to get inconsistent
+results. In other words, the very idea of pre-conditions and post-conditions
+that can be checked statically appears to be at odds with computing in the
+``real world.''
+
+\paragraph*{Security.} 
+Proving the security properties of an abstract mathematical model is great
+(and necessary). This can be used to conclude that an isolated device is
+secure but it is, however, not that relevant for applications based on RFID
+devices which are targeted via DPA (Differential Power Analysis)~\cite{dpa}
+and and DEMA (Differential Electromagnetic Analysis) attacks. There are
+billions of such devices with applications like electronic passports. Power
+consumption and electromagnetic properties are abstracted away in our
+computational model.
+
+\paragraph*{Privacy.} 
+The Internet has created major concerns about privacy. Differential
+privacy~\cite{dwork:differential} states that one can achieve privacy
+by perturbing the output of a deterministic program by a suitable
+amount of noise. The very idea of noise is abstracted away in our
+computational and communication models and the amount of noise is a
+non-existent abstraction in our typical computational models.
+
+\paragraph*{A Crisis?}
+Is this tension between theory and practice a crisis?  We argue:
+yes. Computer science theory is founded on abstractions of the real
+world. These abstractions are necessary to shield us from details of
+technology, noise, errors, etc. and they have served us well until
+recently.  It is, however, becoming more and more evident that
+computer science theory is becoming less and less relevant to
+practice, and hence it is important to revisit our abstractions from a
+foundational point of view.
+
+%%%
+\subsection{Our Origins} 
+ 
+Until Alan Turing's seminal work in 1936, computation was an activity
+of the human mind; much like love and peace. While aspects of the idea
+predated the twentieth century, it was Turing who established the idea
+that computation has a formal interpretation and that all
+computability can be captured within a formal system. Implicit in this
+achievement however is the idea that abstract models of computation
+are just that -- \emph{abstractions of computation realized in the
+  physical world.}  In fact, one of the major achievements of Computer
+Science has been the development of abstract models of computation
+that shield the discipline from the underlying technology. As
+effective as these models have been, one must note, however, that they
+\emph{embody several implicit physical assumptions}.  As Tommaso
+Toffoli explains in his influential 1980 paper:
+
+{\begin{quote} Mathematical models of computation are abstract
+  constructions, by their nature unfettered by physical laws. However,
+  if these models are to give indications that are relevant to
+  concrete computing, they must somehow capture, albeit in a selective
+  and stylized way, certain general physical restrictions to which all
+  concrete computing processes are subjected~\cite{Toffoli:1980}.
+\end{quote}}
+
+Our logic of programs and our hardware are based on Boolean Logic. We go back
+to Boole's 1853 book entitled \emph{An Investigation of the Laws of Thought,
+  on which are Founded the Mathematical Theories of Logic and
+  Probabilities}. The opening sentence of Ch.~1 is:
+\begin{quote}
+  The design of the following treatise is to investigate the fundamental laws
+  of those operations of the mind by which reasoning is performed; \ldots
+\end{quote}
+A few chapters later, we find:
+\begin{quote}
+  \textbf{Proposition IV.}  That axiom of metaphysicians which is termed the
+  principle of contradiction, and which affirms that it is impossible for any
+  being to possess a quality, and at the same time not to possess it, is a
+  consequence of the fundamental law of thought, whose expression is $x^2 =
+  x$.
+\end{quote}
+A detailed historical analysis of Boole's ideas are beyond the scope of this
+book. The above quotes, however, should convey the idea that our hardware is
+based on assumptions that Boole found as reasonable laws in 1853. 
+
+Our theory of computation and complexity is based on the Turing Machine. We
+go back to Turing's 1936 article entitled \emph{On Computable Numbers, with
+  an Application to the Entscheidungsproblem,}. The opening sentence of
+Sec. 1 is:
+\begin{quote}
+  We have said that the computable numbers are those whose decimals are
+  calculable by finite means \ldots the justification lies in the fact that
+  the human memory is necessarily limited.
+\end{quote}
+In Sec. 9, we find:
+\begin{quote}
+I think it is reasonable to suppose that they can only be squares
+whose distance from the closest of the immediately previously observed
+squares does not exceed a certain fixed amount.
+\end{quote}
+Again, a detailed historical analysis of Turing's ideas are beyond the scope
+of this book. The above quotes should again convey the idea that our theories
+of computation and complexity are based on some physical assumptions that
+Turing found reasonable in 1936. When translated to physical language, the
+assumptions embody what is known as the ``Bekenstein bound:'' which is an
+upper limit on the amount of information that can be contained within a given
+finite region of space.
+
+One can examine more and more cases but the general story should be
+clear. Our abstractions were made up based on a certain understanding of the
+laws of physics. And since, as we argue, our abstractions are becoming at
+odds with practice, it is time to revisit these abstractions. In the words of
+Girard:
+\begin{quote}
+  In other terms, what is so good in logic that quantum physics should obey?
+  Can't we imagine that our conceptions about logic are wrong, so wrong that
+  they are unable to cope with the quantum miracle? 
+  \\
+  Instead of teaching logic to nature, it is more reasonable to learn
+  from her. Instead of interpreting quantum into logic, we shall
+  interpret logic into quantum (Girard 2007).
+\end{quote}
+Indeed one should take the physical principles underlying quantum mechanics,
+the most successful physical theory known to us and adapt computation to
+``learn'' from these principles. To illustrate the depth of our crisis, Scott
+Aaronson, Umesh Vazirani, and others have proposed the following puzzle. 
+
+One of these wild claims must be true!:
+\begin{itemize}
+\item the extended Church-Turing thesis is false, or
+\item quantum physics is false, or
+\item there is an efficient classical algorithm for factoring
+\end{itemize} 
+Indeed, if quantum physics is correct then there is an efficient quantum
+algorithm for factoring (Shor). If there is no efficient classical algorithm
+for factoring then the extended Church-Turing thesis is false. 
+
+Indeed, conventional classical models of computation, including boolean
+logic, the Turing machine, and the $\lambda$-calculus, are founded on
+primitives which correspond to \emph{irreversible} physical processes which
+gratuitously erase information.  For example, a \emph{nand} gate is an
+irreversible logical operation in the sense that its inputs cannot generally
+be recovered from observing its output, and so is the operation of overriding
+a cell on a Turing machine tape with a new symbol, and so is a
+$\beta$-reduction which typically erases or duplicates values in a way that
+is destructive and irreversible.
+
+The irreversible abstractions we choose as the basis of our most
+primitive models of computing are at ``odds'' with the underlying
+reversible physical reality. The information theoretic underpinnings
+of physics is best understood through the remarkable \emph{Landauer
+  principle}~\cite{Landauer:1961}. Landauer, through his analysis of
+Maxwell's Demon, established the idea that \emph{information is a
+  physical quantity} in much the sense that one would think of an
+electron as a physical quantity, and that a certain minimum amount of
+thermodynamic work has to be carried out to erase one bit of
+information. Experimental verification of the Landauer principle
+happened in recent years~\cite{berut2012experimental}. If information
+has a physical significance, then it is subject to conservation laws
+as mass and energy are. 
+
+To make this idea concrete and to provide a taste of the applications
+it opens, consider a tiny 2-bit password = \verb|"10"|. The password
+checker looks like:
+
+%subcode{code}
+%! language = Haskell
+% check-password (guess) = 
+%   if guess == "10"
+%   then True
+%   else False
+
+One can ask how much information is leaked by this program assuming
+the attacker has no prior knowledge except that the password is 2
+bits, i.e., the four possible 2-bits are equally likely. If the
+attacker guesses \verb|"10"| (with probability $1/4$) the password (2
+bits) is leaked. If the attacker guesses one of the other choices
+(with probability $3/4$) the number of possibilities is reduced from 4
+to 3, i.e., the attacker learns $\log{4} - \log{3}$ bits of
+information. So in general the attacker learns\footnote{If the
+  password is 8 restricted ASCII characters (6 bits), the attacker
+  learns 0.00001 bits in the first probe.}:
+\[\begin{array}{ll}
+   &  1/4 * 2 + 3/4 (\log{4} - \log{3}) \\
+  =&  1/4 \log{4} + 3/4 \log{4/3} \\
+  =&  - 1/4 \log{1/4} - 3/4 \log{3/4} \\
+  \sim& 0.8 \mbox{~bits~in~the~first~probe}
+\end{array}\]
+
+One can alternatively look at the situation by viewing the input as a
+random variable with 4 possibilities and a uniform distribution (i.e.,
+with 2 bits of information). The output is another random variable
+with 4 possibilities but with the distribution
+$\{ (True, 1/4), (False, 3/4) \}$ which contains 0.8 bits of
+information. Thus 2 input bits of information were given to the
+function and only 0.8 were produced. Where did the 1.2 bits of
+information go? Once we accept the thesis that information is a
+physical entity this question cannot be ignored.
+
+The Landauer Principle states that erasing information requires
+energy. In other words, the password checking function must have
+erased 1.2 bits during its calculation which dissipate as heat in any
+physical realization of the function. In conventional models of
+computation, this erasure is \emph{implicit}, i.e., it occurs as a
+side effect of calculation. A big part of our development will be
+concerned with making that erasure explicit.
+
+The discussion in this section suggests that our foundations are really in
+need of revision. There are many principles we can embrace.  We will start
+with one, ``\textbf{conservation of information}'' and follow its
+consequences, which will turn out to be far reaching.
+
+%%%
+\subsection{Equalities as Isomorphisms}
+
+\begin{quote}
+  The laws of physics are essentially algorithms for calculation. These
+  algorithms are significant only to the extent that they are executable in
+  our real physical world. Our usual laws of physics depend on the
+  mathematician's real number system. With that comes the presumption that
+  given any accuracy requirement, there exist a number of calculations steps,
+  which if executed, will satisfy that accuracy requirement. But the real
+  world is unlikely to supply us with unlimited memory of unlimited Turing
+  machine tapes, Therefore, continuum mathematics is not executable, and
+  physical laws which invoke that can not really be satisfactory. They are
+  references to illusionary procedures. Rolf Landauer, The physical nature of
+  information, Physics Letters A 217 (1996) pp. 188-193:
+\end{quote} 
+
+When a physical law equates two quantities like force and the product of mass
+and acceleration, a deep understanding of the law demands that we interpret
+the equality as an isomorphism, i.e., as two processes, one in each
+direction, that transform one side of the equation to the other. In fact, the
+same insight applies to constructive mathematics and its homotopy
+interpretation. There is a constructive character to equality that is at the
+heart of the constructive approach to mathematics. 
+
+Translated to the computational world, the essence of our thesis is this:
+\emph{to speak of equality is to speak of computation}. This view is partly
+familiar from the study of various systems of equalities, called
+\emph{calculi}, as models of computation. The \lcal, for instance, is a
+system of equalities over a set of syntactic $\lambda$-terms such that they
+result in a model of computation. We distill this idea to its most primitive
+form. We show that there is computational content not just in certain
+specific calculi, such as the \lcal, but even in our most primitive notion of
+equality -- isomorphisms of finite sets.
+
+The equalities we speak of are not \emph{a priori} extensional
+notions, but are intensional specifications. To talk about two things
+being equal, one has to show \emph{how they are equal} wherein this
+\emph{how} is an intensional definition of a translation from
+witnesses of the first to witnesses of the second and vice versa,
+i.e. they are programs. Equivalences that do not have operational
+content do not exist for us.
+
+One may ask, what is the point of such a rarefied spartan view of
+computation? How does this compare with more conventional models of
+computation?  \emph{What is the point?} 
+
+\begin{enumerate}
+
+\item The result is computation in its purest form: Programs written
+  in this model are witnesses of equalities. In the process of
+  computing these programs neither gain nor lose information. We get a
+  crisp notion of quantitative information content of programs and
+  show that \emph{computation preserves information}.
+
+\item From the perspective of Quantum Physics, the physical world is
+  one where every fundamental interaction is essentially reversible
+  and various quantities such as energy, mass, angular momentum are
+  conserved. Computation is no longer at odds with
+  physics. Conservation of information and logical reversibility are
+  intrinsic properties of computation as well. Further, various
+  category theoretic models such as dagger symmetric traced monoidal
+  categories studied for Quantum Physics are also the categorical
+  models for computation based on isomorphisms.
+
+\item Irreversibility is a computational effect: By embracing
+  irreversible physical primitives, models of computation have also
+  implicitly included a class of computational effects which we call
+  \emph{information effects}. A consequence of our careful treatment
+  of information, is that we effectively capture the gap between
+  reversible computation and irreversible computation using a
+  type-and-effect system.
+
+\end{enumerate}
+
+What do we mean when we talk about intentional specification of
+equality leading to an information preserving model of computation?
+The equalities we talk of are processes to transform one thing to the
+other. For example, if one were to believe that apples and oranges
+were equal then one would have to show how any given apple can be
+transformed to an orange i.e. witness of apple-hood get transformed to
+witnesses of orange-hood (and vice versa). This is inherently
+different from an extensional notion of equality such as
+\emph{knowledge is power} and have a more operational sense. Equality
+in this sense acts more like the the more general notion of
+\emph{isomorphism} as probably best explained in the paper
+``\emph{When is one thing equal to some other
+  thing?}''~\cite{mazur2008one}.
+
+In our formalism, we are not concerned with fruit but with very simple
+things, namely numbers and sets. When we talk of a set of five apples,
+we are not concerned about the individuality of the apples that
+constitute the set. Rather, each apple in the set has the same status
+as any other apple and we care about the individual apples only to the
+extent that we can tell them apart to count five distinct ones. We
+care about the abstract idea of fiveness and its equality with any
+other abstract idea of fiveness.  When used as types, sets take the
+role of possibility spaces -- we are no longer talking about a set of
+five apples, but talking of one apple out of a possible five. This is
+also where the switch from sets to information happens: When one apple
+out of five is identified, it corresponds to the information to
+discriminate between five choices. Clearly a choice of one out of ten
+presents more information in the sense that it is a more
+discriminating choice. When a computation promises an output of a
+certain type, the resultant value is a witness of one choice out of
+several. This is the sense in which we are concerned with equalities
+of sets.
+
+Programs in our model are built from descriptions of equalities or
+sets/numbers. These are the familiar laws of arithmetic or logic:
+\emph{Commutativity.} The generalized notion of swapping,
+i.e. $a*b=b*a$ and $a+b=b+a$.  
+\emph{Associativity.} The
+generalized notion of grouping, i.e. $a*(b*c)=(a*b)*c$ and
+$a+(b+c)=(a+b)+c$.
+\emph{Identity.} Multiplication by 1 and addition with 0,
+  i.e. $a*1=a$ and $a+0=a$.
+\emph{Distributivity.} Multiplication distributes over addition
+  and cancels at zero, i.e. $a*(b+c)=a*b+a*c$ and $a*0=0$.
+\emph{Cancellation.} Cancellation is the idea that equal things
+  on both sides of a equality can be canceled out, i.e. $a+b=a+c$
+  implies $b=c$, and is referred to as a \emph{trace} in category
+  theory~\cite{joyal1996traced}.
+
+How, one may ask, does this form a computational model? Even in very
+simple computational models such as the SK combinatory basis, the
+combinator K provides the basis of choice/conditional by deleting an
+argument and the combinator S provides the basis for iteration by
+duplicating an argument. As we will see, distributivity gives us
+conditionals and trace gives us iteration, albeit in a logically
+reversible manner.  In Chs.~\ref{ch:pi} and~\ref{ch:pi0} we work out
+the details of the computational model, show that it is Turing
+complete and develop programs in it including several simple numeric
+operations, algebraic manipulations of trees and a meta-circular
+interpreter (see Ch.~\ref{ch:interpreters}).
+
+More formally, we develop an information preserving model of
+computation, wherein the process of computing does not gain or lose
+information. Our model arises from a computational interpretation of
+type isomorphisms with iso-recursive types and trace. This can
+equivalently be described as computing a commutative semi-ring with
+cancellation or as a traced dagger symmetric bimonoidal category. The
+category has a groupoid structure and all computations are logically
+reversible. 
+
+To summarize, the most primitive notion of equality that is available
+to us -- that of isomorphisms -- already contains the notion of
+computation. The resulting computational model exposes the fine
+structure of how computation handles information. We believe that such
+a model of computing is foundational and we are only beginning to
+understand its applications and full potential. In conclusion, let us
+quote Paul Blain Levy's fine advocacy slogan: Once the fine structure
+has been exposed, why ignore it?
+
+%%%
+\subsection{Information}
+
+We can now describe information preservation in a precise sense.  Let
+`$b$' be a (not necessarily finite) type whose values are labeled
+$b^1, b^2, \ldots$. Let $\xi$ be a random variable of type $b$ that is
+equal to $b^i$ with probability $p_i$. The entropy of $\xi$ is defined
+as $-\sum p_i \log{p_i}$~\cite{Shannon1948}.  Consider a function
+$f : b_1 \rightarrow b_2$ where $b_2$ is a (not necessarily finite)
+type whose values are labeled $b_2^1, b_2^2, \ldots$. The output
+entropy of the function is given by $- \sum q_j \log{q_j}$ where $q_j$
+indicates the probability of the output of the function to have value
+${b_2}^j$. We say a function is \emph{information-preserving} if its
+output entropy is equal to the entropy of its input. See
+Ch.~\ref{ch-metalang} for details.
+
+Operations that change the information content of programs have a
+special status. We call them \emph{information effects} and they are
+encapsulated using an arrow meta-language in much the same way that
+one would encapsulate other computational effects in the \lcal\ using a
+monadic metalanguage.  The treatment of information effects is
+analogous to open and closed systems in physics. Closed physical
+systems conserve mass and energy and are the basic unit of study in
+physics. Pure computations that do not have information effects are
+like closed physical systems. They describe equalities.  Open systems
+interact with their environment, possibly exchanging mass or
+energy. These interactions may be thought of as \emph{effects} that
+modify the conservation properties of the system. Computations with
+information effects are much like open systems and they can be
+converted into pure computations by making explicit the surrounding
+information environment that they interact with. 
+
+Three things follow: (1) We capture the gap between reversible and
+irreversible computation with a type-and-effect system. (2)
+Categorically speaking, information effects turn monoidal categories
+into ones that have a cartesian structure corresponding to
+conventional computation.  (3) We show how conventional irreversible
+computation such as the \lcal\ can be embedded into this model, such
+that the embedding makes the implicit information effects of \lcal\
+explicit.  As a consequence of this approach, many applications in
+which information manipulation is computationally significant are put
+within the reach of our conceptual model of computation. Such
+applications include quantitative information-flow
+security~\cite{myerssab}, differential
+privacy~\cite{dwork:differential}, energy-aware
+computing~\cite{1324180,605411}, VLSI
+design~\cite{Macii:1996:ECE:874066.875828}, and biochemical models of
+computation~\cite{bio}. 
+
+Ch.~\ref{ch:piee} focuses on work in progress. It deals with the
+duality of computation in the setting of information
+preservation. Andrzej Filinski's work on the symmetric
+\lcal\ established the fascinating connection that values are dual to
+continuations, functions are dual to delimited continuations and
+established the duality of call-by-name and call-by-value evaluation
+strategies~\cite{Filinski:1989:DCI:648332.755574}. We explore
+Filinski-style duality in the setting of our information preserving
+model of computing. Here duality does not appear as one De
+Morgan-style dualizing $\neg$ operator, but as two distinct dualizing
+operations -- negation and division. This results in a crisp semantics
+for negative and fractional types and the resulting system has a
+equational formalism in zero-totalized fields or
+meadows~\cite{DBLP:journals/tcs/BergstraHT09}. Computational analogues
+of physical phenomena such as superposition and entanglement appear in
+the resulting semantics.
+
+Talk about conservation of information in biology, computer science,
+evolutionary computing, and search. (See
+\url{http://www.evolutionnews.org/2012/08/conservation_of063671.html}.
+
+%%%
+\subsection{Technical Overview}
+
+The technical development derives from ideas which are implicit in the
+works of \cite{Toffoli:1980, Zuliani:2001:LR,
+  malacaria2007assessing,ClarkHM07,Ghica:2007:GSS:1190216.1190269}.
+(1) Functions whose output entropy is equal to their input entropy are
+information preserving functions.  (2) A function
+$f : b_1 \rightarrow b_2$ is \emph{logically reversible} if there
+exists an inverse function $f^{\dagger}$ such that for any input
+$v_1:b_1$ if there exists $v_2:b_2$ such that $f(v_1)=v_2$ \emph{iff}
+$f^{\dagger}(v_2)=v_1$.  (3) Logically reversible functions are
+information preserving.
+
+To summarize:
+\begin{enumerate}
+\item Based on isomorphisms of sum and product
+  types~\cite{Fiore:2004}, we develop a strong normalizing model of
+  computing, which we call $\Pi$, that is logically reversible and
+  information preserving. Every computation expressible in $\Pi$
+  is an isomorphism.
+
+\item We extend $\Pi$ with isorecursive type and trace operators from
+  category theory to obtain $\Pi$. Every computation expressible in
+  $\Pi$ is a partial isomorphism --- i.e. the system admits
+  non-termination. $\Pi$ is Turing complete while being information
+  preserving and logically reversible.
+
+\item We develop the categorical semantics of these
+  models~\cite{rc2011}. \amr{Mention n-categories.} We also develop
+  a graphical notation for programming in these models that
+  reminiscent of Penrose diagrams for
+  categories~\cite{selinger-graphical}, Geometry of Interaction (GoI)
+  machines and Proof
+  Nets~\cite{Mackie2011,DBLP:conf/popl/Mackie95}. In the graphical
+  notation, computation is modeled by the flow of particles in a
+  circuit.
+
+\item Since these new models are substantially different from \lcal\
+  or familiar high-level languages, a point of concern is how one can
+  effectively develop programs in them.  We address this by presenting
+  a straightforward technique for deriving $\Pi$ programs by
+  systematically translating logically reversible small-step abstract
+  machines~\cite{isoint}. Complex programs can be devised in this way;
+  we demonstrate the derivation of a meta-circular interpreter for
+  $\Pi$.
+
+\item We develop an arrow meta-language to encapsulate information
+  effects. This metalanguage serves to encapsulate effects, in much
+  the same way that traditional arrows or monads serve to encapsulate
+  effects over the \lcal.
+
+\item We show how a conventional irreversible model can be expressed
+  in our model. We compile the first-order fragment of typed \lcal\
+  extended with sums, products and loops to $\Pi$. This compilation is
+  interesting for two reasons: (1) it exposes the implicit information
+  effects of \lcal\ in the compilation to $\Pi$ and (2) the
+  compilation of $\Pi$ to $\Pi$ shows that information effects can be
+  erased by treating them as interactions with an explicit information
+  environment.
+
+\item We develop the notion of `duality' in $\Pi$ which gives us not
+  one duality (like in linear logic or Filinski's symmetric
+  \lcal~\cite{Filinski:89}), but two notions of duality -- an additive
+  duality and a multiplicative duality. This gives a crisp semantics
+  for negative and fractional types in the context of $\Pi$.
+
+\end{enumerate}
+
+Several intriguing areas of exploration remain and the book concludes
+with discussion of some of these, along with other possible
+applications (see Ch.~\ref{ch:discussion}).  Of these, the field of
+reversible and Quantum computing is closely related and we survey
+several connections in depth.  The exact connection between $\Pi$ and
+linear logic~\cite{Girard87tcs} is not fully understood though it is
+clear that both systems capture related but different notions of
+resource usage. A closely related area is the connection with duality
+of computation \cite{Filinski:89, DBLP:conf/icfp/CurienH00,
+  10.1109/LICS.2010.23,Wadler:2003} --- i.e., the quest for a unifying
+framework between `computations', values, continuations and their
+logical counterparts. The investigation of duality gives rise to
+negative and fractional types which have an intuitive semantics and
+are reminiscent of negative information flow, superposition and
+entanglement from Quantum Physics~\cite{piee}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Physics, Computation, and Logic}
@@ -286,4 +881,7 @@ Perhaps Information Flow Security
 \section{Conclusions}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{plainnat}
+\pagestyle{headings}
+\bibliography{cites}
 \end{document}
