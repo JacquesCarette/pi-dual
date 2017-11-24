@@ -161,7 +161,7 @@ A few chapters later, we find:
 A detailed historical analysis of Boole's ideas are beyond our scope.
 The above quotes, however, should convey the idea that our notions of
 computation generally date back to ideas that were thought reasonable
-before \tilde 1900.
+before \textasciitilde 1900.
 
 It is conventional to base
 the theory of computation and complexity on the Turing Machine.
@@ -314,10 +314,40 @@ We will follow its consequences, which will turn out to be far reaching.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conservation of Information}
 
-A physical principle of computation
+\begin{quote}
+  The laws of physics are essentially algorithms for calculation. These
+  algorithms are significant only to the extent that they are executable in
+  our real physical world. Our usual laws of physics depend on the
+  mathematician's real number system. With that comes the presumption that
+  given any accuracy requirement, there exist a number of calculations steps,
+  which if executed, will satisfy that accuracy requirement. But the real
+  world is unlikely to supply us with unlimited memory of unlimited Turing
+  machine tapes, Therefore, continuum mathematics is not executable, and
+  physical laws which invoke that can not really be satisfactory. They are
+  references to illusionary procedures. Rolf Landauer, The physical nature of
+  information, Physics Letters A 217 (1996) pp. 188-193:
+\end{quote}
 
-No creation of information
-No duplication of information
+A high level approach to conservation of information would proceed
+as follows:
+\begin{enumerate}
+\item Create a means to measure information.
+\item Show that this measure is sound with respect to our current understanding
+of what information ought to be.
+\item Assert that whatever ``quantity'' of information a system has, must
+remain invariant throughout the lifetime of the system.
+\end{enumerate}
+
+Certainly, whatever our notion of information, it can neither be created,
+duplicated, nor erased. Of course, if we make our notion of information
+too rigid, it will be impossible to even \textbf{modify} it! For computation
+to occur, modification must be possible.  But of what kind?
+
+\jc{wavefront}
+
+Example : $2+5 = 5+2$. Green and Red apples versus apples. What
+can we observe? If we can't observe something, then we call them
+the same (Leibniz).
 
 All programs, proofs, deductions are equivalences, isomorphisms,
 reversible
@@ -344,28 +374,6 @@ isomorphism.
 \section{Reversibility}
 
 \subsection{Equalities as Isomorphisms}
-
-\begin{quote}
-  The laws of physics are essentially algorithms for calculation. These
-  algorithms are significant only to the extent that they are executable in
-  our real physical world. Our usual laws of physics depend on the
-  mathematician's real number system. With that comes the presumption that
-  given any accuracy requirement, there exist a number of calculations steps,
-  which if executed, will satisfy that accuracy requirement. But the real
-  world is unlikely to supply us with unlimited memory of unlimited Turing
-  machine tapes, Therefore, continuum mathematics is not executable, and
-  physical laws which invoke that can not really be satisfactory. They are
-  references to illusionary procedures. Rolf Landauer, The physical nature of
-  information, Physics Letters A 217 (1996) pp. 188-193:
-\end{quote}
-
-When a physical law equates two quantities like force and the product of mass
-and acceleration, a deep understanding of the law demands that we interpret
-the equality as an isomorphism, i.e., as two processes, one in each
-direction, that transform one side of the equation to the other. In fact, the
-same insight applies to constructive mathematics and its homotopy
-interpretation. There is a constructive character to equality that is at the
-heart of the constructive approach to mathematics.
 
 Translated to the computational world, the essence of our thesis is this:
 \emph{to speak of equality is to speak of computation}. This view is partly
