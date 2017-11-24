@@ -311,7 +311,36 @@ restrict ourselves to exploring a single dimension in which our
 foundations should be revised: \textbf{conservation of information}.
 We will follow its consequences, which will turn out to be far reaching.
 
-%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conservation of Information}
+
+A physical principle of computation
+
+No creation of information
+No duplication of information
+
+All programs, proofs, deductions are equivalences, isomorphisms,
+reversible
+
+Several pages on reversible logic; reversible family of level 1 and
+level 2 languages (Pi);
+
+We should also have a quick survey of other works in reversible
+computation? Most of the other work tries to start from well known
+models of computation or well known programming languages, and then
+adapts them to be reversible. Pi is different in that it starts from
+the semantic implications of reversibility. Then, because it adds
+types, rather than control-flow (or even data-flow) as its next layer
+of ``understanding'', this leads to equivalences, isomorphisms, etc.
+This then leads, quite naturally, to finding that the ``proof
+language'' of semirings (and Rig Groupoids at level 2) is actually a
+programming language. And it is Pi. This is a neat twist on
+Curry-Howard because CH is about \textbf{inhabitation} only. But with
+``conservation of information'' as the basis, a different kind of
+correspondance arises; in fact, this one may well be an actual
+isomorphism.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Reversibility}
 
 \subsection{Equalities as Isomorphisms}
@@ -621,139 +650,6 @@ logical counterparts. The investigation of duality gives rise to
 negative and fractional types which have an intuitive semantics and
 are reminiscent of negative information flow, superposition and
 entanglement from Quantum Physics~\cite{piee}.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Physics, Computation, and Logic}
-
-Conflict between Church-Turing thesis, textbook quantum mechanics, and
-RSA: Either Shor's algorithm is not ``natural''. (Textbook quantum
-mechanics is wrong); or, Shor's algorithm is ``natural'' and there is
-no classical counterpart. (There are ``natural'' computing models that
-are exponentially faster than the Turing Machine); or, there is an
-efficient classical factoring algorithm. (Possible but surprising); At
-least one of these wild claims is true!!!
-
-\noindent Also conflict between quantum mechanics and logic. Possibilities:
-
-\paragraph*{Revise quantum mechanics.}
-
-The mathematician's vision of an unlimited sequence of totally
-reliable operations is unlikely to be implementable in this real
-universe.  But the real world is unlikely to supply us with unlimited
-memory or unlimited Turing machine tapes. Therefore, continuum
-mathematics is not executable, and physical laws which invoke that can
-not really be satisfactory. They are references to illusionary
-procedures.  (Landauer 1996 and 1999)
-
-% \jc{No access to infinite memory/tape just means that ``infinitary''
-% arguments do not go through. The MoC with reversible computation
-% assumes totally reliable operations (but not necessarily infinitely
-% many). You leap to ``continuum'' mathematics without justification.
-% While QC does use the continuum in non-trivial ways, and physical
-% reality is ``discrete'' at the atomic level (but who knows at the
-% quantum level?!?), I don't think that's where you want to go here.
-% But see below.}
-
-I want to talk about the possibility that there is to be an exact
-simulation, that the computer will do exactly the same as nature. If
-this is to be proved and the type of computer is as I've already
-explained, then it's going to be necessary that everything that
-happens in a finite volume of space and time would have to be exactly
-analyzable with a finite number of logical operations. The present
-theory of physics is not that way, apparently. It allows space to go
-down into infinitesimal distances, wavelengths to get infinitely
-great, terms to be summed in infinite order, and so forth; and
-therefore, if this proposition is right, physical law is wrong.
-(Feynman 1981)
-
-% \jc{In a sense, physics already does this: statistical mechanics.
-% Even though the systems under study are explicitly discrete, albeit
-% will huge numbers of particules, the behaviour is approximated (!!)
-% via a continuous model. Same in economics with Black-Scholes.
-% The real problem are those conclusions drawn from such models which
-% *require* arbitrarily small values to exist, and even worse, for
-% the underlying values (reals) to be connected, i.e. form an actual
-% continuum. What Feynman is asking here is 'finiteness of information',
-% which is what things like Type-2 computability also ask for.}
-
-\paragraph*{Revise Computer Science.}
-
-Another thing that had been suggested early was that natural laws are
-reversible, but that computer rules are not. But this turned out to be
-false; the computer rules can be reversible, and it has been a very,
-very useful thing to notice and to discover that. This is a place
-where the relationship of physics and computation has turned itself
-the other way and told us something about the possibilities of
-computation. So this is an interesting subject because it tells us
-something about computer rules.  (Feynman 1981)
-
-Turing hoped that his abstracted-paper-tape model was so simple, so
-transparent and well defined, that it would not depend on any
-assumptions about physics that could conceivably be falsified, and
-therefore that it could become the basis of an abstract theory of
-computation that was independent of the underlying physics. ``He
-thought, as Feynman once put it, that he understood paper. But he
-was mistaken. Real, quantum-mechanical paper is wildly different from
-the abstract stuff that the Turing machine uses. The Turing machine is
-entirely classical, and does not allow for the possibility the paper
-might have different symbols written on it in different universes, and
-that those might interfere with one another.  (Deutsch 1985)
-
-Ed Fredkin pursued the idea that information must be finite in
-density. One day, he announced that things must be even more simple
-than that. He said that he was going to assume that information itself
-is conserved. ``You're out of you mind, Ed.'' I pronounced. ``That
-completely ridiculous. Nothing could happen in such a world. There
-couldn't even be logical gates. No decisions could ever be made.'' But
-when Fredkin gets one of his ideas, he's quite immune to objections
-like that; indeed, they fuel him with energy. Soon he went on to
-assume that information processing must also be reversible and
-invented what is now called the Fredkin gate. (Minsky 1999)
-
-Even revise the laws of thought themselves: In other terms, what is so
-good in logic that quantum physics should obey? Can't we imagine that
-our conceptions about logic are wrong, so wrong that they are unable
-to cope with the quantum miracle? [\ldots] Instead of teaching logic
-to nature, it is more reasonable to learn from her. Instead of
-interpreting quantum into logic, we shall interpret logic into
-quantum. (Girard 2007)
-
-One must be careful with this argument: we have a ``current
-understanding'' of quantum physics, which could be quite flawed.  So
-what we want to do is to learn from those parts of quantum physics
-which seem to be extremely stable (like conservation of information!)
-first. As researchers, we can certainly speculate on it all, but it
-makes sense to vigorously pursue the conclusions one can draw from
-those aspects of (quantum) physics that seem stable.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conservation of Information}
-
-A physical principle of computation
-
-No creation of information
-No duplication of information
-
-All programs, proofs, deductions are equivalences, isomorphisms,
-reversible
-
-Several pages on reversible logic; reversible family of level 1 and
-level 2 languages (Pi);
-
-We should also have a quick survey of other works in reversible
-computation? Most of the other work tries to start from well known
-models of computation or well known programming languages, and then
-adapts them to be reversible. Pi is different in that it starts from
-the semantic implications of reversibility. Then, because it adds
-types, rather than control-flow (or even data-flow) as its next layer
-of ``understanding'', this leads to equivalences, isomorphisms, etc.
-This then leads, quite naturally, to finding that the ``proof
-language'' of semirings (and Rig Groupoids at level 2) is actually a
-programming language. And it is Pi. This is a neat twist on
-Curry-Howard because CH is about \textbf{inhabitation} only. But with
-``conservation of information'' as the basis, a different kind of
-correspondance arises; in fact, this one may well be an actual
-isomorphism.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions}
