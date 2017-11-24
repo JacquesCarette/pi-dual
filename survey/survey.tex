@@ -21,7 +21,7 @@
 
 To fully appreciate one of the principles is missing in conventional computing,
 one must go back to an old thought experiment by J. C. Maxwell. This is
-codified in a letter that Maxwell wrote to P. G Tait in 1867 -- 
+codified in a letter that Maxwell wrote to P. G Tait in 1867 --
 the letter whose ideas are now known as `Maxwell's
 Demon'. Maxwell's Demon is a thought experiment that seems to
 indicate that intelligent beings can somehow violate the second law of
@@ -51,7 +51,7 @@ bringing the demon back into the fold of physics.
 
 This is a strange and wonderful idea: Information,
 physics and computation are inextricably linked. Furthermore, this
-implies that ideas in each field have consequences for the other. 
+implies that ideas in each field have consequences for the other.
 (Cite Bennett and the various `thermodynamics of computation' papers here.)
 
 When the early models computation, the Turing machine, and the
@@ -101,136 +101,29 @@ reveals further structure -- in both mathematics and in computation.
 And that brings us to the principal objective of this survey: explore the
 domain of \emph{typed reversible computation}.
 
-%% Cyber-physical systems increasingly common. Are computing foundations
-%% adequate?
-%% \jc{your questioning of MoC below is not about CPS! Should either
-%% foreshadow the next section 'properly' here, or add a leading
-%% example based on CPS to MoC section}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% JC: I am commenting this out as, intereting as this all is, a lot of
-%     it is about ``real world'' and NOT about the intersection of physics
-%     and computation.  It would be possible to write about that too.
-%     For example, the hardware failures of petabyte scale computing is
-%     physical; physics-based attacks on privacy and security; physics
-%     of dealing with noisy environments (key debouncing, timing drifts,
-%     spurious data, heart rate spikes, etc);
-\begin{comment}
-\section{Physics and computation}
-
-%%%
-\subsection{Software: Foundations and Applications}
-
-We begin with a bold thesis: \textit{common computational models
-embody various physical assumptions that are plainly
-\emph{wrong}}. We certainly
-are not the first to make such a statement. We do want to point
-out that these physically incorrect computational abstractions
-inhibit advances in computing in general.
-
-To appreciate this point, we examine various textbook abstractions and
-contrast them with the actual (i.e., physical) computational situations to
-which they correspond. Generally speaking, we find that textbook algorithms
-differ from ``real programs'' in their assumptions about their environment of
-operation. In textbook abstractions, the surrounding environment which
-includes, for example, the data on which the algorithm operates is considered
-static and well-defined. In the real world, this environment is dynamic and
-noisy. 
-
-\paragraph*{Sorting.} 
-One might consider sorting to be a fairly simple ``solved'' problem. Indeed
-textbook sorting algorithms have been formally specified, proved correct,
-analyzed in the best case, worst case, average case, and are even taught in
-many high school curricula. A beginner programmer can readily implement such
-algorithms to sort ``real data'' --- or can she?
-
-Under some assumptions, the answer is clearly yes. However, a moment's
-reflection should convince us that the textbook algorithm is too idealized
-and that sorting real data in the real world is still a challenge!  Consider
-the following quote posted on the Google research blog in 2011:
-\begin{quote}
-  Almost three years ago we announced results of the first ever ``petasort''
-  \ldots . It completed in just over six hours on 4000 computers. Recently we
-  repeated the experiment using 8000 computers. The execution time was 33
-  minutes, an order of magnitude improvement~\cite{petasort}.
-\end{quote}
-What happens at the petabyte scale that makes sorting such a
-challenge? The answer is simply that ``the real world happens!'' In
-the real world, many of the idealized mathematical assumptions
-embodied in our computational models are invalidated. For example,
-proper hardware functioning can no longer be taken for granted, as
-component failure becomes the norm, global synchronization becomes
-impossible, determinism becomes expensive to maintain, speculative
-execution becomes necessary, global consistency becomes impractical to
-maintain, and eventual consistency is accepted; etc. There have been
-many attempts to taken some of these issues into account in various
-computational models but these attempts are arguably not going far
-enough by not questioning the physical assumptions in our
-computational models and re-thinking our very foundations.
-
-As another data point to reinforce this point: What algorithm
-does Python (and other mainstream platforms) use? A variant of
-QuickSort or HeapSort perhaps.  No. Timsort. This hybrid algorithm
-performs rather well in practice -- but is complex, and even harder 
-to formally analyze. It does not tend to get mentioned in algorithms
-textbooks at all.
-
-\paragraph*{Binary Search.} 
-In the idealized textbook setting, the binary search algorithm has the
-precondition that the data is sorted. Even if we just have a few thousands
-items, na\"{\i}vely checking sortedness (in linear time) defeats the purpose of
-the efficient (logarithmic) binary search. If we have petabytes of
-(changing!) data, is it even possible, in principle, to check sortedness? 
-Or guarantee sortedness? In
-fact, in this dynamic situation, one is likely to get inconsistent
-results. In other words, the very idea of pre-conditions and post-conditions
-that can be checked statically appears to be at odds with computing in the
-``real world.''
-
-\paragraph*{Security.} 
-Proving the security properties of an abstract mathematical model is great
-(and necessary). This can be used to conclude that an isolated device is
-secure but it is, however, not that relevant for applications based on RFID
-devices which are targeted via DPA (Differential Power Analysis)~\cite{dpa}
-and and DEMA (Differential Electromagnetic Analysis) attacks. There are
-billions of such devices with applications like electronic passports. Power
-consumption and electromagnetic properties are abstracted away in our
-computational model.
-
-\paragraph*{Privacy.} 
-The Internet has created major concerns about privacy. Differential
-privacy~\cite{dwork:differential} states that one can achieve privacy
-by perturbing the output of a deterministic program by a suitable
-amount of noise. The very idea of noise is abstracted away in our
-computational and communication models and the amount of noise is a
-non-existent abstraction in our typical computational models.
-
-\paragraph*{A Crisis?}
-Is this tension between theory and practice a crisis?  We argue:
-yes. Computer science theory is founded on abstractions of the real
-world. These abstractions are necessary to shield us from details of
-technology, noise, errors, etc. and they have served us well until
-recently.  It is, however, becoming more and more evident that
-computer science theory is becoming less and less relevant to
-practice, and hence it is important to revisit our abstractions from a
-foundational point of view.
-\end{comment}
 
 \section{Models of Computation}
 %%%
-\begin{comment}
-\subsection{Our Origins} 
- 
-Until Alan Turing's seminal work in 1936, computation was an activity
-of the human mind; much like love and peace. While aspects of the idea
-predated the twentieth century, it was Turing who established the idea
+
+But first, we need to better understand our current models of
+computation, as a prelude to understand where they lead us astray.
+
+\subsection{Origins}
+
+Aspects of computation are
+quite old. M\"{u}ller (1786) first conceived of the idea of a
+``difference machine'', which Babbage (1819--1822) was able to
+construct. There are other computer precursors as well -- the first
+stored programs were actually for looms, most notably those of
+Bouchon (1725) which operated on a paper tape, and Jacquard (1804)
+which operated by chains of punched cards.
+
+But it was Alan Turing's seminal work in 1936 which established the idea
 that computation has a formal interpretation and that all
 computability can be captured within a formal system. Implicit in this
 achievement however is the idea that abstract models of computation
 are just that -- \emph{abstractions of computation realized in the
-  physical world.}  In fact, one of the major achievements of Computer
+physical world.}  In fact, one of the major achievements of Computer
 Science has been the development of abstract models of computation
 that shield the discipline from the underlying technology. As
 effective as these models have been, one must note, however, that they
@@ -245,7 +138,11 @@ Toffoli explains in his influential 1980 paper:
   concrete computing processes are subjected~\cite{Toffoli:1980}.
 \end{quote}}
 
-Our logic of programs and our hardware are based on Boolean Logic. We go back
+Our logic of programs and our hardware are based on Boolean Logic
+-- which really
+ought to be called \emph{Piercean logic}, as Boole had a rather different
+conception of logic which is rather far from our current models.
+Nevertheless, going back
 to Boole's 1853 book entitled \emph{An Investigation of the Laws of Thought,
   on which are Founded the Mathematical Theories of Logic and
   Probabilities}. The opening sentence of Ch.~1 is:
@@ -261,13 +158,15 @@ A few chapters later, we find:
   consequence of the fundamental law of thought, whose expression is $x^2 =
   x$.
 \end{quote}
-A detailed historical analysis of Boole's ideas are beyond the scope of this
-book. The above quotes, however, should convey the idea that our hardware is
-based on assumptions that Boole found as reasonable laws in 1853. 
+A detailed historical analysis of Boole's ideas are beyond our scope.
+The above quotes, however, should convey the idea that our notions of
+computation generally date back to ideas that were thought reasonable
+before \tilde 1900.
 
-Our theory of computation and complexity is based on the Turing Machine. We
-go back to Turing's 1936 article entitled \emph{On Computable Numbers, with
-  an Application to the Entscheidungsproblem,}. The opening sentence of
+It is conventional to base
+the theory of computation and complexity on the Turing Machine.
+Going back to Turing's 1936 article \emph{On Computable Numbers, with
+  an Application to the Entscheidungsproblem,}, the opening sentence of
 Sec. 1 is:
 \begin{quote}
   We have said that the computable numbers are those whose decimals are
@@ -280,46 +179,57 @@ I think it is reasonable to suppose that they can only be squares
 whose distance from the closest of the immediately previously observed
 squares does not exceed a certain fixed amount.
 \end{quote}
-Again, a detailed historical analysis of Turing's ideas are beyond the scope
-of this book. The above quotes should again convey the idea that our theories
-of computation and complexity are based on some physical assumptions that
-Turing found reasonable in 1936. When translated to physical language, the
-assumptions embody what is known as the ``Bekenstein bound:'' which is an
-upper limit on the amount of information that can be contained within a given
-finite region of space.
+A detailed historical account is again beyond our scope. The quotes above
+should convey the ideas that our theories
+of computation and complexity are based on some assumptions that
+Turing found reasonable in 1936. Though it is worth noting that these assumptions
+are both physical (on distances) and metaphysical (on restrictions of the
+mind).  If we take the human mind to be a physical ``machine'' which does
+computation, then when both of the above assumptions are translated to the
+language of physics, they embody what is known as the ``Bekenstein bound:''
+which is an upper limit on the amount of information that can be contained
+within a given finite region of space.
 
 One can examine more and more cases but the general story should be
 clear. Our abstractions were made up based on a certain understanding of the
-laws of physics. And since, as we argue, our abstractions are becoming at
-odds with practice, it is time to revisit these abstractions. In the words of
-Girard:
+laws of physics. In particular, our understanding of physics has evolved
+tremendously since 1900!  Thus it is time to revisit these abstractions,
+especially with respect to quantum mechanics.
+In the words of Girard:
 \begin{quote}
   In other terms, what is so good in logic that quantum physics should obey?
   Can't we imagine that our conceptions about logic are wrong, so wrong that
-  they are unable to cope with the quantum miracle? 
+  they are unable to cope with the quantum miracle?
   \\
   Instead of teaching logic to nature, it is more reasonable to learn
   from her. Instead of interpreting quantum into logic, we shall
   interpret logic into quantum (Girard 2007).
 \end{quote}
+
+\begin{comment}
+\jc{The reason I commented this out is that it is under-justified. The
+reader will simply not understand what these next few lines are really
+saying.}
 Indeed one should take the physical principles underlying quantum mechanics,
 the most successful physical theory known to us and adapt computation to
 ``learn'' from these principles. To illustrate the depth of our crisis, Scott
-Aaronson, Umesh Vazirani, and others have proposed the following puzzle. 
+Aaronson, Umesh Vazirani, and others have proposed the following puzzle.
 
 One of these wild claims must be true!:
 \begin{itemize}
 \item the extended Church-Turing thesis is false, or
 \item quantum physics is false, or
 \item there is an efficient classical algorithm for factoring
-\end{itemize} 
+\end{itemize}
 Indeed, if quantum physics is correct then there is an efficient quantum
 algorithm for factoring (Shor). If there is no efficient classical algorithm
-for factoring then the extended Church-Turing thesis is false. 
+for factoring then the extended Church-Turing thesis is false.
 \end{comment}
 
+\subsection{From classical to quantum}
+
 Conventional classical models of computation, including boolean
-logic, the Turing machine, and the $\lambda$-calculus, are founded on
+circuits, the Turing machine, and the $\lambda$-calculus, are founded on
 primitives which correspond to \emph{irreversible} physical processes which
 gratuitously erase information.  For example, a \emph{nand} gate is an
 irreversible logical operation in the sense that its inputs cannot generally
@@ -329,18 +239,22 @@ $\beta$-reduction which typically erases or duplicates values in a way that
 is destructive and irreversible.
 
 These irreversible abstractions chosen as the basis of our
-models of computing are at ``odds'' with the underlying
+models of computing are at odds with the underlying
 reversible physical reality. The information theoretic underpinnings
-of physics is best understood through the remarkable \emph{Landauer
-  principle}~\cite{Landauer:1961}. Landauer, through his analysis of
+of physics is best understood through \emph{Landauer's
+principle}~\cite{Landauer:1961}. As mentionned previously in the
+introduction, Landauer, through his analysis of
 Maxwell's Demon, established the idea that \emph{information is a
 physical quantity} in much the sense that one would think of an
-electron as a physical quantity, and that a certain minimum amount of
+electron as a physical quantity. More precisely, his principle implies
+that a certain minimum amount of
 thermodynamic work has to be carried out to erase one bit of
 information. Experimental verification of the Landauer principle
 happened in recent years~\cite{berut2012experimental}. If information
 has a physical significance, then it is subject to conservation laws
-as mass and energy are. 
+just as mass and energy are.
+
+\subsection{conservation of information}
 
 To make this idea concrete and to provide a taste of the applications
 it opens, consider a tiny 2-bit password = \verb|"10"|. The password
@@ -348,7 +262,7 @@ checker looks like:
 
 % verbatim for now, will go to something decent later
 \begin{verbatim}
-check-password (guess) = 
+check-password (guess) =
   if guess == "10"
   then True
   else False
@@ -383,16 +297,19 @@ physical entity this question cannot be ignored.
 
 The Landauer Principle states that erasing information requires
 energy. In other words, the password checking function must have
-erased 1.2 bits during its calculation which dissipate as heat in any
+erased 1.2 bits during its calculation, which dissipate as heat in any
 physical realization of the function. In conventional models of
 computation, this erasure is \emph{implicit}, i.e., it occurs as a
-side effect of calculation. A big part of our development will be
-concerned with making that erasure explicit.
+side effect of calculation. We wish to look at models where
+erasure is simply not allowed.
 
-The discussion in this section suggests that our foundations are really in
-need of revision. There are many principles we can embrace.  We will start
-with one, ``\textbf{conservation of information}'' and follow its
-consequences, which will turn out to be far reaching.
+There are, in fact, many different principles of physics which are
+at odds with our current models of computation. Even within quantum
+mechanics itself, there are other ideas (such as superposition or
+entanglement) which are not present in current models. We will however
+restrict ourselves to exploring a single dimension in which our
+foundations should be revised: \textbf{conservation of information}.
+We will follow its consequences, which will turn out to be far reaching.
 
 %%%
 \section{Reversibility}
@@ -411,7 +328,7 @@ consequences, which will turn out to be far reaching.
   physical laws which invoke that can not really be satisfactory. They are
   references to illusionary procedures. Rolf Landauer, The physical nature of
   information, Physics Letters A 217 (1996) pp. 188-193:
-\end{quote} 
+\end{quote}
 
 When a physical law equates two quantities like force and the product of mass
 and acceleration, a deep understanding of the law demands that we interpret
@@ -419,7 +336,7 @@ the equality as an isomorphism, i.e., as two processes, one in each
 direction, that transform one side of the equation to the other. In fact, the
 same insight applies to constructive mathematics and its homotopy
 interpretation. There is a constructive character to equality that is at the
-heart of the constructive approach to mathematics. 
+heart of the constructive approach to mathematics.
 
 Translated to the computational world, the essence of our thesis is this:
 \emph{to speak of equality is to speak of computation}. This view is partly
@@ -441,7 +358,7 @@ content do not exist for us.
 
 One may ask, what is the point of such a rarefied spartan view of
 computation? How does this compare with more conventional models of
-computation?  \emph{What is the point?} 
+computation?  \emph{What is the point?}
 
 \begin{enumerate}
 
@@ -507,7 +424,7 @@ of sets.
 Programs in our model are built from descriptions of equalities or
 sets/numbers. These are the familiar laws of arithmetic or logic:
 \emph{Commutativity.} The generalized notion of swapping,
-i.e. $a*b=b*a$ and $a+b=b+a$.  
+i.e. $a*b=b*a$ and $a+b=b+a$.
 \emph{Associativity.} The
 generalized notion of grouping, i.e. $a*(b*c)=(a*b)*c$ and
 $a+(b+c)=(a+b)+c$.
@@ -539,7 +456,7 @@ type isomorphisms with iso-recursive types and trace. This can
 equivalently be described as computing a commutative semi-ring with
 cancellation or as a traced dagger symmetric bimonoidal category. The
 category has a groupoid structure and all computations are logically
-reversible. 
+reversible.
 
 To summarize, the most primitive notion of equality that is available
 to us -- that of isomorphisms -- already contains the notion of
@@ -580,7 +497,7 @@ energy. These interactions may be thought of as \emph{effects} that
 modify the conservation properties of the system. Computations with
 information effects are much like open systems and they can be
 converted into pure computations by making explicit the surrounding
-information environment that they interact with. 
+information environment that they interact with.
 
 Three things follow: (1) We capture the gap between reversible and
 irreversible computation with a type-and-effect system. (2)
@@ -597,7 +514,7 @@ security~\cite{myerssab}, differential
 privacy~\cite{dwork:differential}, energy-aware
 computing~\cite{1324180,605411}, VLSI
 design~\cite{Macii:1996:ECE:874066.875828}, and biochemical models of
-computation~\cite{bio}. 
+computation~\cite{bio}.
 
 Ch.~\ref{ch:piee} focuses on work in progress. It deals with the
 duality of computation in the setting of information
