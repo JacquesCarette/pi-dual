@@ -1,6 +1,8 @@
 \documentclass{article}
 \usepackage{fullpage}
 \usepackage{url}
+\usepackage{comment}
+
 \title{Embracing the Laws of Physics: \\ Reversible Models of Computation}
 \author{Jacques Carette, Roshan P. James, Amr Sabry}
 
@@ -26,10 +28,10 @@ indicate that intelligent beings can somehow violate the second law of
 thermodynamics, thereby violating physics itself.
 
 Many resolutions were offered for this conundrum (for a compilation, see
-Maxwell's Demon by Leff and Rex~\cite{leff1990}), but none withstood careful
+Maxwell's Demon~\cite{leff1990}), but none withstood careful
 scrutiny until the establishment of `Landauer's Principle' in 1961 -- a
 principle whose experimental validation
-happened recently in 2012~\cite{lutz2012}.
+happened recently in 2012~\cite{berut2012experimental}.
 
 Maxwell's demon appears to violate the second law of thermodynamics by
 having a tiny `intelligence' observing the movement of individual
@@ -96,8 +98,8 @@ computer science (particularly in Homotopy Type Theory~\cite{HoTT-book})
 reveal that not only can mathematics be typed, but that doing so
 reveals further structure -- in both mathematics and in computation.
 
-And that brings us to the objective of this survey: explore the domain of
-\emph{typed reversible computation}.
+And that brings us to the principal objective of this survey: explore the
+domain of \emph{typed reversible computation}.
 
 %% Cyber-physical systems increasingly common. Are computing foundations
 %% adequate?
@@ -107,78 +109,28 @@ And that brings us to the objective of this survey: explore the domain of
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Models of Computation}
-
-Explain classical models of computation and their limitations in
-real-world ``physical'' applications.
-
-Computation in the ``real world'' vs. idealized computation in
-abstract models.
-\begin{itemize}
-\item Mathematical abstraction of sorting is well-understood; sorting
-  petabytes of data violates many of the assumptions: hardware
-  component failure frequent, global synchronization impossible;
-  consistency must be eventual; etc.
-\item Mathematical abstraction of sortedness property: easy; in the
-  real world with petabytes of evolving data; it is not clear that it
-  is even possible to check sortedness; easy to get inconsistent
-  results
-\item Noise does not exist in our mathematical abstractions of
-  computation; essential use in differential privacy
-\item Mathematical models of secure computing typically ignore power
-  consumption, electromagnetic signatures; actual attacks based on DPA
-  and DEMA however
-\end{itemize}
-
-% \jc{While all the above are true (and not exhaustive), what I also read
-% is that the first two are actually ``the same'' point mostly related
-% to scale and distributivity, the 3rd is about inadequate models (but not
-% related to physics), while the 4th is about the physics of devices.
-% They are not about CPS. And not about Quantum either. So how are these
-% motivating a deeper look at how quantum affects our MoC? It feels to me
-% that we ought to have a quantum ``example'' here already.}
-
-% \jc{What this seems to motivate is to look at our models with respect
-% to what we're trying to achieve.  Models are, by definition, abstractions
-% that ``abstract away'' irrelevant details. So the point would be that
-% some details that we thought were irrelevant really are not.
-% So I could see this section motivating a whole programme of
-% targeted de-abstraction. This could lead into the focus of this paper
-% following one strand, namely one aspect of quantum physics.}
-
-\begin{small}
-\begin{quote}
-``Turing hoped that his abstracted-paper-tape model was so simple, so
-  transparent and well defined, that it would not depend on any
-  assumptions about physics that could conceivably be falsified, and
-  therefore that it could become the basis of an abstract theory of
-  computation that was independent of the underlying physics.  `He
-  thought,' as Feynman once put it, `that he understood paper.' But he
-  was mistaken.''
-\end{quote}
-\hfill --- \emph{The Fabric of Reality}~\cite{deutsch}
-\end{small}
+%
+% JC: I am commenting this out as, intereting as this all is, a lot of
+%     it is about ``real world'' and NOT about the intersection of physics
+%     and computation.  It would be possible to write about that too.
+%     For example, the hardware failures of petabyte scale computing is
+%     physical; physics-based attacks on privacy and security; physics
+%     of dealing with noisy environments (key debouncing, timing drifts,
+%     spurious data, heart rate spikes, etc);
+\begin{comment}
+\section{Physics and computation}
 
 %%%
 \subsection{Software: Foundations and Applications}
 
 We begin with a bold thesis: \textit{common computational models
-  embody various physical assumptions that are plainly
-  \emph{wrong}}. As we discuss in the remainder of this chapter, we
-are not the first to make such a statement. We do, however, make two
-novel contributions:
-\begin{itemize}
-\item we argue on pragmatic terms that our physically incorrect
-  computational abstractions contribute significantly to the
-  ``software crisis'' and that they inhibit advances in new emerging
-  application domains; 
-\item we identify the physical principle of \textbf{conservation of
-  information} as a simple twist to our computational models that has,
-  as we demonstrate in this book, far reaching theoretical and
-  practical positive consequences to the science of computing.
-\end{itemize}
+embody various physical assumptions that are plainly
+\emph{wrong}}. We certainly
+are not the first to make such a statement. We do want to point
+out that these physically incorrect computational abstractions
+inhibit advances in computing in general.
 
-To appreciate the first point, we examine various textbook abstractions and
+To appreciate this point, we examine various textbook abstractions and
 contrast them with the actual (i.e., physical) computational situations to
 which they correspond. Generally speaking, we find that textbook algorithms
 differ from ``real programs'' in their assumptions about their environment of
@@ -192,7 +144,7 @@ One might consider sorting to be a fairly simple ``solved'' problem. Indeed
 textbook sorting algorithms have been formally specified, proved correct,
 analyzed in the best case, worst case, average case, and are even taught in
 many high school curricula. A beginner programmer can readily implement such
-algorithms to sort ``real data'' --- or can he?
+algorithms to sort ``real data'' --- or can she?
 
 Under some assumptions, the answer is clearly yes. However, a moment's
 reflection should convince us that the textbook algorithm is too idealized
@@ -208,7 +160,7 @@ What happens at the petabyte scale that makes sorting such a
 challenge? The answer is simply that ``the real world happens!'' In
 the real world, many of the idealized mathematical assumptions
 embodied in our computational models are invalidated. For example,
-proper hardware functioning can no longer be taken for granted as
+proper hardware functioning can no longer be taken for granted, as
 component failure becomes the norm, global synchronization becomes
 impossible, determinism becomes expensive to maintain, speculative
 execution becomes necessary, global consistency becomes impractical to
@@ -218,12 +170,20 @@ computational models but these attempts are arguably not going far
 enough by not questioning the physical assumptions in our
 computational models and re-thinking our very foundations.
 
+As another data point to reinforce this point: What algorithm
+does Python (and other mainstream platforms) use? A variant of
+QuickSort or HeapSort perhaps.  No. Timsort. This hybrid algorithm
+performs rather well in practice -- but is complex, and even harder 
+to formally analyze. It does not tend to get mentioned in algorithms
+textbooks at all.
+
 \paragraph*{Binary Search.} 
 In the idealized textbook setting, the binary search algorithm has the
 precondition that the data is sorted. Even if we just have a few thousands
-items, na\"\i vely checking sortedness (in linear time) defeats the purpose of
+items, na\"{\i}vely checking sortedness (in linear time) defeats the purpose of
 the efficient (logarithmic) binary search. If we have petabytes of
-(changing!) data, is it even possible, in principle, to check sortedness? In
+(changing!) data, is it even possible, in principle, to check sortedness? 
+Or guarantee sortedness? In
 fact, in this dynamic situation, one is likely to get inconsistent
 results. In other words, the very idea of pre-conditions and post-conditions
 that can be checked statically appears to be at odds with computing in the
@@ -256,8 +216,11 @@ recently.  It is, however, becoming more and more evident that
 computer science theory is becoming less and less relevant to
 practice, and hence it is important to revisit our abstractions from a
 foundational point of view.
+\end{comment}
 
+\section{Models of Computation}
 %%%
+\begin{comment}
 \subsection{Our Origins} 
  
 Until Alan Turing's seminal work in 1936, computation was an activity
@@ -353,8 +316,9 @@ One of these wild claims must be true!:
 Indeed, if quantum physics is correct then there is an efficient quantum
 algorithm for factoring (Shor). If there is no efficient classical algorithm
 for factoring then the extended Church-Turing thesis is false. 
+\end{comment}
 
-Indeed, conventional classical models of computation, including boolean
+Conventional classical models of computation, including boolean
 logic, the Turing machine, and the $\lambda$-calculus, are founded on
 primitives which correspond to \emph{irreversible} physical processes which
 gratuitously erase information.  For example, a \emph{nand} gate is an
@@ -364,13 +328,13 @@ a cell on a Turing machine tape with a new symbol, and so is a
 $\beta$-reduction which typically erases or duplicates values in a way that
 is destructive and irreversible.
 
-The irreversible abstractions we choose as the basis of our most
-primitive models of computing are at ``odds'' with the underlying
+These irreversible abstractions chosen as the basis of our
+models of computing are at ``odds'' with the underlying
 reversible physical reality. The information theoretic underpinnings
 of physics is best understood through the remarkable \emph{Landauer
   principle}~\cite{Landauer:1961}. Landauer, through his analysis of
 Maxwell's Demon, established the idea that \emph{information is a
-  physical quantity} in much the sense that one would think of an
+physical quantity} in much the sense that one would think of an
 electron as a physical quantity, and that a certain minimum amount of
 thermodynamic work has to be carried out to erase one bit of
 information. Experimental verification of the Landauer principle
@@ -382,12 +346,13 @@ To make this idea concrete and to provide a taste of the applications
 it opens, consider a tiny 2-bit password = \verb|"10"|. The password
 checker looks like:
 
-%subcode{code}
-%! language = Haskell
-% check-password (guess) = 
-%   if guess == "10"
-%   then True
-%   else False
+% verbatim for now, will go to something decent later
+\begin{verbatim}
+check-password (guess) = 
+  if guess == "10"
+  then True
+  else False
+\end{verbatim}
 
 One can ask how much information is leaked by this program assuming
 the attacker has no prior knowledge except that the password is 2
@@ -430,6 +395,8 @@ with one, ``\textbf{conservation of information}'' and follow its
 consequences, which will turn out to be far reaching.
 
 %%%
+\section{Reversibility}
+
 \subsection{Equalities as Isomorphisms}
 
 \begin{quote}
@@ -872,20 +839,10 @@ correspondance arises; in fact, this one may well be an actual
 isomorphism.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Applications}
-
-Perhaps Information Flow Security
-
-% \jc{This is where I am still least sure. I am wary of either doing
-% new research with such a tight timeline, or of being too speculative.
-% If there are papers on this already, perhaps references to them could
-% be put here?}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliographystyle{plainnat}
-\pagestyle{headings}
+%\pagestyle{headings}
 \bibliography{cites}
 \end{document}
