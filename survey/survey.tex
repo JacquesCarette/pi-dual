@@ -671,6 +671,12 @@ entanglement from Quantum Physics~\cite{piee}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Programs as Reversible Deformations} 
 
+All programs/proofs/deductions are  
+isomorphisms/equivalences/deformations.  
+ 
+Take it as a fundamental principle; avoid detour via irreversible
+functions and current models of computations.
+
 Starting from a physical perspective, programs naturally emerge as
 reversible transformations on data. In some sense, there is nothing
 more to say about programs per se. The focus is on the data. Depending
@@ -713,17 +719,58 @@ perms(n+1) = { (swap 0 i).p | p <- perms(n); i <- [1..n] }
 
 Pi level 1
 
+sound and complete isomorphisms for finite types
+
+name the isomorphisms
+
+\begin{verbatim}
+examples: 
+  (1 + 1) x ((1 + 1) x b) = (b+b) + (b+b)
+  conditionals
+  toffoli
+  fredkin
+\end{verbatim}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data III: Reversible Programs between Structured Finite Types}
 
 Pi level 2
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Data IV: Recursive Types}
+
+Add recursion to structured finite types, trace, feedback, loop...
+
+Natural numbers: fold/unfold
+
+Partial isos
+
+meta-circular interpreter
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Data V: Exclusive Disjunctions}
+
+???
+
+Quantum over finite field 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 
 Discuss recursion, or add a section of infinite sets???
 
+CS abstractions are based on ``old'' physics
+
+computer applications are more and more ``physical''
+
+physical principles such as conservation of information should be part
+of our foundational abstractions
+
+quest for other principles; other data models; graphs; HoTT
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Acknowledgements} many students and colleagues 
+
 \bibliographystyle{plainnat}
 %\pagestyle{headings}
 \bibliography{cites}
