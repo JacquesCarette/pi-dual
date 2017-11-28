@@ -15,9 +15,28 @@
 \begin{document}
 \maketitle
 
+% * Reversibility intro / motivation as we  have now more or less
+
+% * Thesis statement: programs are reversible deformations on data /
+%    spaces, almost necessarily by definition
+
+% * Focus now is on data
+
+% * If data is plain finite sets, programs become permutations (deformations on finite sets).
+
+% * If data is structured trees, we get Pi. 
+
+% * Explain Pi with examples.
+
+% * If data is itself deformations-on-finite-sets, then the
+%   deformations between them become something quite
+%   interesting. Explain Pi level 2 with examples.
+
+% * Conclude with thoughts regarding other kinds of data that can be
+%   plugged in into that story.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction : Reversibility, the Missing Principle}
-
 
 To fully appreciate one of the principles is missing in conventional computing,
 one must go back to an old thought experiment by J. C. Maxwell. This is
@@ -74,7 +93,7 @@ stylized way, certain general physical restrictions to which all
 concrete computing processes are subjected.
 \end{quote}
 
-In our current age, both Laudauer's Princple and recent investigations
+In our current age, both Landauer's Principle and recent investigations
 of computational models well-suited to quantum mechanics, push us to
 revisit our current models of computation. Information, on top of
 having a physical manifestation, appears to be \emph{conserved},
@@ -100,10 +119,6 @@ reveals further structure -- in both mathematics and in computation.
 
 And that brings us to the principal objective of this survey: explore the
 domain of \emph{typed reversible computation}.
-
-
-\section{Models of Computation}
-%%%
 
 But first, we need to better understand our current models of
 computation, as a prelude to understand where they lead us astray.
@@ -242,7 +257,7 @@ These irreversible abstractions chosen as the basis of our
 models of computing are at odds with the underlying
 reversible physical reality. The information theoretic underpinnings
 of physics is best understood through \emph{Landauer's
-principle}~\cite{Landauer:1961}. As mentionned previously in the
+principle}~\cite{Landauer:1961}. As mentioned previously in the
 introduction, Landauer, through his analysis of
 Maxwell's Demon, established the idea that \emph{information is a
 physical quantity} in much the sense that one would think of an
@@ -311,9 +326,6 @@ restrict ourselves to exploring a single dimension in which our
 foundations should be revised: \textbf{conservation of information}.
 We will follow its consequences, which will turn out to be far reaching.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conservation of Information}
-
 \begin{quote}
   The laws of physics are essentially algorithms for calculation. These
   algorithms are significant only to the extent that they are executable in
@@ -369,9 +381,6 @@ Curry-Howard because CH is about \textbf{inhabitation} only. But with
 ``conservation of information'' as the basis, a different kind of
 correspondance arises; in fact, this one may well be an actual
 isomorphism.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Reversibility}
 
 \subsection{Equalities as Isomorphisms}
 
@@ -660,10 +669,63 @@ are reminiscent of negative information flow, superposition and
 entanglement from Quantum Physics~\cite{piee}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusions}
+\section{Programs as Reversible Deformations} 
+
+Starting from a physical perspective, programs naturally emerge as
+reversible transformations on data. In some sense, there is nothing
+more to say about programs per se. The focus is on the data. Depending
+on the space we use to represent the data, the corresponding notion of
+deformation on these spaces will define the appropriate notion of
+programs. In the following three sections, we consider three natural
+classes of data and explore the corresponding notion of reversible
+programs.
+
+In the quantum case, this is clear. Say something about topological
+quantum computing.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Data I: Finite Sets}
+
+Most programming languages provide a rich collection of primitive
+data like booleans, characters, strings, and numbers that are
+naturally modeled as sets. Infinite sets embody a notion of recursion
+which is subtle and is discussed briefly in the concluding
+section. For finite sets, a reversible process between them is simply
+a permutation. In other words, reversible programming with finite sets
+is all about writing permutations. 
+
+We therefore start with a small language for writing permutations as a
+product of transpositions:
+
+\begin{verbatim}
+p ::= id | swap i j | p;p
+\end{verbatim}
+
+Permutations on finite sets of size $n$ can be inductively defined as
+follows:
+\begin{verbatim}
+perms(0)   = { id }
+perms(n+1) = { (swap 0 i).p | p <- perms(n); i <- [1..n] }  
+\end{verbatim}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Data II: Structured Finite Types}
+
+Pi level 1
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Data III: Reversible Programs between Structured Finite Types}
+
+Pi level 2
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+
+Discuss recursion, or add a section of infinite sets???
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliographystyle{plainnat}
 %\pagestyle{headings}
 \bibliography{cites}
 \end{document}
+
