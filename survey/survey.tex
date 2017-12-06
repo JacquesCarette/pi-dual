@@ -424,25 +424,42 @@ More important, even amongst the formal concepts, there are differences
 which is neither too strong nor too weak, that will express when
 some structured information should be treated as ``the same''.
 
+We will take ``the same'' as a fundamental principle. We want
+to then derive what it means for data, programs, program
+transformations, as well as proofs / deductions, to be ``the
+same'' -- in an manner consistent with preservation of 
+information.
+
+This stands in stark contrast with most current approacheds to
+reversible computation, which start from current models of
+computation involving irreversible operations and try to find
+various ways to \emph{patch things up} so as to be reversible.
+
+The reader will have surely noticed how we have studiously avoided
+defining ``the same''. Because there are many such notions, we
+also need to walk our way through them to find the one which is
+``just right''. We can draw an analogy with topology: in topology,
+all point sets can always be equipped with either the discrete or
+the indiscrete topology, but both of these extremes are rarely
+useful. We will develop our working notion of ``sameness''
+as we go through the various components that make up a
+programming language.
+
+Starting from a physical perspective, whatever our notion of data
+is, we will be interested in programs as representating transformations
+of that data which are reversible. In other words, we want our
+programs-as-transformations to ``play well'' with the inherent notion
+of ``sameness'' that our data will carry. Thus we need to start by
+looking at what structure our data has, and that will help us define
+an appropriate notion of program. Of course, when programs themselves
+are data, things do get more complicated.  In the following sections,
+we will look at different natural classes of data, and explore the
+correspond notion of reversible programs.
+
+\amr{In the quantum case, this is clear. Say something about topological
+quantum computing.}
+
 \jc{wavefront}
-All programs/proofs/deductions are  
-isomorphisms/equivalences/deformations.  
- 
-Take it as a fundamental principle; avoid detour via irreversible
-functions and current models of computations.
-
-Starting from a physical perspective, programs naturally emerge as
-reversible transformations on data. In some sense, there is nothing
-more to say about programs per se. The focus is on the data. Depending
-on the space we use to represent the data, the corresponding notion of
-deformation on these spaces will define the appropriate notion of
-programs. In the following three sections, we consider three natural
-classes of data and explore the corresponding notion of reversible
-programs.
-
-In the quantum case, this is clear. Say something about topological
-quantum computing.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data I: Finite Sets}
 
