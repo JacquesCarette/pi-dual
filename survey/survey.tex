@@ -531,11 +531,33 @@ information-perserving transformation of structured data.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data II: Structured Finite Types}
 
-Pi level 1
+\jc{wavefront}
+
+Introduce the usual types. Curry-Howard, as usual. Problem with it, i.e.
+it is merely about inhabitation, which is NOT reversible. Show examples
+with A+A and A*A. Our deformations need to be reversible, so they need
+to induce type isomorphisms. So while our types are as usual, the
+first level of transformations on data will change, and be isomorphisms.
+The type-erasure will, naturally, be permutations. But where do the
+isomorphisms come from?  Well, inhabitants of types with (0,1,+,*)
+form a semiring. So, still inspired by Curry-Howard, look to the
+proof-terms of semiring identities -- and voila, a nice set of
+isomorphisms! We can name these isomorphisms, AND give them
+implementations. Gives us a nice, reversible PL for
+structured finite types. We can it Pi.
+
+We actually have several choices. We can make Pi structurally reversible
+(i.e. there is a syntactic transformation on Pi which maps combinators
+to combinators which witnesses reversibility), or build in a `reverse'
+combinator which flips things around. The latter lets us make the
+language much smaller, but then \emph{programs} in that language are longer.
+[Bias: since there will be many more programs written, the fact that the
+language definition, and its processors, is larger, is a one-time cost.
+Not that big a deal. So pick the version whose meta-theoretical
+properties are obvious. It is thus worthwhile to have reversibility be
+structural.]
 
 sound and complete isomorphisms for finite types
-
-name the isomorphisms
 
 \begin{verbatim}
 examples: 
@@ -546,9 +568,27 @@ examples:
 \end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Data III: Reversible Programs between Structured Finite Types}
+\section{Data III: Reversible Programs between Reversible Programs}
 
-Pi level 2
+Pi level 2.
+
+Take categorification seriously. Types are indeed groupoids, and
+endo-isomorphisms inhabit the Identity 'type' of a type. So + and *
+must be operations on groupoids. Look at the category of (small)
+categories for inspiration. So we have two monoidal structures.
+These are not co-product and product in Groupoid. But this is actually
+a good thing.
+
+So we end up looking, semantically, at weak Rig Groupoid. Syntactically,
+we take the easiest way there: simply make every coherence isomorphism into
+a combinator. Huge proof obligation that this induces actual transformations
+on Pi programs. Luckily, it does.  But not straightforwardly -- ``incorrect''
+definitions of some Pi combinators (such as those for 0*x = 0) can lead to
+some level 2 morphisms not working. 
+
+The interpretation on permutations is unclear, because the Pi representation
+has so much more structure, and permutations too have many different 
+representations. So it is unclear what maps to what.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data IV: Recursive Types}
@@ -561,6 +601,15 @@ Partial isos
 
 meta-circular interpreter
  
+DANGER: here, we leave the safe land of ``preservation of information'',
+because partiality is not reversible. So while trace gives a reversible
+program as output, it itself isn't a reversible operation. Like the
+demon's brain in Maxwell's thought experiment, trace irreversible work!
+So trace, which is fundamental to all work with recursive types, is
+only reversible "at level 1". So we need to replace trace with some other
+operation for level 2 reversibility to also hold -- and this is an open
+problem.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data V: Exclusive Disjunctions}
 
