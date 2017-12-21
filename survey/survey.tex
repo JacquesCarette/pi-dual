@@ -8,6 +8,7 @@
 \author{Jacques Carette, Roshan P. James, Amr Sabry}
 
 \newtheorem{defn}{Definition}[section]
+\newtheorem{prop}{Proposition}[section]
 
 \newcommand{\amr}[1]{\fbox{Amr says:} \textbf{#1}}
 \newcommand{\jc}[1]{\fbox{Jacques says:} \textbf{#1}}
@@ -549,12 +550,81 @@ $\lor$ & $\uplus$ \\
 \end{center}
 
 This correspondance is rather fruitful. As logical expressions form
-a semiring, we would expect that types too form a semiring. And indeed
-they do -- at least up to \emph{type equivalence}.  The natural
-numbers $\Nat$ are another semiring; it will turn out that, even though
-the Curry-Howard correspondance has been extremely fruitful for
-programming language research, it is the semiring $\Nat$ which
-will be a better model for finite structured types.
+a commutative semiring, we would expect that types too form a commutative
+semiring. And indeed they do -- at least up to \emph{type equivalence}.  The
+natural numbers $\Nat$ are another commutative semiring; it will turn out that,
+even though the Curry-Howard correspondance has been extremely fruitful for
+programming language research, it is $\Nat$ which will be a better model for
+finite structured types.
+
+\begin{definition}
+  A \emph{commutative semiring} (sometimes called a \emph{commutative
+    rig} (commutative ri\emph{n}g without negative elements) consists of a
+  set $R$, two distinguished elements of $R$ named 0 and 1, and two
+  binary operations~$+$ and $\cdot$, satisfying the following
+  relations for any $a,b,c \in R$:
+\[\begin{array}{rcl}
+0 + a &=& a \\
+a + b &=& b + a \\
+a + (b + c) &=& (a + b) + c \\
+\\
+1 \cdot a &=& a \\
+a \cdot b &=& b \cdot a \\
+a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
+\\
+0 \cdot a &=& 0 \\
+(a + b) \cdot c &=& (a \cdot c) + (b \cdot c)
+\end{array}\]
+\end{definition}
+
+\begin{prop}
+The structure $\left(\mathbb{B}, \false, \true, \lor, \land\right)$
+is a commutative semiring.
+\end{prop}
+
+We cannot immediately use the above definition in a typed setting.
+First, types do not naturally want to be put together into a ``set''.
+This can be fixed if we replace the set $R$ with a universe $U$, and
+rather than insisting that we have $0 \in R$, we have a typing
+judgement $\bot : U$ (and similarly for the other items).
+
+Our first instinct would be to similarly replace $=$ with
+$\equiv$, i.e. propositional equality. This bring the second
+problem to the fore: this is false. For example, unless $A \equiv B$,
+$A \times B \equiv B \times A$ is not normally provable%
+\footnote{Not without assuming that $U$ is univalent, which we
+don't.}. But it should be clear that $A \times B$ and $B \times A$
+contain equivalent information. In other words, we would like to
+be able to witness that $A \times B$ can be reversibly deformed
+into $B \times A$. Which motivates the introduction of 
+type \emph{equivalences}. To do this, we need a few important
+auxilliary concepts first.
+
+\begin{definition}[homotopy]
+\label{def:homotopy}
+Two functions $f,g:A \rightarrow B$ are \emph{homotopic} if
+$\forall x:A. f(x) = g(x)$. We denote this $f \sim g$.
+\end{definition}
+
+\noindent It is easy to prove that homotopies (for any given function
+space $A \rightarrow B$) are an equivalence relation.
+
+\begin{definition}[Quasi-inverse]
+\label{def:quasi}
+For a function $f : A \rightarrow B$, a \emph{quasi-inverse} is a
+triple $(g, \alpha, \beta)$, consisting of a function
+$g : B \rightarrow A$ and two homotopies
+$\alpha : f \circ g \sim \mathrm{id}_B$ and
+$\beta : g \circ f \sim \mathrm{id}_A$.
+\end{definition}
+ 
+\begin{definition}[Equivalence of types]
+  Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
+  function $f : A \rightarrow B$ together with a quasi-inverse for $f$.
+\end{definition}
+
+\jc{talk about the definition without quasi-inverse? Continue with
+types being a commutative semiring in the above sense.}
 
 \jc{wavefront}
 
