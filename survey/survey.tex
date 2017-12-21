@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{amssymb,amsthm}
+\usepackage{amssymb,amsthm,amsmath}
 \usepackage{fullpage}
 \usepackage{url}
 \usepackage{comment}
@@ -557,7 +557,7 @@ even though the Curry-Howard correspondance has been extremely fruitful for
 programming language research, it is $\Nat$ which will be a better model for
 finite structured types.
 
-\begin{definition}
+\begin{defn}
   A \emph{commutative semiring} (sometimes called a \emph{commutative
     rig} (commutative ri\emph{n}g without negative elements) consists of a
   set $R$, two distinguished elements of $R$ named 0 and 1, and two
@@ -575,7 +575,7 @@ a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
 0 \cdot a &=& 0 \\
 (a + b) \cdot c &=& (a \cdot c) + (b \cdot c)
 \end{array}\]
-\end{definition}
+\end{defn}
 
 \begin{prop}
 The structure $\left(\mathbb{B}, \false, \true, \lor, \land\right)$
@@ -600,31 +600,85 @@ into $B \times A$. Which motivates the introduction of
 type \emph{equivalences}. To do this, we need a few important
 auxilliary concepts first.
 
-\begin{definition}[homotopy]
+\begin{defn}[homotopy]
 \label{def:homotopy}
 Two functions $f,g:A \rightarrow B$ are \emph{homotopic} if
 $\forall x:A. f(x) = g(x)$. We denote this $f \sim g$.
-\end{definition}
+\end{defn}
 
 \noindent It is easy to prove that homotopies (for any given function
-space $A \rightarrow B$) are an equivalence relation.
+space $A \rightarrow B$) are an equivalence relation.  The simplest
+definition of the data which makes up an equivalence is then
 
-\begin{definition}[Quasi-inverse]
+\begin{defn}[Quasi-inverse]
 \label{def:quasi}
 For a function $f : A \rightarrow B$, a \emph{quasi-inverse} is a
 triple $(g, \alpha, \beta)$, consisting of a function
 $g : B \rightarrow A$ and two homotopies
 $\alpha : f \circ g \sim \mathrm{id}_B$ and
 $\beta : g \circ f \sim \mathrm{id}_A$.
-\end{definition}
+\end{defn}
  
-\begin{definition}[Equivalence of types]
-  Two types $A$ and $B$ are equivalent $A ≃ B$ if there exists a
+\begin{defn}[Equivalence of types]
+  Two types $A$ and $B$ are equivalent $A \simeq B$ if there exists a
   function $f : A \rightarrow B$ together with a quasi-inverse for $f$.
-\end{definition}
+\end{defn}
 
-\jc{talk about the definition without quasi-inverse? Continue with
-types being a commutative semiring in the above sense.}
+\noindent Why \emph{quasi}? The reasons are beyond our scope, but
+the interested reader can read sections $2.4$ and $4$ in \cite{hott-book}.
+There are several conceptually different, but equivalent, 
+``better'' definitions.  We record just one here:
+
+\begin{defn}[Bi-invertibility]
+\label{def:biinv}
+For a function $f : A \rightarrow B$, a \emph{bi-inverse} is a
+pair of functions $g,h : B \rightarrow A$ and two homotopies
+$\alpha : f \circ g \sim \mathrm{id}_B$ and
+$\beta : h \circ f \sim \mathrm{id}_A$.
+\end{defn}
+ 
+\noindent We can then replace quasi-inverse with bi-invertibility in
+the definition of type equivalence. The differences will not matter to
+us here.
+
+If we replace $=$ by $\simeq$, then we can indeed prove that
+types (with $\bot, \top, \uplus, \times$) form a semiring.
+
+The reader familiar with universal algebra should pause
+and ponder a bit about what we have done. We have lifted 
+\emph{equality} from being in the signature of the ambient logic
+and instead put it in the signature of the algebraic structure
+of interest. Then, and only then, are we in a solid position
+to show that we have a concept (semiring) which is flexible 
+enough for types to be an instance.
+
+If we revisit the Curry-Howard correspondance, we notice one
+more issue. In logic, it is true that $A \lor A = A$ and
+$A \land A = A$. However, neither $A \uplus A$ nor $A \times A$ are
+equivalent to $A$. They are however \emph{equi-inhabited}. This is
+a fancy way of saying
+\[ A \uplus A \ \text{is inhabited} \qquad \Leftrightarrow
+  \qquad A \ \text{is inhabited} \]
+The above is the real \textit{essence} of the correspondance.
+
+But mere inhabitation falls far short of our goals of being
+able to smoothly deform from one type to another.  
+
+Let's thus analyze the crux of the ``problem''. In logic, we have
+that $\land$ and $\lor$ are both \emph{idempotent}: this is the
+property of any binary operation $*$ where
+$\forall a. a * a = a$. And it should be clear that idempotent
+operations are \emph{forgetful}: its input has two copies of $a$,
+but its output, only one. On the type side, something more subtle
+happens. Consider $\top \uplus \top$ versus $\top$; the first has
+\emph{two} proofs of inhabitation ($\texttt{inl tt} and \texttt{inr tt}$)
+while the second only one ($\texttt{tt}$). These cannot be put in
+bijective correspondance. Even though the ``payload'' \texttt{tt}
+is the same, forgetting $\texttt{inl}$ (or \texttt{inr}) throws
+away information -- something we have expressly disallowed.
+Yes, this should remind you of Maxwell's demon: even though the
+data is the same, they are tagged differently, and this
+information is indeed information, and must be preserved.
 
 \jc{wavefront}
 
