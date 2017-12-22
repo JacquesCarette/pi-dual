@@ -7,6 +7,61 @@
 \usepackage{tikz-cd}
 \usetikzlibrary{quotes}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Macros
+
+\newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
+\newcommand{\mm}{\texttt{\textminus}}
+\newcommand{\pp}{\texttt{+}}
+\newcommand{\inl}[1]{\textsf{inl}~#1}
+\newcommand{\inr}[1]{\textsf{inr}~#1}
+\newcommand{\idv}[3]{#2 \xrightarrow{#1} #3}
+\newcommand{\cp}[3]{#1\stackrel{#2}{\bullet}#3}
+\newcommand{\idt}[3]{#2 \equiv_{#1} #3}
+\newcommand{\idrt}[3]{#3 \equiv_{#1} #2}
+\newcommand{\refl}[1]{\textsf{refl}~#1}
+%% \newcommand{\lid}{\textsf{lid}}
+\newcommand{\alt}{~|~}
+%% \newcommand{\rid}{\textsf{rid}}
+\newcommand{\linv}{l!}
+\newcommand{\rinv}{r!}
+\newcommand{\invinv}{!!}
+\newcommand{\assoc}{\circ}
+\newcommand{\identlp}{\mathit{unite}_+\mathit{l}}
+\newcommand{\identrp}{\mathit{uniti}_+\mathit{l}}
+\newcommand{\identlsp}{\mathit{unite}_+\mathit{r}}
+\newcommand{\identrsp}{\mathit{uniti}_+\mathit{r}}
+\newcommand{\swapp}{\mathit{swap}_+}
+\newcommand{\assoclp}{\mathit{assocl}_+}
+\newcommand{\assocrp}{\mathit{assocr}_+}
+\newcommand{\identlt}{\mathit{unite}_*\mathit{l}}
+\newcommand{\identrt}{\mathit{uniti}_*\mathit{l}}
+\newcommand{\identlst}{\mathit{unite}_*\mathit{r}}
+\newcommand{\identrst}{\mathit{uniti}_*\mathit{r}}
+\newcommand{\swapt}{\mathit{swap}_*}
+\newcommand{\assoclt}{\mathit{assocl}_*}
+\newcommand{\assocrt}{\mathit{assocr}_*}
+\newcommand{\absorbr}{\mathit{absorbr}}
+\newcommand{\absorbl}{\mathit{absorbl}}
+\newcommand{\factorzr}{\mathit{factorzr}}
+\newcommand{\factorzl}{\mathit{factorzl}}
+\newcommand{\dist}{\mathit{dist}}
+\newcommand{\factor}{\mathit{factor}}
+\newcommand{\distl}{\mathit{distl}}
+\newcommand{\factorl}{\mathit{factorl}}
+\newcommand{\distz}{\mathit{absorbr}}
+\newcommand{\iso}{\leftrightarrow}
+\newcommand{\proves}{\vdash}
+\newcommand{\idc}{\mathit{id}\!\!\leftrightarrow}
+\newcommand{\Rule}[4]{
+\makebox{{\rm #1}
+$\displaystyle
+\frac{\begin{array}{l}#2 \\\end{array}}
+{\begin{array}{l}#3      \\\end{array}}$
+ #4}}
+\newcommand{\jdg}[3]{#2 \proves_{#1} #3}
+
+
 \title{Embracing the Laws of Physics: \\ Reversible Models of Computation}
 \author{Jacques Carette, Roshan P. James, Amr Sabry}
 
@@ -566,7 +621,8 @@ finite structured types.
   set $R$, two distinguished elements of $R$ named 0 and 1, and two
   binary operations~$+$ and $\cdot$, satisfying the following
   relations for any $a,b,c \in R$:
-\[\begin{array}{rcl}
+\begin{equation}
+\begin{array}{rcl}
 0 + a &=& a \\
 a + b &=& b + a \\
 a + (b + c) &=& (a + b) + c \\
@@ -577,7 +633,9 @@ a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
 \\
 0 \cdot a &=& 0 \\
 (a + b) \cdot c &=& (a \cdot c) + (b \cdot c)
-\end{array}\]
+\end{array}
+\label{eq:csemiring}
+\end{equation}
 \end{defn}
 
 \begin{prop}
@@ -645,14 +703,14 @@ the definition of type equivalence. The differences will not matter to
 us here.
 
 If we replace $=$ by $\simeq$, then we can indeed prove that
-types (with $\bot, \top, \uplus, \times$) form a semiring.
+types (with $\bot, \top, \uplus, \times$) form a commutative semiring.
 
 The reader familiar with universal algebra should pause
 and ponder a bit about what we have done. We have lifted 
 \emph{equality} from being in the signature of the ambient logic
 and instead put it in the signature of the algebraic structure
 of interest. Then, and only then, are we in a solid position
-to show that we have a concept (semiring) which is flexible 
+to show that we have a concept (commutative semiring) which is flexible 
 enough for types to be an instance.
 
 If we revisit the Curry-Howard correspondance, we notice one
@@ -663,11 +721,16 @@ a fancy way of saying
 \[ A \uplus A \ \text{is inhabited} \qquad \Leftrightarrow
   \qquad A \ \text{is inhabited} \]
 The above is the real \textit{essence} of the correspondance.
+In other words, classical Curry-Howard tells us about
+\emph{logical equivalence} of types. This is even a
+constructive statement: there are indeed functions
+$f : A \uplus A \rightarrow A$ and $g : A \rightarrow A \uplus A$;
+however, they are not inverses.
 
-But mere inhabitation falls far short of our goals of being
+So mere inhabitation falls far short of our goals of being
 able to smoothly deform from one type to another.  
 
-Let's thus analyze the crux of the ``problem''. In logic, we have
+Let us thus analyze the crux of the ``problem''. In logic, we have
 that $\land$ and $\lor$ are both \emph{idempotent}: this is the
 property of any binary operation $*$ where
 $\forall a. a * a = a$. And it should be clear that idempotent
@@ -681,22 +744,75 @@ is the same, forgetting $\texttt{inl}$ (or \texttt{inr}) throws
 away information -- something we have expressly disallowed.
 Yes, this should remind you of Maxwell's demon: even though the
 data is the same, they are tagged differently, and this
-information is indeed information, and must be preserved.
+data is indeed information, and must be preserved.
+
+\begin{figure}[t]
+\[
+\begin{array}{rrcll}
+\idc :& \tau & \iso & \tau &: \idc \\
+\\
+\identlp :&  0 + \tau & \iso & \tau &: \identrp \\
+\swapp :&  \tau_1 + \tau_2 & \iso & \tau_2 + \tau_1 &: \swapp \\
+\assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 &: \assocrp \\
+\\
+\identlt :&  1 * \tau & \iso & \tau &: \identrt \\
+\swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
+\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\
+\\
+\distz :&~ 0 * \tau & \iso & 0 ~ &: \factorzl \\
+\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor
+\end{array}
+\]
+\caption{$\Pi$-terms.}
+\label{pi-terms}
+\end{figure}
+
+Nevertheless, the Curry-Howard correspondance still has some
+force. We know that the inhabitants of types formed with
+with $\bot, \top, \uplus, \times$ are a commutative semiring. What we
+want to know is, which types are equivalent? From a commutative semiring
+perspective, this amounts to asking what terms are equal?
+We have a set of generators for those equations, namely those
+in~(\ref{eq:csemiring}). What we thus need is to create $8$ pairs
+of mutually inverse functions which witness these identities.
+For concreteness, we show the signatures in Figure~\ref{pi-terms}.
+
+\begin{figure}[t]
+\[
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
+{\jdg{}{}{c_1 \odot c_2 : \tau_1 \iso \tau_3}}
+{}
+\qquad
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
+{\jdg{}{}{c_1 \oplus c_2 : \tau_1 + \tau_3 \iso \tau_2 + \tau_4}}
+{}
+\]
+\[
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
+{\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
+{}
+\]
+\caption{$\Pi$-combinators.}
+\label{pi-combinators}
+\end{figure}
 
 \jc{wavefront}
 
-Introduce the usual types. Curry-Howard, as usual. Problem with it, i.e.
-it is merely about inhabitation, which is NOT reversible. Show examples
-with A+A and A*A. Our deformations need to be reversible, so they need
-to induce type isomorphisms. So while our types are as usual, the
-first level of transformations on data will change, and be isomorphisms.
 The type-erasure will, naturally, be permutations. But where do the
 isomorphisms come from?  Well, inhabitants of types with (0,1,+,*)
 form a semiring. So, still inspired by Curry-Howard, look to the
 proof-terms of semiring identities -- and voila, a nice set of
 isomorphisms! We can name these isomorphisms, AND give them
-implementations. Gives us a nice, reversible PL for
-structured finite types. We can it Pi.
+implementations. 
+
+That gives us some ground terms.  Not enough for a PL! So then
+we need to be able to 'combine' these. So we add 3 combinators for
+3 different kinds of composition.
+Gives us a nice, reversible PL for
+structured finite types. We call it Pi.
 
 We actually have several choices. We can make Pi structurally reversible
 (i.e. there is a syntactic transformation on Pi which maps combinators
