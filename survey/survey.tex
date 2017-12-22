@@ -3,6 +3,9 @@
 \usepackage{fullpage}
 \usepackage{url}
 \usepackage{comment}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usetikzlibrary{quotes}
 
 \title{Embracing the Laws of Physics: \\ Reversible Models of Computation}
 \author{Jacques Carette, Roshan P. James, Amr Sabry}
@@ -463,7 +466,7 @@ looking at what structure our data has, and that will help us define
 an appropriate notion of program. Of course, when programs themselves
 are data, things do get more complicated.  In the following sections,
 we will look at different natural classes of data, and explore the
-correspond notion of reversible programs.
+corresponding notion of reversible programs.
 
 \amr{In the quantum case, this is clear. Say something about topological
 quantum computing.}
@@ -718,6 +721,77 @@ examples:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data III: Reversible Programs between Reversible Programs}
+
+In the previous sections, we examined equivalences between
+conventional data structures, i.e, sets of values and structured trees
+of values. We now consider a richer, less conventional, but
+foundational notion of data: programs themselves. Indeed, universal
+computation models fundamentally rely on the fact that ``programs are
+(or can be encoded as) data'', e.g., a Turing machine can be encoded
+as a string that another Turing machine (or even the same machine) can
+manipulate. In our setting, the programs developed in the previous
+sections are reversible deformations of data structures. Can these
+reversible deformations be themselves be subject to (higher-level)
+reversible deformations? 
+
+Before developing the theory, let's consider a small example:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+  \draw[<->,double,red,thick] (2.25,-1.5) -- (2.25,-2.5) ;
+  \node at (3.3,-2) {$\mathit{swapl₊⇔}$} ;
+  \node at (2.5,-1.3) {$((c₂~⊕~c₁)~◎~\mathit{swap₊})$};
+  \node at (2.5,-2.7) {$(\mathit{swap₊}~◎~(c₁~⊕~c₂))$};
+  \draw (-2,-2) ellipse (0.5cm and 1cm);
+  \draw[fill] (-2,-1.5) circle [radius=0.025];
+  \node[below] at (-2.1,-1.5) {$A$};
+  \draw[fill] (-2,-2.5) circle [radius=0.025];
+  \node[below] at (-2.1,-2.5) {$B$};
+
+  \draw (6.5,-2) ellipse (0.5cm and 1cm);
+  \draw[fill] (6.5,-1.5) circle [radius=0.025];
+  \node[below] at (6.7,-1.5) {$C$};
+  \draw[fill] (6.5,-2.5) circle [radius=0.025];
+  \node[below] at (6.7,-2.5) {$D$};
+
+  \draw (-2,-1.5) to[bend left] (1,0.5) ;
+  \draw (-2,-2.5) to[bend left] (1,-0.5) ;
+  \draw[->] (3.5,0.5) to[bend left] (6.5,-1.45) ;
+  \draw[->] (3.5,-0.5) to[bend left] (6.5,-2.45) ;
+
+  \draw (-2,-1.5) to[bend right] (1,-3.5) ;
+  \draw (-2,-2.5) to[bend right] (1,-4.5) ;
+  \draw[->] (3.5,-3.5) to[bend right] (6.5,-1.55) ;
+  \draw[->] (3.5,-4.5) to[bend right] (6.5,-2.55) ;
+
+  \draw     (2.5,-3)  -- (3.5,-3) -- (3.5,-4) -- (2.5,-4) -- cycle ;
+  \draw     (2.5,-4)  -- (3.5,-4) -- (3.5,-5) -- (2.5,-5) -- cycle ;
+
+  \draw     (1,1)  -- (2,1) -- (2,0) -- (1,0) -- cycle ;
+  \draw     (1,0)  -- (2,0) -- (2,-1) -- (1,-1) -- cycle ;
+
+  \node at (3,-3.5) {c₁};
+  \node at (3,-4.5) {c₂};
+
+  \node at (1.5,0.5) {c₂};
+  \node at (1.5,-0.5) {c₁};
+
+  \draw     (2,0.5)  -- (2.5,0.5)  ;
+  \draw     (2,-0.5) -- (2.5,-0.5) ; 
+
+  \draw     (2.5,0.5)  -- (3.5,-0.5)  ;
+  \draw     (2.5,-0.5) -- (3.5,0.5) ; 
+
+  \draw     (1,-3.5)  -- (2,-4.5)    ;
+  \draw     (1,-4.5) -- (2,-3.5)   ; 
+
+  \draw     (2,-3.5)  -- (2.5,-3.5)    ; 
+  \draw     (2,-4.5) -- (2.5,-4.5)   ; 
+
+\end{tikzpicture}
+\end{center}
+
+\amr{another wavefront}
 
 Pi level 2.
 
