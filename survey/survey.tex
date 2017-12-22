@@ -749,6 +749,41 @@ data is indeed information, and must be preserved.
 \begin{figure}[t]
 \[
 \begin{array}{rrcll}
+\idc :& \tau & \simeq & \tau &: \idc \\
+\\
+\identlp :&  \bot \uplus \tau & \simeq & \tau &: \identrp \\
+\swapp :&  \tau_1 \uplus \tau_2 & \simeq & \tau_2 \uplus \tau_1 &: \swapp \\
+\assoclp :&  \tau_1 \uplus (\tau_2 \uplus \tau_3) & \simeq & (\tau_1 \uplus \tau_2) \uplus \tau_3 &: \assocrp \\
+\\
+\identlt :&  \top \times \tau & \simeq & \tau &: \identrt \\
+\swapt :&  \tau_1 \times \tau_2 & \simeq & \tau_2 \times \tau_1 &: \swapt \\
+\assoclt :&  \tau_1 \times (\tau_2 \times \tau_3) & \simeq & (\tau_1 \times \tau_2) \times \tau_3 &: \assocrt \\
+\\
+\distz :&~ \bot \times \tau & \simeq & \bot ~ &: \factorzl \\
+\dist :&~ (\tau_1 \uplus \tau_2) \times \tau_3 & \simeq & (\tau_1 \times \tau_3) \uplus (\tau_2 \times \tau_3)~ &: \factor
+\end{array}
+\]
+\caption{Type isomorphisms.}
+\label{type-isos}
+\end{figure}
+
+Nevertheless, the Curry-Howard correspondance still has some
+force. We know that the inhabitants of types formed with
+with $\bot, \top, \uplus, \times$ are a commutative semiring. What we
+want to know is, which types are equivalent? From a commutative semiring
+perspective, this amounts to asking what terms are equal?
+We have a set of generators for those equations, namely those
+in~(\ref{eq:csemiring}). What we thus need is to create $8$ pairs
+of mutually inverse functions which witness these identities.
+For concreteness, we show the signatures in Figure~\ref{type-isos}.
+As these all come in symmetric pairs (some of which are self-symmetric),
+we give names for both directions. The names use $\iso$, $+$ and $*$
+as these will be what we use when we reflect these isomorphism into
+a programming language, which we proceed to do next.
+
+\begin{figure}[t]
+\[
+\begin{array}{rrcll}
 \idc :& \tau & \iso & \tau &: \idc \\
 \\
 \identlp :&  0 + \tau & \iso & \tau &: \identrp \\
@@ -767,15 +802,20 @@ data is indeed information, and must be preserved.
 \label{pi-terms}
 \end{figure}
 
-Nevertheless, the Curry-Howard correspondance still has some
-force. We know that the inhabitants of types formed with
-with $\bot, \top, \uplus, \times$ are a commutative semiring. What we
-want to know is, which types are equivalent? From a commutative semiring
-perspective, this amounts to asking what terms are equal?
-We have a set of generators for those equations, namely those
-in~(\ref{eq:csemiring}). What we thus need is to create $8$ pairs
-of mutually inverse functions which witness these identities.
-For concreteness, we show the signatures in Figure~\ref{pi-terms}.
+We now have in our hands our desired denotational semantics: we want
+to create a language $\Pi$ such that the types and type combinators
+map to $\bot, \top, \uplus, \times$, and such that we have ground
+terms whose denotation are all $16$ type isormorphisms of
+Figure~\ref{type-isos}. This is completely straightforward, as
+we can simply do this literally. To make the analogy with 
+commutative semirings stand out even more, we will use $0, 1, +$, and $*$
+at the type level, and will denote ``equivalence'' by $\iso$.
+Thus Figure~\ref{pi-terms} shows the ``constants'' of the language.
+
+\jc{wavefront}
+
+Of course, one does not get a programming language with just (typed)
+constants!
 
 \begin{figure}[t]
 \[
@@ -798,8 +838,6 @@ For concreteness, we show the signatures in Figure~\ref{pi-terms}.
 \caption{$\Pi$-combinators.}
 \label{pi-combinators}
 \end{figure}
-
-\jc{wavefront}
 
 The type-erasure will, naturally, be permutations. But where do the
 isomorphisms come from?  Well, inhabitants of types with (0,1,+,*)
