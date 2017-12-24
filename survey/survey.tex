@@ -6,6 +6,7 @@
 \usepackage{tikz}
 \usepackage{tikz-cd}
 \usetikzlibrary{quotes}
+\tikzset{>=latex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Macros
@@ -880,22 +881,23 @@ In the previous sections, we examined equivalences between
 conventional data structures, i.e, sets of values and structured trees
 of values. We now consider a richer, less conventional, but
 foundational notion of data: programs themselves. Indeed, universal
-computation models fundamentally rely on the fact that ``programs are
-(or can be encoded as) data'', e.g., a Turing machine can be encoded
-as a string that another Turing machine (or even the same machine) can
-manipulate. In our setting, the programs developed in the previous
-sections are reversible deformations of data structures. Can these
-reversible deformations be themselves be subject to (higher-level)
-reversible deformations? 
+computation models fundamentally rely on the fact that \emph{programs
+  are (or can be encoded as) data}, e.g., a Turing machine can be
+encoded as a string that another Turing machine (or even the same
+machine) can manipulate. In our setting, the programs developed in the
+previous section are reversible deformations between structured finite
+types. We now ask whether these reversible deformations can themselves
+be subject to (higher-level) reversible deformations?
 
-Before developing the theory, let's consider a small example:
+Before developing the theory, let's consider a small example
+consisting of two deformations between the types $A + B$ and $C+D$:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-  \draw[<->,double,red,thick] (2.25,-1.5) -- (2.25,-2.5) ;
-  \node at (3.3,-2) {$\mathit{swapl₊⇔}$} ;
-  \node at (2.5,-1.3) {$((c₂~⊕~c₁)~◎~\mathit{swap₊})$};
-  \node at (2.5,-2.7) {$(\mathit{swap₊}~◎~(c₁~⊕~c₂))$};
+  \draw[>=latex,<->,double,red,thick] (2.25,-1.2) -- (2.25,-2.9) ;
+%%  \node at (3.3,-2) {$\mathit{swapl}_{+\Leftrightarrow}$} ;
+%%  \node at (2.5,-1.3) {$((c_2~\oplus~c_1)~\circledcirc~\mathit{swap}_{+})$}; 
+%%  \node at (2.5,-2.7) {$(\mathit{swap}_{+}~\circledcirc~(c_1~\oplus~c_2))$}; 
   \draw (-2,-2) ellipse (0.5cm and 1cm);
   \draw[fill] (-2,-1.5) circle [radius=0.025];
   \node[below] at (-2.1,-1.5) {$A$};
@@ -908,13 +910,13 @@ Before developing the theory, let's consider a small example:
   \draw[fill] (6.5,-2.5) circle [radius=0.025];
   \node[below] at (6.7,-2.5) {$D$};
 
-  \draw (-2,-1.5) to[bend left] (1,0.5) ;
-  \draw (-2,-2.5) to[bend left] (1,-0.5) ;
+  \draw[<-] (-2,-1.5) to[bend left] (1,0.5) ;
+  \draw[<-] (-2,-2.5) to[bend left] (1,-0.5) ;
   \draw[->] (3.5,0.5) to[bend left] (6.5,-1.45) ;
   \draw[->] (3.5,-0.5) to[bend left] (6.5,-2.45) ;
 
-  \draw (-2,-1.5) to[bend right] (1,-3.5) ;
-  \draw (-2,-2.5) to[bend right] (1,-4.5) ;
+  \draw[<-] (-2,-1.5) to[bend right] (1,-3.5) ;
+  \draw[<-] (-2,-2.5) to[bend right] (1,-4.5) ;
   \draw[->] (3.5,-3.5) to[bend right] (6.5,-1.55) ;
   \draw[->] (3.5,-4.5) to[bend right] (6.5,-2.55) ;
 
@@ -924,11 +926,11 @@ Before developing the theory, let's consider a small example:
   \draw     (1,1)  -- (2,1) -- (2,0) -- (1,0) -- cycle ;
   \draw     (1,0)  -- (2,0) -- (2,-1) -- (1,-1) -- cycle ;
 
-  \node at (3,-3.5) {c₁};
-  \node at (3,-4.5) {c₂};
+  \node at (3,-3.5) {$c_1$};
+  \node at (3,-4.5) {$c_2$};
 
-  \node at (1.5,0.5) {c₂};
-  \node at (1.5,-0.5) {c₁};
+  \node at (1.5,0.5) {$c_2$};
+  \node at (1.5,-0.5) {$c_1$};
 
   \draw     (2,0.5)  -- (2.5,0.5)  ;
   \draw     (2,-0.5) -- (2.5,-0.5) ; 
@@ -944,8 +946,227 @@ Before developing the theory, let's consider a small example:
 
 \end{tikzpicture}
 \end{center}
+The top path is the reversible deformation
+$(c_2~\oplus~c_1)~\circledcirc~\mathit{swap}_{+}$ which deforms the
+type $A$ by $c_2$, deforms the type $B$ by $c_1$, and deforms the
+resulting space by a twist that exchanges the two injections into the
+sum type. The bottom path performs the twist first and then deforms
+the type $A$ by $c_2$ and the type $B$ by $c_1$ as before. If one
+could imagine the paths are physical wires and the deformations $c_1$
+and $c_2$ as arbitrary deformations on these wires then, holding the
+points $A$, $B$, $C$, and $D$ fixed, it is possible to rotate the top
+part of the diagram to become identical to the bottom one. In other
+words, there exists a higher-level deformation of the program
+$(c_2~\oplus~c_1)~\circledcirc~\mathit{swap}_{+}$ to the program
+$\mathit{swap}_{+} \circledcirc (c_1~\oplus~c_2)$.
 
 \amr{another wavefront}
+
+\begin{figure}[t]
+Let $c₁ : t₁ ⟷ t₂$,  $c₂ : t₂ ⟷ t₃$, and $c₃ : t₃ ⟷ t₄$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {c₁ ◎ (c₂ ◎ c₃) ⇔ (c₁ ◎ c₂) ◎ c₃}
+\\
+  {(c₁ ⊕ (c₂ ⊕ c₃)) ◎ \assoclp ⇔ \assoclp ◎ ((c₁ ⊕ c₂) ⊕ c₃)}
+\\
+  {(c₁ ⊗ (c₂ ⊗ c₃)) ◎ \assoclt ⇔ \assoclt ◎ ((c₁ ⊗ c₂) ⊗ c₃)}
+\\
+  {((c₁ ⊕ c₂) ⊕ c₃) ◎ \assocrp ⇔ \assocrp ◎ (c₁ ⊕ (c₂ ⊕ c₃))}
+\\
+  {((c₁ ⊗ c₂) ⊗ c₃) ◎ \assocrt ⇔ \assocrt ◎ (c₁ ⊗ (c₂ ⊗ c₃))}
+\\
+  {\assocrp ◎ \assocrp ⇔ ((\assocrp ⊕ \idc) ◎ \assocrp) ◎ (\idc ⊕ \assocrp)}
+\\
+  {\assocrt ◎ \assocrt ⇔ ((\assocrt ⊗ \idc) ◎ \assocrt) ◎ (\idc ⊗ \assocrt)}
+\end{array}\]
+\caption{\label{figj}Signatures of level-1 $\Pi$-combinators: associativity}
+\end{figure}
+  
+\begin{figure}[t]
+Let $a : t₁ ⟷ t₂$, $b : t₃ ⟷ t₄$, and $c : t₅ ⟷ t₆$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {((a ⊕ b) ⊗ c) ◎ \dist ⇔ \dist ◎ ((a ⊗ c) ⊕ (b ⊗ c))}
+\\
+  {(a ⊗ (b ⊕ c)) ◎ \distl ⇔ \distl ◎ ((a ⊗ b) ⊕ (a ⊗ c))}
+\\
+  {((a ⊗ c) ⊕ (b ⊗ c)) ◎ \factor ⇔ \factor ◎ ((a ⊕ b) ⊗ c)}
+\\
+  {((a ⊗ b) ⊕ (a ⊗ c)) ◎ \factorl ⇔ \factorl ◎ (a ⊗ (b ⊕ c))}
+\end{array}\]
+\caption{\label{figi}Signatures of level-1 $\Pi$-combinators: distributivity and factoring}
+\end{figure}
+
+\begin{figure}[t]
+Let $c, c₁, c₂, c₃ : t₁ ⟷ t₂$ and $c', c'' : t₃ ⟷ t₄$: 
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\idc ◎ \, c ⇔ c}
+\quad 
+  {c \, ◎ \idc \, ⇔ c}
+\quad
+  {c\,\, ◎\,! c ⇔ \idc}
+\quad 
+  {! c ◎ c ⇔ \idc}
+\\
+  {c ⇔ c}
+\quad 
+\Rule{}
+  {c₁ ⇔ c₂ \quad c₂ ⇔ c₃}
+  {c₁ ⇔ c₃}
+  {} 
+\quad
+\Rule{}
+  {c₁ ⇔ c' \quad c₂ ⇔ c''}
+  {c₁ ◎ c₂ ⇔ c' ◎ c''}
+  {}
+\end{array}\]
+\caption{\label{figh}Signatures of level-1 $\Pi$-combinators: identity and composition}
+\end{figure}
+
+\begin{figure}[t]
+Let $c₀ : 0 ⟷ 0$, $c₁ : 1 ⟷ 1$, and $c : t₁ ⟷ t₂$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\identlp ◎ c ⇔ (c₀ ⊕ c) ◎ \identlp}
+\qquad 
+  {\identrp ◎ (c₀ ⊕ c) ⇔ c ◎ \identrp}
+\\
+  {\identlsp ◎ c ⇔ (c ⊕ c₀) ◎ \identlsp}
+\qquad
+  {\identrsp ◎ (c ⊕ c₀) ⇔ c ◎ \identrsp}
+\\
+  {\identlt ◎ c ⇔ (c₁ ⊗ c) ◎ \identlt}
+\qquad
+  {\identrt ◎ (c₁ ⊗ c) ⇔ c ◎ \identrp}
+\\
+  {\identlst ◎ c ⇔ (c ⊗ c₁) ◎ \identlst}
+\qquad
+  {\identrst ◎ (c ⊗ c₁) ⇔ c ◎ \identrst}
+\\
+  {\identlt ⇔ \distl ◎ (\identlt ⊕ \identlt)}
+\\
+\identlp ⇔ \swapp ◎ \identrsp
+\qquad
+\identlt ⇔ \swapt ◎ \identrst
+\end{array}\]
+\caption{\label{figg}Signatures of level-1 $\Pi$-combinators: unit}
+\end{figure}
+
+\begin{figure}[t]
+Let $c₁ : t₁ ⟷ t₂$ and $c₂ : t₃ ⟷ t₄$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\swapp ◎ (c₁ ⊕ c₂) ⇔ (c₂ ⊕ c₁) ◎ \swapp}
+\quad
+  {\swapt ◎ (c₁ ⊗ c₂) ⇔ (c₂ ⊗ c₁) ◎ \swapt}
+\\
+  {(\assocrp ◎ \swapp) ◎ \assocrp ⇔ ((\swapp ⊕ \idc) ◎ \assocrp) ◎ (\idc ⊕ \swapp)}
+\\
+  {(\assoclp ◎ \swapp) ◎ \assoclp ⇔ ((\idc ⊕ \swapp) ◎ \assoclp) ◎ (\swapp ⊕ \idc)}
+\\
+  {(\assocrt ◎ \swapt) ◎ \assocrt ⇔ ((\swapt ⊗ \idc) ◎ \assocrt) ◎ (\idc ⊗ \swapt)}
+\\
+  {(\assoclt ◎ \swapt) ◎ \assoclt ⇔ ((\idc ⊗ \swapt) ◎ \assoclt) ◎ (\swapt ⊗ \idc)}
+\end{array}\]
+\caption{\label{figf}Signatures of level-1 $\Pi$-combinators: commutativity and associativity}
+\end{figure}
+
+\begin{figure}[t]
+Let $c₁ : t₁ ⟷ t₂$, $c₂ : t₃ ⟷ t₄$, $c₃ : t₁ ⟷ t₂$, and $c₄ : t₃ ⟷ t₄$. \\
+Let $a₁ : t₅ ⟷ t₁$,  $a₂ : t₆ ⟷ t₂$, $a₃ : t₁ ⟷ t₃$, and $a₄ : t₂ ⟷ t₄$.
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+\Rule{}
+  {c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
+  {c₁ ⊕ c₂ ⇔ c₃ ⊕ c₄}
+  {}
+\qquad
+\Rule{}
+  {c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
+  {c₁ ⊗ c₂ ⇔ c₃ ⊗ c₄}
+  {} 
+\\
+  {\idc ⊕ \, \idc \, ⇔ \idc}
+\qquad
+  {\idc ⊗ \, \idc \, ⇔ \idc}
+\\
+  {(a₁ ◎ a₃) ⊕ (a₂ ◎ a₄) ⇔ (a₁ ⊕ a₂) ◎ (a₃ ⊕ a₄)}
+\\
+  {(a₁ ◎ a₃) ⊗ (a₂ ◎ a₄) ⇔ (a₁ ⊗ a₂) ◎ (a₃ ⊗ a₄)}
+\end{array}\]
+\caption{\label{fige}Signatures of level-1 $\Pi$-combinators: functors}
+\end{figure}
+
+\begin{figure}[t]
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\identlsp ⊕ \idc ~⇔~ \assocrp ◎ (\idc ⊕ \, \identlp)}
+\\
+  {\identlst ⊗ \idc ~⇔~ \assocrt ◎ (\idc ⊗ \, \identlt)}
+\end{array}\]
+\caption{\label{figd}Signatures of level-1 $\Pi$-combinators: unit and associativity}
+\end{figure}
+
+
+\begin{figure}[t]
+Let $c : t₁ ⟷ t₂$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {(c ⊗ \idc) ◎ \absorbl ⇔ \absorbl ◎ \idc}
+\quad
+  {(\idc \, ⊗ c) ◎ \absorbr ⇔ \absorbr ◎ \idc}
+\\
+  {\idc ◎ \, \factorzl ⇔ \factorzl ◎ (\idc ⊗ c)}
+\quad
+  {\idc ◎ \, \factorzr ⇔ \factorzr ◎ (c ⊗ \idc)}
+\\
+  {\absorbr ⇔ \absorbl}
+\\
+  {\absorbr ⇔ (\distl ◎ (\absorbr ⊕ \absorbr)) ◎ \identlp}
+\\
+  {\identlst ⇔ \absorbr}
+\qquad
+  {\absorbl ⇔ \swapt ◎ \absorbr}
+\\
+  {\absorbr ⇔ (\assoclt ◎ (\absorbr ⊗ \idc)) ◎ \absorbr}
+\\
+  {(\idc ⊗ \absorbr) ◎ \absorbl ⇔ (\assoclt ◎ (\absorbl ⊗ \idc)) ◎ \absorbr}
+\\
+  {\idc ⊗ \, \identlp ⇔ (\distl ◎ (\absorbl ⊕ \idc)) ◎ \identlp}
+\end{array}\]
+\caption{\label{figc}Signatures of level-1 $\Pi$-combinators: zero}
+\end{figure}
+
+\begin{figure}[t]
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {((\assoclp ⊗ \idc) ◎ \dist) ◎ (\dist ⊕ \idc) ⇔ (\dist ◎ (\idc ⊕ \dist)) ◎ \assoclp}
+\\
+  {\assoclt ◎ \distl ⇔ ((\idc ⊗ \distl) ◎ \distl) ◎ (\assoclt ⊕ \assoclt)}
+\end{array}\]
+\vspace{ -0.5em}
+\[\def\arraystretch{1.3}
+\begin{array}{rcl}
+  (\distl ◎ (\dist ⊕ \dist)) ◎ \assoclp &⇔&   
+   \dist ◎ (\distl ⊕ \distl) ◎ \assoclp ~◎ \\
+&& (\assocrp ⊕ \idc) ~◎ \\
+&& ((\idc ⊕ \swapp) ⊕ \idc) ~◎ \\
+&&      (\assoclp ⊕ \idc)
+\end{array}\]
+\caption{\label{figb}Signatures of level-1 $\Pi$-combinators: associativity and distributivity}
+\end{figure}
+
+\begin{figure}[t]
+\[\def\arraystretch{1.3}
+\begin{array}{rcl}
+  (\idc ⊗ \swapp) ◎ \distl &⇔& \distl ◎ \swapp
+\\
+  \dist ◎ (\swapt ⊕ \swapt) &⇔& \swapt ◎ \distl
+\end{array}\]
+\caption{\label{figa}Signatures of level-1 $\Pi$-combinators: commutativity and distributivity}
+\end{figure}
 
 Pi level 2.
 
