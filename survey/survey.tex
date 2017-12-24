@@ -874,6 +874,212 @@ examples:
   fredkin
 \end{verbatim}
 
+\begin{figure}[t]
+Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t₃$, and $c_3 : t_3 \leftrightarrow t_4$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {c_1 \circledcirc (c_2 \circledcirc c_3) \Leftrightarrow (c_1 \circledcirc c_2) \circledcirc c_3}
+\\
+  {(c_1 \oplus (c_2 \oplus c_3)) \circledcirc \assoclp \Leftrightarrow \assoclp \circledcirc ((c_1 \oplus c_2) \oplus c_3)}
+\\
+  {(c_1 \otimes (c_2 \otimes c_3)) \circledcirc \assoclt \Leftrightarrow \assoclt \circledcirc ((c_1 \otimes c_2) \otimes c_3)}
+\\
+  {((c_1 \oplus c_2) \oplus c_3) \circledcirc \assocrp \Leftrightarrow \assocrp \circledcirc (c_1 \oplus (c_2 \oplus c_3))}
+\\
+  {((c_1 \otimes c_2) \otimes c_3) \circledcirc \assocrt \Leftrightarrow \assocrt \circledcirc (c_1 \otimes (c_2 \otimes c_3))}
+\\
+  {\assocrp \circledcirc \assocrp \Leftrightarrow ((\assocrp \oplus \idc) \circledcirc \assocrp) \circledcirc (\idc \oplus \assocrp)}
+\\
+  {\assocrt \circledcirc \assocrt \Leftrightarrow ((\assocrt \otimes \idc) \circledcirc \assocrt) \circledcirc (\idc \otimes \assocrt)}
+\end{array}\]
+\caption{\label{figj}Signatures of level-1 $\Pi$-combinators: associativity}
+\end{figure}
+  
+\begin{figure}[t]
+Let $a : t_1 \leftrightarrow t_2$, $b : t_3 \leftrightarrow t_4$, and $c : t₅ \leftrightarrow t₆$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {((a \oplus b) \otimes c) \circledcirc \dist \Leftrightarrow \dist \circledcirc ((a \otimes c) \oplus (b \otimes c))}
+\\
+  {(a \otimes (b \oplus c)) \circledcirc \distl \Leftrightarrow \distl \circledcirc ((a \otimes b) \oplus (a \otimes c))}
+\\
+  {((a \otimes c) \oplus (b \otimes c)) \circledcirc \factor \Leftrightarrow \factor \circledcirc ((a \oplus b) \otimes c)}
+\\
+  {((a \otimes b) \oplus (a \otimes c)) \circledcirc \factorl \Leftrightarrow \factorl \circledcirc (a \otimes (b \oplus c))}
+\end{array}\]
+\caption{\label{figi}Signatures of level-1 $\Pi$-combinators: distributivity and factoring}
+\end{figure}
+
+\begin{figure}[t]
+Let $c, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c', c'' : t_3 \leftrightarrow t_4$: 
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\idc \circledcirc \, c \Leftrightarrow c}
+\quad 
+  {c \, \circledcirc \idc \, \Leftrightarrow c}
+\quad
+  {c\,\, \circledcirc\,! c \Leftrightarrow \idc}
+\quad 
+  {! c \circledcirc c \Leftrightarrow \idc}
+\\
+  {c \Leftrightarrow c}
+\quad 
+\Rule{}
+  {c_1 \Leftrightarrow c_2 \quad c_2 \Leftrightarrow c_3}
+  {c_1 \Leftrightarrow c_3}
+  {} 
+\quad
+\Rule{}
+  {c_1 \Leftrightarrow c' \quad c_2 \Leftrightarrow c''}
+  {c_1 \circledcirc c_2 \Leftrightarrow c' \circledcirc c''}
+  {}
+\end{array}\]
+\caption{\label{figh}Signatures of level-1 $\Pi$-combinators: identity and composition}
+\end{figure}
+
+\begin{figure}[t]
+Let $c₀ : 0 \leftrightarrow 0$, $c_1 : 1 \leftrightarrow 1$, and $c : t_1 \leftrightarrow t_2$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\identlp \circledcirc c \Leftrightarrow (c₀ \oplus c) \circledcirc \identlp}
+\qquad 
+  {\identrp \circledcirc (c₀ \oplus c) \Leftrightarrow c \circledcirc \identrp}
+\\
+  {\identlsp \circledcirc c \Leftrightarrow (c \oplus c₀) \circledcirc \identlsp}
+\qquad
+  {\identrsp \circledcirc (c \oplus c₀) \Leftrightarrow c \circledcirc \identrsp}
+\\
+  {\identlt \circledcirc c \Leftrightarrow (c_1 \otimes c) \circledcirc \identlt}
+\qquad
+  {\identrt \circledcirc (c_1 \otimes c) \Leftrightarrow c \circledcirc \identrp}
+\\
+  {\identlst \circledcirc c \Leftrightarrow (c \otimes c_1) \circledcirc \identlst}
+\qquad
+  {\identrst \circledcirc (c \otimes c_1) \Leftrightarrow c \circledcirc \identrst}
+\\
+  {\identlt \Leftrightarrow \distl \circledcirc (\identlt \oplus \identlt)}
+\\
+\identlp \Leftrightarrow \swapp \circledcirc \identrsp
+\qquad
+\identlt \Leftrightarrow \swapt \circledcirc \identrst
+\end{array}\]
+\caption{\label{figg}Signatures of level-1 $\Pi$-combinators: unit}
+\end{figure}
+
+\begin{figure}[t]
+Let $c_1 : t_1 \leftrightarrow t_2$ and $c_2 : t_3 \leftrightarrow t_4$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\swapp \circledcirc (c_1 \oplus c_2) \Leftrightarrow (c_2 \oplus c_1) \circledcirc \swapp}
+\quad
+  {\swapt \circledcirc (c_1 \otimes c_2) \Leftrightarrow (c_2 \otimes c_1) \circledcirc \swapt}
+\\
+  {(\assocrp \circledcirc \swapp) \circledcirc \assocrp \Leftrightarrow ((\swapp \oplus \idc) \circledcirc \assocrp) \circledcirc (\idc \oplus \swapp)}
+\\
+  {(\assoclp \circledcirc \swapp) \circledcirc \assoclp \Leftrightarrow ((\idc \oplus \swapp) \circledcirc \assoclp) \circledcirc (\swapp \oplus \idc)}
+\\
+  {(\assocrt \circledcirc \swapt) \circledcirc \assocrt \Leftrightarrow ((\swapt \otimes \idc) \circledcirc \assocrt) \circledcirc (\idc \otimes \swapt)}
+\\
+  {(\assoclt \circledcirc \swapt) \circledcirc \assoclt \Leftrightarrow ((\idc \otimes \swapt) \circledcirc \assoclt) \circledcirc (\swapt \otimes \idc)}
+\end{array}\]
+\caption{\label{figf}Signatures of level-1 $\Pi$-combinators: commutativity and associativity}
+\end{figure}
+
+\begin{figure}[t]
+Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, $c_3 : t_1 \leftrightarrow t_2$, and $c_4 : t_3 \leftrightarrow t_4$. \\
+Let $a_1 : t₅ \leftrightarrow t_1$,  $a_2 : t₆ \leftrightarrow t_2$, $a_3 : t_1 \leftrightarrow t_3$, and $a_4 : t_2 \leftrightarrow t_4$.
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+\Rule{}
+  {c_1 \Leftrightarrow c_3 \quad c_2 \Leftrightarrow c_4}
+  {c_1 \oplus c_2 \Leftrightarrow c_3 \oplus c_4}
+  {}
+\qquad
+\Rule{}
+  {c_1 \Leftrightarrow c_3 \quad c_2 \Leftrightarrow c_4}
+  {c_1 \otimes c_2 \Leftrightarrow c_3 \otimes c_4}
+  {} 
+\\
+  {\idc \oplus \, \idc \, \Leftrightarrow \idc}
+\qquad
+  {\idc \otimes \, \idc \, \Leftrightarrow \idc}
+\\
+  {(a_1 \circledcirc a_3) \oplus (a_2 \circledcirc a_4) \Leftrightarrow (a_1 \oplus a_2) \circledcirc (a_3 \oplus a_4)}
+\\
+  {(a_1 \circledcirc a_3) \otimes (a_2 \circledcirc a_4) \Leftrightarrow (a_1 \otimes a_2) \circledcirc (a_3 \otimes a_4)}
+\end{array}\]
+\caption{\label{fige}Signatures of level-1 $\Pi$-combinators: functors}
+\end{figure}
+
+\begin{figure}[t]
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\identlsp \oplus \idc ~\Leftrightarrow~ \assocrp \circledcirc (\idc \oplus \, \identlp)}
+\\
+  {\identlst \otimes \idc ~\Leftrightarrow~ \assocrt \circledcirc (\idc \otimes \, \identlt)}
+\end{array}\]
+\caption{\label{figd}Signatures of level-1 $\Pi$-combinators: unit and associativity}
+\end{figure}
+
+
+\begin{figure}[t]
+Let $c : t_1 \leftrightarrow t_2$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {(c \otimes \idc) \circledcirc \absorbl \Leftrightarrow \absorbl \circledcirc \idc}
+\quad
+  {(\idc \, \otimes c) \circledcirc \absorbr \Leftrightarrow \absorbr \circledcirc \idc}
+\\
+  {\idc \circledcirc \, \factorzl \Leftrightarrow \factorzl \circledcirc (\idc \otimes c)}
+\quad
+  {\idc \circledcirc \, \factorzr \Leftrightarrow \factorzr \circledcirc (c \otimes \idc)}
+\\
+  {\absorbr \Leftrightarrow \absorbl}
+\\
+  {\absorbr \Leftrightarrow (\distl \circledcirc (\absorbr \oplus \absorbr)) \circledcirc \identlp}
+\\
+  {\identlst \Leftrightarrow \absorbr}
+\qquad
+  {\absorbl \Leftrightarrow \swapt \circledcirc \absorbr}
+\\
+  {\absorbr \Leftrightarrow (\assoclt \circledcirc (\absorbr \otimes \idc)) \circledcirc \absorbr}
+\\
+  {(\idc \otimes \absorbr) \circledcirc \absorbl \Leftrightarrow (\assoclt \circledcirc (\absorbl \otimes \idc)) \circledcirc \absorbr}
+\\
+  {\idc \otimes \, \identlp \Leftrightarrow (\distl \circledcirc (\absorbl \oplus \idc)) \circledcirc \identlp}
+\end{array}\]
+\caption{\label{figc}Signatures of level-1 $\Pi$-combinators: zero}
+\end{figure}
+
+\begin{figure}[t]
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {((\assoclp \otimes \idc) \circledcirc \dist) \circledcirc (\dist \oplus \idc) \Leftrightarrow (\dist \circledcirc (\idc \oplus \dist)) \circledcirc \assoclp}
+\\
+  {\assoclt \circledcirc \distl \Leftrightarrow ((\idc \otimes \distl) \circledcirc \distl) \circledcirc (\assoclt \oplus \assoclt)}
+\end{array}\]
+\vspace{ -0.5em}
+\[\def\arraystretch{1.3}
+\begin{array}{rcl}
+  (\distl \circledcirc (\dist \oplus \dist)) \circledcirc \assoclp &\Leftrightarrow&   
+   \dist \circledcirc (\distl \oplus \distl) \circledcirc \assoclp ~\circledcirc \\
+&& (\assocrp \oplus \idc) ~\circledcirc \\
+&& ((\idc \oplus \swapp) \oplus \idc) ~\circledcirc \\
+&&      (\assoclp \oplus \idc)
+\end{array}\]
+\caption{\label{figb}Signatures of level-1 $\Pi$-combinators: associativity and distributivity}
+\end{figure}
+
+\begin{figure}[t]
+\[\def\arraystretch{1.3}
+\begin{array}{rcl}
+  (\idc \otimes \swapp) \circledcirc \distl &\Leftrightarrow& \distl \circledcirc \swapp
+\\
+  \dist \circledcirc (\swapt \oplus \swapt) &\Leftrightarrow & \swapt \circledcirc \distl
+\end{array}\]
+\caption{\label{figa}Signatures of level-1 $\Pi$-combinators: commutativity and distributivity}
+\end{figure}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data III: Reversible Programs between Reversible Programs}
 
@@ -960,213 +1166,8 @@ words, there exists a higher-level deformation of the program
 $(c_2~\oplus~c_1)~\circledcirc~\mathit{swap}_{+}$ to the program
 $\mathit{swap}_{+} \circledcirc (c_1~\oplus~c_2)$.
 
-\amr{another wavefront}
+\amr{*** another wavefront ***}
 
-\begin{figure}[t]
-Let $c₁ : t₁ ⟷ t₂$,  $c₂ : t₂ ⟷ t₃$, and $c₃ : t₃ ⟷ t₄$:
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {c₁ ◎ (c₂ ◎ c₃) ⇔ (c₁ ◎ c₂) ◎ c₃}
-\\
-  {(c₁ ⊕ (c₂ ⊕ c₃)) ◎ \assoclp ⇔ \assoclp ◎ ((c₁ ⊕ c₂) ⊕ c₃)}
-\\
-  {(c₁ ⊗ (c₂ ⊗ c₃)) ◎ \assoclt ⇔ \assoclt ◎ ((c₁ ⊗ c₂) ⊗ c₃)}
-\\
-  {((c₁ ⊕ c₂) ⊕ c₃) ◎ \assocrp ⇔ \assocrp ◎ (c₁ ⊕ (c₂ ⊕ c₃))}
-\\
-  {((c₁ ⊗ c₂) ⊗ c₃) ◎ \assocrt ⇔ \assocrt ◎ (c₁ ⊗ (c₂ ⊗ c₃))}
-\\
-  {\assocrp ◎ \assocrp ⇔ ((\assocrp ⊕ \idc) ◎ \assocrp) ◎ (\idc ⊕ \assocrp)}
-\\
-  {\assocrt ◎ \assocrt ⇔ ((\assocrt ⊗ \idc) ◎ \assocrt) ◎ (\idc ⊗ \assocrt)}
-\end{array}\]
-\caption{\label{figj}Signatures of level-1 $\Pi$-combinators: associativity}
-\end{figure}
-  
-\begin{figure}[t]
-Let $a : t₁ ⟷ t₂$, $b : t₃ ⟷ t₄$, and $c : t₅ ⟷ t₆$:
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {((a ⊕ b) ⊗ c) ◎ \dist ⇔ \dist ◎ ((a ⊗ c) ⊕ (b ⊗ c))}
-\\
-  {(a ⊗ (b ⊕ c)) ◎ \distl ⇔ \distl ◎ ((a ⊗ b) ⊕ (a ⊗ c))}
-\\
-  {((a ⊗ c) ⊕ (b ⊗ c)) ◎ \factor ⇔ \factor ◎ ((a ⊕ b) ⊗ c)}
-\\
-  {((a ⊗ b) ⊕ (a ⊗ c)) ◎ \factorl ⇔ \factorl ◎ (a ⊗ (b ⊕ c))}
-\end{array}\]
-\caption{\label{figi}Signatures of level-1 $\Pi$-combinators: distributivity and factoring}
-\end{figure}
-
-\begin{figure}[t]
-Let $c, c₁, c₂, c₃ : t₁ ⟷ t₂$ and $c', c'' : t₃ ⟷ t₄$: 
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {\idc ◎ \, c ⇔ c}
-\quad 
-  {c \, ◎ \idc \, ⇔ c}
-\quad
-  {c\,\, ◎\,! c ⇔ \idc}
-\quad 
-  {! c ◎ c ⇔ \idc}
-\\
-  {c ⇔ c}
-\quad 
-\Rule{}
-  {c₁ ⇔ c₂ \quad c₂ ⇔ c₃}
-  {c₁ ⇔ c₃}
-  {} 
-\quad
-\Rule{}
-  {c₁ ⇔ c' \quad c₂ ⇔ c''}
-  {c₁ ◎ c₂ ⇔ c' ◎ c''}
-  {}
-\end{array}\]
-\caption{\label{figh}Signatures of level-1 $\Pi$-combinators: identity and composition}
-\end{figure}
-
-\begin{figure}[t]
-Let $c₀ : 0 ⟷ 0$, $c₁ : 1 ⟷ 1$, and $c : t₁ ⟷ t₂$:
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {\identlp ◎ c ⇔ (c₀ ⊕ c) ◎ \identlp}
-\qquad 
-  {\identrp ◎ (c₀ ⊕ c) ⇔ c ◎ \identrp}
-\\
-  {\identlsp ◎ c ⇔ (c ⊕ c₀) ◎ \identlsp}
-\qquad
-  {\identrsp ◎ (c ⊕ c₀) ⇔ c ◎ \identrsp}
-\\
-  {\identlt ◎ c ⇔ (c₁ ⊗ c) ◎ \identlt}
-\qquad
-  {\identrt ◎ (c₁ ⊗ c) ⇔ c ◎ \identrp}
-\\
-  {\identlst ◎ c ⇔ (c ⊗ c₁) ◎ \identlst}
-\qquad
-  {\identrst ◎ (c ⊗ c₁) ⇔ c ◎ \identrst}
-\\
-  {\identlt ⇔ \distl ◎ (\identlt ⊕ \identlt)}
-\\
-\identlp ⇔ \swapp ◎ \identrsp
-\qquad
-\identlt ⇔ \swapt ◎ \identrst
-\end{array}\]
-\caption{\label{figg}Signatures of level-1 $\Pi$-combinators: unit}
-\end{figure}
-
-\begin{figure}[t]
-Let $c₁ : t₁ ⟷ t₂$ and $c₂ : t₃ ⟷ t₄$:
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {\swapp ◎ (c₁ ⊕ c₂) ⇔ (c₂ ⊕ c₁) ◎ \swapp}
-\quad
-  {\swapt ◎ (c₁ ⊗ c₂) ⇔ (c₂ ⊗ c₁) ◎ \swapt}
-\\
-  {(\assocrp ◎ \swapp) ◎ \assocrp ⇔ ((\swapp ⊕ \idc) ◎ \assocrp) ◎ (\idc ⊕ \swapp)}
-\\
-  {(\assoclp ◎ \swapp) ◎ \assoclp ⇔ ((\idc ⊕ \swapp) ◎ \assoclp) ◎ (\swapp ⊕ \idc)}
-\\
-  {(\assocrt ◎ \swapt) ◎ \assocrt ⇔ ((\swapt ⊗ \idc) ◎ \assocrt) ◎ (\idc ⊗ \swapt)}
-\\
-  {(\assoclt ◎ \swapt) ◎ \assoclt ⇔ ((\idc ⊗ \swapt) ◎ \assoclt) ◎ (\swapt ⊗ \idc)}
-\end{array}\]
-\caption{\label{figf}Signatures of level-1 $\Pi$-combinators: commutativity and associativity}
-\end{figure}
-
-\begin{figure}[t]
-Let $c₁ : t₁ ⟷ t₂$, $c₂ : t₃ ⟷ t₄$, $c₃ : t₁ ⟷ t₂$, and $c₄ : t₃ ⟷ t₄$. \\
-Let $a₁ : t₅ ⟷ t₁$,  $a₂ : t₆ ⟷ t₂$, $a₃ : t₁ ⟷ t₃$, and $a₄ : t₂ ⟷ t₄$.
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-\Rule{}
-  {c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
-  {c₁ ⊕ c₂ ⇔ c₃ ⊕ c₄}
-  {}
-\qquad
-\Rule{}
-  {c₁ ⇔ c₃ \quad c₂ ⇔ c₄}
-  {c₁ ⊗ c₂ ⇔ c₃ ⊗ c₄}
-  {} 
-\\
-  {\idc ⊕ \, \idc \, ⇔ \idc}
-\qquad
-  {\idc ⊗ \, \idc \, ⇔ \idc}
-\\
-  {(a₁ ◎ a₃) ⊕ (a₂ ◎ a₄) ⇔ (a₁ ⊕ a₂) ◎ (a₃ ⊕ a₄)}
-\\
-  {(a₁ ◎ a₃) ⊗ (a₂ ◎ a₄) ⇔ (a₁ ⊗ a₂) ◎ (a₃ ⊗ a₄)}
-\end{array}\]
-\caption{\label{fige}Signatures of level-1 $\Pi$-combinators: functors}
-\end{figure}
-
-\begin{figure}[t]
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {\identlsp ⊕ \idc ~⇔~ \assocrp ◎ (\idc ⊕ \, \identlp)}
-\\
-  {\identlst ⊗ \idc ~⇔~ \assocrt ◎ (\idc ⊗ \, \identlt)}
-\end{array}\]
-\caption{\label{figd}Signatures of level-1 $\Pi$-combinators: unit and associativity}
-\end{figure}
-
-
-\begin{figure}[t]
-Let $c : t₁ ⟷ t₂$:
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {(c ⊗ \idc) ◎ \absorbl ⇔ \absorbl ◎ \idc}
-\quad
-  {(\idc \, ⊗ c) ◎ \absorbr ⇔ \absorbr ◎ \idc}
-\\
-  {\idc ◎ \, \factorzl ⇔ \factorzl ◎ (\idc ⊗ c)}
-\quad
-  {\idc ◎ \, \factorzr ⇔ \factorzr ◎ (c ⊗ \idc)}
-\\
-  {\absorbr ⇔ \absorbl}
-\\
-  {\absorbr ⇔ (\distl ◎ (\absorbr ⊕ \absorbr)) ◎ \identlp}
-\\
-  {\identlst ⇔ \absorbr}
-\qquad
-  {\absorbl ⇔ \swapt ◎ \absorbr}
-\\
-  {\absorbr ⇔ (\assoclt ◎ (\absorbr ⊗ \idc)) ◎ \absorbr}
-\\
-  {(\idc ⊗ \absorbr) ◎ \absorbl ⇔ (\assoclt ◎ (\absorbl ⊗ \idc)) ◎ \absorbr}
-\\
-  {\idc ⊗ \, \identlp ⇔ (\distl ◎ (\absorbl ⊕ \idc)) ◎ \identlp}
-\end{array}\]
-\caption{\label{figc}Signatures of level-1 $\Pi$-combinators: zero}
-\end{figure}
-
-\begin{figure}[t]
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {((\assoclp ⊗ \idc) ◎ \dist) ◎ (\dist ⊕ \idc) ⇔ (\dist ◎ (\idc ⊕ \dist)) ◎ \assoclp}
-\\
-  {\assoclt ◎ \distl ⇔ ((\idc ⊗ \distl) ◎ \distl) ◎ (\assoclt ⊕ \assoclt)}
-\end{array}\]
-\vspace{ -0.5em}
-\[\def\arraystretch{1.3}
-\begin{array}{rcl}
-  (\distl ◎ (\dist ⊕ \dist)) ◎ \assoclp &⇔&   
-   \dist ◎ (\distl ⊕ \distl) ◎ \assoclp ~◎ \\
-&& (\assocrp ⊕ \idc) ~◎ \\
-&& ((\idc ⊕ \swapp) ⊕ \idc) ~◎ \\
-&&      (\assoclp ⊕ \idc)
-\end{array}\]
-\caption{\label{figb}Signatures of level-1 $\Pi$-combinators: associativity and distributivity}
-\end{figure}
-
-\begin{figure}[t]
-\[\def\arraystretch{1.3}
-\begin{array}{rcl}
-  (\idc ⊗ \swapp) ◎ \distl &⇔& \distl ◎ \swapp
-\\
-  \dist ◎ (\swapt ⊕ \swapt) &⇔& \swapt ◎ \distl
-\end{array}\]
-\caption{\label{figa}Signatures of level-1 $\Pi$-combinators: commutativity and distributivity}
-\end{figure}
 
 Pi level 2.
 
