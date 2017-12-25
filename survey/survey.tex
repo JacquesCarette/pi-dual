@@ -63,8 +63,9 @@ $\displaystyle
 \newcommand{\jdg}[3]{#2 \proves_{#1} #3}
 
 
-\title{Embracing the Laws of Physics: \\ Reversible Models of Computation}
-\author{Jacques Carette, Roshan P. James, Amr Sabry}
+\title{Embracing the Laws of Physics: \\ Three Reversible Models of Computation}
+\author{Jacques Carette \qquad\qquad Roshan P. James \qquad\qquad Amr Sabry \\
+McMaster University \qquad\qquad Google \qquad\qquad Indiana University}
 
 \newtheorem{defn}{Definition}[section]
 \newtheorem{prop}{Proposition}[section]
@@ -104,7 +105,9 @@ $\displaystyle
 %   plugged in into that story.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Introduction : Reversibility, the Missing Principle}
+\section{Reversibility, the Missing Principle}
+
+\subsection{Maxwell's Demon}
 
 To fully appreciate one of the principles is missing in conventional computing,
 one must go back to an old thought experiment by J. C. Maxwell. This is
@@ -181,7 +184,7 @@ reversible manner? And, if so, does it have applications?
 Traditional models of computation are all unityped, generally
 operating on unstructured sequences of symbols. But recent
 investigations, in the intersection between mathematics and
-computer science (particularly in Homotopy Type Theory~\cite{hott-book})
+computer science (particularly in Homotopy Type Theory~\cite{hottbook})
 reveal that not only can mathematics be typed, but that doing so
 reveals further structure -- in both mathematics and in computation.
 
@@ -309,7 +312,7 @@ algorithm for factoring (Shor). If there is no efficient classical algorithm
 for factoring then the extended Church-Turing thesis is false.
 \end{comment}
 
-\subsection{From classical to quantum}
+\subsection{From Classical to Quantum}
 
 Conventional classical models of computation, including boolean
 circuits, the Turing machine, and the $\lambda$-calculus, are founded on
@@ -337,7 +340,7 @@ happened in recent years~\cite{berut2012experimental}. If information
 has a physical significance, then it is subject to conservation laws
 just as mass and energy are.
 
-\subsection{conservation of information}
+\subsection{Conservation of Information}
 
 To make this idea concrete and to provide a taste of the applications
 it opens, consider a tiny 2-bit password = \verb|"10"|. The password
@@ -498,7 +501,7 @@ transformations, as well as proofs / deductions, to be ``the
 same'' -- in an manner consistent with preservation of 
 information.
 
-This stands in stark contrast with most current approacheds to
+This stands in stark contrast with most current approaches to
 reversible computation, which start from current models of
 computation involving irreversible operations and try to find
 various ways to \emph{patch things up} so as to be reversible.
@@ -514,7 +517,7 @@ as we go through the various components that make up a
 programming language.
 
 Starting from a physical perspective, whatever our notion of data
-is, we will be interested in programs as representating transformations
+is, we will be interested in programs as representing transformations
 of that data which are reversible. In other words, we want our
 programs-as-transformations to ``play well'' with the inherent notion
 of ``sameness'' that our data will carry. Thus we need to start by
@@ -660,7 +663,7 @@ contain equivalent information. In other words, we would like to
 be able to witness that $A \times B$ can be reversibly deformed
 into $B \times A$. Which motivates the introduction of 
 type \emph{equivalences}. To do this, we need a few important
-auxilliary concepts first.
+auxiliary concepts first.
 
 \begin{defn}[homotopy]
 \label{def:homotopy}
@@ -687,7 +690,7 @@ $\beta : g \circ f \sim \mathrm{id}_A$.
 \end{defn}
 
 \noindent Why \emph{quasi}? The reasons are beyond our scope, but
-the interested reader can read sections $2.4$ and $4$ in \cite{hott-book}.
+the interested reader can read sections $2.4$ and $4$ in \cite{hottbook}.
 There are several conceptually different, but equivalent, 
 ``better'' definitions.  We record just one here:
 
@@ -806,7 +809,7 @@ a programming language, which we proceed to do next.
 We now have in our hands our desired denotational semantics: we want
 to create a language $\Pi$ such that the types and type combinators
 map to $\bot, \top, \uplus, \times$, and such that we have ground
-terms whose denotation are all $16$ type isormorphisms of
+terms whose denotation are all $16$ type isomorphisms of
 Figure~\ref{type-isos}. This is completely straightforward, as
 we can simply do this literally. To make the analogy with 
 commutative semirings stand out even more, we will use $0, 1, +$, and $*$
@@ -1190,7 +1193,20 @@ has so much more structure, and permutations too have many different
 representations. So it is unclear what maps to what.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Data IV: Recursive Types}
+\section{Conclusion}
+
+Discuss recursion, or add a section of infinite sets???
+
+CS abstractions are based on ``old'' physics
+
+computer applications are more and more ``physical''
+
+physical principles such as conservation of information should be part
+of our foundational abstractions
+
+quest for other principles; other data models; graphs; HoTT
+
+Data IV: Recursive Types
 
 Add recursion to structured finite types, trace, feedback, loop...
 
@@ -1209,31 +1225,16 @@ only reversible "at level 1". So we need to replace trace with some other
 operation for level 2 reversibility to also hold -- and this is an open
 problem.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Data V: Exclusive Disjunctions}
-
-???
+Data V: Exclusive Disjunctions
 
 Quantum over finite field 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusion}
+\section*{Acknowledgements} We would like to thank the numerous
+students and colleagues who participated in various aspects of this
+research and who provided valuable feedack and constructive criticism.
 
-Discuss recursion, or add a section of infinite sets???
-
-CS abstractions are based on ``old'' physics
-
-computer applications are more and more ``physical''
-
-physical principles such as conservation of information should be part
-of our foundational abstractions
-
-quest for other principles; other data models; graphs; HoTT
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section*{Acknowledgements} many students and colleagues 
-
-\bibliographystyle{plainnat}
+\bibliographystyle{acm}
 %\pagestyle{headings}
 \bibliography{cites}
 \end{document}
