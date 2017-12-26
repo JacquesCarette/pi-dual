@@ -107,6 +107,81 @@ McMaster University \qquad\qquad Google \qquad\qquad Indiana University}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Reversibility, the Missing Principle}
 
+What kind of operations can computers perform? This question was
+answered several times in the last hundred years, where each answer
+proposes an abstract \emph{model of computation} that specifies
+allowable operations and (usually) their cost. The emerging consensus,
+reflected in both early models of computations such as the Turing
+Machine and the RAM as well as in the early Von Neumann and in modern
+computer architectures, is that basic computer operations include
+logical operations like conjunction, disjunction, and negation, as
+well as reading from and writing to a large (infinite) collection of
+memory locations.
+
+No doubt, this consensus has been successful. And no doubt, these
+operations \emph{can} indeed be performed on a computer. Yet, today,
+with a possible quantum computing revolution in sight and with
+unprecedented explosion in embedded computers and cyber-physical
+systems, there are reasons to re-think this foundational question
+again. In fact, the calls to re-think this foundational question have
+been proclaimed by physicists for more than thirty years as the
+following two quotes testify:
+
+\begin{quote}
+  Mathematical models of computation are abstract constructions, by
+  their nature unfettered by physical laws. However, if these models
+  are to give indications that are relevant to concrete computing,
+  they must somehow capture, albeit in a selective and stylized way,
+  certain general physical restrictions to which all concrete
+  computing processes are subjected~\cite{toffoli:1980}.
+
+  Another thing that has been suggested early was that natural laws
+  are reversible, but that computer rules are not. But this turned out
+  to be false; the computer rules can be reversible, and it has been a
+  very, very useful thing to notice and to discover that. This is a
+  place where the relationship of physics and computation has turned
+  itself the other way and told us something about the possibilities
+  of computation. So this is an interesting subject because it tells
+  us something about computer rules
+  \ldots~\cite{springerlink:10.1007/bf02650179}.
+\end{quote}
+
+These quotes by Toffoli and Feynman both highlight two obvious
+observations: (i) all the operations that a computer performs reduce
+to basic physical operations; and (ii) there is a mismtach between the
+logical operations of a typical model of computation (which are
+logically irreversible) and the fundamental laws of physics (which are
+reversible). One could certainly dismiss the mismatch but our thesis
+is that there is great value in revisiting models of computation to be
+in harmony with the laws of physics. 
+
+\begin{comment}
+\begin{quote}
+  Ed Fredkin pursued the idea that information must be finite in
+  density. One day, he announced that things must be even more simple
+  than that. He said that he was going to assume that information
+  itself is conserved. “You’re out of you mind, Ed.” I
+  pronounced. “That’s completely ridiculous. Nothing could happen in
+  such a world. There couldn’t even be logical gates. No decisions
+  could ever be made.” But when Fredkin gets one of his ideas, he’s
+  quite immune to objections like that; indeed, they fuel him with
+  energy. Soon he went on to assume that information processing must
+  also be reversible — and invented what’s now called the Fredkin
+  gate. (Minsky 1999)
+
+  In other terms, what is so good in logic that quantum physics should
+  obey?  Can't we imagine that our conceptions about logic are wrong,
+  so wrong that they are unable to cope with the quantum miracle?
+  [\ldots] Instead of teaching logic to nature, it is more reasonable
+  to learn from her. Instead of interpreting quantum into logic, we
+  shall interpret logic into quantum (Girard 2007).
+\end{quote}
+\end{comment}
+
+
+
+
+
 \subsection{Maxwell's Demon}
 
 To fully appreciate one of the principles is missing in conventional computing,
@@ -221,7 +296,7 @@ Toffoli explains in his influential 1980 paper:
   if these models are to give indications that are relevant to
   concrete computing, they must somehow capture, albeit in a selective
   and stylized way, certain general physical restrictions to which all
-  concrete computing processes are subjected~\cite{Toffoli:1980}.
+  concrete computing processes are subjected~\cite{toffoli:1980}.
 \end{quote}}
 
 Our logic of programs and our hardware are based on Boolean Logic
@@ -1246,7 +1321,7 @@ research and who provided valuable feedack and constructive criticism.
 \subsection{Technical Overview}
 
 The technical development derives from ideas which are implicit in the
-works of \cite{Toffoli:1980, Zuliani:2001:LR,
+works of \cite{toffoli:1980, Zuliani:2001:LR,
   malacaria2007assessing,ClarkHM07,Ghica:2007:GSS:1190216.1190269}.
 (1) Functions whose output entropy is equal to their input entropy are
 information preserving functions.  (2) A function
