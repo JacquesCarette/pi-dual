@@ -164,29 +164,6 @@ reversibile computer operations'' and an excursion into the origins of
 reversible models of computation and discuss their potential
 applications.
 
-\begin{comment}
-\begin{quote}
-  Ed Fredkin pursued the idea that information must be finite in
-  density. One day, he announced that things must be even more simple
-  than that. He said that he was going to assume that information
-  itself is conserved. “You’re out of you mind, Ed.” I
-  pronounced. “That’s completely ridiculous. Nothing could happen in
-  such a world. There couldn’t even be logical gates. No decisions
-  could ever be made.” But when Fredkin gets one of his ideas, he’s
-  quite immune to objections like that; indeed, they fuel him with
-  energy. Soon he went on to assume that information processing must
-  also be reversible — and invented what’s now called the Fredkin
-  gate. (Minsky 1999)
-
-  In other terms, what is so good in logic that quantum physics should
-  obey?  Can't we imagine that our conceptions about logic are wrong,
-  so wrong that they are unable to cope with the quantum miracle?
-  [\ldots] Instead of teaching logic to nature, it is more reasonable
-  to learn from her. Instead of interpreting quantum into logic, we
-  shall interpret logic into quantum (Girard 2007).
-\end{quote}
-\end{comment}
-
 %%%%%%%%%
 \paragraph*{Maxwell's Demon.}
 To fully appreciate the missing principle of ``reversibility'' in
@@ -198,9 +175,9 @@ indicate that intelligent beings can somehow violate the second law of
 thermodynamics, thereby violating physics itself. Many resolutions
 were offered for this conundrum (for a compilation, see the book by
 Leff and Rex~\cite{leff1990}), but none withstood careful scrutiny
-until the establishment of \emph{Landauer's Principle} in 1961 -- a
-principle whose experimental validation happened recently in
-2012~\cite{berut2012experimental}.
+until the establishment of \emph{Landauer's Principle} in
+1961~\cite{Landauer:1961} -- a principle whose experimental validation
+happened recently in 2012~\cite{berut2012experimental}.
 
 Maxwell's demon appears to violate the second law of thermodynamics by
 having a tiny `intelligence' observing the movement of individual
@@ -217,9 +194,6 @@ computation.  In other words, the computation that is manipulating
 information in the demon's brain \textit{must be thermodynamic work},
 thereby bringing the demon back into the fold of physics.
 
-%% (Cite Bennett and the various `thermodynamics of computation'  
-%% papers here.)  
- 
 This is a strange and wonderful idea: information, physics, and
 computation are inextricably linked. In contrast, when the early
 models of computation were developed, there was no compelling reason
@@ -238,51 +212,28 @@ really appreciate this fact, we delve deeper into the origin of our
 computational models and argue that they are essentially reflections
 of contemporary laws of physics. 
 
-\amr{wavefront}
-
 %%%%%%%%%
 \paragraph*{Origins of Computational Models.}
-Aspects of computation are
-quite old. M\"{u}ller (1786) first conceived of the idea of a
-``difference machine'', which Babbage (1819--1822) was able to
-construct. There are other computer precursors as well -- the first
-stored programs were actually for looms, most notably those of
-Bouchon (1725) which operated on a paper tape, and Jacquard (1804)
-which operated by chains of punched cards.
-
-But it was Alan Turing's seminal work in 1936 which established the idea
-that computation has a formal interpretation and that all
-computability can be captured within a formal system. Implicit in this
-achievement however is the idea that abstract models of computation
-are just that -- \emph{abstractions of computation realized in the
-physical world.}  In fact, one of the major achievements of Computer
-Science has been the development of abstract models of computation
-that shield the discipline from the underlying technology. As
-effective as these models have been, one must note, however, that they
-\emph{embody several implicit physical assumptions}.  As Tommaso
-Toffoli explains in his influential 1980 paper:
-
-{\begin{quote} Mathematical models of computation are abstract
-  constructions, by their nature unfettered by physical laws. However,
-  if these models are to give indications that are relevant to
-  concrete computing, they must somehow capture, albeit in a selective
-  and stylized way, certain general physical restrictions to which all
-  concrete computing processes are subjected~\cite{toffoli:1980}.
-\end{quote}}
-
-Our logic of programs and our hardware are based on Boolean Logic
--- which really
-ought to be called \emph{Piercean logic}, as Boole had a rather different
-conception of logic which is rather far from our current models.
-Nevertheless, going back
-to Boole's 1853 book entitled \emph{An Investigation of the Laws of Thought,
-  on which are Founded the Mathematical Theories of Logic and
-  Probabilities}. The opening sentence of Ch.~1 is:
+Machines that ``compute'' are quite old. M\"{u}ller (1786) first
+conceived of the idea of a ``difference machine'', which Babbage
+(1819--1822) was able to construct. There are other computer
+precursors as well -- the first stored programs were actually for
+looms, most notably those of Bouchon (1725) which operated on a paper
+tape, and Jacquard (1804) which operated by chains of punched cards.
+Logical operations in high-level programming languages and in our
+hardware are based on Boolean Logic -- which really ought to be called
+\emph{Piercean logic}, as Boole had a rather different conception of
+logic which is rather far from our current models.  Nevertheless,
+going back to Boole's 1853 book entitled \emph{An Investigation of the
+  Laws of Thought, on which are Founded the Mathematical Theories of
+  Logic and Probabilities}. The opening sentence of Ch.~1 is:
 \begin{quote}
   The design of the following treatise is to investigate the fundamental laws
   of those operations of the mind by which reasoning is performed; \ldots
 \end{quote}
-A few chapters later, we find:
+which clearly identifies the ``source'' of the logical laws as
+mirroring Boole's understanding of human reasoning. A few chapters
+later, we find:
 \begin{quote}
   \textbf{Proposition IV.}  That axiom of metaphysicians which is termed the
   principle of contradiction, and which affirms that it is impossible for any
@@ -290,16 +241,23 @@ A few chapters later, we find:
   consequence of the fundamental law of thought, whose expression is $x^2 =
   x$.
 \end{quote}
-A detailed historical analysis of Boole's ideas are beyond our scope.
-The above quotes, however, should convey the idea that our notions of
-computation generally date back to ideas that were thought reasonable
+This ``law'' is reasonable in a classical world but is violated by
+postulates of quantum mechanics. Although a detailed historical
+analysis of Boole's ideas in the light of modern physics is beyond our
+scope, the above quotes should convey the idea that our elementary
+computing notions date back to ideas that were thought reasonable
 before \textasciitilde 1900.
 
-It is conventional to base
-the theory of computation and complexity on the Turing Machine.
-Going back to Turing's 1936 article \emph{On Computable Numbers, with
-  an Application to the Entscheidungsproblem,}, the opening sentence of
-Sec. 1 is:
+The 20th century witnessed the real advent of computer science as a
+formal discipline. One of the pioneering works was Alan Turing's
+seminal paper in 1936 which established the idea that computation has
+a formal interpretation and that all computability can be captured
+within a formal system. Implicit in this achievement however is the
+idea that abstract models of computation are just that --
+\emph{abstractions of computation realized in the physical world.}
+Indeed, going back to Turing's 1936 article \emph{On Computable
+  Numbers, with an Application to the Entscheidungsproblem,}, the
+opening sentence of Sec. 1 is:
 \begin{quote}
   We have said that the computable numbers are those whose decimals are
   calculable by finite means \ldots the justification lies in the fact that
@@ -307,293 +265,94 @@ Sec. 1 is:
 \end{quote}
 In Sec. 9, we find:
 \begin{quote}
-I think it is reasonable to suppose that they can only be squares
-whose distance from the closest of the immediately previously observed
-squares does not exceed a certain fixed amount.
+  I think it is reasonable to suppose that they can only be squares
+  whose distance from the closest of the immediately previously
+  observed squares does not exceed a certain fixed amount.
 \end{quote}
-A detailed historical account is again beyond our scope. The quotes above
-should convey the ideas that our theories
-of computation and complexity are based on some assumptions that
-Turing found reasonable in 1936. Though it is worth noting that these assumptions
-are both physical (on distances) and metaphysical (on restrictions of the
-mind).  If we take the human mind to be a physical ``machine'' which does
-computation, then when both of the above assumptions are translated to the
-language of physics, they embody what is known as the ``Bekenstein bound:''
-which is an upper limit on the amount of information that can be contained
-within a given finite region of space.
+It is worth noting that these assumptions are both physical (on
+distances) and metaphysical (on restrictions of the mind).  If we take
+the human mind to be a physical ``machine'' which does computation,
+then when both of the above assumptions are translated to the language
+of physics, they embody what is known as the ``Bekenstein bound:''
+which is an upper limit on the amount of information that can be
+contained within a given finite region of space. A detailed historical
+account of these ideas in the context of modern physics is again
+beyond our scope. However, the quotes above, like the ones before,
+should convey the ideas that our theories of computation and
+complexity are based on some assumptions that Turing and others found
+reasonable in the 1930s.
 
-One can examine more and more cases but the general story should be
-clear. Our abstractions were made up based on a certain understanding of the
-laws of physics. In particular, our understanding of physics has evolved
-tremendously since 1900!  Thus it is time to revisit these abstractions,
-especially with respect to quantum mechanics.
+To summarize, a major achievement of computer science has been the
+development of abstract models of computation that shield the
+discipline from rapid changes in the underlying technology. Yet, as
+effective as these models have been, one must note that they
+\emph{embody several implicit physical assumptions} and these
+assumptions are based on a certain understanding of the laws of
+physics. 
+
+Our understanding of physics has evolved tremendously since 1900!
+Thus it is time to revisit these abstractions, especially with respect
+to quantum mechanics.  Indeed one should take the physical principles
+underlying quantum mechanics, the most successful physical theory
+known to us and adapt computation to ``learn'' from these principles.
 In the words of Girard:
 \begin{quote}
-  In other terms, what is so good in logic that quantum physics should obey?
-  Can't we imagine that our conceptions about logic are wrong, so wrong that
-  they are unable to cope with the quantum miracle?
-  \\
-  Instead of teaching logic to nature, it is more reasonable to learn
-  from her. Instead of interpreting quantum into logic, we shall
-  interpret logic into quantum (Girard 2007).
+  In other terms, what is so good in logic that quantum physics should
+  obey?  Can't we imagine that our conceptions about logic are wrong,
+  so wrong that they are unable to cope with the quantum miracle?
+  [\ldots] Instead of teaching logic to nature, it is more reasonable
+  to learn from her. Instead of interpreting quantum into logic, we
+  shall interpret logic into quantum (Girard 2007).
 \end{quote}
 
-\begin{comment}
-\jc{The reason I commented this out is that it is under-justified. The
-reader will simply not understand what these next few lines are really
-saying.}
-Indeed one should take the physical principles underlying quantum mechanics,
-the most successful physical theory known to us and adapt computation to
-``learn'' from these principles. To illustrate the depth of our crisis, Scott
-Aaronson, Umesh Vazirani, and others have proposed the following puzzle.
-
-One of these wild claims must be true!:
-\begin{itemize}
-\item the extended Church-Turing thesis is false, or
-\item quantum physics is false, or
-\item there is an efficient classical algorithm for factoring
-\end{itemize}
-Indeed, if quantum physics is correct then there is an efficient quantum
-algorithm for factoring (Shor). If there is no efficient classical algorithm
-for factoring then the extended Church-Turing thesis is false.
-\end{comment}
+There are, in fact, many different principles of physics which are at
+odds with our current models of computation. In this paper, we will
+view data as an explicit representation of \emph{information},
+programs as processes that transform information in a reversible way,
+i.e., processes that are subject to the physical principle of
+\emph{conservation of information.} We will formalize this idea and
+follow its consequences, which will turn out to be far reaching.
 
 %%%%%%%%%
-\paragraph*{From Classical to Quantum.}
-Conventional classical models of computation, including boolean
-circuits, the Turing machine, and the $\lambda$-calculus, are founded on
-primitives which correspond to \emph{irreversible} physical processes which
-gratuitously erase information.  For example, a \emph{nand} gate is an
-irreversible logical operation in the sense that its inputs cannot generally
-be recovered from observing its output, and so is the operation of overriding
-a cell on a Turing machine tape with a new symbol, and so is a
-$\beta$-reduction which typically erases or duplicates values in a way that
-is destructive and irreversible.
+\paragraph*{Programs as Reversible Deformations.} 
 
-These irreversible abstractions chosen as the basis of our
-models of computing are at odds with the underlying
-reversible physical reality. The information theoretic underpinnings
-of physics is best understood through \emph{Landauer's
-principle}~\cite{Landauer:1961}. As mentioned previously in the
-introduction, Landauer, through his analysis of
-Maxwell's Demon, established the idea that \emph{information is a
-physical quantity} in much the sense that one would think of an
-electron as a physical quantity. More precisely, his principle implies
-that a certain minimum amount of
-thermodynamic work has to be carried out to erase one bit of
-information. Experimental verification of the Landauer principle
-happened in recent years~\cite{berut2012experimental}. If information
-has a physical significance, then it is subject to conservation laws
-just as mass and energy are.
-
-%%%%%%%%%
-\paragraph*{Conservation of Information.}
-To make this idea concrete and to provide a taste of the applications
-it opens, consider a tiny 2-bit password = \verb|"10"|. The password
-checker looks like:
-
-% verbatim for now, will go to something decent later
-\begin{verbatim}
-check-password (guess) =
-  if guess == "10"
-  then True
-  else False
-\end{verbatim}
-
-One can ask how much information is leaked by this program assuming
-the attacker has no prior knowledge except that the password is 2
-bits, i.e., the four possible 2-bits are equally likely. If the
-attacker guesses \verb|"10"| (with probability $1/4$) the password (2
-bits) is leaked. If the attacker guesses one of the other choices
-(with probability $3/4$) the number of possibilities is reduced from 4
-to 3, i.e., the attacker learns $\log{4} - \log{3}$ bits of
-information. So in general the attacker learns\footnote{If the
-  password is 8 restricted ASCII characters (6 bits), the attacker
-  learns 0.00001 bits in the first probe.}:
-\[\begin{array}{ll}
-   &  1/4 * 2 + 3/4 (\log{4} - \log{3}) \\
-  =&  1/4 \log{4} + 3/4 \log{4/3} \\
-  =&  - 1/4 \log{1/4} - 3/4 \log{3/4} \\
-  \sim& 0.8 \mbox{~bits~in~the~first~probe}
-\end{array}\]
-
-One can alternatively look at the situation by viewing the input as a
-random variable with 4 possibilities and a uniform distribution (i.e.,
-with 2 bits of information). The output is another random variable
-with 4 possibilities but with the distribution
-$\{ (True, 1/4), (False, 3/4) \}$ which contains 0.8 bits of
-information. Thus 2 input bits of information were given to the
-function and only 0.8 were produced. Where did the 1.2 bits of
-information go? Once we accept the thesis that information is a
-physical entity this question cannot be ignored.
-
-The Landauer Principle states that erasing information requires
-energy. In other words, the password checking function must have
-erased 1.2 bits during its calculation, which dissipate as heat in any
-physical realization of the function. In conventional models of
-computation, this erasure is \emph{implicit}, i.e., it occurs as a
-side effect of calculation. We wish to look at models where
-erasure is simply not allowed.
-
-There are, in fact, many different principles of physics which are
-at odds with our current models of computation. Even within quantum
-mechanics itself, there are other ideas (such as superposition or
-entanglement) which are not present in current models. We will however
-restrict ourselves to exploring a single dimension in which our
-foundations should be revised: \textbf{conservation of information}.
-We will follow its consequences, which will turn out to be far reaching.
-
-\begin{quote}
-  The laws of physics are essentially algorithms for calculation. These
-  algorithms are significant only to the extent that they are executable in
-  our real physical world. Our usual laws of physics depend on the
-  mathematician's real number system. With that comes the presumption that
-  given any accuracy requirement, there exist a number of calculations steps,
-  which if executed, will satisfy that accuracy requirement. But the real
-  world is unlikely to supply us with unlimited memory of unlimited Turing
-  machine tapes, Therefore, continuum mathematics is not executable, and
-  physical laws which invoke that can not really be satisfactory. They are
-  references to illusionary procedures. Rolf Landauer, The physical nature of
-  information, Physics Letters A 217 (1996) pp. 188-193:
-\end{quote}
-
-A high level approach to conservation of information would proceed
-as follows:
-\begin{enumerate}
-\item Create a means to measure information.
-\item Show that this measure is sound with respect to our current understanding
-of what information ought to be.
-\item Assert that whatever ``quantity'' of information a system has, must
-remain invariant throughout the lifetime of the system.
-\end{enumerate}
-
-Certainly, whatever our notion of information, it can neither be created,
-duplicated, nor erased. Of course, if we make our notion of information
-too rigid, it will be impossible to even \textbf{modify} it! For computation
-to occur, modification must be possible.  But of what kind?
-
-\amr{We should also have a quick survey of other works in reversible
-computation? Most of the other work tries to start from well known
-models of computation or well known programming languages, and then
-adapts them to be reversible. Pi is different in that it starts from
-the semantic implications of reversibility. Then, because it adds
-types, rather than control-flow (or even data-flow) as its next layer
-of ``understanding'', this leads to equivalences, isomorphisms, etc.
-This then leads, quite naturally, to finding that the ``proof
-language'' of semirings (and Rig Groupoids at level 2) is actually a
-programming language. And it is Pi. This is a neat twist on
-Curry-Howard because CH is about \textbf{inhabitation} only. But with
-``conservation of information'' as the basis, a different kind of
-correspondance arises; in fact, this one may well be an actual
-isomorphism.}
-
-%%%%%%%%%
-\paragraph*{Information.}
-We can now give a first precise definition of information preservation.
-Let
-`$b$' be a (not necessarily finite) type whose values are labeled
-$b^1, b^2, \ldots$. Let $\xi$ be a random variable of type $b$ that is
-equal to $b^i$ with probability $p_i$. The entropy of $\xi$ is defined
-as $-\sum p_i \log{p_i}$~\cite{Shannon1948}.  Consider a function
-$f : b_1 \rightarrow b_2$ where $b_2$ is a (not necessarily finite)
-type whose values are labeled $b_2^1, b_2^2, \ldots$. The output
-entropy of the function is given by $- \sum q_j \log{q_j}$ where $q_j$
-indicates the probability of the output of the function to have value
-${b_2}^j$. We say a function is \emph{information-preserving} if its
-output entropy is equal to the entropy of its input. In later sections,
-we will refine this view.
-
-\amr{
-Talk about conservation of information in biology, computer science,
-evolutionary computing, and search. (See
-\url{http://www.evolutionnews.org/2012/08/conservation_of063671.html}.
-}
-
-In our current age, both Landauer's Principle and recent investigations
-of computational models well-suited to quantum mechanics, push us to
-revisit our current models of computation. Information, on top of
-having a physical manifestation, appears to be \emph{conserved},
-along with other quantities like energy, mass and momentum.
-
-But what does it mean for a computation to preserve information?
-What is the missing principle that will guide the creation of a new
-model of computation that ``conserve information''?
-It is nature to look again at physics for inspiration --
-in our current understanding of physics all of the primitive rules
-are reversible. Conventional computation is not. Can
-we embrace this simple principle as the building block of a model of
-computation? What would computation look like when viewed from this
-vantage point? Can non-trivial computation be performed in a
-reversible manner? And, if so, does it have applications?
-
-Traditional models of computation are all unityped, generally
-operating on unstructured sequences of symbols. But recent
-investigations, in the intersection between mathematics and
-computer science (particularly in Homotopy Type Theory~\cite{hottbook})
-reveal that not only can mathematics be typed, but that doing so
-reveals further structure -- in both mathematics and in computation.
-
-And that brings us to the principal objective of this survey: explore the
-domain of \emph{typed reversible computation}.
-
-\textbf{punch line: allowable operations that computers can perform
-  while embracing the laws of physics are operations that preserve
-  everthing in abstract space of ``data''; doughnut into cup kind of
-  transformations.}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Programs as Reversible Deformations} 
-
-To better understand conservation of information, we can look
-for analogous ideas outside of computing. Turning again to physics,
-but this time at the macro scale, what does it mean to transform an
-object in such a way that we do not lose the fundamental character
-of the object?
+To better understand the essence of ``conservation of information'' in
+the context of computing, we first look for analogous ideas in
+physics, but this time at the macro scale. Viewing information as a
+physical object, what does it mean to transform an object in such a
+way that we do not lose its fundamental character?
 
 For rigid objects (like a chair), the only such transformations are
 translations and rotations. But what about something more flexible,
-such as a water balloon?  They can be \textbf{deformed} in various ways,
-but still retain their fundamental character -- as long as we do not
-puncture them or over-stretch them. Ignoring material characteristics
-(i.e. over-stretching), what is special about these deformations, as well
-as for translations and rotations, is that they correspond to
+with multiple representations, such as a water balloon?  Such objects
+can be \emph{deformed} in various ways, but still retain their
+fundamental character -- as long as we do not puncture them or
+over-stretch them. Ignoring material characteristics
+(i.e. over-stretching), what is special about these deformations, as
+well as for translations and rotations, is that they correspond to
 continuous maps, with a continuous inverse. In fact, even more is
 true: they are analytic maps, with analytic inverses. For our purpose,
-the most important part is that such maps are infinitely differentiable.
-In other words, not only is there an inverse to the deformation, but
-its derivative is also invertible, and so on.
+the most important part is that such maps are infinitely
+differentiable.  In other words, not only is there an inverse to the
+deformation, but its derivative is also invertible, and so on.
 
 When we look around, we find many different words for related
-concepts: isomorphism, equivalence, sameness, equality, interchangeability,
-comparability, and correspondence, to name a few. Some of these
-are informal concepts, while others have formal mathematical meaning.
-More important, even amongst the formal concepts, there are differences
--- which is why there are so many of them! Thus we seek a concept
-which is neither too strong nor too weak, that will express when
-some structured information should be treated as ``the same''.
+concepts: isomorphism, equivalence, sameness, equality,
+interchangeability, comparability, and correspondence, to name a
+few. Some of these are informal concepts, while others have formal
+mathematical meaning.  More important, even amongst the formal
+concepts, there are differences -- which is why there are so many of
+them! Because there are many such notions, we also need to walk our
+way through them to find the one which is ``just right''. Thus we seek
+a concept which is neither too strong nor too weak, that will express
+when some structured information should be treated as ``the same''.
+We can draw an analogy with topology: in topology, all point sets can
+always be equipped with either the discrete or the indiscrete
+topology, but both of these extremes are rarely useful. We will
+develop our working notion of ``sameness'' as we go through the
+various components that make up a programming language.
 
-We will take ``the same'' as a fundamental principle. We want
-to then derive what it means for data, programs, program
-transformations, as well as proofs / deductions, to be ``the
-same'' -- in an manner consistent with preservation of 
-information.
-
-This stands in stark contrast with most current approaches to
-reversible computation, which start from current models of
-computation involving irreversible operations and try to find
-various ways to \emph{patch things up} so as to be reversible.
-
-The reader will have surely noticed how we have studiously avoided
-defining ``the same''. Because there are many such notions, we
-also need to walk our way through them to find the one which is
-``just right''. We can draw an analogy with topology: in topology,
-all point sets can always be equipped with either the discrete or
-the indiscrete topology, but both of these extremes are rarely
-useful. We will develop our working notion of ``sameness''
-as we go through the various components that make up a
-programming language.
-
-Starting from a physical perspective, whatever our notion of data
+Starting from the physical perspective, whatever our notion of data
 is, we will be interested in programs as representing transformations
 of that data which are reversible. In other words, we want our
 programs-as-transformations to ``play well'' with the inherent notion
@@ -604,8 +363,14 @@ are data, things do get more complicated.  In the following sections,
 we will look at different natural classes of data, and explore the
 corresponding notion of reversible programs.
 
-\amr{In the quantum case, this is clear. Say something about topological
-quantum computing.}
+To summarize, we will take ``the same'' as a fundamental principle and
+derive what it means for data, programs, program transformations, as
+well as proofs / deductions, to be ``the same'' -- in an manner
+consistent with preservation of information. This stands in stark
+contrast with most current approaches to reversible computation, which
+start from current models of computation involving irreversible
+operations and try to find various ways to \emph{patch things up} so
+as to be reversible.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data I: Finite Sets}
@@ -1160,6 +925,22 @@ Let $c : t_1 \leftrightarrow t_2$:
 \caption{\label{figa}Signatures of level-1 $\Pi$-combinators: commutativity and distributivity}
 \end{figure}
 
+Implement Fredkin gate and mention the following:
+
+\begin{quote}
+  Ed Fredkin pursued the idea that information must be finite in
+  density. One day, he announced that things must be even more simple
+  than that. He said that he was going to assume that information
+  itself is conserved. “You’re out of you mind, Ed.” I
+  pronounced. “That’s completely ridiculous. Nothing could happen in
+  such a world. There couldn’t even be logical gates. No decisions
+  could ever be made.” But when Fredkin gets one of his ideas, he’s
+  quite immune to objections like that; indeed, they fuel him with
+  energy. Soon he went on to assume that information processing must
+  also be reversible — and invented what’s now called the Fredkin
+  gate. (Minsky 1999)
+\end{quote}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data III: Reversible Programs between Reversible Programs}
 
@@ -1306,23 +1087,28 @@ Data V: Exclusive Disjunctions
 
 Quantum over finite field 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section*{Acknowledgements} We would like to thank the numerous
-students and colleagues who participated in various aspects of this
-research and who provided valuable feedack and constructive criticism.
+\jc{The reason I commented this out is that it is under-justified. The  
+reader will simply not understand what these next few lines are really
+saying.}
+Indeed one should take the physical principles underlying quantum mechanics,
+the most successful physical theory known to us and adapt computation to
+``learn'' from these principles. To illustrate the depth of our crisis, Scott
+Aaronson, Umesh Vazirani, and others have proposed the following puzzle.
 
-\bibliographystyle{acm}
-%\pagestyle{headings}
-\bibliography{cites}
-\end{document}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+One of these wild claims must be true!:
+\begin{itemize}
+\item the extended Church-Turing thesis is false, or
+\item quantum physics is false, or
+\item there is an efficient classical algorithm for factoring
+\end{itemize}
+Indeed, if quantum physics is correct then there is an efficient quantum
+algorithm for factoring (Shor). If there is no efficient classical algorithm
+for factoring then the extended Church-Turing thesis is false.
 
 %% Below are pieces of text that are not immediately useful above, but
 %% from which we might still be able to pilfer usefully.
 
+%%%%%%%%%
 \subsection{Technical Overview}
 
 The technical development derives from ideas which are implicit in the
@@ -1393,18 +1179,190 @@ To summarize:
 
 Several intriguing areas of exploration remain and the book concludes
 with discussion of some of these, along with other possible
-applications (see Ch.~\ref{ch:discussion}).  Of these, the field of
-reversible and Quantum computing is closely related and we survey
-several connections in depth.  The exact connection between $\Pi$ and
-linear logic~\cite{Girard87tcs} is not fully understood though it is
-clear that both systems capture related but different notions of
-resource usage. A closely related area is the connection with duality
-of computation \cite{Filinski:89, DBLP:conf/icfp/CurienH00,
-  10.1109/LICS.2010.23,Wadler:2003} --- i.e., the quest for a unifying
-framework between `computations', values, continuations and their
-logical counterparts. The investigation of duality gives rise to
-negative and fractional types which have an intuitive semantics and
-are reminiscent of negative information flow, superposition and
-entanglement from Quantum Physics~\cite{piee}.
+applications.  Of these, the field of reversible and Quantum computing
+is closely related and we survey several connections in depth.  The
+exact connection between $\Pi$ and linear logic~\cite{Girard87tcs} is
+not fully understood though it is clear that both systems capture
+related but different notions of resource usage. A closely related
+area is the connection with duality of computation \cite{Filinski:89,
+  DBLP:conf/icfp/CurienH00, 10.1109/LICS.2010.23,Wadler:2003} ---
+i.e., the quest for a unifying framework between `computations',
+values, continuations and their logical counterparts. The
+investigation of duality gives rise to negative and fractional types
+which have an intuitive semantics and are reminiscent of negative
+information flow, superposition and entanglement from Quantum
+Physics~\cite{piee}.
 
+%%%%%%%%%
+\paragraph*{Conservation of Information.}
 
+If information has a physical significance, then it is subject to
+conservation laws just as mass and energy are.  To make this idea
+concrete and to provide a taste of the applications it opens, consider
+a tiny 2-bit password = \verb|"10"|. The password checker looks like:
+
+% verbatim for now, will go to something decent later
+\begin{verbatim}
+check-password (guess) =
+  if guess == "10"
+  then True
+  else False
+\end{verbatim}
+
+One can ask how much information is leaked by this program assuming
+the attacker has no prior knowledge except that the password is 2
+bits, i.e., the four possible 2-bits are equally likely. If the
+attacker guesses \verb|"10"| (with probability $1/4$) the password (2
+bits) is leaked. If the attacker guesses one of the other choices
+(with probability $3/4$) the number of possibilities is reduced from 4
+to 3, i.e., the attacker learns $\log{4} - \log{3}$ bits of
+information. So in general the attacker learns\footnote{If the
+  password is 8 restricted ASCII characters (6 bits), the attacker
+  learns 0.00001 bits in the first probe.}:
+\[\begin{array}{ll}
+   &  1/4 * 2 + 3/4 (\log{4} - \log{3}) \\
+  =&  1/4 \log{4} + 3/4 \log{4/3} \\
+  =&  - 1/4 \log{1/4} - 3/4 \log{3/4} \\
+  \sim& 0.8 \mbox{~bits~in~the~first~probe}
+\end{array}\]
+
+One can alternatively look at the situation by viewing the input as a
+random variable with 4 possibilities and a uniform distribution (i.e.,
+with 2 bits of information). The output is another random variable
+with 4 possibilities but with the distribution
+$\{ (True, 1/4), (False, 3/4) \}$ which contains 0.8 bits of
+information. Thus 2 input bits of information were given to the
+function and only 0.8 were produced. Where did the 1.2 bits of
+information go? Once we accept the thesis that information is a
+physical entity this question cannot be ignored.
+
+The Landauer Principle states that erasing information requires
+energy. In other words, the password checking function must have
+erased 1.2 bits during its calculation, which dissipate as heat in any
+physical realization of the function. In conventional models of
+computation, this erasure is \emph{implicit}, i.e., it occurs as a
+side effect of calculation. We wish to look at models where
+erasure is simply not allowed.
+
+There are, in fact, many different principles of physics which are at
+odds with our current models of computation. Even within quantum
+mechanics itself, there are other ideas (such as superposition or
+entanglement) which are not present in current models. We will however
+restrict ourselves to exploring a single dimension in which our
+foundations should be revised: \textbf{conservation of information}.
+We will follow its consequences, which will turn out to be far
+reaching.
+
+\begin{quote}
+  The laws of physics are essentially algorithms for calculation. These
+  algorithms are significant only to the extent that they are executable in
+  our real physical world. Our usual laws of physics depend on the
+  mathematician's real number system. With that comes the presumption that
+  given any accuracy requirement, there exist a number of calculations steps,
+  which if executed, will satisfy that accuracy requirement. But the real
+  world is unlikely to supply us with unlimited memory of unlimited Turing
+  machine tapes, Therefore, continuum mathematics is not executable, and
+  physical laws which invoke that can not really be satisfactory. They are
+  references to illusionary procedures. Rolf Landauer, The physical nature of
+  information, Physics Letters A 217 (1996) pp. 188-193:
+\end{quote}
+
+A high level approach to conservation of information would proceed
+as follows:
+\begin{enumerate}
+\item Create a means to measure information.
+\item Show that this measure is sound with respect to our current understanding
+of what information ought to be.
+\item Assert that whatever ``quantity'' of information a system has, must
+remain invariant throughout the lifetime of the system.
+\end{enumerate}
+
+Certainly, whatever our notion of information, it can neither be created,
+duplicated, nor erased. Of course, if we make our notion of information
+too rigid, it will be impossible to even \textbf{modify} it! For computation
+to occur, modification must be possible.  But of what kind?
+
+\amr{We should also have a quick survey of other works in reversible
+computation? Most of the other work tries to start from well known
+models of computation or well known programming languages, and then
+adapts them to be reversible. Pi is different in that it starts from
+the semantic implications of reversibility. Then, because it adds
+types, rather than control-flow (or even data-flow) as its next layer
+of ``understanding'', this leads to equivalences, isomorphisms, etc.
+This then leads, quite naturally, to finding that the ``proof
+language'' of semirings (and Rig Groupoids at level 2) is actually a
+programming language. And it is Pi. This is a neat twist on
+Curry-Howard because CH is about \textbf{inhabitation} only. But with
+``conservation of information'' as the basis, a different kind of
+correspondance arises; in fact, this one may well be an actual
+isomorphism.}
+
+%%%%%%%%%
+\paragraph*{Information.}
+We can now give a first precise definition of information preservation.
+Let
+`$b$' be a (not necessarily finite) type whose values are labeled
+$b^1, b^2, \ldots$. Let $\xi$ be a random variable of type $b$ that is
+equal to $b^i$ with probability $p_i$. The entropy of $\xi$ is defined
+as $-\sum p_i \log{p_i}$~\cite{Shannon1948}.  Consider a function
+$f : b_1 \rightarrow b_2$ where $b_2$ is a (not necessarily finite)
+type whose values are labeled $b_2^1, b_2^2, \ldots$. The output
+entropy of the function is given by $- \sum q_j \log{q_j}$ where $q_j$
+indicates the probability of the output of the function to have value
+${b_2}^j$. We say a function is \emph{information-preserving} if its
+output entropy is equal to the entropy of its input. In later sections,
+we will refine this view.
+
+\amr{
+Talk about conservation of information in biology, computer science,
+evolutionary computing, and search. (See
+\url{http://www.evolutionnews.org/2012/08/conservation_of063671.html}.
+}
+
+In our current age, both Landauer's Principle and recent investigations
+of computational models well-suited to quantum mechanics, push us to
+revisit our current models of computation. Information, on top of
+having a physical manifestation, appears to be \emph{conserved},
+along with other quantities like energy, mass and momentum.
+
+But what does it mean for a computation to preserve information?
+What is the missing principle that will guide the creation of a new
+model of computation that ``conserve information''?
+It is nature to look again at physics for inspiration --
+in our current understanding of physics all of the primitive rules
+are reversible. Conventional computation is not. Can
+we embrace this simple principle as the building block of a model of
+computation? What would computation look like when viewed from this
+vantage point? Can non-trivial computation be performed in a
+reversible manner? And, if so, does it have applications?
+
+Traditional models of computation are all unityped, generally
+operating on unstructured sequences of symbols. But recent
+investigations, in the intersection between mathematics and
+computer science (particularly in Homotopy Type Theory~\cite{hottbook})
+reveal that not only can mathematics be typed, but that doing so
+reveals further structure -- in both mathematics and in computation.
+
+And that brings us to the principal objective of this survey: explore the
+domain of \emph{typed reversible computation}.
+
+\amr{In the quantum case, this is clear. Say something about topological
+quantum computing.}
+
+\textbf{punch line: allowable operations that computers can perform
+  while embracing the laws of physics are operations that preserve
+  everthing in abstract space of ``data''; doughnut into cup kind of
+  transformations.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Acknowledgements} We would like to thank the numerous
+students and colleagues who participated in various aspects of this
+research and who provided valuable feedack and constructive criticism.
+
+\bibliographystyle{acm}
+%\pagestyle{headings}
+\bibliography{cites}
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
