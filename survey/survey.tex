@@ -8,7 +8,7 @@
 \usetikzlibrary{quotes}
 \tikzset{>=latex}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Macros
 
 \newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
@@ -104,7 +104,7 @@ McMaster University \qquad\qquad Google \qquad\qquad Indiana University}
 % * Conclude with thoughts regarding other kinds of data that can be
 %   plugged in into that story.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Reversibility, the Missing Principle}
 
 What kind of operations can computers perform? This question was
@@ -151,9 +151,16 @@ observations: (i) all the operations that a computer performs reduce
 to basic physical operations; and (ii) there is a mismtach between the
 logical operations of a typical model of computation (which are
 logically irreversible) and the fundamental laws of physics (which are
-reversible). One could certainly dismiss the mismatch but our thesis
-is that there is great value in revisiting models of computation to be
-in harmony with the laws of physics. 
+reversible). One could certainly dismiss the mismatch as irrelevant to
+the practice of computing but our thesis is that there is the next
+computing revolution is likely to be founded on revised models of
+computation that are designed to in harmony with the laws of physics.
+
+After a detailed introduction on the origins of ``logically
+reversibile computer operations'' and an excursion in the origins of
+our the status quo based on ``irreversible computer operations'', we
+will develop in detail three reversible models of computation and
+discuss their potential applications. 
 
 \begin{comment}
 \begin{quote}
@@ -178,25 +185,21 @@ in harmony with the laws of physics.
 \end{quote}
 \end{comment}
 
-
-
-
-
+%%%%%%%%%
 \subsection{Maxwell's Demon}
 
-To fully appreciate one of the principles is missing in conventional computing,
-one must go back to an old thought experiment by J. C. Maxwell. This is
-codified in a letter that Maxwell wrote to P. G Tait in 1867 --
-the letter whose ideas are now known as `Maxwell's
-Demon'. Maxwell's Demon is a thought experiment that seems to
+To fully appreciate one of the principles is missing in conventional
+computing, one must go back to an old thought experiment by
+J. C. Maxwell. This is codified in a letter that Maxwell wrote to P. G
+Tait in 1867 -- the letter, whose ideas are now known as
+\emph{Maxwell's Demon}, tells of a thought experiment that seems to
 indicate that intelligent beings can somehow violate the second law of
-thermodynamics, thereby violating physics itself.
-
-Many resolutions were offered for this conundrum (for a compilation, see
-Maxwell's Demon~\cite{leff1990}), but none withstood careful
-scrutiny until the establishment of `Landauer's Principle' in 1961 -- a
-principle whose experimental validation
-happened recently in 2012~\cite{berut2012experimental}.
+thermodynamics, thereby violating physics itself. Many resolutions
+were offered for this conundrum (for a compilation, see Maxwell's
+Demon~\cite{leff1990}), but none withstood careful scrutiny until the
+establishment of \emph{Landauer's Principle} in 1961 -- a principle
+whose experimental validation happened recently in
+2012~\cite{berut2012experimental}.
 
 Maxwell's demon appears to violate the second law of thermodynamics by
 having a tiny `intelligence' observing the movement of individual
@@ -214,10 +217,12 @@ important part, that the computation that is manipulating information
 in the demon's brain \textit{must be thermodynamic work}, thereby
 bringing the demon back into the fold of physics.
 
-This is a strange and wonderful idea: Information,
-physics and computation are inextricably linked. Furthermore, this
-implies that ideas in each field have consequences for the other.
-(Cite Bennett and the various `thermodynamics of computation' papers here.)
+This is a strange and wonderful idea: information, physics and
+computation are inextricably linked. Furthermore, this implies that
+ideas in each field have consequences for the
+other~\cite{bennett:1973:lrc,bennett1985fundamental,bennett2010notes,bennett2003notes,baker:1992:nft,dblp:conf/csfw/malacarias12}.
+%% (Cite Bennett and the various `thermodynamics of computation'
+%% papers here.)
 
 When the early models computation, the Turing machine, and the
 $\lambda$-calculus, were developed, there was no compelling reason to the
@@ -230,46 +235,11 @@ constructive, in an era where classical mathematics, with its
 pervasive use of excluded middle and frequent use of the axiom of
 choice, did not overly worry about effective representation.
 
-\begin{quote}
-Toffoli 1980: Mathematical models of computation are abstract
-constructions, by their nature unfettered by physical laws. However,
-if these models are to give indications that are relevant to concrete
-computing, they must somehow capture, albeit in a selective and
-stylized way, certain general physical restrictions to which all
-concrete computing processes are subjected.
-\end{quote}
-
-In our current age, both Landauer's Principle and recent investigations
-of computational models well-suited to quantum mechanics, push us to
-revisit our current models of computation. Information, on top of
-having a physical manifestation, appears to be \emph{conserved},
-along with other quantities like energy, mass and momentum.
-
-But what does it mean for a computation to preserve information?
-What is the missing principle that will guide the creation of a new
-model of computation that ``conserve information''?
-It is nature to look again at physics for inspiration --
-in our current understanding of physics all of the primitive rules
-are reversible. Conventional computation is not. Can
-we embrace this simple principle as the building block of a model of
-computation? What would computation look like when viewed from this
-vantage point? Can non-trivial computation be performed in a
-reversible manner? And, if so, does it have applications?
-
-Traditional models of computation are all unityped, generally
-operating on unstructured sequences of symbols. But recent
-investigations, in the intersection between mathematics and
-computer science (particularly in Homotopy Type Theory~\cite{hottbook})
-reveal that not only can mathematics be typed, but that doing so
-reveals further structure -- in both mathematics and in computation.
-
-And that brings us to the principal objective of this survey: explore the
-domain of \emph{typed reversible computation}.
-
 But first, we need to better understand our current models of
 computation, as a prelude to understand where they lead us astray.
 
-\subsection{Origins}
+%%%%%%%%%
+\subsection{Origins of Computational Models}
 
 Aspects of computation are
 quite old. M\"{u}ller (1786) first conceived of the idea of a
@@ -387,6 +357,7 @@ algorithm for factoring (Shor). If there is no efficient classical algorithm
 for factoring then the extended Church-Turing thesis is false.
 \end{comment}
 
+%%%%%%%%%
 \subsection{From Classical to Quantum}
 
 Conventional classical models of computation, including boolean
@@ -415,6 +386,7 @@ happened in recent years~\cite{berut2012experimental}. If information
 has a physical significance, then it is subject to conservation laws
 just as mass and energy are.
 
+%%%%%%%%%
 \subsection{Conservation of Information}
 
 To make this idea concrete and to provide a taste of the applications
@@ -516,6 +488,7 @@ Curry-Howard because CH is about \textbf{inhabitation} only. But with
 correspondance arises; in fact, this one may well be an actual
 isomorphism.}
 
+%%%%%%%%%
 \subsection{Information}
 
 We can now give a first precise definition of information preservation.
@@ -538,8 +511,34 @@ evolutionary computing, and search. (See
 \url{http://www.evolutionnews.org/2012/08/conservation_of063671.html}.
 }
 
-%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In our current age, both Landauer's Principle and recent investigations
+of computational models well-suited to quantum mechanics, push us to
+revisit our current models of computation. Information, on top of
+having a physical manifestation, appears to be \emph{conserved},
+along with other quantities like energy, mass and momentum.
+
+But what does it mean for a computation to preserve information?
+What is the missing principle that will guide the creation of a new
+model of computation that ``conserve information''?
+It is nature to look again at physics for inspiration --
+in our current understanding of physics all of the primitive rules
+are reversible. Conventional computation is not. Can
+we embrace this simple principle as the building block of a model of
+computation? What would computation look like when viewed from this
+vantage point? Can non-trivial computation be performed in a
+reversible manner? And, if so, does it have applications?
+
+Traditional models of computation are all unityped, generally
+operating on unstructured sequences of symbols. But recent
+investigations, in the intersection between mathematics and
+computer science (particularly in Homotopy Type Theory~\cite{hottbook})
+reveal that not only can mathematics be typed, but that doing so
+reveals further structure -- in both mathematics and in computation.
+
+And that brings us to the principal objective of this survey: explore the
+domain of \emph{typed reversible computation}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Programs as Reversible Deformations} 
 
 To better understand conservation of information, we can look
@@ -605,7 +604,7 @@ corresponding notion of reversible programs.
 \amr{In the quantum case, this is clear. Say something about topological
 quantum computing.}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data I: Finite Sets}
 
 Before we start our investigation of what it means to have typed,
@@ -668,7 +667,7 @@ of $n$-element sets (i.e. those sets where all the structure has been
 forgotten), these are a rather pale shadow of the rich tapestry of
 information-perserving transformation of structured data.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data II: Structured Finite Types}
 
 The elementary building blocks of type theory are the empty type
@@ -1158,7 +1157,7 @@ Let $c : t_1 \leftrightarrow t_2$:
 \caption{\label{figa}Signatures of level-1 $\Pi$-combinators: commutativity and distributivity}
 \end{figure}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data III: Reversible Programs between Reversible Programs}
 
 In the previous sections, we examined equivalences between
@@ -1267,7 +1266,7 @@ The interpretation on permutations is unclear, because the Pi representation
 has so much more structure, and permutations too have many different 
 representations. So it is unclear what maps to what.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 
 Discuss recursion, or add a section of infinite sets???
@@ -1304,7 +1303,7 @@ Data V: Exclusive Disjunctions
 
 Quantum over finite field 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Acknowledgements} We would like to thank the numerous
 students and colleagues who participated in various aspects of this
 research and who provided valuable feedack and constructive criticism.
@@ -1314,7 +1313,7 @@ research and who provided valuable feedack and constructive criticism.
 \bibliography{cites}
 \end{document}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Below are pieces of text that are not immediately useful above, but
 %% from which we might still be able to pilfer usefully.
