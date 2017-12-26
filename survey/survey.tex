@@ -124,17 +124,19 @@ with a possible quantum computing revolution in sight and with
 unprecedented explosion in embedded computers and cyber-physical
 systems, there are reasons to re-think this foundational question
 again. In fact, the calls to re-think this foundational question have
-been proclaimed by physicists for more than thirty years as the
+been proclaimed by physicists more than forty years ago as the
 following two quotes testify:
 
 \begin{quote}
-  Mathematical models of computation are abstract constructions, by
-  their nature unfettered by physical laws. However, if these models
-  are to give indications that are relevant to concrete computing,
-  they must somehow capture, albeit in a selective and stylized way,
-  certain general physical restrictions to which all concrete
-  computing processes are subjected~\cite{toffoli:1980}.
+  \textbf{Toffoli 1980~\cite{toffoli:1980}:} Mathematical models of computation are
+  abstract constructions, by their nature unfettered by physical
+  laws. However, if these models are to give indications that are
+  relevant to concrete computing, they must somehow capture, albeit in
+  a selective and stylized way, certain general physical restrictions
+  to which all concrete computing processes are
+  subjected.
 
+  \textbf{Feynman 1982~\cite{springerlink:10.1007/bf02650179}:}
   Another thing that has been suggested early was that natural laws
   are reversible, but that computer rules are not. But this turned out
   to be false; the computer rules can be reversible, and it has been a
@@ -142,25 +144,25 @@ following two quotes testify:
   place where the relationship of physics and computation has turned
   itself the other way and told us something about the possibilities
   of computation. So this is an interesting subject because it tells
-  us something about computer rules
-  \ldots~\cite{springerlink:10.1007/bf02650179}.
+  us something about computer rules.
 \end{quote}
 
-These quotes by Toffoli and Feynman both highlight two obvious
-observations: (i) all the operations that a computer performs reduce
-to basic physical operations; and (ii) there is a mismtach between the
-logical operations of a typical model of computation (which are
-logically irreversible) and the fundamental laws of physics (which are
-reversible). One could certainly dismiss the mismatch as irrelevant to
-the practice of computing but our thesis is that there is the next
-computing revolution is likely to be founded on revised models of
-computation that are designed to in harmony with the laws of physics.
+\noindent These quotes by Toffoli and Feynman both highlight the
+consequences of two obvious observations: (i) all the operations that
+a computer performs reduce to basic physical operations; and (ii)
+there is a mismatch between the logical operations of a typical model
+of computation (which are logically irreversible) and the fundamental
+laws of physics (which are reversible). One could certainly dismiss
+the mismatch as irrelevant to the practice of computing but our thesis
+is that the next computing revolution is likely to be founded on
+revised models of computation that are designed to in harmony with the
+laws of physics.
 
 After a detailed introduction on the origins of ``logically
-reversibile computer operations'' and an excursion in the origins of
-our the status quo based on ``irreversible computer operations'', we
-will develop in detail three reversible models of computation and
-discuss their potential applications. 
+reversibile computer operations'' and an excursion into the origins of
+``irreversible computer operations'', we will develop in detail three
+reversible models of computation and discuss their potential
+applications.
 
 \begin{comment}
 \begin{quote}
@@ -186,19 +188,18 @@ discuss their potential applications.
 \end{comment}
 
 %%%%%%%%%
-\subsection{Maxwell's Demon}
-
-To fully appreciate one of the principles is missing in conventional
-computing, one must go back to an old thought experiment by
-J. C. Maxwell. This is codified in a letter that Maxwell wrote to P. G
-Tait in 1867 -- the letter, whose ideas are now known as
+\paragraph*{Maxwell's Demon.}
+To fully appreciate the missing principle of ``reversibility'' in
+conventional computing, we go back to an old thought experiment by
+J. C. Maxwell. The details are codified in a letter that Maxwell wrote
+to P. G Tait in 1867 -- the letter, whose ideas are now known as
 \emph{Maxwell's Demon}, tells of a thought experiment that seems to
 indicate that intelligent beings can somehow violate the second law of
 thermodynamics, thereby violating physics itself. Many resolutions
-were offered for this conundrum (for a compilation, see Maxwell's
-Demon~\cite{leff1990}), but none withstood careful scrutiny until the
-establishment of \emph{Landauer's Principle} in 1961 -- a principle
-whose experimental validation happened recently in
+were offered for this conundrum (for a compilation, see the book by
+Leff and Rex~\cite{leff1990}), but none withstood careful scrutiny
+until the establishment of \emph{Landauer's Principle} in 1961 -- a
+principle whose experimental validation happened recently in
 2012~\cite{berut2012experimental}.
 
 Maxwell's demon appears to violate the second law of thermodynamics by
@@ -206,41 +207,41 @@ having a tiny `intelligence' observing the movement of individual
 particles of a gas and separating fast moving particles from slow
 moving ones, thereby reducing the total entropy of the
 system. Landauer's resolution of the demon relied on two ideas that
-took root only a few decades earlier -- the formal notion of
-computation (through the work of Turing and Church, 1936) and the
-formal notion of information (through the work of Claude Shannon,
-1948). Landauer reasoned that the computation done by the finite brain
-of the demon, involves getting information about the movement of
-molecules, acting on that information and then overwriting it to make
-room for the next computation.  Landauer reasoned, and this is the
-important part, that the computation that is manipulating information
-in the demon's brain \textit{must be thermodynamic work}, thereby
-bringing the demon back into the fold of physics.
+took root only a few decades earlier: the formal notion of computation
+(through the work of Turing and Church, 1936) and the formal notion of
+information (through the work of Shannon, 1948). Landauer reasoned
+that the computation done by the finite brain of the demon, involves
+getting information about the movement of molecules, acting on that
+information, and then overwriting it to make room for the next
+computation.  In other words, the computation that is manipulating
+information in the demon's brain \textit{must be thermodynamic work},
+thereby bringing the demon back into the fold of physics.
 
-This is a strange and wonderful idea: information, physics and
-computation are inextricably linked. Furthermore, this implies that
-ideas in each field have consequences for the
-other~\cite{bennett:1973:lrc,bennett1985fundamental,bennett2010notes,bennett2003notes,baker:1992:nft,dblp:conf/csfw/malacarias12}.
-%% (Cite Bennett and the various `thermodynamics of computation'
-%% papers here.)
+%% (Cite Bennett and the various `thermodynamics of computation'  
+%% papers here.)  
+ 
+This is a strange and wonderful idea: information, physics, and
+computation are inextricably linked. In contrast, when the early
+models of computation were developed, there was no compelling reason
+to the take the information content of computations into consideration
+-- in fact, at that time there was no quantifiable notion of
+information. These models followed in the footsteps of logic where,
+following hundreds of years of tradition, conventional operations such
+conjunction and disjunction are logically irreversible. These models
+were already radical enough, by being purely \emph{constructive}, in
+an era where classical mathematics, with its pervasive use of excluded
+middle and frequent use of the axiom of choice, did not overly worry
+about effective representation. Landauer's observation implied however
+that ideas in each field have consequences for the
+other~\cite{bennett:1973:lrc,bennett1985fundamental,bennett2010notes,bennett2003notes,baker:1992:nft,baez2011physics,dblp:conf/csfw/malacarias12}. To
+really appreciate this fact, we delve deeper into the origin of our
+computational models and argue that they are essentially reflections
+of contemporary laws of physics. 
 
-When the early models computation, the Turing machine, and the
-$\lambda$-calculus, were developed, there was no compelling reason to the
-take the information content of computations into
-consideration -- in fact, at that time there was no quantifiable
-notion of information. These models followed in the footsteps of logic
-where conventional gates such as AND and OR happily erase their
-inputs. These models were already radical enough, by being purely
-constructive, in an era where classical mathematics, with its
-pervasive use of excluded middle and frequent use of the axiom of
-choice, did not overly worry about effective representation.
-
-But first, we need to better understand our current models of
-computation, as a prelude to understand where they lead us astray.
+\amr{wavefront}
 
 %%%%%%%%%
-\subsection{Origins of Computational Models}
-
+\paragraph*{Origins of Computational Models.}
 Aspects of computation are
 quite old. M\"{u}ller (1786) first conceived of the idea of a
 ``difference machine'', which Babbage (1819--1822) was able to
@@ -358,8 +359,7 @@ for factoring then the extended Church-Turing thesis is false.
 \end{comment}
 
 %%%%%%%%%
-\subsection{From Classical to Quantum}
-
+\paragraph*{From Classical to Quantum.}
 Conventional classical models of computation, including boolean
 circuits, the Turing machine, and the $\lambda$-calculus, are founded on
 primitives which correspond to \emph{irreversible} physical processes which
@@ -387,8 +387,7 @@ has a physical significance, then it is subject to conservation laws
 just as mass and energy are.
 
 %%%%%%%%%
-\subsection{Conservation of Information}
-
+\paragraph*{Conservation of Information.}
 To make this idea concrete and to provide a taste of the applications
 it opens, consider a tiny 2-bit password = \verb|"10"|. The password
 checker looks like:
@@ -489,8 +488,7 @@ correspondance arises; in fact, this one may well be an actual
 isomorphism.}
 
 %%%%%%%%%
-\subsection{Information}
-
+\paragraph*{Information.}
 We can now give a first precise definition of information preservation.
 Let
 `$b$' be a (not necessarily finite) type whose values are labeled
@@ -1314,9 +1312,12 @@ research and who provided valuable feedack and constructive criticism.
 \end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Below are pieces of text that are not immediately useful above, but
 %% from which we might still be able to pilfer usefully.
+
 \subsection{Technical Overview}
 
 The technical development derives from ideas which are implicit in the
