@@ -5,6 +5,10 @@
 \usepackage{comment}
 \usepackage{tikz}
 \usepackage{tikz-cd}
+\usepackage{listings}
+\usepackage{multicol}
+\usepackage{amsmath}
+\usepackage{stmaryrd}
 \usetikzlibrary{quotes}
 \tikzset{>=latex}
 
@@ -81,6 +85,11 @@ McMaster University \qquad\qquad Google \qquad\qquad Indiana University}
 \newcommand{\true}{\mathit{true}}
 \newcommand{\false}{\mathit{false}}
 
+
+\newcommand{\kw}[1]{{\scriptsize{\textbf{\texttt{#1}}}}}
+\newcommand{\ctr}[1]{{\scriptsize{\texttt{#1}}}}
+\newcommand{\inline}[3]{\ctr{#1} \textasciitilde \ctr{#2}:\ctr{#3}}
+
 \begin{document}
 \maketitle
 
@@ -93,7 +102,7 @@ McMaster University \qquad\qquad Google \qquad\qquad Indiana University}
 
 % * If data is plain finite sets, programs become permutations (deformations on finite sets).
 
-% * If data is structured trees, we get Pi. 
+% * If data is structured trees, we get Pi.
 
 % * Explain Pi with examples.
 
@@ -210,7 +219,7 @@ that ideas in each field have consequences for the
 other~\cite{bennett:1973:lrc,bennett1985fundamental,bennett2010notes,bennett2003notes,baker:1992:nft,baez2011physics,dblp:conf/csfw/malacarias12}. To
 really appreciate this fact, we delve deeper into the origin of our
 computational models and argue that they are essentially reflections
-of contemporary laws of physics. 
+of contemporary laws of physics.
 
 %%%%%%%%%
 \paragraph*{Origins of Computational Models.}
@@ -288,7 +297,7 @@ discipline from rapid changes in the underlying technology. Yet, as
 effective as these models have been, one must note that they
 \emph{embody several implicit physical assumptions} and these
 assumptions are based on a certain understanding of the laws of
-physics. 
+physics.
 
 Our understanding of physics has evolved tremendously since 1900!
 Thus it is time to revisit these abstractions, especially with respect
@@ -314,7 +323,7 @@ i.e., processes that are subject to the physical principle of
 follow its consequences, which will turn out to be far reaching.
 
 %%%%%%%%%
-\paragraph*{Programs as Reversible Deformations.} 
+\paragraph*{Programs as Reversible Deformations.}
 
 To better understand the essence of ``conservation of information'' in
 the context of computing, we first look for analogous ideas in
@@ -391,7 +400,7 @@ of $A$ would be mapped to the same element of $B$. Supposed that this is $2$ and
 $3$, and that they both map to $d$.  But $g(d)$ cannot be both $2$ and $3$, and
 so $g$ is not the inverse of $f$. With just a little more work, we can show
 that $f$ (and $g$) must be both injective and surjective. In other words,
-$f$ (and $g$) must be a bijection between $A$ and $B$.  And of course this 
+$f$ (and $g$) must be a bijection between $A$ and $B$.  And of course this
 only happens when $A$ and $B$ have the same number of elements.
 
 More importantly, given a bijection $f : C \rightarrow D$ of finite sets
@@ -419,16 +428,16 @@ can create a small language for writing permutations as
 \begin{verbatim}
 p ::= id | swap i j | p;p
 \end{verbatim}
-where $i,j:\Nat$, $i\neq j$ and $i,j < n$. Note that we could remove 
+where $i,j:\Nat$, $i\neq j$ and $i,j < n$. Note that we could remove
 \verb|id|
-from the language and drop the $i\neq j$ condition so that 
+from the language and drop the $i\neq j$ condition so that
 \verb|swap j j| would represent the identity permutation.
 
 While we are mainly interested in typed data, it is always worthwhile to
 first start investigating the untyped setting first, as it gives us insights
 into what the \emph{purely operational} view of the theory would be.
 This tells us that permutations are an inescapable part of the fabric of
-reversible computing. 
+reversible computing.
 
 However as permutations are untyped, and act on the canonicalized version
 of $n$-element sets (i.e. those sets where all the structure has been
@@ -503,7 +512,7 @@ $A \times B \equiv B \times A$ is not normally provable%
 don't.}. But it should be clear that $A \times B$ and $B \times A$
 contain equivalent information. In other words, we would like to
 be able to witness that $A \times B$ can be reversibly deformed
-into $B \times A$. Which motivates the introduction of 
+into $B \times A$. Which motivates the introduction of
 type \emph{equivalences}. To do this, we need a few important
 auxiliary concepts first.
 
@@ -525,7 +534,7 @@ $g : B \rightarrow A$ and two homotopies
 $\alpha : f \circ g \sim \mathrm{id}_B$ and
 $\beta : g \circ f \sim \mathrm{id}_A$.
 \end{defn}
- 
+
 \begin{defn}[Equivalence of types]
   Two types $A$ and $B$ are equivalent $A \simeq B$ if there exists a
   function $f : A \rightarrow B$ together with a quasi-inverse for $f$.
@@ -533,7 +542,7 @@ $\beta : g \circ f \sim \mathrm{id}_A$.
 
 \noindent Why \emph{quasi}? The reasons are beyond our scope, but
 the interested reader can read sections $2.4$ and $4$ in \cite{hottbook}.
-There are several conceptually different, but equivalent, 
+There are several conceptually different, but equivalent,
 ``better'' definitions.  We record just one here:
 
 \begin{defn}[Bi-invertibility]
@@ -543,7 +552,7 @@ pair of functions $g,h : B \rightarrow A$ and two homotopies
 $\alpha : f \circ g \sim \mathrm{id}_B$ and
 $\beta : h \circ f \sim \mathrm{id}_A$.
 \end{defn}
- 
+
 \noindent We can then replace quasi-inverse with bi-invertibility in
 the definition of type equivalence. The differences will not matter to
 us here.
@@ -552,11 +561,11 @@ If we replace $=$ by $\simeq$, then we can indeed prove that
 types (with $\bot, \top, \uplus, \times$) form a commutative semiring.
 
 The reader familiar with universal algebra should pause
-and ponder a bit about what we have done. We have lifted 
+and ponder a bit about what we have done. We have lifted
 \emph{equality} from being in the signature of the ambient logic
 and instead put it in the signature of the algebraic structure
 of interest. Then, and only then, are we in a solid position
-to show that we have a concept (commutative semiring) which is flexible 
+to show that we have a concept (commutative semiring) which is flexible
 enough for types to be an instance.
 
 If we revisit the Curry-Howard correspondance, we notice one
@@ -574,7 +583,7 @@ $f : A \uplus A \rightarrow A$ and $g : A \rightarrow A \uplus A$;
 however, they are not inverses.
 
 So mere inhabitation falls far short of our goals of being
-able to smoothly deform from one type to another.  
+able to smoothly deform from one type to another.
 
 Let us thus analyze the crux of the ``problem''. In logic, we have
 that $\land$ and $\lor$ are both \emph{idempotent}: this is the
@@ -653,7 +662,7 @@ to create a language $\Pi$ such that the types and type combinators
 map to $\bot, \top, \uplus, \times$, and such that we have ground
 terms whose denotation are all $16$ type isomorphisms of
 Figure~\ref{type-isos}. This is completely straightforward, as
-we can simply do this literally. To make the analogy with 
+we can simply do this literally. To make the analogy with
 commutative semirings stand out even more, we will use $0, 1, +$, and $*$
 at the type level, and will denote ``equivalence'' by $\iso$.
 Thus Figure~\ref{pi-terms} shows the ``constants'' of the language.
@@ -690,7 +699,7 @@ isomorphisms come from?  Well, inhabitants of types with (0,1,+,*)
 form a semiring. So, still inspired by Curry-Howard, look to the
 proof-terms of semiring identities -- and voila, a nice set of
 isomorphisms! We can name these isomorphisms, AND give them
-implementations. 
+implementations.
 
 That gives us some ground terms.  Not enough for a PL! So then
 we need to be able to 'combine' these. So we add 3 combinators for
@@ -712,7 +721,7 @@ structural.]
 sound and complete isomorphisms for finite types
 
 \begin{verbatim}
-examples: 
+examples:
   (1 + 1) x ((1 + 1) x b) = (b+b) + (b+b)
   conditionals
   toffoli
@@ -739,7 +748,7 @@ Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t₃$, and $c_3
 \end{array}\]
 \caption{\label{figj}Signatures of level-1 $\Pi$-combinators: associativity}
 \end{figure}
-  
+
 \begin{figure}[t]
 Let $a : t_1 \leftrightarrow t_2$, $b : t_3 \leftrightarrow t_4$, and $c : t₅ \leftrightarrow t₆$:
 \[\def\arraystretch{1.3}
@@ -756,23 +765,23 @@ Let $a : t_1 \leftrightarrow t_2$, $b : t_3 \leftrightarrow t_4$, and $c : t₅ 
 \end{figure}
 
 \begin{figure}[t]
-Let $c, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c', c'' : t_3 \leftrightarrow t_4$: 
+Let $c, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c', c'' : t_3 \leftrightarrow t_4$:
 \[\def\arraystretch{1.3}
 \begin{array}{c}
   {\idc \circledcirc \, c \Leftrightarrow c}
-\quad 
+\quad
   {c \, \circledcirc \idc \, \Leftrightarrow c}
 \quad
   {c\,\, \circledcirc\,! c \Leftrightarrow \idc}
-\quad 
+\quad
   {! c \circledcirc c \Leftrightarrow \idc}
 \\
   {c \Leftrightarrow c}
-\quad 
+\quad
 \Rule{}
   {c_1 \Leftrightarrow c_2 \quad c_2 \Leftrightarrow c_3}
   {c_1 \Leftrightarrow c_3}
-  {} 
+  {}
 \quad
 \Rule{}
   {c_1 \Leftrightarrow c' \quad c_2 \Leftrightarrow c''}
@@ -787,7 +796,7 @@ Let $c₀ : 0 \leftrightarrow 0$, $c_1 : 1 \leftrightarrow 1$, and $c : t_1 \lef
 \[\def\arraystretch{1.3}
 \begin{array}{c}
   {\identlp \circledcirc c \Leftrightarrow (c₀ \oplus c) \circledcirc \identlp}
-\qquad 
+\qquad
   {\identrp \circledcirc (c₀ \oplus c) \Leftrightarrow c \circledcirc \identrp}
 \\
   {\identlsp \circledcirc c \Leftrightarrow (c \oplus c₀) \circledcirc \identlsp}
@@ -843,7 +852,7 @@ Let $a_1 : t₅ \leftrightarrow t_1$,  $a_2 : t₆ \leftrightarrow t_2$, $a_3 : 
 \Rule{}
   {c_1 \Leftrightarrow c_3 \quad c_2 \Leftrightarrow c_4}
   {c_1 \otimes c_2 \Leftrightarrow c_3 \otimes c_4}
-  {} 
+  {}
 \\
   {\idc \oplus \, \idc \, \Leftrightarrow \idc}
 \qquad
@@ -906,7 +915,7 @@ Let $c : t_1 \leftrightarrow t_2$:
 \vspace{ -0.5em}
 \[\def\arraystretch{1.3}
 \begin{array}{rcl}
-  (\distl \circledcirc (\dist \oplus \dist)) \circledcirc \assoclp &\Leftrightarrow&   
+  (\distl \circledcirc (\dist \oplus \dist)) \circledcirc \assoclp &\Leftrightarrow&
    \dist \circledcirc (\distl \oplus \distl) \circledcirc \assoclp ~\circledcirc \\
 && (\assocrp \oplus \idc) ~\circledcirc \\
 && ((\idc \oplus \swapp) \oplus \idc) ~\circledcirc \\
@@ -963,8 +972,8 @@ consisting of two deformations between the types $A + B$ and $C+D$:
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
   \draw[>=latex,<->,double,red,thick] (2.25,-1.2) -- (2.25,-2.9) ;
 %%  \node at (3.3,-2) {$\mathit{swapl}_{+\Leftrightarrow}$} ;
-%%  \node at (2.5,-1.3) {$((c_2~\oplus~c_1)~\circledcirc~\mathit{swap}_{+})$}; 
-%%  \node at (2.5,-2.7) {$(\mathit{swap}_{+}~\circledcirc~(c_1~\oplus~c_2))$}; 
+%%  \node at (2.5,-1.3) {$((c_2~\oplus~c_1)~\circledcirc~\mathit{swap}_{+})$};
+%%  \node at (2.5,-2.7) {$(\mathit{swap}_{+}~\circledcirc~(c_1~\oplus~c_2))$};
   \draw (-2,-2) ellipse (0.5cm and 1cm);
   \draw[fill] (-2,-1.5) circle [radius=0.025];
   \node[below] at (-2.1,-1.5) {$A$};
@@ -1000,16 +1009,16 @@ consisting of two deformations between the types $A + B$ and $C+D$:
   \node at (1.5,-0.5) {$c_1$};
 
   \draw     (2,0.5)  -- (2.5,0.5)  ;
-  \draw     (2,-0.5) -- (2.5,-0.5) ; 
+  \draw     (2,-0.5) -- (2.5,-0.5) ;
 
   \draw     (2.5,0.5)  -- (3.5,-0.5)  ;
-  \draw     (2.5,-0.5) -- (3.5,0.5) ; 
+  \draw     (2.5,-0.5) -- (3.5,0.5) ;
 
   \draw     (1,-3.5)  -- (2,-4.5)    ;
-  \draw     (1,-4.5) -- (2,-3.5)   ; 
+  \draw     (1,-4.5) -- (2,-3.5)   ;
 
-  \draw     (2,-3.5)  -- (2.5,-3.5)    ; 
-  \draw     (2,-4.5) -- (2.5,-4.5)   ; 
+  \draw     (2,-3.5)  -- (2.5,-3.5)    ;
+  \draw     (2,-4.5) -- (2.5,-4.5)   ;
 
 \end{tikzpicture}
 \end{center}
@@ -1044,10 +1053,10 @@ we take the easiest way there: simply make every coherence isomorphism into
 a combinator. Huge proof obligation that this induces actual transformations
 on Pi programs. Luckily, it does.  But not straightforwardly -- ``incorrect''
 definitions of some Pi combinators (such as those for 0*x = 0) can lead to
-some level 2 morphisms not working. 
+some level 2 morphisms not working.
 
 The interpretation on permutations is unclear, because the Pi representation
-has so much more structure, and permutations too have many different 
+has so much more structure, and permutations too have many different
 representations. So it is unclear what maps to what.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1073,7 +1082,7 @@ Natural numbers: fold/unfold
 Partial isos
 
 meta-circular interpreter
- 
+
 DANGER: here, we leave the safe land of ``preservation of information'',
 because partiality is not reversible. So while trace gives a reversible
 program as output, it itself isn't a reversible operation. Like the
@@ -1085,9 +1094,9 @@ problem.
 
 Data V: Exclusive Disjunctions
 
-Quantum over finite field 
+Quantum over finite field
 
-\jc{The reason I commented this out is that it is under-justified. The  
+\jc{The reason I commented this out is that it is under-justified. The
 reader will simply not understand what these next few lines are really
 saying.}
 Indeed one should take the physical principles underlying quantum mechanics,
@@ -1353,6 +1362,967 @@ quantum computing.}
   while embracing the laws of physics are operations that preserve
   everthing in abstract space of ``data''; doughnut into cup kind of
   transformations.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Theseus: Types and Simple Isomorphisms}
+\label{theseusI}
+
+We begin by presenting the core of Theseus which consists of evidently
+reversible functions on user-defined datatypes.  In subsequent discourse we
+will use the word `map' to refer to these logically reversible
+functions. Theseus has the same built-in types as~\ensuremath{\Pi^{o}} and as conventional
+functional programming languages: the empty type, the unit type, and sum and
+product types. All other types, including recursive types, are user-defined
+using a general mechanism for type declarations:
+
+\lstset{
+        language=haskell,
+ morekeywords={Bool,Nat,Tree},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+type Bool  =  (@\ctr{True}@) | (@\ctr{False}@)
+type Nat   =  0 | Succ Nat
+type Tree  =  Leaf Nat | Node Tree Tree
+ \end{lstlisting}
+%subcode source theseus.tex:347
+
+\noindent The declarations above witness isomorphisms between the set
+\kw{Bool} and the set constructed by the constants \ctr{True} and
+\ctr{False}, between the set \kw{Nat} and the set inductively constructed
+using {\scriptsize{0}} and \ctr{Succ}, and between the set \kw{Tree} and the
+set inductively constructed using \ctr{Leaf} and \ctr{Node}.  Thus, Theseus
+type definitions are similar to, say, Haskell, type definitions. Such
+definitions translate directly to the underlying \ensuremath{\Pi^{o}} using iso-recursive
+type definitions. For example, the above types translate as follows:
+\vspace{-20pt}
+\begin{small}
+\begin{multicols}{3}
+\[\begin{array}{rclr}
+\kw{Bool}   & = &  \mu  ~x.1 + 1 \\
+\kw{Nat}   & = &  \mu  ~x. 1 + x \\
+\kw{Tree}   & = &  \mu  ~x. \kw{Nat}  + x * x \\
+ \end{array}\]
+%subcode source theseus.tex:363
+
+\[\begin{array}{rclr}
+\mathit{unfoldBool} :& \kw{Bool}  \leftrightarrow 1 + 1 &: \mathit{foldBool} \\
+\mathit{unfoldNat} :& \kw{Nat}  \leftrightarrow 1 + \kw{Nat}  &: \mathit{foldNat} \\
+\mathit{unfoldTree} :& \kw{Tree}  \leftrightarrow \kw{Nat}  + (\kw{Tree}  * \kw{Tree} ) &: \mathit{foldTree} \\
+ \end{array}\]
+%subcode source theseus.tex:368
+\end{multicols}
+\end{small}
+
+%%%%%%%%%%%%
+\subsection{Simple Isomorphisms}
+
+A Theseus program has a type of the form \ctr{a} $\leftrightarrow$ \ctr{b};
+one runs such a program forward by supplying a value of type \ctr{a}. If the
+program terminates, we get back a value of type~\ctr{b}. Alternately we can
+run the program in reverse by supplying a value of type \ctr{b}. Given the
+built-in types and the facility to introduce user-defined ones, one can
+already write a few small but interesting programs. Maps that are evidently
+isomorphisms can be written in the familiar pattern matching style
+popularized by the family of functional languages. For example:
+\begin{multicols}{2}
+\lstset{
+        language=haskell,
+ morekeywords={Nat,Tree,Int,Bool},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+(@\ctr{id}@) :: Bool (@$\leftrightarrow$@) Bool
+| (@\ctr{False}@)  (@$\leftrightarrow$@)  (@\ctr{False}@)
+| (@\ctr{True}@)   (@$\leftrightarrow$@)  (@\ctr{True}@)
+
+expandBool :: Bool * a (@$\leftrightarrow$@) a + a
+| (@\ctr{True}@), a   (@$\leftrightarrow$@)  (@\ctr{Left}@) a
+| (@\ctr{False}@), a  (@$\leftrightarrow$@)  (@\ctr{Right}@) a
+
+expandNat :: Nat (@$\leftrightarrow$@) Nat + 1
+| 0       (@$\leftrightarrow$@)  (@\ctr{Right}@) ()
+| Succ n  (@$\leftrightarrow$@)  (@\ctr{Left}@) n
+
+(@\ctr{not}@) :: Bool (@$\leftrightarrow$@) Bool
+| (@\ctr{True}@)   (@$\leftrightarrow$@)  (@\ctr{False}@)
+| (@\ctr{False}@)  (@$\leftrightarrow$@)  (@\ctr{True}@)
+
+foldBool :: a + a (@$\leftrightarrow$@) Bool * a
+| (@\ctr{Left}@) a   (@$\leftrightarrow$@)  (@\ctr{True}@), a
+| (@\ctr{Right}@) a  (@$\leftrightarrow$@)  (@\ctr{False}@), a
+
+foldNat :: Nat + 1 (@$\leftrightarrow$@) Nat
+| (@\ctr{Right}@) ()  (@$\leftrightarrow$@)  0
+| (@\ctr{Left}@) n    (@$\leftrightarrow$@)  Succ n
+ \end{lstlisting}
+%subcode source theseus.tex:410
+\end{multicols}
+
+\vspace{-25pt}
+\lstset{
+        language=haskell,
+ morekeywords={Nat,Tree,Int,Bool},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+treeUnwind :: Tree (@$\leftrightarrow$@) Tree * Tree + (Bool + Nat)
+| Node t1 t2            (@$\leftrightarrow$@)  (@\ctr{Left}@)   (t1, t2)
+| Leaf 0                (@$\leftrightarrow$@)  (@\ctr{Right}@)  ((@\ctr{Left}@) (@\ctr{True}@))
+| Leaf (Succ 0)         (@$\leftrightarrow$@)  (@\ctr{Right}@)  ((@\ctr{Left}@) (@\ctr{False}@))
+| Leaf (Succ (Succ n))  (@$\leftrightarrow$@)  (@\ctr{Right}@)  ((@\ctr{Right}@) n)
+ \end{lstlisting}
+%subcode source theseus.tex:422
+
+Unlike the situation in a conventional functional language, the
+intuition here is that the two sides of each pattern clause can be
+swapped to produce the inverse of the function, i.e. as we will see
+repeatedly in the paper, patterns and expressions are the same
+thing. Compare for example the definitions of \ctr{expandBool} and
+\ctr{foldBool}. This is the only constraint that a programmer needs to
+maintain. This constraint can be ensured using the following two
+rules:
+
+\begin{enumerate}
+\label{rules}
+\item \emph{Non-overlapping and exhaustive coverage in pattern
+  clauses.} The collections of patterns in the left-hand side (LHS) of
+  each clause must be a complete non-overlapping covering of the input
+  type. Similarly, the collections of patterns in the right-hand side
+  (RHS) of each clause must also be a complete non-overlapping
+  covering of the return type. In other words, no cases should be
+  omitted or duplicated.
+\item \emph{Preserve typed variables across \ensuremath{\leftrightarrow}.} Each variable that
+  occurs on one side of a pattern matching clause can only appear once on
+  that side and must appear exactly once on the other side and with the same
+  type.
+\end{enumerate}
+
+When restricted to one side of each pattern matching clause, the rules
+should be familiar and intuitive. Note that, in general, the two sides
+of a pattern matching clause may have different types. Other than the
+requirement of non-overlapping and exhaustive coverage, there are no
+rules that constrain the types and names of constants nor of
+constructors. So for example, in \ctr{foldBool}, the pattern
+`\ctr{Left}~\ctr{a}' maps to a pair constructor with the first
+component being the constant \ctr{True}.
+
+Examples of expressions that violate the constraints follow:
+
+\begin{multicols}{2}
+\lstset{
+        language=haskell,
+ morekeywords={Nat,Tree,Int,Bool},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+-- Invalid: Missing LHS cases
+missing_node :: Tree (@$\leftrightarrow$@) Nat
+| Leaf n (@$\leftrightarrow$@) n
+
+-- Invalid: Overlapping RHS cases
+overlapping_cases :: Nat (@$\leftrightarrow$@) Nat
+| 0       (@$\leftrightarrow$@)  0
+| Succ n  (@$\leftrightarrow$@)  n
+ \end{lstlisting}
+%subcode source theseus.tex:471
+
+\lstset{
+        language=haskell,
+ morekeywords={Nat,Tree,Int,Bool},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+-- Invalid: n is dropped
+drop_var :: Tree (@$\leftrightarrow$@) Tree * Tree + Nat
+| Node t1 t2  (@$\leftrightarrow$@)  (@\ctr{Left}@)  (t1,t2)
+| Leaf n      (@$\leftrightarrow$@)  (@\ctr{Right}@) 0
+
+-- Invalid: t is used twice
+dup_var :: Tree (@$\leftrightarrow$@) Tree * Tree + Nat
+| Node t t  (@$\leftrightarrow$@)  (@\ctr{Left}@)  (t,t)
+| Leaf n    (@$\leftrightarrow$@)  (@\ctr{Right}@) n
+ \end{lstlisting}
+%subcode source theseus.tex:485
+\end{multicols}
+
+\noindent It is easy to see that every primitive isomorphism of \ensuremath{\Pi^{o}} can
+be expressed in Theseus. Here are a few examples.
+\vspace{-10pt}
+\begin{multicols}{2}
+\lstset{
+        language=haskell,
+ morekeywords={Nat,Tree,Int,Bool},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+assocL :: a+(b+c) (@$\leftrightarrow$@) (a+b)+c :: assocR
+| (@\ctr{Left}@) a          (@$\,\,\leftrightarrow$@) (@\ctr{Left}@) ((@\ctr{Left}@) a)
+| (@\ctr{Right}@) ((@\ctr{Left}@) b)   (@$\leftrightarrow$@) (@\ctr{Left}@) ((@\ctr{Right}@) b)
+| (@\ctr{Right}@) ((@\ctr{Right}@) c)  (@$\leftrightarrow$@) (@\ctr{Right}@) c
+ \end{lstlisting}
+%subcode source theseus.tex:499
+
+\lstset{
+        language=haskell,
+ morekeywords={Nat,Tree,Int,Bool},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+zeroe :: b + 0 (@$\leftrightarrow$@) b :: zeroi
+| (@\ctr{Left}@) v (@$\leftrightarrow$@) v
+
+swapTimes :: a * b (@$\leftrightarrow$@) b * a
+| (a,b) (@$\leftrightarrow$@) (b,a)
+ \end{lstlisting}
+%subcode source theseus.tex:509
+\end{multicols}
+
+\label{translation}
+\noindent
+Every simple isomorphism of Theseus can be translated to \ensuremath{\Pi^{o}} as follows:
+\begin{enumerate}
+\item For every Theseus map \ctr{c : a} $\leftrightarrow$ \ctr{b}, we can
+  define an intermediate type \ctr{ti} which is the sum of pairs of all the
+  variables that occur in the LHS patterns. Since the LHS and RHS patterns
+  contain the same type variables, \ctr{ti} is unique for a given \ctr{c} (up
+  to ordering). For example, in \ctr{treeUnwind} the first clause has
+  variables \lstinline{t1 : Tree} and \lstinline{t2 : Tree}, the second and
+  third clauses have no variables and the fourth clause has the variable
+  \lstinline{n : Nat}. The expected type \ctr{ti} is therefore
+  \lstinline{Tree * Tree + (1 + (1 + Nat))}, where we insert the type
+  {\scriptsize{1}} as a placeholder for the clauses that did not have type
+  variables.
+\item By construction \ctr{ti} is isomorphic to \ctr{a} and \ctr{b}. Hence,
+  maps \ctr{c1 : a} $\leftrightarrow$ \ctr{ti} and \ctr{c2 : ti}
+  $\leftrightarrow$ \ctr{b} must be expressible in \ensuremath{\Pi^{o}}. (Both the above
+  isomorphisms can be constructed by systematically unfolding and
+  distributing \ctr{a} and \ctr{b} until \ctr{ti} is obtained.  The exact
+  details of such an expansion can be found in Sec.~3 of our previous
+  paper~\cite{rc2012} and are skipped in this paper.) Once values of type
+  \ctr{a} and \ctr{b} can be mapped to values of type \ctr{ti}, the required
+  translation of \ctr{c} is given by \ctr{c1} $\fatsemi$ \ctr{c2}.
+\end{enumerate}
+
+%%%%%%%%%%%%
+\subsection{Dealing with Numbers}
+
+If we try to do arithmetic using the previously defined Peano-style \ensuremath{\kw{Nat} },
+we have to address an issue of what to do when we encounter
+\lstinline{sub1 0}. There are two obvious choices:
+\begin{enumerate}
+\item We can define \ctr{add1} and \ctr{sub1} of type \kw{Nat}
+  $\leftrightarrow$ \kw{Nat}, such that \ctr{sub1} of {\scriptsize{0}}
+  diverges. We show how these maps can be defined in Sec.~\ref{add1}.
+\item An error mechanism can be added to the language such that when
+  an error is raised program execution is undefined and there is no
+  meaningful inverse definition.
+\end{enumerate}
+Another choice, similar to that made by Janus, is to use bounded integers
+such that every operation is always well defined through underflows and
+overflows. Here is a simple 4-bit \kw{Nat4} datatype with its corresponding
+\ctr{add1} and \ctr{sub1} operations:
+\lstset{
+        language=haskell,
+ morekeywords={Nat,Tree,Int,Bool,Nat4},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+type Nat4 = Bool * Bool * Bool * Bool
+
+add1 :: Nat4 (@$\leftrightarrow$@) Nat4 :: sub1
+| (a, b, c, (@\ctr{False}@))          (@$\leftrightarrow$@)  (a, b, c, (@\ctr{True}@))
+| (a, b, (@\ctr{False}@), (@\ctr{True}@))       (@$\,\leftrightarrow$@)  (a, b, (@\ctr{True}@), (@\ctr{False}@))
+| (a, (@\ctr{False}@), (@\ctr{True}@), (@\ctr{True}@))    (@$\,\,\leftrightarrow$@)  (a, (@\ctr{True}@), (@\ctr{False}@), (@\ctr{False}@))
+| ((@\ctr{False}@), (@\ctr{True}@), (@\ctr{True}@), (@\ctr{True}@))  (@$\leftrightarrow$@)  ((@\ctr{True}@), (@\ctr{False}@), (@\ctr{False}@), (@\ctr{False}@))
+| ((@\ctr{True}@), (@\ctr{True}@), (@\ctr{True}@), (@\ctr{True}@))   (@$\leftrightarrow$@)  ((@\ctr{False}@), (@\ctr{False}@), (@\ctr{False}@), (@\ctr{False}@))
+ \end{lstlisting}
+%subcode source theseus.tex:567
+
+\noindent It is easy to see how a math library may be defined in this
+way. Once an operator can be defined in Theseus it is always possible to
+replace its implementation by an equivalent one that is expressible
+efficiently in the underlying hardware. In this case one could compile down
+to the CPU's native integer representation and operators.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Parametrized Maps}
+\label{theseusII}
+
+Now that we can express simple standalone isomorphisms, we explain how to
+compose such isomorphisms to model more complex behavior. In \ensuremath{\Pi^{o}}, there
+are three ways of composing isomorphisms: sequential composition, parallel
+composition, and choice composition. The common idiom underlying these
+composition combinators is that a reversible map can be parametrized by
+another reversible map. This idea is related to ``higher-order functions''
+but is more limited as we explain below.
+
+%%%%%%%%%%%%
+\subsection{Definition and Examples}
+
+A Theseus map \ctr{f} can be parametrized by another map \ctr{g} by adding a
+labeled argument~\ctr{g} of the appropriate type to \ctr{f}. In the example
+below \ctr{treeUnwindf} is parametrized over some map \ctr{f} which it
+applies to \ctr{n}, if the supplied tree is \lstinline{Leaf n}:
+\lstset{
+        language=haskell,
+ morekeywords={Nat,Tree,Int,Bool},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+treeUnwindf :: f:(Nat (@$\leftrightarrow$@) a) (@$\rightarrow$@) Tree (@$\leftrightarrow$@) Tree * Tree + a
+| Node t1 t2 (@$\leftrightarrow$@) (@\ctr{Left}@) (t1, t2)
+| Leaf n     (@$\leftrightarrow$@) (@\ctr{Right}@) (f n)
+ \end{lstlisting}
+%subcode source theseus.tex:600
+
+\noindent This parametrization should be thought of as a macro or a
+meta-language construction. Theseus does not have high-order maps in the
+formal sense. In other words, the final type of a Theseus program must be of
+the form \ctr{a} $\leftrightarrow$ \ctr{b} and every occurrence of an arrow
+type $\rightarrow$ must be instantiated at compile time. The notation for
+instantiating the label parameter \ctr{f} in the map \ctr{fun} by the map
+\ctr{g} is \inline{fun}{f}{g}. For example,
+\inline{treeUnwindf}{f}{expandNat} should be thought of as shorthand for the
+map:
+\lstset{
+        language=haskell,
+ morekeywords={Nat,Tree,Int,Bool},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+_ :: Tree (@$\leftrightarrow$@) Tree * Tree + (1 + Nat)
+| Node t1 t2    (@$\leftrightarrow$@) (@\ctr{Left}@) (t1, t2)
+| Leaf 0        (@$\leftrightarrow$@) (@\ctr{Right}@) ((@\ctr{Right}@) ())
+| Leaf (Succ n) (@$\leftrightarrow$@) (@\ctr{Right}@) ((@\ctr{Left}@) n)
+ \end{lstlisting}
+%subcode source theseus.tex:618
+
+\noindent which inlines \ctr{expandNat} within the definition of
+\ctr{treeUnwindf}.
+
+We discuss the reversibility of parametrized maps in the next section. We
+first point out that the \ensuremath{\Pi^{o}} closure primitives can be expressed as
+parametrized maps:
+\lstset{
+        language=haskell,
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+_._ :: f:(a (@$\leftrightarrow$@) b) (@$\rightarrow$@) g:(b (@$\leftrightarrow$@) c) (@$\rightarrow$@) a (@$\leftrightarrow$@) c
+| a (@$\leftrightarrow$@) g (f a)
+
+_*_ :: f:(a (@$\leftrightarrow$@) b) (@$\rightarrow$@) g:(c (@$\leftrightarrow$@) d) (@$\rightarrow$@) a * c (@$\leftrightarrow$@) b * d
+| (a,c) (@$\leftrightarrow$@) (f a , g c)
+
+_+_ :: f:(a (@$\leftrightarrow$@) b) (@$\rightarrow$@) g:(c (@$\leftrightarrow$@) d) (@$\rightarrow$@) a + c (@$\leftrightarrow$@) b + d
+| (@\ctr{Left}@) a   (@$\leftrightarrow$@)  (@\ctr{Left}@) (f a)
+| (@\ctr{Right}@) c  (@$\leftrightarrow$@)  (@\ctr{Right}@) (g c)
+ \end{lstlisting}
+%subcode source theseus.tex:637
+
+As an additional example, parametrized maps allow us to define controlled
+operations in the tradition of reversible circuits. In the definition below,
+the boolean input is a control bit that determines which of the maps \ctr{th}
+or \ctr{el} is applied to the second component of the pair. This conditional
+is then used to define the ``controlled-not'' gate:
+
+\lstset{
+        language=haskell,
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+(@\ctr{if}@) :: th:(a (@$\leftrightarrow$@) b) (@$\rightarrow$@) el:(a (@$\leftrightarrow$@) b) (@$\rightarrow$@) Bool * a (@$\leftrightarrow$@) Bool * b
+| (@\ctr{True}@), a  (@$\leftrightarrow$@) (@\ctr{Left}@) (th a)
+| (@\ctr{False}@), a (@$\leftrightarrow$@) (@\ctr{Right}@) (el a)
+
+cnot :: Bool * Bool (@$\leftrightarrow$@) Bool * Bool
+| control, bit (@$\leftrightarrow$@) if ~th:(@\ctr{not}@) ~el:(@\ctr{id}@) (control, bit)
+ \end{lstlisting}
+%subcode source theseus.tex:653
+
+%%%%%%%%%%%%
+\subsection{Reversing Parametrized Maps}
+
+Reversing a map of type \ctr{a} $\leftrightarrow$ \ctr{b} results in a map of
+type \ctr{b} $\leftrightarrow$ \ctr{a} which is its adjoint. As discussed
+before, simple maps can be reversed by simply switching the LHS and RHS for
+both the type and the pattern matching clauses comprising the
+body. Interestingly, one can think about the reverse of parametrized maps in
+the same way -- i.e. one simply needs to switch LHS and RHS of the `\ensuremath{\leftrightarrow}'.
+
+\lstset{
+        language=haskell,
+ morekeywords={Nat,Tree,Int,Bool},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+treeUnfold :: f:(Nat (@$\leftrightarrow$@) a) (@$\rightarrow$@) Tree (@$\leftrightarrow$@) Tree * Tree + a
+| Node t1 t2  (@$\leftrightarrow$@) (@\ctr{Left}@) (t1, t2)
+| Leaf n      (@$\leftrightarrow$@) (@\ctr{Right}@) (f n)
+
+-- the adjoint of treeUnfold
+rev_treeUnfold :: f:(Nat (@$\leftrightarrow$@) a) (@$\rightarrow$@) Tree * Tree + a (@$\leftrightarrow$@) Tree
+| (@\ctr{Left}@) (t1, t2)  (@$\leftrightarrow$@) Node t1 t2
+| (@\ctr{Right}@) (f n)    (@$\leftrightarrow$@) Leaf n
+ \end{lstlisting}
+%subcode source theseus.tex:676
+
+\noindent Note that the application \lstinline{f n} happens on the left of
+the \ensuremath{\leftrightarrow}, which is something that one does not see in conventional
+functional languages. These applications in the LHS have the dual meaning of
+applications in the RHS and should be understood as follows: the value that
+is the actual argument of the \ctr{Right} constructor is the result of
+applying~\lstinline{f n}. In the forward execution of
+\lstinline{rev_treeUnfold}, when the actual value of the constructor argument
+is encountered, it is passed through the reverse of \ctr{f} to get the value
+\ctr{n}. In other words, the above program is exactly the same as
+\lstinline{rev_treeUnfold'} below where \lstinline{rev_f} is the adjoint of
+\ctr{f}:
+
+\lstset{
+        language=haskell,
+ morekeywords={Nat,Tree,Int,Bool},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+rev_treeUnfold' :: rev_f:(a (@$\leftrightarrow$@) Nat) (@$\rightarrow$@) Tree (@$\leftrightarrow$@) Tree * Tree + a
+| (@\ctr{Left}@) (t1, t2) (@$\leftrightarrow$@) Node t1 t2
+| (@\ctr{Right}@) a       (@$\leftrightarrow$@) Leaf (rev_f a)
+ \end{lstlisting}
+%subcode source theseus.tex:696
+
+\noindent
+It follows that the following programs are equivalent:
+\vspace{-10pt}
+\begin{multicols}{2}
+\lstset{
+        language=haskell,
+ morekeywords={Nat,Tree,Int,Bool},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+g :: f:(a (@$\leftrightarrow$@) b) (@$\rightarrow$@) a (@$\leftrightarrow$@) b
+| a (@$\leftrightarrow$@) f a
+
+g :: rev_f:(b (@$\leftrightarrow$@) a) (@$\rightarrow$@) a (@$\leftrightarrow$@) b
+| rev_f b (@$\leftrightarrow$@) b
+ \end{lstlisting}
+%subcode source theseus.tex:710
+\end{multicols}
+\vspace{-15pt}
+\noindent
+Based on the above observation, it is easy to define the \ctr{sym} map that
+constructs the adjoint of any given map:
+\vspace{-5pt}
+\lstset{
+        language=haskell,
+ morekeywords={Nat,Tree,Int,Bool},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+sym :: f:(a (@$\leftrightarrow$@) b) (@$\rightarrow$@) b (@$\leftrightarrow$@) a
+| (f a) (@$\leftrightarrow$@) a
+ \end{lstlisting}
+%subcode source theseus.tex:722
+While parametrized maps add tremendous programming convenience to Theseus,
+they don't change the expressive power of the language. All programs
+expressible with parametrized maps, can be expressed without them by fully
+inlining the actual parameters. Thus compiling Theseus programs with
+parametrized maps to \ensuremath{\Pi^{o}} simply requires first inlining the maps and then
+doing the translation described in Sec.~\ref{translation}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Iteration Labels}
+\label{theseusIII}
+\label{add1}
+
+The fragment of Theseus discussed up to now, modulo full recursive types, can
+be expressed in pure \ensuremath{\Pi } without \ensuremath{\mathit{trace}}.  Introducing recursive
+definitions in a reversible language is subtle because every iteration must
+be reversible which requires, at least, that the number of iterations be
+recoverable from the output. The insight we use in Theseus is that this can
+be achieved elegantly by adding \emph{typed labels} as explained below. We
+start with a small example:
+
+\lstset{
+        language=haskell,
+ morekeywords={iter,Nat},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+parity :: Nat * Bool (@$\leftrightarrow$@) Nat * Bool
+| n, b                (@$\leftrightarrow$@) iter $ n, 0, b
+| iter $ Succ n, m, b (@$\leftrightarrow$@) iter $ n, Succ m, (@\ctr{not}@) b
+| iter $ 0, m, b      (@$\leftrightarrow$@) m, b
+  where iter :: Nat * Nat * Bool
+ \end{lstlisting}
+%subcode source theseus.tex:751
+
+\noindent The map \ctr{parity} calculates whether the given natural number is
+even or odd by counting to {\scriptsize{0}} and flipping the second boolean
+input each time. In the definition above, the label appears twice on the LHS
+and twice on the RHS. The correctness (i.e., reversibility) of the map is
+guaranteed as labels obey the same restrictions as the one for simple
+patterns. In particular the occurrences of the label in the LHS must
+constitute a non-overlapping coverage of the label type, and similarly for
+the occurrences of the label in the RHS.
+
+The important thing to note about labels is that they may have a
+different type from the LHS or RHS types of their containing map. In
+this case for example, the \ctr{parity} map has \lstinline{Nat * Bool}
+as its LHS and RHS type while the type of the label \kw{iter} has the
+type \lstinline{Nat * Nat * Bool}. Labels temporarily give us a
+different \emph{view}~\cite{Wadler:1987:VWP:41625.41653} of a value,
+by changing it type. Labels act as goto statements from one side to
+the other -- when a label is encountered on the RHS of a map, the
+argument to the label is matched by some definition of the label
+pattern on the LHS of the map, and vice versa.  Here is a trace of the
+execution of \ctr{parity} as it transforms input \ctr{Succ (Succ (Succ
+  0)), False} to the output \ctr{Succ (Succ (Succ 0)), True}. It takes
+five pattern match and rewrite steps to complete.
+
+\lstset{
+        language=haskell,
+ morekeywords={iter,Nat},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+Succ (Succ (Succ 0)), False           (@$\longmapsto$@) iter $ Succ (Succ (Succ 0)), 0, False
+iter $ Succ (Succ (Succ 0)), 0, False (@$\longmapsto$@) iter $ Succ (Succ 0), Succ 0, True
+iter $ Succ (Succ 0), Succ 0, True    (@$\longmapsto$@) iter $ Succ 0, Succ (Succ 0), False
+iter $ Succ 0, Succ (Succ 0), False   (@$\longmapsto$@) iter $ 0, Succ (Succ (Succ 0)), True
+iter $ 0, Succ (Succ (Succ 0)), True  (@$\longmapsto$@) Succ (Succ (Succ 0)), True
+ \end{lstlisting}
+%subcode source theseus.tex:784
+
+A trace operator can be expressed using labels and the definition closely
+follows the expected iteration semantics of \ensuremath{\mathit{trace}} in our previous
+work~\cite{James:2012:IE:2103656.2103667}.  Using \ctr{trace} one can define
+\ctr{add1} on \kw{Nat} such that \ctr{sub1} of {\scriptsize{0}}
+diverges.
+
+\begin{multicols}{2}
+\lstset{
+        language=haskell,
+ morekeywords={enter,leave},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+trace :: f:(a + b (@$\leftrightarrow$@) a + c) (@$\rightarrow$@) b (@$\leftrightarrow$@) c
+| b               (@$\leftrightarrow$@) enter $ (@\ctr{Right}@) b
+| enter $ a       (@$\leftrightarrow$@) leave $ (f a)
+| leave $ (@\ctr{Left}@) a  (@$\leftrightarrow$@) enter $ (@\ctr{Left}@) a
+| leave $ (@\ctr{Right}@) c (@$\leftrightarrow$@) c
+  where enter :: a + b
+        leave :: a + c
+ \end{lstlisting}
+%subcode source theseus.tex:803
+
+\lstset{
+        language=haskell,
+ morekeywords={Nat},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+addSub :: Nat + Nat (@$\leftrightarrow$@) Nat + Nat
+| (@\ctr{Left}@) (Succ n) (@$\leftrightarrow$@) (@\ctr{Left}@) n
+| (@\ctr{Left}@) 0        (@$\leftrightarrow$@) (@\ctr{Right}@) 0
+| (@\ctr{Right}@) n       (@$\leftrightarrow$@) (@\ctr{Right}@) (Succ n)
+
+add1 :: Nat (@$\leftrightarrow$@) Nat :: sub1
+| n (@$\leftrightarrow$@) trace ~f:addSub n
+ \end{lstlisting}
+%subcode source theseus.tex:815
+\end{multicols}
+\vspace{-10pt}
+
+Here are a few more examples that use labels.  Combinators \ctr{iterN} and
+\ctr{add} are ones you would expect to find in a standard library. The
+combinator \ctr{iterN} loops any given map \ctr{n} times and \ctr{add} adds
+the second argument to the first:
+\vspace{-10pt}
+\begin{multicols}{2}
+\lstset{
+        language=haskell,
+ morekeywords={Nat,iter},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+-- runs f some n-times
+iterN :: f:(a(@$\leftrightarrow$@)a) (@$\rightarrow$@) Nat*a (@$\leftrightarrow$@) Nat*a
+| n, a                 (@$\leftrightarrow$@) iter $ n, 0, a
+| iter $ 0, n, a       (@$\leftrightarrow$@) n, a
+| iter $ Succ n, m, a  (@$\leftrightarrow$@)
+    iter $ n, Succ m, f a
+ where iter :: Nat * Nat * a
+
+
+-- add (x, y) = (x+y, x)
+add : Nat * Nat (@$\leftrightarrow$@) Nat * Nat
+| x, y (@$\leftrightarrow$@) iter $ y, 0, x
+| iter $ a, b, 0       (@$\leftrightarrow$@) a, b
+| iter $ a, b, Succ n  (@$\leftrightarrow$@)
+       iter $ add1 a, add1 b, n
+  where iter :: Nat * Nat * Nat
+ \end{lstlisting}
+%subcode source theseus.tex:844
+\end{multicols}
+
+\vspace{-20pt} As another example, here is definition of the Fibonacci
+function where \ctr{fibonacci} applied to \lstinline{(n, (1, 0))} returns
+\lstinline{(n, (x, y))} where \ctr{x} is the $(n+1)$-st Fibonacci number and
+\ctr{y} is the previous one:
+
+\lstset{
+        language=haskell,
+ morekeywords={Nat},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+swapAndAdd :: Nat * Nat (@$\leftrightarrow$@) Nat * Nat
+| x, y (@$\leftrightarrow$@) add (y, x)
+
+fibonacci :: Nat * (Nat * Nat) (@$\leftrightarrow$@) Nat * (Nat * Nat)
+| n, (x, y) (@$\leftrightarrow$@) iterN ~f:swapAndAdd (n, (x, y))
+ \end{lstlisting}
+%subcode source theseus.tex:860
+
+We conclude this section with a somewhat richer example of tree traversal
+that shows how we can work with general recursive types. Here we use two
+labels \kw{walk} and \kw{reconst} and one can verify that each label
+independently covers its type on both the LHS and the RHS. The combinator
+\ctr{treeWalk} walks down a tree and applies a given \ctr{f} to every leaf:
+
+\lstset{
+        language=haskell,
+ morekeywords={Nat,Tree,Ctxt,walk,reconst},
+	keywordstyle=\bfseries\ttfamily,
+	identifierstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	stringstyle=\ttfamily,
+	showstringspaces=false,
+	basicstyle=\scriptsize\sffamily,
+	tabsize=2,
+	breaklines=false,
+	breakatwhitespace=false,
+	aboveskip={1.2\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+}
+\begin{lstlisting}[escapeinside={(@}{@)}]
+type Ctxt = Empty | L Ctxt Tree | R Tree Ctxt
+
+treeWalk :: ~f:(Nat (@$\leftrightarrow$@) Nat) (@$\rightarrow$@) Tree (@$\leftrightarrow$@) Tree
+| tr                       (@$\leftrightarrow$@) walk $ tr, Empty
+| walk $ Leaf b, ctxt      (@$\leftrightarrow$@) reconst $ ctxt, Leaf (f b)
+| walk $ Node b1 b2, ctxt  (@$\leftrightarrow$@) walk $ b1, L ctxt b2
+| reconst $ Empty, tr      (@$\leftrightarrow$@) tr
+| reconst $ L ctxt b2, b1  (@$\leftrightarrow$@) walk $ b2, R b1 ctxt
+| reconst $ R b1 ctxt, b2  (@$\leftrightarrow$@) reconst $ ctxt, Node b1 b2
+  where walk     :: Tree * Ctxt
+        reconst  :: Ctxt * Tree
+ \end{lstlisting}
+%subcode source theseus.tex:882
+
+\noindent
+Compiling programs with labels to \ensuremath{\Pi^{o}} is a straightforward extension of
+compiling label-free programs. For any Theseus map \ctr{c : a}
+$\leftrightarrow$ \ctr{b} that uses an iteration label \kw{label} \ctr{: lab}
+we construct an intermediate type \ctr{ti} corresponding to the pattern
+clauses as before. We can then construct the isomorphisms \ctr{c1 : lab + a}
+$\leftrightarrow$ \ctr{ti} and \ctr{c2 : ti} $\leftrightarrow$ \ctr{lab + b}
+since every LHS pattern clause corresponds to either \ctr{a} (the input) or
+\ctr{lab} (the label) and every RHS clause corresponds to either \ctr{b} (the
+output) or \ctr{lab} (the label). The resulting \ctr{c1} $\fatsemi$ \ctr{c2}
+has type \lstinline{lab+a} $\leftrightarrow$ \lstinline{lab+b} and the
+required compilation of \ctr{c} is given by \ensuremath{\mathit{trace}(} \ctr{c1} $\fatsemi$
+\ctr{c2} \ensuremath{)} \ctr{: a} $\leftrightarrow$ \ctr{b}. This extends to multiple
+by labels by constructing \lstinline{c1 : (lab1 + lab2 + ...) + a}
+$\leftrightarrow$ \ctr{ti} and \lstinline{c2 : ti} $\leftrightarrow$
+\lstinline{(lab1 + lab2 + ...) + b} to include the types of the additional
+labels.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+\label{conc}
+
+Theseus is as expressible as \ensuremath{\Pi^{o}} and preserves its properties. All
+\ensuremath{\Pi^{o}} programs are expressible as Theseus programs and vice-versa. In other
+words, \ensuremath{\Pi^{o}}, or dagger symmetric traced bimonoidal categories serve as a
+fully abstract model for Theseus. Despite being closely related to \ensuremath{\Pi^{o}},
+programmers can use Theseus without needing to understand \ensuremath{\Pi^{o}}, strings
+diagrams or category theory.
+
+Theseus admits non-terminating computations. Just the way that partial
+functions refer to maps that may not be defined on all inputs, the set
+of computations expressible in Theseus are referred to as
+\emph{partial isomorphisms}. As with \ensuremath{\Pi^{o}}, Theseus programs satisfy
+\emph{logical reversibility} (see Def.~\ref{logical-rev}).
+
+Many of the trimmings of more mainstream languages can be added to
+Theseus. Theseus could use an error reporting mechanism for programs to exit
+to without resorting to divergence. Theseus needs an FFI mechanism to take
+advantage of third-party libraries. We imagine that in such cases the
+programmer would write out an explicit extern declaration asserting the type
+that Theseus should assume the external library has. More generally, Theseus
+can adopt Agda's approach of piggy backing on top of Haskell. We can have an
+FFI that lets us drop into Haskell and use Haskell API. We could also import
+user-certified pairs of Haskell functions as isomorphisms into Theseus.
+
+There are few natural extensions to Theseus that require additional research,
+though preliminary investigation seems promising. Theseus currently treats
+all values the same and does not classify values as heap and garbage.
+Theseus can be extended with a framework for encapsulating effects. In other
+words, add the effectful arrow type \ensuremath{\leadsto} in a principled way such that
+information effects, and possibly other effects, may be
+expressed~\cite{James:2012:IE:2103656.2103667}.  It is also desirable to add
+other programming features such as polymorphism, higher-order maps and
+inductive definitions over recursive datatypes without explicitly managing
+\ctr{Ctxt} values as we did in the \ctr{treeWalk} program.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Acknowledgements} We would like to thank the numerous

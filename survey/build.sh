@@ -1,8 +1,8 @@
 #!/bin/bash
 
 while inotifywait -e close_write survey.tex; do
-    pdflatex survey.tex;
+    pdflatex -halt-on-error survey.tex;
     bibtex survey.aux;
-    pdflatex survey.tex;
-    pdflatex survey.tex;
+    pdflatex -halt-on-error survey.tex;
+    pdflatex -halt-on-error survey.tex;
 done
